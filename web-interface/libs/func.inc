@@ -1,6 +1,6 @@
 <?php
 
-function get_memory_limit()
+function xivo_get_memory_limit()
 {
 	$r = false;
 

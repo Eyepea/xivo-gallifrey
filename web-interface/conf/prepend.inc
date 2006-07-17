@@ -13,7 +13,7 @@ define('XIVO_PATH_ROOT',$path_root);
 $incf_xivo = XIVO_PATH_ROOT.'/conf/xivo.inc';
 
 if(!(is_file($incf_xivo) && is_readable($incf_xivo)))
-	die('ERR : INC FILE XIVO NOT FOUND OR UNREADABLE');
+	die('ERR : XIVO INC FILE NOT FOUND OR UNREADABLE');
 
 require_once($incf_xivo);
 

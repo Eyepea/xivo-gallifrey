@@ -56,8 +56,8 @@ switch(getenv('WAG_MODE'))
 		ini_set('display_errors',true);
 		ini_set('error_log',XIVO_TE_ERR_FILE_LOG);
 
-		$_E = new trac_err($_CF['_libs']['trac_err'],array('report_type' => (XIVO_TE_RTYPE_LOG | XIVO_TE_RTYPE_SCREEN)));
-		set_error_handler(array($_E,'report_e_err'));
+		$_E = new trac_err($_CF['_libs']['trac_err'],array('report_mode' => XIVO_TE_RMODE_DELAYED,'report_type' => (XIVO_TE_RTYPE_LOG | XIVO_TE_RTYPE_SCREEN)));
+		set_error_handler(array(&$_E,'report_e_err'));
 
 		break;
 	case 'PROD':
@@ -71,11 +71,10 @@ switch(getenv('WAG_MODE'))
 		define('XIVO_TE_ERR_FILE_LOG',XIVO_PATH_ROOT.'/xivo_error_log');
 
 		$_E = new trac_err();
-		set_error_handler(array($_E,'report_e_err'));
+		set_error_handler(array(&$_E,'report_e_err'));
 }
 
 // require_once('tpl.inc');
-// require_once('func.inc');
 // require_once('mysql.inc');
 // require_once('query.inc');
 
