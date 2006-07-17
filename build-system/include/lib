@@ -157,7 +157,7 @@ init_buildenv()
   SYSROOTIMG="$PREFIX/sysroot.img"
   SYSROOTIMGSIZE="32"
   SYSCONFIMG="$PREFIX/sysconf.img"
-  SYSCONFIMGSIZE="8"
+  SYSCONFIMGSIZE="64"
 
   # Directory where system configuration files are located.
   # Dont mistake $SYSCONF and $SYSCONFDIR. $SYSCONF is the directory
@@ -215,6 +215,7 @@ copy_sysroot()
   done
   echo "done"
 
+  echo -n "creating directories below / ... "
   mkdir -p -m 755 $SYSROOTTMP/dev
   mkdir -p -m 755 $SYSROOTTMP/etc
   mkdir -p -m 755 $SYSROOTTMP/etc/init.d
@@ -224,6 +225,11 @@ copy_sysroot()
   mkdir -p -m 755 $SYSROOTTMP/sys
   mkdir -p -m 755 $SYSROOTTMP/tmp
   sudo mknod -m 600 $SYSROOTTMP/dev/console c 5 1
+  echo "done"
+
+  echo -n "saving sysconf image inside sysroot image... "
+  gzip -c $SYSCONFIMG > $SYSROOTTMP/sysconf.img.gz
+  echo "done"
 }
 
 # Create the system images from $SYSROOT, $SYSBOOT and $SYSCONF.
@@ -232,10 +238,6 @@ copy_sysroot()
 make_sysimgs()
 {
   rm -f $SYSROOTIMG $SYSBOOTIMG $SYSCONFIMG
-  copy_sysroot
-  mksquashfs $SYSROOTTMP $SYSROOTIMG -all-root
-  chmod 644 $SYSROOTIMG
-  sudo rm -rf $SYSROOTTMP
 
   # Here, we assume the size will always be small enough so that the block
   # size is 1024...
@@ -243,4 +245,9 @@ make_sysimgs()
   e2fsck -y $SYSBOOTIMG
   genext2fs -U -b $(($SYSCONFIMGSIZE * 1024)) -d $SYSCONF > $SYSCONFIMG
   e2fsck -y $SYSCONFIMG
+
+  copy_sysroot
+  mksquashfs $SYSROOTTMP $SYSROOTIMG -all-root
+  chmod 644 $SYSROOTIMG
+  sudo rm -rf $SYSROOTTMP
 }

@@ -1,5 +1,6 @@
-#!/bin/bash
+#!/bin/sh
 
+# Xivo 0.1 - Reset factory defaults.
 # Copyright (C) 2006 Richard Braun <rbraun@proformatique.com>
 # 
 # This program is free software; you can redistribute it and/or modify
@@ -18,36 +19,22 @@
 
 set -e
 
-source config
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
 
-for file in include/*; do
-  source $file
-done
+sysconf=/sysconf.img.gz
+conf_partition=$(grep ' /mnt ' /etc/fstab | cut -d ' ' -f 1)
 
-if [ $# -ne 1 ]; then
-  echo "usage: $0 <distribution>"
-  echo
-  echo "See dists/ for supported distributions."
+cd /
+echo "resetting factory defaults, please wait..."
+
+if [ ! -f "$sysconf" ]; then
+  echo "factory defaults not found, aborting"
   exit 1
 fi
 
-DIST=$1
-source dists/$DIST
-source archs/$ARCH
-source targets/$TARGET
-init_buildenv
-clean_prefix
-make_toolchain
-make_busybox
-make_zlib
-make_libbz2
-make_dropbear
-make_iptables
-make_ncurses
-make_openssl
-make_wget
-make_asterisk
-make_php
-make_vsftpd
-make_sysconf
-make_sysimgs
+# The shutdown process will take care if stopping services.
+umount -l /mnt
+gunzip -c $sysconf | dd of=$conf_partition
+
+echo "configuration reset complete, rebooting..."
+reboot

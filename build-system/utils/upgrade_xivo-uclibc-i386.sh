@@ -1,5 +1,6 @@
-#!/bin/bash
+#!/bin/sh
 
+# Xivo 0.1 - Upgrade Xivo.
 # Copyright (C) 2006 Richard Braun <rbraun@proformatique.com>
 # 
 # This program is free software; you can redistribute it and/or modify
@@ -18,36 +19,32 @@
 
 set -e
 
-source config
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
 
-for file in include/*; do
-  source $file
-done
+sysrootfile=sysroot.img
+sysroot=https://192.168.0.220/cross/i486-linux-uclibc/$sysrootfile
 
-if [ $# -ne 1 ]; then
-  echo "usage: $0 <distribution>"
-  echo
-  echo "See dists/ for supported distributions."
+root=$(ls -l /dev/root | cut -d '>' -f 2)
+
+# Trim spaces.
+root=$(echo $root)
+
+echo "upgrading firmware, please wait..."
+
+if [ "$root" = "/dev/hdc2" ]; then
+  newroot="/dev/hdc3"
+elif [ "$root" = "/dev/hdc3" ]; then
+  newroot="/dev/hdc2"
+else
+  echo "root partition is different from what was expected, aborting."
   exit 1
 fi
 
-DIST=$1
-source dists/$DIST
-source archs/$ARCH
-source targets/$TARGET
-init_buildenv
-clean_prefix
-make_toolchain
-make_busybox
-make_zlib
-make_libbz2
-make_dropbear
-make_iptables
-make_ncurses
-make_openssl
-make_wget
-make_asterisk
-make_php
-make_vsftpd
-make_sysconf
-make_sysimgs
+wget --no-check-certificate $sysroot -O $newroot > /dev/null
+mkdir /tmp/hdc1
+mount -o sync /dev/hdc1 /tmp/hdc1
+sed -ie "s%$root%$newroot%" /tmp/hdc1/boot/grub/menu.lst
+umount /tmp/hdc1
+
+echo "firmware upgraded, rebooting..."
+reboot

@@ -1,5 +1,4 @@
-#!/bin/bash
-
+# Xivo 0.1 - Build wget (BusyBox wget has no SSL/TLS support).
 # Copyright (C) 2006 Richard Braun <rbraun@proformatique.com>
 # 
 # This program is free software; you can redistribute it and/or modify
@@ -16,38 +15,35 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-set -e
+WGET_SOURCE="wget-1.10.2.tar.gz"
+WGET_URL="http://calrissian/$WGET_SOURCE"
+WGET_SIZE="1213056"
+WGET_SHA1SUM="a258357297959964fd42fed6afa1a4cce9069980"
 
-source config
+# Build wget.
+# 
+# usage: make_wget
+make_wget()
+{
+  pushd $SRC &> /dev/null
+  download_source $WGET_URL $WGET_SOURCE $WGET_SIZE $WGET_SHA1SUM
 
-for file in include/*; do
-  source $file
-done
+  get_basename $WGET_SOURCE
+  wget_src=$BASENAME
+  wget_src_arch=$wget_src-$TARGET-build
 
-if [ $# -ne 1 ]; then
-  echo "usage: $0 <distribution>"
-  echo
-  echo "See dists/ for supported distributions."
-  exit 1
-fi
+  if [ ! -d $wget_src_arch ]; then
+    extract $WGET_SOURCE
+    mv $wget_src $wget_src_arch
+    cd $wget_src_arch
+    ./configure --host=$TARGET \
+                --prefix=$SYSROOT/usr \
+                --disable-nls
+    do_make
+  else
+    cd $wget_src_arch
+  fi
 
-DIST=$1
-source dists/$DIST
-source archs/$ARCH
-source targets/$TARGET
-init_buildenv
-clean_prefix
-make_toolchain
-make_busybox
-make_zlib
-make_libbz2
-make_dropbear
-make_iptables
-make_ncurses
-make_openssl
-make_wget
-make_asterisk
-make_php
-make_vsftpd
-make_sysconf
-make_sysimgs
+  do_make install
+  popd &> /dev/null
+}

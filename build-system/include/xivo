@@ -1085,9 +1085,8 @@ EOF
 gen_fstab_xivo_i386()
 {
   cat << EOF
-proc      /proc proc     rw,sync 0 0
-/dev/hdc2 /     squashfs ro      0 0
-/dev/hdc3 /mnt  ext2     rw,sync 1 2
+proc      /proc proc rw      0 0
+/dev/hdc4 /mnt  ext2 rw,sync 1 2
 EOF
 }
 
