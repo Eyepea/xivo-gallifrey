@@ -1,0 +1,85 @@
+#!/bin/sh
+
+# Xivo 0.1 - Mount file systems present in /etc/fstab.
+# Copyright (C) 2006 Richard Braun <rbraun@proformatique.com>
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+set -e
+
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+
+# Mount a file system.
+# 
+# usage: do_mount <type> <device> <mount_point> [options]
+do_mount()
+{
+  if [ -d $3 ] && mountpoint -q $3; then
+    return
+  fi
+
+  options="$4"
+
+  if [ "$options" ]; then
+    options="-o $options"
+  fi
+
+  echo -n "mounting $3... "
+  mkdir -p $3
+  mount -n $options -t $1 $2 $3
+  echo "done"
+}
+
+start_mountfstab()
+{
+  # See /etc/init.d/rcS
+  [ -f /var/run/utmp ] && return
+
+  echo "checking file systems..."
+
+  # Never fail.
+  # XXX This could be undesirable in some cases.
+  fsck -p || true
+  echo "done"
+
+  echo -n "mounting file systems present in /etc/fstab... "
+  mount -a
+  echo "done"
+
+  do_mount tmpfs tmpfs /var/run
+}
+
+stop_mountfstab()
+{
+  umount /var/run
+
+  # Don't unmount the file systems in /etc/fstab, it will be done
+  # late in the shutdown process, by mountsys, which uses umount -a.
+}
+
+case "$1" in
+  start)
+    start_mountfstab
+    ;;
+  stop)
+    stop_mountfstab
+    ;;
+  *)
+    echo "usage: $0 {start|stop}"
+    exit 1
+    ;;
+esac
+
+exit 0

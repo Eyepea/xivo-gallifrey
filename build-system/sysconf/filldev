@@ -1,0 +1,45 @@
+#!/bin/sh
+
+# Xivo 0.1 - Fill /dev using mdev (busybox udev replacement).
+# Copyright (C) 2006 Richard Braun <rbraun@proformatique.com>
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+set -e
+
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+
+# See /etc/init.d/rcS
+[ -f /var/run/utmp ] && return
+
+# mdev needs the presence of the root user and some gids in passwd and
+# group. These files are located in /mnt, so they are not yet usable.
+# as /etc/passwd and /etc/group are symlinks, and /etc is readonly, we
+# must mount a temporary /mnt, with temporary passwd and group files, so
+# that mdev can work correctly. Once /dev is filled, these files are no
+# longer necessary.
+mount -n -t tmpfs tmpfs /mnt
+cp /etc/.passwd.mdev /mnt/passwd
+cp /etc/.group.mdev /mnt/group
+
+echo -n "starting mdev... "
+/sbin/mdev -s
+echo /sbin/mdev > /proc/sys/kernel/hotplug
+
+# This helps a lot.
+ln -sf /dev/urandom /dev/random
+echo "done"
+
+umount /mnt

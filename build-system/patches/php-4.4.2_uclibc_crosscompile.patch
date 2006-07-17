@@ -1,0 +1,241 @@
+diff -Nurp php-4.4.2.orig/build/libtool.m4 php-4.4.2/build/libtool.m4
+--- php-4.4.2.orig/build/libtool.m4	2005-12-19 23:29:12.000000000 +0100
++++ php-4.4.2/build/libtool.m4	2006-07-13 14:00:25.000000000 +0200
+@@ -778,6 +778,7 @@ fi
+ # Transform linux* to *-*-linux-gnu*, to support old configure scripts.
+ case $host_os in
+ linux-gnu*) ;;
++linux-uclibc*) ;;
+ linux*) host=`echo $host | sed 's/^\(.*-.*-linux\)\(.*\)$/\1-gnu\2/'`
+ esac
+ 
+@@ -2157,7 +2158,7 @@ linux-gnuoldld* | linux-gnuaout* | linux
+   ;;
+ 
+ # This must be Linux ELF.
+-linux-gnu*)
++linux-gnu* | linux-uclibc*)
+   version_type=linux
+   need_lib_prefix=no
+   need_version=no
+@@ -3426,7 +3427,7 @@ irix5* | irix6* | nonstopux*)
+   ;;
+ 
+ # This must be Linux ELF.
+-linux-gnu*)
++linux-gnu* | linux-uclibc*)
+   case $host_cpu in
+   alpha* | hppa* | i*86 | mips | mipsel | powerpc* | sparc* | ia64* | s390* | x86_64*)
+     lt_cv_deplibs_check_method=pass_all ;;
+diff -Nurp php-4.4.2.orig/config.sub php-4.4.2/config.sub
+--- php-4.4.2.orig/config.sub	2005-02-15 09:52:33.000000000 +0100
++++ php-4.4.2/config.sub	2006-07-13 14:00:25.000000000 +0200
+@@ -118,7 +118,7 @@ esac
+ # Here we must recognize all the valid KERNEL-OS combinations.
+ maybe_os=`echo $1 | sed 's/^\(.*\)-\([^-]*-[^-]*\)$/\2/'`
+ case $maybe_os in
+-  nto-qnx* | linux-gnu* | freebsd*-gnu* | netbsd*-gnu* | storm-chaos* | os2-emx* | rtmk-nova*)
++  nto-qnx* | linux-gnu* | linux-uclibc* | freebsd*-gnu* | netbsd*-gnu* | storm-chaos* | os2-emx* | rtmk-nova*)
+     os=-$maybe_os
+     basic_machine=`echo $1 | sed 's/^\(.*\)-\([^-]*-[^-]*\)$/\1/'`
+     ;;
+@@ -1108,7 +1108,7 @@ case $os in
+ 	      | -udi* | -eabi* | -lites* | -ieee* | -go32* | -aux* \
+ 	      | -chorusos* | -chorusrdb* \
+ 	      | -cygwin* | -pe* | -psos* | -moss* | -proelf* | -rtems* \
+-	      | -mingw32* | -linux-gnu* | -uxpv* | -beos* | -mpeix* | -udk* \
++	      | -mingw32* | -linux-gnu* | -linux-uclibc* | -uxpv* | -beos* | -mpeix* | -udk* \
+ 	      | -interix* | -uwin* | -mks* | -rhapsody* | -darwin* | -opened* \
+ 	      | -openstep* | -oskit* | -conix* | -pw32* | -nonstopux* \
+ 	      | -storm-chaos* | -tops10* | -tenex* | -tops20* | -its* \
+diff -Nurp php-4.4.2.orig/configure php-4.4.2/configure
+--- php-4.4.2.orig/configure	2006-01-12 19:24:23.000000000 +0100
++++ php-4.4.2/configure	2006-07-13 14:00:36.000000000 +0200
+@@ -12285,8 +12285,8 @@ EOF
+ 
+ 
+ 
+-  unset ac_cv_func_dlopen
+-  unset ac_cv_func___dlopen
++  #unset ac_cv_func_dlopen
++  #unset ac_cv_func___dlopen
+   unset found
+   
+   echo $ac_n "checking for dlopen""... $ac_c" 1>&6
+@@ -12398,8 +12398,8 @@ EOF
+   
+     *) 
+   
+-  unset ac_cv_lib_dl_dlopen
+-  unset ac_cv_lib_dl___dlopen
++  #unset ac_cv_lib_dl_dlopen
++  #unset ac_cv_lib_dl___dlopen
+   unset found
+   echo $ac_n "checking for dlopen in -ldl""... $ac_c" 1>&6
+ echo "configure:12406: checking for dlopen in -ldl" >&5
+@@ -12488,9 +12488,9 @@ fi
+   if test "$found" = "yes"; then
+     ac_libs=$LIBS
+     LIBS="$LIBS -ldl"
+-    if test "$cross_compiling" = yes; then
+-  found=no
+-else
++    #if test "$cross_compiling" = yes; then
++  #found=no
++#else
+   cat > conftest.$ac_ext <<EOF
+ #line 12496 "configure"
+ #include "confdefs.h"
+@@ -12506,7 +12506,7 @@ else
+   found=no
+ fi
+ rm -fr conftest*
+-fi
++#fi
+ 
+     LIBS=$ac_libs
+   fi
+@@ -12799,9 +12799,9 @@ fi
+   if test "$found" = "yes"; then
+     ac_libs=$LIBS
+     LIBS="$LIBS -lresolv"
+-    if test "$cross_compiling" = yes; then
+-  found=no
+-else
++    #if test "$cross_compiling" = yes; then
++  #found=no
++#else
+   cat > conftest.$ac_ext <<EOF
+ #line 12807 "configure"
+ #include "confdefs.h"
+@@ -12817,7 +12817,7 @@ else
+   found=no
+ fi
+ rm -fr conftest*
+-fi
++#fi
+ 
+     LIBS=$ac_libs
+   fi
+@@ -100349,7 +100349,7 @@ irix5* | irix6* | nonstopux*)
+   ;;
+ 
+ # This must be Linux ELF.
+-linux-gnu*)
++linux-gnu* | linux-uclibc*)
+   case $host_cpu in
+   alpha* | hppa* | i*86 | mips | mipsel | powerpc* | sparc* | ia64* | s390* | x86_64*)
+     lt_cv_deplibs_check_method=pass_all ;;
+@@ -100960,7 +100960,7 @@ fi
+ fi
+ 
+ 
+-enable_dlopen=no
++#enable_dlopen=no
+ enable_win32_dll=no
+ 
+ # Check whether --enable-libtool-lock or --disable-libtool-lock was given.
+@@ -101101,6 +101101,7 @@ fi
+ # Transform linux* to *-*-linux-gnu*, to support old configure scripts.
+ case $host_os in
+ linux-gnu*) ;;
++linux-uclibc*) ;;
+ linux*) host=`echo $host | sed 's/^\(.*-.*-linux\)\(.*\)$/\1-gnu\2/'`
+ esac
+ 
+@@ -102577,7 +102578,7 @@ linux-gnuoldld* | linux-gnuaout* | linux
+   ;;
+ 
+ # This must be Linux ELF.
+-linux-gnu*)
++linux-gnu* | linux-uclibc*)
+   version_type=linux
+   need_lib_prefix=no
+   need_version=no
+diff -Nurp php-4.4.2.orig/ext/standard/basic_functions.c php-4.4.2/ext/standard/basic_functions.c
+--- php-4.4.2.orig/ext/standard/basic_functions.c	2006-01-01 14:46:57.000000000 +0100
++++ php-4.4.2/ext/standard/basic_functions.c	2006-07-13 14:00:25.000000000 +0200
+@@ -438,7 +438,9 @@ function_entry basic_functions[] = {
+ 
+ #if HAVE_RES_SEARCH && !(defined(__BEOS__) || defined(PHP_WIN32) || defined(NETWARE))
+ 	PHP_FE(checkdnsrr,														NULL)
++# if HAVE_DN_SKIPNAME
+ 	PHP_FE(getmxrr,second_and_third_args_force_ref)
++# endif
+ #endif
+ 
+ 	PHP_FE(getmyuid,														NULL)
+diff -Nurp php-4.4.2.orig/ext/standard/dns.c php-4.4.2/ext/standard/dns.c
+--- php-4.4.2.orig/ext/standard/dns.c	2006-01-01 14:46:57.000000000 +0100
++++ php-4.4.2/ext/standard/dns.c	2006-07-13 14:00:25.000000000 +0200
+@@ -275,6 +275,7 @@ PHP_FUNCTION(checkdnsrr)
+ #define MAXHOSTNAMELEN  256
+ #endif /* MAXHOSTNAMELEN */
+ 
++#if HAVE_DN_SKIPNAME
+ /* {{{ proto int getmxrr(string hostname, array mxhosts [, array weight])
+    Get MX records corresponding to a given Internet host name */
+ PHP_FUNCTION(getmxrr)
+@@ -355,6 +356,7 @@ PHP_FUNCTION(getmxrr)
+ 	RETURN_TRUE;
+ }
+ /* }}} */
++#endif /* HAVE_DN_SKIPNAME */
+ 
+ #endif
+ /*
+diff -Nurp php-4.4.2.orig/Zend/zend_API.c php-4.4.2/Zend/zend_API.c
+--- php-4.4.2.orig/Zend/zend_API.c	2006-01-01 14:46:49.000000000 +0100
++++ php-4.4.2/Zend/zend_API.c	2006-07-13 14:00:25.000000000 +0200
+@@ -30,6 +30,10 @@
+ #include <stdarg.h>
+ #endif
+ 
++#ifdef internal_function
++# undef internal_function
++#endif
++
+ /* these variables are true statics/globals, and have to be mutex'ed on every access */
+ static int module_count=0;
+ ZEND_API HashTable module_registry;
+diff -Nurp php-4.4.2.orig/Zend/zend_builtin_functions.c php-4.4.2/Zend/zend_builtin_functions.c
+--- php-4.4.2.orig/Zend/zend_builtin_functions.c	2006-01-01 14:46:49.000000000 +0100
++++ php-4.4.2/Zend/zend_builtin_functions.c	2006-07-13 14:00:25.000000000 +0200
+@@ -72,6 +72,10 @@ static ZEND_FUNCTION(debug_backtrace);
+ static ZEND_FUNCTION(zend_test_func);
+ #endif
+ 
++#ifdef internal_function
++# undef internal_function
++#endif
++
+ ZEND_API unsigned char first_arg_force_ref[] = { 1, BYREF_FORCE };
+ ZEND_API unsigned char second_arg_force_ref[] = { 2, BYREF_NONE, BYREF_FORCE };
+ ZEND_API unsigned char third_arg_force_ref[] = { 3, BYREF_NONE, BYREF_NONE, BYREF_FORCE };
+diff -Nurp php-4.4.2.orig/Zend/zend_compile.c php-4.4.2/Zend/zend_compile.c
+--- php-4.4.2.orig/Zend/zend_compile.c	2006-01-01 14:46:49.000000000 +0100
++++ php-4.4.2/Zend/zend_compile.c	2006-07-13 14:00:25.000000000 +0200
+@@ -37,6 +37,9 @@ ZEND_API zend_compiler_globals compiler_
+ ZEND_API zend_executor_globals executor_globals;
+ #endif
+ 
++#ifdef internal_function
++# undef internal_function
++#endif
+ 
+ static void build_runtime_defined_function_key(zval *result, zval *name, zend_op *opline TSRMLS_DC)
+ {
+diff -Nurp php-4.4.2.orig/Zend/zend_compile.h php-4.4.2/Zend/zend_compile.h
+--- php-4.4.2.orig/Zend/zend_compile.h	2006-01-01 14:46:49.000000000 +0100
++++ php-4.4.2/Zend/zend_compile.h	2006-07-13 14:00:25.000000000 +0200
+@@ -40,6 +40,10 @@
+ #define DEC_BPC(op_array)	if (CG(interactive)) { ((op_array)->backpatch_count--); }
+ #define HANDLE_INTERACTIVE()  if (CG(interactive)) { execute_new_code(TSRMLS_C); }
+ 
++#ifdef internal_function
++# undef internal_function
++#endif
++
+ typedef struct _zend_op_array zend_op_array;
+ 
+ typedef struct _znode {

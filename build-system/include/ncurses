@@ -1,0 +1,57 @@
+# Xivo 0.1 - Build ncurses.
+# Copyright (C) 2006 Richard Braun <rbraun@proformatique.com>
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+NCURSES_SOURCE="ncurses-5.5.tar.gz"
+NCURSES_URL="http://calrissian/$NCURSES_SOURCE"
+NCURSES_SIZE="2314030"
+NCURSES_SHA1SUM="46414a72e91a62f63a8c9af00f0d65497f5ecc5a"
+
+# Build ncurses.
+# 
+# usage: make_ncurses
+make_ncurses()
+{
+  pushd $SRC &> /dev/null
+  download_source $NCURSES_URL $NCURSES_SOURCE $NCURSES_SIZE $NCURSES_SHA1SUM
+
+  get_basename $NCURSES_SOURCE
+  ncurses_src=$BASENAME
+  ncurses_src_arch=$ncurses_src-$TARGET-build
+
+  if [ ! -d $ncurses_src_arch ]; then
+    extract $NCURSES_SOURCE
+    mv $ncurses_src $ncurses_src_arch
+    cd $ncurses_src_arch
+    ./configure --host=$TARGET \
+                --prefix=/usr \
+                --with-install-prefix=$SYSROOT \
+                --with-shared \
+                --without-normal \
+                --without-debug \
+                --disable-database \
+                --disable-home-terminfo \
+                --disable-macros \
+                --with-fallbacks \
+                --enable-warnings
+    do_make
+  else
+    cd $ncurses_src_arch
+  fi
+
+  do_make install
+  popd &> /dev/null
+}

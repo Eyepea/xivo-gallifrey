@@ -1,0 +1,54 @@
+# Xivo 0.1 - Build dropbear.
+# Copyright (C) 2006 Richard Braun <rbraun@proformatique.com>
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+DROPBEAR_SOURCE="dropbear-0.48.1.tar.gz"
+DROPBEAR_URL="http://calrissian/$DROPBEAR_SOURCE"
+DROPBEAR_SIZE="1473114"
+DROPBEAR_SHA1SUM="4dd349b5e3c1aa1b627c52a27f17f5eb7e85c146"
+
+DROPBEAR_UCLIBC_PATCH="dropbear-0.48.1_uclibc.patch"
+
+# Build dropbear.
+# 
+# usage: make_dropbear
+make_dropbear()
+{
+  pushd $SRC &> /dev/null
+  download_source $DROPBEAR_URL $DROPBEAR_SOURCE $DROPBEAR_SIZE $DROPBEAR_SHA1SUM
+
+  get_basename $DROPBEAR_SOURCE
+  dropbear_src=$BASENAME
+  dropbear_src_arch=$dropbear_src-$TARGET-build
+
+  if [ ! -d $dropbear_src_arch ]; then
+    extract $DROPBEAR_SOURCE
+    mv $dropbear_src $dropbear_src_arch
+    cd $dropbear_src_arch
+
+    if [ "$USE_UCLIBC" ]; then
+      apply_patch $DROPBEAR_UCLIBC_PATCH
+    fi
+
+    ./configure --host=$TARGET --prefix=$SYSROOT/usr
+    do_make
+  else
+    cd $dropbear_src_arch
+  fi
+
+  do_make install
+  popd &> /dev/null
+}

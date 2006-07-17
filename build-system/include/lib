@@ -1,0 +1,246 @@
+# Xivo 0.1 - Common variables and functions.
+# Copyright (C) 2006 Richard Braun <rbraun@proformatique.com>
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+# When extracting a source tarball, any of these extensions are supported.
+# If you add an extension here, see extract function too.
+EXTENSIONS="tar.gz tar.bz2 tgz"
+
+# usage: exit_with_error "error message"
+exit_with_error()
+{
+  echo "error: $1."
+  exit 1
+}
+
+# Fail if running as root.
+# 
+# usage: check_root
+check_root()
+{
+  [ $UID -ne 0 ] || exit_with_error "running as root is dangerous and useless"
+}
+
+# Download a source file and check size and sha1sum.
+# 
+# usage: download_source <url> <source_filename> <size> <sha1sum>
+download_source()
+{
+  pushd $SRC &> /dev/null
+
+  if [ ! -f "$2" ]; then
+    wget "$1"
+  fi
+
+  size=$(stat -c %s "$2")
+  sha1sum=$(sha1sum "$2" | cut -d ' ' -f 1)
+  echo "checking $2"
+
+  if [ "$size" != "$3" ] || [ "$sha1sum" != "$4" ]; then
+    exit_with_error "bad size/sha1sum for $2"
+  fi
+
+  popd &> /dev/null
+  echo "ok"
+}
+
+# Return the base name of the source file, e.g. get_basename tool-1.2.3.tar.gz
+# returns tool-1.2.3. Supported extensions are listed in the $EXTENSIONS
+# global variable. Set global variable $BASENAME on success.
+# 
+# usage: get_basename <source_file>
+get_basename()
+{
+  for extension in $EXTENSIONS; do
+    if echo "$1" | grep "\.$extension\$" &> /dev/null; then
+      BASENAME=$(basename "$1" .$extension)
+      return
+    fi
+  done
+
+  exit_with_error "unable to get base name"
+}
+
+# Call tar with the right arguments based on the extension of source file.
+# 
+# usage: extract <source_file>
+extract()
+{
+  echo "extracting $1"
+
+  for extension in $EXTENSIONS; do
+    if echo "$1" | grep "\.$extension\$" &> /dev/null; then
+      if [ $extension = "tar.gz" ] || [ $extension = "tgz" ]; then
+        arg="z"
+      elif [ $extension = "tar.bz2" ]; then
+        arg="j"
+      else
+        exit_with_error "unsupported source file type"
+      fi
+
+      tar xf$arg "$1"
+      echo "ok"
+      return
+    fi
+  done
+
+  exit_with_error "unable to get base name"
+}
+
+# Apply a patch from the patches/ directory.
+# 
+# usage: apply_patch <patchfile> [patchlevel=1]
+apply_patch()
+{
+  patchfile=$1
+
+  if [ -z "$2" ]; then
+    patchlevel="1"
+  else
+    patchlevel=$2
+  fi
+
+  patch -p$patchlevel < $ROOTDIR/patches/$patchfile
+}
+
+# Call make with $MAKEFLAGS.
+# 
+# usage: do_make [target...]
+do_make()
+{
+  make $MAKEFLAGS $@
+}
+
+# Set $PATH so that target cross compiling tools (gcc, ld, as, etc...) don't
+# conflict with native compiling tools. See init_buildenv().
+use_simple_path()
+{
+  export PATH=$SIMPLE_PATH
+}
+
+# See use_simple_path() and init_buildenv().
+use_extended_path()
+{
+  export PATH=$EXTENDED_PATH
+}
+
+# Set variables, paths, and various elements related to the build environment.
+# Sizes are in MB.
+# 
+# usage: init_buildenv
+init_buildenv()
+{
+  check_root
+  ROOTDIR=$PWD
+  SRC="$BASE/src"
+  PREFIX="$BASE/$TARGET"
+  TOOLCHAIN="$PREFIX/toolchain"
+  SYSROOT="$PREFIX/sysroot"
+  SYSBOOT="$PREFIX/sysboot"
+  SYSCONF="$PREFIX/sysconf"
+  SYSBOOTIMG="$PREFIX/sysboot.img"
+  SYSBOOTIMGSIZE="8"
+  SYSROOTTMP="$PREFIX/sysroot.tmp"
+  SYSROOTIMG="$PREFIX/sysroot.img"
+  SYSROOTIMGSIZE="32"
+  SYSCONFIMG="$PREFIX/sysconf.img"
+  SYSCONFIMGSIZE="8"
+
+  # Directory where system configuration files are located.
+  # Dont mistake $SYSCONF and $SYSCONFDIR. $SYSCONF is the directory
+  # used to generate the ext2fs file system where modifyable configuration
+  # files will be located.
+  SYSCONFDIR="$ROOTDIR/sysconf"
+
+  # See files in $SYSCONFDIR if you change this.
+  DISTFILE="$SYSROOT/etc/dist"
+
+  mkdir -p $SRC
+  mkdir -p $TOOLCHAIN
+  mkdir -p $SYSROOT
+  mkdir -p $SYSBOOT
+  mkdir -p $SYSCONF
+
+  export BUILD_CC=$(which gcc)
+  SIMPLE_PATH=$TOOLCHAIN/bin:$PATH:/sbin:/usr/sbin:/usr/local/sbin
+  EXTENDED_PATH=$TOOLCHAIN/bin:$TOOLCHAIN/i486-linux-uclibc/bin:$PATH:/sbin:/usr/sbin:/usr/local/sbin
+  use_simple_path
+}
+
+# Remove the content of the prefix directory.
+# 
+# usage: clean_prefix
+clean_prefix()
+{
+  rm -rf $TOOLCHAIN/* $SYSROOT/* $SYSBOOT/* $SYSCONF/*
+}
+
+# Copy and optimize content of $SYSROOT into $SYSROOTTMP.
+# 
+# usage: copy_sysroot
+copy_sysroot()
+{
+  echo -n "creating temporary sysroot tree... "
+  rm -rf $SYSROOTTMP
+  cp -a $SYSROOT $SYSROOTTMP
+  echo "done"
+
+  echo -n "removing static libraries and object files... "
+  find $SYSROOTTMP \( -name 'lib*.a' -o -name '*.o' \) -exec rm {} \;
+  echo "done"
+
+  echo -n "removing useless files... "
+  rm -rf $SYSROOTTMP/usr/{include,src,man,info,share/{i18n,locale,man,info}}
+  rm -rf $SYSROOTTMP/usr/lib/pkgconfig
+  rm -rf $SYSROOTTMP/usr/lib/php/build
+  rm -rf $SYSROOTTMP/man $SYSROOTTMP/etc/ssl/{man,misc}
+  echo "done"
+
+  echo "stripping binaries (ignore errors about unrecognized formats)..."
+  for dir in $SYSROOTTMP/{,usr/}{{,s}bin}; do
+    find $dir -type f -exec $TOOLCHAIN/bin/$TARGET-strip -s {} \;
+  done
+  echo "done"
+
+  mkdir -p -m 755 $SYSROOTTMP/dev
+  mkdir -p -m 755 $SYSROOTTMP/etc
+  mkdir -p -m 755 $SYSROOTTMP/etc/init.d
+  mkdir -p -m 755 $SYSROOTTMP/mnt
+  mkdir -p -m 755 $SYSROOTTMP/proc
+  mkdir -p -m 755 $SYSROOTTMP/root
+  mkdir -p -m 755 $SYSROOTTMP/sys
+  mkdir -p -m 755 $SYSROOTTMP/tmp
+  sudo mknod -m 600 $SYSROOTTMP/dev/console c 5 1
+}
+
+# Create the system images from $SYSROOT, $SYSBOOT and $SYSCONF.
+# 
+# usage: make_sysimgs
+make_sysimgs()
+{
+  rm -f $SYSROOTIMG $SYSBOOTIMG $SYSCONFIMG
+  copy_sysroot
+  mksquashfs $SYSROOTTMP $SYSROOTIMG -all-root
+  chmod 644 $SYSROOTIMG
+  sudo rm -rf $SYSROOTTMP
+
+  # Here, we assume the size will always be small enough so that the block
+  # size is 1024...
+  genext2fs -U -b $(($SYSBOOTIMGSIZE * 1024)) -d $SYSBOOT > $SYSBOOTIMG
+  e2fsck -y $SYSBOOTIMG
+  genext2fs -U -b $(($SYSCONFIMGSIZE * 1024)) -d $SYSCONF > $SYSCONFIMG
+  e2fsck -y $SYSCONFIMG
+}

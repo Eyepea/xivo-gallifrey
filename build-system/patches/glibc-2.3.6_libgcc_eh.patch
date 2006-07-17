@@ -1,0 +1,19 @@
+diff -Nurp glibc-2.3.6.orig/Makeconfig glibc-2.3.6/Makeconfig
+--- glibc-2.3.6.orig/Makeconfig	2006-06-13 10:14:14.000000000 +0200
++++ glibc-2.3.6/Makeconfig	2006-06-13 10:15:31.000000000 +0200
+@@ -502,13 +502,8 @@ ifneq ($(have-cc-with-libunwind),yes)
+ else
+   libunwind = -lunwind
+ endif
+-ifneq ($(have-as-needed),yes)
+- libgcc_eh := -lgcc_eh $(libunwind)
+-else
+- libgcc_eh := -Wl,--as-needed -lgcc_s$(libgcc_s_suffix) $(libunwind) -Wl,--no-as-needed
+-endif
+-gnulib := -lgcc $(libgcc_eh)
+-static-gnulib := -lgcc -lgcc_eh $(libunwind)
++gnulib := -lgcc
++static-gnulib := -lgcc $(libunwind)
+ libc.so-gnulib := -lgcc
+ endif
+ ifeq ($(elf),yes)

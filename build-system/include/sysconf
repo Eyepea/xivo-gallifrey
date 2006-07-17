@@ -1,0 +1,208 @@
+# Xivo 0.1 - Handle system configuration files.
+# Copyright (C) 2006 Richard Braun <rbraun@proformatique.com>
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+# Install RC scripts.
+# 
+# usage: make_rc_scripts
+make_rc_scripts()
+{
+  mkdir -p $SYSROOT/etc/init.d
+  install -m 755 $SYSCONFDIR/rcS $SYSROOT/etc/init.d
+  install -m 755 $SYSCONFDIR/shutdown $SYSROOT/etc/init.d
+  install -m 755 $SYSCONFDIR/mountsys $SYSROOT/etc/init.d
+  install -m 755 $SYSCONFDIR/filldev $SYSROOT/etc/init.d
+  install -m 755 $SYSCONFDIR/loadmodules $SYSROOT/etc/init.d
+  install -m 755 $SYSCONFDIR/mountfstab $SYSROOT/etc/init.d
+  install -m 755 $SYSCONFDIR/hostname $SYSROOT/etc/init.d
+  install -m 755 $SYSCONFDIR/syslogd $SYSROOT/etc/init.d
+  install -m 755 $SYSCONFDIR/klogd $SYSROOT/etc/init.d
+  install -m 755 $SYSCONFDIR/networking $SYSROOT/etc/init.d
+  install -m 755 $SYSCONFDIR/dropbear $SYSROOT/etc/init.d
+  install -m 755 $SYSCONFDIR/asterisk/asterisk $SYSROOT/etc/init.d
+  install -m 755 $SYSCONFDIR/httpd/httpd $SYSROOT/etc/init.d
+  install -m 755 $SYSCONFDIR/vsftpd/vsftpd $SYSROOT/etc/init.d
+}
+
+# Create the dist file.
+# 
+# usage: make_distfile
+make_distfile()
+{
+  echo "DIST_NAME=\"$DIST_NAME\"" > $DISTFILE
+  echo "DIST_VERSION=\"$DIST_VERSION\"" >> $DISTFILE
+  chmod 644 $DISTFILE
+}
+
+# Install a site-local configuration file. The file will be written
+# into $SYSCONF (/mnt at runtime), and a symlink of this file will be
+# created in $SYSROOT/destdir (if conffile has a directory part, this
+# directory will be created in $SYSCONF). For example :
+# 
+# make_conf_file httpd/httpd.conf /etc 644
+# 
+# usage: make_conf_file <conffile> <destdir> <mode>
+make_conf_file()
+{
+  conffile=$1
+  destdir=$2
+  mode=$3
+  dir=$(dirname $conffile)
+  file=$(basename $conffile)
+
+  mkdir -p -m 755 $SYSCONF/$dir
+  mkdir -p -m 755 ${SYSROOT}$destdir
+  install -m $mode $SYSCONFDIR/$conffile $SYSCONF/$dir
+  ln -s /mnt/$conffile ${SYSROOT}$destdir/$file
+}
+
+# Create fstab.
+# 
+# usage: make_fstab
+make_fstab()
+{
+  gen_fstab > $SYSROOT/etc/fstab
+  chmod 644 $SYSROOT/etc/fstab
+}
+
+# Create /etc/hostname as a symbolic link to /mnt/hostname.
+# Also create /etc/hosts
+# 
+# usage: make_hostname
+make_hostname()
+{
+  hostname=$(echo $DIST_NAME | tr '[:upper:]' '[:lower:]')
+  echo $hostname > $SYSCONF/hostname
+  ln -s /mnt/hostname $SYSROOT/etc/hostname
+  echo "127.0.0.1 localhost.localdomain localhost" > $SYSROOT/etc/hosts
+
+  # XXX There should be a unique source for the IP address.
+  echo "192.168.0.221 $hostname" >> $SYSROOT/etc/hosts
+}
+
+# Handle passwd/group/shadow/gshadow files (tricky when /etc is readonly).
+# See the sysconf/chpass wrapper (which is installed as /usr/sbin/passwd).
+# 
+# usage: make_passwd
+make_passwd()
+{
+  # These files are copied by /etc/init.d/filldev in a temporary /mnt tmpfs
+  # file system so that mdev.conf can use names instead of UIDs/GIDs (the
+  # real /mnt file system cannot be mounted at that step of the boot process).
+  install -m 644 $SYSCONFDIR/passwd $SYSROOT/etc/.passwd.mdev
+  install -m 644 $SYSCONFDIR/group $SYSROOT/etc/.group.mdev
+
+  make_conf_file passwd /etc 644
+  make_conf_file shadow /etc 600
+  make_conf_file group /etc 644
+  make_conf_file gshadow /etc 600
+
+  for file in passwd group shadow gshadow; do
+    install -m 600 $SYSCONF/$file $SYSCONF/$file-
+    ln -s /mnt/$file- $SYSROOT/etc/$file-
+  done
+
+  install -m 4755 $SYSCONFDIR/chpass $SYSROOT/usr/sbin/passwd
+}
+
+# Create /etc/modules.
+# 
+# make_modules
+make_modules()
+{
+  install -m 644 $SYSCONFDIR/modules $SYSROOT/etc
+  gen_modules >> $SYSROOT/etc/modules
+}
+
+# Create /etc/network tree.
+# 
+# usage: make_network
+make_network()
+{
+  make_conf_file interfaces /etc/network 644
+  mkdir $SYSROOT/etc/network/if-{pre-up,up,down,post-down}.d
+  ln -s /mnt/resolv.conf $SYSROOT/etc/resolv.conf
+  touch $SYSCONF/resolv.conf
+  chmod 644 $SYSCONF/resolv.conf
+  install -m 644 $SYSCONFDIR/services $SYSROOT/etc
+  install -m 644 $SYSCONFDIR/protocols $SYSROOT/etc
+}
+
+# Install Asterisk configuration files.
+# 
+# usage make_asterisk_conf
+make_asterisk_conf()
+{
+  mkdir -p -m 755 $SYSCONF/etc/asterisk
+  rm -rf $SYSROOT/etc/asterisk
+  ln -s /mnt/etc/asterisk $SYSROOT/etc/asterisk
+  install -m 644 $SYSCONFDIR/asterisk/agents.conf $SYSCONF/etc/asterisk
+  install -m 644 $SYSCONFDIR/asterisk/asterisk.conf $SYSCONF/etc/asterisk
+  install -m 644 $SYSCONFDIR/asterisk/extensions.conf $SYSCONF/etc/asterisk
+  install -m 644 $SYSCONFDIR/asterisk/iax.conf $SYSCONF/etc/asterisk
+  install -m 644 $SYSCONFDIR/asterisk/iaxprov.conf $SYSCONF/etc/asterisk
+  install -m 644 $SYSCONFDIR/asterisk/manager.conf $SYSCONF/etc/asterisk
+  install -m 644 $SYSCONFDIR/asterisk/modules.conf $SYSCONF/etc/asterisk
+  install -m 644 $SYSCONFDIR/asterisk/queues.conf $SYSCONF/etc/asterisk
+  install -m 644 $SYSCONFDIR/asterisk/sip.conf $SYSCONF/etc/asterisk
+  install -m 644 $SYSCONFDIR/asterisk/voicemail.conf $SYSCONF/etc/asterisk
+}
+
+# Create the /var tree. This should be done very late in the process, to
+# avoid adding files to /var after this function has been called.
+# 
+# usage: make_var
+make_var()
+{
+  if [ -d $SYSROOT/var ]; then
+    mv $SYSROOT/var $SYSCONF
+  fi
+
+  mkdir -p -m 755 $SYSCONF/var/{lib,log,run,spool,tmp,www}
+  chmod 1777 $SYSCONF/var/tmp
+  ln -s /mnt/var $SYSROOT/var
+  touch $SYSCONF/var/log/lastlog
+  chmod 644 $SYSCONF/var/log/lastlog
+  touch $SYSCONF/var/log/wtmp
+  chmod 644 $SYSCONF/var/log/wtmp
+}
+
+# Create system configuration files.
+# 
+# usage: make_sysconf
+make_sysconf()
+{
+  make_rc_scripts
+  make_distfile
+  make_fstab
+  make_hostname
+  make_passwd
+  make_modules
+  make_network
+  make_asterisk_conf
+  make_var
+  install -m 644 $SYSCONFDIR/inittab $SYSROOT/etc
+  install -m 644 $SYSCONFDIR/mdev.conf $SYSROOT/etc
+  ln -s /proc/mounts $SYSROOT/etc/mtab
+  install -m 644 $SYSCONFDIR/profile $SYSROOT/etc
+  ln -s /mnt/dropbear $SYSROOT/etc/dropbear
+  mkdir -m 755 $SYSCONF/dropbear
+  make_conf_file httpd/httpd.conf /etc 644
+  install -m 644 $SYSCONFDIR/vsftpd/vsftpd.conf $SYSROOT/etc
+  make_conf_file php.ini /etc 644
+  mkdir -p 755 $SYSROOT/usr/share/misc
+  install -m 644 $SYSCONFDIR/magic.mime $SYSROOT/usr/share/misc
+}

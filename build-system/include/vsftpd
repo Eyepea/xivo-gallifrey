@@ -1,0 +1,52 @@
+# Xivo 0.1 - Build vsftpd.
+# Copyright (C) 2006 Richard Braun <rbraun@proformatique.com>
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+VSFTPD_SOURCE="vsftpd-2.0.5.tar.gz"
+VSFTPD_URL="http://calrissian/$VSFTPD_SOURCE"
+VSFTPD_SIZE="155985"
+VSFTPD_SHA1SUM="9b6a079699aaeb01219665acf203c093f94faef0"
+
+VSFTPD_BUILDDEFS_PATCH="vsftpd-2.0.5_builddefs.patch"
+
+# Build vsftpd.
+# 
+# usage: make_vsftpd
+make_vsftpd()
+{
+  pushd $SRC &> /dev/null
+  download_source $VSFTPD_URL $VSFTPD_SOURCE $VSFTPD_SIZE $VSFTPD_SHA1SUM
+
+  get_basename $VSFTPD_SOURCE
+  vsftpd_src=$BASENAME
+  vsftpd_src_arch=$vsftpd_src-$TARGET-build
+
+  use_extended_path
+
+  if [ ! -d $vsftpd_src_arch ]; then
+    extract $VSFTPD_SOURCE
+    mv $vsftpd_src $vsftpd_src_arch
+    cd $vsftpd_src_arch
+    apply_patch $VSFTPD_BUILDDEFS_PATCH
+    do_make
+  else
+    cd $vsftpd_src_arch
+  fi
+
+  install -m 755 vsftpd $SYSROOT/usr/sbin
+  use_simple_path
+  popd &> /dev/null
+}

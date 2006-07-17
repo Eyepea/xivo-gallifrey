@@ -1,0 +1,144 @@
+# Xivo 0.1 - Build PHP.
+# Copyright (C) 2006 Richard Braun <rbraun@proformatique.com>
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+PHP_SOURCE="php-4.4.2.tar.gz"
+PHP_URL="http://calrissian/$PHP_SOURCE"
+PHP_SIZE="5461440"
+PHP_SHA1SUM="99d97c0971d09618e4d7d7a51cd5d47f51f5316d"
+
+PHP_UCLIBC_CROSSCOMPILE_PATCH="php-4.4.2_uclibc_crosscompile.patch"
+
+PHP_SQLITE_SOURCE="SQLite-1.0.3.tgz"
+PHP_SQLITE_URL="http://calrissian/$PHP_SQLITE_SOURCE"
+PHP_SQLITE_SIZE="371189"
+PHP_SQLITE_SHA1SUM="338333183875deb74956b37a8d58e2659d47a501"
+
+# Build SQLite support for PHP.
+# 
+# usage: make_php_sqlite
+make_php_sqlite()
+{
+  pushd $SRC &> /dev/null
+  download_source $PHP_SQLITE_URL $PHP_SQLITE_SOURCE $PHP_SQLITE_SIZE \
+                  $PHP_SQLITE_SHA1SUM
+
+  get_basename $PHP_SQLITE_SOURCE
+  php_sqlite_src=$BASENAME
+  php_sqlite_src_arch=$php_sqlite_src-$TARGET-build
+
+  use_extended_path
+
+  if [ ! -d $php_sqlite_src_arch ]; then
+    extract $PHP_SQLITE_SOURCE
+    mv $php_sqlite_src $php_sqlite_src_arch
+    cd $php_sqlite_src_arch
+    $SYSROOT/usr/bin/phpize
+    ./configure --host=$TARGET \
+                --with-php-config=$SYSROOT/usr/bin/php-config \
+                --enable-shared \
+                --disable-static \
+                --with-pic
+    do_make
+  else
+    cd $php_sqlite_src_arch
+  fi
+
+  do_make install
+  use_simple_path
+  popd &> /dev/null
+}
+
+# Build PHP (configure script is really not cross compilation friendly, the
+# result may be poorly built).
+# 
+# usage: make_php
+make_php()
+{
+  pushd $SRC &> /dev/null
+  download_source $PHP_URL $PHP_SOURCE $PHP_SIZE $PHP_SHA1SUM
+
+  get_basename $PHP_SOURCE
+  php_src=$BASENAME
+  php_src_arch=$php_src-$TARGET-build
+
+  use_extended_path
+
+  if [ ! -d $php_src_arch ]; then
+    extract $PHP_SOURCE
+    mv $php_src $php_src_arch
+    cd $php_src_arch
+    apply_patch $PHP_UCLIBC_CROSSCOMPILE_PATCH
+
+    if [ "$BIG_ENDIAN" = "true" ]; then
+      big_endian=yes
+    else
+      big_endian=no
+    fi
+
+    # Ugly hacks - see the patch applied above.
+    EXTRA_LIBS="-ldl" \
+    enable_dlopen=yes \
+    ac_cv_func_dlopen=yes \
+    ac_cv_lib_dl_dlopen=yes \
+    ac_cv_func_getaddrinfo=yes \
+    ac_cv_sizeof_intmax_t=$SIZEOF_INTMAX_T \
+    ac_cv_sizeof_size_t=$SIZEOF_SIZE_T \
+    ac_cv_sizeof_ssize_t=$SIZEOF_SSIZE_T \
+    ac_cv_sizeof_ptrdiff_t=$SIZEOF_PTRDIFF_T \
+    ac_cv_sizeof_long_long=$SIZEOF_LONG_LONG \
+    ac_cv_sizeof_long_long_int=$SIZEOF_LONG_LONG \
+    ac_cv_sizeof_long=$SIZEOF_LONG \
+    ac_cv_sizeof_int=$SIZEOF_INT \
+    ac_cv_sizeof_char=$SIZEOF_CHAR \
+    ac_cv_c_bigendian_php=$big_endian \
+    ./configure --host=$TARGET \
+                --prefix=$SYSROOT/usr \
+                --enable-discard-path \
+                --with-layout=GNU \
+                --with-config-file-path=/etc \
+                --with-exec-dir=/usr/lib/php/libexec \
+                --disable-rpath \
+                --with-openssl \
+                --with-mime-magic \
+                --with-zlib \
+                --with-bz2 \
+                --enable-ftp \
+                --enable-socket \
+                --enable-calendar \
+                --enable-shmop \
+                --enable-bcmath \
+                --enable-sysvmsg \
+                --enable-sysvsem \
+                --enable-sysvshm \
+                --enable-memory-limit \
+                --disable-static \
+                --enable-shared \
+                --with-pic \
+                --without-mysql \
+                --without-pgsql \
+                --without-pear
+    do_make
+  else
+    cd $php_src_arch
+  fi
+
+  do_make install
+  use_simple_path
+  popd &> /dev/null
+
+  make_php_sqlite
+}

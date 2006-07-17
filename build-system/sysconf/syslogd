@@ -1,0 +1,106 @@
+#!/bin/sh
+
+# Xivo 0.1 - Handle syslogd.
+# Copyright (C) 2006 Richard Braun <rbraun@proformatique.com>
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+set -e
+
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+pidfile=/var/run/syslogd.pid
+binpath=/sbin/syslogd
+
+test -x $binpath || exit 0
+
+# usage: running <pidfile>
+running()
+{
+  if [ -f "$1" ]; then
+    return 0
+  fi
+
+  return 1
+}
+
+start_syslogd()
+{
+  echo -n "starting syslogd... "
+  if ! running $pidfile; then
+    start-stop-daemon --background \
+                      --quiet \
+                      --exec $binpath \
+                      --pidfile $pidfile \
+                      --make-pid \
+                      --start \
+                      -- \
+                      -n
+    echo "done"
+  else
+    echo "syslogd already running"
+  fi
+}
+
+stop_syslogd()
+{
+  echo -n "stopping syslogd... "
+  if running $pidfile; then
+    start-stop-daemon --quiet \
+                      --exec $binpath \
+                      --pidfile $pidfile \
+                      --stop
+    rm -f $pidfile
+    echo "done"
+  else
+    echo "syslogd not running"
+  fi
+}
+
+reload_syslogd()
+{
+  echo -n "reloading syslogd... "
+  if running $pidfile; then
+    start-stop-daemon --quiet \
+                      --exec $binpath \
+                      --pidfile $pidfile \
+                      --signal 1 \
+                      --stop
+    echo "done"
+  else
+    echo "syslogd not running"
+  fi
+}
+
+case "$1" in
+  start)
+    start_syslogd
+    ;;
+  stop)
+    stop_syslogd
+    ;;
+  reload)
+    reload_syslogd
+    ;;
+  restart)
+    stop_syslogd
+    start_syslogd
+    ;;
+  *)
+    echo "usage: $0 {start|stop|reload|restart}"
+    exit 1
+    ;;
+esac
+
+exit 0
