@@ -32,7 +32,7 @@ $_CF['site'] = array();
 $_CF['i18n'] = array();
 
 require_once(XIVO_PATH_LIBS.'/func.inc');
-require_once(XIVO_PATH_LIBS.'/error.inc');
+require_once(XIVO_PATH_LIBS.'/trac_err.inc');
 
 switch(php_sapi_name())
 {
@@ -56,7 +56,7 @@ switch(getenv('WAG_MODE'))
 		ini_set('display_errors',true);
 		ini_set('error_log',XIVO_TE_ERR_FILE_LOG);
 
-		$_E = new trac_err($_CF['_libs']['trac_err'],array('report_mode' => XIVO_TE_RMODE_DELAYED,'report_type' => (XIVO_TE_RTYPE_LOG | XIVO_TE_RTYPE_SCREEN)));
+		$_E = new trac_err($_CF['_libs']['trac_err'],array('report_type' => (XIVO_TE_RTYPE_LOG | XIVO_TE_RTYPE_SCREEN)));
 		set_error_handler(array(&$_E,'report_e_err'));
 
 		break;
