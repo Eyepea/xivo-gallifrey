@@ -116,6 +116,10 @@ make_php()
                 --with-mime-magic \
                 --with-zlib \
                 --with-bz2 \
+                --with-gd \
+                --with-png-dir=$SYSROOT/usr \
+                --with-jpeg-dir=$SYSROOT/usr \
+                --enable-gd-native-ttf \
                 --enable-ftp \
                 --enable-socket \
                 --enable-calendar \

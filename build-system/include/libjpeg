@@ -1,0 +1,58 @@
+# Xivo 0.1 - Build libjpeg.
+# Copyright (C) 2006 Richard Braun <rbraun@proformatique.com>
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+LIBJPEG_SOURCE="jpegsrc.v6b.tar.gz"
+LIBJPEG_URL="http://calrissian/$LIBJPEG_SOURCE"
+LIBJPEG_SIZE="613261"
+LIBJPEG_SHA1SUM="7079f0d6c42fad0cfba382cf6ad322add1ace8f9"
+
+LIBJPEG_UCLIBC_CROSSCOMPILE_PATCH="libjpeg-6b_uclibc_crosscompile.patch"
+
+# Build libjpeg.
+# 
+# usage: make_libjpeg
+make_libjpeg()
+{
+  pushd $SRC &> /dev/null
+  download_source $LIBJPEG_URL $LIBJPEG_SOURCE $LIBJPEG_SIZE $LIBJPEG_SHA1SUM
+
+  get_basename $LIBJPEG_SOURCE
+
+  # Directory name must be hardcoded.
+  libjpeg_src="jpeg-6b"
+  libjpeg_src_arch=$libjpeg_src-$TARGET-build
+
+  use_extended_path
+
+  if [ ! -d $libjpeg_src_arch ]; then
+    extract $LIBJPEG_SOURCE
+    mv $libjpeg_src $libjpeg_src_arch
+    cd $libjpeg_src_arch
+    apply_patch $LIBJPEG_UCLIBC_CROSSCOMPILE_PATCH
+    ./configure --host=$TARGET \
+                --prefix=$SYSROOT/usr \
+                --enable-shared \
+                --disable-static
+    do_make
+  else
+    cd $libjpeg_src_arch
+  fi
+
+  do_make install
+  use_simple_path
+  popd &> /dev/null
+}

@@ -41,6 +41,8 @@ make_toolchain
 make_busybox
 make_zlib
 make_libbz2
+make_libpng
+make_libjpeg
 make_dropbear
 make_iptables
 make_ncurses

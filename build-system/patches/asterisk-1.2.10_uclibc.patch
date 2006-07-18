@@ -1,0 +1,24 @@
+diff -Nurp asterisk-1.2.10.orig/dns.c asterisk-1.2.10/dns.c
+--- asterisk-1.2.10.orig/dns.c	2005-11-29 19:24:39.000000000 +0100
++++ asterisk-1.2.10/dns.c	2006-07-18 14:36:30.000000000 +0200
+@@ -173,7 +173,7 @@ static int dns_parse_answer(void *contex
+ 	return 0;
+ }
+ 
+-#if defined(res_ninit)
++#if (defined(res_ninit) && !defined(__UCLIBC__))
+ #define HAS_RES_NINIT
+ #else
+ AST_MUTEX_DEFINE_STATIC(res_lock);
+diff -Nurp asterisk-1.2.10.orig/include/asterisk/compat.h asterisk-1.2.10/include/asterisk/compat.h
+--- asterisk-1.2.10.orig/include/asterisk/compat.h	2005-11-29 19:24:39.000000000 +0100
++++ asterisk-1.2.10/include/asterisk/compat.h	2006-07-18 14:36:30.000000000 +0200
+@@ -74,7 +74,7 @@ int unsetenv(const char *name);
+ #define HAVE_VASPRINTF
+ #define HAVE_STRTOQ
+ 
+-#ifdef _BSD_SOURCE
++#if (defined(_BSD_SOURCE) && !defined(__UCLIBC__))
+ #define HAVE_GETLOADAVG
+ #endif
+ 

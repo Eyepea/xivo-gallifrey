@@ -94,7 +94,7 @@ make_binutils()
 }
 
 # Extract and prepare linux headers.
-# Also set $KERNEL_SOURCE and $KERNEL_VERSION.
+# Also set $KERNEL_SOURCE.
 # 
 # usage: make_linux_headers
 make_linux_headers()
@@ -102,7 +102,6 @@ make_linux_headers()
   pushd $SRC &> /dev/null
   download_source $LINUX_URL $LINUX_SOURCE $LINUX_SIZE $LINUX_SHA1SUM
 
-  KERNEL_VERSION=$(echo $LINUX_SOURCE | cut -d - -f 2 | cut -d . -f 1-4)
   get_basename $LINUX_SOURCE
   linux_src=$BASENAME
   linux_src_arch=$linux_src-$TARGET
@@ -359,6 +358,7 @@ make_gcc_2()
 }
 
 # Build and install kernel in $SYSBOOT and modules in $SYSROOT.
+# Also set $KERNEL_VERSION.
 # 
 # usage: make_linux
 make_linux()
@@ -372,6 +372,7 @@ make_linux()
   do_make ARCH=$KERNEL_ARCH CROSS_COMPILE=$TARGET- modules
   do_make ARCH=$KERNEL_ARCH CROSS_COMPILE=$TARGET- INSTALL_MOD_PATH=$SYSROOT modules_install
   do_make ARCH=$KERNEL_ARCH CROSS_COMPILE=$TARGET- INSTALL_PATH=$SYSBOOT install
+  KERNEL_VERSION=$(ls -l $SYSBOOT/vmlinuz | cut -d '>' -f 2 | cut -d '-' -f 2-)
   popd &> /dev/null
 }
 

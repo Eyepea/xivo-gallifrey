@@ -22,12 +22,19 @@ LIBPRI_SHA1SUM="8142047002119ce76dfb85204606988be9114d2f"
 
 LIBPRI_XIVO_PATCH="libpri-1.2.3_xivo.patch"
 
-ASTERISK_SOURCE="asterisk-1.2.9.1.tar.gz"
-ASTERISK_URL="http://calrissian/$ASTERISK_SOURCE"
-ASTERISK_SIZE="10568287"
-ASTERISK_SHA1SUM="dbb3f84aa33856654bfc937dce853f524a5aa6d6"
+ZAPTEL_SOURCE="zaptel-1.2.7.tar.gz"
+ZAPTEL_URL="http://calrissian/$ZAPTEL_SOURCE"
+ZAPTEL_SIZE="1137409"
+ZAPTEL_SHA1SUM="790a106ee975a77c413a01584c59ea7d91ca9efd"
 
-ASTERISK_UCLIBC_PATCH="asterisk-1.2.9.1_uclibc.patch"
+ZAPTEL_XIVO_PATCH="zaptel-1.2.7_xivo.patch"
+
+ASTERISK_SOURCE="asterisk-1.2.10.tar.gz"
+ASTERISK_URL="http://calrissian/$ASTERISK_SOURCE"
+ASTERISK_SIZE="10573308"
+ASTERISK_SHA1SUM="e714edce1fba1296fc90d3d69e152bb32f5f5454"
+
+ASTERISK_UCLIBC_PATCH="asterisk-1.2.10_uclibc.patch"
 
 # Build libpri.
 # 
@@ -63,12 +70,55 @@ make_libpri()
   popd &> /dev/null
 }
 
+# Build Zaptel driver.
+# 
+# usage: make_zaptel
+make_zaptel()
+{
+  pushd $SRC &> /dev/null
+  download_source $ZAPTEL_URL $ZAPTEL_SOURCE $ZAPTEL_SIZE $ZAPTEL_SHA1SUM
+
+  get_basename $ZAPTEL_SOURCE
+  zaptel_src=$BASENAME
+  zaptel_src_arch=$zaptel_src-$TARGET-build
+
+  if [ ! -d $zaptel_src_arch ]; then
+    extract $ZAPTEL_SOURCE
+    mv $zaptel_src $zaptel_src_arch
+    cd $zaptel_src_arch
+    apply_patch $ZAPTEL_XIVO_PATCH
+    do_make HOSTCC=$TARGET-gcc \
+            HOSTAR=$TARGET-ar \
+            ARCH=$KERNEL_ARCH \
+            KVERS=$KERNEL_VERSION \
+            KSRC=$KERNEL_SOURCE \
+            DESTDIR=$SYSROOT \
+            DYNFS=yes \
+            CROSS_COMPILE=$TARGET- \
+            linux26
+  else
+    cd $zaptel_src_arch
+  fi
+
+  do_make HOSTCC=$TARGET-gcc \
+          HOSTAR=$TARGET-ar \
+          ARCH=$KERNEL_ARCH \
+          KVERS=$KERNEL_VERSION \
+          KSRC=$KERNEL_SOURCE \
+          DESTDIR=$SYSROOT \
+          DYNFS=yes \
+          CROSS_COMPILE=$TARGET- \
+          install
+  popd &> /dev/null
+}
+
 # Build asterisk.
 # 
 # usage: make_asterisk
 make_asterisk()
 {
   make_libpri
+  make_zaptel
 
   pushd $SRC &> /dev/null
   download_source $ASTERISK_URL $ASTERISK_SOURCE $ASTERISK_SIZE $ASTERISK_SHA1SUM

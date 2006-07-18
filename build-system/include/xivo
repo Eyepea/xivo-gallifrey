@@ -4,7 +4,7 @@ gen_linux_conf_xivo_i386()
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: 2.6.16.20
-# Thu Jul  6 10:25:31 2006
+# Tue Jul 18 18:41:54 2006
 #
 CONFIG_X86_32=y
 CONFIG_SEMAPHORE_SLEEPERS=y
@@ -807,8 +807,7 @@ CONFIG_UNIX98_PTYS=y
 # CONFIG_WATCHDOG is not set
 # CONFIG_HW_RANDOM is not set
 # CONFIG_NVRAM is not set
-# CONFIG_RTC is not set
-# CONFIG_GEN_RTC is not set
+CONFIG_RTC=y
 # CONFIG_DTLK is not set
 # CONFIG_R3964 is not set
 # CONFIG_APPLICOM is not set
