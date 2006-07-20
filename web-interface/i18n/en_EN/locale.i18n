@@ -1,11 +1,16 @@
+# Locale: aa_DJ
+; title_aa_dj
+Afar language locale for Djibouti
+
 ; language_aa_dj
 Afar
 
 ; territory_aa_dj
 Djibouti
 
-; title_aa_dj
-Afar language locale for Djibouti
+# Locale: aa_ER
+; title_aa_er
+Afar language locale for Eritrea
 
 ; language_aa_er
 Afar
@@ -13,8 +18,9 @@ Afar
 ; territory_aa_er
 Eritrea
 
-; title_aa_er
-Afar language locale for Eritrea
+# Locale: aa_ET
+; title_aa_et
+Afar language locale for Ethiopia
 
 ; language_aa_et
 Afar
@@ -22,8 +28,9 @@ Afar
 ; territory_aa_et
 Ethiopia
 
-; title_aa_et
-Afar language locale for Ethiopia
+# Locale: af_ZA
+; title_af_za
+Afrikaans language locale for South Africa
 
 ; language_af_za
 Afrikaans
@@ -31,8 +38,9 @@ Afrikaans
 ; territory_af_za
 South Africa
 
-; title_af_za
-Afrikaans language locale for South Africa
+# Locale: am_ET
+; title_am_et
+Amharic language locale for Ethiopia
 
 ; language_am_et
 Amharic
@@ -40,8 +48,9 @@ Amharic
 ; territory_am_et
 Ethiopia
 
-; title_am_et
-Amharic language locale for Ethiopia
+# Locale: an_ES
+; title_an_es
+Aragonese language locale for Spain
 
 ; language_an_es
 Aragonese
@@ -49,8 +58,9 @@ Aragonese
 ; territory_an_es
 Spain
 
-; title_an_es
-Aragonese language locale for Spain
+# Locale: ar_AE
+; title_ar_ae
+Arabic language locale for United Arab Emirates
 
 ; language_ar_ae
 Arabic
@@ -58,8 +68,9 @@ Arabic
 ; territory_ar_ae
 United Arab Emirates
 
-; title_ar_ae
-Arabic language locale for United Arab Emirates
+# Locale: ar_BH
+; title_ar_bh
+Arabic language locale for Bahrain
 
 ; language_ar_bh
 Arabic
@@ -67,8 +78,9 @@ Arabic
 ; territory_ar_bh
 Bahrain
 
-; title_ar_bh
-Arabic language locale for Bahrain
+# Locale: ar_DZ
+; title_ar_dz
+Arabic language locale for Algeria
 
 ; language_ar_dz
 Arabic
@@ -76,8 +88,9 @@ Arabic
 ; territory_ar_dz
 Algeria
 
-; title_ar_dz
-Arabic language locale for Algeria
+# Locale: ar_EG
+; title_ar_eg
+Arabic language locale for Egypt
 
 ; language_ar_eg
 Arabic
@@ -85,8 +98,9 @@ Arabic
 ; territory_ar_eg
 Egypt
 
-; title_ar_eg
-Arabic language locale for Egypt
+# Locale: ar_IN
+; title_ar_in
+Arabic language locale for India
 
 ; language_ar_in
 Arabic
@@ -94,8 +108,9 @@ Arabic
 ; territory_ar_in
 India
 
-; title_ar_in
-Arabic language locale for India
+# Locale: ar_IQ
+; title_ar_iq
+Arabic language locale for Iraq
 
 ; language_ar_iq
 Arabic
@@ -103,8 +118,9 @@ Arabic
 ; territory_ar_iq
 Iraq
 
-; title_ar_iq
-Arabic language locale for Iraq
+# Locale: ar_JO
+; title_ar_jo
+Arabic language locale for Jordan
 
 ; language_ar_jo
 Arabic
@@ -112,8 +128,9 @@ Arabic
 ; territory_ar_jo
 Jordan
 
-; title_ar_jo
-Arabic language locale for Jordan
+# Locale: ar_KW
+; title_ar_kw
+Arabic language locale for Kuwait
 
 ; language_ar_kw
 Arabic
@@ -121,8 +138,9 @@ Arabic
 ; territory_ar_kw
 Kuwait
 
-; title_ar_kw
-Arabic language locale for Kuwait
+# Locale: ar_LB
+; title_ar_lb
+Arabic language locale for Lebanon
 
 ; language_ar_lb
 Arabic
@@ -130,8 +148,9 @@ Arabic
 ; territory_ar_lb
 Lebanon
 
-; title_ar_lb
-Arabic language locale for Lebanon
+# Locale: ar_LY
+; title_ar_ly
+Arabic language locale for Libyan Arab Jamahiriya
 
 ; language_ar_ly
 Arabic
@@ -139,8 +158,9 @@ Arabic
 ; territory_ar_ly
 Libyan Arab Jamahiriya
 
-; title_ar_ly
-Arabic language locale for Libyan Arab Jamahiriya
+# Locale: ar_MA
+; title_ar_ma
+Arabic language locale for Morocco
 
 ; language_ar_ma
 Arabic
@@ -148,8 +168,9 @@ Arabic
 ; territory_ar_ma
 Morocco
 
-; title_ar_ma
-Arabic language locale for Morocco
+# Locale: ar_OM
+; title_ar_om
+Arabic language locale for Oman
 
 ; language_ar_om
 Arabic
@@ -157,8 +178,9 @@ Arabic
 ; territory_ar_om
 Oman
 
-; title_ar_om
-Arabic language locale for Oman
+# Locale: ar_QA
+; title_ar_qa
+Arabic language locale for Qatar
 
 ; language_ar_qa
 Arabic
@@ -166,8 +188,9 @@ Arabic
 ; territory_ar_qa
 Qatar
 
-; title_ar_qa
-Arabic language locale for Qatar
+# Locale: ar_SA
+; title_ar_sa
+Arabic language locale for Saudi Arabia
 
 ; language_ar_sa
 Arabic
@@ -175,8 +198,9 @@ Arabic
 ; territory_ar_sa
 Saudi Arabia
 
-; title_ar_sa
-Arabic language locale for Saudi Arabia
+# Locale: ar_SD
+; title_ar_sd
+Arabic language locale for Sudan
 
 ; language_ar_sd
 Arabic
@@ -184,8 +208,9 @@ Arabic
 ; territory_ar_sd
 Sudan
 
-; title_ar_sd
-Arabic language locale for Sudan
+# Locale: ar_SY
+; title_ar_sy
+Arabic language locale for Syrian Arab Republic
 
 ; language_ar_sy
 Arabic
@@ -193,8 +218,9 @@ Arabic
 ; territory_ar_sy
 Syrian Arab Republic
 
-; title_ar_sy
-Arabic language locale for Syrian Arab Republic
+# Locale: ar_TN
+; title_ar_tn
+Arabic language locale for Tunisia
 
 ; language_ar_tn
 Arabic
@@ -202,8 +228,9 @@ Arabic
 ; territory_ar_tn
 Tunisia
 
-; title_ar_tn
-Arabic language locale for Tunisia
+# Locale: ar_YE
+; title_ar_ye
+Arabic language locale for Yemen
 
 ; language_ar_ye
 Arabic
@@ -211,8 +238,9 @@ Arabic
 ; territory_ar_ye
 Yemen
 
-; title_ar_ye
-Arabic language locale for Yemen
+# Locale: as_IN
+; title_as_in
+Assamese language locale for India
 
 ; language_as_in
 Assamese
@@ -220,8 +248,9 @@ Assamese
 ; territory_as_in
 India
 
-; title_as_in
-Assamese language locale for India
+# Locale: az_AZ
+; title_az_az
+Azeri language locale for Azerbaijan
 
 ; language_az_az
 Azeri
@@ -229,8 +258,9 @@ Azeri
 ; territory_az_az
 Azerbaijan
 
-; title_az_az
-Azeri language locale for Azerbaijan
+# Locale: be_BY
+; title_be_by
+Belarusian language locale for Belarus
 
 ; language_be_by
 Belarusian
@@ -238,8 +268,9 @@ Belarusian
 ; territory_be_by
 Belarus
 
-; title_be_by
-Belarusian language locale for Belarus
+# Locale: bg_BG
+; title_bg_bg
+Bulgarian language locale for Bulgaria
 
 ; language_bg_bg
 Bulgarian
@@ -247,8 +278,9 @@ Bulgarian
 ; territory_bg_bg
 Bulgaria
 
-; title_bg_bg
-Bulgarian language locale for Bulgaria
+# Locale: bn_BD
+; title_bn_bd
+Bengali language locale for Bangladesh
 
 ; language_bn_bd
 Bengali
@@ -256,8 +288,9 @@ Bengali
 ; territory_bn_bd
 Bangladesh
 
-; title_bn_bd
-Bengali language locale for Bangladesh
+# Locale: bn_IN
+; title_bn_in
+Bengali language locale for India
 
 ; language_bn_in
 Bengali
@@ -265,8 +298,9 @@ Bengali
 ; territory_bn_in
 India
 
-; title_bn_in
-Bengali language locale for India
+# Locale: br_FR
+; title_br_fr
+Breton language locale for France
 
 ; language_br_fr
 Breton
@@ -274,8 +308,9 @@ Breton
 ; territory_br_fr
 France
 
-; title_br_fr
-Breton language locale for France
+# Locale: bs_BA
+; title_bs_ba
+Bosnian language locale for Bosnia and Herzegowina
 
 ; language_bs_ba
 Bosnian
@@ -283,8 +318,9 @@ Bosnian
 ; territory_bs_ba
 Bosnia and Herzegowina
 
-; title_bs_ba
-Bosnian language locale for Bosnia and Herzegowina
+# Locale: byn_ER
+; title_byn_er
+Blin language locale for Eritrea
 
 ; language_byn_er
 Blin
@@ -292,8 +328,9 @@ Blin
 ; territory_byn_er
 Eritrea
 
-; title_byn_er
-Blin language locale for Eritrea
+# Locale: ca_AD
+; title_ca_ad
+Catalan language locale for Andorra
 
 ; language_ca_ad
 Catalan
@@ -301,8 +338,9 @@ Catalan
 ; territory_ca_ad
 Andorra
 
-; title_ca_ad
-Catalan language locale for Andorra
+# Locale: ca_ES
+; title_ca_es
+Catalan language locale for Catalonia
 
 ; language_ca_es
 Catalan
@@ -310,8 +348,9 @@ Catalan
 ; territory_ca_es
 Spain
 
-; title_ca_es
-Catalan language locale for Catalonia
+# Locale: ca_FR
+; title_ca_fr
+Catalan language locale for France
 
 ; language_ca_fr
 Catalan
@@ -319,8 +358,9 @@ Catalan
 ; territory_ca_fr
 France
 
-; title_ca_fr
-Catalan language locale for France
+# Locale: ca_IT
+; title_ca_it
+Catalan language locale for Italia
 
 ; language_ca_it
 Catalan
@@ -328,8 +368,9 @@ Catalan
 ; territory_ca_it
 Italia
 
-; title_ca_it
-Catalan language locale for Italia
+# Locale: cs_CZ
+; title_cs_cz
+Czech language locale for Czech Republic
 
 ; language_cs_cz
 Czech
@@ -337,8 +378,9 @@ Czech
 ; territory_cs_cz
 Czech Republic
 
-; title_cs_cz
-Czech language locale for Czech Republic
+# Locale: cy_GB
+; title_cy_gb
+Welsh language locale for Great Britain
 
 ; language_cy_gb
 Welsh
@@ -346,8 +388,9 @@ Welsh
 ; territory_cy_gb
 Great Britain
 
-; title_cy_gb
-Welsh language locale for Great Britain
+# Locale: da_DK
+; title_da_dk
+Danish language locale for Denmark
 
 ; language_da_dk
 Danish
@@ -355,8 +398,9 @@ Danish
 ; territory_da_dk
 Denmark
 
-; title_da_dk
-Danish language locale for Denmark
+# Locale: de_AT
+; title_de_at
+German language locale for Austria
 
 ; language_de_at
 German
@@ -364,8 +408,9 @@ German
 ; territory_de_at
 Austria
 
-; title_de_at
-German language locale for Austria
+# Locale: de_BE
+; title_de_be
+German language locale for Belgium
 
 ; language_de_be
 German
@@ -373,8 +418,9 @@ German
 ; territory_de_be
 Belgium
 
-; title_de_be
-German language locale for Belgium
+# Locale: de_CH
+; title_de_ch
+German language locale for Switzerland
 
 ; language_de_ch
 German
@@ -382,8 +428,9 @@ German
 ; territory_de_ch
 Switzerland
 
-; title_de_ch
-German language locale for Switzerland
+# Locale: de_DE
+; title_de_de
+German language locale for Germany
 
 ; language_de_de
 German
@@ -391,8 +438,9 @@ German
 ; territory_de_de
 Germany
 
-; title_de_de
-German language locale for Germany
+# Locale: de_LU
+; title_de_lu
+German language locale for Luxemburg
 
 ; language_de_lu
 German
@@ -400,8 +448,9 @@ German
 ; territory_de_lu
 Luxemburg
 
-; title_de_lu
-German language locale for Luxemburg
+# Locale: dz_BT
+; title_dz_bt
+Dzongkha language locale for Bhutan
 
 ; language_dz_bt
 Dzongkha
@@ -409,8 +458,9 @@ Dzongkha
 ; territory_dz_bt
 Bhutan
 
-; title_dz_bt
-Dzongkha language locale for Bhutan
+# Locale: el_CY
+; title_el_cy
+Greek language locale for Cyprus
 
 ; language_el_cy
 Greek
@@ -418,8 +468,9 @@ Greek
 ; territory_el_cy
 Cyprus
 
-; title_el_cy
-Greek language locale for Cyprus
+# Locale: el_GR
+; title_el_gr
+Greek language locale for Greece
 
 ; language_el_gr
 Greek
@@ -427,8 +478,9 @@ Greek
 ; territory_el_gr
 Greece
 
-; title_el_gr
-Greek language locale for Greece
+# Locale: en_AU
+; title_en_au
+English language locale for Australia
 
 ; language_en_au
 English
@@ -436,8 +488,9 @@ English
 ; territory_en_au
 Australia
 
-; title_en_au
-English language locale for Australia
+# Locale: en_BW
+; title_en_bw
+English language locale for Botswana
 
 ; language_en_bw
 English
@@ -445,8 +498,9 @@ English
 ; territory_en_bw
 Botswana
 
-; title_en_bw
-English language locale for Botswana
+# Locale: en_CA
+; title_en_ca
+English language locale for Canada
 
 ; language_en_ca
 English
@@ -454,8 +508,9 @@ English
 ; territory_en_ca
 Canada
 
-; title_en_ca
-English language locale for Canada
+# Locale: en_DK
+; title_en_dk
+English language locale for Denmark
 
 ; language_en_dk
 English
@@ -463,8 +518,9 @@ English
 ; territory_en_dk
 Denmark
 
-; title_en_dk
-English language locale for Denmark
+# Locale: en_GB
+; title_en_gb
+English language locale for Great Britain
 
 ; language_en_gb
 English
@@ -472,8 +528,9 @@ English
 ; territory_en_gb
 Great Britain
 
-; title_en_gb
-English language locale for Great Britain
+# Locale: en_HK
+; title_en_hk
+English language locale for Hong Kong
 
 ; language_en_hk
 English
@@ -481,8 +538,9 @@ English
 ; territory_en_hk
 Hong Kong
 
-; title_en_hk
-English language locale for Hong Kong
+# Locale: en_IE
+; title_en_ie
+English language locale for Ireland
 
 ; language_en_ie
 English
@@ -490,8 +548,9 @@ English
 ; territory_en_ie
 Ireland
 
-; title_en_ie
-English language locale for Ireland
+# Locale: en_IN
+; title_en_in
+English language locale for India
 
 ; language_en_in
 English
@@ -499,8 +558,9 @@ English
 ; territory_en_in
 India
 
-; title_en_in
-English language locale for India
+# Locale: en_NZ
+; title_en_nz
+English language locale for New Zealand
 
 ; language_en_nz
 English
@@ -508,8 +568,9 @@ English
 ; territory_en_nz
 New Zealand
 
-; title_en_nz
-English language locale for New Zealand
+# Locale: en_PH
+; title_en_ph
+English language locale for Philippines
 
 ; language_en_ph
 English
@@ -517,8 +578,9 @@ English
 ; territory_en_ph
 Philippines
 
-; title_en_ph
-English language locale for Philippines
+# Locale: en_SG
+; title_en_sg
+English language locale for Singapore
 
 ; language_en_sg
 English
@@ -526,8 +588,9 @@ English
 ; territory_en_sg
 Singapore
 
-; title_en_sg
-English language locale for Singapore
+# Locale: en_US
+; title_en_us
+English language locale for U.S.A.
 
 ; language_en_us
 English
@@ -535,8 +598,9 @@ English
 ; territory_en_us
 USA
 
-; title_en_us
-English language locale for U.S.A.
+# Locale: en_ZA
+; title_en_za
+English language locale for South Africa
 
 ; language_en_za
 English
@@ -544,8 +608,9 @@ English
 ; territory_en_za
 South Africa
 
-; title_en_za
-English language locale for South Africa
+# Locale: en_ZW
+; title_en_zw
+English language locale for Zimbabwe
 
 ; language_en_zw
 English
@@ -553,8 +618,9 @@ English
 ; territory_en_zw
 Zimbabwe
 
-; title_en_zw
-English language locale for Zimbabwe
+# Locale: es_AR
+; title_es_ar
+Spanish language locale for Argentina
 
 ; language_es_ar
 Spanish
@@ -562,8 +628,9 @@ Spanish
 ; territory_es_ar
 Argentina
 
-; title_es_ar
-Spanish language locale for Argentina
+# Locale: es_BO
+; title_es_bo
+Spanish language locale for Bolivia
 
 ; language_es_bo
 Spanish
@@ -571,8 +638,9 @@ Spanish
 ; territory_es_bo
 Bolivia
 
-; title_es_bo
-Spanish language locale for Bolivia
+# Locale: es_CL
+; title_es_cl
+Spanish language locale for Chile
 
 ; language_es_cl
 Spanish
@@ -580,8 +648,9 @@ Spanish
 ; territory_es_cl
 Chile
 
-; title_es_cl
-Spanish language locale for Chile
+# Locale: es_CO
+; title_es_co
+Spanish language locale for Colombia
 
 ; language_es_co
 Spanish
@@ -589,8 +658,9 @@ Spanish
 ; territory_es_co
 Colombia
 
-; title_es_co
-Spanish language locale for Colombia
+# Locale: es_CR
+; title_es_cr
+Spanish language locale for Costa Rica
 
 ; language_es_cr
 Spanish
@@ -598,8 +668,9 @@ Spanish
 ; territory_es_cr
 Costa Rica
 
-; title_es_cr
-Spanish language locale for Costa Rica
+# Locale: es_DO
+; title_es_do
+Spanish language locale for Dominican Republic
 
 ; language_es_do
 Spanish
@@ -607,8 +678,9 @@ Spanish
 ; territory_es_do
 Dominican Republic
 
-; title_es_do
-Spanish language locale for Dominican Republic
+# Locale: es_EC
+; title_es_ec
+Spanish language locale for Ecuador
 
 ; language_es_ec
 Spanish
@@ -616,8 +688,9 @@ Spanish
 ; territory_es_ec
 Ecuador
 
-; title_es_ec
-Spanish language locale for Ecuador
+# Locale: es_ES
+; title_es_es
+Spanish language locale for Spain
 
 ; language_es_es
 Spanish
@@ -625,8 +698,9 @@ Spanish
 ; territory_es_es
 Spain
 
-; title_es_es
-Spanish language locale for Spain
+# Locale: es_GT
+; title_es_gt
+Spanish language locale for Guatemala
 
 ; language_es_gt
 Spanish
@@ -634,8 +708,9 @@ Spanish
 ; territory_es_gt
 Guatemala
 
-; title_es_gt
-Spanish language locale for Guatemala
+# Locale: es_HN
+; title_es_hn
+Spanish language locale for Honduras
 
 ; language_es_hn
 Spanish
@@ -643,8 +718,9 @@ Spanish
 ; territory_es_hn
 Honduras
 
-; title_es_hn
-Spanish language locale for Honduras
+# Locale: es_MX
+; title_es_mx
+Spanish language locale for Mexico
 
 ; language_es_mx
 Spanish
@@ -652,8 +728,9 @@ Spanish
 ; territory_es_mx
 Mexico
 
-; title_es_mx
-Spanish language locale for Mexico
+# Locale: es_NI
+; title_es_ni
+Spanish language locale for Nicaragua
 
 ; language_es_ni
 Spanish
@@ -661,8 +738,9 @@ Spanish
 ; territory_es_ni
 Nicaragua
 
-; title_es_ni
-Spanish language locale for Nicaragua
+# Locale: es_PA
+; title_es_pa
+Spanish language locale for Panama
 
 ; language_es_pa
 Spanish
@@ -670,8 +748,9 @@ Spanish
 ; territory_es_pa
 Panama
 
-; title_es_pa
-Spanish language locale for Panama
+# Locale: es_PE
+; title_es_pe
+Spanish language locale for Peru
 
 ; language_es_pe
 Spanish
@@ -679,8 +758,9 @@ Spanish
 ; territory_es_pe
 Peru
 
-; title_es_pe
-Spanish language locale for Peru
+# Locale: es_PR
+; title_es_pr
+Spanish language locale for Puerto Rico
 
 ; language_es_pr
 Spanish
@@ -688,8 +768,9 @@ Spanish
 ; territory_es_pr
 Puerto Rico
 
-; title_es_pr
-Spanish language locale for Puerto Rico
+# Locale: es_PY
+; title_es_py
+Spanish language locale for Paraguay
 
 ; language_es_py
 Spanish
@@ -697,8 +778,9 @@ Spanish
 ; territory_es_py
 Paraguay
 
-; title_es_py
-Spanish language locale for Paraguay
+# Locale: es_SV
+; title_es_sv
+Spanish language locale for El Salvador
 
 ; language_es_sv
 Spanish
@@ -706,8 +788,9 @@ Spanish
 ; territory_es_sv
 El Salvador
 
-; title_es_sv
-Spanish language locale for El Salvador
+# Locale: es_US
+; title_es_us
+Spanish language locale for U.S.A.
 
 ; language_es_us
 Spanish
@@ -715,8 +798,9 @@ Spanish
 ; territory_es_us
 USA
 
-; title_es_us
-Spanish language locale for U.S.A.
+# Locale: es_UY
+; title_es_uy
+Spanish language locale for Uruguay
 
 ; language_es_uy
 Spanish
@@ -724,8 +808,9 @@ Spanish
 ; territory_es_uy
 Uruguay
 
-; title_es_uy
-Spanish language locale for Uruguay
+# Locale: es_VE
+; title_es_ve
+Spanish language locale for Venezuela
 
 ; language_es_ve
 Spanish
@@ -733,8 +818,9 @@ Spanish
 ; territory_es_ve
 Venezuela
 
-; title_es_ve
-Spanish language locale for Venezuela
+# Locale: et_EE
+; title_et_ee
+Estonian language locale for Estonia
 
 ; language_et_ee
 Estonian
@@ -742,8 +828,9 @@ Estonian
 ; territory_et_ee
 Estonia
 
-; title_et_ee
-Estonian language locale for Estonia
+# Locale: eu_ES
+; title_eu_es
+Basque language locale for Spain
 
 ; language_eu_es
 Basque
@@ -751,8 +838,9 @@ Basque
 ; territory_eu_es
 Spain
 
-; title_eu_es
-Basque language locale for Spain
+# Locale: fa_IR
+; title_fa_ir
+Persian language locale for Iran
 
 ; language_fa_ir
 Persian
@@ -760,8 +848,9 @@ Persian
 ; territory_fa_ir
 Iran
 
-; title_fa_ir
-Persian language locale for Iran
+# Locale: fi_FI
+; title_fi_fi
+Finnish language locale for Finland
 
 ; language_fi_fi
 Finnish
@@ -769,8 +858,9 @@ Finnish
 ; territory_fi_fi
 Finland
 
-; title_fi_fi
-Finnish language locale for Finland
+# Locale: fo_FO
+; title_fo_fo
+Faroese language locale for Faroe Islands
 
 ; language_fo_fo
 Faroese
@@ -778,8 +868,9 @@ Faroese
 ; territory_fo_fo
 Faroe Islands
 
-; title_fo_fo
-Faroese language locale for Faroe Islands
+# Locale: fr_BE
+; title_fr_be
+French language locale for Belgium
 
 ; language_fr_be
 French
@@ -787,8 +878,9 @@ French
 ; territory_fr_be
 Belgium
 
-; title_fr_be
-French language locale for Belgium
+# Locale: fr_CA
+; title_fr_ca
+French language locale for Canada
 
 ; language_fr_ca
 French
@@ -796,8 +888,9 @@ French
 ; territory_fr_ca
 Canada
 
-; title_fr_ca
-French language locale for Canada
+# Locale: fr_CH
+; title_fr_ch
+French language locale for Switzerland
 
 ; language_fr_ch
 French
@@ -805,8 +898,9 @@ French
 ; territory_fr_ch
 Switzerland
 
-; title_fr_ch
-French language locale for Switzerland
+# Locale: fr_FR
+; title_fr_fr
+French language locale for France
 
 ; language_fr_fr
 French
@@ -814,8 +908,9 @@ French
 ; territory_fr_fr
 France
 
-; title_fr_fr
-French language locale for France
+# Locale: fr_LU
+; title_fr_lu
+French language locale for Luxemburg
 
 ; language_fr_lu
 French
@@ -823,8 +918,9 @@ French
 ; territory_fr_lu
 Luxemburg
 
-; title_fr_lu
-French language locale for Luxemburg
+# Locale: ga_IE
+; title_ga_ie
+Irish language locale for Ireland
 
 ; language_ga_ie
 Irish
@@ -832,8 +928,9 @@ Irish
 ; territory_ga_ie
 Ireland
 
-; title_ga_ie
-Irish language locale for Ireland
+# Locale: gd_GB
+; title_gd_gb
+Scots Gaelic language locale for Great Britain
 
 ; language_gd_gb
 Scots Gaelic
@@ -841,8 +938,9 @@ Scots Gaelic
 ; territory_gd_gb
 Great Britain
 
-; title_gd_gb
-Scots Gaelic language locale for Great Britain
+# Locale: gez_ER
+; title_gez_er
+Ge'ez language locale for Eritrea
 
 ; language_gez_er
 Ge'ez
@@ -850,8 +948,9 @@ Ge'ez
 ; territory_gez_er
 Eritrea
 
-; title_gez_er
-Ge'ez language locale for Eritrea
+# Locale: gez_ET
+; title_gez_et
+Ge'ez language locale for Ethiopia
 
 ; language_gez_et
 Ge'ez
@@ -859,8 +958,9 @@ Ge'ez
 ; territory_gez_et
 Ethiopia
 
-; title_gez_et
-Ge'ez language locale for Ethiopia
+# Locale: gl_ES
+; title_gl_es
+Galician language locale for Spain
 
 ; language_gl_es
 Gallegan
@@ -868,8 +968,9 @@ Gallegan
 ; territory_gl_es
 Spain
 
-; title_gl_es
-Galician language locale for Spain
+# Locale: gu_IN
+; title_gu_in
+Gurajati language locale for India
 
 ; language_gu_in
 Gujarati
@@ -877,8 +978,9 @@ Gujarati
 ; territory_gu_in
 India
 
-; title_gu_in
-Gurajati language locale for India
+# Locale: gv_GB
+; title_gv_gb
+Manx Gaelic language locale for Great Britain
 
 ; language_gv_gb
 Manx Gaelic
@@ -886,8 +988,9 @@ Manx Gaelic
 ; territory_gv_gb
 Great Britain
 
-; title_gv_gb
-Manx Gaelic language locale for Great Britain
+# Locale: he_IL
+; title_he_il
+Hebrew language locale for Israel
 
 ; language_he_il
 Hebrew
@@ -895,8 +998,9 @@ Hebrew
 ; territory_he_il
 Israel
 
-; title_he_il
-Hebrew language locale for Israel
+# Locale: hi_IN
+; title_hi_in
+Hindi language locale for India
 
 ; language_hi_in
 Hindi
@@ -904,8 +1008,9 @@ Hindi
 ; territory_hi_in
 India
 
-; title_hi_in
-Hindi language locale for India
+# Locale: hr_HR
+; title_hr_hr
+Croatian language locale for Croatia
 
 ; language_hr_hr
 Croatian
@@ -913,8 +1018,9 @@ Croatian
 ; territory_hr_hr
 Croatia
 
-; title_hr_hr
-Croatian language locale for Croatia
+# Locale: hsb_DE
+; title_hsb_de
+Upper language Sorbian locale for Germany
 
 ; language_hsb_de
 Upper Sorbian
@@ -922,8 +1028,9 @@ Upper Sorbian
 ; territory_hsb_de
 Germany
 
-; title_hsb_de
-Upper language Sorbian locale for Germany
+# Locale: hu_HU
+; title_hu_hu
+Hungarian language locale for Hungary
 
 ; language_hu_hu
 Hungarian
@@ -931,8 +1038,9 @@ Hungarian
 ; territory_hu_hu
 Hungary
 
-; title_hu_hu
-Hungarian language locale for Hungary
+# Locale: hy_AM
+; title_hy_am
+Armenian language locale for Armenia
 
 ; language_hy_am
 Armenian
@@ -940,8 +1048,9 @@ Armenian
 ; territory_hy_am
 Armenia
 
-; title_hy_am
-Armenian language locale for Armenia
+# Locale: id_ID
+; title_id_id
+Indonesian language locale for Indonesia
 
 ; language_id_id
 Indonesian
@@ -949,8 +1058,9 @@ Indonesian
 ; territory_id_id
 Indonesia
 
-; title_id_id
-Indonesian language locale for Indonesia
+# Locale: is_IS
+; title_is_is
+Icelandic language locale for Iceland
 
 ; language_is_is
 Icelandic
@@ -958,8 +1068,9 @@ Icelandic
 ; territory_is_is
 Iceland
 
-; title_is_is
-Icelandic language locale for Iceland
+# Locale: it_CH
+; title_it_ch
+Italian language locale for Switzerland
 
 ; language_it_ch
 Italian
@@ -967,8 +1078,9 @@ Italian
 ; territory_it_ch
 Switzerland
 
-; title_it_ch
-Italian language locale for Switzerland
+# Locale: it_IT
+; title_it_it
+Italian language locale for Italy
 
 ; language_it_it
 Italian
@@ -976,8 +1088,9 @@ Italian
 ; territory_it_it
 Italia
 
-; title_it_it
-Italian language locale for Italy
+# Locale: iw_IL
+; title_iw_il
+Hebrew language locale for Israel
 
 ; language_iw_il
 Hebrew
@@ -985,8 +1098,9 @@ Hebrew
 ; territory_iw_il
 Israel
 
-; title_iw_il
-Hebrew language locale for Israel
+# Locale: ja_JP
+; title_ja_jp
+Japanese language locale for Japan
 
 ; language_ja_jp
 Japanese
@@ -994,8 +1108,9 @@ Japanese
 ; territory_ja_jp
 Japan
 
-; title_ja_jp
-Japanese language locale for Japan
+# Locale: ka_GE
+; title_ka_ge
+Georgian language locale for Georgia
 
 ; language_ka_ge
 Georgian
@@ -1003,8 +1118,9 @@ Georgian
 ; territory_ka_ge
 Georgia
 
-; title_ka_ge
-Georgian language locale for Georgia
+# Locale: kk_KZ
+; title_kk_kz
+Kazakh language locale for Kazakh
 
 ; language_kk_kz
 Kazakh
@@ -1012,8 +1128,9 @@ Kazakh
 ; territory_kk_kz
 Kazakhstan
 
-; title_kk_kz
-Kazakh language locale for Kazakh
+# Locale: kl_GL
+; title_kl_gl
+Greenlandic language locale for Greenland
 
 ; language_kl_gl
 Greenlandic
@@ -1021,8 +1138,9 @@ Greenlandic
 ; territory_kl_gl
 Greenland
 
-; title_kl_gl
-Greenlandic language locale for Greenland
+# Locale: km_KH
+; title_km_kh
+Khmer language locale for Cambodia
 
 ; language_km_kh
 Khmer
@@ -1030,8 +1148,9 @@ Khmer
 ; territory_km_kh
 Cambodia
 
-; title_km_kh
-Khmer language locale for Cambodia
+# Locale: kn_IN
+; title_kn_in
+Kannada language locale for India
 
 ; language_kn_in
 Kannada
@@ -1039,8 +1158,9 @@ Kannada
 ; territory_kn_in
 India
 
-; title_kn_in
-Kannada language locale for India
+# Locale: ko_KR
+; title_ko_kr
+Korean language locale for Republic of Korea (South Korea)
 
 ; language_ko_kr
 Korean
@@ -1048,8 +1168,9 @@ Korean
 ; territory_ko_kr
 Republic of Korea
 
-; title_ko_kr
-Korean language locale for Republic of Korea (South Korea)
+# Locale: ku_TR
+; title_ku_tr
+Kurdish language locale for Turkey
 
 ; language_ku_tr
 Kurdish
@@ -1057,8 +1178,9 @@ Kurdish
 ; territory_ku_tr
 Turkey
 
-; title_ku_tr
-Kurdish language locale for Turkey
+# Locale: kw_GB
+; title_kw_gb
+Cornish language locale for Great Britain
 
 ; language_kw_gb
 Cornish
@@ -1066,8 +1188,9 @@ Cornish
 ; territory_kw_gb
 Great Britain
 
-; title_kw_gb
-Cornish language locale for Great Britain
+# Locale: ky_KG
+; title_ky_kg
+Kyrgyz language locale for Kyrgyzstan
 
 ; language_ky_kg
 Kyrgyz
@@ -1075,8 +1198,9 @@ Kyrgyz
 ; territory_ky_kg
 Kyrgyzstan
 
-; title_ky_kg
-Kyrgyz language locale for Kyrgyzstan
+# Locale: lg_UG
+; title_lg_ug
+Luganda language locale for Uganda
 
 ; language_lg_ug
 Luganda
@@ -1084,8 +1208,9 @@ Luganda
 ; territory_lg_ug
 Uganda
 
-; title_lg_ug
-Luganda language locale for Uganda
+# Locale: lo_LA
+; title_lo_la
+Laotian language locale for Laos
 
 ; language_lo_la
 Laotian
@@ -1093,8 +1218,9 @@ Laotian
 ; territory_lo_la
 Laos
 
-; title_lo_la
-Laotian language locale for Laos
+# Locale: lt_LT
+; title_lt_lt
+Lithuanian language locale for Lithuania
 
 ; language_lt_lt
 Lithuanian
@@ -1102,8 +1228,9 @@ Lithuanian
 ; territory_lt_lt
 Lithuania
 
-; title_lt_lt
-Lithuanian language locale for Lithuania
+# Locale: lv_LV
+; title_lv_lv
+Latvian language locale for Latvia
 
 ; language_lv_lv
 Latvian
@@ -1111,8 +1238,9 @@ Latvian
 ; territory_lv_lv
 Latvia
 
-; title_lv_lv
-Latvian language locale for Latvia
+# Locale: mg_MG
+; title_mg_mg
+Malagasy language locale for Madagascar
 
 ; language_mg_mg
 Malagasy
@@ -1120,8 +1248,9 @@ Malagasy
 ; territory_mg_mg
 Madagascar
 
-; title_mg_mg
-Malagasy language locale for Madagascar
+# Locale: mi_NZ
+; title_mi_nz
+Maori language locale for New Zealand
 
 ; language_mi_nz
 Maori
@@ -1129,8 +1258,9 @@ Maori
 ; territory_mi_nz
 New Zealand
 
-; title_mi_nz
-Maori language locale for New Zealand
+# Locale: mk_MK
+; title_mk_mk
+Macedonian language locale for Macedonia
 
 ; language_mk_mk
 Macedonian
@@ -1138,8 +1268,9 @@ Macedonian
 ; territory_mk_mk
 Macedonia
 
-; title_mk_mk
-Macedonian language locale for Macedonia
+# Locale: ml_IN
+; title_ml_in
+Malayalam language locale for India
 
 ; language_ml_in
 Malayalam
@@ -1147,8 +1278,9 @@ Malayalam
 ; territory_ml_in
 India
 
-; title_ml_in
-Malayalam language locale for India
+# Locale: mn_MN
+; title_mn_mn
+Mongolian language locale for Mongolia
 
 ; language_mn_mn
 Mongolian
@@ -1156,8 +1288,9 @@ Mongolian
 ; territory_mn_mn
 Mongolia
 
-; title_mn_mn
-Mongolian language locale for Mongolia
+# Locale: mr_IN
+; title_mr_in
+Marathi language locale for India
 
 ; language_mr_in
 Marathi
@@ -1165,8 +1298,9 @@ Marathi
 ; territory_mr_in
 India
 
-; title_mr_in
-Marathi language locale for India
+# Locale: ms_MY
+; title_ms_my
+Malay language locale for Malaysia
 
 ; language_ms_my
 Malay
@@ -1174,8 +1308,9 @@ Malay
 ; territory_ms_my
 Malaysia
 
-; title_ms_my
-Malay language locale for Malaysia
+# Locale: mt_MT
+; title_mt_mt
+Maltese language locale for Malta
 
 ; language_mt_mt
 Maltese
@@ -1183,8 +1318,9 @@ Maltese
 ; territory_mt_mt
 Malta
 
-; title_mt_mt
-Maltese language locale for Malta
+# Locale: nb_NO
+; title_nb_no
+Norwegian Bokmal language locale for Norway
 
 ; language_nb_no
 Norwegian Bokmal
@@ -1192,8 +1328,9 @@ Norwegian Bokmal
 ; territory_nb_no
 Norway
 
-; title_nb_no
-Norwegian Bokmal language locale for Norway
+# Locale: ne_NP
+; title_ne_np
+Nepali language locale for Nepal
 
 ; language_ne_np
 Nepali
@@ -1201,8 +1338,9 @@ Nepali
 ; territory_ne_np
 Nepal
 
-; title_ne_np
-Nepali language locale for Nepal
+# Locale: nl_BE
+; title_nl_be
+Dutch language locale for Belgium
 
 ; language_nl_be
 Dutch
@@ -1210,8 +1348,9 @@ Dutch
 ; territory_nl_be
 Belgium
 
-; title_nl_be
-Dutch language locale for Belgium
+# Locale: nl_NL
+; title_nl_nl
+Dutch language locale for Netherlands
 
 ; language_nl_nl
 Dutch
@@ -1219,8 +1358,9 @@ Dutch
 ; territory_nl_nl
 Netherlands
 
-; title_nl_nl
-Dutch language locale for Netherlands
+# Locale: nn_NO
+; title_nn_no
+Nynorsk language locale for Norway
 
 ; language_nn_no
 Nynorsk
@@ -1228,8 +1368,9 @@ Nynorsk
 ; territory_nn_no
 Norway
 
-; title_nn_no
-Nynorsk language locale for Norway
+# Locale: nr_ZA
+; title_nr_za
+Southern Ndebele language locale for South Africa
 
 ; language_nr_za
 Southern Ndebele
@@ -1237,8 +1378,9 @@ Southern Ndebele
 ; territory_nr_za
 South Africa
 
-; title_nr_za
-Southern Ndebele language locale for South Africa
+# Locale: nso_ZA
+; title_nso_za
+Northern Sotho locale for South Africa
 
 ; language_nso_za
 Northern Sotho
@@ -1246,8 +1388,9 @@ Northern Sotho
 ; territory_nso_za
 South Africa
 
-; title_nso_za
-Northern Sotho locale for South Africa
+# Locale: oc_FR
+; title_oc_fr
+Occitan language locale for France
 
 ; language_oc_fr
 Occitan
@@ -1255,8 +1398,9 @@ Occitan
 ; territory_oc_fr
 France
 
-; title_oc_fr
-Occitan language locale for France
+# Locale: om_ET
+; title_om_et
+Oromo language locale for Ethiopia
 
 ; language_om_et
 Oromo
@@ -1264,8 +1408,9 @@ Oromo
 ; territory_om_et
 Ethiopia
 
-; title_om_et
-Oromo language locale for Ethiopia
+# Locale: om_KE
+; title_om_ke
+Oromo language locale for Kenya
 
 ; language_om_ke
 Oromo
@@ -1273,8 +1418,9 @@ Oromo
 ; territory_om_ke
 Kenya
 
-; title_om_ke
-Oromo language locale for Kenya
+# Locale: or_IN
+; title_or_in
+Oriya language locale for India
 
 ; language_or_in
 Oriya
@@ -1282,8 +1428,9 @@ Oriya
 ; territory_or_in
 India
 
-; title_or_in
-Oriya language locale for India
+# Locale: pa_IN
+; title_pa_in
+Punjabi language locale for India
 
 ; language_pa_in
 Punjabi
@@ -1291,8 +1438,9 @@ Punjabi
 ; territory_pa_in
 India
 
-; title_pa_in
-Punjabi language locale for India
+# Locale: pa_PK
+; title_pa_pk
+Punjabi language locale for Pakistan
 
 ; language_pa_pk
 Punjabi
@@ -1300,8 +1448,9 @@ Punjabi
 ; territory_pa_pk
 Pakistan
 
-; title_pa_pk
-Punjabi language locale for Pakistan
+# Locale: pl_PL
+; title_pl_pl
+Polish language locale for Poland
 
 ; language_pl_pl
 Polish
@@ -1309,8 +1458,9 @@ Polish
 ; territory_pl_pl
 Poland
 
-; title_pl_pl
-Polish language locale for Poland
+# Locale: pt_BR
+; title_pt_br
+Portuguese language locale for Brasil
 
 ; language_pt_br
 Portuguese
@@ -1318,8 +1468,9 @@ Portuguese
 ; territory_pt_br
 Brasil
 
-; title_pt_br
-Portuguese language locale for Brasil
+# Locale: pt_PT
+; title_pt_pt
+Portuguese language locale for Portugal
 
 ; language_pt_pt
 Portuguese
@@ -1327,8 +1478,9 @@ Portuguese
 ; territory_pt_pt
 Portugal
 
-; title_pt_pt
-Portuguese language locale for Portugal
+# Locale: ro_RO
+; title_ro_ro
+Romanian language locale for Romania
 
 ; language_ro_ro
 Romanian
@@ -1336,8 +1488,9 @@ Romanian
 ; territory_ro_ro
 Romania
 
-; title_ro_ro
-Romanian language locale for Romania
+# Locale: ru_RU
+; title_ru_ru
+Russian language locale for Russia
 
 ; language_ru_ru
 Russian
@@ -1345,8 +1498,9 @@ Russian
 ; territory_ru_ru
 Russia
 
-; title_ru_ru
-Russian language locale for Russia
+# Locale: ru_UA
+; title_ru_ua
+Russian language locale for Ukraine
 
 ; language_ru_ua
 Russian
@@ -1354,8 +1508,9 @@ Russian
 ; territory_ru_ua
 Ukraine
 
-; title_ru_ua
-Russian language locale for Ukraine
+# Locale: rw_RW
+; title_rw_rw
+Kinyarwanda language locale for Rwanda
 
 ; language_rw_rw
 Kinyarwanda
@@ -1363,8 +1518,9 @@ Kinyarwanda
 ; territory_rw_rw
 Rwanda
 
-; title_rw_rw
-Kinyarwanda language locale for Rwanda
+# Locale: se_NO
+; title_se_no
+Northern Saami language locale for Norway
 
 ; language_se_no
 Northern Saami
@@ -1372,8 +1528,9 @@ Northern Saami
 ; territory_se_no
 Norway
 
-; title_se_no
-Northern Saami language locale for Norway
+# Locale: si_LK
+; title_si_lk
+Sinhala language locale for Sri Lanka
 
 ; language_si_lk
 Sinhala
@@ -1381,8 +1538,9 @@ Sinhala
 ; territory_si_lk
 Sri Lanka
 
-; title_si_lk
-Sinhala language locale for Sri Lanka
+# Locale: sid_ET
+; title_sid_et
+Sidama language locale for Ethiopia
 
 ; language_sid_et
 Sidama
@@ -1390,8 +1548,9 @@ Sidama
 ; territory_sid_et
 Ethiopia
 
-; title_sid_et
-Sidama language locale for Ethiopia
+# Locale: sk_SK
+; title_sk_sk
+Slovak language locale for Slovak
 
 ; language_sk_sk
 Slovak
@@ -1399,8 +1558,9 @@ Slovak
 ; territory_sk_sk
 Slovak
 
-; title_sk_sk
-Slovak language locale for Slovak
+# Locale: sl_SI
+; title_sl_si
+Slovenian language locale for Slovenia
 
 ; language_sl_si
 Slovenian
@@ -1408,8 +1568,9 @@ Slovenian
 ; territory_sl_si
 Slovenia
 
-; title_sl_si
-Slovenian language locale for Slovenia
+# Locale: so_DJ
+; title_so_dj
+Somali language locale for Djibouti
 
 ; language_so_dj
 Somali
@@ -1417,8 +1578,9 @@ Somali
 ; territory_so_dj
 Djibouti
 
-; title_so_dj
-Somali language locale for Djibouti
+# Locale: so_ET
+; title_so_et
+Somali language locale for Ethiopia
 
 ; language_so_et
 Somali
@@ -1426,8 +1588,9 @@ Somali
 ; territory_so_et
 Ethiopia
 
-; title_so_et
-Somali language locale for Ethiopia
+# Locale: so_KE
+; title_so_ke
+Somali language locale for Kenya
 
 ; language_so_ke
 Somali
@@ -1435,8 +1598,9 @@ Somali
 ; territory_so_ke
 Kenya
 
-; title_so_ke
-Somali language locale for Kenya
+# Locale: so_SO
+; title_so_so
+Somali language locale for Somalia
 
 ; language_so_so
 Somali
@@ -1444,8 +1608,9 @@ Somali
 ; territory_so_so
 Somalia
 
-; title_so_so
-Somali language locale for Somalia
+# Locale: sq_AL
+; title_sq_al
+Albanian language locale for Albania
 
 ; language_sq_al
 Albanian
@@ -1453,8 +1618,9 @@ Albanian
 ; territory_sq_al
 Albania
 
-; title_sq_al
-Albanian language locale for Albania
+# Locale: sr_CS
+; title_sr_cs
+Serbian language locale for Serbia and Montenegro
 
 ; language_sr_cs
 Serbian
@@ -1462,8 +1628,9 @@ Serbian
 ; territory_sr_cs
 Serbia and Montenegro
 
-; title_sr_cs
-Serbian language locale for Serbia and Montenegro
+# Locale: ss_ZA
+; title_ss_za
+Swati language locale for South Africa
 
 ; language_ss_za
 Swati
@@ -1471,8 +1638,9 @@ Swati
 ; territory_ss_za
 South Africa
 
-; title_ss_za
-Swati language locale for South Africa
+# Locale: st_ZA
+; title_st_za
+Sotho language locale for South Africa
 
 ; language_st_za
 Sotho
@@ -1480,8 +1648,9 @@ Sotho
 ; territory_st_za
 South Africa
 
-; title_st_za
-Sotho language locale for South Africa
+# Locale: sv_FI
+; title_sv_fi
+Swedish language locale for Finland
 
 ; language_sv_fi
 Swedish
@@ -1489,8 +1658,9 @@ Swedish
 ; territory_sv_fi
 Finland
 
-; title_sv_fi
-Swedish language locale for Finland
+# Locale: sv_SE
+; title_sv_se
+Swedish language locale for Sweden
 
 ; language_sv_se
 Swedish
@@ -1498,8 +1668,9 @@ Swedish
 ; territory_sv_se
 Sweden
 
-; title_sv_se
-Swedish language locale for Sweden
+# Locale: ta_IN
+; title_ta_in
+Tamil language locale for India
 
 ; language_ta_in
 Tamil
@@ -1507,8 +1678,9 @@ Tamil
 ; territory_ta_in
 India
 
-; title_ta_in
-Tamil language locale for India
+# Locale: te_IN
+; title_te_in
+Telugu language locale for India
 
 ; language_te_in
 Telugu
@@ -1516,8 +1688,9 @@ Telugu
 ; territory_te_in
 India
 
-; title_te_in
-Telugu language locale for India
+# Locale: tg_TJ
+; title_tg_tj
+Tajik language locale for Tajikistan
 
 ; language_tg_tj
 Tajik
@@ -1525,8 +1698,9 @@ Tajik
 ; territory_tg_tj
 Tajikistan
 
-; title_tg_tj
-Tajik language locale for Tajikistan
+# Locale: th_TH
+; title_th_th
+Thai language locale for Thailand
 
 ; language_th_th
 Thai
@@ -1534,8 +1708,9 @@ Thai
 ; territory_th_th
 Thailand
 
-; title_th_th
-Thai language locale for Thailand
+# Locale: ti_ER
+; title_ti_er
+Tigrigna language locale for Eritrea
 
 ; language_ti_er
 Tigrigna
@@ -1543,8 +1718,9 @@ Tigrigna
 ; territory_ti_er
 Eritrea
 
-; title_ti_er
-Tigrigna language locale for Eritrea
+# Locale: ti_ET
+; title_ti_et
+Tigrigna language locale for Ethiopia
 
 ; language_ti_et
 Tigrigna
@@ -1552,8 +1728,9 @@ Tigrigna
 ; territory_ti_et
 Ethiopia
 
-; title_ti_et
-Tigrigna language locale for Ethiopia
+# Locale: tig_ER
+; title_tig_er
+Tigre language locale for Eritrea
 
 ; language_tig_er
 Tigre
@@ -1561,8 +1738,9 @@ Tigre
 ; territory_tig_er
 Eritrea
 
-; title_tig_er
-Tigre language locale for Eritrea
+# Locale: tl_PH
+; title_tl_ph
+Tagalog language locale for Philippines
 
 ; language_tl_ph
 Tagalog
@@ -1570,8 +1748,9 @@ Tagalog
 ; territory_tl_ph
 Philippines
 
-; title_tl_ph
-Tagalog language locale for Philippines
+# Locale: tn_ZA
+; title_tn_za
+Tswana language locale for South Africa
 
 ; language_tn_za
 Tswana
@@ -1579,8 +1758,9 @@ Tswana
 ; territory_tn_za
 South Africa
 
-; title_tn_za
-Tswana language locale for South Africa
+# Locale: tr_CY
+; title_tr_cy
+Turkish language locale for Cyprus
 
 ; language_tr_cy
 Turkish
@@ -1588,8 +1768,9 @@ Turkish
 ; territory_tr_cy
 Cyprus
 
-; title_tr_cy
-Turkish language locale for Cyprus
+# Locale: tr_TR
+; title_tr_tr
+Turkish language locale for Turkey
 
 ; language_tr_tr
 Turkish
@@ -1597,8 +1778,9 @@ Turkish
 ; territory_tr_tr
 Turkey
 
-; title_tr_tr
-Turkish language locale for Turkey
+# Locale: ts_ZA
+; title_ts_za
+Tsonga language locale for South Africa
 
 ; language_ts_za
 Tsonga
@@ -1606,8 +1788,9 @@ Tsonga
 ; territory_ts_za
 South Africa
 
-; title_ts_za
-Tsonga language locale for South Africa
+# Locale: tt_RU
+; title_tt_ru
+Tatar language locale for Tatarstan
 
 ; language_tt_ru
 Tatar
@@ -1615,8 +1798,9 @@ Tatar
 ; territory_tt_ru
 Tatarstan
 
-; title_tt_ru
-Tatar language locale for Tatarstan
+# Locale: uk_UA
+; title_uk_ua
+Ukrainian language locale for Ukraine
 
 ; language_uk_ua
 Ukrainian
@@ -1624,8 +1808,9 @@ Ukrainian
 ; territory_uk_ua
 Ukraine
 
-; title_uk_ua
-Ukrainian language locale for Ukraine
+# Locale: ur_PK
+; title_ur_pk
+Urdu language locale for Pakistan
 
 ; language_ur_pk
 Urdu
@@ -1633,8 +1818,9 @@ Urdu
 ; territory_ur_pk
 Pakistan
 
-; title_ur_pk
-Urdu language locale for Pakistan
+# Locale: uz_UZ
+; title_uz_uz
+Uzbek language locale for Uzbekistan
 
 ; language_uz_uz
 Uzbek
@@ -1642,8 +1828,9 @@ Uzbek
 ; territory_uz_uz
 Uzbekistan
 
-; title_uz_uz
-Uzbek language locale for Uzbekistan
+# Locale: ve_ZA
+; title_ve_za
+Venda language locale for South Africa
 
 ; language_ve_za
 Venda
@@ -1651,8 +1838,9 @@ Venda
 ; territory_ve_za
 South Africa
 
-; title_ve_za
-Venda language locale for South Africa
+# Locale: vi_VN
+; title_vi_vn
+Vietnamese language locale for Vietnam
 
 ; language_vi_vn
 Vietnamese
@@ -1660,8 +1848,9 @@ Vietnamese
 ; territory_vi_vn
 Vietnam
 
-; title_vi_vn
-Vietnamese language locale for Vietnam
+# Locale: wa_BE
+; title_wa_be
+Walloon language locale for Belgium
 
 ; language_wa_be
 Walloon
@@ -1669,8 +1858,9 @@ Walloon
 ; territory_wa_be
 Belgium
 
-; title_wa_be
-Walloon language locale for Belgium
+# Locale: wal_ET
+; title_wal_et
+Walaita language locale for Ethiopia
 
 ; language_wal_et
 Walaita
@@ -1678,8 +1868,9 @@ Walaita
 ; territory_wal_et
 Ethiopia
 
-; title_wal_et
-Walaita language locale for Ethiopia
+# Locale: xh_ZA
+; title_xh_za
+Xhosa language locale for South Africa
 
 ; language_xh_za
 Xhosa
@@ -1687,8 +1878,9 @@ Xhosa
 ; territory_xh_za
 South Africa
 
-; title_xh_za
-Xhosa language locale for South Africa
+# Locale: yi_US
+; title_yi_us
+Yiddish language locale for U.S.A.
 
 ; language_yi_us
 Yiddish
@@ -1696,8 +1888,9 @@ Yiddish
 ; territory_yi_us
 USA
 
-; title_yi_us
-Yiddish language locale for U.S.A.
+# Locale: zh_CN
+; title_zh_cn
+Chinese language locale for Peoples Republic of China
 
 ; language_zh_cn
 Chinese
@@ -1705,8 +1898,9 @@ Chinese
 ; territory_zh_cn
 P.R. of China
 
-; title_zh_cn
-Chinese language locale for Peoples Republic of China
+# Locale: zh_HK
+; title_zh_hk
+Chinese language locale for Hong Kong
 
 ; language_zh_hk
 Chinese
@@ -1714,8 +1908,9 @@ Chinese
 ; territory_zh_hk
 Hong Kong
 
-; title_zh_hk
-Chinese language locale for Hong Kong
+# Locale: zh_SG
+; title_zh_sg
+Chinese language locale for Singapore
 
 ; language_zh_sg
 Chinese
@@ -1723,8 +1918,9 @@ Chinese
 ; territory_zh_sg
 Singapore
 
-; title_zh_sg
-Chinese language locale for Singapore
+# Locale: zh_TW
+; title_zh_tw
+Chinese language locale for Taiwan R.O.C.
 
 ; language_zh_tw
 Chinese
@@ -1732,14 +1928,12 @@ Chinese
 ; territory_zh_tw
 Taiwan R.O.C.
 
-; title_zh_tw
-Chinese language locale for Taiwan R.O.C.
+# Locale: zu_ZA
+; title_zu_za
+Zulu language locale for South Africa
 
 ; language_zu_za
 Zulu
 
 ; territory_zu_za
 South Africa
-
-; title_zu_za
-Zulu language locale for South Africa
