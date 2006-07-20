@@ -1095,7 +1095,6 @@ gen_modules_xivo_i386()
   cat << EOF
 e100
 8021q
-wcfxo
 wctdm
 EOF
 }
