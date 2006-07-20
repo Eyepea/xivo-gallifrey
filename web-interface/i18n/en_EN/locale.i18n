@@ -1,0 +1,1745 @@
+; language_aa_dj
+Afar
+
+; territory_aa_dj
+Djibouti
+
+; title_aa_dj
+Afar language locale for Djibouti
+
+; language_aa_er
+Afar
+
+; territory_aa_er
+Eritrea
+
+; title_aa_er
+Afar language locale for Eritrea
+
+; language_aa_et
+Afar
+
+; territory_aa_et
+Ethiopia
+
+; title_aa_et
+Afar language locale for Ethiopia
+
+; language_af_za
+Afrikaans
+
+; territory_af_za
+South Africa
+
+; title_af_za
+Afrikaans language locale for South Africa
+
+; language_am_et
+Amharic
+
+; territory_am_et
+Ethiopia
+
+; title_am_et
+Amharic language locale for Ethiopia
+
+; language_an_es
+Aragonese
+
+; territory_an_es
+Spain
+
+; title_an_es
+Aragonese language locale for Spain
+
+; language_ar_ae
+Arabic
+
+; territory_ar_ae
+United Arab Emirates
+
+; title_ar_ae
+Arabic language locale for United Arab Emirates
+
+; language_ar_bh
+Arabic
+
+; territory_ar_bh
+Bahrain
+
+; title_ar_bh
+Arabic language locale for Bahrain
+
+; language_ar_dz
+Arabic
+
+; territory_ar_dz
+Algeria
+
+; title_ar_dz
+Arabic language locale for Algeria
+
+; language_ar_eg
+Arabic
+
+; territory_ar_eg
+Egypt
+
+; title_ar_eg
+Arabic language locale for Egypt
+
+; language_ar_in
+Arabic
+
+; territory_ar_in
+India
+
+; title_ar_in
+Arabic language locale for India
+
+; language_ar_iq
+Arabic
+
+; territory_ar_iq
+Iraq
+
+; title_ar_iq
+Arabic language locale for Iraq
+
+; language_ar_jo
+Arabic
+
+; territory_ar_jo
+Jordan
+
+; title_ar_jo
+Arabic language locale for Jordan
+
+; language_ar_kw
+Arabic
+
+; territory_ar_kw
+Kuwait
+
+; title_ar_kw
+Arabic language locale for Kuwait
+
+; language_ar_lb
+Arabic
+
+; territory_ar_lb
+Lebanon
+
+; title_ar_lb
+Arabic language locale for Lebanon
+
+; language_ar_ly
+Arabic
+
+; territory_ar_ly
+Libyan Arab Jamahiriya
+
+; title_ar_ly
+Arabic language locale for Libyan Arab Jamahiriya
+
+; language_ar_ma
+Arabic
+
+; territory_ar_ma
+Morocco
+
+; title_ar_ma
+Arabic language locale for Morocco
+
+; language_ar_om
+Arabic
+
+; territory_ar_om
+Oman
+
+; title_ar_om
+Arabic language locale for Oman
+
+; language_ar_qa
+Arabic
+
+; territory_ar_qa
+Qatar
+
+; title_ar_qa
+Arabic language locale for Qatar
+
+; language_ar_sa
+Arabic
+
+; territory_ar_sa
+Saudi Arabia
+
+; title_ar_sa
+Arabic language locale for Saudi Arabia
+
+; language_ar_sd
+Arabic
+
+; territory_ar_sd
+Sudan
+
+; title_ar_sd
+Arabic language locale for Sudan
+
+; language_ar_sy
+Arabic
+
+; territory_ar_sy
+Syrian Arab Republic
+
+; title_ar_sy
+Arabic language locale for Syrian Arab Republic
+
+; language_ar_tn
+Arabic
+
+; territory_ar_tn
+Tunisia
+
+; title_ar_tn
+Arabic language locale for Tunisia
+
+; language_ar_ye
+Arabic
+
+; territory_ar_ye
+Yemen
+
+; title_ar_ye
+Arabic language locale for Yemen
+
+; language_as_in
+Assamese
+
+; territory_as_in
+India
+
+; title_as_in
+Assamese language locale for India
+
+; language_az_az
+Azeri
+
+; territory_az_az
+Azerbaijan
+
+; title_az_az
+Azeri language locale for Azerbaijan
+
+; language_be_by
+Belarusian
+
+; territory_be_by
+Belarus
+
+; title_be_by
+Belarusian language locale for Belarus
+
+; language_bg_bg
+Bulgarian
+
+; territory_bg_bg
+Bulgaria
+
+; title_bg_bg
+Bulgarian language locale for Bulgaria
+
+; language_bn_bd
+Bengali
+
+; territory_bn_bd
+Bangladesh
+
+; title_bn_bd
+Bengali language locale for Bangladesh
+
+; language_bn_in
+Bengali
+
+; territory_bn_in
+India
+
+; title_bn_in
+Bengali language locale for India
+
+; language_br_fr
+Breton
+
+; territory_br_fr
+France
+
+; title_br_fr
+Breton language locale for France
+
+; language_bs_ba
+Bosnian
+
+; territory_bs_ba
+Bosnia and Herzegowina
+
+; title_bs_ba
+Bosnian language locale for Bosnia and Herzegowina
+
+; language_byn_er
+Blin
+
+; territory_byn_er
+Eritrea
+
+; title_byn_er
+Blin language locale for Eritrea
+
+; language_ca_ad
+Catalan
+
+; territory_ca_ad
+Andorra
+
+; title_ca_ad
+Catalan language locale for Andorra
+
+; language_ca_es
+Catalan
+
+; territory_ca_es
+Spain
+
+; title_ca_es
+Catalan language locale for Catalonia
+
+; language_ca_fr
+Catalan
+
+; territory_ca_fr
+France
+
+; title_ca_fr
+Catalan language locale for France
+
+; language_ca_it
+Catalan
+
+; territory_ca_it
+Italia
+
+; title_ca_it
+Catalan language locale for Italia
+
+; language_cs_cz
+Czech
+
+; territory_cs_cz
+Czech Republic
+
+; title_cs_cz
+Czech language locale for Czech Republic
+
+; language_cy_gb
+Welsh
+
+; territory_cy_gb
+Great Britain
+
+; title_cy_gb
+Welsh language locale for Great Britain
+
+; language_da_dk
+Danish
+
+; territory_da_dk
+Denmark
+
+; title_da_dk
+Danish language locale for Denmark
+
+; language_de_at
+German
+
+; territory_de_at
+Austria
+
+; title_de_at
+German language locale for Austria
+
+; language_de_be
+German
+
+; territory_de_be
+Belgium
+
+; title_de_be
+German language locale for Belgium
+
+; language_de_ch
+German
+
+; territory_de_ch
+Switzerland
+
+; title_de_ch
+German language locale for Switzerland
+
+; language_de_de
+German
+
+; territory_de_de
+Germany
+
+; title_de_de
+German language locale for Germany
+
+; language_de_lu
+German
+
+; territory_de_lu
+Luxemburg
+
+; title_de_lu
+German language locale for Luxemburg
+
+; language_dz_bt
+Dzongkha
+
+; territory_dz_bt
+Bhutan
+
+; title_dz_bt
+Dzongkha language locale for Bhutan
+
+; language_el_cy
+Greek
+
+; territory_el_cy
+Cyprus
+
+; title_el_cy
+Greek language locale for Cyprus
+
+; language_el_gr
+Greek
+
+; territory_el_gr
+Greece
+
+; title_el_gr
+Greek language locale for Greece
+
+; language_en_au
+English
+
+; territory_en_au
+Australia
+
+; title_en_au
+English language locale for Australia
+
+; language_en_bw
+English
+
+; territory_en_bw
+Botswana
+
+; title_en_bw
+English language locale for Botswana
+
+; language_en_ca
+English
+
+; territory_en_ca
+Canada
+
+; title_en_ca
+English language locale for Canada
+
+; language_en_dk
+English
+
+; territory_en_dk
+Denmark
+
+; title_en_dk
+English language locale for Denmark
+
+; language_en_gb
+English
+
+; territory_en_gb
+Great Britain
+
+; title_en_gb
+English language locale for Great Britain
+
+; language_en_hk
+English
+
+; territory_en_hk
+Hong Kong
+
+; title_en_hk
+English language locale for Hong Kong
+
+; language_en_ie
+English
+
+; territory_en_ie
+Ireland
+
+; title_en_ie
+English language locale for Ireland
+
+; language_en_in
+English
+
+; territory_en_in
+India
+
+; title_en_in
+English language locale for India
+
+; language_en_nz
+English
+
+; territory_en_nz
+New Zealand
+
+; title_en_nz
+English language locale for New Zealand
+
+; language_en_ph
+English
+
+; territory_en_ph
+Philippines
+
+; title_en_ph
+English language locale for Philippines
+
+; language_en_sg
+English
+
+; territory_en_sg
+Singapore
+
+; title_en_sg
+English language locale for Singapore
+
+; language_en_us
+English
+
+; territory_en_us
+USA
+
+; title_en_us
+English language locale for U.S.A.
+
+; language_en_za
+English
+
+; territory_en_za
+South Africa
+
+; title_en_za
+English language locale for South Africa
+
+; language_en_zw
+English
+
+; territory_en_zw
+Zimbabwe
+
+; title_en_zw
+English language locale for Zimbabwe
+
+; language_es_ar
+Spanish
+
+; territory_es_ar
+Argentina
+
+; title_es_ar
+Spanish language locale for Argentina
+
+; language_es_bo
+Spanish
+
+; territory_es_bo
+Bolivia
+
+; title_es_bo
+Spanish language locale for Bolivia
+
+; language_es_cl
+Spanish
+
+; territory_es_cl
+Chile
+
+; title_es_cl
+Spanish language locale for Chile
+
+; language_es_co
+Spanish
+
+; territory_es_co
+Colombia
+
+; title_es_co
+Spanish language locale for Colombia
+
+; language_es_cr
+Spanish
+
+; territory_es_cr
+Costa Rica
+
+; title_es_cr
+Spanish language locale for Costa Rica
+
+; language_es_do
+Spanish
+
+; territory_es_do
+Dominican Republic
+
+; title_es_do
+Spanish language locale for Dominican Republic
+
+; language_es_ec
+Spanish
+
+; territory_es_ec
+Ecuador
+
+; title_es_ec
+Spanish language locale for Ecuador
+
+; language_es_es
+Spanish
+
+; territory_es_es
+Spain
+
+; title_es_es
+Spanish language locale for Spain
+
+; language_es_gt
+Spanish
+
+; territory_es_gt
+Guatemala
+
+; title_es_gt
+Spanish language locale for Guatemala
+
+; language_es_hn
+Spanish
+
+; territory_es_hn
+Honduras
+
+; title_es_hn
+Spanish language locale for Honduras
+
+; language_es_mx
+Spanish
+
+; territory_es_mx
+Mexico
+
+; title_es_mx
+Spanish language locale for Mexico
+
+; language_es_ni
+Spanish
+
+; territory_es_ni
+Nicaragua
+
+; title_es_ni
+Spanish language locale for Nicaragua
+
+; language_es_pa
+Spanish
+
+; territory_es_pa
+Panama
+
+; title_es_pa
+Spanish language locale for Panama
+
+; language_es_pe
+Spanish
+
+; territory_es_pe
+Peru
+
+; title_es_pe
+Spanish language locale for Peru
+
+; language_es_pr
+Spanish
+
+; territory_es_pr
+Puerto Rico
+
+; title_es_pr
+Spanish language locale for Puerto Rico
+
+; language_es_py
+Spanish
+
+; territory_es_py
+Paraguay
+
+; title_es_py
+Spanish language locale for Paraguay
+
+; language_es_sv
+Spanish
+
+; territory_es_sv
+El Salvador
+
+; title_es_sv
+Spanish language locale for El Salvador
+
+; language_es_us
+Spanish
+
+; territory_es_us
+USA
+
+; title_es_us
+Spanish language locale for U.S.A.
+
+; language_es_uy
+Spanish
+
+; territory_es_uy
+Uruguay
+
+; title_es_uy
+Spanish language locale for Uruguay
+
+; language_es_ve
+Spanish
+
+; territory_es_ve
+Venezuela
+
+; title_es_ve
+Spanish language locale for Venezuela
+
+; language_et_ee
+Estonian
+
+; territory_et_ee
+Estonia
+
+; title_et_ee
+Estonian language locale for Estonia
+
+; language_eu_es
+Basque
+
+; territory_eu_es
+Spain
+
+; title_eu_es
+Basque language locale for Spain
+
+; language_fa_ir
+Persian
+
+; territory_fa_ir
+Iran
+
+; title_fa_ir
+Persian language locale for Iran
+
+; language_fi_fi
+Finnish
+
+; territory_fi_fi
+Finland
+
+; title_fi_fi
+Finnish language locale for Finland
+
+; language_fo_fo
+Faroese
+
+; territory_fo_fo
+Faroe Islands
+
+; title_fo_fo
+Faroese language locale for Faroe Islands
+
+; language_fr_be
+French
+
+; territory_fr_be
+Belgium
+
+; title_fr_be
+French language locale for Belgium
+
+; language_fr_ca
+French
+
+; territory_fr_ca
+Canada
+
+; title_fr_ca
+French language locale for Canada
+
+; language_fr_ch
+French
+
+; territory_fr_ch
+Switzerland
+
+; title_fr_ch
+French language locale for Switzerland
+
+; language_fr_fr
+French
+
+; territory_fr_fr
+France
+
+; title_fr_fr
+French language locale for France
+
+; language_fr_lu
+French
+
+; territory_fr_lu
+Luxemburg
+
+; title_fr_lu
+French language locale for Luxemburg
+
+; language_ga_ie
+Irish
+
+; territory_ga_ie
+Ireland
+
+; title_ga_ie
+Irish language locale for Ireland
+
+; language_gd_gb
+Scots Gaelic
+
+; territory_gd_gb
+Great Britain
+
+; title_gd_gb
+Scots Gaelic language locale for Great Britain
+
+; language_gez_er
+Ge'ez
+
+; territory_gez_er
+Eritrea
+
+; title_gez_er
+Ge'ez language locale for Eritrea
+
+; language_gez_et
+Ge'ez
+
+; territory_gez_et
+Ethiopia
+
+; title_gez_et
+Ge'ez language locale for Ethiopia
+
+; language_gl_es
+Gallegan
+
+; territory_gl_es
+Spain
+
+; title_gl_es
+Galician language locale for Spain
+
+; language_gu_in
+Gujarati
+
+; territory_gu_in
+India
+
+; title_gu_in
+Gurajati language locale for India
+
+; language_gv_gb
+Manx Gaelic
+
+; territory_gv_gb
+Great Britain
+
+; title_gv_gb
+Manx Gaelic language locale for Great Britain
+
+; language_he_il
+Hebrew
+
+; territory_he_il
+Israel
+
+; title_he_il
+Hebrew language locale for Israel
+
+; language_hi_in
+Hindi
+
+; territory_hi_in
+India
+
+; title_hi_in
+Hindi language locale for India
+
+; language_hr_hr
+Croatian
+
+; territory_hr_hr
+Croatia
+
+; title_hr_hr
+Croatian language locale for Croatia
+
+; language_hsb_de
+Upper Sorbian
+
+; territory_hsb_de
+Germany
+
+; title_hsb_de
+Upper language Sorbian locale for Germany
+
+; language_hu_hu
+Hungarian
+
+; territory_hu_hu
+Hungary
+
+; title_hu_hu
+Hungarian language locale for Hungary
+
+; language_hy_am
+Armenian
+
+; territory_hy_am
+Armenia
+
+; title_hy_am
+Armenian language locale for Armenia
+
+; language_id_id
+Indonesian
+
+; territory_id_id
+Indonesia
+
+; title_id_id
+Indonesian language locale for Indonesia
+
+; language_is_is
+Icelandic
+
+; territory_is_is
+Iceland
+
+; title_is_is
+Icelandic language locale for Iceland
+
+; language_it_ch
+Italian
+
+; territory_it_ch
+Switzerland
+
+; title_it_ch
+Italian language locale for Switzerland
+
+; language_it_it
+Italian
+
+; territory_it_it
+Italia
+
+; title_it_it
+Italian language locale for Italy
+
+; language_iw_il
+Hebrew
+
+; territory_iw_il
+Israel
+
+; title_iw_il
+Hebrew language locale for Israel
+
+; language_ja_jp
+Japanese
+
+; territory_ja_jp
+Japan
+
+; title_ja_jp
+Japanese language locale for Japan
+
+; language_ka_ge
+Georgian
+
+; territory_ka_ge
+Georgia
+
+; title_ka_ge
+Georgian language locale for Georgia
+
+; language_kk_kz
+Kazakh
+
+; territory_kk_kz
+Kazakhstan
+
+; title_kk_kz
+Kazakh language locale for Kazakh
+
+; language_kl_gl
+Greenlandic
+
+; territory_kl_gl
+Greenland
+
+; title_kl_gl
+Greenlandic language locale for Greenland
+
+; language_km_kh
+Khmer
+
+; territory_km_kh
+Cambodia
+
+; title_km_kh
+Khmer language locale for Cambodia
+
+; language_kn_in
+Kannada
+
+; territory_kn_in
+India
+
+; title_kn_in
+Kannada language locale for India
+
+; language_ko_kr
+Korean
+
+; territory_ko_kr
+Republic of Korea
+
+; title_ko_kr
+Korean language locale for Republic of Korea (South Korea)
+
+; language_ku_tr
+Kurdish
+
+; territory_ku_tr
+Turkey
+
+; title_ku_tr
+Kurdish language locale for Turkey
+
+; language_kw_gb
+Cornish
+
+; territory_kw_gb
+Great Britain
+
+; title_kw_gb
+Cornish language locale for Great Britain
+
+; language_ky_kg
+Kyrgyz
+
+; territory_ky_kg
+Kyrgyzstan
+
+; title_ky_kg
+Kyrgyz language locale for Kyrgyzstan
+
+; language_lg_ug
+Luganda
+
+; territory_lg_ug
+Uganda
+
+; title_lg_ug
+Luganda language locale for Uganda
+
+; language_lo_la
+Laotian
+
+; territory_lo_la
+Laos
+
+; title_lo_la
+Laotian language locale for Laos
+
+; language_lt_lt
+Lithuanian
+
+; territory_lt_lt
+Lithuania
+
+; title_lt_lt
+Lithuanian language locale for Lithuania
+
+; language_lv_lv
+Latvian
+
+; territory_lv_lv
+Latvia
+
+; title_lv_lv
+Latvian language locale for Latvia
+
+; language_mg_mg
+Malagasy
+
+; territory_mg_mg
+Madagascar
+
+; title_mg_mg
+Malagasy language locale for Madagascar
+
+; language_mi_nz
+Maori
+
+; territory_mi_nz
+New Zealand
+
+; title_mi_nz
+Maori language locale for New Zealand
+
+; language_mk_mk
+Macedonian
+
+; territory_mk_mk
+Macedonia
+
+; title_mk_mk
+Macedonian language locale for Macedonia
+
+; language_ml_in
+Malayalam
+
+; territory_ml_in
+India
+
+; title_ml_in
+Malayalam language locale for India
+
+; language_mn_mn
+Mongolian
+
+; territory_mn_mn
+Mongolia
+
+; title_mn_mn
+Mongolian language locale for Mongolia
+
+; language_mr_in
+Marathi
+
+; territory_mr_in
+India
+
+; title_mr_in
+Marathi language locale for India
+
+; language_ms_my
+Malay
+
+; territory_ms_my
+Malaysia
+
+; title_ms_my
+Malay language locale for Malaysia
+
+; language_mt_mt
+Maltese
+
+; territory_mt_mt
+Malta
+
+; title_mt_mt
+Maltese language locale for Malta
+
+; language_nb_no
+Norwegian Bokmal
+
+; territory_nb_no
+Norway
+
+; title_nb_no
+Norwegian Bokmal language locale for Norway
+
+; language_ne_np
+Nepali
+
+; territory_ne_np
+Nepal
+
+; title_ne_np
+Nepali language locale for Nepal
+
+; language_nl_be
+Dutch
+
+; territory_nl_be
+Belgium
+
+; title_nl_be
+Dutch language locale for Belgium
+
+; language_nl_nl
+Dutch
+
+; territory_nl_nl
+Netherlands
+
+; title_nl_nl
+Dutch language locale for Netherlands
+
+; language_nn_no
+Nynorsk
+
+; territory_nn_no
+Norway
+
+; title_nn_no
+Nynorsk language locale for Norway
+
+; language_nr_za
+Southern Ndebele
+
+; territory_nr_za
+South Africa
+
+; title_nr_za
+Southern Ndebele language locale for South Africa
+
+; language_nso_za
+Northern Sotho
+
+; territory_nso_za
+South Africa
+
+; title_nso_za
+Northern Sotho locale for South Africa
+
+; language_oc_fr
+Occitan
+
+; territory_oc_fr
+France
+
+; title_oc_fr
+Occitan language locale for France
+
+; language_om_et
+Oromo
+
+; territory_om_et
+Ethiopia
+
+; title_om_et
+Oromo language locale for Ethiopia
+
+; language_om_ke
+Oromo
+
+; territory_om_ke
+Kenya
+
+; title_om_ke
+Oromo language locale for Kenya
+
+; language_or_in
+Oriya
+
+; territory_or_in
+India
+
+; title_or_in
+Oriya language locale for India
+
+; language_pa_in
+Punjabi
+
+; territory_pa_in
+India
+
+; title_pa_in
+Punjabi language locale for India
+
+; language_pa_pk
+Punjabi
+
+; territory_pa_pk
+Pakistan
+
+; title_pa_pk
+Punjabi language locale for Pakistan
+
+; language_pl_pl
+Polish
+
+; territory_pl_pl
+Poland
+
+; title_pl_pl
+Polish language locale for Poland
+
+; language_pt_br
+Portuguese
+
+; territory_pt_br
+Brasil
+
+; title_pt_br
+Portuguese language locale for Brasil
+
+; language_pt_pt
+Portuguese
+
+; territory_pt_pt
+Portugal
+
+; title_pt_pt
+Portuguese language locale for Portugal
+
+; language_ro_ro
+Romanian
+
+; territory_ro_ro
+Romania
+
+; title_ro_ro
+Romanian language locale for Romania
+
+; language_ru_ru
+Russian
+
+; territory_ru_ru
+Russia
+
+; title_ru_ru
+Russian language locale for Russia
+
+; language_ru_ua
+Russian
+
+; territory_ru_ua
+Ukraine
+
+; title_ru_ua
+Russian language locale for Ukraine
+
+; language_rw_rw
+Kinyarwanda
+
+; territory_rw_rw
+Rwanda
+
+; title_rw_rw
+Kinyarwanda language locale for Rwanda
+
+; language_se_no
+Northern Saami
+
+; territory_se_no
+Norway
+
+; title_se_no
+Northern Saami language locale for Norway
+
+; language_si_lk
+Sinhala
+
+; territory_si_lk
+Sri Lanka
+
+; title_si_lk
+Sinhala language locale for Sri Lanka
+
+; language_sid_et
+Sidama
+
+; territory_sid_et
+Ethiopia
+
+; title_sid_et
+Sidama language locale for Ethiopia
+
+; language_sk_sk
+Slovak
+
+; territory_sk_sk
+Slovak
+
+; title_sk_sk
+Slovak language locale for Slovak
+
+; language_sl_si
+Slovenian
+
+; territory_sl_si
+Slovenia
+
+; title_sl_si
+Slovenian language locale for Slovenia
+
+; language_so_dj
+Somali
+
+; territory_so_dj
+Djibouti
+
+; title_so_dj
+Somali language locale for Djibouti
+
+; language_so_et
+Somali
+
+; territory_so_et
+Ethiopia
+
+; title_so_et
+Somali language locale for Ethiopia
+
+; language_so_ke
+Somali
+
+; territory_so_ke
+Kenya
+
+; title_so_ke
+Somali language locale for Kenya
+
+; language_so_so
+Somali
+
+; territory_so_so
+Somalia
+
+; title_so_so
+Somali language locale for Somalia
+
+; language_sq_al
+Albanian
+
+; territory_sq_al
+Albania
+
+; title_sq_al
+Albanian language locale for Albania
+
+; language_sr_cs
+Serbian
+
+; territory_sr_cs
+Serbia and Montenegro
+
+; title_sr_cs
+Serbian language locale for Serbia and Montenegro
+
+; language_ss_za
+Swati
+
+; territory_ss_za
+South Africa
+
+; title_ss_za
+Swati language locale for South Africa
+
+; language_st_za
+Sotho
+
+; territory_st_za
+South Africa
+
+; title_st_za
+Sotho language locale for South Africa
+
+; language_sv_fi
+Swedish
+
+; territory_sv_fi
+Finland
+
+; title_sv_fi
+Swedish language locale for Finland
+
+; language_sv_se
+Swedish
+
+; territory_sv_se
+Sweden
+
+; title_sv_se
+Swedish language locale for Sweden
+
+; language_ta_in
+Tamil
+
+; territory_ta_in
+India
+
+; title_ta_in
+Tamil language locale for India
+
+; language_te_in
+Telugu
+
+; territory_te_in
+India
+
+; title_te_in
+Telugu language locale for India
+
+; language_tg_tj
+Tajik
+
+; territory_tg_tj
+Tajikistan
+
+; title_tg_tj
+Tajik language locale for Tajikistan
+
+; language_th_th
+Thai
+
+; territory_th_th
+Thailand
+
+; title_th_th
+Thai language locale for Thailand
+
+; language_ti_er
+Tigrigna
+
+; territory_ti_er
+Eritrea
+
+; title_ti_er
+Tigrigna language locale for Eritrea
+
+; language_ti_et
+Tigrigna
+
+; territory_ti_et
+Ethiopia
+
+; title_ti_et
+Tigrigna language locale for Ethiopia
+
+; language_tig_er
+Tigre
+
+; territory_tig_er
+Eritrea
+
+; title_tig_er
+Tigre language locale for Eritrea
+
+; language_tl_ph
+Tagalog
+
+; territory_tl_ph
+Philippines
+
+; title_tl_ph
+Tagalog language locale for Philippines
+
+; language_tn_za
+Tswana
+
+; territory_tn_za
+South Africa
+
+; title_tn_za
+Tswana language locale for South Africa
+
+; language_tr_cy
+Turkish
+
+; territory_tr_cy
+Cyprus
+
+; title_tr_cy
+Turkish language locale for Cyprus
+
+; language_tr_tr
+Turkish
+
+; territory_tr_tr
+Turkey
+
+; title_tr_tr
+Turkish language locale for Turkey
+
+; language_ts_za
+Tsonga
+
+; territory_ts_za
+South Africa
+
+; title_ts_za
+Tsonga language locale for South Africa
+
+; language_tt_ru
+Tatar
+
+; territory_tt_ru
+Tatarstan
+
+; title_tt_ru
+Tatar language locale for Tatarstan
+
+; language_uk_ua
+Ukrainian
+
+; territory_uk_ua
+Ukraine
+
+; title_uk_ua
+Ukrainian language locale for Ukraine
+
+; language_ur_pk
+Urdu
+
+; territory_ur_pk
+Pakistan
+
+; title_ur_pk
+Urdu language locale for Pakistan
+
+; language_uz_uz
+Uzbek
+
+; territory_uz_uz
+Uzbekistan
+
+; title_uz_uz
+Uzbek language locale for Uzbekistan
+
+; language_ve_za
+Venda
+
+; territory_ve_za
+South Africa
+
+; title_ve_za
+Venda language locale for South Africa
+
+; language_vi_vn
+Vietnamese
+
+; territory_vi_vn
+Vietnam
+
+; title_vi_vn
+Vietnamese language locale for Vietnam
+
+; language_wa_be
+Walloon
+
+; territory_wa_be
+Belgium
+
+; title_wa_be
+Walloon language locale for Belgium
+
+; language_wal_et
+Walaita
+
+; territory_wal_et
+Ethiopia
+
+; title_wal_et
+Walaita language locale for Ethiopia
+
+; language_xh_za
+Xhosa
+
+; territory_xh_za
+South Africa
+
+; title_xh_za
+Xhosa language locale for South Africa
+
+; language_yi_us
+Yiddish
+
+; territory_yi_us
+USA
+
+; title_yi_us
+Yiddish language locale for U.S.A.
+
+; language_zh_cn
+Chinese
+
+; territory_zh_cn
+P.R. of China
+
+; title_zh_cn
+Chinese language locale for Peoples Republic of China
+
+; language_zh_hk
+Chinese
+
+; territory_zh_hk
+Hong Kong
+
+; title_zh_hk
+Chinese language locale for Hong Kong
+
+; language_zh_sg
+Chinese
+
+; territory_zh_sg
+Singapore
+
+; title_zh_sg
+Chinese language locale for Singapore
+
+; language_zh_tw
+Chinese
+
+; territory_zh_tw
+Taiwan R.O.C.
+
+; title_zh_tw
+Chinese language locale for Taiwan R.O.C.
+
+; language_zu_za
+Zulu
+
+; territory_zu_za
+South Africa
+
+; title_zu_za
+Zulu language locale for South Africa

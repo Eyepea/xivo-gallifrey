@@ -74,6 +74,12 @@ switch(getenv('WAG_MODE'))
 		set_error_handler(array(&$_E,'report_e_err'));
 }
 
+if(extension_loaded('fileinfo') === false)
+	dl('fileinfo.' . PHP_SHLIB_SUFFIX);
+
+if(extension_loaded('fileinfo') === false)
+	trigger_error('ERR : Fileinfo Extension is not available',E_USER_ERROR);
+
 // require_once('tpl.inc');
 // require_once('mysql.inc');
 // require_once('query.inc');
