@@ -109,6 +109,7 @@ make_zaptel()
           DYNFS=yes \
           CROSS_COMPILE=$TARGET- \
           install
+  rm -f $SYSROOT/etc/zaptel.conf
   popd &> /dev/null
 }
 

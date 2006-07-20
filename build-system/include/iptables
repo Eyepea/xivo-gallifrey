@@ -38,12 +38,28 @@ make_iptables()
     extract $IPTABLES_SOURCE
     mv $iptables_src $iptables_src_arch
     cd $iptables_src_arch
-    do_make CC=$TARGET-gcc PREFIX= DESTDIR=$SYSROOT KERNEL_DIR=$KERNEL_SOURCE
+
+    # The creation of libiptc/libiptc.a is not always correct when
+    # using parallel building.
+    do_make DO_IPV6=1 \
+            DO_MULTI=1 \
+            CC=$TARGET-gcc \
+            PREFIX= \
+            DESTDIR=$SYSROOT \
+            KERNEL_DIR=$KERNEL_SOURCE \
+            -j 1
   else
     cd $iptables_src_arch
   fi
 
-  do_make CC=$TARGET-gcc PREFIX= DESTDIR=$SYSROOT KERNEL_DIR=$KERNEL_SOURCE install
+  do_make DO_IPV6=1 \
+          DO_MULTI=1 \
+          CC=$TARGET-gcc \
+          PREFIX= \
+          DESTDIR=$SYSROOT \
+          KERNEL_DIR=$KERNEL_SOURCE \
+          -j 1 \
+          install
   use_simple_path
   popd &> /dev/null
 }

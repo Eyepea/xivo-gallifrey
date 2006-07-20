@@ -60,6 +60,7 @@ stop_asterisk()
                       --exec $binpath \
                       --pidfile $pidfile \
                       --stop
+    rm -rf /var/run/asterisk.ctl /var/run/asterisk.pid
     echo "done"
   else
     echo "asterisk not running"

@@ -207,4 +207,6 @@ make_sysconf()
   make_conf_file php.ini /etc 644
   mkdir -p -m 755 $SYSROOT/usr/share/misc
   install -m 644 $SYSCONFDIR/magic.mime $SYSROOT/usr/share/misc
+  make_conf_file zaptel.conf /etc 644
+  /sbin/depmod -b $SYSROOT -F $SYSBOOT/System.map -a $KERNEL_VERSION
 }

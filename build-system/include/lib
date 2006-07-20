@@ -216,6 +216,7 @@ copy_sysroot()
   echo "done"
 
   echo -n "creating directories below / ... "
+  mkdir -p -m 755 $SYSROOTTMP/boot
   mkdir -p -m 755 $SYSROOTTMP/dev
   mkdir -p -m 755 $SYSROOTTMP/etc
   mkdir -p -m 755 $SYSROOTTMP/etc/init.d
