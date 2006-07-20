@@ -33,6 +33,7 @@ make_rc_scripts()
   install -m 755 $SYSCONFDIR/networking $SYSROOT/etc/init.d
   install -m 755 $SYSCONFDIR/dropbear $SYSROOT/etc/init.d
   install -m 755 $SYSCONFDIR/asterisk/asterisk $SYSROOT/etc/init.d
+  install -m 755 $SYSCONFDIR/zaptel/zaptel $SYSROOT/etc/init.d
   install -m 755 $SYSCONFDIR/httpd/httpd $SYSROOT/etc/init.d
   install -m 755 $SYSCONFDIR/vsftpd/vsftpd $SYSROOT/etc/init.d
   install -m 755 $SYSCONFDIR/upgrade_firmware $SYSROOT/etc/init.d
@@ -163,6 +164,14 @@ make_asterisk_conf()
   install -m 644 $SYSCONFDIR/asterisk/voicemail.conf $SYSCONF/etc/asterisk
 }
 
+# Install Zaptel configuration files.
+# 
+# usage make_zaptel_conf
+make_zaptel_conf()
+{
+  make_conf_file zaptel/zaptel.conf /etc 644
+}
+
 # Create the /var tree. This should be done very late in the process, to
 # avoid adding files to /var after this function has been called.
 # 
@@ -207,6 +216,6 @@ make_sysconf()
   make_conf_file php.ini /etc 644
   mkdir -p -m 755 $SYSROOT/usr/share/misc
   install -m 644 $SYSCONFDIR/magic.mime $SYSROOT/usr/share/misc
-  make_conf_file zaptel.conf /etc 644
+  make_zaptel_conf
   /sbin/depmod -b $SYSROOT -F $SYSBOOT/System.map -a $KERNEL_VERSION
 }

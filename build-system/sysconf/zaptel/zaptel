@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Xivo 0.1 - Main system boot script.
+# Xivo 0.1 - Fill /dev/zap, and configure the Zaptel driver.
 # Copyright (C) 2006 Richard Braun <rbraun@proformatique.com>
 # 
 # This program is free software; you can redistribute it and/or modify
@@ -20,27 +20,42 @@
 set -e
 
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
+conffile=/etc/zaptel.conf
 
-# /var/run/utmp has been arbitrarily chosen to indicate that the boot
-# process has already terminated and must not be started again.
-[ -f /var/run/utmp ] && return
+start_zaptel()
+{
+  echo -n "creating and filling /dev/zap... "
+  mkdir /dev/zap
+  cd /dev/zap
 
-. /etc/dist
+  # mdev ins't able to fill /dev/zap, it creates /dev/zapxxx files.
+  for i in $(seq 32) ctl channel timer pseudo; do
+    ln -s /dev/zap$i $i
+  done
 
-echo
-echo "$DIST_NAME $DIST_VERSION booting"
-echo
+  echo "done"
 
-/etc/init.d/mountsys start
-/etc/init.d/filldev
-/etc/init.d/loadmodules
-/etc/init.d/mountfstab start
-/etc/init.d/hostname
-/etc/init.d/syslogd start
-/etc/init.d/klogd start
-/etc/init.d/networking start
-/etc/init.d/dropbear start
-/etc/init.d/zaptel start
-/etc/init.d/asterisk start
-/etc/init.d/httpd start
-/etc/init.d/vsftpd start
+  echo "configuring the Zaptel driver from $conffile..."
+  ztcfg -c $conffile
+  echo "done"
+}
+
+stop_zaptel()
+{
+  :
+}
+
+case "$1" in
+  start)
+    start_zaptel
+    ;;
+  stop)
+    stop_zaptel
+    ;;
+  *)
+    echo "usage: $0 {start|stop (ignored)}"
+    exit 1
+    ;;
+esac
+
+exit 0
