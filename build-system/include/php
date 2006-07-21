@@ -27,6 +27,11 @@ PHP_SQLITE_URL="http://calrissian/$PHP_SQLITE_SOURCE"
 PHP_SQLITE_SIZE="371189"
 PHP_SQLITE_SHA1SUM="338333183875deb74956b37a8d58e2659d47a501"
 
+PHP_FILEINFO_SOURCE="Fileinfo-1.0.3.tgz"
+PHP_FILEINFO_URL="http://calrissian/$PHP_FILEINFO_SOURCE"
+PHP_FILEINFO_SIZE="5727"
+PHP_FILEINFO_SHA1SUM="220b6872777cf89dd67a9952259083c3183d1327"
+
 # Build SQLite support for PHP.
 # 
 # usage: make_php_sqlite
@@ -55,6 +60,42 @@ make_php_sqlite()
     do_make
   else
     cd $php_sqlite_src_arch
+  fi
+
+  do_make install
+  use_simple_path
+  popd &> /dev/null
+}
+
+# Build Fileinfo support for PHP.
+# 
+# usage: make_php_fileinfo
+make_php_fileinfo()
+{
+  pushd $SRC &> /dev/null
+  download_source $PHP_FILEINFO_URL $PHP_FILEINFO_SOURCE $PHP_FILEINFO_SIZE \
+                  $PHP_FILEINFO_SHA1SUM
+
+  get_basename $PHP_FILEINFO_SOURCE
+  php_fileinfo_src=$BASENAME
+  php_fileinfo_src_arch=$php_fileinfo_src-$TARGET-build
+
+  use_extended_path
+
+  if [ ! -d $php_fileinfo_src_arch ]; then
+    extract $PHP_FILEINFO_SOURCE
+    mv $php_fileinfo_src $php_fileinfo_src_arch
+    cd $php_fileinfo_src_arch
+    $SYSROOT/usr/bin/phpize
+    ./configure --host=$TARGET \
+                --with-php-config=$SYSROOT/usr/bin/php-config \
+                --enable-shared \
+                --disable-static \
+                --with-fileinfo=$SYSROOT/usr \
+                --with-pic
+    do_make
+  else
+    cd $php_fileinfo_src_arch
   fi
 
   do_make install
@@ -145,4 +186,5 @@ make_php()
   popd &> /dev/null
 
   make_php_sqlite
+  make_php_fileinfo
 }

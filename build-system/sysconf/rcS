@@ -42,5 +42,5 @@ echo
 /etc/init.d/dropbear start
 /etc/init.d/zaptel start
 /etc/init.d/asterisk start
-/etc/init.d/httpd start
+/etc/init.d/thy start
 /etc/init.d/vsftpd start

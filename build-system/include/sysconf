@@ -34,7 +34,7 @@ make_rc_scripts()
   install -m 755 $SYSCONFDIR/dropbear $SYSROOT/etc/init.d
   install -m 755 $SYSCONFDIR/asterisk/asterisk $SYSROOT/etc/init.d
   install -m 755 $SYSCONFDIR/zaptel/zaptel $SYSROOT/etc/init.d
-  install -m 755 $SYSCONFDIR/httpd/httpd $SYSROOT/etc/init.d
+  install -m 755 $SYSCONFDIR/thy/thy $SYSROOT/etc/init.d
   install -m 755 $SYSCONFDIR/vsftpd/vsftpd $SYSROOT/etc/init.d
   install -m 755 $SYSCONFDIR/upgrade_firmware $SYSROOT/etc/init.d
   install -m 755 $SYSCONFDIR/reset_factory_defaults $SYSROOT/etc/init.d
@@ -55,7 +55,7 @@ make_distfile()
 # created in $SYSROOT/destdir (if conffile has a directory part, this
 # directory will be created in $SYSCONF). For example :
 # 
-# make_conf_file httpd/httpd.conf /etc 644
+# make_conf_file zaptel/zaptel.conf /etc 644
 # 
 # usage: make_conf_file <conffile> <destdir> <mode>
 make_conf_file()
@@ -162,6 +162,7 @@ make_asterisk_conf()
   install -m 644 $SYSCONFDIR/asterisk/queues.conf $SYSCONF/etc/asterisk
   install -m 644 $SYSCONFDIR/asterisk/sip.conf $SYSCONF/etc/asterisk
   install -m 644 $SYSCONFDIR/asterisk/voicemail.conf $SYSCONF/etc/asterisk
+  install -m 644 $SYSCONFDIR/asterisk/zapata.conf $SYSCONF/etc/asterisk
 }
 
 # Install Zaptel configuration files.
@@ -211,7 +212,7 @@ make_sysconf()
   install -m 644 $SYSCONFDIR/profile $SYSROOT/etc
   ln -s /mnt/dropbear $SYSROOT/etc/dropbear
   mkdir -m 755 $SYSCONF/dropbear
-  make_conf_file httpd/httpd.conf /etc 644
+  make_conf_file thy/thy.conf /etc/thy 644
   install -m 644 $SYSCONFDIR/vsftpd/vsftpd.conf $SYSROOT/etc
   make_conf_file php.ini /etc 644
   mkdir -p -m 755 $SYSROOT/usr/share/misc

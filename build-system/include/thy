@@ -1,0 +1,59 @@
+# Xivo 0.1 - Build thy.
+# Copyright (C) 2006 Richard Braun <rbraun@proformatique.com>
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+THY_SOURCE="thy-0.9.4.tar.gz"
+THY_URL="http://calrissian/$THY_SOURCE"
+THY_SIZE="357776"
+THY_SHA1SUM="e3bae4f3667f98fbc5fc39dc3f61571b524e5dfd"
+
+THY_ZLIB_PATCH="thy-0.9.4_zlib.patch"
+
+# Build thy.
+# 
+# usage: make_thy
+make_thy()
+{
+  pushd $SRC &> /dev/null
+  download_source $THY_URL $THY_SOURCE $THY_SIZE $THY_SHA1SUM
+
+  get_basename $THY_SOURCE
+  thy_src=$BASENAME
+  thy_src_arch=$thy_src-$TARGET-build
+
+  if [ ! -d $thy_src_arch ]; then
+    extract $THY_SOURCE
+    mv $thy_src $thy_src_arch
+    cd $thy_src_arch
+    apply_patch $THY_ZLIB_PATCH
+    CC=$TARGET-gcc \
+    ac_cv_func_malloc_0_nonnull=yes \
+    ac_cv_setproctitle_ok=no \
+    ./configure --host=$TARGET \
+                --prefix=$SYSROOT/usr \
+                --sysconfdir=$SYSROOT/etc \
+                --enable-file-magic \
+                --enable-uname \
+                --with-libgnutls-prefix=$SYSROOT/usr \
+                --with-libgnutls-extra-prefix=$SYSROOT/usr
+    do_make
+  else
+    cd $thy_src_arch
+  fi
+
+  do_make install
+  popd &> /dev/null
+}

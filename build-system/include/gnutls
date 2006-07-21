@@ -1,0 +1,133 @@
+# Xivo 0.1 - Build libgpg-error, libgcrypt and gnutls.
+# Copyright (C) 2006 Richard Braun <rbraun@proformatique.com>
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+LIBGPG_ERROR_SOURCE="libgpg-error-1.3.tar.bz2"
+LIBGPG_ERROR_URL="http://calrissian/$LIBGPG_ERROR_SOURCE"
+LIBGPG_ERROR_SIZE="452266"
+LIBGPG_ERROR_SHA1SUM="10bd8d8503b674e114ecc6620324d5d1c8c918b7"
+
+LIBGPG_ERROR_NLS_PATCH="libgpg-error-1.3_nls.patch"
+
+LIBGCRYPT_SOURCE="libgcrypt-1.2.2.tar.gz"
+LIBGCRYPT_URL="http://calrissian/$LIBGCRYPT_SOURCE"
+LIBGCRYPT_SIZE="959875"
+LIBGCRYPT_SHA1SUM="fdf3638c0de619343c5f2291a3e8b9fe610425ce"
+
+GNUTLS_SOURCE="gnutls-1.0.25.tar.gz"
+GNUTLS_URL="http://calrissian/$GNUTLS_SOURCE"
+GNUTLS_SIZE="1557142"
+GNUTLS_SHA1SUM="e790b848b9aa1e98d8f28ecf522d8e5dc7e0cb0b"
+
+# Build libgpg-error.
+# 
+# usage: make_libgpg_error
+make_libgpg_error()
+{
+  pushd $SRC &> /dev/null
+  download_source $LIBGPG_ERROR_URL $LIBGPG_ERROR_SOURCE $LIBGPG_ERROR_SIZE \
+                  $LIBGPG_ERROR_SHA1SUM
+
+  get_basename $LIBGPG_ERROR_SOURCE
+  libgpg_error_src=$BASENAME
+  libgpg_error_src_arch=$libgpg_error_src-$TARGET-build
+
+  if [ ! -d $libgpg_error_src_arch ]; then
+    extract $LIBGPG_ERROR_SOURCE
+    mv $libgpg_error_src $libgpg_error_src_arch
+    cd $libgpg_error_src_arch
+    apply_patch $LIBGPG_ERROR_NLS_PATCH
+    ./configure --host=$TARGET \
+                --prefix=$SYSROOT/usr \
+                --disable-static \
+                --disable-nls
+    do_make
+  else
+    cd $libgpg_error_src_arch
+  fi
+
+  do_make install
+  popd &> /dev/null
+}
+
+# Build libgcrypt.
+# 
+# usage: make_libgcrypt
+make_libgcrypt()
+{
+  make_libgpg_error
+
+  pushd $SRC &> /dev/null
+  download_source $LIBGCRYPT_URL $LIBGCRYPT_SOURCE $LIBGCRYPT_SIZE \
+                  $LIBGCRYPT_SHA1SUM
+
+  get_basename $LIBGCRYPT_SOURCE
+  libgcrypt_src=$BASENAME
+  libgcrypt_src_arch=$libgcrypt_src-$TARGET-build
+
+  if [ ! -d $libgcrypt_src_arch ]; then
+    extract $LIBGCRYPT_SOURCE
+    mv $libgcrypt_src $libgcrypt_src_arch
+    cd $libgcrypt_src_arch
+    ./configure --host=$TARGET \
+                --prefix=$SYSROOT/usr \
+                --disable-static \
+                --disable-asm
+    do_make
+  else
+    cd $libgcrypt_src_arch
+  fi
+
+  do_make install
+  popd &> /dev/null
+}
+
+# Build gnutls.
+# 
+# usage: make_gnutls
+make_gnutls()
+{
+  make_libgcrypt
+
+  pushd $SRC &> /dev/null
+  download_source $GNUTLS_URL $GNUTLS_SOURCE $GNUTLS_SIZE \
+                  $GNUTLS_SHA1SUM
+
+  get_basename $GNUTLS_SOURCE
+  gnutls_src=$BASENAME
+  gnutls_src_arch=$gnutls_src-$TARGET-build
+
+  if [ ! -d $gnutls_src_arch ]; then
+    extract $GNUTLS_SOURCE
+    mv $gnutls_src $gnutls_src_arch
+    cd $gnutls_src_arch
+    ./configure --host=$TARGET \
+                --prefix=$SYSROOT/usr \
+                --disable-static \
+                --disable-nls \
+                --disable-rpath \
+                --with-included-opencdk \
+                --with-included-libtasn1 \
+                --with-included-libcfg \
+                --with-included-lzo
+    do_make
+  else
+    cd $gnutls_src_arch
+  fi
+
+  do_make install
+  popd &> /dev/null
+}

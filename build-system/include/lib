@@ -203,7 +203,7 @@ copy_sysroot()
   echo "done"
 
   echo -n "removing useless files... "
-  rm -rf $SYSROOTTMP/usr/{include,src,man,info,share/{i18n,locale,man,info}}
+  rm -rf $SYSROOTTMP/usr/{include,src,man,info,share/{aclocal,i18n,locale,man,info}}
   rm -rf $SYSROOTTMP/usr/lib/pkgconfig
   rm -rf $SYSROOTTMP/usr/lib/php/build
   rm -rf $SYSROOTTMP/man $SYSROOTTMP/etc/ssl/{man,misc}
