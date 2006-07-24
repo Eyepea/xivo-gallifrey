@@ -96,6 +96,7 @@ case "$1" in
     ;;
   restart)
     stop_dropbear
+    sleep 1
     start_dropbear
     ;;
   *)

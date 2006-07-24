@@ -95,6 +95,7 @@ case "$1" in
     ;;
   restart)
     stop_syslogd
+    sleep 1
     start_syslogd
     ;;
   *)

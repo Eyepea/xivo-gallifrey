@@ -40,17 +40,12 @@ start_zaptel()
   echo "done"
 }
 
-stop_zaptel()
-{
-  :
-}
-
 case "$1" in
   start)
     start_zaptel
     ;;
   stop)
-    stop_zaptel
+    :
     ;;
   *)
     echo "usage: $0 {start|stop (ignored)}"

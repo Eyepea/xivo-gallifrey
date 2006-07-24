@@ -95,6 +95,7 @@ case "$1" in
     ;;
   restart)
     stop_vsftpd
+    sleep 1
     start_vsftpd
     ;;
   *)

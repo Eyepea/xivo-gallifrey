@@ -46,6 +46,7 @@ case "$1" in
 
   restart)
     deconfigure_interfaces
+    sleep 1
     configure_interfaces
     ;;
   *)

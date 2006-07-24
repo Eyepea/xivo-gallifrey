@@ -94,6 +94,7 @@ case "$1" in
     ;;
   restart)
     stop_asterisk
+    sleep 1
     start_asterisk
     ;;
   *)
