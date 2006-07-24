@@ -16,7 +16,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 ZLIB_SOURCE="zlib-1.2.3.tar.gz"
-ZLIB_URL="http://calrissian/$ZLIB_SOURCE"
+ZLIB_URL="http://switch.dl.sourceforge.net/sourceforge/libpng/$ZLIB_SOURCE"
 ZLIB_SIZE="496597"
 ZLIB_SHA1SUM="60faeaaf250642db5c0ea36cd6dcc9f99c8f3902"
 

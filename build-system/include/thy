@@ -16,7 +16,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 THY_SOURCE="thy-0.9.4.tar.gz"
-THY_URL="http://calrissian/$THY_SOURCE"
+THY_URL="ftp://ftp.bonehunter.rulez.org/pub/thy/stable/$THY_SOURCE"
 THY_SIZE="357776"
 THY_SHA1SUM="e3bae4f3667f98fbc5fc39dc3f61571b524e5dfd"
 

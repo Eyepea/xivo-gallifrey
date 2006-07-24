@@ -15,10 +15,8 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-# Source code is hard to find, so real URL is here
-# ftp://ftp.gw.com/mirrors/pub/unix/file/file-4.17.tar.gz
 FILE_SOURCE="file-4.17.tar.gz"
-FILE_URL="http://calrissian/$FILE_SOURCE"
+FILE_URL="ftp://ftp.gw.com/mirrors/pub/unix/file/$FILE_SOURCE"
 FILE_SIZE="556270"
 FILE_SHA1SUM="e03710a3fcb95db6d0ee9cfcdf88c19a5e525ee4"
 

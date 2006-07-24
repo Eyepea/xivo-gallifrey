@@ -16,21 +16,21 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 LIBPRI_SOURCE="libpri-1.2.3.tar.gz"
-LIBPRI_URL="http://calrissian/$LIBPRI_SOURCE"
+LIBPRI_URL="http://ftp.digium.com/pub/libpri/$LIBPRI_SOURCE"
 LIBPRI_SIZE="76348"
 LIBPRI_SHA1SUM="8142047002119ce76dfb85204606988be9114d2f"
 
 LIBPRI_XIVO_PATCH="libpri-1.2.3_xivo.patch"
 
 ZAPTEL_SOURCE="zaptel-1.2.7.tar.gz"
-ZAPTEL_URL="http://calrissian/$ZAPTEL_SOURCE"
+ZAPTEL_URL="http://ftp.digium.com/pub/telephony/zaptel/$ZAPTEL_SOURCE"
 ZAPTEL_SIZE="1137409"
 ZAPTEL_SHA1SUM="790a106ee975a77c413a01584c59ea7d91ca9efd"
 
 ZAPTEL_XIVO_PATCH="zaptel-1.2.7_xivo.patch"
 
 ASTERISK_SOURCE="asterisk-1.2.10.tar.gz"
-ASTERISK_URL="http://calrissian/$ASTERISK_SOURCE"
+ASTERISK_URL="http://ftp.digium.com/pub/asterisk/$ASTERISK_SOURCE"
 ASTERISK_SIZE="10573308"
 ASTERISK_SHA1SUM="e714edce1fba1296fc90d3d69e152bb32f5f5454"
 

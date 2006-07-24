@@ -16,7 +16,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 NCURSES_SOURCE="ncurses-5.5.tar.gz"
-NCURSES_URL="http://calrissian/$NCURSES_SOURCE"
+NCURSES_URL="http://ftp.gnu.org/pub/gnu/ncurses/$NCURSES_SOURCE"
 NCURSES_SIZE="2314030"
 NCURSES_SHA1SUM="46414a72e91a62f63a8c9af00f0d65497f5ecc5a"
 

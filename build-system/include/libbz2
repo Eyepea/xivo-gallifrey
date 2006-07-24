@@ -16,7 +16,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 LIBBZ2_SOURCE="bzip2-1.0.3.tar.gz"
-LIBBZ2_URL="http://calrissian/$LIBBZ2_SOURCE"
+LIBBZ2_URL="http://www.bzip.org/1.0.3/$LIBBZ2_SOURCE"
 LIBBZ2_SIZE="669075"
 LIBBZ2_SHA1SUM="7e749510f65c86fbfff37b97144a02f1b8b8617f"
 

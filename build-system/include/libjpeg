@@ -16,7 +16,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 LIBJPEG_SOURCE="jpegsrc.v6b.tar.gz"
-LIBJPEG_URL="http://calrissian/$LIBJPEG_SOURCE"
+LIBJPEG_URL="http://www.ijg.org/files/$LIBJPEG_SOURCE"
 LIBJPEG_SIZE="613261"
 LIBJPEG_SHA1SUM="7079f0d6c42fad0cfba382cf6ad322add1ace8f9"
 

@@ -16,7 +16,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 VSFTPD_SOURCE="vsftpd-2.0.5.tar.gz"
-VSFTPD_URL="http://calrissian/$VSFTPD_SOURCE"
+VSFTPD_URL="ftp://vsftpd.beasts.org/users/cevans/$VSFTPD_SOURCE"
 VSFTPD_SIZE="155985"
 VSFTPD_SHA1SUM="9b6a079699aaeb01219665acf203c093f94faef0"
 

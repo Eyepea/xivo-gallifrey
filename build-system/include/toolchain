@@ -17,38 +17,39 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 BINUTILS_SOURCE="binutils-2.16.1.tar.gz"
-BINUTILS_URL="http://calrissian/$BINUTILS_SOURCE"
+BINUTILS_URL="http://ftp.gnu.org/gnu/binutils/$BINUTILS_SOURCE"
 BINUTILS_SIZE="16378360"
 BINUTILS_SHA1SUM="df79ed47b4388a205adf3089d4e36ce47724c940"
 
 BINUTILS_UCLIBC_PATCH="binutils-2.16.1_uclibc.patch"
 
 LINUX_SOURCE="linux-2.6.16.20.tar.bz2"
-LINUX_URL="http://calrissian/$LINUX_SOURCE"
+LINUX_URL="http://www.kernel.org/pub/linux/kernel/v2.6/$LINUX_SOURCE"
 LINUX_SIZE="40840903"
 LINUX_SHA1SUM="27701c6f6124308181955b1a2aad28f06c38e9b8"
 
 LINUX_SQUASHFS_PATCH="squashfs3.0.patch"
 
+# This was a snapshot, removed one month after its release.
 UCLIBC_SOURCE="uClibc-20060628.tar.bz2"
-UCLIBC_URL="http://calrissian/$UCLIBC_SOURCE"
+UCLIBC_URL="http://www.sceen.net/~syn/$UCLIBC_SOURCE"
 UCLIBC_SIZE="3696539"
 UCLIBC_SHA1SUM="3826ca68ef6640911044343c1321264be3500077"
 
 GLIBC_SOURCE="glibc-2.3.6.tar.gz"
-GLIBC_URL="http://calrissian/$GLIBC_SOURCE"
+GLIBC_URL="http://ftp.gnu.org/gnu/glibc/$GLIBC_SOURCE"
 GLIBC_SIZE="18814292"
 GLIBC_SHA1SUM="e990cb85e68bf8493f77468a5e21dabc9f8c212a"
 
 GLIBC_LINUXTHREADS_SOURCE="glibc-linuxthreads-2.3.6.tar.gz"
-GLIBC_LINUXTHREADS_URL="http://calrissian/$GLIBC_LINUXTHREADS_SOURCE"
+GLIBC_LINUXTHREADS_URL="http://ftp.gnu.org/gnu/glibc/$GLIBC_LINUXTHREADS_SOURCE"
 GLIBC_LINUXTHREADS_SIZE="327557"
 GLIBC_LINUXTHREADS_SHA1SUM="08c664c2ea2815dcc6602048a09f6a8acae84829"
 
 GLIBC_LIBGCCEH_PATCH="glibc-2.3.6_libgcc_eh.patch"
 
 GCC_SOURCE="gcc-3.4.6.tar.gz"
-GCC_URL="http://calrissian/$GCC_SOURCE"
+GCC_URL="http://ftp.gnu.org/gnu/gcc/gcc-3.4.6/$GCC_SOURCE"
 GCC_SIZE="36944764"
 GCC_SHA1SUM="580dce840da1283afa5ea505f24b69fc94b910fb"
 

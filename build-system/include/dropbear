@@ -16,7 +16,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 DROPBEAR_SOURCE="dropbear-0.48.1.tar.gz"
-DROPBEAR_URL="http://calrissian/$DROPBEAR_SOURCE"
+DROPBEAR_URL="http://matt.ucc.asn.au/dropbear/releases/$DROPBEAR_SOURCE"
 DROPBEAR_SIZE="1473114"
 DROPBEAR_SHA1SUM="4dd349b5e3c1aa1b627c52a27f17f5eb7e85c146"
 

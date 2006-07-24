@@ -16,7 +16,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 WGET_SOURCE="wget-1.10.2.tar.gz"
-WGET_URL="http://calrissian/$WGET_SOURCE"
+WGET_URL="http://ftp.gnu.org/pub/gnu/wget/$WGET_SOURCE"
 WGET_SIZE="1213056"
 WGET_SHA1SUM="a258357297959964fd42fed6afa1a4cce9069980"
 

@@ -16,7 +16,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 LIBPNG_SOURCE="libpng-1.2.12.tar.bz2"
-LIBPNG_URL="http://calrissian/$LIBPNG_SOURCE"
+LIBPNG_URL="http://switch.dl.sourceforge.net/sourceforge/libpng/$LIBPNG_SOURCE"
 LIBPNG_SIZE="621295"
 LIBPNG_SHA1SUM="44bd6821607ba09ac500279363871ad5974a01b5"
 

@@ -16,7 +16,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 OPENSSL_SOURCE="openssl-0.9.8b.tar.gz"
-OPENSSL_URL="http://calrissian/$OPENSSL_SOURCE"
+OPENSSL_URL="http://www.openssl.org/source/$OPENSSL_SOURCE"
 OPENSSL_SIZE="3279283"
 OPENSSL_SHA1SUM="99565db630a044fa484d4f91006a31908f262246"
 
