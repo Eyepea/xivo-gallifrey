@@ -1,0 +1,68 @@
+This is Xivo, version 0.1
+
+What is Xivo ?
+==============
+
+Xivo is an embedded Linux distribution for VoIP using the Asterisk Open
+Source PBX. It can be configured through a user-friendly HTTP interface
+for services like routing, firewalling, and of course, VoIP services.
+
+This release is an alpha release. It may not work as expected and must
+be considered work in progress. The HTTP interface is currently not
+included and all configuration must be done using a CLI (you can
+use SSH to log on the device - default root password: admin).
+
+Building Xivo
+=============
+
+The build system is designed to support specific hardware. Distribution
+specific properties are in dists/* files. Target specific properties are
+in targets/* files. Architecture specific properties are in archs/* files.
+For example, the /etc/fstab file is distribution specific. Targets are a
+architecture/kernel/C Library combination, so uClibc configuration is
+target specific. Architectures have only a few properties, like the
+processor endianness. User configuration is in the config file.
+
+To build xivo, you must set the $BASE variable in the config file to
+a valid directory on which you have write access. The build system
+prevents you from building as root, but at some points, it will
+require root access (to be able to create the /dev/console character
+device node), and will call sudo (I have not found a reliable solution
+to this problem yet). Then, you must call the build.sh script with the
+name of a distribution target (files in the dists/ directory). For
+example, to build Xivo for the Xivo orange prototype (this hardware has
+no reference :-)), run ./build.sh xivo or ./build.sh xivo-uclibc-i386.
+To build it using the GNU C Library instead of uClibc, run ./build.sh i386.
+
+The result of the build script is the creation of 3 images : sysboot.img,
+sysroot.img, and sysconf.img. The first is an ext2 file system with the
+Linux kernel and the boot loader configuration (currently, you must install
+the boot loader manually). The second is a squashf readonly file system which
+will be used as the root file system. The third is an ext2 file system
+containing configuration files, databases, and everything that needs to be
+writable.
+
+Installing Xivo
+===============
+
+The Xivo install process is currently entirely manual. You must partition
+a Compact Flash disk (or anything else you want to boot from), and copy the
+images to these partitions, then install and configure a boot loader such
+as GRUB. Your partitions must match the /etc/fstab file specific to the
+distribution you built. In addition, keep in mind that there are two
+root partitions : when upgrading the firmware (the sysroot.img file), the
+new firmware is written to the unused root partition, so that if the
+upgrade process fails, the current firmware is unmodified. Usually,
+sysboot.img is written to the first partition, sysroot.img to the second,
+the third one is left empty, and sysconf.img is written to the fourth.
+
+Roadmap
+=======
+
+Xivo 0.1 : Alpha release
+Xivo 0.2 : Lots of bug fixes, package isolation, dependency
+Xivo 0.3 : Inclusion of new packages, mainly mISDN and CAPI support
+Xivo 0.1 : Stable release
+
+
+Please report bugs to <rbraun@proformatique.com>.
