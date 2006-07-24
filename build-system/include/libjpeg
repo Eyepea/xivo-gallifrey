@@ -43,7 +43,8 @@ make_libjpeg()
     mv $libjpeg_src $libjpeg_src_arch
     cd $libjpeg_src_arch
     apply_patch $LIBJPEG_UCLIBC_CROSSCOMPILE_PATCH
-    ./configure --host=$TARGET \
+    ./configure --build=$BUILD \
+                --host=$TARGET \
                 --prefix=$SYSROOT/usr \
                 --enable-shared \
                 --disable-static

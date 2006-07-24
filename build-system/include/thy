@@ -42,7 +42,8 @@ make_thy()
     CC=$TARGET-gcc \
     ac_cv_func_malloc_0_nonnull=yes \
     ac_cv_setproctitle_ok=no \
-    ./configure --host=$TARGET \
+    ./configure --build=$BUILD \
+                --host=$TARGET \
                 --prefix=$SYSROOT/usr \
                 --sysconfdir=$SYSROOT/etc \
                 --enable-file-magic \

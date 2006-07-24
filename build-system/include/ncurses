@@ -36,7 +36,8 @@ make_ncurses()
     extract $NCURSES_SOURCE
     mv $ncurses_src $ncurses_src_arch
     cd $ncurses_src_arch
-    ./configure --host=$TARGET \
+    ./configure --build=$BUILD \
+                --host=$TARGET \
                 --prefix=/usr \
                 --with-install-prefix=$SYSROOT \
                 --with-shared \

@@ -50,7 +50,8 @@ make_libgpg_error()
     mv $libgpg_error_src $libgpg_error_src_arch
     cd $libgpg_error_src_arch
     apply_patch $LIBGPG_ERROR_NLS_PATCH
-    ./configure --host=$TARGET \
+    ./configure --build=$BUILD \
+                --host=$TARGET \
                 --prefix=$SYSROOT/usr \
                 --disable-static \
                 --disable-nls
@@ -82,7 +83,8 @@ make_libgcrypt()
     extract $LIBGCRYPT_SOURCE
     mv $libgcrypt_src $libgcrypt_src_arch
     cd $libgcrypt_src_arch
-    ./configure --host=$TARGET \
+    ./configure --build=$BUILD \
+                --host=$TARGET \
                 --prefix=$SYSROOT/usr \
                 --disable-static \
                 --disable-asm
@@ -114,7 +116,8 @@ make_gnutls()
     extract $GNUTLS_SOURCE
     mv $gnutls_src $gnutls_src_arch
     cd $gnutls_src_arch
-    ./configure --host=$TARGET \
+    ./configure --build=$BUILD \
+                --host=$TARGET \
                 --prefix=$SYSROOT/usr \
                 --disable-static \
                 --disable-nls \

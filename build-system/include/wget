@@ -36,7 +36,8 @@ make_wget()
     extract $WGET_SOURCE
     mv $wget_src $wget_src_arch
     cd $wget_src_arch
-    ./configure --host=$TARGET \
+    ./configure --build=$BUILD \
+                --host=$TARGET \
                 --prefix=$SYSROOT/usr \
                 --disable-nls
     do_make

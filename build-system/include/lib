@@ -19,10 +19,15 @@
 # If you add an extension here, see extract function too.
 EXTENSIONS="tar.gz tar.bz2 tgz"
 
-# usage: exit_with_error "error message"
+# usage: exit_with_error "error message" ...
 exit_with_error()
 {
-  echo "error: $1."
+  echo -e "error: $1."
+
+  while shift; do
+    [ "$1" ] && echo -e "$1."
+  done
+
   exit 1
 }
 
@@ -137,6 +142,22 @@ use_extended_path()
   export PATH=$EXTENDED_PATH
 }
 
+# Compare the build and host GNU system types. If they're the same,
+# some configure scripts may think we're not cross compiling. This must
+# be prevented. $ROOTDIR, $BUILD and $TARGET must be set before calling
+# this function.
+# 
+# usage: check_build_and_target
+check_build_and_target()
+{
+  target_alias=$($ROOTDIR/utils/config.sub $TARGET)
+
+  if [ "$BUILD" = "$target_alias" ]; then
+    exit_with_error "$BUILD and $TARGET are the same GNU system type" \
+                    "This prevents cross compilation from working correctly"
+  fi
+}
+
 # Set variables, paths, and various elements related to the build environment.
 # Sizes are in MB.
 # 
@@ -145,6 +166,10 @@ init_buildenv()
 {
   check_root
   ROOTDIR=$PWD
+  BUILD=$($ROOTDIR/utils/config.guess)
+
+  check_build_and_target
+
   SRC="$BASE/src"
   PREFIX="$BASE/$TARGET"
   TOOLCHAIN="$PREFIX/toolchain"

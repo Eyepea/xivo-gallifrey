@@ -52,7 +52,8 @@ make_php_sqlite()
     mv $php_sqlite_src $php_sqlite_src_arch
     cd $php_sqlite_src_arch
     $SYSROOT/usr/bin/phpize
-    ./configure --host=$TARGET \
+    ./configure --build=$BUILD \
+                --host=$TARGET \
                 --with-php-config=$SYSROOT/usr/bin/php-config \
                 --enable-shared \
                 --disable-static \
@@ -87,7 +88,8 @@ make_php_fileinfo()
     mv $php_fileinfo_src $php_fileinfo_src_arch
     cd $php_fileinfo_src_arch
     $SYSROOT/usr/bin/phpize
-    ./configure --host=$TARGET \
+    ./configure --build=$BUILD \
+                --host=$TARGET \
                 --with-php-config=$SYSROOT/usr/bin/php-config \
                 --enable-shared \
                 --disable-static \
@@ -146,7 +148,8 @@ make_php()
     ac_cv_sizeof_int=$SIZEOF_INT \
     ac_cv_sizeof_char=$SIZEOF_CHAR \
     ac_cv_c_bigendian_php=$big_endian \
-    ./configure --host=$TARGET \
+    ./configure --build=$BUILD \
+                --host=$TARGET \
                 --prefix=$SYSROOT/usr \
                 --enable-discard-path \
                 --with-layout=GNU \

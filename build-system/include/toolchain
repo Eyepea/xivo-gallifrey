@@ -54,8 +54,7 @@ GCC_SHA1SUM="580dce840da1283afa5ea505f24b69fc94b910fb"
 
 GCC_UCLIBC_PATCH="gcc-3.4.6_uclibc.patch"
 
-# Build binutils. This function also sets $BUILD by calling the config.guess
-# script.
+# Build binutils.
 # 
 # usage: make_binutils
 make_binutils()
@@ -89,7 +88,6 @@ make_binutils()
   fi
 
   do_make install
-  BUILD=$(../$binutils_src/config.guess)
   popd &> /dev/null
 }
 
@@ -190,8 +188,8 @@ make_glibc_headers()
     # Setting this variable avoids having an error because of altivec
     # support when crosscompiling to powerpc.
     libc_cv_ppc_machine=yes \
-    ../$glibc_src/configure --host=$TARGET \
-                            --build=$BUILD \
+    ../$glibc_src/configure --build=$BUILD \
+                            --host=$TARGET \
                             --prefix=/usr \
                             --enable-add-ons=linuxthreads \
                             --with-tls \
@@ -295,8 +293,8 @@ make_glibc()
   if [ ! -d $glibc_build ]; then
     mkdir $glibc_build
     cd $glibc_build
-    ../$glibc_src/configure --host=$TARGET \
-                            --build=$BUILD \
+    ../$glibc_src/configure --build=$BUILD \
+                            --host=$TARGET \
                             --prefix=/usr \
                             --enable-add-ons=linuxthreads \
                             --with-tls \

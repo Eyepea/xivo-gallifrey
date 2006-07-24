@@ -43,7 +43,9 @@ make_dropbear()
       apply_patch $DROPBEAR_UCLIBC_PATCH
     fi
 
-    ./configure --host=$TARGET --prefix=$SYSROOT/usr
+    ./configure --build=$BUILD \
+                --host=$TARGET \
+                --prefix=$SYSROOT/usr
     do_make
   else
     cd $dropbear_src_arch
