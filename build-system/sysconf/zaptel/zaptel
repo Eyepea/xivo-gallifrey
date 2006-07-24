@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Xivo 0.1 - Fill /dev/zap, and configure the Zaptel driver.
+# Xivo 0.2 - Fill /dev/zap, and configure the Zaptel driver.
 # Copyright (C) 2006 Richard Braun <rbraun@proformatique.com>
 # 
 # This program is free software; you can redistribute it and/or modify

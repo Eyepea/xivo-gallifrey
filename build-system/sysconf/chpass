@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Xivo 0.1 - Create a suitable environment for passwd (which needs write
+# Xivo 0.2 - Create a suitable environment for passwd (which needs write
 # access on the /etc directory).
 # Copyright (C) 2006 Richard Braun <rbraun@proformatique.com>
 # 

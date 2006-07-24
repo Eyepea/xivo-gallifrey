@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Xivo 0.1 - Upgrade Xivo.
+# Xivo 0.2 - Upgrade Xivo.
 # Copyright (C) 2006 Richard Braun <rbraun@proformatique.com>
 # 
 # This program is free software; you can redistribute it and/or modify

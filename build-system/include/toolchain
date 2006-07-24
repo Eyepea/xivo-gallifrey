@@ -1,4 +1,4 @@
-# Xivo 0.1 - Functions to create cross compilation toolchains and
+# Xivo 0.2 - Functions to create cross compilation toolchains and
 # kernels using uClibc/glibc.
 # Copyright (C) 2006 Richard Braun <rbraun@proformatique.com>
 # 
