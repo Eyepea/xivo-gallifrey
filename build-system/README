@@ -62,7 +62,7 @@ Roadmap
 Xivo 0.1 : Alpha release
 Xivo 0.2 : Lots of bug fixes, package isolation, dependency
 Xivo 0.3 : Inclusion of new packages, mainly mISDN and CAPI support
-Xivo 0.1 : Stable release
+Xivo 1.0 : Stable release
 
 
 Please report bugs to <rbraun@proformatique.com>.
