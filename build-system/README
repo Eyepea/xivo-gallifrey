@@ -37,7 +37,7 @@ To build it using the GNU C Library instead of uClibc, run ./build.sh i386.
 The result of the build script is the creation of 3 images : sysboot.img,
 sysroot.img, and sysconf.img. The first is an ext2 file system with the
 Linux kernel and the boot loader configuration (currently, you must install
-the boot loader manually). The second is a squashf readonly file system which
+the boot loader manually). The second is a squashfs readonly file system which
 will be used as the root file system. The third is an ext2 file system
 containing configuration files, databases, and everything that needs to be
 writable.
