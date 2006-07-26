@@ -74,6 +74,7 @@ make_asterisk()
   make_ncurses
   make_openssl
   make_libpri
+  make_zaptel
 
   get_basename $ASTERISK_SOURCE
   make_package $ASTERISK_SOURCE $ASTERISK_URL $ASTERISK_SIZE $ASTERISK_SHA1SUM \
