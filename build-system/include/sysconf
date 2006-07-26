@@ -20,24 +20,21 @@
 # usage: make_rc_scripts
 make_rc_scripts()
 {
-  mkdir -p $SYSROOT/etc/init.d
-  install -m 755 $SYSCONFDIR/rcS $SYSROOT/etc/init.d
-  install -m 755 $SYSCONFDIR/shutdown $SYSROOT/etc/init.d
-  install -m 755 $SYSCONFDIR/mountsys $SYSROOT/etc/init.d
-  install -m 755 $SYSCONFDIR/filldev $SYSROOT/etc/init.d
-  install -m 755 $SYSCONFDIR/loadmodules $SYSROOT/etc/init.d
-  install -m 755 $SYSCONFDIR/mountfstab $SYSROOT/etc/init.d
-  install -m 755 $SYSCONFDIR/hostname $SYSROOT/etc/init.d
-  install -m 755 $SYSCONFDIR/syslogd $SYSROOT/etc/init.d
-  install -m 755 $SYSCONFDIR/klogd $SYSROOT/etc/init.d
-  install -m 755 $SYSCONFDIR/networking $SYSROOT/etc/init.d
-  install -m 755 $SYSCONFDIR/dropbear $SYSROOT/etc/init.d
-  install -m 755 $SYSCONFDIR/asterisk/asterisk $SYSROOT/etc/init.d
-  install -m 755 $SYSCONFDIR/zaptel/zaptel $SYSROOT/etc/init.d
-  install -m 755 $SYSCONFDIR/thy/thy $SYSROOT/etc/init.d
-  install -m 755 $SYSCONFDIR/vsftpd/vsftpd $SYSROOT/etc/init.d
-  install -m 755 $SYSCONFDIR/upgrade_firmware $SYSROOT/etc/init.d
-  install -m 755 $SYSCONFDIR/reset_factory_defaults $SYSROOT/etc/init.d
+  install_rc_script $SYSCONFDIR/rcS 00 00
+  install_rc_script $SYSCONFDIR/shutdown 00 00
+  install_rc_script $SYSCONFDIR/mountsys 01 99
+  install_rc_script $SYSCONFDIR/filldev 02 00
+  install_rc_script $SYSCONFDIR/loadmodules 03 00
+  install_rc_script $SYSCONFDIR/mountfstab 04 98
+  install_rc_script $SYSCONFDIR/hostname 05 00
+
+  # Don't call /etc/init.d/networking at shutdown so that network is up when
+  # processes are killed. SSH processes getting killed will close
+  # connections automatically.
+  install_rc_script $SYSCONFDIR/networking 08 00
+
+  install_rc_script $SYSCONFDIR/upgrade_firmware 00 00
+  install_rc_script $SYSCONFDIR/reset_factory_defaults 00 00
 }
 
 # Create the dist file.
@@ -49,28 +46,6 @@ make_distfile()
   echo "DIST_NAME=\"$DIST_NAME\"" > $distfile
   echo "DIST_VERSION=\"$DIST_VERSION\"" >> $distfile
   chmod 644 $distfile
-}
-
-# Install a site-local configuration file. The file will be written
-# into $SYSCONF (/mnt at runtime), and a symlink of this file will be
-# created in $SYSROOT/destdir (if conffile has a directory part, this
-# directory will be created in $SYSCONF). For example :
-# 
-# make_conf_file zaptel/zaptel.conf /etc 644
-# 
-# usage: make_conf_file <conffile> <destdir> <mode>
-make_conf_file()
-{
-  conffile=$1
-  destdir=$2
-  mode=$3
-  dir=$(dirname $conffile)
-  file=$(basename $conffile)
-
-  mkdir -p -m 755 $SYSCONF/$dir
-  mkdir -p -m 755 ${SYSROOT}$destdir
-  install -m $mode $SYSCONFDIR/$conffile $SYSCONF/$dir
-  ln -s /mnt/$conffile ${SYSROOT}$destdir/$file
 }
 
 # Create fstab.
@@ -91,10 +66,11 @@ make_hostname()
   hostname=$(echo $DIST_NAME | tr '[:upper:]' '[:lower:]')
   echo $hostname > $SYSCONF/hostname
   ln -s /mnt/hostname $SYSROOT/etc/hostname
-  echo "127.0.0.1 localhost.localdomain localhost" > $SYSROOT/etc/hosts
 
   # XXX There should be a unique source for the IP address.
-  echo "192.168.0.221 $hostname" >> $SYSROOT/etc/hosts
+  echo "127.0.0.1 localhost.localdomain localhost" > $SYSCONF/hosts
+  echo "192.168.0.221 $hostname" >> $SYSCONF/hosts
+  ln -s /mnt/hosts $SYSROOT/etc/hosts
 }
 
 # Handle passwd/group/shadow/gshadow files (tricky when /etc is readonly).
@@ -145,35 +121,6 @@ make_network()
   install -m 644 $SYSCONFDIR/protocols $SYSROOT/etc
 }
 
-# Install Asterisk configuration files.
-# 
-# usage make_asterisk_conf
-make_asterisk_conf()
-{
-  mkdir -p -m 755 $SYSCONF/etc/asterisk
-  rm -rf $SYSROOT/etc/asterisk
-  ln -s /mnt/etc/asterisk $SYSROOT/etc/asterisk
-  install -m 644 $SYSCONFDIR/asterisk/agents.conf $SYSCONF/etc/asterisk
-  install -m 644 $SYSCONFDIR/asterisk/asterisk.conf $SYSCONF/etc/asterisk
-  install -m 644 $SYSCONFDIR/asterisk/extensions.conf $SYSCONF/etc/asterisk
-  install -m 644 $SYSCONFDIR/asterisk/iax.conf $SYSCONF/etc/asterisk
-  install -m 644 $SYSCONFDIR/asterisk/iaxprov.conf $SYSCONF/etc/asterisk
-  install -m 644 $SYSCONFDIR/asterisk/manager.conf $SYSCONF/etc/asterisk
-  install -m 644 $SYSCONFDIR/asterisk/modules.conf $SYSCONF/etc/asterisk
-  install -m 644 $SYSCONFDIR/asterisk/queues.conf $SYSCONF/etc/asterisk
-  install -m 644 $SYSCONFDIR/asterisk/sip.conf $SYSCONF/etc/asterisk
-  install -m 644 $SYSCONFDIR/asterisk/voicemail.conf $SYSCONF/etc/asterisk
-  install -m 644 $SYSCONFDIR/asterisk/zapata.conf $SYSCONF/etc/asterisk
-}
-
-# Install Zaptel configuration files.
-# 
-# usage make_zaptel_conf
-make_zaptel_conf()
-{
-  make_conf_file zaptel/zaptel.conf /etc 644
-}
-
 # Create the /var tree. This should be done very late in the process, to
 # avoid adding files to /var after this function has been called.
 # 
@@ -205,19 +152,10 @@ make_sysconf()
   make_passwd
   make_modules
   make_network
-  make_asterisk_conf
   make_var
   install -m 644 $SYSCONFDIR/inittab $SYSROOT/etc
   install -m 644 $SYSCONFDIR/mdev.conf $SYSROOT/etc
   ln -s /proc/mounts $SYSROOT/etc/mtab
   install -m 644 $SYSCONFDIR/profile $SYSROOT/etc
-  ln -s /mnt/dropbear $SYSROOT/etc/dropbear
-  mkdir -m 755 $SYSCONF/dropbear
-  make_conf_file thy/thy.conf /etc/thy 644
-  install -m 644 $SYSCONFDIR/vsftpd/vsftpd.conf $SYSROOT/etc
-  make_conf_file php.ini /etc 644
-  mkdir -p -m 755 $SYSROOT/usr/share/misc
-  install -m 644 $SYSCONFDIR/magic.mime $SYSROOT/usr/share/misc
-  make_zaptel_conf
   /sbin/depmod -b $SYSROOT -F $SYSBOOT/System.map -a $KERNEL_VERSION
 }

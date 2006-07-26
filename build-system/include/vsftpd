@@ -33,6 +33,8 @@ vsftpd_build()
 vsftpd_install()
 {
   install -m 755 vsftpd $SYSROOT/usr/sbin
+  install_rc_script $SYSCONFDIR/vsftpd/vsftpd
+  install -m 644 $SYSCONFDIR/vsftpd/vsftpd.conf $SYSROOT/etc
 }
 
 # usage: make_vsftpd

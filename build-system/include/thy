@@ -44,6 +44,8 @@ thy_build()
 thy_install()
 {
   do_make install
+  install_rc_script $SYSCONFDIR/thy/thy
+  make_conf_file thy/thy.conf /etc/thy 644
 }
 
 # usage: make_thy

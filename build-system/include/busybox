@@ -665,6 +665,8 @@ busybox_install()
 {
   do_make install
   install -D -m 755 examples/udhcp/simple.script $SYSROOT/usr/share/udhcpc/default.script
+  install_rc_script $SYSCONFDIR/busybox/syslogd 06 97
+  install_rc_script $SYSCONFDIR/busybox/klogd 07 96
 }
 
 # usage: make_busybox

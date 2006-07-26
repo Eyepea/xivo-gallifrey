@@ -32,8 +32,7 @@ if [ ! -f "$sysconf" ]; then
   exit 1
 fi
 
-# The shutdown process will take care if stopping services.
-umount -l /mnt
+/etc/init.d/shutdown
 gunzip -c $sysconf | dd of=$conf_partition
 
 echo "configuration reset complete, rebooting..."

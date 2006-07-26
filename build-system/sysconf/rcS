@@ -31,16 +31,6 @@ echo
 echo "$DIST_NAME $DIST_VERSION booting"
 echo
 
-/etc/init.d/mountsys start
-/etc/init.d/filldev
-/etc/init.d/loadmodules
-/etc/init.d/mountfstab start
-/etc/init.d/hostname
-/etc/init.d/syslogd start
-/etc/init.d/klogd start
-/etc/init.d/networking start
-/etc/init.d/dropbear start
-/etc/init.d/zaptel start
-/etc/init.d/asterisk start
-/etc/init.d/thy start
-/etc/init.d/vsftpd start
+for file in /etc/rc.startup/*; do
+  $file start
+done

@@ -39,6 +39,13 @@ dropbear_build()
 dropbear_install()
 {
   do_make install
+  install_rc_script $SYSCONFDIR/dropbear/dropbear
+
+  # Create an empty directory which will be used to hold rsa/dss keys.
+  # Those keys are generated at first startup (or when they have been
+  # removed).
+  ln -s /mnt/dropbear $SYSROOT/etc/dropbear
+  mkdir -m 755 $SYSCONF/dropbear
 }
 
 # usage: make_dropbear

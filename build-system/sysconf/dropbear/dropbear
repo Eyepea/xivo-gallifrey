@@ -80,6 +80,7 @@ stop_dropbear()
                       --exec $binpath \
                       --pidfile $pidfile \
                       --stop
+    sleep 1
     rm -f $pidfile
     echo "done"
   else
@@ -96,7 +97,6 @@ case "$1" in
     ;;
   restart)
     stop_dropbear
-    sleep 1
     start_dropbear
     ;;
   *)

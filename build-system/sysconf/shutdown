@@ -23,14 +23,6 @@ echo
 echo "System shutdown in progress"
 echo
 
-# Don't call /etc/init.d/networking stop so that network is up when
-# processes are killed. SSH processes getting killed will close
-# connections automatically.
-/etc/init.d/vsftpd stop
-/etc/init.d/thy stop
-/etc/init.d/asterisk stop
-/etc/init.d/dropbear stop
-/etc/init.d/klogd stop
-/etc/init.d/syslogd stop
-/etc/init.d/mountfstab stop
-/etc/init.d/mountsys stop
+for file in /etc/rc.shutdown/*; do
+  $file stop
+done

@@ -61,6 +61,7 @@ stop_syslogd()
                       --exec $binpath \
                       --pidfile $pidfile \
                       --stop
+    sleep 1
     rm -f $pidfile
     echo "done"
   else
@@ -95,7 +96,6 @@ case "$1" in
     ;;
   restart)
     stop_syslogd
-    sleep 1
     start_syslogd
     ;;
   *)

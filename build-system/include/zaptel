@@ -49,7 +49,9 @@ zaptel_install()
           DYNFS=yes \
           CROSS_COMPILE=$TARGET- \
           install
+  install_rc_script $SYSCONFDIR/zaptel/zaptel 15 00
   rm -f $SYSROOT/etc/zaptel.conf
+  make_conf_file zaptel/zaptel.conf /etc 644
 }
 
 # usage: make_zaptel

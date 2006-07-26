@@ -51,6 +51,21 @@ asterisk_install()
           CROSS_PROC=$ARCH \
           DESTDIR=$SYSROOT \
           install -j 1
+  install_rc_script $SYSCONFDIR/asterisk/asterisk
+  rm -rf $SYSROOT/etc/asterisk
+  mkdir -p -m 755 $SYSCONF/etc/asterisk
+  ln -s /mnt/etc/asterisk $SYSROOT/etc/asterisk
+  install -m 644 $SYSCONFDIR/asterisk/agents.conf $SYSCONF/etc/asterisk
+  install -m 644 $SYSCONFDIR/asterisk/asterisk.conf $SYSCONF/etc/asterisk
+  install -m 644 $SYSCONFDIR/asterisk/extensions.conf $SYSCONF/etc/asterisk
+  install -m 644 $SYSCONFDIR/asterisk/iax.conf $SYSCONF/etc/asterisk
+  install -m 644 $SYSCONFDIR/asterisk/iaxprov.conf $SYSCONF/etc/asterisk
+  install -m 644 $SYSCONFDIR/asterisk/manager.conf $SYSCONF/etc/asterisk
+  install -m 644 $SYSCONFDIR/asterisk/modules.conf $SYSCONF/etc/asterisk
+  install -m 644 $SYSCONFDIR/asterisk/queues.conf $SYSCONF/etc/asterisk
+  install -m 644 $SYSCONFDIR/asterisk/sip.conf $SYSCONF/etc/asterisk
+  install -m 644 $SYSCONFDIR/asterisk/voicemail.conf $SYSCONF/etc/asterisk
+  install -m 644 $SYSCONFDIR/asterisk/zapata.conf $SYSCONF/etc/asterisk
 }
 
 # usage: make_asterisk

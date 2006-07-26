@@ -37,6 +37,7 @@ php_sqlite_build()
 php_sqlite_install()
 {
   do_make install
+  echo "extension=sqlite.so" >> $SYSCONF/php/php.ini
 }
 
 # usage: make_php_sqlite

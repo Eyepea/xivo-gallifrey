@@ -38,6 +38,7 @@ php_fileinfo_build()
 php_fileinfo_install()
 {
   do_make install
+  echo "extension=fileinfo.so" >> $SYSCONF/php/php.ini
 }
 
 # usage: make_php_fileinfo

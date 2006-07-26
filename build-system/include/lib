@@ -238,6 +238,57 @@ use_extended_path()
   export PATH=$EXTENDED_PATH
 }
 
+# Install a script in /etc/init.d and handle symlinks in /etc/rc.startup and
+# /etc/rc.shutdown. startup and shutdown are numeric values telling the order
+# of execution of the script. The special value 00 means that the script must
+# not be called at startup or shutdown. Values must have 2 digits. If
+# omitted, the default value is 20.
+# 
+# usage: install_rc_script <script> <startup> <shutdown>
+install_rc_script()
+{
+  script=$1
+  startup=$2
+  shutdown=$3
+  scriptname=$(basename $script)
+
+  mkdir -p -m 755 $SYSROOT/etc/{init.d,rc.startup,rc.shutdown}
+  install -m 755 $script $SYSROOT/etc/init.d
+
+  [ -z "$startup" ] && startup="20"
+  [ -z "$shutdown" ] && shutdown="20"
+
+  if [ "$startup" != "00" ]; then
+    ln -s /etc/init.d/$scriptname $SYSROOT/etc/rc.startup/$startup-$scriptname
+  fi
+
+  if [ "$shutdown" != "00" ]; then
+    ln -s /etc/init.d/$scriptname $SYSROOT/etc/rc.shutdown/$shutdown-$scriptname
+  fi
+}
+
+# Install a site-local configuration file. The file will be written
+# into $SYSCONF (/mnt at runtime), and a symlink of this file will be
+# created in $SYSROOT/destdir (if conffile has a directory part, this
+# directory will be created in $SYSCONF). For example :
+# 
+# make_conf_file zaptel/zaptel.conf /etc 644
+# 
+# usage: make_conf_file <conffile> <destdir> <mode>
+make_conf_file()
+{
+  conffile=$1
+  destdir=$2
+  mode=$3
+  dir=$(dirname $conffile)
+  file=$(basename $conffile)
+
+  mkdir -p -m 755 $SYSCONF/$dir
+  mkdir -p -m 755 ${SYSROOT}$destdir
+  install -m $mode $SYSCONFDIR/$conffile $SYSCONF/$dir
+  ln -s /mnt/$conffile ${SYSROOT}$destdir/$file
+}
+
 # Compare the build and host GNU system types. If they're the same,
 # some configure scripts may think we're not cross compiling. This must
 # be prevented. $ROOTDIR, $BUILD and $TARGET must be set before calling

@@ -87,6 +87,9 @@ php_build()
 php_install()
 {
   do_make install
+  make_conf_file php/php.ini /etc 644
+  mkdir -p -m 755 $SYSROOT/usr/share/misc
+  install -m 644 $SYSCONFDIR/php/magic.mime $SYSROOT/usr/share/misc
 }
 
 # usage: make_php
