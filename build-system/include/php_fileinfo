@@ -43,6 +43,7 @@ php_fileinfo_install()
 # usage: make_php_fileinfo
 make_php_fileinfo()
 {
+  make_file
   make_php
 
   get_basename $PHP_FILEINFO_SOURCE

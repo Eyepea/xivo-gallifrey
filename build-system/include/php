@@ -92,6 +92,12 @@ php_install()
 # usage: make_php
 make_php()
 {
+  make_openssl
+  make_zlib
+  make_libbz2
+  make_libpng
+  make_libjpeg
+
   get_basename $PHP_SOURCE
   use_extended_path
   make_package $PHP_SOURCE $PHP_URL $PHP_SIZE $PHP_SHA1SUM \

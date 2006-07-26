@@ -22,7 +22,7 @@ set -e
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
 
 sysrootfile=sysroot.img
-sysroot=https://192.168.0.220/cross/i486-linux-gnu/$sysrootfile
+sysroot=http://192.168.0.220/cross/dists/xivo-i386/$sysrootfile
 
 root=$(ls -l /dev/root | cut -d '>' -f 2)
 
