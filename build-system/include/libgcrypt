@@ -1,4 +1,4 @@
-# Xivo 0.2 - Build libpng.
+# Xivo 0.2 - Build libgcrypt.
 # Copyright (C) 2006 Richard Braun <rbraun@proformatique.com>
 # 
 # This program is free software; you can redistribute it and/or modify
@@ -15,40 +15,34 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-LIBPNG_SOURCE="libpng-1.2.12.tar.bz2"
-LIBPNG_URL="http://switch.dl.sourceforge.net/sourceforge/libpng/$LIBPNG_SOURCE"
-LIBPNG_SIZE="621295"
-LIBPNG_SHA1SUM="44bd6821607ba09ac500279363871ad5974a01b5"
+LIBGCRYPT_SOURCE="libgcrypt-1.2.2.tar.gz"
+LIBGCRYPT_URL="ftp://ftp.gnupg.org/gcrypt/libgcrypt/$LIBGCRYPT_SOURCE"
+LIBGCRYPT_SIZE="959875"
+LIBGCRYPT_SHA1SUM="fdf3638c0de619343c5f2291a3e8b9fe610425ce"
 
-# usage: libpng_build
-libpng_build()
+# usage: libgcrypt_build
+libgcrypt_build()
 {
-  ac_cv_func_memcmp_working=yes \
-  ac_cv_have_decl_malloc=yes \
-  gl_cv_func_malloc_0_nonnull=yes \
-  ac_cv_func_malloc_0_nonnull=yes \
-  ac_cv_func_calloc_0_nonnull=yes \
-  ac_cv_func_realloc_0_nonnull=yes \
   ./configure --build=$BUILD \
               --host=$TARGET \
               --prefix=$SYSROOT/usr \
-              --without-libpng-compat \
-              --disable-static
+              --disable-static \
+              --disable-asm
   do_make
 }
 
-# usage: libpng_install
-libpng_install()
+# usage: libgcrypt_install
+libgcrypt_install()
 {
   do_make install
 }
 
-# usage: make_libpng
-make_libpng()
+# usage: make_libgcrypt
+make_libgcrypt()
 {
-  make_zlib
+  make_libgpg_error
 
-  get_basename $LIBPNG_SOURCE
-  make_package $LIBPNG_SOURCE $LIBPNG_URL $LIBPNG_SIZE $LIBPNG_SHA1SUM \
-               $BASENAME libpng_build libpng_install
+  get_basename $LIBGCRYPT_SOURCE
+  make_package $LIBGCRYPT_SOURCE $LIBGCRYPT_URL $LIBGCRYPT_SIZE $LIBGCRYPT_SHA1SUM \
+               $BASENAME libgcrypt_build libgcrypt_install
 }

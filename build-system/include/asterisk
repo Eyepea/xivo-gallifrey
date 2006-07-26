@@ -1,4 +1,4 @@
-# Xivo 0.2 - Build Asterisk with libpri.
+# Xivo 0.2 - Build Asterisk.
 # Copyright (C) 2006 Richard Braun <rbraun@proformatique.com>
 # 
 # This program is free software; you can redistribute it and/or modify
@@ -15,20 +15,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-LIBPRI_SOURCE="libpri-1.2.3.tar.gz"
-LIBPRI_URL="http://ftp.digium.com/pub/libpri/$LIBPRI_SOURCE"
-LIBPRI_SIZE="76348"
-LIBPRI_SHA1SUM="8142047002119ce76dfb85204606988be9114d2f"
-
-LIBPRI_XIVO_PATCH="libpri-1.2.3_xivo.patch"
-
-ZAPTEL_SOURCE="zaptel-1.2.7.tar.gz"
-ZAPTEL_URL="http://ftp.digium.com/pub/telephony/zaptel/$ZAPTEL_SOURCE"
-ZAPTEL_SIZE="1137409"
-ZAPTEL_SHA1SUM="790a106ee975a77c413a01584c59ea7d91ca9efd"
-
-ZAPTEL_XIVO_PATCH="zaptel-1.2.7_xivo.patch"
-
 ASTERISK_SOURCE="asterisk-1.2.10.tar.gz"
 ASTERISK_URL="http://ftp.digium.com/pub/asterisk/$ASTERISK_SOURCE"
 ASTERISK_SIZE="10573308"
@@ -36,119 +22,26 @@ ASTERISK_SHA1SUM="e714edce1fba1296fc90d3d69e152bb32f5f5454"
 
 ASTERISK_UCLIBC_PATCH="asterisk-1.2.10_uclibc.patch"
 
-# Build libpri.
-# 
-# usage: make_libpri
-make_libpri()
+# usage: asterisk_build
+asterisk_build()
 {
-  pushd $SRC &> /dev/null
-  download_source $LIBPRI_URL $LIBPRI_SOURCE $LIBPRI_SIZE $LIBPRI_SHA1SUM
-
-  get_basename $LIBPRI_SOURCE
-  libpri_src=$BASENAME
-  libpri_src_arch=$libpri_src-$TARGET-build
-
-  use_extended_path
-
-  if [ ! -d $libpri_src_arch ]; then
-    extract $LIBPRI_SOURCE
-    mv $libpri_src $libpri_src_arch
-    cd $libpri_src_arch
-    apply_patch $LIBPRI_XIVO_PATCH
-    do_make OSARCH=Linux \
-            PROC=$ARCH \
-            DESTDIR=$SYSROOT
-  else
-    cd $libpri_src_arch
+  if [ "$USE_UCLIBC" ]; then
+    apply_patch $ASTERISK_UCLIBC_PATCH
   fi
 
-  do_make OSARCH=Linux \
-          PROC=$ARCH \
+  # I suspect the build process to uncorrectly support parallel builds.
+  do_make CROSS_COMPILE=$TOOLCHAIN/bin/$TARGET- \
+          CROSS_COMPILE_BIN=$TOOLCHAIN/bin \
+          CROSS_COMPILE_TARGET=$SYSROOT \
+          CROSS_ARCH=Linux \
+          CROSS_PROC=$ARCH \
           DESTDIR=$SYSROOT \
-          install
-  use_simple_path
-  popd &> /dev/null
+          -j 1
 }
 
-# Build Zaptel driver.
-# 
-# usage: make_zaptel
-make_zaptel()
+# usage: asterisk_install
+asterisk_install()
 {
-  pushd $SRC &> /dev/null
-  download_source $ZAPTEL_URL $ZAPTEL_SOURCE $ZAPTEL_SIZE $ZAPTEL_SHA1SUM
-
-  get_basename $ZAPTEL_SOURCE
-  zaptel_src=$BASENAME
-  zaptel_src_arch=$zaptel_src-$TARGET-build
-
-  if [ ! -d $zaptel_src_arch ]; then
-    extract $ZAPTEL_SOURCE
-    mv $zaptel_src $zaptel_src_arch
-    cd $zaptel_src_arch
-    apply_patch $ZAPTEL_XIVO_PATCH
-    do_make HOSTCC=$TARGET-gcc \
-            HOSTAR=$TARGET-ar \
-            ARCH=$KERNEL_ARCH \
-            KVERS=$KERNEL_VERSION \
-            KSRC=$KERNEL_SOURCE \
-            DESTDIR=$SYSROOT \
-            DYNFS=yes \
-            CROSS_COMPILE=$TARGET- \
-            linux26
-  else
-    cd $zaptel_src_arch
-  fi
-
-  do_make HOSTCC=$TARGET-gcc \
-          HOSTAR=$TARGET-ar \
-          ARCH=$KERNEL_ARCH \
-          KVERS=$KERNEL_VERSION \
-          KSRC=$KERNEL_SOURCE \
-          DESTDIR=$SYSROOT \
-          DYNFS=yes \
-          CROSS_COMPILE=$TARGET- \
-          install
-  rm -f $SYSROOT/etc/zaptel.conf
-  popd &> /dev/null
-}
-
-# Build asterisk.
-# 
-# usage: make_asterisk
-make_asterisk()
-{
-  make_libpri
-  make_zaptel
-
-  pushd $SRC &> /dev/null
-  download_source $ASTERISK_URL $ASTERISK_SOURCE $ASTERISK_SIZE $ASTERISK_SHA1SUM
-
-  get_basename $ASTERISK_SOURCE
-  asterisk_src=$BASENAME
-  asterisk_src_arch=$asterisk_src-$TARGET-build
-
-  if [ ! -d $asterisk_src_arch ]; then
-    extract $ASTERISK_SOURCE
-    mv $asterisk_src $asterisk_src_arch
-    cd $asterisk_src_arch
-
-    if [ "$USE_UCLIBC" ]; then
-      apply_patch $ASTERISK_UCLIBC_PATCH
-    fi
-
-    # I suspect the build process to uncorrectly support parallel builds.
-    do_make CROSS_COMPILE=$TOOLCHAIN/bin/$TARGET- \
-            CROSS_COMPILE_BIN=$TOOLCHAIN/bin \
-            CROSS_COMPILE_TARGET=$SYSROOT \
-            CROSS_ARCH=Linux \
-            CROSS_PROC=$ARCH \
-            DESTDIR=$SYSROOT \
-            -j 1
-  else
-    cd $asterisk_src_arch
-  fi
-
   # Asterisk build process sucks.
   mkdir -p -m 755 $SYSROOT/usr/lib/asterisk/modules
   do_make CROSS_COMPILE=$TOOLCHAIN/bin/$TARGET- \
@@ -158,5 +51,16 @@ make_asterisk()
           CROSS_PROC=$ARCH \
           DESTDIR=$SYSROOT \
           install -j 1
-  popd &> /dev/null
+}
+
+# usage: make_asterisk
+make_asterisk()
+{
+  make_ncurses
+  make_openssl
+  make_libpri
+
+  get_basename $ASTERISK_SOURCE
+  make_package $ASTERISK_SOURCE $ASTERISK_URL $ASTERISK_SIZE $ASTERISK_SHA1SUM \
+               $BASENAME asterisk_build asterisk_install
 }

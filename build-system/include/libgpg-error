@@ -1,4 +1,4 @@
-# Xivo 0.2 - Build libpng.
+# Xivo 0.2 - Build libgpg-error.
 # Copyright (C) 2006 Richard Braun <rbraun@proformatique.com>
 # 
 # This program is free software; you can redistribute it and/or modify
@@ -15,40 +15,35 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-LIBPNG_SOURCE="libpng-1.2.12.tar.bz2"
-LIBPNG_URL="http://switch.dl.sourceforge.net/sourceforge/libpng/$LIBPNG_SOURCE"
-LIBPNG_SIZE="621295"
-LIBPNG_SHA1SUM="44bd6821607ba09ac500279363871ad5974a01b5"
+LIBGPG_ERROR_SOURCE="libgpg-error-1.3.tar.bz2"
+LIBGPG_ERROR_URL="ftp://ftp.gnupg.org/gcrypt/libgpg-error/$LIBGPG_ERROR_SOURCE"
+LIBGPG_ERROR_SIZE="452266"
+LIBGPG_ERROR_SHA1SUM="10bd8d8503b674e114ecc6620324d5d1c8c918b7"
 
-# usage: libpng_build
-libpng_build()
+LIBGPG_ERROR_NLS_PATCH="libgpg-error-1.3_nls.patch"
+
+# usage: libgpg_error_build
+libgpg_error_build()
 {
-  ac_cv_func_memcmp_working=yes \
-  ac_cv_have_decl_malloc=yes \
-  gl_cv_func_malloc_0_nonnull=yes \
-  ac_cv_func_malloc_0_nonnull=yes \
-  ac_cv_func_calloc_0_nonnull=yes \
-  ac_cv_func_realloc_0_nonnull=yes \
+  apply_patch $LIBGPG_ERROR_NLS_PATCH
   ./configure --build=$BUILD \
               --host=$TARGET \
               --prefix=$SYSROOT/usr \
-              --without-libpng-compat \
-              --disable-static
+              --disable-static \
+              --disable-nls
   do_make
 }
 
-# usage: libpng_install
-libpng_install()
+# usage: libgpg_error_install
+libgpg_error_install()
 {
   do_make install
 }
 
-# usage: make_libpng
-make_libpng()
+# usage: make_libgpg_error
+make_libgpg_error()
 {
-  make_zlib
-
-  get_basename $LIBPNG_SOURCE
-  make_package $LIBPNG_SOURCE $LIBPNG_URL $LIBPNG_SIZE $LIBPNG_SHA1SUM \
-               $BASENAME libpng_build libpng_install
+  get_basename $LIBGPG_ERROR_SOURCE
+  make_package $LIBGPG_ERROR_SOURCE $LIBGPG_ERROR_URL $LIBGPG_ERROR_SIZE \
+               $LIBGPG_ERROR_SHA1SUM $BASENAME libgpg_error_build libgpg_error_install
 }

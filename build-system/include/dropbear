@@ -22,35 +22,31 @@ DROPBEAR_SHA1SUM="4dd349b5e3c1aa1b627c52a27f17f5eb7e85c146"
 
 DROPBEAR_UCLIBC_PATCH="dropbear-0.48.1_uclibc.patch"
 
-# Build dropbear.
-# 
+# usage: dropbear_build
+dropbear_build()
+{
+  if [ "$USE_UCLIBC" ]; then
+    apply_patch $DROPBEAR_UCLIBC_PATCH
+  fi
+
+  ./configure --build=$BUILD \
+              --host=$TARGET \
+              --prefix=$SYSROOT/usr
+  do_make
+}
+
+# usage: dropbear_install
+dropbear_install()
+{
+  do_make install
+}
+
 # usage: make_dropbear
 make_dropbear()
 {
-  pushd $SRC &> /dev/null
-  download_source $DROPBEAR_URL $DROPBEAR_SOURCE $DROPBEAR_SIZE $DROPBEAR_SHA1SUM
+  make_zlib
 
   get_basename $DROPBEAR_SOURCE
-  dropbear_src=$BASENAME
-  dropbear_src_arch=$dropbear_src-$TARGET-build
-
-  if [ ! -d $dropbear_src_arch ]; then
-    extract $DROPBEAR_SOURCE
-    mv $dropbear_src $dropbear_src_arch
-    cd $dropbear_src_arch
-
-    if [ "$USE_UCLIBC" ]; then
-      apply_patch $DROPBEAR_UCLIBC_PATCH
-    fi
-
-    ./configure --build=$BUILD \
-                --host=$TARGET \
-                --prefix=$SYSROOT/usr
-    do_make
-  else
-    cd $dropbear_src_arch
-  fi
-
-  do_make install
-  popd &> /dev/null
+  make_package $DROPBEAR_SOURCE $DROPBEAR_URL $DROPBEAR_SIZE $DROPBEAR_SHA1SUM \
+               $BASENAME dropbear_build dropbear_install
 }

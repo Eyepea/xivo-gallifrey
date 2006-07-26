@@ -1,5 +1,4 @@
-# Xivo 0.2 - Functions to create cross compilation toolchains and
-# kernels using uClibc/glibc.
+# Xivo 0.2 - Create cross compilation toolchain using uClibc or glibc.
 # Copyright (C) 2006 Richard Braun <rbraun@proformatique.com>
 # 
 # This program is free software; you can redistribute it and/or modify
@@ -55,41 +54,64 @@ GCC_SHA1SUM="580dce840da1283afa5ea505f24b69fc94b910fb"
 
 GCC_UCLIBC_PATCH="gcc-3.4.6_uclibc.patch"
 
+# usage: binutils_build <srcdir>
+binutils_build()
+{
+  if [ "$USE_UCLIBC" ]; then
+    pushd $1 &> /dev/null
+    pwd
+    apply_patch $BINUTILS_UCLIBC_PATCH
+    popd &> /dev/null
+  fi
+
+  $1/configure --target=$TARGET \
+               --prefix=$TOOLCHAIN \
+               --with-sysroot=$SYSROOT \
+               --disable-nls
+  do_make
+}
+
+# usage: binutils_install
+binutils_install()
+{
+  do_make install
+}
+
 # Build binutils.
 # 
 # usage: make_binutils
 make_binutils()
 {
-  pushd $SRC &> /dev/null
-  download_source $BINUTILS_URL $BINUTILS_SOURCE $BINUTILS_SIZE $BINUTILS_SHA1SUM
-
   get_basename $BINUTILS_SOURCE
-  binutils_src=$BASENAME
-  binutils_build="$binutils_src-$TARGET-build"
+  make_package $BINUTILS_SOURCE $BINUTILS_URL $BINUTILS_SIZE $BINUTILS_SHA1SUM \
+               $BASENAME binutils_build binutils_install 1 1
+}
 
-  if [ ! -d $binutils_build ]; then
-    extract $BINUTILS_SOURCE
-    mkdir $binutils_build
+# usage: linux_headers_build
+linux_headers_build()
+{
+  apply_patch $LINUX_SQUASHFS_PATCH
+  gen_linux_conf > .config
+  do_make ARCH=$KERNEL_ARCH oldconfig
+  do_make ARCH=$KERNEL_ARCH include/linux/version.h
+  do_make ARCH=$KERNEL_ARCH include/asm
+}
 
-    if [ "$USE_UCLIBC" ]; then
-      cd $binutils_src
-      apply_patch $BINUTILS_UCLIBC_PATCH
-      cd ../$binutils_build
-    else
-      cd $binutils_build
-    fi
+# usage: linux_headers_install
+linux_headers_install()
+{
+  # xxx_build() functions can never be called, so define this variable here.
+  LINUX_BUILD_DIR=$build_dir
 
-    ../$binutils_src/configure --target=$TARGET \
-                               --prefix=$TOOLCHAIN \
-                               --with-sysroot=$SYSROOT \
-                               --disable-nls
-    do_make
-  else
-    cd $binutils_build
-  fi
-
-  do_make install
-  popd &> /dev/null
+  mkdir -p $SYSROOT/usr/include
+  cd $SYSROOT/usr/include
+  cp -a $LINUX_BUILD_DIR/include/linux .
+  cp -a $LINUX_BUILD_DIR/include/asm-$KERNEL_ARCH asm
+  cp -a $LINUX_BUILD_DIR/include/asm-generic .
+  mkdir -p $SYSROOT/usr/src
+  cd $SYSROOT/usr/src
+  ln -s $LINUX_BUILD_DIR linux
+  KERNEL_SOURCE=$SYSROOT/usr/src/linux
 }
 
 # Extract and prepare linux headers.
@@ -98,117 +120,79 @@ make_binutils()
 # usage: make_linux_headers
 make_linux_headers()
 {
-  pushd $SRC &> /dev/null
-  download_source $LINUX_URL $LINUX_SOURCE $LINUX_SIZE $LINUX_SHA1SUM
-
   get_basename $LINUX_SOURCE
-  linux_src=$BASENAME
-  linux_src_arch=$linux_src-$TARGET
-
-  if [ ! -d $linux_src_arch ]; then
-    extract $LINUX_SOURCE
-    mv $linux_src $linux_src_arch
-    cd $linux_src_arch
-    apply_patch $LINUX_SQUASHFS_PATCH
-    gen_linux_conf > .config
-    do_make ARCH=$KERNEL_ARCH oldconfig
-    do_make ARCH=$KERNEL_ARCH include/linux/version.h
-    do_make ARCH=$KERNEL_ARCH include/asm
-  else
-    cd $linux_src_arch
-  fi
-
-  pushd $SYSROOT &> /dev/null
-
-  if [ ! -d usr/include ]; then
-    mkdir -p usr/include
-    cd usr/include
-    cp -a $SRC/$linux_src_arch/include/linux .
-    cp -a $SRC/$linux_src_arch/include/asm-$KERNEL_ARCH asm
-    cp -a $SRC/$linux_src_arch/include/asm-generic .
-    cd $SYSROOT
-  fi
-
-  if [ ! -d usr/src ]; then
-    mkdir -p usr/src
-    cd usr/src
-    ln -s $SRC/$linux_src_arch linux
-    cd $SYSROOT
-  fi
-
-  KERNEL_SOURCE=$SYSROOT/usr/src/linux
-  popd &> /dev/null
-  popd &> /dev/null
+  make_package $LINUX_SOURCE $LINUX_URL $LINUX_SIZE $LINUX_SHA1SUM \
+               $BASENAME linux_headers_build linux_headers_install
 }
 
+# usage: uclibc_headers_build
+uclibc_headers_build()
+{
+  gen_uclibc_conf > .config
+  do_make oldconfig
+  do_make headers
+}
+
+# usage: uclibc_headers_install
+uclibc_headers_install()
+{
+  UCLIBC_BUILD_DIR=$build_dir
+
+  do_make PREFIX=$SYSROOT install_headers
+}
+
+# Extract and prepare uClibc headers.
+# 
 # usage: make_uclibc_headers
 make_uclibc_headers()
 {
-  pushd $SRC &> /dev/null
-  download_source $UCLIBC_URL $UCLIBC_SOURCE $UCLIBC_SIZE $UCLIBC_SHA1SUM
-
-  uclibc_src="uClibc"
-  uclibc_src_arch=$uclibc_src-$TARGET
-
-  if [ ! -d $uclibc_src_arch ]; then
-    extract $UCLIBC_SOURCE
-    mv $uclibc_src $uclibc_src_arch
-    cd $uclibc_src_arch
-    gen_uclibc_conf > .config
-    do_make oldconfig
-    do_make headers
-  else
-    cd $uclibc_src_arch
-  fi
-
-  do_make PREFIX=$SYSROOT install_headers
-  popd &> /dev/null
+  make_package $UCLIBC_SOURCE $UCLIBC_URL $UCLIBC_SIZE $UCLIBC_SHA1SUM \
+               "uClibc" uclibc_headers_build uclibc_headers_install
 }
 
-# usage: make_glibc_headers
-make_glibc_headers()
+# usage: glibc_headers_build <srcdir>
+glibc_headers_build()
 {
-  pushd $SRC &> /dev/null
-  download_source $GLIBC_URL $GLIBC_SOURCE $GLIBC_SIZE $GLIBC_SHA1SUM
-  download_source $GLIBC_LINUXTHREADS_URL $GLIBC_LINUXTHREADS_SOURCE \
+  download_source $GLIBC_LINUXTHREADS_SOURCE $GLIBC_LINUXTHREADS_URL \
                   $GLIBC_LINUXTHREADS_SIZE $GLIBC_LINUXTHREADS_SHA1SUM
 
-  get_basename $GLIBC_SOURCE
-  glibc_src=$BASENAME
-  glibc_headers_build="$glibc_src-$TARGET-headers"
+  pushd $1 &> /dev/null
+  extract $GLIBC_LINUXTHREADS_SOURCE
+  apply_patch $GLIBC_LIBGCCEH_PATCH
+  popd &> /dev/null
 
-  if [ ! -d $glibc_headers_build ]; then
-    extract $GLIBC_SOURCE
-    cd $glibc_src
-    extract ../$GLIBC_LINUXTHREADS_SOURCE
-    apply_patch $GLIBC_LIBGCCEH_PATCH
-    cd ..
-    mkdir $glibc_headers_build
-    cd $glibc_headers_build
+  # Setting this variable avoids having an error because of altivec
+  # support when crosscompiling to powerpc.
+  libc_cv_ppc_machine=yes \
+  $1/configure --build=$BUILD \
+               --host=$TARGET \
+               --prefix=/usr \
+               --enable-add-ons=linuxthreads \
+               --with-tls \
+               --with-elf \
+               --without-__thread \
+               --disable-profile \
+               --without-cvs \
+               --with-headers=$SYSROOT/usr/include
+}
 
-    # Setting this variable avoids having an error because of altivec
-    # support when crosscompiling to powerpc.
-    libc_cv_ppc_machine=yes \
-    ../$glibc_src/configure --build=$BUILD \
-                            --host=$TARGET \
-                            --prefix=/usr \
-                            --enable-add-ons=linuxthreads \
-                            --with-tls \
-                            --with-elf \
-                            --without-__thread \
-                            --disable-profile \
-                            --without-cvs \
-                            --with-headers=$SYSROOT/usr/include
-  else
-    cd $glibc_headers_build
-  fi
-
+# usage: glibc_headers_install
+glibc_headers_install()
+{
   do_make install_root=$SYSROOT install-headers
 
   # These headers are generated at build time, but we need them for stage 1 gcc.
   touch $SYSROOT/usr/include/gnu/stubs.h
   touch $SYSROOT/usr/include/bits/stdio_lim.h
-  popd &> /dev/null
+}
+
+# usage: make_glibc_headers
+make_glibc_headers()
+{
+  get_basename $GLIBC_SOURCE
+  build_dir="$BASENAME-headers"
+  make_package $GLIBC_SOURCE $GLIBC_URL $GLIBC_SIZE $GLIBC_SHA1SUM \
+               $BASENAME glibc_headers_build glibc_headers_install 1
 }
 
 # Install uClibc/glibc headers, depending on $USE_UCLIBC.
@@ -223,95 +207,107 @@ make_libc_headers()
   fi
 }
 
+# usage gcc_1_build <srcdir>
+gcc_1_build()
+{
+  if [ "$USE_UCLIBC" ]; then
+    pushd $1 &> /dev/null
+    apply_patch $GCC_UCLIBC_PATCH
+    popd &> /dev/null
+  fi
+
+  $1/configure --target=$TARGET \
+               --prefix=$TOOLCHAIN \
+               --with-sysroot=$SYSROOT \
+               --disable-nls \
+               --disable-shared \
+               --enable-__cxa_atexit \
+               --enable-languages=c
+  do_make
+}
+
+# usage: gcc_1_install
+gcc_1_install()
+{
+  do_make install
+}
+
 # Build and install stage 1 gcc
 # 
 # usage: make_gcc_1
 make_gcc_1()
 {
-  pushd $SRC &> /dev/null
-  download_source $GCC_URL $GCC_SOURCE $GCC_SIZE $GCC_SHA1SUM
-
   get_basename $GCC_SOURCE
-  gcc_src=$BASENAME
-  gcc_build="$gcc_src-$TARGET-stage1-build"
+  build_dir="$BASENAME-stage1"
+  make_package $GCC_SOURCE $GCC_URL $GCC_SIZE $GCC_SHA1SUM \
+               $BASENAME gcc_1_build gcc_1_install 1 1
+}
 
-  if [ ! -d $gcc_build ]; then
-    extract $GCC_SOURCE
-    mkdir $gcc_build
+# usage: uclibc_build
+uclibc_build()
+{
+  pushd $UCLIBC_BUILD_DIR &> /dev/null
+  do_make CROSS=$TARGET-
+  popd &> /dev/null
+}
 
-    if [ "$USE_UCLIBC" ]; then
-      cd $gcc_src
-      apply_patch $GCC_UCLIBC_PATCH
-      cd ../$gcc_build
-    else
-      cd $gcc_build
-    fi
-
-    ../$gcc_src/configure --target=$TARGET \
-                          --prefix=$TOOLCHAIN \
-                          --with-sysroot=$SYSROOT \
-                          --disable-nls \
-                          --disable-shared \
-                          --enable-__cxa_atexit \
-                          --enable-languages=c
-    do_make
-  else
-    cd $gcc_build
-  fi
-
-  do_make install
+# usage: uclibc_install
+uclibc_install()
+{
+  pushd $UCLIBC_BUILD_DIR &> /dev/null
+  do_make PREFIX=$SYSROOT install
   popd &> /dev/null
 }
 
 # usage: make_uclibc
 make_uclibc()
 {
-  pushd $SRC &> /dev/null
-  cd $uclibc_src_arch
-  do_make CROSS=$TARGET-
-  do_make PREFIX=$SYSROOT install
+  build_dir="uClibc-unused"
+  make_package $UCLIBC_SOURCE $UCLIBC_URL $UCLIBC_SIZE $UCLIBC_SHA1SUM \
+               "uClibc" uclibc_build uclibc_install 0 0 1
+}
+
+# Different directories must be used for headers and libraries because
+# configure is called with a different environment.
+# 
+# usage: glibc_build <srcdir>
+glibc_build()
+{
+  pushd $1 &> /dev/null
+  extract $GLIBC_LINUXTHREADS_SOURCE
+  apply_patch $GLIBC_LIBGCCEH_PATCH
   popd &> /dev/null
+
+  $1/configure --build=$BUILD \
+               --host=$TARGET \
+               --prefix=/usr \
+               --enable-add-ons=linuxthreads \
+               --with-tls \
+               --with-elf \
+               --without-__thread \
+               --disable-profile \
+               --without-cvs \
+               --with-headers=$SYSROOT/usr/include
+  do_make
+}
+
+# usage: glibc_install
+glibc_install()
+{
+  do_make install_root=$SYSROOT install
 }
 
 # usage: make_glibc
 make_glibc()
 {
-  pushd $SRC &> /dev/null
-
-  # Sources are prepared by make_glibc_headers.
-  get_basename $GLIBC_SOURCE
-  glibc_src=$BASENAME
-
-  # Different directories must be used for headers and libraries because
-  # configure is called with a different environment.
-  glibc_build="$glibc_src-$TARGET-build"
-
-  # Building glibc requires setting CC, AS, LD, etc... Set $PATH so that gcc,
+  # Building glibc requires setting $CC, $AS, $LD, etc... Set $PATH so that gcc,
   # as, ld, etc... already resolve to the target cross compiling tools.
   # Note that $BUILD_CC has already been exported by init_buildenv().
   use_extended_path
-
-  if [ ! -d $glibc_build ]; then
-    mkdir $glibc_build
-    cd $glibc_build
-    ../$glibc_src/configure --build=$BUILD \
-                            --host=$TARGET \
-                            --prefix=/usr \
-                            --enable-add-ons=linuxthreads \
-                            --with-tls \
-                            --with-elf \
-                            --without-__thread \
-                            --disable-profile \
-                            --without-cvs \
-                            --with-headers=$SYSROOT/usr/include
-    do_make
-  else
-    cd $glibc_build
-  fi
-
-  do_make install_root=$SYSROOT install
+  get_basename $GLIBC_SOURCE
+  make_package $GLIBC_SOURCE $GLIBC_URL $GLIBC_SIZE $GLIBC_SHA1SUM \
+               $BASENAME glibc_build glibc_install 1
   use_simple_path
-  popd &> /dev/null
 }
 
 # Install uClibc/glibc, depending on $USE_UCLIBC.
@@ -326,34 +322,60 @@ make_libc()
   fi
 }
 
+gcc_2_build()
+{
+  if [ "$USE_UCLIBC" ]; then
+    pushd $1 &> /dev/null
+    apply_patch $GCC_UCLIBC_PATCH
+    popd &> /dev/null
+  fi
+
+  $1/configure --target=$TARGET \
+               --prefix=$TOOLCHAIN \
+               --with-sysroot=$SYSROOT \
+               --disable-nls \
+               --enable-__cxa_atexit \
+               --enable-languages=c,c++
+  do_make
+}
+
+gcc_2_install()
+{
+  do_make install
+  cp -a $TOOLCHAIN/$TARGET/lib/libgcc_s.so* $SYSROOT/lib
+  cp -a $TOOLCHAIN/$TARGET/lib/libstdc++.so* $SYSROOT/usr/lib
+}
+
 # Build and install stage 2 gcc, with C/C++ support.
 # 
 # usage: make_gcc_2
 make_gcc_2()
 {
-  pushd $SRC &> /dev/null
   get_basename $GCC_SOURCE
-  gcc_src=$BASENAME
-  gcc_build="$gcc_src-$TARGET-stage2-build"
+  build_dir="$BASENAME-stage2"
+  make_package $GCC_SOURCE $GCC_URL $GCC_SIZE $GCC_SHA1SUM \
+               $BASENAME gcc_2_build gcc_2_install 1 1
+}
 
-  if [ ! -d $gcc_build ]; then
-    mkdir $gcc_build
-    cd $gcc_build
-    ../$gcc_src/configure --target=$TARGET \
-                          --prefix=$TOOLCHAIN \
-                          --with-sysroot=$SYSROOT \
-                          --disable-nls \
-                          --enable-__cxa_atexit \
-                          --enable-languages=c,c++
-    do_make
-  else
-    cd $gcc_build
-  fi
-
-  do_make install
-  cp -a $TOOLCHAIN/$TARGET/lib/libgcc_s.so* $SYSROOT/lib
-  cp -a $TOOLCHAIN/$TARGET/lib/libstdc++.so* $SYSROOT/usr/lib
+# usage: linux_build
+linux_build()
+{
+  pushd $LINUX_BUILD_DIR &> /dev/null
+  do_make ARCH=$KERNEL_ARCH CROSS_COMPILE=$TARGET- $KERNEL_IMAGE_TARGET
+  do_make ARCH=$KERNEL_ARCH CROSS_COMPILE=$TARGET- modules
   popd &> /dev/null
+}
+
+# usage: linux_install
+linux_install()
+{
+  mkdir -p ~/bin
+  cp $ROOTDIR/utils/installkernel ~/bin/$TARGET-installkernel
+  pushd $LINUX_BUILD_DIR &> /dev/null
+  do_make ARCH=$KERNEL_ARCH CROSS_COMPILE=$TARGET- INSTALL_MOD_PATH=$SYSROOT modules_install
+  do_make ARCH=$KERNEL_ARCH CROSS_COMPILE=$TARGET- INSTALL_PATH=$SYSBOOT install
+  popd &> /dev/null
+  rm -f ~/bin/$TARGET-installkernel
 }
 
 # Build and install kernel in $SYSBOOT and modules in $SYSROOT.
@@ -362,24 +384,16 @@ make_gcc_2()
 # usage: make_linux
 make_linux()
 {
-  pushd $SRC &> /dev/null
   get_basename $LINUX_SOURCE
-  linux_src=$BASENAME
-  linux_src_arch=$linux_src-$TARGET
-  cd $linux_src_arch
-  do_make ARCH=$KERNEL_ARCH CROSS_COMPILE=$TARGET- $KERNEL_IMAGE_TARGET
-  do_make ARCH=$KERNEL_ARCH CROSS_COMPILE=$TARGET- modules
-  do_make ARCH=$KERNEL_ARCH CROSS_COMPILE=$TARGET- INSTALL_MOD_PATH=$SYSROOT modules_install
-  do_make ARCH=$KERNEL_ARCH CROSS_COMPILE=$TARGET- INSTALL_PATH=$SYSBOOT install
+  build_dir="$BASENAME-unused"
+  make_package $LINUX_SOURCE $LINUX_URL $LINUX_SIZE $LINUX_SHA1SUM \
+               $BASENAME linux_build linux_install 0 0 1
   KERNEL_VERSION=$(ls -l $SYSBOOT/vmlinuz | cut -d '>' -f 2 | cut -d '-' -f 2-)
-  popd &> /dev/null
 }
 
 # Main function.
 make_toolchain()
 {
-  mkdir -p ~/bin
-  cp utils/installkernel ~/bin/$TARGET-installkernel
   make_binutils
   make_linux_headers
   make_libc_headers
@@ -387,5 +401,4 @@ make_toolchain()
   make_libc
   make_gcc_2
   make_linux
-  rm -f ~/bin/$TARGET-installkernel
 }

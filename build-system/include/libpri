@@ -1,4 +1,4 @@
-# Xivo 0.2 - Build libbz2.
+# Xivo 0.2 - Build libpri.
 # Copyright (C) 2006 Richard Braun <rbraun@proformatique.com>
 # 
 # This program is free software; you can redistribute it and/or modify
@@ -15,31 +15,37 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-LIBBZ2_SOURCE="bzip2-1.0.3.tar.gz"
-LIBBZ2_URL="http://www.bzip.org/1.0.3/$LIBBZ2_SOURCE"
-LIBBZ2_SIZE="669075"
-LIBBZ2_SHA1SUM="7e749510f65c86fbfff37b97144a02f1b8b8617f"
+LIBPRI_SOURCE="libpri-1.2.3.tar.gz"
+LIBPRI_URL="http://ftp.digium.com/pub/libpri/$LIBPRI_SOURCE"
+LIBPRI_SIZE="76348"
+LIBPRI_SHA1SUM="8142047002119ce76dfb85204606988be9114d2f"
 
-# usage: libbz2_build
-libbz2_build()
+LIBPRI_XIVO_PATCH="libpri-1.2.3_xivo.patch"
+
+# usage: libpri_build
+libpri_build()
 {
-  do_make -f Makefile-libbz2_so
+  apply_patch $LIBPRI_XIVO_PATCH
+  do_make OSARCH=Linux \
+          PROC=$ARCH \
+          DESTDIR=$SYSROOT
 }
 
-# usage: libbz2_install
-libbz2_install()
+# usage: libpri_install
+libpri_install()
 {
-  cp -a bzlib.h $SYSROOT/usr/include
-  cp -a libbz2.so* $SYSROOT/usr/lib
-  ln -s libbz2.so.?.?.? $SYSROOT/usr/lib/libbz2.so
+  do_make OSARCH=Linux \
+          PROC=$ARCH \
+          DESTDIR=$SYSROOT \
+          install
 }
 
-# usage: make_libbz2
-make_libbz2()
+# usage: make_libpri
+make_libpri()
 {
-  get_basename $LIBBZ2_SOURCE
+  get_basename $LIBPRI_SOURCE
   use_extended_path
-  make_package $LIBBZ2_SOURCE $LIBBZ2_URL $LIBBZ2_SIZE $LIBBZ2_SHA1SUM \
-               $BASENAME libbz2_build libbz2_install
+  make_package $LIBPRI_SOURCE $LIBPRI_URL $LIBPRI_SIZE $LIBPRI_SHA1SUM \
+               $BASENAME libpri_build libpri_install
   use_simple_path
 }

@@ -20,39 +20,34 @@ NCURSES_URL="http://ftp.gnu.org/pub/gnu/ncurses/$NCURSES_SOURCE"
 NCURSES_SIZE="2314030"
 NCURSES_SHA1SUM="46414a72e91a62f63a8c9af00f0d65497f5ecc5a"
 
-# Build ncurses.
-# 
+# usage: ncurses_build
+ncurses_build()
+{
+  ./configure --build=$BUILD \
+              --host=$TARGET \
+              --prefix=/usr \
+              --with-install-prefix=$SYSROOT \
+              --with-shared \
+              --without-normal \
+              --without-debug \
+              --disable-database \
+              --disable-home-terminfo \
+              --disable-macros \
+              --with-fallbacks \
+              --enable-warnings
+  do_make
+}
+
+# usage: ncurses_install
+ncurses_install()
+{
+  do_make install
+}
+
 # usage: make_ncurses
 make_ncurses()
 {
-  pushd $SRC &> /dev/null
-  download_source $NCURSES_URL $NCURSES_SOURCE $NCURSES_SIZE $NCURSES_SHA1SUM
-
   get_basename $NCURSES_SOURCE
-  ncurses_src=$BASENAME
-  ncurses_src_arch=$ncurses_src-$TARGET-build
-
-  if [ ! -d $ncurses_src_arch ]; then
-    extract $NCURSES_SOURCE
-    mv $ncurses_src $ncurses_src_arch
-    cd $ncurses_src_arch
-    ./configure --build=$BUILD \
-                --host=$TARGET \
-                --prefix=/usr \
-                --with-install-prefix=$SYSROOT \
-                --with-shared \
-                --without-normal \
-                --without-debug \
-                --disable-database \
-                --disable-home-terminfo \
-                --disable-macros \
-                --with-fallbacks \
-                --enable-warnings
-    do_make
-  else
-    cd $ncurses_src_arch
-  fi
-
-  do_make install
-  popd &> /dev/null
+  make_package $NCURSES_SOURCE $NCURSES_URL $NCURSES_SIZE $NCURSES_SHA1SUM \
+               $BASENAME ncurses_build ncurses_install
 }

@@ -34,3 +34,8 @@ gen_modules()
 {
   gen_modules_xivo_i386
 }
+
+make_dist_packages()
+{
+  make_xivo_packages
+}

@@ -22,36 +22,32 @@ FILE_SHA1SUM="e03710a3fcb95db6d0ee9cfcdf88c19a5e525ee4"
 
 FILE_UCLIBC_PATCH="file-4.17_uclibc.patch"
 
-# Build file.
-# 
+# usage: file_build
+file_build()
+{
+  if [ "$USE_UCLIBC" ]; then
+    apply_patch $FILE_UCLIBC_PATCH
+  fi
+
+  ./configure --build=$BUILD \
+              --host=$TARGET \
+              --prefix=$SYSROOT/usr \
+              --disable-static
+  do_make
+}
+
+# usage: file_install
+file_install()
+{
+  do_make install
+}
+
 # usage: make_file
 make_file()
 {
-  pushd $SRC &> /dev/null
-  download_source $FILE_URL $FILE_SOURCE $FILE_SIZE $FILE_SHA1SUM
+  make_zlib
 
   get_basename $FILE_SOURCE
-  file_src=$BASENAME
-  file_src_arch=$file_src-$TARGET-build
-
-  if [ ! -d $file_src_arch ]; then
-    extract $FILE_SOURCE
-    mv $file_src $file_src_arch
-    cd $file_src_arch
-
-    if [ "$USE_UCLIBC" ]; then
-      apply_patch $FILE_UCLIBC_PATCH
-    fi
-
-    ./configure --build=$BUILD \
-                --host=$TARGET \
-                --prefix=$SYSROOT/usr \
-                --disable-static
-    do_make
-  else
-    cd $file_src_arch
-  fi
-
-  do_make install
-  popd &> /dev/null
+  make_package $FILE_SOURCE $FILE_URL $FILE_SIZE $FILE_SHA1SUM \
+               $BASENAME file_build file_install
 }

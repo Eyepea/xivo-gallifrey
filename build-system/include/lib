@@ -41,21 +41,21 @@ check_root()
 
 # Download a source file and check size and sha1sum.
 # 
-# usage: download_source <url> <source_filename> <size> <sha1sum>
+# usage: download_source <srcfile> <url> <size> <sha1sum>
 download_source()
 {
-  pushd $SRC &> /dev/null
+  pushd $DISTFILES &> /dev/null
 
-  if [ ! -f "$2" ]; then
-    wget "$1"
+  if [ ! -f "$1" ]; then
+    wget "$2"
   fi
 
-  size=$(stat -c %s "$2")
-  sha1sum=$(sha1sum "$2" | cut -d ' ' -f 1)
-  echo "checking $2"
+  size=$(stat -c %s "$1")
+  sha1sum=$(sha1sum "$1" | cut -d ' ' -f 1)
+  echo "checking $1"
 
   if [ "$size" != "$3" ] || [ "$sha1sum" != "$4" ]; then
-    exit_with_error "bad size/sha1sum for $2"
+    exit_with_error "bad size/sha1sum for $1"
   fi
 
   popd &> /dev/null
@@ -96,7 +96,7 @@ extract()
         exit_with_error "unsupported source file type"
       fi
 
-      tar xf$arg "$1"
+      tar xf$arg "$DISTFILES/$1"
       echo "ok"
       return
     fi
@@ -127,6 +127,102 @@ apply_patch()
 do_make()
 {
   make $MAKEFLAGS $@
+}
+
+# Download, check, extract, build and install a package.
+# 
+# The $build_dir variable is set from the $srcdir variable. Sometimes, it can
+# be useful to have several build directories. When extracting the glibc, there
+# is a build directory for the headers installation, and a build directory for
+# the glibc itself. If $build_dir is set when calling this function, its value
+# will be used instead of the value of $srcdir. $build_dir is unset when the
+# function returns.
+# 
+# To build from a separate directory, set build_outside to 1. The build_function
+# callback function will be given the path of a new source directory as its
+# first argument. This directory can then be patched safely.
+# 
+# Some toolchain packages like binutils depend on the target, not the
+# distribution. If target_is_key is 1, $TARGET will be used instead
+# of $DIST for the names of the build directory and stamp files.
+# 
+# Some toolchain package are handled in two steps. The same directories are
+# used in each step, but the stamp files must be different. When this is the
+# case, set dont_extract to 1 so that only stamp files are created.
+# 
+# It is suggested to omit build_outside, target_is_key and dont_extract if
+# they're not needed.
+# 
+# usage: make_package <srcfile> <srcfile_url> <srcfile_size> <srcfile_sha1sum>
+# <srcdir> <build_function> <install_function> <build_outside> <target_is_key>
+# <dont_extract>
+make_package()
+{
+  srcfile=$1
+  srcfile_url=$2
+  srcfile_size=$3
+  srcfile_sha1sum=$4
+  srcdir=$5
+  build_function=$6
+  install_function=$7
+  build_outside=$8
+  target_is_key=$9
+  shift
+  dont_extract=$9
+
+  if [ "$target_is_key" = "1" ]; then
+    key=$TARGET
+  else
+    key=$DIST
+  fi
+
+  if [ -z "$build_dir" ]; then
+    build_dir="$SRC/$srcdir-$key"
+  else
+    build_dir="$SRC/$build_dir-$key"
+  fi
+
+  build_stamp="$build_dir.build_stamp"
+  install_stamp="$build_dir.install_stamp"
+
+  pushd $SRC &> /dev/null
+
+  if [ ! -f $build_stamp ]; then
+    download_source $srcfile $srcfile_url $srcfile_size $srcfile_sha1sum
+    rm -rf $srcdir $build_dir
+
+    if [ "$dont_extract" ]; then
+      mkdir $srcdir
+    else
+      extract $srcfile
+    fi
+
+    if [ "$build_outside" = "1" ]; then
+      new_srcdir="$build_dir-src"
+      build_function_arg=$new_srcdir
+      mv $srcdir $new_srcdir
+      mkdir $build_dir
+    else
+      build_function_arg=
+      mv $srcdir $build_dir
+    fi
+
+    pushd $build_dir &> /dev/null
+    $build_function $build_function_arg
+    popd &> /dev/null
+    touch $build_stamp
+  fi
+
+  if [ ! -f $install_stamp ]; then
+    pushd $build_dir &> /dev/null
+    $install_function
+    popd &> /dev/null
+    touch $install_stamp
+  fi
+
+  popd &> /dev/null
+
+  build_dir=
 }
 
 # Set $PATH so that target cross compiling tools (gcc, ld, as, etc...) don't
@@ -170,9 +266,10 @@ init_buildenv()
 
   check_build_and_target
 
+  DISTFILES="$BASE/distfiles"
   SRC="$BASE/src"
-  PREFIX="$BASE/$TARGET"
-  TOOLCHAIN="$PREFIX/toolchain"
+  TOOLCHAIN="$BASE/toolchains/$TARGET"
+  PREFIX="$BASE/dists/$DIST"
   SYSROOT="$PREFIX/sysroot"
   SYSBOOT="$PREFIX/sysboot"
   SYSCONF="$PREFIX/sysconf"
@@ -184,33 +281,29 @@ init_buildenv()
   SYSCONFIMG="$PREFIX/sysconf.img"
   SYSCONFIMGSIZE="64"
 
+  mkdir -p $DISTFILES \
+           $SRC \
+           $TOOLCHAIN \
+           $SYSROOT \
+           $SYSBOOT \
+           $SYSCONF
+
+  rm -rf $SRC/*.install_stamp \
+         $TOOLCHAIN/* \
+         $SYSROOT/* \
+         $SYSBOOT/* \
+         $SYSCONF/*
+
   # Directory where system configuration files are located.
   # Dont mistake $SYSCONF and $SYSCONFDIR. $SYSCONF is the directory
   # used to generate the ext2fs file system where modifyable configuration
   # files will be located.
   SYSCONFDIR="$ROOTDIR/sysconf"
 
-  # See files in $SYSCONFDIR if you change this.
-  DISTFILE="$SYSROOT/etc/dist"
-
-  mkdir -p $SRC
-  mkdir -p $TOOLCHAIN
-  mkdir -p $SYSROOT
-  mkdir -p $SYSBOOT
-  mkdir -p $SYSCONF
-
   export BUILD_CC=$(which gcc)
   SIMPLE_PATH=$TOOLCHAIN/bin:$PATH:/sbin:/usr/sbin:/usr/local/sbin
   EXTENDED_PATH=$TOOLCHAIN/bin:$TOOLCHAIN/i486-linux-uclibc/bin:$PATH:/sbin:/usr/sbin:/usr/local/sbin
   use_simple_path
-}
-
-# Remove the content of the prefix directory.
-# 
-# usage: clean_prefix
-clean_prefix()
-{
-  rm -rf $TOOLCHAIN/* $SYSROOT/* $SYSBOOT/* $SYSCONF/*
 }
 
 # Copy and optimize content of $SYSROOT into $SYSROOTTMP.

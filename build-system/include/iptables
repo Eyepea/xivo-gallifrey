@@ -20,38 +20,23 @@ IPTABLES_URL="ftp://ftp.netfilter.org/pub/iptables/$IPTABLES_SOURCE"
 IPTABLES_SIZE="191820"
 IPTABLES_SHA1SUM="6dbeeee13517fa02852960b6f6e51115c7548a09"
 
-# Build iptables.
-# 
-# usage: make_iptables
-make_iptables()
+# usage: iptables_build
+iptables_build()
 {
-  pushd $SRC &> /dev/null
-  download_source $IPTABLES_URL $IPTABLES_SOURCE $IPTABLES_SIZE $IPTABLES_SHA1SUM
+  # The creation of libiptc/libiptc.a is not always correct when
+  # using parallel building.
+  do_make DO_IPV6=1 \
+          DO_MULTI=1 \
+          CC=$TARGET-gcc \
+          PREFIX= \
+          DESTDIR=$SYSROOT \
+          KERNEL_DIR=$KERNEL_SOURCE \
+          -j 1
+}
 
-  get_basename $IPTABLES_SOURCE
-  iptables_src=$BASENAME
-  iptables_src_arch=$iptables_src-$TARGET-build
-
-  use_extended_path
-
-  if [ ! -d $iptables_src_arch ]; then
-    extract $IPTABLES_SOURCE
-    mv $iptables_src $iptables_src_arch
-    cd $iptables_src_arch
-
-    # The creation of libiptc/libiptc.a is not always correct when
-    # using parallel building.
-    do_make DO_IPV6=1 \
-            DO_MULTI=1 \
-            CC=$TARGET-gcc \
-            PREFIX= \
-            DESTDIR=$SYSROOT \
-            KERNEL_DIR=$KERNEL_SOURCE \
-            -j 1
-  else
-    cd $iptables_src_arch
-  fi
-
+# usage: iptables_install
+iptables_install()
+{
   do_make DO_IPV6=1 \
           DO_MULTI=1 \
           CC=$TARGET-gcc \
@@ -60,6 +45,14 @@ make_iptables()
           KERNEL_DIR=$KERNEL_SOURCE \
           -j 1 \
           install
+}
+
+# usage: make_iptables
+make_iptables()
+{
+  get_basename $IPTABLES_SOURCE
+  use_extended_path
+  make_package $IPTABLES_SOURCE $IPTABLES_URL $IPTABLES_SIZE $IPTABLES_SHA1SUM \
+               $BASENAME iptables_build iptables_install
   use_simple_path
-  popd &> /dev/null
 }

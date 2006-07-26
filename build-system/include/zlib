@@ -20,31 +20,22 @@ ZLIB_URL="http://switch.dl.sourceforge.net/sourceforge/libpng/$ZLIB_SOURCE"
 ZLIB_SIZE="496597"
 ZLIB_SHA1SUM="60faeaaf250642db5c0ea36cd6dcc9f99c8f3902"
 
-# Build zlib.
-# 
-# usage: make_zlib
+zlib_build()
+{
+  ./configure --prefix=$SYSROOT/usr --shared
+  do_make
+}
+
+zlib_install()
+{
+  do_make install
+}
+
 make_zlib()
 {
-  pushd $SRC &> /dev/null
-  download_source $ZLIB_URL $ZLIB_SOURCE $ZLIB_SIZE $ZLIB_SHA1SUM
-
   get_basename $ZLIB_SOURCE
-  zlib_src=$BASENAME
-  zlib_src_arch=$zlib_src-$TARGET-build
-
   use_extended_path
-
-  if [ ! -d $zlib_src_arch ]; then
-    extract $ZLIB_SOURCE
-    mv $zlib_src $zlib_src_arch
-    cd $zlib_src_arch
-    ./configure --prefix=$SYSROOT/usr --shared
-    do_make
-  else
-    cd $zlib_src_arch
-  fi
-
-  do_make install
+  make_package $ZLIB_SOURCE $ZLIB_URL $ZLIB_SIZE $ZLIB_SHA1SUM \
+               $BASENAME zlib_build zlib_install
   use_simple_path
-  popd &> /dev/null
 }

@@ -1,4 +1,4 @@
-# Xivo 0.2 - Build libpng.
+# Xivo 0.2 - Build SQLite extension for PHP.
 # Copyright (C) 2006 Richard Braun <rbraun@proformatique.com>
 # 
 # This program is free software; you can redistribute it and/or modify
@@ -15,40 +15,38 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-LIBPNG_SOURCE="libpng-1.2.12.tar.bz2"
-LIBPNG_URL="http://switch.dl.sourceforge.net/sourceforge/libpng/$LIBPNG_SOURCE"
-LIBPNG_SIZE="621295"
-LIBPNG_SHA1SUM="44bd6821607ba09ac500279363871ad5974a01b5"
+PHP_SQLITE_SOURCE="SQLite-1.0.3.tgz"
+PHP_SQLITE_URL="http://pecl.php.net/get/$PHP_SQLITE_SOURCE"
+PHP_SQLITE_SIZE="371189"
+PHP_SQLITE_SHA1SUM="338333183875deb74956b37a8d58e2659d47a501"
 
-# usage: libpng_build
-libpng_build()
+# usage: php_sqlite_build
+php_sqlite_build()
 {
-  ac_cv_func_memcmp_working=yes \
-  ac_cv_have_decl_malloc=yes \
-  gl_cv_func_malloc_0_nonnull=yes \
-  ac_cv_func_malloc_0_nonnull=yes \
-  ac_cv_func_calloc_0_nonnull=yes \
-  ac_cv_func_realloc_0_nonnull=yes \
+  $SYSROOT/usr/bin/phpize
   ./configure --build=$BUILD \
               --host=$TARGET \
-              --prefix=$SYSROOT/usr \
-              --without-libpng-compat \
-              --disable-static
+              --with-php-config=$SYSROOT/usr/bin/php-config \
+              --enable-shared \
+              --disable-static \
+              --with-pic
   do_make
 }
 
-# usage: libpng_install
-libpng_install()
+# usage: php_sqlite_install
+php_sqlite_install()
 {
   do_make install
 }
 
-# usage: make_libpng
-make_libpng()
+# usage: make_php_sqlite
+make_php_sqlite()
 {
-  make_zlib
+  make_php
 
-  get_basename $LIBPNG_SOURCE
-  make_package $LIBPNG_SOURCE $LIBPNG_URL $LIBPNG_SIZE $LIBPNG_SHA1SUM \
-               $BASENAME libpng_build libpng_install
+  get_basename $PHP_SQLITE_SOURCE
+  use_extended_path
+  make_package $PHP_SQLITE_SOURCE $PHP_SQLITE_URL $PHP_SQLITE_SIZE $PHP_SQLITE_SHA1SUM \
+               $BASENAME php_sqlite_build php_sqlite_install
+  use_simple_path
 }

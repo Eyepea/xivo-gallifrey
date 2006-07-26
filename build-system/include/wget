@@ -20,31 +20,28 @@ WGET_URL="http://ftp.gnu.org/pub/gnu/wget/$WGET_SOURCE"
 WGET_SIZE="1213056"
 WGET_SHA1SUM="a258357297959964fd42fed6afa1a4cce9069980"
 
-# Build wget.
-# 
+# usage: wget_build
+wget_build()
+{
+  ./configure --build=$BUILD \
+              --host=$TARGET \
+              --prefix=$SYSROOT/usr \
+              --disable-nls
+  do_make
+}
+
+# usage: wget_install
+wget_install()
+{
+  do_make install
+}
+
 # usage: make_wget
 make_wget()
 {
-  pushd $SRC &> /dev/null
-  download_source $WGET_URL $WGET_SOURCE $WGET_SIZE $WGET_SHA1SUM
+  make_openssl
 
   get_basename $WGET_SOURCE
-  wget_src=$BASENAME
-  wget_src_arch=$wget_src-$TARGET-build
-
-  if [ ! -d $wget_src_arch ]; then
-    extract $WGET_SOURCE
-    mv $wget_src $wget_src_arch
-    cd $wget_src_arch
-    ./configure --build=$BUILD \
-                --host=$TARGET \
-                --prefix=$SYSROOT/usr \
-                --disable-nls
-    do_make
-  else
-    cd $wget_src_arch
-  fi
-
-  do_make install
-  popd &> /dev/null
+  make_package $WGET_SOURCE $WGET_URL $WGET_SIZE $WGET_SHA1SUM \
+               $BASENAME wget_build wget_install
 }

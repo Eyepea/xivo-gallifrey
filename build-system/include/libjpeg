@@ -22,38 +22,29 @@ LIBJPEG_SHA1SUM="7079f0d6c42fad0cfba382cf6ad322add1ace8f9"
 
 LIBJPEG_UCLIBC_CROSSCOMPILE_PATCH="libjpeg-6b_uclibc_crosscompile.patch"
 
-# Build libjpeg.
-# 
+# usage: libjpeg_build
+libjpeg_build()
+{
+  apply_patch $LIBJPEG_UCLIBC_CROSSCOMPILE_PATCH
+  ./configure --build=$BUILD \
+              --host=$TARGET \
+              --prefix=$SYSROOT/usr \
+              --enable-shared \
+              --disable-static
+  do_make
+}
+
+# usage: libjpeg_install
+libjpeg_install()
+{
+  do_make install
+}
+
 # usage: make_libjpeg
 make_libjpeg()
 {
-  pushd $SRC &> /dev/null
-  download_source $LIBJPEG_URL $LIBJPEG_SOURCE $LIBJPEG_SIZE $LIBJPEG_SHA1SUM
-
-  get_basename $LIBJPEG_SOURCE
-
-  # Directory name must be hardcoded.
-  libjpeg_src="jpeg-6b"
-  libjpeg_src_arch=$libjpeg_src-$TARGET-build
-
   use_extended_path
-
-  if [ ! -d $libjpeg_src_arch ]; then
-    extract $LIBJPEG_SOURCE
-    mv $libjpeg_src $libjpeg_src_arch
-    cd $libjpeg_src_arch
-    apply_patch $LIBJPEG_UCLIBC_CROSSCOMPILE_PATCH
-    ./configure --build=$BUILD \
-                --host=$TARGET \
-                --prefix=$SYSROOT/usr \
-                --enable-shared \
-                --disable-static
-    do_make
-  else
-    cd $libjpeg_src_arch
-  fi
-
-  do_make install
+  make_package $LIBJPEG_SOURCE $LIBJPEG_URL $LIBJPEG_SIZE $LIBJPEG_SHA1SUM \
+               "jpeg-6b" libjpeg_build libjpeg_install
   use_simple_path
-  popd &> /dev/null
 }

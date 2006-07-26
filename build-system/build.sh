@@ -36,23 +36,10 @@ source dists/$DIST
 source archs/$ARCH
 source targets/$TARGET
 init_buildenv
-clean_prefix
 make_toolchain
 make_busybox
-make_zlib
-make_libbz2
-make_libpng
-make_libjpeg
-make_iptables
-make_ncurses
-make_file
-make_openssl
-make_gnutls
-make_wget
-make_vsftpd
 make_dropbear
-make_thy
-make_asterisk
-make_php
+make_wget
+make_dist_packages
 make_sysconf
 make_sysimgs

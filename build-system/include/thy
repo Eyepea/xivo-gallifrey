@@ -22,39 +22,37 @@ THY_SHA1SUM="e3bae4f3667f98fbc5fc39dc3f61571b524e5dfd"
 
 THY_ZLIB_PATCH="thy-0.9.4_zlib.patch"
 
-# Build thy.
-# 
+# usage: thy_build
+thy_build()
+{
+  apply_patch $THY_ZLIB_PATCH
+  CC=$TARGET-gcc \
+  ac_cv_func_malloc_0_nonnull=yes \
+  ac_cv_setproctitle_ok=no \
+  ./configure --build=$BUILD \
+              --host=$TARGET \
+              --prefix=$SYSROOT/usr \
+              --sysconfdir=$SYSROOT/etc \
+              --enable-file-magic \
+              --enable-uname \
+              --with-libgnutls-prefix=$SYSROOT/usr \
+              --with-libgnutls-extra-prefix=$SYSROOT/usr
+  do_make
+}
+
+# usage: thy_install
+thy_install()
+{
+  do_make install
+}
+
 # usage: make_thy
 make_thy()
 {
-  pushd $SRC &> /dev/null
-  download_source $THY_URL $THY_SOURCE $THY_SIZE $THY_SHA1SUM
+  make_zlib
+  make_gnutls
 
   get_basename $THY_SOURCE
-  thy_src=$BASENAME
-  thy_src_arch=$thy_src-$TARGET-build
-
-  if [ ! -d $thy_src_arch ]; then
-    extract $THY_SOURCE
-    mv $thy_src $thy_src_arch
-    cd $thy_src_arch
-    apply_patch $THY_ZLIB_PATCH
-    CC=$TARGET-gcc \
-    ac_cv_func_malloc_0_nonnull=yes \
-    ac_cv_setproctitle_ok=no \
-    ./configure --build=$BUILD \
-                --host=$TARGET \
-                --prefix=$SYSROOT/usr \
-                --sysconfdir=$SYSROOT/etc \
-                --enable-file-magic \
-                --enable-uname \
-                --with-libgnutls-prefix=$SYSROOT/usr \
-                --with-libgnutls-extra-prefix=$SYSROOT/usr
-    do_make
-  else
-    cd $thy_src_arch
-  fi
-
-  do_make install
-  popd &> /dev/null
+  make_package $THY_SOURCE $THY_URL $THY_SIZE $THY_SHA1SUM \
+               $BASENAME thy_build thy_install
 }

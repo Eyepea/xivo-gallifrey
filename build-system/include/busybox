@@ -652,30 +652,25 @@ CONFIG_LOGGER=y
 EOF
 }
 
-# Build busybox.
-# 
+# usage: busybox_build
+busybox_build()
+{
+  gen_busybox_conf > .config
+  do_make oldconfig
+  do_make
+}
+
+# usage: busybox_install
+busybox_install()
+{
+  do_make install
+  install -D -m 755 examples/udhcp/simple.script $SYSROOT/usr/share/udhcpc/default.script
+}
+
 # usage: make_busybox
 make_busybox()
 {
-  pushd $SRC &> /dev/null
-  download_source $BUSYBOX_URL $BUSYBOX_SOURCE $BUSYBOX_SIZE $BUSYBOX_SHA1SUM
-
   get_basename $BUSYBOX_SOURCE
-  busybox_src=$BASENAME
-  busybox_src_arch=$busybox_src-$TARGET
-
-  if [ ! -d $busybox_src_arch ]; then
-    extract $BUSYBOX_SOURCE
-    mv $busybox_src $busybox_src_arch
-    cd $busybox_src_arch
-    gen_busybox_conf > .config
-    do_make oldconfig
-    do_make
-  else
-    cd $busybox_src_arch
-  fi
-
-  do_make install
-  install -D -m 755 examples/udhcp/simple.script $SYSROOT/usr/share/udhcpc/default.script
-  popd &> /dev/null
+  make_package $BUSYBOX_SOURCE $BUSYBOX_URL $BUSYBOX_SIZE $BUSYBOX_SHA1SUM \
+               $BASENAME busybox_build busybox_install
 }

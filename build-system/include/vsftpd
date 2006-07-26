@@ -22,31 +22,27 @@ VSFTPD_SHA1SUM="9b6a079699aaeb01219665acf203c093f94faef0"
 
 VSFTPD_BUILDDEFS_PATCH="vsftpd-2.0.5_builddefs.patch"
 
-# Build vsftpd.
-# 
+# usage: vsftpd_build
+vsftpd_build()
+{
+  apply_patch $VSFTPD_BUILDDEFS_PATCH
+  do_make
+}
+
+# usage: vsftpd_install
+vsftpd_install()
+{
+  install -m 755 vsftpd $SYSROOT/usr/sbin
+}
+
 # usage: make_vsftpd
 make_vsftpd()
 {
-  pushd $SRC &> /dev/null
-  download_source $VSFTPD_URL $VSFTPD_SOURCE $VSFTPD_SIZE $VSFTPD_SHA1SUM
+  make_openssl
 
   get_basename $VSFTPD_SOURCE
-  vsftpd_src=$BASENAME
-  vsftpd_src_arch=$vsftpd_src-$TARGET-build
-
   use_extended_path
-
-  if [ ! -d $vsftpd_src_arch ]; then
-    extract $VSFTPD_SOURCE
-    mv $vsftpd_src $vsftpd_src_arch
-    cd $vsftpd_src_arch
-    apply_patch $VSFTPD_BUILDDEFS_PATCH
-    do_make
-  else
-    cd $vsftpd_src_arch
-  fi
-
-  install -m 755 vsftpd $SYSROOT/usr/sbin
+  make_package $VSFTPD_SOURCE $VSFTPD_URL $VSFTPD_SIZE $VSFTPD_SHA1SUM \
+               $BASENAME vsftpd_build vsftpd_install
   use_simple_path
-  popd &> /dev/null
 }
