@@ -31,8 +31,8 @@ device node), and will call sudo (I have not found a reliable solution
 to this problem yet). Then, you must call the build.sh script with the
 name of a distribution target (files in the dists/ directory). For
 example, to build Xivo for the Xivo orange prototype (this hardware has
-no reference :-)), run ./build.sh xivo or ./build.sh xivo-uclibc-i386.
-To build it using the GNU C Library instead of uClibc, run ./build.sh i386.
+no reference :-)), run ./build.sh xivo. To build it using the GNU C Library
+instead of uClibc, run ./build.sh xivo-i386.
 
 The result of the build script is the creation of 3 images : sysboot.img,
 sysroot.img, and sysconf.img. The first is an ext2 file system with the
