@@ -20,9 +20,12 @@ GNUTLS_URL="ftp://ftp.gnupg.org/gcrypt/alpha/gnutls/$GNUTLS_SOURCE"
 GNUTLS_SIZE="1557142"
 GNUTLS_SHA1SUM="e790b848b9aa1e98d8f28ecf522d8e5dc7e0cb0b"
 
+GNUTLS_DEPS_PATCH="gnutls-1.0.25_deps.patch"
+
 # usage: gnutls_build
 gnutls_build()
 {
+  apply_patch $GNUTLS_DEPS_PATCH
   ./configure --build=$BUILD \
               --host=$TARGET \
               --prefix=$SYSROOT/usr \

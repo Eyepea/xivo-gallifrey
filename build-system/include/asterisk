@@ -21,6 +21,7 @@ ASTERISK_SIZE="10573308"
 ASTERISK_SHA1SUM="e714edce1fba1296fc90d3d69e152bb32f5f5454"
 
 ASTERISK_UCLIBC_PATCH="asterisk-1.2.10_uclibc.patch"
+ASTERISK_DEPS_PATCH="asterisk-1.2.10_deps.patch"
 
 # usage: asterisk_build
 asterisk_build()
@@ -28,6 +29,8 @@ asterisk_build()
   if [ "$USE_UCLIBC" ]; then
     apply_patch $ASTERISK_UCLIBC_PATCH
   fi
+
+  apply_patch $ASTERISK_DEPS_PATCH
 
   # I suspect the build process to uncorrectly support parallel builds.
   do_make CROSS_COMPILE=$TOOLCHAIN/bin/$TARGET- \
@@ -76,7 +79,10 @@ make_asterisk()
   make_libpri
   make_zaptel
 
+  echo "attention..."
+  read line
   get_basename $ASTERISK_SOURCE
   make_package $ASTERISK_SOURCE $ASTERISK_URL $ASTERISK_SIZE $ASTERISK_SHA1SUM \
                $BASENAME asterisk_build asterisk_install
+  echo "done"
 }

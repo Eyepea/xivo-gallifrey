@@ -35,7 +35,7 @@ openssl_build()
 # usage: openssl_install
 openssl_install()
 {
-  do_make install -j 1
+  do_make install_sw -j 1
 }
 
 # usage: make_openssl

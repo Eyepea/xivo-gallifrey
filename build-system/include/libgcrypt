@@ -20,9 +20,12 @@ LIBGCRYPT_URL="ftp://ftp.gnupg.org/gcrypt/libgcrypt/$LIBGCRYPT_SOURCE"
 LIBGCRYPT_SIZE="959875"
 LIBGCRYPT_SHA1SUM="fdf3638c0de619343c5f2291a3e8b9fe610425ce"
 
+LIBGCRYPT_DEPS_PATCH="libgcrypt-1.2.2_deps.patch"
+
 # usage: libgcrypt_build
 libgcrypt_build()
 {
+  apply_patch $LIBGCRYPT_DEPS_PATCH
   ./configure --build=$BUILD \
               --host=$TARGET \
               --prefix=$SYSROOT/usr \

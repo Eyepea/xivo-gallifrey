@@ -33,7 +33,7 @@ ncurses_build()
               --disable-database \
               --disable-home-terminfo \
               --disable-macros \
-              --with-fallbacks \
+              --with-fallbacks=linux,vt100,xterm,rxvt \
               --enable-warnings
   do_make
 }
@@ -41,7 +41,8 @@ ncurses_build()
 # usage: ncurses_install
 ncurses_install()
 {
-  do_make install
+  do_make install.includes
+  do_make install.libs
 }
 
 # usage: make_ncurses
