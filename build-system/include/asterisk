@@ -79,10 +79,7 @@ make_asterisk()
   make_libpri
   make_zaptel
 
-  echo "attention..."
-  read line
   get_basename $ASTERISK_SOURCE
   make_package $ASTERISK_SOURCE $ASTERISK_URL $ASTERISK_SIZE $ASTERISK_SHA1SUM \
                $BASENAME asterisk_build asterisk_install
-  echo "done"
 }
