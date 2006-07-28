@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Xivo 0.2 - Load modules defined in /etc/modules.
+# Xivo 0.3 - Load modules defined in /etc/modules.
 # Copyright (C) 2006 Richard Braun <rbraun@proformatique.com>
 # 
 # This program is free software; you can redistribute it and/or modify

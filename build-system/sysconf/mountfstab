@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Xivo 0.2 - Mount file systems present in /etc/fstab.
+# Xivo 0.3 - Mount file systems present in /etc/fstab.
 # Copyright (C) 2006 Richard Braun <rbraun@proformatique.com>
 # 
 # This program is free software; you can redistribute it and/or modify

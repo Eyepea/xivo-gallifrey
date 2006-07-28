@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Xivo 0.2 - Main system boot script.
+# Xivo 0.3 - Main system boot script.
 # Copyright (C) 2006 Richard Braun <rbraun@proformatique.com>
 # 
 # This program is free software; you can redistribute it and/or modify
