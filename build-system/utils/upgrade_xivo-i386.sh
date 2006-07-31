@@ -41,10 +41,9 @@ else
 fi
 
 wget --no-check-certificate $sysroot -O $newroot > /dev/null
-mkdir /tmp/hdc1
-mount -o sync /dev/hdc1 /tmp/hdc1
-sed -ie "s%$root%$newroot%" /tmp/hdc1/boot/grub/menu.lst
-umount /tmp/hdc1
+mount /boot
+sed -ie "s%$root%$newroot%" /boot/boot/grub/menu.lst
+umount /boot
 
 echo "firmware upgraded, rebooting..."
 reboot
