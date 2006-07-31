@@ -84,7 +84,7 @@ make_binutils()
 {
   get_basename $BINUTILS_SOURCE
   make_package $BINUTILS_SOURCE $BINUTILS_URL $BINUTILS_SIZE $BINUTILS_SHA1SUM \
-               $BASENAME binutils_build binutils_install 1 1
+               $BASENAME binutils_build binutils_install 1
 }
 
 # usage: linux_headers_build
@@ -240,7 +240,7 @@ make_gcc_1()
   get_basename $GCC_SOURCE
   build_dir="$BASENAME-stage1"
   make_package $GCC_SOURCE $GCC_URL $GCC_SIZE $GCC_SHA1SUM \
-               $BASENAME gcc_1_build gcc_1_install 1 1
+               $BASENAME gcc_1_build gcc_1_install 1
 }
 
 # usage: uclibc_build
@@ -264,7 +264,7 @@ make_uclibc()
 {
   build_dir="uClibc-unused"
   make_package $UCLIBC_SOURCE $UCLIBC_URL $UCLIBC_SIZE $UCLIBC_SHA1SUM \
-               "uClibc" uclibc_build uclibc_install 0 0 1
+               "uClibc" uclibc_build uclibc_install 0 1
 }
 
 # Different directories must be used for headers and libraries because
@@ -354,7 +354,7 @@ make_gcc_2()
   get_basename $GCC_SOURCE
   build_dir="$BASENAME-stage2"
   make_package $GCC_SOURCE $GCC_URL $GCC_SIZE $GCC_SHA1SUM \
-               $BASENAME gcc_2_build gcc_2_install 1 1
+               $BASENAME gcc_2_build gcc_2_install 1
 }
 
 # usage: linux_build
@@ -387,7 +387,7 @@ make_linux()
   get_basename $LINUX_SOURCE
   build_dir="$BASENAME-unused"
   make_package $LINUX_SOURCE $LINUX_URL $LINUX_SIZE $LINUX_SHA1SUM \
-               $BASENAME linux_build linux_install 0 0 1
+               $BASENAME linux_build linux_install 0 1
   KERNEL_VERSION=$(ls -l $SYSBOOT/vmlinuz | cut -d '>' -f 2 | cut -d '-' -f 2-)
 }
 

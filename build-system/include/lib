@@ -142,20 +142,14 @@ do_make()
 # callback function will be given the path of a new source directory as its
 # first argument. This directory can then be patched safely.
 # 
-# Some toolchain packages like binutils depend on the target, not the
-# distribution. If target_is_key is 1, $TARGET will be used instead
-# of $DIST for the names of the build directory and stamp files.
-# 
 # Some toolchain package are handled in two steps. The same directories are
 # used in each step, but the stamp files must be different. When this is the
 # case, set dont_extract to 1 so that only stamp files are created.
 # 
-# It is suggested to omit build_outside, target_is_key and dont_extract if
-# they're not needed.
+# It is suggested to omit build_outside and dont_extract if they're not needed.
 # 
 # usage: make_package <srcfile> <srcfile_url> <srcfile_size> <srcfile_sha1sum>
-# <srcdir> <build_function> <install_function> <build_outside> <target_is_key>
-# <dont_extract>
+# <srcdir> <build_function> <install_function> <build_outside> <dont_extract>
 make_package()
 {
   srcfile=$1
@@ -166,20 +160,12 @@ make_package()
   build_function=$6
   install_function=$7
   build_outside=$8
-  target_is_key=$9
-  shift
   dont_extract=$9
 
-  if [ "$target_is_key" = "1" ]; then
-    key=$TARGET
-  else
-    key=$DIST
-  fi
-
   if [ -z "$build_dir" ]; then
-    build_dir="$SRC/$srcdir-$key"
+    build_dir="$SRC/$srcdir-$DIST"
   else
-    build_dir="$SRC/$build_dir-$key"
+    build_dir="$SRC/$build_dir-$DIST"
   fi
 
   build_stamp="$build_dir.build_stamp"
