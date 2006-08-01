@@ -305,8 +305,8 @@ init_buildenv()
 
   DISTFILES="$BASE/distfiles"
   SRC="$BASE/src"
-  TOOLCHAIN="$BASE/toolchains/$TARGET"
   PREFIX="$BASE/dists/$DIST"
+  TOOLCHAIN="$PREFIX/toolchain"
   SYSROOT="$PREFIX/sysroot"
   SYSBOOT="$PREFIX/sysboot"
   SYSCONF="$PREFIX/sysconf"
