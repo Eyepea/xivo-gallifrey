@@ -26,8 +26,8 @@ PATH=/sbin:/bin:/usr/sbin:/usr/bin
 
 echo "loading modules..."
 
-while read module; do
-  modprobe $module
+while read line; do
+  modprobe $line
 done < /etc/modules
 
 echo "done"

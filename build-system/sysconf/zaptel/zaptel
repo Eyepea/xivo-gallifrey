@@ -36,7 +36,7 @@ start_zaptel()
   echo "done"
 
   echo "configuring the Zaptel driver from $conffile..."
-  ztcfg -c $conffile
+  ztcfg -c $conffile || true
   echo "done"
 }
 

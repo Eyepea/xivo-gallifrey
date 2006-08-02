@@ -69,6 +69,7 @@ asterisk_install()
   install -m 644 $SYSCONFDIR/asterisk/sip.conf $SYSCONF/etc/asterisk
   install -m 644 $SYSCONFDIR/asterisk/voicemail.conf $SYSCONF/etc/asterisk
   install -m 644 $SYSCONFDIR/asterisk/zapata.conf $SYSCONF/etc/asterisk
+  install -m 644 $SYSCONFDIR/asterisk/misdn.conf $SYSCONF/etc/asterisk
 }
 
 # usage: make_asterisk
@@ -78,6 +79,8 @@ make_asterisk()
   make_openssl
   make_libpri
   make_zaptel
+  make_misdn
+  make_misdnuser
 
   get_basename $ASTERISK_SOURCE
   make_package $ASTERISK_SOURCE $ASTERISK_URL $ASTERISK_SIZE $ASTERISK_SHA1SUM \
