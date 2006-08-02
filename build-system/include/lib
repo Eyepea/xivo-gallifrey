@@ -186,6 +186,7 @@ make_package()
     if [ "$build_outside" = "1" ]; then
       new_srcdir="$build_dir-src"
       build_function_arg=$new_srcdir
+      rm -rf $new_srcdir
       mv $srcdir $new_srcdir
       mkdir $build_dir
     else
