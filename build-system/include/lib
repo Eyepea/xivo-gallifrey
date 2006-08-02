@@ -340,7 +340,7 @@ init_buildenv()
 
   export BUILD_CC=$(which gcc)
   SIMPLE_PATH=$TOOLCHAIN/bin:$PATH:/sbin:/usr/sbin:/usr/local/sbin
-  EXTENDED_PATH=$TOOLCHAIN/bin:$TOOLCHAIN/i486-linux-uclibc/bin:$PATH:/sbin:/usr/sbin:/usr/local/sbin
+  EXTENDED_PATH=$TOOLCHAIN/bin:$TOOLCHAIN/$TARGET/bin:$PATH:/sbin:/usr/sbin:/usr/local/sbin
   use_simple_path
 }
 
