@@ -6,7 +6,7 @@ gen_uclibc_conf()
   cat << EOF
 #
 # Automatically generated make config: don't edit
-# Fri Jul  7 15:42:57 2006
+# Tue Aug  1 17:23:58 2006
 #
 # TARGET_alpha is not set
 # TARGET_arm is not set
@@ -196,7 +196,7 @@ UCLIBC_BUILD_NOEXECSTACK=y
 CROSS_COMPILER_PREFIX=""
 # DODEBUG is not set
 # DODEBUG_PT is not set
-# NOSTRIP is not set
+DOSTRIP=y
 # DOASSERTS is not set
 # SUPPORT_LD_DEBUG is not set
 # SUPPORT_LD_DEBUG_EARLY is not set
