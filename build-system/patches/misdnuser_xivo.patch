@@ -1,0 +1,19 @@
+diff -Nurp mISDNuser.orig/Makefile mISDNuser/Makefile
+--- mISDNuser.orig/Makefile	2005-12-25 18:56:40.000000000 +0100
++++ mISDNuser/Makefile	2006-08-02 13:52:51.000000000 +0200
+@@ -1,13 +1,13 @@
+ #
+ # Set this to your local copy of mISDN
+ #
+-MISDNDIR := /usr/src/mqueue/mISDN
++MISDNDIR ?= /usr/src/mqueue/mISDN
+ 
+ #
+ # Change this to create an install prefix for the shared libs, programms and
+ # includes
+ #
+-INSTALL_PREFIX := /
++INSTALL_PREFIX ?= /
+ export INSTALL_PREFIX
+ 
+ MISDNINCLUDEDIR := $(MISDNDIR)/include

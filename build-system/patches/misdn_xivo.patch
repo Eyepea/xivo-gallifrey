@@ -1,0 +1,49 @@
+diff -Nurp mISDN.orig/Makefile mISDN/Makefile
+--- mISDN.orig/Makefile	2005-12-25 18:56:39.000000000 +0100
++++ mISDN/Makefile	2006-08-02 13:44:29.000000000 +0200
+@@ -1,15 +1,14 @@
+ BASEDIR=$(shell pwd)
+ 
+ 
+-INSTALL_PREFIX := /
++INSTALL_PREFIX ?= /
+ export INSTALL_PREFIX
+ 
+ #PATH to linux source/headers
+ #LINUX=/usr/src/linux
+-MODS=/lib/modules/$(shell uname -r)
+-LINUX=$(MODS)/build
+-LINUX_SOURCE=$(MODS)/source
+-
++MODS?=/lib/modules/$(shell uname -r)
++LINUX?=$(MODS)/build
++export CROSS_COMPILE
+ 
+ MISDNDIR=$(BASEDIR)
+ MISDN_SRC=$(MISDNDIR)/drivers/isdn/hardware/mISDN
+@@ -21,7 +20,7 @@ MISDN_SRC=$(MISDNDIR)/drivers/isdn/hardw
+ CONFIGS+=CONFIG_MISDN_DRV=m CONFIG_MISDN_DSP=m 
+ CONFIGS+=CONFIG_MISDN_HFCMULTI=m 
+ CONFIGS+=CONFIG_MISDN_HFCPCI=m
+-CONFIGS+=CONFIG_MISDN_HFCUSB=m
++#CONFIGS+=CONFIG_MISDN_HFCUSB=m
+ CONFIGS+=CONFIG_MISDN_AVM_FRITZ=m
+ 
+ 
+@@ -34,14 +33,12 @@ all: test_old_misdn
+ 	@echo
+ 	cp $(MISDNDIR)/drivers/isdn/hardware/mISDN/Makefile.v2.6 $(MISDNDIR)/drivers/isdn/hardware/mISDN/Makefile
+ 
+-	 export MINCLUDES=$(MISDNDIR)/include ; make -C $(LINUX) SUBDIRS=$(MISDN_SRC) modules $(CONFIGS) 
++	export MINCLUDES=$(MISDNDIR)/include ; make -C $(LINUX) SUBDIRS=$(MISDN_SRC) modules $(CONFIGS) 
+ 
+ 
+ install: all
+-	cd $(LINUX) ; make SUBDIRS=$(MISDN_SRC) modules_install 
++	cd $(LINUX) ; make SUBDIRS=$(MISDN_SRC) INSTALL_MOD_PATH=$(INSTALL_PREFIX) modules_install
+ 	cp $(MISDNDIR)/include/linux/*.h $(INSTALL_PREFIX)/usr/include/linux/
+-	install -m755 misdn-init /etc/init.d/
+-	depmod
+ 
+ 
+ test_old_misdn:
