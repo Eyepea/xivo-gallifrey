@@ -26,6 +26,7 @@ wget_build()
   ./configure --build=$BUILD \
               --host=$TARGET \
               --prefix=$SYSROOT/usr \
+              --sysconfdir=$SYSROOT/etc \
               --disable-nls
   do_make
 }
