@@ -355,7 +355,7 @@ copy_sysroot()
   echo "done"
 
   echo -n "removing static libraries and object files... "
-  find $SYSROOTTMP \( -name 'lib*.a' -o -name '*.o' \) -exec rm {} \;
+  find $SYSROOTTMP \( -name '*.a' -o -name '*.la' -o -name '*.o' \) -exec rm {} \;
   echo "done"
 
   echo -n "removing useless files... "
