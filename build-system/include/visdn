@@ -20,9 +20,17 @@ VISDN_URL="http://www.visdn.org/download/$VISDN_SOURCE"
 VISDN_SIZE="650503"
 VISDN_SHA1SUM="dbbeb64996774ccfb6149de1a611b4772b3532f6"
 
+VISDN_UCLIBC_PATCH="visdn-0.15.0_uclibc.patch"
+
 # usage: visdn_build
 visdn_build()
 {
+  apply_patch $VISDN_UCLIBC_PATCH
+  autoheader
+  aclocal
+  autoconf
+  automake
+
   ARCH=$ARCH \
   CROSS_COMPILE=$TARGET- \
   INSTALL_MOD_PATH=$SYSROOT \
@@ -30,7 +38,6 @@ visdn_build()
   ./configure --build=$BUILD \
               --host=$TARGET \
               --prefix=$SYSROOT \
-              --sysconfdir=$SYSROOT/etc \
               --disable-dependency-tracking \
               --disable-static \
               --enable-kernel-modules \

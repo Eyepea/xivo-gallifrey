@@ -22,9 +22,19 @@ set -e
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
 
 sysconf=/sysconf.img.gz
+boot_dir=/boot
+kernel=vmlinuz
+system_map=System.map
 conf_partition=$(grep ' /mnt ' /etc/fstab | cut -d ' ' -f 1)
 
 cd /
+
+echo -n "resetting kernel and system map... "
+mount $boot_dir
+cat /$kernel > $boot_dir/$kernel
+cat /$system_map > $boot_dir/$system_map
+umount $boot_dir
+echo "done"
 
 if [ ! -f "$sysconf" ]; then
   echo "factory defaults not found, aborting"
@@ -34,6 +44,6 @@ fi
 echo "shutting down services..."
 /etc/init.d/shutdown
 echo "resetting factory defaults, please wait..."
-gunzip -c $sysconf | dd of=$conf_partition bs=256K
+gunzip -c $sysconf | dd of=$conf_partition bs=256k
 echo "configuration reset complete, rebooting..."
 reboot

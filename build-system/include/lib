@@ -397,6 +397,11 @@ copy_sysroot()
   echo -n "saving sysconf image inside sysroot image... "
   gzip -c $SYSCONFIMG > $SYSROOTTMP/sysconf.img.gz
   echo "done"
+
+  echo -n "saving kernel and system map inside sysroot image... "
+  cp $SYSBOOT/vmlinuz-$KERNEL_VERSION $SYSROOTTMP/vmlinuz
+  cp $SYSBOOT/System.map-$KERNEL_VERSION $SYSROOTTMP/System.map
+  echo "done"
 }
 
 # Create the system images from $SYSROOT, $SYSBOOT and $SYSCONF.
