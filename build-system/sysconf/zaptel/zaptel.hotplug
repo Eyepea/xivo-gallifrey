@@ -1,0 +1,17 @@
+case $KERNEL in
+  zapctl)
+    NAME="zap/ctl"
+    ;;
+  zaptimer)
+    NAME="zap/timer"
+    ;;
+  zapchannel)
+    NAME="zap/channel"
+    ;;
+  zappseudo)
+    NAME="zap/pseudo"
+    ;;
+  zap[0-9]*)
+    NAME="zap/$(echo $KERNEL | sed -e 's/^zap//')"
+    ;;
+esac

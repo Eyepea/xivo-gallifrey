@@ -1,0 +1,9 @@
+case $SUBSYSTEM in
+  visdn)
+    NAME="visdn/$KERNEL"
+    ;;
+  visdn-timer)
+    NAME="visdn/timers/$KERNEL"
+    SYMLINK="visdn/timer"
+    ;;
+esac

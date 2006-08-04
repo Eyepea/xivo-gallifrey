@@ -61,7 +61,7 @@ Roadmap
 
 Xivo 0.1 : Alpha release
 Xivo 0.3 : Lots of bug fixes, package isolation, dependency
-Xivo 0.3 : Inclusion of new packages, mainly mISDN and CAPI support
+Xivo 0.3 : Inclusion of new packages, mainly vISDN and CAPI support
 Xivo 1.0 : Stable release
 
 

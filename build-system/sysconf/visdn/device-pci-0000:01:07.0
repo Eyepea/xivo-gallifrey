@@ -1,0 +1,24 @@
+BUS="pci"
+BUS_ID="0000:01:07.0"
+
+# netdev visdn0
+visdnctl netdev create visdn0 lapd
+visdnctl netdev set visdn0 type bri
+visdnctl netdev set visdn0 role TE
+visdnctl netdev set visdn0 mode P2MP
+
+# port st0
+echo TE > /sys/bus/$BUS/devices/$BUS_ID/st0/role
+echo 1500 > /sys/bus/$BUS/devices/$BUS_ID/st0/timer_t1
+echo 1500 > /sys/bus/$BUS/devices/$BUS_ID/st0/timer_t3
+
+# chan D
+CHANNEL=$(basename $(readlink /sys/bus/$BUS/devices/$BUS_ID/st0/D))
+visdnctl connect $CHANNEL /sys/class/net/visdn0/visdn_channel
+
+# chan E
+CHANNEL=$(basename $(readlink /sys/bus/$BUS/devices/$BUS_ID/st0/E))
+visdnctl connect $CHANNEL /sys/class/net/visdn0/visdn_channel_e
+
+echo 1 > /sys/bus/$BUS/devices/$BUS_ID/st0/enabled
+visdnctl netdev set visdn0 up

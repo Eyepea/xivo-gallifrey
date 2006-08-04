@@ -155,6 +155,7 @@ make_sysconf()
   make_var
   install -m 644 $SYSCONFDIR/inittab $SYSROOT/etc
   install -m 644 $SYSCONFDIR/mdev.conf $SYSROOT/etc
+  install -m 755 $SYSCONFDIR/hotplug $SYSROOT/sbin
   ln -s /proc/mounts $SYSROOT/etc/mtab
   install -m 644 $SYSCONFDIR/profile $SYSROOT/etc
   /sbin/depmod -b $SYSROOT -F $SYSBOOT/System.map -a $KERNEL_VERSION

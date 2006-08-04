@@ -34,6 +34,6 @@ fi
 echo "shutting down services..."
 /etc/init.d/shutdown
 echo "resetting factory defaults, please wait..."
-gunzip -c $sysconf | dd of=$conf_partition bs=8M
+gunzip -c $sysconf | dd of=$conf_partition bs=256K
 echo "configuration reset complete, rebooting..."
 reboot

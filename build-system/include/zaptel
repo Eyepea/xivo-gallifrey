@@ -15,6 +15,9 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+# Call make_zaptel() before make_asterisk() so that Asterisk builds
+# chan_zap.so.
+
 ZAPTEL_SOURCE="zaptel-1.2.7.tar.gz"
 ZAPTEL_URL="http://ftp.digium.com/pub/telephony/zaptel/$ZAPTEL_SOURCE"
 ZAPTEL_SIZE="1137409"
@@ -52,6 +55,7 @@ zaptel_install()
   install_rc_script $SYSCONFDIR/zaptel/zaptel 15 00
   rm -f $SYSROOT/etc/zaptel.conf
   make_conf_file zaptel/zaptel.conf /etc 644
+  install_hotplug_rule $SYSCONFDIR/zaptel/zaptel.hotplug
 }
 
 # usage: make_zaptel
@@ -60,4 +64,6 @@ make_zaptel()
   get_basename $ZAPTEL_SOURCE
   make_package $ZAPTEL_SOURCE $ZAPTEL_URL $ZAPTEL_SIZE $ZAPTEL_SHA1SUM \
                $BASENAME zaptel_build zaptel_install
+
+  ENABLE_ZAPTEL="YES"
 }

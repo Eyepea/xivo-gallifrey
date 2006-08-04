@@ -1123,8 +1123,12 @@ e100
 8021q
 ztdummy
 wctdm
-hfcpci protocol=0x2,0x12 layermask=0xf,0x3
-mISDN_dsp
+lapd
+visdn-netdev
+visdn-streamport
+visdn-timer-system
+visdn-ec
+visdn-hfc-pci
 EOF
 }
 
@@ -1138,8 +1142,6 @@ make_xivo_packages()
   make_php_fileinfo
   make_php_sqlite
   make_zaptel
-  make_misdn
-  make_misdnuser
   make_asterisk
-  make_chan_misdn
+  make_visdn
 }

@@ -163,9 +163,9 @@ make_package()
   dont_extract=$9
 
   if [ -z "$build_dir" ]; then
-    build_dir="$SRC/$srcdir-$DIST"
+    build_dir="$SRC/$srcdir-build"
   else
-    build_dir="$SRC/$build_dir-$DIST"
+    build_dir="$SRC/$build_dir"
   fi
 
   build_stamp="$build_dir.build_stamp"
@@ -254,6 +254,16 @@ install_rc_script()
   fi
 }
 
+# Install a script in /etc/hotplug.d, creating the directory if it doesn't
+# exist.
+# 
+# usage: install_hotplug_rule <script>
+install_hotplug_rule()
+{
+  mkdir -p -m 755 $SYSROOT/etc/hotplug.d
+  install -m 644 "$1" $SYSROOT/etc/hotplug.d
+}
+
 # Install a site-local configuration file. The file will be written
 # into $SYSCONF (/mnt at runtime), and a symlink of this file will be
 # created in $SYSROOT/destdir (if conffile has a directory part, this
@@ -305,8 +315,8 @@ init_buildenv()
   check_build_and_target
 
   DISTFILES="$BASE/distfiles"
-  SRC="$BASE/src"
   PREFIX="$BASE/dists/$DIST"
+  SRC="$PREFIX/src"
   TOOLCHAIN="$PREFIX/toolchain"
   SYSROOT="$PREFIX/sysroot"
   SYSBOOT="$PREFIX/sysboot"

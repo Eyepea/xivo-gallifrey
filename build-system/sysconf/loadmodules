@@ -27,7 +27,9 @@ PATH=/sbin:/bin:/usr/sbin:/usr/bin
 echo "loading modules..."
 
 while read line; do
-  modprobe $line
+  modprobe -kq $line 2> /dev/null
 done < /etc/modules
 
+# See /etc/init.d/filldev
+umount /mnt
 echo "done"

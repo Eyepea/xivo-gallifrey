@@ -26,20 +26,23 @@ PATH=/sbin:/bin:/usr/sbin:/usr/bin
 
 # mdev needs the presence of the root user and some gids in passwd and
 # group. These files are located in /mnt, so they are not yet usable.
-# as /etc/passwd and /etc/group are symlinks, and /etc is readonly, we
+# As /etc/passwd and /etc/group are symlinks, and /etc is readonly, we
 # must mount a temporary /mnt, with temporary passwd and group files, so
 # that mdev can work correctly. Once /dev is filled, these files are no
-# longer necessary.
+# longer necessary (the temporary /mnt is unmounted by the loadmodules
+# script).
 mount -n -t tmpfs tmpfs /mnt
 cp /etc/.passwd.mdev /mnt/passwd
 cp /etc/.group.mdev /mnt/group
 
 echo -n "starting mdev... "
 /sbin/mdev -s
-echo /sbin/mdev > /proc/sys/kernel/hotplug
 
 # This helps a lot.
 ln -sf /dev/urandom /dev/random
-echo "done"
 
-umount /mnt
+# hotplug is a script that emulates mdev with better configurability
+# (for hotplug events only, it cannot parse /sys).
+echo /sbin/hotplug > /proc/sys/kernel/hotplug
+
+echo "done"

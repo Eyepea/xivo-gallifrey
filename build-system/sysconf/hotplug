@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Xivo 0.3 - Configure the Zaptel driver.
+# Xivo 0.3 - Script to implement rules for /dev nodes.
 # Copyright (C) 2006 Richard Braun <rbraun@proformatique.com>
 # 
 # This program is free software; you can redistribute it and/or modify
@@ -20,26 +20,30 @@
 set -e
 
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
-conffile=/etc/zaptel.conf
 
-start_zaptel()
-{
-  echo "configuring the Zaptel driver from $conffile..."
-  ztcfg -c $conffile 2> /dev/null || true
-  echo "done"
-}
+if [ "$ACTION" != "add" ] || [ -z "$MAJOR" ] || [ -z "$MINOR" ]; then
+  exit 0
+fi
 
-case "$1" in
-  start)
-    start_zaptel
-    ;;
-  stop)
-    :
-    ;;
-  *)
-    echo "usage: $0 {start|stop (ignored)}"
-    exit 1
-    ;;
-esac
+KERNEL=$(basename $DEVPATH)
+TYPE=$(echo $DEVPATH | grep '^/block/' > /dev/null && echo b || echo c)
+NAME=$KERNEL
+OWNER=root
+GROUP=root
+MODE=660
 
-exit 0
+for file in /etc/hotplug.d/*; do
+  . $file
+done
+
+dir=$(dirname $NAME)
+
+if [ "$dir" != "." ]; then
+  mkdir -p -m 755 /dev/$dir
+fi
+
+mknod -m $MODE /dev/$NAME $TYPE $MAJOR $MINOR
+
+for symlink in $SYMLINK; do
+  ln -sfn /dev/$NAME /dev/$symlink
+done

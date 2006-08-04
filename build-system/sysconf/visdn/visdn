@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Xivo 0.3 - Create /dev/mISDN.
+# Xivo 0.3 - Configure vISDN.
 # Copyright (C) 2006 Richard Braun <rbraun@proformatique.com>
 # 
 # This program is free software; you can redistribute it and/or modify
@@ -20,19 +20,22 @@
 set -e
 
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
+confdir=/etc/visdn
 
-start_misdn()
+start_visdn()
 {
-  if [ ! -e /dev/mISDN ]; then
-    echo -n "creating /dev/mISDN... "
-    mknod /dev/mISDN c 46 0
-    echo "done"
-  fi
+  echo "configuring vISDN from $confdir..."
+
+  for file in $confdir/*; do
+    sh $file
+  done
+
+  echo "done"
 }
 
 case "$1" in
   start)
-    start_misdn
+    start_visdn
     ;;
   stop)
     :
