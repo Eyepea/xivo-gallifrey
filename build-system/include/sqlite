@@ -1,0 +1,67 @@
+# Xivo 0.3 - Build SQLite.
+# Copyright (C) 2006 Richard Braun <rbraun@proformatique.com>
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+SQLITE_SOURCE="sqlite-2.8.17.tar.gz"
+SQLITE_URL="http://www.sqlite.org/$SQLITE_SOURCE"
+SQLITE_SIZE="969805"
+SQLITE_SHA1SUM="75db1cf3b00ea18ae8528e676fc9fdf698e2fe58"
+
+SQLITE_XIVO_PATCH="sqlite-2.8.17_xivo.patch"
+
+# usage: sqlite_build
+sqlite_build()
+{
+  apply_patch $SQLITE_XIVO_PATCH
+  do_make -f Makefile.linux-gcc \
+          TOP=$PWD \
+          INSTALL_PREFIX=$SYSROOT/usr \
+          BCC=$BUILD_CC \
+          TCC=$TOOLCHAIN/bin/$TARGET-gcc \
+          AR="$TOOLCHAIN/bin/$TARGET-ar cr" \
+          RANLIB=$TOOLCHAIN/bin/$TARGET-ranlib \
+          TCL_FLAGS=-DNO_TCL \
+          LIBTCL= \
+          READLINE_FLAGS="-DHAVE_READLINE=1 -I$SYSROOT/usr/include" \
+          LIBREADLINE="-lreadline -lncurses"
+}
+
+# usage: sqlite_install
+sqlite_install()
+{
+  do_make -f Makefile.linux-gcc install \
+          TOP=$PWD \
+          INSTALL_PREFIX=$SYSROOT/usr \
+          BCC=$BUILD_CC \
+          TCC=$TOOLCHAIN/bin/$TARGET-gcc \
+          AR="$TOOLCHAIN/bin/$TARGET-ar cr" \
+          RANLIB=$TOOLCHAIN/bin/$TARGET-ranlib \
+          TCL_FLAGS=-DNO_TCL \
+          LIBTCL= \
+          READLINE_FLAGS="-DHAVE_READLINE=1 -I$SYSROOT/usr/include" \
+          LIBREADLINE="-lreadline -lncurses"
+}
+
+# usage: make_sqlite
+make_sqlite()
+{
+  make_ncurses
+  make_readline
+
+  get_basename $SQLITE_SOURCE
+  make_package $SQLITE_SOURCE $SQLITE_URL $SQLITE_SIZE $SQLITE_SHA1SUM \
+               $BASENAME sqlite_build sqlite_install
+}

@@ -1,0 +1,144 @@
+diff -Nurp sqlite-2.8.17.orig/main.mk sqlite-2.8.17/main.mk
+--- sqlite-2.8.17.orig/main.mk	2005-04-24 00:43:23.000000000 +0200
++++ sqlite-2.8.17/main.mk	2006-08-07 16:50:18.000000000 +0200
+@@ -6,6 +6,8 @@
+ #                  directory that contains this "Makefile.in" and the
+ #                  "configure.in" script.
+ #
++# INSTALL_PREFIX   The toplevel directory where files are installed.
++#
+ # BCC              C Compiler and options for use in building executables that
+ #                  will run on the platform that is doing the build.
+ #
+@@ -139,7 +141,7 @@ VDBEHDR = \
+ # This is the default Makefile target.  The objects listed here
+ # are what get build when you type just "make" with no arguments.
+ #
+-all:	sqlite.h config.h libsqlite.a sqlite$(EXE)
++all:	sqlite.h config.h libsqlite.so sqlite$(EXE)
+ 
+ # Generate the file "last_change" which contains the date of change
+ # of the most recently modified source code file
+@@ -148,15 +150,14 @@ last_change:	$(SRC)
+ 	cat $(SRC) | grep '$$Id: ' | sort +4 | tail -1 \
+           | awk '{print $$5,$$6}' >last_change
+ 
+-libsqlite.a:	$(LIBOBJ)
+-	$(AR) libsqlite.a $(LIBOBJ)
+-	$(RANLIB) libsqlite.a
++libsqlite.so:	$(LIBOBJ)
++	$(TCC) -shared -o libsqlite.so $(LIBOBJ)
+ 
+-sqlite$(EXE):	$(TOP)/src/shell.c libsqlite.a sqlite.h
++sqlite$(EXE):	$(TOP)/src/shell.c libsqlite.so sqlite.h
+ 	$(TCCX) $(READLINE_FLAGS) -o sqlite$(EXE) $(TOP)/src/shell.c \
+-		libsqlite.a $(LIBREADLINE) $(THREADLIB)
++		-L. $(LIBREADLINE) $(THREADLIB) -lsqlite
+ 
+-sqlite_analyzer$(EXE):	$(TOP)/src/tclsqlite.c libsqlite.a $(TESTSRC) \
++sqlite_analyzer$(EXE):	$(TOP)/src/tclsqlite.c libsqlite.so $(TESTSRC) \
+ 			$(TOP)/tool/spaceanal.tcl
+ 	sed \
+ 	  -e '/^#/d' \
+@@ -165,9 +166,9 @@ sqlite_analyzer$(EXE):	$(TOP)/src/tclsql
+ 	  -e 's,^,",' \
+ 	  -e 's,$$,\\n",' \
+ 	  $(TOP)/tool/spaceanal.tcl >spaceanal_tcl.h
+-	$(TCCX) $(TCL_FLAGS) -DTCLSH=2 -DSQLITE_TEST=1 -static -o \
++	$(TCCX) $(TCL_FLAGS) -DTCLSH=2 -DSQLITE_TEST=1 -L. -o \
+  		sqlite_analyzer$(EXE) $(TESTSRC) $(TOP)/src/tclsqlite.c \
+-		libsqlite.a $(LIBTCL)
++		$(LIBTCL) -lsqlite
+ 
+ 
+ # This target creates a directory named "tsrc" and fills it with
+@@ -325,14 +326,14 @@ attach.o:	$(TOP)/src/attach.c $(HDR)
+ auth.o:	$(TOP)/src/auth.c $(HDR)
+ 	$(TCCX) -c $(TOP)/src/auth.c
+ 
+-tclsqlite:	$(TOP)/src/tclsqlite.c libsqlite.a
++tclsqlite:	$(TOP)/src/tclsqlite.c libsqlite.so
+ 	$(TCCX) $(TCL_FLAGS) -DTCLSH=1 -o tclsqlite \
+-		$(TOP)/src/tclsqlite.c libsqlite.a $(LIBTCL)
++		$(TOP)/src/tclsqlite.c -L. $(LIBTCL) -lsqlite
+ 
+-testfixture$(EXE):	$(TOP)/src/tclsqlite.c libsqlite.a $(TESTSRC)
++testfixture$(EXE):	$(TOP)/src/tclsqlite.c libsqlite.so $(TESTSRC)
+ 	$(TCCX) $(TCL_FLAGS) -DTCLSH=1 -DSQLITE_TEST=1 -o testfixture$(EXE) \
+ 		$(TESTSRC) $(TOP)/src/tclsqlite.c \
+-		libsqlite.a $(LIBTCL) $(THREADLIB)
++		-L. $(LIBTCL) $(THREADLIB) -lsqlite
+ 
+ fulltest:	testfixture$(EXE) sqlite$(EXE)
+ 	./testfixture$(EXE) $(TOP)/test/all.test
+@@ -433,13 +434,13 @@ doc:	$(DOC)
+ 	mkdir -p doc
+ 	mv $(DOC) doc
+ 
+-install:	sqlite libsqlite.a sqlite.h
+-	mv sqlite /usr/bin
+-	mv libsqlite.a /usr/lib
+-	mv sqlite.h /usr/include
++install:	sqlite libsqlite.so sqlite.h
++	install -D -m 755 sqlite $(INSTALL_PREFIX)/bin/sqlite
++	install -D -m 755 libsqlite.so $(INSTALL_PREFIX)/lib/libsqlite.so
++	install -D -m 644 sqlite.h $(INSTALL_PREFIX)/include/sqlite.h
+ 
+ clean:	
+-	rm -f *.o sqlite libsqlite.a sqlite.h opcodes.*
++	rm -f *.o sqlite libsqlite.so sqlite.h opcodes.*
+ 	rm -f lemon lempar.c parse.* sqlite*.tar.gz
+ 	rm -f $(PUBLISH)
+ 	rm -f *.da *.bb *.bbg gmon.out
+diff -Nurp sqlite-2.8.17.orig/Makefile.linux-gcc sqlite-2.8.17/Makefile.linux-gcc
+--- sqlite-2.8.17.orig/Makefile.linux-gcc	2005-04-24 00:43:23.000000000 +0200
++++ sqlite-2.8.17/Makefile.linux-gcc	2006-08-07 16:42:46.000000000 +0200
+@@ -14,12 +14,15 @@
+ #### The toplevel directory of the source tree.  This is the directory
+ #    that contains this "Makefile.in" and the "configure.in" script.
+ #
+-TOP = ../sqlite
++TOP ?= ../sqlite
++
++#### The toplevel directory where files are installed.
++INSTALL_PREFIX ?= /usr
+ 
+ #### C Compiler and options for use in building executables that
+ #    will run on the platform that is doing the build.
+ #
+-BCC = gcc -g -O2
++BCC ?= gcc -g -O2
+ #BCC = /opt/ancic/bin/c89 -0
+ 
+ #### If the target operating system supports the "usleep()" system
+@@ -33,13 +36,13 @@ USLEEP = -DHAVE_USLEEP=1
+ #    appropriately:
+ #
+ #THREADSAFE = -DTHREADSAFE=1
+-THREADSAFE = -DTHREADSAFE=0
++THREADSAFE = -DTHREADSAFE=1
+ 
+ #### Specify any extra linker options needed to make the library
+ #    thread safe
+ #
+ #THREADLIB = -lpthread
+-THREADLIB = 
++THREADLIB = -lpthread
+ 
+ #### Leave MEMORY_DEBUG undefined for maximum speed.  Use MEMORY_DEBUG=1
+ #    to check for memory leaks.  Use MEMORY_DEBUG=2 to print a log of all
+@@ -95,12 +98,12 @@ LIBTCL = /home/drh/tcltk/8.4linux/libtcl
+ #### Compiler options needed for programs that use the readline() library.
+ #
+ #READLINE_FLAGS =
+-READLINE_FLAGS = -DHAVE_READLINE=1 -I/usr/include/readline
++READLINE_FLAGS ?= -DHAVE_READLINE=1 -I/usr/include/readline
+ 
+ #### Linker options needed by programs using readline() must link against.
+ #
+ #LIBREADLINE =
+-LIBREADLINE = -static -lreadline -ltermcap
++LIBREADLINE ?= -static -lreadline -ltermcap
+ 
+ #### Should the database engine assume text is coded as UTF-8 or iso8859?
+ #

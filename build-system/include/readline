@@ -1,4 +1,4 @@
-# Xivo 0.3 - Build file.
+# Xivo 0.3 - Build readline.
 # Copyright (C) 2006 Richard Braun <rbraun@proformatique.com>
 # 
 # This program is free software; you can redistribute it and/or modify
@@ -15,41 +15,40 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-FILE_SOURCE="file-4.17.tar.gz"
-FILE_URL="ftp://ftp.gw.com/mirrors/pub/unix/file/$FILE_SOURCE"
-FILE_SIZE="556270"
-FILE_SHA1SUM="e03710a3fcb95db6d0ee9cfcdf88c19a5e525ee4"
+READLINE_SOURCE="readline-5.1.tar.gz"
+READLINE_URL="ftp://ftp.cwru.edu/pub/bash/$READLINE_SOURCE"
+READLINE_SIZE="2030276"
+READLINE_SHA1SUM="4b2ee2bc9c6dd1d238c84a58f7e6db173600b850"
 
-FILE_UCLIBC_PATCH="file-4.17_uclibc.patch"
+READLINE_UCLIBC_PATCH="readline-5.1_uclibc.patch"
 
-# usage: file_build
-file_build()
+# usage: readline_build
+readline_build()
 {
   if [ "$USE_UCLIBC" ]; then
-    apply_patch $FILE_UCLIBC_PATCH
+    apply_patch $READLINE_UCLIBC_PATCH
   fi
 
   ./configure --build=$BUILD \
               --host=$TARGET \
               --prefix=$SYSROOT/usr \
-              --datadir=/usr/share \
-              --disable-dependency-tracking \
-              --disable-static
+              --disable-static \
+              --with-curses
   do_make
 }
 
-# usage: file_install
-file_install()
+# usage: readline_install
+readline_install()
 {
   do_make install
 }
 
-# usage: make_file
-make_file()
+# usage: make_readline
+make_readline()
 {
-  make_zlib
+  make_ncurses
 
-  get_basename $FILE_SOURCE
-  make_package $FILE_SOURCE $FILE_URL $FILE_SIZE $FILE_SHA1SUM \
-               $BASENAME file_build file_install
+  get_basename $READLINE_SOURCE
+  make_package $READLINE_SOURCE $READLINE_URL $READLINE_SIZE $READLINE_SHA1SUM \
+               $BASENAME readline_build readline_install
 }

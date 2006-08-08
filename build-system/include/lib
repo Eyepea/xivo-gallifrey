@@ -126,7 +126,7 @@ apply_patch()
 # usage: do_make [target...]
 do_make()
 {
-  make $MAKEFLAGS $@
+  make $MAKEFLAGS "$@"
 }
 
 # Download, check, extract, build and install a package.
