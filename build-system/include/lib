@@ -364,6 +364,11 @@ copy_sysroot()
   cp -a $SYSROOT $SYSROOTTMP
   echo "done"
 
+  echo -n "create dummy link $SYSROOTTMP/$SYSROOT -> /... "
+  mkdir -p -m 755 $(dirname $SYSROOTTMP/$SYSROOT)
+  ln -s / $SYSROOTTMP/$SYSROOT
+  echo "done"
+
   echo -n "removing static libraries and object files... "
   find $SYSROOTTMP \( -name '*.a' -o -name '*.la' -o -name '*.o' \) -exec rm {} \;
   echo "done"

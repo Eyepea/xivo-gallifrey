@@ -32,7 +32,6 @@ file_build()
   ./configure --build=$BUILD \
               --host=$TARGET \
               --prefix=$SYSROOT/usr \
-              --datadir=/usr/share \
               --disable-dependency-tracking \
               --disable-static
   do_make
