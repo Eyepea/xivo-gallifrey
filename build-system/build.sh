@@ -41,5 +41,7 @@ make_busybox
 make_dropbear
 make_wget
 make_dist_packages
+echo "hop"
+read
 make_sysconf
 make_sysimgs
