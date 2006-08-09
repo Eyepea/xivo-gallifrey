@@ -8,7 +8,6 @@ OBJECTS = res_sqlite.o
 HEADERS = res_sqlite.h
 
 .PHONY: clean
-.SILENT: rxim $(OBJECTS) clean
 
 res_sqlite.so: $(OBJECTS)
 	$(CC) -shared -Xlinker -x -o res_sqlite.so res_sqlite.o $(LIBS)

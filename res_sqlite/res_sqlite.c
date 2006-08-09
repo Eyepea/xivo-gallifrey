@@ -30,7 +30,6 @@
 
 #include "res_sqlite.h"
 
-static int enabled;
 static int cdr_registered;
 static sqlite *db;
 static char *dbfile;
@@ -46,27 +45,69 @@ static int cdr_handler(struct ast_cdr *cdr);
 /*
  * Taken from Asterisk 1.2 cdr_sqlite.so.
  */
-static char sql_create_cdr_table[] =
-"CREATE TABLE %s ("
-"       AcctId          INTEGER PRIMARY KEY,"
-"       clid            VARCHAR(80),"
-"       src             VARCHAR(80),"
-"       dst             VARCHAR(80),"
-"       dcontext        VARCHAR(80),"
-"       channel         VARCHAR(80),"
-"       dstchannel      VARCHAR(80),"
-"       lastapp         VARCHAR(80),"
-"       lastdata        VARCHAR(80),"
-"       start           CHAR(19),"
-"       answer          CHAR(19),"
-"       end             CHAR(19),"
-"       duration        INTEGER,"
-"       billsec         INTEGER,"
-"       disposition     INTEGER,"
-"       amaflags        INTEGER,"
-"       accountcode     VARCHAR(20),"
-"       uniqueid        VARCHAR(32),"
-"       userfield       VARCHAR(255)"
+
+static char *sql_create_cdr_table =
+"CREATE TABLE '%q' ("
+"	AcctId		INTEGER PRIMARY KEY,"
+"	clid		VARCHAR(80),"
+"	src		VARCHAR(80),"
+"	dst		VARCHAR(80),"
+"	dcontext	VARCHAR(80),"
+"	channel		VARCHAR(80),"
+"	dstchannel	VARCHAR(80),"
+"	lastapp		VARCHAR(80),"
+"	lastdata	VARCHAR(80),"
+"	start		CHAR(19),"
+"	answer		CHAR(19),"
+"	end		CHAR(19),"
+"	duration	INTEGER,"
+"	billsec		INTEGER,"
+"	disposition	INTEGER,"
+"	amaflags	INTEGER,"
+"	accountcode	VARCHAR(20),"
+"	uniqueid	VARCHAR(32),"
+"	userfield	VARCHAR(255)"
+");";
+
+static char *sql_add_cdr_entry =
+"INSERT INTO '%q' ("
+"       clid,"
+"	src,"
+"	dst,"
+"	dcontext,"
+"	channel,"
+"	dstchannel,"
+"	lastapp,"
+"	lastdata,"
+"	start,"
+"	answer,"
+"	end,"
+"	duration,"
+"	billsec,"
+"	disposition,"
+"	amaflags,"
+"	accountcode,"
+"	uniqueid,"
+"	userfield"
+") VALUES ("
+"	'%q',"
+"	'%q',"
+"	'%q',"
+"	'%q',"
+"	'%q',"
+"	'%q',"
+"	'%q',"
+"	'%q',"
+"	datetime(%d,'unixepoch')"
+"	,datetime(%d,'unixepoch'),"
+"	datetime(%d,'unixepoch'),"
+"	'%ld',"
+"	'%ld',"
+"	'%ld',"
+"	'%ld',"
+"	'%q',"
+"	'%q',"
+"	'%q'"
 ");";
 
 static int
@@ -79,7 +120,8 @@ set_var(char **var, char *name, char *value)
 
   if (*var == NULL)
     {
-      ast_log(LOG_ERROR, "Unable to allocate variable %s\n", name);
+      ast_log(LOG_ERROR, RES_SQLITE_NAME ": Unable to allocate variable %s\n",
+              name);
       return 1;
     }
 
@@ -112,7 +154,8 @@ load_config(void)
         SET_VAR(config, cdr_table, var)
 
       else
-        ast_log(LOG_WARNING, "Unknown parameter : %s\n", var->name);
+        ast_log(LOG_WARNING, RES_SQLITE_NAME ": Unknown parameter : %s\n",
+                var->name);
     }
 
   ast_config_destroy(config);
@@ -147,7 +190,30 @@ check_vars(void)
 static int
 cdr_handler(struct ast_cdr *cdr)
 {
-  ast_verbose(VERBOSE_PREFIX_3 "cdr_handler() called\n");
+  char *errormsg;
+  int i, error;
+
+  for (i = 0; i < 3; i++)
+    {
+      error = sqlite_exec_printf(db, sql_add_cdr_entry, NULL, NULL, &errormsg,
+                                 cdr_table, cdr->clid, cdr->src, cdr->dst,
+                                 cdr->dcontext, cdr->channel, cdr->dstchannel,
+                                 cdr->lastapp, cdr->lastdata, cdr->start.tv_sec,
+                                 cdr->answer.tv_sec, cdr->end.tv_sec,
+                                 cdr->duration, cdr->billsec, cdr->disposition,
+                                 cdr->amaflags, cdr->accountcode, cdr->uniqueid,
+                                 cdr->userfield);
+
+      if (!error || (error && (error != SQLITE_BUSY && error != SQLITE_LOCKED)))
+        break;
+    }
+
+  if (error)
+    {
+      ast_log(LOG_ERROR, RES_SQLITE_NAME ": %s\n", errormsg);
+      free(errormsg);
+    }
+
   return 0;
 }
 
@@ -157,37 +223,25 @@ load_module(void)
   char *errormsg;
   int error;
 
-  enabled = 1;
   cdr_registered = 0;
   error = load_config();
 
   if (error)
     {
-      ast_verbose(VERBOSE_PREFIX_3 "Unable to load " RES_SQLITE_CONF_FILE
-                  ", " RES_SQLITE_NAME " disabled\n");
       unload_module();
-      return 0;
+      return 1;
     }
 
   db = sqlite_open(dbfile, 0660, &errormsg);
 
   if (db == NULL)
     {
-      ast_log(LOG_ERROR, "Unable to open SQLite database: %s\n", errormsg);
+      ast_log(LOG_ERROR, RES_SQLITE_NAME ": %s\n", errormsg);
+      free(errormsg);
       unload_module();
-      return 0;
+      return 1;
     }
 
-  error = ast_cdr_register(RES_SQLITE_NAME, RES_SQLITE_DESCRIPTION,
-                           cdr_handler);
-
-  if (error)
-    {
-      unload_module();
-      return 0;
-    }
-
-  cdr_registered = 1;
   error = sqlite_exec_printf(db, "SELECT COUNT(AcctId) FROM %s;", NULL, NULL,
                              &errormsg, cdr_table);
 
@@ -198,46 +252,47 @@ load_module(void)
        */
       if (error != SQLITE_ERROR)
         {
-          ast_log(LOG_ERROR, "Unable to access CDR table, error: %s\n",
-                  errormsg);
+          ast_log(LOG_ERROR, RES_SQLITE_NAME ": %s\n", errormsg);
+          free(errormsg);
           unload_module();
-          return 0;
+          return 1;
         }
 
-      else
-        {
-          error = sqlite_exec_printf(db, sql_create_cdr_table, NULL, NULL,
-                  &errormsg, cdr_table);
+      error = sqlite_exec_printf(db, sql_create_cdr_table, NULL, NULL,
+              &errormsg, cdr_table);
 
-          if (error)
-            {
-              ast_log(LOG_ERROR, "Unable to create CDR table, error: %s\n",
-                      errormsg);
-              unload_module();
-              return 0;
-            }
+      if (error)
+        {
+          ast_log(LOG_ERROR, RES_SQLITE_NAME ": %s\n", errormsg);
+          free(errormsg);
+          unload_module();
+          return 1;
         }
     }
 
+  error = ast_cdr_register(RES_SQLITE_NAME, RES_SQLITE_DESCRIPTION,
+                           cdr_handler);
+
+  if (error)
+    {
+      unload_module();
+      return 1;
+    }
+
+  cdr_registered = 1;
   return 0;
 }
 
 int
 unload_module(void)
 {
-  if (!enabled)
-    return 0;
-
-  unload_config();
+  if (cdr_registered)
+    ast_cdr_unregister(RES_SQLITE_NAME);
 
   if (db != NULL)
     sqlite_close(db);
 
-  if (cdr_registered)
-    ast_cdr_unregister(RES_SQLITE_NAME);
-
-  cdr_registered = 0;
-  enabled = 0;
+  unload_config();
   return 0;
 }
 
