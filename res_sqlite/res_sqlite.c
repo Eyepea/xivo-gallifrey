@@ -206,6 +206,8 @@ cdr_handler(struct ast_cdr *cdr)
 
       if (!error || (error && (error != SQLITE_BUSY && error != SQLITE_LOCKED)))
         break;
+
+      usleep(200);
     }
 
   if (error)
