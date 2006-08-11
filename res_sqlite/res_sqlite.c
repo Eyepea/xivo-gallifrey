@@ -18,6 +18,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sqlite.h>
@@ -75,6 +76,12 @@ struct cfg_entry_args
   char *cat_name;
 };
 
+struct rt_cfg_entry_args
+{
+  struct ast_variable *var;
+  struct ast_variable *last;
+};
+
 static int cdr_registered;
 static sqlite *db;
 static char *dbfile;
@@ -86,16 +93,30 @@ static int load_config(void);
 static void unload_config(void);
 static int check_vars(void);
 static int cdr_handler(struct ast_cdr *cdr);
+static int add_cfg_entry(void *arg, int argc, char **argv, char **columnNames);
 static struct ast_config * config_handler(const char *database,
                                           const char *table, const char *file,
                                           struct ast_config *cfg);
+static int add_rt_cfg_entry(void *arg, int argc, char **argv,
+                            char **columnNames);
+static struct ast_variable * realtime_handler(const char *database,
+                                              const char *table, va_list ap);
+static struct ast_config * realtime_multi_handler(const char *database,
+                                                  const char *table,
+                                                  va_list ap);
+static int realtime_update_handler(const char *database, const char *table,
+                                   const char *keyfield, const char *entity,
+                                   va_list ap);
 
 AST_MUTEX_DEFINE_STATIC(mutex);
 
 static struct ast_config_engine sqlite_engine =
 {
   .name = RES_SQLITE_DRIVER,
-  .load_func = config_handler
+  .load_func = config_handler,
+  .realtime_func = realtime_handler,
+  .realtime_multi_func = realtime_multi_handler,
+  .update_func = realtime_update_handler
 };
 
 /*
@@ -104,7 +125,7 @@ static struct ast_config_engine sqlite_engine =
 
 static char *sql_create_cdr_table =
 "CREATE TABLE '%q' ("
-"	AcctId		INTEGER PRIMARY KEY,"
+"	id		INTEGER PRIMARY KEY,"
 "	clid		VARCHAR(80),"
 "	src		VARCHAR(80),"
 "	dst		VARCHAR(80),"
@@ -113,9 +134,9 @@ static char *sql_create_cdr_table =
 "	dstchannel	VARCHAR(80),"
 "	lastapp		VARCHAR(80),"
 "	lastdata	VARCHAR(80),"
-"	start		CHAR(19),"
-"	answer		CHAR(19),"
-"	end		CHAR(19),"
+"	start		VARCHAR(80),"
+"	answer		VARCHAR(80),"
+"	end		VARCHAR(80),"
 "	duration	INTEGER,"
 "	billsec		INTEGER,"
 "	disposition	INTEGER,"
@@ -243,8 +264,10 @@ unload_config(void)
 static int
 check_vars(void)
 {
+  /*
+   * Don't check config_table, as it can be given in extconfig.conf.
+   */
   CHECK_PARAMETER(dbfile)
-  CHECK_PARAMETER(config_table)
   CHECK_PARAMETER(cdr_table)
   return 0;
 }
@@ -319,7 +342,7 @@ add_cfg_entry(void *arg, int argc, char **argv, char **columnNames)
       if (args->cat_name == NULL)
         {
           ast_log(LOG_ERROR, RES_SQLITE_NAME ": Unable to allocate category "
-                  "nam\n");
+                  "name\n");
           return 1;
         }
 
@@ -327,6 +350,13 @@ add_cfg_entry(void *arg, int argc, char **argv, char **columnNames)
     }
 
   var = ast_variable_new(argv[4], argv[5]);
+
+  if (var == NULL)
+    {
+      ast_log(LOG_ERROR, RES_SQLITE_NAME ": Unable to allocate variable");
+      return 1;
+    }
+
   ast_variable_append(args->cat, var);
   return 0;
 }
@@ -339,13 +369,29 @@ config_handler(const char *database, const char *table, const char *file,
   char *errormsg;
   int error;
 
+  if (table == NULL)
+    {
+      if (config_table == NULL)
+        {
+          ast_log(LOG_ERROR, RES_SQLITE_NAME ": Table name unspecified\n");
+          return NULL;
+        }
+
+      else
+        table = config_table;
+    }
+
   args.cfg = cfg;
   args.cat = NULL;
   args.cat_name = NULL;
 
+  /*
+   * This handler is normally called only by a single thread, so there should
+   * be no need for locking.
+   */
   RES_SQLITE_BEGIN
     error = sqlite_exec_printf(db, sql_get_config_table, add_cfg_entry,
-                               &args, &errormsg, config_table, file);
+                               &args, &errormsg, table, file);
   RES_SQLITE_END(error)
 
   free(args.cat_name);
@@ -354,10 +400,208 @@ config_handler(const char *database, const char *table, const char *file,
     {
       ast_log(LOG_ERROR, RES_SQLITE_NAME ": %s\n", errormsg);
       free(errormsg);
+      ast_config_destroy(cfg);
       return NULL;
     }
 
   return cfg;
+}
+
+static int
+add_rt_cfg_entry(void *arg, int argc, char **argv, char **columnNames)
+{
+  struct rt_cfg_entry_args *args;
+  struct ast_variable *var;
+  int i;
+
+  args = (struct rt_cfg_entry_args *)arg;
+
+  for (i = 0; i < argc; i++)
+    {
+      if (argv[i] == NULL)
+        continue;
+
+      var = ast_variable_new(columnNames[i], argv[i]);
+
+      if (var == NULL)
+        {
+          ast_log(LOG_ERROR, RES_SQLITE_NAME ": Unable to allocate variable\n");
+          return 1;
+        }
+
+      if (args->var == NULL)
+        args->var = var;
+
+      if (args->last == NULL)
+        args->last = var;
+
+      else
+        {
+          args->last->next = var;
+          args->last = var;
+        }
+    }
+
+  return 0;
+}
+
+static struct ast_variable *
+realtime_handler(const char *database, const char *table, va_list ap)
+{
+  const char **tmp, *param, *val, **params, **vals;
+  struct rt_cfg_entry_args args;
+  char *query, *errormsg;
+  size_t params_count;
+  int error;
+
+  if (table == NULL)
+    {
+      ast_log(LOG_ERROR, RES_SQLITE_NAME ": Table name unspecified\n");
+      return NULL;
+    }
+
+  params = NULL;
+  vals = NULL;
+  params_count = 0;
+
+  while ((param = va_arg(ap, const char *)) != NULL
+         && (val = va_arg(ap, const char *)) != NULL)
+    {
+      tmp = realloc(params, (params_count + 1) * sizeof(char *));
+
+      if (tmp == NULL)
+        {
+          ast_log(LOG_ERROR, RES_SQLITE_NAME ": Unable to allocate params\n");
+          free(params);
+          free(vals);
+          return NULL;
+        }
+
+      params = tmp;
+      tmp = realloc(vals, (params_count + 1) * sizeof(char *));
+
+      if (tmp == NULL)
+        {
+          ast_log(LOG_ERROR, RES_SQLITE_NAME ": Unable to allocate vars\n");
+          free(params);
+          free(vals);
+          return NULL;
+        }
+
+      vals = tmp;
+      params[params_count] = param;
+      vals[params_count] = val;
+      params_count++;
+    }
+
+  if (params_count == 0)
+    {
+      ast_log(LOG_ERROR, RES_SQLITE_NAME ": 1 parameter and 1 value at least "
+              "required\n");
+      return NULL;
+    }
+
+#define QUERY "SELECT * FROM '%q' WHERE commented = 0 AND %q = '%q'"
+  query = sqlite_mprintf(QUERY, table, params[0], vals[0]);
+
+  if (query == NULL)
+    {
+      ast_log(LOG_ERROR, RES_SQLITE_NAME ": Unable to allocate SQL query\n");
+      free(params);
+      free(vals);
+      return NULL;
+    }
+
+  if (params_count > 1)
+    {
+      char *tmp_str;
+      size_t i;
+
+      for (i = 1; i < params_count; i++)
+        {
+          tmp_str = sqlite_mprintf("%s AND %q = '%q'", query, params[i],
+                                   vals[i]);
+
+          if (tmp_str == NULL)
+            {
+              ast_log(LOG_ERROR, RES_SQLITE_NAME ": Unable to reallocate SQL "
+                      "query\n");
+              free(params);
+              free(vals);
+              sqlite_freemem(query);
+              return NULL;
+            }
+
+          sqlite_freemem(query);
+          query = tmp_str;
+        }
+    }
+
+  free(params);
+  free(vals);
+
+  args.var = NULL;
+  args.last = NULL;
+
+  ast_mutex_lock(&mutex);
+
+  RES_SQLITE_BEGIN
+    error = sqlite_exec_printf(db, "%s LIMIT 1;", add_rt_cfg_entry, &args,
+                               &errormsg, query);
+  RES_SQLITE_END(error)
+
+  ast_mutex_unlock(&mutex);
+
+  sqlite_freemem(query);
+
+  if (error)
+    {
+      ast_log(LOG_ERROR, RES_SQLITE_NAME ": %s\n", errormsg);
+      ast_variables_destroy(args.var);
+      return NULL;
+    }
+
+  return args.var;
+}
+
+static struct ast_config *
+realtime_multi_handler(const char *database, const char *table, va_list ap)
+{
+  const char *var;
+
+  ast_verbose(VERBOSE_PREFIX_3 "%s() called: database = %s, table = %s\n",
+              __PRETTY_FUNCTION__, database, table);
+
+  while ((var = va_arg(ap, const char *)) != NULL)
+    {
+      ast_verbose(VERBOSE_PREFIX_3 "%s\n", var);
+    }
+
+  ast_verbose(VERBOSE_PREFIX_3 "%s() returns\n", __PRETTY_FUNCTION__);
+
+  return NULL;
+}
+
+static int
+realtime_update_handler(const char *database, const char *table,
+                        const char *keyfield, const char *entity,
+                        va_list ap)
+{
+  const char *var;
+
+  ast_verbose(VERBOSE_PREFIX_3 "%s() called: database = %s, table = %s\n",
+              __PRETTY_FUNCTION__, database, table);
+  ast_verbose(VERBOSE_PREFIX_3 "%s(): keyfield = %s, entity = %s\n",
+              __PRETTY_FUNCTION__, keyfield, entity);
+
+  while ((var = va_arg(ap, const char *)) != NULL)
+    {
+      ast_verbose(VERBOSE_PREFIX_3 "%s\n", var);
+    }
+
+  ast_verbose(VERBOSE_PREFIX_3 "%s() returns\n", __PRETTY_FUNCTION__);
+
+  return -1;
 }
 
 int
@@ -386,7 +630,7 @@ load_module(void)
     }
 
   RES_SQLITE_BEGIN
-    error = sqlite_exec_printf(db, "SELECT COUNT(AcctId) FROM %s;", NULL, NULL,
+    error = sqlite_exec_printf(db, "SELECT COUNT(id) FROM %s;", NULL, NULL,
                                &errormsg, cdr_table);
   RES_SQLITE_END(error)
 
