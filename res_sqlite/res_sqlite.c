@@ -39,6 +39,14 @@
 #define RES_SQLITE_APP_DESCRIPTION \
 "SQLITE(): " RES_SQLITE_APP_SYNOPSIS "\n"
 
+#define RES_SQLITE_CONFIG_COLUMNS 6
+#define RES_SQLITE_CONFIG_ID 0
+#define RES_SQLITE_CONFIG_COMMENTED 1
+#define RES_SQLITE_CONFIG_FILENAME 2
+#define RES_SQLITE_CONFIG_CATEGORY 3
+#define RES_SQLITE_CONFIG_VAR_NAME 4
+#define RES_SQLITE_CONFIG_VAR_VAL 5
+
 #define SET_VAR(config, to, from) \
 { \
   int __error; \
@@ -81,6 +89,12 @@ struct rt_cfg_entry_args
   struct ast_variable *last;
 };
 
+struct rt_multi_cfg_entry_args
+{
+  struct ast_config *cfg;
+  char *initfield;
+};
+
 static sqlite *db;
 static int use_cdr;
 static int use_app;
@@ -100,10 +114,14 @@ static int add_cfg_entry(void *arg, int argc, char **argv, char **columnNames);
 static struct ast_config * config_handler(const char *database,
                                           const char *table, const char *file,
                                           struct ast_config *cfg);
+static size_t get_params(va_list ap, const char ***params_ptr,
+                         const char ***vals_ptr);
 static int add_rt_cfg_entry(void *arg, int argc, char **argv,
                             char **columnNames);
 static struct ast_variable * realtime_handler(const char *database,
                                               const char *table, va_list ap);
+static int add_rt_multi_cfg_entry(void *arg, int argc, char **argv,
+                                  char **columnNames);
 static struct ast_config * realtime_multi_handler(const char *database,
                                                   const char *table,
                                                   va_list ap);
@@ -243,7 +261,7 @@ load_config(void)
 
       else if (strcasecmp(var->name, "app_enable") == 0)
         SET_VAR(config, app_enable, var)
-        
+
       else
         ast_log(LOG_WARNING, "Unknown parameter : %s\n", var->name);
     }
@@ -319,13 +337,7 @@ cdr_handler(struct ast_cdr *cdr)
 }
 
 /*
- * Columns are :
- *  0 id
- *  1 filename
- *  2 category
- *  3 commented
- *  4 var_name
- *  5 var_val
+ * This callback relies on SQL entries being sorted by category.
  */
 static int
 add_cfg_entry(void *arg, int argc, char **argv, char **columnNames)
@@ -333,7 +345,7 @@ add_cfg_entry(void *arg, int argc, char **argv, char **columnNames)
   struct cfg_entry_args *args;
   struct ast_variable *var;
 
-  if (argc != 6)
+  if (argc != RES_SQLITE_CONFIG_COLUMNS)
     {
       ast_log(LOG_WARNING, "Corrupt table\n");
       return 1;
@@ -341,9 +353,10 @@ add_cfg_entry(void *arg, int argc, char **argv, char **columnNames)
 
   args = (struct cfg_entry_args *)arg;
 
-  if (args->cat_name == NULL || strcmp(args->cat_name, argv[2]))
+  if (args->cat_name == NULL
+      || (strcmp(args->cat_name, argv[RES_SQLITE_CONFIG_CATEGORY]) != 0))
     {
-      args->cat = ast_category_new(argv[2]);
+      args->cat = ast_category_new(argv[RES_SQLITE_CONFIG_CATEGORY]);
 
       if (args->cat == NULL)
         {
@@ -352,18 +365,20 @@ add_cfg_entry(void *arg, int argc, char **argv, char **columnNames)
         }
 
       free(args->cat_name);
-      args->cat_name = strdup(argv[2]);
+      args->cat_name = strdup(argv[RES_SQLITE_CONFIG_CATEGORY]);
 
       if (args->cat_name == NULL)
         {
           ast_log(LOG_ERROR, "Unable to allocate category name\n");
+          ast_category_destroy(args->cat);
           return 1;
         }
 
       ast_category_append(args->cfg, args->cat);
     }
 
-  var = ast_variable_new(argv[4], argv[5]);
+  var = ast_variable_new(argv[RES_SQLITE_CONFIG_VAR_NAME],
+                         argv[RES_SQLITE_CONFIG_VAR_VAL]);
 
   if (var == NULL)
     {
@@ -418,44 +433,6 @@ config_handler(const char *database, const char *table, const char *file,
     }
 
   return cfg;
-}
-
-static int
-add_rt_cfg_entry(void *arg, int argc, char **argv, char **columnNames)
-{
-  struct rt_cfg_entry_args *args;
-  struct ast_variable *var;
-  int i;
-
-  args = (struct rt_cfg_entry_args *)arg;
-
-  for (i = 0; i < argc; i++)
-    {
-      if (argv[i] == NULL)
-        continue;
-
-      var = ast_variable_new(columnNames[i], argv[i]);
-
-      if (var == NULL)
-        {
-          ast_log(LOG_WARNING, "Unable to allocate variable\n");
-          return 1;
-        }
-
-      if (args->var == NULL)
-        args->var = var;
-
-      if (args->last == NULL)
-        args->last = var;
-
-      else
-        {
-          args->last->next = var;
-          args->last = var;
-        }
-    }
-
-  return 0;
 }
 
 /*
@@ -515,10 +492,48 @@ get_params(va_list ap, const char ***params_ptr, const char ***vals_ptr)
   return params_count;
 }
 
+static int
+add_rt_cfg_entry(void *arg, int argc, char **argv, char **columnNames)
+{
+  struct rt_cfg_entry_args *args;
+  struct ast_variable *var;
+  int i;
+
+  args = (struct rt_cfg_entry_args *)arg;
+
+  for (i = 0; i < argc; i++)
+    {
+      if (argv[i] == NULL)
+        continue;
+
+      var = ast_variable_new(columnNames[i], argv[i]);
+
+      if (var == NULL)
+        {
+          ast_log(LOG_WARNING, "Unable to allocate variable\n");
+          return 1;
+        }
+
+      if (args->var == NULL)
+        args->var = var;
+
+      if (args->last == NULL)
+        args->last = var;
+
+      else
+        {
+          args->last->next = var;
+          args->last = var;
+        }
+    }
+
+  return 0;
+}
+
 static struct ast_variable *
 realtime_handler(const char *database, const char *table, va_list ap)
 {
-  char *query, *errormsg, *tmp_str;
+  char *query, *errormsg, *op, *tmp_str;
   struct rt_cfg_entry_args args;
   const char **params, **vals;
   size_t params_count;
@@ -535,9 +550,11 @@ realtime_handler(const char *database, const char *table, va_list ap)
   if (params_count == 0)
     return NULL;
 
+  op = (strchr(params[0], ' ') == NULL) ? " =" : "";
+
 #undef QUERY
-#define QUERY "SELECT * FROM '%q' WHERE commented = 0 AND %q = '%q'"
-  query = sqlite_mprintf(QUERY, table, params[0], vals[0]);
+#define QUERY "SELECT * FROM '%q' WHERE commented = 0 AND %q%s '%q'"
+  query = sqlite_mprintf(QUERY, table, params[0], op, vals[0]);
 
   if (query == NULL)
     {
@@ -553,7 +570,8 @@ realtime_handler(const char *database, const char *table, va_list ap)
 
       for (i = 1; i < params_count; i++)
         {
-          tmp_str = sqlite_mprintf("%s AND %q = '%q'", query, params[i],
+          op = (strchr(params[i], ' ') == NULL) ? " =" : "";
+          tmp_str = sqlite_mprintf("%s AND %q%s '%q'", query, params[i], op,
                                    vals[i]);
           sqlite_freemem(query);
 
@@ -607,11 +625,189 @@ realtime_handler(const char *database, const char *table, va_list ap)
   return args.var;
 }
 
+static int
+add_rt_multi_cfg_entry(void *arg, int argc, char **argv, char **columnNames)
+{
+  struct rt_multi_cfg_entry_args *args;
+  struct ast_category *cat;
+  struct ast_variable *var;
+  char *cat_name;
+  size_t i;
+
+  args = (struct rt_multi_cfg_entry_args *)arg;
+
+  /*
+   * cat_name should always be set here, since initfield is forged from
+   * params[0] in realtime_multi_handler(), which is a search parameter
+   * of the SQL query.
+   */
+  for (i = 0; i < argc; i++)
+    if (strcmp(args->initfield, columnNames[i]) == 0)
+      cat_name = argv[i];
+
+  cat = ast_category_new(cat_name);
+
+  if (cat == NULL)
+    {
+      ast_log(LOG_ERROR, "Unable to allocate category\n");
+      return 1;
+    }
+
+  ast_category_append(args->cfg, cat);
+
+  for (i = 0; i < argc; i++)
+    {
+      if (argv[i] == NULL || (strcmp(args->initfield, columnNames[i]) == 0))
+        continue;
+
+      var = ast_variable_new(columnNames[i], argv[i]);
+
+      if (var == NULL)
+        {
+          ast_log(LOG_WARNING, "Unable to allocate variable\n");
+          return 1;
+        }
+
+      ast_variable_append(cat, var);
+    }
+
+  return 0;
+}
+
 static struct ast_config *
 realtime_multi_handler(const char *database, const char *table, va_list ap)
 {
-  ast_verbose(VERBOSE_PREFIX_3 "%s() not implemented\n", __PRETTY_FUNCTION__);
-  return NULL;
+  char *query, *errormsg, *op, *tmp_str, *initfield;
+  struct rt_multi_cfg_entry_args args;
+  const char **params, **vals;
+  struct ast_config *cfg;
+  size_t params_count;
+  int error;
+
+  if (table == NULL)
+    {
+      ast_log(LOG_WARNING, "Table name unspecified\n");
+      return NULL;
+    }
+
+  cfg = ast_config_new();
+
+  if (cfg == NULL)
+    {
+      ast_log(LOG_WARNING, "Unable to allocate configuration structure\n");
+      return NULL;
+    }
+
+  params_count = get_params(ap, &params, &vals);
+
+  if (params_count == 0)
+    {
+      ast_config_destroy(cfg);
+      return NULL;
+    }
+
+  initfield = strdup(params[0]);
+
+  if (initfield == NULL)
+    {
+      ast_log(LOG_WARNING, "Unable to allocate initfield\n");
+      ast_config_destroy(cfg);
+      free(params);
+      free(vals);
+      return NULL;
+    }
+
+  tmp_str = strchr(initfield, ' ');
+
+  if (tmp_str != NULL)
+    *tmp_str = '\0';
+
+  op = (strchr(params[0], ' ') == NULL) ? " =" : "";
+
+  /*
+   * Asterisk sends us an already escaped string when searching for
+   * "exten LIKE" (uh!). Handle it separately.
+   */
+  tmp_str = (strcmp(vals[0], "\\_%") == 0) ? "_%" : (char *)vals[0];
+
+#undef QUERY
+#define QUERY "SELECT * FROM '%q' WHERE commented = 0 AND %q%s '%q'"
+  query = sqlite_mprintf(QUERY, table, params[0], op, tmp_str);
+
+  if (query == NULL)
+    {
+      ast_log(LOG_WARNING, "Unable to allocate SQL query\n");
+      ast_config_destroy(cfg);
+      free(params);
+      free(vals);
+      free(initfield);
+      return NULL;
+    }
+
+  if (params_count > 1)
+    {
+      size_t i;
+
+      for (i = 1; i < params_count; i++)
+        {
+          op = (strchr(params[i], ' ') == NULL) ? " =" : "";
+          tmp_str = sqlite_mprintf("%s AND %q%s '%q'", query, params[i], op,
+                                   vals[i]);
+          sqlite_freemem(query);
+
+          if (tmp_str == NULL)
+            {
+              ast_log(LOG_WARNING, "Unable to reallocate SQL query\n");
+              ast_config_destroy(cfg);
+              free(params);
+              free(vals);
+              free(initfield);
+              return NULL;
+            }
+
+          query = tmp_str;
+        }
+    }
+
+  free(params);
+  free(vals);
+
+  tmp_str = sqlite_mprintf("%s ORDER BY %q;", query, initfield);
+  sqlite_freemem(query);
+
+  if (tmp_str == NULL)
+    {
+      ast_log(LOG_WARNING, "Unable to reallocate SQL query\n");
+      ast_config_destroy(cfg);
+      free(initfield);
+      return NULL;
+    }
+
+  query = tmp_str;
+  ast_log(LOG_DEBUG, "SQL query: %s\n", query);
+  args.cfg = cfg;
+  args.initfield = initfield;
+
+  ast_mutex_lock(&mutex);
+
+  RES_SQLITE_BEGIN
+    error = sqlite_exec(db, query, add_rt_multi_cfg_entry, &args, &errormsg);
+  RES_SQLITE_END(error)
+
+  ast_mutex_unlock(&mutex);
+
+  sqlite_freemem(query);
+  free(initfield);
+
+  if (error)
+    {
+      ast_log(LOG_WARNING, "%s\n", errormsg);
+      free(errormsg);
+      ast_config_destroy(cfg);
+      return NULL;
+    }
+
+  return cfg;
 }
 
 static int

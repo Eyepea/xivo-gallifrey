@@ -1,45 +1,57 @@
-# Tables for res_sqlite.so.
+/*
+ * Tables for res_sqlite.so.
+ */
 
-# RealTime static table.
-CREATE TABLE ast_config (
+/*
+ * RealTime static table.
+ */
+CREATE TABLE ast_config
+(
  id INTEGER PRIMARY KEY,
+ commented INT(11) NOT NULL DEFAULT '0',
  filename VARCHAR(128) NOT NULL,
  category VARCHAR(128) NOT NULL,
- commented INT(11) NOT NULL DEFAULT '0',
  var_name VARCHAR(128) NOT NULL,
  var_val VARCHAR(128) NOT NULL
 );
 
 CREATE INDEX ast_config_filename_commented ON ast_config(filename, commented);
 
-# CDR table (this table is automatically created if non existent).
-#CREATE TABLE ast_cdr (
-# id INTEGER PRIMARY KEY,
-# clid VARCHAR(80) NOT NULL DEFAULT '',
-# src VARCHAR(80) NOT NULL DEFAULT '',
-# dst VARCHAR(80) NOT NULL DEFAULT '',
-# dcontext VARCHAR(80) NOT NULL DEFAULT '',
-# channel VARCHAR(80) NOT NULL DEFAULT '',
-# dstchannel VARCHAR(80) NOT NULL DEFAULT '',
-# lastapp VARCHAR(80) NOT NULL DEFAULT '',
-# lastdata VARCHAR(80) NOT NULL DEFAULT '',
-# start CHAR(19) NOT NULL DEFAULT '0000-00-00 00:00:00',
-# answer CHAR(19) NOT NULL DEFAULT '0000-00-00 00:00:00',
-# end CHAR(19) NOT NULL DEFAULT '0000-00-00 00:00:00',
-# duration INT(11) NOT NULL DEFAULT '0',
-# billsec INT(11) NOT NULL DEFAULT '0',
-# disposition INT(11) NOT NULL DEFAULT '0',
-# amaflags INT(11) NOT NULL DEFAULT '0',
-# accountcode VARCHAR(20) NOT NULL DEFAULT '',
-# uniqueid VARCHAR(32) NOT NULL DEFAULT '',
-# userfield VARCHAR(255) NOT NULL DEFAULT ''
-#);
+/*
+ * CDR table (this table is automatically created if non existent).
+ * 
+ * CREATE TABLE ast_cdr
+ * (
+ *  id INTEGER PRIMARY KEY,
+ *  clid VARCHAR(80) NOT NULL DEFAULT '',
+ *  src VARCHAR(80) NOT NULL DEFAULT '',
+ *  dst VARCHAR(80) NOT NULL DEFAULT '',
+ *  dcontext VARCHAR(80) NOT NULL DEFAULT '',
+ *  channel VARCHAR(80) NOT NULL DEFAULT '',
+ *  dstchannel VARCHAR(80) NOT NULL DEFAULT '',
+ *  lastapp VARCHAR(80) NOT NULL DEFAULT '',
+ *  lastdata VARCHAR(80) NOT NULL DEFAULT '',
+ *  start CHAR(19) NOT NULL DEFAULT '0000-00-00 00:00:00',
+ *  answer CHAR(19) NOT NULL DEFAULT '0000-00-00 00:00:00',
+ *  end CHAR(19) NOT NULL DEFAULT '0000-00-00 00:00:00',
+ *  duration INT(11) NOT NULL DEFAULT '0',
+ *  billsec INT(11) NOT NULL DEFAULT '0',
+ *  disposition INT(11) NOT NULL DEFAULT '0',
+ *  amaflags INT(11) NOT NULL DEFAULT '0',
+ *  accountcode VARCHAR(20) NOT NULL DEFAULT '',
+ *  uniqueid VARCHAR(32) NOT NULL DEFAULT '',
+ *  userfield VARCHAR(255) NOT NULL DEFAULT ''
+ * );
+ */
 
-# SIP RealTime table.
-CREATE TABLE ast_sip (
+/*
+ * SIP RealTime table.
+ */
+CREATE TABLE ast_sip
+(
  id INTEGER PRIMARY KEY,
- name VARCHAR(80) NOT NULL,
  commented INT(11) NOT NULL DEFAULT '0',
+ name VARCHAR(80) NOT NULL,
  accountcode VARCHAR(20),
  amaflags VARCHAR(13),
  callgroup VARCHAR(10),
@@ -80,3 +92,17 @@ CREATE TABLE ast_sip (
 );
 
 CREATE UNIQUE INDEX ast_sip_name ON ast_sip(name);
+
+/*
+ * Dialplan RealTime table.
+ */
+CREATE TABLE ast_exten
+(
+ id INTEGER PRIMARY KEY,
+ commented INT(11) NOT NULL DEFAULT '0',
+ context VARCHAR(20) NOT NULL,
+ exten VARCHAR(20) NOT NULL,
+ priority TINYINT(4) NOT NULL,
+ app VARCHAR(20) NOT NULL,
+ appdata VARCHAR(128) NOT NULL
+);
