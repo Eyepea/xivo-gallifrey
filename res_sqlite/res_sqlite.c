@@ -1,7 +1,8 @@
 /*
  * Copyright (C) 2006 Richard Braun <rbraun@proformatique.com>
  * Resource module for SQLite 2,
- * based on res_sqlite3 by Anthony Minessale II.
+ * based on res_sqlite3 by Anthony Minessale II and res_config_mysql
+ * by Matthew Boehm.
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
