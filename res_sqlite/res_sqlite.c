@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sqlite.h>
+#include <asterisk/pbx.h>
 #include <asterisk/cdr.h>
 #include <asterisk/lock.h>
 #include <asterisk/config.h>
@@ -31,8 +32,12 @@
 
 #define RES_SQLITE_NAME "res_sqlite"
 #define RES_SQLITE_DRIVER "sqlite"
+#define RES_SQLITE_APP_DRIVER "SQLITE"
 #define RES_SQLITE_DESCRIPTION "Resource Module for SQLite 2"
 #define RES_SQLITE_CONF_FILE "res_sqlite.conf"
+#define RES_SQLITE_APP_SYNOPSIS "Dialplan access to SQLite 2"
+#define RES_SQLITE_APP_DESCRIPTION \
+"SQLITE(): " RES_SQLITE_APP_SYNOPSIS "\n"
 
 #define SET_VAR(config, to, from) \
 { \
@@ -78,10 +83,13 @@ struct rt_cfg_entry_args
 
 static sqlite *db;
 static int use_cdr;
+static int use_app;
 static int cdr_registered;
+static int app_registered;
 static char *dbfile;
 static char *config_table;
 static char *cdr_table;
+static char *app_enable;
 
 static int set_var(char **var, char *name, char *value);
 static int load_config(void);
@@ -224,15 +232,18 @@ load_config(void)
        var != NULL;
        var = var->next)
     {
-      if (strcmp(var->name, "dbfile") == 0)
+      if (strcasecmp(var->name, "dbfile") == 0)
         SET_VAR(config, dbfile, var)
 
-      else if (strcmp(var->name, "config_table") == 0)
+      else if (strcasecmp(var->name, "config_table") == 0)
         SET_VAR(config, config_table, var)
 
-      else if (strcmp(var->name, "cdr_table") == 0)
+      else if (strcasecmp(var->name, "cdr_table") == 0)
         SET_VAR(config, cdr_table, var)
 
+      else if (strcasecmp(var->name, "app_enable") == 0)
+        SET_VAR(config, app_enable, var)
+        
       else
         ast_log(LOG_WARNING, "Unknown parameter : %s\n", var->name);
     }
@@ -258,6 +269,8 @@ unload_config(void)
   config_table = NULL;
   free(cdr_table);
   cdr_table = NULL;
+  free(app_enable);
+  app_enable = NULL;
 }
 
 static int
@@ -270,6 +283,7 @@ check_vars(void)
     }
 
   use_cdr = (cdr_table != NULL);
+  use_app = (app_enable != NULL && (strcasecmp(app_enable, "yes") == 0));
   return 0;
 }
 
@@ -693,6 +707,16 @@ realtime_update_handler(const char *database, const char *table,
   return rows_num;
 }
 
+static int
+app_exec(struct ast_channel *chan, void *data_ptr)
+{
+  char *data;
+
+  data = data_ptr;
+  ast_verbose(VERBOSE_PREFIX_3 "chan = %s, data = %s\n", chan->name, data);
+  return 0;
+}
+
 int
 load_module(void)
 {
@@ -700,6 +724,7 @@ load_module(void)
   int error;
 
   cdr_registered = 0;
+  app_registered = 0;
   error = load_config();
 
   if (error)
@@ -763,12 +788,30 @@ load_module(void)
       cdr_registered = 1;
     }
 
+  if (use_app)
+    {
+      error = ast_register_application(RES_SQLITE_APP_DRIVER, app_exec,
+                                       RES_SQLITE_APP_SYNOPSIS,
+                                       RES_SQLITE_APP_DESCRIPTION);
+
+      if (error)
+        {
+          unload_module();
+          return 1;
+        }
+
+      app_registered = 1;
+    }
+
   return 0;
 }
 
 int
 unload_module(void)
 {
+  if (app_registered)
+    ast_unregister_application(RES_SQLITE_APP_DRIVER);
+
   if (cdr_registered)
     ast_cdr_unregister(RES_SQLITE_NAME);
 
