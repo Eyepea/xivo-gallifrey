@@ -1,8 +1,10 @@
 /*
  * Copyright (C) 2006 Richard Braun <rbraun@proformatique.com>
- * Resource module for SQLite 2,
- * based on res_sqlite3 by Anthony Minessale II and res_config_mysql
- * by Matthew Boehm.
+ * Resource module for SQLite 2
+ * 
+ * Based on res_sqlite3 by Anthony Minessale II, res_config_mysql by
+ * by Matthew Boehm and app_addon_sql_mysql by Constantine Filin and
+ * Christos Ricudis.
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
@@ -30,6 +33,7 @@
 #include <asterisk/logger.h>
 #include <asterisk/module.h>
 #include <asterisk/options.h>
+#include <asterisk/linkedlists.h>
 
 #define RES_SQLITE_NAME "res_sqlite"
 #define RES_SQLITE_DRIVER "sqlite"
@@ -48,6 +52,12 @@
 #define RES_SQLITE_CONFIG_VAR_NAME 4
 #define RES_SQLITE_CONFIG_VAR_VAL 5
 
+/*
+ * Limit the number of maximum simultaneous registered SQLite VMs to avoid
+ * a denial of service attack.
+ */
+#define RES_SQLITE_VM_MAX 1024
+
 #define SET_VAR(config, to, from) \
 { \
   int __error; \
@@ -58,10 +68,6 @@
       unload_config(); \
       return 1; \
     } \
-}
-
-#define CHECK_PARAMETER(name) \
-{ \
 }
 
 #define RES_SQLITE_BEGIN \
@@ -96,15 +102,12 @@ struct rt_multi_cfg_entry_args
   char *initfield;
 };
 
-static sqlite *db;
-static int use_cdr;
-static int use_app;
-static int cdr_registered;
-static int app_registered;
-static char *dbfile;
-static char *config_table;
-static char *cdr_table;
-static char *app_enable;
+struct vm_entry
+{
+  int vmid;
+  sqlite_vm *vm;
+  AST_LIST_ENTRY(vm_entry) list;
+};
 
 static int set_var(char **var, char *name, char *value);
 static int load_config(void);
@@ -129,8 +132,29 @@ static struct ast_config * realtime_multi_handler(const char *database,
 static int realtime_update_handler(const char *database, const char *table,
                                    const char *keyfield, const char *entity,
                                    va_list ap);
+static sqlite_vm * app_alloc_vm(const char *query);
+static int app_free_vm(sqlite_vm *vm);
+static int app_register_vm(sqlite_vm *vm);
+static int app_unregister_vm(int vmid);
+static sqlite_vm * app_find_vm(int vmid);
+static int app_set_vm(int vmid, sqlite_vm *vm);
+static char * app_itoa(int i);
+static int app_atoi(char *s, int *i);
+static int app_query(struct ast_channel *chan, char *data);
+static int app_fetch(struct ast_channel *chan, char *data);
+static int app_clear(struct ast_channel *chan, char *data);
+static int app_exec(struct ast_channel *chan, void *data_ptr);
 
-AST_MUTEX_DEFINE_STATIC(mutex);
+static sqlite *db;
+static int use_cdr;
+static int use_app;
+static int cdr_registered;
+static int app_registered;
+static char *dbfile;
+static char *config_table;
+static char *cdr_table;
+static char *app_enable;
+static int vm_count = 0;
 
 static struct ast_config_engine sqlite_engine =
 {
@@ -140,6 +164,10 @@ static struct ast_config_engine sqlite_engine =
   .realtime_multi_func = realtime_multi_handler,
   .update_func = realtime_update_handler
 };
+
+AST_MUTEX_DEFINE_STATIC(mutex);
+static AST_LIST_HEAD_STATIC(vm_list_head, vm_entry);
+static struct vm_list_head *vm_list = &vm_list_head;
 
 /*
  * Taken from Asterisk 1.2 cdr_sqlite.so.
@@ -415,14 +443,14 @@ config_handler(const char *database, const char *table, const char *file,
   args.cat = NULL;
   args.cat_name = NULL;
 
-  /*
-   * This handler is normally called only by a single thread, so there should
-   * be no need for locking.
-   */
+  ast_mutex_lock(&mutex);
+
   RES_SQLITE_BEGIN
     error = sqlite_exec_printf(db, sql_get_config_table, add_cfg_entry,
                                &args, &errormsg, table, file);
   RES_SQLITE_END(error)
+
+  ast_mutex_unlock(&mutex);
 
   free(args.cat_name);
 
@@ -904,14 +932,466 @@ realtime_update_handler(const char *database, const char *table,
   return rows_num;
 }
 
+static sqlite_vm *
+app_alloc_vm(const char *query)
+{
+  char *errormsg;
+  sqlite_vm *vm;
+  int error;
+
+  ast_mutex_lock(&mutex);
+
+  /*
+   * XXX Can sqlite_compile() fail because of locking ?
+   */
+  RES_SQLITE_BEGIN
+    error = sqlite_compile(db, query, NULL, &vm, &errormsg);
+  RES_SQLITE_END(error)
+
+  ast_mutex_unlock(&mutex);
+
+  if (error)
+    {
+      ast_log(LOG_WARNING, "%s\n", errormsg);
+      sqlite_freemem(errormsg);
+      return NULL;
+    }
+
+  return vm;
+}
+
+static int
+app_free_vm(sqlite_vm *vm)
+{
+  char *errormsg;
+  int error;
+
+  error = sqlite_finalize(vm, &errormsg);
+
+  if (error)
+    {
+      ast_log(LOG_WARNING, "%s\n", errormsg);
+      sqlite_freemem(errormsg);
+      return -1;
+    }
+
+  return 0;
+}
+
+/*
+ * Register a SQLite VM and associate it to an index. This index is the
+ * value returned in the VMID variable. Return -1 if an error occurred,
+ * the index associated to this VM otherwise.
+ */
+static int
+app_register_vm(sqlite_vm *vm)
+{
+  struct vm_entry *entry, *i, *next;
+  int vmid;
+
+  entry = malloc(sizeof(struct vm_entry));
+
+  if (entry == NULL)
+    {
+      ast_log(LOG_WARNING, "Unable to allocate VM entry\n");
+      return -1;
+    }
+
+  AST_LIST_LOCK(vm_list);
+
+  vm_count++;
+
+  if (vm_count >= RES_SQLITE_VM_MAX)
+    {
+      vm_count--;
+      AST_LIST_UNLOCK(vm_list);
+      free(entry);
+      ast_log(LOG_WARNING, "Maximum number of simultaneous SQLite VMs "
+                           "reached, can't create new VM\n");
+      return -1;
+    }
+
+  if (AST_LIST_EMPTY(vm_list))
+    {
+      vmid = 0;
+      AST_LIST_INSERT_HEAD(vm_list, entry, list);
+    }
+
+  else
+    {
+      AST_LIST_TRAVERSE(vm_list, i, list)
+        {
+          next = AST_LIST_NEXT(i, list);
+
+          if (next == NULL || ((next->vmid - i->vmid) > 1))
+            break;
+        }
+
+      vmid = i->vmid + 1;
+      AST_LIST_INSERT_AFTER(vm_list, i, entry, list);
+    }
+
+  entry->vmid = vmid;
+  entry->vm = vm;
+
+  AST_LIST_UNLOCK(vm_list);
+
+  return vmid;
+}
+
+static int
+app_unregister_vm(int vmid)
+{
+  struct vm_entry *i;
+  int found;
+
+  found = 0;
+
+  AST_LIST_LOCK(vm_list);
+
+  AST_LIST_TRAVERSE(vm_list, i, list)
+    if (i->vmid == vmid)
+      {
+        found = 1;
+        break;
+      }
+
+  if (!found)
+    {
+      AST_LIST_UNLOCK(vm_list);
+      ast_log(LOG_WARNING, "VMID %d not found in VMs list\n", vmid);
+      return -1;
+    }
+
+  AST_LIST_REMOVE(vm_list, i, list);
+  vm_count--;
+
+  AST_LIST_UNLOCK(vm_list);
+
+  free(i);
+  return 0;
+}
+
+static sqlite_vm *
+app_find_vm(int vmid)
+{
+  struct vm_entry *i;
+  sqlite_vm *vm;
+
+  vm = NULL;
+
+  AST_LIST_LOCK(vm_list);
+
+  AST_LIST_TRAVERSE(vm_list, i, list)
+    if (i->vmid == vmid)
+      {
+        vm = i->vm;
+        break;
+      }
+
+  AST_LIST_UNLOCK(vm_list);
+
+  if (vm == NULL)
+    {
+      ast_log(LOG_WARNING, "VMID %d not found in VMs list\n", vmid);
+      return NULL;
+    }
+
+  return vm;
+}
+
+static int
+app_set_vm(int vmid, sqlite_vm *vm)
+{
+  struct vm_entry *i;
+  int found;
+
+  found = 0;
+
+  AST_LIST_LOCK(vm_list);
+
+  AST_LIST_TRAVERSE(vm_list, i, list)
+    if (i->vmid == vmid)
+      {
+        i->vm = vm;
+        found = 1;
+        break;
+      }
+
+  AST_LIST_UNLOCK(vm_list);
+
+  if (!found)
+    {
+      ast_log(LOG_WARNING, "VMID %d not found in VMs list\n", vmid);
+      return -1;
+    }
+
+  return 0;
+}
+
+static char *
+app_itoa(int i)
+{
+  int size;
+  char *s;
+
+  size = snprintf(NULL, 0, "%d", i);
+
+  s = malloc((size + 1) * sizeof(char));
+
+  if (s == NULL)
+    return NULL;
+
+  sprintf(s, "%d", i);
+  return s;
+}
+
+static int
+app_atoi(char *s, int *i)
+{
+  char *endptr;
+
+  if (s == NULL || *s == '\0')
+    return -1;
+
+  *i = strtol(s, &endptr, 10);
+
+  if (*endptr != '\0')
+    return -1;
+
+  return 0;
+}
+
+static int
+app_query(struct ast_channel *chan, char *data)
+{
+  char *vmid_var, *vmid_val;
+  sqlite_vm *vm;
+  int vmid;
+
+  if (data == NULL)
+    {
+      ast_log(LOG_WARNING, "No VMID variable name\n");
+      return -1;
+    }
+
+  vmid_var = strsep(&data, " ");
+
+  if (data == NULL)
+    {
+      ast_log(LOG_WARNING, "No SQL query\n");
+      return -1;
+    }
+
+  vm = app_alloc_vm(data);
+
+  if (vm == NULL)
+    return -1;
+
+  vmid = app_register_vm(vm);
+
+  if (vmid == -1)
+    {
+      app_free_vm(vm);
+      return -1;
+    }
+
+  vmid_val = app_itoa(vmid);
+
+  if (vmid_val == NULL)
+    {
+      ast_log(LOG_WARNING, "Unable to allocate VMID\n");
+      app_unregister_vm(vmid);
+      app_free_vm(vm);
+      return -1;
+    }
+
+  pbx_builtin_setvar_helper(chan, vmid_var, vmid_val);
+  free(vmid_val);
+  return 0;
+}
+
+static int
+app_fetch(struct ast_channel *chan, char *data)
+{
+  char *errormsg, *fetchid, *vmid_str, *var;
+  int i, error, vmid, cols_count;
+  const char **cols, **values;
+  sqlite_vm *vm;
+
+  if (data == NULL)
+    {
+      ast_log(LOG_WARNING, "No fetch ID\n");
+      return -1;
+    }
+
+  fetchid = strsep(&data, " ");
+
+  if (data == NULL)
+    {
+      ast_log(LOG_WARNING, "No VMID\n");
+      return -1;
+    }
+
+  vmid_str = strsep(&data, " ");
+
+  if (data == NULL)
+    {
+      ast_log(LOG_WARNING, "Fetch CMD requires at least one variable name\n");
+      return -1;
+    }
+
+  error = app_atoi(vmid_str, &vmid);
+
+  if (error)
+    {
+      ast_log(LOG_WARNING, "Unable to convert VMID %s to an integer\n",
+              vmid_str);
+      return -1;
+    }
+
+  vm = app_find_vm(vmid);
+
+  if (vm == NULL)
+    return -1;
+
+  ast_mutex_lock(&mutex);
+
+  RES_SQLITE_BEGIN
+    error = sqlite_step(vm, &cols_count, &values, &cols);
+  RES_SQLITE_END(error)
+
+  ast_mutex_unlock(&mutex);
+
+  if (error != SQLITE_ROW)
+    {
+      error = app_set_vm(vmid, NULL);
+
+      /*
+       * Quick and dirty error handling since app_set_vm() is very unlikely
+       * to fail, as app_find_vm() returned a valid pointer.
+       */
+      if (error)
+        return -1;
+
+      error = app_free_vm(vm);
+
+      if (error)
+        return -1;
+
+      if (error != SQLITE_DONE)
+        {
+          ast_log(LOG_WARNING, "%s\n", errormsg);
+          sqlite_freemem(errormsg);
+          return -1;
+        }
+
+      else
+        {
+          pbx_builtin_setvar_helper(chan, fetchid, "0");
+          return 0;
+        }
+    }
+
+  for (i = 0; i < cols_count; i++)
+    {
+      var = strsep(&data, " ");
+
+      if (var == NULL)
+        {
+          ast_log(LOG_WARNING, "More fields than variables\n");
+          break;
+        }
+
+      pbx_builtin_setvar_helper(chan, var,
+                                (values[i] != NULL) ? values[i] : "NULL");
+    }
+
+  pbx_builtin_setvar_helper(chan, fetchid, "1");
+  return 0;
+}
+
+static int
+app_clear(struct ast_channel *chan, char *data)
+{
+  int error, vmid;
+  char *vmid_str;
+  sqlite_vm *vm;
+
+  if (data == NULL)
+    {
+      ast_log(LOG_WARNING, "No VMID\n");
+      return -1;
+    }
+
+  vmid_str = strsep(&data, " ");
+  error = app_atoi(vmid_str, &vmid);
+
+  if (error)
+    {
+      ast_log(LOG_WARNING, "Unable to convert VMID %s to an integer\n",
+              vmid_str);
+      return -1;
+    }
+
+  vm = app_find_vm(vmid);
+
+  if (vm == NULL)
+    return -1;
+
+  error = app_unregister_vm(vmid);
+
+  if (error)
+    return -1;
+
+  error = app_free_vm(vm);
+
+  if (error)
+    return -1;
+
+  return 0;
+}
+
 static int
 app_exec(struct ast_channel *chan, void *data_ptr)
 {
-  char *data;
+  int (*cmd_func)(struct ast_channel *, char *);
+  char *data, *cmd;
+  int error;
 
-  data = data_ptr;
-  ast_verbose(VERBOSE_PREFIX_3 "chan = %s, data = %s\n", chan->name, data);
-  return 0;
+  if (data_ptr == NULL)
+    {
+      ast_log(LOG_WARNING, RES_SQLITE_APP_DRIVER "() requires an argument\n");
+      return -1;
+    }
+
+  data = strdup(data_ptr);
+
+  if (data == NULL)
+    {
+      ast_log(LOG_WARNING, "Unable to allocate copy of argument\n");
+      return -1;
+    }
+
+  /*
+   * data is going to be modified (both address and content). Save the
+   * original address for deallocation.
+   */
+  data_ptr = data;
+  cmd = strsep(&data, " ");
+
+  if (strcasecmp(cmd, "query") == 0)
+    cmd_func = app_query;
+
+  else if (strcasecmp(cmd, "fetch") == 0)
+    cmd_func = app_fetch;
+
+  else if (strcasecmp(cmd, "clear") == 0)
+    cmd_func = app_clear;
+
+  error = cmd_func(chan, data);
+  free(data_ptr);
+  return error;
 }
 
 int
