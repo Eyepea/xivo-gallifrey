@@ -40,7 +40,7 @@
  * There is already a module for SQLite 3 (named res_sqlite3) in the Asterisk
  * addons. res_sqlite was developed because we, at Proformatique, are using
  * PHP 4 in our embedded systems, and PHP 4 has no stable support for SQLite 3
- * at this time.
+ * at this time. We also needed RealTime support.
  * 
  * \section build_install_sec Building and installing
  * 
