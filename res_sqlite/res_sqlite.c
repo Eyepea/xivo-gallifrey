@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2006 Richard Braun <rbraun@proformatique.com>
+ * Copyright (C) 2006 Proformatique
+ * Written by Richard Braun <rbraun@proformatique.com>
  * Resource module for SQLite 2
  * 
  * Based on res_sqlite3 by Anthony Minessale II, res_config_mysql by
@@ -19,6 +20,75 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+/**
+ * \mainpage res_sqlite
+ * 
+ * \section intro_sec Presentation
+ * 
+ * res_sqlite is a module for the Asterisk Open Source PBX to support SQLite 2
+ * databases. It can be used to fetch configuration from a database (static
+ * configuration files and/or using the Asterisk RealTime Architecture - ARA).
+ * It can also be used to log CDR entries. Finally, it can be used for simple
+ * queries in the Dialplan. Note that Asterisk already comes with a module
+ * named cdr_sqlite. There are two reasons for including it in res_sqlite:
+ * the first is that rewriting it was a training to learn how to write a
+ * simple module for Asterisk, the other is to have the same database open for
+ * all kinds of operations, which improves reliability and performance.
+ * 
+ * There is already a module for SQLite 3 (named res_sqlite3) in the Asterisk
+ * addons. res_sqlite was developed because we, at Proformatique, are using
+ * PHP 4 in our embedded systems, and PHP 4 has no stable support for SQLite 3
+ * at this time.
+ * 
+ * \section build_install_sec Building and installing
+ * 
+ * To build res_sqlite, simply enter <code>make</code>. To install it,
+ * enter make install. The Makefile has been slightly designed for
+ * cross compilation and installation in non standard locations, to ease
+ * the work of packagers. Read it for more details.
+ * 
+ * \section conf_sec Configuration
+ * 
+ * The main configuration file is res_sqlite.conf. It must be readable or
+ * res_sqlite will fail to start. It is suggested to use the sample file
+ * in this package as a starting point. The file has only one section
+ * named <code>general</code>. Here are the supported parameters :
+ * 
+ * <dl>
+ *  <dt><code>dbfile</code></dt>
+ *  <dd>The absolute path to the SQLite database (the file can be non existent,
+ *      res_sqlite will create it if is has the appropriate rights)</dd>
+ *  <dt><code>config_table</code></dt>
+ *  <dd>The table used for static configuration</dd>
+ *  <dt><code>cdr_table</code></dt>
+ *  <dd>The table used to store CDR entries (if ommitted, CDR support is
+ *      disabled)</dd>
+ *  <dt><code>app_enable</code></dt>
+ *  <dd>If set to <code>yes</code>, the SQLITE() application will be usable in
+ *      the Dialplan</dd>
+ * </dl>
+ * 
+ * To use res_sqlite for static and/or RealTime configuration, refer to the
+ * Asterisk documentation. The file tables.sql can be used to create the
+ * needed tables.
+ * 
+ * The SQLITE() application is very similar to the MYSQL() application. You
+ * can find more details at
+ * <a href="http://voip-info.org/wiki/view/Asterisk+cmd+MYSQL">http://voip-info.org/wiki/view/Asterisk+cmd+MYSQL</a>.
+ * The main difference is that you cannot choose your database - it's the
+ * file set in the <code>dbfile</code> parameter. As a result, there is no
+ * Connect or Disconnect command, and there is no connid variable.
+ * 
+ * \section credits_sec Credits
+ * 
+ * res_sqlite was developed by Richard Braun at the Proformatique company.
+ */
+
+/**
+ * \file res_sqlite.c
+ * \brief res_sqlite module.
  */
 
 #include <stdio.h>
@@ -52,7 +122,7 @@
 #define RES_SQLITE_CONFIG_VAR_NAME 4
 #define RES_SQLITE_CONFIG_VAR_VAL 5
 
-/*
+/**
  * Limit the number of maximum simultaneous registered SQLite VMs to avoid
  * a denial of service attack.
  */
@@ -70,12 +140,40 @@
     } \
 }
 
+/**
+ * Maximum number of loops before giving up executing a query. Calls to
+ * sqlite_xxx() functions which can return SQLITE_BUSY or SQLITE_LOCKED
+ * are enclosed by RES_SQLITE_BEGIN and RES_SQLITE_END, e.g.
+ * <pre>
+ * char *errormsg;
+ * int error;
+ * 
+ * RES_SQLITE_BEGIN
+ *   error = sqlite_exec(db, query, NULL, NULL, &errormsg);
+ * RES_SQLITE_END(error)
+ * 
+ * if (error)
+ *   ...;
+ * </pre>
+ */
+#define RES_SQLITE_MAX_LOOPS 10
+
+/**
+ * Macro used before executing a query.
+ * 
+ * @see RES_SQLITE_MAX_LOOPS.
+ */
 #define RES_SQLITE_BEGIN \
 { \
   int __i; \
-  for (__i = 0; __i < 10; __i++) \
+  for (__i = 0; __i < RES_SQLITE_MAX_LOOPS; __i++) \
     {
 
+/**
+ * Macro used after executing a query.
+ * 
+ * @see RES_SQLITE_MAX_LOOPS.
+ */
 #define RES_SQLITE_END(error) \
       if (error != SQLITE_BUSY && error != SQLITE_LOCKED) \
         break; \
@@ -83,6 +181,11 @@
     } \
 }
 
+/**
+ * Structure sent to the SQLite callback function for static configuration.
+ * 
+ * @see add_cfg_entry()
+ */
 struct cfg_entry_args
 {
   struct ast_config *cfg;
@@ -90,18 +193,39 @@ struct cfg_entry_args
   char *cat_name;
 };
 
+/**
+ * Structure sent to the SQLite callback function for RealTime configuration.
+ * 
+ * @see add_rt_cfg_entry()
+ */
 struct rt_cfg_entry_args
 {
   struct ast_variable *var;
   struct ast_variable *last;
 };
 
+/**
+ * Structure sent to the SQLite callback function for RealTime configuration
+ * (realtime_multi_handler()).
+ * 
+ * @see add_rt_multi_cfg_entry()
+ */
 struct rt_multi_cfg_entry_args
 {
   struct ast_config *cfg;
   char *initfield;
 };
 
+/**
+ * Entry in the linked list of registered SQLite virtual machines.
+ * 
+ * @see app_alloc_vm()
+ * @see app_free_vm()
+ * @see app_register_vm()
+ * @see app_unregister_vm()
+ * @see app_find_vm()
+ * @see app_set_vm()
+ */
 struct vm_entry
 {
   int vmid;
@@ -109,53 +233,396 @@ struct vm_entry
   AST_LIST_ENTRY(vm_entry) list;
 };
 
+/**
+ * Allocate a variable.
+ * 
+ * @param var   the address of the variable to set (it will be allocated)
+ * @param name  the name of the variable (for error handling)
+ * @param value the value to store in var
+ * @return 1 if an allocation error occurred, 0 otherwise
+ */
 static int set_var(char **var, char *name, char *value);
+
+/**
+ * Load the configuration file.
+ * 
+ * This function sets dbfile, config_table, cdr_table and app_enable. It calls
+ * check_vars() before returning, and unload_config() if an error occurred.
+ * 
+ * @return 1 if an error occurred, 0 otherwise
+ * @see unload_config()
+ */
 static int load_config(void);
+
+/**
+ * Free resources related to configuration.
+ * 
+ * @see load_config()
+ */
 static void unload_config(void);
+
+/**
+ * Check that required parameters have been set in the configuration file,
+ * and set use_cdr and use_app to enable/disable CDR/APP support.
+ * 
+ * @return 1 if a required parameter was not set, 0 otherwise
+ */
 static int check_vars(void);
+
+/**
+ * Asterisk callback function for CDR support.
+ * 
+ * Asterisk will call this function each time a CDR entry must be logged if
+ * CDR support is enabled.
+ * 
+ * @param cdr the CDR entry Asterisk sends us
+ * @return 1 if an error occurred, 0 otherwise
+ */
 static int cdr_handler(struct ast_cdr *cdr);
+
+/**
+ * SQLite callback function for static configuration.
+ * 
+ * This function is passed to the SQLite engine as a callback function to
+ * parse a row and store it in a struct ast_config object. It relies on
+ * resulting rows  being sorted by category.
+ * 
+ * @param arg         a pointer to a struct cfg_entry_args object
+ * @param argc        number of columns
+ * @param argv        values in the row
+ * @param columnNames names and types of the columns
+ * @return 1 if an error occurred, 0 otherwise
+ * @see cfg_entry_args
+ * @see sql_get_config_table
+ * @see config_handler()
+ */
 static int add_cfg_entry(void *arg, int argc, char **argv, char **columnNames);
+
+/**
+ * Asterisk callback function for static configuration.
+ * 
+ * Asterisk will call this function when it loads its static configuration,
+ * which usually happens at startup and reload.
+ * 
+ * @param database the database to use (ignored)
+ * @param table    the table to use
+ * @param file     the file to load from the database
+ * @param cfg      the struct ast_config object to use when storing variables
+ * @return NULL if an error occurred, cfg otherwise
+ * @see add_cfg_entry()
+ */
 static struct ast_config * config_handler(const char *database,
                                           const char *table, const char *file,
                                           struct ast_config *cfg);
+
+/**
+ * Helper function to parse a va_list object into 2 dynamic arrays of
+ * strings, parameters and values.
+ * 
+ * ap must have the following format : param1 val1 param2 val2 param3 val3 ...
+ * arguments will be extracted to create 2 arrays:
+ * 
+ * <ul>
+ *  <li>params : param1 param2 param3 ...</li>
+ *  <li>vals : val1 val2 val3 ...</li>
+ * </ul>
+ * 
+ * The address of these arrays are stored in params_ptr and vals_ptr. It
+ * is the responsibility of the caller to release the memory of these arrays.
+ * It is considered an error that va_list has a null or odd number of strings.
+ * 
+ * @param ap         the va_list object to parse
+ * @param params_ptr where the address of the params array is stored
+ * @param vals_ptr   where the address of the vals array is stored
+ * @return 0 if an error occurred, the number of elements in the arrays (which
+ *         have the same size) otherwise
+ */
 static size_t get_params(va_list ap, const char ***params_ptr,
                          const char ***vals_ptr);
+
+/**
+ * SQLite callback function for RealTime configuration.
+ * 
+ * This function is passed to the SQLite engine as a callback function to
+ * parse a row and store it in a linked list of struct ast_variable objects.
+ * 
+ * @param arg         a pointer to a struct rt_cfg_entry_args object
+ * @param argc        number of columns
+ * @param argv        values in the row
+ * @param columnNames names and types of the columns
+ * @return 1 if an error occurred, 0 otherwise
+ * @see rt_cfg_entry_args
+ * @see realtime_handler()
+ */
 static int add_rt_cfg_entry(void *arg, int argc, char **argv,
                             char **columnNames);
+
+/**
+ * Asterisk callback function for RealTime configuration.
+ * 
+ * Asterisk will call this function each time it requires a variable
+ * through the RealTime architecture. ap is a list of parameters and
+ * values used to find a specific row, e.g one parameter "name" and
+ * one value "123" so that the SQL query becomes <code>SELECT * FROM
+ * table WHERE name = '123';</code>.
+ * 
+ * @param database the database to use (ignored)
+ * @param table    the table to use
+ * @param ap       list of parameters and values to match
+ * @return NULL if an error occurred, a linked list of struct ast_variable
+ *         objects otherwise
+ * @see add_rt_cfg_entry()
+ */
 static struct ast_variable * realtime_handler(const char *database,
                                               const char *table, va_list ap);
+
+/**
+ * SQLite callback function for RealTime configuration.
+ * 
+ * This function performs the same actions as add_rt_cfg_entry() except
+ * that the rt_multi_cfg_entry_args structure is designed to store
+ * categories in addition of variables.
+ * 
+ * @param arg         a pointer to a struct rt_multi_cfg_entry_args object
+ * @param argc        number of columns
+ * @param argv        values in the row
+ * @param columnNames names and types of the columns
+ * @return 1 if an error occurred, 0 otherwise
+ * @see rt_multi_cfg_entry_args
+ * @see realtime_multi_handler()
+ */
 static int add_rt_multi_cfg_entry(void *arg, int argc, char **argv,
                                   char **columnNames);
+
+/**
+ * Asterisk callback function for RealTime configuration.
+ * 
+ * This function performs the same actions as realtime_handler() except
+ * that it can store variables per category, and can return several
+ * categories.
+ * 
+ * @param database the database to use (ignored)
+ * @param table    the table to use
+ * @param ap       list of parameters and values to match
+ * @return NULL if an error occurred, a struct ast_config object storing
+ *         categories and variables
+ * @see add_rt_multi_cfg_entry()
+ */
 static struct ast_config * realtime_multi_handler(const char *database,
                                                   const char *table,
                                                   va_list ap);
+
+/**
+ * Asterisk callback function for RealTime configuration (variable
+ * update).
+ * 
+ * Asterisk will call this function each time a variable has been modified
+ * internally and must be updated in the backend engine. keyfield and entity
+ * are used to find the row to update, e.g. <code>UPDATE table SET ... WHERE
+ * keyfield = 'entity';</code>. ap is a list of parameters and values with the
+ * same format as the other realtime functions.
+ * 
+ * @param database the database to use (ignored)
+ * @param table    the table to use
+ * @param keyfield the column of the matching cell
+ * @param entity   the value of the matching cell
+ * @param ap       list of parameters and new values to update in the database
+ * @return -1 if an error occurred, the number of affected rows otherwise
+ */
 static int realtime_update_handler(const char *database, const char *table,
                                    const char *keyfield, const char *entity,
                                    va_list ap);
+
+/**
+ * Compile a SQL query into a SQLite virtual machine.
+ * 
+ * @param query the query to compile
+ * @return NULL if an error occurred, the virtual machine executing the query
+ *         otherwise
+ * @see vm_entry
+ */
 static sqlite_vm * app_alloc_vm(const char *query);
+
+/**
+ * Finalize a SQLite virtual machine to release it resources.
+ * 
+ * @param vm the virtual machine
+ * @return 1 if an error occurred, 0 otherwise
+ * @see vm_entry
+ */
 static int app_free_vm(sqlite_vm *vm);
+
+/**
+ * Insert a virtual machine in the linked list of registered virtual machines.
+ * 
+ * This function is also responsible of finding an unused VMID.
+ * 
+ * @param vm the virtual machine to register
+ * @return 1 if an error occurred, the VMID associated to the given VM
+ *         otherwise
+ * @see vm_entry
+ */
 static int app_register_vm(sqlite_vm *vm);
+
+/**
+ * Remove a virtual machine from the linked list of registered virtual
+ * machines.
+ * 
+ * @param vmid the VMID of the virtual machine to remove
+ * @return 1 if an error occurred, 0 otherwise
+ * @see vm_entry
+ */
 static int app_unregister_vm(int vmid);
+
+/**
+ * Return the virtual machine associated with the given VMID.
+ * 
+ * @param vmid VMID of the virtual machine to find
+ * @return NULL if the given VMID didn't match any registered virtual machine,
+ *         the virtual machine associated with the given VMID otherwise
+ * @see vm_entry
+ */
 static sqlite_vm * app_find_vm(int vmid);
+
+/**
+ * Set the virtual machine to associate with the given VMID.
+ * 
+ * This function doesn't release the previous virtual machine, this is left
+ * to the caller.
+ * 
+ * @param vmid the VMID of the virtual machine to update
+ * @param vm   the new virtual machine
+ * @return 1 if the given VMID didn't match any registered virtual machine,
+ * @see vm_entry
+ */
 static int app_set_vm(int vmid, sqlite_vm *vm);
+
+/**
+ * Helper function to convert an integer to a string.
+ * 
+ * The string is dynamically allocated. It is the responsibility of the
+ * caller to release it.
+ * 
+ * @param i the integer to convert
+ * @return NULL if an allocation error occurred, the given integer as a
+ *         dynamically allocated string otherwise
+ */
 static char * app_itoa(int i);
+
+/**
+ * Helper function to convert a string to an integer.
+ * 
+ * @param s the string to convert
+ * @param i where to store the converted string
+ * @return 1 if an error occurred, 0 otherwise
+ */
 static int app_atoi(char *s, int *i);
+
+/**
+ * Handle the query command.
+ * 
+ * Extract the VMID variable name from the arguments, compile the query,
+ * register the resulting virtual machine and set the VMID variable.
+ * 
+ * @param chan the Asterisk channel associated to the command
+ * @param data the arguments of the command
+ * @return -1 if an error occurred, 0 otherwise
+ */
 static int app_query(struct ast_channel *chan, char *data);
+
+/**
+ * Handle the fetch command.
+ * 
+ * Extract the fetchid variable name from the arguments and the VMID, retreive
+ * the associated virtual machine, fetch a row from it, set variables with
+ * values from the row, and set the fetchid variable to 1 or 0.
+ * 
+ * @param chan the Asterisk channel associated to the command
+ * @param data the arguments of the command
+ * @return -1 if an error occurred, 0 otherwise
+ */
 static int app_fetch(struct ast_channel *chan, char *data);
+
+/**
+ * Handle the clear command.
+ * 
+ * Extract the VMID variable from the arguments, retreive the associated virtual
+ * machine, unregister it, and release its resources.
+ * 
+ * @param chan the Asterisk channel associated to the command
+ * @param data the arguments of the command
+ * @return -1 if an error occurred, 0 otherwise
+ */
 static int app_clear(struct ast_channel *chan, char *data);
+
+/**
+ * Asterisk callback function for the SQLITE() application.
+ * 
+ * Asterisk will call this function if support for the SQLITE() application
+ * is enabled (app_enable variable in the configuration file) and when the
+ * SQLITE() application is used in the Dialplan. It extracts the command and
+ * executes the appropriate function.
+ * 
+ * @param chan     the Asterisk channel associated to the command
+ * @param data_ptr the string passed to the SQLITE() application
+ * @return -1 if an error occurred, 0 otherwise
+ */
 static int app_exec(struct ast_channel *chan, void *data_ptr);
 
+/**
+ * The SQLite database object.
+ */
 static sqlite *db;
-static int use_cdr;
-static int use_app;
-static int cdr_registered;
-static int app_registered;
-static char *dbfile;
-static char *config_table;
-static char *cdr_table;
-static char *app_enable;
-static int vm_count = 0;
 
+/**
+ * Set to 1 if CDR support is enabled.
+ */
+static int use_cdr;
+
+/**
+ * Set to 1 if the SQLITE() application is enabled.
+ */
+static int use_app;
+
+/**
+ * Set to 1 if the CDR callback was registered.
+ */
+static int cdr_registered;
+
+/**
+ * Set to 1 if the SQLITE() application callback was registered.
+ */
+static int app_registered;
+
+/**
+ * The path of the database file.
+ */
+static char *dbfile;
+
+/**
+ * The name of the static configuration table.
+ */
+static char *config_table;
+
+/**
+ * The name of the table used to store CDR entries.
+ */
+static char *cdr_table;
+
+/**
+ * The value of the app_enable parameter in the configuration file.
+ */
+static char *app_enable;
+
+/**
+ * The number of registered virtual machines.
+ */
+static int vm_count;
+
+/**
+ * The structure specifying all callback functions used by Asterisk for static
+ * and RealTime configuration.
+ */
 static struct ast_config_engine sqlite_engine =
 {
   .name = RES_SQLITE_DRIVER,
@@ -165,14 +632,33 @@ static struct ast_config_engine sqlite_engine =
   .update_func = realtime_update_handler
 };
 
+/**
+ * The mutex used to prevent simultaneous access to the SQLite database.
+ * SQLite isn't always compiled with thread safety.
+ */
 AST_MUTEX_DEFINE_STATIC(mutex);
+
+/**
+ * The linked list of registered SQLite virtual machines.
+ * This list is kept ordered so that VMID never gets a value which could
+ * overflow.
+ */
 static AST_LIST_HEAD_STATIC(vm_list_head, vm_entry);
+
+/**
+ * Pointer to the linked list of registered SQLite virtual machines.
+ * The purpose of this pointer is to use the Asterisk linked lists macros
+ * conveniently.
+ */
 static struct vm_list_head *vm_list = &vm_list_head;
 
 /*
  * Taken from Asterisk 1.2 cdr_sqlite.so.
  */
 
+/**
+ * SQL query format to create the CDR table if non existent.
+ */
 static char *sql_create_cdr_table =
 "CREATE TABLE '%q' ("
 "	id		INTEGER PRIMARY KEY,"
@@ -196,6 +682,9 @@ static char *sql_create_cdr_table =
 "	userfield	VARCHAR(255) NOT NULL DEFAULT ''"
 ");";
 
+/**
+ * SQL query format to insert a CDR entry.
+ */
 static char *sql_add_cdr_entry =
 "INSERT INTO '%q' ("
 "       clid,"
@@ -237,6 +726,12 @@ static char *sql_add_cdr_entry =
 "	'%q'"
 ");";
 
+/**
+ * SQL query format to fetch the static configuration of a file.
+ * Rows must be sorted by category.
+ * 
+ * @see add_cfg_entry()
+ */
 static char *sql_get_config_table =
 "SELECT *"
 "	FROM '%q'"
@@ -253,7 +748,7 @@ set_var(char **var, char *name, char *value)
 
   if (*var == NULL)
     {
-      ast_log(LOG_ERROR, "Unable to allocate variable %s\n", name);
+      ast_log(LOG_WARNING, "Unable to allocate variable %s\n", name);
       return 1;
     }
 
@@ -366,7 +861,6 @@ cdr_handler(struct ast_cdr *cdr)
 }
 
 /*
- * This callback relies on SQL entries being sorted by category.
  */
 static int
 add_cfg_entry(void *arg, int argc, char **argv, char **columnNames)
@@ -389,7 +883,7 @@ add_cfg_entry(void *arg, int argc, char **argv, char **columnNames)
 
       if (args->cat == NULL)
         {
-          ast_log(LOG_ERROR, "Unable to allocate category\n");
+          ast_log(LOG_WARNING, "Unable to allocate category\n");
           return 1;
         }
 
@@ -398,7 +892,7 @@ add_cfg_entry(void *arg, int argc, char **argv, char **columnNames)
 
       if (args->cat_name == NULL)
         {
-          ast_log(LOG_ERROR, "Unable to allocate category name\n");
+          ast_log(LOG_WARNING, "Unable to allocate category name\n");
           ast_category_destroy(args->cat);
           return 1;
         }
@@ -411,7 +905,7 @@ add_cfg_entry(void *arg, int argc, char **argv, char **columnNames)
 
   if (var == NULL)
     {
-      ast_log(LOG_ERROR, "Unable to allocate variable");
+      ast_log(LOG_WARNING, "Unable to allocate variable");
       return 1;
     }
 
@@ -464,11 +958,6 @@ config_handler(const char *database, const char *table, const char *file,
   return cfg;
 }
 
-/*
- * Returns params_count, or 0 if an error occured (if ap doesn't contain
- * at least 2 elements, it's considered as an error). params_ptr and
- * vals_ptr are set if params_count is greater than 0.
- */
 static size_t
 get_params(va_list ap, const char ***params_ptr, const char ***vals_ptr)
 {
@@ -581,8 +1070,11 @@ realtime_handler(const char *database, const char *table, va_list ap)
 
   op = (strchr(params[0], ' ') == NULL) ? " =" : "";
 
+/* @cond DOXYGEN_CAN_PARSE_THIS */
 #undef QUERY
 #define QUERY "SELECT * FROM '%q' WHERE commented = 0 AND %q%s '%q'"
+/* @endcond */
+
   query = sqlite_mprintf(QUERY, table, params[0], op, vals[0]);
 
   if (query == NULL)
@@ -664,6 +1156,7 @@ add_rt_multi_cfg_entry(void *arg, int argc, char **argv, char **columnNames)
   size_t i;
 
   args = (struct rt_multi_cfg_entry_args *)arg;
+  cat_name = NULL;
 
   /*
    * cat_name should always be set here, since initfield is forged from
@@ -674,11 +1167,17 @@ add_rt_multi_cfg_entry(void *arg, int argc, char **argv, char **columnNames)
     if (strcmp(args->initfield, columnNames[i]) == 0)
       cat_name = argv[i];
 
+  if (cat_name == NULL)
+    {
+      ast_log(LOG_ERROR, "Bogus SQL results, cat_name is NULL !\n");
+      return 1;
+    }
+
   cat = ast_category_new(cat_name);
 
   if (cat == NULL)
     {
-      ast_log(LOG_ERROR, "Unable to allocate category\n");
+      ast_log(LOG_WARNING, "Unable to allocate category\n");
       return 1;
     }
 
@@ -759,8 +1258,11 @@ realtime_multi_handler(const char *database, const char *table, va_list ap)
    */
   tmp_str = (strcmp(vals[0], "\\_%") == 0) ? "_%" : (char *)vals[0];
 
+/* @cond DOXYGEN_CAN_PARSE_THIS */
 #undef QUERY
 #define QUERY "SELECT * FROM '%q' WHERE commented = 0 AND %q%s '%q'"
+/* @endcond */
+
   query = sqlite_mprintf(QUERY, table, params[0], op, tmp_str);
 
   if (query == NULL)
@@ -860,8 +1362,11 @@ realtime_update_handler(const char *database, const char *table,
   if (params_count == 0)
     return -1;
 
+/* @cond DOXYGEN_CAN_PARSE_THIS */
 #undef QUERY
 #define QUERY "UPDATE '%q' SET %q = '%q'"
+/* @endcond */
+
   query = sqlite_mprintf(QUERY, table, params[0], vals[0]);
 
   if (query == NULL)
@@ -918,6 +1423,9 @@ realtime_update_handler(const char *database, const char *table,
   if (!error)
     rows_num = sqlite_changes(db);
 
+  else
+    rows_num = -1;
+
   ast_mutex_unlock(&mutex);
 
   sqlite_freemem(query);
@@ -926,7 +1434,6 @@ realtime_update_handler(const char *database, const char *table,
     {
       ast_log(LOG_WARNING, "%s\n", errormsg);
       free(errormsg);
-      return -1;
     }
 
   return rows_num;
@@ -972,17 +1479,12 @@ app_free_vm(sqlite_vm *vm)
     {
       ast_log(LOG_WARNING, "%s\n", errormsg);
       sqlite_freemem(errormsg);
-      return -1;
+      return 1;
     }
 
   return 0;
 }
 
-/*
- * Register a SQLite VM and associate it to an index. This index is the
- * value returned in the VMID variable. Return -1 if an error occurred,
- * the index associated to this VM otherwise.
- */
 static int
 app_register_vm(sqlite_vm *vm)
 {
@@ -994,7 +1496,7 @@ app_register_vm(sqlite_vm *vm)
   if (entry == NULL)
     {
       ast_log(LOG_WARNING, "Unable to allocate VM entry\n");
-      return -1;
+      return 1;
     }
 
   AST_LIST_LOCK(vm_list);
@@ -1008,10 +1510,10 @@ app_register_vm(sqlite_vm *vm)
       free(entry);
       ast_log(LOG_WARNING, "Maximum number of simultaneous SQLite VMs "
                            "reached, can't create new VM\n");
-      return -1;
+      return 1;
     }
 
-  if (AST_LIST_EMPTY(vm_list))
+  if (AST_LIST_EMPTY(vm_list) || AST_LIST_FIRST(vm_list)->vmid != 0)
     {
       vmid = 0;
       AST_LIST_INSERT_HEAD(vm_list, entry, list);
@@ -1060,7 +1562,7 @@ app_unregister_vm(int vmid)
     {
       AST_LIST_UNLOCK(vm_list);
       ast_log(LOG_WARNING, "VMID %d not found in VMs list\n", vmid);
-      return -1;
+      return 1;
     }
 
   AST_LIST_REMOVE(vm_list, i, list);
@@ -1123,7 +1625,7 @@ app_set_vm(int vmid, sqlite_vm *vm)
   if (!found)
     {
       ast_log(LOG_WARNING, "VMID %d not found in VMs list\n", vmid);
-      return -1;
+      return 1;
     }
 
   return 0;
@@ -1152,12 +1654,12 @@ app_atoi(char *s, int *i)
   char *endptr;
 
   if (s == NULL || *s == '\0')
-    return -1;
+    return 1;
 
   *i = strtol(s, &endptr, 10);
 
   if (*endptr != '\0')
-    return -1;
+    return 1;
 
   return 0;
 }
@@ -1214,7 +1716,7 @@ app_query(struct ast_channel *chan, char *data)
 static int
 app_fetch(struct ast_channel *chan, char *data)
 {
-  char *errormsg, *fetchid, *vmid_str, *var;
+  char *fetchid, *vmid_str, *var;
   int i, error, vmid, cols_count;
   const char **cols, **values;
   sqlite_vm *vm;
@@ -1274,40 +1776,40 @@ app_fetch(struct ast_channel *chan, char *data)
       if (error)
         return -1;
 
+      /*
+       * There can be two cases here : if sqlite_step() returned SQLITE_DONE,
+       * app_free_vm() won't fail, and we can safely assume that the virtual
+       * machine has completed execution, so we set fetchid; if sqlite_step()
+       * returned an error, app_free_vm() will tell what this error was, and
+       * we stop execution here, without setting fetchid.
+       */
       error = app_free_vm(vm);
 
       if (error)
         return -1;
 
-      if (error != SQLITE_DONE)
-        {
-          ast_log(LOG_WARNING, "%s\n", errormsg);
-          sqlite_freemem(errormsg);
-          return -1;
-        }
-
-      else
-        {
-          pbx_builtin_setvar_helper(chan, fetchid, "0");
-          return 0;
-        }
+      pbx_builtin_setvar_helper(chan, fetchid, "0");
     }
 
-  for (i = 0; i < cols_count; i++)
+  else
     {
-      var = strsep(&data, " ");
-
-      if (var == NULL)
+      for (i = 0; i < cols_count; i++)
         {
-          ast_log(LOG_WARNING, "More fields than variables\n");
-          break;
+          var = strsep(&data, " ");
+
+          if (var == NULL)
+            {
+              ast_log(LOG_WARNING, "More fields than variables\n");
+              break;
+            }
+
+          pbx_builtin_setvar_helper(chan, var,
+                                    (values[i] != NULL) ? values[i] : "NULL");
         }
 
-      pbx_builtin_setvar_helper(chan, var,
-                                (values[i] != NULL) ? values[i] : "NULL");
+      pbx_builtin_setvar_helper(chan, fetchid, "1");
     }
 
-  pbx_builtin_setvar_helper(chan, fetchid, "1");
   return 0;
 }
 
@@ -1379,6 +1881,7 @@ app_exec(struct ast_channel *chan, void *data_ptr)
    */
   data_ptr = data;
   cmd = strsep(&data, " ");
+  cmd_func = NULL;
 
   if (strcasecmp(cmd, "query") == 0)
     cmd_func = app_query;
@@ -1388,6 +1891,13 @@ app_exec(struct ast_channel *chan, void *data_ptr)
 
   else if (strcasecmp(cmd, "clear") == 0)
     cmd_func = app_clear;
+
+  if (cmd_func == NULL)
+    {
+      ast_log(LOG_WARNING, "Unknown command: %s\n", cmd);
+      free(data_ptr);
+      return -1;
+    }
 
   error = cmd_func(chan, data);
   free(data_ptr);
@@ -1400,8 +1910,14 @@ load_module(void)
   char *errormsg;
   int error;
 
+  db = NULL;
   cdr_registered = 0;
   app_registered = 0;
+  dbfile = NULL;
+  config_table = NULL;
+  cdr_table = NULL;
+  app_enable = NULL;
+  vm_count = 0;
   error = load_config();
 
   if (error)

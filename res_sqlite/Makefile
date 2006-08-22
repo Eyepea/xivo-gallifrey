@@ -1,22 +1,40 @@
-PREFIX = /usr
-INSTALL_PREFIX ?= /usr/cross/dists/xivo-i386/sysroot
+# set PATH and CC to include cross compiling tools for cross compilation, e.g.
+# export PATH=/path/to/toolchain/powerpc-linux-gnu/bin:$PATH
+# export CC=gcc
 
-CC = gcc
-CFLAGS = -g -D _GNU_SOURCE -Wall -Wmissing-prototypes -Wstrict-prototypes
+# you can override default options by calling make OPTIONS=...
+OPTIONS ?= -O2
+CFLAGS = -D _GNU_SOURCE -Wall -Wmissing-prototypes -Wstrict-prototypes $(OPTIONS)
 LIBS = -lpthread -lsqlite
+
+BINARY = res_sqlite.so
 OBJECTS = res_sqlite.o
 HEADERS = res_sqlite.h
 
-.PHONY: clean
+DOXYGEN = doxygen
+DOXYGEN_CONF = Doxyfile
 
-res_sqlite.so: $(OBJECTS)
-	$(CC) -shared -Xlinker -x -o res_sqlite.so res_sqlite.o $(LIBS)
+# use make INSTALL_PREFIX=/path/to/sysroot PREFIX=/usr/local if you want to
+# install this module in a non-standard location
+INSTALL_PREFIX ?=
+PREFIX ?= /usr
+
+.PHONY: doc install clean-doc clean
+
+$(BINARY): $(OBJECTS)
+	$(CC) -shared -Xlinker -x -o $(BINARY) $(OBJECTS) $(LIBS)
 
 %.o: %.c $(HEADERS)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-install: res_sqlite.so
-	install -m 755 res_sqlite.so $(INSTALL_PREFIX)$(PREFIX)/lib/asterisk/modules
+doc: $(DOXYGEN_CONF)
+	$(DOXYGEN) $(DOXYGEN_CONF)
 
-clean:
-	rm -f res_sqlite.so *.o
+install: $(BINARY)
+	install -m 755 $(BINARY) $(INSTALL_PREFIX)$(PREFIX)/lib/asterisk/modules
+
+clean-obj:
+	rm -f $(BINARY) $(OBJECTS)
+
+clean: clean-obj
+	rm -rf doc
