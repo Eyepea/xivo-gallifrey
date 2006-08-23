@@ -81,6 +81,19 @@
  * file set in the <code>dbfile</code> parameter. As a result, there is no
  * Connect or Disconnect command, and there is no connid variable.
  * 
+ * \section status_sec Driver status
+ * 
+ * The CLI command <code>show sqlite status</code> returns status information
+ * about the running driver. One information is more important than others:
+ * the number of registered virtual machines. A SQLite virtual machine is
+ * created each time a SQLITE() query command is used. If the number of
+ * registered virtual machines isn't 0 (or near 0, since one or more SQLITE()
+ * commands can be running when requesting the module status) and increases
+ * over time, this probably means that you're badly using the application
+ * and you're creating resource leaks. You should check your Dialplan and
+ * reload res_sqlite (by unloading and then loading again - reloading isn't
+ * supported)
+ * 
  * \section credits_sec Credits
  * 
  * res_sqlite was developed by Richard Braun at the Proformatique company.
@@ -114,6 +127,11 @@
 #define RES_SQLITE_APP_SYNOPSIS "Dialplan access to SQLite 2"
 #define RES_SQLITE_APP_DESCRIPTION \
 "SQLITE(): " RES_SQLITE_APP_SYNOPSIS "\n"
+#define RES_SQLITE_STATUS_SUMMARY \
+"Show status information about the SQLite 2 driver"
+#define RES_SQLITE_STATUS_USAGE \
+"Usage: show sqlite status\n" \
+"	" RES_SQLITE_STATUS_SUMMARY "\n"
 
 #define RES_SQLITE_CONFIG_COLUMNS 6
 #define RES_SQLITE_CONFIG_ID 0
@@ -573,6 +591,16 @@ static int app_clear(struct ast_channel *chan, char *data);
 static int app_exec(struct ast_channel *chan, void *data_ptr);
 
 /**
+ * Asterisk callback function for the CLI status command.
+ * 
+ * @param fd   file descriptor provided by Asterisk to use with ast_cli()
+ * @param argc number of arguments
+ * @param argv arguments list
+ * @return RESULT_SUCCESS
+ */
+static int cli_status(int fd, int argc, char *argv[]);
+
+/**
  * The SQLite database object.
  */
 static sqlite *db;
@@ -588,14 +616,19 @@ static int use_cdr;
 static int use_app;
 
 /**
- * Set to 1 if the CDR callback was registered.
+ * Set to 1 if the CDR callback function was registered.
  */
 static int cdr_registered;
 
 /**
- * Set to 1 if the SQLITE() application callback was registered.
+ * Set to 1 if the SQLITE() application callback function was registered.
  */
 static int app_registered;
+
+/**
+ * Set to 1 if the CLI status command callback function was registered.
+ */
+static int cli_status_registered;
 
 /**
  * The path of the database file.
@@ -654,6 +687,18 @@ static AST_LIST_HEAD_STATIC(vm_list_head, vm_entry);
  * conveniently.
  */
 static struct vm_list_head *vm_list = &vm_list_head;
+
+/**
+ * Structure containing details and callback functions for the CLI status
+ * command.
+ */
+static struct ast_cli_entry cli_status_cmd =
+{
+  .cmda = {"show", "sqlite", "status", NULL},
+  .handler = cli_status,
+  .summary = RES_SQLITE_STATUS_SUMMARY,
+  .usage = RES_SQLITE_STATUS_USAGE
+};
 
 /*
  * Taken from Asterisk 1.2 cdr_sqlite.so.
@@ -1907,6 +1952,44 @@ app_exec(struct ast_channel *chan, void *data_ptr)
   return error;
 }
 
+static int
+cli_status(int fd, int argc, char *argv[])
+{
+  ast_cli(fd, "SQLite database path: %s\n", dbfile);
+  ast_cli(fd, "config_table: ");
+
+  if (config_table == NULL)
+    ast_cli(fd, "unspecified, must be present in extconfig.conf\n");
+
+  else
+    ast_cli(fd, "%s\n", config_table);
+
+  ast_cli(fd, "cdr_table: ");
+
+  if (cdr_table == NULL)
+    ast_cli(fd, "unspecified, CDR support disabled\n");
+
+  else
+    ast_cli(fd, "%s\n", cdr_table);
+
+  ast_cli(fd, "app_enable: %s, SQLITE() application %s\n", app_enable,
+          use_app ? "enabled" : "disabled");
+
+  if (use_app)
+    {
+      int vm_count_tmp;
+
+      AST_LIST_LOCK(vm_list);
+      vm_count_tmp = vm_count;
+      AST_LIST_UNLOCK(vm_list);
+
+      ast_cli(fd, "Number of registered SQLite virtual machines : %d\n",
+              vm_count_tmp);
+    }
+
+  return RESULT_SUCCESS;
+}
+
 int
 load_module(void)
 {
@@ -1916,6 +1999,7 @@ load_module(void)
   db = NULL;
   cdr_registered = 0;
   app_registered = 0;
+  cli_status_registered = 0;
   dbfile = NULL;
   config_table = NULL;
   cdr_table = NULL;
@@ -1999,12 +2083,24 @@ load_module(void)
       app_registered = 1;
     }
 
+  error = ast_cli_register(&cli_status_cmd);
+
+  if (error)
+    {
+      unload_module();
+      return 1;
+    }
+
+  cli_status_registered = 1;
   return 0;
 }
 
 int
 unload_module(void)
 {
+  if (cli_status_registered)
+    ast_cli_unregister(&cli_status_cmd);
+
   if (app_registered)
     ast_unregister_application(RES_SQLITE_APP_DRIVER);
 
