@@ -9,7 +9,6 @@ LIBS = -lpthread -lsqlite
 
 BINARY = res_sqlite.so
 OBJECTS = res_sqlite.o
-HEADERS = res_sqlite.h
 
 DOXYGEN = doxygen
 DOXYGEN_CONF = Doxyfile
@@ -24,7 +23,7 @@ PREFIX ?= /usr
 $(BINARY): $(OBJECTS)
 	$(CC) -shared -Xlinker -x -o $(BINARY) $(OBJECTS) $(LIBS)
 
-%.o: %.c $(HEADERS)
+%.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 doc: $(DOXYGEN_CONF)
