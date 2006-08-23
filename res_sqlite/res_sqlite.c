@@ -98,6 +98,7 @@
 #include <sqlite.h>
 #include <asterisk/pbx.h>
 #include <asterisk/cdr.h>
+#include <asterisk/cli.h>
 #include <asterisk/lock.h>
 #include <asterisk/config.h>
 #include <asterisk/logger.h>
@@ -129,16 +130,18 @@
 #define RES_SQLITE_VM_MAX 1024
 
 #define SET_VAR(config, to, from) \
-{ \
-  int __error; \
-  __error = set_var(&to, #to, from->value); \
-  if (__error) \
-    { \
-      ast_config_destroy(config); \
-      unload_config(); \
-      return 1; \
-    } \
-}
+do \
+  { \
+    int __error; \
+    __error = set_var(&to, #to, from->value); \
+    if (__error) \
+      { \
+        ast_config_destroy(config); \
+        unload_config(); \
+        return 1; \
+      } \
+  } \
+while (0)
 
 /**
  * Maximum number of loops before giving up executing a query. Calls to
@@ -775,16 +778,16 @@ load_config(void)
        var = var->next)
     {
       if (strcasecmp(var->name, "dbfile") == 0)
-        SET_VAR(config, dbfile, var)
+        SET_VAR(config, dbfile, var);
 
       else if (strcasecmp(var->name, "config_table") == 0)
-        SET_VAR(config, config_table, var)
+        SET_VAR(config, config_table, var);
 
       else if (strcasecmp(var->name, "cdr_table") == 0)
-        SET_VAR(config, cdr_table, var)
+        SET_VAR(config, cdr_table, var);
 
       else if (strcasecmp(var->name, "app_enable") == 0)
-        SET_VAR(config, app_enable, var)
+        SET_VAR(config, app_enable, var);
 
       else
         ast_log(LOG_WARNING, "Unknown parameter : %s\n", var->name);
