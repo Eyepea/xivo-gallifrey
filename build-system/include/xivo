@@ -4,7 +4,7 @@ gen_linux_conf_xivo_i386()
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: 2.6.16.20
-# Fri Aug  4 16:29:45 2006
+# Thu Aug 24 12:10:10 2006
 #
 CONFIG_X86_32=y
 CONFIG_SEMAPHORE_SLEEPERS=y
@@ -26,7 +26,7 @@ CONFIG_INIT_ENV_ARG_LIMIT=32
 #
 # General setup
 #
-CONFIG_LOCALVERSION="-xivo"
+CONFIG_LOCALVERSION="-$DIST_HOSTNAME"
 # CONFIG_LOCALVERSION_AUTO is not set
 # CONFIG_SWAP is not set
 CONFIG_SYSVIPC=y
@@ -943,7 +943,7 @@ CONFIG_USB_ARCH_HAS_OHCI=y
 #
 # File systems
 #
-CONFIG_EXT2_FS=m
+CONFIG_EXT2_FS=y
 # CONFIG_EXT2_FS_XATTR is not set
 # CONFIG_EXT2_FS_XIP is not set
 # CONFIG_EXT3_FS is not set
@@ -1147,4 +1147,5 @@ make_xivo_packages()
   make_zaptel
   make_asterisk
   make_visdn
+  make_res_sqlite
 }

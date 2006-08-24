@@ -1,10 +1,11 @@
-diff -Nurp zaptel-1.2.7.orig/Makefile zaptel-1.2.7/Makefile
---- zaptel-1.2.7.orig/Makefile	2006-07-07 20:03:59.000000000 +0200
-+++ zaptel-1.2.7/Makefile	2006-07-18 19:40:20.000000000 +0200
-@@ -5,12 +5,18 @@
- #
+diff -Nurp zaptel-1.2.8.orig/Makefile zaptel-1.2.8/Makefile
+--- zaptel-1.2.8.orig/Makefile	2006-08-18 22:20:08.000000000 +0200
++++ zaptel-1.2.8/Makefile	2006-08-24 10:54:57.000000000 +0200
+@@ -6,10 +6,17 @@
  #
  
+ 
+-HOSTCC=gcc
 +INSTALL_PREFIX:=$(DESTDIR)$(PREFIX)
 +BUILDCC=cc
 +BUILDAR=ar
@@ -12,17 +13,15 @@ diff -Nurp zaptel-1.2.7.orig/Makefile zaptel-1.2.7/Makefile
 +HOSTAR?=$(BUILDAR)
 +ARCH?=$(shell uname -m)
 +CC:=$(HOSTCC)
- 
--HOSTCC=gcc
- ifeq ($(PWD),)
++
  PWD:=$(shell pwd)
- endif
+ 
 -# If you want to build for a kernel other than the current kernel, set KVERS
 +# If you want to build for a kernel other than the current kernel, set KVERS and KSRC
  ifndef KVERS
  KVERS:=$(shell uname -r)
  endif
-@@ -25,8 +31,8 @@ endif
+@@ -24,8 +31,8 @@ endif
  KINCLUDES:=$(KSRC)/include
  
  CFLAGS+=-I. -Iinclude -O4 -g -Wall -DBUILDING_TONEZONE #-DTONEZONE_DRIVER
@@ -33,7 +32,7 @@ diff -Nurp zaptel-1.2.7.orig/Makefile zaptel-1.2.7/Makefile
  CFLAGS+=$(CFLAGS_PPC) $(CFLAGS_X86-64)
  LCFLAGS:=-fPIC $(CFLAGS) -DBUILDING_TONEZONE
  KFLAGS:=-I$(KINCLUDES) -O6
-@@ -35,9 +41,9 @@ KFLAGS+=-DMODULE -D__KERNEL__ -DEXPORT_S
+@@ -34,9 +41,9 @@ KFLAGS+=-DMODULE -D__KERNEL__ -DEXPORT_S
  ifneq (,$(wildcard $(KINCLUDES)/linux/modversions.h))
    KFLAGS+=-DMODVERSIONS -include $(KINCLUDES)/linux/modversions.h
  endif
@@ -45,7 +44,7 @@ diff -Nurp zaptel-1.2.7.orig/Makefile zaptel-1.2.7/Makefile
  
  #
  # Features are now configured in zconfig.h
-@@ -48,10 +54,7 @@ CFLAGS+=-DSTANDALONE_ZAPATA
+@@ -47,10 +54,7 @@ CFLAGS+=-DSTANDALONE_ZAPATA
  KMAKE:= $(MAKE) -C $(KSRC) SUBDIRS=$(PWD)
  KMAKE_INST:= $(KMAKE) INSTALL_MOD_PATH=$(INSTALL_PREFIX) INSTALL_MOD_DIR=misc modules_install
  
@@ -57,7 +56,7 @@ diff -Nurp zaptel-1.2.7.orig/Makefile zaptel-1.2.7/Makefile
  CFLAGS+=-DZAPTEL_CONFIG=\"$(CONFIG_FILE)\"
  
  ifeq (2.6,$(shell echo $(KVERS) | cut -d. -f1-2))
-@@ -66,7 +69,7 @@ DYNFS:=$(shell ps ax | grep -v grep | gr
+@@ -65,7 +69,7 @@ DYNFS:=$(shell ps ax | grep -v grep | gr
  endif
  
  ifeq ($(BUILDVER),linux26)
@@ -66,7 +65,7 @@ diff -Nurp zaptel-1.2.7.orig/Makefile zaptel-1.2.7/Makefile
      DYNFS=yes
      UDEVRULES=yes
    endif
-@@ -97,10 +100,10 @@ LIBTONEZONE_SO:=libtonezone.so
+@@ -104,10 +108,10 @@ LIBTONEZONE_SO:=libtonezone.so
  LIBTONEZONE_SO_MAJOR_VER:=1
  LIBTONEZONE_SO_MINOR_VER:=0
  
@@ -79,7 +78,7 @@ diff -Nurp zaptel-1.2.7.orig/Makefile zaptel-1.2.7/Makefile
  # build ztdummy by default for 2.6 kernels
  ifeq ($(BUILDVER),linux26)
  MODULES+=ztdummy
-@@ -120,14 +123,14 @@ wct4xxp-objs:=wct4xxp_base.o vpm450m.o
+@@ -127,14 +131,14 @@ wct4xxp-objs:=wct4xxp_base.o vpm450m.o
  # This line is only meaningful when this Makefile is used as kconfig for 
  # 2.6 build
  
@@ -98,7 +97,7 @@ diff -Nurp zaptel-1.2.7.orig/Makefile zaptel-1.2.7/Makefile
  
  all: $(BUILDVER) $(LIBTONEZONE_SO)
  
-@@ -174,10 +177,10 @@ pciradio.o: radfw.h
+@@ -181,10 +185,10 @@ pciradio.o: radfw.h
  ztdummy.o: ztdummy.h
  
  $(filter-out wct4xxp.o,$(MODULESO)) wct4xxp_base.o: %.o: %.c zaptel.h
@@ -106,12 +105,12 @@ diff -Nurp zaptel-1.2.7.orig/Makefile zaptel-1.2.7/Makefile
 +	$(HOSTCC) $(KFLAGS) -o $@ -c $<
  
  vpm450m.o: vpm450m.c zaptel.h
--	$(CC) $(KFLAGS) -I$(PWD)/include  -I$(PWD)/include/oct6100api -o $@ -c $<
-+	$(HOSTCC) $(KFLAGS) -I$(PWD)/include  -I$(PWD)/include/oct6100api -o $@ -c $<
+-	$(CC) $(KFLAGS) -I$(PWD)/include -I$(PWD)/include/oct6100api -I$(SUBDIRS)/include -I$(SUBDIRS)/include/oct6100api -o $@ -c $<
++	$(HOSTCC) $(KFLAGS) -I$(PWD)/include -I$(PWD)/include/oct6100api -I$(SUBDIRS)/include -I$(SUBDIRS)/include/oct6100api -o $@ -c $<
  
  wct4xxp.o: wct4xxp_base.o vpm450m.o
  	$(LD) -r -o $@ wct4xxp_base.o vpm450m.o
-@@ -185,16 +188,16 @@ wct4xxp.o: wct4xxp_base.o vpm450m.o
+@@ -192,16 +196,16 @@ wct4xxp.o: wct4xxp_base.o vpm450m.o
  tor2ee.o: tor2-hw.h
  
  tor2ee: tor2ee.o
@@ -132,7 +131,7 @@ diff -Nurp zaptel-1.2.7.orig/Makefile zaptel-1.2.7/Makefile
  
  tones.h: gendigits
  	./gendigits > $@
-@@ -205,10 +208,14 @@ tor2fw.h: makefw tormenta2.rbt
+@@ -212,10 +216,14 @@ tor2fw.h: makefw tormenta2.rbt
  radfw.h: makefw pciradio.rbt
  	./makefw pciradio.rbt radfw > radfw.h
  
@@ -140,17 +139,17 @@ diff -Nurp zaptel-1.2.7.orig/Makefile zaptel-1.2.7/Makefile
 -	$(CC) -o $@ $^ -lm
 +gendigits: gendigits.c
 +	$(BUILDCC) -o $@ $^ -lm
- 
--fw2h: CFLAGS=
++
 +makefw: makefw.c
 +	$(BUILDCC) -o $@ $^ -lm
-+
+ 
+-fw2h: CFLAGS=
 +fw2h: fw2h.c
 +	$(BUILDCC) -o $@ $^ -lm
  
  vpm450m_fw.h: OCT6114-128D.ima fw2h
  	./fw2h $< $@
-@@ -224,66 +231,66 @@ ztprovision.o: ztprovision.c zaptel.h
+@@ -231,66 +239,66 @@ ztprovision.o: ztprovision.c zaptel.h
  ztmonitor.o: ztmonitor.c zaptel.h
  
  ztspeed.o: ztspeed.c
@@ -236,7 +235,7 @@ diff -Nurp zaptel-1.2.7.orig/Makefile zaptel-1.2.7/Makefile
  
  devices:
  ifndef DYNFS
-@@ -347,14 +354,14 @@ endif
+@@ -363,14 +371,14 @@ endif
  	install -D -m 644 zaptel.h $(INSTALL_PREFIX)/usr/include/linux/zaptel.h
  	install -D -m 644 torisa.h $(INSTALL_PREFIX)/usr/include/linux/torisa.h
  	install -D -m 644 tonezone.h $(INSTALL_PREFIX)/usr/include/tonezone.h

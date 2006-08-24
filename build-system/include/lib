@@ -314,6 +314,7 @@ init_buildenv()
 
   check_build_and_target
 
+  DIST_HOSTNAME=$(echo $DIST_NAME | tr '[:upper:]' '[:lower:]')
   DISTFILES="$BASE/distfiles"
   PREFIX="$BASE/dists/$DIST"
   SRC="$PREFIX/src"

@@ -63,11 +63,10 @@ make_fstab()
 # usage: make_hostname
 make_hostname()
 {
-  hostname=$(echo $DIST_NAME | tr '[:upper:]' '[:lower:]')
-  echo $hostname > $SYSCONF/hostname
+  echo $DIST_HOSTNAME > $SYSCONF/hostname
   ln -s /mnt/hostname $SYSROOT/etc/hostname
 
-  # XXX There should be a unique source for the IP address.
+  # TODO: There should be a unique source for the IP address.
   echo "127.0.0.1 localhost.localdomain localhost" > $SYSCONF/hosts
   echo "192.168.0.221 $hostname" >> $SYSCONF/hosts
   ln -s /mnt/hosts $SYSROOT/etc/hosts

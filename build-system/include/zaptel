@@ -18,12 +18,12 @@
 # Call make_zaptel() before make_asterisk() so that Asterisk builds
 # chan_zap.so.
 
-ZAPTEL_SOURCE="zaptel-1.2.7.tar.gz"
-ZAPTEL_URL="http://ftp.digium.com/pub/telephony/zaptel/$ZAPTEL_SOURCE"
-ZAPTEL_SIZE="1137409"
-ZAPTEL_SHA1SUM="790a106ee975a77c413a01584c59ea7d91ca9efd"
+ZAPTEL_SOURCE="zaptel-1.2.8.tar.gz"
+ZAPTEL_URL="http://ftp.digium.com/pub/telephony/zaptel/releases/$ZAPTEL_SOURCE"
+ZAPTEL_SIZE="1139177"
+ZAPTEL_SHA1SUM="0c074bda31634825f1290a45780929083431da99"
 
-ZAPTEL_XIVO_PATCH="zaptel-1.2.7_xivo.patch"
+ZAPTEL_XIVO_PATCH="zaptel-1.2.8_xivo.patch"
 
 # usage: zaptel_build
 zaptel_build()
