@@ -20,8 +20,15 @@
 set -e
 
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
-pidfile=/var/run/asterisk.pid
+rundir=/var/run/asterisk
+logdir=/var/log/asterisk
+libdir=/var/lib/asterisk
+spooldir=/var/spool/asterisk
+pidfile=$rundir/asterisk.pid
+ctlfile=$rundir/asterisk.ctl
 binpath=/usr/sbin/asterisk
+user=asterisk
+group=asterisk
 
 test -x $binpath || exit 0
 
@@ -39,6 +46,12 @@ start_asterisk()
 {
   echo -n "starting asterisk... "
   if ! running $pidfile; then
+
+    for dir in $rundir $logdir $libdir $spooldir; do
+      mkdir -p $dir
+      chown $user:$group $dir
+    done
+
     start-stop-daemon --background \
                       --quiet \
                       --exec $binpath \
@@ -61,7 +74,7 @@ stop_asterisk()
                       --pidfile $pidfile \
                       --stop
     sleep 1
-    rm -rf /var/run/asterisk.ctl /var/run/asterisk.pid
+    rm -rf $pidfile $ctlfile
     echo "done"
   else
     echo "asterisk not running"

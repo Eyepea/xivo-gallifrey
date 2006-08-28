@@ -1,9 +1,13 @@
 case $SUBSYSTEM in
   visdn)
     NAME="visdn/$KERNEL"
+    OWNER="asterisk"
+    GROUP="asterisk"
     ;;
   visdn-timer)
     NAME="visdn/timers/$KERNEL"
+    OWNER="asterisk"
+    GROUP="asterisk"
     SYMLINK="visdn/timer"
     ;;
 esac

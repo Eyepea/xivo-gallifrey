@@ -1,17 +1,27 @@
 case $KERNEL in
   zapctl)
     NAME="zap/ctl"
+    OWNER="asterisk"
+    GROUP="asterisk"
     ;;
   zaptimer)
     NAME="zap/timer"
+    OWNER="asterisk"
+    GROUP="asterisk"
     ;;
   zapchannel)
     NAME="zap/channel"
+    OWNER="asterisk"
+    GROUP="asterisk"
     ;;
   zappseudo)
     NAME="zap/pseudo"
+    OWNER="asterisk"
+    GROUP="asterisk"
     ;;
   zap[0-9]*)
     NAME="zap/$(echo $KERNEL | sed -e 's/^zap//')"
+    OWNER="asterisk"
+    GROUP="asterisk"
     ;;
 esac
