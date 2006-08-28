@@ -1140,7 +1140,7 @@ make_xivo_packages()
   make_iptables
   make_dropbear
   make_vsftpd
-  make_thy
+  make_lighttpd
   make_php
   make_php_fileinfo
   make_php_sqlite

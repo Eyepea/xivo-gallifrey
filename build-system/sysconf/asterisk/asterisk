@@ -46,7 +46,6 @@ start_asterisk()
 {
   echo -n "starting asterisk... "
   if ! running $pidfile; then
-
     for dir in $rundir $logdir $libdir $spooldir; do
       mkdir -p $dir
       chown $user:$group $dir

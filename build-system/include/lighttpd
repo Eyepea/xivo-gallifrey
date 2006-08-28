@@ -1,4 +1,4 @@
-# Xivo 0.3 - Build thy.
+# Xivo 0.3 - Build lighttpd.
 # Copyright (C) 2006 Richard Braun <rbraun@proformatique.com>
 # 
 # This program is free software; you can redistribute it and/or modify
@@ -15,46 +15,39 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-THY_SOURCE="thy-0.9.4.tar.gz"
-THY_URL="ftp://ftp.bonehunter.rulez.org/pub/thy/stable/$THY_SOURCE"
-THY_SIZE="357776"
-THY_SHA1SUM="e3bae4f3667f98fbc5fc39dc3f61571b524e5dfd"
+LIGHTTPD_SOURCE="lighttpd-1.4.11.tar.gz"
+LIGHTTPD_URL="http://mirrors.cat.pdx.edu/lighttpd/$LIGHTTPD_SOURCE"
+LIGHTTPD_SIZE="781656"
+LIGHTTPD_SHA1SUM="ca904d3d4d9dde76f85156f2c709a394f30e28c8"
 
-THY_ZLIB_PATCH="thy-0.9.4_zlib.patch"
-
-# usage: thy_build
-thy_build()
+# usage: lighttpd_build
+lighttpd_build()
 {
-  apply_patch $THY_ZLIB_PATCH
-  CC=$TARGET-gcc \
-  ac_cv_func_malloc_0_nonnull=yes \
-  ac_cv_setproctitle_ok=no \
   ./configure --build=$BUILD \
               --host=$TARGET \
               --prefix=$SYSROOT/usr \
               --sysconfdir=$SYSROOT/etc \
-              --enable-file-magic \
-              --enable-uname \
-              --with-libgnutls-prefix=$SYSROOT/usr \
-              --with-libgnutls-extra-prefix=$SYSROOT/usr
+              --disable-dependency-tracking \
+              --disable-static \
+              --with-openssl \
   do_make
 }
 
-# usage: thy_install
-thy_install()
+# usage: lighttpd_install
+lighttpd_install()
 {
   do_make install
-  install_rc_script $SYSCONFDIR/thy/thy
-  make_conf_file thy/thy.conf /etc/thy 644
+  install_rc_script $SYSCONFDIR/lighttpd/lighttpd
+  make_conf_file lighttpd/lighttpd.conf /etc 644
 }
 
-# usage: make_thy
-make_thy()
+# usage: make_lighttpd
+make_lighttpd()
 {
   make_zlib
-  make_gnutls
+  make_openssl
 
-  get_basename $THY_SOURCE
-  make_package $THY_SOURCE $THY_URL $THY_SIZE $THY_SHA1SUM \
-               $BASENAME thy_build thy_install
+  get_basename $LIGHTTPD_SOURCE
+  make_package $LIGHTTPD_SOURCE $LIGHTTPD_URL $LIGHTTPD_SIZE $LIGHTTPD_SHA1SUM \
+               $BASENAME lighttpd_build lighttpd_install
 }

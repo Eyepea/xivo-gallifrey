@@ -14,4 +14,5 @@ proxy:x:13:
 kmem:x:15:
 dialout:x:20:
 asterisk:x:100:
+www:x:101:
 nogroup:x:65534:
