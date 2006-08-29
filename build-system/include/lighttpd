@@ -29,7 +29,7 @@ lighttpd_build()
               --sysconfdir=$SYSROOT/etc \
               --disable-dependency-tracking \
               --disable-static \
-              --with-openssl \
+              --with-openssl
   do_make
 }
 
