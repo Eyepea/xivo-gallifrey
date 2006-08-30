@@ -15,9 +15,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-# Call make_res_sqlite() before make_asterisk() so that Asterisk builds
-# chan_zap.so.
-
 RES_SQLITE_SOURCE="res_sqlite-1.0rc1.tar.gz"
 RES_SQLITE_URL="http://www.proformatique.org/IMG/gz/$RES_SQLITE_SOURCE"
 RES_SQLITE_SIZE="75615"
