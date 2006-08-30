@@ -15,10 +15,10 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-PHP_SOURCE="php-4.4.2.tar.gz"
+PHP_SOURCE="php-4.4.4.tar.bz2"
 PHP_URL="http://fr.php.net/distributions/$PHP_SOURCE"
-PHP_SIZE="5461440"
-PHP_SHA1SUM="99d97c0971d09618e4d7d7a51cd5d47f51f5316d"
+PHP_SIZE="4478698"
+PHP_SHA1SUM="05d62910fb5734344db87f0a17b1e8e001b26b05"
 
 PHP_UCLIBC_CROSSCOMPILE_PATCH="php-4.4.2_uclibc_crosscompile.patch"
 
