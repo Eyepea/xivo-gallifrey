@@ -54,6 +54,7 @@ start_mountsys()
   do_mount tmpfs tmpfs /dev/shm
   chmod 1777 /dev/shm
   do_mount tmpfs tmpfs /tmp
+  chmod 1777 /tmp
 }
 
 stop_mountsys()
