@@ -20,12 +20,12 @@ PHP_URL="http://fr.php.net/distributions/$PHP_SOURCE"
 PHP_SIZE="4478698"
 PHP_SHA1SUM="05d62910fb5734344db87f0a17b1e8e001b26b05"
 
-PHP_UCLIBC_CROSSCOMPILE_PATCH="php-4.4.2_uclibc_crosscompile.patch"
+PHP_CROSSCOMPILE_PATCH="php-4.4.4_crosscompile.patch"
 
 # usage: php_build
 php_build()
 {
-  apply_patch $PHP_UCLIBC_CROSSCOMPILE_PATCH
+  apply_patch $PHP_CROSSCOMPILE_PATCH
 
   if [ "$BIG_ENDIAN" = "true" ]; then
     big_endian=yes

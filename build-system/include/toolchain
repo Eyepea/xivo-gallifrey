@@ -28,6 +28,7 @@ LINUX_SIZE="40840903"
 LINUX_SHA1SUM="27701c6f6124308181955b1a2aad28f06c38e9b8"
 
 LINUX_SQUASHFS_PATCH="squashfs3.0.patch"
+LINUX_POWERPC_MAKE_INSTALL_PATCH="linux-2.6.16.20_powerpc_make_install.patch"
 
 # Snapshots are removed after one month...
 UCLIBC_SOURCE="uClibc-20060828.tar.bz2"
@@ -91,6 +92,11 @@ make_binutils()
 linux_headers_build()
 {
   apply_patch $LINUX_SQUASHFS_PATCH
+
+  if [ "$KERNEL_ARCH" = "powerpc" ]; then
+    apply_patch $LINUX_POWERPC_MAKE_INSTALL_PATCH
+  fi
+
   gen_linux_conf > .config
   do_make ARCH=$KERNEL_ARCH oldconfig
   do_make ARCH=$KERNEL_ARCH include/linux/version.h
@@ -163,7 +169,13 @@ glibc_headers_build()
 
   # Setting this variable avoids having an error because of altivec
   # support when crosscompiling to powerpc.
-  libc_cv_ppc_machine=yes \
+  if [ "$ARCH" = "powerpc" ]; then
+    libc_cv_ppc_machine=yes
+  else
+    libc_cv_ppc_machine=
+  fi
+
+  libc_cv_ppc_machine=$libc_cv_ppc_machine \
   $1/configure --build=$BUILD \
                --host=$TARGET \
                --prefix=/usr \

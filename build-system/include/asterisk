@@ -24,6 +24,18 @@ ASTERISK_UCLIBC_PATCH="asterisk-1.2.10_uclibc.patch"
 ASTERISK_CAP_PATCH="asterisk-1.2.5-cap.diff"
 ASTERISK_DEPS_PATCH="asterisk-1.2.10_deps.patch"
 
+# Set $AST_ARCH from $ARCH.
+# 
+# usage: asterisk_set_arch
+asterisk_set_arch()
+{
+  if [ "$ARCH" = "powerpc" ]; then
+    AST_ARCH=ppc
+  else
+    AST_ARCH=$ARCH
+  fi
+}
+
 # usage: asterisk_build
 asterisk_build()
 {
@@ -35,11 +47,12 @@ asterisk_build()
   apply_patch $ASTERISK_DEPS_PATCH
 
   # I suspect the build process to uncorrectly support parallel builds.
+  asterisk_set_arch
   do_make CROSS_COMPILE=$TOOLCHAIN/bin/$TARGET- \
           CROSS_COMPILE_BIN=$TOOLCHAIN/bin \
           CROSS_COMPILE_TARGET=$SYSROOT \
           CROSS_ARCH=Linux \
-          CROSS_PROC=$ARCH \
+          CROSS_PROC=$AST_ARCH \
           DESTDIR=$SYSROOT \
           -j 1
 }
@@ -49,11 +62,12 @@ asterisk_install()
 {
   # Asterisk build process sucks.
   mkdir -p -m 755 $SYSROOT/usr/lib/asterisk/modules
+  asterisk_set_arch
   do_make CROSS_COMPILE=$TOOLCHAIN/bin/$TARGET- \
           CROSS_COMPILE_BIN=$TOOLCHAIN/bin \
           CROSS_COMPILE_TARGET=$SYSROOT \
           CROSS_ARCH=Linux \
-          CROSS_PROC=$ARCH \
+          CROSS_PROC=$AST_ARCH \
           DESTDIR=$SYSROOT \
           install -j 1
   install_rc_script $SYSCONFDIR/asterisk/asterisk

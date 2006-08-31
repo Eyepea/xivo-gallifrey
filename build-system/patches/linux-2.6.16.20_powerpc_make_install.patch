@@ -1,0 +1,28 @@
+diff --git a/arch/powerpc/Makefile b/arch/powerpc/Makefile
+index ed5b26a..85b0c4b 100644
+--- a/arch/powerpc/Makefile
++++ b/arch/powerpc/Makefile
+@@ -156,6 +156,9 @@ boot := arch/$(ARCH)/boot
+ $(BOOT_TARGETS): vmlinux
+ 	$(Q)$(MAKE) ARCH=ppc64 $(build)=$(boot) $(patsubst %,$(boot)/%,$@)
+ 
++install:
++	$(Q)$(MAKE) ARCH=ppc64 $(build)=$(boot) BOOTIMAGE=$(KBUILD_IMAGE) install
++
+ define archhelp
+   @echo '* zImage          - Compressed kernel image (arch/$(ARCH)/boot/zImage.*)'
+   @echo '  install         - Install kernel using'
+diff --git a/arch/powerpc/boot/Makefile b/arch/powerpc/boot/Makefile
+index 840ae59..6bfc3ec 100644
+--- a/arch/powerpc/boot/Makefile
++++ b/arch/powerpc/boot/Makefile
+@@ -209,7 +209,7 @@ extra-y		+= vmlinux.bin vmlinux.gz
+ 	@echo -n '  Image: $@ '
+ 	@if [ -f $@ ]; then echo 'is ready' ; else echo 'not made'; fi
+ 
+-install: $(CONFIGURE) $(BOOTIMAGE)
+-	sh -x $(srctree)/$(src)/install.sh "$(KERNELRELEASE)" vmlinux System.map "$(INSTALL_PATH)" "$(BOOTIMAGE)"
++install:
++	sh $(srctree)/$(src)/install.sh "$(KERNELRELEASE)" vmlinux System.map "$(INSTALL_PATH)"
+ 
+ clean-files += $(addprefix $(objtree)/, $(obj-boot) vmlinux.strip)
