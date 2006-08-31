@@ -1,4 +1,4 @@
-gen_linux_conf_xivo_i386()
+gen_linux_conf_xivo()
 {
   cat << EOF
 #
@@ -1110,7 +1110,7 @@ CONFIG_KTIME_SCALAR=y
 EOF
 }
 
-gen_fstab_xivo_i386()
+gen_fstab_xivo()
 {
   cat << EOF
 proc      /proc proc rw             0 0
@@ -1119,7 +1119,7 @@ proc      /proc proc rw             0 0
 EOF
 }
 
-gen_modules_xivo_i386()
+gen_modules_xivo()
 {
   cat << EOF
 e100
@@ -1135,7 +1135,7 @@ visdn-hfc-pci
 EOF
 }
 
-make_xivo_packages()
+make_dist_packages_xivo()
 {
   make_iptables
   make_dropbear

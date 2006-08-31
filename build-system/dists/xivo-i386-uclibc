@@ -1,4 +1,4 @@
-# Xivo 0.3 - Xivo, using uClibc.
+# Xivo 0.3 - Distribution for the Xivo orange prototype.
 # Copyright (C) 2006 Richard Braun <rbraun@proformatique.com>
 # 
 # This program is free software; you can redistribute it and/or modify
@@ -22,20 +22,20 @@ TARGET="i486-linux-uclibc"
 
 gen_linux_conf()
 {
-  gen_linux_conf_xivo_i386
+  gen_linux_conf_xivo
 }
 
 gen_fstab()
 {
-  gen_fstab_xivo_i386
+  gen_fstab_xivo
 }
 
 gen_modules()
 {
-  gen_modules_xivo_i386
+  gen_modules_xivo
 }
 
 make_dist_packages()
 {
-  make_xivo_packages
+  make_dist_packages_xivo
 }
