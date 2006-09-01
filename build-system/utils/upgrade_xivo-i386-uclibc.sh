@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Xivo 0.3 - Upgrade Xivo.
+# Xivo 0.3 - Upgrade xivo-i386-uclibc.
 # Copyright (C) 2006 Richard Braun <rbraun@proformatique.com>
 # 
 # This program is free software; you can redistribute it and/or modify
@@ -22,7 +22,7 @@ set -e
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
 
 sysrootfile=sysroot.img
-sysroot=http://192.168.0.220/cross/dists/xivo/$sysrootfile
+sysroot=http://192.168.0.220/cross/dists/xivo-i386-uclibc/$sysrootfile
 
 root=$(ls -l /dev/root | cut -d '>' -f 2)
 
