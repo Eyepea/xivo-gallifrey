@@ -1,0 +1,37 @@
+diff -Nurp chan_capi-0.7.0.orig/Makefile chan_capi-0.7.0/Makefile
+--- chan_capi-0.7.0.orig/Makefile	2006-04-01 14:17:32.000000000 +0200
++++ chan_capi-0.7.0/Makefile	2006-09-01 11:23:11.000000000 +0200
+@@ -19,13 +19,13 @@
+ # distributed under the terms of the GNU Public License.
+ #
+ 
+-OSNAME=${shell uname}
++OSNAME?=${shell uname}
+ 
+ .EXPORT_ALL_VARIABLES:
+ 
+ .PHONY: openpbx
+ 
+-INSTALL_PREFIX=
++INSTALL_PREFIX?=
+ 
+ ASTERISK_HEADER_DIR=$(INSTALL_PREFIX)/usr/include
+ 
+@@ -57,7 +57,7 @@ ifeq (${OSNAME},NetBSD)
+ CONFIG_DIR=$(INSTALL_PREFIX)/usr/pkg/etc/asterisk
+ endif
+ 
+-PROC=$(shell uname -m)
++PROC?=$(shell uname -m)
+ 
+ LIBLINUX=
+ DEBUG=-g #-pg
+@@ -81,7 +81,7 @@ CFLAGS=-pipe -fPIC -Wall -Wmissing-proto
+ CFLAGS+=$(OPTIMIZE)
+ CFLAGS+=-O6
+ CFLAGS+=$(shell if $(CC) -march=$(PROC) -S -o /dev/null -xc /dev/null >/dev/null 2>&1; then echo "-march=$(PROC)"; fi)
+-CFLAGS+=$(shell if uname -m | grep -q ppc; then echo "-fsigned-char"; fi)
++CFLAGS+=$(shell if echo $(PROC) | grep -q ppc; then echo "-fsigned-char"; fi)
+ 
+ LIBS=-ldl -lpthread -lm
+ CC=gcc
