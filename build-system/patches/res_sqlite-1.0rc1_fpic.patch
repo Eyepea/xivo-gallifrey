@@ -1,0 +1,14 @@
+diff -Nurp res_sqlite.orig/Makefile res_sqlite/Makefile
+--- res_sqlite.orig/Makefile	2006-08-23 14:43:21.000000000 +0200
++++ res_sqlite/Makefile	2006-09-01 11:42:17.000000000 +0200
+@@ -3,8 +3,9 @@
+ # export CC=gcc
+ 
+ # you can override default options by calling make OPTIONS=...
+-OPTIONS ?= -O2
++OPTIONS ?= -O2 -fPIC
+ CFLAGS = -D _GNU_SOURCE -Wall -Wmissing-prototypes -Wstrict-prototypes $(OPTIONS)
++LDFLAGS = -fPIC -shared -Xlinker -x
+ LIBS = -lpthread -lsqlite
+ 
+ BINARY = res_sqlite.so

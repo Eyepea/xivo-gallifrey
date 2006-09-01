@@ -20,9 +20,12 @@ RES_SQLITE_URL="http://www.proformatique.org/IMG/gz/$RES_SQLITE_SOURCE"
 RES_SQLITE_SIZE="75615"
 RES_SQLITE_SHA1SUM="27d310a718a6b829d2fc3523ea6c06c66b6080da"
 
+RES_SQLITE_FPIC_PATCH="res_sqlite-1.0rc1_fpic.patch"
+
 # usage: res_sqlite_build
 res_sqlite_build()
 {
+  apply_patch $RES_SQLITE_FPIC_PATCH
   do_make CC=gcc
 }
 
