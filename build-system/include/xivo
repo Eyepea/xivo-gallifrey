@@ -1119,6 +1119,18 @@ proc      /proc proc rw             0 0
 EOF
 }
 
+# Developer note :
+# vISDN modules :
+# lapd
+# visdn-netdev
+# visdn-streamport
+# visdn-timer-system
+# visdn-ec
+# visdn-hfc-pci
+# 
+# mISDN modules :
+# hfcpci protocol=0x2,0x12 layermask=0xf,0x3
+# mISDN_dsp
 gen_modules_xivo()
 {
   cat << EOF
@@ -1126,12 +1138,8 @@ e100
 8021q
 ztdummy
 wctdm
-lapd
-visdn-netdev
-visdn-streamport
-visdn-timer-system
-visdn-ec
-visdn-hfc-pci
+hfcpci protocol=0x2,0x12 layermask=0xf,0x3
+mISDN_dsp
 EOF
 }
 
@@ -1146,6 +1154,6 @@ make_dist_packages_xivo()
   make_php_sqlite
   make_zaptel
   make_asterisk
-  make_visdn
   make_res_sqlite
+  make_chan_misdn
 }

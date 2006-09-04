@@ -1,0 +1,57 @@
+diff -Nurp mISDNuser-CVS-2006-08-17.orig/i4lnet/Makefile mISDNuser-CVS-2006-08-17/i4lnet/Makefile
+--- mISDNuser-CVS-2006-08-17.orig/i4lnet/Makefile	2006-08-16 23:37:11.000000000 +0200
++++ mISDNuser-CVS-2006-08-17/i4lnet/Makefile	2006-09-04 17:22:51.000000000 +0200
+@@ -10,7 +10,7 @@ ISDNNETOBJ = net_if.o isdn_debug.o isdn_
+ 		manager.o tone.o bchannel.o g711.o
+ 
+ libisdnnet.so: $(ISDNNETOBJ)
+-	$(CC) -shared -Xlinker -x -o $@ $^
++	$(CC) -L$(PWD)/lib -fPIC -shared -Xlinker -x -o $@ $^ -lmISDN
+ 
+ libisdnnet.a: $(ISDNNETOBJ)
+ 	ar cr $@ $^
+diff -Nurp mISDNuser-CVS-2006-08-17.orig/lib/Makefile mISDNuser-CVS-2006-08-17/lib/Makefile
+--- mISDNuser-CVS-2006-08-17.orig/lib/Makefile	2006-08-16 23:37:12.000000000 +0200
++++ mISDNuser-CVS-2006-08-17/lib/Makefile	2006-09-04 17:15:30.000000000 +0200
+@@ -8,7 +8,7 @@ install:
+ LIBMISDN_OBJS = device.o layer.o stack.o status.o
+ 
+ libmISDN.so: $(LIBMISDN_OBJS)
+-	$(CC) -shared -Xlinker -x -o $@ $^
++	$(CC) -fPIC -shared -Xlinker -x -o $@ $^
+ 
+ libmISDN.a: $(LIBMISDN_OBJS)
+ 	ar cr $@ $^
+diff -Nurp mISDNuser-CVS-2006-08-17.orig/Makefile mISDNuser-CVS-2006-08-17/Makefile
+--- mISDNuser-CVS-2006-08-17.orig/Makefile	2006-08-15 20:57:31.000000000 +0200
++++ mISDNuser-CVS-2006-08-17/Makefile	2006-09-04 17:14:53.000000000 +0200
+@@ -1,7 +1,7 @@
+ #
+ # Set this to your local copy of mISDN
+ #
+-MISDNDIR := /usr/src/mqueue/mISDN
++MISDNDIR ?= /usr/src/mqueue/mISDN
+ 
+ 
+ PWD=$(shell pwd)
+@@ -9,7 +9,7 @@ PWD=$(shell pwd)
+ # Change this to create an install prefix for the shared libs, programms and
+ # includes
+ #
+-INSTALL_PREFIX := /
++INSTALL_PREFIX ?= /
+ export INSTALL_PREFIX
+ 
+ MISDNINCLUDEDIR := $(MISDNDIR)/include
+diff -Nurp mISDNuser-CVS-2006-08-17.orig/suppserv/Makefile mISDNuser-CVS-2006-08-17/suppserv/Makefile
+--- mISDNuser-CVS-2006-08-17.orig/suppserv/Makefile	2006-08-16 23:37:12.000000000 +0200
++++ mISDNuser-CVS-2006-08-17/suppserv/Makefile	2006-09-04 17:17:09.000000000 +0200
+@@ -13,7 +13,7 @@ install:
+ 	cp *.h $(INSTALL_PREFIX)/usr/include/mISDNuser/
+ 
+ libsuppserv.so: $(SUPPSERVOBJ)
+-	$(CC) -shared -Xlinker -x -o $@ $^
++	$(CC) -fPIC -shared -Xlinker -x -o $@ $^
+ 
+ libsuppserv.a: $(SUPPSERVOBJ)
+ 	ar cr $@ $^
