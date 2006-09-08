@@ -432,7 +432,7 @@ make_sysimgs()
     mksquashfs_opt="-le"
   fi
 
-  mksquashfs $SYSROOTTMP $SYSROOTIMG -all-root
+  mksquashfs $SYSROOTTMP $SYSROOTIMG -all-root $mksquashfs_opt
   chmod 644 $SYSROOTIMG
   sudo rm -rf $SYSROOTTMP
 }
