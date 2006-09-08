@@ -41,12 +41,12 @@ start_vsftpd()
   echo -n "starting vsftpd... "
   mkdir -p -m 755 $chrootdir
   if ! running $pidfile; then
-    start-stop-daemon --background \
-                      --quiet \
-                      --exec $binpath \
-                      --pidfile $pidfile \
-                      --make-pid \
-                      --start
+    start-stop-daemon -b \
+                      -q \
+                      -x $binpath \
+                      -p $pidfile \
+                      -m \
+                      -S
     echo "done"
   else
     echo "vsftpd already running"
@@ -73,11 +73,11 @@ reload_vsftpd()
 {
   echo -n "reloading vsftpd... "
   if running $pidfile; then
-    start-stop-daemon --quiet \
-                      --exec $binpath \
-                      --pidfile $pidfile \
-                      --signal 1 \
-                      --stop
+    start-stop-daemon -q \
+                      -x $binpath \
+                      -p $pidfile \
+                      -s 1 \
+                      -K
     echo "done"
   else
     echo "vsftpd not running"

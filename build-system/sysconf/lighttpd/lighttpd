@@ -43,10 +43,10 @@ start_lighttpd()
 {
   echo -n "starting lighttpd... "
   if ! running $pidfile; then
-    start-stop-daemon --quiet \
-                      --exec $binpath \
-                      --pidfile $pidfile \
-                      --start \
+    start-stop-daemon -q \
+                      -x $binpath \
+                      -p $pidfile \
+                      -S \
                       -- \
                       -f $conffile
     echo "done"
@@ -59,10 +59,10 @@ stop_lighttpd()
 {
   echo -n "stopping lighttpd... "
   if running $pidfile; then
-    start-stop-daemon --quiet \
-                      --exec $binpath \
-                      --pidfile $pidfile \
-                      --stop
+    start-stop-daemon -q \
+                      -x $binpath \
+                      -p $pidfile \
+                      -K
     sleep 1
     rm -f $pidfile
     echo "done"

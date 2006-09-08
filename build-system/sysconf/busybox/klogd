@@ -39,12 +39,12 @@ start_klogd()
 {
   echo -n "starting klogd... "
   if ! running $pidfile; then
-    start-stop-daemon --background \
-                      --quiet \
-                      --exec $binpath \
-                      --pidfile $pidfile \
-                      --make-pid \
-                      --start \
+    start-stop-daemon -b \
+                      -q \
+                      -x $binpath \
+                      -p $pidfile \
+                      -m \
+                      -S \
                       -- \
                       -n
     echo "done"
@@ -57,10 +57,10 @@ stop_klogd()
 {
   echo -n "stopping klogd... "
   if running $pidfile; then
-    start-stop-daemon --quiet \
-                      --exec $binpath \
-                      --pidfile $pidfile \
-                      --stop
+    start-stop-daemon -q \
+                      -x $binpath \
+                      -p $pidfile \
+                      -K
     sleep 1
     rm -f $pidfile
     echo "done"
@@ -73,11 +73,11 @@ reload_klogd()
 {
   echo -n "reloading klogd... "
   if running $pidfile; then
-    start-stop-daemon --quiet \
-                      --exec $binpath \
-                      --pidfile $pidfile \
-                      --signal 1 \
-                      --stop
+    start-stop-daemon -q \
+                      -x $binpath \
+                      -p $pidfile \
+                      -s 1 \
+                      -K
     echo "done"
   else
     echo "klogd not running"

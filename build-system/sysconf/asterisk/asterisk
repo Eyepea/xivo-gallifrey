@@ -51,11 +51,11 @@ start_asterisk()
       chown $user:$group $dir
     done
 
-    start-stop-daemon --background \
-                      --quiet \
-                      --exec $binpath \
-                      --pidfile $pidfile \
-                      --start \
+    start-stop-daemon -b \
+                      -q \
+                      -x $binpath \
+                      -p $pidfile \
+                      -S \
                       -- \
                       -f
     echo "done"
@@ -68,10 +68,10 @@ stop_asterisk()
 {
   echo -n "stopping asterisk... "
   if running $pidfile; then
-    start-stop-daemon --quiet \
-                      --exec $binpath \
-                      --pidfile $pidfile \
-                      --stop
+    start-stop-daemon -q \
+                      -x $binpath \
+                      -p $pidfile \
+                      -K
     sleep 1
     rm -rf $pidfile $ctlfile
     echo "done"
@@ -84,11 +84,11 @@ reload_asterisk()
 {
   echo -n "reloading asterisk... "
   if running $pidfile; then
-    start-stop-daemon --quiet \
-                      --exec $binpath \
-                      --pidfile $pidfile \
-                      --signal 1 \
-                      --stop
+    start-stop-daemon -q \
+                      -x $binpath \
+                      -p $pidfile \
+                      -s 1 \
+                      -K
     echo "done"
   else
     echo "asterisk not running"
