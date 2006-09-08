@@ -425,6 +425,13 @@ make_sysimgs()
   e2fsck -y $SYSCONFIMG
 
   copy_sysroot
+
+  if [ "$BIG_ENDIAN" = "true" ]; then
+    mksquashfs_opt="-be"
+  else
+    mksquashfs_opt="-le"
+  fi
+
   mksquashfs $SYSROOTTMP $SYSROOTIMG -all-root
   chmod 644 $SYSROOTIMG
   sudo rm -rf $SYSROOTTMP
