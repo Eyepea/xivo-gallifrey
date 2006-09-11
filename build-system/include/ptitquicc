@@ -825,13 +825,14 @@ EOF
 
 make_dist_packages_ptitquicc()
 {
-  #make_iptables
+  make_mtd_utils
+  make_iptables
   make_dropbear
-  #make_vsftpd
-  #make_lighttpd
-  #make_php
-  #make_php_fileinfo
-  #make_php_sqlite
+  make_vsftpd
+  make_lighttpd
+  make_php
+  make_php_fileinfo
+  make_php_sqlite
   make_asterisk
-  #make_res_sqlite
+  make_res_sqlite
 }
