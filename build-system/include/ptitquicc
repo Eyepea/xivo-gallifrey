@@ -4,7 +4,7 @@ gen_linux_conf_ptitquicc()
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: 2.6.9
-# Thu Sep  7 17:25:28 2006
+# Mon Sep 11 10:49:17 2006
 #
 CONFIG_MMU=y
 CONFIG_RWSEM_XCHGADD_ALGORITHM=y
@@ -108,7 +108,7 @@ CONFIG_BINFMT_ELF=y
 # CONFIG_BINFMT_MISC is not set
 # CONFIG_PPCBOOT is not set
 CONFIG_CMDLINE_BOOL=y
-CONFIG_CMDLINE="mtdparts=phys_mapped_flash:1m(firmware)ro,1m(kernel),14m(root),-(mnt) root=/dev/mtdblock2 ro"
+CONFIG_CMDLINE="mtdparts=phys_mapped_flash:1m(firmware)ro,1m(kernel),22m(root),-(mnt) root=/dev/mtdblock2 ro"
 
 #
 # Bus options
@@ -701,7 +701,13 @@ CONFIG_RAMFS=y
 # CONFIG_BFS_FS is not set
 # CONFIG_EFS_FS is not set
 # CONFIG_JFFS_FS is not set
-# CONFIG_JFFS2_FS is not set
+CONFIG_JFFS2_FS=y
+CONFIG_JFFS2_FS_DEBUG=0
+# CONFIG_JFFS2_FS_NAND is not set
+# CONFIG_JFFS2_COMPRESSION_OPTIONS is not set
+CONFIG_JFFS2_ZLIB=y
+CONFIG_JFFS2_RTIME=y
+# CONFIG_JFFS2_RUBIN is not set
 # CONFIG_CRAMFS is not set
 CONFIG_SQUASHFS=y
 # CONFIG_SQUASHFS_EMBEDDED is not set
@@ -753,10 +759,10 @@ CONFIG_FCC_LXT971=y
 # Library routines
 #
 CONFIG_CRC_CCITT=m
-CONFIG_CRC32=m
+CONFIG_CRC32=y
 # CONFIG_LIBCRC32C is not set
 CONFIG_ZLIB_INFLATE=y
-CONFIG_ZLIB_DEFLATE=m
+CONFIG_ZLIB_DEFLATE=y
 
 #
 # Profiling support
@@ -806,8 +812,8 @@ EOF
 gen_fstab_ptitquicc()
 {
   cat << EOF
-proc           /proc proc rw      0 0
-/dev/mtdblock3 /mnt  ext2 rw,sync 1 2
+proc           /proc proc  rw 0 0
+/dev/mtdblock3 /mnt  jffs2 rw 0 0
 EOF
 }
 

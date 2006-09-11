@@ -1,4 +1,6 @@
-# Xivo 0.3 - PtitQUICC, test distribution for the PowerQUICC port.
+#!/bin/sh
+
+# Xivo 0.3 - Upgrade ptitquicc-powerpc-uclibc.
 # Copyright (C) 2006 Richard Braun <rbraun@proformatique.com>
 # 
 # This program is free software; you can redistribute it and/or modify
@@ -15,33 +17,15 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-DIST_NAME="PtitQUICC"
-DIST_VERSION="0.3"
-DIST_FS="jffs2"
-DIST_CONSOLE="ttyCPM0"
-DIST_CONSOLE_SPEED="9600"
-ARCH="ppc_rgwypq2"
-TARGET="powerpc-linux-uclibc"
-SYSBOOTIMGSIZE="8"
-SYSROOTIMGSIZE="32"
-SYSCONFIMGSIZE="16"
+set -e
 
-gen_linux_conf()
-{
-  gen_linux_conf_ptitquicc
-}
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
 
-gen_fstab()
-{
-  gen_fstab_ptitquicc
-}
+sysrootfile=sysroot.img
+sysroot=http://192.168.0.220/cross/dists/ptitquicc-powerpc-uclibc/$sysrootfile
+root=/dev/mtdblock2
 
-gen_modules()
-{
-  gen_modules_ptitquicc
-}
-
-make_dist_packages()
-{
-  make_dist_packages_ptitquicc
-}
+echo "upgrading firmware, please wait..."
+wget --no-check-certificate $sysroot -O $root > /dev/null
+echo "firmware upgraded, rebooting..."
+reboot

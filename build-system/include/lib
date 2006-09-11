@@ -342,8 +342,8 @@ init_buildenv()
 
   # Directory where system configuration files are located.
   # Dont mistake $SYSCONF and $SYSCONFDIR. $SYSCONF is the directory
-  # used to generate the ext2fs file system where modifyable configuration
-  # files will be located.
+  # used to generate the ext2fs/jffs2 file system where modifyable
+  # configuration files will be located.
   SYSCONFDIR="$ROOTDIR/sysconf"
 
   export BUILD_CC=$(which gcc)
@@ -414,12 +414,26 @@ make_sysimgs()
 {
   rm -f $SYSROOTIMG $SYSBOOTIMG $SYSCONFIMG
 
-  # Here, we assume the size will always be small enough so that the block
-  # size is 1024...
-  genext2fs -U -b $(($SYSBOOTIMGSIZE * 1024)) -d $SYSBOOT > $SYSBOOTIMG
-  e2fsck -y $SYSBOOTIMG
-  genext2fs -U -b $(($SYSCONFIMGSIZE * 1024)) -d $SYSCONF > $SYSCONFIMG
-  e2fsck -y $SYSCONFIMG
+  if [ "$DIST_FS" = "ext2fs" ]; then
+    # Here, we assume the size will always be small enough so that the block
+    # size is 1024...
+    genext2fs -U -b $(($SYSBOOTIMGSIZE * 1024)) -d $SYSBOOT > $SYSBOOTIMG
+    e2fsck -y $SYSBOOTIMG
+    genext2fs -U -b $(($SYSCONFIMGSIZE * 1024)) -d $SYSCONF > $SYSCONFIMG
+    e2fsck -y $SYSCONFIMG
+  elif [ "$DIST_FS" = "jffs2" ]; then
+    if [ "$BIG_ENDIAN" = "true" ]; then
+      mkfsjffs2_opt="-b"
+    else
+      mkfsjffs2_opt="-l"
+    fi
+
+    mkfs.jffs2 -v -d $SYSBOOT -q $mkfsjffs2_opt > $SYSBOOTIMG
+    mkfs.jffs2 -v -d $SYSCONF -q $mkfsjffs2_opt > $SYSCONFIMG
+  else
+    echo "error: invalid \$DIST_FS."
+    exit 1
+  fi
 
   copy_sysroot
 

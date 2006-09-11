@@ -139,6 +139,13 @@ make_var()
   chmod 644 $SYSCONF/var/log/wtmp
 }
 
+make_inittab()
+{
+  install -m 644 $SYSCONFDIR/inittab $SYSROOT/etc
+  echo "::respawn:/sbin/getty -L $DIST_CONSOLE $DIST_CONSOLE_SPEED vt100" >> \
+  $SYSROOT/etc/inittab
+}
+
 # Create system configuration files.
 # 
 # usage: make_sysconf
@@ -152,7 +159,7 @@ make_sysconf()
   make_modules
   make_network
   make_var
-  install -m 644 $SYSCONFDIR/inittab $SYSROOT/etc
+  make_inittab
   install -m 644 $SYSCONFDIR/mdev.conf $SYSROOT/etc
   install -m 755 $SYSCONFDIR/hotplug $SYSROOT/sbin
   ln -s /proc/mounts $SYSROOT/etc/mtab
