@@ -323,12 +323,9 @@ init_buildenv()
   SYSBOOT="$PREFIX/sysboot"
   SYSCONF="$PREFIX/sysconf"
   SYSBOOTIMG="$PREFIX/sysboot.img"
-  SYSBOOTIMGSIZE="8"
   SYSROOTTMP="$PREFIX/sysroot.tmp"
   SYSROOTIMG="$PREFIX/sysroot.img"
-  SYSROOTIMGSIZE="32"
   SYSCONFIMG="$PREFIX/sysconf.img"
-  SYSCONFIMGSIZE="64"
 
   mkdir -p $DISTFILES \
            $SRC \
@@ -405,7 +402,7 @@ copy_sysroot()
   echo "done"
 
   echo -n "saving kernel and system map inside sysroot image... "
-  cp $SYSBOOT/vmlinuz-$KERNEL_VERSION $SYSROOTTMP/vmlinuz
+  cp $SYSBOOT/vmlinux-$KERNEL_VERSION $SYSROOTTMP/vmlinux
   cp $SYSBOOT/System.map-$KERNEL_VERSION $SYSROOTTMP/System.map
   echo "done"
 }

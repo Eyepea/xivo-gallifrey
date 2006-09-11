@@ -29,7 +29,7 @@ ASTERISK_DEPS_PATCH="asterisk-1.2.10_deps.patch"
 # usage: asterisk_set_arch
 asterisk_set_arch()
 {
-  if [ "$ARCH" = "powerpc" ]; then
+  if [ "$ARCH" = "powerpc" ] || [ "$ARCH" = "ppc_rgwypq2" ]; then
     AST_ARCH=ppc
   else
     AST_ARCH=$ARCH

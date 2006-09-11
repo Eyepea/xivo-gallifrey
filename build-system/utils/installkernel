@@ -31,8 +31,8 @@ if [ -z "$version" ] || [ -z "$zimage" ] || [ -z "$system_map" ] || \
   exit 1
 fi
 
-cp $zimage $directory/vmlinuz-$version
+cp $zimage $directory/vmlinux-$version
 cp $system_map $directory/System.map-$version
 cd $directory
-ln -s vmlinuz-$version vmlinuz
+ln -s vmlinux-$version vmlinux
 ln -s System.map-$version System.map

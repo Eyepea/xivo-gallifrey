@@ -23,6 +23,6 @@ index 840ae59..6bfc3ec 100644
 -install: $(CONFIGURE) $(BOOTIMAGE)
 -	sh -x $(srctree)/$(src)/install.sh "$(KERNELRELEASE)" vmlinux System.map "$(INSTALL_PATH)" "$(BOOTIMAGE)"
 +install:
-+	sh $(srctree)/$(src)/install.sh "$(KERNELRELEASE)" vmlinux System.map "$(INSTALL_PATH)"
++	sh $(srctree)/$(src)/install.sh "$(KERNELRELEASE)" arch/powerpc/boot/images/zImage System.map "$(INSTALL_PATH)"
  
  clean-files += $(addprefix $(objtree)/, $(obj-boot) vmlinux.strip)

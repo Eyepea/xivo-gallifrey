@@ -19,5 +19,5 @@
 # will lie.
 BASE="/usr/cross"
 
-# Flags passed to make. -j specifies the number of simultaneous jobs.
-MAKEFLAGS="-j 2"
+# Flags passed to make (parallel builds are not supported).
+MAKEFLAGS=""

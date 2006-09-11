@@ -1,0 +1,68 @@
+diff -Nurp linux-2.6.9.orig/arch/ppc/boot/install.sh linux-2.6.9/arch/ppc/boot/install.sh
+--- linux-2.6.9.orig/arch/ppc/boot/install.sh	1970-01-01 01:00:00.000000000 +0100
++++ linux-2.6.9/arch/ppc/boot/install.sh	2006-09-07 18:19:06.000000000 +0200
+@@ -0,0 +1,41 @@
++#!/bin/sh
++#
++# arch/ppc/boot/install.sh
++#
++# This file is subject to the terms and conditions of the GNU General Public
++# License.  See the file "COPYING" in the main directory of this archive
++# for more details.
++#
++# Copyright (C) 1995 by Linus Torvalds
++#
++# Blatantly stolen from in arch/i386/boot/install.sh by Dave Hansen 
++#
++# "make install" script for ppc architecture
++#
++# Arguments:
++#   $1 - kernel version
++#   $2 - kernel image file
++#   $3 - kernel map file
++#   $4 - default install path (blank if root directory)
++#
++
++# User may have a custom install script
++
++if [ -x ~/bin/installkernel ]; then exec ~/bin/installkernel "$@"; fi
++if [ -x /sbin/installkernel ]; then exec /sbin/installkernel "$@"; fi
++
++# Default install
++
++# this should work for both the pSeries zImage and the iSeries vmlinux.sm
++image_name=`basename $2`
++
++if [ -f $4/$image_name ]; then
++	mv $4/$image_name $4/$image_name.old
++fi
++
++if [ -f $4/System.map ]; then
++	mv $4/System.map $4/System.old
++fi
++
++cat $2 > $4/$image_name
++cp $3 $4/System.map
+diff -Nurp linux-2.6.9.orig/arch/ppc/boot/Makefile linux-2.6.9/arch/ppc/boot/Makefile
+--- linux-2.6.9.orig/arch/ppc/boot/Makefile	2004-10-18 23:54:32.000000000 +0200
++++ linux-2.6.9/arch/ppc/boot/Makefile	2006-09-07 18:14:46.000000000 +0200
+@@ -32,3 +32,6 @@ $(BOOT_TARGETS): $(bootdir-y)
+ $(bootdir-y): $(addprefix $(obj)/,$(subdir-y)) \
+ 		$(addprefix $(obj)/,$(hostprogs-y))
+ 	$(Q)$(MAKE) $(build)=$(obj)/$@ $(MAKECMDGOALS)
++
++install:
++	sh $(srctree)/$(src)/install.sh "$(KERNELRELEASE)" arch/ppc/boot/images/zImage System.map "$(INSTALL_PATH)"
+diff -Nurp linux-2.6.9.orig/arch/ppc/Makefile linux-2.6.9/arch/ppc/Makefile
+--- linux-2.6.9.orig/arch/ppc/Makefile	2004-10-18 23:53:09.000000000 +0200
++++ linux-2.6.9/arch/ppc/Makefile	2006-09-07 18:13:29.000000000 +0200
+@@ -70,6 +70,9 @@ BOOT_TARGETS = zImage zImage.initrd znet
+ 
+ all: zImage
+ 
++install:
++	$(Q)$(MAKE) ARCH=ppc $(build)=$(boot) BOOTIMAGE=$(KBUILD_IMAGE) install
++
+ CPPFLAGS_vmlinux.lds	:= -Upowerpc
+ 
+ # All the instructions talk about "make bzImage".

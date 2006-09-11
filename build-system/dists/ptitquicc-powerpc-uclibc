@@ -17,8 +17,11 @@
 
 DIST_NAME="PtitQUICC"
 DIST_VERSION="0.3"
-ARCH="powerpc"
+ARCH="ppc_rgwypq2"
 TARGET="powerpc-linux-uclibc"
+SYSBOOTIMGSIZE="8"
+SYSROOTIMGSIZE="32"
+SYSCONFIMGSIZE="16"
 
 gen_linux_conf()
 {

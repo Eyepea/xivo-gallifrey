@@ -23,7 +23,7 @@ PATH=/sbin:/bin:/usr/sbin:/usr/bin
 
 sysconf=/sysconf.img.gz
 boot_dir=/boot
-kernel=vmlinuz
+kernel=vmlinux
 system_map=System.map
 conf_partition=$(grep ' /mnt ' /etc/fstab | cut -d ' ' -f 1)
 
