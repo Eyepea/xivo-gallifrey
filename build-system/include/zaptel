@@ -61,8 +61,6 @@ zaptel_install()
 # usage: make_zaptel
 make_zaptel()
 {
-  make_libpri
-
   get_basename $ZAPTEL_SOURCE
   make_package $ZAPTEL_SOURCE $ZAPTEL_URL $ZAPTEL_SIZE $ZAPTEL_SHA1SUM \
                $BASENAME zaptel_build zaptel_install

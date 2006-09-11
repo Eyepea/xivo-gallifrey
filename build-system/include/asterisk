@@ -95,7 +95,10 @@ make_asterisk()
 {
   make_ncurses
   make_openssl
-  make_sqlite
+
+  if [ "$ENABLE_ZAPTEL" ]; then
+    make_libpri
+  fi
 
   get_basename $ASTERISK_SOURCE
   make_package $ASTERISK_SOURCE $ASTERISK_URL $ASTERISK_SIZE $ASTERISK_SHA1SUM \
