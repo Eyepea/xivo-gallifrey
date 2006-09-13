@@ -108,7 +108,7 @@ CONFIG_BINFMT_ELF=y
 # CONFIG_BINFMT_MISC is not set
 # CONFIG_PPCBOOT is not set
 CONFIG_CMDLINE_BOOL=y
-CONFIG_CMDLINE="mtdparts=phys_mapped_flash:1m(firmware)ro,1m(kernel),22m(root),-(mnt) root=/dev/mtdblock2 ro"
+CONFIG_CMDLINE="mtdparts=phys_mapped_flash:1m(firmware)ro,1m(kernel),24m(root),-(mnt) root=/dev/mtdblock2 ro"
 
 #
 # Bus options
@@ -825,14 +825,7 @@ EOF
 
 make_dist_packages_ptitquicc()
 {
-  make_mtd_utils
-  make_iptables
   make_dropbear
   make_vsftpd
-  make_lighttpd
-  make_php
-  make_php_fileinfo
-  make_php_sqlite
   make_asterisk
-  make_res_sqlite
 }

@@ -30,7 +30,7 @@ sqlite_build()
           TOP=$PWD \
           INSTALL_PREFIX=$SYSROOT/usr \
           BCC=$BUILD_CC \
-          TCC=$TOOLCHAIN/bin/$TARGET-gcc \
+          TCC="$TOOLCHAIN/bin/$TARGET-gcc -fPIC" \
           AR="$TOOLCHAIN/bin/$TARGET-ar cr" \
           RANLIB=$TOOLCHAIN/bin/$TARGET-ranlib \
           TCL_FLAGS=-DNO_TCL \

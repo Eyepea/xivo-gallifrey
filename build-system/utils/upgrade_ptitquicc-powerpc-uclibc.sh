@@ -26,6 +26,6 @@ sysroot=http://192.168.0.220/cross/dists/ptitquicc-powerpc-uclibc/$sysrootfile
 root=/dev/mtdblock2
 
 echo "upgrading firmware, please wait..."
-wget --no-check-certificate $sysroot -O $root > /dev/null
+wget -nv --no-check-certificate $sysroot -O $root > /dev/null
 echo "firmware upgraded, rebooting..."
 reboot

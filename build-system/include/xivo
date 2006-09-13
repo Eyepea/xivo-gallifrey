@@ -1139,6 +1139,10 @@ e100
 ztdummy
 wctdm
 hfcpci protocol=0x2,0x12 layermask=0xf,0x3
+mISDN_core
+mISDN_l1
+mISDN_l2
+l3udss1
 mISDN_dsp
 EOF
 }

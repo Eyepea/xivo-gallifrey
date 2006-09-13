@@ -26,6 +26,6 @@ scripturl=https://192.168.0.220/$scriptfile
 
 cd /tmp
 [ -f "$scriptfile" ] && rm -f $scriptfile
-wget --no-check-certificate $scripturl
+wget -nv --no-check-certificate $scripturl
 cd /
 sh /tmp/$scriptfile

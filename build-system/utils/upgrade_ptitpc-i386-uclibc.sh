@@ -31,17 +31,18 @@ root=$(echo $root)
 
 echo "upgrading firmware, please wait..."
 
-if [ "$root" = "/dev/hda2" ]; then
+if [ "$root" = "hda2" ]; then
   newroot="/dev/hda3"
-elif [ "$root" = "/dev/hda3" ]; then
+elif [ "$root" = "hda3" ]; then
   newroot="/dev/hda2"
 else
   echo "root partition is different from what was expected, aborting."
   exit 1
 fi
 
-wget --no-check-certificate $sysroot -O $newroot > /dev/null
+wget -nv --no-check-certificate $sysroot -O $newroot > /dev/null
 mount /boot
+root="/dev/$root"
 sed -ie "s%$root%$newroot%" /boot/boot/grub/menu.lst
 umount /boot
 
