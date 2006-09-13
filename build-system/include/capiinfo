@@ -1,4 +1,4 @@
-# Xivo 0.3 - Build libcapi20.
+# Xivo 0.3 - Build capiinfo.
 # Copyright (C) 2006 Richard Braun <rbraun@proformatique.com>
 # 
 # This program is free software; you can redistribute it and/or modify
@@ -15,39 +15,36 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-LIBCAPI20_SOURCE="isdn4k-utils-CVS-2006-08-17.tar.bz2"
-LIBCAPI20_URL="ftp://ftp.isdn4linux.de/pub/isdn4linux/CVS-Snapshots/$LIBCAPI20_SOURCE"
-LIBCAPI20_SIZE="6104599"
-LIBCAPI20_SHA1SUM="e9a5126cf07578b83f78b481270964cd85e6bc0f"
+CAPIINFO_SOURCE="isdn4k-utils-CVS-2006-08-17.tar.bz2"
+CAPIINFO_URL="ftp://ftp.isdn4linux.de/pub/isdn4linux/CVS-Snapshots/$CAPIINFO_SOURCE"
+CAPIINFO_SIZE="6104599"
+CAPIINFO_SHA1SUM="e9a5126cf07578b83f78b481270964cd85e6bc0f"
 
-# usage: libcapi20_build
-libcapi20_build()
+# usage: capiinfo_build
+capiinfo_build()
 {
-  cd capi20
+  cd capiinfo
   ./configure --build=$BUILD \
               --host=$TARGET \
               --prefix=$SYSROOT/usr \
               --sysconfdir=$SYSROOT/etc \
-              --disable-dependency-tracking \
-              --disable-static
   do_make
 }
 
-# usage: libcapi20_install
-libcapi20_install()
+# usage: capiinfo_install
+capiinfo_install()
 {
-  cd capi20
+  cd capiinfo
   do_make install
-  cd $SYSROOT/usr/lib
-  ln -s $(find . -name 'libcapi20*[0-9]' -type f) libcapi20.so
-  install_hotplug_rule $SYSCONFDIR/capi/capi.hotplug
 }
 
-# usage: make_libcapi20
-make_libcapi20()
+# usage: make_capiinfo
+make_capiinfo()
 {
-  get_basename $LIBCAPI20_SOURCE
-  build_dir="$BASENAME-libcapi20"
-  make_package $LIBCAPI20_SOURCE $LIBCAPI20_URL $LIBCAPI20_SIZE $LIBCAPI20_SHA1SUM \
-               $BASENAME libcapi20_build libcapi20_install
+  get_basename $CAPIINFO_SOURCE
+  use_extended_path
+  build_dir="$BASENAME-capiinfo"
+  make_package $CAPIINFO_SOURCE $CAPIINFO_URL $CAPIINFO_SIZE $CAPIINFO_SHA1SUM \
+               $BASENAME capiinfo_build capiinfo_install
+  use_simple_path
 }

@@ -1,6 +1,4 @@
-#!/bin/sh
-
-# Xivo 0.3 - Main system boot script.
+# Xivo 0.3 - Build all CAPI components.
 # Copyright (C) 2006 Richard Braun <rbraun@proformatique.com>
 # 
 # This program is free software; you can redistribute it and/or modify
@@ -17,18 +15,10 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-PATH=/sbin:/bin:/usr/sbin:/usr/bin
-
-# /var/run/utmp has been arbitrarily chosen to indicate that the boot
-# process has already terminated and must not be started again.
-[ -f /var/run/utmp ] && return
-
-. /etc/dist
-
-echo
-echo "$DIST_NAME $DIST_VERSION booting"
-echo
-
-for file in /etc/rc.startup/*; do
-  $file start
-done
+# usage: make_capi
+make_capi()
+{
+  make_libcapi20
+  make_capiinit
+  make_capiinfo
+}

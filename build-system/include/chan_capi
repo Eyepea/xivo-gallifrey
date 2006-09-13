@@ -40,7 +40,7 @@ chan_capi_install()
 make_chan_capi()
 {
   make_asterisk
-  make_libcapi20
+  make_capi
 
   use_extended_path
   get_basename $CHAN_CAPI_SOURCE

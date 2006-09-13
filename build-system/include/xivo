@@ -4,7 +4,7 @@ gen_linux_conf_xivo()
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: 2.6.16.20
-# Thu Aug 24 12:10:10 2006
+# Wed Sep 13 15:17:57 2006
 #
 CONFIG_X86_32=y
 CONFIG_SEMAPHORE_SLEEPERS=y
@@ -768,8 +768,10 @@ CONFIG_ISDN=m
 #
 CONFIG_ISDN_CAPI=m
 # CONFIG_ISDN_DRV_AVMB1_VERBOSE_REASON is not set
-# CONFIG_ISDN_CAPI_MIDDLEWARE is not set
+CONFIG_ISDN_CAPI_MIDDLEWARE=y
 CONFIG_ISDN_CAPI_CAPI20=m
+CONFIG_ISDN_CAPI_CAPIFS_BOOL=y
+CONFIG_ISDN_CAPI_CAPIFS=m
 
 #
 # CAPI hardware drivers
@@ -1120,6 +1122,14 @@ EOF
 }
 
 # Developer note :
+# mISDN modules :
+# hfcpci protocol=0x2,0x12 layermask=0xf,0x3
+# mISDN_core
+# mISDN_l1
+# mISDN_l2
+# l3udss1
+# mISDN_dsp
+# 
 # vISDN modules :
 # lapd
 # visdn-netdev
@@ -1127,10 +1137,6 @@ EOF
 # visdn-timer-system
 # visdn-ec
 # visdn-hfc-pci
-# 
-# mISDN modules :
-# hfcpci protocol=0x2,0x12 layermask=0xf,0x3
-# mISDN_dsp
 gen_modules_xivo()
 {
   cat << EOF

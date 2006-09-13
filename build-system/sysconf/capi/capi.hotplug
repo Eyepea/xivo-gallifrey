@@ -1,0 +1,16 @@
+case $SUBSYSTEM in
+  capi)
+    NAME="capi20"
+    OWNER="asterisk"
+    GROUP="asterisk"
+    SYMLINK="isdn/capi20"
+    ;;
+esac
+
+case $KERNEL in
+  capi[0-9]*)
+    NAME="capi/$(echo $KERNEL | sed -e 's/^capi//')"
+    OWNER="asterisk"
+    GROUP="asterisk"
+    ;;
+esac
