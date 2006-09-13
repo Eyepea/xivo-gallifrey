@@ -1,0 +1,46 @@
+# Xivo 0.3 - Build mtd-utils.
+# Copyright (C) 2006 Richard Braun <rbraun@proformatique.com>
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+MTD_UTILS_SOURCE="mtd-utils-1.0.0.tar.gz"
+MTD_UTILS_URL="ftp://ftp.infradead.org/pub/mtd-utils/$MTD_UTILS_SOURCE"
+MTD_UTILS_SIZE="280041"
+MTD_UTILS_SHA1SUM="5ae8b095eb452db4319af2db863b36d1c5d3d62f"
+
+MTD_UTILS_XIVO_PATCH="mtd-utils-1.0.0_xivo.patch"
+
+# usage: mtd_utils_build
+mtd_utils_build()
+{
+  apply_patch $MTD_UTILS_XIVO_PATCH
+  do_make CROSS=$TARGET-
+}
+
+# usage: mtd_utils_install
+mtd_utils_install()
+{
+  do_make DESTDIR=$SYSROOT install
+}
+
+# usage: make_mtd_utils
+make_mtd_utils()
+{
+  get_basename $MTD_UTILS_SOURCE
+  use_extended_path
+  make_package $MTD_UTILS_SOURCE $MTD_UTILS_URL $MTD_UTILS_SIZE $MTD_UTILS_SHA1SUM \
+               $BASENAME mtd_utils_build mtd_utils_install
+  use_simple_path
+}
