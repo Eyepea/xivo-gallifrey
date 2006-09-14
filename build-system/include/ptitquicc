@@ -828,4 +828,5 @@ make_dist_packages_ptitquicc()
   make_dropbear
   make_vsftpd
   make_asterisk
+  make_chan_ooh323
 }
