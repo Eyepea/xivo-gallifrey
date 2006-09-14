@@ -15,12 +15,12 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-PWLIB_SOURCE="pwlib-v1_11_1-src.tar.gz"
+PWLIB_SOURCE="pwlib-v1_10_1-src-tar.gz"
 PWLIB_URL="http://kent.dl.sourceforge.net/sourceforge/openh323/$PWLIB_SOURCE"
-PWLIB_SIZE="2327497"
-PWLIB_SHA1SUM="1cdda88e2de3be0186811d466052569b3a771668"
+PWLIB_SIZE="2078624"
+PWLIB_SHA1SUM="0e7a2d9a671571320f7e232e15687e52597a5442"
 
-PWLIB_UCLIBC_PATCH="pwlib-v1_11_1_uclibc.patch"
+PWLIB_UCLIBC_PATCH="pwlib-v1_10_1_uclibc.patch"
 
 # usage: pwlib_build
 pwlib_build()
@@ -33,8 +33,8 @@ pwlib_build()
   CXX=g++ \
   ./configure --build=$BUILD \
               --host=$TARGET \
-              --prefix=$SYSROOT/usr \
-              --sysconfdir=$SYSROOT/etc \
+              --prefix=/usr \
+              --sysconfdir=/etc \
               --enable-openh323 \
               --disable-plugins \
               --disable-sasl \
@@ -65,7 +65,8 @@ pwlib_build()
 # usage: pwlib_install
 pwlib_install()
 {
-  do_make install
+  do_make DESTDIR=$SYSROOT install
+  cp version.h $SYSROOT/usr/share/pwlib
 }
 
 # usage: make_pwlib
@@ -73,10 +74,8 @@ make_pwlib()
 {
   make_openssl
 
-  get_basename $PWLIB_SOURCE
-  BASENAME=$(echo $BASENAME | tr -- - _ | sed -e 's/_src$//')
   use_extended_path
   make_package $PWLIB_SOURCE $PWLIB_URL $PWLIB_SIZE $PWLIB_SHA1SUM \
-               $BASENAME pwlib_build pwlib_install
+               "pwlib_Phobos_release2" pwlib_build pwlib_install
   use_simple_path
 }
