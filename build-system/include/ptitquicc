@@ -829,4 +829,5 @@ make_dist_packages_ptitquicc()
   make_vsftpd
   make_asterisk
   make_chan_ooh323
+  make_pwlib
 }
