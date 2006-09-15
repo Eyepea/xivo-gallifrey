@@ -70,7 +70,9 @@ asterisk_install()
           CROSS_PROC=$AST_ARCH \
           DESTDIR=$SYSROOT \
           install -j 1
-  install_rc_script $SYSCONFDIR/asterisk/asterisk
+
+  # Asterisk may register itself at the local GnuGk, so start it lately.
+  install_rc_script $SYSCONFDIR/asterisk/asterisk 25
   rm -rf $SYSROOT/etc/asterisk
   mkdir -p -m 755 $SYSCONF/etc/asterisk
   ln -s /mnt/etc/asterisk $SYSROOT/etc/asterisk

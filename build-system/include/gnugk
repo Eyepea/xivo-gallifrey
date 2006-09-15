@@ -49,6 +49,7 @@ gnugk_build()
 gnugk_install()
 {
   do_make INSTALLBIN_DIR=$SYSROOT/usr/sbin install
+  install_rc_script $SYSCONFDIR/gnugk/gnugk
   make_conf_file gnugk/gatekeeper.ini /etc 644
 }
 
