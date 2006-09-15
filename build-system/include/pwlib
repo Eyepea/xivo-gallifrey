@@ -36,6 +36,7 @@ pwlib_build()
               --prefix=/usr \
               --sysconfdir=/etc \
               --enable-openh323 \
+              --enable-configfile \
               --disable-plugins \
               --disable-sasl \
               --disable-openldap \
@@ -52,21 +53,19 @@ pwlib_build()
               --disable-snmp \
               --disable-telnet \
               --disable-pop3smtp \
-              --disable-http \
-              --disable-httpsvc \
               --disable-audio \
               --disable-vidfile
 
   CC=gcc \
   CXX=g++ \
-  do_make
+  do_make opt
 }
 
 # usage: pwlib_install
 pwlib_install()
 {
+  PWLIB_BUILD_DIR=$build_dir
   do_make DESTDIR=$SYSROOT install
-  cp version.h $SYSROOT/usr/share/pwlib
 }
 
 # usage: make_pwlib
