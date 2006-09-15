@@ -1,0 +1,62 @@
+# Xivo 0.3 - Build OpenH323 library.
+# Copyright (C) 2006 Richard Braun <rbraun@proformatique.com>
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+OPENH323_SOURCE="openh323-v1_18_0-src-tar.gz"
+OPENH323_URL="http://kent.dl.sourceforge.net/sourceforge/openh323/$OPENH323_SOURCE"
+OPENH323_SIZE="3742730"
+OPENH323_SHA1SUM="7d10cc3e35450f7bbde925375a99d66ae34369fa"
+
+OPENH323_UCLIBC_CROSSCOMPILE_PATCH="openh323-v1_18_0_uclibc_crosscompile.patch"
+
+# usage: openh323_build
+openh323_build()
+{
+  apply_patch $OPENH323_UCLIBC_CROSSCOMPILE_PATCH
+
+  CC=gcc \
+  CXX=g++ \
+  PWLIBDIR=$PWLIB_BUILD_DIR \
+  ./configure --build=$BUILD \
+              --host=$TARGET \
+              --prefix=/usr \
+              --sysconfdir=/etc
+
+  CC=gcc \
+  CXX=g++ \
+  do_make opt
+}
+
+# usage: openh323_install
+openh323_install()
+{
+  OPENH323_BUILD_DIR=$build_dir
+  do_make DESTDIR=$SYSROOT install
+}
+
+# usage: make_openh323
+make_openh323()
+{
+  make_openssl
+  make_pwlib
+
+  get_basename $OPENH323_SOURCE
+  BASENAME=$(echo $BASENAME | tr -- - _ | sed -e 's/_src$//')
+  use_extended_path
+  make_package $OPENH323_SOURCE $OPENH323_URL $OPENH323_SIZE $OPENH323_SHA1SUM \
+               $BASENAME openh323_build openh323_install
+  use_simple_path
+}
