@@ -1,0 +1,228 @@
+diff -Nurp gnugk-2.2.4.orig/configure gnugk-2.2.4/configure
+--- gnugk-2.2.4.orig/configure	2006-06-02 11:21:34.000000000 +0200
++++ gnugk-2.2.4/configure	2006-09-15 12:09:01.000000000 +0200
+@@ -2630,10 +2630,10 @@ echo $ECHO_N "checking for ${PWLIBDIR}/m
+ if eval "test \"\${$as_ac_File+set}\" = set"; then
+   echo $ECHO_N "(cached) $ECHO_C" >&6
+ else
+-  test "$cross_compiling" = yes &&
+-  { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
+-echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
+-   { (exit 1); exit 1; }; }
++#  test "$cross_compiling" = yes &&
++#  { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
++#echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
++#   { (exit 1); exit 1; }; }
+ if test -r "${PWLIBDIR}/make/unix.mak"; then
+   eval "$as_ac_File=yes"
+ else
+@@ -2697,10 +2697,10 @@ echo $ECHO_N "checking for ${HOME}/pwlib
+ if eval "test \"\${$as_ac_File+set}\" = set"; then
+   echo $ECHO_N "(cached) $ECHO_C" >&6
+ else
+-  test "$cross_compiling" = yes &&
+-  { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
+-echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
+-   { (exit 1); exit 1; }; }
++#  test "$cross_compiling" = yes &&
++#  { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
++#echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
++#   { (exit 1); exit 1; }; }
+ if test -r "${HOME}/pwlib/include/ptlib.h"; then
+   eval "$as_ac_File=yes"
+ else
+@@ -2762,10 +2762,10 @@ echo $ECHO_N "checking for ../pwlib/incl
+ if test "${ac_cv_file____pwlib_include_ptlib_h+set}" = set; then
+   echo $ECHO_N "(cached) $ECHO_C" >&6
+ else
+-  test "$cross_compiling" = yes &&
+-  { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
+-echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
+-   { (exit 1); exit 1; }; }
++#  test "$cross_compiling" = yes &&
++#  { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
++#echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
++#   { (exit 1); exit 1; }; }
+ if test -r "../pwlib/include/ptlib.h"; then
+   ac_cv_file____pwlib_include_ptlib_h=yes
+ else
+@@ -2827,10 +2827,10 @@ echo $ECHO_N "checking for /usr/local/in
+ if test "${ac_cv_file__usr_local_include_ptlib_h+set}" = set; then
+   echo $ECHO_N "(cached) $ECHO_C" >&6
+ else
+-  test "$cross_compiling" = yes &&
+-  { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
+-echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
+-   { (exit 1); exit 1; }; }
++#  test "$cross_compiling" = yes &&
++#  { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
++#echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
++#   { (exit 1); exit 1; }; }
+ if test -r "/usr/local/include/ptlib.h"; then
+   ac_cv_file__usr_local_include_ptlib_h=yes
+ else
+@@ -2892,10 +2892,10 @@ echo $ECHO_N "checking for /usr/include/
+ if test "${ac_cv_file__usr_include_ptlib_h+set}" = set; then
+   echo $ECHO_N "(cached) $ECHO_C" >&6
+ else
+-  test "$cross_compiling" = yes &&
+-  { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
+-echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
+-   { (exit 1); exit 1; }; }
++#  test "$cross_compiling" = yes &&
++#  { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
++#echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
++#   { (exit 1); exit 1; }; }
+ if test -r "/usr/include/ptlib.h"; then
+   ac_cv_file__usr_include_ptlib_h=yes
+ else
+@@ -2979,10 +2979,10 @@ echo $ECHO_N "checking for ${PWLIBDIR}/v
+ if eval "test \"\${$as_ac_File+set}\" = set"; then
+   echo $ECHO_N "(cached) $ECHO_C" >&6
+ else
+-  test "$cross_compiling" = yes &&
+-  { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
+-echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
+-   { (exit 1); exit 1; }; }
++#  test "$cross_compiling" = yes &&
++#  { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
++#echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
++#   { (exit 1); exit 1; }; }
+ if test -r "${PWLIBDIR}/version.h"; then
+   eval "$as_ac_File=yes"
+ else
+@@ -3007,10 +3007,10 @@ echo $ECHO_N "checking for ${PWLIBDIR}/p
+ if eval "test \"\${$as_ac_File+set}\" = set"; then
+   echo $ECHO_N "(cached) $ECHO_C" >&6
+ else
+-  test "$cross_compiling" = yes &&
+-  { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
+-echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
+-   { (exit 1); exit 1; }; }
++#  test "$cross_compiling" = yes &&
++#  { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
++#echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
++#   { (exit 1); exit 1; }; }
+ if test -r "${PWLIBDIR}/ptbuildopts.h"; then
+   eval "$as_ac_File=yes"
+ else
+@@ -3072,10 +3072,10 @@ echo $ECHO_N "checking for ${OPENH323DIR
+ if eval "test \"\${$as_ac_File+set}\" = set"; then
+   echo $ECHO_N "(cached) $ECHO_C" >&6
+ else
+-  test "$cross_compiling" = yes &&
+-  { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
+-echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
+-   { (exit 1); exit 1; }; }
++#  test "$cross_compiling" = yes &&
++#  { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
++#echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
++#   { (exit 1); exit 1; }; }
+ if test -r "${OPENH323DIR}/openh323u.mak"; then
+   eval "$as_ac_File=yes"
+ else
+@@ -3098,10 +3098,10 @@ echo $ECHO_N "checking for ${PWLIBDIR}/.
+ if eval "test \"\${$as_ac_File+set}\" = set"; then
+   echo $ECHO_N "(cached) $ECHO_C" >&6
+ else
+-  test "$cross_compiling" = yes &&
+-  { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
+-echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
+-   { (exit 1); exit 1; }; }
++#  test "$cross_compiling" = yes &&
++#  { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
++#echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
++#   { (exit 1); exit 1; }; }
+ if test -r "${PWLIBDIR}/../openh323/version.h"; then
+   eval "$as_ac_File=yes"
+ else
+@@ -3125,10 +3125,10 @@ echo $ECHO_N "checking for ${HOME}/openh
+ if eval "test \"\${$as_ac_File+set}\" = set"; then
+   echo $ECHO_N "(cached) $ECHO_C" >&6
+ else
+-  test "$cross_compiling" = yes &&
+-  { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
+-echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
+-   { (exit 1); exit 1; }; }
++#  test "$cross_compiling" = yes &&
++#  { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
++#echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
++#   { (exit 1); exit 1; }; }
+ if test -r "${HOME}/openh323/include/h323.h"; then
+   eval "$as_ac_File=yes"
+ else
+@@ -3151,10 +3151,10 @@ echo $ECHO_N "checking for /usr/local/in
+ if test "${ac_cv_file__usr_local_include_openh323_h323_h+set}" = set; then
+   echo $ECHO_N "(cached) $ECHO_C" >&6
+ else
+-  test "$cross_compiling" = yes &&
+-  { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
+-echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
+-   { (exit 1); exit 1; }; }
++#  test "$cross_compiling" = yes &&
++#  { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
++#echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
++#   { (exit 1); exit 1; }; }
+ if test -r "/usr/local/include/openh323/h323.h"; then
+   ac_cv_file__usr_local_include_openh323_h323_h=yes
+ else
+@@ -3179,10 +3179,10 @@ echo $ECHO_N "checking for /usr/include/
+ if test "${ac_cv_file__usr_include_openh323_h323_h+set}" = set; then
+   echo $ECHO_N "(cached) $ECHO_C" >&6
+ else
+-  test "$cross_compiling" = yes &&
+-  { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
+-echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
+-   { (exit 1); exit 1; }; }
++#  test "$cross_compiling" = yes &&
++#  { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
++#echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
++#   { (exit 1); exit 1; }; }
+ if test -r "/usr/include/openh323/h323.h"; then
+   ac_cv_file__usr_include_openh323_h323_h=yes
+ else
+@@ -3231,10 +3231,10 @@ echo $ECHO_N "checking for ${OPENH323DIR
+ if eval "test \"\${$as_ac_File+set}\" = set"; then
+   echo $ECHO_N "(cached) $ECHO_C" >&6
+ else
+-  test "$cross_compiling" = yes &&
+-  { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
+-echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
+-   { (exit 1); exit 1; }; }
++#  test "$cross_compiling" = yes &&
++#  { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
++#echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
++#   { (exit 1); exit 1; }; }
+ if test -r "${OPENH323DIR}/version.h"; then
+   eval "$as_ac_File=yes"
+ else
+@@ -3259,10 +3259,10 @@ echo $ECHO_N "checking for ${OPENH323MAK
+ if eval "test \"\${$as_ac_File+set}\" = set"; then
+   echo $ECHO_N "(cached) $ECHO_C" >&6
+ else
+-  test "$cross_compiling" = yes &&
+-  { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
+-echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
+-   { (exit 1); exit 1; }; }
++#  test "$cross_compiling" = yes &&
++#  { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
++#echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
++#   { (exit 1); exit 1; }; }
+ if test -r "${OPENH323MAKEDIR}/openh323buildopts.h"; then
+   eval "$as_ac_File=yes"
+ else
+@@ -3287,10 +3287,10 @@ echo $ECHO_N "checking for ${OPENH323MAK
+ if eval "test \"\${$as_ac_File+set}\" = set"; then
+   echo $ECHO_N "(cached) $ECHO_C" >&6
+ else
+-  test "$cross_compiling" = yes &&
+-  { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
+-echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
+-   { (exit 1); exit 1; }; }
++#  test "$cross_compiling" = yes &&
++#  { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
++#echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
++#   { (exit 1); exit 1; }; }
+ if test -r "${OPENH323MAKEDIR}/../../include/openh323/openh323buildopts.h"; then
+   eval "$as_ac_File=yes"
+ else

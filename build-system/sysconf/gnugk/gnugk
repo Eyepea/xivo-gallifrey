@@ -1,0 +1,117 @@
+#!/bin/sh
+
+# Xivo 0.3 - Handle GnuGk.
+# Copyright (C) 2006 Richard Braun <rbraun@proformatique.com>
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+set -e
+
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+rundir=/var/run/gnugk
+logdir=/var/log/gnugk
+conffile=/etc/gatekeeper.ini
+pidfile=$rundir/gnugk.pid
+logfile=$logdir/gnugk.log
+binpath=/usr/sbin/gnugk
+user=gnugk
+group=gnugk
+
+test -x $binpath || exit 0
+
+# usage: running <pidfile>
+running()
+{
+  if [ -f "$1" ]; then
+    return 0
+  fi
+
+  return 1
+}
+
+start_gnugk()
+{
+  echo -n "starting gnugk... "
+  if ! running $pidfile; then
+    for dir in $rundir $logdir; do
+      mkdir -p $dir
+      chown $user:$group $dir
+    done
+
+    su $user -c "start-stop-daemon -b \
+                                   -q \
+                                   -x $binpath \
+                                   -p $pidfile \
+                                   -S \
+                                   -- \
+                                   -c $conffile --pid $pidfile"
+    echo "done"
+  else
+    echo "gnugk already running"
+  fi
+}
+
+stop_gnugk()
+{
+  echo -n "stopping gnugk... "
+  if running $pidfile; then
+    start-stop-daemon -q \
+                      -x $binpath \
+                      -p $pidfile \
+                      -K
+    sleep 1
+    rm -rf $pidfile
+    echo "done"
+  else
+    echo "gnugk not running"
+  fi
+}
+
+reload_gnugk()
+{
+  echo -n "reloading gnugk... "
+  if running $pidfile; then
+    start-stop-daemon -q \
+                      -x $binpath \
+                      -p $pidfile \
+                      -s 1 \
+                      -K
+    echo "done"
+  else
+    echo "gnugk not running"
+  fi
+}
+
+case "$1" in
+  start)
+    start_gnugk
+    ;;
+  stop)
+    stop_gnugk
+    ;;
+  reload)
+    reload_gnugk
+    ;;
+  restart)
+    stop_gnugk
+    start_gnugk
+    ;;
+  *)
+    echo "usage: $0 {start|stop|reload|restart}"
+    exit 1
+    ;;
+esac
+
+exit 0
