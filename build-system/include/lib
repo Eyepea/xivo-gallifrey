@@ -70,8 +70,8 @@ download_source()
 get_basename()
 {
   for extension in $EXTENSIONS; do
-    if echo "$1" | grep "\.$extension\$" &> /dev/null; then
-      BASENAME=$(basename "$1" .$extension)
+    if echo "$1" | grep "$extension\$" &> /dev/null; then
+      BASENAME=$(basename "$1" $extension | sed -e 's/.$//')
       return
     fi
   done
@@ -87,7 +87,7 @@ extract()
   echo "extracting $1"
 
   for extension in $EXTENSIONS; do
-    if echo "$1" | grep "\.$extension\$" &> /dev/null; then
+    if echo "$1" | grep "$extension\$" &> /dev/null; then
       if [ $extension = "tar.gz" ] || [ $extension = "tgz" ]; then
         arg="z"
       elif [ $extension = "tar.bz2" ]; then
