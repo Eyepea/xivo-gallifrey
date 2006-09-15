@@ -379,8 +379,16 @@ copy_sysroot()
   echo "done"
 
   echo "stripping binaries (ignore errors about unrecognized formats)..."
-  for dir in $SYSROOTTMP/{,usr/}{{,s}bin}; do
+  for dir in $SYSROOTTMP/{,usr/}{,s}bin; do
     find $dir -type f -exec $TOOLCHAIN/bin/$TARGET-strip -s {} \;
+  done
+  echo "done"
+
+  echo "stripping libraries (ignore errors about unrecognized formats)..."
+  for dir in $SYSROOTTMP/{,usr/}lib; do
+    find $dir -type f -name 'lib*' -exec chmod 755 {} \;
+    find $dir -type f -name 'lib*' \
+      -exec $TOOLCHAIN/bin/$TARGET-strip -x -S --strip-unneeded {} \;
   done
   echo "done"
 
