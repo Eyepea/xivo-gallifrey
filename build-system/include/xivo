@@ -1166,4 +1166,6 @@ make_dist_packages_xivo()
   make_asterisk
   make_res_sqlite
   make_chan_misdn
+  make_chan_ooh323
+  make_gnugk
 }
