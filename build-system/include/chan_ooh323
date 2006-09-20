@@ -37,14 +37,14 @@ chan_ooh323_build()
               --prefix=/usr \
               --disable-dependency-tracking \
               --disable-static
-  make
+  do_make
 }
 
 # usage: chan_ooh323_install
 chan_ooh323_install()
 {
   cd asterisk-ooh323c
-  make DESTDIR=$SYSROOT install
+  do_make DESTDIR=$SYSROOT install
   install -m 644 $SYSCONFDIR/chan_ooh323/ooh323.conf $SYSCONF/etc/asterisk
 }
 
