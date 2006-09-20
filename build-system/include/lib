@@ -387,7 +387,7 @@ copy_sysroot()
   echo "stripping libraries (ignore errors about unrecognized formats)..."
   for dir in $SYSROOTTMP/{,usr/}lib; do
     find $dir -type f -name 'lib*' -exec chmod 755 {} \;
-    find $dir -type f -name 'lib*' \
+    find $dir -type f \( -name 'lib*' -o -name '*\.so' \) \
       -exec $TOOLCHAIN/bin/$TARGET-strip -x -S --strip-unneeded {} \;
   done
   echo "done"
