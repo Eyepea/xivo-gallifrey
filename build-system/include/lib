@@ -437,9 +437,9 @@ make_sysimgs()
     fi
 
     mkfs.jffs2 -d $SYSBOOT -U $mkfsjffs2_opt \
-      -p $(($SYSBOOTIMGSIZE * 1024 *1024)) > $SYSBOOTIMG
+      --pad=$(($SYSBOOTIMGSIZE * 1024 * 1024)) > $SYSBOOTIMG
     mkfs.jffs2 -d $SYSCONF -U $mkfsjffs2_opt \
-      -p $(($SYSCONFIMGSIZE * 1024 *1024)) > $SYSCONFIMG
+      --pad=$(($SYSCONFIMGSIZE * 1024 * 1024)) > $SYSCONFIMG
   else
     echo "error: invalid \$DIST_FS."
     exit 1
