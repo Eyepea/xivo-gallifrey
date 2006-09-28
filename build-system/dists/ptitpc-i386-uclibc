@@ -1136,4 +1136,6 @@ make_dist_packages()
   make_php_sqlite
   make_asterisk
   make_res_sqlite
+  make_chan_ooh323
+  make_gnugk
 }
