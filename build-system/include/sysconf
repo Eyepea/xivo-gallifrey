@@ -25,13 +25,14 @@ make_rc_scripts()
   install_rc_script $SYSCONFDIR/mountsys 01 99
   install_rc_script $SYSCONFDIR/filldev 02 00
   install_rc_script $SYSCONFDIR/loadmodules 03 00
-  install_rc_script $SYSCONFDIR/mountfstab 04 98
-  install_rc_script $SYSCONFDIR/hostname 05 00
+  install_rc_script $SYSCONFDIR/hwclock 04 98
+  install_rc_script $SYSCONFDIR/mountfstab 05 97
+  install_rc_script $SYSCONFDIR/hostname 06 00
 
   # Don't call /etc/init.d/networking at shutdown so that network is up when
   # processes are killed. SSH processes getting killed will close
   # connections automatically.
-  install_rc_script $SYSCONFDIR/networking 08 00
+  install_rc_script $SYSCONFDIR/networking 09 00
 
   install_rc_script $SYSCONFDIR/upgrade_firmware 00 00
   install_rc_script $SYSCONFDIR/reset_factory_defaults 00 00
