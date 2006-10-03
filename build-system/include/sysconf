@@ -44,7 +44,7 @@ make_rc_scripts()
 make_distfile()
 {
   distfile="$SYSROOT/etc/dist"
-  echo "DIST_NAME=\"$DIST_NAME\"" > $distfile
+  echo "DIST_NAME=\"Xivo\"" > $distfile
   echo "DIST_VERSION=\"$DIST_VERSION\"" >> $distfile
   chmod 644 $distfile
 }
