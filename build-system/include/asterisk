@@ -86,10 +86,7 @@ asterisk_install()
   install -m 644 $SYSCONFDIR/asterisk/queues.conf $SYSCONF/etc/asterisk
   install -m 644 $SYSCONFDIR/asterisk/sip.conf $SYSCONF/etc/asterisk
   install -m 644 $SYSCONFDIR/asterisk/voicemail.conf $SYSCONF/etc/asterisk
-
-  if [ "$ENABLE_ZAPTEL" ]; then
-    install -m 644 $SYSCONFDIR/zaptel/zapata.conf $SYSCONF/etc/asterisk
-  fi
+  install -m 644 $SYSCONFDIR/zaptel/zapata.conf $SYSCONF/etc/asterisk
 }
 
 # usage: make_asterisk
@@ -97,10 +94,8 @@ make_asterisk()
 {
   make_ncurses
   make_openssl
-
-  if [ "$ENABLE_ZAPTEL" ]; then
-    make_libpri
-  fi
+  make_zaptel
+  make_libpri
 
   get_basename $ASTERISK_SOURCE
   make_package $ASTERISK_SOURCE $ASTERISK_URL $ASTERISK_SIZE $ASTERISK_SHA1SUM \
