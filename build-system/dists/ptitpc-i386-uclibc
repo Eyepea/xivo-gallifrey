@@ -1122,6 +1122,7 @@ gen_modules()
 {
   cat << EOF
 natsemi
+ztdummy
 EOF
 }
 
