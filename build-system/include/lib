@@ -345,6 +345,7 @@ init_buildenv()
   # used to generate the ext2fs/jffs2 file system where modifyable
   # configuration files will be located.
   SYSCONFDIR="$ROOTDIR/sysconf"
+  DATADIR="$ROOTDIR/data"
 
   export BUILD_CC=$(which gcc)
   SIMPLE_PATH=$TOOLCHAIN/bin:$PATH:/sbin:/usr/sbin:/usr/local/sbin

@@ -48,7 +48,7 @@ start_asterisk()
   if ! running $pidfile; then
     for dir in $rundir $logdir $libdir $spooldir; do
       mkdir -p $dir
-      chown $user:$group $dir
+      chown -R $user:$group $dir
     done
 
     start-stop-daemon -b \

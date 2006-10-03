@@ -81,12 +81,22 @@ asterisk_install()
   install -m 644 $SYSCONFDIR/asterisk/extensions.conf $SYSCONF/etc/asterisk
   install -m 644 $SYSCONFDIR/asterisk/iax.conf $SYSCONF/etc/asterisk
   install -m 644 $SYSCONFDIR/asterisk/iaxprov.conf $SYSCONF/etc/asterisk
+  install -m 644 $SYSCONFDIR/asterisk/logger.conf $SYSCONF/etc/asterisk
   install -m 644 $SYSCONFDIR/asterisk/manager.conf $SYSCONF/etc/asterisk
   install -m 644 $SYSCONFDIR/asterisk/modules.conf $SYSCONF/etc/asterisk
   install -m 644 $SYSCONFDIR/asterisk/queues.conf $SYSCONF/etc/asterisk
   install -m 644 $SYSCONFDIR/asterisk/sip.conf $SYSCONF/etc/asterisk
   install -m 644 $SYSCONFDIR/asterisk/voicemail.conf $SYSCONF/etc/asterisk
+  install -m 644 $SYSCONFDIR/asterisk/meetme.conf $SYSCONF/etc/asterisk
+  install -m 644 $SYSCONFDIR/asterisk/musiconhold.conf $SYSCONF/etc/asterisk
   install -m 644 $SYSCONFDIR/zaptel/zapata.conf $SYSCONF/etc/asterisk
+
+  # If /var exists in $SYSROOT, it'll be entirely moved to $SYSCONF.
+  # See include/sysconf.
+  mkdir -p -m 755 $SYSROOT/var/lib/asterisk/moh
+  install -m 644 $DATADIR/fpm-calm-river.gsm $SYSROOT/var/lib/asterisk/moh
+  install -m 644 $DATADIR/fpm-sunshine.gsm $SYSROOT/var/lib/asterisk/moh
+  install -m 644 $DATADIR/fpm-world-mix.gsm $SYSROOT/var/lib/asterisk/moh
 }
 
 # usage: make_asterisk
