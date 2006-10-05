@@ -1,0 +1,11 @@
+diff -Nurp openssl-0.9.8b.orig/crypto/md5/md5.h openssl-0.9.8b/crypto/md5/md5.h
+--- openssl-0.9.8b.orig/crypto/md5/md5.h	2004-07-25 22:09:56.000000000 +0200
++++ openssl-0.9.8b/crypto/md5/md5.h	2006-10-05 12:55:06.000000000 +0200
+@@ -60,6 +60,7 @@
+ #define HEADER_MD5_H
+ 
+ #include <openssl/e_os2.h>
++#include <sys/types.h> /* size_t */
+ 
+ #ifdef  __cplusplus
+ extern "C" {

@@ -20,9 +20,12 @@ OPENSSL_URL="http://www.openssl.org/source/$OPENSSL_SOURCE"
 OPENSSL_SIZE="3279283"
 OPENSSL_SHA1SUM="99565db630a044fa484d4f91006a31908f262246"
 
+OPENSSL_MD5_PATCH="openssl-0.9.8b_md5.patch"
+
 # usage: openssl_build
 openssl_build()
 {
+  apply_patch $OPENSSL_MD5_PATCH
   ./Configure --prefix=/usr \
               --openssldir=/etc/ssl \
               --install_prefix=$SYSROOT \
