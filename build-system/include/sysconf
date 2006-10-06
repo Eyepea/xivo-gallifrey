@@ -114,9 +114,7 @@ make_network()
 {
   make_conf_file interfaces /etc/network 644
   mkdir $SYSROOT/etc/network/if-{pre-up,up,down,post-down}.d
-  ln -s /mnt/resolv.conf $SYSROOT/etc/resolv.conf
-  touch $SYSCONF/resolv.conf
-  chmod 644 $SYSCONF/resolv.conf
+  make_conf_file resolv.conf /etc 644
   install -m 644 $SYSCONFDIR/services $SYSROOT/etc
   install -m 644 $SYSCONFDIR/protocols $SYSROOT/etc
 }

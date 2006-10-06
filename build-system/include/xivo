@@ -1159,6 +1159,7 @@ make_dist_packages_xivo()
   make_dropbear
   make_vsftpd
   make_lighttpd
+  make_nbsmtp
   make_php
   make_php_fileinfo
   make_php_sqlite
