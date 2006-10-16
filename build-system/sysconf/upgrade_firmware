@@ -21,11 +21,14 @@ set -e
 
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
 
-scriptfile=$1
-scripturl=https://192.168.0.220/$scriptfile
+scripturl="$1"
+scriptfile=$(basename "$1")
 
 cd /tmp
-[ -f "$scriptfile" ] && rm -f $scriptfile
-wget -nv --no-check-certificate $scripturl
+[ -f "$scriptfile" ] && rm -f "$scriptfile"
+wget -nv --no-check-certificate "$scripturl"
 cd /
-sh /tmp/$scriptfile
+echo "upgrading firmware, please wait..."
+sh "/tmp/$scriptfile"
+echo "firmware upgraded, rebooting..."
+reboot

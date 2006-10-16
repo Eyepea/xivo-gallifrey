@@ -1143,13 +1143,6 @@ gen_modules_xivo()
 e100
 8021q
 ztdummy
-wctdm
-hfcpci protocol=0x2,0x12 layermask=0xf,0x3
-mISDN_core
-mISDN_l1
-mISDN_l2
-l3udss1
-mISDN_dsp
 EOF
 }
 
@@ -1163,10 +1156,13 @@ make_dist_packages_xivo()
   make_php
   make_php_fileinfo
   make_php_sqlite
-  make_zaptel
   make_asterisk
   make_res_sqlite
-  make_chan_misdn
-  make_chan_ooh323
-  make_gnugk
+
+  # mISDN support needs more testing.
+  #make_chan_misdn
+
+  # H.323 temporarily removed.
+  #make_chan_ooh323
+  #make_gnugk
 }

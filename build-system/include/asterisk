@@ -29,6 +29,7 @@ ASTERISK_DEPS_PATCH="asterisk-1.2.10_deps.patch"
 # usage: asterisk_set_arch
 asterisk_set_arch()
 {
+  # TODO: create sub-architectures.
   if [ "$ARCH" = "powerpc" ] || [ "$ARCH" = "ppc_rgwypq2" ]; then
     AST_ARCH=ppc
   else
@@ -60,7 +61,6 @@ asterisk_build()
 # usage: asterisk_install
 asterisk_install()
 {
-  # Asterisk build process sucks.
   mkdir -p -m 755 $SYSROOT/usr/lib/asterisk/modules
   asterisk_set_arch
   do_make CROSS_COMPILE=$TOOLCHAIN/bin/$TARGET- \
@@ -79,6 +79,7 @@ asterisk_install()
   install -m 644 $SYSCONFDIR/asterisk/agents.conf $SYSCONF/etc/asterisk
   install -m 644 $SYSCONFDIR/asterisk/asterisk.conf $SYSCONF/etc/asterisk
   install -m 644 $SYSCONFDIR/asterisk/extensions.conf $SYSCONF/etc/asterisk
+  install -m 644 $SYSCONFDIR/asterisk/features.conf $SYSCONF/etc/asterisk
   install -m 644 $SYSCONFDIR/asterisk/iax.conf $SYSCONF/etc/asterisk
   install -m 644 $SYSCONFDIR/asterisk/iaxprov.conf $SYSCONF/etc/asterisk
   install -m 644 $SYSCONFDIR/asterisk/logger.conf $SYSCONF/etc/asterisk
