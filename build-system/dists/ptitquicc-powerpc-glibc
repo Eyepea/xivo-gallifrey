@@ -15,8 +15,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-DIST_NAME="PtitQUICC"
-DIST_VERSION="0.3"
 DIST_FS="jffs2"
 DIST_CONSOLE="ttyCPM0"
 DIST_CONSOLE_SPEED="9600"

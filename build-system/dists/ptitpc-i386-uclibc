@@ -15,8 +15,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-DIST_NAME="PtitPC"
-DIST_VERSION="0.3"
 DIST_FS="ext2fs"
 DIST_CONSOLE="ttyS0"
 DIST_CONSOLE_SPEED="38400"
@@ -1137,6 +1135,6 @@ make_dist_packages()
   make_php_sqlite
   make_asterisk
   make_res_sqlite
-  make_chan_ooh323
-  make_gnugk
+  #make_chan_ooh323
+  #make_gnugk
 }
