@@ -67,7 +67,7 @@ php_build()
               --enable-gd-native-ttf \
               --enable-ftp \
               --enable-socket \
-              --enable-calendar \
+              --enable-mbstring \
               --enable-shmop \
               --enable-bcmath \
               --enable-sysvmsg \

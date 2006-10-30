@@ -26,6 +26,7 @@ scriptfile=$(basename "$1")
 
 cd /tmp
 [ -f "$scriptfile" ] && rm -f "$scriptfile"
+echo "getting remote upgrade script..."
 wget -nv --no-check-certificate "$scripturl"
 cd /
 echo "upgrading firmware, please wait..."
