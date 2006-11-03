@@ -40,7 +40,6 @@ dir=$(dirname $NAME)
 
 if [ "$dir" != "." ]; then
   mkdir -p -m 755 /dev/$dir
-  chown $OWNER:$GROUP /dev/$dir
 fi
 
 mknod -m $MODE /dev/$NAME $TYPE $MAJOR $MINOR
@@ -51,7 +50,6 @@ for symlink in $SYMLINK; do
 
   if [ "$dir" != "." ]; then
     mkdir -p -m 755 /dev/$dir
-    chown $OWNER:$GROUP /dev/$dir
   fi
 
   ln -sfn /dev/$NAME /dev/$symlink
