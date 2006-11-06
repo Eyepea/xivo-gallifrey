@@ -15,10 +15,10 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-CHAN_OOH323_SOURCE="asterisk-addons-1.2.4.tar.gz"
+CHAN_OOH323_SOURCE="asterisk-addons-1.2.5.tar.gz"
 CHAN_OOH323_URL="http://ftp.digium.com/pub/asterisk/releases/$CHAN_OOH323_SOURCE"
-CHAN_OOH323_SIZE="755656"
-CHAN_OOH323_SHA1SUM="62708981225f271a994d4d1f071a2ad64574141f"
+CHAN_OOH323_SIZE="756698"
+CHAN_OOH323_SHA1SUM="cc5296af344835ae9a720302dff342b82f5916ca"
 
 CHAN_OOH323_UCLIBC_PATCH="chan_ooh323_uclibc.patch"
 

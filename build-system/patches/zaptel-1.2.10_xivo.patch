@@ -1,7 +1,7 @@
-diff -Nurp zaptel-1.2.8.orig/Makefile zaptel-1.2.8/Makefile
---- zaptel-1.2.8.orig/Makefile	2006-08-18 22:20:08.000000000 +0200
-+++ zaptel-1.2.8/Makefile	2006-08-24 10:54:57.000000000 +0200
-@@ -6,10 +6,17 @@
+diff -Nurp zaptel-1.2.10.orig/Makefile zaptel-1.2.10/Makefile
+--- zaptel-1.2.10.orig/Makefile	2006-10-11 19:22:10.000000000 +0200
++++ zaptel-1.2.10/Makefile	2006-11-06 17:39:26.000000000 +0100
+@@ -6,7 +6,14 @@
  #
  
  
@@ -16,15 +16,11 @@ diff -Nurp zaptel-1.2.8.orig/Makefile zaptel-1.2.8/Makefile
 +
  PWD:=$(shell pwd)
  
--# If you want to build for a kernel other than the current kernel, set KVERS
-+# If you want to build for a kernel other than the current kernel, set KVERS and KSRC
- ifndef KVERS
- KVERS:=$(shell uname -r)
- endif
+ # If you want to build for a kernel other than the current kernel, set KVERS
 @@ -24,8 +31,8 @@ endif
  KINCLUDES:=$(KSRC)/include
  
- CFLAGS+=-I. -Iinclude -O4 -g -Wall -DBUILDING_TONEZONE #-DTONEZONE_DRIVER
+ CFLAGS+=-I. -O4 -g -Wall -DBUILDING_TONEZONE #-DTONEZONE_DRIVER
 -CFLAGS_PPC:=$(shell if uname -m | grep -q ppc; then echo "-fsigned-char"; fi)
 -CFLAGS_X86-64:=$(shell if uname -m | grep -q x86_64; then echo "-m64"; fi)
 +CFLAGS_PPC:=$(shell if echo $(ARCH) | grep -q ppc; then echo "-fsigned-char"; fi)
@@ -40,23 +36,25 @@ diff -Nurp zaptel-1.2.8.orig/Makefile zaptel-1.2.8/Makefile
 +KFLAGS_PPC:=$(shell if echo $(ARCH) | grep -q ppc; then echo "-msoft-float -fsigned-char"; fi)
  KFLAGS+=$(KFLAGS_PPC)
 -KFLAGS+=$(shell if uname -r | grep -q 2.4; then if uname -m | grep -q x86_64; then echo "-mcmodel=kernel"; fi; fi)
-+KFLAGS+=$(shell if echo $(KVERS) | grep -q 2.4; then if echo $(ARCH) | grep -q x86_64; then echo "-mcmodel=kernel"; fi; fi)
++KFLAGS+=$(shell if echo $(KVERS) | grep -q 2.4; then if uname -m | grep -q x86_64; then echo "-mcmodel=kernel"; fi; fi)
  
  #
  # Features are now configured in zconfig.h
-@@ -47,10 +54,7 @@ CFLAGS+=-DSTANDALONE_ZAPATA
+@@ -47,10 +54,10 @@ CFLAGS+=-DSTANDALONE_ZAPATA
  KMAKE:= $(MAKE) -C $(KSRC) SUBDIRS=$(PWD)
  KMAKE_INST:= $(KMAKE) INSTALL_MOD_PATH=$(INSTALL_PREFIX) INSTALL_MOD_DIR=misc modules_install
  
 -ROOT_PREFIX=
 -INSTALL_PREFIX:=$(DESTDIR)
--
++#ROOT_PREFIX=
++#INSTALL_PREFIX:=$(DESTDIR)
+ 
 -CONFIG_FILE:=$(INSTALL_PREFIX)/etc/zaptel.conf
 +CONFIG_FILE:=$(PREFIX)/etc/zaptel.conf
  CFLAGS+=-DZAPTEL_CONFIG=\"$(CONFIG_FILE)\"
  
  ifeq (2.6,$(shell echo $(KVERS) | cut -d. -f1-2))
-@@ -65,7 +69,7 @@ DYNFS:=$(shell ps ax | grep -v grep | gr
+@@ -65,7 +72,7 @@ DYNFS:=$(shell ps ax | grep -v grep | gr
  endif
  
  ifeq ($(BUILDVER),linux26)
@@ -65,20 +63,20 @@ diff -Nurp zaptel-1.2.8.orig/Makefile zaptel-1.2.8/Makefile
      DYNFS=yes
      UDEVRULES=yes
    endif
-@@ -104,10 +108,10 @@ LIBTONEZONE_SO:=libtonezone.so
+@@ -104,10 +111,10 @@ LIBTONEZONE_SO:=libtonezone.so
  LIBTONEZONE_SO_MAJOR_VER:=1
  LIBTONEZONE_SO_MINOR_VER:=0
  
 -MODULES:=zaptel tor2 torisa wcusb wcfxo wctdm wctdm24xxp \
 +MODULES:=zaptel tor2 torisa wcfxo wctdm wctdm24xxp \
- 	 ztdynamic ztd-eth wct1xxp wct4xxp wcte11xp pciradio \
+ 	 ztdynamic ztd-eth wct1xxp wcte11xp pciradio \
           ztd-loc # ztdummy
 -#MODULES+=wcfxsusb
 +#MODULES+=wcusb wcfxsusb
  # build ztdummy by default for 2.6 kernels
  ifeq ($(BUILDVER),linux26)
  MODULES+=ztdummy
-@@ -127,14 +131,14 @@ wct4xxp-objs:=wct4xxp_base.o vpm450m.o
+@@ -126,14 +133,14 @@ obj-m+=wct4xxp/
  # This line is only meaningful when this Makefile is used as kconfig for 
  # 2.6 build
  
@@ -93,24 +91,17 @@ diff -Nurp zaptel-1.2.8.orig/Makefile zaptel-1.2.8/Makefile
  ZTTOOL:=zttool
  endif
 -BINS=ztcfg torisatool makefw ztmonitor ztspeed $(ZTTOOL) zttest fxotune
-+BINS=ztcfg torisatool ztmonitor ztspeed $(ZTTOOL) zttest fxotune
++BINS=ztcfg torisatool ztmonitor ztspeed $(ZTTOOL) zttest fxotune wct4xxp/fw2h
  
  all: $(BUILDVER) $(LIBTONEZONE_SO)
  
-@@ -181,10 +185,10 @@ pciradio.o: radfw.h
+@@ -177,21 +184,21 @@ pciradio.o: radfw.h
  ztdummy.o: ztdummy.h
  
- $(filter-out wct4xxp.o,$(MODULESO)) wct4xxp_base.o: %.o: %.c zaptel.h
+ $(MODULESO): %.o: %.c zaptel.h
 -	$(CC) $(KFLAGS) -o $@ -c $<
 +	$(HOSTCC) $(KFLAGS) -o $@ -c $<
  
- vpm450m.o: vpm450m.c zaptel.h
--	$(CC) $(KFLAGS) -I$(PWD)/include -I$(PWD)/include/oct6100api -I$(SUBDIRS)/include -I$(SUBDIRS)/include/oct6100api -o $@ -c $<
-+	$(HOSTCC) $(KFLAGS) -I$(PWD)/include -I$(PWD)/include/oct6100api -I$(SUBDIRS)/include -I$(SUBDIRS)/include/oct6100api -o $@ -c $<
- 
- wct4xxp.o: wct4xxp_base.o vpm450m.o
- 	$(LD) -r -o $@ wct4xxp_base.o vpm450m.o
-@@ -192,16 +196,16 @@ wct4xxp.o: wct4xxp_base.o vpm450m.o
  tor2ee.o: tor2-hw.h
  
  tor2ee: tor2ee.o
@@ -131,7 +122,7 @@ diff -Nurp zaptel-1.2.8.orig/Makefile zaptel-1.2.8/Makefile
  
  tones.h: gendigits
  	./gendigits > $@
-@@ -212,10 +216,14 @@ tor2fw.h: makefw tormenta2.rbt
+@@ -202,8 +209,11 @@ tor2fw.h: makefw tormenta2.rbt
  radfw.h: makefw pciradio.rbt
  	./makefw pciradio.rbt radfw > radfw.h
  
@@ -143,13 +134,9 @@ diff -Nurp zaptel-1.2.8.orig/Makefile zaptel-1.2.8/Makefile
 +makefw: makefw.c
 +	$(BUILDCC) -o $@ $^ -lm
  
--fw2h: CFLAGS=
-+fw2h: fw2h.c
-+	$(BUILDCC) -o $@ $^ -lm
+ zaptel.c: tones.h 
  
- vpm450m_fw.h: OCT6114-128D.ima fw2h
- 	./fw2h $< $@
-@@ -231,66 +239,66 @@ ztprovision.o: ztprovision.c zaptel.h
+@@ -216,66 +226,69 @@ ztprovision.o: ztprovision.c zaptel.h
  ztmonitor.o: ztmonitor.c zaptel.h
  
  ztspeed.o: ztspeed.c
@@ -232,10 +219,13 @@ diff -Nurp zaptel-1.2.8.orig/Makefile zaptel-1.2.8/Makefile
  ztdiag: ztdiag.o 
 -	$(CC) -o $@ $^
 +	$(HOSTCC) -o $@ $^
++
++wct4xxp/fw2h: wct4xxp/fw2h.c
++	$(BUILDCC) -o $@ $^ -lm
  
  devices:
  ifndef DYNFS
-@@ -363,14 +371,14 @@ endif
+@@ -348,14 +361,14 @@ endif
  	install -D -m 644 zaptel.h $(INSTALL_PREFIX)/usr/include/linux/zaptel.h
  	install -D -m 644 torisa.h $(INSTALL_PREFIX)/usr/include/linux/torisa.h
  	install -D -m 644 tonezone.h $(INSTALL_PREFIX)/usr/include/tonezone.h
@@ -256,4 +246,37 @@ diff -Nurp zaptel-1.2.8.orig/Makefile zaptel-1.2.8/Makefile
 +	#fi
  
  install-udev: devices
+ 
+diff -Nurp zaptel-1.2.10.orig/wct4xxp/Kbuild zaptel-1.2.10/wct4xxp/Kbuild
+--- zaptel-1.2.10.orig/wct4xxp/Kbuild	2006-08-27 04:02:42.000000000 +0200
++++ zaptel-1.2.10/wct4xxp/Kbuild	2006-11-06 17:44:49.000000000 +0100
+@@ -1,8 +1,5 @@
+ # yes, this is redundant... the Kbuild system is changing to hostprogs-y,
+ # but we need to be able to support older verions as well
+-host-progs := fw2h
+-hostprogs-y := fw2h
+-
+ obj-m += wct4xxp.o
+ 
+ EXTRA_CFLAGS := -I$(src)/.. $(shell $(src)/../oct612x/octasic-helper cflags $(src)/../oct612x) -Wno-undef
+diff -Nurp zaptel-1.2.10.orig/wct4xxp/Makefile zaptel-1.2.10/wct4xxp/Makefile
+--- zaptel-1.2.10.orig/wct4xxp/Makefile	2006-08-27 04:27:23.000000000 +0200
++++ zaptel-1.2.10/wct4xxp/Makefile	2006-11-06 17:31:56.000000000 +0100
+@@ -10,7 +10,7 @@ OCTASIC_CFLAGS:=$(shell ../oct612x/octas
+ all: wct4xxp.o
+ 
+ %.o: %.c
+-	$(CC) $(KFLAGS) $(OCTASIC_CFLAGS) -o $@ -c $<
++	$(HOSTCC) $(KFLAGS) $(OCTASIC_CFLAGS) -o $@ -c $<
+ 
+ base.o: ../zaptel.h vpm450m.h wct4xxp.h
+ 
+@@ -19,8 +19,6 @@ vpm450m.o: vpm450m.h vpm450m_fw.h ../oct
+ wct4xxp.o: base.o vpm450m.o $(OCTASIC_OBJS)
+ 	$(LD) -r -o $@ $^
+ 
+-fw2h: CFLAGS=
+-
+ vpm450m_fw.h: OCT6114-128D.ima fw2h
+ 	./fw2h $< $@
  

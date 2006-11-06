@@ -15,10 +15,10 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-ASTERISK_SOURCE="asterisk-1.2.11.tar.gz"
+ASTERISK_SOURCE="asterisk-1.2.13.tar.gz"
 ASTERISK_URL="http://ftp.digium.com/pub/asterisk/releases/$ASTERISK_SOURCE"
-ASTERISK_SIZE="10572064"
-ASTERISK_SHA1SUM="1c064d7a908a9e6fd8e604b192721d04aba18f16"
+ASTERISK_SIZE="10584113"
+ASTERISK_SHA1SUM="d2ec77e08f512a3fa11fd8639a7fe629a46ed242"
 
 ASTERISK_UCLIBC_PATCH="asterisk-1.2.10_uclibc.patch"
 ASTERISK_CAP_PATCH="asterisk-1.2.5-cap.diff"
