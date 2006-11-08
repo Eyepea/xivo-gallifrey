@@ -367,6 +367,7 @@ gcc_2_build()
                --prefix=$TOOLCHAIN \
                --with-sysroot=$SYSROOT \
                --disable-nls \
+               --enable-shared \
                --enable-__cxa_atexit \
                --enable-languages=c,c++
   do_make
