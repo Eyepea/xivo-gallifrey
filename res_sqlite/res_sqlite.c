@@ -868,7 +868,7 @@ check_vars(void)
 {
   if (dbfile == NULL)
     {
-      ast_log(LOG_ERROR, "Undefined parameter %s\n", dbfile);
+      ast_log(LOG_ERROR, "Required parameter undefined : dbfile\n");
       return 1;
     }
 
