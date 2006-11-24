@@ -91,9 +91,14 @@ asterisk_install()
   install -m 644 $SYSCONFDIR/asterisk/meetme.conf $SYSCONF/etc/asterisk
   install -m 644 $SYSCONFDIR/asterisk/musiconhold.conf $SYSCONF/etc/asterisk
   install -m 644 $SYSCONFDIR/zaptel/zapata.conf $SYSCONF/etc/asterisk
+  install -m 755 $SYSCONFDIR/asterisk/callback $SYSROOT/usr/sbin
 
   # If /var exists in $SYSROOT, it'll be entirely moved to $SYSCONF.
   # See include/sysconf.
+  mkdir -p -m 755 $SYSROOT/var/spool/cron/crontabs
+  install -m 600 $SYSCONFDIR/asterisk/crontab $SYSROOT/var/spool/cron/crontabs/asterisk
+  mkdir -p -m 755 $SYSROOT/var/spool/asterisk/pre-outgoing
+  mkdir -p -m 755 $SYSROOT/var/spool/asterisk/queue-outgoing
   mkdir -p -m 755 $SYSROOT/var/lib/asterisk/moh
   install -m 644 $DATADIR/fpm-calm-river.gsm $SYSROOT/var/lib/asterisk/moh
   install -m 644 $DATADIR/fpm-sunshine.gsm $SYSROOT/var/lib/asterisk/moh

@@ -32,7 +32,7 @@ make_rc_scripts()
   # Don't call /etc/init.d/networking at shutdown so that network is up when
   # processes are killed. SSH processes getting killed will close
   # connections automatically.
-  install_rc_script $SYSCONFDIR/networking 09 00
+  install_rc_script $SYSCONFDIR/networking 10 00
 
   install_rc_script $SYSCONFDIR/upgrade_firmware 00 00
   install_rc_script $SYSCONFDIR/reset_factory_defaults 00 00
