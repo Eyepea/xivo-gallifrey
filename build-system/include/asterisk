@@ -103,6 +103,7 @@ asterisk_install()
   install -m 644 $DATADIR/fpm-calm-river.gsm $SYSROOT/var/lib/asterisk/moh
   install -m 644 $DATADIR/fpm-sunshine.gsm $SYSROOT/var/lib/asterisk/moh
   install -m 644 $DATADIR/fpm-world-mix.gsm $SYSROOT/var/lib/asterisk/moh
+  install -m 644 $DATADIR/xivo-attendant.gsm $SYSROOT/var/lib/asterisk/sounds
 }
 
 # usage: make_asterisk
