@@ -23,6 +23,7 @@ ASTERISK_SHA1SUM="d2ec77e08f512a3fa11fd8639a7fe629a46ed242"
 ASTERISK_UCLIBC_PATCH="asterisk-1.2.10_uclibc.patch"
 ASTERISK_CAP_PATCH="asterisk-1.2.5-cap.diff"
 ASTERISK_DEPS_PATCH="asterisk-1.2.10_deps.patch"
+ASTERISK_QUEUE_CALL_LIMIT="asterisk-1.2.13_queue_call_limit.patch"
 
 # Set $AST_ARCH from $ARCH.
 # 
@@ -46,6 +47,7 @@ asterisk_build()
 
   apply_patch $ASTERISK_CAP_PATCH
   apply_patch $ASTERISK_DEPS_PATCH
+  apply_patch $ASTERISK_QUEUE_CALL_LIMIT
 
   # I suspect the build process to uncorrectly support parallel builds.
   asterisk_set_arch
