@@ -4,7 +4,7 @@
 
 # you can override default options by calling make OPTIONS=...
 OPTIONS ?= -std=gnu99 -g -O0
-CFLAGS = -D _GNU_SOURCE -Wall -Wmissing-prototypes -Wstrict-prototypes $(OPTIONS)
+CFLAGS = -D _GNU_SOURCE -Wall -W -Wmissing-prototypes -Wstrict-prototypes $(OPTIONS)
 LIBS = -lpthread
 
 BINARY = chan_sacp.so

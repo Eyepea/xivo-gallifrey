@@ -1,6 +1,9 @@
 /*
- * Copyright (C) 2006 Proformatique
+ * Copyright (C) 2006,2007 Proformatique
+ *
  * Written by Richard Braun <rbraun@proformatique.com>
+ *            Guillaume Knispel <gknispel@proformatique.com>
+ *
  * Simple Asterisk Channel Protocol, a channel implementing a very simple
  * protocol to learn Asterisk channel developement.
  * 
@@ -16,7 +19,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
  */
 
 /**
@@ -35,12 +38,6 @@
  * The called number in packets of the same session is actually used as the
  * session identifier. It is assumed that this number is unique in the network
  * part shared by the two Asterisk instances.
- * 
- * NOTE: descriptions always use the point of view of the sender of a packet
- * when referring to the remote and local peers. Also, when referring to states
- * (e.g DIALING, RINGING), the reader must implicitely understand the Asterisk
- * state of the channel (e.g. AST_STATE_DIALING, AST_STATE_RINGING), unless
- * explicitely mentionned otherwise (e.g. SACP_STATE_RINGING, SACP_STATE_UP).
  * 
  * Commands are :
  *  - SACP_CMD_CALL
@@ -96,6 +93,10 @@
 #include <asterisk/options.h>
 #include <asterisk/translate.h>
 
+#ifndef UNUSED
+#define UNUSED(x)	((void)(x))
+#endif /* UNUSED */
+
 #define SACP_NAME "SACP"
 #define SACP_VERSION "0.1"
 #define SACP_DESCRIPTION "Simple Asterisk Channel Protocol" SACP_VERSION
@@ -114,7 +115,7 @@
 #define FUNCTION_END ast_log(LOG_DEBUG, "%s() returns\n", __FUNCTION__);
 
 /**
- * Enable this macro to debug deadlocks.
+ * Enable this macro to debug locking issues.
  */
 #define DEBUG_LOCKING 0
 
@@ -309,7 +310,7 @@ static struct sched_context *sched;
 /**
  * I/O context for RTP packets.
  */
-static struct io_context *io;
+static struct io_context *ioctx;
 
 /**
  * Socket descriptor.
@@ -710,7 +711,7 @@ sacp_new(const char *dst, int format, int state)
       goto error_pvt;
     }
 
-  rtp = ast_rtp_new_with_bindaddr(sched, io, 1, 0, local_sa.sin_addr);
+  rtp = ast_rtp_new_with_bindaddr(sched, ioctx, 1, 0, local_sa.sin_addr);
 
   if (rtp == NULL)
     {
@@ -922,7 +923,7 @@ handle_call(sacp_packet_t packet, const char *dst)
   if (codecs & SACP_CODEC_GSM)
     format |= AST_FORMAT_GSM;
 
-  channel = sacp_new(dst, format, AST_STATE_RINGING);
+  channel = sacp_new(dst, format, AST_STATE_RING);
 
   if (channel == NULL)
     return;
@@ -966,6 +967,7 @@ handle_state(sacp_packet_t packet, const char *dst)
         break;
       default:
         ast_log(LOG_WARNING, "Unknown state: %u\n", state);
+        break;
     }
 
   session_unlock(pvt);
@@ -1120,6 +1122,8 @@ receiver(void *arg)
   ssize_t received;
   int error;
 
+  UNUSED(arg);
+
   FUNCTION_START
 
   packet = malloc(SACP_PACKET_SIZE_MAX);
@@ -1150,7 +1154,7 @@ receiver(void *arg)
           continue;
         }
 
-      else if (received < sizeof(struct sacp_packet))
+      else if ((size_t)received < sizeof(struct sacp_packet))
         {
           ast_log(LOG_WARNING, "Received inconsistent packet (size: %d), "
                   "ignoring\n", received);
@@ -1201,6 +1205,9 @@ static struct ast_channel *
 sacp_request(const char *type, int format, void *data, int *cause)
 {
   struct ast_channel *channel;
+
+  UNUSED(type);
+  UNUSED(cause);
 
   FUNCTION_START
 
@@ -1310,6 +1317,9 @@ sacp_call(struct ast_channel *channel, char *dest, int timeout)
   sacp_pvt_t pvt;
   uint8_t codecs;
 
+  UNUSED(dest);
+  UNUSED(timeout);
+
   FUNCTION_START
 
   pvt = channel->tech_pvt;
@@ -1352,7 +1362,8 @@ sacp_call(struct ast_channel *channel, char *dest, int timeout)
       return -1;
     }
 
-  ast_setstate(channel, AST_STATE_RING);
+  /* Consider the remote end is ringing as soon as we send him the "call" msg */
+  ast_setstate(channel, AST_STATE_RINGING);
   pvt->devstate = AST_DEVICE_INUSE;
   session_unlock(pvt);
 
@@ -1479,6 +1490,7 @@ sacp_read(struct ast_channel *channel)
         ast_log(LOG_WARNING, "Invalid file descriptor when reading (%d)\n",
                 channel->fdno);
         frame = NULL;
+	break;
     }
 
   session_unlock(pvt);
@@ -1527,6 +1539,7 @@ sacp_write(struct ast_channel *channel, struct ast_frame *frame)
       default:
         ast_log(LOG_DEBUG, "SACP only supports audio frames\n");
         error = 0;
+	break;
     }
 
   session_unlock(pvt);
@@ -1579,6 +1592,7 @@ sacp_indicate(struct ast_channel *channel, int condition)
       default:
         ast_log(LOG_WARNING, "Unknown condition %d\n", condition);
         error = -1;
+	break;
     }
 
   session_unlock(pvt);
@@ -1588,6 +1602,10 @@ sacp_indicate(struct ast_channel *channel, int condition)
   return error;
 }
 
+/**
+ * Called before anything else.
+ * Must return something negative on failure.
+ */
 int
 load_module(void)
 {
@@ -1602,7 +1620,8 @@ load_module(void)
   /*
    * Set a few variables now in case our module is unloaded prematurely.
    */
-  io = NULL;
+  sched = NULL;
+  ioctx = NULL;
   sd = -1;
   registered = 0;
   receiver_started = 0;
@@ -1615,9 +1634,9 @@ load_module(void)
       goto error_sched;
     }
 
-  io = io_context_create();
+  ioctx = io_context_create();
 
-  if (io == NULL)
+  if (ioctx == NULL)
     {
       ast_log(LOG_WARNING, "Unable to create I/O context\n");
       goto error_io;
@@ -1780,15 +1799,22 @@ error_parse:
     free(peer);
 error_peer:
 error_config:
-  if (io != NULL)
-    io_context_destroy(io);
+  if (ioctx != NULL)
+    io_context_destroy(ioctx);
+  ioctx = NULL;
 error_io:
   if (sched != NULL)
     sched_context_destroy(sched);
+  sched = NULL;
 error_sched:
   return -1;
 }
 
+/**
+ * Called to unload the module from the Asterisk process.
+ * WARNING: this function is called even if load_module()
+ * returned with a failure.
+ */
 int
 unload_module(void)
 {
@@ -1808,8 +1834,12 @@ unload_module(void)
   if (receiver_started)
     pthread_join(receiver_thread, NULL);
 
-  io_context_destroy(io);
-  sched_context_destroy(sched);
+  if (ioctx != NULL)
+    io_context_destroy(ioctx);
+  ioctx = NULL;
+  if (sched != NULL)
+    sched_context_destroy(sched);
+  sched = NULL;
 
   FUNCTION_END
 
