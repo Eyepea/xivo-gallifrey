@@ -9,6 +9,12 @@
 ;type = isdnguard
 ;device = /dev/ttyS0
 ;interval = 200
+;serial = yes
+;bitrate = 115200
+;bits = 8
+;parity = N
+;stop = 1
+;flow = None
 
 ;[ISDNguard-with-daemon]
 ;type = isdnguard
