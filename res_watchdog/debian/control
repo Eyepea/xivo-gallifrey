@@ -1,0 +1,14 @@
+Source: asterisk-res-watchdog
+Section: unknown
+Priority: optional
+Maintainer: Sylvain Boily <sboily@proformatique.com>
+Build-Depends: debhelper (>= 4.0.0) asterisk-dev (>= 1:1.2.14~dfsg-1)
+Standards-Version: 3.6.1
+
+Package: asterisk-res-watchdog
+Architecture: any
+Depends: ${shlibs:Depends}, asterisk (>= 1:1.2.14~dfsg-1)
+Description: Asterisk watchdog support (patch by Proformatique)
+ Support for Wachdog in Asterisk. Patch has been apply for some potentiel error 
+ on devel by bristuff team. Original patch is from
+ http://212.91.251.199/~junghanns.net/downloads/isdnguard-asterisk-1.2.13.patch
