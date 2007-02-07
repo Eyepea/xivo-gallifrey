@@ -7,8 +7,9 @@
  * Klaus-Peter Junghanns <kpj@junghanns.net>
  *
  * Copyright (C) 2007, Proformatique
- * De-Stupidify Junghanns' code (does he really know C ???)
  * Guillaume Knispel <gknispel@proformatique.com>
+ * 	(mask signals causing the watchdog thread to abort,
+ * 	 configurate the serial interface)
  *
  * This program is free software, distributed under the terms of
  * the GNU General Public License
