@@ -1,0 +1,38 @@
+#ifndef __MAINWIDGET_H__
+#define __MAINWIDGET_H__
+#include <QWidget>
+#include <QPushButton>
+#include "engine.h"
+
+class QSystemTrayIcon;
+
+/*! \brief Main window class
+ *
+ * This widget contains buttons enabling the user
+ * to popup the config window, to quit and to start
+ * the login process.
+ */
+class MainWidget: public QWidget
+{
+	Q_OBJECT
+public:
+	//! Constructor
+	MainWidget(Engine *engine, QWidget *parent=0);
+private slots:
+	void popupConf();
+	void enableStartButton();
+	void disableStartButton();
+protected:
+	void hideEvent(QHideEvent *event);
+	//void closeEvent(QCloseEvent *event);
+	//void changeEvent(QEvent *event);
+private:
+	void createSystrayIcon();
+private:
+	Engine * m_engine;			//!< pointer to the Engine used
+	QPushButton * m_btnstart;	//!< Start Button
+	QSystemTrayIcon * m_systrayIcon;	//!< System Tray Icon
+};
+
+#endif
+
