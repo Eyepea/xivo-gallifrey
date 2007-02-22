@@ -55,8 +55,8 @@ MainWidget::MainWidget(Engine *engine, QWidget *parent)
  */
 void MainWidget::createSystrayIcon()
 {
-	// TODO: get the icon from some fixed place
-	m_systrayIcon = new QSystemTrayIcon(QIcon("xivoicon.png"), this);
+	// the icon is read from the resources.
+	m_systrayIcon = new QSystemTrayIcon(QIcon(":/xivoicon.png"), this);
 	QMenu * menu = new QMenu(QString("SystrayMenu"), this);
 	menu->addAction( "&Config", this, SLOT(popupConf()) );
 	menu->addAction( "&Quit", qApp, SLOT(quit()) );
@@ -94,12 +94,27 @@ void MainWidget::popupConf()
 void MainWidget::systrayActivated(QSystemTrayIcon::ActivationReason reason)
 {
 	qDebug() << "MainWidget::systrayActivated() " << reason;
+	qDebug() << "visible=" << isVisible() << " hidden=" << isHidden();
+	qDebug() << "active=" << isActiveWindow();
 	// QSystemTrayIcon::DoubleClick
 	// QSystemTrayIcon::Trigger
 	if (reason == QSystemTrayIcon::Trigger)
 	{
-		// Toggle visibility
-		setVisible(!isVisible());
+		if( isVisible() && !isActiveWindow() )
+		{
+			activateWindow();
+			raise();
+		}
+		else
+		{
+			// Toggle visibility
+			setVisible(!isVisible());
+			if( isVisible() )
+			{
+				activateWindow();
+				raise();
+			}
+		}
 	}
 }
 
