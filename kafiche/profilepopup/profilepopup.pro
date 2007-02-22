@@ -6,7 +6,8 @@ TEMPLATE = app
 TARGET = 
 DEPENDPATH += .
 INCLUDEPATH += .
-CONFIG += debug
+CONFIG -= debug
+CONFIG += static
 
 # Input
 HEADERS += confwidget.h engine.h mainwidget.h popup.h
@@ -15,4 +16,5 @@ SOURCES += confwidget.cpp engine.cpp main.cpp mainwidget.cpp popup.cpp
 SOURCES += xmlhandler.cpp remotepicwidget.cpp urllabel.cpp
 QT += network
 QT += xml
+RESOURCES += appli.qrc
 

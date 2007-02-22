@@ -2,6 +2,7 @@
 #define __MAINWIDGET_H__
 #include <QWidget>
 #include <QPushButton>
+#include <QSystemTrayIcon>
 #include "engine.h"
 
 class QSystemTrayIcon;
@@ -22,6 +23,7 @@ private slots:
 	void popupConf();
 	void enableStartButton();
 	void disableStartButton();
+	void systrayActivated(QSystemTrayIcon::ActivationReason);
 protected:
 	void hideEvent(QHideEvent *event);
 	//void closeEvent(QCloseEvent *event);

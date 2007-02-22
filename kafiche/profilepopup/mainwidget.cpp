@@ -2,6 +2,7 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QSystemTrayIcon>
+#include <QMenu>
 #include <QDebug>
 #include "mainwidget.h"
 #include "confwidget.h"
@@ -29,8 +30,8 @@ MainWidget::MainWidget(Engine *engine, QWidget *parent)
 	layout->addWidget(btnquit);
 	connect( btnquit, SIGNAL(clicked()), qApp, SLOT(quit()) );
 
-	qDebug() << "QSystemTrayIcon::isSystemTrayAvailable()="
-	         << QSystemTrayIcon::isSystemTrayAvailable();
+	//qDebug() << "QSystemTrayIcon::isSystemTrayAvailable()="
+	//         << QSystemTrayIcon::isSystemTrayAvailable();
 	QPushButton *btnsystray = new QPushButton("To S&ystray", this);
 	btnsystray->setEnabled( QSystemTrayIcon::isSystemTrayAvailable() );
 	layout->addWidget(btnsystray);
@@ -44,7 +45,7 @@ MainWidget::MainWidget(Engine *engine, QWidget *parent)
 
 	//setWindowFlags(Qt::Dialog);	
 	layout->setSizeConstraint(QLayout::SetFixedSize);	// remove minimize and maximize button
-	setWindowTitle(QString("hop"));
+	setWindowTitle(QString("KaFiche"));
 }
 
 /*! \brief create and show the system tray icon
@@ -54,12 +55,20 @@ MainWidget::MainWidget(Engine *engine, QWidget *parent)
  */
 void MainWidget::createSystrayIcon()
 {
+	// TODO: get the icon from some fixed place
 	m_systrayIcon = new QSystemTrayIcon(QIcon("xivoicon.png"), this);
-	// add a menu ?
-	// m_systrayIcon->setContextMenu()
+	QMenu * menu = new QMenu(QString("SystrayMenu"), this);
+	menu->addAction( "&Config", this, SLOT(popupConf()) );
+	menu->addAction( "&Quit", qApp, SLOT(quit()) );
+	m_systrayIcon->setContextMenu( menu );
 	m_systrayIcon->show();
+	//connect( m_systrayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
+	//         this, SLOT(show()) );
 	connect( m_systrayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
-	         this, SLOT(show()) );
+	         this, SLOT(systrayActivated(QSystemTrayIcon::ActivationReason)) );
+// QSystemTrayIcon::ActivationReason
+	//qDebug() << "QSystemTrayIcon::supportsMessages() = "
+	//         << QSystemTrayIcon::supportsMessages();
 }
 
 // === SLOTS implementations ===
@@ -71,8 +80,27 @@ void MainWidget::createSystrayIcon()
  * m_engine, and then show it. */
 void MainWidget::popupConf()
 {
+	// TODO : prevent the user from opening several confWidget
+	// show, bring to foreground if one is allready existing.
 	ConfWidget * conf = new ConfWidget(m_engine, this);
 	conf->show();
+}
+
+/*! \brief process clicks to the systray icon
+ *
+ * This slot is connected to the activated() signal of the
+ * System Tray icon. It currently toggle the visibility
+ * of the MainWidget on a simple left click. */
+void MainWidget::systrayActivated(QSystemTrayIcon::ActivationReason reason)
+{
+	qDebug() << "MainWidget::systrayActivated() " << reason;
+	// QSystemTrayIcon::DoubleClick
+	// QSystemTrayIcon::Trigger
+	if (reason == QSystemTrayIcon::Trigger)
+	{
+		// Toggle visibility
+		setVisible(!isVisible());
+	}
 }
 
 //! Enable the Start Button
