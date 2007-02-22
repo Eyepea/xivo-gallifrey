@@ -88,12 +88,12 @@ void Popup::addInfoPicture(const QString & name, const QString & value)
 		QPixmap *face = new QPixmap( value );
 		// TODO: connect a signal to close() ?
 		lbl->setPixmap( *face );
-		m_vlayout->addWidget( lbl );
+		m_vlayout->addWidget( lbl, 0, Qt::AlignCenter );
 	}
 	else
 	{
 		RemotePicWidget * pic = new RemotePicWidget( name, value, this );
-		m_vlayout->addWidget( pic );
+		m_vlayout->addWidget( pic, 0, Qt::AlignCenter );
 	}
 }
 
