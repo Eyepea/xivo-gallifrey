@@ -24,7 +24,7 @@ class Fiche:
 		s += '<user>\n'
 		for (name, type, value) in self.infos:
 			s += '<info name="' + name + '" type="' + type + '">'
-			s += value
+			s += '<![CDATA[' + value + ']]>'
 			s += '</info>\n'
 		s += '</user>\n'
 		s += '</profile>\n'

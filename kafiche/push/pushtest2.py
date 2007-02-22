@@ -1,5 +1,5 @@
 #! /usr/bin/python
-# vim: set fileencoding=utf-8 :
+# vim: set encoding=utf-8 :
 # Thomas Bernard
 # script de test du push de fiche
 
@@ -32,6 +32,8 @@ fiche.addinfo('Numéro', 'phone', '+33 1 42 42 42 42')
 fiche.addinfo('Photo', 'picture', 'http://www.lesitedeclaudia.com/photos/claudia38.jpg')
 fiche.addinfo('Adresse email', 'url', 'mailto:claudia.schiffer@claudia.com')
 fiche.addinfo('Homepage', 'url', 'http://www.google.fr/')
+fiche.addinfo('TestHtml', 'text', 'coucou les <b>Gars</b>')
+fiche.addinfo('TestHtml2', 'text', '<table><tr><td>0</td><td>1</td></tr><tr><td>2</td><td>3</td></tr></table>')
 #print fiche
 #print fiche.getxml()
 
