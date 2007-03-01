@@ -23,6 +23,7 @@ port_login = 12345
 port_keepalive = port_login + 1
 port_request = 12347
 session_expiration_time = 60*3
+userlisturl = 'http://192.168.0.5/service/ipbx/sso.php'
 
 # global : userlist
 # liste des champs :
@@ -44,6 +45,11 @@ userlist_lock = threading.Condition()
 def adduser(user, passwd):
 	global userlist
 	userlist[user] = {'user':user, 'passwd':passwd}
+
+def deluser(user):
+	global userlist
+	if userlist.has_key(user):
+		userlist.pop(user)
 
 # TODO: a method to fill user list from a file or a db
 #       or asterisk or something :)
@@ -74,6 +80,23 @@ def filluserlistfromurl(url):
 			if __debug__:
 				print 'user', l[0], l[1] , 'password', l[2], 'droit', l[3]
 			if l[3] != '0':
+				adduser(l[0]+l[1], l[2])
+	finally:
+		f.close()
+
+def updateuserlistfromurl(url):
+	f = urllib.urlopen(url)
+	try:
+		for line in f:
+			# remove leading/tailing whitespaces
+			line = line.strip()
+			l = line.split('|')
+			# line is protocol|phone|password|rightflag
+			if __debug__:
+				print 'user', l[0], l[1] , 'password', l[2], 'droit', l[3]
+			if l[3] == '0':
+				deluser(l[0]+l[1])
+			else:
 				adduser(l[0]+l[1], l[2])
 	finally:
 		f.close()
@@ -111,6 +134,7 @@ def dumpuserlist():
 # supporting commands coming from the client in order to pilot asterisk.
 class LoginHandler(SocketServer.StreamRequestHandler):
 	def handle(self):
+		global userlisturl
 		if __debug__:
 			print 'LoginHandler'
 			print '  client connected :', self.client_address
@@ -128,6 +152,7 @@ class LoginHandler(SocketServer.StreamRequestHandler):
 		passwd = list[1]
 		#print 'user/pass : ' + user + '/' + passwd
 		userlist_lock.acquire()
+		updateuserlistfromurl(userlisturl)
 		e = finduser(user)
 		goodpass = (e != None) and (e.get('passwd') == passwd)
 		userlist_lock.release()
@@ -231,19 +256,21 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
 # starts the execution flow...
 #filluserlist()
 #filluserlistfromfile('users')
-#filluserlistfromurl('http://adc.xivo.pro/service/ipbx/sso.php')
-filluserlistfromurl('http://192.168.0.5/service/ipbx/sso.php')
+filluserlistfromurl(userlisturl)
 #dumpuserlist()
 
 # Instanciate the SocketServer Objects.
 loginserver = SocketServer.ThreadingTCPServer(('', port_login), LoginHandler)
+loginserver.allow_reuse_address = True
 # TODO: maybe we should listen on only one interface (localhost ?)
 requestserver = SocketServer.ThreadingTCPServer(('', port_request), IdentRequestHandler)
+requestserver.allow_reuse_address = True
 # Do we need a Threading server for the keep alive ? I dont think so,
 # packets processing is non blocking so thead creation/start/stop/delete
 # overhead is not worth it.
 #keepaliveserver = SocketServer.ThreadingUDPServer(('', port_keepalive), KeepAliveHandler)
 keepaliveserver = SocketServer.UDPServer(('', port_keepalive), KeepAliveHandler)
+keepaliveserver.allow_reuse_address = True
 
 # We have three sockets to listen to so we cannot use the 
 # very easy to use SocketServer.serve_forever()
