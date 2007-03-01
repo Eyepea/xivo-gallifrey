@@ -298,7 +298,7 @@ filluserlistfromurl(userlisturl)
 
 # Instanciate the SocketServer Objects.
 loginserver = SocketServer.ThreadingTCPServer(('', port_login), LoginHandler)
-loginserver.allow_reuse_address = True
+loginserver.allow_reuse_address = True # a fixer => to be set in a subclass
 # TODO: maybe we should listen on only one interface (localhost ?)
 requestserver = SocketServer.ThreadingTCPServer(('', port_request), IdentRequestHandler)
 requestserver.allow_reuse_address = True
