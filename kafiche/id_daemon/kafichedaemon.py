@@ -1,9 +1,17 @@
 #! /usr/bin/python
 #
 # author : Thomas Bernard
-# last modified : 2007/02/05
+# last modified : 2007/03/01
 
 # still to do : timer to clean state of not connected clients ?
+
+# configuration options :
+port_login = 12345
+port_keepalive = port_login + 1
+port_request = 12347
+session_expiration_time = 60*3
+userlisturl = 'http://192.168.0.5/service/ipbx/sso.php'
+pidfile = '/tmp/kafiche_id_daemon.pid'
 
 # imported packages
 import socket
@@ -14,16 +22,10 @@ import time
 import threading
 import signal
 import sys
+import os
 import pickle
 #
 import urllib
-
-# configuration options :
-port_login = 12345
-port_keepalive = port_login + 1
-port_request = 12347
-session_expiration_time = 60*3
-userlisturl = 'http://192.168.0.5/service/ipbx/sso.php'
 
 # global : userlist
 # liste des champs :
@@ -41,11 +43,15 @@ userlist = {}
 
 userlist_lock = threading.Condition()
 
-# add a user in the userlist
+# add (or update) a user in the userlist
 def adduser(user, passwd):
 	global userlist
-	userlist[user] = {'user':user, 'passwd':passwd}
+	if userlist.has_key(user):
+		userlist[user]['passwd'] = passwd
+	else:
+		userlist[user] = {'user':user, 'passwd':passwd}
 
+# delete a user from the userlist
 def deluser(user):
 	global userlist
 	if userlist.has_key(user):
@@ -117,6 +123,24 @@ def finduser(user):
 # TODO: we could need to dump that to a file using "pickle"
 def dumpuserlist():
 	print userlist
+
+
+# daemonize function
+def daemonize():
+	try:
+		pid = os.fork()
+		if pid > 0: sys.exit(0)
+	except OSError, e: sys.exit(1)
+	os.setsid()
+	os.umask(0)
+	try:
+		pid = os.fork()
+		if pid > 0: sys.exit(0)
+	except OSError, e: sys.exit(1)
+	dev_null = file('/dev/null', 'r+')
+	os.dup2(dev_null.fileno(), sys.stdin.fileno())
+	os.dup2(dev_null.fileno(), sys.stdout.fileno())
+	os.dup2(dev_null.fileno(), sys.stderr.fileno())
 
 # The daemon has 3 listening sockets :
 # - Login - TCP - (the clients connect to it to login) - need SSL ?
@@ -254,6 +278,19 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
 # ===================================================================
 # everything above was Object/function definitions, below
 # starts the execution flow...
+
+# daemonize if not in debug mode ;)
+if sys.argv.count('-d') == 0:
+	daemonize()
+try:
+	f = open(pidfile, "w")
+	try:
+		f.write("%d\n"%os.getpid())
+	finally:
+		f.close()
+except Exception, e:
+	print e
+
 #filluserlist()
 #filluserlistfromfile('users')
 filluserlistfromurl(userlisturl)
@@ -311,6 +348,11 @@ while not askedtoquit:
 			requestserver.handle_request()
 		elif x == keepaliveserver.socket:
 			keepaliveserver.handle_request()
+
+try:
+	os.unlink(pidfile)
+except Exception, e:
+	print e
 
 print 'end of the execution flow...'
 
