@@ -1,0 +1,41 @@
+# $Id$
+
+INSTALL CLUES
+
+* install the python-pexpect (python2.3-pexpect) debian packages
+* copy heartbeat    to /etc/init.d/heartbeat
+* copy heartbeat.py to /usr/sbin/heartbeat.py
+* update the following lines into /etc/asterisk/manager.conf
+[general]
+enabled = yes
+port = 5038
+bindaddr = 127.0.0.1
+[heartbeat]
+secret = heartbeat
+read = command
+write = command
+* "reload manager" in the Asterisk CLI
+
+The present directory is also shipped with cad_mmi.py, which is a trivial UDP
+client that can be used in order to 
+
+FUNCTIONAL DESCRIPTION
+
+* heartbeat.py is a daemon started or stopped by /etc/init.d/heartbeat (start|stop)
+* the /etc/init.d/heartbeat script launches heartbeat.py with no command line
+  option, however the following options are available :
+	-d : avoids the daemon mode + gives some debugging output
+	-t : in order to test the UDP socket, doesn't connect to Asterisk but
+		sends random status numbers
+
+DETAILED DESCRIPTION
+
+* python-pexpect functions are used in order to chat with Asterisk AMI
+* Parsing the results given by "show channels concise" is done whether some
+  delimiters like ':' '/' '-' are present.
+  As for now, only the Zap case is handled.
+
+TODO
+
+* replacing pexpect/spawn with python/Telnet functions
+
