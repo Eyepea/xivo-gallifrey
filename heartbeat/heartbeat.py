@@ -9,7 +9,6 @@ from random import randint
 
 # Set the socket parameters
 host = ""
-portc = 5049
 ports = 5050
 port_ami = 5038
 buf = 1024
@@ -42,24 +41,23 @@ def id_to_string(idn):
     return(chnull + ch1 + ch2 + ch3 + ch4)
 
 def get_zapchan(blocs):
-    id = 0
-    for x in blocs:
-        #Zap/12-1:from-sip:12:2:Up:MeetMe:12:init::3:263062:(None)
-        if (x.find(':') >= 0) and (x.find('/') >= 0) :
-            xs = x.split(':')
-            # xs = Zap/12-1 from-sip 12 2 Up MeetMe 12 init  3 263062 (None)
-            xss = xs[0].split('/')
-            # xss = Zap 12-1
-            if (xss[0] == "Zap") and (xss[1].find('-') >= 0) :
-                xsss = xss[1].split('-')
-                if xs[4] == "Up":
-                    zapchan = int(xsss[0]) - 1
-                    if zapchan < 32:
-                        id += (1<<zapchan)
-    return id
+	id = 0
+	for x in blocs:	    
+		#Zap/12-1:from-sip:12:2:Up:MeetMe:12:init::3:263062:(None)
+		if (x.find(':') >= 0) and (x.find('/') >= 0) :
+			xs = x.split(':')
+			# xs = Zap/12-1 from-sip 12 2 Up MeetMe 12 init  3 263062 (None)
+			xss = xs[0].split('/')
+			# xss = Zap 12-1
+			if (xss[0] == "Zap") and (xss[1].find('-') >= 0) :
+				xsss = xss[1].split('-')
+				if xs[4] == "Up":
+					zapchan = int(xsss[0]) - 1
+					if zapchan < 32:
+						id += (1<<zapchan)
+	return id
 
 def ami_command(pspawn, command):
-    p.logfile = sys.stdout
     p.expect("Asterisk Call Manager/1.0")
     p.sendline("Action: login\rUsername: heartbeat\rSecret: heartbeat\r")
     p.expect("Message: Authentication accepted")
@@ -96,6 +94,7 @@ while 1:
         print "Client has exited!"
         break
     else:
+#        print "port = ", addr
         ami_reply=""
         if sys.argv.count('-t') > 0:
             idnum = randint(0, (1 << 30) - 1)
@@ -114,12 +113,8 @@ while 1:
             idnum = get_zapchan(blocs)
 
         replystring = id_to_string(idnum)
-
-        replysocket = socket(AF_INET,SOCK_DGRAM)
-        replysocket.bind(('',0))
-        replysocket.sendto(replystring,(addr[0],portc))
-        replysocket.close()
-            
+        UDPSock.sendto(replystring,(addr[0], addr[1]))
+    
 # Close socket
 UDPSock.close()
 
