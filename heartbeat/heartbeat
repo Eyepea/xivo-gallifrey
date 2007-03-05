@@ -1,0 +1,40 @@
+#!/bin/sh
+# $Id$
+# Startup daemon script for hearbeat
+
+DAEMON=/usr/sbin/heartbeat.py
+PIDFILE="/tmp/heartbeat_id_daemon.pid"
+
+case "$1" in
+  start)
+	if [ -e $PIDFILE ] ; then
+	    echo "A hearbeat daemon PID file was found. Nothing new started."
+	    exit 1
+	else
+	    echo "Starting hearbeat daemon."
+	    $DAEMON
+	fi
+	;;
+  stop)
+	if ! [ -e $PIDFILE ] ; then
+	    echo "No hearbeat daemon PID file found."
+	    exit 1
+	else
+	    echo "Stopping hearbeat daemon."
+	    DAEMONPID=$(cat $PIDFILE | tr -d '[:blank:]')
+	    kill $DAEMONPID
+	    rm $PIDFILE
+	fi
+	;;
+  restart)
+	$0 stop
+	$0 start
+	;;
+  *)
+	echo "Usage: $0 {start|stop|restart}"
+	exit 1
+	;;
+esac
+
+exit 0
+
