@@ -9,11 +9,12 @@ from random import randint
 
 # Set the socket parameters
 host = ""
-ports = 5050
+port_hbt = 5050
 port_ami = 5038
 buf = 1024
-addr = (host,ports)
+addr = (host,port_hbt)
 pidfile = '/tmp/heartbeat_id_daemon.pid'
+loopc = 0
 
 # daemonize function
 def daemonize():
@@ -97,8 +98,11 @@ while 1:
 #        print "port = ", addr
         ami_reply=""
         if sys.argv.count('-t') > 0:
-            idnum = randint(0, (1 << 30) - 1)
-        else:
+		idnum = randint(0, (1 << 30) - 1)
+	elif sys.argv.count('-l') > 0:
+		idnum = 1 << loopc
+		loopc = (loopc+1) % 30
+	else :
             p = pexpect.spawn('telnet localhost ' + str(port_ami))
             try:
                 ami_reply = ami_command(p, "show channels concise")

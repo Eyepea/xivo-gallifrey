@@ -1,6 +1,9 @@
 # $Id$
 
+
+
 INSTALL CLUES
+=============
 
 * install the python-pexpect (python2.3-pexpect) debian packages
 * copy heartbeat    to /etc/init.d/heartbeat
@@ -17,25 +20,51 @@ write = command
 * "reload manager" in the Asterisk CLI
 
 The present directory is also shipped with cad_mmi.py, which is a trivial UDP
-client that can be used in order to 
+client that can be used in order to test the heartbeat server. Its usage is
+	cad_mmi.py <host>
+
+
 
 FUNCTIONAL DESCRIPTION
+======================
 
 * heartbeat.py is a daemon started or stopped by /etc/init.d/heartbeat (start|stop)
-* the /etc/init.d/heartbeat script launches heartbeat.py with no command line
+* The /etc/init.d/heartbeat script launches heartbeat.py with no command line
   option, however the following options are available :
-	-d : avoids the daemon mode + gives some debugging output
-	-t : in order to test the UDP socket, doesn't connect to Asterisk but
-		sends random status numbers
+	-d      : avoids the daemon mode + gives some debugging output
+	[-t|-l] : in order to test the UDP socket, doesn't connect to Asterisk but
+			(-t) sends random status numbers
+			(-l) loops endlessly from channel 1 Up to channel 30 Up
+* The heartbeat.py daemon listens on an UDP socket on the port 5050.
+  Upon the reception of a frame on this port, the daemon connects to the AMI
+	port (5038) of the local Asterisk process, and fetches the channels'
+	statuses, especially the Zap ones.
+  The status 0/1 of the Zap channels is then aggregated into a 64bit pattern.
+  The 32+2 MSB are reserved for future use.
+  Then, if (let's say) only the Zap/15-1 channel is up, the UDP frame replied
+	by the heartbeat.py server will be :
 
-DETAILED DESCRIPTION
+	# tcpdump -i lo -n -s 1500 -X port 5049 or port 5050
+	09:48:20.400579 IP 127.0.0.1.5050 > 127.0.0.1.34059: UDP, length: 8
+	        0x0000:  4500 0024 004a 4000 4011 3c7d 7f00 0001  E..$.J@.@.<}....
+	        0x0010:  7f00 0001 13ba 850b 0010 fe23 0000 0000  ...........#....
+	        0x0020:  0000 4000                                ..@.
+
+
+
+MORE DETAILED DESCRIPTION
+=========================
 
 * python-pexpect functions are used in order to chat with Asterisk AMI
 * Parsing the results given by "show channels concise" is done whether some
   delimiters like ':' '/' '-' are present.
   As for now, only the Zap case is handled.
 
-TODO
 
-* replacing pexpect/spawn with python/Telnet functions
+
+TODO
+====
+
+* improving casual robustness issues
+* replacing pexpect/spawn with python/Telnet functions ?
 
