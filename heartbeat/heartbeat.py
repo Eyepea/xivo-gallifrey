@@ -9,10 +9,11 @@ from random import randint
 
 # Set the socket parameters
 host = ""
-port_hbt = 5050
+port_cli = 5049
+port_srv = 5050
 port_ami = 5038
 buf = 1024
-addr = (host,port_hbt)
+addr = (host,port_srv)
 pidfile = '/tmp/heartbeat_id_daemon.pid'
 loopc = 0
 
@@ -34,7 +35,7 @@ def daemonize():
 	os.dup2(dev_null.fileno(), sys.stderr.fileno())
 
 def id_to_string(idn):
-    ch1 = chr((idn & 0x3f000000) >> 24)
+    ch1 = chr((idn & 0x7f000000) >> 24)
     ch2 = chr((idn & 0x00ff0000) >> 16)
     ch3 = chr((idn & 0x0000ff00) >>  8)
     ch4 = chr((idn & 0x000000ff))
@@ -53,19 +54,20 @@ def get_zapchan(blocs):
 			if (xss[0] == "Zap") and (xss[1].find('-') >= 0) :
 				xsss = xss[1].split('-')
 				if xs[4] == "Up":
+					# xsss[0]=1-15+17-31 => zapchan=0-14+16-30
 					zapchan = int(xsss[0]) - 1
-					if zapchan < 32:
+					if zapchan < 31:
 						id += (1<<zapchan)
 	return id
 
 def ami_command(pspawn, command):
-    p.expect("Asterisk Call Manager/1.0")
-    p.sendline("Action: login\rUsername: heartbeat\rSecret: heartbeat\r")
-    p.expect("Message: Authentication accepted")
-    p.sendline("Action: Command\rCommand: " + command + "\r")
-    p.expect("--END COMMAND--")
-    reply = p.before
-    p.sendline("Action: Logoff\r")
+    pspawn.expect("Asterisk Call Manager/1.0")
+    pspawn.sendline("Action: login\rUsername: heartbeat\rSecret: heartbeat\r")
+    pspawn.expect("Message: Authentication accepted")
+    pspawn.sendline("Action: Command\rCommand: " + command + "\r")
+    pspawn.expect("--END COMMAND--")
+    reply = pspawn.before
+    pspawn.sendline("Action: Logoff\r")
     return reply
 
 # ===================================================================
@@ -95,13 +97,15 @@ while 1:
         print "Client has exited!"
         break
     else:
-#        print "port = ", addr
         ami_reply=""
         if sys.argv.count('-t') > 0:
 		idnum = randint(0, (1 << 30) - 1)
 	elif sys.argv.count('-l') > 0:
 		idnum = 1 << loopc
-		loopc = (loopc+1) % 30
+		if loopc == 14:
+			loopc = 16
+		else:
+			loopc = (loopc+1) % 31
 	else :
             p = pexpect.spawn('telnet localhost ' + str(port_ami))
             try:
@@ -117,7 +121,14 @@ while 1:
             idnum = get_zapchan(blocs)
 
         replystring = id_to_string(idnum)
-        UDPSock.sendto(replystring,(addr[0], addr[1]))
+
+	# reply on a different socket
+        replysocket = socket(AF_INET,SOCK_DGRAM)
+        replysocket.bind(('',0))
+        replysocket.sendto(replystring,(addr[0],port_cli))
+        replysocket.close()
+	# reply on the same socket
+	# UDPSock.sendto(replystring,(addr[0], addr[1]))
     
 # Close socket
 UDPSock.close()
