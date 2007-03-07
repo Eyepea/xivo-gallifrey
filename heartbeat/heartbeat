@@ -1,6 +1,6 @@
 #!/bin/sh
 # $Id$
-# Startup daemon script for hearbeat
+# Startup daemon script for heartbeat
 
 DAEMON=/usr/sbin/heartbeat.py
 PIDFILE="/tmp/heartbeat_id_daemon.pid"
@@ -8,19 +8,19 @@ PIDFILE="/tmp/heartbeat_id_daemon.pid"
 case "$1" in
   start)
 	if [ -e $PIDFILE ] ; then
-	    echo "A hearbeat daemon PID file was found. Nothing new started."
+	    echo "A heartbeat daemon PID file was found. Nothing new started."
 	    exit 1
 	else
-	    echo "Starting hearbeat daemon."
+	    echo "Starting heartbeat daemon."
 	    $DAEMON
 	fi
 	;;
   stop)
 	if ! [ -e $PIDFILE ] ; then
-	    echo "No hearbeat daemon PID file found."
+	    echo "No heartbeat daemon PID file found."
 	    exit 1
 	else
-	    echo "Stopping hearbeat daemon."
+	    echo "Stopping heartbeat daemon."
 	    DAEMONPID=$(cat $PIDFILE | tr -d '[:blank:]')
 	    kill $DAEMONPID
 	    rm $PIDFILE
