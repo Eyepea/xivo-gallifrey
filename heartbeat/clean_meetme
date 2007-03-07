@@ -1,0 +1,40 @@
+#!/bin/sh
+# $Id: heartbeat 193 2007-03-05 15:40:59Z corentin $
+# Startup daemon script for clean_meetme
+
+DAEMON=/usr/sbin/clean_meetme.py
+PIDFILE="/tmp/clean_meetme_id_daemon.pid"
+
+case "$1" in
+  start)
+	if [ -e $PIDFILE ] ; then
+	    echo "A clean_meetme daemon PID file was found. Nothing new started."
+	    exit 1
+	else
+	    echo "Starting clean_meetme daemon."
+	    $DAEMON
+	fi
+	;;
+  stop)
+	if ! [ -e $PIDFILE ] ; then
+	    echo "No clean_meetme daemon PID file found."
+	    exit 1
+	else
+	    echo "Stopping clean_meetme daemon."
+	    DAEMONPID=$(cat $PIDFILE | tr -d '[:blank:]')
+	    kill $DAEMONPID
+	    rm $PIDFILE
+	fi
+	;;
+  restart)
+	$0 stop
+	$0 start
+	;;
+  *)
+	echo "Usage: $0 {start|stop|restart}"
+	exit 1
+	;;
+esac
+
+exit 0
+
