@@ -1,9 +1,12 @@
 #!/usr/bin/python
-# $Id: heartbeat.py 197 2007-03-06 09:12:15Z corentin $
+# $Id$
 #
 # Server program
 
-import os, sys, posix, string, pexpect
+import os
+import sys
+import string
+import pexpect
 import time
 from socket import *
 from random import randint
@@ -91,8 +94,8 @@ def kick_if_needed():
 						if(numch2 > 1):
 							if sys.argv.count('-d') > 0:
 								print "#debug#", str(numch2), "users in the", str(numch1), "conference"
-							ami_reply = ami_command(p, "meetme list " + str(numch1))
-							for mm in ami_reply.split("\r\n"):
+							ami_reply2 = ami_command(p, "meetme list " + str(numch1))
+							for mm in ami_reply2.split("\r\n"):
 								# for any User that is also SIP
 								if (mm.find("User #: ") == 0) and (mm.find("SIP") > 0):
 									reject = 0

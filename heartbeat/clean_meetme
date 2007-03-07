@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: heartbeat 193 2007-03-05 15:40:59Z corentin $
+# $Id$
 # Startup daemon script for clean_meetme
 
 DAEMON=/usr/sbin/clean_meetme.py

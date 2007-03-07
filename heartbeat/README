@@ -41,15 +41,20 @@ FUNCTIONAL DESCRIPTION
 	statuses, especially the Zap ones.
   The status 0/1 of the Zap channels is then aggregated into a 64bit pattern.
   The 32+2 MSB are reserved for future use.
-  Then, if (let's say) only the Zap/15-1 channel is up, the UDP frame replied
-	by the heartbeat.py server will be :
+  Then, if (let's say) only the Zap/15-1 channel is up, the heartbeat.py server
+	replies with such an UDP frame towards the port 5049 :
 
-	# tcpdump -i lo -n -s 1500 -X port 5049 or port 5050
-	09:48:20.400579 IP 127.0.0.1.5050 > 127.0.0.1.34059: UDP, length: 8
-	        0x0000:  4500 0024 004a 4000 4011 3c7d 7f00 0001  E..$.J@.@.<}....
-	        0x0010:  7f00 0001 13ba 850b 0010 fe23 0000 0000  ...........#....
+	# tcpdump -i lo -n -s 1500 -X port 5049
+	14:18:18.437322 IP 127.0.0.1.34085 > 127.0.0.1.5049: UDP, length: 8
+	        0x0000:  4500 0024 0000 4000 4011 3cc7 7f00 0001  E..$..@.@.<.....
+	        0x0010:  7f00 0001 8525 13b9 0010 fe23 0000 0000  .....%.....#....
 	        0x0020:  0000 4000                                ..@.
 
+   The Zap/16-1 channel is a D channel, used for signalling and should never
+	appear in the reply frames.
+
+* The first bit of the 64bit frame is set according to the running status of the
+	"clean_meetme.py" daemon.
 
 
 MORE DETAILED DESCRIPTION

@@ -3,7 +3,10 @@
 #
 # Server program
 
-import os, sys, posix, string, pexpect
+import os
+import sys
+import string
+import pexpect
 from socket import *
 from random import randint
 
@@ -34,41 +37,63 @@ def daemonize():
 	os.dup2(dev_null.fileno(), sys.stdout.fileno())
 	os.dup2(dev_null.fileno(), sys.stderr.fileno())
 
-def id_to_string(idn):
-    ch1 = chr((idn & 0x7f000000) >> 24)
-    ch2 = chr((idn & 0x00ff0000) >> 16)
-    ch3 = chr((idn & 0x0000ff00) >>  8)
-    ch4 = chr((idn & 0x000000ff))
-    chnull = chr(0) + chr(0) + chr(0) + chr(0)
-    return(chnull + ch1 + ch2 + ch3 + ch4)
+def id_to_string(idn, mm_status):
+    ch5 = chr((idn & 0x7f000000) >> 24)
+    ch6 = chr((idn & 0x00ff0000) >> 16)
+    ch7 = chr((idn & 0x0000ff00) >>  8)
+    ch8 = chr((idn & 0x000000ff))
+    if(mm_status):
+        ch1 = chr(1<<7)
+    else:
+        ch1 = chr(0)
+    chnull = chr(0) + chr(0) + chr(0)
+    return(ch1 + chnull + ch5 + ch6 + ch7 + ch8)
+
+def is_alive(process):
+    try:
+        ppidfile = open("/tmp/" + process + "_id_daemon.pid", 'r')
+        ppid = string.strip(ppidfile.readline())
+        ppidfile.close()
+    except:
+        return 0
+    try:
+        ppidfile = open("/proc/" + ppid + "/cmdline", 'r')
+        ppidfile.close()
+    except:
+        return 0
+    return 1
 
 def get_zapchan(blocs):
 	id = 0
-	for x in blocs:	    
+	for x in blocs:
 		#Zap/12-1:from-sip:12:2:Up:MeetMe:12:init::3:263062:(None)
-		if (x.find(':') >= 0) and (x.find('/') >= 0) :
+		if (x.find('Zap/') == 0) and (x.find(':Up:') >= 0) :
 			xs = x.split(':')
 			# xs = Zap/12-1 from-sip 12 2 Up MeetMe 12 init  3 263062 (None)
 			xss = xs[0].split('/')
 			# xss = Zap 12-1
-			if (xss[0] == "Zap") and (xss[1].find('-') >= 0) :
-				xsss = xss[1].split('-')
-				if xs[4] == "Up":
-					# xsss[0]=1-15+17-31 => zapchan=0-14+16-30
-					zapchan = int(xsss[0]) - 1
-					if zapchan < 31:
-						id += (1<<zapchan)
+                        xsss = xss[1].split('-')
+                        # xsss[0]=1-15+17-31 => zapchan=0-14+16-30
+                        zapchan = int(xsss[0]) - 1
+                        if zapchan < 31:
+                            id += (1<<zapchan)
 	return id
 
-def ami_command(pspawn, command):
+def ami_login(pspawn, loginname):
     pspawn.expect("Asterisk Call Manager/1.0")
-    pspawn.sendline("Action: login\rUsername: heartbeat\rSecret: heartbeat\r")
+    pspawn.sendline("Action: login\rUsername: " + loginname + "\rSecret: " + loginname + "\r")
     pspawn.expect("Message: Authentication accepted")
+    return 0
+
+def ami_command(pspawn, command):
     pspawn.sendline("Action: Command\rCommand: " + command + "\r")
     pspawn.expect("--END COMMAND--")
     reply = pspawn.before
-    pspawn.sendline("Action: Logoff\r")
     return reply
+
+def ami_quit(pspawn):
+    pspawn.sendline("Action: Logoff\r")
+    return 0
 
 # ===================================================================
 # everything above was Object/function definitions, below
@@ -109,7 +134,9 @@ while 1:
 	else :
             p = pexpect.spawn('telnet localhost ' + str(port_ami))
             try:
+                ami_login(p, "heartbeat")
                 ami_reply = ami_command(p, "show channels concise")
+                ami_quit(p)
                 p.close()
             except:
                 print "a problem occurred when trying to connect to Asterisk AMI (port", port_ami, ")"
@@ -120,7 +147,8 @@ while 1:
             blocs = ami_reply.split("\r\n")
             idnum = get_zapchan(blocs)
 
-        replystring = id_to_string(idnum)
+        meetme = is_alive("clean_meetme")
+        replystring = id_to_string(idnum, meetme)
 
 	# reply on a different socket
         replysocket = socket(AF_INET,SOCK_DGRAM)
