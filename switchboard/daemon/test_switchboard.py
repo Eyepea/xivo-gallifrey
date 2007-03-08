@@ -109,12 +109,15 @@ class ConnHandler(SocketServer.StreamRequestHandler):
 	def handle(self):
 		global a
 		str = self.rfile.readline().strip()
-		if str=='hints':
-			#self.wfile.write(a.gethints())
-			for e in a.gethints():
-				self.wfile.write(e[0] + ',' + e[2] + ',' + e[3][6:] + ',' + e[5] + '\n')
-		else:
-			for s in a.execclicommand(str): self.wfile.write(s)
+		try:
+			if str=='hints':
+				for e in a.gethints():
+					self.wfile.write(e[0] + ',' + e[2] + ',' + e[3][6:] + ',' + e[5] + '\n')
+			else:
+				for s in a.execclicommand(str): self.wfile.write(s)
+		except:
+			# TODO : report errors in a better way
+			print 'error!'
 
 server = SocketServer.TCPServer(('', 8080), ConnHandler)
 server.serve_forever()
