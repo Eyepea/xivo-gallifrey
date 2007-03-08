@@ -1,12 +1,13 @@
 #!/usr/bin/python
 # $Id$
 #
-# Server program
+# Server program that cleans meeting rooms
 
 import os
-import sys
-import string
 import pexpect
+import string
+import sys
+import telnetlib
 import time
 from time import strftime
 from socket import *
@@ -15,10 +16,7 @@ from random import randint
 # Set global parameters
 port_ami = 5038
 pidfile = '/tmp/clean_meetme_id_daemon.pid'
-time_between_watch_fast_seconds = 3
-time_between_watch_slow_seconds = 12
-factor = time_between_watch_slow_seconds / time_between_watch_fast_seconds
-idfactor = 0
+time_global_sweep = 10
 
 # daemonize function
 def daemonize():
@@ -47,28 +45,26 @@ def varlog(string):
 def debugs(string):
 	if sys.argv.count('-d') > 0:
 		print "#debug# " + string
-	logfile.write(strftime("%b %2d %H:%M:%S ", time.localtime()) + "#debug# " + string + "\n")
-	logfile.flush()
+	varlog(string)
 	return 0
 
 # logins into the Asterisk MI
-def ami_login(pspawn, loginname):
-	pspawn.expect("Asterisk Call Manager/1.0")
-	pspawn.sendline("Action: login\rUsername: " + loginname + "\rSecret: " + loginname + "\r")
-	pspawn.expect("Message: Authentication accepted")
+def ami_login(tnet, loginname):
+	tnet.read_until("Asterisk Call Manager/1.0")
+	tnet.write("Action: login\r\nUsername: " + loginname + "\r\nSecret: " + loginname + "\r\n\r\n");
+	tnet.read_until("Message: Authentication accepted")
 	return 0
 
 # sends any command to the Asterisk MI
-def ami_command(pspawn, command):
+def ami_command(tnet, command):
 	debugs("Executing AMI command: " + command)
-	pspawn.sendline("Action: Command\rCommand: " + command + "\r")
-	pspawn.expect("--END COMMAND--")
-	reply = pspawn.before
+	tnet.write("Action: Command\r\nCommand: " + command + "\r\n\r\n")
+	reply = tnet.read_until("--END COMMAND--")
 	return reply
 
 # sends the logoff command to the Asterisk MI
-def ami_quit(pspawn):
-	pspawn.sendline("Action: Logoff\r")
+def ami_quit(tnet):
+	tnet.write("Action: Logoff\r\n\r\n")
 	return 0
 
 # pings a given address, with a timeout of 1s, and returns 1 if a
@@ -88,22 +84,27 @@ def spawn_ping(ipaddress):
 # pings the IP address of the SIP channel according to "sip show peer"
 def analyze_sipshowpeer(ami_reply):
 	rej = 0
-	for l in ami_reply.split("\r\n"):
+	for l in ami_reply.split("\n"):
 		if l.find("Addr->IP") >= 0:
 			addip = l.split(None)[2]
 			if addip == "(Unspecified)":
 				rej = 1
 			else:
+## check the time of last update of the heartbeat info at a given IP address
+##				        current_time = time.time()
+##        statusfile = open("/tmp/heartbeat_" + addr[0] + ".log", 'w')
+##        statusfile.write(str(current_time))
+##        statusfile.close()
 				if spawn_ping(l.split(None)[2]) == 0:
 					rej = 1
 	return rej
 
 # kicks the unavailable users from the meetme rooms
-def kick_if_needed(idf):
-	p = pexpect.spawn('telnet localhost ' + str(port_ami))
+def kick_if_needed():
+        tn = telnetlib.Telnet("localhost", port_ami)
 	try:
-		ami_login(p, "heartbeat")
-		ami_reply1 = ami_command(p, "meetme")
+		ami_login(tn, "heartbeat")
+		ami_reply1 = ami_command(tn, "meetme")
 		iid = 0
 		firstline_def  = "Conf Num       Parties"
 		lastline_def   = "Total number of MeetMe users"
@@ -113,7 +114,8 @@ def kick_if_needed(idf):
 			debugs("empty MeetMe list")
 		else:
 			debugs("MeetMe list not empty")
-			for line in ami_reply1.split("\r\n"):
+#			for line in ami_reply1.split("\r\n"):
+			for line in ami_reply1.split("\n"):
 				if len(line) > 0:
 					if line.find(lastline_def) >= 0:
 						# might be useful to get the number of MeetMe users and check it against
@@ -125,14 +127,12 @@ def kick_if_needed(idf):
 						roomnumber = int(fields[0])
 						number = int(fields[1])
 						docheck = 0
-						if number > 2:
-							docheck = 1
-						elif number == 2 and idf == 0:
+						if number > 1:
 							docheck = 1
 						if docheck:
 							debugs(str(number) + " users in the " + str(roomnumber) + " conference")
-							ami_reply2 = ami_command(p, "meetme list " + str(roomnumber))
-							for mm in ami_reply2.split("\r\n"):
+							ami_reply2 = ami_command(tn, "meetme list " + str(roomnumber))
+							for mm in ami_reply2.split("\n"):
 								# for any User that is of the SIP kind
 								if (mm.find("User #: ") == 0) and (mm.find("SIP") > 0):
 									sipuser = mm.split(None)[2]
@@ -141,24 +141,24 @@ def kick_if_needed(idf):
 										reject = 1
 									else:
 										# look at its IP address
-										ami_reply3 = ami_command(p, "sip show peer " + sipname)
+										ami_reply3 = ami_command(tn, "sip show peer " + sipname)
 										reject = analyze_sipshowpeer(ami_reply3)
 
 									if reject == 1:
 										debugs("I will kick out " + sipname +
 										       " from the meeting room number " + str(roomnumber))
-										ami_reply4 = ami_command(p, "meetme kick " + str(roomnumber) +
+										ami_reply4 = ami_command(tn, "meetme kick " + str(roomnumber) +
 													 " " + sipuser)
 									else:
 										debugs("I will NOT kick out " + sipname +
 										       " from the meeting room number " + str(roomnumber))
 					if line.find(firstline_def) >= 0:
 						iid = 1
-		ami_quit(p)
-		p.close()
+		ami_quit(tn)
+		tn.close()
 	except:
 		print "a problem occurred when trying to connect to Asterisk AMI (port", port_ami, ")"
-		p.close()
+		tn.close()
 
 # ===================================================================
 # everything above was Object/function definitions, below
@@ -178,10 +178,41 @@ except Exception, e:
 
 logfile = open("/var/log/clean_meetme.log", 'a')
 
+tnwatch = telnetlib.Telnet("localhost", port_ami)
+ami_login(tnwatch, "clean_meetme")
+l=["Uniqueid: "]
 while 1:
-	kick_if_needed(idfactor)
-	idfactor = idfactor + 1
-	if idfactor == factor:
-		idfactor = 0
-	time.sleep(time_between_watch_fast_seconds)
+	x,y,ami_reply = tnwatch.expect(l, time_global_sweep)
+	if x == 0:
+		id = 0
+		for mm in ami_reply.split("\n"):
+			if mm.find("Event: ") == 0:
+				if mm.find("Newchannel") > 0:
+					id = 1
+			elif mm.find("Channel: ") == 0:
+				if id == 1:
+					debugs(mm.split(None)[1])
+					tn = telnetlib.Telnet("localhost", port_ami)
+					ami_login(tn, "heartbeat")
+					ami_reply2 = ami_command(tn, "meetme list 10000")
+					for mm2 in ami_reply2.split("\n"):
+						if mm2.find("User #: ") == 0:
+							print mm2
+					ami_quit(tn)
+					tn.close()
+	else:
+		debugs("timeout occured : global sweeping !")
+		kick_if_needed()
+
+# Close files and sockets
+logfile.close()
+
+
+##Event: Newchannel
+##Privilege: call,all
+##Channel: SIP/102-081c3778
+##State: Ring
+##CallerID: 102
+##CallerIDName: 102
+##Uniqueid: asterisk-29331-1173373609.31
 
