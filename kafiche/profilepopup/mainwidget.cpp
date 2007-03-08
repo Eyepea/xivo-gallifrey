@@ -47,6 +47,7 @@ MainWidget::MainWidget(Engine *engine, QWidget *parent)
 	//setWindowFlags(Qt::Dialog);	
 	layout->setSizeConstraint(QLayout::SetFixedSize);	// remove minimize and maximize button
 	setWindowTitle(QString("KaFiche"));
+	setWindowIcon(QIcon(":/xivoicon.png"));
 }
 
 /*! \brief create and show the system tray icon
