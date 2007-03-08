@@ -6,8 +6,10 @@ INSTALL CLUES
 =============
 
 * install the python-pexpect (python2.3-pexpect) debian packages
-* copy heartbeat    to /etc/init.d/heartbeat
-* copy heartbeat.py to /usr/sbin/heartbeat.py
+* copy heartbeat       to /etc/init.d/heartbeat
+* copy heartbeat.py    to /usr/sbin/heartbeat.py
+* copy clean_meetme    to /etc/init.d/clean_meetme
+* copy clean_meetme.py to /usr/sbin/clean_meetme.py
 * update the following lines into /etc/asterisk/manager.conf
 [general]
 enabled = yes
@@ -25,8 +27,8 @@ client that can be used in order to test the heartbeat server. Its usage is
 
 
 
-FUNCTIONAL DESCRIPTION
-======================
+FUNCTIONAL DESCRIPTION - heartbeat
+==================================
 
 * heartbeat.py is a daemon started or stopped by /etc/init.d/heartbeat (start|stop)
 * The /etc/init.d/heartbeat script launches heartbeat.py with no command line
@@ -57,8 +59,9 @@ FUNCTIONAL DESCRIPTION
 	"clean_meetme.py" daemon.
 
 
-MORE DETAILED DESCRIPTION
-=========================
+
+MORE DETAILED DESCRIPTION - heartbeat
+=====================================
 
 * python-pexpect functions are used in order to chat with Asterisk AMI
 * Parsing the results given by "show channels concise" is done whether some
@@ -67,9 +70,21 @@ MORE DETAILED DESCRIPTION
 
 
 
+FUNCTIONAL DESCRIPTION - clean_meetme
+=====================================
+
+
+
+
+MORE DETAILED DESCRIPTION - clean_meetme
+========================================
+
+
+
 TODO
 ====
 
 * improving casual robustness issues
 * replacing pexpect/spawn with python/Telnet functions ?
+* use of getopt
 

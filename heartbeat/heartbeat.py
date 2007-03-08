@@ -37,6 +37,7 @@ def daemonize():
 	os.dup2(dev_null.fileno(), sys.stdout.fileno())
 	os.dup2(dev_null.fileno(), sys.stderr.fileno())
 
+# converts the numerical zap channels information to a string pattern
 def id_to_string(idn, mm_status):
     ch5 = chr((idn & 0x7f000000) >> 24)
     ch6 = chr((idn & 0x00ff0000) >> 16)
@@ -49,6 +50,7 @@ def id_to_string(idn, mm_status):
     chnull = chr(0) + chr(0) + chr(0)
     return(ch1 + chnull + ch5 + ch6 + ch7 + ch8)
 
+# looks whether a given daemon is running
 def is_alive(process):
     try:
         ppidfile = open("/tmp/" + process + "_id_daemon.pid", 'r')
@@ -63,6 +65,8 @@ def is_alive(process):
         return 0
     return 1
 
+# converts the result of a "show channels concise" Asterisk command to
+# a numerical bit-by-bit status
 def get_zapchan(blocs):
 	id = 0
 	for x in blocs:
@@ -79,18 +83,21 @@ def get_zapchan(blocs):
                             id += (1<<zapchan)
 	return id
 
+# logins into the Asterisk MI
 def ami_login(pspawn, loginname):
     pspawn.expect("Asterisk Call Manager/1.0")
     pspawn.sendline("Action: login\rUsername: " + loginname + "\rSecret: " + loginname + "\r")
     pspawn.expect("Message: Authentication accepted")
     return 0
 
+# sends any command to the Asterisk MI
 def ami_command(pspawn, command):
     pspawn.sendline("Action: Command\rCommand: " + command + "\r")
     pspawn.expect("--END COMMAND--")
     reply = pspawn.before
     return reply
 
+# sends the logoff command to the Asterisk MI
 def ami_quit(pspawn):
     pspawn.sendline("Action: Logoff\r")
     return 0
