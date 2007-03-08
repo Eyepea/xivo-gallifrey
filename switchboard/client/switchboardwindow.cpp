@@ -86,7 +86,12 @@ void SwitchBoardWindow::updatePeer(const QString & ext, const QString & ext2,
 	}
 	Peer peer(ext);
 	PeerWidget * peerwidget = new PeerWidget(ext, this);
-	m_layout->addWidget( peerwidget, m_x, m_y++ );
+	m_layout->addWidget( peerwidget, m_y, m_x++ );
+	if(m_x>=4)
+	{
+		m_x = 0;
+		m_y++;
+	}
 	peer.setWidget(peerwidget);
 	peer.updateStatus(status);
 	m_peerlist << peer;
