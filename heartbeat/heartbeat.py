@@ -1,12 +1,15 @@
 #!/usr/bin/python
 # $Id$
 #
-# Server program
+# Server program that replies Asterisk channels status on an UDP socket
 
 import os
-import sys
+import select
 import string
-import pexpect
+import sys
+import telnetlib
+import time
+from time import strftime
 from socket import *
 from random import randint
 
@@ -19,6 +22,7 @@ buf = 1024
 addr = (host,port_srv)
 pidfile = '/tmp/heartbeat_id_daemon.pid'
 loopc = 0
+timeout_request_ami = 2
 
 # daemonize function
 def daemonize():
@@ -83,24 +87,72 @@ def get_zapchan(blocs):
                             id += (1<<zapchan)
 	return id
 
+# logs actions to logfile "/var/log/heartbeat.log"
+def varlog(string):
+	logfile.write(strftime("%b %2d %H:%M:%S ", time.localtime()) + string + "\n")
+	logfile.flush()
+	return 0
+
+# outputs a string to stdout in no-daemon mode
+def debugs(string):
+	if sys.argv.count('-d') > 0:
+		print "#debug# " + string
+        varlog(string)
+	return 0
+
 # logins into the Asterisk MI
-def ami_login(pspawn, loginname):
-    pspawn.expect("Asterisk Call Manager/1.0")
-    pspawn.sendline("Action: login\rUsername: " + loginname + "\rSecret: " + loginname + "\r")
-    pspawn.expect("Message: Authentication accepted")
-    return 0
+def ami_login(tnet, loginname):
+	tnet.read_until("Asterisk Call Manager/1.0")
+	tnet.write("Action: login\r\nUsername: " + loginname + "\r\nSecret: " + loginname + "\r\n\r\n");
+	tnet.read_until("Message: Authentication accepted")
+	return 0
 
 # sends any command to the Asterisk MI
-def ami_command(pspawn, command):
-    pspawn.sendline("Action: Command\rCommand: " + command + "\r")
-    pspawn.expect("--END COMMAND--")
-    reply = pspawn.before
-    return reply
+def ami_command(tnet, command):
+	debugs("Executing AMI command: " + command)
+	tnet.write("Action: Command\r\nCommand: " + command + "\r\n\r\n")
+	reply = tnet.read_until("--END COMMAND--")
+	return reply
 
 # sends the logoff command to the Asterisk MI
-def ami_quit(pspawn):
-    pspawn.sendline("Action: Logoff\r")
-    return 0
+def ami_quit(tnet):
+	tnet.write("Action: Logoff\r\n\r\n")
+	return 0
+
+# connects to AMI and returns the numerical ID corresponding to the Zap channels
+def request_zap_status():
+    tn = telnetlib.Telnet("localhost", port_ami)
+    try:
+        ami_login(tn, "heartbeat")
+        ami_reply = ami_command(tn, "show channels concise")
+        ami_quit(tn)
+        tn.close()
+        blocs = ami_reply.split("\n")
+        idnum = get_zapchan(blocs)
+        return idnum
+    except:
+        print "a problem occurred when trying to connect to Asterisk AMI (port", port_ami, ")"
+        return 0
+
+# returns the string built from clean_meetme status + zap_status
+def update_status():
+    if sys.argv.count('-t') > 0:
+        idn = randint(0, (1 << 30) - 1)
+    elif sys.argv.count('-l') > 0:
+        idn = 1 << loopc
+        if loopc == 14:
+            loopc = 16
+        else:
+            loopc = (loopc+1) % 31
+    else :
+        idn = request_zap_status()
+    debugs("Up Channels seen by Heartbeat : " + str(idn))
+    meetme = is_alive("clean_meetme")
+    return id_to_string(idn, meetme)
+
+
+
+
 
 # ===================================================================
 # everything above was Object/function definitions, below
@@ -121,42 +173,17 @@ except Exception, e:
 # Create socket and bind to address
 UDPSock = socket(AF_INET,SOCK_DGRAM)
 UDPSock.bind(addr)
+ins = [UDPSock]
+lastrequest_time = 0
+replystring = chr(0) + chr(0) + chr(0) + chr(0) + chr(0) + chr(0) + chr(0) + chr(0)
+logfile = open("/var/log/heartbeat.log", 'a')
 
 # Receive messages
 while 1:
-    data,addr = UDPSock.recvfrom(buf)
-    if not data:
-        print "Client has exited!"
-        break
-    else:
-        ami_reply=""
-        if sys.argv.count('-t') > 0:
-		idnum = randint(0, (1 << 30) - 1)
-	elif sys.argv.count('-l') > 0:
-		idnum = 1 << loopc
-		if loopc == 14:
-			loopc = 16
-		else:
-			loopc = (loopc+1) % 31
-	else :
-            p = pexpect.spawn('telnet localhost ' + str(port_ami))
-            try:
-                ami_login(p, "heartbeat")
-                ami_reply = ami_command(p, "show channels concise")
-                ami_quit(p)
-                p.close()
-            except:
-                print "a problem occurred when trying to connect to Asterisk AMI (port", port_ami, ")"
-                p.close()
-
-            if sys.argv.count('-d') > 0:
-                print "# Up Channels seen by Heartbeat :"
-            blocs = ami_reply.split("\r\n")
-            idnum = get_zapchan(blocs)
-
-        meetme = is_alive("clean_meetme")
-        replystring = id_to_string(idnum, meetme)
-
+    i,o,e = select.select(ins, [], [], timeout_request_ami)
+    if i:
+        data,addr = UDPSock.recvfrom(buf)
+        debugs("Sending reply to : " + addr[0])
 	# reply on a different socket
         replysocket = socket(AF_INET,SOCK_DGRAM)
         replysocket.bind(('',0))
@@ -164,7 +191,25 @@ while 1:
         replysocket.close()
 	# reply on the same socket
 	# UDPSock.sendto(replystring,(addr[0], addr[1]))
-    
-# Close socket
+
+        # updates last heartbeat information for this IP address
+        current_time = time.time()
+        statusfile = open("/tmp/heartbeat_" + addr[0] + ".log", 'w')
+        statusfile.write(str(current_time))
+        statusfile.close()
+
+        delta_time = current_time - lastrequest_time
+        if delta_time > (2 * timeout_request_ami):
+            # when no timeout has occured for a long time, the status is updated
+            lastrequest_time = time.time()
+            replystring = update_status()
+
+    else:
+        # when timeout occurs, the status is updated
+        lastrequest_time = time.time()
+        replystring = update_status()
+
+# Close files and sockets
 UDPSock.close()
+logfile.close()
 
