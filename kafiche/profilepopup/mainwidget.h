@@ -21,8 +21,8 @@ public:
 	MainWidget(Engine *engine, QWidget *parent=0);
 private slots:
 	void popupConf();
-	void enableStartButton();
-	void disableStartButton();
+	void setDisconnected();
+	void setConnected();
 	void systrayActivated(QSystemTrayIcon::ActivationReason);
 protected:
 	void hideEvent(QHideEvent *event);
@@ -34,6 +34,8 @@ private:
 	Engine * m_engine;			//!< pointer to the Engine used
 	QPushButton * m_btnstart;	//!< Start Button
 	QSystemTrayIcon * m_systrayIcon;	//!< System Tray Icon
+	QIcon m_iconred;	//!< Icon object with red indicator
+	QIcon m_icongreen;	//!< Icon object with green indicator
 };
 
 #endif

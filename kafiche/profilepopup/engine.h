@@ -66,6 +66,7 @@ private:
 	QTcpServer m_listensocket;	//!< TCP socket listening for profiles
 	QString m_sessionid;	//!< Session id obtained after a successfull login
 	EngineState m_state;	//!< State of the engine (Logged/Not Logged)
+	int m_pendingkeepalivemsg;	//!< number of keepalivemsg sent without response
 };
 
 #endif

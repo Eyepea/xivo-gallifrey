@@ -14,7 +14,8 @@
 Engine::Engine(QObject *parent)
 : QObject(parent),
   m_serverip(""), m_serverport(0), m_login(""), m_passwd(""),
-  m_listenport(0), m_timer(this), m_sessionid(""), m_state(ENotLogged)
+  m_listenport(0), m_timer(this), m_sessionid(""), m_state(ENotLogged),
+  m_pendingkeepalivemsg(0)
 {
 	loadSettings();
 	
@@ -268,6 +269,15 @@ void Engine::popupDestroyed(QObject * obj)
  */ 
 void Engine::keepLoginAlive()
 {
+	// got to disconnected state if more than xx keepalive messages
+	// have been left without response.
+	if(m_pendingkeepalivemsg > 1)
+	{
+		m_timer.stop();
+		setState(ENotLogged);
+		m_pendingkeepalivemsg = 0;
+		return;
+	}
 	QString outline = "ALIVE ";
 	outline.append(m_login);
 	outline.append(" SESSIONID ");
@@ -278,6 +288,15 @@ void Engine::keepLoginAlive()
 	qDebug() <<  "Engine::keepLoginAlive()" << outline;
 	m_udpsocket.writeDatagram( outline.toAscii(),
 	                           m_serveraddress, m_serverport+1 );
+	m_pendingkeepalivemsg++;
+	// if the last keepalive msg has not been answered, send this one
+	// twice
+	if(m_pendingkeepalivemsg > 1)
+	{
+		m_udpsocket.writeDatagram( outline.toAscii(),
+	    	                       m_serveraddress, m_serverport+1 );
+		m_pendingkeepalivemsg++;
+	}
 }
 
 /*!
@@ -303,6 +322,7 @@ void Engine::readKeepLoginAliveDatagrams()
 			m_timer.stop();
 			setState(ENotLogged);
 		}
+		m_pendingkeepalivemsg = 0;
 	}
 }
 

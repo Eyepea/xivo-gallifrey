@@ -13,7 +13,8 @@
  * vertical box layout and connect signals with slots.
  */
 MainWidget::MainWidget(Engine *engine, QWidget *parent)
-: QWidget(parent), m_engine(engine), m_systrayIcon(0)
+: QWidget(parent), m_engine(engine), m_systrayIcon(0),
+  m_iconred(":/xivoicon-red.png"), m_icongreen(":/xivoicon-green.png")
 {
 	QVBoxLayout *layout = new QVBoxLayout(this);
 
@@ -40,8 +41,8 @@ MainWidget::MainWidget(Engine *engine, QWidget *parent)
 	if( QSystemTrayIcon::isSystemTrayAvailable() )
 		createSystrayIcon();
 
-	connect( engine, SIGNAL(logged()), this, SLOT(disableStartButton()) );
-	connect( engine, SIGNAL(delogged()), this, SLOT(enableStartButton()) );
+	connect( engine, SIGNAL(logged()), this, SLOT(setConnected()) );
+	connect( engine, SIGNAL(delogged()), this, SLOT(setDisconnected()) );
 
 	//setWindowFlags(Qt::Dialog);	
 	layout->setSizeConstraint(QLayout::SetFixedSize);	// remove minimize and maximize button
@@ -56,7 +57,8 @@ MainWidget::MainWidget(Engine *engine, QWidget *parent)
 void MainWidget::createSystrayIcon()
 {
 	// the icon is read from the resources.
-	m_systrayIcon = new QSystemTrayIcon(QIcon(":/xivoicon.png"), this);
+	//m_systrayIcon = new QSystemTrayIcon(QIcon(":/xivoicon.png"), this);
+	m_systrayIcon = new QSystemTrayIcon(m_iconred, this);
 	QMenu * menu = new QMenu(QString("SystrayMenu"), this);
 	menu->addAction( "&Config", this, SLOT(popupConf()) );
 	menu->addAction( "&Quit", qApp, SLOT(quit()) );
@@ -118,16 +120,20 @@ void MainWidget::systrayActivated(QSystemTrayIcon::ActivationReason reason)
 	}
 }
 
-//! Enable the Start Button
-void MainWidget::enableStartButton()
+//! Enable the Start Button and set the red indicator
+void MainWidget::setDisconnected()
 {
 	m_btnstart->setEnabled(true);
+	if(m_systrayIcon)
+		m_systrayIcon->setIcon(m_iconred);
 }
 
-//! Disable the Start Button
-void MainWidget::disableStartButton()
+//! Disable the Start Button and set the green indicator
+void MainWidget::setConnected()
 {
 	m_btnstart->setEnabled(false);
+	if(m_systrayIcon)
+		m_systrayIcon->setIcon(m_icongreen);
 }
 
 void MainWidget::hideEvent(QHideEvent *event)
