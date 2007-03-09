@@ -71,6 +71,13 @@ void PeerWidget::mouseMoveEvent(QMouseEvent *event)
 	
 }
 
+void PeerWidget::mouseDoubleClickEvent(QMouseEvent *event)
+{
+	qDebug() << "mouseDoubleClickEvent" << event;
+	// disconnect the guy
+	m_engine->hangUp(m_textlbl->text());
+}
+
 void PeerWidget::dragEnterEvent(QDragEnterEvent *event)
 {
 	qDebug() << "dragEnterEvent()";

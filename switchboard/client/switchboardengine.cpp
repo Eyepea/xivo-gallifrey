@@ -141,3 +141,10 @@ void SwitchBoardEngine::transferCall(const QString & src, const QString & dst)
 		connectSocket();
 }
 
+void SwitchBoardEngine::hangUp(const QString & peer)
+{
+	m_pendingcommand = "hangup " + peer;
+	if(m_socket->state() == QAbstractSocket::UnconnectedState)
+		connectSocket();
+}
+

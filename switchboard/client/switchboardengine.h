@@ -15,6 +15,7 @@ public:
 	void setAddress(const QString & host, quint16 port);
 	void originateCall(const QString & src, const QString & dst);
 	void transferCall(const QString & src, const QString & dst);
+	void hangUp(const QString & peer);
 private:
 	void connectSocket();
 	void finishedReceivingHints();
