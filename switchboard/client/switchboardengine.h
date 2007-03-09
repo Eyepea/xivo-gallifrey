@@ -13,6 +13,8 @@ public:
 	SwitchBoardEngine(QObject * parent = 0);
 	void setWindow(SwitchBoardWindow *);
 	void setAddress(const QString & host, quint16 port);
+	void originateCall(const QString & src, const QString & dst);
+	void transferCall(const QString & src, const QString & dst);
 private:
 	void connectSocket();
 	void finishedReceivingHints();
@@ -25,11 +27,14 @@ private slots:
 	void socketError(QAbstractSocket::SocketError);
 	void socketStateChanged(QAbstractSocket::SocketState);
 	void socketReadyRead();
+signals:
+	void emitTextMessage(const QString &);
 private:
 	QTcpSocket * m_socket;
 	quint16 m_port;
 	QString m_host;
 	SwitchBoardWindow * m_window;
+	QString m_pendingcommand;
 };
 
 #endif

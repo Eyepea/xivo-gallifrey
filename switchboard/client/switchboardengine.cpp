@@ -52,7 +52,8 @@ void SwitchBoardEngine::socketConnected()
 {
 	qDebug() << "socketConnected()";
 	//m_socket->write(QString("show hints\n").toAscii());
-	m_socket->write(QString("hints\n").toAscii());
+	//m_socket->write(QString("hints\n").toAscii());
+	m_socket->write((m_pendingcommand + "\n").toAscii());
 }
 
 void SwitchBoardEngine::socketDisconnected()
@@ -69,6 +70,20 @@ void SwitchBoardEngine::socketHostFound()
 void SwitchBoardEngine::socketError(QAbstractSocket::SocketError socketError)
 {
 	qDebug() << "socketError(" << socketError << ")";
+	switch(socketError)
+	{
+	case QAbstractSocket::ConnectionRefusedError:
+		emitTextMessage("Connection refused");
+		break;
+	case QAbstractSocket::HostNotFoundError:
+		emitTextMessage("Host not found");
+		break;
+	case QAbstractSocket::UnknownSocketError:
+		emitTextMessage("Unknown socket error");
+		break;
+	default:
+		break;
+	}
 }
 
 void SwitchBoardEngine::socketStateChanged(QAbstractSocket::SocketState socketState)
@@ -81,6 +96,7 @@ void SwitchBoardEngine::socketReadyRead()
 	qDebug() << "socketReadyRead()";
 	//QByteArray data = m_socket->readAll();
 	//qDebug() << data;
+	bool b = false;
 	while(m_socket->canReadLine())
 	{
 		QByteArray data = m_socket->readLine();
@@ -90,7 +106,10 @@ void SwitchBoardEngine::socketReadyRead()
 		qDebug() << list[0] << list[1] << list[2] << list[3];
 		if(m_window)
 			m_window->updatePeer(list[0], list[1], list[2]);
+		b = true;
 	}
+	if(b)
+		emitTextMessage("Peer list updated");
 }
 
 void SwitchBoardEngine::finishedReceivingHints()
@@ -102,5 +121,23 @@ void SwitchBoardEngine::timerEvent(QTimerEvent * event)
 {
 	qDebug() << event;
 	if(m_socket->state() == QAbstractSocket::UnconnectedState)
+	{
+		m_pendingcommand = "hints";
+		connectSocket();
+	}
+}
+
+void SwitchBoardEngine::originateCall(const QString & src, const QString & dst)
+{
+	m_pendingcommand = "originate " + src + " " + dst;
+	if(m_socket->state() == QAbstractSocket::UnconnectedState)
 		connectSocket();
 }
+
+void SwitchBoardEngine::transferCall(const QString & src, const QString & dst)
+{
+	m_pendingcommand = "transfer " + src + " " + dst;
+	if(m_socket->state() == QAbstractSocket::UnconnectedState)
+		connectSocket();
+}
+
