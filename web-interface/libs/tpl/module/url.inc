@@ -1,0 +1,182 @@
+<?php
+
+require_once(XIVO_PATH_LIBS.XIVO_SEP_DIR.'tpl'.XIVO_SEP_DIR.'module.inc');
+
+class xivo_tpl_url extends xivo_tpl_module
+{
+	var $_tpl	= null;
+
+	function xivo_tpl_url(&$tpl)
+	{
+		$this->_tpl = &$tpl;
+	}
+
+	function href($url='',$param='',$sep=null,$sid=true,$pre='',$key='')
+	{
+		$url = $this->url($url);
+
+		if(isset($url{0}) === true && $url{0} === '#')
+			return($url);
+
+		$url .= $this->_mk_param($param,$sep,$sid,$pre,$key);
+
+		return($url);
+	}
+
+	function _mk_param($param='',$sep=null,$sid=true,$pre='',$key='')
+	{
+		$r = '';
+
+		$sid = (bool) $sid;
+		$sep = $sep === null ? '&amp;' : (string) $sep;
+
+		if(is_array($param) === true)
+			$param = xivo_mk_query($param,$pre,$key,$sep);
+		else
+			$param = (string) $param;
+
+		if(isset($param{0}) === true)
+			$r = '?'.$param.($sid === true ? $sep.XIVO_SESS_STR : '');
+		else if($sid === true)
+			$r = '?'.XIVO_SESS_STR;
+
+		return($r);
+	}
+
+	function href_html($content,$url='',$param='',$opt='',$title=null,$sep='&amp;',$sid=true,$pre='',$key='')
+	{
+		$url = $this->href($url,$param,$sep,$sid,$pre,$key);
+
+		return($this->_mk_href_html($content,$url,$opt,$title));
+	}
+
+	function _mk_href_html($content,$url='',$opt='',$title=null)
+	{
+		$content = (string) $content;
+		$opt = (string) $opt;
+
+		if($title !== null)
+			$title = (string) $title;
+		else
+			$title = $content;
+
+		$title = isset($title{0}) === true ? ' title="'.xivo_alttitle($title).'"' : '';
+
+		$r = '<a href="'.$url.'"'.(isset($opt{0}) === true ? ' '.$opt : '').$title.'>'.$content.'</a>';
+
+		return($r);
+	}
+
+	function img($url,$i18n=false)
+	{
+		$url = (string) $url;
+		$i18n = (bool) $i18n;
+
+		if(isset($url{0}) === false)
+			return($r);
+
+		if($url{0} !== '/')
+		{
+			if($i18n === true)
+			{
+				$usr = &$this->_get_module('user');
+				$r = $this->get_option('script_root').'/img/i18n/'.$usr->get_infos('language').'/'.$url;
+			}
+			else
+				$r = $this->get_option('script_root').'/'.$url;
+		}
+		else $r = $url;
+
+		return($r);
+	}
+
+	function img_html($url,$alt='',$opt='',$i18n=false)
+	{
+		$alt = (string) $alt;
+		$opt = (string) $opt;
+
+		$url = $this->img($url,$i18n);
+
+		$r = '<img src="'.$url.'"'.(isset($opt{0}) === true ? ' '.$opt : '').' alt="'.xivo_alttitle($alt).'" />';
+
+		return($r);
+	}
+
+	function pager($nb,$page,$prev=false,$next=false,$url='',$param='',$opt='',$sep=null,$sid=true,$pre='',$key='')
+	{
+		$r = '';
+
+		$nb = xivo_uint($nb);
+		$page = xivo_uint($page,1);
+		$prev = (bool) $prev;
+		$next = (bool) $next;
+		$sep = $sep === null ? '&amp;' : (string) $sep;
+	
+		if($nb < 2)
+			return($r);
+
+		if($nb < 7)
+			$a = array_fill(1,$nb,0);
+		else
+		{
+			$a = array(1 => 0,2 => 0,3 => 0);
+			$page1 = $page-1;
+			$page2 = $page+1;
+
+			if($nb > 6)
+			{
+				$nb_page1 = $nb-1;
+				$nb_page2 = $nb-2;
+				$a[$nb] = 0;
+				$a[$nb_page1] = 0;
+				$a[$nb_page2] = 0;
+			}
+
+			$a[$page] = 0;
+
+			if($page1 > 0)
+				$a[$page1] = 0;
+			if($page2 <= $nb)
+				$a[$page2] = 0;
+			ksort($a);
+		}
+
+		if(($param = $this->_mk_param($param,$sep,$sid,$pre,$key)) === '')
+			$param = '?';
+		else
+			$param .= $sep;
+
+		$url = $this->url($url).$param.'page=';
+
+		if($prev === true)
+			$r .= $this->_mk_href_html($this->bbf('page_previous'),$url.($page - 1),$opt,$this->bbf('page_previous')).' - ';
+
+		if(($arr = xivo_get_aks($a)) !== false)
+		{
+			for($i = 0;$i < $arr['cnt'];$i++)
+			{
+				$k = $arr['keys'][$i];
+
+				$pagek = $k === $page ? '<b>'.$k.'</b>' : $k;
+
+				$slt = $this->_mk_href_html($pagek,$url.$k,$opt,$this->bbf('page_number',$k));
+
+				if($k > 4 && isset($a[$k-1]) === false)
+					$r .= ' ... '.$slt.', ';
+				else if($k > 4 && $k < $nb-5 && isset($a[$k-1]) === false)
+					$r .= $slt.' ... ';
+				else if(isset($a[$k+1]) === true)
+					$r .= $slt.', ';
+				else
+					$r .= $slt;
+			}
+		}
+
+		if($next === true)
+			$r .= ' - '.$this->_mk_href_html($this->bbf('page_next'),$url.($page + 1),$opt,$this->bbf('page_next'));
+
+		return($r);
+	}
+}
+
+?>

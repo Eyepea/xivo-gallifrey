@@ -1,0 +1,294 @@
+<?php
+
+class xivo_i18n_mediator
+{
+	var $_mediator = array(
+				'language'	=> null,
+				'locale'	=> null,
+				'territory'	=> null);
+
+	var $_attrib = array(
+				'browser'	=> array(),
+				'language'	=> '',
+				'territory'	=> '',
+				'locale'	=> '');
+
+	function xivo_i18n_mediator()
+	{
+		if(xivo::load_class('xivo::i18n::language') === false)
+			return(false);
+
+		if(xivo::load_class('xivo::i18n::locale') === false)
+			return(false);
+
+		if(xivo::load_class('xivo::i18n::territory') === false)
+			return(false);
+
+		$this->_mediator['language'] = new xivo_i18n_language();
+		$this->_mediator['locale'] = new xivo_i18n_locale();
+		$this->_mediator['territory'] = new xivo_i18n_territory();
+		$this->_get_browser_info();
+	}
+
+	function chk($name)
+	{
+		$name = (string) $name;
+
+		return((isset($this->_mediator[$name]) === true && is_object($this->_mediator[$name])));
+	}
+
+	function set_attrib($name,$value)
+	{
+		$name = (string) $name;
+
+		$this->_attrib[$name] = $value;	
+	}
+
+	function get_attrib($name)
+	{
+		$name = (string) $name;
+
+		if(isset($this->_attrib[$name]) === true)
+			return($this->_attrib[$name]);
+		else
+			return(null);
+	}
+
+	function _get_browser_info()
+	{
+		if(isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) === false)
+			return(null);
+
+		$arr = explode(',',$_SERVER['HTTP_ACCEPT_LANGUAGE']);
+
+		if(($nb = count($arr)) === 0)
+			return(null);
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			$l = $arr[$i];
+
+			if(($pos = strpos($l,';')) !== false)
+				$l = substr($l,0,$pos);
+
+			if(($lc = $this->chk_locale($l)) !== false)
+			{
+				$pos = strpos($lc,'_');
+				$t = substr($lc,$pos+1);
+				$l = substr($lc,0,$pos);
+
+				if(isset($this->_attrib['browser'][$l]) === false)
+					$this->_attrib['browser'][$l] = array();
+
+				$this->_attrib['browser'][$l][] = $t;
+			}
+			else if(($la = $this->chk_language($l)) !== false)
+			{
+				if(isset($this->_attrib['browser'][$la]) === false)
+					$this->_attrib['browser'][$la] = array();
+
+				$this->_attrib['browser'][$la][] = '';
+			}
+		}
+
+		$this->_mediator['language']->set_attrib('browser',$this->_attrib['browser']);
+		$this->_mediator['territory']->set_attrib('browser',$this->_attrib['browser']);
+	}
+
+	function get_browser_language()
+	{
+		$r = false;
+
+		if(empty($this->_attrib['browser']) === false)
+		{
+			reset($this->_attrib['browser']);
+			$r = key($this->_attrib['browser']);
+		}
+
+		return($r);
+	}
+
+	function get_browser_territory($lang='')
+	{
+		$r = false;
+		
+		if($lang !== '' && ($lang = $this->chk_language($lang)) !== false && isset($this->_attrib['browser'][$lang]) === true)
+		{
+			$v = &$this->_attrib['browser'][$lang];
+
+			if(is_array($v) === true && ($nb = count($v)) > 1)
+			{
+				for($j = 0;$j < $nb;$j++)
+				{
+					if($v[$j] !== '' && ($r = $this->chk_territory($v[$j])) !== false)
+						return($r);
+				}
+			}
+		}
+		else if(($arr = &xivo_get_aks($this->_attrib['browser'])) !== false)
+		{
+			for($i = 0;$i < $arr['cnt'];$i++)
+			{
+				$k = &$arr['keys'][$i];
+				$v = &$this->_attrib['browser'][$k];
+
+				if(($k = $this->chk_language($k)) !== false && is_array($v) === true && ($nb = count($v)) > 1)
+				{
+					for($j = 0;$j < $nb;$j++)
+					{
+						if($v[$j] !== '' && ($r = $this->chk_territory($v[$j])) !== false)
+							return($r);
+					}
+				}
+			}
+		}
+
+		return($r);
+	}
+
+	function set_language($lang='')
+	{
+		$r = false;
+
+		$lang = (string) $lang;
+
+		if($lang !== '' && ($lang = $this->chk_language($lang)) !== false)
+			$r = $lang;
+		else if(($lang = $this->get_browser_language()) !== false)
+			$r = $lang;
+		else if(defined('XIVO_LC_LANGUAGE') === true && ($lang = $this->chk_language(XIVO_LC_LANGUAGE)) !== false)
+			$r = $lang;
+
+		return(($this->_attrib['language'] = $r));
+	}
+
+	function chk_language($lang)
+	{
+		return($this->_mediator['language']->is_valid($lang));
+	}
+
+	function set_territory($territo='')
+	{
+		$r = false;
+
+		$territo = (string) $territo;
+
+		if($territo !== '' && ($territo = $this->chk_territory($territo)) !== false)
+			$r = $territo;
+		else if($this->_attrib['language'] === '' && ($lang = $this->set_language()) !== false)
+		{
+			if(($r = $this->get_browser_territory($lang)) === false)
+				$r = $this->get_def_territory($lang);
+		}
+
+		if($r === false && defined('XIVO_LC_TERRITORY') === true
+		&& ($territo = $this->chk_territory(XIVO_LC_TERRITORY)) !== false)
+			$r = $territo;
+
+		return(($this->_attrib['territory'] = $r));
+	}
+
+	function chk_territory($territo)
+	{
+		return($this->_mediator['territory']->is_valid($territo));
+	}
+
+	function set_locale($lang=false,$territo=false)
+	{
+		$r = false;
+
+		$lang = $lang !== false ? $this->chk_language($lang) : false;
+		$territo = $territo !== false ? $this->chk_territory($territo) : false;
+
+		if($lang !== false)
+			$lang = $this->set_language($lang);
+		else if(empty($this->_attrib['language']) === false)
+			$lang = $this->_attrib['language'];
+		else
+			$lang = false;
+
+		if($territo !== false)
+			$territo = $this->set_territory($territo);
+		else if(empty($this->_attrib['territory']) === false)
+			$territo = $this->_attrib['territory'];
+		else
+			$territo = false;
+
+		if($lang !== false && $territo !== false)
+			$r = $this->chk_locale($lang.'_'.$territo);
+		else if($lang !== false && ($territo = $this->get_def_territory($lang)) !== false)
+			$r = $this->chk_locale($lang.'_'.$territo);
+		else if($territo !== false && ($lang = $this->get_def_language($territo)) !== false)
+			$r = $this->chk_locale($lang.'_'.$territo);
+		else if($this->_attrib['locale'] === '')
+		{
+			$this->set_territory($this->set_language());
+
+			if(empty($this->_attrib['language']) === false || empty($this->_attrib['territory']) === false)
+				return(($this->_attrib['locale'] = $this->set_locale()));
+		}
+
+		return(($this->_attrib['locale'] = $r));
+	}
+
+	function chk_locale($locale)
+	{
+		return($this->_mediator['locale']->is_valid($locale));
+	}
+
+	function get_language($locale='')
+	{
+		$r = false;
+
+		$locale = $locale === '' ? $this->_attrib['locale'] : (string) $locale;
+
+		if(empty($locale) === false && ($locale = $this->chk_locale($locale)) !== false)
+		{
+			$r = $this->_mediator['locale']->get_language($locale);
+		}
+
+		return($r);
+	}
+
+	function get_territory($locale='')
+	{
+		$r = false;
+
+		$locale = $locale === '' ? $this->_attrib['locale'] : (string) $locale;
+
+		if(empty($locale) === false && ($locale = $this->chk_locale($locale)) !== false)
+		{
+			$r = $this->_mediator['locale']->get_territory($locale);
+		}
+
+		return($r);
+	}
+
+	function get_def_territory($lang)
+	{
+		$r = false;
+
+		if(($lang = $this->chk_language($lang)) !== false
+		&& ($locale = $this->_mediator['language']->exists_default($lang)) !== false)
+		{
+			$r = $this->_mediator['locale']->get_territory($locale);	
+		}
+
+		return($r);
+	}
+
+	function get_def_language($territo)
+	{
+		$r = false;
+
+		if(($territo = $this->chk_territory($territo)) !== false
+		&& ($locale = $this->_mediator['territory']->exists_default($territo)) !== false)
+		{
+			$r = $this->_mediator['locale']->get_language($locale);
+		}
+
+		return($r);
+	}
+}
+
+?>

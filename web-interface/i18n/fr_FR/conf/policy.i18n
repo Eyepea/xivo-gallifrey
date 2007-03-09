@@ -1,0 +1,86 @@
+; ply_xivo
+Xivo
+
+; ply_xivo-user
+Utilisateurs
+
+; ply_service
+Services
+
+; ply_service-ipbx
+IPBX
+
+; ply_service-ipbx-general_settings
+Paramètres globals
+
+; ply_service-ipbx-general_settings-sipprotocol
+Protocole SIP
+
+; ply_service-ipbx-general_settings-iaxprotocol
+Protocole IAX
+
+; ply_service-ipbx-general_settings-voicemail
+Boîtes vocales
+
+; ply_service-ipbx-general_settings-sounds
+Fichiers sons
+
+; ply_service-ipbx-general_settings-musiconhold
+Musiques d'attente
+
+; ply_service-ipbx-general_settings-extenfeatures
+Extensions IPBX
+
+; ply_service-ipbx-pbx_settings
+Paramètres PBX
+
+; ply_service-ipbx-pbx_settings-users
+Utilisateurs
+
+; ply_service-ipbx-pbx_settings-groups
+Groupes
+
+; ply_service-ipbx-pbx_settings-queues
+Queues
+
+; ply_service-ipbx-pbx_settings-meetme
+Chambres de conférence
+
+; ply_service-ipbx-pbx_settings-agents
+Agents
+
+; ply_service-ipbx-call_management
+Gestion des appels
+
+; ply_service-ipbx-call_management-ivr
+IVR
+
+; ply_service-ipbx-call_management-cdr
+CDR
+
+; ply_service-ipbx-trunk_management
+Gestion des interconnexions
+
+; ply_service-ipbx-trunk_management-sip
+SIP
+
+; ply_service-ipbx-trunk_management-iax
+IAX
+
+; ply_service-ipbx-system_management
+Configuration IPBX
+
+; ply_service-ipbx-system_management-configfiles
+Fichiers de configuration
+
+; ply_service-ipbx-system_management-isdncard
+Gestion carte ISDN
+
+; ply_service-ipbx-system_management-modules
+Gestion des modules
+
+; ply_service-ipbx-system_management-manager
+Gestion du manager
+
+; ply_service-ipbx-reload
+Recharger Asterisk

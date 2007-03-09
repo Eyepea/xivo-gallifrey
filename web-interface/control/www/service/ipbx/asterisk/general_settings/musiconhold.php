@@ -1,0 +1,61 @@
+<?php
+
+$act = isset($_QR['act']) === true ? $_QR['act'] : '';
+$cat = isset($_QR['cat']) === true ? $_QR['cat'] : '';
+$page = isset($_QR['page']) === true ? xivo_uint($_QR['page'],1) : 1;
+
+$element = $info = $result = array();
+
+$musiconhold = &$ipbx->get_module('musiconhold');
+
+if(($list_cats = $musiconhold->get_all_by_category()) !== false)
+{
+	xivo::load_class('xivo_sort');
+	$sort = new xivo_sort(array('key' => 'category'));
+	usort($list_cats,array(&$sort,'str_usort'));
+}
+
+$_HTML->assign('list_cats',$list_cats);
+
+switch($act)
+{
+	case 'add':
+	case 'edit':
+		$dhtml = &$_HTML->get_module('dhtml');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/musiconhold.js');
+	case 'delete':
+	case 'deletes':
+	case 'list':
+	case 'addfile':
+	case 'editfile':
+	case 'listfile':
+	case 'deletefile':
+	case 'download':
+		$action = $act;
+		break;
+	case 'enables':
+	case 'disables':
+		$action = 'enables';
+		break;
+	default:
+		xivo_go($_HTML->url('service/ipbx'));
+}
+
+include(dirname(__FILE__).'/musiconhold/'.$action.'.php');
+
+$_HTML->assign('act',$act);
+$_HTML->assign('cat',$cat);
+$_HTML->assign('element',$element);
+$_HTML->assign('info',$info);
+
+$menu = &$_HTML->get_module('menu');
+$menu->set_top('top/user/'.$_USR->get_infos('meta'));
+$menu->set_left('left/service/ipbx/asterisk');
+$menu->set_toolbar('toolbar/service/ipbx/asterisk/general_settings/musiconhold');
+
+$_HTML->assign('bloc','general_settings/musiconhold/'.$act);
+$_HTML->assign('service_name',$service_name);
+$_HTML->set_struct('service/ipbx/index');
+$_HTML->display('index');
+
+?>

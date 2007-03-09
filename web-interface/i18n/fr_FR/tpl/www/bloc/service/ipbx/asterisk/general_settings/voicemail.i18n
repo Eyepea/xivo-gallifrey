@@ -1,0 +1,32 @@
+; title_content_name
+Propriétés des boîtes vocales
+
+; fm_maxmessage
+Taille maximum d'un message :
+
+; fm_minmessage
+Taille minimum d'un message :
+
+; fm_maxisilence
+Temps maximum de silence :
+
+; fm_review
+Revoir les messages :
+
+; fm_serveremail
+Serveur e-mail :
+
+; fm_fromstring
+Expéditeur :
+
+; fm_maxmsg
+Nombre maximum de message :
+
+; fm_emailsubject
+Sujet des messages :
+
+; fm_emailbody
+Corps des messages :
+
+; fm_bt-save
+Sauvegarder

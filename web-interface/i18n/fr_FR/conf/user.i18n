@@ -1,0 +1,8 @@
+; usr_type__user
+Utilisateur
+
+; usr_type__admin
+Administrateur
+
+; usr_type__root
+Root

@@ -1,0 +1,101 @@
+; title_content_name
+Utilisateurs > Ajouter
+
+; fm_protocol_callerid
+Nom d'appel :
+
+; fm_protocol_name
+Identifiant :
+
+; fm_protocol_secret
+Mot de passe :
+
+; fm_protocol_host
+Type d'adressage IP :
+
+; fm_protocol_protocol
+Protocole :
+
+; fm_protocol_nat
+NAT :
+
+; fm_protocol_amaflags
+Drapeau de facturation :
+
+; fm_protocol_canreinvite
+Invite :
+
+; fm_protocol_accountcode
+Numéro d'accompte :
+
+; fm_protocol_qualify
+Supervision :
+
+; fm_protocol_dtmfmode
+DTMF :
+
+; fm_ufeatures_number
+Numéro de téléphone :
+
+; fm_userfeatures_popupwidget
+Remontée de fiche :
+
+; fm_userfeatures_ringseconds
+Temps de sonnerie :
+
+; fm_userfeatures_ringseconds-opt
+%s secondes
+
+; fm_userfeatures_simultcalls
+Appels simultanés :
+
+; fm_userfeatures_ringgroup
+Sonnerie :
+
+; fm_group
+Groupes :
+
+; fm_bt-ingroup
+Ajouter ->
+
+; fm_bt-outgroup
+<- Enlever
+
+; create_group
+Créer un groupe
+
+; fm_usergroup
+Groupe de sonnerie :
+
+; fm_voicemail
+Messagerie vocale :
+
+; fm_voicemail_fullname
+Nom :
+
+; fm_voicemail_password
+Mot de passe :
+
+; fm_voicemail_email
+E-mail :
+
+; fm_voicemail_attach
+Message attaché :
+
+; fm_voicemail_delete
+Supprimer message après notification :
+
+; fm_userfeatures_comment
+Commentaire :
+
+; fm_protocol_host-dynamic
+Dynamique
+
+; fm_protocol_host-static
+Statique
+
+; fm_bt-save
+Sauvegarder
+
+; fm_protocol_context
+Contexte :

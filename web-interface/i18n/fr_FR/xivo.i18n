@@ -1,0 +1,18 @@
+; load conf/policy
+
+; load conf/user
+
+; html_title
+XIVO
+
+; date_format_yymmdd
+%d/%m/%Y
+
+; page_next
+Page suivante
+
+; page_previous
+Page précédente
+
+; page_number
+Page %s

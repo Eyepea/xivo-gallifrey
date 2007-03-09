@@ -1,0 +1,20 @@
+; col_name
+Nom
+
+; col_number_users
+Nombre d'utilisateurs
+
+; col_action
+Action
+
+; no_group
+Aucun groupe trouvé
+
+; opt_modify
+Modifier
+
+; opt_delete_confirm
+Etes-vous certain de vouloir supprimer ce groupe ?
+
+; opt_delete
+Supprimer

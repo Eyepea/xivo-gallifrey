@@ -1,0 +1,59 @@
+; title_content_name
+Propriétés du protocole IAX
+
+; fm_bindport
+Port :
+
+; fm_bindaddr
+Adresse IP d'écoute :
+
+; fm_channel-lang
+Langages :
+
+; fm_delayreject
+Délai de rejet (anti DOS) :
+
+; fm_iax_acceptnotauthcall
+Accept un appel non authentifié :
+
+; fm_tos
+Tos :
+
+; fm_rtcachefriends
+Mise en cache des comptes :
+
+; fm_jitterbuffer
+Activation du jitterbuffer :
+
+; fm_qualify
+Supervision :
+
+; fm_iax_context
+Contexte :
+
+; fm_codec-disallow
+Codecs désactivés :
+
+; fm_codec-allow
+Codecs authorisés :
+
+; fm_bt-incodec
+Ajouter ->
+
+; fm_bt-outcodec
+<- Enlever
+
+; fm_bt-save
+Sauvegarder
+
+;fm_dropcount
+Compteur de drop :
+
+;fm_maxexcessbuffer
+Buffer maximum :
+
+;fm_minexcessbuffer
+Buffer minimum :
+
+;fm_jittershrinkrate
+Shrink rate :

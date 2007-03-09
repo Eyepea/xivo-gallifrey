@@ -1,0 +1,80 @@
+; title_content_name
+Propriétés du protocole SIP
+
+; fm_bindport
+Port :
+
+; fm_bindaddr
+Adresse IP d'écoute :
+
+; fm_channel-lang
+Langages :
+
+; fm_realm
+Nom de domaine :
+
+; fm_srvlookup
+Requête DNS :
+
+; fm_maxexpiry
+Temps d'expiration :
+
+; fm_defaultexpiry
+Temps d'expiration par défaut :
+
+; fm_useragent
+Agent d'utilisateur :
+
+; fm_nat
+NAT :
+
+; fm_qualify
+Supervision :
+
+; fm_rtcachefriends
+Mise en cache des comptes :
+
+; fm_allowguest
+Accepter un appel non authentifié :
+
+; fm_tos
+TOS :
+
+; fm_dtmfmode
+DTMF :
+
+; fm_relaxdtmf
+RelaxDTMF :
+
+; fm_externip
+Adresse IP externe :
+
+; fm_context
+Contexte :
+
+; fm_musicclass
+Musique d'attente :
+
+; fm_checkmwi
+Vérification de la boîte vocale :
+
+; fm_videosupport
+Support vidéo :
+
+; fm_vmexten
+Numéro du répondeur :
+
+; fm_codec-disallow
+Codecs désactivés :
+
+; fm_codec-allow
+Codecs activés :
+
+; fm_bt-incodec
+Ajouter ->
+
+; fm_bt-outcodec
+<- Enlever
+
+; fm_bt-save
+Sauvegarder

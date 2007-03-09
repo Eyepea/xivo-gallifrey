@@ -1,0 +1,337 @@
+<?php
+
+class xivo_trac_err
+{
+	var $_param = array(
+				'level'		=> 0,
+				'report_type'	=> 0,
+				'report_mode'	=> 0,
+				'report_func'	=> 1,
+				'email'		=> false,
+				'file'		=> '');
+
+	var $_delayed_content	= array();
+	var $_sapi		= XIVO_SAPI_MODE;
+	var $_conf		= array();
+
+	function xivo_trac_err($param=array())
+	{
+		$param = (array) $param;
+
+		if(($this->_conf = xivo_gat::load_get('trac_err',XIVO_PATH_CONF)) === false)
+			die('Failed to load trac_err Array');
+
+		if(isset($param['level']) === true && ($param['level'] = $this->_chk_level($param['level'])) !== false)
+			$this->_param['level'] = $param['level'];
+		else
+			$this->_param['level'] = XIVO_TE_ERR_ALL;
+
+		if(isset($param['report_type']) === true && ($param['report_type'] = $this->_chk_report_type($param['report_type'])) !== false)
+			$this->_param['report_type'] = (int) $param['report_type'];
+		else
+			$this->_param['report_type'] = XIVO_TE_RTYPE_LOG;
+
+		if(isset($param['report_mode']) === true && $this->_chk_report_mode($param['report_mode']) === true)
+			$this->_param['report_mode'] = (int) $param['report_mode'];
+		else
+			$this->_param['report_mode'] = XIVO_TE_RMODE_REALTIME;
+
+		if(isset($param['report_func'],$this->_conf['rfunc'][$param['report_func']]) === true)
+			$this->_param['report_func'] = (int) $param['report_func'];
+		else
+			$this->_param['report_func'] = 1;
+		
+		if(isset($param['email']) === true && ($param['email'] = $this->_chk_email($param['email'])) !== false)
+			$this->_param['email'] = $param['email'];
+		else
+			$this->_param['email'] = false;
+
+		//if(isset($param['file']) === true && $param['file'] !== ''
+	}
+
+	function set_param($name,$value)
+	{
+		$name = (string) $name;
+
+		$this->_param[$name] = $value;	
+	}
+
+	function get_param($name)
+	{
+		$name = (string) $name;
+
+		if(isset($this->_param[$name]) === true)
+			return($this->_param[$name]);
+		else
+			return(null);
+	}
+
+	function notice($msg,$context='',$report_type=null)
+	{
+		return($this->report_err($msg,XIVO_TE_ERR_NOTICE,$context,$report_type));
+	}
+
+	function warning($msg,$context='',$report_type=null)
+	{
+		return($this->report_err($msg,XIVO_TE_ERR_WARNING,$context,$report_type));
+	}
+
+	function error($msg,$context='',$report_type=null)
+	{
+		return($this->report_err($msg,XIVO_TE_ERR_ERROR,$context,$report_type));
+	}
+
+	function _chk_level($level)
+	{
+		$r = false;
+
+		if((int) $level === 0 || ((int) $level & XIVO_TE_ERR_ALL) !== 0)
+			$r = (int) $level;
+
+		return($r);
+	}
+
+	function _chk_report_type($type)
+	{
+		$r = false;
+
+		if((int) $type === 0 || ((int) $type & XIVO_TE_RTYPE_ALL) !== 0)
+			$r = (int) $type;
+
+		return($r);
+	}
+
+	function _chk_report_mode($mode)
+	{
+		return(isset($this->_conf['rmode'][$mode]));
+	}
+
+	function _chk_email($email)
+	{
+		$r = false;
+
+		if($email !== false)
+			$r = xivo_chk_email($email);
+
+		return($r);
+	}
+
+	function _chk_file($file)
+	{
+		if(($filelog = xivo_file::is_f_rw($file)) !== false)
+			$r = $filelog;
+		else if(xivo_file::is_d_rwx($file,true) !== false && xivo_file::is_f($file) === false)
+			$r = $file;
+		else
+			$r = false;
+
+		return($r);
+	}
+
+	function report_err($msg,$level=0,$context=XIVO_TE_CONTEXT,$report_type=null)
+	{
+		$level = $this->_chk_level($level);
+
+		if($level === 0 || $level === false || ($this->_param['level'] & $level) === 0)
+			return(false);
+
+		if(($report_type = $this->_chk_report_type($report_type)) === false)
+			$report_type = $this->_param['report_type'];
+
+		$context = $context !== '' ? (string) $context : XIVO_TE_CONTEXT;
+
+		if($this->_param['report_mode'] === XIVO_TE_RMODE_REALTIME || $report_type !== XIVO_TE_RTYPE_SCREEN)
+		{
+			return($this->display($msg,$level,$report_type,$context,$this->_param['report_mode']));
+		}
+
+		return($this->display($msg,XIVO_TE_ERR_TRAC,XIVO_TE_RTYPE_SCREEN,$context,XIVO_TE_RMODE_DELAYED));
+	}
+
+	function report_e_err($errno,$errstr,$errfile,$errline)
+	{
+		$context = XIVO_TE_CONTEXT;
+		$level = XIVO_TE_ERR_TRAC;
+
+		$msg = '['.$errno.'] '.$errstr.' - File: '.$errfile.' - Line: '.$errline;
+
+		if(isset($this->_conf['e_context'][$errno]) === true)
+		{
+			$context = $this->_conf['e_context'][$errno];
+
+			if(($errno & XIVO_TE_ERR_ERROR) !== 0)
+				$level = XIVO_TE_ERR_ERROR;
+			else if(($errno & XIVO_TE_ERR_WARNING) !== 0)
+				$level = XIVO_TE_ERR_WARNING;
+			else if(($errno & XIVO_TE_ERR_NOTICE) !== 0)
+				$level = XIVO_TE_ERR_NOTICE;
+			else if(($errno & XIVO_TE_ERR_PARSE) !== 0)
+				$level = XIVO_TE_ERR_PARSE;
+		}
+
+		$this->report_err($msg,$level,$context,$this->_param['report_type']);
+	}
+
+	function report_trac($msg,$context=XIVO_TE_CONTEXT,$report_type=null,$report_mode=0)
+	{
+		if(($report_type = $this->_chk_report_type($report_type)) === false)
+			$report_type = $this->_param['report_type'];
+
+		if($this->_chk_report_mode($report_mode) === false)
+			$report_mode = $this->_param['report_mode'];
+		
+		if($report_type === XIVO_TE_RTYPE_NONE)
+			return(false);
+
+		$context = $context !== '' ? (string) $context : XIVO_TE_CONTEXT;
+
+		if($report_mode === XIVO_TE_RMODE_REALTIME || $report_type !== XIVO_TE_RTYPE_SCREEN)
+		{
+			return($this->display($msg,XIVO_TE_ERR_TRAC,$report_type,$context,$this->_param['report_mode']));
+		}
+		
+		return($this->display($msg,XIVO_TE_ERR_TRAC,XIVO_TE_RTYPE_SCREEN,$context,XIVO_TE_RMODE_DELAYED));
+	}
+
+	function display($msg,$level=XIVO_TE_ERR_TRAC,$report_type=null,$context=XIVO_TE_CONTEXT,$report_mode=0)
+	{
+		if(($level = $this->_chk_level($level)) === false)
+			$level = XIVO_TE_ERR_TRAC;
+
+		if(($report_type = $this->_chk_report_type($report_type)) === false)
+			$report_type = $this->_param['report_type'];
+
+		if($this->_chk_report_mode($report_mode) === false)
+			$report_mode = $this->_param['report_mode'];
+
+		$context = (string) $context;
+
+		if(isset($context{0}) === false)
+			$context = XIVO_TE_CONTEXT;
+
+		if($report_type === XIVO_TE_RTYPE_NONE)
+			return(false);
+
+		$tomsg_log = '';
+
+		if(is_array($msg) === true || is_object($msg) === true || is_bool($msg) === true || is_null($msg) === true)
+		{
+			if($this->_param['report_func'] === 2 || (is_bool($msg) === true || is_null($msg) === true) === true)
+			{
+				$tomsg = xivo_svar_dump($msg);
+			}
+			else
+			{
+				$tomsg = xivo_sprint_r($msg);
+			}
+
+			if(($report_type & XIVO_TE_RTYPE_LOG) !== 0 || $this->_sapi !== 'default')
+				$tomsg_log = $tomsg;
+
+			if(($report_type & XIVO_TE_RTYPE_SCREEN) !== 0 && $this->_sapi === 'default')
+				$tomsg = '<pre>'.$tomsg.'</pre>';
+		}
+		else $tomsg = (string) $msg;
+
+		if($tomsg_log === '')
+			$tomsg_log = $tomsg;
+
+		$tocolor = $this->_conf['level'][$level]['color'];
+		$tolabel = $this->_conf['level'][$level]['label'];
+		$tocontext = '('.$context.')';
+
+		if(($report_type & XIVO_TE_RTYPE_LOG) !== 0)
+		{
+			$file_err_log = false;
+
+			if($this->_param['file'] !== '')
+			{
+				if(($file = xivo_file::is_f_rw($this->_param['file'])) !== false)
+					$file_err_log = $file;
+				else if(xivo_file::is_d_rwx($this->_param['file'],true) !== false && xivo_file::is_f($this->_param['file']) === false)
+					$file_err_log = $this->_param['file'];
+				else
+					$file_err_log = false;
+			}
+
+			if($file_err_log === false)
+				$file_err_log = ini_get('error_log');
+
+			$log_err = false;
+
+			if(($file = xivo_file::is_f_rw($file_err_log)) !== false)
+				$log_err = true;
+			else if(xivo_file::is_d_rwx($file_err_log,true) !== false && xivo_file::is_f($file_err_log) === false)
+			{
+				touch($file_err_log);
+				$log_err = true;
+			}
+
+			if($log_err === true && ($file = xivo_file::is_f_rw($file_err_log)) !== false)
+				error_log($tolabel.' '.$tocontext.' - Message: '.xivo_notag($tomsg_log),3,$file);
+		}
+
+		$delayed = false;
+
+		if(($report_type & XIVO_TE_RTYPE_SCREEN) !== 0)
+		{
+			if($report_mode === XIVO_TE_RMODE_REALTIME)
+			{
+				if($this->_sapi === 'default')
+					echo '<span style="color: '.$tocolor.'";>'.$tomsg.'</span> '.$tocontext.'<br />';
+				else
+					echo $tolabel.' '.$tocontext.' - Message: '.$tomsg_log."\n";
+			}
+			else
+			{
+				$delayed = true;
+
+				if(isset($this->_delayed_content[$level]) === false)
+					$this->_delayed_content[$level] = array();
+					
+				if($this->_sapi === 'default')
+					$this->_delayed_content[$level][] = '<tr><td style="color: '.$tocolor.'">'.$tolabel.' - '.$tocontext.'</td>'.
+									   '<td>'.$tomsg.'</td></tr>'."\n";
+				else
+					$this->_delayed_content[$level][] = $tolabel.' '.$tocontext.' - Message: '.$tomsg_log."\n";
+			}
+		}
+
+		if(($report_type & XIVO_TE_RTYPE_MAIL) !== 0 && ($mail = $this->_chk_email($this->_param['email'])) !== false)
+			xivo_malert($tolabel,$tomsg,$mail);
+
+		if($delayed === false && ($level & XIVO_TE_ERR_ERROR) !== 0)
+			die();
+	}
+
+	function display_delayed()
+	{
+		if(is_array($this->_delayed_content) === true)
+			return(null);
+
+		ksort($this->_delayed_content,SORT_NUMERIC);
+		$k = array_keys($this->_delayed_content);
+		$cnt = count($k);
+
+		if($cnt === 0)
+			return(null);
+
+		if($this->_sapi === 'default')
+			echo '<table cellspacing="0" cellpadding="0" border="1">';
+
+		for($i = 0;$i < $cnt;$i++)
+		{
+			if((is_array($this->_delayed_content[$k[$i]]) === true
+			&& ($nb = count($this->_delayed_content[$k[$i]])) !== 0) === false)
+				continue;
+
+			for($j = 0;$j < $nb;$j++)
+				echo $this->_delayed_content[$k[$i]][$j];
+		}
+
+		if($this->_sapi === 'default')
+			echo '</table>';
+	}
+}
+
+?>

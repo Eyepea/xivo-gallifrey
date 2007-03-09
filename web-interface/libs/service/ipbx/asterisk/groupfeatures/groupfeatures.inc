@@ -1,0 +1,144 @@
+<?php
+
+require_once(XIVO_PATH_LIBS.XIVO_SEP_DIR.'service'.XIVO_SEP_DIR.'ipbx'.XIVO_SEP_DIR.'asterisk'.XIVO_SEP_DIR.'abstract.inc');
+
+class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
+{
+	var $_dso	= null;
+	var $_name	= 'groupfeatures';
+	var $_origin	= null;
+
+	function xivo_service_asterisk_groupfeatures(&$sre,&$dso)
+	{
+		if(is_object($sre) === false)
+			trigger_error('Invalid service in '.__CLASS__,E_USER_ERROR);
+
+		if(is_object($dso) === false)
+			trigger_error('Invalid datastorage in '.__CLASS__,E_USER_ERROR);
+
+		$this->_sre = &$sre;
+		$this->_dso = &$dso;
+	}
+
+	function get($id,$disable=null)
+	{
+		if(($id = xivo_uint($id)) === 0 || ($r = $this->_dso->get($id,$disable)) === false)
+			return(false);
+
+		$this->_origin = $r;
+
+		return($r);
+	}
+
+	function add_origin()
+	{
+		return($this->_origin('add'));
+	}
+
+	function edit_origin()
+	{
+		return($this->_origin('edit'));
+	}
+
+	function _origin($type)
+	{
+		if(($type === 'add' && $type === 'edit') === true || is_array($this->_origin) === false)
+			return(false);
+
+		if($type === 'add')
+			$r = $this->add($this->_origin,$this->_origin['id']);
+		else
+			$r = $this->edit($this->_origin['id'],$this->_origin);
+
+		return($r);
+	}
+
+	function add($arr)
+	{
+		if(is_array($arr) === false || ($last = $this->_dso->get_last()) === false)
+			return(false);
+		$last++;
+
+		if($last > 63 && ($last = $this->_dso->get_free()) === false)
+			return(false);
+
+		$r = array();
+		$r['id'] = $last;
+		$r['name'] = $arr['name'];
+		$r['commented'] = false;
+
+		return($this->_dso->add($r));
+	}
+
+	function edit($id,$arr)
+	{
+		if(($id = xivo_uint($id)) === 0 || is_array($arr) === false)
+			return(false);
+
+		$r = array();
+		$r['name'] = $arr['name'];
+
+		if(isset($arr['commented']) === true)
+			$r['commented'] = (bool) $arr['commented'];
+
+		return($this->_dso->edit($id,$r));
+	}
+
+	function delete($id)
+	{
+		if(($id = xivo_uint($id)) === 0)
+			return(false);
+
+		return($this->_dso->delete($id));
+	}
+
+	function enable($id)
+	{
+		if(($group = $this->get($id,true)) === false)
+			return(false);
+
+		$id = $group['id'];
+
+		$r = array();
+
+		if(($pos = strrpos($group['name'],'|')) !== false)
+			$r['name'] = substr($group['name'],0,$pos);
+		else
+			$r['name'] = $group['name'];
+
+		$r['commented'] = false;
+
+		return($this->edit($id,$r));
+	}
+
+	function disable($id)
+	{
+		if(($group = $this->get($id)) === false)
+			return(false);
+
+		$id = $group['id'];
+
+		$r = array();
+		$r['name'] = $group['name'].'|'.md5(uniqid(rand(),true));
+		$r['commented'] = true;
+
+		return($this->edit($id,$r));
+	}
+
+	function is_valid($arr)
+	{
+		$r = '';
+
+		$arr = array_values((array) $arr);
+
+		if(($nb = count($arr)) === 0)
+			return($r);
+
+		if(($r = $this->_dso->is_valid($arr)) !== false && $nb !== count($r))
+			$r = false;
+
+		return($r);
+	}
+}
+
+?>

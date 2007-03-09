@@ -1,0 +1,29 @@
+; col_name
+Nom
+
+; col_number
+Numéro
+
+; col_pin
+PIN
+
+; col_admpin
+PIN Administrateur
+
+; col_provisioning
+Approvisionnement
+
+; col_action
+Action
+
+; no_meetme
+Aucune chambre de conférence trouvée
+
+; opt_modify
+Modifier
+
+; opt_delete_confirm
+Etes-vous certain de vouloir supprimer cet utilisateur ?
+
+; opt_delete
+Supprimer

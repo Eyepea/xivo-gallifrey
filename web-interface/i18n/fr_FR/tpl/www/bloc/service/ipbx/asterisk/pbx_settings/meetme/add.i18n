@@ -1,0 +1,122 @@
+; title_content_name
+Chambres de conférence > Ajouter
+
+; fm_meetmefeatures_name
+Nom :
+
+; fm_meetme_number
+Numéro :
+
+; fm_meetme_pin
+PIN :
+
+; fm_meetme_admin-pin
+PIN Administrateur :
+
+; fm_meetmefeatures_mode
+Mode :
+
+; fm_meetmefeatures_mode-talk
+Parler
+
+; fm_meetmefeatures_mode-listen
+Ecouter
+
+; fm_meetmefeatures_mode-all
+Tous
+
+; fm_meetmefeatures_exit
+Sortir avec # :
+
+; fm_meetmefeatures_musiconhold
+Musique d'attente :
+
+; fm_meetmefeatures_quiet
+Notification d'entrée :
+
+; fm_meetmefeatures_record
+Enregistrement :
+
+; fm_meetmefeatures_video
+Vidéo :
+
+; fm_protocol_password
+Mot de passe :
+
+; fm_protocol_host
+Type d'adressage IP :
+
+; fm_protocol_protocol
+Protocole :
+
+; fm_protocol_nat
+NAT :
+
+; fm_protocol_qualify
+Supervision :
+
+; fm_protocol_dtmf
+DTMF :
+
+; fm_userfeatures_ringseconds
+Temps de sonnerie :
+
+; fm_userfeatures_ringseconds-opt
+%s secondes
+
+; fm_userfeatures_simultcalls
+Appels simultanés :
+
+; fm_userfeatures_ringgroup
+Sonnerie :
+
+; fm_group
+Groupes :
+
+; fm_bt-ingroup
+Ajouter ->
+
+; fm_bt-outgroup
+<- Enlever
+
+; create_group
+Créer un groupe
+
+; fm_usergroup
+Groupe de sonnerie :
+
+; fm_voicemail
+Messagerie vocale :
+
+; fm_voicemail_fullname
+Nom :
+
+; fm_voicemail_password
+Mot de passe :
+
+; fm_voicemail_email
+E-mail :
+
+; fm_voicemail_attach
+Message attaché :
+
+; fm_voicemail_delete
+Supprimer message après notification :
+
+; fm_userfeatures_comment
+Commentaire :
+
+; fm_opt-yes
+Oui
+
+; fm_opt-no
+Non
+
+; sip_host_dynamic
+Dynamique
+
+; sip_host_static
+Statique
+
+; fm_bt-save
+Sauvegarder

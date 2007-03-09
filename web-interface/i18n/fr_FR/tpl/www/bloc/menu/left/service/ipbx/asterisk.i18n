@@ -1,0 +1,77 @@
+; mn_left_name
+IPBX
+
+; mn_left_ti_generalsettings
+Paramètres globaux
+
+; mn_left_sip_protocol
+Protocole SIP
+
+; mn_left_iax_protocol
+Protocole IAX
+
+; mn_left_voicemail
+Boîtes vocales
+
+; mn_left_sounds
+Fichiers sons
+
+; mn_left_musiconhold
+Musiques d'attente
+
+; mn_left_extenfeatures
+Extensions IPBX
+
+; mn_left_ti_pbxsettings
+Paramètres PBX
+
+; mn_left_users
+Utilisateurs
+
+; mn_left_groups
+Groupes
+
+; mn_left_ti_call_management
+Gestion des appels
+
+; mn_left_meetme
+Chambres de conférence
+
+; mn_left_queues
+Queues
+
+; mn_left_agents
+Agents
+
+; mn_left_ivr
+IVR
+
+; mn_left_cdr
+Journaux d'appels
+
+; mn_left_ti_trunk_management
+Gestion des interconnexions
+
+; mn_left_trunk_sip
+SIP
+
+; mn_left_trunk_iax
+IAX
+
+; mn_left_ti_system_management
+Configuration IPBX
+
+; mn_left_config_files
+Fichiers de configuration
+
+; mn_left_system_hardware
+Gestion cartes ISDN
+
+; mn_left_modules_settings
+Gestion des modules
+
+; mn_left_manager
+Gestion du manager
+
+; mn_left_asterisk_reload
+Recharger Asterisk

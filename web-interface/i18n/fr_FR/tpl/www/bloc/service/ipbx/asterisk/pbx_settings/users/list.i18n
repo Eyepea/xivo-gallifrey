@@ -1,0 +1,29 @@
+; col_callerid
+Nom d'appel
+
+; col_protocol
+Protocole
+
+; col_username
+Identifiant
+
+; col_phone
+N° Téléphone
+
+; col_provisioning
+Approvisionnement
+
+; col_action
+Action
+
+; no_user
+Aucun utilisateur trouvé
+
+; opt_modify
+Modifier
+
+; opt_delete_confirm
+Etes-vous certain de vouloir supprimer cet utilisateur ?
+
+; opt_delete
+Supprimer

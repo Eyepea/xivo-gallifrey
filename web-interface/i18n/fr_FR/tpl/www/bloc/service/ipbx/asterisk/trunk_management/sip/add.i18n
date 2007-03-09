@@ -1,0 +1,80 @@
+; title_content_name
+Interconnexion SIP > Ajouter
+
+; fm_trunk_name
+Nom :
+
+; fm_trunk_username
+Identifiant :
+
+; fm_trunk_secret
+Mot de passe :
+
+; fm_trunk_callerid
+Nom d'appel :
+
+; fm_trunk_context
+Contexte :
+
+; fm_trunk_calllimit
+Nombre d'appels :
+
+; fm_trunk_host
+Type d'adressage IP :
+
+; fm_trunk_port
+Port :
+
+; fm_trunk_dtmfmode
+DTMF :
+
+; fm_trunk_type
+Type :
+
+; fm_trunk_nat
+NAT :
+
+; fm_trunk_qualify
+Supervision :
+
+; fm_trunk_canreinvite
+Invite :
+
+; fm_trunk_insecure
+Authentification :
+
+; fm_trunk_codec-disallow
+Codecs désactivés :
+
+; fm_trunk_codec-allow
+Codecs activés :
+
+; fm_bt-incodec
+Ajouter ->
+
+; fm_bt-outcodec
+<- Enlever
+
+; fm_bt-save
+Sauvegarder
+
+; fm_register
+Enregistrement :
+
+; fm_register_username
+Identifiant :
+
+; fm_register_password
+Mot de passe :
+
+; fm_register_authuser
+Authentification :
+
+; fm_register_host
+Serveur distant :
+
+; fm_register_port
+Port :
+
+; fm_register_contact
+Contact :
