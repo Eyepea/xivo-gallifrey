@@ -4,19 +4,20 @@
 # Server program that cleans meeting rooms
 
 import os
-import pexpect
+import select
+import socket
 import string
 import sys
 import telnetlib
 import time
 from time import strftime
-from socket import *
 from random import randint
 
 # Set global parameters
 port_ami = 5038
 pidfile = '/tmp/clean_meetme_id_daemon.pid'
-time_global_sweep = 10
+time_global_sweep = 15
+deltatime_last_heartbeat = 10
 
 # daemonize function
 def daemonize():
@@ -42,22 +43,25 @@ def varlog(string):
 	return 0
 
 # outputs a string to stdout in no-daemon mode
-def debugs(string):
+def log_debug(string):
 	if sys.argv.count('-d') > 0:
 		print "#debug# " + string
 	varlog(string)
 	return 0
 
 # logins into the Asterisk MI
-def ami_login(tnet, loginname):
+def ami_login(tnet, loginname, events):
 	tnet.read_until("Asterisk Call Manager/1.0")
-	tnet.write("Action: login\r\nUsername: " + loginname + "\r\nSecret: " + loginname + "\r\n\r\n");
+	if events == 0:
+		tnet.write("Action: login\r\nUsername: " + loginname + "\r\nSecret: " + loginname + "\r\nEvents: off\r\n\r\n");
+	else:
+		tnet.write("Action: login\r\nUsername: " + loginname + "\r\nSecret: " + loginname + "\r\n\r\n");
 	tnet.read_until("Message: Authentication accepted")
 	return 0
 
 # sends any command to the Asterisk MI
 def ami_command(tnet, command):
-	debugs("Executing AMI command: " + command)
+	log_debug("Executing AMI command: <" + command + ">")
 	tnet.write("Action: Command\r\nCommand: " + command + "\r\n\r\n")
 	reply = tnet.read_until("--END COMMAND--")
 	return reply
@@ -67,55 +71,49 @@ def ami_quit(tnet):
 	tnet.write("Action: Logoff\r\n\r\n")
 	return 0
 
-# pings a given address, with a timeout of 1s, and returns 1 if a
-# pong has been received, 0 otherwise
-def spawn_ping(ipaddress):
-	debugs("Pinging IP address: " + ipaddress)
-	exp_ping = pexpect.spawn("ping -c 1 -W 1 " + ipaddress)
-	exp_ping.expect("packet loss")
-	reply = exp_ping.before
-	exp_ping.close()
-	for x in reply.split("\r\n"):
-		if(x.find("transmitted") >= 0):
-			# 1 packets transmitted, 1 received, 0% packet loss
-			y = x.split(None)
-			return int(y[3])
-
 # pings the IP address of the SIP channel according to "sip show peer"
-def analyze_sipshowpeer(ami_reply):
+def analyze_sipshowpeer(reply):
 	rej = 0
-	for l in ami_reply.split("\n"):
+	for l in reply.split("\n"):
 		if l.find("Addr->IP") >= 0:
 			addip = l.split(None)[2]
 			if addip == "(Unspecified)":
+				return 1
+
+			# check the time of last update of the heartbeat info at a given IP address
+			#				        current_time = time.time()
+			current_time = time.time()
+			try:
+				statusfile = open("/tmp/heartbeat_" + addip + ".log", 'r')
+				ttime = string.strip(statusfile.readline())
+				statusfile.close()
+			except:
+				ttime = 0
+			gtime = current_time - float(ttime)
+			if gtime > deltatime_last_heartbeat:
+				log_debug(addip + " not registered by heartbeat for " + str(gtime) + " seconds")
 				rej = 1
-			else:
-## check the time of last update of the heartbeat info at a given IP address
-##				        current_time = time.time()
-##        statusfile = open("/tmp/heartbeat_" + addr[0] + ".log", 'w')
-##        statusfile.write(str(current_time))
-##        statusfile.close()
-				if spawn_ping(l.split(None)[2]) == 0:
-					rej = 1
 	return rej
 
 # kicks the unavailable users from the meetme rooms
 def kick_if_needed():
         tn = telnetlib.Telnet("localhost", port_ami)
 	try:
-		ami_login(tn, "heartbeat")
-		ami_reply1 = ami_command(tn, "meetme")
-		iid = 0
+		ami_login(tn, "heartbeat", 0)
+		ami_reply = ami_command(tn, "meetme")
+
 		firstline_def  = "Conf Num       Parties"
 		lastline_def   = "Total number of MeetMe users"
 		emptyreply_def = "No active MeetMe conferences."
 
-		if ami_reply1.find(emptyreply_def) >= 0:
-			debugs("empty MeetMe list")
+		busy_rooms = []
+		if ami_reply.find(emptyreply_def) >= 0:
+			log_debug("  MeetMe list is EMPTY")
 		else:
-			debugs("MeetMe list not empty")
-#			for line in ami_reply1.split("\r\n"):
-			for line in ami_reply1.split("\n"):
+			nrooms = 0
+			nusers = 0
+			iid = 0
+			for line in ami_reply.split("\n"):
 				if len(line) > 0:
 					if line.find(lastline_def) >= 0:
 						# might be useful to get the number of MeetMe users and check it against
@@ -123,37 +121,52 @@ def kick_if_needed():
 						iid = 0
 					if iid == 1:
 						# 2              0002           N/A        03:24:18  Static
+						nrooms = nrooms + 1
 						fields = line.split(None)
 						roomnumber = int(fields[0])
 						number = int(fields[1])
-						docheck = 0
+						nusers = nusers + number
 						if number > 1:
-							docheck = 1
-						if docheck:
-							debugs(str(number) + " users in the " + str(roomnumber) + " conference")
-							ami_reply2 = ami_command(tn, "meetme list " + str(roomnumber))
-							for mm in ami_reply2.split("\n"):
-								# for any User that is of the SIP kind
-								if (mm.find("User #: ") == 0) and (mm.find("SIP") > 0):
-									sipuser = mm.split(None)[2]
-									sipname = mm.split(None)[3]
-									if(number > 2):
-										reject = 1
-									else:
-										# look at its IP address
-										ami_reply3 = ami_command(tn, "sip show peer " + sipname)
-										reject = analyze_sipshowpeer(ami_reply3)
-
-									if reject == 1:
-										debugs("I will kick out " + sipname +
-										       " from the meeting room number " + str(roomnumber))
-										ami_reply4 = ami_command(tn, "meetme kick " + str(roomnumber) +
-													 " " + sipuser)
-									else:
-										debugs("I will NOT kick out " + sipname +
-										       " from the meeting room number " + str(roomnumber))
+							busy_rooms.append(roomnumber)
 					if line.find(firstline_def) >= 0:
 						iid = 1
+			log_debug("  MeetMe list is NOT empty : " +
+				  str(nusers) + " user(s) ; " +
+				  str(nrooms) + " room(s) ; " +
+				  str(len(busy_rooms)) + " room(s) with >=2 users")
+
+		# looping over the busy rooms
+		for busy_room in busy_rooms:
+			ami_reply = ami_command(tn, "meetme list " + str(busy_room))
+			sip_th = str(busy_room + 100)
+			not_rejected = []
+			for mm in ami_reply.split("\n"):
+				# for any User that is of the SIP kind
+				if (mm.find("User #: ") == 0) and (mm.find("SIP") > 0):
+					sipuser = mm.split(None)[2]
+					sipname = mm.split(None)[3]
+					if sipname != sip_th:
+						reject = 1
+					else:
+						# look at its IP address
+						ami_reply3 = ami_command(tn, "sip show peer " + sipname)
+						reject = analyze_sipshowpeer(ami_reply3)
+
+					if reject == 1:
+						log_debug("I'm kicking OUT SIP/" + sipname + " (user # " + sipuser +
+							  ") from the meeting room number " + str(busy_room) +
+							  " right now")
+						ami_command(tn, "meetme kick " + str(busy_room) + " " + sipuser)
+					else:
+						not_rejected.append(sipuser)
+						log_debug("I let SIP/" + sipname +
+							  " inside the meeting room number " + str(busy_room))
+
+			num_not_rejected = len(not_rejected)
+			log_debug("Number of SIP channels still in the meeting room #" + str(busy_room) + " : " + str(num_not_rejected))
+			if num_not_rejected > 1:
+				for i in range(0, num_not_rejected - 1):
+					ami_command(tn, "meetme kick " + str(busy_room) + " " + not_rejected[i])
 		ami_quit(tn)
 		tn.close()
 	except:
@@ -176,43 +189,60 @@ try:
 except Exception, e:
 	print e
 
+# opens the logfile for output
 logfile = open("/var/log/clean_meetme.log", 'a')
 
-tnwatch = telnetlib.Telnet("localhost", port_ami)
-ami_login(tnwatch, "clean_meetme")
-l=["Uniqueid: "]
+string_expected = ["Uniqueid: "]
+
+# opens the AMI in order to watch for Call actions
+try:
+	tnwatch = telnetlib.Telnet("localhost", port_ami)
+except:
+	log_debug("Asterisk is probably not running : exiting")
+	sys.exit(1)
+ami_login(tnwatch, "heartbeat", 1)
+
+# main loop
 while 1:
-	x,y,ami_reply = tnwatch.expect(l, time_global_sweep)
+	try:
+		x,y,ami_reply = tnwatch.expect(string_expected, time_global_sweep)
+	except:
+		log_debug("Asterisk has probably been closed : exiting")
+		sys.exit(1)
+
 	if x == 0:
 		id = 0
-		for mm in ami_reply.split("\n"):
-			if mm.find("Event: ") == 0:
-				if mm.find("Newchannel") > 0:
-					id = 1
-			elif mm.find("Channel: ") == 0:
-				if id == 1:
-					debugs(mm.split(None)[1])
-					tn = telnetlib.Telnet("localhost", port_ami)
-					ami_login(tn, "heartbeat")
-					ami_reply2 = ami_command(tn, "meetme list 10000")
-					for mm2 in ami_reply2.split("\n"):
-						if mm2.find("User #: ") == 0:
-							print mm2
-					ami_quit(tn)
-					tn.close()
+		sipnames = []
+		for line in ami_reply.split("\n"):
+			if line.find("Event: Newchannel") == 0:
+				id = 1
+			elif line.find("Channel: ") == 0 and (id == 1):
+				sip_fullname = line.split(None)[1]
+				sipnames.append(sip_fullname)
+				id = 0
+
+		for sip_fullname in sipnames:
+			sip_noaddr   = sip_fullname.split('-')[0]
+			sip_number   = sip_noaddr.split('/')[1]
+			room = str(int(sip_number)-100)
+			log_debug(str(len(sipnames)) + " - Incoming call from : " + sip_fullname +
+				  " - I will check the meeting room number : " + room)
+
+			tn = telnetlib.Telnet("localhost", port_ami)
+			ami_login(tn, "heartbeat", 0)
+			ami_reply = ami_command(tn, "meetme list " + room)
+			for line_users in ami_reply.split("\n"):
+				if (line_users.find("User #: ") == 0) and (line_users.find("SIP") >= 0) and (line_users.find(sip_fullname) < 0):
+					log_debug("  An unwanted SIP channel has been found in the room " + room +
+						  " - I'm kicking it out right now")
+					log_debug("  " + line_users)
+					ami_command(tn, "meetme kick " + room + " " + line_users.split(None)[2])
+			ami_quit(tn)
+			tn.close()
 	else:
-		debugs("timeout occured : global sweeping !")
+		log_debug("Timeout occured (" + str(time_global_sweep) + " s) : global sweeping is launched.")
 		kick_if_needed()
 
 # Close files and sockets
 logfile.close()
-
-
-##Event: Newchannel
-##Privilege: call,all
-##Channel: SIP/102-081c3778
-##State: Ring
-##CallerID: 102
-##CallerIDName: 102
-##Uniqueid: asterisk-29331-1173373609.31
 
