@@ -7,11 +7,15 @@
 
 MainWindow::MainWindow(SwitchBoardEngine * engine)
 {
+	setWindowIcon(QIcon(":/xivoicon.png"));
+	setWindowTitle("Xivo Switchboard");
 	SwitchBoardWindow * widget = new SwitchBoardWindow(this);
 	engine->setWindow(widget);
 	widget->setEngine(engine);
 	setCentralWidget(widget);
-	statusBar()->showMessage("test");
+	//statusBar()->showMessage("test");
+	connect(engine, SIGNAL(emitTextMessage(const QString &)),
+	        statusBar(), SLOT(showMessage(const QString &)));
 
 	QAction * quit = new QAction("&Quit", this);
 	connect(quit, SIGNAL(triggered()), qApp, SLOT(quit()));

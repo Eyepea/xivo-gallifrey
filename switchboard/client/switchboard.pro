@@ -13,3 +13,4 @@ HEADERS += switchboardengine.h mainwindow.h
 SOURCES += main.cpp peerwidget.cpp switchboardwindow.cpp
 SOURCES += switchboardengine.cpp mainwindow.cpp
 QT += network
+RESOURCES += appli.qrc
