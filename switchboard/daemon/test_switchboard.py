@@ -30,15 +30,25 @@ class AMI:
 	def sendcommand(self, action, args):
 		self.f.write('Action: ' + action + '\r\n')
 		for (name, value) in args:
+			print name + ': ' + value
 			self.f.write(name + ': ' + value + '\r\n')
 		self.f.write('\r\n')
 		self.f.flush()
+	def printresponse_forever(self):
+		# for debug
+		while True:
+			str = self.f.readline()
+			print self.i, len(str), str,
+			self.i = self.i + 1
 	def readresponsechunk(self):
+		start = True
 		list = []
 		while True:
 			str = self.f.readline()
-			#print self.i, str,
+			#print self.i, len(str), str,
 			self.i = self.i + 1
+			if start and str == '\r\n': continue
+			start = False
 			if str == '\r\n' or str == '':
 				break
 			l = [ x.strip() for x in str.split(': ') ]
@@ -48,6 +58,7 @@ class AMI:
 	def readresponse(self, check):
 		first = self.readresponsechunk()
 		#print first
+		if first=={}: return []
 		if first['Response'] != 'Success':
 			#and first['Response'] != 'Follows':
 			if first.has_key('Message'):
@@ -78,14 +89,29 @@ class AMI:
 			return True
 		except self.AMIError, e:
 			return False
+	def redirect(self, channel, extension, context):
+		try:
+			self.sendcommand('Redirect', [('Channel', channel), ('Exten', extension), ('Context', context), ('Priority', '1')])
+			self.readresponse('')
+			return True
+		except self.AMIError, e:
+			return False
+	def hangup(self, channel):
+		try:
+			self.sendcommand('Hangup', [('Channel', channel)])
+			self.readresponse('')
+			return True
+		except self.AMIError, e:
+			return False
 	def execclicommand(self, command):
 		# special procession for cli commands.
 		self.sendcommand('Command', [('Command', command)])
 		resp = []
 		for i in (1, 2): str = self.f.readline()
+		#for i in (1, 2): print 'discarding line:', self.f.readline(),
 		while True:
 			str = self.f.readline()
-			print self.i, len(str), str,
+			#print self.i, len(str), str,
 			self.i = self.i + 1
 			if str == '\r\n' or str == '' or str == '--END COMMAND--\r\n':
 				break
@@ -93,15 +119,49 @@ class AMI:
 		return resp
 	def gethints(self):
 		return filter(lambda x: len(x)==6, [s.strip().split() for s in a.execclicommand('show hints')])
-
+	def originate(self, src, dst):
+		# originate a call btw src and dst
+		# src will ring first, and dst will ring when src responds
+		a.sendcommand('Originate', [('Channel', 'SIP/'+src),
+		                            ('Exten', dst),
+		                            ('Context', 'local-extensions'),
+									('Priority', '1'),
+									('CallerID', 'Mise en relation <1911>'),
+									('Async', 'true')])
+		print a.readresponse('')
+		return True
+	def transfer(self, src, dst):
+		a.sendcommand('Status', [])
+		for ch in a.readresponse('StatusComplete'):
+			print ch
+			if ch.has_key('CallerID') and ch['CallerID'] == src and ch.has_key('Link'):
+				a.redirect(ch['Link'], dst, 'local-extensions')
 
 a = AMI(asterisk_address)
 a.connect()
 a.login(asterisk_login, asterisk_pass)
 
 #print [ s.strip().split() for s in a.execclicommand('show hints')]
-print a.gethints()
+#print a.gethints()
 
+#print a.redirect('test', '123')
+
+
+a.sendcommand('Status', [])
+for x in a.readresponse('StatusComplete'):
+	print x
+	#if x.has_key('CallerIDName') and x['CallerIDName'] == 'Thinot Benoit':
+	#	print "Redirecting", a.redirect(x['Channel'], '109', 'local-extensions')
+	#if x.has_key('CallerID') and x['CallerID'] == '104':
+	#	print "Redirecting", a.redirect(x['Channel'], '109', 'local-extensions')
+
+#import time
+#time.sleep(1)
+#print '---- after redirecting !!!! --------------'
+
+#a.sendcommand('Status', [])
+#for x in a.readresponse('StatusComplete'):
+#	print x
 # stuff server
 # too bad : pas de sécurité !
 import SocketServer
@@ -110,9 +170,19 @@ class ConnHandler(SocketServer.StreamRequestHandler):
 		global a
 		str = self.rfile.readline().strip()
 		try:
+			l = str.split()
 			if str=='hints':
 				for e in a.gethints():
 					self.wfile.write(e[0] + ',' + e[2] + ',' + e[3][6:] + ',' + e[5] + '\n')
+			elif l[0] == 'originate':
+				a.originate(l[1], l[2])
+			elif l[0] == 'transfer':
+				a.transfer(l[1], l[2])
+			elif l[0] == 'hangup':
+				a.sendcommand('Status', [])
+				for ch in a.readresponse('StatusComplete'):
+					if ch.has_key('CallerID') and ch['CallerID'] == l[1]:
+						a.hangup(ch['Channel'])
 			else:
 				for s in a.execclicommand(str): self.wfile.write(s)
 		except:
