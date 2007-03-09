@@ -5,9 +5,11 @@
 #include <QApplication>
 #include <QDebug>
 #include "peerwidget.h"
+#include "switchboardengine.h"
 
-PeerWidget::PeerWidget(const QString & txtlbl, QWidget * parent, int size)
-: QWidget(parent), m_square(size,size)
+PeerWidget::PeerWidget(const QString & txtlbl, SwitchBoardEngine * engine,
+                       QWidget * parent, int size)
+: QWidget(parent), m_square(size,size), m_engine(engine)
 {
 	QHBoxLayout * layout = new QHBoxLayout(this);
 	m_statelbl = new QLabel(this);
@@ -74,7 +76,21 @@ void PeerWidget::dragEnterEvent(QDragEnterEvent *event)
 	qDebug() << "dragEnterEvent()";
 	qDebug() << event->mimeData()->formats();
 	if(event->mimeData()->hasText())
-		event->acceptProposedAction();
+	{
+		if(event->proposedAction() & (Qt::CopyAction|Qt::MoveAction))
+			event->acceptProposedAction();
+	}
+}
+
+void PeerWidget::dragMoveEvent(QDragMoveEvent *event)
+{
+	qDebug() << "dragMoveEvent()";
+	qDebug() << event->mimeData()->formats();
+	if(event->mimeData()->hasText())
+	{
+		if(event->proposedAction() & (Qt::CopyAction|Qt::MoveAction))
+			event->acceptProposedAction();
+	}
 }
 
 void PeerWidget::dropEvent(QDropEvent *event)
@@ -82,7 +98,21 @@ void PeerWidget::dropEvent(QDropEvent *event)
 	QString from = event->mimeData()->text();
 	QString to = m_textlbl->text();
 	qDebug() << "dropEvent() :" << from << "on" << to;
-	// transfer the call to the peer "to"
-	event->acceptProposedAction();
+	qDebug() << " possibleActions=" << event->possibleActions();
+	qDebug() << " proposedAction=" << event->proposedAction();
+	switch(event->proposedAction())
+	{
+	case Qt::CopyAction:
+		// transfer the call to the peer "to"
+		event->acceptProposedAction();
+		m_engine->originateCall(from, to);
+		break;
+	case Qt::MoveAction:
+		event->acceptProposedAction();
+		m_engine->transferCall(from, to);
+		break;
+	default:
+		break;
+	}
 }
 
