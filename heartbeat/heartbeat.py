@@ -20,9 +20,12 @@ port_srv = 5050
 port_ami = 5038
 buf = 1024
 addr = (host,port_srv)
+#
 pidfile = '/tmp/heartbeat_id_daemon.pid'
 loopc = 0
-timeout_request_ami = 2
+timeout_request_ami = 30
+lastrequest_time = 0
+replystring = chr(0) + chr(0) + chr(0) + chr(0) + chr(0) + chr(0) + chr(0) + chr(0)
 
 # daemonize function
 def daemonize():
@@ -94,22 +97,25 @@ def varlog(string):
 	return 0
 
 # outputs a string to stdout in no-daemon mode
-def debugs(string):
+def log_debug(string):
 	if sys.argv.count('-d') > 0:
 		print "#debug# " + string
         varlog(string)
 	return 0
 
 # logins into the Asterisk MI
-def ami_login(tnet, loginname):
+def ami_login(tnet, loginname, events):
 	tnet.read_until("Asterisk Call Manager/1.0")
-	tnet.write("Action: login\r\nUsername: " + loginname + "\r\nSecret: " + loginname + "\r\n\r\n");
+	if events == 0:
+		tnet.write("Action: login\r\nUsername: " + loginname + "\r\nSecret: " + loginname + "\r\nEvents: off\r\n\r\n");
+	else:
+		tnet.write("Action: login\r\nUsername: " + loginname + "\r\nSecret: " + loginname + "\r\n\r\n");
 	tnet.read_until("Message: Authentication accepted")
 	return 0
 
 # sends any command to the Asterisk MI
 def ami_command(tnet, command):
-	debugs("Executing AMI command: " + command)
+	log_debug("Executing AMI command: <" + command + ">")
 	tnet.write("Action: Command\r\nCommand: " + command + "\r\n\r\n")
 	reply = tnet.read_until("--END COMMAND--")
 	return reply
@@ -123,7 +129,7 @@ def ami_quit(tnet):
 def request_zap_status():
     tn = telnetlib.Telnet("localhost", port_ami)
     try:
-        ami_login(tn, "heartbeat")
+        ami_login(tn, "heartbeat", 0)
         ami_reply = ami_command(tn, "show channels concise")
         ami_quit(tn)
         tn.close()
@@ -146,7 +152,7 @@ def update_status():
             loopc = (loopc+1) % 31
     else :
         idn = request_zap_status()
-    debugs("Up Channels seen by Heartbeat : " + str(idn))
+    log_debug("Up Channels seen by Heartbeat : " + str(idn))
     meetme = is_alive("clean_meetme")
     return id_to_string(idn, meetme)
 
@@ -170,20 +176,20 @@ try:
 except Exception, e:
 	print e
 
+# opens the logfile for output
+logfile = open("/var/log/heartbeat.log", 'a')
+
 # Create socket and bind to address
 UDPSock = socket(AF_INET,SOCK_DGRAM)
 UDPSock.bind(addr)
 ins = [UDPSock]
-lastrequest_time = 0
-replystring = chr(0) + chr(0) + chr(0) + chr(0) + chr(0) + chr(0) + chr(0) + chr(0)
-logfile = open("/var/log/heartbeat.log", 'a')
 
 # Receive messages
 while 1:
     i,o,e = select.select(ins, [], [], timeout_request_ami)
     if i:
         data,addr = UDPSock.recvfrom(buf)
-        debugs("Sending reply to : " + addr[0])
+        log_debug("Sending reply to : " + addr[0])
 	# reply on a different socket
         replysocket = socket(AF_INET,SOCK_DGRAM)
         replysocket.bind(('',0))
@@ -199,7 +205,7 @@ while 1:
         statusfile.close()
 
         delta_time = current_time - lastrequest_time
-        if delta_time > (2 * timeout_request_ami):
+        if delta_time > timeout_request_ami:
             # when no timeout has occured for a long time, the status is updated
             lastrequest_time = time.time()
             replystring = update_status()
