@@ -5,7 +5,6 @@
 INSTALL CLUES
 =============
 
-* install the python-pexpect (python2.3-pexpect) debian packages
 * copy heartbeat       to /etc/init.d/heartbeat
 * copy heartbeat.py    to /usr/sbin/heartbeat.py
 * copy clean_meetme    to /etc/init.d/clean_meetme
@@ -17,8 +16,8 @@ port = 5038
 bindaddr = 127.0.0.1
 [heartbeat]
 secret = heartbeat
-read = command
-write = command
+read = call,command
+write = call,command
 * "reload manager" in the Asterisk CLI
 
 The present directory is also shipped with cad_mmi.py, which is a trivial UDP
@@ -37,14 +36,26 @@ FUNCTIONAL DESCRIPTION - heartbeat
 	[-t|-l] : in order to test the UDP socket, doesn't connect to Asterisk but
 			(-t) sends random status numbers
 			(-l) loops endlessly from channel 1 Up to channel 30 Up
+  For the time being, most of the actions are furthermore logged to a file
+	/var/log/heartbeat.log
+
 * The heartbeat.py daemon listens on an UDP socket on the port 5050.
-  Upon the reception of a frame on this port, the daemon connects to the AMI
-	port (5038) of the local Asterisk process, and fetches the channels'
-	statuses, especially the Zap ones.
-  The status 0/1 of the Zap channels is then aggregated into a 64bit pattern.
-  The 32+2 MSB are reserved for future use.
+
+* Upon the reception of a frame on this port, the daemon sends back a 64bit frame
+	to the original sender, on the port 5049.
+  The /tmp/heartbeat_<ipaddress>.log file is then created/updated with the
+	current time expressed in seconds. This file shall be used by the
+	clean_meetme.py daemon in order to manage the SIP client's presence.
+
+* In order to build the 64bit frame, a connection is regularly established to the
+	Asterisk AMI (port 5038), that fetches the Zap channels' statuses (0/1)
+	thanks to the "show channels concise" command.
+  The connection to the AMI is done only once in a while, as defined by the
+	timeout_request_ami (number of seconds) variable.
+
+* In the 64bit frame, the 32+2 MSB are reserved for future use.
   Then, if (let's say) only the Zap/15-1 channel is up, the heartbeat.py server
-	replies with such an UDP frame towards the port 5049 :
+	will reply with the following UDP frame towards the port 5049 :
 
 	# tcpdump -i lo -n -s 1500 -X port 5049
 	14:18:18.437322 IP 127.0.0.1.34085 > 127.0.0.1.5049: UDP, length: 8
@@ -60,31 +71,37 @@ FUNCTIONAL DESCRIPTION - heartbeat
 
 
 
-MORE DETAILED DESCRIPTION - heartbeat
-=====================================
-
-* python-pexpect functions are used in order to chat with Asterisk AMI
-* Parsing the results given by "show channels concise" is done whether some
-  delimiters like ':' '/' '-' are present.
-  As for now, only the Zap case is handled.
-
-
-
 FUNCTIONAL DESCRIPTION - clean_meetme
 =====================================
 
+* clean_meetme.py is a daemon started or stopped by /etc/init.d/clean_meetme (start|stop)
+* The /etc/init.d/clean_meetme script launches clean_meetme.py with no command line
+  option, however the following options are available :
+	-d      : avoids the daemon mode + gives some debugging output
+  For the time being, most of the actions are furthermore logged to a file
+	/var/log/clean_meetme.log
 
+* clean_meetme is wakened on 2 kinds of events :
+	- each time a SIP call is incoming, its "normal" meeting room, ie.
+	"SIP number - 100", is checked for "bad users". Thanks to the rather complete
+	information about the call (especially the pointer address), any User that is not
+	SIP/1xx-<address> is kicked out
 
-
-MORE DETAILED DESCRIPTION - clean_meetme
-========================================
+	- after a timeout of time_global_sweep (seconds), the meeting rooms whose number
+	of users is >=2 are checked :
+		- any SIP User that would not be compliant to the "room number + 100" rule
+		is kicked out
+		- if the "sip show peer" information returns an IP address, the last heartbeat
+		time is checked : if more than "deltatime_last_heartbeat" (seconds) have
+		spent, the SIP User is kicked out
+		- if ever there remains 2 SIP users in the room (despite these kickouts),
+		only the last one is kept and the other(s) is/are kicked out
 
 
 
 TODO
 ====
 
-* improving casual robustness issues
-* replacing pexpect/spawn with python/Telnet functions ?
+* better management of disconnection (when Asterisks restarts for instance, esp in clean_meetme)
 * use of getopt
 
