@@ -6,6 +6,7 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 {
 	var $_dso	= null;
 	var $_name	= 'groupfeatures';
+	var $_filter	= null;
 	var $_origin	= null;
 
 	function xivo_service_asterisk_groupfeatures(&$sre,&$dso)
@@ -18,6 +19,8 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 
 		$this->_sre = &$sre;
 		$this->_dso = &$dso;
+
+		$this->_load_config();
 	}
 
 	function get($id,$disable=null)
@@ -46,7 +49,7 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 			return(false);
 
 		if($type === 'add')
-			$r = $this->add($this->_origin,$this->_origin['id']);
+			$r = $this->add($this->_origin);
 		else
 			$r = $this->edit($this->_origin['id'],$this->_origin);
 
@@ -62,12 +65,10 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 		if($last > 63 && ($last = $this->_dso->get_free()) === false)
 			return(false);
 
-		$r = array();
-		$r['id'] = $last;
-		$r['name'] = $arr['name'];
-		$r['commented'] = false;
+		$arr['id'] = $last;
+		$arr['commented'] = false;
 
-		return($this->_dso->add($r));
+		return($this->_dso->add($arr));
 	}
 
 	function edit($id,$arr)
@@ -75,13 +76,10 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 		if(($id = xivo_uint($id)) === 0 || is_array($arr) === false)
 			return(false);
 
-		$r = array();
-		$r['name'] = $arr['name'];
-
 		if(isset($arr['commented']) === true)
 			$r['commented'] = (bool) $arr['commented'];
 
-		return($this->_dso->edit($id,$r));
+		return($this->_dso->edit($id,$arr));
 	}
 
 	function delete($id)

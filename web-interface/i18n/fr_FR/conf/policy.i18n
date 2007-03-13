@@ -82,5 +82,8 @@ Gestion des modules
 ; ply_service-ipbx-system_management-manager
 Gestion du manager
 
-; ply_service-ipbx-reload
+; ply_service-ipbx-control_system
+Système de contrôle
+
+; ply_service-ipbx-control_system-reload
 Recharger Asterisk

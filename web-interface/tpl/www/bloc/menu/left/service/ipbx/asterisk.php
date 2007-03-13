@@ -80,9 +80,13 @@
 		endif;
 	endif;
 
-	echo '</dl></dd><dd class="b-nosize"><span class="span-left">&nbsp;</span><span class="span-center">&nbsp;</span><span class="span-right">&nbsp;</span></dd></dl>';
-
-	if($this->chk_policy('reload') === true):
-		echo '<h6 class="txt-center">',$url->href_html($this->bbf('mn_left_asterisk_reload'),'service/ipbx/reload'),'</h6>';
+	if($this->chk_policy('control_system') === true):
+		echo '<dt>',$this->bbf('mn_left_ti_control_system'),'</dt>';
+		if($this->chk_policy('control_system','reload') === true):
+			echo '<dd>',$url->href_html($this->bbf('mn_left_asterisk_reload'),'service/ipbx/control_system/reload'),'</dd>';
+		endif;
 	endif;
+
+
+	echo '</dl></dd><dd class="b-nosize"><span class="span-left">&nbsp;</span><span class="span-center">&nbsp;</span><span class="span-right">&nbsp;</span></dd></dl>';
 ?>

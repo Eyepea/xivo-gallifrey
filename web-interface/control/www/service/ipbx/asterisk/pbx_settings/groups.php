@@ -4,6 +4,8 @@ $act = isset($_QR['act']) === true ? $_QR['act'] : '';
 $gfeatures = &$ipbx->get_module('groupfeatures');
 $queue = &$ipbx->get_module('queue');
 
+$result = $info = array();
+
 switch($act)
 {
 	case 'add':
@@ -11,18 +13,22 @@ switch($act)
 		{
 			do
 			{
-				if(xivo_issa('gfeatures',$_QR) === false
-				|| xivo_issa('queue',$_QR) === false
-				|| ($gid = $gfeatures->add($_QR['gfeatures'])) === false)
+				if(xivo_issa('gfeatures',$_QR) === false || xivo_issa('queue',$_QR) === false)
 					break;
 
-				$_QR['queue']['name'] = $_QR['gfeatures']['name'];
-
-				if($queue->add($_QR['queue']) === false)
+				if(($result['gfeatures'] = $gfeatures->chk_values($_QR['gfeatures'],true,true)) === false
+				|| ($gid = $gfeatures->add($result['gfeatures'])) === false)
 				{
-					$gfeatures->delete($gid);
+					$info['gfeatures'] = $gfeatures->get_filter_result();
 					break;
 				}
+
+				$_QR['queue']['name'] = $result['gfeatures']['name'];
+
+				if($queue->add($_QR['queue']) !== false)
+					break;
+
+				$gfeatures->delete($gid);
 			}
 			while(false);
 
@@ -30,10 +36,9 @@ switch($act)
 		}
 
 		$_HTML->assign('queue_elt',$queue->get_element());
+		$_HTML->assign('gfeatures_elt',$gfeatures->get_element());
 		break;
 	case 'edit':
-		$info = array();
-
 		if(isset($_QR['id']) === false
 		|| ($info['gfeatures'] = $gfeatures->get($_QR['id'],false)) === false
 		|| ($info['queue'] = $queue->get($info['gfeatures']['name'],false)) === false)
@@ -43,12 +48,15 @@ switch($act)
 		{
 			do
 			{
-				if(xivo_issa('gfeatures',$_QR) === false
-				|| xivo_issa('queue',$_QR) === false)
+				if(xivo_issa('gfeatures',$_QR) === false || xivo_issa('queue',$_QR) === false)
 					break;
 
-				if($gfeatures->edit($info['gfeatures']['id'],$_QR['gfeatures']) === false)
+				if(($result['gfeatures'] = $gfeatures->chk_values($_QR['gfeatures'],true,true)) === false
+				|| $gfeatures->edit($info['gfeatures']['id'],$result['gfeatures']) === false)
+				{
+					$info['mfeatures'] = array_merge($info['gfeatures'],$gfeatures->get_filter_result());
 					break;
+				}
 
 				$_QR['queue']['name'] = $_QR['gfeatures']['name'];
 
@@ -76,10 +84,9 @@ switch($act)
 
 		$_HTML->assign('info',$info);
 		$_HTML->assign('queue_elt',$queue->get_element());
+		$_HTML->assign('gfeatures_elt',$gfeatures->get_element());
 		break;
 	case 'delete':
-		$info = array();
-
 		$qmember = &$ipbx->get_module('queuemember');
 
 		if(isset($_QR['id']) === false

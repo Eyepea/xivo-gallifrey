@@ -3,3 +3,15 @@ Fichiers
 
 ; col_action
 Action
+
+; opt_modify
+Modifier
+
+; opt_delete
+Supprimer
+
+; opt_delete_confirm
+Etes-vous certain de vouloir supprimer ce fichier ?
+
+; no_file
+Aucun fichier trouvé

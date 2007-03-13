@@ -121,8 +121,11 @@ class xivo_datastorage_mysql
 	{
 		$str = (string) $str;
 
-		$this->_errno = $this->errno() === false ? 'unknown' : $this->errno();
-		$this->_error = $this->error() === false ? 'unknown' : $this->error();
+		if(($this->_errno = $this->errno()) === false)
+			$this->_errno = 'unknown';
+
+		if(($this->_error = $this->error()) === false)
+			$this->_error = 'unknown';
 
 		if($str !== '')
 			$str .= ' - ';
@@ -132,39 +135,44 @@ class xivo_datastorage_mysql
 
 	function open()
 	{
-		if($this->_link === null)
-		{
-			$host = '';
+		if(is_resource($this->_link) === true)
+			return($this->_link);
 
-			if($this->_param['host'] !== '')
-				$host .= ':'.$this->_param['host'];
+		$host = '';
 
-			if($this->_param['port'] !== 0 && xivo_uint($this->_param['port']) !== 0)
-				$host .= ':'.$this->_param['port'];
-			else if($this->_param['socket'] !== '')
-				$host .= ':'.$this->_param['socket'];
+		if($this->_param['host'] !== '')
+			$host .= ':'.$this->_param['host'];
 
-			if($host !== '')
-				$host = substr($host,1);
+		if($this->_param['port'] !== 0 && xivo_uint($this->_param['port']) !== 0)
+			$host .= ':'.$this->_param['port'];
+		else if($this->_param['socket'] !== '')
+			$host .= ':'.$this->_param['socket'];
 
-			$this->_set_flag();
+		if($host !== '')
+			$host = substr($host,1);
 
-			if($this->_param['persist'] === true)
-				$this->_link = mysql_pconnect($host,$this->_param['user'],$this->_param['pass'],false,$this->_flag);
-			else
-				$this->_link = mysql_connect($host,$this->_param['user'],$this->_param['pass'],false,$this->_flag);
+		$this->_set_flag();
 
-			if($this->_link === false)
-				$this->halt('Can\'t connect to mysql server');
-		}
+		if($this->_param['persist'] === true)
+			$this->_link = mysql_pconnect($host,$this->_param['user'],$this->_param['pass'],false,$this->_flag);
+		else
+			$this->_link = mysql_connect($host,$this->_param['user'],$this->_param['pass'],false,$this->_flag);
+
+		if($this->_link === false)
+			$this->halt('Can\'t connect to mysql server');
 
 		return($this->_link);
 	}
 
+	function is_open()
+	{
+		return(is_resource($this->_link));
+	}
+
 	function select_db()
 	{
-		if(($r = mysql_select_db($this->_db, $this->_link)) === false)
-			$this->halt('Can\'t select database: '.$this->_db);
+		if(($r = mysql_select_db($this->_param['db'], $this->_link)) === false)
+			$this->halt('Can\'t select database: '.$this->_param['db']);
 
 		return($r);
 	}
@@ -449,7 +457,8 @@ class xivo_datastorage_mysql
 
 	function close()
 	{
-		mysql_close($this->_link);
+		if(is_resource($this->_link) === true)
+			mysql_close($this->_link);
 	}
 
 	function free_result($r=false)

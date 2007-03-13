@@ -31,7 +31,7 @@
 	if($list === false || ($nb = count($list)) === 0):
 ?>
 	<tr class="sb-content">
-		<td colspan="5" class="td-single"><?=$this->bbf('no_dir')?></td>
+		<td colspan="5" class="td-single"><?=$this->bbf('no_directory')?></td>
 	</tr>
 <?php
 	else:

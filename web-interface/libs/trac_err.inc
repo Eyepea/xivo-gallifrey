@@ -8,7 +8,7 @@ class xivo_trac_err
 				'report_mode'	=> 0,
 				'report_func'	=> 1,
 				'email'		=> false,
-				'file'		=> '');
+				'file'		=> false);
 
 	var $_delayed_content	= array();
 	var $_sapi		= XIVO_SAPI_MODE;
@@ -46,7 +46,12 @@ class xivo_trac_err
 		else
 			$this->_param['email'] = false;
 
-		//if(isset($param['file']) === true && $param['file'] !== ''
+		if(isset($param['file']) === true && ($param['file'] = $this->_chk_file($param['file'])) !== false)
+			$this->_param['file'] = $param['file'];
+		else if(($param['file'] = $this->_chk_file(ini_get('error_log'))) !== false)
+			$this->_param['file'] = $param['file'];
+		else
+			$this->_param['file'] = false;
 	}
 
 	function set_param($name,$value)
@@ -121,7 +126,7 @@ class xivo_trac_err
 		if(($filelog = xivo_file::is_f_rw($file)) !== false)
 			$r = $filelog;
 		else if(xivo_file::is_d_rwx($file,true) !== false && xivo_file::is_f($file) === false)
-			$r = $file;
+			$r = touch($file);
 		else
 			$r = false;
 
@@ -240,36 +245,9 @@ class xivo_trac_err
 		$tolabel = $this->_conf['level'][$level]['label'];
 		$tocontext = '('.$context.')';
 
-		if(($report_type & XIVO_TE_RTYPE_LOG) !== 0)
-		{
-			$file_err_log = false;
-
-			if($this->_param['file'] !== '')
-			{
-				if(($file = xivo_file::is_f_rw($this->_param['file'])) !== false)
-					$file_err_log = $file;
-				else if(xivo_file::is_d_rwx($this->_param['file'],true) !== false && xivo_file::is_f($this->_param['file']) === false)
-					$file_err_log = $this->_param['file'];
-				else
-					$file_err_log = false;
-			}
-
-			if($file_err_log === false)
-				$file_err_log = ini_get('error_log');
-
-			$log_err = false;
-
-			if(($file = xivo_file::is_f_rw($file_err_log)) !== false)
-				$log_err = true;
-			else if(xivo_file::is_d_rwx($file_err_log,true) !== false && xivo_file::is_f($file_err_log) === false)
-			{
-				touch($file_err_log);
-				$log_err = true;
-			}
-
-			if($log_err === true && ($file = xivo_file::is_f_rw($file_err_log)) !== false)
-				error_log($tolabel.' '.$tocontext.' - Message: '.xivo_notag($tomsg_log),3,$file);
-		}
+		if(($report_type & XIVO_TE_RTYPE_LOG) !== 0 && $this->_param['file'] !== false
+		&& ($file = xivo_file::is_f_rw($this->_param['file'])) !== false)
+			error_log($tolabel.' '.$tocontext.' - Message: '.xivo_notag($tomsg_log)."\n",3,$file);
 
 		$delayed = false;
 

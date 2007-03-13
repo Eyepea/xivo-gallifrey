@@ -469,7 +469,7 @@ class xivo_file
 		return($r);
 	}
 
-	function is_d_w($dir)
+	function is_d_w($dir,$t=false)
 	{
 		$r = false;
 
@@ -512,7 +512,7 @@ class xivo_file
 		return($r);
 	}
 
-	function is_d_rx($dir)
+	function is_d_rx($dir,$t=false)
 	{
 		$r = false;
 
@@ -525,7 +525,7 @@ class xivo_file
 		return($r);
 	}
 
-	function is_d_wx($dir)
+	function is_d_wx($dir,$t=false)
 	{
 		$r = false;
 
@@ -538,7 +538,7 @@ class xivo_file
 		return($r);
 	}
 
-	function is_d_rwx($dir)
+	function is_d_rwx($dir,$t=false)
 	{
 		$r = false;
 

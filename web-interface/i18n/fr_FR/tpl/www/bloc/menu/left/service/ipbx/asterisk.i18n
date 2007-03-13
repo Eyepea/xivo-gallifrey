@@ -73,5 +73,8 @@ Gestion des modules
 ; mn_left_manager
 Gestion du manager
 
+; mn_left_ti_control_system
+Système de contrôle
+
 ; mn_left_asterisk_reload
 Recharger Asterisk

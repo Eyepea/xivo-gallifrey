@@ -38,24 +38,25 @@ switch($cat)
 		if(isset($_QR['fm_send']) === true)
 		{
 			$_USR->call_policy('edit',array($_QR));
-			xivo_go($_HTML->url('xivo/configuration'));
+			xivo_go($_HTML->url('xivo/configuration'),'cat=list');
 		}
 		else if(($user_tree = $_USR->call_policy('get_user',array($info['id']))) !== false)
 		{
 			$_HTML->assign('info',$info);
 			$_HTML->assign('tree',$user_tree);
 		}
-		else xivo_go($_HTML->url('xivo/configuration'));
+		else xivo_go($_HTML->url('xivo/configuration'),'cat=list');
 
 		$dhtml = &$_HTML->get_module('dhtml');
 		$dhtml->add_js('xivo/configuration/policy/policy.js.php','foot');
 		break;
+	default:
 	case 'list':
 		$cat = 'list';
 		$_HTML->assign('list',$_USR->get_list());
 		break;
-	default:
-		$cat = 'index';
+//	default:
+//		$cat = 'index';
 }
 
 $menu = &$_HTML->get_module('menu');

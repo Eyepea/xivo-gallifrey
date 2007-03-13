@@ -69,8 +69,11 @@ class xivo_datastorage_sqlite
 	{
 		$str = (string) $str;
 
-		$this->_errno = $this->errno() === false ? 'unknown' : $this->errno();
-		$this->_error = $this->error() === false ? 'unknown' : $this->error();
+		if(($this->_errno = $this->errno()) === false)
+			$this->_errno = 'unknown';
+
+		if(($this->_error = $this->error()) === false)
+			$this->_error = 'unknown';
 
 		if($str !== '')
 			$str .= ' - ';
@@ -80,34 +83,39 @@ class xivo_datastorage_sqlite
 
 	function _chk_db()
 	{
+		if(($db = xivo_file::is_f($this->_param['db'])) !== false)
+			return(null);
+
+		if(($pos = strrpos($this->_param['db'],'.')) === false || substr($this->_param['db'],1-$pos) !== '.db')
+			$this->_param['db'] .= '.db';
+
+		$this->_param['db'] = XIVO_PATH_DS.XIVO_SEP_DIR.$this->_type.XIVO_SEP_DIR.ltrim($this->_param['db'],XIVO_SEP_DIR);
+
 		if(($db = xivo_file::is_f($this->_param['db'])) === false)
-		{
-			if(($pos = strrpos($this->_param['db'],'.')) === false || substr($this->_param['db'],1-$pos) !== '.db')
-				$this->_param['db'] .= '.db';
-
-			$this->_param['db'] = XIVO_PATH_DS.XIVO_SEP_DIR.$this->_type.XIVO_SEP_DIR.ltrim($this->_param['db'],XIVO_SEP_DIR);
-
-			if(($db = xivo_file::is_f($this->_param['db'])) === false)
-				$this->halt('Can\'t find database');
-		}
+			$this->halt('Can\'t find database');
 	}
 
 	function open()
 	{
-		if($this->_link === null)
-		{
-			$this->_chk_db();
+		if(is_resource($this->_link) === true)
+			return($this->_link);
 
-			if($this->_param['persist'] === true)
-				$this->_link = sqlite_popen($this->_param['db'],0666);
-			else
-				$this->_link = sqlite_open($this->_param['db'],0666);
+		$this->_chk_db();
 
-			if($this->_link === false)
-				$this->halt();
-		}
+		if($this->_param['persist'] === true)
+			$this->_link = sqlite_popen($this->_param['db'],0666);
+		else
+			$this->_link = sqlite_open($this->_param['db'],0666);
+
+		if($this->_link === false)
+			$this->halt();
 
 		return($this->_link);
+	}
+
+	function is_open()
+	{
+		return(is_resource($this->_link));
 	}
 
 	function query($q,$b=false,$o=false)
@@ -432,7 +440,8 @@ class xivo_datastorage_sqlite
 
 	function close()
 	{
-		return(sqlite_close($this->_link));
+		if(is_resource($this->_link) === true)
+			return(sqlite_close($this->_link));
 	}
 
 	function num_rows($r=false)

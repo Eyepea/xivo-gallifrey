@@ -994,43 +994,4 @@ function xivo_compress(&$data,$level=6)
 	return($r);
 }
 
-function xivo_socket($target,$port,$data='',$timeout=30)
-{
-	$r = false;
-
-	if(($port = xivo_uint($port)) === 0 || ($timeout = xivo_uint($timeout)) === 0)
-		return($r);
-
-	$data = (string) $data;
-
-	$socket = socket_create(AF_INET,SOCK_STREAM,SOL_TCP);
-	socket_set_option($socket,SOL_SOCKET,SO_DEBUG,0);
-	socket_connect($socket,'127.0.0.1',$port);
-	socket_set_block($socket);
-	socket_write($socket,$data,strlen($data));
-	$r = socket_read($socket,128,PHP_NORMAL_READ);
-	socket_close($socket);
-
-	die();
-/*
-
-    	if(($fp = @fsockopen($target,$port,$errno,$errstr,$timeout)) === false)
-	{
-		print $errno;
-		print $errstr;
-		return($r);
-	}
-
-	fputs($fp,$data);
-
-	$r = '';
-
-	while(feof($fp) === false)
-		$r .= fgets($fp, 128);
-
-	fclose($fp);
-*/
-	return($r);
-}
-
 ?>

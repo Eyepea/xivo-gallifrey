@@ -2,6 +2,7 @@
 	$form = &$this->get_module('form');
 	$info = $this->vars('info');
 	$queue_elt = $this->vars('queue_elt');
+	$gfeatures_elt = $this->vars('gfeatures_elt');
 ?>
 
 <div class="b-infos b-form">
@@ -12,7 +13,11 @@
 <?=$form->hidden(array('name' => 'act','value' => 'edit'));?>
 <?=$form->hidden(array('name' => 'fm_send','value' => '1'));?>
 <?=$form->hidden(array('name' => 'id','value' => $info['gfeatures']['id']));?>
-<?=$form->text(array('desc' => $this->bbf('fm_gfeatures_name'),'name' => 'gfeatures[name]','id' => 'it-gfeatures-name','label' => 'lb-gfeatures-name','size' => 25,'value' => $info['gfeatures']['name']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
+<?=$form->text(array('desc' => $this->bbf('fm_gfeatures_name'),'name' => 'gfeatures[name]','labelid' => 'gfeatures-name','size' => 25,'default' => $gfeatures_elt['name']['default'],'value' => $info['gfeatures']['name']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
+<?=$form->text(array('desc' => $this->bbf('fm_gfeatures_number'),'name' => 'gfeatures[number]','labelid' => 'gfeatures-number','size' => 25,'default' => $gfeatures_elt['number']['default'],'value' => $info['gfeatures']['number']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
 <?php
 	if(xivo_ak('ringseconds',$queue_elt) === true):
 ?>

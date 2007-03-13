@@ -4,6 +4,9 @@ Groupes > Ajouter
 ; fm_gfeatures_name
 Nom :
 
+; fm_gfeatures_number
+Numéro :
+
 ; fm_queue_ringseconds
 Temps de sonnerie :
 

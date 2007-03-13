@@ -21,9 +21,10 @@ class xivo_service_asterisk_ami extends xivo_service_asterisk_abstract
 
 	function _chk_cfgpath()
 	{
-		if(xivo_issa('general',$this->_sre->_ini) === false
-		|| isset($this->_sre->_ini['general']['cfgpath']) === false)
+		if(xivo_issa($this->_name,$this->_sre->_ini) === false)
 			return(false);
+
+
 
 		if(($this->_cfgpath = xivo_file::is_d_rwx($this->_sre->_ini['general']['cfgpath'])) === false)
 			return(false);

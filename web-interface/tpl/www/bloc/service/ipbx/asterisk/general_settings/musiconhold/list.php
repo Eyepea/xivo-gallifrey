@@ -27,7 +27,7 @@
 	if($list === false || ($nb = count($list)) === 0):
 ?>
 	<tr class="sb-content">
-		<td colspan="5" class="td-single"><?=$this->bbf('no_musiconhold')?></td>
+		<td colspan="5" class="td-single"><?=$this->bbf('no_category')?></td>
 	</tr>
 <?php
 	else:

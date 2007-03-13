@@ -12,3 +12,9 @@ Modifier
 
 ; opt_delete
 Supprimer
+
+; opt_delete_confirm
+Etes-vous certain de vouloir supprimer ce répertoire ?
+
+; no_directory
+Aucun répertoire trouvé

@@ -3,7 +3,6 @@
 $array = array();
 $array['index'] = 'index.php';
 $array['service/ipbx'] = 'service/ipbx/index.php';
-$array['service/ipbx/reload'] = 'service/ipbx/reload.php';
 $array['service/ipbx/general_settings/sipprotocol'] = 'service/ipbx/index.php/general_settings/sipprotocol/';
 $array['service/ipbx/general_settings/iaxprotocol'] = 'service/ipbx/index.php/general_settings/iaxprotocol/';
 $array['service/ipbx/general_settings/voicemail'] = 'service/ipbx/index.php/general_settings/voicemail/';
@@ -21,6 +20,7 @@ $array['service/ipbx/system_management/configfiles'] = 'service/ipbx/index.php/s
 $array['service/ipbx/system_management/isdncard'] = 'service/ipbx/index.php/system_management/isdncard/';
 $array['service/ipbx/system_management/modules'] = 'service/ipbx/index.php/system_management/modules/';
 $array['service/ipbx/system_management/manager'] = 'service/ipbx/index.php/system_management/manager/';
+$array['service/ipbx/control_system/reload'] = 'service/ipbx/index.php/control_system/reload/';
 $array['xivo'] = 'xivo/index.php';
 $array['xivo/configuration'] = 'xivo/configuration.php';
 $array['xivo/preferences'] = 'xivo/preferences.php';

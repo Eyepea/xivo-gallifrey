@@ -24,13 +24,11 @@ switch($act)
 				$_QR['mfeatures']['number'] = $_QR['meetme']['number'];
 				$_QR['mfeatures']['meetmeid'] = $mid;
 
-				if(($result['mfeatures'] = $mfeatures->chk_values($_QR['mfeatures'],true,true)) === false
-				|| $mfeatures->add($result['mfeatures']) !== false)
-				{
-					$info['mfeatures'] = $mfeatures->get_filter_result();
+				if(($result['mfeatures'] = $mfeatures->chk_values($_QR['mfeatures'],true,true)) !== false
+				&& $mfeatures->add($result['mfeatures']) !== false)
 					break;
-				}
 
+				$info['mfeatures'] = $mfeatures->get_filter_result();
 				$meetme->delete($mid);
 			}
 			while(false);

@@ -1,5 +1,5 @@
 ; col_category
-Contexte de musique
+Catégorie
 
 ; col_mode
 Type
@@ -13,5 +13,8 @@ Modifier
 ; opt_delete
 Supprimer
 
-; no_directory
-Aucun répertoire trouvé
+; opt_delete_confirm
+Etes-vous certain de vouloir supprimer cette catégorie ?
+
+; no_category
+Aucune catégorie trouvée
