@@ -194,11 +194,11 @@ class xivo_service_asterisk_sounds extends xivo_service_asterisk_abstract
 
 		$name = (string) $name;
 
-		$dir = $this->_mohpath.XIVO_SEP_DIR.$name;
+		$dir = $this->_sndpath.XIVO_SEP_DIR.$name;
 
 		if(($match_dir = $this->_get_option_dir_name()) === false
 		|| preg_match($match_dir,$name) !== 1
-		|| xivo_file::is_d_rwx($this->_mohpath) === false
+		|| xivo_file::is_d_rwx($this->_sndpath) === false
 		|| xivo_file::is_d($dir) !== false) 
 			return($r);
 
@@ -214,11 +214,11 @@ class xivo_service_asterisk_sounds extends xivo_service_asterisk_abstract
 		$name = (string) $name;
 		$newname = (string) $newname;
 
-		$dir = $this->_mohpath.XIVO_SEP_DIR.$name;
+		$dir = $this->_sndpath.XIVO_SEP_DIR.$name;
 
 		if(($match_dir = $this->_get_option_dir_name()) === false
 		|| preg_match($match_dir,$newname) !== 1
-		|| xivo_file::is_d_rwx($this->_mohpath) === false
+		|| xivo_file::is_d_rwx($this->_sndpath) === false
 		|| xivo_file::is_d($dir) === false)
 			return($r);
 
