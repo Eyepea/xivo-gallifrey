@@ -14,8 +14,6 @@ class Popup: public QWidget
 {
 	Q_OBJECT
 public:
-	//! Default Constructor
-	Popup(QWidget *parent=0);
 	//! Construct from a QIODevice used to read XML input
 	Popup(QIODevice *inputstream, const QString & sessionid, QWidget *parent=0);
 	//! Add a Text field (name, value)
@@ -28,13 +26,15 @@ public:
 	void addInfoPhone(const QString & name, const QString & value);
 	//! finalize the Construction of the window and show it
 	void finishAndShow();
+signals:
+	void wantsToBeShown(Popup *);	//!< sent when the widget want to show itself
 public slots:
 	void streamNewData();		//!< new input data is available
-	void streamAboutToClose();
-	void socketDisconnected();	// test !
-	void socketError(QAbstractSocket::SocketError err);	// test !
+	void streamAboutToClose();	//!< catch aboutToClose() signal from the socket
+	void socketDisconnected();	//!< connected to disconnected() signal
+	void socketError(QAbstractSocket::SocketError err);	//!< socket error handling
 protected:
-	void closeEvent(QCloseEvent *event);
+	void closeEvent(QCloseEvent *event);	//!< catch close event
 private:
 	QIODevice * m_inputstream;	//!< input stream where the XML is read from
 	/* the following properties are for XML parsing */

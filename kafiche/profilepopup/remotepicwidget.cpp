@@ -46,7 +46,7 @@ void RemotePicWidget::startHttpRequest(const QString & urlstr)
 	// QTemporaryFile().open() et filename() apres.
 }
 
-void RemotePicWidget::httpDataReadProgress(int bytesRead, int totalBytes)
+void RemotePicWidget::httpDataReadProgress(int /*bytesRead*/, int /*totalBytes*/)
 {
 //	qDebug() << (100*bytesRead/totalBytes) << "%"
 //	         << bytesRead << "out of" << totalBytes;
