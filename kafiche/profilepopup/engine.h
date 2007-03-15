@@ -10,6 +10,8 @@
 #include <QUdpSocket>
 #include <QTimer>
 
+class Popup;
+
 //! Profile popup engine
 /*! The engine object is containing all the code to
  *  handle network connection and requests */
@@ -36,11 +38,17 @@ public:
 	void setPasswd(const QString &);	//!< see passwd()
 	const EngineState state() const;	//!< Engine state (Logged/Not Logged)
 	void setState(EngineState state);	//!< see state()
+	bool autoconnect() const;			//!< auto connect flag
+	void setAutoconnect(bool b);		//!< set auto connect flag
+	bool trytoreconnect() const;		//!< try to reconnect flag
+	void setTrytoreconnect(bool b);		//!< set try to reconnect flag
 signals:
 	void logged();	//!< signal emmited when the state becomes ELogged
 	void delogged();	//!< signal emmited when the state becomes ENotLogged
+	void newProfile(Popup *);	//!< signal emmited when a new profile has to be shown
 public slots:
 	void start();	//!< start the connection process.
+	void stop();	//!< stop the engine
 private slots:
 	void identifyToTheServer();	//!< perform the first login step
 	void processLoginDialog();	//!< perform the following login steps
@@ -48,7 +56,8 @@ private slots:
 	void serverHostFound();		//!< called when the host name resolution succeded
 	void keepLoginAlive();		//!< Send a UDP datagram to keep session alive
 	void readKeepLoginAliveDatagrams();	//!< handle the responses to keep alive
-	void popupDestroyed(QObject *);
+	void popupDestroyed(QObject *);	//!< know when a profile widget is destroyed *DEBUG*
+	void profileToBeShown(Popup *);	//!< a new profile must be displayed
 private:
 	void initListenSocket();	//!< initialize the socket listening to profile
 
@@ -58,6 +67,9 @@ private:
 	QString m_login;		//!< User login
 	QString m_passwd;		//!< User password
 	// 
+	bool m_autoconnect;		//!< Auto connect flag
+	bool m_trytoreconnect;	//!< "try to reconnect" flag
+	//
 	QHostAddress m_serveraddress;	//!< Resolved address of the login server
 	QTcpSocket m_loginsocket;	//!< TCP socket used to login
 	ushort m_listenport;		//!< Port where we are listening for profiles

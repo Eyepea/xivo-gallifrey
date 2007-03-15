@@ -35,6 +35,9 @@ Engine::Engine(QObject *parent)
              this, SLOT(readKeepLoginAliveDatagrams()));
 	connect( &m_timer, SIGNAL(timeout()),
 	         this, SLOT(keepLoginAlive()));
+	
+	if(m_autoconnect)
+		start();
 }
 
 /*!
@@ -47,6 +50,8 @@ void Engine::loadSettings()
 	m_serverport = settings.value("engine/serverport", 12345).toUInt();
 	m_login = settings.value("engine/login").toString();
 	m_passwd = settings.value("engine/passwd").toString();
+	m_autoconnect = settings.value("engine/autoconnect", false).toBool();
+	m_trytoreconnect = settings.value("engine/trytoreconnect", false).toBool();
 }
 
 /*!
@@ -59,6 +64,8 @@ void Engine::saveSettings()
 	settings.setValue("engine/serverport", m_serverport);
 	settings.setValue("engine/login", m_login);
 	settings.setValue("engine/passwd", m_passwd);
+	settings.setValue("engine/autoconnect", m_autoconnect);
+	settings.setValue("engine/trytoreconnect", m_trytoreconnect);
 }
 
 void Engine::initListenSocket()
@@ -82,6 +89,16 @@ void Engine::start()
 	qDebug() << "Engine::start()";
 	m_loginsocket.abort();
 	m_loginsocket.connectToHost(m_serverip, m_serverport);
+}
+
+/*!
+ * This method disconnect the engine from the the server
+ */
+void Engine::stop()
+{
+	qDebug() << "Engine::stop()";
+	m_timer.stop();
+	setState(ENotLogged);
 }
 
 // === Getter and Setters ===
@@ -124,6 +141,26 @@ const QString & Engine::passwd() const
 void Engine::setPasswd(const QString & passwd)
 {
 	m_passwd = passwd;
+}
+
+void Engine::setAutoconnect(bool b)
+{
+	m_autoconnect = b;
+}
+
+bool Engine::autoconnect() const
+{
+	return m_autoconnect;
+}
+
+void Engine::setTrytoreconnect(bool b)
+{
+	m_trytoreconnect = b;
+}
+
+bool Engine::trytoreconnect() const
+{
+	return m_trytoreconnect;
 }
 
 /*!
@@ -251,8 +288,8 @@ void Engine::handleProfilePush()
 	Popup * popup = new Popup(connection, m_sessionid);
 	connect( popup, SIGNAL(destroyed(QObject *)),
 	         this, SLOT(popupDestroyed(QObject *)) );
-	//popup->show();
-	//connection->disconnectFromHost();
+	connect( popup, SIGNAL(wantsToBeShown(Popup *)),
+	         this, SLOT(profileToBeShown(Popup *)) );
 }
 
 void Engine::popupDestroyed(QObject * obj)
@@ -261,6 +298,11 @@ void Engine::popupDestroyed(QObject * obj)
 	//qDebug() << "========================";
 	obj->dumpObjectTree();
 	qDebug() << "========================";
+}
+
+void Engine::profileToBeShown(Popup * popup)
+{
+	newProfile( popup );
 }
 
 /*!
