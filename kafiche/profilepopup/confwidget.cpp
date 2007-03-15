@@ -4,20 +4,21 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QLineEdit>
+#include <QSpinBox>
+#include <QCheckBox>
 #include <QDebug>
 #include "confwidget.h"
+#include "mainwidget.h"
 
-ConfWidget::ConfWidget(Engine *engine, QWidget *parent)
-//: QWidget(parent), m_engine(engine)
+ConfWidget::ConfWidget(Engine *engine, MainWidget *parent)
 : QDialog(parent), m_engine(engine)
 {
+	m_mainwidget = parent;
 	// the object will be destroyed when closed
 	setAttribute(Qt::WA_DeleteOnClose);
+	setModal(true);
 	QVBoxLayout *vlayout = new QVBoxLayout(this);
 
-//	QLabel *lbl = new QLabel("Configuration", this);
-//	lbl->setAlignment(Qt::AlignCenter);
-//	vlayout->addWidget(lbl);
 	setWindowTitle("Configuration");
 
 	/* grid layout for the editable values */
@@ -46,6 +47,20 @@ ConfWidget::ConfWidget(Engine *engine, QWidget *parent)
 	gridlayout->addWidget(lblpasswd, 3, 0);
 	gridlayout->addWidget(m_linepasswd, 3, 1);
 
+	m_autoconnect = new QCheckBox(tr("Autoconnect at startup"), this);
+	m_autoconnect->setCheckState( m_engine->autoconnect()?Qt::Checked:Qt::Unchecked );
+	gridlayout->addWidget(m_autoconnect, 4, 0, 1, 0);
+	m_trytoreconnect = new QCheckBox(tr("Try to reconnect"), this);
+	m_trytoreconnect->setCheckState( m_engine->trytoreconnect()?Qt::Checked:Qt::Unchecked );
+	gridlayout->addWidget(m_trytoreconnect, 5, 0, 1, 0);
+
+	QLabel * lbltablimit = new QLabel( tr("Tab limit"), this);
+	gridlayout->addWidget(lbltablimit, 6, 0);
+	m_tablimit_sbox = new QSpinBox(this);
+	m_tablimit_sbox->setRange(0, 99);
+	m_tablimit_sbox->setValue(m_mainwidget->tablimit());
+	gridlayout->addWidget(m_tablimit_sbox, 6, 1);
+
 	QPushButton *btnok = new QPushButton("&Ok", this);	// some default ok button should exist :)
 	connect( btnok, SIGNAL(clicked()), this, SLOT(saveAndClose()) );
 	QPushButton *btncancel = new QPushButton("&Cancel", this);
@@ -57,7 +72,6 @@ ConfWidget::ConfWidget(Engine *engine, QWidget *parent)
 
 	vlayout->addLayout(gridlayout);
 	vlayout->addLayout(hlayout);
-	//setLayout(vlayout);
 }
 
 void ConfWidget::saveAndClose()
@@ -71,7 +85,12 @@ void ConfWidget::saveAndClose()
 	m_engine->setLogin( m_linelogin->text() );
 	qDebug() << "password =" << m_linepasswd->text();
 	m_engine->setPasswd( m_linepasswd->text() );
+	qDebug() << "autoconnect =" << m_autoconnect->checkState();
+	m_engine->setAutoconnect( m_autoconnect->checkState() == Qt::Checked );
+	qDebug() << "trytoreconnect =" << m_trytoreconnect->checkState();
+	m_engine->setTrytoreconnect( m_trytoreconnect->checkState() == Qt::Checked );
 	m_engine->saveSettings();
+	m_mainwidget->setTablimit(m_tablimit_sbox->value());
 	close();
 }
 
