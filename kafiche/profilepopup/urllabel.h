@@ -3,6 +3,9 @@
 
 #include <QLabel>
 
+/*! \brief UrlLabel Widget
+ *
+ * This label is a QLabel designed to display an URL. */
 class UrlLabel : public QLabel
 {
 	Q_OBJECT
