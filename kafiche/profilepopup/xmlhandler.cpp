@@ -3,26 +3,28 @@
 #include "xmlhandler.h"
 #include "popup.h"
 
+/*!
+ * Basic constructor
+ * \param popup Popup widget related to the XML stream
+ */
 XmlHandler::XmlHandler( Popup *popup )
 : m_popup(popup), m_isParsingInfo(false)
 {
 	qDebug() << "XmlHandler::XmlHandler()";
 }
 
-/*
- * bool QXmlContentHandler::startElement ( const QString & namespaceURI, const QString & localName, const QString & qName, const QXmlAttributes & atts )
+/*!
+ * Start of element callback.
+ *
+ * Detect "info" element and store "type" and "name"
+ * attributes.
  */
 bool XmlHandler::startElement( const QString & /*namespaceURI*/,
                                const QString & localName,
                                const QString & /*qName*/,
                                const QXmlAttributes & atts )
 {
-	//int i;
 	qDebug() << "XmlHandler::startElement(" << localName << ")";
-	//for(i = 0; i < atts.count(); i++)
-	//{
-	//	qDebug() << atts.localName(i) << "=" << atts.value(i);
-	//}
 	if( localName == QString("info") )
 	{
 		m_isParsingInfo = true;
@@ -37,6 +39,11 @@ bool XmlHandler::startElement( const QString & /*namespaceURI*/,
 	return true;
 }
 
+/*!
+ * Called when a XML element is closed :
+ * use the data stored in attributes to create
+ * widgets in the "popup"
+ */
 bool XmlHandler::endElement( const QString & /*namespaceURI*/,
                              const QString & localName,
                              const QString & /*qName*/)
