@@ -1,21 +1,13 @@
 #include <QPixmap>
 #include <QLabel>
 #include <QUrl>
+#include <QIcon>
+#include <QPushButton>
 #include <QDebug>
 #include "popup.h"
 #include "xmlhandler.h"
 #include "remotepicwidget.h"
 #include "urllabel.h"
-
-// Test - to be removed.
-Popup::Popup(QWidget *parent)
-: QWidget(parent)
-{
-	QPixmap *face = new QPixmap( "portrait.jpg" );
-	QLabel *lbl = new QLabel(this);
-	lbl->setPixmap( *face );
-	m_inputstream = 0;
-}
 
 /*!
  * This constructor init all XML objects and connect signals
@@ -46,6 +38,22 @@ Popup::Popup(QIODevice *inputstream, const QString & sessionid, QWidget *parent)
 	QLabel * title = new QLabel(tr("Incoming call"), this);
 	title->setAlignment(Qt::AlignHCenter);
 	m_vlayout->addWidget(title);
+	bool display_buttons = true;
+	if(display_buttons)
+	{
+		QHBoxLayout * hlayout = new QHBoxLayout();
+		QPushButton * btn1 = new QPushButton(tr("&Answer"), this);
+		btn1->setEnabled(false);
+		hlayout->addWidget(btn1);
+		QPushButton * btn2 = new QPushButton(tr("&Dismiss"), this);
+		btn2->setEnabled(false);
+		hlayout->addWidget(btn2);
+		QPushButton * btn3 = new QPushButton(tr("&Close"), this);
+		connect( btn3, SIGNAL(clicked()), this, SLOT(close()) );
+		hlayout->addWidget(btn3);
+		m_vlayout->addLayout(hlayout);
+	}
+	setWindowIcon(QIcon(":/xivoicon.png"));
 }
 
 void Popup::addInfoText(const QString & name, const QString & value)
@@ -133,14 +141,17 @@ void Popup::socketError(QAbstractSocket::SocketError err)
 	qDebug() << "Popup::socketError()" << err;
 }
 
-//
+/*!
+ * Send signal to be shown !
+ */
 void Popup::finishAndShow()
 {
 	qDebug() << "Popup::finishAndShow()";
 	//dumpObjectInfo();
-	dumpObjectTree();
+	//dumpObjectTree();
 	// ...
-	show();
+	//show();
+	wantsToBeShown( this );
 }
 
 void Popup::closeEvent(QCloseEvent * event)
