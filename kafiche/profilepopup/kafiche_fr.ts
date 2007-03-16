@@ -136,7 +136,7 @@
     <message>
         <location filename="mainwidget.cpp" line="108"/>
         <source>&amp;Availability</source>
-        <translation type="unfinished">&amp;Disponible</translation>
+        <translation type="unfinished">&amp;Disponibilité</translation>
     </message>
     <message>
         <location filename="mainwidget.cpp" line="113"/>
