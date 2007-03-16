@@ -19,36 +19,9 @@
  * vertical box layout and connect signals with slots.
  */
 MainWidget::MainWidget(Engine *engine, QWidget *parent)
-//: QWidget(parent), m_engine(engine), m_systrayIcon(0),
 : QMainWindow(parent), m_engine(engine), m_systrayIcon(0),
   m_iconred(":/xivoicon-red.png"), m_icongreen(":/xivoicon-green.png")
 {
-	/*
-	QVBoxLayout *layout = new QVBoxLayout(this);
-
-	QPushButton *btnconf = new QPushButton("&Configure", this);
-	layout->addWidget(btnconf);
-	connect( btnconf, SIGNAL(clicked()), this, SLOT(popupConf()) );
-
-	m_btnstart = new QPushButton("&Start", this);
-	m_btnstart->setDefault(true);
-	layout->addWidget(m_btnstart);
-	connect( m_btnstart, SIGNAL(clicked()), m_engine, SLOT(start()) );
-
-	QPushButton *btnquit = new QPushButton("&Quit", this);
-	layout->addWidget(btnquit);
-	connect( btnquit, SIGNAL(clicked()), qApp, SLOT(quit()) );
-*/
-
-	//qDebug() << "QSystemTrayIcon::isSystemTrayAvailable()="
-	//         << QSystemTrayIcon::isSystemTrayAvailable();
-	/*
-	QPushButton *btnsystray = new QPushButton("To S&ystray", this);
-	btnsystray->setEnabled( QSystemTrayIcon::isSystemTrayAvailable() );
-	layout->addWidget(btnsystray);
-	connect( btnsystray, SIGNAL(clicked()), this, SLOT(hide()) );
-	*/
-
 	createActions();
 	createMenus();
 	if( QSystemTrayIcon::isSystemTrayAvailable() )
@@ -56,7 +29,8 @@ MainWidget::MainWidget(Engine *engine, QWidget *parent)
 
 	connect( engine, SIGNAL(logged()), this, SLOT(setConnected()) );
 	connect( engine, SIGNAL(delogged()), this, SLOT(setDisconnected()) );
-	connect( engine, SIGNAL(newProfile(Popup *)), this, SLOT(showNewProfile(Popup *)) );
+	connect( engine, SIGNAL(newProfile(Popup *)),
+	         this, SLOT(showNewProfile(Popup *)) );
 
 	//setWindowFlags(Qt::Dialog);	
 	//layout->setSizeConstraint(QLayout::SetFixedSize);	// remove minimize and maximize button
@@ -83,6 +57,7 @@ void MainWidget::createActions()
 	m_systrayact = new QAction(tr("To S&ystray"), this);
 	m_systrayact->setStatusTip(tr("Go to the system tray"));
 	connect( m_systrayact, SIGNAL(triggered()), this, SLOT(hide()) );
+	m_systrayact->setEnabled( QSystemTrayIcon::isSystemTrayAvailable() );
 
 	m_connectact = new QAction(tr("&Connect"), this);
 	m_connectact->setStatusTip(tr("Connect to the server"));
@@ -95,6 +70,22 @@ void MainWidget::createActions()
 	//connectgroup->addAction( m_disconnectact );
 	m_connectact->setEnabled(true);
 	m_disconnectact->setEnabled(false);
+
+	// Availability actions :
+	QActionGroup * availgrp = new QActionGroup( this );
+	availgrp->setExclusive(true);
+
+	m_avact_avail = new QAction( tr("&Available"), this );
+	m_avact_avail->setCheckable(true);
+//	m_avact_avail->setStatusTip( tr("") );
+	availgrp->addAction( m_avact_avail );
+	m_avact_avail->setChecked( true );
+	m_avact_away = new QAction( tr("A&way"), this );
+	m_avact_away->setCheckable(true);
+	availgrp->addAction( m_avact_away );
+	m_avact_dnd = new QAction( tr("&Does not disturb"), this );
+	m_avact_dnd->setCheckable(true);
+	availgrp->addAction( m_avact_dnd );
 }
 
 void MainWidget::createMenus()
@@ -109,14 +100,21 @@ void MainWidget::createMenus()
 	filemenu->addAction( m_quitact );
 
 	QMenu * avail = menuBar()->addMenu(tr("&Availability"));
-	avail->addAction( tr("Available") );
-	avail->addAction( tr("Away") );
+	avail->addAction( m_avact_avail );
+	avail->addAction( m_avact_away );
+	avail->addAction( m_avact_dnd );
 
 	QMenu * helpmenu = menuBar()->addMenu(tr("&Help"));
 	helpmenu->addAction( tr("About &Qt"), qApp, SLOT(aboutQt()) );
 }
 
 /*!
+ * tablimit property is defining the maximum
+ * number of profile that can be displayed in the Tabbed
+ * widget.
+ *
+ * \sa setTablimit
+ * \sa m_tablimit
  */
 int MainWidget::tablimit() const
 {
@@ -124,6 +122,8 @@ int MainWidget::tablimit() const
 }
 
 /*!
+ * \sa tablimit
+ * \sa m_tablimit
  */
 void MainWidget::setTablimit(int tablimit)
 {

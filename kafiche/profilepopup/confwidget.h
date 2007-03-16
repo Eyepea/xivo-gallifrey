@@ -39,7 +39,9 @@ private:
 	QLineEdit *m_linelogin;		//!< user login
 	QLineEdit *m_linepasswd;	//!< user password
 	QCheckBox *m_autoconnect;	//!< Auto connect checkbox
+	QSpinBox *m_kainterval_sbox;	//!< Keep alive interval
 	QCheckBox *m_trytoreconnect;	//!< "Try to reconnect" Checkbox
+	QSpinBox *m_tryinterval_sbox;	//!< "Try to reconnect" interval
 	QSpinBox *m_tablimit_sbox;	//!< Maximum number of tabs
 	Engine *m_engine;			//!< Engine object parameters are commited to
 	MainWidget *m_mainwidget;	//!< MainWidget where some parameters are commited to

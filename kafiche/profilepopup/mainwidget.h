@@ -21,8 +21,8 @@ class MainWidget: public QMainWindow
 public:
 	//! Constructor
 	MainWidget(Engine *engine, QWidget *parent=0);
-	int tablimit() const;
-	void setTablimit(int);
+	int tablimit() const;	//!< getter for m_tablimit
+	void setTablimit(int);	//!< setter for m_tablimit
 private slots:
 	void popupConf();
 	void setDisconnected();
@@ -51,6 +51,9 @@ private:
 	QAction * m_systrayact;	//!< "Go to systray" action
 	QAction * m_connectact;	//!< "Connect" Action
 	QAction * m_disconnectact;	//!< "Disconnect" Action
+	QAction * m_avact_avail;	//!< Available Action
+	QAction * m_avact_away;		//!< Away Action
+	QAction * m_avact_dnd;		//!< "Does not disturb" action
 };
 
 #endif

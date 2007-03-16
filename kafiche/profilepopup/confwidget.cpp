@@ -50,16 +50,26 @@ ConfWidget::ConfWidget(Engine *engine, MainWidget *parent)
 	m_autoconnect = new QCheckBox(tr("Autoconnect at startup"), this);
 	m_autoconnect->setCheckState( m_engine->autoconnect()?Qt::Checked:Qt::Unchecked );
 	gridlayout->addWidget(m_autoconnect, 4, 0, 1, 0);
+	gridlayout->addWidget( new QLabel( tr("Keep alive interval"), this), 5, 0);
+	m_kainterval_sbox = new QSpinBox(this);
+	m_kainterval_sbox->setRange(1, 120);
+	m_kainterval_sbox->setValue(m_engine->keepaliveinterval() / 1000);
+	gridlayout->addWidget( m_kainterval_sbox, 5, 1);
 	m_trytoreconnect = new QCheckBox(tr("Try to reconnect"), this);
 	m_trytoreconnect->setCheckState( m_engine->trytoreconnect()?Qt::Checked:Qt::Unchecked );
-	gridlayout->addWidget(m_trytoreconnect, 5, 0, 1, 0);
+	gridlayout->addWidget(m_trytoreconnect, 6, 0, 1, 0);
+	gridlayout->addWidget( new QLabel( tr("Try to reconnect interval"), this), 7, 0);
+	m_tryinterval_sbox = new QSpinBox(this);
+	m_tryinterval_sbox->setRange(1, 120);
+	m_tryinterval_sbox->setValue(m_engine->trytoreconnectinterval() / 1000);
+	gridlayout->addWidget( m_tryinterval_sbox, 7, 1);
 
 	QLabel * lbltablimit = new QLabel( tr("Tab limit"), this);
-	gridlayout->addWidget(lbltablimit, 6, 0);
+	gridlayout->addWidget(lbltablimit, 8, 0);
 	m_tablimit_sbox = new QSpinBox(this);
 	m_tablimit_sbox->setRange(0, 99);
 	m_tablimit_sbox->setValue(m_mainwidget->tablimit());
-	gridlayout->addWidget(m_tablimit_sbox, 6, 1);
+	gridlayout->addWidget(m_tablimit_sbox, 8, 1);
 
 	QPushButton *btnok = new QPushButton("&Ok", this);	// some default ok button should exist :)
 	connect( btnok, SIGNAL(clicked()), this, SLOT(saveAndClose()) );
@@ -77,18 +87,20 @@ ConfWidget::ConfWidget(Engine *engine, MainWidget *parent)
 void ConfWidget::saveAndClose()
 {
 	// send the conf stuff to the engine !
-	qDebug() << "ip =" << m_lineip->text();
+	//qDebug() << "ip =" << m_lineip->text();
 	m_engine->setServerip( m_lineip->text() );
-	qDebug() << "port =" << m_lineport->text().toUShort();
+	//qDebug() << "port =" << m_lineport->text().toUShort();
 	m_engine->setServerport( m_lineport->text().toUShort() );
-	qDebug() << "login =" << m_linelogin->text();
+	//qDebug() << "login =" << m_linelogin->text();
 	m_engine->setLogin( m_linelogin->text() );
-	qDebug() << "password =" << m_linepasswd->text();
+	//qDebug() << "password =" << m_linepasswd->text();
 	m_engine->setPasswd( m_linepasswd->text() );
-	qDebug() << "autoconnect =" << m_autoconnect->checkState();
+	//qDebug() << "autoconnect =" << m_autoconnect->checkState();
 	m_engine->setAutoconnect( m_autoconnect->checkState() == Qt::Checked );
-	qDebug() << "trytoreconnect =" << m_trytoreconnect->checkState();
+	//qDebug() << "trytoreconnect =" << m_trytoreconnect->checkState();
 	m_engine->setTrytoreconnect( m_trytoreconnect->checkState() == Qt::Checked );
+	m_engine->setKeepaliveinterval( m_kainterval_sbox->value()*1000 );
+	m_engine->setTrytoreconnectinterval( m_tryinterval_sbox->value()*1000 );
 	m_engine->saveSettings();
 	m_mainwidget->setTablimit(m_tablimit_sbox->value());
 	close();

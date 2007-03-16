@@ -42,6 +42,10 @@ public:
 	void setAutoconnect(bool b);		//!< set auto connect flag
 	bool trytoreconnect() const;		//!< try to reconnect flag
 	void setTrytoreconnect(bool b);		//!< set try to reconnect flag
+	uint keepaliveinterval() const;		//!< keep alive interval
+	void setKeepaliveinterval(uint);	//!< set keep alive interval
+	uint trytoreconnectinterval() const;	//!< try to reconnect interval
+	void setTrytoreconnectinterval(uint);	//!< set try to reconnect interval
 signals:
 	void logged();	//!< signal emmited when the state becomes ELogged
 	void delogged();	//!< signal emmited when the state becomes ENotLogged
@@ -58,14 +62,21 @@ private slots:
 	void readKeepLoginAliveDatagrams();	//!< handle the responses to keep alive
 	void popupDestroyed(QObject *);	//!< know when a profile widget is destroyed *DEBUG*
 	void profileToBeShown(Popup *);	//!< a new profile must be displayed
+protected:
+	void timerEvent(QTimerEvent *);	//!< recieve timer events
 private:
 	void initListenSocket();	//!< initialize the socket listening to profile
+	void stopKeepAliveTimer();	//!< Stop the keep alive timer if running
+	void startTryAgainTimer();	//!< Start the "try to reconnect" timer
+	void stopTryAgainTimer();	//!< Stop tje "try to reconnect" timer
 
 	// parameters to connect to server
 	QString m_serverip;		//!< Host to the login server
 	ushort m_serverport;	//!< TCP port (UDP port for keep alive is +1)
 	QString m_login;		//!< User login
 	QString m_passwd;		//!< User password
+	uint m_keepaliveinterval;	//!< Keep alive interval (in msec)
+	uint m_trytoreconnectinterval;	//!< Try to reconnect interval (in msec)
 	// 
 	bool m_autoconnect;		//!< Auto connect flag
 	bool m_trytoreconnect;	//!< "try to reconnect" flag
@@ -73,12 +84,14 @@ private:
 	QHostAddress m_serveraddress;	//!< Resolved address of the login server
 	QTcpSocket m_loginsocket;	//!< TCP socket used to login
 	ushort m_listenport;		//!< Port where we are listening for profiles
-	QTimer m_timer;				//!< timer object for keep alive
+	int m_ka_timerid;			//!< timer id for keep alive
+	int m_try_timerid;			//!< timer id for try to reconnect
 	QUdpSocket m_udpsocket;		//!< UDP socket used for keep alive
 	QTcpServer m_listensocket;	//!< TCP socket listening for profiles
 	QString m_sessionid;	//!< Session id obtained after a successfull login
 	EngineState m_state;	//!< State of the engine (Logged/Not Logged)
 	int m_pendingkeepalivemsg;	//!< number of keepalivemsg sent without response
+	QString m_availstate;	//!< Availability state to send to the server
 };
 
 #endif
