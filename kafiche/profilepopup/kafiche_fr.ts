@@ -15,37 +15,37 @@
     <message>
         <location filename="confwidget.cpp" line="34"/>
         <source>Login</source>
-        <translation type="unfinished">identifiant de connexion</translation>
+        <translation type="unfinished">Identifiant de connexion</translation>
     </message>
     <message>
         <location filename="confwidget.cpp" line="37"/>
         <source>Password</source>
-        <translation type="unfinished">mot de passe</translation>
+        <translation type="unfinished">Mot de passe</translation>
     </message>
     <message>
         <location filename="confwidget.cpp" line="50"/>
         <source>Autoconnect at startup</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Connexion au démarrage</translation>
     </message>
     <message>
         <location filename="confwidget.cpp" line="53"/>
         <source>Keep alive interval</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Maintient de la connexion</translation>
     </message>
     <message>
         <location filename="confwidget.cpp" line="58"/>
         <source>Try to reconnect</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Reconnexion</translation>
     </message>
     <message>
         <location filename="confwidget.cpp" line="61"/>
         <source>Try to reconnect interval</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Interval de reconnexion</translation>
     </message>
     <message>
         <location filename="confwidget.cpp" line="67"/>
         <source>Tab limit</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Nombre d&apos;onglets</translation>
     </message>
 </context>
 <context>
@@ -58,7 +58,7 @@
     <message>
         <location filename="engine.cpp" line="83"/>
         <source>Unable to start the server: %1.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Impossible de se connecter au serveur: %1.</translation>
     </message>
 </context>
 <context>
@@ -66,12 +66,12 @@
     <message>
         <location filename="mainwidget.cpp" line="49"/>
         <source>&amp;Configuration</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Configuration</translation>
     </message>
     <message>
         <location filename="mainwidget.cpp" line="50"/>
         <source>Configure account and connection options</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Configurer votre compte et vos options de connection</translation>
     </message>
     <message>
         <location filename="mainwidget.cpp" line="53"/>
@@ -81,52 +81,52 @@
     <message>
         <location filename="mainwidget.cpp" line="54"/>
         <source>Close the application</source>
-        <translation type="unfinished">Ferme l&apos;application</translation>
+        <translation type="unfinished">Fermer l&apos;application</translation>
     </message>
     <message>
         <location filename="mainwidget.cpp" line="57"/>
         <source>To S&amp;ystray</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Minimiser</translation>
     </message>
     <message>
         <location filename="mainwidget.cpp" line="58"/>
         <source>Go to the system tray</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Minimiser</translation>
     </message>
     <message>
         <location filename="mainwidget.cpp" line="62"/>
         <source>&amp;Connect</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Connexion</translation>
     </message>
     <message>
         <location filename="mainwidget.cpp" line="63"/>
         <source>Connect to the server</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Se connecter au serveur</translation>
     </message>
     <message>
         <location filename="mainwidget.cpp" line="65"/>
         <source>&amp;Disconnect</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Déconnecter</translation>
     </message>
     <message>
         <location filename="mainwidget.cpp" line="66"/>
         <source>Disconnect from the server</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Déconnecter du serveur</translation>
     </message>
     <message>
         <location filename="mainwidget.cpp" line="78"/>
         <source>&amp;Available</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Disponible</translation>
     </message>
     <message>
         <location filename="mainwidget.cpp" line="85"/>
         <source>A&amp;way</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Occupé</translation>
     </message>
     <message>
         <location filename="mainwidget.cpp" line="90"/>
         <source>&amp;Does not disturb</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Ne pas déranger</translation>
     </message>
     <message>
         <location filename="mainwidget.cpp" line="99"/>
@@ -136,7 +136,7 @@
     <message>
         <location filename="mainwidget.cpp" line="108"/>
         <source>&amp;Availability</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Disponible</translation>
     </message>
     <message>
         <location filename="mainwidget.cpp" line="113"/>
@@ -151,7 +151,7 @@
     <message>
         <location filename="mainwidget.cpp" line="222"/>
         <source>Disconnected</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Déconnecté</translation>
     </message>
     <message>
         <location filename="mainwidget.cpp" line="233"/>
@@ -161,12 +161,12 @@
     <message>
         <location filename="mainwidget.cpp" line="247"/>
         <source>Incoming call</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Appel entrant</translation>
     </message>
     <message>
         <location filename="mainwidget.cpp" line="248"/>
         <source> Incoming call</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Appel entrant</translation>
     </message>
 </context>
 <context>
@@ -174,22 +174,22 @@
     <message>
         <location filename="popup.cpp" line="38"/>
         <source>Incoming call</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Appel entrant</translation>
     </message>
     <message>
         <location filename="popup.cpp" line="45"/>
         <source>&amp;Answer</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Répondre</translation>
     </message>
     <message>
         <location filename="popup.cpp" line="48"/>
         <source>&amp;Dismiss</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Raccrocher</translation>
     </message>
     <message>
         <location filename="popup.cpp" line="51"/>
         <source>&amp;Close</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Fermer</translation>
     </message>
 </context>
 </TS>
