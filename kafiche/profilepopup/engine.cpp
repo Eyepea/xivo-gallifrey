@@ -16,11 +16,12 @@ Engine::Engine(QObject *parent)
 : QObject(parent),
   m_serverip(""), m_serverport(0), m_login(""), m_passwd(""),
   m_listenport(0), m_sessionid(""), m_state(ENotLogged),
-  m_pendingkeepalivemsg(0), m_availstate("available")
+  m_pendingkeepalivemsg(0)
 {
 	m_ka_timerid = 0;
 	m_try_timerid = 0;
 	loadSettings();
+	setAvailable();
 	
 	// init listen socket for profile push
 	connect( &m_loginsocket, SIGNAL(connected()),
@@ -105,6 +106,21 @@ void Engine::stop()
 	stopKeepAliveTimer();
 	stopTryAgainTimer();
 	setState(ENotLogged);
+}
+
+void Engine::setAvailable()
+{
+	m_availstate = "available";
+}
+
+void Engine::setAway()
+{
+	m_availstate = "away";
+}
+
+void Engine::setDoesNotDisturb()
+{
+	m_availstate = "doesnotdisturb";
 }
 
 // === Getter and Setters ===

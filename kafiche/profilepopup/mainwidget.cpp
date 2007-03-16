@@ -78,13 +78,19 @@ void MainWidget::createActions()
 	m_avact_avail = new QAction( tr("&Available"), this );
 	m_avact_avail->setCheckable(true);
 //	m_avact_avail->setStatusTip( tr("") );
+	connect( m_avact_avail, SIGNAL(triggered()),
+	         m_engine, SLOT(setAvailable()) );
 	availgrp->addAction( m_avact_avail );
 	m_avact_avail->setChecked( true );
 	m_avact_away = new QAction( tr("A&way"), this );
 	m_avact_away->setCheckable(true);
+	connect( m_avact_away, SIGNAL(triggered()),
+	         m_engine, SLOT(setAway()) );
 	availgrp->addAction( m_avact_away );
 	m_avact_dnd = new QAction( tr("&Does not disturb"), this );
 	m_avact_dnd->setCheckable(true);
+	connect( m_avact_dnd, SIGNAL(triggered()),
+	         m_engine, SLOT(setDoesNotDisturb()) );
 	availgrp->addAction( m_avact_dnd );
 }
 

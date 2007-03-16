@@ -53,6 +53,9 @@ signals:
 public slots:
 	void start();	//!< start the connection process.
 	void stop();	//!< stop the engine
+	void setAvailable();	//!< set user status as "available"
+	void setAway();			//!< set user status as "away"
+	void setDoesNotDisturb();	//!< set user status as "does not disturb"
 private slots:
 	void identifyToTheServer();	//!< perform the first login step
 	void processLoginDialog();	//!< perform the following login steps
