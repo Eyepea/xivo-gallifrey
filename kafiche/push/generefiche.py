@@ -33,6 +33,8 @@ class Fiche:
 		"""send the profile to a user using TCP"""
 		try:
 			s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+			#print 'timeout=', s.gettimeout()
+			#s.settimeout(3.0)
 			s.connect(address)
 			fs = s.makefile('w')
 			s.close()
@@ -58,7 +60,8 @@ def getuserlocation(shost, sport, user):
 		sessionid = list[3]
 		ip = list[5]
 		port = int(list[7])
-		return {'address':(ip, port), 'sessionid':sessionid}
+		state = list[9]
+		return {'address':(ip, port), 'sessionid':sessionid, 'state':state}
 	except:
 		return None
 
