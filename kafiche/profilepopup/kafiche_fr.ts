@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS><TS version="1.1" language="fr">
+<context>
+    <name>ConfWidget</name>
+    <message>
+        <location filename="confwidget.cpp" line="27"/>
+        <source>Server Host</source>
+        <translation type="unfinished">Adresse serveur</translation>
+    </message>
+    <message>
+        <location filename="confwidget.cpp" line="30"/>
+        <source>Server Port</source>
+        <translation type="unfinished">Port serveur</translation>
+    </message>
+    <message>
+        <location filename="confwidget.cpp" line="34"/>
+        <source>Login</source>
+        <translation type="unfinished">identifiant de connexion</translation>
+    </message>
+    <message>
+        <location filename="confwidget.cpp" line="37"/>
+        <source>Password</source>
+        <translation type="unfinished">mot de passe</translation>
+    </message>
+    <message>
+        <location filename="confwidget.cpp" line="50"/>
+        <source>Autoconnect at startup</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="confwidget.cpp" line="53"/>
+        <source>Keep alive interval</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="confwidget.cpp" line="58"/>
+        <source>Try to reconnect</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="confwidget.cpp" line="61"/>
+        <source>Try to reconnect interval</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="confwidget.cpp" line="67"/>
+        <source>Tab limit</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>Engine</name>
+    <message>
+        <location filename="engine.cpp" line="81"/>
+        <source>glop</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="engine.cpp" line="83"/>
+        <source>Unable to start the server: %1.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>MainWidget</name>
+    <message>
+        <location filename="mainwidget.cpp" line="49"/>
+        <source>&amp;Configuration</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwidget.cpp" line="50"/>
+        <source>Configure account and connection options</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwidget.cpp" line="53"/>
+        <source>&amp;Quit</source>
+        <translation type="unfinished">&amp;Quitter</translation>
+    </message>
+    <message>
+        <location filename="mainwidget.cpp" line="54"/>
+        <source>Close the application</source>
+        <translation type="unfinished">Ferme l&apos;application</translation>
+    </message>
+    <message>
+        <location filename="mainwidget.cpp" line="57"/>
+        <source>To S&amp;ystray</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwidget.cpp" line="58"/>
+        <source>Go to the system tray</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwidget.cpp" line="62"/>
+        <source>&amp;Connect</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwidget.cpp" line="63"/>
+        <source>Connect to the server</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwidget.cpp" line="65"/>
+        <source>&amp;Disconnect</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwidget.cpp" line="66"/>
+        <source>Disconnect from the server</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwidget.cpp" line="78"/>
+        <source>&amp;Available</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwidget.cpp" line="85"/>
+        <source>A&amp;way</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwidget.cpp" line="90"/>
+        <source>&amp;Does not disturb</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwidget.cpp" line="99"/>
+        <source>&amp;File</source>
+        <translation type="unfinished">&amp;Fichier</translation>
+    </message>
+    <message>
+        <location filename="mainwidget.cpp" line="108"/>
+        <source>&amp;Availability</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwidget.cpp" line="113"/>
+        <source>&amp;Help</source>
+        <translation type="unfinished">&amp;Aide</translation>
+    </message>
+    <message>
+        <location filename="mainwidget.cpp" line="114"/>
+        <source>About &amp;Qt</source>
+        <translation type="unfinished">A propos de &amp;Qt</translation>
+    </message>
+    <message>
+        <location filename="mainwidget.cpp" line="222"/>
+        <source>Disconnected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwidget.cpp" line="233"/>
+        <source>Connected</source>
+        <translation type="unfinished">Connecté</translation>
+    </message>
+    <message>
+        <location filename="mainwidget.cpp" line="247"/>
+        <source>Incoming call</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwidget.cpp" line="248"/>
+        <source> Incoming call</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>Popup</name>
+    <message>
+        <location filename="popup.cpp" line="38"/>
+        <source>Incoming call</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="popup.cpp" line="45"/>
+        <source>&amp;Answer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="popup.cpp" line="48"/>
+        <source>&amp;Dismiss</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="popup.cpp" line="51"/>
+        <source>&amp;Close</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+</TS>

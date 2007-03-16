@@ -1,5 +1,6 @@
 #include <QApplication>
-//#include "confwidget.h"
+#include <QLocale>
+#include <QTranslator>
 #include "mainwidget.h"
 #include "engine.h"
 
@@ -23,10 +24,14 @@
  */
 int main(int argc, char * * argv)
 {
+	QString locale = QLocale::system().name();
 	QCoreApplication::setOrganizationName("Proformatique");
 	QCoreApplication::setOrganizationDomain("proformatique.com");
 	QCoreApplication::setApplicationName("Profile Popup");
 	QApplication app(argc, argv);
+	QTranslator translator;
+	translator.load(QString("kafiche_") + locale);
+	app.installTranslator(&translator);
 	Engine engine;
 	MainWidget main(&engine);
 	main.show();
