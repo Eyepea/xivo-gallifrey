@@ -9,8 +9,9 @@
 port_login = 12345
 port_keepalive = port_login + 1
 port_request = 12347
-session_expiration_time = 60*3
-userlisturl = 'http://192.168.0.5/service/ipbx/sso.php'
+session_expiration_time = 60*1
+#userlisturl = 'http://192.168.0.5/service/ipbx/sso.php'
+userlisturl = 'http://192.168.0.254/service/ipbx/sso.php'
 pidfile = '/tmp/kafiche_id_daemon.pid'
 
 # imported packages
@@ -35,7 +36,8 @@ import urllib
 #  sessiontimestamp : last time when the client proved itself to be ALIVE :)
 #  ip :               ip address of the client (current session)
 #  port :             port here the client is listening.
-#  state :            online, not-available, busy
+#  state :            available, away, doesnotdisturb
+#                     (??online, not-available, busy)
 # The user identifier will likely be its phone number
 
 # user list initialized empty
@@ -196,7 +198,7 @@ class LoginHandler(SocketServer.StreamRequestHandler):
 		e['sessiontimestamp'] = time.time()
 		e['ip'] = self.client_address[0]
 		e['port'] = port
-		e['state'] = 'online'
+		e['state'] = 'available'
 		userlist_lock.release()
 		retline = 'OK SESSIONID ' + sessionid + '\r\n'
 		self.wfile.write(retline)
@@ -220,21 +222,26 @@ class IdentRequestHandler(SocketServer.StreamRequestHandler):
 				userlist_lock.acquire()
 				try:
 					e = finduser(user)
-					retline = 'USER ' + user
-					retline += ' SESSIONID ' + e.get('sessionid')
-					retline += ' IP ' + e.get('ip')
-					retline += ' PORT ' + e.get('port')
-					retline += ' STATE ' + e.get('state')
-					retline += '\r\n'
+					if e == None:
+						retline = 'ERROR USER NOT FOUND\r\n'
+					elif time.time() - e.get('sessiontimestamp') > session_expiration_time:
+						retline = 'ERROR USER SESSION EXPIRED\r\n'
+					else:
+						retline = 'USER ' + user
+						retline += ' SESSIONID ' + e.get('sessionid')
+						retline += ' IP ' + e.get('ip')
+						retline += ' PORT ' + e.get('port')
+						retline += ' STATE ' + e.get('state')
+						retline += '\r\n'
 				except:
 					retline = 'ERROR (exception)\r\n'
 				userlist_lock.release()
 			try:
 				self.wfile.write(retline)
-			except:
+			except Exception, e:
 				# something bad happened.
 				if __debug__:
-					print 'dead!'
+					print 'Exception :', e
 				return
 
 # The KeepAliveHandler receives UDP datagrams and sends back 
@@ -256,16 +263,20 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
 			else:
 				user = list[1]
 				sessionid = list[3]
+				state = 'available'
+				if len(list) >= 6:
+					state = list[5]
 				e = finduser(user)
 				if e == None:
 					response = 'ERROR user unknown\r\n'
 				else:
 					print user, e['user']
-					print sessionid, e['sessionid']
-					print ip, e['ip']
-					print timestamp, e['sessiontimestamp']
+					#print sessionid, e['sessionid']
+					#print ip, e['ip']
+					#print timestamp, e['sessiontimestamp']
 					print timestamp - e['sessiontimestamp']
 					if sessionid==e['sessionid'] and ip==e['ip'] and e['sessiontimestamp'] + session_expiration_time > timestamp:
+						e['state'] = state
 						e['sessiontimestamp'] = timestamp
 						response = 'OK\r\n'
 					else:
