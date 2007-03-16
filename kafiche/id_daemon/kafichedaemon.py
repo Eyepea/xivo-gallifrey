@@ -286,6 +286,9 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
 		userlist_lock.release()
 		self.request[1].sendto(response, self.client_address)
 
+class MyTCPServer(SocketServer.ThreadingTCPServer):
+	allow_reuse_address = True
+
 # ===================================================================
 # everything above was Object/function definitions, below
 # starts the execution flow...
@@ -308,17 +311,14 @@ filluserlistfromurl(userlisturl)
 #dumpuserlist()
 
 # Instanciate the SocketServer Objects.
-loginserver = SocketServer.ThreadingTCPServer(('', port_login), LoginHandler)
-loginserver.allow_reuse_address = True # a fixer => to be set in a subclass
+loginserver = MyTCPServer(('', port_login), LoginHandler)
 # TODO: maybe we should listen on only one interface (localhost ?)
-requestserver = SocketServer.ThreadingTCPServer(('', port_request), IdentRequestHandler)
-requestserver.allow_reuse_address = True
+requestserver = MyTCPServer(('', port_request), IdentRequestHandler)
 # Do we need a Threading server for the keep alive ? I dont think so,
 # packets processing is non blocking so thead creation/start/stop/delete
 # overhead is not worth it.
 #keepaliveserver = SocketServer.ThreadingUDPServer(('', port_keepalive), KeepAliveHandler)
 keepaliveserver = SocketServer.UDPServer(('', port_keepalive), KeepAliveHandler)
-keepaliveserver.allow_reuse_address = True
 
 # We have three sockets to listen to so we cannot use the 
 # very easy to use SocketServer.serve_forever()
@@ -366,6 +366,6 @@ except Exception, e:
 	print e
 
 print 'end of the execution flow...'
-
 #pickle.dump(userlist, sys.stdout)
+sys.exit(0)
 
