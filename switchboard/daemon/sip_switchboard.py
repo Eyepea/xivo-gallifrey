@@ -1,24 +1,66 @@
 #!/usr/bin/python
 # $Id$
+#
 
 import xml.dom.minidom, xml
 import socket, SocketServer
 import os, posix, select, string, sys, time
 
-port_sip_clt = 5080
+port_ami     = 5038
 port_sip_srv = 5060
+port_sip_clt = 5080
+port_ui_srv  = 5081
+
+pidfile = '/tmp/sip_switchboard_id_daemon.pid'
 bufsize = 1024
 addr = ("", port_sip_clt)
-#here = "192.168.0.159" + ":" + str(port_sip_clt)
-here = "127.0.0.1" + ":" + str(port_sip_clt)
+#here_addr = "192.168.0.159"
+here_addr = "127.0.0.1"
+here = here_addr + ":" + str(port_sip_clt)
 myname = "xivosb"
 expires = "600"
 dhost = os.sys.argv[1]
+sipnumlist = []
+for val in xrange(4):
+    sipnumlist.append(101 + val)
 
-asterisk_address = ('192.168.0.77', 5038)
+asterisk_ami = (dhost, port_ami)
+asterisk_sip = (dhost, port_sip_srv)
 asterisk_login = 'sylvain'
 asterisk_pass = 'sylvain'
 
+# statuses :
+# - Ready
+# - On the phone
+# - Ringing
+# - Unavailable
+# - 
+
+
+
+
+
+
+
+# daemonize function
+def daemonize():
+	try:
+		pid = os.fork()
+		if pid > 0: sys.exit(0)
+	except OSError, e: sys.exit(1)
+	os.setsid()
+	os.umask(0)
+	try:
+		pid = os.fork()
+		if pid > 0: sys.exit(0)
+	except OSError, e: sys.exit(1)
+	dev_null = file('/dev/null', 'r+')
+	os.dup2(dev_null.fileno(), sys.stdin.fileno())
+	os.dup2(dev_null.fileno(), sys.stdout.fileno())
+	os.dup2(dev_null.fileno(), sys.stderr.fileno())
+
+# functions in order to build a SIP packet
+# SIP SUBSCRIBE
 def sip_subscribe(me, cseq, cid, sipnumber):
     rsrc = "sip:" + str(sipnumber)
     command = "SUBSCRIBE " + rsrc + "@" + dhost + " SIP/2.0\r\n"
@@ -36,6 +78,7 @@ def sip_subscribe(me, cseq, cid, sipnumber):
     command += "\r\n"
     return command
 
+# SIP OK (in order to reply to OPTIONS (qualify))
 def sip_ok(me, cseq, cid, sipaddr, smsg):
     rsrc = "sip:" + sipaddr
     command = "SIP/2.0 200 OK\r\n"
@@ -48,6 +91,7 @@ def sip_ok(me, cseq, cid, sipaddr, smsg):
     command += "\r\n"
     return command
 
+# SIP REGISTER
 def sip_register(me, cseq, cid):
     command = "REGISTER sip:" + dhost + " SIP/2.0\r\n"
     command += "Via: SIP/2.0/UDP " + here + ";branch=z9hG4bKnashds7\r\n"
@@ -62,6 +106,8 @@ def sip_register(me, cseq, cid):
     command += "\r\n"
     return command
 
+# functions in order to read informations from a SIP packet
+# reading of the status (200, 404, ...)
 def sipstatus(data):
     ret = 0
     lines = data.split("\n")
@@ -69,34 +115,50 @@ def sipstatus(data):
         ret = int(lines[0].split(None)[1])
     return ret
 
-def sipcseq(data):
+# reading of the CSeq
+# reading of the message type (REGISTER, OPTION, SUBSCRIBE, ...)
+# reading of the callid
+def read_sip_properties(data):
     cseq = 1
+    msg = "xxx"
+    cid = "no_callid@xivo"
     lines = data.split("\n")
     for x in lines:
         if x.find("CSeq") == 0:
             cseq = int(x.split(None)[1])
-    return cseq
-
-def sipmsg(data):
-    cseq = "xxx"
-    lines = data.split("\n")
-    for x in lines:
-        if x.find("CSeq") == 0:
-            cseq = x.split(None)[2]
-    return cseq
-
-def sipcallid(data):
-    cid = "aab@bbb"
-    lines = data.split("\n")
-    for x in lines:
-        if x.find("Call-ID:") == 0:
+            msg = x.split(None)[2]
+        elif x.find("From: ") == 0:
+            bpart = x.split("<sip:")[1]
+            address = bpart.split("@")[0]
+        elif x.find("Call-ID:") == 0:
             cid = x.split(None)[1]
-    return cid
+    return [cseq, msg, cid, address]
 
+
+# converts the SIP message to a useful presence information
 def saystatus(data):
     t1 = "???"
     t2 = "????"
     lines = data.split("\n")
+
+##    sxml = ""
+##    ind = 0
+##    for x in data.split("\n"):
+##        if x.find("<?xml") == 0:
+##            ind = 1
+##        if ind == 1:
+##            sxml += x + "\n"
+##        if x.find("From: ") == 0:
+##            if __debug__:
+##                print x.split("<sip:")[1]
+##            add1 = x.split("@")[0]
+
+##    if sxml != "":
+##        axml = xml.dom.minidom.parseString(sxml)
+##        docu = axml.getElementsByTagName('note')
+##        for as in docu:
+##            print as
+
     for x in lines:
         if x.find("<note>") == 0:
             if x.find("Ready") >= 0:
@@ -113,26 +175,27 @@ def saystatus(data):
 
 
 
+# class AMI definition in order to interact with the Asterisk AMI
 class AMI:
 	class AMIError(Exception):
 		def __init__(self, msg):
-			self.msg = msg
+                    self.msg = msg
 		def __str__(self):
-			return msg
+                    return msg
 	def __init__(self, address):
 		self.address = address
 		self.i = 1
 	def connect(self):
 		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		s.connect(asterisk_address)
+		s.connect(asterisk_ami)
 		self.f = s.makefile()
 		s.close()
 		str = self.f.readline()
-		print str,
+#		print str,
 	def sendcommand(self, action, args):
 		self.f.write('Action: ' + action + '\r\n')
 		for (name, value) in args:
-			print name + ': ' + value
+#			print name + ': ' + value
 			self.f.write(name + ': ' + value + '\r\n')
 		self.f.write('\r\n')
 		self.f.flush()
@@ -140,7 +203,7 @@ class AMI:
 		# for debug
 		while True:
 			str = self.f.readline()
-			print self.i, len(str), str,
+#			print self.i, len(str), str,
 			self.i = self.i + 1
 	def readresponsechunk(self):
 		start = True
@@ -222,20 +285,20 @@ class AMI:
 	def originate(self, src, dst):
 		# originate a call btw src and dst
 		# src will ring first, and dst will ring when src responds
-		a.sendcommand('Originate', [('Channel', 'SIP/'+src),
+		AMIsock.sendcommand('Originate', [('Channel', 'SIP/'+src),
 		                            ('Exten', dst),
 		                            ('Context', 'local-extensions'),
 									('Priority', '1'),
 									('CallerID', 'Mise en relation <1911>'),
 									('Async', 'true')])
-		print a.readresponse('')
+#		print AMIsock.readresponse('')
 		return True
 	def transfer(self, src, dst):
-		a.sendcommand('Status', [])
-		for ch in a.readresponse('StatusComplete'):
-			print ch
+		AMIsock.sendcommand('Status', [])
+		for ch in AMIsock.readresponse('StatusComplete'):
+#			print ch
 			if ch.has_key('CallerID') and ch['CallerID'] == src and ch.has_key('Link'):
-				a.redirect(ch['Link'], dst, 'local-extensions')
+				AMIsock.redirect(ch['Link'], dst, 'local-extensions')
 
 
 def build_statuses(sipstat):
@@ -249,25 +312,11 @@ def build_statuses(sipstat):
 
 
 def parseSIP(data):
-    global tcpopens, sipstatuses, UDPSock
-    sxml = ""
-    ind = 0
-    for x in data.split("\n"):
-        if x.find("<?xml") == 0:
-            ind = 1
-        if ind == 1:
-            sxml += x + "\n"
-        if x.find("From: ") == 0:
-            if __debug__:
-                print x.split("<sip:")[1]
-            add1 = x.split("@")[0]
-##    if sxml != "":
-##        axml = xml.dom.minidom.parseString(sxml)
-##        docu = axml.getElementsByTagName('note')
-##        for as in docu:
-##            print as
-    command = sip_ok("sip:" + myname, sipcseq(data), sipcallid(data), add1, sipmsg(data))
-    UDPSock.sendto(command,(dhost, addr[1]))
+    global tcpopens, sipstatuses, SIPsock
+    [icseq, imsg, icid, iaddr] = read_sip_properties(data)
+    command = sip_ok("sip:" + myname, icseq, icid, iaddr, imsg)
+    print "###", icseq, icid, iaddr, imsg
+    SIPsock.sendto(command,(dhost, addr[1]))
     stat = saystatus(data)
     if stat != "???:????":
         sipstatuses[stat.split(":")[0]] = stat.split(":")[1]
@@ -288,92 +337,172 @@ def manage_connection(connid):
         usefulmsg = usefulmsg_tmp.split("\n")[0]
         if usefulmsg == "hints":
             connid[0].send(build_statuses(sipstatuses))
-        elif usefulmsg == "":
-            if __debug__:
-                print "no command"
-        else:
-#            print usefulmsg
+        elif usefulmsg != "" and is_ami_available:
+            print usefulmsg
             l = usefulmsg.split()
             if l[0] == 'originate':
-                a.originate(l[1], l[2])
+                AMIsock.originate(l[1], l[2])
             elif l[0] == 'transfer':
-                a.transfer(l[1], l[2])
+                AMIsock.transfer(l[1], l[2])
             elif l[0] == 'hangup':
-                a.sendcommand('Status', [])
-                for ch in a.readresponse('StatusComplete'):
+                AMIsock.sendcommand('Status', [])
+                for ch in AMIsock.readresponse('StatusComplete'):
                     if ch.has_key('CallerID') and ch['CallerID'] == l[1]:
-                        a.hangup(ch['Channel'])
-#            else:
-#                for s in a.execclicommand(usefulmsg): connid[0].send(s)
+                        AMIsock.hangup(ch['Channel'])
+
+
+# sends a SIP register message and waits for a reply or a 1s timeout
+def do_sip_register(l_myname, l_sipsock):
+    timeout_sip_register_reply = 1 # unit = second
+    if __debug__:
+        print "sending REGISTER :",
+    command = sip_register("sip:" + l_myname, 1, "aaa@bbb")
+    l_sipsock.sendto(command, asterisk_sip)
+
+    rs = 0
+    l_ins = [l_sipsock]
+    while rs != 200 and rs != -100:
+        [i, o, e] = select.select(l_ins, [], [], timeout_sip_register_reply)
+        if i:
+            if l_sipsock in i:
+                [data, addr] = l_sipsock.recvfrom(bufsize)
+                rs = sipstatus(data)
+        else:
+            rs = -100
+    return rs
+
+
+# sends a SIP register message and waits for a reply or a 1s timeout
+def do_sip_subscribe(l_myname, l_sipsock, l_sipnum):
+    timeout_sip_subscribe_reply = 1 # unit = second
+    if __debug__:
+        print "sending SUBSCRIBE for peer", l_sipnum, ":",
+    command = sip_subscribe("sip:" + l_myname, 1, "cid_" + str(l_sipnum) + "@" + here_addr, l_sipnum)
+    l_sipsock.sendto(command, asterisk_sip)
+
+    rs = 0
+    l_ins = [l_sipsock]
+    while rs != 200 and rs != 404 and rs != -100:
+        [i, o, e] = select.select(l_ins, [], [], timeout_sip_subscribe_reply)
+        if i:
+            if l_sipsock in i:
+                [data, addr] = l_sipsock.recvfrom(bufsize)
+                rs = sipstatus(data)
+        else:
+            rs = -100
+    return rs
 
 
 # ==============================================================================
 # Main Code starts here
 # ==============================================================================
 
-UDPSock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
-UDPSock.bind(addr)
+# daemonize if not in debug mode
+if sys.argv.count('-d') == 0:
+	daemonize()
+try:
+	f = open(pidfile, "w")
+	try:
+		f.write("%d\n"%os.getpid())
+	finally:
+		f.close()
+except Exception, e:
+	print e
 
-TCPSock = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-TCPSock.bind(("",5081))
-TCPSock.listen(10)
+# opens the logfile for output
+logfile = open("/var/log/sip_switchboard.log", 'a')
 
-if __debug__:
-    print "-- REGISTER --"
-command = sip_register("sip:" + myname, 1, "aaa@bbb")
-UDPSock.sendto(command,(dhost, port_sip_srv))
-rs = 0
-while rs != 200:
-    data,addr = UDPSock.recvfrom(bufsize)
-    rs = sipstatus(data)
+SIPsock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+SIPsock.bind(addr)
 
-sipstatuses = {}
-sipnumlist = []
-for val in xrange(4):
-    sipnumlist.append(101 + val)
+UIsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+UIsock.bind(("",port_ui_srv))
+UIsock.listen(10)
 
-for sipnum in sipnumlist:
-    ss = str(sipnum)
-    sipstatuses[ss] = "none"
-    UDPSock.sendto(sip_subscribe("sip:" + myname, 1, "cid_" + str(sipnum) + "@xivo", sipnum),
-                   (dhost, port_sip_srv))
-    rs = 0
-    while rs != 200 and rs != 404:
-        data,addr = UDPSock.recvfrom(bufsize)
-        rs = sipstatus(data)
-    if __debug__:
-        if rs == 404:
-            print "-- SUBSCRIBE -- :", sipnum, "NOT POSSIBLE (received", str(rs), ")"
-        else:
-            print "-- SUBSCRIBE -- :", sipnum, "registered (received", str(rs), ")"
-
-
-
-a = AMI(asterisk_address)
-a.connect()
-a.login(asterisk_login, asterisk_pass)
-a.sendcommand('Status', [])
-for x in a.readresponse('StatusComplete'):
-	print x
-
-# test somewhere whether addr[0] == dhost
-
-ins = [UDPSock, TCPSock]
+is_ami_available = False
 tcpopens = []
 
-# Receive messages
-while 1:
-    i,o,e = select.select(ins, [], [], 0)
-    if i:
-        if UDPSock in i:
-            data,addr = UDPSock.recvfrom(bufsize)
-            parseSIP(data)
-        elif TCPSock in i:
-            conn,addrTCP = TCPSock.accept()
-            print "TCP socket opened on  ", addrTCP[0], addrTCP[1]
-            ins.append(conn)
-            tcpopens.append([conn, addrTCP[0], addrTCP[1]])
+# infinite main loop : re-registers and re-subscribes
+while True:
+    AMIsock = AMI(asterisk_ami)
+    try:
+        AMIsock.connect()
+        AMIsock.login(asterisk_login, asterisk_pass)
+        AMIsock.sendcommand('Status', [])
+        AMIsock.readresponse('StatusComplete')
+        is_ami_available = True
+    except:
+        print "AMI is unavalaible - may be Asterisk as well"
+        is_ami_available = False
+
+    for k in tcpopens:
+        k[0].send("asterisk=will_register_again\n")
+    regist = do_sip_register(myname, SIPsock)
+    if __debug__:
+        print "registered SIP account <" + myname + "> with status code", regist
+
+    for k in tcpopens:
+        k[0].send("asterisk=will_subscribe_again\n")
+    sipstatuses = {}
+    for sipnum in sipnumlist:
+        ss = str(sipnum)
+        sipstatuses[ss] = "BeforeSubscription"
+        subsc = do_sip_subscribe(myname, SIPsock, sipnum)
+        if subsc == 200:
+            sipstatuses[ss] = "SubscriptionSucceeded"
+        elif subsc == 404:
+            sipstatuses[ss] = "SubscriptionFailed_404"
+        elif subsc == -100:
+            sipstatuses[ss] = "SubscriptionTimedOut"
         else:
-            for conn in tcpopens:
-                if conn[0] in i:
-                    manage_connection(conn)
+            sipstatuses[ss] = "SubscriptionFailed_" + str(subsc)
+        if __debug__:
+            print "subscribed SIP account <" + myname + "> with status code", subsc
+        # the statuses are updated only if there has been a problem with the subscription
+        if subsc != 200:
+            for k in tcpopens:
+                k[0].send("update=" + ss + ":" + sipstatuses[ss] + "\n")
+
+    # sockets monitored by select : AMIsock.f is useful in order to detect an Asterisk shutdown
+    if is_ami_available:
+        ins = [AMIsock.f, SIPsock, UIsock]
+        amisf = AMIsock.f
+    else:
+        ins = [SIPsock, UIsock]
+        amisf = 0
+    askedtoquit = False
+
+    # the previous TCP connections are added
+    for conn in tcpopens:
+        ins.append(conn[0])
+
+    # Receive messages
+    while not askedtoquit:
+        [i, o, e] = select.select(ins, [], [], 10)
+        if i:
+            if SIPsock in i:
+                [data, addr] = SIPsock.recvfrom(bufsize)
+                parseSIP(data)
+                # TBD : if parsing == NOTIFY/OPTION and status = -100 ==> askedtoquit = True
+            elif UIsock in i:
+                [conn, UIsockparams] = UIsock.accept()
+                print "TCP socket opened on  ", UIsockparams[0], UIsockparams[1]
+                # appending the opened socket to the ones watched
+                ins.append(conn)
+                tcpopens.append([conn, UIsockparams[0], UIsockparams[1]])
+            elif amisf in i:
+                print "AMI connection is broken : maybe Asterisk has just been stopped"
+                for k in tcpopens:
+                    k[0].send("asterisk=ami_down\n")
+                AMIsock.f.close()
+                askedtoquit = True
+            else:
+                for conn in tcpopens:
+                    if conn[0] in i:
+                        manage_connection(conn)
+        else:
+            askedtoquit = True
+
+# Close files and sockets
+logfile.close()
+
