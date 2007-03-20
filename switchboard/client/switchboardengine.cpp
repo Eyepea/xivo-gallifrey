@@ -1,4 +1,5 @@
 #include <QDebug>
+#include <QTime>
 #include <QStringList>
 #include "switchboardengine.h"
 #include "switchboardwindow.h"
@@ -40,6 +41,9 @@ void SwitchBoardEngine::setAddress(const QString & host, quint16 port)
 {
 	m_host = host;
 	m_port = port;
+	connectSocket();
+	m_pendingcommand = "hints";
+	socketConnected();
 }
 
 void SwitchBoardEngine::connectSocket()
@@ -51,8 +55,6 @@ void SwitchBoardEngine::connectSocket()
 void SwitchBoardEngine::socketConnected()
 {
 	qDebug() << "socketConnected()";
-	//m_socket->write(QString("show hints\n").toAscii());
-	//m_socket->write(QString("hints\n").toAscii());
 	m_socket->write((m_pendingcommand + "\n").toAscii());
 }
 
@@ -100,16 +102,32 @@ void SwitchBoardEngine::socketReadyRead()
 	while(m_socket->canReadLine())
 	{
 		QByteArray data = m_socket->readLine();
-		//qDebug() << data;
 		QString line(data);
-		QStringList list = line.trimmed().split(",");
-		qDebug() << list[0] << list[1] << list[2] << list[3];
-		if(m_window)
-			m_window->updatePeer(list[0], list[1], list[2]);
-		b = true;
+		QStringList list = line.trimmed().split("=");
+		if((list.size() == 2) && m_window) {
+			if(list[0] == QString("hints")) {
+				QStringList listpeers = list[1].split(";");
+				for(int i = 0 ; i < listpeers.size() - 1; i++) {
+					QStringList liststatus = listpeers[i].split(":");
+					m_window->updatePeer(liststatus[0], liststatus[1]);
+				}
+				b = true;
+			} else if(list[0] == QString("update")) {
+				QStringList liststatus = list[1].split(":");
+				m_window->updatePeer(liststatus[0], liststatus[1]);
+				b = true;
+			} else if(list[0] == QString("asterisk")) {
+				QTime currentTime = QTime::currentTime();
+				QString currentTimeStr = currentTime.toString("hh:mm:ss");
+				emitTextMessage(list[1] + " at " + currentTimeStr);
+			}
+		}
 	}
-	if(b)
-		emitTextMessage("Peer list updated");
+	if(b) {
+		QTime currentTime = QTime::currentTime();
+		QString currentTimeStr = currentTime.toString("hh:mm:ss");
+		emitTextMessage("Peers' status updated at " + currentTimeStr);
+	}
 }
 
 void SwitchBoardEngine::finishedReceivingHints()
@@ -120,31 +138,31 @@ void SwitchBoardEngine::finishedReceivingHints()
 void SwitchBoardEngine::timerEvent(QTimerEvent * event)
 {
 	qDebug() << event;
-	if(m_socket->state() == QAbstractSocket::UnconnectedState)
-	{
-		m_pendingcommand = "hints";
-		connectSocket();
-	}
+	//	m_pendingcommand = "hints";
+	//	socketConnected();
 }
 
 void SwitchBoardEngine::originateCall(const QString & src, const QString & dst)
 {
 	m_pendingcommand = "originate " + src + " " + dst;
-	if(m_socket->state() == QAbstractSocket::UnconnectedState)
-		connectSocket();
+	socketConnected();
+// 	if(m_socket->state() == QAbstractSocket::UnconnectedState)
+// 		connectSocket();
 }
 
 void SwitchBoardEngine::transferCall(const QString & src, const QString & dst)
 {
 	m_pendingcommand = "transfer " + src + " " + dst;
-	if(m_socket->state() == QAbstractSocket::UnconnectedState)
-		connectSocket();
+	socketConnected();
+// 	if(m_socket->state() == QAbstractSocket::UnconnectedState)
+// 		connectSocket();
 }
 
 void SwitchBoardEngine::hangUp(const QString & peer)
 {
 	m_pendingcommand = "hangup " + peer;
-	if(m_socket->state() == QAbstractSocket::UnconnectedState)
-		connectSocket();
+	socketConnected();
+// 	if(m_socket->state() == QAbstractSocket::UnconnectedState)
+// 		connectSocket();
 }
 

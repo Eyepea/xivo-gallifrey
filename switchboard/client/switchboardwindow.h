@@ -29,7 +29,7 @@ class SwitchBoardWindow : public QWidget
 public:
 	SwitchBoardWindow( QWidget * parent = 0);
 	void setEngine(SwitchBoardEngine *);
-	void updatePeer(const QString & ext, const QString & ext2,
+	void updatePeer(const QString & ext,
 	                const QString & status);
 private:
 	QGridLayout * m_layout;

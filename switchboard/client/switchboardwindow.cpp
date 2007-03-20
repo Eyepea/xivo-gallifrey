@@ -1,6 +1,8 @@
 #include <QGridLayout>
 #include <QPushButton>
 #include <QDebug>
+#include <QToolTip>
+#include <QPoint>
 #include "switchboardwindow.h"
 #include "peerwidget.h"
 
@@ -23,14 +25,15 @@ Peer::Peer(const Peer & peer)
 void Peer::updateStatus(const QString & status)
 {
 //	qDebug() << status;
-	if(status == "Idle")
+	if(status == "Ready")
 		m_peerwidget->setGreen();
 	else if(status == "Ringing")
 		m_peerwidget->setOrange();
-	else if(status == "InUse")
+	else if(status == "On_the_phone")
 		m_peerwidget->setRed();
 	else
 		m_peerwidget->setGray();
+	m_peerwidget->setToolTip(status);
 }
 
 /*
@@ -71,7 +74,7 @@ void SwitchBoardWindow::setEngine(SwitchBoardEngine * engine)
 	m_engine = engine;
 }
 
-void SwitchBoardWindow::updatePeer(const QString & ext, const QString & ext2,
+void SwitchBoardWindow::updatePeer(const QString & ext,
                                    const QString & status)
 {
 	int i;
@@ -94,6 +97,7 @@ void SwitchBoardWindow::updatePeer(const QString & ext, const QString & ext2,
 	}
 	peer.setWidget(peerwidget);
 	peer.updateStatus(status);
+	peerwidget->setToolTip(status);
 	m_peerlist << peer;
 }
 

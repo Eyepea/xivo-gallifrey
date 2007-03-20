@@ -9,9 +9,8 @@ int main(int argc, char * * argv)
 	SwitchBoardEngine engine;
 	MainWindow mainwin(&engine);
 	mainwin.show();
-	engine.setAddress("192.168.0.159", 8080);
-	//engine.startTimer(10000);		//connectSocket();
-	engine.startTimer(1000);		//connectSocket();
+	engine.setAddress("192.168.0.77", 5081); //connectSocket();
+	engine.startTimer(60000);
 	return app.exec();
 }
 
