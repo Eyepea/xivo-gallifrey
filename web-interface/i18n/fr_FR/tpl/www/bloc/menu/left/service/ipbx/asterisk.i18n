@@ -20,7 +20,7 @@ Fichiers sons
 Musiques d'attente
 
 ; mn_left_extenfeatures
-Extensions IPBX
+Extensions
 
 ; mn_left_ti_pbxsettings
 Paramètres PBX
@@ -76,5 +76,5 @@ Gestion du manager
 ; mn_left_ti_control_system
 Système de contrôle
 
-; mn_left_asterisk_reload
-Recharger Asterisk
+; mn_left_ipbx_reload
+Recharger %s

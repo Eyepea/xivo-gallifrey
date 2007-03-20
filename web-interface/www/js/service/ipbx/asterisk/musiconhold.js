@@ -5,9 +5,9 @@ xivo_fm_musiconhold['fd-application']['style'] = new Array('','display:none','di
 xivo_fm_musiconhold['fd-application']['link'] = 'it-application';
 
 xivo_fm_musiconhold['it-application'] = new Array();
-xivo_fm_musiconhold['it-application']['property'] = new Array('','disabled:true:boolean','disabled:false:boolean');
+xivo_fm_musiconhold['it-application']['property'] = new Array('','disabled|true:boolean','disabled|false:boolean');
 
-xivo_attrib_constructor('fm_musiconhold',xivo_fm_musiconhold);
+xivo_attrib_register('fm_musiconhold',xivo_fm_musiconhold);
 
 window.onload = function()
 {

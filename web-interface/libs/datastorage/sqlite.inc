@@ -78,6 +78,9 @@ class xivo_datastorage_sqlite
 		if($str !== '')
 			$str .= ' - ';
 
+		if(empty($this->_query) === false)
+			$str .= 'Query: '.$this->_query.' - ';
+
 		trigger_error($str.'Error: '.$this->_error.' - Errno: '.$this->_errno,E_USER_ERROR);
 	}
 

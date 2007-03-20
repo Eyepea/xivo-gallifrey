@@ -29,7 +29,7 @@
 ?>
 	<tr class="sb-content l-infos-<?=$mod?>on2">
 		<td class="td-left txt-left" colspan="2"><?=$ref['gfeatures']['name']?></td>
-		<td><?=($ref['gfeatures']['number'] !== '' ? $ref['gfeatures']['number'] : '-')?></td>
+		<td><?=(xivo_empty($ref['gfeatures']['number']) === false ? $ref['gfeatures']['number'] : '-')?></td>
 		<td><?=$ref['nb_qmember']?></td>
 		<td class="td-right" colspan="3">
 		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/pbx_settings/groups',array('act' => 'edit','id' => $ref['gfeatures']['id']),null,$this->bbf('opt_modify'));?>

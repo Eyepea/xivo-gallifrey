@@ -11,12 +11,20 @@ $result = $info = array();
 switch($act)
 {
 	case 'add':
+		$musiconhold = &$ipbx->get_module('musiconhold');
+
+		if(($moh_list = $musiconhold->get_all_category()) !== false)
+			ksort($moh_list);
+
 		if(isset($_QR['fm_send']) === true)
 		{
 			do
 			{
 				if(xivo_issa('meetme',$_QR) === false || xivo_issa('mfeatures',$_QR) === false)
 					break;
+
+				if($moh_list === false || isset($_QR['mfeatures']['musiconhold'],$moh_list[$_QR['mfeatures']['musiconhold']]) === false)
+					$_QR['mfeatures']['musiconhold'] = '';
 
 				if(($mid = $meetme->add($_QR['meetme'])) === false)
 					break;
@@ -37,9 +45,15 @@ switch($act)
 		}
 
 		$_HTML->assign('info',$info);
+		$_HTML->assign('moh_list',$moh_list);
 		$_HTML->assign('mfeatures_elt',$mfeatures->get_element());
 		break;
 	case 'edit':
+		$musiconhold = &$ipbx->get_module('musiconhold');
+
+		if(($moh_list = $musiconhold->get_all_category()) !== false)
+			ksort($moh_list);
+
 		$info = array();
 
 		if(isset($_QR['id']) === false
@@ -53,6 +67,9 @@ switch($act)
 			{
 				if(xivo_issa('meetme',$_QR) === false || xivo_issa('mfeatures',$_QR) === false)
 					break;
+
+				if($moh_list === false || isset($_QR['mfeatures']['musiconhold'],$moh_list[$_QR['mfeatures']['musiconhold']]) === false)
+					$_QR['mfeatures']['musiconhold'] = '';
 
 				if($meetme->edit($info['meetme']['id'],$_QR['meetme']) === false)
 					break;
@@ -73,6 +90,7 @@ switch($act)
 		}
 
 		$_HTML->assign('info',$info);
+		$_HTML->assign('moh_list',$moh_list);
 		$_HTML->assign('mfeatures_elt',$mfeatures->get_element());
 		break;
 	case 'delete':

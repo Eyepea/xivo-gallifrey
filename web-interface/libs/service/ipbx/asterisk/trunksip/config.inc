@@ -13,7 +13,7 @@ $array['element']['dtmfmode']['value'] = array('rfc2833','inband','info');
 $array['element']['dtmfmode']['default'] = 'rfc2833';
 
 $array['element']['type'] = array();
-$array['element']['type']['value'] = array('peer','friend');
+$array['element']['type']['value'] = array('peer','user','friend');
 $array['element']['type']['default'] = 'peer';
 
 $array['element']['nat'] = array();
@@ -58,6 +58,12 @@ $array['element']['regexten']['default'] = 0;
 $array['element']['setvar'] = array();
 $array['element']['setvar']['default'] = 0;
 
+$array['element']['fromuser'] = array();
+$array['element']['fromuser']['default'] = '';
+
+$array['element']['fromdomain'] = array();
+$array['element']['fromdomain']['default'] = '';
+
 $array['element']['host-static'] = array();
 $array['element']['host-static']['copy'] = 'host';
 $array['element']['host-static']['unset'] = true;
@@ -76,7 +82,7 @@ $array['filter']['context'] = array('set' => false,'chk' => 2,'maxlen' => 80);
 $array['filter']['call-limit'] = array('set' => false,'chk' => 2,'between' => array(0,30));
 $array['filter']['host'] = array('set' => false);
 $array['filter']['dtmfmode'] = array('arrkey' => array('rfc2833','inband','info'));
-$array['filter']['type'] = array('arrkey' => array('peer','friend'));
+$array['filter']['type'] = array('arrkey' => array('peer','user','friend'));
 $array['filter']['nat'] = array('bool' => true);
 $array['filter']['qualify'] = array('bool' => true);
 $array['filter']['canreinvite'] = array('bool' => true);
@@ -87,6 +93,8 @@ $array['filter']['port'] = array('set' => false,'between' => array(1,65535));
 $array['filter']['ipaddr'] = array('set' => false);
 $array['filter']['regexten'] = array('set' => false);
 $array['filter']['setvar'] = array('set' => false);
+$array['filter']['fromuser'] = array('set' => false,'maxlen' => 80);
+$array['filter']['fromdomain'] = array('set' => false,'func' => 'xivo_filter::chk_host_ipv4_strict');
 $array['filter']['host-dynamic'] = array('set' => false,'arrkey' => array('dynamic','static'));
 $array['filter']['host-static'] = array('set' => false,'func' => 'xivo_filter::chk_host_ipv4_strict');
 

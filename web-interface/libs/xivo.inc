@@ -545,7 +545,7 @@ class xivo
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			if(isset($ext[$i]) === false || preg_match('/([a-z0-9\-_]+)$/',$ext[$i]) === false)
+			if(isset($ext[$i]) === false || preg_match('/^[a-z0-9\-_]+$/',$ext[$i]) !== 1)
 				continue;
 
 			$meta = $ext[$i];

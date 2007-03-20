@@ -17,7 +17,7 @@
 <?=$form->hidden(array('name' => 'fm_send','value' => '1'));?>
 <?=$form->hidden(array('name' => 'act','value' => 'add'));?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_trunk_name'),'name' => 'trunk[name]','labelid' => 'trunk-name','size' => 15,'value' => $this->varra('info',array('trunk','name'))),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_trunk_name'),'name' => 'trunk[name]','labelid' => 'trunk-name','size' => 15,'value' => $this->varra('info',array('trunk','name'))),'onchange="xivo_eid(\'it-trunk-username\').value = xivo_trunk == \'friend\' ? this.value : xivo_eid(\'it-trunk-username\').value;" onfocus="xivo_eid(\'it-trunk-username\').value = xivo_trunk == \'friend\' ? this.value : xivo_eid(\'it-trunk-username\').value; this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 <?=$form->text(array('desc' => $this->bbf('fm_trunk_username'),'name' => 'trunk[username]','labelid' => 'trunk-username','size' => 15,'value' => $this->varra('info',array('trunk','username'))),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
@@ -27,17 +27,21 @@
 
 <?=$form->text(array('desc' => $this->bbf('fm_trunk_context'),'name' => 'trunk[context]','labelid' => 'trunk-context','size' => 15,'value' => $this->varra('info',array('trunk','context'))),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
+<?=$form->text(array('desc' => $this->bbf('fm_trunk_fromuser'),'name' => 'trunk[fromuser]','labelid' => 'trunk-fromuser','size' => 15,'value' => $this->varra('info',array('trunk','fromuser'))),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
+<?=$form->text(array('desc' => $this->bbf('fm_trunk_fromdomain'),'name' => 'trunk[fromdomain]','labelid' => 'trunk-fromdomain','size' => 15,'value' => $this->varra('info',array('trunk','fromdomain'))),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
 <?=$form->text(array('desc' => $this->bbf('fm_trunk_port'),'name' => 'trunk[port]','labelid' => 'trunk-port','size' => 15,'default' => $element['trunk']['port']['default'],'value' => $this->varra('info',array('trunk','port'))),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 <?=$form->text(array('desc' => $this->bbf('fm_trunk_calllimit'),'name' => 'trunk[call-limit]','labelid' => 'trunk-calllimit','size' => 10,'value' => $this->varra('info',array('trunk','call-limit'))),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_trunk_host'),'name' => 'trunk[host-dynamic]','labelid' => 'trunk-host-dynamic','key' => false,'value' => ($host_static === true ? 'static' : 'dynamic')),$element['trunk']['host-dynamic']['value'],'onchange="xivo_chg_attrib(\'fm_trunk\',\'fd-trunk-host-static\',(this.value == \'dynamic\' ? 1 : 2))" onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_trunk_host'),'name' => 'trunk[host-dynamic]','labelid' => 'trunk-host-dynamic','key' => false,'value' => ($host_static === true ? 'static' : 'dynamic')),$element['trunk']['host-dynamic']['value'],'onchange="xivo_chg_attrib(\'fm_host\',\'fd-trunk-host-static\',(this.value == \'dynamic\' ? 1 : 2))" onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 <?=$form->text(array('name' => 'trunk[host-static]','labelid' => 'trunk-host-static','size' => 15,'value' => $this->varra('info',array('trunk','host-static'))),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 <?=$form->slt(array('desc' => $this->bbf('fm_trunk_dtmfmode'),'name' => 'trunk[dtmfmode]','labelid' => 'trunk-dtmfmode','key' => false,'default' => $element['trunk']['dtmfmode']['default'],'value' => $this->varra('info',array('trunk','dtmfmode'))),$element['trunk']['dtmfmode']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_trunk_type'),'name' => 'trunk[type]','labelid' => 'trunk-type','key' => false,'default' => $element['trunk']['type']['default'],'value' => $this->varra('info',array('trunk','type'))),$element['trunk']['type']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_trunk_type'),'name' => 'trunk[type]','labelid' => 'trunk-type','key' => false,'default' => $element['trunk']['type']['default'],'value' => $this->varra('info',array('trunk','type'))),$element['trunk']['type']['value'],'onchange="xivo_chgtrunk(this);" onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 <?=$form->checkbox(array('desc' => $this->bbf('fm_trunk_nat'),'name' => 'trunk[nat]','labelid' => 'trunk-nat','default' => $element['trunk']['nat']['default'],'checked' => $this->varra('info',array('trunk','nat'))),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 

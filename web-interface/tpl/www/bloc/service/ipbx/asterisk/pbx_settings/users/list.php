@@ -68,7 +68,7 @@
 		<td class="txt-left"><label for="it-users-<?=$i?>" id="lb-users-<?=$i?>"><?=$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"');?><?=$ref['protocol']['callerid']?></label></td>
 		<td><?=$ref['ufeatures']['protocol']?></td>
 		<td><?=$ref['protocol']['name']?></td>
-		<td><?=$ref['ufeatures']['number']?></td>
+		<td><?=(xivo_empty($ref['ufeatures']['number']) === false ? $ref['ufeatures']['number'] : '-')?></td>
 		<td><?=$ref['ufeatures']['provisioningid']?></td>
 		<td class="td-right" colspan="3">
 		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/pbx_settings/users',array('act' => 'edit','id' => $ref['ufeatures']['id'],'page' => $pager['page']),null,$this->bbf('opt_modify'));?>

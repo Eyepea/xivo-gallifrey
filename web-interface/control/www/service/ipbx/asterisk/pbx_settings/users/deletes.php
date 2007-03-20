@@ -7,6 +7,7 @@ $ufeatures = &$ipbx->get_module('userfeatures');
 $qmember = &$ipbx->get_module('queuemember');
 $ugroup = &$ipbx->get_module('usergroup');
 $voicemail = &$ipbx->get_module('uservoicemail');
+$extensions = &$ipbx->get_module('extensions');
 
 $info = array();
 
@@ -44,6 +45,9 @@ for($i = 0;$i < $arr['cnt'];$i++)
 			$ufeatures->add_origin();
 			continue;
 		}
+
+		if(($info['extensions'] = $extensions->get_where(array('exten' => $info['ufeatures']['number'],'app' => $interface))) !== false)
+			$extensions->delete($info['extensions']['id']);
 
 		if(($info['usergroup'] = $ugroup->get_by_user($info['ufeatures']['id'])) !== false)
 			$ugroup->delete($info['usergroup']['id']);

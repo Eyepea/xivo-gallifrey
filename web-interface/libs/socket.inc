@@ -199,8 +199,6 @@ class xivo_socket
 			case 'tcp':
 			case SOL_TCP:
 				return(SOL_TCP);
-			default:
-				return(0);
 		}
 
 		return(0);
@@ -232,7 +230,7 @@ class xivo_socket
 
 		if($this->connect() === false)
 		{
-			$this->halt('Can\'t connect to the socket');
+			$this->halt('Can\'t connect to socket');
 			return(false);
 		}
 

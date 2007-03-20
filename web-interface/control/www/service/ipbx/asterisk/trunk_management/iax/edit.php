@@ -125,6 +125,7 @@ if(xivo_issa('allow',$element['trunk']) === true && xivo_issa('value',$element['
 	{
 		if(is_array($info['trunk']['allow']) === false)
 			$info['trunk']['allow'] = explode(',',$info['trunk']['allow']);
+
 		$element['trunk']['allow']['value'] = array_diff($element['trunk']['allow']['value'],$info['trunk']['allow']);
 	}
 }

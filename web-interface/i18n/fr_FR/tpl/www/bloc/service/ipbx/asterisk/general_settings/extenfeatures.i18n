@@ -1,0 +1,47 @@
+; title_content_name
+Gestion des extensions
+
+; fm_voicemsg
+Accès messagerie vocale :
+
+; fm_fwdundoall
+Annule tout :
+
+; fm_fwdundounc
+Annule renvoi inconditionnel :
+
+; fm_fwdundorna
+Annule renvoi non réponse :
+
+; fm_fwdundobusy
+Annule renvoi occupation :
+
+; fm_fwdunc
+Active renvoi inconditionnel :
+
+; fm_fwdrna
+Active renvoi non réponse :
+
+; fm_fwdbusy
+Active renvoi occupation :
+
+; fm_recsnd
+Enregistrement sonore :
+
+; fm_enablevm
+Active messagerie vocale :
+
+; fm_enablednd
+Active ne pas déranger :
+
+; fm_incallrec
+Enregistrement d'appel entrant :
+
+; fm_incallfilter
+Filtrage d'appel entrant :
+
+; fm_pickup
+Interception d'appel :
+
+; fm_bt-save
+Sauvegarder

@@ -89,7 +89,7 @@ class xivo_service
 	{
 		$name = (string) $name;
 
-		if(preg_match('/^([a-z0-9\-_]+)$/i',$name) !== 1)
+		if(preg_match('/^[a-z0-9\-_]+$/i',$name) !== 1)
 			return(false);
 
 		return(xivo::load_init(XIVO_PATH_INIT.XIVO_SEP_DIR.$name.'.ini'));

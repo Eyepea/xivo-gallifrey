@@ -299,10 +299,11 @@ class xivo_file
 
 		$verif = (bool) $verif;
 
+
 		if($verif === true && ($file = xivo_file::is_f_r($file)) === false)
 			return($r);
 
-		if($r = is_resource(($f = @fopen($file,'r',true))) === true)
+		if($r = is_resource(($f = fopen($file,'r',true))) === true)
 			fclose($f);
 
 		return($r);

@@ -32,6 +32,22 @@ $array['element']['qualify']['value'] = array('no','yes');
 $array['element']['qualify']['default'] = 'no';
 $array['element']['qualify']['set'] = true;
 
+$array['element']['disallow'] = array();
+$array['element']['disallow']['value'] = array('all');
+$array['element']['disallow']['default'] = '';
+
+$array['element']['allow'] = array();
+$array['element']['allow']['value'] = array('gsm','alaw','ulaw','g729');
+
+$array['element']['host-static'] = array();
+$array['element']['host-static']['copy'] = 'host';
+$array['element']['host-static']['unset'] = true;
+
+$array['element']['host-dynamic'] = array();
+$array['element']['host-dynamic']['value'] = array('dynamic','static');
+$array['element']['host-dynamic']['copy'] = 'host';
+$array['element']['host-dynamic']['unset'] = true;
+
 $array['element']['port'] = array();
 $array['element']['port']['default'] = 5060;
 
@@ -53,15 +69,6 @@ $array['element']['context']['default'] = '';
 $array['element']['username'] = array();
 $array['element']['username']['default'] = '';
 
-$array['element']['host-static'] = array();
-$array['element']['host-static']['copy'] = 'host';
-$array['element']['host-static']['unset'] = true;
-
-$array['element']['host-dynamic'] = array();
-$array['element']['host-dynamic']['value'] = array('dynamic','static');
-$array['element']['host-dynamic']['copy'] = 'host';
-$array['element']['host-dynamic']['unset'] = true;
-
 $array['filter'] = array();
 $array['filter']['callerid'] = array('minlen' => 1,'maxlen' => 80);
 $array['filter']['name'] = array('minlen' => 1,'maxlen' => 80);
@@ -75,12 +82,14 @@ $array['filter']['callgroup'] = array('set' => false,'chk' => 2,'preg' => '/^([0
 $array['filter']['context'] = array('set' => false,'chk' => 2,'maxlen' => 80);
 $array['filter']['nat'] = array('bool' => true);
 $array['filter']['qualify'] = array('bool' => true);
+$array['filter']['disallow'] = array('set' => false,'arrkey' => array('all'));
+$array['filter']['allow'] = array('set' => false,'arrvalue' => array('gsm','alaw','ulaw','g729'));
+$array['filter']['host-dynamic'] = array('set' => false,'arrkey' => array('dynamic','static'));
+$array['filter']['host-static'] = array('set' => false,'func' => 'xivo_filter::chk_host_ipv4_strict');
 $array['filter']['port'] = array('set' => false);
 $array['filter']['ipaddr'] = array('set' => false);
 $array['filter']['regexten'] = array('set' => false);
 $array['filter']['setvar'] = array('set' => false);
 $array['filter']['username'] = array('set' => false);
-$array['filter']['host-dynamic'] = array('set' => false,'arrkey' => array('dynamic','static'));
-$array['filter']['host-static'] = array('set' => false,'func' => 'xivo_filter::chk_host_ipv4_strict');
 
 ?>

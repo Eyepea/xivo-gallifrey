@@ -67,17 +67,13 @@ class xivo_service_asterisk_generalsip extends xivo_service_asterisk_staticconf
 	{
 		$disable = $disable === null ? $disable : intval((bool) $disable);
 
-		if($val !== '' && $val !== null)
-		{
-			$arr = array();
-			$arr['var_val'] = $val;
-			$arr['commented'] = $disable !== null ? $disable : 0;
-			return($this->replace_by_name($name,$arr));
-		}
-
 		$arr = array();
 		$arr['var_val'] = $val;
-		$arr['commented'] = $disable !== null ? $disable : 1;
+
+		if($val !== '' && $val !== null)
+			$arr['commented'] = $disable !== null ? $disable : 0;
+		else
+			$arr['commented'] = $disable !== null ? $disable : 1;
 
 		return($this->replace_by_name($name,$arr));
 	}

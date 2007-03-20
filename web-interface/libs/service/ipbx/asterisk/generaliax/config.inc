@@ -58,7 +58,7 @@ $array['element']['register']['default'] = '';
 
 $array['filter'] = array();
 $array['filter']['bindport'] = array('cast' => 'uint','between' => array(1,65535));
-$array['filter']['bindaddr'] = array('func' => 'xivo_filter::chk_ipv4');
+$array['filter']['bindaddr'] = array('func' => 'xivo_filter::chk_host_ipv4_strict');
 $array['filter']['delayreject'] = array('bool' => true);
 $array['filter']['language'] = array('arrkey' => array('en','fr'));
 $array['filter']['tos'] = array('arrkey' => array('none','lowdelay','throughput','reliability','mincost'));

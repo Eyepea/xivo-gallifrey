@@ -13,7 +13,7 @@ switch($act)
 	case 'add':
 	case 'edit':
 		$dhtml = &$_HTML->get_module('dhtml');
-		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/trunks.js');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/trunkiax.js');
 	case 'delete':
 	case 'deletes':
 	case 'list':

@@ -32,10 +32,9 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 	function _chk_mohpath()
 	{
 		if(xivo_issa('general',$this->_sre->_ini) === false
-		|| isset($this->_sre->_ini['general']['mohpath']) === false)
-			return(false);
-
-		if(($this->_mohpath = xivo_file::is_d_rwx($this->_sre->_ini['general']['mohpath'])) === false)
+		|| xivo_issa('path',$this->_sre->_ini['general']) === false
+		|| isset($this->_sre->_ini['general']['path']['musiconhold']) === false
+		|| ($this->_mohpath = xivo_file::is_d_rwx($this->_sre->_ini['general']['path']['musiconhold'])) === false)
 			return(false);
 	}
 

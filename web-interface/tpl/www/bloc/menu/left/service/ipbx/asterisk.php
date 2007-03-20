@@ -83,7 +83,7 @@
 	if($this->chk_policy('control_system') === true):
 		echo '<dt>',$this->bbf('mn_left_ti_control_system'),'</dt>';
 		if($this->chk_policy('control_system','reload') === true):
-			echo '<dd>',$url->href_html($this->bbf('mn_left_asterisk_reload'),'service/ipbx/control_system/reload'),'</dd>';
+			echo '<dd>',$url->href_html($this->bbf('mn_left_ipbx_reload',XIVO_SRE_IPBX_LABEL),'service/ipbx/control_system/reload'),'</dd>';
 		endif;
 	endif;
 

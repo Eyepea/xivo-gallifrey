@@ -29,7 +29,7 @@ Fichiers sons
 Musiques d'attente
 
 ; ply_service-ipbx-general_settings-extenfeatures
-Extensions IPBX
+Extensions
 
 ; ply_service-ipbx-pbx_settings
 Paramètres PBX
@@ -86,4 +86,4 @@ Gestion du manager
 Système de contrôle
 
 ; ply_service-ipbx-control_system-reload
-Recharger Asterisk
+Recharger IPBX

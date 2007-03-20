@@ -24,6 +24,13 @@ $array['section']['voicemail']['disabled'] = true;
 
 $array['module'] = array();
 
+$array['module']['extensions'] = array();
+$array['module']['extensions']['datastorage'] = true;
+
+$array['module']['extenfeatures'] = array();
+$array['module']['extenfeatures']['disabled'] = true;
+$array['module']['extenfeatures']['datastorage'] = 'extensions';
+
 $array['module']['configfiles'] = array();
 $array['module']['configfiles']['disabled'] = true;
 

@@ -55,6 +55,21 @@ function xivo_open_center(url,name,width,height,param)
 	return open(url, name,'left=' + cx + 'px,top=' + cy + 'px,width=' + width + 'px,height=' + height +'px'+ param);
 }
 
+function xivo_str_repeat(str,len)
+{
+	var r = '';
+	str = String(str);
+	len = Number(len);
+
+	if(len < 1)
+		return(r);
+
+	for(var i = 0;i < len;i++)
+		r += str;
+
+	return(r);
+}
+
 var xivo_conf = new Array();
 xivo_conf['attrib'] = new Array();
 xivo_conf['eid'] = new Array();
@@ -77,16 +92,103 @@ function xivo_eid(id)
 		return(false);
 }
 
-function xivo_attrib_constructor(id,arr)
+function xivo_attrib_register(id,arr)
 {
 	if(typeof(xivo_conf['attrib'][id]) == 'undefined')
 		xivo_conf['attrib'][id] = arr;
+}
+
+function xivo_chg_style_attrib(elem,arr,type)
+{
+	type = type == 'undefined' ? 0 : type;
+
+	if(typeof(arr) == 'string')
+		var ref_style = arr;
+	else if(xivo_is_array(arr) == true && typeof(arr[type]) != 'undefined')
+		var ref_style = arr[type];
+	else
+		return(false);
+
+	try
+	{
+		var styles = '';
+
+		if(typeof(elem['style']) != 'undefined')
+		{
+			var astyles = ref_style.split(';');
+			var astyle = new Array();
+
+			for(i = 0;i < astyles.length;i++)
+			{
+				styles = astyles[i].replace(/\s/g,'');
+
+				if(styles.length == 0)
+					continue;
+
+				astyle = styles.split(':');
+
+				if(astyle.length == 1)
+					continue;
+
+				if((pos = astyle[0].search(/-/)) != -1)
+				{
+					var tmp = astyle[0];
+					astyle[0]  = tmp.substring(0,pos);
+					astyle[0] += tmp.substr(pos+1,1).toUpperCase();
+					astyle[0] += tmp.substr(pos+2,(tmp.length - pos-2));
+				}
+
+				elem['style'][astyle[0]] = astyle[1];
+			}
+		}
+		else if(typeof(elem.style.setAttribute) != 'undefined')
+		{
+			var astyles = ref_style.split(';');
+			var astyle = new Array();
+
+			for(i = 0;i < astyles.length;i++)
+			{
+				styles = astyles[i].replace(/\s/g,'');
+
+				if(styles.length == 0)
+					continue;
+
+				astyle = styles.split(':');
+
+				if(astyle.length == 1)
+					continue;
+
+				if((pos = astyle[0].search(/-/)) != -1)
+				{
+					var tmp = astyle[0];
+					astyle[0]  = tmp.substring(0,pos);
+					astyle[0] += tmp.substr(pos+1,1).toUpperCase();
+					astyle[0] += tmp.substr(pos+2,(tmp.length - pos-2));
+				}
+
+				elem.style.setAttribute(astyle[0],astyle[1]);
+			}
+		}
+		else
+		{
+			styles = elem.style.cssText.replace(/\s/g,'');
+
+			if(styles.charAt(styles.length-1) != ';')
+				styles += ';'+ref_style;
+			else
+				styles += ref_style;
+
+			elem.style.cssText = styles;
+		}
+	}
+	catch(e) {}
 }
 
 function xivo_chg_attrib(name,id,type,link)
 {
 	link = link == 1 || link == true ? true : false;
 	type = type == 'undefined' ? 0 : type;
+	var i = 0;
 
 	if(typeof(xivo_conf['attrib'][name]) != 'undefined' && typeof(xivo_conf['attrib'][name][id]) != 'undefined')
 	{
@@ -105,9 +207,7 @@ function xivo_chg_attrib(name,id,type,link)
 			}
 		
 			if(typeof(ref_elem['img']) != 'undefined' && typeof(ref_elem['img'][type]) != 'undefined')
-			{
 				get.src = ref_elem['img'][type];
-			}
 
 			do
 			{
@@ -122,140 +222,64 @@ function xivo_chg_attrib(name,id,type,link)
 					break;
 
 				var properties = '';
+				var nproperty = '';
 				var aproperty = new Array();
 
-				for(var i = 0;i < aproperties.length;i++)
+				for(i = 0;i < aproperties.length;i++)
 				{
 					properties = aproperties[i].replace(/\s/g,'');
 
 					if(properties.length == 0)
 						continue;
 
-					aproperty = properties.split(':');
-					
-					if(aproperty.length == 1 || typeof(get[aproperty[0]]) == 'undefined')
+					nproperty = properties.split('|');
+
+					if(nproperty.length > 2 || typeof(get[nproperty[0]]) == 'undefined')
 						continue;
 
-					if(typeof(aproperty[2]) != 'undefined')
+					if(nproperty[0] == 'style')
 					{
-						var vtype = aproperty[2].toLowerCase();
+						xivo_chg_style_attrib(get,nproperty[1],type);
+						continue;
+					}
+
+					aproperty = nproperty[1].split(':');
+					
+					if(typeof(aproperty[1]) != 'undefined')
+					{
+						var vtype = aproperty[1].toLowerCase();
 						
 						switch(vtype)
 						{
 							case 'boolean':
-								if(aproperty[1] == 'false')
-									aproperty[1] = false;
+								if(aproperty[0] == 'false')
+									aproperty[0] = false;
 								else
-									aproperty[1] = Boolean(aproperty[1]);
+									aproperty[0] = Boolean(aproperty[0]);
 								break;
 							case 'number':
-								aproperty[1] = Number(aproperty[1]);
+								aproperty[0] = Number(aproperty[0]);
 								break;
 							case 'string':
-								aproperty[1] = String(aproperty[1]);
+								aproperty[0] = String(aproperty[0]);
 								break;
 						}		
 					}
 
-					get[aproperty[0]] = aproperty[1];
+					get[nproperty[0]] = aproperty[0];
 				}
 			}
 			while(false);
 
-			do
-			{
-				if(typeof(ref_elem['style']) == 'undefined')
-					break;
-
-				if(typeof(ref_elem['style']) == 'string')
-					var ref_style = ref_elem['style'];
-				else if(xivo_is_array(ref_elem['style']) == true && typeof(ref_elem['style'][type]) != 'undefined')
-					var ref_style = ref_elem['style'][type];
-				else
-					break;
-
-				try
-				{
-					var styles = '';
-
-					if(typeof(get['style']) != 'undefined')
-					{
-						var astyles = ref_style.split(';');
-						var astyle = new Array();
-
-						for(var i = 0;i < astyles.length;i++)
-						{
-							styles = astyles[i].replace(/\s/g,'');
-
-							if(styles.length == 0)
-								continue;
-
-							astyle = styles.split(':');
-
-							if(astyle.length == 1)
-								continue;
-
-							if((pos = astyle[0].search(/-/)) != -1)
-							{
-								var tmp = astyle[0];
-								astyle[0]  = tmp.substring(0,pos);
-								astyle[0] += tmp.substr(pos+1,1).toUpperCase();
-								astyle[0] += tmp.substr(pos+2,(tmp.length - pos-2));
-							}
-
-							get['style'][astyle[0]] = astyle[1];
-						}
-					}
-					else if(typeof(get.style.setAttribute) != 'undefined')
-					{
-						var astyles = ref_style.split(';');
-						var astyle = new Array();
-
-						for(var i = 0;i < astyles.length;i++)
-						{
-							styles = astyles[i].replace(/\s/g,'');
-
-							if(styles.length == 0)
-								continue;
-
-							astyle = styles.split(':');
-
-							if(astyle.length == 1)
-								continue;
-
-							if((pos = astyle[0].search(/-/)) != -1)
-							{
-								var tmp = astyle[0];
-								astyle[0]  = tmp.substring(0,pos);
-								astyle[0] += tmp.substr(pos+1,1).toUpperCase();
-								astyle[0] += tmp.substr(pos+2,(tmp.length - pos-2));
-							}
-
-							get.style.setAttribute(astyle[0],astyle[1]);
-						}
-					}
-					else
-					{
-						styles = get.style.cssText.replace(/\s/g,'');
-
-						if(styles.charAt(styles.length-1) != ';')
-							styles += ';'+ref_style;
-						else
-							styles += ref_style;
-
-						get.style.cssText = styles;
-					}
-				}
-				catch(e) {}
-			}
-			while(false);
+			if(typeof(ref_elem['style']) != 'undefined')
+				xivo_chg_style_attrib(get,ref_elem['style'],type);
 		}
 
 		if(typeof(ref_elem['link']) != 'undefined')
 		{
 			if(xivo_is_array(ref_elem['link']) == true && link == true)
 			{
-				for(var i = 0;i < ref_elem['link'].length; i++)
+				for(i = 0;i < ref_elem['link'].length; i++)
 				{
 					nlink = typeof(ref_elem['link'][i][2]) != 'undefined' ? ref_elem['link'][i][2] : 2;
 					xivo_chg_attrib(name,ref_elem['link'][i][0],ref_elem['link'][i][1],nlink);
@@ -598,4 +622,22 @@ function xivo_fm_unshift_pop_opt_select(from,text,value,chk,num)
 		xivo_fm_pop_opt_select(from.id);
 
 	return(true);
+}
+
+function xivo_clone(obj)
+{
+	if(typeof(obj) != 'object')
+		return(false);
+
+	var r = new obj.constructor();
+
+  	for(var property in obj)
+	{
+    		if(typeof(obj[property]) == 'object')
+			r[property] = xivo_clone(obj[property]);
+		else
+			r[property] = obj[property];
+	}
+	
+	return(r);
 }

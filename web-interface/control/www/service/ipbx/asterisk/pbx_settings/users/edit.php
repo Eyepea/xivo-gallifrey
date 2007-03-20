@@ -11,7 +11,12 @@ if(isset($_QR['id']) === false || ($info['ufeatures'] = $ufeatures->get($_QR['id
 
 $gfeatures = &$ipbx->get_module('groupfeatures');
 $voicemail = &$ipbx->get_module('uservoicemail');
+$extensions = &$ipbx->get_module('extensions');
+$musiconhold = &$ipbx->get_module('musiconhold');
 $ugroup = &$ipbx->get_module('usergroup');
+
+if(($moh_list = $musiconhold->get_all_category()) !== false)
+	ksort($moh_list);
 
 $info['voicemail'] = $voicemail->get_by_mailbox($info['protocol']['mailbox']);
 $info['usergroup'] = $ugroup->get_by_user($info['ufeatures']['id']);
@@ -20,6 +25,12 @@ do
 {
 	if(isset($_QR['fm_send']) === false || xivo_issa('protocol',$_QR) === false || xivo_issa('ufeatures',$_QR) === false)
 		break;
+
+	if($moh_list === false || isset($_QR['ufeatures']['musiconhold'],$moh_list[$_QR['ufeatures']['musiconhold']]) === false)
+		$_QR['ufeatures']['musiconhold'] = '';
+
+	if(xivo_ak('codec-active',$_QR,true) !== '1' || xivo_issa('allow',$_QR['protocol']) === false)
+		unset($_QR['protocol']['allow'],$_QR['protocol']['disallow']);
 
 	if($info['ufeatures']['protocol'] !== $_QR['protocol']['protocol'])
 	{
@@ -40,6 +51,9 @@ do
 		$info['protocol'] = array_merge($info['protocol'],$protocol->get_filter_result());
 		break;
 	}
+
+	if(is_array($result['protocol']['allow']) === true)
+		$result['protocol']['allow'] = implode(',',$result['protocol']['allow']);
 
 	if($chg_protocol === true)
 	{
@@ -82,6 +96,24 @@ do
 			$protocol->edit($pid,array('callgroup' => ''));
 			break;
 		}
+		
+		$new_interface = $ipbx->mk_interface($result['ufeatures']['protocol'],$result['protocol']['name']);
+
+		if($new_interface !== false
+		&& ($info['extensions'] = $extensions->get_where(array('exten' => $info['ufeatures']['number'],'app' => $interface))) !== false)
+		{
+			if($result['ufeatures']['number'] === '')
+				$extensions->delete($extenid);
+			else
+			{
+				$hints = $info['extensions'];
+				$hints['exten'] = $result['ufeatures']['number'];
+				$hints['app'] = $new_interface;
+
+				if(($result['hints'] = $extensions->chk_values($hints,true,true)) !== false)
+					$extensions->edit($info['extensions']['id'],$result['hints']);
+			}
+		}
 
 		$qmember = &$ipbx->get_module('queuemember');
 
@@ -102,7 +134,7 @@ do
 
 		$qm_list = $qmember->get_list_by_interface($interface);
 
-		if(($new_interface = $ipbx->mk_interface($result['ufeatures']['protocol'],$result['protocol']['name'])) === false)
+		if($new_interface === false)
 			break;
 
 		if($qm_list !== false && $qmember->delete_by_interface($interface) === false)
@@ -236,6 +268,30 @@ if(($group_list = $gfeatures->get_list(false)) !== false)
 	}
 }
 
+$protocol_elt = $ipbx->get_protocol_element();
+
+if(xivo_issa('allow',$protocol_elt['sip']) === true && xivo_issa('value',$protocol_elt['sip']['allow']) === true)
+{
+	if(xivo_issa('protocol',$info) === true && xivo_ak('allow',$info['protocol']) === true && empty($info['protocol']['allow']) === false)
+	{
+		if(is_array($info['protocol']['allow']) === false)
+			$info['protocol']['allow'] = explode(',',$info['protocol']['allow']);
+
+		$protocol_elt['sip']['allow']['value'] = array_diff($protocol_elt['sip']['allow']['value'],$info['protocol']['allow']);
+	}
+}
+
+if(xivo_issa('allow',$protocol_elt['iax']) === true && xivo_issa('value',$protocol_elt['iax']['allow']) === true)
+{
+	if(xivo_issa('protocol',$info) === true && xivo_ak('allow',$info['protocol']) === true && empty($info['protocol']['allow']) === false)
+	{
+		if(is_array($info['protocol']['allow']) === false)
+			$info['protocol']['allow'] = explode(',',$info['protocol']['allow']);
+
+		$protocol_elt['iax']['allow']['value'] = array_diff($protocol_elt['iax']['allow']['value'],$info['protocol']['allow']);
+	}
+}
+
 $_HTML->assign('ract',$act);
 $_HTML->assign('ufeatures',$ufeatures);
 $_HTML->assign('voicemail',$voicemail);
@@ -243,8 +299,9 @@ $_HTML->assign('info',$info);
 $_HTML->assign('protocol',$ipbx->get_protocol());
 $_HTML->assign('group_list',$group_list);
 $_HTML->assign('group',$group);
-$_HTML->assign('protocol_elt',$ipbx->get_protocol_element());
+$_HTML->assign('protocol_elt',$protocol_elt);
 $_HTML->assign('ufeatures_elt',$ufeatures->get_element());
+$_HTML->assign('moh_list',$moh_list);
 
 $dhtml = &$_HTML->get_module('dhtml');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users.js');

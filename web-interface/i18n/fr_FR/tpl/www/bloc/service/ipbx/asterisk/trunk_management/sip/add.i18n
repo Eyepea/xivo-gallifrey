@@ -16,6 +16,12 @@ Nom d'appel :
 ; fm_trunk_context
 Contexte :
 
+; fm_trunk_fromuser
+Champ from-user :
+
+; fm_trunk_fromdomain
+Champ from-domain :
+
 ; fm_trunk_calllimit
 Nombre d'appels :
 

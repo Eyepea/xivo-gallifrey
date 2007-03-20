@@ -24,10 +24,9 @@ class xivo_service_asterisk_sounds extends xivo_service_asterisk_abstract
 	function _chk_sndpath()
 	{
 		if(xivo_issa('general',$this->_sre->_ini) === false
-		|| isset($this->_sre->_ini['general']['sndpath']) === false)
-			return(false);
-
-		if(($this->_sndpath = xivo_file::is_d_rwx($this->_sre->_ini['general']['sndpath'])) === false)
+		|| xivo_issa('path',$this->_sre->_ini['general']) === false
+		|| isset($this->_sre->_ini['general']['path']['sounds']) === false
+		|| ($this->_sndpath = xivo_file::is_d_rwx($this->_sre->_ini['general']['path']['sounds'])) === false)
 			return(false);
 	}
 

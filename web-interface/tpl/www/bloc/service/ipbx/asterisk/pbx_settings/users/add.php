@@ -6,6 +6,7 @@
 	$ufeatures_elt = $this->vars('ufeatures_elt');
 	$group_list = $this->vars('group_list');
 	$info = $this->vars('info');
+	$moh_list = $this->vars('moh_list');
 
 	if((string) ($host = $this->varra('info',array('protocol','host-static'))) !== ''):
 		$host_static = true;
@@ -16,7 +17,7 @@
 <div class="b-infos b-form">
 	<h3 class="sb-top xspan"><span class="span-left">&nbsp;</span><span class="span-center"><?=$this->bbf('title_content_name');?></span><span class="span-right">&nbsp;</span></h3>
 	<div class="sb-content">
-<form action="#" method="post" accept-charset="utf-8" onsubmit="xivo_fm_select('it-group');">
+<form action="#" method="post" accept-charset="utf-8" onsubmit="xivo_fm_select('it-group'); xivo_fm_select('it-'+xivo_protocol+'-codec');">
 
 <?=$form->hidden(array('name' => XIVO_SESS_NAME,'value' => XIVO_SESS_ID));?>
 <?=$form->hidden(array('name' => 'act','value' => 'add'));?>
@@ -38,6 +39,8 @@
 
 <?=$form->slt(array('desc' => $this->bbf('fm_userfeatures_simultcalls'),'name' => 'ufeatures[simultcalls]','labelid' => 'ufeatures-simultcalls','key' => false,'default' => $ufeatures_elt['simultcalls']['default']),$ufeatures_elt['simultcalls']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
+<?=$form->slt(array('desc' => $this->bbf('fm_userfeatures_musiconhold'),'name' => 'ufeatures[musiconhold]','labelid' => 'ufeatures-musiconhold','key' => 'category','empty' => true,'default' => $ufeatures_elt['musiconhold']['default']),$moh_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
 <?=$form->slt(array('desc' => $this->bbf('fm_protocol_host'),'name' => 'protocol[host-dynamic]','labelid' => 'sip-protocol-host-dynamic','bbf' => 'fm_protocol_host-','key' => false,'value' => ($host_static === true ? 'static' : 'dynamic')),$protocol_elt['sip']['host-dynamic']['value'],'onchange="xivo_chg_attrib(\'fm_host\',\'fd-sip-protocol-host-static\',(this.value == \'dynamic\' ? 1 : 2))" onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 <?=$form->text(array('name' => 'protocol[host-static]','labelid' => 'sip-protocol-host-static','size' => 15,'value' => $host),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
@@ -47,6 +50,7 @@
 <?=$form->text(array('name' => 'protocol[host-static]','labelid' => 'iax-protocol-host-static','size' => 15,'value' => $host),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 <?=$form->slt(array('desc' => $this->bbf('fm_protocol_dtmfmode'),'name' => 'protocol[dtmfmode]','labelid' => 'protocol-dtmfmode','key' => false),$protocol_elt['sip']['dtmfmode']['value'],'onfocus="this.className=\'it-mfocus\'" onblur="this.className=\'it-mblur\';"');?>
+
 <?php
 	if($this->vars('group') === true):
 ?>
@@ -75,7 +79,43 @@
 	endif;
 ?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail'),'name' => 'voicemail-active','id' => 'it-voicemail','checked' => false),'onclick="xivo_eid(\'voicemail\').style.display = this.checked == true ? \'block\' : \'none\';"');?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_codec-active'),'name' => 'codec-active','labelid' => 'codec-active','checked' => false),'onclick="xivo_eid(\'codec\').style.display = this.checked == true ? \'block\' : \'none\';"');?>
+
+<div id="codec" class="b-nodisplay">
+
+<?=$form->slt(array('desc' => $this->bbf('fm_protocol_codec-disallow'),'name' => 'protocol[disallow]','labelid' => 'sip-protocol-disallow','key' => false),$protocol_elt['sip']['disallow']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
+<?=$form->slt(array('desc' => $this->bbf('fm_protocol_codec-disallow'),'name' => 'protocol[disallow]','labelid' => 'iax-protocol-disallow','key' => false),$protocol_elt['iax']['disallow']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
+<div id="codeclist" class="fm-field"><label id="lb-codeclist" for="it-codeclist" onmouseover="this.for = 'it-'+xivo_protocol+'-codeclist';"><?=$this->bbf('fm_protocol_codec-allow')?></label><br />
+	<div>
+		<?=$form->slt(array('name' => 'codeclist','label' => false,'id' => 'it-sip-codeclist','key_val' => 'id','multiple' => true,'size' => 5,'field' => false,'key' => false),$protocol_elt['sip']['allow']['value'],'class="codeclisted" onfocus="this.className=\'it-mfocus codeclisted\';" onblur="this.className=\'it-mblur codeclisted\';"')?>
+		<?=$form->slt(array('name' => 'codeclist','label' => false,'id' => 'it-iax-codeclist','key_val' => 'id','multiple' => true,'size' => 5,'field' => false,'key' => false),$protocol_elt['iax']['allow']['value'],'class="codeclisted" onfocus="this.className=\'it-mfocus codeclisted\';" onblur="this.className=\'it-mblur codeclisted\';"')?>
+
+	</div>
+	<div id="inout-codec">
+		<?=$form->button(array('name' => 'incodec','id' => 'it-bt-incodec','value' => $this->bbf('fm_bt-incodec')),'onclick="xivo_fm_move_selected(\'it-\'+xivo_protocol+\'-codeclist\',\'it-\'+xivo_protocol+\'-codec\');"')?>
+	
+		<?=$form->button(array('name' => 'outcodec','id' => 'it-bt-outcodec','value' => $this->bbf('fm_bt-outcodec')),'onclick="xivo_fm_move_selected(\'it-\'+xivo_protocol+\'-codec\',\'it-\'+xivo_protocol+\'-codeclist\');"');?>
+	</div>
+	<div id="select-codec" class="txt-left">
+
+		<?=$form->slt(array('name' => 'protocol[allow][]','label' => false,'id' => 'it-sip-codec','multiple' => true,'size' => 5,'field' => false,'key' => false),$this->varra('info',array('protocol','allow')),'class="codecselected" onfocus="this.className=\'it-mfocus codecselected\';" onblur="this.className=\'it-mblur codecselected\';"');?>
+
+		<?=$form->slt(array('name' => 'protocol[allow][]','label' => false,'id' => 'it-iax-codec','multiple' => true,'size' => 5,'field' => false,'key' => false),$this->varra('info',array('protocol','allow')),'class="codecselected" onfocus="this.className=\'it-mfocus codecselected\';" onblur="this.className=\'it-mblur codecselected\';"');?>
+
+		<div id="updown-codec" class="txt-left">
+			<?=$form->button(array('name' => 'upcodec','id' => 'it-bt-upcodec','value' => '&uarr;','schars' => true),'onclick="xivo_fm_order_selected(\'it-\'+xivo_protocol+\'-codec\',1);"')?>
+
+			<?=$form->button(array('name' => 'downcodec','id' => 'it-bt-downcodec','value' => '&darr;','schars' => true),'onclick="xivo_fm_order_selected(\'it-\'+xivo_protocol+\'codec\',-1);"');?>
+		</div>
+	</div>
+</div>
+
+</div>
+<div class="clearboth"></div>
+
+<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail'),'name' => 'voicemail-active','labelid' => 'voicemail','checked' => false),'onclick="xivo_eid(\'voicemail\').style.display = this.checked == true ? \'block\' : \'none\';"');?>
 
 <div id="voicemail" class="b-nodisplay">
 	<?=$form->text(array('desc' => $this->bbf('fm_voicemail_fullname'),'name' => 'voicemail[fullname]','labelid' => 'voicemail-fullname','size' => 15),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>

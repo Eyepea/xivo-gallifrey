@@ -47,14 +47,7 @@ class xivo_service_abstract
 
 		return($r);
 	}
-/*
-	function _load_i18n()
-	{
-		$i18n = &xivo_gct::get('xivo_18n');
 
-		return($i18n->load_file($this->_name,'service::'.$this->_type));
-	}
-*/
 	function _load_config()
 	{
 		if(empty($this->_conf) === true)
@@ -148,21 +141,16 @@ class xivo_service_abstract
 		
 		if($this->chk_module_enable($name) === false)
 			return(false);
-/*
-			if(isset($ref['section'],$this->_conf['section'][$ref['section']]) === false)
-				return($r);
 
-			$section = &$this->_conf['section'][$ref['section']];
-
-			if((isset($section['disabled']) === true && $ref['disabled'] !== false) === true)
-			if((isset($ref['disabled']) === true && $ref['disabled'] !== false) === true
-			|| (bool) xivo_ak($name,$this->_ini['general']['module'],true) === false)
-				return($r);
-*/
 		if(($class = $this->_load_class($name)) !== false)
 		{
 			if(isset($ref['datastorage']) === true && (bool) $ref['datastorage'] === true)
-				$this->_module[$name] = new $class($this,$this->_load_dso($name));
+			{
+				if(is_string($ref['datastorage']) === true && $this->chk_module_enable($ref['datastorage']) === true)
+					$this->_module[$name] = new $class($this,$this->_load_dso($ref['datastorage']));
+				else
+					$this->_module[$name] = new $class($this,$this->_load_dso($name));
+			}
 			else
 				$this->_module[$name] = new $class($this);
 		}

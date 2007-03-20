@@ -44,6 +44,15 @@ function xivo_bool($bool)
 	return($r);
 }
 
+function xivo_empty($val,$str=true)
+{
+	if(empty($val) === false || $val === '0' || $val === 0
+	|| ($str !== true && $val !== $str) === true)
+		return(false);
+
+	return(true);
+}
+
 function xivo_digit($str=0,$def=null,$t=false)
 {
 	$r = false;
@@ -285,14 +294,14 @@ function xivo_chk_email($e,$t=true)
 	$e = strtolower((string) $e);
 	$len = strlen($e);
 
-	if($len >= 6 && $len < 255 && ereg('^([a-z0-9_-]+)(\.[a-z0-9_-]+)*@([a-z0-9-]+)(\.[a-z0-9-]+)*(\.[a-z]{2,4})$',$e) !== false)
+	if($len > 5 && $len < 255 && preg_match('/^[a-z0-9_-]+(\.[a-z0-9_-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*\.[a-z]{2,4}$/',$e) === 1)
 	{
 		if(function_exists('getmxrr') === true && $t === true)
 		{
 			$a = explode('@',$e);
 			$m = array();
 
-			if(getmxrr($a[1], $m) === true && $nb === 0)
+			if(getmxrr($a[1],$m) === true && $nb === 0)
 				$r = $e;
 		}
 		else $r = $e;
@@ -592,181 +601,7 @@ function xivo_mk_order($a,$def,$order='',$desc=true)
 
 	return($r);
 }
-/*
-function xivo_chk_form($k,&$a,&$v)
-{
-	$a = (array) $a;
-	$v = (array) $v;
 
-	$r = array('err' => '','rs' => false,'val' => '');
-
-	if(isset($a[$k]) === false)
-	{
-		$r['rs'] = true;
-		return($r);
-	}
-
-	$arr = &$a[$k];
-
-	if(isset($arr['set']) === false)
-		$arr['set'] = true;
-
-	if(isset($arr['chk']) === false)
-		$arr['chk'] = 1;
-
-	$arr['set'] = (bool) $arr['set'];
-	$arr['chk'] = xivo_uint($arr['chk']);
-
-	if($arr['set'] === true)
-	{
-		if(isset($v[$k]) === false)
-		{
-			$r['err'] = 'undefined';
-			return($r);
-		}
-	}
-	else
-	{
-		if(isset($v[$k]) === true)
-		{
-			if(isset($arr['notag']) === false)
-				$v[$k] = &xivo_notag($v[$k]);
-			else if(isset($arr['notagscript']) === true)
-				$v[$k] = &xivo_notagscript($v[$k]);
-			
-			$r['val'] = &$v[$k];
-		}
-
-		$r['rs'] = true;
-		return($r);
-	}
-
-	$val = &$v[$k];
-
-	if(isset($arr['egal'],$v[$arr['egal']]) === true)
-	{
-		if($v[$arr['egal']] !== $val)
-		{
-			$r['err'] = 'no egal';
-			return($r);
-		}
-	}
-	else if(isset($arr['arrval']) === true)
-	{
-		if($v[$arr['arrval']] !== $val)
-		{
-			$r['err'] = 'different value';
-			return($r);
-		}
-	}
-	else
-	{
-		if(isset($arr['notag']) === false)
-			$val = &xivo_notag($val);
-		else if(isset($arr['notagscript']) === true)
-			$val = &xivo_notagscript($val);
-
-		$len = strlen($val);
-
-		if($arr['chk'] === 0 && $len > 0)
-		{
-			$r['err'] = 'no empty';
-			return($r);
-		}
-
-		if($arr['chk'] === 1 && $len === 0)
-		{
-			$r['err'] = 'empty';
-			return($r);
-		}
-
-		if($arr['chk'] === 2 && $len === 0)
-		{
-			$r['rs'] = true;
-			return($r);
-		}
-
-		if(isset($arr['cast']) === true && $len > 0)
-		{
-			switch($arr['cast'])
-			{
-				case 'int':
-					$tmp = (int) $val;
-
-					if($tmp != $val)
-					{
-						$r['err'] = 'no integer';
-						return($r);
-					}
-					break;
-				case 'uint':
-					$tmp = xivo_uint($val);
-
-					if($tmp != $val)
-					{
-						$r['err'] = 'no unsigned integer';
-						return($r);
-					}
-					break;
-				case 'float':
-					$tmp = (float) $val;
-
-					if($tmp != $val)
-					{
-						$r['err'] = 'no float';
-						return($r);
-					}
-					break;
-				case 'string':
-					$tmp = (string) $val;
-
-					if($tmp != $val)
-					{
-						$r['err'] = 'no string';
-						return($r);
-					}
-					break;
-			}
-		}
-
-		if(isset($arr['minlen']) === true && $len < (int) $arr['minlen'])
-		{
-			$r['err'] = 'mininum length';
-			return($r);
-		}
-
-		if(isset($arr['maxlen']) === true && $len > (int) $arr['maxlen'])
-		{
-			$r['err'] = 'maximun length';
-			return($r);
-		}
-
-		if(isset($arr['func']) === true && function_exists((string) $arr['func']) === true
-		&& call_user_func($arr['func'],$val) === false)
-		{
-			$r['err'] = 'func false';
-			return($r);
-		}
-
-		if(isset($arr['ereg']) === true && ereg((string) $arr['ereg'],$val) === false)
-		{
-			$r['err'] = 'ereg false';
-			return($r);
-		}
-
-		if(isset($arr['eregi']) === true && eregi((string) $arr['eregi'],$val) === false)
-		{
-			$r['err'] = 'eregi false';
-			return($r);
-		}
-	}
-
-	$r['rs'] = true;
-	$r['val'] = $val;
-
-	return($r);
-}
-*/
 function xivo_mk_date($date)
 {
 	$r = false;

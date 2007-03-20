@@ -4,6 +4,9 @@ Nom
 ; col_host
 Hôte
 
+; col_connection-type
+Type de connexion
+
 ; col_call-limit
 Nombre d'appels
 
@@ -25,8 +28,17 @@ Etes-vous certain de vouloir supprimer cette interconnexion ?
 ; opt_delete
 Supprimer
 
-; host_unknow
+; host_unknown
 Hôte inconnu
+
+; connect_type_inbound
+Entrant
+
+; connect_type_outbound
+Sortant
+
+; connect_type_inoutbound
+Entrant/Sortant
 
 ; call_unlimited
 Appels illimités

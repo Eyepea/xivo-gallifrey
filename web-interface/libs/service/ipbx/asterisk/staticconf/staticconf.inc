@@ -204,7 +204,7 @@ class xivo_service_asterisk_staticconf extends xivo_service_asterisk_abstract
 			if(($info = $this->get_where($where)) === false)
 				continue;
 
-			if(($id = $this->edit($info['id'],$edit)) === false)
+			if(($ret = $this->edit($info['id'],$edit)) === false)
 				break;
 
 			$r[] = $info;
@@ -213,7 +213,7 @@ class xivo_service_asterisk_staticconf extends xivo_service_asterisk_abstract
 		if(isset($r[0]) === false)
 			return(false);
 
-		if($id !== false)
+		if($ret !== false)
 			return($r);
 
 		$nb = count($r);
@@ -357,7 +357,33 @@ class xivo_service_asterisk_staticconf extends xivo_service_asterisk_abstract
 				$r[$info['category']] = array();
 
 			$ref = &$r[$info['category']];
+			$ref['id'] = $info['id'];
 			$ref[$info['var_name']] = $info['var_val'];
+		}
+
+		if(empty($r) === true)
+			$r = false;
+
+		return($r);
+	}
+
+	function get_all_category($arr=array(),$disable=null)
+	{
+		$r = false;
+
+		if(($list = $this->get_list_where($arr)) === false)
+			return($r);
+
+		$nb = count($list);
+
+		$r = array();
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			if(($info = $this->get($list[$i],$disable)) === false)
+				continue;
+
+			$r[$info['category']] = $info;
 		}
 
 		if(empty($r) === true)

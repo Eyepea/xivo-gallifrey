@@ -2,6 +2,7 @@
 	$form = &$this->get_module('form');
 
 	$info = $this->vars('info');
+	$moh_list = $this->vars('moh_list');
 	$mfeatures_elt = $this->vars('mfeatures_elt');
 ?>
 
@@ -24,9 +25,9 @@
 
 <?=$form->slt(array('desc' => $this->bbf('fm_meetmefeatures_mode'),'name' => 'mfeatures[mode]','labelid' => 'mfeatures-mode','bbf' => 'fm_meetmefeatures_mode-','key' => false,'default' => $mfeatures_elt['mode']['default'],'value' => $info['mfeatures']['mode']),$mfeatures_elt['mode']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_meetmefeatures_exit'),'name' => 'mfeatures[exit]','labelid' => 'mfeatures-exit','default' => $mfeatures_elt['exit']['default'],'checked' => $info['mfeatures']['exit']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_meetmefeatures_musiconhold'),'name' => 'mfeatures[musiconhold]','labelid' => 'mfeatures-musiconhold','key' => 'category','empty' => true,'default' => $mfeatures_elt['musiconhold']['default'],'value' => $info['mfeatures']['musiconhold']),$moh_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_meetmefeatures_musiconhold'),'name' => 'mfeatures[musiconhold]','labelid' => 'mfeatures-musichold','default' => $mfeatures_elt['musiconhold']['default'],'checked' => $info['mfeatures']['musiconhold']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_meetmefeatures_exit'),'name' => 'mfeatures[exit]','labelid' => 'mfeatures-exit','default' => $mfeatures_elt['exit']['default'],'checked' => $info['mfeatures']['exit']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 <?=$form->checkbox(array('desc' => $this->bbf('fm_meetmefeatures_quiet'),'name' => 'mfeatures[quiet]','labelid' => 'mfeatures-quiet','default' => $mfeatures_elt['quiet']['default'],'checked' => $info['mfeatures']['quiet']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 

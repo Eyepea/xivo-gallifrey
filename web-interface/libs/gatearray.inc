@@ -68,14 +68,20 @@ class xivo_gatearray
 		return($r);
 	}
 
-	function get_file($path)
+	function get_file($path,$once=true)
 	{
+		$r = false;
+
 		$path = (string) $path.'.inc';
+		$once = (bool) $once;
 
 		if(xivo_file::is_i($path) === false)
 			return(false);
 
-		require_once($path);
+		if($once === true)
+			require_once($path);
+		else
+			require($path);
 
 		if(isset($array) === true && is_array($array) === true)
 			$r = &$array;

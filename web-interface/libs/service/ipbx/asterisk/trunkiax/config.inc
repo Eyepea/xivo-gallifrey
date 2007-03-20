@@ -9,7 +9,7 @@ $array['element']['host']['value'] = array('dynamic');
 $array['element']['host']['default'] = 'dynamic';
 
 $array['element']['type'] = array();
-$array['element']['type']['value'] = array('peer','friend');
+$array['element']['type']['value'] = array('peer','user','friend');
 $array['element']['type']['default'] = 'peer';
 
 $array['element']['notransfer'] = array();
@@ -60,7 +60,7 @@ $array['filter']['callerid'] = array('set' => false,'chk' => 2,'maxlen' => 80);
 $array['filter']['context'] = array('set' => false,'chk' => 2,'maxlen' => 80);
 $array['filter']['call-limit'] = array('set' => false,'chk' => 2,'between' => array(0,30));
 $array['filter']['host'] = array('set' => false);
-$array['filter']['type'] = array('arrkey' => array('peer','friend'));
+$array['filter']['type'] = array('arrkey' => array('peer','user','friend'));
 $array['filter']['notransfer'] = array('bool' => true);
 $array['filter']['trunk'] = array('bool' => true);
 $array['filter']['qualify'] = array('bool' => true);

@@ -2,8 +2,12 @@
 
 $ufeatures = &$ipbx->get_module('userfeatures');
 $gfeatures = &$ipbx->get_module('groupfeatures');
-
+$extensions = &$ipbx->get_module('extensions');
+$musiconhold = &$ipbx->get_module('musiconhold');
 $ugroup = &$ipbx->get_module('usergroup');
+
+if(($moh_list = $musiconhold->get_all_category()) !== false)
+	ksort($moh_list);
 
 $result = $info = array();
 
@@ -14,11 +18,20 @@ do
 	|| ($protocol = &$ipbx->get_protocol_module($_QR['protocol']['protocol'])) === false)
 		break;
 
+	if($moh_list === false || isset($_QR['ufeatures']['musiconhold'],$moh_list[$_QR['ufeatures']['musiconhold']]) === false)
+		$_QR['ufeatures']['musiconhold'] = '';
+		
+	if(xivo_ak('codec-active',$_QR,true) !== '1' || xivo_issa('allow',$_QR['protocol']) === false)
+		unset($_QR['protocol']['allow'],$_QR['protocol']['disallow']);
+
 	if(($result['protocol'] = $protocol->chk_values($_QR['protocol'],true,true)) === false)
 	{
 		$info['protocol'] = $protocol->get_filter_result();
 		break;
 	}
+
+	if(is_array($result['protocol']['allow']) === true)
+		$result['protocol']['allow'] = implode(',',$result['protocol']['allow']);
 
 	if(($pid = $protocol->add($result['protocol'])) === false)
 		break;
@@ -40,8 +53,22 @@ do
 
 	do
 	{
-		if(xivo_issa('group',$_QR) === false
-		|| ($interface = $ipbx->mk_interface($result['ufeatures']['protocol'],$result['protocol']['name'])) === false)
+		if(($interface = $ipbx->mk_interface($result['ufeatures']['protocol'],$result['protocol']['name'])) === false)
+			break;
+
+		if($result['ufeatures']['number'] !== '')
+		{
+			$hints = array();
+			$hints['context'] = 'hints';
+			$hints['exten'] = $result['ufeatures']['number'];
+			$hints['priority'] = -1;
+			$hints['app'] = $interface;
+
+			if(($result['hints'] = $extensions->chk_values($hints,true,true)) !== false)
+				$extensions->add($result['hints']);
+		}
+
+		if(xivo_issa('group',$_QR) === false)
 			break;
 
 		$arr_group = array_values($_QR['group']);
@@ -117,13 +144,28 @@ $group_list = array();
 if(($group_list = $gfeatures->get_all(false)) !== false)
 	$group = true;
 
+$protocol_elt = $ipbx->get_protocol_element();
+
+if(xivo_issa('allow',$protocol_elt['sip']) === true && xivo_issa('value',$protocol_elt['sip']['allow']) === true)
+{
+	if(xivo_issa('protocol',$info) === true && xivo_ak('allow',$info['protocol']) === true && empty($info['protocol']['allow']) === false)
+		$protocol_elt['sip']['allow']['value'] = array_diff($protocol_elt['sip']['allow']['value'],$info['protocol']['allow']);
+}
+
+if(xivo_issa('allow',$protocol_elt['iax']) === true && xivo_issa('value',$protocol_elt['iax']['allow']) === true)
+{
+	if(xivo_issa('protocol',$info) === true && xivo_ak('allow',$info['protocol']) === true && empty($info['protocol']['allow']) === false)
+		$protocol_elt['iax']['allow']['value'] = array_diff($protocol_elt['iax']['allow']['value'],$info['protocol']['allow']);
+}
+
 $_HTML->assign('info',$info);
 $_HTML->assign('ract',$act);
 $_HTML->assign('group',$group);
 $_HTML->assign('group_list',$group_list);
 $_HTML->assign('protocol',$ipbx->get_protocol());
-$_HTML->assign('protocol_elt',$ipbx->get_protocol_element());
+$_HTML->assign('protocol_elt',$protocol_elt);
 $_HTML->assign('ufeatures_elt',$ufeatures->get_element());
+$_HTML->assign('moh_list',$moh_list);
 
 $dhtml = &$_HTML->get_module('dhtml');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users.js');

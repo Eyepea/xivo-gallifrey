@@ -278,7 +278,7 @@ class xivo_i18n
 
 		$name = (string) $name;
 
-		if($name === '' || preg_match('/^([a-z0-9:\-_]+)$/',$name) !== 1)
+		if($name === '' || preg_match('/^[a-z0-9:\-_]+$/',$name) !== 1)
 			return($r);
 		else
 			return($name);

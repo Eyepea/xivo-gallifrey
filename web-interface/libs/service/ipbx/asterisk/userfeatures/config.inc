@@ -35,6 +35,9 @@ $array['element']['ringgroup']['set'] = true;
 $array['element']['context'] = array();
 $array['element']['context']['default'] = '';
 
+$array['element']['musiconhold'] = array();
+$array['element']['musiconhold']['default'] = '';
+
 $array['filter'] = array();
 $array['filter']['protocol'] = array('set' => true);
 $array['filter']['protocolid'] = array('cast' => 'uint');
@@ -45,6 +48,7 @@ $array['filter']['ringseconds'] = array('arrkey' => array(5,10,15,20,25,30,35,40
 $array['filter']['simultcalls'] = array('cast' => 'uint','between' => array(1,20));
 $array['filter']['popupwidget'] = array('bool' => true);
 $array['filter']['ringgroup'] = array('bool' => true);
+$array['filter']['musiconhold'] = array('set' => false,'chk' => 2,'maxlen' => 128);
 $array['filter']['comment'] = array('chk' => 2,'maxlen' => 1000);
 
 ?>

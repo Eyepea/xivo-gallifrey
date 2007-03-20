@@ -6,9 +6,9 @@
 
 #s-asterisk .sb-content #comment, #s-asterisk .sb-content #emailbody, #s-asterisk #grouplist, #s-asterisk #codeclist {text-align: center;width: 100%;}
 #s-asterisk #grouplist div, #s-asterisk #codeclist div  {float: left;width: 40%;}
-#s-asterisk #grouplist #it-grouplist, #s-asterisk #codeclist #it-codeclist {float: right;}
+#s-asterisk #grouplist #it-grouplist, #s-asterisk #codeclist #it-codeclist, #s-asterisk #codeclist .codeclisted {float: right;}
 #s-asterisk #grouplist #inout-group, #s-asterisk #codeclist #inout-codec {width: 20%;}
 #s-asterisk #grouplist #it-bt-ingroup, #s-asterisk #codeclist #it-bt-incodec {margin: 10px 0px;} 
 #s-asterisk #codeclist #it-bt-upcodec {margin: 10px 0px 10px 2px;}
 #s-asterisk #codeclist #updown-codec input {font-size: 11pt;}
-#s-asterisk #codeclist #select-codec #it-codec {float: left;}
+#s-asterisk #codeclist #select-codec #it-codec, #s-asterisk #codeclist .codecselected {float: left;}

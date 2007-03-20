@@ -30,8 +30,8 @@ $array['filter']['maxmessage'] = array('cast' => 'uint','between' => array(1,500
 $array['filter']['minmessage'] = array('cast' => 'uint','between' => array(1,200));
 $array['filter']['maxisilence'] = array('cast' => 'uint','between' => array(0,30));
 $array['filter']['review'] = array('bool' => true);
-$array['filter']['serveremail'] = array('eregi' => '^[a-z0-9@\-_\.]+$','maxlen' => 128);
-$array['filter']['fromstring'] = array('eregi' => '^[a-z0-9\-_\.]+$','maxlen' => 128);
+$array['filter']['serveremail'] = array('preg' => '/^[a-z0-9@\-_\.]+$/i','maxlen' => 128);
+$array['filter']['fromstring'] = array('preg' => '/^[a-z0-9\-_\.]+$/i','maxlen' => 128);
 $array['filter']['maxmsg'] = array('cast' => 'uint','between' => array(1,500));
 $array['filter']['emailsubject'] = array('maxlen' => 512);
 $array['filter']['emailbody'] = array('maxlen' => 1000);

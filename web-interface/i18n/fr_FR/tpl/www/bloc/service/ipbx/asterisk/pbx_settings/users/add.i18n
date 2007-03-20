@@ -49,6 +49,9 @@ Temps de sonnerie :
 ; fm_userfeatures_simultcalls
 Appels simultanés :
 
+; fm_userfeatures_musiconhold
+Musique d'attente :
+
 ; fm_userfeatures_ringgroup
 Sonnerie :
 
@@ -66,6 +69,21 @@ Créer un groupe
 
 ; fm_usergroup
 Groupe de sonnerie :
+
+; fm_codec-active
+Codecs :
+
+; fm_protocol_codec-disallow
+Codecs désactivés :
+
+; fm_protocol_codec-allow
+Codecs activés :
+
+; fm_bt-incodec
+Ajouter ->
+
+; fm_bt-outcodec
+<- Enlever
 
 ; fm_voicemail
 Messagerie vocale :

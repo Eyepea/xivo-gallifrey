@@ -64,17 +64,15 @@ class xivo_service_asterisk_generalvoicemail extends xivo_service_asterisk_stati
 
 	function replace_val_by_name($name,$val)
 	{
-		if($val !== '')
-		{
-			$arr = array();
-			$arr['var_val'] = $val;
-			$arr['commented'] = 0;
-			return($this->replace_by_name($name,$arr));
-		}
+		$disable = $disable === null ? $disable : intval((bool) $disable);
 
 		$arr = array();
 		$arr['var_val'] = $val;
-		$arr['commented'] = 1;
+
+		if($val !== '' && $val !== null)
+			$arr['commented'] = $disable !== null ? $disable : 0;
+		else
+			$arr['commented'] = $disable !== null ? $disable : 1;
 
 		return($this->replace_by_name($name,$arr));
 	}

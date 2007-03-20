@@ -24,8 +24,9 @@ class xivo_service_asterisk_configfiles extends xivo_service_asterisk_abstract
 	function _chk_cfgpath()
 	{
 		if(xivo_issa('general',$this->_sre->_ini) === false
-		|| isset($this->_sre->_ini['general']['cfgpath']) === false
-		|| ($this->_cfgpath = xivo_file::is_d_rwx($this->_sre->_ini['general']['cfgpath'])) === false)
+		|| xivo_issa('path',$this->_sre->_ini['general']) === false
+		|| isset($this->_sre->_ini['general']['path']['config']) === false
+		|| ($this->_cfgpath = xivo_file::is_d_rwx($this->_sre->_ini['general']['path']['config'])) === false)
 			return(false);
 	}
 
