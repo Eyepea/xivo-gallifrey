@@ -1,6 +1,8 @@
 <?php
 	$form = &$this->get_module('form');
+
 	$element = $this->vars('element');
+	$moh_list = $this->vars('moh_list');
 ?>
 <div class="b-infos b-form">
 	<h3 class="sb-top xspan"><span class="span-left">&nbsp;</span><span class="span-center"><?=$this->bbf('title_content_name');?></span><span class="span-right">&nbsp;</span></h3>
@@ -10,47 +12,47 @@
 <?=$form->hidden(array('name' => XIVO_SESS_NAME,'value' => XIVO_SESS_ID));?>
 <?=$form->hidden(array('name' => 'fm_send','value' => '1'));?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_bindport'),'name' => 'bindport','id' => 'it-bindport','value' => $this->varra('info','bindport')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_bindport'),'name' => 'bindport','id' => 'it-bindport','value' => $this->varra('info','bindport'),'default' => $element['bindport']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_bindaddr'),'name' => 'bindaddr','id' => 'it-bindaddr','size' => 15,'value' => $this->varra('info','bindaddr')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_bindaddr'),'name' => 'bindaddr','id' => 'it-bindaddr','size' => 15,'value' => $this->varra('info','bindaddr'),'default' => $element['bindaddr']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_srvlookup'),'name' => 'srvlookup','id' => 'it-srvlookup','checked' => $this->varra('info','srvlookup')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_srvlookup'),'name' => 'srvlookup','id' => 'it-srvlookup','checked' => $this->varra('info','srvlookup'),'default' => $element['srvlookup']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_channel-lang'),'name' => 'language','id' => 'it-language','key' => false,'value' => $this->varra('info','language')),$element['language']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_channel-lang'),'name' => 'language','id' => 'it-language','key' => false,'value' => $this->varra('info','language'),'default' => $element['language']['default']),$element['language']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_realm'),'name' => 'realm','id' => 'it-realm','size' => 15,'value' => $this->varra('info','realm')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_realm'),'name' => 'realm','id' => 'it-realm','size' => 15,'value' => $this->varra('info','realm'),'default' => $element['realm']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_maxexpiry'),'name' => 'maxexpiry','id' => 'it-maxexpiry','value' => $this->varra('info','maxexpiry')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_maxexpiry'),'name' => 'maxexpiry','id' => 'it-maxexpiry','value' => $this->varra('info','maxexpiry'),'default' => $element['maxexpiry']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_defaultexpiry'),'name' => 'defaultexpiry','id' => 'it-defaultexpiry','value' => $this->varra('info','defaultexpiry')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_defaultexpiry'),'name' => 'defaultexpiry','id' => 'it-defaultexpiry','value' => $this->varra('info','defaultexpiry'),'default' => $element['defaultexpiry']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_useragent'),'name' => 'useragent','id' => 'it-useragent','size' => 15,'value' => $this->varra('info','useragent')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_useragent'),'name' => 'useragent','id' => 'it-useragent','size' => 15,'value' => $this->varra('info','useragent'),'default' => $element['useragent']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_nat'),'name' => 'nat','id' => 'it-nat','checked' => $this->varra('info','nat')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_nat'),'name' => 'nat','id' => 'it-nat','checked' => $this->varra('info','nat'),'default' => $element['nat']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_qualify'),'name' => 'qualify','id' => 'it-qualify','checked' => $this->varra('info','qualify')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_qualify'),'name' => 'qualify','id' => 'it-qualify','checked' => $this->varra('info','qualify'),'default' => $element['qualify']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_rtcachefriends'),'name' => 'rtcachefriends','id' => 'it-rtcachefriends','checked' => $this->varra('info','rtcachefriends')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_rtcachefriends'),'name' => 'rtcachefriends','id' => 'it-rtcachefriends','checked' => $this->varra('info','rtcachefriends'),'default' => $element['rtcachefriends']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_allowguest'),'name' => 'allowguest','id' => 'it-allowguest','checked' => $this->varra('info','allowguest')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_allowguest'),'name' => 'allowguest','id' => 'it-allowguest','checked' => $this->varra('info','allowguest'),'default' => $element['allowguest']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_tos'),'name' => 'tos','id' => 'it-tos','key' => false,'value' => $this->varra('info','tos')),$element['tos']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_tos'),'name' => 'tos','id' => 'it-tos','key' => false,'value' => $this->varra('info','tos'),'default' => $element['tos']['default']),$element['tos']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_dtmfmode'),'name' => 'dtmfmode','id' => 'it-dtmfmode','key' => false,'default' => $element['dtmfmode']['default'],'value' => $this->varra('info','dtmfmode')),$element['dtmfmode']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_dtmfmode'),'name' => 'dtmfmode','id' => 'it-dtmfmode','key' => false,'value' => $this->varra('info','dtmfmode'),'default' => $element['dtmfmode']['default']),$element['dtmfmode']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_relaxdtmf'),'name' => 'relaxdtmf','id' => 'it-relaxdtmf','checked' => $this->varra('info','relaxdtmf')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_relaxdtmf'),'name' => 'relaxdtmf','id' => 'it-relaxdtmf','checked' => $this->varra('info','relaxdtmf'),'default' => $element['relaxdtmf']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_externip'),'name' => 'externip','id' => 'it-externip','size' => 15,'value' => $this->varra('info','externip')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_externip'),'name' => 'externip','id' => 'it-externip','size' => 15,'value' => $this->varra('info','externip'),'default' => $element['externip']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_context'),'name' => 'context','id' => 'it-context','size' => 15,'value' => $this->varra('info','context')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_context'),'name' => 'context','id' => 'it-context','size' => 15,'value' => $this->varra('info','context'),'default' => $element['context']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_musicclass'),'name' => 'musicclass','id' => 'it-musicclass','size' => 15,'value' => $this->varra('info','musicclass')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_musicclass'),'name' => 'musicclass','id' => 'musicclass','key' => 'category','empty' => true,'value' => $this->varra('info','musicclass'),'default' => $element['musicclass']['default']),$moh_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_checkmwi'),'name' => 'checkmwi','id' => 'it-checkmwi','value' => $this->varra('info','checkmwi')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_checkmwi'),'name' => 'checkmwi','id' => 'it-checkmwi','value' => $this->varra('info','checkmwi'),'default' => $element['checkmwi']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 <?=$form->text(array('desc' => $this->bbf('fm_vmexten'),'name' => 'vmexten','id' => 'it-vmexten','value' => $this->varra('info','vmexten')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_videosupport'),'name' => 'videosupport','id' => 'it-videosupport','checked' => $this->varra('info','videosupport')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_videosupport'),'name' => 'videosupport','id' => 'it-videosupport','checked' => $this->varra('info','videosupport'),'default' => $element['videosupport']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 <?=$form->slt(array('desc' => $this->bbf('fm_codec-disallow'),'name' => 'disallow','id' => 'it-disallow','key' => false),array('all'),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';" disabled="disabled"');?>
 

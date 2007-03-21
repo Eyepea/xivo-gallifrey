@@ -20,9 +20,12 @@ $array['element']['qualify']['set'] = true;
 $array['element']['disallow'] = array();
 $array['element']['disallow']['value'] = array('all');
 $array['element']['disallow']['default'] = '';
+$array['element']['disallow']['null'] = true;
 
 $array['element']['allow'] = array();
 $array['element']['allow']['value'] = array('gsm','alaw','ulaw','g729');
+$array['element']['allow']['default'] = '';
+$array['element']['allow']['null'] = true;
 
 $array['element']['port'] = array();
 $array['element']['port']['default'] = 4569;

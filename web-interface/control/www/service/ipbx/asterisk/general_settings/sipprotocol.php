@@ -1,9 +1,16 @@
 <?php
 
 $generalsip = &$ipbx->get_module('generalsip');
+$musiconhold = &$ipbx->get_module('musiconhold');
+
+if(($moh_list = $musiconhold->get_all_category()) !== false)
+	ksort($moh_list);
 
 if(isset($_QR['fm_send']) === true)
 {
+	if($moh_list === false || isset($_QR['musicclass'],$moh_list[$_QR['musicclass']]) === false)
+		$_QR['musicclass'] = '';
+
 	$generalsip->replace_val_by_name('bindport',$generalsip->set_chk_value('bindport',$_QRY->get_qr('bindport')));
 	$generalsip->replace_val_by_name('bindaddr',$generalsip->set_chk_value('bindaddr',$_QRY->get_qr('bindaddr')));
 	$generalsip->replace_val_by_name('srvlookup',$generalsip->set_chk_value('srvlookup',$_QRY->get_qr('srvlookup')));
@@ -21,7 +28,7 @@ if(isset($_QR['fm_send']) === true)
 	$generalsip->replace_val_by_name('relaxdtmf',$generalsip->set_chk_value('relaxdtmf',$_QRY->get_qr('relaxdtmf')));
 	$generalsip->replace_val_by_name('externip',$generalsip->set_chk_value('externip',$_QRY->get_qr('externip')));
 	$generalsip->replace_val_by_name('context',$generalsip->set_chk_value('context',$_QRY->get_qr('context')));
-	$generalsip->replace_val_by_name('musicclass',$generalsip->set_chk_value('musicclass',$_QRY->get_qr('musicclass')));
+	$generalsip->replace_val_by_name('musicclass',$generalsip->set_chk_value('musicclass',$_QR['musicclass']));
 	$generalsip->replace_val_by_name('checkmwi',$generalsip->set_chk_value('checkmwi',$_QRY->get_qr('checkmwi')));
 	$generalsip->replace_val_by_name('vmexten',$generalsip->set_chk_value('vmexten',$_QRY->get_qr('vmexten')));
 	$generalsip->replace_val_by_name('videosupport',$generalsip->set_chk_value('videosupport',$_QRY->get_qr('videosupport')));
@@ -45,6 +52,7 @@ if(xivo_issa('allow',$element) === true && xivo_issa('value',$element['allow']) 
 
 $_HTML->assign('info',$info);
 $_HTML->assign('element',$element);
+$_HTML->assign('moh_list',$moh_list);
 
 $menu = &$_HTML->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_infos('meta'));

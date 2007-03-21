@@ -15,17 +15,17 @@ $array['exten']['fwdundoall']['appdata'] = 'Not implemented undo all';
 $array['exten']['fwdundounc'] = array();
 $array['exten']['fwdundounc']['priority'] = 1;
 $array['exten']['fwdundounc']['app'] = 'Macro';
-$array['exten']['fwdundounc']['appdata'] = 'features,FWD/Unc/Status,renvoi-on,renvoi-off,1';
+$array['exten']['fwdundounc']['appdata'] = 'features|FWD/Unc/Status|renvoi-on|renvoi-off|1';
 
 $array['exten']['fwdundobusy'] = array();
 $array['exten']['fwdundobusy']['priority'] = 1;
 $array['exten']['fwdundobusy']['app'] = 'Macro';
-$array['exten']['fwdundobusy']['appdata'] = 'features,FWD/Busy/Status,renvoi-on,renvoi-off,1';
+$array['exten']['fwdundobusy']['appdata'] = 'features|FWD/Busy/Status|renvoi-on|renvoi-off|1';
 
 $array['exten']['fwdundorna'] = array();
 $array['exten']['fwdundorna']['priority'] = 1;
 $array['exten']['fwdundorna']['app'] = 'Macro';
-$array['exten']['fwdundorna']['appdata'] = 'features,FWD/RNA/Status,renvoi-on,renvoi-off,1';
+$array['exten']['fwdundorna']['appdata'] = 'features|FWD/RNA/Status|renvoi-on|renvoi-off|1';
 
 $array['exten']['fwdunc'] = array();
 $array['exten']['fwdunc']['app'] = 'Set';
@@ -61,39 +61,39 @@ $array['exten']['fwdbusy']['_line'][] = array('priority' => 6,'app' => 'Playback
 $array['exten']['fwdbusy']['_line'][] = array('priority' => 7,'app' => 'Hangup');
 
 $array['exten']['recsnd'] = array();
-$array['exten']['recsnd']['app'] = 'Set';
+$array['exten']['recsnd']['app'] = 'Wait';
 $array['exten']['recsnd']['appdata'] = 1;
-$array['exten']['recsnd']['_line'][] = array('priority' => 1,'app' => 'Wait');
-$array['exten']['recsnd']['_line'][] = array('priority' => 2,'appdata' => 'ROOT=/usr/share/asterisk/sounds/web-interface/recordings');
-$array['exten']['recsnd']['_line'][] = array('priority' => 3,'appdata' => '${ROOT}/${CALLERID(num)}:wav');
+$array['exten']['recsnd']['_line'][] = array('priority' => 1);
+$array['exten']['recsnd']['_line'][] = array('priority' => 2,'app' => 'Set','appdata' => 'ROOT=/usr/share/asterisk/sounds/web-interface/recordings');
+$array['exten']['recsnd']['_line'][] = array('priority' => 3,'app' => 'Record','appdata' => '${ROOT}/${CALLERID(num)}:wav');
 $array['exten']['recsnd']['_line'][] = array('priority' => 4,'app' => 'Wait');
-$array['exten']['recsnd']['_line'][] = array('priority' => 5,'app' => 'ControlPlayback','appdata' => '${ROOT}/${CALLERID(num)},4000,1,2,3,4,5');
+$array['exten']['recsnd']['_line'][] = array('priority' => 5,'app' => 'Playback','appdata' => '${ROOT}/${CALLERID(num)}');
 $array['exten']['recsnd']['_line'][] = array('priority' => 6,'app' => 'Hangup','appdata' => '');
 
 $array['exten']['enablevm'] = array();
 $array['exten']['enablevm']['priority'] = 1;
 $array['exten']['enablevm']['app'] = 'Macro';
-$array['exten']['enablevm']['appdata'] = 'features,VM,vm-on,vm-off';
+$array['exten']['enablevm']['appdata'] = 'features|VM|vm-on|vm-off';
 
 $array['exten']['enablednd'] = array();
 $array['exten']['enablednd']['priority'] = 1;
 $array['exten']['enablednd']['app'] = 'Macro';
-$array['exten']['enablednd']['appdata'] = 'features,DND,dnd-on,dnd-off';
+$array['exten']['enablednd']['appdata'] = 'features|DND|dnd-on|dnd-off';
 
 $array['exten']['enablednd'] = array();
 $array['exten']['enablednd']['priority'] = 1;
 $array['exten']['enablednd']['app'] = 'Macro';
-$array['exten']['enablednd']['appdata'] = 'features,DND,dnd-on,dnd-off';
+$array['exten']['enablednd']['appdata'] = 'features|DND|dnd-on|dnd-off';
 
 $array['exten']['incallrec'] = array();
 $array['exten']['incallrec']['priority'] = 1;
 $array['exten']['incallrec']['app'] = 'Macro';
-$array['exten']['incallrec']['appdata'] = 'features,Record,to-record-call&on,to-record-call&off-duty';
+$array['exten']['incallrec']['appdata'] = 'features|Record|to-record-call&on|to-record-call&off-duty';
 
 $array['exten']['incallfilter'] = array();
 $array['exten']['incallfilter']['priority'] = 1;
 $array['exten']['incallfilter']['app'] = 'Macro';
-$array['exten']['incallfilter']['appdata'] = 'features,Screen,screen-callee-options&on,screen-callee-options&off-duty';
+$array['exten']['incallfilter']['appdata'] = 'features|Screen|screen-callee-options&on|screen-callee-options&off-duty';
 
 $array['exten']['pickup'] = array();
 $array['exten']['pickup']['priority'] = 1;

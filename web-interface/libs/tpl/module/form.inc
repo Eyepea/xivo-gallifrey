@@ -138,14 +138,24 @@ class xivo_tpl_form extends xivo_tpl_module
 		if(isset($v['null']) === true)
 			$this->_param['null'] = true;
 
-		if(isset($v['bbf']) === true && $v['bbf'] !== true)
+		if(isset($v['bbf']) === true && is_bool($v['bbf']) === false)
 		{
 			if(is_scalar($v['bbf']) === true)
-				$this->_param['bbf'] = $v['bbf'];
-			else if(is_array($v['bbf']) === true
-			&& isset($v['bbf'][0],$v['bbf'][1]) === true
-			&& ($v['bbf'][0] === 'key' || $v['bbf'][0] === 'value') === true)
+				$this->_param['bbf'] = array('concatvalue',$v['bbf']);
+			else if(is_array($v['bbf']) === true && isset($v['bbf'][0],$v['bbf'][1]) === true)
+			{
+				switch($v['bbf'][0])
+				{
+					case 'paramkey':
+					case 'paramvalue':
+					case 'concatkey':
+						break;
+					default:
+						$v['bbf'][0] = 'concatvalue';
+				}
+
 				$this->_param['bbf'] = array($v['bbf'][0],$v['bbf'][1]);
+			}
 		}
 	}
 
@@ -580,17 +590,23 @@ class xivo_tpl_form extends xivo_tpl_module
 		{
 			if(isset($render[3]{0}) === false)
 				$render[3] = '&nbsp;';
-			else if($this->_param['bbf'] !== false)
+			else if(is_array($this->_param['bbf']) === true)
 			{
-				if(is_array($this->_param['bbf']) === true)
+				switch($this->_param['bbf'][0])
 				{
-					if($this->_param['bbf'][0] === 'key')
+					case 'paramkey':
 						$render[3] = $this->bbf($this->_param['bbf'][1],$render[1]);
-					else
+						break;
+					case 'paramvalue':
 						$render[3] = $this->bbf($this->_param['bbf'][1],$render[3]);
+						break;
+					case 'concatkey':
+						$render[3] = $this->bbf($this->_param['bbf'][1].$render[1]);
+						break;
+					case 'concatvalue':
+						$render[3] = $this->bbf($this->_param['bbf'][1].$render[3]);
+						break;
 				}
-				else
-					$render[3] = $this->bbf($this->_param['bbf'].$render[3]);
 			}
 
 			$this->_render .= vsprintf('<option label="%s" value="%s"%s>%s</option>',$render);
@@ -599,17 +615,23 @@ class xivo_tpl_form extends xivo_tpl_module
 		{
 			if(isset($render[2]{0}) === false)
 				$render[2] = '&nbsp;';
-			else if($this->_param['bbf'] !== false)
+			else if(is_array($this->_param['bbf']) === true)
 			{
-				if(is_array($this->_param['bbf']) === true)
+				switch($this->_param['bbf'][0])
 				{
-					if($this->_param['bbf'][0] === 'key')
+					case 'paramkey':
 						$render[2] = $this->bbf($this->_param['bbf'][1],$render[0]);
-					else
+						break;
+					case 'paramvalue':
 						$render[2] = $this->bbf($this->_param['bbf'][1],$render[2]);
+						break;
+					case 'concatkey':
+						$render[2] = $this->bbf($this->_param['bbf'][1].$render[0]);
+						break;
+					case 'concatvalue':
+						$render[2] = $this->bbf($this->_param['bbf'][1].$render[2]);
+						break;
 				}
-				else
-					$render[2] = $this->bbf($this->_param['bbf'].$render[2]);
 			}
 
 			$this->_render .= vsprintf('<option value="%s"%s>%s</option>',$render);

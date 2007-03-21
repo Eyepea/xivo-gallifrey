@@ -117,6 +117,17 @@ class xivo_service_asterisk_abstract
 		return($this->_conf['element'][$key]['unset']);
 	}
 
+	function isnull_element_value($key)
+	{
+		$key = (string) $key;
+
+		if(xivo_issa('element',$this->_conf) === false || xivo_issa($key,$this->_conf['element']) === false
+		|| isset($this->_conf['element'][$key]['null']) === false)
+			return(false);
+
+		return($this->_conf['element'][$key]['null']);
+	}
+
 	function disable_element_value($key)
 	{
 		$key = (string) $key;
@@ -225,7 +236,12 @@ class xivo_service_asterisk_abstract
 				$val = $sval;
 			else if($default === true && ($dval = $this->get_element_default($key)) !== false)
 				$val = $dval;
-			
+
+			if($val === '' && $this->isnull_element_value($key) === true)
+				$val = null;
+			else if($val === null && $this->isnull_element_value($key) === false)
+				$val = '';
+
 			if(($ckey = $this->get_element_copy($key)) !== false && $val !== '')
 				$rs[$ckey] = $r[$ckey] = $val;
 
@@ -263,11 +279,16 @@ class xivo_service_asterisk_abstract
 	function set_chk_value($key,$value,$default=null)
 	{
 		$r = '';
-
+		
 		if(($val = $this->chk_value($key,$value)) !== false)
 		{
 			if(($sval = $this->_set_value($key,$val)) !== false)
 				$val = $sval;
+
+			if($val === '' && $this->isnull_element_value($key) === true)
+				$val = null;
+			else if($val === null && $this->isnull_element_value($key) === false)
+				$val = '';
 
 			return($val);
 		}

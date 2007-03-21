@@ -237,6 +237,10 @@ class xivo_datastorage_sqlite
 				case 'func':
 				case 'integer':
 				case 'float':
+				case 'NULL':
+					if($type === 'NULL')
+						$data = 'NULL';
+
 					$f = $set === true ? '%s = %s'.$sep : '%s'.$sep;
 					break;
 				case 'string':

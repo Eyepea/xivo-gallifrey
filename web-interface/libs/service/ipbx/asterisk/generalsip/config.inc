@@ -17,6 +17,9 @@ $array['element']['language'] = array();
 $array['element']['language']['value'] = array('en','fr');
 $array['element']['language']['default'] = 'en';
 
+$array['element']['realm'] = array();
+$array['element']['realm']['default'] = '';
+
 $array['element']['tos'] = array();
 $array['element']['tos']['value'] = array('none','lowdelay','throughput','reliability','mincost');
 $array['element']['tos']['default'] = 'lowdelay';
@@ -29,6 +32,12 @@ $array['element']['relaxdtmf'] = array();
 $array['element']['relaxdtmf']['value'] = array('no','yes');
 $array['element']['relaxdtmf']['default'] = 'yes';
 $array['element']['relaxdtmf']['set'] = true;
+
+$array['element']['externip'] = array();
+$array['element']['externip']['default'] = '';
+
+$array['element']['context'] = array();
+$array['element']['context']['default'] = '';
 
 $array['element']['maxexpiry'] = array();
 $array['element']['maxexpiry']['default'] = 3600;
@@ -60,7 +69,7 @@ $array['element']['rtcachefriends']['default'] = 'yes';
 $array['element']['rtcachefriends']['set'] = true;
 
 $array['element']['musicclass'] = array();
-$array['element']['musicclass']['default'] = 'default';
+$array['element']['musicclass']['default'] = '';
 
 $array['element']['checkmwi'] = array();
 $array['element']['checkmwi']['default'] = 10;
@@ -72,9 +81,11 @@ $array['element']['videosupport']['set'] = true;
 
 $array['element']['disallow'] = array();
 $array['element']['disallow']['value'] = array('all');
+$array['element']['disallow']['default'] = '';
 
 $array['element']['allow'] = array();
 $array['element']['allow']['value'] = array('gsm','alaw','ulaw','g729');
+$array['element']['allow']['default'] = '';
 
 $array['element']['register'] = array();
 $array['element']['register']['default'] = '';

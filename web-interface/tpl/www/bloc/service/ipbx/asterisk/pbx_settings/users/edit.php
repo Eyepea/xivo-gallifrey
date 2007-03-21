@@ -55,7 +55,7 @@
 
 <?=$form->checkbox(array('desc' => $this->bbf('fm_userfeatures_popupwidget'),'name' => 'ufeatures[popupwidget]','labelid' => 'ufeatures-popupwidget','default' => $ufeatures_elt['popupwidget']['default'],'checked' => $info['ufeatures']['popupwidget']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_userfeatures_ringseconds'),'name' => 'ufeatures[ringseconds]','labelid' => 'ufeatures-ringseconds','bbf' => array('key','fm_userfeatures_ringseconds-opt'),'key' => false,'default' => $ufeatures_elt['ringseconds']['default'],'value' => (int) $info['ufeatures']['ringseconds']),$ufeatures_elt['ringseconds']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_userfeatures_ringseconds'),'name' => 'ufeatures[ringseconds]','labelid' => 'ufeatures-ringseconds','bbf' => array('paramkey','fm_userfeatures_ringseconds-opt'),'key' => false,'default' => $ufeatures_elt['ringseconds']['default'],'value' => (int) $info['ufeatures']['ringseconds']),$ufeatures_elt['ringseconds']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 <?=$form->slt(array('desc' => $this->bbf('fm_userfeatures_simultcalls'),'name' => 'ufeatures[simultcalls]','labelid' => 'ufeatures-simultcalls','key' => false,'default' => $ufeatures_elt['simultcalls']['default'],'value' => (int) $info['ufeatures']['simultcalls']),$ufeatures_elt['simultcalls']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 

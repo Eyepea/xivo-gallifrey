@@ -62,7 +62,7 @@ class xivo_service_asterisk_generalvoicemail extends xivo_service_asterisk_stati
 		return(parent::replace_by_name($name,$arr));
 	}
 
-	function replace_val_by_name($name,$val)
+	function replace_val_by_name($name,$val,$disable=null)
 	{
 		$disable = $disable === null ? $disable : intval((bool) $disable);
 

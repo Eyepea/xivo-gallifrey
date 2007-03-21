@@ -52,7 +52,7 @@ class xivo_session_mysql
 
 	function read($k)
 	{
-		$r = false;
+		$r = '';
 
 		$this->_insert = true;
 
