@@ -91,8 +91,8 @@ void PeerWidget::dragEnterEvent(QDragEnterEvent *event)
 
 void PeerWidget::dragMoveEvent(QDragMoveEvent *event)
 {
-	qDebug() << "dragMoveEvent()";
-	qDebug() << event->mimeData()->formats();
+	//	qDebug() << "dragMoveEvent()";
+	//	qDebug() << event->mimeData()->formats();
 	if(event->mimeData()->hasText())
 	{
 		if(event->proposedAction() & (Qt::CopyAction|Qt::MoveAction))

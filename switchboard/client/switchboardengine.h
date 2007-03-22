@@ -32,6 +32,7 @@ signals:
 	void emitTextMessage(const QString &);
 private:
 	QTcpSocket * m_socket;
+	int m_timer;
 	quint16 m_port;
 	QString m_host;
 	SwitchBoardWindow * m_window;

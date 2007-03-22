@@ -16,6 +16,7 @@ public:
 	const QString & ext() { return m_ext; };
 //	Peer & operator=(const Peer & peer);
 	void setWidget(PeerWidget * widget) { m_peerwidget = widget; };
+	PeerWidget * getWidget() { return m_peerwidget; };
 	void updateStatus(const QString & status);
 private:
 	QString m_ext;
@@ -31,6 +32,10 @@ public:
 	void setEngine(SwitchBoardEngine *);
 	void updatePeer(const QString & ext,
 	                const QString & status);
+	void addPeer(const QString & ext,
+		     const QString & status);
+	void removePeer(const QString & ext);
+	void removePeers(void);
 private:
 	QGridLayout * m_layout;
 	QList<Peer> m_peerlist;

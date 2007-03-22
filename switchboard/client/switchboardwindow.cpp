@@ -29,7 +29,7 @@ void Peer::updateStatus(const QString & status)
 		m_peerwidget->setGreen();
 	else if(status == "Ringing")
 		m_peerwidget->setOrange();
-	else if(status == "On_the_phone")
+	else if(status == "On the phone")
 		m_peerwidget->setRed();
 	else
 		m_peerwidget->setGray();
@@ -80,7 +80,7 @@ void SwitchBoardWindow::updatePeer(const QString & ext,
 	int i;
 	for(i=0; i<m_peerlist.count(); i++)
 	{
-		//qDebug() << i << m_peerlist[i].ext();
+		//		qDebug() << i << m_peerlist[i].ext();
 		if(ext == m_peerlist[i].ext())
 		{
 			m_peerlist[i].updateStatus(status);
@@ -90,7 +90,7 @@ void SwitchBoardWindow::updatePeer(const QString & ext,
 	Peer peer(ext);
 	PeerWidget * peerwidget = new PeerWidget(ext, m_engine, this);
 	m_layout->addWidget( peerwidget, m_y, m_x++ );
-	if(m_x>=4)
+	if(m_x >= 4)
 	{
 		m_x = 0;
 		m_y++;
@@ -99,5 +99,50 @@ void SwitchBoardWindow::updatePeer(const QString & ext,
 	peer.updateStatus(status);
 	peerwidget->setToolTip(status);
 	m_peerlist << peer;
+}
+
+void SwitchBoardWindow::addPeer(const QString & ext,
+				const QString & status)
+{
+	Peer peer(ext);
+	PeerWidget * peerwidget = new PeerWidget(ext, m_engine, this);
+	m_layout->addWidget( peerwidget, m_y, m_x++ );
+	if(m_x >= 4)
+	{
+		m_x = 0;
+		m_y++;
+	}
+	peer.setWidget(peerwidget);
+	peer.updateStatus(status);
+	peerwidget->setToolTip(status);
+	m_peerlist << peer;
+}
+
+void SwitchBoardWindow::removePeer(const QString & ext)
+{
+	int i;
+	for(i=0; i < m_peerlist.count(); i++) {
+		if(ext == m_peerlist[i].ext()) {
+			PeerWidget * peerwidget = m_peerlist[i].getWidget();
+			m_layout->removeWidget( peerwidget );
+			m_peerlist.removeAt(i);
+			delete peerwidget;
+		}
+	}
+	return;
+}
+
+void SwitchBoardWindow::removePeers(void)
+{
+	for(int i=0; i < m_peerlist.count(); i++) {
+		PeerWidget * peerwidget = m_peerlist[i].getWidget();
+		m_layout->removeWidget( peerwidget );
+		//		m_peerlist.removeAt(i);
+		delete peerwidget;
+	}
+	m_peerlist.clear();
+	m_x = 0;
+	m_y = 0;
+	return;
 }
 

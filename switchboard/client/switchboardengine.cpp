@@ -8,6 +8,7 @@ SwitchBoardEngine::SwitchBoardEngine(QObject * parent)
 : QObject(parent), m_port(0)
 {
 	m_socket = new QTcpSocket(this);
+	m_timer = -1;
 /*
       void connected ()
       void disconnected ()
@@ -42,8 +43,6 @@ void SwitchBoardEngine::setAddress(const QString & host, quint16 port)
 	m_host = host;
 	m_port = port;
 	connectSocket();
-	m_pendingcommand = "hints";
-	socketConnected();
 }
 
 void SwitchBoardEngine::connectSocket()
@@ -61,7 +60,10 @@ void SwitchBoardEngine::socketConnected()
 void SwitchBoardEngine::socketDisconnected()
 {
 	qDebug() << "socketDisconnected()";
-	finishedReceivingHints();
+	emitTextMessage("Connection lost with Presence Server");
+	//	finishedReceivingHints();
+	if(m_window) m_window->removePeers();
+	connectSocket();
 }
 
 void SwitchBoardEngine::socketHostFound()
@@ -76,6 +78,8 @@ void SwitchBoardEngine::socketError(QAbstractSocket::SocketError socketError)
 	{
 	case QAbstractSocket::ConnectionRefusedError:
 		emitTextMessage("Connection refused");
+		if(m_timer != -1) killTimer(m_timer);
+		m_timer = startTimer(2000);
 		break;
 	case QAbstractSocket::HostNotFoundError:
 		emitTextMessage("Host not found");
@@ -91,11 +95,16 @@ void SwitchBoardEngine::socketError(QAbstractSocket::SocketError socketError)
 void SwitchBoardEngine::socketStateChanged(QAbstractSocket::SocketState socketState)
 {
 	qDebug() << "socketStateChanged(" << socketState << ")";
+	if(socketState == QAbstractSocket::ConnectedState) {
+		if(m_timer != -1) killTimer(m_timer);
+		m_pendingcommand = "hints";
+		socketConnected();
+	}
 }
 
 void SwitchBoardEngine::socketReadyRead()
 {
-	qDebug() << "socketReadyRead()";
+	//	qDebug() << "socketReadyRead()";
 	//QByteArray data = m_socket->readAll();
 	//qDebug() << data;
 	bool b = false;
@@ -116,10 +125,23 @@ void SwitchBoardEngine::socketReadyRead()
 				QStringList liststatus = list[1].split(":");
 				m_window->updatePeer(liststatus[0], liststatus[1]);
 				b = true;
+
 			} else if(list[0] == QString("asterisk")) {
 				QTime currentTime = QTime::currentTime();
 				QString currentTimeStr = currentTime.toString("hh:mm:ss");
 				emitTextMessage(list[1] + " at " + currentTimeStr);
+
+			} else if(list[0] == QString("peeradd")) {
+				QStringList listpeers = list[1].split(";");
+				for(int i = 0 ; i < listpeers.size() - 1; i++) {
+					QStringList liststatus = listpeers[i].split(":");
+					m_window->addPeer(liststatus[0], liststatus[1]);
+				}
+			} else if(list[0] == QString("peerremove")) {
+				QStringList listpeers = list[1].split(";");
+				for(int i = 0 ; i < listpeers.size() - 1; i++) {
+					m_window->removePeer(listpeers[i]);
+				}
 			}
 		}
 	}
@@ -138,6 +160,7 @@ void SwitchBoardEngine::finishedReceivingHints()
 void SwitchBoardEngine::timerEvent(QTimerEvent * event)
 {
 	qDebug() << event;
+	m_socket->connectToHost(m_host, m_port);
 	//	m_pendingcommand = "hints";
 	//	socketConnected();
 }

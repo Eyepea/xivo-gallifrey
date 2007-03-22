@@ -10,7 +10,7 @@ int main(int argc, char * * argv)
 	MainWindow mainwin(&engine);
 	mainwin.show();
 	engine.setAddress("192.168.0.77", 5081); //connectSocket();
-	engine.startTimer(60000);
+	//	engine.startTimer(60000);
 	return app.exec();
 }
 
