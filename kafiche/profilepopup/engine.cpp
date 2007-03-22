@@ -110,17 +110,23 @@ void Engine::stop()
 
 void Engine::setAvailable()
 {
+	//qDebug() << "setAvailable()";
 	m_availstate = "available";
+	keepLoginAlive();
 }
 
 void Engine::setAway()
 {
+	//qDebug() << "setAway()";
 	m_availstate = "away";
+	keepLoginAlive();
 }
 
 void Engine::setDoesNotDisturb()
 {
+	//qDebug() << "setDoesNotDistrurb()";
 	m_availstate = "doesnotdisturb";
+	keepLoginAlive();
 }
 
 // === Getter and Setters ===
