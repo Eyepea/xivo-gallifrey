@@ -3,49 +3,54 @@
 <context>
     <name>ConfWidget</name>
     <message>
-        <location filename="confwidget.cpp" line="27"/>
+        <location filename="confwidget.cpp" line="28"/>
         <source>Server Host</source>
         <translation type="unfinished">Adresse serveur</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="30"/>
+        <location filename="confwidget.cpp" line="31"/>
         <source>Server Port</source>
         <translation type="unfinished">Port serveur</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="34"/>
+        <location filename="confwidget.cpp" line="44"/>
         <source>Login</source>
         <translation type="unfinished">Identifiant de connexion</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="37"/>
+        <location filename="confwidget.cpp" line="47"/>
         <source>Password</source>
         <translation type="unfinished">Mot de passe</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="50"/>
+        <location filename="confwidget.cpp" line="62"/>
         <source>Autoconnect at startup</source>
         <translation type="unfinished">Connexion au démarrage</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="53"/>
+        <location filename="confwidget.cpp" line="65"/>
         <source>Keep alive interval</source>
         <translation type="unfinished">Maintient de la connexion</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="58"/>
+        <location filename="confwidget.cpp" line="70"/>
         <source>Try to reconnect</source>
         <translation type="unfinished">Reconnexion</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="61"/>
+        <location filename="confwidget.cpp" line="73"/>
         <source>Try to reconnect interval</source>
         <translation type="unfinished">Interval de reconnexion</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="67"/>
+        <location filename="confwidget.cpp" line="79"/>
         <source>Tab limit</source>
         <translation type="unfinished">Nombre d&apos;onglets</translation>
+    </message>
+    <message>
+        <location filename="confwidget.cpp" line="35"/>
+        <source>Protocol</source>
+        <translation>Protocole</translation>
     </message>
 </context>
 <context>
@@ -58,7 +63,7 @@
     <message>
         <location filename="engine.cpp" line="83"/>
         <source>Unable to start the server: %1.</source>
-        <translation type="unfinished">Impossible de se connecter au serveur: %1.</translation>
+        <translation>Impossible de se connecter au serveur: %1.</translation>
     </message>
 </context>
 <context>
@@ -66,22 +71,22 @@
     <message>
         <location filename="mainwidget.cpp" line="49"/>
         <source>&amp;Configuration</source>
-        <translation type="unfinished">&amp;Configuration</translation>
+        <translation>&amp;Configuration</translation>
     </message>
     <message>
         <location filename="mainwidget.cpp" line="50"/>
         <source>Configure account and connection options</source>
-        <translation type="unfinished">Configurer votre compte et vos options de connection</translation>
+        <translation>Configurer votre compte et vos options de connexion</translation>
     </message>
     <message>
         <location filename="mainwidget.cpp" line="53"/>
         <source>&amp;Quit</source>
-        <translation type="unfinished">&amp;Quitter</translation>
+        <translation>&amp;Quitter</translation>
     </message>
     <message>
         <location filename="mainwidget.cpp" line="54"/>
         <source>Close the application</source>
-        <translation type="unfinished">Fermer l&apos;application</translation>
+        <translation>Fermer l&apos;application</translation>
     </message>
     <message>
         <location filename="mainwidget.cpp" line="57"/>
@@ -96,7 +101,7 @@
     <message>
         <location filename="mainwidget.cpp" line="62"/>
         <source>&amp;Connect</source>
-        <translation type="unfinished">&amp;Connexion</translation>
+        <translation>&amp;Connexion</translation>
     </message>
     <message>
         <location filename="mainwidget.cpp" line="63"/>
@@ -149,22 +154,22 @@
         <translation type="unfinished">A propos de &amp;Qt</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="222"/>
+        <location filename="mainwidget.cpp" line="226"/>
         <source>Disconnected</source>
         <translation type="unfinished">Déconnecté</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="233"/>
+        <location filename="mainwidget.cpp" line="237"/>
         <source>Connected</source>
         <translation type="unfinished">Connecté</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="247"/>
+        <location filename="mainwidget.cpp" line="251"/>
         <source>Incoming call</source>
         <translation type="unfinished">Appel entrant</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="248"/>
+        <location filename="mainwidget.cpp" line="252"/>
         <source> Incoming call</source>
         <translation type="unfinished">Appel entrant</translation>
     </message>
