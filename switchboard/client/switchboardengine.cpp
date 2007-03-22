@@ -118,12 +118,12 @@ void SwitchBoardEngine::socketReadyRead()
 				QStringList listpeers = list[1].split(";");
 				for(int i = 0 ; i < listpeers.size() - 1; i++) {
 					QStringList liststatus = listpeers[i].split(":");
-					m_window->updatePeer(liststatus[0], liststatus[1]);
+					m_window->updatePeer("(" + liststatus[0] + ")" + liststatus[1], liststatus[2]);
 				}
 				b = true;
 			} else if(list[0] == QString("update")) {
 				QStringList liststatus = list[1].split(":");
-				m_window->updatePeer(liststatus[0], liststatus[1]);
+				m_window->updatePeer("(" + liststatus[0] + ")" + liststatus[1], liststatus[2]);
 				b = true;
 
 			} else if(list[0] == QString("asterisk")) {
@@ -135,12 +135,13 @@ void SwitchBoardEngine::socketReadyRead()
 				QStringList listpeers = list[1].split(";");
 				for(int i = 0 ; i < listpeers.size() - 1; i++) {
 					QStringList liststatus = listpeers[i].split(":");
-					m_window->addPeer(liststatus[0], liststatus[1]);
+					m_window->addPeer("(" + liststatus[0] + ")" + liststatus[1], liststatus[2]);
 				}
 			} else if(list[0] == QString("peerremove")) {
 				QStringList listpeers = list[1].split(";");
 				for(int i = 0 ; i < listpeers.size() - 1; i++) {
-					m_window->removePeer(listpeers[i]);
+					QStringList liststatus = listpeers[i].split(":");
+					m_window->removePeer("(" + liststatus[0] + ")" + liststatus[1]);
 				}
 			}
 		}
