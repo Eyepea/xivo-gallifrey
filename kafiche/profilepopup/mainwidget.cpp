@@ -279,6 +279,10 @@ void MainWidget::showNewProfile(Popup * popup)
 			// close the first widget
 			m_tabwidget->widget(0)->close();
 		}
+		// show the window and give it the focus.
+		setVisible(true);
+		activateWindow();
+		raise();
 	}
 	else
 	{
