@@ -149,6 +149,10 @@ void MainWidget::createSystrayIcon()
 	//m_systrayIcon = new QSystemTrayIcon(QIcon(":/xivoicon.png"), this);
 	m_systrayIcon = new QSystemTrayIcon(m_iconred, this);
 	QMenu * menu = new QMenu(QString("SystrayMenu"), this);
+	menu->addAction( m_avact_avail );
+	menu->addAction( m_avact_away );
+	menu->addAction( m_avact_dnd );
+	menu->addSeparator();
 	//menu->addAction( "&Config", this, SLOT(popupConf()) );
 	menu->addAction(m_cfgact);
 	//menu->addAction( "&Quit", qApp, SLOT(quit()) );
