@@ -8,6 +8,7 @@
 
 class QSpinBox;
 class QCheckBox;
+class QComboBox;
 class MainWidget;
 
 /*! \brief Configuration Window
@@ -36,6 +37,7 @@ private slots:
 private:
 	QLineEdit *m_lineip;		//!< IP/hostname of the server
 	QLineEdit *m_lineport;		//!< port of the server
+	QComboBox *m_protocombo;	//!< Protocol SIP/IAX
 	QLineEdit *m_linelogin;		//!< user login
 	QLineEdit *m_linepasswd;	//!< user password
 	QCheckBox *m_autoconnect;	//!< Auto connect checkbox
