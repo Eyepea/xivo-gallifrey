@@ -316,8 +316,9 @@ void MainWidget::hideEvent(QHideEvent *event)
 void MainWidget::closeEvent(QCloseEvent *event)
 {
 	qDebug() << "MainWidget::closeEvent()";
-	event->accept();
-	// event->ignore();
+	//event->accept();
+	setVisible( false );
+	event->ignore();
 }
 /*
 void MainWidget::changeEvent(QEvent *event)
