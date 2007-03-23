@@ -96,7 +96,7 @@ void Engine::initListenSocket()
 {
 	if (!m_listensocket.listen())
 	{
-		QMessageBox::critical(NULL, tr("glop"),
+		QMessageBox::critical(NULL, tr("Critical error"),
 		                            tr("Unable to start the server: %1.")
 		                            .arg(m_listensocket.errorString()));
 		return;

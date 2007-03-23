@@ -48,6 +48,7 @@ private slots:
 	void systrayActivated(QSystemTrayIcon::ActivationReason);
 	void systrayMsgClicked();
 	void showNewProfile(Popup *);	//!< display a Profile widget
+	void about();
 protected:
 	void hideEvent(QHideEvent *event);	//!< Catch hide events
 	void closeEvent(QCloseEvent *event);

@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QAction>
 #include <QHideEvent>
 #include <QTime>
+#include <QMessageBox>
 #include <QDebug>
 #include "mainwidget.h"
 #include "confwidget.h"
@@ -129,6 +130,7 @@ void MainWidget::createMenus()
 	avail->addAction( m_avact_dnd );
 
 	QMenu * helpmenu = menuBar()->addMenu(tr("&Help"));
+	helpmenu->addAction( tr("&About"), this, SLOT(about()) );
 	helpmenu->addAction( tr("About &Qt"), qApp, SLOT(aboutQt()) );
 }
 
@@ -336,4 +338,22 @@ void MainWidget::changeEvent(QEvent *event)
 	qDebug() << "MainWidget::changeEvent() eventtype=" << event->type();
 }
 */
+
+/*! \brief Shows the about box
+ *
+ * Use a QMessageBox to show the about box.
+ * The about box contains the version.
+ */
+void MainWidget::about()
+{
+	QString applicationVersion("0.1");
+	QMessageBox::about(this, tr("About Kafiche"),
+	  tr("<h3>About Kafiche</h3>"
+	     "<p>This application show to the user the profile associated"
+	     " with incoming phone calls.</p>"
+		 "<p>Version : %1</p>"
+		 "<p>(c) 2007 <b>Proformatique</b> "
+		 "(<a href=\"http://www.proformatique.com/\">www.proformatique.com</a>)</p>"
+		 "<p>Author : Thomas Bernard</p>").arg(applicationVersion) );
+}
 
