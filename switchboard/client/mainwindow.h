@@ -3,7 +3,9 @@
 
 #include <QMainWindow>
 
+class QAction;
 class SwitchBoardEngine;
+class SwitchBoardWindow;
 
 class MainWindow : public QMainWindow
 {
@@ -12,8 +14,13 @@ public:
 	MainWindow(SwitchBoardEngine *);
 private slots:
 	void showConfDialog();
+	void engineStopped();
+	void engineStarted();
 private:
 	SwitchBoardEngine * m_engine;
+	SwitchBoardWindow * m_widget;
+	QAction * m_startact;
+	QAction * m_stopact;
 };
 
 #endif

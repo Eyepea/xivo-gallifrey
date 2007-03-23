@@ -27,6 +27,7 @@ protected:
 	void timerEvent(QTimerEvent *event);
 public slots:
 	void start();
+	void stop();
 private slots:
 	void socketConnected();
 	void socketDisconnected();
@@ -35,6 +36,8 @@ private slots:
 	void socketStateChanged(QAbstractSocket::SocketState);
 	void socketReadyRead();
 signals:
+	void started();
+	void stopped();
 	void emitTextMessage(const QString &);
 private:
 	QTcpSocket * m_socket;

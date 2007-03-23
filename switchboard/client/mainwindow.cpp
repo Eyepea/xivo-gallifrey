@@ -12,25 +12,33 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 {
 	setWindowIcon(QIcon(":/xivoicon.png"));
 	setWindowTitle("Xivo Switchboard");
-	SwitchBoardWindow * widget = new SwitchBoardWindow(this);
-	engine->setWindow(widget);
-	widget->setEngine(engine);
-	setCentralWidget(widget);
+	m_widget = new SwitchBoardWindow(this);
+	engine->setWindow(m_widget);
+	m_widget->setEngine(engine);
+	setCentralWidget(m_widget);
 	//statusBar()->showMessage("test");
-	connect(engine, SIGNAL(emitTextMessage(const QString &)),
+	connect(m_engine, SIGNAL(emitTextMessage(const QString &)),
 	        statusBar(), SLOT(showMessage(const QString &)));
+	connect(m_engine, SIGNAL(started()),
+	        this, SLOT(engineStarted()));
+	connect(m_engine, SIGNAL(stopped()),
+	        this, SLOT(engineStopped()));
 
 	QMenu * menu = menuBar()->addMenu(tr("&File"));
 	
-	QAction * start = new QAction(tr("S&tart"), this);
-	connect(start, SIGNAL(triggered()), m_engine, SLOT(start()) );
-	menu->addAction(start);
+	m_startact = new QAction(tr("S&tart"), this);
+	m_startact->setStatusTip(tr("Start"));
+	connect(m_startact, SIGNAL(triggered()), m_engine, SLOT(start()) );
+	menu->addAction(m_startact);
 
-	QAction * stop = new QAction(tr("Sto&p"), this);
-	connect(stop, SIGNAL(triggered()), m_engine, SLOT(stop()) );
-	menu->addAction(stop);
+	m_stopact = new QAction(tr("Sto&p"), this);
+	m_stopact->setStatusTip(tr("Stop"));
+	connect(m_stopact, SIGNAL(triggered()), m_engine, SLOT(stop()) );
+	m_stopact->setDisabled(true);
+	menu->addAction(m_stopact);
 
 	QAction * conf = new QAction(tr("&Configure"), this);
+	conf->setStatusTip(tr("Open the configuration dialog"));
 	connect(conf, SIGNAL(triggered()), this, SLOT(showConfDialog()));
 	menu->addAction(conf);
 
@@ -45,7 +53,18 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 
 void MainWindow::showConfDialog()
 {
-	SwitchBoardConfDialog * conf = new SwitchBoardConfDialog(m_engine, this);
+	SwitchBoardConfDialog * conf = new SwitchBoardConfDialog(m_engine, m_widget, this);
 	qDebug() << "<<  " << conf->exec();
 }
 
+void MainWindow::engineStarted()
+{
+	m_stopact->setEnabled(true);
+	m_startact->setDisabled(true);
+}
+
+void MainWindow::engineStopped()
+{
+	m_stopact->setDisabled(true);
+	m_startact->setEnabled(true);
+}

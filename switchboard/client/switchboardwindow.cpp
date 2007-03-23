@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QToolTip>
 #include <QPoint>
+#include <QSettings>
 #include "switchboardwindow.h"
 #include "peerwidget.h"
 
@@ -53,20 +54,8 @@ SwitchBoardWindow::SwitchBoardWindow(QWidget * parent)
 	m_layout = new QGridLayout(this);
 	m_x = 0;
 	m_y = 0;
-	/*PeerWidget * peer1 = new PeerWidget("Thomas", this);
-	layout->addWidget( peer1, 0, 0 );
-	layout->addWidget( new PeerWidget("Sylvain", this), 1, 0 );
-	layout->addWidget( new PeerWidget("Corentin", this), 0, 1 );
-	layout->addWidget( new PeerWidget("Adrien", this), 1, 1 );
-	QPushButton * btnred = new QPushButton("&red", this);
-	layout->addWidget( btnred, 0, 2 );
-	connect( btnred, SIGNAL(clicked()), peer1, SLOT(setRed()) );
-	QPushButton * btngreen = new QPushButton("&green", this);
-	layout->addWidget( btngreen, 1, 2 );
-	connect( btngreen, SIGNAL(clicked()), peer1, SLOT(setGreen()) );
-	QPushButton * btnorange = new QPushButton("&orange", this);
-	layout->addWidget( btnorange, 2, 2 );
-	connect( btnorange, SIGNAL(clicked()), peer1, SLOT(setOrange()) );*/
+	QSettings settings;
+	m_width = settings.value("display/width", 5).toInt();
 }
 
 void SwitchBoardWindow::setEngine(SwitchBoardEngine * engine)
@@ -78,6 +67,7 @@ void SwitchBoardWindow::updatePeer(const QString & ext,
                                    const QString & status)
 {
 	int i;
+	// first search in the peerlist
 	for(i=0; i<m_peerlist.count(); i++)
 	{
 		//		qDebug() << i << m_peerlist[i].ext();
@@ -87,36 +77,37 @@ void SwitchBoardWindow::updatePeer(const QString & ext,
 			return;
 		}
 	}
+	// if not found in the peerlist, create a new Peer
 	Peer peer(ext);
 	PeerWidget * peerwidget = new PeerWidget(ext, m_engine, this);
 	m_layout->addWidget( peerwidget, m_y, m_x++ );
-	if(m_x >= 4)
+	if(m_x >= m_width)
 	{
 		m_x = 0;
 		m_y++;
 	}
 	peer.setWidget(peerwidget);
 	peer.updateStatus(status);
-	peerwidget->setToolTip(status);
 	m_peerlist << peer;
 }
 
+/*
 void SwitchBoardWindow::addPeer(const QString & ext,
 				const QString & status)
 {
 	Peer peer(ext);
 	PeerWidget * peerwidget = new PeerWidget(ext, m_engine, this);
 	m_layout->addWidget( peerwidget, m_y, m_x++ );
-	if(m_x >= 4)
+	if(m_x >= m_width)
 	{
 		m_x = 0;
 		m_y++;
 	}
 	peer.setWidget(peerwidget);
 	peer.updateStatus(status);
-	peerwidget->setToolTip(status);
 	m_peerlist << peer;
 }
+*/
 
 void SwitchBoardWindow::removePeer(const QString & ext)
 {
@@ -126,23 +117,36 @@ void SwitchBoardWindow::removePeer(const QString & ext)
 			PeerWidget * peerwidget = m_peerlist[i].getWidget();
 			m_layout->removeWidget( peerwidget );
 			m_peerlist.removeAt(i);
-			delete peerwidget;
+			//delete peerwidget;
+			peerwidget->deleteLater();
+			return;
 		}
 	}
-	return;
 }
 
 void SwitchBoardWindow::removePeers(void)
 {
-	for(int i=0; i < m_peerlist.count(); i++) {
+	int i;
+	for(i=0; i < m_peerlist.count(); i++) {
 		PeerWidget * peerwidget = m_peerlist[i].getWidget();
 		m_layout->removeWidget( peerwidget );
 		//		m_peerlist.removeAt(i);
-		delete peerwidget;
+		//delete peerwidget;
+		peerwidget->deleteLater();
 	}
 	m_peerlist.clear();
 	m_x = 0;
 	m_y = 0;
 	return;
+}
+
+int SwitchBoardWindow::width() const
+{
+	return m_width;
+}
+
+void SwitchBoardWindow::setWidth(int width)
+{
+	m_width = width;
 }
 

@@ -66,6 +66,11 @@ void SwitchBoardEngine::start()
 	connectSocket();
 }
 
+void SwitchBoardEngine::stop()
+{
+	m_socket->disconnectFromHost();
+}
+
 void SwitchBoardEngine::connectSocket()
 {
 	m_socket->connectToHost(m_host, m_port);
@@ -75,16 +80,19 @@ void SwitchBoardEngine::connectSocket()
 void SwitchBoardEngine::socketConnected()
 {
 	qDebug() << "socketConnected()";
+	started();
 	m_socket->write((m_pendingcommand + "\n").toAscii());
+	qDebug() << "  " << m_pendingcommand;
 }
 
 void SwitchBoardEngine::socketDisconnected()
 {
 	qDebug() << "socketDisconnected()";
+	stopped();
 	emitTextMessage("Connection lost with Presence Server");
 	//	finishedReceivingHints();
 	if(m_window) m_window->removePeers();
-	connectSocket();
+	//connectSocket();
 }
 
 void SwitchBoardEngine::socketHostFound()
@@ -156,7 +164,8 @@ void SwitchBoardEngine::socketReadyRead()
 				QStringList listpeers = list[1].split(";");
 				for(int i = 0 ; i < listpeers.size() - 1; i++) {
 					QStringList liststatus = listpeers[i].split(":");
-					m_window->addPeer(liststatus[0] + "/" + liststatus[1], liststatus[2]);
+					//m_window->addPeer(liststatus[0] + "/" + liststatus[1], liststatus[2]);
+					m_window->updatePeer(liststatus[0] + "/" + liststatus[1], liststatus[2]);
 				}
 			} else if(list[0] == QString("peerremove")) {
 				QStringList listpeers = list[1].split(";");

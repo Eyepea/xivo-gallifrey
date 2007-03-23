@@ -30,18 +30,19 @@ class SwitchBoardWindow : public QWidget
 public:
 	SwitchBoardWindow( QWidget * parent = 0);
 	void setEngine(SwitchBoardEngine *);
-	void updatePeer(const QString & ext,
-	                const QString & status);
-	void addPeer(const QString & ext,
-		     const QString & status);
+	void updatePeer(const QString & ext, const QString & status);
+	//void addPeer(const QString & ext, const QString & status);
 	void removePeer(const QString & ext);
 	void removePeers(void);
+	int width() const;
+	void setWidth(int);
 private:
 	QGridLayout * m_layout;
 	QList<Peer> m_peerlist;
 	SwitchBoardEngine * m_engine;
 	int m_x;
 	int m_y;
+	int m_width;
 };
 
 #endif
