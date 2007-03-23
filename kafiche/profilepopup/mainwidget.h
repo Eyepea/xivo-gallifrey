@@ -46,10 +46,11 @@ private slots:
 	void setDisconnected();
 	void setConnected();
 	void systrayActivated(QSystemTrayIcon::ActivationReason);
+	void systrayMsgClicked();
 	void showNewProfile(Popup *);	//!< display a Profile widget
 protected:
 	void hideEvent(QHideEvent *event);	//!< Catch hide events
-	//void closeEvent(QCloseEvent *event);
+	void closeEvent(QCloseEvent *event);
 	//void changeEvent(QEvent *event);
 private:
 	void createActions();	//!< Create Actions (for menus)

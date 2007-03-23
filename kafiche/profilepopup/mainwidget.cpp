@@ -171,9 +171,7 @@ void MainWidget::createSystrayIcon()
 	menu->addAction( m_avact_away );
 	menu->addAction( m_avact_dnd );
 	menu->addSeparator();
-	//menu->addAction( "&Config", this, SLOT(popupConf()) );
 	menu->addAction(m_cfgact);
-	//menu->addAction( "&Quit", qApp, SLOT(quit()) );
 	menu->addAction(m_quitact);
 	m_systrayIcon->setContextMenu( menu );
 	m_systrayIcon->show();
@@ -181,6 +179,8 @@ void MainWidget::createSystrayIcon()
 	//         this, SLOT(show()) );
 	connect( m_systrayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
 	         this, SLOT(systrayActivated(QSystemTrayIcon::ActivationReason)) );
+	connect( m_systrayIcon, SIGNAL(messageClicked()),
+	         this, SLOT(systrayMsgClicked()) );
 // QSystemTrayIcon::ActivationReason
 	//qDebug() << "QSystemTrayIcon::supportsMessages() = "
 	//         << QSystemTrayIcon::supportsMessages();
@@ -231,6 +231,14 @@ void MainWidget::systrayActivated(QSystemTrayIcon::ActivationReason reason)
 			}
 		}
 	}
+}
+
+void MainWidget::systrayMsgClicked()
+{
+	qDebug() << "MainWidget::systrayMsgClicked()";
+	setVisible(true);
+	activateWindow();
+	raise();
 }
 
 //! Enable the Start Button and set the red indicator
@@ -298,18 +306,20 @@ void MainWidget::hideEvent(QHideEvent *event)
 	qDebug() << "MainWidget::hideEvent : spontaneous="
 	         << event->spontaneous() << " isMinimized()="
 			 << isMinimized();
-	if(event->spontaneous())
-	{
+	//if(event->spontaneous())
+	//{
 		setVisible(false);
 		event->accept();
-	}
+	//}
 }
-/*
+
 void MainWidget::closeEvent(QCloseEvent *event)
 {
 	qDebug() << "MainWidget::closeEvent()";
+	event->accept();
+	// event->ignore();
 }
-
+/*
 void MainWidget::changeEvent(QEvent *event)
 {
 	qDebug() << "MainWidget::changeEvent() eventtype=" << event->type();
