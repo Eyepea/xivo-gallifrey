@@ -18,7 +18,7 @@ expires = "600"
 asterisk_login = 'sylvain'
 asterisk_pass = 'sylvain'
 
-timeout_between_registers = 100
+timeout_between_registers = 5
 
 # daemonize function
 def daemonize():
@@ -184,12 +184,14 @@ class AMI:
                     self.msg = msg
 		def __str__(self):
                     return msg
-	def __init__(self, address):
-		self.address = address
+	def __init__(self, address, loginname, password):
+		self.address   = address
+		self.loginname = loginname
+		self.password  = password
 		self.i = 1
 	def connect(self):
 		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		s.connect(asterisk_ami)
+		s.connect(self.address)
 		self.f = s.makefile()
 		s.close()
 		str = self.f.readline()
@@ -205,7 +207,16 @@ class AMI:
 			ret = True
 		except:
 			ret = False
-		return ret
+		if ret == False:
+			try:
+				self.connect()
+				self.login()
+				if self:
+					print "retrying AMI command " + action
+					self.sendcommand(action, args)
+			except:
+				print "AMI not connected"
+			# if ko : down # if ok : retry / if retry ko : strange
 	def printresponse_forever(self):
 		# for debug
 		while True:
@@ -254,9 +265,9 @@ class AMI:
 			if chunk['Event'] == check:
 				break
 		return resp
-	def login(self, user, passwd):
+	def login(self):
 		try:
-			self.sendcommand('login', [('Username', user), ('Secret', passwd), ('Events', 'off')])
+			self.sendcommand('login', [('Username', self.loginname), ('Secret', self.password), ('Events', 'off')])
 			self.readresponse('')
 			return True
 		except self.AMIError, e:
@@ -292,59 +303,50 @@ class AMI:
 	def originate(self, src, dst):
 		# originate a call btw src and dst
 		# src will ring first, and dst will ring when src responds
-		ret = AMIsock.sendcommand('Originate', [('Channel', 'SIP/'+src),
-                                                         ('Exten', dst),
-                                                         ('Context', 'local-extensions'),
-                                                         ('Priority', '1'),
-                                                         ('CallerID', 'Mise en relation <1911>'),
-                                                         ('Async', 'true')])
+		self.sendcommand('Originate', [('Channel', 'SIP/'+src),
+					       ('Exten', dst),
+					       ('Context', 'local-extensions'),
+					       ('Priority', '1'),
+					       ('CallerID', 'Mise en relation <1911>'),
+					       ('Async', 'true')])
 #		print AMIsock.readresponse('')
-		return ret
 	def transfer(self, src, dst):
-		AMIsock.sendcommand('Status', [])
-		for ch in AMIsock.readresponse('StatusComplete'):
+		self.sendcommand('Status', [])
+		for ch in self.readresponse('StatusComplete'):
 			if ch.has_key('CallerID') and ch['CallerID'] == src and ch.has_key('Link'):
-				AMIsock.redirect(ch['Link'], dst, 'local-extensions')
+				self.redirect(ch['Link'], dst, 'local-extensions')
 
 
-def build_statuses(plist):
-	global cfgs, phonelists
+def build_statuses():
+	global configs, phonelists
 	fullstat = "hints="
-
-##	sskeys = plist.keys()
-##	sskeys.sort()
-##	for ss in sskeys:
-##		fullstat += cfg.astid + ":" + ss + ":" + plist[ss].status + ";"
-
-	for astid in [0, 1]:
-#	for phonelist in phonelists:
-		sskeys = phonelists[astid].keys()
+	for astnum in [0, 1]:
+		sskeys = phonelists[astnum].keys()
 		sskeys.sort()
 		for ss in sskeys:
-			fullstat += cfgs[astid].astid + ":" + ss + ":" + phonelists[astid][ss].status + ";"
-
+			fullstat += configs[astnum].astid + ":" + ss + ":" + phonelists[astnum][ss].status + ";"
 	fullstat += "\n"
 	return fullstat
 
 
-def parseSIP(cfg, data, l_sipsock, l_addrsip, astid):
+def parseSIP(cfg, data, l_sipsock, l_addrsip, astnum):
     global tcpopens, phonelists, sipnumlists
     spret = 0
     [icseq, imsg, icid, iaddr, ilength, iret, ibranch, itag] = read_sip_properties(data)
     # if ilength != 11:
-    print "###", astid, ilength, icseq, icid, iaddr, imsg, iret, ibranch, itag
+#    print "###", astnum, ilength, icseq, icid, iaddr, imsg, iret, ibranch, itag
     if imsg == "REGISTER" and iret == 200 and icid == "reg_cid@xivopy":
         for k in tcpopens:
-            k[0].send("asterisk=registered\n")
+            k[0].send("asterisk=registered_" + cfg.astid + "\n")
     if imsg == "SUBSCRIBE":
         fields = icid.split("@")[0].split("subscribexivo_")[1]
-	if fields in sipnumlists[astid]: # else : send sth anyway ?
-	    phonelists[astid][fields].set_lasttime(time.time())
+	if fields in sipnumlists[astnum]: # else : send sth anyway ?
+	    phonelists[astnum][fields].set_lasttime(time.time())
             if iret != 200:
-		    if phonelists[astid][fields].status != "Fail" + str(iret):
-			    phonelists[astid][fields].set_status("Fail" + str(iret))
+		    if phonelists[astnum][fields].status != "Fail" + str(iret):
+			    phonelists[astnum][fields].set_status("Fail" + str(iret))
 			    for k in tcpopens:
-				    k[0].send("update=" + cfg.astid + ":" + fields + ":" + phonelists[astid][fields].status + "\n")
+				    k[0].send("update=" + cfg.astid + ":" + fields + ":" + phonelists[astnum][fields].status + "\n")
     if imsg == "OPTIONS" or imsg == "NOTIFY":
         command = sip_ok(cfg, "sip:" + cfg.mysipname, icseq, icid, iaddr, imsg, ibranch, itag)
         l_sipsock.sendto(command,(cfg.remoteaddr, l_addrsip[1]))
@@ -352,9 +354,9 @@ def parseSIP(cfg, data, l_sipsock, l_addrsip, astid):
 		stat = tellpresence(data)
 		if stat != "???:????":
 			sipphone = stat.split(":")[0]
-			phonelists[astid][sipphone].set_lasttime(time.time())
-			if phonelists[astid][sipphone].status != stat.split(":")[1]:
-				phonelists[astid][sipphone].set_status(stat.split(":")[1])
+			phonelists[astnum][sipphone].set_lasttime(time.time())
+			if phonelists[astnum][sipphone].status != stat.split(":")[1]:
+				phonelists[astnum][sipphone].set_status(stat.split(":")[1])
 				for k in tcpopens:
 					k[0].send("update=" + cfg.astid + ":" + stat + "\n")
         else:
@@ -374,84 +376,76 @@ def manage_connection(connid):
         usefulmsg_tmp = msg.split("\r\n")[0]
         usefulmsg = usefulmsg_tmp.split("\n")[0]
         if usefulmsg == "hints":
-            connid[0].send(build_statuses(phonelists[0]))
+            connid[0].send(build_statuses())
         elif usefulmsg != "":
             # different cases are treated whether AMIsock was already defined or not
             # ... this part can certainly be improved
             # only the "originate" command is properly handled right now
-            if not AMIsock:
-                "AMI was not connected - attempting to connect again"
-                AMIsock = connect_to_AMI(asterisk_ami, asterisk_login, asterisk_pass)
-            if AMIsock:
-                l = usefulmsg.split()
-                if l[0] == 'originate':
-                    if AMIsock.originate(l[1], l[2]) == False:
-                        del AMIsock
-                        AMIsock = connect_to_AMI(asterisk_ami, asterisk_login, asterisk_pass)
-                        if not AMIsock:
-                            print "Asterisk seems to be down"
-                        else:
-                            if AMIsock.originate(l[1], l[2]) == False:
-                                print "Strange"
-                elif l[0] == 'transfer':
-                    AMIsock.transfer(l[1], l[2])
-                elif l[0] == 'hangup':
-                    AMIsock.sendcommand('Status', [])
-                    for ch in AMIsock.readresponse('StatusComplete'):
-                        if ch.has_key('CallerID') and ch['CallerID'] == l[1]:
-                            AMIsock.hangup(ch['Channel'])
+	    l = usefulmsg.split()
+	    if l[0] == 'originate' or l[0] == 'transfer' or l[0] == 'hangup':
+		    if not AMIsocks[l[1]]:
+			    "AMI was not connected - attempting to connect again"
+			    AMIsocks[l[1]] = connect_to_AMI(asterisk_amis[l[1]], asterisk_login, asterisk_pass)
+		    if AMIsocks[l[1]]:
+			    if l[0] == 'originate':
+				    AMIsocks[l[1]].originate(l[2], l[3])
+			    elif l[0] == 'transfer':
+				    AMIsocks[l[1]].transfer(l[2], l[3])
+			    elif l[0] == 'hangup':
+				    AMIsocks[l[1]].sendcommand('Status', [])
+				    for ch in AMIsocks[l[1]].readresponse('StatusComplete'):
+					    if ch.has_key('CallerID') and ch['CallerID'] == l[2]:
+						    AMIsocks[l[1]].hangup(ch['Channel'])
 
 
 # sends a SIP register + n x SIP subscribe messages
-def do_sip_register_subscribe(cfg, l_sipsock, astid):
+def do_sip_register_subscribe(cfg, l_sipsock, astnum):
     global tcpopens, phonelists, sipnumlists
     for k in tcpopens:
-        k[0].send("asterisk=will_register\n")
+        k[0].send("asterisk=will_register_" + cfg.astid + "\n")
     command = sip_register(cfg, "sip:" + cfg.mysipname, 1, "reg_cid@xivopy")
     l_sipsock.sendto(command, (cfg.remoteaddr, port_sip_srv))
-    for sipnum in sipnumlists[astid]:
-        if (time.time() - phonelists[astid][sipnum].lasttime) > (2 * timeout_between_registers):
-		if phonelists[astid][sipnum].status != "Timeout":
-			phonelists[astid][sipnum].set_status("Timeout")
+    for sipnum in sipnumlists[astnum]:
+        if (time.time() - phonelists[astnum][sipnum].lasttime) > (4 * timeout_between_registers):
+		if phonelists[astnum][sipnum].status != "Timeout":
+			phonelists[astnum][sipnum].set_status("Timeout")
 			for k in tcpopens:
-				k[0].send("update=" + cfg.astid + ":" + sipnum + ":" + phonelists[astid][sipnum].status + "\n")
+				k[0].send("update=" + cfg.astid + ":" + sipnum + ":" + phonelists[astnum][sipnum].status + "\n")
         command = sip_subscribe(cfg, "sip:" + cfg.mysipname, 1, "subscribexivo_" + sipnum + "@" + cfg.localaddr, sipnum)
         l_sipsock.sendto(command, (cfg.remoteaddr, port_sip_srv))
 
-def update_sipnumlist(cfg, astid):
+def update_sipnumlist(cfg, astnum):
 	global phonelists, sipnumlists
-	sipnumlistold = sipnumlists[astid]
+	sipnumlistold = sipnumlists[astnum]
 	sipnumlistnew = updateuserlistfromurl(cfg.userlisturl)
-	sipnumlists[astid] = sipnumlistnew
+	sipnumlists[astnum] = sipnumlistnew
 	sipnumlistnew.sort()
 	if sipnumlistnew != sipnumlistold:
 		lstdel = ""
 		lstadd = ""
 		for snl in sipnumlistold:
 			if snl not in sipnumlistnew:
-				del phonelists[astid][sipnum] # or = "Absent"/0 ?
+				del phonelists[astnum][sipnum] # or = "Absent"/0 ?
 				lstdel += cfg.astid + ":" + snl + ";"
 		for snl in sipnumlistnew:
 			if snl not in sipnumlistold:
-				phonelists[astid][snl] = LineProp()
-				lstadd += cfg.astid + ":" + snl + ":" + phonelists[astid][snl].status + ";"
+				phonelists[astnum][snl] = LineProp()
+				lstadd += cfg.astid + ":" + snl + ":" + phonelists[astnum][snl].status + ";"
 		for k in tcpopens:
 			if lstdel != "":
 				k[0].send("peerremove=" + lstdel + "\n")
 			if lstadd != "":
 				k[0].send("peeradd=" + lstadd + "\n")
 
-def connect_to_AMI(address, login, lpass):
-    AMIsock = AMI(address)
-    try:
-        AMIsock.connect()
-        AMIsock.login(login, lpass)
-        AMIsock.sendcommand('Status', [])
-        AMIsock.readresponse('StatusComplete')
-    except:
-        del AMIsock
-        AMIsock = False
-    return AMIsock
+def connect_to_AMI(address, loginname, password):
+	lAMIsock = AMI(address, loginname, password)
+	try:
+		lAMIsock.connect()
+		lAMIsock.login()
+	except:
+		del lAMIsock
+		lAMIsock = False
+	return lAMIsock
 
 
 class LineProp:
@@ -492,79 +486,70 @@ except Exception, e:
 # opens the logfile for output
 logfile = open("/var/log/sip_switchboard.log", 'a')
 
-cfg1 = AsteriskRemote("clg")
-cfg2 = AsteriskRemote("obelisk", "192.168.0.77", "192.168.0.254", 5082)
-asterisk_ami = (cfg1.remoteaddr, port_ami)
+configs = [AsteriskRemote("clg"),
+	   AsteriskRemote("obelisk", "192.168.0.77", "192.168.0.254", 5082)]
 
-cfgs = [cfg1, cfg2]
-sipnumlists = [[], []]
-phonelists = [{}, {}]
-for val in xrange(4):
-	sipnum = str(101 + val)
-	sipnumlists[0].append(sipnum)
-	phonelists[0][sipnum] = LineProp()
+sipnumlists = []
+phonelists = []
+SIPsocks = []
+AMIsocks = {}
+ins = []
+asterisk_amis = {}
 
-SIPsock1 = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-SIPsock1.bind(("", cfg1.portsipclt))
-SIPsock2 = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-SIPsock2.bind(("", cfg2.portsipclt))
+for cfg in configs:
+	sipnumlists.append([])
+	phonelists.append({})
+	SIPsock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+	SIPsock.bind(("", cfg.portsipclt))
+	SIPsocks.append(SIPsock)
+	ins.append(SIPsock)
+	asterisk_amis[cfg.astid] = (cfg.remoteaddr, port_ami)
+	AMIsocks[cfg.astid] = connect_to_AMI(asterisk_amis[cfg.astid], asterisk_login, asterisk_pass)
+
+#for val in xrange(4):
+#	sipnum = str(101 + val)
+#	sipnumlists[0].append(sipnum)
+#	phonelists[0][sipnum] = LineProp()
 
 UIsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 UIsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 UIsock.bind(("", port_ui_srv))
 UIsock.listen(10)
+ins.append(UIsock)
 
 tcpopens = []
 
-AMIsock = connect_to_AMI(asterisk_ami, asterisk_login, asterisk_pass)
-
 print "do_sip_register_subscribe (first)"
-update_sipnumlist(cfg1, 0)
-update_sipnumlist(cfg2, 1)
-do_sip_register_subscribe(cfg1, SIPsock1, 0)
-do_sip_register_subscribe(cfg2, SIPsock2, 1)
-lastrequest_time = time.time()
+for ii in [0, 1]:
+	update_sipnumlist(configs[ii], ii)
+	do_sip_register_subscribe(configs[ii], SIPsocks[ii], ii)
 
-ins = [SIPsock1, SIPsock2, UIsock]
+lastrequest_time = time.time()
 
 # Receive messages
 while True:
     [i, o, e] = select.select(ins, [], [], timeout_between_registers)
     if i:
-        if SIPsock1 in i:
-            [data1, addrsip1] = SIPsock1.recvfrom(bufsize)
-            current_time = time.time()
-            sp = parseSIP(cfg1, data1, SIPsock1, addrsip1, 0)
-            if sp == 1:
-                if __debug__:
-                    print "do_sip_register_subscribe (parse SIP)"
-		update_sipnumlist(cfg1, 0)
-                do_sip_register_subscribe(cfg1, SIPsock1, 0)
-                lastrequest_time = current_time
-            if (current_time - lastrequest_time) > timeout_between_registers:
-                if __debug__:
-                    print "do_sip_register_subscribe (computed timeout)"
-		update_sipnumlist(cfg1, 0)
-                do_sip_register_subscribe(cfg1, SIPsock1, 0)
-                lastrequest_time = current_time
-
-	elif SIPsock2 in i:
-            [data2, addrsip2] = SIPsock2.recvfrom(bufsize)
-            current_time = time.time()
-            sp = parseSIP(cfg2, data2, SIPsock2, addrsip2, 1)
-            if sp == 1:
-                if __debug__:
-                    print "do_sip_register_subscribe (parse SIP)"
-		update_sipnumlist(cfg2, 1)
-                do_sip_register_subscribe(cfg2, SIPsock2, 1)
-                lastrequest_time = current_time
-            if (current_time - lastrequest_time) > timeout_between_registers:
-                if __debug__:
-                    print "do_sip_register_subscribe (computed timeout)"
-		update_sipnumlist(cfg2, 1)
-                do_sip_register_subscribe(cfg2, SIPsock2, 1)
-                lastrequest_time = current_time
-
+        if SIPsocks[0] in i or SIPsocks[1] in i :
+		if SIPsocks[0] in i:
+			n = 0
+		elif SIPsocks[1] in i :
+			n = 1
+		[data, addrsip] = SIPsocks[n].recvfrom(bufsize)
+		sp = parseSIP(configs[n], data, SIPsocks[n], addrsip, n)
+		if sp == 1:
+			if __debug__:
+				print "do_sip_register_subscribe (parse SIP)", n
+			update_sipnumlist(configs[n], n)
+			do_sip_register_subscribe(configs[n], SIPsocks[n], n)
+			lastrequest_time = time.time()
+		if (time.time() - lastrequest_time) > timeout_between_registers:
+			if __debug__:
+				print "do_sip_register_subscribe (computed timeout)", n
+			update_sipnumlist(configs[n], n)
+			do_sip_register_subscribe(configs[n], SIPsocks[n], n)
+			lastrequest_time = time.time()
+			
         elif UIsock in i:
             [conn, UIsockparams] = UIsock.accept()
             print "TCP socket opened on  ", UIsockparams[0], UIsockparams[1]
@@ -578,10 +563,9 @@ while True:
     else:
         lastrequest_time = time.time()
         print "do_sip_register_subscribe (select's timeout)"
-	update_sipnumlist(cfg1, 0)
-        do_sip_register_subscribe(cfg1, SIPsock1, 0)
-	update_sipnumlist(cfg2, 1)
-        do_sip_register_subscribe(cfg2, SIPsock2, 1)
+	for ii in [0, 1]:
+		update_sipnumlist(configs[ii], ii)
+        	do_sip_register_subscribe(configs[ii], SIPsocks[ii], ii)
 
 # Close files and sockets
 logfile.close()
