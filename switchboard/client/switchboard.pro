@@ -18,4 +18,5 @@ SOURCES += switchboardconf.cpp
 QT += network
 RESOURCES += appli.qrc
 TRANSLATIONS = switchboard_fr.ts
+RC_FILE = appli.rc
 
