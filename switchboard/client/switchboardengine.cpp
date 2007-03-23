@@ -1,14 +1,16 @@
 #include <QDebug>
+#include <QSettings>
 #include <QTime>
 #include <QStringList>
 #include "switchboardengine.h"
 #include "switchboardwindow.h"
 
 SwitchBoardEngine::SwitchBoardEngine(QObject * parent)
-: QObject(parent), m_port(0)
+: QObject(parent)
 {
 	m_socket = new QTcpSocket(this);
 	m_timer = -1;
+	loadSettings();
 /*
       void connected ()
       void disconnected ()
@@ -33,6 +35,20 @@ SwitchBoardEngine::SwitchBoardEngine(QObject * parent)
 	connect(m_socket, SIGNAL(readyRead()), this, SLOT(socketReadyRead()));
 }
 
+void SwitchBoardEngine::loadSettings()
+{
+	QSettings settings;
+	m_host = settings.value("engine/serverhost").toString();
+	m_port = settings.value("engine/serverport", 5081).toUInt();
+}
+
+void SwitchBoardEngine::saveSettings()
+{
+	QSettings settings;
+	settings.setValue("engine/serverhost", m_host);
+	settings.setValue("engine/serverport", m_port);
+}
+
 void SwitchBoardEngine::setWindow(SwitchBoardWindow * window)
 {
 	m_window = window;
@@ -42,6 +58,11 @@ void SwitchBoardEngine::setAddress(const QString & host, quint16 port)
 {
 	m_host = host;
 	m_port = port;
+	//connectSocket();
+}
+
+void SwitchBoardEngine::start()
+{
 	connectSocket();
 }
 
@@ -201,5 +222,15 @@ void SwitchBoardEngine::hangUp(const QString & peer)
 	socketConnected();
 // 	if(m_socket->state() == QAbstractSocket::UnconnectedState)
 // 		connectSocket();
+}
+
+const QString & SwitchBoardEngine::host() const
+{
+	return m_host;
+}
+
+quint16 SwitchBoardEngine::port() const
+{
+	return m_port;
 }
 

@@ -16,11 +16,17 @@ public:
 	void originateCall(const QString & src, const QString & dst);
 	void transferCall(const QString & src, const QString & dst);
 	void hangUp(const QString & peer);
+	quint16 port() const;
+	const QString & host() const;
+	void saveSettings();	//!< save settings
 private:
 	void connectSocket();
 	void finishedReceivingHints();
+	void loadSettings();	//!< load settings
 protected:
 	void timerEvent(QTimerEvent *event);
+public slots:
+	void start();
 private slots:
 	void socketConnected();
 	void socketDisconnected();

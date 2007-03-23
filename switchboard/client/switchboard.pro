@@ -10,7 +10,9 @@ INCLUDEPATH += .
 # Input
 HEADERS += peerwidget.h switchboardwindow.h
 HEADERS += switchboardengine.h mainwindow.h
+HEADERS += switchboardconf.h
 SOURCES += main.cpp peerwidget.cpp switchboardwindow.cpp
 SOURCES += switchboardengine.cpp mainwindow.cpp
+SOURCES += switchboardconf.cpp
 QT += network
 RESOURCES += appli.qrc

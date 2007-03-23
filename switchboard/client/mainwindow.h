@@ -7,9 +7,13 @@ class SwitchBoardEngine;
 
 class MainWindow : public QMainWindow
 {
-//	Q_OBJECT
+	Q_OBJECT
 public:
 	MainWindow(SwitchBoardEngine *);
+private slots:
+	void showConfDialog();
+private:
+	SwitchBoardEngine * m_engine;
 };
 
 #endif
