@@ -20,3 +20,5 @@ RESOURCES += appli.qrc
 
 TRANSLATIONS = kafiche_fr.ts
 
+RC_FILE = appli.rc
+
