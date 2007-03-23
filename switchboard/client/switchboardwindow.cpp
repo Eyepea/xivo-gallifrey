@@ -23,7 +23,8 @@ Peer::Peer(const Peer & peer)
 	//m_y = peer.m_y;
 }
 
-void Peer::updateStatus(const QString & status)
+void Peer::updateStatus(const QString & status,
+			const QString & corrname)
 {
 //	qDebug() << status;
 	if(status == "Ready")
@@ -34,7 +35,10 @@ void Peer::updateStatus(const QString & status)
 		m_peerwidget->setRed();
 	else
 		m_peerwidget->setGray();
-	m_peerwidget->setToolTip(status);
+	if(corrname == "")
+	  m_peerwidget->setToolTip(status);
+	else
+	  m_peerwidget->setToolTip(status + "\n" + corrname);
 }
 
 /*
@@ -64,7 +68,8 @@ void SwitchBoardWindow::setEngine(SwitchBoardEngine * engine)
 }
 
 void SwitchBoardWindow::updatePeer(const QString & ext,
-                                   const QString & status)
+                                   const QString & status,
+				   const QString & corrname)
 {
 	int i;
 	// first search in the peerlist
@@ -73,7 +78,7 @@ void SwitchBoardWindow::updatePeer(const QString & ext,
 		//		qDebug() << i << m_peerlist[i].ext();
 		if(ext == m_peerlist[i].ext())
 		{
-			m_peerlist[i].updateStatus(status);
+		  m_peerlist[i].updateStatus(status, corrname);
 			return;
 		}
 	}
@@ -87,7 +92,7 @@ void SwitchBoardWindow::updatePeer(const QString & ext,
 		m_y++;
 	}
 	peer.setWidget(peerwidget);
-	peer.updateStatus(status);
+	peer.updateStatus(status, corrname);
 	m_peerlist << peer;
 }
 
