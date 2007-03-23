@@ -233,6 +233,10 @@ void MainWidget::systrayActivated(QSystemTrayIcon::ActivationReason reason)
 	}
 }
 
+/*!
+ * This slot implementation show, activate (and raise) the
+ * window.
+ */
 void MainWidget::systrayMsgClicked()
 {
 	qDebug() << "MainWidget::systrayMsgClicked()";
@@ -313,6 +317,12 @@ void MainWidget::hideEvent(QHideEvent *event)
 	//}
 }
 
+/*! \brief Catch the Close event
+ *
+ * This method is called when the user click the upper right X of the
+ * Window.
+ * We ignore the event but hide the window (to minimize it to systray)
+ */
 void MainWidget::closeEvent(QCloseEvent *event)
 {
 	qDebug() << "MainWidget::closeEvent()";
