@@ -6,6 +6,7 @@ TEMPLATE = app
 TARGET = 
 DEPENDPATH += .
 INCLUDEPATH += .
+CONFIG += static
 
 # Input
 HEADERS += peerwidget.h switchboardwindow.h
@@ -16,3 +17,5 @@ SOURCES += switchboardengine.cpp mainwindow.cpp
 SOURCES += switchboardconf.cpp
 QT += network
 RESOURCES += appli.qrc
+TRANSLATIONS = switchboard_fr.ts
+

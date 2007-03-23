@@ -37,6 +37,10 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 	QAction * quit = new QAction(tr("&Quit"), this);
 	connect(quit, SIGNAL(triggered()), qApp, SLOT(quit()));
 	menu->addAction(quit);
+
+	QMenu * helpmenu = menuBar()->addMenu(tr("&Help"));
+
+	helpmenu->addAction(tr("About &Qt"), qApp, SLOT(aboutQt()));
 }
 
 void MainWindow::showConfDialog()
