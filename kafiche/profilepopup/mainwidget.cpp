@@ -210,15 +210,16 @@ void MainWidget::popupConf()
  * of the MainWidget on a simple left click. */
 void MainWidget::systrayActivated(QSystemTrayIcon::ActivationReason reason)
 {
-	qDebug() << "MainWidget::systrayActivated() " << reason;
-	qDebug() << "visible=" << isVisible() << " hidden=" << isHidden();
-	qDebug() << "active=" << isActiveWindow();
+	qDebug() << " systrayActivated() reason=" << reason
+	         << "visible=" << isVisible() << " hidden=" << isHidden()
+	         << "active=" << isActiveWindow();
 	// QSystemTrayIcon::DoubleClick
 	// QSystemTrayIcon::Trigger
 	if (reason == QSystemTrayIcon::Trigger)
 	{
 		if( isVisible() && !isActiveWindow() )
 		{
+			showNormal();
 			activateWindow();
 			raise();
 		}
@@ -228,6 +229,7 @@ void MainWidget::systrayActivated(QSystemTrayIcon::ActivationReason reason)
 			setVisible(!isVisible());
 			if( isVisible() )
 			{
+				showNormal();
 				activateWindow();
 				raise();
 			}
@@ -313,10 +315,10 @@ void MainWidget::hideEvent(QHideEvent *event)
 	         << event->spontaneous() << " isMinimized()="
 			 << isMinimized();
 	//if(event->spontaneous())
-	//{
-		setVisible(false);
+	//	event->ignore();
+	//else
 		event->accept();
-	//}
+	setVisible(false);
 }
 
 /*! \brief Catch the Close event
@@ -332,12 +334,15 @@ void MainWidget::closeEvent(QCloseEvent *event)
 	setVisible( false );
 	event->ignore();
 }
-/*
+
 void MainWidget::changeEvent(QEvent *event)
 {
 	qDebug() << "MainWidget::changeEvent() eventtype=" << event->type();
+	//if(event->type() == 105)
+	//	event->accept();
+		//event->ignore();
 }
-*/
+
 
 /*! \brief Shows the about box
  *

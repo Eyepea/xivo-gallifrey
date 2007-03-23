@@ -52,7 +52,7 @@ private slots:
 protected:
 	void hideEvent(QHideEvent *event);	//!< Catch hide events
 	void closeEvent(QCloseEvent *event);
-	//void changeEvent(QEvent *event);
+	void changeEvent(QEvent *event);
 private:
 	void createActions();	//!< Create Actions (for menus)
 	void createMenus();		//!< Create Menus
