@@ -118,12 +118,12 @@ void SwitchBoardEngine::socketReadyRead()
 				QStringList listpeers = list[1].split(";");
 				for(int i = 0 ; i < listpeers.size() - 1; i++) {
 					QStringList liststatus = listpeers[i].split(":");
-					m_window->updatePeer("(" + liststatus[0] + ")" + liststatus[1], liststatus[2]);
+					m_window->updatePeer(liststatus[0] + "/" + liststatus[1], liststatus[2]);
 				}
 				b = true;
 			} else if(list[0] == QString("update")) {
 				QStringList liststatus = list[1].split(":");
-				m_window->updatePeer("(" + liststatus[0] + ")" + liststatus[1], liststatus[2]);
+				m_window->updatePeer(liststatus[0] + "/" + liststatus[1], liststatus[2]);
 				b = true;
 
 			} else if(list[0] == QString("asterisk")) {
@@ -135,13 +135,13 @@ void SwitchBoardEngine::socketReadyRead()
 				QStringList listpeers = list[1].split(";");
 				for(int i = 0 ; i < listpeers.size() - 1; i++) {
 					QStringList liststatus = listpeers[i].split(":");
-					m_window->addPeer("(" + liststatus[0] + ")" + liststatus[1], liststatus[2]);
+					m_window->addPeer(liststatus[0] + "/" + liststatus[1], liststatus[2]);
 				}
 			} else if(list[0] == QString("peerremove")) {
 				QStringList listpeers = list[1].split(";");
 				for(int i = 0 ; i < listpeers.size() - 1; i++) {
 					QStringList liststatus = listpeers[i].split(":");
-					m_window->removePeer("(" + liststatus[0] + ")" + liststatus[1]);
+					m_window->removePeer(liststatus[0] + "/" + liststatus[1]);
 				}
 			}
 		}
@@ -168,23 +168,36 @@ void SwitchBoardEngine::timerEvent(QTimerEvent * event)
 
 void SwitchBoardEngine::originateCall(const QString & src, const QString & dst)
 {
-	m_pendingcommand = "originate " + src + " " + dst;
-	socketConnected();
+	QStringList srcl = src.split("/");
+	QStringList dstl = dst.split("/");
+	if(srcl[0] == dstl[0]) {
+		m_pendingcommand = "originate " + srcl[0] + " " + srcl[1] + " " + dstl[1];
+		socketConnected();
+	} else {
+		emitTextMessage("<" + srcl[0] + "> and <" + dstl[0] + "> are not the same Asterisk !");
+	}
 // 	if(m_socket->state() == QAbstractSocket::UnconnectedState)
 // 		connectSocket();
 }
 
 void SwitchBoardEngine::transferCall(const QString & src, const QString & dst)
 {
-	m_pendingcommand = "transfer " + src + " " + dst;
-	socketConnected();
+	QStringList srcl = src.split("/");
+	QStringList dstl = dst.split("/");
+	if(srcl[0] == dstl[0]) {
+		m_pendingcommand = "transfer " + srcl[0] + " " + srcl[1] + " " + dstl[1];
+		socketConnected();
+	} else {
+		emitTextMessage("<" + srcl[0] + "> and <" + dstl[0] + "> are not the same Asterisk !");
+	}
 // 	if(m_socket->state() == QAbstractSocket::UnconnectedState)
 // 		connectSocket();
 }
 
 void SwitchBoardEngine::hangUp(const QString & peer)
 {
-	m_pendingcommand = "hangup " + peer;
+	QStringList peerl = peer.split("/");
+	m_pendingcommand = "hangup " + peerl[0] + " " + peerl[1];
 	socketConnected();
 // 	if(m_socket->state() == QAbstractSocket::UnconnectedState)
 // 		connectSocket();
