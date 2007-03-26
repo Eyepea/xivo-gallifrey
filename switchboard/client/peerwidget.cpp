@@ -40,6 +40,24 @@ void PeerWidget::setGray()
 	m_statelbl->setPixmap( m_square );
 }
 
+void PeerWidget::setBlue()
+{
+	m_square.fill( Qt::blue );
+	m_statelbl->setPixmap( m_square );
+}
+
+void PeerWidget::setCyan()
+{
+	m_square.fill( Qt::cyan );
+	m_statelbl->setPixmap( m_square );
+}
+
+void PeerWidget::setYellow()
+{
+	m_square.fill( Qt::yellow );
+	m_statelbl->setPixmap( m_square );
+}
+
 void PeerWidget::setOrange()
 {
 	m_square.fill( QColor(255,127,0) );

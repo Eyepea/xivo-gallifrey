@@ -30,7 +30,9 @@ void Peer::updateStatus(const QString & status,
 	if(status == "Ready")
 		m_peerwidget->setGreen();
 	else if(status == "Ringing")
-		m_peerwidget->setOrange();
+		m_peerwidget->setCyan();
+	else if(status == "Calling")
+		m_peerwidget->setYellow();
 	else if(status == "On the phone")
 		m_peerwidget->setRed();
 	else

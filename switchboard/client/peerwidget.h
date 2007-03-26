@@ -21,10 +21,13 @@ protected:
 	void dragMoveEvent(QDragMoveEvent * event);
 	void dropEvent(QDropEvent * event);
 public slots:
-	void setRed();
-	void setGreen();
+	void setBlue();
+	void setCyan();
 	void setGray();
+	void setGreen();
 	void setOrange();
+	void setRed();
+	void setYellow();
 private:
 	QLabel * m_statelbl;
 	QLabel * m_textlbl;
