@@ -28,6 +28,18 @@ void PeerWidget::setRed()
 	m_statelbl->setPixmap( m_square );
 }
 
+void PeerWidget::setBlack()
+{
+	m_square.fill( Qt::black );
+	m_statelbl->setPixmap( m_square );
+}
+
+void PeerWidget::setDarkGreen()
+{
+	m_square.fill( Qt::darkGreen );
+	m_statelbl->setPixmap( m_square );
+}
+
 void PeerWidget::setGreen()
 {
 	m_square.fill( Qt::green );

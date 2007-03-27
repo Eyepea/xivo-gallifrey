@@ -18,6 +18,7 @@ public:
 	void setWidget(PeerWidget * widget) { m_peerwidget = widget; };
 	PeerWidget * getWidget() { return m_peerwidget; };
 	void updateStatus(const QString & status,
+			  const QString & avail,
 			  const QString & corrname);
 private:
 	QString m_ext;
@@ -33,6 +34,7 @@ public:
 	void setEngine(SwitchBoardEngine *);
 	void updatePeer(const QString & ext,
 			const QString & status,
+			const QString & avail,
 			const QString & corrname);
 	//void addPeer(const QString & ext, const QString & status);
 	void removePeer(const QString & ext);

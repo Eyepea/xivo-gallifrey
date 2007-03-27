@@ -24,23 +24,29 @@ Peer::Peer(const Peer & peer)
 }
 
 void Peer::updateStatus(const QString & status,
+			const QString & avail,
 			const QString & corrname)
 {
 //	qDebug() << status;
-	if(status == "Ready")
-		m_peerwidget->setGreen();
-	else if(status == "Ringing")
-		m_peerwidget->setCyan();
-	else if(status == "Calling")
-		m_peerwidget->setYellow();
-	else if(status == "On the phone")
+  if(avail == "doesnotdisturb")
+    m_peerwidget->setBlack();
+  else if(avail == "away")
+    m_peerwidget->setDarkGreen();
+  else if(status == "Ready")
+    m_peerwidget->setGreen();
+  else if(status == "Ringing")
+    m_peerwidget->setCyan();
+  else if(status == "Calling")
+    m_peerwidget->setYellow();
+  else if(status == "On the phone")
 		m_peerwidget->setRed();
-	else
-		m_peerwidget->setGray();
-	if(corrname == "")
-	  m_peerwidget->setToolTip(status);
-	else
-	  m_peerwidget->setToolTip(status + "\n" + corrname);
+  else
+    m_peerwidget->setGray();
+
+  if(corrname == "")
+    m_peerwidget->setToolTip(status);
+  else
+    m_peerwidget->setToolTip(status + "\n" + corrname);
 }
 
 /*
@@ -71,6 +77,7 @@ void SwitchBoardWindow::setEngine(SwitchBoardEngine * engine)
 
 void SwitchBoardWindow::updatePeer(const QString & ext,
                                    const QString & status,
+				   const QString & avail,
 				   const QString & corrname)
 {
 	int i;
@@ -80,7 +87,7 @@ void SwitchBoardWindow::updatePeer(const QString & ext,
 		//		qDebug() << i << m_peerlist[i].ext();
 		if(ext == m_peerlist[i].ext())
 		{
-		  m_peerlist[i].updateStatus(status, corrname);
+		  m_peerlist[i].updateStatus(status, avail, corrname);
 			return;
 		}
 	}
@@ -94,7 +101,7 @@ void SwitchBoardWindow::updatePeer(const QString & ext,
 		m_y++;
 	}
 	peer.setWidget(peerwidget);
-	peer.updateStatus(status, corrname);
+	peer.updateStatus(status, avail, corrname);
 	m_peerlist << peer;
 }
 

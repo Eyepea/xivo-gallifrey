@@ -28,6 +28,8 @@ public slots:
 	void setOrange();
 	void setRed();
 	void setYellow();
+	void setBlack();
+	void setDarkGreen();
 private:
 	QLabel * m_statelbl;
 	QLabel * m_textlbl;
