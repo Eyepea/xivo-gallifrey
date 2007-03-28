@@ -4,9 +4,10 @@ require_once(XIVO_PATH_LIBS.XIVO_SEP_DIR.'service'.XIVO_SEP_DIR.'ipbx'.XIVO_SEP_
 
 class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 {
-	var $_dso		= null;
-	var $_name		= 'extensions';
-	var $_filter		= null;
+	var $_dso	= null;
+	var $_name	= 'extensions';
+	var $_filter	= null;
+	var $_origin	= null;
 
 	function xivo_service_asterisk_extensions(&$sre,&$dso)
 	{
@@ -35,10 +36,37 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 
 	function get($id,$disable=null)
 	{
+		$r = false;
+
 		if(($id = xivo_uint($id)) === 0 || ($r = $this->_dso->get($id,$disable)) === false)
-			return(false);
+			return($r);
+
+		$this->_origin = $r;
 
 		$r['commented'] = (bool) $r['commented'];
+
+		return($r);
+	}
+
+	function add_origin()
+	{
+		return($this->_origin('add'));
+	}
+
+	function edit_origin()
+	{
+		return($this->_origin('edit'));
+	}
+
+	function _origin($type)
+	{
+		if(($type !== 'add' && $type !== 'edit') === true || is_array($this->_origin) === false)
+			return(false);
+
+		if($type === 'add')
+			$r = $this->add($this->_origin,$this->_origin['id']);
+		else
+			$r = $this->edit($this->_origin['id'],$this->_origin);
 
 		return($r);
 	}

@@ -12,7 +12,6 @@ class xivo_service_asterisk_generalsip extends xivo_service_asterisk_staticconf
 
 	function xivo_service_asterisk_generalsip(&$sre,&$dso)
 	{
-
 		if(is_object($sre) === false)
 			trigger_error('Invalid service in '.__CLASS__,E_USER_ERROR);
 

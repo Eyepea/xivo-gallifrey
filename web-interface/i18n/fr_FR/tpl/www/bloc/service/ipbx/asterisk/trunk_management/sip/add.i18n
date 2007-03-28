@@ -1,6 +1,18 @@
 ; title_content_name
 Interconnexion SIP > Ajouter
 
+; smenu_general
+Général
+
+; smenu_register
+Enregistrement
+
+; smenu_codecs
+Codecs
+
+; smenu_advanced
+Avancé
+
 ; fm_trunk_name
 Nom :
 
@@ -49,20 +61,26 @@ Invite :
 ; fm_trunk_insecure
 Authentification :
 
+; fm_codec-custom
+Personnaliser :
+
 ; fm_trunk_codec-disallow
-Codecs désactivés :
+Désactiver :
 
 ; fm_trunk_codec-allow
-Codecs activés :
+Activer :
 
-; fm_bt-incodec
+; bt-upcodec
+Haut
+
+; bt-downcodec
+Bas
+
+; bt-incodec
 Ajouter ->
 
-; fm_bt-outcodec
+; bt-outcodec
 <- Enlever
-
-; fm_bt-save
-Sauvegarder
 
 ; fm_register
 Enregistrement :
@@ -84,3 +102,6 @@ Port :
 
 ; fm_register_contact
 Contact :
+
+; fm_bt-save
+Sauvegarder

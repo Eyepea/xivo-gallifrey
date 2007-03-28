@@ -144,9 +144,17 @@ class xivo_session_sqlite
 		return(true);
 	}
 
-	function gc($t)
+	function gc($t=0)
 	{
 		$this->_dso->delete($this->_param['table'],'expire < strftime(\'%s\',datetime(\'now\',\'utc\'))');
+		return(true);
+	}
+
+	function write_close()
+	{
+		$this->gc();
+		session_write_close();
+
 		return(true);
 	}
 }

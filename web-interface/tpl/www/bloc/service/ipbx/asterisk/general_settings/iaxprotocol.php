@@ -1,5 +1,7 @@
 <?php
 	$form = &$this->get_module('form');
+	$url = &$this->get_module('url');
+
 	$element = $this->vars('element');
 ?>
 <div class="b-infos b-form">
@@ -45,23 +47,34 @@
 
 <?=$form->slt(array('desc' => $this->bbf('fm_codec-disallow'),'name' => 'disallow','id' => 'it-disallow','key' => false),array('all'),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';" disabled="disabled"');?>
 
-		<div id="codeclist" class="fm-field"><label id="lb-codeclist" for="it-codeclist"><?=$this->bbf('fm_codec-allow')?></label><br />
-			<div>
+<div id="codeclist" class="fm-field"><p><label id="lb-codeclist" for="it-codeclist"><?=$this->bbf('fm_codec-allow')?></label></p>
+	<div>
+
 		<?=$form->slt(array('name' => 'codeclist','label' => false,'id' => 'it-codeclist','key_val' => 'id','multiple' => true,'size' => 5,'field' => false,'key' => false),$element['allow']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"')?>
-			</div>
-			<div id="inout-codec">
-		<?=$form->button(array('name' => 'incodec','id' => 'it-bt-incodec','value' => $this->bbf('fm_bt-incodec')),'onclick="xivo_fm_move_selected(\'it-codeclist\',\'it-codec\');"')?>
-		<?=$form->button(array('name' => 'outcodec','id' => 'it-bt-outcodec','value' => $this->bbf('fm_bt-outcodec')),'onclick="xivo_fm_move_selected(\'it-codec\',\'it-codeclist\');"');?>
-			</div>
-			<div id="select-codec" class="txt-left">
+
+	</div>
+	<div id="inout-codec">
+
+		<a href="#" onclick="xivo_fm_move_selected('it-codeclist','it-codec'); return(false);" title="<?=$this->bbf('bt-incodec')?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt-incodec'),'id="bt-incodec" border="0"');?></a><br />
+
+		<a href="#" onclick="xivo_fm_move_selected('it-codec','it-codeclist'); return(false);" title="<?=$this->bbf('bt-outcodec')?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt-outcodec'),'id="bt-outcodec" border="0"');?></a>
+
+	</div>
+	<div id="select-codec" class="txt-left">
+
 		<?=$form->slt(array('name' => 'allow[]','label' => false,'id' => 'it-codec','multiple' => true,'size' => 5,'field' => false,'key' => false),$this->varra('info','allow'),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
-				<div id="updown-codec" class="txt-left">
-			<?=$form->button(array('name' => 'upcodec','id' => 'it-bt-upcodec','value' => '&uarr;','schars' => true),'onclick="xivo_fm_order_selected(\'it-codec\',1);"')?>
-			<?=$form->button(array('name' => 'downcodec','id' => 'it-bt-downcodec','value' => '&darr;','schars' => true),'onclick="xivo_fm_order_selected(\'it-codec\',-1);"');?>
-				</div>
-			</div>
+
+		<div id="updown-codec" class="txt-left">
+
+			<a href="#" onclick="xivo_fm_order_selected('it-codec',1); return(false);" title="<?=$this->bbf('bt-upcodec')?>"><?=$url->img_html('img/site/button/row-up.gif',$this->bbf('bt-upcodec'),'id="bt-upcodec" border="0"');?></a><br />
+
+			<a href="#" onclick="xivo_fm_order_selected('it-codec',-1); return(false);" title="<?=$this->bbf('bt-downcodec')?>"><?=$url->img_html('img/site/button/row-down.gif',$this->bbf('bt-downcodec'),'id="bt-downcodec" border="0"');?></a>
+
 		</div>
-		<div class="clearboth"></div>
+	</div>
+</div>
+<div class="clearboth"></div>
+
 		<?=$form->submit(array('name' => 'submit','id' => 'it-submit','value' => $this->bbf('fm_bt-save')));?>
 </form>
 	</div>

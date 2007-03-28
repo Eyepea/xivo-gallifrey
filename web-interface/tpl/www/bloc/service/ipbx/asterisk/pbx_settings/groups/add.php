@@ -20,7 +20,7 @@
 	if(xivo_ak('ringseconds',$queue_elt) === true):
 ?>
 <p class="fm-field">
-<label id="lb-queue-ringseconds" for="it-queue-ringseconds"><?=$this->bbf('fm_queue_ringseconds');?></label>
+<label id="lb-queue-ringseconds" for="it-queue-ringseconds"><span class="fm-desc"><?=$this->bbf('fm_queue_ringseconds');?></span></label>
 <select name="queue[ringseconds]" id="it-queue-ringseconds" onfocus="this.className='it-mfocus';" onblur="this.className='it-mblur';">
 <?php
 		$nb = count($queue_elt['ringseconds']);

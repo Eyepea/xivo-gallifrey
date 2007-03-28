@@ -26,14 +26,40 @@ do
 		break;
 	}
 
-	if($qmember->delete_by_interface($interface) === false)
+	$localexten_where = array();
+	$localexten_where['exten'] = $info['ufeatures']['number'];
+	$localexten_where['app'] = 'Macro';
+	$localexten_where['appdata'] = 'superuser';
+
+	if($info['protocol']['context'] === '')
+		$localexten_where['context'] = 'local-extensions';
+	else
+		$localexten_where['context'] = $info['protocol']['context'];
+
+	if(($info['extensions'] = $extensions->get_where($localexten_where)) !== false
+	&& $extensions->delete($info['extensions']['id']) === false)
 	{
 		$protocol->add_origin();
 		$ufeatures->add_origin();
 		break;
 	}
 
-	if(($info['extensions'] = $extensions->get_where(array('exten' => $info['ufeatures']['number'],'app' => $interface))) !== false)
+	if($qmember->delete_by_interface($interface) === false)
+	{
+		$protocol->add_origin();
+		$ufeatures->add_origin();
+
+		if($info['extensions'] !== false)
+			$extensions->add_origin();
+		break;
+	}
+
+	$hints_where = array();
+	$hints_where['context'] = 'hints';
+	$hints_where['exten'] = $info['ufeatures']['number'];
+	$hints_where['app'] = $interface;
+
+	if(($info['extensions'] = $extensions->get_where($hints_where)) !== false)
 		$extensions->delete($info['extensions']['id']);
 
 	if(($info['usergroup'] = $ugroup->get_by_user($info['ufeatures']['id'])) !== false)

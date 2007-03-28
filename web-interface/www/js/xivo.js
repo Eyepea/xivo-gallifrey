@@ -74,6 +74,16 @@ var xivo_conf = new Array();
 xivo_conf['attrib'] = new Array();
 xivo_conf['eid'] = new Array();
 
+var xivo_smenu = new Array();
+xivo_smenu['click'] = new Array();
+xivo_smenu['click']['id'] = '';
+xivo_smenu['click']['class'] = '';
+xivo_smenu['bak'] = new Array();
+xivo_smenu['before'] = new Array();
+xivo_smenu['before']['id'] = '';
+xivo_smenu['before']['class'] = '';
+xivo_smenu['display'] = '';
+
 var xivo_dprog = new Array();
 xivo_dprog['current'] = new Array();
 xivo_dprog['bak'] = new Array();
@@ -199,7 +209,6 @@ function xivo_chg_attrib(name,id,type,link)
 			if(typeof(ref_elem['switch']) != 'undefined' && xivo_is_array(ref_elem['switch']) == true
 			&& typeof(ref_elem['switch'][type]) != 'undefined' && typeof(ref_elem['switch_var']) != 'undefined')
 			{
-
 				if(ref_elem['switch_var'] == ref_elem['switch'][type])
 					type = ref_elem['switch_var'];
 
@@ -227,7 +236,7 @@ function xivo_chg_attrib(name,id,type,link)
 
 				for(i = 0;i < aproperties.length;i++)
 				{
-					properties = aproperties[i].replace(/\s/g,'');
+					properties = aproperties[i];
 
 					if(properties.length == 0)
 						continue;
@@ -285,7 +294,8 @@ function xivo_chg_attrib(name,id,type,link)
 					xivo_chg_attrib(name,ref_elem['link'][i][0],ref_elem['link'][i][1],nlink);
 				}
 			}
-			else xivo_chg_attrib(name,ref_elem['link'],type,2);
+			else
+				xivo_chg_attrib(name,ref_elem['link'],type,2);
 		}
 	}
 }
@@ -587,7 +597,7 @@ function xivo_substr(str,beg,end)
 
 	return(r);
 }
-
+/*
 function xivo_fm_select_to_text()
 {
 	toto = xivo_eid('it-trunk-host');
@@ -595,7 +605,7 @@ function xivo_fm_select_to_text()
 	tutu = xivo_eid('tutu');
 	tutu.type = 'text';
 }
-
+*/
 function xivo_fm_unshift_pop_opt_select(from,text,value,chk,num)
 {
 	if((from = xivo_eid(from)) == false || (from.type != 'select-one' && from.type != 'select-multiple') == true)
@@ -640,4 +650,145 @@ function xivo_clone(obj)
 	}
 	
 	return(r);
+}
+
+function xivo_smenu_click(obj,cname,part,last)
+{
+	if(xivo_is_undef(obj.id) == true || obj.id == '' || xivo_smenu['click']['id'] == obj.id)
+		return(false);
+
+	last = Boolean(last) != false ? true : false;
+
+	var disobj = click = before = '';
+	var num = 0;
+	var id = obj.id;
+
+	if(xivo_smenu['display'] != '' && (disobj = xivo_eid(xivo_smenu['display'])) != false)
+		disobj.style.display = 'none';
+
+	if((disobj = xivo_eid(part)) != false)
+	{
+		xivo_smenu['display'] = part;
+		disobj.style.display = 'block';
+	}
+
+	if(xivo_smenu['click']['id'] != '' && (click = xivo_eid(xivo_smenu['click']['id'])) != false)
+		click.className = xivo_smenu['click']['class'];
+
+	if(xivo_is_undef(xivo_smenu['bak'][id]) == false)
+	{
+		xivo_smenu['click']['id'] = id;
+		xivo_smenu['click']['class'] = xivo_smenu['bak'][id];
+	}
+
+	if(xivo_smenu['before']['id'] != '' && (before = xivo_eid(xivo_smenu['before']['id'])) != false)
+		before.className = xivo_smenu['before']['class'];
+
+	var rs = id.match(/^([a-z0-9-_]*)(\d+)$/i);
+
+	if(rs != null)
+	{
+		var vid = rs[1];
+		var num = Number(rs[2]);
+		var nid = vid+(num-1);
+		var get = '';
+
+		if(num > 1 && (get = xivo_eid(nid)) != false)
+		{
+			if(xivo_is_undef(xivo_smenu['bak'][nid]) == true)
+				xivo_smenu['bak'][nid] = get.className;
+
+			xivo_smenu['before']['id'] = nid;
+			xivo_smenu['before']['class'] = get.className;
+			get.className = cname+'-before';
+		}
+		else
+			xivo_smenu['before']['id'] = xivo_smenu['before']['class'] = '';
+	}
+
+	obj.className = last == false ? cname : cname+'-last';
+}
+
+function xivo_smenu_out(obj,cname,last)
+{
+	if(xivo_is_undef(obj.id) == true || obj.id == '' || xivo_smenu['click']['id'] == obj.id)
+		return(false);
+
+	var num = 0;
+	var id = obj.id;
+
+	last = Boolean(last) != false ? true : false;
+
+	if(last == true)
+	{
+		obj.className = cname+'-last';
+		return(true);
+	}
+
+	var rs = id.match(/^([a-z0-9-_]*)(\d+)$/i);
+
+	if(rs != null)
+	{
+		var vid = rs[1];
+		var num = Number(rs[2]);
+		var nid = vid+(num+1);
+
+		if(xivo_smenu['click']['id'] == nid)
+		{
+			obj.className = cname+'-before';
+			return(true);
+		}
+	}
+
+	obj.className = cname;
+
+	return(true);
+}
+
+function xivo_smenu_over(obj,cname,last)
+{
+	if(xivo_is_undef(obj.id) == true || obj.id == '' || xivo_smenu['click']['id'] == obj.id)
+		return(false);
+
+	var num = 0;
+	var id = obj.id;
+
+	if(xivo_is_undef(xivo_smenu['bak'][id]) == true)
+		xivo_smenu['bak'][id] = obj.className;
+
+	last = Boolean(last) != false ? true : false;
+
+	if(last == true)
+	{
+		obj.className = cname+'-last';
+		return(true);
+	}
+
+	var rs = id.match(/^([a-z0-9-_]*)(\d+)$/i);
+
+	if(rs != null)
+	{
+		var vid = rs[1];
+		var num = Number(rs[2]);
+		var nid = vid+(num+1);
+
+		if(xivo_smenu['click']['id'] == nid)
+		{
+			obj.className = cname+'-before';
+			return(true);
+		}
+	}
+
+	obj.className = cname;
+
+	return(true);
+}
+
+function xivo_menu_active()
+{
+	var xivo_menu_active = 'mn-'+xivo_ctrl_path_info.replace(/\//g,'--');
+	xivo_menu_active = xivo_menu_active.replace(/_/g,'-');
+
+	if((xivo_menu_active = xivo_eid(xivo_menu_active)) != false)
+		xivo_menu_active.className = 'mn-active';
 }

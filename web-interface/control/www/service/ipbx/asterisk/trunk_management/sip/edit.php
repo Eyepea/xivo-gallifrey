@@ -6,13 +6,14 @@ if(isset($_QR['id']) === false
 	xivo_go($_HTML->url('service/ipbx/trunk_management/sip'),'act=list');
 
 $id = $info['trunk']['id'];
-$registerid = $info['tfeatures']['registerid'];
+$registerid = (int) $info['tfeatures']['registerid'];
 
 $generalsip = &$ipbx->get_module('generalsip');
 
 $gregister = $generalsip->get($info['tfeatures']['registerid']);
 
 $info['register'] = array();
+$register_active = false;
 
 if(is_array($gregister) === true && isset($gregister['var_val']) === true)
 {
@@ -48,12 +49,12 @@ do
 	do
 	{
 		$info['register'] = array();
-		$registeractive = xivo_ak('register-active',$_QR,true);
 
-		if($registeractive === '1'
-		&& xivo_issa('register',$_QR) === true
-		&& isset($_QR['register']['username'],$_QR['register']['password'],$_QR['register']['host']) === false)
+		if(xivo_issa('register',$_QR) === false
+		|| isset($_QR['register']['username'],$_QR['register']['password'],$_QR['register']['host']) === false)
 			break;
+
+		$register_active = true;
 
 		if(($info['register']['username'] = $generalsip->chk_value('register_username',$_QR['register']['username'])) === false
 		|| ($info['register']['password'] = $generalsip->chk_value('register_password',$_QR['register']['password'])) === false
@@ -90,17 +91,17 @@ do
 	if($trunksip->edit($id,$result['trunk']) === false)
 		break;
 
-	if($registeractive !== '1' && $registerid !== 0)
+	if($register_active === false && $registerid !== 0)
 		$generalsip->disable($registerid);
 	else if($register !== '')
 	{
 		if($registerid === 0)
 		{
-			if(($registerid = $generalsip->add_name_val('register',$register)) === false)
+			if(($registerid = $generalsip->add_name_val('register',$register,0,false)) === false)
 				$registerid = 0;
 		}
 		else
-			$generalsip->edit_name_val($registerid,'register',$register);
+			$generalsip->edit_name_val($registerid,'register',$register,false);
 	}
 
 	$info['tfeatures']['registerid'] = $registerid;

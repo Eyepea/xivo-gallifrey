@@ -56,7 +56,7 @@ Contexte :
 Musique d'attente :
 
 ; fm_checkmwi
-Vérification de la boîte vocale :
+Vérification de la messagerie vocale :
 
 ; fm_videosupport
 Support vidéo :
@@ -70,10 +70,16 @@ Codecs désactivés :
 ; fm_codec-allow
 Codecs activés :
 
-; fm_bt-incodec
+; bt-upcodec
+Haut
+
+; bt-downcodec
+Bas
+
+; bt-incodec
 Ajouter ->
 
-; fm_bt-outcodec
+; bt-outcodec
 <- Enlever
 
 ; fm_bt-save

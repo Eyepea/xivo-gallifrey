@@ -197,7 +197,7 @@ class xivo_filter
 		}
 		else
 		{
-			if(function_exists($func,$value) === false)
+			if(function_exists($func) === false)
 				return(false);
 		}
 
@@ -209,9 +209,26 @@ class xivo_filter
 		if(is_array($arr) === false)
 			return(false);
 
-		$arr = array_flip($arr);
+		return(in_array($value,$arr));
+	}
 
-		return(array_key_exists($value,$arr));
+	function chk_unarray_value($arr,$value)
+	{
+		if(is_array($arr) === false || is_array($value) === false)
+			return(false);
+
+		$value = array_values($value);
+
+		if(($nb = count($value)) === 0)
+			return(null);
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			if(in_array($value[$i],$arr) === true)
+				return(false);
+		}
+		
+		return(true);
 	}
 
 	function chk_array_value($arr,$value)
@@ -220,14 +237,13 @@ class xivo_filter
 			return(false);
 
 		$value = array_values($value);
-		$arr = array_flip($arr);
 
 		if(($nb = count($value)) === 0)
 			return(null);
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			if(isset($arr[$value[$i]]) === false)
+			if(in_array($value[$i],$arr) === false)
 				return(false);
 		}
 		
@@ -256,7 +272,18 @@ class xivo_filter
 
 		if(isset($arr['arrvalue']) === true)
 		{
-			if($this->chk_array_value($arr['arrvalue'],$value) !== true)
+			if($this->chk_array_value($arr['arrvalue'],$value) === false)
+			{
+				$this->_mk_err($key,'invalid value');
+				return(false);
+			}
+
+			return($value);
+		}
+
+		if(isset($arr['unarrvalue']) === true)
+		{
+			if($this->chk_array_value($arr['unarrvalue'],$value) === false)
 			{
 				$this->_mk_err($key,'invalid value');
 				return(false);
@@ -274,6 +301,15 @@ class xivo_filter
 			}
 
 			return($value);
+		}
+
+		if(isset($arr['unarrkey']) === true)
+		{
+			if($this->chk_key_value($arr['unarrkey'],$value) === true)
+			{
+				$this->_mk_err($key,'invalid value');
+				return(false);
+			}
 		}
 
 		if(isset($arr['notag']) === false)

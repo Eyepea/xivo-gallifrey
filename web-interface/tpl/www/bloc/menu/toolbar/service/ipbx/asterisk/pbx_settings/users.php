@@ -27,7 +27,5 @@
 </div><a href="#" onmouseover="xivo_eid('advanced-menu').style.display = 'block';" onmouseout="xivo_eid('advanced-menu').style.display = 'none';"><?=$url->img_html('img/menu/top/toolbar/bt-more.gif',$this->bbf('toolbar_opt_advanced'),'border="0"')?></a>
 
 <?php
-	elseif($act === 'add' || $act === 'edit'):
-		echo '<a href="#" onclick="xivo_eid(\'advanced\').style.display = xivo_eid(\'advanced\').style.display == \'block\' ? \'none\' : \'block\'; return(false);">',$url->img_html('img/menu/top/toolbar/bt-more.gif',$this->bbf('toolbar_opt_advanced'),'border="0"'),'</a>';
 	endif;
 ?>

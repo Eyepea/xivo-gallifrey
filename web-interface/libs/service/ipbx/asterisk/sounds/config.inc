@@ -8,7 +8,6 @@ $array['option']['dir']['name'] = '/^[a-z0-9_-]{1,50}$/i';
 
 $array['option']['file'] = array();
 $array['option']['file']['name'] = '/^[a-z0-9_-]{1,50}\.(wav|gsm)$/i';
-$array['option']['file']['size'] = 2000000;
 $array['option']['file']['extension'] = array();
 $array['option']['file']['extension']['wav'] = true;
 $array['option']['file']['extension']['gsm'] = array('application/octet-stream','audio/x-gsm');

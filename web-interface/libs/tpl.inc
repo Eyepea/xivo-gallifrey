@@ -523,6 +523,9 @@ class xivo_tpl
 			}
 		}
 
+		$this->set_option('ctrl_path_info',$path);
+		$this->set_option('ctrl_section_info',$section);
+
 		$dir = XIVO_SEP_DIR.trim($section.XIVO_SEP_DIR.$path,XIVO_SEP_DIR).'.'.$ext;
 
 		$r = xivo_file::is_f_r($this->get_option('control_path').$dir);

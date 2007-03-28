@@ -32,7 +32,7 @@
 <table cellspacing="0" cellpadding="0" border="0">
 	<tr class="sb-top">
 		<th class="th-left xspan"><span class="span-left">&nbsp;</span></th>
-		<th class="th-center"><?=$this->bbf('col_callerid');?></th>
+		<th class="th-center"><?=$this->bbf('col_fullname');?></th>
 		<th class="th-center"><?=$this->bbf('col_protocol');?></th>
 		<th class="th-center"><?=$this->bbf('col_username');?></th>
 		<th class="th-center"><?=$this->bbf('col_phone');?></th>
@@ -61,11 +61,17 @@
 				$icon = 'enable';
 			endif;
 
+			if(xivo_empty($ref['ufeatures']['firstname']) === true && xivo_empty($ref['ufeatures']['lastname']) === true):
+				$fullname = '-';
+			else:
+				$fullname = $ref['ufeatures']['firstname'].' '.$ref['ufeatures']['lastname'];
+			endif;
+
 			$mod = $i % 2 === 0 ? 1 : 2;
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=$mod?>on2">
 		<td class="td-left"><?=$form->checkbox(array('name' => 'users['.$ref['ufeatures']['protocol'].'][]','value' => $ref['protocol']['id'],'label' => false,'id' => 'it-users-'.$i,'checked' => false,'field' => false));?></td>
-		<td class="txt-left"><label for="it-users-<?=$i?>" id="lb-users-<?=$i?>"><?=$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"');?><?=$ref['protocol']['callerid']?></label></td>
+		<td class="txt-left"><label for="it-users-<?=$i?>" id="lb-users-<?=$i?>"><?=$url->img_html('img/site/phone/'.$icon.'.gif',null,'class="icons-list"');?><?=$fullname?></label></td>
 		<td><?=$ref['ufeatures']['protocol']?></td>
 		<td><?=$ref['protocol']['name']?></td>
 		<td><?=(xivo_empty($ref['ufeatures']['number']) === false ? $ref['ufeatures']['number'] : '-')?></td>

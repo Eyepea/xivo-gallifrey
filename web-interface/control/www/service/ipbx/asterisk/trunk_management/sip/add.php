@@ -5,15 +5,15 @@ do
 	if(isset($_QR['fm_send']) === false || xivo_issa('trunk',$_QR) === false)
 		break;
 
-	$register = false;
+	$register = '';
 	$generalsip = &$ipbx->get_module('generalsip');
 
 	do
 	{
 		$info['register'] = array();
 
-		if(xivo_issa('register',$_QR) === true
-		&& isset($_QR['register']['username'],$_QR['register']['password'],$_QR['register']['host']) === false)
+		if(xivo_issa('register',$_QR) === false
+		|| isset($_QR['register']['username'],$_QR['register']['password'],$_QR['register']['host']) === false)
 			break;
 
 		if(($info['register']['username'] = $generalsip->chk_value('register_username',$_QR['register']['username'])) === false
@@ -53,7 +53,7 @@ do
 	if(($tid = $trunksip->add($result['trunk'])) === false)
 		break;
 
-	if($register !== false && ($registerid = $generalsip->add_name_val('register',$register)) === false)
+	if($register !== '' && ($registerid = $generalsip->add_name_val('register',$register,0,false)) === false)
 		$registerid = 0;
 
 	$info['tfeatures'] = array();

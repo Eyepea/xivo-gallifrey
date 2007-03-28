@@ -108,6 +108,27 @@ class xivo_service_asterisk_userfeatures_sqlite
 
 		return($r);
 	}
+
+	function get_search($value)
+	{
+		$r = false;
+
+		$value = $this->_dso->escape_string($value);
+
+		$rs = $this->_dso->query('SELECT id FROM '.$this->_param['table'].
+		' WHERE firstname LIKE \'%'.$value.'%\' OR lastname LIKE \'%'.$value.'%\''.
+		' OR number LIKE \'%'.$value.'%\'');
+
+		if($rs !== false)
+		{
+			$r = array();
+
+			while($rw = $this->_dso->fetch_assoc($rs))
+				$r[] = $rw['id'];
+		}
+
+		return($r);
+	}
 }
 
 ?>

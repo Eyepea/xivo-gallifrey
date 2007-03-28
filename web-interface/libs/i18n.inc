@@ -265,7 +265,8 @@ class xivo_i18n
 				$r = (string) $babelfish[$namespace][$name];
 
 				if(empty($value) === false)
-					$r = vsprintf($r,$value);
+					$r = vsprintf(xivo_printf_strip($r,count($value)),$value);
+
 				break;
 		}
 

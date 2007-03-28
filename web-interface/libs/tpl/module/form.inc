@@ -210,9 +210,6 @@ class xivo_tpl_form extends xivo_tpl_module
 
 		$r = &$this->_render;
 
-		if($this->_param['desc'] !== false && is_array($this->_param['desc']) === false)
-			$r .= (string) $this->_param['desc'];
-
 		$r .= '<input type="'.$this->_param['type'].'" name="'.$this->_param['name'].'"';
 
 		if($this->_param['id'] !== false)
@@ -462,14 +459,7 @@ class xivo_tpl_form extends xivo_tpl_module
 
 		$r .= (isset($o{0}) === true ? ' '.$o : '').'>'.$this->_param['value'].'</textarea>'."\n";
 
-		if($this->_param['desc'] !== false)
-		{
-			if(is_array($this->_param['desc']) === false)
-				$this->_render = (string) $this->_param['desc'].$this->_render;
-			else
-				$this->_mk_desc();
-		}
-
+		$this->_mk_desc();
 		$this->_mk_label();
 		$this->_mk_field();
 
@@ -503,16 +493,26 @@ class xivo_tpl_form extends xivo_tpl_module
 
 	function _mk_desc()
 	{
-		if(is_array($this->_param['desc']) === false)
+		if($this->_param['desc'] === false)
 			return(false);
 
-		if(isset($this->_param['desc'][0],$this->_param['desc'][1]) === true)
+		if(is_scalar($this->_param['desc']) === true)
+		{
+			$this->_render = '<span class="fm-desc">'.(string) $this->_param['desc'].'</span>'.$this->_render;	
+			return(null);
+		}
+
+		if(is_array($this->_param['desc']) === true && isset($this->_param['desc'][0],$this->_param['desc'][1]) === true)
 		{
 			$this->_mk_field();
+
+			$this->_param['desc'][1] = '<span class="fm-desc">'.(string) $this->_param['desc'][1].'</span>';
+
 			if(isset($this->_param['desc'][2]) === false)
 				$this->_render = sprintf((string) $this->_param['desc'][0],$this->_mk_label($this->_param['desc'][1]),$this->_render);
 			else
 				$this->_render = sprintf((string) $this->_param['desc'][0],$this->_render,$this->_mk_label($this->_param['desc'][1]));
+
 			$this->_param['label'] = $this->_param['field'] = false;
 		}
 	}
@@ -533,9 +533,9 @@ class xivo_tpl_form extends xivo_tpl_module
 		if($this->_param['id'] !== false)
 			$r .= ' id="'.$this->_param['id'].'"';
 
-		if($this->_param['multiple'] !== false)
+		if($this->_param['multiple'] === true)
 		{
-			$r .= ' multiple="'.$this->_param['multiple'].'"';
+			$r .= ' multiple="multiple"';
 
 			if($this->_param['size'] !== false)
 				$r .= ' size="'.$this->_param['size'].'"';
@@ -567,14 +567,7 @@ class xivo_tpl_form extends xivo_tpl_module
 
 		$r .= '</select>';
 
-		if($this->_param['desc'] !== false)
-		{
-			if(is_array($this->_param['desc']) === false)
-				$this->_render = (string) $this->_param['desc'].$this->_render;
-			else
-				$this->_mk_desc();
-		}
-
+		$this->_mk_desc();
 		$this->_mk_label();
 		$this->_mk_field();
 

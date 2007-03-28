@@ -137,6 +137,14 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 
 		return($this->_dso->delete($id));
 	}
+
+	function get_search($value)
+	{
+		if(($r = $this->_dso->get_search($value)) !== false && isset($r[0]) === false)
+			$r = false;
+
+		return($r);
+	}
 }
 
 ?>

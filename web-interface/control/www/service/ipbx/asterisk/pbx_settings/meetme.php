@@ -8,41 +8,80 @@ $mfeatures = &$ipbx->get_module('meetmefeatures');
 
 $result = $info = array();
 
+$meetme_val = '';
+
 switch($act)
 {
 	case 'add':
 		$musiconhold = &$ipbx->get_module('musiconhold');
+		$extensions = &$ipbx->get_module('extensions');
 
 		if(($moh_list = $musiconhold->get_all_category()) !== false)
 			ksort($moh_list);
 
-		if(isset($_QR['fm_send']) === true)
+		do
 		{
-			do
+			if(isset($_QR['fm_send']) === false || xivo_issa('meetme',$_QR) === false || xivo_issa('mfeatures',$_QR) === false)
+				break;
+
+			if($moh_list === false || isset($_QR['mfeatures']['musiconhold'],$moh_list[$_QR['mfeatures']['musiconhold']]) === false)
+				$_QR['mfeatures']['musiconhold'] = '';
+
+			if(($result['meetme'] = $meetme->chk_values($_QR['meetme'],true,true)) !== false)
 			{
-				if(xivo_issa('meetme',$_QR) === false || xivo_issa('mfeatures',$_QR) === false)
-					break;
+				$meetme_val = $result['meetme']['number'].',';
 
-				if($moh_list === false || isset($_QR['mfeatures']['musiconhold'],$moh_list[$_QR['mfeatures']['musiconhold']]) === false)
-					$_QR['mfeatures']['musiconhold'] = '';
+				if($result['meetme']['pin'] !== '')
+					$meetme_val .= $result['meetme']['pin'];
 
-				if(($mid = $meetme->add($_QR['meetme'])) === false)
-					break;
+				if($result['meetme']['admpin'] !== '')
+					$meetme_val .= ','.$result['meetme']['admpin'];
 
-				$_QR['mfeatures']['number'] = $_QR['meetme']['number'];
-				$_QR['mfeatures']['meetmeid'] = $mid;
+				$meetme_val = rtrim($meetme_val,',');
+			}
 
-				if(($result['mfeatures'] = $mfeatures->chk_values($_QR['mfeatures'],true,true)) !== false
-				&& $mfeatures->add($result['mfeatures']) !== false)
-					break;
+			if($result['meetme'] === false || ($mid = $meetme->add($meetme_val)) === false)
+			{
+				$info['meetme'] = $meetme->get_filter_result();
+				break;
+			}
 
+			$_QR['mfeatures']['number'] = $result['meetme']['number'];
+			$_QR['mfeatures']['meetmeid'] = $mid;
+
+			if(($result['mfeatures'] = $mfeatures->chk_values($_QR['mfeatures'],true,true)) === false
+			|| $mfeatures->add($result['mfeatures']) === false)
+			{
 				$info['mfeatures'] = $mfeatures->get_filter_result();
 				$meetme->delete($mid);
+				break;
 			}
-			while(false);
+
+			if($result['meetme']['number'] !== '')
+			{
+				$local_exten = array();
+				$local_exten['exten'] = $result['meetme']['number'];
+				$local_exten['priority'] = 1;
+				$local_exten['app'] = 'Macro';
+				$local_exten['appdata'] = 'supermeetme';
+
+				if($result['mfeatures']['context'] === '')
+					$local_exten['context'] = 'local-extensions';
+				else
+					$local_exten['context'] = $result['mfeatures']['context'];
+
+				if(($result['local_exten'] = $extensions->chk_values($local_exten,true,true)) === false
+				|| ($local_extenid = $extensions->add($result['local_exten'])) === false)
+				{
+					$meetme->delete($mid);
+					$mfeatures->delete($gid);
+					break;
+				}
+			}
 
 			xivo_go($_HTML->url('service/ipbx/pbx_settings/meetme'),'act=list');
 		}
+		while(false);
 
 		$_HTML->assign('info',$info);
 		$_HTML->assign('moh_list',$moh_list);
@@ -50,6 +89,7 @@ switch($act)
 		break;
 	case 'edit':
 		$musiconhold = &$ipbx->get_module('musiconhold');
+		$extensions = &$ipbx->get_module('extensions');
 
 		if(($moh_list = $musiconhold->get_all_category()) !== false)
 			ksort($moh_list);
@@ -61,39 +101,105 @@ switch($act)
 		|| ($info['mfeatures'] = $mfeatures->get_by_meetme($info['meetme']['id'])) === false)
 			xivo_go($_HTML->url('service/ipbx/pbx_settings/meetme'),'act=list');
 
-		if(isset($_QR['fm_send']) === true)
+		do
 		{
-			do
+			if(isset($_QR['fm_send']) === false || xivo_issa('meetme',$_QR) === false || xivo_issa('mfeatures',$_QR) === false)
+				break;
+
+			if($moh_list === false || isset($_QR['mfeatures']['musiconhold'],$moh_list[$_QR['mfeatures']['musiconhold']]) === false)
+				$_QR['mfeatures']['musiconhold'] = '';
+
+			if(($result['meetme'] = $meetme->chk_values($_QR['meetme'],true,true)) !== false)
 			{
-				if(xivo_issa('meetme',$_QR) === false || xivo_issa('mfeatures',$_QR) === false)
-					break;
+				$meetme_val = $result['meetme']['number'].',';
 
-				if($moh_list === false || isset($_QR['mfeatures']['musiconhold'],$moh_list[$_QR['mfeatures']['musiconhold']]) === false)
-					$_QR['mfeatures']['musiconhold'] = '';
+				if($result['meetme']['pin'] !== '')
+					$meetme_val .= $result['meetme']['pin'];
 
-				if($meetme->edit($info['meetme']['id'],$_QR['meetme']) === false)
-					break;
+				if($result['meetme']['admpin'] !== '')
+					$meetme_val .= ','.$result['meetme']['admpin'];
 
-				$_QR['mfeatures']['number'] = $_QR['meetme']['number'];
-				$_QR['mfeatures']['meetmeid'] = $info['mfeatures']['meetmeid'];
-
-				if(($result['mfeatures'] = $mfeatures->chk_values($_QR['mfeatures'],true,true)) !== false
-				&& $mfeatures->edit($info['mfeatures']['id'],$result['mfeatures']) !== false)
-					break;
-
-				$info['mfeatures'] = array_merge($info['mfeatures'],$mfeatures->get_filter_result());
-				$meetme->edit_origin();
+				$meetme_val = rtrim($meetme_val,',');
 			}
-			while(false);
+
+			if($result['meetme'] === false || $meetme->edit($info['meetme']['id'],$meetme_val) === false)
+			{
+				$info['meetme'] = $meetme->get_filter_result();
+				break;
+			}
+
+			$_QR['mfeatures']['number'] = $result['meetme']['number'];
+			$_QR['mfeatures']['meetmeid'] = $info['meetme']['id'];
+
+			if(($result['mfeatures'] = $mfeatures->chk_values($_QR['mfeatures'],true,true)) === false
+			|| $mfeatures->edit($info['mfeatures']['id'],$result['mfeatures']) === false)
+			{
+				$info['mfeatures'] = $mfeatures->get_filter_result();
+				$meetme->edit_origin();
+				break;
+			}
+
+			$exten_where = array();
+			$exten_where['exten'] = $info['meetme']['number'];
+			$exten_where['app'] = 'Macro';
+			$exten_where['appdata'] = 'supermeetme';
+
+			if($info['mfeatures']['context'] === '')
+				$exten_where['context'] = 'local-extensions';
+			else
+				$exten_where['context'] = $info['mfeatures']['context'];
+
+			if(($info['extensions'] = $extensions->get_where($exten_where)) !== false)
+			{
+				$local_exten = $info['extensions'];
+				$local_exten['exten'] = $result['meetme']['number'];
+
+				if($result['mfeatures']['context'] === '')
+					$local_exten['context'] = 'local-extensions';
+				else
+					$local_exten['context'] = $result['mfeatures']['context'];
+
+				if($result['meetme']['number'] === '')
+					$extensions->delete($info['extensions']['id']);
+				else if(($result['local_exten'] = $extensions->chk_values($local_exten,true,true)) === false
+				|| $extensions->edit($info['extensions']['id'],$result['local_exten']) === false)
+				{
+					$meetme->edit_origin();
+					$mfeatures->edit_origin();
+					break;
+				}
+			}
+			else if($result['meetme']['number'] !== '')
+			{
+				$local_exten = $exten_where;
+				$local_exten['exten'] = $result['meetme']['number'];
+				$local_exten['priority'] = 1;
+
+				if($result['mfeatures']['context'] === '')
+					$local_exten['context'] = 'local-extensions';
+				else
+					$local_exten['context'] = $result['mfeatures']['context'];
+
+				if(($result['local_exten'] = $extensions->chk_values($local_exten,true,true)) === false
+				|| ($local_extenid = $extensions->add($result['local_exten'])) === false)
+				{
+					$meetme->edit_origin();
+					$mfeatures->edit_origin();
+					break;
+				}
+			}
 
 			xivo_go($_HTML->url('service/ipbx/pbx_settings/meetme'),'act=list');
 		}
+		while(false);
 
 		$_HTML->assign('info',$info);
 		$_HTML->assign('moh_list',$moh_list);
 		$_HTML->assign('mfeatures_elt',$mfeatures->get_element());
 		break;
 	case 'delete':
+		$extensions = &$ipbx->get_module('extensions');
+
 		$info = array();
 
 		if(isset($_QR['id']) === false
@@ -101,15 +207,33 @@ switch($act)
 		|| ($info['mfeatures'] = $mfeatures->get_by_meetme($info['meetme']['id'])) === false)
 			xivo_go($_HTML->url('service/ipbx/pbx_settings/meetme'),'act=list&page='.$page);
 
+		$exten_where = array();
+		$exten_where['exten'] = $info['meetme']['number'];
+		$exten_where['app'] = 'Macro';
+		$exten_where['appdata'] = 'supermeetme';
+
+		if($info['mfeatures']['context'] === '')
+			$exten_where['context'] = 'local-extensions';
+		else
+			$exten_where['context'] = $info['mfeatures']['context'];
+
 		do
 		{
 			if($meetme->delete($info['meetme']['id']) === false)
 				break;
 
-			if($mfeatures->delete($info['mfeatures']['id']) === true)
+			if($mfeatures->delete($info['mfeatures']['id']) === false)
+			{
+				$meetme->add_origin();
 				break;
+			}
 
-			$meetme->add_origin();
+			if(($info['extensions'] = $extensions->get_where($exten_where)) !== false
+			&& $extensions->delete($info['extensions']['id']) === false)
+			{
+				$meetme->add_origin();
+				$mfeatures->add_origin();
+			}
 		}
 		while(false);
 
@@ -142,7 +266,12 @@ switch($act)
 		xivo_go($_HTML->url('service/ipbx/pbx_settings/meetme'),'act=list&page='.$page);
 		break;
 	case 'deletes':
-		$info = array();
+		$extensions = &$ipbx->get_module('extensions');
+
+		$info = $exten_where = array();
+
+		$exten_where['app'] = 'Macro';
+		$exten_where['appdata'] = 'supermeetme';
 
 		do
 		{
@@ -163,10 +292,25 @@ switch($act)
 				if($meetme->delete($info['meetme']['id']) === false)
 					continue;
 
-				if($mfeatures->delete($info['mfeatures']['id']) === true)
+				if($mfeatures->delete($info['mfeatures']['id']) === false)
+				{
+					$meetme->add_origin();
 					continue;
+				}
 
-				$meetme->add_origin();
+				$exten_where['exten'] = $info['meetme']['number'];
+
+				if($info['mfeatures']['context'] === '')
+					$exten_where['context'] = 'local-extensions';
+				else
+					$exten_where['context'] = $info['mfeatures']['context'];
+
+				if(($info['extensions'] = $extensions->get_where($exten_where)) !== false
+				&& $extensions->delete($info['extensions']['id']) === false)
+				{
+					$meetme->add_origin();
+					$mfeatures->add_origin();
+				}
 			}
 		}
 		while(false);

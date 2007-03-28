@@ -5,6 +5,7 @@ $gfeatures = &$ipbx->get_module('groupfeatures');
 $extensions = &$ipbx->get_module('extensions');
 $musiconhold = &$ipbx->get_module('musiconhold');
 $ugroup = &$ipbx->get_module('usergroup');
+$voicemail = &$ipbx->get_module('uservoicemail');
 
 if(($moh_list = $musiconhold->get_all_category()) !== false)
 	ksort($moh_list);
@@ -13,7 +14,9 @@ $result = $info = array();
 
 do
 {
-	if(isset($_QR['fm_send']) === false || xivo_issa('protocol',$_QR) === false || xivo_issa('ufeatures',$_QR) === false
+	if(isset($_QR['fm_send']) === false
+	|| xivo_issa('protocol',$_QR) === false
+	|| xivo_issa('ufeatures',$_QR) === false
 	|| isset($_QR['protocol']['protocol']) === false
 	|| ($protocol = &$ipbx->get_protocol_module($_QR['protocol']['protocol'])) === false)
 		break;
@@ -21,7 +24,7 @@ do
 	if($moh_list === false || isset($_QR['ufeatures']['musiconhold'],$moh_list[$_QR['ufeatures']['musiconhold']]) === false)
 		$_QR['ufeatures']['musiconhold'] = '';
 		
-	if(xivo_ak('codec-active',$_QR,true) !== '1' || xivo_issa('allow',$_QR['protocol']) === false)
+	if(xivo_issa('allow',$_QR['protocol']) === false)
 		unset($_QR['protocol']['allow'],$_QR['protocol']['disallow']);
 
 	if(($result['protocol'] = $protocol->chk_values($_QR['protocol'],true,true)) === false)
@@ -46,6 +49,39 @@ do
 		$info['ufeatures'] = $ufeatures->get_filter_result();
 		$protocol->delete($pid);
 		break;
+	}
+
+	if($result['ufeatures']['number'] !== '')
+	{
+		$local_exten = array();
+		$local_exten['exten'] = $result['ufeatures']['number'];
+		$local_exten['priority'] = 1;
+		$local_exten['app'] = 'Macro';
+		$local_exten['appdata'] = 'superuser';
+
+		if($result['protocol']['context'] === '')
+			$local_exten['context'] = 'local-extensions';
+		else
+			$local_exten['context'] = $result['protocol']['context'];
+
+		if(($result['local_exten'] = $extensions->chk_values($local_exten,true,true)) === false
+		|| ($local_extenid = $extensions->add($result['local_exten'])) === false)
+		{
+			$protocol->delete($pid);
+			$ufeatures->delete($uid);
+			break;
+		}
+
+		$callerid = $result['protocol']['callerid'].' <'.$result['ufeatures']['number'].'>';
+
+		if(($callerid = $protocol->set_chk_value('callerid',$callerid)) === false
+		|| $protocol->edit($pid,array('callerid' => $callerid)) === false)
+		{
+			$protocol->delete($pid);
+			$ufeatures->delete($uid);
+			$extensions->delete($local_extenid);
+			break;	
+		}
 	}
 
 	// while waiting protocol[mailbox]
@@ -125,13 +161,13 @@ do
 	}
 	while(false);
 
-	if(xivo_ak('voicemail-active',$_QR,true) === '1'
-	&& xivo_issa('voicemail',$_QR) === true
-	&& $result['ufeatures']['number'] !== '')
+	if($result['ufeatures']['number'] !== '' && xivo_issa('voicemail',$_QR) === true)
 	{
-		$voicemail = &$ipbx->get_module('uservoicemail');
 		$_QR['voicemail']['mailbox'] = $result['ufeatures']['number'];
-		$voicemail->add($_QR['voicemail']);
+
+		if(($result['voicemail'] = $voicemail->chk_values($_QR['voicemail'],true,true)) === false
+		|| $voicemail->add($result['voicemail']) === false)
+			$info['voicemail'] = $voicemail->get_filter_result();
 	}
 
 	xivo_go($_HTML->url('service/ipbx/pbx_settings/users'),'act=list');
@@ -165,6 +201,7 @@ $_HTML->assign('group_list',$group_list);
 $_HTML->assign('protocol',$ipbx->get_protocol());
 $_HTML->assign('protocol_elt',$protocol_elt);
 $_HTML->assign('ufeatures_elt',$ufeatures->get_element());
+$_HTML->assign('voicemail_elt',$voicemail->get_element());
 $_HTML->assign('moh_list',$moh_list);
 
 $dhtml = &$_HTML->get_module('dhtml');

@@ -61,14 +61,15 @@ $array['exten']['fwdbusy']['_line'][] = array('priority' => 6,'app' => 'Playback
 $array['exten']['fwdbusy']['_line'][] = array('priority' => 7,'app' => 'Hangup');
 
 $array['exten']['recsnd'] = array();
-$array['exten']['recsnd']['app'] = 'Wait';
+$array['exten']['recsnd']['app'] = 'Set';
 $array['exten']['recsnd']['appdata'] = 1;
-$array['exten']['recsnd']['_line'][] = array('priority' => 1);
-$array['exten']['recsnd']['_line'][] = array('priority' => 2,'app' => 'Set','appdata' => 'ROOT=/usr/share/asterisk/sounds/web-interface/recordings');
-$array['exten']['recsnd']['_line'][] = array('priority' => 3,'app' => 'Record','appdata' => '${ROOT}/${CALLERID(num)}:wav');
-$array['exten']['recsnd']['_line'][] = array('priority' => 4,'app' => 'Wait');
-$array['exten']['recsnd']['_line'][] = array('priority' => 5,'app' => 'Playback','appdata' => '${ROOT}/${CALLERID(num)}');
-$array['exten']['recsnd']['_line'][] = array('priority' => 6,'app' => 'Hangup','appdata' => '');
+$array['exten']['recsnd']['_line'][] = array('priority' => 1,'app' => 'Wait');
+$array['exten']['recsnd']['_line'][] = array('priority' => 2,'appdata' => 'ROOT=/usr/share/asterisk/sounds/web-interface/recordings');
+$array['exten']['recsnd']['_line'][] = array('priority' => 3,'appdata' => 'FILE=${CALLERID(num)}-${EPOCH}');
+$array['exten']['recsnd']['_line'][] = array('priority' => 4,'app' => 'Record','appdata' => '${ROOT}/${FILE}:wav');
+$array['exten']['recsnd']['_line'][] = array('priority' => 5,'app' => 'Wait');
+$array['exten']['recsnd']['_line'][] = array('priority' => 6,'app' => 'Playback','appdata' => '${ROOT}/${FILE}');
+$array['exten']['recsnd']['_line'][] = array('priority' => 7,'app' => 'Hangup','appdata' => '');
 
 $array['exten']['enablevm'] = array();
 $array['exten']['enablevm']['priority'] = 1;

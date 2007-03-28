@@ -21,6 +21,8 @@ if(($moh_list = $musiconhold->get_all_category()) !== false)
 $info['voicemail'] = $voicemail->get_by_mailbox($info['protocol']['mailbox']);
 $info['usergroup'] = $ugroup->get_by_user($info['ufeatures']['id']);
 
+$localexten_status = false;
+
 do
 {
 	if(isset($_QR['fm_send']) === false || xivo_issa('protocol',$_QR) === false || xivo_issa('ufeatures',$_QR) === false)
@@ -29,7 +31,7 @@ do
 	if($moh_list === false || isset($_QR['ufeatures']['musiconhold'],$moh_list[$_QR['ufeatures']['musiconhold']]) === false)
 		$_QR['ufeatures']['musiconhold'] = '';
 
-	if(xivo_ak('codec-active',$_QR,true) !== '1' || xivo_issa('allow',$_QR['protocol']) === false)
+	if(xivo_issa('allow',$_QR['protocol']) === false)
 		unset($_QR['protocol']['allow'],$_QR['protocol']['disallow']);
 
 	if($info['ufeatures']['protocol'] !== $_QR['protocol']['protocol'])
@@ -83,6 +85,117 @@ do
 		break;
 	}
 
+	$exten_where = array();
+	$exten_where['exten'] = $info['ufeatures']['number'];
+	$exten_where['app'] = 'Macro';
+	$exten_where['appdata'] = 'superuser';
+
+	if($info['protocol']['context'] === '')
+		$exten_where['context'] = 'local-extensions';
+	else
+		$exten_where['context'] = $info['protocol']['context'];
+
+	$info['extensions'] = $extensions->get_where($exten_where);
+
+	if($result['ufeatures']['number'] === '')
+	{
+		if($info['ufeatures']['number'] !== '')
+		{
+			$callerid = preg_replace('/<'.preg_quote($info['ufeatures']['number']).'>$/','',$result['protocol']['callerid']);
+			$protocol->edit($pid,array('callerid' => trim($callerid)));
+
+			if($info['extensions'] !== false && $extensions->delete($info['extensions']['id']) !== false)
+				$localexten_status = 'delete';
+		}
+	}
+	else
+	{
+		if($info['extensions'] === false)
+		{
+			$local_exten = $exten_where;
+			$local_exten['exten'] = $result['ufeatures']['number'];
+			$local_exten['priority'] = 1;
+
+			if($result['protocol']['context'] === '')
+				$local_exten['context'] = 'local-extensions';
+			else
+				$local_exten['context'] = $result['protocol']['context'];
+
+			if(($result['local_exten'] = $extensions->chk_values($local_exten,true,true)) === false
+			|| ($local_extenid = $extensions->add($result['local_exten'])) === false)
+			{
+				$ufeatures->edit_origin();
+
+				if($chg_protocol === true)
+					$protocol->delete($pid);
+				else
+					$protocol->edit_origin();
+				break;
+			}
+
+			$localexten_status = 'add';
+		}
+		else
+		{
+			$local_exten = $info['extensions'];
+			$local_exten['exten'] = $result['ufeatures']['number'];
+
+			if($result['protocol']['context'] === '')
+				$local_exten['context'] = 'local-extensions';
+			else
+				$local_exten['context'] = $result['protocol']['context'];
+
+			if(($result['local_exten'] = $extensions->chk_values($local_exten,true,true)) === false
+			|| $extensions->edit($info['extensions']['id'],$result['local_exten']) === false)
+			{
+				$ufeatures->edit_origin();
+
+				if($chg_protocol === true)
+					$protocol->delete($pid);
+				else
+					$protocol->edit_origin();
+				break;
+			}
+
+			$localexten_status = 'edit';
+		}
+
+		if($info['ufeatures']['number'] === '')
+			$callerid = $result['protocol']['callerid'];
+		else
+		{
+			$callerid = preg_replace('/<'.preg_quote($info['ufeatures']['number']).'>$/','',$result['protocol']['callerid']);
+			$callerid = trim($callerid);
+		}
+
+		$callerid .= ' <'.$result['ufeatures']['number'].'>';
+
+		if(($callerid = $protocol->set_chk_value('callerid',$callerid)) === false
+		|| $protocol->edit($pid,array('callerid' => $callerid)) === false)
+		{
+			$ufeatures->edit_origin();
+
+			switch($localexten_status)
+			{
+				case 'add':
+					$extensions->delete($local_extenid);
+					break;
+				case 'edit':
+					$extensions->edit_origin();
+					break;
+				case 'delete':
+					$extensions->add_origin();
+					break;
+			}
+
+			if($chg_protocol === true)
+				$protocol->delete($pid);
+			else
+				$protocol->edit_origin();
+			break;
+		}
+	}
+
 	if($chg_protocol === true)
 		$old_protocol->delete($info['protocol']['id']);
 
@@ -99,19 +212,33 @@ do
 		
 		$new_interface = $ipbx->mk_interface($result['ufeatures']['protocol'],$result['protocol']['name']);
 
-		if($new_interface !== false
-		&& ($info['extensions'] = $extensions->get_where(array('exten' => $info['ufeatures']['number'],'app' => $interface))) !== false)
+		if($new_interface !== false)
 		{
-			if($result['ufeatures']['number'] === '')
-				$extensions->delete($extenid);
-			else
+			$exten_where = array();
+			$exten_where['context'] = 'hints';
+			$exten_where['exten'] = $info['ufeatures']['number'];
+			$exten_where['app'] = $interface;
+
+			if(($info['extensions'] = $extensions->get_where($exten_where)) !== false)
 			{
 				$hints = $info['extensions'];
 				$hints['exten'] = $result['ufeatures']['number'];
 				$hints['app'] = $new_interface;
 
-				if(($result['hints'] = $extensions->chk_values($hints,true,true)) !== false)
+				if($result['ufeatures']['number'] === '')
+					$extensions->delete($info['extensions']['id']);
+				else if(($result['hints'] = $extensions->chk_values($hints,true,true)) !== false)
 					$extensions->edit($info['extensions']['id'],$result['hints']);
+			}
+			else if($result['ufeatures']['number'] !== '')
+			{
+				$hints = $exten_where;
+				$hints['exten'] = $result['ufeatures']['number'];
+				$hints['priority'] = -1;
+				$hints['app'] = $new_interface;
+
+				if(($result['hints'] = $extensions->chk_values($hints,true,true)) !== false)
+					$extensions->add($result['hints']);
 			}
 		}
 
@@ -203,22 +330,24 @@ do
 	{
 		if($result['ufeatures']['number'] === '')
 			$voicemail->delete($info['voicemail']['id']);
-		else if(xivo_ak('voicemail-active',$_QR,true) !== '1')
+		else if(xivo_issa('voicemail',$_QR) === false)
+			$voicemail->disable($info['voicemail']['id'],true);
+		else
 		{
-			$info['voicemail']['commented'] = 1;
-			$voicemail->edit($info['voicemail']['id'],$info['voicemail']);
-		}
-		else if(xivo_issa('voicemail',$_QR) === true)
-		{
-			$_QR['voicemail']['id'] = $info['voicemail']['id'];
 			$_QR['voicemail']['mailbox'] = $result['ufeatures']['number'];
-			$voicemail->edit($info['voicemail']['id'],$_QR['voicemail']);
+
+			if(($result['voicemail'] = $voicemail->chk_values($_QR['voicemail'],true,true)) === false
+			|| $voicemail->edit($info['voicemail']['id'],$result['voicemail'],false) === false)
+				$info['voicemail'] = array_merge($info['voicemail'],$voicemail->get_filter_result());
 		}
 	}
-	else if($result['ufeatures']['number'] !== '')
+	else if($result['ufeatures']['number'] !== '' && xivo_issa('voicemail',$_QR) === true)
 	{
 		$_QR['voicemail']['mailbox'] = $result['ufeatures']['number'];
-		$voicemail->add($_QR['voicemail']);
+
+		if(($result['voicemail'] = $voicemail->chk_values($_QR['voicemail'],true,true)) === false
+		|| $voicemail->add($result['voicemail']) === false)
+			$info['voicemail'] = $voicemail->get_filter_result();
 	}
 
 	xivo_go($_HTML->url('service/ipbx/pbx_settings/users'),'act=list');
@@ -293,14 +422,13 @@ if(xivo_issa('allow',$protocol_elt['iax']) === true && xivo_issa('value',$protoc
 }
 
 $_HTML->assign('ract',$act);
-$_HTML->assign('ufeatures',$ufeatures);
-$_HTML->assign('voicemail',$voicemail);
 $_HTML->assign('info',$info);
 $_HTML->assign('protocol',$ipbx->get_protocol());
 $_HTML->assign('group_list',$group_list);
 $_HTML->assign('group',$group);
 $_HTML->assign('protocol_elt',$protocol_elt);
 $_HTML->assign('ufeatures_elt',$ufeatures->get_element());
+$_HTML->assign('voicemail_elt',$voicemail->get_element());
 $_HTML->assign('moh_list',$moh_list);
 
 $dhtml = &$_HTML->get_module('dhtml');

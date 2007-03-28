@@ -45,45 +45,37 @@ class xivo_service_asterisk extends xivo_service_abstract
 		
 		if(empty($protocols) === true)
 			$protocols = array_keys($this->_conf['protocol']);
-			
-		if(($arr = xivo_get_aks($protocols)) === false)
-			return($r);
-
-		$r = $info = array();
+		else
+			$protocols = array_values($protocols);
 
 		$ufeatures = &$this->get_module('userfeatures');
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		$r = $info = array();
+
+		switch($action)
 		{
-			$k = $arr['keys'][$i];
-			$v = $protocols[$k];
-
-			if(($protocol = &$this->get_protocol_module($v)) === false)
-				continue;
-
-			switch($action)
-			{
-				case 'search':
-					$rs = $protocol->get_search($opts,$disable);
-					break;
-				case 'list':
-				default:
-					$rs = $protocol->get_list($disable);
-			}
-
-			if($rs === false || ($nb = count($rs)) === 0)
-				continue;
-
-			for($j = 0;$j < $nb;$j++)
-			{
-				if(($info['ufeatures'] = $ufeatures->get_by_protocol($rs[$j],$v)) === false
-				|| ($info['protocol'] = $protocol->get($rs[$j])) === false)
-					continue;
-
-				$r[] = $info;
-			}
+			case 'search':
+				$rs = $ufeatures->get_search($opts);
+				break;
+			case 'list':
+			default:
+				$rs = $ufeatures->get_list();
 		}
 
+		if($rs === false || ($nb = count($rs)) === 0)
+			return(false);
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			if(($info['ufeatures'] = $ufeatures->get($rs[$i])) === false
+			|| in_array($info['ufeatures']['protocol'],$protocols) === false
+			|| ($protocol = &$this->get_protocol_module($info['ufeatures']['protocol'])) === false
+			|| ($info['protocol'] = $protocol->get($info['ufeatures']['protocolid'],$disable)) === false)
+				continue;
+
+			$r[] = $info;
+		}
+			
 		if(isset($r[0]) === false)
 			$r = false;
 

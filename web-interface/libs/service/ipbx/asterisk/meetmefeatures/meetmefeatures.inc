@@ -45,7 +45,7 @@ class xivo_service_asterisk_meetmefeatures extends xivo_service_asterisk_abstrac
 
 	function _origin($type)
 	{
-		if(($type === 'add' && $type === 'edit') === true || is_array($this->_origin) === false)
+		if(($type !== 'add' && $type !== 'edit') === true || is_array($this->_origin) === false)
 			return(false);
 
 		if($type === 'add')

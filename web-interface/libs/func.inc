@@ -1,20 +1,26 @@
 <?php
 
-function xivo_get_memory_limit()
+function xivo_get_memory($value,$name=true)
 {
-	$r = false;
+	$get_name = strtolower((string) $value);
+	$name = (bool) $name;
+
+	if($name === true &&
+	($get_name === 'memory_limit' || $get_name === 'post_max_size' || $get_name === 'upload_max_filesize') === true)
+		$mem = ini_get($get_name);
+	else
+		$mem = strtoupper($value);
 
 	$arr = array('K' => 1024, 'M' => 1048576);
-	$mem = ini_get('memory_limit');
 
-	$len = strlen($mem);
-	$mema = substr($mem,0,$len-1);
-	$type = substr($mem,$len,1);
+	$type = substr($mem,-1,1);
 
-	if(is_numeric($memory_limit) === true)
+	if(xivo_digit($mem) !== false)
 		$r = $mem;
 	else if(isset($arr[$type]) === true)
-		$r = $mema * $arr[$type];
+		$r = substr($mem,0,strlen($mem)-1) * $arr[$type];
+	else
+		$r = false;
 
 	return($r);
 }
@@ -794,11 +800,34 @@ function xivo_date_interval($dbeg)
 	return($r);
 }
 
-function xivo_str_usort($a,$b)
+function xivo_printf_strip($format,$argc=0)
 {
-	xivo_print_r($a);
-	die();
-	return(strcmp(strtolower($a['callerid']),strtolower($b['callerid'])));
+	$format = (string) $format;
+	$argc = xivo_uint($argc);
+
+	if(preg_match_all('/%+/',$format,$match,PREG_OFFSET_CAPTURE) === 0)
+		return($format);
+
+	$j = $k = 0;
+
+	$match = $match[0];
+	$nb = count($match);
+
+	for($i = 0;$i < $nb;$i++)
+	{
+		if(strlen($match[$i][0]) % 2 === 0)
+			continue;
+
+		if($argc <= $j)
+		{
+			$format = substr($format,0,$match[$i][1]+$k).'%'.substr($format,$match[$i][1]+$k);
+			$k++;
+		}
+
+		$j++;
+	}
+
+	return($format);
 }
 
 function xivo_uncompress(&$data,$level=6)

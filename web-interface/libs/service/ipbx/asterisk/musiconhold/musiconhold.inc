@@ -24,9 +24,29 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 		if($this->_chk_mohpath() === false)
 			trigger_error('Invalid or missing music on hold path in '.$this->_sre->get_type().' init file',E_USER_ERROR);
 
+		$_CF = &xivo_gat::get('_CF');
+
+		if($_CF['xivo']['ini']['file_uploads'] !== true)
+			trigger_error('file_uploads php.ini directive is set at "false"',E_USER_ERROR);
+
 		$this->_load_config();
 
 		$this->_set_element_default('directory',$this->_mohpath);
+
+		if(($size = $this->_get_option_file_maxsize()) === false)
+		{
+			$upload = xivo_get_memory('upload_max_filesize');
+
+			if($upload < $size)
+			{
+				trigger_error('file max size in configuration file shoud be less than '.
+					      'upload_max_filesize php.ini directive',E_USER_ERROR);
+			}
+
+			$size = $upload;
+		}
+
+		$this->_conf['option']['file']['size'] = $size;
 	}
 
 	function _chk_mohpath()
@@ -36,6 +56,16 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 		|| isset($this->_sre->_ini['general']['path']['musiconhold']) === false
 		|| ($this->_mohpath = xivo_file::is_d_rwx($this->_sre->_ini['general']['path']['musiconhold'])) === false)
 			return(false);
+	}
+
+	function _get_option_file_maxsize()
+	{
+		if(($option = $this->get_option_value('file')) === false
+		|| isset($option['size']) === false
+		|| ($option['size'] = xivo_get_memory($option['size'],false)) === false)
+			return(false);
+	
+		return($option['size']);	
 	}
 
 	function _get_option_dir_name()

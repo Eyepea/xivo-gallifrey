@@ -6,6 +6,8 @@ class xivo_service_asterisk_uservoicemail extends xivo_service_asterisk_abstract
 {
 	var $_dso	= null;
 	var $_name	= 'uservoicemail';
+	var $_filter	= null;
+	var $_origin	= null;
 
 	function xivo_service_asterisk_uservoicemail(&$sre,&$dso)
 	{
@@ -17,12 +19,20 @@ class xivo_service_asterisk_uservoicemail extends xivo_service_asterisk_abstract
 
 		$this->_sre = &$sre;
 		$this->_dso = &$dso;
+
+		$this->_load_config();
 	}
 
 	function get($id,$disable=null)
 	{
+		$r = false;
+
+		$disable = $disable !== null ? (bool) $disable : null;
+
 		if(($id = xivo_uint($id)) === 0 || ($r = $this->_dso->get($id,$disable)) === false)
-			return(false);
+			return($r);
+
+		$this->_origin = $r;
 
 		$r['commented'] = (bool) $r['commented'];
 
@@ -31,10 +41,33 @@ class xivo_service_asterisk_uservoicemail extends xivo_service_asterisk_abstract
 
 	function get_by_mailbox($mailbox,$disable=null)
 	{
-		if(($mailbox = xivo_uint($mailbox)) === 0 || ($id = $this->_dso->get_by_mailbox($mailbox)) === false)
+		if(($mailbox = xivo_digit($mailbox)) === false || ($id = $this->_dso->get_by_mailbox($mailbox)) === false)
 			return(false);
 
 		return($this->get($id,$disable));
+	}
+
+	function add_origin()
+	{
+		return($this->_origin('add'));
+	}
+
+	function edit_origin()
+	{
+		return($this->_origin('edit'));
+	}
+
+	function _origin($type)
+	{
+		if(($type !== 'add' && $type !== 'edit') === true || is_array($this->_origin) === false)
+			return(false);
+
+		if($type === 'add')
+			$r = $this->add($this->_origin,$this->_origin['id']);
+		else
+			$r = $this->edit($this->_origin['id'],$this->_origin);
+
+		return($r);
 	}
 
 	function add($arr,$id=0)
@@ -42,38 +75,31 @@ class xivo_service_asterisk_uservoicemail extends xivo_service_asterisk_abstract
 		if(is_array($arr) === false)
 			return(false);
 
-		$r = array();
-
 		if(($id = xivo_uint($id)) !== 0)
-			$r['id'] = $id;
+			$arr['id'] = $id;
 
-		$r['fullname'] = $arr['fullname'];
-		$r['password'] = $arr['password'];
-		$r['context'] = 'default';
-		$r['mailbox'] = xivo_uint($arr['mailbox']);
-		$r['email'] = $arr['email'];
-		$r['attach'] = xivo_bool(xivo_ak('attach',$arr,true)) === false ? 'no' : 'yes';
-		$r['delete'] = xivo_bool(xivo_ak('delete',$arr,true)) === true ? 'yes' : 'no';
-
-		return($this->_dso->add($r));
+		return($this->_dso->add($arr));
 	}
 
-	function edit($id,$arr)
+	function edit($id,$arr,$disable=null)
 	{
 		if(($id = xivo_uint($id)) === 0 || is_array($arr) === false)
 			return(false);
 
-		$r = array();
-		$r['fullname'] = $arr['fullname'];
-		$r['password'] = $arr['password'];
-		$r['context'] = 'default';
-		$r['mailbox'] = isset($arr['mailbox']) === true ? xivo_uint($arr['mailbox']) : 0;
-		$r['email'] = isset($arr['email']) === true ? $arr['email'] : '';
-		$r['attach'] = xivo_bool(xivo_ak('attach',$arr,true)) === false ? 'no' : 'yes';
-		$r['delete'] = xivo_bool(xivo_ak('delete',$arr,true)) === true ? 'yes' : 'no';
-		$r['commented'] = xivo_ak('commented',$arr,true) === 1 ? 1 : 0;
+		if($disable !== null)
+			$arr['commented'] = (bool) $disable === false ? 0 : 1;
 
-		return($this->_dso->edit($id,$r));
+		return($this->_dso->edit($id,$arr));
+	}
+
+	function disable($id,$value=false)
+	{
+		if(($id = xivo_uint($id)) === 0)
+			return(false);
+
+		$value = (bool) $value === false ? 0 : 1;
+
+		return($this->_dso->edit($id,array('commented' => $value)));
 	}
 
 	function delete($id)

@@ -67,7 +67,7 @@ $array['filter']['type'] = array('arrkey' => array('peer','user','friend'));
 $array['filter']['notransfer'] = array('bool' => true);
 $array['filter']['trunk'] = array('bool' => true);
 $array['filter']['qualify'] = array('bool' => true);
-$array['filter']['disallow'] = array('arrkey' => array('all'));
+$array['filter']['disallow'] = array('set' => false,'arrkey' => array('all'));
 $array['filter']['allow'] = array('set' => false,'arrvalue' => array('gsm','alaw','ulaw','g729'));
 $array['filter']['port'] = array('set' => false,'between' => array(1,65535));
 $array['filter']['ipaddr'] = array('set' => false);

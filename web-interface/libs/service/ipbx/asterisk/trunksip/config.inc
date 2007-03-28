@@ -90,7 +90,7 @@ $array['filter']['nat'] = array('bool' => true);
 $array['filter']['qualify'] = array('bool' => true);
 $array['filter']['canreinvite'] = array('bool' => true);
 $array['filter']['insecure'] = array('bool' => true);
-$array['filter']['disallow'] = array('arrkey' => array('all'));
+$array['filter']['disallow'] = array('set' => false,'arrkey' => array('all'));
 $array['filter']['allow'] = array('set' => false,'arrvalue' => array('gsm','alaw','ulaw','g729'));
 $array['filter']['port'] = array('set' => false,'between' => array(1,65535));
 $array['filter']['ipaddr'] = array('set' => false);

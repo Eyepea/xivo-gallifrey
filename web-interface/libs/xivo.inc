@@ -189,6 +189,7 @@ class xivo
 	{
 		$this->_conf['xivo']['ini']['safe_mode'] = (bool) ini_get('safe_mode');
 		$this->_conf['xivo']['ini']['enable_dl'] = (bool) ini_get('enable_dl');
+		$this->_conf['xivo']['ini']['file_uploads'] = (bool) ini_get('file_uploads');
 		$this->_conf['xivo']['ini']['extension_dir'] = ini_get('extension_dir');
 
 		define('XIVO_PHP_SAFE',$this->_conf['xivo']['ini']['safe_mode']);

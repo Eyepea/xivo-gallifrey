@@ -11,8 +11,8 @@
 <?=$form->hidden(array('name' => 'cat','value' => 'edit'));?>
 <?=$form->hidden(array('name' => 'fm_send','value' => '1'));?>
 <?=$form->hidden(array('name' => 'id','value' => $info['id']));?>
-<p class="fm-field"><?=$this->bbf('fm_login')?> <?=$info['login']?></p>
-<p class="fm-field"><?=$this->bbf('fm_type')?> <?=$info['meta']?></p>
+<p class="fm-field txt-left"><span class="fm-desc"><?=$this->bbf('fm_login')?></span>&nbsp;<?=$info['login']?></p>
+<p class="fm-field txt-left"><span class="fm-desc"><?=$this->bbf('fm_type')?></span>&nbsp;<?=$info['meta']?></p>
 <?=$form->text(array('desc' => $this->bbf('fm_password'),'name' => 'passwd','id' => 'it-passwd','size' => 25,'value' => $info['passwd']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 <?php
 	if(xivo_user::chk_authorize('admin',$info['meta']) === true):

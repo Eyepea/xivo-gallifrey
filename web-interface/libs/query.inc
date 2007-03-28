@@ -237,7 +237,7 @@ class xivo_query
 		$search = array('@/+@','@^/@','@/$@');
 		$replace = array('/','','');
 
-		if(is_array($arr) === false || empty($arr) === false || isset($_SERVER['PATH_INFO']) === false)
+		if(is_array($arr) === false || empty($arr) === true || isset($_SERVER['PATH_INFO']) === false)
 			return($r);
 
 		$path_info = preg_replace($search,$replace,$_SERVER['PATH_INFO']);

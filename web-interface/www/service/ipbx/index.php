@@ -13,7 +13,9 @@ $dhtml->set_css('css/service/ipbx/'.$service_name.'.css');
 
 $_HTML->load_i18n_file('struct/service/ipbx/'.$service_name);
 
-if(($control = $_HTML->get_control('service/ipbx/'.$service_name,2)) !== false)
+$control = $_HTML->get_control('service/ipbx/'.$service_name,2);
+
+if($control !== false)
 	die(include($control));
 
 $menu = &$_HTML->get_module('menu');

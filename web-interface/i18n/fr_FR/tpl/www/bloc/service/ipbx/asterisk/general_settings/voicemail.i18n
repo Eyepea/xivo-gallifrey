@@ -1,5 +1,5 @@
 ; title_content_name
-Propriétés des boîtes vocales
+Propriétés des messageries vocales
 
 ; fm_maxmessage
 Taille maximum d'un message :
@@ -7,7 +7,7 @@ Taille maximum d'un message :
 ; fm_minmessage
 Taille minimum d'un message :
 
-; fm_maxisilence
+; fm_maxsilence
 Temps maximum de silence :
 
 ; fm_review

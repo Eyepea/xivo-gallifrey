@@ -14,7 +14,7 @@
 
 <?=$form->text(array('desc' => $this->bbf('fm_minmessage'),'name' => 'minmessage','id' => 'it-minmessage','default' => $element['minmessage']['default'],'value' => $this->varra('info','minmessage')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_maxisilence'),'name' => 'maxisilence','id' => 'it-maxisilence','default' => $element['maxisilence']['default'],'value' => $this->varra('info','maxisilence')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_maxsilence'),'name' => 'maxsilence','id' => 'it-maxsilence','default' => $element['maxsilence']['default'],'value' => $this->varra('info','maxsilence')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 <?=$form->checkbox(array('desc' => $this->bbf('fm_review'),'name' => 'review','id' => 'it-review','default' => $element['review']['default'],'checked' => $this->varra('info','review')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
@@ -26,8 +26,8 @@
 
 <?=$form->text(array('desc' => $this->bbf('fm_emailsubject'),'name' => 'emailsubject','id' => 'it-subject','size' => 25,'value' => $this->varra('info','emailsubject')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<div id="emailbody" class="fm-field">
-<?=$form->textarea(array('desc' => $this->bbf('fm_emailbody').'<br />','field' => false,'name' => 'emailbody','id' => 'it-emailbody','cols' => 60,'rows' => 5),$this->varra('info','emailbody'),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<div id="emailbody" class="fm-field"><p><label id="lb-emailbody" for="it-emailbody"><?=$this->bbf('fm_emailbody')?></label></p>
+<?=$form->textarea(array('field' => false,'name' => 'emailbody','id' => 'it-emailbody','cols' => 60,'rows' => 5),$this->varra('info','emailbody'),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 </div>
 
 <?=$form->submit(array('name' => 'submit','id' => 'it-submit','value' => $this->bbf('fm_bt-save')));?>

@@ -52,14 +52,14 @@ $array['element']['host-dynamic']['copy'] = 'host';
 $array['element']['host-dynamic']['unset'] = true;
 
 $array['filter'] = array();
-$array['filter']['callerid'] = array('minlen' => 1,'maxlen' => 80);
+$array['filter']['callerid'] = array('chk' => 2,'maxlen' => 80,'notag' => false);
 $array['filter']['name'] = array('minlen' => 1,'maxlen' => 80);
 $array['filter']['secret'] = array('set' => false,'chk' => 2,'minlen' => 1,'maxlen' => 80);
 $array['filter']['host'] = array('set' => false);
 $array['filter']['amaflags'] = array('arrkey' => array('default','omit','billing','documentation'));
 $array['filter']['accountcode'] = array('chk' => 2,'maxlen' => 20);
 $array['filter']['callgroup'] = array('set' => false,'chk' => 2,'preg' => '/^([0-9]+[,]?)*$/','maxlen' => 10);
-$array['filter']['context'] = array('set' => false,'chk' => 2,'maxlen' => 80);
+$array['filter']['context'] = array('set' => false,'chk' => 2,'unarrkey' => array('general','globals'),'preg' => '/^[a-z0-9_-]+$/','maxlen' => 80);
 $array['filter']['qualify'] = array('bool' => true);
 $array['filter']['disallow'] = array('set' => false,'arrkey' => array('all'));
 $array['filter']['allow'] = array('set' => false,'arrvalue' => array('gsm','alaw','ulaw','g729'));

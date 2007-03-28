@@ -12,8 +12,8 @@ do
 	{
 		$info['register'] = array();
 
-		if(xivo_ak('register-active',$_QR,true) === '1' && xivo_issa('register',$_QR) === true
-		&& isset($_QR['register']['username'],$_QR['register']['password'],$_QR['register']['host']) === false)
+		if(xivo_issa('register',$_QR) === false
+		|| isset($_QR['register']['username'],$_QR['register']['password'],$_QR['register']['host']) === false)
 			break;
 
 		if(($info['register']['username'] = $generaliax->chk_value('register_username',$_QR['register']['username'])) === false

@@ -25,9 +25,10 @@ class xivo_session
 				array(&$this->_dso,'write'),
 				array(&$this->_dso,'destroy'),
 				array(&$this->_dso,'gc'));
+			
+			register_shutdown_function(array(&$this->_dso,'write_close'));
 		}
 
-		register_shutdown_function('session_write_close');
 		session_set_cookie_params(XIVO_SESS_TIME,XIVO_SESS_PATH);
 		session_name(XIVO_SESS_NAME);
 

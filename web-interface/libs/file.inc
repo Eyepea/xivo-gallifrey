@@ -135,9 +135,9 @@ class xivo_file
 		$name = (string) $name;
 		$chk_param = (array) $chk_param;
 
-		if(xivo_issa($name,$_FILES) === false || isset($_FILES[$name]['tmp_name'],
-		$_FILES[$name]['name'],$_FILES[$name]['error'],
-		$_FILES[$name]['type'],$_FILES[$name]['size']) === false)
+		if($this->chk_upload_err($name) === false
+		|| isset($_FILES[$name]['tmp_name'],$_FILES[$name]['name'],
+			$_FILES[$name]['type'],$_FILES[$name]['size']) === false)
 			return($r);
 
 		if(is_uploaded_file($_FILES[$name]['tmp_name']) === false)
@@ -231,22 +231,37 @@ class xivo_file
 		if(xivo_issa($name,$_FILES) === false || isset($_FILES[$name]['error']) === false)
 			return($r);
 
+		if(($upload = xivo_get_memory('upload_max_filesize')) === false)
+			trigger_error('Invalid upload_max_filesize php.ini directive',E_USER_ERROR);
+
+		if(($post = xivo_get_memory('post_max_size')) === false)
+			trigger_error('Invalid post_max_size php.ini directive',E_USER_ERROR);
+
+		if(($mlimit = xivo_get_memory('memory_limit')) === false)
+			trigger_error('Invalid memory_limit php.ini directive',E_USER_ERROR);
+
+		if($post < $upload)
+			trigger_error('post_max_size php.ini directive shoud be less than upload_max_filesize php.ini directive',E_USER_ERROR);
+
+		if($mlimit < $post)
+			trigger_error('memory_limit php.ini directive shoud be less than post_max_size php.ini directive',E_USER_ERROR);
+
 		switch($_FILES[$name]['error'])
 		{
 			case UPLOAD_ERR_OK:
 				$r = true;
 				break;
 			case UPLOAD_ERR_INI_SIZE:
-				trigger_error('Uploaded file exceeds the upload_max_filesize directive',E_USER_WARNING);
+				//trigger_error('Uploaded file exceeds the upload_max_filesize directive',E_USER_WARNING);
 				break;
 			case UPLOAD_ERR_FORM_SIZE:
-				trigger_error('Uploaded file exceeds the MAX_FILE_SIZE directive',E_USER_WARNING);
+				//trigger_error('Uploaded file exceeds the MAX_FILE_SIZE directive',E_USER_WARNING);
 				break;
 			case UPLOAD_ERR_PARTIAL:
-				trigger_error('Uploaded file was only partially uploaded',E_USER_WARNING);
+				//trigger_error('Uploaded file was only partially uploaded',E_USER_WARNING);
 				break;
 			case UPLOAD_ERR_NO_FILE:
-				trigger_error('No file was uploaded',E_USER_WARNING);
+				//trigger_error('No file was uploaded',E_USER_WARNING);
 				break;
 			case UPLOAD_ERR_NO_TMP_DIR:
 				trigger_error('Missing a temporary folder',E_USER_WARNING);

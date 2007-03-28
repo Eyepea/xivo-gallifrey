@@ -22,7 +22,7 @@ $array['element']['name'] = array();
 $array['element']['name']['default'] = '';
 
 $array['filter'] = array();
-$array['filter']['context'] = array('chk' => 2,'minlen' => 0,'maxlen' => 20);
+$array['filter']['context'] = array('preg' => '/^[a-z0-9_-]+$/','chk' => 2,'maxlen' => 20);
 $array['filter']['exten'] = array('minlen' => 1,'maxlen' => 20);
 $array['filter']['priority'] = array('cast' => 'int');
 $array['filter']['app'] = array('minlen' => 1,'maxlen' => 20);

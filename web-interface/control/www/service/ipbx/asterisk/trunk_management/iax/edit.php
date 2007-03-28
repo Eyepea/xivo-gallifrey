@@ -13,6 +13,7 @@ $generaliax = &$ipbx->get_module('generaliax');
 $gregister = $generaliax->get($info['tfeatures']['registerid']);
 
 $info['register'] = array();
+$register_active = false;
 
 if(is_array($gregister) === true && isset($gregister['var_val']) === true)
 {
@@ -47,12 +48,13 @@ do
 
 	do
 	{
-		$registeractive = xivo_ak('register-active',$_QR,true);
+		$info['register'] = array();
 
-		if($registeractive === '1'
-		&& xivo_issa('register',$_QR) === true
-		&& isset($_QR['register']['username'],$_QR['register']['password'],$_QR['register']['host']) === false)
+		if(xivo_issa('register',$_QR) === false
+		|| isset($_QR['register']['username'],$_QR['register']['password'],$_QR['register']['host']) === false)
 			break;
+
+		$register_active = true;
 
 		if(($info['register']['username'] = $generaliax->chk_value('register_username',$_QR['register']['username'])) === false
 		|| ($info['register']['password'] = $generaliax->chk_value('register_password',$_QR['register']['password'])) === false
@@ -89,13 +91,13 @@ do
 	if($trunkiax->edit($id,$result['trunk']) === false)
 		break;
 
-	if($registeractive !== '1' && $registerid !== 0)
+	if($register_active === false && $registerid !== 0)
 		$generaliax->disable($registerid);
 	else if($register !== '')
 	{
 		if($registerid === 0)
 		{
-			if(($registerid = $generaliax->add_name_val('register',$register)) === false)
+			if(($registerid = $generaliax->add_name_val('register',$register,0,false)) === false)
 				$registerid = 0;
 		}
 		else

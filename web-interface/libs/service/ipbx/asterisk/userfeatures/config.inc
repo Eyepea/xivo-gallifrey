@@ -14,6 +14,12 @@ $array['provisioning_id']['iax']['range'] = 100000;
 
 $array['element'] = array();
 
+$array['element']['firstname'] = array();
+$array['element']['firstname']['default'] = '';
+
+$array['element']['lastname'] = array();
+$array['element']['lastname']['default'] = '';
+
 $array['element']['ringseconds'] = array();
 $array['element']['ringseconds']['value'] = array(5,10,15,20,25,30,35,40,45,50,55,60);
 $array['element']['ringseconds']['default'] = 30;
@@ -41,6 +47,8 @@ $array['element']['musiconhold']['default'] = '';
 $array['filter'] = array();
 $array['filter']['protocol'] = array('set' => true);
 $array['filter']['protocolid'] = array('cast' => 'uint');
+$array['filter']['firstname'] = array('chk' => 2,'maxlen' => 128);
+$array['filter']['lastname'] = array('chk' => 2,'maxlen' => 128);
 $array['filter']['name'] = array('minlen' => 1,'maxlen' => 80);
 $array['filter']['number'] = array('set' => false,'chk' => 2,'cast' => 'digit');
 $array['filter']['context'] = array('set' => false);
