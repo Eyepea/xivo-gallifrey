@@ -1,6 +1,9 @@
 #!/usr/bin/python
 # $Id$
 #
+# Author of the Kafiche daemon part : Thomas Bernard
+#
+#
 
 import os, posix, select, socket, string, sys, time
 import random
@@ -22,6 +25,7 @@ port_keepalive = port_login + 1
 port_request = 12347
 session_expiration_time = 60*1
 guserlisturl = 'http://192.168.0.254/service/ipbx/sso.php'
+astname_xivoc = ""
 
 # global : userlist
 # liste des champs :
@@ -68,24 +72,6 @@ def daemonize():
 	os.dup2(dev_null.fileno(), sys.stdin.fileno())
 	os.dup2(dev_null.fileno(), sys.stdout.fileno())
 	os.dup2(dev_null.fileno(), sys.stderr.fileno())
-
-
-##def updateuserlistfromurl(url):
-##	f = urllib.urlopen(url)
-##	try:
-##		for line in f:
-##			# remove leading/tailing whitespaces
-##			line = line.strip()
-##			l = line.split('|')
-##			# line is protocol|phone|password|rightflag
-##			if __debug__:
-##				print 'user', l[0], l[1] , 'password', l[2], 'droit', l[3]
-##			if l[3] == '0':
-##				deluser(l[0]+l[1])
-##			else:
-##				adduser(l[0]+l[1], l[2])
-##	finally:
-##		f.close()
 
 # function to load sso.php user file
 def updateuserlistfromurl(url):
@@ -428,7 +414,7 @@ def manage_connection(connid):
 		try:
 			connid[0].send(build_statuses())
 		except:
-			aa = 0
+			print "warning : there might have been a connection problem"
         elif usefulmsg != "":
             # different cases are treated whether AMIconns was already defined or not
             # ... this part can certainly be improved
@@ -448,28 +434,6 @@ def manage_connection(connid):
 				    for ch in AMIconns[l[1]].readresponse('StatusComplete'):
 					    if ch.has_key('CallerID') and ch['CallerID'] == l[2]:
 						    AMIconns[l[1]].hangup(ch['Channel'])
-
-
-def get_away_etc(cfg, sipnum):
-	try:
-		BAsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		BAsock.connect((cfg.remoteaddr, 12347))
-		BAsock.send("QUERY sip" + sipnum + "\r\n")
-		linestatus = BAsock.recv(bufsize)
-		BAsock.close()
-		if linestatus.find("ERROR USER SESSION EXPIRED") == 0:
-			chtatus = "ERR-EXPIRED"
-		elif linestatus.find("ERROR (exception)") == 0:
-			chtatus = "ERR-EXCEPT"
-		elif linestatus.find("ERROR USER NOT FOUND") == 0:
-			chtatus = "ERR-USER-NOT-FOUND"
-		elif linestatus.find("USER") == 0:
-			chtatus = linestatus.split("\r\n")[0]
-		else:
-			chtatus = "Unknown"
-	except:
-		chtatus = "ERR-CONN"
-#	print cfg.remoteaddr, chtatus
 
 def handle_ami_event_dial(listkeys, astnum, src, dst, clid):
 	if src.find("SIP/") == 0:
@@ -499,78 +463,44 @@ def handle_ami_event_link(listkeys, astnum, src, dst, clid1, clid2):
 			phonelists[astnum][sipnum].set_status("On the phone")
 			update_GUI_clients(configs[astnum], astnum, sipnum)
 
+# handling of AMI events
 def handle_ami_event(astnum, idata):
 	global phonelists, configs, queuenamej, clidq, queuemembers
-	typeev = ""
-	src = ""
-	dst = ""
-	clid = ""
-	queuenameq = ""
-	location = ""
-	status = ""
-	clid1 = ""
-	clid2 = ""
-	idevents = 0
 	listkeys = phonelists[astnum].keys()
-	for x in idata.split("\r\n"):
-		if x.find("Event: ") == 0:
-			if x.find("Dial") == 7:
-				idevents = 1
-			elif x.find("Link") == 7:
-				idevents = 2
-			elif x.find("Unlink") == 7:
-				idevents = 3
-			elif x.find("Join") == 7:
-				idevents = 4
-			elif x.find("QueueMemberStatus") == 7:
-				idevents = 5
-			else:
-				idevents = 0
-		elif idevents:
-			if idevents == 1: # Dial
-				if x.find("Source: ") == 0:
-					src = x.split("Source: ")[1]
-				elif x.find("Destination:") == 0:
-					dst = x.split("Destination: ")[1]
-				elif x.find("CallerID:") == 0:
-					clid = x.split("CallerID: ")[1]
-					handle_ami_event_dial(listkeys, astnum, src, dst, clid)
-			elif idevents == 2: # Link
-				if x.find("Channel1: ") == 0:
-					src = x.split("Channel1: ")[1]
-				elif x.find("Channel2:") == 0:
-					dst = x.split("Channel2: ")[1]
-				elif x.find("CallerID1:") == 0:
-					clid1 = x.split("CallerID1: ")[1]
-				elif x.find("CallerID2:") == 0:
-					clid2 = x.split("CallerID2: ")[1]
-					handle_ami_event_link(listkeys, astnum, src, dst, clid1, clid2)
-			elif idevents == 3: # Unlink
-				if x.find("Channel1: ") == 0:
-					src = x.split("Channel1: ")[1]
-				elif x.find("Channel2:") == 0:
-					dst = x.split("Channel2: ")[1]
-			elif idevents == 4: # Join
-				if x.find("CallerID: ") == 0:
-					clidq = x.split("CallerID: ")[1]
-				elif x.find("Queue:") == 0:
-					queuenamej = x.split("Queue: ")[1]
-					for k in tcpopens:
-						k[0].send("asterisk=<" + clidq + "> is calling the Queue <" + queuenamej + ">\n")
-			elif idevents == 5: # QueueMemberStatus
-				if x.find("Queue: ") == 0:
-					queuenameq = x.split("Queue: ")[1]
-				elif x.find("Location:") == 0:
-					location = x.split("Location: ")[1]
-				elif x.find("Status:") == 0:
-					status = x.split("Status: ")[1]
-					if queuenamej == queuenameq:
-						queuemembers[location] = 1
-						zstr = ""
-						for q in queuemembers.keys() :
-							zstr += " " + q
-						for k in tcpopens:
-							k[0].send("asterisk=<" + clidq + "> is calling the Queue <" + queuenamej + "> :" + zstr + "\n")
+	# we assume no ";" character is present in AMI events fields
+	kdata = idata.replace("\r\n", ";")
+	ldata = kdata.replace(";;", "\n")
+
+	for x in ldata.split("\n"):
+		if x.find("Dial") == 7:
+			src = x.split("Source: ")[1].split(";")[0]
+			dst = x.split("Destination: ")[1].split(";")[0]
+			clid = x.split("CallerID: ")[1].split(";")[0]
+			handle_ami_event_dial(listkeys, astnum, src, dst, clid)
+		elif x.find("Link") == 7:
+			src = x.split("Channel1: ")[1].split(";")[0]
+			dst = x.split("Channel2: ")[1].split(";")[0]
+			clid1 = x.split("CallerID1: ")[1].split(";")[0]
+			clid2 = x.split("CallerID2: ")[1].split(";")[0]
+			handle_ami_event_link(listkeys, astnum, src, dst, clid1, clid2)
+		elif x.find("Unlink") == 7:
+			src = x.split("Channel1: ")[1].split(";")[0]
+			dst = x.split("Channel2: ")[1].split(";")[0]
+		elif x.find("Join") == 7:
+			clidq = x.split("CallerID: ")[1].split(";")[0]
+			queuenamej = x.split("Queue: ")[1].split(";")[0]
+			for k in tcpopens:
+				k[0].send("asterisk=<" + clidq + "> is calling the Queue <" + queuenamej + ">\n")
+		elif x.find("QueueMemberStatus") == 7:
+			queuenameq = x.split("Queue: ")[1].split(";")[0]
+			location = x.split("Location: ")[1].split(";")[0]
+			status = x.split("Status: ")[1].split(";")[0]
+			queuemembers[location] = 1
+			zstr = ""
+			for q in queuemembers.keys():
+				zstr += " " + q
+			for k in tcpopens:
+				k[0].send("asterisk=<" + clidq + "> is calling the Queue <" + queuenamej + "> :" + zstr + "\n")
 
 # sends a SIP register + n x SIP subscribe messages
 def do_sip_register_subscribe(cfg, l_sipsock, astnum):
@@ -581,7 +511,6 @@ def do_sip_register_subscribe(cfg, l_sipsock, astnum):
     command = sip.sip_register(cfg, "sip:" + cfg.mysipname, 1, "reg_cid@xivopy", expires)
     l_sipsock.sendto(command, (cfg.remoteaddr, port_sip_srv))
     for sipnum in sipnumlists[astnum]:
-        #	get_away_etc(cfg, sipnum)
 	dtnow = time.time() - phonelists[astnum][sipnum].lasttime
         if dtnow > (2 * timeout_between_registers):
 		#		print dtnow
@@ -704,13 +633,6 @@ def filluserlistfromurl(url):
 	finally:
 		f.close()
 
-# the following function is for testing
-def filluserlist():
-	adduser('zorro', 'garcia')
-	adduser('bernardo', 'delavega')
-	adduser('toto', 'zut')
-
-
 # finduser() returns the user from the list.
 # None is returned if not found
 def finduser(user):
@@ -732,22 +654,28 @@ def finduser(user):
 # supporting commands coming from the client in order to pilot asterisk.
 class LoginHandler(SocketServer.StreamRequestHandler):
 	def handle(self):
-		global guserlisturl
+		global guserlisturl, astname_xivoc
 		if __debug__:
 			print 'LoginHandler'
 			print '  client connected :', self.client_address
 		#print '  request :', self.request
-		list = self.rfile.readline().strip().split(' ')
-		if len(list) != 2 or list[0] != 'LOGIN':
+		list0 = self.rfile.readline()
+		list1 = list0.strip().split(' ')
+		if len(list1) != 2 or list1[0] != 'LOGIN':
 			self.wfile.write('ERROR\r\n')
 			return
-		user = list[1]
+		if list1[1].find("/"):
+			astname_xivoc = list1[1].split("/")[0]
+			user = list1[1].split("/")[1]
+		else:
+			astname_xivoc = "obelisk"
+			user = list1[1]
 		self.wfile.write('Send PASS for authentification\r\n')
-		list = self.rfile.readline().strip().split(' ')
-		if len(list) != 2 or list[0] != 'PASS':
+		list1 = self.rfile.readline().strip().split(' ')
+		if len(list1) != 2 or list1[0] != 'PASS':
 			self.wfile.write('ERROR\r\n')
 			return
-		passwd = list[1]
+		passwd = list1[1]
 		#print 'user/pass : ' + user + '/' + passwd
 		userlist_lock.acquire()
 		updateuserlistfromurl(guserlisturl)
@@ -758,11 +686,11 @@ class LoginHandler(SocketServer.StreamRequestHandler):
 			self.wfile.write('ERROR : WRONG LOGIN PASSWD\r\n')
 			return
 		self.wfile.write('Send PORT command\r\n')
-		list = self.rfile.readline().strip().split(' ')
-		if len(list) != 2 or list[0] != 'PORT':
+		list1 = self.rfile.readline().strip().split(' ')
+		if len(list1) != 2 or list1[0] != 'PORT':
 			self.wfile.write('ERROR\r\n')
 			return
-		port = list[1]
+		port = list1[1]
 		# TODO : random pas au top, faire generation de session id plus luxe
 		sessionid = '%u' % random.randint(0,999999999)
 		userlist_lock.acquire()
@@ -787,10 +715,10 @@ class IdentRequestHandler(SocketServer.StreamRequestHandler):
 			print 'IdentRequestHandler'
 			print '  client : ', self.client_address
 		while True:
-			list = self.rfile.readline().strip().split(' ')
+			list0 = self.rfile.readline().strip().split(' ')
 			retline = 'ERROR\r\n'
-			if list[0] == 'QUERY' and len(list) == 2:
-				user = list[1]
+			if list0[0] == 'QUERY' and len(list0) == 2:
+				user = list0[1]
 				userlist_lock.acquire()
 				try:
 					e = finduser(user)
@@ -842,11 +770,11 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
 				if e == None:
 					response = 'ERROR user unknown\r\n'
 				else:
-					print user, e['user']
+					#print user, e['user']
 					#print sessionid, e['sessionid']
 					#print ip, e['ip']
 					#print timestamp, e['sessiontimestamp']
-					print timestamp - e['sessiontimestamp']
+					#print timestamp - e['sessiontimestamp']
 					if sessionid==e['sessionid'] and ip==e['ip'] and e['sessiontimestamp'] + session_expiration_time > timestamp:
 						e['state'] = state
 						e['sessiontimestamp'] = timestamp
@@ -858,10 +786,16 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
 		userlist_lock.release()
 		self.request[1].sendto(response, self.client_address)
 		if response == 'OK\r\n':
-			KFsock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-			KFsock.sendto(user + " " + sessionid + " " + ip + " " + state,
-				      ("192.168.0.77", 5076))
-			KFsock.close()
+			print "from kafiche", self.client_address, user, sessionid, ip, state
+			n = -1
+			for n in items_asterisks:
+				if configs[n].astid == astname_xivoc:
+					break
+			if n >= 0:
+				sipnumber = user.split("sip")[1]
+				print n, sipnumber, state
+				phonelists[n][sipnumber].set_imstat(state)
+				update_GUI_clients(configs[n], n, sipnumber)
 
 
 class MyTCPServer(SocketServer.ThreadingTCPServer):
@@ -959,10 +893,6 @@ UIsock.bind(("", port_ui_srv))
 UIsock.listen(10)
 ins.append(UIsock)
 
-KFsock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-KFsock.bind(("", 5076))
-ins.append(KFsock)
-
 tcpopens = []
 lastrequest_time = []
 
@@ -1005,10 +935,6 @@ while True:
 			AMIsocks[n] = 0
 		else:
 			handle_ami_event(n, a)
-        elif KFsock in i:
-		[kfdata, ad] = KFsock.recvfrom(bufsize)
-		phonelists[0]["101"].set_imstat(kfdata.split("\r\n")[0].split()[3])
-		update_GUI_clients(configs[0], 0, "101")
         elif UIsock in i:
             [conn, UIsockparams] = UIsock.accept()
             print "TCP socket opened on  ", UIsockparams[0], UIsockparams[1]
