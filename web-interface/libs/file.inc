@@ -500,7 +500,7 @@ class xivo_file
 		return($r);
 	}
 
-	function is_d_x($dir)
+	function is_d_x($dir,$t=false)
 	{
 		$r = false;
  
@@ -711,10 +711,38 @@ class xivo_file
 	{
 		$r = false;
 
-		if(xivo_file::is_f_w($file) !== false && unlink($file) !== false)
+		if(xivo_file::is_d_w($file,true) !== false && unlink($file) !== false)
 			$r = true;
 
 		return($r);
+	}
+
+	function rmdir($dir)
+	{
+		$r = false;
+
+		if(($dir = xivo_file::is_d_rw($dir)) === false
+		|| xivo_file::is_d_rw(dirname($dir)) === false
+		|| ($list = xivo_file::read_d($dir)) === false)
+			return($r);
+
+		if(isset($list[0]) === false)
+			return(rmdir($dir));
+
+		$nb = count($list);
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			$path = $dir.XIVO_SEP_DIR.$list[$i];
+
+			if(xivo_file::is_f($path) !== false)
+				unlink($path);
+
+			if(xivo_file::is_d($path) !== false)
+				xivo_file::rmdir($path);
+		}
+
+		return(rmdir($dir));
 	}
 }
 

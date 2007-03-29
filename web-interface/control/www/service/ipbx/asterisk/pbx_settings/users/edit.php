@@ -202,45 +202,55 @@ do
 	// while waiting protocol[mailbox]
 	$protocol->edit($pid,array('mailbox' => $result['ufeatures']['number']));
 
+	$exten_where = array();
+	$exten_where['app'] = $ipbx->mk_interface($info['protocol']['name'],$info['ufeatures']['protocol']);
+
+	if(($hints_interface = $ipbx->mk_interface($result['protocol']['name'],$result['ufeatures']['protocol'])) !== false)
+	{
+		$exten_where['context'] = 'hints';
+		$exten_where['exten'] = $info['ufeatures']['number'];
+
+		if(($info['extensions'] = $extensions->get_where($exten_where)) !== false)
+		{
+			$hints = $info['extensions'];
+			$hints['exten'] = $result['ufeatures']['number'];
+			$hints['app'] = $hints_interface;
+
+			if($result['ufeatures']['number'] === '')
+				$extensions->delete($info['extensions']['id']);
+			else if(($result['hints'] = $extensions->chk_values($hints,true,true)) !== false)
+				$extensions->edit($info['extensions']['id'],$result['hints']);
+		}
+		else if($result['ufeatures']['number'] !== '')
+		{
+			$hints = $exten_where;
+			$hints['exten'] = $result['ufeatures']['number'];
+			$hints['priority'] = -1;
+			$hints['app'] = $hints_interface;
+
+			if(($result['hints'] = $extensions->chk_values($hints,true,true)) !== false)
+				$extensions->add($result['hints']);
+		}
+	}
+
 	do
 	{
-		if(($interface = $ipbx->mk_interface($info['ufeatures']['protocol'],$info['protocol']['name'])) === false)
+		if(($interface = $ipbx->mk_interface($info['protocol']['name'],
+						     $info['ufeatures']['protocol'],
+					     	     $info['ufeatures']['number'],
+					     	     $info['protocol']['context'])) === false)
 		{
 			$protocol->edit($pid,array('callgroup' => ''));
+
+			if($info['usergroup'] !== false)
+				$ugroup->delete($info['usergroup']['id']);
 			break;
 		}
 		
-		$new_interface = $ipbx->mk_interface($result['ufeatures']['protocol'],$result['protocol']['name']);
-
-		if($new_interface !== false)
-		{
-			$exten_where = array();
-			$exten_where['context'] = 'hints';
-			$exten_where['exten'] = $info['ufeatures']['number'];
-			$exten_where['app'] = $interface;
-
-			if(($info['extensions'] = $extensions->get_where($exten_where)) !== false)
-			{
-				$hints = $info['extensions'];
-				$hints['exten'] = $result['ufeatures']['number'];
-				$hints['app'] = $new_interface;
-
-				if($result['ufeatures']['number'] === '')
-					$extensions->delete($info['extensions']['id']);
-				else if(($result['hints'] = $extensions->chk_values($hints,true,true)) !== false)
-					$extensions->edit($info['extensions']['id'],$result['hints']);
-			}
-			else if($result['ufeatures']['number'] !== '')
-			{
-				$hints = $exten_where;
-				$hints['exten'] = $result['ufeatures']['number'];
-				$hints['priority'] = -1;
-				$hints['app'] = $new_interface;
-
-				if(($result['hints'] = $extensions->chk_values($hints,true,true)) !== false)
-					$extensions->add($result['hints']);
-			}
-		}
+		$new_interface = $ipbx->mk_interface($result['protocol']['name'],
+						     $result['ufeatures']['protocol'],
+					     	     $result['ufeatures']['number'],
+					     	     $result['protocol']['context']);
 
 		$qmember = &$ipbx->get_module('queuemember');
 
@@ -256,6 +266,9 @@ do
 		if(($nb = count($arr_group)) === 0 && $protocol->edit($pid,array('callgroup' => '')) !== false)
 		{
 			$qmember->delete_by_interface($interface);
+
+			if($info['usergroup'] !== false)
+				$ugroup->delete($info['usergroup']['id']);
 			break;
 		}
 
@@ -300,7 +313,13 @@ do
 		}
 
 		if($groups === '')
+		{
+			$protocol->edit($pid,array('callgroup' => ''));
+
+			if($info['usergroup'] !== false)
+				$ugroup->delete($info['usergroup']['id']);
 			break;
+		}
 
 		$groups = substr($groups,1);
 

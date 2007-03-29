@@ -12,7 +12,10 @@ if(isset($_QR['id']) === false
 || ($info['ufeatures'] = $ufeatures->get($_QR['id'])) === false
 || ($protocol = &$ipbx->get_protocol_module($info['ufeatures']['protocol'])) === false
 || ($info['protocol'] = $protocol->get($info['ufeatures']['protocolid'])) === false
-|| ($interface = $ipbx->mk_interface($info['ufeatures']['protocol'],$info['protocol']['name'])) === false)
+|| ($interface = $ipbx->mk_interface($info['protocol']['name'],
+				     $info['ufeatures']['protocol'],
+			     	     $info['ufeatures']['number'],
+			     	     $info['protocol']['context'])) === false)
 	xivo_go($_HTML->url('service/ipbx/pbx_settings/users'),$param);
 
 do
@@ -44,7 +47,8 @@ do
 		break;
 	}
 
-	if($qmember->delete_by_interface($interface) === false)
+	if($qmember->get_list_by_interface($interface) !== false
+	&& $qmember->delete_by_interface($interface) === false)
 	{
 		$protocol->add_origin();
 		$ufeatures->add_origin();
@@ -57,9 +61,9 @@ do
 	$hints_where = array();
 	$hints_where['context'] = 'hints';
 	$hints_where['exten'] = $info['ufeatures']['number'];
-	$hints_where['app'] = $interface;
 
-	if(($info['extensions'] = $extensions->get_where($hints_where)) !== false)
+	if(($hints_where['app'] = $ipbx->mk_interface($info['protocol']['name'],$info['ufeatures']['protocol'])) !== false
+	&& ($info['extensions'] = $extensions->get_where($hints_where)) !== false)
 		$extensions->delete($info['extensions']['id']);
 
 	if(($info['usergroup'] = $ugroup->get_by_user($info['ufeatures']['id'])) !== false)

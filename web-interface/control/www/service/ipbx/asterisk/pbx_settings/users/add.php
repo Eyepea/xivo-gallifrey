@@ -87,22 +87,26 @@ do
 	// while waiting protocol[mailbox]
 	$protocol->edit($pid,array('mailbox' => $result['ufeatures']['number']));
 
+	$hints = array();
+	$hints['app'] = $ipbx->mk_interface($result['protocol']['name'],$result['ufeatures']['protocol']);
+
+	if($result['ufeatures']['number'] !== '' && $hints['app'] !== false)
+	{
+		$hints['context'] = 'hints';
+		$hints['exten'] = $result['ufeatures']['number'];
+		$hints['priority'] = -1;
+
+		if(($result['hints'] = $extensions->chk_values($hints,true,true)) !== false)
+			$extensions->add($result['hints']);
+	}
+
 	do
 	{
-		if(($interface = $ipbx->mk_interface($result['ufeatures']['protocol'],$result['protocol']['name'])) === false)
+		if(($interface = $ipbx->mk_interface($result['protocol']['name'],
+						     $result['ufeatures']['protocol'],
+						     $result['ufeatures']['number'],
+						     $result['protocol']['context'])) === false)
 			break;
-
-		if($result['ufeatures']['number'] !== '')
-		{
-			$hints = array();
-			$hints['context'] = 'hints';
-			$hints['exten'] = $result['ufeatures']['number'];
-			$hints['priority'] = -1;
-			$hints['app'] = $interface;
-
-			if(($result['hints'] = $extensions->chk_values($hints,true,true)) !== false)
-				$extensions->add($result['hints']);
-		}
 
 		if(xivo_issa('group',$_QR) === false)
 			break;

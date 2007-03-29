@@ -311,19 +311,32 @@ class xivo_service_asterisk extends xivo_service_abstract
 		return($r);
 	}
 
-	function chk_interface($name)
+	function chk_interface($protocol)
 	{
-		return($this->_chk_exists_cfg('interface',$name));
+		return($this->_chk_exists_cfg('interface',$protocol));
 	}
 
-	function mk_interface($name,$number)
+	function mk_interface($name,$protocol='',$number='',$context='')
 	{
 		$r = false;
 
-		if($this->chk_interface($name) === false && ($number = xivo_uint($number)) !== 0)
+		$name = (string) $name;
+		$number = (string) $number;
+		$context = (string) $context;
+
+		if($number !== '')
+		{
+			$context = $context === '' ? 'local-extensions' : $context;
+
+			$r = 'local/'.$number.'@'.$context;
+
+			return($r);
+		}
+
+		if($this->chk_interface($protocol) === false)
 			return($r);
 
-		$r = $this->_conf['interface'][$name].'/'.$number;
+		$r = $this->_conf['interface'][$protocol].'/'.$name;
 
 		return($r);
 	}
