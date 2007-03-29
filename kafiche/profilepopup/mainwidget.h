@@ -73,6 +73,8 @@ private:
 	QAction * m_disconnectact;	//!< "Disconnect" Action
 	QAction * m_avact_avail;	//!< Available Action
 	QAction * m_avact_away;		//!< Away Action
+	QAction * m_avact_brb;		//!< "Be Right Back" Action
+	QAction * m_avact_otl;		//!< "Out To Lunch" Action
 	QAction * m_avact_dnd;		//!< "Does not disturb" action
 };
 

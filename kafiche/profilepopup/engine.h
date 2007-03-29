@@ -73,6 +73,8 @@ public slots:
 	void stop();	//!< stop the engine
 	void setAvailable();	//!< set user status as "available"
 	void setAway();			//!< set user status as "away"
+	void setBeRightBack();	//!< set user status as "be right back"
+	void setOutToLunch();	//!< set user status as "out to lunch"
 	void setDoesNotDisturb();	//!< set user status as "does not disturb"
 private slots:
 	void identifyToTheServer();	//!< perform the first login step
@@ -89,7 +91,8 @@ private:
 	void initListenSocket();	//!< initialize the socket listening to profile
 	void stopKeepAliveTimer();	//!< Stop the keep alive timer if running
 	void startTryAgainTimer();	//!< Start the "try to reconnect" timer
-	void stopTryAgainTimer();	//!< Stop tje "try to reconnect" timer
+	void stopTryAgainTimer();	//!< Stop the "try to reconnect" timer
+	void setAvailState(const QString &);	//!< set Availability state
 
 	// parameters to connect to server
 	QString m_serverip;		//!< Host to the login server

@@ -106,6 +106,16 @@ void MainWidget::createActions()
 	connect( m_avact_away, SIGNAL(triggered()),
 	         m_engine, SLOT(setAway()) );
 	availgrp->addAction( m_avact_away );
+	m_avact_brb = new QAction( tr("&Be Right Back"), this );
+	m_avact_brb->setCheckable(true);
+	connect( m_avact_brb, SIGNAL(triggered()),
+	         m_engine, SLOT(setBeRightBack()) );
+	availgrp->addAction( m_avact_brb );
+	m_avact_otl = new QAction( tr("&Out To Lunch"), this );
+	m_avact_otl->setCheckable(true);
+	connect( m_avact_otl, SIGNAL(triggered()),
+	         m_engine, SLOT(setOutToLunch()) );
+	availgrp->addAction( m_avact_otl );
 	m_avact_dnd = new QAction( tr("&Does not disturb"), this );
 	m_avact_dnd->setCheckable(true);
 	connect( m_avact_dnd, SIGNAL(triggered()),
@@ -127,6 +137,8 @@ void MainWidget::createMenus()
 	QMenu * avail = menuBar()->addMenu(tr("&Availability"));
 	avail->addAction( m_avact_avail );
 	avail->addAction( m_avact_away );
+	avail->addAction( m_avact_brb );
+	avail->addAction( m_avact_otl );
 	avail->addAction( m_avact_dnd );
 
 	QMenu * helpmenu = menuBar()->addMenu(tr("&Help"));
@@ -171,6 +183,8 @@ void MainWidget::createSystrayIcon()
 	QMenu * menu = new QMenu(QString("SystrayMenu"), this);
 	menu->addAction( m_avact_avail );
 	menu->addAction( m_avact_away );
+	menu->addAction( m_avact_brb );
+	menu->addAction( m_avact_otl );
 	menu->addAction( m_avact_dnd );
 	menu->addSeparator();
 	menu->addAction(m_cfgact);

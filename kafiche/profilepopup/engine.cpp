@@ -128,25 +128,50 @@ void Engine::stop()
 	setState(ENotLogged);
 }
 
+/*!
+ * set the availability state and call keepLoginAlive() if needed
+ *
+ * \sa setAvailable()
+ * \sa setAway()
+ * \sa setBeRightBack()
+ * \sa setOutToLunch()
+ * \sa setDoesNotDisturb()
+ */
+void Engine::setAvailState(const QString & newstate)
+{
+	if(m_availstate != newstate)
+	{
+		m_availstate = newstate;
+		keepLoginAlive();
+	}
+}
+
 void Engine::setAvailable()
 {
 	//qDebug() << "setAvailable()";
-	m_availstate = "available";
-	keepLoginAlive();
+	setAvailState("available");
 }
 
 void Engine::setAway()
 {
 	//qDebug() << "setAway()";
-	m_availstate = "away";
-	keepLoginAlive();
+	setAvailState("away");
+}
+
+void Engine::setBeRightBack()
+{
+	setAvailState("berightback");
+}
+
+void Engine::setOutToLunch()
+{
+	setAvailState("outtolunch");
 }
 
 void Engine::setDoesNotDisturb()
 {
 	//qDebug() << "setDoesNotDistrurb()";
-	m_availstate = "doesnotdisturb";
-	keepLoginAlive();
+	setAvailState("doesnotdisturb");
 }
 
 // === Getter and Setters ===
