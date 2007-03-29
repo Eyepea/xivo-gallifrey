@@ -13,55 +13,60 @@
         <translation>Port serveur</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="62"/>
+        <location filename="confwidget.cpp" line="65"/>
         <source>Login</source>
         <translation>Identifiant de connexion</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="65"/>
+        <location filename="confwidget.cpp" line="68"/>
         <source>Password</source>
         <translation>Mot de passe</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="80"/>
+        <location filename="confwidget.cpp" line="85"/>
         <source>Autoconnect at startup</source>
         <translation>Connexion au démarrage</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="83"/>
+        <location filename="confwidget.cpp" line="88"/>
         <source>Keep alive interval</source>
         <translation>Délai de maintien de la connexion</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="88"/>
+        <location filename="confwidget.cpp" line="93"/>
         <source>Try to reconnect</source>
         <translation>Reconnexion automatique</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="91"/>
+        <location filename="confwidget.cpp" line="96"/>
         <source>Try to reconnect interval</source>
         <translation>Délai de reconnexion</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="97"/>
+        <location filename="confwidget.cpp" line="102"/>
         <source>Tab limit</source>
         <translation>Nombre maximum d&apos;onglets</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="53"/>
+        <location filename="confwidget.cpp" line="56"/>
         <source>Protocol</source>
         <translation>Protocole</translation>
+    </message>
+    <message>
+        <location filename="confwidget.cpp" line="53"/>
+        <source>Asterisk Id name</source>
+        <translation type="unfinished">Serveur Téléphonique</translation>
     </message>
 </context>
 <context>
     <name>Engine</name>
     <message>
-        <location filename="engine.cpp" line="101"/>
+        <location filename="engine.cpp" line="103"/>
         <source>Unable to start the server: %1.</source>
         <translation>Impossible de se connecter au serveur: %1.</translation>
     </message>
     <message>
-        <location filename="engine.cpp" line="99"/>
+        <location filename="engine.cpp" line="101"/>
         <source>Critical error</source>
         <translation>Erreur critique</translation>
     </message>
@@ -129,64 +134,84 @@
         <translation type="unfinished">&amp;Occupé</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="109"/>
+        <location filename="mainwidget.cpp" line="119"/>
         <source>&amp;Does not disturb</source>
         <translation type="unfinished">&amp;Ne pas déranger</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="118"/>
+        <location filename="mainwidget.cpp" line="128"/>
         <source>&amp;File</source>
         <translation type="unfinished">&amp;Fichier</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="127"/>
+        <location filename="mainwidget.cpp" line="137"/>
         <source>&amp;Availability</source>
         <translation type="unfinished">&amp;Disponibilité</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="132"/>
+        <location filename="mainwidget.cpp" line="144"/>
         <source>&amp;Help</source>
         <translation type="unfinished">&amp;Aide</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="134"/>
+        <location filename="mainwidget.cpp" line="146"/>
         <source>About &amp;Qt</source>
         <translation type="unfinished">A propos de &amp;Qt</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="258"/>
+        <location filename="mainwidget.cpp" line="271"/>
         <source>Disconnected</source>
         <translation type="unfinished">Déconnecté</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="269"/>
+        <location filename="mainwidget.cpp" line="281"/>
         <source>Connected</source>
         <translation type="unfinished">Connecté</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="283"/>
+        <location filename="mainwidget.cpp" line="294"/>
         <source>Incoming call</source>
         <translation type="unfinished">Appel entrant</translation>
     </message>
     <message>
         <location filename="mainwidget.cpp" line="284"/>
         <source> Incoming call</source>
-        <translation type="unfinished"> Appel entrant</translation>
+        <translation type="obsolete"> Appel entrant</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="133"/>
+        <location filename="mainwidget.cpp" line="145"/>
         <source>&amp;About</source>
         <translation type="unfinished">&amp;A propos</translation>
     </message>
     <message>
         <location filename="mainwidget.cpp" line="350"/>
         <source>About Kafiche</source>
-        <translation type="unfinished">A propos de Kafiche</translation>
+        <translation type="obsolete">A propos de Kafiche</translation>
     </message>
     <message>
         <location filename="mainwidget.cpp" line="357"/>
         <source>&lt;h3&gt;About Kafiche&lt;/h3&gt;&lt;p&gt;This application show to the user the profile associated with incoming phone calls.&lt;/p&gt;&lt;p&gt;Version : %1&lt;/p&gt;&lt;p&gt;(c) 2007 &lt;b&gt;Proformatique&lt;/b&gt; (&lt;a href=&quot;http://www.proformatique.com/&quot;&gt;www.proformatique.com&lt;/a&gt;)&lt;/p&gt;&lt;p&gt;Author : Thomas Bernard&lt;/p&gt;</source>
-        <translation type="unfinished">&lt;h3&gt;A propos de Kafiche&lt;/h3&gt;&lt;p&gt;Cette application présente à l&apos;utilisateur les fiches associées aux appels entants.&lt;/p&gt;&lt;p&gt;Version: %1&lt;/p&gt;&lt;p&gt;(c) 2007 &lt;b&gt;Proformatique&lt;/b&gt; (&lt;a href=&quot;http://www.proformatique.com/&quot;&gt;www.proformatique.com&lt;/a&gt;)&lt;/p&gt;&lt;p&gt;Auteur: Thomas Bernard&lt;/p&gt;</translation>
+        <translation type="obsolete">&lt;h3&gt;A propos de Kafiche&lt;/h3&gt;&lt;p&gt;Cette application présente à l&apos;utilisateur les fiches associées aux appels entants.&lt;/p&gt;&lt;p&gt;Version: %1&lt;/p&gt;&lt;p&gt;(c) 2007 &lt;b&gt;Proformatique&lt;/b&gt; (&lt;a href=&quot;http://www.proformatique.com/&quot;&gt;www.proformatique.com&lt;/a&gt;)&lt;/p&gt;&lt;p&gt;Auteur: Thomas Bernard&lt;/p&gt;</translation>
+    </message>
+    <message>
+        <location filename="mainwidget.cpp" line="109"/>
+        <source>&amp;Be Right Back</source>
+        <translation type="unfinished">&amp;Reviens de suite</translation>
+    </message>
+    <message>
+        <location filename="mainwidget.cpp" line="114"/>
+        <source>&amp;Out To Lunch</source>
+        <translation type="unfinished">&amp;Parti manger</translation>
+    </message>
+    <message>
+        <location filename="mainwidget.cpp" line="369"/>
+        <source>About XIVO client</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwidget.cpp" line="376"/>
+        <source>&lt;h3&gt;About XIVO client&lt;/h3&gt;&lt;p&gt;This application show to the user the profile associated with incoming phone calls.&lt;/p&gt;&lt;p&gt;Version : %1&lt;/p&gt;&lt;p&gt;(c) 2007 &lt;b&gt;Proformatique&lt;/b&gt; (&lt;a href=&quot;http://www.proformatique.com/&quot;&gt;www.proformatique.com&lt;/a&gt;)&lt;/p&gt;&lt;p&gt;Author : Thomas Bernard&lt;/p&gt;</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
