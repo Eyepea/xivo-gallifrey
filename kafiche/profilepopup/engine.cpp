@@ -32,7 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  */
 Engine::Engine(QObject *parent)
 : QObject(parent),
-  m_serverip(""), m_serverport(0), m_login(""), m_passwd(""),
+  m_serverip(""), m_serverport(0), m_serverast(""), m_login(""), m_passwd(""),
   m_listenport(0), m_sessionid(""), m_state(ENotLogged),
   m_pendingkeepalivemsg(0)
 {
@@ -68,6 +68,7 @@ void Engine::loadSettings()
 	QSettings settings;
 	m_serverip = settings.value("engine/serverhost").toString();
 	m_serverport = settings.value("engine/serverport", 12345).toUInt();
+	m_serverast = settings.value("engine/serverastid").toString();
 	m_login = settings.value("engine/login").toString();
 	m_passwd = settings.value("engine/passwd").toString();
 	m_autoconnect = settings.value("engine/autoconnect", false).toBool();
@@ -84,6 +85,7 @@ void Engine::saveSettings()
 	QSettings settings;
 	settings.setValue("engine/serverhost", m_serverip);
 	settings.setValue("engine/serverport", m_serverport);
+	settings.setValue("engine/serverastid", m_serverast);
 	settings.setValue("engine/login", m_login);
 	settings.setValue("engine/passwd", m_passwd);
 	settings.setValue("engine/autoconnect", m_autoconnect);
@@ -153,9 +155,19 @@ const QString & Engine::serverip() const
 	return m_serverip;
 }
 
+const QString & Engine::serverast() const
+{
+	return m_serverast;
+}
+
 void Engine::setServerip(const QString & serverip)
 {
 	m_serverip = serverip;
+}
+
+void Engine::setServerAst(const QString & serverast)
+{
+	m_serverast = serverast;
 }
 
 ushort Engine::serverport() const
@@ -288,6 +300,7 @@ void Engine::identifyToTheServer()
 	qDebug() << "Engine::identifyToTheServer()" << m_loginsocket.peerAddress();
 	m_serveraddress = m_loginsocket.peerAddress();
 	outline = "LOGIN ";
+	outline.append(m_serverast + "/");
 	outline.append(m_login);
 	outline.append("\r\n");
 	m_loginsocket.write(outline.toAscii());

@@ -48,6 +48,8 @@ public:
 	void setServerip(const QString &);	//!< see serverip()
 	ushort serverport() const;			//!< TCP port for connection to server
 	void setServerport(ushort);			//!< see serverport()
+	const QString & serverast() const;	//!< id Name of the Asterisk server
+	void setServerAst(const QString &);	//!< see serverast()
 	const QString & login() const;		//!< login to identify to the server
 	void setLogin(const QString &);		//!< see login()
 	const QString & passwd() const;		//!< password to identify to the sever
@@ -92,6 +94,7 @@ private:
 	// parameters to connect to server
 	QString m_serverip;		//!< Host to the login server
 	ushort m_serverport;	//!< TCP port (UDP port for keep alive is +1)
+	QString m_serverast;		//!< Host to the login server
 	QString m_login;		//!< User login
 	QString m_passwd;		//!< User password
 	uint m_keepaliveinterval;	//!< Keep alive interval (in msec)

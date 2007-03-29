@@ -50,6 +50,9 @@ ConfWidget::ConfWidget(Engine *engine, MainWidget *parent)
 	m_lineport = new QLineEdit(QString::number(m_engine->serverport()), this);
 	m_lineport->setInputMask("90000");
 
+	QLabel *lblast = new QLabel(tr("Asterisk Id name"), this);
+	m_lineast = new QLineEdit(m_engine->serverast(), this);
+
 	QLabel *lblproto = new QLabel(tr("Protocol"), this);
 	m_protocombo = new QComboBox(this);
 	m_protocombo->addItem(QString("SIP"));
@@ -70,36 +73,38 @@ ConfWidget::ConfWidget(Engine *engine, MainWidget *parent)
 	gridlayout->addWidget(m_lineip, 0, 1);
 	gridlayout->addWidget(lblport, 1, 0);
 	gridlayout->addWidget(m_lineport, 1, 1);
-	gridlayout->addWidget(lblproto, 2, 0);
-	gridlayout->addWidget(m_protocombo, 2, 1);
-	gridlayout->addWidget(lbllogin, 3, 0);
-	gridlayout->addWidget(m_linelogin, 3, 1);
-	gridlayout->addWidget(lblpasswd, 4, 0);
-	gridlayout->addWidget(m_linepasswd, 4, 1);
+	gridlayout->addWidget(lblast, 2, 0);
+	gridlayout->addWidget(m_lineast, 2, 1);
+	gridlayout->addWidget(lblproto, 3, 0);
+	gridlayout->addWidget(m_protocombo, 3, 1);
+	gridlayout->addWidget(lbllogin, 4, 0);
+	gridlayout->addWidget(m_linelogin, 4, 1);
+	gridlayout->addWidget(lblpasswd, 5, 0);
+	gridlayout->addWidget(m_linepasswd, 5, 1);
 
 	m_autoconnect = new QCheckBox(tr("Autoconnect at startup"), this);
 	m_autoconnect->setCheckState( m_engine->autoconnect()?Qt::Checked:Qt::Unchecked );
-	gridlayout->addWidget(m_autoconnect, 5, 0, 1, 0);
-	gridlayout->addWidget( new QLabel( tr("Keep alive interval"), this), 6, 0);
+	gridlayout->addWidget(m_autoconnect, 6, 0, 1, 0);
+	gridlayout->addWidget( new QLabel( tr("Keep alive interval"), this), 7, 0);
 	m_kainterval_sbox = new QSpinBox(this);
 	m_kainterval_sbox->setRange(1, 120);
 	m_kainterval_sbox->setValue(m_engine->keepaliveinterval() / 1000);
-	gridlayout->addWidget( m_kainterval_sbox, 6, 1);
+	gridlayout->addWidget( m_kainterval_sbox, 7, 1);
 	m_trytoreconnect = new QCheckBox(tr("Try to reconnect"), this);
 	m_trytoreconnect->setCheckState( m_engine->trytoreconnect()?Qt::Checked:Qt::Unchecked );
-	gridlayout->addWidget(m_trytoreconnect, 7, 0, 1, 0);
-	gridlayout->addWidget( new QLabel( tr("Try to reconnect interval"), this), 8, 0);
+	gridlayout->addWidget(m_trytoreconnect, 8, 0, 1, 0);
+	gridlayout->addWidget( new QLabel( tr("Try to reconnect interval"), this), 9, 0);
 	m_tryinterval_sbox = new QSpinBox(this);
 	m_tryinterval_sbox->setRange(1, 120);
 	m_tryinterval_sbox->setValue(m_engine->trytoreconnectinterval() / 1000);
-	gridlayout->addWidget( m_tryinterval_sbox, 8, 1);
+	gridlayout->addWidget( m_tryinterval_sbox, 9, 1);
 
 	QLabel * lbltablimit = new QLabel( tr("Tab limit"), this);
-	gridlayout->addWidget(lbltablimit, 9, 0);
+	gridlayout->addWidget(lbltablimit, 10, 0);
 	m_tablimit_sbox = new QSpinBox(this);
 	m_tablimit_sbox->setRange(0, 99);
 	m_tablimit_sbox->setValue(m_mainwidget->tablimit());
-	gridlayout->addWidget(m_tablimit_sbox, 9, 1);
+	gridlayout->addWidget(m_tablimit_sbox, 10, 1);
 
 	QPushButton *btnok = new QPushButton("&Ok", this);	// some default ok button should exist :)
 	connect( btnok, SIGNAL(clicked()), this, SLOT(saveAndClose()) );
@@ -121,6 +126,7 @@ void ConfWidget::saveAndClose()
 	m_engine->setServerip( m_lineip->text() );
 	//qDebug() << "port =" << m_lineport->text().toUShort();
 	m_engine->setServerport( m_lineport->text().toUShort() );
+	m_engine->setServerAst( m_lineast->text() );
 	//qDebug() << "login =" << m_linelogin->text();
 	//qDebug() << "protocol =" << m_protocombo->currentText().toLower();
 	m_engine->setLogin( m_protocombo->currentText().toLower()

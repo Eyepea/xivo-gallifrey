@@ -53,7 +53,7 @@ MainWidget::MainWidget(Engine *engine, QWidget *parent)
 
 	//setWindowFlags(Qt::Dialog);	
 	//layout->setSizeConstraint(QLayout::SetFixedSize);	// remove minimize and maximize button
-	setWindowTitle(QString("KaFiche"));
+	setWindowTitle(QString("Xivo Client"));
 	setWindowIcon(QIcon(":/xivoicon.png"));
 	statusBar()->clearMessage();
 	

@@ -37,6 +37,7 @@ private slots:
 private:
 	QLineEdit *m_lineip;		//!< IP/hostname of the server
 	QLineEdit *m_lineport;		//!< port of the server
+	QLineEdit *m_lineast;		//!< id name of the Asterisk server
 	QComboBox *m_protocombo;	//!< Protocol SIP/IAX
 	QLineEdit *m_linelogin;		//!< user login
 	QLineEdit *m_linepasswd;	//!< user password
