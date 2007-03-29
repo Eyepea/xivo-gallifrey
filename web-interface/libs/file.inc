@@ -736,7 +736,10 @@ class xivo_file
 			$path = $dir.XIVO_SEP_DIR.$list[$i];
 
 			if(xivo_file::is_f($path) !== false)
+			{
 				unlink($path);
+				continue;
+			}
 
 			if(xivo_file::is_d($path) !== false)
 				xivo_file::rmdir($path);
