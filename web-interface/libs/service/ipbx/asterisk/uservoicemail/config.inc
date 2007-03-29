@@ -25,13 +25,14 @@ $array['element']['delete']['set'] = true;
 
 $array['element']['context'] = array();
 $array['element']['context']['default'] = 'default';
+$array['element']['context']['set'] = true;
 
 $array['element']['mailbox'] = array();
 $array['element']['mailbox']['default'] = '';
 
 $array['filter'] = array();
 $array['filter']['fullname'] = array('maxlen' => 150);
-$array['filter']['password'] = array('maxlen' => 5);
+$array['filter']['password'] = array('preg' => '/^[0-9\*#]+$/','maxlen' => 5);
 $array['filter']['email'] = array('func' => 'xivo_chk_email');
 $array['filter']['attach'] = array('bool' => true);
 $array['filter']['delete'] = array('bool' => true);

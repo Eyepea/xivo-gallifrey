@@ -270,8 +270,14 @@ class xivo_service_asterisk_abstract
 		if($this->isset_element_value($key) === false)
 			return($val);
 
-		if(($values = $this->get_element_value($key)) !== false && xivo_ak($val,$values) === true)
-			return($values[$val]);
+		if(($value = $this->get_element_value($key)) === false)
+			return(false);
+
+		if(is_scalar($value) === true)
+			return($value);
+
+		if(xivo_ak($val,$value) === true)
+			return($value[$val]);
 
 		return(false);
 	}
