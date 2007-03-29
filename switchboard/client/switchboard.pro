@@ -11,10 +11,10 @@ CONFIG += static
 # Input
 HEADERS += peerwidget.h switchboardwindow.h
 HEADERS += switchboardengine.h mainwindow.h
-HEADERS += switchboardconf.h
+HEADERS += switchboardconf.h callwidget.h callstackwidget.h
 SOURCES += main.cpp peerwidget.cpp switchboardwindow.cpp
 SOURCES += switchboardengine.cpp mainwindow.cpp
-SOURCES += switchboardconf.cpp
+SOURCES += switchboardconf.cpp callwidget.cpp callstackwidget.cpp
 QT += network
 RESOURCES += appli.qrc
 TRANSLATIONS = switchboard_fr.ts

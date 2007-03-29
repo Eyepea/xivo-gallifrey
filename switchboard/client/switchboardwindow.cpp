@@ -67,6 +67,7 @@ SwitchBoardWindow::SwitchBoardWindow(QWidget * parent)
 : QWidget(parent), m_engine(0)
 {
 	m_layout = new QGridLayout(this);
+	m_layout->setSpacing(2);
 	m_x = 0;
 	m_y = 0;
 	QSettings settings;

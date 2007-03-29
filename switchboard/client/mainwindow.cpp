@@ -1,21 +1,52 @@
 #include <QStatusBar>
 #include <QMenuBar>
 #include <QApplication>
+#include <QMessageBox>
+#include <QSplitter>
+#include <QScrollArea>
+#include <QLabel>
 #include <QDebug>
 #include "mainwindow.h"
 #include "switchboardengine.h"
 #include "switchboardwindow.h"
 #include "switchboardconf.h"
+#include "callstackwidget.h"
 
 MainWindow::MainWindow(SwitchBoardEngine * engine)
 : m_engine(engine)
 {
+// va falloir réorganiser les communications entre le "Engine"
+// et les objets d'affichage.
 	setWindowIcon(QIcon(":/xivoicon.png"));
 	setWindowTitle("Xivo Switchboard");
-	m_widget = new SwitchBoardWindow(this);
-	engine->setWindow(m_widget);
-	m_widget->setEngine(engine);
-	setCentralWidget(m_widget);
+
+	QSplitter * splitter = new QSplitter(this);
+
+	QScrollArea * areaCalls = new QScrollArea(splitter);
+	CallStackWidget * calls = new CallStackWidget(areaCalls);
+	// test
+	calls->addCall("test1234");
+	calls->addCall("test1234");
+	calls->addCall("test1234");
+	calls->addCall("test1234");
+	calls->addCall("test1234");
+	areaCalls->setWidget(calls);
+	//QLabel * test = new QLabel("Test! --------------------------\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\nz\na\nr", areaLines);
+	//areaLines->setWidget(test);
+
+	QScrollArea * areaPeers = new QScrollArea(splitter);
+	m_peerswidget = new SwitchBoardWindow(areaPeers);
+	engine->setWindow(m_peerswidget);
+	m_peerswidget->setEngine(engine);
+	areaPeers->setWidget(m_peerswidget);
+
+	QLabel * test2 = new QLabel("Queues", splitter);
+
+	splitter->addWidget(areaCalls);
+	splitter->addWidget(areaPeers);
+	splitter->addWidget(test2);
+
+	setCentralWidget(splitter);
 	//statusBar()->showMessage("test");
 	connect(m_engine, SIGNAL(emitTextMessage(const QString &)),
 	        statusBar(), SLOT(showMessage(const QString &)));
@@ -48,12 +79,13 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 
 	QMenu * helpmenu = menuBar()->addMenu(tr("&Help"));
 
+	helpmenu->addAction(tr("&About"), this, SLOT(about()));
 	helpmenu->addAction(tr("About &Qt"), qApp, SLOT(aboutQt()));
 }
 
 void MainWindow::showConfDialog()
 {
-	SwitchBoardConfDialog * conf = new SwitchBoardConfDialog(m_engine, m_widget, this);
+	SwitchBoardConfDialog * conf = new SwitchBoardConfDialog(m_engine, m_peerswidget, this);
 	qDebug() << "<<  " << conf->exec();
 }
 
@@ -68,3 +100,12 @@ void MainWindow::engineStopped()
 	m_stopact->setDisabled(true);
 	m_startact->setEnabled(true);
 }
+
+void MainWindow::about()
+{
+	QString applicationVersion("0.1");
+	QMessageBox::about(this, tr("About XIVO SwitchBoard"),
+	                   tr("<h3>About</h3>"
+					      "<p>To be continued</p>") );
+}
+
