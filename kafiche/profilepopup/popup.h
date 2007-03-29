@@ -42,6 +42,10 @@ public:
 	void addInfoPicture(const QString & name, const QString & value);
 	//! Add a Phone number
 	void addInfoPhone(const QString & name, const QString & value);
+	//! getter for the message
+	void setMessage(const QString & msg);
+	//! access to the message
+	const QString & message() const;
 	//! finalize the Construction of the window and show it
 	void finishAndShow();
 signals:
@@ -68,6 +72,8 @@ private:
 	QVBoxLayout * m_vlayout;
 	//! Session id with the server in order to check the incoming message
 	QString m_sessionid;
+	//! Message property
+	QString m_message;
 };
 
 #endif

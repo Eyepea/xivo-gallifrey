@@ -42,11 +42,16 @@ bool XmlHandler::startElement( const QString & /*namespaceURI*/,
                                const QXmlAttributes & atts )
 {
 	qDebug() << "XmlHandler::startElement(" << localName << ")";
-	if( localName == QString("info") )
+	if( localName == "info" )
 	{
 		m_isParsingInfo = true;
 		m_infoType = atts.value("type");
 		m_infoName = atts.value("name");
+		m_infoValue = "";
+	}
+	else if( localName == "message" )
+	{
+		m_isParsingInfo = true;
 		m_infoValue = "";
 	}
 	else
@@ -90,6 +95,12 @@ bool XmlHandler::endElement( const QString & /*namespaceURI*/,
 			if(m_popup)
 				m_popup->addInfoPhone( m_infoName, m_infoValue );
 		}
+	}
+	else if( localName == "message" )
+	{
+		qDebug() << m_infoValue;
+		if(m_popup)
+			m_popup->setMessage( m_infoValue );
 	}
 /*	else if( localName == QString("profile") )
 	{

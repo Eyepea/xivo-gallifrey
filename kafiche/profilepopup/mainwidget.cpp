@@ -277,9 +277,9 @@ void MainWidget::showNewProfile(Popup * popup)
 	QString currentTimeStr = currentTime.toString("hh:mm:ss");
 	if(m_systrayIcon)
 	{
-		// TODO : display a better message.
 		m_systrayIcon->showMessage(tr("Incoming call"),
-		                           currentTimeStr + tr(" Incoming call"));
+		                           currentTimeStr + "\n"
+								   + popup->message() );
 	}
 	if(m_tabwidget)
 	{

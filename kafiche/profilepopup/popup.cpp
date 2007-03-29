@@ -177,3 +177,12 @@ void Popup::closeEvent(QCloseEvent * event)
 	qDebug() << "Popup::closeEvent(" << event << ")";
 }
 
+void Popup::setMessage(const QString & message)
+{
+	m_message = message;
+}
+
+const QString & Popup::message() const
+{
+	return m_message;
+}
