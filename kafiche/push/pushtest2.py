@@ -26,6 +26,7 @@ sessionid = z.get('sessionid')
 clientaddress = z.get('address')
 
 fiche = generefiche.Fiche(sessionid)
+fiche.setmessage('test de message')
 fiche.addinfo('Nom', 'text', 'Schiffer')
 fiche.addinfo('Prénom', 'text', 'Claudia')
 fiche.addinfo('Numéro', 'phone', '+33 1 42 42 42 42')

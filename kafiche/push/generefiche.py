@@ -12,16 +12,22 @@ class Fiche:
 	def __init__(self, sessionid=''):
 		self.sessionid = sessionid
 		self.infos = []
+		self.message = ''
 	def __str__(self):
 		return "Fiche : sessionid=" + self.sessionid + " infos=" + str(self.infos)
 	def addinfo(self, name, type, value):
 		"""add a field in the profile"""
 		self.infos.append( (name, type, value) )
+	def setmessage(self, msg):
+		"""set the message to be displayed in systray message"""
+		self.message = msg
 	def getxml(self):
 		"""get a string containing the xml"""
 		s = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
 		s += '<profile sessionid="' + self.sessionid + '">\n'
 		s += '<user>\n'
+		if len(self.message)>0:
+			s += '<message>' + self.message + '</message>\n'
 		for (name, type, value) in self.infos:
 			s += '<info name="' + name + '" type="' + type + '">'
 			s += '<![CDATA[' + value + ']]>'
