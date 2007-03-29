@@ -13,67 +13,97 @@ PeerWidget::PeerWidget(const QString & txtlbl, SwitchBoardEngine * engine,
 {
 	QHBoxLayout * layout = new QHBoxLayout(this);
 	m_statelbl = new QLabel(this);
+	m_availlbl = new QLabel(this);
 	m_square.fill( Qt::gray );
 	m_statelbl->setPixmap( m_square );
-	layout->addWidget( m_statelbl );
+	m_availlbl->setPixmap( m_square );
+	layout->addWidget( m_statelbl, 0, Qt::AlignLeft );
+	layout->addWidget( m_availlbl, 0, Qt::AlignLeft );
 	m_textlbl = new QLabel(txtlbl, this);
-	layout->addWidget( m_textlbl );
+	layout->addWidget( m_textlbl, 1, Qt::AlignRight );
 	// to be able to receive drop
 	setAcceptDrops(true);
 }
 
-void PeerWidget::setRed()
+void PeerWidget::setRed(int n)
 {
 	m_square.fill( Qt::red );
-	m_statelbl->setPixmap( m_square );
+	if(n == 0)
+	  m_statelbl->setPixmap( m_square );
+	else
+	  m_availlbl->setPixmap( m_square );
 }
 
-void PeerWidget::setBlack()
+void PeerWidget::setBlack(int n)
 {
 	m_square.fill( Qt::black );
-	m_statelbl->setPixmap( m_square );
+	if(n == 0)
+	  m_statelbl->setPixmap( m_square );
+	else
+	  m_availlbl->setPixmap( m_square );
 }
 
-void PeerWidget::setDarkGreen()
+void PeerWidget::setDarkGreen(int n)
 {
 	m_square.fill( Qt::darkGreen );
-	m_statelbl->setPixmap( m_square );
+	if(n == 0)
+	  m_statelbl->setPixmap( m_square );
+	else
+	  m_availlbl->setPixmap( m_square );
 }
 
-void PeerWidget::setGreen()
+void PeerWidget::setGreen(int n)
 {
 	m_square.fill( Qt::green );
-	m_statelbl->setPixmap( m_square );
+	if(n == 0)
+	  m_statelbl->setPixmap( m_square );
+	else
+	  m_availlbl->setPixmap( m_square );
 }
 
-void PeerWidget::setGray()
+void PeerWidget::setGray(int n)
 {
 	m_square.fill( Qt::gray );
-	m_statelbl->setPixmap( m_square );
+	if(n == 0)
+	  m_statelbl->setPixmap( m_square );
+	else
+	  m_availlbl->setPixmap( m_square );
 }
 
-void PeerWidget::setBlue()
+void PeerWidget::setBlue(int n)
 {
 	m_square.fill( Qt::blue );
-	m_statelbl->setPixmap( m_square );
+	if(n == 0)
+	  m_statelbl->setPixmap( m_square );
+	else
+	  m_availlbl->setPixmap( m_square );
 }
 
-void PeerWidget::setCyan()
+void PeerWidget::setCyan(int n)
 {
 	m_square.fill( Qt::cyan );
-	m_statelbl->setPixmap( m_square );
+	if(n == 0)
+	  m_statelbl->setPixmap( m_square );
+	else
+	  m_availlbl->setPixmap( m_square );
 }
 
-void PeerWidget::setYellow()
+void PeerWidget::setYellow(int n)
 {
 	m_square.fill( Qt::yellow );
-	m_statelbl->setPixmap( m_square );
+	if(n == 0)
+	  m_statelbl->setPixmap( m_square );
+	else
+	  m_availlbl->setPixmap( m_square );
 }
 
-void PeerWidget::setOrange()
+void PeerWidget::setOrange(int n)
 {
 	m_square.fill( QColor(255,127,0) );
-	m_statelbl->setPixmap( m_square );
+	if(n == 0)
+	  m_statelbl->setPixmap( m_square );
+	else
+	  m_availlbl->setPixmap( m_square );
 }
 
 void PeerWidget::mousePressEvent(QMouseEvent *event)

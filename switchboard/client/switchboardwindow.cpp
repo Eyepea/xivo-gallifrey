@@ -28,20 +28,23 @@ void Peer::updateStatus(const QString & status,
 			const QString & corrname)
 {
 //	qDebug() << status;
-  if(avail == "doesnotdisturb")
-    m_peerwidget->setBlack();
+  if(avail == "available")
+    m_peerwidget->setGreen(1);
   else if(avail == "away")
-    m_peerwidget->setDarkGreen();
-  else if(status == "Ready")
-    m_peerwidget->setGreen();
+    m_peerwidget->setDarkGreen(1);
+  else if(avail == "doesnotdisturb")
+    m_peerwidget->setRed(1);
+
+  if(status == "Ready")
+    m_peerwidget->setGreen(0);
   else if(status == "Ringing")
-    m_peerwidget->setCyan();
+    m_peerwidget->setCyan(0);
   else if(status == "Calling")
-    m_peerwidget->setYellow();
+    m_peerwidget->setYellow(0);
   else if(status == "On the phone")
-		m_peerwidget->setRed();
+    m_peerwidget->setRed(0);
   else
-    m_peerwidget->setGray();
+    m_peerwidget->setGray(0);
 
   if(corrname == "")
     m_peerwidget->setToolTip(status);
