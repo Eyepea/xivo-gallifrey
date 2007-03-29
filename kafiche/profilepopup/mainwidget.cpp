@@ -197,8 +197,6 @@ void MainWidget::createSystrayIcon()
  * m_engine, and then show it. */
 void MainWidget::popupConf()
 {
-	// TODO : prevent the user from opening several confWidget
-	// show, bring to foreground if one is allready existing.
 	ConfWidget * conf = new ConfWidget(m_engine, this);
 	conf->show();
 }
@@ -252,7 +250,6 @@ void MainWidget::systrayMsgClicked()
 //! Enable the Start Button and set the red indicator
 void MainWidget::setDisconnected()
 {
-	//m_btnstart->setEnabled(true);
 	m_connectact->setEnabled(true);
 	m_disconnectact->setEnabled(false);
 	if(m_systrayIcon)
@@ -263,7 +260,6 @@ void MainWidget::setDisconnected()
 //! Disable the Start Button and set the green indicator
 void MainWidget::setConnected()
 {
-	//m_btnstart->setEnabled(false);
 	m_connectact->setEnabled(false);
 	m_disconnectact->setEnabled(true);
 	if(m_systrayIcon)
@@ -318,7 +314,8 @@ void MainWidget::hideEvent(QHideEvent *event)
 	//	event->ignore();
 	//else
 		event->accept();
-	setVisible(false);
+	if( QSystemTrayIcon::isSystemTrayAvailable() )
+		setVisible(false);
 }
 
 /*! \brief Catch the Close event
@@ -331,7 +328,10 @@ void MainWidget::closeEvent(QCloseEvent *event)
 {
 	qDebug() << "MainWidget::closeEvent()";
 	//event->accept();
-	setVisible( false );
+	if( QSystemTrayIcon::isSystemTrayAvailable() )
+		setVisible( false );
+	else
+		showMinimized();
 	event->ignore();
 }
 
@@ -352,8 +352,8 @@ void MainWidget::changeEvent(QEvent *event)
 void MainWidget::about()
 {
 	QString applicationVersion("0.1");
-	QMessageBox::about(this, tr("About Kafiche"),
-	  tr("<h3>About Kafiche</h3>"
+	QMessageBox::about(this, tr("About XIVO client"),
+	  tr("<h3>About XIVO client</h3>"
 	     "<p>This application show to the user the profile associated"
 	     " with incoming phone calls.</p>"
 		 "<p>Version : %1</p>"
