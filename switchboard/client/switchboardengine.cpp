@@ -147,14 +147,14 @@ void SwitchBoardEngine::socketReadyRead()
 				QStringList listpeers = list[1].split(";");
 				for(int i = 0 ; i < listpeers.size() - 1; i++) {
 					QStringList liststatus = listpeers[i].split(":");
-					m_window->updatePeer(liststatus[0] + "/" + liststatus[1],
-							     liststatus[3], liststatus[4], liststatus[5]);
+					m_window->updatePeer(liststatus[1] + "/" + liststatus[3],
+							     liststatus[4], liststatus[5], liststatus[6]);
 				}
 				b = true;
 			} else if(list[0] == QString("update")) {
 				QStringList liststatus = list[1].split(":");
-				m_window->updatePeer(liststatus[0] + "/" + liststatus[1],
-						     liststatus[3], liststatus[4], liststatus[5]);
+				m_window->updatePeer(liststatus[1] + "/" + liststatus[3],
+						     liststatus[4], liststatus[5], liststatus[6]);
 			} else if(list[0] == QString("asterisk")) {
 				QTime currentTime = QTime::currentTime();
 				QString currentTimeStr = currentTime.toString("hh:mm:ss");
@@ -165,8 +165,8 @@ void SwitchBoardEngine::socketReadyRead()
 				for(int i = 0 ; i < listpeers.size() - 1; i++) {
 					QStringList liststatus = listpeers[i].split(":");
 					//m_window->addPeer(liststatus[0] + "/" + liststatus[1], liststatus[2]);
-					m_window->updatePeer(liststatus[0] + "/" + liststatus[1],
-							     liststatus[2], "available", liststatus[3]);
+					m_window->updatePeer(liststatus[1] + "/" + liststatus[3],
+							     liststatus[4], liststatus[5], liststatus[6]);
 				}
 			} else if(list[0] == QString("peerremove")) {
 				QStringList listpeers = list[1].split(";");
