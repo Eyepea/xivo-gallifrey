@@ -12,6 +12,8 @@ PeerWidget::PeerWidget(const QString & txtlbl, SwitchBoardEngine * engine,
 : QWidget(parent), m_square(size,size), m_engine(engine)
 {
 	QHBoxLayout * layout = new QHBoxLayout(this);
+	layout->setSpacing(2);
+	layout->setMargin(2);
 	m_statelbl = new QLabel(this);
 	m_availlbl = new QLabel(this);
 	m_square.fill( Qt::gray );
@@ -54,6 +56,7 @@ void PeerWidget::setDarkGreen(int n)
 
 void PeerWidget::setGreen(int n)
 {
+	//qDebug() << this << "setGreen" << n;
 	m_square.fill( Qt::green );
 	if(n == 0)
 	  m_statelbl->setPixmap( m_square );

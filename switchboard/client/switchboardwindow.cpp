@@ -1,6 +1,7 @@
+#include <QDebug>
+#include <QLabel>
 #include <QGridLayout>
 #include <QPushButton>
-#include <QDebug>
 #include <QToolTip>
 #include <QPoint>
 #include <QSettings>
@@ -27,7 +28,7 @@ void Peer::updateStatus(const QString & status,
 			const QString & avail,
 			const QString & corrname)
 {
-//	qDebug() << status;
+//	qDebug() << status << avail << corrname;
   if(avail == "available")
     m_peerwidget->setGreen(1);
   else if(avail == "away")
@@ -67,7 +68,7 @@ SwitchBoardWindow::SwitchBoardWindow(QWidget * parent)
 : QWidget(parent), m_engine(0)
 {
 	m_layout = new QGridLayout(this);
-	m_layout->setSpacing(2);
+	//m_layout->setSpacing(2);
 	m_x = 0;
 	m_y = 0;
 	QSettings settings;
@@ -85,6 +86,7 @@ void SwitchBoardWindow::updatePeer(const QString & ext,
 				   const QString & corrname)
 {
 	int i;
+	qDebug() << " updatePeer:" << ext << status << avail << corrname;
 	// first search in the peerlist
 	for(i=0; i<m_peerlist.count(); i++)
 	{
@@ -96,6 +98,7 @@ void SwitchBoardWindow::updatePeer(const QString & ext,
 		}
 	}
 	// if not found in the peerlist, create a new Peer
+	//qDebug() << "create new peer widget";
 	Peer peer(ext);
 	PeerWidget * peerwidget = new PeerWidget(ext, m_engine, this);
 	m_layout->addWidget( peerwidget, m_y, m_x++ );
@@ -107,6 +110,8 @@ void SwitchBoardWindow::updatePeer(const QString & ext,
 	peer.setWidget(peerwidget);
 	peer.updateStatus(status, avail, corrname);
 	m_peerlist << peer;
+	//qDebug() << "size=" << size()
+	//         << " grid" << m_layout->rowCount() << m_layout->columnCount();
 }
 
 /*

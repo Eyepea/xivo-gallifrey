@@ -24,27 +24,31 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 
 	QScrollArea * areaCalls = new QScrollArea(splitter);
 	CallStackWidget * calls = new CallStackWidget(areaCalls);
+	connect( m_engine, SIGNAL(updateCall(const QString &, const QString &, const QString &, const QString &)), calls, SLOT(addCall(const QString &, const QString &, const QString &, const QString &)) );
 	// test
-	calls->addCall("test1234");
-	calls->addCall("test1234");
-	calls->addCall("test1234");
-	calls->addCall("test1234");
-	calls->addCall("test1234");
-	areaCalls->setWidget(calls);
-	//QLabel * test = new QLabel("Test! --------------------------\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\nz\na\nr", areaLines);
-	//areaLines->setWidget(test);
+	calls->addCall("1234", "Mr Test", "SIP/123-ABCD", "test");
+	//calls->addCall("1235", "Mme Test", "SIP/123-ABCD2");
+	//calls->addCall("1236", "M gloups", "SIP/123-ABCD3");
+	//calls->addCall("1237", "Dr Test", "SIP/123-ABCD4");
+	//calls->addCall("1238", "zozo grop", "SIP/123-ABCD5");
+	//calls->addCall("1239", "palop", "SIP/123-ABCD6");
+	//areaCalls->setWidget(calls);
 
 	QScrollArea * areaPeers = new QScrollArea(splitter);
+	areaPeers->setWidgetResizable(true);
 	m_peerswidget = new SwitchBoardWindow(areaPeers);
 	engine->setWindow(m_peerswidget);
 	m_peerswidget->setEngine(engine);
 	areaPeers->setWidget(m_peerswidget);
+	qDebug() << areaCalls->widget();
+	qDebug() << areaPeers->widget();
 
-	QLabel * test2 = new QLabel("Queues", splitter);
+	//QLabel * test2 = new QLabel("Queues", splitter);
 
-	splitter->addWidget(areaCalls);
-	splitter->addWidget(areaPeers);
-	splitter->addWidget(test2);
+	//splitter->addWidget(areaCalls);
+	//splitter->addWidget(calls);
+	//splitter->addWidget(areaPeers);
+	//splitter->addWidget(test2);
 
 	setCentralWidget(splitter);
 	//statusBar()->showMessage("test");
@@ -86,7 +90,7 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 void MainWindow::showConfDialog()
 {
 	SwitchBoardConfDialog * conf = new SwitchBoardConfDialog(m_engine, m_peerswidget, this);
-	qDebug() << "<<  " << conf->exec();
+	//qDebug() << "<<  " << conf->exec();
 }
 
 void MainWindow::engineStarted()

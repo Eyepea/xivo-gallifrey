@@ -4,6 +4,7 @@
 #include <QStringList>
 #include "switchboardengine.h"
 #include "switchboardwindow.h"
+#include "astchannel.h"
 
 SwitchBoardEngine::SwitchBoardEngine(QObject * parent)
 : QObject(parent)
@@ -11,7 +12,7 @@ SwitchBoardEngine::SwitchBoardEngine(QObject * parent)
 	m_socket = new QTcpSocket(this);
 	m_timer = -1;
 	loadSettings();
-/*
+/*  QTcpSocket signals :
       void connected ()
       void disconnected ()
       void error ( QAbstractSocket::SocketError socketError )
@@ -23,6 +24,7 @@ SwitchBoardEngine::SwitchBoardEngine(QObject * parent)
       void bytesWritten ( qint64 bytes )
       void readyRead ()
 */
+	// Connect socket signals
 	connect(m_socket, SIGNAL(connected()),
 	        this, SLOT(socketConnected()));
 	connect(m_socket, SIGNAL(disconnected()),
@@ -35,6 +37,9 @@ SwitchBoardEngine::SwitchBoardEngine(QObject * parent)
 	connect(m_socket, SIGNAL(readyRead()), this, SLOT(socketReadyRead()));
 }
 
+/*!
+ * Load Settings from the registery/configuration file
+ */
 void SwitchBoardEngine::loadSettings()
 {
 	QSettings settings;
@@ -42,6 +47,9 @@ void SwitchBoardEngine::loadSettings()
 	m_port = settings.value("engine/serverport", 5081).toUInt();
 }
 
+/*!
+ * Save Settings to the registery/configuration file
+ */
 void SwitchBoardEngine::saveSettings()
 {
 	QSettings settings;
@@ -141,7 +149,9 @@ void SwitchBoardEngine::socketReadyRead()
 	{
 		QByteArray data = m_socket->readLine();
 		QString line(data);
+		qDebug() << "<==" << line;
 		QStringList list = line.trimmed().split("=");
+		//qDebug() << "<==" << list.size() << m_window << list[0];
 		if((list.size() == 2) && m_window) {
 			if(list[0] == QString("hints")) {
 				QStringList listpeers = list[1].split(";");
@@ -155,6 +165,15 @@ void SwitchBoardEngine::socketReadyRead()
 				QStringList liststatus = list[1].split(":");
 				m_window->updatePeer(liststatus[1] + "/" + liststatus[3],
 						     liststatus[4], liststatus[5], liststatus[6]);
+				int n = liststatus[6].toInt();
+				for (int i=0; i<n; i++) {
+					// <channel>:<etat du channel>:<nb de secondes dans cet etat>:<to ou from>:<channel en liaison>:<numero en liaison>
+					qDebug() << liststatus[7+6*i] << liststatus[7+6*i+1]
+					         << liststatus[7+6*i+2] << liststatus[7+6*i+3]
+					         << liststatus[7+6*i+4] << liststatus[7+6*i+5];
+					updateCall(liststatus[7+6*i], liststatus[7+6*i+5],
+					           "test1", "test2");
+				}
 			} else if(list[0] == QString("asterisk")) {
 				QTime currentTime = QTime::currentTime();
 				QString currentTimeStr = currentTime.toString("hh:mm:ss");

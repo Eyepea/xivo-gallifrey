@@ -7,9 +7,14 @@ class QVBoxLayout;
 
 class CallStackWidget : public QWidget
 {
+	Q_OBJECT
 public:
 	CallStackWidget(QWidget * parent = 0);
-	void addCall(const QString &);	// il y aura d'autre params :)
+public slots:
+	void addCall(const QString &callerId,
+	             const QString &callerIdName,
+				 const QString &channel,
+				 const QString &ext);
 private:
 	QVBoxLayout * m_layout;
 };
