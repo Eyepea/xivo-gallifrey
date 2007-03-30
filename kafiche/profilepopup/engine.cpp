@@ -325,7 +325,11 @@ void Engine::identifyToTheServer()
 	qDebug() << "Engine::identifyToTheServer()" << m_loginsocket.peerAddress();
 	m_serveraddress = m_loginsocket.peerAddress();
 	outline = "LOGIN ";
-	outline.append(m_serverast + "/");
+	if(m_serverast.length() > 0)
+	{
+		outline.append(m_serverast);
+		outline.append("/");
+	}
 	outline.append(m_login);
 	outline.append("\r\n");
 	m_loginsocket.write(outline.toAscii());
