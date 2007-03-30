@@ -44,7 +44,7 @@ userlist = {}
 userlist_lock = threading.Condition()
 
 pidfile = '/tmp/sip_switchboard_id_daemon.pid'
-bufsize = 2048
+bufsize = 8192
 
 asterisk_login = 'sylvain'
 asterisk_pass = 'sylvain'
@@ -101,23 +101,20 @@ def ami_socket_login(raddr, loginname, events):
 	try:
 		sockid = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		sockid.connect((raddr, port_ami))
-		a = sockid.recv(bufsize)
+		sockid.recv(bufsize)
 		# check against "Asterisk Call Manager/1.0\r\n"
 		if events == 0:
 			sockid.send("Action: login\r\nUsername: " + loginname + "\r\nSecret: " + loginname + "\r\nEvents: off\r\n\r\n");
 		else:
 			sockid.send("Action: login\r\nUsername: " + loginname + "\r\nSecret: " + loginname + "\r\nEvents: on\r\n\r\n");
-		a = sockid.recv(bufsize)
 		# check against "Message: Authentication accepted\r\n"
 	except:
 		sockid = 0
 	return sockid
 
+# sends a Status command
 def ami_socket_status(sockid):
 	sockid.send("Action: Status\r\n\r\n")
-	a = sockid.recv(bufsize)
-	return a
-
 
 # reading of the CSeq / message type (REGISTER, OPTION, SUBSCRIBE, ...)
 #                callid / address / # of lines / return code (200, 404, 484, ...)
@@ -331,36 +328,61 @@ class AMI:
 				self.redirect(ch['Link'], dst, 'local-extensions')
 
 
+# builds the full list of phone statuses in order to send them to the requesting client
 def build_statuses():
 	global configs, phonelists
 	fullstat = "hints="
-	for astnum in [0, 1]:
+	for astnum in items_asterisks:
 		sskeys = phonelists[astnum].keys()
 		sskeys.sort()
 		for ss in sskeys:
-			fullstat += configs[astnum].astid + ":" \
-				    + ss + ":" \
+			phoneinfo = "000:" + configs[astnum].astid + ":" \
 				    + phonelists[astnum][ss].tech + ":" \
-				    + phonelists[astnum][ss].status + ":" \
+				    + ss + ":" \
 				    + phonelists[astnum][ss].imstat + ":" \
-				    + phonelists[astnum][ss].peername \
-				    + ";"
+				    + phonelists[astnum][ss].sipstatus
+
+			aaa = ""
+			nchans = len(phonelists[astnum][ss].chans)
+			for chan in phonelists[astnum][ss].chans.keys():
+				aaa += ":" + chan + ":" + phonelists[astnum][ss].chans[chan][0] + ":" + \
+				       str(phonelists[astnum][ss].chans[chan][1]) + ":" + \
+				       phonelists[astnum][ss].chans[chan][2] + ":" + \
+				       phonelists[astnum][ss].chans[chan][3] + ":" + \
+				       phonelists[astnum][ss].chans[chan][4]
+
+			fullstat += phoneinfo + ":" + str(nchans) + aaa + ";"
 	fullstat += "\n"
 	return fullstat
 
 
-def update_GUI_clients(config, astnum, sipphone):
+# sends a status update to all the connected xivo-switchboard(-like) clients
+def update_GUI_clients(config, astnum, sipphone, who):
 	global tcpopens, phonelists
+
+	phoneinfo = who + ":" \
+		    + config.astid + ":" \
+		    + phonelists[astnum][sipphone].tech + ":" \
+		    + sipphone +":" \
+		    + phonelists[astnum][sipphone].imstat + ":" \
+		    + phonelists[astnum][sipphone].sipstatus
+
+	aaa = ""
+	nchans = len(phonelists[astnum][sipphone].chans)
+	for chan in phonelists[astnum][sipphone].chans.keys():
+		aaa += ":" + chan + ":" + phonelists[astnum][sipphone].chans[chan][0] + ":" + \
+		       str(phonelists[astnum][sipphone].chans[chan][1]) + ":" + \
+		       phonelists[astnum][sipphone].chans[chan][2] + ":" + \
+		       phonelists[astnum][sipphone].chans[chan][3] + ":" + \
+		       phonelists[astnum][sipphone].chans[chan][4]
+
 	for tcpclient in tcpopens:
-		tcpclient[0].send("update=" + config.astid + ":" \
-				  + sipphone + ":" \
-				  + phonelists[astnum][sipphone].tech + ":" \
-				  + phonelists[astnum][sipphone].status + ":" \
-				  + phonelists[astnum][sipphone].imstat + ":" \
-				  + phonelists[astnum][sipphone].peername \
-				  + "\n")
+		try:
+			tcpclient[0].send("update=" + phoneinfo + ":" + str(nchans) + aaa + "\n")
+		except:
+			print "send has failed on", tcpclient[0]
 
-
+# the incoming SIP messages are parsed (usually as a reply to a formerly sent message)
 def parseSIP(cfg, data, l_sipsock, l_addrsip, astnum):
     global tcpopens, phonelists, sipnumlists
     spret = 0
@@ -375,10 +397,9 @@ def parseSIP(cfg, data, l_sipsock, l_addrsip, astnum):
 	if sipphone in sipnumlists[astnum]: # else : send sth anyway ?
 	    phonelists[astnum][sipphone].set_lasttime(time.time())
             if iret != 200:
-		    if phonelists[astnum][sipphone].status != "Fail" + str(iret):
-			    phonelists[astnum][sipphone].set_status("Fail" + str(iret))
-			    phonelists[astnum][sipphone].set_peername("")
-			    update_GUI_clients(cfg, astnum, sipphone)
+		    if phonelists[astnum][sipphone].sipstatus != "Fail" + str(iret):
+			    phonelists[astnum][sipphone].set_sipstatus("Fail" + str(iret))
+			    update_GUI_clients(cfg, astnum, sipphone, "sip")
     if imsg == "OPTIONS" or imsg == "NOTIFY":
         command = sip.sip_ok(cfg, "sip:" + cfg.mysipname, icseq, icid, iaddr, imsg, ibranch, itag)
         l_sipsock.sendto(command,(cfg.remoteaddr, l_addrsip[1]))
@@ -388,11 +409,9 @@ def parseSIP(cfg, data, l_sipsock, l_addrsip, astnum):
 			sipphone = stat.split(":")[0]
 			sstatus = stat.split(":")[1]
 			phonelists[astnum][sipphone].set_lasttime(time.time())
-			if phonelists[astnum][sipphone].status != sstatus:
-				phonelists[astnum][sipphone].set_status(sstatus)
-				if sstatus == "Ready":
-					phonelists[astnum][sipphone].set_peername("")
-				update_GUI_clients(cfg, astnum, sipphone)
+			if phonelists[astnum][sipphone].sipstatus != sstatus:
+				phonelists[astnum][sipphone].set_sipstatus(sstatus)
+				update_GUI_clients(cfg, astnum, sipphone, "sip")
         else:
 		spret = 1
     return spret
@@ -401,7 +420,10 @@ def manage_connection(connid):
     global AMIconns
     global AMIcomms
     connid[0].setblocking(0)
-    msg = connid[0].recv(bufsize)
+    try:
+	    msg = connid[0].recv(bufsize)
+    except:
+	    print "pb occurred"
     if len(msg) == 0:
         print "TCP socket closed from", connid[1], connid[2]
         connid[0].close()
@@ -435,33 +457,54 @@ def manage_connection(connid):
 					    if ch.has_key('CallerID') and ch['CallerID'] == l[2]:
 						    AMIconns[l[1]].hangup(ch['Channel'])
 
-def handle_ami_event_dial(listkeys, astnum, src, dst, clid):
+def handle_ami_event_dial(listkeys, astnum, src, dst, clid, clidn):
 	if src.find("SIP/") == 0:
 		sipnum = src.split("-")[0].split("/")[1]
 		if sipnum in listkeys:
-			phonelists[astnum][sipnum].set_peername("to " + dst)
-			phonelists[astnum][sipnum].set_status("Calling")
-			update_GUI_clients(configs[astnum], astnum, sipnum)
+			phonelists[astnum][sipnum].set_chan(src, "Calling", 0, "to", dst, "")
+			update_GUI_clients(configs[astnum], astnum, sipnum, "ami-ed")
+		else:
+			print "warning :", sipnum, "does not belong to our phone list"
+	else:
+		print "handle_ami_event_dial src", src
 	if dst.find("SIP/") == 0:
 		sipnum = dst.split("-")[0].split("/")[1]
 		if sipnum in listkeys:
-			phonelists[astnum][sipnum].set_peername("from " + src + " " + clid)
-			phonelists[astnum][sipnum].set_status("Ringing")
-			update_GUI_clients(configs[astnum], astnum, sipnum)
+			phonelists[astnum][sipnum].set_chan(dst, "Ringing", 0, "from", src, clid)
+			update_GUI_clients(configs[astnum], astnum, sipnum, "ami-ed")
+		else:
+			print "warning :", sipnum, "does not belong to our phone list"
+	else:
+		print "handle_ami_event_dial dst", dst
 
 def handle_ami_event_link(listkeys, astnum, src, dst, clid1, clid2):
 	if src.find("SIP/") == 0:
 		sipnum = src.split("-")[0].split("/")[1]
 		if sipnum in listkeys:
-			phonelists[astnum][sipnum].set_peername("to " + dst + " " + clid2)
-			phonelists[astnum][sipnum].set_status("On the phone")
-			update_GUI_clients(configs[astnum], astnum, sipnum)
+			phonelists[astnum][sipnum].set_chan(src, "On the phone", 0, "to", dst, clid2)
+			update_GUI_clients(configs[astnum], astnum, sipnum, "ami-el")
+		else:
+			print "warning :", sipnum, "does not belong to our phone list"
+	else:
+		print "handle_ami_event_link src", src
 	if dst.find("SIP/") == 0:
 		sipnum = dst.split("-")[0].split("/")[1]
 		if sipnum in listkeys:
-			phonelists[astnum][sipnum].set_peername("from " + src + " " + clid1)
-			phonelists[astnum][sipnum].set_status("On the phone")
-			update_GUI_clients(configs[astnum], astnum, sipnum)
+			phonelists[astnum][sipnum].set_chan(dst, "On the phone", 0, "from", src, clid1)
+			update_GUI_clients(configs[astnum], astnum, sipnum, "ami-el")
+		else:
+			print "warning :", sipnum, "does not belong to our phone list"
+	else:
+		print "handle_ami_event_link dst", dst
+
+def handle_ami_event_hangup(listkeys, astnum, chan, cause):
+	if chan.find("SIP/") == 0:
+		sipnum = chan.split("-")[0].split("/")[1]
+		if sipnum in listkeys:
+			phonelists[astnum][sipnum].del_chan(chan)
+			update_GUI_clients(configs[astnum], astnum, sipnum, "ami-eh")
+		else:
+			print "warning :", sipnum, "does not belong to our phone list"
 
 # handling of AMI events
 def handle_ami_event(astnum, idata):
@@ -472,35 +515,137 @@ def handle_ami_event(astnum, idata):
 	ldata = kdata.replace(";;", "\n")
 
 	for x in ldata.split("\n"):
-		if x.find("Dial") == 7:
-			src = x.split("Source: ")[1].split(";")[0]
-			dst = x.split("Destination: ")[1].split(";")[0]
-			clid = x.split("CallerID: ")[1].split(";")[0]
-			handle_ami_event_dial(listkeys, astnum, src, dst, clid)
-		elif x.find("Link") == 7:
-			src = x.split("Channel1: ")[1].split(";")[0]
-			dst = x.split("Channel2: ")[1].split(";")[0]
-			clid1 = x.split("CallerID1: ")[1].split(";")[0]
-			clid2 = x.split("CallerID2: ")[1].split(";")[0]
+		if x.find("Dial;") == 7:
+#			print x
+			src = x.split(";Source: ")[1].split(";")[0]
+			dst = x.split(";Destination: ")[1].split(";")[0]
+			clid = x.split(";CallerID: ")[1].split(";")[0]
+			clidn = x.split(";CallerIDName: ")[1].split(";")[0]
+			handle_ami_event_dial(listkeys, astnum, src, dst, clid, clidn)
+		elif x.find("Link;") == 7:
+			src = x.split(";Channel1: ")[1].split(";")[0]
+			dst = x.split(";Channel2: ")[1].split(";")[0]
+			clid1 = x.split(";CallerID1: ")[1].split(";")[0]
+			clid2 = x.split(";CallerID2: ")[1].split(";")[0]
 			handle_ami_event_link(listkeys, astnum, src, dst, clid1, clid2)
-		elif x.find("Unlink") == 7:
-			src = x.split("Channel1: ")[1].split(";")[0]
-			dst = x.split("Channel2: ")[1].split(";")[0]
-		elif x.find("Join") == 7:
-			clidq = x.split("CallerID: ")[1].split(";")[0]
-			queuenamej = x.split("Queue: ")[1].split(";")[0]
-			for k in tcpopens:
-				k[0].send("asterisk=<" + clidq + "> is calling the Queue <" + queuenamej + ">\n")
-		elif x.find("QueueMemberStatus") == 7:
-			queuenameq = x.split("Queue: ")[1].split(";")[0]
-			location = x.split("Location: ")[1].split(";")[0]
-			status = x.split("Status: ")[1].split(";")[0]
-			queuemembers[location] = 1
-			zstr = ""
-			for q in queuemembers.keys():
-				zstr += " " + q
-			for k in tcpopens:
-				k[0].send("asterisk=<" + clidq + "> is calling the Queue <" + queuenamej + "> :" + zstr + "\n")
+		elif x.find("Unlink;") == 7:
+			print x
+			chan1 = x.split(";Channel1: ")[1].split(";")[0]
+			chan2 = x.split(";Channel2: ")[1].split(";")[0]
+			cid1 = x.split(";CallerID1: ")[1].split(";")[0]
+			cid2 = x.split(";CallerID2: ")[1].split(";")[0]
+		elif x.find("Hangup;") == 7:
+			chan = x.split(";Channel: ")[1].split(";")[0]
+			cause = x.split(";Cause-txt: ")[1].split(";")[0]
+			handle_ami_event_hangup(listkeys, astnum, chan, cause)
+		elif x.find("Reload;") == 7:
+			print "Reloading Asterisk : ", configs[astnum].astid
+		elif x.find("Join;") == 7:
+			clidq = x.split(";CallerID: ")[1].split(";")[0]
+			queuenamej = x.split(";Queue: ")[1].split(";")[0]
+			if queuenamej in queuemembers.keys():
+				zstr = ""
+				for q in queuemembers[queuenamej].keys():
+					zstr += " " + q
+				if len(clidq) > 0:
+					for k in tcpopens:
+						k[0].send("asterisk=<" + clidq + "> is calling the Queue <" + queuenamej + "> :" + zstr + "\n")
+			else:
+				print "#### queue", queuenamej, "not defined !"
+				if len(clidq) > 0:
+					for k in tcpopens:
+						k[0].send("asterisk=<" + clidq + "> is calling the Queue <" + queuenamej + ">\n")
+		elif x.find("PeerStatus;") == 7:
+			abc = 0
+		elif x.find("MeetmeJoin;") == 7:
+			abc = 0
+		elif x.find("MeetmeLeave;") == 7:
+			abc = 0
+		elif x.find("Rename;") == 7:
+			abc = 0
+		elif x.find("Newstate;") == 7:
+			abc = 0
+		elif x.find("ExtensionStatus;") == 7:
+			abc = 0
+		elif x.find("Newcallerid;") == 7:
+			abc = 0
+		elif x.find("Newchannel;") == 7:
+			chan = x.split(";Channel: ")[1].split(";")[0]
+			clid = x.split(";CallerID: ")[1].split(";")[0]
+			if not (clid == "" or (clid == "<unknown>" and chan.find("SIP/") == 0)):
+				for k in tcpopens:
+					k[0].send("asterisk=<" + clid + "> is entering the Asterisk <" + configs[astnum].astid + "> through " + chan + "\n")
+		elif x.find("MessageWaiting;") == 7:
+			print "MWI", x.split(";Mailbox: ")[1].split(";")[0], \
+			      x.split(";Waiting: ")[1].split(";")[0], \
+			      x.split(";New: ")[1].split(";")[0], \
+			      x.split(";Old: ")[1].split(";")[0]
+		elif x.find("Newexten;") == 7: # in order to handle outgoing calls ?
+			chan = x.split(";Channel: ")[1].split(";")[0]
+			exten = x.split(";Extension: ")[1].split(";")[0]
+			if exten != "s" and exten != "h" and exten != "t":
+#				print "--- exten :", chan, exten
+				if chan.find("SIP/") == 0:
+					sipnum = chan.split("-")[0].split("/")[1]
+					if sipnum in listkeys:
+						phonelists[astnum][sipnum].set_chan(chan, "Calling", 0, "to", "", exten)
+						update_GUI_clients(configs[astnum], astnum, sipnum, "ami-en")
+					else:
+						print "warning :", sipnum, "does not belong to our phone list"
+		elif x.find("QueueMemberStatus;") == 7:
+			print x
+			queuenameq = x.split(";Queue: ")[1].split(";")[0]
+			location = x.split(";Location: ")[1].split(";")[0]
+			status = x.split(";Status: ")[1].split(";")[0]
+			if queuenameq not in queuemembers.keys():
+				queuemembers[queuenameq] = {}
+			queuemembers[queuenameq][location] = 1
+		elif x.find("Leave;") == 7:
+			queuenameq = x.split(";Queue: ")[1].split(";")[0]
+			print "leaving the queue ", queuenameq
+		else:
+			if len(x) > 0:
+				print "      <" + x + ">"
+
+# handling of AMI events for the status
+def handle_ami_event_status(astnum, idata):
+	global phonelists, configs, queuenamej, clidq, queuemembers
+	listkeys = phonelists[astnum].keys()
+	# we assume no ";" character is present in AMI events fields
+	kdata = idata.replace("\r\n", ";")
+	ldata = kdata.replace(";;", "\n")
+
+	for x in ldata.split("\n"):
+##		if len(x) > 0:
+##			print "statuses --FULL--", x
+		if x.find("Status;") == 7:
+			if x.find(";State: Up;") >= 0:
+				if x.find(";Seconds: ") >= 0:
+					chan = x.split(";Channel: ")[1].split(";")[0]
+					clid = x.split(";CallerID: ")[1].split(";")[0]
+					exten = x.split(";Extension: ")[1].split(";")[0]
+					seconds = x.split(";Seconds: ")[1].split(";")[0]
+					if x.find(";Link: ") >= 0:
+						link = x.split(";Link: ")[1].split(";")[0]
+#						print "statuses up --------", chan, clid, exten, seconds, link
+						if link.find("SIP/") == 0:
+							sipnum = link.split("-")[0].split("/")[1]
+							phonelists[astnum][sipnum].set_chan(link, "On the phone", int(seconds), "from", chan, clid)
+							update_GUI_clients(configs[astnum], astnum, sipnum, "001")
+						if chan.find("SIP/") == 0:
+							sipnum = chan.split("-")[0].split("/")[1]
+							phonelists[astnum][sipnum].set_chan(chan, "On the phone", int(seconds), "to", link, exten)
+							update_GUI_clients(configs[astnum], astnum, sipnum, "001")
+					else:
+						print "statuses up --------", chan, clid, exten, seconds
+			elif x.find(";State: Ring;") >= 0:
+				print "statuses to --------", \
+				      x.split(";Channel: ")[1].split(";")[0], \
+				      x.split(";Extension: ")[1].split(";")[0], \
+				      x.split(";Seconds: ")[1].split(";")[0]
+			elif x.find(";State: Ringing;") >= 0:
+				print "statuses fr --------", \
+					  x.split(";Channel: ")[1].split(";")[0]
 
 # sends a SIP register + n x SIP subscribe messages
 def do_sip_register_subscribe(cfg, l_sipsock, astnum):
@@ -510,14 +655,17 @@ def do_sip_register_subscribe(cfg, l_sipsock, astnum):
         k[0].send("asterisk=will_register_" + cfg.astid + "\n")
     command = sip.sip_register(cfg, "sip:" + cfg.mysipname, 1, "reg_cid@xivopy", expires)
     l_sipsock.sendto(command, (cfg.remoteaddr, port_sip_srv))
+##    command = sip.sip_options(cfg, "sip:" + cfg.mysipname, "testoptions@xivopy", "107")
+##    l_sipsock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+##    l_sipsock.sendto(command, ("192.168.0.255", 5060))
+
     for sipnum in sipnumlists[astnum]:
 	dtnow = time.time() - phonelists[astnum][sipnum].lasttime
         if dtnow > (2 * timeout_between_registers):
 		#		print dtnow
-		if phonelists[astnum][sipnum].status != "Timeout":
-			phonelists[astnum][sipnum].set_status("Timeout")
-			phonelists[astnum][sipnum].set_peername("")
-			update_GUI_clients(cfg, astnum, sipnum)
+		if phonelists[astnum][sipnum].sipstatus != "Timeout":
+			phonelists[astnum][sipnum].set_sipstatus("Timeout")
+			update_GUI_clients(cfg, astnum, sipnum, "sip")
         command = sip.sip_subscribe(cfg, "sip:" + cfg.mysipname,
 				    1, rdc + "subscribexivo_" + sipnum + "@" + cfg.localaddr,
 				    sipnum, expires)
@@ -542,12 +690,12 @@ def update_sipnumlist(cfg, astnum):
 		for snl in sipnumlistold:
 			if snl not in sipnumlistnew:
 				del phonelists[astnum][sipnum] # or = "Absent"/0 ?
-				lstdel += cfg.astid + ":" + snl + ";"
+				lstdel += "del:" + cfg.astid + ":SIP:" + snl + ";"
 		for snl in sipnumlistnew:
 			if snl not in sipnumlistold:
 				phonelists[astnum][snl] = LineProp()
-				lstadd += cfg.astid + ":" + snl + ":" + phonelists[astnum][snl].status + ";"
-#		print ami_socket_status(AMIcomms[astnum])
+				lstadd += "add:" + cfg.astid + ":SIP:" + snl + ":unknown:0;"
+		ami_socket_status(AMIcomms[astnum])
 		for k in tcpopens:
 			if lstdel != "":
 				k[0].send("peerremove=" + lstdel + "\n")
@@ -569,19 +717,40 @@ class LineProp:
 	def __init__(self):
 		self.tech = "SIP"
 		self.lasttime = 0
-		self.peername = ""
-		self.status = "BefSubs" # Asterisk status
-		self.imstat = "available"  # XMPP / Instant Messaging status
+		self.chans = {}
+		self.sipstatus = "BefSubs" # Asterisk status
+		self.imstat = "unknown"  # XMPP / Instant Messaging status
 	def set_tech(self, itech):
 		self.tech = itech
-	def set_status(self, istatus):
-		self.status = istatus
+	def set_sipstatus(self, isipstatus):
+		self.sipstatus = isipstatus
 	def set_imstat(self, istatus):
 		self.imstat = istatus
 	def set_lasttime(self, ilasttime):
 		self.lasttime = ilasttime
-	def set_peername(self, ipeername):
-		self.peername = ipeername
+	def set_chan(self, ichan, status, time, dir, peerch, peernum):
+		oldpeerch = peerch
+		oldpeernum = peernum
+		if ichan in self.chans:
+			if peerch == "":
+				oldpeerch = self.chans[ichan][3]
+			if peernum == "":
+				oldpeernum = self.chans[ichan][4]
+		self.chans[ichan] = [status, time, dir, oldpeerch, oldpeernum]
+	def del_chan(self, ichan):
+		try:
+			del self.chans[ichan]
+		except:
+			if ichan.find("<ZOMBIE>") >= 0:
+				nichan = ichan.split("<ZOMBIE>")[0]
+				print "channel contains a <ZOMBIE> part :", ichan, ": deleting", nichan, "anyway"
+				try:
+					del self.chans[nichan]
+				except:
+					print "bis / a problem occured when trying to remove", nichan
+					print self.chans
+			else:
+				print "a problem occured when trying to remove", ichan
 
 
 class AsteriskRemote:
@@ -626,8 +795,8 @@ def filluserlistfromurl(url):
 			line = line.strip()
 			l = line.split('|')
 			# line is protocol|phone|password|rightflag
-			if __debug__:
-				print 'user', l[0], l[1] , 'password', l[2], 'droit', l[3]
+##			if __debug__:
+##				print 'user', l[0], l[1] , 'password', l[2], 'droit', l[3]
 			if l[3] != '0':
 				adduser(l[0]+l[1], l[2])
 	finally:
@@ -656,8 +825,7 @@ class LoginHandler(SocketServer.StreamRequestHandler):
 	def handle(self):
 		global guserlisturl, astname_xivoc
 		if __debug__:
-			print 'LoginHandler'
-			print '  client connected :', self.client_address
+			print ' ## LoginHandler / client connected :', self.client_address
 		#print '  request :', self.request
 		list0 = self.rfile.readline()
 		list1 = list0.strip().split(' ')
@@ -702,8 +870,8 @@ class LoginHandler(SocketServer.StreamRequestHandler):
 		userlist_lock.release()
 		retline = 'OK SESSIONID ' + sessionid + '\r\n'
 		self.wfile.write(retline)
-		if __debug__:
-			print userlist
+##		if __debug__:
+##			print userlist
 
 
 # IdentRequestHandler: give client identification to the profile pusher
@@ -711,9 +879,8 @@ class LoginHandler(SocketServer.StreamRequestHandler):
 # same open TCP connection.
 class IdentRequestHandler(SocketServer.StreamRequestHandler):
 	def handle(self):
-		if __debug__:
-			print 'IdentRequestHandler'
-			print '  client : ', self.client_address
+#		if __debug__:
+#			print ' ## IdentRequestHandler from client', self.client_address
 		while True:
 			list0 = self.rfile.readline().strip().split(' ')
 			retline = 'ERROR\r\n'
@@ -740,8 +907,8 @@ class IdentRequestHandler(SocketServer.StreamRequestHandler):
 				self.wfile.write(retline)
 			except Exception, e:
 				# something bad happened.
-				if __debug__:
-					print 'Exception :', e
+##				if __debug__:
+##					print ' ## Exception :', e
 				return
 
 # The KeepAliveHandler receives UDP datagrams and sends back 
@@ -749,9 +916,8 @@ class IdentRequestHandler(SocketServer.StreamRequestHandler):
 # It could be a good thing to give a numerical code to each error.
 class KeepAliveHandler(SocketServer.DatagramRequestHandler):
 	def handle(self):
-		if __debug__:
-			print 'KeepAliveHandler'
-			print '  client : ', self.client_address
+##		if __debug__:
+##			print ' ## KeepAliveHandler from client', self.client_address
 		userlist_lock.acquire()
 		try:
 			ip = self.client_address[0]
@@ -786,16 +952,15 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
 		userlist_lock.release()
 		self.request[1].sendto(response, self.client_address)
 		if response == 'OK\r\n':
-			print "from kafiche", self.client_address, user, sessionid, ip, state
 			n = -1
 			for n in items_asterisks:
 				if configs[n].astid == astname_xivoc:
 					break
 			if n >= 0:
 				sipnumber = user.split("sip")[1]
-				print n, sipnumber, state
+#				print "    from Xivo client", self.client_address, user, sipnumber, sessionid, ip, state
 				phonelists[n][sipnumber].set_imstat(state)
-				update_GUI_clients(configs[n], n, sipnumber)
+				update_GUI_clients(configs[n], n, sipnumber, "kfc")
 
 
 class MyTCPServer(SocketServer.ThreadingTCPServer):
@@ -844,8 +1009,8 @@ keepaliveserver = SocketServer.UDPServer(('', port_keepalive), KeepAliveHandler)
 # opens the logfile for output
 logfile = open("/var/log/sip_switchboard.log", 'a')
 
-configs = [AsteriskRemote("clg", "file:///home/corentin/sso.php"),
-	   AsteriskRemote("obelisk", "http://192.168.0.254/service/ipbx/sso.php", "192.168.0.77", "192.168.0.254", 5082)]
+configs = [AsteriskRemote("clg", "file:///home/corentin/sso_clg.php"),
+	   AsteriskRemote("obelisk", "file:///home/corentin/sso_obelisk.php", "192.168.0.77", "192.168.0.254", 5082)]
 
 sipnumlists = []
 phonelists = []
@@ -880,6 +1045,7 @@ for cfg in configs:
 	als0 = ami_socket_login(cfg.remoteaddr, asterisk_login, 0)
 	if als0:
 		AMIcomms.append(als0)
+		ins.append(als0)
 	als1 = ami_socket_login(cfg.remoteaddr, asterisk_login, 1)
 	if als1:
 		AMIsocks.append(als1)
@@ -924,6 +1090,7 @@ while True:
 			update_sipnumlist(configs[n], n)
 			do_sip_register_subscribe(configs[n], SIPsocks[n], n)
 			lastrequest_time[n] = time.time()
+	# these AMI connections are used in order to manage AMI commands with incoming events
 	elif i[0] in AMIsocks:
 		for n in items_asterisks:
 			if AMIsocks[n] in i:
@@ -935,6 +1102,18 @@ while True:
 			AMIsocks[n] = 0
 		else:
 			handle_ami_event(n, a)
+	# these AMI connections are used in order to manage AMI commands without events
+	elif i[0] in AMIcomms:
+		for n in items_asterisks:
+			if AMIcomms[n] in i:
+				break
+		a = AMIcomms[n].recv(bufsize)
+		if len(a) == 0: # end of connection from server side : closing socket
+			AMIcomms[n].close()
+			ins.remove(AMIcomms[n])
+			AMIcomms[n] = 0
+		else:
+			handle_ami_event_status(n, a)
         elif UIsock in i:
             [conn, UIsockparams] = UIsock.accept()
             print "TCP socket opened on  ", UIsockparams[0], UIsockparams[1]
