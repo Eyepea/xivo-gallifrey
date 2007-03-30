@@ -86,12 +86,17 @@ def updateuserlistfromurl(url):
                         if l[0] == "sip" and l[1] != "xivosb" and l[5] == "1" and l[6] == "0":
 				#			    print l[1], ": '" + l[4] + "'"
 				if l[4] == "":
-					l_sipnumlist.append(l[1])
+					l_sipnumlist.append("SIP/" + l[1])
 				else:
-					l_sipnumlist.append(l[4])
+					l_sipnumlist.append("SIP/" + l[4])
 					adduser(l[0]+l[4], l[2])
-			else:
-				deluser(l[0]+l[4])
+                        elif l[0] == "iax" and l[5] == "1" and l[6] == "0":
+				l_sipnumlist.append("IAX2/" + l[4])
+                        elif l[0] == "misdn" and l[5] == "1" and l[6] == "0":
+				l_sipnumlist.append("mISDN/" + l[4])
+#				adduser(l[0]+l[4], l[2])
+##			else:
+##				deluser(l[0]+l[4])
 	finally:
 		f.close()
 	return l_sipnumlist
@@ -338,7 +343,7 @@ def build_statuses():
 		for ss in sskeys:
 			phoneinfo = "000:" + configs[astnum].astid + ":" \
 				    + phonelists[astnum][ss].tech + ":" \
-				    + ss + ":" \
+				    + ss.split("/")[1] + ":" \
 				    + phonelists[astnum][ss].imstat + ":" \
 				    + phonelists[astnum][ss].sipstatus
 
@@ -363,7 +368,7 @@ def update_GUI_clients(config, astnum, sipphone, who):
 	phoneinfo = who + ":" \
 		    + config.astid + ":" \
 		    + phonelists[astnum][sipphone].tech + ":" \
-		    + sipphone +":" \
+		    + sipphone.split("/")[1] +":" \
 		    + phonelists[astnum][sipphone].imstat + ":" \
 		    + phonelists[astnum][sipphone].sipstatus
 
@@ -406,7 +411,7 @@ def parseSIP(cfg, data, l_sipsock, l_addrsip, astnum):
 	if imsg == "NOTIFY":
 		stat = tellpresence(data)
 		if stat != "???:????":
-			sipphone = stat.split(":")[0]
+			sipphone = "SIP/" + stat.split(":")[0]
 			sstatus = stat.split(":")[1]
 			phonelists[astnum][sipphone].set_lasttime(time.time())
 			if phonelists[astnum][sipphone].sipstatus != sstatus:
@@ -458,8 +463,8 @@ def manage_connection(connid):
 						    AMIconns[l[1]].hangup(ch['Channel'])
 
 def handle_ami_event_dial(listkeys, astnum, src, dst, clid, clidn):
-	if src.find("SIP/") == 0:
-		sipnum = src.split("-")[0].split("/")[1]
+	if src.find("SIP/") == 0 or src.find("IAX2/") == 0 or src.find("mISDN/") == 0:
+		sipnum = src.split("-")[0]
 		if sipnum in listkeys:
 			phonelists[astnum][sipnum].set_chan(src, "Calling", 0, "to", dst, "")
 			update_GUI_clients(configs[astnum], astnum, sipnum, "ami-ed")
@@ -467,8 +472,8 @@ def handle_ami_event_dial(listkeys, astnum, src, dst, clid, clidn):
 			print "warning :", sipnum, "does not belong to our phone list"
 	else:
 		print "handle_ami_event_dial src", src
-	if dst.find("SIP/") == 0:
-		sipnum = dst.split("-")[0].split("/")[1]
+	if dst.find("SIP/") == 0 or dst.find("IAX2/") == 0 or dst.find("mISDN/") == 0:
+		sipnum = dst.split("-")[0]
 		if sipnum in listkeys:
 			phonelists[astnum][sipnum].set_chan(dst, "Ringing", 0, "from", src, clid)
 			update_GUI_clients(configs[astnum], astnum, sipnum, "ami-ed")
@@ -478,8 +483,8 @@ def handle_ami_event_dial(listkeys, astnum, src, dst, clid, clidn):
 		print "handle_ami_event_dial dst", dst
 
 def handle_ami_event_link(listkeys, astnum, src, dst, clid1, clid2):
-	if src.find("SIP/") == 0:
-		sipnum = src.split("-")[0].split("/")[1]
+	if src.find("SIP/") == 0 or src.find("IAX2/") == 0 or src.find("mISDN/") == 0:
+		sipnum = src.split("-")[0]
 		if sipnum in listkeys:
 			phonelists[astnum][sipnum].set_chan(src, "On the phone", 0, "to", dst, clid2)
 			update_GUI_clients(configs[astnum], astnum, sipnum, "ami-el")
@@ -487,8 +492,8 @@ def handle_ami_event_link(listkeys, astnum, src, dst, clid1, clid2):
 			print "warning :", sipnum, "does not belong to our phone list"
 	else:
 		print "handle_ami_event_link src", src
-	if dst.find("SIP/") == 0:
-		sipnum = dst.split("-")[0].split("/")[1]
+	if dst.find("SIP/") == 0 or dst.find("IAX2/") == 0 or dst.find("mISDN/") == 0:
+		sipnum = dst.split("-")[0]
 		if sipnum in listkeys:
 			phonelists[astnum][sipnum].set_chan(dst, "On the phone", 0, "from", src, clid1)
 			update_GUI_clients(configs[astnum], astnum, sipnum, "ami-el")
@@ -498,8 +503,8 @@ def handle_ami_event_link(listkeys, astnum, src, dst, clid1, clid2):
 		print "handle_ami_event_link dst", dst
 
 def handle_ami_event_hangup(listkeys, astnum, chan, cause):
-	if chan.find("SIP/") == 0:
-		sipnum = chan.split("-")[0].split("/")[1]
+	if chan.find("SIP/") == 0 or chan.find("IAX2/") == 0 or chan.find("mISDN/") == 0:
+		sipnum = chan.split("-")[0]
 		if sipnum in listkeys:
 			phonelists[astnum][sipnum].del_chan(chan)
 			update_GUI_clients(configs[astnum], astnum, sipnum, "ami-eh")
@@ -584,9 +589,9 @@ def handle_ami_event(astnum, idata):
 			chan = x.split(";Channel: ")[1].split(";")[0]
 			exten = x.split(";Extension: ")[1].split(";")[0]
 			if exten != "s" and exten != "h" and exten != "t":
-#				print "--- exten :", chan, exten
-				if chan.find("SIP/") == 0:
-					sipnum = chan.split("-")[0].split("/")[1]
+				#				print "--- exten :", chan, exten
+				if chan.find("SIP/") == 0 or chan.find("IAX2/") == 0 or chan.find("mISDN/") == 0:
+					sipnum = chan.split("-")[0]
 					if sipnum in listkeys:
 						phonelists[astnum][sipnum].set_chan(chan, "Calling", 0, "to", "", exten)
 						update_GUI_clients(configs[astnum], astnum, sipnum, "ami-en")
@@ -628,12 +633,12 @@ def handle_ami_event_status(astnum, idata):
 					if x.find(";Link: ") >= 0:
 						link = x.split(";Link: ")[1].split(";")[0]
 #						print "statuses up --------", chan, clid, exten, seconds, link
-						if link.find("SIP/") == 0:
-							sipnum = link.split("-")[0].split("/")[1]
+						if link.find("SIP/") == 0 or link.find("IAX2/") == 0 or link.find("mISDN/") == 0:
+							sipnum = link.split("-")[0]
 							phonelists[astnum][sipnum].set_chan(link, "On the phone", int(seconds), "from", chan, clid)
 							update_GUI_clients(configs[astnum], astnum, sipnum, "001")
-						if chan.find("SIP/") == 0:
-							sipnum = chan.split("-")[0].split("/")[1]
+						if chan.find("SIP/") == 0 or chan.find("IAX2/") == 0 or chan.find("mISDN/") == 0:
+							sipnum = chan.split("-")[0]
 							phonelists[astnum][sipnum].set_chan(chan, "On the phone", int(seconds), "to", link, exten)
 							update_GUI_clients(configs[astnum], astnum, sipnum, "001")
 					else:
@@ -660,16 +665,16 @@ def do_sip_register_subscribe(cfg, l_sipsock, astnum):
 ##    l_sipsock.sendto(command, ("192.168.0.255", 5060))
 
     for sipnum in sipnumlists[astnum]:
-	dtnow = time.time() - phonelists[astnum][sipnum].lasttime
-        if dtnow > (2 * timeout_between_registers):
-		#		print dtnow
-		if phonelists[astnum][sipnum].sipstatus != "Timeout":
-			phonelists[astnum][sipnum].set_sipstatus("Timeout")
-			update_GUI_clients(cfg, astnum, sipnum, "sip")
-        command = sip.sip_subscribe(cfg, "sip:" + cfg.mysipname,
-				    1, rdc + "subscribexivo_" + sipnum + "@" + cfg.localaddr,
-				    sipnum, expires)
-        l_sipsock.sendto(command, (cfg.remoteaddr, port_sip_srv))
+	    if sipnum.find("SIP/") == 0:
+		    dtnow = time.time() - phonelists[astnum][sipnum].lasttime
+		    if dtnow > (2 * timeout_between_registers):
+			    if phonelists[astnum][sipnum].sipstatus != "Timeout":
+				    phonelists[astnum][sipnum].set_sipstatus("Timeout")
+				    update_GUI_clients(cfg, astnum, sipnum, "sip")
+		    command = sip.sip_subscribe(cfg, "sip:" + cfg.mysipname,
+						1, rdc + "subscribexivo_" + sipnum.split("/")[1] + "@" + cfg.localaddr,
+						sipnum.split("/")[1], expires)
+		    l_sipsock.sendto(command, (cfg.remoteaddr, port_sip_srv))
 ##        command = sip.sip_options(cfg, "sip:" + cfg.mysipname,
 ##				  rdc + "subscribexivo_" + sipnum + "@" + cfg.localaddr,
 ##				  sipnum)
@@ -694,7 +699,13 @@ def update_sipnumlist(cfg, astnum):
 		for snl in sipnumlistnew:
 			if snl not in sipnumlistold:
 				phonelists[astnum][snl] = LineProp()
-				lstadd += "add:" + cfg.astid + ":SIP:" + snl + ":unknown:0;"
+				if snl.find("IAX2") == 0:
+					phonelists[astnum][snl].set_tech("IAX2")
+					phonelists[astnum][snl].set_sipstatus("Ready")
+				elif snl.find("mISDN") == 0:
+					phonelists[astnum][snl].set_tech("mISDN")
+					phonelists[astnum][snl].set_sipstatus("Ready")
+				lstadd += "add:" + cfg.astid + ":" + phonelists[astnum][snl].tech + ":" + snl + ":unknown:0;"
 		ami_socket_status(AMIcomms[astnum])
 		for k in tcpopens:
 			if lstdel != "":
