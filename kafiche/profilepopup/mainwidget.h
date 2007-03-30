@@ -61,8 +61,10 @@ private:
 	Engine * m_engine;			//!< pointer to the Engine used
 	//QPushButton * m_btnstart;	//!< Start Button
 	QSystemTrayIcon * m_systrayIcon;	//!< System Tray Icon
-	QIcon m_iconred;	//!< Icon object with red indicator
-	QIcon m_icongreen;	//!< Icon object with green indicator
+	//QIcon m_iconred;	//!< Icon object with red indicator
+	//QIcon m_icongreen;	//!< Icon object with green indicator
+	QIcon m_icon;		//!< Icon Object
+	QIcon m_icongrey;	//!< greyed Icon Object
 	QTabWidget * m_tabwidget;	//!< Area to display profiles
 	int m_tablimit;		//!< Maximum number of tabs in m_tabwidget
 	// actions :

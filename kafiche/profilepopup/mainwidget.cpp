@@ -39,7 +39,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  */
 MainWidget::MainWidget(Engine *engine, QWidget *parent)
 : QMainWindow(parent), m_engine(engine), m_systrayIcon(0),
-  m_iconred(":/xivoicon-red.png"), m_icongreen(":/xivoicon-green.png")
+  m_icon(":/xivoicon.png"), m_icongrey(":/xivoicon-grey.png")
 {
 	createActions();
 	createMenus();
@@ -177,9 +177,7 @@ void MainWidget::setTablimit(int tablimit)
  */
 void MainWidget::createSystrayIcon()
 {
-	// the icon is read from the resources.
-	//m_systrayIcon = new QSystemTrayIcon(QIcon(":/xivoicon.png"), this);
-	m_systrayIcon = new QSystemTrayIcon(m_iconred, this);
+	m_systrayIcon = new QSystemTrayIcon(m_icongrey, this);
 	QMenu * menu = new QMenu(QString("SystrayMenu"), this);
 	menu->addAction( m_avact_avail );
 	menu->addAction( m_avact_away );
@@ -267,7 +265,7 @@ void MainWidget::setDisconnected()
 	m_connectact->setEnabled(true);
 	m_disconnectact->setEnabled(false);
 	if(m_systrayIcon)
-		m_systrayIcon->setIcon(m_iconred);
+		m_systrayIcon->setIcon(m_icongrey);
 	statusBar()->showMessage(tr("Disconnected"));
 }
 
@@ -277,7 +275,7 @@ void MainWidget::setConnected()
 	m_connectact->setEnabled(false);
 	m_disconnectact->setEnabled(true);
 	if(m_systrayIcon)
-		m_systrayIcon->setIcon(m_icongreen);
+		m_systrayIcon->setIcon(m_icon);
 	statusBar()->showMessage(tr("Connected"));
 }
 
