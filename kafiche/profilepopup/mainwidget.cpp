@@ -91,36 +91,36 @@ void MainWidget::createActions()
 	m_disconnectact->setEnabled(false);
 
 	// Availability actions :
-	QActionGroup * availgrp = new QActionGroup( this );
-	availgrp->setExclusive(true);
+	m_availgrp = new QActionGroup( this );
+	m_availgrp->setExclusive(true);
 
 	m_avact_avail = new QAction( tr("&Available"), this );
 	m_avact_avail->setCheckable(true);
 //	m_avact_avail->setStatusTip( tr("") );
 	connect( m_avact_avail, SIGNAL(triggered()),
 	         m_engine, SLOT(setAvailable()) );
-	availgrp->addAction( m_avact_avail );
+	m_availgrp->addAction( m_avact_avail );
 	m_avact_avail->setChecked( true );
 	m_avact_away = new QAction( tr("A&way"), this );
 	m_avact_away->setCheckable(true);
 	connect( m_avact_away, SIGNAL(triggered()),
 	         m_engine, SLOT(setAway()) );
-	availgrp->addAction( m_avact_away );
+	m_availgrp->addAction( m_avact_away );
 	m_avact_brb = new QAction( tr("&Be Right Back"), this );
 	m_avact_brb->setCheckable(true);
 	connect( m_avact_brb, SIGNAL(triggered()),
 	         m_engine, SLOT(setBeRightBack()) );
-	availgrp->addAction( m_avact_brb );
+	m_availgrp->addAction( m_avact_brb );
 	m_avact_otl = new QAction( tr("&Out To Lunch"), this );
 	m_avact_otl->setCheckable(true);
 	connect( m_avact_otl, SIGNAL(triggered()),
 	         m_engine, SLOT(setOutToLunch()) );
-	availgrp->addAction( m_avact_otl );
+	m_availgrp->addAction( m_avact_otl );
 	m_avact_dnd = new QAction( tr("&Does not disturb"), this );
 	m_avact_dnd->setCheckable(true);
 	connect( m_avact_dnd, SIGNAL(triggered()),
 	         m_engine, SLOT(setDoesNotDisturb()) );
-	availgrp->addAction( m_avact_dnd );
+	m_availgrp->addAction( m_avact_dnd );
 }
 
 void MainWidget::createMenus()
@@ -135,11 +135,7 @@ void MainWidget::createMenus()
 	filemenu->addAction( m_quitact );
 
 	QMenu * avail = menuBar()->addMenu(tr("&Availability"));
-	avail->addAction( m_avact_avail );
-	avail->addAction( m_avact_away );
-	avail->addAction( m_avact_brb );
-	avail->addAction( m_avact_otl );
-	avail->addAction( m_avact_dnd );
+	avail->addActions( m_availgrp->actions() );
 
 	QMenu * helpmenu = menuBar()->addMenu(tr("&Help"));
 	helpmenu->addAction( tr("&About"), this, SLOT(about()) );
@@ -179,11 +175,7 @@ void MainWidget::createSystrayIcon()
 {
 	m_systrayIcon = new QSystemTrayIcon(m_icongrey, this);
 	QMenu * menu = new QMenu(QString("SystrayMenu"), this);
-	menu->addAction( m_avact_avail );
-	menu->addAction( m_avact_away );
-	menu->addAction( m_avact_brb );
-	menu->addAction( m_avact_otl );
-	menu->addAction( m_avact_dnd );
+	menu->addActions( m_availgrp->actions() );
 	menu->addSeparator();
 	menu->addAction(m_cfgact);
 	menu->addAction(m_quitact);

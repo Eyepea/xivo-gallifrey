@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 class QSystemTrayIcon;
 class QTabWidget;
+class QActionGroup;
 
 /*! \brief Main window class
  *
@@ -73,6 +74,7 @@ private:
 	QAction * m_systrayact;	//!< "Go to systray" action
 	QAction * m_connectact;	//!< "Connect" Action
 	QAction * m_disconnectact;	//!< "Disconnect" Action
+	QActionGroup * m_availgrp;	//!< group For Availability Actions
 	QAction * m_avact_avail;	//!< Available Action
 	QAction * m_avact_away;		//!< Away Action
 	QAction * m_avact_brb;		//!< "Be Right Back" Action
