@@ -15,42 +15,31 @@
 MainWindow::MainWindow(SwitchBoardEngine * engine)
 : m_engine(engine)
 {
-// va falloir rÃ©organiser les communications entre le "Engine"
+// va falloir réorganiser les communications entre le "Engine"
 // et les objets d'affichage.
 	setWindowIcon(QIcon(":/xivoicon.png"));
 	setWindowTitle("Xivo Switchboard");
 
 	QSplitter * splitter = new QSplitter(this);
-
 	QScrollArea * areaCalls = new QScrollArea(splitter);
+
 	CallStackWidget * calls = new CallStackWidget(areaCalls);
-	connect( m_engine, SIGNAL(updateCall(const QString &, const QString &, const QString &, const QString &)), calls, SLOT(addCall(const QString &, const QString &, const QString &, const QString &)) );
-	// test
-	calls->addCall("1234", "Mr Test", "SIP/123-ABCD", "test");
-	//calls->addCall("1235", "Mme Test", "SIP/123-ABCD2");
-	//calls->addCall("1236", "M gloups", "SIP/123-ABCD3");
-	//calls->addCall("1237", "Dr Test", "SIP/123-ABCD4");
-	//calls->addCall("1238", "zozo grop", "SIP/123-ABCD5");
-	//calls->addCall("1239", "palop", "SIP/123-ABCD6");
-	//areaCalls->setWidget(calls);
+	connect( m_engine, SIGNAL(updateCall(const QString &, const QString &, const QString &,
+					     const QString &, const QString &, const QString &)),
+		 calls, SLOT(addCall(const QString &, const QString &, const QString &,
+				     const QString &, const QString &, const QString &)) );
 
 	QScrollArea * areaPeers = new QScrollArea(splitter);
+	areaCalls->setWidgetResizable(true);
 	areaPeers->setWidgetResizable(true);
-	m_peerswidget = new SwitchBoardWindow(areaPeers);
-	engine->setWindow(m_peerswidget);
-	m_peerswidget->setEngine(engine);
-	areaPeers->setWidget(m_peerswidget);
-	qDebug() << areaCalls->widget();
-	qDebug() << areaPeers->widget();
 
-	//QLabel * test2 = new QLabel("Queues", splitter);
-
-	//splitter->addWidget(areaCalls);
-	//splitter->addWidget(calls);
-	//splitter->addWidget(areaPeers);
-	//splitter->addWidget(test2);
-
+ 	m_widget = new SwitchBoardWindow(areaPeers);
+ 	engine->setWindow(m_widget);
+ 	m_widget->setEngine(engine);
+ 	areaPeers->setWidget(m_widget);
+ 	areaCalls->setWidget(calls);
 	setCentralWidget(splitter);
+
 	//statusBar()->showMessage("test");
 	connect(m_engine, SIGNAL(emitTextMessage(const QString &)),
 	        statusBar(), SLOT(showMessage(const QString &)));
@@ -89,8 +78,8 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 
 void MainWindow::showConfDialog()
 {
-	SwitchBoardConfDialog * conf = new SwitchBoardConfDialog(m_engine, m_peerswidget, this);
-	//qDebug() << "<<  " << conf->exec();
+	SwitchBoardConfDialog * conf = new SwitchBoardConfDialog(m_engine, m_widget, this);
+	qDebug() << "<<  " << conf->exec();
 }
 
 void MainWindow::engineStarted()
@@ -110,6 +99,6 @@ void MainWindow::about()
 	QString applicationVersion("0.1");
 	QMessageBox::about(this, tr("About XIVO SwitchBoard"),
 	                   tr("<h3>About</h3>"
-					      "<p>To be continued</p>") );
+			      "<p>To be continued</p>") );
 }
 

@@ -139,6 +139,31 @@ void SwitchBoardEngine::socketStateChanged(QAbstractSocket::SocketState socketSt
 	}
 }
 
+void SwitchBoardEngine::updatePeers(const QStringList & liststatus)
+{
+	int nchans = liststatus[6].toInt();
+	QString pname = liststatus[1] + "/" + liststatus[2] + "/" + liststatus[3];
+	QString pavail = liststatus[4];
+	QString pstatus = liststatus[5];
+	QString pinfos = "";
+	if(liststatus.size() == 7 + 6 * nchans) {
+		for(int i = 0; i < nchans; i++) {
+			int refn = 7 + 6 * i;
+			pstatus = liststatus[refn + 1];
+			pinfos += liststatus[refn + 1] + " : " + liststatus[refn] + " "
+				+ liststatus[refn + 2] + " " + liststatus[refn + 3] + " "
+				+ liststatus[refn + 4] + " " + liststatus[refn + 5];
+			updateCall(liststatus[refn], liststatus[refn + 1],
+				   liststatus[refn + 2], liststatus[refn + 3],
+				   liststatus[refn + 4], liststatus[refn + 5]);
+			if(i < nchans - 1)
+				pinfos += "\n";
+		}
+	}
+
+	m_window->updatePeer(pname, pstatus, pavail, pinfos);
+}
+
 void SwitchBoardEngine::socketReadyRead()
 {
 	//	qDebug() << "socketReadyRead()";
@@ -149,7 +174,7 @@ void SwitchBoardEngine::socketReadyRead()
 	{
 		QByteArray data = m_socket->readLine();
 		QString line(data);
-		qDebug() << "<==" << line;
+		//qDebug() << "<==" << line;
 		QStringList list = line.trimmed().split("=");
 		//qDebug() << "<==" << list.size() << m_window << list[0];
 		if((list.size() == 2) && m_window) {
@@ -157,23 +182,12 @@ void SwitchBoardEngine::socketReadyRead()
 				QStringList listpeers = list[1].split(";");
 				for(int i = 0 ; i < listpeers.size() - 1; i++) {
 					QStringList liststatus = listpeers[i].split(":");
-					m_window->updatePeer(liststatus[1] + "/" + liststatus[3],
-							     liststatus[4], liststatus[5], liststatus[6]);
+					updatePeers(liststatus);
 				}
 				b = true;
 			} else if(list[0] == QString("update")) {
 				QStringList liststatus = list[1].split(":");
-				m_window->updatePeer(liststatus[1] + "/" + liststatus[3],
-						     liststatus[4], liststatus[5], liststatus[6]);
-				int n = liststatus[6].toInt();
-				for (int i=0; i<n; i++) {
-					// <channel>:<etat du channel>:<nb de secondes dans cet etat>:<to ou from>:<channel en liaison>:<numero en liaison>
-					qDebug() << liststatus[7+6*i] << liststatus[7+6*i+1]
-					         << liststatus[7+6*i+2] << liststatus[7+6*i+3]
-					         << liststatus[7+6*i+4] << liststatus[7+6*i+5];
-					updateCall(liststatus[7+6*i], liststatus[7+6*i+5],
-					           "test1", "test2");
-				}
+				updatePeers(liststatus);
 			} else if(list[0] == QString("asterisk")) {
 				QTime currentTime = QTime::currentTime();
 				QString currentTimeStr = currentTime.toString("hh:mm:ss");
@@ -183,15 +197,13 @@ void SwitchBoardEngine::socketReadyRead()
 				QStringList listpeers = list[1].split(";");
 				for(int i = 0 ; i < listpeers.size() - 1; i++) {
 					QStringList liststatus = listpeers[i].split(":");
-					//m_window->addPeer(liststatus[0] + "/" + liststatus[1], liststatus[2]);
-					m_window->updatePeer(liststatus[1] + "/" + liststatus[3],
-							     liststatus[4], liststatus[5], liststatus[6]);
+					updatePeers(liststatus);
 				}
 			} else if(list[0] == QString("peerremove")) {
 				QStringList listpeers = list[1].split(";");
 				for(int i = 0 ; i < listpeers.size() - 1; i++) {
 					QStringList liststatus = listpeers[i].split(":");
-					m_window->removePeer(liststatus[0] + "/" + liststatus[1]);
+					m_window->removePeer(liststatus[1] + "/" + liststatus[3]);
 				}
 			}
 		}
@@ -221,7 +233,7 @@ void SwitchBoardEngine::originateCall(const QString & src, const QString & dst)
 	QStringList srcl = src.split("/");
 	QStringList dstl = dst.split("/");
 	if(srcl[0] == dstl[0]) {
-		m_pendingcommand = "originate " + srcl[0] + " " + srcl[1] + " " + dstl[1];
+		m_pendingcommand = "originate " + srcl[0] + " " + srcl[2] + " " + dstl[2];
 		socketConnected();
 	} else {
 		emitTextMessage("<" + srcl[0] + "> and <" + dstl[0] + "> are not the same Asterisk !");
@@ -235,7 +247,7 @@ void SwitchBoardEngine::transferCall(const QString & src, const QString & dst)
 	QStringList srcl = src.split("/");
 	QStringList dstl = dst.split("/");
 	if(srcl[0] == dstl[0]) {
-		m_pendingcommand = "transfer " + srcl[0] + " " + srcl[1] + " " + dstl[1];
+		m_pendingcommand = "transfer " + srcl[0] + " " + srcl[2] + " " + dstl[2];
 		socketConnected();
 	} else {
 		emitTextMessage("<" + srcl[0] + "> and <" + dstl[0] + "> are not the same Asterisk !");
@@ -247,7 +259,7 @@ void SwitchBoardEngine::transferCall(const QString & src, const QString & dst)
 void SwitchBoardEngine::hangUp(const QString & peer)
 {
 	QStringList peerl = peer.split("/");
-	m_pendingcommand = "hangup " + peerl[0] + " " + peerl[1];
+	m_pendingcommand = "hangup " + peerl[0] + " " + peerl[2];
 	socketConnected();
 // 	if(m_socket->state() == QAbstractSocket::UnconnectedState)
 // 		connectSocket();

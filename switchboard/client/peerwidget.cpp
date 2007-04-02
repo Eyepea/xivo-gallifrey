@@ -56,7 +56,6 @@ void PeerWidget::setDarkGreen(int n)
 
 void PeerWidget::setGreen(int n)
 {
-	//qDebug() << this << "setGreen" << n;
 	m_square.fill( Qt::green );
 	if(n == 0)
 	  m_statelbl->setPixmap( m_square );

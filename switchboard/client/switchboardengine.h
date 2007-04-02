@@ -10,14 +10,14 @@ class SwitchBoardEngine: public QObject
 {
 	Q_OBJECT
 public:
-	SwitchBoardEngine(QObject * parent = 0);	//!< Constructor
+	SwitchBoardEngine(QObject * parent = 0);
 	void setWindow(SwitchBoardWindow *);
 	void setAddress(const QString & host, quint16 port);
 	void originateCall(const QString & src, const QString & dst);
 	void transferCall(const QString & src, const QString & dst);
 	void hangUp(const QString & peer);
-	quint16 port() const;			//!< server port
-	const QString & host() const;	//!< Server host name
+	quint16 port() const;
+	const QString & host() const;
 	void saveSettings();	//!< save settings
 private:
 	void connectSocket();
@@ -26,9 +26,10 @@ private:
 protected:
 	void timerEvent(QTimerEvent *event);
 public slots:
-	void start();	//!< Start the engine
-	void stop();	//!< Stop the engine, disconnect from server.
+	void start();
+	void stop();
 private slots:
+	void updatePeers(const QStringList & liststatus);
 	void socketConnected();
 	void socketDisconnected();
 	void socketHostFound();
@@ -39,8 +40,12 @@ signals:
 	void started();
 	void stopped();
 	void emitTextMessage(const QString &);
-	void updateCall(const QString &, const QString &,
-	                const QString &, const QString &);
+	void updateCall(const QString & channelme,
+			const QString & action,
+			const QString & time,
+			const QString & direction,
+			const QString & channelpeer,
+			const QString & exten);
 	void endCall(const QString &);
 	void updatePeer(const QString &, const QString &,
 	                const QString &, const QString &);

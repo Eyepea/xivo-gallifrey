@@ -2,13 +2,23 @@
 #define __CALLWIDGET_H__
 #include <QWidget>
 
+class QLabel;
+
 class CallWidget : public QWidget
 {
 public:
-	CallWidget(const QString & callerid,
-	           const QString & calleridname,
-			   const QString & channel,
-			   QWidget * parent = 0);
+	CallWidget(const QString & channelme,
+		   const QString & action,
+		   const QString & time,
+		   const QString & direction,
+		   const QString & channelpeer,
+		   const QString & exten,
+		   QWidget * parent = 0);
+	void updateWidget(const QString & action,
+			  const QString & time,
+			  const QString & direction,
+			  const QString & channelpeer,
+			  const QString & exten);
 	//void setChannel(const QString &);
 	const QString & channel() const;
 	//void setCallerId(const QString &);
@@ -23,7 +33,15 @@ private:
 	QString m_channel;
 	QString m_callerid;
 	QString m_calleridname;
+	QLabel * m_lbl_channelme;
+	QLabel * m_lbl_action;
+	QLabel * m_lbl_time;
+	QLabel * m_lbl_direction;
+	QLabel * m_lbl_channelpeer;
+	QLabel * m_lbl_exten;
 };
+
+
 
 #endif
 

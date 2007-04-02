@@ -19,8 +19,7 @@ private slots:
 	void about();
 private:
 	SwitchBoardEngine * m_engine;
-	//SwitchBoardWindow * m_widget;
-	SwitchBoardWindow * m_peerswidget;
+	SwitchBoardWindow * m_widget;
 	QAction * m_startact;
 	QAction * m_stopact;
 };

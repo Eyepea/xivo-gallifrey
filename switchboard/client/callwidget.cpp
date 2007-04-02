@@ -5,34 +5,52 @@
 #include <QDebug>
 #include "callwidget.h"
 
-
-CallWidget::CallWidget(const QString & callerid,
-                       const QString & calleridname,
-					   const QString & channel,
+CallWidget::CallWidget(const QString & channelme,
+		       const QString & action,
+		       const QString & time,
+		       const QString & direction,
+		       const QString & channelpeer,
+		       const QString & exten,
                        QWidget * parent)
 : QWidget(parent)
 {
 	QHBoxLayout * layout = new QHBoxLayout(this);
 
-	m_callerid = callerid;
-	m_calleridname = calleridname;
-	m_channel = channel;
+// 	m_callerid = callerid;
+// 	m_calleridname = calleridname;
+// 	m_channel = channel;
 
 //	qDebug() << "spacing" << layout->spacing()
 //	         << ", margin" << layout->margin();
-	//layout->setSpacing(0);
+//	layout->setSpacing(0);
 	//layout->setMargin(0);
 
-	QLabel * lblid = new QLabel(m_callerid, this);
-	//lblid->setBackgroundRole( QPalette::Highlight );
-	lblid->setAutoFillBackground( true );
-	layout->addWidget(lblid);
+	m_lbl_channelme = new QLabel(channelme, this);
+	layout->addWidget(m_lbl_channelme);
+	m_lbl_action = new QLabel(action, this);
+	layout->addWidget(m_lbl_action);
+	m_lbl_time = new QLabel(time, this);
+	layout->addWidget(m_lbl_time);
+	m_lbl_direction = new QLabel(direction, this);
+	layout->addWidget(m_lbl_direction);
+	m_lbl_channelpeer = new QLabel(channelpeer, this);
+	layout->addWidget(m_lbl_channelpeer);
+	m_lbl_exten = new QLabel(exten, this);
+	layout->addWidget(m_lbl_exten);
+}
 
-	QLabel * lblcaller = new QLabel(m_calleridname, this);
-	layout->addWidget(lblcaller);
+void CallWidget::updateWidget(const QString & action,
+			      const QString & time,
+			      const QString & direction,
+			      const QString & channelpeer,
+			      const QString & exten)
+{
+	m_lbl_action->setText(action);
+	m_lbl_time->setText(time);
+	m_lbl_direction->setText(direction);
+	m_lbl_channelpeer->setText(channelpeer);
+	m_lbl_exten->setText(exten);
 
-	QLabel * lblstate = new QLabel("On Hold", this);
-	layout->addWidget(lblstate);
 }
 
 void CallWidget::mousePressEvent(QMouseEvent *event)
