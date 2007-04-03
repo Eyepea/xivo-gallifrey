@@ -14,7 +14,7 @@ int main(int argc, char * * argv)
 	mainwin.show();
 	//engine.setAddress("192.168.0.77", 5081); //connectSocket();
 	//engine.start();
-	//	engine.startTimer(60000);
+	engine.startTimer(1000);
 	return app.exec();
 }
 

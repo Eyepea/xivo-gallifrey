@@ -154,7 +154,7 @@ void SwitchBoardEngine::updatePeers(const QStringList & liststatus)
 				+ liststatus[refn + 2] + " " + liststatus[refn + 3] + " "
 				+ liststatus[refn + 4] + " " + liststatus[refn + 5];
 			updateCall(liststatus[refn], liststatus[refn + 1],
-				   liststatus[refn + 2], liststatus[refn + 3],
+				   liststatus[refn + 2].toInt(), liststatus[refn + 3],
 				   liststatus[refn + 4], liststatus[refn + 5],
 				   pname);
 			if(i < nchans - 1)
@@ -224,8 +224,12 @@ void SwitchBoardEngine::finishedReceivingHints()
 
 void SwitchBoardEngine::timerEvent(QTimerEvent * event)
 {
-	qDebug() << event;
-	m_socket->connectToHost(m_host, m_port);
+	if (updateTime() > 0)
+		showCalls(m_tomonitor);
+
+
+	//	qDebug() << event;
+	//	m_socket->connectToHost(m_host, m_port);
 	//	m_pendingcommand = "hints";
 	//	socketConnected();
 }

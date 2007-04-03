@@ -11,7 +11,7 @@ Call::Call(const QString & channelme)
 
 Call::Call(const QString & channelme,
 	   const QString & action,
-	   const QString & time,
+	   const int & time,
 	   const QString & direction,
 	   const QString & channelpeer,
 	   const QString & exten,
@@ -39,7 +39,7 @@ Call::Call(const Call & call)
 }
 
 void Call::updateCall(const QString & action,
-		      const QString & time,
+		      const int & time,
 		      const QString & direction,
 		      const QString & channelpeer,
 		      const QString & exten)
@@ -50,6 +50,13 @@ void Call::updateCall(const QString & action,
 	m_channelpeer = channelpeer;
 	m_exten       = exten;
 }
+
+int Call::updateTime()
+{
+	m_time ++;
+	return 0;
+}
+
 
 
 
@@ -63,7 +70,7 @@ CallStackWidget::CallStackWidget(QWidget * parent)
 
 void CallStackWidget::addCall(const QString & channelme,
                               const QString & action,
-			      const QString & time,
+			      const int & time,
 			      const QString & direction,
 			      const QString & channelpeer,
 			      const QString & exten,
@@ -122,4 +129,13 @@ void CallStackWidget::showCalls(const QString & tomonitor)
 	callwidget = new CallWidget(this);
 	m_layout->addWidget(callwidget, 1, Qt::AlignTop);
 	m_afflist.append(callwidget);
+}
+
+int CallStackWidget::updateTime()
+{
+	int n = m_calllist.count();
+	for(int i = 0; i < n ; i++) {
+		m_calllist[i].updateTime();
+	}
+	return n;
 }

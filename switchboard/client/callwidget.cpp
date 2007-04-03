@@ -27,7 +27,7 @@ CallWidget::CallWidget(const QString & tomonitor,
 
 CallWidget::CallWidget(const QString & channelme,
 		       const QString & action,
-		       const QString & time,
+		       const int & time,
 		       const QString & direction,
 		       const QString & channelpeer,
 		       const QString & exten,
@@ -56,26 +56,27 @@ CallWidget::CallWidget(const QString & channelme,
 	else
 		lsquare.fill( Qt::gray );
 	m_lbl_action->setPixmap( lsquare );
-	layout->addWidget(m_lbl_action);
-	
-	m_lbl_time = new QLabel(time, this);
-	layout->addWidget(m_lbl_time);
+	layout->addWidget(m_lbl_action, 0, Qt::AlignLeft );
+	m_lbl_time = new QLabel(QString::number(time), this);
+	layout->addWidget(m_lbl_time, 0, Qt::AlignLeft );
 	m_lbl_direction = new QLabel(direction, this);
-	layout->addWidget(m_lbl_direction);
+	layout->addWidget(m_lbl_direction, 0, Qt::AlignLeft );
 	m_lbl_channelpeer = new QLabel(channelpeer, this);
-	layout->addWidget(m_lbl_channelpeer);
+	layout->addWidget(m_lbl_channelpeer, 0, Qt::AlignLeft );
 	m_lbl_exten = new QLabel(exten, this);
-	layout->addWidget(m_lbl_exten);
+	layout->addWidget(m_lbl_exten, 0, Qt::AlignLeft );
+	QLabel * dummy = new QLabel(this);
+	layout->addWidget(dummy, 1, Qt::AlignLeft );
 }
 
 void CallWidget::updateWidget(const QString & action,
-			      const QString & time,
+			      const int & time,
 			      const QString & direction,
 			      const QString & channelpeer,
 			      const QString & exten)
 {
 	m_lbl_action->setText(action);
-	m_lbl_time->setText(time);
+	m_lbl_time->setText(QString::number(time));
 	m_lbl_direction->setText(direction);
 	m_lbl_channelpeer->setText(channelpeer);
 	m_lbl_exten->setText(exten);

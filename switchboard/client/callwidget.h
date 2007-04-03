@@ -12,13 +12,13 @@ public:
 		   QWidget * parent = 0);
 	CallWidget(const QString & channelme,
 		   const QString & action,
-		   const QString & time,
+		   const int & time,
 		   const QString & direction,
 		   const QString & channelpeer,
 		   const QString & exten,
 		   QWidget * parent = 0);
 	void updateWidget(const QString & action,
-			  const QString & time,
+			  const int & time,
 			  const QString & direction,
 			  const QString & channelpeer,
 			  const QString & exten);
