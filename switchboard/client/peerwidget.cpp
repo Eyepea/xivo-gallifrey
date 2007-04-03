@@ -130,14 +130,16 @@ void PeerWidget::mouseMoveEvent(QMouseEvent *event)
 
 	Qt::DropAction dropAction = drag->start(Qt::CopyAction | Qt::MoveAction);
 	qDebug() << "dropAction=" << dropAction;
-	
 }
 
 void PeerWidget::mouseDoubleClickEvent(QMouseEvent *event)
 {
 	qDebug() << "mouseDoubleClickEvent" << event;
-	// disconnect the guy
-	m_engine->hangUp(m_textlbl->text());
+	if(event->button() == 1)
+		// disconnect the guy if left-click
+		m_engine->hangUp(m_textlbl->text());
+	else
+		m_engine->selectAsMonitored(m_textlbl->text());
 }
 
 void PeerWidget::dragEnterEvent(QDragEnterEvent *event)

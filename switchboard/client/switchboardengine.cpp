@@ -155,12 +155,14 @@ void SwitchBoardEngine::updatePeers(const QStringList & liststatus)
 				+ liststatus[refn + 4] + " " + liststatus[refn + 5];
 			updateCall(liststatus[refn], liststatus[refn + 1],
 				   liststatus[refn + 2], liststatus[refn + 3],
-				   liststatus[refn + 4], liststatus[refn + 5]);
+				   liststatus[refn + 4], liststatus[refn + 5],
+				   pname);
 			if(i < nchans - 1)
 				pinfos += "\n";
 		}
 	}
 
+	showCalls(m_tomonitor);
 	m_window->updatePeer(pname, pstatus, pavail, pinfos);
 }
 
@@ -263,6 +265,12 @@ void SwitchBoardEngine::hangUp(const QString & peer)
 	socketConnected();
 // 	if(m_socket->state() == QAbstractSocket::UnconnectedState)
 // 		connectSocket();
+}
+
+void SwitchBoardEngine::selectAsMonitored(const QString & peer)
+{
+	m_tomonitor = peer;
+	showCalls(m_tomonitor);
 }
 
 const QString & SwitchBoardEngine::host() const

@@ -24,10 +24,12 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 	QScrollArea * areaCalls = new QScrollArea(splitter);
 
 	CallStackWidget * calls = new CallStackWidget(areaCalls);
-	connect( m_engine, SIGNAL(updateCall(const QString &, const QString &, const QString &,
+	connect( m_engine, SIGNAL(updateCall(const QString &, const QString &, const QString &, const QString &,
 					     const QString &, const QString &, const QString &)),
-		 calls, SLOT(addCall(const QString &, const QString &, const QString &,
+		 calls, SLOT(addCall(const QString &, const QString &, const QString &, const QString &,
 				     const QString &, const QString &, const QString &)) );
+	connect( m_engine, SIGNAL(showCalls(const QString &)),
+		 calls, SLOT(showCalls(const QString &)) );
 
 	QScrollArea * areaPeers = new QScrollArea(splitter);
 	areaCalls->setWidgetResizable(true);

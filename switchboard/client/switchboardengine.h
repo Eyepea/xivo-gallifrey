@@ -16,6 +16,7 @@ public:
 	void originateCall(const QString & src, const QString & dst);
 	void transferCall(const QString & src, const QString & dst);
 	void hangUp(const QString & peer);
+	void selectAsMonitored(const QString & peer);
 	quint16 port() const;
 	const QString & host() const;
 	void saveSettings();	//!< save settings
@@ -45,8 +46,10 @@ signals:
 			const QString & time,
 			const QString & direction,
 			const QString & channelpeer,
-			const QString & exten);
+			const QString & exten,
+			const QString & phone);
 	void endCall(const QString &);
+	void showCalls(const QString & tomonitor);
 	void updatePeer(const QString &, const QString &,
 	                const QString &, const QString &);
 	void removePeer(const QString &);
@@ -57,6 +60,7 @@ private:
 	QString m_host;
 	SwitchBoardWindow * m_window;
 	QString m_pendingcommand;
+	QString m_tomonitor;
 };
 
 #endif
