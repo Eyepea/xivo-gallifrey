@@ -1,5 +1,6 @@
 #ifndef __SWITCHBOARDENGINE_H__
 #define __SWITCHBOARDENGINE_H__
+#include <QHash>
 #include <QObject>
 #include <QTcpSocket>
 
@@ -31,6 +32,7 @@ public slots:
 	void stop();
 private slots:
 	void updatePeers(const QStringList & liststatus);
+	void updateCallerids(const QStringList & liststatus);
 	void socketConnected();
 	void socketDisconnected();
 	void socketHostFound();
@@ -50,7 +52,7 @@ signals:
 			const QString & exten,
 			const QString & phone);
 	void endCall(const QString &);
-	void showCalls(const QString & tomonitor);
+	void showCalls(const QString & tomonitor, const QString & callerid);
 	void updatePeer(const QString &, const QString &,
 	                const QString &, const QString &);
 	void removePeer(const QString &);
@@ -62,6 +64,7 @@ private:
 	SwitchBoardWindow * m_window;
 	QString m_pendingcommand;
 	QString m_tomonitor;
+	QHash<QString, QString> m_callerids;
 };
 
 #endif

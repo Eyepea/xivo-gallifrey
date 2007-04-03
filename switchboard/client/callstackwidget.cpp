@@ -91,13 +91,13 @@ void CallStackWidget::addCall(const QString & channelme,
 		}
 	}
 
-	if(found == 0) {
+	if((found == 0) && (action != QString("Hangup"))) {
 		Call call(channelme, action, time, direction, channelpeer, exten, phonen);
 		m_calllist.append(call);
 	}
 }
 
-void CallStackWidget::showCalls(const QString & tomonitor)
+void CallStackWidget::showCalls(const QString & tomonitor, const QString & callerid)
 {
 	// cleaning the calling list displayed
 	for(int i = 0; i < m_afflist.count() ; i++) {
@@ -107,10 +107,10 @@ void CallStackWidget::showCalls(const QString & tomonitor)
 	m_afflist.clear();
 	
 	// building the new calling list
-	CallWidget * callwidget = new CallWidget(tomonitor, this);
+	CallWidget * callwidget = new CallWidget(callerid, this);
 	m_layout->addWidget(callwidget, 0, Qt::AlignTop);
 	m_afflist.append(callwidget);
-
+	
 	for(int i = 0; i < m_calllist.count() ; i++) {
 		if(tomonitor == m_calllist[i].getPhone()) {
 			Call c = m_calllist[i];
@@ -125,7 +125,7 @@ void CallStackWidget::showCalls(const QString & tomonitor)
 			m_layout->addWidget(callwidget, 0, Qt::AlignTop);
 		}
 	}
-
+	
 	callwidget = new CallWidget(this);
 	m_layout->addWidget(callwidget, 1, Qt::AlignTop);
 	m_afflist.append(callwidget);

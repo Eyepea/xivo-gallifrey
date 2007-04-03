@@ -54,7 +54,7 @@ public slots:
 		     const QString & channelpeer,
 		     const QString & exten,
 		     const QString & phonen);
-	void showCalls(const QString & tomonitor);
+	void showCalls(const QString & tomonitor, const QString & callerid);
 	int updateTime();
 private:
 	QVBoxLayout * m_layout;

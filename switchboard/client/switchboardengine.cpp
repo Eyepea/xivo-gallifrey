@@ -162,8 +162,15 @@ void SwitchBoardEngine::updatePeers(const QStringList & liststatus)
 		}
 	}
 
-	showCalls(m_tomonitor);
+	showCalls(m_tomonitor, m_callerids[m_tomonitor]);
 	m_window->updatePeer(pname, pstatus, pavail, pinfos);
+}
+
+void SwitchBoardEngine::updateCallerids(const QStringList & liststatus)
+{
+	QString pname = liststatus[1] + "/" + liststatus[2] + "/" + liststatus[3];
+	QString pcid = liststatus[4];
+	m_callerids[pname] = pcid;
 }
 
 void SwitchBoardEngine::socketReadyRead()
@@ -186,7 +193,15 @@ void SwitchBoardEngine::socketReadyRead()
 					QStringList liststatus = listpeers[i].split(":");
 					updatePeers(liststatus);
 				}
+				m_pendingcommand = "callerids";
+				socketConnected();
 				b = true;
+			} else if(list[0] == QString("callerids")) {
+				QStringList listpeers = list[1].split(";");
+				for(int i = 0 ; i < listpeers.size() - 1; i++) {
+					QStringList liststatus = listpeers[i].split(":");
+					updateCallerids(liststatus);
+				}
 			} else if(list[0] == QString("update")) {
 				QStringList liststatus = list[1].split(":");
 				updatePeers(liststatus);
@@ -225,7 +240,7 @@ void SwitchBoardEngine::finishedReceivingHints()
 void SwitchBoardEngine::timerEvent(QTimerEvent * event)
 {
 	if (updateTime() > 0)
-		showCalls(m_tomonitor);
+		showCalls(m_tomonitor, m_callerids[m_tomonitor]);
 
 
 	//	qDebug() << event;
@@ -274,7 +289,7 @@ void SwitchBoardEngine::hangUp(const QString & peer)
 void SwitchBoardEngine::selectAsMonitored(const QString & peer)
 {
 	m_tomonitor = peer;
-	showCalls(m_tomonitor);
+	showCalls(m_tomonitor, m_callerids[m_tomonitor]);
 }
 
 const QString & SwitchBoardEngine::host() const
