@@ -7,6 +7,9 @@ class QLabel;
 class CallWidget : public QWidget
 {
 public:
+	CallWidget(QWidget * parent = 0);
+	CallWidget(const QString & tomonitor,
+		   QWidget * parent = 0);
 	CallWidget(const QString & channelme,
 		   const QString & action,
 		   const QString & time,

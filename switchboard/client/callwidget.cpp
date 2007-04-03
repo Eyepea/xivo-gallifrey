@@ -5,6 +5,26 @@
 #include <QDebug>
 #include "callwidget.h"
 
+CallWidget::CallWidget(QWidget * parent)
+: QWidget(parent)
+{
+	QHBoxLayout * layout = new QHBoxLayout(this);
+	m_lbl_time = new QLabel(this);
+	layout->addWidget(m_lbl_time);
+}
+
+CallWidget::CallWidget(const QString & tomonitor,
+                       QWidget * parent)
+: QWidget(parent)
+{
+	QHBoxLayout * layout = new QHBoxLayout(this);
+	if (tomonitor == QString(""))
+		m_lbl_time = new QLabel("No phone monitored", this);
+	else
+		m_lbl_time = new QLabel("Phone monitored = " + tomonitor, this);
+	layout->addWidget(m_lbl_time);
+}
+
 CallWidget::CallWidget(const QString & channelme,
 		       const QString & action,
 		       const QString & time,
@@ -25,10 +45,19 @@ CallWidget::CallWidget(const QString & channelme,
 //	layout->setSpacing(0);
 	//layout->setMargin(0);
 
-	m_lbl_channelme = new QLabel(channelme, this);
-	layout->addWidget(m_lbl_channelme);
-	m_lbl_action = new QLabel(action, this);
+	m_lbl_action = new QLabel(this);
+	QPixmap lsquare(16, 16);
+	if(action == QString("Calling"))
+		lsquare.fill( Qt::yellow );
+	else if(action == QString("Ringing"))
+		lsquare.fill( Qt::cyan );
+	else if(action == QString("On the phone"))
+		lsquare.fill( Qt::red );
+	else
+		lsquare.fill( Qt::gray );
+	m_lbl_action->setPixmap( lsquare );
 	layout->addWidget(m_lbl_action);
+	
 	m_lbl_time = new QLabel(time, this);
 	layout->addWidget(m_lbl_time);
 	m_lbl_direction = new QLabel(direction, this);
@@ -50,7 +79,6 @@ void CallWidget::updateWidget(const QString & action,
 	m_lbl_direction->setText(direction);
 	m_lbl_channelpeer->setText(channelpeer);
 	m_lbl_exten->setText(exten);
-
 }
 
 void CallWidget::mousePressEvent(QMouseEvent *event)

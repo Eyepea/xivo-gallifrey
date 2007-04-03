@@ -96,10 +96,14 @@ void CallStackWidget::showCalls(const QString & tomonitor)
 	for(int i = 0; i < m_afflist.count() ; i++) {
 		m_layout->removeWidget(m_afflist[i]);
 		delete m_afflist[i];
-		m_afflist.removeAt(i);
 	}
-
+	m_afflist.clear();
+	
 	// building the new calling list
+	CallWidget * callwidget = new CallWidget(tomonitor, this);
+	m_layout->addWidget(callwidget, 0, Qt::AlignTop);
+	m_afflist.append(callwidget);
+
 	for(int i = 0; i < m_calllist.count() ; i++) {
 		if(tomonitor == m_calllist[i].getPhone()) {
 			Call c = m_calllist[i];
@@ -114,4 +118,8 @@ void CallStackWidget::showCalls(const QString & tomonitor)
 			m_layout->addWidget(callwidget, 0, Qt::AlignTop);
 		}
 	}
+
+	callwidget = new CallWidget(this);
+	m_layout->addWidget(callwidget, 1, Qt::AlignTop);
+	m_afflist.append(callwidget);
 }
