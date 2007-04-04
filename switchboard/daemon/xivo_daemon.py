@@ -27,6 +27,9 @@ session_expiration_time = 60*1
 guserlisturl = 'http://192.168.0.254/service/ipbx/sso.php'
 astname_xivoc = ""
 
+dir_to_string = ">"
+dir_from_string = "<"
+
 # global : userlist
 # liste des champs :
 #  user :             user name
@@ -75,25 +78,26 @@ def daemonize():
 
 # function to load sso.php user file
 def updateuserlistfromurl(url):
-	l_sipnumlist = []
+	l_sipnumlist = {}
 	f = urllib.urlopen(url)
 	try:
 		for line in f:
 			# remove leading/tailing whitespaces
 			line = line.strip()
 			l = line.split('|')
-			# line is protocol | username | password | rightflag | phone number | initialized | disabled(=1)
+			# line is protocol | username | password | rightflag | phone number | initialized | disabled(=1) | cid
                         if l[0] == "sip" and l[1] != "xivosb" and l[5] == "1" and l[6] == "0":
 				#			    print l[1], ": '" + l[4] + "'"
+				print l
 				if l[4] == "":
-					l_sipnumlist.append("SIP/" + l[1])
+					l_sipnumlist["SIP/" + l[1]] = l[7]
 				else:
-					l_sipnumlist.append("SIP/" + l[4])
+					l_sipnumlist["SIP/" + l[4]] = l[7]
 					adduser(l[0]+l[4], l[2])
                         elif l[0] == "iax" and l[5] == "1" and l[6] == "0":
-				l_sipnumlist.append("IAX2/" + l[4])
+				l_sipnumlist["IAX2/" + l[4]] = l[7]
                         elif l[0] == "misdn" and l[5] == "1" and l[6] == "0":
-				l_sipnumlist.append("mISDN/" + l[4])
+				l_sipnumlist["mISDN/" + l[4]] = l[7]
 #				adduser(l[0]+l[4], l[2])
 ##			else:
 ##				deluser(l[0]+l[4])
@@ -328,10 +332,41 @@ class AMI:
 					       ('Async', 'true')])
 	def transfer(self, src, dst):
 		self.sendcommand('Status', [])
+##		print src, phonelists[1]["SIP/" + src].chans
+##		print dst, phonelists[1]["SIP/" + dst].chans
 		for ch in self.readresponse('StatusComplete'):
 			if ch.has_key('CallerID') and ch['CallerID'] == src and ch.has_key('Link'):
 				self.redirect(ch['Link'], dst, 'local-extensions')
 
+
+# builds the full list of phone statuses in order to send them to the requesting client
+def build_callerids():
+	global configs, phonelists
+	fullstat = "callerids="
+	for astnum in items_asterisks:
+		sskeys = phonelists[astnum].keys()
+		sskeys.sort()
+		for ss in sskeys:
+			phoneinfo = "002:" + configs[astnum].astid + ":" \
+				    + phonelists[astnum][ss].tech + ":" \
+				    + ss.split("/")[1] + ":" \
+				    + phonelists[astnum][ss].callerid
+			fullstat += phoneinfo + ";"
+	fullstat += "\n"
+	return fullstat
+
+# builds the channel-by-channel part in the hints/update replies
+def build_fullstatlist(astnum, sipphone):
+	global phonelists
+	nchans = len(phonelists[astnum][sipphone].chans)
+	fstat = str(nchans)
+	for chan in phonelists[astnum][sipphone].chans.keys():
+		fstat += ":" + chan + ":" + phonelists[astnum][sipphone].chans[chan][0] + ":" + \
+			 str(phonelists[astnum][sipphone].chans[chan][1]) + ":" + \
+			 phonelists[astnum][sipphone].chans[chan][2] + ":" + \
+			 phonelists[astnum][sipphone].chans[chan][3] + ":" + \
+			 phonelists[astnum][sipphone].chans[chan][4]
+	return fstat
 
 # builds the full list of phone statuses in order to send them to the requesting client
 def build_statuses():
@@ -346,20 +381,10 @@ def build_statuses():
 				    + ss.split("/")[1] + ":" \
 				    + phonelists[astnum][ss].imstat + ":" \
 				    + phonelists[astnum][ss].sipstatus
-
-			aaa = ""
-			nchans = len(phonelists[astnum][ss].chans)
-			for chan in phonelists[astnum][ss].chans.keys():
-				aaa += ":" + chan + ":" + phonelists[astnum][ss].chans[chan][0] + ":" + \
-				       str(phonelists[astnum][ss].chans[chan][1]) + ":" + \
-				       phonelists[astnum][ss].chans[chan][2] + ":" + \
-				       phonelists[astnum][ss].chans[chan][3] + ":" + \
-				       phonelists[astnum][ss].chans[chan][4]
-
-			fullstat += phoneinfo + ":" + str(nchans) + aaa + ";"
+			phonelists[astnum][ss].update_time()
+			fullstat += phoneinfo + ":" + build_fullstatlist(astnum, ss) + ";"
 	fullstat += "\n"
 	return fullstat
-
 
 # sends a status update to all the connected xivo-switchboard(-like) clients
 def update_GUI_clients(config, astnum, sipphone, who):
@@ -371,19 +396,10 @@ def update_GUI_clients(config, astnum, sipphone, who):
 		    + sipphone.split("/")[1] +":" \
 		    + phonelists[astnum][sipphone].imstat + ":" \
 		    + phonelists[astnum][sipphone].sipstatus
-
-	aaa = ""
-	nchans = len(phonelists[astnum][sipphone].chans)
-	for chan in phonelists[astnum][sipphone].chans.keys():
-		aaa += ":" + chan + ":" + phonelists[astnum][sipphone].chans[chan][0] + ":" + \
-		       str(phonelists[astnum][sipphone].chans[chan][1]) + ":" + \
-		       phonelists[astnum][sipphone].chans[chan][2] + ":" + \
-		       phonelists[astnum][sipphone].chans[chan][3] + ":" + \
-		       phonelists[astnum][sipphone].chans[chan][4]
-
+	aaa = build_fullstatlist(astnum, sipphone)
 	for tcpclient in tcpopens:
 		try:
-			tcpclient[0].send("update=" + phoneinfo + ":" + str(nchans) + aaa + "\n")
+			tcpclient[0].send("update=" + phoneinfo + ":" + aaa + "\n")
 		except:
 			print "send has failed on", tcpclient[0]
 
@@ -442,11 +458,17 @@ def manage_connection(connid):
 			connid[0].send(build_statuses())
 		except:
 			print "warning : there might have been a connection problem"
+        elif usefulmsg == "callerids":
+		try:
+			connid[0].send(build_callerids())
+		except:
+			print "warning : there might have been a connection problem"
         elif usefulmsg != "":
             # different cases are treated whether AMIconns was already defined or not
             # ... this part can certainly be improved
             # only the "originate" command is properly handled right now
 	    l = usefulmsg.split()
+#	    print l
 	    if l[0] == 'originate' or l[0] == 'transfer' or l[0] == 'hangup':
 		    if not AMIconns[l[1]]:
 			    "AMI was not connected - attempting to connect again"
@@ -455,6 +477,7 @@ def manage_connection(connid):
 			    if l[0] == 'originate':
 				    AMIconns[l[1]].originate(l[2], l[3])
 			    elif l[0] == 'transfer':
+				    # phonelists[astnum][sipnum]
 				    AMIconns[l[1]].transfer(l[2], l[3])
 			    elif l[0] == 'hangup':
 				    AMIconns[l[1]].sendcommand('Status', [])
@@ -466,7 +489,7 @@ def handle_ami_event_dial(listkeys, astnum, src, dst, clid, clidn):
 	if src.find("SIP/") == 0 or src.find("IAX2/") == 0 or src.find("mISDN/") == 0:
 		sipnum = src.split("-")[0]
 		if sipnum in listkeys:
-			phonelists[astnum][sipnum].set_chan(src, "Calling", 0, "to", dst, "")
+			phonelists[astnum][sipnum].set_chan(src, "Calling", 0, dir_to_string, dst, "")
 			update_GUI_clients(configs[astnum], astnum, sipnum, "ami-ed")
 		else:
 			print "warning :", sipnum, "does not belong to our phone list"
@@ -475,7 +498,7 @@ def handle_ami_event_dial(listkeys, astnum, src, dst, clid, clidn):
 	if dst.find("SIP/") == 0 or dst.find("IAX2/") == 0 or dst.find("mISDN/") == 0:
 		sipnum = dst.split("-")[0]
 		if sipnum in listkeys:
-			phonelists[astnum][sipnum].set_chan(dst, "Ringing", 0, "from", src, clid)
+			phonelists[astnum][sipnum].set_chan(dst, "Ringing", 0, dir_from_string, src, clid)
 			update_GUI_clients(configs[astnum], astnum, sipnum, "ami-ed")
 		else:
 			print "warning :", sipnum, "does not belong to our phone list"
@@ -486,7 +509,7 @@ def handle_ami_event_link(listkeys, astnum, src, dst, clid1, clid2):
 	if src.find("SIP/") == 0 or src.find("IAX2/") == 0 or src.find("mISDN/") == 0:
 		sipnum = src.split("-")[0]
 		if sipnum in listkeys:
-			phonelists[astnum][sipnum].set_chan(src, "On the phone", 0, "to", dst, clid2)
+			phonelists[astnum][sipnum].set_chan(src, "On the phone", 0, dir_to_string, dst, clid2)
 			update_GUI_clients(configs[astnum], astnum, sipnum, "ami-el")
 		else:
 			print "warning :", sipnum, "does not belong to our phone list"
@@ -495,7 +518,7 @@ def handle_ami_event_link(listkeys, astnum, src, dst, clid1, clid2):
 	if dst.find("SIP/") == 0 or dst.find("IAX2/") == 0 or dst.find("mISDN/") == 0:
 		sipnum = dst.split("-")[0]
 		if sipnum in listkeys:
-			phonelists[astnum][sipnum].set_chan(dst, "On the phone", 0, "from", src, clid1)
+			phonelists[astnum][sipnum].set_chan(dst, "On the phone", 0, dir_from_string, src, clid1)
 			update_GUI_clients(configs[astnum], astnum, sipnum, "ami-el")
 		else:
 			print "warning :", sipnum, "does not belong to our phone list"
@@ -506,6 +529,8 @@ def handle_ami_event_hangup(listkeys, astnum, chan, cause):
 	if chan.find("SIP/") == 0 or chan.find("IAX2/") == 0 or chan.find("mISDN/") == 0:
 		sipnum = chan.split("-")[0]
 		if sipnum in listkeys:
+			phonelists[astnum][sipnum].set_chan_hangup(chan)
+			update_GUI_clients(configs[astnum], astnum, sipnum, "ami-eh")
 			phonelists[astnum][sipnum].del_chan(chan)
 			update_GUI_clients(configs[astnum], astnum, sipnum, "ami-eh")
 		else:
@@ -534,7 +559,7 @@ def handle_ami_event(astnum, idata):
 			clid2 = x.split(";CallerID2: ")[1].split(";")[0]
 			handle_ami_event_link(listkeys, astnum, src, dst, clid1, clid2)
 		elif x.find("Unlink;") == 7:
-			print x
+			# might be something to parse here
 			chan1 = x.split(";Channel1: ")[1].split(";")[0]
 			chan2 = x.split(";Channel2: ")[1].split(";")[0]
 			cid1 = x.split(";CallerID1: ")[1].split(";")[0]
@@ -582,9 +607,12 @@ def handle_ami_event(astnum, idata):
 					k[0].send("asterisk=<" + clid + "> is entering the Asterisk <" + configs[astnum].astid + "> through " + chan + "\n")
 		elif x.find("MessageWaiting;") == 7:
 			print "MWI", x.split(";Mailbox: ")[1].split(";")[0], \
-			      x.split(";Waiting: ")[1].split(";")[0], \
-			      x.split(";New: ")[1].split(";")[0], \
-			      x.split(";Old: ")[1].split(";")[0]
+			      x.split(";Waiting: ")[1].split(";")[0],
+			if int(x.split(";Waiting: ")[1].split(";")[0]) > 0:
+				print x.split(";New: ")[1].split(";")[0], \
+				      x.split(";Old: ")[1].split(";")[0]
+			else:
+				print
 		elif x.find("Newexten;") == 7: # in order to handle outgoing calls ?
 			chan = x.split(";Channel: ")[1].split(";")[0]
 			exten = x.split(";Extension: ")[1].split(";")[0]
@@ -593,7 +621,7 @@ def handle_ami_event(astnum, idata):
 				if chan.find("SIP/") == 0 or chan.find("IAX2/") == 0 or chan.find("mISDN/") == 0:
 					sipnum = chan.split("-")[0]
 					if sipnum in listkeys:
-						phonelists[astnum][sipnum].set_chan(chan, "Calling", 0, "to", "", exten)
+						phonelists[astnum][sipnum].set_chan(chan, "Calling", 0, dir_to_string, "", exten)
 						update_GUI_clients(configs[astnum], astnum, sipnum, "ami-en")
 					else:
 						print "warning :", sipnum, "does not belong to our phone list"
@@ -635,12 +663,14 @@ def handle_ami_event_status(astnum, idata):
 #						print "statuses up --------", chan, clid, exten, seconds, link
 						if link.find("SIP/") == 0 or link.find("IAX2/") == 0 or link.find("mISDN/") == 0:
 							sipnum = link.split("-")[0]
-							phonelists[astnum][sipnum].set_chan(link, "On the phone", int(seconds), "from", chan, clid)
-							update_GUI_clients(configs[astnum], astnum, sipnum, "001")
+							if sipnum in listkeys:
+								phonelists[astnum][sipnum].set_chan(link, "On the phone", int(seconds), dir_from_string, chan, clid)
+								update_GUI_clients(configs[astnum], astnum, sipnum, "001")
 						if chan.find("SIP/") == 0 or chan.find("IAX2/") == 0 or chan.find("mISDN/") == 0:
 							sipnum = chan.split("-")[0]
-							phonelists[astnum][sipnum].set_chan(chan, "On the phone", int(seconds), "to", link, exten)
-							update_GUI_clients(configs[astnum], astnum, sipnum, "001")
+							if sipnum in listkeys:
+								phonelists[astnum][sipnum].set_chan(chan, "On the phone", int(seconds), dir_to_string, link, exten)
+								update_GUI_clients(configs[astnum], astnum, sipnum, "001")
 					else:
 						print "statuses up --------", chan, clid, exten, seconds
 			elif x.find(";State: Ring;") >= 0:
@@ -686,7 +716,8 @@ def do_sip_register_subscribe(cfg, l_sipsock, astnum):
 def update_sipnumlist(cfg, astnum):
 	global phonelists, sipnumlists
 	sipnumlistold = sipnumlists[astnum]
-	sipnumlistnew = updateuserlistfromurl(cfg.userlisturl)
+	sipnuml = updateuserlistfromurl(cfg.userlisturl)
+	sipnumlistnew = sipnuml.keys()
 	sipnumlists[astnum] = sipnumlistnew
 	sipnumlistnew.sort()
 	if sipnumlistnew != sipnumlistold:
@@ -699,6 +730,7 @@ def update_sipnumlist(cfg, astnum):
 		for snl in sipnumlistnew:
 			if snl not in sipnumlistold:
 				phonelists[astnum][snl] = LineProp()
+				phonelists[astnum][snl].set_callerid(sipnuml[snl])
 				if snl.find("IAX2") == 0:
 					phonelists[astnum][snl].set_tech("IAX2")
 					phonelists[astnum][snl].set_sipstatus("Ready")
@@ -731,6 +763,7 @@ class LineProp:
 		self.chans = {}
 		self.sipstatus = "BefSubs" # Asterisk status
 		self.imstat = "unknown"  # XMPP / Instant Messaging status
+		self.callerid = "nobody"
 	def set_tech(self, itech):
 		self.tech = itech
 	def set_sipstatus(self, isipstatus):
@@ -739,7 +772,15 @@ class LineProp:
 		self.imstat = istatus
 	def set_lasttime(self, ilasttime):
 		self.lasttime = ilasttime
-	def set_chan(self, ichan, status, time, dir, peerch, peernum):
+	def set_callerid(self, icallerid):
+		self.callerid = icallerid
+	def update_time(self):
+		nowtime = time.time()
+		for ic in self.chans:
+			dtime = int(nowtime - self.chans[ic][5])
+			self.chans[ic][1] = dtime
+	def set_chan(self, ichan, status, itime, dir, peerch, peernum):
+		# updates peerch and peernum only if they are not already filled
 		oldpeerch = peerch
 		oldpeernum = peernum
 		if ichan in self.chans:
@@ -747,21 +788,28 @@ class LineProp:
 				oldpeerch = self.chans[ichan][3]
 			if peernum == "":
 				oldpeernum = self.chans[ichan][4]
-		self.chans[ichan] = [status, time, dir, oldpeerch, oldpeernum]
+		firsttime = time.time()
+		self.chans[ichan] = [status, itime, dir, oldpeerch, oldpeernum, firsttime - itime]
+		for ic in self.chans:
+			self.chans[ic][1] = int(firsttime - self.chans[ic][5])
+	def set_chan_hangup(self, ichan):
+		nichan = ichan
+		if ichan.find("<ZOMBIE>") >= 0:
+			print "sch channel contains a <ZOMBIE> part :", ichan, ": sending hup to", nichan, "anyway"
+			nichan = ichan.split("<ZOMBIE>")[0]
+		firsttime = time.time()
+		self.chans[nichan] = ["Hangup", 0, "", "", "", firsttime]
+		for ic in self.chans:
+			self.chans[ic][1] = int(firsttime - self.chans[ic][5])
 	def del_chan(self, ichan):
+		nichan = ichan
+		if ichan.find("<ZOMBIE>") >= 0:
+			print "dch channel contains a <ZOMBIE> part :", ichan, ": deleting", nichan, "anyway"
+			nichan = ichan.split("<ZOMBIE>")[0]
 		try:
-			del self.chans[ichan]
+			del self.chans[nichan]
 		except:
-			if ichan.find("<ZOMBIE>") >= 0:
-				nichan = ichan.split("<ZOMBIE>")[0]
-				print "channel contains a <ZOMBIE> part :", ichan, ": deleting", nichan, "anyway"
-				try:
-					del self.chans[nichan]
-				except:
-					print "bis / a problem occured when trying to remove", nichan
-					print self.chans
-			else:
-				print "a problem occured when trying to remove", ichan
+			print "a problem occured when trying to remove", nichan
 
 
 class AsteriskRemote:
@@ -1078,6 +1126,7 @@ for n in items_asterisks:
 	update_sipnumlist(configs[n], n)
 	do_sip_register_subscribe(configs[n], SIPsocks[n], n)
 	lastrequest_time.append(time.time())
+
 
 # Receive messages
 while True:
