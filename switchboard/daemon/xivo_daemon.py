@@ -88,7 +88,6 @@ def updateuserlistfromurl(url):
 			# line is protocol | username | password | rightflag | phone number | initialized | disabled(=1) | cid
                         if l[0] == "sip" and l[1] != "xivosb" and l[5] == "1" and l[6] == "0":
 				#			    print l[1], ": '" + l[4] + "'"
-				print l
 				if l[4] == "":
 					l_sipnumlist["SIP/" + l[1]] = l[7]
 				else:
@@ -301,8 +300,15 @@ class AMI:
 		except self.AMIError, e:
 			return False
 	def hangup(self, channel):
+		astn = 1 # astn has yet to be set by client
+		phone = channel.split("-")[0]
+		if channel in phonelists[astn][phone].chans:
+			peer = phonelists[astn][phone].chans[channel][3]
+		print "hanging up " + channel + " and " + peer
 		try:
 			self.sendcommand('Hangup', [('Channel', channel)])
+			self.readresponse('')
+			self.sendcommand('Hangup', [('Channel', peer)])
 			self.readresponse('')
 			return True
 		except self.AMIError, e:
@@ -322,6 +328,7 @@ class AMI:
 			resp.append(str)
 		return resp
 	def originate(self, src, dst):
+		astn = 1 # astn has yet to be set by client
 		# originate a call btw src and dst
 		# src will ring first, and dst will ring when src responds
 		self.sendcommand('Originate', [('Channel', 'SIP/'+src),
@@ -330,13 +337,19 @@ class AMI:
 					       ('Priority', '1'),
 					       ('CallerID', src + " calls " + dst),
 					       ('Async', 'true')])
+	# TODO : replace management with "phone src" to "channel src" => no need to look up the list
 	def transfer(self, src, dst):
-		self.sendcommand('Status', [])
-##		print src, phonelists[1]["SIP/" + src].chans
-##		print dst, phonelists[1]["SIP/" + dst].chans
-		for ch in self.readresponse('StatusComplete'):
-			if ch.has_key('CallerID') and ch['CallerID'] == src and ch.has_key('Link'):
-				self.redirect(ch['Link'], dst, 'local-extensions')
+		astn = 1 # astn has yet to be set by client
+		phonesrc = "SIP/" + src
+		if phonesrc in phonelists[astn].keys():
+			channellist = phonelists[astn][phonesrc].chans
+			nopens = len(channellist)
+			if nopens == 0:
+				print "no channel currently open in the phone", phonesrc
+			else:
+				for ch in channellist:
+					print ch, channellist[ch][3]
+					self.redirect(channellist[ch][3], dst, 'local-extensions')
 
 
 # builds the full list of phone statuses in order to send them to the requesting client
@@ -347,7 +360,7 @@ def build_callerids():
 		sskeys = phonelists[astnum].keys()
 		sskeys.sort()
 		for ss in sskeys:
-			phoneinfo = "002:" + configs[astnum].astid + ":" \
+			phoneinfo = "cid:" + configs[astnum].astid + ":" \
 				    + phonelists[astnum][ss].tech + ":" \
 				    + ss.split("/")[1] + ":" \
 				    + phonelists[astnum][ss].callerid
@@ -376,7 +389,7 @@ def build_statuses():
 		sskeys = phonelists[astnum].keys()
 		sskeys.sort()
 		for ss in sskeys:
-			phoneinfo = "000:" + configs[astnum].astid + ":" \
+			phoneinfo = "hnt:" + configs[astnum].astid + ":" \
 				    + phonelists[astnum][ss].tech + ":" \
 				    + ss.split("/")[1] + ":" \
 				    + phonelists[astnum][ss].imstat + ":" \
@@ -468,7 +481,6 @@ def manage_connection(connid):
             # ... this part can certainly be improved
             # only the "originate" command is properly handled right now
 	    l = usefulmsg.split()
-#	    print l
 	    if l[0] == 'originate' or l[0] == 'transfer' or l[0] == 'hangup':
 		    if not AMIconns[l[1]]:
 			    "AMI was not connected - attempting to connect again"
@@ -480,10 +492,7 @@ def manage_connection(connid):
 				    # phonelists[astnum][sipnum]
 				    AMIconns[l[1]].transfer(l[2], l[3])
 			    elif l[0] == 'hangup':
-				    AMIconns[l[1]].sendcommand('Status', [])
-				    for ch in AMIconns[l[1]].readresponse('StatusComplete'):
-					    if ch.has_key('CallerID') and ch['CallerID'] == l[2]:
-						    AMIconns[l[1]].hangup(ch['Channel'])
+				    AMIconns[l[1]].hangup(l[2])
 
 def handle_ami_event_dial(listkeys, astnum, src, dst, clid, clidn):
 	if src.find("SIP/") == 0 or src.find("IAX2/") == 0 or src.find("mISDN/") == 0:
@@ -780,14 +789,14 @@ class LineProp:
 			dtime = int(nowtime - self.chans[ic][5])
 			self.chans[ic][1] = dtime
 	def set_chan(self, ichan, status, itime, dir, peerch, peernum):
-		# updates peerch and peernum only if they are not already filled
-		oldpeerch = peerch
-		oldpeernum = peernum
+		# does not update peerch and peernum if the new values are empty
+		newpeerch = peerch
+		newpeernum = peernum
 		if ichan in self.chans:
 			if peerch == "":
-				oldpeerch = self.chans[ichan][3]
+				newpeerch = self.chans[ichan][3]
 			if peernum == "":
-				oldpeernum = self.chans[ichan][4]
+				newpeernum = self.chans[ichan][4]
 		firsttime = time.time()
 		self.chans[ichan] = [status, itime, dir, oldpeerch, oldpeernum, firsttime - itime]
 		for ic in self.chans:
