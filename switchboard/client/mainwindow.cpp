@@ -32,6 +32,8 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 		 calls, SLOT(showCalls(const QString &, const QString &)) );
 	connect( m_engine, SIGNAL(updateTime()),
 		 calls, SLOT(updateTime()) );
+	connect( calls, SIGNAL(hangUp(const QString &)),
+		 m_engine, SLOT(hangUp(const QString &)) );
 
 	QScrollArea * areaPeers = new QScrollArea(splitter);
 	areaCalls->setWidgetResizable(true);

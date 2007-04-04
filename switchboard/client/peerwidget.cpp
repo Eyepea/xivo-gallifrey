@@ -22,7 +22,9 @@ PeerWidget::PeerWidget(const QString & txtlbl, SwitchBoardEngine * engine,
 	layout->addWidget( m_statelbl, 0, Qt::AlignLeft );
 	layout->addWidget( m_availlbl, 0, Qt::AlignLeft );
 	m_textlbl = new QLabel(txtlbl, this);
-	layout->addWidget( m_textlbl, 1, Qt::AlignRight );
+	layout->addWidget( m_textlbl, 0, Qt::AlignLeft );
+	QLabel * dummy = new QLabel(this);
+	layout->addWidget( dummy, 1, Qt::AlignLeft );
 	// to be able to receive drop
 	setAcceptDrops(true);
 }
@@ -112,6 +114,8 @@ void PeerWidget::mousePressEvent(QMouseEvent *event)
 {
 	if (event->button() == Qt::LeftButton)
 		m_dragstartpos = event->pos();
+	else if (event->button() == Qt::RightButton)
+		qDebug() << "depending on what has been left-cliked on the left ...";
 }
 
 void PeerWidget::mouseMoveEvent(QMouseEvent *event)
@@ -135,10 +139,10 @@ void PeerWidget::mouseMoveEvent(QMouseEvent *event)
 void PeerWidget::mouseDoubleClickEvent(QMouseEvent *event)
 {
 	qDebug() << "mouseDoubleClickEvent" << event;
-	if(event->button() == 1)
-		// disconnect the guy if left-click
-		m_engine->hangUp(m_textlbl->text());
-	else
+	//	m_engine->hangUp(m_textlbl->text());
+
+	// selects this to be monitored otherwise
+        if(event->button() == Qt::LeftButton)
 		m_engine->selectAsMonitored(m_textlbl->text());
 }
 

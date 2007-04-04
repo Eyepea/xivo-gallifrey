@@ -280,7 +280,7 @@ void SwitchBoardEngine::transferCall(const QString & src, const QString & dst)
 void SwitchBoardEngine::hangUp(const QString & peer)
 {
 	QStringList peerl = peer.split("/");
-	m_pendingcommand = "hangup " + peerl[0] + " " + peerl[2];
+	m_pendingcommand = "hangup " + peerl[0] + " " + peerl[1] + "/" + peerl[2];
 	socketConnected();
 // 	if(m_socket->state() == QAbstractSocket::UnconnectedState)
 // 		connectSocket();

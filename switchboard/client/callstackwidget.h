@@ -56,7 +56,10 @@ public slots:
 		     const QString & phonen);
 	void showCalls(const QString & tomonitor, const QString & callerid);
 	int updateTime();
-private:
+	void hupchan(const QString & channel);
+ signals:
+	void hangUp(const QString & tomonitor);
+ private:
 	QVBoxLayout * m_layout;
 	QList<Call> m_calllist;
 	QList<CallWidget *> m_afflist;

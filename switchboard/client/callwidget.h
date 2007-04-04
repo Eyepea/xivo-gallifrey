@@ -31,12 +31,15 @@ public:
 protected:
 	void mousePressEvent(QMouseEvent *);
 	void mouseMoveEvent(QMouseEvent *);
+	void mouseDoubleClickEvent(QMouseEvent * event);
+	void dragEnterEvent(QDragEnterEvent * event);
+	//	void dragMoveEvent(QDragMoveEvent * event);
+	//	void dropEvent(QDropEvent * event);
 private:
 	QPoint m_dragstartpos;
-	QString m_channel;
+	QString m_channelme;
 	QString m_callerid;
 	QString m_calleridname;
-	QLabel * m_lbl_channelme;
 	QLabel * m_lbl_action;
 	QLabel * m_lbl_time;
 	QLabel * m_lbl_direction;

@@ -97,6 +97,11 @@ void CallStackWidget::addCall(const QString & channelme,
 	}
 }
 
+void CallStackWidget::hupchan(const QString & hangupchan)
+{
+	hangUp("obelisk/" + hangupchan);
+}
+
 void CallStackWidget::showCalls(const QString & tomonitor, const QString & callerid)
 {
 	// cleaning the calling list displayed

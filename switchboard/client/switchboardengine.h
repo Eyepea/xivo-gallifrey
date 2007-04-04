@@ -16,7 +16,6 @@ public:
 	void setAddress(const QString & host, quint16 port);
 	void originateCall(const QString & src, const QString & dst);
 	void transferCall(const QString & src, const QString & dst);
-	void hangUp(const QString & peer);
 	void selectAsMonitored(const QString & peer);
 	quint16 port() const;
 	const QString & host() const;
@@ -39,6 +38,7 @@ private slots:
 	void socketError(QAbstractSocket::SocketError);
 	void socketStateChanged(QAbstractSocket::SocketState);
 	void socketReadyRead();
+	void hangUp(const QString & peer);
 signals:
 	void started();
 	void stopped();

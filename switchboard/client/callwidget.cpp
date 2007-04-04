@@ -3,6 +3,7 @@
 #include <QLabel>
 #include <QMouseEvent>
 #include <QDebug>
+#include "callstackwidget.h"
 #include "callwidget.h"
 
 CallWidget::CallWidget(QWidget * parent)
@@ -38,7 +39,7 @@ CallWidget::CallWidget(const QString & channelme,
 
 // 	m_callerid = callerid;
 // 	m_calleridname = calleridname;
-// 	m_channel = channel;
+ 	m_channelme = channelme;
 
 //	qDebug() << "spacing" << layout->spacing()
 //	         << ", margin" << layout->margin();
@@ -57,7 +58,8 @@ CallWidget::CallWidget(const QString & channelme,
 		lsquare.fill( Qt::gray );
 	m_lbl_action->setPixmap( lsquare );
 	layout->addWidget(m_lbl_action, 0, Qt::AlignLeft );
-	m_lbl_time = new QLabel(QString::number(time), this);
+	m_lbl_time = new QLabel("[" + QString::number(time/60) + " min " + QString::number(time%60) + " s]",
+				this);
 	layout->addWidget(m_lbl_time, 0, Qt::AlignLeft );
 	m_lbl_direction = new QLabel(direction, this);
 	layout->addWidget(m_lbl_direction, 0, Qt::AlignLeft );
@@ -67,6 +69,7 @@ CallWidget::CallWidget(const QString & channelme,
 	layout->addWidget(m_lbl_exten, 0, Qt::AlignLeft );
 	QLabel * dummy = new QLabel(this);
 	layout->addWidget(dummy, 1, Qt::AlignLeft );
+	setAcceptDrops(true);
 }
 
 void CallWidget::updateWidget(const QString & action,
@@ -76,7 +79,7 @@ void CallWidget::updateWidget(const QString & action,
 			      const QString & exten)
 {
 	m_lbl_action->setText(action);
-	m_lbl_time->setText(QString::number(time));
+	m_lbl_time->setText("[" + QString::number(time/60) + " min " + QString::number(time%60) + " s]");
 	m_lbl_direction->setText(direction);
 	m_lbl_channelpeer->setText(channelpeer);
 	m_lbl_exten->setText(exten);
@@ -84,8 +87,10 @@ void CallWidget::updateWidget(const QString & action,
 
 void CallWidget::mousePressEvent(QMouseEvent *event)
 {
-	if (event->button() == Qt::LeftButton)
-		m_dragstartpos = event->pos();
+	if (event->button() == Qt::LeftButton) {
+		// m_dragstartpos = event->pos();
+		qDebug() << "I'm selecting this one for future use :" << m_channelme << m_lbl_channelpeer->text();
+	}
 }
 
 void CallWidget::mouseMoveEvent(QMouseEvent *event)
@@ -98,11 +103,34 @@ void CallWidget::mouseMoveEvent(QMouseEvent *event)
 	
 	QDrag *drag = new QDrag(this);
 	QMimeData *mimeData = new QMimeData();
-	mimeData->setText(/*"test"*/ m_channel);
+	mimeData->setText(/*"test"*/ m_channelme);
 	drag->setMimeData(mimeData);
 
 	Qt::DropAction dropAction = drag->start(Qt::CopyAction | Qt::MoveAction);
 }
+
+void CallWidget::dragEnterEvent(QDragEnterEvent *event)
+{
+	qDebug() << "dragEnterEvent()";
+// 	qDebug() << event->mimeData()->formats();
+// 	if(event->mimeData()->hasText())
+// 	{
+// 		if(event->proposedAction() & (Qt::CopyAction|Qt::MoveAction))
+// 			event->acceptProposedAction();
+// 	}
+}
+
+void CallWidget::mouseDoubleClickEvent(QMouseEvent *event)
+{
+	qDebug() << "mouseDoubleClickEvent" << event;
+	if (event->button() == Qt::RightButton) {
+// 		qDebug() << this << this->parentWidget();
+// 		qDebug() << "I want to Hangup" << m_channelme << m_lbl_channelpeer->text();
+		CallStackWidget * csw = (CallStackWidget *) this->parentWidget();
+		csw->hupchan(m_channelme);
+	}
+}
+
 
 /*
 void CallWidget::setCallerId(const QString & callerid)
