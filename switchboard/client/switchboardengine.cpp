@@ -290,7 +290,7 @@ void SwitchBoardEngine::hangUp(const QString & peer)
 void SwitchBoardEngine::selectAsMonitored(const QString & peer)
 {
 	m_tomonitor = peer;
-	qDebug() << "SwitchBoardEngine::selectAsMinitored()" << peer
+	qDebug() << "SwitchBoardEngine::selectAsMonitored()" << peer
 	         << m_callerids[m_tomonitor];
 	showCalls(m_tomonitor, m_callerids[m_tomonitor]);
 }

@@ -78,6 +78,7 @@ void CallWidget::updateWidget(const QString & action,
 			      const QString & channelpeer,
 			      const QString & exten)
 {
+	qDebug() << this << "updateWidget";
 	m_lbl_action->setText(action);
 	m_lbl_time->setText("[" + QString::number(time/60) + " min " + QString::number(time%60) + " s]");
 	m_lbl_direction->setText(direction);
@@ -89,11 +90,13 @@ void CallWidget::mousePressEvent(QMouseEvent *event)
 {
 	if (event->button() == Qt::LeftButton) {
 		m_dragstartpos = event->pos();
+/*
 		if(m_lbl_channelpeer)
 		{
 			qDebug() << "I'm selecting this one for future use :" << m_channelme
 			         << m_lbl_channelpeer->text();
 		}
+*/
 	}
 }
 
@@ -105,7 +108,7 @@ void CallWidget::mouseMoveEvent(QMouseEvent *event)
 	    < QApplication::startDragDistance())
 		return;
 
-	qDebug() << "CallWidget::mouseMoveEvent()";
+	qDebug() << "CallWidget::mouseMoveEvent() starting DRAG" << m_channelme ;
 
 	QDrag *drag = new QDrag(this);
 	QMimeData *mimeData = new QMimeData();
@@ -113,6 +116,7 @@ void CallWidget::mouseMoveEvent(QMouseEvent *event)
 	drag->setMimeData(mimeData);
 
 	Qt::DropAction dropAction = drag->start(Qt::CopyAction | Qt::MoveAction);
+	qDebug() << "dropAction =" << dropAction;
 }
 
 /*
