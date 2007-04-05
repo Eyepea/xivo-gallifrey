@@ -73,6 +73,8 @@ SwitchBoardWindow::SwitchBoardWindow(QWidget * parent)
 	m_y = 0;
 	QSettings settings;
 	m_width = settings.value("display/width", 5).toInt();
+	m_layout->setRowStretch(99, 1);
+	m_layout->setColumnStretch(m_width, 1);
 }
 
 void SwitchBoardWindow::saveSettings()

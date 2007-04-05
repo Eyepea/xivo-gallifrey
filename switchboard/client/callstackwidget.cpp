@@ -68,6 +68,7 @@ CallStackWidget::CallStackWidget(QWidget * parent)
 	//m_layout->setMargin();
 	//m_layout->setSpacing(0);
 	setAcceptDrops(true);
+	m_layout->addStretch(1);
 }
 
 void CallStackWidget::addCall(const QString & channelme,
@@ -106,22 +107,55 @@ void CallStackWidget::hupchan(const QString & hangupchan)
 
 void CallStackWidget::showCalls(const QString & tomonitor, const QString & callerid)
 {
+	int i, j;
 	// cleaning the calling list displayed
+	/*
 	for(int i = 0; i < m_afflist.count() ; i++) {
 		m_layout->removeWidget(m_afflist[i]);
 		delete m_afflist[i];
 	}
 	m_afflist.clear();
-	
+	*/
+
+	CallWidget * callwidget = NULL;
 	// building the new calling list
-	CallWidget * callwidget = new CallWidget(callerid, this);
-	m_layout->addWidget(callwidget, 0, Qt::AlignTop);
-	m_afflist.append(callwidget);
+	//CallWidget * callwidget = new CallWidget(callerid, this);
+	//m_layout->addWidget(callwidget, 0, Qt::AlignTop);
+	//m_afflist.append(callwidget);
 	
-	for(int i = 0; i < m_calllist.count() ; i++) {
+	for(j = m_afflist.count() - 1; j>= 0; j--)
+	{
+		for(i = 0; i < m_calllist.count(); i++)
+		{
+			if(m_afflist[j]->channel() == m_calllist[i].getChannelMe())
+				break;
+		}
+		if(i == m_calllist.count())
+		{
+			m_layout->removeWidget(m_afflist[j]);
+			delete m_afflist.takeAt(j);
+		}
+	}
+
+	for(i = 0; i < m_calllist.count() ; i++) {
 		if(tomonitor == m_calllist[i].getPhone()) {
 			Call c = m_calllist[i];
-			CallWidget * callwidget = new CallWidget(c.getChannelMe(),
+			for(j = 0; j < m_afflist.count(); j++)
+			{
+				qDebug() << j << m_afflist[j]->channel();
+				if(m_afflist[j]->channel() == c.getChannelMe())
+				{
+					m_afflist[j]->updateWidget( c.getAction(),
+					                            c.getTime(),
+											    c.getDirection(),
+											    c.getChannelPeer(),
+											    c.getExten() );
+					break;
+				}
+			}
+			if(j == m_afflist.count())
+			{
+			callwidget = new CallWidget(c.getChannelMe(),
 								 c.getAction(),
 								 c.getTime(),
 								 c.getDirection(),
@@ -129,13 +163,17 @@ void CallStackWidget::showCalls(const QString & tomonitor, const QString & calle
 								 c.getExten(),
 								 this);
 			m_afflist.append(callwidget);
-			m_layout->addWidget(callwidget, 0, Qt::AlignTop);
+			//m_layout->addWidget(callwidget, 0, Qt::AlignTop);
+			m_layout->insertWidget(m_layout->count() - 1, callwidget,
+			                       0, Qt::AlignTop);
+			}
 		}
 	}
-	
+/*	
 	callwidget = new CallWidget(this);
 	m_layout->addWidget(callwidget, 1, Qt::AlignTop);
 	m_afflist.append(callwidget);
+*/
 }
 
 int CallStackWidget::updateTime()

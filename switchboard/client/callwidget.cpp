@@ -33,7 +33,7 @@ CallWidget::CallWidget(const QString & channelme,
 		       const QString & channelpeer,
 		       const QString & exten,
                        QWidget * parent)
-: QWidget(parent)
+: QWidget(parent), m_square(16,16)
 {
 	QHBoxLayout * layout = new QHBoxLayout(this);
 
@@ -47,17 +47,8 @@ CallWidget::CallWidget(const QString & channelme,
 	//layout->setMargin(0);
 
 	m_lbl_action = new QLabel(this);
-	QPixmap lsquare(16, 16);
-	if(action == QString("Calling"))
-		lsquare.fill( Qt::yellow );
-	else if(action == QString("Ringing"))
-		lsquare.fill( Qt::cyan );
-	else if(action == QString("On the phone"))
-		lsquare.fill( Qt::red );
-	else
-		lsquare.fill( Qt::gray );
-	m_lbl_action->setPixmap( lsquare );
 	layout->addWidget(m_lbl_action, 0, Qt::AlignLeft );
+	setActionPixmap(action);
 	m_lbl_time = new QLabel("[" + QString::number(time/60) + " min " + QString::number(time%60) + " s]",
 				this);
 	layout->addWidget(m_lbl_time, 0, Qt::AlignLeft );
@@ -79,11 +70,25 @@ void CallWidget::updateWidget(const QString & action,
 			      const QString & exten)
 {
 	qDebug() << this << "updateWidget";
-	m_lbl_action->setText(action);
+	//m_lbl_action->setText(action);
+	setActionPixmap(action);
 	m_lbl_time->setText("[" + QString::number(time/60) + " min " + QString::number(time%60) + " s]");
 	m_lbl_direction->setText(direction);
 	m_lbl_channelpeer->setText(channelpeer);
 	m_lbl_exten->setText(exten);
+}
+
+void CallWidget::setActionPixmap(const QString & action)
+{
+	if(action == QString("Calling"))
+		m_square.fill( Qt::yellow );
+	else if(action == QString("Ringing"))
+		m_square.fill( Qt::cyan );
+	else if(action == QString("On the phone"))
+		m_square.fill( Qt::red );
+	else
+		m_square.fill( Qt::gray );
+	m_lbl_action->setPixmap( m_square );
 }
 
 void CallWidget::mousePressEvent(QMouseEvent *event)
@@ -160,4 +165,9 @@ void CallWidget::setChannel(const QString & channel)
 	m_channel = channel;
 }
 */
+
+const QString & CallWidget::channel() const
+{
+	return m_channelme;
+}
 

@@ -36,6 +36,8 @@ protected:
 	//	void dragMoveEvent(QDragMoveEvent * event);
 	//	void dropEvent(QDropEvent * event);
 private:
+	void setActionPixmap(const QString &);
+private:
 	QPoint m_dragstartpos;
 	QString m_channelme;
 	QString m_callerid;
@@ -45,6 +47,7 @@ private:
 	QLabel * m_lbl_direction;
 	QLabel * m_lbl_channelpeer;
 	QLabel * m_lbl_exten;
+	QPixmap m_square;
 };
 
 
