@@ -24,7 +24,7 @@ port_login = 12345
 port_keepalive = port_login + 1
 port_request = 12347
 session_expiration_time = 60*1
-guserlisturl = 'http://192.168.0.254/service/ipbx/sso.php'
+guserlisturl = 'file:///home/corentin/sso_obelisk.php' # http://192.168.0.254/service/ipbx/sso.php
 astname_xivoc = ""
 
 dir_to_string = ">"
@@ -77,6 +77,7 @@ def daemonize():
 	os.dup2(dev_null.fileno(), sys.stderr.fileno())
 
 # function to load sso.php user file
+# other would-be channel types to handle : Zap, MGCP, CAPI, <X>h323, ...
 def updateuserlistfromurl(url):
 	l_sipnumlist = {}
 	f = urllib.urlopen(url)
@@ -299,20 +300,21 @@ class AMI:
 			return True
 		except self.AMIError, e:
 			return False
-	def hangup(self, channel):
-		astn = 1 # astn has yet to be set by client
+	def hangup(self, astn, channel):
 		phone = channel.split("-")[0]
 		if channel in phonelists[astn][phone].chans:
 			peer = phonelists[astn][phone].chans[channel][3]
-		print "hanging up " + channel + " and " + peer
-		try:
-			self.sendcommand('Hangup', [('Channel', channel)])
-			self.readresponse('')
-			self.sendcommand('Hangup', [('Channel', peer)])
-			self.readresponse('')
-			return True
-		except self.AMIError, e:
-			return False
+			print "hanging up " + channel + " and " + peer
+			try:
+				self.sendcommand('Hangup', [('Channel', channel)])
+				self.readresponse('')
+				self.sendcommand('Hangup', [('Channel', peer)])
+				self.readresponse('')
+				return True
+			except self.AMIError, e:
+				return False
+		else:
+			print "no channel", channel, "in Asterisk", configs[astn].astid
 	def execclicommand(self, command):
 		# special procession for cli commands.
 		self.sendcommand('Command', [('Command', command)])
@@ -328,7 +330,6 @@ class AMI:
 			resp.append(str)
 		return resp
 	def originate(self, src, dst):
-		astn = 1 # astn has yet to be set by client
 		# originate a call btw src and dst
 		# src will ring first, and dst will ring when src responds
 		self.sendcommand('Originate', [('Channel', 'SIP/'+src),
@@ -338,8 +339,8 @@ class AMI:
 					       ('CallerID', src + " calls " + dst),
 					       ('Async', 'true')])
 	# TODO : replace management with "phone src" to "channel src" => no need to look up the list
-	def transfer(self, src, dst):
-		astn = 1 # astn has yet to be set by client
+	def transfer(self, astn, src, dst):
+		print "transfer", astn, src, dst
 		phonesrc = "SIP/" + src
 		if phonesrc in phonelists[astn].keys():
 			channellist = phonelists[astn][phonesrc].chans
@@ -477,22 +478,21 @@ def manage_connection(connid):
 		except:
 			print "warning : there might have been a connection problem"
         elif usefulmsg != "":
-            # different cases are treated whether AMIconns was already defined or not
-            # ... this part can certainly be improved
-            # only the "originate" command is properly handled right now
+            # different cases are treated whether AMIconns was already defined or not ... this part can certainly be improved
 	    l = usefulmsg.split()
+	    idast = asteriskr[l[1]]
+	    print l, ":", idast
 	    if l[0] == 'originate' or l[0] == 'transfer' or l[0] == 'hangup':
-		    if not AMIconns[l[1]]:
+		    if not AMIconns[idast]:
 			    "AMI was not connected - attempting to connect again"
-			    AMIconns[l[1]] = connect_to_AMI(asterisk_amis[l[1]], asterisk_login, asterisk_pass)
-		    if AMIconns[l[1]]:
+			    AMIconns[idast] = connect_to_AMI((configs[idast].remoteaddr, port_ami), asterisk_login, asterisk_pass)
+		    if AMIconns[idast]:
 			    if l[0] == 'originate':
-				    AMIconns[l[1]].originate(l[2], l[3])
+				    AMIconns[idast].originate(l[2], l[3])
 			    elif l[0] == 'transfer':
-				    # phonelists[astnum][sipnum]
-				    AMIconns[l[1]].transfer(l[2], l[3])
+				    AMIconns[idast].transfer(idast, l[2], l[3])
 			    elif l[0] == 'hangup':
-				    AMIconns[l[1]].hangup(l[2])
+				    AMIconns[idast].hangup(idast, l[2])
 
 def handle_ami_event_dial(listkeys, astnum, src, dst, clid, clidn):
 	if src.find("SIP/") == 0 or src.find("IAX2/") == 0 or src.find("mISDN/") == 0:
@@ -798,7 +798,7 @@ class LineProp:
 			if peernum == "":
 				newpeernum = self.chans[ichan][4]
 		firsttime = time.time()
-		self.chans[ichan] = [status, itime, dir, oldpeerch, oldpeernum, firsttime - itime]
+		self.chans[ichan] = [status, itime, dir, newpeerch, newpeernum, firsttime - itime]
 		for ic in self.chans:
 			self.chans[ic][1] = int(firsttime - self.chans[ic][5])
 	def set_chan_hangup(self, ichan):
@@ -852,23 +852,6 @@ def deluser(user):
 	global userlist
 	if userlist.has_key(user):
 		userlist.pop(user)
-
-# fill the userlist from a url which is likely to be HTTP :
-# http://adc.xivo.pro/service/ipbx/sso.php
-def filluserlistfromurl(url):
-	f = urllib.urlopen(url)
-	try:
-		for line in f:
-			# remove leading/tailing whitespaces
-			line = line.strip()
-			l = line.split('|')
-			# line is protocol|phone|password|rightflag
-##			if __debug__:
-##				print 'user', l[0], l[1] , 'password', l[2], 'droit', l[3]
-			if l[3] != '0':
-				adduser(l[0]+l[1], l[2])
-	finally:
-		f.close()
 
 # finduser() returns the user from the list.
 # None is returned if not found
@@ -947,8 +930,8 @@ class LoginHandler(SocketServer.StreamRequestHandler):
 # same open TCP connection.
 class IdentRequestHandler(SocketServer.StreamRequestHandler):
 	def handle(self):
-#		if __debug__:
-#			print ' ## IdentRequestHandler from client', self.client_address
+		if __debug__:
+			print ' ## IdentRequestHandler from client', self.client_address
 		while True:
 			list0 = self.rfile.readline().strip().split(' ')
 			retline = 'ERROR\r\n'
@@ -975,8 +958,8 @@ class IdentRequestHandler(SocketServer.StreamRequestHandler):
 				self.wfile.write(retline)
 			except Exception, e:
 				# something bad happened.
-##				if __debug__:
-##					print ' ## Exception :', e
+				if __debug__:
+					print ' ## Exception :', e
 				return
 
 # The KeepAliveHandler receives UDP datagrams and sends back 
@@ -1027,8 +1010,8 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
 			if n >= 0:
 				sipnumber = user.split("sip")[1]
 #				print "    from Xivo client", self.client_address, user, sipnumber, sessionid, ip, state
-				phonelists[n][sipnumber].set_imstat(state)
-				update_GUI_clients(configs[n], n, sipnumber, "kfc")
+				phonelists[n]["SIP/" + sipnumber].set_imstat(state)
+				update_GUI_clients(configs[n], n, "SIP/" + sipnumber, "kfc")
 
 
 class MyTCPServer(SocketServer.ThreadingTCPServer):
@@ -1055,12 +1038,6 @@ except Exception, e:
 	print e
 
 
-
-
-
-
-filluserlistfromurl(guserlisturl)
-
 # Instantiate the SocketServer Objects.
 loginserver = MyTCPServer(('', port_login), LoginHandler)
 # TODO: maybe we should listen on only one interface (localhost ?)
@@ -1070,8 +1047,6 @@ requestserver = MyTCPServer(('', port_request), IdentRequestHandler)
 # overhead is not worth it.
 #keepaliveserver = SocketServer.ThreadingUDPServer(('', port_keepalive), KeepAliveHandler)
 keepaliveserver = SocketServer.UDPServer(('', port_keepalive), KeepAliveHandler)
-
-
 
 
 # opens the logfile for output
@@ -1085,7 +1060,8 @@ phonelists = []
 SIPsocks = []
 AMIsocks = []
 AMIcomms = []
-AMIconns = {}
+AMIconns = []
+asteriskr = {}
 
 # We have three sockets to listen to so we cannot use the 
 # very easy to use SocketServer.serve_forever()
@@ -1095,31 +1071,28 @@ AMIconns = {}
 # process should be fast. If it isnt, use a threading UDP server ;)
 ins = [loginserver.socket, requestserver.socket, keepaliveserver.socket]
 
-asterisk_amis = {}
+items_asterisks = xrange(len(configs))
 
-
-for cfg in configs:
+for n in items_asterisks:
 	sipnumlists.append([])
 	phonelists.append({})
 
 	SIPsock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-	SIPsock.bind(("", cfg.portsipclt))
+	SIPsock.bind(("", configs[n].portsipclt))
 	SIPsocks.append(SIPsock)
 	ins.append(SIPsock)
 
-	asterisk_amis[cfg.astid] = (cfg.remoteaddr, port_ami)
-	AMIconns[cfg.astid] = connect_to_AMI(asterisk_amis[cfg.astid], asterisk_login, asterisk_pass)
-
-	als0 = ami_socket_login(cfg.remoteaddr, asterisk_login, 0)
+	AMIconns.append(connect_to_AMI((configs[n].remoteaddr, port_ami), asterisk_login, asterisk_pass))
+	asteriskr[configs[n].astid] = n
+	
+	als0 = ami_socket_login(configs[n].remoteaddr, asterisk_login, 0)
 	if als0:
 		AMIcomms.append(als0)
 		ins.append(als0)
-	als1 = ami_socket_login(cfg.remoteaddr, asterisk_login, 1)
+	als1 = ami_socket_login(configs[n].remoteaddr, asterisk_login, 1)
 	if als1:
 		AMIsocks.append(als1)
 		ins.append(als1)
-
-items_asterisks = xrange(len(sipnumlists))
 
 UIsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 UIsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
