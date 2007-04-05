@@ -74,6 +74,12 @@ SwitchBoardWindow::SwitchBoardWindow(QWidget * parent)
 	m_width = settings.value("display/width", 5).toInt();
 }
 
+void SwitchBoardWindow::saveSettings()
+{
+	QSettings settings;
+	settings.setValue("display/width", m_width);
+}
+
 void SwitchBoardWindow::setEngine(SwitchBoardEngine * engine)
 {
 	m_engine = engine;

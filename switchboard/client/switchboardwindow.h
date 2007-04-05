@@ -41,6 +41,7 @@ public:
 	void removePeers(void);
 	int width() const;
 	void setWidth(int);
+	void saveSettings();
 private:
 	QGridLayout * m_layout;
 	QList<Peer> m_peerlist;

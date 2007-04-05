@@ -50,6 +50,7 @@ void SwitchBoardConfDialog::saveAndClose()
 	m_engine->setAddress( m_host->text(), m_port->text().toUInt() );
 	m_engine->saveSettings();
 	m_window->setWidth( m_widthsb->value() );
+	m_window->saveSettings();
 	close();
 }
 
