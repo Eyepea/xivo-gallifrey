@@ -1,4 +1,5 @@
 #include <QVBoxLayout>
+#include <QDragEnterEvent>
 #include <QDebug>
 #include "callstackwidget.h"
 #include "callwidget.h"
@@ -66,6 +67,7 @@ CallStackWidget::CallStackWidget(QWidget * parent)
 	m_layout = new QVBoxLayout(this);
 	//m_layout->setMargin();
 	//m_layout->setSpacing(0);
+	setAcceptDrops(true);
 }
 
 void CallStackWidget::addCall(const QString & channelme,
@@ -144,3 +146,17 @@ int CallStackWidget::updateTime()
 	}
 	return n;
 }
+
+void CallStackWidget::dragEnterEvent(QDragEnterEvent *event)
+{
+	if (event->mimeData()->hasFormat("text/plain"))
+		event->acceptProposedAction();
+}
+
+void CallStackWidget::dropEvent(QDropEvent *event)
+{
+	qDebug() << "CallStackWidget::dropEvent()";
+	qDebug() << "   " << event->mimeData()->text();
+	selectForMonitoring(event->mimeData()->text());
+}
+

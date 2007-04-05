@@ -6,6 +6,7 @@
 #include <QPoint>
 #include <QSettings>
 #include "switchboardwindow.h"
+#include "switchboardengine.h"
 #include "peerwidget.h"
 
 //Peer::Peer(const QString & ext, QObject * parent)
@@ -103,7 +104,11 @@ void SwitchBoardWindow::updatePeer(const QString & ext,
 	}
 	// if not found in the peerlist, create a new Peer
 	Peer peer(ext);
-	PeerWidget * peerwidget = new PeerWidget(ext, m_engine, this);
+	PeerWidget * peerwidget = new PeerWidget(ext, /*m_engine,*/ this);
+	connect( peerwidget, SIGNAL(originateCall(const QString&, const QString&)),
+	         m_engine, SLOT(originateCall(const QString&, const QString&)) );
+	connect( peerwidget, SIGNAL(transferCall(const QString&, const QString&)),
+	         m_engine, SLOT(transferCall(const QString&, const QString&)) );
 	m_layout->addWidget( peerwidget, m_y, m_x++ );
 	if(m_x >= m_width)
 	{

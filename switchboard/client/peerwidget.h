@@ -5,14 +5,12 @@
 #include <QPoint>
 
 class QLabel;
-class SwitchBoardEngine;
 
 class PeerWidget : public QWidget
 {
 	Q_OBJECT
 public:
-	PeerWidget(const QString & txtlbl, SwitchBoardEngine * engine,
-	           QWidget * parent = 0, int size = 16);
+	PeerWidget(const QString & txtlbl, QWidget * parent = 0, int size = 16);
 protected:
 	void mouseMoveEvent(QMouseEvent * event);
 	void mousePressEvent(QMouseEvent * event);
@@ -20,6 +18,9 @@ protected:
 	void dragEnterEvent(QDragEnterEvent * event);
 	void dragMoveEvent(QDragMoveEvent * event);
 	void dropEvent(QDropEvent * event);
+signals:
+	void originateCall(const QString &, const QString &);
+	void transferCall(const QString &, const QString &);
 public slots:
 	void setBlue(int n);
 	void setCyan(int n);
@@ -36,7 +37,6 @@ private:
 	QLabel * m_textlbl;
 	QPixmap m_square;
 	QPoint m_dragstartpos;
-	SwitchBoardEngine * m_engine;
 };
 
 #endif

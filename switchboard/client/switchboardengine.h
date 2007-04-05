@@ -14,9 +14,6 @@ public:
 	SwitchBoardEngine(QObject * parent = 0);
 	void setWindow(SwitchBoardWindow *);
 	void setAddress(const QString & host, quint16 port);
-	void originateCall(const QString & src, const QString & dst);
-	void transferCall(const QString & src, const QString & dst);
-	void selectAsMonitored(const QString & peer);
 	quint16 port() const;
 	const QString & host() const;
 	void saveSettings();	//!< save settings
@@ -29,6 +26,9 @@ protected:
 public slots:
 	void start();
 	void stop();
+	void selectAsMonitored(const QString & peer);
+	void originateCall(const QString & src, const QString & dst);
+	void transferCall(const QString & src, const QString & dst);
 private slots:
 	void updatePeers(const QStringList & liststatus);
 	void updateCallerids(const QStringList & liststatus);

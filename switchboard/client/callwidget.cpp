@@ -69,7 +69,7 @@ CallWidget::CallWidget(const QString & channelme,
 	layout->addWidget(m_lbl_exten, 0, Qt::AlignLeft );
 	QLabel * dummy = new QLabel(this);
 	layout->addWidget(dummy, 1, Qt::AlignLeft );
-	setAcceptDrops(true);
+	//setAcceptDrops(true);
 }
 
 void CallWidget::updateWidget(const QString & action,
@@ -88,8 +88,12 @@ void CallWidget::updateWidget(const QString & action,
 void CallWidget::mousePressEvent(QMouseEvent *event)
 {
 	if (event->button() == Qt::LeftButton) {
-		// m_dragstartpos = event->pos();
-		qDebug() << "I'm selecting this one for future use :" << m_channelme << m_lbl_channelpeer->text();
+		m_dragstartpos = event->pos();
+		if(m_lbl_channelpeer)
+		{
+			qDebug() << "I'm selecting this one for future use :" << m_channelme
+			         << m_lbl_channelpeer->text();
+		}
 	}
 }
 
@@ -100,7 +104,9 @@ void CallWidget::mouseMoveEvent(QMouseEvent *event)
 	if ((event->pos() - m_dragstartpos).manhattanLength()
 	    < QApplication::startDragDistance())
 		return;
-	
+
+	qDebug() << "CallWidget::mouseMoveEvent()";
+
 	QDrag *drag = new QDrag(this);
 	QMimeData *mimeData = new QMimeData();
 	mimeData->setText(/*"test"*/ m_channelme);
@@ -109,6 +115,7 @@ void CallWidget::mouseMoveEvent(QMouseEvent *event)
 	Qt::DropAction dropAction = drag->start(Qt::CopyAction | Qt::MoveAction);
 }
 
+/*
 void CallWidget::dragEnterEvent(QDragEnterEvent *event)
 {
 	qDebug() << "dragEnterEvent()";
@@ -119,6 +126,7 @@ void CallWidget::dragEnterEvent(QDragEnterEvent *event)
 // 			event->acceptProposedAction();
 // 	}
 }
+*/
 
 void CallWidget::mouseDoubleClickEvent(QMouseEvent *event)
 {

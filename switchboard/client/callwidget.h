@@ -32,7 +32,7 @@ protected:
 	void mousePressEvent(QMouseEvent *);
 	void mouseMoveEvent(QMouseEvent *);
 	void mouseDoubleClickEvent(QMouseEvent * event);
-	void dragEnterEvent(QDragEnterEvent * event);
+	//void dragEnterEvent(QDragEnterEvent * event);
 	//	void dragMoveEvent(QDragMoveEvent * event);
 	//	void dropEvent(QDropEvent * event);
 private:

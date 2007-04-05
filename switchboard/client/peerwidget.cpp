@@ -7,9 +7,8 @@
 #include "peerwidget.h"
 #include "switchboardengine.h"
 
-PeerWidget::PeerWidget(const QString & txtlbl, SwitchBoardEngine * engine,
-                       QWidget * parent, int size)
-: QWidget(parent), m_square(size,size), m_engine(engine)
+PeerWidget::PeerWidget(const QString & txtlbl, QWidget * parent, int size)
+: QWidget(parent), m_square(size,size)
 {
 	QHBoxLayout * layout = new QHBoxLayout(this);
 	layout->setSpacing(2);
@@ -142,8 +141,11 @@ void PeerWidget::mouseDoubleClickEvent(QMouseEvent *event)
 	//	m_engine->hangUp(m_textlbl->text());
 
 	// selects this to be monitored otherwise
-        if(event->button() == Qt::LeftButton)
-		m_engine->selectAsMonitored(m_textlbl->text());
+	if(event->button() == Qt::LeftButton)
+	{
+		//m_engine->selectAsMonitored(m_textlbl->text());
+		qDebug() << m_textlbl->text();
+	}
 }
 
 void PeerWidget::dragEnterEvent(QDragEnterEvent *event)
@@ -180,11 +182,13 @@ void PeerWidget::dropEvent(QDropEvent *event)
 	case Qt::CopyAction:
 		// transfer the call to the peer "to"
 		event->acceptProposedAction();
-		m_engine->originateCall(from, to);
+		//m_engine->originateCall(from, to);
+		originateCall(from, to);
 		break;
 	case Qt::MoveAction:
 		event->acceptProposedAction();
-		m_engine->transferCall(from, to);
+		//m_engine->transferCall(from, to);
+		transferCall(from, to);
 		break;
 	default:
 		break;

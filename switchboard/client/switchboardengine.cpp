@@ -182,7 +182,8 @@ void SwitchBoardEngine::socketReadyRead()
 	while(m_socket->canReadLine())
 	{
 		QByteArray data = m_socket->readLine();
-		QString line(data);
+		//QString line(data);
+		QString line = QString::fromUtf8(data);
 		//qDebug() << "<==" << line;
 		QStringList list = line.trimmed().split("=");
 		//qDebug() << "<==" << list.size() << m_window << list[0];
@@ -289,6 +290,8 @@ void SwitchBoardEngine::hangUp(const QString & peer)
 void SwitchBoardEngine::selectAsMonitored(const QString & peer)
 {
 	m_tomonitor = peer;
+	qDebug() << "SwitchBoardEngine::selectAsMinitored()" << peer
+	         << m_callerids[m_tomonitor];
 	showCalls(m_tomonitor, m_callerids[m_tomonitor]);
 }
 

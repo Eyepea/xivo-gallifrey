@@ -57,9 +57,13 @@ public slots:
 	void showCalls(const QString & tomonitor, const QString & callerid);
 	int updateTime();
 	void hupchan(const QString & channel);
- signals:
+protected:
+	void dragEnterEvent(QDragEnterEvent *event);
+	void dropEvent(QDropEvent *event);
+signals:
 	void hangUp(const QString & tomonitor);
- private:
+	void selectForMonitoring(const QString & peer);
+private:
 	QVBoxLayout * m_layout;
 	QList<Call> m_calllist;
 	QList<CallWidget *> m_afflist;
