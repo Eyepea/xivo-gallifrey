@@ -66,9 +66,6 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 	connect( calls, SIGNAL(hangUp(const QString &)),
 		 m_engine, SLOT(hangUp(const QString &)) );
 
-	connect( calls, SIGNAL(selectForMonitoring(const QString &)),
-	         m_engine, SLOT(selectAsMonitored(const QString &)) );
-
 	QScrollArea * areaPeers = new QScrollArea(m_splitter);
 	areaCalls->setWidgetResizable(true);
 	areaPeers->setWidgetResizable(true);

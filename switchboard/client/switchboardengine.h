@@ -26,7 +26,6 @@ protected:
 public slots:
 	void start();
 	void stop();
-	void selectAsMonitored(const QString & peer);
 	void originateCall(const QString & src, const QString & dst);
 	void transferCall(const QString & src, const QString & dst);
 private slots:
@@ -62,10 +61,8 @@ private:
 	int m_timer;
 	quint16 m_port;
 	QString m_host;
-	QString m_astid;
 	SwitchBoardWindow * m_window;
 	QString m_pendingcommand;
-	QString m_tomonitor;
 	QHash<QString, QString> m_callerids;
 };
 

@@ -140,10 +140,8 @@ void PeerWidget::mouseDoubleClickEvent(QMouseEvent *event)
 	qDebug() << "mouseDoubleClickEvent" << event;
 	//	m_engine->hangUp(m_textlbl->text());
 
-	// selects this to be monitored otherwise
 	if(event->button() == Qt::LeftButton)
 	{
-		//m_engine->selectAsMonitored(m_textlbl->text());
 		qDebug() << m_textlbl->text();
 	}
 }

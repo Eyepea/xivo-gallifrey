@@ -153,7 +153,8 @@ void SwitchBoardEngine::updatePeers(const QStringList & liststatus)
 			pinfos += liststatus[refn + 1] + " : " + liststatus[refn] + " "
 				+ liststatus[refn + 2] + " " + liststatus[refn + 3] + " "
 				+ liststatus[refn + 4] + " " + liststatus[refn + 5];
-			updateCall(liststatus[refn], liststatus[refn + 1],
+			updateCall(liststatus[1] + "/" + liststatus[refn],
+			       liststatus[refn + 1],
 				   liststatus[refn + 2].toInt(), liststatus[refn + 3],
 				   liststatus[refn + 4], liststatus[refn + 5],
 				   pname);
@@ -162,7 +163,6 @@ void SwitchBoardEngine::updatePeers(const QStringList & liststatus)
 		}
 	}
 
-	//showCalls(m_tomonitor, m_callerids[m_tomonitor]);
 	m_window->updatePeer(pname, pstatus, pavail, pinfos);
 }
 
@@ -280,22 +280,19 @@ void SwitchBoardEngine::transferCall(const QString & src, const QString & dst)
 // 		connectSocket();
 }
 
-void SwitchBoardEngine::hangUp(const QString & peer)
+void SwitchBoardEngine::hangUp(const QString & channel)
 {
-	QStringList peerl = peer.split("/");
-	m_pendingcommand = "hangup " + m_astid + " " + peerl[0] + "/" + peerl[1];
+	qDebug() << "SwitchBoardEngine::hangUp() " << channel;
+	QStringList tokens = channel.split("/");
+	if(tokens.count() < 3)
+	{
+		qDebug() << "*** CANNOT HANGUP channel" << channel;
+		return;
+	}
+	m_pendingcommand = "hangup " + tokens[0] + " " + tokens[1] + "/" + tokens[2];
 	socketConnected();
 // 	if(m_socket->state() == QAbstractSocket::UnconnectedState)
 // 		connectSocket();
-}
-
-void SwitchBoardEngine::selectAsMonitored(const QString & peer)
-{
-	QStringList peerl = peer.split("/");
-	m_tomonitor = peer;
-	m_astid = peerl[0];
-	qDebug() << "SwitchBoardEngine::selectAsMonitored()" << peer
-	         << m_callerids[m_tomonitor];
 }
 
 const QString & SwitchBoardEngine::host() const
