@@ -10,9 +10,8 @@ import random
 import SocketServer, telnetlib, urllib
 import xml.dom.minidom, xml
 from time import strftime
-##import time
 import threading
-##import signal
+import signal
 import sip
 
 port_ami     = 5038
@@ -50,7 +49,7 @@ userlist_lock = threading.Condition()
 
 pidfile = '/tmp/sip_switchboard_id_daemon.pid'
 bufsize_large = 8192
-bufsize_any = 8
+bufsize_any = 512
 
 asterisk_login = 'sylvain'
 asterisk_pass = 'sylvain'
@@ -504,6 +503,8 @@ def handle_ami_event_dial(listkeys, astnum, src, dst, clid, clidn):
 			update_GUI_clients(configs[astnum], astnum, sipnum, "ami-ed")
 		else:
 			print "warning :", sipnum, "does not belong to our phone list"
+	elif src.find("Local/") == 0 :
+		print src.split("Local/")[1], dst, clid, clidn
 	else:
 		print "handle_ami_event_dial src", src
 	if dst.find("SIP/") == 0 or dst.find("IAX2/") == 0 or dst.find("mISDN/") == 0:
@@ -524,6 +525,8 @@ def handle_ami_event_link(listkeys, astnum, src, dst, clid1, clid2):
 			update_GUI_clients(configs[astnum], astnum, sipnum, "ami-el")
 		else:
 			print "warning :", sipnum, "does not belong to our phone list"
+	elif src.find("Local/") == 0 :
+		print src.split("Local/")[1], dst, clid1, clid2
 	else:
 		print "handle_ami_event_link src", src
 	if dst.find("SIP/") == 0 or dst.find("IAX2/") == 0 or dst.find("mISDN/") == 0:
@@ -865,7 +868,8 @@ def deluser(user):
 # finduser() returns the user from the list.
 # None is returned if not found
 def finduser(user):
-	return userlist.get(user)
+	u = userlist.get(user)
+	return u
 
 # The daemon has 3 listening sockets :
 # - Login - TCP - (the clients connect to it to login) - need SSL ?
@@ -950,16 +954,22 @@ class IdentRequestHandler(SocketServer.StreamRequestHandler):
 				try:
 					e = finduser(user)
 					if e == None:
-						retline = 'ERROR USER NOT FOUND\r\n'
-					elif time.time() - e.get('sessiontimestamp') > session_expiration_time:
-						retline = 'ERROR USER SESSION EXPIRED\r\n'
+						retline = 'ERROR USER <' + user + '> NOT FOUND\r\n'
 					else:
-						retline = 'USER ' + user
-						retline += ' SESSIONID ' + e.get('sessionid')
-						retline += ' IP ' + e.get('ip')
-						retline += ' PORT ' + e.get('port')
-						retline += ' STATE ' + e.get('state')
-						retline += '\r\n'
+						if e.has_key('ip') and e.has_key('port') \
+						       and e.has_key('state') and e.has_key('sessionid') \
+						       and e.has_key('sessiontimestamp'):
+							if time.time() - e.get('sessiontimestamp') > session_expiration_time:
+								retline = 'ERROR USER SESSION EXPIRED for <' + user + '>\r\n'
+							else:
+								retline = 'USER ' + user
+								retline += ' SESSIONID ' + e.get('sessionid')
+								retline += ' IP ' + e.get('ip')
+								retline += ' PORT ' + e.get('port')
+								retline += ' STATE ' + e.get('state')
+								retline += '\r\n'
+						else:
+							retline = 'ERROR USER SESSION NOT DEFINED for <' + user + '>\r\n'
 				except:
 					retline = 'ERROR (exception)\r\n'
 				userlist_lock.release()
@@ -1120,6 +1130,16 @@ for n in items_asterisks:
 	lastrequest_time.append(time.time())
 
 
+# useful signals are catched here (in the main thread)
+def sighandler(signum, frame):
+	global askedtoquit
+	print 'signal', signum, 'received, quitting' 
+	askedtoquit = True
+
+signal.signal(signal.SIGINT, sighandler)
+signal.signal(signal.SIGTERM, sighandler)
+signal.signal(signal.SIGHUP, sighandler)
+
 # Receive messages
 while not askedtoquit:
     [i, o, e] = select.select(ins, [], [], timeout_between_registers)
@@ -1191,40 +1211,6 @@ while not askedtoquit:
 		    update_sipnumlist(configs[n], n)
 		    do_sip_register_subscribe(configs[n], SIPsocks[n], n)
 
-# Close files and sockets
-logfile.close()
-
-
-
-
-
-askedtoquit = False
-
-# useful signals are catched here (in the main thread)
-def sighandler(signum, frame):
-	global askedtoquit
-	print 'signal', signum, 'received, quitting' 
-	askedtoquit = True
-
-signal.signal(signal.SIGINT, sighandler)
-signal.signal(signal.SIGTERM, sighandler)
-signal.signal(signal.SIGHUP, sighandler)
-
-# never ending loop handling events on the sockets.
-while not askedtoquit:
-	try:
-		i, o, e = select.select(ins, [], [])
-	except:
-		# select was interupted by a signal. just continue
-		# TODO: if it is not the case (=another error) catch it
-		continue
-	for x in i:
-		if x == loginserver.socket:
-			loginserver.handle_request()
-		elif x == requestserver.socket:
-			requestserver.handle_request()
-		elif x == keepaliveserver.socket:
-			keepaliveserver.handle_request()
 
 try:
 	os.unlink(pidfile)
@@ -1233,4 +1219,7 @@ except Exception, e:
 
 print 'end of the execution flow...'
 sys.exit(0)
+
+# Close files and sockets
+logfile.close()
 
