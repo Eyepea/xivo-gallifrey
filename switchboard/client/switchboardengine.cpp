@@ -281,7 +281,7 @@ void SwitchBoardEngine::transferCall(const QString & src, const QString & dst)
 void SwitchBoardEngine::hangUp(const QString & peer)
 {
 	QStringList peerl = peer.split("/");
-	m_pendingcommand = "hangup " + peerl[0] + " " + peerl[1] + "/" + peerl[2];
+	m_pendingcommand = "hangup " + m_astid + " " + peerl[0] + "/" + peerl[1];
 	socketConnected();
 // 	if(m_socket->state() == QAbstractSocket::UnconnectedState)
 // 		connectSocket();
@@ -289,7 +289,9 @@ void SwitchBoardEngine::hangUp(const QString & peer)
 
 void SwitchBoardEngine::selectAsMonitored(const QString & peer)
 {
+	QStringList peerl = peer.split("/");
 	m_tomonitor = peer;
+	m_astid = peerl[0];
 	qDebug() << "SwitchBoardEngine::selectAsMonitored()" << peer
 	         << m_callerids[m_tomonitor];
 	showCalls(m_tomonitor, m_callerids[m_tomonitor]);
