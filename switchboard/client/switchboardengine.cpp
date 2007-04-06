@@ -242,9 +242,8 @@ void SwitchBoardEngine::finishedReceivingHints()
 
 void SwitchBoardEngine::timerEvent(QTimerEvent * event)
 {
-	//if (updateTime() > 0)
-	//	showCalls(m_tomonitor, m_callerids[m_tomonitor]);
-
+	if (updateTime() > 0)
+		callsUpdated();
 
 	//	qDebug() << event;
 	//	m_socket->connectToHost(m_host, m_port);
