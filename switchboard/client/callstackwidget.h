@@ -65,7 +65,6 @@ private:
 	void emptyList();
 signals:
 	void hangUp(const QString & tomonitor);
-	void selectForMonitoring(const QString & peer);
 	void changeTitle(const QString &);
 private:
 	QVBoxLayout * m_layout;

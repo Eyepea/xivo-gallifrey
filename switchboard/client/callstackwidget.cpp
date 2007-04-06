@@ -198,12 +198,14 @@ void CallStackWidget::dragEnterEvent(QDragEnterEvent *event)
 
 void CallStackWidget::dropEvent(QDropEvent *event)
 {
-	qDebug() << "CallStackWidget::dropEvent()";
-	qDebug() << "   " << event->mimeData()->text();
+	QString text = event->mimeData()->text();
+	qDebug() << "CallStackWidget::dropEvent() "
+	         << text;
+	if(text.indexOf('-') >= 0)
+		return;
 	emptyList();
-	selectForMonitoring(event->mimeData()->text());
-	m_monitoredPeer = event->mimeData()->text();
-	changeTitle("Monitoring : " + event->mimeData()->text());
+	m_monitoredPeer = text;
+	changeTitle("Monitoring : " + text);
 	updateDisplay();
 }
 
