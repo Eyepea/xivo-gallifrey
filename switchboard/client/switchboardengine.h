@@ -52,7 +52,8 @@ signals:
 			const QString & exten,
 			const QString & phone);
 	void endCall(const QString &);
-	void showCalls(const QString & tomonitor, const QString & callerid);
+	//void showCalls(const QString & tomonitor, const QString & callerid);
+	void callsUpdated();
 	void updatePeer(const QString &, const QString &,
 	                const QString &, const QString &);
 	void removePeer(const QString &);

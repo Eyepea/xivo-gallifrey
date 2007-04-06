@@ -54,7 +54,8 @@ public slots:
 		     const QString & channelpeer,
 		     const QString & exten,
 		     const QString & phonen);
-	void showCalls(const QString & tomonitor, const QString & callerid);
+//	void showCalls(const QString & tomonitor, const QString & callerid);
+	void updateDisplay();
 	int updateTime();
 	void hupchan(const QString & channel);
 protected:
@@ -70,6 +71,7 @@ private:
 	QVBoxLayout * m_layout;
 	QList<Call> m_calllist;
 	QList<CallWidget *> m_afflist;
+	QString m_monitoredPeer;
 };
 
 #endif

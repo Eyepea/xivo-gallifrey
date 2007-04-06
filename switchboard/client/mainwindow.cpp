@@ -59,8 +59,8 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 					     const QString &, const QString &, const QString &)),
 		 calls, SLOT(addCall(const QString &, const QString &, const int &, const QString &,
 				     const QString &, const QString &, const QString &)) );
-	connect( m_engine, SIGNAL(showCalls(const QString &, const QString &)),
-		 calls, SLOT(showCalls(const QString &, const QString &)) );
+	connect( m_engine, SIGNAL(callsUpdated()),
+	         calls, SLOT(updateDisplay()) );
 	connect( m_engine, SIGNAL(updateTime()),
 		 calls, SLOT(updateTime()) );
 	connect( calls, SIGNAL(hangUp(const QString &)),

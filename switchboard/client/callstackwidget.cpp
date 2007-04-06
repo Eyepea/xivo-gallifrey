@@ -116,7 +116,8 @@ void CallStackWidget::emptyList()
 	//m_calllist.clear();
 }
 
-void CallStackWidget::showCalls(const QString & tomonitor, const QString & callerid)
+//void CallStackWidget::showCalls(const QString & tomonitor, const QString & callerid)
+void CallStackWidget::updateDisplay()
 {
 	int i, j;
 	CallWidget * callwidget = NULL;
@@ -142,7 +143,7 @@ void CallStackWidget::showCalls(const QString & tomonitor, const QString & calle
 	}
 
 	for(i = 0; i < m_calllist.count() ; i++) {
-		if(tomonitor == m_calllist[i].getPhone()) {
+		if(m_monitoredPeer == m_calllist[i].getPhone()) {
 			Call c = m_calllist[i];
 			for(j = 0; j < m_afflist.count(); j++)
 			{
@@ -201,6 +202,8 @@ void CallStackWidget::dropEvent(QDropEvent *event)
 	qDebug() << "   " << event->mimeData()->text();
 	emptyList();
 	selectForMonitoring(event->mimeData()->text());
+	m_monitoredPeer = event->mimeData()->text();
 	changeTitle("Monitoring : " + event->mimeData()->text());
+	updateDisplay();
 }
 

@@ -162,7 +162,7 @@ void SwitchBoardEngine::updatePeers(const QStringList & liststatus)
 		}
 	}
 
-	showCalls(m_tomonitor, m_callerids[m_tomonitor]);
+	//showCalls(m_tomonitor, m_callerids[m_tomonitor]);
 	m_window->updatePeer(pname, pstatus, pavail, pinfos);
 }
 
@@ -203,9 +203,11 @@ void SwitchBoardEngine::socketReadyRead()
 					QStringList liststatus = listpeers[i].split(":");
 					updateCallerids(liststatus);
 				}
+				callsUpdated();
 			} else if(list[0] == QString("update")) {
 				QStringList liststatus = list[1].split(":");
 				updatePeers(liststatus);
+				callsUpdated();
 			} else if(list[0] == QString("asterisk")) {
 				QTime currentTime = QTime::currentTime();
 				QString currentTimeStr = currentTime.toString("hh:mm:ss");
@@ -240,8 +242,8 @@ void SwitchBoardEngine::finishedReceivingHints()
 
 void SwitchBoardEngine::timerEvent(QTimerEvent * event)
 {
-	if (updateTime() > 0)
-		showCalls(m_tomonitor, m_callerids[m_tomonitor]);
+	//if (updateTime() > 0)
+	//	showCalls(m_tomonitor, m_callerids[m_tomonitor]);
 
 
 	//	qDebug() << event;
@@ -294,7 +296,6 @@ void SwitchBoardEngine::selectAsMonitored(const QString & peer)
 	m_astid = peerl[0];
 	qDebug() << "SwitchBoardEngine::selectAsMonitored()" << peer
 	         << m_callerids[m_tomonitor];
-	showCalls(m_tomonitor, m_callerids[m_tomonitor]);
 }
 
 const QString & SwitchBoardEngine::host() const
