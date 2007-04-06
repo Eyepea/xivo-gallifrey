@@ -5,12 +5,39 @@
 #include <QSplitter>
 #include <QScrollArea>
 #include <QLabel>
+#include <QSettings>
+#include <QCloseEvent>
+#include <QVBoxLayout>
 #include <QDebug>
 #include "mainwindow.h"
 #include "switchboardengine.h"
 #include "switchboardwindow.h"
 #include "switchboardconf.h"
 #include "callstackwidget.h"
+
+class RightPanel : public QWidget
+{
+public:
+	RightPanel(QWidget *, QWidget * parent = 0);
+	QLabel * titleLabel();
+private:
+	QLabel * m_titleLabel;
+};
+
+RightPanel::RightPanel(QWidget * bottomWidget,QWidget * parent)
+: QWidget(parent)
+{
+	QVBoxLayout * layout = new QVBoxLayout(this);
+	layout->setMargin(0);
+	m_titleLabel = new QLabel("test", this);
+	layout->addWidget(m_titleLabel, 0, Qt::AlignCenter);
+	layout->addWidget(bottomWidget, 1);
+}
+
+QLabel * RightPanel::titleLabel()
+{
+	return m_titleLabel;
+}
 
 MainWindow::MainWindow(SwitchBoardEngine * engine)
 : m_engine(engine)
@@ -20,10 +47,14 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 	setWindowIcon(QIcon(":/xivoicon.png"));
 	setWindowTitle("Xivo Switchboard");
 
-	QSplitter * splitter = new QSplitter(this);
-	QScrollArea * areaCalls = new QScrollArea(splitter);
+	m_splitter = new QSplitter(this);
+	//QScrollArea * areaCalls = new QScrollArea(m_splitter);
+	QScrollArea * areaCalls = new QScrollArea(this);
+	RightPanel * rightPanel = new RightPanel(areaCalls, m_splitter);
 
 	CallStackWidget * calls = new CallStackWidget(areaCalls);
+	connect( calls, SIGNAL(changeTitle(const QString &)),
+	         rightPanel->titleLabel(), SLOT(setText(const QString &)) );
 	connect( m_engine, SIGNAL(updateCall(const QString &, const QString &, const int &, const QString &,
 					     const QString &, const QString &, const QString &)),
 		 calls, SLOT(addCall(const QString &, const QString &, const int &, const QString &,
@@ -38,7 +69,7 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 	connect( calls, SIGNAL(selectForMonitoring(const QString &)),
 	         m_engine, SLOT(selectAsMonitored(const QString &)) );
 
-	QScrollArea * areaPeers = new QScrollArea(splitter);
+	QScrollArea * areaPeers = new QScrollArea(m_splitter);
 	areaCalls->setWidgetResizable(true);
 	areaPeers->setWidgetResizable(true);
 
@@ -47,7 +78,11 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
  	m_widget->setEngine(engine);
  	areaPeers->setWidget(m_widget);
  	areaCalls->setWidget(calls);
-	setCentralWidget(splitter);
+	setCentralWidget(m_splitter);
+
+	// restore splitter settings
+	QSettings settings;
+	m_splitter->restoreState(settings.value("display/splitterSizes").toByteArray());
 
 	//statusBar()->showMessage("test");
 	connect(m_engine, SIGNAL(emitTextMessage(const QString &)),
@@ -83,6 +118,13 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 
 	helpmenu->addAction(tr("&About"), this, SLOT(about()));
 	helpmenu->addAction(tr("About &Qt"), qApp, SLOT(aboutQt()));
+}
+
+void MainWindow::closeEvent(QCloseEvent * event)
+{
+	qDebug() << "MainWindow::closeEvent()" << event << event->type();
+	QSettings settings;
+	settings.setValue("display/splitterSizes", m_splitter->saveState());
 }
 
 void MainWindow::showConfDialog()

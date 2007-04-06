@@ -196,5 +196,6 @@ void CallStackWidget::dropEvent(QDropEvent *event)
 	qDebug() << "CallStackWidget::dropEvent()";
 	qDebug() << "   " << event->mimeData()->text();
 	selectForMonitoring(event->mimeData()->text());
+	changeTitle("Monitoring : " + event->mimeData()->text());
 }
 
