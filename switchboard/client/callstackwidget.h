@@ -60,6 +60,8 @@ public slots:
 protected:
 	void dragEnterEvent(QDragEnterEvent *event);
 	void dropEvent(QDropEvent *event);
+private:
+	void emptyList();
 signals:
 	void hangUp(const QString & tomonitor);
 	void selectForMonitoring(const QString & peer);

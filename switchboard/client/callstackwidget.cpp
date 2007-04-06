@@ -105,19 +105,23 @@ void CallStackWidget::hupchan(const QString & hangupchan)
 	hangUp(hangupchan);
 }
 
-void CallStackWidget::showCalls(const QString & tomonitor, const QString & callerid)
+void CallStackWidget::emptyList()
 {
-	int i, j;
 	// cleaning the calling list displayed
-	/*
 	for(int i = 0; i < m_afflist.count() ; i++) {
 		m_layout->removeWidget(m_afflist[i]);
 		delete m_afflist[i];
 	}
 	m_afflist.clear();
-	*/
+	//m_calllist.clear();
+}
 
+void CallStackWidget::showCalls(const QString & tomonitor, const QString & callerid)
+{
+	int i, j;
 	CallWidget * callwidget = NULL;
+	qDebug() << "CallStackWidget::showCalls()"
+	         << m_afflist.count() << m_calllist.count();
 	// building the new calling list
 	//CallWidget * callwidget = new CallWidget(callerid, this);
 	//m_layout->addWidget(callwidget, 0, Qt::AlignTop);
@@ -195,6 +199,7 @@ void CallStackWidget::dropEvent(QDropEvent *event)
 {
 	qDebug() << "CallStackWidget::dropEvent()";
 	qDebug() << "   " << event->mimeData()->text();
+	emptyList();
 	selectForMonitoring(event->mimeData()->text());
 	changeTitle("Monitoring : " + event->mimeData()->text());
 }
