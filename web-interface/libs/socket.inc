@@ -284,7 +284,12 @@ class xivo_socket
 		$length = xivo_uint($length);
 
 		if($length !== 0 && is_resource($this->_link) === true)
-			$r = socket_read($this->_link,$length,PHP_BINARY_READ);
+		{
+			$r = '';
+
+			while(($read = socket_read($this->_link,$length,PHP_BINARY_READ)) !== '')
+				$r .= $read;
+		}
 
 		return($r);
 	}
@@ -296,7 +301,12 @@ class xivo_socket
 		$length = xivo_uint($length);
 
 		if($length !== 0 && is_resource($this->_link) === true)
-			$r = socket_read($this->_link,$length,PHP_NORMAL_READ);
+		{
+			$r = '';
+
+			while(($read = socket_read($this->_link,$length,PHP_BINARY_READ)) !== '')
+				$r .= $read;
+		}
 
 		return($r);
 	}
@@ -313,6 +323,34 @@ class xivo_socket
 
 		return($r);
 	}
+
+     function recv($length = 1024) {
+            $read = $buf = '';
+	    
+	while(socket_recv($this->_link, $buf, $length));
+
+	    xivo_print_r($buf);
+	    die();
+        while(($flag=socket_recv($this->_link, $buf, $length,0))>0){
+              $asc=ord(substr($buf, -1));
+            if ($asc==0) {
+                $read.=substr($buf,0,-1);
+                break;
+            }else{
+                $read.=$buf;
+            }
+        }
+           if ($flag<0){
+            //error
+            return false;
+        }elseif ($flag==0){
+            //Client disconnected
+            return  false;
+        }else{
+              return $buf;
+        }
+
+     }
 
 	function accept()
 	{

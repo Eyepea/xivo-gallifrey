@@ -8,9 +8,10 @@ $musiconhold = &$ipbx->get_module('musiconhold');
 $ugroup = &$ipbx->get_module('usergroup');
 $voicemail = &$ipbx->get_module('uservoicemail');
 
-#print $ufeatures->get_autoprov_list();
+# xivo_print_r($ufeatures->get_autoprov_list());
 
-#die();
+# die();
+
 if(($moh_list = $musiconhold->get_all_category(null,false)) !== false)
 	ksort($moh_list);
 

@@ -155,7 +155,7 @@
 
 <div id="sb-part-autoprov" class="b-nodisplay">
 
-	<?=$form->text(array('desc' => $this->bbf('fm_autoprov_vendor'),'name' => 'autoprov[vendor]','labelid' => 'autoprov-vendor','value' => $info['autoprov']['vendor'],'size' => 15),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+	<?=/*$form->text(array('desc' => $this->bbf('fm_autoprov_vendor'),'name' => 'autoprov[vendor]','labelid' => 'autoprov-vendor','value' => $info['autoprov']['vendor'],'size' => 15),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');*/?>
 
 </div>
 

@@ -71,10 +71,15 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 	{
 		if($this->_load_sockprov('list') === false || $this->_sockprov['list']->is_open() !== true
 		|| ($write = $this->_mk_sockprov_header('list')) === false
-		|| $this->_sockprov['list']->write($write) === false)
+		|| $this->_sockprov['list']->write($write) === false
+		|| ($read = $this->_sockprov['list']->read_normal()) === false
+		|| ($recv = $this->_parse_sockprov_recv($read)) === false)
 			return(false);
 
-		return($this->_sockprov['list']->read_normal());
+		if(isset($recv['status'],$recv['data'][0]) === false || preg_match('/^(http\/1\.(1|0)) 200 /i',$recv['status']) !== 1)
+			return(false);
+
+		return($recv['data']);
 	}
 
 	function _mk_sockprov_header($type)
@@ -82,15 +87,42 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		if(xivo_ak($type,$this->_autoprov) === false)
 			return(false);
 
-		xivo_print_r($this->_autoprov[$type]);
-
 		$r  = strtoupper($this->_autoprov[$type]['method']);
-		$r .= ' '.$this->_autoprov[$type]['url'].' HTTP/1.1'."\r\n";
-		$r .= 'Host: '.$this->_autoprov[$type]['address']."\r\n";
+		$r .= ' '.$this->_autoprov[$type]['url'].' HTTP/1.1'."\r\n\r\n";
 
+		return($r);
+	}
 
-		print $r;
-		die();
+	function _parse_sockprov_recv($recv)
+	{
+		$recv = (string) $recv;
+
+		$recv = str_replace("\r",'',$recv);
+		$recv = explode("\n",$recv);
+
+		if(($nb = count($recv)) === 0)
+			return(false);
+
+		$r = array();
+		$r['data'] = array();
+		$data = false;
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			$header = explode(': ',$recv[$i]);
+
+			if($i === 0 && $header[0] !== '' && isset($header[1]) === false)
+				$r['status'] = $header[0];
+			else if($data === false && $recv[$i] === '')
+				$data = true;
+			else if($data === false && isset($header[0],$header[1]) === true)
+				$r[$header[0]] = $header[1];
+			else if($i === $nb-1 && $recv[$i] === '')
+				continue;
+			else
+				$r['data'][] = $recv[$i];
+		}
+
 		return($r);
 	}
 
