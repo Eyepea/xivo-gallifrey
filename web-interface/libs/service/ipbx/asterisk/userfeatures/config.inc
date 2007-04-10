@@ -62,7 +62,7 @@ $array['filter']['protocolid'] = array('cast' => 'uint');
 $array['filter']['firstname'] = array('chk' => 2,'maxlen' => 128);
 $array['filter']['lastname'] = array('chk' => 2,'maxlen' => 128);
 $array['filter']['name'] = array('minlen' => 1,'maxlen' => 80);
-$array['filter']['number'] = array('set' => false,'chk' => 2,'cast' => 'digit');
+$array['filter']['number'] = array('set' => false,'chk' => 2,'preg' => '/^[0-9\*#]+$/','maxlen' => 40);
 $array['filter']['context'] = array('set' => false);
 $array['filter']['ringseconds'] = array('arrkey' => array(5,10,15,20,25,30,35,40,45,50,55,60));
 $array['filter']['simultcalls'] = array('cast' => 'uint','between' => array(1,20));

@@ -25,11 +25,14 @@ Conférence
 ; did_type-custom
 Personnalisé
 
+; no_did
+Aucune SDA trouvée
+
 ; opt_modify
 Modifier
 
 ; opt_delete
 Supprimer
 
-; no_did
-Aucune SDA trouvée
+; opt_delete_confirm
+Etes-vous certain de vouloir supprimer cette SDA ?

@@ -11,7 +11,28 @@ Type :
 Numéro :
 
 ; fm_dfeatures_custom
-Personnalisé :
+Personnaliser :
+
+; fm_dfeatures_type-user
+Utilisateur
+
+; fm_dfeatures_type-group
+Groupe
+
+; fm_dfeatures_type-meetme
+Chambre de conférence
+
+; fm_dfeatures_type-custom
+Personnaliser
+
+; create_user
+Créer un utilisateur
+
+; create_group
+Créer un groupe
+
+; create_meetme
+Créer une chambre de conférence
 
 ; fm_bt-save
 Sauvegarder

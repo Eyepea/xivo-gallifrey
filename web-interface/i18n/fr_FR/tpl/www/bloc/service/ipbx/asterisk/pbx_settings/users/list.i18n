@@ -22,8 +22,8 @@ Aucun utilisateur trouvé
 ; opt_modify
 Modifier
 
-; opt_delete_confirm
-Etes-vous certain de vouloir supprimer cet utilisateur ?
-
 ; opt_delete
 Supprimer
+
+; opt_delete_confirm
+Etes-vous certain de vouloir supprimer cet utilisateur ?

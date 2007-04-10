@@ -45,12 +45,14 @@ switch($act)
 					$add = false;
 					$result['did'] = $extensions->get_filter_result();
 				}
+				else
+					$_QR['dfeatures']['number'] = $result['extenumbers']['number'];
 			}
 
 			$_QR['dfeatures']['extenid'] = 0;
 
 			if(xivo_ak('type',$_QR['dfeatures'],true) === 'custom')
-				unset($_QR['dfeatures']['typeid']);
+				unset($_QR['dfeatures']['typeid'],$_QR['dfeatures']['number']);
 			else
 				unset($_QR['dfeatures']['custom']);
 
@@ -138,6 +140,8 @@ switch($act)
 		{
 			$info['dfeatures']['typeid'] = '';
 			$info['dfeatures']['type'] = '';
+			$info['dfeatures']['custom'] = '';
+			$info['dfeatures']['number'] = '';
 		}
 
 		$edit = true;
@@ -171,12 +175,14 @@ switch($act)
 					$edit = false;
 					$result['did'] = $extensions->get_filter_result();
 				}
+				else
+					$_QR['dfeatures']['number'] = $result['extenumbers']['number'];
 			}
 
 			$_QR['dfeatures']['extenid'] = $info['dfeatures']['extenid'];
 
 			if(xivo_ak('type',$_QR['dfeatures'],true) === 'custom')
-				unset($_QR['dfeatures']['typeid']);
+				unset($_QR['dfeatures']['typeid'],$_QR['dfeatures']['number']);
 			else
 				unset($_QR['dfeatures']['custom']);
 
@@ -310,8 +316,8 @@ switch($act)
 		{
 			$total = count($did);
 			xivo::load_class('xivo_sort');
-			$sort = new xivo_sort(array('browse' => 'dfeatures','key' => 'name'));
-			usort($did,array(&$sort,'str_usort'));
+			$sort = new xivo_sort(array('browse' => 'did','key' => 'exten'));
+			usort($did,array(&$sort,'num_usort'));
 		}
 
 		$_HTML->assign('pager',xivo_calc_page($page,20,$total));

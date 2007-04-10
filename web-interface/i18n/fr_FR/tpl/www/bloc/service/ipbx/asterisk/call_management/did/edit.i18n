@@ -1,17 +1,4 @@
+; load ./add
+
 ; title_content_name
 SDA > Modifier
-
-; fm_extenumbers_number
-SDA :
-
-; fm_dfeatures_type
-Type :
-
-; fm_dfeatures_typeid
-Numéro :
-
-; fm_dfeatures_custom
-Personalisé :
-
-; fm_bt-save
-Sauvegarder

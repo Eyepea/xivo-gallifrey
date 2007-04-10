@@ -159,6 +159,8 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 		for($i = 0;$i < $nb;$i++)
 		{
+			$info['tyfeatures'] = false;
+
 			if(($info['did'] = $extensions->get($rs[$i],$disable)) === false
 			|| ($info['dfeatures'] = $dfeatures->get_by_extenid($info['did']['id'])) === false
 			|| ($info['extenumbers'] = $extenumbers->get_by_number_context($info['did']['exten'],$info['did']['context'])) === false
