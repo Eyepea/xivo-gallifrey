@@ -3,7 +3,7 @@
 $generalsip = &$ipbx->get_module('generalsip');
 $musiconhold = &$ipbx->get_module('musiconhold');
 
-if(($moh_list = $musiconhold->get_all_category()) !== false)
+if(($moh_list = $musiconhold->get_all_category(null,false)) !== false)
 	ksort($moh_list);
 
 if(isset($_QR['fm_send']) === true)

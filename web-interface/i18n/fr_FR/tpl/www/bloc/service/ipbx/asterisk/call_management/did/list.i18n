@@ -1,0 +1,35 @@
+; col_did
+SDA
+
+; col_type
+Type
+
+; col_fullname
+Nom
+
+; col_number
+Numéro
+
+; col_action
+Action
+
+; did_type-group
+Groupe
+
+; did_type-user
+Utilisateur
+
+; did_type-meetme
+Conférence
+
+; did_type-custom
+Personnalisé
+
+; opt_modify
+Modifier
+
+; opt_delete
+Supprimer
+
+; no_did
+Aucune SDA trouvée

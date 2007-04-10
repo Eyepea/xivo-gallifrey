@@ -27,6 +27,9 @@ $array['module'] = array();
 $array['module']['extensions'] = array();
 $array['module']['extensions']['datastorage'] = true;
 
+$array['module']['extenumbers'] = array();
+$array['module']['extenumbers']['datastorage'] = true;
+
 $array['module']['extenfeatures'] = array();
 $array['module']['extenfeatures']['disabled'] = true;
 $array['module']['extenfeatures']['datastorage'] = 'extensions';
@@ -104,6 +107,9 @@ $array['module']['uservoicemail']['section'] = 'voicemail';
 
 $array['module']['musiconhold'] = array();
 $array['module']['musiconhold']['datastorage'] = true;
+
+$array['module']['didfeatures'] = array();
+$array['module']['didfeatures']['datastorage'] = true;
 
 $array['module']['cdr'] = array();
 $array['module']['agent'] = array();

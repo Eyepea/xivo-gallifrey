@@ -7,7 +7,7 @@ Numéro
 ; col_pin
 PIN
 
-; col_admpin
+; col_admin-pin
 PIN Administrateur
 
 ; col_provisioning

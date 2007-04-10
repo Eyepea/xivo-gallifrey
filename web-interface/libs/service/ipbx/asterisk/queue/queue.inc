@@ -6,6 +6,7 @@ class xivo_service_asterisk_queue extends xivo_service_asterisk_abstract
 {
 	var $_dso	= null;
 	var $_name	= 'queue';
+	var $_filter	= null;
 	var $_origin	= null;
 
 	function xivo_service_asterisk_queue(&$sre,&$dso)
@@ -30,7 +31,6 @@ class xivo_service_asterisk_queue extends xivo_service_asterisk_abstract
 		$this->_origin = $r;
 
 		$r['commented'] = (bool) $r['commented'];
-		$r['ringseconds'] = $r['timeout'];
 
 		return($r);
 	}
@@ -61,24 +61,18 @@ class xivo_service_asterisk_queue extends xivo_service_asterisk_abstract
 		if(is_array($arr) === false)
 			return(false);
 
-		$r = array();
-		$r['name'] = $arr['name'];
-		$r['timeout'] = xivo_uint($arr['ringseconds']);
-
-		return($this->_dso->add($r));
+		return($this->_dso->add($arr));
 	}
 
-	function edit($id,$arr)
+	function edit($id,$arr,$disable=null)
 	{
 		if(is_array($arr) === false)
 			return(false);
 
-		$r = array();
-		$r['name'] = $arr['name'];
-		$r['timeout'] = xivo_uint($arr['ringseconds']);
-		$r['commented'] = 0;
+		if($disable !== null)
+			$arr['commented'] = (bool) $disable === false ? 0 : 1;
 
-		return($this->_dso->edit($id,$r));
+		return($this->_dso->edit($id,$arr));
 	}
 
 	function delete($id)

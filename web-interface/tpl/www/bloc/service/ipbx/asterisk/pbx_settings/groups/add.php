@@ -1,7 +1,5 @@
 <?php
 	$form = &$this->get_module('form');
-	$queue_elt = $this->vars('queue_elt');
-	$gfeatures_elt = $this->vars('gfeatures_elt');
 ?>
 <div class="b-infos b-form">
 	<h3 class="sb-top xspan"><span class="span-left">&nbsp;</span><span class="span-center"><?=$this->bbf('title_content_name');?></span><span class="span-right">&nbsp;</span></h3>
@@ -12,30 +10,10 @@
 <?=$form->hidden(array('name' => 'act','value' => 'add'));?>
 <?=$form->hidden(array('name' => 'fm_send','value' => '1'));?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_gfeatures_name'),'name' => 'gfeatures[name]','labelid' => 'gfeatures-name','size' => 25,'default' => $gfeatures_elt['name']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/groups/form');?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_gfeatures_number'),'name' => 'gfeatures[number]','labelid' => 'gfeatures-number','size' => 25,'default' => $gfeatures_elt['number']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->submit(array('name' => 'submit','id' => 'it-submit','value' => $this->bbf('fm_bt-save')));?>
 
-<?php
-	if(xivo_ak('ringseconds',$queue_elt) === true):
-?>
-<p class="fm-field">
-<label id="lb-queue-ringseconds" for="it-queue-ringseconds"><span class="fm-desc"><?=$this->bbf('fm_queue_ringseconds');?></span></label>
-<select name="queue[ringseconds]" id="it-queue-ringseconds" onfocus="this.className='it-mfocus';" onblur="this.className='it-mblur';">
-<?php
-		$nb = count($queue_elt['ringseconds']);
-
-		for($i = 0;$i < $nb;$i++):
-			$val = $queue_elt['ringseconds'][$i];
-			echo '<option value="',xivo_alttitle($val),'"',($val === 30 ? ' selected="selected"' : ''),'>',$this->bbf('fm_queue_ringseconds-opt',$val),'</option>';
-		endfor;
-?>
-</select>
-</p>
-<?php
-	endif;
-?>
-	<?=$form->submit(array('name' => 'submit','id' => 'it-submit','value' => $this->bbf('fm_bt-save')));?>
 </form>
 	</div>
 	<div class="sb-foot xspan"><span class="span-left">&nbsp;</span><span class="span-center">&nbsp;</span><span class="span-right">&nbsp;</span></div>

@@ -8,6 +8,8 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 	var $_name	= 'userfeatures';
 	var $_filter	= null;
 	var $_origin	= null;
+	var $_autoprov	= null;
+	var $_sockprov	= null;
 
 	function xivo_service_asterisk_userfeatures(&$sre,&$dso)
 	{
@@ -21,6 +23,7 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		$this->_dso = &$dso;
 
 		$this->_load_config();
+		$this->_chk_autoprov();
 	}
 
 	function get($id)
@@ -31,6 +34,63 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 
 		$this->_origin = $r;
 
+		return($r);
+	}
+
+	function _chk_autoprov()
+	{
+		if(xivo_issa($this->_name,$this->_sre->_ini) === false
+		|| xivo_issa('autoprov',$this->_sre->_ini[$this->_name]) === false
+		|| isset($this->_sre->_ini[$this->_name]['autoprov']['host'],$this->_sre->_ini[$this->_name]['autoprov']['port']) === false)
+			$this->_autoprov = false;
+		else
+		{
+			$this->_autoprov = $this->_conf['autoprov'];
+			$this->_autoprov['prov']['address'] = $this->_sre->_ini[$this->_name]['autoprov']['host'];
+			$this->_autoprov['prov']['port'] = $this->_sre->_ini[$this->_name]['autoprov']['port'];
+			$this->_autoprov['list']['address'] = $this->_autoprov['prov']['address'];
+			$this->_autoprov['list']['port'] = $this->_autoprov['prov']['port'];
+		}
+	}
+
+	function _load_sockprov($type)
+	{
+		if(($type !== 'list' && $type !== 'prov') === true || xivo_ak($type,$this->_autoprov) === false)
+			return(false);
+
+		if(xivo_ak($type,$this->_sockprov) === true)
+			return(true);
+
+		xivo::load_class('socket');
+		$this->_sockprov[$type] = new xivo_socket($this->_autoprov[$type]);
+
+		return(true);
+	}
+
+	function get_autoprov_list()
+	{
+		if($this->_load_sockprov('list') === false || $this->_sockprov['list']->is_open() !== true
+		|| ($write = $this->_mk_sockprov_header('list')) === false
+		|| $this->_sockprov['list']->write($write) === false)
+			return(false);
+
+		return($this->_sockprov['list']->read_normal());
+	}
+
+	function _mk_sockprov_header($type)
+	{
+		if(xivo_ak($type,$this->_autoprov) === false)
+			return(false);
+
+		xivo_print_r($this->_autoprov[$type]);
+
+		$r  = strtoupper($this->_autoprov[$type]['method']);
+		$r .= ' '.$this->_autoprov[$type]['url'].' HTTP/1.1'."\r\n";
+		$r .= 'Host: '.$this->_autoprov[$type]['address']."\r\n";
+
+
+		print $r;
+		die();
 		return($r);
 	}
 
@@ -46,7 +106,7 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 
 	function _origin($type)
 	{
-		if(($type === 'add' && $type === 'edit') === true || is_array($this->_origin) === false)
+		if(($type !== 'add' && $type !== 'edit') === true || is_array($this->_origin) === false)
 			return(false);
 
 		if($type === 'add')
@@ -141,6 +201,31 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 	function get_search($value)
 	{
 		if(($r = $this->_dso->get_search($value)) !== false && isset($r[0]) === false)
+			$r = false;
+
+		return($r);
+	}
+
+	function get_all_number($disable=null)
+	{
+		$r = false;
+
+		if(($list = $this->get_list()) === false)
+			return($r);
+
+		$nb = count($list);
+
+		$r = array();
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			if(($info = $this->get($list[$i],$disable)) === false || xivo_empty($info['number']) === true)
+				continue;
+
+			$r[] = $info;
+		}
+
+		if(isset($r[0]) === false)
 			$r = false;
 
 		return($r);

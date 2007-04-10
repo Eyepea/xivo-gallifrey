@@ -7,10 +7,10 @@ Nom :
 ; fm_gfeatures_number
 Numéro :
 
-; fm_queue_ringseconds
+; fm_queue_timeout
 Temps de sonnerie :
 
-; fm_queue_ringseconds-opt
+; fm_queue_timeout-opt
 %s secondes
 
 ; fm_bt-save

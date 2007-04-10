@@ -91,7 +91,7 @@ class xivo_service_asterisk_extensions_sqlite
 	function delete_where($arr,$disable=null)
 	{
 		if(($where = $this->_dso->where($arr)) === false)
-			return($r);
+			return(false);
 
 		if($disable !== null)
 			$where .= ' AND commented = '.intval((bool) $disable);

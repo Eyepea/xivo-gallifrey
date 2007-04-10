@@ -52,6 +52,9 @@ Agents
 ; ply_service-ipbx-call_management
 Gestion des appels
 
+; ply_service-ipbx-call_management-did
+SDA
+
 ; ply_service-ipbx-call_management-ivr
 IVR
 

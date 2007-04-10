@@ -37,7 +37,7 @@ class xivo_service_asterisk_meetme extends xivo_service_asterisk_staticconf
 
 		$r['number'] = isset($val[0]) === true ? $val[0] : '';
 		$r['pin'] = isset($val[1]) === true ? $val[1] : '';
-		$r['admpin'] = isset($val[2]) === true ? $val[2] : '';
+		$r['admin-pin'] = isset($val[2]) === true ? $val[2] : '';
 
 		return($r);
 	}

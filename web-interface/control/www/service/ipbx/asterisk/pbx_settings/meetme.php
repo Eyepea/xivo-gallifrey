@@ -5,18 +5,21 @@ $page = isset($_QR['page']) === true ? xivo_uint($_QR['page'],1) : 1;
 
 $meetme = &$ipbx->get_module('meetme');
 $mfeatures = &$ipbx->get_module('meetmefeatures');
+$extensions = &$ipbx->get_module('extensions');
+$extenumbers = &$ipbx->get_module('extenumbers');
 
-$result = $info = array();
-
-$meetme_val = '';
+$info = $result = array();
 
 switch($act)
 {
 	case 'add':
-		$musiconhold = &$ipbx->get_module('musiconhold');
-		$extensions = &$ipbx->get_module('extensions');
+		$add = true;
+		$result = null;
+		$meetmeval = '';
 
-		if(($moh_list = $musiconhold->get_all_category()) !== false)
+		$musiconhold = &$ipbx->get_module('musiconhold');
+
+		if(($moh_list = $musiconhold->get_all_category(null,false)) !== false)
 			ksort($moh_list);
 
 		do
@@ -27,40 +30,39 @@ switch($act)
 			if($moh_list === false || isset($_QR['mfeatures']['musiconhold'],$moh_list[$_QR['mfeatures']['musiconhold']]) === false)
 				$_QR['mfeatures']['musiconhold'] = '';
 
-			if(($result['meetme'] = $meetme->chk_values($_QR['meetme'],true,true)) !== false)
+			if(($result['meetme'] = $meetme->chk_values($_QR['meetme'],true,true)) === false)
 			{
-				$meetme_val = $result['meetme']['number'].',';
+				$add = false;
+				$result['meetme'] = $meetme->get_filter_result();
+			}
+			else
+			{
+				$meetmeval = $result['meetme']['number'].',';
 
 				if($result['meetme']['pin'] !== '')
-					$meetme_val .= $result['meetme']['pin'];
+					$meetmeval .= $result['meetme']['pin'];
 
-				if($result['meetme']['admpin'] !== '')
-					$meetme_val .= ','.$result['meetme']['admpin'];
+				if($result['meetme']['admin-pin'] !== '')
+					$meetmeval .= ','.$result['meetme']['admin-pin'];
 
-				$meetme_val = rtrim($meetme_val,',');
+				$meetmeval = rtrim($meetmeval,',');
 			}
 
-			if($result['meetme'] === false || ($mid = $meetme->add($meetme_val)) === false)
-			{
-				$info['meetme'] = $meetme->get_filter_result();
-				break;
-			}
-
+			$_QR['mfeatures']['meetmeid'] = 0;
 			$_QR['mfeatures']['number'] = $result['meetme']['number'];
-			$_QR['mfeatures']['meetmeid'] = $mid;
 
-			if(($result['mfeatures'] = $mfeatures->chk_values($_QR['mfeatures'],true,true)) === false
-			|| $mfeatures->add($result['mfeatures']) === false)
+			if(($result['mfeatures'] = $mfeatures->chk_values($_QR['mfeatures'],true,true)) === false)
 			{
-				$info['mfeatures'] = $mfeatures->get_filter_result();
-				$meetme->delete($mid);
-				break;
+				$add = false;
+				$result['mfeatures'] = $mfeatures->get_filter_result();
 			}
 
-			if($result['meetme']['number'] !== '')
+			$local_exten = $exten_numbers = null;
+
+			if($add === true && $result['mfeatures']['number'] !== '')
 			{
 				$local_exten = array();
-				$local_exten['exten'] = $result['meetme']['number'];
+				$local_exten['exten'] = $result['mfeatures']['number'];
 				$local_exten['priority'] = 1;
 				$local_exten['app'] = 'Macro';
 				$local_exten['appdata'] = 'supermeetme';
@@ -70,36 +72,82 @@ switch($act)
 				else
 					$local_exten['context'] = $result['mfeatures']['context'];
 
-				if(($result['local_exten'] = $extensions->chk_values($local_exten,true,true)) === false
-				|| ($local_extenid = $extensions->add($result['local_exten'])) === false)
+				if(($result['local_exten'] = $extensions->chk_values($local_exten,true,true)) === false)
 				{
-					$meetme->delete($mid);
-					$mfeatures->delete($gid);
-					break;
+					$add = false;
+					$result['local_exten'] = $extensions->get_filter_result();
 				}
+
+				$exten_numbers = array();
+				$exten_numbers['number'] = $result['local_exten']['exten'];
+				$exten_numbers['context'] = $result['local_exten']['context'];
+
+				if(($result['extenumbers'] = $extenumbers->chk_values($exten_numbers,true,true)) === false
+				|| $extenumbers->get_where($result['extenumbers']) !== false)
+				{
+					$add = false;
+					$result['extenumbers'] = $extenumbers->get_filter_result();
+				}
+			}
+
+			if($add === false || ($meetmeid = $meetme->add($meetmeval)) === false)
+				break;
+
+			$result['mfeatures']['meetmeid'] = $meetmeid;
+
+			if(($mfeaturesid = $mfeatures->add($result['mfeatures'])) === false)
+			{
+				$meetme->delete($meetmeid);
+				break;
+			}
+
+			if($local_exten !== null && ($local_extenid = $extensions->add($result['local_exten'])) === false)
+			{
+				$meetme->delete($meetmeid);
+				$mfeatures->delete($mfeaturesid);
+				break;
+			}
+
+			if($exten_numbers !== null && ($extenumid = $extenumbers->add($result['extenumbers'])) === false)
+			{
+				$meetme->delete($meetmeid);
+				$mfeatures->delete($mfeaturesid);
+
+				if($local_exten !== null)
+					$extensions->delete($local_extenid);
+				break;
 			}
 
 			xivo_go($_HTML->url('service/ipbx/pbx_settings/meetme'),'act=list');
 		}
 		while(false);
 
-		$_HTML->assign('info',$info);
+		$element = array();
+		$element['meetme'] = $meetme->get_element();
+		$element['mfeatures'] = $mfeatures->get_element();
+
+		$_HTML->assign('info',$result);
 		$_HTML->assign('moh_list',$moh_list);
-		$_HTML->assign('mfeatures_elt',$mfeatures->get_element());
+		$_HTML->assign('element',$element);
 		break;
 	case 'edit':
-		$musiconhold = &$ipbx->get_module('musiconhold');
-		$extensions = &$ipbx->get_module('extensions');
+		$edit = true;
+		$meetmeval = '';
 
-		if(($moh_list = $musiconhold->get_all_category()) !== false)
-			ksort($moh_list);
-
-		$info = array();
+		$return = &$info;
 
 		if(isset($_QR['id']) === false
 		|| ($info['meetme'] = $meetme->get($_QR['id'])) === false
 		|| ($info['mfeatures'] = $mfeatures->get_by_meetme($info['meetme']['id'])) === false)
 			xivo_go($_HTML->url('service/ipbx/pbx_settings/meetme'),'act=list');
+
+		$musiconhold = &$ipbx->get_module('musiconhold');
+
+		if(($moh_list = $musiconhold->get_all_category(null,false)) !== false)
+			ksort($moh_list);
+
+		$status = array();
+		$status['local_exten'] = $status['extenumbers'] = false;
 
 		do
 		{
@@ -109,38 +157,35 @@ switch($act)
 			if($moh_list === false || isset($_QR['mfeatures']['musiconhold'],$moh_list[$_QR['mfeatures']['musiconhold']]) === false)
 				$_QR['mfeatures']['musiconhold'] = '';
 
-			if(($result['meetme'] = $meetme->chk_values($_QR['meetme'],true,true)) !== false)
+			if(($result['meetme'] = $meetme->chk_values($_QR['meetme'],true,true)) === false)
 			{
-				$meetme_val = $result['meetme']['number'].',';
+				$edit = false;
+				$result['meetme'] = $meetme->get_filter_result();
+			}
+			else
+			{
+				$meetmeval = $result['meetme']['number'].',';
 
 				if($result['meetme']['pin'] !== '')
-					$meetme_val .= $result['meetme']['pin'];
+					$meetmeval .= $result['meetme']['pin'];
 
-				if($result['meetme']['admpin'] !== '')
-					$meetme_val .= ','.$result['meetme']['admpin'];
+				if($result['meetme']['admin-pin'] !== '')
+					$meetmeval .= ','.$result['meetme']['admin-pin'];
 
-				$meetme_val = rtrim($meetme_val,',');
+				$meetmeval = rtrim($meetmeval,',');
 			}
 
-			if($result['meetme'] === false || $meetme->edit($info['meetme']['id'],$meetme_val) === false)
-			{
-				$info['meetme'] = $meetme->get_filter_result();
-				break;
-			}
-
-			$_QR['mfeatures']['number'] = $result['meetme']['number'];
 			$_QR['mfeatures']['meetmeid'] = $info['meetme']['id'];
+			$_QR['mfeatures']['number'] = $result['meetme']['number'];
 
-			if(($result['mfeatures'] = $mfeatures->chk_values($_QR['mfeatures'],true,true)) === false
-			|| $mfeatures->edit($info['mfeatures']['id'],$result['mfeatures']) === false)
+			if(($result['mfeatures'] = $mfeatures->chk_values($_QR['mfeatures'],true,true)) === false)
 			{
-				$info['mfeatures'] = $mfeatures->get_filter_result();
-				$meetme->edit_origin();
-				break;
+				$edit = false;
+				$result['mfeatures'] = $mfeatures->get_filter_result();
 			}
 
 			$exten_where = array();
-			$exten_where['exten'] = $info['meetme']['number'];
+			$exten_where['exten'] = $info['mfeatures']['number'];
 			$exten_where['app'] = 'Macro';
 			$exten_where['appdata'] = 'supermeetme';
 
@@ -149,30 +194,35 @@ switch($act)
 			else
 				$exten_where['context'] = $info['mfeatures']['context'];
 
-			if(($info['extensions'] = $extensions->get_where($exten_where)) !== false)
+			if(($info['localexten'] = $extensions->get_where($exten_where)) !== false)
 			{
-				$local_exten = $info['extensions'];
-				$local_exten['exten'] = $result['meetme']['number'];
-
-				if($result['mfeatures']['context'] === '')
-					$local_exten['context'] = 'local-extensions';
+				if($result['mfeatures']['number'] === '')
+					$status['localexten'] = 'delete';
 				else
-					$local_exten['context'] = $result['mfeatures']['context'];
-
-				if($result['meetme']['number'] === '')
-					$extensions->delete($info['extensions']['id']);
-				else if(($result['local_exten'] = $extensions->chk_values($local_exten,true,true)) === false
-				|| $extensions->edit($info['extensions']['id'],$result['local_exten']) === false)
 				{
-					$meetme->edit_origin();
-					$mfeatures->edit_origin();
-					break;
+					$status['localexten'] = 'edit';
+
+					$local_exten = $info['localexten'];
+					$local_exten['exten'] = $result['mfeatures']['number'];
+
+					if($result['mfeatures']['context'] === '')
+						$local_exten['context'] = 'local-extensions';
+					else
+						$local_exten['context'] = $result['mfeatures']['context'];
+
+					if(($result['localexten'] = $extensions->chk_values($local_exten,true,true)) === false)
+					{
+						$edit = false;
+						$result['localexten'] = array_merge($info['localexten'],$extensions->get_filter_result());
+					}
 				}
 			}
-			else if($result['meetme']['number'] !== '')
+			else if($result['mfeatures']['number'] !== '')
 			{
+				$status['localexten'] = 'add';
+
 				$local_exten = $exten_where;
-				$local_exten['exten'] = $result['meetme']['number'];
+				$local_exten['exten'] = $result['mfeatures']['number'];
 				$local_exten['priority'] = 1;
 
 				if($result['mfeatures']['context'] === '')
@@ -180,12 +230,138 @@ switch($act)
 				else
 					$local_exten['context'] = $result['mfeatures']['context'];
 
-				if(($result['local_exten'] = $extensions->chk_values($local_exten,true,true)) === false
-				|| ($local_extenid = $extensions->add($result['local_exten'])) === false)
+				if(($result['localexten'] = $extensions->chk_values($local_exten,true,true)) === false)
 				{
-					$meetme->edit_origin();
-					$mfeatures->edit_origin();
+					$edit = false;
+					$result['localexten'] = $extensions->get_filter_result();
+				}
+			}
+
+			$exten_numbers = array();
+			$exten_numbers['number'] = $result['mfeatures']['number'];
+
+			if($result['mfeatures']['context'] === '')
+				$exten_numbers['context'] = 'local-extensions';
+			else
+				$exten_numbers['context'] = $result['mfeatures']['context'];
+
+			$exten_where = array();
+			$exten_where['number'] = $info['mfeatures']['number'];
+
+			if($info['mfeatures']['context'] === '')
+				$exten_where['context'] = 'local-extensions';
+			else
+				$exten_where['context'] = $info['mfeatures']['context'];
+
+			if(($info['extenumbers'] = $extenumbers->get_where($exten_where)) !== false)
+			{
+				if($result['mfeatures']['number'] === '')
+					$status['extenumbers'] = 'delete';
+				else
+				{
+					$status['extenumbers'] = 'edit';
+
+					if(($result['extenumbers'] = $extenumbers->chk_values($exten_numbers,true,true)) === false
+					|| (($extenum = $extenumbers->get_where($result['extenumbers'])) !== false
+					   && (int) $extenum['id'] !== (int) $info['extenumbers']['id']) === true)
+					{
+						$edit = false;
+						$result['extenumbers'] = array_merge($info['extenumbers'],$extenumbers->get_filter_result());
+					}
+				}
+			}
+			else if($result['mfeatures']['number'] !== '')
+			{
+				$status['extenumbers'] = 'add';
+
+				if(($result['extenumbers'] = $extenumbers->chk_values($exten_numbers,true,true)) === false)
+				{
+					$edit = false;
+					$result['extenumbers'] = $extenumbers->get_filter_result();
+				}
+			}
+
+			if($edit === false || $meetme->edit($info['meetme']['id'],$meetmeval) === false)
+				break;
+
+			if($mfeatures->edit($info['mfeatures']['id'],$result['mfeatures']) === false)
+			{
+				$meetme->edit_origin();
+				break;
+			}
+
+			switch($status['localexten'])
+			{
+				case 'add':
+					$rs_localexten = $extensions->add($result['localexten']);
 					break;
+				case 'edit':
+					$rs_localexten = $extensions->edit($info['localexten']['id'],$result['localexten']);
+					break;
+				case 'delete':
+					$rs_localexten = $extensions->delete($info['localexten']['id']);
+					break;
+				default:
+					$rs_localexten = null;
+			}
+
+			if($rs_localexten === false)
+			{
+				$meetme->edit_origin();
+				$mfeatures->edit_origin();
+				break;
+			}
+
+			$rs_dfeatures = null;
+
+			$dfeatures = &$ipbx->get_module('didfeatures');
+			$dfeatures_where = array();
+			$dfeatures_where['type'] = 'meetme';
+			$dfeatures_where['typeid'] = $info['mfeatures']['id'];
+			$dfeatures_where['disable'] = 0;
+
+			switch($status['extenumbers'])
+			{
+				case 'add':
+					$rs_extenumbers = $extenumbers->add($result['extenumbers']);
+					break;
+				case 'edit':
+					$rs_extenumbers = $extenumbers->edit($info['extenumbers']['id'],$result['extenumbers']);
+					break;
+				case 'delete':
+					if(($rs_extenumbers = $extenumbers->delete($info['extenumbers']['id'])) !== false
+					&& ($info['dfeatures'] = $dfeatures->get_list_where($dfeatures_where,false)) !== false
+					&& ($rs_dfeatures = $dfeatures->edit_where($dfeatures_where,array('disable' => 1))) === false)
+						$rs_extenumbers = false;
+					break;
+				default:
+					$rs_extenumbers = null;
+			}
+
+			if($rs_extenumbers === false)
+			{
+				$meetme->edit_origin();
+				$mfeatures->edit_origin();
+
+				if($rs_dfeatures === false)
+					$extenumbers->add_origin();
+
+				if($rs_localexten === null)
+					break;
+
+				switch($status['localexten'])
+				{
+					case 'add':
+						$extensions->delete($rs_localexten);
+						break 2;
+					case 'edit':
+						$extensions->edit_origin();
+						break 2;
+					case 'delete':
+						$extensions->add_origin();
+						break 2;
+					default:
+						break 2;
 				}
 			}
 
@@ -193,29 +369,21 @@ switch($act)
 		}
 		while(false);
 
-		$_HTML->assign('info',$info);
+		$element = array();
+		$element['meetme'] = $meetme->get_element();
+		$element['mfeatures'] = $mfeatures->get_element();
+
+		$_HTML->assign('id',$info['meetme']['id']);
+		$_HTML->assign('info',$return);
 		$_HTML->assign('moh_list',$moh_list);
-		$_HTML->assign('mfeatures_elt',$mfeatures->get_element());
+		$_HTML->assign('element',$element);
 		break;
 	case 'delete':
-		$extensions = &$ipbx->get_module('extensions');
-
-		$info = array();
 
 		if(isset($_QR['id']) === false
 		|| ($info['meetme'] = $meetme->get($_QR['id'])) === false
 		|| ($info['mfeatures'] = $mfeatures->get_by_meetme($info['meetme']['id'])) === false)
 			xivo_go($_HTML->url('service/ipbx/pbx_settings/meetme'),'act=list&page='.$page);
-
-		$exten_where = array();
-		$exten_where['exten'] = $info['meetme']['number'];
-		$exten_where['app'] = 'Macro';
-		$exten_where['appdata'] = 'supermeetme';
-
-		if($info['mfeatures']['context'] === '')
-			$exten_where['context'] = 'local-extensions';
-		else
-			$exten_where['context'] = $info['mfeatures']['context'];
 
 		do
 		{
@@ -228,11 +396,52 @@ switch($act)
 				break;
 			}
 
-			if(($info['extensions'] = $extensions->get_where($exten_where)) !== false
+			$localexten_where = array();
+			$localexten_where['exten'] = $info['mfeatures']['number'];
+			$localexten_where['app'] = 'Macro';
+			$localexten_where['appdata'] = 'supermeetme';
+
+			if($info['mfeatures']['context'] === '')
+				$localexten_where['context'] = 'local-extensions';
+			else
+				$localexten_where['context'] = $info['mfeatures']['context'];
+
+			if(($info['extensions'] = $extensions->get_where($localexten_where)) !== false
 			&& $extensions->delete($info['extensions']['id']) === false)
 			{
 				$meetme->add_origin();
 				$mfeatures->add_origin();
+				break;
+			}
+
+			$extenum_where = array();
+			$extenum_where['number'] = $localexten_where['exten'];
+			$extenum_where['context'] = $localexten_where['context'];
+
+			$info['dfeatures'] = false;
+
+			if(($info['extenumbers'] = $extenumbers->get_where($extenum_where)) !== false)
+			{
+				$dfeatures = &$ipbx->get_module('didfeatures');
+				$dfeatures_where = array();
+				$dfeatures_where['type'] = 'meetme';
+				$dfeatures_where['typeid'] = $info['mfeatures']['id'];
+				$dfeatures_where['disable'] = 0;
+
+				if($extenumbers->delete($info['extenumbers']['id']) === false
+				|| (($info['dfeatures'] = $dfeatures->get_list_where($dfeatures_where,false)) !== false
+				   && $dfeatures->edit_where($dfeatures_where,array('disable' => 1)) === false) === true)
+				{
+					$meetme->add_origin();
+					$mfeatures->add_origin();
+
+					if($info['localexten'] !== false)
+						$extensions->add_origin();
+
+					if($info['dfeatures'] !== false)
+						$extenumbers->add_origin();
+					break;
+				}
 			}
 		}
 		while(false);
@@ -250,7 +459,7 @@ switch($act)
 
 			$val = array_values($_QR['meetme']);
 
-			if(($nb = count($val)) === false)
+			if(($nb = count($val)) === 0)
 				break;
 
 			for($i = 0;$i < $nb;$i++)
@@ -267,11 +476,15 @@ switch($act)
 		break;
 	case 'deletes':
 		$extensions = &$ipbx->get_module('extensions');
+		$dfeatures = &$ipbx->get_module('didfeatures');
 
-		$info = $exten_where = array();
+		$localexten_where = $extenum_where = $dfeatures_where = array();
 
-		$exten_where['app'] = 'Macro';
-		$exten_where['appdata'] = 'supermeetme';
+		$localexten_where['app'] = 'Macro';
+		$localexten_where['appdata'] = 'supermeetme';
+
+		$dfeatures_where['type'] = 'meetme';
+		$dfeatures_where['disable'] = 0;
 
 		do
 		{
@@ -280,7 +493,7 @@ switch($act)
 
 			$val = array_values($_QR['meetme']);
 
-			if(($nb = count($val)) === false)
+			if(($nb = count($val)) === 0)
 				break;
 
 			for($i = 0;$i < $nb;$i++)
@@ -298,18 +511,44 @@ switch($act)
 					continue;
 				}
 
-				$exten_where['exten'] = $info['meetme']['number'];
+				$localexten_where['exten'] = $info['mfeatures']['number'];
 
 				if($info['mfeatures']['context'] === '')
-					$exten_where['context'] = 'local-extensions';
+					$localexten_where['context'] = 'local-extensions';
 				else
-					$exten_where['context'] = $info['mfeatures']['context'];
+					$localexten_where['context'] = $info['mfeatures']['context'];
 
-				if(($info['extensions'] = $extensions->get_where($exten_where)) !== false
+				if(($info['extensions'] = $extensions->get_where($localexten_where)) !== false
 				&& $extensions->delete($info['extensions']['id']) === false)
 				{
 					$meetme->add_origin();
 					$mfeatures->add_origin();
+					continue;
+				}
+
+				$extenum_where['number'] = $localexten_where['exten'];
+				$extenum_where['context'] = $localexten_where['context'];
+
+				$info['dfeatures'] = false;
+
+				$dfeatures_where['typeid'] = $info['mfeatures']['id'];
+
+				if(($info['extenumbers'] = $extenumbers->get_where($extenum_where)) !== false)
+				{
+					if($extenumbers->delete($info['extenumbers']['id']) === false
+					|| (($info['dfeatures'] = $dfeatures->get_list_where($dfeatures_where,false)) !== false
+					   && $dfeatures->edit_where($dfeatures_where,array('disable' => 1)) === false) === true)
+					{
+						$meetme->add_origin();
+						$mfeatures->add_origin();
+
+						if($info['localexten'] !== false)
+							$extensions->add_origin();
+
+						if($info['dfeatures'] !== false)
+							$extenumbers->add_origin();
+						continue;
+					}
 				}
 			}
 		}

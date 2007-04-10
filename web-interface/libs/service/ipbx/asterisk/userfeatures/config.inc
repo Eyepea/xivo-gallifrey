@@ -2,6 +2,18 @@
 
 $array = array();
 
+$array['autoprov'] = array();
+
+$array['autoprov']['prov']['url'] = '/prov';
+$array['autoprov']['prov']['method'] = 'POST';
+$array['autoprov']['prov']['protocol'] = 'tcp';
+$array['autoprov']['prov']['application'] = 'http';
+
+$array['autoprov']['list']['url'] = '/list';
+$array['autoprov']['list']['method'] = 'GET';
+$array['autoprov']['list']['protocol'] = 'tcp';
+$array['autoprov']['list']['application'] = 'http';
+
 $array['provisioning_id'] = array();
 
 $array['provisioning_id']['sip'] = array();

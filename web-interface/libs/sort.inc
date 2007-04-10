@@ -48,7 +48,7 @@ class xivo_sort
 		if($a === $b)
 			return(0);
 
-		return(($a > $b ? -1 : 1));
+		return(($a < $b ? -1 : 1));
 	}
 
 	function _usort($a,$b)

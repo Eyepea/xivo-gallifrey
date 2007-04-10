@@ -197,12 +197,32 @@ class xivo_datastorage_sqlite
 		$r = false;
 	
 		if(($where = $this->_separator($a,$sep=' AND ',$q,true,false)) !== false)
+		{
 			$r = $where['str'];
+
+			if(trim($r) === '')
+				$r = false;
+		}
 
 		return($r);	
 	}
 
-	function _separator($a,$sep=',',$q=true,$set=false,$ident=true)
+	function where_not($a,$q=true)
+	{
+		$r = false;
+
+		if(($where = $this->_separator($a,$sep=' AND ',$q,true,false,'!=')) !== false)
+		{
+			$r = $where['str'];
+
+			if(trim($r) === '')
+				$r = false;
+		}
+
+		return($r);	
+	}
+
+	function _separator($a,$sep=',',$q=true,$set=false,$ident=true,$oper='=')
 	{
 		$r = array('str' => '','keys' => '');
 
@@ -211,6 +231,7 @@ class xivo_datastorage_sqlite
 		$q = (bool) $q;
 		$set = (bool) $set;
 		$ident = (bool) $ident;
+		$oper = (string) $oper;
 
 		if(($arr = xivo_get_aks($a)) === false)
 			return($r);
@@ -241,21 +262,21 @@ class xivo_datastorage_sqlite
 					if($type === 'NULL')
 						$data = 'NULL';
 
-					$f = $set === true ? '%s = %s'.$sep : '%s'.$sep;
+					$f = $set === true ? '%s %s %s'.$sep : '%s'.$sep;
 					break;
 				case 'string':
 				default:
 					if(is_string($data) === false)
 						$data = strval($data);
 
-					$f = $set === true ? '%s = \'%s\''.$sep : '\'%s\''.$sep;
+					$f = $set === true ? '%s %s \'%s\''.$sep : '\'%s\''.$sep;
 
 					if($q === true)
 						$data = $this->escape_string($data);
 			}
 
 			if($set === true)
-				$r['str'] .= sprintf($f,($ident === true ? $this->quote_identifier($k) : $k),$data);
+				$r['str'] .= sprintf($f,($ident === true ? $this->quote_identifier($k) : $k),$oper,$data);
 			else
 			{
 				$r['keys'] .= ($ident === true ? $this->quote_identifier($k) : $k).$sep;

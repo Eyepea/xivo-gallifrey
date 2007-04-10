@@ -7,9 +7,14 @@ $ufeatures = &$ipbx->get_module('userfeatures');
 $qmember = &$ipbx->get_module('queuemember');
 $ugroup = &$ipbx->get_module('usergroup');
 $voicemail = &$ipbx->get_module('uservoicemail');
-$extensions = &$ipbx->get_module('extensions');
+$extenumbers = &$ipbx->get_module('extenumbers');
+$localexten = $hintsexten = &$ipbx->get_module('extensions');
+$dfeatures = &$ipbx->get_module('didfeatures');
 
-$info = $hints_where = $localexten_where = array();
+$info = $localexten_where = $extenum_where = $hints_where = $dfeatures_where = array();
+
+$dfeatures_where['type'] = 'user';
+$dfeatures_where['disable'] = 0;
 
 $hints_where['context'] = 'hints';
 
@@ -54,11 +59,59 @@ for($i = 0;$i < $arr['cnt'];$i++)
 		else
 			$localexten_where['context'] = $info['protocol']['context'];
 
-		if(($info['extensions'] = $extensions->get_where($localexten_where)) !== false
-		&& $extensions->delete($info['extensions']['id']) === false)
+		if(($info['localexten'] = $localexten->get_where($localexten_where)) !== false
+		&& $localexten->delete($info['localexten']['id']) === false)
 		{
 			$protocol->add_origin();
 			$ufeatures->add_origin();
+			continue;
+		}
+
+		$extenum_where['number'] = $localexten_where['exten'];
+		$extenum_where['context'] = $localexten_where['context'];
+
+		$info['dfeatures'] = false;
+
+		$dfeatures_where['typeid'] = $info['ufeatures']['id'];
+
+		if(($info['extenumbers'] = $extenumbers->get_where($extenum_where)) !== false)
+		{
+			if($extenumbers->delete($info['extenumbers']['id']) === false
+			|| (($info['dfeatures'] = $dfeatures->get_list_where($dfeatures_where,false)) !== false
+			   && $dfeatures->edit_where($dfeatures_where,array('disable' => 1)) === false) === true)
+			{
+				$protocol->add_origin();
+				$ufeatures->add_origin();
+		
+				if($info['localexten'] !== false)
+					$localexten->add_origin();
+
+				if($info['dfeatures'] !== false)
+					$extenumbers->add_origin();
+				continue;
+			}
+		}
+
+		$hints_where['exten'] = $info['ufeatures']['number'];
+		$hints_where['app'] = $ipbx->mk_interface($info['protocol']['name'],$info['ufeatures']['protocol']);
+
+		$info['hints'] = false;
+
+		if($hints_where['app'] !== false
+		&& ($info['hints'] = $hintsexten->get_where($hints_where)) !== false
+		&& $hintsexten->delete($info['hints']['id']) === false)
+		{
+			$protocol->add_origin();
+			$ufeatures->add_origin();
+		
+			if($info['localexten'] !== false)
+				$localexten->add_origin();
+
+			if($info['extenumbers'] !== false)
+				$extenumbers->add_origin();
+
+			if($info['dfeatures'] !== false)
+				$dfeatures->edit_list_where($info['dfeatures'],array('disable' => 0));
 			continue;
 		}
 
@@ -68,17 +121,19 @@ for($i = 0;$i < $arr['cnt'];$i++)
 			$protocol->add_origin();
 			$ufeatures->add_origin();
 
-			if($info['extensions'] !== false)
-				$extensions->add_origin();
+			if($info['localexten'] !== false)
+				$localexten->add_origin();
 
+			if($info['extenumbers'] !== false)
+				$extenumbers->add_origin();
+
+			if($info['dfeatures'] !== false)
+				$dfeatures->edit_list_where($info['dfeatures'],array('disable' => 0));
+
+			if($info['hints'] !== false)
+				$hintsexten->add_origin();
 			continue;
 		}
-
-		$hints_where['exten'] = $info['ufeatures']['number'];
-
-		if(($hints_where['app'] = $ipbx->mk_interface($info['protocol']['name'],$info['ufeatures']['protocol'])) !== false
-		&& ($info['extensions'] = $extensions->get_where($hints_where)) !== false)
-			$extensions->delete($info['extensions']['id']);
 
 		if(($info['usergroup'] = $ugroup->get_by_user($info['ufeatures']['id'])) !== false)
 			$ugroup->delete($info['usergroup']['id']);

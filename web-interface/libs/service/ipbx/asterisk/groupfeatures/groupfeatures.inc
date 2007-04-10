@@ -137,6 +137,31 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 
 		return($r);
 	}
+
+	function get_all_number($disable=null)
+	{
+		$r = false;
+
+		if(($list = $this->get_list()) === false)
+			return($r);
+
+		$nb = count($list);
+
+		$r = array();
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			if(($info = $this->get($list[$i],$disable)) === false || $info['number'] === '' || $info['number'] === null)
+				continue;
+
+			$r[] = $info;
+		}
+
+		if(isset($r[0]) === false)
+			$r = false;
+
+		return($r);
+	}
 }
 
 ?>

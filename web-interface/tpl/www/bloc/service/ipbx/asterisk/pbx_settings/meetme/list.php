@@ -23,7 +23,7 @@
 		<th class="th-center"><?=$this->bbf('col_name');?></th>
 		<th class="th-center"><?=$this->bbf('col_number');?></th>
 		<th class="th-center"><?=$this->bbf('col_pin');?></th>
-		<th class="th-center"><?=$this->bbf('col_admpin');?></th>
+		<th class="th-center"><?=$this->bbf('col_admin-pin');?></th>
 		<th class="th-center" id="col-action" colspan="2"><?=$this->bbf('col_action');?></th>
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
 	</tr>
@@ -54,7 +54,7 @@
 		<td class="txt-left"><label for="it-meetme-<?=$i?>" id="lb-meetme-<?=$i?>"><?=$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"');?><?=$ref['mfeatures']['name']?></label></td>
 		<td><?=$ref['meetme']['number']?></td>
 		<td><?=$ref['meetme']['pin']?></td>
-		<td><?=$ref['meetme']['admpin']?></td>
+		<td><?=$ref['meetme']['admin-pin']?></td>
 		<td class="td-right" colspan="3">
 		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/pbx_settings/meetme',array('act' => 'edit','id' => $ref['meetme']['id'],'page' => $pager['page']),null,$this->bbf('opt_modify'));?>
 

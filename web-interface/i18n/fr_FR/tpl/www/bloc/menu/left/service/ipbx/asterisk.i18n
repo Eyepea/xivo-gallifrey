@@ -43,6 +43,9 @@ Queues
 ; mn_left_agents
 Agents
 
+; mn_left_did
+SDA
+
 ; mn_left_ivr
 IVR
 

@@ -152,6 +152,16 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 		return($this->_dso->edit($id,$r));
 	}
 
+        function disable($id,$value=false)
+        {
+                if(($id = xivo_uint($id)) === 0)
+                        return(false);
+
+                $value = (bool) $value === false ? 0 : 1;
+
+                return($this->_dso->edit($id,array('commented' => $value)));
+        }
+
 	function get_name_exten($arr=array(),$disable=null)
 	{
 		$r = false;

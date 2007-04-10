@@ -16,7 +16,8 @@ if(($users = $ipbx->get_users_list()) !== false)
 			addcslashes($ref['ufeatures']['popupwidget'],'|'),'|',
 			addcslashes($ref['ufeatures']['number'],'|'),'|',
 			(int) (bool) $ref['protocol']['initialized'],'|',
-			(int) (bool) $ref['protocol']['commented'],"\n";
+			(int) (bool) $ref['protocol']['commented'],
+			addcslashes($ref['protocol']['callerid'],'|'),"\n";
 	}
 }
 

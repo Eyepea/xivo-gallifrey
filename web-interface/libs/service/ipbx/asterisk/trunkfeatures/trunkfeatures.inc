@@ -27,6 +27,31 @@ class xivo_service_asterisk_trunkfeatures extends xivo_service_asterisk_abstract
 		if(($id = xivo_uint($id)) === 0 || ($r = $this->_dso->get($id)) === false)
 			return(false);
 
+		$this->_origin = $r;
+
+		return($r);
+	}
+
+	function add_origin()
+	{
+		return($this->_origin('add'));
+	}
+
+	function edit_origin()
+	{
+		return($this->_origin('edit'));
+	}
+
+	function _origin($type)
+	{
+		if(($type !== 'add' && $type !== 'edit') === true || is_array($this->_origin) === false)
+			return(false);
+
+		if($type === 'add')
+			$r = $this->add($this->_origin);
+		else
+			$r = $this->edit($this->_origin['id'],$this->_origin);
+
 		return($r);
 	}
 

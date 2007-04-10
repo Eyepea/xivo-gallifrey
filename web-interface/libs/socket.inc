@@ -15,7 +15,6 @@ class xivo_socket
 	var $_errno	= 0;
 	var $_link	= null;
 
-
 	function xivo_socket($param=array())
 	{
 		$param = (array) $param;

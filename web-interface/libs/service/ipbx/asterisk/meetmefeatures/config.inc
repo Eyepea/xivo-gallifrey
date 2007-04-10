@@ -4,6 +4,9 @@ $array = array();
 
 $array['element'] = array();
 
+$array['element']['name'] = array();
+$array['element']['name']['default'] = '';
+
 $array['element']['mode'] = array();
 $array['element']['mode']['value'] = array('all','talk','listen');
 $array['element']['mode']['default'] = 'all';

@@ -6,6 +6,7 @@ class xivo_service_asterisk_usergroup extends xivo_service_asterisk_abstract
 {
 	var $_dso	= null;
 	var $_name	= 'usergroup';
+	var $_filter	= null;
 	var $_origin	= null;
 
 	function xivo_service_asterisk_usergroup(&$sre,&$dso)
@@ -18,6 +19,8 @@ class xivo_service_asterisk_usergroup extends xivo_service_asterisk_abstract
 
 		$this->_sre = &$sre;
 		$this->_dso = &$dso;
+
+		$this->_load_config();
 	}
 
 	function get($id)
@@ -50,7 +53,7 @@ class xivo_service_asterisk_usergroup extends xivo_service_asterisk_abstract
 
 	function _origin($type)
 	{
-		if(($type === 'add' && $type === 'edit') === true || is_array($this->_origin) === false)
+		if(($type !== 'add' && $type !== 'edit') === true || is_array($this->_origin) === false)
 			return(false);
 
 		if($type === 'add')
@@ -66,15 +69,10 @@ class xivo_service_asterisk_usergroup extends xivo_service_asterisk_abstract
 		if(is_array($arr) === false)
 			return(false);
 
-		$r = array();
-
 		if(($id = xivo_uint($id)) !== 0)
-			$r['id'] = $id;
+			$arr['id'] = $id;
 
-		$r['userid'] = xivo_uint($arr['userid']);
-		$r['groupid'] = xivo_uint($arr['groupid']);
-
-		return($this->_dso->add($r));
+		return($this->_dso->add($arr));
 	}
 
 	function edit($id,$arr)
@@ -82,11 +80,7 @@ class xivo_service_asterisk_usergroup extends xivo_service_asterisk_abstract
 		if(($id = xivo_uint($id)) === 0 || is_array($arr) === false)
 			return(false);
 
-		$r = array();
-		$r['userid'] = xivo_uint($arr['userid']);
-		$r['groupid'] = xivo_uint($arr['groupid']);
-
-		return($this->_dso->edit($id,$r));
+		return($this->_dso->edit($id,$arr));
 	}
 
 	function delete($id)

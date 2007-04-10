@@ -46,6 +46,9 @@
 	
 	if($this->chk_policy('call_management') === true):
 		echo '<dt>',$this->bbf('mn_left_ti_call_management'),'</dt>';
+		if($this->chk_policy('call_management','did') === true):
+			echo '<dd id="mn-call-management--did">',$url->href_html($this->bbf('mn_left_did'),'service/ipbx/call_management/did','act=list'),'</dd>';
+		endif;
 		if($this->chk_policy('call_management','ivr') === true):
 			echo '<dd id="mn-call-management--ivr"><a href="#">',$this->bbf('mn_left_ivr'),'</a></dd>';
 		endif;

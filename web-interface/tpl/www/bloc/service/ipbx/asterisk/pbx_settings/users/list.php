@@ -64,7 +64,7 @@
 			if(xivo_empty($ref['ufeatures']['firstname']) === true && xivo_empty($ref['ufeatures']['lastname']) === true):
 				$fullname = '-';
 			else:
-				$fullname = $ref['ufeatures']['firstname'].' '.$ref['ufeatures']['lastname'];
+				$fullname = trim($ref['ufeatures']['firstname'].' '.$ref['ufeatures']['lastname']);
 			endif;
 
 			$mod = $i % 2 === 0 ? 1 : 2;

@@ -43,10 +43,8 @@ class xivo_service_asterisk_uservoicemail_sqlite
 	{
 		$r = false;
 
-		if(($mailbox = xivo_uint($mailbox)) === 0)
-			return($r);
-
-		$rs = $this->_dso->query('SELECT id FROM '.$this->_param['table'].' WHERE mailbox = '.$mailbox.' LIMIT 1');
+		$rs = $this->_dso->query('SELECT id FROM '.$this->_param['table'].
+		' WHERE mailbox = \''.$this->_dso->escape_string($mailbox).'\' LIMIT 1');
 
 		if($rs !== false && ($rw = $this->_dso->fetch_assoc($rs)) !== false)
 			$r = $rw['id'];

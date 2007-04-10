@@ -138,6 +138,45 @@ class xivo_service_asterisk extends xivo_service_abstract
 		return($r);
 	}
 
+	function get_did_list($disable=null)
+	{
+		$r = false;
+
+		$extensions = &$this->get_module('extensions');
+		$dfeatures = &$this->get_module('didfeatures');
+		$extenumbers = &$this->get_module('extenumbers');
+
+		$where = array();
+		$where['context'] = 'did-extensions';
+		$where['app'] = 'Macro';
+		$where['appdata'] = 'superdid';
+
+		if(($rs = $extensions->get_list_where($where,$disable)) === false || ($nb = count($rs)) === 0)
+			return($r);
+
+		$r = $info = array();
+		$info['tyfeatures'] = false;
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			if(($info['did'] = $extensions->get($rs[$i],$disable)) === false
+			|| ($info['dfeatures'] = $dfeatures->get_by_extenid($info['did']['id'])) === false
+			|| ($info['extenumbers'] = $extenumbers->get_by_number_context($info['did']['exten'],$info['did']['context'])) === false
+			|| ($info['dfeatures']['type'] !== 'custom' && $info['dfeatures']['disable'] === false
+			   && (($tyfeatures = &$this->get_module($info['dfeatures']['type'].'features')) === false
+			   || ($info['tyfeatures'] = $tyfeatures->get($info['dfeatures']['typeid'])) === false
+			   || xivo_empty($info['tyfeatures']['number']) === true) === true) === true)
+				continue;
+
+			$r[] = $info;
+		}
+
+		if(isset($r[0]) === false)
+			$r = false;
+
+		return($r);
+	}
+
 	function get_protocol()
 	{
 		return($this->_conf['protocol']);
@@ -207,36 +246,6 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 		return(($ref = &$r));
 	}
-/*
-	function get_user_by_provisioning($id)
-	{
-		$r = false;
-
-		if(($id = xivo_uint($id)) === 0 || ($arr = xivo_get_aks($this->_conf['provisioning_id'])) === false)
-			return($r);
-
-		$prefix = substr($id,0,1);
-
-		for($i = 0;$i < $arr['cnt'];$i++)
-		{
-			$k = &$arr['keys'][$i];
-			$v = &$this->_conf['provisioning_id'][$k];
-
-			if(isset($v['prefix'],$v['range']) === false || $v['prefix'] !== $prefix)
-				continue;
-
-			$min = $v['prefix'] * $v['range'];
-			$max = $min + $v['range'];
-
-			if($id < $min || $id > $max || $this->chk_protocol($v) === false || ($mod = &$this->get_module($k)) === false)
-				return($r);
-
-			$r = $mod->get_by_provisioning($id);
-		}
-
-		return($r);
-	}
-*/
 
 	function get_element($modules=array())
 	{

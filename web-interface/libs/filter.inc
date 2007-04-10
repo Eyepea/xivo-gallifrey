@@ -14,9 +14,10 @@ class xivo_filter
 		$this->_content = &$content;
 	}
 
-	function chk(&$v)
+	function chk(&$v,$set=true)
 	{
 		$a = (array) $this->_content;
+		$set = (bool) $set;
 
 		if(($arr = xivo_get_aks($a)) === false)
 			return(false);
@@ -25,7 +26,7 @@ class xivo_filter
 		{
 			$key = &$arr['keys'][$i];
 
-			$this->_chk_key_val($key,$a,$v);
+			$this->_chk_key_val($key,$a,$v,$set);
 		}
 
 		return(($this->_err['nb'] > 0 ? false : true));
@@ -413,10 +414,11 @@ class xivo_filter
 		return($value);
 	}
 
-	function _chk_key_val($key,&$a,&$v)
+	function _chk_key_val($key,&$a,&$v,$set=true)
 	{
 		$a = (array) $a;
 		$v = (array) $v;
+		$set = (bool) $set;
 	
 		if(isset($a[$key]) === false)
 		{
@@ -425,6 +427,9 @@ class xivo_filter
 		}
 	
 		$arr = &$a[$key];
+
+		if($set === false && isset($v[$key]) === false)
+			return(true);
 	
 		$arr['set'] = isset($arr['set']) === false ? true : (bool) $arr['set'];
 	
