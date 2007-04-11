@@ -82,8 +82,27 @@ class xivo_tpl_form extends xivo_tpl_module
 		if(isset($v['empty']) === true && $v['empty'] !== false)
 			$this->_param['empty'] = $v['empty'] === true ? true : $this->_mk_param_value($v['empty'],$v);
 
-		if(isset($v['optgroup']) === true && $v['optgroup'] !== false)
-			$this->_param['optgroup'] = true;
+		if(isset($v['optgroup']) === true && is_array($v['optgroup']) === true)
+		{
+			$ref_ogrp = &$v['optgroup'];
+
+			$this->_param['optgroup'] = array();
+			
+			if(isset($ref_ogrp['key']) === true)
+				$this->_param['optgroup']['key'] = $ref_ogrp['key'];
+			else
+				$this->_param['optgroup']['key'] = null;
+
+			if(isset($ref_ogrp['key_val']) === true)
+				$this->_param['optgroup']['key_val'] = $ref_ogrp['key_val'];
+			else
+				$this->_param['optgroup']['key_val'] = false;
+
+			if(isset($ref_ogrp['bbf']) === true && is_bool($ref_ogrp['bbf']) === false)
+				$this->_param['optgroup']['bbf'] = $this->_mk_param_bbf($ref_ogrp);
+			else
+				$this->_param['optgroup']['bbf'] = false;
+		}
 
 		if(isset($v['default']) === true)
 			$this->_param['default'] = $this->_mk_param_value($v['default'],$v);
@@ -139,24 +158,7 @@ class xivo_tpl_form extends xivo_tpl_module
 			$this->_param['null'] = true;
 
 		if(isset($v['bbf']) === true && is_bool($v['bbf']) === false)
-		{
-			if(is_scalar($v['bbf']) === true)
-				$this->_param['bbf'] = array('concatvalue',$v['bbf']);
-			else if(is_array($v['bbf']) === true && isset($v['bbf'][0],$v['bbf'][1]) === true)
-			{
-				switch($v['bbf'][0])
-				{
-					case 'paramkey':
-					case 'paramvalue':
-					case 'concatkey':
-						break;
-					default:
-						$v['bbf'][0] = 'concatvalue';
-				}
-
-				$this->_param['bbf'] = array($v['bbf'][0],$v['bbf'][1]);
-			}
-		}
+			$this->_param['bbf'] = $this->_mk_param_bbf($v);
 	}
 
 	function _mk_param_value($value,&$v)
@@ -189,6 +191,30 @@ class xivo_tpl_form extends xivo_tpl_module
 			case 'boolean':
 					$r = (int) $value;
 				break;
+		}
+
+		return($r);
+	}
+
+	function _mk_param_bbf(&$v)
+	{
+		$r = false;
+
+		if(is_scalar($v['bbf']) === true)
+			$r = array('concatvalue',$v['bbf']);
+		else if(is_array($v['bbf']) === true && isset($v['bbf'][0],$v['bbf'][1]) === true)
+		{
+			switch($v['bbf'][0])
+			{
+				case 'paramkey':
+				case 'paramvalue':
+				case 'concatkey':
+					break;
+				default:
+					$v['bbf'][0] = 'concatvalue';
+			}
+
+			$r = array($v['bbf'][0],$v['bbf'][1]);
 		}
 
 		return($r);
@@ -579,7 +605,7 @@ class xivo_tpl_form extends xivo_tpl_module
 		if(is_array($render) === false)
 			return(null);
 
-		if($this->_param['optgroup'] === true)
+		if($this->_param['optgroup'] !== false)
 		{
 			if(isset($render[3]{0}) === false)
 				$render[3] = '&nbsp;';
@@ -631,6 +657,80 @@ class xivo_tpl_form extends xivo_tpl_module
 		}
 	}
 
+	function _mk_slt_optgroup_render($render)
+	{
+		if(is_array($this->_param['optgroup']) === false)
+			return(null);
+
+		$param = &$this->_param['optgroup'];
+
+		if(isset($render{0}) === false)
+			$render = '&nbsp;';
+		else if(is_array($param['bbf']) === true)
+		{
+			switch($param['bbf'][0])
+			{
+				case 'paramkey':
+					$render = $this->bbf($param['bbf'][1],$render);
+					break;
+				case 'paramvalue':
+					$render = $this->bbf($param['bbf'][1],$render);
+					break;
+				case 'concatkey':
+					$render = $this->bbf($param['bbf'][1].$render);
+					break;
+				case 'concatvalue':
+					$render = $this->bbf($param['bbf'][1].$render);
+					break;
+			}
+		}
+
+		$this->_render .= vsprintf('<optgroup label="%s">',$render);
+	}
+
+	function _mk_slt_option_param($key,$ref)
+	{
+		if($this->_param['key_val'] !== false
+		&& isset($ref[$this->_param['key_val']]) === true
+		&& is_scalar($ref[$this->_param['key_val']]) === true)
+			$key = $ref[$this->_param['key_val']];
+
+		$render = false;
+
+		if(is_bool($this->_param['key']) === false
+		&& isset($ref[$this->_param['key']]) === true
+		&& is_scalar($ref[$this->_param['key']]) === true)
+		{
+			$val = &$ref[$this->_param['key']];
+			$selected = $this->_param['value'] === $key ? ' selected="selected"' : '';
+
+			if($this->_param['optgroup'] === true)
+				$render = array(xivo_alttitle($val),xivo_alttitle($key),$selected,xivo_htmlsc($val));
+			else
+				$render = array(xivo_alttitle($key),$selected,xivo_htmlsc($val));
+		}
+		else if($this->_param['key'] === true)
+		{
+			$selected = $this->_param['value'] === $key ? ' selected="selected"' : '';
+
+			if($this->_param['optgroup'] === true)
+				$render = array(xivo_alttitle($key),xivo_alttitle($key),$selected,xivo_htmlsc($key));
+			else
+				$render = array(xivo_alttitle($key),$selected,xivo_htmlsc($key));
+		}
+		else if($this->_param['key'] === false && is_scalar($ref) === true)
+		{
+			$selected = $this->_param['value'] === $ref ? ' selected="selected"' : '';
+
+			if($this->_param['optgroup'] === true)
+				$render = array(xivo_alttitle($ref),xivo_alttitle($ref),$selected,xivo_htmlsc($ref));
+			else
+				$render = array(xivo_alttitle($ref),$selected,xivo_htmlsc($ref));
+		}
+
+		return($render);
+	}
+
 	function _mk_slt_option(&$a)
 	{
 		if(($arr = xivo_get_aks($a)) === false)
@@ -642,58 +742,46 @@ class xivo_tpl_form extends xivo_tpl_module
 
 			$ref = &$a[$k];
 
-			$o = '';
-
-/*
-			if(xivo_issa('__param',$ref) === true && is_string($ref['__param']) === true)
-			{
-				$o = ' '.$ref['__param'];
-				unset($ref['__param']);
-
-				if(count($ref) === 1)
-					$ref = $ref[key($ref)];
-			}
-
-			if(isset($k{0}) === true && $k{0} === ' ' && strlen(trim($k)) === 0)
-				$k = '-';
-*/
-	
 			if(is_array($ref) === true)
 			{
-				if($this->_param['key_val'] !== false && isset($ref[$this->_param['key_val']]) === true)
-					$k = $ref[$this->_param['key_val']];
-
-				$render = false;
-				if(is_bool($this->_param['key']) === false && isset($ref[$this->_param['key']]) === true)
+				if(is_array($this->_param['optgroup']) === true)
 				{
-					$v = &$ref[$this->_param['key']];
-					$selected = $this->_param['value'] === $k ? ' selected="selected"'.$o : $o;
+					$param = $this->_param['optgroup'];
 
-					if($this->_param['optgroup'] === true)
-						$render = array(xivo_alttitle($v),xivo_alttitle($k),$selected,xivo_htmlsc($v));
-					else
-						$render = array(xivo_alttitle($k),$selected,xivo_htmlsc($v));
+					if($param['key_val'] !== false
+					&& isset($ref[$param['key_val']]) === true
+					&& is_scalar($ref[$param['key_val']]) === true)
+					{
+						$k = $ref[$param['key_val']];
+						unset($ref[$param['key_val']]);
+					}
+
+					$render = false;
+
+					if(is_bool($param['key']) === false
+					&& isset($ref[$param['key']]) === true
+					&& is_scalar($ref[$param['key']]) === true)
+					{
+						$v = $ref[$param['key']];
+						unset($ref[$param['key']]);
+						$render = xivo_htmlsc($v);
+					}
+					else if($param['key'] === true)
+						$render = xivo_htmlsc($k);
+					else if($param['key'] === false && is_scalar($ref) === true)
+						$render = xivo_htmlsc($ref);
+
+					if($render !== false)
+						$this->_mk_slt_optgroup_render($render);
+
+					$this->_param['optgroup'] = true;
+					$this->_mk_slt_option($ref);
+					$this->_param['optgroup'] = $param;
+
+					if($render !== false)
+						$this->_render .= '</optgroup>';
 				}
-				else if($this->_param['key'] === true)
-				{
-					$selected = $this->_param['value'] === $k ? ' selected="selected"'.$o : $o;
-
-					if($this->_param['optgroup'] === true)
-						$render = array(xivo_alttitle($k),xivo_alttitle($k),$selected,xivo_htmlsc($k));
-					else
-						$render = array(xivo_alttitle($k),$selected,xivo_htmlsc($k));
-				}
-				else if($this->_param['key'] === false && is_scalar($ref) === true)
-				{
-					$selected = $this->_param['value'] === $ref ? ' selected="selected"'.$o : $o;
-
-					if($this->_param['optgroup'] === true)
-						$render = array(xivo_alttitle($ref),xivo_alttitle($ref),$selected,xivo_htmlsc($ref));
-					else
-						$render = array(xivo_alttitle($ref),$selected,xivo_htmlsc($ref));
-				}
-
-				if($render !== false)
+				else if(($render = $this->_mk_slt_option_param($k,$ref)) !== false)
 					$this->_mk_slt_option_render($render);
 				else
 					$this->_mk_slt_option($ref);
@@ -702,7 +790,7 @@ class xivo_tpl_form extends xivo_tpl_module
 			{
 				if($this->_param['key'] === true)
 				{
-					$selected = $this->_param['value'] === $k ? ' selected="selected"'.$o : $o;
+					$selected = $this->_param['value'] === $k ? ' selected="selected"' : '';
 
 					if($this->_param['optgroup'] === true)
 						$render = array(xivo_alttitle($k),xivo_alttitle($k),$selected,xivo_htmlsc($k));
@@ -711,7 +799,7 @@ class xivo_tpl_form extends xivo_tpl_module
 				}
 				else if($this->_param['key'] === false && is_scalar($ref) === true)
 				{
-					$selected = $this->_param['value'] === $ref ? ' selected="selected"'.$o : $o;
+					$selected = $this->_param['value'] === $ref ? ' selected="selected"' : '';
 
 					if($this->_param['optgroup'] === true)
 						$render = array(xivo_alttitle($ref),xivo_alttitle($ref),$selected,xivo_htmlsc($ref));
@@ -720,7 +808,7 @@ class xivo_tpl_form extends xivo_tpl_module
 				}
 				else
 				{
-					$selected = $this->_param['value'] === $k ? ' selected="selected"'.$o : $o;
+					$selected = $this->_param['value'] === $k ? ' selected="selected"' : '';
 
 					if($this->_param['optgroup'] === true)
 						$render = array(xivo_alttitle($ref),xivo_alttitle($k),$selected,xivo_htmlsc($ref));

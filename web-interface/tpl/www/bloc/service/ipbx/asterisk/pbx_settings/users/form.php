@@ -7,6 +7,7 @@
 
 	$group_list = $this->vars('group_list');
 	$moh_list = $this->vars('moh_list');
+	$autoprov_list = $this->vars('autoprov_list');
 
 	$ringgroup = xivo_bool($info['ufeatures']['ringgroup']);
 
@@ -155,7 +156,9 @@
 
 <div id="sb-part-autoprov" class="b-nodisplay">
 
-	<?=/*$form->text(array('desc' => $this->bbf('fm_autoprov_vendor'),'name' => 'autoprov[vendor]','labelid' => 'autoprov-vendor','value' => $info['autoprov']['vendor'],'size' => 15),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');*/?>
+	<?=$form->slt(array('desc' => $this->bbf('fm_autoprov_vendormodel'),'name' => 'autoprov[vendormodel]','labelid' => 'autoprov-vendormodel','optgroup' => array('key' => 'name'),'key' => 'label','key_val' => 'path'),$autoprov_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
+	<?=$form->text(array('desc' => $this->bbf('fm_autoprov_macaddr'),'name' => 'autoprov[macaddr]','labelid' => 'autoprov-macaddr','value' => $info['autoprov']['macaddr'],'size' => 15),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 </div>
 

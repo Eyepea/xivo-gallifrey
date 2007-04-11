@@ -284,6 +284,40 @@ switch($act)
 
 		xivo_go($_HTML->url('service/ipbx/call_management/did'),'act=list');
 		break;
+	case 'deletes':
+		if(xivo_issa('dids',$_QR) === false)
+			xivo_go($_HTML->url('service/ipbx/call_management/did'),'act=list');
+
+		$values = array_values($_QR['dids']);
+
+		if(($nb = count($values)) === 0)
+			xivo_go($_HTML->url('service/ipbx/call_management/did'),'act=list');
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			if(($info['dfeatures'] = $dfeatures->get($_QR['dids'][$i])) === false
+			|| ($info['did'] = $extensions->get($info['dfeatures']['extenid'])) === false
+			|| ($info['extenumbers'] = $extenumbers->get_by_number_context($info['did']['exten'],$info['did']['context'])) === false)
+				continue;
+
+			if($dfeatures->delete($info['dfeatures']['id']) === false)
+				continue;
+
+			if($extensions->delete($info['did']['id']) === false)
+			{
+				$dfeatures->add_origin();
+				continue;
+			}
+
+			if($extenumbers->delete($info['extenumbers']['id']) === false)
+			{
+				$dfeatures->add_origin();
+				$extensions->add_origin();
+			}
+		}
+
+		xivo_go($_HTML->url('service/ipbx/call_management/did'),'act=list');
+		break;
 	case 'disables':
 	case 'enables':
 		$disable = $act === 'disables' ? true : false;

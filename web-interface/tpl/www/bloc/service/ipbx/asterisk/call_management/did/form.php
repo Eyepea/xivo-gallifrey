@@ -22,7 +22,7 @@
 		echo '<div id="fd-dfeatures-user-typeid" class="txt-center">',$url->href_html($this->bbf('create_user'),'service/ipbx/pbx_settings/users','act=add'),'</div>';
 	endif;
 
-	if(empty($list['group']) === false):
+	if(empty($list['groups']) === false):
 ?>
 
 <?=$form->slt(array('desc' => $this->bbf('fm_dfeatures_typeid'),'name' => 'dfeatures[typeid]','labelid' => 'dfeatures-group-typeid','key' => 'number','key_val' => 'id','default' => $element['dfeatures']['typeid']['default'],'value' => $info['dfeatures']['typeid']),$list['groups'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>

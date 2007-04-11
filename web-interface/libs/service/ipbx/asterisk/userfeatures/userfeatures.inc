@@ -8,8 +8,6 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 	var $_name	= 'userfeatures';
 	var $_filter	= null;
 	var $_origin	= null;
-	var $_autoprov	= null;
-	var $_sockprov	= null;
 
 	function xivo_service_asterisk_userfeatures(&$sre,&$dso)
 	{
@@ -23,7 +21,6 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		$this->_dso = &$dso;
 
 		$this->_load_config();
-		$this->_chk_autoprov();
 	}
 
 	function get($id)
@@ -33,95 +30,6 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 			return(false);
 
 		$this->_origin = $r;
-
-		return($r);
-	}
-
-	function _chk_autoprov()
-	{
-		if(xivo_issa($this->_name,$this->_sre->_ini) === false
-		|| xivo_issa('autoprov',$this->_sre->_ini[$this->_name]) === false
-		|| isset($this->_sre->_ini[$this->_name]['autoprov']['host'],$this->_sre->_ini[$this->_name]['autoprov']['port']) === false)
-			$this->_autoprov = false;
-		else
-		{
-			$this->_autoprov = $this->_conf['autoprov'];
-			$this->_autoprov['prov']['address'] = $this->_sre->_ini[$this->_name]['autoprov']['host'];
-			$this->_autoprov['prov']['port'] = $this->_sre->_ini[$this->_name]['autoprov']['port'];
-			$this->_autoprov['list']['address'] = $this->_autoprov['prov']['address'];
-			$this->_autoprov['list']['port'] = $this->_autoprov['prov']['port'];
-		}
-	}
-
-	function _load_sockprov($type)
-	{
-		if(($type !== 'list' && $type !== 'prov') === true || xivo_ak($type,$this->_autoprov) === false)
-			return(false);
-
-		if(xivo_ak($type,$this->_sockprov) === true)
-			return(true);
-
-		xivo::load_class('socket');
-		$this->_sockprov[$type] = new xivo_socket($this->_autoprov[$type]);
-
-		return(true);
-	}
-
-	function get_autoprov_list()
-	{
-		if($this->_load_sockprov('list') === false || $this->_sockprov['list']->is_open() !== true
-		|| ($write = $this->_mk_sockprov_header('list')) === false
-		|| $this->_sockprov['list']->write($write) === false
-		|| ($read = $this->_sockprov['list']->read_normal()) === false
-		|| ($recv = $this->_parse_sockprov_recv($read)) === false)
-			return(false);
-
-		if(isset($recv['status'],$recv['data'][0]) === false || preg_match('/^(http\/1\.(1|0)) 200 /i',$recv['status']) !== 1)
-			return(false);
-
-		return($recv['data']);
-	}
-
-	function _mk_sockprov_header($type)
-	{
-		if(xivo_ak($type,$this->_autoprov) === false)
-			return(false);
-
-		$r  = strtoupper($this->_autoprov[$type]['method']);
-		$r .= ' '.$this->_autoprov[$type]['url'].' HTTP/1.1'."\r\n\r\n";
-
-		return($r);
-	}
-
-	function _parse_sockprov_recv($recv)
-	{
-		$recv = (string) $recv;
-
-		$recv = str_replace("\r",'',$recv);
-		$recv = explode("\n",$recv);
-
-		if(($nb = count($recv)) === 0)
-			return(false);
-
-		$r = array();
-		$r['data'] = array();
-		$data = false;
-
-		for($i = 0;$i < $nb;$i++)
-		{
-			$header = explode(': ',$recv[$i]);
-
-			if($i === 0 && $header[0] !== '' && isset($header[1]) === false)
-				$r['status'] = $header[0];
-			else if($data === false && $recv[$i] === '')
-				$data = true;
-			else if($data === false && isset($header[0],$header[1]) === true)
-				$r[$header[0]] = $header[1];
-			else if($i === $nb-1 && $recv[$i] === '')
-				continue;
-			else
-				$r['data'][] = $recv[$i];
-		}
 
 		return($r);
 	}

@@ -70,8 +70,8 @@ $array['module']['trunkiax']['section'] = 'iax';
 $array['module']['userfeatures'] = array();
 $array['module']['userfeatures']['datastorage'] = true;
 
-$array['module']['phone'] = array();
-$array['module']['phone']['datastorage'] = true;
+$array['module']['autoprov'] = array();
+$array['module']['autoprov']['datastorage'] = true;
 
 $array['module']['trunkfeatures'] = array();
 $array['module']['trunkfeatures']['datastorage'] = true;
