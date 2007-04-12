@@ -1,0 +1,42 @@
+#!/bin/sh
+# $Revision$
+# $Date$
+# Startup daemon script for xivo_daemon
+#
+
+DAEMON=/usr/sbin/xivo_daemon.py
+PIDFILE="/tmp/xivo_daemon.pid"
+
+case "$1" in
+  start)
+	if [ -e $PIDFILE ] ; then
+	    echo "A xivo_daemon daemon PID file was found. Nothing new started."
+	    exit 1
+	else
+	    echo "Starting xivo_daemon daemon."
+	    $DAEMON
+	fi
+	;;
+  stop)
+	if ! [ -e $PIDFILE ] ; then
+	    echo "No xivo_daemon daemon PID file found."
+	    exit 1
+	else
+	    echo "Stopping xivo_daemon daemon."
+	    DAEMONPID=$(cat $PIDFILE | tr -d '[:blank:]')
+	    kill $DAEMONPID
+	    rm $PIDFILE
+	fi
+	;;
+  restart)
+	$0 stop
+	$0 start
+	;;
+  *)
+	echo "Usage: $0 {start|stop|restart}"
+	exit 1
+	;;
+esac
+
+exit 0
+

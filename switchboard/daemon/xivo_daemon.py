@@ -42,7 +42,7 @@ localchans = {}
 userlist = {}
 userlist_lock = threading.Condition()
 
-pidfile = '/tmp/sip_switchboard_id_daemon.pid'
+pidfile = '/tmp/xivo_daemon.pid'
 bufsize_large = 8192
 bufsize_any = 512
 
