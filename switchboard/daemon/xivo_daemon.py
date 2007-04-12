@@ -1077,41 +1077,40 @@ class IdentRequestHandler(SocketServer.StreamRequestHandler):
 	def handle(self):
 		if __debug__:
 			print ' ## IdentRequestHandler from client', self.client_address
-		while True:
-			list0 = self.rfile.readline().strip().split(' ')
-			retline = 'ERROR\r\n'
-			if list0[0] == 'QUERY' and len(list0) == 2:
-				user = list0[1]
-				userlist_lock.acquire()
-				try:
-					e = finduser(user)
-					if e == None:
-						retline = 'ERROR USER <' + user + '> NOT FOUND\r\n'
-					else:
-						if e.has_key('ip') and e.has_key('port') \
-						       and e.has_key('state') and e.has_key('sessionid') \
-						       and e.has_key('sessiontimestamp'):
-							if time.time() - e.get('sessiontimestamp') > session_expiration_time:
-								retline = 'ERROR USER SESSION EXPIRED for <' + user + '>\r\n'
-							else:
-								retline = 'USER ' + user
-								retline += ' SESSIONID ' + e.get('sessionid')
-								retline += ' IP ' + e.get('ip')
-								retline += ' PORT ' + e.get('port')
-								retline += ' STATE ' + e.get('state')
-								retline += '\r\n'
-						else:
-							retline = 'ERROR USER SESSION NOT DEFINED for <' + user + '>\r\n'
-				except:
-					retline = 'ERROR (exception)\r\n'
-				userlist_lock.release()
+		list0 = self.rfile.readline().strip().split(' ')
+		retline = 'ERROR\r\n'
+		if list0[0] == 'QUERY' and len(list0) == 2:
+			user = list0[1]
+			userlist_lock.acquire()
 			try:
-				self.wfile.write(retline)
-			except Exception, e:
-				# something bad happened.
-				if __debug__:
-					print ' ## Exception :', e
-				return
+				e = finduser(user)
+				if e == None:
+					retline = 'ERROR USER <' + user + '> NOT FOUND\r\n'
+				else:
+					if e.has_key('ip') and e.has_key('port') \
+					       and e.has_key('state') and e.has_key('sessionid') \
+					       and e.has_key('sessiontimestamp'):
+						if time.time() - e.get('sessiontimestamp') > session_expiration_time:
+							retline = 'ERROR USER SESSION EXPIRED for <' + user + '>\r\n'
+						else:
+							retline = 'USER ' + user
+							retline += ' SESSIONID ' + e.get('sessionid')
+							retline += ' IP ' + e.get('ip')
+							retline += ' PORT ' + e.get('port')
+							retline += ' STATE ' + e.get('state')
+							retline += '\r\n'
+					else:
+						retline = 'ERROR USER SESSION NOT DEFINED for <' + user + '>\r\n'
+			except:
+				retline = 'ERROR (exception)\r\n'
+			userlist_lock.release()
+		try:
+			self.wfile.write(retline)
+		except Exception, e:
+			# something bad happened.
+			if __debug__:
+				print ' ## Exception :', e
+			return
 
 # The KeepAliveHandler receives UDP datagrams and sends back 
 # a datagram containing wether "OK" or "ERROR <error-text>"
