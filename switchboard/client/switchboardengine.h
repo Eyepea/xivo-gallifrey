@@ -21,6 +21,7 @@ private:
 	void connectSocket();
 	void finishedReceivingHints();
 	void loadSettings();	//!< load settings
+	void sendCommand();
 protected:
 	void timerEvent(QTimerEvent *event);
 public slots:

@@ -4,29 +4,29 @@
 PeersLayout::PeersLayout(QWidget * parent)
 : QLayout(parent)
 {
-	qDebug() << "PeersLayout::PeersLayout(" << parent << ")";
+	//qDebug() << "PeersLayout::PeersLayout(" << parent << ")";
 }
 
 PeersLayout::PeersLayout()
 {
-	qDebug() << "PeersLayout::PeersLayout()";
+	//qDebug() << "PeersLayout::PeersLayout()";
 }
 
 QSize PeersLayout::sizeHint() const
 {
-	qDebug() << "PeersLayout::sizeHints()";
+	//qDebug() << "PeersLayout::sizeHints()";
 	return size();
 }
 
 QSize PeersLayout::minimumSize() const
 {
-	qDebug() << "PeersLayout::minimumSize()";
+	//qDebug() << "PeersLayout::minimumSize()";
 	return size();
 }
 
 QSize PeersLayout::maximumSize() const
 {
-	qDebug() << "PeersLayout::maximumSize()";
+	//qDebug() << "PeersLayout::maximumSize()";
 	return size();
 }
 
@@ -38,13 +38,13 @@ QSize PeersLayout::size() const
 
 void PeersLayout::addItem(QLayoutItem * item)
 {
-	qDebug() << "PeersLayout::addItem" << item;
+	//qDebug() << "PeersLayout::addItem" << item;
 	m_list.append(item);
 }
 
 void PeersLayout::setGeometry(const QRect & r)
 {
-	qDebug() << "PeersLayout::setGeometry" << r;
+	//qDebug() << "PeersLayout::setGeometry" << r;
 	QSize itemSize = maxItemSize();
 	int i, x, y;
 	x = 0; y = 0;
@@ -64,19 +64,19 @@ void PeersLayout::setGeometry(const QRect & r)
 
 QLayoutItem* PeersLayout::itemAt(int i) const
 {
-	qDebug() << "PeersLayout::itemAt" << i;
+	//qDebug() << "PeersLayout::itemAt" << i;
 	return m_list.value(i);
 }
 
 QLayoutItem* PeersLayout::takeAt(int i)
 {
-	qDebug() << "PeersLayout::takeAt" << i;
+	//qDebug() << "PeersLayout::takeAt" << i;
 	return m_list.takeAt(i);
 }
 
 int PeersLayout::count() const
 {
-	qDebug() << "PeersLayout::count()";
+	//qDebug() << "PeersLayout::count()";
 	return m_list.size();
 }
 

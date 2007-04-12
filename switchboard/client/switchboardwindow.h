@@ -3,9 +3,11 @@
 #include <QWidget>
 #include <QList>
 #include "peerwidget.h"
+#include "peerslayout.h"
 
 class SwitchBoardEngine;
 class QGridLayout;
+class QMouseEvent;
 
 class Peer// : public QObject
 {
@@ -33,17 +35,20 @@ public:
 	SwitchBoardWindow( QWidget * parent = 0);
 	void setEngine(SwitchBoardEngine *);
 	void updatePeer(const QString & ext,
+	        const QString & name,
 			const QString & status,
 			const QString & avail,
 			const QString & corrname);
-	//void addPeer(const QString & ext, const QString & status);
 	void removePeer(const QString & ext);
 	void removePeers(void);
 	int width() const;
 	void setWidth(int);
 	void saveSettings();
+protected:
+	void mousePressEvent(QMouseEvent * event);
 private:
-	QGridLayout * m_layout;
+	//QGridLayout * m_layout;
+	PeersLayout * m_layout;
 	QList<Peer> m_peerlist;
 	SwitchBoardEngine * m_engine;
 	int m_x;

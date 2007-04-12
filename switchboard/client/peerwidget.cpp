@@ -7,8 +7,9 @@
 #include "peerwidget.h"
 #include "switchboardengine.h"
 
-PeerWidget::PeerWidget(const QString & txtlbl, QWidget * parent, int size)
-: QWidget(parent), m_square(size,size)
+PeerWidget::PeerWidget(const QString & id, const QString & name,
+                       QWidget * parent, int size)
+: QWidget(parent), m_square(size,size), m_id(id), m_name(name)
 {
 	QHBoxLayout * layout = new QHBoxLayout(this);
 	layout->setSpacing(2);
@@ -20,10 +21,9 @@ PeerWidget::PeerWidget(const QString & txtlbl, QWidget * parent, int size)
 	m_availlbl->setPixmap( m_square );
 	layout->addWidget( m_statelbl, 0, Qt::AlignLeft );
 	layout->addWidget( m_availlbl, 0, Qt::AlignLeft );
-	m_textlbl = new QLabel(txtlbl, this);
+	m_textlbl = new QLabel(m_id + "/" + m_name, this);
 	layout->addWidget( m_textlbl, 0, Qt::AlignLeft );
-	QLabel * dummy = new QLabel(this);
-	layout->addWidget( dummy, 1, Qt::AlignLeft );
+	layout->addStretch(1);
 	// to be able to receive drop
 	setAcceptDrops(true);
 }
@@ -113,8 +113,8 @@ void PeerWidget::mousePressEvent(QMouseEvent *event)
 {
 	if (event->button() == Qt::LeftButton)
 		m_dragstartpos = event->pos();
-	else if (event->button() == Qt::RightButton)
-		qDebug() << "depending on what has been left-cliked on the left ...";
+	//else if (event->button() == Qt::RightButton)
+	//	qDebug() << "depending on what has been left-cliked on the left ...";
 }
 
 void PeerWidget::mouseMoveEvent(QMouseEvent *event)
@@ -180,15 +180,14 @@ void PeerWidget::dropEvent(QDropEvent *event)
 	case Qt::CopyAction:
 		// transfer the call to the peer "to"
 		event->acceptProposedAction();
-		//m_engine->originateCall(from, to);
 		originateCall(from, to);
 		break;
 	case Qt::MoveAction:
 		event->acceptProposedAction();
-		//m_engine->transferCall(from, to);
 		transferCall(from, to);
 		break;
 	default:
+		qDebug() << "Unrecognized action";
 		break;
 	}
 }
