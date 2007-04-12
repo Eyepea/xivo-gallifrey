@@ -271,13 +271,7 @@ void SwitchBoardEngine::transferCall(const QString & src, const QString & dst)
 void SwitchBoardEngine::hangUp(const QString & channel)
 {
 	qDebug() << "SwitchBoardEngine::hangUp() " << channel;
-	QStringList tokens = channel.split("/");
-	if(tokens.count() < 3)
-	{
-		qDebug() << "*** CANNOT HANGUP channel" << channel;
-		return;
-	}
-	m_pendingcommand = "hangup " + tokens[0] + " " + tokens[1] + "/" + tokens[2];
+	m_pendingcommand = "hangup " + channel;
 	sendCommand();
 // 	if(m_socket->state() == QAbstractSocket::UnconnectedState)
 // 		connectSocket();
