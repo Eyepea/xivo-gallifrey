@@ -8,10 +8,12 @@ import random
 # SIP REGISTER
 def sip_register(cfg, me, cseq, callid, expires):
     here = cfg.localaddr + ":" + str(cfg.portsipclt)
-    command = "REGISTER sip:" + cfg.remoteaddr + " SIP/2.0\r\n"
+    raddr = cfg.remoteaddr
+#    raddr = "192.168.0.255"
+    command = "REGISTER sip:" + raddr + " SIP/2.0\r\n"
     command += "Via: SIP/2.0/UDP " + here + ";branch=" + str(random.randrange(1000000)) + "\r\n"
-    command += "To: <" + me + "@" + cfg.remoteaddr + ">\r\n"
-    command += "From: <" + me + "@" + cfg.remoteaddr + ">;tag=" + str(random.randrange(1000000)) + "\r\n"
+    command += "To: <" + me + "@" + raddr + ">\r\n"
+    command += "From: <" + me + "@" + raddr + ">;tag=" + str(random.randrange(1000000)) + "\r\n"
     command += "Call-ID: " + callid + "\r\n"
     command += "CSeq: " + str(cseq) + " REGISTER\r\n"
     command += "Max-Forwards: 70\r\n"
@@ -44,10 +46,11 @@ def sip_subscribe(cfg, me, cseq, callid, sipnumber, expires):
 # SIP OPTIONS
 def sip_options(cfg, me, callid, sipnumber):
     here = cfg.localaddr + ":" + str(cfg.portsipclt)
-    command = "OPTIONS sip:" + sipnumber + "@" + cfg.remoteaddr + " SIP/2.0\r\n"
+    raddr = cfg.remoteaddr
+    command = "OPTIONS sip:" + sipnumber + "@" + raddr + " SIP/2.0\r\n"
     command += "Via: SIP/2.0/UDP " + here + ";branch=" + str(random.randrange(1000000)) + "\r\n"
     command += "From: <" + me + "@" + here + ">;tag=" + str(random.randrange(1000000)) + "\r\n"
-    command += "To: <sip:" + sipnumber + "@" + cfg.remoteaddr + ">\r\n"
+    command += "To: <sip:" + sipnumber + "@" + raddr + ">\r\n"
     command += "Contact: <" + me + "@" + here + ">\r\n"
     command += "Call-ID: " + callid + "\r\n"
     command += "CSeq: 102 OPTIONS\r\n"

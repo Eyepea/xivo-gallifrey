@@ -46,9 +46,6 @@ pidfile = '/tmp/xivo_daemon.pid'
 bufsize_large = 8192
 bufsize_any = 512
 
-asterisk_login = 'sylvain'
-asterisk_pass = 'sylvain'
-
 timeout_between_registers = 60
 expires = str(2 * timeout_between_registers) # timeout between subscribes
 
@@ -86,7 +83,7 @@ def updateuserlistfromurl(url):
 			line = line.strip()
 			l = line.split('|')
 			# line is protocol | username | password | rightflag | phone number | initialized | disabled(=1) | cid
-                        if l[0] == "sip" and l[1] != "xivosb" and l[5] == "1" and l[6] == "0":
+                        if l[0] == "sip" and l[1] != sip_presence_account and l[5] == "1" and l[6] == "0":
 				#			    print l[1], ": '" + l[4] + "'"
 				if l[4] == "":
 					l_sipnumlist["SIP/" + l[1]] = l[7]
@@ -315,8 +312,9 @@ class AMI:
 			return True
 		except self.AMIError, e:
 			return False
-	def hangup(self, astn, channel):
-		phone = channel.split("-")[0]
+	def hangup(self, astn, ch):
+		phone = ch.split("/")[1] + "/" + ch.split("/")[2].split("-")[0]
+		channel = ch.split("/")[1] + "/" + ch.split("/")[2]
 		if channel in phonelists[astn][phone].chans:
 			peer = phonelists[astn][phone].chans[channel][3]
 			print "hanging up " + channel + " and " + peer
@@ -347,25 +345,26 @@ class AMI:
 	def originate(self, src, dst):
 		# originate a call btw src and dst
 		# src will ring first, and dst will ring when src responds
-		self.sendcommand('Originate', [('Channel', 'SIP/'+src),
-					       ('Exten', dst),
+		phonesrc = src.split("/")[2]
+		phonedst = dst.split("/")[2]
+		self.sendcommand('Originate', [('Channel', 'SIP/' + phonesrc),
+					       ('Exten', phonedst),
 					       ('Context', 'local-extensions'),
 					       ('Priority', '1'),
-					       ('CallerID', src + " calls " + dst),
+					       ('CallerID', phonesrc + " calls " + phonedst),
 					       ('Async', 'true')])
 	# TODO : replace management with "phone src" to "channel src" => no need to look up the list
 	def transfer(self, astn, src, dst):
-		print "transfer", astn, src, dst
-		phonesrc = "SIP/" + src
+		phonesrc = src.split("/")[1] + "/" + src.split("/")[2].split("-")[0]
+		phonesrcchan = src.split("/")[1] + "/" + src.split("/")[2]
+		phonedst = dst.split("/")[2]
 		if phonesrc in phonelists[astn].keys():
 			channellist = phonelists[astn][phonesrc].chans
 			nopens = len(channellist)
 			if nopens == 0:
 				print "no channel currently open in the phone", phonesrc
 			else:
-				for ch in channellist:
-					print ch, channellist[ch][3]
-					self.redirect(channellist[ch][3], dst, 'local-extensions')
+				self.redirect(channellist[phonesrcchan][3], phonedst, 'local-extensions')
 
 
 # builds the full list of phone statuses in order to send them to the requesting client
@@ -443,7 +442,7 @@ def parseSIP(cfg, data, l_sipsock, l_addrsip, astnum):
         for k in tcpopens:
             k[0].send("asterisk=registered_" + cfg.astid + "\n")
     if imsg == "SUBSCRIBE":
-        sipphone = icid.split("@")[0].split("subscribexivo_")[1]
+        sipphone = "SIP/" + icid.split("@")[0].split("subscribexivo_")[1]
 	if sipphone in phonelists[astnum].keys(): # else : send sth anyway ?
 	    phonelists[astnum][sipphone].set_lasttime(time.time())
             if iret != 200:
@@ -496,23 +495,33 @@ def manage_connection(connid):
         elif usefulmsg != "":
             # different cases are handled whether AMIclasssock was already defined or not ... this part can certainly be improved
 	    l = usefulmsg.split()
-	    idast = -1
-	    if len(l) > 1:
-		    if l[1] in asteriskr:
-			    idast = asteriskr[l[1]]
-	    print l, ":", idast
-	    if idast != -1:
+	    idassrc = -1
+	    idasdst = -1
+	    
+	    assrc = l[1].split("/")[0]
+	    if assrc in asteriskr:
+		    idassrc = asteriskr[assrc]
+
+	    if len(l) == 3:
+		    asdst = l[2].split("/")[0]
+		    if asdst in asteriskr:
+			    idasdst = asteriskr[asdst]
+
+	    if (len(l) == 3 and idassrc == idasdst and idassrc != -1) or \
+		   (len(l) == 2 and idassrc != -1 ):
 		    if l[0] == 'originate' or l[0] == 'transfer' or l[0] == 'hangup':
-			    if not AMIclasssock[idast]:
+			    if not AMIclasssock[idassrc]:
 				    "AMI was not connected - attempting to connect again"
-				    AMIclasssock[idast] = connect_to_AMI((configs[idast].remoteaddr, port_ami), asterisk_login, asterisk_pass)
-			    if AMIclasssock[idast]:
+				    AMIclasssock[idassrc] = connect_to_AMI((configs[idassrc].remoteaddr,
+									    port_ami),
+									   asterisk_login, asterisk_pass)
+			    if AMIclasssock[idassrc]:
 				    if l[0] == 'originate':
-					    AMIclasssock[idast].originate(l[2], l[3])
+					    AMIclasssock[idassrc].originate(l[1], l[2])
 				    elif l[0] == 'transfer':
-					    AMIclasssock[idast].transfer(idast, l[2], l[3])
+					    AMIclasssock[idassrc].transfer(idassrc, l[1], l[2])
 				    elif l[0] == 'hangup':
-					    AMIclasssock[idast].hangup(idast, l[2])
+					    AMIclasssock[idassrc].hangup(idassrc, l[1])
 
 def is_normal_channel(chan):
 	if chan.find("SIP/") == 0 or chan.find("IAX2/") == 0 or chan.find("mISDN/") == 0 or chan.find("Zap/") == 0:
@@ -969,7 +978,7 @@ class AsteriskRemote:
 		self.localaddr = localaddr
 		self.remoteaddr = remoteaddr
 		self.portsipclt = portsipclt
-		self.mysipname = "xivosb"
+		self.mysipname = sip_presence_account
 
 # ==============================================================================
 # from kafiche daemon
@@ -1178,13 +1187,16 @@ except Exception, e:
 
 cnf = ConfigParser.ConfigParser()
 cnf.readfp(open("/etc/asterisk/xivo_daemon.conf"))
-port_ami                  = int(cnf.get("general", "port_asterisk_ami"))
-port_sip_srv              = int(cnf.get("general", "port_asterisk_sipsrv"))
-port_ui_srv               = int(cnf.get("general", "port_switchboard"))
-port_login                = int(cnf.get("general", "port_fiche_login"))
-port_keepalive            = int(cnf.get("general", "port_fiche_keepalive"))
-port_request              = int(cnf.get("general", "port_fiche_agi"))
-port_switchboard_base_sip = int(cnf.get("general", "port_switchboard_base_sip"))
+port_ami                  = int(cnf.get("general", "port_asterisk_ami")) # 5038
+port_sip_srv              = int(cnf.get("general", "port_asterisk_sipsrv")) # 5060
+port_ui_srv               = int(cnf.get("general", "port_switchboard")) # 5081
+port_login                = int(cnf.get("general", "port_fiche_login")) # 12345
+port_keepalive            = int(cnf.get("general", "port_fiche_keepalive")) # 12346
+port_request              = int(cnf.get("general", "port_fiche_agi")) # 12347
+port_switchboard_base_sip = int(cnf.get("general", "port_switchboard_base_sip")) # 5080
+asterisk_login = cnf.get("general", "asterisk_manager_login") # sylvain
+asterisk_pass  = cnf.get("general", "asterisk_manager_pass") # sylvain
+sip_presence_account = cnf.get("general", "sip_presence_account") # xivosb
 
 configs = []
 save_for_next_packet = []
