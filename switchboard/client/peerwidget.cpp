@@ -127,8 +127,7 @@ void PeerWidget::mouseMoveEvent(QMouseEvent *event)
 
 	QDrag *drag = new QDrag(this);
 	QMimeData *mimeData = new QMimeData;
-	//mimeData->setData("text/plain", m_textlbl->text().toAscii());
-	mimeData->setText(m_textlbl->text());
+	mimeData->setText(m_id/*m_textlbl->text()*/);
 	drag->setMimeData(mimeData);
 
 	Qt::DropAction dropAction = drag->start(Qt::CopyAction | Qt::MoveAction);
@@ -142,7 +141,7 @@ void PeerWidget::mouseDoubleClickEvent(QMouseEvent *event)
 
 	if(event->button() == Qt::LeftButton)
 	{
-		qDebug() << m_textlbl->text();
+		//qDebug() << m_textlbl->text();
 	}
 }
 
@@ -171,7 +170,7 @@ void PeerWidget::dragMoveEvent(QDragMoveEvent *event)
 void PeerWidget::dropEvent(QDropEvent *event)
 {
 	QString from = event->mimeData()->text();
-	QString to = m_textlbl->text();
+	QString to = m_id;
 	qDebug() << "dropEvent() :" << from << "on" << to;
 	qDebug() << " possibleActions=" << event->possibleActions();
 	qDebug() << " proposedAction=" << event->proposedAction();
@@ -180,7 +179,10 @@ void PeerWidget::dropEvent(QDropEvent *event)
 	case Qt::CopyAction:
 		// transfer the call to the peer "to"
 		event->acceptProposedAction();
-		originateCall(from, to);
+		if(from.indexOf('-') >= 0)	// c'est un channel et non un peer
+			transferCall(from, to);
+		else
+			originateCall(from, to);
 		break;
 	case Qt::MoveAction:
 		event->acceptProposedAction();

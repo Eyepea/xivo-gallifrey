@@ -87,6 +87,7 @@ void SwitchBoardEngine::connectSocket()
 void SwitchBoardEngine::sendCommand()
 {
 	m_socket->write((m_pendingcommand + /*"\r\n"*/"\n").toAscii());
+	qDebug() << m_pendingcommand;
 }
 
 /* Slots */
@@ -257,30 +258,14 @@ void SwitchBoardEngine::timerEvent(QTimerEvent * event)
 
 void SwitchBoardEngine::originateCall(const QString & src, const QString & dst)
 {
-	QStringList srcl = src.split("/");
-	QStringList dstl = dst.split("/");
-	if(srcl[0] == dstl[0]) {
-		m_pendingcommand = "originate " + srcl[0] + " " + srcl[2] + " " + dstl[2];
-		sendCommand();
-	} else {
-		emitTextMessage("<" + srcl[0] + "> and <" + dstl[0] + "> are not the same Asterisk !");
-	}
-// 	if(m_socket->state() == QAbstractSocket::UnconnectedState)
-// 		connectSocket();
+	m_pendingcommand = "originate " + src + " " + dst;
+	sendCommand();
 }
 
 void SwitchBoardEngine::transferCall(const QString & src, const QString & dst)
 {
-	QStringList srcl = src.split("/");
-	QStringList dstl = dst.split("/");
-	if(srcl[0] == dstl[0]) {
-		m_pendingcommand = "transfer " + srcl[0] + " " + srcl[2] + " " + dstl[2];
-		sendCommand();
-	} else {
-		emitTextMessage("<" + srcl[0] + "> and <" + dstl[0] + "> are not the same Asterisk !");
-	}
-// 	if(m_socket->state() == QAbstractSocket::UnconnectedState)
-// 		connectSocket();
+	m_pendingcommand = "transfer " + src + " " + dst;
+	sendCommand();
 }
 
 void SwitchBoardEngine::hangUp(const QString & channel)
