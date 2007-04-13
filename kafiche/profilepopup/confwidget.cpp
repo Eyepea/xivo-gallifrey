@@ -115,9 +115,13 @@ ConfWidget::ConfWidget(Engine *engine, MainWidget *parent)
 	vlayout->addWidget(btnbox);
 }
 
+/*!
+ * This slot saves the configuration (which is stored in displayed
+ * widgets) to the Engine object
+ * and also to the main window object and then call close()
+ */
 void ConfWidget::saveAndClose()
 {
-	// send the conf stuff to the engine !
 	//qDebug() << "ip =" << m_lineip->text();
 	m_engine->setServerip( m_lineip->text() );
 	//qDebug() << "port =" << m_lineport->text().toUShort();

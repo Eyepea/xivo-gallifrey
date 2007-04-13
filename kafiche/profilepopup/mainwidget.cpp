@@ -339,6 +339,7 @@ void MainWidget::closeEvent(QCloseEvent *event)
 	event->ignore();
 }
 
+#if 0
 void MainWidget::changeEvent(QEvent *event)
 {
 	qDebug() << "MainWidget::changeEvent() eventtype=" << event->type();
@@ -346,7 +347,7 @@ void MainWidget::changeEvent(QEvent *event)
 	//	event->accept();
 		//event->ignore();
 }
-
+#endif
 
 /*! \brief Shows the about box
  *

@@ -33,7 +33,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  * \sa main
  */
 
-/*! \brief program entry point
+/*! \fn main
+ *
+ * \brief program entry point
  *
  * Set some static Qt parametters for using QSettings,
  * instanciate a MainWidget window and a Engine object.
