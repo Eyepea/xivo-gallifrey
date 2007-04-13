@@ -4,6 +4,7 @@
 #include <QPushButton>
 #include <QDialogButtonBox>
 #include <QSpinBox>
+#include <QCheckBox>
 #include "switchboardconf.h"
 #include "switchboardengine.h"
 #include "switchboardwindow.h"
@@ -14,6 +15,7 @@ SwitchBoardConfDialog::SwitchBoardConfDialog(SwitchBoardEngine * engine,
 : QDialog(parent), m_engine(engine), m_window(window)
 {
 	setModal( true );
+	setAttribute(Qt::WA_DeleteOnClose);
 	setWindowTitle( tr("Configuration") );
 
 	QVBoxLayout * vlayout = new QVBoxLayout( this );
@@ -35,6 +37,10 @@ SwitchBoardConfDialog::SwitchBoardConfDialog(SwitchBoardEngine * engine,
 	m_widthsb->setValue( m_window->width() );
 	layout->addWidget( lblwidth, 2, 0 );
 	layout->addWidget( m_widthsb, 2, 1 );
+
+	m_autoconnect = new QCheckBox(tr("Autoconnect at startup"), this);
+//	m_autoconnect->setCheckState(Qt::Checked / Qt::Unchecked);
+	layout->addWidget(m_autoconnect, 3, 0, 1, 0);
 
 	vlayout->addLayout( layout );
 

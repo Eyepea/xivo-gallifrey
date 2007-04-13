@@ -29,10 +29,16 @@ private:
 	//int m_y;
 };
 
+/*! \brief Widget displaying Peers
+ *
+ * This widget use a PeersLayout to display Peers in a grid.
+ */
 class SwitchBoardWindow : public QWidget
 {
 public:
+	//! Constructor
 	SwitchBoardWindow( QWidget * parent = 0);
+	//! Destructor
 	virtual ~SwitchBoardWindow();
 	void setEngine(SwitchBoardEngine *);
 	void updatePeer(const QString & ext,
@@ -42,22 +48,22 @@ public:
 			const QString & corrname);
 	void removePeer(const QString & ext);
 	void removePeers(void);
-	int width() const;
-	void setWidth(int);
+	int width() const;	//!< get width property
+	void setWidth(int);	//!< set width property
 	void saveSettings() const;
 	void savePositions() const;
 protected:
-	void mousePressEvent(QMouseEvent *);
+	void mousePressEvent(QMouseEvent *);	//!< Catch mouse press events
 	void dragEnterEvent(QDragEnterEvent *);
 	void dropEvent(QDropEvent *);
 private:
 	//QGridLayout * m_layout;
-	PeersLayout * m_layout;
-	QList<Peer> m_peerlist;
-	SwitchBoardEngine * m_engine;
-	int m_x;
-	int m_y;
-	int m_width;
+	PeersLayout * m_layout;	//!< Grid Layout for displaying peers
+	QList<Peer> m_peerlist;	//!< Peer list
+	SwitchBoardEngine * m_engine;	//!< engine to connect to peer widgets
+	//int m_x;
+	//int m_y;
+	int m_width;	//!< width property
 };
 
 #endif

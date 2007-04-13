@@ -7,7 +7,8 @@
 
 class QVBoxLayout;
 
-
+/*! \brief Object storing call parametters
+ */
 class Call// : public QObject
 {
 public:
@@ -17,13 +18,13 @@ public:
 	      const QString & direction, const QString & channelpeer,
 	      const QString & exten, const QString & phonen);
 	Call( const Call & call);
-	const QString & getPhone() {return m_phonen;};
-	const QString & getChannelMe() {return m_channelme;};
-	const QString & getAction() {return m_action;};
-	const int & getTime() {return m_time;};
-	const QString & getDirection() {return m_direction;};
-	const QString & getChannelPeer() {return m_channelpeer;};
-	const QString & getExten() {return m_exten;};
+	const QString & getPhone() const {return m_phonen;};
+	const QString & getChannelMe() const {return m_channelme;};
+	const QString & getAction() const {return m_action;};
+	const int & getTime() const {return m_time;};
+	const QString & getDirection() const {return m_direction;};
+	const QString & getChannelPeer() const {return m_channelpeer;};
+	const QString & getExten() const {return m_exten;};
 	int updateTime();
 	void updateCall(const QString & action,
 			const int & time,
@@ -40,13 +41,15 @@ private:
 	QString m_phonen;
 };
 
-
+/*! \brief Widget displaying the current open channels for a phone line.
+ */
 class CallStackWidget : public QWidget
 {
 	Q_OBJECT
 public:
-	CallStackWidget(QWidget * parent = 0);
+	CallStackWidget(QWidget * parent = 0);	//!< Constructor
 public slots:
+	//! Add a call to the list to be displayed
 	void addCall(const QString & channelme,
 		     const QString & action,
 		     const int & time,
@@ -62,15 +65,15 @@ protected:
 	void dragEnterEvent(QDragEnterEvent *event);
 	void dropEvent(QDropEvent *event);
 private:
-	void emptyList();
+	void emptyList();	//!< remove all calls from the list
 signals:
-	void hangUp(const QString & tomonitor);
-	void changeTitle(const QString &);
+	void hangUp(const QString &);	//!< hang up a channel
+	void changeTitle(const QString &);	//!< change Title
 private:
-	QVBoxLayout * m_layout;
-	QList<Call> m_calllist;
-	QList<CallWidget *> m_afflist;
-	QString m_monitoredPeer;
+	QVBoxLayout * m_layout;	//!< Vertical Layout used
+	QList<Call> m_calllist;	//!< list of Call Objects
+	QList<CallWidget *> m_afflist;	//!< List of CallWidget Widgets
+	QString m_monitoredPeer;	//!< Peer monitored
 };
 
 #endif

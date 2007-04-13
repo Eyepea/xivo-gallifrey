@@ -19,7 +19,6 @@ public:
 	void saveSettings();	//!< save settings
 private:
 	void connectSocket();
-	void finishedReceivingHints();
 	void loadSettings();	//!< load settings
 	void sendCommand();
 protected:
@@ -58,12 +57,12 @@ signals:
 	                const QString &, const QString &);
 	void removePeer(const QString &);
 private:
-	QTcpSocket * m_socket;
-	int m_timer;
-	quint16 m_port;
-	QString m_host;
+	QTcpSocket * m_socket;	//!< socket to connect to the server
+	int m_timer;	//!< timer id
+	quint16 m_port;	//!< port to connect to server
+	QString m_host;	//!< server host name
 	SwitchBoardWindow * m_window;
-	QString m_pendingcommand;
+	QString m_pendingcommand;	//!< command to be sent to the server.
 	QHash<QString, QString> m_callerids;
 };
 

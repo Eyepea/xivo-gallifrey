@@ -2,6 +2,10 @@
 #define __ASTCHANNEL_H__
 #include <QObject>
 
+/*! \brief Object to store Asterisk channel parameters
+ *
+ *
+ */
 class AstChannel : public QObject
 {
 public:

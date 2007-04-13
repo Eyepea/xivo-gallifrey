@@ -9,11 +9,15 @@ class QSplitter;
 class SwitchBoardEngine;
 class SwitchBoardWindow;
 
+/*! \brief Main window splitted to display peers and calls
+ */
 class MainWindow : public QMainWindow
 {
 	Q_OBJECT
 public:
+	//! Constructor
 	MainWindow(SwitchBoardEngine *);
+	//! Destructor
 	virtual ~MainWindow();
 private slots:
 	void showConfDialog();
@@ -21,11 +25,11 @@ private slots:
 	void engineStarted();
 	void about();
 private:
-	QSplitter * m_splitter;
-	SwitchBoardEngine * m_engine;
-	SwitchBoardWindow * m_widget;
-	QAction * m_startact;
-	QAction * m_stopact;
+	QSplitter * m_splitter;	//!< Splitter to separate right/left panels
+	SwitchBoardEngine * m_engine;	//!< Engine
+	SwitchBoardWindow * m_widget;	//!< Widget to display peers
+	QAction * m_startact;	//!< "Start" Action
+	QAction * m_stopact;	//!< "Stop" Action
 };
 
 #endif

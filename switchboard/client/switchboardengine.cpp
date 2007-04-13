@@ -6,6 +6,12 @@
 #include "switchboardwindow.h"
 #include "astchannel.h"
 
+/*! \brief Constructor.
+ *
+ * Construct the SwitchBoardEngine object and load settings.
+ * The TcpSocket Object used to communicate with the server
+ * is created and connected to the right slots/signals
+ */
 SwitchBoardEngine::SwitchBoardEngine(QObject * parent)
 : QObject(parent)
 {
@@ -57,40 +63,61 @@ void SwitchBoardEngine::saveSettings()
 	settings.setValue("engine/serverport", m_port);
 }
 
+/*
+ * set the window to display peers
+ * TODO : use signals/slots to communicate
+ */
 void SwitchBoardEngine::setWindow(SwitchBoardWindow * window)
 {
 	m_window = window;
 }
 
+/* \brief set server address
+ *
+ * Set server host name and server port
+ */
 void SwitchBoardEngine::setAddress(const QString & host, quint16 port)
 {
 	m_host = host;
 	m_port = port;
-	//connectSocket();
 }
 
+/*! \brief Start the connection to the server
+ */
 void SwitchBoardEngine::start()
 {
 	connectSocket();
 }
 
+/*! \brief close the connection to the server
+ */
 void SwitchBoardEngine::stop()
 {
 	m_socket->disconnectFromHost();
 }
 
+/*! \brief initiate connection to the server
+ */
 void SwitchBoardEngine::connectSocket()
 {
 	m_socket->connectToHost(m_host, m_port);
 }
 
+/*! \brief send a command to the server 
+ * The m_pendingcommand is sent on the socket.
+ *
+ * \sa m_pendingcommand
+ */
 void SwitchBoardEngine::sendCommand()
 {
 	m_socket->write((m_pendingcommand + /*"\r\n"*/"\n").toAscii());
-	qDebug() << m_pendingcommand;
+	//qDebug() << m_pendingcommand;
 }
 
 /* Slots */
+
+/*! \brief called when the socket is first connected
+ */
 void SwitchBoardEngine::socketConnected()
 {
 	qDebug() << "socketConnected()";
@@ -99,12 +126,13 @@ void SwitchBoardEngine::socketConnected()
 	sendCommand();
 }
 
+/*! \brief called when the socket is disconnected from the server
+ */
 void SwitchBoardEngine::socketDisconnected()
 {
 	qDebug() << "socketDisconnected()";
 	stopped();
 	emitTextMessage("Connection lost with Presence Server");
-	//	finishedReceivingHints();
 	if(m_window) m_window->removePeers();
 	//connectSocket();
 }
@@ -139,10 +167,18 @@ void SwitchBoardEngine::socketStateChanged(QAbstractSocket::SocketState socketSt
 {
 	qDebug() << "socketStateChanged(" << socketState << ")";
 	if(socketState == QAbstractSocket::ConnectedState) {
-		if(m_timer != -1) killTimer(m_timer);
+		if(m_timer != -1)
+		{
+			killTimer(m_timer);
+			m_timer = -1;
+		}
 	}
 }
 
+/*! \brief update Peers 
+ *
+ * update peers and calls
+ */
 void SwitchBoardEngine::updatePeers(const QStringList & liststatus)
 {
 	int nchans = liststatus[6].toInt();
@@ -170,6 +206,8 @@ void SwitchBoardEngine::updatePeers(const QStringList & liststatus)
 	m_window->updatePeer(pname, m_callerids[pname], pstatus, pavail, pinfos);
 }
 
+/*! \brief update a caller id 
+ */
 void SwitchBoardEngine::updateCallerids(const QStringList & liststatus)
 {
 	QString pname = liststatus[1] + "/" + liststatus[2] + "/" + liststatus[3];
@@ -177,6 +215,10 @@ void SwitchBoardEngine::updateCallerids(const QStringList & liststatus)
 	m_callerids[pname] = pcid;
 }
 
+/*! \brief called when data are ready to be read on the socket.
+ *
+ * Read and process the data from the server.
+ */
 void SwitchBoardEngine::socketReadyRead()
 {
 	//	qDebug() << "socketReadyRead()";
@@ -240,11 +282,6 @@ void SwitchBoardEngine::socketReadyRead()
 	}
 }
 
-void SwitchBoardEngine::finishedReceivingHints()
-{
-	qDebug() << "finishedReceivingHints()";
-}
-
 void SwitchBoardEngine::timerEvent(QTimerEvent * event)
 {
 	if (updateTime() > 0)
@@ -256,32 +293,40 @@ void SwitchBoardEngine::timerEvent(QTimerEvent * event)
 	//	socketConnected();
 }
 
+/*! \brief send an originate command to the server
+ */
 void SwitchBoardEngine::originateCall(const QString & src, const QString & dst)
 {
 	m_pendingcommand = "originate " + src + " " + dst;
 	sendCommand();
 }
 
+/*! \brief send a transfer call command to the server
+ */
 void SwitchBoardEngine::transferCall(const QString & src, const QString & dst)
 {
 	m_pendingcommand = "transfer " + src + " " + dst;
 	sendCommand();
 }
 
+/*! \brief hang up a channel
+ *
+ * send a hang up command to the server
+ */
 void SwitchBoardEngine::hangUp(const QString & channel)
 {
 	qDebug() << "SwitchBoardEngine::hangUp() " << channel;
 	m_pendingcommand = "hangup " + channel;
 	sendCommand();
-// 	if(m_socket->state() == QAbstractSocket::UnconnectedState)
-// 		connectSocket();
 }
 
+/*! \brief get server host */
 const QString & SwitchBoardEngine::host() const
 {
 	return m_host;
 }
 
+/*! \brief get server port */
 quint16 SwitchBoardEngine::port() const
 {
 	return m_port;

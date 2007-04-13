@@ -77,8 +77,8 @@ SwitchBoardWindow::SwitchBoardWindow(QWidget * parent)
 {
 	//m_layout = new QGridLayout(this);
 	m_layout = new PeersLayout(this);
-	m_x = 0;
-	m_y = 0;
+	//m_x = 0;
+	//m_y = 0;
 	QSettings settings;
 	m_width = settings.value("display/width", 5).toInt();
 	//m_layout->setRowStretch(99, 1);
@@ -86,28 +86,46 @@ SwitchBoardWindow::SwitchBoardWindow(QWidget * parent)
 	setAcceptDrops(true);
 }
 
+/*!
+ * Save the positions in the grid of the peer widgets.
+ */
 SwitchBoardWindow::~SwitchBoardWindow()
 {
 	qDebug() << "SwitchBoardWindow::~SwitchBoardWindow()";
 	savePositions();
 }
 
+/*! \brief Save settings
+ */
 void SwitchBoardWindow::saveSettings() const
 {
 	QSettings settings;
 	settings.setValue("display/width", m_width);
 }
 
+/*! \brief setter for m_engine
+ *
+ * set SwitchBoardEngine object to be used to connect to
+ * peer object slot/signals.
+ */
 void SwitchBoardWindow::setEngine(SwitchBoardEngine * engine)
 {
 	m_engine = engine;
 }
 
+/*! \brief update or add a peer
+ *
+ * The peer with the ext extension is updated or added
+ * to the list if it is not present.
+ * The placement of the PeerWidget is restored from the settings.
+ *
+ * \sa removePeer
+ */
 void SwitchBoardWindow::updatePeer(const QString & ext,
                                    const QString & name,
                                    const QString & status,
-				   const QString & avail,
-				   const QString & corrname)
+                                   const QString & avail,
+                                   const QString & corrname)
 {
 	int i;
 	// first search in the peerlist
@@ -136,6 +154,14 @@ void SwitchBoardWindow::updatePeer(const QString & ext,
 	m_peerlist << peer;
 }
 
+/*! \brief remove a Peer
+ *
+ * Find the peer with extension ext and remove it from the list
+ * and the widget.
+ *
+ * \sa updatePeer
+ * \sa removePeers
+ */
 void SwitchBoardWindow::removePeer(const QString & ext)
 {
 	int i;
@@ -151,6 +177,12 @@ void SwitchBoardWindow::removePeer(const QString & ext)
 	}
 }
 
+/*! \brief remove all peers
+ *
+ * remove all peers and widget.
+ *
+ * \sa removePeer
+ */
 void SwitchBoardWindow::removePeers(void)
 {
 	int i;
@@ -162,9 +194,6 @@ void SwitchBoardWindow::removePeers(void)
 		peerwidget->deleteLater();
 	}
 	m_peerlist.clear();
-	m_x = 0;
-	m_y = 0;
-	return;
 }
 
 int SwitchBoardWindow::width() const
@@ -184,6 +213,11 @@ void SwitchBoardWindow::mousePressEvent(QMouseEvent * event)
 	qDebug() << "   " << event->globalX() << event->globalY() << event->globalPos();
 }
 
+/*!
+ * This method accept or reject the drag event.
+ *
+ * \sa dropEvent()
+ */
 void SwitchBoardWindow::dragEnterEvent(QDragEnterEvent * event)
 {
 	qDebug() << "SwitchBoardWindow::dragEnterEvent" << event;
@@ -191,6 +225,13 @@ void SwitchBoardWindow::dragEnterEvent(QDragEnterEvent * event)
 		event->acceptProposedAction();
 }
 
+/*! \brief Receives drop events
+ * 
+ * This method recieve drop events. It is currently used to 
+ * move PeerWidgets arount :)
+ *
+ * \sa dragEnterEvent()
+ */
 void SwitchBoardWindow::dropEvent(QDropEvent * event)
 {
 	int i;
@@ -212,6 +253,10 @@ void SwitchBoardWindow::dropEvent(QDropEvent * event)
 	event->acceptProposedAction();
 }
 
+/*! \brief Save the positions of Peer Widgets
+ *
+ * Save the positions of all Peer Widgets to the settings.
+ */
 void SwitchBoardWindow::savePositions() const
 {
 	int i;

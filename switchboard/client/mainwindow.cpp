@@ -15,16 +15,16 @@
 #include "switchboardconf.h"
 #include "callstackwidget.h"
 
-class RightPanel : public QWidget
+class LeftPanel : public QWidget
 {
 public:
-	RightPanel(QWidget *, QWidget * parent = 0);
+	LeftPanel(QWidget *, QWidget * parent = 0);
 	QLabel * titleLabel();
 private:
 	QLabel * m_titleLabel;
 };
 
-RightPanel::RightPanel(QWidget * bottomWidget,QWidget * parent)
+LeftPanel::LeftPanel(QWidget * bottomWidget,QWidget * parent)
 : QWidget(parent)
 {
 	QVBoxLayout * layout = new QVBoxLayout(this);
@@ -34,11 +34,16 @@ RightPanel::RightPanel(QWidget * bottomWidget,QWidget * parent)
 	layout->addWidget(bottomWidget, 1);
 }
 
-QLabel * RightPanel::titleLabel()
+QLabel * LeftPanel::titleLabel()
 {
 	return m_titleLabel;
 }
 
+/*!
+ * Construct the Widget with all subwidgets : a left panel for
+ * displaying calls and a right panel for peers.
+ * The geometry is restored from settings.
+ */
 MainWindow::MainWindow(SwitchBoardEngine * engine)
 : m_engine(engine)
 {
@@ -48,13 +53,12 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 	setWindowTitle("Xivo Switchboard");
 
 	m_splitter = new QSplitter(this);
-	//QScrollArea * areaCalls = new QScrollArea(m_splitter);
 	QScrollArea * areaCalls = new QScrollArea(this);
-	RightPanel * rightPanel = new RightPanel(areaCalls, m_splitter);
+	LeftPanel * leftPanel = new LeftPanel(areaCalls, m_splitter);
 
 	CallStackWidget * calls = new CallStackWidget(areaCalls);
 	connect( calls, SIGNAL(changeTitle(const QString &)),
-	         rightPanel->titleLabel(), SLOT(setText(const QString &)) );
+	         leftPanel->titleLabel(), SLOT(setText(const QString &)) );
 	connect( m_engine, SIGNAL(updateCall(const QString &, const QString &, const int &, const QString &,
 					     const QString &, const QString &, const QString &)),
 		 calls, SLOT(addCall(const QString &, const QString &, const int &, const QString &,
@@ -118,6 +122,10 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 	helpmenu->addAction(tr("About &Qt"), qApp, SLOT(aboutQt()));
 }
 
+/*! \brief Destructor
+ *
+ * The Geometry settings are saved for use by the new instance
+ */
 MainWindow::~MainWindow()
 {
 	QSettings settings;
@@ -125,24 +133,40 @@ MainWindow::~MainWindow()
 	settings.setValue("display/mainwingeometry", saveGeometry());
 }
 
+/*! \brief show the Configuration Dialog
+ *
+ * create and execute a new SwitchBoardConfDialog
+ */
 void MainWindow::showConfDialog()
 {
 	SwitchBoardConfDialog * conf = new SwitchBoardConfDialog(m_engine, m_widget, this);
 	qDebug() << "<<  " << conf->exec();
 }
 
+/*!
+ * enable the "Stop" action and disable "Start" Action.
+ * \sa engineStopped()
+ */
 void MainWindow::engineStarted()
 {
 	m_stopact->setEnabled(true);
 	m_startact->setDisabled(true);
 }
 
+/*!
+ * disable the "Stop" action and enable "Start" Action.
+ * \sa engineStarted()
+ */
 void MainWindow::engineStopped()
 {
 	m_stopact->setDisabled(true);
 	m_startact->setEnabled(true);
 }
 
+/*! \brief Display the about box
+ *
+ * use QMessageBox::about() to display the application about box
+ */
 void MainWindow::about()
 {
 	QString applicationVersion("0.1");

@@ -1,24 +1,32 @@
 #ifndef __PEERSLAYOUT_H__
 #define __PEERSLAYOUT_H__
 #include <QLayout>
-/* Layout to organize the peers on the screen
- * They should be movable.
- * The layout should be loadable/savable in the configuration (with QSettings)
- */
 
+/*! \brief Grid layout to organize the peers
+ *
+ * Layout to organize the peers on the screen
+ * The peers are movable.
+ */
 class PeersLayout : public QLayout
 {
 	Q_OBJECT
 public:
+	//! constructor
 	PeersLayout(QWidget * parent);
+	//! ?
 	PeersLayout();
+	//! set geometry
 	void setGeometry( const QRect & );
+	//! return size Hint (prefered size)
 	QSize sizeHint() const;
 	QSize minimumSize() const;
 	QSize maximumSize() const;
 	void addWidget(QWidget *, QPoint);
+	//! add the Item at a specific emplacement
 	void addItem(QLayoutItem *, QPoint);
+	//! default addItem implementation
 	void addItem(QLayoutItem *);
+	//! return the number of items
 	int count() const;
 	QLayoutItem* itemAt(int) const;
 	QLayoutItem* takeAt(int);
