@@ -81,6 +81,7 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 	QSettings settings;
 	m_splitter->restoreState(settings.value("display/splitterSizes").toByteArray());
 
+	restoreGeometry(settings.value("display/mainwingeometry").toByteArray());
 	//statusBar()->showMessage("test");
 	connect(m_engine, SIGNAL(emitTextMessage(const QString &)),
 	        statusBar(), SLOT(showMessage(const QString &)));
@@ -117,11 +118,11 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 	helpmenu->addAction(tr("About &Qt"), qApp, SLOT(aboutQt()));
 }
 
-void MainWindow::closeEvent(QCloseEvent * event)
+MainWindow::~MainWindow()
 {
-	qDebug() << "MainWindow::closeEvent()" << event << event->type();
 	QSettings settings;
 	settings.setValue("display/splitterSizes", m_splitter->saveState());
+	settings.setValue("display/mainwingeometry", saveGeometry());
 }
 
 void MainWindow::showConfDialog()

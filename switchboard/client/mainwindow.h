@@ -14,8 +14,7 @@ class MainWindow : public QMainWindow
 	Q_OBJECT
 public:
 	MainWindow(SwitchBoardEngine *);
-protected:
-	void closeEvent(QCloseEvent *);
+	virtual ~MainWindow();
 private slots:
 	void showConfDialog();
 	void engineStopped();
