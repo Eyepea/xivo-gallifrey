@@ -49,7 +49,7 @@
 	</tr>
 <?php
 	else:
-		for($i = $pager['beg']; $i < $pager['end'] && $i < $pager['total'];$i++):
+		for($i = $pager['beg'],$j = 0;$i < $pager['end'] && $i < $pager['total'];$i++,$j++):
 
 			$ref = &$list[$i];
 
@@ -67,7 +67,7 @@
 				$fullname = trim($ref['ufeatures']['firstname'].' '.$ref['ufeatures']['lastname']);
 			endif;
 
-			$mod = $i % 2 === 0 ? 1 : 2;
+			$mod = $j % 2 === 0 ? 1 : 2;
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=$mod?>on2">
 		<td class="td-left"><?=$form->checkbox(array('name' => 'users['.$ref['ufeatures']['protocol'].'][]','value' => $ref['protocol']['id'],'label' => false,'id' => 'it-users-'.$i,'checked' => false,'field' => false));?></td>
@@ -77,7 +77,7 @@
 		<td><?=(xivo_empty($ref['ufeatures']['number']) === false ? $ref['ufeatures']['number'] : '-')?></td>
 		<td><?=$ref['ufeatures']['provisioningid']?></td>
 		<td class="td-right" colspan="3">
-		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/pbx_settings/users',array('act' => 'edit','id' => $ref['ufeatures']['id'],'page' => $pager['page']),null,$this->bbf('opt_modify'));?>
+		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/pbx_settings/users',array('act' => 'edit','id' => $ref['ufeatures']['id']),null,$this->bbf('opt_modify'));?>
 		<?=$url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'service/ipbx/pbx_settings/users',array('act' => 'delete','id' => $ref['ufeatures']['id'],'page' => $pager['page'],$param),'onclick="return(confirm(\''.xivo_stript($this->bbf('opt_delete_confirm')).'\') ? true : false);"',$this->bbf('opt_delete'));?>
 		</td>
 	</tr>

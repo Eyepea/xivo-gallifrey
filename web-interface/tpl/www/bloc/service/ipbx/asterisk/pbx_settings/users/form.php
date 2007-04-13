@@ -9,6 +9,8 @@
 	$moh_list = $this->vars('moh_list');
 	$autoprov_list = $this->vars('autoprov_list');
 
+	$act = $this->vars('act');
+
 	$ringgroup = xivo_bool($info['ufeatures']['ringgroup']);
 
 	$vm_active = $info['voicemail']['commented'];
@@ -31,6 +33,12 @@
 		$host_static = false;
 	else:
 		$host_static = true;
+	endif;
+
+	if(empty($info['autoprov']) === true):
+		$vendormodel = '';
+	else:
+		$vendormodel = $info['autoprov']['vendor'].'.'.$info['autoprov']['model'];
 	endif;
 ?>
 
@@ -100,7 +108,7 @@
 
 <div id="sb-part-codec" class="b-nodisplay">
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_codec-custom'),'name' => 'codec-active','labelid' => 'codec-active','checked' => $codec_active),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';" onclick="xivo_chg_attrib(\'fm_codec\',\'it-\'+xivo_protocol+\'-protocol-disallow\',(this.checked == true ? 1 : 2))"');?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_codec-custom'),'name' => 'codec-active','labelid' => 'codec-active','checked' => $codec_active),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';" onclick="xivo_chg_attrib(\'fm_codec\',\'it-\'+xivo_protocol+\'-protocol-disallow\',(this.checked == true ? 0 : 1))"');?>
 
 <?=$form->slt(array('desc' => $this->bbf('fm_protocol_codec-disallow'),'name' => 'protocol[disallow]','labelid' => 'sip-protocol-disallow','key' => false),$element['protocol']['sip']['disallow']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
@@ -140,7 +148,7 @@
 
 <div id="sb-part-voicemail" class="b-nodisplay">
 
-	<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail-active'),'name' => 'voicemail-active','labelid' => 'voicemail-active','checked' => $vm_active),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';" onclick="xivo_chg_attrib(\'fm_voicemail\',\'it-voicemail-fullname\',(this.checked == true ? 1 : 2))"');?>
+	<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail-active'),'name' => 'voicemail-active','labelid' => 'voicemail-active','checked' => $vm_active),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';" onclick="xivo_chg_attrib(\'fm_voicemail\',\'it-voicemail-fullname\',(this.checked == true ? 0 : 1))"');?>
 
 	<?=$form->text(array('desc' => $this->bbf('fm_voicemail_fullname'),'name' => 'voicemail[fullname]','labelid' => 'voicemail-fullname','value' => $info['voicemail']['fullname'],'size' => 15),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
@@ -156,9 +164,23 @@
 
 <div id="sb-part-autoprov" class="b-nodisplay">
 
-	<?=$form->slt(array('desc' => $this->bbf('fm_autoprov_vendormodel'),'name' => 'autoprov[vendormodel]','labelid' => 'autoprov-vendormodel','optgroup' => array('key' => 'name'),'key' => 'label','key_val' => 'path'),$autoprov_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?php
+	if($act === 'edit'):
+
+	echo $form->slt(array('desc' => $this->bbf('fm_autoprov_modact'),'name' => 'autoprov[modact]','labelid' => 'autoprov-modact','bbf' => 'fm_autoprov_modact-','key' => false,'empty' => true),$element['autoprov']['modact']['value'],'onchange="xivo_chg_attrib(\'fm_autoprov-\'+xivo_protocol,\'it-autoprov-modact\',(this.value != \'\' ? 0 : 1));" onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');
+
+	endif;
+
+	if(is_array($info['autoprov']) === false):
+?>
+
+	<?=$form->slt(array('desc' => $this->bbf('fm_autoprov_vendormodel'),'name' => 'autoprov[vendormodel]','labelid' => 'autoprov-vendormodel','optgroup' => array('key' => 'name'),'empty' => true,'key' => 'label','key_val' => 'path','value' => $vendormodel),$autoprov_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 	<?=$form->text(array('desc' => $this->bbf('fm_autoprov_macaddr'),'name' => 'autoprov[macaddr]','labelid' => 'autoprov-macaddr','value' => $info['autoprov']['macaddr'],'size' => 15),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
+<?php
+	endif;
+?>
 
 </div>
 
@@ -168,11 +190,11 @@
 
 	<?=$form->slt(array('desc' => $this->bbf('fm_userfeatures_musiconhold'),'name' => 'ufeatures[musiconhold]','labelid' => 'ufeatures-musiconhold','key' => 'category','empty' => true,'default' => $element['ufeatures']['musiconhold']['default'],'value' => $info['ufeatures']['musiconhold']),$moh_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-	<?=$form->slt(array('desc' => $this->bbf('fm_protocol_host'),'name' => 'protocol[host-dynamic]','labelid' => 'sip-protocol-host-dynamic','bbf' => 'fm_protocol_host-','key' => false,'value' => ($host_static === true ? 'static' : 'dynamic')),$element['protocol']['sip']['host-dynamic']['value'],'onchange="xivo_chg_attrib(\'fm_host\',\'fd-sip-protocol-host-static\',(this.value == \'dynamic\' ? 1 : 2))" onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+	<?=$form->slt(array('desc' => $this->bbf('fm_protocol_host'),'name' => 'protocol[host-dynamic]','labelid' => 'sip-protocol-host-dynamic','bbf' => 'fm_protocol_host-','key' => false,'value' => ($host_static === true ? 'static' : 'dynamic')),$element['protocol']['sip']['host-dynamic']['value'],'onchange="xivo_chg_attrib(\'fm_host\',\'fd-sip-protocol-host-static\',(this.value == \'dynamic\' ? 0 : 1))" onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 	<?=$form->text(array('desc' => '&nbsp;','name' => 'protocol[host-static]','labelid' => 'sip-protocol-host-static','size' => 15,'value' => ($host_static === true ? $host : '')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-	<?=$form->slt(array('desc' => $this->bbf('fm_protocol_host'),'name' => 'protocol[host-dynamic]','labelid' => 'iax-protocol-host-dynamic','bbf' => 'fm_protocol_host-','key' => false,'value' => ($host_static === true ? 'static' : 'dynamic')),$element['protocol']['iax']['host-dynamic']['value'],'onchange="xivo_chg_attrib(\'fm_host\',\'fd-iax-protocol-host-static\',(this.value == \'dynamic\' ? 1 : 2))" onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+	<?=$form->slt(array('desc' => $this->bbf('fm_protocol_host'),'name' => 'protocol[host-dynamic]','labelid' => 'iax-protocol-host-dynamic','bbf' => 'fm_protocol_host-','key' => false,'value' => ($host_static === true ? 'static' : 'dynamic')),$element['protocol']['iax']['host-dynamic']['value'],'onchange="xivo_chg_attrib(\'fm_host\',\'fd-iax-protocol-host-static\',(this.value == \'dynamic\' ? 0 : 1))" onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 	<?=$form->text(array('desc' => '&nbsp;','name' => 'protocol[host-static]','labelid' => 'iax-protocol-host-static','size' => 15,'value' => ($host_static === true ? $host : '')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 

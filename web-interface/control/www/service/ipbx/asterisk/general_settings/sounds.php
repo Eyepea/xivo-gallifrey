@@ -4,6 +4,9 @@ $act = isset($_QR['act']) === true ? $_QR['act'] : '';
 $dir = isset($_QR['dir']) === true ? $_QR['dir'] : '';
 $page = isset($_QR['page']) === true ? xivo_uint($_QR['page'],1) : 1;
 
+$param = array();
+$param['act'] = 'list';
+
 $sounds = &$ipbx->get_module('sounds');
 
 if(($list_dirs = $sounds->get_list_dirs()) !== false)
@@ -17,16 +20,20 @@ $_HTML->assign('list_dirs',$list_dirs);
 
 switch($act)
 {
-	case 'add':
 	case 'adddir':
-	case 'edit':
 	case 'editdir':
-	case 'delete':
 	case 'deletedir':
-	case 'list':
 	case 'listdir':
+		$param['act'] = 'listdir';
+		$action = $act;
+		break;
+	case 'add':
+	case 'edit':
+	case 'delete':
+	case 'list':
 	case 'download':
 		$action = $act;
+		$param['dir'] = $dir;
 		break;
 	default:
 		xivo_go($_HTML->url('service/ipbx'));

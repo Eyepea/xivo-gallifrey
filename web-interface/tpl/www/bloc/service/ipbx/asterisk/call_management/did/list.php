@@ -37,7 +37,7 @@
 	</tr>
 <?php
 	else:
-		for($i = $pager['beg']; $i < $pager['end'] && $i < $pager['total'];$i++):
+		for($i = $pager['beg'],$j = 0;$i < $pager['end'] && $i < $pager['total'];$i++,$j++):
 
 			$ref = &$list[$i];
 
@@ -64,7 +64,7 @@
 				$number = $ref['tyfeatures']['number'];
 			endif;
 
-			$mod = $i % 2 === 0 ? 1 : 2;
+			$mod = $j % 2 === 0 ? 1 : 2;
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=$mod?>on2">
 		<td class="td-left"><?=$form->checkbox(array('name' => 'dids[]','value' => $ref['dfeatures']['id'],'label' => false,'id' => 'it-dids-'.$i,'checked' => false,'field' => false));?></td>
@@ -73,7 +73,7 @@
 		<td><?=$fullname?></td>
 		<td><?=$number?></td>
 		<td class="td-right" colspan="3">
-		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/call_management/did',array('act' => 'edit','id' => $ref['dfeatures']['id'],'page' => $pager['page']),null,$this->bbf('opt_modify'));?>
+		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/call_management/did',array('act' => 'edit','id' => $ref['dfeatures']['id']),null,$this->bbf('opt_modify'));?>
 		<?=$url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'service/ipbx/call_management/did',array('act' => 'delete','id' => $ref['dfeatures']['id'],'page' => $pager['page']),'onclick="return(confirm(\''.xivo_stript($this->bbf('opt_delete_confirm')).'\') ? true : false);"',$this->bbf('opt_delete'));?>
 		</td>
 	</tr>

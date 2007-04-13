@@ -3,7 +3,7 @@
 if(isset($_QR['id']) === false
 || ($info['trunk'] = $trunkiax->get($_QR['id'],null)) === false
 || ($info['tfeatures'] = $tfeatures->get_by_trunk($info['trunk']['id'],'iax')) === false)
-	xivo_go($_HTML->url('service/ipbx/trunk_management/iax'),'act=list');
+	xivo_go($_HTML->url('service/ipbx/trunk_management/iax'),$param);
 
 $id = $info['trunk']['id'];
 $registerid = (int) $info['tfeatures']['registerid'];
@@ -19,7 +19,8 @@ if(is_array($gregister) === true && isset($gregister['var_val']) === true)
 {
 	$info['register']['commented'] = $gregister['commented'];
 
-	if(preg_match('#^(([a-z0-9_\.-]+)(@[a-z0-9\.-]+)?):([a-z0-9_\.-]+)(:[a-z0-9_\.-]+)?@([a-z0-9\.-]+)(:[0-9]+)?(/[0-9]+)?$#i',$gregister['var_val'],$register) === 1)
+	if(preg_match('#^(([a-z0-9_\.-]+)(@[a-z0-9\.-]+)?):([a-z0-9_\.-]+)'.
+		      '(:[a-z0-9_\.-]+)?@([a-z0-9\.-]+)(:[0-9]+)?(/[0-9]+)?$#i',$gregister['var_val'],$register) === 1)
 	{
 		$info['register']['username'] = $register[1];
 		$info['register']['password'] = $register[4];
@@ -115,7 +116,7 @@ do
 		break;
 	}
 
-	xivo_go($_HTML->url('service/ipbx/trunk_management/iax'),'act=list');
+	xivo_go($_HTML->url('service/ipbx/trunk_management/iax'),$param);
 
 } while(false);
 

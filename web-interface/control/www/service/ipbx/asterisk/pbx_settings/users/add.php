@@ -9,9 +9,6 @@ $ugroup = &$ipbx->get_module('usergroup');
 $voicemail = &$ipbx->get_module('uservoicemail');
 $autoprov = &$ipbx->get_module('autoprov');
 
-#xivo_print_r($ufeatures->get_autoprov_list());
-#die();
-
 if(($moh_list = $musiconhold->get_all_category(null,false)) !== false)
 	ksort($moh_list);
 
@@ -182,37 +179,34 @@ do
 		$result['voicemail']['commented'] = 0;
 	}
 
-	$add_autoprov = false;
+	$send_autoprov = false;
 
-	if(xivo_issa('autoprov',$_QR) === true && is_array($autoprov_list) === true)
+	if(xivo_issa('autoprov',$_QR) === true && is_array($autoprov_list) === true
+	&& isset($_QR['autoprov']['vendormodel'],$_QR['autoprov']['macaddr']) === true)
 	{
-		if(isset($_QR['autoprov']['vendormodel']) === true)
+		if(($pos = strpos($_QR['autoprov']['vendormodel'],'.')) === false)
+			$_QR['autoprov']['vendormodel'] = '';
+		else
 		{
-			if(($pos = strpos($_QR['autoprov']['vendormodel'],'.')) === false)
-				$_QR['autoprov']['vendormodel'] = '';
-			else
-			{
-				$vendor = substr($_QR['autoprov']['vendormodel'],0,$pos);
-				$model = substr($_QR['autoprov']['vendormodel'],$pos+1);
+			$vendor = substr($_QR['autoprov']['vendormodel'],0,$pos);
+			$model = substr($_QR['autoprov']['vendormodel'],$pos+1);
 
-				if(xivo_issa($vendor,$autoprov_list) === true
-				&& xivo_issa('model',$autoprov_list[$vendor]) === true
-				&& xivo_issa($model,$autoprov_list[$vendor]['model']) === true)
-				{
-					$_QR['autoprov']['vendor'] = $vendor;
-					$_QR['autoprov']['model'] = $model;
-				}
+			if(xivo_issa($vendor,$autoprov_list) === true
+			&& xivo_issa('model',$autoprov_list[$vendor]) === true
+			&& xivo_issa($model,$autoprov_list[$vendor]['model']) === true)
+			{
+				$_QR['autoprov']['vendor'] = $vendor;
+				$_QR['autoprov']['model'] = $model;
 			}
 		}
 
-		if(isset($_QR['autoprov']['macaddr']) === true
-		&& preg_match_all('/(0|([A-F0-9]{2}))[-: ]?/i',$_QR['autoprov']['macaddr'],$match) === 6)
+		if(preg_match_all('/0[-: ]{1}|([A-F0-9]{2})[-: ]?/i',$_QR['autoprov']['macaddr'],$match) >= 6)
 		{
 			$_QR['autoprov']['macaddr'] = '';
 
 			for($i = 0;$i < 6;$i++)
 			{
-				if($match[1][$i] === '0')
+				if($match[1][$i] === '')
 					$match[1][$i] = '00';
 
 				$_QR['autoprov']['macaddr'] .= ':'.strtoupper($match[1][$i]);
@@ -221,20 +215,14 @@ do
 			$_QR['autoprov']['macaddr'] = substr($_QR['autoprov']['macaddr'],1);
 		}
 
+		$_QR['autoprov']['modact'] = 'prov';
 		$_QR['autoprov']['proto'] = $result['ufeatures']['protocol'];
 		$_QR['autoprov']['iduserfeatures'] = 0;
 		
 		if(($result['autoprov'] = $autoprov->chk_values($_QR['autoprov'],true,true)) === false)
 			$result['autoprov'] = $autoprov->get_filter_result();
 		else
-			$add_autoprov = true;
-	}
-
-	if($add_autoprov === true)
-	{
-		$result['autoprov']['iduserfeatures'] = 11;
-		$autoprov->informative($result['autoprov']);
-		die();
+			$send_autoprov = true;
 	}
 
 	if($add === false || ($protocolid = $protocol->add($result['protocol'])) === false)
@@ -320,13 +308,13 @@ do
 	if($add_voicemail === true)
 		$voicemail->add($result['voicemail']);
 
-	if($add_autoprov === true)
+	if($send_autoprov === true)
 	{
 		$result['autoprov']['iduserfeatures'] = $ufeaturesid;
-		$autoprov->informative($result['autoprov']);
+		$autoprov->informative($result['autoprov'],$result['autoprov']['modact']);
 	}
 
-	xivo_go($_HTML->url('service/ipbx/pbx_settings/users'),'act=list');
+	xivo_go($_HTML->url('service/ipbx/pbx_settings/users'),$param);
 }
 while(false);
 
@@ -377,6 +365,7 @@ $element = array();
 $element['protocol'] = $ipbx->get_protocol_element();
 $element['ufeatures'] = $ufeatures->get_element();
 $element['voicemail'] = $voicemail->get_element();
+$element['autoprov'] = $autoprov->get_element();
 
 if(xivo_issa('allow',$element['protocol']['sip']) === true && xivo_issa('value',$element['protocol']['sip']['allow']) === true)
 {

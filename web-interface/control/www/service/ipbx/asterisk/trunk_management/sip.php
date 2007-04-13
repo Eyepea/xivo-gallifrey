@@ -5,6 +5,9 @@ $page = isset($_QR['page']) === true ? xivo_uint($_QR['page'],1) : 1;
 
 $element = $info = $result = array();
 
+$param = array();
+$param['act'] = 'list';
+
 $trunksip = &$ipbx->get_module('trunksip');
 $tfeatures = &$ipbx->get_module('trunkfeatures');
 

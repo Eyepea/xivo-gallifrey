@@ -19,14 +19,12 @@ class xivo_service_asterisk_autoprov_sqlite
 			$this->_param['table'] = (string) $param['table'];
 	}
 
-	function get($id)
+	function get($macaddr)
 	{
 		$r = false;
 
-		if(($id = xivo_uint($id)) === 0)
-			return($r);
-
-		$rs = $this->_dso->query('SELECT * FROM '.$this->_param['table'].' WHERE id = '.$id.' LIMIT 1');
+		$rs = $this->_dso->query('SELECT * FROM '.$this->_param['table'].
+		' WHERE macaddr = \''.$this->_dso->escape_string($macaddr).'\' LIMIT 1');
 
 		if($rs !== false && ($rw = $this->_dso->fetch_assoc($rs)) !== false)
 			$r = &$rw;
@@ -41,10 +39,10 @@ class xivo_service_asterisk_autoprov_sqlite
 		if(($where = $this->_dso->where($arr)) === false)
 			return($r);
 
-		$rs = $this->_dso->query('SELECT id FROM '.$this->_param['table'].' WHERE '.$where.' LIMIT 1');
+		$rs = $this->_dso->query('SELECT macaddr FROM '.$this->_param['table'].' WHERE '.$where.' LIMIT 1');
 
 		if($rs !== false && ($rw = $this->_dso->fetch_assoc($rs)) !== false)
-			$r = $rw['id'];
+			$r = $rw['macaddr'];
 
 		return($r);
 	}
@@ -53,13 +51,13 @@ class xivo_service_asterisk_autoprov_sqlite
 	{
 		$r = false;
 
-		$rs = $this->_dso->query('SELECT id FROM '.$this->_param['table']);
+		$rs = $this->_dso->query('SELECT macaddr FROM '.$this->_param['table']);
 
 		if($rs !== false)
 		{
 			$r = array();
 			while($rw = $this->_dso->fetch_assoc($rs))
-				$r[] = $rw['id'];
+				$r[] = $rw['macaddr'];
 		}
 
 		return($r);

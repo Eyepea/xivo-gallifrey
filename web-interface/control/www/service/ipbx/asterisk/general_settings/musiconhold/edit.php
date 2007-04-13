@@ -2,7 +2,7 @@
 
 if(isset($_QR['id']) === false
 || ($infos = $musiconhold->get_category($_QR['id'],null)) === false)
-	xivo_go($_HTML->url('service/ipbx/general_settings/musiconhold'),'act=list');
+	xivo_go($_HTML->url('service/ipbx/general_settings/musiconhold'),$param);
 
 $info = $infos['cat'];
 $id = $info['category'];
@@ -20,7 +20,7 @@ do
 	}
 
 	if($musiconhold->edit_category($id,$result) !== false)
-		xivo_go($_HTML->url('service/ipbx/general_settings/musiconhold'),'act=list');
+		xivo_go($_HTML->url('service/ipbx/general_settings/musiconhold'),$param);
 
 } while(false);
 

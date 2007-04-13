@@ -1,7 +1,9 @@
 <?php
 
+$param['page'] = $page;
+
 if(xivo_issa('peers',$_QR) === false)
-	xivo_go($_HTML->url('service/ipbx/trunk_management/sip'),'act=list&page='.$page);
+	xivo_go($_HTML->url('service/ipbx/trunk_management/sip'),$param);
 
 $arr = array_values($_QR['peers']);
 $nb = count($arr);
@@ -30,6 +32,6 @@ for($i = 0;$i < $arr['cnt'];$i++)
 	}
 }
 
-xivo_go($_HTML->url('service/ipbx/trunk_management/sip'),'act=list&page='.$page);
+xivo_go($_HTML->url('service/ipbx/trunk_management/sip'),$param);
 
 ?>

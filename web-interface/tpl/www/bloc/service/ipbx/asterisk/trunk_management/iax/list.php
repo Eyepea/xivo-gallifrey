@@ -37,7 +37,7 @@
 	</tr>
 <?php
 	else:
-		for($i = $pager['beg']; $i < $pager['end'] && $i < $pager['total'];$i++):
+		for($i = $pager['beg'],$j = 0;$i < $pager['end'] && $i < $pager['total'];$i++,$j++):
 
 			$ref = &$list[$i];
 
@@ -47,7 +47,7 @@
 				$icon = 'enable';
 			endif;
 
-			$mod = $i % 2 === 0 ? 1 : 2;
+			$mod = $j % 2 === 0 ? 1 : 2;
 
 			if($ref['type'] === 'user'):
 				$connectype = 'in';
@@ -66,7 +66,7 @@
 		<td><?=$this->bbf('connect_type_'.$connectype.'bound');?></td>
 		<td><?=($calllimit === 0 ? $this->bbf('call_unlimited') : $calllimit)?></td>
 		<td class="td-right" colspan="3">
-		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/trunk_management/iax',array('act' => 'edit','id' => $ref['id'],'page' => $pager['page']),null,$this->bbf('opt_modify'));?>
+		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/trunk_management/iax',array('act' => 'edit','id' => $ref['id']),null,$this->bbf('opt_modify'));?>
 		<?=$url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'service/ipbx/trunk_management/iax',array('act' => 'delete','id' => $ref['id'],'page' => $pager['page']),'onclick="return(confirm(\''.xivo_stript($this->bbf('opt_delete_confirm')).'\') ? true : false);"',$this->bbf('opt_delete'));?>
 		</td>
 	</tr>

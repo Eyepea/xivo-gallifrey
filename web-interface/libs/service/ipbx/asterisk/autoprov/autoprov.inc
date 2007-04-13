@@ -46,7 +46,7 @@ class xivo_service_asterisk_autoprov extends xivo_service_asterisk_abstract
 			return(false);
 
 		if(xivo_ak($type,$this->_sockprov) === true)
-			return(true);
+			return($this->_sockprov[$type]->open());
 
 		xivo::load_class('socket');
 		$this->_sockprov[$type] = new xivo_socket($this->_autoprov[$type]);
@@ -56,55 +56,76 @@ class xivo_service_asterisk_autoprov extends xivo_service_asterisk_abstract
 
 	function get_autoprov_list()
 	{
-		if($this->_load_sockprov('list') === false || $this->_sockprov['list']->is_open() !== true
-		|| ($write = $this->_mk_sockprov_header('list')) === false
+		$r = false;
+
+		if($this->_load_sockprov('list') === false
+		|| $this->_sockprov['list']->is_open() === false
+		|| ($write = $this->_mk_sockprov_http('list')) === false)
+			return($r);
+	
+		if(($write = $this->_mk_sockprov_http('list')) === false
 		|| $this->_sockprov['list']->write($write) === false
 		|| ($read = $this->_sockprov['list']->read_normal()) === false
 		|| ($recv = $this->_parse_sockprov_recv($read)) === false)
-			return(false);
+		{
+			$this->_sockprov['list']->close();
+			return($r);
+		}
 
 		if(isset($recv['status']) === false
 		|| ($nb = count($recv['data'])) === 0
 		|| preg_match('/^HTTP\/1\.(0|1) 200 /i',$recv['status']) !== 1)
-			return(false);
+		{
+			$this->_sockprov['list']->close();
+			return($r);
+		}
 
-		$data = array();
+		$r = array();
 
 		for($i = 0;$i < $nb;$i++)
 		{
 			$ref = &$recv['data'][$i];
 
 			if(preg_match('/^([0-9a-z\-_]+)="([0-9a-zA-Z\-_\.]+)"$/',$ref,$match) === 1
-			&& isset($data[$match[1]]) === false)
+			&& isset($r[$match[1]]) === false)
 			{
-				$data[$match[1]] = array();
-				$data[$match[1]]['name'] = $match[2];
-				$data[$match[1]]['model'] = array();
+				$r[$match[1]] = array();
+				$r[$match[1]]['name'] = $match[2];
+				$r[$match[1]]['model'] = array();
 			}
 			else if(preg_match('/^([0-9a-z\-_]+)\.([0-9a-z\-_]+)="([0-9a-zA-Z\-_\.]+)"$/',$ref,$match) === 1
-			&& isset($data[$match[1]]) === true)
+			&& isset($r[$match[1]]) === true)
 			{
-				$data[$match[1]]['model'][$match[2]] = array();
-				$data[$match[1]]['model'][$match[2]]['path'] = $match[1].'.'.$match[2];
-				$data[$match[1]]['model'][$match[2]]['meta'] = $match[2];
-				$data[$match[1]]['model'][$match[2]]['label'] = $match[3];
+				$r[$match[1]]['model'][$match[2]] = array();
+				$r[$match[1]]['model'][$match[2]]['path'] = $match[1].'.'.$match[2];
+				$r[$match[1]]['model'][$match[2]]['meta'] = $match[2];
+				$r[$match[1]]['model'][$match[2]]['label'] = $match[3];
 			}
 		}
 
-		if(empty($data) === true)
-			$data = false;
+		if(empty($r) === true)
+			$r = false;
 
-		return($data);
+		return($r);
 	}
 
-	function _mk_sockprov_header($type)
+	function _mk_sockprov_http($type,$data='')
 	{
+		$data = (string) $data;
+
 		if(xivo_ak($type,$this->_autoprov) === false)
 			return(false);
 
 		$r  = strtoupper($this->_autoprov[$type]['method']);
 		$r .= ' '.$this->_autoprov[$type]['url'].' HTTP/1.1'."\r\n";
-		$r .= 'Host: '.$this->_autoprov[$type]['address']."\r\n\r\n";
+		$r .= 'Host: '.$this->_autoprov[$type]['address']."\r\n";
+
+		if(($len = strlen($data)) !== 0)
+		{
+			$r .= 'Content-Length: '.$len."\r\n\r\n";
+			$r .= $data;
+		}
+		else $r .= "\r\n";
 
 		return($r);
 	}
@@ -142,28 +163,85 @@ class xivo_service_asterisk_autoprov extends xivo_service_asterisk_abstract
 		return($r);
 	}
 
-	function informative($arr)
+	function _send_sockprov_mode($mode,$arr,$modact='')
 	{
-		if(($aks = xivo_get_aks($arr)) === false)
-			return(false);
+		$r = false;
 
-		$data = 'mode=informative'."\n";
-		$data .= 'actions=no'."\n";
+		$mode = (string) $mode;
+		$modact = (string) $modact;
+
+		if(is_array($arr) === false)
+			return($r);
+
+		unset($arr['modact']);
+
+		if($modact === 'guest')
+			$arr['iduserfeatures'] = 0;
+
+		$arr['mode'] = $mode;
+
+		if(($aks = xivo_get_aks($arr)) === false)
+			return($r);
+
+		$data = '';
 
 		for($i = 0;$i < $aks['cnt'];$i++)
 		{
 			$key = &$aks['keys'][$i];
+			$val = &$arr[$key];
 
-			$data .= $key.'='.$arr[$key]."\n";
+			if(xivo_empty($val) === true)
+				continue;
+
+			$data .= $key.'='.$val."\r\n";
 		}
 
-		print $data;
-		die();
+		if($this->_load_sockprov('prov') === false
+		|| ($write = $this->_mk_sockprov_http('prov',$data)) === false
+		|| $this->_sockprov['prov']->is_open() === false)
+			return($r);
+
+		if($this->_sockprov['prov']->write($write) !== false)
+			$r = true;
+
+		$this->_sockprov['prov']->close();
+
+		return($r);
 	}
 
-	function get($id)
+	function notification($arr,$mod)
 	{
-		if(($id = xivo_uint($id)) === 0 || ($r = $this->_dso->get($id)) === false)
+		if(is_array($arr) === false)
+			return(false);
+
+		unset($arr['vendor'],$arr['model']);
+
+		$arr['actions'] = 'yes';
+
+		if(($mod !== 'guest' && $mod !== 'prov') === true
+		|| $this->_send_sockprov_mode('notification',$arr,$mod) === false)
+			return(false);
+
+		return(true);
+	}
+
+	function informative($arr,$mod)
+	{
+		if(is_array($arr) === false)
+			return(false);
+
+		$arr['actions'] = 'no';
+
+		if(($mod !== 'guest' && $mod !== 'prov') === true
+		|| $this->_send_sockprov_mode('informative',$arr,$mod) === false)
+			return(false);
+
+		return(true);
+	}
+
+	function get($macaddr)
+	{
+		if(($r = $this->_dso->get($macaddr)) === false)
 			return(false);
 
 		$this->_origin = $r;
@@ -178,7 +256,7 @@ class xivo_service_asterisk_autoprov extends xivo_service_asterisk_abstract
 
 		$arr = array();
 
-		$arr['idfeatures'] = $id;
+		$arr['iduserfeatures'] = $id;
 
 		return($this->get_where($arr));
 	}
@@ -201,8 +279,8 @@ class xivo_service_asterisk_autoprov extends xivo_service_asterisk_abstract
 		if(isset($arr['proto']) === true)
 			$where['proto'] = $arr['proto'];
 
-		if(isset($arr['idfeatures']) === true)
-			$where['idfeatures'] = $arr['idfeatures'];
+		if(isset($arr['iduserfeatures']) === true)
+			$where['iduserfeatures'] = $arr['iduserfeatures'];
 
 		if(($id = $this->_dso->get_where($where)) === false)
 			return(false);

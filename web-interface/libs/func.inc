@@ -274,6 +274,8 @@ function xivo_go($v='',$k='')
 		$qstring = &$query->qstring_raw();
 		$qry = &$query->qstring_raw_str();
 	}
+	else if(is_array($k) === true)
+		$qry = xivo_mk_query($k);
 	else if($k !== '' && $k !== false)
 		$qry = (string) $k;
 	else $qry = '';

@@ -70,7 +70,7 @@ do
 		break;
 	}
 
-	xivo_go($_HTML->url('service/ipbx/trunk_management/iax'),'act=list');
+	xivo_go($_HTML->url('service/ipbx/trunk_management/iax'),$param);
 
 } while(false);
 

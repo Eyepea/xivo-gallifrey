@@ -30,16 +30,16 @@
 	</tr>
 <?php
 	else:
-		for($i = $pager['beg']; $i < $pager['end'] && $i < $pager['total'];$i++):
+		for($i = $pager['beg'],$j = 0;$i < $pager['end'] && $i < $pager['total'];$i++,$j++):
 
 			$name = &$list[$i];
 
-			$mod = $i % 2 === 0 ? 1 : 2;
+			$mod = $j % 2 === 0 ? 1 : 2;
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=$mod?>on2">
 		<td class="td-left txt-left curpointer" colspan="2" onclick="location.href = xivo_eid('ah-files-<?=$i?>').href;"><?=$name?></td>
 		<td class="td-right" colspan="2">
-		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/system_management/configfiles',array('act' => 'edit','id' => $name,'page' => $pager['page']),'id="ah-files-'.$i.'"',$this->bbf('opt_modify'));?>
+		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/system_management/configfiles',array('act' => 'edit','id' => $name),'id="ah-files-'.$i.'"',$this->bbf('opt_modify'));?>
 		</td>
 	</tr>
 <?php

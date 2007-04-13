@@ -9,6 +9,8 @@ $localexten = $hintsexten = &$ipbx->get_module('extensions');
 
 $info = array();
 
+$param['page'] = $page;
+
 if(isset($_QR['id']) === false
 || ($info['ufeatures'] = $ufeatures->get($_QR['id'])) === false
 || ($protocol = &$ipbx->get_protocol_module($info['ufeatures']['protocol'])) === false

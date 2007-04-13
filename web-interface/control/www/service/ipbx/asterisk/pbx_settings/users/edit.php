@@ -9,7 +9,7 @@ $return = &$info;
 if(isset($_QR['id']) === false || ($info['ufeatures'] = $ufeatures->get($_QR['id'])) === false
 || ($protocol = &$ipbx->get_protocol_module($info['ufeatures']['protocol'])) === false
 || ($info['protocol'] = $protocol->get($info['ufeatures']['protocolid'])) === false)
-	xivo_go($_HTML->url('service/ipbx/pbx_settings/users'),'act=list');
+	xivo_go($_HTML->url('service/ipbx/pbx_settings/users'),$param);
 
 $gfeatures = &$ipbx->get_module('groupfeatures');
 $extensions = &$ipbx->get_module('extensions');
@@ -17,12 +17,17 @@ $extenumbers = &$ipbx->get_module('extenumbers');
 $musiconhold = &$ipbx->get_module('musiconhold');
 $ugroup = &$ipbx->get_module('usergroup');
 $voicemail = &$ipbx->get_module('uservoicemail');
+$autoprov = &$ipbx->get_module('autoprov');
 
 if(($moh_list = $musiconhold->get_all_category(null,false)) !== false)
 	ksort($moh_list);
 
-$info['voicemail'] = $voicemail->get_by_mailbox($info['protocol']['mailbox']);
+if(($autoprov_list = $autoprov->get_autoprov_list()) !== false)
+	ksort($autoprov_list);
+
 $info['usergroup'] = $ugroup->get_by_user($info['ufeatures']['id']);
+$info['voicemail'] = $voicemail->get_by_mailbox($info['protocol']['mailbox']);
+$info['autoprov'] = $autoprov->get_by_iduserfeatures($info['ufeatures']['id']);
 
 $allow = $info['protocol']['allow'];
 $groups = $info['protocol']['callgroup'];
@@ -51,7 +56,7 @@ do
 		$old_protocol = $protocol;
 
 		if(($protocol = &$ipbx->get_protocol_module($_QR['protocol']['protocol'])) === false)
-			xivo_go($_HTML->url('service/ipbx/pbx_settings/users'),'act=list');
+			xivo_go($_HTML->url('service/ipbx/pbx_settings/users'),$param);
 	}
 	else
 	{
@@ -339,6 +344,65 @@ do
 			$result['voicemail'] = $voicemail->get_filter_result();
 		else
 			$status['voicemail'] = 'add';
+	}
+
+	$send_autoprov = false;
+
+	if($info['autoprov'] !== false)
+	{
+		if(xivo_issa('autoprov',$_QR) === true && isset($_QR['autoprov']['modact']) === true)
+		{
+			$aprovinfo = $info['autoprov'];
+			$aprovinfo['modact'] = $_QR['autoprov']['modact'];
+			$aprovinfo['proto'] = $result['ufeatures']['protocol'];
+
+			if(($result['autoprov'] = $autoprov->chk_values($aprovinfo,true,true)) === false)
+				$result['autoprov'] = $autoprov->get_filter_result();
+			else
+				$send_autoprov = true;
+		}
+	}
+	else if(xivo_issa('autoprov',$_QR) === true && is_array($autoprov_list) === true
+	&& isset($_QR['autoprov']['vendormodel'],$_QR['autoprov']['macaddr']) === true)
+	{
+		if(($pos = strpos($_QR['autoprov']['vendormodel'],'.')) === false)
+			$_QR['autoprov']['vendormodel'] = '';
+		else
+		{
+			$vendor = substr($_QR['autoprov']['vendormodel'],0,$pos);
+			$model = substr($_QR['autoprov']['vendormodel'],$pos+1);
+
+			if(xivo_issa($vendor,$autoprov_list) === true
+			&& xivo_issa('model',$autoprov_list[$vendor]) === true
+			&& xivo_issa($model,$autoprov_list[$vendor]['model']) === true)
+			{
+				$_QR['autoprov']['vendor'] = $vendor;
+				$_QR['autoprov']['model'] = $model;
+			}
+		}
+
+		if(preg_match_all('/0[-: ]{1}|([A-F0-9]{2})[-: ]?/i',$_QR['autoprov']['macaddr'],$match) >= 6)
+		{
+			$_QR['autoprov']['macaddr'] = '';
+
+			for($i = 0;$i < 6;$i++)
+			{
+				if($match[1][$i] === '')
+					$match[1][$i] = '00';
+
+				$_QR['autoprov']['macaddr'] .= ':'.strtoupper($match[1][$i]);
+			}
+
+			$_QR['autoprov']['macaddr'] = substr($_QR['autoprov']['macaddr'],1);
+		}
+
+		$_QR['autoprov']['proto'] = $result['ufeatures']['protocol'];
+		$_QR['autoprov']['iduserfeatures'] = $info['ufeatures']['id'];
+		
+		if(($result['autoprov'] = $autoprov->chk_values($_QR['autoprov'],true,true)) === false)
+			$result['autoprov'] = $autoprov->get_filter_result();
+		else
+			$send_autoprov = true;
 	}
 
 	if($edit === false)
@@ -631,9 +695,17 @@ do
 		case 'disable':
 			$voicemail->disable($info['voicemail']['id'],true);
 			break;
-	}	
+	}
 
-	xivo_go($_HTML->url('service/ipbx/pbx_settings/users'),'act=list');
+	if($send_autoprov === true)
+	{
+		if($info['autoprov'] !== false)
+			$autoprov->notification($result['autoprov'],$result['autoprov']['modact']);
+		else
+			$autoprov->informative($result['autoprov'],$result['autoprov']['modact']);
+	}
+
+	xivo_go($_HTML->url('service/ipbx/pbx_settings/users'),$param);
 }
 while(false);
 
@@ -682,6 +754,7 @@ $element = array();
 $element['protocol'] = $ipbx->get_protocol_element();
 $element['ufeatures'] = $ufeatures->get_element();
 $element['voicemail'] = $voicemail->get_element();
+$element['autoprov'] = $autoprov->get_element();
 
 if(xivo_issa('allow',$element['protocol']['sip']) === true && xivo_issa('value',$element['protocol']['sip']['allow']) === true)
 {
@@ -711,6 +784,9 @@ if($info['usergroup'] === false)
 if($info['voicemail'] === false)
 	$return['voicemail'] = null;
 
+if($info['autoprov'] === false)
+	$return['autoprov'] = null;
+
 $return['protocol']['allow'] = $allow;
 
 $_HTML->assign('id',$info['ufeatures']['id']);
@@ -721,6 +797,7 @@ $_HTML->assign('group_list',$group_list);
 $_HTML->assign('protocol',$ipbx->get_protocol());
 $_HTML->assign('element',$element);
 $_HTML->assign('moh_list',$moh_list);
+$_HTML->assign('autoprov_list',$autoprov_list);
 
 $dhtml = &$_HTML->get_module('dhtml');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users.js');

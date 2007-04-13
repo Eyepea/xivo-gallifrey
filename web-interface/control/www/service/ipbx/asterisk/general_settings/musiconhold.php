@@ -6,6 +6,9 @@ $page = isset($_QR['page']) === true ? xivo_uint($_QR['page'],1) : 1;
 
 $element = $info = $result = array();
 
+$param = array();
+$param['act'] = 'list';
+
 $musiconhold = &$ipbx->get_module('musiconhold');
 
 if(($list_cats = $musiconhold->get_all_by_category()) !== false)
@@ -26,12 +29,16 @@ switch($act)
 	case 'delete':
 	case 'deletes':
 	case 'list':
+		$action = $act;
+		break;
 	case 'addfile':
 	case 'editfile':
 	case 'listfile':
 	case 'deletefile':
 	case 'download':
 		$action = $act;
+		$param['act'] = 'listfile';
+		$param['cat'] = $cat;
 		break;
 	case 'enables':
 	case 'disables':

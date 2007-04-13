@@ -1,10 +1,15 @@
 <?php
 
 $act = isset($_QR['act']) === true ? $_QR['act'] : '';
+$page = isset($_QR['page']) === true ? xivo_uint($_QR['page'],1) : 1;
+
 $gfeatures = &$ipbx->get_module('groupfeatures');
 $queue = &$ipbx->get_module('queue');
 $extensions = &$ipbx->get_module('extensions');
 $extenumbers = &$ipbx->get_module('extenumbers');
+
+$param = array();
+$param['act'] = 'list';
 
 $info = $result = array();
 
@@ -94,7 +99,7 @@ switch($act)
 				break;
 			}
 
-			xivo_go($_HTML->url('service/ipbx/pbx_settings/groups'),'act=list');
+			xivo_go($_HTML->url('service/ipbx/pbx_settings/groups'),$param);
 		}
 		while(false);
 
@@ -113,7 +118,7 @@ switch($act)
 		if(isset($_QR['id']) === false
 		|| ($info['gfeatures'] = $gfeatures->get($_QR['id'],false)) === false
 		|| ($info['queue'] = $queue->get($info['gfeatures']['name'],false)) === false)
-			xivo_go($_HTML->url('service/ipbx/pbx_settings/groups'),'act=list');
+			xivo_go($_HTML->url('service/ipbx/pbx_settings/groups'),$param);
 
 		$status = array();
 		$status['local_exten'] = $status['extenumbers'] = false;
@@ -321,7 +326,7 @@ switch($act)
 			}
 
 			if($info['queue']['name'] === $result['queue']['name'])
-				xivo_go($_HTML->url('service/ipbx/pbx_settings/groups'),'act=list');
+				xivo_go($_HTML->url('service/ipbx/pbx_settings/groups'),$param);
 
 			$qmember = &$ipbx->get_module('queuemember');
 
@@ -370,7 +375,7 @@ switch($act)
 				}
 			}
 
-			xivo_go($_HTML->url('service/ipbx/pbx_settings/groups'),'act=list');
+			xivo_go($_HTML->url('service/ipbx/pbx_settings/groups'),$param);
 		}
 		while(false);
 
@@ -383,13 +388,14 @@ switch($act)
 		$_HTML->assign('element',$element);
 		break;
 	case 'delete':
+		$param['page'] = $page;
 		$qmember = &$ipbx->get_module('queuemember');
 
 		if(isset($_QR['id']) === false
 		|| ($info['gfeatures'] = $gfeatures->get($_QR['id'],false)) === false
 		|| ($info['queue'] = $queue->get($info['gfeatures']['name'],false)) === false
 		|| $qmember->get_nb_by_name($info['queue']['name']) !== 0)
-			xivo_go($_HTML->url('service/ipbx/pbx_settings/groups'),'act=list');
+			xivo_go($_HTML->url('service/ipbx/pbx_settings/groups'),$param);
 
 		do
 		{
@@ -452,12 +458,11 @@ switch($act)
 		}
 		while(false);
 
-		xivo_go($_HTML->url('service/ipbx/pbx_settings/groups'),'act=list');
+		xivo_go($_HTML->url('service/ipbx/pbx_settings/groups'),$param);
 		break;
 	default:
 		$act = 'list';
 		$total = 0;
-		$page = 1;
 
 		if(($groups = $ipbx->get_groups_list(false)) !== false)
 		{
@@ -469,8 +474,9 @@ switch($act)
 
 		$_HTML->assign('pager',xivo_calc_page($page,20,$total));
 		$_HTML->assign('list',$groups);
-
 }
+
+$_HTML->assign('act',$act);
 
 $menu = &$_HTML->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_infos('meta'));

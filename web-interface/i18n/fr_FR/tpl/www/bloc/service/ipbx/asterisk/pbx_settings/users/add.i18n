@@ -142,5 +142,23 @@ Dynamique
 ; fm_protocol_host-static
 Statique
 
+; fm_autoprov_modact
+Mode :
+
+; fm_autoprov_modact-guest
+Initialiser
+
+; fm_autoprov_modact-prov
+Approvisionner
+
+; fm_autoprov_vendormodel
+Modèle :
+
+; fm_autoprov_macaddr
+Adresse MAC :
+
+; fm_autoprov_actions
+LAN :
+
 ; fm_bt-save
 Sauvegarder

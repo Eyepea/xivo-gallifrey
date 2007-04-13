@@ -1,7 +1,9 @@
 <?php
 
+$param['page'] = $page;
+
 if(xivo_issa('peers',$_QR) === false)
-	xivo_go($_HTML->url('service/ipbx/trunk_management/sip'),'act=list&page='.$page);
+	xivo_go($_HTML->url('service/ipbx/trunk_management/sip'),$param);
 
 $disable = $act === 'disables' ? true : false;
 
@@ -13,6 +15,6 @@ for($i = 0;$i < $nb;$i++)
 	$trunksip->disable($_QR['peers'][$i],$disable);
 }
 
-xivo_go($_HTML->url('service/ipbx/trunk_management/sip'),'act=list&page='.$page);
+xivo_go($_HTML->url('service/ipbx/trunk_management/sip'),$param);
 
 ?>

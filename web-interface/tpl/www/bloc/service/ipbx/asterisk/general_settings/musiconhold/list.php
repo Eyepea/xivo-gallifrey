@@ -31,17 +31,17 @@
 	</tr>
 <?php
 	else:
-		for($i = $pager['beg']; $i < $pager['end'] && $i < $pager['total'];$i++):
+		for($i = $pager['beg'],$j = 0;$i < $pager['end'] && $i < $pager['total'];$i++,$j++):
 
 			$ref = &$list[$i];
 
-			$mod = $i % 2 === 0 ? 1 : 2;
+			$mod = $j % 2 === 0 ? 1 : 2;
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=$mod?>on2">
 		<td class="td-left txt-left curpointer" colspan="2" onclick="location.href = '<?=$url->href('service/ipbx/general_settings/musiconhold',array('act' => 'listfile','cat' => $ref['category']));?>';"><?=$ref['category']?></td>
 		<td><?=$ref['mode']?></td>
 		<td class="td-right" colspan="2">
-		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/general_settings/musiconhold',array('act' => 'edit','id' => $ref['category'],'page' => $pager['page']),null,$this->bbf('opt_modify'));?>
+		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/general_settings/musiconhold',array('act' => 'edit','id' => $ref['category']),null,$this->bbf('opt_modify'));?>
 		<?=$url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'service/ipbx/general_settings/musiconhold',array('act' => 'delete','id' => $ref['category'],'page' => $pager['page']),'onclick="return(confirm(\''.xivo_stript($this->bbf('opt_delete_confirm')).'\') ? true : false);"',$this->bbf('opt_delete'));?>
 		</td>
 	</tr>

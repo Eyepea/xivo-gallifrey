@@ -70,7 +70,7 @@ do
 		break;
 	}
 
-	xivo_go($_HTML->url('service/ipbx/trunk_management/sip'),'act=list');
+	xivo_go($_HTML->url('service/ipbx/trunk_management/sip'),$param);
 
 } while(false);
 

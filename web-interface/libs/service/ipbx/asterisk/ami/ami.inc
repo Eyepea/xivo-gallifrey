@@ -33,7 +33,7 @@ class xivo_service_asterisk_ami extends xivo_service_asterisk_abstract
 	function _load_socket()
 	{
 		if($this->_socket !== null)
-			return(true);
+			return($this->_socket->open());
 
 		xivo::load_class('socket');
 		$this->_socket = new xivo_socket($this->_conf['socket']);
@@ -43,12 +43,18 @@ class xivo_service_asterisk_ami extends xivo_service_asterisk_abstract
 
 	function cmd($cmd)
 	{
+		$r = false;
+
 		$this->_load_socket();
 
-		if($this->_socket->is_open() !== true)
-			return(false);
+		if($this->_socket->is_open() === false)
+			return($r);
 
-		return($this->_socket->write($cmd));
+		$r = $this->_socket->write($cmd);
+
+		$this->_socket->close();
+
+		return($r);
 	}
 }
 

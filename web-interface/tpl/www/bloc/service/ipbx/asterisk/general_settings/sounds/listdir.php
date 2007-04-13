@@ -35,17 +35,17 @@
 	</tr>
 <?php
 	else:
-		for($i = $pager['beg']; $i < $pager['end'] && $i < $pager['total'];$i++):
+		for($i = $pager['beg'],$j = 0;$i < $pager['end'] && $i < $pager['total'];$i++,$j++):
 
 			$ref = &$list[$i];
 
-			$mod = $i % 2 === 0 ? 1 : 2;
+			$mod = $j % 2 === 0 ? 1 : 2;
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=$mod?>on2">
 		<td class="td-left txt-left curpointer" colspan="2" onclick="location.href = '<?=$url->href('service/ipbx/general_settings/sounds',array('act' => 'list','dir' => $ref['dirname']));?>';"><?=$ref['dirname']?></td>
 		<td><?=$ref['nb_files']?></td>
 		<td class="td-right" colspan="2">
-		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/general_settings/sounds',array('act' => 'editdir','id' => $ref['dirname'],'page' => $pager['page']),'id="ah-dirs-'.$i.'"',$this->bbf('opt_modify'));?>
+		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/general_settings/sounds',array('act' => 'editdir','id' => $ref['dirname']),'id="ah-dirs-'.$i.'"',$this->bbf('opt_modify'));?>
 		<?=$url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'service/ipbx/general_settings/sounds',array('act' => 'deletedir','id' => $ref['dirname'],'page' => $pager['page']),'onclick="return(confirm(\''.xivo_stript($this->bbf('opt_delete_confirm')).'\') ? true : false);"',$this->bbf('opt_delete'));?>
 		</td>
 	</tr>

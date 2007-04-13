@@ -1,7 +1,22 @@
 <?php
 	$url = &$this->get_module('url');
+	$form = &$this->get_module('form');
+
+	$pager = $this->vars('pager');
+	$act = $this->vars('act');
+
+	$page = $url->pager($pager['pages'],$pager['page'],$pager['prev'],$pager['next'],'service/ipbx/pbx_settings/groups',array('act' => $act));
 ?>
 <div class="b-list">
+<?php
+	if($page !== ''):
+		echo '<div class="b-page">',$page,'</div>';
+	endif;
+?>
+<form action="#" name="fm-group-list" method="post" accept-charset="utf-8">
+<?=$form->hidden(array('name' => XIVO_SESS_NAME,'value' => XIVO_SESS_ID));?>
+<?=$form->hidden(array('name' => 'act','value' => $act));?>
+<?=$form->hidden(array('name' => 'page','value' => $pager['page']));?>
 <table cellspacing="0" cellpadding="0" border="0">
 	<tr class="sb-top">
 		<th class="th-left xspan"><span class="span-left">&nbsp;</span></th>
@@ -21,11 +36,11 @@
 	</tr>
 <?php
 	else:
-		for($i = 0; $i < $nb;$i++):
+		for($i = $pager['beg'],$j = 0;$i < $pager['end'] && $i < $pager['total'];$i++,$j++):
 
 			$ref = &$list[$i];
 
-			$mod = $i % 2 === 0 ? 1 : 2;
+			$mod = $j % 2 === 0 ? 1 : 2;
 ?>
 	<tr class="sb-content l-infos-<?=$mod?>on2">
 		<td class="td-left txt-left" colspan="2"><?=$ref['gfeatures']['name']?></td>
@@ -36,7 +51,7 @@
 
 <?php
 	if($ref['nb_qmember'] === 0):
-		echo $url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'service/ipbx/pbx_settings/groups',array('act' => 'delete','id' => $ref['gfeatures']['id']),'onclick="return(confirm(\''.xivo_stript($this->bbf('opt_delete_confirm')).'\') ? true : false);"',$this->bbf('opt_delete'));
+		echo $url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'service/ipbx/pbx_settings/groups',array('act' => 'delete','id' => $ref['gfeatures']['id'],'page' => $pager['page']),'onclick="return(confirm(\''.xivo_stript($this->bbf('opt_delete_confirm')).'\') ? true : false);"',$this->bbf('opt_delete'));
 	endif;
 ?>
 		</td>
@@ -51,4 +66,10 @@
 		<td class="td-right xspan b-nosize"><span class="span-right b-nosize">&nbsp;</span></td>
 	</tr>
 </table>
+</form>
+<?php
+	if($page !== ''):
+		echo '<div class="b-page">',$page,'</div>';
+	endif;
+?>
 </div>

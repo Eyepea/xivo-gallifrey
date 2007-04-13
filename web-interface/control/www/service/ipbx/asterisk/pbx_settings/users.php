@@ -5,16 +5,13 @@ $ract = isset($_QR['ract']) === true ? $_QR['ract'] : '';
 $page = isset($_QR['page']) === true ? xivo_uint($_QR['page'],1) : 1;
 $search = isset($_QR['search']) === true ? $_QR['search'] : '';
 
-switch($ract)
-{
-	case 'search':
-		$param = 'act=search&page='.$page.'&search='.$search;					
+$param = array();
+$param['act'] = 'list';
 
-		if($search !== '')
-			break;
-	case 'list':
-	default:
-		$param = 'act=list&page='.$page;					
+if($ract === 'search' && $search !== '')
+{
+	$param['act'] = 'search';
+	$param['search'] = $search;
 }
 
 switch($act)

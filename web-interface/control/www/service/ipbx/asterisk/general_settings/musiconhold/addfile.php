@@ -30,7 +30,7 @@ do
 	$filename = $info['category'].XIVO_SEP_DIR.$file->info['name'];
 
 	if($musiconhold->add_file($filename,$file->info['tmp_name']) === true)
-		xivo_go($_HTML->url('service/ipbx/general_settings/musiconhold'),'act=listfile&cat='.$info['category']);
+		xivo_go($_HTML->url('service/ipbx/general_settings/musiconhold'),$param);
 }
 while(false);
 

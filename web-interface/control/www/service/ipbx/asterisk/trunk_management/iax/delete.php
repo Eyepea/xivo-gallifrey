@@ -1,9 +1,11 @@
 <?php
 
+$param['page'] = $page;
+
 if(isset($_QR['id']) === false
 || ($info['trunk'] = $trunkiax->get($_QR['id'],null)) === false
 || ($info['tfeatures'] = $tfeatures->get_by_trunk($info['trunk']['id'],'iax')) === false)
-	xivo_go($_HTML->url('service/ipbx/trunk_management/iax'),'act=list');
+	xivo_go($_HTML->url('service/ipbx/trunk_management/iax'),$param);
 
 do
 {
@@ -24,6 +26,6 @@ do
 }
 while(false);
 
-xivo_go($_HTML->url('service/ipbx/trunk_management/iax'),'act=list');
+xivo_go($_HTML->url('service/ipbx/trunk_management/iax'),$param);
 
 ?>
