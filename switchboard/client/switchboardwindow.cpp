@@ -30,13 +30,19 @@ void Peer::updateStatus(const QString & status,
 			const QString & avail,
 			const QString & corrname)
 {
-//	qDebug() << status;
+  //qDebug() << status << avail;
   if(avail == "available")
     m_peerwidget->setGreen(1);
   else if(avail == "away")
     m_peerwidget->setDarkGreen(1);
   else if(avail == "doesnotdisturb")
     m_peerwidget->setRed(1);
+  else if(avail == "berightback")
+    m_peerwidget->setOrange(1);
+  else if(avail == "outtolunch")
+	m_peerwidget->setYellow(1);
+  else
+  	m_peerwidget->setGray(1);
 
   if(status == "Ready")
     m_peerwidget->setGreen(0);
