@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QSpinBox>
 #include <QCheckBox>
 #include <QComboBox>
+#include <QDialogButtonBox>
 #include <QDebug>
 #include "confwidget.h"
 #include "mainwidget.h"
@@ -106,17 +107,12 @@ ConfWidget::ConfWidget(Engine *engine, MainWidget *parent)
 	m_tablimit_sbox->setValue(m_mainwidget->tablimit());
 	gridlayout->addWidget(m_tablimit_sbox, 10, 1);
 
-	QPushButton *btnok = new QPushButton("&Ok", this);	// some default ok button should exist :)
-	connect( btnok, SIGNAL(clicked()), this, SLOT(saveAndClose()) );
-	QPushButton *btncancel = new QPushButton("&Cancel", this);
-	connect( btncancel, SIGNAL(clicked()), this, SLOT(close()) );
-
-	QHBoxLayout *hlayout = new QHBoxLayout();
-	hlayout->addWidget(btnok);
-	hlayout->addWidget(btncancel);
+	QDialogButtonBox * btnbox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
+	connect( btnbox, SIGNAL(accepted()), this, SLOT(saveAndClose()) );
+	connect( btnbox, SIGNAL(rejected()), this, SLOT(close()) );
 
 	vlayout->addLayout(gridlayout);
-	vlayout->addLayout(hlayout);
+	vlayout->addWidget(btnbox);
 }
 
 void ConfWidget::saveAndClose()
