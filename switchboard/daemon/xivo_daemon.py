@@ -44,6 +44,7 @@ userlist_lock = threading.Condition()
 
 pidfile = '/tmp/xivo_daemon.pid'
 bufsize_large = 8192
+bufsize_udp = 2048
 bufsize_any = 512
 
 timeout_between_registers = 60
@@ -104,16 +105,16 @@ def updateuserlistfromurl(url):
 	return l_sipnumlist
 
 # logins into the Asterisk MI
-def ami_socket_login(raddr, loginname, events):
+def ami_socket_login(raddr, amiport, loginname, passname, events):
 	try:
 		sockid = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		sockid.connect((raddr, port_ami))
-		sockid.recv(bufsize_any)
+		sockid.connect((raddr, amiport))
+		sockid.recv(bufsize_large)
 		# check against "Asterisk Call Manager/1.0\r\n"
 		if events == 0:
-			sockid.send("Action: login\r\nUsername: " + loginname + "\r\nSecret: " + loginname + "\r\nEvents: off\r\n\r\n");
+			sockid.send("Action: login\r\nUsername: " + loginname + "\r\nSecret: " + passname + "\r\nEvents: off\r\n\r\n")
 		else:
-			sockid.send("Action: login\r\nUsername: " + loginname + "\r\nSecret: " + loginname + "\r\nEvents: on\r\n\r\n");
+			sockid.send("Action: login\r\nUsername: " + loginname + "\r\nSecret: " + passname + "\r\nEvents: on\r\n\r\n")
 		# check against "Message: Authentication accepted\r\n"
 	except:
 		sockid = -1
@@ -328,6 +329,7 @@ class AMI:
 				return False
 		else:
 			print "no channel", channel, "in Asterisk", configs[astn].astid
+			return False
 	def execclicommand(self, command):
 		# special procession for cli commands.
 		self.sendcommand('Command', [('Command', command)])
@@ -438,9 +440,9 @@ def parseSIP(cfg, data, l_sipsock, l_addrsip, astnum):
     [icseq, imsg, icid, iaddr, ilength, iret, ibranch, itag] = read_sip_properties(data)
     # if ilength != 11:
     # print "###", astnum, ilength, icseq, icid, iaddr, imsg, iret, ibranch, itag
-    if imsg == "REGISTER" and iret == 200 and icid == "reg_cid@xivopy":
-        for k in tcpopens:
-            k[0].send("asterisk=registered_" + cfg.astid + "\n")
+##    if imsg == "REGISTER" and iret == 200 and icid == "reg_cid@xivopy":
+##        for k in tcpopens:
+##            k[0].send("asterisk=registered_" + cfg.astid + "\n")
     if imsg == "SUBSCRIBE":
         sipphone = "SIP/" + icid.split("@")[0].split("subscribexivo_")[1]
 	if sipphone in phonelists[astnum].keys(): # else : send sth anyway ?
@@ -480,8 +482,7 @@ def manage_connection(connid):
         tcpopens.remove(connid)
     else:
         # what if more lines ???
-        usefulmsg_tmp = msg.split("\r\n")[0]
-        usefulmsg = usefulmsg_tmp.split("\n")[0]
+        usefulmsg = msg.split("\r\n")[0].split("\n")[0]
         if usefulmsg == "hints":
 		try:
 			connid[0].send(build_statuses())
@@ -493,35 +494,60 @@ def manage_connection(connid):
 		except:
 			print "warning : there might have been a connection problem"
         elif usefulmsg != "":
-            # different cases are handled whether AMIclasssock was already defined or not ... this part can certainly be improved
-	    l = usefulmsg.split()
-	    idassrc = -1
-	    idasdst = -1
-	    
-	    assrc = l[1].split("/")[0]
-	    if assrc in asteriskr:
-		    idassrc = asteriskr[assrc]
+		l = usefulmsg.split()
+		if len(l) == 2 and l[0] == 'hangup':
+			idassrc = -1
+			assrc = l[1].split("/")[0]
+			if assrc in asteriskr: idassrc = asteriskr[assrc]
+			if idassrc != -1:
+				if not AMIclasssock[idassrc]:
+					print "AMI was not connected - attempting to connect again"
+					AMIclasssock[idassrc] = connect_to_AMI((configs[idassrc].remoteaddr,
+										configs[idassrc].ami_port),
+									       configs[idassrc].ami_login,
+									       configs[idassrc].ami_pass)
+				if AMIclasssock[idassrc]:
+					ret = AMIclasssock[idassrc].hangup(idassrc, l[1])
+					if ret == True:
+						connid[0].send("asterisk=hangup ok\n")
+					else:
+						connid[0].send("asterisk=hangup ko\n")
+		elif len(l) == 3 and (l[0] == 'originate' or l[0] == 'transfer'):
+			idassrc = -1
+			assrc = l[1].split("/")[0]
+			if assrc in asteriskr: idassrc = asteriskr[assrc]
+			idasdst = -1
+			asdst = l[2].split("/")[0]
+			if asdst in asteriskr: idasdst = asteriskr[asdst]
+			if idassrc != -1 and idassrc == idasdst:
+				if not AMIclasssock[idassrc]:
+					"AMI was not connected - attempting to connect again"
+					AMIclasssock[idassrc] = connect_to_AMI((configs[idassrc].remoteaddr,
+										configs[idassrc].ami_port),
+									       configs[idassrc].ami_login,
+									       configs[idassrc].ami_pass)
+				if AMIclasssock[idassrc]:
+					if l[0] == 'originate':
+						AMIclasssock[idassrc].originate(l[1], l[2])
+						connid[0].send("asterisk=originate successful\n")
+					elif l[0] == 'transfer':
+						AMIclasssock[idassrc].transfer(idassrc, l[1], l[2])
+						connid[0].send("asterisk=transfer successful\n")
+			else:
+				connid[0].send("asterisk=originate or transfer ko\n")
+		else:
+			n = -1
+			for i in items_asterisks:
+				if configs[i].ipaddress_php == connid[1]:
+					n = i
+			if n == -1:
+				connid[0].send("XIVO CLI:NOT ALLOWED\n")
+			else:
+				connid[0].send("XIVO CLI:" + configs[i].astid + "\n")
+				s = AMIclasssock[n].execclicommand(usefulmsg.strip())
+				for x in s: connid[0].send(x)
+				connid[0].send("XIVO CLI:OK\n")
 
-	    if len(l) == 3:
-		    asdst = l[2].split("/")[0]
-		    if asdst in asteriskr:
-			    idasdst = asteriskr[asdst]
-
-	    if (len(l) == 3 and idassrc == idasdst and idassrc != -1) or \
-		   (len(l) == 2 and idassrc != -1 ):
-		    if l[0] == 'originate' or l[0] == 'transfer' or l[0] == 'hangup':
-			    if not AMIclasssock[idassrc]:
-				    "AMI was not connected - attempting to connect again"
-				    AMIclasssock[idassrc] = connect_to_AMI((configs[idassrc].remoteaddr,
-									    port_ami),
-									   asterisk_login, asterisk_pass)
-			    if AMIclasssock[idassrc]:
-				    if l[0] == 'originate':
-					    AMIclasssock[idassrc].originate(l[1], l[2])
-				    elif l[0] == 'transfer':
-					    AMIclasssock[idassrc].transfer(idassrc, l[1], l[2])
-				    elif l[0] == 'hangup':
-					    AMIclasssock[idassrc].hangup(idassrc, l[1])
 
 def is_normal_channel(chan):
 	if chan.find("SIP/") == 0 or chan.find("IAX2/") == 0 or chan.find("mISDN/") == 0 or chan.find("Zap/") == 0:
@@ -820,8 +846,8 @@ def handle_ami_event_status(astnum, idata):
 def do_sip_register_subscribe(cfg, l_sipsock, astnum):
     global tcpopens, phonelists, rdc
     rdc = chr(65 + 32 * random.randrange(2) + random.randrange(26))
-    for k in tcpopens:
-        k[0].send("asterisk=will_register_" + cfg.astid + "\n")
+##    for k in tcpopens:
+##        k[0].send("asterisk=will_register_" + cfg.astid + "\n")
     command = sip.sip_register(cfg, "sip:" + cfg.mysipname, 1, "reg_cid@xivopy", expires)
     l_sipsock.sendto(command, (cfg.remoteaddr, port_sip_srv))
 ##    command = sip.sip_options(cfg, "sip:" + cfg.mysipname, "testoptions@xivopy", "107")
@@ -851,8 +877,9 @@ def update_sipnumlist(cfg, astnum):
 	global phonelists
 	sipnumlistold = phonelists[astnum].keys()
 	sipnumlistold.sort()
-
 	sipnuml = updateuserlistfromurl(cfg.userlisturl)
+	for x in cfg.extrachannels.split(","):
+		if x != "": sipnuml[x] = x
 	sipnumlistnew = sipnuml.keys()
 	sipnumlistnew.sort()
 	if sipnumlistnew != sipnumlistold:
@@ -932,17 +959,23 @@ class LineProp:
 		for ic in self.chans:
 			dtime = int(nowtime - self.chans[ic][5])
 			self.chans[ic][1] = dtime
-	def set_chan(self, ichan, status, itime, dir, peerch, peernum):
+	def set_chan(self, ichan, status, itime, idir, peerch, peernum):
 		# does not update peerch and peernum if the new values are empty
+		newstatus = status
+		newdir = idir
 		newpeerch = peerch
 		newpeernum = peernum
 		if ichan in self.chans:
+			if status == "":
+				newstatus = self.chans[ichan][0]
+			if idir == "":
+				newdir = self.chans[ichan][2]
 			if peerch == "":
 				newpeerch = self.chans[ichan][3]
 			if peernum == "":
 				newpeernum = self.chans[ichan][4]
 		firsttime = time.time()
-		self.chans[ichan] = [status, itime, dir, newpeerch, newpeernum, firsttime - itime]
+		self.chans[ichan] = [newstatus, itime, newdir, newpeerch, newpeernum, firsttime - itime]
 		for ic in self.chans:
 			self.chans[ic][1] = int(firsttime - self.chans[ic][5])
 	def set_chan_hangup(self, ichan):
@@ -969,16 +1002,26 @@ class AsteriskRemote:
 	def __init__(self,
 		     astid,
 		     userlisturl,
+		     extrachannels,
 		     localaddr = "127.0.0.1",
 		     remoteaddr = "127.0.0.1",
+		     ipaddress_php = "127.0.0.1",
+		     ami_port = 5038,
+		     ami_login = "sylvain",
+		     ami_pass = "sylvain",
 		     portsipclt = 5080):
 
 		self.astid = astid
 		self.userlisturl = userlisturl
+		self.extrachannels = extrachannels
 		self.localaddr = localaddr
 		self.remoteaddr = remoteaddr
+		self.ipaddress_php = ipaddress_php
 		self.portsipclt = portsipclt
 		self.mysipname = sip_presence_account
+		self.ami_port = ami_port
+		self.ami_login = ami_login
+		self.ami_pass = ami_pass
 
 # ==============================================================================
 # from kafiche daemon
@@ -1076,8 +1119,10 @@ class LoginHandler(SocketServer.StreamRequestHandler):
 class IdentRequestHandler(SocketServer.StreamRequestHandler):
 	def handle(self):
 		if __debug__:
-			print ' ## IdentRequestHandler from client', self.client_address
+			print ' ## IdentRequestHandler from client', self.client_address,
 		list0 = self.rfile.readline().strip().split(' ')
+		if __debug__:
+			print " / request from :", list0
 		retline = 'ERROR\r\n'
 		if list0[0] == 'QUERY' and len(list0) == 2:
 			user = list0[1]
@@ -1186,15 +1231,12 @@ except Exception, e:
 
 cnf = ConfigParser.ConfigParser()
 cnf.readfp(open("/etc/asterisk/xivo_daemon.conf"))
-port_ami                  = int(cnf.get("general", "port_asterisk_ami")) # 5038
 port_sip_srv              = int(cnf.get("general", "port_asterisk_sipsrv")) # 5060
 port_ui_srv               = int(cnf.get("general", "port_switchboard")) # 5081
 port_login                = int(cnf.get("general", "port_fiche_login")) # 12345
 port_keepalive            = int(cnf.get("general", "port_fiche_keepalive")) # 12346
 port_request              = int(cnf.get("general", "port_fiche_agi")) # 12347
 port_switchboard_base_sip = int(cnf.get("general", "port_switchboard_base_sip")) # 5080
-asterisk_login = cnf.get("general", "asterisk_manager_login") # sylvain
-asterisk_pass  = cnf.get("general", "asterisk_manager_pass") # sylvain
 sip_presence_account = cnf.get("general", "sip_presence_account") # xivosb
 
 configs = []
@@ -1207,8 +1249,13 @@ for i in cnf.sections():
 	if i != "general":
 		configs.append(AsteriskRemote(i,
 					      cnf.get(i, "userlisturl"),
+					      cnf.get(i, "extrachannels"),
 					      cnf.get("general", "localaddr"),
 					      cnf.get(i, "ipaddress"),
+					      cnf.get(i, "ipaddress_php"),
+					      int(cnf.get(i, "ami_port")),
+					      cnf.get(i, "ami_login"),
+					      cnf.get(i, "ami_pass"),
 					      port_switchboard_base_sip + 2 * n))
 		save_for_next_packet.append("")
 		save_for_next_packet_status.append("")
@@ -1254,15 +1301,21 @@ for n in items_asterisks:
 	SIPsocks.append(SIPsock)
 	ins.append(SIPsock)
 
-	AMIclasssock.append(connect_to_AMI((configs[n].remoteaddr, port_ami),
-					   asterisk_login, asterisk_pass))
+	AMIclasssock.append(connect_to_AMI((configs[n].remoteaddr, configs[n].ami_port),
+					   configs[n].ami_login, configs[n].ami_pass))
 	asteriskr[configs[n].astid] = n
 	
-	als0 = ami_socket_login(configs[n].remoteaddr, asterisk_login, 0)
+	als0 = ami_socket_login(configs[n].remoteaddr,
+				configs[n].ami_port,
+				configs[n].ami_login,
+				configs[n].ami_pass, 0)
 	AMIcomms.append(als0)
 	if als0 != -1:
 		ins.append(als0)
-	als1 = ami_socket_login(configs[n].remoteaddr, asterisk_login, 1)
+	als1 = ami_socket_login(configs[n].remoteaddr,
+				configs[n].ami_port,
+				configs[n].ami_login,
+				configs[n].ami_pass, 1)
 	AMIsocks.append(als1)
 	if als1 != -1:
 		ins.append(als1)
@@ -1311,7 +1364,7 @@ while not askedtoquit:
 		for n in items_asterisks:
 			if SIPsocks[n] == res:
 				break
-		[data, addrsip] = SIPsocks[n].recvfrom(bufsize_large)
+		[data, addrsip] = SIPsocks[n].recvfrom(bufsize_udp)
 		sp = parseSIP(configs[n], data, SIPsocks[n], addrsip, n)
 		if sp == 1:
 			if __debug__:
@@ -1356,6 +1409,8 @@ while not askedtoquit:
             for conn in tcpopens:
                 if conn[0] in i:
                     manage_connection(conn)
+
+
 	for n in items_asterisks:
 		if (time.time() - lastrequest_time[n]) > timeout_between_registers:
 			lastrequest_time[n] = time.time()
