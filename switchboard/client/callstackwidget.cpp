@@ -192,8 +192,11 @@ int CallStackWidget::updateTime()
 
 void CallStackWidget::dragEnterEvent(QDragEnterEvent *event)
 {
+	qDebug() << event->mimeData()->formats();
 	if (event->mimeData()->hasFormat("text/plain"))
+	{
 		event->acceptProposedAction();
+	}
 }
 
 void CallStackWidget::dropEvent(QDropEvent *event)
@@ -202,10 +205,15 @@ void CallStackWidget::dropEvent(QDropEvent *event)
 	qDebug() << "CallStackWidget::dropEvent() "
 	         << text;
 	if(text.indexOf('-') >= 0)
+	{
+		// it is a channel, not a peer.
+		event->ignore();
 		return;
+	}
 	emptyList();
 	m_monitoredPeer = text;
 	changeTitle("Monitoring : " + text);
 	updateDisplay();
+	event->acceptProposedAction();
 }
 

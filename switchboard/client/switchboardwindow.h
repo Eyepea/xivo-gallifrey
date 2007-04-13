@@ -15,7 +15,7 @@ public:
 	//Peer( const QString & ext, QObject * parent = 0 );
 	Peer( const QString & ext);
 	Peer( const Peer & peer);
-	const QString & ext() { return m_ext; };
+	const QString & ext() const { return m_ext; };
 //	Peer & operator=(const Peer & peer);
 	void setWidget(PeerWidget * widget) { m_peerwidget = widget; };
 	PeerWidget * getWidget() { return m_peerwidget; };
@@ -33,6 +33,7 @@ class SwitchBoardWindow : public QWidget
 {
 public:
 	SwitchBoardWindow( QWidget * parent = 0);
+	virtual ~SwitchBoardWindow();
 	void setEngine(SwitchBoardEngine *);
 	void updatePeer(const QString & ext,
 	        const QString & name,
@@ -43,9 +44,12 @@ public:
 	void removePeers(void);
 	int width() const;
 	void setWidth(int);
-	void saveSettings();
+	void saveSettings() const;
+	void savePositions() const;
 protected:
-	void mousePressEvent(QMouseEvent * event);
+	void mousePressEvent(QMouseEvent *);
+	void dragEnterEvent(QDragEnterEvent *);
+	void dropEvent(QDropEvent *);
 private:
 	//QGridLayout * m_layout;
 	PeersLayout * m_layout;

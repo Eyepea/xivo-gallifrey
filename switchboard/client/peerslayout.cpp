@@ -2,7 +2,7 @@
 #include "peerslayout.h"
 
 PeersLayout::PeersLayout(QWidget * parent)
-: QLayout(parent)
+: QLayout(parent), m_nb_rows(0), m_nb_columns(0)
 {
 	//qDebug() << "PeersLayout::PeersLayout(" << parent << ")";
 }
@@ -33,13 +33,37 @@ QSize PeersLayout::maximumSize() const
 QSize PeersLayout::size() const
 {
 	QSize itemSize = maxItemSize();
-	return QSize(itemSize.width(), m_list.size() * itemSize.height());
+	return QSize( itemSize.width() * m_nb_columns, 
+	              itemSize.height() * m_nb_rows );
+}
+
+void PeersLayout::addWidget(QWidget *w, QPoint pos)
+{
+	addChildWidget(w);
+	addItem(new QWidgetItem(w), pos);
+}
+
+void PeersLayout::addItem(QLayoutItem * item, QPoint pos)
+{
+	m_list.append(item);
+	if(m_listPos.contains(pos))
+		pos = freePosition();
+	if(pos.x() >= m_nb_columns)
+		m_nb_columns = pos.x() + 1;
+	if(pos.y() >= m_nb_rows)
+		m_nb_rows = pos.y() + 1;
+	m_listPos.append(pos);
 }
 
 void PeersLayout::addItem(QLayoutItem * item)
 {
-	//qDebug() << "PeersLayout::addItem" << item;
 	m_list.append(item);
+	QPoint pos = freePosition();
+	if(pos.x() >= m_nb_columns)
+		m_nb_columns = pos.x() + 1;
+	if(pos.y() >= m_nb_rows)
+		m_nb_rows = pos.y() + 1;
+	m_listPos.append(pos);
 }
 
 void PeersLayout::setGeometry(const QRect & r)
@@ -47,18 +71,14 @@ void PeersLayout::setGeometry(const QRect & r)
 	//qDebug() << "PeersLayout::setGeometry" << r;
 	QSize itemSize = maxItemSize();
 	int i, x, y;
-	x = 0; y = 0;
 	for(i = 0; i<m_list.size(); i++)
 	{
+		x = m_listPos[i].x();
+		y = m_listPos[i].y();
 		m_list[i]->setGeometry(
 		       QRect( x*itemSize.width()/*left*/, y*itemSize.height()/*top*/,
 		              itemSize.width()/*width*/, itemSize.height()/*height*/ )
 				                );
-		y++;
-		/*if(y>6)
-		{
-			x++; y = 0;
-		}*/
 	}
 }
 
@@ -71,6 +91,7 @@ QLayoutItem* PeersLayout::itemAt(int i) const
 QLayoutItem* PeersLayout::takeAt(int i)
 {
 	//qDebug() << "PeersLayout::takeAt" << i;
+	m_listPos.takeAt(i);
 	return m_list.takeAt(i);
 }
 
@@ -94,5 +115,44 @@ QSize PeersLayout::maxItemSize() const
 			max_h = size.height();
 	}
 	return QSize(max_w, max_h);
+}
+
+QPoint PeersLayout::freePosition() const
+{
+	QPoint pos(0, 0);
+	while(m_listPos.contains(pos))
+	{
+		pos.ry()++;
+		if(pos.y() > 6)
+		{
+			pos.ry() = 0;
+			pos.rx()++;
+		}
+	}
+	return pos;
+}
+
+QPoint PeersLayout::getPosInGrid(QPoint pos) const
+{
+	QSize itemSize = maxItemSize();
+	return QPoint(pos.x() / itemSize.width(), pos.y() / itemSize.height());
+}
+
+void PeersLayout::setItemPosition(int i, QPoint pos)
+{
+	if(i >= 0 && i < m_listPos.size())
+	{
+		m_listPos[i] = pos;
+		if(pos.x() >= m_nb_columns)
+			m_nb_columns = pos.x() + 1;
+		if(pos.y() >= m_nb_rows)
+			m_nb_rows = pos.y() + 1;
+		setGeometry(QRect());
+	}
+}
+
+QPoint PeersLayout::getItemPosition(int i) const
+{
+	return m_listPos[i];
 }
 

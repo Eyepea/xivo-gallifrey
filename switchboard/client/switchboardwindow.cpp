@@ -77,9 +77,16 @@ SwitchBoardWindow::SwitchBoardWindow(QWidget * parent)
 	m_width = settings.value("display/width", 5).toInt();
 	//m_layout->setRowStretch(99, 1);
 	//m_layout->setColumnStretch(m_width, 1);
+	setAcceptDrops(true);
 }
 
-void SwitchBoardWindow::saveSettings()
+SwitchBoardWindow::~SwitchBoardWindow()
+{
+	qDebug() << "SwitchBoardWindow::~SwitchBoardWindow()";
+	savePositions();
+}
+
+void SwitchBoardWindow::saveSettings() const
 {
 	QSettings settings;
 	settings.setValue("display/width", m_width);
@@ -108,19 +115,16 @@ void SwitchBoardWindow::updatePeer(const QString & ext,
 		}
 	}
 	// if not found in the peerlist, create a new Peer
+	QSettings settings;
 	Peer peer(ext);
 	PeerWidget * peerwidget = new PeerWidget(ext, name, this);
 	connect( peerwidget, SIGNAL(originateCall(const QString&, const QString&)),
 	         m_engine, SLOT(originateCall(const QString&, const QString&)) );
 	connect( peerwidget, SIGNAL(transferCall(const QString&, const QString&)),
 	         m_engine, SLOT(transferCall(const QString&, const QString&)) );
-	//m_layout->addWidget( peerwidget, m_y, m_x++ );
-	m_layout->addWidget( peerwidget );
-	if(m_x >= m_width)
-	{
-		m_x = 0;
-		m_y++;
-	}
+	QPoint pos = settings.value("layout/" + ext).toPoint();
+	//qDebug() << " " << ext << " " << pos;
+	m_layout->addWidget( peerwidget, pos );
 	peer.setWidget(peerwidget);
 	peer.updateStatus(status, avail, corrname);
 	m_peerlist << peer;
@@ -172,5 +176,44 @@ void SwitchBoardWindow::mousePressEvent(QMouseEvent * event)
 	qDebug() << "SwitchBoardWindow::mousePressEvent" << event;
 	qDebug() << "   " << event->x() << event->y() << event->pos();
 	qDebug() << "   " << event->globalX() << event->globalY() << event->globalPos();
+}
+
+void SwitchBoardWindow::dragEnterEvent(QDragEnterEvent * event)
+{
+	qDebug() << "SwitchBoardWindow::dragEnterEvent" << event;
+	if(event->mimeData()->hasFormat("text/plain"))
+		event->acceptProposedAction();
+}
+
+void SwitchBoardWindow::dropEvent(QDropEvent * event)
+{
+	int i;
+	QString text = event->mimeData()->text();
+	qDebug() << "SwitchBoardWindow::dropEvent" << event
+	         << text;
+	qDebug() << "  " << event->pos() << m_layout->getPosInGrid(event->pos());
+	//
+	for(i=0; i<m_peerlist.count(); i++)
+	{
+		if(text == m_peerlist[i].ext())
+		{
+			qDebug() << "   " << i;
+			m_layout->setItemPosition(i, m_layout->getPosInGrid(event->pos()));
+			updateGeometry();
+			//update();
+		}
+	}
+	event->acceptProposedAction();
+}
+
+void SwitchBoardWindow::savePositions() const
+{
+	int i;
+	QSettings settings;
+	for(i = 0; i < m_peerlist.size(); i++)
+	{
+		settings.setValue("layout/" + m_peerlist[i].ext(),
+		                  m_layout->getItemPosition(i));
+	}
 }
 
