@@ -7,7 +7,7 @@ class xivo_i18n_locale
 
 	function xivo_i18n_locale()
 	{
-		$dir = XIVO_PATH_LIBS.XIVO_SEP_DIR.'i18n'.XIVO_SEP_DIR.'locales';
+		$dir = XIVO_PATH_LIB.XIVO_SEP_DIR.'i18n'.XIVO_SEP_DIR.'locales';
 
 		if(($this->_conf = xivo_gat::load_get('locales',$dir)) === false)
 			trigger_error('Failed to load locales listing',E_USER_ERROR);

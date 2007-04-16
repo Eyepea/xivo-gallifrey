@@ -1,16 +1,16 @@
 <?php
 
-define('XIVO_PATH_LIBS',XIVO_PATH_ROOT.DIRECTORY_SEPARATOR.'libs');
+define('XIVO_PATH_LIB',XIVO_PATH_ROOT.DIRECTORY_SEPARATOR.'libs');
 define('XIVO_PATH_OBJECT',XIVO_PATH_ROOT.DIRECTORY_SEPARATOR.'object');
 define('XIVO_PATH_APPCONF',XIVO_PATH_ROOT.DIRECTORY_SEPARATOR.'appconf');
 define('XIVO_PATH_CONF',XIVO_PATH_ROOT.DIRECTORY_SEPARATOR.'conf');
 define('XIVO_PATH_I18N',XIVO_PATH_ROOT.DIRECTORY_SEPARATOR.'i18n');
 define('XIVO_PATH_DS',XIVO_PATH_ROOT.DIRECTORY_SEPARATOR.'datastorage');
 
-require_once(XIVO_PATH_LIBS.DIRECTORY_SEPARATOR.'func.inc');
-require_once(XIVO_PATH_LIBS.DIRECTORY_SEPARATOR.'file.inc');
-require_once(XIVO_PATH_LIBS.DIRECTORY_SEPARATOR.'gateclass.inc');
-require_once(XIVO_PATH_LIBS.DIRECTORY_SEPARATOR.'gatearray.inc');
+require_once(XIVO_PATH_LIB.DIRECTORY_SEPARATOR.'func.inc');
+require_once(XIVO_PATH_LIB.DIRECTORY_SEPARATOR.'file.inc');
+require_once(XIVO_PATH_LIB.DIRECTORY_SEPARATOR.'gateclass.inc');
+require_once(XIVO_PATH_LIB.DIRECTORY_SEPARATOR.'gatearray.inc');
 
 class xivo
 {
@@ -194,7 +194,7 @@ class xivo
 		if(XIVO_PHP_SAFE === false)
 			ini_set('max_execution_time',0);
 
-		ini_set('include_path',XIVO_PATH_ROOT.XIVO_SEP_PATH.XIVO_PATH_LIBS.XIVO_SEP_PATH.ini_get('include_path'));
+		ini_set('include_path',XIVO_PATH_ROOT.XIVO_SEP_PATH.XIVO_PATH_LIB.XIVO_SEP_PATH.ini_get('include_path'));
 		ini_set('default_charset',XIVO_LC_CHARSET);
 
 		if($this->chk_extension_loaded(XIVO_EXT__MBSTRING) === true)
@@ -550,7 +550,7 @@ class xivo
 			$class = str_replace('::','_',$class);
 
 			if(substr($path,0,5) === 'xivo'.XIVO_SEP_DIR)
-				$dir = XIVO_PATH_LIBS.XIVO_SEP_DIR.dirname(substr($path,5));
+				$dir = XIVO_PATH_LIB.XIVO_SEP_DIR.dirname(substr($path,5));
 			else
 				$dir = dirname($path);
 
@@ -558,13 +558,13 @@ class xivo
 		}
 		else if($dir === '' && $path !== $class)
 		{
-			$dir = XIVO_PATH_LIBS.XIVO_SEP_DIR.dirname($path);
+			$dir = XIVO_PATH_LIB.XIVO_SEP_DIR.dirname($path);
 			$file .= '.inc';
 		}
 		else if(substr($class,0,5) === 'xivo_')
 		{
 			if($lib === true)
-				$dir = rtrim(XIVO_PATH_LIBS.XIVO_SEP_DIR.ltrim($dir,XIVO_SEP_DIR),XIVO_SEP_DIR.'.');
+				$dir = rtrim(XIVO_PATH_LIB.XIVO_SEP_DIR.ltrim($dir,XIVO_SEP_DIR),XIVO_SEP_DIR.'.');
 			else
 				$dir = rtrim($dir,XIVO_SEP_DIR.'.');
 

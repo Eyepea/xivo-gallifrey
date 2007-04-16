@@ -1,6 +1,6 @@
 <?php
 
-require_once(XIVO_PATH_LIBS.XIVO_SEP_DIR.'tpl'.XIVO_SEP_DIR.'module.inc');
+require_once(XIVO_PATH_LIB.XIVO_SEP_DIR.'tpl'.XIVO_SEP_DIR.'module.inc');
 
 class xivo_tpl_url extends xivo_tpl_module
 {

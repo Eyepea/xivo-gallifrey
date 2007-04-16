@@ -46,7 +46,7 @@ class xivo_gatearray
 			$name = $file;
 
 		if($path === '')
-			$path = XIVO_PATH_LIBS.DIRECTORY_SEPARATOR.'gatearray'.DIRECTORY_SEPARATOR.$file.'.inc';
+			$path = XIVO_PATH_LIB.DIRECTORY_SEPARATOR.'gatearray'.DIRECTORY_SEPARATOR.$file.'.inc';
 		else
 			$path = rtrim($path,DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.$file.'.inc';
 

@@ -179,7 +179,7 @@ class xivo_tpl
 
 		$file = $module.'.inc';
 
-		$dir = XIVO_PATH_LIBS.XIVO_SEP_DIR.'tpl'.XIVO_SEP_DIR.'module';
+		$dir = XIVO_PATH_LIB.XIVO_SEP_DIR.'tpl'.XIVO_SEP_DIR.'module';
 		$class = 'xivo_tpl_'.$module;
 
 		if(xivo_file::load_file($file,$dir,true) === false)
