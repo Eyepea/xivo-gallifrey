@@ -17,7 +17,7 @@ class xivo_service_asterisk_ami extends xivo_service_asterisk_abstract
 		$this->_load_config();
 
 		if($this->_chk_socket() === false)
-			trigger_error('Invalid or missing configuration in '.$this->_sre->get_type().' init file',E_USER_ERROR);
+			trigger_error('Invalid or missing configuration in '.$this->_sre->get_type().' ini file',E_USER_ERROR);
 	}
 
 	function _chk_socket()

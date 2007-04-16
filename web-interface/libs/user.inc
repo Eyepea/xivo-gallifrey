@@ -14,7 +14,7 @@ class xivo_user
 		$ini = &xivo_user::load_get_init();
 
 		if(xivo_issa('general',$ini) === false)
-			trigger_error('Invalid user init file',E_USER_ERROR);
+			trigger_error('Invalid user ini file',E_USER_ERROR);
 
 		$this->_ini = &$ini;
 
@@ -52,7 +52,7 @@ class xivo_user
 		if($ini === null)
 		{
 			if(($ini = xivo::load_init(XIVO_PATH_CONF.XIVO_SEP_DIR.'user.ini')) === false)
-				trigger_error('User init file not found or unreadable',E_USER_ERROR);
+				trigger_error('User ini file not found or unreadable',E_USER_ERROR);
 		}
 		
 		return(($ref = &$ini));

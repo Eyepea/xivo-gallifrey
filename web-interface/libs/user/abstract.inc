@@ -317,7 +317,7 @@ class xivo_user_abstract
 		$authent = &$ini['authent'];
 
 		if(isset($authent['type']) === false)
-			trigger_error('Missing type user authentification in user init file',E_USER_ERROR);
+			trigger_error('Missing type user authentification in user ini file',E_USER_ERROR);
 
 		$type = $authent['type'];
 

@@ -16,7 +16,7 @@ class xivo_service_asterisk_configfiles extends xivo_service_asterisk_abstract
 		$this->_sre = &$sre;
 
 		if($this->_chk_cfgpath() === false)
-			trigger_error('Invalid or missing configuration path in '.$this->_sre->get_type().' init file',E_USER_ERROR);
+			trigger_error('Invalid or missing configuration path in '.$this->_sre->get_type().' ini file',E_USER_ERROR);
 
 		$this->_load_config();
 	}
