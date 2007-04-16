@@ -499,7 +499,7 @@ class xivo_tpl
 		if($ext === '')
 			$ext = 'php';
 
-		$search = array('@/+@','@^/@','@/$@','..');
+		$search = array('@/+@','@^/@','@/$@','@\.\.@');
 		$replace = array(XIVO_SEP_DIR,'','','');
 
 		$section = preg_replace($search,$replace,$section);
@@ -552,7 +552,8 @@ class xivo_tpl
 			else
 				return($r);
 
-			$section = substr($section,0,strrpos($section,'/'));
+			if(($pos = strrpos($section,'/')) !== false)
+				$section = substr($section,0,$pos);
 		}
 
 		if($cat === true)

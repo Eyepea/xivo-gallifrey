@@ -2,7 +2,7 @@
 
 define('XIVO_PATH_ROOT',dirname(__FILE__));
 
-require_once(XIVO_PATH_ROOT.DIRECTORY_SEPARATOR.'libs'.DIRECTORY_SEPARATOR.'xivo.inc');
+require_once(XIVO_PATH_ROOT.DIRECTORY_SEPARATOR.'object'.DIRECTORY_SEPARATOR.'xivo.inc');
 
 $_XIVO = &xivo_gct::set_get(new xivo());
 
@@ -19,7 +19,5 @@ $_HTML = &new xivo_tpl($_CF['tpl']['www'],array('menu','url','dhtml'));
 
 if(($prepend = $_HTML->get_prepend()) !== false)
 	include($prepend);
-
-//$_TPL = new xivo_tpl(XIVO_PATH_ROOT.'/mail',XIVO_PATH_ROOT.'/tpl/mail',array('menu','dhtml','image'));
 
 ?>

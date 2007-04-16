@@ -7,7 +7,7 @@
 	$act = $this->vars('act');
 	$dir = $this->vars('dir');
 
-	$page = $url->pager($pager['pages'],$pager['page'],$pager['prev'],$pager['next'],'service/ipbx/general_settings/sounds',array('act' => $act));
+	$page = $url->pager($pager['pages'],$pager['page'],$pager['prev'],$pager['next'],'service/ipbx/general_settings/sounds',array('act' => $act,'dir' => $dir));
 ?>
 <div class="b-list">
 <?php
