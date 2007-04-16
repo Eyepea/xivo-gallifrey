@@ -19,8 +19,6 @@ class xivo_i18n
 
 		$this->_dso = new $name($dso);
 
-		//unset($_SESSION['_i18n']);
-
 		if(isset($_SESSION['_i18n']) === false)
 			$_SESSION['_i18n'] = array('babelfish' => array());
 
@@ -520,7 +518,8 @@ class xivo_i18n
 
 						$this->_file = $_file;
 					}
-					else if(preg_match('/^;(\t| )*load(\t| )+(\.\\'.XIVO_SEP_DIR.')?([a-z0-9-_\\'.XIVO_SEP_DIR.']+)$/i',$line,$matchload) === 1)
+					else if(preg_match('/^;(\t| )*load(\t| )+'.
+							   '(\.\\'.XIVO_SEP_DIR.')?([a-z0-9-_\\'.XIVO_SEP_DIR.']+)$/i',$line,$matchload) === 1)
 					{
 						if($priority > 3)
 							continue;

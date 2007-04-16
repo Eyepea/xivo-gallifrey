@@ -12,6 +12,7 @@ $voicemail = &$ipbx->get_module('uservoicemail');
 $extenumbers = &$ipbx->get_module('extenumbers');
 $localexten = $hintsexten = &$ipbx->get_module('extensions');
 $dfeatures = &$ipbx->get_module('didfeatures');
+$autoprov = &$ipbx->get_module('autoprov');
 
 $info = $localexten_where = $extenum_where = $hints_where = $dfeatures_where = array();
 
@@ -142,6 +143,9 @@ for($i = 0;$i < $arr['cnt'];$i++)
 
 		if(($info['voicemail'] = $voicemail->get_by_mailbox($info['ufeatures']['number'])) !== false)
 			$voicemail->delete($info['voicemail']['id']);
+
+		if($autoprov->get_by_iduserfeatures($info['ufeatures']['id']) !== false)
+			$autoprov->userdeleted($info['ufeatures']['id']);
 	}
 }
 

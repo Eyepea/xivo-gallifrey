@@ -4,8 +4,17 @@ $array = array();
 
 $array['element'] = array();
 
+$array['element']['id'] = array();
+$array['element']['id']['default'] = '';
+
 $array['element']['name'] = array();
 $array['element']['name']['default'] = '';
+
+$array['element']['number'] = array();
+$array['element']['number']['default'] = '';
+
+$array['element']['meetmeid'] = array();
+$array['element']['meetmeid']['default'] = '';
 
 $array['element']['mode'] = array();
 $array['element']['mode']['value'] = array('all','talk','listen');
@@ -13,6 +22,9 @@ $array['element']['mode']['default'] = 'all';
 
 $array['element']['musiconhold'] = array();
 $array['element']['musiconhold']['default'] = '';
+
+$array['element']['context'] = array();
+$array['element']['context']['default'] = '';
 
 $array['element']['exit'] = array();
 $array['element']['exit']['value'] = array(0,1);
@@ -33,9 +45,6 @@ $array['element']['video'] = array();
 $array['element']['video']['value'] = array(0,1);
 $array['element']['video']['default'] = 0;
 $array['element']['video']['set'] = true;
-
-$array['element']['context'] = array();
-$array['element']['context']['default'] = '';
 
 $array['filter'] = array();
 $array['filter']['name'] = array('minlen' => 1,'maxlen' => 128);

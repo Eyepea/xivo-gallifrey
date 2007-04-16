@@ -7,7 +7,7 @@ class xivo_service
 
 	function xivo_service($ini)
 	{
-		if(($this->_conf = xivo_gat::load_get('service',XIVO_PATH_CONF)) === false)
+		if(($this->_conf = xivo_gat::load_get('service',XIVO_PATH_APPCONF)) === false)
 			trigger_error('Failed to load service Array',E_USER_ERROR);	
 
 		if(($arr = xivo_get_aks($ini)) === false)
@@ -92,7 +92,7 @@ class xivo_service
 		if(preg_match('/^[a-z0-9\-_]+$/i',$name) !== 1)
 			return(false);
 
-		return(xivo::load_init(XIVO_PATH_INIT.XIVO_SEP_DIR.$name.'.ini'));
+		return(xivo::load_init(XIVO_PATH_CONF.XIVO_SEP_DIR.$name.'.ini'));
 	}
 
 	function _set($name,&$obj)

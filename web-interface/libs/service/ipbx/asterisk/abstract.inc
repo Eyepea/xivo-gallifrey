@@ -49,6 +49,34 @@ class xivo_service_asterisk_abstract
 		return($this->_conf['element']);
 	}
 
+	function get_elements_where($where)
+	{
+		$r = false;
+
+		if(is_array($where) === false || xivo_issa('element',$this->_conf) === false)
+			return($r);
+
+		$arr_keys = array_keys($this->_conf['element']);
+
+		if(($nb = count($arr_keys)) === 0)
+			return($r);
+
+		$r = array();
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			$key = &$arr_keys[$i];
+
+			if(array_key_exists($key,$where) === true && $this->unset_element_value($key) === false)
+				$r[$key] = $where[$key];
+		}
+
+		if(empty($r) === true)
+			$r = false;
+
+		return($r);
+	}
+
 	function get_element_value($key)
 	{
 		$key = (string) $key;

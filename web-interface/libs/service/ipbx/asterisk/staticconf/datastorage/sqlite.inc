@@ -63,17 +63,15 @@ class xivo_service_asterisk_staticconf_sqlite
 		return($r);
 	}
 
-	function edit_where($arr,$where,$disable=null)
+	function edit_where($arr,$values,$disable=null)
 	{
-		if(($where = $this->_dso->where($where)) === false)
-			return($r);
+		if(($where = $this->_dso->where($arr)) === false)
+			return(false);
 
 		if($disable !== null)
 			$where .= ' AND commented = '.intval((bool) $disable);
 
-		$r = $this->_dso->update($this->_param['table'],$arr,$where);
-
-		return($r);
+		$r = $this->_dso->update($this->_param['table'],$values,$where);
 	}
 
 	function delete($id)

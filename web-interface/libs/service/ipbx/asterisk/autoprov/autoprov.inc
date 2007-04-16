@@ -239,6 +239,21 @@ class xivo_service_asterisk_autoprov extends xivo_service_asterisk_abstract
 		return(true);
 	}
 
+	function userdeleted($iduserfeatures)
+	{
+		if(($id = xivo_uint($iduserfeatures)) === 0)
+			return(false);
+
+		$r = array();
+		$r['actions'] = 'no';
+		$r['iduserfeatures'] = $id;
+
+		if($this->_send_sockprov_mode('userdeleted',$r) === false)
+			return(false);
+
+		return(true);
+	}
+
 	function get($macaddr)
 	{
 		if(($r = $this->_dso->get($macaddr)) === false)

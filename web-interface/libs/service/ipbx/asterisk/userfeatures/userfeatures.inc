@@ -130,6 +130,18 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		return($this->_dso->edit($id,$arr));
 	}
 
+	function edit_where($arr,$values)
+	{
+		$arr = (array) $arr;
+
+		if(is_array($values) === false
+		|| ($where = $this->get_elements_where($arr)) === false
+		|| ($values = $this->chk_set_values($values,true,true)) === false)
+			return(false);
+
+		return($this->_dso->edit_where($where,$values));
+	}
+
 	function delete($id)
 	{
 		if(($id = xivo_uint($id)) === 0)

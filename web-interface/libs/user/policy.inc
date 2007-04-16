@@ -8,7 +8,7 @@ class xivo_user_policy
 
 	function xivo_user_policy(&$dso,$factory=true)
 	{
-		if(($this->_conf = xivo_gat::load_get('policy',XIVO_PATH_CONF)) === false)
+		if(($this->_conf = xivo_gat::load_get('policy',XIVO_PATH_APPCONF)) === false)
 			trigger_error('Failed to load user Array',E_USER_ERROR);
 
 		if(is_object($dso) === false)

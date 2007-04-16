@@ -51,7 +51,7 @@ class xivo_user
 
 		if($ini === null)
 		{
-			if(($ini = xivo::load_init(XIVO_PATH_INIT.XIVO_SEP_DIR.'user.ini')) === false)
+			if(($ini = xivo::load_init(XIVO_PATH_CONF.XIVO_SEP_DIR.'user.ini')) === false)
 				trigger_error('User init file not found or unreadable',E_USER_ERROR);
 		}
 		

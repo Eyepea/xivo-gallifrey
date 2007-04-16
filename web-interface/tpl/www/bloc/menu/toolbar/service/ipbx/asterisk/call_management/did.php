@@ -3,7 +3,7 @@
 
 	$act = $this->vars('act');
 
-	echo $url->href_html($url->img_html('img/menu/top/toolbar/bt-add.gif',$this->bbf('toolbar_opt_add'),'border="0"'),'service/ipbx/call_management/did','act=add');
+	echo $url->href_html($url->img_html('img/menu/top/toolbar/bt-add.gif',$this->bbf('toolbar_opt_add'),'border="0"'),'service/ipbx/call_management/did','act=add',null,$this->bbf('toolbar_opt_add'));
 
 	if($act === 'list'):
 ?>

@@ -53,6 +53,14 @@ class xivo_service_asterisk_generalsip extends xivo_service_asterisk_staticconf
 		return(parent::edit($id,$arr));
 	}
 
+	function edit_where($arr,$val,$disable=null)
+	{
+		$arr = (array) $arr;
+		$arr['category'] = $this->_category;
+
+		return(parent::edit_where($arr,$val,$disable));
+	}
+
 	function replace_by_name($name,$arr)
 	{
 		$arr = (array) $arr;

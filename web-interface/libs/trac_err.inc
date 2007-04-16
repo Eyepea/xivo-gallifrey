@@ -18,7 +18,7 @@ class xivo_trac_err
 	{
 		$param = (array) $param;
 
-		if(($this->_conf = xivo_gat::load_get('trac_err',XIVO_PATH_CONF)) === false)
+		if(($this->_conf = xivo_gat::load_get('trac_err',XIVO_PATH_APPCONF)) === false)
 			die('Failed to load trac_err Array');
 
 		if(isset($param['level']) === true && ($param['level'] = $this->_chk_level($param['level'])) !== false)

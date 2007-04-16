@@ -97,7 +97,7 @@ $array = array(
 	'sl' => array('default' => 'sl_SI','locale' => array('sl_SI' => 1)),
 	'so' => array('default' => 'so_SO','locale' => array('so_DJ' => 1,'so_ET' => 1,'so_KE' => 1,'so_SO' => 1)),
 	'sq' => array('default' => 'sq_AL','locale' => array('sq_AL' => 1)),
-	'sr' => array('default' => 'sr_CS','locale' => array('sr_CS' => 1)),
+	'sr' => array('default' => 'sr_CS','locale' => array('sr_CS' => 1,'sr_ME' => 1,'sr_RS' => 1)),
 	'ss' => array('default' => 'ss_ZA','locale' => array('ss_ZA' => 1)),
 	'st' => array('default' => 'st_ZA','locale' => array('st_ZA' => 1)),
 	'sv' => array('locale' => array('sv_FI' => 1,'sv_SE' => 1)),

@@ -89,6 +89,7 @@ pre {text-align: left;}
 
 #b-tmenu #loginbox {color: #fff;float: right;margin: 0px 20px 20px;background-image: url(../img/menu/top/login/bg.gif);background-repeat: repeat-x;background-position: left top;}
 #b-tmenu #loginbox span {font-size: 9pt;padding: 0px 30px 3px;vertical-align: top;}
+#b-tmenu #loginbox span b {color: #055a82;}
 
 /*#b-tmenu .login {font-size: 1pt;text-align: right;vertical-align: top;margin: 0px 20px 20px auto;width: 300px;}
 #b-tmenu .login h1 {font-size: 9pt;background-image: url(../img/menu/top/login/bg.gif);background-position: left bottom;}

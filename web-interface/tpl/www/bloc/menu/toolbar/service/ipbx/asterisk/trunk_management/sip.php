@@ -2,7 +2,7 @@
 	$url = &$this->get_module('url');
 	$act = $this->vars('act');
 ?>
-<?=$url->href_html($url->img_html('img/menu/top/toolbar/bt-add.gif',$this->bbf('toolbar_opt_add'),'border="0"'),'service/ipbx/trunk_management/sip','act=add');?>
+<?=$url->href_html($url->img_html('img/menu/top/toolbar/bt-add.gif',$this->bbf('toolbar_opt_add'),'border="0"'),'service/ipbx/trunk_management/sip','act=add',null,$this->bbf('toolbar_opt_add'));?>
 <?php
 	if($act === 'list'):
 ?>

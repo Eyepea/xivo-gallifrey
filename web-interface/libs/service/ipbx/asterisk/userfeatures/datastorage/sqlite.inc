@@ -83,6 +83,14 @@ class xivo_service_asterisk_userfeatures_sqlite
 		return($r);
 	}
 
+	function edit_where($arr,$values)
+	{
+		if(($where = $this->_dso->where($arr)) === false)
+			return(false);
+
+		$r = $this->_dso->update($this->_param['table'],$values,$where);
+	}
+
 	function delete($id)
 	{
 		if(($id = xivo_uint($id)) === 0)

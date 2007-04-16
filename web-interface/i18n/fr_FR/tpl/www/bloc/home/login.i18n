@@ -1,8 +1,14 @@
+; title_content_name
+Connexion
+
 ; fm_login
 Pseudo
 
 ; fm_password
 Mot de passe
+
+; fm_language
+Langage :
 
 ; fm_bt-connection
 Connexion

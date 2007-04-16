@@ -6,6 +6,7 @@ $qmember = &$ipbx->get_module('queuemember');
 $ugroup = &$ipbx->get_module('usergroup');
 $extenumbers = &$ipbx->get_module('extenumbers');
 $localexten = $hintsexten = &$ipbx->get_module('extensions');
+$autoprov = &$ipbx->get_module('autoprov');
 
 $info = array();
 
@@ -130,6 +131,9 @@ do
 
 	if(($info['voicemail'] = $voicemail->get_by_mailbox($info['ufeatures']['number'])) !== false)
 		$voicemail->delete($info['voicemail']['id']);
+
+	if($autoprov->get_by_iduserfeatures($info['ufeatures']['id']) !== false)
+		$autoprov->userdeleted($info['ufeatures']['id']);
 }
 while(false);
 

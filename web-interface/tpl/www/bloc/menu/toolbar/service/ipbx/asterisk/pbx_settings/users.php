@@ -12,7 +12,7 @@
 <form action="#" method="post" accept-charset="utf-8">
 <?=$form->hidden(array('name' => XIVO_SESS_NAME,'value' => XIVO_SESS_ID));?>
 <?=$form->hidden(array('name' => 'act','value' => 'search'));?>
-	<div class="fm-field"><?=$form->text(array('name' => 'search','id' => 'it-search','size' => 20,'field' => false,'value' => $search),'onfocus="this.value = this.value == \''.xivo_alttitle($this->bbf('toolbar_fm_search')).'\' ? \'\' : this.value; this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?><?=$form->bimg(array('name' => 'submit','id' => 'it-subsearch','src' => $url->img('img/menu/top/toolbar/bt-search.gif'),'field' => false,'alt' => $this->bbf('toolbar_fm_search')));?></div>
+	<div class="fm-field"><?=$form->text(array('name' => 'search','id' => 'it-search','size' => 20,'field' => false,'value' => $search),'onfocus="this.value = this.value == \''.xivo_stript($this->bbf('toolbar_fm_search')).'\' ? \'\' : this.value; this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?><?=$form->bimg(array('name' => 'submit','id' => 'it-subsearch','src' => $url->img('img/menu/top/toolbar/bt-search.gif'),'field' => false,'alt' => $this->bbf('toolbar_fm_search')));?></div>
 </form>
 	<?=$url->href_html($url->img_html('img/menu/top/toolbar/bt-add.gif',$this->bbf('toolbar_opt_add'),'border="0"'),'service/ipbx/pbx_settings/users','act=add',null,$this->bbf('toolbar_opt_add'));?>
 <?php

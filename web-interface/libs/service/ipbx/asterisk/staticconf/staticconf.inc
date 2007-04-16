@@ -227,6 +227,49 @@ class xivo_service_asterisk_staticconf extends xivo_service_asterisk_abstract
 		return(false);
 	}
 
+	function edit_where($arr,$val,$disable=null)
+	{
+		$arr = (array) $arr;
+
+		if(is_array($val) === false)
+			return(false);
+
+		$values = array();
+
+		if(array_key_exists('commented',$val) === true)
+			$values['commented'] = (bool) intval($val['commented']);
+
+		if(array_key_exists('category',$val) === true)
+			$values['category'] = $val['category'];
+
+		if(array_key_exists('var_name',$val) === true)
+			$values['var_name'] = $val['var_name'];
+
+		if(array_key_exists('var_val',$val) === true)
+			$values['var_val'] = $val['var_val'];
+
+		if(empty($values) === true)
+			return(false);
+
+		$where = array();
+
+		$where['filename'] = $this->_filename;
+
+		if(array_key_exists('id',$arr) === true)
+			$where['id'] = $arr['id'];
+
+		if(array_key_exists('category',$arr) === true)
+			$where['category'] = $arr['category'];
+
+		if(array_key_exists('var_name',$arr) === true)
+			$where['var_name'] = $arr['var_name'];
+
+		if(array_key_exists('var_val',$arr) === true)
+			$where['var_val'] = $arr['var_val'];
+
+		return($this->_dso->edit_where($where,$values,$disable));
+	}
+
 	function replace_by_name($name,$arr)
 	{
 		if(isset($arr['var_name']) === false)
