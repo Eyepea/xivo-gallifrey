@@ -9,7 +9,7 @@
 			var xivo_sess_name = '<?=XIVO_SESS_NAME?>';
 			var xivo_sess_id = '<?=XIVO_SESS_ID?>';
 			var xivo_sess_str = '<?=XIVO_SESS_STR?>';
-			var xivo_ctrl_path_info = '<?=$this->get_option('ctrl_path_info');?>';
+			var xivo_api_path_info = '<?=$this->get_option('api_path_info');?>';
 		</script>
 		<!-- Date: <?=strftime('%Y-%m-%d %H:%M')?> -->
 <?php

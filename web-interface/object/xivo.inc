@@ -422,10 +422,10 @@ class xivo
 			else
 				die('ERR: Missing or invalid script_path in '.$k.' for template configuration in Xivo ini file');
 
-			if(isset($v['control_path']) === true && ($control_path = xivo_file::is_d_r($v['control_path'])) !== false)
-				$this->_conf['tpl'][$k]['control_path'] = $control_path;
+			if(isset($v['application_path']) === true && ($application_path = xivo_file::is_d_r($v['application_path'])) !== false)
+				$this->_conf['tpl'][$k]['application_path'] = $application_path;
 			else
-				die('ERR: Missing or invalid control_path in '.$k.' for template configuration in Xivo ini file');
+				die('ERR: Missing or invalid application_path in '.$k.' for template configuration in Xivo ini file');
 
 			if(isset($v['tpl_path']) === true && ($tpl_path = xivo_file::is_d_r($v['tpl_path'])) !== false)
 				$this->_conf['tpl'][$k]['tpl_path'] = $tpl_path;

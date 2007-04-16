@@ -786,7 +786,7 @@ function xivo_smenu_over(obj,cname,last)
 
 function xivo_menu_active()
 {
-	var xivo_menu_active = 'mn-'+xivo_ctrl_path_info.replace(/\//g,'--');
+	var xivo_menu_active = 'mn-'+xivo_api_path_info.replace(/\//g,'--');
 	xivo_menu_active = xivo_menu_active.replace(/_/g,'-');
 
 	if((xivo_menu_active = xivo_eid(xivo_menu_active)) != false)

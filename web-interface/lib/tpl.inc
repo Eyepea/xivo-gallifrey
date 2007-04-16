@@ -17,8 +17,8 @@ class xivo_tpl
 		if(isset($param['script_path']) === false || ($script_path = xivo_file::is_d_r($param['script_path'])) === false)
 			trigger_error('Missing or invalid parameter script_path in '.__CLASS__,E_USER_ERROR);
 
-		if(isset($param['control_path']) === false || ($control_path = xivo_file::is_d_r($param['control_path'])) === false)
-			trigger_error('Missing or invalid parameter control_path in '.__CLASS__,E_USER_ERROR);
+		if(isset($param['application_path']) === false || ($application_path = xivo_file::is_d_r($param['application_path'])) === false)
+			trigger_error('Missing or invalid parameter application_path in '.__CLASS__,E_USER_ERROR);
 
 		if(isset($param['tpl_path']) === false || ($tpl_path = xivo_file::is_d_r($param['tpl_path'])) === false)
 			trigger_error('Missing or invalid parameter tpl_path in '.__CLASS__,E_USER_ERROR);
@@ -34,7 +34,7 @@ class xivo_tpl
 			$tpl_dir = '';
 
 		$this->set_option('script_path',$script_path);
-		$this->set_option('control_path',$control_path);
+		$this->set_option('application_path',$application_path);
 		$this->set_option('tpl_path',$tpl_path);
 		$this->set_option('tpl_dir',$tpl_dir);
 		$this->set_option('script_root',$script_root);
@@ -484,7 +484,7 @@ class xivo_tpl
 		return($r);
 	}
 
-	function get_control($section,$nb=0,$path='',$ext='')
+	function get_application($section,$nb=0,$path='',$ext='')
 	{
 		$r = false;
 
@@ -523,12 +523,12 @@ class xivo_tpl
 			}
 		}
 
-		$this->set_option('ctrl_path_info',$path);
-		$this->set_option('ctrl_section_info',$section);
+		$this->set_option('api_path_info',$path);
+		$this->set_option('api_section_info',$section);
 
 		$dir = XIVO_SEP_DIR.trim($section.XIVO_SEP_DIR.$path,XIVO_SEP_DIR).'.'.$ext;
 
-		$r = xivo_file::is_f_r($this->get_option('control_path').$dir);
+		$r = xivo_file::is_f_r($this->get_option('application_path').$dir);
 
 		return($r);
 	}

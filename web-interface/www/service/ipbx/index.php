@@ -13,10 +13,10 @@ $dhtml->set_css('css/service/ipbx/'.$service_name.'.css');
 
 $_HTML->load_i18n_file('struct/service/ipbx/'.$service_name);
 
-$control = $_HTML->get_control('service/ipbx/'.$service_name,2);
+$application = $_HTML->get_application('service/ipbx/'.$service_name,2);
 
-if($control !== false)
-	die(include($control));
+if($application !== false)
+	die(include($application));
 
 $menu = &$_HTML->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_infos('meta'));
