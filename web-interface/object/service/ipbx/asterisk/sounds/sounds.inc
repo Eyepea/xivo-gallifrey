@@ -146,24 +146,23 @@ class xivo_service_asterisk_sounds extends xivo_service_asterisk_abstract
 
 	function add($name,$tmpname)
 	{
-		$r = false;
-
 		$name = (string) $name;
 		$tmpname = (string) $tmpname;
 
 		$file = $this->_sndpath.XIVO_SEP_DIR.$name;
 
 		if(xivo_file::is_f($tmpname) === false || xivo_file::is_f($file) !== false
-		|| xivo_file::is_d_rwx($this->_sndpath) === false)
-			return($r);
+		|| xivo_file::is_d_rwx($this->_sndpath) === false
+		|| move_uploaded_file($tmpname,$file) === false)
+			return(false);
 
-		return(move_uploaded_file($tmpname,$file));
+		chmod($file,0664);
+
+		return(true);
 	}
 
 	function edit($name,$newname)
 	{
-		$r = false;
-
 		$name = (string) $name;
 		$newname = (string) $newname;
 
@@ -171,10 +170,13 @@ class xivo_service_asterisk_sounds extends xivo_service_asterisk_abstract
 		$newfile = $this->_sndpath.XIVO_SEP_DIR.$newname;
 
 		if(xivo_file::is_f($file) === false || xivo_file::is_f($newfile) !== false
-		|| xivo_file::is_d_rwx($this->_sndpath) === false)
-			return($r);
+		|| xivo_file::is_d_rwx($this->_sndpath) === false
+		|| rename($file,$newfile) === false)
+			return(false);
 
-		return(rename($file,$newfile));
+		chmod($newfile,0664);
+
+		return(true);
 	}
 
 	function delete($name)

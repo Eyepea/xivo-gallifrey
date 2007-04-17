@@ -77,7 +77,7 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 			return(false);
 
 		if(isset($arr['commented']) === true)
-			$r['commented'] = (bool) $arr['commented'];
+			$arr['commented'] = (bool) $arr['commented'];
 
 		return($this->_dso->edit($id,$arr));
 	}

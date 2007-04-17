@@ -330,7 +330,7 @@ switch($act)
 
 			$qmember = &$ipbx->get_module('queuemember');
 
-			if($qmember->update_by_name($info['queue']['name'],array('queue_name' => $result['queue']['name'])) === false)
+			if($qmember->edit_where(array('queue_name' => $info['queue']['name']),array('queue_name' => $result['queue']['name'])) === false)
 			{
 				$gfeatures->edit_origin();
 				$queue->edit_origin();

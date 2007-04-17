@@ -34,7 +34,6 @@ include(dirname(__FILE__).'/iax/'.$action.'.php');
 
 $_HTML->assign('act',$act);
 $_HTML->assign('element',$element);
-$_HTML->assign('info',$info);
 
 $menu = &$_HTML->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_infos('meta'));

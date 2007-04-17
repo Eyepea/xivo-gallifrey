@@ -1,41 +1,52 @@
 <?php
 
+$allow = array();
+
+$result = null;
+
+$add = true;
+
 do
 {
 	if(isset($_QR['fm_send']) === false || xivo_issa('trunk',$_QR) === false)
 		break;
+
+	$result = array();
 
 	$register = '';
 	$generaliax = &$ipbx->get_module('generaliax');
 
 	do
 	{
-		$info['register'] = array();
-
-		if(xivo_issa('register',$_QR) === false
-		|| isset($_QR['register']['username'],$_QR['register']['password'],$_QR['register']['host']) === false)
+		if(xivo_issa('register',$_QR) === false)
 			break;
 
-		if(($info['register']['username'] = $generaliax->chk_value('register_username',$_QR['register']['username'])) === false
-		|| ($info['register']['password'] = $generaliax->chk_value('register_password',$_QR['register']['password'])) === false
-		|| ($info['register']['host'] = $generaliax->chk_value('register_host',$_QR['register']['host'])) === false)
+		$result['register'] = array();
+		$result['register']['commented'] = 0;
+
+		if(isset($_QR['register']['username'],$_QR['register']['password'],$_QR['register']['host']) === false)
 			break;
 
-		$register = $info['register']['username'].':'.$info['register']['password'];
+		if(($result['register']['username'] = $generaliax->chk_value('register_username',$_QR['register']['username'])) === false
+		|| ($result['register']['password'] = $generaliax->chk_value('register_password',$_QR['register']['password'])) === false
+		|| ($result['register']['host'] = $generaliax->chk_value('register_host',$_QR['register']['host'])) === false)
+			break;
+
+		$register = $result['register']['username'].':'.$result['register']['password'];
 
 		if(isset($_QR['register']['authuser']) === true
-		&& ($info['register']['authuser'] = $generaliax->set_chk_value('register_authuser',$_QR['register']['authuser'])) !== '')
-			$register .= ':'.$info['register']['authuser'];
+		&& ($result['register']['authuser'] = $generaliax->set_chk_value('register_authuser',$_QR['register']['authuser'])) !== '')
+			$register .= ':'.$result['register']['authuser'];
 
-		$register .= '@'.$info['register']['host'];
+		$register .= '@'.$result['register']['host'];
 
 		if(isset($_QR['register']['port']) === true
-		&& ($info['register']['port'] = $generaliax->set_chk_value('register_port',$_QR['register']['port'])) !== '')
-			$register .= ':'.$info['register']['port'];
+		&& ($result['register']['port'] = $generaliax->set_chk_value('register_port',$_QR['register']['port'])) !== '')
+			$register .= ':'.$result['register']['port'];
 
 		if(isset($_QR['register']['contact']) === true
-		&& ($info['register']['contact'] = $generaliax->set_chk_value('register_contact',$_QR['register']['contact'])) !== '')
-			$register .= '/'.$info['register']['contact'];
+		&& ($result['register']['contact'] = $generaliax->set_chk_value('register_contact',$_QR['register']['contact'])) !== '')
+			$register .= '/'.$result['register']['contact'];
 	}
 	while(false);
 
@@ -43,30 +54,42 @@ do
 
 	if(($result['trunk'] = $trunkiax->chk_values($_QR['trunk'],true,true)) === false)
 	{
-		$info['trunk'] = $trunkiax->get_filter_result();
-		break;
+		$add = false;
+		$result['trunk'] = $trunkiax->get_filter_result();
 	}
 
 	if(is_array($result['trunk']['allow']) === true)
+	{
+		$allow = $result['trunk']['allow'];
 		$result['trunk']['allow'] = implode(',',$result['trunk']['allow']);
+	}
 
-	if(($tid = $trunkiax->add($result['trunk'])) === false)
+	$infotfeatures = array();
+	$infotfeatures['trunk'] = 'iax';
+	$infotfeatures['trunkid'] = 0;
+	$infotfeatures['registerid'] = $registerid;
+
+	if(($result['tfeatures'] = $tfeatures->chk_values($infotfeatures,true,true)) === false)
+	{
+		$add = false;
+		$result['tfeatures'] = $tfeatures->get_filter_result();
+	}
+
+	if($add === false || ($trunkid = $trunkiax->add($result['trunk'])) === false)
 		break;
 
 	if($register !== '' && ($registerid = $generaliax->add_name_val('register',$register)) === false)
 		$registerid = 0;
 
-	$info['tfeatures'] = array();
-	$info['tfeatures']['trunk'] = 'iax';
-	$info['tfeatures']['trunkid'] = $tid;
-	$info['tfeatures']['registerid'] = $registerid;
+	$result['registerid'] = $registerid;
+	$result['trunkid'] = $trunkid;
 
-	if(($result['tfeatures'] = $tfeatures->chk_values($info['tfeatures'],true,true)) === false
-	|| $tfeatures->add($result['tfeatures']) === false)
+	if($tfeatures->add($result['tfeatures']) === false)
 	{
-		$info['tfeatures'] = $tfeatures->get_filter_result();
-		$trunkiax->delete($tid);
-		$generaliax->delete($registerid);
+		$trunkiax->delete($trunkid);
+
+		if($registerid !== 0)
+			$generaliax->delete($registerid);
 		break;
 	}
 
@@ -76,11 +99,25 @@ do
 
 $element['trunk'] = $trunkiax->get_element();
 
-
 if(xivo_issa('allow',$element['trunk']) === true && xivo_issa('value',$element['trunk']['allow']) === true)
 {
-	if(xivo_issa('trunk',$info) === true && xivo_ak('allow',$info['trunk']) === true && empty($info['trunk']['allow']) === false)
-		$element['trunk']['allow']['value'] = array_diff($element['trunk']['allow']['value'],$info['trunk']['allow']);
+	if(empty($allow) === false)
+	{
+		if(is_array($allow) === false)
+			$allow = explode(',',$allow);
+
+		$element['trunk']['allow']['value'] = array_diff($element['trunk']['allow']['value'],$allow);
+	}
 }
+
+if($result !== null)
+{
+	$result['trunk']['allow'] = $allow;
+
+	if(xivo_issa('register',$result) === false)
+		$result['register'] = null;
+}
+
+$_HTML->assign('info',$result);
 
 ?>

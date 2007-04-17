@@ -95,13 +95,12 @@ class xivo_service_asterisk_queuemember_sqlite
 		return($r);
 	}
 
-	function update_by_name($id,$arr)
+	function edit_where($arr,$values)
 	{
-		$id = (string) $id;
+		if(($where = $this->_dso->where($arr)) === false)
+			return(false);
 
-		$r = $this->_dso->update($this->_param['table'],$arr,'queue_name = \''.$this->_dso->escape_string($id).'\'');
-
-		return($r);
+		$r = $this->_dso->update($this->_param['table'],$values,$where);
 	}
 
 	function delete($ids)

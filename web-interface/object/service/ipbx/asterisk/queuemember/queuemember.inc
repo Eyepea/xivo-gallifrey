@@ -6,6 +6,8 @@ class xivo_service_asterisk_queuemember extends xivo_service_asterisk_abstract
 {
 	var $_dso	= null;
 	var $_name	= 'queuemember';
+	var $_filter	= null;
+	var $_origin	= null;
 
 	function xivo_service_asterisk_queuemember(&$sre,&$dso)
 	{
@@ -17,14 +19,42 @@ class xivo_service_asterisk_queuemember extends xivo_service_asterisk_abstract
 
 		$this->_sre = &$sre;
 		$this->_dso = &$dso;
+
+		$this->_load_config();
 	}
 
 	function get($ids,$disable=null)
 	{
-		if(is_array($ids) === false || isset($ids['queue_name'],$ids['interface']) === false)
+		if(is_array($ids) === false || isset($ids['queue_name'],$ids['interface']) === false
+		|| ($r = $this->_dso->get($ids,$disable)) === false)
 			return(false);
 
-		return($this->_dso->get($ids,$disable));
+		$this->_origin = $r;
+
+		return($r);
+	}
+
+	function add_origin()
+	{
+		return($this->_origin('add'));
+	}
+
+	function edit_origin()
+	{
+		return($this->_origin('edit'));
+	}
+
+	function _origin($type)
+	{
+		if(($type !== 'add' && $type !== 'edit') === true || is_array($this->_origin) === false)
+			return(false);
+
+		if($type === 'add')
+			$r = $this->add($this->_origin,array($this->_origin['queue_name'],$this->_origin['interface']));
+		else
+			$r = $this->edit(array($this->_origin['queue_name'],$this->_origin['interface']),$this->_origin);
+
+		return($r);
 	}
 
 	function get_list_by_interface($interface,$disable=null)
@@ -67,63 +97,31 @@ class xivo_service_asterisk_queuemember extends xivo_service_asterisk_abstract
 		if(is_array($arr) === false)
 			return(false);
 
-		$r = array();
-		$r['queue_name'] = $arr['queue_name'];
-		$r['interface'] = $arr['interface'];
-		$r['call_limit'] = xivo_uint($arr['call_limit']);
-
-		return($this->_dso->add($r));
-	}
-
-	function add_list($arr)
-	{
-		$r = false;
-
-		if(is_array($arr) === false)
-			return($r);
-
-		$values = array_values($arr);
-
-		if(($nb = count($values)) === 0)
-			return($r);
-
-		for($i = 0;$i < $nb;$i++)
-			$this->add($arr[$i]);
-
-		return(true);
+		return($this->_dso->add($arr));
 	}
 
 	function edit($ids,$arr)
 	{
-		if(is_array($ids) === false || is_array($arr) === false || isset($ids['queue_name'],$ids['interface']) === false)
+		if(is_array($ids) === false || is_array($arr) === false
+		|| isset($ids['queue_name'],$ids['interface']) === false)
 			return(false);
 
-		$r = array();
-		$r['queue_name'] = $arr['queue_name'];
-		$r['interface'] = $arr['interface'];
-		$r['call_limit'] = xivo_uint($arr['call_limit']);
-		$r['commented'] = 0;
+		if(isset($arr['commented']) === true)
+			$arr['commented'] = (bool) $arr['commented'];
 
-		return($this->_dso->edit($ids,$r));
+		return($this->_dso->edit($ids,$arr));
 	}
 
-	function update_by_name($id,$arr)
+	function edit_where($arr,$values)
 	{
-		if(is_array($arr) === false)
+		$arr = (array) $arr;
+
+		if(is_array($values) === false
+		|| ($where = $this->get_elements_where($arr)) === false
+		|| ($values = $this->chk_set_values($values,true,true)) === false)
 			return(false);
 
-		$r = array();
-
-		if(isset($arr['queue_name']) === true)
-			$r['queue_name'] = $arr['queue_name'];
-
-		if(isset($arr['interface']) === true)
-			$r['interface'] = $arr['interface'];
-
-		if(isset($arr['call_limit']) === true)
-			$r['call_limit'] = xivo_uint($arr['call_limit']);
-
-		return($this->_dso->update_by_name($id,$r));
+		return($this->_dso->edit_where($where,$values));
 	}
 
 	function delete($ids)

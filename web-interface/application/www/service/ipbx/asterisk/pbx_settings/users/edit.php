@@ -16,6 +16,7 @@ $extensions = &$ipbx->get_module('extensions');
 $extenumbers = &$ipbx->get_module('extenumbers');
 $musiconhold = &$ipbx->get_module('musiconhold');
 $ugroup = &$ipbx->get_module('usergroup');
+$qmember = &$ipbx->get_module('queuemember');
 $voicemail = &$ipbx->get_module('uservoicemail');
 $autoprov = &$ipbx->get_module('autoprov');
 
@@ -594,9 +595,6 @@ do
 		}
 	}
 
- 	$mqueues = array();
-	$qmember = &$ipbx->get_module('queuemember');
-
 	$interface = $ipbx->mk_interface($info['protocol']['name'],
 					 $info['ufeatures']['protocol'],
 					 $info['ufeatures']['number'],
@@ -640,11 +638,11 @@ do
 					continue;
 				}
 
-				$mqueues = array('queue_name'	=> $ginfo['name'],
-						 'interface'	=> $interface,
-						 'call_limit'	=> $result['ufeatures']['simultcalls']);
+				$mqinfo = array('queue_name'	=> $ginfo['name'],
+						'interface'	=> $new_interface,
+						'call_limit'	=> $result['ufeatures']['simultcalls']);
 
-				if($qmember->add($mqueues) === false)
+				if(($mqinfo = $qmember->chk_values($mqinfo,true,true)) === false || $qmember->add($mqinfo) === false)
 				{
 					unset($groups[$i]);
 					continue;
@@ -659,7 +657,7 @@ do
 				if($status['usergroup'] === 'edit')
 					$status['usergroup'] = 'delete';
 
-				$qmember->delete_by_interface($interface);
+				$qmember->delete_by_interface($new_interface);
 			}
 
 			switch($status['usergroup'])

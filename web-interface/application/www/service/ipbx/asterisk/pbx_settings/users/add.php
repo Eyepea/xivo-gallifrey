@@ -6,6 +6,7 @@ $extensions = &$ipbx->get_module('extensions');
 $extenumbers = &$ipbx->get_module('extenumbers');
 $musiconhold = &$ipbx->get_module('musiconhold');
 $ugroup = &$ipbx->get_module('usergroup');
+$qmember = &$ipbx->get_module('queuemember');
 $voicemail = &$ipbx->get_module('uservoicemail');
 $autoprov = &$ipbx->get_module('autoprov');
 
@@ -129,18 +130,30 @@ do
 
 		if(($nb = count($arr_group)) !== 0)
 		{
-			$infogrps = array();
+			$infomqueue = array();
 			$usergroup = false;
 
 			if(isset($_QR['usergroup']) === false || xivo_bool($result['ufeatures']['ringgroup']) === false)
 				$_QR['usergroup'] = false;
+
+			$interface = $ipbx->mk_interface($result['protocol']['name'],
+							 $result['ufeatures']['protocol'],
+							 $result['ufeatures']['number'],
+							 $result['protocol']['context']);
 
 			for($i = 0;$i < $nb;$i++)
 			{
 				if(($ginfo = $gfeatures->get($arr_group[$i],false)) === false)
 					continue;
 
-				$infogrps[] = $ginfo;
+				$mqinfo = array('queue_name'	=> $ginfo['name'],
+						'interface'	=> $interface,
+						'call_limit'	=> $result['ufeatures']['simultcalls']);
+
+				if(($mqinfo = $qmember->chk_values($mqinfo,true,true)) === false)
+					continue;
+
+				$infomqueue[] = $mqinfo;
 				$groups[] = $ginfo['id'];
 
 				if($_QR['usergroup'] !== false && (int) $ginfo['id'] === (int) $_QR['usergroup'])
@@ -153,7 +166,7 @@ do
 			if($usergroup !== false)
 			{
 				$result['usergroup'] = array();
-				$result['usergroup']['userid'] = $result['userfeatures']['id'];
+				$result['usergroup']['userid'] = 0;
 				$result['usergroup']['groupid'] = $usergroup;
 
 				if(($result['usergroup'] = $ugroup->chk_values($result['usergroup'],true,true)) === false)
@@ -275,17 +288,11 @@ do
 
 	if(isset($groups[0]) === true && $interface !== false)
 	{
-		$qmember = &$ipbx->get_module('queuemember');
-
 		$nb = count($groups);
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			$mqueues = array('queue_name'	=> $infogrps[$i]['name'],
-					 'interface'	=> $interface,
-					 'call_limit'	=> $result['ufeatures']['simultcalls']);
-
-			if($qmember->add($mqueues) === false)
+			if($qmember->add($infomqueue[$i]) === false)
 			{
 				unset($groups[$i]);
 				continue;
@@ -302,7 +309,10 @@ do
 		}
 
 		if($add_usergroup !== false && in_array($result['usergroup']['groupid'],$groups) === true)
+		{
+			$result['usergroup']['userid'] = $ufeaturesid;
 			$ugroup->add($result['usergroup']);
+		}
 	}
 
 	if($add_voicemail === true)
@@ -398,6 +408,9 @@ if($result !== null)
 
 	if(xivo_issa('voicemail',$result) === false)
 		$result['voicemail'] = null;
+
+	if(xivo_issa('autoprov',$result) === false)
+		$result['autoprov'] = null;
 }
 
 $_HTML->assign('info',$result);
