@@ -14,7 +14,7 @@ import xml.dom.minidom, xml
 from time import strftime
 import threading
 import signal
-import sip, xivo_ami
+import xivo_sip, xivo_ami
 
 # socket.setdefaulttimeout(0.2)
 

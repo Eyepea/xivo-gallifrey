@@ -1,5 +1,7 @@
 #!/usr/bin/python
-# $Id$
+# $Revision$
+# $Date$
+#
 
 # functions in order to build SIP packets
 
