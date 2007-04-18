@@ -462,6 +462,8 @@ void Engine::keepLoginAlive()
 		return;
 	}
 	QString outline = "ALIVE ";
+	outline.append(m_serverast);
+	outline.append("/");
 	outline.append(m_login);
 	outline.append(" SESSIONID ");
 	outline.append(m_sessionid);
