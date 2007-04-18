@@ -118,7 +118,7 @@ def updateuserlistfromurl(url, sipaccount):
 			l = line.split('|')
 			# line is protocol | username | password | rightflag | phone number | initialized | disabled(=1) | callerid
                         if l[0] == "sip" and l[1] != sipaccount and l[5] == "1" and l[6] == "0":
-				#			    print l[1], ": '" + l[4] + "'"
+				#print l[1], ": '" + l[4] + "'"
 				if l[4] == "":
 					l_sipnumlist["SIP/" + l[1]] = l[7]
 				else:
@@ -219,7 +219,7 @@ class AMI:
 		self.f = s.makefile()
 		s.close()
 		str = self.f.readline()
-#		print str,
+		#print str,
 	def sendcommand(self, action, args):
 		ret = False
 		try:
@@ -245,14 +245,14 @@ class AMI:
 		# for debug
 		while True:
 			str = self.f.readline()
-#			print self.i, len(str), str,
+			#print self.i, len(str), str,
 			self.i = self.i + 1
 	def readresponsechunk(self):
 		start = True
 		list = []
 		while True:
 			str = self.f.readline()
-			print "--------------", self.i, len(str), str,
+			#print "--------------", self.i, len(str), str,
 			self.i = self.i + 1
 			if start and str == '\r\n': continue
 			start = False
@@ -307,7 +307,7 @@ class AMI:
 		channel = ch.split("/")[1] + "/" + ch.split("/")[2]
 		if channel in phonelists[astn][phone].chans:
 			peer = phonelists[astn][phone].chans[channel][3]
-			print "hanging up " + channel + " and " + peer
+			log_debug("UI action : " + configs[astn].astid + " : hanging up " + channel + " and " + peer)
 			try:
 				self.sendcommand('Hangup', [('Channel', channel)])
 				self.readresponse('')
@@ -317,14 +317,13 @@ class AMI:
 			except self.AMIError, e:
 				return False
 		else:
-			print "no channel", channel, "in Asterisk", configs[astn].astid
+			log_debug("UI action : " + configs[astn].astid + " : no channel " + channel)
 			return False
 	def execclicommand(self, command):
 		# special procession for cli commands.
 		self.sendcommand('Command', [('Command', command)])
 		resp = []
 		for i in (1, 2): str = self.f.readline()
-		#for i in (1, 2): print 'discarding line:', self.f.readline(),
 		while True:
 			str = self.f.readline()
 			#print self.i, len(str), str,
@@ -355,7 +354,7 @@ class AMI:
 			channellist = phonelists[astn][phonesrc].chans
 			nopens = len(channellist)
 			if nopens == 0:
-				print "no channel currently open in the phone", phonesrc
+				log_debug("no channel currently open in the phone " + phonesrc)
 			else:
 				self.redirect(channellist[phonesrcchan][3], phonedst, 'local-extensions')
 
@@ -435,7 +434,7 @@ def update_GUI_clients(astnum, sipphone, who):
 		try:
 			tcpclient[0].send("update=" + phoneinfo + ":" + aaa + "\n")
 		except:
-			print "send has failed on", tcpclient[0]
+			log_debug("send has failed on " + str(tcpclient[0]))
 
 
 ## \brief Handles the SIP messages according to their meaning (reply to a formerly sent message).
@@ -450,7 +449,7 @@ def parseSIP(astnum, data, l_sipsock, l_addrsip):
     spret = False
     [icseq, imsg, icid, iaddr, ilength, iret, ibranch, itag] = read_sip_properties(data)
     # if ilength != 11:
-    # print "###", astnum, ilength, icseq, icid, iaddr, imsg, iret, ibranch, itag
+    #print "###", astnum, ilength, icseq, icid, iaddr, imsg, iret, ibranch, itag
 ##    if imsg == "REGISTER" and iret == 200 and icid == "reg_cid@xivopy":
 ##        for k in tcpopens_sb:
 ##            k[0].send("asterisk=registered_" + configs[astnum].astid + "\n")
@@ -523,7 +522,7 @@ def manage_tcp_connection(connid, allow_events):
 			if assrc in asteriskr: idassrc = asteriskr[assrc]
 			if idassrc != -1:
 				if not AMIclasssock[idassrc]:
-					print "AMI was not connected - attempting to connect again"
+					log_debug("AMI was not connected - attempting to connect again")
 					AMIclasssock[idassrc] = connect_to_AMI((configs[idassrc].remoteaddr,
 										configs[idassrc].ami_port),
 									       configs[idassrc].ami_login,
@@ -581,7 +580,7 @@ def is_normal_channel(chan):
 	else: return False
 
 
-## \brief Updates some channels according to the events occuring in the AMI.
+## \brief Updates some channels according to the Dial events occuring in the AMI.
 # \param listkeys the list of allowed phones
 # \param astnum the Asterisk numerical identifier
 # \param src the source channel
@@ -601,7 +600,8 @@ def handle_ami_event_dial(listkeys, astnum, src, dst, clid, clidn):
 		if src in localchans:
 			localchans[src].set_state("Dial")
 			localchans[src].set_peer(dst)
-			print "[watch] dial", localchans[src].state, localchans[src].callerid, localchans[src].peer
+			log_debug("[watch] Local/ Dial : " + src + " " + localchans[src].state + " " + \
+				  localchans[src].callerid + " " + localchans[src].peer)
 		else: notmonitoredsrc[src] = "d"
 	else: notmonitoredsrc[src] = "d"
 
@@ -612,12 +612,12 @@ def handle_ami_event_dial(listkeys, astnum, src, dst, clid, clidn):
 			update_GUI_clients(astnum, sipnum, "ami-ed")
 		else: notmonitoreddst[dst] = "d"
 	elif dst.find("Local/") == 0:
-		print "[watch] Dial to Local/ :", src, dst
+		log_debug("[watch] Dial to Local/ : " + src + " " + dst)
 		notmonitoreddst[dst] = "d"
 	else: notmonitoreddst[dst] = "d"
 
 
-## \brief link events
+## \brief Updates some channels according to the Link events occuring in the AMI.
 # \param listkeys the list of allowed phones
 # \param astnum the Asterisk numerical identifier
 # \param src the source channel
@@ -637,7 +637,8 @@ def handle_ami_event_link(listkeys, astnum, src, dst, clid1, clid2):
 		if src in localchans:
 			localchans[src].set_state("Link")
 			localchans[src].set_peer(dst)
-			print "[watch] link", localchans[src].state, localchans[src].peer, localchans[src].callerid
+			log_debug("[watch] Local/ Link : " + src + " " + localchans[src].state + " " + \
+				  localchans[src].callerid + " " + localchans[src].peer)
 		else: notmonitoredsrc[src] = "l"
 	else: notmonitoredsrc[src] = "l"
 
@@ -649,7 +650,7 @@ def handle_ami_event_link(listkeys, astnum, src, dst, clid1, clid2):
 		else: notmonitoreddst[dst] = "l"
 	elif dst.find("Local/") == 0: # occurs when someone picks up the phone
 		notmonitoreddst[dst] = "l"
-		print "[watch] Link to Local/ :", src, dst
+		log_debug("[watch] Link to Local/ : " + src + " " + dst)
 		# here dst ends with ",1" => binding with the same with ",2"
 		newdst = dst.replace(",1", ",2")
 		if newdst in localchans :
@@ -663,7 +664,7 @@ def handle_ami_event_link(listkeys, astnum, src, dst, clid1, clid2):
 	else: notmonitoreddst[dst] = "l"
 
 
-## \brief hangup
+## \brief Updates some channels according to the Hangup events occuring in the AMI.
 # \param listkeys the list of allowed phones
 # \param astnum the Asterisk numerical identifier
 # \param chan the channel
@@ -684,7 +685,8 @@ def handle_ami_event_hangup(listkeys, astnum, chan, cause):
 	elif chan.find("Local/") == 0:
 		if chan in localchans:
 			localchans[chan].set_state("Hup")
-			print "hup", chan, localchans[chan].state, localchans[chan].peer, localchans[chan].callerid
+			log_debug("[watch] Local/ Hangup : " + chan + " " + localchans[chan].state + " " + \
+				  localchans[chan].callerid + " " + localchans[chan].peer)
 		else:
 			if chan in notmonitoredsrc.keys(): del notmonitoredsrc[chan]
 			if chan in notmonitoreddst.keys(): del notmonitoreddst[chan]
@@ -708,8 +710,8 @@ def handle_ami_event(astnum, idata):
 	for z in evlist:
 		# we assume no ";" character is present in AMI events fields
 		x = z.replace("\r\n", ";")
-##		if x.find("Local/") >= 0 and x.find("Newexten") < 0:
-##			print "LocalChannel : ", x
+		#if x.find("Local/") >= 0 and x.find("Newexten") < 0:
+		#print "LocalChannel : ", x
 		if x.find("Dial;") == 7:
 			src = x.split(";Source: ")[1].split(";")[0]
 			dst = x.split(";Destination: ")[1].split(";")[0]
@@ -759,7 +761,7 @@ def handle_ami_event(astnum, idata):
 			channel_new = x.split(";Newname: ")[1].split(";")[0]
 			if channel_old.find("<MASQ>") < 0 and channel_new.find("<MASQ>") < 0 and \
 			       is_normal_channel(channel_old) and is_normal_channel(channel_new):
-				log_debug("AMI: Rename: " + configs[astnum].astid + " : " + \
+				log_debug("AMI:Rename: " + configs[astnum].astid + " : " + \
 					  "old=" + channel_old + " new=" + channel_new)
 				phone_old = channel_old.split("-")[0]
 				phone_new = channel_new.split("-")[0]
@@ -822,20 +824,17 @@ def handle_ami_event(astnum, idata):
 				for k in tcpopens_sb:
 					k[0].send("asterisk=<" + clid + "> is entering the Asterisk <" + configs[astnum].astid + "> through " + chan + "\n")
 		elif x.find("MessageWaiting;") == 7:
-			log_debug("AMI:MessageWaiting: " + configs[astnum].astid + " : " + x)
-			print configs[astnum].astid, ":", "MWI", \
-			      x.split(";Mailbox: ")[1].split(";")[0], \
-			      "waiting =", x.split(";Waiting: ")[1].split(";")[0],
+			mwi_string = x.split(";Mailbox: ")[1].split(";")[0] + \
+				     " waiting=" + x.split(";Waiting: ")[1].split(";")[0]
 			if int(x.split(";Waiting: ")[1].split(";")[0]) > 0:
-				print "; new =", x.split(";New: ")[1].split(";")[0], \
-				      "; old =", x.split(";Old: ")[1].split(";")[0]
-			else:
-				print
+				mwi_string += "; new=" + x.split(";New: ")[1].split(";")[0] + \
+					      "; old=" + x.split(";Old: ")[1].split(";")[0]
+			log_debug("AMI:MessageWaiting: " + configs[astnum].astid + " : " + mwi_string)
 		elif x.find("Newexten;") == 7: # in order to handle outgoing calls ?
 			chan = x.split(";Channel: ")[1].split(";")[0]
 			exten = x.split(";Extension: ")[1].split(";")[0]
 			if exten != "s" and exten != "h" and exten != "t":
-				# print "--- exten :", chan, exten
+				#print "--- exten :", chan, exten
 				if is_normal_channel(chan):
 					sipnum = chan.split("-")[0]
 					if sipnum in listkeys:
@@ -871,8 +870,8 @@ def handle_ami_status(astnum, idata):
 	for z in evlist:
 		# we assume no ";" character is present in AMI events fields
 		x = z.replace("\r\n", ";")
-##		if len(x) > 0:
-##			print "statuses --FULL--", x
+		#if len(x) > 0:
+		#print "statuses --FULL--", x
 		if x.find("Status;") == 7:
 			if x.find(";State: Up;") >= 0:
 				if x.find(";Seconds: ") >= 0:
@@ -882,7 +881,7 @@ def handle_ami_status(astnum, idata):
 					seconds = x.split(";Seconds: ")[1].split(";")[0]
 					if x.find(";Link: ") >= 0:
 						link = x.split(";Link: ")[1].split(";")[0]
-						#  print "statuses up --------", chan, clid, exten, seconds, link
+						#print "statuses up --------", chan, clid, exten, seconds, link
 						if is_normal_channel(link):
 							sipnum = link.split("-")[0]
 							if sipnum in listkeys:
@@ -894,19 +893,17 @@ def handle_ami_status(astnum, idata):
 								phonelists[astnum][sipnum].set_chan(chan, "On the phone", int(seconds), dir_to_string, link, exten)
 								update_GUI_clients(astnum, sipnum, "001")
 					else:
-						print "statuses up --------", chan, clid, exten, seconds
+						log_debug("AMI::Status UP: " + chan + " " + clid + " " + exten + " " + seconds)
 			elif x.find(";State: Ring;") >= 0:
-				print "statuses to --------", \
-				      x.split(";Channel: ")[1].split(";")[0], \
-				      x.split(";Extension: ")[1].split(";")[0], \
-				      x.split(";Seconds: ")[1].split(";")[0]
+				log_debug("AMI::Status TO: " + x.split(";Channel: ")[1].split(";")[0] + \
+					  " " + x.split(";Extension: ")[1].split(";")[0] + \
+					  " " + x.split(";Seconds: ")[1].split(";")[0])
 			elif x.find(";State: Ringing;") >= 0:
-				print "statuses fr --------", \
-					  x.split(";Channel: ")[1].split(";")[0]
+				log_debug("AMI::Status FROM: " + x.split(";Channel: ")[1].split(";")[0])
 
-## \brief sends a SIP register + n x SIP subscribe messages
+## \brief Sends a SIP register + n x SIP subscribe messages.
 # \param astnum the asterisk numerical identifier
-# \param l_sipsock b
+# \param l_sipsock the SIP socket where to reply
 # \return
 def do_sip_register_subscribe(astnum, l_sipsock):
     global tcpopens_sb, phonelists, configs
@@ -936,7 +933,7 @@ def do_sip_register_subscribe(astnum, l_sipsock):
 ##        l_sipsock.sendto(command, (configs[n].remoteaddr, configs[n].portsipsrv))
 
 
-## \brief updates the list of sip numbers according to the sso then sends old and new peers to the UIs
+## \brief Updates the list of sip numbers according to the SSO then sends old and new peers to the UIs.
 # \param astnum the asterisk numerical identifier
 # \return none
 # \sa updateuserlistfromurl
@@ -1066,7 +1063,7 @@ class LineProp:
 	def set_chan_hangup(self, ichan):
 		nichan = ichan
 		if ichan.find("<ZOMBIE>") >= 0:
-			print "sch channel contains a <ZOMBIE> part :", ichan, ": sending hup to", nichan, "anyway"
+		        log_debug("sch channel contains a <ZOMBIE> part : " + ichan + " : sending hup to " + nichan + "anyway")
 			nichan = ichan.split("<ZOMBIE>")[0]
 		firsttime = time.time()
 		self.chans[nichan] = ["Hangup", 0, "", "", "", firsttime]
@@ -1075,7 +1072,7 @@ class LineProp:
 	def del_chan(self, ichan):
 		nichan = ichan
 		if ichan.find("<ZOMBIE>") >= 0:
-			print "dch channel contains a <ZOMBIE> part :", ichan, ": deleting", nichan, "anyway"
+		        log_debug("dch channel contains a <ZOMBIE> part : " + ichan + " : deleting " + nichan + "anyway")
 			nichan = ichan.split("<ZOMBIE>")[0]
 		try:
 			del self.chans[nichan]
@@ -1130,7 +1127,7 @@ def deluser(user):
 	if userlist.has_key(user):
 		userlist.pop(user)
 
-## \brief returns the user from the list
+## \brief Returns the user from the list.
 # \param user searched for
 # \return user found, otherwise None
 def finduser(user):
@@ -1200,7 +1197,7 @@ class LoginHandler(SocketServer.StreamRequestHandler):
 		userlist_lock.release()
 		retline = 'OK SESSIONID ' + sessionid + '\r\n'
 		self.wfile.write(retline)
-##		if __debug__: print userlist
+		#print userlist
 
 
 # IdentRequestHandler: give client identification to the profile pusher
@@ -1287,7 +1284,7 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
 			n = asteriskr[astname_xivoc]
 			if n >= 0:
 				sipnumber = user.split("sip")[1]
-#				print "    from Xivo client", self.client_address, user, sipnumber, sessionid, ip, state
+				#print "    from Xivo client", self.client_address, user, sipnumber, sessionid, ip, state
 				phonelists[n]["SIP/" + sipnumber].set_imstat(state)
 				update_GUI_clients(n, "SIP/" + sipnumber, "kfc")
 
@@ -1432,13 +1429,13 @@ for n in items_asterisks:
 	lastrequest_time.append(time.time())
 
 
-## \brief useful signals are catched here (in the main thread)
+## \brief Handler for catching signals (in the main thread)
 # \param signum signal number
 # \param frame frame
 # \return none
 def sighandler(signum, frame):
 	global askedtoquit
-	print 'signal', signum, 'received, quitting' 
+	print "signal", signum, "received : quitting"
 	askedtoquit = True
 
 signal.signal(signal.SIGINT, sighandler)
