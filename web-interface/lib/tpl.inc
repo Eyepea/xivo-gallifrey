@@ -40,7 +40,7 @@ class xivo_tpl
 		$this->set_option('script_root',$script_root);
 		$this->set_option('i18n_namespace','tpl::'.$tpl_dir);
 
-		if(($this->_url = xivo_gat::load_get('url',XIVO_PATH_APPCONF)) === false)
+		if(($this->_url = xivo_gat::load_get('url',XIVO_PATH_CONF)) === false)
 			trigger_error('Failed to load url Array',E_USER_ERROR);
 
 		if(($arr = xivo_get_aks($modules)) === false)

@@ -7,7 +7,7 @@ class xivo_service
 
 	function xivo_service($ini)
 	{
-		if(($this->_conf = xivo_gat::load_get('service',XIVO_PATH_APPCONF)) === false)
+		if(($this->_conf = xivo_gat::load_get('service',XIVO_PATH_OBJECTCONF)) === false)
 			trigger_error('Failed to load service Array',E_USER_ERROR);	
 
 		if(($arr = xivo_get_aks($ini)) === false)

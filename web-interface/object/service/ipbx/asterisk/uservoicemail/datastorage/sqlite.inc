@@ -39,12 +39,14 @@ class xivo_service_asterisk_uservoicemail_sqlite
 		return($r);
 	}
 
-	function get_by_mailbox($mailbox)
+	function get_where($arr)
 	{
 		$r = false;
 
-		$rs = $this->_dso->query('SELECT id FROM '.$this->_param['table'].
-		' WHERE mailbox = \''.$this->_dso->escape_string($mailbox).'\' LIMIT 1');
+		if(($where = $this->_dso->where($arr)) === false)
+			return($r);
+
+		$rs = $this->_dso->query('SELECT id FROM '.$this->_param['table'].' WHERE '.$where.' LIMIT 1');
 
 		if($rs !== false && ($rw = $this->_dso->fetch_assoc($rs)) !== false)
 			$r = $rw['id'];

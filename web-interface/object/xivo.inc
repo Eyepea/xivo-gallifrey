@@ -1,8 +1,9 @@
 <?php
 
 define('XIVO_PATH_LIB',XIVO_PATH_ROOT.DIRECTORY_SEPARATOR.'lib');
+define('XIVO_PATH_LIBCONF',XIVO_PATH_LIB.DIRECTORY_SEPARATOR.'libconf');
 define('XIVO_PATH_OBJECT',XIVO_PATH_ROOT.DIRECTORY_SEPARATOR.'object');
-define('XIVO_PATH_APPCONF',XIVO_PATH_ROOT.DIRECTORY_SEPARATOR.'appconf');
+define('XIVO_PATH_OBJECTCONF',XIVO_PATH_OBJECT.DIRECTORY_SEPARATOR.'objectconf');
 define('XIVO_PATH_CONF',XIVO_PATH_ROOT.DIRECTORY_SEPARATOR.'conf');
 define('XIVO_PATH_I18N',XIVO_PATH_ROOT.DIRECTORY_SEPARATOR.'i18n');
 define('XIVO_PATH_DS',XIVO_PATH_ROOT.DIRECTORY_SEPARATOR.'datastorage');
@@ -18,18 +19,18 @@ class xivo
 
 	function xivo()
 	{
-		if(($this->_conf['xivo'] = xivo_gat::load_get('xivo',XIVO_PATH_APPCONF)) === false)
+		if(($this->_conf['xivo'] = xivo_gat::load_get('xivo',XIVO_PATH_OBJECTCONF)) === false)
 			die('ERR: Failed to load Xivo Array');
 
 		$this->_conf['xivo']['ini']['extension_loaded'] = 0;
 
-		if(($this->_conf['extension'] = xivo_gat::load_get('extension',XIVO_PATH_APPCONF)) === false)
+		if(($this->_conf['extension'] = xivo_gat::load_get('extension',XIVO_PATH_LIBCONF)) === false)
 			die('ERR: Failed to load extension Array');
 
-		if(($this->_conf['datastorage'] = xivo_gat::load_get('datastorage',XIVO_PATH_APPCONF)) === false)
+		if(($this->_conf['datastorage'] = xivo_gat::load_get('datastorage',XIVO_PATH_LIBCONF)) === false)
 			die('ERR: Failed to load datastorage Array');
 
-		if(($this->_conf['user'] = xivo_gat::load_get('user',XIVO_PATH_APPCONF)) === false)
+		if(($this->_conf['user'] = xivo_gat::load_get('user',XIVO_PATH_OBJECTCONF)) === false)
 			die('ERR: Failed to load user Array');
 
 		if(function_exists('version_compare') === false

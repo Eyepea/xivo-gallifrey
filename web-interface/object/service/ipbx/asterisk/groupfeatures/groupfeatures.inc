@@ -68,6 +68,14 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 		$arr['id'] = $last;
 		$arr['commented'] = false;
 
+		if(isset($arr['name']) === true)
+		{
+			$where = array('name' => $arr['name']);
+
+			if(($whereid = $this->get_where($where)) !== false)
+				return(false);
+		}
+
 		return($this->_dso->add($arr));
 	}
 
@@ -78,6 +86,14 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 
 		if(isset($arr['commented']) === true)
 			$arr['commented'] = (bool) $arr['commented'];
+
+		if(isset($arr['name']) === true)
+		{
+			$where = array('name' => $arr['name']);
+
+			if(($whereid = $this->get_where($where)) !== false && (int) $whereid !== $id)
+				return(false);
+		}
 
 		return($this->_dso->edit($id,$arr));
 	}
@@ -136,6 +152,16 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 			$r = false;
 
 		return($r);
+	}
+
+	function get_where($arr)
+	{
+		$arr = (array) $arr;
+
+		if(($where = $this->get_elements_where($arr)) === false)
+			return(false);
+
+		return($this->_dso->get_where($where));
 	}
 
 	function get_all_number($disable=null)

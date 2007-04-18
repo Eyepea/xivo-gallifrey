@@ -74,6 +74,14 @@ class xivo_service_asterisk_useriax extends xivo_service_asterisk_abstract
 
 		$arr['category'] = 'user';
 
+		if(isset($arr['name']) === true)
+		{
+			$where = array('name' => $arr['name']);
+
+			if(($whereid = $this->get_where($where)) !== false)
+				return(false);
+		}
+
 		return($this->_dso->add($arr));
 	}
 
@@ -85,6 +93,14 @@ class xivo_service_asterisk_useriax extends xivo_service_asterisk_abstract
 			return(false);
 
 		$arr['category'] = 'user';
+
+		if(isset($arr['name']) === true)
+		{
+			$where = array('name' => $arr['name']);
+
+			if(($whereid = $this->get_where($where)) !== false && (int) $whereid !== $id)
+				return(false);
+		}
 
 		return($this->_dso->edit($id,$arr));
 	}
@@ -113,6 +129,16 @@ class xivo_service_asterisk_useriax extends xivo_service_asterisk_abstract
 			$r = false;
 
 		return($r);
+	}
+
+	function get_where($arr)
+	{
+		$arr = (array) $arr;
+
+		if(($where = $this->get_elements_where($arr)) === false)
+			return(false);
+
+		return($this->_dso->get_where($where));
 	}
 }
 

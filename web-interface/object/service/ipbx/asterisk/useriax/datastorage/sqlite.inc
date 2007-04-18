@@ -40,6 +40,21 @@ class xivo_service_asterisk_useriax_sqlite
 		return($r);
 	}
 
+	function get_where($arr)
+	{
+		$r = false;
+
+		if(($where = $this->_dso->where($arr)) === false)
+			return($r);
+
+		$rs = $this->_dso->query('SELECT id FROM '.$this->_param['table'].' WHERE '.$where.' LIMIT 1');
+
+		if($rs !== false && ($rw = $this->_dso->fetch_assoc($rs)) !== false)
+			$r = $rw['id'];
+
+		return($r);
+	}
+
 	function add($arr)
 	{
 		$r = false;

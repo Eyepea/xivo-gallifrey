@@ -41,7 +41,8 @@ class xivo_service_asterisk_uservoicemail extends xivo_service_asterisk_abstract
 
 	function get_by_mailbox($mailbox,$disable=null)
 	{
-		if(($mailbox = xivo_digit($mailbox)) === false || ($id = $this->_dso->get_by_mailbox($mailbox)) === false)
+		if(($mailbox = xivo_digit($mailbox)) === false
+		|| ($id = $this->get_where(array('mailbox' => $mailbox))) === false)
 			return(false);
 
 		return($this->get($id,$disable));
@@ -78,6 +79,14 @@ class xivo_service_asterisk_uservoicemail extends xivo_service_asterisk_abstract
 		if(($id = xivo_uint($id)) !== 0)
 			$arr['id'] = $id;
 
+		if(isset($arr['mailbox']) === true)
+		{
+			$where = array('mailbox' => $arr['mailbox']);
+
+			if(($whereid = $this->get_where($where)) !== false)
+				return(false);
+		}
+
 		return($this->_dso->add($arr));
 	}
 
@@ -88,6 +97,14 @@ class xivo_service_asterisk_uservoicemail extends xivo_service_asterisk_abstract
 
 		if($disable !== null)
 			$arr['commented'] = (bool) $disable === false ? 0 : 1;
+
+		if(isset($arr['mailbox']) === true)
+		{
+			$where = array('mailbox' => $arr['mailbox']);
+
+			if(($whereid = $this->get_where($where)) !== false && (int) $whereid !== $id)
+				return(false);
+		}
 
 		return($this->_dso->edit($id,$arr));
 	}
@@ -108,6 +125,16 @@ class xivo_service_asterisk_uservoicemail extends xivo_service_asterisk_abstract
 			return(false);
 
 		return($this->_dso->delete($id));
+	}
+
+	function get_where($arr)
+	{
+		$arr = (array) $arr;
+
+		if(($where = $this->get_elements_where($arr)) === false)
+			return(false);
+
+		return($this->_dso->get_where($where));
 	}
 }
 

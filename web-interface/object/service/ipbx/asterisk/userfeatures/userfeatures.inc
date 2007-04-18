@@ -23,13 +23,16 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		$this->_load_config();
 	}
 
-	function get($id)
+	function get($id,$orig=true)
 	{
+		$orig = (bool) $orig;
+
 		if(($id = xivo_uint($id)) === 0 || ($r = $this->_dso->get($id)) === false
 		|| ($r['protocol'] = $this->_sre->get_protocol_by_protocol_name($r['protocol'])) === false)
 			return(false);
 
-		$this->_origin = $r;
+		if($orig === true)
+			$this->_origin = $r;
 
 		return($r);
 	}
@@ -83,9 +86,18 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		if(($id = xivo_uint($id)) !== 0)
 			$arr['id'] = $id;
 
-		if(($arr['provisioningid'] = $this->_mk_provisioning_id($arr['protocol'])) === false
+		if(isset($arr['protocol']) === false
+		|| ($arr['provisioningid'] = $this->_mk_provisioning_id($arr['protocol'])) === false
 		|| ($arr['protocol'] = $this->_sre->get_protocol_name($arr['protocol'])) === false)
 			return(false);
+
+		if(isset($arr['name']) === true)
+		{
+			$where = array('name' => $arr['name'],'protocol' => $arr['protocol']);
+
+			if(($whereid = $this->get_where($where)) !== false)
+				return(false);
+		}
 
 		return($this->_dso->add($arr));
 	}
@@ -118,10 +130,32 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		if(($id = xivo_uint($id)) === 0 || is_array($arr) === false)
 			return(false);
 
+		if(isset($arr['name'],$arr['protocol']) === true)
+			$where = array('name' => $arr['name'],'protocol' => $arr['protocol']);
+		else
+		{
+			$where = array();
+
+			if(($info = $this->get($id,false)) === false)
+				return(false);
+
+			if(isset($arr['name']) === false)
+				$where['name'] = $info['name'];
+
+			if(isset($arr['protocol']) === false)
+				$where['protocol'] = $info['protocol'];
+		}
+
+		if(($whereid = $this->get_where($where)) !== false && (int) $whereid !== $id)
+			return(false);
+
 		if(isset($arr['protocol']) === true)
 		{
 			if($provisioning === true)
-				$arr['provisioningid'] = $this->_mk_provisioning_id($arr['protocol']);
+			{
+				if(($arr['provisioningid'] = $this->_mk_provisioning_id($arr['protocol'])) === false)
+					return(false);
+			}
 
 			if(($arr['protocol'] = $this->_sre->get_protocol_name($arr['protocol'])) === false)
 				return(false);
@@ -156,6 +190,16 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 			$r = false;
 
 		return($r);
+	}
+
+	function get_where($arr)
+	{
+		$arr = (array) $arr;
+
+		if(($where = $this->get_elements_where($arr)) === false)
+			return(false);
+
+		return($this->_dso->get_where($where));
 	}
 
 	function get_all_number($disable=null)

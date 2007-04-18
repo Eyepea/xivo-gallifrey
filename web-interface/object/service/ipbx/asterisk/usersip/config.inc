@@ -6,6 +6,9 @@ $array['initialized'] = 'sip';
 
 $array['element'] = array();
 
+$array['element']['name'] = array();
+$array['element']['name']['default'] = '';
+
 $array['element']['host'] = array();
 $array['element']['host']['value'] = array('dynamic');
 
