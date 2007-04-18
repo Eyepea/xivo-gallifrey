@@ -10,6 +10,17 @@
 # \section section_1 This is the Xivo Daemon
 ## \file xivo_daemon.py
 # \brief Xivo Daemon for Switchboard and Client
+#
+# 
+#
+# The daemon has 3 other listening sockets :
+# - Login - TCP - (the clients connect to it to login) - need SSL ?
+# - KeepAlive - UDP - (the clients send datagram to it to inform
+#                      of their current state)
+# - IdentRequest - TCP - offer a service to ask for localization and 
+#                        state of the clients.
+# we use the SocketServer "framework" to implement the "services"
+# see http://docs.python.org/lib/module-SocketServer.html
 
 import os, posix, select, socket, string, sys, time
 import random
@@ -24,7 +35,6 @@ import xivo_sip, xivo_ami
 
 # configuration options :
 session_expiration_time = 60*1
-astname_xivoc = ""
 
 dir_to_string = ">"
 dir_from_string = "<"
@@ -201,13 +211,16 @@ def tellpresence(data):
 
 
 
-# class AMI definition in order to interact with the Asterisk AMI
-class AMI:
+## \class AMIClass
+# AMI definition in order to interact with the Asterisk AMI.
+class AMIClass:
 	class AMIError(Exception):
 		def __init__(self, msg):
                     self.msg = msg
 		def __str__(self):
                     return msg
+
+	# \brief Class initialization.
 	def __init__(self, address, loginname, password):
 		self.address   = address
 		self.loginname = loginname
@@ -993,13 +1006,13 @@ def update_sipnumlist(astnum):
 			if lstadd != "": k[0].send("peeradd=" + lstadd + "\n")
 
 
-## \brief Connects to the AMI.
+## \brief Connects to the AMI through AMIClass.
 # \param address IP address
 # \param loginname loginname
 # \param password password
 # \return the socket
 def connect_to_AMI(address, loginname, password):
-	lAMIsock = AMI(address, loginname, password)
+	lAMIsock = AMIClass(address, loginname, password)
 	try:
 		lAMIsock.connect()
 		lAMIsock.login()
@@ -1010,7 +1023,10 @@ def connect_to_AMI(address, loginname, password):
 		lAMIsock = False
 	return lAMIsock
 
+## \class TmpLocalChannel
+# \brief Properties of a temporary "Local" channel.
 class TmpLocalChannel:
+	# \brief Class initialization.
 	def __init__(self, istate, icallerid):
 		self.state = istate
 		self.callerid = icallerid
@@ -1022,7 +1038,10 @@ class TmpLocalChannel:
 	def set_callerid(self, icallerid):
 		self.callerid = icallerid
 
+## \class LineProp
+# \brief Properties of a phone line. It might contain many channels.
 class LineProp:
+	# \brief Class initialization.
 	def __init__(self):
 		self.tech = "SIP"
 		self.lasttime = 0
@@ -1045,6 +1064,8 @@ class LineProp:
 		for ic in self.chans:
 			dtime = int(nowtime - self.chans[ic][5])
 			self.chans[ic][1] = dtime
+
+	##  \brief Adds or changes a Channel.
 	def set_chan(self, ichan, status, itime, idir, peerch, peernum):
 		# does not update peerch and peernum if the new values are empty
 		newstatus = status
@@ -1060,6 +1081,8 @@ class LineProp:
 		self.chans[ichan] = [newstatus, itime, newdir, newpeerch, newpeernum, firsttime - itime]
 		for ic in self.chans:
 			self.chans[ic][1] = int(firsttime - self.chans[ic][5])
+
+	##  \brief Hangs up a Channel.
 	def set_chan_hangup(self, ichan):
 		nichan = ichan
 		if ichan.find("<ZOMBIE>") >= 0:
@@ -1069,6 +1092,8 @@ class LineProp:
 		self.chans[nichan] = ["Hangup", 0, "", "", "", firsttime]
 		for ic in self.chans:
 			self.chans[ic][1] = int(firsttime - self.chans[ic][5])
+
+	##  \brief Removes a Channel.
 	def del_chan(self, ichan):
 		nichan = ichan
 		if ichan.find("<ZOMBIE>") >= 0:
@@ -1079,8 +1104,16 @@ class LineProp:
 		except:
 			log_debug("a problem occured when trying to remove " + nichan)
 
-
+## \class AsteriskRemote
+# \brief Properties of an Asterisk server
 class AsteriskRemote:
+	## \var astid
+	# \brief Asterisk String ID
+	
+	## \var userlisturl
+	# \brief Asterisk's URL
+	
+	##  \brief Class initialization.
 	def __init__(self,
 		     astid,
 		     userlisturl,
@@ -1134,22 +1167,12 @@ def finduser(user):
 	u = userlist.get(user)
 	return u
 
-# The daemon has 3 listening sockets :
-# - Login - TCP - (the clients connect to it to login) - need SSL ?
-# - KeepAlive - UDP - (the clients send datagram to it to inform
-#                      of their current state)
-# - IdentRequest - TCP - offer a service to ask for localization and 
-#                        state of the clients.
 
-# we use the SocketServer "framework" to implement the "services"
-# see http://docs.python.org/lib/module-SocketServer.html
-
-# LoginHandler : the client connect to this in order to obtain a
-# valid session id.
+## \class LoginHandler
+# \brief The clients connect to this in order to obtain a valid session id.
 # This could be enhanced to support a more complete protocol
 # supporting commands coming from the client in order to pilot asterisk.
 class LoginHandler(SocketServer.StreamRequestHandler):
-	global astname_xivoc
 	def handle(self):
 		#print '  request :', self.request
 		list0 = self.rfile.readline()    # list0 should be "LOGIN <asteriskname>/sip<nnn>"
@@ -1200,9 +1223,9 @@ class LoginHandler(SocketServer.StreamRequestHandler):
 		#print userlist
 
 
-# IdentRequestHandler: give client identification to the profile pusher
-# the connection is kept alive so several requests can be made on the 
-# same open TCP connection.
+## \class IdentRequestHandler
+# \brief Gives client identification to the profile pusher.
+# The connection is kept alive so several requests can be made on the same open TCP connection.
 class IdentRequestHandler(SocketServer.StreamRequestHandler):
 	def handle(self):
 		list0 = self.rfile.readline().strip().split(' ')
@@ -1240,13 +1263,15 @@ class IdentRequestHandler(SocketServer.StreamRequestHandler):
 			log_debug("IdentRequestHandler/Exception: " + str(e))
 			return
 
-# The KeepAliveHandler receives UDP datagrams and sends back 
-# a datagram containing wether "OK" or "ERROR <error-text>"
+
+## \class KeepAliveHandler
+# \brief It receives UDP datagrams and sends back a datagram containing whether
+# "OK" or "ERROR <error-text>".
 # It could be a good thing to give a numerical code to each error.
 class KeepAliveHandler(SocketServer.DatagramRequestHandler):
-	global astname_xivoc
 	def handle(self):
 		log_debug("KeepAliveHandler : client = " + str(self.client_address))
+		astname_xivoc = ""
 		userlist_lock.acquire()
 		try:
 			ip = self.client_address[0]
@@ -1256,7 +1281,8 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
 			if len(list) < 4 or list[0] != 'ALIVE' or list[2] != 'SESSIONID':
 				response = 'ERROR unknown\r\n'
 			else:
-				user = list[1]
+				astname_xivoc = list[1].split("/")[0]
+				user = list[1].split("/")[1]
 				sessionid = list[3]
 				state = 'available'
 				if len(list) >= 6:
@@ -1289,6 +1315,8 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
 				update_GUI_clients(n, "SIP/" + sipnumber, "kfc")
 
 
+## \class MyTCPServer
+# \brief TCPServer with the reuse address on.
 class MyTCPServer(SocketServer.ThreadingTCPServer):
 	allow_reuse_address = True
 
