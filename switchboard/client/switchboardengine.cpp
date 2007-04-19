@@ -63,15 +63,6 @@ void SwitchBoardEngine::saveSettings()
 	settings.setValue("engine/serverport", m_port);
 }
 
-/*
- * set the window to display peers
- * TODO : use signals/slots to communicate
- */
-void SwitchBoardEngine::setWindow(SwitchBoardWindow * window)
-{
-	m_window = window;
-}
-
 /* \brief set server address
  *
  * Set server host name and server port
@@ -133,7 +124,7 @@ void SwitchBoardEngine::socketDisconnected()
 	qDebug() << "socketDisconnected()";
 	stopped();
 	emitTextMessage("Connection lost with Presence Server");
-	if(m_window) m_window->removePeers();
+	//removePeers();
 	//connectSocket();
 }
 
@@ -203,7 +194,7 @@ void SwitchBoardEngine::updatePeers(const QStringList & liststatus)
 		}
 	}
 
-	m_window->updatePeer(pname, m_callerids[pname], pstatus, pavail, pinfos);
+	updatePeer(pname, m_callerids[pname], pstatus, pavail, pinfos);
 }
 
 /*! \brief update a caller id 
@@ -232,7 +223,7 @@ void SwitchBoardEngine::socketReadyRead()
 		//qDebug() << "<==" << line;
 		QStringList list = line.trimmed().split("=");
 		//qDebug() << "<==" << list.size() << m_window << list[0];
-		if((list.size() == 2) && m_window) {
+		if(list.size() == 2) {
 			if(list[0] == QString("hints")) {
 				QStringList listpeers = list[1].split(";");
 				for(int i = 0 ; i < listpeers.size() - 1; i++) {
@@ -270,7 +261,7 @@ void SwitchBoardEngine::socketReadyRead()
 				QStringList listpeers = list[1].split(";");
 				for(int i = 0 ; i < listpeers.size() - 1; i++) {
 					QStringList liststatus = listpeers[i].split(":");
-					m_window->removePeer(liststatus[1] + "/" + liststatus[3]);
+					removePeer(liststatus[1] + "/" + liststatus[3]);
 				}
 			}
 		}

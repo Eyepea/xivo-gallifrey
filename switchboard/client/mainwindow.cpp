@@ -14,6 +14,7 @@
 #include "switchboardwindow.h"
 #include "switchboardconf.h"
 #include "callstackwidget.h"
+#include "searchpanel.h"
 
 class LeftPanel : public QWidget
 {
@@ -75,10 +76,28 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 	areaPeers->setWidgetResizable(true);
 
  	m_widget = new SwitchBoardWindow(areaPeers);
- 	engine->setWindow(m_widget);
  	m_widget->setEngine(engine);
+	connect( engine, SIGNAL(updatePeer(const QString &, const QString &,
+	                                   const QString &, const QString &,
+									   const QString &)),
+	         m_widget, SLOT(updatePeer(const QString &, const QString &,
+			                           const QString &, const QString &,
+									   const QString &)) );
+	connect( engine, SIGNAL(stop()), 
+	         m_widget, SLOT(removePeers()) );
+	connect( engine, SIGNAL(removePeer(const QString &)),
+	         m_widget, SLOT(removePeer(const QString &)) );
  	areaPeers->setWidget(m_widget);
  	areaCalls->setWidget(calls);
+	
+	SearchPanel * searchpanel = new SearchPanel(m_splitter);
+	connect( engine, SIGNAL(updatePeer(const QString &, const QString &,
+	                                   const QString &, const QString &,
+									   const QString &)),
+	         searchpanel, SLOT(updatePeer(const QString &, const QString &,
+			                           const QString &, const QString &,
+									   const QString &)) );
+
 	setCentralWidget(m_splitter);
 
 	// restore splitter settings

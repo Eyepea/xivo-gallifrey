@@ -10,79 +10,12 @@
 #include "switchboardengine.h"
 #include "peerwidget.h"
 
-//Peer::Peer(const QString & ext, QObject * parent)
-//: QObject(parent)
-Peer::Peer(const QString & ext)
-{
-	m_ext = ext;
-}
-
-Peer::Peer(const Peer & peer)
-//: QObject(peer.parent())
-{
-	m_ext = peer.m_ext;
-	m_peerwidget = peer.m_peerwidget;
-	//m_x = peer.m_x;
-	//m_y = peer.m_y;
-}
-
-void Peer::updateStatus(const QString & status,
-			const QString & avail,
-			const QString & corrname)
-{
-  //qDebug() << status << avail;
-  if(avail == "available")
-    m_peerwidget->setGreen(1);
-  else if(avail == "away")
-    m_peerwidget->setDarkGreen(1);
-  else if(avail == "doesnotdisturb")
-    m_peerwidget->setRed(1);
-  else if(avail == "berightback")
-    m_peerwidget->setOrange(1);
-  else if(avail == "outtolunch")
-	m_peerwidget->setYellow(1);
-  else
-  	m_peerwidget->setGray(1);
-
-  if(status == "Ready")
-    m_peerwidget->setGreen(0);
-  else if(status == "Ringing")
-    m_peerwidget->setCyan(0);
-  else if(status == "Calling")
-    m_peerwidget->setYellow(0);
-  else if(status == "On the phone")
-    m_peerwidget->setRed(0);
-  else
-    m_peerwidget->setGray(0);
-
-  if(corrname == "")
-    m_peerwidget->setToolTip(status);
-  else
-    m_peerwidget->setToolTip(status + "\n" + corrname);
-}
-
-/*
-Peer & Peer::operator=(const Peer & peer)
-{
-	m_ext = peer.m_ext;
-	m_peerwidget = peer.m_peerwidget;
-	m_x = peer.m_x;
-	m_y = peer.m_y;
-	return *this;
-}
-*/
-
 SwitchBoardWindow::SwitchBoardWindow(QWidget * parent)
 : QWidget(parent), m_engine(0)
 {
-	//m_layout = new QGridLayout(this);
 	m_layout = new PeersLayout(this);
-	//m_x = 0;
-	//m_y = 0;
 	QSettings settings;
 	m_width = settings.value("display/width", 5).toInt();
-	//m_layout->setRowStretch(99, 1);
-	//m_layout->setColumnStretch(m_width, 1);
 	setAcceptDrops(true);
 }
 
@@ -140,7 +73,7 @@ void SwitchBoardWindow::updatePeer(const QString & ext,
 	}
 	// if not found in the peerlist, create a new Peer
 	QSettings settings;
-	Peer peer(ext);
+	Peer peer(ext, name);
 	PeerWidget * peerwidget = new PeerWidget(ext, name, this);
 	connect( peerwidget, SIGNAL(originateCall(const QString&, const QString&)),
 	         m_engine, SLOT(originateCall(const QString&, const QString&)) );

@@ -5,14 +5,12 @@
 #include <QTcpSocket>
 
 class QTimer;
-class SwitchBoardWindow;
 
 class SwitchBoardEngine: public QObject
 {
 	Q_OBJECT
 public:
 	SwitchBoardEngine(QObject * parent = 0);
-	void setWindow(SwitchBoardWindow *);
 	void setAddress(const QString & host, quint16 port);
 	quint16 port() const;
 	const QString & host() const;
@@ -54,14 +52,14 @@ signals:
 	//void showCalls(const QString & tomonitor, const QString & callerid);
 	void callsUpdated();
 	void updatePeer(const QString &, const QString &,
-	                const QString &, const QString &);
+	                const QString &, const QString &,
+					const QString &);
 	void removePeer(const QString &);
 private:
 	QTcpSocket * m_socket;	//!< socket to connect to the server
 	int m_timer;	//!< timer id
 	quint16 m_port;	//!< port to connect to server
 	QString m_host;	//!< server host name
-	SwitchBoardWindow * m_window;
 	QString m_pendingcommand;	//!< command to be sent to the server.
 	QHash<QString, QString> m_callerids;
 };

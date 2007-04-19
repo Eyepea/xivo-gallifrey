@@ -21,7 +21,7 @@ PeerWidget::PeerWidget(const QString & id, const QString & name,
 	m_availlbl->setPixmap( m_square );
 	layout->addWidget( m_statelbl, 0, Qt::AlignLeft );
 	layout->addWidget( m_availlbl, 0, Qt::AlignLeft );
-	m_textlbl = new QLabel(m_id + "/" + m_name, this);
+	m_textlbl = new QLabel(/*m_id + "/" +*/ m_name, this);
 	layout->addWidget( m_textlbl, 0, Qt::AlignLeft );
 	layout->addStretch(1);
 	// to be able to receive drop
