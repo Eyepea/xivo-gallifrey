@@ -7,20 +7,74 @@
 #
 
 ## \mainpage
-# \section section_1 This is the Xivo Daemon
-## \file xivo_daemon.py
-# \brief Xivo Daemon for Switchboard and Client
+# \section section_1 General description of XIVO Daemon
+# The XIVO Daemon aims to monitor all the actions taking place into one or
+# more Asterisk servers, in order to provide 2 basic customer facilities :
+# - a monitoring switchboard;
+# - a customer information popup.
 #
-# 
+# This is achieved thanks to 3 mechanisms :
+# - a notification of the Asterisk hints through SIP NOTIFY messages;
+# - one or more connections to the Asterisk Manager Interface (AMI), where
+# all the events can be watched;
+# - Asterisk AGI's that send informations when a call is issued.
+#
+# This daemon is able to manage any number of Asterisk's one might wish.
+#
+# \section section_2 Initializations
+#
+# - Fetch the phone number lists from the SSO addresses.
+# - Sending the first SIP REGISTERs and SUBSCRIBEs
+#
+# \section section_3 Main loop
+# The main loop is triggered by a select() on the file descriptors for :
+# - the SIP sockets (SIPsocks);
+# - the AMI Event sockets (AMIsocks);
+# - the UI sockets (UIsock, PHPUIsock);
+# - the Caller Information Popup sockets (authentication, keepalive and identrequest).
+#
+# On reception of a SIP socket, parseSIP is called in order to either read SIP
+# informations that might be useful for presence information, either to send
+# a reply.
+#
+# On reception of AMI Events, handle_ami_event() parses the messages to update
+# the detailed status of the channels.
+#
+# For each UI connection, a list of the open UI connections is updated
+# (tcpopens_sb or tcpopens_php according to the kind of connection).
+# This list is the one used to broadcast the miscellaneous updates
+# (it is up to the UI clients to fetch the initial status with the "hints"
+# command).
+#
+# \section section_5 Presence information from SIP/XML
+# On startup, a given account (xivosb for instance) is SIP-REGISTERed for
+# each Asterisk.
+# This account then SIP-SUBSCRIBEs all the SIP phone numbers.
+#
+# \section section_6 Monitoring with AMI
+#
+# The AMI events are the basis for a channel-by-channel status of the phones.
+# The SIP/XML events do not carry enough information, however they are useful
+# for when no channel is open.
+#
+# Many AMI events are watched for, but not all of them are handled yet.
+# The most useful ones are now : Dial, Link, Hangup, Rename.
+# The following ones : Newexten, Newchannel, Newcallerid, Newstate are useful when dealing
+# complex situations (when there are Local/ channels and Queues for instance).
+#
+# \section section_8 Caller Information Popup management
 #
 # The daemon has 3 other listening sockets :
-# - Login - TCP - (the clients connect to it to login) - need SSL ?
+# - Login - TCP - (the clients connect to it to login)
 # - KeepAlive - UDP - (the clients send datagram to it to inform
 #                      of their current state)
 # - IdentRequest - TCP - offer a service to ask for localization and 
 #                        state of the clients.
 # we use the SocketServer "framework" to implement the "services"
 # see http://docs.python.org/lib/module-SocketServer.html
+#
+## \file xivo_daemon.py
+#
 
 import os, posix, select, socket, string, sys, time
 import random
@@ -226,6 +280,7 @@ class AMIClass:
 		self.loginname = loginname
 		self.password  = password
 		self.i = 1
+	# \brief Connection to a socket.
 	def connect(self):
 		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		s.connect(self.address)
@@ -233,6 +288,7 @@ class AMIClass:
 		s.close()
 		str = self.f.readline()
 		#print str,
+	# \brief Sending any AMI command.
 	def sendcommand(self, action, args):
 		ret = False
 		try:
@@ -260,6 +316,7 @@ class AMIClass:
 			str = self.f.readline()
 			#print self.i, len(str), str,
 			self.i = self.i + 1
+	# \brief Reads a part of a reply.
 	def readresponsechunk(self):
 		start = True
 		list = []
@@ -510,10 +567,10 @@ def manage_tcp_connection(connid, allow_events):
         ins.remove(connid[0])
 	if allow_events == True:
 		tcpopens_sb.remove(connid)
-		log_debug("TCP (SB) socket closed from " + connid[1] + str(connid[2]))
+		log_debug("TCP (SB) socket closed from " + connid[1] + " " + str(connid[2]))
 	else:
 		tcpopens_php.remove(connid)
-		log_debug("TCP (PHP) socket closed from " + connid[1] + str(connid[2]))
+		log_debug("TCP (PHP) socket closed from " + connid[1] + " " + str(connid[2]))
     else:
         # what if more lines ???
         usefulmsg = msg.split("\r\n")[0].split("\n")[0]
@@ -621,6 +678,8 @@ def handle_ami_event_dial(listkeys, astnum, src, dst, clid, clidn):
 	if is_normal_channel(dst):
 		sipnum = dst.split("-")[0]
 		if sipnum in listkeys:
+			if clid == "<unknown>" and is_normal_channel(src):
+				clid = src.split("-")[0].split("/")[1]
 			phonelists[astnum][sipnum].set_chan(dst, "Ringing", 0, dir_from_string, src, clid)
 			update_GUI_clients(astnum, sipnum, "ami-ed")
 		else: notmonitoreddst[dst] = "d"
@@ -644,7 +703,7 @@ def handle_ami_event_link(listkeys, astnum, src, dst, clid1, clid2):
 		sipnum = src.split("-")[0]
 		if sipnum in listkeys:
 			phonelists[astnum][sipnum].set_chan(src, "On the phone", 0, dir_to_string, dst, clid2)
-			update_GUI_clients(astnum, sipnum, "ami-el")
+			update_GUI_clients(astnum, sipnum, "ami-el1")
 		else: notmonitoredsrc[src] = "l"
 	elif src.find("Local/") == 0:
 		if src in localchans:
@@ -658,14 +717,17 @@ def handle_ami_event_link(listkeys, astnum, src, dst, clid1, clid2):
 	if is_normal_channel(dst):
 		sipnum = dst.split("-")[0]
 		if sipnum in listkeys:
+			if clid1 == "(null)" and is_normal_channel(src):
+				clid1 = src.split("-")[0].split("/")[1]
 			phonelists[astnum][sipnum].set_chan(dst, "On the phone", 0, dir_from_string, src, clid1)
-			update_GUI_clients(astnum, sipnum, "ami-el")
+			update_GUI_clients(astnum, sipnum, "ami-el2")
 		else: notmonitoreddst[dst] = "l"
 	elif dst.find("Local/") == 0: # occurs when someone picks up the phone
-		notmonitoreddst[dst] = "l"
-		log_debug("[watch] Link to Local/ : " + src + " " + dst)
+		if dst in notmonitoreddst.keys(): del notmonitoreddst[dst]
 		# here dst ends with ",1" => binding with the same with ",2"
 		newdst = dst.replace(",1", ",2")
+		log_debug("[watch] Link to Local/ : " + src + " " + dst + " => " + newdst)
+		#notmonitoreddst[newdst] = "l"
 		if newdst in localchans :
 			sipnuma = src.split("-")[0]
 			sipnumb = localchans[newdst].peer.split("-")[0]
@@ -708,6 +770,18 @@ def handle_ami_event_hangup(listkeys, astnum, chan, cause):
 		if chan in notmonitoreddst.keys(): del notmonitoreddst[chan]
 
 
+## \brief Returns a given field from an AMI line.
+# \param lineami the line extracted from AMI
+# \param field the field whose value one is interested in
+# \return the value of the field
+def getvalue(lineami, field):
+	ret = ""
+	s1 = lineami.split(";" + field + ": ")
+	if len(s1) == 2:
+		s2 = s1[1].split(";")[0]
+		ret = s2
+	return ret
+
 ## \brief Handling of AMI events occuring in Events=on mode.
 # \param astnum the asterisk numerical identifier
 # \param idata the data read from the AMI we want to parse
@@ -723,40 +797,38 @@ def handle_ami_event(astnum, idata):
 	for z in evlist:
 		# we assume no ";" character is present in AMI events fields
 		x = z.replace("\r\n", ";")
-		#if x.find("Local/") >= 0 and x.find("Newexten") < 0:
-		#print "LocalChannel : ", x
 		if x.find("Dial;") == 7:
-			src = x.split(";Source: ")[1].split(";")[0]
-			dst = x.split(";Destination: ")[1].split(";")[0]
-			clid = x.split(";CallerID: ")[1].split(";")[0]
-			clidn = x.split(";CallerIDName: ")[1].split(";")[0]
+			src   = getvalue(x, "Source")
+			dst   = getvalue(x, "Destination")
+			clid  = getvalue(x, "CallerID")
+			clidn = getvalue(x, "CallerIDName")
 			handle_ami_event_dial(listkeys, astnum, src, dst, clid, clidn)
 		elif x.find("Link;") == 7:
-			src = x.split(";Channel1: ")[1].split(";")[0]
-			dst = x.split(";Channel2: ")[1].split(";")[0]
-			clid1 = x.split(";CallerID1: ")[1].split(";")[0]
-			clid2 = x.split(";CallerID2: ")[1].split(";")[0]
+			src   = getvalue(x, "Channel1")
+			dst   = getvalue(x, "Channel2")
+			clid1 = getvalue(x, "CallerID1")
+			clid2 = getvalue(x, "CallerID2")
 			handle_ami_event_link(listkeys, astnum, src, dst, clid1, clid2)
 		elif x.find("Unlink;") == 7:
 			# might be something to parse here
-			chan1 = x.split(";Channel1: ")[1].split(";")[0]
-			chan2 = x.split(";Channel2: ")[1].split(";")[0]
-			cid1 = x.split(";CallerID1: ")[1].split(";")[0]
-			cid2 = x.split(";CallerID2: ")[1].split(";")[0]
+			src   = getvalue(x, "Channel1")
+			dst   = getvalue(x, "Channel2")
+			clid1 = getvalue(x, "CallerID1")
+			clid2 = getvalue(x, "CallerID2")
 		elif x.find("Hangup;") == 7:
-			chan = x.split(";Channel: ")[1].split(";")[0]
-			cause = x.split(";Cause-txt: ")[1].split(";")[0]
+			chan  = getvalue(x, "Channel")
+			cause = getvalue(x, "Cause-txt")
 			handle_ami_event_hangup(listkeys, astnum, chan, cause)
 		elif x.find("Reload;") == 7:
 			log_debug("AMI:Reload: " + configs[astnum].astid)
 		elif x.find("Shutdown;") == 7:
 			log_debug("AMI:Shutdown: " + configs[astnum].astid)
 		elif x.find("Join;") == 7:
-			clidq = x.split(";CallerID: ")[1].split(";")[0]
-			queuenamej = x.split(";Queue: ")[1].split(";")[0]
-			if len(clidq) > 0:
+			clid  = getvalue(x, "CallerID")
+			qname = getvalue(x, "Queue")
+			if len(clid) > 0:
 				for k in tcpopens_sb:
-					k[0].send("asterisk=<" + clidq + "> is calling the Queue <" + queuenamej + ">\n")
+					k[0].send("asterisk=<" + clid + "> is calling the Queue <" + qname + ">\n")
 		elif x.find("PeerStatus;") == 7:
 			# <-> register's ? notify's ?
 			pass
@@ -767,14 +839,15 @@ def handle_ami_event(astnum, idata):
 		elif x.find("MeetmeLeave;") == 7: pass
 		elif x.find("OriginateSuccess;") == 7: pass
 		elif x.find("OriginateFailure;") == 7:
-			log_debug("AMI:OriginateFailure: " + configs[astnum].astid + " - reason=" + x.split(";Reason: ")[1].split(";")[0])
+			log_debug("AMI:OriginateFailure: " + configs[astnum].astid + \
+				  " - reason=" + getvalue(x, "Reason"))
 		elif x.find("Rename;") == 7:
 			# appears when there is a transfer
-			channel_old = x.split(";Oldname: ")[1].split(";")[0]
-			channel_new = x.split(";Newname: ")[1].split(";")[0]
+			channel_old = getvalue(x, "Oldname")
+			channel_new = getvalue(x, "Newname")
 			if channel_old.find("<MASQ>") < 0 and channel_new.find("<MASQ>") < 0 and \
 			       is_normal_channel(channel_old) and is_normal_channel(channel_new):
-				log_debug("AMI:Rename: " + configs[astnum].astid + " : " + \
+				log_debug("AMI:Rename:N: " + configs[astnum].astid + " : " + \
 					  "old=" + channel_old + " new=" + channel_new)
 				phone_old = channel_old.split("-")[0]
 				phone_new = channel_new.split("-")[0]
@@ -808,27 +881,31 @@ def handle_ami_event(astnum, idata):
 						phonelists[astnum][phone_p1].chans[channel_p1][3] = channel_new
 						phonelists[astnum][phone_p1].chans[channel_p1][4] = phonelists[astnum][phone_p2].chans[channel_p2][4]
 						update_GUI_clients(astnum, phone_p1, "ami-er")
+			else:
+				log_debug("AMI:Rename:A: " + configs[astnum].astid + " : " + \
+					  "old=" + channel_old + " new=" + channel_new)
+		elif x.find("ExtensionStatus;") == 7:
+			pass
 		elif x.find("Newstate;") == 7:
-			chan = x.split(";Channel: ")[1].split(";")[0]
-			state = x.split(";State: ")[1].split(";")[0]
-			clid = x.split(";CallerID: ")[1].split(";")[0]
+			chan    = getvalue(x, "Channel")
+			clid    = getvalue(x, "CallerID")
+			state   = getvalue(x, "State")
 			sipnum = chan.split("-")[0]
 			if sipnum in listkeys:
 				phonelists[astnum][sipnum].set_chan(chan, state, 0, "", "", "")
 				update_GUI_clients(astnum, sipnum, "ami-ns")
-		elif x.find("ExtensionStatus;") == 7:
-			pass
 		elif x.find("Newcallerid;") == 7:
 			# for tricky queues' management
-			chan = x.split(";Channel: ")[1].split(";")[0]
-			cid = x.split(";CallerID: ")[1].split(";")[0]
-			cidname = x.split(";CallerIDName: ")[1].split(";")[0]
-			log_debug("AMI:Newcallerid: " + configs[astnum].astid + " channel=" + chan + " callerid=" + cid + " calleridname=" + cidname)
+			chan    = getvalue(x, "Channel")
+			cid     = getvalue(x, "CallerID")
+			cidname = getvalue(x, "CallerIDName")
+			log_debug("AMI:Newcallerid: " + configs[astnum].astid + \
+				  " channel=" + chan + " callerid=" + cid + " calleridname=" + cidname)
 			if chan.find("Local/") == 0:
 				localchans[chan] = TmpLocalChannel("Init", cid)
 		elif x.find("Newchannel;") == 7:
-			chan = x.split(";Channel: ")[1].split(";")[0]
-			clid = x.split(";CallerID: ")[1].split(";")[0]
+			chan    = getvalue(x, "Channel")
+			clid    = getvalue(x, "CallerID")
 			sipnum = chan.split("-")[0]
 			if sipnum in listkeys:
 				phonelists[astnum][sipnum].set_chan(chan, "", 0, "", "", "")
@@ -836,16 +913,9 @@ def handle_ami_event(astnum, idata):
 			if not (clid == "" or (clid == "<unknown>" and is_normal_channel(chan))):
 				for k in tcpopens_sb:
 					k[0].send("asterisk=<" + clid + "> is entering the Asterisk <" + configs[astnum].astid + "> through " + chan + "\n")
-		elif x.find("MessageWaiting;") == 7:
-			mwi_string = x.split(";Mailbox: ")[1].split(";")[0] + \
-				     " waiting=" + x.split(";Waiting: ")[1].split(";")[0]
-			if int(x.split(";Waiting: ")[1].split(";")[0]) > 0:
-				mwi_string += "; new=" + x.split(";New: ")[1].split(";")[0] + \
-					      "; old=" + x.split(";Old: ")[1].split(";")[0]
-			log_debug("AMI:MessageWaiting: " + configs[astnum].astid + " : " + mwi_string)
 		elif x.find("Newexten;") == 7: # in order to handle outgoing calls ?
-			chan = x.split(";Channel: ")[1].split(";")[0]
-			exten = x.split(";Extension: ")[1].split(";")[0]
+			chan    = getvalue(x, "Channel")
+			exten   = getvalue(x, "Extension")
 			if exten != "s" and exten != "h" and exten != "t":
 				#print "--- exten :", chan, exten
 				if is_normal_channel(chan):
@@ -855,13 +925,18 @@ def handle_ami_event(astnum, idata):
 						update_GUI_clients(astnum, sipnum, "ami-en")
 					else:
 						log_debug("AMI:Newexten: " + configs[astnum].astid + " warning : " + sipnum + " does not belong to our phone list")
+		elif x.find("MessageWaiting;") == 7:
+			mwi_string = getvalue(x,"Mailbox") + " waiting=" + getvalue(x,"Waiting")
+			if int(getvalue(x,"Waiting")) > 0:
+				mwi_string += "; new=" + getvalue(x, "New") + "; old=" + getvalue(x, "Old")
+			log_debug("AMI:MessageWaiting: " + configs[astnum].astid + " : " + mwi_string)
 		elif x.find("QueueMemberStatus;") == 7:
-			queuenameq = x.split(";Queue: ")[1].split(";")[0]
-			location = x.split(";Location: ")[1].split(";")[0]
-			status = x.split(";Status: ")[1].split(";")[0]
+			queuenameq = getvalue(x, "Queue")
+			location   = getvalue(x, "Location")
+			status     = getvalue(x, "Status")
 			log_debug("AMI:QueueMemberStatus: " + configs[astnum].astid + " " + queuenameq + " " + location + " " + status)
 		elif x.find("Leave;") == 7:
-			queuenameq = x.split(";Queue: ")[1].split(";")[0]
+			queuenameq = getvalue(x, "Queue")
 			log_debug("AMI:Leave: " + configs[astnum].astid + " " + queuenameq)
 		else:
 			if len(x) > 0:
@@ -888,12 +963,12 @@ def handle_ami_status(astnum, idata):
 		if x.find("Status;") == 7:
 			if x.find(";State: Up;") >= 0:
 				if x.find(";Seconds: ") >= 0:
-					chan = x.split(";Channel: ")[1].split(";")[0]
-					clid = x.split(";CallerID: ")[1].split(";")[0]
-					exten = x.split(";Extension: ")[1].split(";")[0]
-					seconds = x.split(";Seconds: ")[1].split(";")[0]
+					chan    = getvalue(x, "Channel")
+					clid    = getvalue(x, "CallerID")
+					exten   = getvalue(x, "Extension")
+					seconds = getvalue(x, "Seconds")
 					if x.find(";Link: ") >= 0:
-						link = x.split(";Link: ")[1].split(";")[0]
+						link = getvalue(x, "Link")
 						#print "statuses up --------", chan, clid, exten, seconds, link
 						if is_normal_channel(link):
 							sipnum = link.split("-")[0]
@@ -907,12 +982,13 @@ def handle_ami_status(astnum, idata):
 								update_GUI_clients(astnum, sipnum, "001")
 					else:
 						log_debug("AMI::Status UP: " + chan + " " + clid + " " + exten + " " + seconds)
+				else:
+					pass
 			elif x.find(";State: Ring;") >= 0:
-				log_debug("AMI::Status TO: " + x.split(";Channel: ")[1].split(";")[0] + \
-					  " " + x.split(";Extension: ")[1].split(";")[0] + \
-					  " " + x.split(";Seconds: ")[1].split(";")[0])
+				log_debug("AMI::Status TO: " + getvalue(x, "Channel") + \
+					  " " + getvalue(x, "Extension") + " " + getvalue(x, "Seconds"))
 			elif x.find(";State: Ringing;") >= 0:
-				log_debug("AMI::Status FROM: " + x.split(";Channel: ")[1].split(";")[0])
+				log_debug("AMI::Status FROM: " + getvalue(x, "Channel"))
 
 ## \brief Sends a SIP register + n x SIP subscribe messages.
 # \param astnum the asterisk numerical identifier
@@ -921,8 +997,6 @@ def handle_ami_status(astnum, idata):
 def do_sip_register_subscribe(astnum, l_sipsock):
     global tcpopens_sb, phonelists, configs
     rdc = chr(65 + 32 * random.randrange(2) + random.randrange(26))
-##    for k in tcpopens_sb:
-##        k[0].send("asterisk=will_register_" + configs[n].astid + "\n")
     command = xivo_sip.sip_register(configs[n], "sip:" + configs[n].mysipname, 1, "reg_cid@xivopy", expires)
     l_sipsock.sendto(command, (configs[n].remoteaddr, configs[n].portsipsrv))
 ##    command = xivo_sip.sip_options(configs[n], "sip:" + configs[n].mysipname, "testoptions@xivopy", "107")
@@ -1031,6 +1105,7 @@ class TmpLocalChannel:
 		self.state = istate
 		self.callerid = icallerid
 		self.peer = ""
+	# \brief Sets the peer channel name.
 	def set_peer(self, ipeer):
 		self.peer = ipeer
 	def set_state(self, istate):
@@ -1038,10 +1113,17 @@ class TmpLocalChannel:
 	def set_callerid(self, icallerid):
 		self.callerid = icallerid
 
+
+## \class ChannelStatus
+# \brief Properties of a Channel.
+class ChannelStatus:
+	def __init__(self):
+		self.a = a
+
 ## \class LineProp
 # \brief Properties of a phone line. It might contain many channels.
 class LineProp:
-	# \brief Class initialization.
+	##  \brief Class initialization.
 	def __init__(self):
 		self.tech = "SIP"
 		self.lasttime = 0
@@ -1066,6 +1148,7 @@ class LineProp:
 			self.chans[ic][1] = dtime
 
 	##  \brief Adds or changes a Channel.
+	# \param ichan the Channel to hangup.
 	def set_chan(self, ichan, status, itime, idir, peerch, peernum):
 		# does not update peerch and peernum if the new values are empty
 		newstatus = status
@@ -1083,6 +1166,7 @@ class LineProp:
 			self.chans[ic][1] = int(firsttime - self.chans[ic][5])
 
 	##  \brief Hangs up a Channel.
+	# \param ichan the Channel to hangup.
 	def set_chan_hangup(self, ichan):
 		nichan = ichan
 		if ichan.find("<ZOMBIE>") >= 0:
@@ -1094,6 +1178,7 @@ class LineProp:
 			self.chans[ic][1] = int(firsttime - self.chans[ic][5])
 
 	##  \brief Removes a Channel.
+	# \param ichan the Channel to remove.
 	def del_chan(self, ichan):
 		nichan = ichan
 		if ichan.find("<ZOMBIE>") >= 0:
@@ -1521,14 +1606,14 @@ while not askedtoquit:
 			handle_ami_status(n, a)
         elif UIsock in i:
 		[conn, UIsockparams] = UIsock.accept()
-		log_debug("TCP (SB) socket opened on " + UIsockparams[0] + " " + str(UIsockparams[1]))
+		log_debug("TCP (SB)  socket opened on   " + UIsockparams[0] + " " + str(UIsockparams[1]))
 		# appending the opened socket to the ones watched
 		ins.append(conn)
 		conn.setblocking(0)
 		tcpopens_sb.append([conn, UIsockparams[0], UIsockparams[1]])
         elif PHPUIsock in i:
 		[conn, PHPUIsockparams] = PHPUIsock.accept()
-		log_debug("TCP (PHP) socket opened on " + PHPUIsockparams[0] + " " + str(PHPUIsockparams[1]))
+		log_debug("TCP (PHP) socket opened on   " + PHPUIsockparams[0] + " " + str(PHPUIsockparams[1]))
 		# appending the opened socket to the ones watched
 		ins.append(conn)
 		conn.setblocking(0)
