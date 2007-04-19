@@ -84,3 +84,6 @@ Ajouter ->
 
 ; fm_bt-save
 Sauvegarder
+
+; fm_success-save
+Propriétés du protocole SIP sauvegardées avec succès

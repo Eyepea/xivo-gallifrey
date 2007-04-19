@@ -8,7 +8,6 @@ $_XIVO = &xivo_gct::set_get(new xivo());
 
 $_CF = &xivo_gat::get('_CF');
 $_QR = &xivo_gat::get('_QR');
-$_PI = &xivo_gat::get('_PI');
 
 $_QRY = &xivo_gct::get('xivo_query');
 $_SRE = &xivo_gct::get('xivo_service');

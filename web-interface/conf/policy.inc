@@ -10,25 +10,20 @@ $array['tree']['service']['ipbx']['call_management'] = array('did' => true,'ivr'
 $array['tree']['service']['ipbx']['trunk_management'] = array('sip' => true,'iax' => true);
 $array['tree']['service']['ipbx']['system_management'] = array('configfiles' => true,'isdncard' => true,'modules' => true,'manager' => true);
 $array['tree']['service']['ipbx']['control_system'] = array('reload' => true);
-/*
-$array['tree']['service']['ipbx']['_query'] = array();
-$array['tree']['service']['ipbx']['_query']['dir'] = 'ipbx';
-$array['tree']['service']['ipbx']['_query']['list'] = array();
-$array['tree']['service']['ipbx']['_query']['list']['pbx_settings::local_extension'] = array();
-$array['tree']['service']['ipbx']['_query']['list']['pbx_settings::local_extension']['url'] = 'user';
-$array['tree']['service']['ipbx']['_query']['list']['pbx_settings::local_extension']['param'] = array('cat' => 'add');
-*/
+
 $array['group'] = array();
 $array['group']['visitor'] = false;
 $array['group']['user']['service'] = false;
 $array['group']['admin'] = array();
 $array['group']['admin']['service'] = array();
 $array['group']['admin']['service']['ipbx'] = true;
+
 /*
 $array['group']['admin']['service']['ipbx']['pbx_settings'] = array('local_extension' => true);
 $array['group']['admin']['service']['ipbx']['call_management'] = array('ivr' => true,'cdr' => true);
+
+$array['group']['root'] = true;
 */
-//$array['group']['root'] = true;
 $array['group']['root'] = array();
 $array['group']['root']['service'] = array();
 $array['group']['root']['service']['ipbx'] = array();

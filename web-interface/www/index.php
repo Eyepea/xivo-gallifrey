@@ -8,8 +8,6 @@ if(xivo_user::is_valid() === true)
 if(isset($_QR['login'],$_QR['password']) === true && $_USR->load_by_authent($_QR['login'],$_QR['password']) === true)
 	xivo_go($_HTML->url('xivo'));
 
-$menu = &$_HTML->get_module('menu');
-
 $_HTML->set_struct('home/login');
 $_HTML->display('center');
 

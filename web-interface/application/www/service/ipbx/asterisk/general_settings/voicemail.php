@@ -23,6 +23,8 @@ if(isset($_QR['fm_send']) === true)
 	$generalvoicemail->replace_val_by_name('emailsubject',$generalvoicemail->set_chk_value('emailsubject',$_QRY->get_qr('emailsubject')));
 	$generalvoicemail->replace_val_by_name('emailbody',$generalvoicemail->set_chk_value('emailbody',$_QRY->get_qr('emailbody')));
 	$generalvoicemail->replace_val_by_name('charset',$element['charset']['default']);
+
+	$_HTML->assign('fm_save',true);
 }
 
 $info = $generalvoicemail->get_name_val(null,false);

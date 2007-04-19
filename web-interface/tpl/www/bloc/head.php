@@ -10,6 +10,7 @@
 			var xivo_sess_id = '<?=XIVO_SESS_ID?>';
 			var xivo_sess_str = '<?=XIVO_SESS_STR?>';
 			var xivo_api_path_info = '<?=$this->get_option('api_path_info');?>';
+			var xivo_tooltips = '&nbsp;';
 		</script>
 		<!-- Date: <?=strftime('%Y-%m-%d %H:%M')?> -->
 <?php

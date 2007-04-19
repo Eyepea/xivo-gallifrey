@@ -36,6 +36,8 @@ if(isset($_QR['fm_send']) === true)
 
 	if(($allow = $generalsip->chk_value('allow',$_QRY->get_qr('allow'))) !== false)
 		$generalsip->replace_val_by_name('allow',(is_array($allow) === true ? implode(',',$allow) : $allow));
+
+	$_HTML->assign('fm_save',true);
 }
 
 $info = $generalsip->get_name_val(null,false);

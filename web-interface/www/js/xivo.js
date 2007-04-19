@@ -27,10 +27,6 @@ function xivo_open_center(url,name,width,height,param)
 
 	if (bw.ie)
 	{
-		//x = window.screenLeft;
-		//y = window.screenTop;
-		//w = window.document.body.offsetWidth;
-		//h = window.document.body.offsetHeight;
 		x = 0;
 		y = 0;
 		w = screen.width;
@@ -91,7 +87,7 @@ xivo_dprog['display'] = new Array();
 
 function xivo_eid(id)
 {
-	if(typeof(xivo_conf['eid'][id]) != 'undefined')
+	if(xivo_is_undef(xivo_conf['eid'][id]) == false)
 		return(xivo_conf['eid'][id]);
 	else if(xivo_bw.dom && (get = document.getElementById(id)))
 	{
@@ -104,7 +100,7 @@ function xivo_eid(id)
 
 function xivo_attrib_register(id,arr)
 {
-	if(typeof(xivo_conf['attrib'][id]) == 'undefined')
+	if(xivo_is_undef(xivo_conf['attrib'][id]) == true)
 		xivo_conf['attrib'][id] = arr;
 }
 
@@ -114,7 +110,7 @@ function xivo_chg_style_attrib(elem,arr,type)
 
 	if(typeof(arr) == 'string')
 		var ref_style = arr;
-	else if(xivo_is_array(arr) == true && typeof(arr[type]) != 'undefined')
+	else if(xivo_is_array(arr) == true && xivo_is_undef(arr[type]) == false)
 		var ref_style = arr[type];
 	else
 		return(false);
@@ -123,9 +119,9 @@ function xivo_chg_style_attrib(elem,arr,type)
 	{
 		var styles = '';
 
-		if(typeof(elem['style']) != 'undefined')
+		if(xivo_is_undef(elem['style']) == false)
 		{
-			var astyles = ref_style.split(';');
+			var astyles = xivo_split(ref_style,';');
 			var astyle = new Array();
 
 			for(i = 0;i < astyles.length;i++)
@@ -135,7 +131,7 @@ function xivo_chg_style_attrib(elem,arr,type)
 				if(styles.length == 0)
 					continue;
 
-				astyle = styles.split(':');
+				astyle = xivo_split(styles,':');
 
 				if(astyle.length == 1)
 					continue;
@@ -151,9 +147,9 @@ function xivo_chg_style_attrib(elem,arr,type)
 				elem['style'][astyle[0]] = astyle[1];
 			}
 		}
-		else if(typeof(elem.style.setAttribute) != 'undefined')
+		else if(xivo_is_undef(elem.style.setAttribute) == false)
 		{
-			var astyles = ref_style.split(';');
+			var astyles = xivo_split(ref_style,';');
 			var astyle = new Array();
 
 			for(i = 0;i < astyles.length;i++)
@@ -163,7 +159,7 @@ function xivo_chg_style_attrib(elem,arr,type)
 				if(styles.length == 0)
 					continue;
 
-				astyle = styles.split(':');
+				astyle = xivo_split(styles,':');
 
 				if(astyle.length == 1)
 					continue;
@@ -194,109 +190,162 @@ function xivo_chg_style_attrib(elem,arr,type)
 	catch(e) {}
 }
 
+function xivo_split(str,delimit)
+{
+	str = String(str);
+
+	if(str.match(/\\/) == null || delimit.length != 1)
+		return(str.split(delimit));
+
+	var len = str.length;
+
+	var norm = 0;
+	var lit = 1;
+	var strip = 2;
+
+	var st = norm;
+	var c = out = '';
+	var r = new Array();
+
+	for(i = 0;i < len;i++)
+	{
+		c = str.charAt(i);
+
+		switch(st)
+		{
+			case norm:
+				if(c == '\\')
+					st = strip;
+				else if(c == delimit)
+				{
+					r.push(out);
+					out = '';
+				}
+				else
+					out += c;
+				break;
+			case strip:
+				if(c == delimit)
+					out += c;
+				else
+					out += '\\'+c;
+				st = norm;
+				break;
+		}
+	}
+
+	if(out.length != 0)
+		r.push(out);
+
+	return(r);
+}
+
+function xivo_chg_property_attrib(elem,arr,type)
+{
+	if(typeof(arr) == 'string')
+		var aproperties = xivo_split(arr,';');
+	else if(xivo_is_array(arr) == true && xivo_is_undef(arr[type]) == false)
+		var aproperties = xivo_split(arr[type],';');
+	else
+		return(false);
+
+	var properties = '';
+	var nproperty = '';
+	var aproperty = new Array();
+	var len = aproperties.length;
+
+	for(i = 0;i < len;i++)
+	{
+		properties = aproperties[i];
+
+		if(properties.length == 0)
+			continue;
+
+		nproperty = xivo_split(properties,'|');
+
+		if(nproperty.length > 2 || xivo_is_undef(elem[nproperty[0]]) == true)
+			continue;
+
+		if(nproperty[0] == 'style')
+		{
+			xivo_chg_style_attrib(elem,nproperty[1],type);
+			continue;
+		}
+
+		aproperty = xivo_split(nproperty[1],':');
+					
+		if(xivo_is_undef(aproperty[1]) == false)
+		{
+			var vtype = aproperty[1].toLowerCase();
+					
+			switch(vtype)
+			{
+				case 'boolean':
+					if(aproperty[0] == 'false')
+						aproperty[0] = false;
+					else
+						aproperty[0] = Boolean(aproperty[0]);
+					break;
+				case 'number':
+						aproperty[0] = Number(aproperty[0]);
+					break;
+				case 'string':
+						aproperty[0] = String(aproperty[0]);
+					break;
+			}		
+		}
+
+		elem[nproperty[0]] = aproperty[0];
+	}
+}
+
 function xivo_chg_attrib(name,id,type,link)
 {
 	link = link == 1 || link == true ? true : false;
 	type = type == 'undefined' ? 0 : type;
+
 	var i = 0;
 
-	if(typeof(xivo_conf['attrib'][name]) != 'undefined' && typeof(xivo_conf['attrib'][name][id]) != 'undefined')
+	if(xivo_is_undef(xivo_conf['attrib'][name]) == true || xivo_is_undef(xivo_conf['attrib'][name][id]) == true)
+		return(false);
+
+	var ref_elem = xivo_conf['attrib'][name][id];
+
+	if((get = xivo_eid(id)))
 	{
-		var ref_elem = xivo_conf['attrib'][name][id];
-
-		if((get = xivo_eid(id)))
+		if(xivo_is_undef(ref_elem['switch']) == false && xivo_is_array(ref_elem['switch']) == true
+		&& xivo_is_undef(ref_elem['switch'][type]) == false && xivo_is_undef(ref_elem['switch_var']) == false)
 		{
-			if(typeof(ref_elem['switch']) != 'undefined' && xivo_is_array(ref_elem['switch']) == true
-			&& typeof(ref_elem['switch'][type]) != 'undefined' && typeof(ref_elem['switch_var']) != 'undefined')
-			{
-				if(ref_elem['switch_var'] == ref_elem['switch'][type])
-					type = ref_elem['switch_var'];
+			if(ref_elem['switch_var'] == ref_elem['switch'][type])
+				type = ref_elem['switch_var'];
 
-				ref_elem['switch_var'] = ref_elem['switch'][type];
-			}
+			ref_elem['switch_var'] = ref_elem['switch'][type];
+		}
 		
-			if(typeof(ref_elem['img']) != 'undefined' && typeof(ref_elem['img'][type]) != 'undefined')
-				get.src = ref_elem['img'][type];
+		if(xivo_is_undef(ref_elem['img']) == false && xivo_is_undef(ref_elem['img'][type]) == false)
+			get.src = ref_elem['img'][type];
 
-			do
-			{
-				if(typeof(ref_elem['property']) == 'undefined')
-					break;
+		if(xivo_is_undef(ref_elem['property']) == false)
+			xivo_chg_property_attrib(get,ref_elem['property'],type);
 
-				if(typeof(ref_elem['property']) == 'string')
-					var aproperties = ref_elem['property'].split(';');
-				else if(xivo_is_array(ref_elem['property']) == true && typeof(ref_elem['property'][type]) != 'undefined')
-					var aproperties = ref_elem['property'][type].split(';');
-				else
-					break;
+		if(xivo_is_undef(ref_elem['style']) == false)
+			xivo_chg_style_attrib(get,ref_elem['style'],type);
+	}
 
-				var properties = '';
-				var nproperty = '';
-				var aproperty = new Array();
-
-				for(i = 0;i < aproperties.length;i++)
-				{
-					properties = aproperties[i];
-
-					if(properties.length == 0)
-						continue;
-
-					nproperty = properties.split('|');
-
-					if(nproperty.length > 2 || typeof(get[nproperty[0]]) == 'undefined')
-						continue;
-
-					if(nproperty[0] == 'style')
-					{
-						xivo_chg_style_attrib(get,nproperty[1],type);
-						continue;
-					}
-
-					aproperty = nproperty[1].split(':');
-					
-					if(typeof(aproperty[1]) != 'undefined')
-					{
-						var vtype = aproperty[1].toLowerCase();
-						
-						switch(vtype)
-						{
-							case 'boolean':
-								if(aproperty[0] == 'false')
-									aproperty[0] = false;
-								else
-									aproperty[0] = Boolean(aproperty[0]);
-								break;
-							case 'number':
-								aproperty[0] = Number(aproperty[0]);
-								break;
-							case 'string':
-								aproperty[0] = String(aproperty[0]);
-								break;
-						}		
-					}
-
-					get[nproperty[0]] = aproperty[0];
-				}
-			}
-			while(false);
-
-			if(typeof(ref_elem['style']) != 'undefined')
-				xivo_chg_style_attrib(get,ref_elem['style'],type);
-		}
-
-		if(typeof(ref_elem['link']) != 'undefined')
+	if(xivo_is_undef(ref_elem['link']) == false)
+	{
+		if(xivo_is_array(ref_elem['link']) == true && link == true)
 		{
-			if(xivo_is_array(ref_elem['link']) == true && link == true)
+			var len = ref_elem['link'].length;
+
+			for(i = 0;i < len; i++)
 			{
-				for(i = 0;i < ref_elem['link'].length; i++)
-				{
-					nlink = typeof(ref_elem['link'][i][2]) != 'undefined' ? ref_elem['link'][i][2] : 2;
-					xivo_chg_attrib(name,ref_elem['link'][i][0],ref_elem['link'][i][1],nlink);
-				}
+				nlink = xivo_is_undef(ref_elem['link'][i][2]) == false ? ref_elem['link'][i][2] : 2;
+				xivo_chg_attrib(name,ref_elem['link'][i][0],ref_elem['link'][i][1],nlink);
 			}
-			else
-				xivo_chg_attrib(name,ref_elem['link'],type,2);
 		}
+		else
+			xivo_chg_attrib(name,ref_elem['link'],type,2);
 	}
 }
 
@@ -330,33 +379,32 @@ function xivo_set_dprog(id,h,t,pid)
 	h = Number(h);
 	t = Number(t);
 
-	if((get = xivo_eid(id)) != false && typeof(xivo_dprog['current'][id]) == 'undefined')
-	{
-		if(xivo_display_dprog(id) == 1)
-		{
-			var mt = Number(t)*1000;
-			var oh = Number(get.offsetHeight);
-			var cmt = Math.round((mt * h) / oh);
+	if((get = xivo_eid(id)) == false
+	|| xivo_is_undef(xivo_dprog['current'][id]) == true
+	|| xivo_display_dprog(id) != 1)
+		return(false);
 
-			get.style.height = '0px';
-			get.style.overflow = 'hidden';
-			get.style.visibility = 'visible';
-			get.style.position = 'static';
+	var mt = Number(t)*1000;
+	var oh = Number(get.offsetHeight);
+	var cmt = Math.round((mt * h) / oh);
 
-			if(pid != '')
-				xivo_set_dprog_height(pid,h,t,oh,id);
+	get.style.height = '0px';
+	get.style.overflow = 'hidden';
+	get.style.visibility = 'visible';
+	get.style.position = 'static';
 
-			xivo_dprog['current'][id] = new Array();
-			xivo_dprog['current'][id]['timer'] = window.setInterval('xivo_mk_dprog(\''+id+'\','+h+')',cmt);
-			xivo_dprog['current'][id]['mheight'] = oh;
-			xivo_dprog['current'][id]['cheight'] = 0;
-		}
-	}
+	if(pid != '')
+		xivo_set_dprog_height(pid,h,t,oh,id);
+
+	xivo_dprog['current'][id] = new Array();
+	xivo_dprog['current'][id]['timer'] = window.setInterval('xivo_mk_dprog(\''+id+'\','+h+')',cmt);
+	xivo_dprog['current'][id]['mheight'] = oh;
+	xivo_dprog['current'][id]['cheight'] = 0;
 }
 
 function xivo_display_dprog(id)
 {
-	if(typeof(xivo_dprog['display'][id]) == 'undefined' || xivo_dprog['display'][id] == 2)
+	if(xivo_is_undef(xivo_dprog['display'][id]) == true || xivo_dprog['display'][id] == 2)
 		xivo_dprog['display'][id] = 1;
 	else
 		xivo_dprog['display'][id] = 2;
@@ -366,45 +414,45 @@ function xivo_display_dprog(id)
 
 function xivo_set_dprog_height(id,h,t,oh,cid)
 {
-	if((get = xivo_eid(id)) != false && typeof(xivo_dprog['current'][id]) == 'undefined')
-	{
-		var mt = Number(t)*1000;
-		var oh = Number(get.offsetHeight + oh);
-		var cmt = Math.round((mt * h) / oh);
+	if((get = xivo_eid(id)) == false || xivo_is_undef(xivo_dprog['current'][id]) == true)
+		return(false);
 
-		if(typeof(xivo_dprog['bak'][id]) == 'undefined')
-			xivo_dprog['bak'][id] = new Array();
+	var mt = Number(t)*1000;
+	var oh = Number(get.offsetHeight + oh);
+	var cmt = Math.round((mt * h) / oh);
 
-		xivo_dprog['bak'][id][cid] = new Array();
-		xivo_dprog['bak'][id][cid]['oh'] = get.offsetHeight;
+	if(xivo_is_undef(xivo_dprog['bak'][id]) == true)
+		xivo_dprog['bak'][id] = new Array();
 
-		get.style.height = '0px';
-		get.style.overflow = 'hidden';
-		get.style.visibility = 'visible';
-		get.style.position = 'static';
+	xivo_dprog['bak'][id][cid] = new Array();
+	xivo_dprog['bak'][id][cid]['oh'] = get.offsetHeight;
 
-		xivo_dprog['current'][id] = new Array();
+	get.style.height = '0px';
+	get.style.overflow = 'hidden';
+	get.style.visibility = 'visible';
+	get.style.position = 'static';
 
-		xivo_dprog['current'][id]['timer'] = window.setInterval('xivo_mk_dprog(\''+id+'\','+h+')',cmt);
-		xivo_dprog['current'][id]['mheight'] = oh;
-		xivo_dprog['current'][id]['cheight'] = 0;
-	}
+	xivo_dprog['current'][id] = new Array();
+
+	xivo_dprog['current'][id]['timer'] = window.setInterval('xivo_mk_dprog(\''+id+'\','+h+')',cmt);
+	xivo_dprog['current'][id]['mheight'] = oh;
+	xivo_dprog['current'][id]['cheight'] = 0;
 }
 
 function xivo_mk_dprog(id,h)
 {
-	if((get = xivo_eid(id)) != false && typeof(xivo_dprog['current'][id]) != 'undefined')
+	if((get = xivo_eid(id)) == false || xivo_is_undef(xivo_dprog['current'][id]) == true)
+		return(false);
+
+	if(xivo_dprog['current'][id]['cheight'] >= xivo_dprog['current'][id]['mheight'])
 	{
-		if(xivo_dprog['current'][id]['cheight'] >= xivo_dprog['current'][id]['mheight'])
-		{
-			window.clearInterval(xivo_dprog['current'][id]['timer']);
-			delete(xivo_dprog['current'][id]);
-			return(null);
-		}
-		
-		xivo_dprog['current'][id]['cheight'] += Number(h);
-		get.style.height = xivo_dprog['current'][id]['cheight']+'px';
+		window.clearInterval(xivo_dprog['current'][id]['timer']);
+		delete(xivo_dprog['current'][id]);
+		return(null);
 	}
+		
+	xivo_dprog['current'][id]['cheight'] += Number(h);
+	get.style.height = xivo_dprog['current'][id]['cheight']+'px';
 }
 
 function xivo_fm_move_selected(from,to)
@@ -416,11 +464,11 @@ function xivo_fm_move_selected(from,to)
 	
 	for(var i = len; i >= 0; i--)
 	{
-		if(from.options[i].selected == true)
-		{
-			to.options[to.options.length] = new Option(from.options[i].text,from.options[i].value);
-			from.options[i] = null;	
-		}
+		if(from.options[i].selected != true)
+			continue;
+
+		to.options[to.options.length] = new Option(from.options[i].text,from.options[i].value);
+		from.options[i] = null;	
 	}
 
 	return(true);
@@ -431,7 +479,7 @@ function xivo_fm_copy_select(from,to)
 	if ((from = xivo_eid(from)) == false || (to = xivo_eid(to)) == false)
 		return(false);
 
-	if(to.selectedIndex == -1 || typeof(to.options[to.selectedIndex]) == 'undefined')
+	if(to.selectedIndex == -1 || xivo_is_undef(to.options[to.selectedIndex]) == true)
 		var selected = false;
 	else
 		var selected = to.options[to.selectedIndex].text;
@@ -450,18 +498,6 @@ function xivo_fm_copy_select(from,to)
 	}
 
 	return(true);
-}
-
-function xivo_fm_new_opt_select(text,value)
-{
-	if(xivo_is_undef(value) == true)
-		value = text;
-
-	titi = xivo_eid('it-trunk-host');
-	titi.options[titi.options.length] = new Option(text,value);
-	tutu = xivo_eid('tutu');
-	tutu.style.display = 'none';
-	titi.style.display = 'inline';
 }
 
 function xivo_fm_unshift_opt_select(from,text,value)
@@ -530,12 +566,12 @@ function xivo_fm_order_selected(from,order)
 	var len = from.length;
 	var selected = from.selectedIndex;
 
-	if(len < 2 || selected == -1 || typeof(from.options[selected]) == 'undefined')
+	if(len < 2 || selected == -1 || xivo_is_undef(from.options[selected]) == true)
 		return(r);
 
 	if(order == -1)
 	{
-		if(selected == len-1 || typeof(from.options[selected+1]) == 'undefined')
+		if(selected == len-1 || xivo_is_undef(from.options[selected+1]) == true)
 			return(r);
 
 		var noption = from.options[selected+1];
@@ -550,7 +586,7 @@ function xivo_fm_order_selected(from,order)
 	}
 	else
 	{
-		if(selected == 0 || typeof(from.options[selected-1]) == 'undefined')
+		if(selected == 0 || xivo_is_undef(from.options[selected-1]) == true)
 			return(r);
 
 		var noption = from.options[selected-1];
@@ -597,15 +633,7 @@ function xivo_substr(str,beg,end)
 
 	return(r);
 }
-/*
-function xivo_fm_select_to_text()
-{
-	toto = xivo_eid('it-trunk-host');
-	toto.style.display = 'none';
-	tutu = xivo_eid('tutu');
-	tutu.type = 'text';
-}
-*/
+
 function xivo_fm_unshift_pop_opt_select(from,text,value,chk,num)
 {
 	if((from = xivo_eid(from)) == false || (from.type != 'select-one' && from.type != 'select-multiple') == true)
@@ -791,4 +819,22 @@ function xivo_menu_active()
 
 	if((xivo_menu_active = xivo_eid(xivo_menu_active)) != false)
 		xivo_menu_active.className = 'mn-active';
+}
+
+function xivo_form_success(str)
+{
+	str = String(str);
+
+	if(str == 'undefined' || str.length == 0 || xivo_eid('tooltips') == false)
+		var property = 'innerHTML|&nbsp\\;';
+	else
+	{
+		str = str.replace(/;/g,'\\;');
+		str = str.replace(/\|/g,'\\|');
+		str = str.replace(/:/g,'\\:');
+
+		var property = 'className|c-green;innerHTML|'+str;
+	}
+
+	xivo_chg_property_attrib(xivo_eid('tooltips'),property);
 }

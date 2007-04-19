@@ -1,6 +1,11 @@
 <?php
 	$form = &$this->get_module('form');
 	$element = $this->vars('element');
+
+	if($this->vars('fm_save') === true):
+		$dhtml = &$this->get_module('dhtml');
+		$dhtml->write_js('xivo_form_success(\''.xivo_stript($this->bbf('fm_success-save')).'\');');
+	endif;
 ?>
 <div class="b-infos b-form">
 	<h3 class="sb-top xspan"><span class="span-left">&nbsp;</span><span class="span-center"><?=$this->bbf('title_content_name');?></span><span class="span-right">&nbsp;</span></h3>

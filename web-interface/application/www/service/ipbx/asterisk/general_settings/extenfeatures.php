@@ -18,9 +18,10 @@ if(isset($_QR['fm_send']) === true)
 	$extenfeatures->replace_exten_by_name('incallrec',$extenfeatures->set_chk_value('incallrec',$_QRY->get_qr('incallrec')));
 	$extenfeatures->replace_exten_by_name('incallfilter',$extenfeatures->set_chk_value('incallfilter',$_QRY->get_qr('incallfilter')));
 	$extenfeatures->replace_exten_by_name('pickup',$extenfeatures->set_chk_value('pickup',$_QRY->get_qr('pickup')));
+
+	$_HTML->assign('fm_save',true);
 }
 
-//$info = $extenfeatures->get_name_val(null,false);
 $info = $extenfeatures->get_name_exten_for_display();
 $element = $extenfeatures->get_element();
 

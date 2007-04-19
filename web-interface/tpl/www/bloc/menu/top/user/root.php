@@ -13,8 +13,8 @@
                 <li onmouseout="this.className='moo';" onmouseover="this.className='mov';"><?=$url->href_html('<span class="span-left">&nbsp;</span><span class="span-center">'.$this->bbf('mn_top_preferences').'</span><span class="span-right">&nbsp;</span>','xivo/preferences');?></li>
                 <li onmouseout="this.className='moo';" onmouseover="this.className='mov';"><?=$url->href_html('<span class="span-left">&nbsp;</span><span class="span-center">'.$this->bbf('mn_top_help').'</span><span class="span-right">&nbsp;</span>','#');?></li>
                 <li onmouseout="this.className='moo';" onmouseover="this.className='mov';"><?=$url->href_html('<span class="span-left">&nbsp;</span><span class="span-center">'.$this->bbf('mn_top_contact').'</span><span class="span-right">&nbsp;</span>','xivo/contact');?></li>
-	</ul>	
+	</ul>
 </div>
-<div id="tooltips">Tooltips</div>
+<div id="tooltips">&nbsp;</div>
 <div id="toolbar"><?=$menu->mk_toolbar();?></div>
 </div>

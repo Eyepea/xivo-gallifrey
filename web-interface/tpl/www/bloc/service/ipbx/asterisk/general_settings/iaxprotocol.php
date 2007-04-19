@@ -3,6 +3,16 @@
 	$url = &$this->get_module('url');
 
 	$element = $this->vars('element');
+
+	if(($jitter = $this->varra('info','jitterbuffer')) === null)
+		$jitter = $element['jitterbuffer']['default'];
+	else
+		$jitter = xivo_bool($jitter);
+
+	if($this->vars('fm_save') === true):
+		$dhtml = &$this->get_module('dhtml');
+		$dhtml->write_js('xivo_form_success(\''.xivo_stript($this->bbf('fm_success-save')).'\');');
+	endif;
 ?>
 <div class="b-infos b-form">
 	<h3 class="sb-top xspan"><span class="span-left">&nbsp;</span><span class="span-center"><?=$this->bbf('title_content_name');?></span><span class="span-right">&nbsp;</span></h3>
@@ -25,13 +35,6 @@
 <?=$form->checkbox(array('desc' => $this->bbf('fm_qualify'),'name' => 'qualify','id' => 'it-qualify','default' => $element['qualify']['default'],'checked' => $this->varra('info','qualify')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 <?=$form->checkbox(array('desc' => $this->bbf('fm_rtcachefriends'),'name' => 'rtcachefriends','id' => 'it-rtcachefriends','default' => $element['rtcachefriends']['default'],'checked' => $this->varra('info','rtcachefriends')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
-
-<?php
-	if(($jitter = $this->varra('info','jitterbuffer')) === null)
-		$jitter = $element['jitterbuffer']['default'];
-	else
-		$jitter = xivo_bool($jitter);
-?>
 
 <?=$form->checkbox(array('desc' => $this->bbf('fm_jitterbuffer'),'name' => 'jitterbuffer','id' => 'it-jitterbuffer','checked' => $jitter),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';" onclick="xivo_eid(\'jitter\').style.display = this.checked == true ? \'block\' : \'none\';"');?>
 

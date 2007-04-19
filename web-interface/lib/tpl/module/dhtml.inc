@@ -160,8 +160,22 @@ class xivo_tpl_dhtml extends xivo_tpl_module
 				$r .= $this->_load_file($this->_inc['js'][$where][$i])."\n"; 
 
 			if($r !== '')
-				echo '<script type="text/javascript">',"\n",'<!--',"\n",$r,'-->',"\n",'</script>',"\n";
+				$this->write_js($r);
 		}
+	}
+
+	function write_js($str)
+	{
+		$str = (string) $str;
+
+		echo '<script type="text/javascript">',"\n",'<!--',"\n",$str,"\n",'-->',"\n",'</script>',"\n";
+	}
+
+	function write_css($str)
+	{
+		$str = (string) $str;
+
+		echo '<style type="text/css">',"\n",'<!--',"\n",$str,"\n",'-->',"\n",'</style>',"\n";
 	}
 
 	function load_css()
@@ -174,7 +188,7 @@ class xivo_tpl_dhtml extends xivo_tpl_module
 				$r .= $this->_load_file($this->_inc['css'][$i]);
 
 			if($r !== '')
-				echo '<style type="text/css">',"\n",'<!--',"\n",$r,'-->',"\n",'</style>',"\n";
+				$this->write_css($r);
 		}
 	}
 

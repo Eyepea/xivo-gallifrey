@@ -1,6 +1,8 @@
 <?php
 
-class xivo_datastorage_mysql
+require_once(XIVO_PATH_LIB.XIVO_SEP_DIR.'datastorage'.XIVO_SEP_DIR.'abstract'.XIVO_SEP_DIR.'sql.inc');
+
+class xivo_datastorage_mysql extends xivo_datastorage_abstract_sql
 {
 	var $_param	= array(
 			'host'		=> '',
@@ -15,14 +17,7 @@ class xivo_datastorage_mysql
 			'interactive'	=> false,
 			'ssl'		=> false);
 
-	var $_date	= array();
-	var $_error	= '';
-	var $_errno	= 0;
 	var $_flag	= 0;
-	var $_link	= null;
-	var $_query	= '';
-	var $_quote	= false;
-	var $_result	= false;
 	var $_type	= 'mysql';
 
 	function xivo_datastorage_mysql($param=array())
@@ -74,28 +69,6 @@ class xivo_datastorage_mysql
 			$this->select_db();
 	}
 
-	function set_param($name,$value)
-	{
-		$name = (string) $name;
-
-		$this->_param[$name] = $value;	
-	}
-
-	function get_param($name)
-	{
-		$name = (string) $name;
-
-		if(isset($this->_param[$name]) === true)
-			return($this->_param[$name]);
-		else
-			return(null);
-	}
-
-	function get_type()
-	{
-		return($this->_type);
-	}
-
 	function quote_identifier($name)
 	{
 		$name = str_replace('`','``',$name);
@@ -115,25 +88,6 @@ class xivo_datastorage_mysql
 
 		if($this->_param['ssl'] === true)
 			$this->_flag |= MYSQL_CLIENT_SSL;
-	}
-
-	function halt($str='')
-	{
-		$str = (string) $str;
-
-		if(($this->_errno = $this->errno()) === false)
-			$this->_errno = 'unknown';
-
-		if(($this->_error = $this->error()) === false)
-			$this->_error = 'unknown';
-
-		if($str !== '')
-			$str .= ' - ';
-
-		if(empty($this->_query) === false)
-			$str .= 'Query: '.$this->_query.' - ';
-
-		trigger_error($str.'Error: '.$this->_error.' - Errno: '.$this->_errno,E_USER_ERROR);
 	}
 
 	function open()
@@ -167,10 +121,6 @@ class xivo_datastorage_mysql
 		return($this->_link);
 	}
 
-	function is_open()
-	{
-		return(is_resource($this->_link));
-	}
 
 	function select_db()
 	{
@@ -189,214 +139,6 @@ class xivo_datastorage_mysql
 			$this->halt();
 
 		return($this->r);
-	}
-
-	function select_hash($t,$w='',$o='')
-	{
-		$t = (string) $t;
-		$w = (string) $w;
-		$o = (string) $o;
-
-		$r = false;
-		$q = sprintf('SELECT * FROM %s WHERE %s%s',$t,($w !== '' ? $w : 1),$o);
-
-		if($this->query($q) !== false)
-		{
-			$r = array();
-
-			for($i = 0;$m = $this->fetch_assoc();$i++)
-				$r[$i] = $m;
-
-			$this->free_result();
-		}
-
-		return($r);
-	}
-
-	function insert($t,&$a,$q=true)
-	{
-		return($this->_insertupdate('INSERT INTO',$t,$a,null,$q));
-	}
-
-	function update($t,&$a,$w='',$q=true,$o='')
-	{
-		return($this->_insertupdate('UPDATE',$t,$a,$w,$q,$o));
-	}
-
-	function replace($t,&$a,$q=true)
-	{
-		return($this->_insertupdate('REPLACE INTO',$t,$a,null,$q));
-	}
-
-	function delete($t,$w='',$o='')
-	{
-		$t = (string) $t;
-		$w = (string) $w;
-		$o = (string) $o;
-
-		return($this->query(sprintf('DELETE FROM %s WHERE %s%s',$t,($w !== '' ? $w : 1),$o)));
-	}
-
-	function _insertupdate($p,$t,&$a,$w='',$q=true,$o='')
-	{
-		$p = (string) $p;
-		$t = (string) $t;
-		$a = (array) $a;
-		$w = (string) $w;
-		$q = (bool) $q;
-		$o = (string) $o;
-
-		$r = false;
-		$str = '';
-
-		if(($arr = xivo_get_aks($a)) === false)
-			return($r);
-
-		for($i = 0;$i < $arr['cnt'];$i++)
-		{
-			$k = &$arr['keys'][$i];
-
-			if(is_array($a[$k]) === true && isset($a[$k]['type'],$a[$k]['data']) === true)
-			{
-				$type = $a[$k]['type'];
-				$data = &$a[$k]['data'];
-			}
-			else
-			{
-				$type = gettype($a[$k]);
-				$data = &$a[$k];
-			}
-
-			switch($type)
-			{
-				case 'boolean':
-					$data = intval($data);
-				case 'func':
-				case 'integer':
-				case 'float':
-					$f = '%s = %s,';
-					$data = (string) $data;
-					break;
-				default:
-				case 'string':
-					$f = '%s = \'%s\',';
-
-					if($q === true)
-						$data = $this->escape_string($data);
-			}
-				
-			$str .= sprintf($f,$this->quote_identifier($k),$data);
-		}
-
-		if($str === '')
-			return($r);
-
-		$str = substr($str,0,-1);
-		$q = sprintf('%s %s SET %s',$p,$t,$str);
-
-		if($w !== '')
-			$q .= sprintf(' WHERE %s',$w);
-
-		if($o !== '')
-			$q .= $o;
-
-		$r = $this->query($q);
-
-		return($r);
-	}
-
-	function date($k,$date='',$format=0,$utc=false)
-	{
-		$r = false;
-
-		$k = (string) $k;
-		$date = (array) $date;
-		$format = xivo_uint($format);
-		$utc = (bool) $utc;
-
-		if($format !== 2)
-			$utc = false;
-
-
-		if(isset($date['beg'],$date['sql']) === false)
-			return($r);
-
-		$col = $col_beg = $k;
-
-		if(is_array($date['beg']) === true)
-		{
-			$k .= '-'.$date['beg']['int'];
-			if(is_array($date['end']) === true)
-				$k .= '-'.$date['end']['int'];
-		}
-
-		if($utc === true)
-			$k .= '-utc';
-
-		if(isset($this->_date[$k]) === false)
-		{
-			$arr = array(1 => '%Y',2 => '%Y%m',3 => '%Y%m%d');
-			$this->_date[$k] = array('date' => '','unix' => '');
-
-			$f = $arr[$date['cnt']];
-
-			$dbeg = $date['beg']['int'];
-
-			if(is_array($date['end']) === true)
-				$dend = $date['end']['int'];
-			else
-				$dend = null;
-
-			if($utc === true)
-			{
-				$tz_beg = strftime('%z',$date['beg']['unix']);
-				$tz_beg_sql = sprintf('%s%02d:%02d',$tz_beg{0},(int) substr($tz_beg,1,2),(int) substr($tz_beg,-2));
-
-				$col = 'FROM_UNIXTIME('.$col.',\'%Y-%m-%d %H.%i.%s\')';
-
-				$col_beg = 'CONVERT_TZ('.$col.',\'+00:00\',\''.$tz_beg_sql.'\')';
-
-				if($dend !== null)
-				{
-					if(($tz_end = strftime('%z',$date['end']['unix'])) === $tz_beg)
-						$this->_date[$k]['unix'] = 'DATE_FORMAT('.$col_beg.',\''.$f.'\') BETWEEN '.$dbeg.' AND '.$dend;
-					else
-					{
-						$tz_end_sql = sprintf('%s%02d:%02d',$tz_end{0},substr($tz_end,1,2),substr($tz_end,-2));
-						$col_end = 'CONVERT_TZ('.$col.',\'+00:00\',\''.$tz_end_sql.'\')';
-
-						$this->_date[$k]['unix'] = 'DATE_FORMAT('.$col_beg.',\''.$f.'\') >= '.$dbeg.' AND '.
-									  $dend.' <= DATE_FORMAT('.$col_end.',\''.$f.'\')';
-					}
-				}
-				else
-					$this->_date[$k]['unix'] = 'DATE_FORMAT('.$col_beg.',\''.$f.'\') = '.$dbeg;
-			}
-			else if($dend === null)
-			{
-				$this->_date[$k]['date'] = 'DATE_FORMAT('.$col_beg.',\''.$f.'\') = '.$dbeg;
-				$this->_date[$k]['unix'] = 'FROM_UNIXTIME('.$col_beg.',\''.$f.'\') = '.$dbeg;
-			}
-			else
-			{
-				$this->_date[$k]['date'] = 'DATE_FORMAT('.$col_beg.',\''.$f.'\') BETWEEN '.$dbeg.' AND '.$dend;
-				$this->_date[$k]['unix'] = 'FROM_UNIXTIME('.$col_beg.',\''.$f.'\') BETWEEN '.$dbeg.' AND '.$dend;
-			}
-		}
-
-		switch($format)
-		{
-			case 1:
-				$r = &$this->_date[$k]['date'];
-				break;
-			case 2:
-				$r = &$this->_date[$k]['unix'];
-				break;
-			default:
-				$r = &$this->_date[$k];
-		}
-
-		return($r);
 	}
 
 	function lock($t)
@@ -455,7 +197,7 @@ class xivo_datastorage_mysql
 				$str = mysql_escape_string($str);
 		}
 		
-		return($str);	
+		return($str);
 	}
 
 	function close()

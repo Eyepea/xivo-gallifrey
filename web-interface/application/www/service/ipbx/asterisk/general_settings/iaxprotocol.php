@@ -25,6 +25,8 @@ if(isset($_QR['fm_send']) === true)
 
 	if(($allow = $generaliax->chk_value('allow',$_QRY->get_qr('allow'))) !== false)
 		$generaliax->replace_val_by_name('allow',(is_array($allow) === true ? implode(',',$allow) : $allow));
+
+	$_HTML->assign('fm_save',true);
 }
 
 $info = $generaliax->get_name_val(null,false);
