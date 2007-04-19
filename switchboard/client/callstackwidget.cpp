@@ -105,6 +105,13 @@ void CallStackWidget::hupchan(const QString & hangupchan)
 	hangUp(hangupchan);
 }
 
+void CallStackWidget::reset()
+{
+	m_monitoredPeer = "";
+	emptyList();
+	changeTitle("");
+}
+
 void CallStackWidget::emptyList()
 {
 	// cleaning the calling list displayed

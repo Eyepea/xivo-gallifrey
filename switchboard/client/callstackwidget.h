@@ -61,6 +61,7 @@ public slots:
 	void updateDisplay();
 	int updateTime();
 	void hupchan(const QString & channel);
+	void reset();
 protected:
 	void dragEnterEvent(QDragEnterEvent *event);
 	void dropEvent(QDropEvent *event);

@@ -5,6 +5,7 @@
 #include <QDebug>
 #include "searchpanel.h"
 #include "peerwidget.h"
+#include "switchboardengine.h"
 
 SearchPanel::SearchPanel(QWidget * parent)
 : QWidget(parent)
@@ -27,6 +28,11 @@ SearchPanel::SearchPanel(QWidget * parent)
 	vlayout->addWidget(scrollarea);
 }
 
+void SearchPanel::setEngine(SwitchBoardEngine * engine)
+{
+	m_engine = engine;
+}
+
 void SearchPanel::affTextChanged(const QString & text)
 {
 	int i;
@@ -47,7 +53,7 @@ void SearchPanel::updatePeer(const QString & ext,
 							 const QString & corrname)
 {
 	int i;
-	qDebug() << "SearchPanel::updatePeer" << ext << name << status << avail << corrname;
+	//qDebug() << "SearchPanel::updatePeer" << ext << name << status << avail << corrname;
 	for(i = 0; i < m_peerlist.count(); i++)
 	{
 		if(ext == m_peerlist[i].ext())
@@ -58,10 +64,10 @@ void SearchPanel::updatePeer(const QString & ext,
 	}
 	Peer peer(ext, name);
 	PeerWidget * peerwidget = new PeerWidget(ext, name, this);
-	//connect( peerwidget, SIGNAL(originateCall(const QString&, const QString&)),
-	//         m_engine, SLOT(originateCall(const QString&, const QString&)) );
-	//connect( peerwidget, SIGNAL(transferCall(const QString&, const QString&)),
-	//         m_engine, SLOT(transferCall(const QString&, const QString&)) );
+	connect( peerwidget, SIGNAL(originateCall(const QString&, const QString&)),
+	         m_engine, SLOT(originateCall(const QString&, const QString&)) );
+	connect( peerwidget, SIGNAL(transferCall(const QString&, const QString&)),
+	         m_engine, SLOT(transferCall(const QString&, const QString&)) );
 	m_peerlayout->addWidget( peerwidget );
 	if( !name.contains(m_input->text(), Qt::CaseInsensitive) )
 	{
@@ -70,5 +76,33 @@ void SearchPanel::updatePeer(const QString & ext,
 	peer.setWidget(peerwidget);
 	peer.updateStatus(status, avail, corrname);
 	m_peerlist << peer;
+}
+
+void SearchPanel::removePeer(const QString & ext)
+{
+	int i;
+	for(i = 0; i < m_peerlist.size(); i++)
+	{
+		if(m_peerlist[i].ext() == ext)
+		{
+			PeerWidget * peerwidget = m_peerlist[i].getWidget();
+			m_peerlayout->removeWidget( peerwidget );
+			m_peerlist.removeAt(i);
+			peerwidget->deleteLater();
+			return;
+		}
+	}
+}
+
+void SearchPanel::removePeers()
+{
+	int i;
+	for(i = 0; i < m_peerlist.size(); i++)
+	{
+		PeerWidget * peerwidget = m_peerlist[i].getWidget();
+		m_peerlayout->removeWidget( peerwidget );
+		peerwidget->deleteLater();
+	}
+	m_peerlist.clear();
 }
 
