@@ -3,29 +3,31 @@
 # export CC=gcc
 
 # you can override default options by calling make OPTIONS=...
-OPTIONS ?= -O2
-CFLAGS = -D _GNU_SOURCE -Wall -Wmissing-prototypes -Wstrict-prototypes $(OPTIONS)
-LIBS = -lpthread
+CFLAGS ?= -O2
+Z_CFLAGS = $(CFLAGS)-D _GNU_SOURCE -Wall -Wmissing-prototypes -Wstrict-prototypes $(OPTIONS)
+LIBS ?=
+Z_LIBS = $(LIBS) -lpthread
 
 BINARY = res_watchdog.so
 OBJECTS = res_watchdog.o
 
-# use make INSTALL_PREFIX=/path/to/sysroot PREFIX=/usr/local if you want to
+# use make DESTDIR=/path/to/sysroot PREFIX=/usr/local if you want to
 # install this module in a non-standard location
-INSTALL_PREFIX ?=
+DESTDIR ?=
 PREFIX ?= /usr
 
 .PHONY: install clean
 
 $(BINARY): $(OBJECTS)
-	$(CC) -shared -Xlinker -x -o $(BINARY) $(OBJECTS) $(LIBS)
+	$(CC) -shared -Xlinker -x -o $(BINARY) $(OBJECTS) $(Z_LIBS)
 
 %.o: %.c
-	$(CC) $(CFLAGS) -c -o $@ $<
+	$(CC) $(Z_CFLAGS) -c -o $@ $<
 
 install: $(BINARY)
-	install -m 755 $(BINARY) $(DESTDIR)$(INSTALL_PREFIX)$(PREFIX)/lib/asterisk/modules
-	install -m 644 configs/watchdog.conf.sample $(DESTDIR)$(INSTALL_PREFIX)/etc/asterisk/watchdog.conf
+	install -d $(DESTDIR)$(PREFIX)/lib/asterisk/modules
+	install -m 755 $(BINARY) $(DESTDIR)$(DESTDIR)$(PREFIX)/lib/asterisk/modules
+	install -m 644 configs/watchdog.conf.sample $(DESTDIR)$(DESTDIR)/etc/asterisk/watchdog.conf
 
 clean:
 	rm -f $(BINARY) $(OBJECTS)
