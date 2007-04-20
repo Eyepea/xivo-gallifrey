@@ -11,6 +11,7 @@ SearchPanel::SearchPanel(QWidget * parent)
 : QWidget(parent)
 {
 	QVBoxLayout * vlayout = new QVBoxLayout(this);
+	vlayout->setMargin(0);
 	QLabel * lbl = new QLabel( tr("Name or number to search"), this );
 	vlayout->addWidget(lbl);
 	m_input = new QLineEdit( this );
