@@ -39,7 +39,7 @@ SwitchBoardConfDialog::SwitchBoardConfDialog(SwitchBoardEngine * engine,
 	layout->addWidget( m_widthsb, 2, 1 );
 
 	m_autoconnect = new QCheckBox(tr("Autoconnect at startup"), this);
-//	m_autoconnect->setCheckState(Qt::Checked / Qt::Unchecked);
+	m_autoconnect->setCheckState( m_engine->autoconnect()?Qt::Checked:Qt::Unchecked );
 	layout->addWidget(m_autoconnect, 3, 0, 1, 0);
 
 	vlayout->addLayout( layout );
@@ -54,6 +54,7 @@ SwitchBoardConfDialog::SwitchBoardConfDialog(SwitchBoardEngine * engine,
 void SwitchBoardConfDialog::saveAndClose()
 {
 	m_engine->setAddress( m_host->text(), m_port->text().toUInt() );
+	m_engine->setAutoconnect( m_autoconnect->checkState() == Qt::Checked );
 	m_engine->saveSettings();
 	m_window->setWidth( m_widthsb->value() );
 	m_window->saveSettings();

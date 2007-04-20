@@ -41,6 +41,8 @@ SwitchBoardEngine::SwitchBoardEngine(QObject * parent)
 	connect(m_socket, SIGNAL(stateChanged(QAbstractSocket::SocketState)),
 	        this, SLOT(socketStateChanged(QAbstractSocket::SocketState)));
 	connect(m_socket, SIGNAL(readyRead()), this, SLOT(socketReadyRead()));
+	if(m_autoconnect)
+		start();
 }
 
 /*!
@@ -51,6 +53,7 @@ void SwitchBoardEngine::loadSettings()
 	QSettings settings;
 	m_host = settings.value("engine/serverhost").toString();
 	m_port = settings.value("engine/serverport", 5081).toUInt();
+	m_autoconnect = settings.value("engine/autoconnect", false).toBool();
 }
 
 /*!
@@ -61,6 +64,7 @@ void SwitchBoardEngine::saveSettings()
 	QSettings settings;
 	settings.setValue("engine/serverhost", m_host);
 	settings.setValue("engine/serverport", m_port);
+	settings.setValue("engine/autoconnect", m_autoconnect);
 }
 
 /* \brief set server address

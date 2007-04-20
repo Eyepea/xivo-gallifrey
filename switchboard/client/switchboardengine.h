@@ -14,6 +14,8 @@ public:
 	void setAddress(const QString & host, quint16 port);
 	quint16 port() const;
 	const QString & host() const;
+	void setAutoconnect(bool b) { m_autoconnect = b;};
+	bool autoconnect() const {return m_autoconnect;};
 	void saveSettings();	//!< save settings
 private:
 	void connectSocket();
@@ -60,6 +62,7 @@ private:
 	int m_timer;	//!< timer id
 	quint16 m_port;	//!< port to connect to server
 	QString m_host;	//!< server host name
+	bool m_autoconnect;	//!< Autoconnect to server at startup ?
 	QString m_pendingcommand;	//!< command to be sent to the server.
 	QHash<QString, QString> m_callerids;
 };
