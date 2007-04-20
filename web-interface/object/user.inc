@@ -181,11 +181,11 @@ class xivo_user
 	function policy_chk($section)
 	{
 		$r = false;
-	
+
 		if(isset($_SESSION['_PLY']) === false || xivo_user::is_valid() === false)
 			return($r);
 			
-		if(xivo_issa('tree',$_SESSION['_PLY']) === false || xivo_issa('user',$_SESSION['_PLY']) === false)
+		if(xivo_issa('tree',$_SESSION['_PLY']) === false || isset($_SESSION['_PLY']['user']) === false)
 			return($r);
 
 		$section = trim(preg_replace('@/+@','/',(string) $section),'/');
@@ -193,8 +193,11 @@ class xivo_user
 		$tree = $_SESSION['_PLY']['tree'];
 		$user = $_SESSION['_PLY']['user'];
 
-		if($user === false || $user === true)
+		if(is_bool($user) === true)
 			return($user);
+
+		if(is_array($user) === false)
+			return(false);
 
 		$arr = explode('/',$section);
 		$nb = count($arr);
@@ -281,12 +284,6 @@ class xivo_user
 
 		return(xivo_gct::set_get($obj,XIVO_USER_CLASS_PRE.$name));
 	}
-/*
-	function is_valid($name)
-	{
-		return(xivo_gct::is_valid(XIVO_USER_CLASS_PRE.$name));
-	}
-*/
 }
 
 ?>
