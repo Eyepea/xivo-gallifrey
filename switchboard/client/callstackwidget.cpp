@@ -4,12 +4,15 @@
 #include "callstackwidget.h"
 #include "callwidget.h"
 
-
+/*! \brief Constructor
+ */
 Call::Call(const QString & channelme)
 {
 	m_channelme = channelme;
 }
 
+/*! \brief Constructor
+ */
 Call::Call(const QString & channelme,
 	   const QString & action,
 	   const int & time,
@@ -20,19 +23,20 @@ Call::Call(const QString & channelme,
 {
 	m_channelme   = channelme;
 	m_action      = action;
-	m_time        = time;
+	m_startTime   = QDateTime::currentDateTime().addSecs(-time);
 	m_direction   = direction;
 	m_channelpeer = channelpeer;
 	m_exten       = exten;
 	m_phonen      = phonen;
 }
 
+/*! \brief Copy constructor */
 Call::Call(const Call & call)
 //: QObject(call.parent())
 {
 	m_channelme   = call.m_channelme;
 	m_action      = call.m_action;
-	m_time        = call.m_time;
+	m_startTime   = call.m_startTime;
 	m_direction   = call.m_direction;
 	m_channelpeer = call.m_channelpeer;
 	m_exten       = call.m_exten;
@@ -46,21 +50,15 @@ void Call::updateCall(const QString & action,
 		      const QString & exten)
 {
 	m_action      = action;
-	m_time        = time;
+	m_startTime   = QDateTime::currentDateTime().addSecs(-time);
 	m_direction   = direction;
 	m_channelpeer = channelpeer;
 	m_exten       = exten;
 }
 
-int Call::updateTime()
-{
-	m_time ++;
-	return 0;
-}
 
-
-
-
+/*! \brief Constructor
+ */
 CallStackWidget::CallStackWidget(QWidget * parent)
 : QWidget(parent)
 {
@@ -71,6 +69,8 @@ CallStackWidget::CallStackWidget(QWidget * parent)
 	m_layout->addStretch(1);
 }
 
+/*! \brief add a call to the list
+ */
 void CallStackWidget::addCall(const QString & channelme,
                               const QString & action,
 			      const int & time,
@@ -100,11 +100,14 @@ void CallStackWidget::addCall(const QString & channelme,
 	}
 }
 
+/*! \brief hang up channel
+ */
 void CallStackWidget::hupchan(const QString & hangupchan)
 {
 	hangUp(hangupchan);
 }
 
+/*! \brief Reset the Widget */
 void CallStackWidget::reset()
 {
 	m_monitoredPeer = "";
@@ -112,23 +115,25 @@ void CallStackWidget::reset()
 	changeTitle("");
 }
 
+/*!
+ * delete all widgets in the list 
+ * and empty m_afflist */
 void CallStackWidget::emptyList()
 {
 	// cleaning the calling list displayed
 	for(int i = 0; i < m_afflist.count() ; i++) {
 		m_layout->removeWidget(m_afflist[i]);
-		delete m_afflist[i];
+		m_afflist[i]->deleteLater();
 	}
 	m_afflist.clear();
 	//m_calllist.clear();
 }
 
-//void CallStackWidget::showCalls(const QString & tomonitor, const QString & callerid)
 void CallStackWidget::updateDisplay()
 {
 	int i, j;
 	CallWidget * callwidget = NULL;
-	qDebug() << "CallStackWidget::showCalls()"
+	qDebug() << "CallStackWidget::updateDisplay()"
 	         << m_afflist.count() << m_calllist.count();
 	// building the new calling list
 	//CallWidget * callwidget = new CallWidget(callerid, this);
@@ -145,7 +150,7 @@ void CallStackWidget::updateDisplay()
 		if(i == m_calllist.count())
 		{
 			m_layout->removeWidget(m_afflist[j]);
-			delete m_afflist.takeAt(j);
+			m_afflist.takeAt(j)->deleteLater();
 		}
 	}
 
@@ -188,15 +193,6 @@ void CallStackWidget::updateDisplay()
 */
 }
 
-int CallStackWidget::updateTime()
-{
-	int n = m_calllist.count();
-	for(int i = 0; i < n ; i++) {
-		m_calllist[i].updateTime();
-	}
-	return n;
-}
-
 void CallStackWidget::dragEnterEvent(QDragEnterEvent *event)
 {
 	qDebug() << event->mimeData()->formats();
@@ -206,6 +202,11 @@ void CallStackWidget::dragEnterEvent(QDragEnterEvent *event)
 	}
 }
 
+/*! \brief receive drop Events.
+ *
+ * check if the dropped "text" is a Peer "id" 
+ * and start to monitor it
+ */
 void CallStackWidget::dropEvent(QDropEvent *event)
 {
 	QString text = event->mimeData()->text();
@@ -219,7 +220,7 @@ void CallStackWidget::dropEvent(QDropEvent *event)
 	}
 	emptyList();
 	m_monitoredPeer = text;
-	changeTitle("Monitoring : " + text);
+	changeTitle(tr("Monitoring : ") + text);
 	updateDisplay();
 	event->acceptProposedAction();
 }

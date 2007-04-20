@@ -16,13 +16,15 @@
 #include "callstackwidget.h"
 #include "searchpanel.h"
 
+/*! \brief Widget containing the CallStackWidget and a Title QLabel
+ */
 class LeftPanel : public QWidget
 {
 public:
-	LeftPanel(QWidget *, QWidget * parent = 0);
-	QLabel * titleLabel();
+	LeftPanel(QWidget *, QWidget * parent = 0);	//!< Constructor
+	QLabel * titleLabel();	//!< getter for m_titleLabel
 private:
-	QLabel * m_titleLabel;
+	QLabel * m_titleLabel;	//!< Title label property
 };
 
 LeftPanel::LeftPanel(QWidget * bottomWidget,QWidget * parent)
@@ -30,7 +32,7 @@ LeftPanel::LeftPanel(QWidget * bottomWidget,QWidget * parent)
 {
 	QVBoxLayout * layout = new QVBoxLayout(this);
 	layout->setMargin(0);
-	m_titleLabel = new QLabel("test", this);
+	m_titleLabel = new QLabel("", this);
 	layout->addWidget(m_titleLabel, 0, Qt::AlignCenter);
 	layout->addWidget(bottomWidget, 1);
 }
@@ -66,8 +68,6 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 				     const QString &, const QString &, const QString &)) );
 	connect( m_engine, SIGNAL(callsUpdated()),
 	         calls, SLOT(updateDisplay()) );
-	connect( m_engine, SIGNAL(updateTime()),
-	         calls, SLOT(updateTime()) );
 	connect( m_engine, SIGNAL(stopped()),
 	         calls, SLOT(reset()) );
 	connect( calls, SIGNAL(hangUp(const QString &)),
@@ -112,7 +112,6 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 	m_splitter->restoreState(settings.value("display/splitterSizes").toByteArray());
 
 	restoreGeometry(settings.value("display/mainwingeometry").toByteArray());
-	//statusBar()->showMessage("test");
 	connect(m_engine, SIGNAL(emitTextMessage(const QString &)),
 	        statusBar(), SLOT(showMessage(const QString &)));
 	connect(m_engine, SIGNAL(started()),

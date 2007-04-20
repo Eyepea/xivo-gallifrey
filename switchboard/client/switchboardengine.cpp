@@ -144,8 +144,12 @@ void SwitchBoardEngine::socketError(QAbstractSocket::SocketError socketError)
 	{
 	case QAbstractSocket::ConnectionRefusedError:
 		emitTextMessage("Connection refused");
-		if(m_timer != -1) killTimer(m_timer);
-		m_timer = startTimer(2000);
+		if(m_timer != -1)
+		{
+			killTimer(m_timer);
+			m_timer = -1;
+		}
+		//m_timer = startTimer(2000);
 		break;
 	case QAbstractSocket::HostNotFoundError:
 		emitTextMessage("Host not found");
@@ -279,9 +283,7 @@ void SwitchBoardEngine::socketReadyRead()
 
 void SwitchBoardEngine::timerEvent(QTimerEvent * event)
 {
-	if (updateTime() > 0)
-		callsUpdated();
-
+	// event->timerId() !
 	//	qDebug() << event;
 	//	m_socket->connectToHost(m_host, m_port);
 	//	m_pendingcommand = "hints";

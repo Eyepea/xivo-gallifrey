@@ -23,7 +23,7 @@ int main(int argc, char * * argv)
 	SwitchBoardEngine engine;
 	MainWindow mainwin(&engine);
 	mainwin.show();
-	engine.startTimer(1000);
+	//engine.startTimer(1000);
 	return app.exec();
 }
 

@@ -49,8 +49,10 @@ CallWidget::CallWidget(const QString & channelme,
 	m_lbl_action = new QLabel(this);
 	layout->addWidget(m_lbl_action, 0, Qt::AlignLeft );
 	setActionPixmap(action);
-	m_lbl_time = new QLabel("[" + QString::number(time/60) + " min " + QString::number(time%60) + " s]",
-				this);
+	m_lbl_time = new QLabel(this);
+	m_startTime = QDateTime::currentDateTime().addSecs(-time);
+	startTimer(1000);
+	updateCallTimeLabel();
 	layout->addWidget(m_lbl_time, 0, Qt::AlignLeft );
 	m_lbl_direction = new QLabel(direction, this);
 	layout->addWidget(m_lbl_direction, 0, Qt::AlignLeft );
@@ -63,6 +65,19 @@ CallWidget::CallWidget(const QString & channelme,
 	//setAcceptDrops(true);
 }
 
+void CallWidget::updateCallTimeLabel()
+{
+	int time = m_startTime.secsTo(QDateTime::currentDateTime());
+	m_lbl_time->setText( "[" + QString::number(time/60) + " min "
+	                    + QString::number(time%60) + " s]" );
+}
+
+void CallWidget::timerEvent( QTimerEvent * event )
+{
+	// event->timerId();
+	updateCallTimeLabel();
+}
+
 void CallWidget::updateWidget(const QString & action,
 			      const int & time,
 			      const QString & direction,
@@ -72,7 +87,9 @@ void CallWidget::updateWidget(const QString & action,
 	qDebug() << this << "updateWidget";
 	//m_lbl_action->setText(action);
 	setActionPixmap(action);
-	m_lbl_time->setText("[" + QString::number(time/60) + " min " + QString::number(time%60) + " s]");
+	//qDebug() << time << m_startTime << m_startTime.secsTo(QDateTime::currentDateTime());
+	m_startTime = QDateTime::currentDateTime().addSecs(-time);
+	updateCallTimeLabel();
 	m_lbl_direction->setText(direction);
 	m_lbl_channelpeer->setText(channelpeer);
 	m_lbl_exten->setText(exten);

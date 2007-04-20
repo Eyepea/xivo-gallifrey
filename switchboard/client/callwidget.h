@@ -1,6 +1,7 @@
 #ifndef __CALLWIDGET_H__
 #define __CALLWIDGET_H__
 #include <QWidget>
+#include <QDateTime>
 
 class QLabel;
 
@@ -42,8 +43,10 @@ protected:
 	//void dragEnterEvent(QDragEnterEvent * event);
 	//	void dragMoveEvent(QDragMoveEvent * event);
 	//	void dropEvent(QDropEvent * event);
+	void timerEvent(QTimerEvent *);
 private:
 	void setActionPixmap(const QString &);
+	void updateCallTimeLabel();
 private:
 	QPoint m_dragstartpos;	//!< used for drag
 	QString m_channelme;	//!< channel identifier
@@ -55,6 +58,7 @@ private:
 	QLabel * m_lbl_channelpeer;	//!< sub widget
 	QLabel * m_lbl_exten;	//!< sub widget
 	QPixmap m_square;		//!< QPixmap used to display the action square
+	QDateTime m_startTime;
 };
 
 

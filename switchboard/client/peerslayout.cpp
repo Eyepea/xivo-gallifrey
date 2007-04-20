@@ -1,3 +1,4 @@
+#include <QWidget>
 #include <QDebug>
 #include "peerslayout.h"
 
@@ -46,12 +47,15 @@ void PeersLayout::addWidget(QWidget *w, QPoint pos)
 void PeersLayout::addItem(QLayoutItem * item, QPoint pos)
 {
 	m_list.append(item);
-	if(m_listPos.contains(pos))
-		pos = freePosition();
-	if(pos.x() >= m_nb_columns)
-		m_nb_columns = pos.x() + 1;
-	if(pos.y() >= m_nb_rows)
-		m_nb_rows = pos.y() + 1;
+	if(pos.x() >= 0 && pos.y() >= 0)
+	{
+		if(m_listPos.contains(pos))
+			pos = freePosition();
+		if(pos.x() >= m_nb_columns)
+			m_nb_columns = pos.x() + 1;
+		if(pos.y() >= m_nb_rows)
+			m_nb_rows = pos.y() + 1;
+	}
 	m_listPos.append(pos);
 }
 
@@ -75,10 +79,13 @@ void PeersLayout::setGeometry(const QRect & r)
 	{
 		x = m_listPos[i].x();
 		y = m_listPos[i].y();
-		m_list[i]->setGeometry(
+		if(x>=0 && y>=0)
+		{
+			m_list[i]->setGeometry(
 		       QRect( x*itemSize.width()/*left*/, y*itemSize.height()/*top*/,
 		              itemSize.width()/*width*/, itemSize.height()/*height*/ )
-				                );
+					                );
+		}
 	}
 }
 
@@ -147,6 +154,10 @@ void PeersLayout::setItemPosition(int i, QPoint pos)
 			m_nb_columns = pos.x() + 1;
 		if(pos.y() >= m_nb_rows)
 			m_nb_rows = pos.y() + 1;
+		if(pos.x() >= 0)
+			m_list[i]->widget()->show();
+		else
+			m_list[i]->widget()->hide();
 		setGeometry(QRect());
 	}
 }
