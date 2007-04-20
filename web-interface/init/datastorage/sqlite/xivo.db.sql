@@ -1,3 +1,5 @@
+BEGIN TRANSACTION;
+
 CREATE TABLE i18n_cache (
   dcreate integer unsigned NOT NULL default 0,
   dupdate integer unsigned NOT NULL default 0,
@@ -47,3 +49,5 @@ CREATE UNIQUE INDEX user__uidx__login_meta ON user(login,meta);
 
 INSERT INTO user VALUES(1,'root','proformatique','root','true',0,'',strftime('%s',datetime('now','utc')),0);
 INSERT INTO user VALUES(2,'admin','proformatique','admin','true',0,'',strftime('%s',datetime('now','utc')),0);
+
+COMMIT;

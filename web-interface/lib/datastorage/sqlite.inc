@@ -34,8 +34,8 @@ class xivo_datastorage_sqlite extends xivo_datastorage_abstract_sql
 
 	function quote_identifier($name)
 	{
-		$name = str_replace('\'','\'\'',$name);
-		return('\''.$name.'\'');
+		$name = str_replace('"','""',$name);
+		return('"'.$name.'"');
 	}
 
 	function _chk_db()

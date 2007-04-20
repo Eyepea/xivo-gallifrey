@@ -15,17 +15,17 @@ $array['exten']['fwdundoall']['appdata'] = 'Not implemented undo all';
 $array['exten']['fwdundounc'] = array();
 $array['exten']['fwdundounc']['priority'] = 1;
 $array['exten']['fwdundounc']['app'] = 'Macro';
-$array['exten']['fwdundounc']['appdata'] = 'features|FWD/Unc/Status|renvoi-on|renvoi-off|1';
+$array['exten']['fwdundounc']['appdata'] = 'features|FWD/Unc/Status|forward-on|forward-off|1';
 
 $array['exten']['fwdundobusy'] = array();
 $array['exten']['fwdundobusy']['priority'] = 1;
 $array['exten']['fwdundobusy']['app'] = 'Macro';
-$array['exten']['fwdundobusy']['appdata'] = 'features|FWD/Busy/Status|renvoi-on|renvoi-off|1';
+$array['exten']['fwdundobusy']['appdata'] = 'features|FWD/Busy/Status|forward-on|forward-off|1';
 
 $array['exten']['fwdundorna'] = array();
 $array['exten']['fwdundorna']['priority'] = 1;
 $array['exten']['fwdundorna']['app'] = 'Macro';
-$array['exten']['fwdundorna']['appdata'] = 'features|FWD/RNA/Status|renvoi-on|renvoi-off|1';
+$array['exten']['fwdundorna']['appdata'] = 'features|FWD/RNA/Status|forward-on|forward-off|1';
 
 $array['exten']['fwdunc'] = array();
 $array['exten']['fwdunc']['app'] = 'Set';
@@ -35,7 +35,7 @@ $array['exten']['fwdunc']['_line'][] = array('priority' => 2,'app' => 'Wait','ap
 $array['exten']['fwdunc']['_line'][] = array('priority' => 3,'appdata' => 'USER=${CALLERID(num)}');
 $array['exten']['fwdunc']['_line'][] = array('priority' => 4,'appdata' => 'DB(users/${USER}/FWD/Unc/Number)=${EXTEN:$<EXTNUMLEN>}');
 $array['exten']['fwdunc']['_line'][] = array('priority' => 5,'appdata' => 'DB(users/${USER}/FWD/Unc/Status)=1');
-$array['exten']['fwdunc']['_line'][] = array('priority' => 6,'app' => 'Playback','appdata' => 'renvoi-on');
+$array['exten']['fwdunc']['_line'][] = array('priority' => 6,'app' => 'Playback','appdata' => 'forward-on');
 $array['exten']['fwdunc']['_line'][] = array('priority' => 7,'app' => 'Hangup');
 
 $array['exten']['fwdrna'] = array();
@@ -46,7 +46,7 @@ $array['exten']['fwdrna']['_line'][] = array('priority' => 2,'app' => 'Wait','ap
 $array['exten']['fwdrna']['_line'][] = array('priority' => 3,'appdata' => 'USER=${CALLERID(num)}');
 $array['exten']['fwdrna']['_line'][] = array('priority' => 4,'appdata' => 'DB(users/${USER}/FWD/RNA/Number)=${EXTEN:$<EXTNUMLEN>}');
 $array['exten']['fwdrna']['_line'][] = array('priority' => 5,'appdata' => 'DB(users/${USER}/FWD/RNA/Status)=1');
-$array['exten']['fwdrna']['_line'][] = array('priority' => 6,'app' => 'Playback','appdata' => 'renvoi-on');
+$array['exten']['fwdrna']['_line'][] = array('priority' => 6,'app' => 'Playback','appdata' => 'forward-on');
 $array['exten']['fwdrna']['_line'][] = array('priority' => 7,'app' => 'Hangup');
 
 $array['exten']['fwdbusy'] = array();
@@ -57,7 +57,7 @@ $array['exten']['fwdbusy']['_line'][] = array('priority' => 2,'app' => 'Wait','a
 $array['exten']['fwdbusy']['_line'][] = array('priority' => 3,'appdata' => 'USER=${CALLERID(num)}');
 $array['exten']['fwdbusy']['_line'][] = array('priority' => 4,'appdata' => 'DB(users/${USER}/FWD/Busy/Number)=${EXTEN:$<EXTNUMLEN>}');
 $array['exten']['fwdbusy']['_line'][] = array('priority' => 5,'appdata' => 'DB(users/${USER}/FWD/Busy/Status)=1');
-$array['exten']['fwdbusy']['_line'][] = array('priority' => 6,'app' => 'Playback','appdata' => 'renvoi-on');
+$array['exten']['fwdbusy']['_line'][] = array('priority' => 6,'app' => 'Playback','appdata' => 'forward-on');
 $array['exten']['fwdbusy']['_line'][] = array('priority' => 7,'app' => 'Hangup');
 
 $array['exten']['recsnd'] = array();
