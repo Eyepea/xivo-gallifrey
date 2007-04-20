@@ -5,6 +5,7 @@
 import sys, traceback, string, sqlite
 import os, threading, traceback
 import cgi, syslog
+import getopt
 
 import BaseHTTPServer
 from BaseHTTPServer import HTTPServer
@@ -17,7 +18,6 @@ import provsup
 from Phones import *
 
 DB	    = "/var/lib/asterisk/astsqlite"
-# DB          = "/home/xilun/agi-xivo/truc.db" 
 SQLITE_BUSY_TIMEOUT = 100
 
 # === used all over this file: ===
@@ -27,6 +27,15 @@ SIP_TABLE   = "usersip"
 
 # right now the only allowed tech is SIP:
 TECH        = "sip"
+
+def name_from_first_last(first,last):
+	if first and last:
+		return first + ' ' + last
+	if first:
+		return first
+	if last:
+		return last
+	return ''
 
 # Informations backend
 class SQLiteDB:
@@ -96,7 +105,8 @@ class SQLiteDB:
 			    UF_TABLE, SIP_TABLE, UF_TABLE, '%s',
 			    UF_TABLE, '%s')
 		mapping = {
-			"name":			SIP_TABLE+".callerid",
+			"firstname":		UF_TABLE+".firstname",
+			"lastname":		UF_TABLE+".lastname",
 			"ident":		SIP_TABLE+".name",
 			"passwd":		SIP_TABLE+".secret",
 			"number":		UF_TABLE+".number",
@@ -104,8 +114,11 @@ class SQLiteDB:
 			"provcode":		UF_TABLE+".provisioningid",
 			"proto":		UF_TABLE+".protocol"
 		}
-		return self.generic_sqlite_select(query,
+		confdico = self.generic_sqlite_select(query,
 				(proto, something_content), mapping)
+		confdico["name"] = name_from_first_last(confdico["firstname"],
+							confdico["lastname"])
+		return confdico
 
 	# lookup the configuration information of the phone in the DB,
 	# by ID of the UserFeatures table, and protocol
@@ -395,10 +408,11 @@ class ThreadingHTTPServer(SocketServer.ThreadingTCPServer):
 		self.server_name = socket.getfqdn(host)
 		self.server_port = port
 
-def main():
+def main(log_level, foreground):
 	syslog.openlog('autoprovisioning', 0, syslog.LOG_DAEMON)
-#	TODO: add syslog filtering
-	daemonize() # todo conditional
+	syslog.setlogmask(syslog.LOG_UPTO(log_level))
+	if not foreground:
+		daemonize()
 	http_server = ThreadingHTTPServer((provsup.LISTEN_IPV4, provsup.LISTEN_PORT), ProvHttpHandler)
 	http_server.my_infos = SQLiteDB(DB)
 	http_server.my_maclocks = MacLocks()
@@ -408,4 +422,37 @@ def main():
 if sqlite.paramstyle != 'pyformat':
 	raise "This script expect pysqlite 1 with sqlite.paramstyle != 'pyformat', but sqlite.paramstyle has been detected as %s" % sqlite.paramstyle
 
-main()
+dontlauchmain = False
+foreground = False
+logmap = {
+	'emerg':   syslog.LOG_EMERG,
+	'alert':   syslog.LOG_ALERT,
+	'crit':    syslog.LOG_CRIT,
+	'err':     syslog.LOG_ERR,
+	'warning': syslog.LOG_WARNING,
+	'notice':  syslog.LOG_NOTICE,
+	'info':    syslog.LOG_INFO,
+	'debug':   syslog.LOG_DEBUG
+}
+log_level = syslog.LOG_NOTICE
+
+# l: log filter up to EMERG, ALERT, CRIT, ERR, WARNING, NOTICE, INFO or DEBUG
+# d: don't launch the main function
+# f: keep the program on foreground, don't daemonize
+# b: override the default sqlite DB filename
+
+opts,args = getopt.getopt(sys.argv[1:], 'b:l:df')
+for k,v in opts:
+	if '-l' == k:
+		if v.lower() not in logmap:
+			raise "Unknown log filter '%s'" % v
+		log_level = logmap[v.lower()]
+	elif '-d' == k:
+		dontlauchmain = True
+	elif '-f' == k:
+		foreground = True
+	elif '-b' == k:
+		DB = v
+
+if not dontlauchmain:
+	main(log_level, foreground)
