@@ -262,6 +262,11 @@ pre {text-align: left;}
 #r-contact dt {font-weight: bold;padding-top: 4px;}
 #r-contact dd {padding-left: 20px;}
 
+#r-help .sb-content div {padding: 10px 0px;}
+#r-help dl {padding-bottom: 10px;}
+#r-help dt {font-weight: bold;padding-top: 4px;}
+#r-help dd {padding-left: 20px;}
+
 /*
 #b-tmenu #mn-guest table {width: 750px;}
 #b-tmenu #mn-guest th {width: 272px;}

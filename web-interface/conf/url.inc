@@ -25,6 +25,7 @@ $array['service/ipbx/control_system/reload'] = 'service/ipbx/index.php/control_s
 $array['xivo'] = 'xivo/index.php';
 $array['xivo/configuration'] = 'xivo/configuration.php';
 $array['xivo/preferences'] = 'xivo/preferences.php';
+$array['xivo/help'] = 'xivo/help.php';
 $array['xivo/contact'] = 'xivo/contact.php';
 $array['xivo/logout'] = 'xivo/logout.php';
 
