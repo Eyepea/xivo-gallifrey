@@ -1,7 +1,7 @@
 # -*- coding: iso-8859-15 -*-
 # Dependencies : arping
 
-import os, sys, syslog, string, traceback
+import os, sys, string, syslog, traceback
 
 LISTEN_IPV4 = ""
 LISTEN_PORT = 8666
