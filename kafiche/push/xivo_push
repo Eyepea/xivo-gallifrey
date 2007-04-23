@@ -23,7 +23,7 @@ if databasekind == "ldap":
 	LDAP_HOST = "192.168.0.247"
 	LDAP_PORT = "389"
 	LDAP_USER = "cn=admin,dc=lan,dc=proformatique,dc=com"
-	LDAP_PASS  = "openxchange"
+	LDAP_PASS = "openxchange"
 	LDAP_BASE = "dc=lan,dc=proformatique,dc=com"
 
 	class myldap:
@@ -119,7 +119,6 @@ if databasekind == "ldap":
 elif databasekind == "mysql":
 	try:
 		mail = "notyetrelevant@here.fr"
-## 298529812   06   520912   LE HENAFF LAURENT   29000   QUIMPER
 		name = x[3]
 		firstname = "not yet relevant"
 		print "SET CALLERID \"" + name + "\""
@@ -171,9 +170,9 @@ elif clientstate == "away":
 	print "SET VARIABLE STATUS 1"
 	print "away"
 
-elif clientstate == "doesnotdisturb":
+elif clientstate == "donotdisturb":
 	print "SET VARIABLE STATUS 2"
-	print "doesnotdisturb"
+	print "donotdisturb"
 
 
 sys.stdout.flush()

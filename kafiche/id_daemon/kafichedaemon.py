@@ -36,7 +36,7 @@ import urllib
 #  sessiontimestamp : last time when the client proved itself to be ALIVE :)
 #  ip :               ip address of the client (current session)
 #  port :             port here the client is listening.
-#  state :            available, away, doesnotdisturb
+#  state :            available, away, donotdisturb
 #                     (??online, not-available, busy)
 # The user identifier will likely be its phone number
 
