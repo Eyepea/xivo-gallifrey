@@ -22,7 +22,7 @@ void Peer::updateStatus(const QString & status,
     m_peerwidget->setGreen(1);
   else if(avail == "away")
     m_peerwidget->setDarkGreen(1);
-  else if(avail == "doesnotdisturb")
+  else if(avail == "donotdisturb")
     m_peerwidget->setRed(1);
   else if(avail == "berightback")
     m_peerwidget->setOrange(1);
