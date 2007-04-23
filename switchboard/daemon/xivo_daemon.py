@@ -1001,9 +1001,8 @@ def handle_ami_event(astnum, idata):
 			else:
 				pass
 		elif x.find("MessageWaiting;") == 7:
-			mwi_string = getvalue(x,"Mailbox") + " waiting=" + getvalue(x,"Waiting")
-			if int(getvalue(x, "Waiting")) > 0:
-				mwi_string += "; new=" + getvalue(x, "New") + "; old=" + getvalue(x, "Old")
+			mwi_string = getvalue(x,"Mailbox") + " waiting=" + getvalue(x,"Waiting") \
+				     + "; new=" + getvalue(x, "New") + "; old=" + getvalue(x, "Old")
 			log_debug("AMI:MessageWaiting: " + plist[astnum].astid + " : " + mwi_string)
 		elif x.find("QueueParams;") == 7: pass
 		elif x.find("QueueMember;") == 7: pass
@@ -1665,7 +1664,7 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
 			astnum = asteriskr[astname_xivoc]
 			if astnum >= 0:
 				sipnumber = "SIP/" + user.split("sip")[1]
-				if sipnum in plist[astnum].normal:
+				if sipnumber in plist[astnum].normal:
 					plist[astnum].normal[sipnumber].set_imstat(state)
 					update_GUI_clients(astnum, sipnumber, "kfc-kah")
 
