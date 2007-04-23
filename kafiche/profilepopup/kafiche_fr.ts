@@ -135,7 +135,7 @@
     </message>
     <message>
         <location filename="mainwidget.cpp" line="119"/>
-        <source>&amp;Does not disturb</source>
+        <source>&amp;Do not disturb</source>
         <translation type="unfinished">&amp;Ne pas déranger</translation>
     </message>
     <message>

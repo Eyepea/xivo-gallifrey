@@ -75,7 +75,7 @@ public slots:
 	void setAway();			//!< set user status as "away"
 	void setBeRightBack();	//!< set user status as "be right back"
 	void setOutToLunch();	//!< set user status as "out to lunch"
-	void setDoesNotDisturb();	//!< set user status as "does not disturb"
+	void setDoNotDisturb();	//!< set user status as "do not disturb"
 private slots:
 	void identifyToTheServer();	//!< perform the first login step
 	void processLoginDialog();	//!< perform the following login steps

@@ -116,10 +116,10 @@ void MainWidget::createActions()
 	connect( m_avact_otl, SIGNAL(triggered()),
 	         m_engine, SLOT(setOutToLunch()) );
 	m_availgrp->addAction( m_avact_otl );
-	m_avact_dnd = new QAction( tr("&Does not disturb"), this );
+	m_avact_dnd = new QAction( tr("&Do not disturb"), this );
 	m_avact_dnd->setCheckable(true);
 	connect( m_avact_dnd, SIGNAL(triggered()),
-	         m_engine, SLOT(setDoesNotDisturb()) );
+	         m_engine, SLOT(setDoNotDisturb()) );
 	m_availgrp->addAction( m_avact_dnd );
 }
 

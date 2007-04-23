@@ -135,7 +135,7 @@ void Engine::stop()
  * \sa setAway()
  * \sa setBeRightBack()
  * \sa setOutToLunch()
- * \sa setDoesNotDisturb()
+ * \sa setDoNotDisturb()
  */
 void Engine::setAvailState(const QString & newstate)
 {
@@ -168,10 +168,10 @@ void Engine::setOutToLunch()
 	setAvailState("outtolunch");
 }
 
-void Engine::setDoesNotDisturb()
+void Engine::setDoNotDisturb()
 {
-	//qDebug() << "setDoesNotDistrurb()";
-	setAvailState("doesnotdisturb");
+	//qDebug() << "setDoNotDistrurb()";
+	setAvailState("donotdisturb");
 }
 
 // === Getter and Setters ===
