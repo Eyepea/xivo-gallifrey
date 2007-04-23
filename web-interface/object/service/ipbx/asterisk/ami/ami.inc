@@ -38,6 +38,13 @@ class xivo_service_asterisk_ami extends xivo_service_asterisk_abstract
 		xivo::load_class('xivo_socket');
 		$this->_socket = new xivo_socket($this->_conf['socket']);
 
+		if(xivo_issa('timeout',$this->_conf['sockect']) === true)
+		{
+			$this->_socket->set_option(null,
+						   'sndtimeo',
+						   $this->_conf['socket']['timeout']);
+		}
+
 		return(true);
 	}
 

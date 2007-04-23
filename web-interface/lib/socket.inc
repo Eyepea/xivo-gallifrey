@@ -390,7 +390,7 @@ class xivo_socket
 
 	function set_option($level,$option,$value=array())
 	{
-		if(is_resource($this->_link) === true && ($option = $this->_chk_option($option)) !== false)
+		if(is_resource($this->_link) === true && ($option = $this->_chk_option('set',$option)) !== false)
 			$r = socket_set_option($this->_link,$this->_chk_level($level),$option,$value);
 		else
 			$r = false;
@@ -400,7 +400,7 @@ class xivo_socket
 
 	function get_option($level,$option)
 	{
-		if(is_resource($this->_link) === true && ($option = $this->_chk_option($option)) !== false)
+		if(is_resource($this->_link) === true && ($option = $this->_chk_option('get',$option)) !== false)
 			$r = socket_get_option($this->_link,$this->_chk_level($level),$option);
 		else
 			$r = false;

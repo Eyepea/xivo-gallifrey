@@ -51,6 +51,13 @@ class xivo_service_asterisk_autoprov extends xivo_service_asterisk_abstract
 		xivo::load_class('xivo_socket');
 		$this->_sockprov[$type] = new xivo_socket($this->_autoprov[$type]);
 
+		if(xivo_issa('timeout',$this->_autoprov[$type]) === true)
+		{
+			$this->_sockprov[$type]->set_option(null,
+							    'sndtimeo',
+							    $this->_autoprov[$type]['timeout']);
+		}
+
 		return(true);
 	}
 

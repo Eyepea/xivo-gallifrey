@@ -7,12 +7,12 @@ $array['autoprov'] = array();
 $array['autoprov']['prov']['url'] = '/prov';
 $array['autoprov']['prov']['method'] = 'POST';
 $array['autoprov']['prov']['protocol'] = 'tcp';
-$array['autoprov']['prov']['application'] = 'http';
+$array['autoprov']['prov']['timeout'] = array('sec' => 60,'usec' => 0);
 
 $array['autoprov']['list']['url'] = '/list';
 $array['autoprov']['list']['method'] = 'GET';
 $array['autoprov']['list']['protocol'] = 'tcp';
-$array['autoprov']['list']['application'] = 'http';
+$array['autoprov']['list']['timeout'] = array('sec' => 60,'usec' => 0);
 
 $array['element']['modact'] = array();
 $array['element']['modact']['value'] = array('guest','prov');
