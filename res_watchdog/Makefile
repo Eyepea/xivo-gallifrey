@@ -26,8 +26,8 @@ $(BINARY): $(OBJECTS)
 
 install: $(BINARY)
 	install -d $(DESTDIR)$(PREFIX)/lib/asterisk/modules
-	install -m 755 $(BINARY) $(DESTDIR)$(DESTDIR)$(PREFIX)/lib/asterisk/modules
-	install -m 644 configs/watchdog.conf.sample $(DESTDIR)$(DESTDIR)/etc/asterisk/watchdog.conf
+	install -m 755 $(BINARY) $(DESTDIR)$(PREFIX)/lib/asterisk/modules
+	install -m 644 configs/watchdog.conf.sample $(DESTDIR)$(PREFIX)/etc/asterisk/watchdog.conf
 
 clean:
 	rm -f $(BINARY) $(OBJECTS)
