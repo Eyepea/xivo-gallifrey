@@ -29,6 +29,7 @@ def ami_socket_status(sockid):
 	"""Sends a Status command to the socket sockid"""
 	try:
 		sockid.send("Action: Status\r\n\r\n")
+		return True
 	except:
-		if __debug__: print "failing to send command to sockid", sockid
+		return False
 
