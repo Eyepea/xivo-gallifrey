@@ -1,0 +1,136 @@
+#! /usr/bin/python
+# vim: set fileencoding=utf-8 :
+# Thomas Bernard
+# script de test du push de fiche
+
+import socket, sys, generefiche, ldap, sys, ConfigParser, string
+
+kafiche = "/etc/asterisk/kafiche.conf"
+config = ConfigParser.ConfigParser()
+config.readfp(open(kafiche))
+
+
+LDAP_HOST = "192.168.0.247"
+LDAP_PORT = "389"
+LDAP_USER = "cn=admin,dc=lan,dc=proformatique,dc=com"
+LDAP_PASS  = "openxchange"
+LDAP_BASE = "dc=lan,dc=proformatique,dc=com"
+
+class myldap:
+        def __init__(self):
+                try:
+                        self.l = ldap.initialize("ldap://%s:%s" %(LDAP_HOST, LDAP_PORT))
+                        self.l.protocol_version = ldap.VERSION3
+                        self.l.simple_bind_s(LDAP_USER, LDAP_PASS)
+
+                except ldap.LDAPError, e:
+                        print e
+                        sys.exit()
+
+        def getldap(self, filter, attrib):
+                try:
+                        resultat = self.l.search_s(LDAP_BASE, ldap.SCOPE_SUBTREE, filter, attrib)
+                        return resultat
+                except ldap.LDAPError, e:
+                        print e
+
+
+
+#print sys.argv[0], len(sys.argv)
+if len(sys.argv) < 6:
+	print "Usage :", sys.argv[0], "<server> <port> <proto> <user> <callerid> <msgext>"
+	sys.exit(1)
+else:
+	shost = sys.argv[1]
+	sport = int(sys.argv[2])
+	proto = sys.argv[3]
+	exten = sys.argv[4]
+	callerid = sys.argv[5]
+	user = proto + exten
+	if len(sys.argv) > 6:
+		msgext = sys.argv[6]
+	else:
+		msgext = ""
+
+# first connect to the server to get ip, port of the client
+z = generefiche.getuserlocation(shost, sport, user)
+print z
+if z == None:
+	print "could not localize user", user
+	sys.exit(3)
+sessionid = z.get('sessionid')
+clientaddress = z.get('address')
+
+result = myldap().getldap("(|(telephonenumber=%s)(mobile=%s)(pager=%s))" %(callerid,callerid,callerid),['cn','mail'])
+
+name = ""
+firstname = ""
+mail = ""
+url = ""
+msg = config.get('msg', 'day')
+
+try:
+	url = config.get('photo', callerid)
+except:
+	pass
+
+try:
+	r = result[0][1]['cn'][0]
+	mail = result[0][1]['mail'][0]
+	(name, firstname) = r.split()
+	sys.stdout.write("SET CALLERID \"%s\"\n" %r)
+except:
+	print "No callerid from OX"	
+
+
+if not name:
+	name = "Inconnu"
+if not firstname:
+	firstname = "Inconnu"
+if not mail:
+	mail = "Inconnu"
+if not callerid:
+	callerid = "Inconnu"
+if not url:
+	url = "http://wiki/upload/9/9f/Manque.png"
+
+z = generefiche.getuserlocation(shost, sport, user)
+if z == None:
+        print "could not localize user", user
+
+sessionid = z.get('sessionid')
+clientaddress = z.get('address')
+clientstate = z.get('state')
+
+if clientstate == "available":
+	print "SET VARIABLE STATUS 0"
+
+	fiche = generefiche.Fiche(sessionid)
+	fiche.setmessage(msgext)
+	fiche.addinfo('Nom', 'text', name)
+	fiche.addinfo('Prenom', 'text', firstname)
+	fiche.addinfo('Numero', 'phone', callerid)
+	fiche.addinfo('Photo', 'picture', url)
+	fiche.addinfo('Adresse email', 'url', 'mailto:' + mail)
+	fiche.addinfo('Homepage', 'url', 'http://www.proformatique.com/')
+	fiche.addinfo('Message du jour', 'text', '<b>' + msg + '</b>')
+
+
+
+	#connect to the client and send the stuff !
+	if fiche.sendtouser(clientaddress):
+		print "Profile sent"
+	else:
+		print "could not send profile to user"
+
+elif clientstate == "away":
+	print "SET VARIABLE STATUS 1"
+	print "away"
+
+elif clientstate == "doesnotdisturb":
+	print "SET VARIABLE STATUS 2"
+	print "doesnotdisturb"
+
+
+sys.stdout.flush()
+sys.stderr.flush()

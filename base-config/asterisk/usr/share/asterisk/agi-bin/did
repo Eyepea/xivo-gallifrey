@@ -1,0 +1,67 @@
+#!/usr/bin/python
+
+import sqlite, sys, string
+
+DB = '/var/lib/asterisk/astsqlite'
+
+try:
+	exten = int(sys.argv[1])
+except:
+	sys.exit()
+
+conn = sqlite.connect(DB)
+cursor = conn.cursor()
+query = "select id from extensions where exten=%d" %exten
+q = False
+
+while (not q):
+	try:
+		cursor.execute(query)
+		q = True
+	except:
+		print "DB lock!"
+		print "try again ..."
+
+r = cursor.fetchone()
+
+if r.id:
+	query = "select * from didfeatures where extenid=%d" % r.id
+	cursor.execute(query)
+	t = cursor.fetchone()
+
+	print t
+
+if t.type == 'custom':
+	(apps, args) = t.custom.split('(')
+	(args, noargs) = args.split(')')
+	args = string.replace(args,',','|')
+	print "ANSWER"
+	print "EXEC %s \"%s\"" %(apps, args)
+
+if t.type == 'meetme':
+	query = "select number from meetmefeatures where id=%d" % t.typeid
+	cursor.execute(query)
+	m = cursor.fetchone()
+	num = int(m[0])
+	query = "select * from extenumbers where number=%d" % num
+	cursor.execute(query)
+	g = cursor.fetchone()
+	print "ANSWER"
+	print "EXEC GOTO \"%s|%s|1\"" %(g.context,g.number)
+
+if t.type == 'user':
+	query = "select number from userfeatures where id=%d" % t.typeid
+	cursor.execute(query)
+	u = cursor.fetchone()
+	num = int(u[0])
+	query = "select * from extenumbers where number=%d" % num
+	cursor.execute(query)
+	g = cursor.fetchone()
+	print "ANSWER"
+	print "EXEC GOTO \"%s|%s|1\"" %(g.context,g.number)
+
+if t.type == 'group':
+	query = "select number from groupfeatures where id=%d" % t.typeid
+	cursor.execute(query)
+	g = cursor.fetchone()
+	print g

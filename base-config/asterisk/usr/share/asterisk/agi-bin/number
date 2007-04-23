@@ -1,0 +1,31 @@
+#!/usr/bin/python
+
+import sqlite, sys
+
+DB = '/var/lib/asterisk/astsqlite'
+
+try:
+	exten = int(sys.argv[1])
+except:
+	sys.exit()
+
+conn = sqlite.connect(DB)
+cursor = conn.cursor()
+query = "select name,number from groupfeatures where number=%d" %exten
+q = False
+
+while (not q):
+	try:
+		cursor.execute(query)
+		q = True
+	except:
+		print "DB lock!"
+		print "try again ..."
+
+r = cursor.fetchone()
+
+try:
+	print "SET VARIABLE EXT %d" % int(r['number'])
+	print "SET VARIABLE GNAME %s" % r['name']
+except:
+	pass

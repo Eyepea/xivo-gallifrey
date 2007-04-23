@@ -1,0 +1,59 @@
+context features {
+	switches {
+		Realtime/features@extensions;
+	};
+};
+
+context initconfig {
+	NoOp(extension s);
+	678 => {
+		Answer();
+		Authenticate(1234);
+		&infotel();
+		AGI(initconfig|${IP}|init|${UA});
+		Hangup();
+	};
+	_XXX. => {
+		Noop(Initialisation ...);
+		&infotel();
+		AGI(initconfig|${IP}|${EXTEN}|${UA});
+		Hangup();
+	};
+};
+
+context pondeuse {
+	s => {
+		Noop(pondeuse ${URL} ..);
+		Answer();
+		Playback(hello-world);
+		Hangup();
+	};
+};
+
+context recv-pondeuse {
+	s => {
+		Noop(Appel de la pondeuse ...);
+		Wait(0.5);
+		Dial(local/101@local-extensions,1);
+		Hangup();
+	};
+};
+
+macro infotel {
+	Set(TECH=${CUT(CHANNEL,/,1)});
+	switch (${TECH}) {
+		case IAX:
+		   NoOp(You called from IAX!);
+		   break;
+		case SIP:
+		   Set(UA=${SIP_HEADER(User-Agent)});
+		   Set(IP=${SIP_HEADER(Contact)});
+		   NoOp(You called SIP!);
+		   break;
+		case ZAP:
+		   NoOp(You called ZAP!);
+		   break;
+		default:
+		   NoOp(In the default clause!);
+	};
+};

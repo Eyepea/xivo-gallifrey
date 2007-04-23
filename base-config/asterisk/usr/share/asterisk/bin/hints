@@ -1,0 +1,24 @@
+#!/usr/bin/python
+
+import sqlite
+
+DB = '/var/lib/asterisk/astsqlite'
+
+conn = sqlite.connect(DB)
+cursor = conn.cursor()
+query = "select * from extensions where context='hints'"
+cursor.execute(query)
+
+r = cursor.fetchall()
+c = 0
+
+while (len(r) > c):
+	try:
+		context = str(r[c][2])
+		app = str(r[c][5])
+		exten = str(r[c][3])
+		print 'exten => ' + exten + ',hint,' + app 
+	except:
+		pass
+
+	c = c + 1

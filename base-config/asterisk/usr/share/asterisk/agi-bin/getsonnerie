@@ -1,0 +1,26 @@
+#!/usr/bin/python
+# AGI callgroup
+
+import ConfigParser, string, sys
+
+try:
+        exten = sys.argv[1]
+except:
+        exten = ""
+
+ring = "/etc/asterisk/ring.conf"
+
+config = ConfigParser.ConfigParser()
+config.readfp(open(ring))
+
+phonetype = config.get('number', exten)
+
+sys.stdout.write("SET VARIABLE RINGINTERNAL \"" + config.get(phonetype, 'intern') + "\"\n")
+sys.stdout.write("SET VARIABLE RINGEXTERNAL \"" + config.get(phonetype, 'extern') + "\"\n")
+sys.stdout.write("SET VARIABLE RINGGROUP \"" + config.get(phonetype, 'group') + "\"\n")
+
+if phonetype == 'thomson':
+	sys.stdout.write("SET VARIABLE ISTHOMSON 1\n")
+
+sys.stdout.flush()
+sys.stderr.flush()
