@@ -100,7 +100,7 @@ void MainWidget::createActions()
 	connect( m_avact_avail, SIGNAL(triggered()),
 	         m_engine, SLOT(setAvailable()) );
 	m_availgrp->addAction( m_avact_avail );
-	m_avact_avail->setChecked( true );
+	//	m_avact_avail->setChecked( true );
 	m_avact_away = new QAction( tr("A&way"), this );
 	m_avact_away->setCheckable(true);
 	connect( m_avact_away, SIGNAL(triggered()),
@@ -121,6 +121,18 @@ void MainWidget::createActions()
 	connect( m_avact_dnd, SIGNAL(triggered()),
 	         m_engine, SLOT(setDoNotDisturb()) );
 	m_availgrp->addAction( m_avact_dnd );
+
+	if(m_engine->getAvailState() == QString("berightback"))
+		m_avact_brb->setChecked( true );
+	else if(m_engine->getAvailState() == QString("donotdisturb"))
+		m_avact_dnd->setChecked( true );
+	else if(m_engine->getAvailState() == QString("away"))
+		m_avact_away->setChecked( true );
+	else if(m_engine->getAvailState() == QString("outtolunch"))
+		m_avact_otl->setChecked( true );
+	else
+		m_avact_avail->setChecked( true );
+
 }
 
 void MainWidget::createMenus()

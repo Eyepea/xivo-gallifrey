@@ -64,6 +64,7 @@ public:
 	void setKeepaliveinterval(uint);	//!< set keep alive interval
 	uint trytoreconnectinterval() const;	//!< try to reconnect interval
 	void setTrytoreconnectinterval(uint);	//!< set try to reconnect interval
+	const QString & getAvailState() {return m_availstate;} //!< returns availability status
 signals:
 	void logged();	//!< signal emmited when the state becomes ELogged
 	void delogged();	//!< signal emmited when the state becomes ENotLogged

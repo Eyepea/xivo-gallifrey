@@ -39,7 +39,7 @@ Engine::Engine(QObject *parent)
 	m_ka_timerid = 0;
 	m_try_timerid = 0;
 	loadSettings();
-	setAvailable();
+	setAvailState(m_availstate);
 	
 	// init listen socket for profile push
 	connect( &m_loginsocket, SIGNAL(connected()),
@@ -75,6 +75,7 @@ void Engine::loadSettings()
 	m_trytoreconnect = settings.value("engine/trytoreconnect", false).toBool();
 	m_keepaliveinterval = settings.value("engine/keepaliveinterval", 20*1000).toUInt();
 	m_trytoreconnectinterval = settings.value("engine/trytoreconnectinterval", 20*1000).toUInt();
+	m_availstate = settings.value("engine/availstate", "available").toString();
 }
 
 /*!
@@ -141,7 +142,9 @@ void Engine::setAvailState(const QString & newstate)
 {
 	if(m_availstate != newstate)
 	{
+		QSettings settings;
 		m_availstate = newstate;
+		settings.setValue("engine/availstate", m_availstate);
 		keepLoginAlive();
 	}
 }
@@ -374,6 +377,12 @@ void Engine::processLoginDialog()
 	{
 		outline = "PORT ";
 		outline.append(QString::number(m_listenport));
+		outline.append("\r\n");
+	}
+	else if(readLine.startsWith("Send STATE"))
+	{
+		outline = "STATE ";
+		outline.append(m_availstate);
 		outline.append("\r\n");
 	}
 	else if(readLine.startsWith("OK SESSIONID"))
