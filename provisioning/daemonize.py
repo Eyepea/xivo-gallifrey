@@ -3,7 +3,7 @@
 
 def daemonize():
 	"""Daemonize the program, ie. make it runs in the 'background',
-	detach it from its controlling session, and detach it from its
+	detach it from its controlling terminal, and detach it from its
 	controlling process group session.
 	
 	"""
