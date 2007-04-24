@@ -36,7 +36,7 @@ class SnomProv(BaseProv):
 		if self.phone["model"] != "300" and \
 		   self.phone["model"] != "320" and \
 		   self.phone["model"] != "360":
-			raise "Unknown Snom model '%s'" % self.phone["model"]
+			raise ValueError, "Unknown Snom model '%s'" % self.phone["model"]
 	def pv_action(self, command, user, passwd):
 		os.system(WGET + " -q -nv -O /dev/null --http-user=%s --http-passwd=%s http://%s/confirm.html?%s=yes" % (user, passwd, self.phone['ipv4'], command))
 	def do_reinit(self):

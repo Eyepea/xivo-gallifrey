@@ -271,7 +271,7 @@ class MacLocks:
 		self.lock.acquire()
 		try:
 			if macaddr not in self.maclocked:
-				raise macaddr + " not locked"
+				raise thread.error, "release unlocked lock for %s" % (macaddr,)
 			self.maclocked.remove(macaddr)
 		finally:
 			self.lock.release()
@@ -432,18 +432,18 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 				"do_provisioning(): the only protocol supported " +\
 				"right now is SIP, but I got %s" \
 				% phone["proto"])
-			raise "Unknown protocol '%s' != sip" % (phone["proto"],)
+			raise ValueError, "Unknown protocol '%s' != sip" % (phone["proto"],)
 
 		syslogf(SYSLOG_NOTICE, "do_provisioning(): handling phone %s" % str(phone))
 
 		if (not phone["vendor"]) or (not phone["model"]):
 			syslogf(SYSLOG_ERR, "do_provisioning(): Missing model or vendor in phone %s" % str(phone))
-			raise "Missing model or vendor in phone %s" % str(phone)
+			raise ValueError, "Missing model or vendor in phone %s" % str(phone)
 
 		if "provcode" in phone and phone["provcode"] != "0" and \
 		   not provsup.well_formed_provcode(phone["provcode"]):
 			syslogf(SYSLOG_ERR, "do_provisioning(): Invalid provcode %s" % (phone["provcode"],))
-			raise "Invalid provcode %s" % (phone["provcode"],)
+			raise ValueError, "Invalid provcode %s" % (phone["provcode"],)
 
 		if phone["actions"] != "no":
 			if "ipv4" not in phone:
@@ -451,12 +451,12 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 				phone["ipv4"] = provsup.ipv4_from_macaddr(phone["macaddr"], lambda x: syslogf(SYSLOG_ERR, x))
 			if phone["ipv4"] is None:
 				syslogf(SYSLOG_ERR, "do_provisioning(): No IP address found for Mac Address %s" % (phone["macaddr"],))
-				raise "No IP address found for Mac Address %s" % (phone["macaddr"],)
+				raise RuntimeError, "No IP address found for Mac Address %s" % (phone["macaddr"],)
 
 		syslogf(SYSLOG_DEBUG, "do_provisioning(): locking %s" % (phone["macaddr"],))
 		if not self.my_maclocks.try_acquire(phone["macaddr"]):
 		    syslogf(SYSLOG_WARNING, "do_provisioning(): Provisioning already in progress for %s" % (phone["macaddr"],))
-		    raise "Provisioning already in progress for %s" % (phone["macaddr"],)
+		    raise RuntimeError, "Provisioning already in progress for %s" % (phone["macaddr"],)
 		try:
 		    syslogf(SYSLOG_DEBUG, "do_provisioning(): phone class from vendor")
 		    prov_class = provsup.PhoneClasses[phone["vendor"]] # TODO also use model
@@ -504,7 +504,7 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 		"""
 		syslogf(SYSLOG_DEBUG, "Entering lock_and_provision(phone=%s)" % str(phone))
 		if not self.my_del_or_prov_lock.acquire_read(DEL_OR_PROV_TIMEOUT):
-			raise "Could not acquire the global lock in shared mode"
+			raise RuntimeError, "Could not acquire the global lock in shared mode"
 		try:
 			self.do_provisioning(phone)
 		finally:
@@ -519,7 +519,7 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 		"""
 		syslogf(SYSLOG_DEBUG, "Entering lock_and_userdel(userinfo=%s)" % str(userinfo))
 		if not self.my_del_or_prov_lock.acquire_write(DEL_OR_PROV_TIMEOUT):
-			raise "Could not acquire the global lock in exclusive mode"
+			raise RuntimeError, "Could not acquire the global lock in exclusive mode"
 		try:
 			self.do_userdeleted(phone)
 		finally:
@@ -537,7 +537,7 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 		self.get_posted()
 		if "mode" not in self.posted:
 			syslogf(SYSLOG_ERR, "handle_prov(): No mode posted")
-			raise "No mode posted"
+			raise ValueError, "No mode posted"
 
 		if self.posted["mode"] == "authoritative" or \
 		   self.posted["mode"] == "informative":
@@ -557,7 +557,7 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 			self.lock_and_userdel(userinfo)
 		else:
 			syslogf(SYSLOG_ERR, "handle_prov(): Unknown mode %s" % (self.posted["mode"],))
-			raise "Unknown mode %s" % (self.posted["mode"],)
+			raise ValueError, "Unknown mode %s" % (self.posted["mode"],)
 
 	    except:
 		syslogf(SYSLOG_NOTICE, "handle_prov(): action FAILED - phone %s - userinfo %s" % (str(phone),str(userinfo)))
@@ -658,7 +658,7 @@ opts,args = getopt(sys.argv[1:], 'b:l:df')
 for k,v in opts:
 	if '-l' == k:
 		if v.lower() not in logmap:
-			raise "Unknown log filter '%s'" % v
+			raise ValueError, "Unknown log filter '%s'" % v
 		log_level = logmap[v.lower()]
 	elif '-d' == k:
 		dontlauchmain = True
