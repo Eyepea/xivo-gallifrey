@@ -22,12 +22,17 @@ public:
 	const QString & getPhone() const {return m_phonen;};
 	const QString & getChannelMe() const {return m_channelme;};
 	const QString & getAction() const {return m_action;};
-	int getTime() const {
-		return m_startTime.secsTo(QDateTime::currentDateTime());
-	};
+	// modif TBernard 20/04/07
+	const int & getTime() const {return m_time;};
+	//	int getTime() const {
+	//return m_startTime.secsTo(QDateTime::currentDateTime());
+	//};
 	const QString & getDirection() const {return m_direction;};
 	const QString & getChannelPeer() const {return m_channelpeer;};
 	const QString & getExten() const {return m_exten;};
+	// modif TBernard 20/04/07
+	int updateTime();
+	//
 	void updateCall(const QString & action,
 			const int & time,
 			const QString & direction,
@@ -36,6 +41,8 @@ public:
 private:
 	QString m_channelme;
 	QString m_action;
+	// modif TBernard 20/04/07
+	int m_time;
 	QDateTime m_startTime;
 	QString m_direction;
 	QString m_channelpeer;
@@ -61,6 +68,9 @@ public slots:
 		     const QString & phonen);
 //	void showCalls(const QString & tomonitor, const QString & callerid);
 	void updateDisplay();
+	// modif TBernard 20/04/07
+	int updateTime();
+	//
 	void hupchan(const QString & channel);
 	void reset();
 protected:

@@ -23,6 +23,8 @@ Call::Call(const QString & channelme,
 {
 	m_channelme   = channelme;
 	m_action      = action;
+	// modif TBernard 20/04/07
+	m_time        = time;
 	m_startTime   = QDateTime::currentDateTime().addSecs(-time);
 	m_direction   = direction;
 	m_channelpeer = channelpeer;
@@ -36,6 +38,8 @@ Call::Call(const Call & call)
 {
 	m_channelme   = call.m_channelme;
 	m_action      = call.m_action;
+	// modif TBernard 20/04/07
+	m_time        = call.m_time;
 	m_startTime   = call.m_startTime;
 	m_direction   = call.m_direction;
 	m_channelpeer = call.m_channelpeer;
@@ -50,12 +54,21 @@ void Call::updateCall(const QString & action,
 		      const QString & exten)
 {
 	m_action      = action;
+	// modif TBernard 20/04/07
+	m_time        = time;
 	m_startTime   = QDateTime::currentDateTime().addSecs(-time);
 	m_direction   = direction;
 	m_channelpeer = channelpeer;
 	m_exten       = exten;
 }
 
+
+// modif TBernard 20/04/07
+int Call::updateTime()
+{
+	m_time ++;
+	return 0;
+}
 
 /*! \brief Constructor
  */
@@ -123,6 +136,7 @@ void CallStackWidget::emptyList()
 	// cleaning the calling list displayed
 	for(int i = 0; i < m_afflist.count() ; i++) {
 		m_layout->removeWidget(m_afflist[i]);
+		delete m_afflist[i];
 		m_afflist[i]->deleteLater();
 	}
 	m_afflist.clear();
@@ -133,8 +147,8 @@ void CallStackWidget::updateDisplay()
 {
 	int i, j;
 	CallWidget * callwidget = NULL;
-	qDebug() << "CallStackWidget::updateDisplay()"
-	         << m_afflist.count() << m_calllist.count();
+	//	qDebug() << "CallStackWidget::updateDisplay()"
+	//	         << m_afflist.count() << m_calllist.count();
 	// building the new calling list
 	//CallWidget * callwidget = new CallWidget(callerid, this);
 	//m_layout->addWidget(callwidget, 0, Qt::AlignTop);
@@ -159,14 +173,14 @@ void CallStackWidget::updateDisplay()
 			Call c = m_calllist[i];
 			for(j = 0; j < m_afflist.count(); j++)
 			{
-				qDebug() << j << m_afflist[j]->channel();
+				// qDebug() << j << m_afflist[j]->channel();
 				if(m_afflist[j]->channel() == c.getChannelMe())
 				{
 					m_afflist[j]->updateWidget( c.getAction(),
 					                            c.getTime(),
-											    c.getDirection(),
-											    c.getChannelPeer(),
-											    c.getExten() );
+								    c.getDirection(),
+								    c.getChannelPeer(),
+								    c.getExten() );
 					break;
 				}
 			}
@@ -191,6 +205,16 @@ void CallStackWidget::updateDisplay()
 	m_layout->addWidget(callwidget, 1, Qt::AlignTop);
 	m_afflist.append(callwidget);
 */
+}
+
+// modif TBernard 20/04/07
+int CallStackWidget::updateTime()
+{
+	int n = m_calllist.count();
+	for(int i = 0; i < n ; i++) {
+		m_calllist[i].updateTime();
+	}
+	return n;
 }
 
 void CallStackWidget::dragEnterEvent(QDragEnterEvent *event)

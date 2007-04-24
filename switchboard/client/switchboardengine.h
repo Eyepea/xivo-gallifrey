@@ -42,6 +42,8 @@ signals:
 	void started();
 	void stopped();
 	void emitTextMessage(const QString &);
+	// modif TBernard 20/04/07
+	int updateTime();
 	void updateCall(const QString & channelme,
 			const QString & action,
 			const int & time,

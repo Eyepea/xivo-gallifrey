@@ -1,8 +1,11 @@
 #include <QHBoxLayout>
+#include <QGridLayout>
 #include <QApplication>
 #include <QLabel>
 #include <QMouseEvent>
 #include <QDebug>
+#include <QFont>
+#include <QTextFormat>
 #include "callstackwidget.h"
 #include "callwidget.h"
 
@@ -35,7 +38,7 @@ CallWidget::CallWidget(const QString & channelme,
                        QWidget * parent)
 : QWidget(parent), m_square(16,16)
 {
-	QHBoxLayout * layout = new QHBoxLayout(this);
+	QGridLayout * layout = new QGridLayout(this);
 
 // 	m_callerid = callerid;
 // 	m_calleridname = calleridname;
@@ -46,22 +49,35 @@ CallWidget::CallWidget(const QString & channelme,
 //	layout->setSpacing(0);
 	//layout->setMargin(0);
 
+	layout->setColumnStretch(3, 1);
 	m_lbl_action = new QLabel(this);
-	layout->addWidget(m_lbl_action, 0, Qt::AlignLeft );
+	layout->addWidget(m_lbl_action, 0, 0);
 	setActionPixmap(action);
-	m_lbl_time = new QLabel(this);
-	m_startTime = QDateTime::currentDateTime().addSecs(-time);
-	startTimer(1000);
-	updateCallTimeLabel();
-	layout->addWidget(m_lbl_time, 0, Qt::AlignLeft );
+
+	// modif TBernard 20/04/07
+	m_lbl_time = new QLabel("[" + QString::number(time/60) + " min " + QString::number(time%60) + " s]",
+				this);
+	// 	m_lbl_time = new QLabel(this);
+	// 	m_startTime = QDateTime::currentDateTime().addSecs(-time);
+	// 	startTimer(1000);
+	// 	updateCallTimeLabel();
+	m_lbl_time->setFont(QFont("", 8, QFont::Bold));
+	layout->addWidget(m_lbl_time, 1, 0);
+
 	m_lbl_direction = new QLabel(direction, this);
-	layout->addWidget(m_lbl_direction, 0, Qt::AlignLeft );
-	m_lbl_channelpeer = new QLabel(channelpeer, this);
-	layout->addWidget(m_lbl_channelpeer, 0, Qt::AlignLeft );
+	layout->addWidget(m_lbl_direction, 0, 1);
+
+	// 	m_lbl_channelpeer = new QLabel(channelpeer, this);
+	// 	layout->addWidget(m_lbl_channelpeer, 0, Qt::AlignLeft );
+
 	m_lbl_exten = new QLabel(exten, this);
-	layout->addWidget(m_lbl_exten, 0, Qt::AlignLeft );
-	QLabel * dummy = new QLabel(this);
-	layout->addWidget(dummy, 1, Qt::AlignLeft );
+	m_lbl_exten->setFont(QFont("courier", 10, QFont::Light));
+	layout->addWidget(m_lbl_exten, 0, 2);
+
+	// for caller id information
+	QLabel * dummy = new QLabel("", this);
+	dummy->setFont(QFont("times", 10, QFont::Light, TRUE));
+	layout->addWidget(dummy, 1, 2);
 	//setAcceptDrops(true);
 }
 
@@ -84,14 +100,16 @@ void CallWidget::updateWidget(const QString & action,
 			      const QString & channelpeer,
 			      const QString & exten)
 {
-	qDebug() << this << "updateWidget";
+	//	qDebug() << this << "updateWidget";
 	//m_lbl_action->setText(action);
 	setActionPixmap(action);
-	//qDebug() << time << m_startTime << m_startTime.secsTo(QDateTime::currentDateTime());
-	m_startTime = QDateTime::currentDateTime().addSecs(-time);
-	updateCallTimeLabel();
+	// modif TBernard 20/04/07
+	m_lbl_time->setText("[" + QString::number(time/60) + " min " + QString::number(time%60) + " s]");
+	// 	//qDebug() << time << m_startTime << m_startTime.secsTo(QDateTime::currentDateTime());
+	// 	m_startTime = QDateTime::currentDateTime().addSecs(-time);
+	// 	updateCallTimeLabel();
 	m_lbl_direction->setText(direction);
-	m_lbl_channelpeer->setText(channelpeer);
+	//	m_lbl_channelpeer->setText(channelpeer);
 	m_lbl_exten->setText(exten);
 }
 

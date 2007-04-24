@@ -144,12 +144,17 @@ void SwitchBoardEngine::socketError(QAbstractSocket::SocketError socketError)
 	{
 	case QAbstractSocket::ConnectionRefusedError:
 		emitTextMessage("Connection refused");
-		if(m_timer != -1)
-		{
-			killTimer(m_timer);
-			m_timer = -1;
-		}
-		//m_timer = startTimer(2000);
+
+
+		// modif TBernard 20/04/07
+		if(m_timer != -1) killTimer(m_timer);
+		m_timer = startTimer(2000);
+		// 		if(m_timer != -1)
+		// 		{
+		// 			killTimer(m_timer);
+		// 			m_timer = -1;
+		// 		}
+		// 		//m_timer = startTimer(2000);
 		break;
 	case QAbstractSocket::HostNotFoundError:
 		emitTextMessage("Host not found");
@@ -193,7 +198,7 @@ void SwitchBoardEngine::updatePeers(const QStringList & liststatus)
 				+ liststatus[refn + 2] + " " + liststatus[refn + 3] + " "
 				+ liststatus[refn + 4] + " " + liststatus[refn + 5];
 			updateCall(liststatus[1] + "/" + liststatus[refn],
-			       liststatus[refn + 1],
+				   liststatus[refn + 1],
 				   liststatus[refn + 2].toInt(), liststatus[refn + 3],
 				   liststatus[refn + 4], liststatus[refn + 5],
 				   pname);
@@ -283,6 +288,11 @@ void SwitchBoardEngine::socketReadyRead()
 
 void SwitchBoardEngine::timerEvent(QTimerEvent * event)
 {
+	// modif TBernard 20/04/07
+	if (updateTime() > 0)
+		callsUpdated();
+
+
 	// event->timerId() !
 	//	qDebug() << event;
 	//	m_socket->connectToHost(m_host, m_port);

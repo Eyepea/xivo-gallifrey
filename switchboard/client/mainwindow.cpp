@@ -1,3 +1,6 @@
+/* $Revision$ $Date$ */
+/* Copyright (C) 2007 Proformatique */
+
 #include <QStatusBar>
 #include <QMenuBar>
 #include <QApplication>
@@ -68,6 +71,10 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 				     const QString &, const QString &, const QString &)) );
 	connect( m_engine, SIGNAL(callsUpdated()),
 	         calls, SLOT(updateDisplay()) );
+	// modif TBernard 20/04/07
+	connect( m_engine, SIGNAL(updateTime()),
+	         calls, SLOT(updateTime()) );
+	//
 	connect( m_engine, SIGNAL(stopped()),
 	         calls, SLOT(reset()) );
 	connect( calls, SIGNAL(hangUp(const QString &)),
@@ -81,10 +88,10 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
  	m_widget->setEngine(engine);
 	connect( engine, SIGNAL(updatePeer(const QString &, const QString &,
 	                                   const QString &, const QString &,
-									   const QString &)),
+					   const QString &)),
 	         m_widget, SLOT(updatePeer(const QString &, const QString &,
-			                           const QString &, const QString &,
-									   const QString &)) );
+					   const QString &, const QString &,
+					   const QString &)) );
 	connect( engine, SIGNAL(stopped()), 
 	         m_widget, SLOT(removePeers()) );
 	connect( engine, SIGNAL(removePeer(const QString &)),
@@ -96,10 +103,10 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 	searchpanel->setEngine(engine);
 	connect( engine, SIGNAL(updatePeer(const QString &, const QString &,
 	                                   const QString &, const QString &,
-									   const QString &)),
+					   const QString &)),
 	         searchpanel, SLOT(updatePeer(const QString &, const QString &,
-			                           const QString &, const QString &,
-									   const QString &)) );
+					      const QString &, const QString &,
+					      const QString &)) );
 	connect( engine, SIGNAL(stopped()),
 	         searchpanel, SLOT(removePeers()) );
 	connect( engine, SIGNAL(removePeer(const QString &)),
@@ -143,7 +150,7 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 
 	QMenu * helpmenu = menuBar()->addMenu(tr("&Help"));
 
-	helpmenu->addAction(tr("&About"), this, SLOT(about()));
+	helpmenu->addAction(tr("&About XIVO Switchboard"), this, SLOT(about()));
 	helpmenu->addAction(tr("About &Qt"), qApp, SLOT(aboutQt()));
 }
 
@@ -195,8 +202,18 @@ void MainWindow::engineStopped()
 void MainWindow::about()
 {
 	QString applicationVersion("0.1");
-	QMessageBox::about(this, tr("About XIVO SwitchBoard"),
-	                   tr("<h3>About</h3>"
-			      "<p>To be continued</p>") );
+	QMessageBox::about(this,
+			   tr("About XIVO SwitchBoard"),
+	                   tr("<h3>XIVO Switchboard</h3>"
+			      "<p>This application displays the status of the"
+			      " ongoing phone calls.</p>"
+			      "<p>Version : %1</p>"
+			      "<p>(C) 2007 <b>Proformatique</b> "
+			      "<a href=\"http://www.proformatique.com\">"
+			      "http://www.proformatique.com</a></p>"
+			      "<p>67 rue Voltaire 92800 Puteaux FRANCE</p>"
+			      "<p>E-mail : technique@proformatique.com</p>"
+			      "<p>(+33/0)1.41.38.99.60</p>"
+			      "<p>Author : Thomas Bernard</p>").arg(applicationVersion) );
 }
 
