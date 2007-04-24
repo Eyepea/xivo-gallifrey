@@ -123,7 +123,16 @@ void Engine::start()
  */
 void Engine::stop()
 {
+	QString outline;
 	qDebug() << "Engine::stop()";
+	outline = "STOP ";
+	outline.append(m_serverast);
+	outline.append("/");
+	outline.append(m_login);
+	outline.append("\r\n");
+
+	m_udpsocket.writeDatagram( outline.toAscii(),
+				   m_serveraddress, m_serverport+1 );
 	stopKeepAliveTimer();
 	stopTryAgainTimer();
 	setState(ENotLogged);
