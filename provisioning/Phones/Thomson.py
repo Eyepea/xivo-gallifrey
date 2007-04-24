@@ -1,7 +1,16 @@
 # -*- coding: iso-8859-15 -*-
+"""Support for Thomson phones for Xivo Autoprovisioning
+
+Thomson 2030S is supported.
+
+Copyright (C) 2007, Proformatique
+
+"""
+# Dependencies : apache wget
 
 import os, sys, syslog, time, telnetlib
 import provsup
+from provsup import BaseProv
 
 # === THOMSON ===
 
@@ -24,10 +33,10 @@ THOMSON_SPEC_TXT_TEMPLATE = "files/ST2030S_template.txt"
 # THOMSON_SPEC_TXT_BASENAME = "files/ST2030S_"
 THOMSON_SPEC_TXT_BASENAME = "/tftpboot/ST2030S_"
 # warning drop number use ident instead
-class ThomsonProv(provsup.BaseProv):
+class ThomsonProv(BaseProv):
 	label = "Thomson"
 	def __init__(self, phone):
-		provsup.BaseProv.__init__(self, phone)
+		BaseProv.__init__(self, phone)
 	# private function:
 	def pv_generate_timestamp(self):
 		tuple_time = time.localtime()

@@ -1,13 +1,26 @@
 #!/usr/bin/python
 # -*- coding: iso-8859-15 -*-
-"""Autoprovisioning daemon for Xivo"""
+"""Autoprovisioning daemon for Xivo
 
-# Dependencies : python-sqlite wget
+Copyright (C) 2007, Proformatique
 
-import sys, traceback, string, sqlite
-import os, threading, traceback
-import cgi, syslog
-import getopt
+"""
+# Dependencies : python-sqlite
+
+import os, cgi, sys, sqlite, thread, threading, traceback
+
+import syslog
+from syslog import syslog      as syslogf
+from syslog import LOG_EMERG   as SYSLOG_EMERG
+from syslog import LOG_ALERT   as SYSLOG_ALERT
+from syslog import LOG_CRIT    as SYSLOG_CRIT
+from syslog import LOG_ERR     as SYSLOG_ERR
+from syslog import LOG_WARNING as SYSLOG_WARNING
+from syslog import LOG_NOTICE  as SYSLOG_NOTICE
+from syslog import LOG_INFO    as SYSLOG_INFO
+from syslog import LOG_DEBUG   as SYSLOG_DEBUG
+
+from getopt import getopt
 
 import BaseHTTPServer
 from BaseHTTPServer import HTTPServer
@@ -16,14 +29,11 @@ from BaseHTTPServer import BaseHTTPRequestHandler
 import SocketServer
 from SocketServer import socket
 
+# personnal imports:
 import provsup
-# Phones is a package containing one module per vendor
-from Phones import *
-
-# moresynchro contains R/W Locks
-import moresynchro
-
-import daemonize
+from Phones import * # package containing one module per vendor
+from moresynchro import RWLock
+from daemonize import daemonize
 
 DB	    = "/var/lib/asterisk/astsqlite"
 # sqlite timeout is in ms
@@ -38,7 +48,7 @@ SIP_TABLE   = "usersip"
 TECH        = "sip"
 
 # deletion (W) / provisioning (R) lock timeout in secs
-DEL_OR_PROV_TIMEOUT = 55
+DEL_OR_PROV_TIMEOUT = 45
 
 def name_from_first_last(first, last):
 	"Construct full name from first and last."
@@ -70,32 +80,38 @@ class SQLiteDB:
 		try:
 			a = foobar(conn, *remain)
 		except:
-			provsup.log_debug_current_exception()
+			provsup.log_current_exception()
 			a = None
 		conn.close()
 		return a
 
-	def generic_sqlite_select(self, request, parameters_tuple, mapping):
+	def sqlite_select(self, request, parameters_tuple, mapping):
 		"Does a SELECT SQLite query."
-		return self.generic_sqlite_request(self.__select_func, request, parameters_tuple, mapping)
-	def __select_func(self, conn, request, parameters_tuple, mapping):
-		"Internally called in a safe context to execute SELECT queries."
+		return self.generic_sqlite_request(self.method_select, request, parameters_tuple, mapping)
+	def method_select(self, conn, request, parameters_tuple, mapping):
+		"""Internally called in a safe context to execute SELECT
+		SQLite queries and return their result.
+		
+		"""
 		cursor = conn.cursor()
 		cursor.execute(request, parameters_tuple)
 		r = cursor.fetchone()
 		if not r:
-			syslog.syslog(syslog.LOG_WARNING, "No result for request " + request)
+			syslogf(SYSLOG_WARNING, "No result for request " + request)
 			return None
 		a = {}
 		for k,v in mapping.iteritems():
 			a[k] = provsup.elem_or_none(r, v)
 		return a
 
-	def generic_sqlite_replace(self, request, parameters_tuple):
-		"Does a REPLACE SQLite query."
-		return self.generic_sqlite_request(self.__replace_func, request, parameters_tuple)
-	def __replace_func(self, conn, request, parameters_tuple):
-		"Internally called in a safe context to execute REPLACE queries."
+	def sqlite_modify(self, request, parameters_tuple):
+		"Does a SQLite query that is going to modify the database."
+		return self.generic_sqlite_request(self.method_commit, request, parameters_tuple)
+	def method_commit(self, conn, request, parameters_tuple):
+		"""Internally called in a safe context to commit the result of
+		SQLite queries that modify the database content.
+		
+		"""
 		cursor = conn.cursor()
 		cursor.execute(request, parameters_tuple)
 		conn.commit()
@@ -109,12 +125,12 @@ class SQLiteDB:
 		by mac address.
 		
 		Returns a dictionary with the following keys:
-		        "macaddr", "vendor", "model"
+		        'macaddr', 'vendor', 'model'
 
 		"""
 		query = "SELECT * FROM %s WHERE macaddr=%s" % (TABLE, '%s')
 		mapping = dict(map(lambda x: (x,x), ("macaddr", "vendor", "model")))
-		return self.generic_sqlite_select(query, (macaddr,), mapping)
+		return self.sqlite_select(query, (macaddr,), mapping)
 
 	def config_by_something_proto(self, something_column, something_content, proto):
 		"""Query the database to return a phone configuration.
@@ -125,15 +141,22 @@ class SQLiteDB:
 				    the column identified by something_column
 		
 		Returns a dictionary with the following keys:
-		        "firstname", "lastname", "name": user civil status
-		        "iduserfeatures": user id in the userfeatures table
-		        "provcode": provisioning code
-		        "ident": protocol specific identification
-		        "passwd": protocol specific password
-		        "number": extension number
-		        "proto": protocol
+		        'firstname', 'lastname', 'name': user civil status
+				note that the name is constructed from the
+				first and last name
+		        'iduserfeatures': user id in the userfeatures table
+		        'provcode': provisioning code
+		        'ident': protocol specific identification
+		        'passwd': protocol specific password
+		        'number': extension number
+		        'proto': protocol
+		
+		Right now proto must evaluate to 'sip'
 		
 		"""
+		if proto != TECH:
+			raise ValueError, "proto must be 'sip' for now"
+		
 		query = ("SELECT %s.*,%s.* " +
 			  "FROM %s LEFT OUTER JOIN %s " +
 				"ON %s.protocolid=%s.id AND %s.protocol=%s " +
@@ -152,8 +175,8 @@ class SQLiteDB:
 			"provcode":		UF_TABLE+".provisioningid",
 			"proto":		UF_TABLE+".protocol"
 		}
-		confdico = self.generic_sqlite_select(query,
-				(proto, something_content), mapping)
+		confdico = self.sqlite_select(query, (proto, something_content),
+		                              mapping)
 		confdico["name"] = name_from_first_last(confdico["firstname"],
 							confdico["lastname"])
 		return confdico
@@ -161,6 +184,8 @@ class SQLiteDB:
 	def config_by_iduserfeatures_proto(self, iduserfeatures, proto):
 		"""Lookup the configuration information of the phone in the
 		database, by ID of the 'userfeatures' table, and protocol.
+		
+		Right now proto must evaluate to 'sip'
 		
 		"""
 		return self.config_by_something_proto(
@@ -170,19 +195,59 @@ class SQLiteDB:
 		"""Lookup the configuration information of the phone in the
 		database, by provisioning code and protocol.
 		
+		Right now proto must evaluate to 'sip'
+		
 		"""
 		return self.config_by_something_proto(
 				"provisioningid", provcode, proto)
 
 	def save_phone(self, phone):
-		"Save phone informations in the database."
-		self.generic_sqlite_replace(
+		"""Save phone informations in the database.
+		phone must be a dictionary and contain the following keys:
+		
+		- 'macaddr'
+		- 'vendor'
+		- 'model'
+		- 'proto'
+		- 'iduserfeatures'
+		
+		"""
+		self.sqlite_modify(
 			"REPLACE INTO %s (macaddr, vendor, model, proto, iduserfeatures) VALUES (%s, %s, %s, %s, %s)" \
 			% (TABLE, '%s', '%s', '%s', '%s', '%s'),
-			map(lambda x: phone[x], ('macaddr', 'vendor', 'model', 'proto', 'iduserfeatures')))
+			map(lambda x: phone[x], ('macaddr', 'vendor', 'model',
+			                         'proto', 'iduserfeatures')))
 
-	def user_deletion(self, userinfo):
-		pass
+	def phone_by_userinfo(self, userinfo):
+		"""Lookup phone information by user information (iduserfeatures)
+		Right now this is limited to the 'sip' protocol, so the result
+		is a single phone description in the form of a dictionary
+		containing the classical keys.
+		
+		- 'macaddr'
+		- 'vendor'
+		- 'model'
+		- 'proto'
+		- 'iduserfeatures'
+		
+		"""
+		query = ("SELECT * FROM %s " +
+		         "WHERE iduserfeatures=%s AND proto=%s") \
+			% ( TABLE, '%s', '%s' )
+		mapping = dict(map(lambda x: (x,x), ("macaddr", "vendor",
+		                          "model", "proto", "iduserfeatures")))
+		return self.sqlite_select(query, (userinfo['iduserfeatures'],
+		                          TECH), mapping)
+
+	def delete_phone_by_iduserfeatures(self, userinfo):
+		"""Delete any phone in the database having iduserfeatures ==
+		userinfo['iduserfeatures'].
+		
+		"""
+		self.sqlite_modify(
+			("DELETE FROM %s WHERE iduserfeatures=%s") \
+		        % ( TABLE, '%s'),
+			(userinfo['iduserfeatures'],))
 
 class MacLocks:
 	"""This class let us enforce that only one provisioning is in progress
@@ -341,83 +406,94 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 
 	def log_message(self, fmt, *args):
 		"Override default logging method."
-		syslog.syslog(fmt % args)
+		syslogf(fmt % args)
 
 	# High level logic
 	def do_userdeleted(self, userinfo):
 		"Does what has to be done when a user is deleted."
-		syslog.syslog("do_userdeleted(): handling deletion of user %s" % str(userinfo))
-		self.my_infos.user_deletion(userinfo)
+		syslogf(SYSLOG_NOTICE, "do_userdeleted(): handling deletion of user %s" % str(userinfo))
+		phone = self.my_infos.phone_by_userinfo(userinfo)
+		if phone:
+			syslogf("do_userdeleted(): phone to destroy, because destruction of its owner - %s" % str(phone))
+			phone["mode"] = "authoritative"
+			phone["actions"] = "no"
+			phone["iduserfeatures"] = "0"
+			self.do_provisioning(phone)
+		# the following line will just destroy non 'sip' provisioning
+		# with the same "iduserfeatures", and as they are none for now
+		# it's not really useful but might become so in the future
+		self.my_infos.delete_phone_by_iduserfeatures(userinfo)
 	def do_provisioning(self, phone):
 		"Provisioning high level logic for the described phone"
 		# I only allow "sip" right now
 		if phone["proto"] != TECH:
-			syslog.syslog(syslog.LOG_ERR,			       \
+			syslogf(SYSLOG_ERR,			       \
 				"do_provisioning(): the only protocol supported " +\
 				"right now is SIP, but I got %s" \
 				% phone["proto"])
 			raise "Unknown protocol '%s' != sip" % (phone["proto"],)
 
-		syslog.syslog("do_provisioning(): handling phone %s" % str(phone))
+		syslogf(SYSLOG_NOTICE, "do_provisioning(): handling phone %s" % str(phone))
 
 		if (not phone["vendor"]) or (not phone["model"]):
-			syslog.syslog(syslog.LOG_ERR, "do_provisioning(): Missing model or vendor in phone %s" % str(phone))
+			syslogf(SYSLOG_ERR, "do_provisioning(): Missing model or vendor in phone %s" % str(phone))
 			raise "Missing model or vendor in phone %s" % str(phone)
 
 		if "provcode" in phone and phone["provcode"] != "0" and \
 		   not provsup.well_formed_provcode(phone["provcode"]):
-			syslog.syslog(syslog.LOG_ERR, "do_provisioning(): Invalid provcode %s" % (phone["provcode"],))
+			syslogf(SYSLOG_ERR, "do_provisioning(): Invalid provcode %s" % (phone["provcode"],))
 			raise "Invalid provcode %s" % (phone["provcode"],)
 
 		if phone["actions"] != "no":
 			if "ipv4" not in phone:
-				syslog.syslog(syslog.LOG_DEBUG, "do_provisioning(): trying to get IPv4 address from Mac Address %s" % (phone["macaddr"],))
-				phone["ipv4"] = provsup.ipv4_from_macaddr(phone["macaddr"])
+				syslogf(SYSLOG_DEBUG, "do_provisioning(): trying to get IPv4 address from Mac Address %s" % (phone["macaddr"],))
+				phone["ipv4"] = provsup.ipv4_from_macaddr(phone["macaddr"], lambda x: syslogf(SYSLOG_ERR, x))
 			if phone["ipv4"] is None:
-				syslog.syslog(syslog.LOG_ERR, "do_provisioning(): No IP address found for Mac Address %s" % (phone["macaddr"],))
+				syslogf(SYSLOG_ERR, "do_provisioning(): No IP address found for Mac Address %s" % (phone["macaddr"],))
 				raise "No IP address found for Mac Address %s" % (phone["macaddr"],)
 
-		syslog.syslog(syslog.LOG_DEBUG, "do_provisioning(): locking %s" % (phone["macaddr"],))
+		syslogf(SYSLOG_DEBUG, "do_provisioning(): locking %s" % (phone["macaddr"],))
 		if not self.my_maclocks.try_acquire(phone["macaddr"]):
-		    syslog.syslog(syslog.LOG_WARNING, "do_provisioning(): Provisioning already in progress for %s" % (phone["macaddr"],))
+		    syslogf(SYSLOG_WARNING, "do_provisioning(): Provisioning already in progress for %s" % (phone["macaddr"],))
 		    raise "Provisioning already in progress for %s" % (phone["macaddr"],)
 		try:
-		    syslog.syslog(syslog.LOG_DEBUG, "do_provisioning(): phone class from vendor")
+		    syslogf(SYSLOG_DEBUG, "do_provisioning(): phone class from vendor")
 		    prov_class = provsup.PhoneClasses[phone["vendor"]] # TODO also use model
-		    syslog.syslog(syslog.LOG_DEBUG, "do_provisioning(): phone instance from class")
+		    syslogf(SYSLOG_DEBUG, "do_provisioning(): phone instance from class")
 		    prov_inst = prov_class(phone)
 
 		    if "provcode" in phone and phone["provcode"] == "0":
 			    phone["iduserfeatures"] = "0"
 
 		    if "iduserfeatures" in phone and phone["iduserfeatures"] == "0":
-			syslog.syslog("do_provisioning(): reinitializing provisioning to GUEST for %s" % (str(phone),))
+			syslogf("do_provisioning(): reinitializing provisioning to GUEST for %s" % (str(phone),))
 			prov_inst.reinitprov()
 		    else:			
 			if "iduserfeatures" in phone:
-			    syslog.syslog(syslog.LOG_DEBUG, "do_provisioning(): getting configuration from iduserfeatures for phone %s" % (str(phone),))
+			    syslogf("do_provisioning(): getting configuration from iduserfeatures for phone %s" % (str(phone),))
 			    config = self.my_infos.config_by_iduserfeatures_proto(phone["iduserfeatures"], phone["proto"])
 			else:
-			    syslog.syslog(syslog.LOG_DEBUG, "do_provisioning(): getting configuration from provcode for phone %s" % (str(phone),))
+			    syslogf("do_provisioning(): getting configuration from provcode for phone %s" % (str(phone),))
 			    config = self.my_infos.config_by_provcode_proto(phone["provcode"], phone["proto"])
 			    # XXX TODO test if config_by_provcode returned useful infos
 			    # or send error informations to the caller (ultimately 
 			    # http client)
 			if config is not None:
-			    syslog.syslog("do_provisioning(): AUTOPROV'isioning phone %s with config %s" % (str(phone),str(config)))
+			    syslogf("do_provisioning(): AUTOPROV'isioning phone %s with config %s" % (str(phone),str(config)))
 			    prov_inst.autoprov(config)
 			else:
-			    syslog.syslog(syslog.LOG_ERR, "do_provisioning(): not AUTOPROV'isioning phone %s cause no config found" % (str(phone),))
+			    syslogf(SYSLOG_ERR, "do_provisioning(): not AUTOPROV'isioning phone %s cause no config found" % (str(phone),))
 
 		    if "iduserfeatures" not in phone and config is not None and \
 		       "iduserfeatures" in config:
+			syslogf(SYSLOG_DEBUG, "do_provisioning(): iduserfeatures='%s' from config to phone" % (config["iduserfeatures"],))
 			phone["iduserfeatures"] = config["iduserfeatures"]
 
 		    if self.posted["mode"] != "informative" and "iduserfeatures" in phone:
-			    syslog.syslog("do_provisioning(): SAVING phone %s informations to backend" % (str(phone),))
+			    syslogf("do_provisioning(): SAVING phone %s informations to backend" % (str(phone),))
 			    self.my_infos.save_phone(phone)
 		finally:
-		    syslog.syslog(syslog.LOG_DEBUG, "do_provisioning(): unlocking %s" % (phone["macaddr"],))
+		    syslogf(SYSLOG_DEBUG, "do_provisioning(): unlocking %s" % (phone["macaddr"],))
 		    self.my_maclocks.release(phone["macaddr"])
 
 	def lock_and_provision(self, phone):
@@ -425,14 +501,14 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 		hold in shared mode
 		
 		"""
-		syslog.syslog(syslog.LOG_DEBUG, "Entering lock_and_provision(phone=%s)" % str(phone))
+		syslogf(SYSLOG_DEBUG, "Entering lock_and_provision(phone=%s)" % str(phone))
 		if not self.my_del_or_prov_lock.acquire_read(DEL_OR_PROV_TIMEOUT):
 			raise "Could not acquire the global lock in shared mode"
 		try:
 			self.do_provisioning(phone)
 		finally:
 			self.my_del_or_prov_lock.release()
-			syslog.syslog(syslog.LOG_DEBUG, "Leaving lock_and_provision(phone=%s)" % str(phone))
+			syslogf(SYSLOG_DEBUG, "Leaving lock_and_provision(phone=%s)" % str(phone))
 	def lock_and_userdel(self, userinfo):
 		"""Will attempt to delete informations related to the user
 		described by userinfo from areas we are handling in the
@@ -440,14 +516,14 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 		access.
 		
 		"""
-		syslog.syslog(syslog.LOG_DEBUG, "Entering lock_and_userdel(userinfo=%s)" % str(userinfo))
+		syslogf(SYSLOG_DEBUG, "Entering lock_and_userdel(userinfo=%s)" % str(userinfo))
 		if not self.my_del_or_prov_lock.acquire_write(DEL_OR_PROV_TIMEOUT):
 			raise "Could not acquire the global lock in exclusive mode"
 		try:
 			self.do_userdeleted(phone)
 		finally:
 			self.my_del_or_prov_lock.release()
-			syslog.syslog(syslog.LOG_DEBUG, "Leaving lock_and_userdel(userinfo=%s)" % str(userinfo))
+			syslogf(SYSLOG_DEBUG, "Leaving lock_and_userdel(userinfo=%s)" % str(userinfo))
 
 	# Main handling functions
 
@@ -456,41 +532,41 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 	    phone = None
 	    userinfo = None
 	    try:
-		syslog.syslog(syslog.LOG_DEBUG, "handle_prov(): parsing posted informations")
+		syslogf(SYSLOG_DEBUG, "handle_prov(): parsing posted informations")
 		self.get_posted()
 		if "mode" not in self.posted:
-			syslog.syslog(syslog.LOG_ERR, "handle_prov(): No mode posted")
+			syslogf(SYSLOG_ERR, "handle_prov(): No mode posted")
 			raise "No mode posted"
 
 		if self.posted["mode"] == "authoritative" or \
 		   self.posted["mode"] == "informative":
-			syslog.syslog(syslog.LOG_DEBUG, "handle_prov(): creating phone internal representation using full posted infos.")
+			syslogf("handle_prov(): creating phone internal representation using full posted infos.")
 			phone = self.posted_phone_infos()
 			self.lock_and_provision(phone)
 		elif self.posted["mode"] == "notification":
-			syslog.syslog(syslog.LOG_DEBUG, "handle_prov(): creating phone internal representation using light posted infos.")
+			syslogf("handle_prov(): creating phone internal representation using light posted infos.")
 			phone = self.posted_light_infos()
 			phonetype = self.my_infos.type_by_macaddr(phone["macaddr"])
 			phone["vendor"] = provsup.elem_or_none(phonetype, "vendor")
 			phone["model"] = provsup.elem_or_none(phonetype, "model")
 			self.lock_and_provision(phone)
 		elif self.posted["mode"] == "userdeleted":
-			syslog.syslog(syslog.LOG_DEBUG, "handle_prov(): user deletion")
+			syslogf("handle_prov(): user deletion")
 			userinfo = self.posted_userdeleted_infos()
 			self.lock_and_userdel(userinfo)
 		else:
-			syslog.syslog(syslog.LOG_ERR, "handle_prov(): Unknown mode %s" % (self.posted["mode"],))
+			syslogf(SYSLOG_ERR, "handle_prov(): Unknown mode %s" % (self.posted["mode"],))
 			raise "Unknown mode %s" % (self.posted["mode"],)
 
 	    except:
-		syslog.syslog("handle_prov(): action FAILED - phone %s - userinfo %s" % (str(phone),str(userinfo)))
+		syslogf(SYSLOG_NOTICE, "handle_prov(): action FAILED - phone %s - userinfo %s" % (str(phone),str(userinfo)))
 		tb_line_list = traceback.format_exception(*sys.exc_info())
 		err_to_send = "<pre>\n" + cgi.escape(''.join(tb_line_list)) + "</pre>\n"
 		for line in tb_line_list:
-			syslog.syslog(syslog.LOG_DEBUG, line.rstrip())
+			syslogf(SYSLOG_ERR, line.rstrip())
 		self.send_error_explain(500, err_to_send) # XXX
 		return
-	    syslog.syslog("handle_prov(): provisioning OK for phone %s" % (str(phone),))
+	    syslogf(SYSLOG_NOTICE, "handle_prov(): provisioning OK for phone %s" % (str(phone),))
 	    self.send_response_lines(('Ok',))
 
 	def handle_list(self):
@@ -527,46 +603,54 @@ class ThreadingHTTPServer(SocketServer.ThreadingTCPServer):
 		self.server_name = socket.getfqdn(host)
 		self.server_port = port
 
+def log_stderr_and_syslog(x):
+	"""This function logs the string x to both stderr and the system log.
+	The string to be logged doesn't have to end with a trailing '\\n'
+	
+	"""
+	print >> sys.stderr, x
+	syslogf(SYSLOG_ERR, x)
+
 def main(log_level, foreground):
-	"""log_level - one of syslog.LOG_EMERG to syslog.LOG_DEBUG
+	"""log_level - one of SYSLOG_EMERG to SYSLOG_DEBUG
 	            nothing will be logged below this limit
 	foreground - don't daemonize if true
 	
 	"""
-	syslog.openlog('autoprovisioning', 0, syslog.LOG_DAEMON)
+	syslog.openlog('autoprovisioning', 0, SYSLOG_DAEMON)
 	syslog.setlogmask(syslog.LOG_UPTO(log_level))
 	if not foreground:
-		daemonize.daemonize()
+		daemonize(log_stderr_and_syslog)
 	http_server = ThreadingHTTPServer((provsup.LISTEN_IPV4, provsup.LISTEN_PORT), ProvHttpHandler)
 	http_server.my_infos = SQLiteDB(DB)
 	http_server.my_maclocks = MacLocks()
-	http_server.my_del_or_prov_lock = moresynchro.RWLock()
+	http_server.my_del_or_prov_lock = RWLock()
 	http_server.serve_forever()
 	syslog.closelog()
 
 if sqlite.paramstyle != 'pyformat':
-	raise "This script expect pysqlite 1 with sqlite.paramstyle != 'pyformat', but sqlite.paramstyle has been detected as %s" % sqlite.paramstyle
+	raise NotImplementedError, "This script expect pysqlite 1 with sqlite.paramstyle != 'pyformat', but sqlite.paramstyle has been detected as %s" % sqlite.paramstyle
 
 dontlauchmain = False
 foreground = False
 logmap = {
-	'emerg':   syslog.LOG_EMERG,
-	'alert':   syslog.LOG_ALERT,
-	'crit':    syslog.LOG_CRIT,
-	'err':     syslog.LOG_ERR,
-	'warning': syslog.LOG_WARNING,
-	'notice':  syslog.LOG_NOTICE,
-	'info':    syslog.LOG_INFO,
-	'debug':   syslog.LOG_DEBUG
+	'emerg':   SYSLOG_EMERG,
+	'alert':   SYSLOG_ALERT,
+	'crit':    SYSLOG_CRIT,
+	'err':     SYSLOG_ERR,
+	'warning': SYSLOG_WARNING,
+	'notice':  SYSLOG_NOTICE,
+	'info':    SYSLOG_INFO,
+	'debug':   SYSLOG_DEBUG
 }
-log_level = syslog.LOG_NOTICE
+log_level = SYSLOG_NOTICE
 
 # l: log filter up to EMERG, ALERT, CRIT, ERR, WARNING, NOTICE, INFO or DEBUG
 # d: don't launch the main function (useful for python -i invocations)
 # f: keep the program on foreground, don't daemonize
 # b: override the default sqlite DB filename
 
-opts,args = getopt.getopt(sys.argv[1:], 'b:l:df')
+opts,args = getopt(sys.argv[1:], 'b:l:df')
 for k,v in opts:
 	if '-l' == k:
 		if v.lower() not in logmap:

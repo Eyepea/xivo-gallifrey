@@ -1,7 +1,16 @@
 # -*- coding: iso-8859-15 -*-
+"""Support for Snom phones for Xivo Autoprovisioning
+
+Snom 300 320 and 360 are supported.
+
+Copyright (C) 2007, Proformatique
+
+"""
+# Dependencies : apache wget
 
 import os, sys, syslog
 import provsup
+from provsup import BaseProv
 
 WGET        = "/usr/bin/wget"
 
@@ -19,10 +28,10 @@ SNOM_SPEC_DIR = provsup.TFTPROOT + "Snom/"
 SNOM_SPEC_TEMPLATE = "files/snom-template.htm"
 SNOM_COMMON_HTTP_USER = "guest"
 SNOM_COMMON_HTTP_PASS = "guest"
-class SnomProv(provsup.BaseProv):
+class SnomProv(BaseProv):
 	label = "Snom"
 	def __init__(self, phone):
-		provsup.BaseProv.__init__(self, phone)
+		BaseProv.__init__(self, phone)
 		# TODO: handle this with a ?translation table stored in the DB
 		if self.phone["model"] != "300" and \
 		   self.phone["model"] != "320" and \

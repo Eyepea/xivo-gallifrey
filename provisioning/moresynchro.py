@@ -12,6 +12,8 @@
 		Copyright (C) 2007, Heiko Wundram.
 		Released under the BSD-license.
 
+	Copyright (C) 2007, Proformatique
+
 """
 
 import time, thread, threading

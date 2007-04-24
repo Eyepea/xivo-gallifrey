@@ -1,5 +1,10 @@
 #!/usr/bin/python
 # -*- coding: iso-8859-15 -*-
+"""Provisioning AGI for Xivo
+
+Copyright (C) 2007, Proformatique
+
+"""
 # TODO WARNING: must be used only if the caller is of a SIP tech
 
 import sys, httplib
@@ -50,53 +55,57 @@ def phone_desc_by_ua(ua):
 			return r
 	return None
 
-if len(sys.argv) >= 4:
-	print_verbose("Argument number ok")
-else:
-	return_exit("Too few arguments")
+def main():
+	if len(sys.argv) >= 4:
+		print_verbose("Argument number ok")
+	else:
+		return_exit("Too few arguments")
 
-sip_uri = sys.argv[1]
-code = sys.argv[2]
-ua = sys.argv[3]
+	sip_uri = sys.argv[1]
+	code = sys.argv[2]
+	ua = sys.argv[3]
 
-# Get Sip User, IPv4 and Mac Address
-user_ipv4 = user_ipv4_from_sip_uri(sip_uri)
-if not user_ipv4:
-	return_exit("Could not parse Sip URI \"%s\"" % sip_uri)
-sip_user, ipv4 = user_ipv4
-macaddr = provsup.macaddr_from_ipv4(ipv4, print_verbose)
-if not macaddr:
-	return_exit("Could not find Mac Address from IPv4 \"%s\"" % ipv4)
+	# Get Sip User, IPv4 and Mac Address
+	user_ipv4 = user_ipv4_from_sip_uri(sip_uri)
+	if not user_ipv4:
+		return_exit("Could not parse Sip URI \"%s\"" % sip_uri)
+	sip_user, ipv4 = user_ipv4
+	macaddr = provsup.macaddr_from_ipv4(ipv4, print_verbose)
+	if not macaddr:
+		return_exit("Could not find Mac Address from IPv4 \"%s\"" % ipv4)
 
-# Get Phone description (if we are able to handle this vendor...)
-phone_desc = phone_desc_by_ua(ua)
-if not phone_desc:
-	return_exit("Unknown UA %s" % ua)
-phone_vendor = phone_desc[0]
-phone_model = phone_desc[1]
+	# Get Phone description (if we are able to handle this vendor...)
+	phone_desc = phone_desc_by_ua(ua)
+	if not phone_desc:
+		return_exit("Unknown UA %s" % ua)
+	phone_vendor = phone_desc[0]
+	phone_model = phone_desc[1]
 
-if code == 'init':
-	code = '0'
-if not provsup.well_formed_provcode(code):
-	return_exit("Badly formed provisioning code", "privacy-incorrect")
+	if code == 'init':
+		code = '0'
+	if not provsup.well_formed_provcode(code):
+		return_exit("Badly formed provisioning code", "privacy-incorrect")
 
-command = ( "mode=authoritative\r\nvendor=%s\r\nmodel=%s\r\n" + 
-	    "macaddr=%s\r\nipv4=%s\r\nprovcode=%s\r\nactions=yes\r\n" + 
-	    "proto=sip\r\n" ) % (phone_vendor, phone_model, macaddr, ipv4, code)
+	command = ( "mode=authoritative\r\nvendor=%s\r\nmodel=%s\r\n" + 
+		    "macaddr=%s\r\nipv4=%s\r\nprovcode=%s\r\nactions=yes\r\n" + 
+		    "proto=sip\r\n" ) % (phone_vendor, phone_model, macaddr, ipv4, code)
 
-try:
-	conn = httplib.HTTPConnection(SERVER_IPV4 + ':' + str(provsup.LISTEN_PORT))
-	conn.request("POST", "/prov", command, {"Content-Type": "text/plain; charset=ISO-8859-1"})
-	response = conn.getresponse()
-	response.read()	# eat every data sent by the provisioning server
-	conn.close()
-	reason = response.reason
-	status = response.status
-except Exception, xcept:
-	reason = str(xcept)
-	status = 500
-	for line in provsup.exception_traceback():
-		print_verbose(line)
+	try:
+		conn = httplib.HTTPConnection(SERVER_IPV4 + ':' + str(provsup.LISTEN_PORT))
+		conn.request("POST", "/prov", command, {"Content-Type": "text/plain; charset=ISO-8859-1"})
+		response = conn.getresponse()
+		response.read()	# eat every data sent by the provisioning server
+		conn.close()
+		reason = response.reason
+		status = response.status
+	except Exception, xcept:
+		reason = str(xcept)
+		status = 500
+		for line in provsup.exception_traceback():
+			print_verbose(line)
 
-if status != 200:
-	return_exit("Provisioning failure; %s" % reason)
+	if status != 200:
+		return_exit("Provisioning failure; %s" % reason)
+
+if __name__ == '__main__':
+	main()

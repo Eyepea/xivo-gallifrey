@@ -1,7 +1,23 @@
 # -*- coding: iso-8859-15 -*-
+"""Common routines and objects daemon for autoprovisioning services in Xivo
+
+Copyright (C) 2007, Proformatique
+
+"""
 # Dependencies : arping
 
-import os, sys, string, syslog, traceback
+import os, sys, traceback
+
+import syslog
+from syslog import syslog      as syslogf
+from syslog import LOG_EMERG   as SYSLOG_EMERG
+from syslog import LOG_ALERT   as SYSLOG_ALERT
+from syslog import LOG_CRIT    as SYSLOG_CRIT
+from syslog import LOG_ERR     as SYSLOG_ERR
+from syslog import LOG_WARNING as SYSLOG_WARNING
+from syslog import LOG_NOTICE  as SYSLOG_NOTICE
+from syslog import LOG_INFO    as SYSLOG_INFO
+from syslog import LOG_DEBUG   as SYSLOG_DEBUG
 
 LISTEN_IPV4 = ""
 LISTEN_PORT = 8666
@@ -15,17 +31,19 @@ ARPING	    = 'sudo /usr/sbin/arping'
 SLEEP_PB    = 150000	# 150ms should be enough
 			# XXX maybe some phones are really slow...
 
-# r is a dictionary or None, and if e1 in r then r[el] must exists
 def elem_or_none(r, el):
+	"r is a dictionary or None, and if (e1 in r) then r[el] must exists"
 	if (r is None) or (el not in r):
 		return None
 	return r[el]
 
-# In a string, substitute "{{varname}}" occurrences with value
-# of variables["varname"], '\\' being an escaping char...
-# This function works and has no bug ;)
-# If you don't believe it draw the graph :}
 def linesubst(line, variables):
+	"""In a string, substitute '{{varname}}' occurrences with the 
+	value of variables['varname'], '\\' being an escaping char...
+	If at first you don't understand this function, draw its finite
+	state machine and everything will become crystal clear :)
+	
+	"""
 	NORM=0
 	ONE=1
 	TWO=2
@@ -71,12 +89,12 @@ def linesubst(line, variables):
 		elif st == TERM:
 			if c == '}':
 				if curvar not in variables:
-					syslog.syslog(syslog.LOG_WARNING, 
+					syslogf(SYSLOG_WARNING, 
 					    ("Unknown variable '%s' detected, "+
 					    "will just be replaced by an "+
 					    "empty string") % (curvar,))
 				else:
-					syslog.syslog(syslog.LOG_DEBUG,
+					syslogf(SYSLOG_DEBUG,
 					    ("Substitution of {{%s}} by \"%s\""%\
 					    	(curvar, variables[curvar])))
 					out += variables[curvar]
@@ -89,27 +107,37 @@ def linesubst(line, variables):
 				curvar += '}' + c
 				st = TWO
 	if st != NORM:
-		syslog.syslog(syslog.LOG_WARNING, "st != NORM at end of line: " + line)
-		syslog.syslog(syslog.LOG_WARNING, "returned substitution: " + out)
+		syslogf(SYSLOG_WARNING, "st != NORM at end of line: " + line)
+		syslogf(SYSLOG_WARNING, "returned substitution: " + out)
 	return out
 
 def txtsubst(lines, variables, target_file = None):
+	"""Log that target_file is going to be generated, and calculate its
+	content by applying the linesubst() transformation with the given
+	variables to each given lines.
+	
+	"""
 	if target_file:
-		syslog.syslog("In process of generating file \"%s\"" % (target_file,))
-	result = []
-	for line in lines:
-		result.append(linesubst(line, variables))
-	return result
+		syslogf("In process of generating file \"%s\"" % (target_file,))
+	return map(lambda line: linesubst(line, variables), lines)
 
 def exception_traceback():
+	"""Returns a backtrace of the current exception in a list of strings,
+	not terminated by newlines.
+	
+	"""
 	return map(lambda x: x.rstrip(), traceback.format_exception(*sys.exc_info()))
 
-def log_debug_current_exception():
+def log_current_exception(loglevel=SYSLOG_ERR):
+	"""Log a backtrace of the current exception in the system logs, with
+	the desired log level.
+	
+	"""
 	for line in exception_traceback():
-		syslog.syslog(syslog.LOG_DEBUG, line)
+		syslogf(loglevel, line)
 
-# Get Linux view of the list of network interfaces
 def get_netdev_list():
+	"Get a view of network interfaces as seen by Linux"
 	l=[]
 	pnd = open(PROC_NET_DEV)
 	pnd.readline()
@@ -121,25 +149,32 @@ def get_netdev_list():
 		line = pnd.readline()
 	return tuple(l)
 
-# Get and filter the list of network interfaces, returning only those
-# whose names begin with an element of AUTHORIZED_PREFIX
 def get_ethdev_list():
+	"""Get and filter the list of network interfaces, returning only those
+	whose names begin with an element of AUTHORIZED_PREFIX
+	
+	"""
 	return tuple([e for e in get_netdev_list()
 		      if True in map(lambda x: e.find(x) == 0,
 		      		     AUTHORIZED_PREFIX)])
 
-# input: mac address, with bytes in hexa, ':' separated
-# ouput: mac address with format %02X:%02X:%02X:%02X:%02X:%02X
 def normalize_mac_address(macaddr):
+	"""input: mac address, with bytes in hexa, ':' separated
+	ouput: mac address with format %02X:%02X:%02X:%02X:%02X:%02X
+	
+	"""
 	macaddr_split = macaddr.upper().split(':', 6)
 	if len(macaddr_split) != 6:
-		raise "Bad format for mac address " + macaddr
-	return string.join(map(lambda s: '%02X' % int(s, 16), macaddr_split), ':')
+		raise ValueError, "Bad format for mac address " + macaddr
+	return ':'.join(map(lambda s: '%02X' % int(s, 16), macaddr_split))
 
-# macaddr must be normalized
-# WARNING: macaddr_from_ipv4() makes implementation
-# dependent use of this function
 def ipv4_from_macaddr(macaddr, logexceptfunc = None):
+	"""Given a mac address, get an IPv4 address for an host living on the
+	LAN. This makes use of the tool "arping". Of course the remote peer
+	must respond to ping broadcasts. Some stupid phones from well known
+	stupid and expensive brands don't.
+
+	"""
 	# -r : will only display the IP address on stdout, or nothing
 	# -c 1 : ping once
 	# -w <xxx> : wait for the answer during <xxx> µs after the ping
@@ -169,12 +204,17 @@ def ipv4_from_macaddr(macaddr, logexceptfunc = None):
 	return None
 
 def macaddr_from_ipv4(ipv4, logexceptfunc = None):
-	# ipv4_from_macaddr is indeed a symetrical fonction that can be
-	# used to retrieve an ipv4 address from a given mac address
-	# WARNING: this is of course implementation dependent
+	"""ipv4_from_macaddr() is indeed a symetrical fonction that can be
+	used to retrieve an ipv4 address from a given mac address. This
+	function just call the former.
+
+	WARNING: this is of course ipv4_from_macaddr() implementation dependent
+	"""
 	return ipv4_from_macaddr(ipv4, logexceptfunc)
 
 def well_formed_provcode(provcode):
+	"""Check whether provcode really is a well formed Xivo provisioning
+	code."""
 	if provcode == '0':
 		return True
 	for d in provcode:
@@ -182,34 +222,37 @@ def well_formed_provcode(provcode):
 			return False
 	return True
 
-# Basic provisioning logic, including syslogs
 class BaseProv:
+	"""Basic provisioning logic, including syslogs and conditionnal actions
+	execution.
+	
+	"""
 	def __init__(self, phone):
 		self.phone = phone
-		syslog.syslog("Instantiation of %s" % (str(self.phone),))
+		syslogf("Instantiation of %s" % (str(self.phone),))
 	def action_reinit(self):
 		if self.phone["actions"].lower() == "no": # possible cause: "distant" provisioning
-			syslog.syslog("Skipping REINIT action for phone %s" % self.phone['macaddr'])
+			syslogf("Skipping REINIT action for phone %s" % self.phone['macaddr'])
 			return
-		syslog.syslog("Sending REINIT command to phone %s" % self.phone['macaddr'])
+		syslogf("Sending REINIT command to phone %s" % self.phone['macaddr'])
 		self.do_reinit()
-		syslog.syslog("Sent REINIT command to phone %s" % self.phone['macaddr'])
+		syslogf("Sent REINIT command to phone %s" % self.phone['macaddr'])
 	def action_reboot(self):
 		if self.phone["actions"] == "no": # distant provisioning with actions disabled
-			syslog.syslog("Skipping REBOOT action for phone %s" % self.phone['macaddr'])
+			syslogf("Skipping REBOOT action for phone %s" % self.phone['macaddr'])
 			return
-		syslog.syslog("Sending REBOOT command to phone %s" % self.phone['macaddr'])
+		syslogf("Sending REBOOT command to phone %s" % self.phone['macaddr'])
 		self.do_reboot()
-		syslog.syslog("Sent REBOOT command to phone %s" % self.phone['macaddr'])
+		syslogf("Sent REBOOT command to phone %s" % self.phone['macaddr'])
 	def reinitprov(self):
-		syslog.syslog("About to GUEST'ify the phone %s" % self.phone['macaddr'])
+		syslogf("About to GUEST'ify the phone %s" % self.phone['macaddr'])
 		self.do_reinitprov()
-		syslog.syslog("Phone GUEST'ified %s" % self.phone['macaddr'])
+		syslogf("Phone GUEST'ified %s" % self.phone['macaddr'])
 		self.action_reinit()
 	def autoprov(self, provinfo):
-		syslog.syslog("About to AUTOPROV the phone %s" % self.phone['macaddr'])
+		syslogf("About to AUTOPROV the phone %s" % self.phone['macaddr'])
 		self.do_autoprov(provinfo)
-		syslog.syslog("Phone AUTOPROV'ed %s" % self.phone['macaddr'])
+		syslogf("Phone AUTOPROV'ed %s" % self.phone['macaddr'])
 		self.action_reboot()
 
 # Populated by Phone implementation modules
