@@ -150,7 +150,7 @@ void MainWidget::createMenus()
 	avail->addActions( m_availgrp->actions() );
 
 	QMenu * helpmenu = menuBar()->addMenu(tr("&Help"));
-	helpmenu->addAction( tr("&About"), this, SLOT(about()) );
+	helpmenu->addAction( tr("&About XIVO Client"), this, SLOT(about()) );
 	helpmenu->addAction( tr("About &Qt"), qApp, SLOT(aboutQt()) );
 }
 
@@ -369,13 +369,18 @@ void MainWidget::changeEvent(QEvent *event)
 void MainWidget::about()
 {
 	QString applicationVersion("0.1");
-	QMessageBox::about(this, tr("About XIVO client"),
-	  tr("<h3>About XIVO client</h3>"
-	     "<p>This application show to the user the profile associated"
-	     " with incoming phone calls.</p>"
-		 "<p>Version : %1</p>"
-		 "<p>(c) 2007 <b>Proformatique</b> "
-		 "(<a href=\"http://www.proformatique.com/\">www.proformatique.com</a>)</p>"
-		 "<p>Author : Thomas Bernard</p>").arg(applicationVersion) );
+	QMessageBox::about(this,
+			   tr("About XIVO Client"),
+			   tr("<h3>XIVO Client</h3>"
+			      "<p>This application shows to the user the profile associated"
+			      " with incoming phone calls.</p>"
+			      "<p>Version : %1</p>"
+			      "<p>(C) 2007 <b>Proformatique</b> "
+			      "<a href=\"http://www.proformatique.com\">"
+			      "http://www.proformatique.com</a></p>"
+			      "<p>67 rue Voltaire 92800 Puteaux FRANCE</p>"
+			      "<p>E-mail : technique@proformatique.com</p>"
+			      "<p>(+33/0)1.41.38.99.60</p>"
+			      "<p>Author : Thomas Bernard</p>").arg(applicationVersion) );
 }
 
