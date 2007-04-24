@@ -309,6 +309,7 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 		self.send_response_headers_200()
 		self.wfile.writelines(map(lambda x: x+"\r\n", req_lines))
 	def answer_404(self, err_str = None):
+		syslogf(SYSLOG_NOTICE, "answer_404(): sending not found message to %s" % str(self.client_address))
 		self.send_error(404, err_str)
 	def send_error_explain(self, errno, perso_message):
 		self.send_response(errno)
@@ -531,8 +532,8 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 	    "Does whatever action is asked by the peer"
 	    phone = None
 	    userinfo = None
+	    syslogf(SYSLOG_NOTICE, "handle_prov(): handling /prov POST request for peer %s" % (str(self.client_address),))
 	    try:
-		syslogf(SYSLOG_DEBUG, "handle_prov(): parsing posted informations")
 		self.get_posted()
 		if "mode" not in self.posted:
 			syslogf(SYSLOG_ERR, "handle_prov(): No mode posted")
@@ -571,6 +572,7 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 
 	def handle_list(self):
 		"Respond with the list of supported Vendors / Models"
+		syslogf(SYSLOG_NOTICE, "handle_list(): handling /list GET request for peer %s" % (str(self.client_address),))
 		self.send_response_headers_200()
 		for phonekey,phoneclass in provsup.PhoneClasses.iteritems():
 			phonelabel = phoneclass.label
@@ -581,10 +583,12 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 	# === ENTRY POINTS (called FROM BaseHTTPRequestHandler) ===
 
 	def do_POST(self):
+		syslogf("do_POST(): handling POST request to path %s for peer %s" % (self.path, str(self.client_address)))
 		if self.path == '/prov':
 			self.handle_prov()
 		else: self.answer_404()
 	def do_GET(self):
+		syslogf("do_POST(): handling GET request to path %s for peer %s" % (self.path, str(self.client_address)))
 		if self.path == '/list':
 			self.handle_list()
 		else: self.answer_404()
