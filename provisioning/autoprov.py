@@ -621,7 +621,7 @@ def main(log_level, foreground):
 	foreground - don't daemonize if true
 	
 	"""
-	syslog.openlog('autoprovisioning', 0, SYSLOG_DAEMON)
+	syslog.openlog('autoprovisioning', 0, syslog.LOG_DAEMON)
 	syslog.setlogmask(syslog.LOG_UPTO(log_level))
 	if not foreground:
 		daemonize(log_stderr_and_syslog)
