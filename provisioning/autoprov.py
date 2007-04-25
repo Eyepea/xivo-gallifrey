@@ -85,12 +85,12 @@ class SQLiteDB:
 		conn.close()
 		return a
 
-	def sqlite_select(self, request, parameters_tuple, mapping):
-		"Does a SELECT SQLite query."
-		return self.generic_sqlite_request(self.method_select, request, parameters_tuple, mapping)
-	def method_select(self, conn, request, parameters_tuple, mapping):
+	def sqlite_select_one(self, request, parameters_tuple, mapping):
+		"Does a SELECT SQLite query and returns only one row."
+		return self.generic_sqlite_request(self.method_select_one, request, parameters_tuple, mapping)
+	def method_select_one(self, conn, request, parameters_tuple, mapping):
 		"""Internally called in a safe context to execute SELECT
-		SQLite queries and return their result.
+		SQLite queries and return their result (only one row).
 		
 		"""
 		cursor = conn.cursor()
@@ -99,10 +99,22 @@ class SQLiteDB:
 		if not r:
 			syslogf(SYSLOG_WARNING, "No result for request " + request)
 			return None
-		a = {}
-		for k,v in mapping.iteritems():
-			a[k] = provsup.elem_or_none(r, v)
-		return a
+		return dict([(k,provsup.elem_or_none(r,v))
+		             for k,v in mapping.iteritems()])
+
+	def sqlite_select_all(self, request, parameters_tuple, mapping):
+		"Does a SELECT SQLite query and returns all rows."
+		return self.generic_sqlite_request(self.method_select_all, request, parameters_tuple, mapping)
+	def method_select_all(self, conn, request, parameters_tuple, mapping):
+		"""Internally called in a safe context to execute SELECT
+		SQLite queries and return their result (all rows).
+		
+		"""
+		cursor = conn.cursor()
+		cursor.execute(request, parameters_tuple)
+		return map(lambda row: dict([(k,provsup.elem_or_none(row,v))
+		                             for k,v in mapping.iteritems()]),
+                           cursor.fetchall())
 
 	def sqlite_modify(self, request, parameters_tuple):
 		"Does a SQLite query that is going to modify the database."
@@ -130,7 +142,7 @@ class SQLiteDB:
 		"""
 		query = "SELECT * FROM %s WHERE macaddr=%s" % (TABLE, '%s')
 		mapping = dict(map(lambda x: (x,x), ("macaddr", "vendor", "model")))
-		return self.sqlite_select(query, (macaddr,), mapping)
+		return self.sqlite_select_one(query, (macaddr,), mapping)
 
 	def config_by_something_proto(self, something_column, something_content, proto):
 		"""Query the database to return a phone configuration.
@@ -175,8 +187,8 @@ class SQLiteDB:
 			"provcode":		UF_TABLE+".provisioningid",
 			"proto":		UF_TABLE+".protocol"
 		}
-		confdico = self.sqlite_select(query, (proto, something_content),
-		                              mapping)
+		confdico = self.sqlite_select_one(
+			query, (proto, something_content), mapping)
 		confdico["name"] = name_from_first_last(confdico["firstname"],
 							confdico["lastname"])
 		return confdico
@@ -205,11 +217,7 @@ class SQLiteDB:
 		"""Save phone informations in the database.
 		phone must be a dictionary and contain the following keys:
 		
-		- 'macaddr'
-		- 'vendor'
-		- 'model'
-		- 'proto'
-		- 'iduserfeatures'
+		'macaddr', 'vendor', 'model', 'proto', 'iduserfeatures'
 		
 		"""
 		self.sqlite_modify(
@@ -222,13 +230,9 @@ class SQLiteDB:
 		"""Lookup phone information by user information (iduserfeatures)
 		Right now this is limited to the 'sip' protocol, so the result
 		is a single phone description in the form of a dictionary
-		containing the classical keys.
+		containing the classic keys.
 		
-		- 'macaddr'
-		- 'vendor'
-		- 'model'
-		- 'proto'
-		- 'iduserfeatures'
+		'macaddr', 'vendor', 'model', 'proto', 'iduserfeatures'
 		
 		"""
 		query = ("SELECT * FROM %s " +
@@ -236,8 +240,8 @@ class SQLiteDB:
 			% ( TABLE, '%s', '%s' )
 		mapping = dict(map(lambda x: (x,x), ("macaddr", "vendor",
 		                          "model", "proto", "iduserfeatures")))
-		return self.sqlite_select(query, (userinfo['iduserfeatures'],
-		                          TECH), mapping)
+		return self.sqlite_select_one(
+			query, (userinfo['iduserfeatures'], TECH), mapping)
 
 	def delete_phone_by_iduserfeatures(self, userinfo):
 		"""Delete any phone in the database having iduserfeatures ==
@@ -249,10 +253,26 @@ class SQLiteDB:
 		        % ( TABLE, '%s'),
 			(userinfo['iduserfeatures'],))
 
+	def find_orphan_phones(self):
+		"""Find every phones that do not have a corresponding user
+		anymore, but that are neither provisioned in state GUEST. Used
+		at startup to maintain the coherency of the whole provisioning
+		subsystem.
+		
+		Returns a list of dictionaries, each one representing
+		informations stored in the base about a phone with the classic
+		keys :
+		
+		'macaddr', 'vendor', 'model', 'proto', 'iduserfeatures'
+		
+		"""
+		pass
+
 	def delete_orphan_phones(self):
 		"""Delete any phone that does not have a corresponding user
-		anymore. Used at startup to maintain the base in a coherent
-		state, because SQLite does not support foreign key constraints.
+		anymore, but that is not provisioned in state GUEST. Used at
+		startup to maintain the base in a coherent state, because
+		SQLite does not support foreign key constraints.
 		
 		"""
 		self.sqlite_modify(
