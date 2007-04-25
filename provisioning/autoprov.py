@@ -259,14 +259,24 @@ class SQLiteDB:
 		at startup to maintain the coherency of the whole provisioning
 		subsystem.
 		
-		Returns a list of dictionaries, each one representing
+		Returns a list of dictionaries, each of the latter representing
 		informations stored in the base about a phone with the classic
 		keys :
 		
 		'macaddr', 'vendor', 'model', 'proto', 'iduserfeatures'
 		
 		"""
-		pass
+		return self.sqlite_select_all(
+			("SELECT %s.* " + 
+			 	"FROM %s LEFT JOIN %s " +
+				"ON %s.iduserfeatures = %s.id " +
+				"WHERE %s.iduserfeatures != 0 AND %s.id is NULL")
+			% (TABLE, TABLE, UF_TABLE,
+			   TABLE, UF_TABLE, TABLE, UF_TABLE),
+			(),
+			dict([(x,TABLE+'.'+x)
+			      for x in ("macaddr", "vendor", "model",
+			                "proto", "iduserfeatures")]))
 
 	def delete_orphan_phones(self):
 		"""Delete any phone that does not have a corresponding user
