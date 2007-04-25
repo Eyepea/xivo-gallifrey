@@ -6,6 +6,9 @@
 #           Proformatique
 #           67, rue Voltaire
 #           92800 PUTEAUX
+#           (+33/0)1.41.38.99.60
+#           mailto:technique@proformatique.com
+#           (C) 2007 Proformatique
 #
 
 ## \mainpage
@@ -106,9 +109,6 @@ import time
 import urllib
 import xivo_ami
 import xivo_sip
-
-# configuration options :
-session_expiration_time = 60*1
 
 dir_to_string = ">"
 dir_from_string = "<"
@@ -783,16 +783,22 @@ def handle_ami_event_link(listkeys, astnum, src, dst, clid1, clid2):
 			phonenuma = src.split("-")[0]
 			phonenumb = plist[astnum].locals[newdst].peer.split("-")[0]
 
-			plist[astnum].normal[phonenuma].set_chan(src, "On the phone", 0,
-							       dir_to_string,
-							       plist[astnum].locals[newdst].peer,
-							       plist[astnum].locals[newdst].peer)
-			update_GUI_clients(astnum, phonenuma, "ami-eq1")
-			plist[astnum].normal[phonenumb].set_chan(plist[astnum].locals[newdst].peer,
-							       "On the phone", 0,
-							       dir_from_string, src,
-							       plist[astnum].locals[newdst].callerid)
-			update_GUI_clients(astnum, phonenumb, "ami-eq2")
+			if phonenuma in plist[astnum].normal:
+				plist[astnum].normal[phonenuma].set_chan(src, "On the phone", 0,
+									 dir_to_string,
+									 plist[astnum].locals[newdst].peer,
+									 plist[astnum].locals[newdst].peer)
+				update_GUI_clients(astnum, phonenuma, "ami-eq1")
+			else:
+				pass
+			if phonenumb in plist[astnum].normal:
+				plist[astnum].normal[phonenumb].set_chan(plist[astnum].locals[newdst].peer,
+									 "On the phone", 0,
+									 dir_from_string, src,
+									 plist[astnum].locals[newdst].callerid)
+				update_GUI_clients(astnum, phonenumb, "ami-eq2")
+			else:
+				pass
 	else: plist[astnum].others[dst] = "L"
 
 
@@ -899,8 +905,10 @@ def handle_ami_event(astnum, idata):
 		elif x.find("Cdr;") == 7: pass
 		elif x.find("Alarm;") == 7: pass
 		elif x.find("AlarmClear;") == 7: pass
-		elif x.find("MeetmeJoin;") == 7: pass
-		elif x.find("MeetmeLeave;") == 7: pass
+		elif x.find("MeetmeJoin;") == 7:
+			log_debug("AMI:MeetmeJoin: " + plist[astnum].astid + " : " + x)
+		elif x.find("MeetmeLeave;") == 7:
+			log_debug("AMI:MeetmeLeave: " + plist[astnum].astid + " : " + x)
 		elif x.find("ExtensionStatus;") == 7: pass
 		elif x.find("OriginateSuccess;") == 7: pass
 		elif x.find("OriginateFailure;") == 7:
@@ -1152,6 +1160,22 @@ def update_amisocks(astnum):
 # \sa updateuserlistfromurl
 def update_sipnumlist(astnum):
 	global plist, configs
+
+	userlist_lock.acquire()
+	for user in userlist[astnum].keys():
+		if "sessiontimestamp" in userlist[astnum][user].keys():
+			if time.time() - userlist[astnum][user]["sessiontimestamp"] > session_expiration_time:
+				del userlist[astnum][user]["sessionid"]
+				del userlist[astnum][user]["sessiontimestamp"]
+				del userlist[astnum][user]["ip"]
+				del userlist[astnum][user]["port"]
+				userlist[astnum][user]["state"] = "unknown"
+				sipnumber = "SIP/" + user.split("sip")[1]
+				if sipnumber in plist[astnum].normal:
+					plist[astnum].normal[sipnumber].set_imstat("unknown")
+					update_GUI_clients(astnum, sipnumber, "kfc-dsc")
+				log_debug(plist[astnum].astid + " : timeout reached for " + sipnumber)
+	userlist_lock.release()
 
 	if len(plist[astnum].others) > 0:
 		log_debug("WARNING : unmonitored list : " + str(plist[astnum].others))
@@ -1518,7 +1542,6 @@ class LoginHandler(SocketServer.StreamRequestHandler):
 
 
 		self.wfile.write('Send PASS for authentification\r\n')
-		log_debug("LoginHandler : client connected = " + str(self.client_address) + " " + list1[1])
 		list1 = self.rfile.readline().strip().split(' ')
 		if len(list1) != 2 or list1[0] != 'PASS':
 			self.wfile.write('ERROR : wrong format for PASS reply\r\n')
@@ -1627,7 +1650,25 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
 			list = self.request[0].strip().split(' ')
 			timestamp = time.time()
 			# ALIVE user SESSIONID sessionid
-			if len(list) < 4 or list[0] != 'ALIVE' or list[2] != 'SESSIONID':
+			if len(list) == 2 and list[0] == 'STOP':
+				response = 'DISC\r\n'
+				astname_xivoc = list[1].split("/")[0]
+				astnum = asteriskr[astname_xivoc]
+				user = list[1].split("/")[1]
+
+				userlist_lock.acquire()
+				if "sessiontimestamp" in userlist[astnum][user].keys():
+					del userlist[astnum][user]["sessionid"]
+					del userlist[astnum][user]["sessiontimestamp"]
+					del userlist[astnum][user]["ip"]
+					del userlist[astnum][user]["port"]
+					userlist[astnum][user]["state"] = "unknown"
+					sipnumber = "SIP/" + user.split("sip")[1]
+					if sipnumber in plist[astnum].normal:
+						plist[astnum].normal[sipnumber].set_imstat("unkown")
+						update_GUI_clients(astnum, sipnumber, "kfc-dcc")
+				userlist_lock.release()
+			elif len(list) < 4 or list[0] != 'ALIVE' or list[2] != 'SESSIONID':
 				response = 'ERROR unknown\r\n'
 			else:
 				astname_xivoc = list[1].split("/")[0]
@@ -1709,10 +1750,20 @@ port_login                = int(xivoconf.get("general", "port_fiche_login")) # 1
 port_keepalive            = int(xivoconf.get("general", "port_fiche_keepalive")) # 12346
 port_request              = int(xivoconf.get("general", "port_fiche_agi")) # 12347
 port_switchboard_base_sip = int(xivoconf.get("general", "port_switchboard_base_sip")) # 5080
+
+session_expiration_time = 3600
+if "expiration_session" in xivoconf.options("general"):
+	session_expiration_time = xivoconf.get("general", "expiration_session")
+
 try:
 	log_filename = xivoconf.get("general", "logfile")
 except:
 	log_filename = "/var/log/xivo_daemon.log"
+
+with_ami = True
+with_sip = True
+if "noami" in xivoconf.options("general"): with_ami = False
+if "nosip" in xivoconf.options("general"): with_sip = False
 
 configs = []
 save_for_next_packet_events = []
@@ -1820,8 +1871,8 @@ askedtoquit = False
 log_debug("# STARTING XIVO Daemon # (3/3) fetch SSO, SIP register and subscribe")
 for n in items_asterisks:
 	update_sipnumlist(n)
-	update_amisocks(n)
-	do_sip_register_subscribe(n, SIPsocks[n])
+	if with_ami: update_amisocks(n)
+	if with_sip: do_sip_register_subscribe(n, SIPsocks[n])
 	lastrequest_time.append(time.time())
 
 ## \brief Handler for catching signals (in the main thread)
@@ -1858,8 +1909,8 @@ while not askedtoquit:
 		if is_an_options_packet:
 			log_debug(configs[n].astid + " : do_sip_register_subscribe (parse SIP)")
 			update_sipnumlist(n)
-			update_amisocks(n)
-			do_sip_register_subscribe(n, SIPsocks[n])
+			if with_ami: update_amisocks(n)
+			if with_sip: do_sip_register_subscribe(n, SIPsocks[n])
 			lastrequest_time[n] = time.time()
 	# these AMI connections are used in order to manage AMI commands with incoming events
 	elif [j for j in i if j in AMIsocks]:
@@ -1922,15 +1973,15 @@ while not askedtoquit:
 			lastrequest_time[n] = time.time()
 			log_debug(configs[n].astid + " : do_sip_register_subscribe (computed timeout)")
 			update_sipnumlist(n)
-			update_amisocks(n)
-			do_sip_register_subscribe(n, SIPsocks[n])
+			if with_ami: update_amisocks(n)
+			if with_sip: do_sip_register_subscribe(n, SIPsocks[n])
     else:
 	    log_debug("do_sip_register_subscribe (select's timeout)")
 	    for n in items_asterisks:
 		    lastrequest_time[n] = time.time()
 		    update_sipnumlist(n)
-		    update_amisocks(n)
-		    do_sip_register_subscribe(n, SIPsocks[n])
+		    if with_ami: update_amisocks(n)
+		    if with_sip: do_sip_register_subscribe(n, SIPsocks[n])
 
 
 try:
