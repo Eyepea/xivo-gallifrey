@@ -114,7 +114,7 @@ class RWLock:
 			    self.__writer = me
 			    self.__writer_lock_count = 1
 			    self.__pending_writers = self.__pending_writers[1:]
-			    return
+			    return True
 			if timeout is not None:
 			    remaining = endtime - time.time()
 			    if remaining <= 0:
