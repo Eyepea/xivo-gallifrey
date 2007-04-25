@@ -11,7 +11,7 @@ class xivo_gatearray
 		if($instance === null)
 			$instance = new xivo_gatearray();
 
-		return($instance);
+		return(($ref = &$instance));
 	}
 
 	function set($name,&$array)
@@ -105,18 +105,22 @@ class xivo_gatearray
 
 	function &load_get($file,$path='',$name='')
 	{
-		if(($name = $this->load($file,$path,$name)) !== false)
-			return($this->get($name));
+		$r = false;
 
-		return(false);
+		if(($name = $this->load($file,$path,$name)) !== false)
+			$r = &$this->get($name);
+
+		return(($ref = &$r));
 	}
 
 	function &set_get($name,&$array)
 	{
-		if($this->set($name,$array) === true)
-			return($this->get($name));
+		$r = false;
 
-		return(false);
+		if($this->set($name,$array) === true)
+			$r = &$this->get($name);
+
+		return(($ref = &$r));
 	}
 
 	function is_valid($name)
@@ -149,7 +153,7 @@ class xivo_gat
 	function &get($name='')
 	{
 		$aga = &xivo_gatearray::getinstance();
-		return($aga->get($name));
+		return(($ref = &$aga->get($name)));
 	}
 
 	function get_file($path)
@@ -160,13 +164,13 @@ class xivo_gat
 	function &load_get($file,$path='',$name='')
 	{
 		$aga = &xivo_gatearray::getinstance();
-		return($aga->load_get($file,$path,$name));
+		return(($ref = &$aga->load_get($file,$path,$name)));
 	}
 
 	function &set_get($name,&$array)
 	{
 		$aga = &xivo_gatearray::getinstance();
-		return($aga->set_get($name,$array));
+		return(($ref = &$aga->set_get($name,$array)));
 	}
 
 	function is_valid($name)

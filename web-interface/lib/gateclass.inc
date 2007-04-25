@@ -11,7 +11,7 @@ class xivo_gateclass
 		if($instance === null)
 			$instance = new xivo_gateclass();
 
-		return($instance);
+		return(($ref = &$instance));
 	}
 
 	function set(&$obj,$name='')
@@ -86,13 +86,13 @@ class xivo_gct
 	function &get($name)
 	{
 		$agc = &xivo_gateclass::getinstance();
-		return($agc->get($name));
+		return(($ref = &$agc->get($name)));
 	}
 
 	function &set_get(&$obj,$name='')
 	{
 		$agc = &xivo_gateclass::getinstance();
-		return($agc->set_get($obj,$name));
+		return(($ref = &$agc->set_get($obj,$name)));
 	}
 
 	function is_valid($name)

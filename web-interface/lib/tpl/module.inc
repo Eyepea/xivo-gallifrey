@@ -69,7 +69,7 @@ class xivo_tpl_module
 
 	function &_get_module($name)
 	{
-		return($this->_tpl->get_module($name));
+		return(($ref = &$this->_tpl->get_module($name)));
 	}
 }
 

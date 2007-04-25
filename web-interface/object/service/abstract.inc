@@ -65,9 +65,8 @@ class xivo_service_abstract
 		$func = (string) $func;
 
 		if($this->_load_module($name) === false)
-			return(false);
-
-		if($args === null)
+			$r = false;
+		else if($args === null)
 			$r = call_user_func(array(&$this->_module[$name],$func));
 		else
 		{

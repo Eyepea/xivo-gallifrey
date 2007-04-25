@@ -73,7 +73,7 @@ class xivo_service
 		if(($class = &$this->get($service)) === false)
 			trigger_error('Service not found, not loaded or installed',E_USER_ERROR);
 
-		return($class->call($module,$func,$args));
+		return(($ref = &$class->call($module,$func,$args)));
 	}
 
 	function &get_module($service,$module)
@@ -84,7 +84,7 @@ class xivo_service
 		if(($class = &$this->get($service)) === false)
 			trigger_error('Service not found, not loaded or installed',E_USER_ERROR);	
 
-		return($class->get_module($module));
+		return(($ref = &$class->get_module($module)));
 	}
 
 	function _load_init_file($name)
@@ -109,17 +109,17 @@ class xivo_service
 
 	function &get($name)
 	{
-		return(xivo_gct::get(XIVO_SRE_CLASS_PRE.$name));
+		return(($ref = &xivo_gct::get(XIVO_SRE_CLASS_PRE.$name)));
 	}
 
 	function &_set_get($name,&$obj)
 	{
 		$r = false;
 
-		if($name === '')
-			return($r);
+		if($name !== '')
+			$r = &xivo_gct::set_get($obj,XIVO_SRE_CLASS_PRE.$name);
 
-		return(xivo_gct::set_get($obj,XIVO_SRE_CLASS_PRE.$name));
+		return(($ref = &$r));
 	}
 
 	function is_valid($name)

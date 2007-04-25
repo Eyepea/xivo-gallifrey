@@ -241,7 +241,7 @@ class xivo_user
 		if(($class = xivo_user::load_class($meta)) === false)
 			return($r);
 
-		return(xivo_user::set_get($meta,new $class()));
+		return(($ref = &xivo_user::set_get($meta,new $class())));
 	}
 
 	function load_class($meta)
@@ -272,17 +272,17 @@ class xivo_user
 
 	function &get($name)
 	{
-		return(xivo_gct::get(XIVO_USER_CLASS_PRE.$name));
+		return(($ref = &xivo_gct::get(XIVO_USER_CLASS_PRE.$name)));
 	}
 
 	function &set_get($name,&$obj)
 	{
 		$r = false;
 
-		if($name === '')
-			return($r);
+		if($name !== '')
+			$r = &xivo_gct::set_get($obj,XIVO_USER_CLASS_PRE.$name);
 
-		return(xivo_gct::set_get($obj,XIVO_USER_CLASS_PRE.$name));
+		return(($ref = &$r));
 	}
 }
 

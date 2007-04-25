@@ -160,7 +160,7 @@ class xivo_query
 
 	function &request_meth_raw()
 	{
-		return($this->query_string('request',XIVO_QUERY_MODE_RAW));
+		return(($ref = &$this->query_string('request',XIVO_QUERY_MODE_RAW)));
 	}
 
 	function request_meth_raw_str($pre='',$key='',$sep='')
@@ -170,7 +170,7 @@ class xivo_query
 
 	function &request_meth_uraw()
 	{
-		return($this->query_string('request',XIVO_QUERY_MODE_URAW));
+		return(($ref = &$this->query_string('request',XIVO_QUERY_MODE_URAW)));
 	}
 
 	function request_meth_uraw_str($pre='',$key='',$sep='')
@@ -180,7 +180,7 @@ class xivo_query
 
 	function &request_meth_qot()
 	{
-		return($this->query_string('request',XIVO_QUERY_MODE_QOT));
+		return(($ref = &$this->query_string('request',XIVO_QUERY_MODE_QOT)));
 	}
 
 	function request_meth_qot_str($pre='',$key='',$sep='')
@@ -190,7 +190,7 @@ class xivo_query
 
 	function &request_orig()
 	{
-		return($this->_orig['request']);
+		return(($ref = &$this->_orig['request']));
 	}
 
 	function request_orig_str($pre='',$key='',$sep='')
@@ -200,7 +200,7 @@ class xivo_query
 
 	function &qstring_raw()
 	{
-		return($this->query_string('qstring',XIVO_QUERY_MODE_RAW));
+		return(($ref = &$this->query_string('qstring',XIVO_QUERY_MODE_RAW)));
 	}
 
 	function qstring_raw_str($pre='',$key='',$sep='')
@@ -210,7 +210,7 @@ class xivo_query
 
 	function &qstring_qot()
 	{
-		return($this->query_string('qstring',XIVO_QUERY_MODE_QOT));
+		return(($ref = $this->query_string('qstring',XIVO_QUERY_MODE_QOT)));
 	}
 
 	function qstring_qot_str($pre='',$key='',$sep='')
@@ -218,12 +218,12 @@ class xivo_query
 		return($this->mk_query_str($this->qstring_qot(),$pre,$key,$sep));
 	}
 
-	function &qstring_orig()
+	function qstring_orig()
 	{
 		return($this->_orig['qstring']);
 	}
 
-	function &qstring_orig_str()
+	function qstring_orig_str()
 	{
 		return($_SERVER['QUERY_STRING']);
 	}
