@@ -678,11 +678,14 @@ def manage_tcp_connection(connid, allow_events):
 			if n == -1:
 				connid[0].send("XIVO CLI:CLIENT NOT ALLOWED\n")
 			else:
-				connid[0].send("XIVO CLI:" + configs[i].astid + "\n")
+				connid[0].send("XIVO CLI:" + configs[n].astid + "\n")
 				try:
 					s = AMIclasssock[n].execclicommand(usefulmsg.strip())
-					for x in s: connid[0].send(x)
-					connid[0].send("XIVO CLI:OK\n")
+					try:
+						for x in s: connid[0].send(x)
+						connid[0].send("XIVO CLI:OK\n")
+					except Exception, e:
+						log_debug(configs[n].astid + " : could not send reply : " + str(e))
 				except Exception, e:
 					connid[0].send("XIVO CLI:KO Exception : " + str(e) + "\n")
 		else:
@@ -1744,21 +1747,32 @@ for opt, arg in opts:
 
 xivoconf = ConfigParser.ConfigParser()
 xivoconf.readfp(open(xivoconffile))
-port_ui_srv               = int(xivoconf.get("general", "port_switchboard")) # 5081
-port_phpui_srv            = int(xivoconf.get("general", "port_php")) # 5081
-port_login                = int(xivoconf.get("general", "port_fiche_login")) # 12345
-port_keepalive            = int(xivoconf.get("general", "port_fiche_keepalive")) # 12346
-port_request              = int(xivoconf.get("general", "port_fiche_agi")) # 12347
-port_switchboard_base_sip = int(xivoconf.get("general", "port_switchboard_base_sip")) # 5080
 
-session_expiration_time = 3600
+port_login = 5000
+port_keepalive = 5001
+port_request = 5002
+port_ui_srv = 5003
+port_phpui_srv = 5004
+port_switchboard_base_sip = 5005
+session_expiration_time = 60
+log_filename = "/var/log/xivo_daemon.log"
+
+if "port_fiche_login" in xivoconf.options("general"):
+	port_login = int(xivoconf.get("general", "port_fiche_login"))
+if "port_fiche_keepalive" in xivoconf.options("general"):
+	port_keepalive = int(xivoconf.get("general", "port_fiche_keepalive"))
+if "port_fiche_agi" in xivoconf.options("general"):
+	port_request = int(xivoconf.get("general", "port_fiche_agi"))
+if "port_switchboard" in xivoconf.options("general"):
+	port_ui_srv = int(xivoconf.get("general", "port_switchboard"))
+if "port_php" in xivoconf.options("general"):
+	port_phpui_srv = int(xivoconf.get("general", "port_php"))
+if "port_switchboard_base_sip" in xivoconf.options("general"):
+	port_switchboard_base_sip = int(xivoconf.get("general", "port_switchboard_base_sip"))
 if "expiration_session" in xivoconf.options("general"):
-	session_expiration_time = xivoconf.get("general", "expiration_session")
-
-try:
+	session_expiration_time = int(xivoconf.get("general", "expiration_session"))
+if "logfile" in xivoconf.options("general"):
 	log_filename = xivoconf.get("general", "logfile")
-except:
-	log_filename = "/var/log/xivo_daemon.log"
 
 with_ami = True
 with_sip = True
@@ -1781,7 +1795,7 @@ for i in xivoconf.sections():
 					      int(xivoconf.get(i, "ami_port")),
 					      xivoconf.get(i, "ami_login"),
 					      xivoconf.get(i, "ami_pass"),
-					      port_switchboard_base_sip + 2 * n,
+					      port_switchboard_base_sip + n,
 					      int(xivoconf.get(i, "sip_port")),
 					      xivoconf.get(i, "sip_presence_account")))
 		save_for_next_packet_events.append("")
