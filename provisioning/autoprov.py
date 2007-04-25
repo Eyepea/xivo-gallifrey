@@ -33,6 +33,7 @@ from SocketServer import socket
 import provsup
 from Phones import * # package containing one module per vendor
 from moresynchro import RWLock
+from moresynchro import ListLock
 from daemonize import daemonize
 
 DB	    = "/var/lib/asterisk/astsqlite"
@@ -189,6 +190,8 @@ class SQLiteDB:
 		}
 		confdico = self.sqlite_select_one(
 			query, (proto, something_content), mapping)
+		if not confdico:
+			return None
 		confdico["name"] = name_from_first_last(confdico["firstname"],
 							confdico["lastname"])
 		return confdico
@@ -294,35 +297,10 @@ class SQLiteDB:
 #			% (TABLE, TABLE, TABLE, UF_TABLE,
 #			   TABLE, UF_TABLE, TABLE, UF_TABLE), ())
 
-class MacLocks:
-	"""This class let us enforce that only one provisioning is in progress
-	at any time for a given mac address.
-	
-	"""
-	def __init__(self):
-		self.lock = threading.Lock()
-		self.maclocked = []
-	def try_acquire(self, macaddr):
-		r = False
-		self.lock.acquire()
-		try:
-			if macaddr not in self.maclocked:
-				r = True
-				self.maclocked.append(macaddr)
-		finally:
-			self.lock.release()
-		return r
-	def release(self, macaddr):
-		self.lock.acquire()
-		try:
-			if macaddr not in self.maclocked:
-				raise thread.error, "release unlocked lock for %s" % (macaddr,)
-			self.maclocked.remove(macaddr)
-		finally:
-			self.lock.release()
-
 class CommonProvContext:
-	def __init__(self, maclocks, dbinfos, rwlock):
+	def __init__(self, userlocks, maclocks, dbinfos, rwlock):
+		# There is no locking order because my ListLocks don't block.
+		self.userlocks = userlocks
 		self.maclocks = maclocks
 		self.dbinfos = dbinfos
 		self.rwlock = rwlock
@@ -356,10 +334,10 @@ def __provisioning(mode, ctx, phone):
 			syslogf(SYSLOG_ERR, "__provisioning(): No IP address found for Mac Address %s" % (phone["macaddr"],))
 			raise RuntimeError, "No IP address found for Mac Address %s" % (phone["macaddr"],)
 
-	syslogf(SYSLOG_DEBUG, "__provisioning(): locking %s" % (phone["macaddr"],))
+	syslogf(SYSLOG_DEBUG, "__provisioning(): locking phone %s" % (phone["macaddr"],))
 	if not ctx.maclocks.try_acquire(phone["macaddr"]):
-	    syslogf(SYSLOG_WARNING, "__provisioning(): Provisioning already in progress for %s" % (phone["macaddr"],))
-	    raise RuntimeError, "Provisioning already in progress for %s" % (phone["macaddr"],)
+	    syslogf(SYSLOG_WARNING, "__provisioning(): Operation already in progress for %s" % (phone["macaddr"],))
+	    raise RuntimeError, "Operation already in progress for phone %s" % (phone["macaddr"],)
 	try:
 	    syslogf(SYSLOG_DEBUG, "__provisioning(): phone class from vendor")
 	    prov_class = provsup.PhoneClasses[phone["vendor"]] # TODO also use model
@@ -370,7 +348,7 @@ def __provisioning(mode, ctx, phone):
 		    phone["iduserfeatures"] = "0"
 
 	    if "iduserfeatures" in phone and phone["iduserfeatures"] == "0":
-		syslogf("__provisioning(): reinitializing provisioning to GUEST for %s" % (str(phone),))
+		syslogf("__provisioning(): reinitializing provisioning to GUEST for phone %s" % (str(phone),))
 		prov_inst.reinitprov()
 	    else:			
 		if "iduserfeatures" in phone:
@@ -379,14 +357,21 @@ def __provisioning(mode, ctx, phone):
 		else:
 		    syslogf("__provisioning(): getting configuration from provcode for phone %s" % (str(phone),))
 		    config = ctx.dbinfos.config_by_provcode_proto(phone["provcode"], phone["proto"])
-		    # XXX TODO test if config_by_provcode returned useful infos
-		    # or send error informations to the caller (ultimately 
-		    # http client)
-		if config is not None:
-		    syslogf("__provisioning(): AUTOPROV'isioning phone %s with config %s" % (str(phone),str(config)))
-		    prov_inst.autoprov(config)
+		if config is not None \
+		   and 'iduserfeatures' in config \
+		   and config['iduserfeatures']:
+		    syslogf(SYSLOG_DEBUG, "__provisioning(): locking user %s" % config['iduserfeatures'])
+		    if not ctx.userlocks.try_acquire(config['iduserfeatures']):
+			syslogf(SYSLOG_WARNING, "__provisioning(): Operation already in progress for user %s" % config['iduserfeatures'])
+			raise RuntimeError, "Operation already in progress for user %s" % config['iduserfeatures']
+		    try:
+			syslogf(SYSLOG_NOTIFY, "__provisioning(): AUTOPROV'isioning phone %s with config %s" % (str(phone),str(config)))
+			prov_inst.autoprov(config)
+		    finally:
+			syslogf(SYSLOG_DEBUG, "__provisioning(): unlocking user %s" % config['iduserfeatures'])
+			ctx.userlocks.release(config['iduserfeatures'])
 		else:
-		    syslogf(SYSLOG_ERR, "__provisioning(): not AUTOPROV'isioning phone %s cause no config found" % (str(phone),))
+		    syslogf(SYSLOG_ERR, "__provisioning(): not AUTOPROV'isioning phone %s cause no config found or no iduserfeatures in config" % (str(phone),))
 
 	    if "iduserfeatures" not in phone and config is not None and \
 	       "iduserfeatures" in config:
@@ -397,23 +382,29 @@ def __provisioning(mode, ctx, phone):
 		    syslogf("__provisioning(): SAVING phone %s informations to backend" % (str(phone),))
 		    ctx.dbinfos.save_phone(phone)
 	finally:
-	    syslogf(SYSLOG_DEBUG, "__provisioning(): unlocking %s" % (phone["macaddr"],))
+	    syslogf(SYSLOG_DEBUG, "__provisioning(): unlocking phone %s" % (phone["macaddr"],))
 	    ctx.maclocks.release(phone["macaddr"])
 
 def __userdeleted(ctx, iduserfeatures):
 	"Does what has to be done when a user is deleted."
 	syslogf(SYSLOG_NOTICE, "__userdeleted(): handling deletion of user %s" % iduserfeatures)
-	phone = ctx.dbinfos.phone_by_iduserfeatures(iduserfeatures)
-	if phone:
-		syslogf("__userdeleted(): phone to destroy, because destruction of its owner - %s" % str(phone))
-		phone["mode"] = "authoritative"
-		phone["actions"] = "no"
-		phone["iduserfeatures"] = "0"
-		__provisioning("userdeleted", ctx, phone)
-	# the following line will just destroy non 'sip' provisioning
-	# with the same "iduserfeatures", and as they are none for now
-	# it's not really useful but might become so in the future
-	ctx.dbinfos.delete_phone_by_iduserfeatures(iduserfeatures)
+	if not ctx.userlocks.try_acquire(iduserfeatures):
+		syslogf(SYSLOG_WARNING, "__userdeleted(): Operation already in progress for user %s" % iduserfeatures)
+		raise RuntimeError, "Operation already in progress for user %s" % iduserfeatures
+	try:
+		phone = ctx.dbinfos.phone_by_iduserfeatures(iduserfeatures)
+		if phone:
+			syslogf("__userdeleted(): phone to destroy, because destruction of its owner - %s" % str(phone))
+			phone["mode"] = "authoritative"
+			phone["actions"] = "no"
+			phone["iduserfeatures"] = "0"
+			__provisioning("userdeleted", ctx, phone)
+		# the following line will just destroy non 'sip' provisioning
+		# with the same "iduserfeatures", and as they are none for now
+		# it's not really useful but might become so in the future
+		ctx.dbinfos.delete_phone_by_iduserfeatures(iduserfeatures)
+	finally:
+		ctx.userlocks.release(iduserfeatures)
 
 
 # Safe locking API for provisioning and related stuffs
@@ -689,7 +680,8 @@ def main(log_level, foreground):
 		daemonize(log_stderr_and_syslog)
 	http_server = ThreadingHTTPServer((provsup.LISTEN_IPV4, provsup.LISTEN_PORT), ProvHttpHandler)
 	http_server.my_ctx = CommonProvContext(
-		MacLocks(),
+		ListLock(), # userlocks
+		ListLock(), # maclocks
 		SQLiteDB(DB),
 		RWLock()
 	)

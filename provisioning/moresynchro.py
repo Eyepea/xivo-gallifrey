@@ -1,7 +1,9 @@
 # -*- coding: iso-8859-15 -*-
 """Supplementary synchronization primitives not provided by 'threading'
 
-- RWLock		simple implementation with timeouts, without promotion.
+Copyright (C) 2007, Proformatique
+
+- RWLock		simple implementation with timeouts, without promotion
 
 	Highly inspired from
 		http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/502283
@@ -12,7 +14,11 @@
 		Copyright (C) 2007, Heiko Wundram.
 		Released under the BSD-license.
 
-	Copyright (C) 2007, Proformatique
+- ListLock		simple dictionary used to atomically test and insert
+			implemented locks are reentrant
+
+	Useful to lock basing on dynamic symbolic identifiers instead of
+	already known computer objects.
 
 """
 
@@ -150,3 +156,50 @@ class RWLock:
 			raise thread.error, "release unlocked lock"
 		finally:
 		    self.__condition.release()
+
+class ListLock:
+	"This class let us lock on a given object identifier in a set"
+	def __init__(self):
+		self.lock = threading.Lock()
+		self.locked = {}
+	def try_acquire(self, elt):
+		"""elt must be hashable.
+		
+		If not yet locked, elt is captured for the current thread and
+		True is returned.
+		
+		If already locked by the current thread its recursive counter
+		is incremented and True is returned.
+		
+		If already locked by another thread False is returned.
+		
+		"""
+		me = threading.currentThread()
+		self.lock.acquire()
+		try:
+			if elt not in self.locked:
+				self.locked[elt] = [me,1]
+				return True
+			elif self.locked[elt][0] == me:
+				self.locked[elt][1] += 1
+				return True
+		finally:
+			self.lock.release()
+		return False
+	def release(self, elt):
+		"""elt must be already locked (if it is not a thread.error
+		exception will be raised)
+		
+		The recursive counter for elt is decremented and when it
+		reaches zero the lock is released.
+		
+		"""
+		self.lock.acquire()
+		try:
+			if elt not in self.locked:
+				raise thread.error, "release unlocked lock for \"%s\"" % (str(elt),)
+			self.locked[elt][1] -= 1
+			if not self.locked[elt][1]:
+				del self.locked[elt]
+		finally:
+			self.lock.release()
