@@ -98,7 +98,6 @@ class SQLiteDB:
 		cursor.execute(request, parameters_tuple)
 		r = cursor.fetchone()
 		if not r:
-			syslogf(SYSLOG_WARNING, "No result for request " + request)
 			return None
 		return dict([(k,provsup.elem_or_none(r,v))
 		             for k,v in mapping.iteritems()])
@@ -132,17 +131,31 @@ class SQLiteDB:
 
 	# === ENTRY POINTS ===
 
-	# lookup vendor and model of the phone in the DB, by mac address
 	def type_by_macaddr(self, macaddr):
 		"""Lookup vendor and model of the phone in the database,
 		by mac address.
 		
 		Returns a dictionary with the following keys:
 		        'macaddr', 'vendor', 'model'
+		or None
 
 		"""
 		query = "SELECT * FROM %s WHERE macaddr=%s" % (TABLE, '%s')
 		mapping = dict(map(lambda x: (x,x), ("macaddr", "vendor", "model")))
+		return self.sqlite_select_one(query, (macaddr,), mapping)
+
+	def phone_by_macaddr(self, macaddr):
+		"""Lookup a phone description by Mac Address in the database.
+		
+		Returns a dictionary with the following keys:
+			'macaddr', 'vendor', 'model', 'proto', 'iduserfeatures'
+		or None
+		
+		"""
+		query = "SELECT * FROM %s WHERE macaddr=%s" % (TABLE, '%s')
+		mapping = dict(map(lambda x: (x,x),
+		                   ('macaddr', 'vendor', 'model', 'proto',
+			            'iduserfeatures')))
 		return self.sqlite_select_one(query, (macaddr,), mapping)
 
 	def config_by_something_proto(self, something_column, something_content, proto):
@@ -281,6 +294,17 @@ class SQLiteDB:
 			      for x in ("macaddr", "vendor", "model",
 			                "proto", "iduserfeatures")]))
 
+	def delete_guest_by_mac(self, macaddr):
+		"""Delete every GUEST phone from the database having the given
+		Mac Address.
+		
+		"""
+		self.sqlite_modify(
+			("DELETE FROM %s WHERE macaddr = %s " +
+			                      "AND iduserfeatures = %s")
+			% (TABLE, '%s', '%s'),
+			(macaddr, 0))
+
 #	def delete_orphan_phones(self):
 #		"""Delete any phone that does not have a corresponding user
 #		anymore, but that is not provisioned in state GUEST. Used at
@@ -366,6 +390,7 @@ def __provisioning(mode, ctx, phone):
 			raise RuntimeError, "Operation already in progress for user %s" % config['iduserfeatures']
 		    try:
 			syslogf(SYSLOG_NOTIFY, "__provisioning(): AUTOPROV'isioning phone %s with config %s" % (str(phone),str(config)))
+			__mode_dependant_provlogic_locked(mode, ctx, phone, config)
 			prov_inst.autoprov(config)
 		    finally:
 			syslogf(SYSLOG_DEBUG, "__provisioning(): unlocking user %s" % config['iduserfeatures'])
@@ -385,6 +410,28 @@ def __provisioning(mode, ctx, phone):
 	    syslogf(SYSLOG_DEBUG, "__provisioning(): unlocking phone %s" % (phone["macaddr"],))
 	    ctx.maclocks.release(phone["macaddr"])
 
+def __mode_dependant_provlogic_locked(mode, ctx, phone, config):
+	if mode == 'informative':
+		syslogf(SYSLOG_DEBUG, "__mode_dependant_provlogic_locked() in informative mode for phone %s and user %s" % (phone['macaddr'], config['iduserfeatures']))
+		existing_phone = phone_by_iduserfeatures(config['iduserfeatures'])
+		if existing_phone:
+			syslogf(SYSLOG_WARNING, "__mode_dependant_provlogic_locked(): User %s already has a locally provisioned phone, not trying to provision a remote one" % config['iduserfeatures'])
+			raise RuntimeError, "User %s already has a locally provisioned phone, not trying to provision a remote one" % config['iduserfeatures']
+		ctx.dbinfos.delete_guest_by_mac(phone['macaddr'])
+		existing_phone = ctx.dbinfos.phone_by_macaddr(phone['macaddr'])
+		if existing_phone:
+			syslogf(SYSLOG_WARNING, "__mode_dependant_provlogic_locked(): Phone %s already locally provisioned, not trying to provision it for remote operations" % phone['macaddr'])
+			raise RuntimeError, "Phone %s already locally provisioned, not trying to provision it for remote operations" % phone['macaddr']
+	elif mode == 'authoritative':
+		syslogf(SYSLOG_DEBUG, "__mode_dependant_provlogic_locked() in authoritative mode for phone %s and user %s" % (phone['macaddr'], config['iduserfeatures']))
+		existing_phone = phone_by_iduserfeatures(config['iduserfeatures'])
+		if existing_phone and existing_phone['macaddr'] != phone['macaddr']:
+			syslogf(SYSLOG_NOTIFY, "__mode_dependant_provlogic_locked(): phone %s to be put back in guest state, because another one (%s) is being provisioned for the same user" % (existing_phone['macaddr'], phone['macaddr']))
+			existing_phone['mode'] = 'authoritative'
+			existing_phone['actions'] = 'no'
+			existing_phone['iduserfeatures'] = '0'
+			__provisioning('__internal_to_guest', ctx, phone)
+
 def __userdeleted(ctx, iduserfeatures):
 	"Does what has to be done when a user is deleted."
 	syslogf(SYSLOG_NOTICE, "__userdeleted(): handling deletion of user %s" % iduserfeatures)
@@ -395,10 +442,10 @@ def __userdeleted(ctx, iduserfeatures):
 		phone = ctx.dbinfos.phone_by_iduserfeatures(iduserfeatures)
 		if phone:
 			syslogf("__userdeleted(): phone to destroy, because destruction of its owner - %s" % str(phone))
-			phone["mode"] = "authoritative"
-			phone["actions"] = "no"
-			phone["iduserfeatures"] = "0"
-			__provisioning("userdeleted", ctx, phone)
+			phone['mode'] = 'authoritative'
+			phone['actions'] = 'no'
+			phone['iduserfeatures'] = '0'
+			__provisioning('userdeleted', ctx, phone)
 		# the following line will just destroy non 'sip' provisioning
 		# with the same "iduserfeatures", and as they are none for now
 		# it's not really useful but might become so in the future
