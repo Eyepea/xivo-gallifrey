@@ -509,7 +509,7 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 			self.do_provisioning(phone)
 		finally:
 			self.my_del_or_prov_lock.release()
-			syslogf(SYSLOG_DEBUG, "Leaving lock_and_provision(phone=%s)" % str(phone))
+			syslogf(SYSLOG_DEBUG, "Leaving lock_and_provision for Mac Address %s" % phone["macaddr"])
 	def lock_and_userdel(self, userinfo):
 		"""Will attempt to delete informations related to the user
 		described by userinfo from areas we are handling in the

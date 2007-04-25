@@ -60,7 +60,7 @@ class ThomsonProv(BaseProv):
 				tn.read_until("["+self.user+"]#")
 				syslog.syslog(syslog.LOG_DEBUG,
 					"sending telnet command (%s): %s" \
-					% (str(self.phone),cmd))
+					% (self.phone["macaddr"],cmd))
 				tn.write("%s\n" % cmd)
 				if cmd == 'reboot':
 					break
