@@ -321,6 +321,134 @@ class MacLocks:
 		finally:
 			self.lock.release()
 
+class CommonProvContext:
+	def __init__(self, maclocks, dbinfos, rwlock):
+		self.maclocks = maclocks
+		self.dbinfos = dbinfos
+		self.rwlock = rwlock
+
+def __provisioning(mode, ctx, phone):
+	"Provisioning high level logic for the described phone"
+	# I only allow "sip" right now
+	if phone["proto"] != TECH:
+		syslogf(SYSLOG_ERR,			       \
+			"__provisioning(): the only protocol supported " +\
+			"right now is SIP, but I got %s" \
+			% phone["proto"])
+		raise ValueError, "Unknown protocol '%s' != sip" % (phone["proto"],)
+
+	syslogf(SYSLOG_NOTICE, "__provisioning(): handling phone %s" % str(phone))
+
+	if (not phone["vendor"]) or (not phone["model"]):
+		syslogf(SYSLOG_ERR, "__provisioning(): Missing model or vendor in phone %s" % str(phone))
+		raise ValueError, "Missing model or vendor in phone %s" % str(phone)
+
+	if "provcode" in phone and phone["provcode"] != "0" and \
+	   not provsup.well_formed_provcode(phone["provcode"]):
+		syslogf(SYSLOG_ERR, "__provisioning(): Invalid provcode %s" % (phone["provcode"],))
+		raise ValueError, "Invalid provcode %s" % (phone["provcode"],)
+
+	if phone["actions"] != "no":
+		if "ipv4" not in phone:
+			syslogf(SYSLOG_DEBUG, "__provisioning(): trying to get IPv4 address from Mac Address %s" % (phone["macaddr"],))
+			phone["ipv4"] = provsup.ipv4_from_macaddr(phone["macaddr"], lambda x: syslogf(SYSLOG_ERR, x))
+		if phone["ipv4"] is None:
+			syslogf(SYSLOG_ERR, "__provisioning(): No IP address found for Mac Address %s" % (phone["macaddr"],))
+			raise RuntimeError, "No IP address found for Mac Address %s" % (phone["macaddr"],)
+
+	syslogf(SYSLOG_DEBUG, "__provisioning(): locking %s" % (phone["macaddr"],))
+	if not ctx.maclocks.try_acquire(phone["macaddr"]):
+	    syslogf(SYSLOG_WARNING, "__provisioning(): Provisioning already in progress for %s" % (phone["macaddr"],))
+	    raise RuntimeError, "Provisioning already in progress for %s" % (phone["macaddr"],)
+	try:
+	    syslogf(SYSLOG_DEBUG, "__provisioning(): phone class from vendor")
+	    prov_class = provsup.PhoneClasses[phone["vendor"]] # TODO also use model
+	    syslogf(SYSLOG_DEBUG, "__provisioning(): phone instance from class")
+	    prov_inst = prov_class(phone)
+
+	    if "provcode" in phone and phone["provcode"] == "0":
+		    phone["iduserfeatures"] = "0"
+
+	    if "iduserfeatures" in phone and phone["iduserfeatures"] == "0":
+		syslogf("__provisioning(): reinitializing provisioning to GUEST for %s" % (str(phone),))
+		prov_inst.reinitprov()
+	    else:			
+		if "iduserfeatures" in phone:
+		    syslogf("__provisioning(): getting configuration from iduserfeatures for phone %s" % (str(phone),))
+		    config = ctx.dbinfos.config_by_iduserfeatures_proto(phone["iduserfeatures"], phone["proto"])
+		else:
+		    syslogf("__provisioning(): getting configuration from provcode for phone %s" % (str(phone),))
+		    config = ctx.dbinfos.config_by_provcode_proto(phone["provcode"], phone["proto"])
+		    # XXX TODO test if config_by_provcode returned useful infos
+		    # or send error informations to the caller (ultimately 
+		    # http client)
+		if config is not None:
+		    syslogf("__provisioning(): AUTOPROV'isioning phone %s with config %s" % (str(phone),str(config)))
+		    prov_inst.autoprov(config)
+		else:
+		    syslogf(SYSLOG_ERR, "__provisioning(): not AUTOPROV'isioning phone %s cause no config found" % (str(phone),))
+
+	    if "iduserfeatures" not in phone and config is not None and \
+	       "iduserfeatures" in config:
+		syslogf(SYSLOG_DEBUG, "__provisioning(): iduserfeatures='%s' from config to phone" % (config["iduserfeatures"],))
+		phone["iduserfeatures"] = config["iduserfeatures"]
+
+	    if mode != "informative" and "iduserfeatures" in phone:
+		    syslogf("__provisioning(): SAVING phone %s informations to backend" % (str(phone),))
+		    ctx.dbinfos.save_phone(phone)
+	finally:
+	    syslogf(SYSLOG_DEBUG, "__provisioning(): unlocking %s" % (phone["macaddr"],))
+	    ctx.maclocks.release(phone["macaddr"])
+
+def __userdeleted(ctx, userinfo):
+	"Does what has to be done when a user is deleted."
+	syslogf(SYSLOG_NOTICE, "__userdeleted(): handling deletion of user %s" % str(userinfo))
+	phone = ctx.dbinfos.phone_by_userinfo(userinfo)
+	if phone:
+		syslogf("__userdeleted(): phone to destroy, because destruction of its owner - %s" % str(phone))
+		phone["mode"] = "authoritative"
+		phone["actions"] = "no"
+		phone["iduserfeatures"] = "0"
+		__provisioning("userdeleted", ctx, phone)
+	# the following line will just destroy non 'sip' provisioning
+	# with the same "iduserfeatures", and as they are none for now
+	# it's not really useful but might become so in the future
+	ctx.dbinfos.delete_phone_by_iduserfeatures(userinfo)
+
+
+# Safe locking API for provisioning and related stuffs
+
+def lock_and_provision(mode, ctx, phone):
+	"""Will attempt to provision with a global lock
+	hold in shared mode
+
+	"""
+	syslogf(SYSLOG_DEBUG, "Entering lock_and_provision(phone=%s)" % str(phone))
+	if not ctx.rwlock.acquire_read(DEL_OR_PROV_TIMEOUT):
+		raise RuntimeError, "Could not acquire the global lock in shared mode"
+	try:
+		__provisioning(mode, ctx, phone)
+	finally:
+		ctx.rwlock.release()
+		syslogf(SYSLOG_DEBUG, "Leaving lock_and_provision for Mac Address %s" % phone["macaddr"])
+
+def lock_and_userdel(ctx, userinfo):
+	"""Will attempt to delete informations related to the user
+	described by userinfo from areas we are handling in the
+	information backend, with a global lock hold in exclusive
+	access.
+
+	"""
+	syslogf(SYSLOG_DEBUG, "Entering lock_and_userdel(userinfo=%s)" % str(userinfo))
+	if not ctx.rwlock.acquire_write(DEL_OR_PROV_TIMEOUT):
+		raise RuntimeError, "Could not acquire the global lock in exclusive mode"
+	try:
+		__userdeleted(ctx, userinfo)
+	finally:
+		ctx.rwlock.release()
+		syslogf(SYSLOG_DEBUG, "Leaving lock_and_userdel(userinfo=%s)" % str(userinfo))
+
+
 class MissingParam(Exception):
 	pass
 
@@ -336,9 +464,10 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 	"""
 	def __init__(self, request, client_address, server):
 		self.my_server = server
-		self.my_infos = self.my_server.my_infos
-		self.my_maclocks = self.my_server.my_maclocks
-		self.my_del_or_prov_lock = self.my_server.my_del_or_prov_lock
+		self.my_ctx = self.my_server.my_ctx
+		
+		self.my_infos = self.my_ctx.dbinfos # compability with legacy code in this class
+		
 		self.posted = None
 		BaseHTTPRequestHandler.__init__(self, request, client_address, server)
 
@@ -454,123 +583,6 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 		"Override default logging method."
 		syslogf(fmt % args)
 
-	# High level logic
-	def do_userdeleted(self, userinfo):
-		"Does what has to be done when a user is deleted."
-		syslogf(SYSLOG_NOTICE, "do_userdeleted(): handling deletion of user %s" % str(userinfo))
-		phone = self.my_infos.phone_by_userinfo(userinfo)
-		if phone:
-			syslogf("do_userdeleted(): phone to destroy, because destruction of its owner - %s" % str(phone))
-			phone["mode"] = "authoritative"
-			phone["actions"] = "no"
-			phone["iduserfeatures"] = "0"
-			self.do_provisioning(phone)
-		# the following line will just destroy non 'sip' provisioning
-		# with the same "iduserfeatures", and as they are none for now
-		# it's not really useful but might become so in the future
-		self.my_infos.delete_phone_by_iduserfeatures(userinfo)
-	def do_provisioning(self, phone):
-		"Provisioning high level logic for the described phone"
-		# I only allow "sip" right now
-		if phone["proto"] != TECH:
-			syslogf(SYSLOG_ERR,			       \
-				"do_provisioning(): the only protocol supported " +\
-				"right now is SIP, but I got %s" \
-				% phone["proto"])
-			raise ValueError, "Unknown protocol '%s' != sip" % (phone["proto"],)
-
-		syslogf(SYSLOG_NOTICE, "do_provisioning(): handling phone %s" % str(phone))
-
-		if (not phone["vendor"]) or (not phone["model"]):
-			syslogf(SYSLOG_ERR, "do_provisioning(): Missing model or vendor in phone %s" % str(phone))
-			raise ValueError, "Missing model or vendor in phone %s" % str(phone)
-
-		if "provcode" in phone and phone["provcode"] != "0" and \
-		   not provsup.well_formed_provcode(phone["provcode"]):
-			syslogf(SYSLOG_ERR, "do_provisioning(): Invalid provcode %s" % (phone["provcode"],))
-			raise ValueError, "Invalid provcode %s" % (phone["provcode"],)
-
-		if phone["actions"] != "no":
-			if "ipv4" not in phone:
-				syslogf(SYSLOG_DEBUG, "do_provisioning(): trying to get IPv4 address from Mac Address %s" % (phone["macaddr"],))
-				phone["ipv4"] = provsup.ipv4_from_macaddr(phone["macaddr"], lambda x: syslogf(SYSLOG_ERR, x))
-			if phone["ipv4"] is None:
-				syslogf(SYSLOG_ERR, "do_provisioning(): No IP address found for Mac Address %s" % (phone["macaddr"],))
-				raise RuntimeError, "No IP address found for Mac Address %s" % (phone["macaddr"],)
-
-		syslogf(SYSLOG_DEBUG, "do_provisioning(): locking %s" % (phone["macaddr"],))
-		if not self.my_maclocks.try_acquire(phone["macaddr"]):
-		    syslogf(SYSLOG_WARNING, "do_provisioning(): Provisioning already in progress for %s" % (phone["macaddr"],))
-		    raise RuntimeError, "Provisioning already in progress for %s" % (phone["macaddr"],)
-		try:
-		    syslogf(SYSLOG_DEBUG, "do_provisioning(): phone class from vendor")
-		    prov_class = provsup.PhoneClasses[phone["vendor"]] # TODO also use model
-		    syslogf(SYSLOG_DEBUG, "do_provisioning(): phone instance from class")
-		    prov_inst = prov_class(phone)
-
-		    if "provcode" in phone and phone["provcode"] == "0":
-			    phone["iduserfeatures"] = "0"
-
-		    if "iduserfeatures" in phone and phone["iduserfeatures"] == "0":
-			syslogf("do_provisioning(): reinitializing provisioning to GUEST for %s" % (str(phone),))
-			prov_inst.reinitprov()
-		    else:			
-			if "iduserfeatures" in phone:
-			    syslogf("do_provisioning(): getting configuration from iduserfeatures for phone %s" % (str(phone),))
-			    config = self.my_infos.config_by_iduserfeatures_proto(phone["iduserfeatures"], phone["proto"])
-			else:
-			    syslogf("do_provisioning(): getting configuration from provcode for phone %s" % (str(phone),))
-			    config = self.my_infos.config_by_provcode_proto(phone["provcode"], phone["proto"])
-			    # XXX TODO test if config_by_provcode returned useful infos
-			    # or send error informations to the caller (ultimately 
-			    # http client)
-			if config is not None:
-			    syslogf("do_provisioning(): AUTOPROV'isioning phone %s with config %s" % (str(phone),str(config)))
-			    prov_inst.autoprov(config)
-			else:
-			    syslogf(SYSLOG_ERR, "do_provisioning(): not AUTOPROV'isioning phone %s cause no config found" % (str(phone),))
-
-		    if "iduserfeatures" not in phone and config is not None and \
-		       "iduserfeatures" in config:
-			syslogf(SYSLOG_DEBUG, "do_provisioning(): iduserfeatures='%s' from config to phone" % (config["iduserfeatures"],))
-			phone["iduserfeatures"] = config["iduserfeatures"]
-
-		    if self.posted["mode"] != "informative" and "iduserfeatures" in phone:
-			    syslogf("do_provisioning(): SAVING phone %s informations to backend" % (str(phone),))
-			    self.my_infos.save_phone(phone)
-		finally:
-		    syslogf(SYSLOG_DEBUG, "do_provisioning(): unlocking %s" % (phone["macaddr"],))
-		    self.my_maclocks.release(phone["macaddr"])
-
-	def lock_and_provision(self, phone):
-		"""Will attempt to provision with a global lock
-		hold in shared mode
-		
-		"""
-		syslogf(SYSLOG_DEBUG, "Entering lock_and_provision(phone=%s)" % str(phone))
-		if not self.my_del_or_prov_lock.acquire_read(DEL_OR_PROV_TIMEOUT):
-			raise RuntimeError, "Could not acquire the global lock in shared mode"
-		try:
-			self.do_provisioning(phone)
-		finally:
-			self.my_del_or_prov_lock.release()
-			syslogf(SYSLOG_DEBUG, "Leaving lock_and_provision for Mac Address %s" % phone["macaddr"])
-	def lock_and_userdel(self, userinfo):
-		"""Will attempt to delete informations related to the user
-		described by userinfo from areas we are handling in the
-		information backend, with a global lock hold in exclusive
-		access.
-		
-		"""
-		syslogf(SYSLOG_DEBUG, "Entering lock_and_userdel(userinfo=%s)" % str(userinfo))
-		if not self.my_del_or_prov_lock.acquire_write(DEL_OR_PROV_TIMEOUT):
-			raise RuntimeError, "Could not acquire the global lock in exclusive mode"
-		try:
-			self.do_userdeleted(phone)
-		finally:
-			self.my_del_or_prov_lock.release()
-			syslogf(SYSLOG_DEBUG, "Leaving lock_and_userdel(userinfo=%s)" % str(userinfo))
-
 	# Main handling functions
 
 	def handle_prov(self):
@@ -588,18 +600,18 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 		   self.posted["mode"] == "informative":
 			syslogf("handle_prov(): creating phone internal representation using full posted infos.")
 			phone = self.posted_phone_infos()
-			self.lock_and_provision(phone)
+			lock_and_provision(self.posted['mode'], self.my_ctx, phone)
 		elif self.posted["mode"] == "notification":
 			syslogf("handle_prov(): creating phone internal representation using light posted infos.")
 			phone = self.posted_light_infos()
 			phonetype = self.my_infos.type_by_macaddr(phone["macaddr"])
 			phone["vendor"] = provsup.elem_or_none(phonetype, "vendor")
 			phone["model"] = provsup.elem_or_none(phonetype, "model")
-			self.lock_and_provision(phone)
+			lock_and_provision(self.posted['mode'], self.my_ctx, phone)
 		elif self.posted["mode"] == "userdeleted":
 			syslogf("handle_prov(): user deletion")
 			userinfo = self.posted_userdeleted_infos()
-			self.lock_and_userdel(userinfo)
+			lock_and_userdel(self.my_ctx, userinfo)
 		else:
 			syslogf(SYSLOG_ERR, "handle_prov(): Unknown mode %s" % (self.posted["mode"],))
 			raise ValueError, "Unknown mode %s" % (self.posted["mode"],)
@@ -671,10 +683,14 @@ def main(log_level, foreground):
 	if not foreground:
 		daemonize(log_stderr_and_syslog)
 	http_server = ThreadingHTTPServer((provsup.LISTEN_IPV4, provsup.LISTEN_PORT), ProvHttpHandler)
-	http_server.my_infos = SQLiteDB(DB)
-	http_server.my_maclocks = MacLocks()
-	http_server.my_del_or_prov_lock = RWLock()
-	http_server.my_infos.delete_orphan_phones()
+	http_server.my_ctx = CommonProvContext(
+		MacLocks(),
+		SQLiteDB(DB),
+		RWLock()
+	)
+
+#	http_server.my_infos.delete_orphan_phones()
+
 	http_server.serve_forever()
 	syslog.closelog()
 
