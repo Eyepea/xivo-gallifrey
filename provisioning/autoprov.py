@@ -245,9 +245,24 @@ class SQLiteDB:
 		
 		"""
 		self.sqlite_modify(
-			("DELETE FROM %s WHERE iduserfeatures=%s") \
+			("DELETE FROM %s WHERE iduserfeatures=%s")
 		        % ( TABLE, '%s'),
 			(userinfo['iduserfeatures'],))
+
+	def delete_orphan_phones(self):
+		"""Delete any phone that does not have a corresponding user
+		anymore. Used at startup to maintain the base in a coherent
+		state, because SQLite does not support foreign key constraints.
+		
+		"""
+		self.sqlite_modify(
+			("DELETE FROM %s WHERE macaddr IN "+
+			 "(SELECT %s.macaddr " + 
+			 	"FROM %s LEFT JOIN %s " +
+				"ON %s.iduserfeatures = %s.id " +
+				"WHERE %s.iduserfeatures != 0 AND %s.id is NULL)")
+			% (TABLE, TABLE, TABLE, UF_TABLE,
+			   TABLE, UF_TABLE, TABLE, UF_TABLE), ())
 
 class MacLocks:
 	"""This class let us enforce that only one provisioning is in progress
@@ -629,6 +644,7 @@ def main(log_level, foreground):
 	http_server.my_infos = SQLiteDB(DB)
 	http_server.my_maclocks = MacLocks()
 	http_server.my_del_or_prov_lock = RWLock()
+	http_server.my_infos.delete_orphan_phones()
 	http_server.serve_forever()
 	syslog.closelog()
 
