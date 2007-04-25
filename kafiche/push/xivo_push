@@ -6,25 +6,36 @@
 #
 # Authors : Thomas Bernard, Corentin Le Gall
 #           Proformatique
+#           67, rue Voltaire
+#           92800 PUTEAUX
+#           (+33/0)1.41.38.99.60
+#           mailto:technique@proformatique.com
+#           (C) 2007 Proformatique
+#
 # script de push de fiche
 #
 
 import socket, sys, generefiche, ConfigParser, string
 
+def log_agi(message):
+	print "VERBOSE \"" + "xivo_push : " + message + "\""
+	return 0
+
 config = ConfigParser.ConfigParser()
+
 try:
-	config.readfp(open("/etc/asterisk/xivo_push.conf"))
+	config.readfp(open("xivo_push.conf"))
 	databasekind = config.get('general', 'db')
 except:
 	databasekind = ""
 
 if databasekind == "ldap":
 	import ldap
-	LDAP_HOST = "192.168.0.247"
-	LDAP_PORT = "389"
-	LDAP_USER = "cn=admin,dc=lan,dc=proformatique,dc=com"
-	LDAP_PASS = "openxchange"
-	LDAP_BASE = "dc=lan,dc=proformatique,dc=com"
+	LDAP_HOST = config.get('general', 'host')
+	LDAP_PORT = config.get('general', 'port')
+	LDAP_USER = config.get('general', 'user')
+	LDAP_PASS = config.get('general', 'pass')
+	LDAP_BASE = config.get('general', 'dbname')
 
 	class myldap:
 		def __init__(self):
@@ -45,14 +56,35 @@ if databasekind == "ldap":
 				print e
 
 elif databasekind == "mysql":
-	import MySQLdb
-	con = MySQLdb.connect(host="127.0.0.1", port=3306, user="vip", passwd="vip", db="asterisk")
-	cursor = con.cursor()
-
+	try:
+		import MySQLdb
+		con = MySQLdb.connect(host = config.get('general', 'host'),
+				      port = int(config.get('general', 'port')),
+				      user = config.get('general', 'user'),
+				      passwd = config.get('general', 'pass'),
+				      db = config.get('general', 'dbname'))
+		cursor = con.cursor()
+	except Exception, e:
+		log_agi("Connection to MySQL failed")
+		
+agency = ""
+callerid = ""
+daymsg = ""
+firstname = ""
+fullnumber = ""
+homepage = ""
+mail = ""
+medal = ""
+msgext = ""
+name = ""
+refnumber = ""
+town = ""
+urlpicture = ""
+zipcode = ""
 
 #print sys.argv[0], len(sys.argv)
 if len(sys.argv) < 6:
-	print "Usage :", sys.argv[0], "<server> <port> <proto> <user> <callerid> <msgext>"
+	print "Usage :", sys.argv[0], "<server> <port> <proto> <user> <callerid> [<msgext>]"
 	sys.exit(1)
 else:
 	shost = sys.argv[1]
@@ -61,54 +93,20 @@ else:
 	exten = sys.argv[4]
 	callerid = sys.argv[5]
 	user = proto + exten
-	if len(sys.argv) > 6:
-		msgext = sys.argv[6]
-	else:
-		msgext = ""
-
-
-
+	if len(sys.argv) > 6: msgext = sys.argv[6]
 
 # first connect to the server to get ip, port of the client
 z = generefiche.getuserlocation(shost, sport, user)
-print z
 if z == None:
-	print "could not localize user", user
+	log_agi("Could not localize user " + user)
 	sys.exit(3)
 sessionid = z.get('sessionid')
 clientaddress = z.get('address')
 
-if databasekind == "ldap":
-	result = myldap().getldap("(|(telephonenumber=%s)(mobile=%s)(pager=%s))" %(callerid,callerid,callerid),['cn','mail'])
-elif databasekind == "mysql":
-	sql = "select * from vip_tel where appelant REGEXP '" + callerid + "';"
-	cursor.execute(sql)
-	results = cursor.fetchall()
-	con.close()
-	x = results[0]
-
-#####################################
-
-name = ""
-firstname = ""
-mail = ""
-url = ""
-try:
-	msg = config.get('msg', 'day')
-except:
-	msg = "un Jour un Message"
-
-try:
-	url = config.get('photo', callerid)
-except:
-	url = "file:///home/proformatique/Manque.png"
-
-try:
-	homepage = config.get('general', 'homepage')
-except:
-	homepage = "http://www.proformatique.com"
 
 if databasekind == "ldap":
+	result = myldap().getldap("(|(telephonenumber=%s)(mobile=%s)(pager=%s))" %(callerid,callerid,callerid),
+				  ['cn','mail'])
 	try:
 		r = result[0][1]['cn'][0]
 		mail = result[0][1]['mail'][0]
@@ -117,27 +115,81 @@ if databasekind == "ldap":
 	except:
 		print "No callerid from OX"
 elif databasekind == "mysql":
+	table = config.get('general', 'dbtable')
+	sql = "select * from " + table + " where appelant REGEXP '" + callerid + "';"
+	cursor.execute(sql)
+	results = cursor.fetchall()
+	con.close()
+	if len(results) > 0:
+		x = results[0]
 	try:
-		mail = "notyetrelevant@here.fr"
-		name = x[3]
-		firstname = "not yet relevant"
-		print "SET CALLERID \"" + name + "\""
-	except:
-		mail = "unknown@unkwown.fr"
-		name = "humhum"
-		firstname = "still not relevant"
-		print "no found in mysql db"
+		fullnumber = x[0]
+		agency     = x[1]
+		refnumber  = x[2]
+		name       = x[3]
+		zipcode    = x[4]
+		town       = x[5]
+		medal      = x[6]
+	except Exception, e:
+		log_agi("Customer not found in mysql db")
+		if len(callerid) == 9:
+			fullnumber = callerid
 
-if not name:
-	name = "Inconnu"
-if not firstname:
-	firstname = "Inconnu"
-if not mail:
-	mail = "Inconnu"
-if not callerid:
-	callerid = "Inconnu"
-if not url:
-	url = "file:///home/proformatique/Manque.png"
+	if len(fullnumber) == 9:
+		tmpnum = "0" + fullnumber[0] + "." + \
+			 fullnumber[1] + fullnumber[2] + "." + \
+			 fullnumber[3] + fullnumber[4] + "." + \
+			 fullnumber[5] + fullnumber[6] + "." + \
+			 fullnumber[7] + fullnumber[8]
+		fullnumber = tmpnum
+
+class Info:
+	def __init__(self, ititle, itype, ivalue, idefvalue):
+		self.title = ititle
+		self.type = itype
+		if ivalue == "":
+			self.value = idefvalue
+		else:
+			self.value = ivalue
+	def getTitle(self):
+		return self.title
+	def getType(self):
+		return self.type
+	def getValue(self):
+		return self.value
+
+
+liste = []
+items = config.items("fiche")
+items.sort()
+
+for field_to_display in items:
+	# a "/" character splits the order of the field in the displayed popup
+	# and its kind
+	if field_to_display[0].find("|") >= 0:
+		kindoffield = field_to_display[0].split("|")[1]
+		argum = field_to_display[1].split("|")[0]
+		defaultvalue = field_to_display[1].split("|")[1]
+		if kindoffield == "name":       liste.append(Info(argum, 'text', name, defaultvalue))
+		if kindoffield == "firstname":  liste.append(Info(argum, 'text', firstname, defaultvalue))
+		if kindoffield == "callerid":   liste.append(Info(argum, 'phone', callerid, defaultvalue))
+		if kindoffield == "picture":
+			try:
+				urlpicture = config.get('photo', callerid)
+			except:
+				urlpicture = defaultvalue
+			liste.append(Info(argum, 'picture', urlpicture, defaultvalue))
+		if kindoffield == "mail":
+			liste.append(Info(argum, 'url', 'mailto:' + mail, 'mailto:' + defaultvalue))
+		if kindoffield == "homepage":   liste.append(Info(argum, 'url', homepage, defaultvalue))
+		if kindoffield == "daymsg":
+			liste.append(Info(argum, 'text', '<b>' + defaultvalue + '</b>', ""))
+		if kindoffield == "agency":     liste.append(Info(argum, 'text', agency, defaultvalue))
+		if kindoffield == "refnumber":  liste.append(Info(argum, 'text', refnumber, defaultvalue))
+		if kindoffield == "fullnumber": liste.append(Info(argum, 'text', fullnumber, defaultvalue))
+		if kindoffield == "zipcode":    liste.append(Info(argum, 'text', zipcode, defaultvalue))
+		if kindoffield == "town":       liste.append(Info(argum, 'text', town, defaultvalue))
+		if kindoffield == "medal":      liste.append(Info(argum, 'text', medal, defaultvalue))
 
 z = generefiche.getuserlocation(shost, sport, user)
 if z == None:
@@ -152,19 +204,14 @@ if clientstate == "available":
 
 	fiche = generefiche.Fiche(sessionid)
 	fiche.setmessage(msgext)
-	fiche.addinfo('Nom', 'text', name)
-	fiche.addinfo('Prenom', 'text', firstname)
-	fiche.addinfo('Numero', 'phone', callerid)
-	fiche.addinfo('Photo', 'picture', url)
-	fiche.addinfo('Adresse email', 'url', 'mailto:' + mail)
-	fiche.addinfo('Homepage', 'url', homepage)
-	fiche.addinfo('Message du jour', 'text', '<b>' + msg + '</b>')
+	for x in liste:
+		fiche.addinfo(x.getTitle(), x.getType(), x.getValue())
 
 	#connect to the client and send the stuff !
 	if fiche.sendtouser(clientaddress):
 		print "Profile sent"
 	else:
-		print "could not send profile to user"
+		log_agi("Could not send profile to user")
 
 elif clientstate == "away":
 	print "SET VARIABLE STATUS 1"
