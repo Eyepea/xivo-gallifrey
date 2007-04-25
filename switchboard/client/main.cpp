@@ -7,9 +7,9 @@
 
 int main(int argc, char * * argv)
 {
-	QCoreApplication::setOrganizationName("Proformatique");
+	QCoreApplication::setOrganizationName("XivoCTI");
 	QCoreApplication::setOrganizationDomain("proformatique.com");
-	QCoreApplication::setApplicationName("SwitchBoard");
+	QCoreApplication::setApplicationName("XivoSwitchBoard");
 	QApplication app(argc, argv);
 
 	QTranslator qtTranslator;

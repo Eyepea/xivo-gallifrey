@@ -45,9 +45,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 int main(int argc, char * * argv)
 {
 	QString locale = QLocale::system().name();
-	QCoreApplication::setOrganizationName("Proformatique");
+	QCoreApplication::setOrganizationName("XivoCTI");
 	QCoreApplication::setOrganizationDomain("proformatique.com");
-	QCoreApplication::setApplicationName("Profile Popup");
+	QCoreApplication::setApplicationName("XivoClient");
 	QApplication app(argc, argv);
 	QTranslator translator;
 	translator.load(QString("kafiche_") + locale);
