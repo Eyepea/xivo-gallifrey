@@ -461,14 +461,14 @@ function xivo_malert($subject='',$msg='',$to='')
 	}
 	else if($mail === '' && defined('XIVO_ROOT_MAIL') && xivo_chk_email(XIVO_ROOT_MAIL))
 	{
-		$mail = 'TECK GS <'.XIVO_ROOT_MAIL.'>';
+		$mail = 'TECK XIVO <'.XIVO_ROOT_MAIL.'>';
 		$h .= 'To: '.$mail."\n";
 	}
 	else
 		$h .= 'To: '.$mail.' <'.$mail.'>'."\n";
 
-	$h .= 'From: Eyefar <eyefar@eyefar>'."\n";
-	$h .= 'X-Mailer: GS'."\n"; 
+	$h .= 'From: Xivo <xivo@xivo>'."\n";
+	$h .= 'X-Mailer: Xivo'."\n"; 
 	$h .= 'X-Priority: 1 (Highest)'."\n";
 
 	mb_send_mail($mail,$subject,$msg,$h);
