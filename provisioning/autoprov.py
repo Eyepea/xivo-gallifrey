@@ -226,7 +226,7 @@ class SQLiteDB:
 			map(lambda x: phone[x], ('macaddr', 'vendor', 'model',
 			                         'proto', 'iduserfeatures')))
 
-	def phone_by_userinfo(self, userinfo):
+	def phone_by_iduserfeatures(self, iduserfeatures):
 		"""Lookup phone information by user information (iduserfeatures)
 		Right now this is limited to the 'sip' protocol, so the result
 		is a single phone description in the form of a dictionary
@@ -241,17 +241,17 @@ class SQLiteDB:
 		mapping = dict(map(lambda x: (x,x), ("macaddr", "vendor",
 		                          "model", "proto", "iduserfeatures")))
 		return self.sqlite_select_one(
-			query, (userinfo['iduserfeatures'], TECH), mapping)
+			query, (iduserfeatures, TECH), mapping)
 
-	def delete_phone_by_iduserfeatures(self, userinfo):
-		"""Delete any phone in the database having iduserfeatures ==
-		userinfo['iduserfeatures'].
+	def delete_phone_by_iduserfeatures(self, iduserfeatures):
+		"""Delete any phone in the database having the given
+		iduserfeatures.
 		
 		"""
 		self.sqlite_modify(
 			("DELETE FROM %s WHERE iduserfeatures=%s")
 		        % ( TABLE, '%s'),
-			(userinfo['iduserfeatures'],))
+			(iduserfeatures,))
 
 	def find_orphan_phones(self):
 		"""Find every phones that do not have a corresponding user
@@ -278,21 +278,21 @@ class SQLiteDB:
 			      for x in ("macaddr", "vendor", "model",
 			                "proto", "iduserfeatures")]))
 
-	def delete_orphan_phones(self):
-		"""Delete any phone that does not have a corresponding user
-		anymore, but that is not provisioned in state GUEST. Used at
-		startup to maintain the base in a coherent state, because
-		SQLite does not support foreign key constraints.
-		
-		"""
-		self.sqlite_modify(
-			("DELETE FROM %s WHERE macaddr IN "+
-			 "(SELECT %s.macaddr " + 
-			 	"FROM %s LEFT JOIN %s " +
-				"ON %s.iduserfeatures = %s.id " +
-				"WHERE %s.iduserfeatures != 0 AND %s.id is NULL)")
-			% (TABLE, TABLE, TABLE, UF_TABLE,
-			   TABLE, UF_TABLE, TABLE, UF_TABLE), ())
+#	def delete_orphan_phones(self):
+#		"""Delete any phone that does not have a corresponding user
+#		anymore, but that is not provisioned in state GUEST. Used at
+#		startup to maintain the base in a coherent state, because
+#		SQLite does not support foreign key constraints.
+#		
+#		"""
+#		self.sqlite_modify(
+#			("DELETE FROM %s WHERE macaddr IN "+
+#			 "(SELECT %s.macaddr " + 
+#			 	"FROM %s LEFT JOIN %s " +
+#				"ON %s.iduserfeatures = %s.id " +
+#				"WHERE %s.iduserfeatures != 0 AND %s.id is NULL)")
+#			% (TABLE, TABLE, TABLE, UF_TABLE,
+#			   TABLE, UF_TABLE, TABLE, UF_TABLE), ())
 
 class MacLocks:
 	"""This class let us enforce that only one provisioning is in progress
@@ -400,10 +400,10 @@ def __provisioning(mode, ctx, phone):
 	    syslogf(SYSLOG_DEBUG, "__provisioning(): unlocking %s" % (phone["macaddr"],))
 	    ctx.maclocks.release(phone["macaddr"])
 
-def __userdeleted(ctx, userinfo):
+def __userdeleted(ctx, iduserfeatures):
 	"Does what has to be done when a user is deleted."
-	syslogf(SYSLOG_NOTICE, "__userdeleted(): handling deletion of user %s" % str(userinfo))
-	phone = ctx.dbinfos.phone_by_userinfo(userinfo)
+	syslogf(SYSLOG_NOTICE, "__userdeleted(): handling deletion of user %s" % iduserfeatures)
+	phone = ctx.dbinfos.phone_by_iduserfeatures(iduserfeatures)
 	if phone:
 		syslogf("__userdeleted(): phone to destroy, because destruction of its owner - %s" % str(phone))
 		phone["mode"] = "authoritative"
@@ -413,7 +413,7 @@ def __userdeleted(ctx, userinfo):
 	# the following line will just destroy non 'sip' provisioning
 	# with the same "iduserfeatures", and as they are none for now
 	# it's not really useful but might become so in the future
-	ctx.dbinfos.delete_phone_by_iduserfeatures(userinfo)
+	ctx.dbinfos.delete_phone_by_iduserfeatures(iduserfeatures)
 
 
 # Safe locking API for provisioning and related stuffs
@@ -432,22 +432,27 @@ def lock_and_provision(mode, ctx, phone):
 		ctx.rwlock.release()
 		syslogf(SYSLOG_DEBUG, "Leaving lock_and_provision for Mac Address %s" % phone["macaddr"])
 
-def lock_and_userdel(ctx, userinfo):
-	"""Will attempt to delete informations related to the user
-	described by userinfo from areas we are handling in the
-	information backend, with a global lock hold in exclusive
-	access.
+def lock_and_userdel(ctx, iduserfeatures):
+	"""Will attempt to delete informations related to the user identified by
+	iduserfeatures from areas we are handling in the information backend,
+	with a global lock hold for exclusive access.
 
 	"""
-	syslogf(SYSLOG_DEBUG, "Entering lock_and_userdel(userinfo=%s)" % str(userinfo))
+	syslogf(SYSLOG_DEBUG, "Entering lock_and_userdel %s" % iduserfeatures)
 	if not ctx.rwlock.acquire_write(DEL_OR_PROV_TIMEOUT):
 		raise RuntimeError, "Could not acquire the global lock in exclusive mode"
 	try:
-		__userdeleted(ctx, userinfo)
+		__userdeleted(ctx, iduserfeatures)
 	finally:
 		ctx.rwlock.release()
-		syslogf(SYSLOG_DEBUG, "Leaving lock_and_userdel(userinfo=%s)" % str(userinfo))
+		syslogf(SYSLOG_DEBUG, "Leaving lock_and_userdel %s" % iduserfeatures)
 
+def clean_at_startup(ctx):
+	"Put back every non guest orphan phones in GUEST state at startup."
+	orphans = ctx.dbinfos.find_orphan_phones()
+	for phone in orphans:
+		syslogf(SYSLOG_NOTIFY, "clean_at_startup(): about to remove orphan %s at startup" % str(phone))
+		lock_and_userdel(ctx, phone['iduserfeatures'])
 
 class MissingParam(Exception):
 	pass
@@ -611,7 +616,7 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 		elif self.posted["mode"] == "userdeleted":
 			syslogf("handle_prov(): user deletion")
 			userinfo = self.posted_userdeleted_infos()
-			lock_and_userdel(self.my_ctx, userinfo)
+			lock_and_userdel(self.my_ctx, userinfo['iduserfeatures'])
 		else:
 			syslogf(SYSLOG_ERR, "handle_prov(): Unknown mode %s" % (self.posted["mode"],))
 			raise ValueError, "Unknown mode %s" % (self.posted["mode"],)
@@ -688,9 +693,7 @@ def main(log_level, foreground):
 		SQLiteDB(DB),
 		RWLock()
 	)
-
-#	http_server.my_infos.delete_orphan_phones()
-
+	clean_at_startup(http_server.my_ctx)
 	http_server.serve_forever()
 	syslog.closelog()
 
