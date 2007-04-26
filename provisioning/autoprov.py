@@ -389,7 +389,7 @@ def __provisioning(mode, ctx, phone):
 			syslogf(SYSLOG_WARNING, "__provisioning(): Operation already in progress for user %s" % config['iduserfeatures'])
 			raise RuntimeError, "Operation already in progress for user %s" % config['iduserfeatures']
 		    try:
-			syslogf(SYSLOG_NOTIFY, "__provisioning(): AUTOPROV'isioning phone %s with config %s" % (str(phone),str(config)))
+			syslogf(SYSLOG_NOTICE, "__provisioning(): AUTOPROV'isioning phone %s with config %s" % (str(phone),str(config)))
 			__mode_dependant_provlogic_locked(mode, ctx, phone, config)
 			prov_inst.autoprov(config)
 		    finally:
@@ -426,7 +426,7 @@ def __mode_dependant_provlogic_locked(mode, ctx, phone, config):
 		syslogf(SYSLOG_DEBUG, "__mode_dependant_provlogic_locked() in authoritative mode for phone %s and user %s" % (phone['macaddr'], config['iduserfeatures']))
 		existing_phone = phone_by_iduserfeatures(config['iduserfeatures'])
 		if existing_phone and existing_phone['macaddr'] != phone['macaddr']:
-			syslogf(SYSLOG_NOTIFY, "__mode_dependant_provlogic_locked(): phone %s to be put back in guest state, because another one (%s) is being provisioned for the same user" % (existing_phone['macaddr'], phone['macaddr']))
+			syslogf(SYSLOG_NOTICE, "__mode_dependant_provlogic_locked(): phone %s to be put back in guest state, because another one (%s) is being provisioned for the same user" % (existing_phone['macaddr'], phone['macaddr']))
 			existing_phone['mode'] = 'authoritative'
 			existing_phone['actions'] = 'no'
 			existing_phone['iduserfeatures'] = '0'
@@ -489,7 +489,7 @@ def clean_at_startup(ctx):
 	"Put back every non guest orphan phones in GUEST state at startup."
 	orphans = ctx.dbinfos.find_orphan_phones()
 	for phone in orphans:
-		syslogf(SYSLOG_NOTIFY, "clean_at_startup(): about to remove orphan %s at startup" % str(phone))
+		syslogf(SYSLOG_NOTICE, "clean_at_startup(): about to remove orphan %s at startup" % str(phone))
 		lock_and_userdel(ctx, phone['iduserfeatures'])
 
 class MissingParam(Exception):
