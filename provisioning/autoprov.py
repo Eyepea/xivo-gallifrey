@@ -329,6 +329,16 @@ class CommonProvContext:
 		self.dbinfos = dbinfos
 		self.rwlock = rwlock
 
+def __save_lan_phone(mode, ctx, phone, config):
+	"Save new configuration of the local phone in the database."
+	if "iduserfeatures" not in phone and config is not None \
+	   and "iduserfeatures" in config:
+		syslogf(SYSLOG_DEBUG, "__provisioning(): iduserfeatures='%s' from config to phone" % (config["iduserfeatures"],))
+		phone["iduserfeatures"] = config["iduserfeatures"]
+	if mode != "informative" and "iduserfeatures" in phone:
+		syslogf("__provisioning(): SAVING phone %s informations to backend" % (str(phone),))
+		ctx.dbinfos.save_phone(phone)
+
 def __provisioning(mode, ctx, phone):
 	"Provisioning high level logic for the described phone"
 	# I only allow "sip" right now
@@ -374,6 +384,7 @@ def __provisioning(mode, ctx, phone):
 	    if "iduserfeatures" in phone and phone["iduserfeatures"] == "0":
 		syslogf("__provisioning(): reinitializing provisioning to GUEST for phone %s" % (str(phone),))
 		prov_inst.reinitprov()
+		__save_lan_phone(mode, ctx, phone, None)
 	    else:			
 		if "iduserfeatures" in phone:
 		    syslogf("__provisioning(): getting configuration from iduserfeatures for phone %s" % (str(phone),))
@@ -392,20 +403,13 @@ def __provisioning(mode, ctx, phone):
 			syslogf(SYSLOG_NOTICE, "__provisioning(): AUTOPROV'isioning phone %s with config %s" % (str(phone),str(config)))
 			__mode_dependant_provlogic_locked(mode, ctx, phone, config)
 			prov_inst.autoprov(config)
+			__save_lan_phone(mode, ctx, phone, config)
 		    finally:
 			syslogf(SYSLOG_DEBUG, "__provisioning(): unlocking user %s" % config['iduserfeatures'])
 			ctx.userlocks.release(config['iduserfeatures'])
 		else:
 		    syslogf(SYSLOG_ERR, "__provisioning(): not AUTOPROV'isioning phone %s cause no config found or no iduserfeatures in config" % (str(phone),))
 
-	    if "iduserfeatures" not in phone and config is not None and \
-	       "iduserfeatures" in config:
-		syslogf(SYSLOG_DEBUG, "__provisioning(): iduserfeatures='%s' from config to phone" % (config["iduserfeatures"],))
-		phone["iduserfeatures"] = config["iduserfeatures"]
-
-	    if mode != "informative" and "iduserfeatures" in phone:
-		    syslogf("__provisioning(): SAVING phone %s informations to backend" % (str(phone),))
-		    ctx.dbinfos.save_phone(phone)
 	finally:
 	    syslogf(SYSLOG_DEBUG, "__provisioning(): unlocking phone %s" % (phone["macaddr"],))
 	    ctx.maclocks.release(phone["macaddr"])
