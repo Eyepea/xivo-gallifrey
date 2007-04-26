@@ -12,7 +12,8 @@ import os, sys, syslog
 import provsup
 from provsup import BaseProv
 
-WGET        = "/usr/bin/wget"
+WGET         = "/usr/bin/wget"
+WGET_TIMEOUT = 30 #s
 
 # SNOM BUGBUG #1
 # Snom doesn't support something else than files at root of tftproot when using
@@ -38,7 +39,12 @@ class SnomProv(BaseProv):
 		   self.phone["model"] != "360":
 			raise ValueError, "Unknown Snom model '%s'" % self.phone["model"]
 	def __action(self, command, user, passwd):
-		os.system(WGET + " -q -nv -O /dev/null --http-user=%s --http-passwd=%s http://%s/confirm.html?%s=yes" % (user, passwd, self.phone['ipv4'], command))
+		# -q -- quiet
+		# -nv -- non-verbose
+		# -O /dev/null -- send result into /dev/null
+		# -T 30 -- timeout after 30s
+		# -t 1 -- don't retry
+		os.system(WGET + " -t 1 -T %s -q -nv -O /dev/null --http-user=%s --http-passwd=%s http://%s/confirm.html?%s=yes" % (str(WGET_TIMEOUT), user, passwd, self.phone['ipv4'], command))
 
 	def do_reinit(self):
 		"""Entry point to send the (possibly post) reinit command to
