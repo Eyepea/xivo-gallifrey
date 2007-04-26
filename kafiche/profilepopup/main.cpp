@@ -56,6 +56,8 @@ int main(int argc, char * * argv)
 	MainWidget main(&engine);
 	main.show();
 	//main.dumpObjectTree();
+	QObject::connect( &app, SIGNAL(lastWindowClosed()),
+	         &engine, SLOT(stop()) );
 	return app.exec();
 }
 

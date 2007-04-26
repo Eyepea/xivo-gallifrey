@@ -71,6 +71,7 @@ void MainWidget::createActions()
 
 	m_quitact = new QAction(tr("&Quit"), this);
 	m_quitact->setStatusTip(tr("Close the application"));
+	connect( m_quitact, SIGNAL(triggered()), m_engine, SLOT(stop()) );
 	connect( m_quitact, SIGNAL(triggered()), qApp, SLOT(quit()) );
 
 	m_systrayact = new QAction(tr("To S&ystray"), this);
