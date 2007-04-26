@@ -413,7 +413,7 @@ def __provisioning(mode, ctx, phone):
 def __mode_dependant_provlogic_locked(mode, ctx, phone, config):
 	if mode == 'informative':
 		syslogf(SYSLOG_DEBUG, "__mode_dependant_provlogic_locked() in informative mode for phone %s and user %s" % (phone['macaddr'], config['iduserfeatures']))
-		existing_phone = phone_by_iduserfeatures(config['iduserfeatures'])
+		existing_phone = ctx.dbinfos.phone_by_iduserfeatures(config['iduserfeatures'])
 		if existing_phone:
 			syslogf(SYSLOG_WARNING, "__mode_dependant_provlogic_locked(): User %s already has a locally provisioned phone, not trying to provision a remote one" % config['iduserfeatures'])
 			raise RuntimeError, "User %s already has a locally provisioned phone, not trying to provision a remote one" % config['iduserfeatures']
@@ -424,7 +424,7 @@ def __mode_dependant_provlogic_locked(mode, ctx, phone, config):
 			raise RuntimeError, "Phone %s already locally provisioned, not trying to provision it for remote operations" % phone['macaddr']
 	elif mode == 'authoritative':
 		syslogf(SYSLOG_DEBUG, "__mode_dependant_provlogic_locked() in authoritative mode for phone %s and user %s" % (phone['macaddr'], config['iduserfeatures']))
-		existing_phone = phone_by_iduserfeatures(config['iduserfeatures'])
+		existing_phone = ctx.dbinfos.phone_by_iduserfeatures(config['iduserfeatures'])
 		if existing_phone and existing_phone['macaddr'] != phone['macaddr']:
 			syslogf(SYSLOG_NOTICE, "__mode_dependant_provlogic_locked(): phone %s to be put back in guest state, because another one (%s) is being provisioned for the same user" % (existing_phone['macaddr'], phone['macaddr']))
 			existing_phone['mode'] = 'authoritative'
