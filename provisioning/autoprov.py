@@ -430,7 +430,7 @@ def __mode_dependant_provlogic_locked(mode, ctx, phone, config):
 			existing_phone['mode'] = 'authoritative'
 			existing_phone['actions'] = 'no'
 			existing_phone['iduserfeatures'] = '0'
-			__provisioning('__internal_to_guest', ctx, phone)
+			__provisioning('__internal_to_guest', ctx, existing_phone)
 
 def __userdeleted(ctx, iduserfeatures):
 	"Does what has to be done when a user is deleted."
