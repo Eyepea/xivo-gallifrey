@@ -236,24 +236,22 @@ class BaseProv:
 			return
 		syslogf("Sending REINIT command to phone %s" % self.phone['macaddr'])
 		self.do_reinit()
-		syslogf("Sent REINIT command to phone %s" % self.phone['macaddr'])
+		syslogf(SYSLOG_DEBUG, "Sent REINIT command to phone %s" % self.phone['macaddr'])
 	def action_reboot(self):
 		if self.phone["actions"] == "no": # distant provisioning with actions disabled
 			syslogf("Skipping REBOOT action for phone %s" % self.phone['macaddr'])
 			return
 		syslogf("Sending REBOOT command to phone %s" % self.phone['macaddr'])
 		self.do_reboot()
-		syslogf("Sent REBOOT command to phone %s" % self.phone['macaddr'])
-	def reinitprov(self):
+		syslogf(SYSLOG_DEBUG, "Sent REBOOT command to phone %s" % self.phone['macaddr'])
+	def generate_reinitprov(self):
 		syslogf("About to GUEST'ify the phone %s" % self.phone['macaddr'])
 		self.do_reinitprov()
-		syslogf("Phone GUEST'ified %s" % self.phone['macaddr'])
-		self.action_reinit()
-	def autoprov(self, provinfo):
+		syslogf(SYSLOG_DEBUG, "Phone GUEST'ified %s" % self.phone['macaddr'])
+	def generate_autoprov(self, provinfo):
 		syslogf("About to AUTOPROV the phone %s" % self.phone['macaddr'])
 		self.do_autoprov(provinfo)
-		syslogf("Phone AUTOPROV'ed %s" % self.phone['macaddr'])
-		self.action_reboot()
+		syslogf(SYSLOG_DEBUG, "Phone AUTOPROV'ed %s" % self.phone['macaddr'])
 
 # Populated by Phone implementation modules
 PhoneClasses = {}

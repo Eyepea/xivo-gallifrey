@@ -383,8 +383,9 @@ def __provisioning(mode, ctx, phone):
 
 	    if "iduserfeatures" in phone and phone["iduserfeatures"] == "0":
 		syslogf("__provisioning(): reinitializing provisioning to GUEST for phone %s" % (str(phone),))
-		prov_inst.reinitprov()
+		prov_inst.generate_reinitprov()
 		__save_lan_phone(mode, ctx, phone, None)
+		prov_inst.action_reinit()
 	    else:			
 		if "iduserfeatures" in phone:
 		    syslogf("__provisioning(): getting configuration from iduserfeatures for phone %s" % (str(phone),))
@@ -402,8 +403,9 @@ def __provisioning(mode, ctx, phone):
 		    try:
 			syslogf(SYSLOG_NOTICE, "__provisioning(): AUTOPROV'isioning phone %s with config %s" % (str(phone),str(config)))
 			__mode_dependant_provlogic_locked(mode, ctx, phone, config)
-			prov_inst.autoprov(config)
+			prov_inst.generate_autoprov(config)
 			__save_lan_phone(mode, ctx, phone, config)
+			prov_inst.action_reboot()
 		    finally:
 			syslogf(SYSLOG_DEBUG, "__provisioning(): unlocking user %s" % config['iduserfeatures'])
 			ctx.userlocks.release(config['iduserfeatures'])
