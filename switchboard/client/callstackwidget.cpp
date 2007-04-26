@@ -23,8 +23,6 @@ Call::Call(const QString & channelme,
 {
 	m_channelme   = channelme;
 	m_action      = action;
-	// modif TBernard 20/04/07
-	m_time        = time;
 	m_startTime   = QDateTime::currentDateTime().addSecs(-time);
 	m_direction   = direction;
 	m_channelpeer = channelpeer;
@@ -38,8 +36,6 @@ Call::Call(const Call & call)
 {
 	m_channelme   = call.m_channelme;
 	m_action      = call.m_action;
-	// modif TBernard 20/04/07
-	m_time        = call.m_time;
 	m_startTime   = call.m_startTime;
 	m_direction   = call.m_direction;
 	m_channelpeer = call.m_channelpeer;
@@ -54,21 +50,12 @@ void Call::updateCall(const QString & action,
 		      const QString & exten)
 {
 	m_action      = action;
-	// modif TBernard 20/04/07
-	m_time        = time;
 	m_startTime   = QDateTime::currentDateTime().addSecs(-time);
 	m_direction   = direction;
 	m_channelpeer = channelpeer;
 	m_exten       = exten;
 }
 
-
-// modif TBernard 20/04/07
-int Call::updateTime()
-{
-	m_time ++;
-	return 0;
-}
 
 /*! \brief Constructor
  */
@@ -211,16 +198,6 @@ void CallStackWidget::updateDisplay()
 	m_layout->addWidget(callwidget, 1, Qt::AlignTop);
 	m_afflist.append(callwidget);
 */
-}
-
-// modif TBernard 20/04/07
-int CallStackWidget::updateTime()
-{
-	int n = m_calllist.count();
-	for(int i = 0; i < n ; i++) {
-		m_calllist[i].updateTime();
-	}
-	return n;
 }
 
 void CallStackWidget::dragEnterEvent(QDragEnterEvent *event)

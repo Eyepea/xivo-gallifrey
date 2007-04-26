@@ -54,14 +54,11 @@ CallWidget::CallWidget(const QString & channelme,
 	layout->addWidget(m_lbl_action, 0, 0);
 	setActionPixmap(action);
 
-	// modif TBernard 20/04/07
-	m_lbl_time = new QLabel("[" + QString::number(time/60) + " min " + QString::number(time%60) + " s]",
-				this);
-	// 	m_lbl_time = new QLabel(this);
-	// 	m_startTime = QDateTime::currentDateTime().addSecs(-time);
-	// 	startTimer(1000);
-	// 	updateCallTimeLabel();
+	m_lbl_time = new QLabel(this);
 	m_lbl_time->setFont(QFont("", 8, QFont::Bold));
+	m_startTime = QDateTime::currentDateTime().addSecs(-time);
+	startTimer(1000);
+	updateCallTimeLabel();
 	layout->addWidget(m_lbl_time, 1, 0);
 
 	m_lbl_direction = new QLabel(direction, this);
@@ -103,11 +100,9 @@ void CallWidget::updateWidget(const QString & action,
 	//	qDebug() << this << "updateWidget";
 	//m_lbl_action->setText(action);
 	setActionPixmap(action);
-	// modif TBernard 20/04/07
-	m_lbl_time->setText("[" + QString::number(time/60) + " min " + QString::number(time%60) + " s]");
-	// 	//qDebug() << time << m_startTime << m_startTime.secsTo(QDateTime::currentDateTime());
-	// 	m_startTime = QDateTime::currentDateTime().addSecs(-time);
-	// 	updateCallTimeLabel();
+	//qDebug() << time << m_startTime << m_startTime.secsTo(QDateTime::currentDateTime());
+	m_startTime = QDateTime::currentDateTime().addSecs(-time);
+	updateCallTimeLabel();
 	m_lbl_direction->setText(direction);
 	//	m_lbl_channelpeer->setText(channelpeer);
 	m_lbl_exten->setText(exten);

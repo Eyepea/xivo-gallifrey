@@ -71,10 +71,6 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 				     const QString &, const QString &, const QString &)) );
 	connect( m_engine, SIGNAL(callsUpdated()),
 	         calls, SLOT(updateDisplay()) );
-	// modif TBernard 20/04/07
-	connect( m_engine, SIGNAL(updateTime()),
-	         calls, SLOT(updateTime()) );
-	//
 	connect( m_engine, SIGNAL(stopped()),
 	         calls, SLOT(reset()) );
 	connect( calls, SIGNAL(hangUp(const QString &)),
