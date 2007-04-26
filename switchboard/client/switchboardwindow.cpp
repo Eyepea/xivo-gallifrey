@@ -81,7 +81,7 @@ void SwitchBoardWindow::updatePeer(const QString & ext,
 	         m_engine, SLOT(transferCall(const QString&, const QString&)) );
 	QPoint pos = settings.value("layout/" + ext, QPoint(-1, -1) ).toPoint();
 	//qDebug() << " " << ext << " " << pos;
-	if(pos.x() <= 0)
+	if(pos.x() < 0)
 		peerwidget->hide();
 	m_layout->addWidget( peerwidget, pos );
 	peer.setWidget(peerwidget);
