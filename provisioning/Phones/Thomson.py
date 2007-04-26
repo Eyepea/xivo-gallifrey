@@ -10,6 +10,8 @@ import os, sys, syslog, time, telnetlib
 import provsup
 from provsup import BaseProv
 
+import time # for TimeoutingTelnet
+
 # NOTES:
 # ~/etc/dhcpd3/dhcpd.conf -> /tftpboot/Thomson/ST2030S_v1.53.inf
 #				-> /tftpboot/Thomson/ST2030S_common_v1.53.txt
@@ -33,6 +35,57 @@ THOMSON_SPEC_TXT_TEMPLATE = "files/ST2030S_template.txt"
 # for some tests: THOMSON_SPEC_TXT_BASENAME = "files/ST2030S_"
 THOMSON_SPEC_TXT_BASENAME = "/tftpboot/ST2030S_"
 
+TELNET_TIMEOUT = 30
+
+class TelnetExpectationFailed(RuntimeError):
+	"""Exception raised by the new methods introduced by the
+	telnetlib.Telnet extending TimeoutingTelnet class.
+	
+	"""
+	pass
+
+class TimeoutingTelnet(telnetlib.Telnet):
+	"""This class extends Telnet so that a global timeout can trigger
+	during the newly introduced read_until_to(), and this will result
+	in the raising of an exception.
+	
+	"""
+	def __init__(self, cnx, global_TO = TELNET_TIMEOUT):
+		if type(cnx) != tuple or len(cnx) < 1:
+			raise ValueError, "The cnx argument must be (peer,) or (peer,port) ; %s was given" % str(cnx)
+		elif len(cnx) < 2:
+			telnetlib.Telnet.__init__(self, cnx[0])
+		else:
+			telnetlib.Telnet.__init__(self, cnx[0], cnx[1])
+		self.__my_global_to = global_TO
+		self.__my_global_to_start = None
+		self.__my_cnx = cnx
+	def restart_global_to(self):
+		"Start / reset the global TO timer for this telnet session"
+		self.__my_global_to_start = time.time()
+	def stop_global_to(self):
+		"Stop the global TO timer for this telnet session"
+		self.__my_global_to_start = None
+	def read_until_to(self, expected):
+		"""Same as read_until() but if expected has not been received a
+		TelnetExpectationFailed will be raised - this will be the case
+		when the session global timer is hit.
+		
+		"""
+		if self.__my_global_to_start is not None:
+			remaining_time = (self.__my_global_to_start + self.__my_global_to) - time.time()
+			if remaining_time <= 0:
+				raise TelnetExpectationFailed, "Telnet session already timeouted for peer %s" % str(self.__my_cnx)
+			gotstr = self.read_until(expected, remaining_time)
+			if expected in gotstr:
+				return gotstr
+			raise TelnetExpectationFailed, "Telnet session timeouted for peer %s - the expected string '%s' has not yet been received" % (str(self.__my_cnx), expected)
+		else:
+			gotstr = self.read_until(expected)
+			if expected in gotstr:
+				return gotstr
+			raise TelnetExpectationFailed, "Expected string '%s' has not been received before termination of the telnet session with peer %s" % (expected, str(self.__my_cnx))
+
 class ThomsonProv(BaseProv):
 	label = "Thomson"
 	def __init__(self, phone):
@@ -46,15 +99,16 @@ class ThomsonProv(BaseProv):
 		self.passwd = passwd
 	def __action(self, commands):
 		ip = self.phone["ipv4"]
-		tn = telnetlib.Telnet(ip)
+		tn = TimeoutingTelnet((ip,))
+		tn.restart_global_to()
 		try:
-			tn.read_until("Login: ")
+			tn.read_until_to("Login: ")
 			tn.write(self.user + "\r\n")
 			if self.passwd:
-				tn.read_until("Password: ")
+				tn.read_until_to("Password: ")
 				tn.write(self.passwd + "\r\n")
 			for cmd in commands:
-				tn.read_until("["+self.user+"]#")
+				tn.read_until_to("["+self.user+"]#")
 				syslog.syslog(syslog.LOG_DEBUG,
 					"sending telnet command (%s): %s" \
 					% (self.phone["macaddr"],cmd))
