@@ -15,7 +15,7 @@ class Call// : public QObject
 public:
 	//Peer( const QString & ext, QObject * parent = 0 );
 	Call( const QString & channelme);
-	Call( const QString & channelme, const QString & action, const int & time,
+	Call( const QString & channelme, const QString & action, int time,
 	      const QString & direction, const QString & channelpeer,
 	      const QString & exten, const QString & phonen);
 	Call( const Call & call);
@@ -29,7 +29,7 @@ public:
 	const QString & getChannelPeer() const {return m_channelpeer;};
 	const QString & getExten() const {return m_exten;};
 	void updateCall(const QString & action,
-			const int & time,
+			int time,
 			const QString & direction,
 			const QString & channelpeer,
 			const QString & exten);
@@ -54,7 +54,7 @@ public slots:
 	//! Add a call to the list to be displayed
 	void addCall(const QString & channelme,
 		     const QString & action,
-		     const int & time,
+		     int time,
 		     const QString & direction,
 		     const QString & channelpeer,
 		     const QString & exten,

@@ -13,6 +13,7 @@ class QLabel;
  */
 class CallWidget : public QWidget
 {
+	Q_OBJECT
 public:
 	//! Default constructor
 	CallWidget(QWidget * parent = 0);
@@ -20,13 +21,13 @@ public:
 		   QWidget * parent = 0);
 	CallWidget(const QString & channelme,
 		   const QString & action,
-		   const int & time,
+		   int time,
 		   const QString & direction,
 		   const QString & channelpeer,
 		   const QString & exten,
 		   QWidget * parent = 0);
 	void updateWidget(const QString & action,
-			  const int & time,
+			  int time,
 			  const QString & direction,
 			  const QString & channelpeer,
 			  const QString & exten);
@@ -39,14 +40,19 @@ public:
 protected:
 	void mousePressEvent(QMouseEvent *);
 	void mouseMoveEvent(QMouseEvent *);
-	void mouseDoubleClickEvent(QMouseEvent * event);
+	//void mouseDoubleClickEvent(QMouseEvent * event);
 	//void dragEnterEvent(QDragEnterEvent * event);
 	//	void dragMoveEvent(QDragMoveEvent * event);
 	//	void dropEvent(QDropEvent * event);
 	void timerEvent(QTimerEvent *);
+	void contextMenuEvent(QContextMenuEvent *);
 private:
 	void setActionPixmap(const QString &);
 	void updateCallTimeLabel();
+signals:
+	void doHangUp(const QString &);
+public slots:
+	void hangUp();
 private:
 	QPoint m_dragstartpos;	//!< used for drag
 	QString m_channelme;	//!< channel identifier
@@ -58,7 +64,8 @@ private:
 	QLabel * m_lbl_channelpeer;	//!< sub widget
 	QLabel * m_lbl_exten;	//!< sub widget
 	QPixmap m_square;		//!< QPixmap used to display the action square
-	QDateTime m_startTime;
+	QDateTime m_startTime;	//!< call start date/time
+	QAction * m_hangUpAction;	//!< Hang Up Action
 };
 
 

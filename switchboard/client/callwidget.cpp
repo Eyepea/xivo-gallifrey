@@ -6,9 +6,10 @@
 #include <QDebug>
 #include <QFont>
 #include <QTextFormat>
+#include <QMenu>
 #include "callstackwidget.h"
 #include "callwidget.h"
-
+/*
 CallWidget::CallWidget(QWidget * parent)
 : QWidget(parent)
 {
@@ -28,10 +29,10 @@ CallWidget::CallWidget(const QString & tomonitor,
 		m_lbl_time = new QLabel("Phone monitored = " + tomonitor, this);
 	layout->addWidget(m_lbl_time);
 }
-
+*/
 CallWidget::CallWidget(const QString & channelme,
 		       const QString & action,
-		       const int & time,
+		       int time,
 		       const QString & direction,
 		       const QString & channelpeer,
 		       const QString & exten,
@@ -76,6 +77,11 @@ CallWidget::CallWidget(const QString & channelme,
 	dummy->setFont(QFont("times", 10, QFont::Light, TRUE));
 	layout->addWidget(dummy, 1, 2);
 	//setAcceptDrops(true);
+	
+	m_hangUpAction = new QAction( tr("&Hangup"), this);
+	m_hangUpAction->setStatusTip( tr("Hang up/Close the channel") );
+	connect( m_hangUpAction, SIGNAL(triggered()),
+	         this, SLOT(hangUp()) );
 }
 
 void CallWidget::updateCallTimeLabel()
@@ -92,7 +98,7 @@ void CallWidget::timerEvent( QTimerEvent * event )
 }
 
 void CallWidget::updateWidget(const QString & action,
-			      const int & time,
+			      int time,
 			      const QString & direction,
 			      const QString & channelpeer,
 			      const QString & exten)
@@ -167,6 +173,7 @@ void CallWidget::dragEnterEvent(QDragEnterEvent *event)
 }
 */
 
+#if 0
 void CallWidget::mouseDoubleClickEvent(QMouseEvent *event)
 {
 	qDebug() << "mouseDoubleClickEvent" << event;
@@ -177,7 +184,20 @@ void CallWidget::mouseDoubleClickEvent(QMouseEvent *event)
 		csw->hupchan(m_channelme);
 	}
 }
+#endif
 
+void CallWidget::hangUp()
+{
+	qDebug() << "CallWidget::hangUp()";
+	doHangUp( m_channelme );
+}
+
+void CallWidget::contextMenuEvent(QContextMenuEvent *event)
+{
+	QMenu contextMenu(this);
+	contextMenu.addAction(m_hangUpAction);
+	contextMenu.exec(event->globalPos());
+}
 
 /*
 void CallWidget::setCallerId(const QString & callerid)

@@ -15,7 +15,7 @@ Call::Call(const QString & channelme)
  */
 Call::Call(const QString & channelme,
 	   const QString & action,
-	   const int & time,
+	   int time,
 	   const QString & direction,
 	   const QString & channelpeer,
 	   const QString & exten,
@@ -44,7 +44,7 @@ Call::Call(const Call & call)
 }
 
 void Call::updateCall(const QString & action,
-		      const int & time,
+		      int time,
 		      const QString & direction,
 		      const QString & channelpeer,
 		      const QString & exten)
@@ -73,7 +73,7 @@ CallStackWidget::CallStackWidget(QWidget * parent)
  */
 void CallStackWidget::addCall(const QString & channelme,
                               const QString & action,
-			      const int & time,
+			      int time,
 			      const QString & direction,
 			      const QString & channelpeer,
 			      const QString & exten,
@@ -186,6 +186,8 @@ void CallStackWidget::updateDisplay()
 								 c.getChannelPeer(),
 								 c.getExten(),
 								 this);
+			connect( callwidget, SIGNAL(doHangUp(const QString &)),
+			         this, SLOT(hupchan(const QString &)) );
 			m_afflist.append(callwidget);
 			//m_layout->addWidget(callwidget, 0, Qt::AlignTop);
 			m_layout->insertWidget(m_layout->count() - 1, callwidget,

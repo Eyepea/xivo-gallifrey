@@ -44,7 +44,7 @@ signals:
 	void emitTextMessage(const QString &);
 	void updateCall(const QString & channelme,
 			const QString & action,
-			const int & time,
+			int time,
 			const QString & direction,
 			const QString & channelpeer,
 			const QString & exten,
