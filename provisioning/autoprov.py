@@ -329,6 +329,32 @@ class CommonProvContext:
 		self.dbinfos = dbinfos
 		self.rwlock = rwlock
 
+def __mode_dependant_provlogic_locked(mode, ctx, phone, config):
+	"""This function resolves conflicts or abort by raising an execption
+	for the current provisioning in progress.
+	
+	"""
+	if mode == 'informative':
+		syslogf(SYSLOG_DEBUG, "__mode_dependant_provlogic_locked() in informative mode for phone %s and user %s" % (phone['macaddr'], config['iduserfeatures']))
+		existing_phone = ctx.dbinfos.phone_by_iduserfeatures(config['iduserfeatures'])
+		if existing_phone:
+			syslogf(SYSLOG_WARNING, "__mode_dependant_provlogic_locked(): User %s already has a locally provisioned phone, not trying to provision a remote one" % config['iduserfeatures'])
+			raise RuntimeError, "User %s already has a locally provisioned phone, not trying to provision a remote one" % config['iduserfeatures']
+		ctx.dbinfos.delete_guest_by_mac(phone['macaddr'])
+		existing_phone = ctx.dbinfos.phone_by_macaddr(phone['macaddr'])
+		if existing_phone:
+			syslogf(SYSLOG_WARNING, "__mode_dependant_provlogic_locked(): Phone %s already locally provisioned, not trying to provision it for remote operations" % phone['macaddr'])
+			raise RuntimeError, "Phone %s already locally provisioned, not trying to provision it for remote operations" % phone['macaddr']
+	elif mode == 'authoritative':
+		syslogf(SYSLOG_DEBUG, "__mode_dependant_provlogic_locked() in authoritative mode for phone %s and user %s" % (phone['macaddr'], config['iduserfeatures']))
+		existing_phone = ctx.dbinfos.phone_by_iduserfeatures(config['iduserfeatures'])
+		if existing_phone and existing_phone['macaddr'] != phone['macaddr']:
+			syslogf(SYSLOG_NOTICE, "__mode_dependant_provlogic_locked(): phone %s to be put back in guest state, because another one (%s) is being provisioned for the same user" % (existing_phone['macaddr'], phone['macaddr']))
+			existing_phone['mode'] = 'authoritative'
+			existing_phone['actions'] = 'no'
+			existing_phone['iduserfeatures'] = '0'
+			__provisioning('__internal_to_guest', ctx, existing_phone)
+
 def __save_lan_phone(mode, ctx, phone, config):
 	"Save new configuration of the local phone in the database."
 	if "iduserfeatures" not in phone and config is not None \
@@ -415,28 +441,6 @@ def __provisioning(mode, ctx, phone):
 	finally:
 	    syslogf(SYSLOG_DEBUG, "__provisioning(): unlocking phone %s" % (phone["macaddr"],))
 	    ctx.maclocks.release(phone["macaddr"])
-
-def __mode_dependant_provlogic_locked(mode, ctx, phone, config):
-	if mode == 'informative':
-		syslogf(SYSLOG_DEBUG, "__mode_dependant_provlogic_locked() in informative mode for phone %s and user %s" % (phone['macaddr'], config['iduserfeatures']))
-		existing_phone = ctx.dbinfos.phone_by_iduserfeatures(config['iduserfeatures'])
-		if existing_phone:
-			syslogf(SYSLOG_WARNING, "__mode_dependant_provlogic_locked(): User %s already has a locally provisioned phone, not trying to provision a remote one" % config['iduserfeatures'])
-			raise RuntimeError, "User %s already has a locally provisioned phone, not trying to provision a remote one" % config['iduserfeatures']
-		ctx.dbinfos.delete_guest_by_mac(phone['macaddr'])
-		existing_phone = ctx.dbinfos.phone_by_macaddr(phone['macaddr'])
-		if existing_phone:
-			syslogf(SYSLOG_WARNING, "__mode_dependant_provlogic_locked(): Phone %s already locally provisioned, not trying to provision it for remote operations" % phone['macaddr'])
-			raise RuntimeError, "Phone %s already locally provisioned, not trying to provision it for remote operations" % phone['macaddr']
-	elif mode == 'authoritative':
-		syslogf(SYSLOG_DEBUG, "__mode_dependant_provlogic_locked() in authoritative mode for phone %s and user %s" % (phone['macaddr'], config['iduserfeatures']))
-		existing_phone = ctx.dbinfos.phone_by_iduserfeatures(config['iduserfeatures'])
-		if existing_phone and existing_phone['macaddr'] != phone['macaddr']:
-			syslogf(SYSLOG_NOTICE, "__mode_dependant_provlogic_locked(): phone %s to be put back in guest state, because another one (%s) is being provisioned for the same user" % (existing_phone['macaddr'], phone['macaddr']))
-			existing_phone['mode'] = 'authoritative'
-			existing_phone['actions'] = 'no'
-			existing_phone['iduserfeatures'] = '0'
-			__provisioning('__internal_to_guest', ctx, existing_phone)
 
 def __userdeleted(ctx, iduserfeatures):
 	"Does what has to be done when a user is deleted."
@@ -664,7 +668,6 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 		else:
 			syslogf(SYSLOG_ERR, "handle_prov(): Unknown mode %s" % (self.posted["mode"],))
 			raise ValueError, "Unknown mode %s" % (self.posted["mode"],)
-
 	    except:
 		syslogf(SYSLOG_NOTICE, "handle_prov(): action FAILED - phone %s - userinfo %s" % (str(phone),str(userinfo)))
 		tb_line_list = traceback.format_exception(*sys.exc_info())
@@ -715,7 +718,7 @@ class ThreadingHTTPServer(SocketServer.ThreadingTCPServer):
 
 def log_stderr_and_syslog(x):
 	"""This function logs the string x to both stderr and the system log.
-	The string to be logged doesn't have to end with a trailing '\\n'
+	The trailing '\\n' of the string to be logged must have been stripped
 	
 	"""
 	print >> sys.stderr, x

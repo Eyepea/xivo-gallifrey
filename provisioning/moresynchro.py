@@ -27,13 +27,13 @@ import time, thread, threading
 class RWLock:
 	"""Simple RWLock with timeouts, without promotion.
 
-	Writers are always preferred by this implementation: if there are blocked
-	threads waiting for a write lock, current readers may request more read
-	locks (which they eventually should free, as they starve the waiting
-	writers otherwise), but a new thread requesting a read lock will not
-	be granted one, and block. This might mean starvation for readers if
-	two writer threads interweave their calls to acquireWrite() without
-	leaving a window only for readers.
+	Writers are always preferred by this implementation: if there are
+	blocked threads waiting for a write lock, current readers may request
+	more read locks (which they eventually should free, as they starve the
+	waiting writers otherwise), but a new thread requesting a read lock
+	will not be granted one, and block. This might mean starvation for
+	readers if two writer threads interweave their calls to acquireWrite()
+	without leaving a window only for readers.
 	
 	Maybe optimisations could be done by adding another condition to
 	distinguish between waiting readers and waiting writers ?
