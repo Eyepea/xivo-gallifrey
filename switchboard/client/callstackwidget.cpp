@@ -133,11 +133,13 @@ void CallStackWidget::reset()
  * and empty m_afflist */
 void CallStackWidget::emptyList()
 {
+	//qDebug() << "CallStackWidget::emptyList()";
 	// cleaning the calling list displayed
 	for(int i = 0; i < m_afflist.count() ; i++) {
+		//qDebug() << " Removing" << m_afflist[i]->channel();
 		m_layout->removeWidget(m_afflist[i]);
+		//m_afflist[i]->deleteLater();
 		delete m_afflist[i];
-		m_afflist[i]->deleteLater();
 	}
 	m_afflist.clear();
 	//m_calllist.clear();
@@ -158,13 +160,17 @@ void CallStackWidget::updateDisplay()
 	{
 		for(i = 0; i < m_calllist.count(); i++)
 		{
+			//qDebug() << "   " << j << m_afflist[j]->channel()
+			//         << i << m_calllist[i].getChannelMe();
 			if(m_afflist[j]->channel() == m_calllist[i].getChannelMe())
 				break;
 		}
 		if(i == m_calllist.count())
 		{
+			//qDebug() << " Removing " << m_afflist[j]->channel();
 			m_layout->removeWidget(m_afflist[j]);
-			m_afflist.takeAt(j)->deleteLater();
+			//m_afflist.takeAt(j)->deleteLater();
+			delete m_afflist.takeAt(j);
 		}
 	}
 
