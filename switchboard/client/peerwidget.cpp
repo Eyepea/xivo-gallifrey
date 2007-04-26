@@ -3,6 +3,7 @@
 #include <QPixmap>
 #include <QMouseEvent>
 #include <QApplication>
+#include <QMenu>
 #include <QDebug>
 #include "peerwidget.h"
 #include "switchboardengine.h"
@@ -26,6 +27,10 @@ PeerWidget::PeerWidget(const QString & id, const QString & name,
 	layout->addStretch(1);
 	// to be able to receive drop
 	setAcceptDrops(true);
+	m_removeAction = new QAction( tr("&Remove"), this);
+	m_removeAction->setStatusTip( tr("Remove this peer from the panel") );
+	connect( m_removeAction, SIGNAL(triggered()),
+	         this, SLOT(removeFromPanel()) );
 }
 
 void PeerWidget::setRed(int n)
@@ -109,6 +114,12 @@ void PeerWidget::setOrange(int n)
 	  m_availlbl->setPixmap( m_square );
 }
 
+void PeerWidget::removeFromPanel()
+{
+	qDebug() << "PeerWidget::removeFromPanel()" << m_id;
+	doRemoveFromPanel( m_id );
+}
+
 void PeerWidget::mousePressEvent(QMouseEvent *event)
 {
 	if (event->button() == Qt::LeftButton)
@@ -134,6 +145,7 @@ void PeerWidget::mouseMoveEvent(QMouseEvent *event)
 	qDebug() << "dropAction=" << dropAction;
 }
 
+#if 0
 void PeerWidget::mouseDoubleClickEvent(QMouseEvent *event)
 {
 	qDebug() << "mouseDoubleClickEvent" << event;
@@ -144,6 +156,7 @@ void PeerWidget::mouseDoubleClickEvent(QMouseEvent *event)
 		//qDebug() << m_textlbl->text();
 	}
 }
+#endif
 
 void PeerWidget::dragEnterEvent(QDragEnterEvent *event)
 {
@@ -192,5 +205,13 @@ void PeerWidget::dropEvent(QDropEvent *event)
 		qDebug() << "Unrecognized action";
 		break;
 	}
+}
+
+void PeerWidget::contextMenuEvent(QContextMenuEvent * event)
+{
+	QMenu contextMenu(this);
+	//contextMenu.addAction("&Test");
+	contextMenu.addAction(m_removeAction);
+	contextMenu.exec(event->globalPos());
 }
 

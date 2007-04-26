@@ -79,6 +79,8 @@ void SwitchBoardWindow::updatePeer(const QString & ext,
 	         m_engine, SLOT(originateCall(const QString&, const QString&)) );
 	connect( peerwidget, SIGNAL(transferCall(const QString&, const QString&)),
 	         m_engine, SLOT(transferCall(const QString&, const QString&)) );
+	connect( peerwidget, SIGNAL(doRemoveFromPanel(const QString &)),
+	         this, SLOT(removePeerFromLayout(const QString &)) );
 	QPoint pos = settings.value("layout/" + ext, QPoint(-1, -1) ).toPoint();
 	//qDebug() << " " << ext << " " << pos;
 	if(pos.x() < 0)
@@ -87,6 +89,20 @@ void SwitchBoardWindow::updatePeer(const QString & ext,
 	peer.setWidget(peerwidget);
 	peer.updateStatus(status, avail, corrname);
 	m_peerlist << peer;
+}
+
+/*!
+ *
+ */
+void SwitchBoardWindow::removePeerFromLayout(const QString & ext)
+{
+	int i;
+	for(i=0; i < m_peerlist.count(); i++) {
+		if(ext == m_peerlist[i].ext()) {
+			m_layout->setItemPosition(i, QPoint(-1, -1));
+			return;
+		}
+	}
 }
 
 /*! \brief remove a Peer

@@ -20,13 +20,15 @@ public:
 protected:
 	void mouseMoveEvent(QMouseEvent * event);
 	void mousePressEvent(QMouseEvent * event);
-	void mouseDoubleClickEvent(QMouseEvent * event);
+//	void mouseDoubleClickEvent(QMouseEvent * event);
 	void dragEnterEvent(QDragEnterEvent * event);
 	void dragMoveEvent(QDragMoveEvent * event);
 	void dropEvent(QDropEvent * event);
+	void contextMenuEvent(QContextMenuEvent *);
 signals:
 	void originateCall(const QString &, const QString &);
 	void transferCall(const QString &, const QString &);
+	void doRemoveFromPanel(const QString &);
 public slots:
 	void setBlue(int n);
 	void setCyan(int n);
@@ -37,6 +39,8 @@ public slots:
 	void setYellow(int n);
 	void setBlack(int n);
 	void setDarkGreen(int n);
+private slots:
+	void removeFromPanel();
 private:
 	QLabel * m_statelbl;	//!< Peer state display (ringing, online, ...)
 	QLabel * m_availlbl;	//!< Peer state display from XIVO CTI Client
@@ -45,6 +49,7 @@ private:
 	QPoint m_dragstartpos;	//!< drag start position
 	QString m_id;	//!< peer id : asterisk/protocol/extension
 	QString m_name;	//!< caller id to display : usualy the NAME of the person
+	QAction * m_removeAction;
 };
 
 #endif

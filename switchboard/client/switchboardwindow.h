@@ -40,6 +40,8 @@ public slots:
 			const QString & corrname);
 	void removePeer(const QString & ext);
 	void removePeers(void);
+private slots:
+	void removePeerFromLayout(const QString &);
 private:
 	//QGridLayout * m_layout;
 	PeersLayout * m_layout;	//!< Grid Layout for displaying peers
