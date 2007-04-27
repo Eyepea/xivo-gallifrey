@@ -18,6 +18,7 @@
 #include "switchboardconf.h"
 #include "callstackwidget.h"
 #include "searchpanel.h"
+#include "logwidget.h"
 
 /*! \brief Widget containing the CallStackWidget and a Title QLabel
  */
@@ -59,8 +60,14 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 	setWindowTitle("Xivo Switchboard");
 
 	m_splitter = new QSplitter(this);
+	QSplitter * leftsplitter = new QSplitter(Qt::Vertical, m_splitter);
 	QScrollArea * areaCalls = new QScrollArea(this);
-	LeftPanel * leftPanel = new LeftPanel(areaCalls, m_splitter);
+	//LeftPanel * leftPanel = new LeftPanel(areaCalls, m_splitter);
+	LeftPanel * leftPanel = new LeftPanel(areaCalls, leftsplitter);
+	//LogWidget * logwidget = new LogWidget(leftsplitter);
+	QScrollArea * areaLog = new QScrollArea(leftsplitter);
+	areaLog->setWidgetResizable(true);
+	LogWidget * logwidget = new LogWidget(areaLog);
 
 	CallStackWidget * calls = new CallStackWidget(areaCalls);
 	connect( calls, SIGNAL(changeTitle(const QString &)),

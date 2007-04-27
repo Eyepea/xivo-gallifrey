@@ -111,8 +111,20 @@ void SwitchBoardEngine::connectSocket()
  */
 void SwitchBoardEngine::sendCommand()
 {
-	m_socket->write((m_pendingcommand + /*"\r\n"*/"\n").toAscii());
+	m_socket->write((m_pendingcommand + "\r\n"/*"\n"*/).toAscii());
 	//qDebug() << m_pendingcommand;
+}
+
+void SwitchBoardEngine::processHistory(const QStringList & histlist)
+{
+	int i;
+	for(i=0; i+6<=histlist.size(); i+=6)
+	{
+		// DateTime; CallerID; duration; Status?; peer; IN/OUT
+		qDebug() << histlist[i+0] << histlist[i+1]
+		         << histlist[i+2] << histlist[i+3]
+		         << histlist[i+4] << histlist[i+5];
+	}
 }
 
 /* Slots */
@@ -246,6 +258,9 @@ void SwitchBoardEngine::socketReadyRead()
 				}
 				callsUpdated();
 				b = true;
+				// TEST !
+				m_pendingcommand = "history obelisk/SIP/103 10";
+				sendCommand();
 			} else if(list[0] == QString("callerids")) {
 				QStringList listpeers = list[1].split(";");
 				for(int i = 0 ; i < listpeers.size() - 1; i++) {
@@ -277,6 +292,8 @@ void SwitchBoardEngine::socketReadyRead()
 					QStringList liststatus = listpeers[i].split(":");
 					removePeer(liststatus[1] + "/" + liststatus[3]);
 				}
+			} else if(list[0] == QString("history")) {
+				processHistory(list[1].split(";"));
 			}
 		}
 	}

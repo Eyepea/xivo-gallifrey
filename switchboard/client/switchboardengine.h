@@ -27,6 +27,7 @@ private:
 	void connectSocket();
 	void loadSettings();	//!< load settings
 	void sendCommand();
+	void processHistory(const QStringList &);
 protected:
 	void timerEvent(QTimerEvent *event);
 public slots:
