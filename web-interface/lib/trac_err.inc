@@ -52,6 +52,11 @@ class xivo_trac_err
 			$this->_param['file'] = $param['file'];
 		else
 			$this->_param['file'] = false;
+
+		if(($this->_param['report_type'] & XIVO_TE_RTYPE_SCREEN) !== 0)
+			ini_set('display_errors',true);
+
+		ini_set('error_reporting',$this->_param['level']);
 	}
 
 	function set_param($name,$value)

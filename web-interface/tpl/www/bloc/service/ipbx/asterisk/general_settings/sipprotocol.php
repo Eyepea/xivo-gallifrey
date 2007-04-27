@@ -50,6 +50,8 @@
 
 <?=$form->text(array('desc' => $this->bbf('fm_externip'),'name' => 'externip','id' => 'it-externip','size' => 15,'value' => $this->varra('info','externip'),'default' => $element['externip']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
+<?=$form->text(array('desc' => $this->bbf('fm_localnet'),'name' => 'localnet','id' => 'it-localnet','size' => 15,'value' => $this->varra('info','localnet'),'default' => $element['localnet']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
 <?=$form->text(array('desc' => $this->bbf('fm_context'),'name' => 'context','id' => 'it-context','size' => 15,'value' => $this->varra('info','context'),'default' => $element['context']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 <?=$form->slt(array('desc' => $this->bbf('fm_musicclass'),'name' => 'musicclass','id' => 'musicclass','key' => 'category','empty' => true,'value' => $this->varra('info','musicclass'),'default' => $element['musicclass']['default']),$moh_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>

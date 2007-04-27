@@ -49,6 +49,9 @@ RelaxDTMF :
 ; fm_externip
 Adresse IP externe :
 
+; fm_localnet
+Réseau local :
+
 ; fm_context
 Contexte :
 

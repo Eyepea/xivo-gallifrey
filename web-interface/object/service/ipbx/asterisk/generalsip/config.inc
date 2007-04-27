@@ -36,6 +36,9 @@ $array['element']['relaxdtmf']['set'] = true;
 $array['element']['externip'] = array();
 $array['element']['externip']['default'] = '';
 
+$array['element']['localnet'] = array();
+$array['element']['localnet']['default'] = '';
+
 $array['element']['context'] = array();
 $array['element']['context']['default'] = '';
 
@@ -107,6 +110,7 @@ $array['filter']['tos'] = array('arrkey' => array('none','lowdelay','throughput'
 $array['filter']['dtmfmode'] = array('arrkey' => array('','rfc2833','inband','info'));
 $array['filter']['relaxdtmf'] = array('bool' => true);
 $array['filter']['externip'] = array('func' => 'xivo_filter::chk_host_ipv4_strict');
+$array['filter']['localnet'] = array('preg' => '/^[0-9\.\/]+$/','maxlen' => 128);
 $array['filter']['context'] = array('maxlen' => 128);
 $array['filter']['musicclass'] = array('maxlen' => 128);
 $array['filter']['checkmwi'] = array('cast' => 'uint','maxlen' => 4);
@@ -120,7 +124,5 @@ $array['filter']['register_password'] = array('preg' => '/^[a-z0-9_\.-]+$/i');
 $array['filter']['register_host'] = array('func' => 'xivo_filter::chk_host_ipv4_strict');
 $array['filter']['register_port'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,65535));
 $array['filter']['register_contact'] = array('set' => false,'chk' => 2,'cast' => 'uint','maxlen' => 6);
-/*
-$array['filter']['register'] = array('preg' => '#^([a-z0-9_\.-]+)(@([a-z0-9-]+)(\.[a-z0-9-]+)*(\.[a-z]{2,4})|@([1-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))?:([a-z0-9_\.-]+)(:[a-z0-9_\.-]+)?@(([a-z0-9-]+)(\.[a-z0-9-]+)*(\.[a-z]{2,4})|([1-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))(:([1-5][0-9]{1,4}|[1-9]([0-9]{1,3})?|6[0-4][0-9]{1,3}|65[0-4][0-9]{1,2}|655[0-2][0-9]|6553[0-5]))?(/[0-9]+)?$#i');
-*/
+
 ?>

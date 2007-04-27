@@ -11,6 +11,11 @@ if(isset($_QR['fm_send']) === true)
 	if($moh_list === false || isset($_QR['musicclass'],$moh_list[$_QR['musicclass']]) === false)
 		$_QR['musicclass'] = '';
 
+	$externip = $generalsip->set_chk_value('externip',$_QRY->get_qr('externip'));
+
+	if(xivo_empty($externip) === true || isset($_QR['localnet']) === false)
+		$_QR['localnet'] = '';
+
 	$generalsip->replace_val_by_name('bindport',$generalsip->set_chk_value('bindport',$_QRY->get_qr('bindport')));
 	$generalsip->replace_val_by_name('bindaddr',$generalsip->set_chk_value('bindaddr',$_QRY->get_qr('bindaddr')));
 	$generalsip->replace_val_by_name('srvlookup',$generalsip->set_chk_value('srvlookup',$_QRY->get_qr('srvlookup')));
@@ -27,6 +32,7 @@ if(isset($_QR['fm_send']) === true)
 	$generalsip->replace_val_by_name('dtmfmode',$generalsip->set_chk_value('dtmfmode',$_QRY->get_qr('dtmfmode')));
 	$generalsip->replace_val_by_name('relaxdtmf',$generalsip->set_chk_value('relaxdtmf',$_QRY->get_qr('relaxdtmf')));
 	$generalsip->replace_val_by_name('externip',$generalsip->set_chk_value('externip',$_QRY->get_qr('externip')));
+	$generalsip->replace_val_by_name('localnet',$generalsip->set_chk_value('localnet',$_QR['localnet']));
 	$generalsip->replace_val_by_name('context',$generalsip->set_chk_value('context',$_QRY->get_qr('context')));
 	$generalsip->replace_val_by_name('musicclass',$generalsip->set_chk_value('musicclass',$_QR['musicclass']));
 	$generalsip->replace_val_by_name('checkmwi',$generalsip->set_chk_value('checkmwi',$_QRY->get_qr('checkmwi')));

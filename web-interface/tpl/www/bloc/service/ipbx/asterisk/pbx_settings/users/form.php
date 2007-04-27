@@ -179,9 +179,19 @@
 	<?=$form->text(array('desc' => $this->bbf('fm_autoprov_macaddr'),'name' => 'autoprov[macaddr]','labelid' => 'autoprov-macaddr','value' => $info['autoprov']['macaddr'],'size' => 15),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 <?php
-	endif;
+	elseif(isset($autoprov_list[$info['autoprov']['vendor']]) === true):
 ?>
 
+<p id="fd-autoprov-vendormodel" class="fm-field">
+	<label id="lb-autoprov-vendormodel"><span class="fm-desc"><?=$this->bbf('fm_autoprov_vendormodel');?></span>&nbsp;<?=$autoprov_list[$info['autoprov']['vendor']]['name']?> <?=$autoprov_list[$info['autoprov']['vendor']]['model'][$info['autoprov']['model']]['label']?></label>
+</p>
+
+<p id="fd-autoprov-macaddr" class="fm-field">
+	<label id="lb-autoprov-macaddr"><span class="fm-desc"><?=$this->bbf('fm_autoprov_macaddr');?></span>&nbsp;<?=$info['autoprov']['macaddr']?></label>
+</p>
+<?php
+	endif;
+?>
 </div>
 
 <div id="sb-part-advanced" class="b-nodisplay">
