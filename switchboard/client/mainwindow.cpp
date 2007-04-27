@@ -65,9 +65,9 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 	CallStackWidget * calls = new CallStackWidget(areaCalls);
 	connect( calls, SIGNAL(changeTitle(const QString &)),
 	         leftPanel->titleLabel(), SLOT(setText(const QString &)) );
-	connect( m_engine, SIGNAL(updateCall(const QString &, const QString &, const int &, const QString &,
+	connect( m_engine, SIGNAL(updateCall(const QString &, const QString &, int, const QString &,
 					     const QString &, const QString &, const QString &)),
-		 calls, SLOT(addCall(const QString &, const QString &, const int &, const QString &,
+		 calls, SLOT(addCall(const QString &, const QString &, int, const QString &,
 				     const QString &, const QString &, const QString &)) );
 	connect( m_engine, SIGNAL(callsUpdated()),
 	         calls, SLOT(updateDisplay()) );

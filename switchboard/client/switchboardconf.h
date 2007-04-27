@@ -8,6 +8,7 @@ class SwitchBoardWindow;
 class QLineEdit;
 class QSpinBox;
 class QCheckBox;
+class QComboBox;
 
 class SwitchBoardConfDialog : public QDialog
 {
@@ -24,6 +25,9 @@ private:
 	QLineEdit * m_port;
 	QSpinBox * m_widthsb;
 	QCheckBox * m_autoconnect;
+	QLineEdit * m_asterisk;
+	QComboBox * m_protocombo;
+	QLineEdit * m_ext;
 };
 
 #endif

@@ -1,3 +1,4 @@
+/* (c) 2007 Proformatique */
 #include <QApplication>
 #include <QTranslator>
 #include <QLocale>
@@ -7,6 +8,7 @@
 
 int main(int argc, char * * argv)
 {
+//	QApplication::setStyle(new SwitchboardStyle());
 	QCoreApplication::setOrganizationName("XivoCTI");
 	QCoreApplication::setOrganizationDomain("proformatique.com");
 	QCoreApplication::setApplicationName("XivoSwitchBoard");

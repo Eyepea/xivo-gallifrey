@@ -17,6 +17,12 @@ public:
 	void setAutoconnect(bool b) { m_autoconnect = b;};
 	bool autoconnect() const {return m_autoconnect;};
 	void saveSettings();	//!< save settings
+	void setAsterisk(const QString & ast) { m_asterisk = ast; };
+	const QString & asterisk() const { return m_asterisk; };
+	void setProtocol(const QString & proto) { m_protocol = proto; };
+	const QString & protocol() const { return m_protocol; };
+	void setExtension(const QString & ext) { m_extension = ext; };
+	const QString & extension() const { return m_extension; };
 private:
 	void connectSocket();
 	void loadSettings();	//!< load settings
@@ -64,6 +70,10 @@ private:
 	bool m_autoconnect;	//!< Autoconnect to server at startup ?
 	QString m_pendingcommand;	//!< command to be sent to the server.
 	QHash<QString, QString> m_callerids;
+	// poste à utiliser pour les commandes "DIAL"
+	QString m_asterisk;
+	QString m_protocol;
+	QString m_extension;
 };
 
 #endif

@@ -54,6 +54,9 @@ void SwitchBoardEngine::loadSettings()
 	m_host = settings.value("engine/serverhost").toString();
 	m_port = settings.value("engine/serverport", 5081).toUInt();
 	m_autoconnect = settings.value("engine/autoconnect", false).toBool();
+	m_asterisk = settings.value("engine/asterisk").toString();
+	m_protocol = settings.value("engine/protocol").toString();
+	m_extension = settings.value("engine/extension").toString();
 }
 
 /*!
@@ -65,6 +68,9 @@ void SwitchBoardEngine::saveSettings()
 	settings.setValue("engine/serverhost", m_host);
 	settings.setValue("engine/serverport", m_port);
 	settings.setValue("engine/autoconnect", m_autoconnect);
+	settings.setValue("engine/asterisk", m_asterisk);
+	settings.setValue("engine/protocol", m_protocol);
+	settings.setValue("engine/extension", m_extension);
 }
 
 /* \brief set server address
