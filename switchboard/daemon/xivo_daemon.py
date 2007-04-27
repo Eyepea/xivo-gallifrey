@@ -73,7 +73,7 @@
 # - Login - TCP - (the clients connect to it to login)
 # - KeepAlive - UDP - (the clients send datagram to it to inform
 #                      of their current state)
-# - IdentRequest - TCP - offer a service to ask for localization and 
+# - IdentRequest - TCP - offer a service to ask for localization and
 #                        state of the clients.
 # we use the SocketServer "framework" to implement the "services"
 # see http://docs.python.org/lib/module-SocketServer.html
@@ -96,13 +96,15 @@
 #
 
 import ConfigParser
-import SocketServer
 import getopt
+import MySQLdb
 import os
 import random
 import select
 import signal
 import socket
+import SocketServer
+import sqlite
 import sys
 import threading
 import time
@@ -158,7 +160,7 @@ def daemonize():
 # \param string the string to log
 # \return zero
 # \sa log_debug
-def varlog(string): 
+def varlog(string):
 	global logfile
 	if logfile:
 		logfile.write(time.strftime("%b %2d %H:%M:%S ", time.localtime()) + string + "\n")
@@ -183,7 +185,7 @@ def log_debug(string):
 # \param sipaccount the name of the reserved sip account (typically xivosb)
 # \return the new phone numbers list
 # \sa update_sipnumlist
-def updateuserlistfromurl(astn, url, sipaccount):
+def update_userlist_fromurl(astn, url, sipaccount):
 	numlist = {}
 	try:
 		f = urllib.urlopen(url)
@@ -195,21 +197,81 @@ def updateuserlistfromurl(astn, url, sipaccount):
 			# remove leading/tailing whitespaces
 			line = line.strip()
 			l = line.split('|')
+			fullname = ""
+			firstname = ""
+			lastname = ""
+			if len(l) > 7:
+				fullname = l[7]
+			if len(l) > 8:
+				firstname = l[8]
+			if len(l) > 9:
+				lastname = l[9]
 			# line is protocol | username | password | rightflag |
 			#         phone number | initialized | disabled(=1) | callerid
                         if l[0] == "sip" and l[5] == "1" and l[6] == "0" and l[1] != sipaccount and l[4] != "":
-				numlist["SIP/" + l[4]] = l[7]
+				numlist["SIP/" + l[4]] = fullname, firstname, lastname
 				adduser(astn, l[0]+l[4], l[2])
                         elif l[0] == "iax" and l[5] == "1" and l[6] == "0":
-				numlist["IAX2/" + l[4]] = l[7]
+				numlist["IAX2/" + l[4]] = fullname, firstname, lastname
                         elif l[0] == "misdn" and l[5] == "1" and l[6] == "0":
-				numlist["mISDN/" + l[4]] = l[7]
+				numlist["mISDN/" + l[4]] = fullname, firstname, lastname
                         elif l[0] == "zap" and l[5] == "1" and l[6] == "0":
-				numlist["Zap/" + l[4]] = l[7]
+				numlist["Zap/" + l[4]] = fullname, firstname, lastname
 				adduser(astn, l[0]+l[4], l[2])
 	finally:
 		f.close()
+
 	return numlist
+
+
+## \brief Function to load the customer file.
+# SIP, Zap, mISDN and IAX2 are taken into account there.
+# There would remain MGCP, CAPI, h323, ...
+# \param url the url where lies the customer list, it can be file:/ as well as http://
+# \return the new phone numbers list
+# \sa update_sipnumlist
+def update_customers_fromurl(astn, url):
+	try:
+		f = urllib.urlopen(url)
+	except Exception, e:
+		log_debug(configs[astn].astid + " : unable to open URL : " + url + " " + str(e))
+		return True
+	try:
+		for line in f:
+			# remove leading/tailing whitespaces
+			line = line.strip()
+			l = line.split('|')
+			# line is number | customer name
+			customerbase[l[0]] = l[1]
+	finally:
+		f.close()
+	return True
+
+
+## \brief Function that fetches the call history into a database
+# \param astn the asterisk to connect to
+# \param sipnum the phone number
+# \param nlines the number of lines to fetch for the given phone
+def update_history_call(astn, sipnum, nlines):
+	results = []
+	try:
+		con = MySQLdb.connect(host = configs[astn].remoteaddr,
+				      port = 3306,
+				      user = "asterisk",
+				      passwd = "asterisk",
+				      db = "asterisk")
+		cursor = con.cursor()
+		table = "cdr"
+		sql = "select * from " + table + " where ((src = " + sipnum + \
+		      ") or (dst = " + sipnum + ")) order by calldate desc limit " + nlines + ";"
+		cursor.execute(sql)
+		results = cursor.fetchall()
+		con.close()
+
+	except Exception, e:
+		log_debug("Connection to MySQL failed")
+
+	return results
 
 
 ## \brief Extracts the main SIP properties from a received packet
@@ -349,6 +411,7 @@ class AMIClass:
 			if chunk['Event'] == check:
 				break
 		return resp
+	# \brief Logins to the AMI.
 	def login(self):
 		try:
 			self.sendcommand('login',
@@ -418,6 +481,19 @@ class AMIClass:
 		except self.AMIError, e:
 			return False
 
+
+## \brief Builds the full list of customers in order to send them to the requesting client.
+# This should be done after a command called "customers".
+# \return a string containing the full customers list
+# \sa manage_tcp_connection
+def build_customers():
+	fullstat = "customers="
+	for num in customerbase:
+		fullstat += num + "|" + customerbase[num] + ";"
+	fullstat += "\n"
+	return fullstat
+
+
 ## \brief Builds the full list of callerIDs in order to send them to the requesting client.
 # This should be done after a command called "callerid".
 # \return a string containing the full callerIDs list
@@ -432,7 +508,9 @@ def build_callerids():
 			phoneinfo = "cid:" + plist[n].astid + ":" \
 				    + plist[n].normal[phonenum].tech + ":" \
 				    + plist[n].normal[phonenum].phonenum + ":" \
-				    + plist[n].normal[phonenum].callerid
+				    + plist[n].normal[phonenum].calleridfull + ":" \
+				    + plist[n].normal[phonenum].calleridfirst + ":" \
+				    + plist[n].normal[phonenum].calleridlast
 			fullstat += phoneinfo + ";"
 	fullstat += "\n"
 	return fullstat
@@ -591,6 +669,11 @@ def manage_tcp_connection(connid, allow_events):
 			connid[0].send(build_callerids())
 		except Exception, e:
 			log_debug("UI connection : a problem occured when sending to " + str(connid[0]) + " " + str(e))
+        elif usefulmsg == "customers":
+		try:
+			connid[0].send(build_customers())
+		except Exception, e:
+			log_debug("UI connection : a problem occured when sending to " + str(connid[0]) + " " + str(e))
 	elif usefulmsg == "keepalive":
 		try:
 			connid[0].send("keepalive=\n")
@@ -670,11 +753,31 @@ def manage_tcp_connection(connid, allow_events):
 									connid[0].send("asterisk=transfer KO\n")
 			else:
 				connid[0].send("asterisk=originate or transfer KO : asterisk id mismatch\n")
+		elif len(l) == 3 and l[0] == 'history':
+			idassrc = -1
+			assrc = l[1].split("/")[0]
+			if assrc in asteriskr: idassrc = asteriskr[assrc]
+			if idassrc == -1:
+				connid[0].send("asterisk=hangup KO : no such asterisk id\n")
+			else:
+				phone, channel = split_from_ui(l[1])
+				hist = update_history_call(idassrc, phone.split("/")[1], l[2])
+				repstr = "history="
+				separ = ";"
+				for x in hist:
+					repstr = repstr + str(x[0]) + separ + x[1] \
+						 + separ + str(x[10]) + separ + x[11]
+					if phone.split("/")[1] == x[2]:
+						repstr = repstr + separ + "OUT"
+					elif phone.split("/")[1] == x[3]:
+						repstr = repstr + separ + "IN"
+					else:
+						repstr = repstr + separ + "UNKNOWN"
+					repstr = repstr + ";"
+				connid[0].send(repstr + "\n")
 		elif allow_events == False: # i.e. if PHP-style connection
 			n = -1
-			for i in items_asterisks:
-				if configs[i].ipaddress_php == connid[1]:
-					n = i
+			if connid[1] in ip_reverse_php: n = ip_reverse_php[connid[1]]
 			if n == -1:
 				connid[0].send("XIVO CLI:CLIENT NOT ALLOWED\n")
 			else:
@@ -847,6 +950,7 @@ def getvalue(lineami, field):
 		ret = s2
 	return ret
 
+
 ## \brief Handling of AMI events occuring in Events=on mode.
 # \param astnum the asterisk numerical identifier
 # \param idata the data read from the AMI we want to parse
@@ -886,6 +990,7 @@ def handle_ami_event(astnum, idata):
 			cause = getvalue(x, "Cause-txt")
 			handle_ami_event_hangup(listkeys, astnum, chan, cause)
 		elif x.find("Reload;") == 7:
+			# warning : "reload" as well as "reload manager" can appear here
 			log_debug("AMI:Reload: " + plist[astnum].astid)
 		elif x.find("Shutdown;") == 7:
 			log_debug("AMI:Shutdown: " + plist[astnum].astid)
@@ -905,7 +1010,8 @@ def handle_ami_event(astnum, idata):
 		elif x.find("AgentCalled;") == 7: pass
 		elif x.find("ParkedCallsComplete;") == 7: pass
 		elif x.find("ParkedCalled;") == 7: pass
-		elif x.find("Cdr;") == 7: pass
+		elif x.find("Cdr;") == 7:
+			log_debug("AMI:Cdr: " + plist[astnum].astid + " : " + x)
 		elif x.find("Alarm;") == 7: pass
 		elif x.find("AlarmClear;") == 7: pass
 		elif x.find("MeetmeJoin;") == 7:
@@ -1088,7 +1194,7 @@ def handle_ami_status(astnum, idata):
 			else:
 				log_debug("AMI::Status : " + x)
 		else:
-			log_debug("AMI: _status_ " + x)
+			log_debug("AMI:_status_: " + plist[astnum].astid + " : " + x)
 
 
 ## \brief Sends a SIP register + n x SIP subscribe messages.
@@ -1160,7 +1266,7 @@ def update_amisocks(astnum):
 # If the AMI sockets are dead, a reconnection is also attempted here.
 # \param astnum the asterisk numerical identifier
 # \return none
-# \sa updateuserlistfromurl
+# \sa update_userlist_fromurl
 def update_sipnumlist(astnum):
 	global plist, configs
 
@@ -1176,6 +1282,7 @@ def update_sipnumlist(astnum):
 				sipnumber = "SIP/" + user.split("sip")[1]
 				if sipnumber in plist[astnum].normal:
 					plist[astnum].normal[sipnumber].set_imstat("unknown")
+					plist[astnum].normal[sipnumber].update_time()
 					update_GUI_clients(astnum, sipnumber, "kfc-dsc")
 				log_debug(plist[astnum].astid + " : timeout reached for " + sipnumber)
 	userlist_lock.release()
@@ -1185,9 +1292,10 @@ def update_sipnumlist(astnum):
 
 	sipnumlistold = plist[astnum].normal.keys()
 	sipnumlistold.sort()
-	sipnuml = updateuserlistfromurl(astnum, configs[astnum].userlisturl, configs[astnum].mysipname)
+	sipnuml = update_userlist_fromurl(astnum, configs[astnum].userlisturl, configs[astnum].mysipname)
+	update_customers_fromurl(astnum, "file:/home/corentin/customers.txt")
 	for x in configs[astnum].extrachannels.split(","):
-		if x != "": sipnuml[x] = x
+		if x != "": sipnuml[x] = [x, "", ""]
 	sipnumlistnew = sipnuml.keys()
 	sipnumlistnew.sort()
 	if sipnumlistnew != sipnumlistold:
@@ -1236,6 +1344,7 @@ def connect_to_AMI(address, loginname, password):
 		del lAMIsock
 		lAMIsock = False
 	return lAMIsock
+
 
 ## \class LocalChannel
 # \brief Properties of a temporary "Local" channel.
@@ -1365,7 +1474,9 @@ class LineProp:
 		self.imstat = "unknown"  # XMPP / Instant Messaging status
 		self.voicemail = ""  # Voicemail status
 		self.queueavail = "" # Availability as a queue member
-		self.callerid = "nobody"
+		self.calleridfull = "nobody"
+		self.calleridfirst = "nobody"
+		self.calleridlast = "nobody"
 	def set_tech(self, itech):
 		self.tech = itech
 	def set_phonenum(self, iphonenum):
@@ -1377,7 +1488,9 @@ class LineProp:
 	def set_lasttime(self, ilasttime):
 		self.lasttime = ilasttime
 	def set_callerid(self, icallerid):
-		self.callerid = icallerid
+		self.calleridfull  = icallerid[0]
+		self.calleridfirst = icallerid[1]
+		self.calleridlast  = icallerid[2]
 	##  \brief Updates the time elapsed on a channel according to current time.
 	def update_time(self):
 		nowtime = time.time()
@@ -1593,6 +1706,7 @@ class LoginHandler(SocketServer.StreamRequestHandler):
 		if astnum >= 0:
 			sipnumber = "SIP/" + user.split("sip")[1]
 			plist[astnum].normal[sipnumber].set_imstat(state)
+			plist[astnum].normal[sipnumber].update_time()
 			update_GUI_clients(astnum, sipnumber, "kfc-lin")
 
 		#print userlist
@@ -1610,7 +1724,8 @@ class IdentRequestHandler(SocketServer.StreamRequestHandler):
 			user = list0[1]
 			userlist_lock.acquire()
 			try:
-				e = finduser(0, user) #### define how to set asterisk remote id ?
+				astnum = ip_reverse_sht[self.client_address[0]]
+				e = finduser(astnum, user)
 				if e == None:
 					retline = 'ERROR USER <' + user + '> NOT FOUND\r\n'
 				else:
@@ -1669,6 +1784,7 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
 					sipnumber = "SIP/" + user.split("sip")[1]
 					if sipnumber in plist[astnum].normal:
 						plist[astnum].normal[sipnumber].set_imstat("unkown")
+						plist[astnum].normal[sipnumber].update_time()
 						update_GUI_clients(astnum, sipnumber, "kfc-dcc")
 				userlist_lock.release()
 			elif len(list) < 4 or list[0] != 'ALIVE' or list[2] != 'SESSIONID':
@@ -1681,7 +1797,7 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
 				state = "undefinedstate"
 				if len(list) >= 6:
 					state = list[5]
-				e = finduser(astnum, user) #### define how to set asterisk remote id ?
+				e = finduser(astnum, user)
 				if e == None:
 					response = 'ERROR user unknown\r\n'
 				else:
@@ -1710,6 +1826,7 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
 				sipnumber = "SIP/" + user.split("sip")[1]
 				if sipnumber in plist[astnum].normal:
 					plist[astnum].normal[sipnumber].set_imstat(state)
+					plist[astnum].normal[sipnumber].update_time()
 					update_GUI_clients(astnum, sipnumber, "kfc-kah")
 
 
@@ -1741,7 +1858,7 @@ except Exception, e:
 xivoconffile = "/etc/asterisk/xivo_daemon.conf"
 
 opts, args = getopt.getopt(sys.argv[1:], "dc:", ["daemon", "config="])
-for opt, arg in opts:            
+for opt, arg in opts:
         if opt == "-c":
 		xivoconffile = arg
 
@@ -1783,6 +1900,8 @@ configs = []
 save_for_next_packet_events = []
 save_for_next_packet_status = []
 n = 0
+ip_reverse_php = {}
+ip_reverse_sht = {}
 
 for i in xivoconf.sections():
 	if i != "general":
@@ -1798,6 +1917,8 @@ for i in xivoconf.sections():
 					      port_switchboard_base_sip + n,
 					      int(xivoconf.get(i, "sip_port")),
 					      xivoconf.get(i, "sip_presence_account")))
+		ip_reverse_sht[xivoconf.get(i, "ipaddress")] = n
+		ip_reverse_php[xivoconf.get(i, "ipaddress_php")] = n
 		save_for_next_packet_events.append("")
 		save_for_next_packet_status.append("")
 		n += 1
@@ -1830,8 +1951,9 @@ AMIsocks = []
 AMIcomms = []
 AMIclasssock = []
 asteriskr = {}
+customerbase = {}
 
-# We have three sockets to listen to so we cannot use the 
+# We have three sockets to listen to so we cannot use the
 # very easy to use SocketServer.serve_forever()
 # So select() is what we need. The SocketServer.handle_request() calls
 # won't block the execution. In case of the TCP servers, they will
@@ -1931,14 +2053,17 @@ while not askedtoquit:
 		res = [j for j in i if j in AMIsocks][0]
 		for n in items_asterisks:
 			if AMIsocks[n] is res: break
-		a = AMIsocks[n].recv(bufsize_any)
-		if len(a) == 0: # end of connection from server side : closing socket
-			log_debug(configs[n].astid + " : AMI (events = on)  : CLOSING")
-			AMIsocks[n].close()
-			ins.remove(AMIsocks[n])
-			AMIsocks[n] = -1
-		else:
-			handle_ami_event(n, a)
+		try:
+			a = AMIsocks[n].recv(bufsize_any)
+			if len(a) == 0: # end of connection from server side : closing socket
+				log_debug(configs[n].astid + " : AMI (events = on)  : CLOSING")
+				AMIsocks[n].close()
+				ins.remove(AMIsocks[n])
+				AMIsocks[n] = -1
+			else:
+				handle_ami_event(n, a)
+		except Exception, e:
+			pass
 	# these AMI connections are used in order to manage AMI commands without events
 	elif [j for j in i if j in AMIcomms]:
 		res = [j for j in i if j in AMIcomms][0]
@@ -1953,7 +2078,7 @@ while not askedtoquit:
 				AMIcomms[n] = -1
 			else:
 				handle_ami_status(n, a)
-		except:
+		except Exception, e:
 			pass
 	# the new UI (SB) connections are catched here
         elif UIsock in i:
