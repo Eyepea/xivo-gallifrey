@@ -38,7 +38,7 @@ $array['element']['canreinvite']['default'] = 'yes';
 $array['element']['canreinvite']['set'] = true;
 
 $array['element']['insecure'] = array();
-$array['element']['insecure']['value'] = array('no','yes');
+$array['element']['insecure']['value'] = array('no','very');
 $array['element']['insecure']['default'] = 'no';
 $array['element']['insecure']['set'] = true;
 
@@ -82,7 +82,7 @@ $array['element']['host-dynamic']['unset'] = true;
 $array['filter'] = array();
 $array['filter']['name'] = array('maxlen' => 80);
 $array['filter']['username'] = array('set' => false,'chk' => 2,'maxlen' => 80);
-$array['filter']['secret'] = array('maxlen' => 80);
+$array['filter']['secret'] = array('set' => false,'chk' => 2,'maxlen' => 80);
 $array['filter']['callerid'] = array('set' => false,'chk' => 2,'maxlen' => 80);
 $array['filter']['context'] = array('set' => false,'chk' => 2,'maxlen' => 80);
 $array['filter']['call-limit'] = array('set' => false,'chk' => 2,'between' => array(0,30));

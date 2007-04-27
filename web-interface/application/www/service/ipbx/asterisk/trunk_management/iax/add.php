@@ -81,8 +81,8 @@ do
 	if($register !== '' && ($registerid = $generaliax->add_name_val('register',$register)) === false)
 		$registerid = 0;
 
-	$result['registerid'] = $registerid;
-	$result['trunkid'] = $trunkid;
+	$result['tfeatures']['registerid'] = $registerid;
+	$result['tfeatures']['trunkid'] = $trunkid;
 
 	if($tfeatures->add($result['tfeatures']) === false)
 	{
