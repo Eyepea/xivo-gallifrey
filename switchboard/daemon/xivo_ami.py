@@ -24,11 +24,20 @@ def ami_socket_login(raddr, amiport, loginname, passname, events):
 	return sockid
 
 
-## \brief Sends a Status command to the AMI.
+## \brief Sends a Status request to the AMI.
 def ami_socket_status(sockid):
 	"""Sends a Status command to the socket sockid"""
 	try:
 		sockid.send("Action: Status\r\n\r\n")
+		return True
+	except:
+		return False
+
+## \brief Sends a Command to the AMI.
+def ami_socket_command(sockid, command):
+	"""Sends a <command> command to the socket sockid"""
+	try:
+		sockid.send("Action: Command\r\nCommand: " + command + "\r\n\r\n")
 		return True
 	except:
 		return False

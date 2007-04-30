@@ -99,6 +99,7 @@ import ConfigParser
 import getopt
 import MySQLdb
 import os
+import pgdb
 import random
 import select
 import signal
@@ -255,18 +256,18 @@ def update_customers_fromurl(astn, url):
 def update_history_call(astn, sipnum, nlines):
 	results = []
 	try:
-		con = MySQLdb.connect(host = configs[astn].remoteaddr,
-				      port = 3306,
-				      user = "asterisk",
-				      passwd = "asterisk",
-				      db = "asterisk")
-		cursor = con.cursor()
+		conn = MySQLdb.connect(host = configs[astn].remoteaddr,
+				       port = 3306,
+				       user = "asterisk",
+				       passwd = "asterisk",
+				       db = "asterisk")
+		cursor = conn.cursor()
 		table = "cdr"
-		sql = "select * from " + table + " where ((src = " + sipnum + \
-		      ") or (dst = " + sipnum + ")) order by calldate desc limit " + nlines + ";"
+		sql = "SELECT * FROM %s WHERE ((src = %s) or (dst = %s)) ORDER BY calldate DESC LIMIT %s;" \
+		      %(table,sipnum,sipnum,nlines)
 		cursor.execute(sql)
 		results = cursor.fetchall()
-		con.close()
+		conn.close()
 
 	except Exception, e:
 		log_debug("Connection to MySQL failed")
@@ -765,14 +766,14 @@ def manage_tcp_connection(connid, allow_events):
 				repstr = "history="
 				separ = ";"
 				for x in hist:
-					repstr = repstr + str(x[0]) + separ + x[1] \
+					repstr = repstr + x[0].isoformat() + separ + x[1] \
 						 + separ + str(x[10]) + separ + x[11]
 					if phone.split("/")[1] == x[2]:
-						repstr = repstr + separ + "OUT"
+						repstr = repstr + separ + x[3] + separ + "OUT"
 					elif phone.split("/")[1] == x[3]:
-						repstr = repstr + separ + "IN"
+						repstr = repstr + separ + x[2] + separ + "IN"
 					else:
-						repstr = repstr + separ + "UNKNOWN"
+						repstr = repstr + separ + separ + "UNKNOWN"
 					repstr = repstr + ";"
 				connid[0].send(repstr + "\n")
 		elif allow_events == False: # i.e. if PHP-style connection
@@ -999,38 +1000,78 @@ def handle_ami_event(astnum, idata):
 			qname = getvalue(x, "Queue")
 			if len(clid) > 0:
 				for k in tcpopens_sb:
-					k[0].send("asterisk=<" + clid + "> is calling the Queue <" + qname + ">\n")
+					k[0].send("asterisk=<%s> is calling the Queue <%s>\n" %(clid, qname))
 		elif x.find("PeerStatus;") == 7:
 			# <-> register's ? notify's ?
 			pass
-		elif x.find("Agentlogin;") == 7: pass
-		elif x.find("Agentlogoff;") == 7: pass
-		elif x.find("Agentcallbacklogin;") == 7: pass
-		elif x.find("Agentcallbacklogoff;") == 7: pass
-		elif x.find("AgentCalled;") == 7: pass
-		elif x.find("ParkedCallsComplete;") == 7: pass
-		elif x.find("ParkedCalled;") == 7: pass
+		elif x.find("Agentlogin;") == 7:
+			log_debug("//AMI:Agentlogin// %s : %s" %(plist[astnum].astid, x))
+		elif x.find("Agentlogoff;") == 7:
+			log_debug("//AMI:Agentlogoff// %s : %s" %(plist[astnum].astid, x))
+		elif x.find("Agentcallbacklogin;") == 7:
+			log_debug("//AMI:Agentcallbacklogin// %s : %s" %(plist[astnum].astid, x))
+		elif x.find("Agentcallbacklogoff;") == 7:
+			log_debug("//AMI:Agentcallbacklogoff// %s : %s" %(plist[astnum].astid, x))
+		elif x.find("AgentCalled;") == 7:
+			log_debug("//AMI:AgentCalled// %s : %s" %(plist[astnum].astid, x))
+		elif x.find("ParkedCallsComplete;") == 7:
+			log_debug("//AMI:ParkedCallsComplete// %s : %s" %(plist[astnum].astid, x))
+		elif x.find("ParkedCalled;") == 7:
+			log_debug("//AMI:ParkedCalled// %s : %s" %(plist[astnum].astid, x))
 		elif x.find("Cdr;") == 7:
-			log_debug("AMI:Cdr: " + plist[astnum].astid + " : " + x)
-		elif x.find("Alarm;") == 7: pass
-		elif x.find("AlarmClear;") == 7: pass
+			log_debug("//AMI:Cdr// %s : %s" %(plist[astnum].astid, x))
+		elif x.find("Alarm;") == 7:
+			log_debug("//AMI:Alarm// %s : %s" %(plist[astnum].astid, x))
+		elif x.find("AlarmClear;") == 7:
+			log_debug("//AMI:AlarmClear// %s : %s" %(plist[astnum].astid, x))
 		elif x.find("MeetmeJoin;") == 7:
-			log_debug("AMI:MeetmeJoin: " + plist[astnum].astid + " : " + x)
+			channel = getvalue(x, "Channel")
+			meetme = getvalue(x, "Meetme")
+			usernum = getvalue(x, "Usernum")
+			log_debug("AMI:MeetmeJoin %s : %s %s %s"
+				  %(plist[astnum].astid, channel, meetme, usernum))
 		elif x.find("MeetmeLeave;") == 7:
-			log_debug("AMI:MeetmeLeave: " + plist[astnum].astid + " : " + x)
-		elif x.find("ExtensionStatus;") == 7: pass
+			channel = getvalue(x, "Channel")
+			meetme = getvalue(x, "Meetme")
+			usernum = getvalue(x, "Usernum")
+			log_debug("AMI:MeetmeLeave %s : %s %s %s"
+				  %(plist[astnum].astid, channel, meetme, usernum))
+		elif x.find("ExtensionStatus;") == 7:
+			exten   = getvalue(x, "Exten")
+			context = getvalue(x, "Context")
+			status  = getvalue(x, "Status")
+			log_debug("AMI:ExtensionStatus: %s : %s %s %s"
+				  %(plist[astnum].astid, exten, context, status))
+			# QueueMemberStatus ExtensionStatus
+			#                 0                  AST_DEVICE_UNKNOWN
+			#                 1               0  AST_DEVICE_NOT_INUSE  /  libre
+			#                 2               1  AST_DEVICE IN USE     / en ligne
+			#                 3                  AST_DEVICE_BUSY
+			#                                 4  AST_EXTENSION_UNAVAILABLE ?
+			#                 5                  AST_DEVICE_UNAVAILABLE
+			#                 6 AST_EXTENSION_RINGING = 8  appele
 		elif x.find("OriginateSuccess;") == 7: pass
 		elif x.find("OriginateFailure;") == 7:
 			log_debug("AMI:OriginateFailure: " + plist[astnum].astid + \
 				  " - reason=" + getvalue(x, "Reason"))
+			#define AST_CONTROL_HANGUP              1
+			#define AST_CONTROL_RING                2
+			#define AST_CONTROL_RINGING             3
+			#define AST_CONTROL_ANSWER              4
+			#define AST_CONTROL_BUSY                5
+			#define AST_CONTROL_TAKEOFFHOOK         6
+			#define AST_CONTROL_OFFHOOK             7
+			#define AST_CONTROL_CONGESTION          8
+			#define AST_CONTROL_FLASH               9
+			#define AST_CONTROL_WINK                10
 		elif x.find("Rename;") == 7:
 			# appears when there is a transfer
 			channel_old = getvalue(x, "Oldname")
 			channel_new = getvalue(x, "Newname")
 			if channel_old.find("<MASQ>") < 0 and channel_new.find("<MASQ>") < 0 and \
 			       is_normal_channel(channel_old) and is_normal_channel(channel_new):
-				log_debug("AMI:Rename:N: " + plist[astnum].astid + " : " + \
-					  "old=" + channel_old + " new=" + channel_new)
+				log_debug("AMI:Rename:N: %s : old=%s new=%s"
+					  %(plist[astnum].astid, channel_old, channel_new))
 				phone_old = channel_old.split("-")[0]
 				phone_new = channel_new.split("-")[0]
 
@@ -1044,9 +1085,13 @@ def handle_ami_event(astnum, idata):
 					if phone_new in listkeys:
 						plist[astnum].normal[phone_new].chann[channel_new].setChannelPeer(channel_p1)
 						update_GUI_clients(astnum, phone_new, "ami-er1")
+					else:
+						pass
 					if phone_p1 in listkeys:
 						plist[astnum].normal[phone_p1].chann[channel_p1].setChannelPeer(channel_new)
 						update_GUI_clients(astnum, phone_p1, "ami-er2")
+					else:
+						pass
 				else:
 					# A -> B  then B' transfers to C
 					# in this case old = B' and new = A
@@ -1064,8 +1109,8 @@ def handle_ami_event(astnum, idata):
 						plist[astnum].normal[phone_p1].chann[channel_p1].setChannelNum(plist[astnum].normal[phone_p2].chann[channel_p2].getChannelNum())
 						update_GUI_clients(astnum, phone_p1, "ami-er4")
 			else:
-				log_debug("AMI:Rename:A: " + plist[astnum].astid + " : " + \
-					  "old=" + channel_old + " new=" + channel_new)
+				log_debug("AMI:Rename:A: %s : old=%s new=%s"
+					  %(plist[astnum].astid, channel_old, channel_new))
 		elif x.find("Newstate;") == 7:
 			chan    = getvalue(x, "Channel")
 			clid    = getvalue(x, "CallerID")
@@ -1121,8 +1166,10 @@ def handle_ami_event(astnum, idata):
 			mwi_string = getvalue(x,"Mailbox") + " waiting=" + getvalue(x,"Waiting") \
 				     + "; new=" + getvalue(x, "New") + "; old=" + getvalue(x, "Old")
 			log_debug("AMI:MessageWaiting: " + plist[astnum].astid + " : " + mwi_string)
-		elif x.find("QueueParams;") == 7: pass
-		elif x.find("QueueMember;") == 7: pass
+		elif x.find("QueueParams;") == 7:
+			log_debug("//AMI:QueueParams// %s : %s" %(plist[astnum].astid, x))
+		elif x.find("QueueMember;") == 7:
+			log_debug("//AMI:QueueMember// %s : %s" %(plist[astnum].astid, x))
 		elif x.find("QueueMemberStatus;") == 7:
 			queuenameq = getvalue(x, "Queue")
 			location   = getvalue(x, "Location")
@@ -1193,6 +1240,9 @@ def handle_ami_status(astnum, idata):
 				log_debug("AMI::Status FROM: " + getvalue(x, "Channel"))
 			else:
 				log_debug("AMI::Status : " + x)
+		elif x.find("Response: Follows;Privilege: Command;") == 0:
+			for y in x.split("Response: Follows;Privilege: Command;")[1].split("\n"):
+				log_debug("AMI:Response: " + plist[astnum].astid + " : " + y)
 		else:
 			log_debug("AMI:_status_: " + plist[astnum].astid + " : " + x)
 
@@ -1241,6 +1291,9 @@ def update_amisocks(astnum):
 		if AMIcomms[astnum] != -1:
 			ins.append(als0)
 			log_debug(configs[astnum].astid + " : AMI (events = off) : connected")
+			"""Clears the channels before requesting a new status"""
+			for x in plist[astnum].normal.keys():
+				plist[astnum].normal[x].clear_channels()
 			ret = xivo_ami.ami_socket_status(AMIcomms[astnum])
 			if not ret:
 				log_debug(configs[astnum].astid + " : could not send status command")
@@ -1257,6 +1310,16 @@ def update_amisocks(astnum):
 		if AMIsocks[astnum] != -1:
 			ins.append(als1)
 			log_debug(configs[astnum].astid + " : AMI (events = on)  : connected")
+			"""Clears the channels before requesting a new status"""
+			for x in plist[astnum].normal.keys():
+				plist[astnum].normal[x].clear_channels()
+			ret = xivo_ami.ami_socket_status(AMIcomms[astnum])
+			#xivo_ami.ami_socket_command(AMIcomms[astnum], "show channeltypes")
+			#xivo_ami.ami_socket_command(AMIcomms[astnum], "show uptime")
+			#xivo_ami.ami_socket_command(AMIcomms[astnum], "show version")
+			#xivo_ami.ami_socket_command(AMIcomms[astnum], "meetme")
+			if not ret:
+				log_debug(configs[astnum].astid + " : could not send status command")
 		else:
 			log_debug(configs[astnum].astid + " : AMI (events = on)  : could NOT connect")
 
@@ -1497,7 +1560,9 @@ class LineProp:
 		for ic in self.chann:
 			dtime = int(nowtime - self.chann[ic].getTime())
 			self.chann[ic].updateDeltaTime(dtime)
-
+	##  \brief Removes all channels.
+	def clear_channels(self):
+		self.chann = {}
 	##  \brief Adds a channel or changes its properties.
 	# If the values of status, itime, peerch and/or peernum are empty,
 	# they are not updated : the previous value is kept.
