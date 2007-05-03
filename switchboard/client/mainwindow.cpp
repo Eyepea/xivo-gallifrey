@@ -7,6 +7,7 @@
 #include <QMessageBox>
 #include <QSplitter>
 #include <QScrollArea>
+#include <QLineEdit>
 #include <QLabel>
 #include <QSettings>
 #include <QCloseEvent>
@@ -19,6 +20,7 @@
 #include "callstackwidget.h"
 #include "searchpanel.h"
 #include "logwidget.h"
+#include "dialpanel.h"
 
 /*! \brief Widget containing the CallStackWidget and a Title QLabel
  */
@@ -68,6 +70,11 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 	QScrollArea * areaLog = new QScrollArea(leftsplitter);
 	areaLog->setWidgetResizable(true);
 	LogWidget * logwidget = new LogWidget(areaLog);
+
+ 	QScrollArea * dialArea = new QScrollArea(leftsplitter);
+ 	dialArea->setWidgetResizable(false);
+ 	DialPanel * dialpanel = new DialPanel(dialArea);
+	dialpanel->setEngine(engine);
 
 	CallStackWidget * calls = new CallStackWidget(areaCalls);
 	connect( calls, SIGNAL(changeTitle(const QString &)),
