@@ -74,7 +74,9 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
  	QScrollArea * dialArea = new QScrollArea(leftsplitter);
  	dialArea->setWidgetResizable(false);
  	DialPanel * dialpanel = new DialPanel(dialArea);
-	dialpanel->setEngine(engine);
+	//dialpanel->setEngine(engine);
+	connect( dialpanel, SIGNAL(emitDial(const QString &)),
+	         engine, SLOT(dial(const QString &)) );
 
 	CallStackWidget * calls = new CallStackWidget(areaCalls);
 	connect( calls, SIGNAL(changeTitle(const QString &)),

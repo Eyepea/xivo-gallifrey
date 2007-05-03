@@ -28,6 +28,7 @@ protected:
 signals:
 	void originateCall(const QString &, const QString &);
 	void transferCall(const QString &, const QString &);
+	void emitDial(const QString &);
 	void doRemoveFromPanel(const QString &);
 public slots:
 	void setBlue(int n);
@@ -41,6 +42,7 @@ public slots:
 	void setDarkGreen(int n);
 private slots:
 	void removeFromPanel();
+	void dial();
 private:
 	QLabel * m_statelbl;	//!< Peer state display (ringing, online, ...)
 	QLabel * m_availlbl;	//!< Peer state display from XIVO CTI Client
@@ -50,6 +52,7 @@ private:
 	QString m_id;	//!< peer id : asterisk/protocol/extension
 	QString m_name;	//!< caller id to display : usualy the NAME of the person
 	QAction * m_removeAction;
+	QAction * m_dialAction;
 };
 
 #endif

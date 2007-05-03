@@ -69,6 +69,8 @@ void SearchPanel::updatePeer(const QString & ext,
 	         m_engine, SLOT(originateCall(const QString&, const QString&)) );
 	connect( peerwidget, SIGNAL(transferCall(const QString&, const QString&)),
 	         m_engine, SLOT(transferCall(const QString&, const QString&)) );
+	connect( peerwidget, SIGNAL(emitDial(const QString &)),
+	         m_engine, SLOT(dial(const QString &)) );
 	m_peerlayout->addWidget( peerwidget );
 	if( !name.contains(m_input->text(), Qt::CaseInsensitive) )
 	{

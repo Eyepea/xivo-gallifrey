@@ -13,11 +13,13 @@ class DialPanel : public QWidget
 	Q_OBJECT
 public:
 	DialPanel(QWidget * parent = 0);
-	void setEngine(SwitchBoardEngine *);
+	//void setEngine(SwitchBoardEngine *);
 public slots:
 	void affTextChanged();
+signals:
+	void emitDial(const QString &);
 private:
-	SwitchBoardEngine * m_engine;
+	//SwitchBoardEngine * m_engine;
 	QLineEdit * m_input;
 };
 

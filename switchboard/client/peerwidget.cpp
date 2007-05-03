@@ -31,6 +31,10 @@ PeerWidget::PeerWidget(const QString & id, const QString & name,
 	m_removeAction->setStatusTip( tr("Remove this peer from the panel") );
 	connect( m_removeAction, SIGNAL(triggered()),
 	         this, SLOT(removeFromPanel()) );
+	m_dialAction = new QAction( tr("&Dial"), this);
+	m_dialAction->setStatusTip( tr("Dial this number") );
+	connect( m_dialAction, SIGNAL(triggered()),
+	         this, SLOT(dial()) );
 }
 
 void PeerWidget::setRed(int n)
@@ -118,6 +122,12 @@ void PeerWidget::removeFromPanel()
 {
 	qDebug() << "PeerWidget::removeFromPanel()" << m_id;
 	doRemoveFromPanel( m_id );
+}
+
+void PeerWidget::dial()
+{
+	qDebug() << "PeerWidget::dial()" << m_id;
+	emitDial( m_id );
 }
 
 void PeerWidget::mousePressEvent(QMouseEvent *event)
@@ -211,6 +221,7 @@ void PeerWidget::contextMenuEvent(QContextMenuEvent * event)
 {
 	QMenu contextMenu(this);
 	//contextMenu.addAction("&Test");
+	contextMenu.addAction(m_dialAction);
 	contextMenu.addAction(m_removeAction);
 	contextMenu.exec(event->globalPos());
 }

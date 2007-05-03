@@ -329,6 +329,15 @@ void SwitchBoardEngine::transferCall(const QString & src, const QString & dst)
 	sendCommand();
 }
 
+/*! \brief dial (originate with known src)
+ */
+void SwitchBoardEngine::dial(const QString & dst)
+{
+	m_pendingcommand = "originate " + m_asterisk + "/" + m_protocol
+	                   + "/" + m_extension + " " + dst;
+	sendCommand();
+}
+
 /*! \brief hang up a channel
  *
  * send a hang up command to the server

@@ -35,6 +35,7 @@ public slots:
 	void stop();
 	void originateCall(const QString & src, const QString & dst);
 	void transferCall(const QString & src, const QString & dst);
+	void dial(const QString & dst);
 private slots:
 	void updatePeers(const QStringList & liststatus);
 	void updateCallerids(const QStringList & liststatus);

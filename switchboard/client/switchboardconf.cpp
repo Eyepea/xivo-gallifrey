@@ -87,7 +87,7 @@ void SwitchBoardConfDialog::saveAndClose()
 	m_engine->setAddress( m_host->text(), m_port->text().toUInt() );
 	m_engine->setAutoconnect( m_autoconnect->checkState() == Qt::Checked );
 	m_engine->setAsterisk( m_asterisk->text() );
-	//m_engine->setProtocol( );
+	m_engine->setProtocol( m_protocombo->currentText() );
 	m_engine->setExtension( m_ext->text() );
 	m_engine->saveSettings();
 	//m_window->setWidth( m_widthsb->value() );
