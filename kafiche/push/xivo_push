@@ -62,11 +62,18 @@ class myLDAP:
 		except ldap.LDAPError, e:
 			print e
 
+
+## \brief Secures an output string for the AGI VERBOSE
+# \param s string to secure
+def agi_escape_string(s):
+       return s.replace('\\', '\\\\').replace('"', '\\"').replace('\n', ' ')
+
+
 ## \brief Logs a message into the Asterisk CLI
-# \param message message to send to the CLI
-def log_agi(message):
-	print "VERBOSE \"xivo_push : %s\"" %message
-	return 0
+# \param txt message to send to the CLI
+def print_verbose(txt):
+	print "VERBOSE \"xivo_push : %s\"" % agi_escape_string(txt)
+
 
 ## \brief Returns the kind of database
 # \param cfg
@@ -82,24 +89,25 @@ def get_dbkind(cfg):
 # \param config
 # \param cid
 def get_ldap_infos(config, cid):
-	mail = ""
-	name = ""
-	firstname = ""
+	[callid, mail, name, firstname, company] = ["", "", "", "", ""]
 	ldapid = myLDAP(config.get('general', 'host'),
 			config.get('general', 'port'),
 			config.get('general', 'user'),
 			config.get('general', 'pass'))
 	result = ldapid.getldap(config.get('general', 'dbname'),
 				"(|(telephonenumber=%s)(mobile=%s)(pager=%s))" %(cid,cid,cid),
-				['cn','mail'])
+				['cn','mail','sn','givenName','o'])
 	try:
-		r = result[0][1]['cn'][0]
-		mail = result[0][1]['mail'][0]
-		(name, firstname) = r.split()
+		who = result[0][1]
+		if 'cn' in who.keys():        callid    = who['cn'][0]
+		if 'mail' in who.keys():      mail      = who['mail'][0]
+		if 'givenName' in who.keys(): firstname = who['givenName'][0]
+		if 'sn' in who.keys():        name      = who['sn'][0]
+		if 'o' in who.keys():         company   = who['o'][0]
 		sys.stdout.write("SET CALLERID \"%s\"\n" %r)
 	except:
 		print "No callerid from OX"
-	return [mail, name, firstname]
+	return [callid, mail, name, firstname, company]
 
 
 ## \brief Returns informations fetched from the MySQL database
@@ -263,7 +271,7 @@ fields = {}
 
 if databasekind == "ldap":
 	fields["req_cid"] = callerid
-	fields["mail"], fields["name"], fields["firstname"] = get_ldap_infos(config, callerid)
+	fields["callidname"], fields["mail"], fields["name"], fields["firstname"], fields["company"] = get_ldap_infos(config, callerid)
 	if callerid in config.options('photo'):
 		fields["picture"] = config.get('photo', callerid)
 	liste = make_fields(fitems, fformats, fields)
