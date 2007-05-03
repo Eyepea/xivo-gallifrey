@@ -22,9 +22,9 @@ DialPanel::DialPanel(QWidget * parent)
 	connect( dialButton, SIGNAL(clicked()),
 	         this, SLOT(affTextChanged()) );
 
-	vlayout->addWidget( lbl );
-	vlayout->addWidget( m_input );
-	vlayout->addWidget( dialButton );
+	vlayout->addWidget( lbl, 0, Qt::AlignCenter );
+	vlayout->addWidget( m_input, 0, Qt::AlignCenter );
+	vlayout->addWidget( dialButton, 0, Qt::AlignCenter );
 }
 
 /*void DialPanel::setEngine(SwitchBoardEngine * engine)

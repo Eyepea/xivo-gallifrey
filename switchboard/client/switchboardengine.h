@@ -5,6 +5,7 @@
 #include <QTcpSocket>
 
 class QTimer;
+class QDateTime;
 
 class SwitchBoardEngine: public QObject
 {
@@ -64,6 +65,7 @@ signals:
 	                const QString &, const QString &,
 					const QString &);
 	void removePeer(const QString &);
+	void updateLogEntry(const QDateTime &, int, const QString &, int);
 private:
 	QTcpSocket * m_socket;	//!< socket to connect to the server
 	int m_timer;	//!< timer id

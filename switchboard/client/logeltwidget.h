@@ -14,6 +14,13 @@ public:
 				  const QDateTime & dt,
 				  int duration,
 				  QWidget * parent = 0 );
+	const QDateTime & dateTime() const { return m_dateTime; };
+	const QString & peer() const { return m_peer; };
+	Direction direction() const { return m_direction; };
+private:
+	QDateTime m_dateTime;
+	QString m_peer;
+	Direction m_direction;
 };
 
 #endif

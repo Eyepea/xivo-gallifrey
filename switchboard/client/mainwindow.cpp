@@ -70,6 +70,9 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 	QScrollArea * areaLog = new QScrollArea(leftsplitter);
 	areaLog->setWidgetResizable(true);
 	LogWidget * logwidget = new LogWidget(areaLog);
+	areaLog->setWidget(logwidget);
+	connect( engine, SIGNAL(updateLogEntry(const QDateTime &, int, const QString &, int)),
+	         logwidget, SLOT(addLogEntry(const QDateTime &, int, const QString &, int)) );
 
  	QScrollArea * dialArea = new QScrollArea(leftsplitter);
  	dialArea->setWidgetResizable(false);
