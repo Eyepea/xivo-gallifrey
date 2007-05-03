@@ -67,7 +67,7 @@ void Engine::loadSettings()
 {
 	QSettings settings;
 	m_serverip = settings.value("engine/serverhost").toString();
-	m_serverport = settings.value("engine/serverport", 12345).toUInt();
+	m_serverport = settings.value("engine/serverport", 5000).toUInt();
 	m_serverast = settings.value("engine/serverastid").toString();
 	m_login = settings.value("engine/login").toString();
 	m_passwd = settings.value("engine/passwd").toString();
@@ -473,6 +473,7 @@ void Engine::keepLoginAlive()
 	// have been left without response.
 	if(m_pendingkeepalivemsg > 1)
 	{
+		qDebug() << "m_pendingkeepalivemsg" << m_pendingkeepalivemsg;
 		stopKeepAliveTimer();
 		setState(ENotLogged);
 		m_pendingkeepalivemsg = 0;
@@ -503,6 +504,34 @@ void Engine::keepLoginAlive()
 }
 
 /*!
+ * Send a keep alive message to the login server.
+ * The message is sent in a datagram through m_udpsocket
+ */ 
+void Engine::sendMessage(const QString & txt)
+{
+	if(m_pendingkeepalivemsg > 1)
+	{
+		qDebug() << "m_pendingkeepalivemsg" << m_pendingkeepalivemsg;
+		stopKeepAliveTimer();
+		setState(ENotLogged);
+		m_pendingkeepalivemsg = 0;
+		startTryAgainTimer();
+		return;
+	}
+	QString outline = "MESSAGE ";
+	outline.append(m_serverast);
+	outline.append("/");
+	outline.append(m_login);
+	outline.append(" ");
+	outline.append(txt);
+	outline.append("\r\n");
+	qDebug() <<  "Engine::sendMessage()" << outline;
+	m_udpsocket.writeDatagram( outline.toAscii(),
+	                           m_serveraddress, m_serverport+1 );
+	m_pendingkeepalivemsg++;
+}
+
+/*!
  * Process incoming UDP datagrams which are likely to be 
  * response from keep alive messages.
  * If the response is not 'OK', goes to
@@ -519,8 +548,8 @@ void Engine::readKeepLoginAliveDatagrams()
 		if(len == 0)
 			continue;
 		buffer[len] = '\0';
-		qDebug() << len << ":" << buffer;
-		if(buffer[0] != 'O' || buffer[1] !='K')
+		//		qDebug() << len << ":" << buffer;
+		if(buffer[0] != 'O' && buffer[0] != 'S' || buffer[1] !='K' && buffer[1] !='E')
 		{
 			stopKeepAliveTimer();
 			setState(ENotLogged);

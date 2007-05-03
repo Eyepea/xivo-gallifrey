@@ -25,9 +25,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QTabWidget>
 #include <QAction>
 #include <QHideEvent>
+#include <QLabel>
 #include <QTime>
 #include <QMessageBox>
 #include <QDebug>
+#include <QVBoxLayout>
 #include "mainwidget.h"
 #include "confwidget.h"
 #include "popup.h"
@@ -51,17 +53,41 @@ MainWidget::MainWidget(Engine *engine, QWidget *parent)
 	connect( engine, SIGNAL(newProfile(Popup *)),
 	         this, SLOT(showNewProfile(Popup *)) );
 
-	//setWindowFlags(Qt::Dialog);	
+	
+	//setWindowFlags(Qt::Dialog);
 	//layout->setSizeConstraint(QLayout::SetFixedSize);	// remove minimize and maximize button
 	setWindowTitle(QString("Xivo Client"));
 	setWindowIcon(QIcon(":/xivoicon.png"));
 	statusBar()->clearMessage();
 	
-	m_tabwidget = new QTabWidget( this );
-	setCentralWidget(m_tabwidget);
+	QWidget * wid = new QWidget();
+	QVBoxLayout * vbox = new QVBoxLayout(wid);
+
+	m_tabwidget = new QTabWidget();
+	QLabel * labelwhat = new QLabel(tr("Tell the Switchboard :"));
+	m_messagetosend = new QLineEdit();
+	connect( m_messagetosend, SIGNAL(returnPressed()),
+	         this, SLOT(affTextChanged()) );
+	vbox->addWidget(m_tabwidget, 1);
+	vbox->addWidget(labelwhat, 0);
+	vbox->addWidget(m_messagetosend, 0);
+
+	wid->show();
+
+	setCentralWidget(wid);
 	QSettings settings;
 	m_tablimit = settings.value("display/tablimit", 5).toInt();
 }
+
+
+void MainWidget::affTextChanged()
+{
+	QString txt = m_messagetosend->text();
+	txt.replace(" ", "_");
+	m_engine->sendMessage(txt);
+	m_messagetosend->setText("");
+}
+
 
 void MainWidget::createActions()
 {

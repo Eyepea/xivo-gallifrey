@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QPushButton>
 #include <QSystemTrayIcon>
 #include <QMainWindow>
+#include <QLineEdit>
 #include "engine.h"
 
 class QSystemTrayIcon;
@@ -50,6 +51,7 @@ private slots:
 	void systrayMsgClicked();
 	void showNewProfile(Popup *);	//!< display a Profile widget
 	void about();
+	void affTextChanged();
 protected:
 	void hideEvent(QHideEvent *event);	//!< Catch hide events
 	void closeEvent(QCloseEvent *event);
@@ -67,6 +69,7 @@ private:
 	QIcon m_icon;		//!< Icon Object
 	QIcon m_icongrey;	//!< greyed Icon Object
 	QTabWidget * m_tabwidget;	//!< Area to display profiles
+	QLineEdit * m_messagetosend;    //!< Message to send to the connected switchboards
 	int m_tablimit;		//!< Maximum number of tabs in m_tabwidget
 	// actions :
 	QAction * m_cfgact;		//!< Configuration Action

@@ -131,7 +131,7 @@ def get_mysql_infos(config, cid):
 		conn.close()
 
 	except Exception, e:
-		log_agi("Connection to MySQL failed")
+		print_verbose("Connection to MySQL failed")
 
 	return results
 
@@ -153,7 +153,7 @@ def get_sqlite_infos(config, cid):
 		conn.close()
 
 	except Exception, e:
-		log_agi("Connection to sqlite failed")
+		print_verbose("Connection to sqlite failed")
 
 	return results
 
@@ -172,7 +172,7 @@ def set_fields_from_resultline(callerid, x):
 		field["town"]       = x[5]
 		field["medal"]      = x[6]
 	except Exception, e:
-		log_agi("Customer not found in mysql db")
+		print_verbose("Customer not found in mysql db")
 		if len(callerid) == 9:
 			field["fullnumber"] = callerid
 		else:
@@ -238,7 +238,7 @@ else:
 # 1/N : connects to the server to get IP address and port of the client
 z = generefiche.getuserlocation(shost, sport, user)
 if z == None:
-	log_agi("Could not localize user %s" %user)
+	print_verbose("Could not localize user %s" %user)
 	sys.exit(3)
 sessionid = z.get('sessionid')
 clientaddress = z.get('address')
@@ -252,7 +252,7 @@ except:
 	try:
 		config.readfp(open("xivo_push.conf"))
 	except:
-		log_agi("no xivo_push.conf file found")
+		print_verbose("no xivo_push.conf file found")
 		sys.exit(2)
 
 # 3/N : reads the kind of database and the sheet's format
@@ -281,7 +281,7 @@ elif databasekind == "mysql" or databasekind == "sqlite":
 		results = get_mysql_infos(config, callerid)
 	if databasekind == "sqlite":
 		results = get_sqlite_infos(config, callerid)
-	log_agi("%d result(s) found for %s" %(len(results),callerid))
+	print_verbose("%d result(s) found for %s" %(len(results),callerid))
 	if len(results) > 0:
 		for z in xrange(len(results)):
 			fields = set_fields_from_resultline(callerid, results[z])
@@ -292,7 +292,7 @@ elif databasekind == "mysql" or databasekind == "sqlite":
 		fields["req_cid"] = callerid
 		liste = make_fields(fitems, fformats, fields)
 else:
-	log_agi("Database type %s not supported" %databasekind)
+	print_verbose("Database type %s not supported" %databasekind)
 	sys.exit(3)
 
 # 5/N : sends the sheet to the connected peer
@@ -310,7 +310,7 @@ if clientstate == "available":
 	if fiche.sendtouser(clientaddress):
 		print "Profile sent"
 	else:
-		log_agi("Could not send profile to user")
+		print_verbose("Could not send profile to user")
 
 elif clientstate == "away":
 	print "SET VARIABLE STATUS 1"
@@ -323,7 +323,7 @@ elif clientstate == "berightback":
 	pass
 	#print "SET VARIABLE STATUS 2"
 else:
-	log_agi("Unknown user's availability status : %s" %clientstate)
+	print_verbose("Unknown user's availability status : %s" %clientstate)
 
 print "availability is currently :", clientstate
 
