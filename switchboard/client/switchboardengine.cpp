@@ -306,6 +306,8 @@ void SwitchBoardEngine::socketReadyRead()
 				}
 			} else if(list[0] == QString("history")) {
 				processHistory(list[1].split(";"));
+			} else if(list[0] == "directory-response") {
+				directoryResponse(list[1]);
 			}
 		}
 	}
@@ -358,6 +360,16 @@ void SwitchBoardEngine::hangUp(const QString & channel)
 {
 	qDebug() << "SwitchBoardEngine::hangUp() " << channel;
 	m_pendingcommand = "hangup " + channel;
+	sendCommand();
+}
+
+/*! \brief 
+ *
+ */
+void SwitchBoardEngine::searchDirectory(const QString & text)
+{
+	qDebug() << "SwitchBoardEngine::searchDirectory()" << text;
+	m_pendingcommand = "directory-search " + text;
 	sendCommand();
 }
 

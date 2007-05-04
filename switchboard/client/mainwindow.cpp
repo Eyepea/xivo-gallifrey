@@ -21,6 +21,7 @@
 #include "searchpanel.h"
 #include "logwidget.h"
 #include "dialpanel.h"
+#include "directorypanel.h"
 
 /*! \brief Widget containing the CallStackWidget and a Title QLabel
  */
@@ -61,25 +62,21 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 	setWindowIcon(QIcon(":/xivoicon.png"));
 	setWindowTitle("Xivo Switchboard");
 
+
 	m_splitter = new QSplitter(this);
-	QSplitter * leftsplitter = new QSplitter(Qt::Vertical, m_splitter);
+	m_leftSplitter = new QSplitter(Qt::Vertical, m_splitter);
+
 	QScrollArea * areaCalls = new QScrollArea(this);
-	//LeftPanel * leftPanel = new LeftPanel(areaCalls, m_splitter);
-	LeftPanel * leftPanel = new LeftPanel(areaCalls, leftsplitter);
-	//LogWidget * logwidget = new LogWidget(leftsplitter);
-	QScrollArea * areaLog = new QScrollArea(leftsplitter);
+	LeftPanel * leftPanel = new LeftPanel(areaCalls, m_leftSplitter);
+	QScrollArea * areaLog = new QScrollArea(m_leftSplitter);
 	areaLog->setWidgetResizable(true);
 	LogWidget * logwidget = new LogWidget(areaLog);
 	areaLog->setWidget(logwidget);
 	connect( engine, SIGNAL(updateLogEntry(const QDateTime &, int, const QString &, int)),
 	         logwidget, SLOT(addLogEntry(const QDateTime &, int, const QString &, int)) );
 
- 	QScrollArea * dialArea = new QScrollArea(leftsplitter);
- 	dialArea->setWidgetResizable(false);
- 	DialPanel * dialpanel = new DialPanel(dialArea);
-	//dialpanel->setEngine(engine);
-	connect( dialpanel, SIGNAL(emitDial(const QString &)),
-	         engine, SLOT(dial(const QString &)) );
+ 	//QScrollArea * dialArea = new QScrollArea(leftsplitter);
+ 	//dialArea->setWidgetResizable(false);
 
 	CallStackWidget * calls = new CallStackWidget(areaCalls);
 	connect( calls, SIGNAL(changeTitle(const QString &)),
@@ -95,7 +92,10 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 	connect( calls, SIGNAL(hangUp(const QString &)),
 		 m_engine, SLOT(hangUp(const QString &)) );
 
-	QScrollArea * areaPeers = new QScrollArea(m_splitter);
+	m_middleSplitter = new QSplitter( Qt::Vertical, m_splitter);
+
+	//QScrollArea * areaPeers = new QScrollArea(m_splitter);
+	QScrollArea * areaPeers = new QScrollArea(m_middleSplitter);
 	areaCalls->setWidgetResizable(true);
 	areaPeers->setWidgetResizable(true);
 
@@ -114,7 +114,16 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
  	areaPeers->setWidget(m_widget);
  	areaCalls->setWidget(calls);
 	
-	SearchPanel * searchpanel = new SearchPanel(m_splitter);
+	DirectoryPanel * dirpanel = new DirectoryPanel(m_middleSplitter);
+	connect( dirpanel, SIGNAL(searchDirectory(const QString &)),
+	         engine, SLOT(searchDirectory(const QString &)) );
+	connect( engine, SIGNAL(directoryResponse(const QString &)),
+	         dirpanel, SLOT(setSearchResponse(const QString &)) );
+
+	m_rightSplitter = new QSplitter(Qt::Vertical, m_splitter);
+
+	//SearchPanel * searchpanel = new SearchPanel(m_splitter);
+	SearchPanel * searchpanel = new SearchPanel(m_rightSplitter);
 	searchpanel->setEngine(engine);
 	connect( engine, SIGNAL(updatePeer(const QString &, const QString &,
 	                                   const QString &, const QString &,
@@ -127,11 +136,18 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 	connect( engine, SIGNAL(removePeer(const QString &)),
 	         searchpanel, SLOT(removePeer(const QString &)) );
 
+ 	DialPanel * dialpanel = new DialPanel(m_rightSplitter);
+	connect( dialpanel, SIGNAL(emitDial(const QString &)),
+	         engine, SLOT(dial(const QString &)) );
+
 	setCentralWidget(m_splitter);
 
 	// restore splitter settings
 	QSettings settings;
 	m_splitter->restoreState(settings.value("display/splitterSizes").toByteArray());
+	m_leftSplitter->restoreState(settings.value("display/leftSplitterSizes").toByteArray());
+	m_middleSplitter->restoreState(settings.value("display/middleSplitterSizes").toByteArray());
+	m_rightSplitter->restoreState(settings.value("display/rightSplitterSizes").toByteArray());
 
 	restoreGeometry(settings.value("display/mainwingeometry").toByteArray());
 	connect(m_engine, SIGNAL(emitTextMessage(const QString &)),
@@ -177,6 +193,9 @@ MainWindow::~MainWindow()
 {
 	QSettings settings;
 	settings.setValue("display/splitterSizes", m_splitter->saveState());
+	settings.setValue("display/leftSplitterSizes", m_leftSplitter->saveState());
+	settings.setValue("display/middleSplitterSizes", m_middleSplitter->saveState());
+	settings.setValue("display/rightSplitterSizes", m_rightSplitter->saveState());
 	settings.setValue("display/mainwingeometry", saveGeometry());
 }
 

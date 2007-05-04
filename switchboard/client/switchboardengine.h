@@ -37,6 +37,7 @@ public slots:
 	void originateCall(const QString & src, const QString & dst);
 	void transferCall(const QString & src, const QString & dst);
 	void dial(const QString & dst);
+	void searchDirectory(const QString &);
 private slots:
 	void updatePeers(const QStringList & liststatus);
 	void updateCallerids(const QStringList & liststatus);
@@ -66,6 +67,7 @@ signals:
 					const QString &);
 	void removePeer(const QString &);
 	void updateLogEntry(const QDateTime &, int, const QString &, int);
+	void directoryResponse(const QString &);
 private:
 	QTcpSocket * m_socket;	//!< socket to connect to the server
 	int m_timer;	//!< timer id

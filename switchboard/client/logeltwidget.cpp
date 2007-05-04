@@ -1,5 +1,6 @@
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QMenu>
 #include <QDebug>
 #include "logeltwidget.h"
 
@@ -25,5 +26,15 @@ LogEltWidget::LogEltWidget( const QString & peer, Direction d,
 	layout->addWidget(lblduration);
 
 	layout->addStretch(1);
+
+	m_dialAction = new QAction( tr("&Dial"), this );
+	m_dialAction->setStatusTip( tr("Dial back") );
+}
+
+void LogEltWidget::contextMenuEvent(QContextMenuEvent *event)
+{
+	QMenu contextMenu(this);
+	contextMenu.addAction( m_dialAction );
+	contextMenu.exec(event->globalPos());
 }
 

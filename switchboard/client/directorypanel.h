@@ -4,8 +4,11 @@
 #define __DIRECTORYPANEL_H__
 
 #include <QWidget>
-#include <QLineEdit>
-#include <QPushButton>
+
+class QLineEdit;
+class QPushButton;
+class QTableWidget;
+class QTableWidgetItem;
 
 class DirectoryPanel : public QWidget
 {
@@ -16,11 +19,13 @@ signals:
 	void searchDirectory(const QString &);
 private slots:
 	void startSearch();
+	void itemDoubleClicked(QTableWidgetItem *);
 public slots:
-
+	void setSearchResponse(const QString &);
 private:
 	QLineEdit * m_searchText;
 	QPushButton * m_searchButton;
+	QTableWidget * m_table;
 };
 
 #endif

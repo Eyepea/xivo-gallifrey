@@ -3,6 +3,8 @@
 
 #include <QWidget>
 #include <QDateTime>
+#include <QAction>
+#include <QContextMenuEvent>
 
 class LogEltWidget : public QWidget
 {
@@ -17,10 +19,13 @@ public:
 	const QDateTime & dateTime() const { return m_dateTime; };
 	const QString & peer() const { return m_peer; };
 	Direction direction() const { return m_direction; };
+protected:
+	void contextMenuEvent(QContextMenuEvent *);
 private:
 	QDateTime m_dateTime;
 	QString m_peer;
 	Direction m_direction;
+	QAction * m_dialAction;
 };
 
 #endif

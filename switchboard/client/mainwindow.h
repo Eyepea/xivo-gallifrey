@@ -26,6 +26,9 @@ private slots:
 	void about();
 private:
 	QSplitter * m_splitter;	//!< Splitter to separate right/left panels
+	QSplitter * m_leftSplitter;	//!< Vertical splitter on the left
+	QSplitter * m_middleSplitter;	//!< vertical splitter in the middle
+	QSplitter * m_rightSplitter;	//!< Vertical splitter on the right
 	SwitchBoardEngine * m_engine;	//!< Engine
 	SwitchBoardWindow * m_widget;	//!< Widget to display peers
 	QAction * m_startact;	//!< "Start" Action
