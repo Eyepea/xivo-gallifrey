@@ -321,7 +321,7 @@ switch($act)
 			$dfeatures_where = array();
 			$dfeatures_where['type'] = 'meetme';
 			$dfeatures_where['typeid'] = $info['mfeatures']['id'];
-			$dfeatures_where['disable'] = 0;
+			$dfeatures_where['commented'] = 0;
 
 			switch($status['extenumbers'])
 			{
@@ -334,7 +334,7 @@ switch($act)
 				case 'delete':
 					if(($rs_extenumbers = $extenumbers->delete($info['extenumbers']['id'])) !== false
 					&& ($info['dfeatures'] = $dfeatures->get_list_where($dfeatures_where,false)) !== false
-					&& ($rs_dfeatures = $dfeatures->edit_where($dfeatures_where,array('disable' => 1))) === false)
+					&& ($rs_dfeatures = $dfeatures->edit_where($dfeatures_where,array('commented' => 1))) === false)
 						$rs_extenumbers = false;
 					break;
 				default:
@@ -430,11 +430,11 @@ switch($act)
 				$dfeatures_where = array();
 				$dfeatures_where['type'] = 'meetme';
 				$dfeatures_where['typeid'] = $info['mfeatures']['id'];
-				$dfeatures_where['disable'] = 0;
+				$dfeatures_where['commented'] = 0;
 
 				if($extenumbers->delete($info['extenumbers']['id']) === false
 				|| (($info['dfeatures'] = $dfeatures->get_list_where($dfeatures_where,false)) !== false
-				   && $dfeatures->edit_where($dfeatures_where,array('disable' => 1)) === false) === true)
+				   && $dfeatures->edit_where($dfeatures_where,array('commented' => 1)) === false) === true)
 				{
 					$meetme->add_origin();
 					$mfeatures->add_origin();
@@ -490,7 +490,7 @@ switch($act)
 		$localexten_where['appdata'] = 'supermeetme';
 
 		$dfeatures_where['type'] = 'meetme';
-		$dfeatures_where['disable'] = 0;
+		$dfeatures_where['commented'] = 0;
 
 		do
 		{
@@ -543,7 +543,7 @@ switch($act)
 				{
 					if($extenumbers->delete($info['extenumbers']['id']) === false
 					|| (($info['dfeatures'] = $dfeatures->get_list_where($dfeatures_where,false)) !== false
-					   && $dfeatures->edit_where($dfeatures_where,array('disable' => 1)) === false) === true)
+					   && $dfeatures->edit_where($dfeatures_where,array('commented' => 1)) === false) === true)
 					{
 						$meetme->add_origin();
 						$mfeatures->add_origin();

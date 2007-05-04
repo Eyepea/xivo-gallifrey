@@ -9,6 +9,7 @@ class xivo_datastorage_abstract_sql
 	var $_link	= null;
 	var $_result	= false;
 	var $_debug	= false;
+	var $_free	= false;
 
 	function set_param($name,$value)
 	{
@@ -61,14 +62,26 @@ class xivo_datastorage_abstract_sql
 		return(is_resource($this->_link));
 	}
 
-	function select_hash($t,$w='',$o='')
+	function is_free()
 	{
-		$t = (string) $t;
-		$w = (string) $w;
-		$o = (string) $o;
+		return((bool) $this->_free);
+	}
+
+	function select_hash($t,$s='',$w='',$o='')
+	{
+		$t = trim((string) $t);
+		$s = trim((string) $s);
+		$w = trim((string) $w);
+		$o = trim((string) $o);
+
+		if($s === '')
+			$s = '*';
+
+		if($o !== '')
+			$o = ' '.$o;
 
 		$r = false;
-		$q = sprintf('SELECT * FROM %s WHERE %s%s',$t,($w !== '' ? $w : 1),$o);
+		$q = sprintf('SELECT %s FROM %s WHERE %s%s',$s,$t,($w !== '' ? $w : 1),$o);
 
 		if($this->query($q) === false)
 			return($r);
@@ -82,6 +95,38 @@ class xivo_datastorage_abstract_sql
 
 			$r[$i] = $m;
 		}
+
+		if($this->_free === true)
+			$this->free();
+
+		return($r);
+	}
+
+	function select_one($t,$s='',$w='',$o='')
+	{
+		$t = trim((string) $t);
+		$s = trim((string) $s);
+		$w = trim((string) $w);
+		$o = trim((string) $o);
+
+		if($s === '')
+			$s = '*';
+
+		if($o === '')
+			$o = ' ';
+		else
+			$o = ' '.$o.' ';
+
+		$r = false;
+		$q = sprintf('SELECT %s FROM %s WHERE %s%s%s',$s,$t,($w !== '' ? $w : 1),$o,'LIMIT 1');
+
+		if($this->query($q) === false)
+			return($r);
+
+		$r = $this->fetch_assoc();
+
+		if($this->_free === true)
+			$this->free();
 
 		return($r);
 	}
@@ -103,9 +148,12 @@ class xivo_datastorage_abstract_sql
 
 	function delete($t,$w='',$o='')
 	{
-		$t = (string) $t;
-		$w = (string) $w;
-		$o = (string) $o;
+		$t = trim((string) $t);
+		$w = trim((string) $w);
+		$o = trim((string) $o);
+
+		if($o !== '')
+			$o = ' '.$o;
 	
 		$q = sprintf('DELETE FROM %s WHERE %s%s',$t,($w !== '' ? $w : 1),$o);
 
@@ -124,7 +172,7 @@ class xivo_datastorage_abstract_sql
 				$r = false;
 		}
 
-		return($r);	
+		return($r);
 	}
 
 	function where_not($data,$escape=true)

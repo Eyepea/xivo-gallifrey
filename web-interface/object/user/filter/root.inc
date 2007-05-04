@@ -23,7 +23,7 @@ $array['admin']['add']['meta'] = array('arrkey' => array('root' => 1));
 */
 $array['admin']['edit'] = array();
 $array['admin']['edit']['passwd'] = array('cast' => 'string','minlen' => 4,'maxlen' => 255);
-$array['admin']['edit']['valid'] = array('arrkey' => array('true','false'));
+$array['admin']['edit']['valid'] = array('bool' => true);
 //$array['admin']['edit']['meta'] = array('arrkey' => array('root' => 1,'admin' => 1));
 
 ?>

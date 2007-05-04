@@ -33,7 +33,7 @@ $array['element']['mailbox']['default'] = '';
 $array['filter'] = array();
 $array['filter']['fullname'] = array('maxlen' => 150);
 $array['filter']['password'] = array('preg' => '/^[0-9\*#]+$/','maxlen' => 5);
-$array['filter']['email'] = array('func' => 'xivo_chk_email');
+$array['filter']['email'] = array('func' => 'xivo_filter::chk_email');
 $array['filter']['attach'] = array('bool' => true);
 $array['filter']['delete'] = array('bool' => true);
 $array['filter']['context'] = array('chk' => 2,'set' => false,'maxlen' => 50);

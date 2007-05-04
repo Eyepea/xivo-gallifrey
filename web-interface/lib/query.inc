@@ -29,6 +29,11 @@ class xivo_query
 		if(defined('XIVO_SEP_ARG_OUT') === true)
 			$this->_separator['out'] = XIVO_SEP_ARG_OUT;
 
+		$this->_mquotes = (bool) get_magic_quotes_gpc();
+
+		if(isset($_SERVER['REQUEST_METHOD']) === false)
+			return(false);
+
 		switch($_SERVER['REQUEST_METHOD'])
 		{
 			case 'GET':
@@ -41,7 +46,6 @@ class xivo_query
 				return(false);
 		}
 
-		$this->_mquotes = (bool) get_magic_quotes_gpc();
 		$this->raw = &$this->request_meth_raw();
 	}
 

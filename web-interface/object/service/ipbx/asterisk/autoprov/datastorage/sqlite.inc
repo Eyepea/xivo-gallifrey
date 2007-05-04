@@ -1,66 +1,12 @@
 <?php
 
-class xivo_service_asterisk_autoprov_sqlite
+xivo_file::required(array(XIVO_PATH_OBJECT,'service','ipbx','asterisk','autoprov','datastorage','abstract','sql.inc'),true);
+
+class xivo_service_asterisk_autoprov_sqlite extends xivo_service_asterisk_autoprov_abstract_sql
 {
-	var $_param	= array('table' => 'phone');
-
-	var $_dso	= null;
-
 	function xivo_service_asterisk_autoprov_sqlite(&$dso,$param=array())
 	{
-		if(is_object($dso) === false)
-			trigger_error('Invalid Datastorage object',E_USER_ERROR);
-
-		$this->_dso = &$dso;
-
-		$param = (array) $param;
-
-		if(isset($param['table']) === true)
-			$this->_param['table'] = (string) $param['table'];
-	}
-
-	function get($macaddr)
-	{
-		$r = false;
-
-		$rs = $this->_dso->query('SELECT * FROM '.$this->_param['table'].
-		' WHERE macaddr = \''.$this->_dso->escape_string($macaddr).'\' LIMIT 1');
-
-		if($rs !== false && ($rw = $this->_dso->fetch_assoc($rs)) !== false)
-			$r = &$rw;
-
-		return($r);
-	}
-
-	function get_where($arr)
-	{
-		$r = false;
-
-		if(($where = $this->_dso->where($arr)) === false)
-			return($r);
-
-		$rs = $this->_dso->query('SELECT macaddr FROM '.$this->_param['table'].' WHERE '.$where.' LIMIT 1');
-
-		if($rs !== false && ($rw = $this->_dso->fetch_assoc($rs)) !== false)
-			$r = $rw['macaddr'];
-
-		return($r);
-	}
-
-	function get_list()
-	{
-		$r = false;
-
-		$rs = $this->_dso->query('SELECT macaddr FROM '.$this->_param['table']);
-
-		if($rs !== false)
-		{
-			$r = array();
-			while($rw = $this->_dso->fetch_assoc($rs))
-				$r[] = $rw['macaddr'];
-		}
-
-		return($r);
+		$this->_init(&$dso,$param);
 	}
 }
 

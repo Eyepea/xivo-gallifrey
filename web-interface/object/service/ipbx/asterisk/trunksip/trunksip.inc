@@ -1,6 +1,6 @@
 <?php
 
-require_once(XIVO_PATH_OBJECT.XIVO_SEP_DIR.'service'.XIVO_SEP_DIR.'ipbx'.XIVO_SEP_DIR.'asterisk'.XIVO_SEP_DIR.'abstract.inc');
+xivo_file::required(array(XIVO_PATH_OBJECT,'service','ipbx','asterisk','abstract.inc'),true);
 
 class xivo_service_asterisk_trunksip extends xivo_service_asterisk_abstract
 {
@@ -23,11 +23,12 @@ class xivo_service_asterisk_trunksip extends xivo_service_asterisk_abstract
 		$this->_load_config();
 	}
 
-	function get($id,$disable=false)
+	function get($id,$disable=null)
 	{
 		$r = false;
 
-		$disable = $disable !== null ? (bool) $disable : null;
+		if($disable !== null)
+			$disable = (bool) $disable;
 
 		if(($id = xivo_uint($id)) === 0 || ($r = $this->_dso->get($id,$disable)) === false)
 			return($r);

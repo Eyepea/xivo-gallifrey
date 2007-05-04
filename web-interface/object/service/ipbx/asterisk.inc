@@ -73,6 +73,12 @@ class xivo_service_asterisk extends xivo_service_abstract
 			|| ($info['protocol'] = $protocol->get($info['ufeatures']['protocolid'],$disable)) === false)
 				continue;
 
+			$info['sort'] = array();
+			$info['sort']['name'] = trim($info['ufeatures']['firstname'].' '.$info['ufeatures']['lastname']);
+			
+			if($info['sort']['name'] === '')
+				$info['sort']['name'] = '-';
+
 			$r[] = $info;
 		}
 			
@@ -164,7 +170,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 			if(($info['did'] = $extensions->get($rs[$i],$disable)) === false
 			|| ($info['dfeatures'] = $dfeatures->get_by_extenid($info['did']['id'])) === false
 			|| ($info['extenumbers'] = $extenumbers->get_by_number_context($info['did']['exten'],$info['did']['context'])) === false
-			|| ($info['dfeatures']['type'] !== 'custom' && $info['dfeatures']['disable'] === false
+			|| ($info['dfeatures']['type'] !== 'custom' && $info['dfeatures']['commented'] === false
 			   && (($tyfeatures = &$this->get_module($info['dfeatures']['type'].'features')) === false
 			   || ($info['tyfeatures'] = $tyfeatures->get($info['dfeatures']['typeid'])) === false
 			   || xivo_empty($info['tyfeatures']['number']) === true) === true) === true)

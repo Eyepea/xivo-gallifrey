@@ -12,7 +12,7 @@ for($i = 0;$i < $arr['cnt'];$i++)
 {
 	$id = &$_QR['peers'][$i];
 
-	if(($info['trunk'] = $trunksip->get($id,null)) === false
+	if(($info['trunk'] = $trunksip->get($id)) === false
 	|| ($info['tfeatures'] = $tfeatures->get_by_trunk($info['trunk']['id'],'sip')) === false)
 		continue;
 

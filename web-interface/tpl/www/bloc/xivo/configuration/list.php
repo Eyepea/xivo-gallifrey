@@ -33,7 +33,7 @@
 		<td><?=$v['passwd']?></td>
 		<td><?=$v['meta']?></td>
 		<td><?=strftime($this->bbf('date_format_yymmdd'),$v['dcreate']);?></td>
-		<td><?=$this->bbf('valid_'.($v['valid'] === 'true' ? 'true' : 'false'));?></td>
+		<td><?=$this->bbf('valid_'.($v['valid'] === true ? 'true' : 'false'));?></td>
 		<td class="td-right" colspan="3">
 		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'xivo/configuration',array('cat' => 'edit','id' => $v['id']),null,$this->bbf('opt_modify'));?>
 <?php

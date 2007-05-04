@@ -1,6 +1,6 @@
 <?php
 
-require_once(XIVO_PATH_OBJECT.XIVO_SEP_DIR.'service'.XIVO_SEP_DIR.'ipbx'.XIVO_SEP_DIR.'asterisk'.XIVO_SEP_DIR.'staticconf'.XIVO_SEP_DIR.'staticconf.inc');
+xivo_file::required(array(XIVO_PATH_OBJECT,'service','ipbx','asterisk','staticconf','staticconf.inc'),true);
 
 class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 {

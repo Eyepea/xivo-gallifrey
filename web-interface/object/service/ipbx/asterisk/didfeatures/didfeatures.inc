@@ -1,6 +1,6 @@
 <?php
 
-require_once(XIVO_PATH_OBJECT.XIVO_SEP_DIR.'service'.XIVO_SEP_DIR.'ipbx'.XIVO_SEP_DIR.'asterisk'.XIVO_SEP_DIR.'abstract.inc');
+xivo_file::required(array(XIVO_PATH_OBJECT,'service','ipbx','asterisk','abstract.inc'),true);
 
 class xivo_service_asterisk_didfeatures extends xivo_service_asterisk_abstract
 {
@@ -30,7 +30,7 @@ class xivo_service_asterisk_didfeatures extends xivo_service_asterisk_abstract
 
 		$this->_origin = $r;
 
-		$r['disable'] = (bool) $r['disable'];
+		$r['commented'] = (bool) $r['commented'];
 
 		return($r);
 	}
@@ -143,8 +143,8 @@ class xivo_service_asterisk_didfeatures extends xivo_service_asterisk_abstract
 		if(isset($arr['custom']) === true)
 			$where['custom'] = $arr['custom'];
 
-		if(isset($arr['disable']) === true)
-			$where['disable'] = $arr['disable'];
+		if(isset($arr['commented']) === true)
+			$where['commented'] = $arr['commented'];
 
 		return($this->_dso->edit_where($where,$values));
 	}

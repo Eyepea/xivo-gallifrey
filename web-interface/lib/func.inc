@@ -295,27 +295,27 @@ function xivo_go($v='',$k='')
 	die(header('Location: '.$v.'?'.$q));
 }
 
-function xivo_chk_email($e,$t=true)
+function xivo_chk_email($email,$strict=true)
 {
-	$r = false;
 	$nb = 0;
-	$e = strtolower((string) $e);
-	$len = strlen($e);
+	$email = strtolower((string) $email);
+	$strict = (bool) $strict;
+	$len = strlen($email);
 
-	if($len > 5 && $len < 255 && preg_match('/^[a-z0-9_-]+(\.[a-z0-9_-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*\.[a-z]{2,4}$/',$e) === 1)
-	{
-		if(function_exists('getmxrr') === true && $t === true)
-		{
-			$a = explode('@',$e);
-			$m = array();
+	if($len < 6 || $len > 255
+	|| preg_match('/^[a-z0-9_-]+(\.[a-z0-9_-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*\.[a-z]{2,4}$/',$email) !== 1)
+		return(false);
 
-			if(getmxrr($a[1],$m) === true && $nb === 0)
-				$r = $e;
-		}
-		else $r = $e;
-	}
+	if($strict === false || function_exists('getmxrr') === false)
+		return($email);
 
-	return($r);
+	$a = explode('@',$email);
+	$m = array();
+
+	if(getmxrr($a[1],$m) === true && $nb === 0)
+		return($email);
+
+	return(false);
 }
 
 function xivo_mk_list(&$a,$f='')

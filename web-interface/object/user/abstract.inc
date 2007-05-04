@@ -132,6 +132,8 @@ class xivo_user_abstract
 
 	function _set_infos($valid,$arr=array())
 	{
+		$valid = (bool) $valid;
+
 		if(is_array($arr) === true)
 		{
 			$this->_infos = &$arr;
@@ -147,10 +149,10 @@ class xivo_user_abstract
 				$this->_infos['_time'] = gmmktime();
 			}
 			else
-				$this->_infos['_valid'] = false;
+				$this->_infos['_valid'] = $valid = false;
 		}
 
-		if($valid === 'true' || $valid === true)
+		if($valid === true)
 			$this->_infos['_valid'] = true;
 		else
 			$this->_infos['_valid'] = false;
@@ -190,7 +192,7 @@ class xivo_user_abstract
 		$arr['passwd'] = $pass;
 		$arr['meta'] = $meta;
 		$arr['time'] = gmmktime();
-		$arr['valid'] = $valid === false ? 'false' : 'true';
+		$arr['valid'] = $valid === false ? false : true;
 
 		return($this->_dso->add($arr));
 	}

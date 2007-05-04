@@ -19,6 +19,7 @@ class xivo_datastorage_mysql extends xivo_datastorage_abstract_sql
 
 	var $_flag	= 0;
 	var $_type	= 'mysql';
+	var $_free	= true;
 
 	function xivo_datastorage_mysql($param=array())
 	{
@@ -99,6 +100,8 @@ class xivo_datastorage_mysql extends xivo_datastorage_abstract_sql
 
 		if($this->_param['host'] !== '')
 			$host .= ':'.$this->_param['host'];
+		else
+			$host .= ':localhost';
 
 		if($this->_param['port'] !== 0 && xivo_uint($this->_param['port']) !== 0)
 			$host .= ':'.$this->_param['port'];
@@ -121,7 +124,6 @@ class xivo_datastorage_mysql extends xivo_datastorage_abstract_sql
 		return($this->_link);
 	}
 
-
 	function select_db()
 	{
 		if(($r = mysql_select_db($this->_param['db'], $this->_link)) === false)
@@ -138,7 +140,7 @@ class xivo_datastorage_mysql extends xivo_datastorage_abstract_sql
 		if(($this->_result = mysql_query($this->_query,$this->_link)) === false && $o !== false)
 			$this->halt();
 
-		return($this->r);
+		return($this->_result);
 	}
 
 	function lock($t)
@@ -206,7 +208,7 @@ class xivo_datastorage_mysql extends xivo_datastorage_abstract_sql
 			mysql_close($this->_link);
 	}
 
-	function free_result($r=false)
+	function free($r=false)
 	{
 		return(mysql_free_result(($r !== false ? $r : $this->_result)));
 	}

@@ -13,10 +13,10 @@
 <?=$form->hidden(array('name' => 'id','value' => $info['id']));?>
 <p class="fm-field txt-left"><span class="fm-desc"><?=$this->bbf('fm_login')?></span>&nbsp;<?=$info['login']?></p>
 <p class="fm-field txt-left"><span class="fm-desc"><?=$this->bbf('fm_type')?></span>&nbsp;<?=$info['meta']?></p>
-<?=$form->text(array('desc' => $this->bbf('fm_password'),'name' => 'passwd','id' => 'it-passwd','size' => 25,'value' => $info['passwd']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_password'),'name' => 'passwd','labelid' => 'passwd','size' => 25,'value' => $info['passwd']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 <?php
 	if(xivo_user::chk_authorize('admin',$info['meta']) === true):
-		echo $form->slt(array('desc' => $this->bbf('fm_valid'),'name' => 'valid','id' => 'it-valid','value' => $info['valid']),array('true' => $this->bbf('valid_true'),'false' => $this->bbf('valid_false')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');
+		echo $form->checkbox(array('desc' => $this->bbf('fm_valid'),'name' => 'valid','labelid' => 'valid','default' => true,'checked' => $info['valid']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');
 	endif;
 ?>
 <?=$form->submit(array('name' => 'submit','id' => 'it-submit','value' => $this->bbf('fm_bt-save')));?>

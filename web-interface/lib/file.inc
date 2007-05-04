@@ -303,9 +303,9 @@ class xivo_file
 			return($r);
 
 		if($once === true)
-			return(require_once($path));
+			return((bool) require_once($path));
 		else
-			return(require($path));
+			return((bool) require($path));
 	}
 
 	function is_i($file,$verif=true)
@@ -314,7 +314,6 @@ class xivo_file
 
 		$verif = (bool) $verif;
 
-
 		if($verif === true && ($file = xivo_file::is_f_r($file)) === false)
 			return($r);
 
@@ -322,6 +321,31 @@ class xivo_file
 			fclose($f);
 
 		return($r);
+	}
+
+	function required($arr,$once=false,$includable=false)
+	{
+		$r = false;
+
+		$arr = (array) $arr;
+		$once = (bool) $once;
+		$includable = (bool) $includable;
+
+		$value = array_values($arr);
+
+		if(isset($value[0]) === false)
+			return($r);
+
+		$path = implode($arr,XIVO_SEP_DIR);
+
+		if(($includable === true && xivo_file::is_i($path) === false) === true
+		|| ($path = xivo_file::is_f_r($path)) === false)
+			return($r);
+
+		if($once === true)
+			return((bool) require_once($path));
+		else
+			return((bool) require($path));
 	}
 
 	function is_r($file)

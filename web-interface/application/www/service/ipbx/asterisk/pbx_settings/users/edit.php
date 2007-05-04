@@ -474,7 +474,7 @@ do
 	$dfeatures_where = array();
 	$dfeatures_where['type'] = 'user';
 	$dfeatures_where['typeid'] = $info['ufeatures']['id'];
-	$dfeatures_where['disable'] = 0;
+	$dfeatures_where['commented'] = 0;
 
 	switch($status['extenumbers'])
 	{
@@ -487,7 +487,7 @@ do
 		case 'delete':
 			if(($rs_extenumbers = $extenumbers->delete($info['extenumbers']['id'])) !== false
 			&& ($info['dfeatures'] = $dfeatures->get_list_where($dfeatures_where,false)) !== false
-			&& ($rs_dfeatures = $dfeatures->edit_where($dfeatures_where,array('disable' => 1))) === false)
+			&& ($rs_dfeatures = $dfeatures->edit_where($dfeatures_where,array('commented' => 1))) === false)
 				$rs_extenumbers = false;
 			break;
 		default:
@@ -588,7 +588,7 @@ do
 				$extenumbers->add_origin();
 
 				if($rs_dfeatures === true)
-					$dfeatures->edit_list_where($info['dfeatures'],array('disable' => 0));
+					$dfeatures->edit_list_where($info['dfeatures'],array('commented' => 0));
 				break 2;
 			default:
 				break 2;

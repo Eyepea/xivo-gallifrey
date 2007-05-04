@@ -5,7 +5,6 @@ require_once(XIVO_PATH_OBJECT.XIVO_SEP_DIR.'user'.XIVO_SEP_DIR.'abstract.inc');
 class xivo_user_root extends xivo_user_abstract
 {
 	var $_param	= array('factory' => true);
-
 	var $_authent	= null;
 
 	function xivo_user_root($factory=true)

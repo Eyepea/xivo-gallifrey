@@ -63,11 +63,11 @@ do
 		$dfeatures_where = array();
 		$dfeatures_where['type'] = 'user';
 		$dfeatures_where['typeid'] = $info['ufeatures']['id'];
-		$dfeatures_where['disable'] = 0;
+		$dfeatures_where['commented'] = 0;
 
 		if($extenumbers->delete($info['extenumbers']['id']) === false
 		|| (($info['dfeatures'] = $dfeatures->get_list_where($dfeatures_where,false)) !== false
-		   && $dfeatures->edit_where($dfeatures_where,array('disable' => 1)) === false) === true)
+		   && $dfeatures->edit_where($dfeatures_where,array('commented' => 1)) === false) === true)
 		{
 			$protocol->add_origin();
 			$ufeatures->add_origin();
@@ -102,7 +102,7 @@ do
 			$extenumbers->add_origin();
 
 		if($info['dfeatures'] !== false)
-			$dfeatures->edit_list_where($info['dfeatures'],array('disable' => 0));
+			$dfeatures->edit_list_where($info['dfeatures'],array('commented' => 0));
 		break;
 	}
 
@@ -119,7 +119,7 @@ do
 			$extenumbers->add_origin();
 
 		if($info['dfeatures'] !== false)
-			$dfeatures->edit_list_where($info['dfeatures'],array('disable' => 0));
+			$dfeatures->edit_list_where($info['dfeatures'],array('commented' => 0));
 
 		if($info['hints'] !== false)
 			$hintsexten->add_origin();

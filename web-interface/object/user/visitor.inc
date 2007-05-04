@@ -5,7 +5,6 @@ require_once(XIVO_PATH_OBJECT.XIVO_SEP_DIR.'user'.XIVO_SEP_DIR.'abstract.inc');
 class xivo_user_visitor extends xivo_user_abstract
 {
 	var $_param	= array('factory' => true);
-
 	var $_authent	= null;
 	var $_dso	= null;
 	var $_ini	= array();

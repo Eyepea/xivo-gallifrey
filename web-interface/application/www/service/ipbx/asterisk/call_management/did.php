@@ -56,7 +56,7 @@ switch($act)
 			$_QR['dfeatures']['extenid'] = 0;
 
 			if(xivo_ak('type',$_QR['dfeatures'],true) === 'custom')
-				unset($_QR['dfeatures']['typeid'],$_QR['dfeatures']['number']);
+				unset($_QR['dfeatures']['typeid']);
 			else
 				unset($_QR['dfeatures']['custom']);
 
@@ -134,13 +134,13 @@ switch($act)
 		|| ($info['dfeatures'] = $dfeatures->get($_QR['id'])) === false
 		|| ($info['did'] = $extensions->get($info['dfeatures']['extenid'])) === false
 		|| ($info['extenumbers'] = $extenumbers->get_by_number_context($info['did']['exten'],$info['did']['context'])) === false
-		|| ($info['dfeatures']['type'] !== 'custom' && $info['dfeatures']['disable'] === false
+		|| ($info['dfeatures']['type'] !== 'custom' && $info['dfeatures']['commented'] === false
 		   && (($tyfeatures = &$ipbx->get_module($info['dfeatures']['type'].'features')) === false
 		   || ($info['tyfeatures'] = $tyfeatures->get($info['dfeatures']['typeid'])) === false
 		   || xivo_empty($info['tyfeatures']['number']) === true) === true) === true)
 			xivo_go($_HTML->url('service/ipbx/call_management/did'),$param);
 
-		if($info['dfeatures']['disable'] === true)
+		if($info['dfeatures']['commented'] === true)
 		{
 			$info['dfeatures']['typeid'] = '';
 			$info['dfeatures']['type'] = '';
@@ -186,7 +186,7 @@ switch($act)
 			$_QR['dfeatures']['extenid'] = $info['dfeatures']['extenid'];
 
 			if(xivo_ak('type',$_QR['dfeatures'],true) === 'custom')
-				unset($_QR['dfeatures']['typeid'],$_QR['dfeatures']['number']);
+				unset($_QR['dfeatures']['typeid']);
 			else
 				unset($_QR['dfeatures']['custom']);
 

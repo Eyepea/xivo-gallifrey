@@ -59,6 +59,34 @@ class xivo_filter
 		$this->_result[$key] = $val;
 	}
 
+	function chk_email($email,$strict=false)
+	{
+		$nb = 0;
+		$email = strtolower((string) $email);
+		$strict = (bool) $strict;
+		$len = strlen($email);
+
+		if($len < 6 || $len > 255
+		|| preg_match('/^[a-z0-9_-]+(\.[a-z0-9_-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*\.[a-z]{2,4}$/',$email) !== 1)
+			return(false);
+
+		if($strict === false || function_exists('getmxrr') === false)
+			return($email);
+
+		$a = explode('@',$email);
+		$m = array();
+
+		if(getmxrr($a[1],$m) === true && $nb === 0)
+			return($email);
+
+		return(false);
+	}
+
+	function chk_email_strict($email)
+	{
+		return(xivo_filter::chk_email($email,true));
+	}
+
 	function chk_ipv4($ip)
 	{
 		$ip = (string) $ip;
@@ -69,21 +97,33 @@ class xivo_filter
 		return(true);
 	}
 
+	function chk_ipv4_strict($ip)
+	{
+		$ip = (string) $ip;
+
+		if(xivo_filter::chk_ipv4($ip) === true
+		&& preg_match('#^([1-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.'.
+				'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.'.
+				'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.'.
+				'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$#i',$ip) === 1)
+			return(true);
+
+		return(false);
+	}
+
 	function chk_host($host)
 	{
 		$host = (string) $host;
 
-		if(gethostbyname($host) === $host)
-			return(false);
+		if(preg_match('#^[a-z0-9-]+(\.[a-z0-9-]+)*\.[a-z]{2,4}$#i',$host) === 1)
+			return(true);
 
-		return(true);
+		return(false);
 	}
 
-	function chk_host_ipv4($value,$strict=false)
+	function chk_host_ipv4($value)
 	{
-		$strict = (bool) $strict;
-
-		if(xivo_filter::chk_host($value) === true || xivo_filter::chk_ipv4($value) === true)
+		if(xivo_filter::chk_ipv4($value) === true || xivo_filter::chk_host($value) === true)
 			return(true);
 
 		return(false);
@@ -91,12 +131,7 @@ class xivo_filter
 
 	function chk_host_ipv4_strict($value)
 	{
-		if(xivo_filter::chk_host_ipv4($value,true) === true
-		&& preg_match('#^(([a-z0-9-]+)(\.[a-z0-9-]+)*(\.[a-z]{2,4})'.
-				'|([1-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.'.
-				'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.'.
-				'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.'.
-				'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))$#i',$value) === 1)
+		if(xivo_filter::chk_ipv4_strict($value) === true || xivo_filter::chk_host($value) === true)
 			return(true);
 
 		return(false);

@@ -6,7 +6,7 @@ if(($users = $ipbx->get_users_list()) !== false)
 {
 	$total = count($users);
 	xivo::load_class('xivo_sort');
-	$sort = new xivo_sort(array('browse' => 'protocol','key' => 'callerid'));
+	$sort = new xivo_sort(array('browse' => 'sort','key' => 'name'));
 	usort($users,array(&$sort,'str_usort'));
 }
 

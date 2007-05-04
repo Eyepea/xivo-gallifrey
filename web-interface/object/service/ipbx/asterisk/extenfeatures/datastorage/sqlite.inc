@@ -1,6 +1,6 @@
 <?php
 
-require_once(XIVO_PATH_OBJECT.XIVO_SEP_DIR.'service'.XIVO_SEP_DIR.'ipbx'.XIVO_SEP_DIR.'asterisk'.XIVO_SEP_DIR.'extensions'.XIVO_SEP_DIR.'datastorage'.XIVO_SEP_DIR.'sqlite.inc');
+xivo_file::required(array(XIVO_PATH_OBJECT,'service','ipbx','asterisk','extensions','datastorage','sqlite.inc'),true);
 
 class xivo_service_asterisk_extenfeatures_sqlite extends xivo_service_asterisk_extensions_sqlite
 {

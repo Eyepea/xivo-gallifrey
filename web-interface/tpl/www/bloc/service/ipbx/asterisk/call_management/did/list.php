@@ -43,7 +43,7 @@
 
 			$type = $this->bbf('did_type-'.$ref['dfeatures']['type']); 
 
-			if($ref['dfeatures']['disable'] === true):
+			if($ref['dfeatures']['commented'] === true):
 				$icon = 'unavailable';
 				$type = '-';
 			elseif($ref['did']['commented'] === true):
@@ -54,7 +54,7 @@
 
 			$fullname = $number = '-';
 
-			if($ref['tyfeatures'] !== false && $ref['dfeatures']['disable'] === false):
+			if($ref['tyfeatures'] !== false && $ref['dfeatures']['commented'] === false):
 				if($ref['dfeatures']['type'] !== 'user'):
 					$fullname = $ref['tyfeatures']['name'];
 				elseif(xivo_empty($ref['tyfeatures']['firstname']) === false || xivo_empty($ref['tyfeatures']['lastname']) === false):
