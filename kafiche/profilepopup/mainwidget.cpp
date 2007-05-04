@@ -84,7 +84,7 @@ void MainWidget::affTextChanged()
 {
 	QString txt = m_messagetosend->text();
 	txt.replace(" ", "_");
-	m_engine->sendMessage(txt);
+	m_engine->sendMessage(txt.toUtf8());
 	m_messagetosend->setText("");
 }
 
