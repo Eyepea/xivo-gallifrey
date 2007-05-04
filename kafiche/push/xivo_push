@@ -100,11 +100,11 @@ def get_ldap_infos(config, cid):
 	try:
 		who = result[0][1]
 		if 'cn' in who.keys():        callid    = who['cn'][0]
+		sys.stdout.write("SET CALLERID \"%s\"\n" %callid)
 		if 'mail' in who.keys():      mail      = who['mail'][0]
 		if 'givenName' in who.keys(): firstname = who['givenName'][0]
 		if 'sn' in who.keys():        name      = who['sn'][0]
 		if 'o' in who.keys():         company   = who['o'][0]
-		sys.stdout.write("SET CALLERID \"%s\"\n" %r)
 	except:
 		print "No callerid from OX"
 	return [callid, mail, name, firstname, company]
