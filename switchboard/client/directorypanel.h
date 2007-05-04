@@ -1,4 +1,4 @@
-/* $Id: $
+/* $Id$
  * $Log: $
  */
 #ifndef __DIRECTORYPANEL_H__
