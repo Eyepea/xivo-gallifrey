@@ -53,7 +53,7 @@ void SwitchBoardEngine::loadSettings()
 {
 	QSettings settings;
 	m_host = settings.value("engine/serverhost").toString();
-	m_port = settings.value("engine/serverport", 5081).toUInt();
+	m_port = settings.value("engine/serverport", 5003).toUInt();
 	m_autoconnect = settings.value("engine/autoconnect", false).toBool();
 	m_asterisk = settings.value("engine/asterisk").toString();
 	m_protocol = settings.value("engine/protocol").toString();
