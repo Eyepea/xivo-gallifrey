@@ -60,21 +60,24 @@ MainWidget::MainWidget(Engine *engine, QWidget *parent)
 	setWindowIcon(QIcon(":/xivoicon.png"));
 	statusBar()->clearMessage();
 	
-	QWidget * wid = new QWidget();
-	QVBoxLayout * vbox = new QVBoxLayout(wid);
 
 	m_tabwidget = new QTabWidget();
+
+#ifndef DISABLE_SWITCHBOARD_MESSAGES
+	QWidget * wid = new QWidget();
+	QVBoxLayout * vbox = new QVBoxLayout(wid);
 	QLabel * labelwhat = new QLabel(tr("Tell the Switchboard :"));
 	m_messagetosend = new QLineEdit();
 	connect( m_messagetosend, SIGNAL(returnPressed()),
-	         this, SLOT(affTextChanged()) );
+		 this, SLOT(affTextChanged()) );
 	vbox->addWidget(m_tabwidget, 1);
 	vbox->addWidget(labelwhat, 0);
 	vbox->addWidget(m_messagetosend, 0);
-
 	wid->show();
-
 	setCentralWidget(wid);
+#else
+	setCentralWidget(m_tabwidget);
+#endif
 	QSettings settings;
 	m_tablimit = settings.value("display/tablimit", 5).toInt();
 }
