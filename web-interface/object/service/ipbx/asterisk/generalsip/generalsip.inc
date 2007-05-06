@@ -4,14 +4,17 @@ xivo_file::required(array(XIVO_PATH_OBJECT,'service','ipbx','asterisk','staticco
 
 class xivo_service_asterisk_generalsip extends xivo_service_asterisk_staticconf
 {
-	var $_dso	= null;
-	var $_name	= 'generalsip';
-	var $_filename	= 'sip.conf';
-	var $_category	= 'general';
-	var $_filter	= null;
+	var $_dso		= null;
+	var $_name		= 'generalsip';
+	var $_filename		= 'sip.conf';
+	var $_category		= 'general';
+	var $_filter		= null;
+	var $_generalsip	= array();
 
 	function xivo_service_asterisk_generalsip(&$sre,&$dso)
 	{
+		$this->_load_staticconf_config();
+
 		if(is_object($sre) === false)
 			trigger_error('Invalid service in '.__CLASS__,E_USER_ERROR);
 
@@ -22,6 +25,7 @@ class xivo_service_asterisk_generalsip extends xivo_service_asterisk_staticconf
 		$this->_dso = &$dso;
 
 		$this->_load_config();
+		$this->_generalsip['conf'] = $this->_conf;
 	}
 
 	function get_by_name($name,$disable=null)
@@ -58,7 +62,13 @@ class xivo_service_asterisk_generalsip extends xivo_service_asterisk_staticconf
 		$arr = (array) $arr;
 		$arr['category'] = $this->_category;
 
-		return(parent::edit_where($arr,$val,$disable));
+		$this->_conf = &$this->_staticconf['conf'];
+
+		$r = parent::edit_where($arr,$val,$disable);
+
+		$this->_conf = &$this->_generalsip['conf'];
+
+		return($r);
 	}
 
 	function replace_by_name($name,$arr)
@@ -90,7 +100,38 @@ class xivo_service_asterisk_generalsip extends xivo_service_asterisk_staticconf
 		$arr = (array) $arr;
 		$arr['category'] = $this->_category;
 
-		return(parent::get_list_where($arr,$disable));
+		$this->_conf = &$this->_staticconf['conf'];
+
+		$r = parent::get_list_where($arr,$disable);
+
+		$this->_conf = &$this->_generalsip['conf'];
+
+		return($r);
+	}
+
+	function _prepare_get_all_where($arr=array(),$disable=null)
+	{
+		$this->_conf = &$this->_staticconf['conf'];
+
+		$r = parent::_prepare_get_all_where($arr,$disable);
+
+		$this->_conf = &$this->_generalsip['conf'];
+
+		return($r);
+	}
+
+	function get_all_where($arr=array(),$disable=null)
+	{
+		$arr = (array) $arr;
+		$arr['category'] = $this->_category;
+
+		$this->_conf = &$this->_staticconf['conf'];
+
+		$r = parent::get_all_where($arr,$disable);
+
+		$this->_conf = &$this->_generalsip['conf'];
+
+		return($r);
 	}
 }
 

@@ -34,7 +34,14 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		if($orig === true)
 			$this->_origin = $r;
 
+		$r = $this->_prepare($r);
+
 		return($r);
+	}
+
+	function _prepare($data)
+	{
+		return($data);
 	}
 
 	function add_origin()
@@ -184,14 +191,6 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		return($this->_dso->delete($id));
 	}
 
-	function get_search($value)
-	{
-		if(($r = $this->_dso->get_search($value)) !== false && isset($r[0]) === false)
-			$r = false;
-
-		return($r);
-	}
-
 	function get_where($arr)
 	{
 		$arr = (array) $arr;
@@ -202,12 +201,46 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		return($this->_dso->get_where($where));
 	}
 
-	function get_all_number($disable=null)
+	function get_search($value)
 	{
-		$r = false;
+		if(($list = $this->_dso->get_search($value)) === false)
+			return(false);
 
-		if(($list = $this->get_list()) === false)
-			return($r);
+		$nb = count($list);
+
+		$r = array();
+
+		for($i = 0;$i < $nb;$i++)
+			$r[] = $this->_prepare($list[$i]);
+
+		if(isset($r[0]) === false)
+			$r = false;
+
+		return($r);
+	}
+
+	function get_all()
+	{
+		if(($list = $this->_dso->get_all()) === false)
+			return(false);
+
+		$nb = count($list);
+
+		$r = array();
+
+		for($i = 0;$i < $nb;$i++)
+			$r[] = $this->_prepare($list[$i]);
+
+		if(isset($r[0]) === false)
+			$r = false;
+
+		return($r);
+	}
+
+	function get_all_number()
+	{
+		if(($list = $this->_dso->get_all()) === false)
+			return(false);
 
 		$nb = count($list);
 
@@ -215,7 +248,9 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			if(($info = $this->get($list[$i],$disable)) === false || xivo_empty($info['number']) === true)
+			$info = $this->_prepare($list[$i]);
+
+			if(xivo_empty($info['number']) === true)
 				continue;
 
 			$r[] = $info;

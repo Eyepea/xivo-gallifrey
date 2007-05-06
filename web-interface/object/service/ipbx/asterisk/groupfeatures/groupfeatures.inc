@@ -29,8 +29,14 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 			return(false);
 
 		$this->_origin = $r;
+		$r = $this->_prepare($r);
 
 		return($r);
+	}
+
+	function _prepare($data)
+	{
+		return($data);
 	}
 
 	function add_origin()
@@ -164,12 +170,28 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 		return($this->_dso->get_where($where));
 	}
 
+	function get_all($disable=null)
+	{
+		if(($list = $this->_dso->get_all($disable)) === false)
+			return(false);
+
+		$nb = count($list);
+
+		$r = array();
+
+		for($i = 0;$i < $nb;$i++)
+			$r[] = $this->_prepare($list[$i]);
+
+		if(isset($r[0]) === false)
+			$r = false;
+
+		return($r);
+	}
+
 	function get_all_number($disable=null)
 	{
-		$r = false;
-
-		if(($list = $this->get_list()) === false)
-			return($r);
+		if(($list = $this->_dso->get_all($disable)) === false)
+			return(false);
 
 		$nb = count($list);
 
@@ -177,7 +199,9 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			if(($info = $this->get($list[$i],$disable)) === false || $info['number'] === '' || $info['number'] === null)
+			$info = $this->_prepare($list[$i]);
+
+			if(xivo_empty($info['number']) === true)
 				continue;
 
 			$r[] = $info;

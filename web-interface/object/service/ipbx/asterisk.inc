@@ -59,7 +59,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 				break;
 			case 'list':
 			default:
-				$rs = $ufeatures->get_list();
+				$rs = $ufeatures->get_all();
 		}
 
 		if($rs === false || ($nb = count($rs)) === 0)
@@ -67,15 +67,16 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			if(($info['ufeatures'] = $ufeatures->get($rs[$i])) === false
-			|| in_array($info['ufeatures']['protocol'],$protocols) === false
+			$info['ufeatures'] = $rs[$i];
+
+			if(in_array($info['ufeatures']['protocol'],$protocols) === false
 			|| ($protocol = &$this->get_protocol_module($info['ufeatures']['protocol'])) === false
 			|| ($info['protocol'] = $protocol->get($info['ufeatures']['protocolid'],$disable)) === false)
 				continue;
 
 			$info['sort'] = array();
 			$info['sort']['name'] = trim($info['ufeatures']['firstname'].' '.$info['ufeatures']['lastname']);
-			
+
 			if($info['sort']['name'] === '')
 				$info['sort']['name'] = '-';
 
@@ -96,15 +97,16 @@ class xivo_service_asterisk extends xivo_service_abstract
 		$queue = &$this->get_module('queue');
 		$qmember = &$this->get_module('queuemember');
 
-		if(($rs = $gfeatures->get_list($disable)) === false || ($nb = count($rs)) === 0)
+		if(($rs = $gfeatures->get_all($disable)) === false || ($nb = count($rs)) === 0)
 			return($r);
 
 		$r = $info = array();
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			if(($info['gfeatures'] = $gfeatures->get($rs[$i],$disable)) === false
-			|| ($info['queue'] = $queue->get($info['gfeatures']['name'],$disable)) === false
+			$info['gfeatures'] = $rs[$i];
+
+			if(($info['queue'] = $queue->get($info['gfeatures']['name'],$disable)) === false
 			|| ($info['nb_qmember'] = $qmember->get_nb_by_name($info['queue']['name'],$disable)) === false)
 				continue;
 
@@ -124,15 +126,16 @@ class xivo_service_asterisk extends xivo_service_abstract
 		$meetme = &$this->get_module('meetme');
 		$mfeatures = &$this->get_module('meetmefeatures');
 
-		if(($rs = $meetme->get_list($disable)) === false || ($nb = count($rs)) === 0)
+		if(($rs = $meetme->get_all($disable)) === false || ($nb = count($rs)) === 0)
 			return($r);
 
 		$r = $info = array();
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			if(($info['meetme'] = $meetme->get($rs[$i],$disable)) === false
-			|| ($info['mfeatures'] = $mfeatures->get_by_meetme($info['meetme']['id'])) === false)
+			$info['meetme'] = $rs[$i];
+
+			if(($info['mfeatures'] = $mfeatures->get_by_meetme($info['meetme']['id'])) === false)
 				continue;
 
 			$r[] = $info;
@@ -157,18 +160,17 @@ class xivo_service_asterisk extends xivo_service_abstract
 		$where['app'] = 'Macro';
 		$where['appdata'] = 'superdid';
 
-		if(($rs = $extensions->get_list_where($where,$disable)) === false || ($nb = count($rs)) === 0)
+		if(($rs = $extensions->get_all_where($where,$disable)) === false || ($nb = count($rs)) === 0)
 			return($r);
 
 		$r = $info = array();
-		$info['tyfeatures'] = false;
 
 		for($i = 0;$i < $nb;$i++)
 		{
+			$info['did'] = $rs[$i];
 			$info['tyfeatures'] = false;
 
-			if(($info['did'] = $extensions->get($rs[$i],$disable)) === false
-			|| ($info['dfeatures'] = $dfeatures->get_by_extenid($info['did']['id'])) === false
+			if(($info['dfeatures'] = $dfeatures->get_by_extenid($info['did']['id'])) === false
 			|| ($info['extenumbers'] = $extenumbers->get_by_number_context($info['did']['exten'],$info['did']['context'])) === false
 			|| ($info['dfeatures']['type'] !== 'custom' && $info['dfeatures']['commented'] === false
 			   && (($tyfeatures = &$this->get_module($info['dfeatures']['type'].'features')) === false

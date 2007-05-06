@@ -103,6 +103,18 @@ class xivo_service_asterisk_groupfeatures_abstract_sql
 		return($r);
 	}
 
+	function get_all($disable=null)
+	{
+		$where = '';
+
+		if($disable !== null)
+			$where = 'commented = '.intval((bool) $disable);
+
+		$r = $this->_dso->select_all($this->_param['table'],null,$where);
+
+		return($r);
+	}
+
 	function get_last()
 	{
 		$r = $this->_dso->select_one($this->_param['table'],'COUNT(id) AS cnt, MAX(id) AS id');

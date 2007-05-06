@@ -123,29 +123,20 @@ class xivo_service_asterisk_userfeatures_abstract_sql
 		return($r);
 	}
 
+	function get_all()
+	{
+		$r = $this->_dso->select_all($this->_param['table']);
+
+		return($r);
+	}
+
 	function get_search($value)
 	{
-		$r = false;
-
 		$value = $this->_dso->escape_string($value);
+		$like = 'LIKE \'%'.$value.'%\'';
+		$where = 'firstname '.$like.' OR lastname '.$like.' OR number '.$like.' OR name '.$like.' OR context '.$like;
 
-		$rs = $this->_dso->query('SELECT id FROM '.$this->_param['table'].
-		      ' WHERE firstname LIKE \'%'.$value.'%\' OR lastname LIKE \'%'.$value.'%\''.
-		      ' OR number LIKE \'%'.$value.'%\'');
-	
-		if($rs === false)
-			return(false);
-
-		$r = array();
-
-		while($rw = $this->_dso->fetch_assoc($rs))
-			$r[] = $rw['id'];
-
-		if($this->_dso->is_free() === true)
-			$this->_dso->free($rs);
-
-		if(isset($r[0]) === false)
-			$r = false;
+		$r = $this->_dso->select_all($this->_param['table'],null,$where);
 
 		return($r);
 	}

@@ -33,13 +33,20 @@ class xivo_service_asterisk_meetme extends xivo_service_asterisk_staticconf
 
 		$this->_origin = $r;
 
-		$val = explode(',',$r['var_val']);
-
-		$r['number'] = isset($val[0]) === true ? $val[0] : '';
-		$r['pin'] = isset($val[1]) === true ? $val[1] : '';
-		$r['admin-pin'] = isset($val[2]) === true ? $val[2] : '';
+		$r = $this->_prepare($r);
 
 		return($r);
+	}
+
+	function _prepare($data)
+	{
+		$val = explode(',',$data['var_val']);
+
+		$data['number'] = isset($val[0]) === true ? $val[0] : '';
+		$data['pin'] = isset($val[1]) === true ? $val[1] : '';
+		$data['admin-pin'] = isset($val[2]) === true ? $val[2] : '';
+
+		return($data);
 	}
 
 	function add_origin()

@@ -52,6 +52,7 @@ do
 	}
 
 	$_QR['ufeatures']['name'] = $result['protocol']['name'];
+	$_QR['ufeatures']['context'] = $result['protocol']['context'];
 	$_QR['ufeatures']['protocol'] = $_QR['protocol']['protocol'];
 	$_QR['ufeatures']['protocolid'] = 0;
 

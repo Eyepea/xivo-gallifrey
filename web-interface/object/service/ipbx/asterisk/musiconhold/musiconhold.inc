@@ -4,14 +4,17 @@ xivo_file::required(array(XIVO_PATH_OBJECT,'service','ipbx','asterisk','staticco
 
 class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 {
-	var $_dso	= null;
-	var $_name	= 'musiconhold';
-	var $_filename	= 'musiconhold.conf';
-	var $_filter	= null;
-	var $_mohpath	= '';
+	var $_dso		= null;
+	var $_name		= 'musiconhold';
+	var $_filename		= 'musiconhold.conf';
+	var $_filter		= null;
+	var $_mohpath		= '';
+	var $_musiconhold	= array();
 
 	function xivo_service_asterisk_musiconhold(&$sre,&$dso)
 	{
+		$this->_load_staticconf_config();
+
 		if(is_object($sre) === false)
 			trigger_error('Invalid service in '.__CLASS__,E_USER_ERROR);
 
@@ -30,6 +33,7 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 			trigger_error('file_uploads php.ini directive is set at "false"',E_USER_ERROR);
 
 		$this->_load_config();
+		$this->_musiconhold['conf'] = $this->_conf;
 
 		$this->_set_element_default('directory',$this->_mohpath);
 
@@ -47,6 +51,7 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 		}
 
 		$this->_conf['option']['file']['size'] = $size;
+		$this->_musiconhold['conf']['option']['file']['size'] = $size;
 	}
 
 	function _chk_mohpath()
@@ -166,12 +171,19 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 			return($r);
 
 		$category = $arr['category'];
-		unset($arr['category']);
 
 		if($this->add_dir($category) === false)
 			return($r);
 
 		$arr['directory'] = $this->_mohpath.XIVO_SEP_DIR.$category;
+
+		if(($r = parent::get_category($category)) !== false)
+		{
+			parent::edit_category($category,$arr);
+			return($r);
+		}
+
+		unset($arr['category']);
 
 		if(($r = parent::add_category($category,$arr)) !== false)
 			return($r);
@@ -194,6 +206,9 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 			return($r);
 
 		$arr['directory'] = $this->_mohpath.XIVO_SEP_DIR.$category;
+
+		if($id !== $category && parent::get_category($category) !== false)
+			parent::delete_by_category($category);
 
 		if(($r = parent::edit_category($id,$arr)) !== false)
 			return($r);
@@ -320,8 +335,6 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 
 	function add_dir($name)
 	{
-		$r = false;
-
 		$name = (string) $name;
 
 		$dir = $this->_mohpath.XIVO_SEP_DIR.$name;
@@ -330,7 +343,7 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 		|| preg_match($match_dir,$name) !== 1
 		|| xivo_file::is_d_rwx($this->_mohpath) === false
 		|| xivo_file::is_d($dir) !== false) 
-			return($r);
+			return(false);
 
 		$r = mkdir($dir);
 
@@ -345,17 +358,19 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 		$newname = (string) $newname;
 
 		$dir = $this->_mohpath.XIVO_SEP_DIR.$name;
+		$newdir = $this->_mohpath.XIVO_SEP_DIR.$newname;
 
 		if(($match_dir = $this->_get_option_dir_name()) === false
 		|| preg_match($match_dir,$newname) !== 1
 		|| xivo_file::is_d_rwx($this->_mohpath) === false
-		|| xivo_file::is_d($dir) === false)
+		|| xivo_file::is_d($dir) === false
+		|| xivo_file::is_d($newdir) !== false)
 			return($r);
 
 		if($name === $newname)
 			return(true);
 
-		$r = rename($dir,$this->_mohpath.XIVO_SEP_DIR.$newname);
+		$r = rename($dir,$newdir);
 
 		return($r);
 	}
@@ -423,6 +438,29 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 		return($r);
 	}
 
+	function get_all_category($arr=array(),$disable=null)
+	{
+		if(($list = $this->_prepare_get_all_where($arr,$disable)) === false)
+			return(false);
+		
+		$nb = count($list);
+
+		$r = array();
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			if($this->_chk_dir($list[$i]['category'],true) === false)
+				continue;
+
+			$r[$list[$i]['category']] = $list[$i];
+		}
+
+		if(empty($r) === true)
+			$r = false;
+
+		return($r);
+	}
+
 	function get_list_files($dir='')
 	{
 		$dir = (string) $dir;
@@ -457,6 +495,39 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 
 		if($r !== false && isset($r[0]) === false)
 			$r = false;
+
+		return($r);
+	}
+
+	function get_list_where($arr=array(),$disable=null)
+	{
+		$this->_conf = &$this->_staticconf['conf'];
+
+		$r = parent::get_list_where($arr,$disable);
+
+		$this->_conf = &$this->_musiconhold['conf'];
+
+		return($r);
+	}
+
+	function _prepare_get_all_where($arr=array(),$disable=null)
+	{
+		$this->_conf = &$this->_staticconf['conf'];
+
+		$r = parent::_prepare_get_all_where($arr,$disable);
+
+		$this->_conf = &$this->_musiconhold['conf'];
+
+		return($r);
+	}
+
+	function get_all_where($arr=array(),$disable=null)
+	{
+		$this->_conf = &$this->_staticconf['conf'];
+
+		$r = parent::get_all_where($arr,$disable);
+
+		$this->_conf = &$this->_musiconhold['conf'];
 
 		return($r);
 	}

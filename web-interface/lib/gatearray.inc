@@ -156,9 +156,9 @@ class xivo_gat
 		return(($ref = &$aga->get($name)));
 	}
 
-	function get_file($path)
+	function get_file($path,$once=true)
 	{
-		return(xivo_gatearray::get_file($path));
+		return(xivo_gatearray::get_file($path,$once));
 	}
 
 	function &load_get($file,$path='',$name='')

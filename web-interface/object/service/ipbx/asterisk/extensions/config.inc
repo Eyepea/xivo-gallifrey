@@ -3,6 +3,7 @@
 $array = array();
 
 $array['element'] = array();
+
 $array['element']['context'] = array();
 $array['element']['context']['default'] = 'default';
 

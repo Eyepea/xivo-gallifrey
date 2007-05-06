@@ -67,7 +67,7 @@ class xivo_datastorage_abstract_sql
 		return((bool) $this->_free);
 	}
 
-	function select_hash($t,$s='',$w='',$o='')
+	function select_all($t,$s='',$w='',$o='')
 	{
 		$t = trim((string) $t);
 		$s = trim((string) $s);
@@ -80,11 +80,10 @@ class xivo_datastorage_abstract_sql
 		if($o !== '')
 			$o = ' '.$o;
 
-		$r = false;
 		$q = sprintf('SELECT %s FROM %s WHERE %s%s',$s,$t,($w !== '' ? $w : 1),$o);
 
 		if($this->query($q) === false)
-			return($r);
+			return(false);
 
 		$r = array();
 

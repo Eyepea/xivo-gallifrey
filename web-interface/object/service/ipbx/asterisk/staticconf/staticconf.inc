@@ -4,14 +4,34 @@ xivo_file::required(array(XIVO_PATH_OBJECT,'service','ipbx','asterisk','abstract
 
 class xivo_service_asterisk_staticconf extends xivo_service_asterisk_abstract
 {
+	var $_staticconf	= array();
+
+	function _load_staticconf_config()
+	{
+		if(empty($this->_staticconf) === false)
+			return(null);
+
+		$dir = dirname(__FILE__).XIVO_SEP_DIR.'config';
+
+		if(($this->_staticconf['conf'] = xivo_gat::get_file($dir,false)) === false)
+			$this->_staticconf = array();
+	}
+
 	function get($id,$disable=null)
 	{
 		if(($id = xivo_uint($id)) === 0 || ($r = $this->_dso->get($id,$disable)) === false)
 			return(false);
 
-		$r['commented'] = (bool) $r['commented'];
+		$r = $this->_prepare($r);
 
 		return($r);
+	}
+
+	function _prepare($data)
+	{
+		$data['commented'] = (bool) $data['commented'];
+
+		return($data);
 	}
 
 	function get_where($arr,$disable=null)
@@ -231,41 +251,12 @@ class xivo_service_asterisk_staticconf extends xivo_service_asterisk_abstract
 	{
 		$arr = (array) $arr;
 
-		if(is_array($val) === false)
+		$arr['filename'] = $this->_filename;
+
+		if(is_array($val) === false
+		|| ($where = $this->get_elements_where($arr)) === false
+		|| ($values = $this->chk_set_values($val,true,true)) === false)
 			return(false);
-
-		$values = array();
-
-		if(array_key_exists('commented',$val) === true)
-			$values['commented'] = (bool) intval($val['commented']);
-
-		if(array_key_exists('category',$val) === true)
-			$values['category'] = $val['category'];
-
-		if(array_key_exists('var_name',$val) === true)
-			$values['var_name'] = $val['var_name'];
-
-		if(array_key_exists('var_val',$val) === true)
-			$values['var_val'] = $val['var_val'];
-
-		if(empty($values) === true)
-			return(false);
-
-		$where = array();
-
-		$where['filename'] = $this->_filename;
-
-		if(array_key_exists('id',$arr) === true)
-			$where['id'] = $arr['id'];
-
-		if(array_key_exists('category',$arr) === true)
-			$where['category'] = $arr['category'];
-
-		if(array_key_exists('var_name',$arr) === true)
-			$where['var_name'] = $arr['var_name'];
-
-		if(array_key_exists('var_val',$arr) === true)
-			$where['var_val'] = $arr['var_val'];
 
 		return($this->_dso->edit_where($where,$values,$disable));
 	}
@@ -335,19 +326,13 @@ class xivo_service_asterisk_staticconf extends xivo_service_asterisk_abstract
 	{
 		$arr = (array) $arr;
 
-		$where = array();
-		$where['filename'] = $this->_filename;
+		unset($arr['commented']);
 
-		if(isset($arr['category']) === true)
-			$where['category'] = $arr['category'];
+		$arr['filename'] = $this->_filename;
 
-		if(isset($arr['var_name']) === true)
-			$where['var_name'] = $arr['var_name'];
-
-		if(isset($arr['var_val']) === true)
-			$where['var_val'] = $arr['var_val'];
-
-		if(($r = $this->_dso->get_list_where($where,$disable)) !== false && isset($r[0]) === false)
+		if(($where = $this->get_elements_where($arr)) === false
+		|| ($r = $this->_dso->get_list_where($where,$disable)) === false
+		|| isset($r[0]) === false)
 			$r = false;
 
 		return($r);
@@ -355,24 +340,15 @@ class xivo_service_asterisk_staticconf extends xivo_service_asterisk_abstract
 
 	function get_name_val($arr=array(),$disable=null)
 	{
-		$r = false;
-
-		$arr = (array) $arr;
-
-		if(($list = $this->get_list_where($arr)) === false)
-			return($r);
+		if(($list = $this->_prepare_get_all_where($arr,$disable)) === false)
+			return(false);
 
 		$nb = count($list);
 
 		$r = array();
 
 		for($i = 0;$i < $nb;$i++)
-		{
-			if(($info = $this->get($list[$i],$disable)) === false)
-				continue;
-
-			$r[$info['var_name']] = $info['var_val'];
-		}
+			$r[$list[$i]['var_name']] = $list[$i]['var_val'];
 
 		if(empty($r) === true)
 			$r = false;
@@ -382,10 +358,8 @@ class xivo_service_asterisk_staticconf extends xivo_service_asterisk_abstract
 
 	function get_name_val_by_category($arr=array(),$disable=null)
 	{
-		$r = false;
-
-		if(($list = $this->get_list_where($arr)) === false)
-			return($r);
+		if(($list = $this->_prepare_get_all_where($arr,$disable)) === false)
+			return(false);
 
 		$nb = count($list);
 
@@ -393,8 +367,7 @@ class xivo_service_asterisk_staticconf extends xivo_service_asterisk_abstract
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			if(($info = $this->get($list[$i],$disable)) === false)
-				continue;
+			$info = &$list[$i];
 
 			if(isset($r[$info['category']]) === false)
 				$r[$info['category']] = array();
@@ -412,22 +385,15 @@ class xivo_service_asterisk_staticconf extends xivo_service_asterisk_abstract
 
 	function get_all_category($arr=array(),$disable=null)
 	{
-		$r = false;
-
-		if(($list = $this->get_list_where($arr)) === false)
-			return($r);
-
+		if(($list = $this->_prepare_get_all_where($arr,$disable)) === false)
+			return(false);
+		
 		$nb = count($list);
 
 		$r = array();
 
 		for($i = 0;$i < $nb;$i++)
-		{
-			if(($info = $this->get($list[$i],$disable)) === false)
-				continue;
-
-			$r[$info['category']] = $info;
-		}
+			$r[$list[$i]['category']] = $list[$i];
 
 		if(empty($r) === true)
 			$r = false;
@@ -435,24 +401,19 @@ class xivo_service_asterisk_staticconf extends xivo_service_asterisk_abstract
 		return($r);
 	}
 
-	function get_all($disable=null)
+	function get_all($disable=null,$prepare=true)
 	{
-		$r = false;
+		$prepare = (bool) $prepare;
 
-		if(($list = $this->get_list($disable)) === false)
-			return($r);
+		if(($list = $this->_dso->get_all($disable)) === false)
+			return(false);
 
 		$nb = count($list);
 
 		$r = array();
 
 		for($i = 0;$i < $nb;$i++)
-		{
-			if(($info = $this->get($list[$i],$disable)) === false)
-				continue;
-
-			$r[] = $info;
-		}
+			$r[] = $prepare === true ? $this->_prepare($list[$i]) : $list[$i];
 
 		if(isset($r[0]) === false)
 			$r = false;
@@ -460,26 +421,37 @@ class xivo_service_asterisk_staticconf extends xivo_service_asterisk_abstract
 		return($r);
 	}
 
-	function get_all_where($arr=array(),$disable=null)
+	function get_all_where($arr=array(),$disable=null,$prepare=true)
 	{
-		$r = false;
+		$prepare = (bool) $prepare;
 
-		if(($list = $this->get_list_where($arr)) === false)
-			return($r);
+		if(($list = $this->_prepare_get_all_where($arr,$disable)) === false)
+			return(false);
 
 		$nb = count($list);
 
 		$r = array();
 
 		for($i = 0;$i < $nb;$i++)
-		{
-			if(($info = $this->get($list[$i],$disable)) === false)
-				continue;
-
-			$r[] = $info;
-		}
+			$r[] = $prepare === true ? $this->_prepare($list[$i]) : $list[$i];
 
 		if(isset($r[0]) === false)
+			$r = false;
+
+		return($r);
+	}
+
+	function _prepare_get_all_where($arr=array(),$disable=null)
+	{
+		$arr = (array) $arr;
+
+		unset($arr['commented']);
+
+		$arr['filename'] = $this->_filename;
+
+		if(($where = $this->get_elements_where($arr)) === false
+		|| ($r = $this->_dso->get_all_where($where,$disable)) === false
+		|| isset($r[0]) === false)
 			$r = false;
 
 		return($r);
@@ -487,22 +459,15 @@ class xivo_service_asterisk_staticconf extends xivo_service_asterisk_abstract
 
 	function get_all_name($arr=array(),$disable=null)
 	{
-		$r = false;
-
-		if(($list = $this->get_list_where($arr)) === false)
-			return($r);
+		if(($list = $this->_prepare_get_all_where($arr,$disable)) === false)
+			return(false);
 
 		$nb = count($list);
 
 		$r = array();
 
 		for($i = 0;$i < $nb;$i++)
-		{
-			if(($info = $this->get($list[$i],$disable)) === false)
-				continue;
-
-			$r[$info['var_name']] = $info;
-		}
+			$r[$list[$i]['var_name']] = $list[$i];
 
 		if(empty($r) === true)
 			$r = false;

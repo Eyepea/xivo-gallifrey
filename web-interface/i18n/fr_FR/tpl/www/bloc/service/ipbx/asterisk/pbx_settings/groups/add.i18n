@@ -7,6 +7,9 @@ Nom :
 ; fm_gfeatures_number
 Numéro :
 
+; fm_gfeatures_context
+Contexte :
+
 ; fm_queue_timeout
 Temps de sonnerie :
 
