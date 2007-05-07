@@ -11,25 +11,9 @@ except:
 
 conn = sqlite.connect(DB)
 cursor = conn.cursor()
-query = "select id from extensions where exten=%d" %exten
-q = False
-
-while (not q):
-	try:
-		cursor.execute(query)
-		q = True
-	except:
-		print "DB lock!"
-		print "try again ..."
-
-r = cursor.fetchone()
-
-if r.id:
-	query = "select * from didfeatures where extenid=%d" % r.id
-	cursor.execute(query)
-	t = cursor.fetchone()
-
-	print t
+query = "select * from didfeatures where number=%d" % exten
+cursor.execute(query)
+t = cursor.fetchone()
 
 if t.type == 'custom':
 	(apps, args) = t.custom.split('(')
@@ -43,7 +27,7 @@ if t.type == 'meetme':
 	cursor.execute(query)
 	m = cursor.fetchone()
 	num = int(m[0])
-	query = "select * from extenumbers where number=%d" % num
+	query = "select * from extenumbers where number=%d and context!='did-extensions'" % num
 	cursor.execute(query)
 	g = cursor.fetchone()
 	print "ANSWER"
@@ -54,14 +38,14 @@ if t.type == 'user':
 	cursor.execute(query)
 	u = cursor.fetchone()
 	num = int(u[0])
-	query = "select * from extenumbers where number=%d" % num
+	query = "select * from extenumbers where number=%d and context!='did-extensions'" % num
 	cursor.execute(query)
 	g = cursor.fetchone()
 	print "ANSWER"
 	print "EXEC GOTO \"%s|%s|1\"" %(g.context,g.number)
 
 if t.type == 'group':
-	query = "select number from groupfeatures where id=%d" % t.typeid
+	query = "select number from groupfeatures where id=%d and context!='did-extensions'" % t.typeid
 	cursor.execute(query)
 	g = cursor.fetchone()
 	print g

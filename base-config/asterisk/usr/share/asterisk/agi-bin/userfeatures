@@ -45,19 +45,13 @@ def find_informations_by_extension(exten):
 		except:
 			return_exit("Error no name !", "invalid")
 
-		query = "select * from usergroup where userid=%d" % int(id)
-		cursor.execute(query)
-
-		d = cursor.fetchone()
-
 		try:
-			query = "select * from groupfeatures where id=%d and disable=0" % int(d.groupid)
+			query = "select groupfeatures.name from usergroup,groupfeatures where userid='%d';" % int(id)
 			cursor.execute(query)
 
-			e = cursor.fetchone()
+			d = cursor.fetchone()
 
-			queuename = e.name
-
+			queuename = d[0]
 		except:
 			queuename = 0
 

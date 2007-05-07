@@ -5,13 +5,13 @@ import sqlite, sys
 DB = '/var/lib/asterisk/astsqlite'
 
 try:
-	exten = int(sys.argv[1])
+	exten = sys.argv[1]
 except:
 	sys.exit()
 
 conn = sqlite.connect(DB)
 cursor = conn.cursor()
-query = "select name,number from groupfeatures where number=%d" %exten
+query = "select name,number from groupfeatures where number='%s'" %exten
 q = False
 
 while (not q):
@@ -25,7 +25,7 @@ while (not q):
 r = cursor.fetchone()
 
 try:
-	print "SET VARIABLE EXT %d" % int(r['number'])
+	print "SET VARIABLE EXT %s" % r['number']
 	print "SET VARIABLE GNAME %s" % r['name']
 except:
 	pass
