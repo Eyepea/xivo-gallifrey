@@ -1,5 +1,7 @@
 # -*- coding: iso-8859-15 -*-
 
+REV_DATE = "$Revision$ $Date$"
+
 import syslog
 from syslog import syslog      as syslogf
 from syslog import LOG_EMERG   as SYSLOG_EMERG

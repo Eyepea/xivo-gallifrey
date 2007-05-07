@@ -22,6 +22,8 @@ Copyright (C) 2007, Proformatique
 
 """
 
+REV_DATE = "$Revision$ $Date$"
+
 import time, thread, threading
 
 class RWLock:

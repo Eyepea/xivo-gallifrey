@@ -8,6 +8,8 @@ Copyright (C) 2007, Proformatique
 """
 # Dependencies : wget
 
+REV_DATE = "$Revision$ $Date$"
+
 import os, sys, syslog
 import provsup
 from provsup import BaseProv

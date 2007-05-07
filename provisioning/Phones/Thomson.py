@@ -6,6 +6,9 @@ Thomson 2030S is supported.
 Copyright (C) 2007, Proformatique
 
 """
+
+REV_DATE = "$Revision$ $Date$"
+
 import os, sys, syslog, time, telnetlib
 import provsup
 from provsup import BaseProv

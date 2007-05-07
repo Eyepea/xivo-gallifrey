@@ -5,6 +5,8 @@ Copyright (C) 2007, Proformatique
 
 """
 
+REV_DATE = "$Revision$ $Date$"
+
 import os, sys, traceback
 
 def log_exception(logline_func):

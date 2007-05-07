@@ -2,6 +2,8 @@
 
 import re, os, os.path
 
+REV_DATE = "$Revision$ $Date$"
+
 # WARNING: non order preserving
 def uniqlist(lst):
 	if not lst: return []

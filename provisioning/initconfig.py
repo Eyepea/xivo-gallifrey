@@ -7,6 +7,8 @@ Copyright (C) 2007, Proformatique
 """
 # TODO WARNING: must be used only if the caller is of a SIP tech
 
+REV_DATE = "$Revision$ $Date$"
+
 import timeoutsocket
 from timeoutsocket import Timeout
 

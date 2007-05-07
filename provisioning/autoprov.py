@@ -7,6 +7,8 @@ Copyright (C) 2007, Proformatique
 """
 # Dependencies : python-sqlite
 
+REV_DATE = "$Revision$ $Date$"
+
 import timeoutsocket
 from timeoutsocket import Timeout
 

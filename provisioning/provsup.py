@@ -6,6 +6,8 @@ Copyright (C) 2007, Proformatique
 """
 # Dependencies : arping
 
+REV_DATE = "$Revision$ $Date$"
+
 import os, sys, traceback
 
 import syslog

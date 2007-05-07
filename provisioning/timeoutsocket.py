@@ -74,7 +74,7 @@ Good Luck!
 
 """
 
-__version__ = "$Revision: 1.23 $"
+__version__ = "$Revision$"
 __author__  = "Timothy O'Malley <timo@alum.mit.edu>"
 __copyright__ = \
 """Copyright 2000,2001 by Timothy O'Malley <timo@alum.mit.edu>
@@ -98,6 +98,8 @@ WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS
 ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 PERFORMANCE OF THIS SOFTWARE. 
 """
+
+REV_DATE = "$Revision$ $Date$"
 
 #
 # Imports
