@@ -317,23 +317,23 @@ CREATE TABLE generalsip (
  PRIMARY KEY(id)
 ) TYPE=MyISAM DEFAULT CHARACTER SET utf8;
 
-INSERT INTO generalsip VALUES(1,false,'sip.conf','general','bindport',5060);
-INSERT INTO generalsip VALUES(2,false,'sip.conf','general','bindaddr','0.0.0.0');
-INSERT INTO generalsip VALUES(3,false,'sip.conf','general','srvlookup','no');
-INSERT INTO generalsip VALUES(4,false,'sip.conf','general','language','fr');
-INSERT INTO generalsip VALUES(5,false,'sip.conf','general','maxexpiry',3600);
-INSERT INTO generalsip VALUES(6,false,'sip.conf','general','defaultexpiry',120);
-INSERT INTO generalsip VALUES(7,false,'sip.conf','general','useragent','Xivo PBX');
-INSERT INTO generalsip VALUES(8,false,'sip.conf','general','nat','yes');
-INSERT INTO generalsip VALUES(9,false,'sip.conf','general','qualify','yes');
-INSERT INTO generalsip VALUES(10,false,'sip.conf','general','rtcachefriends','yes');
-INSERT INTO generalsip VALUES(11,false,'sip.conf','general','allowguest','yes');
-INSERT INTO generalsip VALUES(12,false,'sip.conf','general','tos','lowdelay');
-INSERT INTO generalsip VALUES(13,false,'sip.conf','general','relaxdtmf','yes');
-INSERT INTO generalsip VALUES(14,false,'sip.conf','general','context','from-sip');
-INSERT INTO generalsip VALUES(15,false,'sip.conf','general','checkmwi',10);
-INSERT INTO generalsip VALUES(16,false,'sip.conf','general','vmexten','*98');
-INSERT INTO generalsip VALUES(17,false,'sip.conf','general','videosupport','no');
+INSERT INTO generalsip VALUES(1,0,0,false,'sip.conf','general','bindport',5060);
+INSERT INTO generalsip VALUES(2,0,0,false,'sip.conf','general','bindaddr','0.0.0.0');
+INSERT INTO generalsip VALUES(3,0,0,false,'sip.conf','general','srvlookup','no');
+INSERT INTO generalsip VALUES(4,0,0,false,'sip.conf','general','language','fr');
+INSERT INTO generalsip VALUES(5,0,0,false,'sip.conf','general','maxexpiry',3600);
+INSERT INTO generalsip VALUES(6,0,0,false,'sip.conf','general','defaultexpiry',120);
+INSERT INTO generalsip VALUES(7,0,0,false,'sip.conf','general','useragent','Xivo PBX');
+INSERT INTO generalsip VALUES(8,0,0,false,'sip.conf','general','nat','yes');
+INSERT INTO generalsip VALUES(9,0,0,false,'sip.conf','general','qualify','yes');
+INSERT INTO generalsip VALUES(10,0,0,false,'sip.conf','general','rtcachefriends','yes');
+INSERT INTO generalsip VALUES(11,0,0,false,'sip.conf','general','allowguest','yes');
+INSERT INTO generalsip VALUES(12,0,0,false,'sip.conf','general','tos','lowdelay');
+INSERT INTO generalsip VALUES(13,0,0,false,'sip.conf','general','relaxdtmf','yes');
+INSERT INTO generalsip VALUES(14,0,0,false,'sip.conf','general','context','from-sip');
+INSERT INTO generalsip VALUES(15,0,0,false,'sip.conf','general','checkmwi',10);
+INSERT INTO generalsip VALUES(16,0,0,false,'sip.conf','general','vmexten','*98');
+INSERT INTO generalsip VALUES(17,0,0,false,'sip.conf','general','videosupport','no');
 
 
 CREATE TABLE generaliax (
@@ -348,14 +348,14 @@ CREATE TABLE generaliax (
  PRIMARY KEY(id)
 ) TYPE=MyISAM DEFAULT CHARACTER SET utf8;
 
-INSERT INTO generaliax VALUES(1,false,'iax.conf','general','bindport',4569);
-INSERT INTO generaliax VALUES(2,false,'iax.conf','general','bindaddr','0.0.0.0');
-INSERT INTO generaliax VALUES(3,false,'iax.conf','general','delayreject','no');
-INSERT INTO generaliax VALUES(4,false,'iax.conf','general','language','en');
-INSERT INTO generaliax VALUES(5,false,'iax.conf','general','tos','lowdelay');
-INSERT INTO generaliax VALUES(6,false,'iax.conf','general','qualify','yes');
-INSERT INTO generaliax VALUES(7,false,'iax.conf','general','rtcachefriends','yes');
-INSERT INTO generaliax VALUES(8,false,'iax.conf','general','jitterbuffer','no');
+INSERT INTO generaliax VALUES(1,0,0,false,'iax.conf','general','bindport',4569);
+INSERT INTO generaliax VALUES(2,0,0,false,'iax.conf','general','bindaddr','0.0.0.0');
+INSERT INTO generaliax VALUES(3,0,0,false,'iax.conf','general','delayreject','no');
+INSERT INTO generaliax VALUES(4,0,0,false,'iax.conf','general','language','en');
+INSERT INTO generaliax VALUES(5,0,0,false,'iax.conf','general','tos','lowdelay');
+INSERT INTO generaliax VALUES(6,0,0,false,'iax.conf','general','qualify','yes');
+INSERT INTO generaliax VALUES(7,0,0,false,'iax.conf','general','rtcachefriends','yes');
+INSERT INTO generaliax VALUES(8,0,0,false,'iax.conf','general','jitterbuffer','no');
 
 
 CREATE TABLE generalvoicemail (
@@ -370,23 +370,23 @@ CREATE TABLE generalvoicemail (
  PRIMARY KEY(id)
 ) TYPE=MyISAM DEFAULT CHARACTER SET utf8;
 
-INSERT INTO generalvoicemail VALUES(1,false,'voicemail.conf','general','maxmessage',180);
-INSERT INTO generalvoicemail VALUES(2,false,'voicemail.conf','general','minmessage',5);
-INSERT INTO generalvoicemail VALUES(3,false,'voicemail.conf','general','maxsilence',1);
-INSERT INTO generalvoicemail VALUES(4,false,'voicemail.conf','general','review','yes');
-INSERT INTO generalvoicemail VALUES(5,false,'voicemail.conf','general','serveremail','voicemail@xivo');
-INSERT INTO generalvoicemail VALUES(6,false,'voicemail.conf','general','fromstring','XIVO PBX');
-INSERT INTO generalvoicemail VALUES(7,false,'voicemail.conf','general','maxmsg',100);
-INSERT INTO generalvoicemail VALUES(8,false,'voicemail.conf','general','emailsubject','Messagerie XIVO');
-INSERT INTO generalvoicemail VALUES(9,false,'voicemail.conf','general','emailbody','Bonjour ${VM_NAME} !
+INSERT INTO generalvoicemail VALUES(1,0,0,false,'voicemail.conf','general','maxmessage',180);
+INSERT INTO generalvoicemail VALUES(2,0,0,false,'voicemail.conf','general','minmessage',5);
+INSERT INTO generalvoicemail VALUES(3,0,0,false,'voicemail.conf','general','maxsilence',1);
+INSERT INTO generalvoicemail VALUES(4,0,0,false,'voicemail.conf','general','review','yes');
+INSERT INTO generalvoicemail VALUES(5,0,0,false,'voicemail.conf','general','serveremail','voicemail@xivo');
+INSERT INTO generalvoicemail VALUES(6,0,0,false,'voicemail.conf','general','fromstring','XIVO PBX');
+INSERT INTO generalvoicemail VALUES(7,0,0,false,'voicemail.conf','general','maxmsg',100);
+INSERT INTO generalvoicemail VALUES(8,0,0,false,'voicemail.conf','general','emailsubject','Messagerie XIVO');
+INSERT INTO generalvoicemail VALUES(9,0,0,false,'voicemail.conf','general','emailbody','Bonjour ${VM_NAME} !
 
 Vous avez reçu un message d''une durée de ${VM_DUR} minutes, il vous reste actuellement ${VM_MSGNUM} message(s) non lu sur votre messagerie vocale : ${VM_MAILBOX}.
 Le dernier a été envoyé par ${VM_CALLERID}, le ${VM_DATE}. Si vous le souhaitez vous pouvez l''écouter ou le consulter en tapant le *98 sur votre téléphone. Merci !
 
 -- Messagerie XIVO --');
-INSERT INTO generalvoicemail VALUES(10,false,'voicemail.conf','general','charset','UTF-8');
-INSERT INTO generalvoicemail VALUES(11,false,'voicemail.conf','zonemessages','eu-fr','Europe/Paris|''vm-received'' q ''digits/at'' kM');
-INSERT INTO generalvoicemail VALUES(12,false,'voicemail.conf','general','tz','eu-fr');
+INSERT INTO generalvoicemail VALUES(10,0,0,false,'voicemail.conf','general','charset','UTF-8');
+INSERT INTO generalvoicemail VALUES(11,0,0,false,'voicemail.conf','zonemessages','eu-fr','Europe/Paris|''vm-received'' q ''digits/at'' kM');
+INSERT INTO generalvoicemail VALUES(12,0,0,false,'voicemail.conf','general','tz','eu-fr');
 
 
 CREATE TABLE usersip (
@@ -453,9 +453,9 @@ CREATE TABLE musiconhold (
  PRIMARY KEY(id)
 ) TYPE=MyISAM DEFAULT CHARACTER SET utf8;
 
-CREATE UNIQUE INDEX musiconhold__uidx__filename_category_var_name ON musiconhold(filename,category,var_name);
+CREATE UNIQUE INDEX musiconhold__uidx__filename_category_var_name ON musiconhold(filename(48),category,var_name);
 
-INSERT INTO musiconhold VALUES(1,false,'musiconhold.conf','default','mode','custom');
-INSERT INTO musiconhold VALUES(2,false,'musiconhold.conf','default','application','/usr/bin/madplay --mono -a -10 -R 8000 --output=raw:-');
-INSERT INTO musiconhold VALUES(3,false,'musiconhold.conf','default','random','no');
-INSERT INTO musiconhold VALUES(4,false,'musiconhold.conf','default','directory','/usr/share/asterisk/moh/default');
+INSERT INTO musiconhold VALUES(1,0,0,false,'musiconhold.conf','default','mode','custom');
+INSERT INTO musiconhold VALUES(2,0,0,false,'musiconhold.conf','default','application','/usr/bin/madplay --mono -a -10 -R 8000 --output=raw:-');
+INSERT INTO musiconhold VALUES(3,0,0,false,'musiconhold.conf','default','random','no');
+INSERT INTO musiconhold VALUES(4,0,0,false,'musiconhold.conf','default','directory','/usr/share/asterisk/moh/default');
