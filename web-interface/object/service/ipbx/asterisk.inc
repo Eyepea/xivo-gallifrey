@@ -36,10 +36,18 @@ class xivo_service_asterisk extends xivo_service_abstract
 		return($this->_get_users('list',$protocols,$disable));
 	}
 
+	function get_users_context($name,$protocols=array(),$disable=null)
+	{
+		$name = strval($name);
+
+		if($name === '#main')
+			$name = '';
+
+		return($this->_get_users('context',$protocols,$disable,$name));
+	}
+
 	function _get_users($action,$protocols=array(),$disable=null,$opts=array())
 	{
-		$r = false;
-
 		$action = (string) $action;
 		$protocols = (array) $protocols;
 		
@@ -56,6 +64,9 @@ class xivo_service_asterisk extends xivo_service_abstract
 		{
 			case 'search':
 				$rs = $ufeatures->get_search($opts);
+				break;
+			case 'context':
+				$rs = $ufeatures->get_all_where(array('context' => $opts));
 				break;
 			case 'list':
 			default:

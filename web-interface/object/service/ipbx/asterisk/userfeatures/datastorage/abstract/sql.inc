@@ -140,6 +140,16 @@ class xivo_service_asterisk_userfeatures_abstract_sql
 
 		return($r);
 	}
+
+	function get_all_where($arr)
+	{
+		if(($where = $this->_dso->where($arr)) === false)
+			return(false);
+
+		$r = $this->_dso->select_all($this->_param['table'],null,$where);
+
+		return($r);
+	}
 }
 
 ?>

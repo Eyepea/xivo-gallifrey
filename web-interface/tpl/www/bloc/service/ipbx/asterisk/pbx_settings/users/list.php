@@ -13,6 +13,9 @@
 	if($ract === 'search' && ($search = $this->vars('search')) !== ''):
 		$act = 'search';
 		$param['search'] = $search;
+	elseif($ract === 'context' && ($context = $this->vars('context')) !== ''):
+		$act = 'context';
+		$param['context'] = $context;
 	endif;
 
 	$page = $url->pager($pager['pages'],$pager['page'],$pager['prev'],$pager['next'],'service/ipbx/pbx_settings/users',array('act' => $act,$param));

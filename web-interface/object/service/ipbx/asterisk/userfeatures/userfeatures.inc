@@ -237,6 +237,54 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		return($r);
 	}
 
+	function get_all_where($arr=array(),$prepare=true)
+	{
+		$arr = (array) $arr;
+		$prepare = (bool) $prepare;
+
+		if(($where = $this->get_elements_where($arr)) === false
+		|| ($list = $this->_dso->get_all_where($where)) === false
+		|| isset($list[0]) === false)
+			return(false);
+
+		$nb = count($list);
+
+		$r = array();
+
+		for($i = 0;$i < $nb;$i++)
+			$r[] = $prepare === true ? $this->_prepare($list[$i]) : $list[$i];
+
+		if(isset($r[0]) === false)
+			$r = false;
+
+		return($r);
+	}
+
+	function get_all_context()
+	{
+		if(($list = $this->_dso->get_all()) === false)
+			return(false);
+
+		$nb = count($list);
+
+		$r = array();
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			$info = $this->_prepare($list[$i]);
+
+			if($info['context'] === '')
+				$info['context'] = '#main';
+
+			$r[$info['context']] = $info['context'];
+		}
+
+		if(empty($r) === true)
+			$r = false;
+
+		return($r);
+	}
+
 	function get_all_number()
 	{
 		if(($list = $this->_dso->get_all()) === false)

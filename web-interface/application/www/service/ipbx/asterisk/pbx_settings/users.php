@@ -4,6 +4,7 @@ $act = isset($_QR['act']) === true ? $_QR['act'] : '';
 $ract = isset($_QR['ract']) === true ? $_QR['ract'] : '';
 $page = isset($_QR['page']) === true ? xivo_uint($_QR['page'],1) : 1;
 $search = isset($_QR['search']) === true ? $_QR['search'] : '';
+$context = isset($_QR['context']) === true ? $_QR['context'] : '';
 
 $param = array();
 $param['act'] = 'list';
@@ -14,6 +15,11 @@ if($ract === 'search' && $search !== '')
 	$param['search'] = $search;
 }
 
+$ufeatures = &$ipbx->get_module('userfeatures');
+
+if(($contexts = $ufeatures->get_all_context()) !== false)
+	ksort($contexts);
+
 switch($act)
 {
 	case 'add':
@@ -22,6 +28,7 @@ switch($act)
 	case 'deletes':
 	case 'search':
 	case 'list':
+	case 'context':
 		$action = $act;
 		break;
 	case 'enables':
@@ -35,6 +42,7 @@ switch($act)
 include(dirname(__FILE__).'/users/'.$action.'.php');
 
 $_HTML->assign('act',$act);
+$_HTML->assign('contexts',$contexts);
 
 $menu = &$_HTML->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_infos('meta'));
