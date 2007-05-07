@@ -5,7 +5,7 @@ Copyright (C) 2007, Proformatique
 
 """
 
-import os, sys
+import os, sys, traceback
 
 def log_exception(logline_func):
 	"""Log the current exception using the passed logline_func function."""

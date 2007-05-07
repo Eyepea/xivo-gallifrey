@@ -7,6 +7,9 @@ Copyright (C) 2007, Proformatique
 """
 # Dependencies : python-sqlite
 
+import timeoutsocket
+from timeoutsocket import Timeout
+
 import os, cgi, sys, sqlite, thread, threading, traceback
 
 import syslog
@@ -50,6 +53,9 @@ TECH        = "sip"
 
 # deletion (W) / provisioning (R) lock timeout in secs
 DEL_OR_PROV_TIMEOUT = 45
+# abruptly close the TCP connection supporting the HTTP request in case an IO 
+# timeout after HTTP_REQUEST_TIMEOUT secs
+HTTP_REQUEST_TIMEOUT = 90
 
 def name_from_first_last(first, last):
 	"Construct full name from first and last."
@@ -523,6 +529,14 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 		
 		self.posted = None
 		BaseHTTPRequestHandler.__init__(self, request, client_address, server)
+
+	# Override the setup method, taken from SocketServer.py and modified.
+
+	def setup(self):
+		self.connection = self.request
+		self.connection.set_timeout(HTTP_REQUEST_TIMEOUT)
+		self.rfile = self.connection.makefile('rb', self.rbufsize)
+		self.wfile = self.connection.makefile('wb', self.wbufsize)
 
 	# HTTP responses
 
