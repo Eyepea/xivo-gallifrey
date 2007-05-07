@@ -20,6 +20,8 @@ DEBUG	     = 1
 # SERVER_IPV4 = provsup.LISTEN_IPV4
 SERVER_IPV4 = '192.168.0.5'
 
+HTTP_REQUEST_TIMEOUT = 90
+
 def agi_escape_string(s):
 	return s.replace('\\', '\\\\').replace('"', '\\"').replace('\n', ' ')
 
@@ -94,6 +96,7 @@ def main():
 		    "proto=sip\r\n" ) % (phone_vendor, phone_model, macaddr, ipv4, code)
 
 	try:
+		timeoutsocket.setDefaultSocketTimeout(HTTP_REQUEST_TIMEOUT)
 		conn = httplib.HTTPConnection(SERVER_IPV4 + ':' + str(provsup.LISTEN_PORT))
 		conn.request("POST", "/prov", command, {"Content-Type": "text/plain; charset=ISO-8859-1"})
 		response = conn.getresponse()
