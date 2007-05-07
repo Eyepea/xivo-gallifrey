@@ -33,7 +33,6 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 			trigger_error('file_uploads php.ini directive is set at "false"',E_USER_ERROR);
 
 		$this->_load_config();
-		$this->_musiconhold['conf'] = $this->_conf;
 
 		$this->_set_element_default('directory',$this->_mohpath);
 
@@ -51,7 +50,7 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 		}
 
 		$this->_conf['option']['file']['size'] = $size;
-		$this->_musiconhold['conf']['option']['file']['size'] = $size;
+		$this->_musiconhold['conf'] = $this->_conf;
 	}
 
 	function _chk_mohpath()
