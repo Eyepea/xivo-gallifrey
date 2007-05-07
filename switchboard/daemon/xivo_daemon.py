@@ -99,7 +99,7 @@ import ConfigParser
 import getopt
 import MySQLdb
 import os
-import pgdb
+import pyPgSQL 
 import random
 import select
 import signal
@@ -128,7 +128,7 @@ allowed_states = ["available", "away", "outtolunch", "donotdisturb", "berightbac
 #  state :            cf. allowed_states
 # The user identifier will likely be its phone number
 
-pidfile = '/tmp/xivo_daemon.pid'
+pidfile = '/var/run/xivo_daemon.pid'
 bufsize_large = 8192
 bufsize_udp = 2048
 bufsize_any = 512
@@ -488,9 +488,9 @@ class AMIClass:
 # \return a string containing the full customers list
 # \sa manage_tcp_connection
 def build_customers():
-	fullstat = "customers="
+	fullstat = "directory-response=2;Numero;Nom"
 	for num in customerbase:
-		fullstat += num + "|" + customerbase[num] + ";"
+		fullstat += ";%s;%s" %(num, customerbase[num])
 	fullstat += "\n"
 	return fullstat
 
@@ -670,11 +670,6 @@ def manage_tcp_connection(connid, allow_events):
 			connid[0].send(build_callerids())
 		except Exception, e:
 			log_debug("UI connection : a problem occured when sending to " + str(connid[0]) + " " + str(e))
-        elif usefulmsg == "customers":
-		try:
-			connid[0].send(build_customers())
-		except Exception, e:
-			log_debug("UI connection : a problem occured when sending to " + str(connid[0]) + " " + str(e))
 	elif usefulmsg == "keepalive":
 		try:
 			connid[0].send("keepalive=\n")
@@ -689,6 +684,7 @@ def manage_tcp_connection(connid, allow_events):
 			if idassrc == -1:
 				connid[0].send("asterisk=hangup KO : no such asterisk id\n")
 			else:
+				log_debug("attempting a HANGUP : " + str(l))
 				phone, channel = split_from_ui(l[1])
 				if phone in plist[idassrc].normal:
 					if channel in plist[idassrc].normal[phone].chann:
@@ -714,7 +710,11 @@ def manage_tcp_connection(connid, allow_events):
 						connid[0].send("asterisk=hangup KO : no such channel\n")
 				else:
 					connid[0].send("asterisk=hangup KO : no such phone\n")
-
+		elif len(l) == 2 and l[0] == 'directory-search':
+			try:
+				connid[0].send(build_customers())
+			except Exception, e:
+				log_debug("UI connection : a problem occured when sending to " + str(connid[0]) + " " + str(e))
 		elif len(l) == 3 and (l[0] == 'originate' or l[0] == 'transfer'):
 			idassrc = -1
 			assrc = l[1].split("/")[0]
@@ -731,27 +731,40 @@ def manage_tcp_connection(connid, allow_events):
 									       configs[idassrc].ami_pass)
 				if AMIclasssock[idassrc]:
 					if l[0] == 'originate':
-						ret = AMIclasssock[idassrc].originate(l[1].split("/")[2],
-										      l[2].split("/")[2],
-										      "local-extensions")
-						if ret:
-							connid[0].send("asterisk=originate successful\n")
+						log_debug("attempting a ORIGINATE : " + str(l))
+						if l[2].split("/")[1] == "SIP":
+							ret = AMIclasssock[idassrc].originate(l[1].split("/")[2],
+											      l[2].split("/")[2],
+											      "local-extensions")
 						else:
-							connid[0].send("asterisk=originate KO\n")
-					elif l[0] == 'transfer':
-						phonesrc, phonesrcchan = split_from_ui(l[1])
-						phonedst = l[2].split("/")[2]
-						if phonesrc in plist[idassrc].normal.keys():
-							channellist = plist[idassrc].normal[phonesrc].chann
-							nopens = len(channellist)
-							if nopens == 0:
-								log_debug("no channel currently open in the phone " + phonesrc)
+							if l[2].split("/")[1] != "":
+								ret = AMIclasssock[idassrc].originate(l[1].split("/")[2],
+												      l[2].split("/")[1],
+												      "extern-extensions")
 							else:
-								ret = AMIclasssock[idassrc].transfer(channellist[phonesrcchan].getChannelPeer(), phonedst, "local-extensions")
-								if ret:
-									connid[0].send("asterisk=transfer successful " + str(idassrc) + "\n")
+								ret = False
+						if ret:
+							connid[0].send("asterisk=originate %s %s successful\n" %(l[1], l[2]))
+						else:
+							connid[0].send("asterisk=originate %s %s KO\n" %(l[1], l[2]))
+					elif l[0] == 'transfer':
+						log_debug("attempting a TRANSFER : " + str(l))
+						phonesrc, phonesrcchan = split_from_ui(l[1])
+						if phonesrc == phonesrcchan:
+							connid[0].send("asterisk=transfer KO : %s not a channel\n" %phonesrcchan)
+						else:
+							phonedst = l[2].split("/")[2]
+							if phonesrc in plist[idassrc].normal.keys():
+								channellist = plist[idassrc].normal[phonesrc].chann
+								nopens = len(channellist)
+								if nopens == 0:
+									log_debug("no channel currently open in the phone " + phonesrc)
 								else:
-									connid[0].send("asterisk=transfer KO\n")
+									ret = AMIclasssock[idassrc].transfer(channellist[phonesrcchan].getChannelPeer(), phonedst, "local-extensions")
+									if ret:
+										connid[0].send("asterisk=transfer successful " + str(idassrc) + "\n")
+									else:
+										connid[0].send("asterisk=transfer KO\n")
 			else:
 				connid[0].send("asterisk=originate or transfer KO : asterisk id mismatch\n")
 		elif len(l) == 3 and l[0] == 'history':
@@ -1852,6 +1865,13 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
 						plist[astnum].normal[sipnumber].update_time()
 						update_GUI_clients(astnum, sipnumber, "kfc-dcc")
 				userlist_lock.release()
+			elif len(list) == 3 and list[0] == 'MESSAGE':
+				response = 'SENT\r\n'
+				#astname_xivoc = list[1].split("/")[0]
+				#astnum = asteriskr[astname_xivoc]
+				#user = list[1].split("/")[1]
+				for k in tcpopens_sb:
+					k[0].send("asterisk=<%s> said : <%s>\n" %(list[1], list[2]))
 			elif len(list) < 4 or list[0] != 'ALIVE' or list[2] != 'SESSIONID':
 				response = 'ERROR unknown\r\n'
 			else:

@@ -4,8 +4,8 @@
 # Startup daemon script for xivo_daemon
 #
 
-DAEMON=/usr/sbin/xivo_daemon.py
-PIDFILE="/tmp/xivo_daemon.pid"
+DAEMON=/usr/sbin/xivo_daemon
+PIDFILE="/var/run/xivo_daemon.pid"
 
 case "$1" in
   start)
