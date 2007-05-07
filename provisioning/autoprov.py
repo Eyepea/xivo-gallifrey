@@ -13,15 +13,7 @@ from timeoutsocket import Timeout
 import os, cgi, sys, sqlite, thread, threading, traceback
 
 import syslog
-from syslog import syslog      as syslogf
-from syslog import LOG_EMERG   as SYSLOG_EMERG
-from syslog import LOG_ALERT   as SYSLOG_ALERT
-from syslog import LOG_CRIT    as SYSLOG_CRIT
-from syslog import LOG_ERR     as SYSLOG_ERR
-from syslog import LOG_WARNING as SYSLOG_WARNING
-from syslog import LOG_NOTICE  as SYSLOG_NOTICE
-from syslog import LOG_INFO    as SYSLOG_INFO
-from syslog import LOG_DEBUG   as SYSLOG_DEBUG
+from easyslog import *
 
 from getopt import getopt
 
@@ -764,16 +756,6 @@ if sqlite.paramstyle != 'pyformat':
 
 dontlauchmain = False
 foreground = False
-logmap = {
-	'emerg':   SYSLOG_EMERG,
-	'alert':   SYSLOG_ALERT,
-	'crit':    SYSLOG_CRIT,
-	'err':     SYSLOG_ERR,
-	'warning': SYSLOG_WARNING,
-	'notice':  SYSLOG_NOTICE,
-	'info':    SYSLOG_INFO,
-	'debug':   SYSLOG_DEBUG
-}
 log_level = SYSLOG_NOTICE
 
 # l: log filter up to EMERG, ALERT, CRIT, ERR, WARNING, NOTICE, INFO or DEBUG
@@ -784,9 +766,7 @@ log_level = SYSLOG_NOTICE
 opts,args = getopt(sys.argv[1:], 'b:l:df')
 for k,v in opts:
 	if '-l' == k:
-		if v.lower() not in logmap:
-			raise ValueError, "Unknown log filter '%s'" % v
-		log_level = logmap[v.lower()]
+		log_level = sysloglevel_from_str(v)
 	elif '-d' == k:
 		dontlauchmain = True
 	elif '-f' == k:

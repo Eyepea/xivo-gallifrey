@@ -9,15 +9,7 @@ Copyright (C) 2007, Proformatique
 import os, sys, traceback
 
 import syslog
-from syslog import syslog      as syslogf
-from syslog import LOG_EMERG   as SYSLOG_EMERG
-from syslog import LOG_ALERT   as SYSLOG_ALERT
-from syslog import LOG_CRIT    as SYSLOG_CRIT
-from syslog import LOG_ERR     as SYSLOG_ERR
-from syslog import LOG_WARNING as SYSLOG_WARNING
-from syslog import LOG_NOTICE  as SYSLOG_NOTICE
-from syslog import LOG_INFO    as SYSLOG_INFO
-from syslog import LOG_DEBUG   as SYSLOG_DEBUG
+from easyslog import *
 
 LISTEN_IPV4 = ""
 LISTEN_PORT = 8666
