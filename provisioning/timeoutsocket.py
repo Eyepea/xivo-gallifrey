@@ -3,6 +3,13 @@
 # 
 # See __copyright__ and __license__ below.
 # 
+# Modifications by Proformatique:
+#	- fixed TimeoutSocket.send() so that the timeout really happens when
+#	  there is a buffer available, but not large enough
+#	- fixed TimeoutFile.write() so that it exposes the correct file object
+#	  API while correctly using TimeoutSocket.send() which exposes a
+#	  superset of the socket.send() API
+# 
 ###
 
 """Timeout Socket
@@ -70,7 +77,7 @@ __version__ = "$Revision: 1.23 $"
 __author__  = "Timothy O'Malley <timo@alum.mit.edu>"
 __copyright__ = \
 """Copyright 2000,2001 by Timothy O'Malley <timo@alum.mit.edu>
-All Rights Reserved"""
+Copyright (C) 2007, Proformatique - All Rights Reserved"""
 __license__ = \
 """Permission to use, copy, modify, and distribute this software
 and its documentation for any purpose and without fee is hereby
@@ -186,7 +193,7 @@ class TimeoutSocket:
     def setblocking(self, blocking):
         self._blocking = blocking
         return self._sock.setblocking(blocking)
-    # end set_timeout
+    # end setblocking
 
     def connect_ex(self, addr):
         errcode = 0
@@ -286,11 +293,16 @@ class TimeoutSocket:
 
     def send(self, data, flags=0):
         sock = self._sock
-        if self._blocking:
+        blocking = self._blocking
+        if blocking:
             r,w,e = select.select([],[sock],[], self._timeout)
             if not w:
                 raise Timeout("Send timed out")
-        return sock.send(data, flags)
+        sock.setblocking(0)
+        try:
+                return sock.send(data, flags)
+        finally:
+                sock.setblocking(blocking)
     # end send
 
     def recv(self, bufsize, flags=0):
@@ -327,7 +339,6 @@ class TimeoutFile:
         self._bufsize       = 4096
         if bufsize > 0: self._bufsize = bufsize
         if not hasattr(sock, "_inqueue"): self._sock._inqueue = ""
-
     # end __init__
 
     def __getattr__(self, key):
@@ -340,8 +351,15 @@ class TimeoutFile:
     # end close
     
     def write(self, data):
-        self.send(data)
+        while data:
+            written = self.send(data)
+            data = data[written:]
     # end write
+
+    def writelines(self, lines):
+        for line in lines:
+            self.write(line)
+    # end writelines
 
     def read(self, size=-1):
         _sock = self._sock
