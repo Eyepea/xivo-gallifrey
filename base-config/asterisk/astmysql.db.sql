@@ -316,7 +316,7 @@ CREATE TABLE generalsip (
 INSERT INTO generalsip VALUES(1,false,'sip.conf','general','bindport',5060);
 INSERT INTO generalsip VALUES(2,false,'sip.conf','general','bindaddr','0.0.0.0');
 INSERT INTO generalsip VALUES(3,false,'sip.conf','general','srvlookup','no');
-INSERT INTO generalsip VALUES(4,false,'sip.conf','general','language','en');
+INSERT INTO generalsip VALUES(4,false,'sip.conf','general','language','fr');
 INSERT INTO generalsip VALUES(5,false,'sip.conf','general','maxexpiry',3600);
 INSERT INTO generalsip VALUES(6,false,'sip.conf','general','defaultexpiry',120);
 INSERT INTO generalsip VALUES(7,false,'sip.conf','general','useragent','Xivo PBX');
