@@ -9,6 +9,7 @@
 #	- fixed TimeoutFile.write() so that it exposes the correct file object
 #	  API while correctly using TimeoutSocket.send() which exposes a
 #	  superset of the socket.send() API
+#	- added the file object API TimeoutFile.writelines()
 # 
 ###
 
