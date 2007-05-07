@@ -336,6 +336,7 @@ class TimeoutFile:
     """
     
     def __init__(self, sock, mode="r", bufsize=4096):
+        self.closed         = False
         self._sock          = sock
         self._bufsize       = 4096
         if bufsize > 0: self._bufsize = bufsize
@@ -349,6 +350,7 @@ class TimeoutFile:
     def close(self):
         self._sock.close()
         self._sock = None
+        self.closed = True
     # end close
     
     def write(self, data):
