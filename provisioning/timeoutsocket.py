@@ -75,10 +75,13 @@ Good Luck!
 """
 
 __version__ = "$Revision$"
-__author__  = "Timothy O'Malley <timo@alum.mit.edu>"
+__author__  = \
+"""Timothy O'Malley <timo@alum.mit.edu>
+Proformatique <technique@proformatique.com>"""
 __copyright__ = \
 """Copyright 2000,2001 by Timothy O'Malley <timo@alum.mit.edu>
-Copyright (C) 2007, Proformatique - All Rights Reserved"""
+Copyright (C) 2007, Proformatique <technique@proformatique.com>
+					All Rights Reserved"""
 __license__ = \
 """Permission to use, copy, modify, and distribute this software
 and its documentation for any purpose and without fee is hereby
