@@ -1,0 +1,10 @@
+[application]
+fw_filename=Thomson/binary/v2030SEG.060928.1.50t3.zz
+provision_mode=auto_provisioning
+
+[config]
+call_waiting_tone=Thomson/Bellcore_CW.txt
+common_config=Thomson/ST2030S_common_v1.50t3-200702276864.txt
+telcfg=Thomson/binary/TelConf2030SEG_060815_t2.txt
+system_melodies=Thomson/Sys_Ringtones.txt
+melodies=Thomson/Melodies.txt
