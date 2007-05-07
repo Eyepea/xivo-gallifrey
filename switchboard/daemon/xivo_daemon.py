@@ -2,7 +2,7 @@
 # $Revision$
 # $Date$
 #
-# Authors : Thomas Bernard, Corentin Le Gall
+# Authors : Thomas Bernard, Corentin Le Gall, Benoît Thinot, Guillaume Knispel
 #           Proformatique
 #           67, rue Voltaire
 #           92800 PUTEAUX
@@ -2120,8 +2120,8 @@ while not askedtoquit:
 	elif keepaliveserver.socket in i:
 		keepaliveserver.handle_request()
 	# SIP incoming packets are catched here
-	elif [j for j in i if j in SIPsocks]:
-		res = [j for j in i if j in SIPsocks][0]
+	elif filter(lambda j: j in SIPsocks, i):
+		res = filter(lambda j: j in SIPsocks, i)[0]
 		for n in items_asterisks:
 			if SIPsocks[n] is res: break
 		[data, addrsip] = SIPsocks[n].recvfrom(bufsize_udp)
@@ -2134,8 +2134,8 @@ while not askedtoquit:
 			if with_sip: do_sip_register_subscribe(n, SIPsocks[n])
 			lastrequest_time[n] = time.time()
 	# these AMI connections are used in order to manage AMI commands with incoming events
-	elif [j for j in i if j in AMIsocks]:
-		res = [j for j in i if j in AMIsocks][0]
+	elif filter(lambda j: j in AMIsocks, i):
+		res = filter(lambda j: j in AMIsocks, i)[0]
 		for n in items_asterisks:
 			if AMIsocks[n] is res: break
 		try:
@@ -2150,8 +2150,8 @@ while not askedtoquit:
 		except Exception, e:
 			pass
 	# these AMI connections are used in order to manage AMI commands without events
-	elif [j for j in i if j in AMIcomms]:
-		res = [j for j in i if j in AMIcomms][0]
+	elif filter(lambda j: j in AMIcomms, i):
+		res = filter(lambda j: j in AMIcomms, i)[0]
 		for n in items_asterisks:
 			if AMIcomms[n] is res: break
 		try:
@@ -2182,12 +2182,12 @@ while not askedtoquit:
 		conn.setblocking(0)
 		tcpopens_php.append([conn, PHPUIsockparams[0], PHPUIsockparams[1]])
 	# open UI (SB) connections
-        elif [j for j in tcpopens_sb if j[0] in i]:
-		conn = [j for j in tcpopens_sb if j[0] in i][0]
+        elif filter(lambda j: j[0] in i, tcpopens_sb):
+		conn = filter(lambda j: j[0] in i, tcpopens_sb)[0]
 		manage_tcp_connection(conn, True)
 	# open UI (PHP) connections
-        elif [j for j in tcpopens_php if j[0] in i]:
-		conn = [j for j in tcpopens_php if j[0] in i][0]
+        elif filter(lambda j: j[0] in i, tcpopens_php):
+		conn = filter(lambda j: j[0] in i, tcpopens_php)[0]
 		manage_tcp_connection(conn, False)
 	else:
 		log_debug("unknown socket " + str(i))
