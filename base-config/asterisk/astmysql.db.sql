@@ -37,6 +37,8 @@ CREATE UNIQUE INDEX groupfeatures__uidx__name_commented ON groupfeatures(name,co
 
 CREATE TABLE meetme (
  `id` int(11) unsigned auto_increment,
+ `cat_metric` int(11) unsigned default 0,
+ `var_metric` int(11) unsigned default 0,
  `commented` boolean default false,
  `filename` varchar(128) NOT NULL,
  `category` varchar(128) NOT NULL,
@@ -305,6 +307,8 @@ INSERT INTO extensions VALUES(39,false,'features','_*8.',1,'Pickup','${EXTEN:2}'
 
 CREATE TABLE generalsip (
  `id` int(11) unsigned auto_increment,
+ `cat_metric` int(11) unsigned default 0,
+ `var_metric` int(11) unsigned default 0,
  `commented` boolean default false,
  `filename` varchar(128) NOT NULL,
  `category` varchar(128) NOT NULL,
@@ -334,6 +338,8 @@ INSERT INTO generalsip VALUES(17,false,'sip.conf','general','videosupport','no')
 
 CREATE TABLE generaliax (
  `id` int(11) unsigned auto_increment,
+ `cat_metric` int(11) unsigned default 0,
+ `var_metric` int(11) unsigned default 0,
  `commented` boolean default false,
  `filename` varchar(128) NOT NULL,
  `category` varchar(128) NOT NULL,
@@ -354,6 +360,8 @@ INSERT INTO generaliax VALUES(8,false,'iax.conf','general','jitterbuffer','no');
 
 CREATE TABLE generalvoicemail (
  `id` int(11) unsigned auto_increment,
+ `cat_metric` int(11) unsigned default 0,
+ `var_metric` int(11) unsigned default 0,
  `commented` boolean default false,
  `filename` varchar(128) NOT NULL,
  `category` varchar(128) NOT NULL,
@@ -435,6 +443,8 @@ INSERT INTO usersip VALUES(1,'guest',false,'','documentation','','Guest','no','i
 
 CREATE TABLE musiconhold (
  `id` int(11) unsigned auto_increment,
+ `cat_metric` int(11) unsigned default 0,
+ `var_metric` int(11) unsigned default 0,
  `commented` boolean default false,
  `filename` varchar(128) NOT NULL,
  `category` varchar(128) NOT NULL,
