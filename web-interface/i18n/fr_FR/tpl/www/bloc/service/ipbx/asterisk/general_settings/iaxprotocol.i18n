@@ -40,6 +40,9 @@ Codecs désactivés :
 ; fm_codec-allow
 Codecs activés :
 
+; fm_channel-lang
+Langages :
+
 ; bt-upcodec
 Haut
 
