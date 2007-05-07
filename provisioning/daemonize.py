@@ -22,6 +22,8 @@ def daemonize(logline_func=lambda x: sys.stderr.write(x+'\n')):
 		pid = os.fork()
 		if pid > 0:
 			sys.exit(0)
+	except SystemExit:
+		raise
 	except:
 		log_exception(logline_func)
 		sys.exit(1)
@@ -31,6 +33,8 @@ def daemonize(logline_func=lambda x: sys.stderr.write(x+'\n')):
 		pid = os.fork()
 		if pid > 0:
 			sys.exit(0)
+	except SystemExit:
+		raise
         except:
 		log_exception(logline_func)
 		sys.exit(1)
