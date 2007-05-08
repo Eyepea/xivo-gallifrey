@@ -442,28 +442,31 @@ class xivo
 
 	function _load_ini_extension()
 	{
-		if(($arr = xivo_get_aks($this->_conf['extension'])) !== false)
+		if(($arr = xivo_get_aks($this->_conf['extension'])) === false)
 		{
-			for($i = 0;$i < $arr['cnt'];$i++)
+			define('XIVO_EXT_INI_LD',$this->_conf['xivo']['ini']['extension_loaded']);
+			return(null);
+		}
+
+		for($i = 0;$i < $arr['cnt'];$i++)
+		{
+			$k = &$arr['keys'][$i];
+			$ref_ext = &$this->_conf['extension'][$k];
+
+			if(extension_loaded($ref_ext['meta']) === true)
+				$this->_conf['xivo']['ini']['extension_loaded'] |= $k;
+			else if($ref_ext['load'] === 1 && XIVO_EXT_ENABLE === true)
 			{
-				$k = &$arr['keys'][$i];
-				$ref_ext = &$this->_conf['extension'][$k];
+				$file = XIVO_EXT_PRE.$this->_conf['extension'][$k]['meta'].'.'.XIVO_EXT_SUF;
+				$path = $this->_conf['xivo']['ini']['extension_dir'].XIVO_SEP_DIR.$file;
 
-				if(extension_loaded($ref_ext['meta']) === true)
+				if(xivo_file::is_f_r($path) === false)
+					continue;
+
+				dl($file);
+
+				if(extension_loaded($this->_conf['extension'][$k]['meta']) === true)
 					$this->_conf['xivo']['ini']['extension_loaded'] |= $k;
-				else if($ref_ext['load'] === 1 && $this->_conf['xivo']['ini']['safe_mode'] === false)
-				{
-					$file = $this->_conf['xivo']['ini']['extension_dir'].XIVO_SEP_DIR
-					.XIVO_EXT_PRE.$this->_conf['extension'][$k]['meta'].'.'.XIVO_EXT_SUF;
-
-					if(xivo_file::is_f_rx($file) === false)
-						continue;
-
-					dl($file);
-
-					if(extension_loaded($this->_conf['extension'][$k]['meta']) === true)
-						$this->_conf['xivo']['ini']['extension_loaded'] |= $k;
-				}
 			}
 		}
 
