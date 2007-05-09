@@ -100,6 +100,7 @@ import getopt
 import MySQLdb
 import os
 import random
+import re
 import select
 import signal
 import socket
@@ -486,10 +487,13 @@ class AMIClass:
 # This should be done after a command called "customers".
 # \return a string containing the full customers list
 # \sa manage_tcp_connection
-def build_customers():
+def build_customers(searchpattern):
 	fullstat = "directory-response=2;Numero;Nom"
 	for num in customerbase:
-		fullstat += ";%s;%s" %(num, customerbase[num])
+		if searchpattern == "*" or searchpattern == "" or \
+		       customerbase[num].lower().find(searchpattern.lower()) >= 0 or \
+		       num.lower().find(searchpattern.lower()) >= 0:
+			fullstat += ";%s;%s" %(num, customerbase[num])
 	fullstat += "\n"
 	return fullstat
 
@@ -709,9 +713,10 @@ def manage_tcp_connection(connid, allow_events):
 						connid[0].send("asterisk=hangup KO : no such channel\n")
 				else:
 					connid[0].send("asterisk=hangup KO : no such phone\n")
-		elif len(l) == 2 and l[0] == 'directory-search':
+		elif len(l) >= 1 and l[0] == 'directory-search':
 			try:
-				connid[0].send(build_customers())
+				if len(l) == 1: l.append("")
+				connid[0].send(build_customers(l[1]))
 			except Exception, e:
 				log_debug("UI connection : a problem occured when sending to " + str(connid[0]) + " " + str(e))
 		elif len(l) == 3 and (l[0] == 'originate' or l[0] == 'transfer'):
@@ -1956,7 +1961,7 @@ port_ui_srv = 5003
 port_phpui_srv = 5004
 port_switchboard_base_sip = 5005
 session_expiration_time = 60
-log_filename = "/var/log/xivo_daemon.log"
+log_filename = "/var/log/pf-xivo-cti-server/xivo_daemon.log"
 xivoconf_general = dict(xivoconf.items("general"))
 
 if "port_fiche_login" in xivoconf_general:
