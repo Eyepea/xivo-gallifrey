@@ -10,20 +10,20 @@ Copyright (C) 2007, Proformatique
 REV_DATE = "$Revision$ $Date$"
 GETOPT_SHORTOPTS = 'b:l:dfc:'
 
-
-# === BEGIN of early configuration handling, so that the sys.path can be altered
-CONFIG_FILE = '/etc/xivo/provisioning.conf'
 import sys
+# === BEGIN of early configuration handling, so that the sys.path can be altered
+CONFIG_FILE = '/etc/xivo/provisioning.conf' # can be overridded by cmd line param
+CONFIG_LIB_PATH = 'py_lib_path'
 from getopt import getopt
+from ConfigPath import *
 opts,args = getopt(sys.argv[1:], GETOPT_SHORTOPTS)
 for v in [v for k,v in opts if k == '-c']:
 	CONFIG_FILE = v
-import ConfigParser
-conf = ConfigParser.ConfigParser()
-conf.readfp(open(CONFIG_FILE))
-conf_general = dict(conf.items("general"))
-if "python_module_dir" in conf_general:
-	sys.path.insert(0, conf_general["python_module_dir"])
+try:
+	InsertPathListSys(SortedValuesFromConfigSection(CONFIG_FILE, CONFIG_LIB_PATH))
+except NoSectionError, s:
+	print >> sys.stderr, "WARNING: Section [%s] apparently missing from configuration file %s" % (CONFIG_LIB_PATH, CONFIG_FILE)
+del opts, args, k, v
 # === END of early configuration handling
 
 

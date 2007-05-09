@@ -8,11 +8,32 @@ Copyright (C) 2007, Proformatique
 # TODO WARNING: must be used only if the caller is of a SIP tech
 
 REV_DATE = "$Revision$ $Date$"
+GETOPT_SHORTOPTS = 'c:'
+
+import sys
+# === BEGIN of early configuration handling, so that the sys.path can be altered
+CONFIG_FILE = '/etc/xivo/provisioning.conf' # can be overridded by cmd line param
+CONFIG_LIB_PATH = 'py_lib_path'
+from getopt import getopt
+from ConfigPath import *
+opts,args = getopt(sys.argv[1:], GETOPT_SHORTOPTS)
+sys.argv[1:] = args # strip options for legacy code behind
+for v in [v for k,v in opts if k == '-c']:
+	CONFIG_FILE = v
+try:
+	InsertPathListSys(SortedValuesFromConfigSection(CONFIG_FILE, CONFIG_LIB_PATH))
+except NoSectionError, s:
+	print >> sys.stderr, "WARNING: Section [%s] apparently missing from configuration file %s" % (CONFIG_LIB_PATH, CONFIG_FILE)
+del opts, args, k, v
+# === END of early configuration handling
+
+
+# Loading personnal modules is possible from this point
 
 import timeoutsocket
 from timeoutsocket import Timeout
 
-import sys, httplib
+import httplib
 
 import provsup
 from Phones import *
