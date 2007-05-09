@@ -99,7 +99,6 @@ import ConfigParser
 import getopt
 import MySQLdb
 import os
-import pyPgSQL 
 import random
 import select
 import signal
