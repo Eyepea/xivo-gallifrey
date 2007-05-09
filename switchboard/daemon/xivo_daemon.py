@@ -2,7 +2,7 @@
 # $Revision$
 # $Date$
 #
-# Authors : Thomas Bernard, Corentin Le Gall, Benoît Thinot, Guillaume Knispel
+# Authors : Thomas Bernard, Corentin Le Gall, Benoit Thinot, Guillaume Knispel
 #           Proformatique
 #           67, rue Voltaire
 #           92800 PUTEAUX
@@ -1958,28 +1958,29 @@ port_phpui_srv = 5004
 port_switchboard_base_sip = 5005
 session_expiration_time = 60
 log_filename = "/var/log/xivo_daemon.log"
+xivoconf_general = xivoconf.items("general")
 
-if "port_fiche_login" in xivoconf.options("general"):
-	port_login = int(xivoconf.get("general", "port_fiche_login"))
-if "port_fiche_keepalive" in xivoconf.options("general"):
-	port_keepalive = int(xivoconf.get("general", "port_fiche_keepalive"))
-if "port_fiche_agi" in xivoconf.options("general"):
-	port_request = int(xivoconf.get("general", "port_fiche_agi"))
-if "port_switchboard" in xivoconf.options("general"):
-	port_ui_srv = int(xivoconf.get("general", "port_switchboard"))
-if "port_php" in xivoconf.options("general"):
-	port_phpui_srv = int(xivoconf.get("general", "port_php"))
-if "port_switchboard_base_sip" in xivoconf.options("general"):
-	port_switchboard_base_sip = int(xivoconf.get("general", "port_switchboard_base_sip"))
-if "expiration_session" in xivoconf.options("general"):
-	session_expiration_time = int(xivoconf.get("general", "expiration_session"))
-if "logfile" in xivoconf.options("general"):
-	log_filename = xivoconf.get("general", "logfile")
+if "port_fiche_login" in xivoconf_general:
+	port_login = int(xivoconf_general["port_fiche_login"])
+if "port_fiche_keepalive" in xivoconf_general:
+	port_keepalive = int(xivoconf_general["port_fiche_keepalive"])
+if "port_fiche_agi" in xivoconf_general:
+	port_request = int(xivoconf_general["port_fiche_agi"])
+if "port_switchboard" in xivoconf_general:
+	port_ui_srv = int(xivoconf_general["port_switchboard"])
+if "port_php" in xivoconf_general:
+	port_phpui_srv = int(xivoconf_general["port_php"])
+if "port_switchboard_base_sip" in xivoconf_general:
+	port_switchboard_base_sip = int(xivoconf_general["port_switchboard_base_sip"])
+if "expiration_session" in xivoconf_general:
+	session_expiration_time = int(xivoconf_general["expiration_session"])
+if "logfile" in xivoconf_general:
+	log_filename = xivoconf_general["logfile"]
 
 with_ami = True
 with_sip = True
-if "noami" in xivoconf.options("general"): with_ami = False
-if "nosip" in xivoconf.options("general"): with_sip = False
+if "noami" in xivoconf_general: with_ami = False
+if "nosip" in xivoconf_general: with_sip = False
 
 configs = []
 save_for_next_packet_events = []
