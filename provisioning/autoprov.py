@@ -8,16 +8,34 @@ Copyright (C) 2007, Proformatique
 # Dependencies : python-sqlite
 
 REV_DATE = "$Revision$ $Date$"
+GETOPT_SHORTOPTS = 'b:l:dfc:'
+
+
+# === BEGIN of early configuration handling, so that the sys.path can be altered
+CONFIG_FILE = '/etc/xivo/provisioning.conf'
+import sys
+from getopt import getopt
+opts,args = getopt(sys.argv[1:], GETOPT_SHORTOPTS)
+for v in [v for k,v in opts if k == '-c']:
+	CONFIG_FILE = v
+import ConfigParser
+conf = ConfigParser.ConfigParser()
+conf.readfp(open(CONFIG_FILE))
+conf_general = dict(conf.items("general"))
+if "python_module_dir" in conf_general:
+	sys.path.insert(0, conf_general["python_module_dir"])
+# === END of early configuration handling
+
+
+# Loading personnal modules is possible from this point
 
 import timeoutsocket
 from timeoutsocket import Timeout
 
-import os, cgi, sys, sqlite, thread, threading, traceback
+import os, cgi, sqlite, thread, threading, traceback
 
 import syslog
 from easyslog import *
-
-from getopt import getopt
 
 import BaseHTTPServer
 from BaseHTTPServer import HTTPServer
@@ -26,7 +44,6 @@ from BaseHTTPServer import BaseHTTPRequestHandler
 import SocketServer
 from SocketServer import socket
 
-# personnal imports:
 import provsup
 from Phones import * # package containing one module per vendor
 from moresynchro import RWLock
@@ -765,7 +782,7 @@ log_level = SYSLOG_NOTICE
 # f: keep the program on foreground, don't daemonize
 # b: override the default sqlite DB filename
 
-opts,args = getopt(sys.argv[1:], 'b:l:df')
+opts,args = getopt(sys.argv[1:], GETOPT_SHORTOPTS)
 for k,v in opts:
 	if '-l' == k:
 		log_level = sysloglevel_from_str(v)
