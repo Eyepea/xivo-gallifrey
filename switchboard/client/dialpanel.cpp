@@ -1,4 +1,4 @@
-#include <QVBoxLayout>
+#include <QHBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
 #include <QScrollArea>
@@ -12,9 +12,9 @@
 DialPanel::DialPanel(QWidget * parent)
 : QWidget(parent)
 {
-	QVBoxLayout * vlayout = new QVBoxLayout(this);
+	QHBoxLayout * vlayout = new QHBoxLayout(this);
 	vlayout->setMargin(0);
-	QLabel * lbl = new QLabel( tr("Number to dial"), this );
+	QLabel * lbl = new QLabel( tr("Enter Number"), this );
 	m_input = new QLineEdit( this );
 	connect( m_input, SIGNAL(returnPressed()),
 	         this, SLOT(affTextChanged()) );
