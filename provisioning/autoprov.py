@@ -23,7 +23,11 @@ try:
 	InsertPathListSys(SortedValuesFromConfigSection(CONFIG_FILE, CONFIG_LIB_PATH))
 except NoSectionError, s:
 	print >> sys.stderr, "WARNING: Section [%s] apparently missing from configuration file %s" % (CONFIG_LIB_PATH, CONFIG_FILE)
-del opts, args, k, v
+del opts, args
+try: del k
+except: pass
+try: del v
+except: pass
 # === END of early configuration handling
 
 
