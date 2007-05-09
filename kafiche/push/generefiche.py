@@ -55,6 +55,7 @@ def getuserlocation(shost, sport, user):
 	"""return None or the address and session id"""
 	try:
 		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		s.settimeout(0.1)
 		s.connect((shost, sport))
 		fs = s.makefile("r")
 		s.send("QUERY " + user + "\r\n")
