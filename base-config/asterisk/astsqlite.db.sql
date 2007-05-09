@@ -399,7 +399,7 @@ CREATE TABLE usersip (
  fromdomain varchar(80),
  fullcontact varchar(80),
  host varchar(31) NOT NULL,
- insecure varchar(4),
+ insecure varchar(11),
  language char(2),
  mailbox varchar(50),
  md5secret varchar(80),

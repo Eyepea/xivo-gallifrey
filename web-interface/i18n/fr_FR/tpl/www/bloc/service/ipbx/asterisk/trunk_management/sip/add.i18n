@@ -59,7 +59,16 @@ Supervision :
 Invite :
 
 ; fm_trunk_insecure
-Authentification :
+Insécurité :
+
+; fm_trunk_insecure-opt-port
+Port
+
+; fm_trunk_insecure-opt-invite
+Invite
+
+; fm_trunk_insecure-opt-all
+Tout
 
 ; fm_codec-custom
 Personnaliser :

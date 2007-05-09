@@ -38,9 +38,9 @@ $array['element']['canreinvite']['default'] = 'yes';
 $array['element']['canreinvite']['set'] = true;
 
 $array['element']['insecure'] = array();
-$array['element']['insecure']['value'] = array('no','very');
-$array['element']['insecure']['default'] = 'no';
-$array['element']['insecure']['set'] = true;
+$array['element']['insecure']['value'] = array('port' => 'port','invite' => 'invite','port,invite' => 'all');
+$array['element']['insecure']['default'] = '';
+$array['element']['insecure']['null'] = true;
 
 $array['element']['disallow'] = array();
 $array['element']['disallow']['value'] = array('all');
@@ -92,7 +92,7 @@ $array['filter']['type'] = array('arrkey' => array('peer','user','friend'));
 $array['filter']['nat'] = array('bool' => true);
 $array['filter']['qualify'] = array('bool' => true);
 $array['filter']['canreinvite'] = array('bool' => true);
-$array['filter']['insecure'] = array('bool' => true);
+$array['filter']['insecure'] = array('set' => false,'arrkey' => array('','port','invite','port,invite'));
 $array['filter']['disallow'] = array('set' => false,'arrkey' => array('all'));
 $array['filter']['allow'] = array('set' => false,'arrvalue' => array('gsm','alaw','ulaw','g729'));
 $array['filter']['port'] = array('set' => false,'between' => array(1,65535));
