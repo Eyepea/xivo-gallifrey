@@ -1958,7 +1958,7 @@ port_phpui_srv = 5004
 port_switchboard_base_sip = 5005
 session_expiration_time = 60
 log_filename = "/var/log/xivo_daemon.log"
-xivoconf_general = xivoconf.items("general")
+xivoconf_general = dir(xivoconf.items("general"))
 
 if "port_fiche_login" in xivoconf_general:
 	port_login = int(xivoconf_general["port_fiche_login"])
