@@ -5,7 +5,7 @@
     <message>
         <location filename="callstackwidget.cpp" line="232"/>
         <source>Monitoring : </source>
-        <translation>Surveillance de :</translation>
+        <translation>Surveillance de : </translation>
     </message>
 </context>
 <context>
