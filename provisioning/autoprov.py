@@ -49,28 +49,18 @@ import SocketServer
 from SocketServer import socket
 
 import provsup
+from provsup import ProvGeneralConf as pgc
+
 from Phones import * # package containing one module per vendor
 from moresynchro import RWLock
 from moresynchro import ListLock
 from daemonize import daemonize
 
-DB	    = "/var/lib/asterisk/astsqlite"
-# sqlite timeout is in ms
-SQLITE_BUSY_TIMEOUT = 100
-
-# === used all over this file: ===
 TABLE	    = "phone"
 UF_TABLE    = "userfeatures"
 SIP_TABLE   = "usersip"
-
 # right now the only allowed tech is SIP:
 TECH        = "sip"
-
-# deletion (W) / provisioning (R) lock timeout in secs
-DEL_OR_PROV_TIMEOUT = 45
-# abruptly close the TCP connection supporting the HTTP request in case an IO 
-# timeout after HTTP_REQUEST_TIMEOUT secs
-HTTP_REQUEST_TIMEOUT = 90
 
 def name_from_first_last(first, last):
 	"Construct full name from first and last."
@@ -98,7 +88,7 @@ class SQLiteDB:
 		
 		"""
 		conn = sqlite.connect(self.__db)
-		conn.db.sqlite_busy_timeout(SQLITE_BUSY_TIMEOUT)
+		conn.db.sqlite_busy_timeout(pgc['sqlite_to_ms'])
 		try:
 			a = foobar(conn, *remain)
 		except:
@@ -493,7 +483,7 @@ def lock_and_provision(mode, ctx, phone):
 
 	"""
 	syslogf(SYSLOG_DEBUG, "Entering lock_and_provision(phone=%s)" % str(phone))
-	if not ctx.rwlock.acquire_read(DEL_OR_PROV_TIMEOUT):
+	if not ctx.rwlock.acquire_read(pgc['excl_del_lock_to_s']):
 		raise RuntimeError, "Could not acquire the global lock in shared mode"
 	try:
 		__provisioning(mode, ctx, phone)
@@ -508,7 +498,7 @@ def lock_and_userdel(ctx, iduserfeatures):
 
 	"""
 	syslogf(SYSLOG_DEBUG, "Entering lock_and_userdel %s" % iduserfeatures)
-	if not ctx.rwlock.acquire_write(DEL_OR_PROV_TIMEOUT):
+	if not ctx.rwlock.acquire_write(pgc['excl_del_lock_to_s']):
 		raise RuntimeError, "Could not acquire the global lock in exclusive mode"
 	try:
 		__userdeleted(ctx, iduserfeatures)
@@ -549,7 +539,7 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 
 	def setup(self):
 		self.connection = self.request
-		self.connection.set_timeout(HTTP_REQUEST_TIMEOUT)
+		self.connection.set_timeout(pgc['http_read_request_to_s'])
 		self.rfile = self.connection.makefile('rb', self.rbufsize)
 		self.wfile = self.connection.makefile('wb', self.wbufsize)
 
@@ -763,11 +753,11 @@ def main(log_level, foreground):
 	syslog.setlogmask(syslog.LOG_UPTO(log_level))
 	if not foreground:
 		daemonize(log_stderr_and_syslog)
-	http_server = ThreadingHTTPServer((provsup.LISTEN_IPV4, provsup.LISTEN_PORT), ProvHttpHandler)
+	http_server = ThreadingHTTPServer((pgc['listen_ipv4'], pgc['listen_port']), ProvHttpHandler)
 	http_server.my_ctx = CommonProvContext(
 		ListLock(), # userlocks
 		ListLock(), # maclocks
-		SQLiteDB(DB),
+		SQLiteDB(pgc['sqlite_db']),
 		RWLock()
 	)
 	clean_at_startup(http_server.my_ctx)
@@ -786,16 +776,25 @@ log_level = SYSLOG_NOTICE
 # f: keep the program on foreground, don't daemonize
 # b: override the default sqlite DB filename
 
+db_override = None
+log_level_override = None
 opts,args = getopt(sys.argv[1:], GETOPT_SHORTOPTS)
 for k,v in opts:
 	if '-l' == k:
-		log_level = sysloglevel_from_str(v)
+		log_level_override = v
 	elif '-d' == k:
 		dontlauchmain = True
 	elif '-f' == k:
 		foreground = True
 	elif '-b' == k:
-		DB = v
+		db_override = v
+
+provsup.LoadConfig(CONFIG_FILE)
+if log_level_override is not None:
+	pgc['log_level'] = log_level_override
+log_level = sysloglevel_from_str(pgc['log_level'])
+if db_override is not None:
+	pgc['sqlite_db'] = db_override
 
 if __name__ == '__main__' and not dontlauchmain:
 	main(log_level, foreground)

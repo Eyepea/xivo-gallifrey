@@ -6,16 +6,13 @@ Snom 300 320 and 360 are supported.
 Copyright (C) 2007, Proformatique
 
 """
-# Dependencies : wget
 
 REV_DATE = "$Revision$ $Date$"
 
 import os, sys, syslog
 import provsup
 from provsup import BaseProv
-
-WGET         = "/usr/bin/wget"
-WGET_TIMEOUT = 30 #s
+from provsup import ProvGeneralConf as pgc
 
 # SNOM BUGBUG #1
 # Snom doesn't support something else than files at root of tftproot when using
@@ -26,7 +23,7 @@ WGET_TIMEOUT = 30 #s
 # dhcp request (model not in the request.... :///), we'll need to also support
 # HTTP based provisioning
 
-SNOM_SPEC_DIR = provsup.TFTPROOT + "Snom/"
+SNOM_SPEC_DIR = pgc['tftproot'] + "Snom/"
 SNOM_SPEC_TEMPLATE = "files/snom-template.htm"
 SNOM_COMMON_HTTP_USER = "guest"
 SNOM_COMMON_HTTP_PASS = "guest"
@@ -46,7 +43,7 @@ class SnomProv(BaseProv):
 		# -O /dev/null -- send result into /dev/null
 		# -T 30 -- timeout after 30s
 		# -t 1 -- don't retry
-		os.system(WGET + " -t 1 -T %s -q -nv -O /dev/null --http-user=%s --http-passwd=%s http://%s/confirm.html?%s=yes" % (str(WGET_TIMEOUT), user, passwd, self.phone['ipv4'], command))
+		os.system(pgc['wget_cmd'] + " -t 1 -T %s -q -nv -O /dev/null --http-user=%s --http-passwd=%s http://%s/confirm.html?%s=yes" % (str(pgc['wget_to_s']), user, passwd, self.phone['ipv4'], command))
 
 	def do_reinit(self):
 		"""Entry point to send the (possibly post) reinit command to

@@ -4,7 +4,7 @@
 Copyright (C) 2007, Proformatique
 
 """
-# Dependencies : arping
+# Dependencies/highly recommended? : arping wget
 
 REV_DATE = "$Revision$ $Date$"
 
@@ -12,18 +12,44 @@ import os, sys, traceback
 
 import syslog
 from easyslog import *
+from ConfigDict import *
+from ConfigParser import ConfigParser
 
-LISTEN_IPV4 = ""
-LISTEN_PORT = 8666
+ProvGeneralConf = {
+	'sqlite_db':			"/var/lib/asterisk/astsqlite",
+	'sqlite_to_ms':			100,
+	'excl_del_lock_to_s':		45,
+	'http_read_request_to_s':	90,
+	'http_request_to_s':		90,
+	'listen_ipv4':			"127.0.0.1",
+	'listen_port':			8666,
+	'connect_ipv4':			"127.0.0.1",
+	'connect_port':			8666,
+	'tftproot':			"/tftpboot/",
+	'proc_dev_net':			"/proc/net/dev",
+	'scan_ifaces_prefix':		"eth",
+	'arping_cmd':			"sudo /usr/sbin/arping",
+	'arping_sleep_us':		150000,
+	'log_level':			"notice",
+	'debug_agi':			0,
+	'wget_cmd':			"/usr/bin/wget",
+	'wget_to_s':			30,
+	'telnet_to_s':			30,
+}
+pgc = ProvGeneralConf
+authorized_prefix = ["eth"]
 
-TFTPROOT     = "/tftpboot/"
-PROC_NET_DEV = "/proc/net/dev"
-AUTHORIZED_PREFIX = ("eth",)
-
-# wait time after arping in µs
-ARPING	    = 'sudo /usr/sbin/arping'
-SLEEP_PB    = 150000	# 150ms should be enough
-			# XXX maybe some phones are really slow...
+def LoadConfig(filename):
+	global ProvGeneralConf
+	cp = ConfigParser()
+	cp.readfp(open(filename))
+	FillDictFromConfigSection(ProvGeneralConf, cp, "general")
+	authorized_prefix = pgc['scan_ifaces_prefix'].split(',')
+	authorized_prefix = [	\
+		p.strip()	\
+		for p in pgc['scan_ifaces_prefix'].split(',')	\
+		if p.strip()	\
+	]
 
 def elem_or_none(r, el):
 	"r is a dictionary or None, and if (e1 in r) then r[el] must exists"
@@ -133,7 +159,7 @@ def log_current_exception(loglevel=SYSLOG_ERR):
 def get_netdev_list():
 	"Get a view of network interfaces as seen by Linux"
 	l=[]
-	pnd = open(PROC_NET_DEV)
+	pnd = open(pgc['proc_dev_net'])
 	pnd.readline()
 	pnd.readline()
 	return tuple([line.split(':',1)[0].strip()
@@ -142,11 +168,12 @@ def get_netdev_list():
 
 def get_ethdev_list():
 	"""Get and filter the list of network interfaces, returning only those
-	whose names begin with an element of AUTHORIZED_PREFIX
+	whose names begin with an element of global variable authorized_prefix
 	
 	"""
+	global authorized_prefix
 	return filter(lambda dev: True in map(lambda x: dev.find(x) == 0,
-                                              AUTHORIZED_PREFIX),
+                                              authorized_prefix),
 	              get_netdev_list())
 
 def normalize_mac_address(macaddr):
@@ -172,8 +199,8 @@ def ipv4_from_macaddr(macaddr, logexceptfunc = None):
 	# -i <netiface> : the network interface to use is <netiface>
 	for iface in get_ethdev_list():
 		try:
-		    ipfd = os.popen(ARPING +
-			    (" -r -c 1 -w %s -i %s " % (SLEEP_PB, iface)) +
+		    ipfd = os.popen(pgc['arping_cmd'] +
+			    (" -r -c 1 -w %s -i %s " % (pgc['arping_sleep_us'], iface)) +
 			    macaddr)
 		except:
 		    if logexceptfunc:

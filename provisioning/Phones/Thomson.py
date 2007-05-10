@@ -12,6 +12,7 @@ REV_DATE = "$Revision$ $Date$"
 import os, sys, syslog, time, telnetlib
 import provsup
 from provsup import BaseProv
+from provsup import ProvGeneralConf as pgc
 
 import time # for TimeoutingTelnet
 
@@ -22,14 +23,14 @@ import time # for TimeoutingTelnet
 #				-> ...also firmware and other global
 #					config files like ringing tones...
 
-THOMSON_COMMON_DIR = provsup.TFTPROOT + "Thomson/"
+THOMSON_COMMON_DIR = pgc['tftproot'] + "Thomson/"
 THOMSON_COMMON_INF = THOMSON_COMMON_DIR + "ST2030S_v1.53.inf"
 THOMSON_COMMON_TXT = THOMSON_COMMON_DIR + "ST2030S_common_v1.53.txt"
 
 # THOMSON BUGBUG #3
 # THOMSON_SPEC_DIR must be *TFTPROOT* because the phone will only download its
 # mac specific configuration from this directory.
-THOMSON_SPEC_DIR = provsup.TFTPROOT
+THOMSON_SPEC_DIR = pgc['tftproot']
 
 THOMSON_USER = "admin"		# XXX
 THOMSON_PASSWD = "superpass"	# XXX
@@ -37,8 +38,6 @@ THOMSON_SPEC_TXT_TEMPLATE = "files/ST2030S_template.txt"
 
 # for some tests: THOMSON_SPEC_TXT_BASENAME = "files/ST2030S_"
 THOMSON_SPEC_TXT_BASENAME = "/tftpboot/ST2030S_"
-
-TELNET_TIMEOUT = 30
 
 class TelnetExpectationFailed(RuntimeError):
 	"""Exception raised by the new methods introduced by the
@@ -53,7 +52,7 @@ class TimeoutingTelnet(telnetlib.Telnet):
 	in the raising of an exception.
 	
 	"""
-	def __init__(self, cnx, global_TO = TELNET_TIMEOUT):
+	def __init__(self, cnx, global_TO = pgc['telnet_to_s']):
 		if type(cnx) != tuple or len(cnx) < 1:
 			raise ValueError, "The cnx argument must be (peer,) or (peer,port) ; %s was given" % str(cnx)
 		elif len(cnx) < 2:

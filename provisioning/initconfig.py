@@ -40,24 +40,21 @@ from timeoutsocket import Timeout
 import httplib
 
 import provsup
+from provsup import ProvGeneralConf as pgc
 from Phones import *
-
-DEBUG	     = 1
-
-# SERVER_IPV4 = provsup.LISTEN_IPV4
-SERVER_IPV4 = '192.168.0.5'
-
-HTTP_REQUEST_TIMEOUT = 90
 
 def agi_escape_string(s):
 	return s.replace('\\', '\\\\').replace('"', '\\"').replace('\n', ' ')
 
-def print_verbose(txt):
-	if DEBUG:
-		print "VERBOSE \"%s\"" % agi_escape_string(txt)
+def agi_verbose(txt):
+	print "VERBOSE \"%s\"" % agi_escape_string(txt)
+
+def agi_verbose_debug(txt):
+	if pgc['debug_agi']:
+		agi_verbose(txt)
 
 def return_exit(error, playback=None):
-	print_verbose("%s" % error)
+	agi_verbose("%s" % error)
 	if playback:
 		print "EXEC PLAYBACK \"%s\"" % playback
 	sys.exit(1)
@@ -82,14 +79,15 @@ def phone_desc_by_ua(ua):
 		except:
 			r = None
 			for line in provsup.exception_traceback():
-				print_verbose(line)
+				agi_verbose(line)
 		if r:
 			return r
 	return None
 
 def main():
+	provsup.LoadConfig(CONFIG_FILE)
 	if len(sys.argv) >= 4:
-		print_verbose("Argument number ok")
+		agi_verbose_debug("Argument number ok")
 	else:
 		return_exit("Too few arguments")
 
@@ -102,7 +100,7 @@ def main():
 	if not user_ipv4:
 		return_exit("Could not parse Sip URI \"%s\"" % sip_uri)
 	sip_user, ipv4 = user_ipv4
-	macaddr = provsup.macaddr_from_ipv4(ipv4, print_verbose)
+	macaddr = provsup.macaddr_from_ipv4(ipv4, agi_verbose)
 	if not macaddr:
 		return_exit("Could not find Mac Address from IPv4 \"%s\"" % ipv4)
 
@@ -123,8 +121,8 @@ def main():
 		    "proto=sip\r\n" ) % (phone_vendor, phone_model, macaddr, ipv4, code)
 
 	try:
-		timeoutsocket.setDefaultSocketTimeout(HTTP_REQUEST_TIMEOUT)
-		conn = httplib.HTTPConnection(SERVER_IPV4 + ':' + str(provsup.LISTEN_PORT))
+		timeoutsocket.setDefaultSocketTimeout(pgc['http_request_to_s'])
+		conn = httplib.HTTPConnection(pgc['connect_ipv4'] + ':' + str(pgc['connect_port']))
 		conn.request("POST", "/prov", command, {"Content-Type": "text/plain; charset=ISO-8859-1"})
 		response = conn.getresponse()
 		response.read()	# eat every data sent by the provisioning server
@@ -135,7 +133,7 @@ def main():
 		reason = str(xcept)
 		status = 500
 		for line in provsup.exception_traceback():
-			print_verbose(line)
+			agi_verbose(line)
 
 	if status != 200:
 		return_exit("Provisioning failure; %s" % reason)
