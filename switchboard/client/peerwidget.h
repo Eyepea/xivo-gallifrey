@@ -1,4 +1,4 @@
-/* $Id $ */
+/* $Id$ */
 #ifndef __PEERWIDGET_H__
 #define __PEERWIDGET_H__
 #include <QWidget>

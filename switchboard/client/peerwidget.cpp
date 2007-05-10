@@ -1,4 +1,4 @@
-/* $Id $ */
+/* $Id$ */
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPixmap>
