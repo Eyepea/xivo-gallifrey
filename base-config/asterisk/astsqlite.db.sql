@@ -264,7 +264,7 @@ CREATE UNIQUE INDEX userfeatures__uidx__protocol_name ON userfeatures(protocol,n
 CREATE UNIQUE INDEX userfeatures__uidx__protocol_protocolid ON userfeatures(protocol,protocolid);
 CREATE UNIQUE INDEX userfeatures__uidx__provisioningid ON userfeatures(provisioningid);
 
-INSERT INTO userfeatures VALUES(1,'sip',1,'Guest','','guest','','',116359,30,0,5,0,'','');
+INSERT INTO userfeatures VALUES(1,'sip',1,'Guest','','guest','','initconfig',116359,30,0,5,0,'','');
 
 
 CREATE TABLE extensions (
