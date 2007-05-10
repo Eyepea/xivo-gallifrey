@@ -7,11 +7,12 @@ CREATE TABLE didfeatures (
  extenid integer unsigned NOT NULL,
  custom varchar(128) NOT NULL default '',
  number varchar(80) NOT NULL,
- commented boolean NOT NULL default 0,
+ commented tinyint(1) unsigned NOT NULL default 0,
  PRIMARY KEY(id)
 );
 
 CREATE INDEX didfeatures__idx__type_typeid ON didfeatures(type,typeid);
+CREATE INDEX didfeatures__idx__commented ON didfeatures(commented);
 CREATE UNIQUE INDEX didfeatures__uidx__extenid ON didfeatures(extenid);
 
 
@@ -30,7 +31,7 @@ CREATE TABLE groupfeatures (
  name varchar(255) NOT NULL,
  number varchar(80) default '',
  context varchar(80) NOT NULL default '',
- commented boolean default 0,
+ commented tinyint(1) unsigned default 0,
  PRIMARY KEY(id)
 );
 
@@ -39,13 +40,18 @@ CREATE UNIQUE INDEX groupfeatures__uidx__name_commented ON groupfeatures(name,co
 
 CREATE TABLE meetme (
  id integer unsigned,
- commented boolean default 0,
+ commented tinyint(1) unsigned default 0,
  filename varchar(128) NOT NULL,
  category varchar(128) NOT NULL,
  var_name varchar(128) NOT NULL,
  var_val varchar(128) NOT NULL,
  PRIMARY KEY(id)
 );
+
+CREATE INDEX meetme__idx__commented ON meetme(commented);
+CREATE INDEX meetme__idx__filename ON meetme(filename);
+CREATE INDEX meetme__idx__category ON meetme(category);
+CREATE INDEX meetme__idx__var_name ON meetme(var_name);
 
 
 CREATE TABLE meetmefeatures (
@@ -56,10 +62,10 @@ CREATE TABLE meetmefeatures (
  mode varchar(6) NOT NULL default 'all',
  musiconhold varchar(128) NOT NULL default '',
  context varchar(80) NOT NULL default '',
- exit boolean default 0,
- quiet boolean default 0,
- record boolean default 0,
- video boolean default 0,
+ exit tinyint(1) unsigned default 0,
+ quiet tinyint(1) unsigned default 0,
+ record tinyint(1) unsigned default 0,
+ video tinyint(1) unsigned default 0,
  PRIMARY KEY(id)
 );
 
@@ -113,9 +119,11 @@ CREATE TABLE queue (
  memberdelay integer unsigned,
  weight integer unsigned,
  timeoutrestart boolean,
- commented boolean default 0,
+ commented tinyint(1) unsigned default 0,
  PRIMARY KEY(name)
 );
+
+CREATE INDEX queue__idx__commented ON queue(commented);
 
 
 CREATE TABLE queuemember (
@@ -123,9 +131,11 @@ CREATE TABLE queuemember (
  interface varchar(128) NOT NULL,
  penalty integer unsigned default 0,
  call_limit integer unsigned default 0,
- commented boolean default 0,
+ commented tinyint(1) unsigned default 0,
  PRIMARY KEY(queue_name,interface)
 );
+
+CREATE INDEX queuemember__idx__commented ON queuemember(commented);
 
 
 CREATE TABLE trunkfeatures (
@@ -136,6 +146,7 @@ CREATE TABLE trunkfeatures (
  PRIMARY KEY(id)
 );
 
+CREATE INDEX trunkfeatures__idx__registerid ON trunkfeatures(registerid);
 CREATE UNIQUE INDEX trunkfeatures__uidx__trunk_trunkid ON trunkfeatures(trunk,trunkid);
 
 
@@ -152,7 +163,7 @@ CREATE UNIQUE INDEX usergroup__uidx__userid_groupid ON usergroup(userid,groupid)
 CREATE TABLE useriax (
  id integer unsigned,
  name varchar(80) NOT NULL,
- commented boolean NOT NULL default 0,
+ commented tinyint(1) unsigned NOT NULL default 0,
  username varchar(80) NOT NULL,
  type varchar(6) NOT NULL default 'friend',
  secret varchar(80),
@@ -185,6 +196,7 @@ CREATE TABLE useriax (
  PRIMARY KEY(id)
 );
 
+CREATE INDEX useriax__idx__commented ON useriax(commented);
 CREATE INDEX useriax__idx__category ON useriax(category);
 CREATE UNIQUE INDEX useriax__uidx__name ON useriax(name);
 
@@ -214,10 +226,11 @@ CREATE TABLE uservoicemail (
  forcename varchar(4) NOT NULL default 'no',
  forcegreetings varchar(4) NOT NULL default 'no',
  hidefromdir varchar(4) NOT NULL default 'yes',
- commented boolean NOT NULL default 0,
+ commented tinyint(1) unsigned NOT NULL default 0,
  PRIMARY KEY(id)
 );
 
+CREATE INDEX uservoicemail__idx__commented ON uservoicemail(commented);
 CREATE INDEX uservoicemail__idx__context ON uservoicemail(context);
 CREATE INDEX uservoicemail__idx__mailbox_context ON uservoicemail(mailbox,context);
 CREATE UNIQUE INDEX uservoicemail__uidx__mailbox ON uservoicemail(mailbox);
@@ -234,14 +247,19 @@ CREATE TABLE userfeatures (
  context varchar(80) NOT NULL,
  provisioningid mediumint unsigned NOT NULL,
  ringseconds tinyint unsigned default 15,
- ringgroup boolean default 0,
+ ringgroup tinyint(1) unsigned default 0,
  simultcalls tinyint unsigned default 1,
- popupwidget boolean default 0,
+ popupwidget tinyint(1) unsigned default 0,
  musiconhold varchar(128) NOT NULL default '',
  comment text default '',
  PRIMARY KEY(id)
 );
 
+CREATE INDEX userfeatures__idx__firstname ON userfeatures(firstname);
+CREATE INDEX userfeatures__idx__lastname ON userfeatures(lastname);
+CREATE INDEX userfeatures__idx__number ON userfeatures(number);
+CREATE INDEX userfeatures__idx__context ON userfeatures(context);
+CREATE INDEX userfeatures__idx__musiconhold ON userfeatures(musiconhold);
 CREATE UNIQUE INDEX userfeatures__uidx__protocol_name ON userfeatures(protocol,name);
 CREATE UNIQUE INDEX userfeatures__uidx__protocol_protocolid ON userfeatures(protocol,protocolid);
 CREATE UNIQUE INDEX userfeatures__uidx__provisioningid ON userfeatures(provisioningid);
@@ -251,7 +269,7 @@ INSERT INTO userfeatures VALUES(1,'sip',1,'Guest','','guest','','',116359,30,0,5
 
 CREATE TABLE extensions (
  id integer unsigned,
- commented boolean NOT NULL default 0,
+ commented tinyint(1) unsigned NOT NULL default 0,
  context varchar(20) NOT NULL default '',
  exten varchar(20) NOT NULL default '',
  priority tinyint unsigned NOT NULL default 0,
@@ -261,6 +279,7 @@ CREATE TABLE extensions (
  PRIMARY KEY(id)
 );
 
+CREATE INDEX extensions__idx__commented ON extensions(commented);
 CREATE INDEX extensions__idx__context_exten_priority ON extensions(context,exten,priority);
 CREATE INDEX extensions__idx__name ON extensions(name);
 
@@ -307,13 +326,18 @@ INSERT INTO extensions VALUES(39,0,'features','_*8.',1,'Pickup','${EXTEN:2}','pi
 
 CREATE TABLE generalsip (
  id integer unsigned,
- commented boolean default 0,
+ commented tinyint(1) unsigned default 0,
  filename varchar(128) NOT NULL,
  category varchar(128) NOT NULL,
  var_name varchar(128) NOT NULL,
  var_val varchar(128) NOT NULL,
  PRIMARY KEY(id)
 );
+
+CREATE INDEX generalsip__idx__commented ON generalsip(commented);
+CREATE INDEX generalsip__idx__filename ON generalsip(filename);
+CREATE INDEX generalsip__idx__category ON generalsip(category);
+CREATE INDEX generalsip__idx__var_name ON generalsip(var_name);
 
 INSERT INTO generalsip VALUES(1,0,'sip.conf','general','bindport',5060);
 INSERT INTO generalsip VALUES(2,0,'sip.conf','general','bindaddr','0.0.0.0');
@@ -336,13 +360,18 @@ INSERT INTO generalsip VALUES(17,0,'sip.conf','general','videosupport','no');
 
 CREATE TABLE generaliax (
  id integer unsigned,
- commented boolean default 0,
+ commented tinyint(1) unsigned default 0,
  filename varchar(128) NOT NULL,
  category varchar(128) NOT NULL,
  var_name varchar(128) NOT NULL,
  var_val varchar(128) NOT NULL,
  PRIMARY KEY(id)
 );
+
+CREATE INDEX generaliax__idx__commented ON generaliax(commented);
+CREATE INDEX generaliax__idx__filename ON generaliax(filename);
+CREATE INDEX generaliax__idx__category ON generaliax(category);
+CREATE INDEX generaliax__idx__var_name ON generaliax(var_name);
 
 INSERT INTO generaliax VALUES(1,0,'iax.conf','general','bindport',4569);
 INSERT INTO generaliax VALUES(2,0,'iax.conf','general','bindaddr','0.0.0.0');
@@ -356,13 +385,18 @@ INSERT INTO generaliax VALUES(8,0,'iax.conf','general','jitterbuffer','no');
 
 CREATE TABLE generalvoicemail (
  id integer unsigned,
- commented boolean default 0,
+ commented tinyint(1) unsigned default 0,
  filename varchar(128) NOT NULL,
  category varchar(128) NOT NULL,
  var_name varchar(128) NOT NULL,
  var_val text NOT NULL,
  PRIMARY KEY(id)
 );
+
+CREATE INDEX generalvoicemail__idx__commented ON generalvoicemail(commented);
+CREATE INDEX generalvoicemail__idx__filename ON generalvoicemail(filename);
+CREATE INDEX generalvoicemail__idx__category ON generalvoicemail(category);
+CREATE INDEX generalvoicemail__idx__var_name ON generalvoicemail(var_name);
 
 INSERT INTO generalvoicemail VALUES(1,0,'voicemail.conf','general','maxmessage',180);
 INSERT INTO generalvoicemail VALUES(2,0,'voicemail.conf','general','minmessage',5);
@@ -383,10 +417,28 @@ INSERT INTO generalvoicemail VALUES(11,0,'voicemail.conf','zonemessages','eu-fr'
 INSERT INTO generalvoicemail VALUES(12,0,'voicemail.conf','general','tz','eu-fr');
 
 
+CREATE TABLE generalqueue (
+ id integer unsigned,
+ commented tinyint(1) unsigned default 0,
+ filename varchar(128) NOT NULL,
+ category varchar(128) NOT NULL,
+ var_name varchar(128) NOT NULL,
+ var_val varchar(128) NOT NULL,
+ PRIMARY KEY(id)
+);
+
+CREATE INDEX generalqueue__idx__commented ON generalqueue(commented);
+CREATE INDEX generalqueue__idx__filename ON generalqueue(filename);
+CREATE INDEX generalqueue__idx__category ON generalqueue(category);
+CREATE INDEX generalqueue__idx__var_name ON generalqueue(var_name);
+
+INSERT INTO generalqueue VALUES(1,0,'queues.conf','general','persistentmembers','yes');
+
+
 CREATE TABLE usersip (
  id integer unsigned,
  name varchar(80) NOT NULL,
- commented boolean NOT NULL default 0,
+ commented tinyint(1) unsigned NOT NULL default 0,
  accountcode varchar(20),
  amaflags varchar(13),
  callgroup varchar(10),
@@ -429,6 +481,7 @@ CREATE TABLE usersip (
  PRIMARY KEY(id)
 );
 
+CREATE INDEX usersip__idx__commented ON usersip(commented);
 CREATE INDEX usersip__idx__category ON usersip(category);
 CREATE UNIQUE INDEX usersip__uidx__name ON usersip(name);
 
@@ -437,7 +490,7 @@ INSERT INTO usersip VALUES(1,'guest',0,'','documentation','','Guest','no','initc
 
 CREATE TABLE musiconhold (
  id integer unsigned,
- commented boolean default 0,
+ commented tinyint(1) unsigned default 0,
  filename varchar(128) NOT NULL,
  category varchar(128) NOT NULL,
  var_name varchar(128) NOT NULL,
@@ -445,6 +498,7 @@ CREATE TABLE musiconhold (
  PRIMARY KEY(id)
 );
 
+CREATE INDEX musiconhold__idx__commented ON musiconhold(commented);
 CREATE UNIQUE INDEX musiconhold__uidx__filename_category_var_name ON musiconhold(filename,category,var_name);
 
 INSERT INTO musiconhold VALUES(1,0,'musiconhold.conf','default','mode','custom');
