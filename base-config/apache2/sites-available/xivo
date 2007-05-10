@@ -1,0 +1,23 @@
+
+NameVirtualHost *:443
+
+<VirtualHost *:443>
+	ServerAdmin technique@proformatique.com
+	DocumentRoot /usr/share/pf-xivo-web-interface/www
+
+	ErrorLog /var/log/apache2/xivo_error.log
+	CustomLog /var/log/apache2/xivo_access.log combined
+
+	SSLEngine on
+	SSLOptions +FakeBasicAuth +StrictRequire +StdEnvVars +ExportCertData
+	SSLProtocol all
+	SSLCipherSuite RSA:!EXP:!NULL:+HIGH:+MEDIUM:-LOW
+	SSLCertificateFile /etc/apache2/cert/server.crt
+	SSLCertificateKeyFile /etc/apache2/cert/server.key
+	SSLCACertificatePath /etc/apache2/cert/
+	SSLCACertificateFile /etc/apache2/cert/ca.crt
+	SSLVerifyClient none
+
+	Include "/usr/share/pf-xivo-web-interface/apache.conf"
+</VirtualHost>
+
