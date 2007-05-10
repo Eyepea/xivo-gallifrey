@@ -12,8 +12,12 @@
 PeerWidget::PeerWidget(const QString & id, const QString & name,
                        QWidget * parent, int size)
 : QWidget(parent), m_square(size,size), m_id(id), m_name(name),
-m_phone_green(":/phone-green.gif"), m_phone_red(":/phone-red.gif"),
-m_phone_gray(":/phone-gray.gif")
+m_phone_green(":/phone-green.png"), m_phone_red(":/phone-red.png"),
+m_phone_orange(":/phone-orange.png"), m_phone_gray(":/phone-grey.png"),
+m_phone_yellow(":/phone-yellow.png"), m_phone_blue(":/phone-blue.png"),
+m_person_green(":/personal-green.png"), m_person_red(":/personal-red.png"),
+m_person_orange(":/personal-orange.png"), m_person_gray(":/personal-grey.png"),
+m_person_yellow(":/personal-yellow.png"), m_person_blue(":/personal-blue.png")
 {
 	QHBoxLayout * layout = new QHBoxLayout(this);
 	layout->setSpacing(2);
@@ -42,11 +46,11 @@ m_phone_gray(":/phone-gray.gif")
 
 void PeerWidget::setRed(int n)
 {
-	m_square.fill( Qt::red );
+	//m_square.fill( Qt::red );
 	if(n == 0)
 	  m_statelbl->setPixmap( m_phone_red/*m_square*/ );
 	else
-	  m_availlbl->setPixmap( m_square );
+	  m_availlbl->setPixmap( m_person_red/*m_square*/ );
 }
 
 void PeerWidget::setBlack(int n)
@@ -69,29 +73,29 @@ void PeerWidget::setDarkGreen(int n)
 
 void PeerWidget::setGreen(int n)
 {
-	m_square.fill( Qt::green );
+	//m_square.fill( Qt::green );
 	if(n == 0)
 	  m_statelbl->setPixmap( m_phone_green/*m_square*/ );
 	else
-	  m_availlbl->setPixmap( m_square );
+	  m_availlbl->setPixmap( m_person_green/*m_square*/ );
 }
 
 void PeerWidget::setGray(int n)
 {
-	m_square.fill( Qt::gray );
+	//m_square.fill( Qt::gray );
 	if(n == 0)
 	  m_statelbl->setPixmap( m_phone_gray/*m_square*/ );
 	else
-	  m_availlbl->setPixmap( m_square );
+	  m_availlbl->setPixmap( m_person_gray/*m_square*/ );
 }
 
 void PeerWidget::setBlue(int n)
 {
-	m_square.fill( Qt::blue );
+	//m_square.fill( Qt::blue );
 	if(n == 0)
-	  m_statelbl->setPixmap( m_square );
+	  m_statelbl->setPixmap( m_phone_blue/*m_square*/ );
 	else
-	  m_availlbl->setPixmap( m_square );
+	  m_availlbl->setPixmap( m_person_blue/*m_square*/ );
 }
 
 void PeerWidget::setCyan(int n)
@@ -105,20 +109,20 @@ void PeerWidget::setCyan(int n)
 
 void PeerWidget::setYellow(int n)
 {
-	m_square.fill( Qt::yellow );
+	//m_square.fill( Qt::yellow );
 	if(n == 0)
-	  m_statelbl->setPixmap( m_square );
+	  m_statelbl->setPixmap( m_phone_yellow/*m_square*/ );
 	else
-	  m_availlbl->setPixmap( m_square );
+	  m_availlbl->setPixmap( m_person_yellow/*m_square*/ );
 }
 
 void PeerWidget::setOrange(int n)
 {
-	m_square.fill( QColor(255,127,0) );
+	//m_square.fill( QColor(255,127,0) );
 	if(n == 0)
-	  m_statelbl->setPixmap( m_square );
+	  m_statelbl->setPixmap( m_phone_orange/*m_square*/ );
 	else
-	  m_availlbl->setPixmap( m_square );
+	  m_availlbl->setPixmap( m_person_orange/*m_square*/ );
 }
 
 void PeerWidget::removeFromPanel()

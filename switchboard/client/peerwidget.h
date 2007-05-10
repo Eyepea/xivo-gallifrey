@@ -56,7 +56,17 @@ private:
 	QAction * m_dialAction;
 	QPixmap m_phone_green;
 	QPixmap m_phone_red;
+	QPixmap m_phone_orange;
 	QPixmap m_phone_gray;
+	QPixmap m_phone_yellow;
+	QPixmap m_phone_blue;
+
+	QPixmap m_person_green;
+	QPixmap m_person_red;
+	QPixmap m_person_orange;
+	QPixmap m_person_gray;
+	QPixmap m_person_yellow;
+	QPixmap m_person_blue;
 };
 
 #endif

@@ -21,7 +21,7 @@ void Peer::updateStatus(const QString & status,
   if(avail == "available")
     m_peerwidget->setGreen(1);
   else if(avail == "away")
-    m_peerwidget->setDarkGreen(1);
+    m_peerwidget->setBlue(1);/*setDarkGreen(1);*/
   else if(avail == "donotdisturb")
     m_peerwidget->setRed(1);
   else if(avail == "berightback")
@@ -34,7 +34,7 @@ void Peer::updateStatus(const QString & status,
   if(status == "Ready")
     m_peerwidget->setGreen(0);
   else if(status == "Ringing")
-    m_peerwidget->setCyan(0);
+    m_peerwidget->setBlue(0);/*setCyan(0);*/
   else if(status == "Calling")
     m_peerwidget->setYellow(0);
   else if(status == "On the phone")
