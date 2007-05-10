@@ -1,3 +1,4 @@
+/* $Id $ */
 #ifndef __PEERWIDGET_H__
 #define __PEERWIDGET_H__
 #include <QWidget>
@@ -53,6 +54,9 @@ private:
 	QString m_name;	//!< caller id to display : usualy the NAME of the person
 	QAction * m_removeAction;
 	QAction * m_dialAction;
+	QPixmap m_phone_green;
+	QPixmap m_phone_red;
+	QPixmap m_phone_gray;
 };
 
 #endif

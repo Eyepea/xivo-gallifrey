@@ -1,6 +1,9 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
 	<file>xivoicon.png</file>
+	<file>phone-green.gif</file>
+	<file>phone-red.gif</file>
+	<file>phone-gray.gif</file>
 </qresource>
 </RCC>
 

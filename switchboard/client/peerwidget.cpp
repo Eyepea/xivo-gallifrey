@@ -1,3 +1,4 @@
+/* $Id $ */
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPixmap>
@@ -10,7 +11,9 @@
 
 PeerWidget::PeerWidget(const QString & id, const QString & name,
                        QWidget * parent, int size)
-: QWidget(parent), m_square(size,size), m_id(id), m_name(name)
+: QWidget(parent), m_square(size,size), m_id(id), m_name(name),
+m_phone_green(":/phone-green.gif"), m_phone_red(":/phone-red.gif"),
+m_phone_gray(":/phone-gray.gif")
 {
 	QHBoxLayout * layout = new QHBoxLayout(this);
 	layout->setSpacing(2);
@@ -41,7 +44,7 @@ void PeerWidget::setRed(int n)
 {
 	m_square.fill( Qt::red );
 	if(n == 0)
-	  m_statelbl->setPixmap( m_square );
+	  m_statelbl->setPixmap( m_phone_red/*m_square*/ );
 	else
 	  m_availlbl->setPixmap( m_square );
 }
@@ -68,7 +71,7 @@ void PeerWidget::setGreen(int n)
 {
 	m_square.fill( Qt::green );
 	if(n == 0)
-	  m_statelbl->setPixmap( m_square );
+	  m_statelbl->setPixmap( m_phone_green/*m_square*/ );
 	else
 	  m_availlbl->setPixmap( m_square );
 }
@@ -77,7 +80,7 @@ void PeerWidget::setGray(int n)
 {
 	m_square.fill( Qt::gray );
 	if(n == 0)
-	  m_statelbl->setPixmap( m_square );
+	  m_statelbl->setPixmap( m_phone_gray/*m_square*/ );
 	else
 	  m_availlbl->setPixmap( m_square );
 }
