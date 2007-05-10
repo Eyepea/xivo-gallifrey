@@ -1,3 +1,4 @@
+/* $Id$ */
 #include <QHBoxLayout>
 #include <QGridLayout>
 #include <QApplication>
@@ -9,27 +10,7 @@
 #include <QMenu>
 #include "callstackwidget.h"
 #include "callwidget.h"
-/*
-CallWidget::CallWidget(QWidget * parent)
-: QWidget(parent)
-{
-	QHBoxLayout * layout = new QHBoxLayout(this);
-	m_lbl_time = new QLabel(this);
-	layout->addWidget(m_lbl_time);
-}
 
-CallWidget::CallWidget(const QString & tomonitor,
-                       QWidget * parent)
-: QWidget(parent)
-{
-	QHBoxLayout * layout = new QHBoxLayout(this);
-	if (tomonitor == QString(""))
-		m_lbl_time = new QLabel("No phone monitored", this);
-	else
-		m_lbl_time = new QLabel("Phone monitored = " + tomonitor, this);
-	layout->addWidget(m_lbl_time);
-}
-*/
 CallWidget::CallWidget(const QString & channelme,
 		       const QString & action,
 		       int time,
@@ -37,7 +18,11 @@ CallWidget::CallWidget(const QString & channelme,
 		       const QString & channelpeer,
 		       const QString & exten,
                        QWidget * parent)
-: QWidget(parent), m_square(16,16)
+: QWidget(parent), m_square(16,16),
+m_call_yellow(":/phone-yellow.png"),
+m_call_blue(":/phone-blue.png"),
+m_call_red(":/phone-red.png"),
+m_call_gray(":/phone-grey.png")
 {
 	QGridLayout * layout = new QGridLayout(this);
 
@@ -116,6 +101,7 @@ void CallWidget::updateWidget(const QString & action,
 
 void CallWidget::setActionPixmap(const QString & action)
 {
+#if 0
 	if(action == QString("Calling"))
 		m_square.fill( Qt::yellow );
 	else if(action == QString("Ringing"))
@@ -125,6 +111,17 @@ void CallWidget::setActionPixmap(const QString & action)
 	else
 		m_square.fill( Qt::gray );
 	m_lbl_action->setPixmap( m_square );
+#endif
+	if(action == "Calling")
+		m_lbl_action->setPixmap( m_call_yellow );
+	else if(action == "Ringing")
+		m_lbl_action->setPixmap( m_call_blue );
+	else if(action == "On the phone")
+		m_lbl_action->setPixmap( m_call_red );
+	else {
+		m_lbl_action->setPixmap( m_call_gray );
+		qDebug() << " *** WARNING *** action unknown for call" << action;
+	}
 }
 
 void CallWidget::mousePressEvent(QMouseEvent *event)

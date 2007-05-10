@@ -64,6 +64,10 @@ private:
 	QLabel * m_lbl_channelpeer;	//!< sub widget
 	QLabel * m_lbl_exten;	//!< sub widget
 	QPixmap m_square;		//!< QPixmap used to display the action square
+	QPixmap m_call_yellow;
+	QPixmap m_call_blue;
+	QPixmap m_call_red;
+	QPixmap m_call_gray;
 	QDateTime m_startTime;	//!< call start date/time
 	QAction * m_hangUpAction;	//!< Hang Up Action
 };
