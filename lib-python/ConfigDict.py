@@ -40,7 +40,7 @@ def FillDictFromConfigSection(dicttofill, confpars_obj, section):
 					raise ValueError, "Content of \"%s\" in section \"%s\" of configuration file should be of type \"%s\", but the actual value found there \"%s\" is not" % (name, section, str(t), oldval)
 		dicttofill[name] = val
 	return dicttofill
-	
+
 def FillDictFromMultipleConfig(dicttofill, confpars_obj, sect_mapping):
 	"""Acts the same as FillDictFromConfigSection(), but instead of filling
 	the dictionary with every entries of a given section of the
