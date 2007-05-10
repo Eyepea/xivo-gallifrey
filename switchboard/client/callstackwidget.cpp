@@ -229,6 +229,7 @@ void CallStackWidget::dropEvent(QDropEvent *event)
 	}
 	emptyList();
 	m_monitoredPeer = text;
+	monitoredPeerChanged(text);
 	changeTitle(tr("Monitoring : ") + text);
 	updateDisplay();
 	event->acceptProposedAction();

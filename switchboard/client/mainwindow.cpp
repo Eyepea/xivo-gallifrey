@@ -1,3 +1,4 @@
+/* $Id$ */
 /* $Revision$ $Date$ */
 /* Copyright (C) 2007 Proformatique */
 
@@ -70,7 +71,7 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 	LeftPanel * leftPanel = new LeftPanel(areaCalls, m_leftSplitter);
 	QScrollArea * areaLog = new QScrollArea(m_leftSplitter);
 	areaLog->setWidgetResizable(true);
-	LogWidget * logwidget = new LogWidget(areaLog);
+	LogWidget * logwidget = new LogWidget(m_engine, areaLog);
 	areaLog->setWidget(logwidget);
 	connect( engine, SIGNAL(updateLogEntry(const QDateTime &, int, const QString &, int)),
 	         logwidget, SLOT(addLogEntry(const QDateTime &, int, const QString &, int)) );
@@ -91,6 +92,11 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 	         calls, SLOT(reset()) );
 	connect( calls, SIGNAL(hangUp(const QString &)),
 		 m_engine, SLOT(hangUp(const QString &)) );
+
+	connect( calls, SIGNAL(monitoredPeerChanged(const QString &)),
+	         logwidget, SLOT(setPeerToDisplay(const QString &)) );
+	connect( logwidget, SIGNAL(askHistory(const QString &)),
+	         m_engine, SLOT(requestHistory(const QString &)) );
 
 	m_middleSplitter = new QSplitter( Qt::Vertical, m_splitter);
 

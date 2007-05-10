@@ -199,7 +199,7 @@ void SwitchBoardEngine::socketStateChanged(QAbstractSocket::SocketState socketSt
 			killTimer(m_timer);
 			m_timer = -1;
 		}
-		startTimer(3000);
+		//startTimer(3000);
 	}
 }
 
@@ -323,8 +323,8 @@ void SwitchBoardEngine::timerEvent(QTimerEvent * event)
 	// event->timerId() !
 	//	qDebug() << event;
 	//	m_socket->connectToHost(m_host, m_port);
-	m_pendingcommand = "history obelisk/SIP/103 3";
-	sendCommand();
+	//m_pendingcommand = "history obelisk/SIP/103 3";
+	//sendCommand();
 }
 
 /*! \brief send an originate command to the server
@@ -370,6 +370,15 @@ void SwitchBoardEngine::searchDirectory(const QString & text)
 {
 	qDebug() << "SwitchBoardEngine::searchDirectory()" << text;
 	m_pendingcommand = "directory-search " + text;
+	sendCommand();
+}
+
+/*! \brief ask history for an extension 
+ */
+void SwitchBoardEngine::requestHistory(const QString & peer)
+{
+	qDebug() << "SwitchBoardEngine::requestHistory()" << peer;
+	m_pendingcommand = "history " + peer + " 3";
 	sendCommand();
 }
 

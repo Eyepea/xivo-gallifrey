@@ -29,6 +29,8 @@ LogEltWidget::LogEltWidget( const QString & peer, Direction d,
 
 	m_dialAction = new QAction( tr("&Dial"), this );
 	m_dialAction->setStatusTip( tr("Dial back") );
+	connect( m_dialAction, SIGNAL(triggered()),
+	         this, SLOT(callBackPeer()) );
 }
 
 void LogEltWidget::contextMenuEvent(QContextMenuEvent *event)
@@ -36,5 +38,10 @@ void LogEltWidget::contextMenuEvent(QContextMenuEvent *event)
 	QMenu contextMenu(this);
 	contextMenu.addAction( m_dialAction );
 	contextMenu.exec(event->globalPos());
+}
+
+void LogEltWidget::callBackPeer()
+{
+	emitDial(m_peer);
 }
 

@@ -21,6 +21,10 @@ public:
 	Direction direction() const { return m_direction; };
 protected:
 	void contextMenuEvent(QContextMenuEvent *);
+private slots:
+	void callBackPeer();
+signals:
+	void emitDial(const QString &);
 private:
 	QDateTime m_dateTime;
 	QString m_peer;
