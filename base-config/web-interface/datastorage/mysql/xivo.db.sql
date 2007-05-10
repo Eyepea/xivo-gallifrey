@@ -32,7 +32,7 @@ CREATE TABLE user (
  `login` varchar(255) NOT NULL default '',
  `passwd` varchar(255) NOT NULL default '',
  `meta` enum('user','admin','root') default 'user',
- `valid` boolean default true,
+ `valid` tinyint(1) unsigned default 1,
  `time` int(11) unsigned NOT NULL default 0,
  `obj` longblob NOT NULL,
  `dcreate` int(11) unsigned NOT NULL default 0,
@@ -47,5 +47,5 @@ CREATE INDEX user__idx__time ON user(time);
 CREATE INDEX user__idx__valid ON user(valid);
 CREATE UNIQUE INDEX user__uidx__login_meta ON user(login,meta);
 
-INSERT INTO user VALUES(1,'root','proformatique','root',true,0,'',UNIX_TIMESTAMP(UTC_TIMESTAMP()),0);
-INSERT INTO user VALUES(2,'admin','proformatique','admin',true,0,'',UNIX_TIMESTAMP(UTC_TIMESTAMP()),0);
+INSERT INTO user VALUES(1,'root','proformatique','root',1,0,'',UNIX_TIMESTAMP(UTC_TIMESTAMP()),0);
+INSERT INTO user VALUES(2,'admin','proformatique','admin',1,0,'',UNIX_TIMESTAMP(UTC_TIMESTAMP()),0);

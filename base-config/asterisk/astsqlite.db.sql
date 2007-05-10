@@ -7,7 +7,7 @@ CREATE TABLE didfeatures (
  extenid integer unsigned NOT NULL,
  custom varchar(128) NOT NULL default '',
  number varchar(80) NOT NULL,
- commented tinyint(1) unsigned NOT NULL default 0,
+ commented tinyint(1) NOT NULL default 0,
  PRIMARY KEY(id)
 );
 
@@ -31,7 +31,7 @@ CREATE TABLE groupfeatures (
  name varchar(255) NOT NULL,
  number varchar(80) default '',
  context varchar(80) NOT NULL default '',
- commented tinyint(1) unsigned default 0,
+ commented tinyint(1) default 0,
  PRIMARY KEY(id)
 );
 
@@ -40,7 +40,7 @@ CREATE UNIQUE INDEX groupfeatures__uidx__name_commented ON groupfeatures(name,co
 
 CREATE TABLE meetme (
  id integer unsigned,
- commented tinyint(1) unsigned default 0,
+ commented tinyint(1) default 0,
  filename varchar(128) NOT NULL,
  category varchar(128) NOT NULL,
  var_name varchar(128) NOT NULL,
@@ -62,10 +62,10 @@ CREATE TABLE meetmefeatures (
  mode varchar(6) NOT NULL default 'all',
  musiconhold varchar(128) NOT NULL default '',
  context varchar(80) NOT NULL default '',
- exit tinyint(1) unsigned default 0,
- quiet tinyint(1) unsigned default 0,
- record tinyint(1) unsigned default 0,
- video tinyint(1) unsigned default 0,
+ exit tinyint(1) default 0,
+ quiet tinyint(1) default 0,
+ record tinyint(1) default 0,
+ video tinyint(1) default 0,
  PRIMARY KEY(id)
 );
 
@@ -119,7 +119,7 @@ CREATE TABLE queue (
  memberdelay integer unsigned,
  weight integer unsigned,
  timeoutrestart boolean,
- commented tinyint(1) unsigned default 0,
+ commented tinyint(1) default 0,
  PRIMARY KEY(name)
 );
 
@@ -131,7 +131,7 @@ CREATE TABLE queuemember (
  interface varchar(128) NOT NULL,
  penalty integer unsigned default 0,
  call_limit integer unsigned default 0,
- commented tinyint(1) unsigned default 0,
+ commented tinyint(1) default 0,
  PRIMARY KEY(queue_name,interface)
 );
 
@@ -163,7 +163,7 @@ CREATE UNIQUE INDEX usergroup__uidx__userid_groupid ON usergroup(userid,groupid)
 CREATE TABLE useriax (
  id integer unsigned,
  name varchar(80) NOT NULL,
- commented tinyint(1) unsigned NOT NULL default 0,
+ commented tinyint(1) NOT NULL default 0,
  username varchar(80) NOT NULL,
  type varchar(6) NOT NULL default 'friend',
  secret varchar(80),
@@ -226,7 +226,7 @@ CREATE TABLE uservoicemail (
  forcename varchar(4) NOT NULL default 'no',
  forcegreetings varchar(4) NOT NULL default 'no',
  hidefromdir varchar(4) NOT NULL default 'yes',
- commented tinyint(1) unsigned NOT NULL default 0,
+ commented tinyint(1) NOT NULL default 0,
  PRIMARY KEY(id)
 );
 
@@ -247,9 +247,9 @@ CREATE TABLE userfeatures (
  context varchar(80) NOT NULL,
  provisioningid mediumint unsigned NOT NULL,
  ringseconds tinyint unsigned default 15,
- ringgroup tinyint(1) unsigned default 0,
+ ringgroup tinyint(1) default 0,
  simultcalls tinyint unsigned default 1,
- popupwidget tinyint(1) unsigned default 0,
+ popupwidget tinyint(1) default 0,
  musiconhold varchar(128) NOT NULL default '',
  comment text default '',
  PRIMARY KEY(id)
@@ -269,7 +269,7 @@ INSERT INTO userfeatures VALUES(1,'sip',1,'Guest','','guest','','initconfig',116
 
 CREATE TABLE extensions (
  id integer unsigned,
- commented tinyint(1) unsigned NOT NULL default 0,
+ commented tinyint(1) NOT NULL default 0,
  context varchar(20) NOT NULL default '',
  exten varchar(20) NOT NULL default '',
  priority tinyint unsigned NOT NULL default 0,
@@ -326,7 +326,7 @@ INSERT INTO extensions VALUES(39,0,'features','_*8.',1,'Pickup','${EXTEN:2}','pi
 
 CREATE TABLE generalsip (
  id integer unsigned,
- commented tinyint(1) unsigned default 0,
+ commented tinyint(1) default 0,
  filename varchar(128) NOT NULL,
  category varchar(128) NOT NULL,
  var_name varchar(128) NOT NULL,
@@ -360,7 +360,7 @@ INSERT INTO generalsip VALUES(17,0,'sip.conf','general','videosupport','no');
 
 CREATE TABLE generaliax (
  id integer unsigned,
- commented tinyint(1) unsigned default 0,
+ commented tinyint(1) default 0,
  filename varchar(128) NOT NULL,
  category varchar(128) NOT NULL,
  var_name varchar(128) NOT NULL,
@@ -385,7 +385,7 @@ INSERT INTO generaliax VALUES(8,0,'iax.conf','general','jitterbuffer','no');
 
 CREATE TABLE generalvoicemail (
  id integer unsigned,
- commented tinyint(1) unsigned default 0,
+ commented tinyint(1) default 0,
  filename varchar(128) NOT NULL,
  category varchar(128) NOT NULL,
  var_name varchar(128) NOT NULL,
@@ -419,7 +419,7 @@ INSERT INTO generalvoicemail VALUES(12,0,'voicemail.conf','general','tz','eu-fr'
 
 CREATE TABLE generalqueue (
  id integer unsigned,
- commented tinyint(1) unsigned default 0,
+ commented tinyint(1) default 0,
  filename varchar(128) NOT NULL,
  category varchar(128) NOT NULL,
  var_name varchar(128) NOT NULL,
@@ -438,7 +438,7 @@ INSERT INTO generalqueue VALUES(1,0,'queues.conf','general','persistentmembers',
 CREATE TABLE usersip (
  id integer unsigned,
  name varchar(80) NOT NULL,
- commented tinyint(1) unsigned NOT NULL default 0,
+ commented tinyint(1) NOT NULL default 0,
  accountcode varchar(20),
  amaflags varchar(13),
  callgroup varchar(10),
@@ -490,7 +490,7 @@ INSERT INTO usersip VALUES(1,'guest',0,'','documentation','','Guest','no','initc
 
 CREATE TABLE musiconhold (
  id integer unsigned,
- commented tinyint(1) unsigned default 0,
+ commented tinyint(1) default 0,
  filename varchar(128) NOT NULL,
  category varchar(128) NOT NULL,
  var_name varchar(128) NOT NULL,

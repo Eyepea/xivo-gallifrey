@@ -34,10 +34,10 @@ CREATE TABLE user (
  login varchar(255) NOT NULL default '',
  passwd varchar(255) NOT NULL default '',
  meta varchar(5) default 'user',
- valid boolean default 1,
+ valid tinyint(1) default 1,
  time integer unsigned NOT NULL default 0,
  obj longblob NOT NULL,
-  dcreate integer unsigned NOT NULL default 0,
+ dcreate integer unsigned NOT NULL default 0,
  dupdate integer unsigned NOT NULL default 0,
  PRIMARY KEY(id)
 );
