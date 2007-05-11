@@ -5,7 +5,7 @@ Copyright (C) 2007, Proformatique
 
 """
 
-REV_DATE = "$Revision$ $Date$"
+__version__ = "$Revision$ $Date$"
 
 from ConfigParser import ConfigParser, NoSectionError, NoOptionError
 

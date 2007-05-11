@@ -7,7 +7,7 @@ Copyright (C) 2007, Proformatique
 
 """
 
-REV_DATE = "$Revision$ $Date$"
+__version__ = "$Revision$ $Date$"
 
 import os, sys, syslog, time, telnetlib
 import provsup

@@ -7,7 +7,7 @@ Copyright (C) 2007, Proformatique
 """
 # TODO WARNING: must be used only if the caller is of a SIP tech
 
-REV_DATE = "$Revision$ $Date$"
+__version__ = "$Revision$ $Date$"
 GETOPT_SHORTOPTS = 'c:'
 
 import sys

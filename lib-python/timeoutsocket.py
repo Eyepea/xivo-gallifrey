@@ -74,7 +74,7 @@ Good Luck!
 
 """
 
-__version__ = "$Revision$"
+__version__ = "$Revision$ $Date$"
 __author__  = \
 """Timothy O'Malley <timo@alum.mit.edu>
 Proformatique <technique@proformatique.com>"""
@@ -101,8 +101,6 @@ WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS
 ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 PERFORMANCE OF THIS SOFTWARE. 
 """
-
-REV_DATE = "$Revision$ $Date$"
 
 #
 # Imports

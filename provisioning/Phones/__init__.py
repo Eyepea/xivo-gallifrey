@@ -2,7 +2,7 @@
 
 import re, os, os.path
 
-REV_DATE = "$Revision$ $Date$"
+__version__ = "$Revision$ $Date$"
 
 # WARNING: non order preserving
 def uniqlist(lst):

@@ -1,6 +1,6 @@
 # -*- coding: iso-8859-15 -*-
 
-REV_DATE = "$Revision$ $Date$"
+__version__ = "$Revision$ $Date$"
 
 import syslog
 from syslog import syslog      as syslogf

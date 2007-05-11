@@ -7,7 +7,7 @@ Copyright (C) 2007, Proformatique
 """
 # Dependencies : python-sqlite
 
-REV_DATE = "$Revision$ $Date$"
+__version__ = "$Revision$ $Date$"
 GETOPT_SHORTOPTS = 'b:l:dfc:'
 
 import sys

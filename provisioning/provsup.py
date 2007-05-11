@@ -6,7 +6,7 @@ Copyright (C) 2007, Proformatique
 """
 # Dependencies/highly recommended? : arping wget
 
-REV_DATE = "$Revision$ $Date$"
+__version__ = "$Revision$ $Date$"
 
 import os, sys, traceback
 
