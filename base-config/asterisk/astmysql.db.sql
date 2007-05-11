@@ -121,10 +121,12 @@ CREATE TABLE queue (
  `weight` int(11) unsigned,
  `timeoutrestart` tinyint(1) default 0,
  `commented` tinyint(1) default 0,
+ `category` enum('group','queue') NOT NULL,
  PRIMARY KEY(name)
 ) TYPE=MyISAM DEFAULT CHARACTER SET utf8;
 
 CREATE INDEX queue__idx__commented ON queue(commented);
+CREATE INDEX queue__idx__category ON queue(category);
 
 
 CREATE TABLE queuefeatures (

@@ -120,10 +120,12 @@ CREATE TABLE queue (
  weight integer unsigned,
  timeoutrestart tinyint(1) default 0,
  commented tinyint(1) default 0,
+ category char(5) NOT NULL,
  PRIMARY KEY(name)
 );
 
 CREATE INDEX queue__idx__commented ON queue(commented);
+CREATE INDEX queue__idx__category ON queue(category);
 
 
 CREATE TABLE queuefeatures (
