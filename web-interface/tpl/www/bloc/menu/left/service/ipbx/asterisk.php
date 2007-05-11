@@ -6,13 +6,16 @@
 	if($this->chk_policy('general_settings') === true):
 		echo '<dt>',$this->bbf('mn_left_ti_generalsettings'),'</dt>';
 		if($this->chk_policy('general_settings','sipprotocol') === true):
-			echo '<dd id="mn-general-settings--sipprotocol">',$url->href_html($this->bbf('mn_left_sip_protocol'),'service/ipbx/general_settings/sipprotocol','act=list'),'</dd>';
+			echo '<dd id="mn-general-settings--sipprotocol">',$url->href_html($this->bbf('mn_left_sip_protocol'),'service/ipbx/general_settings/sipprotocol'),'</dd>';
 		endif;
 		if($this->chk_policy('general_settings','iaxprotocol') === true):
-			echo '<dd id="mn-general-settings--iaxprotocol">',$url->href_html($this->bbf('mn_left_iax_protocol'),'service/ipbx/general_settings/iaxprotocol','act=list'),'</dd>';
+			echo '<dd id="mn-general-settings--iaxprotocol">',$url->href_html($this->bbf('mn_left_iax_protocol'),'service/ipbx/general_settings/iaxprotocol'),'</dd>';
 		endif;
 		if($this->chk_policy('general_settings','voicemail') === true):
-			echo '<dd id="mn-general-settings--voicemail">',$url->href_html($this->bbf('mn_left_voicemail'),'service/ipbx/general_settings/voicemail','act=list'),'</dd>';
+			echo '<dd id="mn-general-settings--voicemail">',$url->href_html($this->bbf('mn_left_voicemail'),'service/ipbx/general_settings/voicemail'),'</dd>';
+		endif;
+		if($this->chk_policy('general_settings','queues') === true):
+			echo '<dd id="mn-general-settings--queues">',$url->href_html($this->bbf('mn_left_queues'),'service/ipbx/general_settings/queues'),'</dd>';
 		endif;
 		if($this->chk_policy('general_settings','sounds') === true):
 			echo '<dd id="mn-general-settings--sounds">',$url->href_html($this->bbf('mn_left_sounds'),'service/ipbx/general_settings/sounds','act=listdir'),'</dd>';
@@ -21,7 +24,7 @@
 			echo '<dd id="mn-general-settings--musiconhold">',$url->href_html($this->bbf('mn_left_musiconhold'),'service/ipbx/general_settings/musiconhold','act=list'),'</dd>';
 		endif;
 		if($this->chk_policy('general_settings','extenfeatures') === true):
-			echo '<dd id="mn-general-settings--extenfeatures">',$url->href_html($this->bbf('mn_left_extenfeatures'),'service/ipbx/general_settings/extenfeatures','act=list'),'</dd>';
+			echo '<dd id="mn-general-settings--extenfeatures">',$url->href_html($this->bbf('mn_left_extenfeatures'),'service/ipbx/general_settings/extenfeatures'),'</dd>';
 		endif;
 	endif;
 

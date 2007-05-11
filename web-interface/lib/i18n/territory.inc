@@ -48,7 +48,7 @@ class xivo_i18n_territory
 	{
 		$r = false;
 
-		if(($territo = $this->chk_territo($territo)) !== false)
+		if(($territo = $this->is_valid($territo)) !== false)
 		{
 			$r = $this->_conf[$territo];
 			$r['territo'] = $territo;

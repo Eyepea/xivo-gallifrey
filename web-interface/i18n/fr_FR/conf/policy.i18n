@@ -11,7 +11,7 @@ Services
 IPBX
 
 ; ply_service-ipbx-general_settings
-Paramètres globals
+Paramètres globaux
 
 ; ply_service-ipbx-general_settings-sipprotocol
 Protocole SIP
@@ -21,6 +21,9 @@ Protocole IAX
 
 ; ply_service-ipbx-general_settings-voicemail
 Messageries vocales
+
+; ply_service-ipbx-general_settings-queues
+Files d'attente
 
 ; ply_service-ipbx-general_settings-sounds
 Fichiers sons
@@ -41,7 +44,7 @@ Utilisateurs
 Groupes
 
 ; ply_service-ipbx-pbx_settings-queues
-Queues
+Files d'attente
 
 ; ply_service-ipbx-pbx_settings-meetme
 Chambres de conférence

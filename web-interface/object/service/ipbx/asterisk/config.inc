@@ -92,6 +92,10 @@ $array['module']['meetmefeatures'] = array();
 $array['module']['meetmefeatures']['datastorage'] = true;
 $array['module']['meetmefeatures']['section'] = 'meetme';
 
+$array['module']['generalqueue'] = array();
+$array['module']['generalqueue']['datastorage'] = true;
+$array['module']['generalqueue']['section'] = 'queue';
+
 $array['module']['queue'] = array();
 $array['module']['queue']['datastorage'] = true;
 $array['module']['queue']['section'] = 'queue';

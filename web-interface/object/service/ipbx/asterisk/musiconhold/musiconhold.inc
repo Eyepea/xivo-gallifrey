@@ -206,7 +206,7 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 
 		$arr['directory'] = $this->_mohpath.XIVO_SEP_DIR.$category;
 
-		if($id !== $category && parent::get_category($category) !== false)
+		if(strtolower($id) !== strtolower($category) && parent::get_category($category) !== false)
 			parent::delete_by_category($category);
 
 		if(($r = parent::edit_category($id,$arr)) !== false)
@@ -362,12 +362,14 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 		if(($match_dir = $this->_get_option_dir_name()) === false
 		|| preg_match($match_dir,$newname) !== 1
 		|| xivo_file::is_d_rwx($this->_mohpath) === false
-		|| xivo_file::is_d($dir) === false
-		|| xivo_file::is_d($newdir) !== false)
+		|| xivo_file::is_d($dir) === false)
 			return($r);
 
 		if($name === $newname)
 			return(true);
+
+		if(xivo_file::is_d($newdir) !== false)
+			return($r);
 
 		$r = rename($dir,$newdir);
 

@@ -45,6 +45,11 @@ class xivo_i18n
 		return(xivo_i18n::mediator('set','language',$lang));
 	}
 
+	function get_language_info($lang='')
+	{
+		return(xivo_i18n::mediator('info','language',$lang));
+	}
+
 	function get_territory($locale='')
 	{
 		return(xivo_i18n::mediator('get','territory',$locale));
@@ -65,6 +70,11 @@ class xivo_i18n
 		return(xivo_i18n::mediator('set','territory',$territo));
 	}
 
+	function get_territory_info($territo='')
+	{
+		return(xivo_i18n::mediator('info','territory',$territo));
+	}
+
 	function attrib_locale()
 	{
 		return(xivo_i18n::mediator('attrib','locale'));
@@ -78,6 +88,11 @@ class xivo_i18n
 	function set_locale($lang=false,$territo=false)
 	{
 		return(xivo_i18n::mediator('set','locale',array($lang,$territo)));
+	}
+
+	function get_locale_info($locale='')
+	{
+		return(xivo_i18n::mediator('info','locale',$locale));
 	}
 
 	function mediator($func,$name,$value='')
@@ -144,6 +159,19 @@ class xivo_i18n
 						break;
 				}
 				break;
+			case 'info':
+				switch($name)
+				{
+					case 'language':
+						$r = $mediator->get_language_info($value);	
+						break;
+					case 'territory':
+						$r = $mediator->get_territory_info($value);
+						break;
+					case 'locale':
+						$r = $mediator->get_locale_info($value);
+						break;
+				}
 		}
 
 		return($r);

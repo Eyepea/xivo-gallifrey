@@ -30,19 +30,6 @@ class xivo_i18n_language
 			return(null);
 	}
 
-	function get_info($lang)
-	{
-		$r = false;
-
-		if(($lang = $this->chk_lang($lang)) !== false)
-		{
-			$r = $this->_conf[$lang];
-			$r['lang'] = $lang;
-		}
-
-		return($r);
-	}
-
 	function is_valid($lang)
 	{
 		$r = false;
@@ -52,6 +39,19 @@ class xivo_i18n_language
 		if(xivo_issa($lang,$this->_conf) === true)
 		{
 			$r = $lang;
+		}
+
+		return($r);
+	}
+
+	function get_info($lang)
+	{
+		$r = false;
+
+		if(($lang = $this->is_valid($lang)) !== false)
+		{
+			$r = $this->_conf[$lang];
+			$r['lang'] = $lang;
 		}
 
 		return($r);

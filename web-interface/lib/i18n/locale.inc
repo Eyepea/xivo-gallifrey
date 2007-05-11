@@ -43,11 +43,11 @@ class xivo_i18n_locale
 		return($r);
 	}
 
-	function get_locale_info($locale)
+	function get_info($locale)
 	{
 		$r = false;
 
-		if(($locale = $this->chk_locale($locale)) !== false)
+		if(($locale = $this->is_valid($locale)) !== false)
 		{
 			$r = $this->_conf[$locale];
 			$r['locale'] = $locale;

@@ -149,7 +149,7 @@ do
 
 				$mqinfo = array('queue_name'	=> $ginfo['name'],
 						'interface'	=> $interface,
-						'call_limit'	=> $result['ufeatures']['simultcalls']);
+						'call-limit'	=> $result['ufeatures']['simultcalls']);
 
 				if(($mqinfo = $qmember->chk_values($mqinfo,true,true)) === false)
 					continue;

@@ -37,6 +37,16 @@ class xivo_i18n_mediator
 		return((isset($this->_mediator[$name]) === true && is_object($this->_mediator[$name])));
 	}
 
+	function get($name)
+	{
+		$name = (string) $name;
+
+		if($this->chk($name) === true)
+			return($this->_mediator[$name]);
+
+		return(false);
+	}
+
 	function set_attrib($name,$value)
 	{
 		$name = (string) $name;
@@ -125,7 +135,7 @@ class xivo_i18n_mediator
 				}
 			}
 		}
-		else if(($arr = &xivo_get_aks($this->_attrib['browser'])) !== false)
+		else if(($arr = xivo_get_aks($this->_attrib['browser'])) !== false)
 		{
 			for($i = 0;$i < $arr['cnt'];$i++)
 			{
@@ -167,6 +177,16 @@ class xivo_i18n_mediator
 		return($this->_mediator['language']->is_valid($lang));
 	}
 
+	function get_language_info($lang='')
+	{
+		$lang = (string) $lang;
+
+		if($lang === '')
+			$lang = $this->set_language();
+
+		return($this->_mediator['language']->get_info($lang));
+	}
+
 	function set_territory($territo='')
 	{
 		$r = false;
@@ -191,6 +211,16 @@ class xivo_i18n_mediator
 	function chk_territory($territo)
 	{
 		return($this->_mediator['territory']->is_valid($territo));
+	}
+
+	function get_territory_info($territo='')
+	{
+		$territo = (string) $territo;
+
+		if($territo === '')
+			$territo = $this->set_territory();
+
+		return($this->_mediator['territory']->get_info($territo));
 	}
 
 	function set_locale($lang=false,$territo=false)
@@ -225,15 +255,53 @@ class xivo_i18n_mediator
 			$this->set_territory($this->set_language());
 
 			if(empty($this->_attrib['language']) === false || empty($this->_attrib['territory']) === false)
-				return(($this->_attrib['locale'] = $this->set_locale()));
+				$r = $this->set_locale();
 		}
 
+		$this->_set_locale($r);
+
 		return(($this->_attrib['locale'] = $r));
+	}
+
+	function _set_locale($locale)
+	{
+		$locale = (string) $locale;
+
+		if($locale === '' || ($info = $this->get_locale_info($locale)) === false)
+			return(false);
+
+		$locales = array();
+
+		if(xivo_issa('charset',$info) === true)
+		{
+			$value = array_values($info['charset']);
+
+			if(($nb = count($value)) !== 0)
+			{
+				for($i = 0;$i < $nb;$i++)
+					$locales[] = $info['locale'].'.'.$info['charset'][$i];
+			}
+		}
+
+		$locales[] = $info['locale'];
+		$locales[] = $info['lang'];
+
+		return(setlocale(LC_ALL,$locales));
 	}
 
 	function chk_locale($locale)
 	{
 		return($this->_mediator['locale']->is_valid($locale));
+	}
+
+	function get_locale_info($locale='')
+	{
+		$locale = (string) $locale;
+
+		if($locale === '')
+			$locale = $this->set_locale();
+
+		return($this->_mediator['locale']->get_info($locale));
 	}
 
 	function get_language($locale='')

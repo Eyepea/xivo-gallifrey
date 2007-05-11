@@ -295,7 +295,7 @@ function xivo_go($v='',$k='')
 	die(header('Location: '.$v.'?'.$q));
 }
 
-function xivo_chk_email($email,$strict=true)
+function xivo_chk_email($email,$strict=false)
 {
 	$nb = 0;
 	$email = strtolower((string) $email);
@@ -574,7 +574,7 @@ function xivo_mk_order($a,$def,$order='',$desc=true)
 		$korder = substr($order,1);
 	}
 
-	if(($arr = &xivo_get_aks($a)) !== false)
+	if(($arr = xivo_get_aks($a)) !== false)
 	{
 		$r['tab'] = array();
 

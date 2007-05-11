@@ -44,9 +44,9 @@
 
 <div id="sb-part-general">
 
-<?=$form->text(array('desc' => $this->bbf('fm_userfeatures_firstname'),'name' => 'ufeatures[firstname]','labelid' => 'ufeatures-firstname','value' => $info['ufeatures']['firstname'],'size' => 15),'onchange="xivo_chgname();" onfocus="xivo_cpyname(); this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_userfeatures_firstname'),'name' => 'ufeatures[firstname]','labelid' => 'ufeatures-firstname','value' => $info['ufeatures']['firstname'],'size' => 15),'onchange="xivo_chgname();" onfocus="xivo_cpyname(); this.className=\'it-mfocus\';" onblur="xivo_chgname(); this.className=\'it-mblur\';"');?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_userfeatures_lastname'),'name' => 'ufeatures[lastname]','labelid' => 'ufeatures-lastname','value' => $info['ufeatures']['lastname'],'size' => 15),'onchange="xivo_chgname();" onfocus="xivo_cpyname(); this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_userfeatures_lastname'),'name' => 'ufeatures[lastname]','labelid' => 'ufeatures-lastname','value' => $info['ufeatures']['lastname'],'size' => 15),'onchange="xivo_chgname();" onfocus="xivo_cpyname(); this.className=\'it-mfocus\';" onblur="xivo_chgname(); this.className=\'it-mblur\';"');?>
 
 <?=$form->text(array('desc' => $this->bbf('fm_protocol_name'),'name' => 'protocol[name]','labelid' => 'protocol-name','value' => $info['protocol']['name'],'size' => 15),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 

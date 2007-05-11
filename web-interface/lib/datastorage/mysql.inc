@@ -5,7 +5,7 @@ require_once(XIVO_PATH_LIB.XIVO_SEP_DIR.'datastorage'.XIVO_SEP_DIR.'abstract'.XI
 class xivo_datastorage_mysql extends xivo_datastorage_abstract_sql
 {
 	var $_param	= array(
-			'host'		=> '',
+			'host'		=> 'localhost',
 			'user'		=> '',
 			'pass'		=> '',
 			'db'		=> '',
@@ -96,20 +96,15 @@ class xivo_datastorage_mysql extends xivo_datastorage_abstract_sql
 		if(is_resource($this->_link) === true)
 			return($this->_link);
 
-		$host = '';
-
 		if($this->_param['host'] !== '')
-			$host .= ':'.$this->_param['host'];
+			$host = $this->_param['host'];
 		else
-			$host .= ':localhost';
+			$host = 'localhost';
 
 		if($this->_param['port'] !== 0 && xivo_uint($this->_param['port']) !== 0)
 			$host .= ':'.$this->_param['port'];
 		else if($this->_param['socket'] !== '')
 			$host .= ':'.$this->_param['socket'];
-
-		if($host !== '')
-			$host = substr($host,1);
 
 		$this->_set_flag();
 

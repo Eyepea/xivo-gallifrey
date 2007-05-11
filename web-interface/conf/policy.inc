@@ -4,7 +4,7 @@ $array = array();
 $array['tree'] = array();
 $array['tree']['service'] = array();
 $array['tree']['service']['ipbx'] = array();
-$array['tree']['service']['ipbx']['general_settings'] = array('sipprotocol' => true,'iaxprotocol' => true,'voicemail' => true,'sounds' => true,'musiconhold' => true,'extenfeatures' => true);
+$array['tree']['service']['ipbx']['general_settings'] = array('sipprotocol' => true,'iaxprotocol' => true,'voicemail' => true,'queues' => true,'sounds' => true,'musiconhold' => true,'extenfeatures' => true);
 $array['tree']['service']['ipbx']['pbx_settings'] = array('users' => true,'groups' => true,'meetme' => true,'queues' => true,'agents' => true);
 $array['tree']['service']['ipbx']['call_management'] = array('did' => true,'ivr' => true,'cdr' => true);
 $array['tree']['service']['ipbx']['trunk_management'] = array('sip' => true,'iax' => true);

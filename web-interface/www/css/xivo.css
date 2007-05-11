@@ -255,7 +255,8 @@ pre {text-align: left;}
 #r-user #cat-policy .ply-category span {display: block;float: left;width: 20px;}
 #r-user #cat-policy .ply-category .fm-desc  {display: inline;float: none;text-align: left;width: auto;}
 #r-user #cat-policy .ply-category table {display: none;clear: both;width: 100%;border: 1px solid #9e9e9e;border-bottom-width: 0px;}
-#r-user #cat-policy .ply-category .ply-func {width: 230px;border: none;margin: 2px 18px;background-color: #fff;}
+#r-user #cat-policy .ply-category table td {width: 240px;padding: 2px;vertical-align: top;}
+#r-user #cat-policy .ply-category .ply-func {max-width: 238px;border: none;margin: 2px 0px;background-color: #fff;}
 
 #r-contact .sb-content div {padding: 10px 0px;}
 #r-contact dl {padding-bottom: 10px;}
