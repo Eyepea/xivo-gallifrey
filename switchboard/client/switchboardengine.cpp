@@ -333,7 +333,7 @@ void SwitchBoardEngine::timerEvent(QTimerEvent * event)
  */
 void SwitchBoardEngine::originateCall(const QString & src, const QString & dst)
 {
-	m_pendingcommand = "originate " + src + " " + dst;
+	m_pendingcommand = "originate " + src + " " + dst + " " + m_dialcontext;
 	sendCommand();
 }
 
@@ -350,7 +350,7 @@ void SwitchBoardEngine::transferCall(const QString & src, const QString & dst)
 void SwitchBoardEngine::dial(const QString & dst)
 {
 	m_pendingcommand = "originate " + m_asterisk + "/" + m_protocol
-	                   + "/" + m_extension + " " + dst;
+	                   + "/" + m_extension + " " + dst + " " + m_dialcontext;
 	sendCommand();
 }
 
