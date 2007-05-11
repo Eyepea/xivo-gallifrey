@@ -1,11 +1,16 @@
 #!/bin/sh
 # $Revision$
 # $Date$
+#
 # Startup daemon script for xivo_daemon
 #
 
 DAEMON=/usr/sbin/xivo_daemon
 PIDFILE="/var/run/xivo_daemon.pid"
+
+# TODO :
+# - section LSB
+# - start stop daemon
 
 case "$1" in
   start)
@@ -28,12 +33,14 @@ case "$1" in
 	    rm $PIDFILE
 	fi
 	;;
+  force-reload)
+	;;
   restart)
 	$0 stop
 	$0 start
 	;;
   *)
-	echo "Usage: $0 {start|stop|restart}"
+	echo "Usage: $0 {start|stop|force-reload|restart}"
 	exit 1
 	;;
 esac
