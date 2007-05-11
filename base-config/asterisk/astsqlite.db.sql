@@ -125,45 +125,6 @@ CREATE TABLE queue (
 
 CREATE INDEX queue__idx__commented ON queue(commented);
 
-CREATE TABLE queue (
- name varchar(128) NOT NULL,
- musiconhold varchar(128),
- announce varchar(128),
- context varchar(128),
- timeout integer unsigned,
- monitor_join boolean,
- monitor_format varchar(128),
- queue_youarenext varchar(128),
- queue_thereare varchar(128),
- queue_callswaiting varchar(128),
- queue_holdtime varchar(128),
- queue_minutes varchar(128),
- queue_seconds varchar(128),
- queue_lessthan varchar(128),
- queue_thankyou varchar(128),
- queue_reporthold varchar(128),
- announce_frequency integer unsigned,
- announce_round_seconds integer unsigned,
- announce_holdtime varchar(128),
- retry tinyint unsigned,
- wrapuptime integer unsigned,
- maxlen integer unsigned,
- servicelevel integer unsigned,
- strategy varchar(128),
- joinempty varchar(128),
- leavewhenempty varchar(128),
- eventmemberstatus boolean,
- eventwhencalled boolean,
- reportholdtime boolean,
- memberdelay integer unsigned,
- weight integer unsigned,
- timeoutrestart boolean,
- commented tinyint(1) default 0,
- PRIMARY KEY(name)
-);
-
-CREATE INDEX queue__idx__commented ON queue(commented);
-
 
 CREATE TABLE queuemember (
  queue_name varchar(128) NOT NULL,
