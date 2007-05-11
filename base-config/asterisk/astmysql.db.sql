@@ -1,4 +1,5 @@
-CREATE TABLE didfeatures (
+DROP TABLE IF EXISTS `didfeatures`;
+CREATE TABLE `didfeatures` (
  `id` int(11) unsigned auto_increment,
  `type` varchar(50) NOT NULL,
  `typeid` int(11) unsigned NOT NULL,
@@ -7,36 +8,39 @@ CREATE TABLE didfeatures (
  `number` varchar(80) NOT NULL,
  `commented` tinyint(1) NOT NULL default 0,
  PRIMARY KEY(id)
-) TYPE=MyISAM DEFAULT CHARACTER SET utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE INDEX didfeatures__idx__type_typeid ON didfeatures(type,typeid);
 CREATE INDEX didfeatures__idx__commented ON didfeatures(commented);
 CREATE UNIQUE INDEX didfeatures__uidx__extenid ON didfeatures(extenid);
 
 
-CREATE TABLE extenumbers (
+DROP TABLE IF EXISTS `extenumbers`;
+CREATE TABLE `extenumbers` (
  `id` int(11) unsigned auto_increment,
  `number` varchar(80) NOT NULL,
  `context` varchar(80) NOT NULL,
  PRIMARY KEY(id)
-) TYPE=MyISAM DEFAULT CHARACTER SET utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE UNIQUE INDEX extenumbers__uidx__number_context ON extenumbers(number,context);
 
 
-CREATE TABLE groupfeatures (
+DROP TABLE IF EXISTS `groupfeatures`;
+CREATE TABLE `groupfeatures` (
  `id` tinyint unsigned auto_increment,
  `name` varchar(255) NOT NULL,
  `number` varchar(80) default '',
  `context` varchar(80) NOT NULL default '',
  `commented` tinyint(1) default 0,
  PRIMARY KEY(id)
-) TYPE=MyISAM DEFAULT CHARACTER SET utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE UNIQUE INDEX groupfeatures__uidx__name_commented ON groupfeatures(name,commented);
 
 
-CREATE TABLE meetme (
+DROP TABLE IF EXISTS `meetme`;
+CREATE TABLE `meetme` (
  `id` int(11) unsigned auto_increment,
  `cat_metric` int(11) unsigned default 0,
  `var_metric` int(11) unsigned default 0,
@@ -46,7 +50,7 @@ CREATE TABLE meetme (
  `var_name` varchar(128) NOT NULL,
  `var_val` varchar(128) NOT NULL,
  PRIMARY KEY(id)
-) TYPE=MyISAM DEFAULT CHARACTER SET utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE INDEX meetme__idx__commented ON meetme(commented);
 CREATE INDEX meetme__idx__filename ON meetme(filename);
@@ -54,7 +58,8 @@ CREATE INDEX meetme__idx__category ON meetme(category);
 CREATE INDEX meetme__idx__var_name ON meetme(var_name);
 
 
-CREATE TABLE meetmefeatures (
+DROP TABLE IF EXISTS `meetmefeatures`;
+CREATE TABLE `meetmefeatures` (
  `id` int(11) unsigned auto_increment,
  `name` varchar(128) NOT NULL,
  `number` varchar(128) NOT NULL,
@@ -67,26 +72,28 @@ CREATE TABLE meetmefeatures (
  `record` tinyint(1) default 0,
  `video` tinyint(1) default 0,
  PRIMARY KEY(id)
-) TYPE=MyISAM DEFAULT CHARACTER SET utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE UNIQUE INDEX meetmefeatures__uidx__meetmeid ON meetmefeatures(meetmeid);
 CREATE UNIQUE INDEX meetmefeatures__uidx__name ON meetmefeatures(name);
 CREATE UNIQUE INDEX meetmefeatures__uidx__number ON meetmefeatures(number);
 
 
-CREATE TABLE phone (
+DROP TABLE IF EXISTS `phone`;
+CREATE TABLE `phone` (
  `macaddr` char(17) NOT NULL,
  `vendor` varchar(16) NOT NULL,
  `model` varchar(16) NOT NULL,
  `proto` varchar(50) NOT NULL,
  `iduserfeatures` int(11) unsigned,
  PRIMARY KEY(macaddr)
-) TYPE=MyISAM DEFAULT CHARACTER SET utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE INDEX phone__idx__proto_iduserfeatures ON phone(proto,iduserfeatures);
 
 
-CREATE TABLE queue (
+DROP TABLE IF EXISTS `queue`;
+CREATE TABLE `queue` (
  `name` varchar(128) NOT NULL,
  `musiconhold` varchar(128),
  `announce` varchar(128),
@@ -123,13 +130,14 @@ CREATE TABLE queue (
  `commented` tinyint(1) default 0,
  `category` enum('group','queue') NOT NULL,
  PRIMARY KEY(name)
-) TYPE=MyISAM DEFAULT CHARACTER SET utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE INDEX queue__idx__commented ON queue(commented);
 CREATE INDEX queue__idx__category ON queue(category);
 
 
-CREATE TABLE queuefeatures (
+DROP TABLE IF EXISTS `queuefeatures`;
+CREATE TABLE `queuefeatures` (
  `id` int(11) unsigned auto_increment,
  `name` varchar(255) NOT NULL,
  `number` varchar(80) default '',
@@ -147,46 +155,50 @@ CREATE TABLE queuefeatures (
  `announceoverride` varchar(128) default '',
  `timeout` tinyint unsigned,
  PRIMARY KEY(id)
-) TYPE=MyISAM DEFAULT CHARACTER SET utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE UNIQUE INDEX queuefeatures__uidx__name ON queuefeatures(name);
 
 
-CREATE TABLE queuemember (
+DROP TABLE IF EXISTS `queuemember`;
+CREATE TABLE `queuemember` (
  `queue_name` varchar(128) NOT NULL,
  `interface` varchar(128) NOT NULL,
  `penalty` int(11) unsigned default 0,
  `call-limit` int(11) unsigned default 0,
  `commented` tinyint(1) default 0,
  PRIMARY KEY(queue_name,interface)
-) TYPE=MyISAM DEFAULT CHARACTER SET utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE INDEX queuemember__idx__commented ON queuemember(commented);
 
 
-CREATE TABLE trunkfeatures (
+DROP TABLE IF EXISTS `trunkfeatures`;
+CREATE TABLE `trunkfeatures` (
  `id` int(11) unsigned auto_increment,
  `trunk` varchar(50) NOT NULL,
  `trunkid` int(11) unsigned NOT NULL,
  `registerid` int(11) unsigned default 0,
  PRIMARY KEY(id)
-) TYPE=MyISAM DEFAULT CHARACTER SET utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE INDEX trunkfeatures__idx__registerid ON trunkfeatures(registerid);
 CREATE UNIQUE INDEX trunkfeatures__uidx__trunk_trunkid ON trunkfeatures(trunk,trunkid);
 
 
-CREATE TABLE usergroup (
+DROP TABLE IF EXISTS `usergroup`;
+CREATE TABLE `usergroup` (
  `id` int(11) unsigned auto_increment,
  `userid` int(11) unsigned NOT NULL,
  `groupid` tinyint unsigned NOT NULL,
  PRIMARY KEY(id)
-) TYPE=MyISAM DEFAULT CHARACTER SET utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE UNIQUE INDEX usergroup__uidx__userid_groupid ON usergroup(userid,groupid);
 
 
-CREATE TABLE useriax (
+DROP TABLE IF EXISTS `useriax`;
+CREATE TABLE `useriax` (
  `id` int(11) unsigned auto_increment,
  `name` varchar(80) NOT NULL,
  `commented` tinyint(1) NOT NULL default 0,
@@ -220,14 +232,15 @@ CREATE TABLE useriax (
  `call-limit` tinyint unsigned default 0,
  `category` varchar(50) NOT NULL,
  PRIMARY KEY(id)
-) TYPE=MyISAM DEFAULT CHARACTER SET utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE INDEX useriax__idx__commented ON useriax(commented);
 CREATE INDEX useriax__idx__category ON useriax(category);
 CREATE UNIQUE INDEX useriax__uidx__name ON useriax(name);
 
 
-CREATE TABLE uservoicemail (
+DROP TABLE IF EXISTS `uservoicemail`;
+CREATE TABLE `uservoicemail` (
  `id` int(11) unsigned auto_increment,
  `customer_id` varchar(11) NOT NULL default '0',
  `context` varchar(50) NOT NULL default '',
@@ -254,7 +267,7 @@ CREATE TABLE uservoicemail (
  `hidefromdir` varchar(4) NOT NULL default 'yes',
  `commented` tinyint(1) NOT NULL default 0,
  PRIMARY KEY(id)
-) TYPE=MyISAM DEFAULT CHARACTER SET utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE INDEX uservoicemail__idx__commented ON uservoicemail(commented);
 CREATE INDEX uservoicemail__idx__context ON uservoicemail(context);
@@ -262,7 +275,8 @@ CREATE INDEX uservoicemail__idx__mailbox_context ON uservoicemail(mailbox,contex
 CREATE UNIQUE INDEX uservoicemail__uidx__mailbox ON uservoicemail(mailbox);
 
 
-CREATE TABLE userfeatures (
+DROP TABLE IF EXISTS `userfeatures`;
+CREATE TABLE `userfeatures` (
  `id` int(11) unsigned auto_increment,
  `protocol` varchar(50) NOT NULL,
  `protocolid` int(11) unsigned NOT NULL,
@@ -279,7 +293,7 @@ CREATE TABLE userfeatures (
  `musiconhold` varchar(128) NOT NULL default '',
  `comment` text default '',
  PRIMARY KEY(id)
-) TYPE=MyISAM DEFAULT CHARACTER SET utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE INDEX userfeatures__idx__firstname ON userfeatures(firstname);
 CREATE INDEX userfeatures__idx__lastname ON userfeatures(lastname);
@@ -294,7 +308,8 @@ INSERT INTO userfeatures VALUES(1,'sip',1,'Guest','','guest','','initconfig',148
 INSERT INTO userfeatures VALUES(2,'sip',2,'XivoSB','','xivosb','','',194867,30,0,5,0,'','');
 
 
-CREATE TABLE extensions (
+DROP TABLE IF EXISTS `extensions`;
+CREATE TABLE `extensions` (
  `id` int(11) unsigned auto_increment,
  `commented` tinyint(1) NOT NULL default 0,
  `context` varchar(20) NOT NULL default '',
@@ -304,7 +319,7 @@ CREATE TABLE extensions (
  `appdata` varchar(128) NOT NULL default '',
  `name` varchar(128) default '',
  PRIMARY KEY(id)
-) TYPE=MyISAM DEFAULT CHARACTER SET utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE INDEX extensions__idx__commented ON extensions(commented);
 CREATE INDEX extensions__idx__context_exten_priority ON extensions(context,exten,priority);
@@ -351,7 +366,8 @@ INSERT INTO extensions VALUES(38,0,'features','_*27',1,'Macro','features|Screen|
 INSERT INTO extensions VALUES(39,0,'features','_*8.',1,'Pickup','${EXTEN:2}','pickup');
 
 
-CREATE TABLE generalsip (
+DROP TABLE IF EXISTS `generalsip`;
+CREATE TABLE `generalsip` (
  `id` int(11) unsigned auto_increment,
  `cat_metric` int(11) unsigned default 0,
  `var_metric` int(11) unsigned default 0,
@@ -361,7 +377,7 @@ CREATE TABLE generalsip (
  `var_name` varchar(128) NOT NULL,
  `var_val` varchar(128) NOT NULL,
  PRIMARY KEY(id)
-) TYPE=MyISAM DEFAULT CHARACTER SET utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE INDEX generalsip__idx__commented ON generalsip(commented);
 CREATE INDEX generalsip__idx__filename ON generalsip(filename);
@@ -387,7 +403,8 @@ INSERT INTO generalsip VALUES(16,0,0,0,'sip.conf','general','vmexten','*98');
 INSERT INTO generalsip VALUES(17,0,0,0,'sip.conf','general','videosupport','no');
 
 
-CREATE TABLE generaliax (
+DROP TABLE IF EXISTS `generaliax`;
+CREATE TABLE `generaliax` (
  `id` int(11) unsigned auto_increment,
  `cat_metric` int(11) unsigned default 0,
  `var_metric` int(11) unsigned default 0,
@@ -397,7 +414,7 @@ CREATE TABLE generaliax (
  `var_name` varchar(128) NOT NULL,
  `var_val` varchar(128) NOT NULL,
  PRIMARY KEY(id)
-) TYPE=MyISAM DEFAULT CHARACTER SET utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE INDEX generaliax__idx__commented ON generaliax(commented);
 CREATE INDEX generaliax__idx__filename ON generaliax(filename);
@@ -414,7 +431,8 @@ INSERT INTO generaliax VALUES(7,0,0,0,'iax.conf','general','rtcachefriends','yes
 INSERT INTO generaliax VALUES(8,0,0,0,'iax.conf','general','jitterbuffer','no');
 
 
-CREATE TABLE generalvoicemail (
+DROP TABLE IF EXISTS `generalvoicemail`;
+CREATE TABLE `generalvoicemail` (
  `id` int(11) unsigned auto_increment,
  `cat_metric` int(11) unsigned default 0,
  `var_metric` int(11) unsigned default 0,
@@ -424,7 +442,7 @@ CREATE TABLE generalvoicemail (
  `var_name` varchar(128) NOT NULL,
  `var_val` text NOT NULL,
  PRIMARY KEY(id)
-) TYPE=MyISAM DEFAULT CHARACTER SET utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE INDEX generalvoicemail__idx__commented ON generalvoicemail(commented);
 CREATE INDEX generalvoicemail__idx__filename ON generalvoicemail(filename);
@@ -450,7 +468,8 @@ INSERT INTO generalvoicemail VALUES(11,0,0,0,'voicemail.conf','zonemessages','eu
 INSERT INTO generalvoicemail VALUES(12,0,0,0,'voicemail.conf','general','tz','eu-fr');
 
 
-CREATE TABLE generalqueue (
+DROP TABLE IF EXISTS `generalqueue`;
+CREATE TABLE `generalqueue` (
  `id` int(11) unsigned auto_increment,
  `cat_metric` int(11) unsigned default 0,
  `var_metric` int(11) unsigned default 0,
@@ -460,7 +479,7 @@ CREATE TABLE generalqueue (
  `var_name` varchar(128) NOT NULL,
  `var_val` varchar(128) NOT NULL,
  PRIMARY KEY(id)
-) TYPE=MyISAM DEFAULT CHARACTER SET utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE INDEX generalqueue__idx__commented ON generalqueue(commented);
 CREATE INDEX generalqueue__idx__filename ON generalqueue(filename);
@@ -470,7 +489,8 @@ CREATE INDEX generalqueue__idx__var_name ON generalqueue(var_name);
 INSERT INTO generalqueue VALUES(1,0,0,0,'queues.conf','general','persistentmembers','yes');
 
 
-CREATE TABLE usersip (
+DROP TABLE IF EXISTS `usersip`;
+CREATE TABLE `usersip` (
  `id` int(11) unsigned auto_increment,
  `name` varchar(80) NOT NULL,
  `commented` tinyint(1) NOT NULL default 0,
@@ -514,7 +534,7 @@ CREATE TABLE usersip (
  `call-limit` tinyint unsigned default 0,
  `category` varchar(50) NOT NULL,
  PRIMARY KEY(id)
-) TYPE=MyISAM DEFAULT CHARACTER SET utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE INDEX usersip__idx__commented ON usersip(commented);
 CREATE INDEX usersip__idx__category ON usersip(category);
@@ -524,7 +544,8 @@ INSERT INTO usersip VALUES(1,'guest',0,'','documentation','','Guest','no','initc
 INSERT INTO usersip VALUES(2,'xivosb',0,'','documentation','','XivoSB','no','',NULL,'rfc2833',NULL,NULL,'','dynamic',NULL,NULL,'',NULL,'no',NULL,NULL,NULL,'',5060,'no',NULL,NULL,NULL,'','friend','xivosb',NULL,NULL,NULL,'','','',NULL,'',0,'user');
 
 
-CREATE TABLE musiconhold (
+DROP TABLE IF EXISTS `musiconhold`;
+CREATE TABLE `musiconhold` (
  `id` int(11) unsigned auto_increment,
  `cat_metric` int(11) unsigned default 0,
  `var_metric` int(11) unsigned default 0,
@@ -534,7 +555,7 @@ CREATE TABLE musiconhold (
  `var_name` varchar(128) NOT NULL,
  `var_val` varchar(128) NOT NULL,
  PRIMARY KEY(id)
-) TYPE=MyISAM DEFAULT CHARACTER SET utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE INDEX musiconhold__idx__commented ON musiconhold(commented);
 CREATE UNIQUE INDEX musiconhold__uidx__filename_category_var_name ON musiconhold(filename(48),category,var_name);

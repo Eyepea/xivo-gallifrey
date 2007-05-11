@@ -1,5 +1,6 @@
 BEGIN TRANSACTION;
 
+DROP TABLE didfeatures;
 CREATE TABLE didfeatures (
  id integer unsigned,
  type varchar(50) NOT NULL,
@@ -16,6 +17,7 @@ CREATE INDEX didfeatures__idx__commented ON didfeatures(commented);
 CREATE UNIQUE INDEX didfeatures__uidx__extenid ON didfeatures(extenid);
 
 
+DROP TABLE extenumbers;
 CREATE TABLE extenumbers (
  id integer unsigned,
  number varchar(80) NOT NULL,
@@ -26,6 +28,7 @@ CREATE TABLE extenumbers (
 CREATE UNIQUE INDEX extenumbers__uidx__number_context ON extenumbers(number,context);
 
 
+DROP TABLE groupfeatures;
 CREATE TABLE groupfeatures (
  id tinyint unsigned,
  name varchar(255) NOT NULL,
@@ -38,6 +41,7 @@ CREATE TABLE groupfeatures (
 CREATE UNIQUE INDEX groupfeatures__uidx__name_commented ON groupfeatures(name,commented);
 
 
+DROP TABLE meetme;
 CREATE TABLE meetme (
  id integer unsigned,
  commented tinyint(1) default 0,
@@ -54,6 +58,7 @@ CREATE INDEX meetme__idx__category ON meetme(category);
 CREATE INDEX meetme__idx__var_name ON meetme(var_name);
 
 
+DROP TABLE meetmefeatures;
 CREATE TABLE meetmefeatures (
  id integer unsigned,
  name varchar(128) NOT NULL,
@@ -74,6 +79,7 @@ CREATE UNIQUE INDEX meetmefeatures__uidx__name ON meetmefeatures(name);
 CREATE UNIQUE INDEX meetmefeatures__uidx__number ON meetmefeatures(number);
 
 
+DROP TABLE phone;
 CREATE TABLE phone (
  macaddr char(17) NOT NULL,
  vendor varchar(16) NOT NULL,
@@ -85,6 +91,7 @@ CREATE TABLE phone (
 
 CREATE INDEX phone__idx__proto_iduserfeatures ON phone(proto,iduserfeatures);
 
+DROP TABLE queue;
 CREATE TABLE queue (
  name varchar(128) NOT NULL,
  musiconhold varchar(128),
@@ -128,6 +135,7 @@ CREATE INDEX queue__idx__commented ON queue(commented);
 CREATE INDEX queue__idx__category ON queue(category);
 
 
+DROP TABLE queuefeatures;
 CREATE TABLE queuefeatures (
  id int(11) unsigned auto_increment,
  name varchar(255) NOT NULL,
@@ -151,6 +159,7 @@ CREATE TABLE queuefeatures (
 CREATE UNIQUE INDEX queuefeatures__uidx__name ON queuefeatures(name);
 
 
+DROP TABLE queuemember;
 CREATE TABLE queuemember (
  queue_name varchar(128) NOT NULL,
  interface varchar(128) NOT NULL,
@@ -163,6 +172,7 @@ CREATE TABLE queuemember (
 CREATE INDEX queuemember__idx__commented ON queuemember(commented);
 
 
+DROP TABLE trunkfeatures;
 CREATE TABLE trunkfeatures (
  id integer unsigned,
  trunk varchar(50) NOT NULL,
@@ -175,6 +185,7 @@ CREATE INDEX trunkfeatures__idx__registerid ON trunkfeatures(registerid);
 CREATE UNIQUE INDEX trunkfeatures__uidx__trunk_trunkid ON trunkfeatures(trunk,trunkid);
 
 
+DROP TABLE usergroup;
 CREATE TABLE usergroup (
  id integer unsigned,
  userid integer unsigned NOT NULL,
@@ -185,6 +196,7 @@ CREATE TABLE usergroup (
 CREATE UNIQUE INDEX usergroup__uidx__userid_groupid ON usergroup(userid,groupid);
 
 
+DROP TABLE useriax;
 CREATE TABLE useriax (
  id integer unsigned,
  name varchar(80) NOT NULL,
@@ -226,6 +238,7 @@ CREATE INDEX useriax__idx__category ON useriax(category);
 CREATE UNIQUE INDEX useriax__uidx__name ON useriax(name);
 
 
+DROP TABLE uservoicemail;
 CREATE TABLE uservoicemail (
  id integer unsigned,
  customer_id varchar(11) NOT NULL default '0',
@@ -261,6 +274,7 @@ CREATE INDEX uservoicemail__idx__mailbox_context ON uservoicemail(mailbox,contex
 CREATE UNIQUE INDEX uservoicemail__uidx__mailbox ON uservoicemail(mailbox);
 
 
+DROP TABLE userfeatures;
 CREATE TABLE userfeatures (
  id integer unsigned,
  protocol varchar(50) NOT NULL,
@@ -293,6 +307,7 @@ INSERT INTO userfeatures VALUES(1,'sip',1,'Guest','','guest','','initconfig',148
 INSERT INTO userfeatures VALUES(2,'sip',2,'XivoSB','','xivosb','','',194867,30,0,5,0,'','');
 
 
+DROP TABLE extensions;
 CREATE TABLE extensions (
  id integer unsigned,
  commented tinyint(1) NOT NULL default 0,
@@ -350,6 +365,7 @@ INSERT INTO extensions VALUES(38,0,'features','_*27',1,'Macro','features|Screen|
 INSERT INTO extensions VALUES(39,0,'features','_*8.',1,'Pickup','${EXTEN:2}','pickup');
 
 
+DROP TABLE generalsip;
 CREATE TABLE generalsip (
  id integer unsigned,
  commented tinyint(1) default 0,
@@ -384,6 +400,7 @@ INSERT INTO generalsip VALUES(16,0,'sip.conf','general','vmexten','*98');
 INSERT INTO generalsip VALUES(17,0,'sip.conf','general','videosupport','no');
 
 
+DROP TABLE generaliax;
 CREATE TABLE generaliax (
  id integer unsigned,
  commented tinyint(1) default 0,
@@ -409,6 +426,7 @@ INSERT INTO generaliax VALUES(7,0,'iax.conf','general','rtcachefriends','yes');
 INSERT INTO generaliax VALUES(8,0,'iax.conf','general','jitterbuffer','no');
 
 
+DROP TABLE generalvoicemail;
 CREATE TABLE generalvoicemail (
  id integer unsigned,
  commented tinyint(1) default 0,
@@ -443,6 +461,7 @@ INSERT INTO generalvoicemail VALUES(11,0,'voicemail.conf','zonemessages','eu-fr'
 INSERT INTO generalvoicemail VALUES(12,0,'voicemail.conf','general','tz','eu-fr');
 
 
+DROP TABLE generalqueue;
 CREATE TABLE generalqueue (
  id integer unsigned,
  commented tinyint(1) default 0,
@@ -461,6 +480,7 @@ CREATE INDEX generalqueue__idx__var_name ON generalqueue(var_name);
 INSERT INTO generalqueue VALUES(1,0,'queues.conf','general','persistentmembers','yes');
 
 
+DROP TABLE usersip;
 CREATE TABLE usersip (
  id integer unsigned,
  name varchar(80) NOT NULL,
@@ -515,6 +535,7 @@ INSERT INTO usersip VALUES(1,'guest',0,'','documentation','','Guest','no','initc
 INSERT INTO usersip VALUES(2,'xivosb',0,'','documentation','','XivoSB','no','',NULL,'rfc2833',NULL,NULL,'','dynamic',NULL,NULL,'',NULL,'no',NULL,NULL,NULL,'',5060,'no',NULL,NULL,NULL,'','friend','xivosb',NULL,NULL,NULL,'','','',NULL,'',0,'user');
 
 
+DROP TABLE musiconhold;
 CREATE TABLE musiconhold (
  id integer unsigned,
  commented tinyint(1) default 0,

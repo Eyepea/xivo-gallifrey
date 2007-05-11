@@ -1,5 +1,6 @@
 BEGIN TRANSACTION;
 
+DROP TABLE i18n_cache;
 CREATE TABLE i18n_cache (
  dcreate integer unsigned NOT NULL default 0,
  dupdate integer unsigned NOT NULL default 0,
@@ -16,6 +17,7 @@ CREATE INDEX i18n_cache__idx__language ON i18n_cache(language);
 CREATE INDEX i18n_cache__idx__path ON i18n_cache(path);
 
 
+DROP TABLE session;
 CREATE TABLE session (
  sesskey varchar(32) NOT NULL default '',
  expire integer unsigned NOT NULL default 0,
@@ -29,6 +31,7 @@ CREATE INDEX session__idx__expire ON session(expire);
 CREATE INDEX session__idx__user_id ON session(user_id);
 
 
+DROP TABLE user;
 CREATE TABLE user (
  id integer unsigned,
  login varchar(255) NOT NULL default '',
