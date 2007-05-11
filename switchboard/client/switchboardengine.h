@@ -24,6 +24,8 @@ public:
 	const QString & protocol() const { return m_protocol; };
 	void setExtension(const QString & ext) { m_extension = ext; };
 	const QString & extension() const { return m_extension; };
+	void setDialContext(const QString & context) { m_dialcontext = context; };
+	const QString & dialContext() const { return m_dialcontext; };
 private:
 	void connectSocket();
 	void loadSettings();	//!< load settings
@@ -81,6 +83,7 @@ private:
 	QString m_asterisk;
 	QString m_protocol;
 	QString m_extension;
+	QString m_dialcontext;
 };
 
 #endif

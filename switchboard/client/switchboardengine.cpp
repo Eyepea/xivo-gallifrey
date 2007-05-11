@@ -58,6 +58,7 @@ void SwitchBoardEngine::loadSettings()
 	m_asterisk = settings.value("engine/asterisk").toString();
 	m_protocol = settings.value("engine/protocol").toString();
 	m_extension = settings.value("engine/extension").toString();
+	m_dialcontext = settings.value("engine/dialcontext").toString();
 }
 
 /*!
@@ -72,6 +73,7 @@ void SwitchBoardEngine::saveSettings()
 	settings.setValue("engine/asterisk", m_asterisk);
 	settings.setValue("engine/protocol", m_protocol);
 	settings.setValue("engine/extension", m_extension);
+	settings.setValue("engine/dialcontext", m_dialcontext);
 }
 
 /* \brief set server address

@@ -28,6 +28,7 @@ private:
 	QLineEdit * m_asterisk;
 	QComboBox * m_protocombo;
 	QLineEdit * m_ext;
+	QLineEdit * m_context;
 };
 
 #endif

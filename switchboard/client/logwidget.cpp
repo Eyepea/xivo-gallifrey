@@ -12,18 +12,6 @@ LogWidget::LogWidget(SwitchBoardEngine * engine, QWidget * parent)
 {
 	m_layout = new QVBoxLayout(this);
 	m_layout->setSpacing(2);
-#if 0
-	LogEltWidget * e = new LogEltWidget("peer test",
-	                                    LogEltWidget::InCall,
-										QDateTime::currentDateTime(),
-										42,
-										this);
-	m_layout->addWidget(e);
-	addElement("peer test2", LogEltWidget::InCall, QDateTime::currentDateTime(), 0);
-	addElement("peer test2", LogEltWidget::InCall, QDateTime::currentDateTime(), 0);
-	addElement("peer test3", LogEltWidget::OutCall, QDateTime::currentDateTime(),
-	           43);
-#endif
 	m_layout->addStretch(1);
 }
 

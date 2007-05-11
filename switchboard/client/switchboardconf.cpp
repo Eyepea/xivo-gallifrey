@@ -73,6 +73,11 @@ SwitchBoardConfDialog::SwitchBoardConfDialog(SwitchBoardEngine * engine,
 	layout->addWidget( m_ext, line, 1 );
 	line++;
 
+	QLabel * lblcontext = new QLabel( tr("Dial context :"), this );
+	layout->addWidget(lblcontext, line, 0);
+	m_context = new QLineEdit( m_engine->dialContext(), this );
+	layout->addWidget( m_context, line, 1);
+
 	vlayout->addLayout( layout );
 
 	QDialogButtonBox * btnbox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
@@ -89,6 +94,7 @@ void SwitchBoardConfDialog::saveAndClose()
 	m_engine->setAsterisk( m_asterisk->text() );
 	m_engine->setProtocol( m_protocombo->currentText() );
 	m_engine->setExtension( m_ext->text() );
+	m_engine->setDialContext( m_context->text() );
 	m_engine->saveSettings();
 	//m_window->setWidth( m_widthsb->value() );
 	//m_window->saveSettings();
