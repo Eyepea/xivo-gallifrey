@@ -11,12 +11,7 @@ LogEltWidget::LogEltWidget( const QString & peer, Direction d,
 {
 //	qDebug() << "  LogEltWidget::LogEltWidget()" << peer << d << dt << duration << parent;
 	QHBoxLayout * layout = new QHBoxLayout( this );
-	QLabel * lblpeer = new QLabel( peer, this );
-	layout->addWidget(lblpeer);
-
-	QLabel * lbldir = new QLabel( this );
-	lbldir->setText((d == OutCall)?"<=":"=>");
-	layout->addWidget(lbldir);
+	layout->setMargin(0);
 
 	QLabel * lbldt = new QLabel( dt.toString(Qt::SystemLocaleDate), this );
 	layout->addWidget(lbldt);
@@ -24,6 +19,13 @@ LogEltWidget::LogEltWidget( const QString & peer, Direction d,
 	QLabel * lblduration = new QLabel( this );
 	lblduration->setText(QString::number(duration) + "s");
 	layout->addWidget(lblduration);
+
+	QLabel * lblpeer = new QLabel( peer, this );
+	layout->addWidget(lblpeer);
+
+	QLabel * lbldir = new QLabel( this );
+	lbldir->setText((d == OutCall)?"<=":"=>");
+	layout->addWidget(lbldir);
 
 	layout->addStretch(1);
 

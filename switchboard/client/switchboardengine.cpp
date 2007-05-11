@@ -377,8 +377,8 @@ void SwitchBoardEngine::searchDirectory(const QString & text)
  */
 void SwitchBoardEngine::requestHistory(const QString & peer)
 {
-	qDebug() << "SwitchBoardEngine::requestHistory()" << peer;
-	m_pendingcommand = "history " + peer + " 3";
+	//qDebug() << "SwitchBoardEngine::requestHistory()" << peer;
+	m_pendingcommand = "history " + peer + " 10";
 	sendCommand();
 }
 
