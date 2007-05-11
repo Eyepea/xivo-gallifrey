@@ -127,6 +127,29 @@ CREATE TABLE queue (
 CREATE INDEX queue__idx__commented ON queue(commented);
 
 
+CREATE TABLE queuefeatures (
+ `id` int(11) unsigned auto_increment,
+ `name` varchar(255) NOT NULL,
+ `number` varchar(80) default '',
+ `context` varchar(80) NOT NULL default '',
+ `data_quality` tinyint(1) default 0,
+ `hitting_callee` tinyint(1) default 0,
+ `hitting_caller` tinyint(1) default 0,
+ `retries` tinyint(1) default 0,
+ `ring` tinyint(1) default 0,
+ `transfer_user` tinyint(1) default 0,
+ `transfer_call` tinyint(1) default 0,
+ `write_caller` tinyint(1) default 0,
+ `write_calling` tinyint(1) default 0,
+ `url` varchar(256) default '',
+ `announceoverride` varchar(128) default '',
+ `timeout` tinyint unsigned,
+ PRIMARY KEY(id)
+) TYPE=MyISAM DEFAULT CHARACTER SET utf8;
+
+CREATE UNIQUE INDEX queue__uidx__name ON queuefeatures(name);
+
+
 CREATE TABLE queuemember (
  `queue_name` varchar(128) NOT NULL,
  `interface` varchar(128) NOT NULL,
