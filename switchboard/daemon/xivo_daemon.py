@@ -95,8 +95,10 @@
 # \brief XIVO CTI server
 #
 
+# debian.org modules
 import ConfigParser
 import getopt
+import ldap
 import MySQLdb
 import os
 import random
@@ -110,6 +112,7 @@ import sys
 import threading
 import time
 import urllib
+# XIVO modules
 import xivo_ami
 import xivo_sip
 
@@ -136,6 +139,29 @@ bufsize_any = 512
 socket.setdefaulttimeout(2)
 timeout_between_registers = 60
 expires = str(2 * timeout_between_registers) # timeout between subscribes
+
+
+## \class myLDAP
+class myLDAP:
+	def __init__(self, ihost, iport, iuser, ipass):
+		try:
+			self.l = ldap.initialize("ldap://%s:%s" %(ihost, iport))
+			self.l.protocol_version = ldap.VERSION3
+			self.l.simple_bind_s(iuser, ipass)
+			
+		except ldap.LDAPError, e:
+			print e
+			sys.exit()
+
+	def getldap(self, ibase, filter, attrib):
+		try:
+			resultat = self.l.search_s(ibase,
+						   ldap.SCOPE_SUBTREE,
+						   filter,
+						   attrib)
+			return resultat
+		except ldap.LDAPError, e:
+			print e
 
 
 ## \brief Function for Daemonizing
@@ -223,30 +249,6 @@ def update_userlist_fromurl(astn, url, sipaccount):
 		f.close()
 
 	return numlist
-
-
-## \brief Function to load the customer file.
-# SIP, Zap, mISDN and IAX2 are taken into account there.
-# There would remain MGCP, CAPI, h323, ...
-# \param url the url where lies the customer list, it can be file:/ as well as http://
-# \return the new phone numbers list
-# \sa update_sipnumlist
-def update_customers_fromurl(astn, url):
-	try:
-		f = urllib.urlopen(url)
-	except Exception, e:
-		log_debug(configs[astn].astid + " : unable to open URL : " + url + " " + str(e))
-		return True
-	try:
-		for line in f:
-			# remove leading/tailing whitespaces
-			line = line.strip()
-			l = line.split('|')
-			# line is number | customer name
-			customerbase[l[0]] = l[1]
-	finally:
-		f.close()
-	return True
 
 
 ## \brief Function that fetches the call history into a database
@@ -488,12 +490,32 @@ class AMIClass:
 # \return a string containing the full customers list
 # \sa manage_tcp_connection
 def build_customers(searchpattern):
-	fullstat = "directory-response=2;Numero;Nom"
-	for num in customerbase:
-		if searchpattern == "*" or searchpattern == "" or \
-		       customerbase[num].lower().find(searchpattern.lower()) >= 0 or \
-		       num.lower().find(searchpattern.lower()) >= 0:
-			fullstat += ";%s;%s" %(num, customerbase[num])
+	global xivoconf_general
+	fullstat = "directory-response=3;Numero;Nom;Entreprise"
+	ldapid = myLDAP(xivoconf_general["dir_address"],
+			int(xivoconf_general["dir_port"]),
+			xivoconf_general["dir_user"],
+			xivoconf_general["dir_pass"])
+	if searchpattern == "" or searchpattern == "*":
+		result = ldapid.getldap(xivoconf_general["dir_base"],
+					"(|(cn=*)(o=*)(telephoneNumber=*)(mobile=*))",
+					['cn','o','telephoneNumber','mobile'])
+	else:
+		result = ldapid.getldap(xivoconf_general["dir_base"],
+					"(|(cn=*%s*)(o=*%s*)(telephoneNumber=*%s*)(mobile=*%s*))"
+					%(searchpattern,searchpattern,searchpattern,searchpattern),
+					['cn','o','telephoneNumber','mobile'])
+	for x in result:
+		[tnum, cn, o] = ["", "", ""]
+		if 'telephoneNumber' in x[1].keys():
+			tnum = x[1]['telephoneNumber'][0]
+		elif 'mobile' in x[1].keys():
+			tnum = x[1]['mobile'][0]
+		if 'cn' in x[1].keys():
+			cn = x[1]['cn'][0]
+		if 'o' in x[1].keys():
+			o = x[1]['o'][0]
+		fullstat += ";%s;%s;%s" %(tnum,cn,o)
 	fullstat += "\n"
 	return fullstat
 
@@ -1373,7 +1395,6 @@ def update_sipnumlist(astnum):
 	sipnumlistold = plist[astnum].normal.keys()
 	sipnumlistold.sort()
 	sipnuml = update_userlist_fromurl(astnum, configs[astnum].userlisturl, configs[astnum].mysipname)
-	update_customers_fromurl(astnum, "file:/home/corentin/customers.txt")
 	for x in configs[astnum].extrachannels.split(","):
 		if x != "": sipnuml[x] = [x, "", ""]
 	sipnumlistnew = sipnuml.keys()
@@ -1714,9 +1735,11 @@ def deluser(astn, user):
 # \param user searched for
 # \return user found, otherwise None
 def finduser(astn, user):
-	u = userlist[astn].get(user)
+	if astn >= 0 and astn < len(userlist):
+		u = userlist[astn].get(user)
+	else:
+		u = None
 	return u
-
 
 ## \class LoginHandler
 # \brief The clients connect to this in order to obtain a valid session id.
@@ -1748,7 +1771,11 @@ class LoginHandler(SocketServer.StreamRequestHandler):
 		#print 'user/pass : ' + user + '/' + passwd
 
 		userlist_lock.acquire()
-		astnum = asteriskr[astname_xivoc]
+		if astname_xivoc in asteriskr.keys():
+			astnum = asteriskr[astname_xivoc]
+		else:
+			self.wfile.write('ERROR : asterisk name <%s> unknown\r\n' %astname_xivoc)
+			return
 		e = finduser(astnum, user)
 		goodpass = (e != None) and (e.get('passwd') == passwd)
 		userlist_lock.release()
@@ -1853,22 +1880,24 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
 			if len(list) == 2 and list[0] == 'STOP':
 				response = 'DISC\r\n'
 				astname_xivoc = list[1].split("/")[0]
-				astnum = asteriskr[astname_xivoc]
-				user = list[1].split("/")[1]
-
-				userlist_lock.acquire()
-				if "sessiontimestamp" in userlist[astnum][user].keys():
-					del userlist[astnum][user]["sessionid"]
-					del userlist[astnum][user]["sessiontimestamp"]
-					del userlist[astnum][user]["ip"]
-					del userlist[astnum][user]["port"]
-					userlist[astnum][user]["state"] = "unknown"
-					sipnumber = "SIP/" + user.split("sip")[1]
-					if sipnumber in plist[astnum].normal:
-						plist[astnum].normal[sipnumber].set_imstat("unkown")
-						plist[astnum].normal[sipnumber].update_time()
-						update_GUI_clients(astnum, sipnumber, "kfc-dcc")
-				userlist_lock.release()
+				if astname_xivoc in asteriskr.keys():
+					astnum = asteriskr[astname_xivoc]
+					user = list[1].split("/")[1]
+					userlist_lock.acquire()
+					if "sessiontimestamp" in userlist[astnum][user].keys():
+						del userlist[astnum][user]["sessionid"]
+						del userlist[astnum][user]["sessiontimestamp"]
+						del userlist[astnum][user]["ip"]
+						del userlist[astnum][user]["port"]
+						userlist[astnum][user]["state"] = "unknown"
+						sipnumber = "SIP/" + user.split("sip")[1]
+						if sipnumber in plist[astnum].normal:
+							plist[astnum].normal[sipnumber].set_imstat("unkown")
+							plist[astnum].normal[sipnumber].update_time()
+							update_GUI_clients(astnum, sipnumber, "kfc-dcc")
+					userlist_lock.release()
+				else:
+					response = "ERROR unknown asterisk name <%s>\r\n" %astname_xivoc
 			elif len(list) == 3 and list[0] == 'MESSAGE':
 				response = 'SENT\r\n'
 				#astname_xivoc = list[1].split("/")[0]
@@ -1880,31 +1909,29 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
 				response = 'ERROR unknown\r\n'
 			else:
 				astname_xivoc = list[1].split("/")[0]
-				astnum = asteriskr[astname_xivoc]
-				user = list[1].split("/")[1]
-				sessionid = list[3]
-				state = "undefinedstate"
-				if len(list) >= 6:
-					state = list[5]
-				e = finduser(astnum, user)
-				if e == None:
-					response = 'ERROR user unknown\r\n'
-				else:
-					#print user, e['user']
-					#print sessionid, e['sessionid']
-					#print ip, e['ip']
-					#print timestamp, e['sessiontimestamp']
-					#print timestamp - e['sessiontimestamp']
-					if sessionid == e['sessionid'] and ip == e['ip'] and \
-					       e['sessiontimestamp'] + session_expiration_time > timestamp:
-						if state in allowed_states:
-							e['state'] = state
-						else:
-							e['state'] = "undefinedstate"
-						e['sessiontimestamp'] = timestamp
-						response = 'OK\r\n'
+				if astname_xivoc in asteriskr.keys():
+					astnum = asteriskr[astname_xivoc]
+					user = list[1].split("/")[1]
+					sessionid = list[3]
+					state = "undefinedstate"
+					if len(list) >= 6:
+						state = list[5]
+					e = finduser(astnum, user)
+					if e == None:
+						response = 'ERROR user unknown\r\n'
 					else:
-						response = 'ERROR SESSION EXPIRED OR INVALID\r\n'
+						if sessionid == e['sessionid'] and ip == e['ip'] and \
+						       e['sessiontimestamp'] + session_expiration_time > timestamp:
+							if state in allowed_states:
+								e['state'] = state
+							else:
+								e['state'] = "undefinedstate"
+							e['sessiontimestamp'] = timestamp
+							response = 'OK\r\n'
+						else:
+							response = 'ERROR SESSION EXPIRED OR INVALID\r\n'
+				else:
+					response = "ERROR unknown asterisk name <%s>\r\n" %astname_xivoc
 		except Exception, e:
 			response = 'ERROR (exception) : ' + str(e) + '\r\n'
 		userlist_lock.release()
@@ -2041,7 +2068,6 @@ AMIsocks = []
 AMIcomms = []
 AMIclasssock = []
 asteriskr = {}
-customerbase = {}
 
 # We have three sockets to listen to so we cannot use the
 # very easy to use SocketServer.serve_forever()
@@ -2173,7 +2199,7 @@ while not askedtoquit:
 	# the new UI (SB) connections are catched here
         elif UIsock in i:
 		[conn, UIsockparams] = UIsock.accept()
-		log_debug("TCP (SB)  socket opened on   " + UIsockparams[0] + " " + str(UIsockparams[1]))
+		log_debug("TCP (SB)  socket opened on   %s %s" %(UIsockparams[0],str(UIsockparams[1])))
 		# appending the opened socket to the ones watched
 		ins.append(conn)
 		conn.setblocking(0)
@@ -2181,7 +2207,7 @@ while not askedtoquit:
 	# the new UI (PHP) connections are catched here
         elif PHPUIsock in i:
 		[conn, PHPUIsockparams] = PHPUIsock.accept()
-		log_debug("TCP (PHP) socket opened on   " + PHPUIsockparams[0] + " " + str(PHPUIsockparams[1]))
+		log_debug("TCP (PHP) socket opened on   %s %s" %(PHPUIsockparams[0],str(PHPUIsockparams[1])))
 		# appending the opened socket to the ones watched
 		ins.append(conn)
 		conn.setblocking(0)
@@ -2189,11 +2215,17 @@ while not askedtoquit:
 	# open UI (SB) connections
         elif filter(lambda j: j[0] in i, tcpopens_sb):
 		conn = filter(lambda j: j[0] in i, tcpopens_sb)[0]
-		manage_tcp_connection(conn, True)
+		try:
+			manage_tcp_connection(conn, True)
+		except:
+			log_debug("a problem occured when managing SB tcp connection")
 	# open UI (PHP) connections
         elif filter(lambda j: j[0] in i, tcpopens_php):
 		conn = filter(lambda j: j[0] in i, tcpopens_php)[0]
-		manage_tcp_connection(conn, False)
+		try:
+			manage_tcp_connection(conn, False)
+		except:
+			log_debug("a problem occured when managing PHP tcp connection")
 	else:
 		log_debug("unknown socket " + str(i))
 
