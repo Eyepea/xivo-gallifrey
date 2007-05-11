@@ -146,7 +146,7 @@ CREATE TABLE queuefeatures (
  PRIMARY KEY(id)
 ) TYPE=MyISAM DEFAULT CHARACTER SET utf8;
 
-CREATE UNIQUE INDEX queue__uidx__name ON queuefeatures(name);
+CREATE UNIQUE INDEX queuefeatures__uidx__name ON queuefeatures(name);
 
 
 CREATE TABLE queuemember (
