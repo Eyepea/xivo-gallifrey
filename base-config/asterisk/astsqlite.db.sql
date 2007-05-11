@@ -85,6 +85,45 @@ CREATE TABLE phone (
 
 CREATE INDEX phone__idx__proto_iduserfeatures ON phone(proto,iduserfeatures);
 
+CREATE TABLE queue (
+ name varchar(128) NOT NULL,
+ musiconhold varchar(128),
+ announce varchar(128),
+ context varchar(128),
+ timeout tinyint unsigned,
+ 'monitor-join' tinyint(1) default 0,
+ 'monitor-format' varchar(128),
+ 'queue-youarenext' varchar(128),
+ 'queue-thereare' varchar(128),
+ 'queue-callswaiting' varchar(128),
+ 'queue-holdtime' varchar(128),
+ 'queue-minutes' varchar(128),
+ 'queue-seconds' varchar(128),
+ 'queue-lessthan' varchar(128),
+ 'queue-thankyou' varchar(128),
+ 'queue-reporthold' varchar(128),
+ 'announce-frequency' integer,
+ 'periodic-announce-frequency' integer,
+ 'announce-round-seconds' tinyint unsigned,
+ 'announce-holdtime' varchar(4),
+ retry tinyint unsigned,
+ wrapuptime tinyint unsigned,
+ maxlen integer unsigned,
+ servicelevel integer,
+ strategy varchar(11),
+ joinempty varchar(6),
+ leavewhenempty varchar(6),
+ eventmemberstatus tinyint(1) default 0,
+ eventwhencalled tinyint(1) default 0,
+ reportholdtime tinyint(1) default 0,
+ memberdelay integer unsigned,
+ weight integer unsigned,
+ timeoutrestart tinyint(1) default 0,
+ commented tinyint(1) default 0,
+ PRIMARY KEY(name)
+);
+
+CREATE INDEX queue__idx__commented ON queue(commented);
 
 CREATE TABLE queue (
  name varchar(128) NOT NULL,
@@ -130,7 +169,7 @@ CREATE TABLE queuemember (
  queue_name varchar(128) NOT NULL,
  interface varchar(128) NOT NULL,
  penalty integer unsigned default 0,
- call_limit integer unsigned default 0,
+ 'call-limit' integer unsigned default 0,
  commented tinyint(1) default 0,
  PRIMARY KEY(queue_name,interface)
 );
