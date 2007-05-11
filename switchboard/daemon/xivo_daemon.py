@@ -233,6 +233,7 @@ def update_userlist_fromurl(astn, url, sipaccount):
 				firstname = l[8]
 			if len(l) > 9:
 				lastname = l[9]
+			fullname = firstname + " " + lastname + "<b>" + l[4] + "</b>"
 			# line is protocol | username | password | rightflag |
 			#         phone number | initialized | disabled(=1) | callerid
                         if l[0] == "sip" and l[5] == "1" and l[6] == "0" and l[1] != sipaccount and l[4] != "":
@@ -491,22 +492,22 @@ class AMIClass:
 # \sa manage_tcp_connection
 def build_customers(searchpattern):
 	global xivoconf_general
-	fullstat = "directory-response=3;Numero;Nom;Entreprise"
+	fullstat = "directory-response=4;Numero;Nom;Entreprise;E-mail"
 	ldapid = myLDAP(xivoconf_general["dir_address"],
 			int(xivoconf_general["dir_port"]),
 			xivoconf_general["dir_user"],
 			xivoconf_general["dir_pass"])
 	if searchpattern == "" or searchpattern == "*":
 		result = ldapid.getldap(xivoconf_general["dir_base"],
-					"(|(cn=*)(o=*)(telephoneNumber=*)(mobile=*))",
-					['cn','o','telephoneNumber','mobile'])
+					"(|(cn=*)(o=*)(telephoneNumber=*)(mobile=*)(mail=*))",
+					['cn','o','telephoneNumber','mobile','mail'])
 	else:
 		result = ldapid.getldap(xivoconf_general["dir_base"],
-					"(|(cn=*%s*)(o=*%s*)(telephoneNumber=*%s*)(mobile=*%s*))"
-					%(searchpattern,searchpattern,searchpattern,searchpattern),
-					['cn','o','telephoneNumber','mobile'])
+					"(|(cn=*%s*)(o=*%s*)(telephoneNumber=*%s*)(mobile=*%s*)(mail=*%s*))"
+					%(searchpattern,searchpattern,searchpattern,searchpattern,searchpattern),
+					['cn','o','telephoneNumber','mobile','mail'])
 	for x in result:
-		[tnum, cn, o] = ["", "", ""]
+		[tnum, cn, o, mailn] = ["", "", "", ""]
 		if 'telephoneNumber' in x[1].keys():
 			tnum = x[1]['telephoneNumber'][0]
 		elif 'mobile' in x[1].keys():
@@ -515,7 +516,9 @@ def build_customers(searchpattern):
 			cn = x[1]['cn'][0]
 		if 'o' in x[1].keys():
 			o = x[1]['o'][0]
-		fullstat += ";%s;%s;%s" %(tnum,cn,o)
+		if 'mail' in x[1].keys():
+			mailn = x[1]['mail'][0]
+		fullstat += ";%s;%s;%s;%s" %(tnum,cn,o,mailn)
 	fullstat += "\n"
 	return fullstat
 
@@ -741,7 +744,8 @@ def manage_tcp_connection(connid, allow_events):
 				connid[0].send(build_customers(l[1]))
 			except Exception, e:
 				log_debug("UI connection : a problem occured when sending to " + str(connid[0]) + " " + str(e))
-		elif len(l) == 3 and (l[0] == 'originate' or l[0] == 'transfer'):
+		elif (len(l) == 4 and l[0] == 'originate') \
+		     or (len(l) == 3 and l[0] == 'transfer'):
 			idassrc = -1
 			assrc = l[1].split("/")[0]
 			if assrc in asteriskr: idassrc = asteriskr[assrc]
@@ -758,17 +762,12 @@ def manage_tcp_connection(connid, allow_events):
 				if AMIclasssock[idassrc]:
 					if l[0] == 'originate':
 						log_debug("attempting a ORIGINATE : " + str(l))
-						if l[2].split("/")[1] == "SIP":
+						if l[2].split("/")[1] != "":
 							ret = AMIclasssock[idassrc].originate(l[1].split("/")[2],
-											      l[2].split("/")[2],
-											      "local-extensions")
+											      l[2].split("/")[1],
+											      l[3])
 						else:
-							if l[2].split("/")[1] != "":
-								ret = AMIclasssock[idassrc].originate(l[1].split("/")[2],
-												      l[2].split("/")[1],
-												      "extern-extensions")
-							else:
-								ret = False
+							ret = False
 						if ret:
 							connid[0].send("asterisk=originate %s %s successful\n" %(l[1], l[2]))
 						else:
