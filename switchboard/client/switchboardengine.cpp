@@ -377,10 +377,14 @@ void SwitchBoardEngine::searchDirectory(const QString & text)
 
 /*! \brief ask history for an extension 
  */
-void SwitchBoardEngine::requestHistory(const QString & peer)
+void SwitchBoardEngine::requestHistory(const QString & peer, int mode)
 {
+	/* mode = 0 : Out calls
+	 * mode = 1 : In calls
+	 * mode = 2 : Missed calls */
 	//qDebug() << "SwitchBoardEngine::requestHistory()" << peer;
-	m_pendingcommand = "history " + peer + " 10";
+	m_pendingcommand = "history " + peer + " 10 " + QString::number(mode);
+	qDebug() << m_pendingcommand;
 	sendCommand();
 }
 

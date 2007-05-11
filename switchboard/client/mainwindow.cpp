@@ -95,8 +95,8 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 
 	connect( calls, SIGNAL(monitoredPeerChanged(const QString &)),
 	         logwidget, SLOT(setPeerToDisplay(const QString &)) );
-	connect( logwidget, SIGNAL(askHistory(const QString &)),
-	         m_engine, SLOT(requestHistory(const QString &)) );
+	connect( logwidget, SIGNAL(askHistory(const QString &, int)),
+	         m_engine, SLOT(requestHistory(const QString &, int)) );
 
 	m_middleSplitter = new QSplitter( Qt::Vertical, m_splitter);
 

@@ -3,7 +3,7 @@
 <context>
     <name>CallStackWidget</name>
     <message>
-        <location filename="callstackwidget.cpp" line="232"/>
+        <location filename="callstackwidget.cpp" line="233"/>
         <source>Monitoring : </source>
         <translation>Surveillance de : </translation>
     </message>
@@ -11,12 +11,12 @@
 <context>
     <name>CallWidget</name>
     <message>
-        <location filename="callwidget.cpp" line="81"/>
+        <location filename="callwidget.cpp" line="66"/>
         <source>&amp;Hangup</source>
         <translation>&amp;Raccrocher</translation>
     </message>
     <message>
-        <location filename="callwidget.cpp" line="82"/>
+        <location filename="callwidget.cpp" line="67"/>
         <source>Hang up/Close the channel</source>
         <translation>Raccroche/Ferme la liaison</translation>
     </message>
@@ -50,12 +50,12 @@
 <context>
     <name>LogEltWidget</name>
     <message>
-        <location filename="logeltwidget.cpp" line="30"/>
+        <location filename="logeltwidget.cpp" line="32"/>
         <source>&amp;Dial</source>
         <translation>&amp;Composer</translation>
     </message>
     <message>
-        <location filename="logeltwidget.cpp" line="31"/>
+        <location filename="logeltwidget.cpp" line="33"/>
         <source>Dial back</source>
         <translation>Rappeler</translation>
     </message>
@@ -63,67 +63,67 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="mainwindow.cpp" line="160"/>
+        <location filename="mainwindow.cpp" line="166"/>
         <source>&amp;File</source>
         <translation>&amp;Fichier</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="162"/>
+        <location filename="mainwindow.cpp" line="168"/>
         <source>S&amp;tart</source>
         <translation>&amp;Démarrer</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="167"/>
+        <location filename="mainwindow.cpp" line="173"/>
         <source>Sto&amp;p</source>
         <translation>&amp;Arrêter</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="173"/>
+        <location filename="mainwindow.cpp" line="179"/>
         <source>&amp;Configure</source>
         <translation>&amp;Configuration</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="178"/>
+        <location filename="mainwindow.cpp" line="184"/>
         <source>&amp;Quit</source>
         <translation>&amp;Quitter</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="182"/>
+        <location filename="mainwindow.cpp" line="188"/>
         <source>&amp;Help</source>
         <translation>&amp;Aide</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="185"/>
+        <location filename="mainwindow.cpp" line="191"/>
         <source>About &amp;Qt</source>
         <translation>A propos de &amp;Qt</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="163"/>
+        <location filename="mainwindow.cpp" line="169"/>
         <source>Start</source>
         <translation>Connexion</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="168"/>
+        <location filename="mainwindow.cpp" line="174"/>
         <source>Stop</source>
         <translation>Déconnexion</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="174"/>
+        <location filename="mainwindow.cpp" line="180"/>
         <source>Open the configuration dialog</source>
         <translation>Ouvre la fenêtre de configuration</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="240"/>
+        <location filename="mainwindow.cpp" line="246"/>
         <source>About XIVO SwitchBoard</source>
         <translation>A propos du SwitchBoard XIVO</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="184"/>
+        <location filename="mainwindow.cpp" line="190"/>
         <source>&amp;About XIVO Switchboard</source>
         <translation>&amp;A propos du SwitchBoard XIVO</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="251"/>
+        <location filename="mainwindow.cpp" line="257"/>
         <source>&lt;h3&gt;XIVO Switchboard&lt;/h3&gt;&lt;p&gt;This application displays the status of the ongoing phone calls.&lt;/p&gt;&lt;p&gt;Version : %1&lt;/p&gt;&lt;p&gt;(C) 2007 &lt;b&gt;Proformatique&lt;/b&gt; &lt;a href=&quot;http://www.proformatique.com&quot;&gt;http://www.proformatique.com&lt;/a&gt;&lt;/p&gt;&lt;p&gt;67 rue Voltaire 92800 Puteaux FRANCE&lt;/p&gt;&lt;p&gt;E-mail : technique@proformatique.com&lt;/p&gt;&lt;p&gt;(+33/0)1.41.38.99.60&lt;/p&gt;&lt;p&gt;Author : Thomas Bernard&lt;/p&gt;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -131,22 +131,22 @@
 <context>
     <name>PeerWidget</name>
     <message>
-        <location filename="peerwidget.cpp" line="30"/>
+        <location filename="peerwidget.cpp" line="37"/>
         <source>&amp;Remove</source>
         <translation>&amp;Enlever</translation>
     </message>
     <message>
-        <location filename="peerwidget.cpp" line="31"/>
+        <location filename="peerwidget.cpp" line="38"/>
         <source>Remove this peer from the panel</source>
         <translation type="unfinished">Suppression de ce poste du panneau</translation>
     </message>
     <message>
-        <location filename="peerwidget.cpp" line="34"/>
+        <location filename="peerwidget.cpp" line="41"/>
         <source>&amp;Dial</source>
         <translation>&amp;Composer</translation>
     </message>
     <message>
-        <location filename="peerwidget.cpp" line="35"/>
+        <location filename="peerwidget.cpp" line="42"/>
         <source>Dial this number</source>
         <translation>Composer ce numéro</translation>
     </message>
@@ -200,6 +200,11 @@
         <location filename="switchboardconf.cpp" line="69"/>
         <source>Extension :</source>
         <translation>Extension :</translation>
+    </message>
+    <message>
+        <location filename="switchboardconf.cpp" line="76"/>
+        <source>Dial context :</source>
+        <translation>Contexte d&apos;appel :</translation>
     </message>
 </context>
 </TS>

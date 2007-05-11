@@ -40,7 +40,7 @@ public slots:
 	void transferCall(const QString & src, const QString & dst);
 	void dial(const QString & dst);
 	void searchDirectory(const QString &);
-	void requestHistory(const QString &);
+	void requestHistory(const QString &, int);
 private slots:
 	void updatePeers(const QStringList & liststatus);
 	void updateCallerids(const QStringList & liststatus);

@@ -6,6 +6,7 @@
 
 class QVBoxLayout;
 class SwitchBoardEngine;
+class QRadioButton;
 
 class LogWidget : public QWidget
 {
@@ -16,17 +17,24 @@ public:
 	                const QDateTime & dt, int duration);
 protected:
 	void timerEvent(QTimerEvent *);
+private:
+	int mode();
 public slots:
 	void clear();
 	void addLogEntry(const QDateTime & dt, int, const QString &, int);
 	void setPeerToDisplay(const QString &);
+private slots:
+	void modeChanged(bool);
 signals:
-	void askHistory(const QString &);
+	void askHistory(const QString &, int);
 private:
 	SwitchBoardEngine * m_engine;
 	QVBoxLayout * m_layout;
 	QString m_peer;
 	int m_timer;
+	QRadioButton * m_radioOut;
+	QRadioButton * m_radioIn;
+	QRadioButton * m_radioMissed;
 };
 
 #endif

@@ -1,0 +1,10 @@
+/* http://doc.trolltech.com/4.2/stylesheet.html */
+QPushButton {
+/*  background-color: green;*/
+/*  background-image: url(bg-button.gif);*/
+}
+
+/*SwitchBoardWindow {
+  background-image: url(xivoicon.png);
+}*/
+
