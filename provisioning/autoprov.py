@@ -15,7 +15,8 @@ import sys
 CONFIG_FILE = '/etc/xivo/provisioning.conf' # can be overridded by cmd line param
 CONFIG_LIB_PATH = 'py_lib_path'
 from getopt import getopt
-from ConfigPath import *
+from xivo import ConfigPath
+from xivo.ConfigPath import *
 opts,args = getopt(sys.argv[1:], GETOPT_SHORTOPTS)
 for v in [v for k,v in opts if k == '-c']:
 	CONFIG_FILE = v

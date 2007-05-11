@@ -1,0 +1,2 @@
+uriparse.py will be installed under /usr/lib/pythonX.Y/site-packages/
+For other modules, the .pyc will be installed under /usr/lib/pythonX.Y/site-packages/xivo/
