@@ -793,12 +793,12 @@ def manage_tcp_connection(connid, allow_events):
 										connid[0].send("asterisk=transfer KO\n")
 			else:
 				connid[0].send("asterisk=originate or transfer KO : asterisk id mismatch\n")
-		elif len(l) == 3 and l[0] == 'history':
+		elif len(l) >= 3 and l[0] == 'history':
 			idassrc = -1
 			assrc = l[1].split("/")[0]
 			if assrc in asteriskr: idassrc = asteriskr[assrc]
 			if idassrc == -1:
-				connid[0].send("asterisk=hangup KO : no such asterisk id\n")
+				connid[0].send("asterisk=history KO : no such asterisk id\n")
 			else:
 				phone, channel = split_from_ui(l[1])
 				hist = update_history_call(idassrc, phone.split("/")[1], l[2])
