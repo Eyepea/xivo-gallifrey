@@ -37,7 +37,7 @@ def FillDictFromConfigSection(dicttofill, confpars_obj, section):
 				try:
 					val = t(val)
 				except ValueError:
-					raise ValueError, "Content of \"%s\" in section \"%s\" of configuration file should be of type \"%s\", but the actual value found there \"%s\" is not" % (name, section, str(t), oldval)
+					raise ValueError, "Content of \"%s\" in section [%s] of configuration file should be of type \"%s\", but the actual value found there \"%s\" is not" % (name, section, str(t), oldval)
 		dicttofill[name] = val
 	return dicttofill
 
@@ -55,8 +55,8 @@ def FillDictFromMultipleConfig(dicttofill, confpars_obj, sect_mapping):
 	
 		{ 'key_for_dicttofill': ('section', 'name', type), ... }
 	
-	An entry missing in the configuration file will result in the raise of
-	the corresponding ConfigParser exception.
+	An entry missing in the configuration file will result in
+	the corresponding ConfigParser exception being raised.
 	
 	"""
 	for key,(section, name, t) in sect_mapping.iteritems():
@@ -66,7 +66,7 @@ def FillDictFromMultipleConfig(dicttofill, confpars_obj, sect_mapping):
 			try:
 				val = t(val)
 			except ValueError:
-				raise ValueError, "Content of \"%s\" in section \"%s\" of configuration file should be of type \"%s\", but the actual value found there \"%s\" is not" % (name, section, str(t), oldval)
+				raise ValueError, "Content of \"%s\" in section [%s] of configuration file should be of type \"%s\", but the actual value found there \"%s\" is not" % (name, section, str(t), oldval)
 		dicttofill[key] = val
 	return dicttofill
 
@@ -88,7 +88,7 @@ def FillDictFromMultipleConfigOpt(dicttofill, confpars_obj, sect_mapping):
 				try:
 					val = t(val)
 				except ValueError:
-					raise ValueError, "Content of \"%s\" in section \"%s\" of configuration file should be of type \"%s\", but the actual value found there \"%s\" is not" % (name, section, str(t), oldval)
+					raise ValueError, "Content of \"%s\" in section [%s] of configuration file should be of type \"%s\", but the actual value found there \"%s\" is not" % (name, section, str(t), oldval)
 			dicttofill[key] = val
 		except NoSectionError, NoOptionError:
 			pass
