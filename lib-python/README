@@ -1,2 +1,4 @@
 uriparse.py will be installed under /usr/lib/pythonX.Y/site-packages/
+uriparse.py comes from Python Patch request 1462525 as described in http://sourceforge.net/tracker/index.php?func=detail&aid=1462525&group_id=5470&atid=305470 and threads http://mail.python.org/pipermail/python-dev/2005-November/058301.html and http://mail.python.org/pipermail/python-dev/2006-April/063294.html. It correspond to URI parsing library v32 as uploaded in Python BTS.
+
 For other modules, the .pyc will be installed under /usr/lib/pythonX.Y/site-packages/xivo/
