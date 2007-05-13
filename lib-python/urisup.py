@@ -18,8 +18,8 @@ GEN_DELIMS = ':/?#[]@'
 SUB_DELIMS = "!$&'()*+,;="
 RESERVED = GEN_DELIMS + SUB_DELIMS
 UNRESERVED = ALPHA + DIGIT + '-._~'
-PCHAR = UNRESERVED + SUB_DELIMS + '%:@'
-QUEFRAG_CHAR = PCHAR + '/?'
+PCHAR = UNRESERVED + SUB_DELIMS + '%:@/'
+QUEFRAG_CHAR = PCHAR + '?'
 USER_CHAR = UNRESERVED + SUB_DELIMS + '%'
 PASSWD_CHAR = UNRESERVED + SUB_DELIMS + '%:'
 REG_NAME_CHAR = UNRESERVED + SUB_DELIMS + '%'
@@ -40,12 +40,12 @@ def __split_sz(s, n):
 	return [s[b:b+n] for b in range(0,len(s),n)]
 
 def __valid_IPv4address(potential_ipv4):
-	if potential_ipv4[0] in "0123456789" and __all_in(potential_ipv4[1:], "0123456789."):
+	if potential_ipv4[0] in "0123456789xX" and __all_in(potential_ipv4[1:], "0123456789.xX"):
 		s_ipv4 = potential_ipv4.split('.', 4)
 		if len(s_ipv4) == 4:
 			try:
 				for s in s_ipv4:
-					i = int(s)
+					i = int(s, 0)
 					if i < 0 or i > 255:
 						return False
 			except ValueError:
@@ -118,6 +118,13 @@ def __valid_IPLiteral(potential_ipliteral):
 	return __valid_IPv6address(potential_ipliteral[1:-1]) \
 	       or __valid_IPvFuture(potential_ipliteral[1:-1])
 
+def __valid_query(pquery_tuple):
+	for k,v in pquery_tuple:
+		if (k and (not __all_in(k, QUEFRAG_CHAR))) \
+		   or (v and (not __all_in(v, QUEFRAG_CHAR))):
+			return False
+	return True
+
 class InvalidURIError(ValueError):
   """Base class of all Exceptions directly raised by this module"""
 class InvalidSchemeError(InvalidURIError):
@@ -138,6 +145,10 @@ class InvalidPortError(InvalidAuthorityError):
 	"""Invalid content for the port part of an URI"""
 class InvalidPathError(InvalidURIError):
     """Invalid content for the path part of an URI"""
+class InvalidQueryError(InvalidURIError):
+    """Invalid content for the query part of an URI"""
+class InvalidFragmentError(InvalidURIError):
+    """Invalid content for the fragment part of an URI"""
 
 def pct_decode(s):
 	"""Returns the percent-decoded version of string s
@@ -180,8 +191,11 @@ def host_type(host):
 	"""Correctly classifies correct RFC 3986 compliant hostnames, but
 	don't try hard to validate compliance anyway...
 	NOTE: indeed we allow a small deviation from the RFC 3986: IPv4
-	addresses do not need to be as small as possible and those with
-	numbers prepended with one or more zero won't be regected.
+	addresses are allowed to contain bytes represented in hexadecimal or
+	octal notation when begining respectively with '0x'/'0X' and '0'
+	numbers prepended with one or more zero won't be rejected. Anyway
+	representation of multiple bytes by a single decimal/octal/hexadecimal
+	integer is not allowed.
 	
 	Returns HOST_IP_LITERAL, HOST_IPV4_ADDRESS or HOST_REG_NAME
 
@@ -191,7 +205,7 @@ def host_type(host):
 	HOST_REG_NAME
 	>>> host_type('127.0.0.1')
 	HOST_IPV4_ADDRESS
-	>>> host_type('127.0.0.00000000000001')
+	>>> host_type('0x7F.0.0.00000000000001')
 	HOST_IPV4_ADDRESS
 	>>> host_type('666.42.131.2')
 	HOST_REG_NAME
@@ -310,8 +324,106 @@ def uri_split_tree(uri):
 	        path and path or None, query and query or None,
 	        fragment and fragment or None)
 
+def uri_tree_normalize(uri_tree):
+	"""Transforms an URI tree so that adjacent all-empty fields are
+	coalesced into a single None at parent level.
+	The return value can be used for validation by uri_tree_validate()
+	As a result, no distinction is made between empty and absent fields.
+	It is believed that this limitation is harmless because this is the
+	behavior of most implementations, and even useful in the context of
+	this Python module because empty strings are already not distinguished
+	from None when converting to boolean, so we are only generalizing this
+	concept in order to keep code small and minimize special cases.
+	
+	If the distinction is ever really needed, for example to support empty
+	anchor special HTTP script related URI in a clean way, one will
+	probably need to completely rewrite (or at least review and modify)
+	this module, and special care would be taken to distinguish between '',
+	(), None and others everywhere implicit boolean conversion is now
+	performed. The behavior should then be checked in regards to its
+	conformance with RFC 3986, especially (but this would probably not be
+	sufficient) the classification switches of some URI parts according to
+	the content of others.
+	
+	"""
+	scheme, authority, path, query, fragment = uri_tree
+	if authority and (filter(lambda x: bool(x), authority) == ()):
+		authority = None
+	if query:
+		query = filter(lambda (x,y): bool(x) or bool(y), query)
+	return (scheme and scheme or None, authority and authority or None,
+	        path and path or None, query and query or None,
+	        fragment and fragment or None)
+
+def uri_tree_validate(uri_tree):
+	"""Validate a tree splitted URI in format returned by
+	uri_tree_normalize(), raising an exception in case something invalid
+	is detected - that is RFC 3986 is not respected - and returning the
+	unmodified uri_tree otherwise, so this function can be used in an
+	helper function chaining uri_split_tree(), uri_tree_normalize(),
+	uri_tree_validate() and then uri_tree_decode().
+	
+	This function must be called on something similar to the return value
+	of uri_tree_normalize() - and not uri_tree_decode() or directly
+	uri_split_tree() - to have a meaningful action.
+	
+	The following deviations from RFC 3986 - and also design choice - are
+	allowed and no exception will be raised in these cases:
+	
+	- IPv4address can contain decimal / octal / hexadecimal representation
+	  of individual bytes.
+	- in a similar way h16 in IPv6address can be zero-prepended
+	- no percent encoding validation is performed, so that non pct-encoded
+	  sequences begining with an '%' will be leaved untouched later by the
+	  percent decoding algorithm
+	- this function will not attempt to classify path as path-absolute
+	  according to the presence of a non-empty authority; paths will always
+	  be allowed to begin with '//' because the implicit assertion that
+	  this URI has just been splitted by the Appendix B Regular Expression
+	  is made, so a (possibly empty) authority was present, and that when
+	  the intent of the caller is to join the URI it will take appropriate
+	  measures to guaranty RFC 3986 compliance, by unconditionally or if
+	  necessary adding an empty authority.
+	
+	"""
+	scheme, authority, path, query, fragment = uri_tree
+	if scheme:
+		if (scheme[0] not in ALPHA) or (not __all_in(scheme[1:], SCHEME_CHAR)):
+			raise InvalidSchemeError, 'Invalid scheme "%s"' % scheme
+	if authority:
+		user, passwd, host, port = authority
+		if user and not __all_in(user, USER_CHAR):
+			raise InvalidUserError, 'Invalid user "%s"' % user
+		if passwd and not __all_in(passwd, PASSWD_CHAR):
+			raise InvalidPasswdError, 'Invalid passwd "%s"' % passwd
+		if host:
+			type_host = host_type(host)
+			if type_host == HOST_REG_NAME:
+				if not __all_in(host, REG_NAME_CHAR):
+					raise InvalidRegNameError, 'Invalid reg-name "%s"' % host
+			elif type_host == HOST_IP_LITERAL:
+				if not __valid_IPLiteral(host):
+					raise InvalidIPLiteralError, 'Invalid IP-literal "%s"' % host
+		if port and not __all_in(port, DIGIT):
+			raise InvalidPortError, 'Invalid port "%s"' % port
+	if path:
+		if not __all_in(path, PCHAR):
+			raise InvalidPathError, 'Invalid path "%s" - invalid character detected' % path
+		if authority and path[0] != '/':
+			raise InvalidPathError, 'Invalid path "%s" - non-absolute path can\'t be used with an authority' % path
+		if (not authority) and (not scheme) \
+		   and (':' in path.split('/')[0]):
+			raise InvalidPathError, 'Invalid path "%s" - path-noscheme can\'t have a \':\' if no \'/\' before' % path
+	if query and (not __valid_query(query)):
+		raise InvalidQueryError, 'Invalid splitted query tuple "%s"' % str(query)
+	if fragment and (not __all_in(fragment, QUEFRAG_CHAR)):
+		raise InvalidFragmentError, 'Invalid fragment "%s"' % fragment
+	return uri_tree
+
 def uri_tree_decode(uri_tree):
-	"""Decode a tree splitted Uri in format returned by uri_split_tree()
+	"""Decode a tree splitted Uri in format returned by uri_split_tree() or
+	uri_tree_normalize(), the returned value keeping the same layout.
+	
 	user, passwd, path, fragment are percent decoded, and so is host if of
 	type reg-name.
 	
@@ -340,48 +452,13 @@ def uri_tree_decode(uri_tree):
 		query = tuple(map(lambda (x,y): (query_elt_decode(x), query_elt_decode(y)), query))
 	return (scheme, authority, path, query, fragment)
 
-def uri_tree_validate(uri_tree):
-	"""Validate a tree splitted Uri in format returned by uri_split_tree(),
-	raising an exception in case something invalid is detected - that is
-	RFC 3986 is not respected - and returning None otherwise so this
-	function can be used in an helper function chaining uri_split_tree(),
-	uri_tree_validate() and then uri_tree_decode().
-	
-	This function must be called on something similar to the return value
-	of uri_split_tree() and not uri_tree_validate() to have a meaningful
-	action.
-	
-	The following deviations from RFC 3986 are allowed and no exception
-	will be raised in this case :
-	
-	- dec-octet in an IPv4address can be prepended with one or more zeros
-	- in a similar way h16 in IPv6address can also be zero-prepended
-	- no percent encoding validation is performed, so that non pct-encoded
-	  sequences begining with an '%' will be leaved untouched later by the
-	  percent decoding algorithm
-	- XXX TODO
-	
+def uri_split_norm_valid_decode(uri):
+	"""Returns uri_tree_decode(
+	                uri_tree_validate(
+                                uri_tree_normalize(
+                                        uri_split_tree(uri))))
 	"""
-	if scheme:
-		if (scheme[0] not in ALPHA) or (not __all_in(scheme[1:], SCHEME_CHAR)):
-			raise InvalidSchemeError, 'Invalid scheme "%s"' % scheme
-	if authority:
-		user, passwd, host, port = authority
-		if user and not __all_in(user, USER_CHAR):
-			raise InvalidUserError, 'Invalid user "%s"' % user
-		if passwd and not __all_in(passwd, PASSWD_CHAR):
-			raise InvalidPasswdError, 'Invalid passwd "%s"' % passwd
-		if host:
-			type_host = host_type(host)
-			if type_host == HOST_REG_NAME:
-				if not __all_in(host, REG_NAME_CHAR):
-					raise InvalidRegNameError, 'Invalid reg-name "%s"' % host
-			elif type_host == HOST_IP_LITERAL:
-				if not __valid_IPLiteral(host):
-					raise InvalidIPLiteralError, 'Invalid IP-literal "%s"' % host
-		if port and not __all_in(port, DIGIT):
-			raise InvalidPortError, 'Invalid port "%s"' % port
-	if path and ((not __all_in(path, PCHAR)) or 
-	             ((not scheme) and (':' in path.split('/')[0]))):
-		raise InvalidPathError, 'Invalid path "%s"' % path
-	# XXX TODO: query and fragments
+	return uri_tree_decode(
+	                uri_tree_validate(
+                                uri_tree_normalize(
+                                        uri_split_tree(uri))))
