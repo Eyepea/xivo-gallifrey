@@ -147,7 +147,8 @@ def valid_scheme(potential_scheme):
 	URI scheme
 	
 	"""
-	return (scheme[0] in ALPHA) and __all_in(scheme[1:], SCHEME_CHAR)
+	return (potential_scheme[0] in ALPHA) \
+	       and __all_in(potential_scheme[1:], SCHEME_CHAR)
 
 class InvalidURIError(ValueError):
   """Base class of all Exceptions directly raised by this module"""
