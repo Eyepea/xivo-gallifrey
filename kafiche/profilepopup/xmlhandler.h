@@ -1,5 +1,5 @@
 /*
-kafiche client : popup profile for incoming calls
+XIVO customer information client client : popup profile for incoming calls
 Copyright (C) 2007  Proformatique
 
 This program is free software; you can redistribute it and/or
