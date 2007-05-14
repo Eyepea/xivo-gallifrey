@@ -5,7 +5,6 @@
 Copyright (C) 2007, Proformatique
 
 """
-# Dependencies : python-sqlite
 
 __version__ = "$Revision$ $Date$"
 GETOPT_SHORTOPTS = 'b:l:dfc:'
@@ -37,10 +36,14 @@ except: pass
 import timeoutsocket
 from timeoutsocket import Timeout
 
-import os, cgi, sqlite, thread, threading, traceback
+import os, cgi, thread, threading, traceback
 
 import syslog
 from easyslog import *
+
+import anysql
+from BackSQL import backsqlite
+from BackSQL import backmysql
 
 import BaseHTTPServer
 from BaseHTTPServer import HTTPServer
@@ -73,9 +76,9 @@ def name_from_first_last(first, last):
 		return last
 	return ''
 
-class SQLiteDB:
+class SQLBackEnd:
 	"""An information backend for this provisioning daemon,
-	using the Xivo SQLite database.
+	using the Xivo SQL database.
 	
 	"""
 	def __init__(self, db):
@@ -83,13 +86,12 @@ class SQLiteDB:
 
 	# === INTERNAL FUNCTIONS ===
 	
-	def generic_sqlite_request(self, foobar, *remain):
+	def generic_sql_request(self, foobar, *remain):
 		"""Generic function to generate a safe context to issue any
-		SQLite request.
+		SQL request.
 		
 		"""
-		conn = sqlite.connect(self.__db)
-		conn.db.sqlite_busy_timeout(pgc['sqlite_to_ms'])
+		conn = anysql.connect_by_uri(self.__db)
 		try:
 			a = foobar(conn, *remain)
 		except:
@@ -98,12 +100,12 @@ class SQLiteDB:
 		conn.close()
 		return a
 
-	def sqlite_select_one(self, request, parameters_tuple, mapping):
-		"Does a SELECT SQLite query and returns only one row."
-		return self.generic_sqlite_request(self.method_select_one, request, parameters_tuple, mapping)
+	def sql_select_one(self, request, parameters_tuple, mapping):
+		"Does a SELECT SQL query and returns only one row."
+		return self.generic_sql_request(self.method_select_one, request, parameters_tuple, mapping)
 	def method_select_one(self, conn, request, parameters_tuple, mapping):
 		"""Internally called in a safe context to execute SELECT
-		SQLite queries and return their result (only one row).
+		SQL queries and return their result (only one row).
 		
 		"""
 		cursor = conn.cursor()
@@ -114,12 +116,12 @@ class SQLiteDB:
 		return dict([(k,provsup.elem_or_none(r,v))
 		             for k,v in mapping.iteritems()])
 
-	def sqlite_select_all(self, request, parameters_tuple, mapping):
-		"Does a SELECT SQLite query and returns all rows."
-		return self.generic_sqlite_request(self.method_select_all, request, parameters_tuple, mapping)
+	def sql_select_all(self, request, parameters_tuple, mapping):
+		"Does a SELECT SQL query and returns all rows."
+		return self.generic_sql_request(self.method_select_all, request, parameters_tuple, mapping)
 	def method_select_all(self, conn, request, parameters_tuple, mapping):
 		"""Internally called in a safe context to execute SELECT
-		SQLite queries and return their result (all rows).
+		SQL queries and return their result (all rows).
 		
 		"""
 		cursor = conn.cursor()
@@ -128,12 +130,12 @@ class SQLiteDB:
 		                             for k,v in mapping.iteritems()]),
                            cursor.fetchall())
 
-	def sqlite_modify(self, request, parameters_tuple):
-		"Does a SQLite query that is going to modify the database."
-		return self.generic_sqlite_request(self.method_commit, request, parameters_tuple)
+	def sql_modify(self, request, parameters_tuple):
+		"Does a SQL query that is going to modify the database."
+		return self.generic_sql_request(self.method_commit, request, parameters_tuple)
 	def method_commit(self, conn, request, parameters_tuple):
 		"""Internally called in a safe context to commit the result of
-		SQLite queries that modify the database content.
+		SQL queries that modify the database content.
 		
 		"""
 		cursor = conn.cursor()
@@ -154,13 +156,13 @@ class SQLiteDB:
 		"""
 		query = "SELECT * FROM %s WHERE macaddr=%s" % (TABLE, '%s')
 		mapping = dict(map(lambda x: (x,x), ("macaddr", "vendor", "model")))
-		return self.sqlite_select_one(query, (macaddr,), mapping)
+		return self.sql_select_one(query, (macaddr,), mapping)
 
 	def phone_by_macaddr(self, macaddr):
 		"""Lookup a phone description by Mac Address in the database.
 		
 		Returns a dictionary with the following keys:
-			'macaddr', 'vendor', 'model', 'proto', 'iduserfeatures'
+		        'macaddr', 'vendor', 'model', 'proto', 'iduserfeatures'
 		or None
 		
 		"""
@@ -168,7 +170,7 @@ class SQLiteDB:
 		mapping = dict(map(lambda x: (x,x),
 		                   ('macaddr', 'vendor', 'model', 'proto',
 			            'iduserfeatures')))
-		return self.sqlite_select_one(query, (macaddr,), mapping)
+		return self.sql_select_one(query, (macaddr,), mapping)
 
 	def config_by_something_proto(self, something_column, something_content, proto):
 		"""Query the database to return a phone configuration.
@@ -176,12 +178,12 @@ class SQLiteDB:
 		something_column - name of the column of the table 'userfeatures'
 		                   used to select the right phone
 		something_content - content to be match against the content of
-				    the column identified by something_column
+		                    the column identified by something_column
 		
 		Returns a dictionary with the following keys:
 		        'firstname', 'lastname', 'name': user civil status
-				note that the name is constructed from the
-				first and last name
+		                note that the name is constructed from the
+		                first and last name
 		        'iduserfeatures': user id in the userfeatures table
 		        'provcode': provisioning code
 		        'ident': protocol specific identification
@@ -213,7 +215,7 @@ class SQLiteDB:
 			"provcode":		UF_TABLE+".provisioningid",
 			"proto":		UF_TABLE+".protocol"
 		}
-		confdico = self.sqlite_select_one(
+		confdico = self.sql_select_one(
 			query, (proto, something_content), mapping)
 		if not confdico:
 			return None
@@ -248,7 +250,7 @@ class SQLiteDB:
 		'macaddr', 'vendor', 'model', 'proto', 'iduserfeatures'
 		
 		"""
-		self.sqlite_modify(
+		self.sql_modify(
 			"REPLACE INTO %s (macaddr, vendor, model, proto, iduserfeatures) VALUES (%s, %s, %s, %s, %s)" \
 			% (TABLE, '%s', '%s', '%s', '%s', '%s'),
 			map(lambda x: phone[x], ('macaddr', 'vendor', 'model',
@@ -268,7 +270,7 @@ class SQLiteDB:
 			% ( TABLE, '%s', '%s' )
 		mapping = dict(map(lambda x: (x,x), ("macaddr", "vendor",
 		                          "model", "proto", "iduserfeatures")))
-		return self.sqlite_select_one(
+		return self.sql_select_one(
 			query, (iduserfeatures, TECH), mapping)
 
 	def delete_phone_by_iduserfeatures(self, iduserfeatures):
@@ -276,7 +278,7 @@ class SQLiteDB:
 		iduserfeatures.
 		
 		"""
-		self.sqlite_modify(
+		self.sql_modify(
 			("DELETE FROM %s WHERE iduserfeatures=%s")
 		        % ( TABLE, '%s'),
 			(iduserfeatures,))
@@ -294,7 +296,7 @@ class SQLiteDB:
 		'macaddr', 'vendor', 'model', 'proto', 'iduserfeatures'
 		
 		"""
-		return self.sqlite_select_all(
+		return self.sql_select_all(
 			("SELECT %s.* " + 
 			 	"FROM %s LEFT JOIN %s " +
 				"ON %s.iduserfeatures = %s.id " +
@@ -311,7 +313,7 @@ class SQLiteDB:
 		Mac Address.
 		
 		"""
-		self.sqlite_modify(
+		self.sql_modify(
 			("DELETE FROM %s WHERE macaddr = %s " +
 			                      "AND iduserfeatures = %s")
 			% (TABLE, '%s', '%s'),
@@ -324,7 +326,7 @@ class SQLiteDB:
 #		SQLite does not support foreign key constraints.
 #		
 #		"""
-#		self.sqlite_modify(
+#		self.sql_modify(
 #			("DELETE FROM %s WHERE macaddr IN "+
 #			 "(SELECT %s.macaddr " + 
 #			 	"FROM %s LEFT JOIN %s " +
@@ -758,15 +760,12 @@ def main(log_level, foreground):
 	http_server.my_ctx = CommonProvContext(
 		ListLock(), # userlocks
 		ListLock(), # maclocks
-		SQLiteDB(pgc['sqlite_db']),
+		SQLBackEnd(pgc['database_uri']),
 		RWLock()
 	)
 	clean_at_startup(http_server.my_ctx)
 	http_server.serve_forever()
 	syslog.closelog()
-
-if sqlite.paramstyle != 'pyformat':
-	raise NotImplementedError, "This script expect pysqlite 1 with sqlite.paramstyle != 'pyformat', but sqlite.paramstyle has been detected as %s" % sqlite.paramstyle
 
 dontlauchmain = False
 foreground = False
@@ -775,9 +774,9 @@ log_level = SYSLOG_NOTICE
 # l: log filter up to EMERG, ALERT, CRIT, ERR, WARNING, NOTICE, INFO or DEBUG
 # d: don't launch the main function (useful for python -i invocations)
 # f: keep the program on foreground, don't daemonize
-# b: override the default sqlite DB filename
+# b: override the default DB URI
 
-db_override = None
+dburi_override = None
 log_level_override = None
 opts,args = getopt(sys.argv[1:], GETOPT_SHORTOPTS)
 for k,v in opts:
@@ -788,14 +787,14 @@ for k,v in opts:
 	elif '-f' == k:
 		foreground = True
 	elif '-b' == k:
-		db_override = v
+		dburi_override = v
 
 provsup.LoadConfig(CONFIG_FILE)
 if log_level_override is not None:
 	pgc['log_level'] = log_level_override
 log_level = sysloglevel_from_str(pgc['log_level'])
-if db_override is not None:
-	pgc['sqlite_db'] = db_override
+if dburi_override is not None:
+	pgc['database_uri'] = dburi_override
 
 if __name__ == '__main__' and not dontlauchmain:
 	main(log_level, foreground)
