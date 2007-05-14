@@ -50,6 +50,18 @@ HOST_IP_LITERAL = 1
 HOST_IPV4_ADDRESS = 2
 HOST_REG_NAME = 3
 
+# Indexes in a parsed/splitted URI
+SCHEME = 0
+AUTHORITY = 1
+PATH = 2
+QUERY = 3
+FRAGMENT = 4
+
+AUTHORITY_USER = 0
+AUTHORITY_PASSWD = 1
+AUTHORITY_HOST = 2
+AUTHORITY_PORT = 3
+
 def __all_in(s, charset):
 	return False not in map(lambda c:c in charset, s)
 

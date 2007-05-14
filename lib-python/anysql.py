@@ -73,7 +73,7 @@ def connect_by_uri(sqluri):
 	uri_scheme = urisup.uri_help_split(sqluri)[0]
 	if uri_scheme not in __uri_create_methods:
 		raise NotImplementedError, 'Unknown URI scheme "%s"' % str(uri_scheme)
-	__uri_create_methods[uri_scheme][0](sqluri)
+	return __uri_create_methods[uri_scheme][0](sqluri)
 
 __all__ = ["register_uri", "connect_by_uri",
            "paramstyle", "threadsafety", "apilevel"]
