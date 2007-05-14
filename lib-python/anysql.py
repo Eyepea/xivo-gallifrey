@@ -29,12 +29,15 @@ def __compare_api_level(als1, als2):
 
 def register_uri_backend(uri_scheme, create_method, module):
 	"""This method is intended to be used by backends only.
-
+	
 	It lets them register their services, identified by the URI scheme,
 	at import time. The associated method create_method must take one
 	parameter: the complete requested RFC 3986 compliant URI. The
 	associated module must be compliant with DBAPI v2.0 but will not be 
 	directly used for other purposes than compatibility testing.
+	
+	If something obviously not compatible is tried to be registred,
+	NotImplementedError is raised.
 	
 	"""
 	try:
@@ -49,6 +52,8 @@ def register_uri_backend(uri_scheme, create_method, module):
 		raise NotImplementedError, "This module only supports registration of DBAPI services with a 'format' or 'pyformat' paramstyle, not '%s'" % mod_paramstyle
 	if mod_threadsafety < any_threadsafety:
 		raise NotImplementedError, "This module does not support registration of DBAPI services of threadsafety %d (more generally under %d)" % (mod_threadsafety, any_threadsafety)
+	if not urisup.valid_scheme(uri_scheme):
+		raise urisup.InvalidSchemeError, "Can't register an invalid URI scheme \"%s\"" % uri_scheme
 	__uri_create_methods[uri_scheme] = (create_method, module)
 
 def connect_by_uri(sqluri):
@@ -61,8 +66,13 @@ def connect_by_uri(sqluri):
 	If no handler is found for this method, a NotImplementedError will be
 	raised.
 	
+	A malformed URI will result in an exception being raised by the
+	supporting URI parsing module.
+	
 	"""
-	# todo: parse the sqluri
+	uri_scheme = urisup.uri_help_split(sqluri)[0]
+	if uri_scheme not in __uri_create_methods:
+		raise NotImplementedError, 'Unknown URI scheme "%s"' % str(uri_scheme)
 	__uri_create_methods[uri_scheme][0](sqluri)
 
 __all__ = ["register_uri", "connect_by_uri",
