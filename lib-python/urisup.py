@@ -28,6 +28,22 @@ IPV_FUTURE_RE = 'v[\da-fA-F]+\.[' \
                 + re.escape(UNRESERVED + SUB_DELIMS + ':') \
                 + ']+'
 
+BYTES_VAL = ''.join(map(chr, range(0,256)))
+
+def __not_in_re_strip_pct(charset):
+	return re.compile('[^'
+	                  + re.escape(charset.translate(BYTES_VAL, '%'))
+	                  + ']')
+
+USER_ENCRE = __not_in_re_strip_pct(USER_CHAR)
+PASSWD_ENCRE = __not_in_re_strip_pct(PASSWD_CHAR)
+REG_NAME_ENCRE = __not_in_re_strip_pct(REG_NAME_CHAR)
+P_ENCRE = __not_in_re_strip_pct(PCHAR)
+FRAG_ENCRE = __not_in_re_strip_pct(QUEFRAG_CHAR)
+# QUERY_ENCRE is reserved for query encoding, that is spaces are not percent
+# encoded but translated in plus ' ' -> '+'
+QUERY_ENCRE = __not_in_re_strip_pct(QUEFRAG_CHAR.translate(BYTES_VAL, '+') + ' ')
+
 # Host type alternatives:
 HOST_IP_LITERAL = 1
 HOST_IPV4_ADDRESS = 2
@@ -137,6 +153,8 @@ class InvalidPasswdError(InvalidAuthorityError):
 	"""Invalid content for the passwd part of an URI"""
 class InvalidHostError(InvalidAuthorityError):
         """Invalid content for the host part of an URI"""
+class InvalidIPv4addressError(InvalidHostError):
+                """Invalid content for the IPv4address part of an URI"""
 class InvalidIPLiteralError(InvalidHostError):
                 """Invalid content for the IP-literal part of an URI"""
 class InvalidRegNameError(InvalidHostError):
@@ -175,6 +193,27 @@ def pct_decode(s):
 		m = ro.search(s)
 	return s
 
+def pct_encode(s, reo):
+	"""Uses the compiled regex object reo to find the first forbidden
+	character in s and percent encode it. Iterate through the remaining
+	right part of the string to treat it in whole.
+	
+	"""
+	if s is None:
+		return None
+	a = [s]
+	while a[-1]:
+		m = reo.search(a[-1])
+		if not m:
+			a.append('')
+		else:
+			r = a[-1][m.start()+1:]
+			t = a[-1][:m.start()] + '%' + \
+			    ('%02X' % ord(m.group()[0]))
+			a[-1] = t
+			a.append(r)
+	return ''.join(a)
+
 def query_elt_decode(s):
 	"""Returns the percent-decoded version of string s, after a
 	plus-to-space substitution has been done.
@@ -186,6 +225,15 @@ def query_elt_decode(s):
 	if s is None:
 		return None
 	return pct_decode(s.replace('+', ' '))
+
+def query_elt_encode(s, reo):
+	"""Query encode a string, using the regex object reo to find forbidden
+	characters. '+' must be found by reo. ' ' must not be found by reo.
+	
+	"""
+	if s is None:
+		return None
+	return pct_encode(s, reo).replace(' ', '+')
 
 def host_type(host):
 	"""Correctly classifies correct RFC 3986 compliant hostnames, but
@@ -421,7 +469,7 @@ def uri_tree_validate(uri_tree):
 	return uri_tree
 
 def uri_tree_decode(uri_tree):
-	"""Decode a tree splitted Uri in format returned by uri_split_tree() or
+	"""Decode a tree splitted URI in format returned by uri_split_tree() or
 	uri_tree_normalize(), the returned value keeping the same layout.
 	
 	user, passwd, path, fragment are percent decoded, and so is host if of
@@ -455,10 +503,58 @@ def uri_tree_decode(uri_tree):
 def uri_split_norm_valid_decode(uri):
 	"""Returns uri_tree_decode(
 	                uri_tree_validate(
-                                uri_tree_normalize(
-                                        uri_split_tree(uri))))
+	                        uri_tree_normalize(
+	                                uri_split_tree(uri))))
 	"""
 	return uri_tree_decode(
 	                uri_tree_validate(
                                 uri_tree_normalize(
                                         uri_split_tree(uri))))
+
+def uri_tree_precode_check(uri_tree, type_host = HOST_REG_NAME):
+	"""Call this function to validate a raw URI tree before trying to
+	encode it.
+	
+	"""
+	scheme, authority, path, query, fragment = uri_tree
+	if scheme:
+		if (scheme[0] not in ALPHA) or (not __all_in(scheme[1:], SCHEME_CHAR)):
+			raise InvalidSchemeError, 'Invalid scheme "%s"' % scheme
+	if authority:
+		user, passwd, host, port = authority
+		if port and not __all_in(port, DIGIT):
+			raise InvalidPortError, 'Invalid port "%s"' % port
+		if type_host == HOST_IP_LITERAL:
+			if host and (not __valid_IPLiteral(host)):
+				raise InvalidIPLiteralError, 'Invalid IP-literal "%s"' % host
+		elif type_host == HOST_IPV4_ADDRESS:
+			if host and (not __valid_IPv4address(host)):
+				raise InvalidIPv4addressError, 'Invalid IPv4address "%s"' % host
+
+def uri_tree_encode(uri_tree, type_host = HOST_REG_NAME):
+	"""Percent/Query encode a raw URI tree.
+	
+	"""
+	scheme, authority, path, query, fragment = uri_tree
+	if authority:
+		user, passwd, host, port = authority
+		if user:
+			user = pct_encode(user, USER_ENCRE)
+		if passwd:
+			passwd = pct_encode(passwd, PASSWD_ENCRE)
+		if host and type_host == HOST_REG_NAME:
+			host = pct_encode(host, REG_NAME_ENCRE)
+		authority = (user, passwd, host, port)
+	if path:
+		path = pct_encode(path, P_ENCRE)
+	if query:
+		query = tuple(map(lambda (x,y):
+		                           (query_elt_encode(x, QUERY_ENCRE),
+		                            query_elt_encode(y, QUERY_ENCRE)),
+		                  query))
+	if fragment:
+		fragment = pct_encode(fragment, FRAG_ENCRE)
+	return (scheme, authority, path, query, fragment)
+
+def uri_unsplit_tree(uri_tree):
+	
