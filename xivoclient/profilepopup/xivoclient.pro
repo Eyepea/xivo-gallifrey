@@ -18,7 +18,7 @@ QT += network
 QT += xml
 RESOURCES += appli.qrc
 
-TRANSLATIONS = kafiche_fr.ts
+TRANSLATIONS = xivoclient_fr.ts
 
 RC_FILE = appli.rc
 
