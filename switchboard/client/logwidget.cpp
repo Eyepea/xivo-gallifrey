@@ -16,12 +16,12 @@ LogWidget::LogWidget(SwitchBoardEngine * engine, QWidget * parent)
 	m_layout->setSpacing(2);
 	QGroupBox * groupBox = new QGroupBox( tr("Call history"), this );
 	QVBoxLayout * vbox = new QVBoxLayout( groupBox );
-	m_radioOut = new QRadioButton( tr("&Out calls"), groupBox );
+	m_radioOut = new QRadioButton( tr("&Outgoing calls"), groupBox );
 	m_radioOut->setChecked( true );
 	connect( m_radioOut, SIGNAL(toggled(bool)),
 	         this, SLOT(modeChanged(bool)) );
 	vbox->addWidget( m_radioOut );
-	m_radioIn = new QRadioButton( tr("&In calls"), groupBox );
+	m_radioIn = new QRadioButton( tr("&Incoming calls"), groupBox );
 	connect( m_radioIn, SIGNAL(toggled(bool)),
 	         this, SLOT(modeChanged(bool)) );
 	vbox->addWidget( m_radioIn );

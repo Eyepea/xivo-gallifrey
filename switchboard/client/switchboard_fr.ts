@@ -50,14 +50,37 @@
 <context>
     <name>LogEltWidget</name>
     <message>
-        <location filename="logeltwidget.cpp" line="32"/>
+        <location filename="logeltwidget.cpp" line="33"/>
         <source>&amp;Dial</source>
         <translation>&amp;Composer</translation>
     </message>
     <message>
-        <location filename="logeltwidget.cpp" line="33"/>
+        <location filename="logeltwidget.cpp" line="34"/>
         <source>Dial back</source>
         <translation>Rappeler</translation>
+    </message>
+</context>
+<context>
+    <name>LogWidget</name>
+    <message>
+        <location filename="logwidget.cpp" line="17"/>
+        <source>Call history</source>
+        <translation>Historique des appels</translation>
+    </message>
+    <message>
+        <location filename="logwidget.cpp" line="19"/>
+        <source>&amp;Outgoing calls</source>
+        <translation>Appels &amp;sortants</translation>
+    </message>
+    <message>
+        <location filename="logwidget.cpp" line="24"/>
+        <source>&amp;Incoming calls</source>
+        <translation>Appels &amp;entrants</translation>
+    </message>
+    <message>
+        <location filename="logwidget.cpp" line="28"/>
+        <source>&amp;Missed calls</source>
+        <translation>Appels &amp;manqués</translation>
     </message>
 </context>
 <context>
