@@ -45,22 +45,23 @@ def __dict_from_query(query):
 def connect_by_uri(uri):
 	"""General URI syntax:
 	
-	mysql://user:passwd@host:passwd/db?opt1=val1&opt2=val2&...
+	mysql://user:passwd@host:port/db?opt1=val1&opt2=val2&...
 	
 	where opt_n is in the list of options supported by MySQLdb:
 	
-	host,user,passwd,db,compress,connect_timeout,read_default_file,
-	read_default_group,unix_socket,port
+	    host,user,passwd,db,compress,connect_timeout,read_default_file,
+	    read_default_group,unix_socket,port
 	
 	NOTE: the authority and the path parts of the URI have precedence
 	over the query part, if an argument is given in both.
 	
-	conv,quote_conv,cursorclass are not (yet?) allowed as complex Python
-	objects are needed, hard to transmit with an URI...
+	    conv,quote_conv,cursorclass
+	are not (yet?) allowed as complex Python objects are needed, hard to
+	transmit within an URI...
 
 	See for description of options:
-	http://dustman.net/andy/python/MySQLdb_obsolete/doc/MySQLdb-3.html#ss3.1
-	http://mysql-python.svn.sourceforge.net/viewvc/mysql-python/trunk/MySQLdb/doc/MySQLdb.txt?revision=438&view=markup&pathrev=438
+	    http://dustman.net/andy/python/MySQLdb_obsolete/doc/MySQLdb-3.html#ss3.1
+	    http://mysql-python.svn.sourceforge.net/viewvc/mysql-python/trunk/MySQLdb/doc/MySQLdb.txt?revision=438&view=markup&pathrev=438
 
 	"""
 	puri = urisup.uri_help_split(uri)
@@ -74,7 +75,7 @@ def connect_by_uri(uri):
 		if host:
 			params['host'] = host
 		if port:
-			params['port'] = host
+			params['port'] = port
 	if puri[PATH]:
 		params['db'] = puri[PATH]
 		if params['db'] and params['db'][0] == '/':
