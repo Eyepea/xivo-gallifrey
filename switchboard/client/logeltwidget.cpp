@@ -23,9 +23,10 @@ LogEltWidget::LogEltWidget( const QString & peer, Direction d,
 	QLabel * lblpeer = new QLabel( peer, this );
 	layout->addWidget(lblpeer);
 
-	QLabel * lbldir = new QLabel( this );
-	lbldir->setText((d == OutCall)?"<=":"=>");
-	layout->addWidget(lbldir);
+	/*	QLabel * lbldir = new QLabel( this );
+	  lbldir->setText((d == OutCall)?"<=":"=>");
+	  layout->addWidget(lbldir);
+	*/
 
 	layout->addStretch(1);
 
