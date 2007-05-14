@@ -35,8 +35,6 @@ DialPanel::DialPanel(QWidget * parent)
 
 void DialPanel::affTextChanged()
 {
-//	m_engine->originateCall( QString("obelisk/SIP/103"),
-//	                         "obelisk/" + m_input->text() );
-	emitDial( "obelisk/" + m_input->text() );
+	emitDial( m_input->text() );
 }
 

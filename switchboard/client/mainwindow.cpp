@@ -142,7 +142,7 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 	connect( engine, SIGNAL(removePeer(const QString &)),
 	         searchpanel, SLOT(removePeer(const QString &)) );
 
- 	DialPanel * dialpanel = new DialPanel(m_rightSplitter);
+	DialPanel * dialpanel = new DialPanel(m_rightSplitter);
 	connect( dialpanel, SIGNAL(emitDial(const QString &)),
 	         engine, SLOT(dial(const QString &)) );
 

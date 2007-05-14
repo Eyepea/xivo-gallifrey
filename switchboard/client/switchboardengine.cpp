@@ -115,7 +115,7 @@ void SwitchBoardEngine::connectSocket()
 void SwitchBoardEngine::sendCommand()
 {
 	m_socket->write((m_pendingcommand + "\r\n"/*"\n"*/).toAscii());
-	//qDebug() << m_pendingcommand;
+	qDebug() << m_pendingcommand;
 }
 
 void SwitchBoardEngine::processHistory(const QStringList & histlist)
@@ -333,8 +333,12 @@ void SwitchBoardEngine::timerEvent(QTimerEvent * event)
  */
 void SwitchBoardEngine::originateCall(const QString & src, const QString & dst)
 {
-	m_pendingcommand = "originate " + src + " " + dst + " " + m_dialcontext;
-	sendCommand();
+	QStringList dstlist = dst.split("/");
+	if (dstlist.size() == 3) {
+		m_pendingcommand = "originate " + src + " " +
+			dstlist[0] + "/" + dstlist[2] + " " + m_dialcontext;
+		sendCommand();
+	}
 }
 
 /*! \brief send a transfer call command to the server
@@ -350,7 +354,7 @@ void SwitchBoardEngine::transferCall(const QString & src, const QString & dst)
 void SwitchBoardEngine::dial(const QString & dst)
 {
 	m_pendingcommand = "originate " + m_asterisk + "/" + m_protocol
-	                   + "/" + m_extension + " " + dst + " " + m_dialcontext;
+		+ "/" + m_extension + " " + m_asterisk + "/" + dst + " " + m_dialcontext;
 	sendCommand();
 }
 
