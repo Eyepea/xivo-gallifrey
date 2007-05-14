@@ -42,7 +42,8 @@ P_ENCRE = __not_in_re_strip_pct(PCHAR)
 FRAG_ENCRE = __not_in_re_strip_pct(QUEFRAG_CHAR)
 # QUERY_ENCRE is reserved for query encoding, that is spaces are not percent
 # encoded but translated in plus ' ' -> '+'
-QUERY_ENCRE = __not_in_re_strip_pct(QUEFRAG_CHAR.translate(BYTES_VAL, '+') + ' ')
+QUERY_KEY_ENCRE = __not_in_re_strip_pct(QUEFRAG_CHAR.translate(BYTES_VAL, '&+=') + ' ')
+QUERY_VAL_ENCRE = __not_in_re_strip_pct(QUEFRAG_CHAR.translate(BYTES_VAL, '&+') + ' ')
 
 # Host type alternatives:
 HOST_IP_LITERAL = 1
@@ -345,6 +346,22 @@ def split_query(query):
 	assignments = query.split('&')
 	return tuple([split_assignment(a) for a in assignments if a])
 
+def unsplit_query(query):
+	"""Create a query string using the tuple query with a format as the one
+	returned by split_query()
+	
+	"""
+	def unsplit_assignment((x,y)):
+		if (x is not None) and (y is not None):
+			return x + '=' + y
+		elif x is not None:
+			return x
+		elif y is not None:
+			return '=' + y
+		else:
+			return ''
+	return '&'.join(map(unsplit_assignment, query))
+
 def uri_split_tree(uri):
 	"""Returns (scheme, (user, passwd, host, port), path,
 	            ((k1, v1), (k2, v2), ...), fragment) using
@@ -460,7 +477,7 @@ def uri_tree_validate(uri_tree):
 		if authority and path[0] != '/':
 			raise InvalidPathError, 'Invalid path "%s" - non-absolute path can\'t be used with an authority' % path
 		if (not authority) and (not scheme) \
-		   and (':' in path.split('/')[0]):
+		   and (':' in path.split('/', 1)[0]):
 			raise InvalidPathError, 'Invalid path "%s" - path-noscheme can\'t have a \':\' if no \'/\' before' % path
 	if query and (not __valid_query(query)):
 		raise InvalidQueryError, 'Invalid splitted query tuple "%s"' % str(query)
@@ -530,6 +547,7 @@ def uri_tree_precode_check(uri_tree, type_host = HOST_REG_NAME):
 		elif type_host == HOST_IPV4_ADDRESS:
 			if host and (not __valid_IPv4address(host)):
 				raise InvalidIPv4addressError, 'Invalid IPv4address "%s"' % host
+	return uri_tree
 
 def uri_tree_encode(uri_tree, type_host = HOST_REG_NAME):
 	"""Percent/Query encode a raw URI tree.
@@ -547,14 +565,77 @@ def uri_tree_encode(uri_tree, type_host = HOST_REG_NAME):
 		authority = (user, passwd, host, port)
 	if path:
 		path = pct_encode(path, P_ENCRE)
+		if (not authority) and (not scheme):
+			# check for path-noscheme special case
+			sppath = path.split('/', 1)
+			if ':' in sppath[0]:
+				sppath[0] = pct_encode(sppath[0],
+				                       re.compile('[\\:]'))
+				path = '/'.join(sppath)
 	if query:
 		query = tuple(map(lambda (x,y):
-		                           (query_elt_encode(x, QUERY_ENCRE),
-		                            query_elt_encode(y, QUERY_ENCRE)),
+		                           (query_elt_encode(x, QUERY_KEY_ENCRE),
+		                            query_elt_encode(y, QUERY_VAL_ENCRE)),
 		                  query))
 	if fragment:
 		fragment = pct_encode(fragment, FRAG_ENCRE)
 	return (scheme, authority, path, query, fragment)
 
 def uri_unsplit_tree(uri_tree):
+	"""Unsplit a coded URI tree, which must also be coalesced by
+	uri_tree_normalize().
 	
+	"""
+	scheme, authority, path, query, fragment = uri_tree
+	if authority:
+		user, passwd, host, port = authority
+		if user and passwd:
+			userinfo = user + ':' + passwd
+		elif user:
+			userinfo = user
+		elif passwd:
+			userinfo = ':' + passwd
+		else:
+			userinfo = None
+		if host and port:
+			hostport = host + ':' + port
+		elif host:
+			hostport = host
+		elif port:
+			hostport = ':' + port
+		else:
+			hostport = None
+		if userinfo and hostport:
+			authority = userinfo + '@' + hostport
+		elif userinfo:
+			authority = userinfo + '@'
+		elif hostport:
+			authority = hostport
+		else:
+			authority = None
+	if query:
+		query = unsplit_query(query)
+	uri = ''
+	if scheme:
+		uri += scheme + ':'
+	if authority:
+		uri += '//' + authority
+	if path:
+		if (not authority) and path[0:2] == '//':
+			uri += '//'
+		uri += path
+	if query:
+		uri += '?' + query
+	if fragment:
+		uri += '#' + fragment
+	return uri
+
+#
+# TODO: write non regression tests
+#
+# ex: ('http', ('xilun:/?#[]@!$&\'"()*+,;=-._~%:@/?% ', 'kikoolol/?#[]@!$&\'"()*+,;=-._~%:@/?% ', 'www./?#[]@!$&\'"()*+,;=-._~%:@/? %xivo.fr', '8080'), '/kikoololerie//?#[]@!$&\'"()*+,;=-. _~%:@/?%', (('k1/?#[]@!$&\'"()*+,;=-._~%:@/?% ', 'v1/?#[]@!$&\'"()*+,;=-._~%:@/?% '), ('k2/?#[]@!$&\'"()*+,;=-._~%:@/?% ', 'v2/?#[]@!$&\'"()*+,;=-._~%:@/?% ')), 'foobar2000/?#[]@!$&\'"()*+,;=-._~%:@/?% ')
+#     (None, None, ':blabla', None, None)
+#     (None, None, '//foobar', None, None)
+#     ('http', None, '//foobar', None, None)
+# ...
+#
