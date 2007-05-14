@@ -527,6 +527,7 @@ def uri_split_norm_valid_decode(uri):
 	                uri_tree_validate(
                                 uri_tree_normalize(
                                         uri_split_tree(uri))))
+uri_help_split = uri_split_norm_valid_decode
 
 def uri_tree_precode_check(uri_tree, type_host = HOST_REG_NAME):
 	"""Call this function to validate a raw URI tree before trying to
@@ -629,6 +630,19 @@ def uri_unsplit_tree(uri_tree):
 	if fragment:
 		uri += '#' + fragment
 	return uri
+
+def uri_tree_prechk_code_norm_unsplit(uri_tree):
+	"""Returns uri_unsplit_tree(
+	               uri_tree_normalize(
+	                       uri_tree_encode(
+	                               uri_tree_precode_check(uri_tree))))
+	"""
+	return uri_unsplit_tree(
+	               uri_tree_normalize(
+	                       uri_tree_encode(
+	                               uri_tree_precode_check(uri_tree))))
+uri_help_unsplit = uri_tree_prechk_code_norm_unsplit
+
 
 #
 # TODO: write non regression tests
