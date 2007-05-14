@@ -3,26 +3,53 @@
 
 Copyright (C) 2007, Proformatique
 
+WARNING: this module is not DBAPI 2.0 compliant by itself
+
 """
 
 __version__ = "$Revision$ $Date$"
 
-import uriparse
+import urisup
 
 __uri_create_methods = {}
 
+any_paramstyle='format'
+any_threadsafety=1
+any_apilevel='2.0'
+
+def __compare_api_level(als1, als2):
+	lst1 = map(int, als1.split('.'))
+	lst2 = map(int, als2.split('.'))
+	if lst1 < lst2:
+		return -1 - bool(lst1[0] < lst2[0])
+	elif lst1 > lst2:
+		return 1 + bool(lst1[0] > lst2[0])
+	else:
+		return 0
+
 def register_uri_backend(uri_scheme, create_method, module):
 	"""This method is intended to be used by backends only.
+
 	It lets them register their services, identified by the URI scheme,
 	at import time. The associated method create_method must take one
-	parameter: the complete requested URI. The associated module must
-	be compliant with DBAPI v2.0 but will not be directly used for other
-	purposes than compatibility testing.
+	parameter: the complete requested RFC 3986 compliant URI. The
+	associated module must be compliant with DBAPI v2.0 but will not be 
+	directly used for other purposes than compatibility testing.
 	
 	"""
-	sal = map(module.apilevel.split('.')
-	if int(sal[0]) != 2 or 
-	__uri_create_methods[uri] = (create_method, module)
+	try:
+		delta_api =  __compare_api_level(module.apilevel, any_apilevel)
+		mod_paramstyle = module.paramstyle
+		mod_threadsafety = module.threadsafety
+	except NameError:
+		raise NotImplementedError, "This module does not support registration of non DBAPI services of at least apilevel 2.0"
+	if delta_api < 0 or delta_api > 1:
+		raise NotImplementedError, "This module does not support registration of DBAPI services with a specified apilevel of %s" % module.apilevel
+	if mod_paramstyle != 'pyformat' and mod_paramstyle != 'format':
+		raise NotImplementedError, "This module only supports registration of DBAPI services with a 'format' or 'pyformat' paramstyle, not '%s'" % mod_paramstyle
+	if mod_threadsafety < any_threadsafety:
+		raise NotImplementedError, "This module does not support registration of DBAPI services of threadsafety %d (more generally under %d)" % (mod_threadsafety, any_threadsafety)
+	__uri_create_methods[uri_scheme] = (create_method, module)
 
 def connect_by_uri(sqluri):
 	"""Same purpose as the classical DBAPI v2.0 connect constructor, but
@@ -36,6 +63,7 @@ def connect_by_uri(sqluri):
 	
 	"""
 	# todo: parse the sqluri
-	__uri_create_methods[uri][0](sqluri)
+	__uri_create_methods[uri_scheme][0](sqluri)
 
-__all__ = ["register_uri", "connect_by_uri"]
+__all__ = ["register_uri", "connect_by_uri",
+           "paramstyle", "threadsafety", "apilevel"]

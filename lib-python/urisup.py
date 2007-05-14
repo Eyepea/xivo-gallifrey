@@ -142,6 +142,13 @@ def __valid_query(pquery_tuple):
 			return False
 	return True
 
+def valid_scheme(potential_scheme):
+	"""Check wether or not the content of potential_scheme is a valid
+	URI scheme
+	
+	"""
+	return (scheme[0] in ALPHA) and __all_in(scheme[1:], SCHEME_CHAR)
+
 class InvalidURIError(ValueError):
   """Base class of all Exceptions directly raised by this module"""
 class InvalidSchemeError(InvalidURIError):
@@ -453,7 +460,7 @@ def uri_tree_validate(uri_tree):
 	"""
 	scheme, authority, path, query, fragment = uri_tree
 	if scheme:
-		if (scheme[0] not in ALPHA) or (not __all_in(scheme[1:], SCHEME_CHAR)):
+		if not valid_scheme(scheme):
 			raise InvalidSchemeError, 'Invalid scheme "%s"' % scheme
 	if authority:
 		user, passwd, host, port = authority
@@ -536,7 +543,7 @@ def uri_tree_precode_check(uri_tree, type_host = HOST_REG_NAME):
 	"""
 	scheme, authority, path, query, fragment = uri_tree
 	if scheme:
-		if (scheme[0] not in ALPHA) or (not __all_in(scheme[1:], SCHEME_CHAR)):
+		if not valid_scheme(scheme):
 			raise InvalidSchemeError, 'Invalid scheme "%s"' % scheme
 	if authority:
 		user, passwd, host, port = authority
