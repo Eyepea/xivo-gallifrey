@@ -1,9 +1,0 @@
-<!DOCTYPE RCC><RCC version="1.0">
-<qresource>
-	<file>xivoicon.png</file>
-	<file>xivoicon-red.png</file>
-	<file>xivoicon-green.png</file>
-	<file>xivoicon-grey.png</file>
-</qresource>
-</RCC>
-
