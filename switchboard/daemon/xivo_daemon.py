@@ -227,25 +227,33 @@ def update_userlist_fromurl(astn, url, sipaccount):
 			fullname = ""
 			firstname = ""
 			lastname = ""
+			number = ""
+			if len(l) > 4:
+				number = l[4]
 			if len(l) > 7:
 				fullname = l[7]
 			if len(l) > 8:
 				firstname = l[8]
 			if len(l) > 9:
 				lastname = l[9]
-			fullname = firstname + " " + lastname + "<b>" + l[4] + "</b>"
+
+			#the <b> tag inside the string disables the drag&drop of the widget
+			#fullname = firstname + " " + lastname + " <b>" + number + "</b>"
+
+			fullname = firstname + " " + lastname + " " + number
+
 			# line is protocol | username | password | rightflag |
 			#         phone number | initialized | disabled(=1) | callerid
-                        if l[0] == "sip" and l[5] == "1" and l[6] == "0" and l[1] != sipaccount and l[4] != "":
-				numlist["SIP/" + l[4]] = fullname, firstname, lastname
-				adduser(astn, l[0]+l[4], l[2])
+                        if l[0] == "sip" and l[5] == "1" and l[6] == "0" and l[1] != sipaccount and number != "":
+				numlist["SIP/" + number] = fullname, firstname, lastname
+				adduser(astn, l[0] + number, l[2])
                         elif l[0] == "iax" and l[5] == "1" and l[6] == "0":
-				numlist["IAX2/" + l[4]] = fullname, firstname, lastname
+				numlist["IAX2/" + number] = fullname, firstname, lastname
                         elif l[0] == "misdn" and l[5] == "1" and l[6] == "0":
-				numlist["mISDN/" + l[4]] = fullname, firstname, lastname
+				numlist["mISDN/" + number] = fullname, firstname, lastname
                         elif l[0] == "zap" and l[5] == "1" and l[6] == "0":
-				numlist["Zap/" + l[4]] = fullname, firstname, lastname
-				adduser(astn, l[0]+l[4], l[2])
+				numlist["Zap/" + number] = fullname, firstname, lastname
+				adduser(astn, l[0] + number, l[2])
 	finally:
 		f.close()
 
@@ -256,24 +264,33 @@ def update_userlist_fromurl(astn, url, sipaccount):
 # \param astn the asterisk to connect to
 # \param sipnum the phone number
 # \param nlines the number of lines to fetch for the given phone
-def update_history_call(astn, sipnum, nlines):
+# \param kind kind of list (ingoing, outgoing, missed calls)
+def update_history_call(astn, sipnum, nlines, kind):
+	global xivoconf_general
 	results = []
 	try:
-		conn = MySQLdb.connect(host = configs[astn].remoteaddr,
-				       port = 3306,
-				       user = "asterisk",
-				       passwd = "asterisk",
-				       db = "asterisk")
+		conn = MySQLdb.connect(host = xivoconf_general["cdr_address"],
+				       port = int(xivoconf_general["cdr_port"]),
+				       user = xivoconf_general["cdr_user"],
+				       passwd = xivoconf_general["cdr_passwd"],
+				       db = xivoconf_general["cdr_dbname"])
 		cursor = conn.cursor()
-		table = "cdr"
-		sql = "SELECT * FROM %s WHERE ((src = %s) or (dst = %s)) ORDER BY calldate DESC LIMIT %s;" \
-		      %(table,sipnum,sipnum,nlines)
+		table = xivoconf_general["cdr_tablename"]
+		if kind == "0": # outgoing calls
+			sql = "SELECT * FROM %s WHERE ((src = %s) and (disposition = \"ANSWERED\")) ORDER BY calldate DESC LIMIT %s;" \
+			      %(table,sipnum,nlines)
+		elif kind == "1": # incoming calls
+			sql = "SELECT * FROM %s WHERE ((dst = %s) and (disposition = \"ANSWERED\")) ORDER BY calldate DESC LIMIT %s;" \
+			      %(table,sipnum,nlines)
+		else: # missed calls
+			sql = "SELECT * FROM %s WHERE ((dst = %s) and (disposition != \"ANSWERED\")) ORDER BY calldate DESC LIMIT %s;" \
+			      %(table,sipnum,nlines)
 		cursor.execute(sql)
 		results = cursor.fetchall()
 		conn.close()
 
 	except Exception, e:
-		log_debug("Connection to MySQL failed")
+		log_debug("Connection to MySQL failed <%s>" %(str(e)))
 
 	return results
 
@@ -426,6 +443,8 @@ class AMIClass:
 			return True
 		except self.AMIError, e:
 			return False
+		except Exception, e:
+			return False
 
 	# \brief Executes a CLI command.
 	def execclicommand(self, command):
@@ -455,6 +474,8 @@ class AMIClass:
 			return True
 		except self.AMIError, e:
 			return False
+		except Exception, e:
+			return False
 
 	# \brief Originates a call from a phone towards another.
 	def originate(self, phonesrc, phonedst, locext):
@@ -472,6 +493,8 @@ class AMIClass:
 			return True
 		except self.AMIError, e:
 			return False
+		except Exception, e:
+			return False
 
 	# \brief Transfers a channel towards a new extension.
 	def transfer(self, channel, extension, context):
@@ -484,6 +507,8 @@ class AMIClass:
 			return True
 		except self.AMIError, e:
 			return False
+		except Exception, e:
+			return False
 
 
 ## \brief Builds the full list of customers in order to send them to the requesting client.
@@ -492,7 +517,7 @@ class AMIClass:
 # \sa manage_tcp_connection
 def build_customers(searchpattern):
 	global xivoconf_general
-	fullstat = "directory-response=4;Numero;Nom;Entreprise;E-mail"
+	fullstat = "directory-response=" + xivoconf_general["dir_fields"]
 	ldapid = myLDAP(xivoconf_general["dir_address"],
 			int(xivoconf_general["dir_port"]),
 			xivoconf_general["dir_user"],
@@ -792,7 +817,7 @@ def manage_tcp_connection(connid, allow_events):
 										connid[0].send("asterisk=transfer KO\n")
 			else:
 				connid[0].send("asterisk=originate or transfer KO : asterisk id mismatch\n")
-		elif len(l) >= 3 and l[0] == 'history':
+		elif len(l) >= 4 and l[0] == 'history':
 			idassrc = -1
 			assrc = l[1].split("/")[0]
 			if assrc in asteriskr: idassrc = asteriskr[assrc]
@@ -800,7 +825,7 @@ def manage_tcp_connection(connid, allow_events):
 				connid[0].send("asterisk=history KO : no such asterisk id\n")
 			else:
 				phone, channel = split_from_ui(l[1])
-				hist = update_history_call(idassrc, phone.split("/")[1], l[2])
+				hist = update_history_call(idassrc, phone.split("/")[1], l[2], l[3])
 				repstr = "history="
 				separ = ";"
 				for x in hist:
@@ -1011,13 +1036,19 @@ def handle_ami_event(astnum, idata):
 			dst   = getvalue(x, "Destination")
 			clid  = getvalue(x, "CallerID")
 			clidn = getvalue(x, "CallerIDName")
-			handle_ami_event_dial(listkeys, astnum, src, dst, clid, clidn)
+			try:
+				handle_ami_event_dial(listkeys, astnum, src, dst, clid, clidn)
+			except Exception, e:
+				log_debug("an exception occured in handle_ami_event_dial : " + str(e))
 		elif x.find("Link;") == 7:
 			src   = getvalue(x, "Channel1")
 			dst   = getvalue(x, "Channel2")
 			clid1 = getvalue(x, "CallerID1")
 			clid2 = getvalue(x, "CallerID2")
-			handle_ami_event_link(listkeys, astnum, src, dst, clid1, clid2)
+			try:
+				handle_ami_event_link(listkeys, astnum, src, dst, clid1, clid2)
+			except Exception, e:
+				log_debug("an exception occured in handle_ami_event_link : " + str(e))
 		elif x.find("Unlink;") == 7:
 			# might be something to parse here
 			src   = getvalue(x, "Channel1")
@@ -1027,7 +1058,10 @@ def handle_ami_event(astnum, idata):
 		elif x.find("Hangup;") == 7:
 			chan  = getvalue(x, "Channel")
 			cause = getvalue(x, "Cause-txt")
-			handle_ami_event_hangup(listkeys, astnum, chan, cause)
+			try:
+				handle_ami_event_hangup(listkeys, astnum, chan, cause)
+			except Exception, e:
+				log_debug("an exception occured in handle_ami_event_hangup: " + str(e))
 		elif x.find("Reload;") == 7:
 			# warning : "reload" as well as "reload manager" can appear here
 			log_debug("AMI:Reload: " + plist[astnum].astid)
@@ -1260,6 +1294,8 @@ def handle_ami_status(astnum, idata):
 							pass
 						if is_normal_channel(chan):
 							phonenum = chan.split("-")[0]
+							if exten == "s" or exten == "1":
+								exten = phonenum.split("/")[1]
 							if phonenum in listkeys:
 								plist[astnum].normal[phonenum].set_chan(chan, "On the phone", int(seconds), dir_to_string, link, exten)
 								update_GUI_clients(astnum, phonenum, "ami-st2")
