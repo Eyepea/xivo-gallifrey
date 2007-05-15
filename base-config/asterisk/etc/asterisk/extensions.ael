@@ -21,24 +21,6 @@ context initconfig {
 	};
 };
 
-context pondeuse {
-	s => {
-		Noop(pondeuse ${URL} ..);
-		Answer();
-		Playback(hello-world);
-		Hangup();
-	};
-};
-
-context recv-pondeuse {
-	s => {
-		Noop(Appel de la pondeuse ...);
-		Wait(0.5);
-		Dial(local/101@local-extensions,1);
-		Hangup();
-	};
-};
-
 macro infotel {
 	Set(TECH=${CUT(CHANNEL,/,1)});
 	switch (${TECH}) {
