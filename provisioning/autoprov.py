@@ -11,7 +11,7 @@ GETOPT_SHORTOPTS = 'b:l:dfc:'
 
 import sys
 # === BEGIN of early configuration handling, so that the sys.path can be altered
-CONFIG_FILE = '/etc/asterisk/provisioning.conf' # can be overridded by cmd line param
+CONFIG_FILE = '/etc/xivo/provisioning.conf' # can be overridded by cmd line param
 CONFIG_LIB_PATH = 'py_lib_path'
 from getopt import getopt
 from xivo import ConfigPath
