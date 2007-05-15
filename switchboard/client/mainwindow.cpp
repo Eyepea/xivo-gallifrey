@@ -23,6 +23,7 @@
 #include "logwidget.h"
 #include "dialpanel.h"
 #include "directorypanel.h"
+#include "displaymessages.h"
 
 /*! \brief Widget containing the CallStackWidget and a Title QLabel
  */
@@ -142,10 +143,14 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 	connect( engine, SIGNAL(removePeer(const QString &)),
 	         searchpanel, SLOT(removePeer(const QString &)) );
 
-	DialPanel * dialpanel = new DialPanel(m_rightSplitter);
+	QSplitter * m_rightbottomSplitter = new QSplitter(Qt::Vertical, m_rightSplitter);
+	
+	DisplayMessagesPanel * lbl = new DisplayMessagesPanel(m_rightbottomSplitter);
+	
+	DialPanel * dialpanel = new DialPanel(m_rightbottomSplitter);
 	connect( dialpanel, SIGNAL(emitDial(const QString &)),
 	         engine, SLOT(dial(const QString &)) );
-
+	
 	setCentralWidget(m_splitter);
 
 	// restore splitter settings
@@ -156,8 +161,10 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 	m_rightSplitter->restoreState(settings.value("display/rightSplitterSizes").toByteArray());
 
 	restoreGeometry(settings.value("display/mainwingeometry").toByteArray());
+// 	connect(m_engine, SIGNAL(emitTextMessage(const QString &)),
+// 	        statusBar(), SLOT(showMessage(const QString &)));
 	connect(m_engine, SIGNAL(emitTextMessage(const QString &)),
-	        statusBar(), SLOT(showMessage(const QString &)));
+	        lbl, SLOT(updateMessage(const QString &)));
 	connect(m_engine, SIGNAL(started()),
 	        this, SLOT(engineStarted()));
 	connect(m_engine, SIGNAL(stopped()),
