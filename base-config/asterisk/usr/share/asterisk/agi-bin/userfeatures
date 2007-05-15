@@ -1,9 +1,42 @@
 #!/usr/bin/python
+# $Revision: 593 $
+# $Date: 2007-05-15 11:17:20 +0200 (mar, 15 mai 2007) $
+#
+# Authors : Sylvain Boily, Guillaume Knispel
+#           Proformatique
+#           67, rue Voltaire
+#           92800 PUTEAUX
+#           (+33/0)1.41.38.99.60
+#           mailto:technique@proformatique.com
+#           (C) 2007 Proformatique
+#
 
-import sqlite, re, sys
-
+CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
+CONFIG_LIB_PATH = 'py_lib_path'
 DB = '/var/lib/asterisk/astsqlite'
 DEBUG = 1
+
+import sys
+from xivo import ConfigPath
+from xivo.ConfigPath import *
+
+try:
+        InsertPathListSys(SortedValuesFromConfigSection(CONFIG_FILE, CONFIG_LIB_PATH))
+except NoSectionError, s:
+        print >> sys.stderr, "WARNING: Section [%s] apparently missing from configuration file %s" % (CONFIG_LIB_PATH, CONFIG_FILE)
+
+import anysql
+from BackSQL import backsqlite
+from BackSQL import backmysql
+import ConfigParser
+from ConfigDict import *
+
+options = { "db_uri" : "" }
+conf_obj = ConfigParser.ConfigParser()
+conf_obj.readfp(open(CONFIG_FILE))
+FillDictFromConfigSection(options, conf_obj, "db")
+
+import string, re
 
 def print_verbose(txt):
         if DEBUG:
@@ -20,20 +53,26 @@ def return_exit(error, playback=None):
         sys.exit()
 
 def find_informations_by_extension(exten):
-        conn = sqlite.connect(DB)
-        cursor = conn.cursor()
-        query = "select * from userfeatures where name='%s'" %(exten)
+	try:
+		conn = anysql.connect_by_uri(options['db_uri'])
+	except:
+		print "VERBOSE \"Error to connect %s\" %options['db_uri']"
+		sys.exit()
+
+	cursor = conn.cursor()
+        query = "select * from userfeatures where number='%s'" %(exten)
         print_verbose("%s" %query)
         cursor.execute(query)
 
         r = cursor.fetchone()
 
         if r:
-		id = r.protocolid
-                proto = r.protocol
-                nbcall = r.simultcalls
-                ringcall = r.ringseconds
-		moh = r.musiconhold
+
+		id = r[2]
+                proto = r[1]
+                nbcall = r[11]
+                ringcall = r[9]
+		moh = r[13]
 
 		try:
 			query = "select name from usersip where id=%d" % int(id)
@@ -41,7 +80,7 @@ def find_informations_by_extension(exten):
 
 			n = cursor.fetchone()
 
-			name = n.name
+			name = n[0]
 		except:
 			return_exit("Error no name !", "invalid")
 
@@ -55,11 +94,14 @@ def find_informations_by_extension(exten):
 		except:
 			queuename = 0
 
-		res = (proto, nbcall, ringcall, queuename, name, moh)
+		if not name:
+			return_exit("Error user not found!")
+		else:
+			res = (proto, nbcall, ringcall, queuename, name, moh)
 
                 return res
 
-        return None
+	return_exit("Error user not found!")
 
 def find_features_db(exten, family, key, comment):
 	sys.stderr.write("DATABASE GET users/%s%s %s\n" %(exten, family, key))

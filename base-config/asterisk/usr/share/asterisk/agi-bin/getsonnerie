@@ -1,5 +1,15 @@
 #!/usr/bin/python
-# AGI callgroup
+# $Revision: 593 $
+# $Date: 2007-05-15 11:17:20 +0200 (mar, 15 mai 2007) $
+#
+# Authors : Sylvain Boily, Guillaume Knispel
+#           Proformatique
+#           67, rue Voltaire
+#           92800 PUTEAUX
+#           (+33/0)1.41.38.99.60
+#           mailto:technique@proformatique.com
+#           (C) 2007 Proformatique
+#
 
 import ConfigParser, string, sys
 
@@ -13,7 +23,8 @@ ring = "/etc/asterisk/ring.conf"
 config = ConfigParser.ConfigParser()
 config.readfp(open(ring))
 
-phonetype = config.get('number', exten)
+#phonetype = config.get('number', exten)
+phonetype = 'thomson'
 
 sys.stdout.write("SET VARIABLE RINGINTERNAL \"" + config.get(phonetype, 'intern') + "\"\n")
 sys.stdout.write("SET VARIABLE RINGEXTERNAL \"" + config.get(phonetype, 'extern') + "\"\n")
