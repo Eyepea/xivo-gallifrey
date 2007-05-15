@@ -36,6 +36,7 @@ class xivo_tpl_form extends xivo_tpl_module
 		$this->_param['optgroup'] = false;
 		$this->_param['null'] = false;
 		$this->_param['bbf'] = false;
+		$this->_param['bbf_paramarray'] = false;
 
 		if(isset($v['name']) === true)
 			$this->_param['name'] = xivo_htmlsc($v['name']);
@@ -207,7 +208,9 @@ class xivo_tpl_form extends xivo_tpl_module
 			switch($v['bbf'][0])
 			{
 				case 'paramkey':
+				case 'mixkey':
 				case 'paramvalue':
+				case 'mixvalue':
 				case 'concatkey':
 					break;
 				default:
@@ -215,6 +218,9 @@ class xivo_tpl_form extends xivo_tpl_module
 			}
 
 			$r = array($v['bbf'][0],$v['bbf'][1]);
+
+			if(isset($v['bbf'][2]) === true && $v['bbf'][2] === 'paramarray')
+				$this->_param['bbf_paramarray'] = true;
 		}
 
 		return($r);
@@ -600,7 +606,7 @@ class xivo_tpl_form extends xivo_tpl_module
 		return($this->_render);
 	}
 
-	function _mk_slt_option_render($render)
+	function _mk_slt_option_render($render,$param=null)
 	{
 		if(is_array($render) === false)
 			return(null);
@@ -614,16 +620,36 @@ class xivo_tpl_form extends xivo_tpl_module
 				switch($this->_param['bbf'][0])
 				{
 					case 'paramkey':
-						$render[3] = $this->bbf($this->_param['bbf'][1],$render[1]);
+						$render[3] = $this->bbf($this->_param['bbf'][1],(is_array($param) === true ? $param : $render[1]));
 						break;
 					case 'paramvalue':
-						$render[3] = $this->bbf($this->_param['bbf'][1],$render[3]);
+						$render[3] = $this->bbf($this->_param['bbf'][1],(is_array($param) === true ? $param : $render[3]));
 						break;
 					case 'concatkey':
 						$render[3] = $this->bbf($this->_param['bbf'][1].$render[1]);
 						break;
 					case 'concatvalue':
 						$render[3] = $this->bbf($this->_param['bbf'][1].$render[3]);
+						break;
+					case 'mixkey':
+						$render[3] = $this->bbf($this->_param['bbf'][1].$render[1]);
+
+						if($render[3] === $this->_param['bbf'][1].$render[1])
+						{
+							if(is_array($param) === true)
+								$render[3] = $this->bbf($this->_param['bbf'][1],$param);
+							else
+								$render[3] = $this->bbf($this->_param['bbf'][1],$render[1]);
+						}
+						break;
+					case 'mixvalue':
+						if($render[3] === $this->_param['bbf'][1].$render[1])
+						{
+							if(is_array($param) === true)
+								$render[3] = $this->bbf($this->_param['bbf'][1],$param);
+							else
+								$render[3] = $this->bbf($this->_param['bbf'][1],$render[3]);
+						}
 						break;
 				}
 			}
@@ -639,16 +665,38 @@ class xivo_tpl_form extends xivo_tpl_module
 				switch($this->_param['bbf'][0])
 				{
 					case 'paramkey':
-						$render[2] = $this->bbf($this->_param['bbf'][1],$render[0]);
+						$render[2] = $this->bbf($this->_param['bbf'][1],(is_array($param) === true ? $param : $render[0]));
 						break;
 					case 'paramvalue':
-						$render[2] = $this->bbf($this->_param['bbf'][1],$render[2]);
+						$render[2] = $this->bbf($this->_param['bbf'][1],(is_array($param) === true ? $param : $render[2]));
 						break;
 					case 'concatkey':
 						$render[2] = $this->bbf($this->_param['bbf'][1].$render[0]);
 						break;
 					case 'concatvalue':
 						$render[2] = $this->bbf($this->_param['bbf'][1].$render[2]);
+						break;
+					case 'mixkey':
+						$render[2] = $this->bbf($this->_param['bbf'][1].$render[0]);
+
+						if($render[2] === $this->_param['bbf'][1].$render[0])
+						{
+							if(is_array($param) === true)
+								$render[2] = $this->bbf($this->_param['bbf'][1],$param);
+							else
+								$render[2] = $this->bbf($this->_param['bbf'][1],$render[0]);
+						}
+						break;
+					case 'mixvalue':
+						$render[2] = $this->bbf($this->_param['bbf'][1].$render[2]);
+
+						if($render[2] === $this->_param['bbf'][1].$render[2])
+						{
+							if(is_array($param) === true)
+								$render[2] = $this->bbf($this->_param['bbf'][1],$param);
+							else
+								$render[2] = $this->bbf($this->_param['bbf'][1],$render[2]);
+						}
 						break;
 				}
 			}
@@ -688,7 +736,7 @@ class xivo_tpl_form extends xivo_tpl_module
 		$this->_render .= vsprintf('<optgroup label="%s">',$render);
 	}
 
-	function _mk_slt_option_param($key,$ref)
+	function _mk_slt_option_param_array($key,$ref)
 	{
 		if($this->_param['key_val'] !== false
 		&& isset($ref[$this->_param['key_val']]) === true
@@ -726,6 +774,39 @@ class xivo_tpl_form extends xivo_tpl_module
 				$render = array(xivo_alttitle($ref),xivo_alttitle($ref),$selected,xivo_htmlsc($ref));
 			else
 				$render = array(xivo_alttitle($ref),$selected,xivo_htmlsc($ref));
+		}
+
+		return($render);
+	}
+
+	function _mk_slt_option_param($key,$ref)
+	{
+		if($this->_param['key'] === true || is_scalar($ref) === false)
+		{
+			$selected = $this->_param['value'] === $key ? ' selected="selected"' : '';
+
+			if($this->_param['optgroup'] === true)
+				$render = array(xivo_alttitle($key),xivo_alttitle($key),$selected,xivo_htmlsc($key));
+			else
+				$render = array(xivo_alttitle($key),$selected,xivo_htmlsc($key));
+		}
+		else if($this->_param['key'] === false && is_scalar($ref) === true)
+		{
+			$selected = $this->_param['value'] === $ref ? ' selected="selected"' : '';
+
+			if($this->_param['optgroup'] === true)
+				$render = array(xivo_alttitle($ref),xivo_alttitle($ref),$selected,xivo_htmlsc($ref));
+			else
+				$render = array(xivo_alttitle($ref),$selected,xivo_htmlsc($ref));
+		}
+		else
+		{
+			$selected = $this->_param['value'] === $key ? ' selected="selected"' : '';
+
+			if($this->_param['optgroup'] === true)
+				$render = array(xivo_alttitle($ref),xivo_alttitle($key),$selected,xivo_htmlsc($ref));
+			else
+				$render = array(xivo_alttitle($key),$selected,xivo_htmlsc($ref));
 		}
 
 		return($render);
@@ -781,41 +862,17 @@ class xivo_tpl_form extends xivo_tpl_module
 					if($render !== false)
 						$this->_render .= '</optgroup>';
 				}
-				else if(($render = $this->_mk_slt_option_param($k,$ref)) !== false)
+				else if(($render = $this->_mk_slt_option_param_array($k,$ref)) !== false)
 					$this->_mk_slt_option_render($render);
+				else if($this->_param['bbf_paramarray'] === true
+				&& ($render = $this->_mk_slt_option_param($k,$ref)) !== false)
+					$this->_mk_slt_option_render($render,$ref);
 				else
 					$this->_mk_slt_option($ref);
 			}
 			else
 			{
-				if($this->_param['key'] === true)
-				{
-					$selected = $this->_param['value'] === $k ? ' selected="selected"' : '';
-
-					if($this->_param['optgroup'] === true)
-						$render = array(xivo_alttitle($k),xivo_alttitle($k),$selected,xivo_htmlsc($k));
-					else
-						$render = array(xivo_alttitle($k),$selected,xivo_htmlsc($k));
-				}
-				else if($this->_param['key'] === false && is_scalar($ref) === true)
-				{
-					$selected = $this->_param['value'] === $ref ? ' selected="selected"' : '';
-
-					if($this->_param['optgroup'] === true)
-						$render = array(xivo_alttitle($ref),xivo_alttitle($ref),$selected,xivo_htmlsc($ref));
-					else
-						$render = array(xivo_alttitle($ref),$selected,xivo_htmlsc($ref));
-				}
-				else
-				{
-					$selected = $this->_param['value'] === $k ? ' selected="selected"' : '';
-
-					if($this->_param['optgroup'] === true)
-						$render = array(xivo_alttitle($ref),xivo_alttitle($k),$selected,xivo_htmlsc($ref));
-					else
-						$render = array(xivo_alttitle($k),$selected,xivo_htmlsc($ref));
-				}
-
+				$render = $this->_mk_slt_option_param($k,$ref);
 				$this->_mk_slt_option_render($render);
 			}
 		}

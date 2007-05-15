@@ -58,8 +58,6 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 		$ufeatures = &$this->get_module('userfeatures');
 
-		$r = $info = array();
-
 		switch($action)
 		{
 			case 'search':
@@ -75,6 +73,8 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 		if($rs === false || ($nb = count($rs)) === 0)
 			return(false);
+
+		$r = $info = array();
 
 		for($i = 0;$i < $nb;$i++)
 		{
@@ -102,14 +102,12 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 	function get_groups_list($disable=null)
 	{
-		$r = false;
-
 		$gfeatures = &$this->get_module('groupfeatures');
 		$queue = &$this->get_module('queue');
 		$qmember = &$this->get_module('queuemember');
 
 		if(($rs = $gfeatures->get_all($disable)) === false || ($nb = count($rs)) === 0)
-			return($r);
+			return(false);
 
 		$r = $info = array();
 
@@ -130,15 +128,41 @@ class xivo_service_asterisk extends xivo_service_abstract
 		return($r);
 	}
 
+	function get_queues_list($disable=null)
+	{
+		$gfeatures = &$this->get_module('queuefeatures');
+		$queue = &$this->get_module('queue');
+		$qmember = &$this->get_module('queuemember');
+
+		if(($rs = $gfeatures->get_all($disable)) === false || ($nb = count($rs)) === 0)
+			return(false);
+
+		$r = $info = array();
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			$info['qfeatures'] = $rs[$i];
+
+			if(($info['queue'] = $queue->get($info['qfeatures']['name'],$disable)) === false
+			|| ($info['nb_qmember'] = $qmember->get_nb_by_name($info['queue']['name'],$disable)) === false)
+				continue;
+
+			$r[] = $info;
+		}
+
+		if(isset($r[0]) === false)
+			$r = false;
+
+		return($r);
+	}
+
 	function get_meetme_list($disable=null)
 	{
-		$r = false;
-
 		$meetme = &$this->get_module('meetme');
 		$mfeatures = &$this->get_module('meetmefeatures');
 
 		if(($rs = $meetme->get_all($disable)) === false || ($nb = count($rs)) === 0)
-			return($r);
+			return(false);
 
 		$r = $info = array();
 
@@ -153,6 +177,51 @@ class xivo_service_asterisk extends xivo_service_abstract
 		}
 
 		if(isset($r[0]) === false)
+			$r = false;
+
+		return($r);
+	}
+
+	function get_members_list($protocols=array(),$disable=null)
+	{
+		$protocols = (array) $protocols;
+		
+		if(empty($protocols) === true)
+			$protocols = array_keys($this->_conf['protocol']);
+		else
+			$protocols = array_values($protocols);
+
+		$ufeatures = &$this->get_module('userfeatures');
+
+		if(($rs = $ufeatures->get_all()) === false || ($nb = count($rs)) === 0)
+			return(false);
+
+		$r = $info = array();
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			$info['ufeatures'] = $rs[$i];
+
+			if(in_array($info['ufeatures']['protocol'],$protocols) === false
+			|| ($protocol = &$this->get_protocol_module($info['ufeatures']['protocol'])) === false
+			|| ($info['protocol'] = $protocol->get($info['ufeatures']['protocolid'],$disable)) === false)
+				continue;
+
+			if($info['protocol']['context'] === '')
+				$info['protocol']['context'] = 'local-extensions';
+
+			$interface = $this->mk_interface($info['protocol']['name'],
+							 $info['ufeatures']['protocol'],
+							 $info['ufeatures']['number'],
+							 $info['protocol']['context']);
+
+			$r[$interface] = trim($info['ufeatures']['firstname'].' '.$info['ufeatures']['lastname']);
+
+			if($r[$interface] === '')
+				$r[$interface] = '-';
+		}
+			
+		if(empty($r) === true)
 			$r = false;
 
 		return($r);

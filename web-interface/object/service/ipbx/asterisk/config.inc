@@ -100,6 +100,10 @@ $array['module']['queue'] = array();
 $array['module']['queue']['datastorage'] = true;
 $array['module']['queue']['section'] = 'queue';
 
+$array['module']['queuefeatures'] = array();
+$array['module']['queuefeatures']['datastorage'] = true;
+$array['module']['queuefeatures']['section'] = 'queue';
+
 $array['module']['queuemember'] = array();
 $array['module']['queuemember']['datastorage'] = true;
 $array['module']['queuemember']['section'] = 'queue';

@@ -3,15 +3,23 @@
 $act = isset($_QR['act']) === true ? $_QR['act'] : '';
 $page = isset($_QR['page']) === true ? xivo_uint($_QR['page'],1) : 1;
 
-$gfeatures = &$ipbx->get_module('groupfeatures');
 $queue = &$ipbx->get_module('queue');
+$qfeatures = &$ipbx->get_module('queuefeatures');
 $extensions = &$ipbx->get_module('extensions');
 $extenumbers = &$ipbx->get_module('extenumbers');
+$qmember = &$ipbx->get_module('queuemember');
+
+if(($member_list = $ipbx->get_members_list()) !== false)
+{
+	xivo::load_class('xivo_sort');
+	$sort = new xivo_sort();
+	uasort($member_list,array(&$sort,'str_usort'));
+}
 
 $param = array();
 $param['act'] = 'list';
 
-$info = $result = array();
+$info = $result = $member_slt = array();
 
 switch($act)
 {
@@ -19,22 +27,32 @@ switch($act)
 		$add = true;
 		$result = null;
 
+		$sounds = &$ipbx->get_module('sounds');
+		$musiconhold = &$ipbx->get_module('musiconhold');
+		
+		if(($moh_list = $musiconhold->get_all_category(null,false)) !== false)
+			ksort($moh_list);
+
+		$announce_list = $sounds->get_list('acd');
+
 		do
 		{
-			if(isset($_QR['fm_send']) === false || xivo_issa('gfeatures',$_QR) === false || xivo_issa('queue',$_QR) === false)
+			if(isset($_QR['fm_send']) === false || xivo_issa('qfeatures',$_QR) === false || xivo_issa('queue',$_QR) === false)
 				break;
 
-			$_QR['queue']['category'] = 'group';
+			if($moh_list === false || isset($_QR['queue']['musiconhold'],$moh_list[$_QR['queue']['musiconhold']]) === false)
+				$_QR['queue']['musiconhold'] = '';
 
 			$result = array();
 
-			if(($result['gfeatures'] = $gfeatures->chk_values($_QR['gfeatures'],true,true)) === false)
+			if(($result['qfeatures'] = $qfeatures->chk_values($_QR['qfeatures'],true,true)) === false)
 			{
 				$add = false;
-				$result['gfeatures'] = $gfeatures->get_filter_result();
+				$result['qfeatures'] = $qfeatures->get_filter_result();
 			}
 
-			$_QR['queue']['name'] = $result['gfeatures']['name'];
+			$_QR['queue']['category'] = 'queue';
+			$_QR['queue']['name'] = $result['qfeatures']['name'];
 
 			if(($result['queue'] = $queue->chk_values($_QR['queue'],true,true)) === false)
 			{
@@ -42,20 +60,20 @@ switch($act)
 				$result['queue'] = $queue->get_filter_result();
 			}
 
-			$local_exten = $exten_numbers = null;
+			$local_exten = $exten_numbers = $result['qmember'] = null;
 
-			if($add === true && $result['gfeatures']['number'] !== '')
+			if($add === true && $result['qfeatures']['number'] !== '')
 			{
 				$local_exten = array();
-				$local_exten['exten'] = $result['gfeatures']['number'];
+				$local_exten['exten'] = $result['qfeatures']['number'];
 				$local_exten['priority'] = 1;
 				$local_exten['app'] = 'Macro';
-				$local_exten['appdata'] = 'supergroup';
+				$local_exten['appdata'] = 'superqueue';
 
-				if($result['gfeatures']['context'] === '')
+				if($result['qfeatures']['context'] === '')
 					$local_exten['context'] = 'local-extensions';
 				else
-					$local_exten['context'] = $result['gfeatures']['context'];
+					$local_exten['context'] = $result['qfeatures']['context'];
 
 				if(($result['local_exten'] = $extensions->chk_values($local_exten,true,true)) === false)
 				{
@@ -75,25 +93,64 @@ switch($act)
 				}
 			}
 
-			if($add === false || ($gfeaturesid = $gfeatures->add($result['gfeatures'])) === false)
+			if($member_list !== false && xivo_issa('member',$_QR) === true)
+			{
+				$member = array_values($_QR['member']);
+				$mqinfo = array('call-limit' => 0);
+				$result['qmember'] = array();
+
+				if(($nb = count($member)) !== 0)
+				{
+					for($i = 0;$i < $nb;$i++)
+					{
+						if(isset($member_list[$member[$i]]) === false)
+							continue;
+
+						if($add === false)
+						{
+							$member_slt[$member[$i]] = $member_list[$member[$i]];
+							unset($member_list[$member[$i]]);
+						}
+
+						$mqinfo['queue_name'] = $result['qfeatures']['name'];
+						$mqinfo['interface'] = $member[$i];
+
+						if(($mqinfo = $qmember->chk_values($mqinfo,true,true)) === false)
+							continue;
+
+						if($add === true)
+						{
+							$member_slt[$member[$i]] = $member_list[$member[$i]];
+							unset($member_list[$member[$i]]);
+						}
+
+						$result['qmember'][] = $mqinfo;
+					}
+				}
+
+				if(isset($result['qmember'][0]) === false)
+					$result['qmember'] = null;
+			}
+
+			if($add === false || ($qfeaturesid = $qfeatures->add($result['qfeatures'])) === false)
 				break;
 
 			if(($queueid = $queue->add($result['queue'])) === false)
 			{
-				$gfeatures->delete($gfeaturesid);
+				$qfeatures->delete($qfeaturesid);
 				break;
 			}
 
 			if($local_exten !== null && ($local_extenid = $extensions->add($result['local_exten'])) === false)
 			{
-				$gfeatures->delete($gfeaturesid);
+				$qfeatures->delete($qfeaturesid);
 				$queue->delete($queueid);
 				break;
 			}
 
 			if($exten_numbers !== null && ($extenumid = $extenumbers->add($result['extenumbers'])) === false)
 			{
-				$gfeatures->delete($gfeaturesid);
+				$qfeatures->delete($qfeaturesid);
 				$queue->delete($queueid);
 
 				if($local_exten !== null)
@@ -101,14 +158,24 @@ switch($act)
 				break;
 			}
 
-			xivo_go($_HTML->url('service/ipbx/pbx_settings/groups'),$param);
+			if($result['qmember'] !== null && ($nb = count($result['qmember'])) !== 0)
+			{
+				for($i = 0;$i < $nb;$i++)
+					$qmember->add($result['qmember'][$i]);
+			}
+
+			xivo_go($_HTML->url('service/ipbx/pbx_settings/queues'),$param);
 		}
 		while(false);
 
 		$element = array();
 		$element['queue'] = $queue->get_element();
-		$element['gfeatures'] = $gfeatures->get_element();
+		$element['qfeatures'] = $qfeatures->get_element();
 
+		$_HTML->assign('member_slt',$member_slt);
+		$_HTML->assign('member_list',$member_list);
+		$_HTML->assign('moh_list',$moh_list);
+		$_HTML->assign('announce_list',$announce_list);
 		$_HTML->assign('element',$element);
 		$_HTML->assign('info',$result);
 		break;
@@ -118,29 +185,27 @@ switch($act)
 		$return = &$info;
 
 		if(isset($_QR['id']) === false
-		|| ($info['gfeatures'] = $gfeatures->get($_QR['id'],false)) === false
-		|| ($info['queue'] = $queue->get($info['gfeatures']['name'],false)) === false)
-			xivo_go($_HTML->url('service/ipbx/pbx_settings/groups'),$param);
+		|| ($info['qfeatures'] = $qfeatures->get($_QR['id'],false)) === false
+		|| ($info['queue'] = $queue->get($info['qfeatures']['name'],false)) === false)
+			xivo_go($_HTML->url('service/ipbx/pbx_settings/queues'),$param);
 
 		$status = array();
 		$status['local_exten'] = $status['extenumbers'] = false;
 
 		do
 		{
-			if(isset($_QR['fm_send']) === false || xivo_issa('gfeatures',$_QR) === false || xivo_issa('queue',$_QR) === false)
+			if(isset($_QR['fm_send']) === false || xivo_issa('qfeatures',$_QR) === false || xivo_issa('queue',$_QR) === false)
 					break;
-
-			$_QR['queue']['category'] = 'group';
 
 			$return = &$result;
 
-			if(($result['gfeatures'] = $gfeatures->chk_values($_QR['gfeatures'],true,true)) === false)
+			if(($result['qfeatures'] = $qfeatures->chk_values($_QR['qfeatures'],true,true)) === false)
 			{
 				$edit = false;
-				$result['mfeatures'] = array_merge($info['gfeatures'],$gfeatures->get_filter_result());
+				$result['mfeatures'] = array_merge($info['qfeatures'],$qfeatures->get_filter_result());
 			}
 
-			$_QR['queue']['name'] = $result['gfeatures']['name'];
+			$_QR['queue']['name'] = $result['qfeatures']['name'];
 
 			if(($result['queue'] = $queue->chk_values($_QR['queue'],true,true)) === false)
 			{
@@ -149,30 +214,30 @@ switch($act)
 			}
 
 			$exten_where = array();
-			$exten_where['exten'] = $info['gfeatures']['number'];
+			$exten_where['exten'] = $info['qfeatures']['number'];
 			$exten_where['app'] = 'Macro';
-			$exten_where['appdata'] = 'supergroup';
+			$exten_where['appdata'] = 'superqueue';
 
-			if($info['gfeatures']['context'] === '')
+			if($info['qfeatures']['context'] === '')
 				$exten_where['context'] = 'local-extensions';
 			else
-				$exten_where['context'] = $info['gfeatures']['context'];
+				$exten_where['context'] = $info['qfeatures']['context'];
 
 			if(($info['localexten'] = $extensions->get_where($exten_where)) !== false)
 			{
-				if($result['gfeatures']['number'] === '')
+				if($result['qfeatures']['number'] === '')
 					$status['localexten'] = 'delete';
 				else
 				{
 					$status['localexten'] = 'edit';
 
 					$local_exten = $info['localexten'];
-					$local_exten['exten'] = $result['gfeatures']['number'];
+					$local_exten['exten'] = $result['qfeatures']['number'];
 
-					if($result['gfeatures']['context'] === '')
+					if($result['qfeatures']['context'] === '')
 						$local_exten['context'] = 'local-extensions';
 					else
-						$local_exten['context'] = $result['gfeatures']['context'];
+						$local_exten['context'] = $result['qfeatures']['context'];
 
 					if(($result['localexten'] = $extensions->chk_values($local_exten,true,true)) === false)
 					{
@@ -181,18 +246,18 @@ switch($act)
 					}
 				}
 			}
-			else if($result['gfeatures']['number'] !== '')
+			else if($result['qfeatures']['number'] !== '')
 			{
 				$status['localexten'] = 'add';
 
 				$local_exten = $exten_where;
-				$local_exten['exten'] = $result['gfeatures']['number'];
+				$local_exten['exten'] = $result['qfeatures']['number'];
 				$local_exten['priority'] = 1;
 
-				if($result['gfeatures']['context'] === '')
+				if($result['qfeatures']['context'] === '')
 					$local_exten['context'] = 'local-extensions';
 				else
-					$local_exten['context'] = $result['gfeatures']['context'];
+					$local_exten['context'] = $result['qfeatures']['context'];
 
 				if(($result['localexten'] = $extensions->chk_values($local_exten,true,true)) === false)
 				{
@@ -202,24 +267,24 @@ switch($act)
 			}
 
 			$exten_numbers = array();
-			$exten_numbers['number'] = $result['gfeatures']['number'];
+			$exten_numbers['number'] = $result['qfeatures']['number'];
 
-			if($result['gfeatures']['context'] === '')
+			if($result['qfeatures']['context'] === '')
 				$exten_numbers['context'] = 'local-extensions';
 			else
-				$exten_numbers['context'] = $result['gfeatures']['context'];
+				$exten_numbers['context'] = $result['qfeatures']['context'];
 
 			$exten_where = array();
-			$exten_where['number'] = $info['gfeatures']['number'];
+			$exten_where['number'] = $info['qfeatures']['number'];
 
-			if($info['gfeatures']['context'] === '')
+			if($info['qfeatures']['context'] === '')
 				$exten_where['context'] = 'local-extensions';
 			else
-				$exten_where['context'] = $info['gfeatures']['context'];
+				$exten_where['context'] = $info['qfeatures']['context'];
 
 			if(($info['extenumbers'] = $extenumbers->get_where($exten_where)) !== false)
 			{
-				if($result['gfeatures']['number'] === '')
+				if($result['qfeatures']['number'] === '')
 					$status['extenumbers'] = 'delete';
 				else
 				{
@@ -234,7 +299,7 @@ switch($act)
 					}
 				}
 			}
-			else if($result['gfeatures']['number'] !== '')
+			else if($result['qfeatures']['number'] !== '')
 			{
 				$status['extenumbers'] = 'add';
 
@@ -245,12 +310,12 @@ switch($act)
 				}
 			}
 
-			if($edit === false || $gfeatures->edit($info['gfeatures']['id'],$result['gfeatures']) === false)
+			if($edit === false || $qfeatures->edit($info['qfeatures']['id'],$result['qfeatures']) === false)
 				break;
 
 			if($queue->edit($info['queue']['name'],$result['queue']) === false)
 			{
-				$gfeatures->edit_origin();
+				$qfeatures->edit_origin();
 				break;
 			}
 
@@ -271,7 +336,7 @@ switch($act)
 
 			if($rs_localexten === false)
 			{
-				$gfeatures->edit_origin();
+				$qfeatures->edit_origin();
 				$queue->edit_origin();
 				break;
 			}
@@ -280,8 +345,8 @@ switch($act)
 
 			$dfeatures = &$ipbx->get_module('didfeatures');
 			$dfeatures_where = array();
-			$dfeatures_where['type'] = 'group';
-			$dfeatures_where['typeid'] = $info['gfeatures']['id'];
+			$dfeatures_where['type'] = 'queue';
+			$dfeatures_where['typeid'] = $info['qfeatures']['id'];
 			$dfeatures_where['commented'] = 0;
 
 			switch($status['extenumbers'])
@@ -304,7 +369,7 @@ switch($act)
 
 			if($rs_extenumbers === false)
 			{
-				$gfeatures->edit_origin();
+				$qfeatures->edit_origin();
 				$queue->edit_origin();
 
 				if($rs_dfeatures === false)
@@ -330,13 +395,13 @@ switch($act)
 			}
 
 			if($info['queue']['name'] === $result['queue']['name'])
-				xivo_go($_HTML->url('service/ipbx/pbx_settings/groups'),$param);
+				xivo_go($_HTML->url('service/ipbx/pbx_settings/queues'),$param);
 
 			$qmember = &$ipbx->get_module('queuemember');
 
 			if($qmember->edit_where(array('queue_name' => $info['queue']['name']),array('queue_name' => $result['queue']['name'])) === false)
 			{
-				$gfeatures->edit_origin();
+				$qfeatures->edit_origin();
 				$queue->edit_origin();
 
 				if($rs_localexten !== null)
@@ -379,15 +444,15 @@ switch($act)
 				}
 			}
 
-			xivo_go($_HTML->url('service/ipbx/pbx_settings/groups'),$param);
+			xivo_go($_HTML->url('service/ipbx/pbx_settings/queues'),$param);
 		}
 		while(false);
 
 		$element = array();
 		$element['queue'] = $queue->get_element();
-		$element['gfeatures'] = $gfeatures->get_element();
+		$element['qfeatures'] = $qfeatures->get_element();
 
-		$_HTML->assign('id',$info['gfeatures']['id']);
+		$_HTML->assign('id',$info['qfeatures']['id']);
 		$_HTML->assign('info',$return);
 		$_HTML->assign('element',$element);
 		break;
@@ -396,36 +461,36 @@ switch($act)
 		$qmember = &$ipbx->get_module('queuemember');
 
 		if(isset($_QR['id']) === false
-		|| ($info['gfeatures'] = $gfeatures->get($_QR['id'],false)) === false
-		|| ($info['queue'] = $queue->get($info['gfeatures']['name'],false)) === false
+		|| ($info['qfeatures'] = $qfeatures->get($_QR['id'],false)) === false
+		|| ($info['queue'] = $queue->get($info['qfeatures']['name'],false)) === false
 		|| $qmember->get_nb_by_name($info['queue']['name']) !== 0)
-			xivo_go($_HTML->url('service/ipbx/pbx_settings/groups'),$param);
+			xivo_go($_HTML->url('service/ipbx/pbx_settings/queues'),$param);
 
 		do
 		{
-			if($gfeatures->disable($info['gfeatures']['id']) === false)
+			if($qfeatures->disable($info['qfeatures']['id']) === false)
 				break;
 
 			if($queue->delete($info['queue']['name']) === false)
 			{
-				$gfeatures->enable($info['gfeatures']['id']);
+				$qfeatures->enable($info['qfeatures']['id']);
 				break;
 			}
 
 			$localexten_where = array();
-			$localexten_where['exten'] = $info['gfeatures']['number'];
+			$localexten_where['exten'] = $info['qfeatures']['number'];
 			$localexten_where['app'] = 'Macro';
-			$localexten_where['appdata'] = 'supergroup';
+			$localexten_where['appdata'] = 'superqueue';
 
-			if($info['gfeatures']['context'] === '')
+			if($info['qfeatures']['context'] === '')
 				$localexten_where['context'] = 'local-extensions';
 			else
-				$localexten_where['context'] = $info['gfeatures']['context'];
+				$localexten_where['context'] = $info['qfeatures']['context'];
 
 			if(($info['extensions'] = $extensions->get_where($localexten_where)) !== false
 			&& $extensions->delete($info['extensions']['id']) === false)
 			{
-				$gfeatures->enable($info['gfeatures']['id']);
+				$qfeatures->enable($info['qfeatures']['id']);
 				$queue->add_origin();
 				break;
 			}
@@ -440,15 +505,15 @@ switch($act)
 			{
 				$dfeatures = &$ipbx->get_module('didfeatures');
 				$dfeatures_where = array();
-				$dfeatures_where['type'] = 'group';
-				$dfeatures_where['typeid'] = $info['gfeatures']['id'];
+				$dfeatures_where['type'] = 'queue';
+				$dfeatures_where['typeid'] = $info['qfeatures']['id'];
 				$dfeatures_where['commented'] = 0;
 
 				if($extenumbers->delete($info['extenumbers']['id']) === false
 				|| (($info['dfeatures'] = $dfeatures->get_list_where($dfeatures_where,false)) !== false
 				   && $dfeatures->edit_where($dfeatures_where,array('commented' => 1)) === false) === true)
 				{
-					$gfeatures->enable($info['gfeatures']['id']);
+					$qfeatures->enable($info['qfeatures']['id']);
 					$queue->add_origin();
 
 					if($info['localexten'] !== false)
@@ -462,22 +527,22 @@ switch($act)
 		}
 		while(false);
 
-		xivo_go($_HTML->url('service/ipbx/pbx_settings/groups'),$param);
+		xivo_go($_HTML->url('service/ipbx/pbx_settings/queues'),$param);
 		break;
 	default:
 		$act = 'list';
 		$total = 0;
 
-		if(($groups = $ipbx->get_groups_list(false)) !== false)
+		if(($queues = $ipbx->get_queues_list(false)) !== false)
 		{
-			$total = count($groups);
+			$total = count($queues);
 			xivo::load_class('xivo_sort');
-			$sort = new xivo_sort(array('browse' => 'gfeatures','key' => 'name'));
-			usort($groups,array(&$sort,'str_usort'));
+			$sort = new xivo_sort(array('browse' => 'qfeatures','key' => 'name'));
+			usort($queues,array(&$sort,'str_usort'));
 		}
 
 		$_HTML->assign('pager',xivo_calc_page($page,20,$total));
-		$_HTML->assign('list',$groups);
+		$_HTML->assign('list',$queues);
 }
 
 $_HTML->assign('act',$act);
@@ -485,9 +550,9 @@ $_HTML->assign('act',$act);
 $menu = &$_HTML->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_infos('meta'));
 $menu->set_left('left/service/ipbx/asterisk');
-$menu->set_toolbar('toolbar/service/ipbx/asterisk/pbx_settings/groups');
+$menu->set_toolbar('toolbar/service/ipbx/asterisk/pbx_settings/queues');
 
-$_HTML->assign('bloc','pbx_settings/groups/'.$act);
+$_HTML->assign('bloc','pbx_settings/queues/'.$act);
 $_HTML->assign('service_name',$service_name);
 $_HTML->set_struct('service/ipbx/index');
 $_HTML->display('index');

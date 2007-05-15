@@ -41,7 +41,7 @@ $array['filter'] = array();
 $array['filter']['category'] = array('preg' => '/^[a-z0-9_-]+$/i','minlen' => 1,'maxlen' => 50);
 $array['filter']['mode'] = array('arrkey' => array('files','custom','quietmp3','mp3','mp3nb','quietmp3nb'));
 $array['filter']['application'] = array('set' => false,'chk' => 2,'maxlen' => 128);
-$array['filter']['random'] = array('set' => false,'bool' => true);
+$array['filter']['random'] = array('bool' => true);
 $array['filter']['filename'] = array('set' => false,'preg' => '/^[a-z0-9_-]{1,50}\.(mp3|wav|ogg)$/i');
 
 ?>

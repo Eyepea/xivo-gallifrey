@@ -295,7 +295,7 @@ class xivo_service_asterisk_sounds extends xivo_service_asterisk_abstract
 		$dir = (string) $dir;
 
 		if(($match_file = $this->_get_option_file_name()) === false)
-			return($r);
+			return(false);
 
 		if($dir !== '')
 		{

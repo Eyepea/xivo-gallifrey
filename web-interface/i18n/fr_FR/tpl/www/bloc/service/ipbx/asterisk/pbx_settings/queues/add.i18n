@@ -1,0 +1,302 @@
+; title_content_name
+Files d'attente > Ajouter
+
+; fm_qfeatures_name
+Nom :
+
+; fm_qfeatures_number
+Numéro :
+
+; fm_qfeatures_context
+Contexte :
+
+; fm_qfeatures_timeout
+Délai d'attente :
+
+; fm_qfeatures_timeout-opt
+%s secondes
+
+; fm_qfeatures_data-quality
+Modem qualité :
+
+; fm_qfeatures_hitting-callee
+Autorise l'appelant à sortir avec * :
+
+; fm_qfeatures_hitting-caller
+Autorise l'appelé à sortir avec * :
+
+; fm_qfeatures_retries
+Aucun rappel pour le temps dépassé :
+
+; fm_qfeatures_ring
+Sonnerie au lieu de musique d'attente :
+
+; fm_qfeatures_transfer-user
+Autorise l'appelé à transférer l'appelant :
+
+; fm_qfeatures_transfer-call
+Autorise l'appelant à transférer l'appel :
+
+; fm_qfeatures_write-caller
+Autorise l'appelé à enregistrer l'appel :
+
+; fm_qfeatures_write-calling
+Autorise l'appelant à enregistrer l'appel :
+
+; fm_queue_musiconhold
+Musique d'attente :
+
+; fm_queue_announce
+Annonce :
+
+; fm_queue_strategy
+Stratégie :
+
+; fm_queue_servicelevel
+Niveau de service :
+
+; fm_queue_weight
+Poids :
+
+; fm_queue_timeout
+Délai d'attente pour joindre un agent :
+
+; fm_queue_timeout-opt
+%s secondes
+
+; fm_queue_retry
+Temps d'attente avant rappel des membres :
+
+; fm_queue_retry-opt
+%s secondes
+
+; fm_queue_wrapuptime
+Délai de réatribution d'appel :
+
+; fm_queue_wrapuptime-opt0
+0 seconde
+
+; fm_queue_wrapuptime-opt
+%s secondes
+
+; fm_queue_maxlen 
+Nombre de personne autorisé à attendre :
+
+; fm_queue_announce-frequency
+Fréquence d'annonce de position :
+
+; fm_queue_announce-frequency-opt0
+0 seconde
+
+; fm_queue_announce-frequency-opt15
+15 secondes
+
+; fm_queue_announce-frequency-opt30
+30 secondes
+
+; fm_queue_announce-frequency-opt45
+45 secondes
+
+; fm_queue_announce-frequency-opt60
+1 minute
+
+; fm_queue_announce-frequency-opt75
+1 minute 15 secondes
+
+; fm_queue_announce-frequency-opt90
+1 minute 30 secondes
+
+; fm_queue_announce-frequency-opt105
+1 minute 45 secondes
+
+; fm_queue_announce-frequency-opt120
+2 minutes
+
+; fm_queue_announce-frequency-opt180
+3 minutes
+
+; fm_queue_announce-frequency-opt240
+4 minutes
+
+; fm_queue_announce-frequency-opt300
+5 minutes
+
+; fm_queue_announce-frequency-opt
+%s minutes %s secondes
+
+; fm_queue_periodic-announce-frequency
+Fréquence d'annonce :
+
+; fm_queue_periodic-announce-frequency-opt0
+0 seconde
+
+; fm_queue_periodic-announce-frequency-opt15
+15 secondes
+
+; fm_queue_periodic-announce-frequency-opt30
+30 secondes
+
+; fm_queue_periodic-announce-frequency-opt45
+45 secondes
+
+; fm_queue_periodic-announce-frequency-opt60
+1 minute
+
+; fm_queue_periodic-announce-frequency-opt75
+1 minute 15 secondes
+
+; fm_queue_periodic-announce-frequency-opt90
+1 minute 30 secondes
+
+; fm_queue_periodic-announce-frequency-opt105
+1 minute 45 secondes
+
+; fm_queue_periodic-announce-frequency-opt120
+2 minutes
+
+; fm_queue_periodic-announce-frequency-opt180
+3 minutes
+
+; fm_queue_periodic-announce-frequency-opt240
+4 minutes
+
+; fm_queue_periodic-announce-frequency-opt300
+5 minutes
+
+; fm_queue_periodic-announce-frequency-opt
+%s minutes %s secondes
+
+; fm_queue_announce-holdtime
+Annoncer le temps d'attente :
+
+; fm_queue_announce-holdtime-opt-no
+Non
+
+; fm_queue_announce-holdtime-opt-yes
+Oui
+
+; fm_queue_announce-holdtime-opt-once
+Une fois
+
+; fm_queue_announce-round-seconds
+Arrondi du temps d'attente :
+
+; fm_queue_announce-round-seconds-opt0
+0 seconde
+
+; fm_queue_announce-round-seconds-opt
+%s secondes
+
+; fm_queue_monitor-format
+Format d'enregistrement :
+
+; fm_queue_monitor-join
+Enregistrement :
+
+; fm_queue_joinempty
+Joindre une file d'attente vide :
+
+; fm_queue_joinempty-opt-no
+Non
+
+; fm_queue_joinempty-opt-yes
+Oui
+
+; fm_queue_joinempty-opt-strict
+Strict
+
+; fm_queue_leavewhenempty
+Vider la file d'attente :
+
+; fm_queue_leavewhenempty-opt-no
+Non
+
+; fm_queue_leavewhenempty-opt-yes
+Oui
+
+; fm_queue_leavewhenempty-opt-strict
+Strict
+
+; fm_queue_eventwhencalled
+Activer les événements (AMI) :
+
+; fm_queue_eventmemberstatus
+Activer les événements agents (AMI) :
+
+; fm_queue_reportholdtime
+Activer le rapport d'attente d'un appelant :
+
+; fm_queue_memberdelay
+Temps d'attente avant de passer l'appel :
+
+; fm_queue_memberdelay-opt0
+0 seconde
+
+; fm_queue_memberdelay-opt
+%s secondes
+
+; fm_queue_timeoutrestart
+Délai de réinitialisation du temps de réponse d'un agent :
+
+; fm_queue_queue-youarenext
+Vous serez le prochain :
+
+; fm_queue_queue-youarenext-opt-default
+Défaut
+
+; fm_queue_queue-thereare
+Il y a :
+
+; fm_queue_queue-thereare-opt-default
+Défaut
+
+; fm_queue_queue-callswaiting
+Appel en attente :
+
+; fm_queue_queue-callswaiting-opt-default
+Défaut
+
+; fm_queue_queue-holdtime
+Temps d'attente est de :
+
+; fm_queue_queue-holdtime-opt-default
+Défaut
+
+; fm_queue_queue-minutes
+Minutes :
+
+; fm_queue_queue-minutes-opt-default
+Défaut
+
+; fm_queue_queue-seconds
+Secondes :
+
+; fm_queue_queue-seconds-opt-default
+Défaut
+
+; fm_queue_queue-thankyou
+Merci de votre patience :
+
+; fm_queue_queue-thankyou-opt-default
+Défaut
+
+; fm_queue_queue-lessthan
+Reste plus que :
+
+; fm_queue_queue-lessthan-opt-default
+Défaut
+
+; fm_queue_queue-reporthold
+Temps d'attente d'un appelant :
+
+; fm_queue_queue-reporthold-opt-default
+Défaut
+
+; fm_queue_periodic-announce
+Annonce :
+
+; fm_queue_periodic-announce-opt-default
+Défaut
+
+; fm_bt-save
+Sauvegarder

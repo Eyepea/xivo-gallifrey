@@ -1,4 +1,5 @@
-CREATE TABLE i18n_cache (
+DROP TABLE IF EXISTS `i18n_cache`;
+CREATE TABLE `i18n_cache` (
  `dcreate` int(10) unsigned NOT NULL default 0,
  `dupdate` int(10) unsigned NOT NULL default 0,
  `locale` varchar(7) NOT NULL default '',
@@ -6,7 +7,7 @@ CREATE TABLE i18n_cache (
  `path` varchar(255) NOT NULL default '',
  `obj` longblob NOT NULL,
  PRIMARY KEY(locale,path)
-) TYPE=MyISAM DEFAULT CHARACTER SET utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE INDEX i18n_cache__idx__dupdate ON i18n_cache(dupdate);
 CREATE INDEX i18n_cache__idx__locale ON i18n_cache(locale);
@@ -14,20 +15,22 @@ CREATE INDEX i18n_cache__idx__language ON i18n_cache(language);
 CREATE INDEX i18n_cache__idx__path ON i18n_cache(path);
 
 
-CREATE TABLE session (
+DROP TABLE IF EXISTS `session`;
+CREATE TABLE `session` (
  `sesskey` varchar(32) NOT NULL default '',
  `expire` int(10) unsigned NOT NULL default 0,
  `data` longblob NOT NULL,
  `user_id` int(11) unsigned default 0,
  `start` int(10) unsigned default 0,
  PRIMARY KEY(sesskey)
-) TYPE=MyISAM DEFAULT CHARACTER SET utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE INDEX session__idx__expire ON session(expire);
 CREATE INDEX session__idx__user_id ON session(user_id);
 
 
-CREATE TABLE user (
+DROP TABLE IF EXISTS `user`;
+CREATE TABLE `user` (
  `id` int(11) unsigned auto_increment,
  `login` varchar(255) NOT NULL default '',
  `passwd` varchar(255) NOT NULL default '',
@@ -38,7 +41,7 @@ CREATE TABLE user (
  `dcreate` int(11) unsigned NOT NULL default 0,
  `dupdate` int(11) unsigned NOT NULL default 0,
  PRIMARY KEY(id)
-) TYPE=MyISAM DEFAULT CHARACTER SET utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE INDEX user__idx__login ON user(login);
 CREATE INDEX user__idx__meta ON user(meta);

@@ -308,6 +308,9 @@ class xivo_filter
 
 		if(isset($arr['arrvalue']) === true)
 		{
+			if(isset($arr['chk']) === true && $arr['chk'] === 2 && isset($arr['chk']{0}) === false)
+				return('');
+
 			if($this->chk_array_value($arr['arrvalue'],$value) === false)
 			{
 				$this->_mk_err($key,'invalid value');
@@ -319,6 +322,9 @@ class xivo_filter
 
 		if(isset($arr['unarrvalue']) === true)
 		{
+			if(isset($arr['chk']) === true && $arr['chk'] === 2 && isset($arr['chk']{0}) === false)
+				return('');
+
 			if($this->chk_array_value($arr['unarrvalue'],$value) === false)
 			{
 				$this->_mk_err($key,'invalid value');
@@ -330,6 +336,9 @@ class xivo_filter
 
 		if(isset($arr['arrkey']) === true)
 		{
+			if(isset($arr['chk']) === true && $arr['chk'] === 2 && isset($arr['chk']{0}) === false)
+				return('');
+
 			if($this->chk_key_value($arr['arrkey'],$value) === false)
 			{
 				$this->_mk_err($key,'invalid value');
@@ -341,6 +350,9 @@ class xivo_filter
 
 		if(isset($arr['unarrkey']) === true)
 		{
+			if(isset($arr['chk']) === true && $arr['chk'] === 2 && isset($arr['chk']{0}) === false)
+				return('');
+
 			if($this->chk_key_value($arr['unarrkey'],$value) === true)
 			{
 				$this->_mk_err($key,'invalid value');

@@ -4,11 +4,11 @@
 #s-asterisk #index .sb-content dl {width: 50%;}
 #s-asterisk #index .sb-content dt {padding-top: 10px;font-weight: bold;}
 
-#s-asterisk .sb-content #comment, #s-asterisk .sb-content #emailbody, #s-asterisk #grouplist, #s-asterisk #codeclist {text-align: center;width: 100%;}
-#s-asterisk #grouplist #it-grouplist, #s-asterisk #codeclist #it-codeclist, #s-asterisk #codeclist .codeclisted {float: right;}
-#s-asterisk #grouplist #it-grouplist, #s-asterisk #grouplist #it-group, #s-asterisk #codeclist #it-codeclist, #s-asterisk #codeclist #it-codec, #s-asterisk #codeclist .codeclisted, #s-asterisk #codeclist .codecselected {min-width: 120px;width: auto;}
-#s-asterisk #codeclist div, #s-asterisk #grouplist div {float: left;width: 45%;}
-#s-asterisk #grouplist #inout-group, #s-asterisk #codeclist #inout-codec {width: 10%;}
-#s-asterisk #grouplist #bt-ingroup, #s-asterisk #grouplist #bt-outgroup,#s-asterisk #codeclist #bt-incodec, #s-asterisk #codeclist #bt-outcodec {margin: 10px 0px 10px 2px;}
+#s-asterisk .sb-content #comment, #s-asterisk .sb-content #emailbody, #s-asterisk #grouplist, #s-asterisk #codeclist, #s-asterisk #memberlist {text-align: center;width: 100%;}
+#s-asterisk #grouplist #it-grouplist, #s-asterisk #memberlist #it-memberlist, #s-asterisk #codeclist #it-codeclist, #s-asterisk #codeclist .codeclisted {float: right;}
+#s-asterisk #grouplist #it-grouplist, #s-asterisk #grouplist #it-group, #s-asterisk #memberlist #it-memberlist, #s-asterisk #memberlist #it-group, #s-asterisk #codeclist #it-codeclist, #s-asterisk #codeclist #it-codec, #s-asterisk #codeclist .codeclisted, #s-asterisk #codeclist .codecselected {min-width: 120px;width: auto;}
+#s-asterisk #codeclist div, #s-asterisk #grouplist div, #s-asterisk #memberlist div {float: left;width: 45%;}
+#s-asterisk #grouplist #inout-group, #s-asterisk #memberlist #inout-member,#s-asterisk #codeclist #inout-codec {width: 10%;}
+#s-asterisk #grouplist #bt-ingroup, #s-asterisk #grouplist #bt-outgroup, #s-asterisk #memberlist #bt-inmember, #s-asterisk #memberlist #bt-outmember,#s-asterisk #codeclist #bt-incodec, #s-asterisk #codeclist #bt-outcodec {margin: 10px 0px 10px 2px;}
 #s-asterisk #codeclist #bt-upcodec, #s-asterisk #codeclist #bt-downcodec {margin: 10px 0px 10px 2px;}
 #s-asterisk #codeclist #select-codec #it-codec, #s-asterisk #codeclist .codecselected {float: left;}
