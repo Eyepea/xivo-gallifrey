@@ -110,6 +110,7 @@ CREATE TABLE `queue` (
  `queue-lessthan` varchar(128),
  `queue-thankyou` varchar(128),
  `queue-reporthold` varchar(128),
+ `periodic-announce` varchar(128),
  `announce-frequency` int(11) unsigned,
  `periodic-announce-frequency` int(11) unsigned,
  `announce-round-seconds` tinyint unsigned,
