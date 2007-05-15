@@ -24,8 +24,7 @@ import time # for TimeoutingTelnet
 #					config files like ringing tones...
 
 THOMSON_COMMON_DIR = pgc['tftproot'] + "Thomson/"
-THOMSON_COMMON_INF = THOMSON_COMMON_DIR + "ST2030S_v1.53.inf"
-THOMSON_COMMON_TXT = THOMSON_COMMON_DIR + "ST2030S_common_v1.53.txt"
+THOMSON_COMMON_INF = THOMSON_COMMON_DIR + "ST2030S_v1.54.inf"
 
 # THOMSON BUGBUG #3
 # THOMSON_SPEC_DIR must be *TFTPROOT* because the phone will only download its
