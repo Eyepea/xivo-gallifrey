@@ -40,8 +40,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  * vertical box layout and connect signals with slots.
  */
 MainWidget::MainWidget(Engine *engine, QWidget *parent)
-: QMainWindow(parent), m_engine(engine), m_systrayIcon(0),
-  m_icon(":/xivoicon.png"), m_icongrey(":/xivoicon-grey.png")
+	: QMainWindow(parent), m_engine(engine), m_systrayIcon(0),
+	  m_icon(":/xivoicon.png"), m_icongrey(":/xivoicon-grey.png")
 {
 	createActions();
 	createMenus();
@@ -60,24 +60,15 @@ MainWidget::MainWidget(Engine *engine, QWidget *parent)
 	setWindowIcon(QIcon(":/xivoicon.png"));
 	statusBar()->clearMessage();
 	
-
 	m_tabwidget = new QTabWidget();
 
-
 	QWidget * wid = new QWidget();
-	QVBoxLayout * vbox = new QVBoxLayout(wid);
-	QLabel * labelwhat = new QLabel(tr("Tell the Switchboard :"));
-	m_messagetosend = new QLineEdit();
-	connect( m_messagetosend, SIGNAL(returnPressed()),
-		 this, SLOT(affTextChanged()) );
-	vbox->addWidget(m_tabwidget, 1);
-	vbox->addWidget(labelwhat, 0);
-	vbox->addWidget(m_messagetosend, 0);
-	wid->show();
+	m_vboxwidgets = new QVBoxLayout(wid);
+	m_vboxwidgets->addWidget(m_tabwidget, 1);
+
 	setCentralWidget(wid);
 	//setCentralWidget(m_tabwidget);
-	
-	
+
 	QSettings settings;
 	m_tablimit = settings.value("display/tablimit", 5).toInt();
 }
@@ -298,6 +289,17 @@ void MainWidget::setDisconnected()
 {
 	m_connectact->setEnabled(true);
 	m_disconnectact->setEnabled(false);
+
+	QStringList capas = m_engine->getCapabilities().split(",");
+	for(int c = 0; c < capas.size(); c++) {
+		if(capas[c] == QString("switchboard")) {
+			m_vboxwidgets->removeWidget(m_messagetosendlabel);
+			m_vboxwidgets->removeWidget(m_messagetosend);
+			delete m_messagetosendlabel;
+			delete m_messagetosend;
+		}
+	}
+
 	if(m_systrayIcon)
 		m_systrayIcon->setIcon(m_icongrey);
 	statusBar()->showMessage(tr("Disconnected"));
@@ -308,6 +310,20 @@ void MainWidget::setConnected()
 {
 	m_connectact->setEnabled(false);
 	m_disconnectact->setEnabled(true);
+	qDebug() << m_engine->getCapabilities();
+
+	QStringList capas = m_engine->getCapabilities().split(",");
+	for(int c = 0; c < capas.size(); c++) {
+		if(capas[c] == QString("switchboard")) {
+			m_messagetosendlabel = new QLabel(tr("Tell the Switchboard :"));
+			m_messagetosend = new QLineEdit();
+			connect( m_messagetosend, SIGNAL(returnPressed()),
+				 this, SLOT(affTextChanged()) );
+			m_vboxwidgets->addWidget(m_messagetosendlabel, 0);
+			m_vboxwidgets->addWidget(m_messagetosend, 0);
+		}
+	}
+
 	if(m_systrayIcon)
 		m_systrayIcon->setIcon(m_icon);
 	statusBar()->showMessage(tr("Connected"));
@@ -325,7 +341,7 @@ void MainWidget::showNewProfile(Popup * popup)
 	{
 		m_systrayIcon->showMessage(tr("Incoming call"),
 		                           currentTimeStr + "\n"
-								   + popup->message() );
+					   + popup->message() );
 	}
 	if(m_tabwidget)
 	{

@@ -398,7 +398,10 @@ void Engine::processLoginDialog()
 	{
 		readLine.remove(QChar('\r')).remove(QChar('\n'));
 		QStringList sessionResp = readLine.split(" ");
-		m_sessionid = sessionResp[2];
+		if(sessionResp.size() > 2)
+			m_sessionid = sessionResp[2];
+		if(sessionResp.size() > 3)
+			m_capabilities = sessionResp[3];
 		m_loginsocket.close();
 		setState(ELogged);
 		// start the keepalive timer

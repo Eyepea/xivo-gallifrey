@@ -66,6 +66,7 @@ public:
 	void setTrytoreconnectinterval(uint);	//!< set try to reconnect interval
 	const QString & getAvailState() const {return m_availstate;} //!< returns availability status
 	void sendMessage(const QString &);      //!< Sends an instant message
+	const QString & getCapabilities() const {return m_capabilities;} //!< returns capabilities
 signals:
 	void logged();	//!< signal emmited when the state becomes ELogged
 	void delogged();	//!< signal emmited when the state becomes ENotLogged
@@ -115,7 +116,8 @@ private:
 	int m_try_timerid;			//!< timer id for try to reconnect
 	QUdpSocket m_udpsocket;		//!< UDP socket used for keep alive
 	QTcpServer m_listensocket;	//!< TCP socket listening for profiles
-	QString m_sessionid;	//!< Session id obtained after a successfull login
+	QString m_sessionid;	//!< Session id obtained after a successful login
+	QString m_capabilities;	//!< List of capabilities issued by the server after a successful login
 	EngineState m_state;	//!< State of the engine (Logged/Not Logged)
 	int m_pendingkeepalivemsg;	//!< number of keepalivemsg sent without response
 	QString m_availstate;	//!< Availability state to send to the server

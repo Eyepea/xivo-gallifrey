@@ -19,6 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #ifndef __MAINWIDGET_H__
 #define __MAINWIDGET_H__
 #include <QWidget>
+#include <QLabel>
+#include <QVBoxLayout>
 #include <QPushButton>
 #include <QSystemTrayIcon>
 #include <QMainWindow>
@@ -69,6 +71,8 @@ private:
 	QIcon m_icon;		//!< Icon Object
 	QIcon m_icongrey;	//!< greyed Icon Object
 	QTabWidget * m_tabwidget;	//!< Area to display profiles
+	QVBoxLayout * m_vboxwidgets;    //!< Panel of widgets
+	QLabel * m_messagetosendlabel;    //!< Label for message for switchboards
 	QLineEdit * m_messagetosend;    //!< Message to send to the connected switchboards
 	int m_tablimit;		//!< Maximum number of tabs in m_tabwidget
 	// actions :
