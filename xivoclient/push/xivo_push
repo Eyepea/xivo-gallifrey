@@ -25,7 +25,16 @@
 # \brief XIVO CTI pushing AGI
 #
 
-import socket, sys, generefiche, ConfigParser, string, ldap, MySQLdb, sqlite
+# debian.org modules
+import ConfigParser
+import ldap
+import MySQLdb
+import sqlite
+import socket
+import string
+import sys
+# XIVO modules
+import generefiche
 
 ## \class Info
 class Info:

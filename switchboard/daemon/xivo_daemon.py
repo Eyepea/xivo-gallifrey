@@ -109,6 +109,7 @@ import socket
 import SocketServer
 import sqlite
 import sys
+import syslog
 import threading
 import time
 import urllib
@@ -139,7 +140,6 @@ bufsize_any = 512
 socket.setdefaulttimeout(2)
 timeout_between_registers = 60
 expires = str(2 * timeout_between_registers) # timeout between subscribes
-
 
 ## \class myLDAP
 class myLDAP:
@@ -189,6 +189,7 @@ def daemonize():
 # \sa log_debug
 def varlog(string):
 	global logfile
+	syslog.syslog(syslog.LOG_NOTICE, "xivo_daemon : " + string)
 	if logfile:
 		logfile.write(time.strftime("%b %2d %H:%M:%S ", time.localtime()) + string + "\n")
 		logfile.flush()
@@ -269,13 +270,13 @@ def update_history_call(astn, sipnum, nlines, kind):
 	global xivoconf_general
 	results = []
 	try:
-		conn = MySQLdb.connect(host = xivoconf_general["cdr_address"],
-				       port = int(xivoconf_general["cdr_port"]),
-				       user = xivoconf_general["cdr_user"],
-				       passwd = xivoconf_general["cdr_passwd"],
-				       db = xivoconf_general["cdr_dbname"])
+		conn = MySQLdb.connect(host = xivoconf_general["cdr_db_address"],
+				       port = int(xivoconf_general["cdr_db_port"]),
+				       user = xivoconf_general["cdr_db_username"],
+				       passwd = xivoconf_general["cdr_db_passwd"],
+				       db = xivoconf_general["cdr_db_basename"])
 		cursor = conn.cursor()
-		table = xivoconf_general["cdr_tablename"]
+		table = xivoconf_general["cdr_db_tablename"]
 		if kind == "0": # outgoing calls
 			sql = "SELECT * FROM %s WHERE ((src = %s) and (disposition = \"ANSWERED\")) ORDER BY calldate DESC LIMIT %s;" \
 			      %(table,sipnum,nlines)
@@ -517,17 +518,17 @@ class AMIClass:
 # \sa manage_tcp_connection
 def build_customers(searchpattern):
 	global xivoconf_general
-	fullstat = "directory-response=" + xivoconf_general["dir_fields"]
-	ldapid = myLDAP(xivoconf_general["dir_address"],
-			int(xivoconf_general["dir_port"]),
-			xivoconf_general["dir_user"],
-			xivoconf_general["dir_pass"])
+	fullstat = "directory-response=" + xivoconf_general["dir_db_fields"]
+	ldapid = myLDAP(xivoconf_general["dir_db_address"],
+			int(xivoconf_general["dir_db_port"]),
+			xivoconf_general["dir_db_username"],
+			xivoconf_general["dir_db_passwd"])
 	if searchpattern == "" or searchpattern == "*":
-		result = ldapid.getldap(xivoconf_general["dir_base"],
+		result = ldapid.getldap(xivoconf_general["dir_db_basename"],
 					"(|(cn=*)(o=*)(telephoneNumber=*)(mobile=*)(mail=*))",
 					['cn','o','telephoneNumber','mobile','mail'])
 	else:
-		result = ldapid.getldap(xivoconf_general["dir_base"],
+		result = ldapid.getldap(xivoconf_general["dir_db_basename"],
 					"(|(cn=*%s*)(o=*%s*)(telephoneNumber=*%s*)(mobile=*%s*)(mail=*%s*))"
 					%(searchpattern,searchpattern,searchpattern,searchpattern,searchpattern),
 					['cn','o','telephoneNumber','mobile','mail'])
@@ -726,6 +727,11 @@ def manage_tcp_connection(connid, allow_events):
 	elif usefulmsg == "keepalive":
 		try:
 			connid[0].send("keepalive=\n")
+		except Exception, e:
+			log_debug("UI connection : a problem occured when sending to " + str(connid[0]) + " " + str(e))
+	elif usefulmsg == "capabilities":
+		try:
+			connid[0].send("capabilities=%s\n" %capabilities)
 		except Exception, e:
 			log_debug("UI connection : a problem occured when sending to " + str(connid[0]) + " " + str(e))
 	elif usefulmsg != "":
@@ -1664,7 +1670,7 @@ class LineProp:
 	def set_chan_hangup(self, ichan):
 		nichan = ichan
 		if ichan.find("<ZOMBIE>") >= 0:
-		        log_debug("sch channel contains a <ZOMBIE> part : " + ichan + " : sending hup to " + nichan + "anyway")
+		        log_debug("sch channel contains a <ZOMBIE> part (%s) : sending hup to %s anyway" %(ichan,nichan))
 			nichan = ichan.split("<ZOMBIE>")[0]
 		firsttime = time.time()
 		self.chann[nichan] = ChannelStatus("Hangup", 0, "", "", "", firsttime)
@@ -1676,7 +1682,7 @@ class LineProp:
 	def del_chan(self, ichan):
 		nichan = ichan
 		if ichan.find("<ZOMBIE>") >= 0:
-		        log_debug("dch channel contains a <ZOMBIE> part : " + ichan + " : deleting " + nichan + "anyway")
+		        log_debug("dch channel contains a <ZOMBIE> part (%s) : deleting %s anyway" %(ichan,nichan))
 			nichan = ichan.split("<ZOMBIE>")[0]
 		if nichan in self.chann: del self.chann[nichan]
 
@@ -2025,6 +2031,7 @@ port_switchboard_base_sip = 5005
 session_expiration_time = 60
 log_filename = "/var/log/pf-xivo-cti-server/xivo_daemon.log"
 xivoconf_general = dict(xivoconf.items("general"))
+capabilities = ""
 
 if "port_fiche_login" in xivoconf_general:
 	port_login = int(xivoconf_general["port_fiche_login"])
@@ -2042,6 +2049,8 @@ if "expiration_session" in xivoconf_general:
 	session_expiration_time = int(xivoconf_general["expiration_session"])
 if "logfile" in xivoconf_general:
 	log_filename = xivoconf_general["logfile"]
+if "capabilities" in xivoconf_general:
+	capabilities = xivoconf_general["capabilities"]
 
 with_ami = True
 with_sip = True

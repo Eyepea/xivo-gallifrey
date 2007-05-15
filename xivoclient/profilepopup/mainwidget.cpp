@@ -63,7 +63,7 @@ MainWidget::MainWidget(Engine *engine, QWidget *parent)
 
 	m_tabwidget = new QTabWidget();
 
-#ifndef DISABLE_SWITCHBOARD_MESSAGES
+
 	QWidget * wid = new QWidget();
 	QVBoxLayout * vbox = new QVBoxLayout(wid);
 	QLabel * labelwhat = new QLabel(tr("Tell the Switchboard :"));
@@ -75,9 +75,9 @@ MainWidget::MainWidget(Engine *engine, QWidget *parent)
 	vbox->addWidget(m_messagetosend, 0);
 	wid->show();
 	setCentralWidget(wid);
-#else
-	setCentralWidget(m_tabwidget);
-#endif
+	//setCentralWidget(m_tabwidget);
+	
+	
 	QSettings settings;
 	m_tablimit = settings.value("display/tablimit", 5).toInt();
 }
