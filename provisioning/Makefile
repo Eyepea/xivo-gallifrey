@@ -1,21 +1,9 @@
 # $Revision$
 # $Date$
 
-TMPREP=/tmp/frpython
-FROZENEXT=py.fz
-
-default: frozen
+default:
 
 frozen:
-	mkdir -p ${TMPREP}
-	${FREEZEPATH}/freeze.py -o ${TMPREP} autoprov.py
-	make -C ${TMPREP}
-	mv ${TMPREP}/autoprov autoprov.${FROZENEXT}
-	rm -rf ${TMPREP}
-
-	mkdir -p ${TMPREP}
-	${FREEZEPATH}/freeze.py -o ${TMPREP} initconfig.py
-	make -C ${TMPREP}
-	mv ${TMPREP}/initconfig initconfig.${FROZENEXT}
-	rm -rf ${TMPREP}
+	${FREEZEPATH}/local_freeze.py ${FREEZEPATH}/freeze.py provsup,autoprov.py
+	${FREEZEPATH}/local_freeze.py ${FREEZEPATH}/freeze.py provsup,initconfig.py
 
