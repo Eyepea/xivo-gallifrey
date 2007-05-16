@@ -138,7 +138,7 @@ CREATE INDEX queue__idx__category ON queue(category);
 
 DROP TABLE queuefeatures;
 CREATE TABLE queuefeatures (
- id int(11) unsigned auto_increment,
+ id integer unsigned auto_increment,
  name varchar(255) NOT NULL,
  number varchar(80) default '',
  context varchar(80) NOT NULL default '',
@@ -155,7 +155,7 @@ CREATE TABLE queuefeatures (
  announceoverride varchar(128) default '',
  timeout tinyint unsigned,
  PRIMARY KEY(id)
-) TYPE=MyISAM DEFAULT CHARACTER SET utf8;
+);
 
 CREATE UNIQUE INDEX queuefeatures__uidx__name ON queuefeatures(name);
 

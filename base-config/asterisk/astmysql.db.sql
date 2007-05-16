@@ -1,3 +1,6 @@
+GRANT ALL PRIVILEGES ON asterisk.* TO asterisk@localhost IDENTIFIED BY PASSWORD '7560ba9c16089426';
+CREATE DATABASE IF NOT EXISTS `asterisk` DEFAULT CHARACTER SET utf8;
+
 DROP TABLE IF EXISTS `didfeatures`;
 CREATE TABLE `didfeatures` (
  `id` int(11) unsigned auto_increment,
