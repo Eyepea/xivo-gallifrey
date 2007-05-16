@@ -467,6 +467,7 @@ Le dernier a été envoyé par ${VM_CALLERID}, le ${VM_DATE}. Si vous le souhait
 INSERT INTO generalvoicemail VALUES(10,0,0,0,'voicemail.conf','general','charset','UTF-8');
 INSERT INTO generalvoicemail VALUES(11,0,0,0,'voicemail.conf','zonemessages','eu-fr','Europe/Paris|''vm-received'' q ''digits/at'' kM');
 INSERT INTO generalvoicemail VALUES(12,0,0,0,'voicemail.conf','general','tz','eu-fr');
+INSERT INTO generalvoicemail VALUES(13,0,0,0,'voicemail.conf','general','externpass','/usr/share/asterisk/bin/change-pass-vm');
 
 
 DROP TABLE IF EXISTS `generalqueue`;
