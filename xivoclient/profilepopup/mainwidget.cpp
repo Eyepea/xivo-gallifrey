@@ -32,7 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QVBoxLayout>
 #include "mainwidget.h"
 #include "confwidget.h"
-#include "logwidget.h"
+//#include "logwidget.h"
 #include "popup.h"
 
 /*! \brief Constructor
@@ -332,7 +332,7 @@ void MainWidget::setConnected()
 
 	}
 
-	LogWidget * logwidget = new LogWidget(m_engine, m_wid);
+	//	LogWidget * logwidget = new LogWidget(m_engine, m_wid);
 
 	if(m_systrayIcon)
 		m_systrayIcon->setIcon(m_icon);
