@@ -66,7 +66,7 @@ except:
 	sys.exit()
 
 cursor = conn.cursor()
-query = "select type,typeid from didfeatures where number=%d" % exten
+query = "select type,typeid,custom from didfeatures where number=%d" % exten
 cursor.execute(query)
 t = cursor.fetchone()
 
