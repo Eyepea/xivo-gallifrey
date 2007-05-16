@@ -9,6 +9,7 @@ Copyright (C) 2007, Proformatique
 __version__ = "$Revision$ $Date$"
 GETOPT_SHORTOPTS = 'b:l:dfc:'
 
+import _sre
 import sys
 # === BEGIN of early configuration handling, so that the sys.path can be altered
 CONFIG_FILE = '/etc/xivo/provisioning.conf' # can be overridded by cmd line param
