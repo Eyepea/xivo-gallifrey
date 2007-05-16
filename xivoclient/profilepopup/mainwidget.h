@@ -70,10 +70,14 @@ private:
 	//QIcon m_icongreen;	//!< Icon object with green indicator
 	QIcon m_icon;		//!< Icon Object
 	QIcon m_icongrey;	//!< greyed Icon Object
+
+	QWidget * m_wid;	//!< Main widget
 	QTabWidget * m_tabwidget;	//!< Area to display profiles
 	QVBoxLayout * m_vboxwidgets;    //!< Panel of widgets
 	QLabel * m_messagetosendlabel;    //!< Label for message for switchboards
 	QLineEdit * m_messagetosend;    //!< Message to send to the connected switchboards
+	QLabel * m_history;
+
 	int m_tablimit;		//!< Maximum number of tabs in m_tabwidget
 	// actions :
 	QAction * m_cfgact;		//!< Configuration Action

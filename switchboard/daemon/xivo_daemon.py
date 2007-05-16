@@ -97,7 +97,7 @@
 
 # debian.org modules
 import ConfigParser
-import encodings.latin_1
+import encodings.utf_8
 import getopt
 import ldap
 import MySQLdb
@@ -276,7 +276,7 @@ def update_history_call(astn, sipnum, nlines, kind):
 				       user = xivoconf_general["cdr_db_username"],
 				       passwd = xivoconf_general["cdr_db_passwd"],
 				       db = xivoconf_general["cdr_db_basename"],
-				       charset = None)
+				       charset = 'utf8')
 		cursor = conn.cursor()
 		table = xivoconf_general["cdr_db_tablename"]
 		if kind == "0": # outgoing calls

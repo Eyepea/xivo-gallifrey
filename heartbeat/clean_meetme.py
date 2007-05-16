@@ -4,7 +4,6 @@
 # Server program that cleans meeting rooms
 
 import os
-import select
 import socket
 import string
 import sys

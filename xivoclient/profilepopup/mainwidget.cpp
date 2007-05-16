@@ -32,6 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QVBoxLayout>
 #include "mainwidget.h"
 #include "confwidget.h"
+#include "logwidget.h"
 #include "popup.h"
 
 /*! \brief Constructor
@@ -60,14 +61,14 @@ MainWidget::MainWidget(Engine *engine, QWidget *parent)
 	setWindowIcon(QIcon(":/xivoicon.png"));
 	statusBar()->clearMessage();
 	
+	m_wid = new QWidget();
+
+	m_vboxwidgets = new QVBoxLayout(m_wid);
 	m_tabwidget = new QTabWidget();
 
-	QWidget * wid = new QWidget();
-	m_vboxwidgets = new QVBoxLayout(wid);
 	m_vboxwidgets->addWidget(m_tabwidget, 1);
 
-	setCentralWidget(wid);
-	//setCentralWidget(m_tabwidget);
+	setCentralWidget(m_wid);
 
 	QSettings settings;
 	m_tablimit = settings.value("display/tablimit", 5).toInt();
@@ -297,6 +298,9 @@ void MainWidget::setDisconnected()
 			m_vboxwidgets->removeWidget(m_messagetosend);
 			delete m_messagetosendlabel;
 			delete m_messagetosend;
+		} else if(capas[c] == QString("history")) {
+			m_vboxwidgets->removeWidget(m_history);
+			delete m_history;
 		}
 	}
 
@@ -321,8 +325,14 @@ void MainWidget::setConnected()
 				 this, SLOT(affTextChanged()) );
 			m_vboxwidgets->addWidget(m_messagetosendlabel, 0);
 			m_vboxwidgets->addWidget(m_messagetosend, 0);
+		} else if(capas[c] == QString("history")) {
+			m_history = new QLabel(tr("History"));
+			m_vboxwidgets->addWidget(m_history, 0);
 		}
+
 	}
+
+	LogWidget * logwidget = new LogWidget(m_engine, m_wid);
 
 	if(m_systrayIcon)
 		m_systrayIcon->setIcon(m_icon);
