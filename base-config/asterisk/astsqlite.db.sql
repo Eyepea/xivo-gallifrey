@@ -48,7 +48,7 @@ CREATE TABLE meetme (
  filename varchar(128) NOT NULL,
  category varchar(128) NOT NULL,
  var_name varchar(128) NOT NULL,
- var_var varchar(128),
+ var_val varchar(128),
  PRIMARY KEY(id)
 );
 
@@ -373,7 +373,7 @@ CREATE TABLE generalsip (
  filename varchar(128) NOT NULL,
  category varchar(128) NOT NULL,
  var_name varchar(128) NOT NULL,
- var_var varchar(128),
+ var_val varchar(128),
  PRIMARY KEY(id)
 );
 
@@ -408,7 +408,7 @@ CREATE TABLE generaliax (
  filename varchar(128) NOT NULL,
  category varchar(128) NOT NULL,
  var_name varchar(128) NOT NULL,
- var_var varchar(128),
+ var_val varchar(128),
  PRIMARY KEY(id)
 );
 
@@ -434,7 +434,7 @@ CREATE TABLE generalvoicemail (
  filename varchar(128) NOT NULL,
  category varchar(128) NOT NULL,
  var_name varchar(128) NOT NULL,
- var_var text,
+ var_val text,
  PRIMARY KEY(id)
 );
 
@@ -470,7 +470,7 @@ CREATE TABLE generalqueue (
  filename varchar(128) NOT NULL,
  category varchar(128) NOT NULL,
  var_name varchar(128) NOT NULL,
- var_var varchar(128),
+ var_val varchar(128),
  PRIMARY KEY(id)
 );
 
@@ -544,7 +544,7 @@ CREATE TABLE musiconhold (
  filename varchar(128) NOT NULL,
  category varchar(128) NOT NULL,
  var_name varchar(128) NOT NULL,
- var_var varchar(128),
+ var_val varchar(128),
  PRIMARY KEY(id)
 );
 
