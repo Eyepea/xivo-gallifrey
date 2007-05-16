@@ -59,6 +59,7 @@ except:
 
 if len(sys.argv) != 3:
 	print "VERBOSE \"Missing args!\""
+	sys.exit()
 
 
 # FIXME : Make table to be dynamic
