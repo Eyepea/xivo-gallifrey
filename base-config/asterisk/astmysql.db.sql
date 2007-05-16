@@ -48,7 +48,7 @@ CREATE TABLE `meetme` (
  `filename` varchar(128) NOT NULL,
  `category` varchar(128) NOT NULL,
  `var_name` varchar(128) NOT NULL,
- `var_val` varchar(128) NOT NULL,
+ `var_val` varchar(128),
  PRIMARY KEY(id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -376,7 +376,7 @@ CREATE TABLE `generalsip` (
  `filename` varchar(128) NOT NULL,
  `category` varchar(128) NOT NULL,
  `var_name` varchar(128) NOT NULL,
- `var_val` varchar(128) NOT NULL,
+ `var_val` varchar(128),
  PRIMARY KEY(id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -413,7 +413,7 @@ CREATE TABLE `generaliax` (
  `filename` varchar(128) NOT NULL,
  `category` varchar(128) NOT NULL,
  `var_name` varchar(128) NOT NULL,
- `var_val` varchar(128) NOT NULL,
+ `var_val` varchar(128),
  PRIMARY KEY(id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -441,7 +441,7 @@ CREATE TABLE `generalvoicemail` (
  `filename` varchar(128) NOT NULL,
  `category` varchar(128) NOT NULL,
  `var_name` varchar(128) NOT NULL,
- `var_val` text NOT NULL,
+ `var_val` text,
  PRIMARY KEY(id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -479,7 +479,7 @@ CREATE TABLE `generalqueue` (
  `filename` varchar(128) NOT NULL,
  `category` varchar(128) NOT NULL,
  `var_name` varchar(128) NOT NULL,
- `var_val` varchar(128) NOT NULL,
+ `var_val` varchar(128),
  PRIMARY KEY(id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -555,7 +555,7 @@ CREATE TABLE `musiconhold` (
  `filename` varchar(128) NOT NULL,
  `category` varchar(128) NOT NULL,
  `var_name` varchar(128) NOT NULL,
- `var_val` varchar(128) NOT NULL,
+ `var_val` varchar(128),
  PRIMARY KEY(id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
