@@ -57,18 +57,18 @@ except:
         print "VERBOSE \"Error to connect %s\" %options['db_uri']"
         sys.exit()
 
-if len(sys.argv) != 3:
-	print "VERBOSE \"Missing args!\""
-	sys.exit()
-
+if len(sys.argv) != 4:
+        print "Missing args!"
+        sys.exit()
 
 # FIXME : Make table to be dynamic
-table = uservoicemail
+table = 'uservoicemail'
 
 context = sys.argv[1]
-extension = sys.argv[2]
+mailbox = sys.argv[2]
 password = sys.argv[3]
 
 cursor = conn.cursor()
-query = "update %s set password='%d' where context='%s' and extension='%s'" % (table, password, context, extension)
+query = "UPDATE %s SET password='%s' WHERE context='%s' AND mailbox='%s'" % (table, password, context, mailbox)
 cursor.execute(query)
+conn.commit()
