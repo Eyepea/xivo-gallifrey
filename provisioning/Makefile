@@ -2,7 +2,6 @@
 # $Date$
 
 TMPREP=/tmp/frpython
-FREEZEPATH=../../../eyefar/trunk/python-freeze
 FROZENEXT=py.fz
 
 default: frozen
