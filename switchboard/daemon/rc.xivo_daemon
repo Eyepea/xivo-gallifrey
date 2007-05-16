@@ -2,11 +2,11 @@
 # $Revision$
 # $Date$
 #
-# Startup daemon script for autoprov
+# Startup daemon script for xivo_daemon
 #
 
-DAEMON=/usr/sbin/autoprov
-PIDFILE="/var/run/autoprov.pid"
+DAEMON=/usr/sbin/xivo_daemon
+PIDFILE="/var/run/xivo_daemon.pid"
 
 # TODO :
 # - section LSB
@@ -15,20 +15,21 @@ PIDFILE="/var/run/autoprov.pid"
 case "$1" in
   start)
 	if [ -e $PIDFILE ] ; then
-	    echo "A autoprov daemon PID file was found. Nothing new started."
+	    echo "A xivo_daemon daemon PID file" $PIDFILE "was found. Nothing new started."
 	    exit 1
 	else
-	    echo "Starting autoprov daemon."
+	    echo "Starting xivo_daemon daemon."
 	    $DAEMON
 	fi
 	;;
   stop)
 	if ! [ -e $PIDFILE ] ; then
-	    echo "No autoprov daemon PID file found."
+	    echo "No xivo_daemon daemon PID file" $PIDFILE "found."
 	    exit 1
 	else
-	    echo "Stopping autoprov daemon."
+	    echo "Stopping xivo_daemon daemon."
 	    DAEMONPID=$(cat $PIDFILE | tr -d '[:blank:]')
+	    echo "PID =" $DAEMONPID
 	    kill $DAEMONPID
 	    rm $PIDFILE
 	fi

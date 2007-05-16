@@ -1,0 +1,57 @@
+#!/bin/sh
+# $Revision$
+# $Date$
+#
+# Startup daemon script for autoprov
+#
+
+DAEMON=/usr/sbin/autoprov
+PID=`ps aux | grep autoprov | grep -v grep | awk '{print $2}'`
+#PIDFILE="/var/run/autoprov.pid"
+
+# TODO :
+# - section LSB
+# - start stop daemon
+
+case "$1" in
+  start)
+#	if [ -e $PIDFILE ] ; then
+#	    echo "An autoprov daemon PID file was found. Nothing new started."
+#	    exit 1
+	if ! [ "$PID" = "" ] ; then
+	    echo "A PID " $PID "was found for autoprov. Nothing new started."
+	    exit 1
+	else
+	    echo "Starting autoprov daemon."
+	    $DAEMON
+	fi
+	;;
+  stop)
+#	if ! [ -e $PIDFILE ] ; then
+#	    echo "No autoprov daemon PID file found."
+#	    exit 1
+	if [ "$PID" = "" ] ; then
+	    echo "No autoprov daemon PID found."
+	    exit 1
+	else
+	    echo "Stopping autoprov daemon."
+#	    DAEMONPID=$(cat $PIDFILE | tr -d '[:blank:]')
+#	    kill $DAEMONPID
+#	    rm $PIDFILE
+	    kill $PID
+	fi
+	;;
+  force-reload)
+	;;
+  restart)
+	$0 stop
+	$0 start
+	;;
+  *)
+	echo "Usage: $0 {start|stop|force-reload|restart}"
+	exit 1
+	;;
+esac
+
+exit 0
+

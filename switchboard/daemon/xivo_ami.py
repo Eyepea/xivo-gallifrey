@@ -1,6 +1,6 @@
 #!/usr/bin/python
-# $Revision: 341 $
-# $Date: 2007-04-13 19:27:06 +0200 (ven, 13 avr 2007) $
+# $Revision$
+# $Date$
 #
 
 import socket
