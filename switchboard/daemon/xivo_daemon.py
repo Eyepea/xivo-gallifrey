@@ -97,6 +97,7 @@
 
 # debian.org modules
 import ConfigParser
+import encodings.latin_1
 import getopt
 import ldap
 import MySQLdb
@@ -274,17 +275,18 @@ def update_history_call(astn, sipnum, nlines, kind):
 				       port = int(xivoconf_general["cdr_db_port"]),
 				       user = xivoconf_general["cdr_db_username"],
 				       passwd = xivoconf_general["cdr_db_passwd"],
-				       db = xivoconf_general["cdr_db_basename"])
+				       db = xivoconf_general["cdr_db_basename"],
+				       charset = None)
 		cursor = conn.cursor()
 		table = xivoconf_general["cdr_db_tablename"]
 		if kind == "0": # outgoing calls
-			sql = "SELECT * FROM %s WHERE ((src = %s) and (disposition = \"ANSWERED\")) ORDER BY calldate DESC LIMIT %s;" \
+			sql = "SELECT * FROM %s WHERE `src`='%s' AND `disposition`='ANSWERED' ORDER BY calldate DESC LIMIT %s;" \
 			      %(table,sipnum,nlines)
 		elif kind == "1": # incoming calls
-			sql = "SELECT * FROM %s WHERE ((dst = %s) and (disposition = \"ANSWERED\")) ORDER BY calldate DESC LIMIT %s;" \
+			sql = "SELECT * FROM %s WHERE `dst`='%s' AND `disposition`='ANSWERED' ORDER BY calldate DESC LIMIT %s;" \
 			      %(table,sipnum,nlines)
 		else: # missed calls
-			sql = "SELECT * FROM %s WHERE ((dst = %s) and (disposition != \"ANSWERED\")) ORDER BY calldate DESC LIMIT %s;" \
+			sql = "SELECT * FROM %s WHERE `dst`='%s' AND `disposition`!='ANSWERED' ORDER BY calldate DESC LIMIT %s;" \
 			      %(table,sipnum,nlines)
 		cursor.execute(sql)
 		results = cursor.fetchall()
@@ -1850,7 +1852,7 @@ class LoginHandler(SocketServer.StreamRequestHandler):
 		else:
 			e['state'] = "undefinedstate"
 		userlist_lock.release()
-		retline = 'OK SESSIONID ' + sessionid + '\r\n'
+		retline = 'OK SESSIONID %s %s\r\n' %(sessionid,capabilities)
 		self.wfile.write(retline)
 
 		if astnum >= 0:
@@ -2066,18 +2068,22 @@ ip_reverse_sht = {}
 
 for i in xivoconf.sections():
 	if i != "general":
+		xivoconf_local = dict(xivoconf.items(i))
+		extrachannels = ""
+		if "extrachannels" in xivoconf_local:
+			extrachannels = xivoconf_local["extrachannels"]
 		configs.append(AsteriskRemote(i,
-					      xivoconf.get(i, "userlisturl"),
-					      xivoconf.get(i, "extrachannels"),
-					      xivoconf.get(i, "localaddr"),
-					      xivoconf.get(i, "ipaddress"),
-					      xivoconf.get(i, "ipaddress_php"),
-					      int(xivoconf.get(i, "ami_port")),
-					      xivoconf.get(i, "ami_login"),
-					      xivoconf.get(i, "ami_pass"),
+					      xivoconf_local["userlisturl"],
+					      extrachannels,
+					      xivoconf_local["localaddr"],
+					      xivoconf_local["ipaddress"],
+					      xivoconf_local["ipaddress_php"],
+					      int(xivoconf_local["ami_port"]),
+					      xivoconf_local["ami_login"],
+					      xivoconf_local["ami_pass"],
 					      port_switchboard_base_sip + n,
-					      int(xivoconf.get(i, "sip_port")),
-					      xivoconf.get(i, "sip_presence_account")))
+					      int(xivoconf_local["sip_port"]),
+					      xivoconf_local["sip_presence_account"]))
 		ip_reverse_sht[xivoconf.get(i, "ipaddress")] = n
 		ip_reverse_php[xivoconf.get(i, "ipaddress_php")] = n
 		save_for_next_packet_events.append("")
