@@ -41,11 +41,33 @@ outcall = "/etc/asterisk/xivo_outcall.conf"
 config = ConfigParser.ConfigParser()
 config.readfp(open(outcall))
 
-sys.stdout.write("SET VARIABLE USEENUM \"" + config.get('outcall', 'useenum') + "\"\n")
-sys.stdout.write("SET VARIABLE USEZEROFOROUT \"" + config.get('outcall', 'usezeroforout') + "\"\n")
-sys.stdout.write("SET VARIABLE SETCALLERID \"" + config.get('outcall', 'setcallerid') + "\"\n")
-sys.stdout.write("SET VARIABLE CHANVOIP \"" + config.get('outcall', 'chanvoip') + "\"\n")
-sys.stdout.write("SET VARIABLE CHANISDN \"" + config.get('outcall', 'chanisdn') + "\"\n")
-sys.stdout.write("SET VARIABLE EMERGENCYNUMBERS \"" + config.get('outcall', 'emergencynumbers') + "\"\n")
-sys.stdout.write("SET VARIABLE EXTERNNUM \"" + config.get('outcall', 'externnum') + "\"\n")
-sys.stdout.write("SET VARIABLE USEVOIPFORCALL \"" + config.get('outcall', 'usevoipforcall') + "\"\n")
+providers = ''
+for provider in config.sections():
+        if provider != 'general':
+                if not providers:
+                        providers = provider
+                else:
+                        providers = providers + "," + provider
+
+if len(sys.argv) > 1:
+        try:
+                section = sys.argv[1]
+                sys.stdout.write("SET VARIABLE EXTERNPREFIX \"" + config.get(section, 'externprefix') + "\"\n")
+                sys.stdout.write("SET VARIABLE PREFIX \"" + config.get(section, 'prefix') + "\"\n")
+                sys.stdout.write("SET VARIABLE CHAN \"" + config.get(section, 'chan') + "\"\n")
+                sys.stdout.write("SET VARIABLE EXTERNNUM \"" + config.get(section, 'externnum') + "\"\n")
+                sys.stdout.write("SET VARIABLE SETCALLERID \"" + config.get(section, 'setcallerid') + "\"\n")
+                sys.stdout.write("SET VARIABLE STRIPNUM \"" + config.get(section, 'stripnum') + "\"\n")
+                sys.stdout.write("SET VARIABLE USEENUM \"" + config.get(section, 'useenum') + "\"\n")
+                sys.stdout.write("SET VARIABLE TIMETOCALL \"" + config.get(section, 'timetocall') + "\"\n")
+        except ConfigParser.NoSectionError:
+                print "VERBOSE \"Sorry no providers with this name\""
+        except ConfigParser.NoOptionError:
+                print "VERBOSE \"Sorry your config is broken please add all options on the section %s\"" % section
+else:
+        sys.stdout.write("SET VARIABLE EMERGENCYPROVIDER \"" + config.get('general', 'emergencyprovider') + "\"\n")
+        sys.stdout.write("SET VARIABLE EMERGENCYNUMBERS \"" + config.get('general', 'emergencynumbers') + "\"\n")
+        sys.stdout.write("SET VARIABLE SPECIALNUMBERS \"" + config.get('general', 'specialnumbers') + "\"\n")
+        sys.stdout.write("SET VARIABLE SPECIALPROVIDER \"" + config.get('general', 'specialprovider') + "\"\n")
+        sys.stdout.write("SET VARIABLE PREFERPROVIDER \"" + config.get('general', 'preferprovider') + "\"\n")
+        sys.stdout.write("SET VARIABLE PROVIDERS \"" + providers + "\"\n")
