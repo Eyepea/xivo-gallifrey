@@ -27,7 +27,7 @@ int main(int argc, char * * argv)
 	app.installTranslator(&qtTranslator);
 
 	QTranslator switchboardTranslator;
-	switchboardTranslator.load("switchboard_" + QLocale::system().name());
+	switchboardTranslator.load(":/switchboard_" + QLocale::system().name());
 	app.installTranslator(&switchboardTranslator);
 
 	SwitchBoardEngine engine;

@@ -4,6 +4,7 @@
 #include <QLabel>
 #include <QGroupBox>
 #include <QRadioButton>
+#include <QScrollArea>
 #include <QDebug>
 #include "logwidget.h"
 #include "logeltwidget.h"
@@ -12,8 +13,9 @@
 LogWidget::LogWidget(SwitchBoardEngine * engine, QWidget * parent)
 : QWidget(parent), m_engine(engine), m_timer(-1)
 {
-	m_layout = new QVBoxLayout(this);
-	m_layout->setSpacing(2);
+	QVBoxLayout * layout = new QVBoxLayout(this);
+	layout->setMargin(0);
+	layout->setSpacing(2);
 	QGroupBox * groupBox = new QGroupBox( tr("Call history"), this );
 	QVBoxLayout * vbox = new QVBoxLayout( groupBox );
 	m_radioOut = new QRadioButton( tr("&Outgoing calls"), groupBox );
@@ -29,16 +31,22 @@ LogWidget::LogWidget(SwitchBoardEngine * engine, QWidget * parent)
 	connect( m_radioMissed, SIGNAL(toggled(bool)),
 	         this, SLOT(modeChanged(bool)) );
 	vbox->addWidget( m_radioMissed );
-	m_layout->addWidget( groupBox );
+	layout->addWidget( groupBox );
+	QScrollArea * scrollArea = new QScrollArea( this );
+	scrollArea->setWidgetResizable( true );
+	QWidget * widget = new QWidget( this );
+	scrollArea->setWidget( widget );
+	m_layout = new QVBoxLayout( widget );
 	m_layout->addStretch(1);
+	layout->addWidget( scrollArea );
 }
 
 void LogWidget::addElement(const QString & peer, LogEltWidget::Direction d,
                            const QDateTime & dt, int duration)
 {
 	//qDebug() << "LogWidget::addElement()" << peer << d << dt << duration;
-	int i, index = 1;
-	for(i = 1; i<m_layout->count(); i++)
+	int i, index = 0;
+	for(i = 0; i<m_layout->count(); i++)
 	{
 		QWidget * widget = m_layout->itemAt( i )->widget();
 		if(widget)
@@ -65,7 +73,7 @@ void LogWidget::addElement(const QString & peer, LogEltWidget::Direction d,
 void LogWidget::clear()
 {
 	QLayoutItem * child;
-	while ((child = m_layout->itemAt(1)) != 0)
+	while ((child = m_layout->itemAt(0)) != 0)
 	{
 		if(child->widget())
 		{

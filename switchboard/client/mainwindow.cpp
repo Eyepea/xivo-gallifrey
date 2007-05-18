@@ -1,5 +1,4 @@
 /* $Id$ */
-/* $Revision$ $Date$ */
 /* Copyright (C) 2007 Proformatique */
 
 #include <QStatusBar>
@@ -59,21 +58,20 @@ QLabel * LeftPanel::titleLabel()
 MainWindow::MainWindow(SwitchBoardEngine * engine)
 : m_engine(engine)
 {
-// va falloir réorganiser les communications entre le "Engine"
-// et les objets d'affichage.
+	statusBar();	// This creates the status bar.
 	setWindowIcon(QIcon(":/xivoicon.png"));
 	setWindowTitle("Xivo Switchboard");
-
 
 	m_splitter = new QSplitter(this);
 	m_leftSplitter = new QSplitter(Qt::Vertical, m_splitter);
 
 	QScrollArea * areaCalls = new QScrollArea(this);
 	LeftPanel * leftPanel = new LeftPanel(areaCalls, m_leftSplitter);
-	QScrollArea * areaLog = new QScrollArea(m_leftSplitter);
-	areaLog->setWidgetResizable(true);
-	LogWidget * logwidget = new LogWidget(m_engine, areaLog);
-	areaLog->setWidget(logwidget);
+	//QScrollArea * areaLog = new QScrollArea(m_leftSplitter);
+	//areaLog->setWidgetResizable(true);
+	//LogWidget * logwidget = new LogWidget(m_engine, areaLog);
+	LogWidget * logwidget = new LogWidget(m_engine, m_leftSplitter);
+	//areaLog->setWidget(logwidget);
 	connect( engine, SIGNAL(updateLogEntry(const QDateTime &, int, const QString &, int)),
 	         logwidget, SLOT(addLogEntry(const QDateTime &, int, const QString &, int)) );
 
@@ -129,7 +127,6 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 
 	m_rightSplitter = new QSplitter(Qt::Vertical, m_splitter);
 
-	//SearchPanel * searchpanel = new SearchPanel(m_splitter);
 	SearchPanel * searchpanel = new SearchPanel(m_rightSplitter);
 	searchpanel->setEngine(engine);
 	connect( engine, SIGNAL(updatePeer(const QString &, const QString &,
@@ -143,11 +140,9 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 	connect( engine, SIGNAL(removePeer(const QString &)),
 	         searchpanel, SLOT(removePeer(const QString &)) );
 
-	QSplitter * m_rightbottomSplitter = new QSplitter(Qt::Vertical, m_rightSplitter);
+	DisplayMessagesPanel * lbl = new DisplayMessagesPanel(m_rightSplitter);
 	
-	DisplayMessagesPanel * lbl = new DisplayMessagesPanel(m_rightbottomSplitter);
-	
-	DialPanel * dialpanel = new DialPanel(m_rightbottomSplitter);
+	DialPanel * dialpanel = new DialPanel(m_rightSplitter);
 	connect( dialpanel, SIGNAL(emitDial(const QString &)),
 	         engine, SLOT(dial(const QString &)) );
 	
@@ -161,8 +156,8 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 	m_rightSplitter->restoreState(settings.value("display/rightSplitterSizes").toByteArray());
 
 	restoreGeometry(settings.value("display/mainwingeometry").toByteArray());
-// 	connect(m_engine, SIGNAL(emitTextMessage(const QString &)),
-// 	        statusBar(), SLOT(showMessage(const QString &)));
+ 	connect(m_engine, SIGNAL(emitTextMessage(const QString &)),
+ 	        statusBar(), SLOT(showMessage(const QString &)));
 	connect(m_engine, SIGNAL(emitTextMessage(const QString &)),
 	        lbl, SLOT(updateMessage(const QString &)));
 	connect(m_engine, SIGNAL(started()),

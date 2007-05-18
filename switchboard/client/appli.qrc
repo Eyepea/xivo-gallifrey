@@ -1,6 +1,7 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
 	<file>xivoicon.png</file>
+	<file>switchboard_fr.qm</file>
 	<file>phone-blue.png</file>
 	<file>phone-green.png</file>
 	<file>phone-grey.png</file>
