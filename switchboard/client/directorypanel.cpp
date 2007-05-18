@@ -5,6 +5,8 @@
 #include <QLineEdit>
 #include <QTableWidget>
 #include <QLabel>
+#include <QContextMenuEvent>
+#include <QMenu>
 #include <QDebug>
 #include "directorypanel.h"
 
@@ -66,6 +68,7 @@ void DirectoryPanel::setSearchResponse(const QString & resp)
 	QStringList labelList;
 	for(i = 1; i <= ncolumns; i++)
 		labelList << items[i];
+	m_table->setHorizontalHeaderLabels( labelList );
 	for(y = 0; y < nrows; y++)
 		for(x = 0; x < ncolumns; x++)
 		{
@@ -77,11 +80,27 @@ void DirectoryPanel::setSearchResponse(const QString & resp)
 			m_table->setItem( y, x, item );
 			//qDebug() << m_table->cellWidget( y, x );
 		}
-	m_table->setHorizontalHeaderLabels( labelList );
 }
 
 void DirectoryPanel::startSearch()
 {
 	searchDirectory( m_searchText->text() );
+}
+
+void DirectoryPanel::contextMenuEvent(QContextMenuEvent * event)
+{
+	qDebug() << "DirectoryPanel::contextMenuEvent" << event->pos();
+	//qDebug() << "  " << event->globalPos();
+	qDebug() << "  " << event->pos() - m_table->pos() << "m_table->pos()=" << m_table->pos();
+	QTableWidgetItem * item = m_table->itemAt( event->pos() - m_table->pos() );
+	qDebug() << "  " << item;
+	if(item)
+	{
+		qDebug() << "   " << item->text();
+		// TODO : check that this is a number !
+		QMenu contextMenu(this);
+		contextMenu.addAction( tr("&Dial") );
+		contextMenu.exec( event->globalPos() );
+	}
 }
 

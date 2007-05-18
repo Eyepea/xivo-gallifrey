@@ -15,6 +15,8 @@ class DirectoryPanel : public QWidget
 	Q_OBJECT
 public:
 	DirectoryPanel(QWidget * parent = 0);
+protected:
+	void contextMenuEvent(QContextMenuEvent *);
 signals:
 	void searchDirectory(const QString &);
 private slots:
