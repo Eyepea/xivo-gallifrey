@@ -9,7 +9,7 @@
 #           (C) 2007 Proformatique
 #
 
-__version__ = "$Revision$ $Date$"
+__version__ = "$Revision: 616 $ $Date: 2007-05-16 11:48:13 +0200 (mer, 16 mai 2007) $"
 __license__ = """
     Copyright (C) 2007, Proformatique
 
@@ -36,20 +36,16 @@ try:
 except:
         exten = ""
 
-ring = "/etc/asterisk/xivo_ring.conf"
+outcall = "/etc/asterisk/xivo_outcall.conf"
 
 config = ConfigParser.ConfigParser()
-config.readfp(open(ring))
+config.readfp(open(outcall))
 
-#phonetype = config.get('number', exten)
-phonetype = 'thomson'
-
-sys.stdout.write("SET VARIABLE RINGINTERNAL \"" + config.get(phonetype, 'intern') + "\"\n")
-sys.stdout.write("SET VARIABLE RINGEXTERNAL \"" + config.get(phonetype, 'extern') + "\"\n")
-sys.stdout.write("SET VARIABLE RINGGROUP \"" + config.get(phonetype, 'group') + "\"\n")
-
-if phonetype == 'thomson':
-	sys.stdout.write("SET VARIABLE ISTHOMSON 1\n")
-
-sys.stdout.flush()
-sys.stderr.flush()
+sys.stdout.write("SET VARIABLE USEENUM \"" + config.get('outcall', 'useenum') + "\"\n")
+sys.stdout.write("SET VARIABLE USEZEROFOROUT \"" + config.get('outcall', 'usezeroforout') + "\"\n")
+sys.stdout.write("SET VARIABLE SETCALLERID \"" + config.get('outcall', 'setcallerid') + "\"\n")
+sys.stdout.write("SET VARIABLE CHANVOIP \"" + config.get('outcall', 'chanvoip') + "\"\n")
+sys.stdout.write("SET VARIABLE CHANISDN \"" + config.get('outcall', 'chanisdn') + "\"\n")
+sys.stdout.write("SET VARIABLE EMERGENCYNUMBERS \"" + config.get('outcall', 'emergencynumbers') + "\"\n")
+sys.stdout.write("SET VARIABLE EXTERNNUM \"" + config.get('outcall', 'externnum') + "\"\n")
+sys.stdout.write("SET VARIABLE USEVOIPFORCALL \"" + config.get('outcall', 'usevoipforcall') + "\"\n")
