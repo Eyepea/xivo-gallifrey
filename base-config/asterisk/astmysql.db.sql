@@ -100,7 +100,7 @@ CREATE TABLE `queue` (
  `name` varchar(128) NOT NULL,
  `musiconhold` varchar(128),
  `announce` varchar(128),
- `context` varchar(128),
+ `context` varchar(80),
  `timeout` tinyint unsigned,
  `monitor-join` tinyint(1) default 0,
  `monitor-format` varchar(128),
@@ -247,7 +247,7 @@ DROP TABLE IF EXISTS `uservoicemail`;
 CREATE TABLE `uservoicemail` (
  `id` int(11) unsigned auto_increment,
  `customer_id` varchar(11) NOT NULL default '0',
- `context` varchar(50) NOT NULL default '',
+ `context` varchar(80) NOT NULL default '',
  `mailbox` varchar(11) NOT NULL default '0',
  `password` varchar(5) NOT NULL default '0',
  `fullname` varchar(150) NOT NULL default '',
