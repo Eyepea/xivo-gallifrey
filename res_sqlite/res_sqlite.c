@@ -708,33 +708,41 @@ static struct ast_cli_entry cli_status_cmd =
  * SQL query format to create the CDR table if non existent.
  */
 static char *sql_create_cdr_table =
-"CREATE TABLE '%q' ("
-"	id		INTEGER PRIMARY KEY,"
-"	clid		VARCHAR(80) NOT NULL DEFAULT '',"
-"	src		VARCHAR(80) NOT NULL DEFAULT '',"
-"	dst		VARCHAR(80) NOT NULL DEFAULT '',"
-"	dcontext	VARCHAR(80) NOT NULL DEFAULT '',"
-"	channel		VARCHAR(80) NOT NULL DEFAULT '',"
-"	dstchannel	VARCHAR(80) NOT NULL DEFAULT '',"
-"	lastapp		VARCHAR(80) NOT NULL DEFAULT '',"
-"	lastdata	VARCHAR(80) NOT NULL DEFAULT '',"
-"	start		CHAR(19) NOT NULL DEFAULT '0000-00-00 00:00:00',"
-"	answer		CHAR(19) NOT NULL DEFAULT '0000-00-00 00:00:00',"
-"	end		CHAR(19) NOT NULL DEFAULT '0000-00-00 00:00:00',"
-"	duration	INT(11) NOT NULL DEFAULT '0',"
-"	billsec		INT(11) NOT NULL DEFAULT '0',"
-"	disposition	INT(11) NOT NULL DEFAULT '0',"
-"	amaflags	INT(11) NOT NULL DEFAULT '0',"
-"	accountcode	VARCHAR(20) NOT NULL DEFAULT '',"
-"	uniqueid	VARCHAR(32) NOT NULL DEFAULT '',"
-"	userfield	VARCHAR(255) NOT NULL DEFAULT ''"
-");";
+"CREATE TABLE '%q' (\n"
+" id integer unsigned auto_increment,\n"
+" calldate char(19) DEFAULT '0000-00-00 00:00:00',\n"
+" clid varchar(80) NOT NULL DEFAULT '',\n"
+" src varchar(80) NOT NULL DEFAULT '',\n"
+" dst varchar(80) NOT NULL DEFAULT '',\n"
+" dcontext varchar(80) NOT NULL DEFAULT '',\n"
+" channel varchar(80) NOT NULL DEFAULT '',\n"
+" dstchannel varchar(80) NOT NULL DEFAULT '',\n"
+" lastapp varchar(80) NOT NULL DEFAULT '',\n"
+" lastdata varchar(80) NOT NULL DEFAULT '',\n"
+" start char(19) DEFAULT '0000-00-00 00:00:00',\n"
+" answer char(19) DEFAULT '0000-00-00 00:00:00',\n"
+" end char(19) DEFAULT '0000-00-00 00:00:00',\n"
+" duration integer unsigned NOT NULL DEFAULT 0,\n"
+" billsec integer unsigned NOT NULL DEFAULT 0,\n"
+" disposition varchar(9) NOT NULL DEFAULT '',\n"
+" amaflags tinyint unsigned NOT NULL DEFAULT 0,\n"
+" accountcode varchar(20) NOT NULL DEFAULT '',\n"
+" uniqueid varchar(32) NOT NULL DEFAULT '',\n"
+" userfield varchar(255) NOT NULL DEFAULT '',\n"
+" PRIMARY KEY(id)\n"
+");\n\n"
+"CREATE INDEX cdr__idx__disposition ON cdr(dispotion);\n"
+"CREATE INDEX cdr__idx__src ON cdr(src);\n"
+"CREATE INDEX cdr__idx__dst ON cdr(dst);\n"
+"CREATE INDEX cdr__idx__calldate ON cdr(calldate);\n"
+"CREATE INDEX cdr__idx__start ON cdr(start);";
 
 /**
  * SQL query format to insert a CDR entry.
  */
 static char *sql_add_cdr_entry =
 "INSERT INTO '%q' ("
+"	calldate,"
 "       clid,"
 "	src,"
 "	dst,"
@@ -754,6 +762,7 @@ static char *sql_add_cdr_entry =
 "	uniqueid,"
 "	userfield"
 ") VALUES ("
+"	datetime(%d,'unixepoch'),"
 "	'%q',"
 "	'%q',"
 "	'%q',"
@@ -887,13 +896,15 @@ cdr_handler(struct ast_cdr *cdr)
 
   RES_SQLITE_BEGIN
     error = sqlite_exec_printf(db, sql_add_cdr_entry, NULL, NULL, &errormsg,
-                               cdr_table, cdr->clid, cdr->src, cdr->dst,
-                               cdr->dcontext, cdr->channel, cdr->dstchannel,
-                               cdr->lastapp, cdr->lastdata, cdr->start.tv_sec,
+                               cdr_table, cdr->start.tv_sec, cdr->clid,
+			       cdr->src, cdr->dst, cdr->dcontext,
+			       cdr->channel, cdr->dstchannel, cdr->lastapp,
+			       cdr->lastdata, cdr->start.tv_sec,
                                cdr->answer.tv_sec, cdr->end.tv_sec,
-                               cdr->duration, cdr->billsec, cdr->disposition,
-                               cdr->amaflags, cdr->accountcode, cdr->uniqueid,
-                               cdr->userfield);
+                               cdr->duration, cdr->billsec,
+			       ast_cdr_disp2str(cdr->disposition),
+			       cdr->amaflags, cdr->accountcode, cdr->uniqueid,
+			       cdr->userfield);
   RES_SQLITE_END(error)
 
   ast_mutex_unlock(&mutex);
