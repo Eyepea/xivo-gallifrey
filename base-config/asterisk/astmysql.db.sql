@@ -1,15 +1,45 @@
 GRANT ALL PRIVILEGES ON asterisk.* TO asterisk@localhost IDENTIFIED BY PASSWORD '7560ba9c16089426';
 CREATE DATABASE IF NOT EXISTS `asterisk` DEFAULT CHARACTER SET utf8;
 
+DROP TABLE IF EXISTS `cdr`;
+CREATE TABLE `cdr` (
+ `id` int(11) unsigned auto_increment,
+ `calldate` timestamp DEFAULT 0,
+ `clid` varchar(80) NOT NULL DEFAULT '',
+ `src` varchar(80) NOT NULL DEFAULT '',
+ `dst` varchar(80) NOT NULL DEFAULT '',
+ `dcontext` varchar(80) NOT NULL DEFAULT '',
+ `channel` varchar(80) NOT NULL DEFAULT '',
+ `dstchannel` varchar(80) NOT NULL DEFAULT '',
+ `lastapp` varchar(80) NOT NULL DEFAULT '',
+ `lastdata` varchar(80) NOT NULL DEFAULT '',
+ `answer` timestamp DEFAULT 0,
+ `end` timestamp DEFAULT 0,
+ `duration` int(11) unsigned NOT NULL DEFAULT 0,
+ `billsec` int(11) unsigned NOT NULL DEFAULT 0,
+ `disposition` varchar(9) NOT NULL DEFAULT '',
+ `amaflags` tinyint(2) unsigned NOT NULL DEFAULT 0,
+ `accountcode` varchar(20) NOT NULL DEFAULT '',
+ `uniqueid` varchar(32) NOT NULL DEFAULT '',
+ `userfield` varchar(255) NOT NULL DEFAULT '',
+ PRIMARY KEY(id)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE INDEX cdr__idx__disposition ON cdr(dispotion);
+CREATE INDEX cdr__idx__src ON cdr(src);
+CREATE INDEX cdr__idx__dst ON cdr(dst);
+CREATE INDEX cdr__idx__calldate ON cdr(calldate);
+
+
 DROP TABLE IF EXISTS `didfeatures`;
 CREATE TABLE `didfeatures` (
  `id` int(11) unsigned auto_increment,
  `type` varchar(50) NOT NULL,
  `typeid` int(11) unsigned NOT NULL,
  `extenid` int(11) unsigned NOT NULL,
- `custom` varchar(128) NOT NULL default '',
+ `custom` varchar(128) NOT NULL DEFAULT '',
  `number` varchar(80) NOT NULL,
- `commented` tinyint(1) NOT NULL default 0,
+ `commented` tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -33,9 +63,9 @@ DROP TABLE IF EXISTS `groupfeatures`;
 CREATE TABLE `groupfeatures` (
  `id` tinyint unsigned auto_increment,
  `name` varchar(255) NOT NULL,
- `number` varchar(80) default '',
- `context` varchar(80) NOT NULL default '',
- `commented` tinyint(1) default 0,
+ `number` varchar(80) DEFAULT '',
+ `context` varchar(80) NOT NULL DEFAULT '',
+ `commented` tinyint(1) DEFAULT 0,
  PRIMARY KEY(id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -45,9 +75,9 @@ CREATE UNIQUE INDEX groupfeatures__uidx__name_commented ON groupfeatures(name,co
 DROP TABLE IF EXISTS `meetme`;
 CREATE TABLE `meetme` (
  `id` int(11) unsigned auto_increment,
- `cat_metric` int(11) unsigned default 0,
- `var_metric` int(11) unsigned default 0,
- `commented` tinyint(1) default 0,
+ `cat_metric` int(11) unsigned DEFAULT 0,
+ `var_metric` int(11) unsigned DEFAULT 0,
+ `commented` tinyint(1) DEFAULT 0,
  `filename` varchar(128) NOT NULL,
  `category` varchar(128) NOT NULL,
  `var_name` varchar(128) NOT NULL,
@@ -67,13 +97,13 @@ CREATE TABLE `meetmefeatures` (
  `name` varchar(128) NOT NULL,
  `number` varchar(128) NOT NULL,
  `meetmeid` int(11) unsigned NOT NULL,
- `mode` varchar(6) NOT NULL default 'all',
- `musiconhold` varchar(128) NOT NULL default '',
- `context` varchar(80) NOT NULL default '',
- `exit` tinyint(1) default 0,
- `quiet` tinyint(1) default 0,
- `record` tinyint(1) default 0,
- `video` tinyint(1) default 0,
+ `mode` varchar(6) NOT NULL DEFAULT 'all',
+ `musiconhold` varchar(128) NOT NULL DEFAULT '',
+ `context` varchar(80) NOT NULL DEFAULT '',
+ `exit` tinyint(1) DEFAULT 0,
+ `quiet` tinyint(1) DEFAULT 0,
+ `record` tinyint(1) DEFAULT 0,
+ `video` tinyint(1) DEFAULT 0,
  PRIMARY KEY(id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -102,7 +132,7 @@ CREATE TABLE `queue` (
  `announce` varchar(128),
  `context` varchar(80),
  `timeout` tinyint unsigned,
- `monitor-join` tinyint(1) default 0,
+ `monitor-join` tinyint(1) DEFAULT 0,
  `monitor-format` varchar(128),
  `queue-youarenext` varchar(128),
  `queue-thereare` varchar(128),
@@ -125,13 +155,13 @@ CREATE TABLE `queue` (
  `strategy` varchar(11),
  `joinempty` varchar(6),
  `leavewhenempty` varchar(6),
- `eventmemberstatus` tinyint(1) default 0,
- `eventwhencalled` tinyint(1) default 0,
- `reportholdtime` tinyint(1) default 0,
+ `eventmemberstatus` tinyint(1) DEFAULT 0,
+ `eventwhencalled` tinyint(1) DEFAULT 0,
+ `reportholdtime` tinyint(1) DEFAULT 0,
  `memberdelay` int(11) unsigned,
  `weight` int(11) unsigned,
- `timeoutrestart` tinyint(1) default 0,
- `commented` tinyint(1) default 0,
+ `timeoutrestart` tinyint(1) DEFAULT 0,
+ `commented` tinyint(1) DEFAULT 0,
  `category` enum('group','queue') NOT NULL,
  PRIMARY KEY(name)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -144,19 +174,19 @@ DROP TABLE IF EXISTS `queuefeatures`;
 CREATE TABLE `queuefeatures` (
  `id` int(11) unsigned auto_increment,
  `name` varchar(255) NOT NULL,
- `number` varchar(80) default '',
- `context` varchar(80) NOT NULL default '',
- `data_quality` tinyint(1) default 0,
- `hitting_callee` tinyint(1) default 0,
- `hitting_caller` tinyint(1) default 0,
- `retries` tinyint(1) default 0,
- `ring` tinyint(1) default 0,
- `transfer_user` tinyint(1) default 0,
- `transfer_call` tinyint(1) default 0,
- `write_caller` tinyint(1) default 0,
- `write_calling` tinyint(1) default 0,
- `url` varchar(256) default '',
- `announceoverride` varchar(128) default '',
+ `number` varchar(80) DEFAULT '',
+ `context` varchar(80) NOT NULL DEFAULT '',
+ `data_quality` tinyint(1) DEFAULT 0,
+ `hitting_callee` tinyint(1) DEFAULT 0,
+ `hitting_caller` tinyint(1) DEFAULT 0,
+ `retries` tinyint(1) DEFAULT 0,
+ `ring` tinyint(1) DEFAULT 0,
+ `transfer_user` tinyint(1) DEFAULT 0,
+ `transfer_call` tinyint(1) DEFAULT 0,
+ `write_caller` tinyint(1) DEFAULT 0,
+ `write_calling` tinyint(1) DEFAULT 0,
+ `url` varchar(256) DEFAULT '',
+ `announceoverride` varchar(128) DEFAULT '',
  `timeout` tinyint unsigned,
  PRIMARY KEY(id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -168,9 +198,9 @@ DROP TABLE IF EXISTS `queuemember`;
 CREATE TABLE `queuemember` (
  `queue_name` varchar(128) NOT NULL,
  `interface` varchar(128) NOT NULL,
- `penalty` int(11) unsigned default 0,
- `call-limit` int(11) unsigned default 0,
- `commented` tinyint(1) default 0,
+ `penalty` int(11) unsigned DEFAULT 0,
+ `call-limit` int(11) unsigned DEFAULT 0,
+ `commented` tinyint(1) DEFAULT 0,
  PRIMARY KEY(queue_name,interface)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -182,7 +212,7 @@ CREATE TABLE `trunkfeatures` (
  `id` int(11) unsigned auto_increment,
  `trunk` varchar(50) NOT NULL,
  `trunkid` int(11) unsigned NOT NULL,
- `registerid` int(11) unsigned default 0,
+ `registerid` int(11) unsigned DEFAULT 0,
  PRIMARY KEY(id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -205,9 +235,9 @@ DROP TABLE IF EXISTS `useriax`;
 CREATE TABLE `useriax` (
  `id` int(11) unsigned auto_increment,
  `name` varchar(80) NOT NULL,
- `commented` tinyint(1) NOT NULL default 0,
+ `commented` tinyint(1) NOT NULL DEFAULT 0,
  `username` varchar(80) NOT NULL,
- `type` varchar(6) NOT NULL default 'friend',
+ `type` varchar(6) NOT NULL DEFAULT 'friend',
  `secret` varchar(80),
  `md5secret` varchar(32),
  `dbsecret` varchar(100),
@@ -222,7 +252,7 @@ CREATE TABLE `useriax` (
  `callgroup` varchar(10),
  `context` varchar(80),
  `defaultip` varchar(15),
- `host` varchar(31) NOT NULL default 'dynamic',
+ `host` varchar(31) NOT NULL DEFAULT 'dynamic',
  `language` char(2),
  `mailbox` varchar(50),
  `deny` varchar(95),
@@ -232,8 +262,8 @@ CREATE TABLE `useriax` (
  `allow` varchar(100),
  `ipaddr` varchar(15) NOT NULL,
  `port` smallint unsigned NOT NULL,
- `regseconds` int(11) unsigned default 0,
- `call-limit` tinyint unsigned default 0,
+ `regseconds` int(11) unsigned DEFAULT 0,
+ `call-limit` tinyint unsigned DEFAULT 0,
  `category` varchar(50) NOT NULL,
  PRIMARY KEY(id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -246,30 +276,30 @@ CREATE UNIQUE INDEX useriax__uidx__name ON useriax(name);
 DROP TABLE IF EXISTS `uservoicemail`;
 CREATE TABLE `uservoicemail` (
  `id` int(11) unsigned auto_increment,
- `customer_id` varchar(11) NOT NULL default '0',
- `context` varchar(80) NOT NULL default '',
- `mailbox` varchar(11) NOT NULL default '0',
- `password` varchar(5) NOT NULL default '0',
- `fullname` varchar(150) NOT NULL default '',
- `email` varchar(50) NOT NULL default '',
- `pager` varchar(50) NOT NULL default '',
- `tz` varchar(10) NOT NULL default 'central',
- `attach` varchar(4) NOT NULL default 'yes',
- `saycid` varchar(4) NOT NULL default 'yes',
- `dialout` varchar(10) NOT NULL default '',
- `callback` varchar(10) NOT NULL default '',
- `review` varchar(4) NOT NULL default 'no',
- `operator` varchar(4) NOT NULL default 'no',
- `envelope` varchar(4) NOT NULL default 'no',
- `sayduration` varchar(4) NOT NULL default 'no',
- `saydurationm` tinyint unsigned NOT NULL default 2,
- `sendvoicemail` varchar(4) NOT NULL default 'no',
- `delete` varchar(4) NOT NULL default 'no',
- `nextaftercmd` varchar(5) NOT NULL default 'yes',
- `forcename` varchar(4) NOT NULL default 'no',
- `forcegreetings` varchar(4) NOT NULL default 'no',
- `hidefromdir` varchar(4) NOT NULL default 'yes',
- `commented` tinyint(1) NOT NULL default 0,
+ `customer_id` varchar(11) NOT NULL DEFAULT '0',
+ `context` varchar(80) NOT NULL DEFAULT '',
+ `mailbox` varchar(11) NOT NULL DEFAULT '0',
+ `password` varchar(5) NOT NULL DEFAULT '0',
+ `fullname` varchar(150) NOT NULL DEFAULT '',
+ `email` varchar(50) NOT NULL DEFAULT '',
+ `pager` varchar(50) NOT NULL DEFAULT '',
+ `tz` varchar(10) NOT NULL DEFAULT 'central',
+ `attach` varchar(4) NOT NULL DEFAULT 'yes',
+ `saycid` varchar(4) NOT NULL DEFAULT 'yes',
+ `dialout` varchar(10) NOT NULL DEFAULT '',
+ `callback` varchar(10) NOT NULL DEFAULT '',
+ `review` varchar(4) NOT NULL DEFAULT 'no',
+ `operator` varchar(4) NOT NULL DEFAULT 'no',
+ `envelope` varchar(4) NOT NULL DEFAULT 'no',
+ `sayduration` varchar(4) NOT NULL DEFAULT 'no',
+ `saydurationm` tinyint unsigned NOT NULL DEFAULT 2,
+ `sendvoicemail` varchar(4) NOT NULL DEFAULT 'no',
+ `delete` varchar(4) NOT NULL DEFAULT 'no',
+ `nextaftercmd` varchar(5) NOT NULL DEFAULT 'yes',
+ `forcename` varchar(4) NOT NULL DEFAULT 'no',
+ `forcegreetings` varchar(4) NOT NULL DEFAULT 'no',
+ `hidefromdir` varchar(4) NOT NULL DEFAULT 'yes',
+ `commented` tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -284,18 +314,18 @@ CREATE TABLE `userfeatures` (
  `id` int(11) unsigned auto_increment,
  `protocol` varchar(50) NOT NULL,
  `protocolid` int(11) unsigned NOT NULL,
- `firstname` varchar(128) NOT NULL default '',
- `lastname` varchar(128) NOT NULL default '',
+ `firstname` varchar(128) NOT NULL DEFAULT '',
+ `lastname` varchar(128) NOT NULL DEFAULT '',
  `name` varchar(80) NOT NULL,
  `number` varchar(80) NOT NULL,
  `context` varchar(80) NOT NULL,
  `provisioningid` mediumint unsigned NOT NULL,
- `ringseconds` tinyint unsigned default 15,
- `ringgroup` tinyint(1) default 0,
- `simultcalls` tinyint unsigned default 1,
- `popupwidget` tinyint(1) default 0,
- `musiconhold` varchar(128) NOT NULL default '',
- `comment` text default '',
+ `ringseconds` tinyint unsigned DEFAULT 15,
+ `ringgroup` tinyint(1) DEFAULT 0,
+ `simultcalls` tinyint unsigned DEFAULT 1,
+ `popupwidget` tinyint(1) DEFAULT 0,
+ `musiconhold` varchar(128) NOT NULL DEFAULT '',
+ `comment` text DEFAULT '',
  PRIMARY KEY(id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -315,13 +345,13 @@ INSERT INTO userfeatures VALUES(2,'sip',2,'XivoSB','','xivosb','','',194867,30,0
 DROP TABLE IF EXISTS `extensions`;
 CREATE TABLE `extensions` (
  `id` int(11) unsigned auto_increment,
- `commented` tinyint(1) NOT NULL default 0,
- `context` varchar(20) NOT NULL default '',
- `exten` varchar(20) NOT NULL default '',
- `priority` tinyint unsigned NOT NULL default 0,
- `app` varchar(20) NOT NULL default '',
- `appdata` varchar(128) NOT NULL default '',
- `name` varchar(128) default '',
+ `commented` tinyint(1) NOT NULL DEFAULT 0,
+ `context` varchar(20) NOT NULL DEFAULT '',
+ `exten` varchar(20) NOT NULL DEFAULT '',
+ `priority` tinyint unsigned NOT NULL DEFAULT 0,
+ `app` varchar(20) NOT NULL DEFAULT '',
+ `appdata` varchar(128) NOT NULL DEFAULT '',
+ `name` varchar(128) DEFAULT '',
  PRIMARY KEY(id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -373,9 +403,9 @@ INSERT INTO extensions VALUES(39,0,'features','_*8.',1,'Pickup','${EXTEN:2}','pi
 DROP TABLE IF EXISTS `generalsip`;
 CREATE TABLE `generalsip` (
  `id` int(11) unsigned auto_increment,
- `cat_metric` int(11) unsigned default 0,
- `var_metric` int(11) unsigned default 0,
- `commented` tinyint(1) default 0,
+ `cat_metric` int(11) unsigned DEFAULT 0,
+ `var_metric` int(11) unsigned DEFAULT 0,
+ `commented` tinyint(1) DEFAULT 0,
  `filename` varchar(128) NOT NULL,
  `category` varchar(128) NOT NULL,
  `var_name` varchar(128) NOT NULL,
@@ -410,9 +440,9 @@ INSERT INTO generalsip VALUES(17,0,0,0,'sip.conf','general','videosupport','no')
 DROP TABLE IF EXISTS `generaliax`;
 CREATE TABLE `generaliax` (
  `id` int(11) unsigned auto_increment,
- `cat_metric` int(11) unsigned default 0,
- `var_metric` int(11) unsigned default 0,
- `commented` tinyint(1) default 0,
+ `cat_metric` int(11) unsigned DEFAULT 0,
+ `var_metric` int(11) unsigned DEFAULT 0,
+ `commented` tinyint(1) DEFAULT 0,
  `filename` varchar(128) NOT NULL,
  `category` varchar(128) NOT NULL,
  `var_name` varchar(128) NOT NULL,
@@ -438,9 +468,9 @@ INSERT INTO generaliax VALUES(8,0,0,0,'iax.conf','general','jitterbuffer','no');
 DROP TABLE IF EXISTS `generalvoicemail`;
 CREATE TABLE `generalvoicemail` (
  `id` int(11) unsigned auto_increment,
- `cat_metric` int(11) unsigned default 0,
- `var_metric` int(11) unsigned default 0,
- `commented` tinyint(1) default 0,
+ `cat_metric` int(11) unsigned DEFAULT 0,
+ `var_metric` int(11) unsigned DEFAULT 0,
+ `commented` tinyint(1) DEFAULT 0,
  `filename` varchar(128) NOT NULL,
  `category` varchar(128) NOT NULL,
  `var_name` varchar(128) NOT NULL,
@@ -476,9 +506,9 @@ INSERT INTO generalvoicemail VALUES(13,0,0,0,'voicemail.conf','general','externp
 DROP TABLE IF EXISTS `generalqueue`;
 CREATE TABLE `generalqueue` (
  `id` int(11) unsigned auto_increment,
- `cat_metric` int(11) unsigned default 0,
- `var_metric` int(11) unsigned default 0,
- `commented` tinyint(1) default 0,
+ `cat_metric` int(11) unsigned DEFAULT 0,
+ `var_metric` int(11) unsigned DEFAULT 0,
+ `commented` tinyint(1) DEFAULT 0,
  `filename` varchar(128) NOT NULL,
  `category` varchar(128) NOT NULL,
  `var_name` varchar(128) NOT NULL,
@@ -498,7 +528,7 @@ DROP TABLE IF EXISTS `usersip`;
 CREATE TABLE `usersip` (
  `id` int(11) unsigned auto_increment,
  `name` varchar(80) NOT NULL,
- `commented` tinyint(1) NOT NULL default 0,
+ `commented` tinyint(1) NOT NULL DEFAULT 0,
  `accountcode` varchar(20),
  `amaflags` varchar(13),
  `callgroup` varchar(10),
@@ -515,7 +545,7 @@ CREATE TABLE `usersip` (
  `language` char(2),
  `mailbox` varchar(50),
  `md5secret` varchar(80),
- `nat` varchar(5) NOT NULL default 'no',
+ `nat` varchar(5) NOT NULL DEFAULT 'no',
  `deny` varchar(95),
  `permit` varchar(95),
  `mask` varchar(95),
@@ -526,17 +556,17 @@ CREATE TABLE `usersip` (
  `rtptimeout` char(3),
  `rtpholdtimeout` char(3),
  `secret` varchar(80),
- `type` varchar(6) NOT NULL default 'friend',
+ `type` varchar(6) NOT NULL DEFAULT 'friend',
  `username` varchar(80) NOT NULL,
  `disallow` varchar(100),
  `allow` varchar(100),
  `musiconhold` varchar(100),
- `regseconds` int(11) unsigned NOT NULL default 0,
+ `regseconds` int(11) unsigned NOT NULL DEFAULT 0,
  `ipaddr` varchar(15) NOT NULL,
  `regexten` varchar(80) NOT NULL,
  `cancallforward` char(3),
  `setvar` varchar(100) NOT NULL,
- `call-limit` tinyint unsigned default 0,
+ `call-limit` tinyint unsigned DEFAULT 0,
  `category` varchar(50) NOT NULL,
  PRIMARY KEY(id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -552,9 +582,9 @@ INSERT INTO usersip VALUES(2,'xivosb',0,'','documentation','','XivoSB','no','',N
 DROP TABLE IF EXISTS `musiconhold`;
 CREATE TABLE `musiconhold` (
  `id` int(11) unsigned auto_increment,
- `cat_metric` int(11) unsigned default 0,
- `var_metric` int(11) unsigned default 0,
- `commented` tinyint(1) default 0,
+ `cat_metric` int(11) unsigned DEFAULT 0,
+ `var_metric` int(11) unsigned DEFAULT 0,
+ `commented` tinyint(1) DEFAULT 0,
  `filename` varchar(128) NOT NULL,
  `category` varchar(128) NOT NULL,
  `var_name` varchar(128) NOT NULL,
