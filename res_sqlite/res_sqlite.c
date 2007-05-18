@@ -719,7 +719,6 @@ static char *sql_create_cdr_table =
 " dstchannel varchar(80) NOT NULL DEFAULT '',\n"
 " lastapp varchar(80) NOT NULL DEFAULT '',\n"
 " lastdata varchar(80) NOT NULL DEFAULT '',\n"
-" start char(19) DEFAULT '0000-00-00 00:00:00',\n"
 " answer char(19) DEFAULT '0000-00-00 00:00:00',\n"
 " end char(19) DEFAULT '0000-00-00 00:00:00',\n"
 " duration integer unsigned NOT NULL DEFAULT 0,\n"
@@ -734,8 +733,7 @@ static char *sql_create_cdr_table =
 "CREATE INDEX cdr__idx__disposition ON cdr(dispotion);\n"
 "CREATE INDEX cdr__idx__src ON cdr(src);\n"
 "CREATE INDEX cdr__idx__dst ON cdr(dst);\n"
-"CREATE INDEX cdr__idx__calldate ON cdr(calldate);\n"
-"CREATE INDEX cdr__idx__start ON cdr(start);";
+"CREATE INDEX cdr__idx__calldate ON cdr(calldate);";
 
 /**
  * SQL query format to insert a CDR entry.
@@ -751,7 +749,6 @@ static char *sql_add_cdr_entry =
 "	dstchannel,"
 "	lastapp,"
 "	lastdata,"
-"	start,"
 "	answer,"
 "	end,"
 "	duration,"
@@ -771,7 +768,6 @@ static char *sql_add_cdr_entry =
 "	'%q',"
 "	'%q',"
 "	'%q',"
-"	datetime(%d,'unixepoch'),"
 "	datetime(%d,'unixepoch'),"
 "	datetime(%d,'unixepoch'),"
 "	'%ld',"
@@ -899,9 +895,8 @@ cdr_handler(struct ast_cdr *cdr)
                                cdr_table, cdr->start.tv_sec, cdr->clid,
 			       cdr->src, cdr->dst, cdr->dcontext,
 			       cdr->channel, cdr->dstchannel, cdr->lastapp,
-			       cdr->lastdata, cdr->start.tv_sec,
-                               cdr->answer.tv_sec, cdr->end.tv_sec,
-                               cdr->duration, cdr->billsec,
+			       cdr->lastdata, cdr->answer.tv_sec,
+			       cdr->end.tv_sec, cdr->duration, cdr->billsec,
 			       ast_cdr_disp2str(cdr->disposition),
 			       cdr->amaflags, cdr->accountcode, cdr->uniqueid,
 			       cdr->userfield);
