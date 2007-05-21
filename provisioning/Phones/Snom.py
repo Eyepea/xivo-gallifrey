@@ -1,4 +1,3 @@
-# -*- coding: iso-8859-15 -*-
 """Support for Snom phones for Xivo Autoprovisioning
 
 Snom 300 320 and 360 are supported.
@@ -24,7 +23,7 @@ from provsup import ProvGeneralConf as pgc
 # HTTP based provisioning
 
 SNOM_SPEC_DIR = pgc['tftproot'] + "Snom/"
-SNOM_SPEC_TEMPLATE = "files/snom-template.htm"
+SNOM_SPEC_TEMPLATE = pgc['templates_dir'] + "snom-template.htm"
 SNOM_COMMON_HTTP_USER = "guest"
 SNOM_COMMON_HTTP_PASS = "guest"
 

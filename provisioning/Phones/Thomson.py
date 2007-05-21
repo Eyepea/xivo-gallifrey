@@ -1,4 +1,3 @@
-# -*- coding: iso-8859-15 -*-
 """Support for Thomson phones for Xivo Autoprovisioning
 
 Thomson 2030S is supported.
@@ -33,9 +32,9 @@ THOMSON_SPEC_DIR = pgc['tftproot']
 
 THOMSON_USER = "admin"		# XXX
 THOMSON_PASSWD = "superpass"	# XXX
-THOMSON_SPEC_TXT_TEMPLATE = "files/ST2030S_template.txt"
+THOMSON_SPEC_TXT_TEMPLATE = pgc['templates_dir'] + "ST2030S_template.txt"
 
-# for some tests: THOMSON_SPEC_TXT_BASENAME = "files/ST2030S_"
+# for some tests: THOMSON_SPEC_TXT_BASENAME = pgc['templates_dir'] + "ST2030S_"
 THOMSON_SPEC_TXT_BASENAME = "/tftpboot/ST2030S_"
 
 class TelnetExpectationFailed(RuntimeError):
