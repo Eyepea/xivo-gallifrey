@@ -1,0 +1,3 @@
+308       SIP41.8-0-2SR1S     11             // IP Phone 7961G-GE SIP
+
+

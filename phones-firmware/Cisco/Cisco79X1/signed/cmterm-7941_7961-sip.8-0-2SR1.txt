@@ -1,0 +1,5 @@
+FILE QUARANTINED
+----------------
+
+The original contents of cmterm-7941_7961-sip.8-0-2SR1.zip->cmterm-7941_7961-sip.8-0-2SR1.cop->Unknown->signed/cmterm-7941_7961-sip.8-0-2SR1.cop have been replaced with
+this message because of its CorruptedCompressedFile characteristics.

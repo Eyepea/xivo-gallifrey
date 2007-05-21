@@ -1,0 +1,511 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<phrases>
+<trkLocaleName>French</trkLocaleName>
+<trkBaseClearcaseVersion></trkBaseClearcaseVersion>
+<trkTranslationVersion></trkTranslationVersion>
+<phrase i="3000" t="&#131;Appels manqués"/>
+<phrase i="3001" t="&#131;Liste de rappel"/>
+<phrase i="3002" t="Volume de la sonnerie"/>
+<phrase i="3003" t="Volume du haut-parleur"/>
+<phrase i="3004" t="Volume du casque"/>
+<phrase i="3005" t="Volume du combiné"/>
+<phrase i="3006" t="Contraste LCD"/>
+<phrase i="3007" t="Etat"/>
+<phrase i="3008" t="Etat"/>
+<phrase i="3009" t="Touche Ligne 4"/>
+<phrase i="3010" t="Touche Ligne 3"/>
+<phrase i="3011" t="Touche Ligne 2"/>
+<phrase i="3012" t="Touche Ligne 1"/>
+<phrase i="3013" t="Ext 4"/>
+<phrase i="3014" t="Ext 3"/>
+<phrase i="3015" t="Ext 2"/>
+<phrase i="3016" t="Ext 1"/>
+<phrase i="3017" t="Téléphone"/>
+<phrase i="3018" t="npd"/>
+<phrase i="3019" t="Services locaux"/>
+<phrase i="3020" t="NouvelAppel"/>
+<phrase i="3021" t="Appel entr."/>
+<phrase i="3022" t="Intercom"/>
+<phrase i="3023" t="bis"/>
+<phrase i="3024" t="LCD   "/>
+<phrase i="3025" t="Technologie"/>
+<phrase i="3026" t="Sipura"/>
+<phrase i="3027" t="Redémarrage du système&#10;Veuillez patienter"/>
+<phrase i="3028" t="Réinitialisation du système&#10;Veuillez patienter"/>
+<phrase i="3029" t="Réinitialisation aux paramètres d'usine par défaut&#10;Veuillez patienter"/>
+<phrase i="3030" t="Redémarrer le système ?"/>
+<phrase i="3031" t="Réinitialiser le système ?"/>
+<phrase i="3032" t="Tous les paramètres seront&#10;réinitialisés à leur valeur d'usine &#10;par défaut. Continuer ?"/>
+<phrase i="3033" t="Erreur de Combinaison. Réessayer ?"/>
+<phrase i="3034" t="Neuf Combin :"/>
+<phrase i="3035" t="Num de messagerie vocale :"/>
+<phrase i="3036" t="Ecart(&#130;H:m:s) :"/>
+<phrase i="3037" t="Heure(H:m:s) :"/>
+<phrase i="3038" t="Date(m/j/a) :"/>
+<phrase i="3039" t="Déconnexion"/>
+<phrase i="3040" t="Login (Connexion)"/>
+<phrase i="3041" t="&#131;Configuration de x"/>
+<phrase i="3042" t="&#131;Configuration"/>
+<phrase i="3043" t="réseau"/>
+<phrase i="3044" t="Veuillez saisir le Combinaison administrateur :"/>
+<phrase i="3045" t="Non"/>
+<phrase i="3046" t="Renvoi si pas de réponse après un moment défini"/>
+<phrase i="3047" t="Renvoi si pas de réponse"/>
+<phrase i="3048" t="Renvoi si numéro occupé"/>
+<phrase i="3049" t="Renvoi de tous les appels"/>
+<phrase i="3050" t="Adresse multidiffusion"/>
+<phrase i="3051" t="Serveur NTP non DHCP 2"/>
+<phrase i="3052" t="Serveur NTP non DHCP 1"/>
+<phrase i="3053" t="DNS non DHCP 2"/>
+<phrase i="3054" t="DNS non DHCP 1"/>
+<phrase i="3055" t="Route par défaut non DHCP"/>
+<phrase i="3056" t="Masque de réseau non DHCP"/>
+<phrase i="3057" t="Adresse IP non DHCP"/>
+<phrase i="3058" t="Activer le serveur Web"/>
+<phrase i="3059" t="IP routeur-entrée actuel"/>
+<phrase i="3060" t="Masque de réseau actuel"/>
+<phrase i="3061" t="Domaine"/>
+<phrase i="3062" t="Nom d'hôte"/>
+<phrase i="3063" t="IP actuel"/>
+<phrase i="3064" t="Activer DHCP"/>
+<phrase i="3065" t="Type de connexion WAN"/>
+<phrase i="3066" t="Format de date"/>
+<phrase i="3067" t="Format de l'heure"/>
+<phrase i="3068" t="Envoi audio au haut-parleur"/>
+<phrase i="3069" t="Page Réponse automatique"/>
+<phrase i="3070" t="Périphérique préféré"/>
+<phrase i="3071" t="Assist. numérotation"/>
+<phrase i="3072" t="Appel sécurisé"/>
+<phrase i="3073" t="Ne pas déranger"/>
+<phrase i="3074" t="Bloquer appels anonymes"/>
+<phrase i="3075" t="Bloquer l'id de l'appelant"/>
+<phrase i="3076" t="Certificat client"/>
+<phrase i="3077" t="Adresse MAC"/>
+<phrase i="3078" t="Version matérielle"/>
+<phrase i="3079" t="Version du logiciel"/>
+<phrase i="3080" t="Numéro de série"/>
+<phrase i="3081" t="Nom du produit"/>
+<phrase i="3082" t="Périphérique préféré"/>
+<phrase i="3083" t="Nom de la station"/>
+<phrase i="3085" t="Etat de la file d'attente"/>
+<phrase i="3087" t="Définition du Combinaison"/>
+<phrase i="3088" t="Rétablis. param. défaut"/>
+<phrase i="3089" t="Redémarrer"/>
+<phrase i="3090" t="Redémarrage"/>
+<phrase i="3092" t="Informations produit"/>
+<phrase i="3094" t="Messagerie vocale"/>
+<phrase i="3095" t="Heure/Date"/>
+<phrase i="3096" t="Renvoi d'appel"/>
+<phrase i="3097" t="Préférences"/>
+<phrase i="3099" t="Historique des appels"/>
+<phrase i="3100" t="Numérotation rapide"/>
+<phrase i="3101" t="&#131;Répertoire"/>
+<phrase i="3102" t="Saisie numérotation rapide x"/>
+<phrase i="3104" t="Sonnerie 10"/>
+<phrase i="3105" t="Sonnerie 9"/>
+<phrase i="3106" t="Sonnerie 8"/>
+<phrase i="3107" t="Sonnerie 7"/>
+<phrase i="3108" t="Sonnerie 6"/>
+<phrase i="3109" t="Sonnerie 5"/>
+<phrase i="3110" t="Sonnerie 4"/>
+<phrase i="3111" t="Sonnerie 3"/>
+<phrase i="3112" t="Sonnerie 2"/>
+<phrase i="3113" t="Sonnerie 1"/>
+<phrase i="3114" t="Extension sonnerie"/>
+<phrase i="3115" t="Ext 1 : "/>
+<phrase i="3116" t="Sonnerie"/>
+<phrase i="3117" t="Supprimer : "/>
+<phrase i="3118" t="La liste est vide"/>
+<phrase i="3119" t="Combinaison incorrect. Réessayer ?"/>
+<phrase i="3120" t="Saisissez le Combinaison :"/>
+<phrase i="3121" t="Mise en file d'attente"/>
+<phrase i="3123" t="La demande de l'état de la mise en file d'attente&#10;a échoué"/>
+<phrase i="3124" t="File d'attente vide"/>
+<phrase i="3125" t="Demande de l'état de la mise en file d'attente&#10;..."/>
+<phrase i="3126" t="Numéro non valide&#10;Veuillez réessayer"/>
+<phrase i="3127" t="Sonnerie sur la station"/>
+<phrase i="3128" t="Décrocher d'appel"/>
+<phrase i="3129" t="Sélectionnez une ligne d'attente&#10;pour les transferts"/>
+<phrase i="3130" t="Sélectionnez une ligne d'attente&#10;pour les conférences"/>
+<phrase i="3131" t="Composer *Code"/>
+<phrase i="3132" t="Forcer G729A"/>
+<phrase i="3133" t="Préférer G729A"/>
+<phrase i="3134" t="Forcer G726r40"/>
+<phrase i="3135" t="Préférer G726r40"/>
+<phrase i="3136" t="Forcer G726r32"/>
+<phrase i="3137" t="Préférer G726r32"/>
+<phrase i="3138" t="Forcer G726r24"/>
+<phrase i="3139" t="Préférer G726r24"/>
+<phrase i="3140" t="Forcer G726r16"/>
+<phrase i="3141" t="Préférer G726r16"/>
+<phrase i="3142" t="Forcer G723"/>
+<phrase i="3143" t="Préférer G723"/>
+<phrase i="3144" t="Forcer G711A"/>
+<phrase i="3145" t="Préférer G711A"/>
+<phrase i="3146" t="Forcer G711U"/>
+<phrase i="3147" t="Préférer G711U"/>
+<phrase i="3148" t="Contact"/>
+<phrase i="3149" t="Annuler l'appel sécurisé suivant"/>
+<phrase i="3150" t="Appel sécurisé suivant"/>
+<phrase i="3151" t="Annuler tous les appels sécurisés"/>
+<phrase i="3152" t="Sécuriser tous les appels"/>
+<phrase i="3153" t="Annuler Ne pas déranger"/>
+<phrase i="3155" t="Autoriser les appels anonymes"/>
+<phrase i="3157" t="Débloquer identifiant appel suivant"/>
+<phrase i="3158" t="Bloquer identifiant appel suivant"/>
+<phrase i="3159" t="Annuler bloquer identifiant"/>
+<phrase i="3160" t="Bloquer identifiant"/>
+<phrase i="3161" t="Annuler rappel"/>
+<phrase i="3162" t="Rappel"/>
+<phrase i="3163" t="Annuler transfert d'appel si pas de réponse"/>
+<phrase i="3164" t="Transfert d'appel si pas de réponse"/>
+<phrase i="3165" t="Annuler transfert d'appel si occupé"/>
+<phrase i="3166" t="Transfert d'appel si occupé"/>
+<phrase i="3167" t="Annuler transférer tous les appels"/>
+<phrase i="3168" t="Transférer tous les appels"/>
+<phrase i="3169" t="Rappel du dernier appelant"/>
+<phrase i="3185" t="(P)"/>
+<phrase i="3186" t="(F)"/>
+<phrase i="3188" t="Final   "/>
+<phrase i="3189" t="Flash   "/>
+<phrase i="3190" t="Casque   "/>
+<phrase i="3191" t="Combiné   "/>
+<phrase i="3192" t="Haut-parleur   "/>
+<phrase i="3193" t="Voyant   "/>
+<phrase i="3194" t="LCD   "/>
+<phrase i="3195" t="Clavier   "/>
+<phrase i="3196" t="Test LED"/>
+<phrase i="3201" t="Réussite"/>
+<phrase i="3202" t="Echec"/>
+<phrase i="3203" t="Test écran LCD"/>
+<phrase i="3206" t="Test clavier"/>
+<phrase i="3207" t="x"/>
+<phrase i="3216" t="Son :"/>
+<phrase i="3217" t="Numéro :"/>
+<phrase i="3218" t="Nom :"/>
+<phrase i="3219" t="Supprimer :"/>
+<phrase i="3220" t="Sonnerie correspondant"/>
+<phrase i="3221" t="répertoire"/>
+<phrase i="3222" t="Composez le numéro :"/>
+<phrase i="3223" t="Saisissez la cible du contact :"/>
+<phrase i="3224" t="Saisissez le groupe de décrocher d'appel :"/>
+<phrase i="3225" t="Saisissez la cible du service spécial :"/>
+<phrase i="3226" t="Saisissez la cible du service de référence :"/>
+<phrase i="3227" t="Numéro à extraire de la file :"/>
+<phrase i="3228" t="Num à ajouter à la file d'attente :"/>
+<phrase i="3229" t="Saisissez la cible du transfert simple :"/>
+<phrase i="3230" t="Num Renvoi si pas de réponse :"/>
+<phrase i="3231" t="Num Renvoi si occupé :"/>
+<phrase i="3232" t="Num Renvoi tous les appels :"/>
+<phrase i="3234" t="Saisissez davantage de chiffres :"/>
+<phrase i="3235" t="La liste est vide"/>
+<phrase i="3237" t="Appels manqués"/>
+<phrase i="3238" t="Appels pris"/>
+<phrase i="3239" t="Appels pris"/>
+<phrase i="3240" t="Liste de rappel"/>
+<phrase i="3241" t="Initialisation du réseau"/>
+<phrase i="3242" t="Vérification du DNS"/>
+<phrase i="3243" t="rép"/>
+<phrase i="3244" t="renvoi"/>
+<phrase i="3245" t="Langue"/>
+<phrase i="3246" t="Sélection de la langue"/>
+<phrase i="3248" t="Appels transférés"/>
+<phrase i="3249" t="Nouvel appel manqué"/>
+<phrase i="3250" t="Appels manqués"/>
+<phrase i="3251" t="plus"/>
+<phrase i="3252" t="réessayer"/>
+<phrase i="3253" t="abandonner"/>
+<phrase i="3254" t="nondispo"/>
+<phrase i="3255" t="dispo"/>
+<phrase i="3258" t="décGr"/>
+<phrase i="3259" t="décro"/>
+<phrase i="3260" t="déparq"/>
+<phrase i="3261" t="parquer"/>
+<phrase i="3262" t="transSi"/>
+<phrase i="3263" t="n"/>
+<phrase i="3264" t="transLx"/>
+<phrase i="3265" t="transf"/>
+<phrase i="3266" t="*code"/>
+<phrase i="3267" t="sélect"/>
+<phrase i="3268" t="sauver"/>
+<phrase i="3269" t="&#62;&#62;"/>
+<phrase i="3270" t="reprendre"/>
+<phrase i="3272" t="précédent"/>
+<phrase i="3273" t="lire"/>
+<phrase i="3274" t="coller"/>
+<phrase i="3275" t="option"/>
+<phrase i="3276" t="ok"/>
+<phrase i="3277" t="num"/>
+<phrase i="3278" t="suivant"/>
+<phrase i="3279" t="manqué"/>
+<phrase i="3280" t="&#60;&#60;"/>
+<phrase i="3281" t="dar"/>
+<phrase i="3282" t="rejoindre"/>
+<phrase i="3283" t="IP"/>
+<phrase i="3284" t="quitter"/>
+<phrase i="3285" t="éditer"/>
+<phrase i="3286" t="npd"/>
+<phrase i="3288" t="comp."/>
+<phrase i="3289" t="suppr"/>
+<phrase i="3290" t="copie"/>
+<phrase i="3291" t="confLx"/>
+<phrase i="3292" t="conf"/>
+<phrase i="3293" t="suppr"/>
+<phrase i="3294" t="-renvoi d'appel"/>
+<phrase i="3295" t="-npd"/>
+<phrase i="3296" t="modif"/>
+<phrase i="3298" t="annul"/>
+<phrase i="3299" t="pont"/>
+<phrase i="3300" t="supCar"/>
+<phrase i="3301" t="alpha"/>
+<phrase i="3302" t="ajouter"/>
+<phrase i="3303" t="Configuration de x"/>
+<phrase i="3304" t="Configuration"/>
+<phrase i="3305" t="Partagé"/>
+<phrase i="3306" t="Tentative de reprise"/>
+<phrase i="3307" t="Tentative de mise en attente"/>
+<phrase i="3308" t="Mise en attente"/>
+<phrase i="3309" t="Connecté"/>
+<phrase i="3310" t="Prise d'appel"/>
+<phrase i="3311" t="Appel terminé"/>
+<phrase i="3312" t="Sonnerie"/>
+<phrase i="3313" t="Sonnerie chez l'appelé"/>
+<phrase i="3314" t="Appel"/>
+<phrase i="3315" t="Contact du serveur STUN"/>
+<phrase i="3316" t="Numérotation"/>
+<phrase i="3317" t="Sélection de la station"/>
+<phrase i="3318" t="Séléction de l'appel"/>
+<phrase i="3319" t="Récupération info de l'appel"/>
+<phrase i="3320" t="Tentative de prise de ligne"/>
+<phrase i="3321" t="Prêt"/>
+<phrase i="3322" t="Oui"/>
+<phrase i="3323" t="Non enregistré"/>
+<phrase i="3324" t="Enregistré"/>
+<phrase i="3325" t="Entrant"/>
+<phrase i="3326" t="Sortant"/>
+<phrase i="3327" t="Rappel"/>
+<phrase i="3328" t="Transféré"/>
+<phrase i="3329" t="Transféré"/>
+<phrase i="3330" t="Incorrecte"/>
+<phrase i="3331" t="Inactif"/>
+<phrase i="3332" t="tonalité d'appel en attente"/>
+<phrase i="3333" t="Sonnerie - Rappel"/>
+<phrase i="3334" t="Sonnerie - Mise en attente"/>
+<phrase i="3335" t="Sonnerie"/>
+<phrase i="3336" t="Indication d'appel sécurisé"/>
+<phrase i="3337" t="Conférence"/>
+<phrase i="3338" t="Mise en attente"/>
+<phrase i="3339" t="Erreur"/>
+<phrase i="3340" t="Confirmer"/>
+<phrase i="3341" t="Invite"/>
+<phrase i="3342" t="SIT 4"/>
+<phrase i="3343" t="SIT 3"/>
+<phrase i="3344" t="SIT 2"/>
+<phrase i="3345" t="SIT 1"/>
+<phrase i="3346" t="Avertissement combiné décroché"/>
+<phrase i="3347" t="Rappeler"/>
+<phrase i="3348" t="Réorganiser"/>
+<phrase i="3349" t="Occupé"/>
+<phrase i="3350" t="Indicateur de message en attente"/>
+<phrase i="3351" t="Numérotation extérieure"/>
+<phrase i="3352" t="Deuxième numérotation"/>
+<phrase i="3353" t="Numér"/>
+<phrase i="3354" t="aucun"/>
+<phrase i="3355" t="trnsf."/>
+<phrase i="3356" t="renv."/>
+<phrase i="3357" t="Rappel"/>
+<phrase i="3358" t="Pour"/>
+<phrase i="3359" t="De"/>
+<phrase i="3360" t="Nouvelle entrée"/>
+<phrase i="3361" t="(FULL)"/>
+<phrase i="3362" t="Répertoire d'entreprise"/>
+<phrase i="3363" t="Saisir num. décrocher appel :"/>
+<phrase i="3364" t="Prise d'appel"/>
+<phrase i="3365" t="&#131;Numérotation rapide"/>
+<phrase i="3366" t="&#60;Non attribué&#62;"/>
+<phrase i="3367" t="Saisie numérotation rapide 2"/>
+<phrase i="3368" t="Saisie numérotation rapide 3"/>
+<phrase i="3369" t="Saisie numérotation rapide 4"/>
+<phrase i="3370" t="Saisie numérotation rapide 5"/>
+<phrase i="3371" t="Saisie numérotation rapide 6"/>
+<phrase i="3372" t="Saisie numérotation rapide 7"/>
+<phrase i="3373" t="Saisie numérotation rapide 8"/>
+<phrase i="3374" t="Saisie numérotation rapide 9"/>
+<phrase i="3375" t="Saisie numérotation rapide"/>
+<phrase i="3376" t="&#131;Historique des appels"/>
+<phrase i="3377" t="&#131;Appels pris"/>
+<phrase i="3378" t="&#131;Sonnerie"/>
+<phrase i="3379" t="&#131;Sonnerie Ext.1"/>
+<phrase i="3380" t="&#131;Sonnerie Ext.2"/>
+<phrase i="3381" t="&#131;Sonnerie Ext.3"/>
+<phrase i="3382" t="&#131;Sonnerie Ext.4"/>
+<phrase i="3383" t="&#131;Répertoire d'entreprise"/>
+<phrase i="3384" t="&#131;Préférences"/>
+<phrase i="3385" t="y/n (o/n)"/>
+<phrase i="3386" t="Bloquer l'id de l'appelant&#10;"/>
+<phrase i="3387" t="Bloquer appels anonymes&#10;"/>
+<phrase i="3388" t="Ne pas déranger&#10;"/>
+<phrase i="3389" t="Appel sécurisé&#10;"/>
+<phrase i="3390" t="Assist. numérotation &#10;"/>
+<phrase i="3391" t="Périphérique préféré&#10;"/>
+<phrase i="3394" t="Répondre automatiquement au contact&#10;"/>
+<phrase i="3395" t="Envoi audio au haut-parleur&#10;"/>
+<phrase i="3396" t="Format de l'heure&#10;"/>
+<phrase i="3397" t="Format de la date&#10;"/>
+<phrase i="3398" t="jour/mois"/>
+<phrase i="3399" t="mois/jour"/>
+<phrase i="3400" t="&#131;Langue"/>
+<phrase i="3401" t="&#131;Etat mise en file d'attente"/>
+<phrase i="3402" t="&#131;Etat"/>
+<phrase i="3403" t="&#131;Etat du téléphone"/>
+<phrase i="3404" t="&#131;Etat"/>
+<phrase i="3405" t="&#131;Etat Ext 2"/>
+<phrase i="3406" t="&#131;Etat L1"/>
+<phrase i="3407" t="&#131;Etat L2"/>
+<phrase i="3408" t="&#131;Etat L3"/>
+<phrase i="3409" t="&#131;Etat L4"/>
+<phrase i="3410" t="Appel1 :"/>
+<phrase i="3412" t="Date : "/>
+<phrase i="3413" t="Temps d'émission : "/>
+<phrase i="3414" t="Enregistré"/>
+<phrase i="3415" t="Dernier enreg:%02d:%02d %d/%d&#10;"/>
+<phrase i="3416" t="Prochain enreg. dans %us&#10;"/>
+<phrase i="3417" t="Echec"/>
+<phrase i="3418" t="Appel 1 : "/>
+<phrase i="3419" t="Prêt"/>
+<phrase i="3420" t="Son: "/>
+<phrase i="3421" t="Aucune"/>
+<phrase i="3422" t="Non installé"/>
+<phrase i="3423" t=" Valeur par défaut"/>
+<phrase i="3425" t="Station"/>
+<phrase i="3426" t="Groupe de contact"/>
+<phrase i="3427" t="Système de réponse automatique"/>
+<phrase i="3428" t="Musique interne"/>
+<phrase i="3429" t="Veuillez patienter"/>
+<phrase i="3430" t="Tentative de connexion"/>
+<phrase i="3432" t="Contact du serveur ACD&#10;Pour Disponible"/>
+<phrase i="3433" t="Contact du serveur ACD&#10;Pour Non disponible"/>
+<phrase i="3434" t="Echec de la connexion.&#10;"/>
+<phrase i="3435" t="Veuillez vérifier votre ID d'utilisateur&#10;et votre Combinaison."/>
+<phrase i="3437" t="Echec de la notification Dispo&#10;"/>
+<phrase i="3438" t="Echec de la notification Non dispo&#10;"/>
+<phrase i="3439" t="ID d'utilisateur :"/>
+<phrase i="3440" t="Combinaison:"/>
+<phrase i="3441" t="Connexion à la Distribution automatique des appels (DAA)"/>
+<phrase i="3445" t="Mise à jour du micrologiciel&#10;Laissez l'appareil sous tension&#10;tél redémarrera automatiq"/>
+<phrase i="3446" t="&#10;&#10;Prise d'appel : "/>
+<phrase i="3450" t="Démarrage du système"/>
+<phrase i="3451" t="Demande du répertoire d'entreprise&#10;auprès du serveur..."/>
+<phrase i="3452" t="Echec de la Demande du répertoire &#10;d'entreprise"/>
+<phrase i="3453" t="cdir"/>
+<phrase i="3461" t="Entrée inconnue"/>
+<phrase i="3468" t="Utilisateur inconnu"/>
+<phrase i="3469" t="De : %s"/>
+<phrase i="3470" t="modem routeur"/>
+<phrase i="3471" t="Gr de contact"/>
+<phrase i="3472" t="Partager l'appel %s"/>
+<phrase i="3473" t="De : %s&#10;"/>
+<phrase i="3476" t="destinataire"/>
+<phrase i="3477" t="département/état"/>
+<phrase i="3478" t="terminé"/>
+<phrase i="3479" t="tentative"/>
+<phrase i="3480" t="initial"/>
+<phrase i="3481" t="en cours"/>
+<phrase i="3482" t="confirmé"/>
+<phrase i="3503" t="Utilisateur %d"/>
+<phrase i="3504" t="Aucune sonnerie"/>
+<phrase i="3505" t="Extension sonnerie"/>
+<phrase i="3509" t="Utilisateur %d (Non installé)"/>
+<phrase i="3510" t="12 h"/>
+<phrase i="3511" t="24 h"/>
+<phrase i="3512" t="DHCP"/>
+<phrase i="3513" t="Adresse IP statique"/>
+<phrase i="3515" t="PPPOE"/>
+<phrase i="3516" t="pwd"/>
+<phrase i="3517" t="configuration"/>
+<phrase i="3518" t="Langue(Non disponible)"/>
+<phrase i="3519" t="Non disponible"/>
+<phrase i="3520" t="du Combinaison"/>
+<phrase i="3521" t="contraste"/>
+<phrase i="3522" t="spd_dial"/>
+<phrase i="3523" t="%d jours"/>
+<phrase i="3524" t="1 jour"/>
+<phrase i="3525" t="Désactivé&#10;"/>
+<phrase i="3526" t="Type %d appel : %s&#10;"/>
+<phrase i="3527" t="Nom du poste : %s&#10;"/>
+<phrase i="3528" t="N° du poste : %s&#10;"/>
+<phrase i="3529" t="Durée : %02d:%02d:%02d"/>
+<phrase i="3530" t="Appel %d : %s&#10;"/>
+<phrase i="3531" t="Sonnerie : %s&#10;"/>
+<phrase i="3532" t="Encoder : %s&#10;"/>
+<phrase i="3533" t="Décoder : %s&#10;"/>
+<phrase i="3534" t="L%d : Service absent&#10;"/>
+<phrase i="3535" t="Etat du téléphone"/>
+<phrase i="3536" t="Etat Ext %d"/>
+<phrase i="3537" t="Etat L%d"/>
+<phrase i="3538" t="HeureDate"/>
+<phrase i="3539" t="Enregistrer les modifications du volume&#10;"/>
+<phrase i="3540" t="Enregistrer les modifications du contraste&#10;"/>
+<phrase i="3541" t="bis"/>
+<phrase i="3542" t="connexion"/>
+<phrase i="3543" t="déconnexion"/>
+<phrase i="3544" t="vol."/>
+<phrase i="3545" t="configuration"/>
+<phrase i="3546" t="Appel manqué"/>
+<phrase i="3548" t="Echec&#10;"/>
+<phrase i="3549" t="extraire de la file d'attente ?"/>
+<phrase i="3550" t="Anglais"/>
+<phrase i="3551" t="Espagnol"/>
+<phrase i="3552" t="Portugais"/>
+<phrase i="3553" t="Italien"/>
+<phrase i="3554" t="Allemand"/>
+<phrase i="3555" t="Danois"/>
+<phrase i="3556" t="Finnois"/>
+<phrase i="3557" t="Néerlandais"/>
+<phrase i="3558" t="Norvégien"/>
+<phrase i="3559" t="French"/>
+<phrase i="3560" t="Minuterie rétroéclairée"/>
+<phrase i="3561" t="Toujours active"/>
+<phrase i="3562" t="Eteinte"/>
+<phrase i="3563" t="Raccourci d'appel manqué"/>
+<phrase i="3564" t="Appel en attente"/>
+<phrase i="3565" t="Active VLAN"/>
+<phrase i="3566" t="VLAN ID"/>
+<phrase i="3567" t="Bureau"/>
+<phrase i="3568" t="Classique-1"/>
+<phrase i="3569" t="Classique-2"/>
+<phrase i="3570" t="Classique-3"/>
+<phrase i="3571" t="Classique-4"/>
+<phrase i="3572" t="Simple-1"/>
+<phrase i="3573" t="Simple-2"/>
+<phrase i="3574" t="Simple-3"/>
+<phrase i="3575" t="Simple-4"/>
+<phrase i="3576" t="Simple-5"/>
+<phrase i="3577" t="Installé"/>
+<phrase i="3578" t="supCar"/>
+<phrase i="3579" t="suivant"/>
+<phrase i="3580" t="-nePDér"/>
+<phrase i="3581" t="Ne pas déranger&#130;"/>
+<phrase i="3582" t="-reAppel"/>
+<phrase i="3583" t="confLx"/>
+<phrase i="3584" t="dar"/>
+<phrase i="3585" t="précédent"/>
+<phrase i="3586" t="transf"/>
+<phrase i="3587" t="trans Lx"/>
+<phrase i="3588" t="trans Si"/>
+<phrase i="3589" t="déc Gr"/>
+<phrase i="3590" t="Apperçu"/>
+<phrase i="3591" t="Propriétés de l'interface graphique"/>
+<phrase i="3592" t="&#131;Propriétés de l'interface graphique"/>
+<phrase i="3593" t="Image de fond préférée"/>
+<phrase i="3594" t="Téléchargé"/>
+<phrase i="3596" t="Théme de couleur préférée pour le menu"/>
+<phrase i="3597" t="Bleu clair"/>
+<phrase i="3598" t="Vert clair"/>
+<phrase i="3599" t="Rose"/>
+<phrase i="3600" t="Argent"/>
+<phrase i="3601" t="Appels transférés&#130;"/>
+<phrase i="3602" t="Touche Ligne 5"/>
+<phrase i="3603" t="Touche Ligne 6"/>
+<trkAuthentication>2TWE-71JE-ARE2-R8JJ-R2HN-V7J4-CNZ1-YUKE</trkAuthentication>
+</phrases>
