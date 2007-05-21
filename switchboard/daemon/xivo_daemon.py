@@ -1736,8 +1736,8 @@ class AsteriskRemote:
 		     remoteaddr = "127.0.0.1",
 		     ipaddress_php = "127.0.0.1",
 		     ami_port = 5038,
-		     ami_login = "sylvain",
-		     ami_pass = "sylvain",
+		     ami_login = "xivouser",
+		     ami_pass = "xivouser",
 		     portsipclt = 5080,
 		     portsipsrv = 5060,
 		     mysipname = "xivoaccount"):
@@ -2069,23 +2069,53 @@ ip_reverse_sht = {}
 for i in xivoconf.sections():
 	if i != "general":
 		xivoconf_local = dict(xivoconf.items(i))
+
+		localaddr = "127.0.0.1"
+		userlisturl = "sso.php"
+		ipaddress = "127.0.0.1"
+		ipaddress_php = "127.0.0.1"
 		extrachannels = ""
+		ami_port = 5038
+		ami_login = "xivouser"
+		ami_pass = "xivouser"
+		sip_port = 5060
+		sip_presence_account = "xivoaccount"
+
+		if "localaddr" in xivoconf_local:
+			localaddr = xivoconf_local["localaddr"]
+		if "userlisturl" in xivoconf_local:
+			userlisturl = xivoconf_local["userlisturl"]
+		if "ipaddress" in xivoconf_local:
+			ipaddress = xivoconf_local["ipaddress"]
+		if "ipaddress_php" in xivoconf_local:
+			ipaddress_php = xivoconf_local["ipaddress_php"]
 		if "extrachannels" in xivoconf_local:
 			extrachannels = xivoconf_local["extrachannels"]
+		if "ami_port" in xivoconf_local:
+			ami_port = int(xivoconf_local["ami_port"])
+		if "ami_login" in xivoconf_local:
+			ami_login = xivoconf_local["ami_login"]
+		if "ami_pass" in xivoconf_local:
+			ami_pass = xivoconf_local["ami_pass"]
+		if "sip_port" in xivoconf_local:
+			sip_port = int(xivoconf_local["sip_port"])
+		if "sip_presence_account" in xivoconf_local:
+			sip_presence_account = xivoconf_local["sip_presence_account"]
+
 		configs.append(AsteriskRemote(i,
-					      xivoconf_local["userlisturl"],
+					      userlisturl,
 					      extrachannels,
-					      xivoconf_local["localaddr"],
-					      xivoconf_local["ipaddress"],
-					      xivoconf_local["ipaddress_php"],
-					      int(xivoconf_local["ami_port"]),
-					      xivoconf_local["ami_login"],
-					      xivoconf_local["ami_pass"],
+					      localaddr,
+					      ipaddress,
+					      ipaddress_php,
+					      ami_port,
+					      ami_login,
+					      ami_pass,
 					      port_switchboard_base_sip + n,
-					      int(xivoconf_local["sip_port"]),
-					      xivoconf_local["sip_presence_account"]))
-		ip_reverse_sht[xivoconf.get(i, "ipaddress")] = n
-		ip_reverse_php[xivoconf.get(i, "ipaddress_php")] = n
+					      sip_port,
+					      sip_presence_account))
+		ip_reverse_sht[ipaddress] = n
+		ip_reverse_php[ipaddress_php] = n
 		save_for_next_packet_events.append("")
 		save_for_next_packet_status.append("")
 		n += 1
@@ -2177,22 +2207,40 @@ for n in items_asterisks:
 	if with_sip: do_sip_register_subscribe(n, SIPsocks[n])
 	lastrequest_time.append(time.time())
 
+
 ## \brief Handler for catching signals (in the main thread)
 # \param signum signal number
 # \param frame frame
 # \return none
 def sighandler(signum, frame):
 	global askedtoquit
-	print "signal", signum, "received : quitting"
+	print "--- signal", signum, "received : quitting"
 	askedtoquit = True
+
+
+## \brief Handler for catching signals (in the main thread)
+# \param signum signal number
+# \param frame frame
+# \return none
+def sighandler_reload(signum, frame):
+	global askedtoquit
+	print "--- signal", signum, "received : reloading"
+	askedtoquit = False
+
 
 signal.signal(signal.SIGINT, sighandler)
 signal.signal(signal.SIGTERM, sighandler)
-signal.signal(signal.SIGHUP, sighandler)
+signal.signal(signal.SIGHUP, sighandler_reload)
+
 
 # Receive messages
 while not askedtoquit:
-    [i, o, e] = select.select(ins, [], [], timeout_between_registers)
+    try:
+	    [i, o, e] = select.select(ins, [], [], timeout_between_registers)
+    except Exception, e:
+	    if askedtoquit: sys.exit(5)
+	    # TBD : if not askedtoquit => reload the config
+	    else: sys.exit(6)
     if i:
         if loginserver.socket in i:
 		loginserver.handle_request()
