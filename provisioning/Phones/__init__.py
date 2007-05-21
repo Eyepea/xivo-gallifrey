@@ -1,6 +1,4 @@
-# -*- coding: iso-8859-15 -*-
-
-import re, os, os.path
+import re, os, sys, os.path
 
 __version__ = "$Revision$ $Date$"
 
@@ -23,4 +21,6 @@ def get_module_list_from_package_path(package_path):
 
 mypath = get_this_internal_package_path()
 __all__ = get_module_list_from_package_path(mypath)
-# print __all__
+
+if "GEN_STATIC_INIT" in dir(sys.modules['__main__']):
+	print "__all__ = " + str(__all__)
