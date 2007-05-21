@@ -730,7 +730,7 @@ static char *sql_create_cdr_table =
 " userfield varchar(255) NOT NULL DEFAULT '',\n"
 " PRIMARY KEY(id)\n"
 ");\n\n"
-"CREATE INDEX cdr__idx__disposition ON cdr(dispotion);\n"
+"CREATE INDEX cdr__idx__disposition ON cdr(disposition);\n"
 "CREATE INDEX cdr__idx__src ON cdr(src);\n"
 "CREATE INDEX cdr__idx__dst ON cdr(dst);\n"
 "CREATE INDEX cdr__idx__calldate ON cdr(calldate);";
