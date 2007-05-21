@@ -320,22 +320,6 @@ class SQLBackEnd:
 			% (TABLE, '%s', '%s'),
 			(macaddr, 0))
 
-#	def delete_orphan_phones(self):
-#		"""Delete any phone that does not have a corresponding user
-#		anymore, but that is not provisioned in state GUEST. Used at
-#		startup to maintain the base in a coherent state, because
-#		SQLite does not support foreign key constraints.
-#		
-#		"""
-#		self.sql_modify(
-#			("DELETE FROM %s WHERE macaddr IN "+
-#			 "(SELECT %s.macaddr " + 
-#			 	"FROM %s LEFT JOIN %s " +
-#				"ON %s.iduserfeatures = %s.id " +
-#				"WHERE %s.iduserfeatures != 0 AND %s.id is NULL)")
-#			% (TABLE, TABLE, TABLE, UF_TABLE,
-#			   TABLE, UF_TABLE, TABLE, UF_TABLE), ())
-
 class CommonProvContext:
 	def __init__(self, userlocks, maclocks, dbinfos, rwlock):
 		# There is no locking order because my ListLocks don't block.
