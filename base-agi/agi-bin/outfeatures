@@ -30,11 +30,17 @@ __license__ = """
 
 import ConfigParser, sys
 
+# This is the configuration file, please do not change the path because if was editable by xivo web interface
 outcall = "/etc/asterisk/xivo_outcall.conf"
 
-config = ConfigParser.ConfigParser()
-config.readfp(open(outcall))
+try:
+	config = ConfigParser.ConfigParser()
+	config.readfp(open(outcall))
+except IOError:
+	print "VERBOSE \"Configuration file not found : %s\"" % outcall
+	sys.exit()
 
+# This function return all informations for a specific provider
 def get_provider(provider):
 	sys.stdout.write("SET VARIABLE PROVIDER \"" + provider + "\"\n")
 	sys.stdout.write("SET VARIABLE EXTERNPREFIX \"" + config.get(provider, 'externprefix') + "\"\n")
@@ -49,21 +55,25 @@ def get_provider(provider):
 	else:
 		sys.stdout.write("SET VARIABLE STRIPNUM \"" + config.get(provider, 'stripnum') + "\"\n")
 
+# This function return all informations from the general section, special number and emergency number
 def get_general():
+	providers = ''
+	for provider in config.sections():
+		if provider != 'general':
+			if not providers:
+				providers = provider
+			else:
+				providers = providers + "," + provider
+
 	sys.stdout.write("SET VARIABLE EMERGENCYPROVIDER \"" + config.get('general', 'emergencyprovider') + "\"\n")
 	sys.stdout.write("SET VARIABLE EMERGENCYNUMBERS \"" + config.get('general', 'emergencynumbers') + "\"\n")
 	sys.stdout.write("SET VARIABLE SPECIALNUMBERS \"" + config.get('general', 'specialnumbers') + "\"\n")
 	sys.stdout.write("SET VARIABLE SPECIALPROVIDER \"" + config.get('general', 'specialprovider') + "\"\n")
 	sys.stdout.write("SET VARIABLE PROVIDERS \"" + providers + "\"\n")
 
-providers = ''
-for provider in config.sections():
-	if provider != 'general':
-		if not providers:
-			providers = provider
-		else:
-			providers = providers + "," + provider
-
+# If no argnument script return all general configuration
+# First argument must be a phone number 
+# Second argument must be a provider setup on config file
 if len(sys.argv) > 1:
 	try:
 		provider = sys.argv[2]
@@ -79,24 +89,29 @@ if len(sys.argv) > 1:
 
 			for s in config.sections():
 				if s != 'general':
-					try:
-						lennum = int(config.get(s, 'len'))
-					except:
-						lennum = 0
+					if config.has_option(s, 'len'):
+						if config.get(s, 'len'):
+							lennum = int(config.get(s, 'len'))+len(config.get(s, 'prefix'))
+						else:
+							lennum = len(config.get(s, 'prefix'))
+					else:
+						lennum = len(config.get(s, 'prefix'))
 
-					if len(exten) == lennum+len(config.get(s, 'prefix')) and not config.get(s, 'externregexp'):
+					if len(exten) == lennum and not config.get(s, 'externregexp'):
 						if exten[:len(config.get(s, 'prefix'))] == config.get(s, 'prefix'):
 							get_provider(s)
 							sys.exit()
 						else:
-							print "VERBOSE \"Number not found provider!\""
+							print "VERBOSE \"No found provider for this number %s!\"" % exten
 					else:
 						try:
 							import re
-							r = re.compile(config.get(s, 'externregexp'))
-							if len(r.findall(exten)) != 0 and r.findall(exten)[0]:
-								get_provider(s)
-								sys.exit()
+							if config.has_option(s, 'externregexp'):
+								r = re.compile(config.get(s, 'externregexp'))
+								if len(r.findall(exten)) != 0:
+									if r.findall(exten)[0]:
+										get_provider(s)
+										sys.exit()
 						except IndexError:
 							print "VERBOSE \"Error for the regexp %s on the section %s\"" %(config.get(s, 'externregexp'), s)
 							print "VERBOSE \"Maybe this number is wrong!\""
@@ -110,3 +125,7 @@ if len(sys.argv) > 1:
 			print "VERBOSE \"Error for number for args on the section %s\"" % s
 else:
 	get_general()
+	sys.exit()
+
+print "VERBOSE \"No found provider for this number %s!\"" % exten
+sys.exit()
