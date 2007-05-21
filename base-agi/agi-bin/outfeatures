@@ -36,6 +36,7 @@ config = ConfigParser.ConfigParser()
 config.readfp(open(outcall))
 
 def get_provider(provider):
+	sys.stdout.write("SET VARIABLE PROVIDER \"" + provider + "\"\n")
 	sys.stdout.write("SET VARIABLE EXTERNPREFIX \"" + config.get(provider, 'externprefix') + "\"\n")
 	sys.stdout.write("SET VARIABLE PREFIX \"" + config.get(provider, 'prefix') + "\"\n")
 	sys.stdout.write("SET VARIABLE CHAN \"" + config.get(provider, 'chan') + "\"\n")
@@ -78,17 +79,22 @@ if len(sys.argv) > 1:
 
 			for s in config.sections():
 				if s != 'general':
-					if len(exten) == int(config.get(s, 'len'))+len(config.get(s, 'prefix')):
+					try:
+						lennum = int(config.get(s, 'len'))
+					except:
+						lennum = 0
+
+					if len(exten) == lennum+len(config.get(s, 'prefix')) and not config.get(s, 'externregexp'):
 						if exten[:len(config.get(s, 'prefix'))] == config.get(s, 'prefix'):
 							get_provider(s)
 							sys.exit()
 						else:
-							print "Not found!"
+							print "VERBOSE \"Number not found provider!\""
 					else:
 						try:
 							import re
 							r = re.compile(config.get(s, 'externregexp'))
-							if r.findall(exten)[0]:
+							if len(r.findall(exten)) != 0 and r.findall(exten)[0]:
 								get_provider(s)
 								sys.exit()
 						except IndexError:
