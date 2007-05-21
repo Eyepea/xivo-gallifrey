@@ -24,7 +24,7 @@ CREATE TABLE cdr (
  PRIMARY KEY(id)
 );
 
-CREATE INDEX cdr__idx__disposition ON cdr(dispotion);
+CREATE INDEX cdr__idx__disposition ON cdr(disposition);
 CREATE INDEX cdr__idx__src ON cdr(src);
 CREATE INDEX cdr__idx__dst ON cdr(dst);
 CREATE INDEX cdr__idx__calldate ON cdr(calldate);
