@@ -13,7 +13,7 @@ __version__ = "$Revision: 616 $ $Date: 2007-05-16 11:48:13 +0200 (mer, 16 mai 20
 __license__ = """
     Copyright (C) 2007, Proformatique
 
-    This library is free software; you can redistribute it and/or
+    This software is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
     License as published by the Free Software Foundation; either
     version 2.1 of the License, or (at your option) any later version.
@@ -28,76 +28,79 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-
-import ConfigParser, string, sys
-
-try:
-        exten = sys.argv[1]
-except:
-        exten = ""
+import ConfigParser, sys
 
 outcall = "/etc/asterisk/xivo_outcall.conf"
 
 config = ConfigParser.ConfigParser()
 config.readfp(open(outcall))
 
+def get_provider(provider):
+	sys.stdout.write("SET VARIABLE EXTERNPREFIX \"" + config.get(provider, 'externprefix') + "\"\n")
+	sys.stdout.write("SET VARIABLE PREFIX \"" + config.get(provider, 'prefix') + "\"\n")
+	sys.stdout.write("SET VARIABLE CHAN \"" + config.get(provider, 'chan') + "\"\n")
+	sys.stdout.write("SET VARIABLE EXTERNNUM \"" + config.get(provider, 'externnum') + "\"\n")
+	sys.stdout.write("SET VARIABLE SETCALLERID \"" + config.get(provider, 'setcallerid') + "\"\n")
+	sys.stdout.write("SET VARIABLE USEENUM \"" + config.get(provider, 'useenum') + "\"\n")
+	sys.stdout.write("SET VARIABLE TIMETOCALL \"" + config.get(provider, 'timetocall') + "\"\n")
+	if not config.get(provider, 'stripnum'):
+		sys.stdout.write("SET VARIABLE STRIPNUM \"0\"\n")
+	else:
+		sys.stdout.write("SET VARIABLE STRIPNUM \"" + config.get(provider, 'stripnum') + "\"\n")
+
+def get_general():
+	sys.stdout.write("SET VARIABLE EMERGENCYPROVIDER \"" + config.get('general', 'emergencyprovider') + "\"\n")
+	sys.stdout.write("SET VARIABLE EMERGENCYNUMBERS \"" + config.get('general', 'emergencynumbers') + "\"\n")
+	sys.stdout.write("SET VARIABLE SPECIALNUMBERS \"" + config.get('general', 'specialnumbers') + "\"\n")
+	sys.stdout.write("SET VARIABLE SPECIALPROVIDER \"" + config.get('general', 'specialprovider') + "\"\n")
+	sys.stdout.write("SET VARIABLE PROVIDERS \"" + providers + "\"\n")
+
 providers = ''
 for provider in config.sections():
-        if provider != 'general':
-                if not providers:
-                        providers = provider
-                else:
-                        providers = providers + "," + provider
+	if provider != 'general':
+		if not providers:
+			providers = provider
+		else:
+			providers = providers + "," + provider
 
 if len(sys.argv) > 1:
-        try:
-                provider = sys.argv[2]
-        except:
-                provider = ""
+	try:
+		provider = sys.argv[2]
+	except:
+		provider = ""
 
-        if provider:
-                sys.stdout.write("SET VARIABLE EXTERNPREFIX \"" + config.get(provider, 'externprefix') + "\"\n")
-                sys.stdout.write("SET VARIABLE PREFIX \"" + config.get(provider, 'prefix') + "\"\n")
-                sys.stdout.write("SET VARIABLE CHAN \"" + config.get(provider, 'chan') + "\"\n")
-                sys.stdout.write("SET VARIABLE EXTERNNUM \"" + config.get(provider, 'externnum') + "\"\n")
-                sys.stdout.write("SET VARIABLE SETCALLERID \"" + config.get(provider, 'setcallerid') + "\"\n")
-                sys.stdout.write("SET VARIABLE USEENUM \"" + config.get(provider, 'useenum') + "\"\n")
-                sys.stdout.write("SET VARIABLE TIMETOCALL \"" + config.get(provider, 'timetocall') + "\"\n")
-                if not config.get(provider, 'stripnum'):
-                        sys.stdout.write("SET VARIABLE STRIPNUM \"0\"\n")
-                else:
-                        sys.stdout.write("SET VARIABLE STRIPNUM \"" + config.get(provider, 'stripnum') + "\"\n")
+	if provider:
+		get_provider(provider)
+		sys.exit()
+	else:
+		try:
+			exten = sys.argv[1]
 
-        else:
-                try:
-                        exten = sys.argv[1]
+			for s in config.sections():
+				if s != 'general':
+					if len(exten) == int(config.get(s, 'len'))+len(config.get(s, 'prefix')):
+						if exten[:len(config.get(s, 'prefix'))] == config.get(s, 'prefix'):
+							get_provider(s)
+							sys.exit()
+						else:
+							print "Not found!"
+					else:
+						try:
+							import re
+							r = re.compile(config.get(s, 'externregexp'))
+							if r.findall(exten)[0]:
+								get_provider(s)
+								sys.exit()
+						except IndexError:
+							print "VERBOSE \"Error for the regexp %s on the section %s\"" %(config.get(s, 'externregexp'), s)
+							print "VERBOSE \"Maybe this number is wrong!\""
 
-                        for s in config.sections():
-                                if s != 'general':
-                                        if len(exten) == int(config.get(s, 'len'))+len(config.get(s, 'prefix')):
-                                                if exten[:len(config.get(s, 'prefix'))] == config.get(s, 'prefix'):
-                                                        sys.stdout.write("SET VARIABLE PREFERPROVIDER \"" + s + "\"\n")
-                                                        sys.stdout.write("SET VARIABLE EXTERNPREFIX \"" + config.get(s, 'externprefix') + "\"\n")
-                                                        sys.stdout.write("SET VARIABLE PREFIX \"" + config.get(s, 'prefix') + "\"\n")
-                                                        sys.stdout.write("SET VARIABLE CHAN \"" + config.get(s, 'chan') + "\"\n")
-                                                        sys.stdout.write("SET VARIABLE EXTERNNUM \"" + config.get(s, 'externnum') + "\"\n")
-                                                        sys.stdout.write("SET VARIABLE SETCALLERID \"" + config.get(s, 'setcallerid') + "\"\n")
-                                                        sys.stdout.write("SET VARIABLE USEENUM \"" + config.get(s, 'useenum') + "\"\n")
-                                                        sys.stdout.write("SET VARIABLE TIMETOCALL \"" + config.get(s, 'timetocall') + "\"\n")
-                                                        if not config.get(s, 'stripnum'):
-                                                                sys.stdout.write("SET VARIABLE STRIPNUM \"0\"\n")
-                                                        else:
-                                                                sys.stdout.write("SET VARIABLE STRIPNUM \"" + config.get(s, 'stripnum') + "\"\n")
 
-                except ConfigParser.NoSectionError:
-                        print "VERBOSE \"Sorry no providers with this name\""
-                except ConfigParser.NoOptionError:
-                        print "VERBOSE \"Sorry your config is broken please add all options on the section %s\"" % section
-                except IndexError:
-                        print "VERBOSE \"Error for number for args\""
+		except ConfigParser.NoSectionError:
+			print "VERBOSE \"Sorry no providers with this name\""
+		except ConfigParser.NoOptionError:
+			print "VERBOSE \"Sorry your config is broken please add all options on the section %s\"" % s
+		except IndexError:
+			print "VERBOSE \"Error for number for args on the section %s\"" % s
 else:
-        sys.stdout.write("SET VARIABLE EMERGENCYPROVIDER \"" + config.get('general', 'emergencyprovider') + "\"\n")
-        sys.stdout.write("SET VARIABLE EMERGENCYNUMBERS \"" + config.get('general', 'emergencynumbers') + "\"\n")
-        sys.stdout.write("SET VARIABLE SPECIALNUMBERS \"" + config.get('general', 'specialnumbers') + "\"\n")
-        sys.stdout.write("SET VARIABLE SPECIALPROVIDER \"" + config.get('general', 'specialprovider') + "\"\n")
-        sys.stdout.write("SET VARIABLE PROVIDERS \"" + providers + "\"\n")
+	get_general()
