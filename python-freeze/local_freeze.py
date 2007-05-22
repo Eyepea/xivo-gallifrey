@@ -43,37 +43,27 @@ executable_path = os.path.dirname(executable_pathname)
 executable_name = os.path.basename(executable_pathname)
 
 
-fullline = "cp -r " + script_pathname
+command_cp = "cp -r " + script_pathname
 for extramod in scripts_to_build[:nscripts-1]:
-	fullline = fullline + " " + script_path + "/" + extramod
+	command_cp = command_cp + " " + script_path + "/" + extramod
 	if extramod.find(".py") > 0:
-		excludables.append(extramod[0:len(extramod[nscripts-1]) - 3])
+		excludables.append(os.path.basename(extramod[0:len(extramod[nscripts-1]) - 4]))
 	else:
 		excludables.append(extramod)
-fullline = fullline + " " + TMP_DIR
+command_cp = command_cp + " " + TMP_DIR
 
 os.mkdir(TMP_DIR)
-os.system(fullline)
-
-
-for extramod in scripts_to_build[:nscripts-1]:
-	if extramod.find(".py") < 0:
-		fullline = "cp " + script_path + "/" + extramod + "__init__.py" + " " + TMP_DIR + "/" + extramod + "/__init__.py"
-		print "####", fullline
-		os.system(fullline)
-#		os.system("rm " + TMP_DIR + "/" + extramod + "/*.pyc")
-
-# sys.exit(5)
-
+os.system(command_cp)
 os.chdir(TMP_DIR)
 
 
-fullline = freeze_script + " " + script_name
+command_freeze = freeze_script + " " + script_name
 for extramod in scripts_to_build[:nscripts-1]:
-	fullline = fullline + " " + extramod
-fullline = fullline + " | grep '^freezing' | cut -d ' ' -f 2-2"
+	if extramod.find(".py") > 0:
+		command_freeze = command_freeze + " " + extramod
+command_freeze = command_freeze + " | grep '^freezing' | cut -d ' ' -f 2-2"
 
-f = os.popen(fullline, 'r')
+f = os.popen(command_freeze, 'r')
 exclude_list = [ module.strip() for module in f if excludable(module.strip()) ]
 f.close()
 
