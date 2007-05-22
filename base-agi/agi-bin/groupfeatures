@@ -72,8 +72,8 @@ if not r:
 	print "VERBOSE \"No group found\""
 	sys.exit()
 
-number = r[0]
-name = r[1]
+name = r[0]
+number = r[1]
 
 try:
 	print "SET VARIABLE EXT %s" % number
