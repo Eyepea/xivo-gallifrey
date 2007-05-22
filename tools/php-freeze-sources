@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Create PHP encoded source tarball
+#
+# arguments: <tarball_prefix> <svn_url>
+
+TEMPDIR=$(mktemp -d)
+SRCDIR=${TEMPDIR}/sources
+RESULTDIR=${TEMPDIR}/result
+
+svn export -q $2 ${SRCDIR}
+
+SVNREV=$(svn info $2 | grep Revision | cut -d\  -f2)
+TARBALL=$1~svn${SVNREV}.orig.tar.gz
+
+cp -a ${SRCDIR} ${RESULTDIR}
+eaccelerator_encoder ${SRCDIR} -r -f -sphp -sinc -o ${RESULTDIR};
+
+tar czf ${TARBALL} -C ${TEMPDIR} result
+echo "RESULT: ${TARBALL}"
+
