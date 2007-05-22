@@ -51,11 +51,17 @@ conf_obj = ConfigParser.ConfigParser()
 conf_obj.readfp(open(CONFIG_FILE))
 FillDictFromConfigSection(options, conf_obj, "db")
 
+
+if len(sys.argv) != 2:
+	print "VERBOSE \"Error no args found!\""
+        sys.exit()
+
 try:
         exten = int(sys.argv[1])
+	query = "SELECT groupfeatures.name,groupfeatures.number,queue.timeout FROM groupfeatures,queue WHERE groupfeatures.name=queue.name AND groupfeatures.number='%d';" % exten
 except:
-        print "VERBOSE \"Error no args found!\""
-        sys.exit()
+	exten = sys.argv[1]
+	query = "SELECT groupfeatures.name,groupfeatures.number,queue.timeout FROM groupfeatures,queue WHERE groupfeatures.name=queue.name AND groupfeatures.name='%s';" % exten
 
 try:
         conn = anysql.connect_by_uri(options['db_uri'])
@@ -64,7 +70,6 @@ except:
         sys.exit()
 
 cursor = conn.cursor()
-query = "select name,number from groupfeatures where number='%s'" %exten
 cursor.execute(query)
 r = cursor.fetchone()
 
@@ -74,9 +79,11 @@ if not r:
 
 name = r[0]
 number = r[1]
+timeout = r[2]
 
 try:
-	print "SET VARIABLE EXT %s" % number
+	print "SET VARIABLE GEXT %s" % number
 	print "SET VARIABLE GNAME %s" % name
+	print "SET VARIABLE GTIMEOUT %s" % timeout
 except:
 	pass
