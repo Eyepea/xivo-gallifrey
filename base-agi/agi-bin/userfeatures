@@ -30,7 +30,7 @@ __license__ = """
 
 CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
 CONFIG_LIB_PATH = 'py_lib_path'
-DEBUG = 1
+DEBUG = 0
 
 import sys
 from xivo import ConfigPath
