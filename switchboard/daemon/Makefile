@@ -4,7 +4,9 @@
 default:
 
 frozen:
-	${FREEZEPATH}/local_freeze.py ${FREEZEPATH}/freeze.py xivo_ami,xivo_sip,xivo_daemon.py
+	${FREEZEPATH}/local_freeze.py ${FREEZEPATH}/freeze.py xivo_ami.py,xivo_sip.py,xivo_daemon.py
 
-# doc : doxygen @ nanard
+tarball:
+	${FREEZEPATH}/local_freeze.py ${FREEZEPATH}/freeze.py xivo_ami.py,xivo_sip.py,xivo_daemon.py
+	tar zcf pf-xivo-cti-server.tgz xivo_daemon xivo_daemon.conf
 
