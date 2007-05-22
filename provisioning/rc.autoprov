@@ -19,7 +19,7 @@ case "$1" in
 #	    echo "An autoprov daemon PID file was found. Nothing new started."
 #	    exit 1
 	if ! [ "$PID" = "" ] ; then
-	    echo "A PID " $PID "was found for autoprov. Nothing new started."
+	    echo "A PID " $PID " was found for autoprov. Nothing new started."
 	    exit 1
 	else
 	    echo "Starting autoprov daemon."
@@ -41,9 +41,7 @@ case "$1" in
 	    kill $PID
 	fi
 	;;
-  force-reload)
-	;;
-  restart)
+  force-reload|restart)
 	$0 stop
 	$0 start
 	;;
