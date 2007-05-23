@@ -114,6 +114,7 @@ import syslog
 import threading
 import time
 import urllib
+import _sre
 # XIVO modules
 import xivo_ami
 import xivo_sip

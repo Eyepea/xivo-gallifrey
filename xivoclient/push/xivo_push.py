@@ -33,6 +33,7 @@ import sqlite
 import socket
 import string
 import sys
+import _sre
 # XIVO modules
 import generefiche
 

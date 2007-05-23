@@ -10,6 +10,7 @@ __version__ = "$Revision$ $Date$"
 GETOPT_SHORTOPTS = 'c:'
 
 import sys
+import _sre
 # === BEGIN of early configuration handling, so that the sys.path can be altered
 CONFIG_FILE = '/etc/xivo/provisioning.conf' # can be overridded by cmd line param
 CONFIG_LIB_PATH = 'py_lib_path'
