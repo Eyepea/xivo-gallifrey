@@ -12,5 +12,6 @@ frozen:
 	@${FREEZEPATH}/local_freeze.py ${FREEZEPATH}/freeze.py xivo_ami.py,xivo_sip.py,xivo_daemon.py
 
 tarball: frozen
+	@rm -f pf-xivo-cti-server_*.orig.tar.gz
 	@tar zcf pf-xivo-cti-server_${XIVO_REV}.orig.tar.gz xivo_daemon xivo_daemon.conf
 
