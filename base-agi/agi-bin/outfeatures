@@ -75,18 +75,19 @@ def get_general():
 # First argument must be a phone number 
 # Second argument must be a provider setup on config file
 if len(sys.argv) > 1:
-	try:
-		provider = sys.argv[2]
-	except:
+	if sys.argv[1].isdigit():
+		exten = sys.argv[1]
 		provider = ""
+	else:
+		provider = sys.argv[1]
 
 	if provider:
 		get_provider(provider)
 		sys.exit()
 	else:
-		try:
-			exten = sys.argv[1]
+		get_general()
 
+		try:
 			for s in config.sections():
 				if s != 'general':
 					if config.has_option(s, 'len'):
