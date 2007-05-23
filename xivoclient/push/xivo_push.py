@@ -28,8 +28,10 @@
 # debian.org modules
 import ConfigParser
 import ldap
+import os
 import MySQLdb
 import sqlite
+import site
 import socket
 import string
 import sys
