@@ -17,3 +17,5 @@ tarball: frozen
 	@rm -f pf-xivo-provisioning_*.orig.tar.gz
 	@tar zcf pf-xivo-provisioning_${XIVO_REV}.orig.tar.gz autoprov initconfig etc files Phones --exclude=.svn --exclude=Phones/Thomson.py --exclude=Phones/Snom.py --exclude=Phones/__init__.py
 
+tarball-dep:
+	@echo "python2.4-dev"
