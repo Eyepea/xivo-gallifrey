@@ -308,20 +308,30 @@ def read_sip_properties(data):
 	cseq = 1
 	msg = "xxx"
 	cid = "no_callid@xivopy"
+	address = ""
+	lines = ""
 	ret = -99
+	bbranch = ""
 	btag = "no_tag"
+	
+	try:
+		lines = data.split("\r\n")
+		if lines[0].find("SIP/2.0") == 0: ret = int(lines[0].split(None)[1])
 
-	lines = data.split("\r\n")
-	if lines[0].find("SIP/2.0") == 0: ret = int(lines[0].split(None)[1])
+		for x in lines:
+			if x.find("CSeq") == 0:
+				cseq = int(x.split(None)[1])
+				msg = x.split(None)[2]
+			elif x.find("From: ") == 0 or x.find("f: ") == 0:
+				address = x.split("<sip:")[1].split("@")[0]
+			elif x.find("Call-ID:") == 0 or x.find("i: ") == 0:
+				cid = x.split(None)[1]
+			elif x.find("branch=") >= 0:  bbranch = x.split("branch=")[1].split(";")[0]
+			elif x.find("tag=") >= 0:     btag = x.split("tag=")[1].split(";")[0]
 
-	for x in lines:
-		if x.find("CSeq") == 0:
-			cseq = int(x.split(None)[1])
-			msg = x.split(None)[2]
-		elif x.find("From: ") == 0:   address = x.split("<sip:")[1].split("@")[0]
-		elif x.find("Call-ID:") == 0: cid = x.split(None)[1]
-		elif x.find("branch=") >= 0:  bbranch = x.split("branch=")[1].split(";")[0]
-		elif x.find("tag=") >= 0:     btag = x.split("tag=")[1].split(";")[0]
+	except Exception, e:
+		log_debug("problem occured in read_sip_properties : " + str(e))
+
 	return [cseq, msg, cid, address, len(lines), ret, bbranch, btag]
 
 
