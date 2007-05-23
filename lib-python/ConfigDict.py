@@ -1,4 +1,3 @@
-# -*- coding: iso-8859-15 -*-
 """Support routines to load content of configuration sections to a dictionary
 
 Copyright (C) 2007, Proformatique

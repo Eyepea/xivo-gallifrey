@@ -1,5 +1,3 @@
-# -*- coding: iso-8859-15 -*-
-
 import re, os, os.path
 
 __version__ = "$Revision$ $Date$"

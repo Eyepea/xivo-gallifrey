@@ -1,4 +1,3 @@
-# -*- coding: iso-8859-15 -*-
 """Supplementary synchronization primitives not provided by 'threading'
 
 Copyright (C) 2007, Proformatique

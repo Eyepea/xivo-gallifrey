@@ -1,4 +1,3 @@
-# -*- coding: iso-8859-15 -*-
 """DBAPI Helper using URI to create talk to various DB
 
 Copyright (C) 2007, Proformatique

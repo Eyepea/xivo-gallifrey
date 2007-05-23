@@ -1,4 +1,3 @@
-# -*- coding: iso-8859-15 -*-
 """Transforms a process into a daemon from hell
 
 Copyright (C) 2007, Proformatique

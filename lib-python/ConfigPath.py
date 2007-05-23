@@ -1,4 +1,3 @@
-# -*- coding: iso-8859-15 -*-
 """Support routines for ordered injections in sys.path from an .ini file
 
 Copyright (C) 2007, Proformatique

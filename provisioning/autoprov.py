@@ -1,5 +1,4 @@
 #!/usr/bin/python
-# -*- coding: iso-8859-15 -*-
 """Autoprovisioning daemon for Xivo
 
 Copyright (C) 2007, Proformatique

@@ -1,4 +1,3 @@
-# -*- coding: iso-8859-15 -*-
 """Common routines and objects for autoprovisioning services in Xivo
 
 Copyright (C) 2007, Proformatique

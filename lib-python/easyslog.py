@@ -1,5 +1,3 @@
-# -*- coding: iso-8859-15 -*-
-
 __version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2007, Proformatique

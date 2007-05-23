@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-# -*- coding: iso-8859-15 -*-
 
 # TODO: handle multi-modules python programs
 
