@@ -194,7 +194,7 @@ def ipv4_from_macaddr(macaddr, logexceptfunc = None):
 	"""
 	# -r : will only display the IP address on stdout, or nothing
 	# -c 1 : ping once
-	# -w <xxx> : wait for the answer during <xxx> µs after the ping
+	# -w <xxx> : wait for the answer during <xxx> microsec after the ping
 	# -i <netiface> : the network interface to use is <netiface>
 	for iface in get_ethdev_list():
 		try:
