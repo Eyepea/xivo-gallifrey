@@ -33,7 +33,7 @@ ProvGeneralConf = {
 	'wget_cmd':			"/usr/bin/wget",
 	'wget_to_s':			30,
 	'telnet_to_s':			30,
-	'templates_dir':	       	"/usr/share/xivo-provisioning/files/",
+	'templates_dir':	       	"/usr/share/pf-xivo-provisioning/files/",
 }
 pgc = ProvGeneralConf
 authorized_prefix = ["eth"]
