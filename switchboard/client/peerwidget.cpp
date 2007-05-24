@@ -30,6 +30,9 @@ m_person_yellow(":/personal-yellow.png"), m_person_blue(":/personal-blue.png")
 	layout->addWidget( m_statelbl, 0, Qt::AlignLeft );
 	layout->addWidget( m_availlbl, 0, Qt::AlignLeft );
 	m_textlbl = new QLabel(/*m_id + "/" +*/ m_name, this);
+	// set TextInteraction Flags so the mouse clicks are not catched by the
+	// QLabel widget
+	m_textlbl->setTextInteractionFlags( Qt::NoTextInteraction );
 	layout->addWidget( m_textlbl, 0, Qt::AlignLeft );
 	layout->addStretch(1);
 	// to be able to receive drop
@@ -139,6 +142,7 @@ void PeerWidget::dial()
 
 void PeerWidget::mousePressEvent(QMouseEvent *event)
 {
+	//qDebug() << "PeerWidget::mousePressEvent(QMouseEvent *event)";
 	if (event->button() == Qt::LeftButton)
 		m_dragstartpos = event->pos();
 	//else if (event->button() == Qt::RightButton)
@@ -153,13 +157,14 @@ void PeerWidget::mouseMoveEvent(QMouseEvent *event)
 	    < QApplication::startDragDistance())
 		return;
 
+	//qDebug() << "PeerWidget::mouseMoveEvent() startDrag";
 	QDrag *drag = new QDrag(this);
 	QMimeData *mimeData = new QMimeData;
 	mimeData->setText(m_id/*m_textlbl->text()*/);
 	drag->setMimeData(mimeData);
 
 	Qt::DropAction dropAction = drag->start(Qt::CopyAction | Qt::MoveAction);
-	qDebug() << "dropAction=" << dropAction;
+	//qDebug() << "PeerWidget::mouseMoveEvent : dropAction=" << dropAction;
 }
 
 #if 0
@@ -177,8 +182,7 @@ void PeerWidget::mouseDoubleClickEvent(QMouseEvent *event)
 
 void PeerWidget::dragEnterEvent(QDragEnterEvent *event)
 {
-	qDebug() << "dragEnterEvent()";
-	qDebug() << event->mimeData()->formats();
+	qDebug() << "PeerWidget::dragEnterEvent()" << event->mimeData()->formats();
 	if(event->mimeData()->hasText())
 	{
 		if(event->proposedAction() & (Qt::CopyAction|Qt::MoveAction))
