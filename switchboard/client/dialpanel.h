@@ -1,4 +1,4 @@
-/* $Id: $ */
+/* $Id$ */
 #ifndef __DIALPANEL_H__
 #define __DIALPANEL_H__
 #include <QWidget>
