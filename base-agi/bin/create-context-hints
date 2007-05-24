@@ -9,7 +9,7 @@
 #           (C) 2007 Proformatique
 #
 
-__version__ = "$Revision$ $Date$"
+__version__ = "$Revision: 616 $ $Date: 2007-05-16 11:48:13 +0200 (Wed, 16 May 2007) $"
 __license__ = """
     Copyright (C) 2007, Proformatique
 
@@ -51,6 +51,8 @@ conf_obj = ConfigParser.ConfigParser()
 conf_obj.readfp(open(CONFIG_FILE))
 FillDictFromConfigSection(options, conf_obj, "db")
 
+import operator, string
+
 try:
         conn = anysql.connect_by_uri(options['db_uri'])
 except:
@@ -58,19 +60,41 @@ except:
         sys.exit()
 
 cursor = conn.cursor()
-query = "select * from extensions where context='hints'"
+query = "SELECT context FROM extenumbers WHERE context NOT IN('general','global','hints','initconfig','did-extensions') GROUP BY context"
 cursor.execute(query)
 
 r = cursor.fetchall()
-c = 0
 
-while (len(r) > c):
-	try:
-		context = str(r[c][2])
-		app = str(r[c][5])
-		exten = str(r[c][3])
-		print 'exten => ' + exten + ',hint,' + app 
-	except:
-		pass
+if not r:
+	print "Erreur there is no context!"
+	sys.exit()
 
-	c = c + 1
+# This is the configuration file, please do not change the path because if was editable by xivo web interface
+outcall = "/etc/asterisk/xivo_context.conf"
+
+try:
+        config = ConfigParser.ConfigParser()
+        config.readfp(open(outcall))
+except IOError:
+        print "VERBOSE \"Configuration file not found : %s\"" % outcall
+        sys.exit()
+
+
+for context in r:
+	print "[" + context[0] + "]"
+	if context[0] == 'local-extensions':
+		query = "SELECT number,protocol,name FROM userfeatures WHERE context=''"
+	else:
+		query = "SELECT number,protocol,name FROM userfeatures WHERE context='%s'" % context[0]
+	cursor.execute(query)
+	r = cursor.fetchall()
+	for e in r:
+		if e[0] and e[1] and e[2]:
+			print "exten = " + str(e[0]) + ",hint," + str(e[1].upper()) + "/" + str(e[2])
+	for cont in config.sections():
+		exten = config.items(cont)
+
+	for line in sorted(exten, key=operator.itemgetter(0)):
+		print string.replace(line[1],'%%CONTEXT%%',context[0])
+	
+	print "\r"
