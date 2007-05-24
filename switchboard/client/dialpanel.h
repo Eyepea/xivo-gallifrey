@@ -1,3 +1,4 @@
+/* $Id: $ */
 #ifndef __DIALPANEL_H__
 #define __DIALPANEL_H__
 #include <QWidget>
@@ -6,6 +7,7 @@
 
 class QVBoxLayout;
 class QLineEdit;
+class QComboBox;
 class SwitchBoardEngine;
 
 class DialPanel : public QWidget
@@ -13,14 +15,14 @@ class DialPanel : public QWidget
 	Q_OBJECT
 public:
 	DialPanel(QWidget * parent = 0);
-	//void setEngine(SwitchBoardEngine *);
 public slots:
-	void affTextChanged();
+	//void textEdited(const QString &);
+	void inputValidated();
 signals:
 	void emitDial(const QString &);
 private:
-	//SwitchBoardEngine * m_engine;
-	QLineEdit * m_input;
+	//QLineEdit * m_input;
+	QComboBox * m_input;
 };
 
 #endif
