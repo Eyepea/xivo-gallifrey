@@ -13,7 +13,8 @@ default:
 frozen:
 	@PYTHONPATH=../lib-python ./gen_static_init.py
 	@${FREEZEPATH}/local_freeze.py ${FREEZEPATH}/freeze.py provsup.py,autoprov.py
-	@${FREEZEPATH}/local_freeze.py ${FREEZEPATH}/freeze.py provsup.py,initconfig.py
+#	@${FREEZEPATH}/local_freeze.py ${FREEZEPATH}/freeze.py provsup.py,initconfig.py
+	@cp initconfig.py initconfig
 
 tarball: frozen
 	@rm -f pf-xivo-provisioning_*.orig.tar.gz
