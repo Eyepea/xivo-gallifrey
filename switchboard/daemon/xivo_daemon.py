@@ -232,8 +232,8 @@ def update_userlist_fromurl(astn, url, sipaccount):
 			firstname = ""
 			lastname = ""
 			number = ""
-			if len(l) > 4:
-				number = l[4]
+			if len(l) > 1:
+				number = l[1]
 			if len(l) > 7:
 				fullname = l[7]
 			if len(l) > 8:
@@ -495,11 +495,11 @@ class AMIClass:
 			return False
 
 	# \brief Originates a call from a phone towards another.
-	def originate(self, phonesrc, phonedst, locext):
+	def originate(self, phoneproto, phonesrc, phonedst, locext):
 		# originate a call btw src and dst
 		# src will ring first, and dst will ring when src responds
 		try:
-			self.sendcommand('Originate', [('Channel', 'SIP/' + phonesrc),
+			self.sendcommand('Originate', [('Channel', phoneproto + '/' + phonesrc),
 						       ('Exten', phonedst),
 						       ('Context', locext),
 						       ('Priority', '1'),
@@ -895,7 +895,8 @@ def manage_tcp_connection(connid, allow_events):
 					if l[0] == 'originate':
 						log_debug("attempting a ORIGINATE : " + str(l))
 						if l[2].split("/")[1] != "":
-							ret = AMIclasssock[idassrc].originate(l[1].split("/")[2],
+							ret = AMIclasssock[idassrc].originate(l[1].split("/")[1],
+											      l[1].split("/")[2],
 											      l[2].split("/")[1],
 											      l[3])
 						else:
