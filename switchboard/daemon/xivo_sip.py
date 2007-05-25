@@ -14,7 +14,7 @@ import random
 # \param callid the callerID to send
 # \param expires the expiration time
 # \return the built message
-def sip_register(cfg, me, cseq, callid, expires):
+def sip_register(cfg, me, cseq, callid, expires, authentication):
     here = cfg.localaddr + ":" + str(cfg.portsipclt)
     raddr = cfg.remoteaddr
     #raddr = "192.168.0.255"
@@ -26,7 +26,8 @@ def sip_register(cfg, me, cseq, callid, expires):
     command += "CSeq: " + str(cseq) + " REGISTER\r\n"
     command += "Max-Forwards: 70\r\n"
     command += "Contact: <" + me + "@" + here + ">\r\n"
-    command += "User-Agent: Switchboard Watcher $Revision$\r\n"
+    command += authentication
+    command += "User-Agent: Switchboard Watcher\r\n"
     command += "Expires: " + expires + "\r\n"
     command += "Content-Length: 0\r\n"
     command += "\r\n"
@@ -39,7 +40,7 @@ def sip_register(cfg, me, cseq, callid, expires):
 # \param callid the callerID to send
 # \param expires the expiration time
 # \return the built message
-def sip_subscribe(cfg, me, cseq, callid, sipnumber, expires):
+def sip_subscribe(cfg, me, cseq, callid, sipnumber, expires, authentication):
     here = cfg.localaddr + ":" + str(cfg.portsipclt)
     command = "SUBSCRIBE sip:" + sipnumber + "@" + cfg.remoteaddr + " SIP/2.0\r\n"
     command += "Via: SIP/2.0/UDP " + here + ";branch=" + str(random.randrange(1000000)) + "\r\n"
@@ -51,7 +52,8 @@ def sip_subscribe(cfg, me, cseq, callid, sipnumber, expires):
     command += "Event: presence\r\n"
     command += "Accept: application/pidf+xml\r\n"
     command += "Contact: <" + me + "@" + here + ">\r\n"
-    command += "User-Agent: Switchboard Watcher $Revision$\r\n"
+    command += authentication
+    command += "User-Agent: Switchboard Watcher\r\n"
     command += "Expires: " + expires + "\r\n"
     command += "Content-Length: 0\r\n"
     command += "\r\n"
@@ -73,7 +75,7 @@ def sip_options(cfg, me, callid, sipnumber):
     command += "Contact: <" + me + "@" + here + ">\r\n"
     command += "Call-ID: " + callid + "\r\n"
     command += "CSeq: 102 OPTIONS\r\n"
-    command += "User-Agent: Switchboard Watcher $Revision$\r\n"
+    command += "User-Agent: Switchboard Watcher\r\n"
     command += "Max-Forwards: 70\r\n"
     command += "Allow: INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, SUBSCRIBE, NOTIFY\r\n"
     command += "Content-Length: 0\r\n"
@@ -95,7 +97,7 @@ def sip_ok(cfg, me, cseq, callid, sipnumber, smsg, lbranch, ltag):
     command += "To: <" + me + "@" + cfg.remoteaddr + ">\r\n"
     command += "Call-ID: " + callid + "\r\n"
     command += "CSeq: " + str(cseq) + " " + smsg + "\r\n"
-    command += "User-Agent: Switchboard Watcher $Revision$\r\n"
+    command += "User-Agent: Switchboard Watcher\r\n"
     command += "Content-Length: 0\r\n"
     command += "\r\n"
     return command
