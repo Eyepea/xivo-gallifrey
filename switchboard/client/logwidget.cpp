@@ -58,7 +58,7 @@ void LogWidget::addElement(const QString & peer, LogEltWidget::Direction d,
 				   && peer == logelt->peer()
 				   && d == logelt->direction())
 					return;
-				else if(dt >= logelt->dateTime())
+				else if(dt > logelt->dateTime())
 					break;
 				index = i + 1;
 			}
