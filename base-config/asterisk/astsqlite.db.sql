@@ -24,10 +24,10 @@ CREATE TABLE cdr (
  PRIMARY KEY(id)
 );
 
-CREATE INDEX cdr__idx__disposition ON cdr(disposition);
+CREATE INDEX cdr__idx__calldate ON cdr(calldate);
 CREATE INDEX cdr__idx__src ON cdr(src);
 CREATE INDEX cdr__idx__dst ON cdr(dst);
-CREATE INDEX cdr__idx__calldate ON cdr(calldate);
+CREATE INDEX cdr__idx__disposition ON cdr(disposition);
 
 
 DROP TABLE didfeatures;
@@ -181,7 +181,7 @@ CREATE TABLE queuefeatures (
  transfer_call tinyint(1) DEFAULT 0,
  write_caller tinyint(1) DEFAULT 0,
  write_calling tinyint(1) DEFAULT 0,
- url varchar(256) DEFAULT '',
+ url varchar(255) DEFAULT '',
  announceoverride varchar(128) DEFAULT '',
  timeout tinyint unsigned,
  PRIMARY KEY(id)

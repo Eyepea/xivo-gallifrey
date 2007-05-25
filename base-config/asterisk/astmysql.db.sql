@@ -1,5 +1,6 @@
 GRANT ALL PRIVILEGES ON asterisk.* TO asterisk@localhost IDENTIFIED BY PASSWORD '7560ba9c16089426';
 CREATE DATABASE IF NOT EXISTS `asterisk` DEFAULT CHARACTER SET utf8;
+USE `asterisk`;
 
 DROP TABLE IF EXISTS `cdr`;
 CREATE TABLE `cdr` (
@@ -22,13 +23,13 @@ CREATE TABLE `cdr` (
  `accountcode` varchar(20) NOT NULL DEFAULT '',
  `uniqueid` varchar(32) NOT NULL DEFAULT '',
  `userfield` varchar(255) NOT NULL DEFAULT '',
- PRIMARY KEY(id)
+ PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-CREATE INDEX cdr__idx__disposition ON cdr(disposition);
-CREATE INDEX cdr__idx__src ON cdr(src);
-CREATE INDEX cdr__idx__dst ON cdr(dst);
-CREATE INDEX cdr__idx__calldate ON cdr(calldate);
+CREATE INDEX `cdr__idx__calldate` ON `cdr`(`calldate`);
+CREATE INDEX `cdr__idx__src` ON `cdr`(`src`);
+CREATE INDEX `cdr__idx__dst` ON `cdr`(`dst`);
+CREATE INDEX `cdr__idx__disposition` ON `cdr`(`disposition`);
 
 
 DROP TABLE IF EXISTS `didfeatures`;
@@ -40,12 +41,12 @@ CREATE TABLE `didfeatures` (
  `custom` varchar(128) NOT NULL DEFAULT '',
  `number` varchar(80) NOT NULL,
  `commented` tinyint(1) NOT NULL DEFAULT 0,
- PRIMARY KEY(id)
+ PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-CREATE INDEX didfeatures__idx__type_typeid ON didfeatures(type,typeid);
-CREATE INDEX didfeatures__idx__commented ON didfeatures(commented);
-CREATE UNIQUE INDEX didfeatures__uidx__extenid ON didfeatures(extenid);
+CREATE INDEX `didfeatures__idx__type_typeid` ON `didfeatures`(`type`,`typeid`);
+CREATE INDEX `didfeatures__idx__commented` ON `didfeatures`(`commented`);
+CREATE UNIQUE INDEX `didfeatures__uidx__extenid` ON `didfeatures`(`extenid`);
 
 
 DROP TABLE IF EXISTS `extenumbers`;
@@ -53,10 +54,10 @@ CREATE TABLE `extenumbers` (
  `id` int(11) unsigned auto_increment,
  `number` varchar(80) NOT NULL,
  `context` varchar(80) NOT NULL,
- PRIMARY KEY(id)
+ PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-CREATE UNIQUE INDEX extenumbers__uidx__number_context ON extenumbers(number,context);
+CREATE UNIQUE INDEX `extenumbers__uidx__number_context` ON `extenumbers`(`number`,`context`);
 
 
 DROP TABLE IF EXISTS `groupfeatures`;
@@ -66,10 +67,10 @@ CREATE TABLE `groupfeatures` (
  `number` varchar(80) DEFAULT '',
  `context` varchar(80) NOT NULL DEFAULT '',
  `commented` tinyint(1) DEFAULT 0,
- PRIMARY KEY(id)
+ PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-CREATE UNIQUE INDEX groupfeatures__uidx__name_commented ON groupfeatures(name,commented);
+CREATE UNIQUE INDEX `groupfeatures__uidx__name_commented` ON `groupfeatures`(`name`,`commented`);
 
 
 DROP TABLE IF EXISTS `meetme`;
@@ -82,13 +83,13 @@ CREATE TABLE `meetme` (
  `category` varchar(128) NOT NULL,
  `var_name` varchar(128) NOT NULL,
  `var_val` varchar(128),
- PRIMARY KEY(id)
+ PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-CREATE INDEX meetme__idx__commented ON meetme(commented);
-CREATE INDEX meetme__idx__filename ON meetme(filename);
-CREATE INDEX meetme__idx__category ON meetme(category);
-CREATE INDEX meetme__idx__var_name ON meetme(var_name);
+CREATE INDEX `meetme__idx__commented` ON `meetme`(`commented`);
+CREATE INDEX `meetme__idx__filename` ON `meetme`(`filename`);
+CREATE INDEX `meetme__idx__category` ON `meetme`(`category`);
+CREATE INDEX `meetme__idx__var_name` ON `meetme`(`var_name`);
 
 
 DROP TABLE IF EXISTS `meetmefeatures`;
@@ -104,12 +105,12 @@ CREATE TABLE `meetmefeatures` (
  `quiet` tinyint(1) DEFAULT 0,
  `record` tinyint(1) DEFAULT 0,
  `video` tinyint(1) DEFAULT 0,
- PRIMARY KEY(id)
+ PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-CREATE UNIQUE INDEX meetmefeatures__uidx__meetmeid ON meetmefeatures(meetmeid);
-CREATE UNIQUE INDEX meetmefeatures__uidx__name ON meetmefeatures(name);
-CREATE UNIQUE INDEX meetmefeatures__uidx__number ON meetmefeatures(number);
+CREATE UNIQUE INDEX `meetmefeatures__uidx__meetmeid` ON `meetmefeatures`(`meetmeid`);
+CREATE UNIQUE INDEX `meetmefeatures__uidx__name` ON `meetmefeatures`(`name`);
+CREATE UNIQUE INDEX `meetmefeatures__uidx__number` ON `meetmefeatures`(`number`);
 
 
 DROP TABLE IF EXISTS `phone`;
@@ -119,10 +120,10 @@ CREATE TABLE `phone` (
  `model` varchar(16) NOT NULL,
  `proto` varchar(50) NOT NULL,
  `iduserfeatures` int(11) unsigned,
- PRIMARY KEY(macaddr)
+ PRIMARY KEY(`macaddr`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-CREATE INDEX phone__idx__proto_iduserfeatures ON phone(proto,iduserfeatures);
+CREATE INDEX `phone__idx__proto_iduserfeatures` ON `phone`(`proto`,`iduserfeatures`);
 
 
 DROP TABLE IF EXISTS `queue`;
@@ -163,11 +164,11 @@ CREATE TABLE `queue` (
  `timeoutrestart` tinyint(1) DEFAULT 0,
  `commented` tinyint(1) DEFAULT 0,
  `category` enum('group','queue') NOT NULL,
- PRIMARY KEY(name)
+ PRIMARY KEY(`name`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-CREATE INDEX queue__idx__commented ON queue(commented);
-CREATE INDEX queue__idx__category ON queue(category);
+CREATE INDEX `queue__idx__commented` ON `queue`(`commented`);
+CREATE INDEX `queue__idx__category` ON `queue`(`category`);
 
 
 DROP TABLE IF EXISTS `queuefeatures`;
@@ -185,13 +186,13 @@ CREATE TABLE `queuefeatures` (
  `transfer_call` tinyint(1) DEFAULT 0,
  `write_caller` tinyint(1) DEFAULT 0,
  `write_calling` tinyint(1) DEFAULT 0,
- `url` varchar(256) DEFAULT '',
+ `url` varchar(255) DEFAULT '',
  `announceoverride` varchar(128) DEFAULT '',
  `timeout` tinyint unsigned,
- PRIMARY KEY(id)
+ PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-CREATE UNIQUE INDEX queuefeatures__uidx__name ON queuefeatures(name);
+CREATE UNIQUE INDEX `queuefeatures__uidx__name` ON `queuefeatures`(`name`);
 
 
 DROP TABLE IF EXISTS `queuemember`;
@@ -201,10 +202,10 @@ CREATE TABLE `queuemember` (
  `penalty` int(11) unsigned DEFAULT 0,
  `call-limit` int(11) unsigned DEFAULT 0,
  `commented` tinyint(1) DEFAULT 0,
- PRIMARY KEY(queue_name,interface)
+ PRIMARY KEY(`queue_name`,`interface`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-CREATE INDEX queuemember__idx__commented ON queuemember(commented);
+CREATE INDEX `queuemember__idx__commented` ON `queuemember`(`commented`);
 
 
 DROP TABLE IF EXISTS `trunkfeatures`;
@@ -213,11 +214,11 @@ CREATE TABLE `trunkfeatures` (
  `trunk` varchar(50) NOT NULL,
  `trunkid` int(11) unsigned NOT NULL,
  `registerid` int(11) unsigned DEFAULT 0,
- PRIMARY KEY(id)
+ PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-CREATE INDEX trunkfeatures__idx__registerid ON trunkfeatures(registerid);
-CREATE UNIQUE INDEX trunkfeatures__uidx__trunk_trunkid ON trunkfeatures(trunk,trunkid);
+CREATE INDEX `trunkfeatures__idx__registerid` ON `trunkfeatures`(`registerid`);
+CREATE UNIQUE INDEX `trunkfeatures__uidx__trunk_trunkid` ON `trunkfeatures`(`trunk`,`trunkid`);
 
 
 DROP TABLE IF EXISTS `usergroup`;
@@ -225,10 +226,10 @@ CREATE TABLE `usergroup` (
  `id` int(11) unsigned auto_increment,
  `userid` int(11) unsigned NOT NULL,
  `groupid` tinyint unsigned NOT NULL,
- PRIMARY KEY(id)
+ PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-CREATE UNIQUE INDEX usergroup__uidx__userid_groupid ON usergroup(userid,groupid);
+CREATE UNIQUE INDEX `usergroup__uidx__userid_groupid` ON `usergroup`(`userid`,`groupid`);
 
 
 DROP TABLE IF EXISTS `useriax`;
@@ -265,12 +266,12 @@ CREATE TABLE `useriax` (
  `regseconds` int(11) unsigned DEFAULT 0,
  `call-limit` tinyint unsigned DEFAULT 0,
  `category` varchar(50) NOT NULL,
- PRIMARY KEY(id)
+ PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-CREATE INDEX useriax__idx__commented ON useriax(commented);
-CREATE INDEX useriax__idx__category ON useriax(category);
-CREATE UNIQUE INDEX useriax__uidx__name ON useriax(name);
+CREATE INDEX `useriax__idx__commented` ON `useriax`(`commented`);
+CREATE INDEX `useriax__idx__category` ON `useriax`(`category`);
+CREATE UNIQUE INDEX `useriax__uidx__name` ON `useriax`(`name`);
 
 
 DROP TABLE IF EXISTS `uservoicemail`;
@@ -300,13 +301,13 @@ CREATE TABLE `uservoicemail` (
  `forcegreetings` varchar(4) NOT NULL DEFAULT 'no',
  `hidefromdir` varchar(4) NOT NULL DEFAULT 'yes',
  `commented` tinyint(1) NOT NULL DEFAULT 0,
- PRIMARY KEY(id)
+ PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-CREATE INDEX uservoicemail__idx__commented ON uservoicemail(commented);
-CREATE INDEX uservoicemail__idx__context ON uservoicemail(context);
-CREATE INDEX uservoicemail__idx__mailbox_context ON uservoicemail(mailbox,context);
-CREATE UNIQUE INDEX uservoicemail__uidx__mailbox ON uservoicemail(mailbox);
+CREATE INDEX `uservoicemail__idx__commented` ON `uservoicemail`(`commented`);
+CREATE INDEX `uservoicemail__idx__context` ON `uservoicemail`(`context`);
+CREATE INDEX `uservoicemail__idx__mailbox_context` ON `uservoicemail`(`mailbox`,`context`);
+CREATE UNIQUE INDEX `uservoicemail__uidx__mailbox` ON `uservoicemail`(`mailbox`);
 
 
 DROP TABLE IF EXISTS `userfeatures`;
@@ -326,20 +327,20 @@ CREATE TABLE `userfeatures` (
  `popupwidget` tinyint(1) DEFAULT 0,
  `musiconhold` varchar(128) NOT NULL DEFAULT '',
  `comment` text DEFAULT '',
- PRIMARY KEY(id)
+ PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-CREATE INDEX userfeatures__idx__firstname ON userfeatures(firstname);
-CREATE INDEX userfeatures__idx__lastname ON userfeatures(lastname);
-CREATE INDEX userfeatures__idx__number ON userfeatures(number);
-CREATE INDEX userfeatures__idx__context ON userfeatures(context);
-CREATE INDEX userfeatures__idx__musiconhold ON userfeatures(musiconhold);
-CREATE UNIQUE INDEX userfeatures__uidx__protocol_name ON userfeatures(protocol,name);
-CREATE UNIQUE INDEX userfeatures__uidx__protocol_protocolid ON userfeatures(protocol,protocolid);
-CREATE UNIQUE INDEX userfeatures__uidx__provisioningid ON userfeatures(provisioningid);
+CREATE INDEX `userfeatures__idx__firstname` ON `userfeatures`(`firstname`);
+CREATE INDEX `userfeatures__idx__lastname` ON `userfeatures`(`lastname`);
+CREATE INDEX `userfeatures__idx__number` ON `userfeatures`(`number`);
+CREATE INDEX `userfeatures__idx__context` ON `userfeatures`(`context`);
+CREATE INDEX `userfeatures__idx__musiconhold` ON `userfeatures`(`musiconhold`);
+CREATE UNIQUE INDEX `userfeatures__uidx__protocol_name` ON `userfeatures`(`protocol`,`name`);
+CREATE UNIQUE INDEX `userfeatures__uidx__protocol_protocolid` ON `userfeatures`(`protocol`,`protocolid`);
+CREATE UNIQUE INDEX `userfeatures__uidx__provisioningid` ON `userfeatures`(`provisioningid`);
 
-INSERT INTO userfeatures VALUES(1,'sip',1,'Guest','','guest','','initconfig',148378,30,0,5,0,'','');
-INSERT INTO userfeatures VALUES(2,'sip',2,'XivoSB','','xivosb','','',194867,30,0,5,0,'','');
+INSERT INTO `userfeatures` VALUES(1,'sip',1,'Guest','','guest','','initconfig',148378,30,0,5,0,'','');
+INSERT INTO `userfeatures` VALUES(2,'sip',2,'XivoSB','','xivosb','','',194867,30,0,5,0,'','');
 
 
 DROP TABLE IF EXISTS `extensions`;
@@ -352,52 +353,52 @@ CREATE TABLE `extensions` (
  `app` varchar(20) NOT NULL DEFAULT '',
  `appdata` varchar(128) NOT NULL DEFAULT '',
  `name` varchar(128) DEFAULT '',
- PRIMARY KEY(id)
+ PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-CREATE INDEX extensions__idx__commented ON extensions(commented);
-CREATE INDEX extensions__idx__context_exten_priority ON extensions(context,exten,priority);
-CREATE INDEX extensions__idx__name ON extensions(name);
+CREATE INDEX `extensions__idx__commented` ON `extensions`(`commented`);
+CREATE INDEX `extensions__idx__context_exten_priority` ON `extensions`(`context`,`exten`,`priority`);
+CREATE INDEX `extensions__idx__name` ON `extensions`(`name`);
 
-INSERT INTO extensions VALUES(1,0,'features','_*98',1,'VoiceMailMain','${CALLERID(num)@default}','voicemsg');
-INSERT INTO extensions VALUES(2,0,'features','_*98',2,'Hangup','','voicemsg');
-INSERT INTO extensions VALUES(3,0,'features','_*20',1,'Noop','Not implemented undo all','fwdundoall');
-INSERT INTO extensions VALUES(4,0,'features','_*21',1,'Macro','features|FWD/Unc/Status|forward-on|forward-off|1','fwdundounc');
-INSERT INTO extensions VALUES(5,0,'features','_*22',1,'Macro','features|FWD/RNA/Status|forward-on|forward-off|1','fwdundorna');
-INSERT INTO extensions VALUES(6,0,'features','_*23',1,'Macro','features|FWD/Busy/Status|forward-on|forward-off|1','fwdundobusy');
-INSERT INTO extensions VALUES(7,0,'features','_*21.',1,'Answer','','fwdunc');
-INSERT INTO extensions VALUES(8,0,'features','_*21.',2,'Wait',0.5,'fwdunc');
-INSERT INTO extensions VALUES(9,0,'features','_*21.',3,'Set','USER=${CALLERID(num)}','fwdunc');
-INSERT INTO extensions VALUES(10,0,'features','_*21.',4,'Set','DB(users/${USER}/FWD/Unc/Number)=${EXTEN:3}','fwdunc');
-INSERT INTO extensions VALUES(11,0,'features','_*21.',5,'Set','DB(users/${USER}/FWD/Unc/Status)=1','fwdunc');
-INSERT INTO extensions VALUES(12,0,'features','_*21.',6,'Playback','forward-on','fwdunc');
-INSERT INTO extensions VALUES(13,0,'features','_*21.',7,'Hangup','','fwdunc');
-INSERT INTO extensions VALUES(14,0,'features','_*22.',1,'Answer','','fwdrna');
-INSERT INTO extensions VALUES(15,0,'features','_*22.',2,'Wait',0.5,'fwdrna');
-INSERT INTO extensions VALUES(16,0,'features','_*22.',3,'Set','USER=${CALLERID(num)}','fwdrna');
-INSERT INTO extensions VALUES(17,0,'features','_*22.',4,'Set','DB(users/${USER}/FWD/RNA/Number)=${EXTEN:3}','fwdrna');
-INSERT INTO extensions VALUES(18,0,'features','_*22.',5,'Set','DB(users/${USER}/FWD/RNA/Status)=1','fwdrna');
-INSERT INTO extensions VALUES(19,0,'features','_*22.',6,'Playback','forward-on','fwdrna');
-INSERT INTO extensions VALUES(20,0,'features','_*22.',7,'Hangup','','fwdrna');
-INSERT INTO extensions VALUES(21,0,'features','_*23.',1,'Answer','','fwdbusy');
-INSERT INTO extensions VALUES(22,0,'features','_*23.',2,'Wait',0.5,'fwdbusy');
-INSERT INTO extensions VALUES(23,0,'features','_*23.',3,'Set','USER=${CALLERID(num)}','fwdbusy');
-INSERT INTO extensions VALUES(24,0,'features','_*23.',4,'Set','DB(users/${USER}/FWD/Busy/Number)=${EXTEN:3}','fwdbusy');
-INSERT INTO extensions VALUES(25,0,'features','_*23.',5,'Set','DB(users/${USER}/FWD/Busy/Status)=1','fwdbusy');
-INSERT INTO extensions VALUES(26,0,'features','_*23.',6,'Playback','forward-on','fwdbusy');
-INSERT INTO extensions VALUES(27,0,'features','_*23.',7,'Hangup','','fwdbusy');
-INSERT INTO extensions VALUES(28,0,'features','_*9',1,'Wait',1,'recsnd');
-INSERT INTO extensions VALUES(29,0,'features','_*9',2,'Set','ROOT=/usr/share/asterisk/sounds/web-interface/recordings','recsnd');
-INSERT INTO extensions VALUES(30,0,'features','_*9',3,'Set','FILE=${CALLERID(num)}-${EPOCH}','recsnd');
-INSERT INTO extensions VALUES(31,0,'features','_*9',4,'Record','${ROOT}/${FILE}:wav','recsnd');
-INSERT INTO extensions VALUES(32,0,'features','_*9',5,'Wait',1,'recsnd');
-INSERT INTO extensions VALUES(33,0,'features','_*9',6,'Playback','${ROOT}/${FILE}','recsnd');
-INSERT INTO extensions VALUES(34,0,'features','_*9',7,'Hangup','','recsnd');
-INSERT INTO extensions VALUES(35,0,'features','_*24',1,'Macro','features|VM|vm-on|vm-off','enablevm');
-INSERT INTO extensions VALUES(36,0,'features','_*25',1,'Macro','features|DND|dnd-on|dnd-off','enablednd');
-INSERT INTO extensions VALUES(37,0,'features','_*26',1,'Macro','features|Record|to-record-call&on|to-record-call&off-duty','incallrec');
-INSERT INTO extensions VALUES(38,0,'features','_*27',1,'Macro','features|Screen|screen-callee-options&on|screen-callee-options&off-duty','incallfilter');
-INSERT INTO extensions VALUES(39,0,'features','_*8.',1,'Pickup','${EXTEN:2}','pickup');
+INSERT INTO `extensions` VALUES(1,0,'features','_*98',1,'VoiceMailMain','${CALLERID(num)@default}','voicemsg');
+INSERT INTO `extensions` VALUES(2,0,'features','_*98',2,'Hangup','','voicemsg');
+INSERT INTO `extensions` VALUES(3,0,'features','_*20',1,'Noop','Not implemented undo all','fwdundoall');
+INSERT INTO `extensions` VALUES(4,0,'features','_*21',1,'Macro','features|FWD/Unc/Status|forward-on|forward-off|1','fwdundounc');
+INSERT INTO `extensions` VALUES(5,0,'features','_*22',1,'Macro','features|FWD/RNA/Status|forward-on|forward-off|1','fwdundorna');
+INSERT INTO `extensions` VALUES(6,0,'features','_*23',1,'Macro','features|FWD/Busy/Status|forward-on|forward-off|1','fwdundobusy');
+INSERT INTO `extensions` VALUES(7,0,'features','_*21.',1,'Answer','','fwdunc');
+INSERT INTO `extensions` VALUES(8,0,'features','_*21.',2,'Wait',0.5,'fwdunc');
+INSERT INTO `extensions` VALUES(9,0,'features','_*21.',3,'Set','USER=${CALLERID(num)}','fwdunc');
+INSERT INTO `extensions` VALUES(10,0,'features','_*21.',4,'Set','DB(users/${USER}/FWD/Unc/Number)=${EXTEN:3}','fwdunc');
+INSERT INTO `extensions` VALUES(11,0,'features','_*21.',5,'Set','DB(users/${USER}/FWD/Unc/Status)=1','fwdunc');
+INSERT INTO `extensions` VALUES(12,0,'features','_*21.',6,'Playback','forward-on','fwdunc');
+INSERT INTO `extensions` VALUES(13,0,'features','_*21.',7,'Hangup','','fwdunc');
+INSERT INTO `extensions` VALUES(14,0,'features','_*22.',1,'Answer','','fwdrna');
+INSERT INTO `extensions` VALUES(15,0,'features','_*22.',2,'Wait',0.5,'fwdrna');
+INSERT INTO `extensions` VALUES(16,0,'features','_*22.',3,'Set','USER=${CALLERID(num)}','fwdrna');
+INSERT INTO `extensions` VALUES(17,0,'features','_*22.',4,'Set','DB(users/${USER}/FWD/RNA/Number)=${EXTEN:3}','fwdrna');
+INSERT INTO `extensions` VALUES(18,0,'features','_*22.',5,'Set','DB(users/${USER}/FWD/RNA/Status)=1','fwdrna');
+INSERT INTO `extensions` VALUES(19,0,'features','_*22.',6,'Playback','forward-on','fwdrna');
+INSERT INTO `extensions` VALUES(20,0,'features','_*22.',7,'Hangup','','fwdrna');
+INSERT INTO `extensions` VALUES(21,0,'features','_*23.',1,'Answer','','fwdbusy');
+INSERT INTO `extensions` VALUES(22,0,'features','_*23.',2,'Wait',0.5,'fwdbusy');
+INSERT INTO `extensions` VALUES(23,0,'features','_*23.',3,'Set','USER=${CALLERID(num)}','fwdbusy');
+INSERT INTO `extensions` VALUES(24,0,'features','_*23.',4,'Set','DB(users/${USER}/FWD/Busy/Number)=${EXTEN:3}','fwdbusy');
+INSERT INTO `extensions` VALUES(25,0,'features','_*23.',5,'Set','DB(users/${USER}/FWD/Busy/Status)=1','fwdbusy');
+INSERT INTO `extensions` VALUES(26,0,'features','_*23.',6,'Playback','forward-on','fwdbusy');
+INSERT INTO `extensions` VALUES(27,0,'features','_*23.',7,'Hangup','','fwdbusy');
+INSERT INTO `extensions` VALUES(28,0,'features','_*9',1,'Wait',1,'recsnd');
+INSERT INTO `extensions` VALUES(29,0,'features','_*9',2,'Set','ROOT=/usr/share/asterisk/sounds/web-interface/recordings','recsnd');
+INSERT INTO `extensions` VALUES(30,0,'features','_*9',3,'Set','FILE=${CALLERID(num)}-${EPOCH}','recsnd');
+INSERT INTO `extensions` VALUES(31,0,'features','_*9',4,'Record','${ROOT}/${FILE}:wav','recsnd');
+INSERT INTO `extensions` VALUES(32,0,'features','_*9',5,'Wait',1,'recsnd');
+INSERT INTO `extensions` VALUES(33,0,'features','_*9',6,'Playback','${ROOT}/${FILE}','recsnd');
+INSERT INTO `extensions` VALUES(34,0,'features','_*9',7,'Hangup','','recsnd');
+INSERT INTO `extensions` VALUES(35,0,'features','_*24',1,'Macro','features|VM|vm-on|vm-off','enablevm');
+INSERT INTO `extensions` VALUES(36,0,'features','_*25',1,'Macro','features|DND|dnd-on|dnd-off','enablednd');
+INSERT INTO `extensions` VALUES(37,0,'features','_*26',1,'Macro','features|Record|to-record-call&on|to-record-call&off-duty','incallrec');
+INSERT INTO `extensions` VALUES(38,0,'features','_*27',1,'Macro','features|Screen|screen-callee-options&on|screen-callee-options&off-duty','incallfilter');
+INSERT INTO `extensions` VALUES(39,0,'features','_*8.',1,'Pickup','${EXTEN:2}','pickup');
 
 
 DROP TABLE IF EXISTS `generalsip`;
@@ -410,31 +411,31 @@ CREATE TABLE `generalsip` (
  `category` varchar(128) NOT NULL,
  `var_name` varchar(128) NOT NULL,
  `var_val` varchar(128),
- PRIMARY KEY(id)
+ PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-CREATE INDEX generalsip__idx__commented ON generalsip(commented);
-CREATE INDEX generalsip__idx__filename ON generalsip(filename);
-CREATE INDEX generalsip__idx__category ON generalsip(category);
-CREATE INDEX generalsip__idx__var_name ON generalsip(var_name);
+CREATE INDEX `generalsip__idx__commented` ON `generalsip`(`commented`);
+CREATE INDEX `generalsip__idx__filename` ON `generalsip`(`filename`);
+CREATE INDEX `generalsip__idx__category` ON `generalsip`(`category`);
+CREATE INDEX `generalsip__idx__var_name` ON `generalsip`(`var_name`);
 
-INSERT INTO generalsip VALUES(1,0,0,0,'sip.conf','general','bindport',5060);
-INSERT INTO generalsip VALUES(2,0,0,0,'sip.conf','general','bindaddr','0.0.0.0');
-INSERT INTO generalsip VALUES(3,0,0,0,'sip.conf','general','srvlookup','no');
-INSERT INTO generalsip VALUES(4,0,0,0,'sip.conf','general','language','fr');
-INSERT INTO generalsip VALUES(5,0,0,0,'sip.conf','general','maxexpiry',3600);
-INSERT INTO generalsip VALUES(6,0,0,0,'sip.conf','general','defaultexpiry',120);
-INSERT INTO generalsip VALUES(7,0,0,0,'sip.conf','general','useragent','Xivo PBX');
-INSERT INTO generalsip VALUES(8,0,0,0,'sip.conf','general','nat','yes');
-INSERT INTO generalsip VALUES(9,0,0,0,'sip.conf','general','qualify','yes');
-INSERT INTO generalsip VALUES(10,0,0,0,'sip.conf','general','rtcachefriends','yes');
-INSERT INTO generalsip VALUES(11,0,0,0,'sip.conf','general','allowguest','yes');
-INSERT INTO generalsip VALUES(12,0,0,0,'sip.conf','general','tos','lowdelay');
-INSERT INTO generalsip VALUES(13,0,0,0,'sip.conf','general','relaxdtmf','yes');
-INSERT INTO generalsip VALUES(14,0,0,0,'sip.conf','general','context','from-sip');
-INSERT INTO generalsip VALUES(15,0,0,0,'sip.conf','general','checkmwi',10);
-INSERT INTO generalsip VALUES(16,0,0,0,'sip.conf','general','vmexten','*98');
-INSERT INTO generalsip VALUES(17,0,0,0,'sip.conf','general','videosupport','no');
+INSERT INTO `generalsip` VALUES(1,0,0,0,'sip.conf','general','bindport',5060);
+INSERT INTO `generalsip` VALUES(2,0,0,0,'sip.conf','general','bindaddr','0.0.0.0');
+INSERT INTO `generalsip` VALUES(3,0,0,0,'sip.conf','general','srvlookup','no');
+INSERT INTO `generalsip` VALUES(4,0,0,0,'sip.conf','general','language','fr');
+INSERT INTO `generalsip` VALUES(5,0,0,0,'sip.conf','general','maxexpiry',3600);
+INSERT INTO `generalsip` VALUES(6,0,0,0,'sip.conf','general','defaultexpiry',120);
+INSERT INTO `generalsip` VALUES(7,0,0,0,'sip.conf','general','useragent','Xivo PBX');
+INSERT INTO `generalsip` VALUES(8,0,0,0,'sip.conf','general','nat','yes');
+INSERT INTO `generalsip` VALUES(9,0,0,0,'sip.conf','general','qualify','yes');
+INSERT INTO `generalsip` VALUES(10,0,0,0,'sip.conf','general','rtcachefriends','yes');
+INSERT INTO `generalsip` VALUES(11,0,0,0,'sip.conf','general','allowguest','yes');
+INSERT INTO `generalsip` VALUES(12,0,0,0,'sip.conf','general','tos','lowdelay');
+INSERT INTO `generalsip` VALUES(13,0,0,0,'sip.conf','general','relaxdtmf','yes');
+INSERT INTO `generalsip` VALUES(14,0,0,0,'sip.conf','general','context','from-sip');
+INSERT INTO `generalsip` VALUES(15,0,0,0,'sip.conf','general','checkmwi',10);
+INSERT INTO `generalsip` VALUES(16,0,0,0,'sip.conf','general','vmexten','*98');
+INSERT INTO `generalsip` VALUES(17,0,0,0,'sip.conf','general','videosupport','no');
 
 
 DROP TABLE IF EXISTS `generaliax`;
@@ -447,22 +448,22 @@ CREATE TABLE `generaliax` (
  `category` varchar(128) NOT NULL,
  `var_name` varchar(128) NOT NULL,
  `var_val` varchar(128),
- PRIMARY KEY(id)
+ PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-CREATE INDEX generaliax__idx__commented ON generaliax(commented);
-CREATE INDEX generaliax__idx__filename ON generaliax(filename);
-CREATE INDEX generaliax__idx__category ON generaliax(category);
-CREATE INDEX generaliax__idx__var_name ON generaliax(var_name);
+CREATE INDEX `generaliax__idx__commented` ON `generaliax`(`commented`);
+CREATE INDEX `generaliax__idx__filename` ON `generaliax`(`filename`);
+CREATE INDEX `generaliax__idx__category` ON `generaliax`(`category`);
+CREATE INDEX `generaliax__idx__var_name` ON `generaliax`(`var_name`);
 
-INSERT INTO generaliax VALUES(1,0,0,0,'iax.conf','general','bindport',4569);
-INSERT INTO generaliax VALUES(2,0,0,0,'iax.conf','general','bindaddr','0.0.0.0');
-INSERT INTO generaliax VALUES(3,0,0,0,'iax.conf','general','delayreject','no');
-INSERT INTO generaliax VALUES(4,0,0,0,'iax.conf','general','language','en');
-INSERT INTO generaliax VALUES(5,0,0,0,'iax.conf','general','tos','lowdelay');
-INSERT INTO generaliax VALUES(6,0,0,0,'iax.conf','general','qualify','yes');
-INSERT INTO generaliax VALUES(7,0,0,0,'iax.conf','general','rtcachefriends','yes');
-INSERT INTO generaliax VALUES(8,0,0,0,'iax.conf','general','jitterbuffer','no');
+INSERT INTO `generaliax` VALUES(1,0,0,0,'iax.conf','general','bindport',4569);
+INSERT INTO `generaliax` VALUES(2,0,0,0,'iax.conf','general','bindaddr','0.0.0.0');
+INSERT INTO `generaliax` VALUES(3,0,0,0,'iax.conf','general','delayreject','no');
+INSERT INTO `generaliax` VALUES(4,0,0,0,'iax.conf','general','language','en');
+INSERT INTO `generaliax` VALUES(5,0,0,0,'iax.conf','general','tos','lowdelay');
+INSERT INTO `generaliax` VALUES(6,0,0,0,'iax.conf','general','qualify','yes');
+INSERT INTO `generaliax` VALUES(7,0,0,0,'iax.conf','general','rtcachefriends','yes');
+INSERT INTO `generaliax` VALUES(8,0,0,0,'iax.conf','general','jitterbuffer','no');
 
 
 DROP TABLE IF EXISTS `generalvoicemail`;
@@ -475,32 +476,32 @@ CREATE TABLE `generalvoicemail` (
  `category` varchar(128) NOT NULL,
  `var_name` varchar(128) NOT NULL,
  `var_val` text,
- PRIMARY KEY(id)
+ PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-CREATE INDEX generalvoicemail__idx__commented ON generalvoicemail(commented);
-CREATE INDEX generalvoicemail__idx__filename ON generalvoicemail(filename);
-CREATE INDEX generalvoicemail__idx__category ON generalvoicemail(category);
-CREATE INDEX generalvoicemail__idx__var_name ON generalvoicemail(var_name);
+CREATE INDEX `generalvoicemail__idx__commented` ON `generalvoicemail`(`commented`);
+CREATE INDEX `generalvoicemail__idx__filename` ON `generalvoicemail`(`filename`);
+CREATE INDEX `generalvoicemail__idx__category` ON `generalvoicemail`(`category`);
+CREATE INDEX `generalvoicemail__idx__var_name` ON `generalvoicemail`(`var_name`);
 
-INSERT INTO generalvoicemail VALUES(1,0,0,0,'voicemail.conf','general','maxmessage',180);
-INSERT INTO generalvoicemail VALUES(2,0,0,0,'voicemail.conf','general','minmessage',5);
-INSERT INTO generalvoicemail VALUES(3,0,0,0,'voicemail.conf','general','maxsilence',1);
-INSERT INTO generalvoicemail VALUES(4,0,0,0,'voicemail.conf','general','review','yes');
-INSERT INTO generalvoicemail VALUES(5,0,0,0,'voicemail.conf','general','serveremail','voicemail@xivo');
-INSERT INTO generalvoicemail VALUES(6,0,0,0,'voicemail.conf','general','fromstring','XIVO PBX');
-INSERT INTO generalvoicemail VALUES(7,0,0,0,'voicemail.conf','general','maxmsg',100);
-INSERT INTO generalvoicemail VALUES(8,0,0,0,'voicemail.conf','general','emailsubject','Messagerie XIVO');
-INSERT INTO generalvoicemail VALUES(9,0,0,0,'voicemail.conf','general','emailbody','Bonjour ${VM_NAME} !
+INSERT INTO `generalvoicemail` VALUES(1,0,0,0,'voicemail.conf','general','maxmessage',180);
+INSERT INTO `generalvoicemail` VALUES(2,0,0,0,'voicemail.conf','general','minmessage',5);
+INSERT INTO `generalvoicemail` VALUES(3,0,0,0,'voicemail.conf','general','maxsilence',1);
+INSERT INTO `generalvoicemail` VALUES(4,0,0,0,'voicemail.conf','general','review','yes');
+INSERT INTO `generalvoicemail` VALUES(5,0,0,0,'voicemail.conf','general','serveremail','voicemail@xivo');
+INSERT INTO `generalvoicemail` VALUES(6,0,0,0,'voicemail.conf','general','fromstring','XIVO PBX');
+INSERT INTO `generalvoicemail` VALUES(7,0,0,0,'voicemail.conf','general','maxmsg',100);
+INSERT INTO `generalvoicemail` VALUES(8,0,0,0,'voicemail.conf','general','emailsubject','Messagerie XIVO');
+INSERT INTO `generalvoicemail` VALUES(9,0,0,0,'voicemail.conf','general','emailbody','Bonjour ${VM_NAME} !
 
-Vous avez reçu un message d''une durée de ${VM_DUR} minutes, il vous reste actuellement ${VM_MSGNUM} message(s) non lu sur votre messagerie vocale : ${VM_MAILBOX}.
-Le dernier a été envoyé par ${VM_CALLERID}, le ${VM_DATE}. Si vous le souhaitez vous pouvez l''écouter ou le consulter en tapant le *98 sur votre téléphone. Merci !
+Vous avez reçu un message d\'une durée de ${VM_DUR} minutes, il vous reste actuellement ${VM_MSGNUM} message(s) non lu sur votre messagerie vocale : ${VM_MAILBOX}.
+Le dernier a été envoyé par ${VM_CALLERID}, le ${VM_DATE}. Si vous le souhaitez vous pouvez l\'écouter ou le consulter en tapant le *98 sur votre téléphone. Merci !
 
 -- Messagerie XIVO --');
-INSERT INTO generalvoicemail VALUES(10,0,0,0,'voicemail.conf','general','charset','UTF-8');
-INSERT INTO generalvoicemail VALUES(11,0,0,0,'voicemail.conf','zonemessages','eu-fr','Europe/Paris|''vm-received'' q ''digits/at'' kM');
-INSERT INTO generalvoicemail VALUES(12,0,0,0,'voicemail.conf','general','tz','eu-fr');
-INSERT INTO generalvoicemail VALUES(13,0,0,0,'voicemail.conf','general','externpass','/usr/share/asterisk/bin/change-pass-vm');
+INSERT INTO `generalvoicemail` VALUES(10,0,0,0,'voicemail.conf','general','charset','UTF-8');
+INSERT INTO `generalvoicemail` VALUES(11,0,0,0,'voicemail.conf','zonemessages','eu-fr','Europe/Paris|\'vm-received\' q \'digits/at\' kM');
+INSERT INTO `generalvoicemail` VALUES(12,0,0,0,'voicemail.conf','general','tz','eu-fr');
+INSERT INTO `generalvoicemail` VALUES(13,0,0,0,'voicemail.conf','general','externpass','/usr/share/asterisk/bin/change-pass-vm');
 
 
 DROP TABLE IF EXISTS `generalqueue`;
@@ -513,15 +514,15 @@ CREATE TABLE `generalqueue` (
  `category` varchar(128) NOT NULL,
  `var_name` varchar(128) NOT NULL,
  `var_val` varchar(128),
- PRIMARY KEY(id)
+ PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-CREATE INDEX generalqueue__idx__commented ON generalqueue(commented);
-CREATE INDEX generalqueue__idx__filename ON generalqueue(filename);
-CREATE INDEX generalqueue__idx__category ON generalqueue(category);
-CREATE INDEX generalqueue__idx__var_name ON generalqueue(var_name);
+CREATE INDEX `generalqueue__idx__commented` ON `generalqueue`(`commented`);
+CREATE INDEX `generalqueue__idx__filename` ON `generalqueue`(`filename`);
+CREATE INDEX `generalqueue__idx__category` ON `generalqueue`(`category`);
+CREATE INDEX `generalqueue__idx__var_name` ON `generalqueue`(`var_name`);
 
-INSERT INTO generalqueue VALUES(1,0,0,0,'queues.conf','general','persistentmembers','yes');
+INSERT INTO `generalqueue` VALUES(1,0,0,0,'queues.conf','general','persistentmembers','yes');
 
 
 DROP TABLE IF EXISTS `usersip`;
@@ -568,15 +569,15 @@ CREATE TABLE `usersip` (
  `setvar` varchar(100) NOT NULL,
  `call-limit` tinyint unsigned DEFAULT 0,
  `category` varchar(50) NOT NULL,
- PRIMARY KEY(id)
+ PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-CREATE INDEX usersip__idx__commented ON usersip(commented);
-CREATE INDEX usersip__idx__category ON usersip(category);
-CREATE UNIQUE INDEX usersip__uidx__name ON usersip(name);
+CREATE INDEX `usersip__idx__commented` ON `usersip`(`commented`);
+CREATE INDEX `usersip__idx__category` ON `usersip`(`category`);
+CREATE UNIQUE INDEX `usersip__uidx__name` ON `usersip`(`name`);
 
-INSERT INTO usersip VALUES(1,'guest',0,'','documentation','','Guest','no','initconfig',NULL,'rfc2833',NULL,NULL,'','dynamic',NULL,NULL,'',NULL,'no',NULL,NULL,NULL,'',5060,'no',NULL,NULL,NULL,'guest','friend','guest',NULL,NULL,NULL,'','','',NULL,'',0,'user');
-INSERT INTO usersip VALUES(2,'xivosb',0,'','documentation','','XivoSB','no','',NULL,'rfc2833',NULL,NULL,'','dynamic',NULL,NULL,'',NULL,'no',NULL,NULL,NULL,'',5060,'no',NULL,NULL,NULL,'','friend','xivosb',NULL,NULL,NULL,'','','',NULL,'',0,'user');
+INSERT INTO `usersip` VALUES(1,'guest',0,'','documentation','','Guest','no','initconfig',NULL,'rfc2833',NULL,NULL,'','dynamic',NULL,NULL,'',NULL,'no',NULL,NULL,NULL,'',5060,'no',NULL,NULL,NULL,'guest','friend','guest',NULL,NULL,NULL,'','','',NULL,'',0,'user');
+INSERT INTO `usersip` VALUES(2,'xivosb',0,'','documentation','','XivoSB','no','',NULL,'rfc2833',NULL,NULL,'','dynamic',NULL,NULL,'',NULL,'no',NULL,NULL,NULL,'',5060,'no',NULL,NULL,NULL,'','friend','xivosb',NULL,NULL,NULL,'','','',NULL,'',0,'user');
 
 
 DROP TABLE IF EXISTS `musiconhold`;
@@ -589,13 +590,13 @@ CREATE TABLE `musiconhold` (
  `category` varchar(128) NOT NULL,
  `var_name` varchar(128) NOT NULL,
  `var_val` varchar(128),
- PRIMARY KEY(id)
+ PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-CREATE INDEX musiconhold__idx__commented ON musiconhold(commented);
-CREATE UNIQUE INDEX musiconhold__uidx__filename_category_var_name ON musiconhold(filename(48),category,var_name);
+CREATE INDEX `musiconhold__idx__commented` ON `musiconhold`(`commented`);
+CREATE UNIQUE INDEX `musiconhold__uidx__filename_category_var_name` ON `musiconhold`(`filename`(48),`category`,`var_name`);
 
-INSERT INTO musiconhold VALUES(1,0,0,0,'musiconhold.conf','default','mode','custom');
-INSERT INTO musiconhold VALUES(2,0,0,0,'musiconhold.conf','default','application','/usr/bin/madplay --mono -a -10 -R 8000 --output=raw:-');
-INSERT INTO musiconhold VALUES(3,0,0,0,'musiconhold.conf','default','random','no');
-INSERT INTO musiconhold VALUES(4,0,0,0,'musiconhold.conf','default','directory','/usr/share/asterisk/moh/default');
+INSERT INTO `musiconhold` VALUES(1,0,0,0,'musiconhold.conf','default','mode','custom');
+INSERT INTO `musiconhold` VALUES(2,0,0,0,'musiconhold.conf','default','application','/usr/bin/madplay --mono -a -10 -R 8000 --output=raw:-');
+INSERT INTO `musiconhold` VALUES(3,0,0,0,'musiconhold.conf','default','random','no');
+INSERT INTO `musiconhold` VALUES(4,0,0,0,'musiconhold.conf','default','directory','/usr/share/asterisk/moh/default');
