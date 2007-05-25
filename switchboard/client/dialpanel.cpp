@@ -17,9 +17,10 @@ DialPanel::DialPanel(QWidget * parent)
 {
 	QHBoxLayout * vlayout = new QHBoxLayout(this);
 	vlayout->setMargin(0);
-	QLabel * lbl = new QLabel( tr("Enter Number"), this );
+	QLabel * lbl = new QLabel( tr("Enter &Number :"), this );
 	//m_input = new QLineEdit( this );
 	m_input = new QComboBox( this );
+	lbl->setBuddy(m_input);
 	m_input->setStatusTip( tr("Input here the phone number to dial") );
 	m_input->setEditable( true );
 	m_input->setMinimumContentsLength( 15 );
