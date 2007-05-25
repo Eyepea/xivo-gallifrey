@@ -124,6 +124,8 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 	         engine, SLOT(searchDirectory(const QString &)) );
 	connect( engine, SIGNAL(directoryResponse(const QString &)),
 	         dirpanel, SLOT(setSearchResponse(const QString &)) );
+	connect( dirpanel, SIGNAL(emitDial(const QString &)),
+	         engine, SLOT(dial(const QString &)) );
 
 	m_rightSplitter = new QSplitter(Qt::Vertical, m_splitter);
 

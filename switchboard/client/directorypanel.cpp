@@ -22,7 +22,7 @@ DirectoryPanel::DirectoryPanel(QWidget * parent)
 	connect( m_searchText, SIGNAL(returnPressed()),
 	         this, SLOT(startSearch()) );
 	hlayout->addWidget( m_searchText );
-	m_searchButton = new QPushButton( tr("Search"), this );
+	m_searchButton = new QPushButton( tr("Sea&rch"), this );
 	connect( m_searchButton, SIGNAL(clicked()),
 	         this, SLOT(startSearch()) );
 	hlayout->addWidget( m_searchButton );
@@ -94,13 +94,20 @@ void DirectoryPanel::contextMenuEvent(QContextMenuEvent * event)
 	qDebug() << "  " << event->pos() - m_table->pos() << "m_table->pos()=" << m_table->pos();
 	QTableWidgetItem * item = m_table->itemAt( event->pos() - m_table->pos() );
 	qDebug() << "  " << item;
-	if(item)
+	QRegExp re("\\+?[0-9\\s\\.]+");
+	if(item && re.exactMatch(item->text()))
 	{
 		qDebug() << "   " << item->text();
-		// TODO : check that this is a number !
+		m_numberToDial = item->text();
 		QMenu contextMenu(this);
-		contextMenu.addAction( tr("&Dial") );
+		contextMenu.addAction( tr("&Dial"), this, SLOT(dialNumber()) );
 		contextMenu.exec( event->globalPos() );
 	}
+}
+
+void DirectoryPanel::dialNumber()
+{
+	if(m_numberToDial.length() > 0)
+		emitDial(m_numberToDial);
 }
 
