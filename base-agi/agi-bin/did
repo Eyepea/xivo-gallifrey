@@ -66,13 +66,13 @@ except:
 	sys.exit()
 
 cursor = conn.cursor()
-query = "select type,typeid,custom from didfeatures where number=%d" % exten
+query = "SELECT type,typeid,custom FROM didfeatures WHERE number=%d" % exten
 cursor.execute(query)
 t = cursor.fetchone()
 
 
 if not t:
-	print "VERBOSE \"No SDA found !\""
+	print "VERBOSE \"No DID found !\""
 	sys.exit()
 
 type = t[0]
@@ -86,11 +86,11 @@ if type == 'custom':
 	print "EXEC %s \"%s\"" %(apps, args)
 
 if type == 'meetme':
-	query = "select number from meetmefeatures where id=%d" % t[1]
+	query = "SELECT number FROM meetmefeatures WHERE id=%d" % t[1]
 	cursor.execute(query)
 	m = cursor.fetchone()
 	num = int(m[0])
-	query = "select context,number from extenumbers where number=%d and context!='did-extensions'" % num
+	query = "SELECT context,number FROM extenumbers WHERE number=%d AND context!='did-extensions'" % num
 	cursor.execute(query)
 	g = cursor.fetchone()
 	context = g[0]
@@ -99,24 +99,27 @@ if type == 'meetme':
 	print "EXEC GOTO \"%s|%s|1\"" %(context,number)
 
 if type == 'user':
-	query = "select number from userfeatures where id=%d" % typeid
+	query = "SELECT number,context FROM userfeatures WHERE id=%d" % typeid
 	cursor.execute(query)
 	u = cursor.fetchone()
 	number = u[0]
+	context = u[1]
+	if not context:
+		context='local-extensions'
 	num = int(number)
-	query = "select context,number from extenumbers where number=%d and context!='did-extensions'" % num
+	query = "SELECT number,context FROM extenumbers WHERE number=%d AND context='%s'" %(num, context)
 	cursor.execute(query)
 	g = cursor.fetchone()
-	context = g[0]
-	number = g[1]
+	number = g[0]
+	context = g[1]
 	print "ANSWER"
 	print "EXEC GOTO \"%s|%s|1\"" %(context,number)
 
 if type == 'group':
-	query = "select context,number from groupfeatures where id=%d and context!='did-extensions'" % typeid
+	query = "SELECT number,context FROM groupfeatures WHERE id=%d AND context!='did-extensions'" % typeid
 	cursor.execute(query)
 	g = cursor.fetchone()
-	context = g[0]
-	number = g[1]
+	number = g[0]
+	context = g[1]
 	print "ANSWER"
 	print "EXEC GOTO \"%s|%s|1\"" %(context,number)

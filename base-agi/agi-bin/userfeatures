@@ -30,7 +30,7 @@ __license__ = """
 
 CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
 CONFIG_LIB_PATH = 'py_lib_path'
-DEBUG = 1
+DEBUG = 0
 
 import sys
 from xivo import ConfigPath
@@ -166,8 +166,6 @@ LCNumber = find_features_db(sys.argv[1], '', 'LCNumber', 'Last Calling Number')
 RCStatus = find_features_db(sys.argv[1], '', 'Record', 'Last Record Number')
 FFStatus= find_features_db(sys.argv[1], '', 'FindMe', 'Find Me Status')
 CSStatus= find_features_db(sys.argv[1], '', 'Screen', 'Screen Number')
-ISCHANMOBILELOGGED= find_features_db(sys.argv[1], '/AG', 'logged', '')
-CHANMOBILEAGENT= find_features_db(sys.argv[1], '/AG', 'chan', '')
 
 res = find_informations_by_extension(sys.argv[1])
 print "SET VARIABLE VMStatus %s" % VMStatus
@@ -189,5 +187,3 @@ print "SET VARIABLE NBS %s" %res[2]
 print "SET VARIABLE QUEUENAME %s" %res[3]
 print "SET VARIABLE NAME %s" %res[4]
 print "SET VARIABLE MOH %s" %res[5]
-print "SET VARIABLE CHANMOBILEAGENT %s" % CHANMOBILEAGENT
-print "SET VARIABLE ISCHANMOBILELOGGED %s" % ISCHANMOBILELOGGED
