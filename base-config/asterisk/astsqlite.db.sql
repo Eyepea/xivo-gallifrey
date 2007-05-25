@@ -301,8 +301,7 @@ CREATE TABLE uservoicemail (
 
 CREATE INDEX uservoicemail__idx__commented ON uservoicemail(commented);
 CREATE INDEX uservoicemail__idx__context ON uservoicemail(context);
-CREATE INDEX uservoicemail__idx__mailbox_context ON uservoicemail(mailbox,context);
-CREATE UNIQUE INDEX uservoicemail__uidx__mailbox ON uservoicemail(mailbox);
+CREATE UNIQUE INDEX uservoicemail__uidx__mailbox_context ON uservoicemail(mailbox,context);
 
 
 DROP TABLE userfeatures;
