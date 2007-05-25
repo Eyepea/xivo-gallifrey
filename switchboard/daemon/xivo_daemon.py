@@ -668,7 +668,7 @@ def parseSIP(astnum, data, l_sipsock, l_addrsip):
 
     if imsg == "REGISTER":
 	    if iret == 401:
-		    log_debug("%s : REGISTER %s Passwd?" %(configs[astnum].astid, configs[astnum].mysipname))
+		    # log_debug("%s : REGISTER %s Passwd?" %(configs[astnum].astid, configs[astnum].mysipname))
 		    nonce    = iauth.split("nonce=\"")[1].split("\"")[0]
 		    md5_r2   = md5.md5(imsg   + ":" + uri).hexdigest()
 		    response = md5.md5(md5_r1 + ":" + nonce + ":" + md5_r2).hexdigest()
@@ -678,9 +678,10 @@ def parseSIP(astnum, data, l_sipsock, l_addrsip):
 	    elif iret == 403:
 		    log_debug("%s : REGISTER %s Unauthorized" %(configs[astnum].astid, configs[astnum].mysipname))
 	    elif iret == 100:
-		    log_debug("%s : REGISTER %s Trying" %(configs[astnum].astid, configs[astnum].mysipname))
+		    # log_debug("%s : REGISTER %s Trying" %(configs[astnum].astid, configs[astnum].mysipname))
+		    pass
 	    elif iret == 200:
-		    log_debug("%s : REGISTER %s OK" %(configs[astnum].astid, configs[astnum].mysipname))
+		    # log_debug("%s : REGISTER %s OK" %(configs[astnum].astid, configs[astnum].mysipname))
 		    rdc = chr(65 + 32 * random.randrange(2) + random.randrange(26))
 		    for sipnum in plist[astnum].normal.keys():
 			    if sipnum.find("SIP/") == 0:
@@ -706,7 +707,7 @@ def parseSIP(astnum, data, l_sipsock, l_addrsip):
 	    if sipphone in plist[astnum].normal.keys(): # else : send sth anyway ?
 		    plist[astnum].normal[sipphone].set_lasttime(time.time())
 		    if iret == 401:
-			    log_debug("%s : SUBSCRIBE %s Passwd? %s" %(configs[astnum].astid, configs[astnum].mysipname, icid))
+			    # log_debug("%s : SUBSCRIBE %s Passwd? %s" %(configs[astnum].astid, configs[astnum].mysipname, icid))
 			    nonce    = iauth.split("nonce=\"")[1].split("\"")[0]
 			    md5_r2   = md5.md5(imsg   + ":" + uri).hexdigest()
 			    response = md5.md5(md5_r1 + ":" + nonce + ":" + md5_r2).hexdigest()
@@ -721,9 +722,11 @@ def parseSIP(astnum, data, l_sipsock, l_addrsip):
 				    plist[astnum].normal[sipphone].set_sipstatus("Fail" + str(iret))
 				    update_GUI_clients(astnum, sipphone, "sip_403")
 		    elif iret == 100:
-			    log_debug("%s : SUBSCRIBE %s Trying %s" %(configs[astnum].astid, configs[astnum].mysipname, icid))
+			    # log_debug("%s : SUBSCRIBE %s Trying %s" %(configs[astnum].astid, configs[astnum].mysipname, icid))
+			    pass
 		    elif iret == 200:
-			    log_debug("%s : SUBSCRIBE %s OK %s" %(configs[astnum].astid, configs[astnum].mysipname, icid))
+			    # log_debug("%s : SUBSCRIBE %s OK %s" %(configs[astnum].astid, configs[astnum].mysipname, icid))
+			    pass
 		    else:
 			    log_debug("%s : SUBSCRIBE %s Failed (code %d) %s"
 				      %(configs[astnum].astid, configs[astnum].mysipname, iret, icid))
@@ -945,7 +948,8 @@ def manage_tcp_connection(connid, allow_events):
 				try:
 					connid[0].send(repstr + "\n")
 				except Exception, e:
-					log_debug("a problem occured when replying to history : " + str(e))
+					log_debug("(%s) error : history : (client %s:%d) : %s"
+						  %(assrc, connid[1], connid[2], str(e)))
 					connid[0].send("history=\n")
 		elif allow_events == False: # i.e. if PHP-style connection
 			n = -1
@@ -960,7 +964,8 @@ def manage_tcp_connection(connid, allow_events):
 						for x in s: connid[0].send(x)
 						connid[0].send("XIVO CLI:OK\n")
 					except Exception, e:
-						log_debug(configs[n].astid + " : could not send reply : " + str(e))
+						log_debug("(%s) error : php command : (client %s:%d) : %s"
+							  %(configs[n].astid, connid[1], connid[2], str(e)))
 				except Exception, e:
 					connid[0].send("XIVO CLI:KO Exception : " + str(e) + "\n")
 		else:
@@ -994,7 +999,9 @@ def handle_ami_event_dial(listkeys, astnum, src, dst, clid, clidn):
 			if is_normal_channel(dst):
 				phonenum2 = dst.split("-")[0]
 				if phonenum2 in plist[astnum].normal:
-					plist[astnum].normal[phonenum].chann[src].setChannelNum(plist[astnum].normal[phonenum2].chann[dst].getChannelMyNum())
+					mynum = plist[astnum].normal[phonenum2].chann[dst].getChannelMyNum()
+					if mynum != "":
+						plist[astnum].normal[phonenum].chann[src].setChannelNum(mynum)
 			update_GUI_clients(astnum, phonenum, "ami-ed1")
 		else: plist[astnum].others[src] = "d"
 	elif src.find("Local/") == 0:
@@ -1014,7 +1021,9 @@ def handle_ami_event_dial(listkeys, astnum, src, dst, clid, clidn):
 			if is_normal_channel(src):
 				phonenum2 = src.split("-")[0]
 				if phonenum2 in plist[astnum].normal:
-					plist[astnum].normal[phonenum].chann[dst].setChannelNum(plist[astnum].normal[phonenum2].chann[src].getChannelMyNum())
+					mynum = plist[astnum].normal[phonenum2].chann[src].getChannelMyNum()
+					if mynum != "":
+						plist[astnum].normal[phonenum].chann[dst].setChannelNum(mynum)
 			update_GUI_clients(astnum, phonenum, "ami-ed2")
 		else: plist[astnum].others[dst] = "D"
 	elif dst.find("Local/") == 0:
@@ -1147,6 +1156,7 @@ def handle_ami_event(astnum, idata):
 	for z in evlist:
 		# we assume no ";" character is present in AMI events fields
 		x = z.replace("\r\n", ";")
+		#print getvalue(x, "Context")
 		if x.find("Dial;") == 7:
 			src   = getvalue(x, "Source")
 			dst   = getvalue(x, "Destination")
@@ -2130,6 +2140,7 @@ session_expiration_time = 60
 log_filename = "/var/log/pf-xivo-cti-server/xivo_daemon.log"
 xivoconf_general = dict(xivoconf.items("general"))
 capabilities = ""
+asterisklist = ""
 
 if "port_fiche_login" in xivoconf_general:
 	port_login = int(xivoconf_general["port_fiche_login"])
@@ -2263,6 +2274,7 @@ ins = [loginserver.socket, requestserver.socket, keepaliveserver.socket]
 
 items_asterisks = xrange(len(configs))
 
+log_debug("the monitored asterisk's is/are : " + str(asterisklist))
 log_debug("# STARTING XIVO Daemon # (1/3) AMI socket connections")
 
 for n in items_asterisks:
