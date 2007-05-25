@@ -14,8 +14,8 @@ Peer::Peer(const Peer & peer)
 }
 
 void Peer::updateStatus(const QString & status,
-			const QString & avail,
-			const QString & corrname)
+			const QString & avail/*,
+			const QString & corrname*/)
 {
   //qDebug() << status << avail;
   if(avail == "available")
@@ -42,9 +42,9 @@ void Peer::updateStatus(const QString & status,
   else
     m_peerwidget->setGray(0);
 
-  if(corrname == "")
+//  if(corrname == "")
     m_peerwidget->setToolTip(status);
-  else
-    m_peerwidget->setToolTip(status + "\n" + corrname);
+//  else
+//    m_peerwidget->setToolTip(status + "\n" + corrname);
 }
 

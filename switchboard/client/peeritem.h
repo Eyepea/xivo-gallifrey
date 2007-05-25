@@ -16,8 +16,8 @@ public:
 	void setWidget(PeerWidget * widget) { m_peerwidget = widget; };
 	PeerWidget * getWidget() { return m_peerwidget; };
 	void updateStatus(const QString & status,
-			  const QString & avail,
-			  const QString & corrname);
+			  const QString & avail/*,
+			  const QString & corrname*/);
 private:
 	QString m_ext;
 	QString m_name;

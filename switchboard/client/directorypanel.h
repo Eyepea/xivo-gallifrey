@@ -19,15 +19,18 @@ protected:
 	void contextMenuEvent(QContextMenuEvent *);
 signals:
 	void searchDirectory(const QString &);
+	void emitDial(const QString &);
 private slots:
 	void startSearch();
 	void itemDoubleClicked(QTableWidgetItem *);
+	void dialNumber();
 public slots:
 	void setSearchResponse(const QString &);
 private:
 	QLineEdit * m_searchText;
 	QPushButton * m_searchButton;
 	QTableWidget * m_table;
+	QString m_numberToDial;
 };
 
 #endif

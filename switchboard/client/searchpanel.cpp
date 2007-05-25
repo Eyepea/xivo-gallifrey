@@ -12,9 +12,10 @@ SearchPanel::SearchPanel(QWidget * parent)
 {
 	QVBoxLayout * vlayout = new QVBoxLayout(this);
 	vlayout->setMargin(0);
-	QLabel * lbl = new QLabel( tr("Name or number to search"), this );
-	vlayout->addWidget(lbl);
+	QLabel * lbl = new QLabel( tr("N&ame or number to search :"), this );
+	vlayout->addWidget(lbl, 0, Qt::AlignCenter);
 	m_input = new QLineEdit( this );
+	lbl->setBuddy(m_input);
 	connect( m_input, SIGNAL(textChanged(const QString &)),
 	         this, SLOT(affTextChanged(const QString &)) );
 	vlayout->addWidget( m_input );
@@ -50,8 +51,8 @@ void SearchPanel::affTextChanged(const QString & text)
 void SearchPanel::updatePeer(const QString & ext,
                              const QString & name,
 							 const QString & status,
-							 const QString & avail,
-							 const QString & corrname)
+							 const QString & avail/*,
+							 const QString & corrname*/)
 {
 	int i;
 	//qDebug() << "SearchPanel::updatePeer" << ext << name << status << avail << corrname;
@@ -59,7 +60,7 @@ void SearchPanel::updatePeer(const QString & ext,
 	{
 		if(ext == m_peerlist[i].ext())
 		{
-			m_peerlist[i].updateStatus(status, avail, corrname);
+			m_peerlist[i].updateStatus(status, avail/*, corrname*/);
 			return;
 		}
 	}
@@ -77,7 +78,7 @@ void SearchPanel::updatePeer(const QString & ext,
 		peerwidget->hide();
 	}
 	peer.setWidget(peerwidget);
-	peer.updateStatus(status, avail, corrname);
+	peer.updateStatus(status, avail/*, corrname*/);
 	m_peerlist << peer;
 }
 

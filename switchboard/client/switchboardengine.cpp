@@ -158,7 +158,7 @@ void SwitchBoardEngine::socketDisconnected()
 {
 	qDebug() << "socketDisconnected()";
 	stopped();
-	emitTextMessage("Connection lost with Presence Server");
+	emitTextMessage(tr("Connection lost with Presence Server"));
 	//removePeers();
 	//connectSocket();
 }
@@ -174,7 +174,7 @@ void SwitchBoardEngine::socketError(QAbstractSocket::SocketError socketError)
 	switch(socketError)
 	{
 	case QAbstractSocket::ConnectionRefusedError:
-		emitTextMessage("Connection refused");
+		emitTextMessage(tr("Connection refused"));
 		if(m_timer != -1)
 		{
 			killTimer(m_timer);
@@ -183,10 +183,10 @@ void SwitchBoardEngine::socketError(QAbstractSocket::SocketError socketError)
 		//m_timer = startTimer(2000);
 		break;
 	case QAbstractSocket::HostNotFoundError:
-		emitTextMessage("Host not found");
+		emitTextMessage(tr("Host not found"));
 		break;
 	case QAbstractSocket::UnknownSocketError:
-		emitTextMessage("Unknown socket error");
+		emitTextMessage(tr("Unknown socket error"));
 		break;
 	default:
 		break;
@@ -216,25 +216,33 @@ void SwitchBoardEngine::updatePeers(const QStringList & liststatus)
 	QString pname = liststatus[1] + "/" + liststatus[2] + "/" + liststatus[3];
 	QString pavail = liststatus[4];
 	QString pstatus = liststatus[5];
-	QString pinfos = "";
+	//QString pinfos = "";
 	if(liststatus.size() == 7 + 6 * nchans) {
 		for(int i = 0; i < nchans; i++) {
+			//  <channel>:<etat du channel>:<nb de secondes dans cet etat>:<to/from>:<channel en liaison>:<numero en liaison>
 			int refn = 7 + 6 * i;
 			pstatus = liststatus[refn + 1];
-			pinfos += liststatus[refn + 1] + " : " + liststatus[refn] + " "
+			if(liststatus[3] == "114")
+			{
+				qDebug() << liststatus[refn] << liststatus[refn + 1]
+				         << liststatus[refn + 2] << liststatus[refn + 3]
+				         << liststatus[refn + 4] << liststatus[refn + 5];
+			}
+			/*pinfos += liststatus[refn + 1] + " : " + liststatus[refn] + " "
 				+ liststatus[refn + 2] + " " + liststatus[refn + 3] + " "
-				+ liststatus[refn + 4] + " " + liststatus[refn + 5];
+				+ liststatus[refn + 4] + " " + liststatus[refn + 5];*/
 			updateCall(liststatus[1] + "/" + liststatus[refn],
 				   liststatus[refn + 1],
 				   liststatus[refn + 2].toInt(), liststatus[refn + 3],
 				   liststatus[refn + 4], liststatus[refn + 5],
 				   pname);
-			if(i < nchans - 1)
-				pinfos += "\n";
+/*			if(i < nchans - 1)
+				pinfos += "\n";*/
 		}
 	}
 
-	updatePeer(pname, m_callerids[pname], pstatus, pavail, pinfos);
+	//updatePeer(pname, m_callerids[pname], pstatus, pavail, pinfos);
+	updatePeer(pname, m_callerids[pname], pstatus, pavail);
 }
 
 /*! \brief update a caller id 
@@ -317,7 +325,7 @@ void SwitchBoardEngine::socketReadyRead()
 	if(b) {
 		QTime currentTime = QTime::currentTime();
 		QString currentTimeStr = currentTime.toString("hh:mm:ss");
-		emitTextMessage("Peers' status updated at " + currentTimeStr);
+		emitTextMessage(tr("Peers' status updated at ") + currentTimeStr);
 	}
 }
 

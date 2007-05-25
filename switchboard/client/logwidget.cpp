@@ -17,6 +17,7 @@ LogWidget::LogWidget(SwitchBoardEngine * engine, QWidget * parent)
 	layout->setMargin(0);
 	layout->setSpacing(2);
 	QGroupBox * groupBox = new QGroupBox( tr("Call history"), this );
+	groupBox->setAlignment( Qt::AlignHCenter );
 	QVBoxLayout * vbox = new QVBoxLayout( groupBox );
 	m_radioOut = new QRadioButton( tr("&Outgoing calls"), groupBox );
 	m_radioOut->setChecked( true );

@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QPixmap>
 #include <QPoint>
+#include "peerchannel.h"
 
 class QLabel;
 
@@ -52,8 +53,13 @@ private:
 	QPoint m_dragstartpos;	//!< drag start position
 	QString m_id;	//!< peer id : asterisk/protocol/extension
 	QString m_name;	//!< caller id to display : usualy the NAME of the person
+
 	QAction * m_removeAction;
 	QAction * m_dialAction;
+	
+	QList<PeerChannel> m_channels;
+
+	/* TODO : have the Pixmaps as static objects */
 	QPixmap m_phone_green;
 	QPixmap m_phone_red;
 	QPixmap m_phone_orange;

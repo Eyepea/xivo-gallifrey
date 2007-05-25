@@ -51,14 +51,17 @@ void SwitchBoardWindow::setEngine(SwitchBoardEngine * engine)
  * The peer with the ext extension is updated or added
  * to the list if it is not present.
  * The placement of the PeerWidget is restored from the settings.
+ * 
+ * \arg ext phone extension
+ * \arg name name
  *
  * \sa removePeer
  */
 void SwitchBoardWindow::updatePeer(const QString & ext,
                                    const QString & name,
                                    const QString & status,
-                                   const QString & avail,
-                                   const QString & corrname)
+                                   const QString & avail/*,
+                                   const QString & corrname*/)
 {
 	int i;
 	// first search in the peerlist
@@ -67,7 +70,7 @@ void SwitchBoardWindow::updatePeer(const QString & ext,
 		//		qDebug() << i << m_peerlist[i].ext();
 		if(ext == m_peerlist[i].ext())
 		{
-		  m_peerlist[i].updateStatus(status, avail, corrname);
+		  m_peerlist[i].updateStatus(status, avail/*, corrname*/);
 			return;
 		}
 	}
@@ -89,7 +92,7 @@ void SwitchBoardWindow::updatePeer(const QString & ext,
 		peerwidget->hide();
 	m_layout->addWidget( peerwidget, pos );
 	peer.setWidget(peerwidget);
-	peer.updateStatus(status, avail, corrname);
+	peer.updateStatus(status, avail/*, corrname*/);
 	m_peerlist << peer;
 }
 

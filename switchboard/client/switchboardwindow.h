@@ -36,8 +36,8 @@ public slots:
 	void updatePeer(const QString & ext,
 	        const QString & name,
 			const QString & status,
-			const QString & avail,
-			const QString & corrname);
+			const QString & avail/*,
+			const QString & corrname*/);
 	void removePeer(const QString & ext);
 	void removePeers(void);
 private slots:

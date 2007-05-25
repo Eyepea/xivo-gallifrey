@@ -8,6 +8,7 @@
 #include <QDebug>
 #include "peerwidget.h"
 #include "switchboardengine.h"
+#include "switchboardwindow.h"
 
 PeerWidget::PeerWidget(const QString & id, const QString & name,
                        QWidget * parent, int size)
@@ -45,6 +46,8 @@ m_person_yellow(":/personal-yellow.png"), m_person_blue(":/personal-blue.png")
 	m_dialAction->setStatusTip( tr("Dial this number") );
 	connect( m_dialAction, SIGNAL(triggered()),
 	         this, SLOT(dial()) );
+	PeerChannel ch("SIP/666-123", "Glop", "666");
+	m_channels << ch;
 }
 
 void PeerWidget::setRed(int n)
@@ -233,7 +236,32 @@ void PeerWidget::contextMenuEvent(QContextMenuEvent * event)
 	QMenu contextMenu(this);
 	//contextMenu.addAction("&Test");
 	contextMenu.addAction(m_dialAction);
-	contextMenu.addAction(m_removeAction);
+	// add remove action only if we are in the central widget.
+	qDebug() << parentWidget();
+	if(parentWidget())
+	{
+		qDebug() << parentWidget()->objectName();
+		qDebug() << parentWidget()->metaObject();
+		qDebug() << &SwitchBoardWindow::staticMetaObject;
+		qDebug() << parentWidget()->metaObject()->className();
+		qDebug() << (&SwitchBoardWindow::staticMetaObject == parentWidget()->metaObject());
+	}
+	if(parentWidget() && (&SwitchBoardWindow::staticMetaObject == parentWidget()->metaObject()))
+		contextMenu.addAction(m_removeAction);
+	if( !m_channels.empty() )
+	{
+		QMenu * interceptMenu = new QMenu( tr("&Intercept"), &contextMenu );
+		QListIterator<PeerChannel> i(m_channels);
+		while(i.hasNext())
+		{
+			const PeerChannel & channel = i.next();
+			//interceptMenu->addAction("0140000000", blah, SLOT(intercept()));
+			//interceptMenu->addAction("0666666666");
+			interceptMenu->addAction(channel.otherPeer(),
+			                         &channel, SLOT(intercept()));
+		}
+		contextMenu.addMenu(interceptMenu);
+	}
 	contextMenu.exec(event->globalPos());
 }
 
