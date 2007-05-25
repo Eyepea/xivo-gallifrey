@@ -1,3 +1,4 @@
+/* $Id$ */
 #include <QDebug>
 #include <QSettings>
 #include <QTime>
