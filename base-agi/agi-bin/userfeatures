@@ -30,7 +30,7 @@ __license__ = """
 
 CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
 CONFIG_LIB_PATH = 'py_lib_path'
-DEBUG = 0
+DEBUG = 1
 
 import sys
 from xivo import ConfigPath
@@ -68,16 +68,17 @@ def return_exit(error, playback=None):
                 print "EXEC PLAYBACK \"%s\"" % playback
         sys.exit()
 
-def find_informations_by_extension(exten):
+def find_informations_by_extension(exten, context):
 	try:
 		conn = anysql.connect_by_uri(options['db_uri'])
 	except:
 		print "VERBOSE \"Error to connect %s\" %options['db_uri']"
 		sys.exit()
+	if context == 'local-extensions':
+		context = ''
 
+        query = "SELECT * FROM userfeatures WHERE number='%s' and context='%s'" %(exten, context)
 	cursor = conn.cursor()
-        query = "select * from userfeatures where number='%s'" %(exten)
-        print_verbose("%s" %query)
         cursor.execute(query)
 
         r = cursor.fetchone()
@@ -91,7 +92,7 @@ def find_informations_by_extension(exten):
 		moh = r[13]
 
 		try:
-			query = "select name from usersip where id=%d" % int(id)
+			query = "SELECT name FROM usersip WHERE id=%d" % int(id)
 			cursor.execute(query)
 
 			n = cursor.fetchone()
@@ -101,7 +102,8 @@ def find_informations_by_extension(exten):
 			return_exit("Error no name !", "invalid")
 
 		try:
-			query = "select groupfeatures.name from usergroup,groupfeatures where userid='%d';" % int(id)
+			query = "SELECT groupfeatures.name FROM usergroup,groupfeatures WHERE userid='%d';" % int(id)
+			print query
 			cursor.execute(query)
 
 			d = cursor.fetchone()
@@ -119,10 +121,10 @@ def find_informations_by_extension(exten):
 
 	return_exit("Error user not found!")
 
-def find_features_db(exten, family, key, comment):
-	sys.stderr.write("DATABASE GET users/%s%s %s\n" %(exten, family, key))
+def find_features_db(exten, family, key, comment, context):
+	sys.stderr.write("DATABASE GET %s/users/%s%s %s\n" %(context, exten, family, key))
 	sys.stderr.flush()
-	sys.stdout.write("DATABASE GET users/%s%s %s\n" %(exten, family, key))
+	sys.stdout.write("DATABASE GET %s/users/%s%s %s\n" %(context, exten, family, key))
 	sys.stdout.flush()
 	line = sys.stdin.readline().strip()
 
@@ -143,31 +145,32 @@ def find_features_db(exten, family, key, comment):
 		return 0
 
 
-if len(sys.argv) == 2:
-	pass
-else:
+if len(sys.argv) != 3:
         return_exit("len argument not ok")
 
 env=""
 while(env != "\n"):
 	env = sys.stdin.readline()
 
+context = sys.argv[2]
 
-VMStatus = find_features_db(sys.argv[1], '', 'VM', 'Voicemail Souscription Status')
-DND = find_features_db(sys.argv[1], '', 'DND', 'Do Not Disturb')
-FUStatus = find_features_db(sys.argv[1], '/FWD/Unc', 'Status', 'Forward Inconditionel Status')
-FUNumber = find_features_db(sys.argv[1], '/FWD/Unc', 'Number', 'Forward Inconditionel Number')
-FBStatus = find_features_db(sys.argv[1], '/FWD/Busy', 'Status', 'Forward Busy Status')
-FBNumber = find_features_db(sys.argv[1], '/FWD/Busy', 'Number', 'Forward Busy Number')
-FRStatus = find_features_db(sys.argv[1], '/FWD/RNA', 'Status', 'Forward RNA Status')
-FRNumber = find_features_db(sys.argv[1], '/FWD/RNA', 'Number', 'Forward RNA Number')
-LDNumber = find_features_db(sys.argv[1], '', 'LDNumber', 'Last Dial Number')
-LCNumber = find_features_db(sys.argv[1], '', 'LCNumber', 'Last Calling Number')
-RCStatus = find_features_db(sys.argv[1], '', 'Record', 'Last Record Number')
-FFStatus= find_features_db(sys.argv[1], '', 'FindMe', 'Find Me Status')
-CSStatus= find_features_db(sys.argv[1], '', 'Screen', 'Screen Number')
+VMStatus = find_features_db(sys.argv[1], '', 'VM', 'Voicemail Souscription Status', context)
+DND = find_features_db(sys.argv[1], '', 'DND', 'Do Not Disturb', context)
+FUStatus = find_features_db(sys.argv[1], '/FWD/Unc', 'Status', 'Forward Inconditionel Status', context)
+FUNumber = find_features_db(sys.argv[1], '/FWD/Unc', 'Number', 'Forward Inconditionel Number', context)
+FBStatus = find_features_db(sys.argv[1], '/FWD/Busy', 'Status', 'Forward Busy Status', context)
+FBNumber = find_features_db(sys.argv[1], '/FWD/Busy', 'Number', 'Forward Busy Number', context)
+FRStatus = find_features_db(sys.argv[1], '/FWD/RNA', 'Status', 'Forward RNA Status', context)
+FRNumber = find_features_db(sys.argv[1], '/FWD/RNA', 'Number', 'Forward RNA Number', context)
+LDNumber = find_features_db(sys.argv[1], '', 'LDNumber', 'Last Dial Number', context)
+LCNumber = find_features_db(sys.argv[1], '', 'LCNumber', 'Last Calling Number', context)
+RCStatus = find_features_db(sys.argv[1], '', 'Record', 'Last Record Number', context)
+FFStatus= find_features_db(sys.argv[1], '', 'FindMe', 'Find Me Status', context)
+CSStatus= find_features_db(sys.argv[1], '', 'Screen', 'Screen Number', context)
+ISCHANMOBILELOGGED= find_features_db(sys.argv[1], '/AG', 'logged', '', context)
+CHANMOBILEAGENT= find_features_db(sys.argv[1], '/AG', 'chan', '', context)
 
-res = find_informations_by_extension(sys.argv[1])
+res = find_informations_by_extension(sys.argv[1], context)
 print "SET VARIABLE VMStatus %s" % VMStatus
 print "SET VARIABLE DND %s" % DND
 print "SET VARIABLE FUStatus %s" % FUStatus
@@ -187,3 +190,5 @@ print "SET VARIABLE NBS %s" %res[2]
 print "SET VARIABLE QUEUENAME %s" %res[3]
 print "SET VARIABLE NAME %s" %res[4]
 print "SET VARIABLE MOH %s" %res[5]
+print "SET VARIABLE CHANMOBILEAGENT %s" % CHANMOBILEAGENT
+print "SET VARIABLE ISCHANMOBILELOGGED %s" % ISCHANMOBILELOGGED
