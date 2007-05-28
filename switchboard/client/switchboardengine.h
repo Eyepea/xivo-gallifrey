@@ -26,6 +26,8 @@ public:
 	const QString & extension() const { return m_extension; };
 	void setDialContext(const QString & context) { m_dialcontext = context; };
 	const QString & dialContext() const { return m_dialcontext; };
+	void setPassword(const QString & pass) { m_pass = pass; };
+	const QString & password() const { return m_pass; };
 private:
 	void connectSocket();
 	void loadSettings();	//!< load settings
@@ -83,6 +85,7 @@ private:
 	QString m_protocol;
 	QString m_extension;
 	QString m_dialcontext;
+	QString m_pass;	//!< password for account
 };
 
 #endif

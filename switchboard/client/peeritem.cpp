@@ -31,20 +31,26 @@ void Peer::updateStatus(const QString & status,
   else
   	m_peerwidget->setGray(1);
 
-  if(status == "Ready")
-    m_peerwidget->setGreen(0);
-  else if(status == "Ringing")
-    m_peerwidget->setBlue(0);/*setCyan(0);*/
-  else if(status == "Calling")
-    m_peerwidget->setYellow(0);
-  else if(status == "On the phone")
-    m_peerwidget->setRed(0);
-  else
-    m_peerwidget->setGray(0);
+  if(status == "Ready") {
+	  m_peerwidget->setGreen(0);
+	  m_peerwidget->setToolTip("Ready"); // tr("Ready")
+  } else if(status == "Ringing") {
+	  m_peerwidget->setBlue(0);/*setCyan(0);*/
+	  m_peerwidget->setToolTip("Ringing"); // tr("Ringing")
+  } else if(status == "Calling") {
+	  m_peerwidget->setYellow(0);
+	  m_peerwidget->setToolTip("Calling"); // tr("Calling")
+  } else if(status == "On the phone") {
+	  m_peerwidget->setRed(0);
+	  m_peerwidget->setToolTip("On the phone"); // tr("On the phone")
+  } else {
+	  m_peerwidget->setGray(0);
+	  m_peerwidget->setToolTip(status);
+  }
 
-//  if(corrname == "")
-    m_peerwidget->setToolTip(status);
-//  else
-//    m_peerwidget->setToolTip(status + "\n" + corrname);
+  //  if(corrname == "")
+  //    m_peerwidget->setToolTip(status);
+  //  else
+  //    m_peerwidget->setToolTip(status + "\n" + corrname);
 }
 

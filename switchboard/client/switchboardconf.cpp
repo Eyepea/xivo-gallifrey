@@ -77,6 +77,13 @@ SwitchBoardConfDialog::SwitchBoardConfDialog(SwitchBoardEngine * engine,
 	layout->addWidget(lblcontext, line, 0);
 	m_context = new QLineEdit( m_engine->dialContext(), this );
 	layout->addWidget( m_context, line, 1);
+	line++;
+
+	QLabel * lblpass = new QLabel( tr("Password :"), this );
+	layout->addWidget(lblpass, line, 0);
+	m_pass = new QLineEdit( m_engine->password(), this );
+	m_pass->setEchoMode(QLineEdit::Password);
+	layout->addWidget( m_pass, line, 1);
 
 	vlayout->addLayout( layout );
 
@@ -95,6 +102,7 @@ void SwitchBoardConfDialog::saveAndClose()
 	m_engine->setProtocol( m_protocombo->currentText() );
 	m_engine->setExtension( m_ext->text() );
 	m_engine->setDialContext( m_context->text() );
+	m_engine->setPassword( m_pass->text() );
 	m_engine->saveSettings();
 	//m_window->setWidth( m_widthsb->value() );
 	//m_window->saveSettings();

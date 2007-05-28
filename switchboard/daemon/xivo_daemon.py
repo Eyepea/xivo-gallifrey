@@ -216,7 +216,7 @@ def log_debug(string):
 # \param sipaccount the name of the reserved sip account (typically xivosb)
 # \return the new phone numbers list
 # \sa update_sipnumlist
-def update_userlist_fromurl(astn, url, sipaccount):
+def update_userlist_fromurl(astn, url, sipaccounts):
 	numlist = {}
 	try:
 		f = urllib.urlopen(url)
@@ -232,6 +232,7 @@ def update_userlist_fromurl(astn, url, sipaccount):
 			firstname = ""
 			lastname = ""
 			number = ""
+			context = ""
 			if len(l) > 1:
 				number = l[1]
 			if len(l) > 7:
@@ -240,6 +241,20 @@ def update_userlist_fromurl(astn, url, sipaccount):
 				firstname = l[8]
 			if len(l) > 9:
 				lastname = l[9]
+			if len(l) > 10:
+				context = l[10]
+			if l[6] == "0":
+				enabling = True
+			else:
+				enabling = False
+
+			sipaccount = ""
+			for z in sipaccounts:
+				if z[0] == context:
+					sipaccount = z[1]
+					break
+			if sipaccount == "":
+				enabling = False
 
 			#the <b> tag inside the string disables the drag&drop of the widget (4.2.3 ok, 4.2.1 ko)
 			fullname = firstname + " " + lastname + " <b>" + number + "</b>"
@@ -247,15 +262,16 @@ def update_userlist_fromurl(astn, url, sipaccount):
 
 			# line is protocol | username | password | rightflag |
 			#         phone number | initialized | disabled(=1) | callerid
-                        if l[0] == "sip" and l[5] == "1" and l[6] == "0" and l[1] != sipaccount and number != "":
-				numlist["SIP/" + number] = fullname, firstname, lastname
+			argg = number
+                        if l[0] == "sip" and l[5] == "1" and enabling and l[1] != sipaccount and number != "":
+				numlist["SIP/" + argg] = fullname, firstname, lastname, l[4], context
 				adduser(astn, l[0] + number, l[2])
-                        elif l[0] == "iax" and l[5] == "1" and l[6] == "0":
-				numlist["IAX2/" + number] = fullname, firstname, lastname
-                        elif l[0] == "misdn" and l[5] == "1" and l[6] == "0":
-				numlist["mISDN/" + number] = fullname, firstname, lastname
-                        elif l[0] == "zap" and l[5] == "1" and l[6] == "0":
-				numlist["Zap/" + number] = fullname, firstname, lastname
+                        elif l[0] == "iax" and l[5] == "1" and enabling:
+				numlist["IAX2/" + argg] = fullname, firstname, lastname, l[4], context
+                        elif l[0] == "misdn" and l[5] == "1" and enabling:
+				numlist["mISDN/" + argg] = fullname, firstname, lastname, l[4], context
+                        elif l[0] == "zap" and l[5] == "1" and enabling:
+				numlist["Zap/" + argg] = fullname, firstname, lastname, l[4], context
 				adduser(astn, l[0] + number, l[2])
 	finally:
 		f.close()
@@ -308,7 +324,7 @@ def read_sip_properties(data):
 	cseq = 1
 	msg = "xxx"
 	cid = "no_callid@xivopy"
-	address = ""
+	account = ""
 	lines = ""
 	ret = -99
 	bbranch = ""
@@ -324,7 +340,7 @@ def read_sip_properties(data):
 				cseq = int(x.split(None)[1])
 				msg = x.split(None)[2]
 			elif x.find("From: ") == 0 or x.find("f: ") == 0:
-				address = x.split("<sip:")[1].split("@")[0]
+				account = x.split("<sip:")[1].split("@")[0]
 			elif x.find("Call-ID:") == 0 or x.find("i: ") == 0:
 				cid = x.split(None)[1]
 			elif x.find("WWW-Authenticate:") == 0:
@@ -335,7 +351,7 @@ def read_sip_properties(data):
 	except Exception, e:
 		log_debug("problem occured in read_sip_properties : " + str(e))
 
-	return [cseq, msg, cid, address, len(lines), ret, bbranch, btag, authenticate]
+	return [cseq, msg, cid, account, len(lines), ret, bbranch, btag, authenticate]
 
 
 ## \brief Converts the SIP message to a useful presence information.
@@ -578,7 +594,9 @@ def build_callerids():
 		for phonenum in sskeys:
 			phoneinfo = "cid:" + plist[n].astid + ":" \
 				    + plist[n].normal[phonenum].tech + ":" \
+				    + plist[n].normal[phonenum].phoneid + ":" \
 				    + plist[n].normal[phonenum].phonenum + ":" \
+				    + plist[n].normal[phonenum].context + ":" \
 				    + plist[n].normal[phonenum].calleridfull + ":" \
 				    + plist[n].normal[phonenum].calleridfirst + ":" \
 				    + plist[n].normal[phonenum].calleridlast
@@ -592,9 +610,13 @@ def build_callerids():
 # \return the string containing the base status of the phone
 def build_basestatus(phoneid):
 	basestatus = phoneid.tech + ":" \
+		     + phoneid.phoneid  + ":" \
 		     + phoneid.phonenum  + ":" \
-		     + phoneid.imstat + phoneid.voicemail + phoneid.queueavail  + ":" \
-		     + phoneid.sipstatus
+		     + phoneid.context  + ":" \
+		     + phoneid.imstat  + ":" \
+		     + phoneid.sipstatus  + ":" \
+		     + phoneid.voicemail  + ":" \
+		     + phoneid.queueavail
 	return basestatus
 
 
@@ -656,50 +678,67 @@ def update_GUI_clients(astnum, phonenum, fromwhom):
 def parseSIP(astnum, data, l_sipsock, l_addrsip):
     global tcpopens_sb, plist, configs
     spret = False
-    [icseq, imsg, icid, iaddr, ilength, iret, ibranch, itag, iauth] = read_sip_properties(data)
+    [icseq, imsg, icid, iaccount, ilength, iret, ibranch, itag, iauth] = read_sip_properties(data)
     # if ilength != 11:
-    #print "###", astnum, ilength, icseq, icid, iaddr, imsg, iret, ibranch, itag
+    #print "###", astnum, ilength, icseq, icid, iaccount, imsg, iret, ibranch, itag
 ##    if imsg == "REGISTER" and iret == 200 and icid == "reg_cid@xivopy":
 ##        for k in tcpopens_sb:
 ##            k[0].send("asterisk=registered_" + configs[astnum].astid + "\n")
-    
-    uri = "sip:%s@%s" %(configs[astnum].mysipname, configs[astnum].remoteaddr)
-    md5_r1 = md5.md5(configs[astnum].mysipname + ":asterisk:" + configs[astnum].mysippass).hexdigest()
 
+    uri = "sip:%s@%s" %(iaccount, configs[astnum].remoteaddr)
+    mysippass = ""
+    for z in configs[astnum].mysipaccounts:
+	    if z[1] == iaccount:
+		    mycontext = z[0]
+		    mysippass = z[2]
+    md5_r1 = md5.md5(iaccount + ":asterisk:" + mysippass).hexdigest()
+
+    #print "-----------", iaccount, mysippass
+    #print data
+    #print "================================="
+    
     if imsg == "REGISTER":
 	    if iret == 401:
-		    # log_debug("%s : REGISTER %s Passwd?" %(configs[astnum].astid, configs[astnum].mysipname))
+		    # log_debug("%s : REGISTER %s Passwd?" %(configs[astnum].astid, iaccount))
 		    nonce    = iauth.split("nonce=\"")[1].split("\"")[0]
 		    md5_r2   = md5.md5(imsg   + ":" + uri).hexdigest()
 		    response = md5.md5(md5_r1 + ":" + nonce + ":" + md5_r2).hexdigest()
-		    auth = "Authorization: Digest username=\"%s\", realm=\"asterisk\", nonce=\"%s\", uri=\"%s\", response=\"%s\", algorithm=MD5\r\n" %(configs[astnum].mysipname, nonce, uri, response)
-		    command = xivo_sip.sip_register(configs[astnum], "sip:" + configs[astnum].mysipname, 1, "reg_cid@xivopy", expires, auth)
+		    auth = "Authorization: Digest username=\"%s\", realm=\"asterisk\", nonce=\"%s\", uri=\"%s\", response=\"%s\", algorithm=MD5\r\n" %(iaccount, nonce, uri, response)
+		    command = xivo_sip.sip_register(configs[astnum], "sip:" + iaccount, 1, "reg_cid@xivopy", expires, auth)
 		    l_sipsock.sendto(command, (configs[astnum].remoteaddr, configs[astnum].portsipsrv))
 	    elif iret == 403:
-		    log_debug("%s : REGISTER %s Unauthorized" %(configs[astnum].astid, configs[astnum].mysipname))
+		    log_debug("%s : REGISTER %s Unauthorized" %(configs[astnum].astid, iaccount))
 	    elif iret == 100:
-		    # log_debug("%s : REGISTER %s Trying" %(configs[astnum].astid, configs[astnum].mysipname))
+		    # log_debug("%s : REGISTER %s Trying" %(configs[astnum].astid, iaccount))
 		    pass
 	    elif iret == 200:
-		    # log_debug("%s : REGISTER %s OK" %(configs[astnum].astid, configs[astnum].mysipname))
+		    log_debug("%s : REGISTER %s OK" %(configs[astnum].astid, iaccount))
 		    rdc = chr(65 + 32 * random.randrange(2) + random.randrange(26))
 		    for sipnum in plist[astnum].normal.keys():
 			    if sipnum.find("SIP/") == 0:
-				    dtnow = time.time() - plist[astnum].normal[sipnum].lasttime
-				    if dtnow > (2 * timeout_between_registers):
-					    if plist[astnum].normal[sipnum].sipstatus != "Timeout":
-						    plist[astnum].normal[sipnum].set_sipstatus("Timeout")
-						    update_GUI_clients(astnum, sipnum, "sip___3")
-				    cid = rdc + "subscribexivo_" + sipnum.split("/")[1] + "@" + configs[astnum].localaddr
-				    command = xivo_sip.sip_subscribe(configs[astnum], "sip:" + configs[astnum].mysipname, 1,
-								     cid,
-								     sipnum.split("/")[1], expires, "")
-				    l_sipsock.sendto(command, (configs[astnum].remoteaddr, configs[astnum].portsipsrv))
+				    if mycontext.replace("-", "_") == plist[astnum].normal[sipnum].context:
+					    dtnow = time.time() - plist[astnum].normal[sipnum].lasttime
+					    if dtnow > (2 * timeout_between_registers):
+						    if plist[astnum].normal[sipnum].sipstatus != "Timeout":
+							    plist[astnum].normal[sipnum].set_sipstatus("Timeout")
+							    update_GUI_clients(astnum, sipnum, "sip___3")
+						    else:
+							    pass
+					    else:
+						    pass
+					    cid = rdc + "subscribexivo_" + sipnum.split("/")[1] + "@" + configs[astnum].localaddr
+					    command = xivo_sip.sip_subscribe(configs[astnum], "sip:" + iaccount, 1,
+									     cid,
+									     plist[astnum].normal[sipnum].phonenum,
+									     expires, "")
+					    l_sipsock.sendto(command, (configs[astnum].remoteaddr, configs[astnum].portsipsrv))
+				    else:
+					    pass
 			    else:
 				    pass
 	    else:
 		    log_debug("%s : REGISTER %s Failed (code %d)"
-			      %(configs[astnum].astid, configs[astnum].mysipname, iret))
+			      %(configs[astnum].astid, iaccount, iret))
 
 
     elif imsg == "SUBSCRIBE":
@@ -707,42 +746,44 @@ def parseSIP(astnum, data, l_sipsock, l_addrsip):
 	    if sipphone in plist[astnum].normal.keys(): # else : send sth anyway ?
 		    plist[astnum].normal[sipphone].set_lasttime(time.time())
 		    if iret == 401:
-			    # log_debug("%s : SUBSCRIBE %s Passwd? %s" %(configs[astnum].astid, configs[astnum].mysipname, icid))
+			    # log_debug("%s : SUBSCRIBE %s Passwd? %s" %(configs[astnum].astid, iaccount, icid))
 			    nonce    = iauth.split("nonce=\"")[1].split("\"")[0]
 			    md5_r2   = md5.md5(imsg   + ":" + uri).hexdigest()
 			    response = md5.md5(md5_r1 + ":" + nonce + ":" + md5_r2).hexdigest()
-			    auth = "Authorization: Digest username=\"%s\", realm=\"asterisk\", nonce=\"%s\", uri=\"%s\", response=\"%s\", algorithm=MD5\r\n" %(configs[astnum].mysipname, nonce, uri, response)
-			    command = xivo_sip.sip_subscribe(configs[astnum], "sip:" + configs[astnum].mysipname, 1,
+			    auth = "Authorization: Digest username=\"%s\", realm=\"asterisk\", nonce=\"%s\", uri=\"%s\", response=\"%s\", algorithm=MD5\r\n" %(iaccount, nonce, uri, response)
+			    command = xivo_sip.sip_subscribe(configs[astnum], "sip:" + iaccount, 1,
 							     icid,
 							     sipphone.split("/")[1], expires, auth)
 			    l_sipsock.sendto(command, (configs[astnum].remoteaddr, configs[astnum].portsipsrv))
 		    elif iret == 403:
-			    log_debug("%s : SUBSCRIBE %s Unauthorized %s" %(configs[astnum].astid, configs[astnum].mysipname, icid))
+			    log_debug("%s : SUBSCRIBE %s Unauthorized %s" %(configs[astnum].astid, iaccount, icid))
 			    if plist[astnum].normal[sipphone].sipstatus != "Fail" + str(iret):
 				    plist[astnum].normal[sipphone].set_sipstatus("Fail" + str(iret))
 				    update_GUI_clients(astnum, sipphone, "sip_403")
+			    else:
+				    pass
 		    elif iret == 100:
-			    # log_debug("%s : SUBSCRIBE %s Trying %s" %(configs[astnum].astid, configs[astnum].mysipname, icid))
+			    # log_debug("%s : SUBSCRIBE %s Trying %s" %(configs[astnum].astid, iaccount, icid))
 			    pass
 		    elif iret == 200:
-			    # log_debug("%s : SUBSCRIBE %s OK %s" %(configs[astnum].astid, configs[astnum].mysipname, icid))
+			    log_debug("%s : SUBSCRIBE %s OK %s" %(configs[astnum].astid, iaccount, icid))
 			    pass
 		    else:
 			    log_debug("%s : SUBSCRIBE %s Failed (code %d) %s"
-				      %(configs[astnum].astid, configs[astnum].mysipname, iret, icid))
+				      %(configs[astnum].astid, iaccount, iret, icid))
 			    if plist[astnum].normal[sipphone].sipstatus != "Fail" + str(iret):
 				    plist[astnum].normal[sipphone].set_sipstatus("Fail" + str(iret))
 				    update_GUI_clients(astnum, sipphone, "sip___1")
 
 
     elif imsg == "OPTIONS" or imsg == "NOTIFY":
-	    command = xivo_sip.sip_ok(configs[astnum], "sip:" + configs[astnum].mysipname,
-				      icseq, icid, iaddr, imsg, ibranch, itag)
+	    command = xivo_sip.sip_ok(configs[astnum], "sip:" + iaccount,
+				      icseq, icid, iaccount, imsg, ibranch, itag)
 	    l_sipsock.sendto(command,(configs[astnum].remoteaddr, l_addrsip[1]))
 	    if imsg == "NOTIFY":
 		    sipnum, sippresence = tellpresence(data)
 		    if [sipnum, sippresence] != [None, None]:
-			    sipphone = "SIP/" + sipnum
+			    sipphone = "SIP/" + icid.split("@")[0].split("subscribexivo_")[1] # vs. sipnum
 			    if sipphone in plist[astnum].normal:
 				    plist[astnum].normal[sipphone].set_lasttime(time.time())
 				    if plist[astnum].normal[sipphone].sipstatus != sippresence:
@@ -763,13 +804,11 @@ def parseSIP(astnum, data, l_sipsock, l_addrsip):
 # \return
 def do_sip_register_subscribe(astnum, l_sipsock):
 	global plist, configs
-	rdc = chr(65 + 32 * random.randrange(2) + random.randrange(26))
-	command = xivo_sip.sip_register(configs[astnum], "sip:" + configs[astnum].mysipname, 1, "reg_cid@xivopy", expires, "")
-	l_sipsock.sendto(command, (configs[astnum].remoteaddr, configs[astnum].portsipsrv))
-
-	#command = xivo_sip.sip_options(configs[astnum], "sip:" + configs[astnum].mysipname,
-	#cid, sipnum)
-	#l_sipsock.sendto(command, (configs[astnum].remoteaddr, configs[astnum].portsipsrv))
+	for sipacc in configs[astnum].mysipaccounts:
+		rdc = chr(65 + 32 * random.randrange(2) + random.randrange(26))
+		command = xivo_sip.sip_register(configs[astnum], "sip:" + sipacc[1], 1, "reg_cid@xivopy", expires, "")
+		l_sipsock.sendto(command, (configs[astnum].remoteaddr, configs[astnum].portsipsrv))
+		# command = xivo_sip.sip_options(configs[astnum], "sip:" + configs[astnum].mysipname, cid, sipnum)
 
 
 ## \brief Extracts the phone number and the channel name from the asterisk/SIP/num-08abcf
@@ -780,7 +819,7 @@ def split_from_ui(fullname):
 	phone = ""
 	channel = ""
 	s1 = fullname.split("/")
-	if len(s1) == 3:
+	if len(s1) == 4:
 		phone = s1[1] + "/" + s1[2].split("-")[0]
 		channel = s1[1] + "/" + s1[2]
 	return [phone, channel]
@@ -814,27 +853,38 @@ def manage_tcp_connection(connid, allow_events):
 		try:
 			connid[0].send(build_statuses())
 		except Exception, e:
-			log_debug("UI connection : a problem occured when sending to " + str(connid[0]) + " " + str(e))
+			log_debug("UI connection [%s] : KO when sending to %s : %s"
+				  %(usefulmsg, str(connid[0]), str(e)))
         elif usefulmsg == "callerids":
 		try:
 			connid[0].send(build_callerids())
 		except Exception, e:
-			log_debug("UI connection : a problem occured when sending to " + str(connid[0]) + " " + str(e))
+			log_debug("UI connection [%s] : KO when sending to %s : %s"
+				  %(usefulmsg, str(connid[0]), str(e)))
+        elif usefulmsg == "version":
+		try:
+			connid[0].send("version=$Revision$\n")
+		except Exception, e:
+			log_debug("UI connection [%s] : KO when sending to %s : %s"
+				  %(usefulmsg, str(connid[0]), str(e)))
         elif usefulmsg == "infos":
 		try:
-			connid[0].send("infos=nsb:" + str(len(tcpopens_sb)) + "\n")
+			connid[0].send("infos=nsb:%d\n" %(len(tcpopens_sb)))
 		except Exception, e:
-			log_debug("UI connection : a problem occured when sending to " + str(connid[0]) + " " + str(e))
+			log_debug("UI connection [%s] : KO when sending to %s : %s"
+				  %(usefulmsg, str(connid[0]), str(e)))
 	elif usefulmsg == "keepalive":
 		try:
 			connid[0].send("keepalive=\n")
 		except Exception, e:
-			log_debug("UI connection : a problem occured when sending to " + str(connid[0]) + " " + str(e))
+			log_debug("UI connection [%s] : KO when sending to %s : %s"
+				  %(usefulmsg, str(connid[0]), str(e)))
 	elif usefulmsg == "capabilities":
 		try:
 			connid[0].send("capabilities=%s\n" %capabilities)
 		except Exception, e:
-			log_debug("UI connection : a problem occured when sending to " + str(connid[0]) + " " + str(e))
+			log_debug("UI connection [%s] : KO when sending to %s : %s"
+				  %(usefulmsg, str(connid[0]), str(e)))
 	elif usefulmsg != "":
 		l = usefulmsg.split()
 		if len(l) == 2 and l[0] == 'hangup':
@@ -926,6 +976,7 @@ def manage_tcp_connection(connid, allow_events):
 			else:
 				connid[0].send("asterisk=originate or transfer KO : asterisk id mismatch\n")
 		elif len(l) >= 4 and l[0] == 'history':
+			log_debug("attempting a HISTORY : " + str(l))
 			idassrc = -1
 			assrc = l[1].split("/")[0]
 			if assrc in asteriskr: idassrc = asteriskr[assrc]
@@ -1159,21 +1210,25 @@ def handle_ami_event(astnum, idata):
 		x = z.replace("\r\n", ";")
 		#print getvalue(x, "Context")
 		if x.find("Dial;") == 7:
-			src   = getvalue(x, "Source")
-			dst   = getvalue(x, "Destination")
-			clid  = getvalue(x, "CallerID")
-			clidn = getvalue(x, "CallerIDName")
+			src     = getvalue(x, "Source")
+			dst     = getvalue(x, "Destination")
+			clid    = getvalue(x, "CallerID")
+			clidn   = getvalue(x, "CallerIDName")
+			context = getvalue(x, "Context")
 			try:
 				handle_ami_event_dial(listkeys, astnum, src, dst, clid, clidn)
+				#print "dial", context, x
 			except Exception, e:
 				log_debug("an exception occured in handle_ami_event_dial : " + str(e))
 		elif x.find("Link;") == 7:
-			src   = getvalue(x, "Channel1")
-			dst   = getvalue(x, "Channel2")
-			clid1 = getvalue(x, "CallerID1")
-			clid2 = getvalue(x, "CallerID2")
+			src     = getvalue(x, "Channel1")
+			dst     = getvalue(x, "Channel2")
+			clid1   = getvalue(x, "CallerID1")
+			clid2   = getvalue(x, "CallerID2")
+			context = getvalue(x, "Context")
 			try:
 				handle_ami_event_link(listkeys, astnum, src, dst, clid1, clid2)
+				#print "link", context, x
 			except Exception, e:
 				log_debug("an exception occured in handle_ami_event_link : " + str(e))
 		elif x.find("Unlink;") == 7:
@@ -1223,6 +1278,8 @@ def handle_ami_event(astnum, idata):
 			log_debug("//AMI:Alarm// %s : %s" %(plist[astnum].astid, x))
 		elif x.find("AlarmClear;") == 7:
 			log_debug("//AMI:AlarmClear// %s : %s" %(plist[astnum].astid, x))
+		elif x.find("FaxReceived;") == 7:
+			log_debug("//AMI:FaxReceived// %s : %s" %(plist[astnum].astid, x))
 		elif x.find("MeetmeJoin;") == 7:
 			channel = getvalue(x, "Channel")
 			meetme = getvalue(x, "Meetme")
@@ -1530,9 +1587,9 @@ def update_sipnumlist(astnum):
 
 	sipnumlistold = plist[astnum].normal.keys()
 	sipnumlistold.sort()
-	sipnuml = update_userlist_fromurl(astnum, configs[astnum].userlisturl, configs[astnum].mysipname)
+	sipnuml = update_userlist_fromurl(astnum, configs[astnum].userlisturl, configs[astnum].mysipaccounts)
 	for x in configs[astnum].extrachannels.split(","):
-		if x != "": sipnuml[x] = [x, "", ""]
+		if x != "": sipnuml[x] = [x, "", "", x, ""]
 	sipnumlistnew = sipnuml.keys()
 	sipnumlistnew.sort()
 	if sipnumlistnew != sipnumlistold:
@@ -1545,13 +1602,29 @@ def update_sipnumlist(astnum):
 		for snl in sipnumlistnew:
 			if snl not in sipnumlistold:
 				if snl.find("SIP") == 0:
-					plist[astnum].normal[snl] = LineProp("SIP", snl.split("/")[1], "BefSubs")
+					plist[astnum].normal[snl] = LineProp("SIP",
+									     snl.split("/")[1],
+									     sipnuml[snl][3],
+									     sipnuml[snl][4],
+									     "BefSubs")
 				elif snl.find("IAX2") == 0:
-					plist[astnum].normal[snl] = LineProp("IAX2", snl.split("/")[1], "Ready")
+					plist[astnum].normal[snl] = LineProp("IAX2",
+									     snl.split("/")[1],
+									     sipnuml[snl][3],
+									     sipnuml[snl][4],
+									     "Ready")
 				elif snl.find("mISDN") == 0:
-					plist[astnum].normal[snl] = LineProp("mISDN", snl.split("/")[1], "Ready")
+					plist[astnum].normal[snl] = LineProp("mISDN",
+									     snl.split("/")[1],
+									     sipnuml[snl][3],
+									     sipnuml[snl][4],
+									     "Ready")
 				elif snl.find("Zap") == 0:
-					plist[astnum].normal[snl] = LineProp("Zap", snl.split("/")[1], "Ready")
+					plist[astnum].normal[snl] = LineProp("Zap",
+									     snl.split("/")[1],
+									     sipnuml[snl][3],
+									     sipnuml[snl][4],
+									     "Ready")
 				else:
 					log_debug(snl + " format not supported")
 
@@ -1681,6 +1754,12 @@ class LineProp:
 	## \var tech
 	# \brief Protocol of the phone (SIP, IAX2, ...)
 	
+	## \var phonenum
+	# \brief Phone number
+	
+	## \var context
+	# \brief Context
+	
 	## \var lasttime
 	# \brief Last time the phone has received a reply from a SUBSCRIBE
 	
@@ -1694,21 +1773,20 @@ class LineProp:
 	# \brief Instant Messaging status, as given by Xivo Clients
 	
 	## \var voicemail
-	# \brief Voicemail status (only the member name for now)
-	
-	## \var phonenum
-	# \brief Phone number
+	# \brief Voicemail status
 	
 	## \var queueavail
-	# \brief Queue availability (only the member name for now)
+	# \brief Queue availability
 	
 	## \var callerid
 	# \brief Caller ID
 	
 	##  \brief Class initialization.
-	def __init__(self, itech, iphonenum, isipstatus):
+	def __init__(self, itech, iphoneid, iphonenum, icontext, isipstatus):
 		self.tech = itech
+		self.phoneid  = iphoneid
 		self.phonenum = iphonenum
+		self.context = icontext.replace("-", "_")
 		self.lasttime = 0
 		self.chann = {}
 		self.sipstatus = isipstatus # Asterisk "hints" status
@@ -1720,8 +1798,10 @@ class LineProp:
 		self.calleridlast = "nobody"
 	def set_tech(self, itech):
 		self.tech = itech
+	def set_phoneid(self, iphoneid):
+		self.phoneid = iphoneid
 	def set_phonenum(self, iphonenum):
-		self.tech = iphonenum
+		self.phonenum = iphonenum
 	def set_sipstatus(self, isipstatus):
 		self.sipstatus = isipstatus
 	def set_imstat(self, istatus):
@@ -1820,7 +1900,7 @@ class AsteriskRemote:
 	## \var portsipsrv
 	# \brief SIP port of the monitored Asterisk
 
-	## \var mysipname
+	## \var mysipaccounts
 	# \brief SIP identifier as registered on the monitored Asterisk
 
 	## \var ami_port
@@ -1843,10 +1923,9 @@ class AsteriskRemote:
 		     ami_port = 5038,
 		     ami_login = "xivouser",
 		     ami_pass = "xivouser",
-		     portsipclt = 5080,
+		     portsipclt = 5005,
 		     portsipsrv = 5060,
-		     mysipname = "xivoaccount",
-		     mysippass = "xivoaccount"):
+		     mysipaccounts = []):
 
 		self.astid = astid
 		self.userlisturl = userlisturl
@@ -1856,11 +1935,14 @@ class AsteriskRemote:
 		self.ipaddress_php = ipaddress_php
 		self.portsipclt = portsipclt
 		self.portsipsrv = portsipsrv
-		self.mysipname = mysipname
-		self.mysippass = mysippass
 		self.ami_port = ami_port
 		self.ami_login = ami_login
 		self.ami_pass = ami_pass
+		self.mysipaccounts = []
+		zz = mysipaccounts.split(";")
+		for za in zz:
+			[ctx, acc, zpass] = za.split(",")
+			self.mysipaccounts.append([ctx, acc, zpass])
 
 ## \brief Adds (or updates) a user in the userlist.
 # \param user the user to add
@@ -2191,8 +2273,7 @@ for i in xivoconf.sections():
 		ami_login = "xivouser"
 		ami_pass = "xivouser"
 		sip_port = 5060
-		sip_presence_account = "xivoaccount"
-		sip_presence_secret  = "xivoaccount"
+		sip_presence = ""
 
 		if "localaddr" in xivoconf_local:
 			localaddr = xivoconf_local["localaddr"]
@@ -2212,10 +2293,8 @@ for i in xivoconf.sections():
 			ami_pass = xivoconf_local["ami_pass"]
 		if "sip_port" in xivoconf_local:
 			sip_port = int(xivoconf_local["sip_port"])
-		if "sip_presence_account" in xivoconf_local:
-			sip_presence_account = xivoconf_local["sip_presence_account"]
-		if "sip_presence_secret" in xivoconf_local:
-			sip_presence_secret = xivoconf_local["sip_presence_secret"]
+		if "sip_presence" in xivoconf_local:
+			sip_presence = xivoconf_local["sip_presence"]
 
 		configs.append(AsteriskRemote(i,
 					      userlisturl,
@@ -2228,8 +2307,7 @@ for i in xivoconf.sections():
 					      ami_pass,
 					      port_switchboard_base_sip + n,
 					      sip_port,
-					      sip_presence_account,
-					      sip_presence_secret))
+					      sip_presence))
 		ip_reverse_sht[ipaddress] = n
 		ip_reverse_php[ipaddress_php] = n
 		save_for_next_packet_events.append("")
@@ -2390,7 +2468,7 @@ while not askedtoquit:
 		is_an_options_packet = parseSIP(n, data, SIPsocks[n], addrsip)
 		# if the packet is an OPTIONS one (sent for instance when * is restarted)
 		if is_an_options_packet:
-			log_debug(configs[n].astid + " : do_sip_register_subscribe (parse SIP)")
+			log_debug(configs[n].astid + " : do_sip_register_subscribe (parse SIP) " + time.strftime("%H:%M:%S", time.localtime()))
 			update_sipnumlist(n)
 			if with_ami: update_amisocks(n)
 			if with_sip: do_sip_register_subscribe(n, SIPsocks[n])
@@ -2448,15 +2526,15 @@ while not askedtoquit:
 		conn = filter(lambda j: j[0] in i, tcpopens_sb)[0]
 		try:
 			manage_tcp_connection(conn, True)
-		except:
-			log_debug("a problem occured when managing SB tcp connection")
+		except Exception, e:
+			log_debug("a problem occured when managing SB tcp connection : " + str(e))
 	# open UI (PHP) connections
         elif filter(lambda j: j[0] in i, tcpopens_php):
 		conn = filter(lambda j: j[0] in i, tcpopens_php)[0]
 		try:
 			manage_tcp_connection(conn, False)
-		except:
-			log_debug("a problem occured when managing PHP tcp connection")
+		except Exception, e:
+			log_debug("a problem occured when managing PHP tcp connection : " + str(e))
 	# advertising from other xivo_daemon's around
 	elif xdal in i:
 		[data, addrsip] = xdal.recvfrom(bufsize_udp)
@@ -2467,12 +2545,12 @@ while not askedtoquit:
 	for n in items_asterisks:
 		if (time.time() - lastrequest_time[n]) > timeout_between_registers:
 			lastrequest_time[n] = time.time()
-			log_debug(configs[n].astid + " : do_sip_register_subscribe (computed timeout)")
+			log_debug(configs[n].astid + " : do_sip_register_subscribe (computed timeout) " + time.strftime("%H:%M:%S", time.localtime()))
 			update_sipnumlist(n)
 			if with_ami: update_amisocks(n)
 			if with_sip: do_sip_register_subscribe(n, SIPsocks[n])
     else:
-	    log_debug("do_sip_register_subscribe (select's timeout)")
+	    log_debug("do_sip_register_subscribe (select's timeout) " + time.strftime("%H:%M:%S", time.localtime()))
 	    for n in items_asterisks:
 		    lastrequest_time[n] = time.time()
 		    update_sipnumlist(n)

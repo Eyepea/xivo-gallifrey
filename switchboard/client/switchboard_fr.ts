@@ -207,7 +207,7 @@
         <translation>Composer ce numéro</translation>
     </message>
     <message>
-        <location filename="peerwidget.cpp" line="253"/>
+        <location filename="peerwidget.cpp" line="254"/>
         <source>&amp;Intercept</source>
         <translation>&amp;Intercepter</translation>
     </message>
@@ -267,6 +267,11 @@
         <source>Dial context :</source>
         <translation>Contexte d&apos;appel :</translation>
     </message>
+    <message>
+        <location filename="switchboardconf.cpp" line="82"/>
+        <source>Password :</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SwitchBoardEngine</name>
@@ -291,7 +296,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="switchboardengine.cpp" line="328"/>
+        <location filename="switchboardengine.cpp" line="334"/>
         <source>Peers&apos; status updated at </source>
         <translation type="unfinished"></translation>
     </message>

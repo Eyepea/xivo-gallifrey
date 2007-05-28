@@ -212,16 +212,22 @@ void SwitchBoardEngine::socketStateChanged(QAbstractSocket::SocketState socketSt
  */
 void SwitchBoardEngine::updatePeers(const QStringList & liststatus)
 {
-	int nchans = liststatus[6].toInt();
-	QString pname = liststatus[1] + "/" + liststatus[2] + "/" + liststatus[3];
-	QString pavail = liststatus[4];
-	QString pstatus = liststatus[5];
+	const int nfields0 = 11; // 0th order size (per-phone/line informations)
+	const int nfields1 = 6;  // 1st order size (per-channel informations)
+	
+	// liststatus[0] is a dummy field, only used for debug on the daemon side
+	QString pname    = liststatus[1] + "/" + liststatus[2] + "/" + liststatus[3] + "/" + liststatus[5];
+	QString pIMavail   = liststatus[6];
+	QString pSIPstatus = liststatus[7];
+	QString pVMstatus  = liststatus[8];
+	QString pQueue     = liststatus[9];
+	int nchans = liststatus[10].toInt();
 	//QString pinfos = "";
-	if(liststatus.size() == 7 + 6 * nchans) {
+	if(liststatus.size() == nfields0 + nfields1 * nchans) {
 		for(int i = 0; i < nchans; i++) {
 			//  <channel>:<etat du channel>:<nb de secondes dans cet etat>:<to/from>:<channel en liaison>:<numero en liaison>
-			int refn = 7 + 6 * i;
-			pstatus = liststatus[refn + 1];
+			int refn = nfields0 + nfields1 * i;
+			pSIPstatus = liststatus[refn + 1];
 			if(liststatus[3] == "114")
 			{
 				qDebug() << liststatus[refn] << liststatus[refn + 1]
@@ -241,16 +247,16 @@ void SwitchBoardEngine::updatePeers(const QStringList & liststatus)
 		}
 	}
 
-	//updatePeer(pname, m_callerids[pname], pstatus, pavail, pinfos);
-	updatePeer(pname, m_callerids[pname], pstatus, pavail);
+	//updatePeer(pname, m_callerids[pname], pSIPstatus, pIMavail, pinfos);
+	updatePeer(pname, m_callerids[pname], pSIPstatus, pIMavail);
 }
 
 /*! \brief update a caller id 
  */
 void SwitchBoardEngine::updateCallerids(const QStringList & liststatus)
 {
-	QString pname = liststatus[1] + "/" + liststatus[2] + "/" + liststatus[3];
-	QString pcid = liststatus[4];
+	QString pname = liststatus[1] + "/" + liststatus[2] + "/" + liststatus[3] + "/" + liststatus[5];
+	QString pcid = liststatus[6];
 	m_callerids[pname] = pcid;
 }
 
@@ -343,7 +349,7 @@ void SwitchBoardEngine::timerEvent(QTimerEvent * event)
 void SwitchBoardEngine::originateCall(const QString & src, const QString & dst)
 {
 	QStringList dstlist = dst.split("/");
-	if (dstlist.size() == 3) {
+	if (dstlist.size() == 4) {
 		m_pendingcommand = "originate " + src + " " +
 			dstlist[0] + "/" + dstlist[2] + " " + m_dialcontext;
 		sendCommand();

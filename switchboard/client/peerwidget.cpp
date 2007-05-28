@@ -163,6 +163,7 @@ void PeerWidget::mouseMoveEvent(QMouseEvent *event)
 	//qDebug() << "PeerWidget::mouseMoveEvent() startDrag";
 	QDrag *drag = new QDrag(this);
 	QMimeData *mimeData = new QMimeData;
+	qDebug() << "here" << m_id;
 	mimeData->setText(m_id/*m_textlbl->text()*/);
 	drag->setMimeData(mimeData);
 
