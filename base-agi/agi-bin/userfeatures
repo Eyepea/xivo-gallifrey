@@ -74,8 +74,6 @@ def find_informations_by_extension(exten, context):
 	except:
 		print "VERBOSE \"Error to connect %s\" %options['db_uri']"
 		sys.exit()
-	if context == 'local-extensions':
-		context = ''
 
         query = "SELECT * FROM userfeatures WHERE number='%s' and context='%s'" %(exten, context)
 	cursor = conn.cursor()

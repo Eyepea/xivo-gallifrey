@@ -104,8 +104,6 @@ if type == 'user':
 	u = cursor.fetchone()
 	number = u[0]
 	context = u[1]
-	if not context:
-		context='local-extensions'
 	num = int(number)
 	query = "SELECT number,context FROM extenumbers WHERE number=%d AND context='%s'" %(num, context)
 	cursor.execute(query)
