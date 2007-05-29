@@ -19,19 +19,28 @@ LogWidget::LogWidget(SwitchBoardEngine * engine, QWidget * parent)
 	QGroupBox * groupBox = new QGroupBox( tr("Call history"), this );
 	groupBox->setAlignment( Qt::AlignHCenter );
 	QVBoxLayout * vbox = new QVBoxLayout( groupBox );
+
+	m_radioNone = new QRadioButton( tr("&None"), groupBox );
+	connect( m_radioNone, SIGNAL(toggled(bool)),
+	         this, SLOT(modeChanged(bool)) );
+	vbox->addWidget( m_radioNone );
+
 	m_radioOut = new QRadioButton( tr("&Outgoing calls"), groupBox );
 	m_radioOut->setChecked( true );
 	connect( m_radioOut, SIGNAL(toggled(bool)),
 	         this, SLOT(modeChanged(bool)) );
 	vbox->addWidget( m_radioOut );
+
 	m_radioIn = new QRadioButton( tr("&Incoming calls"), groupBox );
 	connect( m_radioIn, SIGNAL(toggled(bool)),
 	         this, SLOT(modeChanged(bool)) );
 	vbox->addWidget( m_radioIn );
+
 	m_radioMissed = new QRadioButton( tr("&Missed calls"), groupBox );
 	connect( m_radioMissed, SIGNAL(toggled(bool)),
 	         this, SLOT(modeChanged(bool)) );
 	vbox->addWidget( m_radioMissed );
+
 	layout->addWidget( groupBox );
 	QScrollArea * scrollArea = new QScrollArea( this );
 	scrollArea->setWidgetResizable( true );
@@ -116,7 +125,7 @@ void LogWidget::timerEvent(QTimerEvent * event)
 
 int LogWidget::mode()
 {
-	int r = 0;
+	int r = -1;
 	if(m_radioOut->isChecked())
 		r = 0;
 	else if(m_radioIn->isChecked())

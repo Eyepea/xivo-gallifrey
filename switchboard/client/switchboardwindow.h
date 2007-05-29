@@ -34,10 +34,11 @@ protected:
 	void dropEvent(QDropEvent *);
 public slots:
 	void updatePeer(const QString & ext,
-	        const QString & name,
-			const QString & status,
-			const QString & avail/*,
-			const QString & corrname*/);
+			const QString & name,
+			const QString & imavail,
+			const QString & sipstatus,
+			const QString & vmstatus,
+			const QString & queuestatus);
 	void removePeer(const QString & ext);
 	void removePeers(void);
 private slots:

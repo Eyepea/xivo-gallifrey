@@ -217,9 +217,9 @@ void PeerWidget::dropEvent(QDropEvent *event)
 	case Qt::CopyAction:
 		// transfer the call to the peer "to"
 		event->acceptProposedAction();
-		if(from.indexOf('-') >= 0)	// c'est un channel et non un peer
+		if(from.indexOf('c') == 0)         // 'c/' => channel
 			transferCall(from, to);
-		else
+		else if(from.indexOf('p') == 0)    // 'p/' => peer
 			originateCall(from, to);
 		break;
 	case Qt::MoveAction:

@@ -2,6 +2,7 @@
 #define __CALLWIDGET_H__
 #include <QWidget>
 #include <QDateTime>
+#include <QObject>
 
 class QLabel;
 

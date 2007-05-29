@@ -50,9 +50,10 @@ void SearchPanel::affTextChanged(const QString & text)
 
 void SearchPanel::updatePeer(const QString & ext,
                              const QString & name,
-							 const QString & status,
-							 const QString & avail/*,
-							 const QString & corrname*/)
+			     const QString & imavail,
+			     const QString & sipstatus,
+			     const QString & vmstatus,
+			     const QString & queuestatus)
 {
 	int i;
 	//qDebug() << "SearchPanel::updatePeer" << ext << name << status << avail << corrname;
@@ -60,7 +61,7 @@ void SearchPanel::updatePeer(const QString & ext,
 	{
 		if(ext == m_peerlist[i].ext())
 		{
-			m_peerlist[i].updateStatus(status, avail/*, corrname*/);
+			m_peerlist[i].updateStatus(imavail, sipstatus, vmstatus, queuestatus);
 			return;
 		}
 	}
@@ -78,7 +79,7 @@ void SearchPanel::updatePeer(const QString & ext,
 		peerwidget->hide();
 	}
 	peer.setWidget(peerwidget);
-	peer.updateStatus(status, avail/*, corrname*/);
+	peer.updateStatus(imavail, sipstatus, vmstatus, queuestatus);
 	m_peerlist << peer;
 }
 

@@ -219,10 +219,8 @@ void CallStackWidget::dragEnterEvent(QDragEnterEvent *event)
 void CallStackWidget::dropEvent(QDropEvent *event)
 {
 	QString text = event->mimeData()->text();
-	qDebug() << "CallStackWidget::dropEvent() "
-	         << text;
-	if(text.indexOf('-') >= 0)
-	{
+	qDebug() << "CallStackWidget::dropEvent()" << text;
+	if(text.indexOf('c') == 0) { // 'c/' if channel, 'p/' otherwise
 		// it is a channel, not a peer.
 		event->ignore();
 		return;

@@ -68,6 +68,7 @@ signals:
 	//void showCalls(const QString & tomonitor, const QString & callerid);
 	void callsUpdated();
 	void updatePeer(const QString &, const QString &,
+			const QString &, const QString &,
 	                const QString &, const QString &);
 	void removePeer(const QString &);
 	void updateLogEntry(const QDateTime &, int, const QString &, int);

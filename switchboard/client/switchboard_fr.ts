@@ -3,7 +3,7 @@
 <context>
     <name>CallStackWidget</name>
     <message>
-        <location filename="callstackwidget.cpp" line="233"/>
+        <location filename="callstackwidget.cpp" line="231"/>
         <source>Monitoring : </source>
         <translation>Surveillance de : </translation>
     </message>
@@ -101,85 +101,90 @@
         <translation>Historique des appels</translation>
     </message>
     <message>
-        <location filename="logwidget.cpp" line="22"/>
+        <location filename="logwidget.cpp" line="28"/>
         <source>&amp;Outgoing calls</source>
         <translation>Appels &amp;sortants</translation>
     </message>
     <message>
-        <location filename="logwidget.cpp" line="27"/>
+        <location filename="logwidget.cpp" line="34"/>
         <source>&amp;Incoming calls</source>
         <translation>Appels &amp;entrants</translation>
     </message>
     <message>
-        <location filename="logwidget.cpp" line="31"/>
+        <location filename="logwidget.cpp" line="39"/>
         <source>&amp;Missed calls</source>
         <translation>Appels &amp;manqués</translation>
+    </message>
+    <message>
+        <location filename="logwidget.cpp" line="23"/>
+        <source>&amp;None</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="mainwindow.cpp" line="166"/>
+        <location filename="mainwindow.cpp" line="170"/>
         <source>&amp;File</source>
         <translation>&amp;Fichier</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="168"/>
+        <location filename="mainwindow.cpp" line="172"/>
         <source>S&amp;tart</source>
         <translation>&amp;Démarrer</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="173"/>
+        <location filename="mainwindow.cpp" line="177"/>
         <source>Sto&amp;p</source>
         <translation>&amp;Arrêter</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="179"/>
+        <location filename="mainwindow.cpp" line="183"/>
         <source>&amp;Configure</source>
         <translation>&amp;Configuration</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="184"/>
+        <location filename="mainwindow.cpp" line="188"/>
         <source>&amp;Quit</source>
         <translation>&amp;Quitter</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="188"/>
+        <location filename="mainwindow.cpp" line="192"/>
         <source>&amp;Help</source>
         <translation>&amp;Aide</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="191"/>
+        <location filename="mainwindow.cpp" line="195"/>
         <source>About &amp;Qt</source>
         <translation>A propos de &amp;Qt</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="169"/>
+        <location filename="mainwindow.cpp" line="173"/>
         <source>Start</source>
         <translation>Connexion</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="174"/>
+        <location filename="mainwindow.cpp" line="178"/>
         <source>Stop</source>
         <translation>Déconnexion</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="180"/>
+        <location filename="mainwindow.cpp" line="184"/>
         <source>Open the configuration dialog</source>
         <translation>Ouvre la fenêtre de configuration</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="246"/>
+        <location filename="mainwindow.cpp" line="250"/>
         <source>About XIVO SwitchBoard</source>
         <translation>A propos du SwitchBoard XIVO</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="190"/>
+        <location filename="mainwindow.cpp" line="194"/>
         <source>&amp;About XIVO Switchboard</source>
         <translation>&amp;A propos du SwitchBoard XIVO</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="257"/>
+        <location filename="mainwindow.cpp" line="261"/>
         <source>&lt;h3&gt;XIVO Switchboard&lt;/h3&gt;&lt;p&gt;This application displays the status of the ongoing phone calls.&lt;/p&gt;&lt;p&gt;Version : %1&lt;/p&gt;&lt;p&gt;(C) 2007 &lt;b&gt;Proformatique&lt;/b&gt; &lt;a href=&quot;http://www.proformatique.com&quot;&gt;http://www.proformatique.com&lt;/a&gt;&lt;/p&gt;&lt;p&gt;67 rue Voltaire 92800 Puteaux FRANCE&lt;/p&gt;&lt;p&gt;E-mail : technique@proformatique.com&lt;/p&gt;&lt;p&gt;(+33/0)1.41.38.99.60&lt;/p&gt;&lt;p&gt;Author : Thomas Bernard&lt;/p&gt;</source>
         <translation type="unfinished">&lt;h3&gt;XIVO Switchboard&lt;/h3&gt;&lt;p&gt;Cette application affiche le statut des appels téléphoniques en cours.&lt;/p&gt;&lt;p&gt;Version : %1&lt;/p&gt;&lt;p&gt;(C) 2007 &lt;b&gt;Proformatique&lt;/b&gt; &lt;a href=&quot;http://www.proformatique.com&quot;&gt;http://www.proformatique.com&lt;/a&gt;&lt;/p&gt;&lt;p&gt;67 rue Voltaire 92800 Puteaux FRANCE&lt;/p&gt;&lt;p&gt;E-mail : technique@proformatique.com&lt;/p&gt;&lt;p&gt;(+33/0)1.41.38.99.60&lt;/p&gt;&lt;p&gt;Auteur : Thomas Bernard&lt;/p&gt;</translation>
     </message>
@@ -296,7 +301,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="switchboardengine.cpp" line="334"/>
+        <location filename="switchboardengine.cpp" line="339"/>
         <source>Peers&apos; status updated at </source>
         <translation type="unfinished"></translation>
     </message>

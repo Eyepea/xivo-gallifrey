@@ -216,18 +216,22 @@ void SwitchBoardEngine::updatePeers(const QStringList & liststatus)
 	const int nfields1 = 6;  // 1st order size (per-channel informations)
 	
 	// liststatus[0] is a dummy field, only used for debug on the daemon side
-	QString pname    = liststatus[1] + "/" + liststatus[2] + "/" + liststatus[3] + "/" + liststatus[5];
-	QString pIMavail   = liststatus[6];
-	QString pSIPstatus = liststatus[7];
-	QString pVMstatus  = liststatus[8];
-	QString pQueue     = liststatus[9];
+	// (asteriskid)/(context)/(protocol)/(phoneid)/(phonenum)
+	
+	QString context = liststatus[5];
+	QString pname   = "p/" + liststatus[1] + "/" + context + "/"
+		+ liststatus[2] + "/" + liststatus[3] + "/" + liststatus[4];
+	QString InstMessAvail   = liststatus[6];
+	QString SIPPresStatus   = liststatus[7];
+	QString VoiceMailStatus = liststatus[8];
+	QString QueueStatus     = liststatus[9];
 	int nchans = liststatus[10].toInt();
 	//QString pinfos = "";
 	if(liststatus.size() == nfields0 + nfields1 * nchans) {
 		for(int i = 0; i < nchans; i++) {
 			//  <channel>:<etat du channel>:<nb de secondes dans cet etat>:<to/from>:<channel en liaison>:<numero en liaison>
 			int refn = nfields0 + nfields1 * i;
-			pSIPstatus = liststatus[refn + 1];
+			SIPPresStatus = liststatus[refn + 1];
 			if(liststatus[3] == "114")
 			{
 				qDebug() << liststatus[refn] << liststatus[refn + 1]
@@ -237,7 +241,7 @@ void SwitchBoardEngine::updatePeers(const QStringList & liststatus)
 			/*pinfos += liststatus[refn + 1] + " : " + liststatus[refn] + " "
 				+ liststatus[refn + 2] + " " + liststatus[refn + 3] + " "
 				+ liststatus[refn + 4] + " " + liststatus[refn + 5];*/
-			updateCall(liststatus[1] + "/" + liststatus[refn],
+			updateCall("c/" + liststatus[1] + "/" + context + "/" + liststatus[refn],
 				   liststatus[refn + 1],
 				   liststatus[refn + 2].toInt(), liststatus[refn + 3],
 				   liststatus[refn + 4], liststatus[refn + 5],
@@ -247,15 +251,16 @@ void SwitchBoardEngine::updatePeers(const QStringList & liststatus)
 		}
 	}
 
-	//updatePeer(pname, m_callerids[pname], pSIPstatus, pIMavail, pinfos);
-	updatePeer(pname, m_callerids[pname], pSIPstatus, pIMavail);
+	updatePeer(pname, m_callerids[pname],
+		   InstMessAvail, SIPPresStatus, VoiceMailStatus, QueueStatus);
 }
 
 /*! \brief update a caller id 
  */
 void SwitchBoardEngine::updateCallerids(const QStringList & liststatus)
 {
-	QString pname = liststatus[1] + "/" + liststatus[2] + "/" + liststatus[3] + "/" + liststatus[5];
+	QString pname = "p/" + liststatus[1] + "/" + liststatus[5] + "/"
+		+ liststatus[2] + "/" + liststatus[3] + "/" + liststatus[4];
 	QString pcid = liststatus[6];
 	m_callerids[pname] = pcid;
 }
@@ -348,19 +353,23 @@ void SwitchBoardEngine::timerEvent(QTimerEvent * event)
  */
 void SwitchBoardEngine::originateCall(const QString & src, const QString & dst)
 {
+	qDebug() << "SwitchBoardEngine::originateCall()" << src << dst;
 	QStringList dstlist = dst.split("/");
-	if (dstlist.size() == 4) {
-		m_pendingcommand = "originate " + src + " " +
-			dstlist[0] + "/" + dstlist[2] + " " + m_dialcontext;
-		sendCommand();
-	}
+	m_pendingcommand = "originate " + src + " "
+		+ dstlist[0] + "/" + dstlist[1] + "/" + m_dialcontext + "/"
+		+ dstlist[3] + "/" + dstlist[4] + "/" + dstlist[5];
+	sendCommand();
 }
 
 /*! \brief send a transfer call command to the server
  */
 void SwitchBoardEngine::transferCall(const QString & src, const QString & dst)
 {
-	m_pendingcommand = "transfer " + src + " " + dst;
+	qDebug() << "SwitchBoardEngine::transferCall()" << src << dst;
+	QStringList dstlist = dst.split("/");
+	m_pendingcommand = "transfer " + src + " "
+		+ dstlist[0] + "/" + dstlist[1] + "/" + m_dialcontext + "/"
+		+ dstlist[3] + "/" + dstlist[4] + "/" + dstlist[5];
 	sendCommand();
 }
 
@@ -368,8 +377,11 @@ void SwitchBoardEngine::transferCall(const QString & src, const QString & dst)
  */
 void SwitchBoardEngine::dial(const QString & dst)
 {
-	m_pendingcommand = "originate " + m_asterisk + "/" + m_protocol
-		+ "/" + m_extension + " " + m_asterisk + "/" + dst + " " + m_dialcontext;
+	qDebug() << "SwitchBoardEngine::dial()" << dst;
+	m_pendingcommand = "originate p/" +
+		m_asterisk + "/" + m_dialcontext + "/" + m_protocol + "/" + m_extension +
+		"/ p/" +
+		m_asterisk + "/" + m_dialcontext + "/" +              "/" +               "/" + dst;
 	sendCommand();
 }
 
@@ -379,7 +391,7 @@ void SwitchBoardEngine::dial(const QString & dst)
  */
 void SwitchBoardEngine::hangUp(const QString & channel)
 {
-	qDebug() << "SwitchBoardEngine::hangUp() " << channel;
+	qDebug() << "SwitchBoardEngine::hangUp()" << channel;
 	m_pendingcommand = "hangup " + channel;
 	sendCommand();
 }
@@ -402,9 +414,11 @@ void SwitchBoardEngine::requestHistory(const QString & peer, int mode)
 	 * mode = 1 : In calls
 	 * mode = 2 : Missed calls */
 	//qDebug() << "SwitchBoardEngine::requestHistory()" << peer;
-	m_pendingcommand = "history " + peer + " 10 " + QString::number(mode);
-	qDebug() << m_pendingcommand;
-	sendCommand();
+	if(mode >= 0) {
+		m_pendingcommand = "history " + peer + " 10 " + QString::number(mode);
+		qDebug() << m_pendingcommand;
+		sendCommand();
+	}
 }
 
 /*! \brief get server host */

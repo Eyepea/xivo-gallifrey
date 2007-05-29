@@ -1,6 +1,7 @@
 #ifndef __PEERITEM_H__
 #define __PEERITEM_H__
 #include <QString>
+#include <QObject>
 
 class PeerWidget;
 
@@ -15,9 +16,10 @@ public:
 //	Peer & operator=(const Peer & peer);
 	void setWidget(PeerWidget * widget) { m_peerwidget = widget; };
 	PeerWidget * getWidget() { return m_peerwidget; };
-	void updateStatus(const QString & status,
-			  const QString & avail/*,
-			  const QString & corrname*/);
+	void updateStatus(const QString & imavail,
+			  const QString & sipstatus,
+			  const QString & vmstatus,
+			  const QString & queuestatus);
 private:
 	QString m_ext;
 	QString m_name;

@@ -32,6 +32,7 @@ private:
 	QVBoxLayout * m_layout;
 	QString m_peer;
 	int m_timer;
+	QRadioButton * m_radioNone;
 	QRadioButton * m_radioOut;
 	QRadioButton * m_radioIn;
 	QRadioButton * m_radioMissed;

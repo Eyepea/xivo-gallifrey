@@ -107,10 +107,12 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
  	m_widget = new SwitchBoardWindow(areaPeers);
  	m_widget->setEngine(engine);
 	connect( engine, SIGNAL(updatePeer(const QString &, const QString &,
+					   const QString &, const QString &,
 	                                   const QString &, const QString &)),
 	         m_widget, SLOT(updatePeer(const QString &, const QString &,
+					   const QString &, const QString &,
 					   const QString &, const QString &)) );
-	connect( engine, SIGNAL(stopped()), 
+	connect( engine, SIGNAL(stopped()),
 	         m_widget, SLOT(removePeers()) );
 	connect( engine, SIGNAL(removePeer(const QString &)),
 	         m_widget, SLOT(removePeer(const QString &)) );
@@ -130,8 +132,10 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 	SearchPanel * searchpanel = new SearchPanel(m_rightSplitter);
 	searchpanel->setEngine(engine);
 	connect( engine, SIGNAL(updatePeer(const QString &, const QString &,
+					   const QString &, const QString &,
 	                                   const QString &, const QString &)),
 	         searchpanel, SLOT(updatePeer(const QString &, const QString &,
+					      const QString &, const QString &,
 					      const QString &, const QString &)) );
 	connect( engine, SIGNAL(stopped()),
 	         searchpanel, SLOT(removePeers()) );
