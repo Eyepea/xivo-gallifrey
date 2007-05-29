@@ -712,11 +712,11 @@ def parseSIP(astnum, data, l_sipsock, l_addrsip):
 		    # log_debug("%s : REGISTER %s Trying" %(configs[astnum].astid, iaccount))
 		    pass
 	    elif iret == 200:
-		    log_debug("%s : REGISTER %s OK" %(configs[astnum].astid, iaccount))
+		    # log_debug("%s : REGISTER %s OK" %(configs[astnum].astid, iaccount))
 		    rdc = chr(65 + 32 * random.randrange(2) + random.randrange(26))
 		    for sipnum in plist[astnum].normal.keys():
 			    if sipnum.find("SIP/") == 0:
-				    if mycontext.replace("-", "_") == plist[astnum].normal[sipnum].context:
+				    if mycontext == plist[astnum].normal[sipnum].context:
 					    dtnow = time.time() - plist[astnum].normal[sipnum].lasttime
 					    if dtnow > (2 * timeout_between_registers):
 						    if plist[astnum].normal[sipnum].sipstatus != "Timeout":
@@ -766,7 +766,7 @@ def parseSIP(astnum, data, l_sipsock, l_addrsip):
 			    # log_debug("%s : SUBSCRIBE %s Trying %s" %(configs[astnum].astid, iaccount, icid))
 			    pass
 		    elif iret == 200:
-			    log_debug("%s : SUBSCRIBE %s OK %s" %(configs[astnum].astid, iaccount, icid))
+			    # log_debug("%s : SUBSCRIBE %s OK %s" %(configs[astnum].astid, iaccount, icid))
 			    pass
 		    else:
 			    log_debug("%s : SUBSCRIBE %s Failed (code %d) %s"
@@ -819,9 +819,9 @@ def split_from_ui(fullname):
 	phone = ""
 	channel = ""
 	s1 = fullname.split("/")
-	if len(s1) == 4:
-		phone = s1[1] + "/" + s1[2].split("-")[0]
-		channel = s1[1] + "/" + s1[2]
+	if len(s1) == 5:
+		phone = s1[3] + "/" + s1[4].split("-")[0]
+		channel = s1[3] + "/" + s1[4]
 	return [phone, channel]
 
 
@@ -889,7 +889,7 @@ def manage_tcp_connection(connid, allow_events):
 		l = usefulmsg.split()
 		if len(l) == 2 and l[0] == 'hangup':
 			idassrc = -1
-			assrc = l[1].split("/")[0]
+			assrc = l[1].split("/")[1]
 			if assrc in asteriskr: idassrc = asteriskr[assrc]
 			if idassrc == -1:
 				connid[0].send("asterisk=hangup KO : no such asterisk id\n")
@@ -923,16 +923,17 @@ def manage_tcp_connection(connid, allow_events):
 		elif len(l) >= 1 and l[0] == 'directory-search':
 			try:
 				if len(l) == 1: l.append("")
-				connid[0].send(build_customers(l[1]))
+				spattern = ' '.join(l[1:])
+				connid[0].send(build_customers(spattern))
 			except Exception, e:
 				log_debug("UI connection : a problem occured when sending to " + str(connid[0]) + " " + str(e))
-		elif (len(l) == 4 and l[0] == 'originate') \
+		elif (len(l) == 3 and l[0] == 'originate') \
 		     or (len(l) == 3 and l[0] == 'transfer'):
 			idassrc = -1
-			assrc = l[1].split("/")[0]
+			assrc = l[1].split("/")[1]
 			if assrc in asteriskr: idassrc = asteriskr[assrc]
 			idasdst = -1
-			asdst = l[2].split("/")[0]
+			asdst = l[2].split("/")[1]
 			if asdst in asteriskr: idasdst = asteriskr[asdst]
 			if idassrc != -1 and idassrc == idasdst:
 				if not AMIclasssock[idassrc]:
@@ -945,10 +946,10 @@ def manage_tcp_connection(connid, allow_events):
 					if l[0] == 'originate':
 						log_debug("attempting a ORIGINATE : " + str(l))
 						if l[2].split("/")[1] != "":
-							ret = AMIclasssock[idassrc].originate(l[1].split("/")[1],
-											      l[1].split("/")[2],
-											      l[2].split("/")[1],
-											      l[3])
+							ret = AMIclasssock[idassrc].originate(l[1].split("/")[3],
+											      l[1].split("/")[4],
+											      l[2].split("/")[5],
+											      l[2].split("/")[2])
 						else:
 							ret = False
 						if ret:
@@ -961,14 +962,16 @@ def manage_tcp_connection(connid, allow_events):
 						if phonesrc == phonesrcchan:
 							connid[0].send("asterisk=transfer KO : %s not a channel\n" %phonesrcchan)
 						else:
-							phonedst = l[2].split("/")[2]
 							if phonesrc in plist[idassrc].normal.keys():
 								channellist = plist[idassrc].normal[phonesrc].chann
 								nopens = len(channellist)
 								if nopens == 0:
-									log_debug("no channel currently open in the phone " + phonesrc)
+									connid[0].send("asterisk=transfer KO - no channel opened on %s\n" %phonesrc)
 								else:
-									ret = AMIclasssock[idassrc].transfer(channellist[phonesrcchan].getChannelPeer(), phonedst, "local-extensions")
+									tchan = channellist[phonesrcchan].getChannelPeer()
+									ret = AMIclasssock[idassrc].transfer(tchan,
+													     l[2].split("/")[5],
+													     l[2].split("/")[2])
 									if ret:
 										connid[0].send("asterisk=transfer successful " + str(idassrc) + "\n")
 									else:
@@ -978,21 +981,21 @@ def manage_tcp_connection(connid, allow_events):
 		elif len(l) >= 4 and l[0] == 'history':
 			log_debug("attempting a HISTORY : " + str(l))
 			idassrc = -1
-			assrc = l[1].split("/")[0]
+			assrc = l[1].split("/")[1]
 			if assrc in asteriskr: idassrc = asteriskr[assrc]
 			if idassrc == -1:
 				connid[0].send("asterisk=history KO : no such asterisk id\n")
 			else:
-				phone, channel = split_from_ui(l[1])
-				hist = update_history_call(idassrc, phone.split("/")[1], l[2], l[3])
+				phoneid = l[1].split("/")[4]
+				hist = update_history_call(idassrc, phoneid, l[2], l[3])
 				repstr = "history="
 				separ = ";"
 				for x in hist:
 					repstr = repstr + x[0].isoformat() + separ + x[1] \
 						 + separ + str(x[10]) + separ + x[11]
-					if phone.split("/")[1] == x[2]:
+					if phoneid == x[2]:
 						repstr = repstr + separ + x[3] + separ + "OUT"
-					elif phone.split("/")[1] == x[3]:
+					elif phoneid == x[3]:
 						repstr = repstr + separ + x[2] + separ + "IN"
 					else:
 						repstr = repstr + separ + separ + "UNKNOWN"
@@ -1589,7 +1592,7 @@ def update_sipnumlist(astnum):
 	sipnumlistold.sort()
 	sipnuml = update_userlist_fromurl(astnum, configs[astnum].userlisturl, configs[astnum].mysipaccounts)
 	for x in configs[astnum].extrachannels.split(","):
-		if x != "": sipnuml[x] = [x, "", "", x, ""]
+		if x != "": sipnuml[x] = [x, "", "", x.split("/")[1], ""]
 	sipnumlistnew = sipnuml.keys()
 	sipnumlistnew.sort()
 	if sipnumlistnew != sipnumlistold:
@@ -1786,7 +1789,7 @@ class LineProp:
 		self.tech = itech
 		self.phoneid  = iphoneid
 		self.phonenum = iphonenum
-		self.context = icontext.replace("-", "_")
+		self.context = icontext
 		self.lasttime = 0
 		self.chann = {}
 		self.sipstatus = isipstatus # Asterisk "hints" status
