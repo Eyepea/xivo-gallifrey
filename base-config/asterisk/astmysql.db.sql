@@ -65,7 +65,7 @@ CREATE TABLE `groupfeatures` (
  `id` tinyint unsigned auto_increment,
  `name` varchar(255) NOT NULL,
  `number` varchar(80) DEFAULT '',
- `context` varchar(80) NOT NULL DEFAULT '',
+ `context` varchar(80),
  `commented` tinyint(1) DEFAULT 0,
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -100,7 +100,7 @@ CREATE TABLE `meetmefeatures` (
  `meetmeid` int(11) unsigned NOT NULL,
  `mode` varchar(6) NOT NULL DEFAULT 'all',
  `musiconhold` varchar(128) NOT NULL DEFAULT '',
- `context` varchar(80) NOT NULL DEFAULT '',
+ `context` varchar(80),
  `exit` tinyint(1) DEFAULT 0,
  `quiet` tinyint(1) DEFAULT 0,
  `record` tinyint(1) DEFAULT 0,
@@ -176,7 +176,7 @@ CREATE TABLE `queuefeatures` (
  `id` int(11) unsigned auto_increment,
  `name` varchar(255) NOT NULL,
  `number` varchar(80) DEFAULT '',
- `context` varchar(80) NOT NULL DEFAULT '',
+ `context` varchar(80),
  `data_quality` tinyint(1) DEFAULT 0,
  `hitting_callee` tinyint(1) DEFAULT 0,
  `hitting_caller` tinyint(1) DEFAULT 0,
@@ -318,7 +318,7 @@ CREATE TABLE `userfeatures` (
  `lastname` varchar(128) NOT NULL DEFAULT '',
  `name` varchar(80) NOT NULL,
  `number` varchar(80) NOT NULL,
- `context` varchar(80) NOT NULL,
+ `context` varchar(80),
  `provisioningid` mediumint unsigned NOT NULL,
  `ringseconds` tinyint unsigned DEFAULT 15,
  `ringgroup` tinyint(1) DEFAULT 0,
@@ -359,7 +359,7 @@ CREATE INDEX `extensions__idx__commented` ON `extensions`(`commented`);
 CREATE INDEX `extensions__idx__context_exten_priority` ON `extensions`(`context`,`exten`,`priority`);
 CREATE INDEX `extensions__idx__name` ON `extensions`(`name`);
 
-INSERT INTO `extensions` VALUES(1,0,'features','_*98',1,'VoiceMailMain','${CALLERID(num)@default}','voicemsg');
+INSERT INTO `extensions` VALUES(1,0,'features','_*98',1,'VoiceMailMain','${CALLERID(num)}@${MACRO_CONTEXT},s','voicemsg');
 INSERT INTO `extensions` VALUES(2,0,'features','_*98',2,'Hangup','','voicemsg');
 INSERT INTO `extensions` VALUES(3,0,'features','_*20',1,'Noop','Not implemented undo all','fwdundoall');
 INSERT INTO `extensions` VALUES(4,0,'features','_*21',1,'Macro','features|FWD/Unc/Status|forward-on|forward-off|1','fwdundounc');
@@ -368,22 +368,22 @@ INSERT INTO `extensions` VALUES(6,0,'features','_*23',1,'Macro','features|FWD/Bu
 INSERT INTO `extensions` VALUES(7,0,'features','_*21.',1,'Answer','','fwdunc');
 INSERT INTO `extensions` VALUES(8,0,'features','_*21.',2,'Wait',0.5,'fwdunc');
 INSERT INTO `extensions` VALUES(9,0,'features','_*21.',3,'Set','USER=${CALLERID(num)}','fwdunc');
-INSERT INTO `extensions` VALUES(10,0,'features','_*21.',4,'Set','DB(users/${USER}/FWD/Unc/Number)=${EXTEN:3}','fwdunc');
-INSERT INTO `extensions` VALUES(11,0,'features','_*21.',5,'Set','DB(users/${USER}/FWD/Unc/Status)=1','fwdunc');
+INSERT INTO `extensions` VALUES(10,0,'features','_*21.',4,'Set','DB(${MACRO_CONTEXT}/users/${USER}/FWD/Unc/Number)=${EXTEN:3}','fwdunc');
+INSERT INTO `extensions` VALUES(11,0,'features','_*21.',5,'Set','DB(${MACRO_CONTEXT}/users/${USER}/FWD/Unc/Status)=1','fwdunc');
 INSERT INTO `extensions` VALUES(12,0,'features','_*21.',6,'Playback','forward-on','fwdunc');
 INSERT INTO `extensions` VALUES(13,0,'features','_*21.',7,'Hangup','','fwdunc');
 INSERT INTO `extensions` VALUES(14,0,'features','_*22.',1,'Answer','','fwdrna');
 INSERT INTO `extensions` VALUES(15,0,'features','_*22.',2,'Wait',0.5,'fwdrna');
 INSERT INTO `extensions` VALUES(16,0,'features','_*22.',3,'Set','USER=${CALLERID(num)}','fwdrna');
-INSERT INTO `extensions` VALUES(17,0,'features','_*22.',4,'Set','DB(users/${USER}/FWD/RNA/Number)=${EXTEN:3}','fwdrna');
-INSERT INTO `extensions` VALUES(18,0,'features','_*22.',5,'Set','DB(users/${USER}/FWD/RNA/Status)=1','fwdrna');
+INSERT INTO `extensions` VALUES(17,0,'features','_*22.',4,'Set','DB(${MACRO_CONTEXT}/users/${USER}/FWD/RNA/Number)=${EXTEN:3}','fwdrna');
+INSERT INTO `extensions` VALUES(18,0,'features','_*22.',5,'Set','DB(${MACRO_CONTEXT}/users/${USER}/FWD/RNA/Status)=1','fwdrna');
 INSERT INTO `extensions` VALUES(19,0,'features','_*22.',6,'Playback','forward-on','fwdrna');
 INSERT INTO `extensions` VALUES(20,0,'features','_*22.',7,'Hangup','','fwdrna');
 INSERT INTO `extensions` VALUES(21,0,'features','_*23.',1,'Answer','','fwdbusy');
 INSERT INTO `extensions` VALUES(22,0,'features','_*23.',2,'Wait',0.5,'fwdbusy');
 INSERT INTO `extensions` VALUES(23,0,'features','_*23.',3,'Set','USER=${CALLERID(num)}','fwdbusy');
-INSERT INTO `extensions` VALUES(24,0,'features','_*23.',4,'Set','DB(users/${USER}/FWD/Busy/Number)=${EXTEN:3}','fwdbusy');
-INSERT INTO `extensions` VALUES(25,0,'features','_*23.',5,'Set','DB(users/${USER}/FWD/Busy/Status)=1','fwdbusy');
+INSERT INTO `extensions` VALUES(24,0,'features','_*23.',4,'Set','DB(${MACRO_CONTEXT}/users/${USER}/FWD/Busy/Number)=${EXTEN:3}','fwdbusy');
+INSERT INTO `extensions` VALUES(25,0,'features','_*23.',5,'Set','DB(${MACRO_CONTEXT}/users/${USER}/FWD/Busy/Status)=1','fwdbusy');
 INSERT INTO `extensions` VALUES(26,0,'features','_*23.',6,'Playback','forward-on','fwdbusy');
 INSERT INTO `extensions` VALUES(27,0,'features','_*23.',7,'Hangup','','fwdbusy');
 INSERT INTO `extensions` VALUES(28,0,'features','_*9',1,'Wait',1,'recsnd');
