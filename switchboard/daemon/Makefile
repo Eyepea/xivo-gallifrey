@@ -1,18 +1,20 @@
 # $Revision$
 # $Date$
 
-FREEZEPATH?=../../tools/python-freeze/
-MAINREV=`cat ../../VERSION`
-SVNREV=`svn info | grep "Last Changed Rev" | sed "s/.*: //"`
-XIVO_REV=${MAINREV}~svn${SVNREV}
+include $(WRK_DIR)/../autobuild.mk
+
 DEB_PKG="pf-xivo-cti-server"
+DEB_TB_DEPS="python2.4-dev upx-ucl"
+DEB_TAR_EXTRA_OPTIONS="--exclude=*.py"
+
+FREEZEPATH?=$(WRK_DIR)/../tools/python-freeze/
 
 default:
 
-frozen:
+prepare-tarball::
 	@${FREEZEPATH}/local_freeze.py ${FREEZEPATH}/freeze.py xivo_ami.py,xivo_sip.py,xivo_daemon.py
 
-tarball: frozen
-	@rm -f ${DEB_PKG}_*.orig.tar.gz
-	@tar zcf ${DEB_PKG}_${XIVO_REV}.orig.tar.gz --exclude .svn xivo_daemon xivo_daemon.conf
+clean-tarball::
+	@find . ${FREEZEPATH} $(WRK_DIR)/../lib-python/ -name "*.pyc" -exec rm -f {} \;
+	@rm -f xivo_daemon
 

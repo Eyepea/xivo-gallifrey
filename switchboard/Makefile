@@ -1,13 +1,17 @@
 # $Revision$
 # $Date$
 
-DESTDIR?=.
+export
+
+WRK_DIR ?= $(shell pwd)
 
 default:
 
-tarball:
-	@make -C daemon tarball
-	@mv daemon/*.orig.tar.gz ${DESTDIR}
-
 tarball-dep:
-	@echo "python2.4-dev upx-ucl"
+	# return concatenated tarball deps for each module
+	@$(MAKE) -C daemon tarball-dep
+
+tarball:
+	# run each submodule tarball build
+	@$(MAKE) -C daemon tarball
+

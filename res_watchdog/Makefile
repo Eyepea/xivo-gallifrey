@@ -1,6 +1,14 @@
+# $Revision$
+# $Date$
+#
 # set PATH and CC to include cross compiling tools for cross compilation, e.g.
 # export PATH=/path/to/toolchain/powerpc-linux-gnu/bin:$PATH
 # export CC=gcc
+
+include ../autobuild.mk
+
+DEB_PKG="pf-asterisk-res-watchdog"
+DEB_TB_DEPS=""
 
 # you can override default options by calling make OPTIONS=...
 CFLAGS ?= -O2
@@ -31,3 +39,4 @@ install: $(BINARY)
 
 clean:
 	rm -f $(BINARY) $(OBJECTS)
+
