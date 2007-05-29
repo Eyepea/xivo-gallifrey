@@ -772,7 +772,7 @@ static char *sql_add_cdr_entry =
 "	datetime(%d,'unixepoch'),"
 "	'%ld',"
 "	'%ld',"
-"	'%ld',"
+"	'%q',"
 "	'%ld',"
 "	'%q',"
 "	'%q',"
