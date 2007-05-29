@@ -1,0 +1,14 @@
+# $Revision$
+# $Date$
+#
+# set PATH and CC to include cross compiling tools for cross compilation, e.g.
+# export PATH=/path/to/toolchain/powerpc-linux-gnu/bin:$PATH
+# export CC=gcc
+
+include ../autobuild.mk
+
+DEB_PKG="pf-asterisk-res-watchdog"
+DEB_TB_DEPS=""
+
+default:
+

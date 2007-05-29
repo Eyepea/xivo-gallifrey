@@ -9,9 +9,9 @@ default:
 
 tarball-dep:
 	# return concatenated tarball deps for each module
-	@$(MAKE) -C push tarball-dep
+	@$(MAKE) -C push -f Makefile.pkg tarball-dep
 
 tarball:
 	# run each submodule tarball build
-	@$(MAKE) -C push tarball
+	@$(MAKE) -C push -f Makefile.pkg tarball
 

@@ -9,9 +9,9 @@ default:
 
 tarball-dep:
 	# return concatenated tarball deps for each module
-	@$(MAKE) -C daemon tarball-dep
+	@$(MAKE) -C daemon -f Makefile.pkg tarball-dep
 
 tarball:
 	# run each submodule tarball build
-	@$(MAKE) -C daemon tarball
+	@$(MAKE) -C daemon -f Makefile.pkg tarball
 

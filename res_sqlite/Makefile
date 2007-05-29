@@ -5,11 +5,6 @@
 # export PATH=/path/to/toolchain/powerpc-linux-gnu/bin:$PATH
 # export CC=gcc
 
-include ../autobuild.mk
-
-DEB_PKG="pf-asterisk-res-sqlite2"
-DEB_TB_DEPS=""
-
 # you can override default options by calling make OPTIONS=...
 CFLAGS ?= -O2
 Z_CFLAGS := $(CFLAGS) -D _GNU_SOURCE -Wall -Wmissing-prototypes -Wstrict-prototypes
