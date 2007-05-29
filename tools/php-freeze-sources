@@ -10,7 +10,7 @@ RESULTDIR=${TEMPDIR}/result
 
 svn export -q $2 ${SRCDIR}
 
-SVNREV=$(svn info $2 | grep "Last Changed Rev" | cut -d\  -f2)
+SVNREV=$(svn info $2 | grep "Last Changed Rev" | cut -d\  -f4)
 TARBALL=$1~svn${SVNREV}.orig.tar.gz
 
 cp -a ${SRCDIR} ${RESULTDIR}
