@@ -76,7 +76,7 @@ def connect_by_uri(sqluri):
 	"""Same purpose as the classical DBAPI v2.0 connect constructor, but
 	with a unique prototype and routing the request to a registred method
 	for this uri. It is not the responsibility of this anysql module to
-	load any backend SQL implementation, so be sure the application as
+	load any backend SQL implementation, so be sure the application has
 	imported the correct one before calling this constructor.
 	
 	If no handler is found for this method, a NotImplementedError will be
@@ -92,4 +92,4 @@ def connect_by_uri(sqluri):
 	return __uri_create_methods[uri_scheme][0](sqluri)
 
 __all__ = ["register_uri", "connect_by_uri",
-           "paramstyle", "threadsafety", "apilevel"]
+           "any_paramstyle", "any_threadsafety", "any_apilevel"]
