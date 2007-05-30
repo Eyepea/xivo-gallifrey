@@ -56,6 +56,12 @@ def elem_or_none(r, el):
 		return None
 	return r[el]
 
+def lst_get(lst, idx, dft=None):
+	"lst_get(lst, idx, default) -> lst[idx] if idx > 0 and idx < len(lst), else dft."
+	if lst is None or (not (idx >= 0 and idx < len(lst))):
+		return dft
+	return lst[idx]
+
 def linesubst(line, variables):
 	"""In a string, substitute '{{varname}}' occurrences with the 
 	value of variables['varname'], '\\' being an escaping char...

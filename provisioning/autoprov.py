@@ -54,6 +54,7 @@ from SocketServer import socket
 
 import provsup
 from provsup import ProvGeneralConf as pgc
+from provsup import lst_get
 
 from Phones import * # package containing one module per vendor
 from moresynchro import RWLock
@@ -75,6 +76,16 @@ def name_from_first_last(first, last):
 	if last:
 		return last
 	return ''
+
+def nummap_and_selectexpr_from_symbmap(mapping):
+	nummap = {}
+	vlst = []
+	i = 0
+	for k,v in mapping.iteritems():
+		nummap[k] = i
+		vlst.append(v)
+		i+=1
+	return (nummap, ','.join(vlst))
 
 class SQLBackEnd:
 	"""An information backend for this provisioning daemon,
@@ -113,8 +124,8 @@ class SQLBackEnd:
 		r = cursor.fetchone()
 		if not r:
 			return None
-		return dict([(k,provsup.elem_or_none(r,v))
-		             for k,v in mapping.iteritems()])
+		return dict([(k,lst_get(r,idx))
+		             for k,idx in mapping.iteritems()])
 
 	def sql_select_all(self, request, parameters_tuple, mapping):
 		"Does a SELECT SQL query and returns all rows."
@@ -126,8 +137,8 @@ class SQLBackEnd:
 		"""
 		cursor = conn.cursor()
 		cursor.execute(request, parameters_tuple)
-		return map(lambda row: dict([(k,provsup.elem_or_none(row,v))
-		                             for k,v in mapping.iteritems()]),
+		return map(lambda row: dict([(k,lst_get(row,idx))
+		                             for k,idx in mapping.iteritems()]),
                            cursor.fetchall())
 
 	def sql_modify(self, request, parameters_tuple):
@@ -154,9 +165,10 @@ class SQLBackEnd:
 		or None
 
 		"""
-		query = "SELECT * FROM %s WHERE macaddr=%s" % (TABLE, '%s')
 		mapping = dict(map(lambda x: (x,x), ("macaddr", "vendor", "model")))
-		return self.sql_select_one(query, (macaddr,), mapping)
+		nummap, sexpr = nummap_and_selectexpr_from_symbmap(mapping)
+		query = "SELECT %s FROM %s WHERE macaddr=%s" % (sexpr, TABLE, '%s')
+		return self.sql_select_one(query, (macaddr,), nummap)
 
 	def phone_by_macaddr(self, macaddr):
 		"""Lookup a phone description by Mac Address in the database.
@@ -166,11 +178,12 @@ class SQLBackEnd:
 		or None
 		
 		"""
-		query = "SELECT * FROM %s WHERE macaddr=%s" % (TABLE, '%s')
 		mapping = dict(map(lambda x: (x,x),
 		                   ('macaddr', 'vendor', 'model', 'proto',
 			            'iduserfeatures')))
-		return self.sql_select_one(query, (macaddr,), mapping)
+		nummap, sexpr = nummap_and_selectexpr_from_symbmap(mapping)
+		query = "SELECT %s FROM %s WHERE macaddr=%s" % (sexpr, TABLE, '%s')
+		return self.sql_select_one(query, (macaddr,), nummap)
 
 	def config_by_something_proto(self, something_column, something_content, proto):
 		"""Query the database to return a phone configuration.
@@ -196,15 +209,6 @@ class SQLBackEnd:
 		"""
 		if proto != TECH:
 			raise ValueError, "proto must be 'sip' for now"
-		
-		query = ("SELECT %s.*,%s.* " +
-			  "FROM %s LEFT OUTER JOIN %s " +
-				"ON %s.protocolid=%s.id AND %s.protocol=%s " +
-			  "WHERE %s." + something_column + "=%s")\
-			% ( UF_TABLE, SIP_TABLE,
-			    UF_TABLE, SIP_TABLE,
-			    UF_TABLE, SIP_TABLE, UF_TABLE, '%s',
-			    UF_TABLE, '%s')
 		mapping = {
 			"firstname":		UF_TABLE+".firstname",
 			"lastname":		UF_TABLE+".lastname",
@@ -215,8 +219,16 @@ class SQLBackEnd:
 			"provcode":		UF_TABLE+".provisioningid",
 			"proto":		UF_TABLE+".protocol"
 		}
+		nummap, sexpr = nummap_and_selectexpr_from_symbmap(mapping)
+		query = ("SELECT %s " +
+			  "FROM %s LEFT OUTER JOIN %s " +
+				"ON %s.protocolid=%s.id AND %s.protocol=%s " +
+			  "WHERE %s." + something_column + "=%s")\
+			% ( sexpr, UF_TABLE, SIP_TABLE,
+			    UF_TABLE, SIP_TABLE, UF_TABLE, '%s',
+			    UF_TABLE, '%s')
 		confdico = self.sql_select_one(
-			query, (proto, something_content), mapping)
+			query, (proto, something_content), nummap)
 		if not confdico:
 			return None
 		confdico["name"] = name_from_first_last(confdico["firstname"],
@@ -265,13 +277,14 @@ class SQLBackEnd:
 		'macaddr', 'vendor', 'model', 'proto', 'iduserfeatures'
 		
 		"""
-		query = ("SELECT * FROM %s " +
-		         "WHERE iduserfeatures=%s AND proto=%s") \
-			% ( TABLE, '%s', '%s' )
 		mapping = dict(map(lambda x: (x,x), ("macaddr", "vendor",
 		                          "model", "proto", "iduserfeatures")))
+		nummap, sexpr = nummap_and_selectexpr_from_symbmap(mapping)
+		query = ("SELECT %s FROM %s " +
+		         "WHERE iduserfeatures=%s AND proto=%s") \
+			% ( sexpr, TABLE, '%s', '%s' )
 		return self.sql_select_one(
-			query, (iduserfeatures, TECH), mapping)
+			query, (iduserfeatures, TECH), nummap)
 
 	def delete_phone_by_iduserfeatures(self, iduserfeatures):
 		"""Delete any phone in the database having the given
@@ -296,20 +309,20 @@ class SQLBackEnd:
 		'macaddr', 'vendor', 'model', 'proto', 'iduserfeatures'
 		
 		"""
-		return self.sql_select_all(
-			("SELECT %s.* " + 
-			 	"FROM %s LEFT JOIN %s " +
-				"ON %s.iduserfeatures = %s.id " +
-				"WHERE %s.iduserfeatures != 0 AND %s.id is NULL")
-			% (TABLE, TABLE, UF_TABLE,
-			   TABLE, UF_TABLE, TABLE, UF_TABLE),
-			(),
-			dict([(x,TABLE+'.'+x)
-			      for x in ("macaddr", "vendor", "model",
-			                "proto", "iduserfeatures")]))
+		mapping = dict([(x,TABLE+'.'+x)
+				for x in ("macaddr", "vendor", "model",
+					"proto", "iduserfeatures")])
+		nummap, sexpr = nummap_and_selectexpr_from_symbmap(mapping)
+		query = ( "SELECT %s " + 
+			  "FROM %s LEFT JOIN %s " +
+			  "ON %s.iduserfeatures = %s.id " +
+			  "WHERE %s.iduserfeatures != 0 AND %s.id is NULL") \
+			% (sexpr, TABLE, UF_TABLE,
+			   TABLE, UF_TABLE, TABLE, UF_TABLE)
+		return self.sql_select_all(query, (), nummap)
 
 	def delete_guest_by_mac(self, macaddr):
-		"""Delete every GUEST phone from the database having the given
+		"""Delete from the database every GUEST phone having the given
 		Mac Address.
 		
 		"""
@@ -328,7 +341,7 @@ class CommonProvContext:
 		self.rwlock = rwlock
 
 def __mode_dependant_provlogic_locked(mode, ctx, phone, config):
-	"""This function resolves conflicts or abort by raising an execption
+	"""This function resolves conflicts or abort by raising an exception
 	for the current provisioning in progress.
 	
 	"""
