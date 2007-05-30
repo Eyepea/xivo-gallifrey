@@ -458,7 +458,7 @@ CREATE INDEX `generaliax__idx__var_name` ON `generaliax`(`var_name`);
 INSERT INTO `generaliax` VALUES(1,0,0,0,'iax.conf','general','bindport',4569);
 INSERT INTO `generaliax` VALUES(2,0,0,0,'iax.conf','general','bindaddr','0.0.0.0');
 INSERT INTO `generaliax` VALUES(3,0,0,0,'iax.conf','general','delayreject','no');
-INSERT INTO `generaliax` VALUES(4,0,0,0,'iax.conf','general','language','en');
+INSERT INTO `generaliax` VALUES(4,0,0,0,'iax.conf','general','language','fr');
 INSERT INTO `generaliax` VALUES(5,0,0,0,'iax.conf','general','tos','lowdelay');
 INSERT INTO `generaliax` VALUES(6,0,0,0,'iax.conf','general','qualify','yes');
 INSERT INTO `generaliax` VALUES(7,0,0,0,'iax.conf','general','rtcachefriends','yes');
