@@ -1,0 +1,10 @@
+# $Revision$
+# $Date$
+
+include ../autobuild.mk
+DEB_PKG="pf-xivo-lib-python"
+DEB_TB_DEPS=""
+DEB_TAR_EXTRA_OPTIONS="--exclude=*.pyc"
+
+default:
+
