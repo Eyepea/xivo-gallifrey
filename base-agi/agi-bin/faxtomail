@@ -92,7 +92,7 @@ date = datetime.datetime.now()
 
 if not mail and not name:
 	print "VERBOSE \"Sorry there is no person at this number\""
-	print "VERBOSE \"Missiong mail or name\""
+	print "VERBOSE \"Missing mail or name\""
 	sys.exit()
 else:
 	try:
