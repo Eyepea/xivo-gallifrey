@@ -60,4 +60,17 @@ def InsertPathListSys(lst_path):
 		if (x not in abssyspath):
 			sys.path.insert(0, x)
 
-__all__ = ["NoSectionError", "SortedValuesFromConfigSection", "InsertPathListSys"]
+def ConfiguredPathHelper(config_file, config_section):
+	"""Calls SortedValuesFromConfigSection() then InsertPathListSys() in
+	a try except block that output a simple explicit error message on
+	stderr in case of failure. Used in almost all python program code in
+	Xivo.
+	
+	"""
+	try:
+		InsertPathListSys(SortedValuesFromConfigSection(config_file, config_section))
+	except NoSectionError, s:
+		print >> sys.stderr, "WARNING: Section [%s] apparently missing from configuration file %s" % (config_section, config_file)
+
+__all__ = ["NoSectionError", "SortedValuesFromConfigSection",
+           "InsertPathListSys", "ConfiguredPathHelper"]
