@@ -83,7 +83,7 @@ except IOError:
 for context in r:
 	print "[" + context[0] + "]"
 	if context[0] == 'local-extensions':
-		query = "SELECT number,protocol,name FROM userfeatures WHERE context=''"
+		query = "SELECT number,protocol,name FROM userfeatures WHERE context IN('','local-extensions') OR context IS NULL"
 	else:
 		query = "SELECT number,protocol,name FROM userfeatures WHERE context='%s'" % context[0]
 	cursor.execute(query)
