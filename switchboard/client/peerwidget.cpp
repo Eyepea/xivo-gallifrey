@@ -11,8 +11,8 @@
 #include "switchboardwindow.h"
 
 PeerWidget::PeerWidget(const QString & id, const QString & name,
-                       QWidget * parent, int size)
-: QWidget(parent), m_square(size,size), m_id(id), m_name(name),
+                       QWidget * parent/*, int size*/)
+: QWidget(parent)/*, m_square(size,size)*/, m_id(id), m_name(name),
 m_phone_green(":/phone-green.png"), m_phone_red(":/phone-red.png"),
 m_phone_orange(":/phone-orange.png"), m_phone_gray(":/phone-grey.png"),
 m_phone_yellow(":/phone-yellow.png"), m_phone_blue(":/phone-blue.png"),
@@ -25,9 +25,8 @@ m_person_yellow(":/personal-yellow.png"), m_person_blue(":/personal-blue.png")
 	layout->setMargin(2);
 	m_statelbl = new QLabel(this);
 	m_availlbl = new QLabel(this);
-	m_square.fill( Qt::gray );
-	m_statelbl->setPixmap( m_square );
-	m_availlbl->setPixmap( m_square );
+	m_statelbl->setPixmap( m_phone_gray );
+	m_availlbl->setPixmap( m_person_gray );
 	layout->addWidget( m_statelbl, 0, Qt::AlignLeft );
 	layout->addWidget( m_availlbl, 0, Qt::AlignLeft );
 	m_textlbl = new QLabel(/*m_id + "/" +*/ m_name, this);
@@ -59,6 +58,7 @@ void PeerWidget::setRed(int n)
 	  m_availlbl->setPixmap( m_person_red/*m_square*/ );
 }
 
+#if 0
 void PeerWidget::setBlack(int n)
 {
 	m_square.fill( Qt::black );
@@ -76,6 +76,7 @@ void PeerWidget::setDarkGreen(int n)
 	else
 	  m_availlbl->setPixmap( m_square );
 }
+#endif 
 
 void PeerWidget::setGreen(int n)
 {
@@ -104,6 +105,7 @@ void PeerWidget::setBlue(int n)
 	  m_availlbl->setPixmap( m_person_blue/*m_square*/ );
 }
 
+#if 0
 void PeerWidget::setCyan(int n)
 {
 	m_square.fill( Qt::cyan );
@@ -112,6 +114,7 @@ void PeerWidget::setCyan(int n)
 	else
 	  m_availlbl->setPixmap( m_square );
 }
+#endif
 
 void PeerWidget::setYellow(int n)
 {
