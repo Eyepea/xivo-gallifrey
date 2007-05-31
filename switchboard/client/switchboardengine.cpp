@@ -226,7 +226,10 @@ void SwitchBoardEngine::updatePeers(const QStringList & liststatus)
 {
 	const int nfields0 = 11; // 0th order size (per-phone/line informations)
 	const int nfields1 = 6;  // 1st order size (per-channel informations)
-	
+	QStringList chanIds;
+	QStringList chanStates;
+	QStringList chanOthers;
+
 	// liststatus[0] is a dummy field, only used for debug on the daemon side
 	// p/(asteriskid)/(context)/(protocol)/(phoneid)/(phonenum)
 	
@@ -257,6 +260,9 @@ void SwitchBoardEngine::updatePeers(const QStringList & liststatus)
 				         << liststatus[refn + 2] << liststatus[refn + 3]
 				         << liststatus[refn + 4] << liststatus[refn + 5];
 			}
+			chanIds << liststatus[refn];
+			chanStates << liststatus[refn + 1];
+			chanOthers << liststatus[refn + 5];
 			/*pinfos += liststatus[refn + 1] + " : " + liststatus[refn] + " "
 				+ liststatus[refn + 2] + " " + liststatus[refn + 3] + " "
 				+ liststatus[refn + 4] + " " + liststatus[refn + 5];*/
@@ -270,8 +276,12 @@ void SwitchBoardEngine::updatePeers(const QStringList & liststatus)
 		}
 	}
 
+	//qDebug() << chanIds;
+	//qDebug() << chanStates;
+	//qDebug() << chanOthers;
 	updatePeer(pname, m_callerids[pname],
-		   InstMessAvail, SIPPresStatus, VoiceMailStatus, QueueStatus);
+	           InstMessAvail, SIPPresStatus, VoiceMailStatus, QueueStatus,
+	           chanIds, chanStates, chanOthers);
 }
 
 /*! \brief update a caller id 

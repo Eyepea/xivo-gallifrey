@@ -92,8 +92,9 @@ signals:
 	//void showCalls(const QString & tomonitor, const QString & callerid);
 	void callsUpdated();
 	void updatePeer(const QString &, const QString &,
-			const QString &, const QString &,
-	                const QString &, const QString &);
+	                const QString &, const QString &,
+	                const QString &, const QString &,
+	                const QStringList &, const QStringList &, const QStringList &);
 	void removePeer(const QString &);
 	void updateLogEntry(const QDateTime &, int, const QString &, int);
 	void directoryResponse(const QString &);

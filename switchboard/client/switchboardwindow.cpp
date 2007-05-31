@@ -61,8 +61,11 @@ void SwitchBoardWindow::updatePeer(const QString & ext,
                                    const QString & name,
                                    const QString & imavail,
                                    const QString & sipstatus,
-				   const QString & vmstatus,
-				   const QString & queuestatus)
+                                   const QString & vmstatus,
+                                   const QString & queuestatus,
+								   const QStringList & chanIds,
+								   const QStringList & chanStates,
+								   const QStringList & chanOthers)
 {
 	int i;
 	// first search in the peerlist
@@ -73,6 +76,7 @@ void SwitchBoardWindow::updatePeer(const QString & ext,
 		{
 			m_peerlist[i].updateStatus(imavail, sipstatus,
 						   vmstatus, queuestatus);
+			m_peerlist[i].updateChans(chanIds, chanStates, chanOthers);
 			return;
 		}
 	}
@@ -96,6 +100,7 @@ void SwitchBoardWindow::updatePeer(const QString & ext,
 	peer.setWidget(peerwidget);
 	peer.updateStatus(imavail, sipstatus,
 			  vmstatus, queuestatus);
+	peer.updateChans(chanIds, chanStates, chanOthers);
 	m_peerlist << peer;
 }
 

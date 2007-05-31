@@ -45,8 +45,11 @@ m_person_yellow(":/personal-yellow.png"), m_person_blue(":/personal-blue.png")
 	m_dialAction->setStatusTip( tr("Dial this number") );
 	connect( m_dialAction, SIGNAL(triggered()),
 	         this, SLOT(dial()) );
-	PeerChannel ch("SIP/666-123", "Glop", "666");
-	m_channels << ch;
+}
+
+PeerWidget::~PeerWidget()
+{
+	clearChanList();
 }
 
 void PeerWidget::setRed(int n)
@@ -170,7 +173,7 @@ void PeerWidget::mouseMoveEvent(QMouseEvent *event)
 	mimeData->setText(m_id/*m_textlbl->text()*/);
 	drag->setMimeData(mimeData);
 
-	Qt::DropAction dropAction = drag->start(Qt::CopyAction | Qt::MoveAction);
+	/*Qt::DropAction dropAction = */drag->start(Qt::CopyAction | Qt::MoveAction);
 	//qDebug() << "PeerWidget::mouseMoveEvent : dropAction=" << dropAction;
 }
 
@@ -255,17 +258,37 @@ void PeerWidget::contextMenuEvent(QContextMenuEvent * event)
 	if( !m_channels.empty() )
 	{
 		QMenu * interceptMenu = new QMenu( tr("&Intercept"), &contextMenu );
-		QListIterator<PeerChannel> i(m_channels);
+		QListIterator<PeerChannel *> i(m_channels);
 		while(i.hasNext())
 		{
-			const PeerChannel & channel = i.next();
-			//interceptMenu->addAction("0140000000", blah, SLOT(intercept()));
-			//interceptMenu->addAction("0666666666");
-			interceptMenu->addAction(channel.otherPeer(),
-			                         &channel, SLOT(intercept()));
+			const PeerChannel * channel = i.next();
+			interceptMenu->addAction(channel->otherPeer(),
+			                         channel, SLOT(intercept()));
 		}
 		contextMenu.addMenu(interceptMenu);
 	}
 	contextMenu.exec(event->globalPos());
 }
+
+void PeerWidget::clearChanList()
+{
+	//qDebug() << "PeerWidget::clearChanList()" << m_channels;
+	//m_channels.clear();
+	while(!m_channels.isEmpty())
+		delete m_channels.takeFirst();
+}
+
+void PeerWidget::addChannel(const QString & id, const QString & state, const QString & otherPeer)
+{
+	PeerChannel * ch = new PeerChannel(id, state, otherPeer, this);
+	connect(ch, SIGNAL(interceptChan(const QString &)),
+		this, SLOT(test(const QString &)));
+	m_channels << ch;
+}
+
+void PeerWidget::test(const QString & arg)
+{
+	qDebug() << "PeerWidget::test" << arg;
+}
+
 

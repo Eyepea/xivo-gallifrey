@@ -38,7 +38,10 @@ public slots:
 			const QString & imavail,
 			const QString & sipstatus,
 			const QString & vmstatus,
-			const QString & queuestatus);
+			const QString & queuestatus,
+			const QStringList & chanIds,
+			const QStringList & chanStates,
+			const QStringList & chanOthers);
 	void removePeer(const QString & ext);
 	void removePeers(void);
 private slots:

@@ -1,3 +1,5 @@
+/* $Id$ */
+#include <QDebug>
 #include "peeritem.h"
 #include "peerwidget.h"
 
@@ -54,5 +56,25 @@ void Peer::updateStatus(const QString & imavail,
 	//    m_peerwidget->setToolTip(status);
 	//  else
 	//    m_peerwidget->setToolTip(status + "\n" + corrname);
+}
+
+void Peer::updateChans(const QStringList & chanIds,
+                       const QStringList & chanStates,
+                       const QStringList & chanOthers)
+{
+	if( (chanIds.size() != chanStates.size())
+	   || (chanIds.size() != chanOthers.size()) )
+	{
+		qDebug() << "Peer::updateChans() : bad args";
+		return;
+	}
+	if(m_peerwidget)
+	{
+		m_peerwidget->clearChanList();
+		for(int i = 0; i < chanIds.size(); i++)
+		{
+			m_peerwidget->addChannel(chanIds[i], chanStates[i], chanOthers[i]);
+		}
+	}
 }
 

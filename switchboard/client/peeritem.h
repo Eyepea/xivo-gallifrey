@@ -1,3 +1,4 @@
+/* $Id$ */
 #ifndef __PEERITEM_H__
 #define __PEERITEM_H__
 #include <QString>
@@ -20,6 +21,9 @@ public:
 			  const QString & sipstatus,
 			  const QString & vmstatus,
 			  const QString & queuestatus);
+	void updateChans(const QStringList & chanIds,
+	                 const QStringList & chanStates,
+	                 const QStringList & chanOthers);
 private:
 	QString m_ext;
 	QString m_name;

@@ -18,6 +18,9 @@ class PeerWidget : public QWidget
 public:
 	PeerWidget(const QString & id, const QString & name,
 	           QWidget * parent = 0/*, int size = 16*/);
+	~PeerWidget();
+	void clearChanList();
+	void addChannel(const QString &, const QString &, const QString &);
 protected:
 	void mouseMoveEvent(QMouseEvent * event);
 	void mousePressEvent(QMouseEvent * event);
@@ -44,6 +47,7 @@ public slots:
 private slots:
 	void removeFromPanel();
 	void dial();
+	void test(const QString &);
 private:
 	QLabel * m_statelbl;	//!< Peer state display (ringing, online, ...)
 	QLabel * m_availlbl;	//!< Peer state display from XIVO CTI Client
@@ -56,7 +60,7 @@ private:
 	QAction * m_removeAction;
 	QAction * m_dialAction;
 	
-	QList<PeerChannel> m_channels;
+	QList<PeerChannel *> m_channels;
 
 	/* TODO : have the Pixmaps as static objects */
 	QPixmap m_phone_green;
