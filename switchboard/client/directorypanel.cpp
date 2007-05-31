@@ -3,12 +3,12 @@
 #include <QVBoxLayout>
 #include <QPushButton>
 #include <QLineEdit>
-#include <QTableWidget>
 #include <QLabel>
 #include <QContextMenuEvent>
 #include <QMenu>
 #include <QDebug>
 #include "directorypanel.h"
+#include "extendedtablewidget.h"
 
 DirectoryPanel::DirectoryPanel(QWidget * parent)
 : QWidget(parent)
@@ -27,9 +27,11 @@ DirectoryPanel::DirectoryPanel(QWidget * parent)
 	         this, SLOT(startSearch()) );
 	hlayout->addWidget( m_searchButton );
 	vlayout->addLayout( hlayout );
-	m_table = new QTableWidget( this );
+	m_table = new ExtendedTableWidget( this );
 	connect( m_table, SIGNAL(itemDoubleClicked(QTableWidgetItem *)),
 	         this, SLOT(itemDoubleClicked(QTableWidgetItem *)) );
+	connect( m_table, SIGNAL(emitDial(const QString &)),
+	         this, SIGNAL(emitDial(const QString &)) );
 	vlayout->addWidget(m_table);
 	/*
 	QStringList labelList;
@@ -87,27 +89,4 @@ void DirectoryPanel::startSearch()
 	searchDirectory( m_searchText->text() );
 }
 
-void DirectoryPanel::contextMenuEvent(QContextMenuEvent * event)
-{
-	qDebug() << "DirectoryPanel::contextMenuEvent" << event->pos();
-	//qDebug() << "  " << event->globalPos();
-	qDebug() << "  " << event->pos() - m_table->pos() << "m_table->pos()=" << m_table->pos();
-	QTableWidgetItem * item = m_table->itemAt( event->pos() - m_table->pos() );
-	qDebug() << "  " << item;
-	QRegExp re("\\+?[0-9\\s\\.]+");
-	if(item && re.exactMatch(item->text()))
-	{
-		qDebug() << "   " << item->text();
-		m_numberToDial = item->text();
-		QMenu contextMenu(this);
-		contextMenu.addAction( tr("&Dial"), this, SLOT(dialNumber()) );
-		contextMenu.exec( event->globalPos() );
-	}
-}
-
-void DirectoryPanel::dialNumber()
-{
-	if(m_numberToDial.length() > 0)
-		emitDial(m_numberToDial);
-}
 

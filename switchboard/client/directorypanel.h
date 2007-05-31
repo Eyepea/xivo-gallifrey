@@ -16,14 +16,14 @@ class DirectoryPanel : public QWidget
 public:
 	DirectoryPanel(QWidget * parent = 0);
 protected:
-	void contextMenuEvent(QContextMenuEvent *);
+	//void contextMenuEvent(QContextMenuEvent *);
 signals:
 	void searchDirectory(const QString &);
 	void emitDial(const QString &);
 private slots:
 	void startSearch();
 	void itemDoubleClicked(QTableWidgetItem *);
-	void dialNumber();
+	//void dialNumber();
 public slots:
 	void setSearchResponse(const QString &);
 private:
