@@ -111,7 +111,6 @@ void SwitchBoardConfDialog::saveAndClose()
 	m_engine->setExtension( m_ext->text() );
 	//	m_engine->setDialContext( m_context->text() );
 	m_engine->setPassword( m_passwd->text() );
-	m_engine->setAvailstate( m_availstate->text() );
 	m_engine->saveSettings();
 	//m_window->setWidth( m_widthsb->value() );
 	//m_window->saveSettings();

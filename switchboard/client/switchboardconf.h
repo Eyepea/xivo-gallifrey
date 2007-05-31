@@ -31,7 +31,6 @@ private:
 	QLineEdit * m_ext;
 	QLineEdit * m_passwd;
 	//	QLineEdit * m_context;
-	QLineEdit * m_availstate;
 };
 
 #endif
