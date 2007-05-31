@@ -19,10 +19,7 @@ from xivo.ConfigPath import *
 opts,args = getopt(sys.argv[1:], GETOPT_SHORTOPTS)
 for v in [v for k,v in opts if k == '-c']:
 	CONFIG_FILE = v
-try:
-	InsertPathListSys(SortedValuesFromConfigSection(CONFIG_FILE, CONFIG_LIB_PATH))
-except NoSectionError, s:
-	print >> sys.stderr, "WARNING: Section [%s] apparently missing from configuration file %s" % (CONFIG_LIB_PATH, CONFIG_FILE)
+ConfiguredPathHelper(CONFIG_FILE, CONFIG_LIB_PATH)
 del opts, args
 try: del k
 except: pass
