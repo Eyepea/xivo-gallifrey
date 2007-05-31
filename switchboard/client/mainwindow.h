@@ -4,6 +4,7 @@
 #include <QMainWindow>
 
 class QAction;
+class QActionGroup;
 class QCloseEvent;
 class QSplitter;
 class SwitchBoardEngine;
@@ -33,6 +34,12 @@ private:
 	SwitchBoardWindow * m_widget;	//!< Widget to display peers
 	QAction * m_startact;	//!< "Start" Action
 	QAction * m_stopact;	//!< "Stop" Action
+	QActionGroup * m_availgrp;
+	QAction * m_avact_avail;
+	QAction * m_avact_brb;
+	QAction * m_avact_dnd;
+	QAction * m_avact_otl;
+	QAction * m_avact_away;
 };
 
 #endif

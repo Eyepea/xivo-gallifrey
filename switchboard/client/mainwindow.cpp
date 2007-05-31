@@ -125,7 +125,7 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 	connect( engine, SIGNAL(directoryResponse(const QString &)),
 	         dirpanel, SLOT(setSearchResponse(const QString &)) );
 	connect( dirpanel, SIGNAL(emitDial(const QString &)),
-	         engine, SLOT(dial(const QString &)) );
+	         engine, SLOT(dialExtension(const QString &)) );
 
 	m_rightSplitter = new QSplitter(Qt::Vertical, m_splitter);
 
@@ -146,7 +146,7 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 	
 	DialPanel * dialpanel = new DialPanel(m_rightSplitter);
 	connect( dialpanel, SIGNAL(emitDial(const QString &)),
-	         engine, SLOT(dial(const QString &)) );
+	         engine, SLOT(dialExtension(const QString &)) );
 	
 	setCentralWidget(m_splitter);
 
@@ -189,8 +189,51 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 	connect(quit, SIGNAL(triggered()), qApp, SLOT(quit()));
 	menu->addAction(quit);
 
-	QMenu * helpmenu = menuBar()->addMenu(tr("&Help"));
+	// Availability actions :
+	m_availgrp = new QActionGroup( this );
+	m_availgrp->setExclusive(true);
 
+	m_avact_avail = new QAction( tr("&Available"), this );
+	m_avact_avail->setCheckable(true);
+	connect( m_avact_avail, SIGNAL(triggered()),
+	         m_engine, SLOT(setAvailable()) );
+	m_availgrp->addAction( m_avact_avail );
+	m_avact_away = new QAction( tr("A&way"), this );
+	m_avact_away->setCheckable(true);
+	connect( m_avact_away, SIGNAL(triggered()),
+	         m_engine, SLOT(setAway()) );
+	m_availgrp->addAction( m_avact_away );
+	m_avact_brb = new QAction( tr("&Be Right Back"), this );
+	m_avact_brb->setCheckable(true);
+	connect( m_avact_brb, SIGNAL(triggered()),
+	         m_engine, SLOT(setBeRightBack()) );
+	m_availgrp->addAction( m_avact_brb );
+	m_avact_otl = new QAction( tr("&Out To Lunch"), this );
+	m_avact_otl->setCheckable(true);
+	connect( m_avact_otl, SIGNAL(triggered()),
+	         m_engine, SLOT(setOutToLunch()) );
+	m_availgrp->addAction( m_avact_otl );
+	m_avact_dnd = new QAction( tr("&Do not disturb"), this );
+	m_avact_dnd->setCheckable(true);
+	connect( m_avact_dnd, SIGNAL(triggered()),
+	         m_engine, SLOT(setDoNotDisturb()) );
+	m_availgrp->addAction( m_avact_dnd );
+
+	if(m_engine->getAvailState() == QString("berightback"))
+		m_avact_brb->setChecked( true );
+	else if(m_engine->getAvailState() == QString("donotdisturb"))
+		m_avact_dnd->setChecked( true );
+	else if(m_engine->getAvailState() == QString("away"))
+		m_avact_away->setChecked( true );
+	else if(m_engine->getAvailState() == QString("outtolunch"))
+		m_avact_otl->setChecked( true );
+	else
+		m_avact_avail->setChecked( true );
+
+	QMenu * avail = menuBar()->addMenu(tr("&Availability"));
+	avail->addActions( m_availgrp->actions() );
+
+	QMenu * helpmenu = menuBar()->addMenu(tr("&Help"));
 	helpmenu->addAction(tr("&About XIVO Switchboard"), this, SLOT(about()));
 	helpmenu->addAction(tr("About &Qt"), qApp, SLOT(aboutQt()));
 }

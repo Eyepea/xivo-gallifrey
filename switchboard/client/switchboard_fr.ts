@@ -149,12 +149,12 @@
         <translation>&amp;Quitter</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="192"/>
+        <location filename="mainwindow.cpp" line="236"/>
         <source>&amp;Help</source>
         <translation>&amp;Aide</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="195"/>
+        <location filename="mainwindow.cpp" line="238"/>
         <source>About &amp;Qt</source>
         <translation>A propos de &amp;Qt</translation>
     </message>
@@ -174,20 +174,53 @@
         <translation>Ouvre la fenêtre de configuration</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="250"/>
+        <location filename="mainwindow.cpp" line="293"/>
         <source>About XIVO SwitchBoard</source>
         <translation>A propos du SwitchBoard XIVO</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="194"/>
+        <location filename="mainwindow.cpp" line="237"/>
         <source>&amp;About XIVO Switchboard</source>
         <translation>&amp;A propos du SwitchBoard XIVO</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="261"/>
+        <location filename="mainwindow.cpp" line="304"/>
         <source>&lt;h3&gt;XIVO Switchboard&lt;/h3&gt;&lt;p&gt;This application displays the status of the ongoing phone calls.&lt;/p&gt;&lt;p&gt;Version : %1&lt;/p&gt;&lt;p&gt;(C) 2007 &lt;b&gt;Proformatique&lt;/b&gt; &lt;a href=&quot;http://www.proformatique.com&quot;&gt;http://www.proformatique.com&lt;/a&gt;&lt;/p&gt;&lt;p&gt;67 rue Voltaire 92800 Puteaux FRANCE&lt;/p&gt;&lt;p&gt;E-mail : technique@proformatique.com&lt;/p&gt;&lt;p&gt;(+33/0)1.41.38.99.60&lt;/p&gt;&lt;p&gt;Author : Thomas Bernard&lt;/p&gt;</source>
         <translation type="unfinished">&lt;h3&gt;XIVO Switchboard&lt;/h3&gt;&lt;p&gt;Cette application affiche le statut des appels téléphoniques en cours.&lt;/p&gt;&lt;p&gt;Version : %1&lt;/p&gt;&lt;p&gt;(C) 2007 &lt;b&gt;Proformatique&lt;/b&gt; &lt;a href=&quot;http://www.proformatique.com&quot;&gt;http://www.proformatique.com&lt;/a&gt;&lt;/p&gt;&lt;p&gt;67 rue Voltaire 92800 Puteaux FRANCE&lt;/p&gt;&lt;p&gt;E-mail : technique@proformatique.com&lt;/p&gt;&lt;p&gt;(+33/0)1.41.38.99.60&lt;/p&gt;&lt;p&gt;Auteur : Thomas Bernard&lt;/p&gt;</translation>
     </message>
+    <message>
+        <location filename="mainwindow.cpp" line="196"/>
+        <source>&amp;Available</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="201"/>
+        <source>A&amp;way</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="206"/>
+        <source>&amp;Be Right Back</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="211"/>
+        <source>&amp;Out To Lunch</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="216"/>
+        <source>&amp;Do not disturb</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="233"/>
+        <source>&amp;Availability</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>Peer</name>
 </context>
 <context>
     <name>PeerWidget</name>
@@ -243,65 +276,65 @@
         <translation>Port du serveur :</translation>
     </message>
     <message>
-        <location filename="switchboardconf.cpp" line="40"/>
+        <location filename="switchboardconf.cpp" line="47"/>
         <source>Width :</source>
         <translation>Largeur :</translation>
     </message>
     <message>
-        <location filename="switchboardconf.cpp" line="49"/>
+        <location filename="switchboardconf.cpp" line="56"/>
         <source>Autoconnect at startup</source>
         <translation>Se connecter au démarrage</translation>
     </message>
     <message>
-        <location filename="switchboardconf.cpp" line="54"/>
+        <location filename="switchboardconf.cpp" line="61"/>
         <source>Asterisk server :</source>
         <translation>Serveur Asterisk :</translation>
     </message>
     <message>
-        <location filename="switchboardconf.cpp" line="60"/>
+        <location filename="switchboardconf.cpp" line="67"/>
         <source>Protocol :</source>
         <translation>Protocole :</translation>
     </message>
     <message>
-        <location filename="switchboardconf.cpp" line="69"/>
-        <source>Extension :</source>
-        <translation>Extension :</translation>
-    </message>
-    <message>
         <location filename="switchboardconf.cpp" line="76"/>
-        <source>Dial context :</source>
-        <translation>Contexte d&apos;appel :</translation>
+        <source>Extension :</source>
+        <translation type="unfinished">Contexte d&apos;appel :</translation>
     </message>
     <message>
-        <location filename="switchboardconf.cpp" line="82"/>
+        <location filename="switchboardconf.cpp" line="89"/>
         <source>Password :</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="switchboardconf.cpp" line="39"/>
+        <source>Login port :</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>SwitchBoardEngine</name>
     <message>
-        <location filename="switchboardengine.cpp" line="161"/>
+        <location filename="switchboardengine.cpp" line="173"/>
         <source>Connection lost with Presence Server</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="switchboardengine.cpp" line="177"/>
+        <location filename="switchboardengine.cpp" line="189"/>
         <source>Connection refused</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="switchboardengine.cpp" line="186"/>
+        <location filename="switchboardengine.cpp" line="198"/>
         <source>Host not found</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="switchboardengine.cpp" line="189"/>
+        <location filename="switchboardengine.cpp" line="201"/>
         <source>Unknown socket error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="switchboardengine.cpp" line="339"/>
+        <location filename="switchboardengine.cpp" line="352"/>
         <source>Peers&apos; status updated at </source>
         <translation type="unfinished"></translation>
     </message>

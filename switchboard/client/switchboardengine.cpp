@@ -18,6 +18,7 @@ SwitchBoardEngine::SwitchBoardEngine(QObject * parent)
 : QObject(parent)
 {
 	m_socket = new QTcpSocket(this);
+	m_loginsocket = new QTcpSocket(this);
 	m_timer = -1;
 	loadSettings();
 /*  QTcpSocket signals :
@@ -43,6 +44,12 @@ SwitchBoardEngine::SwitchBoardEngine(QObject * parent)
 	connect(m_socket, SIGNAL(stateChanged(QAbstractSocket::SocketState)),
 	        this, SLOT(socketStateChanged(QAbstractSocket::SocketState)));
 	connect(m_socket, SIGNAL(readyRead()), this, SLOT(socketReadyRead()));
+
+	connect( m_loginsocket, SIGNAL(connected()),
+	         this, SLOT(identifyToTheServer()) );
+	connect( m_loginsocket, SIGNAL(readyRead()),
+	         this, SLOT(processLoginDialog()) );
+
 	if(m_autoconnect)
 		start();
 }
@@ -53,13 +60,15 @@ SwitchBoardEngine::SwitchBoardEngine(QObject * parent)
 void SwitchBoardEngine::loadSettings()
 {
 	QSettings settings;
-	m_host = settings.value("engine/serverhost").toString();
-	m_port = settings.value("engine/serverport", 5003).toUInt();
+	m_serverhost = settings.value("engine/serverhost").toString();
+	m_sbport = settings.value("engine/serverport", 5003).toUInt();
+	m_loginport = settings.value("engine/loginport", 5000).toUInt();
 	m_autoconnect = settings.value("engine/autoconnect", false).toBool();
 	m_asterisk = settings.value("engine/asterisk").toString();
 	m_protocol = settings.value("engine/protocol").toString();
 	m_extension = settings.value("engine/extension").toString();
-	m_dialcontext = settings.value("engine/dialcontext").toString();
+	m_passwd = settings.value("engine/passwd").toString();
+	m_availstate = settings.value("engine/availstate", "available").toString();
 }
 
 /*!
@@ -68,13 +77,15 @@ void SwitchBoardEngine::loadSettings()
 void SwitchBoardEngine::saveSettings()
 {
 	QSettings settings;
-	settings.setValue("engine/serverhost", m_host);
-	settings.setValue("engine/serverport", m_port);
+	settings.setValue("engine/serverhost", m_serverhost);
+	settings.setValue("engine/serverport", m_sbport);
+	settings.setValue("engine/loginport", m_loginport);
 	settings.setValue("engine/autoconnect", m_autoconnect);
 	settings.setValue("engine/asterisk", m_asterisk);
 	settings.setValue("engine/protocol", m_protocol);
 	settings.setValue("engine/extension", m_extension);
-	settings.setValue("engine/dialcontext", m_dialcontext);
+	settings.setValue("engine/passwd", m_passwd);
+	settings.setValue("engine/availstate", m_availstate);
 }
 
 /* \brief set server address
@@ -83,8 +94,8 @@ void SwitchBoardEngine::saveSettings()
  */
 void SwitchBoardEngine::setAddress(const QString & host, quint16 port)
 {
-	m_host = host;
-	m_port = port;
+	m_serverhost = host;
+	m_sbport = port;
 }
 
 /*! \brief Start the connection to the server
@@ -105,7 +116,8 @@ void SwitchBoardEngine::stop()
  */
 void SwitchBoardEngine::connectSocket()
 {
-	m_socket->connectToHost(m_host, m_port);
+	m_socket->connectToHost(m_serverhost, m_sbport);
+	m_loginsocket->connectToHost(m_serverhost, m_loginport);
 }
 
 /*! \brief send a command to the server 
@@ -216,7 +228,7 @@ void SwitchBoardEngine::updatePeers(const QStringList & liststatus)
 	const int nfields1 = 6;  // 1st order size (per-channel informations)
 	
 	// liststatus[0] is a dummy field, only used for debug on the daemon side
-	// (asteriskid)/(context)/(protocol)/(phoneid)/(phonenum)
+	// p/(asteriskid)/(context)/(protocol)/(phoneid)/(phonenum)
 	
 	QString context = liststatus[5];
 	QString pname   = "p/" + liststatus[1] + "/" + context + "/"
@@ -262,6 +274,7 @@ void SwitchBoardEngine::updateCallerids(const QStringList & liststatus)
 	QString pname = "p/" + liststatus[1] + "/" + liststatus[5] + "/"
 		+ liststatus[2] + "/" + liststatus[3] + "/" + liststatus[4];
 	QString pcid = liststatus[6];
+	// liststatus[7] => group informations
 	m_callerids[pname] = pcid;
 }
 
@@ -355,9 +368,32 @@ void SwitchBoardEngine::originateCall(const QString & src, const QString & dst)
 {
 	qDebug() << "SwitchBoardEngine::originateCall()" << src << dst;
 	QStringList dstlist = dst.split("/");
-	m_pendingcommand = "originate " + src + " "
-		+ dstlist[0] + "/" + dstlist[1] + "/" + m_dialcontext + "/"
-		+ dstlist[3] + "/" + dstlist[4] + "/" + dstlist[5];
+	m_pendingcommand = "originate " + src + " " + dst;
+	//		+ dstlist[0] + "/" + dstlist[1] + "/" + m_dialcontext + "/"
+	//	+ dstlist[3] + "/" + dstlist[4] + "/" + dstlist[5];
+	sendCommand();
+}
+
+/*! \brief dial (originate with known src)
+ */
+void SwitchBoardEngine::dialFullChannel(const QString & dst)
+{
+	qDebug() << "SwitchBoardEngine::dialFullChannel()" << dst;
+	m_pendingcommand = "originate p/" +
+		m_asterisk + "/" + m_dialcontext + "/" + m_protocol + "/" + m_extension +
+		"/ " + dst;
+	sendCommand();
+}
+
+/*! \brief dial (originate with known src)
+ */
+void SwitchBoardEngine::dialExtension(const QString & dst)
+{
+	qDebug() << "SwitchBoardEngine::dialExtension()" << dst;
+	m_pendingcommand = "originate p/" +
+		m_asterisk + "/" + m_dialcontext + "/" + m_protocol + "/" + m_extension +
+		"/ p/" +
+		m_asterisk + "/" + m_dialcontext + "/" +              "/" +               "/" + dst;
 	sendCommand();
 }
 
@@ -370,18 +406,6 @@ void SwitchBoardEngine::transferCall(const QString & src, const QString & dst)
 	m_pendingcommand = "transfer " + src + " "
 		+ dstlist[0] + "/" + dstlist[1] + "/" + m_dialcontext + "/"
 		+ dstlist[3] + "/" + dstlist[4] + "/" + dstlist[5];
-	sendCommand();
-}
-
-/*! \brief dial (originate with known src)
- */
-void SwitchBoardEngine::dial(const QString & dst)
-{
-	qDebug() << "SwitchBoardEngine::dial()" << dst;
-	m_pendingcommand = "originate p/" +
-		m_asterisk + "/" + m_dialcontext + "/" + m_protocol + "/" + m_extension +
-		"/ p/" +
-		m_asterisk + "/" + m_dialcontext + "/" +              "/" +               "/" + dst;
 	sendCommand();
 }
 
@@ -424,12 +448,180 @@ void SwitchBoardEngine::requestHistory(const QString & peer, int mode)
 /*! \brief get server host */
 const QString & SwitchBoardEngine::host() const
 {
-	return m_host;
+	return m_serverhost;
 }
 
 /*! \brief get server port */
-quint16 SwitchBoardEngine::port() const
+quint16 SwitchBoardEngine::sbport() const
 {
-	return m_port;
+	return m_sbport;
+}
+
+/*! \brief get server port */
+quint16 SwitchBoardEngine::loginport() const
+{
+	return m_loginport;
+}
+
+/*!
+ * Perform the first login step once the TCP connection is established.
+ */
+void SwitchBoardEngine::identifyToTheServer()
+{
+	QString outline;
+	qDebug() << "Engine::identifyToTheServer()" << m_loginsocket->peerAddress();
+	outline = "LOGIN ";
+	if(m_asterisk.length() > 0)
+	{
+		outline.append(m_asterisk);
+		outline.append("/sip");
+	}
+	outline.append(m_extension + "\r\n");
+	m_loginsocket->write(outline.toAscii());
+	m_loginsocket->flush();
+	qDebug() << outline;
+}
+
+/*!
+ * Perform the following of the login process after identifyToTheServer()
+ * made the first step.
+ * Theses steps are : sending the password, sending the port,
+ *   just reading the session id from server response.
+ * The state is changed accordingly.
+ */
+void SwitchBoardEngine::processLoginDialog()
+{
+	char buffer[256];
+	int len;
+	qDebug() << "Engine::processLoginDialog()";
+	if(!m_loginsocket->canReadLine())
+	{
+		qDebug() << "no line ready to be read";
+		return;
+	}
+	len = m_loginsocket->readLine(buffer, sizeof(buffer));
+	if(len<0)
+	{
+		qDebug() << "readLine() returned -1, closing socket";
+		m_loginsocket->close();
+		setState(ENotLogged);
+		return;
+	}
+	QString readLine = QString::fromAscii(buffer);
+	QString outline;
+	if(readLine.startsWith("Send PASS"))
+	{
+		outline = "PASS ";
+		outline.append(m_passwd);
+		outline.append("\r\n");
+	}
+	else if(readLine.startsWith("Send PORT"))
+	{
+		outline = "PORT ";
+		outline.append(QString::number(0)); // m_listenport
+		outline.append("\r\n");
+	}
+	else if(readLine.startsWith("Send STATE"))
+	{
+		outline = "STATE ";
+		outline.append(m_availstate);
+		outline.append("\r\n");
+	}
+	else if(readLine.startsWith("OK SESSIONID"))
+	{
+		readLine.remove(QChar('\r')).remove(QChar('\n'));
+		QStringList sessionResp = readLine.split(" ");
+		// 		if(sessionResp.size() > 2)
+		// 			m_sessionid = sessionResp[2];
+		// 		if(sessionResp.size() > 3)
+		// 			m_context = sessionResp[3];
+		// 		if(sessionResp.size() > 4)
+		// 			m_capabilities = sessionResp[4];
+		m_loginsocket->close();
+		setState(ELogged);
+		// start the keepalive timer
+		//		m_ka_timerid = startTimer(m_keepaliveinterval);
+		return;
+	}
+	else
+	{
+		qDebug() << "Response from server not recognized, closing" << readLine;
+		m_loginsocket->close();
+		setState(ENotLogged);
+		return;
+	}
+	qDebug() << outline;
+	m_loginsocket->write(outline.toAscii());
+	m_loginsocket->flush();
+}
+
+/*!
+ * setter for the m_state property.
+ * If the state is becoming ELogged, the
+ * signal logged() is thrown.
+ * If the state is becoming ENotLogged, the
+ * signal delogged() is thrown.
+ */
+void SwitchBoardEngine::setState(EngineState state)
+{
+	if(state != m_state)
+	{
+		m_state = state;
+		if(state == ELogged)
+		{
+			//			stopTryAgainTimer();
+			logged();
+		}
+		else if(state == ENotLogged)
+			delogged();
+	}
+}
+
+/*!
+ * set the availability state and call keepLoginAlive() if needed
+ *
+ * \sa setAvailable()
+ * \sa setAway()
+ * \sa setBeRightBack()
+ * \sa setOutToLunch()
+ * \sa setDoNotDisturb()
+ */
+void SwitchBoardEngine::setAvailState(const QString & newstate)
+{
+	if(m_availstate != newstate)
+	{
+		QSettings settings;
+		m_availstate = newstate;
+		settings.setValue("engine/availstate", m_availstate);
+		//		keepLoginAlive();
+	}
+}
+
+void SwitchBoardEngine::setAvailable()
+{
+	//qDebug() << "setAvailable()";
+	setAvailState("available");
+}
+
+void SwitchBoardEngine::setAway()
+{
+	//qDebug() << "setAway()";
+	setAvailState("away");
+}
+
+void SwitchBoardEngine::setBeRightBack()
+{
+	setAvailState("berightback");
+}
+
+void SwitchBoardEngine::setOutToLunch()
+{
+	setAvailState("outtolunch");
+}
+
+void SwitchBoardEngine::setDoNotDisturb()
+{
+	//qDebug() << "setDoNotDistrurb()";
+	setAvailState("donotdisturb");
 }
 

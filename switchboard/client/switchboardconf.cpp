@@ -24,16 +24,23 @@ SwitchBoardConfDialog::SwitchBoardConfDialog(SwitchBoardEngine * engine,
 
 	QGridLayout * layout = new QGridLayout();
 	QLabel * lblhost = new QLabel( tr("Server host :"), this);
-	m_host = new QLineEdit(m_engine->host(), this);
+	m_serverhost = new QLineEdit(m_engine->host(), this);
 	layout->addWidget( lblhost, line, 0 );
-	layout->addWidget( m_host, line, 1 );
+	layout->addWidget( m_serverhost, line, 1 );
 	line++;
 
 	QLabel * lblport = new QLabel( tr("Server port :"), this);
-	m_port = new QLineEdit(QString::number(m_engine->port()), this);
-	m_port->setInputMask("90000");
+	m_sbport = new QLineEdit(QString::number(m_engine->sbport()), this);
+	m_sbport->setInputMask("5003");
 	layout->addWidget( lblport, line, 0 );
-	layout->addWidget( m_port, line, 1 );
+	layout->addWidget( m_sbport, line, 1 );
+	line++;
+	
+	QLabel * lbllport = new QLabel( tr("Login port :"), this);
+	m_loginport = new QLineEdit(QString::number(m_engine->loginport()), this);
+	m_loginport->setInputMask("5000");
+	layout->addWidget( lbllport, line, 0 );
+	layout->addWidget( m_loginport, line, 1 );
 	line++;
 	
 #if 0
@@ -73,18 +80,19 @@ SwitchBoardConfDialog::SwitchBoardConfDialog(SwitchBoardEngine * engine,
 	layout->addWidget( m_ext, line, 1 );
 	line++;
 
-	QLabel * lblcontext = new QLabel( tr("Dial context :"), this );
-	layout->addWidget(lblcontext, line, 0);
-	m_context = new QLineEdit( m_engine->dialContext(), this );
-	layout->addWidget( m_context, line, 1);
-	line++;
+// 	QLabel * lblcontext = new QLabel( tr("Dial context :"), this );
+// 	layout->addWidget(lblcontext, line, 0);
+// 	m_context = new QLineEdit( m_engine->dialContext(), this );
+// 	layout->addWidget( m_context, line, 1);
+// 	line++;
 
 	QLabel * lblpass = new QLabel( tr("Password :"), this );
 	layout->addWidget(lblpass, line, 0);
-	m_pass = new QLineEdit( m_engine->password(), this );
-	m_pass->setEchoMode(QLineEdit::Password);
-	layout->addWidget( m_pass, line, 1);
-
+	m_passwd = new QLineEdit( m_engine->password(), this );
+	m_passwd->setEchoMode(QLineEdit::Password);
+	layout->addWidget( m_passwd, line, 1);
+	line++;
+	
 	vlayout->addLayout( layout );
 
 	QDialogButtonBox * btnbox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
@@ -96,13 +104,14 @@ SwitchBoardConfDialog::SwitchBoardConfDialog(SwitchBoardEngine * engine,
 
 void SwitchBoardConfDialog::saveAndClose()
 {
-	m_engine->setAddress( m_host->text(), m_port->text().toUInt() );
+	m_engine->setAddress( m_serverhost->text(), m_sbport->text().toUInt() );
 	m_engine->setAutoconnect( m_autoconnect->checkState() == Qt::Checked );
 	m_engine->setAsterisk( m_asterisk->text() );
 	m_engine->setProtocol( m_protocombo->currentText() );
 	m_engine->setExtension( m_ext->text() );
-	m_engine->setDialContext( m_context->text() );
-	m_engine->setPassword( m_pass->text() );
+	//	m_engine->setDialContext( m_context->text() );
+	m_engine->setPassword( m_passwd->text() );
+	m_engine->setAvailstate( m_availstate->text() );
 	m_engine->saveSettings();
 	//m_window->setWidth( m_widthsb->value() );
 	//m_window->saveSettings();

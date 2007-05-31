@@ -21,15 +21,17 @@ private slots:
 private:
 	SwitchBoardEngine * m_engine;
 	SwitchBoardWindow * m_window;
-	QLineEdit * m_host;
-	QLineEdit * m_port;
+	QLineEdit * m_serverhost;
+	QLineEdit * m_sbport;
+	QLineEdit * m_loginport;
 	QSpinBox * m_widthsb;
 	QCheckBox * m_autoconnect;
 	QLineEdit * m_asterisk;
 	QComboBox * m_protocombo;
 	QLineEdit * m_ext;
-	QLineEdit * m_pass;
-	QLineEdit * m_context;
+	QLineEdit * m_passwd;
+	//	QLineEdit * m_context;
+	QLineEdit * m_availstate;
 };
 
 #endif
