@@ -34,12 +34,7 @@ CONFIG_LIB_PATH = 'py_lib_path'
 import sys
 from xivo import ConfigPath
 from xivo.ConfigPath import *
-
-try:
-        InsertPathListSys(SortedValuesFromConfigSection(CONFIG_FILE, CONFIG_LIB_PATH))
-except NoSectionError, s:
-        print >> sys.stderr, "WARNING: Section [%s] apparently missing from configuration file %s" % (CONFIG_LIB_PATH, CONFIG_FILE)
-
+ConfiguredPathHelper(CONFIG_FILE, CONFIG_LIB_PATH)
 import anysql
 from BackSQL import backsqlite
 from BackSQL import backmysql
