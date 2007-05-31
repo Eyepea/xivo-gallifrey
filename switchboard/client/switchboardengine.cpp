@@ -230,6 +230,13 @@ void SwitchBoardEngine::updatePeers(const QStringList & liststatus)
 	// liststatus[0] is a dummy field, only used for debug on the daemon side
 	// p/(asteriskid)/(context)/(protocol)/(phoneid)/(phonenum)
 	
+	if(liststatus.count() < 11)
+	{
+		// not valid
+		qDebug() << "Bad data from the server :" << liststatus;
+		return;
+	}
+
 	QString context = liststatus[5];
 	QString pname   = "p/" + liststatus[1] + "/" + context + "/"
 		+ liststatus[2] + "/" + liststatus[3] + "/" + liststatus[4];
