@@ -1,6 +1,8 @@
+/* $Id$ */
 #include <QVBoxLayout>
 #include <QLabel>
-#include <QLineEdit>
+#include <QTableWidget>
+#include <QTime>
 #include <QDebug>
 #include "searchpanel.h"
 #include "peerwidget.h"
@@ -11,19 +13,30 @@ DisplayMessagesPanel::DisplayMessagesPanel(QWidget * parent)
 	: QWidget(parent)
 {
 	QVBoxLayout * vlayout = new QVBoxLayout(this);
-	//	vlayout->setMargin(0);
+	vlayout->setMargin(0);
 	QLabel * lbl = new QLabel( tr("Messages :"), this );
-	m_text = new QLabel( "", this );
-	m_text->setWordWrap(true);
-	QLabel * dummy = new QLabel( "", this );
-	
-	vlayout->addWidget( lbl, 0 );
-	vlayout->addWidget( m_text, 0 );
-	vlayout->addWidget( dummy, 1 );
+	m_table = new QTableWidget( this );
+	m_table->setColumnCount( 2 );
+	QStringList labels;
+	labels << tr("Time Stamp");
+	labels << tr("Message");
+	m_table->setHorizontalHeaderLabels(labels);
+
+	vlayout->addWidget( lbl, 0, Qt::AlignCenter );
+	vlayout->addWidget( m_table, 0 );
 }
 
-void DisplayMessagesPanel::updateMessage(const QString & str)
+void DisplayMessagesPanel::addMessage(const QString & str)
 {
-	m_text->setText(str);
+	qDebug() << "DisplayMessagesPanel::addMessage()" << str;
+	QTime time = QTime::currentTime();
+	m_table->insertRow( 0 );
+	QTableWidgetItem * item1 = new QTableWidgetItem( time.toString( Qt::ISODate ) );
+	item1->setFlags( Qt::ItemIsSelectable | Qt::ItemIsEnabled );
+	m_table->setItem( 0, 0, item1 );
+	QTableWidgetItem * item2 = new QTableWidgetItem( str );
+	item2->setFlags( Qt::ItemIsSelectable | Qt::ItemIsEnabled );
+	m_table->setItem( 0, 1, item2 );
+	m_table->resizeColumnsToContents();
 }
 

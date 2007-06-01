@@ -169,7 +169,7 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
  	connect(m_engine, SIGNAL(emitTextMessage(const QString &)),
  	        statusBar(), SLOT(showMessage(const QString &)));
 	connect(m_engine, SIGNAL(emitTextMessage(const QString &)),
-	        lbl, SLOT(updateMessage(const QString &)));
+	        lbl, SLOT(addMessage(const QString &)));
 	connect(m_engine, SIGNAL(started()),
 	        this, SLOT(engineStarted()));
 	connect(m_engine, SIGNAL(stopped()),
