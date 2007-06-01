@@ -339,7 +339,7 @@ CREATE UNIQUE INDEX `userfeatures__uidx__protocol_protocolid` ON `userfeatures`(
 CREATE UNIQUE INDEX `userfeatures__uidx__provisioningid` ON `userfeatures`(`provisioningid`);
 
 INSERT INTO `userfeatures` VALUES(1,'sip',1,'Guest','','guest','','initconfig',148378,30,0,5,0,'','');
-INSERT INTO `userfeatures` VALUES(2,'sip',2,'XivoSB','','xivosb','','',194867,30,0,5,0,'','');
+INSERT INTO `userfeatures` VALUES(2,'sip',2,'XivoSB','','xivosb','','local-extensions',194867,30,0,5,0,'','');
 
 
 DROP TABLE IF EXISTS `extensions`;
@@ -576,7 +576,7 @@ CREATE INDEX `usersip__idx__category` ON `usersip`(`category`);
 CREATE UNIQUE INDEX `usersip__uidx__name` ON `usersip`(`name`);
 
 INSERT INTO `usersip` VALUES(1,'guest',0,'','documentation','','Guest','no','initconfig',NULL,'rfc2833',NULL,NULL,'','dynamic',NULL,NULL,'',NULL,'no',NULL,NULL,NULL,'',5060,'no',NULL,NULL,NULL,'guest','friend','guest',NULL,NULL,NULL,'','','',NULL,'',0,'user');
-INSERT INTO `usersip` VALUES(2,'xivosb',0,'','documentation','','XivoSB','no','',NULL,'rfc2833',NULL,NULL,'','dynamic',NULL,NULL,'',NULL,'no',NULL,NULL,NULL,'',5060,'no',NULL,NULL,NULL,'','friend','xivosb',NULL,NULL,NULL,'','','',NULL,'',0,'user');
+INSERT INTO `usersip` VALUES(2,'xivosb',0,'','documentation','','XivoSB','no','local-extensions',NULL,'rfc2833',NULL,NULL,'','dynamic',NULL,NULL,'',NULL,'no',NULL,NULL,NULL,'',5060,'no',NULL,NULL,NULL,'','friend','xivosb',NULL,NULL,NULL,'','','',NULL,'',0,'user');
 
 
 DROP TABLE IF EXISTS `musiconhold`;
