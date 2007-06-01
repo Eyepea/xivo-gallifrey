@@ -90,6 +90,8 @@ void SwitchBoardWindow::updatePeer(const QString & ext,
 	         m_engine, SLOT(transferCall(const QString&, const QString&)) );
 	connect( peerwidget, SIGNAL(emitDial(const QString &)),
 	         m_engine, SLOT(dialFullChannel(const QString &)) );
+	connect( peerwidget, SIGNAL(interceptChan(const QString &)),
+	         m_engine, SLOT(interceptCall(const QString &)) );
 	connect( peerwidget, SIGNAL(doRemoveFromPanel(const QString &)),
 	         this, SLOT(removePeerFromLayout(const QString &)) );
 	QPoint pos = settings.value("layout/" + ext, QPoint(-1, -1) ).toPoint();

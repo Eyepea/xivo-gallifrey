@@ -426,6 +426,15 @@ void SwitchBoardEngine::transferCall(const QString & src, const QString & dst)
 	sendCommand();
 }
 
+void SwitchBoardEngine::interceptCall(const QString & src)
+{
+	qDebug() << "SwitchBoardEngine::interceptCall()" << src;
+	//m_pendingcommand = "transfer " + src + " "
+	//        + m_asterisk + "/" + ?? + "/" + m_dialcontext + "/"
+	//		+ 
+	//sendCommand();
+}
+
 /*! \brief hang up a channel
  *
  * send a hang up command to the server

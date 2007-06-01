@@ -53,7 +53,10 @@ void SearchPanel::updatePeer(const QString & ext,
 			     const QString & imavail,
 			     const QString & sipstatus,
 			     const QString & vmstatus,
-			     const QString & queuestatus)
+			     const QString & queuestatus,
+ 								   const QStringList & chanIds,
+								   const QStringList & chanStates,
+								   const QStringList & chanOthers)
 {
 	int i;
 	//qDebug() << "SearchPanel::updatePeer" << ext << name << status << avail << corrname;
@@ -62,6 +65,7 @@ void SearchPanel::updatePeer(const QString & ext,
 		if(ext == m_peerlist[i].ext())
 		{
 			m_peerlist[i].updateStatus(imavail, sipstatus, vmstatus, queuestatus);
+			m_peerlist[i].updateChans(chanIds, chanStates, chanOthers);
 			return;
 		}
 	}
@@ -71,6 +75,8 @@ void SearchPanel::updatePeer(const QString & ext,
 	         m_engine, SLOT(originateCall(const QString&, const QString&)) );
 	connect( peerwidget, SIGNAL(transferCall(const QString&, const QString&)),
 	         m_engine, SLOT(transferCall(const QString&, const QString&)) );
+	connect( peerwidget, SIGNAL(interceptChan(const QString &)),
+	         m_engine, SLOT(interceptCall(const QString &)) );
 	connect( peerwidget, SIGNAL(emitDial(const QString &)),
 	         m_engine, SLOT(dialFullChannel(const QString &)) );
 	m_peerlayout->addWidget( peerwidget );
@@ -80,6 +86,7 @@ void SearchPanel::updatePeer(const QString & ext,
 	}
 	peer.setWidget(peerwidget);
 	peer.updateStatus(imavail, sipstatus, vmstatus, queuestatus);
+	peer.updateChans(chanIds, chanStates, chanOthers);
 	m_peerlist << peer;
 }
 

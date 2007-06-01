@@ -57,6 +57,7 @@ public slots:
 	void dialFullChannel(const QString & dst);
 	void dialExtension(const QString & dst);
 	void transferCall(const QString & src, const QString & dst);
+	void interceptCall(const QString & src);
 	void searchDirectory(const QString &);
 	void requestHistory(const QString &, int);
 

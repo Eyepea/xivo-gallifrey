@@ -32,6 +32,7 @@ protected:
 signals:
 	void originateCall(const QString &, const QString &);
 	void transferCall(const QString &, const QString &);
+	void interceptChan(const QString &);
 	void emitDial(const QString &);
 	void doRemoveFromPanel(const QString &);
 public slots:
@@ -47,7 +48,6 @@ public slots:
 private slots:
 	void removeFromPanel();
 	void dial();
-	void test(const QString &);
 private:
 	QLabel * m_statelbl;	//!< Peer state display (ringing, online, ...)
 	QLabel * m_availlbl;	//!< Peer state display from XIVO CTI Client

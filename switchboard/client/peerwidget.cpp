@@ -282,13 +282,8 @@ void PeerWidget::addChannel(const QString & id, const QString & state, const QSt
 {
 	PeerChannel * ch = new PeerChannel(id, state, otherPeer, this);
 	connect(ch, SIGNAL(interceptChan(const QString &)),
-		this, SLOT(test(const QString &)));
+	        this, SIGNAL(interceptChan(const QString &)));
 	m_channels << ch;
-}
-
-void PeerWidget::test(const QString & arg)
-{
-	qDebug() << "PeerWidget::test" << arg;
 }
 
 

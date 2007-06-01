@@ -142,7 +142,9 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 									   const QStringList &)),
 	         searchpanel, SLOT(updatePeer(const QString &, const QString &,
 					      const QString &, const QString &,
-					      const QString &, const QString &)) );
+					      const QString &, const QString &,
+									   const QStringList &, const QStringList &,
+									   const QStringList &)) );
 	connect( engine, SIGNAL(stopped()),
 	         searchpanel, SLOT(removePeers()) );
 	connect( engine, SIGNAL(removePeer(const QString &)),
