@@ -21,12 +21,13 @@ LogWidget::LogWidget(SwitchBoardEngine * engine, QWidget * parent)
 	QVBoxLayout * vbox = new QVBoxLayout( groupBox );
 
 	m_radioNone = new QRadioButton( tr("&None"), groupBox );
+	m_radioNone->setChecked( true );
 	connect( m_radioNone, SIGNAL(toggled(bool)),
 	         this, SLOT(modeChanged(bool)) );
 	vbox->addWidget( m_radioNone );
 
 	m_radioOut = new QRadioButton( tr("&Outgoing calls"), groupBox );
-	m_radioOut->setChecked( true );
+	//m_radioOut->setChecked( true );
 	connect( m_radioOut, SIGNAL(toggled(bool)),
 	         this, SLOT(modeChanged(bool)) );
 	vbox->addWidget( m_radioOut );
