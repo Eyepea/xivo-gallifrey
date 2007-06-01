@@ -95,7 +95,7 @@ else:
 			print "VERBOSE \"Convert tif to pdf\""
 			os.system("/usr/bin/tiff2pdf -o %s %s" %(filepdf, file))
 			print "VERBOSE \"Send FAX to %s (%s) at %s\"" %(mail, name, date)
-			os.system("echo \"Bonjour %s,\n\nVous avez recu un FAX , il est joint dans ce mail !\n\nCordialement,\nService IPBX\" | /usr/bin/mutt -s \"Reception FAX de %s\" -a %s %s" %(name, callexten, filepdf, mail))
+			os.system("echo \"Un nouveau fax est arrive pour %s, il est joint dans ce mail !\n\nCordialement,\nService IPBX\" | /usr/bin/mutt -s \"Reception FAX de %s\" -a %s %s" %(name, callexten, filepdf, mail))
 			try:
 				os.remove(filepdf)
 				os.remove(file)
