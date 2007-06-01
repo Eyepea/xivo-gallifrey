@@ -258,14 +258,19 @@ void PeerWidget::contextMenuEvent(QContextMenuEvent * event)
 	if( !m_channels.empty() )
 	{
 		QMenu * interceptMenu = new QMenu( tr("&Intercept"), &contextMenu );
+		QMenu * hangupMenu = new QMenu( tr("&Hangup"), &contextMenu );
+
 		QListIterator<PeerChannel *> i(m_channels);
 		while(i.hasNext())
 		{
 			const PeerChannel * channel = i.next();
 			interceptMenu->addAction(channel->otherPeer(),
 			                         channel, SLOT(intercept()));
+			hangupMenu->addAction(channel->otherPeer(),
+			                      channel, SLOT(hangUp()));
 		}
 		contextMenu.addMenu(interceptMenu);
+		contextMenu.addMenu(hangupMenu);
 	}
 	contextMenu.exec(event->globalPos());
 }

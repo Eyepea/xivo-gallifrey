@@ -33,3 +33,9 @@ void PeerChannel::intercept()
 	interceptChan( m_id );
 }
 
+void PeerChannel::hangUp()
+{
+	qDebug() << "PeerChannel::hangUp()" << m_id;
+	// TO BE IMPLEMENTED :)
+}
+

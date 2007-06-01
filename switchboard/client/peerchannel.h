@@ -15,6 +15,7 @@ public:
 	const QString & otherPeer() const { return m_otherPeer; };
 public slots:
 	void intercept();
+	void hangUp();
 signals:
 	void interceptChan(const QString &);
 private:
