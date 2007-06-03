@@ -23,6 +23,8 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
+from copy import deepcopy
+
 UNIVERSE = 'all'
 
 DISALLOWED = -1
@@ -184,6 +186,91 @@ def check_acl(user_elem,res_elem,grplst_order,dflt_policy,validation_model=DISAL
 		if st != NEUTRAL:
 			return st
 	return dflt_policy
+
+def format_loop(prev_dict,grp,v):
+	a = [v, grp]
+	while prev_dict[v]:
+		v = prev_dict[v]
+		a.insert(0, v)
+	return ' -> '.join(a)
+
+def reachable_elems(group_list,elem_list,conn_grp_elem_dict,impure_function=False):
+	"""group_list is a list containing valid group names. It shall not contain
+	a group name multiple times.
+	
+	elem_list is a list containing valid elements names. It shall not
+	contain an element name multiple times.
+	
+	conn_grp_elem_dict is a dictionary of form
+		{grp_name_1: ([included_grp_1_name,included_grp_2_name,...],
+			      [included_elem_1_name,included_elem_2_name,...]),
+		 grp_name_2: ...}
+	
+	If impure_function is True, the work is done in place in 
+	conn_grp_elem_dict
+	
+	In any case conn_grp_elem_dict must not contain any key not in
+	group_list, neither shall it contains anything not in group_list from
+	within list stored in element 0 of the tuple dictionary value or
+	anything not in elem_list from within list stored in element 1.
+	conn_grp_elem_dict must contain an entry for every existing group.
+	
+	Common errors like loop in the ordered graph will be detected and
+	an exception will be raised, but not all error will be detected anyway.
+	As far as the internal representation of data passed in parameters is
+	compliant with requirements stated above, calling this function should
+	be ok.
+	
+	A dictionary of the same form as conn_grp_elem_dict will be returned,
+	except that all lists at position 0 of dictionary values will be empty
+	and that all lists at postition 1 will contain every directly or
+	indirectly connected to the group which name is defined by the
+	corresponding key.
+	
+	"""
+	if impure_function:
+		reachable_dict = conn_grp_elem_dict
+	else:
+		reachable_dict = deepcopy(conn_grp_elem_dict)
+	group_set = frozenset(group_list)
+	elem_set = frozenset(elem_list)
+	for grp in group_list:
+		gp_el_lst = []
+		gp_el_set = set()
+		vertices_done = set()
+		vertices_todo_lst = [grp]
+		vertices_todo_set = set(vertices_todo_lst)
+		prev_dict = {grp: None}
+		while vertices_todo_lst:
+			v = vertices_todo_lst.pop(0)
+			vertices_todo_set.discard(v)
+			vertices_done.add(v) # dont loop on ourself even if not current "root"
+			if v not in group_set:
+				raise ValueError, \
+					"Bad destination vertex %s" % v
+			for el in reachable_dict[v][1]:
+				if el not in elem_set:
+					raise ValueError, \
+						"Bad element %s within vertex %s" % (el,v)
+				if el not in gp_el_set:
+					gp_el_lst.append(el)
+					gp_el_set.add(el)
+			for gp in reachable_dict[v][0]:
+				if gp not in group_set:
+					raise ValueError, \
+						"Bad destination vertex %s from %s" % (gp,v)
+				if gp == grp:
+					raise ValueError, \
+						"Loop detected: %s" % format_loop(prev_dict,grp,v)
+				if gp not in vertices_done and gp not in vertices_todo_set:
+					prev_dict[gp] = v
+					vertices_todo_lst.append(gp)
+					vertices_todo_set.add(gp)
+		del reachable_dict[grp][0][:]
+		del reachable_dict[grp][1][:]
+		reachable_dict[grp][1].extend(gp_el_lst)
+	return reachable_dict
+	
 
 if __debug__:
     if __name__ == "__main__":
