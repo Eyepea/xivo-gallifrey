@@ -130,9 +130,10 @@ def check_acl(user_elem,res_elem,grplst_order,dflt_policy,validation_model=DISAL
 		evaluated first so any specific rules configured at this point
 		has the greatest precedence and one can override a more general
 		policy by either giving or denying specific permissions for
-		individual entity. If no rule match at this point the execution
-		continues, in the other case the result is returned immediatly.
-
+		individual entities. If no rule match at this point the
+		execution continues, in the other case the result is returned
+		immediatly.
+		
 		* grplst_order is iterated over and specify the precedence order
 		that must be applied to rules given inside group definitions.
 		As grplst_order is indeed a list of list of groups descriptors
