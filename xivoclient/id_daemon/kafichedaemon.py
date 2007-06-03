@@ -245,7 +245,7 @@ class IdentRequestHandler(SocketServer.StreamRequestHandler):
 				return
 
 # The KeepAliveHandler receives UDP datagrams and sends back 
-# a datagram containing wether "OK" or "ERROR <error-text>"
+# a datagram containing whether "OK" or "ERROR <error-text>"
 # It could be a good thing to give a numerical code to each error.
 class KeepAliveHandler(SocketServer.DatagramRequestHandler):
 	def handle(self):

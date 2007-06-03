@@ -171,7 +171,7 @@ def __valid_query(pquery_tuple):
 	return True
 
 def valid_scheme(potential_scheme):
-	"""Check wether or not the content of potential_scheme is a valid
+	"""Check whether or not the content of potential_scheme is a valid
 	URI scheme
 	
 	"""
