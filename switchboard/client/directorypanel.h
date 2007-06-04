@@ -26,6 +26,7 @@ private slots:
 	//void dialNumber();
 public slots:
 	void setSearchResponse(const QString &);
+	void stop();
 private:
 	QLineEdit * m_searchText;
 	QPushButton * m_searchButton;

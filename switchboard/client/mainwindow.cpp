@@ -117,6 +117,8 @@ MainWindow::MainWindow(SwitchBoardEngine * engine, LoginEngine * loginengine)
 	         logwidget, SLOT(setPeerToDisplay(const QString &)) );
 	connect( logwidget, SIGNAL(askHistory(const QString &, int)),
 	         m_engine, SLOT(requestHistory(const QString &, int)) );
+	connect( engine, SIGNAL(stopped()),
+	         logwidget, SLOT(clear()) );
 
 	m_middleSplitter = new QSplitter( Qt::Vertical, m_splitter);
 
@@ -151,6 +153,8 @@ MainWindow::MainWindow(SwitchBoardEngine * engine, LoginEngine * loginengine)
 	         dirpanel, SLOT(setSearchResponse(const QString &)) );
 	connect( dirpanel, SIGNAL(emitDial(const QString &)),
 	         engine, SLOT(dialExtension(const QString &)) );
+	connect( engine, SIGNAL(stopped()),
+	         dirpanel, SLOT(stop()) );
 
 	m_rightSplitter = new QSplitter(Qt::Vertical, m_splitter);
 
