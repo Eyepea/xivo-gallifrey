@@ -186,7 +186,7 @@ class SectionDesc:
 		return self.sect_id_token
 	def __getattr__(self,name):
 		try:
-			func = getattr('_'+self.conf_instance,name+'_by_section_token')
+			func = getattr(self.conf_instance,'_'+name+'_by_section_token')
 			return lambda *x: func(self.sect_id_token, *x)
 		except AttributeError:
 			raise AttributeError, name
@@ -202,7 +202,7 @@ class OptionDesc:
 		return self.opt_id_token
 	def __getattr__(self,name):
 		try:
-			func = getattr('_'+self.conf_instance,name+'_by_option_token')
+			func = getattr(self.conf_instance,'_'+name+'_by_option_token')
 			return lambda *x: func(self.opt_id_token, *x)
 		except AttributeError:
 			raise AttributeError, name
@@ -615,7 +615,7 @@ class OrderedRawConf:
 			yield OptionDesc(self,(sectup,j))
 
 	def _iter_options_by_section_token(self,i):
-		self._iter_options_by_sectup(self._sectup_by_tok(i))
+		return self._iter_options_by_sectup(self._sectup_by_tok(i))
 
 	def iter_options(self,section):
 		"""NEW API - but could still be unsafe if
@@ -630,7 +630,7 @@ class OrderedRawConf:
 		correct iterable option token abstract descriptor.
 		
 		"""
-		self._iter_options_by_sectup(self._sectup_by_name(section))
+		return self._iter_options_by_sectup(self._sectup_by_name(section))
 
 	def _get_name_by_option_token(self,(sectup,ot)):
 		return sectup[0][ot][0]
