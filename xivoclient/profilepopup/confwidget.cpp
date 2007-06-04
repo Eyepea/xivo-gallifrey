@@ -16,6 +16,11 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 */
+
+/* $Revision $
+   $Date: 2007-06-04 16:29:18 +0200 (Mon, 04 Jun 2007) $
+*/
+
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QGridLayout>
@@ -129,9 +134,7 @@ void ConfWidget::saveAndClose()
 	m_engine->setServerAst( m_lineast->text() );
 	//qDebug() << "login =" << m_linelogin->text();
 	//qDebug() << "protocol =" << m_protocombo->currentText().toLower();
-	m_engine->setLogin( m_protocombo->currentText().toLower()
-	                    + m_linelogin->text() );
-	//m_engine->setLogin( m_linelogin->text() );
+	m_engine->setLogin( m_protocombo->currentText().toLower() + m_linelogin->text() );
 	//qDebug() << "password =" << m_linepasswd->text();
 	m_engine->setPasswd( m_linepasswd->text() );
 	//qDebug() << "autoconnect =" << m_autoconnect->checkState();

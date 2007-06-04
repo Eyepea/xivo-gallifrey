@@ -68,9 +68,9 @@ public:
 	void sendMessage(const QString &);      //!< Sends an instant message
 	const QString & getCapabilities() const {return m_capabilities;} //!< returns capabilities
 signals:
-	void logged();	//!< signal emmited when the state becomes ELogged
-	void delogged();	//!< signal emmited when the state becomes ENotLogged
-	void newProfile(Popup *);	//!< signal emmited when a new profile has to be shown
+	void logged();	//!< signal emitted when the state becomes ELogged
+	void delogged();	//!< signal emitted when the state becomes ENotLogged
+	void newProfile(Popup *);	//!< signal emitted when a new profile has to be shown
 public slots:
 	void start();	//!< start the connection process.
 	void stop();	//!< stop the engine
@@ -99,8 +99,8 @@ private:
 
 	// parameters to connect to server
 	QString m_serverip;		//!< Host to the login server
-	ushort m_serverport;	//!< TCP port (UDP port for keep alive is +1)
-	QString m_serverast;		//!< Host to the login server
+	ushort m_loginport;	//!< TCP port (UDP port for keep alive is +1)
+	QString m_asterisk;		//!< Host to the login server
 	QString m_login;		//!< User login
 	QString m_passwd;		//!< User password
 	uint m_keepaliveinterval;	//!< Keep alive interval (in msec)
@@ -118,6 +118,7 @@ private:
 	QTcpServer m_listensocket;	//!< TCP socket listening for profiles
 	QString m_sessionid;	//!< Session id obtained after a successful login
 	QString m_capabilities;	//!< List of capabilities issued by the server after a successful login
+	QString m_context;	//!< Context of the phone, as returned by the xivo_daemon server
 	EngineState m_state;	//!< State of the engine (Logged/Not Logged)
 	int m_pendingkeepalivemsg;	//!< number of keepalivemsg sent without response
 	QString m_availstate;	//!< Availability state to send to the server

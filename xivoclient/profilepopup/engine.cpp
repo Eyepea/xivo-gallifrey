@@ -16,10 +16,13 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 */
+
+/* $Id: switchboardengine.cpp 795 2007-06-01 13:53:02Z nanard $ */
+
+#include <QDebug>
 #include <QTcpSocket>
 #include <QThread>
 #include <QMessageBox>
-#include <QDebug>
 #include <QSettings>
 #include <QTimerEvent>
 #include "engine.h"
@@ -32,7 +35,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  */
 Engine::Engine(QObject *parent)
 : QObject(parent),
-  m_serverip(""), m_serverport(0), m_serverast(""), m_login(""), m_passwd(""),
+  m_serverip(""), m_loginport(0), m_asterisk(""), m_login(""), m_passwd(""),
   m_listenport(0), m_sessionid(""), m_state(ENotLogged),
   m_pendingkeepalivemsg(0)
 {
@@ -41,6 +44,19 @@ Engine::Engine(QObject *parent)
 	loadSettings();
 	setAvailState(m_availstate);
 	
+	/*  QTcpSocket signals :
+	    void connected ()
+	    void disconnected ()
+	    void error ( QAbstractSocket::SocketError socketError )
+	    void hostFound ()
+	    void stateChanged ( QAbstractSocket::SocketState socketState )
+	*/
+	/* Signals inherited from QIODevice :
+	   void aboutToClose ()
+	   void bytesWritten ( qint64 bytes )
+	   void readyRead ()
+	*/
+
 	// init listen socket for profile push
 	connect( &m_loginsocket, SIGNAL(connected()),
 	         this, SLOT(identifyToTheServer()) );
@@ -67,15 +83,15 @@ void Engine::loadSettings()
 {
 	QSettings settings;
 	m_serverip = settings.value("engine/serverhost").toString();
-	m_serverport = settings.value("engine/serverport", 5000).toUInt();
-	m_serverast = settings.value("engine/serverastid").toString();
+	m_loginport = settings.value("engine/serverport", 5000).toUInt();
+	m_asterisk = settings.value("engine/serverastid").toString();
 	m_login = settings.value("engine/login").toString();
 	m_passwd = settings.value("engine/passwd").toString();
 	m_autoconnect = settings.value("engine/autoconnect", false).toBool();
-	m_trytoreconnect = settings.value("engine/trytoreconnect", false).toBool();
-	m_keepaliveinterval = settings.value("engine/keepaliveinterval", 20*1000).toUInt();
-	m_trytoreconnectinterval = settings.value("engine/trytoreconnectinterval", 20*1000).toUInt();
 	m_availstate = settings.value("engine/availstate", "available").toString();
+	m_keepaliveinterval = settings.value("engine/keepaliveinterval", 20*1000).toUInt();
+	m_trytoreconnect = settings.value("engine/trytoreconnect", false).toBool();
+	m_trytoreconnectinterval = settings.value("engine/trytoreconnectinterval", 20*1000).toUInt();
 }
 
 /*!
@@ -85,13 +101,13 @@ void Engine::saveSettings()
 {
 	QSettings settings;
 	settings.setValue("engine/serverhost", m_serverip);
-	settings.setValue("engine/serverport", m_serverport);
-	settings.setValue("engine/serverastid", m_serverast);
+	settings.setValue("engine/serverport", m_loginport);
+	settings.setValue("engine/serverastid", m_asterisk);
 	settings.setValue("engine/login", m_login);
 	settings.setValue("engine/passwd", m_passwd);
 	settings.setValue("engine/autoconnect", m_autoconnect);
-	settings.setValue("engine/trytoreconnect", m_trytoreconnect);
 	settings.setValue("engine/keepaliveinterval", m_keepaliveinterval);
+	settings.setValue("engine/trytoreconnect", m_trytoreconnect);
 	settings.setValue("engine/trytoreconnectinterval", m_trytoreconnectinterval);
 }
 
@@ -115,7 +131,7 @@ void Engine::start()
 {
 	qDebug() << "Engine::start()";
 	m_loginsocket.abort();
-	m_loginsocket.connectToHost(m_serverip, m_serverport);
+	m_loginsocket.connectToHost(m_serverip, m_loginport);
 }
 
 /*!
@@ -126,13 +142,15 @@ void Engine::stop()
 	QString outline;
 	qDebug() << "Engine::stop()";
 	outline = "STOP ";
-	outline.append(m_serverast);
-	outline.append("/");
+	if(m_asterisk.length() > 0) {
+		outline.append(m_asterisk);
+		outline.append("/");
+	}
 	outline.append(m_login);
 	outline.append("\r\n");
 
 	m_udpsocket.writeDatagram( outline.toAscii(),
-				   m_serveraddress, m_serverport+1 );
+				   m_serveraddress, m_loginport + 1 );
 	stopKeepAliveTimer();
 	stopTryAgainTimer();
 	setState(ENotLogged);
@@ -194,7 +212,7 @@ const QString & Engine::serverip() const
 
 const QString & Engine::serverast() const
 {
-	return m_serverast;
+	return m_asterisk;
 }
 
 void Engine::setServerip(const QString & serverip)
@@ -204,18 +222,18 @@ void Engine::setServerip(const QString & serverip)
 
 void Engine::setServerAst(const QString & serverast)
 {
-	m_serverast = serverast;
+	m_asterisk = serverast;
 }
 
 ushort Engine::serverport() const
 {
-	return m_serverport;
+	return m_loginport;
 }
 
 void Engine::setServerport(ushort port)
 {
 	//qDebug( "Engine::setServerport(%hu)", port);
-	m_serverport = port;
+	m_loginport = port;
 }
 
 const QString & Engine::login() const
@@ -337,11 +355,8 @@ void Engine::identifyToTheServer()
 	qDebug() << "Engine::identifyToTheServer()" << m_loginsocket.peerAddress();
 	m_serveraddress = m_loginsocket.peerAddress();
 	outline = "LOGIN ";
-	if(m_serverast.length() > 0)
-	{
-		outline.append(m_serverast);
-		outline.append("/");
-	}
+	outline.append(m_asterisk);
+	outline.append("/");
 	outline.append(m_login);
 	outline.append("\r\n");
 	m_loginsocket.write(outline.toAscii());
@@ -401,7 +416,9 @@ void Engine::processLoginDialog()
 		if(sessionResp.size() > 2)
 			m_sessionid = sessionResp[2];
 		if(sessionResp.size() > 3)
-			m_capabilities = sessionResp[3];
+			m_context = sessionResp[3];
+		if(sessionResp.size() > 4)
+			m_capabilities = sessionResp[4];
 		m_loginsocket.close();
 		setState(ELogged);
 		// start the keepalive timer
@@ -410,6 +427,7 @@ void Engine::processLoginDialog()
 	}
 	else
 	{
+		readLine.remove(QChar('\r')).remove(QChar('\n'));
 		qDebug() << "Response from server not recognized, closing" << readLine;
 		m_loginsocket.close();
 		setState(ENotLogged);
@@ -484,7 +502,7 @@ void Engine::keepLoginAlive()
 		return;
 	}
 	QString outline = "ALIVE ";
-	outline.append(m_serverast);
+	outline.append(m_asterisk);
 	outline.append("/");
 	outline.append(m_login);
 	outline.append(" SESSIONID ");
@@ -494,14 +512,14 @@ void Engine::keepLoginAlive()
 	outline.append("\r\n");
 	qDebug() <<  "Engine::keepLoginAlive()" << outline;
 	m_udpsocket.writeDatagram( outline.toAscii(),
-	                           m_serveraddress, m_serverport+1 );
+	                           m_serveraddress, m_loginport + 1 );
 	m_pendingkeepalivemsg++;
 	// if the last keepalive msg has not been answered, send this one
 	// twice
 	if(m_pendingkeepalivemsg > 1)
 	{
 		m_udpsocket.writeDatagram( outline.toAscii(),
-	    	                       m_serveraddress, m_serverport+1 );
+	    	                       m_serveraddress, m_loginport + 1 );
 		m_pendingkeepalivemsg++;
 	}
 }
@@ -522,15 +540,17 @@ void Engine::sendMessage(const QString & txt)
 		return;
 	}
 	QString outline = "MESSAGE ";
-	outline.append(m_serverast);
-	outline.append("/");
+	if(m_asterisk.length() > 0) {
+		outline.append(m_asterisk);
+		outline.append("/");
+	}
 	outline.append(m_login);
 	outline.append(" ");
 	outline.append(txt);
 	outline.append("\r\n");
 	qDebug() <<  "Engine::sendMessage()" << outline;
 	m_udpsocket.writeDatagram( outline.toAscii(),
-	                           m_serveraddress, m_serverport+1 );
+	                           m_serveraddress, m_loginport + 1 );
 	m_pendingkeepalivemsg++;
 }
 
