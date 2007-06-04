@@ -78,6 +78,9 @@ private slots:
 	void hangUp(const QString & peer);
 	void identifyToTheServer();	//!< perform the first login step
 	void processLoginDialog();	//!< perform the following login steps
+	void keepLoginAlive();		//!< Send a UDP datagram to keep session alive
+	void readKeepLoginAliveDatagrams();	//!< handle the responses to keep alive
+	void setKeepaliveinterval(uint);	//!< set keep alive interval
 signals:
 	void started();
 	void stopped();
@@ -100,6 +103,9 @@ signals:
 	void updateLogEntry(const QDateTime &, int, const QString &, int);
 	void directoryResponse(const QString &);
 private:
+	void stopKeepAliveTimer();	//!< Stop the keep alive timer if running
+	void startTryAgainTimer();	//!< Start the "try to reconnect" timer
+	void stopTryAgainTimer();	//!< Stop the "try to reconnect" timer
 	void setAvailState(const QString &);	//!< set Availability state
 
 	QTcpSocket * m_socket;	//!< socket to connect to the server
@@ -112,13 +118,24 @@ private:
 	QString m_pendingcommand;	//!< command to be sent to the server.
 	QHash<QString, QString> m_callerids;
 	// poste à utiliser pour les commandes "DIAL"
+	QHostAddress m_serveraddress;	//!< Resolved address of the login server
 	QString m_asterisk;
 	QString m_protocol;
 	QString m_extension;
 	QString m_passwd;	//!< password for account
 	QString m_dialcontext;
 	QString m_availstate;	//!< Availability state to send to the server
+	QString m_sessionid;	//!< Session id obtained after a successful login
+	QString m_capabilities;	//!< List of capabilities issued by the server after a successful login
+	QString m_context;	//!< Context of the phone, as returned by the xivo_daemon server
 	EngineState m_state;	//!< State of the engine (Logged/Not Logged)
+	uint m_keepaliveinterval;	//!< Keep alive interval (in msec)
+	uint m_trytoreconnectinterval;	//!< Try to reconnect interval (in msec)
+	bool m_trytoreconnect;	//!< "try to reconnect" flag
+	int m_ka_timerid;			//!< timer id for keep alive
+	int m_try_timerid;			//!< timer id for try to reconnect
+	QUdpSocket m_udpsocket;		//!< UDP socket used for keep alive
+	int m_pendingkeepalivemsg;	//!< number of keepalivemsg sent without response
 };
 
 #endif

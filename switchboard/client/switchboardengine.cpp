@@ -69,6 +69,7 @@ void SwitchBoardEngine::loadSettings()
 	m_extension = settings.value("engine/extension").toString();
 	m_passwd = settings.value("engine/passwd").toString();
 	m_availstate = settings.value("engine/availstate", "available").toString();
+	m_keepaliveinterval = settings.value("engine/keepaliveinterval", 20*1000).toUInt();
 }
 
 /*!
@@ -86,6 +87,7 @@ void SwitchBoardEngine::saveSettings()
 	settings.setValue("engine/extension", m_extension);
 	settings.setValue("engine/passwd", m_passwd);
 	settings.setValue("engine/availstate", m_availstate);
+	settings.setValue("engine/keepaliveinterval", m_keepaliveinterval);
 }
 
 /* \brief set server address
@@ -178,6 +180,25 @@ void SwitchBoardEngine::socketDisconnected()
 void SwitchBoardEngine::socketHostFound()
 {
 	qDebug() << "socketHostFound()";
+}
+
+/*!
+ * Setter for the m_keepaliveinterval property.
+ * if the value is changed, existing timer is restarted.
+ *
+ * \sa keepaliveinterval
+ */
+void SwitchBoardEngine::setKeepaliveinterval(uint i)
+{
+	if(i != m_keepaliveinterval)
+	{
+		m_keepaliveinterval = i;
+		if(m_ka_timerid > 0)
+		{
+			killTimer(m_ka_timerid);
+			m_ka_timerid = startTimer(m_keepaliveinterval);
+		}
+	}
 }
 
 void SwitchBoardEngine::socketError(QAbstractSocket::SocketError socketError)
@@ -370,14 +391,14 @@ void SwitchBoardEngine::socketReadyRead()
 	}
 }
 
-void SwitchBoardEngine::timerEvent(QTimerEvent * event)
-{
-	// event->timerId() !
-	//	qDebug() << event;
-	//	m_socket->connectToHost(m_host, m_port);
-	//m_pendingcommand = "history obelisk/SIP/103 3";
-	//sendCommand();
-}
+// void SwitchBoardEngine::timerEvent(QTimerEvent * event)
+// {
+// 	// event->timerId() !
+// 	//	qDebug() << event;
+// 	//	m_socket->connectToHost(m_host, m_port);
+// 	//m_pendingcommand = "history obelisk/SIP/103 3";
+// 	//sendCommand();
+// }
 
 /*! \brief send an originate command to the server
  */
@@ -496,6 +517,7 @@ void SwitchBoardEngine::identifyToTheServer()
 {
 	QString outline;
 	qDebug() << "Engine::identifyToTheServer()" << m_loginsocket->peerAddress();
+	m_serveraddress = m_loginsocket->peerAddress();
 	outline = "LOGIN ";
 	if(m_asterisk.length() > 0)
 	{
@@ -557,16 +579,16 @@ void SwitchBoardEngine::processLoginDialog()
 	{
 		readLine.remove(QChar('\r')).remove(QChar('\n'));
 		QStringList sessionResp = readLine.split(" ");
-		// 		if(sessionResp.size() > 2)
-		// 			m_sessionid = sessionResp[2];
-		// 		if(sessionResp.size() > 3)
-		// 			m_context = sessionResp[3];
-		// 		if(sessionResp.size() > 4)
-		// 			m_capabilities = sessionResp[4];
+		if(sessionResp.size() > 2)
+			m_sessionid = sessionResp[2];
+		if(sessionResp.size() > 3)
+			m_context = sessionResp[3];
+		if(sessionResp.size() > 4)
+			m_capabilities = sessionResp[4];
 		m_loginsocket->close();
 		setState(ELogged);
 		// start the keepalive timer
-		//		m_ka_timerid = startTimer(m_keepaliveinterval);
+		m_ka_timerid = startTimer(m_keepaliveinterval);
 		return;
 	}
 	else
@@ -619,7 +641,7 @@ void SwitchBoardEngine::setAvailState(const QString & newstate)
 		QSettings settings;
 		m_availstate = newstate;
 		settings.setValue("engine/availstate", m_availstate);
-		//		keepLoginAlive();
+		keepLoginAlive();
 	}
 }
 
@@ -649,5 +671,119 @@ void SwitchBoardEngine::setDoNotDisturb()
 {
 	//qDebug() << "setDoNotDistrurb()";
 	setAvailState("donotdisturb");
+}
+
+/*!
+ * Send a keep alive message to the login server.
+ * The message is sent in a datagram through m_udpsocket
+ */ 
+void SwitchBoardEngine::keepLoginAlive()
+{
+	// got to disconnected state if more than xx keepalive messages
+	// have been left without response.
+	if(m_pendingkeepalivemsg > 1)
+	{
+		qDebug() << "m_pendingkeepalivemsg" << m_pendingkeepalivemsg;
+		stopKeepAliveTimer();
+		setState(ENotLogged);
+		m_pendingkeepalivemsg = 0;
+		startTryAgainTimer();
+		return;
+	}
+	QString outline = "ALIVE ";
+	outline.append(m_asterisk);
+	outline.append("/sip");
+	outline.append(m_extension);
+	outline.append(" SESSIONID ");
+	outline.append(m_sessionid);
+	outline.append(" STATE ");
+	outline.append(m_availstate);
+	outline.append("\r\n");
+	qDebug() <<  "Engine::keepLoginAlive()" << outline;
+	m_udpsocket.writeDatagram( outline.toAscii(),
+	                           m_serveraddress, m_loginport+1 );
+	m_pendingkeepalivemsg++;
+	// if the last keepalive msg has not been answered, send this one
+	// twice
+	if(m_pendingkeepalivemsg > 1)
+	{
+		m_udpsocket.writeDatagram( outline.toAscii(),
+	    	                       m_serveraddress, m_loginport+1 );
+		m_pendingkeepalivemsg++;
+	}
+}
+
+void SwitchBoardEngine::stopKeepAliveTimer()
+{
+	if( m_ka_timerid > 0 )
+	{
+		killTimer(m_ka_timerid);
+		m_ka_timerid = 0;
+	}
+}
+
+void SwitchBoardEngine::stopTryAgainTimer()
+{
+	if( m_try_timerid > 0 )
+	{
+		killTimer(m_try_timerid);
+		m_try_timerid = 0;
+	}
+}
+
+void SwitchBoardEngine::startTryAgainTimer()
+{
+	if( m_try_timerid == 0 && m_trytoreconnect )
+	{
+		m_try_timerid = startTimer(m_trytoreconnectinterval);
+	}
+}
+
+/*!
+ * Process incoming UDP datagrams which are likely to be 
+ * response from keep alive messages.
+ * If the response is not 'OK', goes to
+ * the "not connected" state.
+ */
+void SwitchBoardEngine::readKeepLoginAliveDatagrams()
+{
+	char buffer[256];
+	int len;
+	qDebug() << "Engine::readKeepLoginAliveDatagrams()";
+	while( m_udpsocket.hasPendingDatagrams() )
+	{
+		len = m_udpsocket.readDatagram(buffer, sizeof(buffer)-1);
+		if(len == 0)
+			continue;
+		buffer[len] = '\0';
+		//		qDebug() << len << ":" << buffer;
+		if(buffer[0] != 'O' && buffer[0] != 'S' || buffer[1] !='K' && buffer[1] !='E')
+		{
+			stopKeepAliveTimer();
+			setState(ENotLogged);
+			startTryAgainTimer();
+		}
+		m_pendingkeepalivemsg = 0;
+	}
+}
+
+void SwitchBoardEngine::timerEvent(QTimerEvent * event)
+{
+	int timerId = event->timerId();
+	qDebug() << "SwitchBoardEngine::timerEvent() timerId=" << timerId;
+	if(timerId == m_ka_timerid)
+	{
+		keepLoginAlive();
+		event->accept();
+	}
+	else if(timerId == m_try_timerid)
+	{
+		start();
+		event->accept();
+	}
+	else
+	{
+		event->ignore();
+	}
 }
 
