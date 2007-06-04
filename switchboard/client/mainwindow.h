@@ -25,6 +25,8 @@ private slots:
 	void showConfDialog();
 	void engineStopped();
 	void engineStarted();
+	void loginengineStopped();
+	void loginengineStarted();
 	void about();
 private:
 	QSplitter * m_splitter;	//!< Splitter to separate right/left panels

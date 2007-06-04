@@ -1,6 +1,24 @@
+/*
+XIVO switchboard : 
+Copyright (C) 2007  Proformatique
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
+*/
+
 /* $Revision $
    $Date$
-   Copyright (C) 2007 Proformatique
 */
 
 #include <QStatusBar>
@@ -152,7 +170,7 @@ MainWindow::MainWindow(SwitchBoardEngine * engine, LoginEngine * loginengine)
 	         searchpanel, SLOT(removePeers()) );
 	connect( engine, SIGNAL(removePeer(const QString &)),
 	         searchpanel, SLOT(removePeer(const QString &)) );
-
+	
 	DisplayMessagesPanel * lbl = new DisplayMessagesPanel(m_rightSplitter);
 	
 	DialPanel * dialpanel = new DialPanel(m_rightSplitter);
@@ -177,7 +195,12 @@ MainWindow::MainWindow(SwitchBoardEngine * engine, LoginEngine * loginengine)
 	        this, SLOT(engineStarted()));
 	connect(m_engine, SIGNAL(stopped()),
 	        this, SLOT(engineStopped()));
-
+	
+	connect(m_loginengine, SIGNAL(logged()),
+		this, SLOT(loginengineStarted()) );
+	connect(m_loginengine, SIGNAL(delogged()),
+		this, SLOT(loginengineStopped()) );
+	
 	QMenu * menu = menuBar()->addMenu(tr("&File"));
 	
 	m_loginact = new QAction(tr("&Log in"), this);
@@ -207,6 +230,7 @@ MainWindow::MainWindow(SwitchBoardEngine * engine, LoginEngine * loginengine)
 	menu->addAction(conf);
 
 	QAction * quit = new QAction(tr("&Quit"), this);
+	connect(quit, SIGNAL(triggered()), m_loginengine, SLOT(stop()) );
 	connect(quit, SIGNAL(triggered()), qApp, SLOT(quit()));
 	menu->addAction(quit);
 
@@ -302,6 +326,26 @@ void MainWindow::engineStopped()
 {
 	m_stopact->setDisabled(true);
 	m_startact->setEnabled(true);
+}
+
+/*!
+ * enable the "Log off" action and disable "Login" Action.
+ * \sa loginengineStopped()
+ */
+void MainWindow::loginengineStarted()
+{
+	m_logoffact->setEnabled(true);
+	m_loginact->setDisabled(true);
+}
+
+/*!
+ * disable the "Stop" action and enable "Start" Action.
+ * \sa loginengineStarted()
+ */
+void MainWindow::loginengineStopped()
+{
+	m_logoffact->setDisabled(true);
+	m_loginact->setEnabled(true);
 }
 
 /*! \brief Display the about box

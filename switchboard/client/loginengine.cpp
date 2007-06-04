@@ -1,5 +1,5 @@
 /*
-XIVO customer information client : popup profile for incoming calls
+XIVO switchboard & customer information client : 
 Copyright (C) 2007  Proformatique
 
 This program is free software; you can redistribute it and/or
@@ -17,7 +17,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 */
 
-/* $Id$ */
+/* $Revision $
+   $Date$
+*/
 
 #include <QDebug>
 #include <QSettings>
@@ -34,11 +36,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  * is created and connected to the right slots/signals
  */
 LoginEngine::LoginEngine(QObject * parent)
-: QObject(parent)
+	: QObject(parent), m_loginport(0), m_sessionid(""),
+	  m_state(ENotLogged), m_pendingkeepalivemsg(0)
 {
 	m_ka_timerid = 0;
 	m_try_timerid = 0;
 	m_loginsocket = new QTcpSocket(this);
+	m_udpsocket   = new QUdpSocket(this);
 	loadSettings();
 	setAvailState(m_availstate);
 	
@@ -60,7 +64,12 @@ LoginEngine::LoginEngine(QObject * parent)
 	         this, SLOT(identifyToTheServer()) );
 	connect( m_loginsocket, SIGNAL(readyRead()),
 	         this, SLOT(processLoginDialog()) );
-
+	
+	// init UDP socket used for keep alive
+	m_udpsocket->bind();
+	connect( m_udpsocket, SIGNAL(readyRead()),
+		 this, SLOT(readKeepLoginAliveDatagrams()) );
+	
 	if(m_autoconnect)
 		start();
 }
@@ -107,7 +116,7 @@ void LoginEngine::saveSettings()
  */
 void LoginEngine::start()
 {
-	qDebug() << "LoginEngine::start()";
+	qDebug() << "LoginEngine::start()" << m_serverhost << m_loginport;
 	m_loginsocket->abort();
 	m_loginsocket->connectToHost(m_serverhost, m_loginport);
 }
@@ -119,20 +128,18 @@ void LoginEngine::stop()
 	QString outline;
 	qDebug() << "LoginEngine::stop()";
 	outline = "STOP ";
-	if(m_asterisk.length() > 0) {
-		outline.append(m_asterisk);
-		outline.append("/");
-		outline.append("sip");
-	}
+	outline.append(m_asterisk);
+	outline.append("/");
+	outline.append(m_protocol.toLower());
 	outline.append(m_extension);
+	qDebug() << "LoginEngine::stop()" << outline;
 	outline.append("\r\n");
-
-	m_udpsocket.writeDatagram( outline.toAscii(),
-				   m_serveraddress, m_loginport+1 );
+	m_udpsocket->writeDatagram( outline.toAscii(),
+				    m_serveraddress, m_loginport + 1 );
 	stopKeepAliveTimer();
 	stopTryAgainTimer();
 	setState(ENotLogged);
-	m_socket->disconnectFromHost();
+	m_loginsocket->disconnectFromHost();
 }
 
 /*!
@@ -269,15 +276,14 @@ void LoginEngine::identifyToTheServer()
 	qDebug() << "LoginEngine::identifyToTheServer()" << m_loginsocket->peerAddress();
 	m_serveraddress = m_loginsocket->peerAddress();
 	outline = "LOGIN ";
-	if(m_asterisk.length() > 0) {
-		outline.append(m_asterisk);
-		outline.append("/");
-		outline.append("sip");
-	}
-	outline.append(m_extension + "\r\n");
+	outline.append(m_asterisk);
+	outline.append("/");
+	outline.append(m_protocol.toLower());
+	outline.append(m_extension);
+	qDebug() << "LoginEngine::identifyToTheServer() : " << outline;
+	outline.append("\r\n");
 	m_loginsocket->write(outline.toAscii());
 	m_loginsocket->flush();
-	qDebug() << outline;
 }
 
 /*!
@@ -311,19 +317,16 @@ void LoginEngine::processLoginDialog()
 	{
 		outline = "PASS ";
 		outline.append(m_passwd);
-		outline.append("\r\n");
 	}
 	else if(readLine.startsWith("Send PORT"))
 	{
 		outline = "PORT ";
 		outline.append(QString::number(0)); // m_listenport
-		outline.append("\r\n");
 	}
 	else if(readLine.startsWith("Send STATE"))
 	{
 		outline = "STATE ";
 		outline.append(m_availstate);
-		outline.append("\r\n");
 	}
 	else if(readLine.startsWith("OK SESSIONID"))
 	{
@@ -343,12 +346,15 @@ void LoginEngine::processLoginDialog()
 	}
 	else
 	{
+		readLine.remove(QChar('\r')).remove(QChar('\n'));
 		qDebug() << "Response from server not recognized, closing" << readLine;
 		m_loginsocket->close();
 		setState(ENotLogged);
 		return;
 	}
-	qDebug() << outline;
+	
+	qDebug() << "LoginEngine::processLoginDialog() : " << outline;
+	outline.append("\r\n");
 	m_loginsocket->write(outline.toAscii());
 	m_loginsocket->flush();
 }
@@ -363,7 +369,7 @@ void LoginEngine::keepLoginAlive()
 	// have been left without response.
 	if(m_pendingkeepalivemsg > 1)
 	{
-		qDebug() << "m_pendingkeepalivemsg" << m_pendingkeepalivemsg;
+		qDebug() << "m_pendingkeepalivemsg" << m_pendingkeepalivemsg << "=> 0";
 		stopKeepAliveTimer();
 		setState(ENotLogged);
 		m_pendingkeepalivemsg = 0;
@@ -372,23 +378,24 @@ void LoginEngine::keepLoginAlive()
 	}
 	QString outline = "ALIVE ";
 	outline.append(m_asterisk);
-	outline.append("/sip");
+	outline.append("/");
+	outline.append(m_protocol.toLower());
 	outline.append(m_extension);
 	outline.append(" SESSIONID ");
 	outline.append(m_sessionid);
 	outline.append(" STATE ");
 	outline.append(m_availstate);
+	qDebug() <<  "LoginEngine::keepLoginAlive() : " << outline;
 	outline.append("\r\n");
-	qDebug() <<  "LoginEngine::keepLoginAlive()" << outline;
-	m_udpsocket.writeDatagram( outline.toAscii(),
-	                           m_serveraddress, m_loginport+1 );
+	m_udpsocket->writeDatagram( outline.toAscii(),
+				    m_serveraddress, m_loginport + 1 );
 	m_pendingkeepalivemsg++;
 	// if the last keepalive msg has not been answered, send this one
 	// twice
 	if(m_pendingkeepalivemsg > 1)
 	{
-		m_udpsocket.writeDatagram( outline.toAscii(),
-	    	                       m_serveraddress, m_loginport+1 );
+		m_udpsocket->writeDatagram( outline.toAscii(),
+					    m_serveraddress, m_loginport + 1 );
 		m_pendingkeepalivemsg++;
 	}
 }
@@ -404,13 +411,13 @@ void LoginEngine::readKeepLoginAliveDatagrams()
 	char buffer[256];
 	int len;
 	qDebug() << "LoginEngine::readKeepLoginAliveDatagrams()";
-	while( m_udpsocket.hasPendingDatagrams() )
+	while( m_udpsocket->hasPendingDatagrams() )
 	{
-		len = m_udpsocket.readDatagram(buffer, sizeof(buffer)-1);
+		len = m_udpsocket->readDatagram(buffer, sizeof(buffer)-1);
 		if(len == 0)
 			continue;
 		buffer[len] = '\0';
-		//		qDebug() << len << ":" << buffer;
+		qDebug() << "LoginEngine::readKeepLoginAliveDatagrams() : " << buffer;
 		if(buffer[0] != 'O' && buffer[0] != 'S' || buffer[1] !='K' && buffer[1] !='E')
 		{
 			stopKeepAliveTimer();

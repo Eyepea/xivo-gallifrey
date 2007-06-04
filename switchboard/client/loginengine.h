@@ -72,8 +72,8 @@ private:
 	void stopTryAgainTimer();	//!< Stop the "try to reconnect" timer
 	void setAvailState(const QString &);	//!< set Availability state
 
-	QTcpSocket * m_socket;	//!< socket to connect to the server
 	QTcpSocket * m_loginsocket;	//!< socket to login to the server
+	QUdpSocket * m_udpsocket;		//!< UDP socket used for keep alive
 	int m_timer;	//!< timer id
 	QString m_serverhost;	//!< server host name
 	quint16 m_loginport;	//!< port to login to server
@@ -95,7 +95,6 @@ private:
 	bool m_trytoreconnect;	//!< "try to reconnect" flag
 	int m_ka_timerid;			//!< timer id for keep alive
 	int m_try_timerid;			//!< timer id for try to reconnect
-	QUdpSocket m_udpsocket;		//!< UDP socket used for keep alive
 	int m_pendingkeepalivemsg;	//!< number of keepalivemsg sent without response
 };
 
