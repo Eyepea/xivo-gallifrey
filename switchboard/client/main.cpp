@@ -4,6 +4,7 @@
 #include <QLocale>
 #include <QFile>
 #include "switchboardwindow.h"
+#include "loginengine.h"
 #include "switchboardengine.h"
 #include "mainwindow.h"
 
@@ -31,9 +32,10 @@ int main(int argc, char * * argv)
 	app.installTranslator(&switchboardTranslator);
 
 	SwitchBoardEngine engine;
-	MainWindow mainwin(&engine);
+	LoginEngine login_engine;
+	MainWindow mainwin(&engine, &login_engine);
 	mainwin.show();
-    //engine.startTimer(1000);
+	//engine.startTimer(1000);
 	return app.exec();
 }
 

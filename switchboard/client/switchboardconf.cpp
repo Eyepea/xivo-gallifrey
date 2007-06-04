@@ -1,3 +1,8 @@
+/* $Revision $
+   $Date$
+   Copyright (C) 2007 Proformatique
+*/
+
 #include <QGridLayout>
 #include <QLabel>
 #include <QLineEdit>
@@ -9,11 +14,13 @@
 #include "switchboardconf.h"
 #include "switchboardengine.h"
 #include "switchboardwindow.h"
+#include "loginengine.h"
 
 SwitchBoardConfDialog::SwitchBoardConfDialog(SwitchBoardEngine * engine,
+					     LoginEngine * loginengine,
                                              SwitchBoardWindow * window,
                                              QWidget * parent)
-: QDialog(parent), m_engine(engine), m_window(window)
+: QDialog(parent), m_engine(engine), m_loginengine(loginengine), m_window(window)
 {
 	int line = 0;
 	setModal( true );
@@ -37,7 +44,7 @@ SwitchBoardConfDialog::SwitchBoardConfDialog(SwitchBoardEngine * engine,
 	line++;
 	
 	QLabel * lbllport = new QLabel( tr("Login port :"), this);
-	m_loginport = new QLineEdit(QString::number(m_engine->loginport()), this);
+	m_loginport = new QLineEdit(QString::number(m_loginengine->loginport()), this);
 	m_loginport->setInputMask("5000");
 	layout->addWidget( lbllport, line, 0 );
 	layout->addWidget( m_loginport, line, 1 );

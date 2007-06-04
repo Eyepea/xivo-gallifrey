@@ -3,6 +3,7 @@
 
 #include <QDialog>
 
+class LoginEngine;
 class SwitchBoardEngine;
 class SwitchBoardWindow;
 class QLineEdit;
@@ -15,11 +16,14 @@ class SwitchBoardConfDialog : public QDialog
 	Q_OBJECT
 public:
 	SwitchBoardConfDialog(SwitchBoardEngine * engine,
-	                      SwitchBoardWindow * window, QWidget *parent = 0);
+			      LoginEngine * loginengine,
+	                      SwitchBoardWindow * window,
+			      QWidget *parent = 0);
 private slots:
 	void saveAndClose();
 private:
 	SwitchBoardEngine * m_engine;
+	LoginEngine * m_loginengine;
 	SwitchBoardWindow * m_window;
 	QLineEdit * m_serverhost;
 	QLineEdit * m_sbport;

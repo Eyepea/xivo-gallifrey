@@ -1,5 +1,7 @@
-/* $Id$ */
-/* Copyright (C) 2007 Proformatique */
+/* $Revision $
+   $Date$
+   Copyright (C) 2007 Proformatique
+*/
 
 #include <QStatusBar>
 #include <QMenuBar>
@@ -14,6 +16,7 @@
 #include <QVBoxLayout>
 #include <QDebug>
 #include "mainwindow.h"
+#include "loginengine.h"
 #include "switchboardengine.h"
 #include "switchboardwindow.h"
 #include "switchboardconf.h"
@@ -55,8 +58,8 @@ QLabel * LeftPanel::titleLabel()
  * displaying calls and a right panel for peers.
  * The geometry is restored from settings.
  */
-MainWindow::MainWindow(SwitchBoardEngine * engine)
-: m_engine(engine)
+MainWindow::MainWindow(SwitchBoardEngine * engine, LoginEngine * loginengine)
+	: m_engine(engine), m_loginengine(loginengine)
 {
 	statusBar();	// This creates the status bar.
 	setWindowIcon(QIcon(":/xivoicon.png"));
@@ -109,13 +112,13 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 	connect( engine, SIGNAL(updatePeer(const QString &, const QString &,
 	                                   const QString &, const QString &,
 	                                   const QString &, const QString &,
-									   const QStringList &, const QStringList &,
-									   const QStringList &)),
+					   const QStringList &, const QStringList &,
+					   const QStringList &)),
 	         m_widget, SLOT(updatePeer(const QString &, const QString &,
 					   const QString &, const QString &,
 					   const QString &, const QString &,
-									   const QStringList &, const QStringList &,
-									   const QStringList &)) );
+					   const QStringList &, const QStringList &,
+					   const QStringList &)) );
 	connect( engine, SIGNAL(stopped()),
 	         m_widget, SLOT(removePeers()) );
 	connect( engine, SIGNAL(removePeer(const QString &)),
@@ -138,13 +141,13 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 	connect( engine, SIGNAL(updatePeer(const QString &, const QString &,
 	                                   const QString &, const QString &,
 	                                   const QString &, const QString &,
-									   const QStringList &, const QStringList &,
-									   const QStringList &)),
+					   const QStringList &, const QStringList &,
+					   const QStringList &)),
 	         searchpanel, SLOT(updatePeer(const QString &, const QString &,
 					      const QString &, const QString &,
 					      const QString &, const QString &,
-									   const QStringList &, const QStringList &,
-									   const QStringList &)) );
+					      const QStringList &, const QStringList &,
+					      const QStringList &)) );
 	connect( engine, SIGNAL(stopped()),
 	         searchpanel, SLOT(removePeers()) );
 	connect( engine, SIGNAL(removePeer(const QString &)),
@@ -177,6 +180,16 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 
 	QMenu * menu = menuBar()->addMenu(tr("&File"));
 	
+	m_loginact = new QAction(tr("&Log in"), this);
+	m_loginact->setStatusTip(tr("Log in"));
+	connect(m_loginact, SIGNAL(triggered()), m_loginengine, SLOT(start()) );
+	menu->addAction(m_loginact);
+
+	m_logoffact = new QAction(tr("Log o&ff"), this);
+	m_logoffact->setStatusTip(tr("Log off"));
+	connect(m_logoffact, SIGNAL(triggered()), m_loginengine, SLOT(stop()) );
+	menu->addAction(m_logoffact);
+
 	m_startact = new QAction(tr("S&tart"), this);
 	m_startact->setStatusTip(tr("Start"));
 	connect(m_startact, SIGNAL(triggered()), m_engine, SLOT(start()) );
@@ -204,36 +217,36 @@ MainWindow::MainWindow(SwitchBoardEngine * engine)
 	m_avact_avail = new QAction( tr("&Available"), this );
 	m_avact_avail->setCheckable(true);
 	connect( m_avact_avail, SIGNAL(triggered()),
-	         m_engine, SLOT(setAvailable()) );
+	         m_loginengine, SLOT(setAvailable()) );
 	m_availgrp->addAction( m_avact_avail );
 	m_avact_away = new QAction( tr("A&way"), this );
 	m_avact_away->setCheckable(true);
 	connect( m_avact_away, SIGNAL(triggered()),
-	         m_engine, SLOT(setAway()) );
+	         m_loginengine, SLOT(setAway()) );
 	m_availgrp->addAction( m_avact_away );
 	m_avact_brb = new QAction( tr("&Be Right Back"), this );
 	m_avact_brb->setCheckable(true);
 	connect( m_avact_brb, SIGNAL(triggered()),
-	         m_engine, SLOT(setBeRightBack()) );
+	         m_loginengine, SLOT(setBeRightBack()) );
 	m_availgrp->addAction( m_avact_brb );
 	m_avact_otl = new QAction( tr("&Out To Lunch"), this );
 	m_avact_otl->setCheckable(true);
 	connect( m_avact_otl, SIGNAL(triggered()),
-	         m_engine, SLOT(setOutToLunch()) );
+	         m_loginengine, SLOT(setOutToLunch()) );
 	m_availgrp->addAction( m_avact_otl );
 	m_avact_dnd = new QAction( tr("&Do not disturb"), this );
 	m_avact_dnd->setCheckable(true);
 	connect( m_avact_dnd, SIGNAL(triggered()),
-	         m_engine, SLOT(setDoNotDisturb()) );
+	         m_loginengine, SLOT(setDoNotDisturb()) );
 	m_availgrp->addAction( m_avact_dnd );
 
-	if(m_engine->getAvailState() == QString("berightback"))
+	if(m_loginengine->getAvailState() == QString("berightback"))
 		m_avact_brb->setChecked( true );
-	else if(m_engine->getAvailState() == QString("donotdisturb"))
+	else if(m_loginengine->getAvailState() == QString("donotdisturb"))
 		m_avact_dnd->setChecked( true );
-	else if(m_engine->getAvailState() == QString("away"))
+	else if(m_loginengine->getAvailState() == QString("away"))
 		m_avact_away->setChecked( true );
-	else if(m_engine->getAvailState() == QString("outtolunch"))
+	else if(m_loginengine->getAvailState() == QString("outtolunch"))
 		m_avact_otl->setChecked( true );
 	else
 		m_avact_avail->setChecked( true );
@@ -266,7 +279,8 @@ MainWindow::~MainWindow()
  */
 void MainWindow::showConfDialog()
 {
-	SwitchBoardConfDialog * conf = new SwitchBoardConfDialog(m_engine, m_widget, this);
+	SwitchBoardConfDialog * conf = new SwitchBoardConfDialog(m_engine, m_loginengine,
+								 m_widget, this);
 	qDebug() << "<<  " << conf->exec();
 }
 

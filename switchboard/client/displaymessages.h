@@ -7,7 +7,6 @@
 
 class QVBoxLayout;
 class QLineEdit;
-class SwitchBoardEngine;
 class QTableWidget;
 
 class DisplayMessagesPanel : public QWidget
