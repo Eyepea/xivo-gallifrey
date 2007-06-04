@@ -152,8 +152,8 @@ class myLDAP:
 			self.l.protocol_version = ldap.VERSION3
 			self.l.simple_bind_s(iuser, ipass)
 			
-		except ldap.LDAPError, e:
-			print e
+		except ldap.LDAPError, exc:
+			print exc
 			sys.exit()
 
 	def getldap(self, ibase, filter, attrib):
@@ -163,8 +163,8 @@ class myLDAP:
 						   filter,
 						   attrib)
 			return resultat
-		except ldap.LDAPError, e:
-			print e
+		except ldap.LDAPError, exc:
+			print exc
 
 
 ## \brief Function for Daemonizing
@@ -172,14 +172,17 @@ class myLDAP:
 def daemonize():
 	try:
 		pid = os.fork()
-		if pid > 0: sys.exit(0)
-	except OSError, e: sys.exit(1)
+		if pid > 0:
+			sys.exit(0)
+	except OSError, exc:
+		sys.exit(1)
 	os.setsid()
 	os.umask(0)
 	try:
 		pid = os.fork()
 		if pid > 0: sys.exit(0)
-	except OSError, e: sys.exit(1)
+	except OSError, exc:
+		sys.exit(1)
 	dev_null = file('/dev/null', 'r+')
 	os.dup2(dev_null.fileno(), sys.stdin.fileno())
 	os.dup2(dev_null.fileno(), sys.stdout.fileno())
@@ -220,59 +223,51 @@ def update_userlist_fromurl(astn, url, sipaccounts):
 	numlist = {}
 	try:
 		f = urllib.urlopen(url)
-	except Exception, e:
-		log_debug(configs[astn].astid + " : unable to open URL : " + url + " " + str(e))
+	except Exception, exc:
+		log_debug("%s : unable to open URL %s : %s" %(configs[astn].astid, url, str(exc)))
 		return numlist
 	try:
 		for line in f:
 			# remove leading/tailing whitespaces
 			line = line.strip()
 			l = line.split('|')
-			fullname = ""
-			firstname = ""
-			lastname = ""
-			number = ""
-			context = ""
-			if len(l) > 1:
-				number = l[1]
-			if len(l) > 7:
-				fullname = l[7]
-			if len(l) > 8:
-				firstname = l[8]
-			if len(l) > 9:
-				lastname = l[9]
-			if len(l) > 10:
-				context = l[10]
-			if l[6] == "0":
-				enabling = True
-			else:
-				enabling = False
+			
+			[sso_tech, sso_phoneid, sso_passwd, sso_dummy,
+			 sso_phonenum, sso_l5, sso_l6,
+			 fullname, firstname, lastname, sso_context] = ["", "", "", "", "", "", "", "", "", "", ""]
 
-			sipaccount = ""
-			for z in sipaccounts:
-				if z[0] == context:
-					sipaccount = z[1]
-					break
-			if sipaccount == "":
-				enabling = False
+			if len(l) == 11:
+				[sso_tech, sso_phoneid, sso_passwd, sso_dummy,
+				 sso_phonenum, sso_l5, sso_l6,
+				 fullname, firstname, lastname, sso_context] = l
 
-			#the <b> tag inside the string disables the drag&drop of the widget (4.2.3 ok, 4.2.1 ko)
-			fullname = firstname + " " + lastname + " <b>" + number + "</b>"
-			#fullname = firstname + " " + lastname + " " + number
-
-			# line is protocol | username | password | rightflag |
-			#         phone number | initialized | disabled(=1) | callerid
-			argg = number
-                        if l[0] == "sip" and l[5] == "1" and enabling and l[1] != sipaccount and number != "":
-				numlist["SIP/" + argg] = fullname, firstname, lastname, l[4], context
-				adduser(astn, l[0] + number, l[2])
-                        elif l[0] == "iax" and l[5] == "1" and enabling:
-				numlist["IAX2/" + argg] = fullname, firstname, lastname, l[4], context
-                        elif l[0] == "misdn" and l[5] == "1" and enabling:
-				numlist["mISDN/" + argg] = fullname, firstname, lastname, l[4], context
-                        elif l[0] == "zap" and l[5] == "1" and enabling:
-				numlist["Zap/" + argg] = fullname, firstname, lastname, l[4], context
-				adduser(astn, l[0] + number, l[2])
+				if sso_l6 == "0": enabling = True
+				else:             enabling = False
+				sipaccount = ""
+				for z in sipaccounts:
+					if z[0] == sso_context:
+						sipaccount = z[1]
+						break
+				if sipaccount == "":
+					enabling = False
+					
+				# the <b> tag inside the string disables the drag&drop of the widget (4.2.3 ok, 4.2.1 ko)
+				fullname = firstname + " " + lastname + " <b>" + sso_phoneid + "</b>"
+			
+				# line is protocol | username | password | rightflag |
+				#         phone number | initialized | disabled(=1) | callerid
+				if sso_l5 == "1" and enabling and sso_phoneid != sipaccount and sso_phonenum != "":
+					if sso_tech == "sip":
+						argg = "SIP/" + sso_phoneid
+						adduser(astn, sso_tech + sso_phoneid, sso_passwd, sso_context)
+					elif sso_tech == "iax":
+						argg = "IAX2/" + sso_phoneid
+					elif sso_tech == "misdn":
+						argg = "mISDN/" + sso_phoneid
+					elif sso_tech == "zap":
+						argg = "Zap/" + sso_phoneid
+						adduser(astn, sso_tech + sso_phoneid, sso_passwd, sso_context)
+					numlist[argg] = fullname, firstname, lastname, sso_phonenum, sso_context
 	finally:
 		f.close()
 
@@ -309,8 +304,8 @@ def update_history_call(astn, sipnum, nlines, kind):
 		results = cursor.fetchall()
 		conn.close()
 
-	except Exception, e:
-		log_debug("Connection to MySQL failed <%s>" %(str(e)))
+	except Exception, exc:
+		log_debug("Connection to MySQL failed <%s>" %(str(exc)))
 
 	return results
 
@@ -348,8 +343,8 @@ def read_sip_properties(data):
 			elif x.find("branch=") >= 0:  bbranch = x.split("branch=")[1].split(";")[0]
 			elif x.find("tag=") >= 0:     btag = x.split("tag=")[1].split(";")[0]
 
-	except Exception, e:
-		log_debug("problem occured in read_sip_properties : " + str(e))
+	except Exception, exc:
+		log_debug("problem occured in read_sip_properties : " + str(exc))
 
 	return [cseq, msg, cid, account, len(lines), ret, bbranch, btag, authenticate]
 
@@ -363,6 +358,9 @@ def tellpresence(data):
 	lines = data.split("\n")
 
 	for x in lines:
+		if x.find("Subscription-State:") == 0:
+			if x.find("Subscription-State: active") < 0:
+				log_debug(x)
 		if x.find("<note>") == 0:
 			if x.find("Ready") >= 0:          stat = "Ready"
 			elif x.find("On the phone") >= 0: stat = "On the phone"
@@ -416,8 +414,8 @@ class AMIClass:
 				if self:
 					log_debug("retrying AMI command " + action)
 					self.sendcommand(action, args)
-			except Exception, e:
-				log_debug("AMI not connected : " + str(e))
+			except Exception, exc:
+				log_debug("AMI not connected : " + str(exc))
 	# \brief For debug.
 	def printresponse_forever(self):
 		while True:
@@ -474,9 +472,9 @@ class AMIClass:
 					  ('Events', 'off')])
 			self.readresponse('')
 			return True
-		except self.AMIError, e:
+		except self.AMIError, exc:
 			return False
-		except Exception, e:
+		except Exception, exc:
 			return False
 
 	# \brief Executes a CLI command.
@@ -505,9 +503,9 @@ class AMIClass:
 					 [('Channel', channel_peer)])
 			self.readresponse('')
 			return True
-		except self.AMIError, e:
+		except self.AMIError, exc:
 			return False
-		except Exception, e:
+		except Exception, exc:
 			return False
 
 	# \brief Originates a call from a phone towards another.
@@ -524,9 +522,9 @@ class AMIClass:
 						       ('Async', 'true')])
 			self.readresponse('')
 			return True
-		except self.AMIError, e:
+		except self.AMIError, exc:
 			return False
-		except Exception, e:
+		except Exception, exc:
 			return False
 
 	# \brief Transfers a channel towards a new extension.
@@ -538,9 +536,9 @@ class AMIClass:
 						      ('Priority', '1')])
 			self.readresponse('')
 			return True
-		except self.AMIError, e:
+		except self.AMIError, exc:
 			return False
-		except Exception, e:
+		except Exception, exc:
 			return False
 
 
@@ -581,7 +579,7 @@ def build_customers(searchpattern):
 	return fullstat
 
 
-## \brief Builds the full list of callerIDs in order to send them to the requesting client.
+## \brief Builds the full list of callerIDNames in order to send them to the requesting client.
 # This should be done after a command called "callerid".
 # \return a string containing the full callerIDs list
 # \sa manage_tcp_connection
@@ -600,6 +598,8 @@ def build_callerids():
 				    + plist[n].normal[phonenum].calleridfull + ":" \
 				    + plist[n].normal[phonenum].calleridfirst + ":" \
 				    + plist[n].normal[phonenum].calleridlast
+			#+ ":" \
+			#    + "groupinfos/technique"
 			fullstat += phoneinfo + ";"
 	fullstat += "\n"
 	return fullstat
@@ -664,8 +664,8 @@ def update_GUI_clients(astnum, phonenum, fromwhom):
 	for tcpclient in tcpopens_sb:
 		try:
 			tcpclient[0].send("update=" + phoneinfo + ":" + fstatlist + "\n")
-		except Exception, e:
-			log_debug("send has failed on " + str(tcpclient[0])+ " " + str(e))
+		except Exception, exc:
+			log_debug("send has failed on %s : %s" %(str(tcpclient[0]),str(exc)))
 
 
 ## \brief Handles the SIP messages according to their meaning (reply to a formerly sent message).
@@ -834,57 +834,55 @@ def manage_tcp_connection(connid, allow_events):
     global AMIclasssock, AMIcomms, ins
     try:
 	    msg = connid[0].recv(bufsize_large)
-    except Exception, e:
+    except Exception, exc:
 	    msg = ""
-	    log_debug("UI connection : a problem occured when recv from " + str(connid[0]) + " " + str(e))
+	    log_debug("UI connection : a problem occured when recv from %s : %s" %(str(connid[0]),str(exc)))
     if len(msg) == 0:
-        connid[0].close()
-        ins.remove(connid[0])
-	if allow_events == True:
-		tcpopens_sb.remove(connid)
-		log_debug("TCP (SB)  socket closed from " + connid[1] + " " + str(connid[2]))
-	else:
-		tcpopens_php.remove(connid)
-		log_debug("TCP (PHP) socket closed from " + connid[1] + " " + str(connid[2]))
+	    connid[0].close()
+	    ins.remove(connid[0])
+	    if allow_events == True:
+		    tcpopens_sb.remove(connid)
+		    log_debug("TCP (SB)  socket closed from " + connid[1] + " " + str(connid[2]))
+	    else:
+		    tcpopens_php.remove(connid)
+		    log_debug("TCP (PHP) socket closed from " + connid[1] + " " + str(connid[2]))
     else:
         # what if more lines ???
         usefulmsg = msg.split("\r\n")[0].split("\n")[0]
         if usefulmsg == "hints":
 		try:
 			connid[0].send(build_statuses())
-		except Exception, e:
+		except Exception, exc:
 			log_debug("UI connection [%s] : KO when sending to %s : %s"
-				  %(usefulmsg, str(connid[0]), str(e)))
+				  %(usefulmsg, str(connid[0]), str(exc)))
         elif usefulmsg == "callerids":
 		try:
 			connid[0].send(build_callerids())
-		except Exception, e:
+		except Exception, exc:
 			log_debug("UI connection [%s] : KO when sending to %s : %s"
-				  %(usefulmsg, str(connid[0]), str(e)))
-        elif usefulmsg == "version":
-		try:
-			connid[0].send("version=$Revision$\n")
-		except Exception, e:
-			log_debug("UI connection [%s] : KO when sending to %s : %s"
-				  %(usefulmsg, str(connid[0]), str(e)))
+				  %(usefulmsg, str(connid[0]), str(exc)))
         elif usefulmsg == "infos":
 		try:
-			connid[0].send("infos=nsb:%d\n" %(len(tcpopens_sb)))
-		except Exception, e:
+			reply = "infos=nsb:%d" %(len(tcpopens_sb))
+			for tcpo in tcpopens_sb:
+				reply += ":%s:%d" %(tcpo[1],tcpo[2])
+			reply += ";version=$Revision$"
+			connid[0].send(reply + "\n")
+		except Exception, exc:
 			log_debug("UI connection [%s] : KO when sending to %s : %s"
-				  %(usefulmsg, str(connid[0]), str(e)))
+				  %(usefulmsg, str(connid[0]), str(exc)))
 	elif usefulmsg == "keepalive":
 		try:
 			connid[0].send("keepalive=\n")
-		except Exception, e:
+		except Exception, exc:
 			log_debug("UI connection [%s] : KO when sending to %s : %s"
-				  %(usefulmsg, str(connid[0]), str(e)))
+				  %(usefulmsg, str(connid[0]), str(exc)))
 	elif usefulmsg == "capabilities":
 		try:
 			connid[0].send("capabilities=%s\n" %capabilities)
-		except Exception, e:
+		except Exception, exc:
 			log_debug("UI connection [%s] : KO when sending to %s : %s"
-				  %(usefulmsg, str(connid[0]), str(e)))
+				  %(usefulmsg, str(connid[0]), str(exc)))
 	elif usefulmsg != "":
 		l = usefulmsg.split()
 		if len(l) == 2 and l[0] == 'hangup':
@@ -925,10 +923,10 @@ def manage_tcp_connection(connid, allow_events):
 				if len(l) == 1: l.append("")
 				spattern = ' '.join(l[1:])
 				connid[0].send(build_customers(spattern))
-			except Exception, e:
-				log_debug("UI connection : a problem occured when sending to " + str(connid[0]) + " " + str(e))
-		elif (len(l) == 3 and l[0] == 'originate') \
-		     or (len(l) == 3 and l[0] == 'transfer'):
+			except Exception, exc:
+				log_debug("UI connection : a problem occured when sending to %s : %s"
+					  %(str(connid[0]),str(exc)))
+		elif len(l) == 3 and (l[0] == 'originate' or l[0] == 'transfer'):
 			idassrc = -1
 			assrc = l[1].split("/")[1]
 			if assrc in asteriskr: idassrc = asteriskr[assrc]
@@ -971,7 +969,7 @@ def manage_tcp_connection(connid, allow_events):
 									tchan = channellist[phonesrcchan].getChannelPeer()
 									ret = AMIclasssock[idassrc].transfer(tchan,
 													     l[2].split("/")[5],
-													     l[2].split("/")[2])
+													     "local-extensions")
 									if ret:
 										connid[0].send("asterisk=transfer successful " + str(idassrc) + "\n")
 									else:
@@ -1002,9 +1000,9 @@ def manage_tcp_connection(connid, allow_events):
 					repstr = repstr + ";"
 				try:
 					connid[0].send(repstr + "\n")
-				except Exception, e:
+				except Exception, exc:
 					log_debug("(%s) error : history : (client %s:%d) : %s"
-						  %(assrc, connid[1], connid[2], str(e)))
+						  %(assrc, connid[1], connid[2], str(exc)))
 					connid[0].send("history=\n")
 		elif allow_events == False: # i.e. if PHP-style connection
 			n = -1
@@ -1018,11 +1016,11 @@ def manage_tcp_connection(connid, allow_events):
 					try:
 						for x in s: connid[0].send(x)
 						connid[0].send("XIVO CLI:OK\n")
-					except Exception, e:
+					except Exception, exc:
 						log_debug("(%s) error : php command : (client %s:%d) : %s"
-							  %(configs[n].astid, connid[1], connid[2], str(e)))
-				except Exception, e:
-					connid[0].send("XIVO CLI:KO Exception : " + str(e) + "\n")
+							  %(configs[n].astid, connid[1], connid[2], str(exc)))
+				except Exception, exc:
+					connid[0].send("XIVO CLI:KO Exception : %s\n" %(str(exc)))
 		else:
 			connid[0].send("XIVO CLI:NOT ALLOWED from Switchboard\n")
 
@@ -1221,8 +1219,8 @@ def handle_ami_event(astnum, idata):
 			try:
 				handle_ami_event_dial(listkeys, astnum, src, dst, clid, clidn)
 				#print "dial", context, x
-			except Exception, e:
-				log_debug("an exception occured in handle_ami_event_dial : " + str(e))
+			except Exception, exc:
+				log_debug("an exception occured in handle_ami_event_dial : " + str(exc))
 		elif x.find("Link;") == 7:
 			src     = getvalue(x, "Channel1")
 			dst     = getvalue(x, "Channel2")
@@ -1232,8 +1230,8 @@ def handle_ami_event(astnum, idata):
 			try:
 				handle_ami_event_link(listkeys, astnum, src, dst, clid1, clid2)
 				#print "link", context, x
-			except Exception, e:
-				log_debug("an exception occured in handle_ami_event_link : " + str(e))
+			except Exception, exc:
+				log_debug("an exception occured in handle_ami_event_link : " + str(exc))
 		elif x.find("Unlink;") == 7:
 			# might be something to parse here
 			src   = getvalue(x, "Channel1")
@@ -1244,12 +1242,14 @@ def handle_ami_event(astnum, idata):
 			chan  = getvalue(x, "Channel")
 			cause = getvalue(x, "Cause-txt")
 			try:
+				#print x
 				handle_ami_event_hangup(listkeys, astnum, chan, cause)
-			except Exception, e:
-				log_debug("an exception occured in handle_ami_event_hangup: " + str(e))
+			except Exception, exc:
+				log_debug("an exception occured in handle_ami_event_hangup: " + str(exc))
 		elif x.find("Reload;") == 7:
 			# warning : "reload" as well as "reload manager" can appear here
 			log_debug("AMI:Reload: " + plist[astnum].astid)
+			do_sip_register_subscribe(astnum, SIPsocks[astnum])
 		elif x.find("Shutdown;") == 7:
 			log_debug("AMI:Shutdown: " + plist[astnum].astid)
 		elif x.find("Join;") == 7:
@@ -1385,6 +1385,7 @@ def handle_ami_event(astnum, idata):
 			chan    = getvalue(x, "Channel")
 			clid    = getvalue(x, "CallerID")
 			clidn   = getvalue(x, "CallerIDName")
+			#print x
 			log_debug("AMI:Newcallerid: " + plist[astnum].astid + \
 				  " channel=" + chan + " callerid=" + clid + " calleridname=" + clidn)
 			if chan.find("Local/") == 0:
@@ -1395,6 +1396,7 @@ def handle_ami_event(astnum, idata):
 			chan    = getvalue(x, "Channel")
 			clid    = getvalue(x, "CallerID")
 			phonenum = chan.split("-")[0]
+			#print x
 			if phonenum in listkeys:
 				plist[astnum].normal[phonenum].set_chan(chan, "", 0, "", "", "", clid)
 				# update_GUI_clients(astnum, phonenum, "ami-nc0")
@@ -1590,7 +1592,11 @@ def update_sipnumlist(astnum):
 
 	sipnumlistold = plist[astnum].normal.keys()
 	sipnumlistold.sort()
-	sipnuml = update_userlist_fromurl(astnum, configs[astnum].userlisturl, configs[astnum].mysipaccounts)
+	try:
+		sipnuml = update_userlist_fromurl(astnum, configs[astnum].userlisturl, configs[astnum].mysipaccounts)
+	except Exception, exc:
+		log_debug("%s : update_userlist_fromurl failed : %s" %(configs[astnum].astid,str(exc)))
+		sipnuml = {}
 	for x in configs[astnum].extrachannels.split(","):
 		if x != "": sipnuml[x] = [x, "", "", x.split("/")[1], ""]
 	sipnumlistnew = sipnuml.keys()
@@ -1799,6 +1805,7 @@ class LineProp:
 		self.calleridfull = "nobody"
 		self.calleridfirst = "nobody"
 		self.calleridlast = "nobody"
+		self.groups = ""
 	def set_tech(self, itech):
 		self.tech = itech
 	def set_phoneid(self, iphoneid):
@@ -1942,21 +1949,24 @@ class AsteriskRemote:
 		self.ami_login = ami_login
 		self.ami_pass = ami_pass
 		self.mysipaccounts = []
-		zz = mysipaccounts.split(";")
-		for za in zz:
-			[ctx, acc, zpass] = za.split(",")
+		sipaccs = mysipaccounts.split(";")
+		for sipacc in sipaccs:
+			[ctx, acc, zpass] = sipacc.split(",")
 			self.mysipaccounts.append([ctx, acc, zpass])
 
 ## \brief Adds (or updates) a user in the userlist.
 # \param user the user to add
 # \param passwd the user's passwd
 # \return none
-def adduser(astn, user, passwd):
+def adduser(astn, user, passwd, context):
 	global userlist
 	if userlist[astn].has_key(user):
 		userlist[astn][user]['passwd'] = passwd
+		userlist[astn][user]['context'] = context
 	else:
-		userlist[astn][user] = {'user':user, 'passwd':passwd}
+		userlist[astn][user] = {'user':user,
+					'passwd':passwd,
+					'context':context}
 
 ## \brief Deletes a user from the userlist.
 # \param user the user to delete
@@ -1976,84 +1986,119 @@ def finduser(astn, user):
 		u = None
 	return u
 
+
+##def askforparam(reqstring, rfile, wfile, debugstr):
+##	wfile.write('Send %s for authentication\r\n' %reqstring)
+##	list1 = rfile.readline().strip().split(' ')
+##	if len(list1) != 2 or list1[0] != reqstring:
+##		replystr = "ERROR : wrong format for %s reply" %reqstring
+##		debugstr += " / %s error" %reqstring
+##		return [replystr, debugstr], [user, port, state, astnum]
+##	return list1[1]
+
+
 ## \class LoginHandler
 # \brief The clients connect to this in order to obtain a valid session id.
 # This could be enhanced to support a more complete protocol
 # supporting commands coming from the client in order to pilot asterisk.
 class LoginHandler(SocketServer.StreamRequestHandler):
-	def handle(self):
-		#print '  request :', self.request
-		log_debug("LoginHandler : client connected = " + str(self.client_address))
-		list0 = self.rfile.readline()    # list0 should be "LOGIN <asteriskname>/sip<nnn>"
-		list1 = list0.strip().split(' ') # list1 should be "[LOGIN <asteriskname>/sip<nnn>]"
+	def logintalk(self):
+		[user, port, state, astnum] = ["", "", "", -1]
+		replystr = "ERROR"
+		debugstr = "LoginRequestHandler (TCP) : client = %s:%d" %(self.client_address[0], self.client_address[1])
+		list1 = self.rfile.readline().strip().split(' ') # list1 should be "[LOGIN <asteriskname>/sip<nnn>]"
 		if len(list1) != 2 or list1[0] != 'LOGIN':
-			self.wfile.write('ERROR : wrong number of arguments\r\n')
-			return
+			replystr = "ERROR : wrong number of arguments"
+			debugstr += " / LOGIN error args"
+			return [replystr, debugstr], [user, port, state, astnum]
+		
 		if list1[1].find("/") >= 0:
 			astname_xivoc = list1[1].split("/")[0]
 			user = list1[1].split("/")[1]
 		else:
-			self.wfile.write('ERROR : wrong ID format\r\n')
-			return
-
-
-		self.wfile.write('Send PASS for authentification\r\n')
+			replystr = "ERROR : wrong ID format"
+			debugstr += " / LOGIN error ID"
+			return [replystr, debugstr], [user, port, state, astnum]
+		
+		# asks for PASS
+		self.wfile.write('Send PASS for authentication\r\n')
 		list1 = self.rfile.readline().strip().split(' ')
 		if len(list1) != 2 or list1[0] != 'PASS':
-			self.wfile.write('ERROR : wrong format for PASS reply\r\n')
-			return
+			replystr = "ERROR : wrong format for PASS reply"
+			debugstr += " / PASS error"
+			return [replystr, debugstr], [user, port, state, astnum]
 		passwd = list1[1]
-		#print 'user/pass : ' + user + '/' + passwd
-
+		
 		userlist_lock.acquire()
 		if astname_xivoc in asteriskr.keys():
 			astnum = asteriskr[astname_xivoc]
 		else:
-			self.wfile.write('ERROR : asterisk name <%s> unknown\r\n' %astname_xivoc)
-			return
+			replystr = "ERROR : asterisk name <%s> unknown" %astname_xivoc
+			debugstr += " / asterisk name unknown"
+			userlist_lock.release()
+			return [replystr, debugstr], [user, port, state, astnum]
 		e = finduser(astnum, user)
 		goodpass = (e != None) and (e.get('passwd') == passwd)
 		userlist_lock.release()
 		if not goodpass:
-			self.wfile.write('ERROR : WRONG LOGIN PASSWD\r\n')
-			return
-
+			replystr = "ERROR : WRONG LOGIN PASSWD"
+			debugstr += " / PASS KO for %s on asterisk #%d" %(user,astnum)
+			return [replystr, debugstr], [user, port, state, astnum]
+		
+		# asks for PORT
 		self.wfile.write('Send PORT command\r\n')
 		list1 = self.rfile.readline().strip().split(' ')
 		if len(list1) != 2 or list1[0] != 'PORT':
-			self.wfile.write('ERROR PORT\r\n')
-			return
+			replystr = "ERROR PORT"
+			debugstr += " / PORT KO"
+			return [replystr, debugstr], [user, port, state, astnum]
 		port = list1[1]
-
+		
+		# asks for STATE
 		self.wfile.write('Send STATE command\r\n')
 		list1 = self.rfile.readline().strip().split(' ')
 		if len(list1) != 2 or list1[0] != 'STATE':
-			self.wfile.write('ERROR STATE\r\n')
-			return
+			replystr = "ERROR STATE"
+			debugstr += " / STATE KO"
+			return [replystr, debugstr], [user, port, state, astnum]
 		state = list1[1]
-
+		
 		# TODO : random pas au top, faire generation de session id plus luxe
 		sessionid = '%u' % random.randint(0,999999999)
 		userlist_lock.acquire()
+		if e.has_key('sessiontimestamp'):
+			if time.time() - e.get('sessiontimestamp') < session_expiration_time:
+				replystr = "ERROR ALREADY CONNECTED"
+				debugstr += " / USER %s already connected" %user
+				userlist_lock.release()
+				return [replystr, debugstr], [user, port, state, astnum]
 		e['sessionid'] = sessionid
 		e['sessiontimestamp'] = time.time()
 		e['ip'] = self.client_address[0]
 		e['port'] = port
+		context = e['context']
 		if state in allowed_states:
 			e['state'] = state
 		else:
 			e['state'] = "undefinedstate"
 		userlist_lock.release()
-		retline = 'OK SESSIONID %s %s\r\n' %(sessionid,capabilities)
-		self.wfile.write(retline)
+		
+		replystr = "OK SESSIONID %s %s %s" %(sessionid,context,capabilities)
+		debugstr += " / user %s, port %s, state %s, astnum %d : connected : %s" %(user,port,state,astnum,replystr)
+		return [replystr, debugstr], [user, port, state, astnum]
 
-		if astnum >= 0:
-			sipnumber = "SIP/" + user.split("sip")[1]
-			plist[astnum].normal[sipnumber].set_imstat(state)
-			plist[astnum].normal[sipnumber].update_time()
-			update_GUI_clients(astnum, sipnumber, "kfc-lin")
-
-		#print userlist
+	def handle(self):
+		try:
+			[rstr, dstr], [user, port, state, astnum] = self.logintalk()
+			self.wfile.write(rstr + "\r\n")
+			log_debug(dstr)
+			if astnum >= 0:
+				sipnumber = "SIP/" + user.split("sip")[1]
+				plist[astnum].normal[sipnumber].set_imstat(state)
+				plist[astnum].normal[sipnumber].update_time()
+				update_GUI_clients(astnum, sipnumber, "kfc-lin")
+		except Exception, exc:
+			log_debug(str(exc))
 
 
 ## \class IdentRequestHandler
@@ -2062,13 +2107,14 @@ class LoginHandler(SocketServer.StreamRequestHandler):
 class IdentRequestHandler(SocketServer.StreamRequestHandler):
 	def handle(self):
 		list0 = self.rfile.readline().strip().split(' ')
-		log_debug("IdentRequestHandler : client = " + str(self.client_address) + " / " + str(list0))
+		log_debug("IdentRequestHandler (TCP) : client = %s:%d / %s"
+			  %(self.client_address[0],self.client_address[1],str(list0)))
 		retline = 'ERROR\r\n'
 		if list0[0] == 'QUERY' and len(list0) == 2:
 			user = list0[1]
-			userlist_lock.acquire()
 			try:
 				astnum = ip_reverse_sht[self.client_address[0]]
+				userlist_lock.acquire()
 				e = finduser(astnum, user)
 				if e == None:
 					retline = 'ERROR USER <' + user + '> NOT FOUND\r\n'
@@ -2077,7 +2123,7 @@ class IdentRequestHandler(SocketServer.StreamRequestHandler):
 					       and e.has_key('state') and e.has_key('sessionid') \
 					       and e.has_key('sessiontimestamp'):
 						if time.time() - e.get('sessiontimestamp') > session_expiration_time:
-							retline = 'ERROR USER SESSION EXPIRED for <' + user + '>\r\n'
+							retline = 'ERROR USER SESSION EXPIRED for <%s>\r\n' %user
 						else:
 							retline = 'USER ' + user
 							retline += ' SESSIONID ' + e.get('sessionid')
@@ -2086,15 +2132,15 @@ class IdentRequestHandler(SocketServer.StreamRequestHandler):
 							retline += ' STATE ' + e.get('state')
 							retline += '\r\n'
 					else:
-						retline = 'ERROR USER SESSION NOT DEFINED for <' + user + '>\r\n'
-			except Exception, e:
-				retline = 'ERROR (exception) : ' + str(e) + '\r\n'
-			userlist_lock.release()
+						retline = 'ERROR USER SESSION NOT DEFINED for <%s>\r\n' %user
+				userlist_lock.release()
+			except Exception, exc:
+				retline = 'ERROR (exception) : %s\r\n' %(str(exc))
 		try:
 			self.wfile.write(retline)
-		except Exception, e:
+		except Exception, exc:
 			# something bad happened.
-			log_debug("IdentRequestHandler/Exception: " + str(e))
+			log_debug("IdentRequestHandler/Exception: " + str(exc))
 			return
 
 
@@ -2104,9 +2150,9 @@ class IdentRequestHandler(SocketServer.StreamRequestHandler):
 # It could be a good thing to give a numerical code to each error.
 class KeepAliveHandler(SocketServer.DatagramRequestHandler):
 	def handle(self):
-		log_debug("KeepAliveHandler : client = " + str(self.client_address))
+		log_debug("KeepAliveHandler    (UDP) : client = %s:%d"
+			  %(self.client_address[0],self.client_address[1]))
 		astname_xivoc = ""
-		userlist_lock.acquire()
 		try:
 			ip = self.client_address[0]
 			list = self.request[0].strip().split(' ')
@@ -2151,26 +2197,31 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
 					state = "undefinedstate"
 					if len(list) >= 6:
 						state = list[5]
+					userlist_lock.acquire()
 					e = finduser(astnum, user)
 					if e == None:
 						response = 'ERROR user unknown\r\n'
 					else:
-						if sessionid == e['sessionid'] and ip == e['ip'] and \
-						       e['sessiontimestamp'] + session_expiration_time > timestamp:
-							if state in allowed_states:
-								e['state'] = state
+						if e.has_key("sessionid"):
+							if sessionid == e['sessionid'] and ip == e['ip'] and \
+							       e['sessiontimestamp'] + session_expiration_time > timestamp:
+								if state in allowed_states:
+									e['state'] = state
+								else:
+									e['state'] = "undefinedstate"
+								e['sessiontimestamp'] = timestamp
+								response = 'OK\r\n'
 							else:
-								e['state'] = "undefinedstate"
-							e['sessiontimestamp'] = timestamp
-							response = 'OK\r\n'
+								response = 'ERROR SESSION EXPIRED OR INVALID\r\n'
 						else:
 							response = 'ERROR SESSION EXPIRED OR INVALID\r\n'
+					userlist_lock.release()
 				else:
 					response = "ERROR unknown asterisk name <%s>\r\n" %astname_xivoc
-		except Exception, e:
-			response = 'ERROR (exception) : ' + str(e) + '\r\n'
-		userlist_lock.release()
+		except Exception, exc:
+			response = 'ERROR (exception) : %s\r\n' %(str(exc))
 		self.request[1].sendto(response, self.client_address)
+		
 		if response == 'OK\r\n':
 			astnum = asteriskr[astname_xivoc]
 			if astnum >= 0:
@@ -2203,8 +2254,8 @@ try:
 		f.write("%d\n"%os.getpid())
 	finally:
 		f.close()
-except Exception, e:
-	print e
+except Exception, exc:
+	print exc
 
 xivoconffile = "/etc/asterisk/xivo_daemon.conf"
 
@@ -2331,8 +2382,8 @@ keepaliveserver = SocketServer.UDPServer(('', port_keepalive), KeepAliveHandler)
 # opens the logfile for output in append mode
 try:
 	logfile = open(log_filename, 'a')
-except Exception, e:
-	print "Could not open", log_filename, "in append mode : ", e
+except Exception, exc:
+	print "Could not open %s in append mode : %s" %(log_filename,exc)
 	logfile = False
 
 # user list initialized empty
@@ -2451,7 +2502,7 @@ signal.signal(signal.SIGHUP, sighandler_reload)
 while not askedtoquit:
     try:
 	    [i, o, e] = select.select(ins, [], [], timeout_between_registers)
-    except Exception, e:
+    except Exception, exc:
 	    if askedtoquit: sys.exit(5)
 	    # TBD : if not askedtoquit => reload the config
 	    else: sys.exit(6)
@@ -2490,7 +2541,7 @@ while not askedtoquit:
 				AMIsocks[n] = -1
 			else:
 				handle_ami_event(n, a)
-		except Exception, e:
+		except Exception, exc:
 			pass
 	# these AMI connections are used in order to manage AMI commands without events
 	elif filter(lambda j: j in AMIcomms, i):
@@ -2506,7 +2557,7 @@ while not askedtoquit:
 				AMIcomms[n] = -1
 			else:
 				handle_ami_status(n, a)
-		except Exception, e:
+		except Exception, exc:
 			pass
 	# the new UI (SB) connections are catched here
         elif UIsock in i:
@@ -2529,15 +2580,15 @@ while not askedtoquit:
 		conn = filter(lambda j: j[0] in i, tcpopens_sb)[0]
 		try:
 			manage_tcp_connection(conn, True)
-		except Exception, e:
-			log_debug("a problem occured when managing SB tcp connection : " + str(e))
+		except Exception, exc:
+			log_debug("a problem occured when managing SB tcp connection : " + str(exc))
 	# open UI (PHP) connections
         elif filter(lambda j: j[0] in i, tcpopens_php):
 		conn = filter(lambda j: j[0] in i, tcpopens_php)[0]
 		try:
 			manage_tcp_connection(conn, False)
-		except Exception, e:
-			log_debug("a problem occured when managing PHP tcp connection : " + str(e))
+		except Exception, exc:
+			log_debug("a problem occured when managing PHP tcp connection : " + str(exc))
 	# advertising from other xivo_daemon's around
 	elif xdal in i:
 		[data, addrsip] = xdal.recvfrom(bufsize_udp)
@@ -2563,8 +2614,8 @@ while not askedtoquit:
 
 try:
 	os.unlink(pidfile)
-except Exception, e:
-	print e
+except Exception, exc:
+	print exc
 
 print 'end of the execution flow...'
 sys.exit(0)
