@@ -1,3 +1,4 @@
+/* $Id$ */
 #ifndef __SEARCHPANEL_H__
 #define __SEARCHPANEL_H__
 #include <QWidget>

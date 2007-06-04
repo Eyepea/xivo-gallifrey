@@ -1,3 +1,4 @@
+/* $Id$ */
 #ifndef __LOGWIDGET_H__
 #define __LOGWIDGET_H__
 

@@ -261,12 +261,6 @@ const QString & LoginEngine::host() const
 	return m_serverhost;
 }
 
-/*! \brief get server port */
-quint16 LoginEngine::loginport() const
-{
-	return m_loginport;
-}
-
 /*!
  * Perform the first login step once the TCP connection is established.
  */
@@ -335,9 +329,10 @@ void LoginEngine::processLoginDialog()
 		if(sessionResp.size() > 2)
 			m_sessionid = sessionResp[2];
 		if(sessionResp.size() > 3)
-			m_context = sessionResp[3];
+			m_dialcontext = sessionResp[3];
 		if(sessionResp.size() > 4)
 			m_capabilities = sessionResp[4];
+		qDebug() << m_dialcontext << m_capabilities;
 		m_loginsocket->close();
 		setState(ELogged);
 		// start the keepalive timer
@@ -417,7 +412,9 @@ void LoginEngine::readKeepLoginAliveDatagrams()
 		if(len == 0)
 			continue;
 		buffer[len] = '\0';
-		qDebug() << "LoginEngine::readKeepLoginAliveDatagrams() : " << buffer;
+		QString qsbuffer = QString::fromAscii(buffer);
+		qsbuffer.remove(QChar('\r')).remove(QChar('\n'));
+		qDebug() << "LoginEngine::readKeepLoginAliveDatagrams() : " << qsbuffer;
 		if(buffer[0] != 'O' && buffer[0] != 'S' || buffer[1] !='K' && buffer[1] !='E')
 		{
 			stopKeepAliveTimer();

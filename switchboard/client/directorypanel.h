@@ -1,5 +1,4 @@
-/* $Id$
- */
+/* $Id$ */
 #ifndef __DIRECTORYPANEL_H__
 #define __DIRECTORYPANEL_H__
 

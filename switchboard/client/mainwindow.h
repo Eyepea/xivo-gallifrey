@@ -1,3 +1,4 @@
+/* $Id$ */
 #ifndef __MAINWINDOW_H__
 #define __MAINWINDOW_H__
 
@@ -25,7 +26,6 @@ private slots:
 	void showConfDialog();
 	void engineStopped();
 	void engineStarted();
-	void loginengineStopped();
 	void loginengineStarted();
 	void about();
 private:

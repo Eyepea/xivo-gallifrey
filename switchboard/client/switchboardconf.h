@@ -1,3 +1,4 @@
+/* $Id$ */
 #ifndef __SWITCHBOARDCONF_H__
 #define __SWITCHBOARDCONF_H__
 
@@ -34,7 +35,6 @@ private:
 	QComboBox * m_protocombo;
 	QLineEdit * m_ext;
 	QLineEdit * m_passwd;
-	//	QLineEdit * m_context;
 };
 
 #endif

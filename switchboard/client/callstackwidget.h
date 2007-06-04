@@ -1,3 +1,4 @@
+/* $Id$ */
 #ifndef __CALLSTACKWIDGET_H__
 #define __CALLSTACKWIDGET_H__
 #include <QObject>

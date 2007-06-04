@@ -62,7 +62,7 @@ SwitchBoardConfDialog::SwitchBoardConfDialog(SwitchBoardEngine * engine,
 	line++;
 	
 	QLabel * lbllport = new QLabel( tr("Login port :"), this);
-	m_loginport = new QLineEdit(QString::number(m_loginengine->loginport()), this);
+	m_loginport = new QLineEdit(QString::number(m_loginengine->loginPort()), this);
 	m_loginport->setInputMask("5000");
 	layout->addWidget( lbllport, line, 0 );
 	layout->addWidget( m_loginport, line, 1 );
@@ -101,19 +101,12 @@ SwitchBoardConfDialog::SwitchBoardConfDialog(SwitchBoardEngine * engine,
 	QLabel * lblext = new QLabel( tr("Extension :"), this );
 	layout->addWidget(lblext, line, 0);
 	m_ext = new QLineEdit( m_engine->extension(), this );
-//	m_ext->setInputMask("00000");
 	layout->addWidget( m_ext, line, 1 );
 	line++;
 
-// 	QLabel * lblcontext = new QLabel( tr("Dial context :"), this );
-// 	layout->addWidget(lblcontext, line, 0);
-// 	m_context = new QLineEdit( m_engine->dialContext(), this );
-// 	layout->addWidget( m_context, line, 1);
-// 	line++;
-
 	QLabel * lblpass = new QLabel( tr("Password :"), this );
 	layout->addWidget(lblpass, line, 0);
-	m_passwd = new QLineEdit( m_engine->password(), this );
+	m_passwd = new QLineEdit( m_loginengine->password(), this );
 	m_passwd->setEchoMode(QLineEdit::Password);
 	layout->addWidget( m_passwd, line, 1);
 	line++;
@@ -134,8 +127,8 @@ void SwitchBoardConfDialog::saveAndClose()
 	m_engine->setAsterisk( m_asterisk->text() );
 	m_engine->setProtocol( m_protocombo->currentText() );
 	m_engine->setExtension( m_ext->text() );
-	//	m_engine->setDialContext( m_context->text() );
-	m_engine->setPassword( m_passwd->text() );
+	m_loginengine->setLoginPort( m_loginport->text().toUInt() );
+	m_loginengine->setPassword( m_passwd->text() );
 	m_engine->saveSettings();
 	//m_window->setWidth( m_widthsb->value() );
 	//m_window->saveSettings();

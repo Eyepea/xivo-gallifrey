@@ -1,3 +1,4 @@
+/* $Id$ */
 #ifndef __LOGINENGINE_H__
 #define __LOGINENGINE_H__
 #include <QHash>
@@ -17,24 +18,28 @@ public:
 	typedef enum {ENotLogged, ELogged } EngineState;
 	
 	LoginEngine(QObject * parent = 0);
-	quint16 loginport() const;
 	const QString & host() const;
 	void setAutoconnect(bool b) { m_autoconnect = b;};
 	bool autoconnect() const {return m_autoconnect;};
 	void saveSettings();	//!< save settings
+	
 	void setAsterisk(const QString & ast) { m_asterisk = ast; };
 	const QString & asterisk() const { return m_asterisk; };
 	void setProtocol(const QString & proto) { m_protocol = proto; };
 	const QString & protocol() const { return m_protocol; };
+	void setLoginPort(const quint16 & loginport) { m_loginport = loginport; };
+	const quint16 & loginPort() const { return m_loginport; };
+
 	void setExtension(const QString & ext) { m_extension = ext; };
 	const QString & extension() const { return m_extension; };
 	void setDialContext(const QString & context) { m_dialcontext = context; };
 	const QString & dialContext() const { return m_dialcontext; };
 	void setPassword(const QString & pass) { m_passwd = pass; };
 	const QString & password() const { return m_passwd; };
+
 	void setAvailstate(const QString & availstate) { m_availstate = availstate; };
 	const QString & availstate() const { return m_availstate; };
-
+	
 	const EngineState state() const;	//!< Engine state (Logged/Not Logged)
 	void setState(EngineState state);	//!< see state()
 	uint trytoreconnectinterval() const;	//!< try to reconnect interval
@@ -84,11 +89,10 @@ private:
 	QString m_protocol;
 	QString m_extension;
 	QString m_passwd;	//!< password for account
-	QString m_dialcontext;
+	QString m_dialcontext;	//!< Context of the phone, as returned by the xivo_daemon server
 	QString m_availstate;	//!< Availability state to send to the server
 	QString m_sessionid;	//!< Session id obtained after a successful login
 	QString m_capabilities;	//!< List of capabilities issued by the server after a successful login
-	QString m_context;	//!< Context of the phone, as returned by the xivo_daemon server
 	EngineState m_state;	//!< State of the engine (Logged/Not Logged)
 	uint m_keepaliveinterval;	//!< Keep alive interval (in msec)
 	uint m_trytoreconnectinterval;	//!< Try to reconnect interval (in msec)

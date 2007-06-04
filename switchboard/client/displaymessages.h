@@ -1,3 +1,4 @@
+/* $Id$ */
 #ifndef __DISPLAYMESSAGES_H__
 #define __DISPLAYMESSAGES_H__
 #include <QWidget>

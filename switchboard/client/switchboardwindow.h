@@ -1,3 +1,4 @@
+/* $Id$ */
 #ifndef __SWITCHBOARDWINDOW_H__
 #define __SWITCHBOARDWINDOW_H__
 #include <QWidget>

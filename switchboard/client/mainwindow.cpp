@@ -201,30 +201,24 @@ MainWindow::MainWindow(SwitchBoardEngine * engine, LoginEngine * loginengine)
 	        this, SLOT(engineStopped()));
 	
 	connect(m_loginengine, SIGNAL(logged()),
-		this, SLOT(loginengineStarted()) );
+ 		this, SLOT(loginengineStarted()) );
+	connect(m_loginengine, SIGNAL(logged()),
+		m_engine, SLOT(start()) );
 	connect(m_loginengine, SIGNAL(delogged()),
-		this, SLOT(loginengineStopped()) );
+		m_engine, SLOT(stop()) );
 	
 	QMenu * menu = menuBar()->addMenu(tr("&File"));
 	
-	m_loginact = new QAction(tr("&Log in"), this);
-	m_loginact->setStatusTip(tr("Log in"));
-	connect(m_loginact, SIGNAL(triggered()), m_loginengine, SLOT(start()) );
-	menu->addAction(m_loginact);
-
-	m_logoffact = new QAction(tr("Log o&ff"), this);
-	m_logoffact->setStatusTip(tr("Log off"));
-	connect(m_logoffact, SIGNAL(triggered()), m_loginengine, SLOT(stop()) );
-	menu->addAction(m_logoffact);
-
 	m_startact = new QAction(tr("S&tart"), this);
 	m_startact->setStatusTip(tr("Start"));
-	connect(m_startact, SIGNAL(triggered()), m_engine, SLOT(start()) );
+	connect(m_startact, SIGNAL(triggered()),
+		m_loginengine, SLOT(start()) );
 	menu->addAction(m_startact);
 
 	m_stopact = new QAction(tr("Sto&p"), this);
 	m_stopact->setStatusTip(tr("Stop"));
-	connect(m_stopact, SIGNAL(triggered()), m_engine, SLOT(stop()) );
+	connect(m_stopact, SIGNAL(triggered()),
+		m_loginengine, SLOT(stop()) );
 	m_stopact->setDisabled(true);
 	menu->addAction(m_stopact);
 
@@ -334,22 +328,10 @@ void MainWindow::engineStopped()
 
 /*!
  * enable the "Log off" action and disable "Login" Action.
- * \sa loginengineStopped()
  */
 void MainWindow::loginengineStarted()
 {
-	m_logoffact->setEnabled(true);
-	m_loginact->setDisabled(true);
-}
-
-/*!
- * disable the "Stop" action and enable "Start" Action.
- * \sa loginengineStarted()
- */
-void MainWindow::loginengineStopped()
-{
-	m_logoffact->setDisabled(true);
-	m_loginact->setEnabled(true);
+	m_engine->setDialContext(m_loginengine->dialContext());
 }
 
 /*! \brief Display the about box

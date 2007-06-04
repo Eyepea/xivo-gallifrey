@@ -1,3 +1,4 @@
+/* $Id$ */
 #ifndef __SWITCHBOARDENGINE_H__
 #define __SWITCHBOARDENGINE_H__
 #include <QHash>
@@ -32,8 +33,6 @@ public:
 	const QString & extension() const { return m_extension; };
 	void setDialContext(const QString & context) { m_dialcontext = context; };
 	const QString & dialContext() const { return m_dialcontext; };
-	void setPassword(const QString & pass) { m_passwd = pass; };
-	const QString & password() const { return m_passwd; };
 private:
 	void connectSocket();
 	void loadSettings();	//!< load settings
@@ -99,11 +98,9 @@ private:
 	QString m_asterisk;
 	QString m_protocol;
 	QString m_extension;
-	QString m_passwd;	//!< password for account
-	QString m_dialcontext;
+	QString m_dialcontext;	//!< Context of the phone, as returned by the xivo_daemon server
 	QString m_sessionid;	//!< Session id obtained after a successful login
 	QString m_capabilities;	//!< List of capabilities issued by the server after a successful login
-	QString m_context;	//!< Context of the phone, as returned by the xivo_daemon server
 };
 
 #endif
