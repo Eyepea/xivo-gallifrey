@@ -8,7 +8,6 @@
 class QVBoxLayout;
 class QLineEdit;
 class QComboBox;
-class SwitchBoardEngine;
 
 class DialPanel : public QWidget
 {

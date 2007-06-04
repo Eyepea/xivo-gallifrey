@@ -7,6 +7,7 @@ class QAction;
 class QActionGroup;
 class QCloseEvent;
 class QSplitter;
+class LoginEngine;
 class SwitchBoardEngine;
 class SwitchBoardWindow;
 
@@ -17,7 +18,7 @@ class MainWindow : public QMainWindow
 	Q_OBJECT
 public:
 	//! Constructor
-	MainWindow(SwitchBoardEngine *);
+	MainWindow(SwitchBoardEngine *, LoginEngine *);
 	//! Destructor
 	virtual ~MainWindow();
 private slots:
@@ -31,7 +32,11 @@ private:
 	QSplitter * m_middleSplitter;	//!< vertical splitter in the middle
 	QSplitter * m_rightSplitter;	//!< Vertical splitter on the right
 	SwitchBoardEngine * m_engine;	//!< Engine
+	LoginEngine * m_loginengine;	//!< Login Engine
 	SwitchBoardWindow * m_widget;	//!< Widget to display peers
+
+	QAction * m_loginact;	//!< "Log in" Action
+	QAction * m_logoffact;	//!< "Log off" Action
 	QAction * m_startact;	//!< "Start" Action
 	QAction * m_stopact;	//!< "Stop" Action
 	QActionGroup * m_availgrp;

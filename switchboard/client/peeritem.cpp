@@ -21,7 +21,7 @@ void Peer::updateStatus(const QString & imavail,
 			const QString & queuestatus)
 {
 	// TBD : tr()
-	QString fortooltip = "SIP Presence: " + sipstatus + "\n"
+	QString fortooltip = PeerWidget::tr("SIP Presence: ") + sipstatus + "\n"
 		+ "Xivo Client: " + imavail;/* + "\n"
 					       + "Voicemail Status: " + vmstatus + "\n"
 					       + "Queues Status: " + queuestatus;*/
