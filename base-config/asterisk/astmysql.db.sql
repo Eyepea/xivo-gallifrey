@@ -493,7 +493,7 @@ INSERT INTO `generalvoicemail` VALUES(7,0,0,0,'voicemail.conf','general','maxmsg
 INSERT INTO `generalvoicemail` VALUES(8,0,0,0,'voicemail.conf','general','emailsubject','Messagerie XIVO');
 INSERT INTO `generalvoicemail` VALUES(9,0,0,0,'voicemail.conf','general','emailbody','Bonjour ${VM_NAME} !
 
-Vous avez reçu un message d\'une durée de ${VM_DUR} minutes, il vous reste actuellement ${VM_MSGNUM} message(s) non lu sur votre messagerie vocale : ${VM_MAILBOX}.
+Vous avez reçu un message d\'une durée de ${VM_DUR} minute(s), il vous reste actuellement ${VM_MSGNUM} message(s) non lu(s) sur votre messagerie vocale : ${VM_MAILBOX}.
 Le dernier a été envoyé par ${VM_CALLERID}, le ${VM_DATE}. Si vous le souhaitez vous pouvez l\'écouter ou le consulter en tapant le *98 sur votre téléphone. Merci !
 
 -- Messagerie XIVO --');
