@@ -43,6 +43,7 @@ __typemap = {
 	"conv": None,
 	"quote_conv": None,
 	"cursorclass": None,
+	"charset": str
 }
 
 def __apply_types(params, typemap):
