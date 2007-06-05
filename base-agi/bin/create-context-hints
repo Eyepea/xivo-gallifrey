@@ -34,7 +34,12 @@ CONFIG_LIB_PATH = 'py_lib_path'
 import sys
 from xivo import ConfigPath
 from xivo.ConfigPath import *
-ConfiguredPathHelper(CONFIG_FILE, CONFIG_LIB_PATH)
+
+try:
+        InsertPathListSys(SortedValuesFromConfigSection(CONFIG_FILE, CONFIG_LIB_PATH))
+except NoSectionError, s:
+        print >> sys.stderr, "WARNING: Section [%s] apparently missing from configuration file %s" % (CONFIG_LIB_PATH, CONFIG_FILE)
+
 import anysql
 from BackSQL import backsqlite
 from BackSQL import backmysql
@@ -74,20 +79,23 @@ except IOError:
         print "VERBOSE \"Configuration file not found : %s\"" % outcall
         sys.exit()
 
+if not config.has_section('template'):
+	print "Erreur template section doesn't exist"
+	sys.exit()
 
 for context in r:
 	print "[" + context[0] + "]"
-	if context[0] == 'local-extensions':
-		query = "SELECT number,protocol,name FROM userfeatures WHERE context IN('','local-extensions') OR context IS NULL"
-	else:
-		query = "SELECT number,protocol,name FROM userfeatures WHERE context='%s'" % context[0]
+	query = "SELECT number,protocol,name FROM userfeatures WHERE context='%s'" % context[0]
 	cursor.execute(query)
 	r = cursor.fetchall()
 	for e in r:
 		if e[0] and e[1] and e[2]:
 			print "exten = " + str(e[0]) + ",hint," + str(e[1].upper()) + "/" + str(e[2])
-	for cont in config.sections():
-		exten = config.items(cont)
+
+	if config.has_section(context[0]):
+		exten = config.items(context[0])
+	else:
+		exten = config.items('template')
 
 	for line in sorted(exten, key=operator.itemgetter(0)):
 		print string.replace(line[1],'%%CONTEXT%%',context[0])
