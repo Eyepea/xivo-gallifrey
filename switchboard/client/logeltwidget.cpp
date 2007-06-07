@@ -30,8 +30,8 @@ LogEltWidget::LogEltWidget( const QString & peer, Direction d,
 
 	layout->addStretch(1);
 
-	m_dialAction = new QAction( tr("&Dial"), this );
-	m_dialAction->setStatusTip( tr("Dial back") );
+	m_dialAction = new QAction( tr("&Call back"), this );
+	m_dialAction->setStatusTip( tr("Call back the correspondent") );
 	connect( m_dialAction, SIGNAL(triggered()),
 	         this, SLOT(callBackPeer()) );
 }

@@ -17,7 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 */
 
-/* $Revision $
+/* $Id$
+ * $Revision$
    $Date$
 */
 
@@ -63,8 +64,8 @@ m_person_yellow(":/personal-yellow.png"), m_person_blue(":/personal-blue.png")
 	m_removeAction->setStatusTip( tr("Remove this peer from the panel") );
 	connect( m_removeAction, SIGNAL(triggered()),
 	         this, SLOT(removeFromPanel()) );
-	m_dialAction = new QAction( tr("&Dial"), this);
-	m_dialAction->setStatusTip( tr("Dial this number") );
+	m_dialAction = new QAction( tr("&Call"), this);
+	m_dialAction->setStatusTip( tr("Call this peer") );
 	connect( m_dialAction, SIGNAL(triggered()),
 	         this, SLOT(dial()) );
 }
