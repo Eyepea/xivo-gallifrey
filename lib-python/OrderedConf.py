@@ -462,8 +462,8 @@ class OrderedRawConf:
 		return [n for n,v in self._sections[0]]
 
 	def has_section(self, section):
-		"""OLD API FOR RawConfigParser COMPATIBILITY
-		But probably always safe to call.
+		"""OLD API FOR RawConfigParser COMPATIBILITY -  but rather
+                quite safe.
 
 		Test if a section with canonical name sect_trans(section) exists
 		
@@ -581,7 +581,8 @@ class OrderedRawConf:
 		return self._sectup_by_name(section)[1].keys()
 
 	def has_option(self, section, option):
-		"""OLD but rather safe API
+		"""OLD API - unsafe unless has_conflicting_section_names()
+                returns False.
 		
 		Test if at least a section with canonical name
 		sect_trans(section) exists and if the first matching one
@@ -899,3 +900,134 @@ class OrderedRawConf:
 			e.append(lineno, repr(line))
 		if e:
 			raise e
+
+if __name__ == '__main__':
+  if __debug__:
+    from cStringIO import StringIO
+    import unittest
+    import sys
+    
+    def whoami(lvl=0):
+      return sys._getframe(lvl+1).f_code.co_name
+    
+    valid_conf = """
+[blablabla]
+key1=blablabla_val_1
+key2=blablabla_val_2
+
+[corpremedaille]
+okey1=corpremedaille_val_1
+okey2=corpremedaille_val_2
+
+[transtyping]
+key_int=42
+key_float=131.31337
+key_boolean_0=fALSe
+key_boolean_1=1
+    """
+    
+    valid_conf_skv = (
+      ('blablabla','key1','blablabla_val_1'),
+      ('blablabla','key2','blablabla_val_2'),
+      ('corpremedaille','okey1','corpremedaille_val_1'),
+      ('corpremedaille','okey2','corpremedaille_val_2'),
+      ('transtyping','key_int','42'),
+      ('transtyping','key_float','131.31337'),
+      ('transtyping','key_boolean_0','fALSe'),
+      ('transtyping','key_boolean_1','1')
+    )
+
+    valid_conf_int = (
+      ('transtyping','key_int',42),
+      ('transtyping','key_boolean_1',1)
+    )
+
+    valid_conf_float = (
+      ('transtyping','key_int',42.0),
+      ('transtyping','key_float',131.31337),
+      ('transtyping','key_boolean_1',1.0)
+    )
+    
+    valid_conf_boolean = (
+      ('transtyping','key_boolean_0',False),
+      ('transtyping','key_boolean_1',True)
+    )
+
+    valid_sections = ('blablabla', 'corpremedaille', 'transtyping')
+    other_sections = ('kikoolol', 'wazza')
+
+    section_conflict_conf = """
+[blabla]
+[blabla]
+    """
+
+    option_conflict_conf = """
+[blabla]
+k=v1
+k=v2
+    """
+    
+    no_sec_conf = "k=v\n"
+    
+    inval_conf = """
+[sec]
+    INVALID
+k=v
+    """
+
+    def parser_origin():
+      return '<' + whoami(1) + '>'
+
+    class Parsing(unittest.TestCase):
+      def commonTest(self, fo, tst_name):
+        try:
+          OrderedRawConf(fo, tst_name)
+        except Error:
+          self.fail()
+      def testSimple(self):
+        self.commonTest(StringIO(valid_conf), parser_origin())
+      def testSectionConflict(self):
+        self.commonTest(StringIO(section_conflict_conf), parser_origin())
+      def testOptionConflict(self):
+        self.commonTest(StringIO(option_conflict_conf), parser_origin())
+      def testNoSection(self):
+        self.assertRaises(Error, OrderedRawConf, StringIO(no_sec_conf), parser_origin())
+      def testInval(self):
+        self.assertRaises(Error, OrderedRawConf, StringIO(inval_conf), parser_origin())
+
+    class SimpleOldApi(unittest.TestCase):
+      set_skv,set_int,set_float,set_boolean=valid_conf_skv,valid_conf_int,valid_conf_float,valid_conf_boolean
+      section_set = frozenset(valid_sections)
+      other_set = frozenset(other_sections)
+      def setUp(self):
+        self.ord_cnf = OrderedRawConf(StringIO(valid_conf), parser_origin())
+      def commonGetLike(self, method, set):
+        map(lambda (x,y,z): self.assertEqual(method(x,y),z), set)
+      def testGet(self):
+        self.commonGetLike(self.ord_cnf.get, self.set_skv)
+      def testGetInt(self):
+        self.commonGetLike(self.ord_cnf.getint, self.set_int)
+      def testGetFloat(self):
+        self.commonGetLike(self.ord_cnf.getfloat, self.set_float)
+      def testGetBoolean(self):
+        self.commonGetLike(self.ord_cnf.getboolean, self.set_boolean)
+      def testSections(self):
+        self.assertEqual(frozenset(self.ord_cnf.sections()), self.section_set)
+      def testHasSection(self):
+        map(lambda x: self.assertEqual(self.ord_cnf.has_section(x), True), self.section_set)
+        map(lambda x: self.assertEqual(self.ord_cnf.has_section(x), False), self.other_set)
+      def testItems(self):
+        for sec in self.section_set:
+          self.assertEqual(frozenset(self.ord_cnf.items(sec)),
+                           frozenset([(k,v) for s,k,v in self.set_skv if s == sec]))
+      def testOptions(self):
+        for sec in self.section_set:
+          self.assertEqual(frozenset(self.ord_cnf.options(sec)),
+                           frozenset([k for s,k,v in self.set_skv if s == sec]))
+      def testHasOption(self):
+        map(lambda (s,k,v): self.assertEqual(self.ord_cnf.has_option(s, k), True), self.set_skv)
+        for sec in self.other_set:
+          map(lambda (s,k,v): self.assertEqual(self.ord_cnf.has_option(sec, k), False), self.set_skv)
+          map(lambda (s,k,v): self.assertEqual(self.ord_cnf.has_option(s, sec), False), self.set_skv)
+
+    unittest.main()
