@@ -249,15 +249,11 @@ void CallStackWidget::dropEvent(QDropEvent *event)
 	}
 	QString text = event->mimeData()->text();
 	qDebug() << "CallStackWidget::dropEvent()" << text;
-	if(text.indexOf('c') == 0) { // 'c/' if channel, 'p/' otherwise
-		// it is a channel, not a peer.
-		event->ignore();
-		return;
-	}
 	emptyList();
 	m_monitoredPeer = text;
 	monitoredPeerChanged(text);
-	changeTitle(tr("Monitoring : ") + text);
+	QString name = QString::fromUtf8(event->mimeData()->data("name"));
+	changeTitle(tr("Monitoring : ") + name);
 	updateDisplay();
 	event->acceptProposedAction();
 }

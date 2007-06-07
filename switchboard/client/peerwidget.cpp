@@ -196,6 +196,7 @@ void PeerWidget::mouseMoveEvent(QMouseEvent *event)
 	qDebug() << "here" << m_id;
 	mimeData->setText(m_id/*m_textlbl->text()*/);
 	mimeData->setData(PEER_MIMETYPE, m_id.toAscii());
+	mimeData->setData("name", m_name.toUtf8());
 	drag->setMimeData(mimeData);
 
 	/*Qt::DropAction dropAction = */drag->start(Qt::CopyAction | Qt::MoveAction);
