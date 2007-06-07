@@ -16,6 +16,7 @@ HEADERS += astchannel.h peerslayout.h searchpanel.h
 HEADERS += peeritem.h logeltwidget.h logwidget.h dialpanel.h
 HEADERS += directorypanel.h displaymessages.h
 HEADERS += peerchannel.h extendedtablewidget.h loginengine.h
+HEADERS += xivoconsts.h
 SOURCES += main.cpp peerwidget.cpp switchboardwindow.cpp
 SOURCES += switchboardengine.cpp mainwindow.cpp
 SOURCES += switchboardconf.cpp callwidget.cpp callstackwidget.cpp
