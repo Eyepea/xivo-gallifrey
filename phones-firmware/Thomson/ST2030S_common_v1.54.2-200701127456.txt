@@ -16,7 +16,7 @@ DoNotDisturb_Type=0
 DoNotDisturb_Year=0
 Suppress-DomainName-Flag=1
 LCDvoltLevel=0
-LanguageType=0
+LanguageType=1
 LocalMusicOnHold=1
 OptionVisible=0000
 PasswordString=0000
@@ -26,8 +26,8 @@ RingToneMP1=0
 RingToneMP2=0
 RingToneMP3=0
 RingToneMP4=0
-DateFlag=0
-TimeFlag=0
+DateFlag=2
+TimeFlag=1
 
 
 [net]
