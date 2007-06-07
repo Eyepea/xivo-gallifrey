@@ -10,6 +10,7 @@
 #include <QMenu>
 #include "callstackwidget.h"
 #include "callwidget.h"
+#include "xivoconsts.h"
 
 CallWidget::CallWidget(const QString & channelme,
 		       const QString & action,
@@ -151,6 +152,7 @@ void CallWidget::mouseMoveEvent(QMouseEvent *event)
 	QDrag *drag = new QDrag(this);
 	QMimeData *mimeData = new QMimeData();
 	mimeData->setText(/*"test"*/ m_channelme);
+	mimeData->setData(CHANNEL_MIMETYPE, m_channelme.toAscii());
 	drag->setMimeData(mimeData);
 
 	Qt::DropAction dropAction = drag->start(Qt::CopyAction | Qt::MoveAction);

@@ -1,0 +1,9 @@
+/* $Id$ */
+#ifndef __XIVOCONSTS_H__
+#define __XIVOCONSTS_H__
+
+#define CHANNEL_MIMETYPE	"XIVO_ASTERISK_CHANNEL"
+#define PEER_MIMETYPE		"XIVO_ASTERISK_PEER"
+
+#endif
+

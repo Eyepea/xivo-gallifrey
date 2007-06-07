@@ -32,6 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include "peerwidget.h"
 #include "switchboardengine.h"
 #include "switchboardwindow.h"
+#include "xivoconsts.h"
 
 PeerWidget::PeerWidget(const QString & id, const QString & name,
                        QWidget * parent/*, int size*/)
@@ -194,6 +195,7 @@ void PeerWidget::mouseMoveEvent(QMouseEvent *event)
 	QMimeData *mimeData = new QMimeData;
 	qDebug() << "here" << m_id;
 	mimeData->setText(m_id/*m_textlbl->text()*/);
+	mimeData->setData(PEER_MIMETYPE, m_id.toAscii());
 	drag->setMimeData(mimeData);
 
 	/*Qt::DropAction dropAction = */drag->start(Qt::CopyAction | Qt::MoveAction);
@@ -216,7 +218,8 @@ void PeerWidget::mouseDoubleClickEvent(QMouseEvent *event)
 void PeerWidget::dragEnterEvent(QDragEnterEvent *event)
 {
 	qDebug() << "PeerWidget::dragEnterEvent()" << event->mimeData()->formats();
-	if(event->mimeData()->hasText())
+	if(  event->mimeData()->hasFormat(PEER_MIMETYPE)
+	  || event->mimeData()->hasFormat(CHANNEL_MIMETYPE) )
 	{
 		if(event->proposedAction() & (Qt::CopyAction|Qt::MoveAction))
 			event->acceptProposedAction();
@@ -227,7 +230,8 @@ void PeerWidget::dragMoveEvent(QDragMoveEvent *event)
 {
 	//	qDebug() << "dragMoveEvent()";
 	//	qDebug() << event->mimeData()->formats();
-	if(event->mimeData()->hasText())
+	if(  event->mimeData()->hasFormat(PEER_MIMETYPE)
+	  || event->mimeData()->hasFormat(CHANNEL_MIMETYPE) )
 	{
 		if(event->proposedAction() & (Qt::CopyAction|Qt::MoveAction))
 			event->acceptProposedAction();
@@ -245,11 +249,18 @@ void PeerWidget::dropEvent(QDropEvent *event)
 	{
 	case Qt::CopyAction:
 		// transfer the call to the peer "to"
-		event->acceptProposedAction();
-		if(from.indexOf('c') == 0)         // 'c/' => channel
+	  	if(event->mimeData()->hasFormat(CHANNEL_MIMETYPE))
+		//if(from.indexOf('c') == 0)         // 'c/' => channel
+		{
+			event->acceptProposedAction();
 			transferCall(from, to);
-		else if(from.indexOf('p') == 0)    // 'p/' => peer
+		}
+		else if(event->mimeData()->hasFormat(PEER_MIMETYPE))
+		//else if(from.indexOf('p') == 0)    // 'p/' => peer
+		{
+			event->acceptProposedAction();
 			originateCall(from, to);
+		}
 		break;
 	case Qt::MoveAction:
 		event->acceptProposedAction();
@@ -268,14 +279,14 @@ void PeerWidget::contextMenuEvent(QContextMenuEvent * event)
 	contextMenu.addAction(m_dialAction);
 	// add remove action only if we are in the central widget.
 	qDebug() << parentWidget();
-	if(parentWidget())
+/*	if(parentWidget())
 	{
 		qDebug() << parentWidget()->objectName();
 		qDebug() << parentWidget()->metaObject();
 		qDebug() << &SwitchBoardWindow::staticMetaObject;
 		qDebug() << parentWidget()->metaObject()->className();
 		qDebug() << (&SwitchBoardWindow::staticMetaObject == parentWidget()->metaObject());
-	}
+	}*/
 	if(parentWidget() && (&SwitchBoardWindow::staticMetaObject == parentWidget()->metaObject()))
 		contextMenu.addAction(m_removeAction);
 	if( !m_channels.empty() )

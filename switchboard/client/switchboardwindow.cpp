@@ -32,6 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include "switchboardwindow.h"
 #include "switchboardengine.h"
 #include "peerwidget.h"
+#include "xivoconsts.h"
 
 SwitchBoardWindow::SwitchBoardWindow(QWidget * parent)
 : QWidget(parent), m_engine(0)
@@ -210,7 +211,7 @@ void SwitchBoardWindow::mousePressEvent(QMouseEvent * event)
 void SwitchBoardWindow::dragEnterEvent(QDragEnterEvent * event)
 {
 	qDebug() << "SwitchBoardWindow::dragEnterEvent" << event;
-	if(event->mimeData()->hasFormat("text/plain"))
+	if(event->mimeData()->hasFormat(PEER_MIMETYPE))
 		event->acceptProposedAction();
 }
 

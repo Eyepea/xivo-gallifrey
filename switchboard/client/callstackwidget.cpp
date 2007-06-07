@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QDebug>
 #include "callstackwidget.h"
 #include "callwidget.h"
+#include "xivoconsts.h"
 
 /*! \brief Constructor
  */
@@ -228,7 +229,7 @@ void CallStackWidget::updateDisplay()
 void CallStackWidget::dragEnterEvent(QDragEnterEvent *event)
 {
 	qDebug() << event->mimeData()->formats();
-	if (event->mimeData()->hasFormat("text/plain"))
+	if (event->mimeData()->hasFormat(PEER_MIMETYPE))
 	{
 		event->acceptProposedAction();
 	}
@@ -241,6 +242,11 @@ void CallStackWidget::dragEnterEvent(QDragEnterEvent *event)
  */
 void CallStackWidget::dropEvent(QDropEvent *event)
 {
+	if(!event->mimeData()->hasFormat(PEER_MIMETYPE))
+	{
+		event->ignore();
+		return;
+	}
 	QString text = event->mimeData()->text();
 	qDebug() << "CallStackWidget::dropEvent()" << text;
 	if(text.indexOf('c') == 0) { // 'c/' if channel, 'p/' otherwise
