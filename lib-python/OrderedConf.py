@@ -93,8 +93,7 @@ use OrderedRawConf natively, and should be preferred:
   - Methods on OrderedRawConf instances:
       ordered_sections, has_section, has_conflicting_section_names,
       has_any_conflicting_option_name, get_conflicting_section_names,
-      get_all_conflicting_option_names, __iter__ (via standard python
-      iterations) or iter_sections
+      __iter__ (via standard python iterations) or iter_sections
   - Methods on SectionDesc instances (during iteration over sections):
       get_name, has_conflicting_option_names, get_conflicting_option_names,
       ordered_items, has_option, __iter__ or iter_options
@@ -105,7 +104,7 @@ Under some conditions, the following new methods are also useful:
 
   - Methods on OrderedRawConf instances:
       ordered_items, iter_options, has_conflicting_option_names,
-      get_conflicting_option_names
+      get_conflicting_option_names, get_all_conflicting_option_names
   - Methods on SectionDesc instances (during iteration over sections):
       items, get, getint, getfloat, getboolean
 
@@ -623,7 +622,7 @@ class OrderedRawConf:
 			tsec = self.sect_trans(sec)
 			if tsec not in cd:
 				cf.append([sec])
-				cd[tsec] = len(cf-1)
+				cd[tsec] = len(cf)-1
 			else:
 				cf[cd[tsec]].append(sec)
 		return [tuple(c) for c in cf if len(c) > 1]
@@ -638,7 +637,7 @@ class OrderedRawConf:
 			topt = self.opt_trans(opt)
 			if topt not in cd:
 				cf.append([opt])
-				cd[topt] = len(cf-1)
+				cd[topt] = len(cf)-1
 			else:
 				cf[cd[topt]].append(opt)
 		return filter(lambda c: len(c) > 1, cf)
@@ -910,6 +909,8 @@ if __name__ == '__main__':
     def whoami(lvl=0):
       return sys._getframe(lvl+1).f_code.co_name
     
+    empty_conf = "\n"
+    
     valid_conf = """
 [blablabla]
 key1=blablabla_val_1
@@ -958,13 +959,32 @@ key_boolean_1=1
 
     section_conflict_conf = """
 [blabla]
+[evil]
 [blabla]
     """
 
+    double_section_conflict_conf = """
+[blabla]
+[evil]
+[kikoo]
+[blabla]
+[kikoo]
+    """
+
     option_conflict_conf = """
+[a]
+z=t
 [blabla]
 k=v1
+x=y
+y=123
 k=v2
+y=456
+[b]
+z=t
+[other]
+c=1
+c=2
     """
     
     no_sec_conf = "k=v\n"
@@ -984,6 +1004,8 @@ k=v
           OrderedRawConf(fo, tst_name)
         except Error:
           self.fail()
+      def testEmpty(self):
+        self.commonTest(StringIO(empty_conf), parser_origin())
       def testSimple(self):
         self.commonTest(StringIO(valid_conf), parser_origin())
       def testSectionConflict(self):
@@ -1030,4 +1052,100 @@ k=v
           map(lambda (s,k,v): self.assertEqual(self.ord_cnf.has_option(sec, k), False), self.set_skv)
           map(lambda (s,k,v): self.assertEqual(self.ord_cnf.has_option(s, sec), False), self.set_skv)
 
+    class NonIterConfictAPI(unittest.TestCase):
+      def commonHasConfSecName(self, conftxt, result):
+        ord_cnf = OrderedRawConf(StringIO(conftxt), parser_origin())
+        self.assertEqual(ord_cnf.has_conflicting_section_name(), result)
+      def testHasConflictingSectionNames(self):
+        HasConfSecName = (
+          (empty_conf, False),
+          (valid_conf, False),
+          (section_conflict_conf, True),
+          (double_section_conflict_conf, True),
+          (option_conflict_conf, False)
+        )
+        for conftxt, result in HasConfSecName:
+          ord_cnf = OrderedRawConf(StringIO(conftxt), parser_origin())
+          self.assertEqual(ord_cnf.has_conflicting_section_names(), result)
+      def testGetConflictingSectionNames(self):
+        GetConfSecName = (
+          (empty_conf, []),
+          (valid_conf, []),
+          (section_conflict_conf, [("blabla","blabla")]),
+          (double_section_conflict_conf, [("blabla","blabla"),("kikoo","kikoo")]),
+          (option_conflict_conf, [])
+        )
+        for conftxt, result in GetConfSecName:
+          ord_cnf = OrderedRawConf(StringIO(conftxt), parser_origin())
+          self.assertEqual(ord_cnf.get_conflicting_section_names(), result)
+      def testHasConflictingOptionNames(self):
+        HasConfOptName = (
+          (valid_conf, "blablabla", False),
+          (valid_conf, "corpremedaille", False),
+          (valid_conf, "transtyping", False),
+          (section_conflict_conf, "blabla", False),
+          (section_conflict_conf, "evil", False),
+          (double_section_conflict_conf, "blabla", False),
+          (double_section_conflict_conf, "evil", False),
+          (double_section_conflict_conf, "kikoo", False),
+          (option_conflict_conf, "a", False),
+          (option_conflict_conf, "blabla", True),
+          (option_conflict_conf, "other", True),
+          (option_conflict_conf, "b", False)
+        )
+        for conftxt, section, result in HasConfOptName:
+          ord_cnf = OrderedRawConf(StringIO(conftxt), parser_origin())
+          self.assertEqual(ord_cnf.has_conflicting_option_names(section), result)
+      def testGetConflictingOptionNames(self):
+        GetConfOptName = (
+          (valid_conf, "blablabla", []),
+          (valid_conf, "corpremedaille", []),
+          (valid_conf, "transtyping", []),
+          (section_conflict_conf, "blabla", []),
+          (section_conflict_conf, "evil", []),
+          (double_section_conflict_conf, "blabla", []),
+          (double_section_conflict_conf, "evil", []),
+          (double_section_conflict_conf, "kikoo", []),
+          (option_conflict_conf, "a", []),
+          (option_conflict_conf, "blabla", [['k','k'],['y','y']]),
+          (option_conflict_conf, "other", [['c','c']]),
+          (option_conflict_conf, "b", [])
+        )
+        for conftxt, section, result in GetConfOptName:
+          ord_cnf = OrderedRawConf(StringIO(conftxt), parser_origin())
+          self.assertEqual(ord_cnf.get_conflicting_option_names(section), result)
+      def testHasAnyConflictingOptionName(self):
+        HasAnyConfOptName = (
+          (empty_conf, False),
+          (valid_conf, False),
+          (section_conflict_conf, False),
+          (double_section_conflict_conf, False),
+          (option_conflict_conf, True)
+        )
+        for conftxt, result in HasAnyConfOptName:
+          ord_cnf = OrderedRawConf(StringIO(conftxt), parser_origin())
+          self.assertEqual(ord_cnf.has_any_conflicting_option_name(), result)
+      def testGetAllConflictingOptionNames(self):
+        GetAllConfOptName = (
+          (empty_conf, []),
+          (valid_conf, [("blablabla",[]),("corpremedaille",[]),("transtyping",[]),]),
+          (section_conflict_conf, [('blabla', []), ('evil', []), ('blabla', [])]),
+          (double_section_conflict_conf, [('blabla', []), ('evil', []), ('kikoo', []), ('blabla', []), ('kikoo', [])]),
+          (option_conflict_conf, [('a', []), ('blabla', [['k', 'k'], ['y', 'y']]), ('b', []), ('other', [['c', 'c']])])
+        )
+        for conftxt, result in GetAllConfOptName:
+          ord_cnf = OrderedRawConf(StringIO(conftxt), parser_origin())
+          self.assertEqual(ord_cnf.get_all_conflicting_option_names(), result)
+      def testIsProbablySafeWithOldApi(self):
+        IsProbablySafeWithOldApi = (
+          (empty_conf, True),
+          (valid_conf, True),
+          (section_conflict_conf, False),
+          (double_section_conflict_conf, False),
+          (option_conflict_conf, False)
+        )
+        for conftxt, result in IsProbablySafeWithOldApi:
+          ord_cnf = OrderedRawConf(StringIO(conftxt), parser_origin())
+          self.assertEqual(ord_cnf.is_probably_safe_with_old_api(), result)
+    
     unittest.main()
