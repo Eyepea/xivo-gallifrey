@@ -241,6 +241,19 @@ class SectionDesc:
 	    Returns the ordered list of (name, value) option pairs of this
 	    section.
 	
+	options(self)
+	    TRANSITIONARY API
+	    
+	    Returns the unordered list of option names of this section. If
+            multiple options with the same canonical name (as per 'opt_trans'
+            of the corresponding OrderedRawConf object) exists, only the first
+            one of each different set will be returned.
+	
+	ordered_options(self)
+	    NEW API
+	    
+	    Returns the ordered list of option names of this section.
+	
 	get(self, option)
 	    TRANSITIONARY API
 	    
@@ -1389,8 +1402,84 @@ key=second_one
         isec = ord_cnf.iter_sections()
         self.assert_(bool(isec.next()))
         self.assertRaises(StopIteration, isec.next)
+      def commonTwoSections(self, conftxt):
+        ord_cnf = self.factory(conftxt)
+        isec = ord_cnf.iter_sections()
+        self.assertEqual(isec.next().get('k'), 'v1')
+        self.assertEqual(isec.next().get('k'), 'v2')
+        self.assertRaises(StopIteration, isec.next)
+      def testIterSectionTwo(self):
+        self.commonTwoSections(itersection_two)
+      def testIterSectionConflict(self):
+        self.commonTwoSections(itersection_conflict)
+      def testIterConf(self):
+        ord_cnf = self.factory(iter_conf)
+        sections = ["sec_empty", "sec_1", "sec_2", "sec_opt_conflict",
+                    "sec_c14n_opt_conflict", "name_conflict", "name_conflict",
+                    "name_c14n_conflict", "NAME_C14N_CONFLICT"]
+        hcon = (False, False, False, True, False, False, False, False, False)
+        gcon = ([], [], [], [['key', 'key']], [], [], [], [], [])
+	self.assertEqual(ord_cnf.ordered_sections(), sections)
+        self.assertEqual(frozenset(ord_cnf.sections()), frozenset(sections))
+        self.assertEqual([sec.get_name() for sec in ord_cnf], sections)
+        for sec, hc, gc in zip(ord_cnf, hcon, gcon):
+        	self.assertEqual(sec.has_conflicting_option_names(), hc)
+        	self.assertEqual(sec.get_conflicting_option_names(), gc)
+      def testPreced(self):
+         ord_cnf = self.factory(iter_conf)
+         self.assertEqual(ord_cnf.get('name_c14n_conflict', 'key'), 'this_one')
 
-      class IterOptions(unittest.TestCase):
-        pass
+    class IterOptions(unittest.TestCase):
+
+      def factory(self, conftxt):
+        return OrderedRawConf(StringIO(conftxt), parser_origin())
+      def commonOptIterOne(self, iopt):
+        opt = iopt.next()
+        self.assertEqual(opt.get_name(), "k")
+        self.assertEqual(opt.get_value(), "v1")
+        opt = iopt.next()
+        self.assertEqual(opt.get_name(), "int")
+        self.assertEqual(opt.get_value(), "42")
+        self.assertEqual(opt.getint(), 42)
+        opt = iopt.next()
+        self.assertEqual(opt.get_name(), "float")
+        self.assertEqual(opt.get_value(), "131.31337")
+        self.assertEqual(opt.getfloat(), 131.31337)
+        opt = iopt.next()
+        self.assertEqual(opt.get_name(), "boolean")
+        self.assertEqual(opt.get_value(), "on")
+        self.assertEqual(opt.getboolean(), True)
+        self.assertRaises(StopIteration, iopt.next)
+      def testIterSectionOne(self):
+        ord_cnf = self.factory(itersection_one)
+        self.commonOptIterOne(ord_cnf.iter_options("section"))
+        more = False
+        for sec in ord_cnf:
+          self.failIf(more)
+          self.commonOptIterOne(sec.iter_options())
+          more = True
+        more = False
+        for sec in ord_cnf.iter_sections():
+          self.failIf(more)
+          self.commonOptIterOne(sec.iter_options())
+          more = True
+      def testIterConf(self):
+        ord_cnf = self.factory(iter_conf)
+        all_skv = (
+          ('sec_empty', ()),
+          ('sec_1', (('key','value_sec_1'),)),
+          ('sec_2', (('key1','value_sec_2_key_1'), ('key2','value_sec_2_key_2'))),
+          ('sec_opt_conflict', (('key','val1'), ('key','val2'))),
+          ('sec_c14n_opt_conflict', (('key','this_one'), ('KEY', 'second_one'))),
+          ('name_conflict', (('key','this_one'),)),
+          ('name_conflict', (('key','not_this_one'),)),
+          ('name_c14n_conflict', (('key','this_one'),)),
+          ('NAME_C14N_CONFLICT', (('key','second_one'),))
+        )
+        for sec, sec_tup in zip(ord_cnf, all_skv):
+          self.assertEqual(sec.get_name(), sec_tup[0])
+          for opt, opt_desc in zip(sec, sec_tup[1]):
+            self.assertEqual(opt.get_name(), opt_desc[0])
+            self.assertEqual(opt.get_value(), opt_desc[1])
 
     unittest.main()
