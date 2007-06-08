@@ -17,7 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 */
 
-/* $Revision $
+/* $Id$
+ * $Revision$
    $Date$
 */
 
@@ -263,12 +264,12 @@ void SwitchBoardEngine::updatePeers(const QStringList & liststatus)
 			//  <channel>:<etat du channel>:<nb de secondes dans cet etat>:<to/from>:<channel en liaison>:<numero en liaison>
 			int refn = nfields0 + nfields1 * i;
 			SIPPresStatus = liststatus[refn + 1];
-			if(liststatus[3] == "114")
+			/*if(liststatus[3] == "114")
 			{
 				qDebug() << liststatus[refn] << liststatus[refn + 1]
 				         << liststatus[refn + 2] << liststatus[refn + 3]
 				         << liststatus[refn + 4] << liststatus[refn + 5];
-			}
+			}*/
 			chanIds << liststatus[refn];
 			chanStates << liststatus[refn + 1];
 			chanOthers << liststatus[refn + 5];
@@ -350,8 +351,8 @@ void SwitchBoardEngine::socketReadyRead()
 				callsUpdated();
 			} else if(list[0] == QString("asterisk")) {
 				QTime currentTime = QTime::currentTime();
-				QString currentTimeStr = currentTime.toString("hh:mm:ss");
-				emitTextMessage(list[1] + " at " + currentTimeStr);
+				//QString currentTimeStr = currentTime.toString("hh:mm:ss");
+				emitTextMessage(list[1]/* + " at " + currentTimeStr*/);
 
 			} else if(list[0] == QString("peeradd")) {
 				QStringList listpeers = list[1].split(";");
@@ -373,9 +374,10 @@ void SwitchBoardEngine::socketReadyRead()
 		}
 	}
 	if(b) {
-		QTime currentTime = QTime::currentTime();
-		QString currentTimeStr = currentTime.toString("hh:mm:ss");
-		emitTextMessage(tr("Peers' status updated at ") + currentTimeStr);
+		//QTime currentTime = QTime::currentTime();
+		//QString currentTimeStr = currentTime.toString("hh:mm:ss");
+		//emitTextMessage(tr("Peers' status updated at ") + currentTimeStr);
+		emitTextMessage(tr("Peers' status updated"));
 	}
 }
 
