@@ -19,6 +19,7 @@ protected:
 signals:
 	void searchDirectory(const QString &);
 	void emitDial(const QString &);
+	void updateMyCalls(const QStringList &, const QStringList &, const QStringList &);
 private slots:
 	void startSearch();
 	void itemDoubleClicked(QTableWidgetItem *);

@@ -17,7 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 */
 
-/* $Revision $
+/* $Id$
+ * $Revision$
    $Date$
 */
 
@@ -54,6 +55,8 @@ DirectoryPanel::DirectoryPanel(QWidget * parent)
 	         this, SLOT(itemDoubleClicked(QTableWidgetItem *)) );
 	connect( m_table, SIGNAL(emitDial(const QString &)),
 	         this, SIGNAL(emitDial(const QString &)) );
+	connect( this, SIGNAL(updateMyCalls(const QStringList &, const QStringList &, const QStringList &)),
+	         m_table, SLOT(updateMyCalls(const QStringList &, const QStringList &, const QStringList &)) );
 	vlayout->addWidget(m_table);
 	/*
 	QStringList labelList;

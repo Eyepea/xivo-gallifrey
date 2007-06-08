@@ -3,6 +3,8 @@
 #define __EXTENDEDTABLEWIDGET_H__
 
 #include <QTableWidget>
+#include <QList>
+#include "peerchannel.h"
 
 class QContextMenuEvent;
 
@@ -16,10 +18,13 @@ protected:
 	void contextMenuEvent(QContextMenuEvent * event);
 signals:
 	void emitDial(const QString & number);
+public slots:
+	void updateMyCalls(const QStringList &, const QStringList &, const QStringList &);
 private slots:
 	void dialNumber();
 private:
 	QString m_numberToDial;
+	QList<PeerChannel *> m_mychannels;
 };
 
 #endif

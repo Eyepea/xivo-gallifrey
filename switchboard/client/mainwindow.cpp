@@ -153,6 +153,8 @@ MainWindow::MainWindow(SwitchBoardEngine * engine, LoginEngine * loginengine)
 	         dirpanel, SLOT(setSearchResponse(const QString &)) );
 	connect( dirpanel, SIGNAL(emitDial(const QString &)),
 	         engine, SLOT(dialExtension(const QString &)) );
+	connect( engine, SIGNAL(updateMyCalls(const QStringList &, const QStringList &, const QStringList &)),
+	         dirpanel, SIGNAL(updateMyCalls(const QStringList &, const QStringList &, const QStringList &)) );
 	connect( engine, SIGNAL(stopped()),
 	         dirpanel, SLOT(stop()) );
 
