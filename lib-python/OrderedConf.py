@@ -726,7 +726,7 @@ class OrderedRawConf:
 			lst.append((sec,self._get_conflicting_option_names_int(opts)))
 		return lst
 
-	def has_no_key_duplication(self):
+	def has_no_duplication(self):
 		"""TEST THAT BEFORE USING OLD API
 		
 		Check that there is neither any conflicting section names, nor
@@ -745,7 +745,7 @@ class OrderedRawConf:
 		"""
 		return (not self.has_conflicting_section_names()) \
 			and (not self.has_any_conflicting_option_name())
-	is_probably_safe_with_old_api = has_no_key_duplication
+	is_probably_safe_with_old_api = has_no_duplication
 
 	def iter_sections(self):
 		"""NEW API
@@ -936,12 +936,12 @@ if __name__ == '__main__':
     import unittest
     import string
     import sys
-    
+
     def whoami(lvl=0):
       return sys._getframe(lvl+1).f_code.co_name
-    
+
     empty_conf = "\n"
-    
+
     valid_conf = """
 [blablabla]
 key1=blablabla_val_1
@@ -1201,7 +1201,7 @@ k=v
         self.assertEqual(ord_cnf.has_any_conflicting_option_name(), resdesc['hacon'])
         self.assertEqual(ord_cnf.get_all_conflicting_option_names(), resdesc['gacon'])
         self.assertEqual(ord_cnf.is_probably_safe_with_old_api(), resdesc['ipswoa'])
-    
+
     class C14nSectionsSimpleOldApiNoChange(SimpleOldApi):
       def setUp(self):
         self.ord_cnf = OrderedRawConf(StringIO(valid_conf), parser_origin(), string.lower)
@@ -1359,8 +1359,66 @@ key=this_one
 key=second_one
     """
 
+    iter_conf_sections = ["sec_empty", "sec_1", "sec_2", "sec_opt_conflict",
+                          "sec_c14n_opt_conflict", "name_conflict", "name_conflict",
+                          "name_c14n_conflict", "NAME_C14N_CONFLICT"]
+
+    class NewApi(unittest.TestCase):
+      ordItems = (
+        [],
+        [('key','value_sec_1')],
+        [('key1','value_sec_2_key_1'), ('key2','value_sec_2_key_2')],
+        [('key','val1'), ('key','val2')],
+        [('key','this_one'), ('KEY','second_one')],
+        [('key','this_one')],
+        [('key','not_this_one')],
+        [('key','this_one')],
+        [('key','second_one')]
+      )
+      def secMapper(self, secname):
+        return secname
+      def factory(self, conftxt):
+        return OrderedRawConf(StringIO(conftxt), parser_origin())
+      def secFilter(self, lst_tuple_sec_data):
+        for p,(secname,data) in enumerate(lst_tuple_sec_data):
+          if self.secMapper(secname) \
+               not in map(lambda (x,y):x, lst_tuple_sec_data[:p]):
+            yield (secname,data)
+      def injectAndFilter(self, datas):
+        return self.secFilter(zip(iter_conf_sections, datas))
+      def testOrderedSections(self):
+        ord_cnf = self.factory(iter_conf)
+        self.assertEqual(ord_cnf.ordered_sections(), iter_conf_sections)
+      def testSections(self):
+        ord_cnf = self.factory(iter_conf)
+        self.assertEqual(frozenset(ord_cnf.sections()), frozenset(map(self.secMapper, iter_conf_sections)))
+      def testOrderedItems(self):
+        ord_cnf = self.factory(iter_conf)
+        for s,loi in self.injectAndFilter(self.ordItems):
+          self.assertEqual(ord_cnf.ordered_items(s), loi)
+      def testOrderedOptions(self):
+        ord_cnf = self.factory(iter_conf)
+        for s,loi in self.injectAndFilter(self.ordItems):
+          self.assertEqual(ord_cnf.ordered_options(s), map(lambda (k,v):k, loi))
+
+    class C14nSectionsNewApi(NewApi):
+      def secMapper(self, secname):
+        return secname.lower()
+      def factory(self, conftxt):
+        return OrderedRawConf(StringIO(conftxt), parser_origin(), string.lower)
+
+    class C14nOptionsNewApi(NewApi):
+      def factory(self, conftxt):
+        return OrderedRawConf(StringIO(conftxt), parser_origin(), lambda x:x, string.lower)
+
     class IterSections(unittest.TestCase):
-        
+      hcon = (False, False, False, True, False, False, False, False, False)
+      gcon = ([], [], [], [['key', 'key']], [], [], [], [], [])
+      c14n_skv = ('sec_c14n_opt_conflict', 'KEY', 'second_one')
+      def secMapper(self, secname):
+        return secname
+      def optMapper(self, optname):
+        return optname
       def factory(self, conftxt):
         return OrderedRawConf(StringIO(conftxt), parser_origin())
       def testIterSectionEmpty(self):
@@ -1383,10 +1441,10 @@ key=second_one
                  ('boolean', 'on')]
         map(lambda (k,v): self.assertEqual(si1.has_option(k), v), options_pst)
         self.assertEqual(si1.ordered_items(), items)
-        self.assertEqual(frozenset(si1.items()), frozenset(items))
+        self.assertEqual(frozenset(si1.items()), frozenset(map(lambda (k,v): (self.optMapper(k), v), items)))
         self.assertEqual(si1.ordered_options(), map(lambda (k,v): k, items))
         self.assertEqual(frozenset(si1.options()),
-                         frozenset(map(lambda (k,v): k, items)))
+                         frozenset(map(lambda (k,v): self.optMapper(k), items)))
       def testIterSectionOne(self):
         ord_cnf = self.factory(itersection_one)
         more = False
@@ -1414,23 +1472,21 @@ key=second_one
         self.commonTwoSections(itersection_conflict)
       def testIterConf(self):
         ord_cnf = self.factory(iter_conf)
-        sections = ["sec_empty", "sec_1", "sec_2", "sec_opt_conflict",
-                    "sec_c14n_opt_conflict", "name_conflict", "name_conflict",
-                    "name_c14n_conflict", "NAME_C14N_CONFLICT"]
-        hcon = (False, False, False, True, False, False, False, False, False)
-        gcon = ([], [], [], [['key', 'key']], [], [], [], [], [])
-	self.assertEqual(ord_cnf.ordered_sections(), sections)
-        self.assertEqual(frozenset(ord_cnf.sections()), frozenset(sections))
-        self.assertEqual([sec.get_name() for sec in ord_cnf], sections)
-        for sec, hc, gc in zip(ord_cnf, hcon, gcon):
-        	self.assertEqual(sec.has_conflicting_option_names(), hc)
-        	self.assertEqual(sec.get_conflicting_option_names(), gc)
-      def testPreced(self):
-         ord_cnf = self.factory(iter_conf)
-         self.assertEqual(ord_cnf.get('name_c14n_conflict', 'key'), 'this_one')
+        self.assertEqual([sec.get_name() for sec in ord_cnf], iter_conf_sections)
+        for sec, hc, gc in zip(ord_cnf, self.hcon, self.gcon):
+          self.assertEqual(sec.has_conflicting_option_names(), hc)
+          self.assertEqual(sec.get_conflicting_option_names(), gc)
+      def testC14n(self):
+        ord_cnf = self.factory(iter_conf)
+        for sec in ord_cnf:
+          if sec.get_name() == self.c14n_skv[0]:
+            self.assertEqual(sec.get(self.c14n_skv[1]), self.c14n_skv[2])
+            break
 
     class IterOptions(unittest.TestCase):
-
+      c14n_skv = ('NAME_C14N_CONFLICT', 'key', 'second_one')
+      def secMapper(self, secname):
+        return secname
       def factory(self, conftxt):
         return OrderedRawConf(StringIO(conftxt), parser_origin())
       def commonOptIterOne(self, iopt):
@@ -1463,6 +1519,14 @@ key=second_one
           self.failIf(more)
           self.commonOptIterOne(sec.iter_options())
           more = True
+      def testIterOptionsPrio(self):
+        ord_cnf = self.factory(iter_conf)
+        more = False
+        for opt in ord_cnf.iter_options(self.c14n_skv[0]):
+          self.failIf(more)
+          self.assertEqual(opt.get_name(), self.c14n_skv[1])
+          self.assertEqual(opt.get_value(), self.c14n_skv[2])
+          more = True
       def testIterConf(self):
         ord_cnf = self.factory(iter_conf)
         all_skv = (
@@ -1481,5 +1545,31 @@ key=second_one
           for opt, opt_desc in zip(sec, sec_tup[1]):
             self.assertEqual(opt.get_name(), opt_desc[0])
             self.assertEqual(opt.get_value(), opt_desc[1])
+
+    class C14nIterSections(IterSections):
+      def secMapper(self, secname):
+        return secname.lower()
+      def factory(self, conftxt):
+        return OrderedRawConf(StringIO(conftxt), parser_origin(), string.lower)
+
+    class C14nIterSections_c14nOptions(IterSections):
+      hcon = (False, False, False, True, True, False, False, False, False)
+      gcon = ([], [], [], [['key', 'key']], [['key','KEY']], [], [], [], [])
+      c14n_skv = ('sec_c14n_opt_conflict', 'KEY', 'this_one')
+      def optMapper(self, optname):
+        return optname.lower()
+      def factory(self, conftxt):
+        return OrderedRawConf(StringIO(conftxt), parser_origin(), lambda x:x, string.lower)
+
+    class C14nIterOptions_c14nSections(IterOptions):
+      c14n_skv = ('NAME_C14N_CONFLICT', 'key', 'this_one')
+      def secMapper(self, secname):
+        return secname.lower()
+      def factory(self, conftxt):
+        return OrderedRawConf(StringIO(conftxt), parser_origin(), string.lower)
+
+    class C14nIterOptions(IterOptions):
+      def factory(self, conftxt):
+        return OrderedRawConf(StringIO(conftxt), parser_origin(), lambda x:x, string.lower)
 
     unittest.main()
