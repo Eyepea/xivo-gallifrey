@@ -904,6 +904,7 @@ if __name__ == '__main__':
   if __debug__:
     from cStringIO import StringIO
     import unittest
+    import string
     import sys
     
     def whoami(lvl=0):
@@ -1052,9 +1053,11 @@ k=v
           map(lambda (s,k,v): self.assertEqual(self.ord_cnf.has_option(sec, k), False), self.set_skv)
           map(lambda (s,k,v): self.assertEqual(self.ord_cnf.has_option(s, sec), False), self.set_skv)
 
-    class NonIterConfictAPI(unittest.TestCase):
+    class NonIterConfictApi(unittest.TestCase):
+      def factory(self, conftxt):
+        return OrderedRawConf(StringIO(conftxt), parser_origin())
       def commonHasConfSecName(self, conftxt, result):
-        ord_cnf = OrderedRawConf(StringIO(conftxt), parser_origin())
+        ord_cnf = self.factory(conftxt)
         self.assertEqual(ord_cnf.has_conflicting_section_name(), result)
       def testHasConflictingSectionNames(self):
         HasConfSecName = (
@@ -1065,7 +1068,7 @@ k=v
           (option_conflict_conf, False)
         )
         for conftxt, result in HasConfSecName:
-          ord_cnf = OrderedRawConf(StringIO(conftxt), parser_origin())
+          ord_cnf = self.factory(conftxt)
           self.assertEqual(ord_cnf.has_conflicting_section_names(), result)
       def testGetConflictingSectionNames(self):
         GetConfSecName = (
@@ -1076,7 +1079,7 @@ k=v
           (option_conflict_conf, [])
         )
         for conftxt, result in GetConfSecName:
-          ord_cnf = OrderedRawConf(StringIO(conftxt), parser_origin())
+          ord_cnf = self.factory(conftxt)
           self.assertEqual(ord_cnf.get_conflicting_section_names(), result)
       def testHasConflictingOptionNames(self):
         HasConfOptName = (
@@ -1094,7 +1097,7 @@ k=v
           (option_conflict_conf, "b", False)
         )
         for conftxt, section, result in HasConfOptName:
-          ord_cnf = OrderedRawConf(StringIO(conftxt), parser_origin())
+          ord_cnf = self.factory(conftxt)
           self.assertEqual(ord_cnf.has_conflicting_option_names(section), result)
       def testGetConflictingOptionNames(self):
         GetConfOptName = (
@@ -1112,7 +1115,7 @@ k=v
           (option_conflict_conf, "b", [])
         )
         for conftxt, section, result in GetConfOptName:
-          ord_cnf = OrderedRawConf(StringIO(conftxt), parser_origin())
+          ord_cnf = self.factory(conftxt)
           self.assertEqual(ord_cnf.get_conflicting_option_names(section), result)
       def testHasAnyConflictingOptionName(self):
         HasAnyConfOptName = (
@@ -1123,7 +1126,7 @@ k=v
           (option_conflict_conf, True)
         )
         for conftxt, result in HasAnyConfOptName:
-          ord_cnf = OrderedRawConf(StringIO(conftxt), parser_origin())
+          ord_cnf = self.factory(conftxt)
           self.assertEqual(ord_cnf.has_any_conflicting_option_name(), result)
       def testGetAllConflictingOptionNames(self):
         GetAllConfOptName = (
@@ -1134,7 +1137,7 @@ k=v
           (option_conflict_conf, [('a', []), ('blabla', [['k', 'k'], ['y', 'y']]), ('b', []), ('other', [['c', 'c']])])
         )
         for conftxt, result in GetAllConfOptName:
-          ord_cnf = OrderedRawConf(StringIO(conftxt), parser_origin())
+          ord_cnf = self.factory(conftxt)
           self.assertEqual(ord_cnf.get_all_conflicting_option_names(), result)
       def testIsProbablySafeWithOldApi(self):
         IsProbablySafeWithOldApi = (
@@ -1145,7 +1148,23 @@ k=v
           (option_conflict_conf, False)
         )
         for conftxt, result in IsProbablySafeWithOldApi:
-          ord_cnf = OrderedRawConf(StringIO(conftxt), parser_origin())
+          ord_cnf = self.factory(conftxt)
           self.assertEqual(ord_cnf.is_probably_safe_with_old_api(), result)
     
+    class C14nSectionsSimpleOldApiNoChange(SimpleOldApi):
+      def setUp(self):
+        self.ord_cnf = OrderedRawConf(StringIO(valid_conf), parser_origin(), string.lower)
+
+    class C14nSectionsNonIterConfictApiNoChange(NonIterConfictApi):
+      def factory(self, conftxt):
+        return OrderedRawConf(StringIO(conftxt), parser_origin(), string.lower)
+
+    class C14nOptionsSimpleOldApiNoChange(SimpleOldApi):
+      def setUp(self):
+        self.ord_cnf = OrderedRawConf(StringIO(valid_conf), parser_origin(), lambda x:x, string.lower)
+
+    class C14nOptionsNonIterConfictApiNoChange(NonIterConfictApi):
+      def factory(self, conftxt):
+        return OrderedRawConf(StringIO(conftxt), parser_origin(), string.lower)
+
     unittest.main()
