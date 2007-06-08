@@ -273,6 +273,11 @@ void PeerWidget::dropEvent(QDropEvent *event)
 	}
 }
 
+void PeerWidget::transferChan(const QString & chan)
+{
+	transferCall(chan, m_id);
+}
+
 void PeerWidget::contextMenuEvent(QContextMenuEvent * event)
 {
 	QMenu contextMenu(this);
@@ -307,6 +312,18 @@ void PeerWidget::contextMenuEvent(QContextMenuEvent * event)
 		contextMenu.addMenu(interceptMenu);
 		contextMenu.addMenu(hangupMenu);
 	}
+	if( !m_mychannels.empty() )
+	{
+		QMenu * transferMenu = new QMenu( tr("&Transfer"), &contextMenu );
+		QListIterator<PeerChannel *> i(m_mychannels);
+		while(i.hasNext())
+		{
+			const PeerChannel * channel = i.next();
+			transferMenu->addAction(channel->otherPeer(),
+			                        channel, SLOT(transfer()));
+		}
+		contextMenu.addMenu(transferMenu);
+	}
 	contextMenu.exec(event->globalPos());
 }
 
@@ -323,7 +340,23 @@ void PeerWidget::addChannel(const QString & id, const QString & state, const QSt
 	PeerChannel * ch = new PeerChannel(id, state, otherPeer, this);
 	connect(ch, SIGNAL(interceptChan(const QString &)),
 	        this, SIGNAL(interceptChan(const QString &)));
+	connect(ch, SIGNAL(hangUpChan(const QString &)),
+	        this, SIGNAL(hangUpChan(const QString &)));
 	m_channels << ch;
 }
 
+void PeerWidget::updateMyCalls(const QStringList & chanIds,
+                               const QStringList & chanStates,
+							   const QStringList & chanOthers)
+{
+	while(!m_mychannels.isEmpty())
+		delete m_mychannels.takeFirst();
+	for(int i = 0; i<chanIds.count(); i++)
+	{
+		PeerChannel * ch = new PeerChannel(chanIds[i], chanStates[i], chanOthers[i]);
+		connect(ch, SIGNAL(transferChan(const QString &)),
+		        this, SLOT(transferChan(const QString &)) );
+		m_mychannels << ch;
+	}
+}
 

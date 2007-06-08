@@ -36,6 +36,12 @@ void PeerChannel::intercept()
 void PeerChannel::hangUp()
 {
 	qDebug() << "PeerChannel::hangUp()" << m_id;
-	// TO BE IMPLEMENTED :)
+	hangUpChan( m_id );
+}
+
+void PeerChannel::transfer()
+{
+	qDebug() << "PeerChannel::transfer()" << m_id;
+	transferChan( m_id );
 }
 

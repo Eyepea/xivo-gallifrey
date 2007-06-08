@@ -16,8 +16,11 @@ public:
 public slots:
 	void intercept();
 	void hangUp();
+	void transfer();
 signals:
 	void interceptChan(const QString &);
+	void hangUpChan(const QString &);
+	void transferChan(const QString &);
 private:
 	QString m_id;
 	QString m_state;

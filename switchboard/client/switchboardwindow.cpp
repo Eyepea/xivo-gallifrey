@@ -112,12 +112,16 @@ void SwitchBoardWindow::updatePeer(const QString & ext,
 	         m_engine, SLOT(originateCall(const QString&, const QString&)) );
 	connect( peerwidget, SIGNAL(transferCall(const QString&, const QString&)),
 	         m_engine, SLOT(transferCall(const QString&, const QString&)) );
+	connect( peerwidget, SIGNAL(hangUpChan(const QString &)),
+	         m_engine, SLOT(hangUp(const QString &)) );
 	connect( peerwidget, SIGNAL(emitDial(const QString &)),
 	         m_engine, SLOT(dialFullChannel(const QString &)) );
 	connect( peerwidget, SIGNAL(interceptChan(const QString &)),
 	         m_engine, SLOT(interceptCall(const QString &)) );
 	connect( peerwidget, SIGNAL(doRemoveFromPanel(const QString &)),
 	         this, SLOT(removePeerFromLayout(const QString &)) );
+	connect( m_engine, SIGNAL(updateMyCalls(const QStringList &, const QStringList &, const QStringList &)),
+	         peerwidget, SLOT(updateMyCalls(const QStringList &, const QStringList &, const QStringList &)) );
 	QPoint pos = settings.value("layout/" + ext, QPoint(-1, -1) ).toPoint();
 	//qDebug() << " " << ext << " " << pos;
 	if(pos.x() < 0)

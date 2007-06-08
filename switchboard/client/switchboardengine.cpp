@@ -138,7 +138,7 @@ void SwitchBoardEngine::connectSocket()
 void SwitchBoardEngine::sendCommand()
 {
 	m_socket->write((m_pendingcommand + "\r\n"/*"\n"*/).toAscii());
-	qDebug() << m_pendingcommand;
+	qDebug() << ">>>" << m_pendingcommand;
 }
 
 void SwitchBoardEngine::processHistory(const QStringList & histlist)
@@ -250,6 +250,7 @@ void SwitchBoardEngine::updatePeers(const QStringList & liststatus)
 		return;
 	}
 
+	//<who>:<asterisk_id>:<tech(SIP/IAX/...)>:<phoneid>:<numero>:<contexte>:<dispo>:<etat SIP/XML>:<etat VM>:<etat Queues>: <nombre de liaisons>:
 	QString context = liststatus[5];
 	QString pname   = "p/" + liststatus[1] + "/" + context + "/"
 		+ liststatus[2] + "/" + liststatus[3] + "/" + liststatus[4];
@@ -270,7 +271,7 @@ void SwitchBoardEngine::updatePeers(const QStringList & liststatus)
 				         << liststatus[refn + 2] << liststatus[refn + 3]
 				         << liststatus[refn + 4] << liststatus[refn + 5];
 			}*/
-			chanIds << liststatus[refn];
+			chanIds << ("c/" + liststatus[1] + "/" + context + "/" + liststatus[refn]);
 			chanStates << liststatus[refn + 1];
 			chanOthers << liststatus[refn + 5];
 			/*pinfos += liststatus[refn + 1] + " : " + liststatus[refn] + " "
@@ -292,6 +293,12 @@ void SwitchBoardEngine::updatePeers(const QStringList & liststatus)
 	updatePeer(pname, m_callerids[pname],
 	           InstMessAvail, SIPPresStatus, VoiceMailStatus, QueueStatus,
 	           chanIds, chanStates, chanOthers);
+	// and my_context == context ???
+	if(liststatus[4] == m_extension) // my_name == liststatus[3]
+	{
+		//qDebug() << "glop";
+		updateMyCalls(chanIds, chanStates, chanOthers);
+	}
 }
 
 /*! \brief update a caller id 

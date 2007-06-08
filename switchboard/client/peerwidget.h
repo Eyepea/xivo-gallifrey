@@ -33,6 +33,7 @@ signals:
 	void originateCall(const QString &, const QString &);
 	void transferCall(const QString &, const QString &);
 	void interceptChan(const QString &);
+	void hangUpChan(const QString &);
 	void emitDial(const QString &);
 	void doRemoveFromPanel(const QString &);
 public slots:
@@ -45,7 +46,9 @@ public slots:
 	void setYellow(int n);
 	//void setBlack(int n);
 	//void setDarkGreen(int n);
+	void updateMyCalls(const QStringList &, const QStringList &, const QStringList &);
 private slots:
+	void transferChan(const QString &);
 	void removeFromPanel();
 	void dial();
 private:
@@ -61,6 +64,7 @@ private:
 	QAction * m_dialAction;
 	
 	QList<PeerChannel *> m_channels;
+	QList<PeerChannel *> m_mychannels;
 
 	/* TODO : have the Pixmaps as static objects */
 	QPixmap m_phone_green;

@@ -74,6 +74,7 @@ signals:
 			const QString & channelpeer,
 			const QString & exten,
 			const QString & phone);
+	void updateMyCalls(const QStringList &, const QStringList &, const QStringList &);
 	void endCall(const QString &);
 	//void showCalls(const QString & tomonitor, const QString & callerid);
 	void callsUpdated();
