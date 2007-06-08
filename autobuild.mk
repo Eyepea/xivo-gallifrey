@@ -3,6 +3,7 @@
 WRK_DIR ?= $(shell pwd)
 DEB_DESTDIR ?= $(WRK_DIR)/..
 DEB_TAR_EXTRA_OPTIONS ?=
+TARBALL_DIR = .
 
 # internal variables
 MAINREV=$(shell cat $(WRK_DIR)/../VERSION)
@@ -21,7 +22,7 @@ remove-tarball::
 prepare-tarball:: remove-tarball
 
 do-tarball::
-	tar zcf $(DEB_DESTDIR)/$(DEB_PKG)_$(XIVO_REV).orig.tar.gz --exclude .svn $(DEB_TAR_EXTRA_OPTIONS) .
+	tar zcf $(DEB_DESTDIR)/$(DEB_PKG)_$(XIVO_REV).orig.tar.gz -C ${TARBALL_DIR} --exclude .svn $(DEB_TAR_EXTRA_OPTIONS) .
 
 clean-tarball::
 
