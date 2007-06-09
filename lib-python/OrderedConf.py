@@ -664,7 +664,7 @@ class OrderedRawConf:
 				cd[topt] = len(cf)-1
 			else:
 				cf[cd[topt]].append(opt)
-		return filter(lambda c: len(c) > 1, cf)
+		return [tuple(c) for c in cf if len(c) > 1]
 
 	def has_conflicting_option_names(self, section):
 		"""TEST THAT BEFORE USING OLD API
@@ -934,6 +934,7 @@ if __name__ == '__main__':
   if __debug__:
     from cStringIO import StringIO
     import unittest
+    import operator
     import string
     import sys
 
@@ -1101,48 +1102,20 @@ k=v
         return s
       def factory(self, conftxt):
         return OrderedRawConf(StringIO(conftxt), parser_origin())
-      def testHasConflictingSectionNames(self):
-        HasConfSecName = (
-          (empty_conf, False),
-          (valid_conf, False),
-          (section_conflict_conf, True),
-          (double_section_conflict_conf, True),
-          (option_conflict_conf, False)
-        )
-        for conftxt, result in HasConfSecName:
-          ord_cnf = self.factory(conftxt)
-          self.assertEqual(ord_cnf.has_conflicting_section_names(), result)
-      def testGetConflictingSectionNames(self):
-        GetConfSecName = (
+      def testConflictingSectionNames(self):
+        ConfSecName = (
           (empty_conf, []),
           (valid_conf, []),
           (section_conflict_conf, [("blabla","blabla")]),
           (double_section_conflict_conf, [("blabla","blabla"),("kikoo","kikoo")]),
           (option_conflict_conf, [])
         )
-        for conftxt, result in GetConfSecName:
+        for conftxt, result in ConfSecName:
           ord_cnf = self.factory(conftxt)
+          self.assertEqual(ord_cnf.has_conflicting_section_names(), result != [])
           self.assertEqual(ord_cnf.get_conflicting_section_names(), result)
-      def testHasConflictingOptionNames(self):
-        HasConfOptName = (
-          (valid_conf, self.sectionSynonym("blablabla"), False),
-          (valid_conf, self.sectionSynonym("corpremedaille"), False),
-          (valid_conf, self.sectionSynonym("transtyping"), False),
-          (section_conflict_conf, self.sectionSynonym("blabla"), False),
-          (section_conflict_conf, self.sectionSynonym("evil"), False),
-          (double_section_conflict_conf, self.sectionSynonym("blabla"), False),
-          (double_section_conflict_conf, self.sectionSynonym("evil"), False),
-          (double_section_conflict_conf, self.sectionSynonym("kikoo"), False),
-          (option_conflict_conf, self.sectionSynonym("a"), False),
-          (option_conflict_conf, self.sectionSynonym("blabla"), True),
-          (option_conflict_conf, self.sectionSynonym("other"), True),
-          (option_conflict_conf, self.sectionSynonym("b"), False)
-        )
-        for conftxt, section, result in HasConfOptName:
-          ord_cnf = self.factory(conftxt)
-          self.assertEqual(ord_cnf.has_conflicting_option_names(section), result)
-      def testGetConflictingOptionNames(self):
-        GetConfOptName = (
+      def testConflictingOptionNames(self):
+        ConfOptName = (
           (valid_conf, self.sectionSynonym("blablabla"), []),
           (valid_conf, self.sectionSynonym("corpremedaille"), []),
           (valid_conf, self.sectionSynonym("transtyping"), []),
@@ -1152,34 +1125,25 @@ k=v
           (double_section_conflict_conf, self.sectionSynonym("evil"), []),
           (double_section_conflict_conf, self.sectionSynonym("kikoo"), []),
           (option_conflict_conf, self.sectionSynonym("a"), []),
-          (option_conflict_conf, self.sectionSynonym("blabla"), [['k','k'],['y','y']]),
-          (option_conflict_conf, self.sectionSynonym("other"), [['c','c']]),
+          (option_conflict_conf, self.sectionSynonym("blabla"), [('k','k'),('y','y')]),
+          (option_conflict_conf, self.sectionSynonym("other"), [('c','c')]),
           (option_conflict_conf, self.sectionSynonym("b"), [])
         )
-        for conftxt, section, result in GetConfOptName:
+        for conftxt, section, result in ConfOptName:
           ord_cnf = self.factory(conftxt)
+          self.assertEqual(ord_cnf.has_conflicting_option_names(section), result != [])
           self.assertEqual(ord_cnf.get_conflicting_option_names(section), result)
-      def testHasAnyConflictingOptionName(self):
-        HasAnyConfOptName = (
-          (empty_conf, False),
-          (valid_conf, False),
-          (section_conflict_conf, False),
-          (double_section_conflict_conf, False),
-          (option_conflict_conf, True)
-        )
-        for conftxt, result in HasAnyConfOptName:
-          ord_cnf = self.factory(conftxt)
-          self.assertEqual(ord_cnf.has_any_conflicting_option_name(), result)
-      def testGetAllConflictingOptionNames(self):
-        GetAllConfOptName = (
+      def testAllConflictingOptionNames(self):
+        AllConfOptName = (
           (empty_conf, []),
           (valid_conf, [("blablabla",[]),("corpremedaille",[]),("transtyping",[]),]),
           (section_conflict_conf, [('blabla', []), ('evil', []), ('blabla', [])]),
           (double_section_conflict_conf, [('blabla', []), ('evil', []), ('kikoo', []), ('blabla', []), ('kikoo', [])]),
-          (option_conflict_conf, [('a', []), ('blabla', [['k', 'k'], ['y', 'y']]), ('b', []), ('other', [['c', 'c']])])
+          (option_conflict_conf, [('a', []), ('blabla', [('k', 'k'), ('y', 'y')]), ('b', []), ('other', [('c', 'c')])])
         )
-        for conftxt, result in GetAllConfOptName:
+        for conftxt, result in AllConfOptName:
           ord_cnf = self.factory(conftxt)
+          self.assertEqual(ord_cnf.has_any_conflicting_option_name(), reduce(operator.concat, map(lambda x:x[1], result), []) != [])
           self.assertEqual(ord_cnf.get_all_conflicting_option_names(), result)
       def testIsProbablySafeWithOldApi(self):
         IsProbablySafeWithOldApi = (
@@ -1288,9 +1252,9 @@ k=v
         ord_cnf = self.factory(more_canonical_option_conflict_conf)
         ConfOptName = [
           ('a', []),
-          ('blabla', [['k','k'],['y','y']]),
+          ('blabla', [('k','k'),('y','y')]),
           ('b', []),
-          ('other', [['c','c','C']])
+          ('other', [('c','c','C')])
         ]
         result_descriptor = {
           'hcsn': False,
@@ -1304,7 +1268,7 @@ k=v
       def testC14nInsensitiveBehavior(self):
         ord_cnf = self.factory(c14n_change_option_behavior)
         ConfOptName = [
-          ('blabla', [['key','KEY']])
+          ('blabla', [('key','KEY')])
         ]
         result_descriptor = {
           'hcsn': False,
@@ -1413,7 +1377,7 @@ key=second_one
 
     class IterSections(unittest.TestCase):
       hcon = (False, False, False, True, False, False, False, False, False)
-      gcon = ([], [], [], [['key', 'key']], [], [], [], [], [])
+      gcon = ([], [], [], [('key', 'key')], [], [], [], [], [])
       c14n_skv = ('sec_c14n_opt_conflict', 'KEY', 'second_one')
       def secMapper(self, secname):
         return secname
@@ -1554,7 +1518,7 @@ key=second_one
 
     class C14nIterSections_c14nOptions(IterSections):
       hcon = (False, False, False, True, True, False, False, False, False)
-      gcon = ([], [], [], [['key', 'key']], [['key','KEY']], [], [], [], [])
+      gcon = ([], [], [], [('key', 'key')], [('key','KEY')], [], [], [], [])
       c14n_skv = ('sec_c14n_opt_conflict', 'KEY', 'this_one')
       def optMapper(self, optname):
         return optname.lower()
