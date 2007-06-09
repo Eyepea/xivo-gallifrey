@@ -1078,6 +1078,18 @@ k=v
         self.commonGetLike(self.ord_cnf.getfloat, self.set_float)
       def testGetBoolean(self):
         self.commonGetLike(self.ord_cnf.getboolean, self.set_boolean)
+      def testGetRaisesSections(self):
+        for wrong_s in other_sections:
+          self.assertRaises(NoSectionError, self.ord_cnf.get, wrong_s, 'x')
+          self.assertRaises(NoSectionError, self.ord_cnf.getint, wrong_s, 'x')
+          self.assertRaises(NoSectionError, self.ord_cnf.getfloat, wrong_s, 'x')
+          self.assertRaises(NoSectionError, self.ord_cnf.getboolean, wrong_s, 'x')
+      def testGetRaisesOption(self):
+        for wrong_s in other_sections:
+          self.assertRaises(NoOptionError, self.ord_cnf.get, valid_sections[0], wrong_s)
+          self.assertRaises(NoOptionError, self.ord_cnf.getint, valid_sections[0], wrong_s)
+          self.assertRaises(NoOptionError, self.ord_cnf.getfloat, valid_sections[0], wrong_s)
+          self.assertRaises(NoOptionError, self.ord_cnf.getboolean, valid_sections[0], wrong_s)
       def testSections(self):
         self.assertEqual(frozenset(self.ord_cnf.sections()), self.section_set)
       def testHasSection(self):
@@ -1087,10 +1099,16 @@ k=v
         for sec in self.section_set:
           self.assertEqual(frozenset(self.ord_cnf.items(sec)),
                            frozenset([(self.keyToCanon(k),v) for s,k,v in self.set_skv if self.cmpSection(s, sec)]))
+      def testItemsRaises(self):
+        for wrong_s in other_sections:
+          self.assertRaises(NoSectionError, self.ord_cnf.items, wrong_s)
       def testOptions(self):
         for sec in self.section_set:
           self.assertEqual(frozenset(self.ord_cnf.options(sec)),
                            frozenset([self.keyToCanon(k) for s,k,v in self.set_skv if self.cmpSection(s, sec)]))
+      def testOptionsRaises(self):
+        for wrong_s in other_sections:
+          self.assertRaises(NoSectionError, self.ord_cnf.options, wrong_s)
       def testHasOption(self):
         map(lambda (s,k,v): self.assertEqual(self.ord_cnf.has_option(s, k), True), self.set_skv)
         for sec in self.other_set:
@@ -1133,6 +1151,8 @@ k=v
           ord_cnf = self.factory(conftxt)
           self.assertEqual(ord_cnf.has_conflicting_option_names(section), result != [])
           self.assertEqual(ord_cnf.get_conflicting_option_names(section), result)
+          self.assertRaises(NoSectionError, ord_cnf.has_conflicting_option_names, "nothing")
+          self.assertRaises(NoSectionError, ord_cnf.get_conflicting_option_names, "nothing")
       def testAllConflictingOptionNames(self):
         AllConfOptName = (
           (empty_conf, []),
@@ -1360,10 +1380,16 @@ key=second_one
         ord_cnf = self.factory(iter_conf)
         for s,loi in self.injectAndFilter(self.ordItems):
           self.assertEqual(ord_cnf.ordered_items(s), loi)
+      def testOrderedItemsRaises(self):
+        ord_cnf = self.factory(iter_conf)
+        self.assertRaises(NoSectionError, ord_cnf.ordered_items, "nothing")
       def testOrderedOptions(self):
         ord_cnf = self.factory(iter_conf)
         for s,loi in self.injectAndFilter(self.ordItems):
           self.assertEqual(ord_cnf.ordered_options(s), map(lambda (k,v):k, loi))
+      def testOrderedOptionsRaises(self):
+        ord_cnf = self.factory(iter_conf)
+        self.assertRaises(NoSectionError, ord_cnf.ordered_options, "nothing")
 
     class C14nSectionsNewApi(NewApi):
       def secMapper(self, secname):
@@ -1399,6 +1425,10 @@ key=second_one
         self.assertEqual(si1.getint('int'), 42)
         self.assertEqual(si1.getfloat('float'), 131.31337)
         self.assertEqual(si1.getboolean('boolean'), True)
+        self.assertRaises(NoOptionError, si1.get, "nothing")
+        self.assertRaises(NoOptionError, si1.getint, "nothing")
+        self.assertRaises(NoOptionError, si1.getfloat, "nothing")
+        self.assertRaises(NoOptionError, si1.getboolean, "nothing")
         options_pst = [('k', True), ('int', True), ('float', True),
                        ('boolean', True), ('nothere', False)]
         items = [('k', 'v1'), ('int', '42'), ('float', '131.31337'),
@@ -1470,6 +1500,9 @@ key=second_one
         self.assertEqual(opt.get_value(), "on")
         self.assertEqual(opt.getboolean(), True)
         self.assertRaises(StopIteration, iopt.next)
+      def testIterRaises(self):
+        ord_cnf = self.factory(itersection_one)
+        self.assertRaises(NoSectionError, ord_cnf.iter_options, "nothing")
       def testIterSectionOne(self):
         ord_cnf = self.factory(itersection_one)
         self.commonOptIterOne(ord_cnf.iter_options("section"))
