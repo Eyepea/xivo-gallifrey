@@ -1,10 +1,13 @@
-<APPLICATION server=ftp version=v101_b4_fk update=forced clean-data=all>
-app_abip10s_g729v101_b4_fk.ld.000
-app_abip10s_g729v101_b4_fk.ld.001
-app_abip10s_g729v101_b4_fk.ld.002
-app_abip10s_g729v101_b4_fk.ld.003
-app_abip10s_g729v101_b4_fk.ld.004
+<APPLICATION server=tftp version=v101_b4_fk update=forced clean-data=all>
+Swissvoice/app_abip10s_g729v101_b4_fk.ld.000
+Swissvoice/app_abip10s_g729v101_b4_fk.ld.001
+Swissvoice/app_abip10s_g729v101_b4_fk.ld.002
+Swissvoice/app_abip10s_g729v101_b4_fk.ld.003
+Swissvoice/app_abip10s_g729v101_b4_fk.ld.004
 </APPLICATION>
-<BOOT version=v109 server=ftp update=forced>
-boot_abip10h_v109.ld.000
+<BOOT version=v109 server=tftp update=forced>
+Swissvoice/boot_abip10h_v109.ld.000
 </BOOT>
+<CONFIG server=tftp>
+Swissvoice/guestaccount_ip10sp.cfg
+</CONFIG>
