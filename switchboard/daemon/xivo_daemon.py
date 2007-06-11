@@ -713,7 +713,7 @@ def parseSIP(astnum, data, l_sipsock, l_addrsip):
 		    pass
 	    elif iret == 200:
 		    # log_debug("%s : REGISTER %s OK" %(configs[astnum].astid, iaccount))
-		    rdc = chr(65 + 32 * random.randrange(2) + random.randrange(26))
+		    rdc = ''.join(random.sample('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijkLmnopqrstuvwxyz0123456789',12))
 		    for sipnum in plist[astnum].normal.keys():
 			    if sipnum.find("SIP/") == 0:
 				    if mycontext == plist[astnum].normal[sipnum].context:
@@ -726,7 +726,7 @@ def parseSIP(astnum, data, l_sipsock, l_addrsip):
 							    pass
 					    else:
 						    pass
-					    cid = rdc + "subscribexivo_" + sipnum.split("/")[1] + "@" + configs[astnum].localaddr
+					    cid = rdc + "_subsxivo_" + sipnum.split("/")[1] + "@" + configs[astnum].localaddr
 					    command = xivo_sip.sip_subscribe(configs[astnum], "sip:" + iaccount, 1,
 									     cid,
 									     plist[astnum].normal[sipnum].phonenum,
@@ -742,7 +742,7 @@ def parseSIP(astnum, data, l_sipsock, l_addrsip):
 
 
     elif imsg == "SUBSCRIBE":
-	    sipphone = "SIP/" + icid.split("@")[0].split("subscribexivo_")[1]
+	    sipphone = "SIP/" + icid.split("@")[0].split("_subsxivo_")[1]
 	    if sipphone in plist[astnum].normal.keys(): # else : send sth anyway ?
 		    plist[astnum].normal[sipphone].set_lasttime(time.time())
 		    if iret == 401:
@@ -783,7 +783,7 @@ def parseSIP(astnum, data, l_sipsock, l_addrsip):
 	    if imsg == "NOTIFY":
 		    sipnum, sippresence = tellpresence(data)
 		    if [sipnum, sippresence] != [None, None]:
-			    sipphone = "SIP/" + icid.split("@")[0].split("subscribexivo_")[1] # vs. sipnum
+			    sipphone = "SIP/" + icid.split("@")[0].split("_subsxivo_")[1] # vs. sipnum
 			    if sipphone in plist[astnum].normal:
 				    plist[astnum].normal[sipphone].set_lasttime(time.time())
 				    if plist[astnum].normal[sipphone].sipstatus != sippresence:
@@ -805,7 +805,7 @@ def parseSIP(astnum, data, l_sipsock, l_addrsip):
 def do_sip_register_subscribe(astnum, l_sipsock):
 	global plist, configs
 	for sipacc in configs[astnum].mysipaccounts:
-		rdc = chr(65 + 32 * random.randrange(2) + random.randrange(26))
+		rdc = ''.join(random.sample('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijkLmnopqrstuvwxyz0123456789',12))
 		command = xivo_sip.sip_register(configs[astnum], "sip:" + sipacc[1], 1, "reg_cid@xivopy", expires, "")
 		l_sipsock.sendto(command, (configs[astnum].remoteaddr, configs[astnum].portsipsrv))
 		# command = xivo_sip.sip_options(configs[astnum], "sip:" + configs[astnum].mysipname, cid, sipnum)
@@ -863,10 +863,9 @@ def manage_tcp_connection(connid, allow_events):
 				  %(usefulmsg, str(connid[0]), str(exc)))
         elif usefulmsg == "infos":
 		try:
-			reply = "infos=nsb:%d" %(len(tcpopens_sb))
+			reply = "infos=$Revision$;maxgui=%d;conngui=%d" %(maxgui,len(tcpopens_sb))
 			for tcpo in tcpopens_sb:
 				reply += ":%s:%d" %(tcpo[1],tcpo[2])
-			reply += ";version=$Revision$"
 			connid[0].send(reply + "\n")
 		except Exception, exc:
 			log_debug("UI connection [%s] : KO when sending to %s : %s"
@@ -1763,6 +1762,9 @@ class LineProp:
 	## \var tech
 	# \brief Protocol of the phone (SIP, IAX2, ...)
 	
+	## \var phoneid
+	# \brief Phone identifier
+	
 	## \var phonenum
 	# \brief Phone number
 	
@@ -1789,6 +1791,9 @@ class LineProp:
 	
 	## \var callerid
 	# \brief Caller ID
+	
+	## \var towatch
+	# \brief Boolean value that tells whether this phone is watched by the switchboards
 	
 	##  \brief Class initialization.
 	def __init__(self, itech, iphoneid, iphonenum, icontext, isipstatus):
@@ -2278,6 +2283,7 @@ log_filename = "/var/log/pf-xivo-cti-server/xivo_daemon.log"
 xivoconf_general = dict(xivoconf.items("general"))
 capabilities = ""
 asterisklist = ""
+maxgui = 5
 
 if "port_fiche_login" in xivoconf_general:
 	port_login = int(xivoconf_general["port_fiche_login"])
@@ -2299,6 +2305,8 @@ if "capabilities" in xivoconf_general:
 	capabilities = xivoconf_general["capabilities"]
 if "asterisklist" in xivoconf_general:
 	asterisklist = xivoconf_general["asterisklist"].split(",")
+if "maxgui" in xivoconf_general:
+	maxgui = int(xivoconf_general["maxgui"])
 
 with_ami = True
 with_sip = True
@@ -2562,11 +2570,14 @@ while not askedtoquit:
 	# the new UI (SB) connections are catched here
         elif UIsock in i:
 		[conn, UIsockparams] = UIsock.accept()
-		log_debug("TCP (SB)  socket opened on   %s %s" %(UIsockparams[0],str(UIsockparams[1])))
-		# appending the opened socket to the ones watched
-		ins.append(conn)
-		conn.setblocking(0)
-		tcpopens_sb.append([conn, UIsockparams[0], UIsockparams[1]])
+		if len(tcpopens_sb) >= maxgui:
+			conn.close()
+		else:
+			log_debug("TCP (SB)  socket opened on   %s %s" %(UIsockparams[0],str(UIsockparams[1])))
+			# appending the opened socket to the ones watched
+			ins.append(conn)
+			conn.setblocking(0)
+			tcpopens_sb.append([conn, UIsockparams[0], UIsockparams[1]])
 	# the new UI (PHP) connections are catched here
         elif PHPUIsock in i:
 		[conn, PHPUIsockparams] = PHPUIsock.accept()
