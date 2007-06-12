@@ -9,5 +9,5 @@ Swissvoice/app_abip10s_g729v101_b4_fk.ld.004
 Swissvoice/boot_abip10h_v109.ld.000
 </BOOT>
 <CONFIG server=tftp>
-Swissvoice/MACADDR_ip10.cfg
+Swissvoice/{{macaddr}}_ip10.cfg
 </CONFIG>
