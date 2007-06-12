@@ -29,7 +29,7 @@ except: pass
 # === END of early configuration handling
 
 
-# Loading personnal modules is possible from this point
+# Loading personal modules is possible from this point
 
 import timeoutsocket
 from timeoutsocket import Timeout
@@ -421,7 +421,7 @@ def __provisioning(mode, ctx, phone):
 		prov_inst.generate_reinitprov()
 		__save_lan_phone(mode, ctx, phone, None)
 		prov_inst.action_reinit()
-	    else:			
+	    else:
 		if "iduserfeatures" in phone:
 		    syslogf("__provisioning(): getting configuration from iduserfeatures for phone %s" % (str(phone),))
 		    config = ctx.dbinfos.config_by_iduserfeatures_proto(phone["iduserfeatures"], phone["proto"])
@@ -714,7 +714,7 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 			self.handle_prov()
 		else: self.answer_404()
 	def do_GET(self):
-		syslogf("do_POST(): handling GET request to path %s for peer %s" % (self.path, str(self.client_address)))
+		syslogf("do_GET(): handling GET request to path %s for peer %s" % (self.path, str(self.client_address)))
 		if self.path == '/list':
 			self.handle_list()
 		else: self.answer_404()
