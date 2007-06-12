@@ -390,11 +390,29 @@ INSERT INTO extensions VALUES(33,0,'features','_*9',4,'Record','${ROOT}/${FILE}:
 INSERT INTO extensions VALUES(34,0,'features','_*9',5,'Wait',1,'recsnd');
 INSERT INTO extensions VALUES(35,0,'features','_*9',6,'Playback','${ROOT}/${FILE}','recsnd');
 INSERT INTO extensions VALUES(36,0,'features','_*9',7,'Hangup','','recsnd');
-INSERT INTO extensions VALUES(37,0,'features','_*24',1,'Macro','features|VM|vm-on|vm-off','enablevm');
-INSERT INTO extensions VALUES(38,0,'features','_*25',1,'Macro','features|DND|dnd-on|dnd-off','enablednd');
-INSERT INTO extensions VALUES(39,0,'features','_*26',1,'Macro','features|Record|record-call-on|record-call-off','incallrec');
-INSERT INTO extensions VALUES(40,0,'features','_*27',1,'Macro','features|Screen|screening-on|screening-off','incallfilter');
-INSERT INTO extensions VALUES(41,0,'features','_*8.',1,'Pickup','${EXTEN:2}','pickup');
+INSERT INTO extensions VALUES(37,0,'features','_*10',1,'Answer','','phonestatus');
+INSERT INTO extensions VALUES(38,0,'features','_*10',2,'Playback','status-phone','phonestatus');
+INSERT INTO extensions VALUES(39,0,'features','_*10',3,'Playback','forward-inc','phonestatus');
+INSERT INTO extensions VALUES(40,0,'features','_*10',4,'Macro','checkdbfeatures|FWD/Unc/Status|1|FWD/Unc/Number','phonestatus');
+INSERT INTO extensions VALUES(41,0,'features','_*10',5,'Playback','forward-busy','phonestatus');
+INSERT INTO extensions VALUES(42,0,'features','_*10',6,'Macro','checkdbfeatures|FWD/Busy/Status|1|FWD/Busy/Number','phonestatus');
+INSERT INTO extensions VALUES(43,0,'features','_*10',7,'Playback','forward-rna','phonestatus');
+INSERT INTO extensions VALUES(44,0,'features','_*10',8,'Macro','checkdbfeatures|FWD/RNA/Status|1|FWD/RNA/Number','phonestatus');
+INSERT INTO extensions VALUES(45,0,'features','_*10',9,'Playback','vm-status','phonestatus');
+INSERT INTO extensions VALUES(46,0,'features','_*10',10,'Macro','checkdbfeatures|VM','phonestatus');
+INSERT INTO extensions VALUES(47,0,'features','_*10',11,'Playback','screening-status','phonestatus');
+INSERT INTO extensions VALUES(48,0,'features','_*10',12,'Macro','checkdbfeatures|Screen','phonestatus');
+INSERT INTO extensions VALUES(49,0,'features','_*10',13,'Playback','record-status','phonestatus');
+INSERT INTO extensions VALUES(50,0,'features','_*10',14,'Macro','checkdbfeatures|Record','phonestatus');
+INSERT INTO extensions VALUES(51,0,'features','_*10',15,'Playback','dnd-status','phonestatus');
+INSERT INTO extensions VALUES(52,0,'features','_*10',16,'Macro','checkdbfeatures|DND','phonestatus');
+INSERT INTO extensions VALUES(53,0,'features','_*10',17,'Playback','bye','phonestatus');
+INSERT INTO extensions VALUES(54,0,'features','_*10',18,'Hangup','','phonestatus');
+INSERT INTO extensions VALUES(55,0,'features','_*24',1,'Macro','features|VM|vm-on|vm-off','enablevm');
+INSERT INTO extensions VALUES(56,0,'features','_*25',1,'Macro','features|DND|dnd-on|dnd-off','enablednd');
+INSERT INTO extensions VALUES(57,0,'features','_*26',1,'Macro','features|Record|record-call-on|record-call-off','incallrec');
+INSERT INTO extensions VALUES(58,0,'features','_*27',1,'Macro','features|Screen|screening-on|screening-off','incallfilter');
+INSERT INTO extensions VALUES(59,0,'features','_*8.',1,'Pickup','${EXTEN:2}','pickup');
 
 
 DROP TABLE generalsip;
