@@ -120,6 +120,7 @@ CREATE TABLE `phone` (
  `model` varchar(16) NOT NULL,
  `proto` varchar(50) NOT NULL,
  `iduserfeatures` int(11) unsigned,
+ `isinalan` tinyint(1) DEFAULT 0,
  PRIMARY KEY(`macaddr`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 

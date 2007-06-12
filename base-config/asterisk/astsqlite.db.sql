@@ -116,6 +116,7 @@ CREATE TABLE phone (
  model varchar(16) NOT NULL,
  proto varchar(50) NOT NULL,
  iduserfeatures integer unsigned,
+ isinalan tinyint(1) DEFAULT 0,
  PRIMARY KEY(macaddr)
 );
 
