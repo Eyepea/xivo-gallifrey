@@ -6,7 +6,7 @@ Copyright (C) 2007, Proformatique
 
 """
 
-__version__ = "$Revision: 668 $ $Date: 2007-05-21 18:29:02 +0200 (lun, 21 mai 2007) $"
+__version__ = "$Revision$ $Date$"
 
 import os, sys, syslog
 import provsup
