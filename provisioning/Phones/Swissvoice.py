@@ -1,6 +1,6 @@
 """Support for Swissvoice phones for Xivo Autoprovisioning
 
-Swissvoice IP10 is supported.
+Swissvoice IP10S is supported.
 
 Copyright (C) 2007, Proformatique
 
@@ -13,14 +13,15 @@ import provsup
 from provsup import BaseProv
 from provsup import ProvGeneralConf as pgc
 
-# SNOM BUGBUG #1
-# Snom doesn't support something else than files at root of tftproot when using
-# tftp... :/ (It just internaly replace the first '/' with a '\0' :/// )
+# SWISSVOICE BUGBUG
+# It would be possible to make tftp upload a /tftpboot/Swissvoice/swupdate_ip10.inf
+# into the phones, however in order for any MAC address to be taken care of,
+# the <MACADDR>_ip10.inf files have to be located directly under /tftpboot/
+# Nevertheless, we made them refer to the config <MACADDR>_ip10.cfg files
+# located under /tftpboot/Swissvoice/
 
-# SNOM BUGBUG #2
-# Because it seems much technically impossible to detect the phone model by
-# dhcp request (model not in the request.... :///), we'll need to also support
-# HTTP based provisioning
+# Swissvoice User-Agent format :
+# User-Agent: Swissvoice IP10 SP v1.0.1 (Build 4) 3.0.5.1
 
 SWISSVOICE_SPEC_DIR = pgc['tftproot'] + "Swissvoice/"
 SWISSVOICE_SPEC_INF_TEMPLATE = pgc['templates_dir'] + "template_ip10.inf"
@@ -28,14 +29,12 @@ SWISSVOICE_SPEC_CFG_TEMPLATE = pgc['templates_dir'] + "template_ip10.cfg"
 SWISSVOICE_COMMON_HTTP_USER = "admin"
 SWISSVOICE_COMMON_HTTP_PASS = "admin"
 
-# User-Agent: Swissvoice IP10 SP v1.0.1 (Build 4) 3.0.5.1
-
 class SwissvoiceProv(BaseProv):
 	label = "Swissvoice"
 	def __init__(self, phone):
 		BaseProv.__init__(self, phone)
 		# TODO: handle this with a lookup table stored in the DB?
-		if self.phone["model"] != "ip10":
+		if self.phone["model"] != "ip10s":
 			raise ValueError, "Unknown Swissvoice model '%s'" % self.phone["model"]
 	def __action(self, command, user, passwd):
 		# -q -- quiet
@@ -145,7 +144,7 @@ class SwissvoiceProv(BaseProv):
 		ua_splitted = ua.split(' ')
 		if 'swissvoice' != ua_splitted[0].lower():
 			return None
-		model = ua_splitted[1].lower()
+		model = ua_splitted[1].lower() + "s"
 		fw = ua_splitted[3]
 		return ("swissvoice", model, fw)
 	get_vendor_model_fw = classmethod(get_vendor_model_fw)
