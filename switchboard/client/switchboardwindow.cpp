@@ -17,7 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 */
 
-/* $Revision $
+/* $Id$
+ * $Revision$
    $Date$
 */
 
@@ -134,8 +135,12 @@ void SwitchBoardWindow::updatePeer(const QString & ext,
 	m_peerlist << peer;
 }
 
-/*!
+/*! \brief remove the peer from the layout
  *
+ * the peer with extension is moved to position (-1, -1) so it
+ * wont be displayed anymore
+ *
+ * \sa dropEvent()
  */
 void SwitchBoardWindow::removePeerFromLayout(const QString & ext)
 {

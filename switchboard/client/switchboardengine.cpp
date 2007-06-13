@@ -141,6 +141,13 @@ void SwitchBoardEngine::sendCommand()
 	qDebug() << ">>>" << m_pendingcommand;
 }
 
+/*! \brief parse history command response
+ *
+ * parse the history command response from the server and
+ * trigger the update of the call history panel.
+ *
+ * \sa Logwidget
+ */
 void SwitchBoardEngine::processHistory(const QStringList & histlist)
 {
 	int i;
@@ -170,6 +177,7 @@ void SwitchBoardEngine::socketConnected()
 {
 	qDebug() << "socketConnected()";
 	started();
+	/* do the login/identification ? */
 	m_pendingcommand = "callerids";
 	sendCommand();
 }
@@ -185,11 +193,17 @@ void SwitchBoardEngine::socketDisconnected()
 	//connectSocket();
 }
 
+/*! \brief cat host found socket signal
+ *
+ * Do nothing...
+ */
 void SwitchBoardEngine::socketHostFound()
 {
 	qDebug() << "socketHostFound()";
 }
 
+/*! \brief catch socket errors
+ */
 void SwitchBoardEngine::socketError(QAbstractSocket::SocketError socketError)
 {
 	qDebug() << "socketError(" << socketError << ")";
@@ -215,6 +229,10 @@ void SwitchBoardEngine::socketError(QAbstractSocket::SocketError socketError)
 	}
 }
 
+/*! \brief receive signals of socket state change
+ *
+ * useless...
+ */
 void SwitchBoardEngine::socketStateChanged(QAbstractSocket::SocketState socketState)
 {
 	qDebug() << "socketStateChanged(" << socketState << ")";
@@ -415,8 +433,8 @@ void SwitchBoardEngine::dialFullChannel(const QString & dst)
 {
 	qDebug() << "SwitchBoardEngine::dialFullChannel()" << dst;
 	m_pendingcommand = "originate p/" +
-		m_asterisk + "/" + m_dialcontext + "/" + m_protocol + "/" + m_extension +
-		"/ " + dst;
+		m_asterisk + "/" + m_dialcontext + "/" + m_protocol + "/" +
+		m_extension + "/ " + dst;
 	sendCommand();
 }
 
@@ -428,7 +446,7 @@ void SwitchBoardEngine::dialExtension(const QString & dst)
 	m_pendingcommand = "originate p/" +
 		m_asterisk + "/" + m_dialcontext + "/" + m_protocol + "/" + m_extension +
 		"/ p/" +
-		m_asterisk + "/" + m_dialcontext + "/" +              "/" +               "/" + dst;
+		m_asterisk + "/" + m_dialcontext + "/" + "/" + "/" + dst;
 	sendCommand();
 }
 
@@ -452,13 +470,19 @@ void SwitchBoardEngine::transferCall(const QString & src, const QString & dst)
 	sendCommand();
 }
 
+/*! \brief intercept a call (a channel)
+ *
+ * The channel is transfered to "Me"
+ *
+ * \sa transferCall
+ */
 void SwitchBoardEngine::interceptCall(const QString & src)
 {
 	qDebug() << "SwitchBoardEngine::interceptCall()" << src;
-	//m_pendingcommand = "transfer " + src + " "
-	//        + m_asterisk + "/" + ?? + "/" + m_dialcontext + "/"
-	//		+ 
-	//sendCommand();
+	m_pendingcommand = "transfer " + src + " p/"
+	        + m_asterisk + "/" + m_dialcontext + "/"
+			+ m_protocol + "/" + "/" + m_extension; 
+	sendCommand();
 }
 
 /*! \brief hang up a channel
@@ -472,8 +496,9 @@ void SwitchBoardEngine::hangUp(const QString & channel)
 	sendCommand();
 }
 
-/*! \brief 
+/*! \brief send the directory search command to the server
  *
+ * \sa directoryResponse()
  */
 void SwitchBoardEngine::searchDirectory(const QString & text)
 {
@@ -509,7 +534,10 @@ quint16 SwitchBoardEngine::sbport() const
 	return m_sbport;
 }
 
-
+/*! \brief implement timer event
+ *
+ * does nothing
+ */
 void SwitchBoardEngine::timerEvent(QTimerEvent * event)
 {
 	return;
