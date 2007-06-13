@@ -132,10 +132,7 @@ class SwissvoiceProv(BaseProv):
 
 	def get_phones(cls):
 		"Report supported phone models for this vendor."
-		ph = ("IP10S",)
-		# this is a trick since (("a", "b")) = ("a", "b")
-		ph2 = (ph, ph)
-		return ph2
+		return (("ip10s", "IP10S"),)
 	get_phones = classmethod(get_phones)
 
 	# Entry points for the AGI
