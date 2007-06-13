@@ -65,3 +65,8 @@ void ExtendedTableWidget::updateMyCalls(const QStringList & chanIds,
 	}
 }
 
+void ExtendedTableWidget::transferChan(const QString & chan)
+{
+	transferCall(chan, m_numberToDial);
+}
+

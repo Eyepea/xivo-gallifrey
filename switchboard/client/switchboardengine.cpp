@@ -438,9 +438,17 @@ void SwitchBoardEngine::transferCall(const QString & src, const QString & dst)
 {
 	qDebug() << "SwitchBoardEngine::transferCall()" << src << dst;
 	QStringList dstlist = dst.split("/");
-	m_pendingcommand = "transfer " + src + " "
-		+ dstlist[0] + "/" + dstlist[1] + "/" + m_dialcontext + "/"
-		+ dstlist[3] + "/" + dstlist[4] + "/" + dstlist[5];
+	if(dstlist.size() >= 6)
+	{
+		m_pendingcommand = "transfer " + src + " "
+			+ dstlist[0] + "/" + dstlist[1] + "/" + m_dialcontext + "/"
+			+ dstlist[3] + "/" + dstlist[4] + "/" + dstlist[5];
+	}
+	else
+	{
+		m_pendingcommand = "transfer " + src + " p/" + m_asterisk + "/"
+		     + m_dialcontext + "/" + "/" + "/" + dst;
+	}
 	sendCommand();
 }
 

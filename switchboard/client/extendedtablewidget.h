@@ -18,10 +18,12 @@ protected:
 	void contextMenuEvent(QContextMenuEvent * event);
 signals:
 	void emitDial(const QString & number);
+	void transferCall(const QString &, const QString &);
 public slots:
 	void updateMyCalls(const QStringList &, const QStringList &, const QStringList &);
 private slots:
 	void dialNumber();
+	void transferChan(const QString &);
 private:
 	QString m_numberToDial;
 	QList<PeerChannel *> m_mychannels;
