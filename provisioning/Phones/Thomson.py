@@ -23,7 +23,7 @@ import time # for TimeoutingTelnet
 #					config files like ringing tones...
 
 THOMSON_COMMON_DIR = pgc['tftproot'] + "Thomson/"
-THOMSON_COMMON_INF = THOMSON_COMMON_DIR + "ST2030S_common"
+THOMSON_COMMON_INF = THOMSON_COMMON_DIR + "ST" # + "2030S_common"
 
 # THOMSON BUGBUG #3
 # THOMSON_SPEC_DIR must be *TFTPROOT* because the phone will only download its
@@ -32,10 +32,10 @@ THOMSON_SPEC_DIR = pgc['tftproot']
 
 THOMSON_USER = "admin"		# XXX
 THOMSON_PASSWD = "superpass"	# XXX
-THOMSON_SPEC_TXT_TEMPLATE = pgc['templates_dir'] + "ST2030S_template.txt"
+THOMSON_SPEC_TXT_TEMPLATE = pgc['templates_dir'] + "ST" # + "2030S_template.txt"
 
 # for some tests: THOMSON_SPEC_TXT_BASENAME = pgc['templates_dir'] + "ST2030S_"
-THOMSON_SPEC_TXT_BASENAME = "/tftpboot/ST2030S_"
+THOMSON_SPEC_TXT_BASENAME = "/tftpboot/ST" # + "2030S_"
 
 class TelnetExpectationFailed(RuntimeError):
 	"""Exception raised by the new methods introduced by the
@@ -90,6 +90,10 @@ class ThomsonProv(BaseProv):
 	label = "Thomson"
 	def __init__(self, phone):
 		BaseProv.__init__(self, phone)
+		# TODO: handle this with a lookup table stored in the DB?
+		if self.phone["model"] != "2022s" and \
+		   self.phone["model"] != "2030s":
+			raise ValueError, "Unknown Thomson model '%s'" % self.phone["model"]
 	def __generate_timestamp(self):
 		tuple_time = time.localtime()
 		seximin = tuple_time[3] * 360 + tuple_time[4] * 6 + int(tuple_time[5] / 10)
@@ -118,10 +122,10 @@ class ThomsonProv(BaseProv):
 		finally:
 			tn.close()
 	def __generate(self, myprovinfo):
-		txt_template_file = open(THOMSON_SPEC_TXT_TEMPLATE)
+		txt_template_file = open(THOMSON_SPEC_TXT_TEMPLATE + self.phone["model"].upper() + "_template.txt")
 		txt_template_lines = txt_template_file.readlines()
 		txt_template_file.close()
-		tmp_filename = THOMSON_SPEC_TXT_BASENAME + self.phone["macaddr"].replace(':','') + '.txt.tmp'
+		tmp_filename = THOMSON_SPEC_TXT_BASENAME + self.phone["model"].upper() + "_" + self.phone["macaddr"].replace(':','') + '.txt.tmp'
 		txt_filename = tmp_filename[:-4]
 		txt = provsup.txtsubst(txt_template_lines, {
 			"DisplayName1": myprovinfo["name"],
@@ -139,13 +143,13 @@ class ThomsonProv(BaseProv):
 		tmp_file.writelines(txt)
 		tmp_file.close()
 		os.rename(tmp_filename, txt_filename) # atomically update the file
-		inf_filename = THOMSON_SPEC_TXT_BASENAME + self.phone["macaddr"].replace(':','') + '.inf'
+		inf_filename = THOMSON_SPEC_TXT_BASENAME + self.phone["model"].upper() + "_" + self.phone["macaddr"].replace(':','') + '.inf'
 		try:
 			os.lstat(inf_filename)
 			os.unlink(inf_filename)
 		except:
 			pass
-		os.symlink(THOMSON_COMMON_INF, inf_filename)
+		os.symlink(THOMSON_COMMON_INF + self.phone["model"].upper() + "_common", inf_filename)
 
 	# Daemon entry points for configuration generation and issuing commands
 
