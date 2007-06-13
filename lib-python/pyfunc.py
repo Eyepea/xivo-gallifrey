@@ -73,3 +73,11 @@ def find(f, seq):
 		if f(item): 
 			return item
 
+def flatten_list(seq_of_seq):
+	# return reduce(operator.concat, seq_of_lists, [])
+	# The previous line would have been absolutely pure and perfect
+	# but its at least of order O(n^2), so:
+	lst = []
+	for one_seq in seq_of_seq:
+		lst.extend(one_seq)
+	return lst

@@ -149,7 +149,12 @@ itself can already be a lzslice object (after all this is the reason we created
 it at the beginning) or even can come from a stack of thousands of lazy slices,
 and that in these cases only one transformation of the index is performed.
 
-Conclusion: The more lazy you are, the more you profit from functional
+If you can live with it, this module also provides the same kind of wrapper
+than lazy_ for itertools.islice, named lazislice, so you can use negative
+integers to create some islice if needed. (only usable if the object has a 
+length and is iterable)
+
+Conclusion: The lazier you are, the more you can profit from functional
 programming ;)
 
 --
@@ -180,6 +185,7 @@ __license__ = """
 """
 
 from pyfunc import *
+from itertools import izip, islice
 
 def xor(a, b):
 	return (not(a)) != (not(b))
@@ -371,7 +377,7 @@ class lzslice(object):
 			return 1
 		if iam < its:
 			return -1
-		for my,ot in zip(self, other):
+		for my,ot in izip(self, other):
 			if my < ot: return -1
 			if my > ot: return  1
 		return len(self) - len(other)
@@ -407,7 +413,28 @@ class lazy_:
 			raise TypeError, SIZE_CHANGE_ERRMSG
 		return self.len
 
-__all__ = ["lazy_", "lzslice", "slice_compose"]
+class lazislice:
+	def __init__(self, obj):
+		obj.__iter__
+                obj.__len__
+                self.obj = obj
+                self.len = len(obj)
+        def __getitem__(self, k):
+		if self.len != len(self.obj):
+			raise TypeError, SIZE_CHANGE_ERRMSG
+		if not isinstance(k, slice):
+			raise TypeError, \
+				"lazislice indexing needs a slice, got a '%s'" % type(k).__name__
+		start, stop, step = k.indices(self.len)
+                if stop < 0:
+                  start, stop = 0, 0
+		return islice(self.obj, start, stop, step)
+	def __len__(self):
+		if self.len != len(self.obj):
+			raise TypeError, SIZE_CHANGE_ERRMSG
+                return self.len
+
+__all__ = ["lazy_", "lzslice", "slice_compose", "lazislice"]
 
 if __name__ == '__main__':
   if __debug__:
@@ -443,6 +470,60 @@ if __name__ == '__main__':
         self.assertEqual(lza.slicer, slice(None, 1, None))
         lza = lazy_(a)[::-1]
         self.assertEqual(lza.slicer, slice(None, None, -1))
+    class LazisliceCase(unittest.TestCase):
+      def testNonIterRaises(self):
+        class blah:
+          def __len__(self):
+            return 42
+        self.assertRaises(AttributeError, lazislice, blah())
+      def testNonLenRaises(self):
+        class blah:
+          def __iter__(self):
+            yield 42
+        self.assertRaises(AttributeError, lazislice, blah())
+      def testLenChangeRaises(self):
+        a = range(42)
+        lz = lazislice(a)
+        a.append(666)
+        self.assertRaises(TypeError, lz.__len__)
+        self.assertRaises(TypeError, lz.__getitem__, slice(0,1,1))
+      def testGetItemNonSliceRaises(self):
+        self.assertRaises(TypeError, lazislice(range(42)).__getitem__, 17)
+      def noneAndXrange(self, low, high):
+        yield None
+        for i in xrange(low, high):
+          yield i
+      def testSlicesEquiv(self):
+        for l in xrange(10):
+          lst = range(l)
+          for start in self.noneAndXrange(-l-2, l+2):
+            for stop in self.noneAndXrange(-l-2, l+2):
+              for step in self.noneAndXrange(1, l+2):
+                pos_start,pos_stop,pos_step = slice(start,stop,step).indices(l)
+                if pos_stop < 0:
+                  pos_start, pos_stop = 0, 0
+                lzi = lazislice(lst)[start:stop:step]
+                isl = islice(lst, pos_start, pos_stop, pos_step)
+                sli = lst[start:stop:step]
+                lzi_iter, isl_iter, sli_iter = map(iter, (lzi, isl, sli))
+                for bla in xrange(len(sli)):
+                  reference = sli_iter.next()
+                  self.assertEqual(reference, isl_iter.next())
+                  self.assertEqual(reference, lzi_iter.next())
+                self.assertRaises(StopIteration, sli_iter.next)
+                self.assertRaises(StopIteration, isl_iter.next)
+                self.assertRaises(StopIteration, lzi_iter.next)
+      def testSlicesNegStep(self):
+        for l in xrange(10):
+          lst = range(l)
+          for start in self.noneAndXrange(-l,l):
+            for stop in self.noneAndXrange(-l,l):
+              step = -1
+              pos_start,pos_stop,pos_step = slice(start,stop,step).indices(l)
+              if pos_stop < 0:
+                pos_start, pos_stop = 0, 0
+              self.assertRaises(ValueError, islice, lst, pos_start, pos_stop, step)
+              self.assertRaises(ValueError, lazislice(lst).__getitem__, slice(start, stop, step))
     class LzSliceCase(unittest.TestCase):
       def testInstNonArrayRaises(self):
         self.assertRaises(AttributeError, lzslice, None, slice(None))
