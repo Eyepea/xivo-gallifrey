@@ -109,6 +109,7 @@ def main():
 	sip_uri = sys.argv[1]
 	code = sys.argv[2]
 	ua = sys.argv[3]
+	isinalan = "1"
 
 	# Get Sip User, IPv4 and Mac Address
 	user_ipv4 = user_ipv4_from_sip_uri(sip_uri)
@@ -133,7 +134,8 @@ def main():
 
 	command = ( "mode=authoritative\r\nvendor=%s\r\nmodel=%s\r\n" + 
 		    "macaddr=%s\r\nipv4=%s\r\nprovcode=%s\r\nactions=yes\r\n" + 
-		    "proto=sip\r\n" ) % (phone_vendor, phone_model, macaddr, ipv4, code)
+		    "proto=sip\r\nisinalan=%s\r\n" ) % (phone_vendor, phone_model,
+							macaddr, ipv4, code, isinalan)
 
 	try:
 		timeoutsocket.setDefaultSocketTimeout(pgc['http_request_to_s'])
