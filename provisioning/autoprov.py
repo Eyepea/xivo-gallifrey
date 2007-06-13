@@ -172,13 +172,13 @@ class SQLBackEnd:
 		"""Lookup a phone description by Mac Address in the database.
 		
 		Returns a dictionary with the following keys:
-		        'macaddr', 'vendor', 'model', 'proto', 'iduserfeatures'
+		        'macaddr', 'vendor', 'model', 'proto', 'iduserfeatures', 'isinalan'
 		or None
 		
 		"""
 		mapping = dict(map(lambda x: (x,x),
 		                   ('macaddr', 'vendor', 'model', 'proto',
-			            'iduserfeatures')))
+			            'iduserfeatures', 'isinalan')))
 		nummap, sexpr = nummap_and_selectexpr_from_symbmap(mapping)
 		query = "SELECT %s FROM %s WHERE macaddr=%s" % (sexpr, TABLE, '%s')
 		return self.sql_select_one(query, (macaddr,), nummap)
@@ -257,14 +257,14 @@ class SQLBackEnd:
 		"""Save phone informations in the database.
 		phone must be a dictionary and contain the following keys:
 		
-		'macaddr', 'vendor', 'model', 'proto', 'iduserfeatures'
+		'macaddr', 'vendor', 'model', 'proto', 'iduserfeatures', 'isinalan'
 		
 		"""
 		self.sql_modify(
-			"REPLACE INTO %s (macaddr, vendor, model, proto, iduserfeatures) VALUES (%s, %s, %s, %s, %s)" \
-			% (TABLE, '%s', '%s', '%s', '%s', '%s'),
+			"REPLACE INTO %s (macaddr, vendor, model, proto, iduserfeatures, isinalan) VALUES (%s, %s, %s, %s, %s, %s)" \
+			% (TABLE, '%s', '%s', '%s', '%s', '%s', '%s'),
 			map(lambda x: phone[x], ('macaddr', 'vendor', 'model',
-			                         'proto', 'iduserfeatures')))
+			                         'proto', 'iduserfeatures', 'isinalan')))
 
 	def phone_by_iduserfeatures(self, iduserfeatures):
 		"""Lookup phone information by user information (iduserfeatures)
@@ -272,7 +272,7 @@ class SQLBackEnd:
 		is a single phone description in the form of a dictionary
 		containing the classic keys.
 		
-		'macaddr', 'vendor', 'model', 'proto', 'iduserfeatures'
+		'macaddr', 'vendor', 'model', 'proto', 'iduserfeatures', 'isinalan'
 		
 		"""
 		mapping = dict(map(lambda x: (x,x), ("macaddr", "vendor",
@@ -304,12 +304,12 @@ class SQLBackEnd:
 		informations stored in the base about a phone with the classic
 		keys :
 		
-		'macaddr', 'vendor', 'model', 'proto', 'iduserfeatures'
+		'macaddr', 'vendor', 'model', 'proto', 'iduserfeatures', 'isinalan'
 		
 		"""
 		mapping = dict([(x,TABLE+'.'+x)
 				for x in ("macaddr", "vendor", "model",
-					"proto", "iduserfeatures")])
+					  "proto", "iduserfeatures", "isinalan")])
 		nummap, sexpr = nummap_and_selectexpr_from_symbmap(mapping)
 		query = ( "SELECT %s " + 
 			  "FROM %s LEFT JOIN %s " +
@@ -364,7 +364,7 @@ def __mode_dependant_provlogic_locked(mode, ctx, phone, config):
 			existing_phone['iduserfeatures'] = '0'
 			__provisioning('__internal_to_guest', ctx, existing_phone)
 
-def __save_lan_phone(mode, ctx, phone, config):
+def __save_phone(mode, ctx, phone, config):
 	"Save new configuration of the local phone in the database."
 	if "iduserfeatures" not in phone and config is not None \
 	   and "iduserfeatures" in config:
@@ -417,10 +417,10 @@ def __provisioning(mode, ctx, phone):
 		    phone["iduserfeatures"] = "0"
 
 	    if "iduserfeatures" in phone and phone["iduserfeatures"] == "0":
-		syslogf("__provisioning(): reinitializing provisioning to GUEST for phone %s" % (str(phone),))
-		prov_inst.generate_reinitprov()
-		__save_lan_phone(mode, ctx, phone, None)
-		prov_inst.action_reinit()
+		    syslogf("__provisioning(): reinitializing provisioning to GUEST for phone %s" % (str(phone),))
+		    prov_inst.generate_reinitprov()
+		    __save_phone(mode, ctx, phone, None)
+		    prov_inst.action_reinit()
 	    else:
 		if "iduserfeatures" in phone:
 		    syslogf("__provisioning(): getting configuration from iduserfeatures for phone %s" % (str(phone),))
@@ -439,7 +439,7 @@ def __provisioning(mode, ctx, phone):
 			syslogf(SYSLOG_NOTICE, "__provisioning(): AUTOPROV'isioning phone %s with config %s" % (str(phone),str(config)))
 			__mode_dependant_provlogic_locked(mode, ctx, phone, config)
 			prov_inst.generate_autoprov(config)
-			__save_lan_phone(mode, ctx, phone, config)
+			__save_phone(mode, ctx, phone, config)
 			prov_inst.action_reboot()
 		    finally:
 			syslogf(SYSLOG_DEBUG, "__provisioning(): unlocking user %s" % config['iduserfeatures'])
@@ -639,7 +639,7 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 		return phone
 	def posted_phone_infos(self):
 		"Used in 'authoritative' and 'informative' modes"
-		return self.posted_infos("proto", "vendor", "model", "actions")
+		return self.posted_infos("proto", "vendor", "model", "actions", "isinalan")
 	def posted_light_infos(self):
 		"Used in 'notification' mode"
 		return self.posted_infos("proto", "actions")
@@ -670,11 +670,14 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 		   self.posted["mode"] == "informative":
 			syslogf("handle_prov(): creating phone internal representation using full posted infos.")
 			phone = self.posted_phone_infos()
+                        if "isinalan" not in phone:
+                            phone["isinalan"] = 0
 			lock_and_provision(self.posted['mode'], self.my_ctx, phone)
 		elif self.posted["mode"] == "notification":
 			syslogf("handle_prov(): creating phone internal representation using light posted infos.")
 			phone = self.posted_light_infos()
 			phonetype = self.my_infos.type_by_macaddr(phone["macaddr"])
+                        phone["isinalan"] = provsup.elem_or_none(phonetype, "isinalan")
 			phone["vendor"] = provsup.elem_or_none(phonetype, "vendor")
 			phone["model"] = provsup.elem_or_none(phonetype, "model")
 			lock_and_provision(self.posted['mode'], self.my_ctx, phone)
