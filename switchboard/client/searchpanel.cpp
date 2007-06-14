@@ -1,3 +1,4 @@
+/* $Id$ */
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
@@ -35,6 +36,8 @@ void SearchPanel::setEngine(SwitchBoardEngine * engine)
 	m_engine = engine;
 }
 
+/*! \brief apply the search
+ */
 void SearchPanel::affTextChanged(const QString & text)
 {
 	int i;
@@ -48,6 +51,8 @@ void SearchPanel::affTextChanged(const QString & text)
 	}
 }
 
+/*! \brief update peer
+ */
 void SearchPanel::updatePeer(const QString & ext,
                              const QString & name,
 			     const QString & imavail,
@@ -94,6 +99,8 @@ void SearchPanel::updatePeer(const QString & ext,
 	m_peerlist << peer;
 }
 
+/*! \brief remove on peer
+ */
 void SearchPanel::removePeer(const QString & ext)
 {
 	int i;
@@ -110,6 +117,8 @@ void SearchPanel::removePeer(const QString & ext)
 	}
 }
 
+/*! \brief clear the widget
+ */
 void SearchPanel::removePeers()
 {
 	int i;
