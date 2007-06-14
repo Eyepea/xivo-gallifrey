@@ -30,19 +30,31 @@ protected:
 	void dropEvent(QDropEvent * event);
 	void contextMenuEvent(QContextMenuEvent *);
 signals:
+	//! originate signal
 	void originateCall(const QString &, const QString &);
+	//! transfer signal
 	void transferCall(const QString &, const QString &);
+	//! intercept signal
 	void interceptChan(const QString &);
+	//! hang up signal
 	void hangUpChan(const QString &);
+	//! dial/call signal
 	void emitDial(const QString &);
+	//! hide the widget in the channel
 	void doRemoveFromPanel(const QString &);
 public slots:
+	//! set phone or person icon in blue
 	void setBlue(int n);
 	//void setCyan(int n);
+	//! set phone or person icon in gray
 	void setGray(int n);
+	//! set phone or person icon in green
 	void setGreen(int n);
+	//! set phone or person icon in orange
 	void setOrange(int n);
+	//! set phone or person icon in red
 	void setRed(int n);
+	//! set phone or person icon in yellow
 	void setYellow(int n);
 	//void setBlack(int n);
 	//void setDarkGreen(int n);
@@ -60,26 +72,26 @@ private:
 	QString m_id;	//!< peer id : asterisk/protocol/extension
 	QString m_name;	//!< caller id to display : usualy the NAME of the person
 
-	QAction * m_removeAction;
-	QAction * m_dialAction;
+	QAction * m_removeAction;	//!< action to remove this peer from the window
+	QAction * m_dialAction;		//!< action to dial this number
 	
-	QList<PeerChannel *> m_channels;
-	QList<PeerChannel *> m_mychannels;
+	QList<PeerChannel *> m_channels;	//!< channels associated with THIS peer
+	QList<PeerChannel *> m_mychannels;	//!< channels assiciated with ME
 
 	/* TODO : have the Pixmaps as static objects */
-	QPixmap m_phone_green;
-	QPixmap m_phone_red;
-	QPixmap m_phone_orange;
-	QPixmap m_phone_gray;
-	QPixmap m_phone_yellow;
-	QPixmap m_phone_blue;
+	QPixmap m_phone_green;	//!< green phone icon
+	QPixmap m_phone_red;	//!< red phone icon
+	QPixmap m_phone_orange;	//!< orange phone icon
+	QPixmap m_phone_gray;	//!< gray phone icon
+	QPixmap m_phone_yellow;	//!< yellow phone icon
+	QPixmap m_phone_blue;	//!< blue phone icon
 
-	QPixmap m_person_green;
-	QPixmap m_person_red;
-	QPixmap m_person_orange;
-	QPixmap m_person_gray;
-	QPixmap m_person_yellow;
-	QPixmap m_person_blue;
+	QPixmap m_person_green;	//!< green person icon
+	QPixmap m_person_red;	//!< red person icon
+	QPixmap m_person_orange;	//!< orange person icon
+	QPixmap m_person_gray;	//!< gray person icon
+	QPixmap m_person_yellow;	//!< yellow person icon
+	QPixmap m_person_blue;	//!< blue person icon
 };
 
 #endif

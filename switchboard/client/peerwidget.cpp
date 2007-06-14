@@ -34,6 +34,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include "switchboardwindow.h"
 #include "xivoconsts.h"
 
+/*! \brief Constructor
+ */
 PeerWidget::PeerWidget(const QString & id, const QString & name,
                        QWidget * parent/*, int size*/)
 : QWidget(parent)/*, m_square(size,size)*/, m_id(id), m_name(name),
@@ -71,6 +73,8 @@ m_person_yellow(":/personal-yellow.png"), m_person_blue(":/personal-blue.png")
 	         this, SLOT(dial()) );
 }
 
+/*! \brief destructor
+ */
 PeerWidget::~PeerWidget()
 {
 	clearChanList();
@@ -161,18 +165,24 @@ void PeerWidget::setOrange(int n)
 	  m_availlbl->setPixmap( m_person_orange/*m_square*/ );
 }
 
+/*! \brief hid this widget from the panel
+ */
 void PeerWidget::removeFromPanel()
 {
-	qDebug() << "PeerWidget::removeFromPanel()" << m_id;
+//	qDebug() << "PeerWidget::removeFromPanel()" << m_id;
 	doRemoveFromPanel( m_id );
 }
 
+/*! \brief call this peer
+ */
 void PeerWidget::dial()
 {
-	qDebug() << "PeerWidget::dial()" << m_id;
+//	qDebug() << "PeerWidget::dial()" << m_id;
 	emitDial( m_id );
 }
 
+/*! \brief mouse press. store position
+ */
 void PeerWidget::mousePressEvent(QMouseEvent *event)
 {
 	//qDebug() << "PeerWidget::mousePressEvent(QMouseEvent *event)";
@@ -182,6 +192,8 @@ void PeerWidget::mousePressEvent(QMouseEvent *event)
 	//	qDebug() << "depending on what has been left-cliked on the left ...";
 }
 
+/*! \brief start drag if necessary
+ */
 void PeerWidget::mouseMoveEvent(QMouseEvent *event)
 {
 	if (!(event->buttons() & Qt::LeftButton))
@@ -216,9 +228,13 @@ void PeerWidget::mouseDoubleClickEvent(QMouseEvent *event)
 }
 #endif
 
+/*! \brief  
+ *
+ * filters the acceptable drag on the mime type.
+ */
 void PeerWidget::dragEnterEvent(QDragEnterEvent *event)
 {
-	qDebug() << "PeerWidget::dragEnterEvent()" << event->mimeData()->formats();
+	//qDebug() << "PeerWidget::dragEnterEvent()" << event->mimeData()->formats();
 	if(  event->mimeData()->hasFormat(PEER_MIMETYPE)
 	  || event->mimeData()->hasFormat(CHANNEL_MIMETYPE) )
 	{
@@ -227,6 +243,10 @@ void PeerWidget::dragEnterEvent(QDragEnterEvent *event)
 	}
 }
 
+/*! \brief drag move event
+ *
+ * filter based on the mimeType.
+ */
 void PeerWidget::dragMoveEvent(QDragMoveEvent *event)
 {
 	//	qDebug() << "dragMoveEvent()";
@@ -239,6 +259,10 @@ void PeerWidget::dragMoveEvent(QDragMoveEvent *event)
 	}
 }
 
+/*! \brief receive drop events
+ *
+ * initiate an originate or transfer
+ */
 void PeerWidget::dropEvent(QDropEvent *event)
 {
 	QString from = event->mimeData()->text();
@@ -273,11 +297,15 @@ void PeerWidget::dropEvent(QDropEvent *event)
 	}
 }
 
+/*! \brief transfer the channel to this peer
+ */
 void PeerWidget::transferChan(const QString & chan)
 {
 	transferCall(chan, m_id);
 }
 
+/*! \brief display context menu
+ */
 void PeerWidget::contextMenuEvent(QContextMenuEvent * event)
 {
 	QMenu contextMenu(this);
@@ -327,6 +355,8 @@ void PeerWidget::contextMenuEvent(QContextMenuEvent * event)
 	contextMenu.exec(event->globalPos());
 }
 
+/*! \brief empty m_channels
+ */
 void PeerWidget::clearChanList()
 {
 	//qDebug() << "PeerWidget::clearChanList()" << m_channels;
@@ -335,6 +365,8 @@ void PeerWidget::clearChanList()
 		delete m_channels.takeFirst();
 }
 
+/*! \brief add a channel to m_channels list
+ */
 void PeerWidget::addChannel(const QString & id, const QString & state, const QString & otherPeer)
 {
 	PeerChannel * ch = new PeerChannel(id, state, otherPeer, this);
@@ -345,6 +377,8 @@ void PeerWidget::addChannel(const QString & id, const QString & state, const QSt
 	m_channels << ch;
 }
 
+/*! \brief update calls of "ME" (for transfer context menu)
+ */
 void PeerWidget::updateMyCalls(const QStringList & chanIds,
                                const QStringList & chanStates,
 							   const QStringList & chanOthers)
