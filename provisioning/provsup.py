@@ -34,6 +34,8 @@ ProvGeneralConf = {
 	'wget_to_s':			30,
 	'telnet_to_s':			30,
 	'templates_dir':	       	"/usr/share/pf-xivo-provisioning/files/",
+	'asterisk_ipv4':                "192.168.0.254",
+	'ntp_server_ipv4':              "192.168.0.254"
 }
 pgc = ProvGeneralConf
 authorized_prefix = ["eth"]
