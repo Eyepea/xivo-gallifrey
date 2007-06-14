@@ -199,6 +199,7 @@ class SQLBackEnd:
 		        'provcode': provisioning code
 		        'ident': protocol specific identification
 		        'passwd': protocol specific password
+		        'dtmfmode': DTMF mode
 		        'number': extension number
 		        'proto': protocol
 		
@@ -212,6 +213,7 @@ class SQLBackEnd:
 			"lastname":		UF_TABLE+".lastname",
 			"ident":		SIP_TABLE+".name",
 			"passwd":		SIP_TABLE+".secret",
+			"dtmfmode":		SIP_TABLE+".dtmfmode",
 			"number":		UF_TABLE+".number",
 			"iduserfeatures":	UF_TABLE+".id",
 			"provcode":		UF_TABLE+".provisioningid",

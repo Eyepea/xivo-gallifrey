@@ -107,6 +107,7 @@ class SwissvoiceProv(BaseProv):
 			"http_user": SWISSVOICE_COMMON_HTTP_USER,
 			"http_pass": SWISSVOICE_COMMON_HTTP_PASS,
 			"phone_name": provinfo["number"],
+			"dtmfmode": provinfo["dtmfmode"],
 			"user_idle_text1": provinfo["name"],
 			"user_sipusername_as_line1": "on",
 			"asterisk_ipv4" : pgc['asterisk_ipv4'],
