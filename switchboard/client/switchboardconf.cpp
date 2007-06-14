@@ -130,6 +130,7 @@ void SwitchBoardConfDialog::saveAndClose()
 	m_engine->setExtension( m_ext->text() );
 	m_loginengine->setLoginPort( m_loginport->text().toUInt() );
 	m_loginengine->setPassword( m_passwd->text() );
+	m_loginengine->saveSettings();
 	m_engine->saveSettings();
 	//m_window->setWidth( m_widthsb->value() );
 	//m_window->saveSettings();
