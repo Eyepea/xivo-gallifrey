@@ -13,7 +13,7 @@ class PeersLayout : public QLayout
 public:
 	//! constructor
 	PeersLayout(QWidget * parent);
-	//! ?
+	//! ??
 	PeersLayout();
 	//! set geometry
 	void setGeometry( const QRect & );
@@ -30,9 +30,13 @@ public:
 	int count() const;
 	QLayoutItem* itemAt(int) const;
 	QLayoutItem* takeAt(int);
+	//! get m_nb_rows
 	int nbRows() const { return m_nb_rows; };
+	//! set m_nb_rows
 	void setNbRows(int rows) { m_nb_rows = rows; };
+	//! get m_nb_columns
 	int nbColumns() const { return m_nb_columns; };
+	//! set m_nb_columns
 	void setNbColumns(int cols) { m_nb_columns = cols; };
 	QPoint getPosInGrid(QPoint) const;
 	void setItemPosition(int i, QPoint pos);
@@ -41,10 +45,10 @@ private:
 	QPoint freePosition() const;
 	QSize size() const;
 	QSize maxItemSize() const;
-	QList<QLayoutItem *> m_list;
-	QList<QPoint> m_listPos;
-	int m_nb_rows;
-	int m_nb_columns;
+	QList<QLayoutItem *> m_list;	//!< layout items list
+	QList<QPoint> m_listPos;		//!< positions list
+	int m_nb_rows;					//!< height
+	int m_nb_columns;				//!< width
 };
 
 #endif
