@@ -28,8 +28,6 @@ SWISSVOICE_SPEC_INF_TEMPLATE = pgc['templates_dir'] + "template_ip10.inf"
 SWISSVOICE_SPEC_CFG_TEMPLATE = pgc['templates_dir'] + "template_ip10.cfg"
 SWISSVOICE_COMMON_HTTP_USER = "admin"
 SWISSVOICE_COMMON_HTTP_PASS = "admin"
-ASTERISK_IPV4   = pgc['asterisk_ipv4']
-NTP_SERVER_IPV4 = pgc['ntp_server_ipv4']
 
 class SwissvoiceProv(BaseProv):
 	label = "Swissvoice"
@@ -111,8 +109,8 @@ class SwissvoiceProv(BaseProv):
 			"phone_name": provinfo["number"],
 			"user_idle_text1": provinfo["name"],
 			"user_sipusername_as_line1": "on",
-			"asterisk_ipv4" : ASTERISK_IPV4,
-			"ntp_server_ipv4" : NTP_SERVER_IPV4
+			"asterisk_ipv4" : pgc['asterisk_ipv4'],
+			"ntp_server_ipv4" : pgc['ntp_server_ipv4']
 		}, cfg_filename)
 		tmp_file = open(cfg_tmp_filename, 'w')
 		tmp_file.writelines(txt)
