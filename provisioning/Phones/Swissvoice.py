@@ -66,11 +66,9 @@ class SwissvoiceProv(BaseProv):
 		
 		"""
 		cfg_filename = SWISSVOICE_SPEC_DIR + \
-			       self.phone["macaddr"].lower().replace(':','') + '_' + \
-			       self.phone["model"] + '.cfg'
+			       self.phone["macaddr"].lower().replace(':','') + '_ip10.cfg'
 		inf_filename = SWISSVOICE_SPEC_DIR + "/../" + \
-			       self.phone["macaddr"].lower().replace(':','') + '_' + \
-			       self.phone["model"] + '.inf'
+			       self.phone["macaddr"].lower().replace(':','') + '_ip10.inf'
 		try:
 			os.unlink(cfg_filename)
 		except:
@@ -95,11 +93,9 @@ class SwissvoiceProv(BaseProv):
 		macaddr = self.phone["macaddr"].lower().replace(':','')
 
 		cfg_tmp_filename = SWISSVOICE_SPEC_DIR + \
-				   self.phone["macaddr"].lower().replace(':','') + '_' + \
-				   self.phone["model"] + '.cfg.tmp'
+				   self.phone["macaddr"].lower().replace(':','') + '_ip10.cfg.tmp'
 		inf_tmp_filename = SWISSVOICE_SPEC_DIR + "/../" + \
-				   self.phone["macaddr"].lower().replace(':','') + '_' + \
-				   self.phone["model"] + '.inf.tmp'
+				   self.phone["macaddr"].lower().replace(':','') + '_ip10.inf.tmp'
 		cfg_filename = cfg_tmp_filename[:-4]
 		inf_filename = inf_tmp_filename[:-4]
 
