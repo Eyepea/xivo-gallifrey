@@ -81,3 +81,18 @@ def flatten_list(seq_of_seq):
 	for one_seq in seq_of_seq:
 		lst.extend(one_seq)
 	return lst
+
+def at_least(num, check_func, seq):
+	"""Returns True if at least the first 'num' items of 'seq' are valids
+	as checked by 'check_func', otherwise - i.e. there is less than 'num'
+	items in the sequence or at least one of the first 'num' ones has a
+	value such as 'check_func(item)' evaluates to False - returns False."""
+	if num < 1:
+		return True
+	count = -1
+	for count, item in enumerate(seq):
+		if not check_func(item):
+			return False
+		if count + 1 >= num:
+			return True
+	return count + 1 >= num
