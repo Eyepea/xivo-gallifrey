@@ -54,7 +54,6 @@ import provsup
 from provsup import ProvGeneralConf as pgc
 from provsup import lst_get
 
-from Phones import * # package containing one module per vendor
 from moresynchro import RWLock
 from moresynchro import ListLock
 from daemonize import daemonize
@@ -790,11 +789,14 @@ for k,v in opts:
 		dburi_override = v
 
 provsup.LoadConfig(CONFIG_FILE)
+
 if log_level_override is not None:
 	pgc['log_level'] = log_level_override
 log_level = sysloglevel_from_str(pgc['log_level'])
 if dburi_override is not None:
 	pgc['database_uri'] = dburi_override
 
+# provsup.LoadConfig must be called before
+from Phones import * # package containing one module per vendor
 if __name__ == '__main__' and not dontlauchmain:
 	main(log_level, foreground)
