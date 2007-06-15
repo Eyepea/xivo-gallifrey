@@ -9,7 +9,7 @@
 #           (C) 2007 Proformatique
 #
 
-__version__ = "$Revision: 616 $ $Date: 2007-05-16 11:48:13 +0200 (mer, 16 mai 2007) $"
+__version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2007, Proformatique
 
