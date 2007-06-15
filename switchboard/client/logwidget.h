@@ -9,6 +9,8 @@ class QVBoxLayout;
 class SwitchBoardEngine;
 class QRadioButton;
 
+/*! \brief Call Log display widget
+ */
 class LogWidget : public QWidget
 {
 	Q_OBJECT
@@ -27,16 +29,16 @@ public slots:
 private slots:
 	void modeChanged(bool);
 signals:
-	void askHistory(const QString &, int);
+	void askHistory(const QString &, int);	//!< need history to be updated !
 private:
-	SwitchBoardEngine * m_engine;
-	QVBoxLayout * m_layout;
-	QString m_peer;
-	int m_timer;
-	QRadioButton * m_radioNone;
-	QRadioButton * m_radioOut;
-	QRadioButton * m_radioIn;
-	QRadioButton * m_radioMissed;
+	SwitchBoardEngine * m_engine;	//!< SwitchBoardEngine object
+	QVBoxLayout * m_layout;			//!< Widget layout
+	QString m_peer;					//!< "monitored" peer
+	int m_timer;					//!< timer id for refresh
+	QRadioButton * m_radioNone;		//!< "None" radio button
+	QRadioButton * m_radioOut;		//!< "Out" radio button
+	QRadioButton * m_radioIn;		//!< "In" radio button
+	QRadioButton * m_radioMissed;	//!< "Missed" radio button
 };
 
 #endif

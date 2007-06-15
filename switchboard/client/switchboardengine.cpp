@@ -82,7 +82,8 @@ void SwitchBoardEngine::loadSettings()
 	m_autoconnect = settings.value("engine/autoconnect", false).toBool();
 	m_asterisk = settings.value("engine/asterisk").toString();
 	m_protocol = settings.value("engine/protocol").toString();
-	m_extension = settings.value("engine/extension").toString();
+	//m_extension = settings.value("engine/extension").toString();
+	m_userid = settings.value("engine/userid").toString();
 }
 
 /*!
@@ -96,7 +97,8 @@ void SwitchBoardEngine::saveSettings()
 	settings.setValue("engine/autoconnect", m_autoconnect);
 	settings.setValue("engine/asterisk", m_asterisk);
 	settings.setValue("engine/protocol", m_protocol);
-	settings.setValue("engine/extension", m_extension);
+	//settings.setValue("engine/extension", m_extension);
+	settings.setValue("engine/userid", m_userid);
 }
 
 /* \brief set server address
@@ -178,7 +180,10 @@ void SwitchBoardEngine::socketConnected()
 	qDebug() << "socketConnected()";
 	started();
 	/* do the login/identification ? */
-	m_pendingcommand = "callerids";
+	m_pendingcommand = "login " + m_asterisk + " "
+	                   + m_protocol + " " + m_userid;
+					   // login <asterisk> <techno> <id>
+	//m_pendingcommand = "callerids";
 	sendCommand();
 }
 
@@ -312,7 +317,9 @@ void SwitchBoardEngine::updatePeers(const QStringList & liststatus)
 	           InstMessAvail, SIPPresStatus, VoiceMailStatus, QueueStatus,
 	           chanIds, chanStates, chanOthers);
 	// and my_context == context ???
-	if(liststatus[4] == m_extension) // my_name == liststatus[3]
+	//if(liststatus[4] == m_extension)
+	if(   (m_userid == liststatus[3])
+	   && (m_dialcontext == liststatus[5]))
 	{
 		//qDebug() << "glop";
 		updateMyCalls(chanIds, chanStates, chanOthers);
@@ -360,6 +367,14 @@ void SwitchBoardEngine::socketReadyRead()
 				//m_pendingcommand = "history obelisk/SIP/103 10";
 				//m_pendingcommand = "history obelisk/SIP/103 3";
 				//sendCommand();
+			} else if(list[0] == "loginok") {
+				QStringList params = list[1].split(";");
+				if(params.size() > 1) {
+					m_dialcontext = params[0];
+					m_extension = params[1];
+				}
+				m_pendingcommand = "callerids";
+				sendCommand();
 			} else if(list[0] == QString("callerids")) {
 				QStringList listpeers = list[1].split(";");
 				for(int i = 0 ; i < listpeers.size() - 1; i++) {
@@ -434,7 +449,7 @@ void SwitchBoardEngine::dialFullChannel(const QString & dst)
 	qDebug() << "SwitchBoardEngine::dialFullChannel()" << dst;
 	m_pendingcommand = "originate p/" +
 		m_asterisk + "/" + m_dialcontext + "/" + m_protocol + "/" +
-		m_extension + "/ " + dst;
+		m_userid + "/" + m_extension + " " + dst;
 	sendCommand();
 }
 
@@ -444,8 +459,8 @@ void SwitchBoardEngine::dialExtension(const QString & dst)
 {
 	qDebug() << "SwitchBoardEngine::dialExtension()" << dst;
 	m_pendingcommand = "originate p/" +
-		m_asterisk + "/" + m_dialcontext + "/" + m_protocol + "/" + m_extension +
-		"/ p/" +
+		m_asterisk + "/" + m_dialcontext + "/" + m_protocol + "/" + 
+		m_userid + "/" + m_extension + " p/" +
 		m_asterisk + "/" + m_dialcontext + "/" + "/" + "/" + dst;
 	sendCommand();
 }

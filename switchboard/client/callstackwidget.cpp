@@ -67,6 +67,8 @@ Call::Call(const Call & call)
 	m_phonen      = call.m_phonen;
 }
 
+/*! \brief update object properties
+ */
 void Call::updateCall(const QString & action,
 		      int time,
 		      const QString & direction,

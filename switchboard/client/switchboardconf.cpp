@@ -35,8 +35,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include "switchboardwindow.h"
 #include "loginengine.h"
 
+/*! \brief constructor
+ */
 SwitchBoardConfDialog::SwitchBoardConfDialog(SwitchBoardEngine * engine,
-					     LoginEngine * loginengine,
+                                             LoginEngine * loginengine,
                                              SwitchBoardWindow * window,
                                              QWidget * parent)
 : QDialog(parent), m_engine(engine), m_loginengine(loginengine), m_window(window)
@@ -99,10 +101,10 @@ SwitchBoardConfDialog::SwitchBoardConfDialog(SwitchBoardEngine * engine,
 	layout->addWidget( m_protocombo, line, 1 );
 	line++;
 
-	QLabel * lblext = new QLabel( tr("Extension :"), this );
-	layout->addWidget(lblext, line, 0);
-	m_ext = new QLineEdit( m_engine->extension(), this );
-	layout->addWidget( m_ext, line, 1 );
+	QLabel * lblid = new QLabel( tr("User id :"), this );
+	layout->addWidget(lblid, line, 0);
+	m_userid = new QLineEdit( m_engine->userId(), this );
+	layout->addWidget( m_userid, line, 1 );
 	line++;
 
 	QLabel * lblpass = new QLabel( tr("Password :"), this );
@@ -127,7 +129,9 @@ void SwitchBoardConfDialog::saveAndClose()
 	m_engine->setAutoconnect( m_autoconnect->checkState() == Qt::Checked );
 	m_engine->setAsterisk( m_asterisk->text() );
 	m_engine->setProtocol( m_protocombo->currentText() );
-	m_engine->setExtension( m_ext->text() );
+	m_engine->setUserId( m_userid->text() );
+	//m_loginengine->setUserId( m_userid->text() );
+	m_loginengine->setExtension( m_userid->text() );
 	m_loginengine->setLoginPort( m_loginport->text().toUInt() );
 	m_loginengine->setPassword( m_passwd->text() );
 	m_loginengine->saveSettings();

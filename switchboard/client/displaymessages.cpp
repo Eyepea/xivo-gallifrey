@@ -9,6 +9,10 @@
 #include "displaymessages.h"
 #include "switchboardengine.h"
 
+/*! \brief Constructor
+ *
+ * Set up the layout and the table widget.
+ */
 DisplayMessagesPanel::DisplayMessagesPanel(QWidget * parent)
 	: QWidget(parent)
 {
@@ -27,6 +31,10 @@ DisplayMessagesPanel::DisplayMessagesPanel(QWidget * parent)
 	vlayout->addWidget( m_table, 0 );
 }
 
+/*! \brief add a message to the list
+ *
+ * add a new message.
+ */
 void DisplayMessagesPanel::addMessage(const QString & str)
 {
 	qDebug() << "DisplayMessagesPanel::addMessage()" << str;

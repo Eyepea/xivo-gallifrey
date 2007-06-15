@@ -10,6 +10,8 @@
 class QTimer;
 class QDateTime;
 
+/*! \brief login engine
+ */
 class LoginEngine: public QObject
 {
 	Q_OBJECT
@@ -19,18 +21,28 @@ public:
 	
 	LoginEngine(QObject * parent = 0);
 	const QString & host() const;
+	//! set m_autoconnect
 	void setAutoconnect(bool b) { m_autoconnect = b;};
+	//! get m_autoconnect
 	bool autoconnect() const {return m_autoconnect;};
 	void saveSettings();	//!< save settings
 	
+	//! set m_asterisk
 	void setAsterisk(const QString & ast) { m_asterisk = ast; };
+	//! get m_asterisk
 	const QString & asterisk() const { return m_asterisk; };
+	//! set m_protocol
 	void setProtocol(const QString & proto) { m_protocol = proto; };
+	//! get m_protocol
 	const QString & protocol() const { return m_protocol; };
+	//! set m_loginport
 	void setLoginPort(const quint16 & loginport) { m_loginport = loginport; };
+	//! get m_loginport
 	const quint16 & loginPort() const { return m_loginport; };
 
+	//! set m_extension
 	void setExtension(const QString & ext) { m_extension = ext; };
+	//! get m_extension
 	const QString & extension() const { return m_extension; };
 	void setDialContext(const QString & context) { m_dialcontext = context; };
 	const QString & dialContext() const { return m_dialcontext; };

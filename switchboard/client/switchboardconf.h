@@ -12,29 +12,31 @@ class QSpinBox;
 class QCheckBox;
 class QComboBox;
 
+/*! \brief Configuration dialog
+ */
 class SwitchBoardConfDialog : public QDialog
 {
 	Q_OBJECT
 public:
 	SwitchBoardConfDialog(SwitchBoardEngine * engine,
-			      LoginEngine * loginengine,
+	                      LoginEngine * loginengine,
 	                      SwitchBoardWindow * window,
-			      QWidget *parent = 0);
+	                      QWidget *parent = 0);
 private slots:
-	void saveAndClose();
+	void saveAndClose();	//!< save configuration and close dialog
 private:
-	SwitchBoardEngine * m_engine;
-	LoginEngine * m_loginengine;
-	SwitchBoardWindow * m_window;
-	QLineEdit * m_serverhost;
-	QLineEdit * m_sbport;
-	QLineEdit * m_loginport;
-	QSpinBox * m_widthsb;
-	QCheckBox * m_autoconnect;
-	QLineEdit * m_asterisk;
-	QComboBox * m_protocombo;
-	QLineEdit * m_ext;
-	QLineEdit * m_passwd;
+	SwitchBoardEngine * m_engine;	//!< switchboard engine
+	LoginEngine * m_loginengine;	//!< presence server engine
+	SwitchBoardWindow * m_window;	//!< main application window
+	QLineEdit * m_serverhost;	//!< server host
+	QLineEdit * m_sbport;		//!< server port (switchboard)
+	QLineEdit * m_loginport;	//!< server port (presence)
+//	QSpinBox * m_widthsb;
+	QCheckBox * m_autoconnect;	//!< autoconnect checkbox
+	QLineEdit * m_asterisk;	//!< asterisk server id
+	QComboBox * m_protocombo;	//!< protocol(SIP/IAX/...) combo
+	QLineEdit * m_userid;	//!< user id
+	QLineEdit * m_passwd;	//!< password (for presence server)
 };
 
 #endif

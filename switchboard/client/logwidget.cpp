@@ -17,7 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 */
 
-/* $Revision $
+/* $Id$
+ * $Revision$
    $Date$
 */
 
@@ -32,6 +33,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include "logeltwidget.h"
 #include "switchboardengine.h"
 
+/*! \brief Constructor
+ *
+ * build layout and child widgets.
+ */
 LogWidget::LogWidget(SwitchBoardEngine * engine, QWidget * parent)
 : QWidget(parent), m_engine(engine), m_timer(-1)
 {
@@ -74,6 +79,10 @@ LogWidget::LogWidget(SwitchBoardEngine * engine, QWidget * parent)
 	layout->addWidget( scrollArea );
 }
 
+/*! \brief add an entry
+ *
+ * \sa addLogEntry
+ */
 void LogWidget::addElement(const QString & peer, LogEltWidget::Direction d,
                            const QDateTime & dt, int duration)
 {
@@ -103,6 +112,8 @@ void LogWidget::addElement(const QString & peer, LogEltWidget::Direction d,
 	m_layout->insertWidget(index, e);
 }
 
+/*! \brief remove all child widgets
+ */
 void LogWidget::clear()
 {
 	QLayoutItem * child;
@@ -120,6 +131,8 @@ void LogWidget::clear()
 	//m_layout->addStretch(1);
 }
 
+/*! \brief add an entry
+ */
 void LogWidget::addLogEntry(const QDateTime & dt, int duration,
                             const QString & peer, int d)
 {
@@ -127,6 +140,8 @@ void LogWidget::addLogEntry(const QDateTime & dt, int duration,
 	addElement(peer, (LogEltWidget::Direction)d, dt, duration);
 }
 
+/*! \brief change the monitored peer
+ */
 void LogWidget::setPeerToDisplay(const QString & peer)
 {
 	clear();
@@ -140,12 +155,16 @@ void LogWidget::setPeerToDisplay(const QString & peer)
 	//qDebug() << "  zz " << mode();
 }
 
+/*! \brief timer event : ask for update
+ */
 void LogWidget::timerEvent(QTimerEvent * event)
 {
 	//qDebug() << "LogWidget::timerEvent() id=" << event->timerId();
 	askHistory(m_peer, mode());
 }
 
+/*! \brief return the mode (out/in or missed)
+ */
 int LogWidget::mode()
 {
 	int r = -1;
@@ -158,9 +177,13 @@ int LogWidget::mode()
 	return r;
 }
 
+/*! \brief triggered when mode is changed.
+ *
+ * clear the list and ask an update.
+ */
 void LogWidget::modeChanged(bool b)
 {
-	qDebug() << "LogWidget::modeChanger()" << b << mode();
+	qDebug() << "LogWidget::modeChanged()" << b << mode();
 	if(b && m_peer.size() > 0)
 	{
 		clear();

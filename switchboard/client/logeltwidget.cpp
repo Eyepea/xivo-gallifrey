@@ -4,6 +4,10 @@
 #include <QDebug>
 #include "logeltwidget.h"
 
+/*! \brief Constructor
+ *
+ * init everything and construct the sub widgets.
+ */
 LogEltWidget::LogEltWidget( const QString & peer, Direction d,
                             const QDateTime & dt, int duration,
 							QWidget * parent )
@@ -36,6 +40,8 @@ LogEltWidget::LogEltWidget( const QString & peer, Direction d,
 	         this, SLOT(callBackPeer()) );
 }
 
+/*! \brief display context menu
+ */
 void LogEltWidget::contextMenuEvent(QContextMenuEvent *event)
 {
 	QMenu contextMenu(this);
@@ -43,6 +49,8 @@ void LogEltWidget::contextMenuEvent(QContextMenuEvent *event)
 	contextMenu.exec(event->globalPos());
 }
 
+/*! \brief call the guy
+ */
 void LogEltWidget::callBackPeer()
 {
 	emitDial(m_peer);

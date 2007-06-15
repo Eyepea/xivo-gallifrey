@@ -40,9 +40,13 @@ public:
 	//! get m_protocol
 	const QString & protocol() const { return m_protocol; };
 	//! set m_extension
-	void setExtension(const QString & ext) { m_extension = ext; };
+	//void setExtension(const QString & ext) { m_extension = ext; };
 	//! get m_extension
-	const QString & extension() const { return m_extension; };
+	//const QString & extension() const { return m_extension; };
+	//! set m_userid
+	void setUserId(const QString & userid) { m_userid = userid; };
+	//! get m_userid
+	const QString & userId() const { return m_userid; };
 	//! set m_dialcontext
 	void setDialContext(const QString & context) { m_dialcontext = context; };
 	//! get m_dialcontext
@@ -124,6 +128,7 @@ private:
 	QString m_asterisk;		//!< asterisk server id of "my phone"
 	QString m_protocol;		//!< protocol (SIP/IAX/ZAP...) for "my phone"
 	QString m_extension;	//!< extension for "my phone"
+	QString m_userid;		//!< userid
 	QString m_dialcontext;	//!< Context of the phone, as returned by the xivo_daemon server
 	QString m_sessionid;	//!< Session id obtained after a successful login
 	QString m_capabilities;	//!< List of capabilities issued by the server after a successful login

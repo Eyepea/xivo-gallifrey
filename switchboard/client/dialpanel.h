@@ -9,6 +9,8 @@ class QVBoxLayout;
 class QLineEdit;
 class QComboBox;
 
+/*! \brief Simple widget to enter a	number and dial it
+ */
 class DialPanel : public QWidget
 {
 	Q_OBJECT
@@ -18,10 +20,10 @@ public slots:
 	//void textEdited(const QString &);
 	void inputValidated();
 signals:
-	void emitDial(const QString &);
+	void emitDial(const QString &);		//!< dial a number
 private:
 	//QLineEdit * m_input;
-	QComboBox * m_input;
+	QComboBox * m_input;	//!< input widget
 };
 
 #endif

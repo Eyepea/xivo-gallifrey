@@ -4,16 +4,22 @@
 #include <QDebug>
 #include "extendedtablewidget.h"
 
+/*! \brief Constructor
+ */
 ExtendedTableWidget::ExtendedTableWidget(QWidget * parent)
 : QTableWidget(parent)
 {
 }
 
+/*! \brief Constructor
+ */
 ExtendedTableWidget::ExtendedTableWidget(int rows, int columns, QWidget * parent)
 : QTableWidget(rows, columns, parent)
 {
 }
 
+/*! \brief display the context Menu
+ */
 void ExtendedTableWidget::contextMenuEvent(QContextMenuEvent * event)
 {
 	qDebug() << "ExtendedTableWidget::contextMenuEvent()";
@@ -42,6 +48,8 @@ void ExtendedTableWidget::contextMenuEvent(QContextMenuEvent * event)
 	}
 }
 
+/*! \brief dial the number (when context menu item is toggled
+ */
 void ExtendedTableWidget::dialNumber()
 {
 	if(m_numberToDial.length() > 0)
@@ -50,6 +58,8 @@ void ExtendedTableWidget::dialNumber()
 	}
 }
 
+/*! \brief update call list for transfer
+ */
 void ExtendedTableWidget::updateMyCalls(const QStringList & chanIds,
                                const QStringList & chanStates,
 							   const QStringList & chanOthers)
@@ -65,6 +75,8 @@ void ExtendedTableWidget::updateMyCalls(const QStringList & chanIds,
 	}
 }
 
+/*! \brief transfer channel to the number
+ */
 void ExtendedTableWidget::transferChan(const QString & chan)
 {
 	transferCall(chan, m_numberToDial);

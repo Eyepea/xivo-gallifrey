@@ -33,6 +33,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include "directorypanel.h"
 #include "extendedtablewidget.h"
 
+/*! \brief Constructor
+ *
+ *  Build layout and child widgets, connect signals/slots.
+ */
 DirectoryPanel::DirectoryPanel(QWidget * parent)
 : QWidget(parent)
 {
@@ -75,6 +79,8 @@ DirectoryPanel::DirectoryPanel(QWidget * parent)
 	//vlayout->addStretch( 1 );
 }
 
+/*! \brief useless
+ */
 void DirectoryPanel::itemDoubleClicked(QTableWidgetItem * item)
 {
 	qDebug() << item << item->text();
@@ -84,6 +90,11 @@ void DirectoryPanel::itemDoubleClicked(QTableWidgetItem * item)
 	// TODO : DIAL
 }
 
+/*! \brief receive and process search response
+ *
+ * Parses the response, sets column and row headers,
+ * set table cells.
+ */
 void DirectoryPanel::setSearchResponse(const QString & resp)
 {
 	int i, x, y;
@@ -111,12 +122,19 @@ void DirectoryPanel::setSearchResponse(const QString & resp)
 		}
 }
 
+/*! \brief start the search process
+ *
+ * sends the searchDirectory() signal avec the right argument.
+ */
 void DirectoryPanel::startSearch()
 {
 	searchDirectory( m_searchText->text() );
 }
 
-
+/*! \brief stop
+ *
+ * clear everything.
+ */
 void DirectoryPanel::stop()
 {
 	m_table->setRowCount(0);

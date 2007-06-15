@@ -3,11 +3,17 @@
 #include "peeritem.h"
 #include "peerwidget.h"
 
+/*! \brief Constructor
+ *
+ * just sets the properties m_ext and m_name.
+ */
 Peer::Peer(const QString & ext, const QString & name)
 : m_ext(ext), m_name(name)
 {
 }
 
+/*! \brief Copy constructor
+ */
 Peer::Peer(const Peer & peer)
 {
 	m_ext = peer.m_ext;
@@ -15,6 +21,10 @@ Peer::Peer(const Peer & peer)
 	m_peerwidget = peer.m_peerwidget;
 }
 
+/*! \brief update status of the peer
+ *
+ * Change what is displayed according to new status values.
+ */
 void Peer::updateStatus(const QString & imavail,
 			const QString & sipstatus,
 			const QString & vmstatus,
@@ -58,6 +68,8 @@ void Peer::updateStatus(const QString & imavail,
 	//    m_peerwidget->setToolTip(status + "\n" + corrname);
 }
 
+/*! \brief update channel list
+ */
 void Peer::updateChans(const QStringList & chanIds,
                        const QStringList & chanStates,
                        const QStringList & chanOthers)

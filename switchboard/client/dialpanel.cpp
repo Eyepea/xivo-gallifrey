@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 */
 
-/* $Revision $
+/* $Id$
    $Date$
 */
 
@@ -34,6 +34,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include "dialpanel.h"
 #include "switchboardengine.h"
 
+/*! \brief Constructor
+ */
 DialPanel::DialPanel(QWidget * parent)
 : QWidget(parent)
 {
@@ -67,6 +69,10 @@ void DialPanel::textEdited(const QString & text)
 	qDebug() << "DialPane::textEdited()" << text;
 }*/
 
+/*! \brief the input was validated
+ *
+ * check the input and call emitDial() if ok.
+ */
 void DialPanel::inputValidated()
 {
 	QString ext;

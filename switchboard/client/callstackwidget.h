@@ -21,14 +21,21 @@ public:
 	      const QString & direction, const QString & channelpeer,
 	      const QString & exten, const QString & phonen);
 	Call( const Call & call);
+	//! get m_phonen
 	const QString & getPhone() const {return m_phonen;};
+	//! get m_channelme
 	const QString & getChannelMe() const {return m_channelme;};
+	//! get m_action
 	const QString & getAction() const {return m_action;};
+	//! get duration of the channel
 	int getTime() const {
 		return m_startTime.secsTo(QDateTime::currentDateTime());
 	};
+	//! get m_direction
 	const QString & getDirection() const {return m_direction;};
+	//! get m_channelpeer
 	const QString & getChannelPeer() const {return m_channelpeer;};
+	//! get m_exten
 	const QString & getExten() const {return m_exten;};
 	void updateCall(const QString & action,
 			int time,
@@ -36,13 +43,13 @@ public:
 			const QString & channelpeer,
 			const QString & exten);
 private:
-	QString m_channelme;
-	QString m_action;
-	QDateTime m_startTime;
-	QString m_direction;
-	QString m_channelpeer;
-	QString m_exten;
-	QString m_phonen;
+	QString m_channelme;	//!< "my" channel 
+	QString m_action;		//!< action
+	QDateTime m_startTime;	//!< channel start time
+	QString m_direction;	//!< chan direction
+	QString m_channelpeer;	//!< linked channel
+	QString m_exten;		//!< extension
+	QString m_phonen;		//!< phone number
 };
 
 /*! \brief Widget displaying the current open channels for a phone line.

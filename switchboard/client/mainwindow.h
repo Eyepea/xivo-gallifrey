@@ -41,12 +41,12 @@ private:
 	QAction * m_logoffact;	//!< "Log off" Action
 	QAction * m_startact;	//!< "Start" Action
 	QAction * m_stopact;	//!< "Stop" Action
-	QActionGroup * m_availgrp;
-	QAction * m_avact_avail;
-	QAction * m_avact_brb;
-	QAction * m_avact_dnd;
-	QAction * m_avact_otl;
-	QAction * m_avact_away;
+	QActionGroup * m_availgrp;	//!< Availability action group
+	QAction * m_avact_avail;	//!< "Available" action
+	QAction * m_avact_brb;		//!< "Be right back" action
+	QAction * m_avact_dnd;		//!< "Do not disturb" action
+	QAction * m_avact_otl;		//!< "out to lunch" action
+	QAction * m_avact_away;		//!< "away" action
 };
 
 #endif
