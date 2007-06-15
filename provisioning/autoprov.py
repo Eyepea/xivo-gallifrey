@@ -14,6 +14,7 @@ import sys
 # === BEGIN of early configuration handling, so that the sys.path can be altered
 CONFIG_FILE = '/etc/xivo/provisioning.conf' # can be overridded by cmd line param
 CONFIG_LIB_PATH = 'py_lib_path'
+PIDFILE = "/var/run/autoprov.pid"
 from getopt import getopt
 from xivo import ConfigPath
 from xivo.ConfigPath import *
@@ -755,6 +756,15 @@ def main(log_level, foreground):
 	syslog.setlogmask(syslog.LOG_UPTO(log_level))
 	if not foreground:
 		daemonize(log_stderr_and_syslog)
+		# Generating PID file
+		try:
+			f = open(PIDFILE, "w")
+			try:
+				f.write("%d\n"%os.getpid())
+			finally:
+				f.close()
+		except Exception, exc:
+			pass
 	http_server = ThreadingHTTPServer((pgc['listen_ipv4'], pgc['listen_port']), ProvHttpHandler)
 	http_server.my_ctx = CommonProvContext(
 		ListLock(), # userlocks
