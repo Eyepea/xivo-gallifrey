@@ -28,6 +28,9 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
+# XXX TODO BUGBUG FIXME SATAN: any print or sys.stdout.write is probably a bug,
+# remove every prints and include the correct modules (Xilun - 2007-06-15)
+
 CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
 CONFIG_LIB_PATH = 'py_lib_path'
 
@@ -51,6 +54,7 @@ if len(sys.argv) != 2:
 	print "VERBOSE \"Error no args found!\""
         sys.exit()
 
+# XXX TODO BUGBUG FIXME SATAN: the following lines make absolutely sense to me (Xilun - 2007-06-15)
 try:
         exten = sys.argv[1]
 	query = "SELECT groupfeatures.name,groupfeatures.number,queue.timeout FROM groupfeatures,queue WHERE groupfeatures.name=queue.name AND groupfeatures.number='%s';" % exten
@@ -61,8 +65,8 @@ except:
 try:
         conn = anysql.connect_by_uri(options['db_uri'])
 except:
-        print "VERBOSE \"Error to connect %s\" %options['db_uri']"
-        sys.exit()
+        print "VERBOSE \"Unable to connect to %s\"" %options['db_uri']
+        raise
 
 cursor = conn.cursor()
 cursor.execute(query)
@@ -76,6 +80,7 @@ name = r[0]
 number = r[1]
 timeout = r[2]
 
+# XXX TODO BUGBUG FIXME SATAN: sometime we do it sometimes not ... how is this decided???
 try:
 	print "SET VARIABLE GEXT %s" % number
 	print "SET VARIABLE GNAME %s" % name

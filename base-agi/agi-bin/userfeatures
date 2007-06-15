@@ -28,6 +28,9 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
+# XXX TODO BUGBUG FIXME SATAN: any print or sys.stdout.write is probably a bug,
+# remove every prints and include the correct modules (Xilun - 2007-06-15)
+
 CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
 CONFIG_LIB_PATH = 'py_lib_path'
 DEBUG = 0
@@ -67,9 +70,10 @@ def find_informations_by_extension(exten, context):
 	try:
 		conn = anysql.connect_by_uri(options['db_uri'])
 	except:
-		print "VERBOSE \"Error to connect %s\" %options['db_uri']"
-		sys.exit()
+	        print "VERBOSE \"Unable to connect to %s\"" %options['db_uri']
+        	raise
 
+	# XXX TODO BUGBUG FIXME SATAN: will bug one day... at least I know the future... (Xilun - 2007-06-15)
         query = "SELECT * FROM userfeatures WHERE number='%s' and context='%s'" %(exten, context)
 	cursor = conn.cursor()
         cursor.execute(query)
@@ -77,15 +81,15 @@ def find_informations_by_extension(exten, context):
         r = cursor.fetchone()
 
         if r:
-
-		id = r[2]
+		# XXX TODO BUGBUG FIXME SATAN: will bug one day... at least I know the future... (Xilun - 2007-06-15)
+		idblah = r[2]
                 proto = r[1]
                 nbcall = r[11]
                 ringcall = r[9]
 		moh = r[13]
 
 		try:
-			query = "SELECT name FROM usersip WHERE id=%d" % int(id)
+			query = "SELECT name FROM usersip WHERE id=%d" % int(idblah)
 			cursor.execute(query)
 
 			n = cursor.fetchone()
@@ -95,7 +99,7 @@ def find_informations_by_extension(exten, context):
 			return_exit("Error no name !", "invalid")
 
 		try:
-			query = "SELECT groupfeatures.name FROM usergroup,groupfeatures WHERE userid='%d';" % int(id)
+			query = "SELECT groupfeatures.name FROM usergroup,groupfeatures WHERE userid='%d';" % int(idblah)
 			print query
 			cursor.execute(query)
 

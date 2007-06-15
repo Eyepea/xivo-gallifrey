@@ -28,6 +28,9 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
+# XXX TODO BUGBUG FIXME SATAN: any print is probably a bug, remove every prints
+# and include the correct modules (Xilun - 2007-06-15)
+
 CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
 CONFIG_LIB_PATH = 'py_lib_path'
 
@@ -57,8 +60,8 @@ except:
 try:
 	conn = anysql.connect_by_uri(options['db_uri'])
 except:
-	print "VERBOSE \"Error to connect %s\" %options['db_uri']"
-	sys.exit()
+        print "VERBOSE \"Unable to connect to %s\"" %options['db_uri']
+        raise
 
 cursor = conn.cursor()
 query = "SELECT type,typeid,custom FROM didfeatures WHERE number='%s'" % exten

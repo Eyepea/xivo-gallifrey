@@ -28,6 +28,9 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
+# XXX TODO BUGBUG FIXME SATAN: any print or sys.stdout.write is probably a bug,
+# remove every prints and include the correct modules (Xilun - 2007-06-15)
+
 import ConfigParser, sys
 
 # This is the configuration file, please do not change the path because if was editable by xivo web interface
@@ -38,7 +41,7 @@ try:
 	config.readfp(open(outcall))
 except IOError:
 	print "VERBOSE \"Configuration file not found : %s\"" % outcall
-	sys.exit()
+	raise
 
 # This function return all informations for a specific provider
 def get_provider(provider):

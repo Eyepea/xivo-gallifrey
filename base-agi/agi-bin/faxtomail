@@ -28,6 +28,9 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
+# XXX TODO BUGBUG FIXME SATAN: any print or sys.stdout.write is probably a bug,
+# remove every prints and include the correct modules (Xilun - 2007-06-15)
+
 CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
 CONFIG_LIB_PATH = 'py_lib_path'
 
@@ -58,8 +61,8 @@ else:
 	print "VERBOSE \"Error it's not a phone number!\""
 	sys.exit()
 
-file = sys.argv[2]
-filepdf = string.replace(file,".tif",".pdf")
+filename = sys.argv[2]
+filepdf = string.replace(filename,".tif",".pdf")
 
 if sys.argv[3].isdigit():
 	mailbox = sys.argv[3]
@@ -69,8 +72,8 @@ else:
 try:
         conn = anysql.connect_by_uri(options['db_uri'])
 except:
-        print "VERBOSE \"Error to connect %s\" %options['db_uri']"
-        sys.exit()
+        print "VERBOSE \"Unable to connect to %s\"" %options['db_uri']
+        raise
 
 query = "SELECT email, fullname FROM uservoicemail WHERE mailbox='%s'" % mailbox
 cursor = conn.cursor()
@@ -91,24 +94,24 @@ if not mail and not name:
 	sys.exit()
 else:
 	try:
-		if os.stat(file).st_size != 0:
+		if os.stat(filename).st_size != 0:
 			print "VERBOSE \"Convert tif to pdf\""
-			os.system("/usr/bin/tiff2pdf -o %s %s" %(filepdf, file))
+			os.system("/usr/bin/tiff2pdf -o %s %s" %(filepdf, filename))
 			print "VERBOSE \"Send FAX to %s (%s) at %s\"" %(mail, name, date)
 			os.system("echo \"Un nouveau fax est arrive pour %s, il est joint dans ce mail !\n\nCordialement,\nService IPBX\" | /usr/bin/mutt -s \"Reception FAX de %s\" -a %s %s" %(name, callexten, filepdf, mail))
 			try:
 				os.remove(filepdf)
-				os.remove(file)
+				os.remove(filename)
 			except OSError:
-				print "VERBOSE \"Error there is no file to remove\""
-				sys.exit()
+				print "VERBOSE \"Error while trying to remove '%s' and '%s'\"" % (filename, filepdf)
+				raise
 		else:
 			print "VERBOSE \"Sorry the file is empty\""
 			try:
-				os.remove(file)
+				os.remove(filename)
 			except OSError:
-				print "VERBOSE \"Error there is no file to remove\""
-				sys.exit()
+				print "VERBOSE \"Error while trying to remove '%s'\"" % filename
+				raise
 	except OSError:
-		print "VERBOSE \"Sorry there is no fax receive\""
-		sys.exit()
+		print "VERBOSE \"Error during fax conversion, maybe no fax received...\""
+		raise

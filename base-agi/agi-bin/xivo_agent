@@ -13,7 +13,7 @@ __version__ = "$Revision: 616 $ $Date: 2007-05-16 11:48:13 +0200 (mer, 16 mai 20
 __license__ = """
     Copyright (C) 2007, Proformatique
 
-    This software is free software; you can redistribute it and/or
+    This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
     License as published by the Free Software Foundation; either
     version 2.1 of the License, or (at your option) any later version.
@@ -28,7 +28,16 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-import ConfigParser, sys, telnetlib
+CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
+CONFIG_LIB_PATH = 'py_lib_path'
+
+import sys
+from xivo import ConfigPath
+from xivo.ConfigPath import *
+ConfiguredPathHelper(CONFIG_FILE, CONFIG_LIB_PATH)
+
+import ConfigParser, telnetlib
+from agi import *
 
 # This is the configuration file, please do not change the path because if was editable by xivo web interface
 mobileagent = "/etc/asterisk/xivo_mobile_agent.conf"
@@ -36,20 +45,19 @@ DEBUG = 1
 USER = 'admin'
 PASSWORD = 'superpass'
 
+def print_verbose(txt):
+        if DEBUG:
+                sys.stdout.write("VERBOSE \"%s\"\n" % agi_escape_string(txt))
+                sys.stdout.flush()
+
 try:
 	config = ConfigParser.ConfigParser()
 	config.readfp(open(mobileagent))
 except IOError:
 	print_verbose("Configuration file not found : %s" % mobileagent)
-	sys.exit()
+	raise
 
-# This function is for verbose
-def print_verbose(txt):
-        if DEBUG:
-                sys.stdout.write("VERBOSE \"%s\"\n" %txt)
-                sys.stdout.flush()
-
-# This function is for make an action to thomson
+# FIXME: action_thomson has nothing to do here
 def action_thomson(ip, cmd_telnet):
         tn = telnetlib.Telnet(ip)
 
@@ -68,17 +76,19 @@ def action_thomson(ip, cmd_telnet):
         tn.close()
 
 
-# This function return all informations for a specific agent
+# This function returns all informations relatives to a specific agent
 def get_agent(agent):
 	if config.has_section(agent):
+		# <XXX TODO BUGBUG FIXME SATAN>
 		sys.stdout.write("SET VARIABLE ISMOBILEAGENT \"" + config.get(agent, 'isagent') + "\"\n")
 		sys.stdout.write("SET VARIABLE CALLUSERANDAGENT \"" + config.get(agent, 'calluserandagent') + "\"\n")
 		sys.stdout.write("SET VARIABLE SECRET \"" + config.get(agent, 'secret') + "\"\n")
 		sys.stdout.write("SET VARIABLE CONTEXT_ \"" + config.get(agent, 'context') + "\"\n")
+		# </XXX TODO BUGBUG FIXME SATAN>
 
 if len(sys.argv) > 1:
 	if sys.argv[1].isdigit():
 		get_agent(sys.argv[1])
-		ip = '192.168.0.199'
-		name = 'Sylvain Boily'
-		#action_thomson(ip, ('sip set tel_name 1 ' + name, 'logout'))
+		ip = '192.168.0.199'   # I'm anxious (Xilun - 2007-06-15)
+		name = 'Sylvain Boily' # I'm afraid (Xilun - 2007-06-15)
+		#action_thomson(ip, ('sip set tel_name 1 ' + name, 'logout'))  # now I'm really really really frightened (Xilun - 2007-06-15)

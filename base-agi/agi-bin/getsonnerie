@@ -44,12 +44,17 @@ config.readfp(open(ring))
 #phonetype = config.get('number', exten)
 phonetype = 'thomson'
 
+# XXX TODO BUGBUG FIXME SATAN
 sys.stdout.write("SET VARIABLE RINGINTERNAL \"" + config.get(phonetype, 'intern') + "\"\n")
+# XXX TODO BUGBUG FIXME SATAN
 sys.stdout.write("SET VARIABLE RINGEXTERNAL \"" + config.get(phonetype, 'extern') + "\"\n")
+# XXX TODO BUGBUG FIXME SATAN
 sys.stdout.write("SET VARIABLE RINGGROUP \"" + config.get(phonetype, 'group') + "\"\n")
 
+# XXX TODO BUGBUG FIXME SATAN
 if phonetype == 'thomson':
 	sys.stdout.write("SET VARIABLE ISTHOMSON 1\n")
 
+# XXX TODO BUGBUG FIXME SATAN
 sys.stdout.flush()
 sys.stderr.flush()
