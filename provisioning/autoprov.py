@@ -758,13 +758,19 @@ def main(log_level, foreground):
 		daemonize(log_stderr_and_syslog)
 		# Generating PID file
 		try:
-			f = open(PIDFILE, "w")
-			try:
-				f.write("%d\n"%os.getpid())
-			finally:
-				f.close()
+			fd = os.open(PIDFILE,
+				     os.O_WRONLY|os.O_CREAT|os.O_EXCL,
+				     0644)
 		except Exception, exc:
-			pass
+			syslogf(SYSLOG_ERR, "daemon already running : %s already exists" %(PIDFILE))
+		else:
+			try:
+				f = os.fdopen(fd, 'w')
+				f.write("%d\n"%os.getpid())
+				f.close()
+			except:
+				syslogf(SYSLOG_ERR, "could not write PID to %s" %(PIDFILE))
+
 	http_server = ThreadingHTTPServer((pgc['listen_ipv4'], pgc['listen_port']), ProvHttpHandler)
 	http_server.my_ctx = CommonProvContext(
 		ListLock(), # userlocks
