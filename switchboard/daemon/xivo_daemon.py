@@ -259,14 +259,14 @@ def update_userlist_fromurl(astn, url, sipaccounts):
 				if sso_l5 == "1" and enabling and sso_phoneid != sipaccount and sso_phonenum != "":
 					if sso_tech == "sip":
 						argg = "SIP/" + sso_phoneid
-						adduser(astn, sso_tech + sso_phoneid, sso_passwd, sso_context)
+						adduser(astn, sso_tech + sso_phoneid, sso_passwd, sso_context, sso_phonenum)
 					elif sso_tech == "iax":
 						argg = "IAX2/" + sso_phoneid
 					elif sso_tech == "misdn":
 						argg = "mISDN/" + sso_phoneid
 					elif sso_tech == "zap":
 						argg = "Zap/" + sso_phoneid
-						adduser(astn, sso_tech + sso_phoneid, sso_passwd, sso_context)
+						adduser(astn, sso_tech + sso_phoneid, sso_passwd, sso_context, sso_phonenum)
 					numlist[argg] = fullname, firstname, lastname, sso_phonenum, sso_context
 	finally:
 		f.close()
@@ -1003,6 +1003,15 @@ def manage_tcp_connection(connid, allow_events):
 					log_debug("(%s) error : history : (client %s:%d) : %s"
 						  %(assrc, connid[1], connid[2], str(exc)))
 					connid[0].send("history=\n")
+		elif len(l) >= 4 and l[0] == 'login':
+                    astnum = asteriskr[l[1]]
+                    #log_debug("%i %s" % (astnum,l[3]))
+                    user = finduser(astnum, l[2].lower() + l[3])
+                    if user == None:
+                        pass
+                    else:
+                        repstr = "loginok=" + user.get('context') + ";" + user.get('phonenum') + "\r\n"
+                        connid[0].send(repstr)
 		elif allow_events == False: # i.e. if PHP-style connection
 			n = -1
 			if connid[1] in ip_reverse_php: n = ip_reverse_php[connid[1]]
@@ -1963,15 +1972,16 @@ class AsteriskRemote:
 # \param user the user to add
 # \param passwd the user's passwd
 # \return none
-def adduser(astn, user, passwd, context):
-	global userlist
-	if userlist[astn].has_key(user):
-		userlist[astn][user]['passwd'] = passwd
-		userlist[astn][user]['context'] = context
-	else:
-		userlist[astn][user] = {'user':user,
-					'passwd':passwd,
-					'context':context}
+def adduser(astn, user, passwd, context, phonenum):
+    global userlist
+    if userlist[astn].has_key(user):
+        userlist[astn][user]['passwd'] = passwd
+        userlist[astn][user]['context'] = context
+    else:
+        userlist[astn][user] = {'user':user,
+                                'passwd':passwd,
+                                'context':context,
+                                'phonenum':phonenum}
 
 ## \brief Deletes a user from the userlist.
 # \param user the user to delete
