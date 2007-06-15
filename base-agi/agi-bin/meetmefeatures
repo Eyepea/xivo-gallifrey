@@ -47,7 +47,7 @@ conf_obj.readfp(open(CONFIG_FILE))
 FillDictFromConfigSection(options, conf_obj, "db")
 
 try:
-        exten = int(sys.argv[1])
+        exten = sys.argv[1]
 except:
         print "VERBOSE \"Error no args found!\""
         sys.exit()
@@ -59,7 +59,7 @@ except:
         sys.exit()
 
 cursor = conn.cursor()
-query = "SELECT mode,musiconhold,exit,quiet,record,video FROM meetmefeatures WHERE number='%s'" %exten
+query = "SELECT mode,musiconhold,exit,quiet,record,video FROM meetmefeatures WHERE number='%s'" % exten
 cursor.execute(query)
 r = cursor.fetchone()
 

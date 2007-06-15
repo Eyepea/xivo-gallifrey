@@ -49,7 +49,7 @@ FillDictFromConfigSection(options, conf_obj, "db")
 import string
 
 try:
-	exten = int(sys.argv[1])
+	exten = sys.argv[1]
 except:
 	print "VERBOSE \"Error no args found!\""
 	sys.exit()
@@ -61,7 +61,7 @@ except:
 	sys.exit()
 
 cursor = conn.cursor()
-query = "SELECT type,typeid,custom FROM didfeatures WHERE number=%d" % exten
+query = "SELECT type,typeid,custom FROM didfeatures WHERE number='%s'" % exten
 cursor.execute(query)
 t = cursor.fetchone()
 
@@ -84,12 +84,11 @@ if type == 'meetme':
 	query = "SELECT number FROM meetmefeatures WHERE id=%d" % t[1]
 	cursor.execute(query)
 	m = cursor.fetchone()
-	num = int(m[0])
-	query = "SELECT context,number FROM extenumbers WHERE number=%d AND context!='did-extensions'" % num
+	query = "SELECT number,context FROM extenumbers WHERE number='%s' AND context!='did-extensions'" % m[0]
 	cursor.execute(query)
 	g = cursor.fetchone()
-	context = g[0]
-	number = g[1]
+	number = g[0]
+	context = g[1]
 	print "ANSWER"
 	print "EXEC GOTO \"%s|%s|1\"" %(context,number)
 
@@ -97,10 +96,7 @@ if type == 'user':
 	query = "SELECT number,context FROM userfeatures WHERE id=%d" % typeid
 	cursor.execute(query)
 	u = cursor.fetchone()
-	number = u[0]
-	context = u[1]
-	num = int(number)
-	query = "SELECT number,context FROM extenumbers WHERE number=%d AND context='%s'" %(num, context)
+	query = "SELECT number,context FROM extenumbers WHERE number='%s' AND context='%s'" %(u[0], u[1])
 	cursor.execute(query)
 	g = cursor.fetchone()
 	number = g[0]

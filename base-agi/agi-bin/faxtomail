@@ -72,7 +72,7 @@ except:
         print "VERBOSE \"Error to connect %s\" %options['db_uri']"
         sys.exit()
 
-query = "SELECT email, fullname FROM uservoicemail WHERE mailbox=%d" % int(mailbox)
+query = "SELECT email, fullname FROM uservoicemail WHERE mailbox=%d" % mailbox
 cursor = conn.cursor()
 cursor.execute(query)
 r = cursor.fetchone()

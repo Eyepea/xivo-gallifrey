@@ -52,8 +52,8 @@ if len(sys.argv) != 2:
         sys.exit()
 
 try:
-        exten = int(sys.argv[1])
-	query = "SELECT groupfeatures.name,groupfeatures.number,queue.timeout FROM groupfeatures,queue WHERE groupfeatures.name=queue.name AND groupfeatures.number='%d';" % exten
+        exten = sys.argv[1]
+	query = "SELECT groupfeatures.name,groupfeatures.number,queue.timeout FROM groupfeatures,queue WHERE groupfeatures.name=queue.name AND groupfeatures.number='%s';" % exten
 except:
 	exten = sys.argv[1]
 	query = "SELECT groupfeatures.name,groupfeatures.number,queue.timeout FROM groupfeatures,queue WHERE groupfeatures.name=queue.name AND groupfeatures.name='%s';" % exten
