@@ -43,7 +43,7 @@ except IOError:
 	print "VERBOSE \"Configuration file not found : %s\"" % outcall
 	raise
 
-# This function return all informations for a specific provider
+# This function returns all informations for a specific provider
 def get_provider(provider):
 	sys.stdout.write("SET VARIABLE PROVIDER \"" + provider + "\"\n")
 	sys.stdout.write("SET VARIABLE EXTERNPREFIX \"" + config.get(provider, 'externprefix') + "\"\n")
