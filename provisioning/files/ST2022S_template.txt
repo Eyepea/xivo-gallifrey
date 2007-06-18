@@ -6,3 +6,4 @@ regpwd1={{regpwd1}}
 
 [sys]
 config_sn={{config_sn}}
+Current_Max_Multiline={{simultcalls}}

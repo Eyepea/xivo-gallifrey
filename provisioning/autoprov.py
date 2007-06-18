@@ -214,6 +214,7 @@ class SQLBackEnd:
 			"ident":		SIP_TABLE+".name",
 			"passwd":		SIP_TABLE+".secret",
 			"dtmfmode":		SIP_TABLE+".dtmfmode",
+			"simultcalls":		UF_TABLE+".simultcalls",
 			"number":		UF_TABLE+".number",
 			"iduserfeatures":	UF_TABLE+".id",
 			"provcode":		UF_TABLE+".provisioningid",
