@@ -99,6 +99,15 @@ class SwissvoiceProv(BaseProv):
 		cfg_filename = cfg_tmp_filename[:-4]
 		inf_filename = inf_tmp_filename[:-4]
 
+		dtmf_swissvoice = "off"
+		dtmf_config     = provinfo["dtmfmode"]
+		if dtmf_config == "rfc2833":
+			dtmf_swissvoice = "on inb"
+		elif dtmf_config == "inband":
+			dtmf_swissvoice = "off"
+		elif dtmf_config == "info":
+			dtmf_swissvoice = "on oob"
+
 		txt = provsup.txtsubst(cfg_template_lines, {
 			"user_realname1": provinfo["name"],
 			"user_name1": provinfo["ident"],
@@ -107,7 +116,7 @@ class SwissvoiceProv(BaseProv):
 			"http_user": SWISSVOICE_COMMON_HTTP_USER,
 			"http_pass": SWISSVOICE_COMMON_HTTP_PASS,
 			"phone_name": provinfo["number"],
-			"dtmfmode": provinfo["dtmfmode"],
+			"dtmfmode": dtmf_swissvoice,
 			"user_idle_text1": provinfo["name"],
 			"user_sipusername_as_line1": "on",
 			"asterisk_ipv4" : pgc['asterisk_ipv4'],
