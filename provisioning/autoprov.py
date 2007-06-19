@@ -200,6 +200,7 @@ class SQLBackEnd:
 		        'ident': protocol specific identification
 		        'passwd': protocol specific password
 		        'dtmfmode': DTMF mode
+		        'simultcalls': number of simultaneous calls (multiline)
 		        'number': extension number
 		        'proto': protocol
 		

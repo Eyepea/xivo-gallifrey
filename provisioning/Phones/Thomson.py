@@ -135,7 +135,7 @@ class ThomsonProv(BaseProv):
 			"TEL1Number": myprovinfo["ident"],
 			"regid1": myprovinfo["ident"],
 			"regpwd1": myprovinfo["passwd"],
-			"simultcalls": myprovinfo["simultcalls"],
+			"simultcalls": str(myprovinfo["simultcalls"]),
 			# <WARNING: THIS FIELD MUST STAY IN LOWER CASE IN THE TEMPLATE AND MAC SPECIFIC FILE>
 			"config_sn": self.__generate_timestamp()
 			# </WARNING>
