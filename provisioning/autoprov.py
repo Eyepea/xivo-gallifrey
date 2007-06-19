@@ -699,6 +699,7 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 		for line in tb_line_list:
 			syslogf(SYSLOG_ERR, line.rstrip())
 		self.send_error_explain(500, err_to_send) # XXX
+		sys.exc_clear()
 		return
 	    syslogf(SYSLOG_NOTICE, "handle_prov(): provisioning OK for phone %s" % (str(phone),))
 	    self.send_response_lines(('Ok',))

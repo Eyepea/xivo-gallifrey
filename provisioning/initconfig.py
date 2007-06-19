@@ -58,11 +58,7 @@ import provsup
 from provsup import ProvGeneralConf as pgc
 from Phones import *
 
-def agi_escape_string(s):
-	return s.replace('\\', '\\\\').replace('"', '\\"').replace('\n', ' ')
-
-def agi_verbose(txt):
-	print "VERBOSE \"%s\"" % agi_escape_string(txt)
+from agi import *
 
 def agi_verbose_debug(txt):
 	if pgc['debug_agi']:
@@ -71,7 +67,7 @@ def agi_verbose_debug(txt):
 def return_exit(error, playback=None):
 	agi_verbose("%s" % error)
 	if playback:
-		print "EXEC PLAYBACK \"%s\"" % playback
+		print "EXEC PLAYBACK \"%s\"" % agi_escape_string(playback)
 	sys.exit(1)
 
 # TODO: use an RFC compliant regexp instead of
@@ -95,6 +91,7 @@ def phone_desc_by_ua(ua):
 			r = None
 			for line in provsup.exception_traceback():
 				agi_verbose(line)
+			sys.exc_clear()
 		if r:
 			return r
 	return None
@@ -151,6 +148,7 @@ def main():
 		status = 500
 		for line in provsup.exception_traceback():
 			agi_verbose(line)
+		sys.exc_clear()
 
 	if status != 200:
 		return_exit("Provisioning failure; %s" % reason)
