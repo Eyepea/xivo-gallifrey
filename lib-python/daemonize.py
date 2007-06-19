@@ -47,6 +47,7 @@ def daemonize(logline_func=lambda x: sys.stderr.write(x+'\n')):
 		sys.exit(1)
 	os.setsid()
 	os.umask(0)
+	os.chdir('/')
 	try:
 		pid = os.fork()
 		if pid > 0:

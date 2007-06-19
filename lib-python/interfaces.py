@@ -2,6 +2,13 @@
 
 Copyright (C) 2007, Proformatique
 
+This module only supports a subset of what is allowed by ifupdown, with at
+least the following limitations:
+- options must be indented while ifupdown does not require it.
+- you can't use line continuation: this would be too complicated to parse and
+  then do a formatting preserving rewrite of a modified version, so we just
+  pretend this does not exists.
+
 """
 
 __version__ = "$Revision$ $Date$"
@@ -23,17 +30,27 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
+# XXX don't directly raise Error exceptions
+
 import re
 from pyfunc import *
 from lzslice import *
+from itertools import *
 
 # Empty lines or lines beginning with a "#" are comments:
 STANZA_COMMENT_RE = r'^(\s*|#.*)$'
 STANZA_COMMENT = re.compile(STANZA_COMMENT_RE)
+IS_COMMENT = STANZA_COMMENT.match
+IS_OP = lambda x: not STANZA_COMMENT.match(x)
 
 # Lines not indented and not comments are where stanzas start:
 STANZA_START_RE = r'^[^\s#].*$'
 STANZA_START = re.compile(STANZA_START_RE)
+IS_START = STANZA_START.match
+
+# And it's also interesting to recognize non-comment and non-starter
+# lines of the configuration file (option lines)
+IS_XOPTION = lambda x: (not IS_COMMENT(x)) and (not IS_START(x))
 
 # Space indent at beginning of line
 INDENT_RE = r'^(\s*)'
@@ -62,59 +79,80 @@ class RedundantIfaces(Error):
 		              for k, v in redundant_ifaces_dict.iteritems()))
 		self.redundant_ifaces_dict = redundant_ifaces_dict
 
+class InvalidStanzaPayload(Error):
+	def __init__(self, list_tuple_pos_len):
+		Error.__init__(self,
+			"Invalid config. block(s) (lineno, numlines):\n"
+			+ ''.join('\t' + str(tuple_pos_len) + '\n'
+			          for tuple_pos_len in list_tuple_pos_len))
+		self.list_tuple_pos_len = list_tuple_pos_len
+
+class OptionSetError(Error):
+	def __init__(self, name, value):
+		Error.__init__(self,
+			"Can't set option parameter '%' to '%s'" % (name, value))
+		self.name = name
+		self.value = value
+
+class BadlyFormedStanza(InvalidStanzaPayload): pass
+class BadlyFormedStarter(InvalidStanzaPayload): pass
+class WrongStanzaType(InvalidStanzaPayload): pass
+class EmptyStanza(InvalidStanzaPayload): pass
+class UnsyncStanza(InvalidStanzaPayload): pass
+
 class Stanza(list):
 	"""This class adds very useful "interfaces" like stanza related methods
 	to the built-in python lists.
 	
 	You can pass it (or a derivative) to the constructor of StanzaFormat,
-	so that it will split 
+	so that it will split each stanza in an instance of this type.
 	
 	"""
 	def itercomments(self):
 		"Generator to iterate over comments and blank lines."
-		return (line for line in self if STANZA_COMMENT.match(line))
+		return ifilter(IS_COMMENT, self)
 	def iteroplines(self):
-		"Generator to iterate over operational lines."
-		return (line for line in self if not STANZA_COMMENT.match(line))
+		"Generator to iterate over starter and option lines."
+		return ifilter(IS_OP, self)
 	def get_stanza_starter(self):
 		"""Get the first found stanza starter (there really should be
 		one but this can't be guaranteed by this class"""
-		return find(STANZA_START.match, self)
-	def get_opline_indent(self, default=None):
-		"""Get the stanza body indentation according to the one used by
-		the first operational non starter line. """
+		return find(IS_START, self)
+	def get_stanza_starter_line(self):
+		return find(lambda p,line: IS_START(line), enumerate(self))
+	def _get_indent_from_line(self, line, default='\t'):
 		indent = None
-		line = find(lambda l: (not STANZA_COMMENT.match(line)) and \
-		                      (not STANZA_START.match(line)), self)
 		if line:
 			mo = INDENT.match(line)
 			if mo:
 				indent = mo.group(1)
-		if indent is None:
+		if not indent:
 			return default
 		else:
 			return indent
+	def get_opline_indent(self, default='\t'):
+		"""Get the stanza body indentation according to the one used by
+		the first operational non starter line. """
+		self._get_indent_from_line(find(IS_XOPTION, self), default)
 	def has_payload(self):
 		"""Returns True if any line is operational, otherwise
 		returns False."""
-		return find(lambda x: not STANZA_COMMENT.match(x), self) is not None
+		return find(IS_OP, self) is not None
 	def has_valid_payload(self):
 		"""Returns True if exactly one line is a stanza starter and
 		every other non comment lines are after that one. """
-		return bool(all_and_count(equiv(pos==0, STANZA_START.match(line))
+		return bool(all_and_count(equiv(pos==0, IS_START(line))
 		                          for pos, line in enumerate(self.iteroplines())))
 	def has_stanza_starter(self):
 		"""Returns True as soon as a valid stanza starter is detected,
-		regardless of its position.
-		
-		"""
-		return find(lambda x: STANZA_START.match(x), self) is not None
+		regardless of its position."""
+		return find(IS_START, self) is not None
+	def has_more_than_starter_payload(self):
+		return at_least(2, lambda v: True, self.iteroplines())
 	def insertcomment(self, index, commentline):
 		"""Just insert the comment line at the given index, or raise an
-		exception if commentline is indeed not a comment/blank line.
-
-		"""
-		if not STANZA_COMMENT.match(commentline):
+		exception if commentline is indeed not a comment/blank line."""
+		if not IS_COMMENT(commentline):
 			raise Error("'%s' is not a comment/blank line" % commentline.rstrip())
 		self.insert(index, commentline)
 	def insertstarter(self, index, starterline):
@@ -126,17 +164,86 @@ class Stanza(list):
 		  in this stanza
 		
 		"""
-		if not STANZA_START.match(starterline):
+		if not IS_START(starterline):
 			raise Error(
 				"'%s' is not a valid stanza starter" % starterline.rstrip())
 		if self.has_stanza_starter():
 			raise Error(
 				"trying to insert the stanza starter '%s' in a stanza where there is already one" % starterline.rstrip())
-		if find(lambda x: not STANZA_COMMENT.match(x), lazy_(self)[:index]):
+		if find(lambda x: not IS_COMMENT(x), lazy_(self)[:index]):
 			raise Error(
 				"trying to insert the stanza starter '%s' in a stanza after at least one non comment/blank line (first found '%s')" % (starterline.rstrip(), line.rstrip()))
 		self.insert(index, starterline)
-	def insertopertional(self, index, opline):
+	def _common_iterate_to(self, seq_lines, f_first = None, f_last = None, f_stop = None, data = None):
+		# This internal function iterates through a well formed stanza
+		# contained in seq_lines, raising an exception if it's indeed 
+		# a not so well formed one, and using f_first(pos, line, state,
+		# data) to detect and extract the first matching line
+		# identified by this function, f_last with the same prototype
+		# but this time to extract the last matching line, and f_stop
+		# still with the same prototype and used to stop iteration.
+		#
+		# (state, (first_pos, first_line), (last_pos, last_line),
+		#  (end_pos, end_line)) is returned.
+		#
+		# f_first can also be None and in this case (-1, '') will be
+		# returned instead of (first_pos, first_line), equivalent
+		# behavior for f_last, and if f_stop is None iteration will
+		# only end when there is no more line to handle.
+		#
+		# If there is no line in the stanza,
+		# (0, (-1, ''), (-1, ''), (-1, '')) is returned
+		#
+		# f_first, f_last and f_stop are called after state update
+		# caused by the current line
+		#
+		state = 0 # evaluates to 0 before the stanza starter is found
+		pos = -1, line = ''
+		first_pos, first_line = -1, ''
+		last_pos, last_line = -1, ''
+		for pos, line in enumerate(seq_lines):
+			if state == 0:
+				if IS_START(line):
+					state = 1
+				elif IS_OP(line):
+					raise BadlyFormedStanza([])
+			else:
+				if IS_START(line):
+					raise BadlyFormedStanza([])
+			if f_first:
+				if first_pos < 0 and f_first(pos, line, state, data):
+					first_pos, first_line = pos, line
+			if f_last:
+				if f_last(pos, line, state, data):
+					last_pos, last_line = pos, line
+			if f_stop:
+				if f_stop(pos, line, state, data):
+					break
+		return (state, (first_pos, first_line),
+		               (last_pos, last_line),
+			       (pos, line))
+	def find_replace_option(self, finder, new_opt_line, data, auto_adjust = True, default = '\t'):
+		if not IS_XOPTION(opline):
+			raise Error("'%s' is not an option line" % opline.rstrip())
+		(state, (first_pos, first_line),
+		               (last_pos, last_line),
+			       (pos, line)) \
+		    = self._common_iterate_to(
+		            self,
+			    finder,
+			    None,
+			    None,
+			    data)
+		if state != 1:
+			raise Error("Can not insert option line if no starter before")
+		if first_pos < 0:
+			raise Error("Did not found an option line to replace")
+		if auto_adjust:
+			new_opt_line = new_opt_line.lstrip()
+			indent = self._get_indent_from_line(first_line, default)
+			new_opt_line = indent + new_opt_line
+		self[first_pos] = new_opt_line
+	def insert_option(self, index, opline):
 		"""Just insert a stanza operational line at given index, or
 		raise an exception if:
 		
@@ -145,21 +252,35 @@ class Stanza(list):
 		- this operational line would be inserted before the starter
 		
 		"""
-		if STANZA_START.match(opline) or STANZA_COMMENT.search(opline):
-			raise Error(
-				"'%s' is not a simple operational line" % opline.rstrip())
-		if not self.has_stanza_starter():
-			raise Error(
-				"trying to insert a simple operational line '%s' in a stanza where there is no starter line" % opline.rstrip())
-		if find(STANZA_START.search, lazy_(self)[index:]):
-			raise Error(
-				"trying to insert a simple operational line '%s' in a stanza before a stanza starter '%s'" % (opline.rstrip(), line.strip()))
+		if not IS_XOPTION(opline):
+			raise Error("'%s' is not an option line" % opline.rstrip())
+		(state, (first_pos, first_line),
+		        (last_pos, last_line),
+			(pos, line)) \
+		    = self._common_iterate_to(lazy_(self)[:index])
+		if state != 1:
+			raise Error("Trying to insert a simple operational line '%s' in a stanza before any starter line" % opline.rstrip())
 		self.insert(self, index, opline)
+	def insert_eo_options(self, opline):
+		if STANZA_START.match(opline) or STANZA_COMMENT.match(opline):
+			raise Error("'%s' is not an option line" % opline.rstrip())
+		(state, (first_pos, first_line),
+		        (last_pos, last_line),
+			(pos, line)) \
+		    = self._common_iterate_to(
+		            self,
+			    None,
+		            lambda pos, line, state, data: IS_OP(line))
+		if state != 1:
+			raise Error("Can not insert option line if no starter")
+		if last_pos < 0:
+			raise EmptyStanza([])
+		self.insert(self, last_pos + 1, opline)
 
 class SplittedStanzas:
-	"""This class lets parse "/etc/network/interfaces" and "interfaces"
-	like files in a generic way, in order to get an internal representation
-	of stanzas included the target file.
+	"""This class lets parse "/etc/network/interfaces" and "interfaces" like
+	files in a generic way, in order to get an internal representation of
+	stanzas included the target file.
 	
 	A file can be saved back from the internal representation with or
 	without modification, with comments and indentation preserved.
@@ -210,6 +331,7 @@ class NetworkInterfacesStanza(Stanza):
 	PARSED_ATTRIBUTES = (
 		'allow_list', 'allow_type',		# allow / auto stanzas
 		'iface_name', 'iface_family', 'iface_method', # iface stanzas
+		'options_list', 'options_dict', 'options_multicnt',
 	)
 	def __init__(self, lst):
 		"""Will construct a regular Stanza instance and do additional work
@@ -218,42 +340,78 @@ class NetworkInterfacesStanza(Stanza):
 		Stanza.__init__(self, lst)
 		self.parse()
 	def _clear_unparse(self):
-		self.sz_type = UNKNOWN_STANZA
 		for attr in PARSED_ATTRIBUTES:
 			if hasattr(self, attr):
 				delattr(self, attr)
-	def parse(self):
-		self._clear_unparse()
+	def _parse_allow(self):
 		szst = self.get_stanza_starter()
-		if szst and self.has_payload_valid():
-			szst_splitted = re.split(' +', szst.strip(), 1)
-			if szst_splitted[0] == 'auto' \
-			   or szst_splitted[0].find("allow-") == 0: 
-				self.sz_type = STANZA_ALLOW
-				self.parse_allow()
-			elif szst_splitted[0] == 'iface':
-				self.sz_type = STANZA_IFACE
-				self.parse_iface()
-	def parse_allow(self):
-		szst = self.get_stanza_starter()
-		szst_splitted = re.split(' +', szst.strip())
+		szst_splitted = szst.strip().split()
 		if szst_splitted[0] == 'auto':
 			self.allow_type = 'auto'
 		elif szst_splitted[0].find('allow-') == 0:
 			self.allow_type = szst_splitted[0][len('allow-'):]
 		else:
-			raise Error(
-				"trying to parse an 'auto' stanza, but this is a '%s' one" % szst_splitted[0])
+			raise WrongStanzaType([])
 		self.allow_list = filter(lambda x: bool(x), lazy_(szst_splitted)[1:])
-	def parse_iface(self):
-		pass # TODO
+	def _parse_options(self, oplines):
+		self.options_multicnt = {}
+		self.options_dict = {}
+		self.options_list = []
+		for option in oplines:
+			optslit = option.strip().split(None, 1)
+			while len(optsplit) < 2:
+				optsplit.append('')
+			opt_name, opt_value = optslit
+			if opt_name not in self.options_multicnt:
+				self.options_multicnt[opt_name] = 0
+			self.options_multicnt[opt_name] += 1
+			self.options_dict[opt_name] = opt_value
+			self.options_list.append((opt_name, opt_value))
+	def _split_and_check_iface_starter(self, starter):
+		splitted = starter.strip().split(None, 4)
+		if len(splitted) != 4:
+			raise BadlyFormedStarter([])
+		if splitted[0] != 'iface':
+			raise WrongStanzaType([])
+		return splitted
+	def _parse_iface(self):
+		oplines = self.iteroplines()
+		starter = oplines.next()
+		if not STANZA_START.match(starter):
+			raise BadlyFormedStarter([])
+		splitted = self._split_and_check_iface_starter(starter)
+		self.iface_name = splitted[1]
+		self.iface_family = splitted[2]
+		self.iface_method = splitted[3]
+		self._parse_options(oplines)
+	def parse(self):
+		self.sz_type = UNKNOWN_STANZA
+		self._clear_unparse()
+		if self.has_payload() and not self.has_valid_payload():
+			raise BadlyFormedStanza([])
+		try:
+			szst = self.get_stanza_starter()
+			if szst and self.has_valid_payload():
+				szst_splitted = szst.strip().split(None, 1)
+				if szst_splitted[0] == 'auto' \
+				   or szst_splitted[0].find("allow-") == 0: 
+					self._parse_allow()
+					self.sz_type = STANZA_ALLOW
+				elif szst_splitted[0] == 'iface':
+					self._parse_iface()
+					self.sz_type = STANZA_IFACE
+		except:
+			self._clear_unparse()
+			raise
 	def get_type(self):
 		return self.sz_type
 	def get_allow_desc(self):
 		"""Returns a tuple of allow-type (auto or something else) and
 		the corresponding list of interfaces. This will just raise an
 		exception if the instance is indeed not an 'allow' stanza.
-		Example:
+		Example if the line
+		    allow-hotplug eth0 eth1
+		has been processed for the current stanza:
 		
 		>>> stanza.get_allow_desc()
 		('hotplug', ['eth0', 'eth1'])
@@ -262,6 +420,70 @@ class NetworkInterfacesStanza(Stanza):
 		return (self.allow_type, self.allow_list)
 	def get_iface_desc(self):
 		return (self.iface_name, self.iface_family, self.iface_method)
+	def get_iface_name(self):
+		return self.iface_name
+	def get_iface_family(self):
+		return self.iface_family
+	def get_iface_method(self):
+		return self.iface_method
+	def get_iface_attr(self, attr):
+		return {'name': self.iface_name,
+			'family': self.iface_family,
+			'method': self.iface_method}[attr]
+	def get_options_list(self):
+		return self.options_list
+	def get_options_dict(self):
+		return self.options_dict
+	def get_options_multicnt(self):
+		return self.options_multicnt
+	def get_options_pack(self):
+		return (self.options_list, self.options_dict, self.options_multicnt)
+	def iteroptions(self, k=None):
+		if k is None:
+			return iter(self.options_list)
+		else:
+			return ifilter(lambda opt: opt[0] == k, self.options_list)
+	def _option_finder(self, pos, line, state, opt_name):
+		if not state:
+			return False
+		sline = line.strip().split(None, 1)
+		while len(sline) < 2:
+			sline.append('')
+		return sline[0] and sline[0] == opt_name
+	def set_or_change_opt(self, opt_name, opt_value):
+		if opt_name not in options_multicnt:
+			options_multicnt[opt_name] = 1
+			options_dict[opt_name] = opt_value
+			options_list.append((opt_name, opt_value))
+			self.insert_eo_options(self.get_opline_indent('\t') + opt_name + ' ' + opt_value)
+			return
+		if options_multicnt[opt_name] > 1:
+			raise OptionSetError(opt_name, opt_value)
+		options_dict[opt_name] = opt_value
+		p = -1
+		for p, (k, v) in enumerate(options_list):
+			if k == opt_name: break
+		if p == -1:
+			raise OptionSetError(opt_name, opt_value)
+		options_list[p] = (opt_name, opt_value)
+		self.find_replace_option(
+			self._option_finder,
+			opt_name + ' ' + opt_value,
+			opt_name)
+	def set_iface_attr(self, attr, value):
+		attrs = ('name', 'family', 'method')
+		if attr not in attrs:
+			raise NameError, \
+				"name '%s' is not defined" % attr
+		setattr(self, 'iface_' + attr, value)
+		p_line = self.get_stanza_starter_line()
+		if p_line is None:
+			raise EmptyStanza([])
+		p, line = p_line
+		self._split_and_check_iface_starter(line)
+		splitted = ['iface']
+		splitted.extend(getattr(self, 'iface_' + name) for name in attrs)
+		self[p] = ' '.join(splitted)
 
 class NetworkInterfaces(SplittedStanzas):
 	"""This class lets parse "/etc/network/interfaces" and understand it in
@@ -274,6 +496,7 @@ class NetworkInterfaces(SplittedStanzas):
 		stanza_class must provide at least the interface of 
 		NetworkInterfacesStanza."""
 		SplittedStanzas.__init__(self, iteralines, stanza_class)
+	def parse(self):
 		for stanza in self.stanza_list:
 			stanza.parse()
 	def _no_redundant_ifaces_check(self):
@@ -315,13 +538,12 @@ class NetworkInterfaces(SplittedStanzas):
 		                    for stanza in self.iterallow(what))
 	def get_all_allow_lists(self):
 		"""Returns a list of consolidated (name, <interfaces_list>)
-		tuples where name contains an 'allow-' stanza postfix and
-		<interfaces_list> is a list of interfaces for this allow-
+		tuples where name contains an 'allow-' stanza qualifier and
+		<interfaces_list> is a list of interfaces for this 'allow-'
 		stanza. There won't be the same name multiple times, but for
 		a given name there will be a given interface multiple times
-		in its associated list if the configuration file contains
-		multiple ones.
-		"""
+		in its associated list if the configuration file contains such
+		multiple interfaces in the considered 'allow-' stanza. """
 		allow_type_list = []
 		allow_list_dict = {}
 		for stanza in self.iterallow():
