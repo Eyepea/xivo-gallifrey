@@ -315,7 +315,7 @@ class SplittedStanzas:
 				if len(self.stanza_list) == 0:
 					# yes: create a stanza just for them
 					self.stanza_list.append(stanza_class())
-				self.stanza_list[len(self.stanza_list)-1].append(line)
+				self.stanza_list[-1].append(line)
 
 class NetworkInterfacesStanza(Stanza):
 	"""This class adds methods specific to "/etc/network/interfaces"
