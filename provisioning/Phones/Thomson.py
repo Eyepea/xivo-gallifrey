@@ -127,6 +127,11 @@ class ThomsonProv(BaseProv):
 		txt_template_file.close()
 		tmp_filename = THOMSON_SPEC_TXT_BASENAME + self.phone["model"].upper() + "_" + self.phone["macaddr"].replace(':','') + '.txt.tmp'
 		txt_filename = tmp_filename[:-4]
+
+		multilines = "10" # simultcalls not defined when called in guest mode
+		if "simultcalls" in myprovinfo:
+			multilines = str(myprovinfo["simultcalls"])
+
 		txt = provsup.txtsubst(txt_template_lines, {
 			"DisplayName1": myprovinfo["name"],
 # THOMSON BUGBUG #1
@@ -135,7 +140,7 @@ class ThomsonProv(BaseProv):
 			"TEL1Number": myprovinfo["ident"],
 			"regid1": myprovinfo["ident"],
 			"regpwd1": myprovinfo["passwd"],
-			"simultcalls": str(myprovinfo["simultcalls"]),
+			"simultcalls": multilines,
 			# <WARNING: THIS FIELD MUST STAY IN LOWER CASE IN THE TEMPLATE AND MAC SPECIFIC FILE>
 			"config_sn": self.__generate_timestamp()
 			# </WARNING>
