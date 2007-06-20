@@ -90,7 +90,8 @@ class InvalidStanzaPayload(Error):
 class OptionSetError(Error):
 	def __init__(self, name, value):
 		Error.__init__(self,
-			"Can't set option parameter '%' to '%s'" % (name, value))
+			"Can't set option parameter %s to %s"
+			% (repr(name), repr(value)))
 		self.name = name
 		self.value = value
 
@@ -99,6 +100,89 @@ class BadlyFormedStarter(InvalidStanzaPayload): pass
 class WrongStanzaType(InvalidStanzaPayload): pass
 class EmptyStanza(InvalidStanzaPayload): pass
 class UnsyncStanza(InvalidStanzaPayload): pass
+
+class FilteredView:
+	def __init__(self, f, array, empty_begin = None, empty_end = None):
+		self.underlying = array
+		self.filter = f
+		self.virtual_begin = empty_begin
+		self.virtual_end = empty_end
+	def __iter__(self):
+		return ifilter(self.filter, self.underlying)
+	def __len__(self):
+		return all_and_count(True for elt in self.underlying if self.filter(elt))
+	def __getitem__(self, idx):
+		if not isinstance(idx, int):
+			raise TypeError, 'list indices must be integers'
+		if idx >= 0:
+			cnt = 0
+			for elt in self.underlying:
+				if not self.filter(elt):
+					continue
+				if cnt == idx:
+					return elt
+				cnt += 1
+			raise IndexError, 'list index out of range'
+		else:
+			sub = [elt for elt in self.underlying if self.filter(elt)]
+			return sub[idx]
+	def _common_set_del(self, idx, cb, *data):
+		if not isinstance(idx, int):
+			raise TypeError, 'list indices must be integers'
+		if idx >= 0:
+			found_pos = -1
+			cnt = 0
+			for pos, elt in enumerate(self.underlying):
+				if not self.filter(elt):
+					continue
+				if cnt == idx:
+					found_pos = pos
+					break
+				cnt += 1
+			if found_pos < 0:
+				raise IndexError, 'list index out of range'
+		else:
+			found_pos = [pos for pos,elt in self.underlying if self.filter(elt)][idx]
+		cb(found_pos, *data)
+	def _setitem_cb(self, real_idx, new_elt):
+		self.underlying[real_idx] = new_elt
+	def __setitem__(self, idx, new_elt):
+		self._common_set_del(idx, self._setitem_cb, new_elt)
+	def _delitem_cb(self, real_idx):
+		del self.underlying[real_idx]
+	def __delitem__(self, idx):
+		self._common_set_del(idx, self._delitem_cb)
+	def prepend(self, new_elt):
+		pos = first(pos for (pos,elt) in enumerate(self.underlying) if self.filter(elt))
+		if pos is not None:
+			self.underlying.insert(pos, new_elt)
+		else:
+			self.underlying.insert(self.virtual_begin)
+	def _generic_insert(self, ins_pos, new_elt, correction):
+		if not isinstance(ins_pos, int):
+			raise TypeError, 'list indices must be integers'
+		if ins_pos <= 0:
+			self.prepend(new_elt)
+			return 
+		real_pos = nth((pos for (pos,elt) in enumerate(self.underlying) if self.filter(elt)), ins_pos)
+		if real_pos is not None:
+			self.underlying.insert(real_pos, new_elt)
+		else:
+			self.underlying.insert(self.virtual_end, new_elt)
+	def insert_before(self, ins_pos, new_elt):
+		self._generic_insert(ins_pos, new_elt, 0)
+	insert = insert_before
+	def insert_after(self, pos, new_elt):
+		self._generic_insert(ins_pos, new_elt, 1)
+	def append(self, new_elt):
+		pos = last(pos for (pos,elt) in enumerate(self.underlying) if self.filter(elt))
+		if pos is not None:
+			self.underlying.insert(pos+1, new_elt)
+		else:
+			self.underlying.insert(self.virtual_end, new_elt)
+	def extend(self, seq):
+		for elt in seq:
+			self.append(elt)
 
 class Stanza(list):
 	"""This class adds very useful "interfaces" like stanza related methods
@@ -115,11 +199,13 @@ class Stanza(list):
 		"Generator to iterate over starter and option lines."
 		return ifilter(IS_OP, self)
 	def get_stanza_starter(self):
-		"""Get the first found stanza starter (there really should be
-		one but this can't be guaranteed by this class"""
+		"""Get the first found stanza starter (or None). There really
+		should be one but this can't be guaranteed by this class"""
 		return find(IS_START, self)
 	def get_stanza_starter_line(self):
-		return find(lambda p,line: IS_START(line), enumerate(self))
+		"""Same as self.get_stanza_starter() except when a stanza
+		starter is found, returns (position,line) instead of just line"""
+		return first((p,line) for p,line in enumerate(self) if IS_START(line))
 	def _get_indent_from_line(self, line, default='\t'):
 		indent = None
 		if line:
@@ -143,6 +229,10 @@ class Stanza(list):
 		every other non comment lines are after that one. """
 		return bool(all_and_count(equiv(pos==0, IS_START(line))
 		                          for pos, line in enumerate(self.iteroplines())))
+	def has_invalid_payload(self):
+		"""Equivalent to
+		    self.has_payload() and not self.has_valid_payload() """
+		return not all(equiv(pos==0, IS_START(line)) for pos, line in enumerate(self.iteroplines()))
 	def has_stanza_starter(self):
 		"""Returns True as soon as a valid stanza starter is detected,
 		regardless of its position."""
@@ -170,9 +260,10 @@ class Stanza(list):
 		if self.has_stanza_starter():
 			raise Error(
 				"trying to insert the stanza starter '%s' in a stanza where there is already one" % starterline.rstrip())
-		if find(lambda x: not IS_COMMENT(x), lazy_(self)[:index]):
+		line = find(IS_OP, lazy_(self)[:index])
+		if (line):
 			raise Error(
-				"trying to insert the stanza starter '%s' in a stanza after at least one non comment/blank line (first found '%s')" % (starterline.rstrip(), line.rstrip()))
+				"trying to insert stanza starter '%s' in a stanza after at least one non comment/blank line (first found '%s')" % (starterline.rstrip(), line.rstrip()))
 		self.insert(index, starterline)
 	def _common_iterate_to(self, seq_lines, f_first = None, f_last = None, f_stop = None, data = None):
 		# This internal function iterates through a well formed stanza
@@ -198,7 +289,7 @@ class Stanza(list):
 		# caused by the current line
 		#
 		state = 0 # evaluates to 0 before the stanza starter is found
-		pos = -1, line = ''
+		pos, line = -1, ''
 		first_pos, first_line = -1, ''
 		last_pos, last_line = -1, ''
 		for pos, line in enumerate(seq_lines):
@@ -358,10 +449,7 @@ class NetworkInterfacesStanza(Stanza):
 		self.options_dict = {}
 		self.options_list = []
 		for option in oplines:
-			optslit = option.strip().split(None, 1)
-			while len(optsplit) < 2:
-				optsplit.append('')
-			opt_name, opt_value = optslit
+			opt_name, opt_value = split_pad(option.strip(), 1)
 			if opt_name not in self.options_multicnt:
 				self.options_multicnt[opt_name] = 0
 			self.options_multicnt[opt_name] += 1
@@ -401,6 +489,7 @@ class NetworkInterfacesStanza(Stanza):
 					self._parse_iface()
 					self.sz_type = STANZA_IFACE
 		except:
+			self.sz_type = UNKNOWN_STANZA
 			self._clear_unparse()
 			raise
 	def get_type(self):
@@ -442,20 +531,17 @@ class NetworkInterfacesStanza(Stanza):
 		if k is None:
 			return iter(self.options_list)
 		else:
-			return ifilter(lambda opt: opt[0] == k, self.options_list)
+			return (opt for opt in self.options_list if opt[0] == k)
 	def _option_finder(self, pos, line, state, opt_name):
-		if not state:
-			return False
-		sline = line.strip().split(None, 1)
-		while len(sline) < 2:
-			sline.append('')
-		return sline[0] and sline[0] == opt_name
+		return state and split_pad(line.strip(), 1)[0] == opt_name
 	def set_or_change_opt(self, opt_name, opt_value):
 		if opt_name not in options_multicnt:
 			options_multicnt[opt_name] = 1
 			options_dict[opt_name] = opt_value
 			options_list.append((opt_name, opt_value))
-			self.insert_eo_options(self.get_opline_indent('\t') + opt_name + ' ' + opt_value)
+			self.insert_eo_options(
+				self.get_opline_indent('\t')
+				+ unsplit_none((opt_name, opt_value), ' '))
 			return
 		if options_multicnt[opt_name] > 1:
 			raise OptionSetError(opt_name, opt_value)
@@ -468,7 +554,7 @@ class NetworkInterfacesStanza(Stanza):
 		options_list[p] = (opt_name, opt_value)
 		self.find_replace_option(
 			self._option_finder,
-			opt_name + ' ' + opt_value,
+			unsplit_none((opt_name, opt_value), ' '),
 			opt_name)
 	def set_iface_attr(self, attr, value):
 		attrs = ('name', 'family', 'method')
