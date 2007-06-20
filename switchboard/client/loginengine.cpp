@@ -91,6 +91,7 @@ void LoginEngine::loadSettings()
 	m_keepaliveinterval = settings.value("engine/keepaliveinterval", 20*1000).toUInt();
 	m_trytoreconnect = settings.value("engine/trytoreconnect", false).toBool();
 	m_trytoreconnectinterval = settings.value("engine/trytoreconnectinterval", 20*1000).toUInt();
+	m_enabled = settings.value("engine/enabled", true).toBool();
 }
 
 /*!
@@ -110,15 +111,17 @@ void LoginEngine::saveSettings()
 	settings.setValue("engine/keepaliveinterval", m_keepaliveinterval);
 	settings.setValue("engine/trytoreconnect", m_trytoreconnect);
 	settings.setValue("engine/trytoreconnectinterval", m_trytoreconnectinterval);
+	settings.setValue("engine/enabled", m_enabled);
 }
 
 /*! \brief Start the connection to the server
  */
 void LoginEngine::start()
 {
-	qDebug() << "LoginEngine::start()" << m_serverhost << m_loginport;
+	qDebug() << "LoginEngine::start()" << m_serverhost << m_loginport << m_enabled;
 	m_loginsocket->abort();
-	m_loginsocket->connectToHost(m_serverhost, m_loginport);
+	if(m_enabled)
+		m_loginsocket->connectToHost(m_serverhost, m_loginport);
 }
 
 /*! \brief close the connection to the server

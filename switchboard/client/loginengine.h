@@ -57,6 +57,10 @@ public:
 	uint trytoreconnectinterval() const;	//!< try to reconnect interval
 	void setTrytoreconnectinterval(uint);	//!< set try to reconnect interval
 	const QString & getAvailState() const {return m_availstate;} //!< returns availability status
+	//! set m_enabled
+	void setEnabled(bool b) { m_enabled = b; };
+	//! get m_enabled
+	bool enabled() { return m_enabled; };
 private:
 	void connectSocket();
 	void loadSettings();	//!< load settings
@@ -100,6 +104,7 @@ private:
 	QString m_asterisk;
 	QString m_protocol;
 	QString m_extension;
+	bool m_enabled;		//!< is enabled
 	QString m_passwd;	//!< password for account
 	QString m_dialcontext;	//!< Context of the phone, as returned by the xivo_daemon server
 	QString m_availstate;	//!< Availability state to send to the server

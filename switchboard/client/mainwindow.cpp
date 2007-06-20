@@ -208,21 +208,27 @@ MainWindow::MainWindow(SwitchBoardEngine * engine, LoginEngine * loginengine)
 	
 	connect(m_loginengine, SIGNAL(logged()),
  		this, SLOT(loginengineStarted()) );
+#if 0
 	connect(m_loginengine, SIGNAL(logged()),
 		m_engine, SLOT(start()) );
 	connect(m_loginengine, SIGNAL(delogged()),
 		m_engine, SLOT(stop()) );
+#endif
 	
 	QMenu * menu = menuBar()->addMenu(tr("&File"));
 	
 	m_startact = new QAction(tr("S&tart"), this);
 	m_startact->setStatusTip(tr("Start"));
 	connect(m_startact, SIGNAL(triggered()),
+		m_engine, SLOT(start()) );
+	connect(m_startact, SIGNAL(triggered()),
 		m_loginengine, SLOT(start()) );
 	menu->addAction(m_startact);
 
 	m_stopact = new QAction(tr("Sto&p"), this);
 	m_stopact->setStatusTip(tr("Stop"));
+	connect(m_stopact, SIGNAL(triggered()),
+		m_engine, SLOT(stop()) );
 	connect(m_stopact, SIGNAL(triggered()),
 		m_loginengine, SLOT(stop()) );
 	m_stopact->setDisabled(true);

@@ -71,6 +71,11 @@ SwitchBoardConfDialog::SwitchBoardConfDialog(SwitchBoardEngine * engine,
 	layout->addWidget( m_loginport, line, 1 );
 	line++;
 	
+	m_presence = new QCheckBox( tr("Presence reporting"), this );
+	m_presence->setCheckState( m_loginengine->enabled()?Qt::Checked:Qt::Unchecked );
+	layout->addWidget( m_presence, line, 0, 1, 0);
+	line++;
+
 #if 0
 	QLabel * lblwidth = new QLabel( tr("Width :"), this );
 	m_widthsb = new QSpinBox( this );
@@ -134,6 +139,7 @@ void SwitchBoardConfDialog::saveAndClose()
 	m_loginengine->setExtension( m_userid->text() );
 	m_loginengine->setLoginPort( m_loginport->text().toUInt() );
 	m_loginengine->setPassword( m_passwd->text() );
+	m_loginengine->setEnabled( m_presence->checkState() == Qt::Checked );
 	m_loginengine->saveSettings();
 	m_engine->saveSettings();
 	//m_window->setWidth( m_widthsb->value() );
