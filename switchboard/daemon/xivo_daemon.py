@@ -753,7 +753,7 @@ def parseSIP(astnum, data, l_sipsock, l_addrsip):
 			    auth = "Authorization: Digest username=\"%s\", realm=\"asterisk\", nonce=\"%s\", uri=\"%s\", response=\"%s\", algorithm=MD5\r\n" %(iaccount, nonce, uri, response)
 			    command = xivo_sip.sip_subscribe(configs[astnum], "sip:" + iaccount, 1,
 							     icid,
-							     sipphone.split("/")[1], expires, auth)
+							     plist[astnum].normal[sipphone].phonenum, expires, auth)
 			    l_sipsock.sendto(command, (configs[astnum].remoteaddr, configs[astnum].portsipsrv))
 		    elif iret == 403:
 			    log_debug("%s : SUBSCRIBE %s Unauthorized %s" %(configs[astnum].astid, iaccount, icid))
@@ -805,7 +805,7 @@ def parseSIP(astnum, data, l_sipsock, l_addrsip):
 def do_sip_register_subscribe(astnum, l_sipsock):
 	global plist, configs
 	for sipacc in configs[astnum].mysipaccounts:
-		rdc = ''.join(random.sample('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijkLmnopqrstuvwxyz0123456789',12))
+		#rdc = ''.join(random.sample('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijkLmnopqrstuvwxyz0123456789',12))
 		command = xivo_sip.sip_register(configs[astnum], "sip:" + sipacc[1], 1, "reg_cid@xivopy", expires, "")
 		l_sipsock.sendto(command, (configs[astnum].remoteaddr, configs[astnum].portsipsrv))
 		# command = xivo_sip.sip_options(configs[astnum], "sip:" + configs[astnum].mysipname, cid, sipnum)
