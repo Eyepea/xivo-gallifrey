@@ -45,8 +45,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 int main(int argc, char * * argv)
 {
 	QString locale = QLocale::system().name();
-	QCoreApplication::setOrganizationName("XivoCTI");
-	QCoreApplication::setOrganizationDomain("proformatique.com");
+	QCoreApplication::setOrganizationName("Xivo");
+	QCoreApplication::setOrganizationDomain("xivo.fr");
 	QCoreApplication::setApplicationName("XivoClient");
 	QApplication app(argc, argv);
 	QTranslator translator;

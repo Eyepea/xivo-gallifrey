@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 */
 
-/* $Revision $
+/* $Id$
    $Date$
 */
 
@@ -33,8 +33,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 int main(int argc, char * * argv)
 {
 //	QApplication::setStyle(new SwitchboardStyle());
-	QCoreApplication::setOrganizationName("XivoCTI");
-	QCoreApplication::setOrganizationDomain("proformatique.com");
+	QCoreApplication::setOrganizationName("Xivo");
+	QCoreApplication::setOrganizationDomain("xivo.fr");
 	QCoreApplication::setApplicationName("XivoSwitchBoard");
 	QApplication app(argc, argv);
 
