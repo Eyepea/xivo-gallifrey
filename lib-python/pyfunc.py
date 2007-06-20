@@ -96,3 +96,17 @@ def at_least(num, check_func, seq):
 		if count + 1 >= num:
 			return True
 	return count + 1 >= num
+
+def split_pad(s, maxsplit, sep=None, pad=None):
+	"""Split 's' at most 'maxsplit' times (that is in at most maxsplit+1
+	parts) and pad it until there is maxsplit + 1 parts."""
+	split = s.split(sep, maxsplit)
+	l = len(split)
+	if l < maxsplit + 1:
+		split.extend([pad] * (maxsplit + 1 - l))
+	return split
+
+def unsplit_none(strseq, sep=''):
+	"""Join elements of strseq that are not None, using the value
+	of sep as separator. """
+	return sep.join(x for x in strseq if x is not None)
