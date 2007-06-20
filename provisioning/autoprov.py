@@ -6,7 +6,13 @@ Copyright (C) 2007, Proformatique
 """
 
 __version__ = "$Revision$ $Date$"
-GETOPT_SHORTOPTS = 'b:l:dfc:'
+
+GETOPT_SHORTOPTS	= 'b:l:dfc:'
+PIDFILE			= "/var/run/autoprov.pid"
+TABLE			= "phone"
+UF_TABLE		= "userfeatures"
+SIP_TABLE		= "usersip"
+TECH			= "sip" # only allowed tech right now
 
 import encodings.latin_1
 import _sre
@@ -14,7 +20,6 @@ import sys
 # === BEGIN of early configuration handling, so that the sys.path can be altered
 CONFIG_FILE = '/etc/xivo/provisioning.conf' # can be overridded by cmd line param
 CONFIG_LIB_PATH = 'py_lib_path'
-PIDFILE = "/var/run/autoprov.pid"
 from getopt import getopt
 from xivo import ConfigPath
 from xivo.ConfigPath import *
@@ -57,13 +62,7 @@ from provsup import lst_get
 
 from moresynchro import RWLock
 from moresynchro import ListLock
-from daemonize import daemonize
-
-TABLE	    = "phone"
-UF_TABLE    = "userfeatures"
-SIP_TABLE   = "usersip"
-# right now the only allowed tech is SIP:
-TECH        = "sip"
+import daemonize
 
 def name_from_first_last(first, last):
 	"Construct full name from first and last."
@@ -752,37 +751,40 @@ def log_stderr_and_syslog(x):
 def main(log_level, foreground):
 	"""log_level - one of SYSLOG_EMERG to SYSLOG_DEBUG
 	            nothing will be logged below this limit
+		    (this is automatically upgraded to SYSLOG_INFO
+		     during startup)
 	foreground - don't daemonize if true
 	
 	"""
 	syslog.openlog('autoprovisioning', syslog.LOG_PID, syslog.LOG_DAEMON)
-	syslog.setlogmask(syslog.LOG_UPTO(log_level))
-	if not foreground:
-		daemonize(log_stderr_and_syslog)
-		# Generating PID file
-		try:
-			fd = os.open(PIDFILE,
-				     os.O_WRONLY|os.O_CREAT|os.O_EXCL,
-				     0644)
-		except Exception, exc:
-			syslogf(SYSLOG_ERR, "daemon already running : %s already exists" %(PIDFILE))
+	try:
+		if log_level == SYSLOG_DEBUG:
+			syslog.setlogmask(syslog.LOG_UPTO(SYSLOG_DEBUG))
 		else:
-			try:
-				f = os.fdopen(fd, 'w')
-				f.write("%d\n"%os.getpid())
-				f.close()
-			except:
-				syslogf(SYSLOG_ERR, "could not write PID to %s" %(PIDFILE))
-
-	http_server = ThreadingHTTPServer((pgc['listen_ipv4'], pgc['listen_port']), ProvHttpHandler)
-	http_server.my_ctx = CommonProvContext(
-		ListLock(), # userlocks
-		ListLock(), # maclocks
-		SQLBackEnd(pgc['database_uri']),
-		RWLock()
-	)
-	clean_at_startup(http_server.my_ctx)
-	http_server.serve_forever()
+			syslog.setlogmask(syslog.LOG_UPTO(SYSLOG_INFO))
+		syslogf(SYSLOG_NOTICE, "Starting up")
+		if not foreground:
+			syslogf(SYSLOG_NOTICE, "Transforming into a daemon from hell")
+			daemonize.daemonize(log_stderr_and_syslog, PIDFILE, True)
+		syslogf(SYSLOG_NOTICE, "HTTP server creation")
+		http_server = ThreadingHTTPServer((pgc['listen_ipv4'], pgc['listen_port']), ProvHttpHandler)
+		http_server.my_ctx = CommonProvContext(
+			ListLock(), # userlocks
+			ListLock(), # maclocks
+			SQLBackEnd(pgc['database_uri']),
+			RWLock()
+		)
+		syslogf(SYSLOG_NOTICE, "Orphan phones cleanup")
+		clean_at_startup(http_server.my_ctx)
+		syslog.setlogmask(syslog.LOG_UPTO(log_level))
+		syslogf(SYSLOG_NOTICE, "Will now serve incoming HTTP requests")
+		http_server.serve_forever()
+	except SystemExit:
+		raise
+	except:
+		daemonize.log_exception(log_stderr_and_syslog)
+		syslog.closelog()
+		return
 	syslog.closelog()
 
 dontlauchmain = False
@@ -814,6 +816,11 @@ if log_level_override is not None:
 log_level = sysloglevel_from_str(pgc['log_level'])
 if dburi_override is not None:
 	pgc['database_uri'] = dburi_override
+
+# We could daemonize and if we do we will chdir to '/',
+# so get absolute pathname or anything else relative to
+# database uri that could depends upon current envt.
+pgc['database_uri'] = anysql.c14n_uri(pgc['database_uri'])
 
 # provsup.LoadConfig must be called before
 from Phones import * # package containing one module per vendor
