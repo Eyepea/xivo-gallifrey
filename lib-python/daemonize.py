@@ -29,17 +29,21 @@ SLASH_PROC = os.sep + 'proc'
 PROG_SLINK = 'exe'
 PROG_CMDLN = 'cmdline'
 
+LOGLINE_STDERR = lambda x: sys.stderr.write(x+'\n')
+
 class DaemonError(Exception): pass
 
-def log_exception(logline_func):
+def log_exception(logline_func = LOGLINE_STDERR, noclear = False):
 	"""Log the current exception using the passed 'logline_func' function.
 	'logline_func' will be called one line at a time, without any trailing
-	\\n (or \\r)."""
+	\\n (or \\r). Clear the current exception at end of command if
+	'noclear' is False. """
 	for x in map(lambda x: x.rstrip(), traceback.format_exception(*sys.exc_info())):
 		logline_func(x)
-	sys.exc_clear()
+	if not noclear:
+		sys.exc_clear()
 
-def remove_if_stale_pidfile(pidfile, logline_func=lambda x: sys.stderr.write(x+'\n')):
+def remove_if_stale_pidfile(pidfile, logline_func = LOGLINE_STDERR):
     """If the given 'pidfile' does not exists, do nothing.
     If it contains a PID that does not correspond to a living process on the
     local host, remove the stale 'pidfile'.
@@ -151,8 +155,8 @@ def take_file_lock_or_die(own_file, lock_file, own_content):
 			"playing with us."
 			% lock_file)
 
-def daemonize(logline_func=lambda x: sys.stderr.write(x+'\n'),
-              pidfile = None, pidfile_lock = False, logout = None, logerr = None):
+def daemonize(logline_func = LOGLINE_STDERR, pidfile = None, pidfile_lock = False,
+              logout = None, logerr = None):
 	"""Daemonize the program, ie. make it runs in the "background",
 	detach it from its controlling terminal, and detach it from its
 	controlling process group session.
