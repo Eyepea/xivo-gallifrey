@@ -21,6 +21,7 @@ public:
 	~PeerWidget();
 	void clearChanList();
 	void addChannel(const QString &, const QString &, const QString &);
+	void setName(const QString & name);
 protected:
 	void mouseMoveEvent(QMouseEvent * event);
 	void mousePressEvent(QMouseEvent * event);

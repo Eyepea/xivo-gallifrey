@@ -92,16 +92,18 @@ void SwitchBoardWindow::updatePeer(const QString & ext,
 				   const QStringList & chanStates,
 				   const QStringList & chanOthers)
 {
-	int i;
 	// first search in the peerlist
-	for(i=0; i<m_peerlist.count(); i++)
+	QListIterator<Peer> i(m_peerlist);
+	while(i.hasNext())
 	{
+		Peer & p = (Peer &)i.next();
 		//		qDebug() << i << m_peerlist[i].ext();
-		if(ext == m_peerlist[i].ext())
+		if(ext == p.ext())
 		{
-			m_peerlist[i].updateStatus(imavail, sipstatus,
+			p.updateStatus(imavail, sipstatus,
 						   vmstatus, queuestatus);
-			m_peerlist[i].updateChans(chanIds, chanStates, chanOthers);
+			p.updateChans(chanIds, chanStates, chanOthers);
+			p.updateName(name);
 			return;
 		}
 	}
@@ -219,7 +221,7 @@ void SwitchBoardWindow::mousePressEvent(QMouseEvent * event)
  */
 void SwitchBoardWindow::dragEnterEvent(QDragEnterEvent * event)
 {
-	qDebug() << "SwitchBoardWindow::dragEnterEvent" << event;
+	//qDebug() << "SwitchBoardWindow::dragEnterEvent" << event->mimeData()->formats();
 	if(event->mimeData()->hasFormat(PEER_MIMETYPE))
 		event->acceptProposedAction();
 }

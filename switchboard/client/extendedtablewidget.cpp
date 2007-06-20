@@ -3,12 +3,14 @@
 #include <QMenu>
 #include <QDebug>
 #include "extendedtablewidget.h"
+#include "xivoconsts.h"
 
 /*! \brief Constructor
  */
 ExtendedTableWidget::ExtendedTableWidget(QWidget * parent)
 : QTableWidget(parent)
 {
+	setAcceptDrops(true);
 }
 
 /*! \brief Constructor
@@ -16,6 +18,7 @@ ExtendedTableWidget::ExtendedTableWidget(QWidget * parent)
 ExtendedTableWidget::ExtendedTableWidget(int rows, int columns, QWidget * parent)
 : QTableWidget(rows, columns, parent)
 {
+	setAcceptDrops(true);
 }
 
 /*! \brief display the context Menu
@@ -80,5 +83,67 @@ void ExtendedTableWidget::updateMyCalls(const QStringList & chanIds,
 void ExtendedTableWidget::transferChan(const QString & chan)
 {
 	transferCall(chan, m_numberToDial);
+}
+
+/*! \brief filter drag events
+ */
+void ExtendedTableWidget::dragEnterEvent(QDragEnterEvent *event)
+{
+	//qDebug() << "ExtendedTableWidget::dragEnterEvent" << event->mimeData()->formats() << event->pos();
+	if(  event->mimeData()->hasFormat(PEER_MIMETYPE)
+	  || event->mimeData()->hasFormat(CHANNEL_MIMETYPE) )
+	{
+		event->acceptProposedAction();
+	}
+}
+
+/*! \brief filter drag move events
+ *
+ * Detect if the move is over a cell containing a phone number.
+ */
+void ExtendedTableWidget::dragMoveEvent(QDragMoveEvent *event)
+{
+	//qDebug() << "ExtendedTableWidget::dragMoveEvent()" << event->pos();
+	if(event->proposedAction() & (Qt::CopyAction|Qt::MoveAction))
+		event->acceptProposedAction();
+	QTableWidgetItem * item = itemAt( event->pos() );
+	if(item)
+	{
+		QRegExp re("\\+?[0-9\\s\\.]+");
+		if(re.exactMatch( item->text() ))
+			event->accept(visualItemRect(item));
+		else
+			event->ignore(visualItemRect(item));
+	}
+	else
+		event->ignore();
+}
+
+/*! \brief receive drop event
+ */
+void ExtendedTableWidget::dropEvent(QDropEvent *event)
+{
+	qDebug() << "ExtendedTableWidget::dropEvent()" << event->mimeData()->text() << event->pos();
+	QTableWidgetItem * item = itemAt( event->pos() );
+	QRegExp re("\\+?[0-9\\s\\.]+");
+	if(item && re.exactMatch( item->text() ))
+	{
+		qDebug() << item->text();
+		QString from = event->mimeData()->text();
+		if(event->mimeData()->hasFormat(CHANNEL_MIMETYPE))
+		{
+			event->acceptProposedAction();
+			transferCall(from, item->text());
+		}
+		else if(event->mimeData()->hasFormat(PEER_MIMETYPE))
+		{
+			event->acceptProposedAction();
+			originateCall(from, item->text());
+		}
+		else
+			event->ignore();
+	}
+	else
+		event->ignore();
 }
 

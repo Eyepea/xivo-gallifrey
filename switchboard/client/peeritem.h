@@ -30,6 +30,7 @@ public:
 	void updateChans(const QStringList & chanIds,
 	                 const QStringList & chanStates,
 	                 const QStringList & chanOthers);
+	void updateName(const QString & newname);
 private:
 	QString m_ext;		//!< Extension
 	QString m_name;		//!< Person name

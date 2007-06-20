@@ -71,6 +71,7 @@ void SearchPanel::updatePeer(const QString & ext,
 		{
 			m_peerlist[i].updateStatus(imavail, sipstatus, vmstatus, queuestatus);
 			m_peerlist[i].updateChans(chanIds, chanStates, chanOthers);
+			m_peerlist[i].updateName(name);
 			return;
 		}
 	}

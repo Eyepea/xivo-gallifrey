@@ -313,6 +313,7 @@ void SwitchBoardEngine::updatePeers(const QStringList & liststatus)
 	//qDebug() << chanIds;
 	//qDebug() << chanStates;
 	//qDebug() << chanOthers;
+	//qDebug() << "updatePeer" << pname << m_callerids[pname];
 	updatePeer(pname, m_callerids[pname],
 	           InstMessAvail, SIPPresStatus, VoiceMailStatus, QueueStatus,
 	           chanIds, chanStates, chanOthers);
@@ -335,6 +336,7 @@ void SwitchBoardEngine::updateCallerids(const QStringList & liststatus)
 	QString pcid = liststatus[6];
 	// liststatus[7] => group informations
 	m_callerids[pname] = pcid;
+	//qDebug() << "callerid[" << pname<< "]=" << pcid;
 }
 
 /*! \brief called when data are ready to be read on the socket.
@@ -353,7 +355,7 @@ void SwitchBoardEngine::socketReadyRead()
 		QString line = QString::fromUtf8(data);
 		//qDebug() << "<==" << line;
 		QStringList list = line.trimmed().split("=");
-		//qDebug() << "<==" << list.size() << m_window << list[0];
+		qDebug() << "<<<" << list.size() << list[0];
 		if(list.size() == 2) {
 			if(list[0] == QString("hints")) {
 				QStringList listpeers = list[1].split(";");
@@ -436,9 +438,17 @@ void SwitchBoardEngine::originateCall(const QString & src, const QString & dst)
 {
 	qDebug() << "SwitchBoardEngine::originateCall()" << src << dst;
 	QStringList dstlist = dst.split("/");
-	m_pendingcommand = "originate " + src + " " + dst;
-	//		+ dstlist[0] + "/" + dstlist[1] + "/" + m_dialcontext + "/"
-	//	+ dstlist[3] + "/" + dstlist[4] + "/" + dstlist[5];
+	if(dstlist.size()>5)
+	{
+		m_pendingcommand = "originate " + src + " " + dst;
+		//		+ dstlist[0] + "/" + dstlist[1] + "/" + m_dialcontext + "/"
+		//	+ dstlist[3] + "/" + dstlist[4] + "/" + dstlist[5];
+	}
+	else
+	{
+		m_pendingcommand = "originate " + src + " p/" + m_asterisk + "/"
+		     + m_dialcontext + "/" + "/" + "/" + dst;
+	}
 	sendCommand();
 }
 
@@ -532,7 +542,6 @@ void SwitchBoardEngine::requestHistory(const QString & peer, int mode)
 	//qDebug() << "SwitchBoardEngine::requestHistory()" << peer;
 	if(mode >= 0) {
 		m_pendingcommand = "history " + peer + " 10 " + QString::number(mode);
-		qDebug() << m_pendingcommand;
 		sendCommand();
 	}
 }

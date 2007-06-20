@@ -25,6 +25,8 @@ signals:
 	void emitDial(const QString &);
 	//! transfer one of my call to this number
 	void transferCall(const QString &, const QString &);
+	//! originate a call
+	void originateCall(const QString &, const QString &);
 	//! signal to be redirected to view
 	void updateMyCalls(const QStringList &, const QStringList &, const QStringList &);
 private slots:

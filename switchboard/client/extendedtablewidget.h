@@ -18,9 +18,13 @@ public:
 	ExtendedTableWidget(int rows, int columns, QWidget * parent = 0);
 protected:
 	void contextMenuEvent(QContextMenuEvent * event);
+	void dragEnterEvent(QDragEnterEvent *event);
+	void dragMoveEvent(QDragMoveEvent *event);
+	void dropEvent(QDropEvent *event);
 signals:
 	void emitDial(const QString & number);	//!< dial
 	void transferCall(const QString &, const QString &);	//!< transfer a call
+	void originateCall(const QString &, const QString &);	//!< originate a call
 public slots:
 	void updateMyCalls(const QStringList &, const QStringList &, const QStringList &);
 private slots:

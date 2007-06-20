@@ -250,7 +250,7 @@ void CallStackWidget::dropEvent(QDropEvent *event)
 		return;
 	}
 	QString text = event->mimeData()->text();
-	qDebug() << "CallStackWidget::dropEvent()" << text;
+	//qDebug() << "CallStackWidget::dropEvent()" << text;
 	emptyList();
 	m_monitoredPeer = text;
 	monitoredPeerChanged(text);

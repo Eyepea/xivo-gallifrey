@@ -55,7 +55,8 @@ m_person_yellow(":/personal-yellow.png"), m_person_blue(":/personal-blue.png")
 	m_availlbl->setPixmap( m_person_gray );
 	layout->addWidget( m_statelbl, 0, Qt::AlignLeft );
 	layout->addWidget( m_availlbl, 0, Qt::AlignLeft );
-	m_textlbl = new QLabel(/*m_id + "/" +*/ m_name, this);
+	//qDebug() << "new PeerWidget: id=" << m_id << "name=" << m_name;
+	m_textlbl = new QLabel(m_name.isEmpty()?m_id:m_name, this);
 	// set TextInteraction Flags so the mouse clicks are not catched by the
 	// QLabel widget
 	m_textlbl->setTextInteractionFlags( Qt::NoTextInteraction );
@@ -249,14 +250,14 @@ void PeerWidget::dragEnterEvent(QDragEnterEvent *event)
  */
 void PeerWidget::dragMoveEvent(QDragMoveEvent *event)
 {
-	//	qDebug() << "dragMoveEvent()";
-	//	qDebug() << event->mimeData()->formats();
-	if(  event->mimeData()->hasFormat(PEER_MIMETYPE)
+	//qDebug() << "PeerWidget::dragMoveEvent()" << event->mimeData()->formats() << event->pos();
+	event->accept(rect());
+	/*if(  event->mimeData()->hasFormat(PEER_MIMETYPE)
 	  || event->mimeData()->hasFormat(CHANNEL_MIMETYPE) )
-	{
+	{*/
 		if(event->proposedAction() & (Qt::CopyAction|Qt::MoveAction))
 			event->acceptProposedAction();
-	}
+	/*}*/
 }
 
 /*! \brief receive drop events
@@ -392,5 +393,13 @@ void PeerWidget::updateMyCalls(const QStringList & chanIds,
 		        this, SLOT(transferChan(const QString &)) );
 		m_mychannels << ch;
 	}
+}
+
+/*! \brief change displayed name
+ */
+void PeerWidget::setName(const QString & name)
+{
+	m_name = name;
+	m_textlbl->setText(m_name);
 }
 

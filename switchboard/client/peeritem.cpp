@@ -90,3 +90,14 @@ void Peer::updateChans(const QStringList & chanIds,
 	}
 }
 
+/*! \brief update name if changed
+ */
+void Peer::updateName(const QString & newname)
+{
+	if(newname != m_name)
+	{
+		m_name = newname;
+		m_peerwidget->setName(m_name);
+	}
+}
+
