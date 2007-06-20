@@ -66,6 +66,41 @@ def all_and_count(seq):
 			return False
 	return c+1
 
+def nth(seq, pos):
+	"""Returns the element at the given position of the sequence, or
+	None if seq is not large enough.
+	
+	- seq is the sequence
+	- pos is the position, must be a positive or null integer """
+	if not isinstance(pos, int):
+		raise TypeError, 'list indices must be integers'
+	if pos < 0:
+		raise IndexError, 'list index out of range'
+	if hasattr(seq, '__getitem__'):
+		try:
+			return seq[pos]
+		except:
+			return None
+	else:
+		iseq = iter(seq)
+		try:
+			for i in xrange(pos):
+				iseq.next()
+			return iseq.next()
+		except StopIteration:
+			return None
+
+first = lambda seq: nth(seq, 0)
+
+def last(seq):
+	if hasattr(seq, '__getitem__'):
+		return seq[-1]
+	else:
+		elt = None
+		for elt in seq:
+			pass
+		return elt
+
 def find(f, seq):
 	"""Return first item in sequence where f(item) evaluates to True,
 	or returns None."""
