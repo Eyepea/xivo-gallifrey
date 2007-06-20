@@ -155,13 +155,16 @@ def exception_traceback():
 	"""
 	return map(lambda x: x.rstrip(), traceback.format_exception(*sys.exc_info()))
 
-def log_current_exception(loglevel=SYSLOG_ERR):
+def log_current_exception(loglevel=SYSLOG_ERR, noclear=False):
 	"""Log a backtrace of the current exception in the system logs, with
-	the desired log level.
+	the desired log level. Clear the current exception at end of command
+	if 'noclear' is False.
 	
 	"""
 	for line in exception_traceback():
 		syslogf(loglevel, line)
+	if not noclear:
+		sys.exc_clear()
 
 def get_netdev_list():
 	"Get a view of network interfaces as seen by Linux"
