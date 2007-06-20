@@ -43,19 +43,25 @@ def __compare_api_level(als1, als2):
 	else:
 		return 0
 
-def register_uri_backend(uri_scheme, create_method, module):
+def register_uri_backend(uri_scheme, create_method, module, c14n_uri = None):
 	"""This method is intended to be used by backends only.
 	
 	It lets them register their services, identified by the URI scheme,
 	at import time. The associated method create_method must take one
-	parameter: the complete requested RFC 3986 compliant URI. The
-	associated module must be compliant with DBAPI v2.0 but will not be 
-	directly used for other purposes than compatibility testing.
+	parameter: the complete requested RFC 3986 compliant URI.
+	
+	The associated module must be compliant with DBAPI v2.0 but will not
+	be directly used for other purposes than compatibility testing.
+
+	c14n_uri must be a function that takes one string argument (the same
+	form that the one that would be passed to connect_by_uri) and returns
+	its canonicalized form in an implementation dependant way. This
+	includes transforming any local pathname into an absolute form.
+	c14n_uri can also be None, in which case the behavior will be the same
+	as the one of the identity function.
 	
 	If something obviously not compatible is tried to be registred,
-	NotImplementedError is raised.
-	
-	"""
+	NotImplementedError is raised. """
 	try:
 		delta_api =  __compare_api_level(module.apilevel, any_apilevel)
 		mod_paramstyle = module.paramstyle
@@ -70,7 +76,13 @@ def register_uri_backend(uri_scheme, create_method, module):
 		raise NotImplementedError, "This module does not support registration of DBAPI services of threadsafety %d (more generally under %d)" % (mod_threadsafety, any_threadsafety)
 	if not urisup.valid_scheme(uri_scheme):
 		raise urisup.InvalidSchemeError, "Can't register an invalid URI scheme \"%s\"" % uri_scheme
-	__uri_create_methods[uri_scheme] = (create_method, module)
+	__uri_create_methods[uri_scheme] = (create_method, module, c14n_uri)
+
+def _get_methods_by_uri(sqluri):
+	uri_scheme = urisup.uri_help_split(sqluri)[0]
+	if uri_scheme not in __uri_create_methods:
+		raise NotImplementedError, 'Unknown URI scheme "%s"' % str(uri_scheme)
+	return __uri_create_methods[uri_scheme]
 
 def connect_by_uri(sqluri):
 	"""Same purpose as the classical DBAPI v2.0 connect constructor, but
@@ -79,17 +91,24 @@ def connect_by_uri(sqluri):
 	load any backend SQL implementation, so be sure the application has
 	imported the correct one before calling this constructor.
 	
-	If no handler is found for this method, a NotImplementedError will be
-	raised.
+	If no handler is found for this uri method, a NotImplementedError
+	will be raised.
 	
 	A malformed URI will result in an exception being raised by the
-	supporting URI parsing module.
-	
-	"""
-	uri_scheme = urisup.uri_help_split(sqluri)[0]
-	if uri_scheme not in __uri_create_methods:
-		raise NotImplementedError, 'Unknown URI scheme "%s"' % str(uri_scheme)
-	return __uri_create_methods[uri_scheme][0](sqluri)
+	supporting URI parsing module. """
+	uri_connect_method = _get_methods_by_uri(sqluri)[0]
+	return uri_connect_method(sqluri)
 
-__all__ = ["register_uri", "connect_by_uri",
+def c14n_uri(sqluri):
+	"""Ask the backend to c14n the uri. See register_uri_backend() for
+	details.
+	
+	If no backend is found for this uri method, a NotImplementedError
+	will be raised. """
+	uri_c14n_method = _get_methods_by_uri(sqluri)[2]
+	if not uri_c14n_method:
+		return sqluri
+	return uri_c14n_method(sqluri)
+
+__all__ = ["register_uri", "connect_by_uri", "c14n_uri",
            "any_paramstyle", "any_threadsafety", "any_apilevel"]

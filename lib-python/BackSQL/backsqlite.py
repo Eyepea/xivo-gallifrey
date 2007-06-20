@@ -26,7 +26,8 @@ __license__ = """
 import anysql
 import sqlite
 import urisup
-from urisup import SCHEME, AUTHORITY, PATH, QUERY, FRAGMENT, uri_help_split
+from urisup import SCHEME, AUTHORITY, PATH, QUERY, FRAGMENT, uri_help_split, uri_help_unsplit
+import os.path
 
 def __dict_from_query(query):
 	if not query:
@@ -41,4 +42,9 @@ def connect_by_uri(uri):
 		con.db.sqlite_busy_timeout(int(opts["timeout_ms"]))
 	return con
 
-anysql.register_uri_backend('sqlite', connect_by_uri, sqlite)
+def c14n_uri(uri):
+	puri = list(urisup.uri_help_split(uri))
+	puri[PATH] = os.path.abspath(puri[PATH])
+	return uri_help_unsplit(tuple(puri))
+
+anysql.register_uri_backend('sqlite', connect_by_uri, sqlite, c14n_uri)
