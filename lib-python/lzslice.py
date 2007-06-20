@@ -358,7 +358,7 @@ class lzslice(object):
 		if self._dir_len != len(self._direct):
 			raise TypeError, SIZE_CHANGE_ERRMSG
 		T = (tuple, str, list)
-		iam = map(lambda x: isinstance(self._direct, x), T)
+		iam = tuple(isinstance(self._direct, x) for x in T)
 		if not any(iam):
 			raise TypeError,\
 				"Underlying object of a lazy slice is not of a type in %s, refusing to compare anything." \
@@ -367,7 +367,7 @@ class lzslice(object):
 			other_for_type = other._direct
 		else:
 			other_for_type = other
-		its = map(lambda x: isinstance(other_for_type, x), T)
+		its = tuple(isinstance(other_for_type, x) for x in T)
 		if not any(its):
 			raise TypeError, \
 				"Object being compared to a lazy slice is neither of a type in %s, " \
