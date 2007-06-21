@@ -23,6 +23,8 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
+from itertools import *
+
 # any() and all() are available in Python 2.5, we target Python 2.4
 try:
 	all
@@ -66,36 +68,36 @@ def all_and_count(seq):
 			return False
 	return c+1
 
+def nth_raw(seq, pos):
+	try:
+		return seq[pos]
+	except (AttributeError, TypeError):
+		return islice(seq, pos, pos+1).next()
+
 def nth(seq, pos):
 	"""Returns the element at the given position of the sequence, or
 	None if seq is not large enough.
 	
 	- seq is the sequence
 	- pos is the position, must be a positive or null integer """
-	if not isinstance(pos, int):
-		raise TypeError, 'list indices must be integers'
-	if pos < 0:
-		raise IndexError, 'list index out of range'
-	if hasattr(seq, '__getitem__'):
+	try:
+		return seq[pos]
+	except IndexError:
+		return None
+	except (AttributeError, TypeError):
 		try:
-			return seq[pos]
-		except:
-			return None
-	else:
-		iseq = iter(seq)
-		try:
-			for i in xrange(pos):
-				iseq.next()
-			return iseq.next()
+			return islice(seq, pos, pos+1).next()
 		except StopIteration:
 			return None
 
 first = lambda seq: nth(seq, 0)
 
 def last(seq):
-	if hasattr(seq, '__getitem__'):
+	try:
 		return seq[-1]
-	else:
+	except IndexError:
+		return None
+	except (AttributeError, TypeError):
 		elt = None
 		for elt in seq:
 			pass
