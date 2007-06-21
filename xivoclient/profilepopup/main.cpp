@@ -50,7 +50,7 @@ int main(int argc, char * * argv)
 	QCoreApplication::setApplicationName("XivoClient");
 	QApplication app(argc, argv);
 	QTranslator translator;
-	translator.load(QString("xivoclient_") + locale);
+	translator.load(QString(":/xivoclient_") + locale);
 	app.installTranslator(&translator);
 	Engine engine;
 	MainWidget main(&engine);
