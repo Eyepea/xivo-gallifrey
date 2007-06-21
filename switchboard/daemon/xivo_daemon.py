@@ -277,38 +277,44 @@ def update_userlist_fromurl(astn, url, sipaccounts):
 
 ## \brief Function that fetches the call history into a database
 # \param astn the asterisk to connect to
-# \param sipnum the phone number
+# \param techno technology (SIP/IAX/ZAP/etc...)
+# \param phoneid phone id
+# \param phonenum the phone number
 # \param nlines the number of lines to fetch for the given phone
 # \param kind kind of list (ingoing, outgoing, missed calls)
-def update_history_call(astn, sipnum, nlines, kind):
-	global xivoconf_general
-	results = []
-	try:
-		conn = MySQLdb.connect(host = xivoconf_general["cdr_db_address"],
-				       port = int(xivoconf_general["cdr_db_port"]),
-				       user = xivoconf_general["cdr_db_username"],
-				       passwd = xivoconf_general["cdr_db_passwd"],
-				       db = xivoconf_general["cdr_db_basename"],
-				       charset = 'utf8')
-		cursor = conn.cursor()
-		table = xivoconf_general["cdr_db_tablename"]
-		if kind == "0": # outgoing calls
-			sql = "SELECT * FROM %s WHERE `src`='%s' AND `disposition`='ANSWERED' ORDER BY calldate DESC LIMIT %s;" \
-			      %(table,sipnum,nlines)
-		elif kind == "1": # incoming calls
-			sql = "SELECT * FROM %s WHERE `dst`='%s' AND `disposition`='ANSWERED' ORDER BY calldate DESC LIMIT %s;" \
-			      %(table,sipnum,nlines)
-		else: # missed calls
-			sql = "SELECT * FROM %s WHERE `dst`='%s' AND `disposition`!='ANSWERED' ORDER BY calldate DESC LIMIT %s;" \
-			      %(table,sipnum,nlines)
-		cursor.execute(sql)
-		results = cursor.fetchall()
-		conn.close()
-
-	except Exception, exc:
-		log_debug("Connection to MySQL failed <%s>" %(str(exc)))
-
-	return results
+def update_history_call(astn, techno, phoneid, phonenum, nlines, kind):
+    global xivoconf_general
+    results = []
+    try:
+        conn = MySQLdb.connect(host = xivoconf_general["cdr_db_address"],
+                               port = int(xivoconf_general["cdr_db_port"]),
+                               user = xivoconf_general["cdr_db_username"],
+                               passwd = xivoconf_general["cdr_db_passwd"],
+                               db = xivoconf_general["cdr_db_basename"],
+                               charset = 'utf8')
+        cursor = conn.cursor()
+        table = xivoconf_general["cdr_db_tablename"]
+        sql = "SELECT calldate, clid, src, dst, dcontext, channel, dstchannel, " \
+              "lastapp, lastdata, duration, billsec, disposition, amaflags, " \
+              "accountcode, uniqueid, userfield FROM %s " % (table)
+        if kind == "0": # outgoing calls (answered)
+            sql += "WHERE disposition='ANSWERED' "
+            sql += "AND channel LIKE '%s/%s-%%' " \
+                   "ORDER BY calldate DESC LIMIT %s" % (techno, phoneid, nlines)
+        elif kind == "1": # incoming calls (answered)
+            sql += "WHERE disposition='ANSWERED' "
+            sql += "AND dstchannel LIKE '%s/%s-%%' " \
+                   "ORDER BY calldate DESC LIMIT %s" % (techno, phoneid, nlines)
+        else: # missed calls (received but not answered)
+            sql += "WHERE disposition!='ANSWERED' "
+            sql += "AND dstchannel LIKE '%s/%s-%%' " \
+                   "ORDER BY calldate DESC LIMIT %s" % (techno, phoneid, nlines)
+        cursor.execute(sql)
+        results = cursor.fetchall()
+        conn.close()
+    except Exception, exc:
+        log_debug("Connection to MySQL failed <%s>" %(str(exc)))
+    return results
 
 
 ## \brief Extracts the main SIP properties from a received packet
@@ -979,25 +985,26 @@ def manage_tcp_connection(connid, allow_events):
 		elif len(l) >= 4 and l[0] == 'history':
 			log_debug("attempting a HISTORY : " + str(l))
 			idassrc = -1
-			assrc = l[1].split("/")[1]
+                        l2 = l[1].split('/')
+			assrc = l2[1]
 			if assrc in asteriskr: idassrc = asteriskr[assrc]
 			if idassrc == -1:
 				connid[0].send("asterisk=history KO : no such asterisk id\n")
 			else:
-				phonenum = l[1].split("/")[5]
-				hist = update_history_call(idassrc, phonenum, l[2], l[3])
+                                techno = l2[3]
+                                phoneid = l2[4]
+				phonenum = l2[5]
+				hist = update_history_call(idassrc, techno, phoneid, phonenum, l[2], l[3])
 				repstr = "history="
 				separ = ";"
 				for x in hist:
-					repstr = repstr + x[0].isoformat() + separ + x[1] \
+					repstr += x[0].isoformat() + separ + x[1] \
 						 + separ + str(x[10]) + separ + x[11]
-					if phonenum == x[2]:
-						repstr = repstr + separ + x[3] + separ + "OUT"
-					elif phonenum == x[3]:
-						repstr = repstr + separ + x[2] + separ + "IN"
-					else:
-						repstr = repstr + separ + separ + "UNKNOWN"
-					repstr = repstr + ";"
+                                        if l[3]=='0':
+                                            repstr += separ + x[3] + separ + 'OUT'
+                                        else:   # display callerid for incoming calls
+                                            repstr += separ + x[1] + separ + 'IN'
+					repstr += ";"
 				try:
 					connid[0].send(repstr + "\n")
 				except Exception, exc:
