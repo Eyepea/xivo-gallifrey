@@ -252,7 +252,8 @@ def update_userlist_fromurl(astn, url, sipaccounts):
 					enabling = False
 					
 				# the <b> tag inside the string disables the drag&drop of the widget (4.2.3 ok, 4.2.1 ko)
-				fullname = firstname + " " + lastname + " <b>" + sso_phoneid + "</b>"
+				#fullname = firstname + " " + lastname + " <b>" + sso_phoneid + "</b>"
+				fullname = firstname + " " + lastname + " <b>" + sso_phonenum + "</b>"
 			
 				# line is protocol | username | password | rightflag |
 				#         phone number | initialized | disabled(=1) | callerid
@@ -983,16 +984,16 @@ def manage_tcp_connection(connid, allow_events):
 			if idassrc == -1:
 				connid[0].send("asterisk=history KO : no such asterisk id\n")
 			else:
-				phoneid = l[1].split("/")[4]
-				hist = update_history_call(idassrc, phoneid, l[2], l[3])
+				phonenum = l[1].split("/")[5]
+				hist = update_history_call(idassrc, phonenum, l[2], l[3])
 				repstr = "history="
 				separ = ";"
 				for x in hist:
 					repstr = repstr + x[0].isoformat() + separ + x[1] \
 						 + separ + str(x[10]) + separ + x[11]
-					if phoneid == x[2]:
+					if phonenum == x[2]:
 						repstr = repstr + separ + x[3] + separ + "OUT"
-					elif phoneid == x[3]:
+					elif phonenum == x[3]:
 						repstr = repstr + separ + x[2] + separ + "IN"
 					else:
 						repstr = repstr + separ + separ + "UNKNOWN"
