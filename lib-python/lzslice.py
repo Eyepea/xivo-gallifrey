@@ -453,6 +453,8 @@ class FilteredView:
 				raise IndexError, 'list index out of range'
 		else:
 			return [elt for elt in self.underlying if self.filter(elt)][idx]
+	def idx_map(self):
+		return [pos for pos,elt in enumerate(self.underlying) if self.filter(elt)]
 	def real_idx(self, idx):
 		if (idx^0) >= 0:
 			try:
