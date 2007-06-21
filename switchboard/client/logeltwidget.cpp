@@ -21,7 +21,9 @@ LogEltWidget::LogEltWidget( const QString & peer, Direction d,
 	layout->addWidget(lbldt);
 
 	QLabel * lblduration = new QLabel( this );
-	lblduration->setText(QString::number(duration) + "s");
+	int min = duration / 60;
+	int sec = duration % 60;
+	lblduration->setText((min?(QString::number(min) + "m"):"") + QString::number(sec) + "s");
 	layout->addWidget(lblduration);
 
 	QLabel * lblpeer = new QLabel( peer, this );
