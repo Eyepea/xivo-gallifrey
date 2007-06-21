@@ -11,6 +11,10 @@ class QTimer;
 class QDateTime;
 
 /*! \brief login engine
+ *
+ * Connect to presence server and advertise state
+ * (available, away, gone for lunch, do not disturb,
+ * be right back).
  */
 class LoginEngine: public QObject
 {
@@ -44,25 +48,31 @@ public:
 	void setExtension(const QString & ext) { m_extension = ext; };
 	//! get m_extension
 	const QString & extension() const { return m_extension; };
+	//! set dial context ?
 	void setDialContext(const QString & context) { m_dialcontext = context; };
+	//! get dial context
 	const QString & dialContext() const { return m_dialcontext; };
+	//! set m_passwd
 	void setPassword(const QString & pass) { m_passwd = pass; };
+	//! get m_passwd
 	const QString & password() const { return m_passwd; };
-
+	//! set m_availstate
 	void setAvailstate(const QString & availstate) { m_availstate = availstate; };
+	//! get m_availstate
 	const QString & availstate() const { return m_availstate; };
 	
 	const EngineState state() const;	//!< Engine state (Logged/Not Logged)
 	void setState(EngineState state);	//!< see state()
 	uint trytoreconnectinterval() const;	//!< try to reconnect interval
 	void setTrytoreconnectinterval(uint);	//!< set try to reconnect interval
-	const QString & getAvailState() const {return m_availstate;} //!< returns availability status
+	//! returns availability status
+	const QString & getAvailState() const {return m_availstate;}
 	//! set m_enabled
 	void setEnabled(bool b) { m_enabled = b; };
 	//! get m_enabled
 	bool enabled() { return m_enabled; };
 private:
-	void connectSocket();
+	//void connectSocket();
 	void loadSettings();	//!< load settings
 protected:
 	void timerEvent(QTimerEvent *event);
@@ -84,9 +94,9 @@ private slots:
 	void readKeepLoginAliveDatagrams();	//!< handle the responses to keep alive
 	void setKeepaliveinterval(uint);	//!< set keep alive interval
 signals:
-	void started();
-	void stopped();
-	void emitTextMessage(const QString &);
+	void started();		//!< emited when the engine is started
+	void stopped();		//!< emited when the engine is stopped
+	void emitTextMessage(const QString &);	//!< some message have to be emited
 private:
 	void stopKeepAliveTimer();	//!< Stop the keep alive timer if running
 	void startTryAgainTimer();	//!< Start the "try to reconnect" timer
@@ -101,9 +111,9 @@ private:
 	bool m_autoconnect;	//!< Autoconnect to server at startup ?
 	// poste à utiliser pour les commandes "DIAL"
 	QHostAddress m_serveraddress;	//!< Resolved address of the login server
-	QString m_asterisk;
-	QString m_protocol;
-	QString m_extension;
+	QString m_asterisk;		//!< asterisk id
+	QString m_protocol;		//!< protocol (SIP/IAX)
+	QString m_extension;	//!< phone extension
 	bool m_enabled;		//!< is enabled
 	QString m_passwd;	//!< password for account
 	QString m_dialcontext;	//!< Context of the phone, as returned by the xivo_daemon server

@@ -454,10 +454,14 @@ void LoginEngine::startTryAgainTimer()
 	}
 }
 
+/*! \brief periodicaly called method
+ *
+ * Performs keep alive or periodic "try to reconnect".
+ */
 void LoginEngine::timerEvent(QTimerEvent * event)
 {
 	int timerId = event->timerId();
-	qDebug() << "LoginEngine::timerEvent() timerId=" << timerId;
+	//qDebug() << "LoginEngine::timerEvent() timerId=" << timerId;
 	if(timerId == m_ka_timerid)
 	{
 		keepLoginAlive();

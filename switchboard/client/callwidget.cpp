@@ -12,6 +12,10 @@
 #include "callwidget.h"
 #include "xivoconsts.h"
 
+/*! \brief Constructor
+ *
+ * set up the widget, start timer.
+ */
 CallWidget::CallWidget(const QString & channelme,
 		       const QString & action,
 		       int time,
@@ -70,6 +74,8 @@ m_call_gray(":/phone-grey.png")
 	         this, SLOT(hangUp()) );
 }
 
+/*! \brief update time displayed in m_lbl_time
+ */
 void CallWidget::updateCallTimeLabel()
 {
 	int time = m_startTime.secsTo(QDateTime::currentDateTime());
@@ -77,12 +83,18 @@ void CallWidget::updateCallTimeLabel()
 	                    + QString::number(time%60) + " s]" );
 }
 
+/*! \brief timer event
+ *
+ * update the time displayed.
+ */
 void CallWidget::timerEvent( QTimerEvent * event )
 {
 	// event->timerId();
 	updateCallTimeLabel();
 }
 
+/*! \brief update displayed stuff
+ */
 void CallWidget::updateWidget(const QString & action,
 			      int time,
 			      const QString & direction,
@@ -100,6 +112,8 @@ void CallWidget::updateWidget(const QString & action,
 	m_lbl_exten->setText(exten);
 }
 
+/*! \brief set icon depending on status
+ */
 void CallWidget::setActionPixmap(const QString & action)
 {
 #if 0
@@ -125,6 +139,10 @@ void CallWidget::setActionPixmap(const QString & action)
 	}
 }
 
+/*! \brief mouse press event
+ *
+ * store mouse position for drag&drop.
+ */
 void CallWidget::mousePressEvent(QMouseEvent *event)
 {
 	if (event->button() == Qt::LeftButton) {
@@ -139,6 +157,11 @@ void CallWidget::mousePressEvent(QMouseEvent *event)
 	}
 }
 
+/*! \brief mouse move event
+ *
+ * start drag if left button pressed and if the
+ * mouse has been moved enough.
+ */
 void CallWidget::mouseMoveEvent(QMouseEvent *event)
 {
 	if (!(event->buttons() & Qt::LeftButton))
@@ -185,12 +208,16 @@ void CallWidget::mouseDoubleClickEvent(QMouseEvent *event)
 }
 #endif
 
+/*! \brief hang up the channel
+ */
 void CallWidget::hangUp()
 {
-	qDebug() << "CallWidget::hangUp()";
+	//qDebug() << "CallWidget::hangUp()";
 	doHangUp( m_channelme );
 }
 
+/*! \brief open the context menu
+ */
 void CallWidget::contextMenuEvent(QContextMenuEvent *event)
 {
 	QMenu contextMenu(this);
@@ -215,6 +242,8 @@ void CallWidget::setChannel(const QString & channel)
 }
 */
 
+/*! \brief return m_channelme
+ */
 const QString & CallWidget::channel() const
 {
 	return m_channelme;

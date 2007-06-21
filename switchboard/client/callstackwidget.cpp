@@ -158,6 +158,10 @@ void CallStackWidget::emptyList()
 	//m_calllist.clear();
 }
 
+/*! \brief update display according to call list
+ *
+ * Read m_calllist and update m_afflist accordingly.
+ */
 void CallStackWidget::updateDisplay()
 {
 	int i, j;
@@ -228,6 +232,8 @@ void CallStackWidget::updateDisplay()
 */
 }
 
+/*! \brief filter events based on the mimetype
+ */
 void CallStackWidget::dragEnterEvent(QDragEnterEvent *event)
 {
 	qDebug() << event->mimeData()->formats();

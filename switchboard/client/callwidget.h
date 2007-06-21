@@ -18,8 +18,8 @@ class CallWidget : public QWidget
 public:
 	//! Default constructor
 	CallWidget(QWidget * parent = 0);
-	CallWidget(const QString & tomonitor,
-		   QWidget * parent = 0);
+	//CallWidget(const QString & tomonitor,
+	//	   QWidget * parent = 0);
 	CallWidget(const QString & channelme,
 		   const QString & action,
 		   int time,
@@ -35,9 +35,9 @@ public:
 	//void setChannel(const QString &);
 	const QString & channel() const;
 	//void setCallerId(const QString &);
-	const QString & callerId() const;
+	//const QString & callerId() const;
 	//void setCallerIdName(const QString &);
-	const QString & callerIdName() const;
+	//const QString & callerIdName() const;
 protected:
 	void mousePressEvent(QMouseEvent *);
 	void mouseMoveEvent(QMouseEvent *);
@@ -51,7 +51,7 @@ private:
 	void setActionPixmap(const QString &);
 	void updateCallTimeLabel();
 signals:
-	void doHangUp(const QString &);
+	void doHangUp(const QString &);	//!< hang up the channel
 public slots:
 	void hangUp();
 private:
@@ -65,10 +65,10 @@ private:
 	QLabel * m_lbl_channelpeer;	//!< sub widget
 	QLabel * m_lbl_exten;	//!< sub widget
 	QPixmap m_square;		//!< QPixmap used to display the action square
-	QPixmap m_call_yellow;
-	QPixmap m_call_blue;
-	QPixmap m_call_red;
-	QPixmap m_call_gray;
+	QPixmap m_call_yellow;	//!< yellow phone icon
+	QPixmap m_call_blue;	//!< blue phone icon
+	QPixmap m_call_red;		//!< red phone icon
+	QPixmap m_call_gray;	//!< gray phone icon
 	QDateTime m_startTime;	//!< call start date/time
 	QAction * m_hangUpAction;	//!< Hang Up Action
 };

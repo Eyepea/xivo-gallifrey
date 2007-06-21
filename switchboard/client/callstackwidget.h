@@ -80,7 +80,7 @@ private:
 signals:
 	void hangUp(const QString &);	//!< hang up a channel
 	void changeTitle(const QString &);	//!< change Title
-	void monitoredPeerChanged(const QString &);
+	void monitoredPeerChanged(const QString &);	//!< send the name of the new monitored peer
 private:
 	QVBoxLayout * m_layout;	//!< Vertical Layout used
 	QList<Call> m_calllist;	//!< list of Call Objects
