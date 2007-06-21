@@ -185,7 +185,7 @@ __license__ = """
 """
 
 from pyfunc import *
-from itertools import izip, islice
+from itertools import izip, islice, ifilter
 
 def xor(a, b):
 	return (not(a)) != (not(b))
@@ -434,7 +434,79 @@ class lazislice:
 			raise TypeError, SIZE_CHANGE_ERRMSG
                 return self.len
 
-__all__ = ["lazy_", "lzslice", "slice_compose", "lazislice"]
+class FilteredView:
+	def __init__(self, f, array, empty_begin = None, empty_end = None):
+		self.underlying = array
+		self.filter = f
+		self.virtual_begin = empty_begin
+		self.virtual_end = empty_end
+	def __iter__(self):
+		return ifilter(self.filter, self.underlying)
+	def __len__(self):
+		return all_and_count(True for elt in self.underlying if self.filter(elt))
+	def __getitem__(self, idx):
+		if (idx^0) >= 0:
+			try:
+				return islice((elt for elt in self.underlying 
+				               if self.filter(elt)), idx, idx+1).next()
+			except StopIteration:
+				raise IndexError, 'list index out of range'
+		else:
+			return [elt for elt in self.underlying if self.filter(elt)][idx]
+	def _common_set_del(self, idx, cb, *data):
+		if (idx^0) >= 0:
+			try:
+				found_pos = islice((pos for pos,elt in enumerate(self.underlying)
+				                    if self.filter(elt)), idx, idx+1).next()
+			except StopIteration:
+				raise IndexError, 'list index out of range'
+		else:
+			found_pos = [pos for pos,elt in enumerate(self.underlying) if self.filter(elt)][idx]
+		cb(found_pos, *data)
+	def _setitem_cb(self, real_idx, new_elt):
+		self.underlying[real_idx] = new_elt
+	def __setitem__(self, idx, new_elt):
+		self._common_set_del(idx, self._setitem_cb, new_elt)
+	def _delitem_cb(self, real_idx):
+		del self.underlying[real_idx]
+	def __delitem__(self, idx):
+		self._common_set_del(idx, self._delitem_cb)
+	def prepend(self, new_elt):
+		pos = first(pos for (pos,elt) in enumerate(self.underlying) if self.filter(elt))
+		if pos is not None:
+			self.underlying.insert(pos, new_elt)
+		else:
+			self.underlying.insert(self.virtual_begin, new_elt)
+	def _generic_insert(self, ins_pos, new_elt, correction):
+		if (ins_pos^0) >= 0:
+			real_pos = nth((pos for (pos,elt) in enumerate(self.underlying) if self.filter(elt)), ins_pos)
+		else:
+			real_pos = None
+			indices = [pos for (pos,elt) in enumerate(self.underlying) if self.filter(elt)]
+			if -ins_pos <= len(indices):
+				real_pos = indices[ins_pos]
+		if real_pos is not None:
+			self.underlying.insert(real_pos + correction, new_elt)
+		elif ins_pos >= 0:
+			self.append(new_elt)
+		else:
+			self.prepend(new_elt)
+	def insert_before(self, ins_pos, new_elt):
+		self._generic_insert(ins_pos, new_elt, 0)
+	insert = insert_before
+	def insert_after(self, ins_pos, new_elt):
+		self._generic_insert(ins_pos, new_elt, 1)
+	def append(self, new_elt):
+		pos = last(pos for (pos,elt) in enumerate(self.underlying) if self.filter(elt))
+		if pos is not None:
+			self.underlying.insert(pos+1, new_elt)
+		else:
+			self.underlying.insert(self.virtual_end, new_elt)
+	def extend(self, seq):
+		for elt in seq:
+			self.append(elt)
+
+__all__ = ["lazy_", "lzslice", "slice_compose", "lazislice", "FilteredView"]
 
 if __name__ == '__main__':
   if __debug__:
@@ -772,4 +844,245 @@ if __name__ == '__main__':
                 for i,e in enumerate(trans[0]):
                   self.assertEqual(e, itblah.next())
                 self.assertRaises(StopIteration, itblah.next)
+    class FilterBase:
+      FILTER = ((lambda x: x%5 == 0),)
+      EMPTY  = []
+      BEGIN  = [10, 11, 12, 13, 14]
+      END    = [11, 12, 13, 14, 15]
+      BOTH   = [10, 11, 12, 13, 14, 15]
+      MIDDLE = [9, 10, 11, 12, 13, 14, 15, 16]
+      NO     = [9, 11, 12, 13, 14, 16]
+      ONLY   = [10, 15, 20, 25]
+      BIG    = range(5,555)
+      FILTERED = [(unfiltered, [x for x in unfiltered if FILTER[0](x)])
+                  for unfiltered in (EMPTY, BEGIN, END, BOTH, MIDDLE,
+                                     NO, ONLY, BIG)]
+    class ClassicFilter(FilterBase):
+      def filterFactory(self, unfil):
+        return FilteredView(self.FILTER[0], unfil)
+    class BoundedFilter(FilterBase):
+      def filterFactory(self, unfil):
+        return FilteredView(self.FILTER[0], unfil, 0, len(unfil))
+    class MyFiltered(FilterBase):
+      def testIter(self):
+        for unfil,fil in self.FILTERED:
+          refil = self.filterFactory(unfil)
+          self.assertEqual(all(x == y for (x,y) in izip(refil, fil)), True)
+      def testIterLen(self):
+        for unfil,fil in self.FILTERED:
+          refil = self.filterFactory(unfil)
+          self.assertEqual(all_and_count(True for x in refil), all_and_count(True for x in fil))
+      def testLen(self):
+        for unfil,fil in self.FILTERED:
+          refil = self.filterFactory(unfil)
+          self.assertEqual(len(refil), len(fil))
+      def testGetItem(self):
+        for unfil,fil in self.FILTERED:
+          refil = self.filterFactory(unfil)
+          self.assertEqual(all(refil[p] == fil[p] for p in xrange(-len(fil), len(fil))), True)
+      def testGetItemBad(self):
+        for unfil,fil in self.FILTERED:
+          refil = self.filterFactory(unfil)
+          self.assertRaises(TypeError, refil.__getitem__, 2.0)
+          self.assertRaises(IndexError, refil.__getitem__, len(fil))
+          self.assertRaises(IndexError, refil.__getitem__, -len(fil)-1)
+      def commonSetItem(self, unfil, fil, start, stop):
+        copy_unfil = unfil[:]
+        copy_fil = fil[:]
+        refil = self.filterFactory(copy_unfil)
+        for p in xrange(start,stop):
+          refil[p] = 1000000+p*5
+          copy_fil[p] = 1000000+p*5
+          self.assertEqual(refil[p], copy_fil[p])
+        for orig, mod in izip(unfil, copy_unfil):
+          if not self.FILTER[0](orig):
+            self.assertEqual(orig, mod)
+      def testSetItem(self):
+        for unfil,fil in self.FILTERED:
+          self.commonSetItem(unfil, fil, -len(fil), 0)
+          self.commonSetItem(unfil, fil, 0, len(fil))
+      def testSetItemBad(self):
+        for unfil,fil in self.FILTERED:
+          refil = self.filterFactory(unfil[:])
+          self.assertRaises(TypeError, refil.__setitem__, 2.0, 40)
+          self.assertRaises(IndexError, refil.__setitem__, len(fil), 40)
+          self.assertRaises(IndexError, refil.__setitem__, -len(fil)-1, 40)
+      def commonDelItem(self, unfil, fil, start, stop):
+        for p in xrange(start, stop):
+          copy_unfil = unfil[:]
+          copy_fil = fil[:]
+          refil = self.filterFactory(copy_unfil)
+          del refil[p]
+          del copy_fil[p]
+	  self.assertEqual(list(refil), list(copy_fil))
+	  a,b,c = slice(p-3,p+3,1).indices(len(copy_fil))
+	  a,b,c = (a-len(copy_fil),b-len(copy_fil),c)
+          self.assertEqual(all(refil[p] == copy_fil[p] for p in xrange(a,b)), True)
+          copy_notfil = [x for x in copy_unfil if not self.FILTER[0](x)]
+          notfil = [x for x in unfil if not self.FILTER[0](x)]
+          self.assertEqual(copy_notfil, notfil)
+      def testDelItem(self):
+        for unfil,fil in self.FILTERED:
+          self.commonDelItem(unfil, fil, -len(fil), 0)
+          self.commonDelItem(unfil, fil, 0, len(fil))
+      def testDelItemBad(self):
+        for unfil,fil in self.FILTERED:
+          refil = self.filterFactory(unfil[:])
+          self.assertRaises(TypeError, refil.__delitem__, 2.0)
+          self.assertRaises(IndexError, refil.__delitem__, len(fil))
+          self.assertRaises(IndexError, refil.__delitem__, -len(fil)-1)
+      def testPrepend(self):
+        for unfil,fil in self.FILTERED:
+          if len(fil):
+            copy_unfil = unfil[:]
+            copy_fil = fil[:]
+            refil = self.filterFactory(copy_unfil)
+            refil.prepend(1000000)
+            self.assertEqual(refil[0], 1000000)
+            back = [x for x in copy_unfil if x != 1000000]
+            self.assertEqual(back, unfil)
+      def testAppend(self):
+        for unfil,fil in self.FILTERED:
+          if len(fil):
+            copy_unfil = unfil[:]
+            copy_fil = fil[:]
+            refil = self.filterFactory(copy_unfil)
+            refil.append(1000000)
+            self.assertEqual(refil[-1], 1000000)
+            back = [x for x in copy_unfil if x != 1000000]
+            self.assertEqual(back, unfil)
+      def testExtend(self):
+        for unfil,fil in self.FILTERED:
+          if len(fil):
+            copy_unfil = unfil[:]
+            copy_fil = fil[:]
+            refil = self.filterFactory(copy_unfil)
+            refil.extend(range(1000000, 1000050, 5))
+            for p, want in zip(range(-10,0), range(1000000, 1000050, 5)):
+              self.assertEqual(refil[p], want)
+            back = [x for x in copy_unfil if x < 1000000]
+            self.assertEqual(back, unfil)
+      def commonInsertBefore(self, unfil, fil, method_name, p):
+        copy_unfil = unfil[:]
+        copy_fil = fil[:]
+        refil = self.filterFactory(copy_unfil)
+        method = getattr(refil, method_name)
+        method(p, 1000000)
+        if p < 0:
+          p -= 1
+        self.assertEqual(refil[p], 1000000)
+        back = [x for x in copy_unfil if x < 1000000]
+        self.assertEqual(back, unfil)
+      def testInsertBefore(self):
+        for unfil,fil in self.FILTERED:
+          for method_name in ('insert_before', 'insert'):
+            for p in xrange(-len(fil), len(fil)):
+              self.commonInsertBefore(unfil, fil, method_name, p)
+      def testInsertAfter(self):
+        for unfil,fil in self.FILTERED:
+          for p in xrange(-len(fil), len(fil)):
+            copy_unfil = unfil[:]
+            copy_fil = fil[:]
+            refil = self.filterFactory(copy_unfil)
+	    refil.insert_after(p, 1000000)
+	    if p < 0:
+	      p += len(fil)
+            self.assertEqual(refil[p+1], 1000000)
+            back = [x for x in copy_unfil if x < 1000000]
+            self.assertEqual(back, unfil)
+      def testInsertBeyondLimits(self):
+        for unfil,fil in self.FILTERED:
+          if len(fil):
+            copy_unfil_append          = unfil[:]
+            copy_unfil_A_insert_after  = unfil[:]
+            copy_unfil_A_insert_before = unfil[:]
+            copy_unfil_A_insert        = unfil[:]
+            copy_unfil_prepend         = unfil[:]
+            copy_unfil_P_insert_after  = unfil[:]
+            copy_unfil_P_insert_before = unfil[:]
+            copy_unfil_P_insert        = unfil[:]
+            (refil_append         ,
+             refil_A_insert_after ,
+             refil_A_insert_before,
+             refil_A_insert       ,
+             refil_prepend        ,
+             refil_P_insert_after ,
+             refil_P_insert_before,
+             refil_P_insert       ) = map(self.filterFactory,
+            (copy_unfil_append         ,
+             copy_unfil_A_insert_after ,
+             copy_unfil_A_insert_before,
+             copy_unfil_A_insert       ,
+             copy_unfil_prepend        ,
+             copy_unfil_P_insert_after ,
+             copy_unfil_P_insert_before,
+             copy_unfil_P_insert       ))
+            refil_append.append(1000000)
+            refil_A_insert_after.insert_after(len(fil), 1000000)
+            refil_A_insert_before.insert_before(len(fil), 1000000)
+            refil_A_insert.insert(len(fil), 1000000)
+            self.assertEqual(refil_append[-1], 1000000)
+            self.assertEqual(refil_append[-1], refil_A_insert_after[-1])
+            self.assertEqual(refil_append[-1], refil_A_insert_before[-1])
+            self.assertEqual(refil_append[-1], refil_A_insert[-1])
+            refil_prepend.prepend(1000000)
+            refil_P_insert_after.insert_after(-len(fil)-1, 1000000)
+            refil_P_insert_before.insert_before(-len(fil)-1, 1000000)
+            refil_P_insert.insert(-len(fil)-1, 1000000)
+            self.assertEqual(refil_prepend[0], 1000000)
+            self.assertEqual(refil_prepend[0], refil_P_insert_after[0])
+            self.assertEqual(refil_prepend[0], refil_P_insert_before[0])
+            self.assertEqual(refil_prepend[0], refil_P_insert[0])
+    class FilteredCase(unittest.TestCase, ClassicFilter, MyFiltered):
+      def testBadAppend(self):
+        for unfil,fil in self.FILTERED:
+          if len(fil) == 0:
+            refil = self.filterFactory(unfil)
+            self.assertRaises(TypeError, refil.append, 1000000)
+      def testBadPrepend(self):
+        for unfil,fil in self.FILTERED:
+          if len(fil) == 0:
+            refil = self.filterFactory(unfil)
+            self.assertRaises(TypeError, refil.prepend, 1000000)
+      def testBadInsertBefore(self):
+        for unfil,fil in self.FILTERED:
+          if len(fil) == 0:
+            refil = self.filterFactory(unfil)
+            self.assertRaises(TypeError, refil.insert_before, 1000, 1000000)
+            self.assertRaises(TypeError, refil.insert_before, -1000, 1000000)
+      def testBadInsertAfter(self):
+        for unfil,fil in self.FILTERED:
+          if len(fil) == 0:
+            refil = self.filterFactory(unfil)
+            self.assertRaises(TypeError, refil.insert_after, 1000, 1000000)
+            self.assertRaises(TypeError, refil.insert_after, -1000, 1000000)
+    class BoundedFilteredCase(unittest.TestCase, BoundedFilter, MyFiltered):
+      def testBoundedAppend(self):
+        for unfil,fil in self.FILTERED:
+          if len(fil) == 0:
+            copy_unfil = unfil[:]
+            refil = self.filterFactory(copy_unfil)
+            refil.append(1000000)
+            self.assertEqual(refil[-1], 1000000)
+      def testBoundedPrepend(self):
+        for unfil,fil in self.FILTERED:
+          if len(fil) == 0:
+            copy_unfil = unfil[:]
+            refil = self.filterFactory(copy_unfil)
+            refil.prepend(1000000)
+            self.assertEqual(refil[0], 1000000)
+      def testBoundedInsertBefore(self):
+        for unfil,fil in self.FILTERED:
+          if len(fil) == 0:
+            copy_unfil = unfil[:]
+            refil = self.filterFactory(copy_unfil)
+            refil.insert_before(0, 1000000)
+            self.assertEqual(refil[0], 1000000)
+      def testBoundedInsertAfter(self):
+        for unfil,fil in self.FILTERED:
+          if len(fil) == 0:
+            copy_unfil = unfil[:]
+            refil = self.filterFactory(copy_unfil)
+            refil.insert_after(0, 1000000)
+            self.assertEqual(refil[-1], 1000000)
     unittest.main()
