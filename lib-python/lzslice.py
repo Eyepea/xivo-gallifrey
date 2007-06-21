@@ -453,24 +453,19 @@ class FilteredView:
 				raise IndexError, 'list index out of range'
 		else:
 			return [elt for elt in self.underlying if self.filter(elt)][idx]
-	def _common_set_del(self, idx, cb, *data):
+	def real_idx(self, idx):
 		if (idx^0) >= 0:
 			try:
-				found_pos = islice((pos for pos,elt in enumerate(self.underlying)
+				return islice((pos for pos,elt in enumerate(self.underlying)
 				                    if self.filter(elt)), idx, idx+1).next()
 			except StopIteration:
 				raise IndexError, 'list index out of range'
 		else:
-			found_pos = [pos for pos,elt in enumerate(self.underlying) if self.filter(elt)][idx]
-		cb(found_pos, *data)
-	def _setitem_cb(self, real_idx, new_elt):
-		self.underlying[real_idx] = new_elt
+			return [pos for pos,elt in enumerate(self.underlying) if self.filter(elt)][idx]
 	def __setitem__(self, idx, new_elt):
-		self._common_set_del(idx, self._setitem_cb, new_elt)
-	def _delitem_cb(self, real_idx):
-		del self.underlying[real_idx]
+		self.underlying[self.real_idx(idx)] = new_elt
 	def __delitem__(self, idx):
-		self._common_set_del(idx, self._delitem_cb)
+		del self.underlying[self.real_idx(idx)]
 	def prepend(self, new_elt):
 		pos = first(pos for (pos,elt) in enumerate(self.underlying) if self.filter(elt))
 		if pos is not None:
