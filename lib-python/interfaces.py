@@ -56,6 +56,9 @@ IS_XOPTION = lambda x: (not IS_COMMENT(x)) and (not IS_START(x))
 INDENT_RE = r'^(\s*)'
 INDENT = re.compile(INDENT_RE)
 
+DEFAULT_AUTOADJ = '\t'
+DEFAULT_FILTER = lambda x: True
+
 def xor(a, b):
 	return (not(a)) != (not(b))
 
@@ -101,89 +104,6 @@ class WrongStanzaType(InvalidStanzaPayload): pass
 class EmptyStanza(InvalidStanzaPayload): pass
 class UnsyncStanza(InvalidStanzaPayload): pass
 
-class FilteredView:
-	def __init__(self, f, array, empty_begin = None, empty_end = None):
-		self.underlying = array
-		self.filter = f
-		self.virtual_begin = empty_begin
-		self.virtual_end = empty_end
-	def __iter__(self):
-		return ifilter(self.filter, self.underlying)
-	def __len__(self):
-		return all_and_count(True for elt in self.underlying if self.filter(elt))
-	def __getitem__(self, idx):
-		if not isinstance(idx, int):
-			raise TypeError, 'list indices must be integers'
-		if idx >= 0:
-			cnt = 0
-			for elt in self.underlying:
-				if not self.filter(elt):
-					continue
-				if cnt == idx:
-					return elt
-				cnt += 1
-			raise IndexError, 'list index out of range'
-		else:
-			sub = [elt for elt in self.underlying if self.filter(elt)]
-			return sub[idx]
-	def _common_set_del(self, idx, cb, *data):
-		if not isinstance(idx, int):
-			raise TypeError, 'list indices must be integers'
-		if idx >= 0:
-			found_pos = -1
-			cnt = 0
-			for pos, elt in enumerate(self.underlying):
-				if not self.filter(elt):
-					continue
-				if cnt == idx:
-					found_pos = pos
-					break
-				cnt += 1
-			if found_pos < 0:
-				raise IndexError, 'list index out of range'
-		else:
-			found_pos = [pos for pos,elt in self.underlying if self.filter(elt)][idx]
-		cb(found_pos, *data)
-	def _setitem_cb(self, real_idx, new_elt):
-		self.underlying[real_idx] = new_elt
-	def __setitem__(self, idx, new_elt):
-		self._common_set_del(idx, self._setitem_cb, new_elt)
-	def _delitem_cb(self, real_idx):
-		del self.underlying[real_idx]
-	def __delitem__(self, idx):
-		self._common_set_del(idx, self._delitem_cb)
-	def prepend(self, new_elt):
-		pos = first(pos for (pos,elt) in enumerate(self.underlying) if self.filter(elt))
-		if pos is not None:
-			self.underlying.insert(pos, new_elt)
-		else:
-			self.underlying.insert(self.virtual_begin)
-	def _generic_insert(self, ins_pos, new_elt, correction):
-		if not isinstance(ins_pos, int):
-			raise TypeError, 'list indices must be integers'
-		if ins_pos <= 0:
-			self.prepend(new_elt)
-			return 
-		real_pos = nth((pos for (pos,elt) in enumerate(self.underlying) if self.filter(elt)), ins_pos)
-		if real_pos is not None:
-			self.underlying.insert(real_pos, new_elt)
-		else:
-			self.underlying.insert(self.virtual_end, new_elt)
-	def insert_before(self, ins_pos, new_elt):
-		self._generic_insert(ins_pos, new_elt, 0)
-	insert = insert_before
-	def insert_after(self, pos, new_elt):
-		self._generic_insert(ins_pos, new_elt, 1)
-	def append(self, new_elt):
-		pos = last(pos for (pos,elt) in enumerate(self.underlying) if self.filter(elt))
-		if pos is not None:
-			self.underlying.insert(pos+1, new_elt)
-		else:
-			self.underlying.insert(self.virtual_end, new_elt)
-	def extend(self, seq):
-		for elt in seq:
-			self.append(elt)
-
 class Stanza(list):
 	"""This class adds very useful "interfaces" like stanza related methods
 	to the built-in python lists.
@@ -200,9 +120,11 @@ class Stanza(list):
 		return ifilter(IS_OP, self)
 	def get_stanza_starter(self):
 		"""Get the first found stanza starter (or None). There really
-		should be one but this can't be guaranteed by this class"""
+		should be one but this can't be guaranteed by this class (and
+		indeed there could also be an initial stanza containing only
+		comments) """
 		return find(IS_START, self)
-	def get_stanza_starter_line(self):
+	def get_stanza_starter_pos(self):
 		"""Same as self.get_stanza_starter() except when a stanza
 		starter is found, returns (position,line) instead of just line"""
 		return first((p,line) for p,line in enumerate(self) if IS_START(line))
@@ -216,10 +138,13 @@ class Stanza(list):
 			return default
 		else:
 			return indent
+	def get_first_xop(self):
+		"""Finds and returns the first option line or returns None."""
+		return find(IS_XOPTION, self)
 	def get_opline_indent(self, default='\t'):
 		"""Get the stanza body indentation according to the one used by
 		the first operational non starter line. """
-		self._get_indent_from_line(find(IS_XOPTION, self), default)
+		self._get_indent_from_line(self.get_first_xop(), default)
 	def has_payload(self):
 		"""Returns True if any line is operational, otherwise
 		returns False."""
@@ -238,14 +163,16 @@ class Stanza(list):
 		regardless of its position."""
 		return find(IS_START, self) is not None
 	def has_more_than_starter_payload(self):
+		"""Precondition: does not have invalid payload.
+		Returns True if there is at least one option line."""
 		return at_least(2, lambda v: True, self.iteroplines())
-	def insertcomment(self, index, commentline):
+	def insert_comment(self, index, commentline):
 		"""Just insert the comment line at the given index, or raise an
 		exception if commentline is indeed not a comment/blank line."""
 		if not IS_COMMENT(commentline):
 			raise Error("'%s' is not a comment/blank line" % commentline.rstrip())
 		self.insert(index, commentline)
-	def insertstarter(self, index, starterline):
+	def insert_starter(self, index, starterline):
 		"""Just insert a stanza starter or raise an exception if:
 		
 		- starterline is indeed not a valid stanza starter
@@ -255,16 +182,37 @@ class Stanza(list):
 		
 		"""
 		if not IS_START(starterline):
-			raise Error(
-				"'%s' is not a valid stanza starter" % starterline.rstrip())
+			raise Error("'%s' is not a valid stanza starter" % starterline.rstrip())
 		if self.has_stanza_starter():
-			raise Error(
-				"trying to insert the stanza starter '%s' in a stanza where there is already one" % starterline.rstrip())
+			raise Error("trying to insert the stanza starter '%s' in a stanza where there is already one" % starterline.rstrip())
 		line = find(IS_OP, lazy_(self)[:index])
 		if (line):
-			raise Error(
-				"trying to insert stanza starter '%s' in a stanza after at least one non comment/blank line (first found '%s')" % (starterline.rstrip(), line.rstrip()))
+			raise Error("trying to insert stanza starter '%s' in a stanza after at least one non comment/blank line (first found '%s')" % (starterline.rstrip(), line.rstrip()))
 		self.insert(index, starterline)
+	def replace_starter(self, index, starterline):
+		"""Replaces the stanza starter by a new one at the given index.
+		Index can also be None in which case a lookup is done to find
+		the starter automatically. """
+		if not IS_START(starterline):
+			raise Error("'%s' is not a valid stanza starter" % starterline.rstrip())
+		if index is not None:
+			if not IS_START(self[index]):
+				raise Error("No stanza starter found at given position")
+			self[index] = starterline
+			return
+		p_line = self.get_stanza_starter_pos()
+		if p_line is None:
+			raise Error("No stanza starter found, can't replace it")
+		p,line = p_line
+		self[p] = starterline
+	def _auto_adjust_indent(self, old_line, new_line, autoadj):
+		if autoadj:
+			indent = self._get_indent_from_line(old_line, autoadj)
+			return indent + new_line.lstrip()
+		else:
+			return new_line
+	def _auto_indent_one(self, opline, autoadj):
+		return self._auto_adjust_indent(self.get_first_xop(), opline, autoadj)
 	def _common_iterate_to(self, seq_lines, f_first = None, f_last = None, f_stop = None, data = None):
 		# This internal function iterates through a well formed stanza
 		# contained in seq_lines, raising an exception if it's indeed 
@@ -313,60 +261,159 @@ class Stanza(list):
 		return (state, (first_pos, first_line),
 		               (last_pos, last_line),
 			       (pos, line))
-	def find_replace_option(self, finder, new_opt_line, data, auto_adjust = True, default = '\t'):
-		if not IS_XOPTION(opline):
-			raise Error("'%s' is not an option line" % opline.rstrip())
+	def _get_option_zone(self):
+		p_line = self.get_stanza_starter_pos()
+		if p_line is None:
+			raise Error("No stanza starter found, can't play with options")
+		p,line = p_line
 		(state, (first_pos, first_line),
 		               (last_pos, last_line),
 			       (pos, line)) \
 		    = self._common_iterate_to(
-		            self,
-			    finder,
-			    None,
-			    None,
-			    data)
-		if state != 1:
-			raise Error("Can not insert option line if no starter before")
-		if first_pos < 0:
-			raise Error("Did not found an option line to replace")
-		if auto_adjust:
-			new_opt_line = new_opt_line.lstrip()
-			indent = self._get_indent_from_line(first_line, default)
-			new_opt_line = indent + new_opt_line
-		self[first_pos] = new_opt_line
-	def insert_option(self, index, opline):
-		"""Just insert a stanza operational line at given index, or
-		raise an exception if:
-		
-		- this is not an operational line or this is a starter line
-		- there is no starter line in this stanza
-		- this operational line would be inserted before the starter
-		
-		"""
+				lazy_(self)[p:], None,
+				lambda pos, line, state, data: IS_OP(line),
+				None, None)
+		p += 1
+		q = last_pos + p
+		return (p, q)
+	def _check_insert_return_opzone(self, opline, finder, filt):
 		if not IS_XOPTION(opline):
 			raise Error("'%s' is not an option line" % opline.rstrip())
-		(state, (first_pos, first_line),
-		        (last_pos, last_line),
-			(pos, line)) \
-		    = self._common_iterate_to(lazy_(self)[:index])
-		if state != 1:
-			raise Error("Trying to insert a simple operational line '%s' in a stanza before any starter line" % opline.rstrip())
-		self.insert(self, index, opline)
-	def insert_eo_options(self, opline):
-		if STANZA_START.match(opline) or STANZA_COMMENT.match(opline):
+		(p, q) = self._get_option_zone()
+		opzone = FilteredView(filt, self, 0, q-p, (p,q))
+		if finder is not None:
+			if find(finder, opzone) is not None:
+				raise Error("There can't be multiple option lines like '%s'" % opline.rstrip())
+		return opzone
+	def insert_option_common(self, opline, pos, finder, filt = DEFAULT_FILTER, autoadj = DEFAULT_AUTOADJ, insert_after = False):
+		"""In the option list of the stanza, filtered by filt (which
+		get the current line as its only argument and returns True if
+		the line is allowed, or False if it is disallowed), insert
+		before position pos if insert_after is False or after if
+		insert_after is True. If finder (same prototype as filt) is
+		not None, it's used to check if the option already exists, in
+		which case it the new option line will not be inserted. If
+		autoadj is not None the new option line will be automatically
+		indented with indentation of the first existing option line, or
+		if none exists with what is stored in autoadj, else if autoadj
+		is None the new option line will be leaved untouched.
+		Either the new option line is inserted, or an exception is
+		raised. """
+		self._check_insert_return_opzone(opline, finder, filt).common_insert(pos, self._auto_indent_one(opline, autoadj), insert_after)
+	def insert_option(self, opline, pos, finder, filt = DEFAULT_FILTER, autoadj = DEFAULT_AUTOADJ):
+		"Same as insert_option_common() with insert_after set to False"
+		self.insert_option_common(opline, pos, finder, filt, autoadj, False)
+	def insert_option_after(self, opline, pos, finder, filt = DEFAULT_FILTER, autoadj = DEFAULT_AUTOADJ):
+		"Same as insert_option_common() with insert_after set to True"
+		self.insert_option_common(opline, pos, finder, filt, autoadj, True)
+	def set_uniq_option(self, opline, pos, finder, filt = DEFAULT_FILTER, autoadj = DEFAULT_AUTOADJ, insert_after = False):
+		"""Set option line found by finder in filtered (by filt) list of
+		option lines to new option line. If an existing option line does
+		not exist, insert either before or after position pos, depending
+		upon insert_after value. autoadj is used for automatic
+		indentation if no other option line already exists or can also
+		be set to None to disable automatic indentation."""
+		if not IS_XOPTION(opline):
 			raise Error("'%s' is not an option line" % opline.rstrip())
-		(state, (first_pos, first_line),
-		        (last_pos, last_line),
-			(pos, line)) \
-		    = self._common_iterate_to(
-		            self,
-			    None,
-		            lambda pos, line, state, data: IS_OP(line))
-		if state != 1:
-			raise Error("Can not insert option line if no starter")
-		if last_pos < 0:
-			raise EmptyStanza([])
-		self.insert(self, last_pos + 1, opline)
+		if finder is None:
+			raise Error("Finder can't be None")
+		(p, q) = self._get_option_zone()
+		opzone = FilteredView(filt, self, 0, q-p, (p,q))
+		tp_line = find(lambda (tp,line): finder(line), opzone.real_unsliced_enumerate())
+		if tp_line is None:
+			if pos is None:
+				raise Error("Option not found and don't know where to insert")
+			self.insert_option_common(opline, pos, None, filt, autoadj, insert_after)
+			return
+		tp, line = tp_line
+		self[tp] = self._auto_adjust_indent(self[tp], opline, autoadj)
+	def set_uniq_option_after(self, opline, pos, finder, filt = DEFAULT_FILTER, autoadj = DEFAULT_AUTOADJ):
+		"set_uniq_option() with insert_after set to True"
+		self.set_uniq_option(opline, pos, finder, filt, autoadj, True)
+	def _pos_and_find_matcher(self, pos, finder, filt, second_find = None):
+		if (finder is None) and (pos is None):
+			raise Error("Can't have both finder and pos set to None")
+		(p, q) = self._get_option_zone()
+		opzone = FilteredView(filt, self, 0, q-p, (p,q))
+		if pos is not None:
+			if (finder is not None) and (not finder(opzone[pos])):
+				raise Error("Option at filtered position %d does not match attended option, can't replace" % pos)
+			return opzone.real_unsliced_idx(pos)
+		else:
+			tp_line = find(lambda (tp,line): finder(line), opzone.real_unsliced_enumerate())
+			if tp_line is None:
+				raise Error("No matching option")
+			if (second_find is None) or (tp_line[0] != second_find):
+				return tp_line[0]
+			p = second_find + 1
+			tp_line = find(lambda (tp,line): finder(line),
+			               FilteredView(filt, self, 0, q-p, (p,q)).real_unsliced_enumerate())
+			if tp_line is None:
+				raise Error("No second matching option")
+			return tp_line[0]
+	def replace_option(self, opline, pos, finder, filt = DEFAULT_FILTER, autoadj = DEFAULT_AUTOADJ):
+		"""Replaces option line at position pos or position found by
+		function finder() in list of filtered option lines. If both
+		pos and finder are provided, positions must match. autoadj is
+		used to disable automatic indentation (when set to None). """
+		if not IS_XOPTION(opline):
+			raise Error("'%s' is not an option line" % opline.rstrip())
+		real_u_pos = self._pos_and_find_matcher(pos, finder, filt)
+		self[real_u_pos] = self._auto_adjust_indent(self[real_u_pos], opline, autoadj)
+	def delete_option(self, pos, finder, filt = DEFAULT_FILTER):
+		"""option line at position pos or position found by
+		function finder() in list of filtered option lines. If both pos
+		and finder are provided and the line at position pos does not
+		match with what finder thinks, an exception will be raised. """
+		real_u_pos = self._pos_and_find_matcher(pos, finder, filt)
+		del self[real_u_pos]
+	def iter_options(self, filt = DEFAULT_FILTER):
+		"""Iterate through filtered option lines."""
+		(p, q) = self._get_option_zone()
+		return iter(FilteredView(filt, self, 0, q-p, (p,q)))
+	def swap_options(self, pos1, finder1, pos2, finder2, filt = DEFAULT_FILTER):
+		"""Swap option line at position identified by pos1/finder1
+		(must match if both provided) with option line identified by
+		pos2/finder2 (must match if both provided) within the filtered
+		option lines. When pos2 is None, if the first line matched by
+		finder2 is the same as line 1, the next matching line will be
+		used for line 2. """
+		matchpos1 = self._pos_and_find_matcher(pos1, finder1, filt)
+		matchpos2 = self._pos_and_find_matcher(pos2, finder2, filt, matchpos1)
+		if matchpos1 == matchpos2:
+			return
+		self[matchpos1], self[matchpos2] = self[matchpos2], self[matchpos1]
+	def get_option(self, pos, finder, filt = DEFAULT_FILTER):
+		"""Returns the option line found at position pos or by function
+		finder in filtered list of options. If both pos and finder are
+		provided and the line at position pos does not match with what
+		finder thinks, an exception will be raised. """
+		real_u_pos = self._pos_and_find_matcher(pos, finder, filt)
+		return self[real_u_pos]
+	def append_option(self, opline, finder, filt = DEFAULT_FILTER, autoadj = DEFAULT_AUTOADJ):
+		"""Append an option line in the filtered list of options.
+		If finder is not None it is used to check that no other similar
+		option line already exists, in which case the insertion is not
+		performed.
+		If autoadj is not None the new option line will be automatically
+		indented with indentation of the first existing option line, or
+		if none exists with what is stored in autoadj, else if autoadj
+		is None the new option line will be leaved untouched.
+		Either the new option line is inserted, or an exception is
+		raised. """
+		self._check_insert_return_opzone(opline, finder, filt).append(self._auto_indent_one(opline, autoadj))
+	def prepend_option(self, opline, finder, filt = DEFAULT_FILTER, autoadj = DEFAULT_AUTOADJ):
+		"""Prepend an option line in the filtered list of options.
+		If finder is not None it is used to check that no other similar
+		option line already exists, in which case the insertion is not
+		performed.
+		If autoadj is not None the new option line will be automatically
+		indented with indentation of the first existing option line, or
+		if none exists with what is stored in autoadj, else if autoadj
+		is None the new option line will be leaved untouched.
+		Either the new option line is inserted, or an exception is
+		raised. """
+		self._check_insert_return_opzone(opline, finder, filt).prepend(self._auto_indent_one(opline, autoadj))
 
 class SplittedStanzas:
 	"""This class lets parse "/etc/network/interfaces" and "interfaces" like
@@ -399,7 +446,7 @@ class SplittedStanzas:
 			       internal representation of the file stanzas """
 		self.stanza_list = []
 		for line in iteralines:
-			if STANZA_START.match(line):
+			if IS_START(line):
 				self.stanza_list.append(stanza_class([line]))
 			else: # comment or stanza content
 				# does the file starts with comments ?
@@ -424,12 +471,6 @@ class NetworkInterfacesStanza(Stanza):
 		'iface_name', 'iface_family', 'iface_method', # iface stanzas
 		'options_list', 'options_dict', 'options_multicnt',
 	)
-	def __init__(self, lst):
-		"""Will construct a regular Stanza instance and do additional work
-		to understand the contents of 'iface' and 'allow-<blah>' stanzas
-		('auto' stanzas are indeed the same thing as 'allow-auto')"""
-		Stanza.__init__(self, lst)
-		self.parse()
 	def _clear_unparse(self):
 		for attr in PARSED_ATTRIBUTES:
 			if hasattr(self, attr):
@@ -465,7 +506,7 @@ class NetworkInterfacesStanza(Stanza):
 	def _parse_iface(self):
 		oplines = self.iteroplines()
 		starter = oplines.next()
-		if not STANZA_START.match(starter):
+		if not IS_START(starter):
 			raise BadlyFormedStarter([])
 		splitted = self._split_and_check_iface_starter(starter)
 		self.iface_name = splitted[1]
@@ -562,7 +603,7 @@ class NetworkInterfacesStanza(Stanza):
 			raise NameError, \
 				"name '%s' is not defined" % attr
 		setattr(self, 'iface_' + attr, value)
-		p_line = self.get_stanza_starter_line()
+		p_line = self.get_stanza_starter_pos()
 		if p_line is None:
 			raise EmptyStanza([])
 		p, line = p_line
@@ -588,7 +629,7 @@ class NetworkInterfaces(SplittedStanzas):
 	def _no_redundant_ifaces_check(self):
 		multiples = {}
 		for stanza in self.iteriface():
-			iface_name = stanza.get_iface_desc()[0]
+			iface_name = stanza.get_iface_name()
 			if iface_name not in multiples:
 				multiples[iface_name] = 1
 			else:
