@@ -435,73 +435,94 @@ class lazislice:
                 return self.len
 
 class FilteredView:
-	def __init__(self, f, array, empty_begin = None, empty_end = None):
-		self.underlying = array
-		self.filter = f
-		self.virtual_begin = empty_begin
-		self.virtual_end = empty_end
+	def __init__(self, f, array, empty_begin = None, empty_end = None, part = None):
+		self._underlying = array
+		self._filter = f
+		self._part = part
+		if part:
+			a,b,c = slice(part[0], part[1], 1).indices(len(array))
+			a, b = max(a, 0), max(b, 0)
+			self._start, self._stop = a, max(a, b)
+		else:
+			self._start, self._stop = 0, len(array)
+		vlen = self._stop - self._start
+		if empty_begin is not None:
+			self._virtual_begin = max(min(empty_begin, vlen), 0)
+		else:
+			self._virtual_begin = None
+		if empty_end is not None:
+			self._virtual_end = max(min(empty_end, vlen), 0, self._virtual_begin)
+		else:
+			self._virtual_end = None
+	def _underl_iter(self):
+		return islice(self._underlying, self._start, self._stop)
 	def __iter__(self):
-		return ifilter(self.filter, self.underlying)
+		return ifilter(self._filter, self._underl_iter())
 	def __len__(self):
-		return all_and_count(True for elt in self.underlying if self.filter(elt))
+		return all_and_count(True for elt in self._underl_iter() if self._filter(elt))
 	def __getitem__(self, idx):
 		if (idx^0) >= 0:
 			try:
-				return islice((elt for elt in self.underlying 
-				               if self.filter(elt)), idx, idx+1).next()
+				return islice(iter(self), idx, idx+1).next()
 			except StopIteration:
 				raise IndexError, 'list index out of range'
 		else:
-			return [elt for elt in self.underlying if self.filter(elt)][idx]
-	def idx_map(self):
-		return [pos for pos,elt in enumerate(self.underlying) if self.filter(elt)]
+			return [elt for elt in self._underl_iter() if self._filter(elt)][idx]
+	def idxmap_list(self):
+		return [pos for pos,elt in enumerate(self._underl_iter()) if self._filter(elt)]
+	def idxmap_iter(self):
+		return (pos for pos,elt in enumerate(self._underl_iter()) if self._filter(elt))
 	def real_idx(self, idx):
 		if (idx^0) >= 0:
 			try:
-				return islice((pos for pos,elt in enumerate(self.underlying)
-				                    if self.filter(elt)), idx, idx+1).next()
+				return islice(self.idxmap_iter(), idx, idx+1).next()
 			except StopIteration:
 				raise IndexError, 'list index out of range'
 		else:
-			return [pos for pos,elt in enumerate(self.underlying) if self.filter(elt)][idx]
+			return self.idxmap_list()[idx]
 	def __setitem__(self, idx, new_elt):
-		self.underlying[self.real_idx(idx)] = new_elt
+		self._underlying[self.real_idx(idx) + self._start] = new_elt
 	def __delitem__(self, idx):
-		del self.underlying[self.real_idx(idx)]
+		del self._underlying[self.real_idx(idx) + self._start]
+		self._stop -= 1
+		vlen = self._stop - self._start
+		self._virtual_begin = max(self._virtual_begin, vlen)
+		self._virtual_end = max(self._virtual_end, vlen)
 	def prepend(self, new_elt):
-		pos = first(pos for (pos,elt) in enumerate(self.underlying) if self.filter(elt))
+		pos = first(self.idxmap_iter())
 		if pos is not None:
-			self.underlying.insert(pos, new_elt)
+			self._underlying.insert(self._start + pos, new_elt)
 		else:
-			self.underlying.insert(self.virtual_begin, new_elt)
+			self._underlying.insert(self._start + self._virtual_begin, new_elt)
+		self._stop += 1
 	def _generic_insert(self, ins_pos, new_elt, correction):
-		if (ins_pos^0) >= 0:
-			real_pos = nth((pos for (pos,elt) in enumerate(self.underlying) if self.filter(elt)), ins_pos)
-		else:
-			real_pos = None
-			indices = [pos for (pos,elt) in enumerate(self.underlying) if self.filter(elt)]
-			if -ins_pos <= len(indices):
-				real_pos = indices[ins_pos]
-		if real_pos is not None:
-			self.underlying.insert(real_pos + correction, new_elt)
-		elif ins_pos >= 0:
-			self.append(new_elt)
-		else:
-			self.prepend(new_elt)
+		try:
+			real_pos = self.real_idx(ins_pos)
+			self._underlying.insert(self._start + real_pos + correction, new_elt)
+			self._stop += 1
+		except IndexError:
+			if ins_pos >= 0:
+				self.append(new_elt)
+			else:
+				self.prepend(new_elt)
 	def insert_before(self, ins_pos, new_elt):
 		self._generic_insert(ins_pos, new_elt, 0)
 	insert = insert_before
 	def insert_after(self, ins_pos, new_elt):
 		self._generic_insert(ins_pos, new_elt, 1)
 	def append(self, new_elt):
-		pos = last(pos for (pos,elt) in enumerate(self.underlying) if self.filter(elt))
+		pos = last(self.idxmap_iter())
 		if pos is not None:
-			self.underlying.insert(pos+1, new_elt)
+			self._underlying.insert(self._start + pos + 1, new_elt)
 		else:
-			self.underlying.insert(self.virtual_end, new_elt)
+			self._underlying.insert(self._start + self._virtual_end, new_elt)
+		self._stop += 1
 	def extend(self, seq):
 		for elt in seq:
 			self.append(elt)
+
+### XXX TODO Regression testing for part argument of FilteredView, as well as
+### idxmap_list, idxmap_iter, real_idx
 
 __all__ = ["lazy_", "lzslice", "slice_compose", "lazislice", "FilteredView"]
 
