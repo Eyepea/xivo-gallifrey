@@ -185,7 +185,7 @@ __license__ = """
 """
 
 from pyfunc import *
-from itertools import izip, islice, ifilter
+from itertools import imap, izip, islice, ifilter
 
 def xor(a, b):
 	return (not(a)) != (not(b))
@@ -480,6 +480,16 @@ class FilteredView:
 				raise IndexError, 'list index out of range'
 		else:
 			return self.idxmap_list()[idx]
+	def real_enumerate(self):
+		return ((pos,elt) for pos,elt in enumerate(self._underl_iter()) if self._filter(elt))
+	def idxmap_unsliced_list(self):
+		return [pos + self._start for pos,elt in enumerate(self._underl_iter()) if self._filter(elt)]
+	def idxmap_unsliced_iter(self):
+		return (pos + self._start for pos,elt in enumerate(self._underl_iter()) if self._filter(elt))
+	def real_unsliced_idx(self, idx):
+		return self.real_idx(idx) + self._start
+	def real_unsliced_enumerate(self):
+		return ((pos + self._start, elt) for pos,elt in enumerate(self._underl_iter()) if self._filter(elt))
 	def __setitem__(self, idx, new_elt):
 		self._underlying[self.real_idx(idx) + self._start] = new_elt
 	def __delitem__(self, idx):
@@ -505,6 +515,8 @@ class FilteredView:
 				self.append(new_elt)
 			else:
 				self.prepend(new_elt)
+	def common_insert(self, ins_pos, new_elt, after = False):
+		self._generic_insert(ins_pos, new_elt, bool(after))
 	def insert_before(self, ins_pos, new_elt):
 		self._generic_insert(ins_pos, new_elt, 0)
 	insert = insert_before
@@ -522,7 +534,9 @@ class FilteredView:
 			self.append(elt)
 
 ### XXX TODO Regression testing for part argument of FilteredView, as well as
-### idxmap_list, idxmap_iter, real_idx
+###    idxmap_list, idxmap_iter, real_idx, and real_enumerate and 
+###    their unsliced variant
+### XXX TODO add something to move the start
 
 __all__ = ["lazy_", "lzslice", "slice_compose", "lazislice", "FilteredView"]
 
