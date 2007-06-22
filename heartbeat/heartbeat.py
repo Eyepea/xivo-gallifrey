@@ -1,7 +1,11 @@
 #!/usr/bin/python
 # $Id$
-#
-# Server program that replies Asterisk channels status on an UDP socket
+"""
+Server program that replies Asterisk channels status on an UDP socket.
+Copyright (C) 2007, Proformatique
+"""
+
+__version__ = "$Revision$ $Date$"
 
 import os
 import select
@@ -21,7 +25,7 @@ port_ami = 5038
 buf = 1024
 addr = (host,port_srv)
 #
-pidfile = '/tmp/heartbeat_id_daemon.pid'
+pidfile = '/var/run/heartbeat/heartbeat_id_daemon.pid'
 loopc = 0
 timeout_request_ami = 30
 lastrequest_time = 0
@@ -60,7 +64,7 @@ def id_to_string(idn, mm_status):
 # looks whether a given daemon is running
 def is_alive(process):
     try:
-        ppidfile = open("/tmp/" + process + "_id_daemon.pid", 'r')
+        ppidfile = open("/var/run/heartbeat/" + process + "_id_daemon.pid", 'r')
         ppid = string.strip(ppidfile.readline())
         ppidfile.close()
     except:
@@ -106,10 +110,10 @@ def log_debug(string):
 # logins into the Asterisk MI
 def ami_login(tnet, loginname, events):
 	tnet.read_until("Asterisk Call Manager/1.0")
-	if events == 0:
-		tnet.write("Action: login\r\nUsername: " + loginname + "\r\nSecret: " + loginname + "\r\nEvents: off\r\n\r\n");
+	if events == True:
+		tnet.write("Action: login\r\nUsername: " + loginname + "\r\nSecret: " + loginname + "\r\nEvents: on\r\n\r\n");
 	else:
-		tnet.write("Action: login\r\nUsername: " + loginname + "\r\nSecret: " + loginname + "\r\n\r\n");
+		tnet.write("Action: login\r\nUsername: " + loginname + "\r\nSecret: " + loginname + "\r\nEvents: off\r\n\r\n");
 	tnet.read_until("Message: Authentication accepted")
 	return 0
 
@@ -129,7 +133,7 @@ def ami_quit(tnet):
 def request_zap_status():
     tn = telnetlib.Telnet("localhost", port_ami)
     try:
-        ami_login(tn, "heartbeat", 0)
+        ami_login(tn, "heartbeat", False)
         ami_reply = ami_command(tn, "show channels concise")
         ami_quit(tn)
         tn.close()
@@ -185,35 +189,41 @@ UDPSock.bind(addr)
 ins = [UDPSock]
 
 # Receive messages
-while 1:
-    i,o,e = select.select(ins, [], [], timeout_request_ami)
-    if i:
-        data,addr = UDPSock.recvfrom(buf)
-        log_debug("Sending reply to : " + addr[0])
-	# reply on a different socket
-        replysocket = socket(AF_INET,SOCK_DGRAM)
-        replysocket.bind(('',0))
-        replysocket.sendto(replystring,(addr[0],port_cli))
-        replysocket.close()
-	# reply on the same socket
-	# UDPSock.sendto(replystring,(addr[0], addr[1]))
+while True:
+	try:
+		i,o,e = select.select(ins, [], [], timeout_request_ami)
+		if i:
+			data,addr = UDPSock.recvfrom(buf)
+			log_debug("Sending reply to : " + addr[0])
+			# reply on a different socket
+			replysocket = socket(AF_INET,SOCK_DGRAM)
+			replysocket.bind(('',0))
+			replysocket.sendto(replystring,(addr[0],port_cli))
+			replysocket.close()
+			# reply on the same socket
+			# UDPSock.sendto(replystring,(addr[0], addr[1]))
 
-        # updates last heartbeat information for this IP address
-        current_time = time.time()
-        statusfile = open("/tmp/heartbeat_" + addr[0] + ".log", 'w')
-        statusfile.write(str(current_time))
-        statusfile.close()
+			# updates last heartbeat information for this IP address
+			current_time = time.time()
+			statusfile = open("/var/run/heartbeat/heartbeat_" + addr[0] + ".log", 'w')
+			statusfile.write(str(current_time))
+			statusfile.close()
+		
+			delta_time = current_time - lastrequest_time
+			if delta_time > timeout_request_ami:
+				# when no timeout has occured for a long time, the status is updated
+				lastrequest_time = time.time()
+				replystring = update_status()
+		else:
+			# when timeout occurs, the status is updated
+			try:
+				lastrequest_time = time.time()
+				replystring = update_status()
+			except Exception, exc:
+				log_debug(str(exc))
+	except Exception, exc:
+		log_debug(str(exc))
 
-        delta_time = current_time - lastrequest_time
-        if delta_time > timeout_request_ami:
-            # when no timeout has occured for a long time, the status is updated
-            lastrequest_time = time.time()
-            replystring = update_status()
-
-    else:
-        # when timeout occurs, the status is updated
-        lastrequest_time = time.time()
-        replystring = update_status()
 
 # Close files and sockets
 UDPSock.close()
