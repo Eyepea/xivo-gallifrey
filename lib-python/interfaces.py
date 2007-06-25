@@ -104,6 +104,9 @@ class WrongStanzaType(InvalidStanzaPayload): pass
 class EmptyStanza(InvalidStanzaPayload): pass
 class UnsyncStanza(InvalidStanzaPayload): pass
 
+def _finder_option(option_name):
+	return lambda x: split_pad(x.strip(), 1)[0] == option_name
+
 class Stanza(list):
 	"""This class adds very useful "interfaces" like stanza related methods
 	to the built-in python lists.
@@ -472,7 +475,7 @@ class NetworkInterfacesStanza(Stanza):
 		'options_list', 'options_dict', 'options_multicnt',
 	)
 	def _clear_unparse(self):
-		for attr in PARSED_ATTRIBUTES:
+		for attr in self.PARSED_ATTRIBUTES:
 			if hasattr(self, attr):
 				delattr(self, attr)
 	def _parse_allow(self):
@@ -484,7 +487,7 @@ class NetworkInterfacesStanza(Stanza):
 			self.allow_type = szst_splitted[0][len('allow-'):]
 		else:
 			raise WrongStanzaType([])
-		self.allow_list = filter(lambda x: bool(x), lazy_(szst_splitted)[1:])
+		self.allow_list = filter(lambda x: bool(x), lazislice(szst_splitted)[1:])
 	def _parse_options(self, oplines):
 		self.options_multicnt = {}
 		self.options_dict = {}
@@ -514,9 +517,9 @@ class NetworkInterfacesStanza(Stanza):
 		self.iface_method = splitted[3]
 		self._parse_options(oplines)
 	def parse(self):
-		self.sz_type = UNKNOWN_STANZA
+		self.sz_type = self.UNKNOWN_STANZA
 		self._clear_unparse()
-		if self.has_payload() and not self.has_valid_payload():
+		if self.has_invalid_payload():
 			raise BadlyFormedStanza([])
 		try:
 			szst = self.get_stanza_starter()
@@ -525,12 +528,12 @@ class NetworkInterfacesStanza(Stanza):
 				if szst_splitted[0] == 'auto' \
 				   or szst_splitted[0].find("allow-") == 0: 
 					self._parse_allow()
-					self.sz_type = STANZA_ALLOW
+					self.sz_type = self.STANZA_ALLOW
 				elif szst_splitted[0] == 'iface':
 					self._parse_iface()
-					self.sz_type = STANZA_IFACE
+					self.sz_type = self.STANZA_IFACE
 		except:
-			self.sz_type = UNKNOWN_STANZA
+			self.sz_type = self.UNKNOWN_STANZA
 			self._clear_unparse()
 			raise
 	def get_type(self):
@@ -576,27 +579,26 @@ class NetworkInterfacesStanza(Stanza):
 	def _option_finder(self, pos, line, state, opt_name):
 		return state and split_pad(line.strip(), 1)[0] == opt_name
 	def set_or_change_opt(self, opt_name, opt_value):
-		if opt_name not in options_multicnt:
-			options_multicnt[opt_name] = 1
-			options_dict[opt_name] = opt_value
-			options_list.append((opt_name, opt_value))
-			self.insert_eo_options(
-				self.get_opline_indent('\t')
-				+ unsplit_none((opt_name, opt_value), ' '))
+		if '\n' not in opt_value:
+			opt_value += '\n'
+		if opt_name not in self.options_multicnt:
+			self.options_multicnt[opt_name] = 1
+			self.options_dict[opt_name] = opt_value
+			self.options_list.append((opt_name, opt_value))
+			self.append_optiony(' ' + unsplit_none((opt_name, opt_value), ' '),
+			                    None)
 			return
-		if options_multicnt[opt_name] > 1:
+		if self.options_multicnt[opt_name] > 1:
 			raise OptionSetError(opt_name, opt_value)
-		options_dict[opt_name] = opt_value
+		self.options_dict[opt_name] = opt_value
 		p = -1
-		for p, (k, v) in enumerate(options_list):
+		for p, (k, v) in enumerate(self.options_list):
 			if k == opt_name: break
 		if p == -1:
 			raise OptionSetError(opt_name, opt_value)
-		options_list[p] = (opt_name, opt_value)
-		self.find_replace_option(
-			self._option_finder,
-			unsplit_none((opt_name, opt_value), ' '),
-			opt_name)
+		self.options_list[p] = (opt_name, opt_value)
+		self.replace_option(' ' + unsplit_none((opt_name, opt_value), ' '),
+		                    None, _finder_option(opt_name))
 	def set_iface_attr(self, attr, value):
 		attrs = ('name', 'family', 'method')
 		if attr not in attrs:
@@ -622,6 +624,7 @@ class NetworkInterfaces(SplittedStanzas):
 		
 		stanza_class must provide at least the interface of 
 		NetworkInterfacesStanza."""
+		self.stanza_class = stanza_class
 		SplittedStanzas.__init__(self, iteralines, stanza_class)
 	def parse(self):
 		for stanza in self.stanza_list:
@@ -639,14 +642,16 @@ class NetworkInterfaces(SplittedStanzas):
 			raise RedundantIfaces(filtered_multiples)
 	def sanity_check(self):
 		self._no_redundant_ifaces_check()
+		# XXX also check no double allow and everything in allow
+		# also in iface stanzas
 	def iterallow(self, what=None):
 		return (stanza for stanza in self.stanza_list
-		        if stanza.get_type() == STANZA_ALLOW
-			and (what is None
-			     or stanza.get_allow_desc()[0] == what))
+		        if stanza.get_type() == self.stanza_class.STANZA_ALLOW
+		           and (what is None
+		                or stanza.get_allow_desc()[0] == what))
 	def iteriface(self):
 		return (stanza for stanza in self.stanza_list
-		        if stanza.get_type() == STANZA_IFACE)
+		        if stanza.get_type() == self.stanza_class.STANZA_IFACE)
 	def get_allow_list(self, what='auto'):
 		"""Returns the list of interfaces to be automatically brought up
 		when "ifup" is run with the "-a" option (like at system startup)
@@ -663,6 +668,36 @@ class NetworkInterfaces(SplittedStanzas):
 		"allow-" stanzas at all."""
 		return flatten_list(stanza.get_allow_desc()[1]
 		                    for stanza in self.iterallow(what))
+	def allow_iface(self, iface_name, what = 'auto'):
+		if iface_name in self.get_allow_list():
+			return
+		# Look for comment line with just allow-<what> <iface_name> and
+		# if what is 'auto', also look for auto <iface_name>
+		if what == 'auto':
+			commented = re.compile(r'^#\s*(('+re.escape('allow-'+what)+
+			                       r'|auto)\s+'+re.escape(iface_name)+
+					       r'\s*)$')
+		else:
+			commented = re.compile(r'^#\s*('+re.escape('allow-'+what)+
+			                       r'\s+'+re.escape(iface_name)+r'\s*)$')
+		found_sz = -1
+		for p_sz, sz in enumerate(self.stanza_list):
+			p_ln_line = find(lambda p,l: commented.search(l), enumerate(sz))
+			if p_ln_line is not None:
+				p_ln,line = p_ln_line
+				match = commented.search(line)
+				found_sz = p_sz
+				break
+		if found_sz >= 0:
+			after = 0
+			p_line = self.stanza_list[found_sz].get_stanza_starter_pos()
+			if p_line is None or p_ln > p_line[0]:
+				after = 1
+			self.stanza_list[found_sz].pop(p_ln)
+			self.stanza_list.insert(found_sz + after,
+				self.stanza_class([match.group(1)+'\n']))
+			return
+		# Commented line not found
 	def get_all_allow_lists(self):
 		"""Returns a list of consolidated (name, <interfaces_list>)
 		tuples where name contains an 'allow-' stanza qualifier and
@@ -680,3 +715,19 @@ class NetworkInterfaces(SplittedStanzas):
 				allow_list_dict[allow_desc[0]] = []
 			allow_list_dict[allow_desc[0]].extend(allow_desc[1])
 		return [(name, allow_list_dict[name]) for name in allow_type_list]
+	def get_iface_names(self):
+		"Returns a list of described interfaces"
+		return [sz.get_iface_name() for sz in self.iteriface()]
+	def get_iface(self, iface_name):
+		"Returns the first interface stanza with given iface_name"
+		sz = find(lambda x: x.get_iface_name() == iface_name, self.iteriface())
+		if sz is None:
+			raise KeyError, repr(iface_name)
+		return sz
+	def iterlines(self):
+		return flatten_seq(self.stanza_list)
+
+__all__ = ['Error', 'RedundantIfaces', 'InvalidStanzaPayload', 'OptionSetError',
+           'BadlyFormedStanza', 'BadlyFormedStarter', 'WrongStanzaType',
+           'EmptyStanza', 'UnsyncStanza', 'Stanza', 'SplittedStanzas',
+	   'NetworkInterfacesStanza', 'NetworkInterfaces']
