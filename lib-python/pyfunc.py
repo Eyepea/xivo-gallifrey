@@ -119,6 +119,11 @@ def flatten_list(seq_of_seq):
 		lst.extend(one_seq)
 	return lst
 
+def flatten_seq(seq_of_seq):
+	for seq in seq_of_seq:
+		for x in seq:
+			yield x
+
 def at_least(num, check_func, seq):
 	"""Returns True if at least the first 'num' items of 'seq' are valids
 	as checked by 'check_func', otherwise - i.e. there is less than 'num'
