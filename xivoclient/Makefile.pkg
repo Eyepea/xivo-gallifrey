@@ -4,12 +4,17 @@
 export
 
 WRK_DIR ?= $(shell pwd)
+# no unscrambled packaged yet
+DEB_TB_SCRAMBLED = "0"
 
 default:
 
 tarball-dep:
 	# return concatenated tarball deps for each module
 	@$(MAKE) -C push -f Makefile.pkg tarball-dep
+
+tarball-scrambled:
+	@echo "$(DEB_TB_SCRAMBLED)"
 
 tarball:
 	# run each submodule tarball build
