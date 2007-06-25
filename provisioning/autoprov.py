@@ -264,7 +264,9 @@ class SQLBackEnd:
 		
 		"""
 		self.sql_modify(
-			"REPLACE INTO %s (macaddr, vendor, model, proto, iduserfeatures, isinalan) VALUES (%s, %s, %s, %s, %s, %s)" \
+			("REPLACE INTO %s "
+			 "(macaddr, vendor, model, proto, iduserfeatures, isinalan)"
+			 " VALUES (%s, %s, %s, %s, %s, %s)")
 			% (TABLE, '%s', '%s', '%s', '%s', '%s', '%s'),
 			map(lambda x: phone[x], ('macaddr', 'vendor', 'model',
 			                         'proto', 'iduserfeatures', 'isinalan')))
@@ -278,8 +280,9 @@ class SQLBackEnd:
 		'macaddr', 'vendor', 'model', 'proto', 'iduserfeatures', 'isinalan'
 		
 		"""
-		mapping = dict(map(lambda x: (x,x), ("macaddr", "vendor",
-		                          "model", "proto", "iduserfeatures")))
+		mapping = dict(map(lambda x: (x,x),
+		                   ("macaddr", "vendor", "model", "proto",
+				    "iduserfeatures", "isinalan")))
 		nummap, sexpr = nummap_and_selectexpr_from_symbmap(mapping)
 		query = ("SELECT %s FROM %s " +
 		         "WHERE iduserfeatures=%s AND proto=%s") \
