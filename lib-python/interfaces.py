@@ -803,7 +803,12 @@ class NetworkInterfaces(SplittedStanzas):
 	def iterlines(self):
 		return flatten_seq(self.stanza_list)
 
+LO_DEFAULT_STANZA = ['iface lo inet loopback\n', '\n']
+def INET_DEFAULT_STANZA(iface_name):
+	return ['iface '+iface_name+' inet static\n', '\n']
+
 __all__ = ['Error', 'RedundantIfaces', 'InvalidStanzaPayload', 'OptionSetError',
            'BadlyFormedStanza', 'BadlyFormedStarter', 'WrongStanzaType',
            'EmptyStanza', 'UnsyncStanza', 'Stanza', 'SplittedStanzas',
-	   'NetworkInterfacesStanza', 'NetworkInterfaces']
+	   'NetworkInterfacesStanza', 'NetworkInterfaces',
+	   'LO_DEFAULT_STANZA', 'INET_DEFAULT_STANZA']
