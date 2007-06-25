@@ -23,15 +23,13 @@ CONFIG_LIB_PATH = 'py_lib_path'
 from getopt import getopt
 from xivo import ConfigPath
 from xivo.ConfigPath import *
-opts,args = getopt(sys.argv[1:], GETOPT_SHORTOPTS)
-for v in [v for k,v in opts if k == '-c']:
-	CONFIG_FILE = v
-ConfiguredPathHelper(CONFIG_FILE, CONFIG_LIB_PATH)
-del opts, args
-try: del k
-except: pass
-try: del v
-except: pass
+def config_path():
+	global CONFIG_FILE
+	opts,args = getopt(sys.argv[1:], GETOPT_SHORTOPTS)
+	for v in [v for k,v in opts if k == '-c']:
+		CONFIG_FILE = v
+	ConfiguredPathHelper(CONFIG_FILE, CONFIG_LIB_PATH)
+config_path()
 # === END of early configuration handling
 
 
@@ -769,6 +767,9 @@ def main(log_level, foreground):
 		if not foreground:
 			syslogf(SYSLOG_NOTICE, "Transforming into a daemon from hell")
 			daemonize.daemonize(log_stderr_and_syslog, PIDFILE, True)
+		else:
+			syslogf(SYSLOG_NOTICE, "Not daemonizing, trying to take PID anyway")
+			daemonize.create_pidfile_or_die(log_stderr_and_syslog, PIDFILE, True)
 		syslogf(SYSLOG_NOTICE, "HTTP server creation")
 		http_server = ThreadingHTTPServer((pgc['listen_ipv4'], pgc['listen_port']), ProvHttpHandler)
 		http_server.my_ctx = CommonProvContext(
