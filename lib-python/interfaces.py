@@ -551,6 +551,23 @@ class NetworkInterfacesStanza(Stanza):
 		
 		"""
 		return (self.allow_type, self.allow_list)
+	def _get_allow_outtype(self):
+		if self.allow_type == 'auto':
+			return 'auto'
+		else:
+			return 'allow-' + self.allow_type
+	def _replace_allow(self):
+		self.replace_starter(None, ' '.join(chain((self._get_allow_outtype(),), self.allow_list)) + '\n')
+	def allow_add(self, iface_name):
+		if iface_name in self.allow_list:
+			return
+		self.allow_list.append(iface_name)
+		self._replace_allow()
+	def allow_remove(self, iface_name):
+		if iface_name not in self.allow_list:
+			return
+		self.allow_list.remove(iface_name)
+		self._replace_allow()
 	def get_iface_desc(self):
 		return (self.iface_name, self.iface_family, self.iface_method)
 	def get_iface_name(self):
@@ -585,18 +602,18 @@ class NetworkInterfacesStanza(Stanza):
 			self.options_multicnt[opt_name] = 1
 			self.options_dict[opt_name] = opt_value
 			self.options_list.append((opt_name, opt_value))
-			self.append_optiony(' ' + unsplit_none((opt_name, opt_value), ' '),
-			                    None)
+			self.append_option(' ' + unsplit_none((opt_name, opt_value), ' '),
+			                   None)
 			return
 		if self.options_multicnt[opt_name] > 1:
 			raise OptionSetError(opt_name, opt_value)
 		self.options_dict[opt_name] = opt_value
-		p = -1
-		for p, (k, v) in enumerate(self.options_list):
-			if k == opt_name: break
-		if p == -1:
+		found_pkv = find(lambda (p, (k, v)): k == opt_name,
+		                 enumerate(self.options_list))
+		if found_pkv is None:
 			raise OptionSetError(opt_name, opt_value)
-		self.options_list[p] = (opt_name, opt_value)
+		found_p, (k, v) = found_pkv
+		self.options_list[found_p] = (opt_name, opt_value)
 		self.replace_option(' ' + unsplit_none((opt_name, opt_value), ' '),
 		                    None, _finder_option(opt_name))
 	def set_iface_attr(self, attr, value):
@@ -649,8 +666,16 @@ class NetworkInterfaces(SplittedStanzas):
 		        if stanza.get_type() == self.stanza_class.STANZA_ALLOW
 		           and (what is None
 		                or stanza.get_allow_desc()[0] == what))
+	def enumallow(self, what=None):
+		return ((pos,stanza) for pos,stanza in enumerate(self.stanza_list)
+		        if stanza.get_type() == self.stanza_class.STANZA_ALLOW
+		           and (what is None
+		                or stanza.get_allow_desc()[0] == what))
 	def iteriface(self):
 		return (stanza for stanza in self.stanza_list
+		        if stanza.get_type() == self.stanza_class.STANZA_IFACE)
+	def enumiface(self):
+		return ((pos,stanza) for pos,stanza in enumerate(self.stanza_list)
 		        if stanza.get_type() == self.stanza_class.STANZA_IFACE)
 	def get_allow_list(self, what='auto'):
 		"""Returns the list of interfaces to be automatically brought up
@@ -668,9 +693,16 @@ class NetworkInterfaces(SplittedStanzas):
 		"allow-" stanzas at all."""
 		return flatten_list(stanza.get_allow_desc()[1]
 		                    for stanza in self.iterallow(what))
+	def _get_pos_sz_iface(self, iface_name):
+		pos_sz = find(lambda (pos,sz): sz.get_iface_name() == iface_name,
+		              self.enumiface())
+		if pos_sz is None:
+			raise KeyError, repr(iface_name)
+		return pos_sz
 	def allow_iface(self, iface_name, what = 'auto'):
-		if iface_name in self.get_allow_list():
+		if iface_name in self.get_allow_list(what):
 			return
+		pos,iface_sz = self._get_pos_sz_iface(iface_name)
 		# Look for comment line with just allow-<what> <iface_name> and
 		# if what is 'auto', also look for auto <iface_name>
 		if what == 'auto':
@@ -680,24 +712,68 @@ class NetworkInterfaces(SplittedStanzas):
 		else:
 			commented = re.compile(r'^#\s*('+re.escape('allow-'+what)+
 			                       r'\s+'+re.escape(iface_name)+r'\s*)$')
-		found_sz = -1
-		for p_sz, sz in enumerate(self.stanza_list):
-			p_ln_line = find(lambda p,l: commented.search(l), enumerate(sz))
-			if p_ln_line is not None:
-				p_ln,line = p_ln_line
-				match = commented.search(line)
-				found_sz = p_sz
-				break
-		if found_sz >= 0:
+		# Find the first stanza in which a commented line match the 
+		# commented regex, and returns
+		# (stanza_pos,(line_pos,line,match_object)) if found, else None
+		found_psz_plc = \
+		  find(lambda (psz,p_l_c): p_l_c is not None,
+		       ((psz, find(lambda (p,l,c): bool(c),
+		                   ((p,l,commented.search(l))
+				    for p,l in enumerate(sz))))
+		        for psz,sz in enumerate(self.stanza_list)))
+		if found_psz_plc is not None:
+			found_sz,(p_ln,line,match) = found_psz_plc
 			after = 0
 			p_line = self.stanza_list[found_sz].get_stanza_starter_pos()
 			if p_line is None or p_ln > p_line[0]:
 				after = 1
 			self.stanza_list[found_sz].pop(p_ln)
+			new_found_sz = found_sz + (not after)
+			uncommented_line = match.group(1)
+			if '\n' != uncommented_line[-1]:
+				uncommented_line += '\n'
 			self.stanza_list.insert(found_sz + after,
-				self.stanza_class([match.group(1)+'\n']))
+				self.stanza_class([uncommented_line]))
+			self.stanza_list[found_sz + after].parse()
+			if not self.stanza_list[new_found_sz]:
+				self.stanza_list.pop(new_found_sz)
 			return
-		# Commented line not found
+		# Commented line not found, will insert a new one just before
+		# iface stanza
+		if what != 'auto':
+			what = 'allow-' + what
+		self.stanza_list.insert(pos, self.stanza_class([what+' '+iface_name+'\n']))
+		self.stanza_list[pos].parse()
+	def _suppress_allow_starter(self, allow_pos, allow_sz):
+		stpos,stline = allow_sz.get_stanza_starter_pos()
+		allow_sz.pop(stpos)
+		new_line = '#' + stline
+		self.stanza_list.pop(allow_pos)
+		if allow_pos > 0:
+			self.stanza_list[allow_pos-1].append(new_line)
+			self.stanza_list[allow_pos-1].extend(allow_sz.itercomments())
+		else:
+			self.stanza_list.insert(0, self.stanza_class([new_line]))
+			self.stanza_list[0].extend(allow_sz.itercomments())
+			self.stanza_list[0].parse()
+	def _disallow_iface_remove(self, iface_name, what):
+		allow_pos_sz = \
+		  find(lambda (pos,sz): iface_name in sz.get_allow_desc()[1],
+		       self.enumallow(what))
+		if allow_pos_sz is None:
+			return
+		allow_pos,allow_sz = allow_pos_sz
+		if allow_pos >= 0:
+			if [iface_name] == allow_sz.get_allow_desc()[1]:
+				self._suppress_allow_starter(allow_pos, allow_sz)
+			else:
+				allow_sz.allow_remove(iface_name)
+	def disallow_iface(self, iface_name, what = 'auto'):
+		# will raise except if no such iface:
+		self._get_pos_sz_iface(iface_name)
+		# Ensure that no allow stanza containing <iface_name> remains
+		while iface_name in self.get_allow_list(what):
+			self._disallow_iface_remove(iface_name, what)
 	def get_all_allow_lists(self):
 		"""Returns a list of consolidated (name, <interfaces_list>)
 		tuples where name contains an 'allow-' stanza qualifier and
