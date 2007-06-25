@@ -155,16 +155,13 @@ def take_file_lock_or_die(own_file, lock_file, own_content):
 			"playing with us."
 			% lock_file)
 
-def daemonize(logline_func = LOGLINE_STDERR, pidfile = None, pidfile_lock = False,
-              logout = None, logerr = None):
-	"""Daemonize the program, ie. make it runs in the "background",
-	detach it from its controlling terminal, and detach it from its
-	controlling process group session.
+def create_pidfile_or_die(logline_func = LOGLINE_STDERR, pidfile = None, pidfile_lock = False):
+	"""You must give a writable filename in parameter 'pidfile', or None.
 	
-	If you specify a writable filename in parameter 'pidfile', it will be
-	created if possible.
+	If you pass None no action will be performed.
 	
-	There are two modes of operation when creating pidfiles: 
+	Otherwise there are two modes of operation to create the pidfile:
+	
 	* If pidfile_lock is False we can unconditionally create a pidfile,
 	  overwriting any previously existing one. If its possible to start
 	  the process only when no such pidfile exists or when it contains a
@@ -178,6 +175,41 @@ def daemonize(logline_func = LOGLINE_STDERR, pidfile = None, pidfile_lock = Fals
 	  non-temporary one and the temporary link is destroyed. At this point
 	  if the non-temporary pidfile contains our own PID, we know for sure
 	  that we just atomically grabbed a lock and the right to serenely run.
+
+	Exceptions are logged thanks to the 'logline_func' function, which is
+	called one line at a time when applicable.	
+
+	This function returns the PID. """
+	pid = os.getpid()
+	try:
+	    if pidfile:
+		if pidfile_lock:
+			remove_if_stale_pidfile(pidfile, logline_func)
+			pid_write_file = pidfile + '.' + str(pid)
+		else:
+			pid_write_file = pidfile
+		fpid = open(pid_write_file, 'w')
+		try:
+			fpid.write("%s\n" % (pid,))
+		finally:
+			fpid.close()
+		if pidfile_lock:
+			take_file_lock_or_die(pid_write_file, pidfile, "%s\n" % (pid,))
+	except:
+		log_exception(logline_func)
+		sys.exit(1)
+	return pid
+
+def daemonize(logline_func = LOGLINE_STDERR, pidfile = None, pidfile_lock = False,
+              logout = None, logerr = None):
+	"""Daemonize the program, ie. make it runs in the "background",
+	detach it from its controlling terminal, and detach it from its
+	controlling process group session.
+	
+	'pidfile' and 'pidfile_lock' will be passed to function
+	create_pidfile_or_die() after forking. 'pidfile' can contain None 
+	(default value) in which case create_pidfile_or_die() will take no
+	action.
 	
 	If 'logout' is not None, standard output will be directed to this
 	Python file interface object instead of /dev/null. Same thing for
@@ -204,24 +236,7 @@ def daemonize(logline_func = LOGLINE_STDERR, pidfile = None, pidfile_lock = Fals
 		log_exception(logline_func)
 		sys.exit(1)
 
-	pid = os.getpid()
-	try:
-	    if pidfile:
-		if pidfile_lock:
-			remove_if_stale_pidfile(pidfile, logline_func)
-			pid_write_file = pidfile + '.' + str(pid)
-		else:
-			pid_write_file = pidfile
-		fpid = open(pid_write_file, 'w')
-		try:
-			fpid.write("%s\n" % (pid,))
-		finally:
-			fpid.close()
-		if pidfile_lock:
-			take_file_lock_or_die(pid_write_file, pidfile, "%s\n" % (pid,))
-	except:
-		log_exception(logline_func)
-		sys.exit(1)
+	pid = create_pidfile_or_die(logline_func, pidfile, pidfile_lock)
 
 	# Redirect standard file descriptors.
 	sys.stdout.flush()
