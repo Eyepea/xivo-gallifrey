@@ -116,6 +116,26 @@ import threading
 import time
 import urllib
 import _sre
+
+# XIVO lib-python modules initialization
+from xivo import ConfigPath
+from xivo.ConfigPath import *
+xivoconffile		= "/etc/asterisk/xivo_daemon.conf"
+GETOPT_SHORTOPTS	= 'dc:'
+GETOPT_LONGOPTS		= ["daemon", "config="]
+CONFIG_LIB_PATH		= 'py_lib_path'
+def config_path():
+	global xivoconffile
+	for opt, arg in getopt.getopt(sys.argv[1:], "dc:", ["daemon", "config="])[0]:
+        	if opt == "-c":
+			xivoconffile = arg
+	ConfiguredPathHelper(xivoconffile, CONFIG_LIB_PATH)
+config_path()
+debug_mode = (sys.argv.count('-d') > 0)
+
+# XIVO lib-python modules imports
+import daemonize
+
 # XIVO modules
 import xivo_ami
 import xivo_sip
@@ -135,14 +155,14 @@ allowed_states = ["available", "away", "outtolunch", "donotdisturb", "berightbac
 #  state :            cf. allowed_states
 # The user identifier will likely be its phone number
 
-pidfile = '/var/run/xivo_daemon.pid'
-bufsize_large = 8192
-bufsize_udp = 2048
-bufsize_any = 512
+PIDFILE = '/var/run/xivo_daemon.pid'
+BUFSIZE_LARGE = 8192
+BUFSIZE_UDP = 2048
+BUFSIZE_ANY = 512
 
 socket.setdefaulttimeout(2)
-timeout_between_registers = 60
-expires = str(2 * timeout_between_registers) # timeout between subscribes
+TIMEOUT_BETWEEN_REGISTERS = 60
+EXPIRES = str(2 * TIMEOUT_BETWEEN_REGISTERS) # timeout between subscribes
 
 ## \class myLDAP
 class myLDAP:
@@ -167,38 +187,12 @@ class myLDAP:
 			print exc
 
 
-## \brief Function for Daemonizing
-# \return none
-def daemonize():
-	try:
-		pid = os.fork()
-		if pid > 0:
-			sys.exit(0)
-	except OSError, exc:
-		sys.exit(1)
-	os.setsid()
-	os.umask(0)
-	try:
-		pid = os.fork()
-		if pid > 0: sys.exit(0)
-	except OSError, exc:
-		sys.exit(1)
-	dev_null = file('/dev/null', 'r+')
-	os.dup2(dev_null.fileno(), sys.stdin.fileno())
-	os.dup2(dev_null.fileno(), sys.stdout.fileno())
-	os.dup2(dev_null.fileno(), sys.stderr.fileno())
-
-
 ## \brief Logs actions to a log file, prepending them with a timestamp.
 # \param string the string to log
 # \return zero
 # \sa log_debug
 def varlog(string):
-	global logfile
 	syslog.syslog(syslog.LOG_NOTICE, "xivo_daemon : " + string)
-	if logfile:
-		logfile.write(time.strftime("%b %2d %H:%M:%S ", time.localtime()) + string + "\n")
-		logfile.flush()
 	return 0
 
 
@@ -208,7 +202,7 @@ def varlog(string):
 # \return the return code of the varlog call
 # \sa varlog
 def log_debug(string):
-	if sys.argv.count('-d') > 0: print "#debug# " + string
+	if debug_mode: print "#debug# " + string
 	return varlog(string)
 
 
@@ -711,7 +705,7 @@ def parseSIP(astnum, data, l_sipsock, l_addrsip):
 		    md5_r2   = md5.md5(imsg   + ":" + uri).hexdigest()
 		    response = md5.md5(md5_r1 + ":" + nonce + ":" + md5_r2).hexdigest()
 		    auth = "Authorization: Digest username=\"%s\", realm=\"asterisk\", nonce=\"%s\", uri=\"%s\", response=\"%s\", algorithm=MD5\r\n" %(iaccount, nonce, uri, response)
-		    command = xivo_sip.sip_register(configs[astnum], "sip:" + iaccount, 1, "reg_cid@xivopy", expires, auth)
+		    command = xivo_sip.sip_register(configs[astnum], "sip:" + iaccount, 1, "reg_cid@xivopy", EXPIRES, auth)
 		    l_sipsock.sendto(command, (configs[astnum].remoteaddr, configs[astnum].portsipsrv))
 	    elif iret == 403:
 		    log_debug("%s : REGISTER %s Unauthorized" %(configs[astnum].astid, iaccount))
@@ -725,7 +719,7 @@ def parseSIP(astnum, data, l_sipsock, l_addrsip):
 			    if sipnum.find("SIP/") == 0:
 				    if mycontext == plist[astnum].normal[sipnum].context:
 					    dtnow = time.time() - plist[astnum].normal[sipnum].lasttime
-					    if dtnow > (2 * timeout_between_registers):
+					    if dtnow > (2 * TIMEOUT_BETWEEN_REGISTERS):
 						    if plist[astnum].normal[sipnum].sipstatus != "Timeout":
 							    plist[astnum].normal[sipnum].set_sipstatus("Timeout")
 							    update_GUI_clients(astnum, sipnum, "sip___3")
@@ -737,7 +731,7 @@ def parseSIP(astnum, data, l_sipsock, l_addrsip):
 					    command = xivo_sip.sip_subscribe(configs[astnum], "sip:" + iaccount, 1,
 									     cid,
 									     plist[astnum].normal[sipnum].phonenum,
-									     expires, "")
+									     EXPIRES, "")
 					    l_sipsock.sendto(command, (configs[astnum].remoteaddr, configs[astnum].portsipsrv))
 				    else:
 					    pass
@@ -760,7 +754,7 @@ def parseSIP(astnum, data, l_sipsock, l_addrsip):
 			    auth = "Authorization: Digest username=\"%s\", realm=\"asterisk\", nonce=\"%s\", uri=\"%s\", response=\"%s\", algorithm=MD5\r\n" %(iaccount, nonce, uri, response)
 			    command = xivo_sip.sip_subscribe(configs[astnum], "sip:" + iaccount, 1,
 							     icid,
-							     plist[astnum].normal[sipphone].phonenum, expires, auth)
+							     plist[astnum].normal[sipphone].phonenum, EXPIRES, auth)
 			    l_sipsock.sendto(command, (configs[astnum].remoteaddr, configs[astnum].portsipsrv))
 		    elif iret == 403:
 			    log_debug("%s : SUBSCRIBE %s Unauthorized %s" %(configs[astnum].astid, iaccount, icid))
@@ -813,7 +807,7 @@ def do_sip_register_subscribe(astnum, l_sipsock):
 	global plist, configs
 	for sipacc in configs[astnum].mysipaccounts:
 		#rdc = ''.join(random.sample('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijkLmnopqrstuvwxyz0123456789',12))
-		command = xivo_sip.sip_register(configs[astnum], "sip:" + sipacc[1], 1, "reg_cid@xivopy", expires, "")
+		command = xivo_sip.sip_register(configs[astnum], "sip:" + sipacc[1], 1, "reg_cid@xivopy", EXPIRES, "")
 		l_sipsock.sendto(command, (configs[astnum].remoteaddr, configs[astnum].portsipsrv))
 		# command = xivo_sip.sip_options(configs[astnum], "sip:" + configs[astnum].mysipname, cid, sipnum)
 
@@ -840,7 +834,7 @@ def split_from_ui(fullname):
 def manage_tcp_connection(connid, allow_events):
     global AMIclasssock, AMIcomms, ins
     try:
-	    msg = connid[0].recv(bufsize_large)
+	    msg = connid[0].recv(BUFSIZE_LARGE)
     except Exception, exc:
 	    msg = ""
 	    log_debug("UI connection : a problem occured when recv from %s : %s" %(str(connid[0]),str(exc)))
@@ -2263,32 +2257,22 @@ class MyTCPServer(SocketServer.ThreadingTCPServer):
 # ==============================================================================
 # ==============================================================================
 
+def log_stderr_and_syslog(x):
+	print >> sys.stderr, x
+	syslog.syslog(syslog.LOG_ERR, x)
 
 # ==============================================================================
 # Main Code starts here
 # ==============================================================================
 
-# daemonize if not in debug mode
-if sys.argv.count('-d') == 0:
-	daemonize()
-try:
-	f = open(pidfile, "w")
-	try:
-		f.write("%d\n"%os.getpid())
-	finally:
-		f.close()
-except Exception, exc:
-	print exc
-
-xivoconffile = "/etc/asterisk/xivo_daemon.conf"
-
-opts, args = getopt.getopt(sys.argv[1:], "dc:", ["daemon", "config="])
-for opt, arg in opts:
-        if opt == "-c":
-		xivoconffile = arg
-
 xivoconf = ConfigParser.ConfigParser()
 xivoconf.readfp(open(xivoconffile))
+
+# daemonize if not in debug mode
+if not debug_mode:
+	daemonize.daemonize(log_stderr_and_syslog, PIDFILE, True)
+else:
+	daemonize.create_pidfile_or_die(log_stderr_and_syslog, PIDFILE, True)
 
 port_login = 5000
 port_keepalive = 5001
@@ -2297,7 +2281,6 @@ port_ui_srv = 5003
 port_phpui_srv = 5004
 port_switchboard_base_sip = 5005
 session_expiration_time = 60
-log_filename = "/var/log/pf-xivo-cti-server/xivo_daemon.log"
 xivoconf_general = dict(xivoconf.items("general"))
 capabilities = ""
 asterisklist = ""
@@ -2317,8 +2300,6 @@ if "port_switchboard_base_sip" in xivoconf_general:
 	port_switchboard_base_sip = int(xivoconf_general["port_switchboard_base_sip"])
 if "expiration_session" in xivoconf_general:
 	session_expiration_time = int(xivoconf_general["expiration_session"])
-if "logfile" in xivoconf_general:
-	log_filename = xivoconf_general["logfile"]
 if "capabilities" in xivoconf_general:
 	capabilities = xivoconf_general["capabilities"]
 if "asterisklist" in xivoconf_general:
@@ -2403,14 +2384,6 @@ requestserver = MyTCPServer(('', port_request), IdentRequestHandler)
 # overhead is not worth it.
 #keepaliveserver = SocketServer.ThreadingUDPServer(('', port_keepalive), KeepAliveHandler)
 keepaliveserver = SocketServer.UDPServer(('', port_keepalive), KeepAliveHandler)
-
-
-# opens the logfile for output in append mode
-try:
-	logfile = open(log_filename, 'a')
-except Exception, exc:
-	print "Could not open %s in append mode : %s" %(log_filename,exc)
-	logfile = False
 
 # user list initialized empty
 userlist = []
@@ -2527,7 +2500,7 @@ signal.signal(signal.SIGHUP, sighandler_reload)
 # Receive messages
 while not askedtoquit:
     try:
-	    [i, o, e] = select.select(ins, [], [], timeout_between_registers)
+	    [i, o, e] = select.select(ins, [], [], TIMEOUT_BETWEEN_REGISTERS)
     except Exception, exc:
 	    if askedtoquit: sys.exit(5)
 	    # TBD : if not askedtoquit => reload the config
@@ -2544,7 +2517,7 @@ while not askedtoquit:
 		res = filter(lambda j: j in SIPsocks, i)[0]
 		for n in items_asterisks:
 			if SIPsocks[n] is res: break
-		[data, addrsip] = SIPsocks[n].recvfrom(bufsize_udp)
+		[data, addrsip] = SIPsocks[n].recvfrom(BUFSIZE_UDP)
 		is_an_options_packet = parseSIP(n, data, SIPsocks[n], addrsip)
 		# if the packet is an OPTIONS one (sent for instance when * is restarted)
 		if is_an_options_packet:
@@ -2559,7 +2532,7 @@ while not askedtoquit:
 		for n in items_asterisks:
 			if AMIsocks[n] is res: break
 		try:
-			a = AMIsocks[n].recv(bufsize_any)
+			a = AMIsocks[n].recv(BUFSIZE_ANY)
 			if len(a) == 0: # end of connection from server side : closing socket
 				log_debug(configs[n].astid + " : AMI (events = on)  : CLOSING")
 				AMIsocks[n].close()
@@ -2575,7 +2548,7 @@ while not askedtoquit:
 		for n in items_asterisks:
 			if AMIcomms[n] is res: break
 		try:
-			a = AMIcomms[n].recv(bufsize_any)
+			a = AMIcomms[n].recv(BUFSIZE_ANY)
 			if len(a) == 0: # end of connection from server side : closing socket
 				log_debug(configs[n].astid + " : AMI (events = off) : CLOSING")
 				AMIcomms[n].close()
@@ -2620,13 +2593,13 @@ while not askedtoquit:
 			log_debug("a problem occured when managing PHP tcp connection : " + str(exc))
 	# advertising from other xivo_daemon's around
 	elif xdal in i:
-		[data, addrsip] = xdal.recvfrom(bufsize_udp)
+		[data, addrsip] = xdal.recvfrom(BUFSIZE_UDP)
 		log_debug("a xivo_daemon is around : " + str(addrsip))
 	else:
 		log_debug("unknown socket " + str(i))
 
 	for n in items_asterisks:
-		if (time.time() - lastrequest_time[n]) > timeout_between_registers:
+		if (time.time() - lastrequest_time[n]) > TIMEOUT_BETWEEN_REGISTERS:
 			lastrequest_time[n] = time.time()
 			log_debug(configs[n].astid + " : do_sip_register_subscribe (computed timeout) " + time.strftime("%H:%M:%S", time.localtime()))
 			update_sipnumlist(n)
@@ -2642,13 +2615,9 @@ while not askedtoquit:
 
 
 try:
-	os.unlink(pidfile)
+	os.unlink(PIDFILE)
 except Exception, exc:
 	print exc
 
 print 'end of the execution flow...'
 sys.exit(0)
-
-# Close files and sockets
-logfile.close()
-
