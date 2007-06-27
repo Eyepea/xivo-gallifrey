@@ -139,6 +139,7 @@ void CallStackWidget::reset()
 	m_monitoredPeer = "";
 	emptyList();
 	changeTitle("");
+	m_calllist.clear();
 }
 
 /*!
