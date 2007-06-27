@@ -116,12 +116,12 @@
     <message>
         <location filename="mainwidget.cpp" line="111"/>
         <source>&amp;Disconnect</source>
-        <translation type="unfinished">&amp;Déconnecter</translation>
+        <translation>&amp;Déconnecter</translation>
     </message>
     <message>
         <location filename="mainwidget.cpp" line="112"/>
         <source>Disconnect from the server</source>
-        <translation type="unfinished">Déconnecter du serveur</translation>
+        <translation>Déconnecter du serveur</translation>
     </message>
     <message>
         <location filename="mainwidget.cpp" line="124"/>
@@ -136,7 +136,7 @@
     <message>
         <location filename="mainwidget.cpp" line="146"/>
         <source>&amp;Do not disturb</source>
-        <translation>&amp;Ne pas déranger</translation>
+        <translation>&amp;Ne Pas Déranger</translation>
     </message>
     <message>
         <location filename="mainwidget.cpp" line="167"/>
@@ -176,12 +176,12 @@
     <message>
         <location filename="mainwidget.cpp" line="136"/>
         <source>&amp;Be Right Back</source>
-        <translation>&amp;Reviens de suite</translation>
+        <translation>&amp;Bientôt De Retour</translation>
     </message>
     <message>
         <location filename="mainwidget.cpp" line="141"/>
         <source>&amp;Out To Lunch</source>
-        <translation>&amp;Parti manger</translation>
+        <translation>&amp;Parti Déjeuner</translation>
     </message>
     <message>
         <location filename="mainwidget.cpp" line="180"/>
