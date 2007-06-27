@@ -1,18 +1,22 @@
 #!/usr/bin/python
-# $Revision$
 # $Date$
-#
+"""
+Asterisk AMI utilities.
+Copyright (C) 2007, Proformatique
+"""
+
+__version__ = "$Revision$ $Date$"
 
 import socket
 
-bufsize_large = 8192
+BUFSIZE_LARGE = 8192
 
 ## \brief Logins into the Asterisk Manager Interface.
 def ami_socket_login(raddr, amiport, loginname, passname, events):
 	try:
 		sockid = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		sockid.connect((raddr, amiport))
-		sockid.recv(bufsize_large)
+		sockid.recv(BUFSIZE_LARGE)
 		# check against "Asterisk Call Manager/1.0\r\n"
 		if events == True:
 			sockid.send("Action: login\r\nUsername: " + loginname + "\r\nSecret: " + passname + "\r\nEvents: on\r\n\r\n")

@@ -1,9 +1,11 @@
 #!/usr/bin/python
-# $Revision$
 # $Date$
-#
+"""
+Functions in order to build SIP packets.
+Copyright (C) 2007, Proformatique
+"""
 
-# functions in order to build SIP packets
+__version__ = "$Revision$ $Date$"
 
 import random
 
@@ -28,7 +30,7 @@ def sip_register(cfg, me, cseq, callid, expires, authentication):
     command += "Contact: <" + me + "@" + here + ">\r\n"
     command += authentication
     command += "User-Agent: Switchboard Watcher\r\n"
-    command += "Expires: " + expires + "\r\n"
+    command += "Expires: %d\r\n" %expires
     command += "Content-Length: 0\r\n"
     command += "\r\n"
     return command
@@ -54,7 +56,7 @@ def sip_subscribe(cfg, me, cseq, callid, sipnumber, expires, authentication):
     command += "Contact: <" + me + "@" + here + ">\r\n"
     command += authentication
     command += "User-Agent: Switchboard Watcher\r\n"
-    command += "Expires: " + expires + "\r\n"
+    command += "Expires: %d\r\n" %expires
     command += "Content-Length: 0\r\n"
     command += "\r\n"
     return command
