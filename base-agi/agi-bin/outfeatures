@@ -83,7 +83,12 @@ if len(sys.argv) > 1:
 		provider = ""
 	else:
 		provider = sys.argv[1]
-
+	
+	if len(sys.argv) > 2:
+		context = sys.argv[2]
+	else:
+		context = ""
+	
 	if provider:
 		get_provider(provider)
 		sys.exit()
@@ -103,10 +108,14 @@ if len(sys.argv) > 1:
 
 					if len(exten) == lennum and not config.get(s, 'externregexp'):
 						if exten[:len(config.get(s, 'prefix'))] == config.get(s, 'prefix'):
-							get_provider(s)
-							sys.exit()
+							if (not config.has_option(s, 'context')) or \
+							       (config.has_option(s, 'context') and context == config.get(s, 'context')):
+								get_provider(s)
+								sys.exit()
+							else:
+								print "VERBOSE \"Found no provider for this number %s and context %s!\"" %(exten,context)
 						else:
-							print "VERBOSE \"No found provider for this number %s!\"" % exten
+							print "VERBOSE \"Found no provider for this number %s!\"" % exten
 					else:
 						try:
 							import re
@@ -114,8 +123,12 @@ if len(sys.argv) > 1:
 								r = re.compile(config.get(s, 'externregexp'))
 								if len(r.findall(exten)) != 0:
 									if r.findall(exten)[0]:
-										get_provider(s)
-										sys.exit()
+										if (not config.has_option(s, 'context')) or \
+										       (config.has_option(s, 'context') and context == config.get(s, 'context')):
+											get_provider(s)
+											sys.exit()
+										else:
+											print "VERBOSE \"Found no provider in this context %s!\"" %(context)
 						except IndexError:
 							print "VERBOSE \"Error for the regexp %s on the section %s\"" %(config.get(s, 'externregexp'), s)
 							print "VERBOSE \"Maybe this number is wrong!\""
