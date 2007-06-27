@@ -3,7 +3,7 @@
 <context>
     <name>CallStackWidget</name>
     <message>
-        <location filename="callstackwidget.cpp" line="258"/>
+        <location filename="callstackwidget.cpp" line="264"/>
         <source>Monitoring : </source>
         <translation>Surveillance de : </translation>
     </message>
@@ -11,12 +11,12 @@
 <context>
     <name>CallWidget</name>
     <message>
-        <location filename="callwidget.cpp" line="67"/>
+        <location filename="callwidget.cpp" line="89"/>
         <source>&amp;Hangup</source>
         <translation>&amp;Raccrocher</translation>
     </message>
     <message>
-        <location filename="callwidget.cpp" line="68"/>
+        <location filename="callwidget.cpp" line="90"/>
         <source>Hang up/Close the channel</source>
         <translation>Raccroche/Ferme la liaison</translation>
     </message>
@@ -75,32 +75,32 @@
 <context>
     <name>DisplayMessagesPanel</name>
     <message>
-        <location filename="displaymessages.cpp" line="21"/>
+        <location filename="displaymessages.cpp" line="39"/>
         <source>Messages :</source>
-        <translation type="unfinished">Messages :</translation>
+        <translation>Messages :</translation>
     </message>
     <message>
-        <location filename="displaymessages.cpp" line="26"/>
+        <location filename="displaymessages.cpp" line="44"/>
         <source>Time Stamp</source>
-        <translation type="unfinished">horotage</translation>
+        <translation>Horodatage</translation>
     </message>
     <message>
-        <location filename="displaymessages.cpp" line="27"/>
+        <location filename="displaymessages.cpp" line="45"/>
         <source>Message</source>
-        <translation type="unfinished">Message</translation>
+        <translation>Message</translation>
     </message>
 </context>
 <context>
     <name>ExtendedTableWidget</name>
     <message>
-        <location filename="extendedtablewidget.cpp" line="37"/>
+        <location filename="extendedtablewidget.cpp" line="55"/>
         <source>&amp;Dial</source>
         <translation>&amp;Composer</translation>
     </message>
     <message>
-        <location filename="extendedtablewidget.cpp" line="40"/>
+        <location filename="extendedtablewidget.cpp" line="58"/>
         <source>&amp;Transfer</source>
-        <translation type="unfinished">&amp;Transférer</translation>
+        <translation>&amp;Transférer</translation>
     </message>
 </context>
 <context>
@@ -116,12 +116,12 @@
         <translation type="obsolete">Rappeler</translation>
     </message>
     <message>
-        <location filename="logeltwidget.cpp" line="37"/>
+        <location filename="logeltwidget.cpp" line="57"/>
         <source>&amp;Call back</source>
         <translation type="unfinished">R&amp;appeler</translation>
     </message>
     <message>
-        <location filename="logeltwidget.cpp" line="38"/>
+        <location filename="logeltwidget.cpp" line="58"/>
         <source>Call back the correspondent</source>
         <translation type="unfinished">Rappeler le correspondant</translation>
     </message>
@@ -151,7 +151,7 @@
     <message>
         <location filename="logwidget.cpp" line="50"/>
         <source>&amp;None</source>
-        <translation type="unfinished">&amp;Aucun</translation>
+        <translation>&amp;Aucun</translation>
     </message>
 </context>
 <context>
@@ -219,37 +219,37 @@
     <message>
         <location filename="mainwindow.cpp" line="368"/>
         <source>&lt;h3&gt;XIVO Switchboard&lt;/h3&gt;&lt;p&gt;This application displays the status of the ongoing phone calls.&lt;/p&gt;&lt;p&gt;Version : %1&lt;/p&gt;&lt;p&gt;(C) 2007 &lt;b&gt;Proformatique&lt;/b&gt; &lt;a href=&quot;http://www.proformatique.com&quot;&gt;http://www.proformatique.com&lt;/a&gt;&lt;/p&gt;&lt;p&gt;67 rue Voltaire 92800 Puteaux FRANCE&lt;/p&gt;&lt;p&gt;E-mail : technique@proformatique.com&lt;/p&gt;&lt;p&gt;(+33/0)1.41.38.99.60&lt;/p&gt;&lt;p&gt;Author : Thomas Bernard&lt;/p&gt;</source>
-        <translation type="unfinished">&lt;h3&gt;XIVO Switchboard&lt;/h3&gt;&lt;p&gt;Cette application affiche le statut des appels téléphoniques en cours.&lt;/p&gt;&lt;p&gt;Version : %1&lt;/p&gt;&lt;p&gt;(C) 2007 &lt;b&gt;Proformatique&lt;/b&gt; &lt;a href=&quot;http://www.proformatique.com&quot;&gt;http://www.proformatique.com&lt;/a&gt;&lt;/p&gt;&lt;p&gt;67 rue Voltaire 92800 Puteaux FRANCE&lt;/p&gt;&lt;p&gt;E-mail : technique@proformatique.com&lt;/p&gt;&lt;p&gt;(+33/0)1.41.38.99.60&lt;/p&gt;&lt;p&gt;Auteur : Thomas Bernard&lt;/p&gt;</translation>
+        <translation>&lt;h3&gt;XIVO Switchboard&lt;/h3&gt;&lt;p&gt;Cette application affiche le statut des appels téléphoniques en cours.&lt;/p&gt;&lt;p&gt;Version : %1&lt;/p&gt;&lt;p&gt;(C) 2007 &lt;b&gt;Proformatique&lt;/b&gt; &lt;a href=&quot;http://www.proformatique.com&quot;&gt;http://www.proformatique.com&lt;/a&gt;&lt;/p&gt;&lt;p&gt;67 rue Voltaire 92800 Puteaux FRANCE&lt;/p&gt;&lt;p&gt;E-mail : technique@proformatique.com&lt;/p&gt;&lt;p&gt;(+33/0)1.41.38.99.60&lt;/p&gt;&lt;p&gt;Auteur : Thomas Bernard&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="251"/>
         <source>&amp;Available</source>
-        <translation type="unfinished">&amp;Disponible</translation>
+        <translation>&amp;Disponible</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="256"/>
         <source>A&amp;way</source>
-        <translation type="unfinished">&amp;Parti</translation>
+        <translation>&amp;Occupé</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="261"/>
         <source>&amp;Be Right Back</source>
-        <translation type="unfinished">&amp;Revient de suite</translation>
+        <translation>&amp;Bientôt De Retour</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="266"/>
         <source>&amp;Out To Lunch</source>
-        <translation type="unfinished">P&amp;arti déjeuner</translation>
+        <translation>P&amp;arti Déjeuner</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="271"/>
         <source>&amp;Do not disturb</source>
-        <translation type="unfinished">&amp;Ne pas déranger</translation>
+        <translation>&amp;Ne Pas Déranger</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="288"/>
         <source>&amp;Availability</source>
-        <translation type="unfinished">&amp;Disponibilité</translation>
+        <translation>&amp;Disponibilité</translation>
     </message>
 </context>
 <context>
@@ -262,7 +262,7 @@
     <message>
         <location filename="peerwidget.cpp" line="68"/>
         <source>Remove this peer from the panel</source>
-        <translation type="unfinished">Suppression de ce poste du panneau</translation>
+        <translation>Suppression de ce poste du panneau</translation>
     </message>
     <message>
         <location filename="peerwidget.cpp" line="66"/>
@@ -280,7 +280,7 @@
         <translation>&amp;Intercepter</translation>
     </message>
     <message>
-        <location filename="peeritem.cpp" line="34"/>
+        <location filename="peeritem.cpp" line="52"/>
         <source>SIP Presence: </source>
         <translation type="unfinished">Présence SIP : </translation>
     </message>
@@ -308,7 +308,7 @@
 <context>
     <name>SearchPanel</name>
     <message>
-        <location filename="searchpanel.cpp" line="16"/>
+        <location filename="searchpanel.cpp" line="34"/>
         <source>N&amp;ame or number to search :</source>
         <translation>N&amp;om ou numéro à rechercher :</translation>
     </message>
@@ -381,27 +381,27 @@
     <message>
         <location filename="switchboardengine.cpp" line="196"/>
         <source>Connection lost with Presence Server</source>
-        <translation type="unfinished">Connection perdue avec le serveur de présence</translation>
+        <translation>Connexion perdue avec le serveur de présence</translation>
     </message>
     <message>
         <location filename="switchboardengine.cpp" line="218"/>
         <source>Connection refused</source>
-        <translation type="unfinished">Connection refusée</translation>
+        <translation>Connexion refusée</translation>
     </message>
     <message>
         <location filename="switchboardengine.cpp" line="227"/>
         <source>Host not found</source>
-        <translation type="unfinished">Hôte non trouvé</translation>
+        <translation>Hôte non trouvé</translation>
     </message>
     <message>
         <location filename="switchboardengine.cpp" line="230"/>
         <source>Unknown socket error</source>
-        <translation type="unfinished">Erreur reseau inconnue</translation>
+        <translation>Erreur réseau inconnue</translation>
     </message>
     <message>
         <location filename="switchboardengine.cpp" line="422"/>
         <source>Peers&apos; status updated</source>
-        <translation type="unfinished">Status des postes mis à jour</translation>
+        <translation>Statut des postes mis à jour</translation>
     </message>
 </context>
 </TS>
