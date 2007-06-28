@@ -1120,13 +1120,20 @@ def manage_tcp_connection(connid, allow_events):
 			else:
 				connid[0].send("XIVO CLI:" + configs[n].astid + "\n")
 				try:
-					s = AMIclasssock[n].execclicommand(usefulmsg.strip())
-					try:
-						for x in s: connid[0].send(x)
-						connid[0].send("XIVO CLI:OK\n")
-					except Exception, exc:
-						log_debug("(%s) error : php command : (client %s:%d) : %s"
-							  %(configs[n].astid, connid[1], connid[2], str(exc)))
+					if not AMIclasssock[n]:
+						log_debug("AMI was not connected - attempting to connect again")
+						AMIclasssock[n] = connect_to_AMI((configs[n].remoteaddr,
+										  configs[n].ami_port),
+										 configs[n].ami_login,
+										 configs[n].ami_pass)
+					if AMIclasssock[n]:
+						s = AMIclasssock[n].execclicommand(usefulmsg.strip())
+						try:
+							for x in s: connid[0].send(x)
+							connid[0].send("XIVO CLI:OK\n")
+						except Exception, exc:
+							log_debug("(%s) error : php command : (client %s:%d) : %s"
+								  %(configs[n].astid, connid[1], connid[2], str(exc)))
 				except Exception, exc:
 					connid[0].send("XIVO CLI:KO Exception : %s\n" %(str(exc)))
 		else:
