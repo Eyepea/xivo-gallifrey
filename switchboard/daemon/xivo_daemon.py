@@ -1198,7 +1198,7 @@ def handle_ami_event_link(listkeys, astnum, src, dst, clid1, clid2):
 # \return
 def handle_ami_event_hangup(listkeys, astnum, chan, cause):
 	global plist
-	plist[astnum].normal_channel_hangup(chan, DUMMY_MYNUM, "ami-eh")
+	plist[astnum].normal_channel_hangup(chan, "ami-eh")
 
 
 ## \brief Returns a given field from an AMI line.
@@ -1386,6 +1386,7 @@ def handle_ami_event(astnum, idata):
 										   "ami-er3")
 					except Exception, exc:
 						log_debug("%s : renaming (A) failed : %s" %(configs[astnum].astid,str(exc)))
+
 					try:
 						plist[astnum].normal_channel_fills(channel_p1, DUMMY_CLID,
 										   DUMMY_STATE, 0, DUMMY_DIR,
@@ -1393,6 +1394,12 @@ def handle_ami_event(astnum, idata):
 										   "ami-er4")
 					except Exception, exc:
 						log_debug("%s : renaming (B) failed : %s" %(configs[astnum].astid,str(exc)))
+
+					try:
+						plist[astnum].normal_channel_hangup(channel_old, "ami-er5")
+					except Exception, exc:
+						log_debug("%s : renaming (hangup) failed : %s" %(configs[astnum].astid,str(exc)))
+
 			else:
 				log_debug("AMI:Rename:A: %s : old=%s new=%s"
 					  %(plist[astnum].astid, channel_old, channel_new))
@@ -1724,7 +1731,7 @@ class PhoneList:
 		self.update_GUI_clients(phoneid_src, "ncf-" + comment)
 
 
-	def normal_channel_hangup(self, chan_src, num_src, comment):
+	def normal_channel_hangup(self, chan_src, comment):
 		phoneid_src = channel_splitter(chan_src)
 		if phoneid_src not in self.normal.keys():
 			self.normal[phoneid_src] = LineProp(phoneid_src.split("/")[0],
@@ -2281,247 +2288,6 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
 class MyTCPServer(SocketServer.ThreadingTCPServer):
 	allow_reuse_address = True
 
-# ==============================================================================
-# ==============================================================================
-
-def log_stderr_and_syslog(x):
-	print >> sys.stderr, x
-	syslog.syslog(syslog.LOG_ERR, x)
-
-# ==============================================================================
-# Main Code starts here
-# ==============================================================================
-
-xivoconf = ConfigParser.ConfigParser()
-xivoconf.readfp(open(xivoconffile))
-
-# daemonize if not in debug mode
-if not debug_mode:
-	daemonize.daemonize(log_stderr_and_syslog, PIDFILE, True)
-else:
-	daemonize.create_pidfile_or_die(log_stderr_and_syslog, PIDFILE, True)
-
-port_login = 5000
-port_keepalive = 5001
-port_request = 5002
-port_ui_srv = 5003
-port_phpui_srv = 5004
-port_switchboard_base_sip = 5005
-xivoclient_session_timeout = 60
-xivosb_register_frequency = 60
-gui_filename = "/var/log/pf-xivo-cti-server/gui.log"
-evt_filename = "/var/log/pf-xivo-cti-server/ami_events.log"
-xivoconf_general = dict(xivoconf.items("general"))
-capabilities = ""
-asterisklist = ""
-maxgui = 5
-
-if "port_fiche_login" in xivoconf_general:
-	port_login = int(xivoconf_general["port_fiche_login"])
-if "port_fiche_keepalive" in xivoconf_general:
-	port_keepalive = int(xivoconf_general["port_fiche_keepalive"])
-if "port_fiche_agi" in xivoconf_general:
-	port_request = int(xivoconf_general["port_fiche_agi"])
-if "port_switchboard" in xivoconf_general:
-	port_ui_srv = int(xivoconf_general["port_switchboard"])
-if "port_php" in xivoconf_general:
-	port_phpui_srv = int(xivoconf_general["port_php"])
-if "port_switchboard_base_sip" in xivoconf_general:
-	port_switchboard_base_sip = int(xivoconf_general["port_switchboard_base_sip"])
-if "xivoclient_session_timeout" in xivoconf_general:
-	xivoclient_session_timeout = int(xivoconf_general["xivoclient_session_timeout"])
-if "xivosb_register_frequency" in xivoconf_general:
-	xivosb_register_frequency = int(xivoconf_general["xivosb_register_frequency"])
-if "evtfile" in xivoconf_general:
-	evt_filename = xivoconf_general["evtfile"]
-if "guifile" in xivoconf_general:
-	gui_filename = xivoconf_general["guifile"]
-if "capabilities" in xivoconf_general:
-	capabilities = xivoconf_general["capabilities"]
-if "asterisklist" in xivoconf_general:
-	asterisklist = xivoconf_general["asterisklist"].split(",")
-if "maxgui" in xivoconf_general:
-	maxgui = int(xivoconf_general["maxgui"])
-
-with_ami = True
-with_sip = True
-with_advert = False
-if "noami" in xivoconf_general: with_ami = False
-if "nosip" in xivoconf_general: with_sip = False
-if "advert" in xivoconf_general: with_advert = True
-
-configs = []
-save_for_next_packet_events = []
-save_for_next_packet_status = []
-n = 0
-ip_reverse_php = {}
-ip_reverse_sht = {}
-
-for i in xivoconf.sections():
-	if i != "general" and i in asterisklist:
-		xivoconf_local = dict(xivoconf.items(i))
-
-		localaddr = "127.0.0.1"
-		userlisturl = "sso.php"
-		ipaddress = "127.0.0.1"
-		ipaddress_php = "127.0.0.1"
-		extrachannels = ""
-		ami_port = 5038
-		ami_login = "xivouser"
-		ami_pass = "xivouser"
-		sip_port = 5060
-		sip_presence = ""
-
-		if "localaddr" in xivoconf_local:
-			localaddr = xivoconf_local["localaddr"]
-		if "userlisturl" in xivoconf_local:
-			userlisturl = xivoconf_local["userlisturl"]
-		if "ipaddress" in xivoconf_local:
-			ipaddress = xivoconf_local["ipaddress"]
-		if "ipaddress_php" in xivoconf_local:
-			ipaddress_php = xivoconf_local["ipaddress_php"]
-		if "extrachannels" in xivoconf_local:
-			extrachannels = xivoconf_local["extrachannels"]
-		if "ami_port" in xivoconf_local:
-			ami_port = int(xivoconf_local["ami_port"])
-		if "ami_login" in xivoconf_local:
-			ami_login = xivoconf_local["ami_login"]
-		if "ami_pass" in xivoconf_local:
-			ami_pass = xivoconf_local["ami_pass"]
-		if "sip_port" in xivoconf_local:
-			sip_port = int(xivoconf_local["sip_port"])
-		if "sip_presence" in xivoconf_local:
-			sip_presence = xivoconf_local["sip_presence"]
-
-		configs.append(AsteriskRemote(i,
-					      userlisturl,
-					      extrachannels,
-					      localaddr,
-					      ipaddress,
-					      ipaddress_php,
-					      ami_port,
-					      ami_login,
-					      ami_pass,
-					      port_switchboard_base_sip + n,
-					      sip_port,
-					      sip_presence))
-		ip_reverse_sht[ipaddress] = n
-		ip_reverse_php[ipaddress_php] = n
-		save_for_next_packet_events.append("")
-		save_for_next_packet_status.append("")
-		n += 1
-
-# Instantiate the SocketServer Objects.
-loginserver = MyTCPServer(('', port_login), LoginHandler)
-# TODO: maybe we should listen on only one interface (localhost ?)
-requestserver = MyTCPServer(('', port_request), IdentRequestHandler)
-# Do we need a Threading server for the keep alive ? I dont think so,
-# packets processing is non blocking so thead creation/start/stop/delete
-# overhead is not worth it.
-#keepaliveserver = SocketServer.ThreadingUDPServer(('', port_keepalive), KeepAliveHandler)
-keepaliveserver = SocketServer.UDPServer(('', port_keepalive), KeepAliveHandler)
-
-if debug_mode:
-	# opens the evtfile for output in append mode
-	try:
-		evtfile = open(evt_filename, 'a')
-	except Exception, exc:
-		print "Could not open %s in append mode : %s" %(evt_filename,exc)
-		evtfile = False
-	# opens the guifile for output in append mode
-	try:
-		guifile = open(gui_filename, 'a')
-	except Exception, exc:
-		print "Could not open %s in append mode : %s" %(gui_filename,exc)
-		guifile = False
-
-# user list initialized empty
-userlist = []
-userlist_lock = threading.Condition()
-
-plist = []
-SIPsocks = []
-AMIsocks = []
-AMIcomms = []
-AMIclasssock = []
-asteriskr = {}
-
-# We have three sockets to listen to so we cannot use the
-# very easy to use SocketServer.serve_forever()
-# So select() is what we need. The SocketServer.handle_request() calls
-# won't block the execution. In case of the TCP servers, they will
-# spawn a new thread, in case of the UDP server, the request handling
-# process should be fast. If it isnt, use a threading UDP server ;)
-ins = [loginserver.socket, requestserver.socket, keepaliveserver.socket]
-
-items_asterisks = xrange(len(configs))
-
-time_start = time.time()
-log_debug("the monitored asterisk's is/are : " + str(asterisklist))
-log_debug("# STARTING XIVO Daemon # (1/3) AMI socket connections")
-
-for n in items_asterisks:
-	plist.append(PhoneList(configs[n].astid))
-	userlist.append({})
-	asteriskr[configs[n].astid] = n
-	AMIcomms.append(-1)
-	AMIsocks.append(-1)
-
-	SIPsock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-	SIPsock.bind(("", configs[n].portsipclt))
-	SIPsocks.append(SIPsock)
-	ins.append(SIPsock)
-
-	AMIclasssock.append(connect_to_AMI((configs[n].remoteaddr,
-					    configs[n].ami_port),
-					   configs[n].ami_login,
-					   configs[n].ami_pass))
-
-
-advertise = "xivo_daemon:" + str(len(items_asterisks))
-xdal = None
-for n in items_asterisks:
-	advertise = advertise + ":" + configs[n].astid
-# xivo daemon advertising
-if with_advert:
-	xda = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-	xda.bind(("", 5010))
-	xda.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-	xda.sendto(advertise, ("255.255.255.255", 5011))
-
-	xdal = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-	xdal.bind(("", 5011))
-	ins.append(xdal)
-
-log_debug("# STARTING XIVO Daemon # (2/3) listening UI sockets")
-
-# opens the listening socket for UI connections
-UIsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-UIsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-UIsock.bind(("", port_ui_srv))
-UIsock.listen(10)
-ins.append(UIsock)
-
-# opens the listening socket for PHP/CLI connections
-PHPUIsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-PHPUIsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-PHPUIsock.bind(("", port_phpui_srv))
-PHPUIsock.listen(10)
-ins.append(PHPUIsock)
-
-tcpopens_sb = []
-tcpopens_php = []
-lastrequest_time = []
-
-askedtoquit = False
-
-log_debug("# STARTING XIVO Daemon # (3/3) fetch SSO, SIP register and subscribe")
-for n in items_asterisks:
-	update_sipnumlist(n)
-	if with_ami: update_amisocks(n)
-	if with_sip: do_sip_register(n, SIPsocks[n])
-	lastrequest_time.append(time.time())
-
 
 ## \brief Handler for catching signals (in the main thread)
 # \param signum signal number
@@ -2539,142 +2305,390 @@ def sighandler(signum, frame):
 # \return none
 def sighandler_reload(signum, frame):
 	global askedtoquit
-	print "--- signal", signum, "received : quits (but will reload later on)"
+	print "--- signal", signum, "received : reloads"
 	askedtoquit = False
 
+# ==============================================================================
+# ==============================================================================
+
+def log_stderr_and_syslog(x):
+	print >> sys.stderr, x
+	syslog.syslog(syslog.LOG_ERR, x)
+
+# ==============================================================================
+# Main Code starts here
+# ==============================================================================
+
+# daemonize if not in debug mode
+if not debug_mode:
+	daemonize.daemonize(log_stderr_and_syslog, PIDFILE, True)
+else:
+	daemonize.create_pidfile_or_die(log_stderr_and_syslog, PIDFILE, True)
 
 signal.signal(signal.SIGINT, sighandler)
 signal.signal(signal.SIGTERM, sighandler)
 signal.signal(signal.SIGHUP, sighandler_reload)
 
+nreload = 0
 
-# Receive messages
-while not askedtoquit:
-    try:
-	    [i, o, e] = select.select(ins, [], [], xivosb_register_frequency)
-    except Exception, exc:
-	    if askedtoquit: sys.exit(5)
-	    # TBD : if not askedtoquit => reload the config
-	    else: sys.exit(6)
-    if i:
-        if loginserver.socket in i:
-		loginserver.handle_request()
-	elif requestserver.socket in i:
-		requestserver.handle_request()
-	elif keepaliveserver.socket in i:
-		keepaliveserver.handle_request()
-	# SIP incoming packets are catched here
-	elif filter(lambda j: j in SIPsocks, i):
-		res = filter(lambda j: j in SIPsocks, i)[0]
-		for n in items_asterisks:
-			if SIPsocks[n] is res: break
-		[data, addrsip] = SIPsocks[n].recvfrom(BUFSIZE_UDP)
-		is_an_options_packet = parseSIP(n, data, SIPsocks[n], addrsip)
-		# if the packet is an OPTIONS one (sent for instance when * is restarted)
-		if is_an_options_packet:
-			log_debug(configs[n].astid + " : do_sip_register (parse SIP) " + time.strftime("%H:%M:%S", time.localtime()))
-			update_sipnumlist(n)
-			if with_ami: update_amisocks(n)
-			if with_sip: do_sip_register(n, SIPsocks[n])
-			lastrequest_time[n] = time.time()
-	# these AMI connections are used in order to manage AMI commands with incoming events
-	elif filter(lambda j: j in AMIsocks, i):
-		res = filter(lambda j: j in AMIsocks, i)[0]
-		for n in items_asterisks:
-			if AMIsocks[n] is res: break
+while True: # loops over the reloads
+	askedtoquit = False
+
+	time_start = time.time()
+	if nreload == 0:
+		log_debug("# STARTING XIVO Daemon # (0/3) Starting")
+	else:
+		log_debug("# STARTING XIVO Daemon # (0/3) Reloading (%d)" %nreload)
+	nreload += 1
+	
+	# global default definitions
+	port_login = 5000
+	port_keepalive = 5001
+	port_request = 5002
+	port_ui_srv = 5003
+	port_phpui_srv = 5004
+	port_switchboard_base_sip = 5005
+	xivoclient_session_timeout = 60
+	xivosb_register_frequency = 60
+	capabilities = ""
+	asterisklist = []
+	maxgui = 5
+	evt_filename = "/var/log/pf-xivo-cti-server/ami_events.log"
+	gui_filename = "/var/log/pf-xivo-cti-server/gui.log"
+	with_ami = True
+	with_sip = True
+	with_advert = False
+
+	xivoconf = ConfigParser.ConfigParser()
+	xivoconf.readfp(open(xivoconffile))
+	xivoconf_general = dict(xivoconf.items("general"))
+
+	# loads the general configuration
+	if "port_fiche_login" in xivoconf_general:
+		port_login = int(xivoconf_general["port_fiche_login"])
+	if "port_fiche_keepalive" in xivoconf_general:
+		port_keepalive = int(xivoconf_general["port_fiche_keepalive"])
+	if "port_fiche_agi" in xivoconf_general:
+		port_request = int(xivoconf_general["port_fiche_agi"])
+	if "port_switchboard" in xivoconf_general:
+		port_ui_srv = int(xivoconf_general["port_switchboard"])
+	if "port_php" in xivoconf_general:
+		port_phpui_srv = int(xivoconf_general["port_php"])
+	if "port_switchboard_base_sip" in xivoconf_general:
+		port_switchboard_base_sip = int(xivoconf_general["port_switchboard_base_sip"])
+	if "xivoclient_session_timeout" in xivoconf_general:
+		xivoclient_session_timeout = int(xivoconf_general["xivoclient_session_timeout"])
+	if "xivosb_register_frequency" in xivoconf_general:
+		xivosb_register_frequency = int(xivoconf_general["xivosb_register_frequency"])
+	if "capabilities" in xivoconf_general:
+		capabilities = xivoconf_general["capabilities"]
+	if "asterisklist" in xivoconf_general:
+		asterisklist = xivoconf_general["asterisklist"].split(",")
+	if "maxgui" in xivoconf_general:
+		maxgui = int(xivoconf_general["maxgui"])
+	if "evtfile" in xivoconf_general:
+		evt_filename = xivoconf_general["evtfile"]
+	if "guifile" in xivoconf_general:
+		gui_filename = xivoconf_general["guifile"]
+
+	if "noami" in xivoconf_general: with_ami = False
+	if "nosip" in xivoconf_general: with_sip = False
+	if "advert" in xivoconf_general: with_advert = True
+
+	configs = []
+	save_for_next_packet_events = []
+	save_for_next_packet_status = []
+	n = 0
+	ip_reverse_php = {}
+	ip_reverse_sht = {}
+
+	# loads the configuration for each asterisk
+	for i in xivoconf.sections():
+		if i != "general" and i in asterisklist:
+			xivoconf_local = dict(xivoconf.items(i))
+
+			localaddr = "127.0.0.1"
+			userlisturl = "sso.php"
+			ipaddress = "127.0.0.1"
+			ipaddress_php = "127.0.0.1"
+			extrachannels = ""
+			ami_port = 5038
+			ami_login = "xivouser"
+			ami_pass = "xivouser"
+			sip_port = 5060
+			sip_presence = ""
+
+			if "localaddr" in xivoconf_local:
+				localaddr = xivoconf_local["localaddr"]
+			if "userlisturl" in xivoconf_local:
+				userlisturl = xivoconf_local["userlisturl"]
+			if "ipaddress" in xivoconf_local:
+				ipaddress = xivoconf_local["ipaddress"]
+			if "ipaddress_php" in xivoconf_local:
+				ipaddress_php = xivoconf_local["ipaddress_php"]
+			if "extrachannels" in xivoconf_local:
+				extrachannels = xivoconf_local["extrachannels"]
+			if "ami_port" in xivoconf_local:
+				ami_port = int(xivoconf_local["ami_port"])
+			if "ami_login" in xivoconf_local:
+				ami_login = xivoconf_local["ami_login"]
+			if "ami_pass" in xivoconf_local:
+				ami_pass = xivoconf_local["ami_pass"]
+			if "sip_port" in xivoconf_local:
+				sip_port = int(xivoconf_local["sip_port"])
+			if "sip_presence" in xivoconf_local:
+				sip_presence = xivoconf_local["sip_presence"]
+
+			configs.append(AsteriskRemote(i,
+						      userlisturl,
+						      extrachannels,
+						      localaddr,
+						      ipaddress,
+						      ipaddress_php,
+						      ami_port,
+						      ami_login,
+						      ami_pass,
+						      port_switchboard_base_sip + n,
+						      sip_port,
+						      sip_presence))
+			ip_reverse_sht[ipaddress] = n
+			ip_reverse_php[ipaddress_php] = n
+			save_for_next_packet_events.append("")
+			save_for_next_packet_status.append("")
+			n += 1
+
+	# Instantiate the SocketServer Objects.
+	loginserver = MyTCPServer(('', port_login), LoginHandler)
+	# TODO: maybe we should listen on only one interface (localhost ?)
+	requestserver = MyTCPServer(('', port_request), IdentRequestHandler)
+	# Do we need a Threading server for the keep alive ? I dont think so,
+	# packets processing is non blocking so thead creation/start/stop/delete
+	# overhead is not worth it.
+	# keepaliveserver = SocketServer.ThreadingUDPServer(('', port_keepalive), KeepAliveHandler)
+	keepaliveserver = SocketServer.UDPServer(('', port_keepalive), KeepAliveHandler)
+
+	# We have three sockets to listen to so we cannot use the
+	# very easy to use SocketServer.serve_forever()
+	# So select() is what we need. The SocketServer.handle_request() calls
+	# won't block the execution. In case of the TCP servers, they will
+	# spawn a new thread, in case of the UDP server, the request handling
+	# process should be fast. If it isnt, use a threading UDP server ;)
+	ins = [loginserver.socket, requestserver.socket, keepaliveserver.socket]
+
+	if debug_mode:
+		# opens the evtfile for output in append mode
 		try:
-			a = AMIsocks[n].recv(BUFSIZE_ANY)
-			if len(a) == 0: # end of connection from server side : closing socket
-				log_debug(configs[n].astid + " : AMI (events = on)  : CLOSING")
-				AMIsocks[n].close()
-				ins.remove(AMIsocks[n])
-				AMIsocks[n] = -1
-			else:
-				handle_ami_event(n, a)
+			evtfile = open(evt_filename, 'a')
 		except Exception, exc:
-			pass
-	# these AMI connections are used in order to manage AMI commands without events
-	elif filter(lambda j: j in AMIcomms, i):
-		res = filter(lambda j: j in AMIcomms, i)[0]
-		for n in items_asterisks:
-			if AMIcomms[n] is res: break
+			print "Could not open %s in append mode : %s" %(evt_filename,exc)
+			evtfile = False
+		# opens the guifile for output in append mode
 		try:
-			a = AMIcomms[n].recv(BUFSIZE_ANY)
-			if len(a) == 0: # end of connection from server side : closing socket
-				log_debug(configs[n].astid + " : AMI (events = off) : CLOSING")
-				AMIcomms[n].close()
-				ins.remove(AMIcomms[n])
-				AMIcomms[n] = -1
-			else:
-				handle_ami_status(n, a)
+			guifile = open(gui_filename, 'a')
 		except Exception, exc:
-			pass
-	# the new UI (SB) connections are catched here
-        elif UIsock in i:
-		[conn, UIsockparams] = UIsock.accept()
-		if len(tcpopens_sb) >= maxgui:
-			conn.close()
-		else:
-			log_debug("TCP (SB)  socket opened on   %s %s" %(UIsockparams[0],str(UIsockparams[1])))
+			print "Could not open %s in append mode : %s" %(gui_filename,exc)
+			guifile = False
+
+	# user list initialized empty
+	userlist = []
+	userlist_lock = threading.Condition()
+
+	plist = []
+	SIPsocks = []
+	AMIsocks = []
+	AMIcomms = []
+	AMIclasssock = []
+	asteriskr = {}
+
+	items_asterisks = xrange(len(configs))
+	advertise = "xivo_daemon:" + str(len(items_asterisks))
+
+	log_debug("the monitored asterisk's is/are : " + str(asterisklist))
+	log_debug("# STARTING XIVO Daemon # (1/3) AMI socket connections")
+
+	for n in items_asterisks:
+		plist.append(PhoneList(configs[n].astid))
+		userlist.append({})
+		asteriskr[configs[n].astid] = n
+		AMIcomms.append(-1)
+		AMIsocks.append(-1)
+
+		SIPsock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+		SIPsock.bind(("", configs[n].portsipclt))
+		SIPsocks.append(SIPsock)
+		ins.append(SIPsock)
+
+		AMIclasssock.append(connect_to_AMI((configs[n].remoteaddr,
+						    configs[n].ami_port),
+						   configs[n].ami_login,
+						   configs[n].ami_pass))
+		advertise = advertise + ":" + configs[n].astid
+
+	xdal = None
+	# xivo daemon advertising
+	if with_advert:
+		xda = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+		xda.bind(("", 5010))
+		xda.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+		xda.sendto(advertise, ("255.255.255.255", 5011))
+
+		xdal = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+		xdal.bind(("", 5011))
+		ins.append(xdal)
+
+	log_debug("# STARTING XIVO Daemon # (2/3) listening UI sockets")
+
+	# opens the listening socket for UI connections
+	UIsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	UIsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+	UIsock.bind(("", port_ui_srv))
+	UIsock.listen(10)
+	ins.append(UIsock)
+
+	# opens the listening socket for PHP/CLI connections
+	PHPUIsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	PHPUIsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+	PHPUIsock.bind(("", port_phpui_srv))
+	PHPUIsock.listen(10)
+	ins.append(PHPUIsock)
+
+	tcpopens_sb = []
+	tcpopens_php = []
+	lastrequest_time = []
+
+	log_debug("# STARTING XIVO Daemon # (3/3) fetch SSO, SIP register and subscribe")
+	for n in items_asterisks:
+		update_sipnumlist(n)
+		if with_ami: update_amisocks(n)
+		if with_sip: do_sip_register(n, SIPsocks[n])
+		lastrequest_time.append(time.time())
+
+
+	# Receive messages
+	while not askedtoquit:
+	    try:
+		    [i, o, e] = select.select(ins, [], [], xivosb_register_frequency)
+	    except Exception, exc:
+		    if askedtoquit:
+			    try:
+				    os.unlink(PIDFILE)
+			    except Exception, exc:
+				    print exc
+			    if debug_mode:
+				    # Close files and sockets
+				    evtfile.close()
+				    guifile.close()
+			    sys.exit(5)
+		    else:
+			    askedtoquit = True
+			    for s in ins:
+				    s.close()
+			    continue
+	    if i:
+	        if loginserver.socket in i:
+			loginserver.handle_request()
+		elif requestserver.socket in i:
+			requestserver.handle_request()
+		elif keepaliveserver.socket in i:
+			keepaliveserver.handle_request()
+		# SIP incoming packets are catched here
+		elif filter(lambda j: j in SIPsocks, i):
+			res = filter(lambda j: j in SIPsocks, i)[0]
+			for n in items_asterisks:
+				if SIPsocks[n] is res: break
+			[data, addrsip] = SIPsocks[n].recvfrom(BUFSIZE_UDP)
+			is_an_options_packet = parseSIP(n, data, SIPsocks[n], addrsip)
+			# if the packet is an OPTIONS one (sent for instance when * is restarted)
+			if is_an_options_packet:
+				log_debug(configs[n].astid + " : do_sip_register (parse SIP) " + time.strftime("%H:%M:%S", time.localtime()))
+				update_sipnumlist(n)
+				if with_ami: update_amisocks(n)
+				if with_sip: do_sip_register(n, SIPsocks[n])
+				lastrequest_time[n] = time.time()
+		# these AMI connections are used in order to manage AMI commands with incoming events
+		elif filter(lambda j: j in AMIsocks, i):
+			res = filter(lambda j: j in AMIsocks, i)[0]
+			for n in items_asterisks:
+				if AMIsocks[n] is res: break
+			try:
+				a = AMIsocks[n].recv(BUFSIZE_ANY)
+				if len(a) == 0: # end of connection from server side : closing socket
+					log_debug(configs[n].astid + " : AMI (events = on)  : CLOSING")
+					AMIsocks[n].close()
+					ins.remove(AMIsocks[n])
+					AMIsocks[n] = -1
+				else:
+					handle_ami_event(n, a)
+			except Exception, exc:
+				pass
+		# these AMI connections are used in order to manage AMI commands without events
+		elif filter(lambda j: j in AMIcomms, i):
+			res = filter(lambda j: j in AMIcomms, i)[0]
+			for n in items_asterisks:
+				if AMIcomms[n] is res: break
+			try:
+				a = AMIcomms[n].recv(BUFSIZE_ANY)
+				if len(a) == 0: # end of connection from server side : closing socket
+					log_debug(configs[n].astid + " : AMI (events = off) : CLOSING")
+					AMIcomms[n].close()
+					ins.remove(AMIcomms[n])
+					AMIcomms[n] = -1
+				else:
+					handle_ami_status(n, a)
+			except Exception, exc:
+				pass
+		# the new UI (SB) connections are catched here
+	        elif UIsock in i:
+			[conn, UIsockparams] = UIsock.accept()
+			if len(tcpopens_sb) >= maxgui:
+				conn.close()
+			else:
+				log_debug("TCP (SB)  socket opened on   %s %s" %(UIsockparams[0],str(UIsockparams[1])))
+				# appending the opened socket to the ones watched
+				ins.append(conn)
+				conn.setblocking(0)
+				tcpopens_sb.append([conn, UIsockparams[0], UIsockparams[1]])
+		# the new UI (PHP) connections are catched here
+	        elif PHPUIsock in i:
+			[conn, PHPUIsockparams] = PHPUIsock.accept()
+			log_debug("TCP (PHP) socket opened on   %s %s" %(PHPUIsockparams[0],str(PHPUIsockparams[1])))
 			# appending the opened socket to the ones watched
 			ins.append(conn)
 			conn.setblocking(0)
-			tcpopens_sb.append([conn, UIsockparams[0], UIsockparams[1]])
-	# the new UI (PHP) connections are catched here
-        elif PHPUIsock in i:
-		[conn, PHPUIsockparams] = PHPUIsock.accept()
-		log_debug("TCP (PHP) socket opened on   %s %s" %(PHPUIsockparams[0],str(PHPUIsockparams[1])))
-		# appending the opened socket to the ones watched
-		ins.append(conn)
-		conn.setblocking(0)
-		tcpopens_php.append([conn, PHPUIsockparams[0], PHPUIsockparams[1]])
-	# open UI (SB) connections
-        elif filter(lambda j: j[0] in i, tcpopens_sb):
-		conn = filter(lambda j: j[0] in i, tcpopens_sb)[0]
-		try:
-			manage_tcp_connection(conn, True)
-		except Exception, exc:
-			log_debug("a problem occured when managing SB tcp connection : " + str(exc))
-	# open UI (PHP) connections
-        elif filter(lambda j: j[0] in i, tcpopens_php):
-		conn = filter(lambda j: j[0] in i, tcpopens_php)[0]
-		try:
-			manage_tcp_connection(conn, False)
-		except Exception, exc:
-			log_debug("a problem occured when managing PHP tcp connection : " + str(exc))
-	# advertising from other xivo_daemon's around
-	elif xdal in i:
-		[data, addrsip] = xdal.recvfrom(BUFSIZE_UDP)
-		log_debug("a xivo_daemon is around : " + str(addrsip))
-	else:
-		log_debug("unknown socket " + str(i))
-
-	for n in items_asterisks:
-		if (time.time() - lastrequest_time[n]) > xivosb_register_frequency:
-			lastrequest_time[n] = time.time()
-			log_debug(configs[n].astid + " : do_sip_register (computed timeout) " + time.strftime("%H:%M:%S", time.localtime()))
-			update_sipnumlist(n)
-			if with_ami: update_amisocks(n)
-			if with_sip: do_sip_register(n, SIPsocks[n])
-    else: # when nothing happens on the sockets, we fall here sooner or later
-	    log_debug("do_sip_register (select's timeout) " + time.strftime("%H:%M:%S", time.localtime()))
-	    for n in items_asterisks:
-		    lastrequest_time[n] = time.time()
-		    update_sipnumlist(n)
-		    if with_ami: update_amisocks(n)
-		    if with_sip: do_sip_register(n, SIPsocks[n])
-
-
-try:
-	os.unlink(PIDFILE)
-except Exception, exc:
-	print exc
-
-print 'end of the execution flow...'
-sys.exit(0)
-
-if debug_mode:
-	# Close files and sockets
-	evtfile.close()
-	guifile.close()
+			tcpopens_php.append([conn, PHPUIsockparams[0], PHPUIsockparams[1]])
+		# open UI (SB) connections
+	        elif filter(lambda j: j[0] in i, tcpopens_sb):
+			conn = filter(lambda j: j[0] in i, tcpopens_sb)[0]
+			try:
+				manage_tcp_connection(conn, True)
+			except Exception, exc:
+				log_debug("a problem occured when managing SB tcp connection : " + str(exc))
+		# open UI (PHP) connections
+	        elif filter(lambda j: j[0] in i, tcpopens_php):
+			conn = filter(lambda j: j[0] in i, tcpopens_php)[0]
+			try:
+				manage_tcp_connection(conn, False)
+			except Exception, exc:
+				log_debug("a problem occured when managing PHP tcp connection : " + str(exc))
+		# advertising from other xivo_daemon's around
+		elif xdal in i:
+			[data, addrsip] = xdal.recvfrom(BUFSIZE_UDP)
+			log_debug("a xivo_daemon is around : " + str(addrsip))
+		else:
+			log_debug("unknown socket " + str(i))
+	
+		for n in items_asterisks:
+			if (time.time() - lastrequest_time[n]) > xivosb_register_frequency:
+				lastrequest_time[n] = time.time()
+				log_debug(configs[n].astid + " : do_sip_register (computed timeout) " + time.strftime("%H:%M:%S", time.localtime()))
+				update_sipnumlist(n)
+				if with_ami: update_amisocks(n)
+				if with_sip: do_sip_register(n, SIPsocks[n])
+	    else: # when nothing happens on the sockets, we fall here sooner or later
+		    log_debug("do_sip_register (select's timeout) " + time.strftime("%H:%M:%S", time.localtime()))
+		    for n in items_asterisks:
+			    lastrequest_time[n] = time.time()
+			    update_sipnumlist(n)
+			    if with_ami: update_amisocks(n)
+			    if with_sip: do_sip_register(n, SIPsocks[n])
 
