@@ -90,5 +90,9 @@ class ordDict(dict):
 			self[k] = v
 	def values(self):
 		return [self[k] for k in self._seq]
+	def reverse(self):
+		self._seq.reverse()
+	def sort(self):
+		self._seq.sort()
 
 __all__ = ['ordDict']
