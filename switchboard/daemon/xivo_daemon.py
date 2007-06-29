@@ -1612,8 +1612,8 @@ def update_sipnumlist(astnum):
 		lstadd = ""
 		for snl in sipnumlistold:
 			if snl not in sipnumlistnew:
+				lstdel += "del:" + configs[astnum].astid + ":" + build_basestatus(plist[astnum].normal[snl]) + ";"
 				del plist[astnum].normal[snl] # or = "Absent"/0 ?
-				lstdel += "del:" + configs[astnum].astid + ":SIP:" + snl + ";"
 		for snl in sipnumlistnew:
 			if snl not in sipnumlistold:
 				if snl.find("SIP") == 0:
@@ -1646,8 +1646,7 @@ def update_sipnumlist(astnum):
 				if snl in plist[astnum].normal:
 					plist[astnum].normal[snl].set_callerid(sipnuml[snl])
 
-				lstadd += "add:" + configs[astnum].astid + ":" + \
-					  plist[astnum].normal[snl].tech + ":" + snl.split("/")[1] + ":unknown:unknown:0;"
+				lstadd += "add:" + configs[astnum].astid + ":" + build_basestatus(plist[astnum].normal[snl]) + ":0;"
 		for k in tcpopens_sb:
 			if lstdel != "": k[0].send("peerremove=" + lstdel + "\n")
 			if lstadd != "": k[0].send("peeradd=" + lstadd + "\n")
@@ -2558,10 +2557,13 @@ while True: # loops over the reloads
 
 	log_debug("# STARTING XIVO Daemon # (3/3) fetch SSO, SIP register and subscribe")
 	for n in items_asterisks:
-		update_sipnumlist(n)
-		if with_ami: update_amisocks(n)
-		if with_sip: do_sip_register(n, SIPsocks[n])
-		lastrequest_time.append(time.time())
+		try:
+			update_sipnumlist(n)
+			if with_ami: update_amisocks(n)
+			if with_sip: do_sip_register(n, SIPsocks[n])
+			lastrequest_time.append(time.time())
+		except Exception, exc:
+			log_debug(configs[n].astid + " : do_sip_register (parse SIP) " + time.strftime("%H:%M:%S", time.localtime()))
 
 
 	# Receive messages

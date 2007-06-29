@@ -355,7 +355,7 @@ void SwitchBoardEngine::socketReadyRead()
 		QString line = QString::fromUtf8(data);
 		//qDebug() << "<==" << line;
 		QStringList list = line.trimmed().split("=");
-		qDebug() << "<<<" << list.size() << list[0];
+		//qDebug() << "<<<" << list.size() << list[0];
 		if(list.size() == 2) {
 			if(list[0] == QString("hints")) {
 				QStringList listpeers = list[1].split(";");
@@ -394,7 +394,13 @@ void SwitchBoardEngine::socketReadyRead()
 			} else if(list[0] == QString("asterisk")) {
 				QTime currentTime = QTime::currentTime();
 				//QString currentTimeStr = currentTime.toString("hh:mm:ss");
-				emitTextMessage(list[1]/* + " at " + currentTimeStr*/);
+				QStringList message = list[1].split("::");
+				// message[0] : emitter name
+				if(message.size() == 2) {
+					emitTextMessage(message[1]);
+				} else {
+					emitTextMessage(list[1]);
+				}
 
 			} else if(list[0] == QString("peeradd")) {
 				QStringList listpeers = list[1].split(";");
@@ -406,7 +412,10 @@ void SwitchBoardEngine::socketReadyRead()
 				QStringList listpeers = list[1].split(";");
 				for(int i = 0 ; i < listpeers.size() - 1; i++) {
 					QStringList liststatus = listpeers[i].split(":");
-					removePeer(liststatus[1] + "/" + liststatus[3]);
+					QString toremove = "p/" + liststatus[1] + "/" + \
+						liststatus[5] + "/" + liststatus[2] + "/" + \
+						liststatus[3] + "/" + liststatus[4];
+					removePeer(toremove);
 				}
 			} else if(list[0] == QString("history")) {
 				processHistory(list[1].split(";"));
