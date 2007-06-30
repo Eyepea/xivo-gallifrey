@@ -45,11 +45,10 @@ def LoadConfig(filename):
 	cp = ConfigParser()
 	cp.readfp(open(filename))
 	FillDictFromConfigSection(ProvGeneralConf, cp, "general")
-	authorized_prefix = pgc['scan_ifaces_prefix'].split(',')
-	authorized_prefix = [	\
-		p.strip()	\
-		for p in pgc['scan_ifaces_prefix'].split(',')	\
-		if p.strip()	\
+	authorized_prefix = [
+		p.strip()
+		for p in pgc['scan_ifaces_prefix'].split(',')
+		if p.strip()
 	]
 
 def elem_or_none(r, el):
