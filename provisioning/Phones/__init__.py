@@ -19,8 +19,4 @@ def get_module_list_from_package_path(package_path):
 		if re.search(r'\.py[^\.]*$', filename)
 		and '__init__' not in filename])
 
-mypath = get_this_internal_package_path()
-__all__ = get_module_list_from_package_path(mypath)
-
-if "GEN_STATIC_INIT" in dir(sys.modules['__main__']):
-	print "__all__ = " + str(__all__)
+__all__ = get_module_list_from_package_path(get_this_internal_package_path())
