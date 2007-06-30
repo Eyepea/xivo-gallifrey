@@ -1,4 +1,4 @@
-import re, os, sys, os.path
+import re, os, os.path
 
 __version__ = "$Revision$ $Date$"
 
