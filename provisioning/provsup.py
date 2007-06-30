@@ -53,9 +53,10 @@ def LoadConfig(filename):
 
 def elem_or_none(r, el):
 	"r is a dictionary or None, and if (e1 in r) then r[el] must exists"
-	if (r is None) or (el not in r):
+	if r is None:
 		return None
-	return r[el]
+	else:
+		return r.get(el)
 
 def lst_get(lst, idx, dft=None):
 	"lst_get(lst, idx, default) -> lst[idx] if idx > 0 and idx < len(lst), else dft."
