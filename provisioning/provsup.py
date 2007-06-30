@@ -41,7 +41,7 @@ pgc = ProvGeneralConf
 authorized_prefix = ["eth"]
 
 def LoadConfig(filename):
-	global ProvGeneralConf
+	global ProvGeneralConf, authorized_prefix
 	cp = ConfigParser()
 	cp.readfp(open(filename))
 	FillDictFromConfigSection(ProvGeneralConf, cp, "general")
