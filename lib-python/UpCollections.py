@@ -9,7 +9,7 @@
 __version__ = "$Revision$ $Date$"
 
 from operator import itemgetter as _itemgetter
-
+import sys as _sys
 import collections as _collections
 try:
     _collections.NamedTuple
@@ -47,11 +47,12 @@ except AttributeError:
                 return '%(typename)s(%(reprtxt)s)' %% self
         ''' % locals()
         for i, name in enumerate(field_names):
-            template += '\n        %s = property(itemgetter(%d))\n' % (name, i)
+            template += '\n            %s = property(itemgetter(%d))\n' % (name, i)
         m = dict(itemgetter=_itemgetter)
         exec template in m
         result = m[typename]
-        result.__module__ = 'collections'
+        if hasattr(_sys, '_getframe'):
+            result.__module__ = _sys._getframe(1).f_globals['__name__']
         return result
 
     _collections.NamedTuple = NamedTuple
