@@ -34,16 +34,14 @@ CONFIG_LIB_PATH = 'py_lib_path'
 from getopt import getopt
 from xivo import ConfigPath
 from xivo.ConfigPath import *
-opts,args = getopt(sys.argv[1:], GETOPT_SHORTOPTS)
-sys.argv[1:] = args # strip options for legacy code behind
-for v in [v for k,v in opts if k == '-c']:
-	CONFIG_FILE = v
-ConfiguredPathHelper(CONFIG_FILE, CONFIG_LIB_PATH)
-del opts, args
-try: del k
-except: pass
-try: del v
-except: pass
+def config_path():
+	global CONFIG_FILE
+	opts,args = getopt(sys.argv[1:], GETOPT_SHORTOPTS)
+	sys.argv[1:] = args # strip options for legacy code behind
+	for v in [v for k,v in opts if k == '-c']:
+		CONFIG_FILE = v
+	ConfiguredPathHelper(CONFIG_FILE, CONFIG_LIB_PATH)
+config_path()
 # === END of early configuration handling
 
 
