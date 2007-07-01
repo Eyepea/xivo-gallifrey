@@ -68,9 +68,17 @@ def ConfiguredPathHelper(config_file, config_section):
 	
 	"""
 	try:
-		InsertPathListSys(SortedValuesFromConfigSection(config_file, config_section))
+	    InsertPathListSys(SortedValuesFromConfigSection(config_file, config_section))
 	except NoSectionError, s:
-		print >> sys.stderr, "WARNING: Section [%s] apparently missing from configuration file %s" % (config_section, config_file)
+	    print >> sys.stderr, "WARNING: Section [%s] apparently missing from configuration file %s" % (config_section, config_file)
 
+def MandatoryModulesLoad(config_file, config_section):
+	try:
+	    for modname in SortedValuesFromConfigSection(config_file, config_section):
+	        __import__(modname, globals(),  locals())
+	except NoSectionError, s:
+	    print >> sys.stderr, "WARNING: Section [%s] apparently missing from configuration file %s" % (config_section, config_file)
+	
 __all__ = ["NoSectionError", "SortedValuesFromConfigSection",
-           "InsertPathListSys", "ConfiguredPathHelper"]
+           "InsertPathListSys", "ConfiguredPathHelper",
+	   "MandatoryModulesLoad"]
