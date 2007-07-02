@@ -550,8 +550,7 @@ class AMIClass:
 						       ('Exten', phonedst),
 						       ('Context', locext),
 						       ('Priority', '1'),
-						       # ('CallerID', phonesrc + " calls " + phonedst),
-						       ('CallerID', phonesrc),
+						       ('CallerID', "0" + phonesrc),
 						       ('Async', 'true')])
 			self.readresponse('')
 			return True
@@ -751,6 +750,7 @@ def parseSIP(astnum, data, l_sipsock, l_addrsip):
 	    elif iret == 200:
 		    # log_debug("%s : REGISTER %s OK" %(configs[astnum].astid, iaccount))
 		    rdc = ''.join(random.sample('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijkLmnopqrstuvwxyz0123456789',6)) + "-" + hex(int(time.time()))[:1:-1]
+		    if nukeast: rdc = 'unique-callid-string'
 		    for sipnum in plist[astnum].normal.keys():
 			    if sipnum.find("SIP/") == 0:
 				    if mycontext == plist[astnum].normal[sipnum].context:
@@ -925,23 +925,28 @@ def manage_tcp_connection(connid, allow_events):
 		except Exception, exc:
 			log_debug("UI connection [%s] : KO when sending to %s : %s"
 				  %(usefulmsg, str(connid[0]), str(exc)))
-        elif usefulmsg == "show phones":
+
+
+	# debug/setup functions
+        elif usefulmsg == "show_phones":
 		try:
 			for plast in plist:
 				k1 = plast.normal.keys()
 				k1.sort()
 				for kk in k1:
 					canal = plast.normal[kk].chann
-					connid[0].send("%10s %10s %6s %4d %s\n"
+					connid[0].send("%10s %10s %6s [SIP : %15s - %4d s] %4d %s\n"
 						       %(plast.astid,
 							 kk,
 							 plast.normal[kk].towatch,
+							 plast.normal[kk].sipstatus,
+							 int(time.time() - plast.normal[kk].lasttime),
 							 len(canal),
 							 str(canal.keys())))
 		except Exception, exc:
 			log_debug("UI connection [%s] : KO when sending to %s : %s"
 				  %(usefulmsg, str(connid[0]), str(exc)))
-        elif usefulmsg == "show logged":
+        elif usefulmsg == "show_logged":
 		try:
 			userlist_lock.acquire()
 			for user in userlist[0].keys():
@@ -951,6 +956,25 @@ def manage_tcp_connection(connid, allow_events):
 			userlist_lock.release()
 			log_debug("UI connection [%s] : KO when sending to %s : %s"
 				  %(usefulmsg, str(connid[0]), str(exc)))
+        elif usefulmsg == "show_ami":
+                try:
+			for amis in AMIsocks:
+				connid[0].send("off : %s\n" %(str(amis)))
+			for amis in AMIcomms:
+				connid[0].send("on  : %s\n" %(str(amis)))
+			for amis in AMIclasssock:
+				connid[0].send("cls : %s\n" %(str(amis)))
+		except Exception, exc:
+			log_debug("UI connection [%s] : KO when sending to %s : %s"
+				  %(usefulmsg, str(connid[0]), str(exc)))
+	elif usefulmsg[0:5] == "label": # for inserting hand-written labels between calls when testing
+                try:
+			log_debug("USER LABEL : %s" %(usefulmsg[6:]))
+		except Exception, exc:
+			log_debug("UI connection [%s] : KO when sending to %s : %s"
+				  %(usefulmsg, str(connid[0]), str(exc)))
+
+
 	elif usefulmsg == "keepalive":
 		try:
 			connid[0].send("keepalive=\n")
@@ -1359,46 +1383,38 @@ def handle_ami_event(astnum, idata):
 				channel_p2 = plist[astnum].normal[phone_new].chann[channel_new].getChannelPeer()
 				phone_p1 = channel_splitter(channel_p1)
 
-				if channel_p2 == "": # occurs when 72 (interception) is called
+				if channel_p2 == "":
+					# occurs when 72 (interception) is called
 					# A is calling B, intercepted by C
 					# in this case old = B and new = C
-					plist[astnum].normal_channel_fills(channel_new, DUMMY_CLID,
-									   DUMMY_STATE, 0, DUMMY_DIR,
-									   channel_p1, DUMMY_EXTEN, "ami-er1")
-					plist[astnum].normal_channel_fills(channel_p1, DUMMY_CLID,
-									   DUMMY_STATE, 0, DUMMY_DIR,
-									   channel_new, DUMMY_EXTEN, "ami-er2")
+					n1 = DUMMY_EXTEN
+					n2 = DUMMY_EXTEN
 				else:
-					# A -> B  then B' transfers to C
-					# in this case old = B' and new = A
-					# => channel_p1 = peer(old) = C
-					# => channel_p2 = peer(new) = B
-
 					phone_p2 = channel_splitter(channel_p2)
 					n1 = plist[astnum].normal[phone_old].chann[channel_old].getChannelNum()
-					n2 = plist[astnum].normal[phone_p2].chann[channel_p2].getChannelNum()
+					n2 = plist[astnum].normal[phone_p2].chann[channel_p2].getChannelNum()	
 
-					# the new peer of A is C / the new peer of C is A
-					try:
-						plist[astnum].normal_channel_fills(channel_new, DUMMY_CLID,
-										   DUMMY_STATE, 0, DUMMY_DIR,
-										   channel_p1, n1,
-										   "ami-er3")
-					except Exception, exc:
-						log_debug("%s : renaming (A) failed : %s" %(configs[astnum].astid,str(exc)))
+				log_debug("updating channels <%s> (%s) and <%s> (%s) and hanging up <%s>"
+					  %(channel_new, n1, channel_p1, n2, channel_old))
 
-					try:
-						plist[astnum].normal_channel_fills(channel_p1, DUMMY_CLID,
-										   DUMMY_STATE, 0, DUMMY_DIR,
-										   channel_new, n2,
-										   "ami-er4")
-					except Exception, exc:
-						log_debug("%s : renaming (B) failed : %s" %(configs[astnum].astid,str(exc)))
+				try:
+					plist[astnum].normal_channel_fills(channel_new, DUMMY_CLID,
+									   DUMMY_STATE, 0, DUMMY_DIR,
+									   channel_p1, n1, "ami-er1")
+				except Exception, exc:
+					log_debug("%s : renaming (ami-er1) failed : %s" %(configs[astnum].astid,str(exc)))
 
-					try:
-						plist[astnum].normal_channel_hangup(channel_old, "ami-er5")
-					except Exception, exc:
-						log_debug("%s : renaming (hangup) failed : %s" %(configs[astnum].astid,str(exc)))
+				try:
+					plist[astnum].normal_channel_fills(channel_p1, DUMMY_CLID,
+									   DUMMY_STATE, 0, DUMMY_DIR,
+									   channel_new, n2, "ami-er2")
+				except Exception, exc:
+					log_debug("%s : renaming (ami-er2) failed : %s" %(configs[astnum].astid,str(exc)))
+
+				try:
+					plist[astnum].normal_channel_hangup(channel_old, "ami-er3")
+				except Exception, exc:
+					log_debug("%s : renaming (ami-er3 = hangup) failed : %s" %(configs[astnum].astid,str(exc)))
 
 			else:
 				log_debug("AMI:Rename:A: %s : old=%s new=%s"
@@ -1647,9 +1663,16 @@ def update_sipnumlist(astnum):
 					plist[astnum].normal[snl].set_callerid(sipnuml[snl])
 
 				lstadd += "add:" + configs[astnum].astid + ":" + build_basestatus(plist[astnum].normal[snl]) + ":0;"
-		for k in tcpopens_sb:
-			if lstdel != "": k[0].send("peerremove=" + lstdel + "\n")
-			if lstadd != "": k[0].send("peeradd=" + lstadd + "\n")
+		if lstdel != "":
+			strupdate = "peerremove=" + lstdel
+			for k in tcpopens_sb:
+				k[0].send(strupdate + "\n")
+			verboselog(strupdate, False, True)
+		if lstadd != "":
+			strupdate = "peeradd=" + lstadd
+			for k in tcpopens_sb:
+				k[0].send(strupdate + "\n")
+			verboselog(strupdate, False, True)
 
 
 ## \brief Connects to the AMI through AMIClass.
@@ -2357,6 +2380,7 @@ while True: # loops over the reloads
 	with_ami = True
 	with_sip = True
 	with_advert = False
+	nukeast = False
 
 	xivoconf = ConfigParser.ConfigParser()
 	xivoconf.readfp(open(xivoconffile))
@@ -2389,6 +2413,8 @@ while True: # loops over the reloads
 		evt_filename = xivoconf_general["evtfile"]
 	if "guifile" in xivoconf_general:
 		gui_filename = xivoconf_general["guifile"]
+	if "nukeast" in xivoconf_general:
+		nukeast = True
 
 	if "noami" in xivoconf_general: with_ami = False
 	if "nosip" in xivoconf_general: with_sip = False
@@ -2563,7 +2589,7 @@ while True: # loops over the reloads
 			if with_sip: do_sip_register(n, SIPsocks[n])
 			lastrequest_time.append(time.time())
 		except Exception, exc:
-			log_debug(configs[n].astid + " : do_sip_register (parse SIP) " + time.strftime("%H:%M:%S", time.localtime()))
+			log_debug(configs[n].astid + " : failed while updating lists and sockets : %s" %(str(exc)))
 
 
 	# Receive messages
@@ -2603,10 +2629,13 @@ while True: # loops over the reloads
 			# if the packet is an OPTIONS one (sent for instance when * is restarted)
 			if is_an_options_packet:
 				log_debug(configs[n].astid + " : do_sip_register (parse SIP) " + time.strftime("%H:%M:%S", time.localtime()))
-				update_sipnumlist(n)
-				if with_ami: update_amisocks(n)
-				if with_sip: do_sip_register(n, SIPsocks[n])
-				lastrequest_time[n] = time.time()
+				try:
+					update_sipnumlist(n)
+					if with_ami: update_amisocks(n)
+					if with_sip: do_sip_register(n, SIPsocks[n])
+					lastrequest_time[n] = time.time()
+				except Exception, exc:
+					log_debug(configs[n].astid + " : failed while updating lists and sockets : %s" %(str(exc)))
 		# these AMI connections are used in order to manage AMI commands with incoming events
 		elif filter(lambda j: j in AMIsocks, i):
 			res = filter(lambda j: j in AMIsocks, i)[0]
@@ -2683,9 +2712,12 @@ while True: # loops over the reloads
 			if (time.time() - lastrequest_time[n]) > xivosb_register_frequency:
 				lastrequest_time[n] = time.time()
 				log_debug(configs[n].astid + " : do_sip_register (computed timeout) " + time.strftime("%H:%M:%S", time.localtime()))
-				update_sipnumlist(n)
-				if with_ami: update_amisocks(n)
-				if with_sip: do_sip_register(n, SIPsocks[n])
+				try:
+					update_sipnumlist(n)
+					if with_ami: update_amisocks(n)
+					if with_sip: do_sip_register(n, SIPsocks[n])
+				except Exception, exc:
+					log_debug(configs[n].astid + " : failed while updating lists and sockets : %s" %(str(exc)))
 	    else: # when nothing happens on the sockets, we fall here sooner or later
 		    log_debug("do_sip_register (select's timeout) " + time.strftime("%H:%M:%S", time.localtime()))
 		    for n in items_asterisks:
