@@ -3,7 +3,7 @@
 <context>
     <name>CallStackWidget</name>
     <message>
-        <location filename="callstackwidget.cpp" line="264"/>
+        <location filename="callstackwidget.cpp" line="265"/>
         <source>Monitoring : </source>
         <translation>Surveillance de : </translation>
     </message>
@@ -251,6 +251,61 @@
         <source>&amp;Availability</source>
         <translation>&amp;Disponibilité</translation>
     </message>
+    <message>
+        <location filename="peeritem.cpp" line="58"/>
+        <source>Available</source>
+        <translation>Disponible</translation>
+    </message>
+    <message>
+        <location filename="peeritem.cpp" line="61"/>
+        <source>Away</source>
+        <translation>Occupé</translation>
+    </message>
+    <message>
+        <location filename="peeritem.cpp" line="64"/>
+        <source>Do not disturb</source>
+        <translation>Ne Pas Déranger</translation>
+    </message>
+    <message>
+        <location filename="peeritem.cpp" line="67"/>
+        <source>Be Right Back</source>
+        <translation>Bientôt De Retour</translation>
+    </message>
+    <message>
+        <location filename="peeritem.cpp" line="70"/>
+        <source>Out To Lunch</source>
+        <translation>Parti Déjeuner</translation>
+    </message>
+    <message>
+        <location filename="peeritem.cpp" line="73"/>
+        <source>Unknown</source>
+        <translation>Inconnue</translation>
+    </message>
+    <message>
+        <location filename="peeritem.cpp" line="82"/>
+        <source>Ready</source>
+        <translation>Libre</translation>
+    </message>
+    <message>
+        <location filename="peeritem.cpp" line="85"/>
+        <source>Ringing</source>
+        <translation>Se fait appeler</translation>
+    </message>
+    <message>
+        <location filename="peeritem.cpp" line="88"/>
+        <source>Calling</source>
+        <translation>Appelle</translation>
+    </message>
+    <message>
+        <location filename="peeritem.cpp" line="91"/>
+        <source>On the phone</source>
+        <translation>En communication</translation>
+    </message>
+    <message>
+        <location filename="peeritem.cpp" line="94"/>
+        <source>Not online</source>
+        <translation>Pas en ligne</translation>
+    </message>
 </context>
 <context>
     <name>PeerWidget</name>
@@ -280,29 +335,34 @@
         <translation>&amp;Intercepter</translation>
     </message>
     <message>
-        <location filename="peeritem.cpp" line="52"/>
-        <source>SIP Presence: </source>
-        <translation type="unfinished">Présence SIP : </translation>
+        <location filename="peeritem.cpp" line="101"/>
+        <source>SIP Presence : </source>
+        <translation>Présence SIP : </translation>
     </message>
     <message>
         <location filename="peerwidget.cpp" line="330"/>
         <source>&amp;Hangup</source>
-        <translation type="unfinished">&amp;Raccrocher</translation>
+        <translation>&amp;Raccrocher</translation>
     </message>
     <message>
         <location filename="peerwidget.cpp" line="71"/>
         <source>&amp;Call</source>
-        <translation type="unfinished">&amp;Appeler</translation>
+        <translation>&amp;Appeler</translation>
     </message>
     <message>
         <location filename="peerwidget.cpp" line="72"/>
         <source>Call this peer</source>
-        <translation type="unfinished">Appeler ce poste</translation>
+        <translation>Appeler ce poste</translation>
     </message>
     <message>
         <location filename="peerwidget.cpp" line="346"/>
         <source>&amp;Transfer</source>
-        <translation type="unfinished">&amp;Transférer</translation>
+        <translation>&amp;Transférer</translation>
+    </message>
+    <message>
+        <location filename="peeritem.cpp" line="102"/>
+        <source>Availability : </source>
+        <translation>Disponibilité : </translation>
     </message>
 </context>
 <context>
@@ -399,9 +459,24 @@
         <translation>Erreur réseau inconnue</translation>
     </message>
     <message>
-        <location filename="switchboardengine.cpp" line="422"/>
+        <location filename="switchboardengine.cpp" line="431"/>
         <source>Peers&apos; status updated</source>
         <translation>Statut des postes mis à jour</translation>
+    </message>
+    <message>
+        <location filename="switchboardengine.cpp" line="402"/>
+        <source> said : </source>
+        <translation> dit : </translation>
+    </message>
+    <message>
+        <location filename="switchboardengine.cpp" line="402"/>
+        <source>Someone</source>
+        <translation type="obsolete">Quelqu&apos;un</translation>
+    </message>
+    <message>
+        <location filename="switchboardengine.cpp" line="402"/>
+        <source>Unknown</source>
+        <translation>Inconnu</translation>
     </message>
 </context>
 </TS>

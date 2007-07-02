@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QDebug>
 #include "peeritem.h"
 #include "peerwidget.h"
+#include "mainwindow.h"
 
 /*! \brief Constructor
  *
@@ -48,36 +49,61 @@ void Peer::updateStatus(const QString & imavail,
 			const QString & vmstatus,
 			const QString & queuestatus)
 {
-	// TBD : tr()
-	QString fortooltip = PeerWidget::tr("SIP Presence: ") + sipstatus + "\n"
-		+ "Xivo Client: " + imavail;/* + "\n"
-					       + "Voicemail Status: " + vmstatus + "\n"
-					       + "Queues Status: " + queuestatus;*/
-	//qDebug() << imavail << sipstatus;
-	if(imavail == "available")
-		m_peerwidget->setGreen(1);
-	else if(imavail == "away")
-		m_peerwidget->setBlue(1);/*setDarkGreen(1);*/
-	else if(imavail == "donotdisturb")
-		m_peerwidget->setRed(1);
-	else if(imavail == "berightback")
-		m_peerwidget->setOrange(1);
-	else if(imavail == "outtolunch")
-		m_peerwidget->setYellow(1);
-	else
-		m_peerwidget->setGray(1);
+	QString display_imavail;
+	QString display_sipstatus;
 
-	if(sipstatus == "Ready")
+	//qDebug() << imavail << sipstatus;
+	if(imavail == "available") {
+		m_peerwidget->setGreen(1);
+		display_imavail = MainWindow::tr("Available");
+	} else if(imavail == "away") {
+		m_peerwidget->setBlue(1);/*setDarkGreen(1);*/
+		display_imavail = MainWindow::tr("Away");
+	} else if(imavail == "donotdisturb") {
+		m_peerwidget->setRed(1);
+		display_imavail = MainWindow::tr("Do not disturb");
+	} else if(imavail == "berightback") {
+		m_peerwidget->setOrange(1);
+		display_imavail = MainWindow::tr("Be Right Back");
+	} else if(imavail == "outtolunch") {
+		m_peerwidget->setYellow(1);
+		display_imavail = MainWindow::tr("Out To Lunch");
+	} else if(imavail == "unknown") {
+		m_peerwidget->setGray(1);
+		display_imavail = MainWindow::tr("Unknown");
+	} else {
+		m_peerwidget->setGray(1);
+		display_imavail = imavail;
+	}
+
+
+	if(sipstatus == "Ready") {
 		m_peerwidget->setGreen(0);
-	else if(sipstatus == "Ringing")
+		display_sipstatus = MainWindow::tr("Ready");
+	} else if(sipstatus == "Ringing") {
 		m_peerwidget->setBlue(0);/*setCyan(0);*/
-	else if(sipstatus == "Calling")
+		display_sipstatus = MainWindow::tr("Ringing");
+	} else if(sipstatus == "Calling") {
 		m_peerwidget->setYellow(0);
-	else if(sipstatus == "On the phone")
+		display_sipstatus = MainWindow::tr("Calling");
+	} else if(sipstatus == "On the phone") {
 		m_peerwidget->setRed(0);
-	else
+		display_sipstatus = MainWindow::tr("On the phone");
+	} else if(sipstatus == "Not online") {
 		m_peerwidget->setGray(0);
-	
+		display_sipstatus = MainWindow::tr("Not online");
+	} else {
+		m_peerwidget->setGray(0);
+		display_sipstatus = sipstatus;
+	}
+
+
+	QString fortooltip = PeerWidget::tr("SIP Presence : ") + display_sipstatus + "\n"
+		+ PeerWidget::tr("Availability : ") + display_imavail;
+	/* + "\n"
+	   + "Voicemail Status: " + vmstatus + "\n"
+	   + "Queues Status: " + queuestatus;*/
+
 	m_peerwidget->setToolTip(fortooltip);
 
 	//  if(corrname == "")

@@ -397,9 +397,9 @@ void SwitchBoardEngine::socketReadyRead()
 				QStringList message = list[1].split("::");
 				// message[0] : emitter name
 				if(message.size() == 2) {
-					emitTextMessage(message[1]);
+					emitTextMessage(message[0] + tr(" said : ") + message[1]);
 				} else {
-					emitTextMessage(list[1]);
+					emitTextMessage(tr("Unknown") + tr(" said : ") + list[1]);
 				}
 
 			} else if(list[0] == QString("peeradd")) {
