@@ -594,19 +594,25 @@ def build_customers(searchpattern):
 					"(|(cn=*%s*)(o=*%s*)(telephoneNumber=*%s*)(mobile=*%s*)(mail=*%s*))"
 					%(searchpattern,searchpattern,searchpattern,searchpattern,searchpattern),
 					['cn','o','telephoneNumber','mobile','mail'])
+
+	fullstatlist = []
 	for x in result:
 		[tnum, cn, o, mailn] = ["", "", "", ""]
 		if 'telephoneNumber' in x[1].keys():
-			tnum = x[1]['telephoneNumber'][0]
+			tnum = x[1]['telephoneNumber'][0].replace(" ", "")
 		elif 'mobile' in x[1].keys():
-			tnum = x[1]['mobile'][0]
+			tnum = x[1]['mobile'][0].replace(" ", "")
 		if 'cn' in x[1].keys():
 			cn = x[1]['cn'][0]
 		if 'o' in x[1].keys():
 			o = x[1]['o'][0]
 		if 'mail' in x[1].keys():
 			mailn = x[1]['mail'][0]
-		fullstat += ";%s;%s;%s;%s" %(tnum,cn,o,mailn)
+		fullstatlist.append("%s;%s;%s;%s" %(tnum,cn,o,mailn))
+
+	fullstatlist.sort()
+	for fsl in fullstatlist:
+		fullstat += ";" + fsl
 	fullstat += "\n"
 	return fullstat
 
@@ -826,7 +832,7 @@ def parseSIP(astnum, data, l_sipsock, l_addrsip):
 				    plist[astnum].normal[sipphone].set_lasttime(time.time())
 				    if plist[astnum].normal[sipphone].sipstatus != sippresence:
 					    plist[astnum].normal[sipphone].set_sipstatus(sippresence)
-					    update_GUI_clients(astnum, sipphone, "sip")
+					    update_GUI_clients(astnum, sipphone, "SIP-NTFY")
 				    else:
 					    pass
 			    else:
@@ -1222,7 +1228,7 @@ def handle_ami_event_link(listkeys, astnum, src, dst, clid1, clid2):
 # \return
 def handle_ami_event_hangup(listkeys, astnum, chan, cause):
 	global plist
-	plist[astnum].normal_channel_hangup(chan, "ami-eh")
+	plist[astnum].normal_channel_hangup(chan, "ami-eh0")
 
 
 ## \brief Returns a given field from an AMI line.
@@ -1729,7 +1735,7 @@ class PhoneList:
 		phoneinfo = fromwhom + ":" + self.astid + ":" + build_basestatus(self.normal[phonenum])
 		fstatlist = build_fullstatlist(self.normal[phonenum])
 		if self.normal[phonenum].towatch: fstr = "update="
-		else:                             fstr = "no_update_yet="
+		else:                             fstr = "______="
 		strupdate = fstr + phoneinfo + ":" + fstatlist
 		for tcpclient in tcpopens_sb:
 			try:
@@ -1750,7 +1756,7 @@ class PhoneList:
 							    phoneid_src.split("/")[1],
 							    "which-context?", "sipstatus?", False)
 		self.normal[phoneid_src].set_chan(chan_src, action, timeup, direction, chan_dst, num_dst, num_src)
-		self.update_GUI_clients(phoneid_src, "ncf-" + comment)
+		self.update_GUI_clients(phoneid_src, comment + "F")
 
 
 	def normal_channel_hangup(self, chan_src, comment):
@@ -1761,9 +1767,9 @@ class PhoneList:
 							    phoneid_src.split("/")[1],
 							    "which-context?", "sipstatus?", False)
 		self.normal[phoneid_src].set_chan_hangup(chan_src)
-		self.update_GUI_clients(phoneid_src, "ncf-" + comment + "-a")
+		self.update_GUI_clients(phoneid_src, comment + "H")
 		self.normal[phoneid_src].del_chan(chan_src)
-		self.update_GUI_clients(phoneid_src, "ncf-" + comment + "-b")
+		self.update_GUI_clients(phoneid_src, comment + "D")
 		if len(self.normal[phoneid_src].chann) == 0 and self.normal[phoneid_src].towatch == False:
 			del self.normal[phoneid_src]
 
