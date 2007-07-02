@@ -588,11 +588,13 @@ class NetworkInterfacesStanza(Stanza):
 		return self.options_multicnt
 	def get_options_pack(self):
 		return (self.options_list, self.options_dict, self.options_multicnt)
-	def iteroptions(self, k=None):
-		if k is None:
-			return iter(self.options_list)
-		else:
-			return (opt for opt in self.options_list if opt[0] == k)
+	#def iteroptions(self, k=None):
+	#	if k is None:
+	#		return iter(self.options_list)
+	#	else:
+	#		return (opt for opt in self.options_list if opt[0] == k)
+	def simple_get_option(self, opt_name):
+		return self.options_dict[opt_name]
 	def _option_finder(self, pos, line, state, opt_name):
 		return state and split_pad(line.strip(), 1)[0] == opt_name
 	def set_or_change_opt(self, opt_name, opt_value):
