@@ -31,7 +31,7 @@ __license__ = """
 CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
 CONFIG_LIB_PATH = 'py_lib_path'
 
-import sys
+import sys, re
 from xivo import ConfigPath
 from xivo.ConfigPath import *
 ConfiguredPathHelper(CONFIG_FILE, CONFIG_LIB_PATH)
@@ -84,7 +84,7 @@ def get_general():
 # First argument must be a phone number 
 # Second argument must be a provider setup on config file
 if len(sys.argv) > 1:
-	if sys.argv[1].isdigit() or sys.argv[1].find('^\+'):
+	if sys.argv[1].isdigit() or re.search("^\+", sys.argv[1]):
 		exten = sys.argv[1]
 		provider = ""
 	else:
