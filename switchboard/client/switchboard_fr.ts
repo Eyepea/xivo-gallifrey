@@ -401,12 +401,12 @@
         <translation>Se connecter au démarrage</translation>
     </message>
     <message>
-        <location filename="switchboardconf.cpp" line="94"/>
+        <location filename="switchboardconf.cpp" line="106"/>
         <source>Asterisk server :</source>
         <translation>Serveur Asterisk :</translation>
     </message>
     <message>
-        <location filename="switchboardconf.cpp" line="100"/>
+        <location filename="switchboardconf.cpp" line="112"/>
         <source>Protocol :</source>
         <translation>Protocole :</translation>
     </message>
@@ -416,7 +416,7 @@
         <translation type="obsolete">Numéro :</translation>
     </message>
     <message>
-        <location filename="switchboardconf.cpp" line="115"/>
+        <location filename="switchboardconf.cpp" line="127"/>
         <source>Password :</source>
         <translation type="unfinished">Mot de Passe :</translation>
     </message>
@@ -431,40 +431,50 @@
         <translation type="unfinished">Rapport de la présence</translation>
     </message>
     <message>
-        <location filename="switchboardconf.cpp" line="109"/>
+        <location filename="switchboardconf.cpp" line="121"/>
         <source>User id :</source>
         <translation type="unfinished">Identifiant utilisateur :</translation>
+    </message>
+    <message>
+        <location filename="switchboardconf.cpp" line="94"/>
+        <source>Try to reconnect</source>
+        <translation>Reconnexion automatique</translation>
+    </message>
+    <message>
+        <location filename="switchboardconf.cpp" line="99"/>
+        <source>Try to reconnect interval</source>
+        <translation>Délai de reconnexion</translation>
     </message>
 </context>
 <context>
     <name>SwitchBoardEngine</name>
     <message>
-        <location filename="switchboardengine.cpp" line="196"/>
+        <location filename="switchboardengine.cpp" line="201"/>
         <source>Connection lost with Presence Server</source>
         <translation>Connexion perdue avec le serveur de présence</translation>
     </message>
     <message>
-        <location filename="switchboardengine.cpp" line="218"/>
+        <location filename="switchboardengine.cpp" line="224"/>
         <source>Connection refused</source>
         <translation>Connexion refusée</translation>
     </message>
     <message>
-        <location filename="switchboardengine.cpp" line="227"/>
+        <location filename="switchboardengine.cpp" line="233"/>
         <source>Host not found</source>
         <translation>Hôte non trouvé</translation>
     </message>
     <message>
-        <location filename="switchboardengine.cpp" line="230"/>
+        <location filename="switchboardengine.cpp" line="236"/>
         <source>Unknown socket error</source>
         <translation>Erreur réseau inconnue</translation>
     </message>
     <message>
-        <location filename="switchboardengine.cpp" line="431"/>
+        <location filename="switchboardengine.cpp" line="437"/>
         <source>Peers&apos; status updated</source>
         <translation>Statut des postes mis à jour</translation>
     </message>
     <message>
-        <location filename="switchboardengine.cpp" line="402"/>
+        <location filename="switchboardengine.cpp" line="408"/>
         <source> said : </source>
         <translation> dit : </translation>
     </message>
@@ -474,7 +484,7 @@
         <translation type="obsolete">Quelqu&apos;un</translation>
     </message>
     <message>
-        <location filename="switchboardengine.cpp" line="402"/>
+        <location filename="switchboardengine.cpp" line="408"/>
         <source>Unknown</source>
         <translation>Inconnu</translation>
     </message>
