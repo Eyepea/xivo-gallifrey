@@ -28,9 +28,6 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-# XXX TODO BUGBUG FIXME SATAN: any print is probably a bug, remove every prints
-# and include the correct modules (Xilun - 2007-06-15)
-
 CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
 CONFIG_LIB_PATH = 'py_lib_path'
 
@@ -43,6 +40,7 @@ from BackSQL import backsqlite
 from BackSQL import backmysql
 import ConfigParser
 from ConfigDict import *
+from xivo import agi
 
 options = { "db_uri" : "" }
 conf_obj = ConfigParser.ConfigParser()
@@ -54,13 +52,13 @@ import string
 try:
 	exten = sys.argv[1]
 except:
-	print "VERBOSE \"Error no args found!\""
+	agi.agi_verbose("Error no args found!")
 	sys.exit()
 
 try:
 	conn = anysql.connect_by_uri(options['db_uri'])
 except:
-        print "VERBOSE \"Unable to connect to %s\"" %options['db_uri']
+        agi.agi_verbose("Unable to connect to %s" %options['db_uri'])
         raise
 
 cursor = conn.cursor()
@@ -70,7 +68,7 @@ t = cursor.fetchone()
 
 
 if not t:
-	print "VERBOSE \"No DID found !\""
+	agi.agi_verbose("No DID found !")
 	sys.exit()
 
 type = t[0]
@@ -80,8 +78,8 @@ if type == 'custom':
 	(apps, args) = t.custom.split('(')
 	(args, noargs) = args.split(')')
 	args = string.replace(args,',','|')
-	print "ANSWER"
-	print "EXEC %s \"%s\"" %(apps, args)
+	agi.agi_answer()
+	agi.agi_exec(apps, args)
 
 if type == 'meetme':
 	query = "SELECT number FROM meetmefeatures WHERE id=%d" % t[1]
@@ -92,8 +90,8 @@ if type == 'meetme':
 	g = cursor.fetchone()
 	number = g[0]
 	context = g[1]
-	print "ANSWER"
-	print "EXEC GOTO \"%s|%s|1\"" %(context,number)
+	agi.agi_answer()
+	agi.agi_exec("GOTO", "%s|%s|1" %(context,number))
 
 if type == 'user':
 	query = "SELECT number,context FROM userfeatures WHERE id=%d" % typeid
@@ -104,8 +102,8 @@ if type == 'user':
 	g = cursor.fetchone()
 	number = g[0]
 	context = g[1]
-	print "ANSWER"
-	print "EXEC GOTO \"%s|%s|1\"" %(context,number)
+	agi.agi_answer()
+	agi.agi_exec("GOTO", "%s|%s|1" %(context,number))
 
 if type == 'group':
 	query = "SELECT number,context FROM groupfeatures WHERE id=%d AND context!='did-extensions'" % typeid
@@ -113,5 +111,5 @@ if type == 'group':
 	g = cursor.fetchone()
 	number = g[0]
 	context = g[1]
-	print "ANSWER"
-	print "EXEC GOTO \"%s|%s|1\"" %(context,number)
+	agi.agi_answer()
+	agi.agi_exec("GOTO", "%s|%s|1" %(context,number))

@@ -28,9 +28,6 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-# XXX TODO BUGBUG FIXME SATAN: any print or sys.stdout.write is probably a bug,
-# remove every prints and include the correct modules (Xilun - 2007-06-15)
-
 CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
 CONFIG_LIB_PATH = 'py_lib_path'
 
@@ -43,6 +40,7 @@ from BackSQL import backsqlite
 from BackSQL import backmysql
 import ConfigParser
 from ConfigDict import *
+from xivo import agi
 
 options = { "db_uri" : "" }
 conf_obj = ConfigParser.ConfigParser()
@@ -51,10 +49,11 @@ FillDictFromConfigSection(options, conf_obj, "db")
 
 
 if len(sys.argv) != 2:
-	print "VERBOSE \"Error no args found!\""
+	agi.agi_verbose("Error no args found!")
         sys.exit()
 
 # XXX TODO BUGBUG FIXME SATAN: the following lines make absolutely sense to me (Xilun - 2007-06-15)
+# XXX For me too :-) (Quintana - 2007-07-03)
 try:
         exten = sys.argv[1]
 	query = "SELECT groupfeatures.name,groupfeatures.number,queue.timeout FROM groupfeatures,queue WHERE groupfeatures.name=queue.name AND groupfeatures.number='%s';" % exten
@@ -65,7 +64,7 @@ except:
 try:
         conn = anysql.connect_by_uri(options['db_uri'])
 except:
-        print "VERBOSE \"Unable to connect to %s\"" %options['db_uri']
+        agi.agi_verbose("Unable to connect to %s" %options['db_uri'])
         raise
 
 cursor = conn.cursor()
@@ -73,17 +72,16 @@ cursor.execute(query)
 r = cursor.fetchone()
 
 if not r:
-	print "VERBOSE \"No group found\""
+	agi.agi_verbose("No ring group found")
 	sys.exit()
 
 name = r[0]
 number = r[1]
 timeout = r[2]
 
-# XXX TODO BUGBUG FIXME SATAN: sometime we do it sometimes not ... how is this decided???
-try:
-	print "SET VARIABLE GEXT %s" % number
-	print "SET VARIABLE GNAME %s" % name
-	print "SET VARIABLE GTIMEOUT %s" % timeout
-except:
-	pass
+if name and number and timeout:
+	agi.agi_set_variable("GEXT", "%s" % number)
+	agi.agi_set_variable("GNAME", "%s" % name)
+	agi.agi_set_variable("GTIMEOUT", "%s" % timeout)
+else:
+	agi.agi_verbose("There is an error")

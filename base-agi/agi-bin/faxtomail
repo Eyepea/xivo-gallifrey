@@ -28,9 +28,6 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-# XXX TODO BUGBUG FIXME SATAN: any print or sys.stdout.write is probably a bug,
-# remove every prints and include the correct modules (Xilun - 2007-06-15)
-
 CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
 CONFIG_LIB_PATH = 'py_lib_path'
 
@@ -43,6 +40,7 @@ from BackSQL import backsqlite
 from BackSQL import backmysql
 import ConfigParser
 from ConfigDict import *
+from xivo import agi
 
 options = { "db_uri" : "" }
 conf_obj = ConfigParser.ConfigParser()
@@ -52,13 +50,13 @@ FillDictFromConfigSection(options, conf_obj, "db")
 import string, re, os, datetime
 
 if len(sys.argv) != 4:
-	print "VERBOSE \"Missing arguments\""
+	agi.agi_verbose("Missing arguments")
 	sys.exit()
 
 if sys.argv[1].isdigit():
 	callexten = sys.argv[1]
 else:
-	print "VERBOSE \"Error it's not a phone number!\""
+	agi.agi_verbose("Error it's not a phone number!")
 	sys.exit()
 
 filename = sys.argv[2]
@@ -67,12 +65,12 @@ filepdf = string.replace(filename,".tif",".pdf")
 if sys.argv[3].isdigit():
 	mailbox = sys.argv[3]
 else:
-	print "VERBOSE \"Error it's not a phone number!\""
+	agi.agi_verbose("Error it's not a phone number!")
 
 try:
         conn = anysql.connect_by_uri(options['db_uri'])
 except:
-        print "VERBOSE \"Unable to connect to %s\"" %options['db_uri']
+        agi.agi_verbose("Unable to connect to %s" %options['db_uri'])
         raise
 
 query = "SELECT email, fullname FROM uservoicemail WHERE mailbox='%s'" % mailbox
@@ -81,7 +79,7 @@ cursor.execute(query)
 r = cursor.fetchone()
 
 if not r:
-	print "VERBOSE \"Sorry there is not user for this FAX\""
+	agi.agi_verbose("Sorry there is not user for this FAX")
 	sys.exit()
 
 mail = r[0]
@@ -89,29 +87,29 @@ name = r[1]
 date = datetime.datetime.now()
 
 if not mail and not name:
-	print "VERBOSE \"Sorry there is no person at this number\""
-	print "VERBOSE \"Missing mail or name\""
+	agi.agi_verbose("Sorry there is no person at this number")
+	agi.agi_verbose("Missing mail or name")
 	sys.exit()
 else:
 	try:
 		if os.stat(filename).st_size != 0:
-			print "VERBOSE \"Convert tif to pdf\""
+			agi.agi_verbose("Convert tif to pdf")
 			os.system("/usr/bin/tiff2pdf -o %s %s" %(filepdf, filename))
-			print "VERBOSE \"Send FAX to %s (%s) at %s\"" %(mail, name, date)
+			agi.agi_verbose("Send FAX to %s (%s) at %s" %(mail, name, date))
 			os.system("echo \"Un nouveau fax est arrive pour %s, il est joint dans ce mail !\n\nCordialement,\nService IPBX\" | /usr/bin/mutt -s \"Reception FAX de %s\" -a %s %s" %(name, callexten, filepdf, mail))
 			try:
 				os.remove(filepdf)
 				os.remove(filename)
 			except OSError:
-				print "VERBOSE \"Error while trying to remove '%s' and '%s'\"" % (filename, filepdf)
+				agi.agi_verbose("Error while trying to remove '%s' and '%s'" % (filename, filepdf))
 				raise
 		else:
-			print "VERBOSE \"Sorry the file is empty\""
+			agi.agi_verbose("Sorry the file is empty")
 			try:
 				os.remove(filename)
 			except OSError:
-				print "VERBOSE \"Error while trying to remove '%s'\"" % filename
+				agi.agi_verbose("Error while trying to remove '%s'" % filename)
 				raise
 	except OSError:
-		print "VERBOSE \"Error during fax conversion, maybe no fax received...\""
+		agi.agi_verbose("Error during fax conversion, maybe no fax received...")
 		raise

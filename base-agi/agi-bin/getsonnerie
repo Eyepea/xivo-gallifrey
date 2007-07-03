@@ -30,6 +30,7 @@ __license__ = """
 
 
 import ConfigParser, string, sys
+from xivo import agi
 
 try:
         exten = sys.argv[1]
@@ -41,20 +42,11 @@ ring = "/etc/asterisk/xivo_ring.conf"
 config = ConfigParser.ConfigParser()
 config.readfp(open(ring))
 
-#phonetype = config.get('number', exten)
-phonetype = 'thomson'
+phonetype = config.get('number', exten)
 
-# XXX TODO BUGBUG FIXME SATAN
-sys.stdout.write("SET VARIABLE RINGINTERNAL \"" + config.get(phonetype, 'intern') + "\"\n")
-# XXX TODO BUGBUG FIXME SATAN
-sys.stdout.write("SET VARIABLE RINGEXTERNAL \"" + config.get(phonetype, 'extern') + "\"\n")
-# XXX TODO BUGBUG FIXME SATAN
-sys.stdout.write("SET VARIABLE RINGGROUP \"" + config.get(phonetype, 'group') + "\"\n")
+agi.agi_set_variable("RINGINTERNAL", config.get(phonetype, 'intern'))
+agi.agi_set_variable("RINGEXTERNAL", config.get(phonetype, 'extern'))
+agi.agi_set_variable("RINGGROUP", config.get(phonetype, 'group'))
 
-# XXX TODO BUGBUG FIXME SATAN
 if phonetype == 'thomson':
-	sys.stdout.write("SET VARIABLE ISTHOMSON 1\n")
-
-# XXX TODO BUGBUG FIXME SATAN
-sys.stdout.flush()
-sys.stderr.flush()
+	agi.agi_set_variable("ISTHOMSON", "1")
