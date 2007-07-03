@@ -25,3 +25,9 @@ def agi_verbose(txt):
 
 def agi_set_variable(var, val):
         print "SET VARIABLE %s \"%s\"" %(agi_escape_string(var), agi_escape_string(val))
+
+def agi_answer():
+        print "ANSWER"
+
+def agi_exec(app, args):
+        print "EXEC %s \"%s\"" %(agi_escape_string(app), agi_escape_string(args))
