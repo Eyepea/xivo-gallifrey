@@ -142,26 +142,25 @@ SwitchBoardConfDialog::SwitchBoardConfDialog(SwitchBoardEngine * engine,
 
 void SwitchBoardConfDialog::saveAndClose()
 {
-	m_engine->setAddress( m_serverhost->text(), m_sbport->text().toUInt() );
-	m_engine->setAutoconnect( m_autoconnect->checkState() == Qt::Checked );
-	m_engine->setAsterisk( m_asterisk->text() );
-	m_engine->setProtocol( m_protocombo->currentText() );
-	m_engine->setUserId( m_userid->text() );
-
-	m_engine->setTrytoreconnect( m_trytoreconnect->checkState() == Qt::Checked );
-	m_engine->setTrytoreconnectinterval( m_tryinterval_sbox->value()*1000 );
-
 	//m_loginengine->setUserId( m_userid->text() );
 	m_loginengine->setExtension( m_userid->text() );
 	m_loginengine->setLoginPort( m_loginport->text().toUInt() );
 	m_loginengine->setPassword( m_passwd->text() );
 	m_loginengine->setEnabled( m_presence->checkState() == Qt::Checked );
-	m_loginengine->saveSettings();
 	m_loginengine->setTrytoreconnect( m_trytoreconnect->checkState() == Qt::Checked );
 	m_loginengine->setTrytoreconnectinterval( m_tryinterval_sbox->value()*1000 );
-	m_engine->saveSettings();
+	m_loginengine->saveSettings();
 	//m_window->setWidth( m_widthsb->value() );
 	//m_window->saveSettings();
+
+	m_engine->setAddress( m_serverhost->text(), m_sbport->text().toUInt() );
+	m_engine->setAutoconnect( m_autoconnect->checkState() == Qt::Checked );
+	m_engine->setAsterisk( m_asterisk->text() );
+	m_engine->setProtocol( m_protocombo->currentText() );
+	m_engine->setUserId( m_userid->text() );
+	m_engine->setTrytoreconnect( m_trytoreconnect->checkState() == Qt::Checked );
+	m_engine->setTrytoreconnectinterval( m_tryinterval_sbox->value()*1000 );
+	m_engine->saveSettings();
 	close();
 }
 
