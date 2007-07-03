@@ -40,7 +40,7 @@ from BackSQL import backsqlite
 from BackSQL import backmysql
 import ConfigParser
 from ConfigDict import *
-from xivo import agi
+from agi import *
 
 options = { "db_uri" : "" }
 conf_obj = ConfigParser.ConfigParser()
@@ -49,7 +49,7 @@ FillDictFromConfigSection(options, conf_obj, "db")
 
 
 if len(sys.argv) != 2:
-	agi.agi_verbose("Error no args found!")
+	agi_verbose("Error no args found!")
         sys.exit()
 
 # XXX TODO BUGBUG FIXME SATAN: the following lines make absolutely sense to me (Xilun - 2007-06-15)
@@ -64,7 +64,7 @@ except:
 try:
         conn = anysql.connect_by_uri(options['db_uri'])
 except:
-        agi.agi_verbose("Unable to connect to %s" %options['db_uri'])
+        agi_verbose("Unable to connect to %s" %options['db_uri'])
         raise
 
 cursor = conn.cursor()
@@ -72,7 +72,7 @@ cursor.execute(query)
 r = cursor.fetchone()
 
 if not r:
-	agi.agi_verbose("No ring group found")
+	agi_verbose("No ring group found")
 	sys.exit()
 
 name = r[0]
@@ -80,8 +80,8 @@ number = r[1]
 timeout = r[2]
 
 if name and number and timeout:
-	agi.agi_set_variable("GEXT", "%s" % number)
-	agi.agi_set_variable("GNAME", "%s" % name)
-	agi.agi_set_variable("GTIMEOUT", "%s" % timeout)
+	agi_set_variable("GEXT", "%s" % number)
+	agi_set_variable("GNAME", "%s" % name)
+	agi_set_variable("GTIMEOUT", "%s" % timeout)
 else:
-	agi.agi_verbose("There is an error")
+	agi_verbose("There is an error")

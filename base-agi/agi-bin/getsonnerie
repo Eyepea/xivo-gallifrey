@@ -28,14 +28,23 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
+CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
+CONFIG_LIB_PATH = 'py_lib_path'
 
-import ConfigParser, string, sys
-from xivo import agi
+import sys, string
+from xivo import ConfigPath
+from xivo.ConfigPath import *
+ConfiguredPathHelper(CONFIG_FILE, CONFIG_LIB_PATH)
+import ConfigParser
+from ConfigDict import *
+from agi import *
 
-try:
-        exten = sys.argv[1]
-except:
-        exten = ""
+if len(sys.argv) > 1:
+	if sys.argv[1].isdigit():
+		exten = sys.argv[1]
+else:
+	agi_verbose("Sorry there is not number")
+	sys.exit()
 
 ring = "/etc/asterisk/xivo_ring.conf"
 
@@ -44,9 +53,9 @@ config.readfp(open(ring))
 
 phonetype = config.get('number', exten)
 
-agi.agi_set_variable("RINGINTERNAL", config.get(phonetype, 'intern'))
-agi.agi_set_variable("RINGEXTERNAL", config.get(phonetype, 'extern'))
-agi.agi_set_variable("RINGGROUP", config.get(phonetype, 'group'))
+agi_set_variable("RINGINTERNAL", config.get(phonetype, 'intern'))
+agi_set_variable("RINGEXTERNAL", config.get(phonetype, 'extern'))
+agi_set_variable("RINGGROUP", config.get(phonetype, 'group'))
 
 if phonetype == 'thomson':
-	agi.agi_set_variable("ISTHOMSON", "1")
+	agi_set_variable("ISTHOMSON", "1")

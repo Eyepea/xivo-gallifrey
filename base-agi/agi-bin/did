@@ -40,7 +40,7 @@ from BackSQL import backsqlite
 from BackSQL import backmysql
 import ConfigParser
 from ConfigDict import *
-from xivo import agi
+from agi import *
 
 options = { "db_uri" : "" }
 conf_obj = ConfigParser.ConfigParser()
@@ -52,13 +52,13 @@ import string
 try:
 	exten = sys.argv[1]
 except:
-	agi.agi_verbose("Error no args found!")
+	agi_verbose("Error no args found!")
 	sys.exit()
 
 try:
 	conn = anysql.connect_by_uri(options['db_uri'])
 except:
-        agi.agi_verbose("Unable to connect to %s" %options['db_uri'])
+        agi_verbose("Unable to connect to %s" %options['db_uri'])
         raise
 
 cursor = conn.cursor()
@@ -68,7 +68,7 @@ t = cursor.fetchone()
 
 
 if not t:
-	agi.agi_verbose("No DID found !")
+	agi_verbose("No DID found !")
 	sys.exit()
 
 type = t[0]
@@ -78,8 +78,8 @@ if type == 'custom':
 	(apps, args) = t.custom.split('(')
 	(args, noargs) = args.split(')')
 	args = string.replace(args,',','|')
-	agi.agi_answer()
-	agi.agi_exec(apps, args)
+	agi_answer()
+	agi_exec(apps, args)
 
 if type == 'meetme':
 	query = "SELECT number FROM meetmefeatures WHERE id=%d" % t[1]
@@ -90,8 +90,8 @@ if type == 'meetme':
 	g = cursor.fetchone()
 	number = g[0]
 	context = g[1]
-	agi.agi_answer()
-	agi.agi_exec("GOTO", "%s|%s|1" %(context,number))
+	agi_answer()
+	agi_exec("GOTO", "%s|%s|1" %(context,number))
 
 if type == 'user':
 	query = "SELECT number,context FROM userfeatures WHERE id=%d" % typeid
@@ -102,8 +102,8 @@ if type == 'user':
 	g = cursor.fetchone()
 	number = g[0]
 	context = g[1]
-	agi.agi_answer()
-	agi.agi_exec("GOTO", "%s|%s|1" %(context,number))
+	agi_answer()
+	agi_exec("GOTO", "%s|%s|1" %(context,number))
 
 if type == 'group':
 	query = "SELECT number,context FROM groupfeatures WHERE id=%d AND context!='did-extensions'" % typeid
@@ -111,5 +111,5 @@ if type == 'group':
 	g = cursor.fetchone()
 	number = g[0]
 	context = g[1]
-	agi.agi_answer()
-	agi.agi_exec("GOTO", "%s|%s|1" %(context,number))
+	agi_answer()
+	agi_exec("GOTO", "%s|%s|1" %(context,number))

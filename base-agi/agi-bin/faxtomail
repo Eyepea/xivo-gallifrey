@@ -40,7 +40,7 @@ from BackSQL import backsqlite
 from BackSQL import backmysql
 import ConfigParser
 from ConfigDict import *
-from xivo import agi
+from agi import *
 
 options = { "db_uri" : "" }
 conf_obj = ConfigParser.ConfigParser()
@@ -50,13 +50,13 @@ FillDictFromConfigSection(options, conf_obj, "db")
 import string, re, os, datetime
 
 if len(sys.argv) != 4:
-	agi.agi_verbose("Missing arguments")
+	agi_verbose("Missing arguments")
 	sys.exit()
 
 if sys.argv[1].isdigit():
 	callexten = sys.argv[1]
 else:
-	agi.agi_verbose("Error it's not a phone number!")
+	agi_verbose("Error it's not a phone number!")
 	sys.exit()
 
 filename = sys.argv[2]
@@ -65,12 +65,12 @@ filepdf = string.replace(filename,".tif",".pdf")
 if sys.argv[3].isdigit():
 	mailbox = sys.argv[3]
 else:
-	agi.agi_verbose("Error it's not a phone number!")
+	agi_verbose("Error it's not a phone number!")
 
 try:
         conn = anysql.connect_by_uri(options['db_uri'])
 except:
-        agi.agi_verbose("Unable to connect to %s" %options['db_uri'])
+        agi_verbose("Unable to connect to %s" %options['db_uri'])
         raise
 
 query = "SELECT email, fullname FROM uservoicemail WHERE mailbox='%s'" % mailbox
@@ -79,7 +79,7 @@ cursor.execute(query)
 r = cursor.fetchone()
 
 if not r:
-	agi.agi_verbose("Sorry there is not user for this FAX")
+	agi_verbose("Sorry there is not user for this FAX")
 	sys.exit()
 
 mail = r[0]
@@ -87,29 +87,29 @@ name = r[1]
 date = datetime.datetime.now()
 
 if not mail and not name:
-	agi.agi_verbose("Sorry there is no person at this number")
-	agi.agi_verbose("Missing mail or name")
+	agi_verbose("Sorry there is no person at this number")
+	agi_verbose("Missing mail or name")
 	sys.exit()
 else:
 	try:
 		if os.stat(filename).st_size != 0:
-			agi.agi_verbose("Convert tif to pdf")
+			agi_verbose("Convert tif to pdf")
 			os.system("/usr/bin/tiff2pdf -o %s %s" %(filepdf, filename))
-			agi.agi_verbose("Send FAX to %s (%s) at %s" %(mail, name, date))
+			agi_verbose("Send FAX to %s (%s) at %s" %(mail, name, date))
 			os.system("echo \"Un nouveau fax est arrive pour %s, il est joint dans ce mail !\n\nCordialement,\nService IPBX\" | /usr/bin/mutt -s \"Reception FAX de %s\" -a %s %s" %(name, callexten, filepdf, mail))
 			try:
 				os.remove(filepdf)
 				os.remove(filename)
 			except OSError:
-				agi.agi_verbose("Error while trying to remove '%s' and '%s'" % (filename, filepdf))
+				agi_verbose("Error while trying to remove '%s' and '%s'" % (filename, filepdf))
 				raise
 		else:
-			agi.agi_verbose("Sorry the file is empty")
+			agi_verbose("Sorry the file is empty")
 			try:
 				os.remove(filename)
 			except OSError:
-				agi.agi_verbose("Error while trying to remove '%s'" % filename)
+				agi_verbose("Error while trying to remove '%s'" % filename)
 				raise
 	except OSError:
-		agi.agi_verbose("Error during fax conversion, maybe no fax received...")
+		agi_verbose("Error during fax conversion, maybe no fax received...")
 		raise

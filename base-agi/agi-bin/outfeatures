@@ -28,8 +28,16 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-import ConfigParser, sys
-from xivo import agi
+CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
+CONFIG_LIB_PATH = 'py_lib_path'
+
+import sys
+from xivo import ConfigPath
+from xivo.ConfigPath import *
+ConfiguredPathHelper(CONFIG_FILE, CONFIG_LIB_PATH)
+import ConfigParser
+from ConfigDict import *
+from agi import *
 
 # This is the configuration file, please do not change the path because if was editable by xivo web interface
 outcall = "/etc/asterisk/xivo_outcall.conf"
@@ -38,23 +46,23 @@ try:
 	config = ConfigParser.ConfigParser()
 	config.readfp(open(outcall))
 except IOError:
-	agi.agi_verbose("Configuration file not found : %s" % outcall)
+	agi_verbose("Configuration file not found : %s" % outcall)
 	raise
 
 # This function returns all informations for a specific provider
 def get_provider(provider):
-	agi.agi_set_variable("PROVIDER", provider)
-	agi.agi_set_variable("EXTERNPREFIX", config.get(provider, 'externprefix'))
-	agi.agi_set_variable("PREFIX", config.get(provider, 'prefix'))
-	agi.agi_set_variable("CHAN", config.get(provider, 'chan'))
-	agi.agi_set_variable("EXTERNNUM", config.get(provider, 'externnum'))
-	agi.agi_set_variable("SETCALLERID", config.get(provider, 'setcallerid'))
-	agi.agi_set_variable("USEENUM", config.get(provider, 'useenum'))
-	agi.agi_set_variable("TIMETOCALL", config.get(provider, 'timetocall'))
+	agi_set_variable("PROVIDER", provider)
+	agi_set_variable("EXTERNPREFIX", config.get(provider, 'externprefix'))
+	agi_set_variable("PREFIX", config.get(provider, 'prefix'))
+	agi_set_variable("CHAN", config.get(provider, 'chan'))
+	agi_set_variable("EXTERNNUM", config.get(provider, 'externnum'))
+	agi_set_variable("SETCALLERID", config.get(provider, 'setcallerid'))
+	agi_set_variable("USEENUM", config.get(provider, 'useenum'))
+	agi_set_variable("TIMETOCALL", config.get(provider, 'timetocall'))
 	if not config.get(provider, 'stripnum'):
-		agi.agi_set_variable("STRIPNUM", "0")
+		agi_set_variable("STRIPNUM", "0")
 	else:
-		agi.agi_set_variable("STRIPNUM", config.get(provider, 'stripnum'))
+		agi_set_variable("STRIPNUM", config.get(provider, 'stripnum'))
 
 # This function return all informations from the general section, special number and emergency number
 def get_general():
@@ -66,11 +74,11 @@ def get_general():
 			else:
 				providers = providers + "," + provider
 
-	agi.agi_set_variable("EMERGENCYPROVIDER", config.get('general', 'emergencyprovider'))
-	agi.agi_set_variable("EMERGENCYNUMBERS", config.get('general', 'emergencynumbers'))
-	agi.agi_set_variable("SPECIALNUMBERS", config.get('general', 'specialnumbers'))
-	agi.agi_set_variable("SPECIALPROVIDER", config.get('general', 'specialprovider'))
-	agi.agi_set_variable("PROVIDERS", providers)
+	agi_set_variable("EMERGENCYPROVIDER", config.get('general', 'emergencyprovider'))
+	agi_set_variable("EMERGENCYNUMBERS", config.get('general', 'emergencynumbers'))
+	agi_set_variable("SPECIALNUMBERS", config.get('general', 'specialnumbers'))
+	agi_set_variable("SPECIALPROVIDER", config.get('general', 'specialprovider'))
+	agi_set_variable("PROVIDERS", providers)
 
 # If no argnument script return all general configuration
 # First argument must be a phone number 
@@ -111,9 +119,9 @@ if len(sys.argv) > 1:
 								get_provider(s)
 								sys.exit()
 							else:
-								agi.agi_verbose("Found no provider for this number %s and context %s!" %(exten,context))
+								agi_verbose("Found no provider for this number %s and context %s!" %(exten,context))
 						else:
-							agi.agi_verbose("Found no provider for this number %s!" % exten)
+							agi_verbose("Found no provider for this number %s!" % exten)
 					else:
 						try:
 							import re
@@ -126,21 +134,21 @@ if len(sys.argv) > 1:
 											get_provider(s)
 											sys.exit()
 										else:
-											agi.agi_verbose("Found no provider in this context %s!" %(context))
+											agi_verbose("Found no provider in this context %s!" %(context))
 						except IndexError:
-							agi.agi_verbose("Error for the regexp %s on the section %s" %(config.get(s, 'externregexp'), s))
-							agi.agi_verbose("Maybe this number is wrong!")
+							agi_verbose("Error for the regexp %s on the section %s" %(config.get(s, 'externregexp'), s))
+							agi_verbose("Maybe this number is wrong!")
 
 
 		except ConfigParser.NoSectionError:
-			agi.agi_verbose("Sorry no providers with this name")
+			agi_verbose("Sorry no providers with this name")
 		except ConfigParser.NoOptionError:
-			agi.agi_verbose("Sorry your config is broken please add all options on the section %s" % s)
+			agi_verbose("Sorry your config is broken please add all options on the section %s" % s)
 		except IndexError:
-			agi.agi_verbose("Error for number for args on the section %s" % s)
+			agi_verbose("Error for number for args on the section %s" % s)
 else:
 	get_general()
 	sys.exit()
 
-agi.agi_verbose("No found provider for this number %s!" % exten)
+agi_verbose("No found provider for this number %s!" % exten)
 sys.exit()

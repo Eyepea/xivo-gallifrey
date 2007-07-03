@@ -28,9 +28,6 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-# XXX TODO BUGBUG FIXME SATAN: any print or sys.stdout.write is probably a bug,
-# remove every prints and include the correct modules (Xilun - 2007-06-15)
-
 CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
 CONFIG_LIB_PATH = 'py_lib_path'
 
@@ -43,6 +40,7 @@ from BackSQL import backsqlite
 from BackSQL import backmysql
 import ConfigParser
 from ConfigDict import *
+from agi import *
 
 options = { "db_uri" : "" }
 conf_obj = ConfigParser.ConfigParser()
@@ -52,13 +50,13 @@ FillDictFromConfigSection(options, conf_obj, "db")
 try:
         exten = sys.argv[1]
 except:
-        print "VERBOSE \"Error no args found!\""
+        agi_verbose("Error no args found!")
         sys.exit()
 
 try:
         conn = anysql.connect_by_uri(options['db_uri'])
 except:
-        print "VERBOSE \"Unable to connect to %s\"" %options['db_uri']
+        agi_verbose("Unable to connect to %s" %options['db_uri'])
         raise
 
 cursor = conn.cursor()
@@ -67,7 +65,7 @@ cursor.execute(query)
 r = cursor.fetchone()
 
 if not r:
-        print "VERBOSE \"No meetme found\""
+        agi_verbose("No meetme found")
         sys.exit()
 
 mode = r[0]
@@ -98,6 +96,6 @@ try:
                 pass
         options = options + 's'
 
-        print "SET VARIABLE MEETMEOPTIONS \"" + options + "\""
+        agi_set_variable("MEETMEOPTIONS", options )
 except:
         pass

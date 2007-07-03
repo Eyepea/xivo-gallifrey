@@ -28,12 +28,8 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-# XXX TODO BUGBUG FIXME SATAN: any print or sys.stdout.write is probably a bug,
-# remove every prints and include the correct modules (Xilun - 2007-06-15)
-
 CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
 CONFIG_LIB_PATH = 'py_lib_path'
-DEBUG = 0
 
 import sys
 from xivo import ConfigPath
@@ -44,6 +40,7 @@ from BackSQL import backsqlite
 from BackSQL import backmysql
 import ConfigParser
 from ConfigDict import *
+from agi import *
 
 options = { "db_uri" : "" }
 conf_obj = ConfigParser.ConfigParser()
@@ -52,25 +49,17 @@ FillDictFromConfigSection(options, conf_obj, "db")
 
 import string, re
 
-def print_verbose(txt):
-        if DEBUG:
-                sys.stderr.write("VERBOSE \"%s\"\n" %txt)
-		sys.stderr.flush()
-                sys.stdout.write("VERBOSE \"%s\"\n" %txt)
-		sys.stdout.flush()
-		line = sys.stdin.readline().strip()
-
 def return_exit(error, playback=None):
-        print_verbose("%s" % error)
+        agi_verbose("%s" % error)
         if playback:
-                print "EXEC PLAYBACK \"%s\"" % playback
+                agi_exec("PLAYBACK", "%s" % playback)
         sys.exit()
 
 def find_informations_by_extension(exten, context):
 	try:
 		conn = anysql.connect_by_uri(options['db_uri'])
 	except:
-	        print "VERBOSE \"Unable to connect to %s\"" %options['db_uri']
+	        agi_verbose("Unable to connect to %s" %options['db_uri'])
         	raise
 
 	# XXX TODO BUGBUG FIXME SATAN: will bug one day... at least I know the future... (Xilun - 2007-06-15)
@@ -129,16 +118,16 @@ def find_features_db(exten, family, key, comment, context):
 		if '200' not in line:
 			sys.stderr.write("FAIL (%s)\n" % line)
 			sys.stderr.flush()
-			print_verbose("Wrong return " + line)
+			agi_verbose("Wrong return " + line)
 		else:
 			sys.stderr.write("PASS (%s)\n" % line)
 			sys.stderr.flush()
 			res = line.split('(')[1]
 			value = res.split(')')[0]
-			print_verbose(value)
+			agi_verbose(value)
 			return value
 	except:
-		print_verbose("No features found !")
+		agi_verbose("No features found !")
 		return 0
 
 
@@ -168,24 +157,24 @@ ISCHANMOBILELOGGED= find_features_db(sys.argv[1], '/AG', 'logged', '', context)
 CHANMOBILEAGENT= find_features_db(sys.argv[1], '/AG', 'chan', '', context)
 
 res = find_informations_by_extension(sys.argv[1], context)
-print "SET VARIABLE VMStatus %s" % VMStatus
-print "SET VARIABLE DND %s" % DND
-print "SET VARIABLE FUStatus %s" % FUStatus
-print "SET VARIABLE FUNumber %s" % FUNumber
-print "SET VARIABLE FBStatus %s" % FBStatus
-print "SET VARIABLE FBNumber %s" % FBNumber
-print "SET VARIABLE FRStatus %s" % FRStatus
-print "SET VARIABLE FRNumber %s" % FRNumber
-print "SET VARIABLE LDNumber %s" % LDNumber
-print "SET VARIABLE LCNumber %s" % LCNumber
-print "SET VARIABLE RCStatus %s" % RCStatus
-print "SET VARIABLE FFStatus %s" % FFStatus
-print "SET VARIABLE CSStatus %s" % CSStatus
-print "SET VARIABLE PROTO %s" %res[0]
-print "SET VARIABLE NBC %s" %res[1]
-print "SET VARIABLE NBS %s" %res[2]
-print "SET VARIABLE QUEUENAME %s" %res[3]
-print "SET VARIABLE NAME %s" %res[4]
-print "SET VARIABLE MOH %s" %res[5]
-print "SET VARIABLE CHANMOBILEAGENT %s" % CHANMOBILEAGENT
-print "SET VARIABLE ISCHANMOBILELOGGED %s" % ISCHANMOBILELOGGED
+agi_set_variable("VMStatus", "%s" % VMStatus)
+agi_set_variable("DND", "%s" % DND)
+agi_set_variable("FUStatus", "%s" % FUStatus)
+agi_set_variable("FUNumber", "%s" % FUNumber)
+agi_set_variable("FBStatus", "%s" % FBStatus)
+agi_set_variable("FBNumber", "%s" % FBNumber)
+agi_set_variable("FRStatus", "%s" % FRStatus)
+agi_set_variable("FRNumber", "%s" % FRNumber)
+agi_set_variable("LDNumber", "%s" % LDNumber)
+agi_set_variable("LCNumber", "%s" % LCNumber)
+agi_set_variable("RCStatus", "%s" % RCStatus)
+agi_set_variable("FFStatus", "%s" % FFStatus)
+agi_set_variable("CSStatus", "%s" % CSStatus)
+agi_set_variable("PROTO", "%s" %res[0])
+agi_set_variable("NBC", "%s" %res[1])
+agi_set_variable("NBS", "%s" %res[2])
+agi_set_variable("QUEUENAME", "%s" %res[3])
+agi_set_variable("NAME", "%s" %res[4])
+agi_set_variable("MOH", "%s" %res[5])
+agi_set_variable("CHANMOBILEAGENT", "%s" % CHANMOBILEAGENT)
+agi_set_variable("ISCHANMOBILELOGGED", "%s" % ISCHANMOBILELOGGED)
