@@ -78,7 +78,7 @@ def get_general():
 # First argument must be a phone number 
 # Second argument must be a provider setup on config file
 if len(sys.argv) > 1:
-	if sys.argv[1].isdigit():
+	if sys.argv[1].isdigit() or sys.argv[1].find('\+'):
 		exten = sys.argv[1]
 		provider = ""
 	else:
