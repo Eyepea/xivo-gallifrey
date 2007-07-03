@@ -22,3 +22,6 @@ def agi_escape_string(s):
 
 def agi_verbose(txt):
 	print "VERBOSE \"%s\"" % agi_escape_string(txt)
+
+def agi_set_variable(var, val):
+        print "SET VARIABLE %s \"%s\"" %(agi_escape_string(var), agi_escape_string(val))
