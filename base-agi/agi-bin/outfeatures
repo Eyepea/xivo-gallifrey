@@ -43,18 +43,18 @@ except IOError:
 
 # This function returns all informations for a specific provider
 def get_provider(provider):
-	sys.stdout.write("SET VARIABLE PROVIDER \"" + agi.agi_escape_string(provider) + "\"\n")
-	sys.stdout.write("SET VARIABLE EXTERNPREFIX \"" + agi.agi_escape_string(config.get(provider, 'externprefix')) + "\"\n")
-	sys.stdout.write("SET VARIABLE PREFIX \"" + agi.agi_escape_string(config.get(provider, 'prefix')) + "\"\n")
-	sys.stdout.write("SET VARIABLE CHAN \"" + agi.agi_escape_string(config.get(provider, 'chan')) + "\"\n")
-	sys.stdout.write("SET VARIABLE EXTERNNUM \"" + agi.agi_escape_string(config.get(provider, 'externnum')) + "\"\n")
-	sys.stdout.write("SET VARIABLE SETCALLERID \"" + agi.agi_escape_string(config.get(provider, 'setcallerid')) + "\"\n")
-	sys.stdout.write("SET VARIABLE USEENUM \"" + agi.agi_escape_string(config.get(provider, 'useenum')) + "\"\n")
-	sys.stdout.write("SET VARIABLE TIMETOCALL \"" + agi.agi_escape_string(config.get(provider, 'timetocall')) + "\"\n")
+	agi.agi_set_variable("PROVIDER", provider)
+	agi.agi_set_variable("EXTERNPREFIX", config.get(provider, 'externprefix'))
+	agi.agi_set_variable("PREFIX", config.get(provider, 'prefix'))
+	agi.agi_set_variable("CHAN", config.get(provider, 'chan'))
+	agi.agi_set_variable("EXTERNNUM", config.get(provider, 'externnum'))
+	agi.agi_set_variable("SETCALLERID", config.get(provider, 'setcallerid'))
+	agi.agi_set_variable("USEENUM", config.get(provider, 'useenum'))
+	agi.agi_set_variable("TIMETOCALL", config.get(provider, 'timetocall'))
 	if not config.get(provider, 'stripnum'):
-		sys.stdout.write("SET VARIABLE STRIPNUM \"0\"\n")
+		agi.agi_set_variable("STRIPNUM", "0")
 	else:
-		sys.stdout.write("SET VARIABLE STRIPNUM \"" + agi.agi_escape_string(config.get(provider, 'stripnum')) + "\"\n")
+		agi.agi_set_variable("STRIPNUM", config.get(provider, 'stripnum'))
 
 # This function return all informations from the general section, special number and emergency number
 def get_general():
@@ -66,11 +66,11 @@ def get_general():
 			else:
 				providers = providers + "," + provider
 
-	sys.stdout.write("SET VARIABLE EMERGENCYPROVIDER \"" + agi.agi_escape_string(config.get('general', 'emergencyprovider')) + "\"\n")
-	sys.stdout.write("SET VARIABLE EMERGENCYNUMBERS \"" + agi.agi_escape_string(config.get('general', 'emergencynumbers')) + "\"\n")
-	sys.stdout.write("SET VARIABLE SPECIALNUMBERS \"" + agi.agi_escape_string(config.get('general', 'specialnumbers')) + "\"\n")
-	sys.stdout.write("SET VARIABLE SPECIALPROVIDER \"" + agi.agi_escape_string(config.get('general', 'specialprovider')) + "\"\n")
-	sys.stdout.write("SET VARIABLE PROVIDERS \"" + agi.agi_escape_string(providers) + "\"\n")
+	agi.agi_set_variable("EMERGENCYPROVIDER", config.get('general', 'emergencyprovider'))
+	agi.agi_set_variable("EMERGENCYNUMBERS", config.get('general', 'emergencynumbers'))
+	agi.agi_set_variable("SPECIALNUMBERS", config.get('general', 'specialnumbers'))
+	agi.agi_set_variable("SPECIALPROVIDER", config.get('general', 'specialprovider'))
+	agi.agi_set_variable("PROVIDERS", providers)
 
 # If no argnument script return all general configuration
 # First argument must be a phone number 
