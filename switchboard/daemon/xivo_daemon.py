@@ -1232,14 +1232,32 @@ def handle_ami_event_dial(listkeys, astnum, src, dst, clid, clidn):
 # \return none
 def handle_ami_event_link(listkeys, astnum, src, dst, clid1, clid2):
 	global plist
-	plist[astnum].normal_channel_fills(src, DUMMY_MYNUM,
-					   "On the phone", 0, DIR_TO_STRING,
-					   dst, clid2,
-					   "ami-el1")
-	plist[astnum].normal_channel_fills(dst, DUMMY_MYNUM,
-					   "On the phone", 0, DIR_FROM_STRING,
-					   src, clid1,
-					   "ami-el2")
+	if src not in plist[astnum].star10:
+		plist[astnum].normal_channel_fills(src, DUMMY_MYNUM,
+						   "On the phone", 0, DIR_TO_STRING,
+						   dst, clid2,
+						   "ami-el1")
+	if dst not in plist[astnum].star10:
+		plist[astnum].normal_channel_fills(dst, DUMMY_MYNUM,
+						   "On the phone", 0, DIR_FROM_STRING,
+						   src, clid1,
+						   "ami-el2")
+
+
+## \brief Fills the star10 field on unlink events.
+# \param listkeys the list of allowed phones
+# \param astnum the Asterisk numerical identifier
+# \param src the source channel
+# \param dst the dest channel
+# \param clid1 the src callerid
+# \param clid2 the dest callerid
+# \return none
+def handle_ami_event_unlink(listkeys, astnum, src, dst, clid1, clid2):
+	global plist
+	if src not in plist[astnum].star10:
+		plist[astnum].star10.append(src)
+	if dst not in plist[astnum].star10:
+		plist[astnum].star10.append(dst)
 
 
 ## \brief Updates some channels according to the Hangup events occuring in the AMI.
@@ -1250,6 +1268,8 @@ def handle_ami_event_link(listkeys, astnum, src, dst, clid1, clid2):
 # \return
 def handle_ami_event_hangup(listkeys, astnum, chan, cause):
 	global plist
+	if chan in plist[astnum].star10:
+		plist[astnum].star10.remove(chan)
 	plist[astnum].normal_channel_hangup(chan, "ami-eh0")
 
 
@@ -1311,6 +1331,11 @@ def handle_ami_event(astnum, idata):
 			dst   = getvalue(x, "Channel2")
 			clid1 = getvalue(x, "CallerID1")
 			clid2 = getvalue(x, "CallerID2")
+			try:
+				handle_ami_event_unlink(listkeys, astnum, src, dst, clid1, clid2)
+				#print "unlink", context, x
+			except Exception, exc:
+				log_debug("an exception occured in handle_ami_event_unlink : " + str(exc))
 		elif x.find("Hangup;") == 7:
 			chan  = getvalue(x, "Channel")
 			cause = getvalue(x, "Cause-txt")
@@ -1754,6 +1779,7 @@ class PhoneList:
 	def __init__(self, iastid):
 		self.astid = iastid
 		self.normal = {}
+		self.star10 = []
 
 	def update_GUI_clients(self, phonenum, fromwhom):
 		global tcpopens_sb
