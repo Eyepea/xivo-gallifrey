@@ -28,10 +28,8 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-# XXX TODO BUGBUG FIXME SATAN: any print or sys.stdout.write is probably a bug,
-# remove every prints and include the correct modules (Xilun - 2007-06-15)
-
 import ConfigParser, sys
+from xivo import agi
 
 # This is the configuration file, please do not change the path because if was editable by xivo web interface
 outcall = "/etc/asterisk/xivo_outcall.conf"
@@ -40,23 +38,23 @@ try:
 	config = ConfigParser.ConfigParser()
 	config.readfp(open(outcall))
 except IOError:
-	print "VERBOSE \"Configuration file not found : %s\"" % outcall
+	agi.agi_verbose("Configuration file not found : %s" % outcall)
 	raise
 
 # This function returns all informations for a specific provider
 def get_provider(provider):
-	sys.stdout.write("SET VARIABLE PROVIDER \"" + provider + "\"\n")
-	sys.stdout.write("SET VARIABLE EXTERNPREFIX \"" + config.get(provider, 'externprefix') + "\"\n")
-	sys.stdout.write("SET VARIABLE PREFIX \"" + config.get(provider, 'prefix') + "\"\n")
-	sys.stdout.write("SET VARIABLE CHAN \"" + config.get(provider, 'chan') + "\"\n")
-	sys.stdout.write("SET VARIABLE EXTERNNUM \"" + config.get(provider, 'externnum') + "\"\n")
-	sys.stdout.write("SET VARIABLE SETCALLERID \"" + config.get(provider, 'setcallerid') + "\"\n")
-	sys.stdout.write("SET VARIABLE USEENUM \"" + config.get(provider, 'useenum') + "\"\n")
-	sys.stdout.write("SET VARIABLE TIMETOCALL \"" + config.get(provider, 'timetocall') + "\"\n")
+	sys.stdout.write("SET VARIABLE PROVIDER \"" + agi.agi_escape_string(provider) + "\"\n")
+	sys.stdout.write("SET VARIABLE EXTERNPREFIX \"" + agi.agi_escape_string(config.get(provider, 'externprefix')) + "\"\n")
+	sys.stdout.write("SET VARIABLE PREFIX \"" + agi.agi_escape_string(config.get(provider, 'prefix')) + "\"\n")
+	sys.stdout.write("SET VARIABLE CHAN \"" + agi.agi_escape_string(config.get(provider, 'chan')) + "\"\n")
+	sys.stdout.write("SET VARIABLE EXTERNNUM \"" + agi.agi_escape_string(config.get(provider, 'externnum')) + "\"\n")
+	sys.stdout.write("SET VARIABLE SETCALLERID \"" + agi.agi_escape_string(config.get(provider, 'setcallerid')) + "\"\n")
+	sys.stdout.write("SET VARIABLE USEENUM \"" + agi.agi_escape_string(config.get(provider, 'useenum')) + "\"\n")
+	sys.stdout.write("SET VARIABLE TIMETOCALL \"" + agi.agi_escape_string(config.get(provider, 'timetocall')) + "\"\n")
 	if not config.get(provider, 'stripnum'):
 		sys.stdout.write("SET VARIABLE STRIPNUM \"0\"\n")
 	else:
-		sys.stdout.write("SET VARIABLE STRIPNUM \"" + config.get(provider, 'stripnum') + "\"\n")
+		sys.stdout.write("SET VARIABLE STRIPNUM \"" + agi.agi_escape_string(config.get(provider, 'stripnum')) + "\"\n")
 
 # This function return all informations from the general section, special number and emergency number
 def get_general():
@@ -68,17 +66,17 @@ def get_general():
 			else:
 				providers = providers + "," + provider
 
-	sys.stdout.write("SET VARIABLE EMERGENCYPROVIDER \"" + config.get('general', 'emergencyprovider') + "\"\n")
-	sys.stdout.write("SET VARIABLE EMERGENCYNUMBERS \"" + config.get('general', 'emergencynumbers') + "\"\n")
-	sys.stdout.write("SET VARIABLE SPECIALNUMBERS \"" + config.get('general', 'specialnumbers') + "\"\n")
-	sys.stdout.write("SET VARIABLE SPECIALPROVIDER \"" + config.get('general', 'specialprovider') + "\"\n")
-	sys.stdout.write("SET VARIABLE PROVIDERS \"" + providers + "\"\n")
+	sys.stdout.write("SET VARIABLE EMERGENCYPROVIDER \"" + agi.agi_escape_string(config.get('general', 'emergencyprovider')) + "\"\n")
+	sys.stdout.write("SET VARIABLE EMERGENCYNUMBERS \"" + agi.agi_escape_string(config.get('general', 'emergencynumbers')) + "\"\n")
+	sys.stdout.write("SET VARIABLE SPECIALNUMBERS \"" + agi.agi_escape_string(config.get('general', 'specialnumbers')) + "\"\n")
+	sys.stdout.write("SET VARIABLE SPECIALPROVIDER \"" + agi.agi_escape_string(config.get('general', 'specialprovider')) + "\"\n")
+	sys.stdout.write("SET VARIABLE PROVIDERS \"" + agi.agi_escape_string(providers) + "\"\n")
 
 # If no argnument script return all general configuration
 # First argument must be a phone number 
 # Second argument must be a provider setup on config file
 if len(sys.argv) > 1:
-	if sys.argv[1].isdigit() or sys.argv[1].find('\+'):
+	if sys.argv[1].isdigit() or sys.argv[1].find('^\+'):
 		exten = sys.argv[1]
 		provider = ""
 	else:
@@ -113,9 +111,9 @@ if len(sys.argv) > 1:
 								get_provider(s)
 								sys.exit()
 							else:
-								print "VERBOSE \"Found no provider for this number %s and context %s!\"" %(exten,context)
+								agi.agi_verbose("Found no provider for this number %s and context %s!" %(exten,context))
 						else:
-							print "VERBOSE \"Found no provider for this number %s!\"" % exten
+							agi.agi_verbose("Found no provider for this number %s!" % exten)
 					else:
 						try:
 							import re
@@ -128,21 +126,21 @@ if len(sys.argv) > 1:
 											get_provider(s)
 											sys.exit()
 										else:
-											print "VERBOSE \"Found no provider in this context %s!\"" %(context)
+											agi.agi_verbose("Found no provider in this context %s!" %(context))
 						except IndexError:
-							print "VERBOSE \"Error for the regexp %s on the section %s\"" %(config.get(s, 'externregexp'), s)
-							print "VERBOSE \"Maybe this number is wrong!\""
+							agi.agi_verbose("Error for the regexp %s on the section %s" %(config.get(s, 'externregexp'), s))
+							agi.agi_verbose("Maybe this number is wrong!")
 
 
 		except ConfigParser.NoSectionError:
-			print "VERBOSE \"Sorry no providers with this name\""
+			agi.agi_verbose("Sorry no providers with this name")
 		except ConfigParser.NoOptionError:
-			print "VERBOSE \"Sorry your config is broken please add all options on the section %s\"" % s
+			agi.agi_verbose("Sorry your config is broken please add all options on the section %s" % s)
 		except IndexError:
-			print "VERBOSE \"Error for number for args on the section %s\"" % s
+			agi.agi_verbose("Error for number for args on the section %s" % s)
 else:
 	get_general()
 	sys.exit()
 
-print "VERBOSE \"No found provider for this number %s!\"" % exten
+agi.agi_verbose("No found provider for this number %s!" % exten)
 sys.exit()
