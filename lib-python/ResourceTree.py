@@ -25,15 +25,15 @@ __license__ = """
 
 from pyfunc import *
 
-# NOTE: path must be a tuple
+# NOTE: paths are tuples in this module
 # TODO: a generic fenter which call fvisit() when visitable(), then
 # overloadable methods ?
 
 class RT_node(object):
 
 	"""Both base class of all Resource Trees, and possible near
-	complete implementation of leaves nodes (fvisit() just need to
-	be overridden. """
+	complete implementation of leaves nodes - fvisit() just need to
+	be overridden to do that. """
 
 	def __init__(self, ropen = True):
 		"""When ropen is True, if there is no subpath remaining when this
@@ -62,7 +62,7 @@ class RT_node(object):
 
 	@staticmethod
 	def fout(ctx, path, pos):
-		"""fin() is called after the return of the fenter() function
+		"""fout() is called after the return of the fenter() function
 		of the child, and can return a transformed new ctx if needed."""
 		return ctx
 
@@ -76,7 +76,7 @@ class RT_node(object):
 
 	def fenter_child(self, child_t, ctx, path, pos, eaten):
 		"""Typically called by base and overloaded versions of fenter()
-		to factorise code. """
+		to factorise code, when traversal of a child tree is needed. """
 		ctx, cont = self.fin(ctx, path, pos)
 		if not cont:
 			return None
