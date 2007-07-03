@@ -488,5 +488,10 @@
         <source>Unknown</source>
         <translation>Inconnu</translation>
     </message>
+    <message>
+        <location filename="switchboardengine.cpp" line="585"/>
+        <source>Attempting to reconnect to server</source>
+        <translation>Tentative de reconnexion au serveur</translation>
+    </message>
 </context>
 </TS>

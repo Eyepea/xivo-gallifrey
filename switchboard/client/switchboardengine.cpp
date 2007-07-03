@@ -580,8 +580,9 @@ quint16 SwitchBoardEngine::sbport() const
 void SwitchBoardEngine::timerEvent(QTimerEvent * event)
 {
 	int timerId = event->timerId();
-	//qDebug() << "SwitchBoardEngine::timerEvent() timerId=" << timerId;
+	qDebug() << "SwitchBoardEngine::timerEvent() timerId=" << timerId;
 	if(timerId == m_try_timerid) {
+		emitTextMessage(tr("Attempting to reconnect to server"));
 		start();
 		event->accept();
 	} else {
