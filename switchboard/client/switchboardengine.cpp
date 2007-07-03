@@ -291,6 +291,8 @@ void SwitchBoardEngine::updatePeers(const QStringList & liststatus)
 		for(int i = 0; i < nchans; i++) {
 			//  <channel>:<etat du channel>:<nb de secondes dans cet etat>:<to/from>:<channel en liaison>:<numero en liaison>
 			int refn = nfields0 + nfields1 * i;
+			QString displayedNum;
+			
 			SIPPresStatus = liststatus[refn + 1];
 			/*if(liststatus[3] == "114")
 			{
@@ -300,14 +302,23 @@ void SwitchBoardEngine::updatePeers(const QStringList & liststatus)
 			}*/
 			chanIds << ("c/" + liststatus[1] + "/" + context + "/" + liststatus[refn]);
 			chanStates << liststatus[refn + 1];
-			chanOthers << liststatus[refn + 5];
+			if((liststatus[refn + 5] == "") ||
+			   (liststatus[refn + 5] == "<Unknown>") ||
+			   (liststatus[refn + 5] == "<unknown>") ||
+			   (liststatus[refn + 5] == "anonymous") ||
+			   (liststatus[refn + 5] == "(null)"))
+				displayedNum = tr("Unknown Number");
+			else
+				displayedNum = liststatus[refn + 5];
+
+			chanOthers << displayedNum;
 			/*pinfos += liststatus[refn + 1] + " : " + liststatus[refn] + " "
 				+ liststatus[refn + 2] + " " + liststatus[refn + 3] + " "
 				+ liststatus[refn + 4] + " " + liststatus[refn + 5];*/
 			updateCall("c/" + liststatus[1] + "/" + context + "/" + liststatus[refn],
 				   liststatus[refn + 1],
 				   liststatus[refn + 2].toInt(), liststatus[refn + 3],
-				   liststatus[refn + 4], liststatus[refn + 5],
+				   liststatus[refn + 4], displayedNum,
 				   pname);
 /*			if(i < nchans - 1)
 				pinfos += "\n";*/

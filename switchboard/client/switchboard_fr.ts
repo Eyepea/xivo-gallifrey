@@ -449,32 +449,32 @@
 <context>
     <name>SwitchBoardEngine</name>
     <message>
-        <location filename="switchboardengine.cpp" line="201"/>
+        <location filename="switchboardengine.cpp" line="199"/>
         <source>Connection lost with Presence Server</source>
         <translation>Connexion perdue avec le serveur de présence</translation>
     </message>
     <message>
-        <location filename="switchboardengine.cpp" line="224"/>
+        <location filename="switchboardengine.cpp" line="222"/>
         <source>Connection refused</source>
         <translation>Connexion refusée</translation>
     </message>
     <message>
-        <location filename="switchboardengine.cpp" line="233"/>
+        <location filename="switchboardengine.cpp" line="231"/>
         <source>Host not found</source>
         <translation>Hôte non trouvé</translation>
     </message>
     <message>
-        <location filename="switchboardengine.cpp" line="236"/>
+        <location filename="switchboardengine.cpp" line="234"/>
         <source>Unknown socket error</source>
         <translation>Erreur réseau inconnue</translation>
     </message>
     <message>
-        <location filename="switchboardengine.cpp" line="437"/>
+        <location filename="switchboardengine.cpp" line="446"/>
         <source>Peers&apos; status updated</source>
         <translation>Statut des postes mis à jour</translation>
     </message>
     <message>
-        <location filename="switchboardengine.cpp" line="408"/>
+        <location filename="switchboardengine.cpp" line="417"/>
         <source> said : </source>
         <translation> dit : </translation>
     </message>
@@ -484,14 +484,19 @@
         <translation type="obsolete">Quelqu&apos;un</translation>
     </message>
     <message>
-        <location filename="switchboardengine.cpp" line="408"/>
+        <location filename="switchboardengine.cpp" line="417"/>
         <source>Unknown</source>
         <translation>Inconnu</translation>
     </message>
     <message>
-        <location filename="switchboardengine.cpp" line="585"/>
+        <location filename="switchboardengine.cpp" line="594"/>
         <source>Attempting to reconnect to server</source>
         <translation>Tentative de reconnexion au serveur</translation>
+    </message>
+    <message>
+        <location filename="switchboardengine.cpp" line="310"/>
+        <source>Unknown Number</source>
+        <translation>Numéro Inconnu</translation>
     </message>
 </context>
 </TS>
