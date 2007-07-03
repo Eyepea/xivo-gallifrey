@@ -32,7 +32,7 @@ class IfAttr(RT_node):
 class Iface:
 	def __init__(self, iface_name):
 		print 'mdr'
-		self.truc = NetworkInterfaces(file('/home/xilun/xivo/trunk/lib-python/interfaces'))
+		self.truc = NetworkInterfaces(file('/home/xilun/xivo/trunk/lib-python/Tests/interfaces'))
 		self.truc.parse()
 		self.machin = self.truc.get_iface(iface_name)
 		self.iface_name = iface_name
