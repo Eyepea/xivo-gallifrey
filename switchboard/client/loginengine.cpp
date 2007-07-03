@@ -81,17 +81,18 @@ void LoginEngine::loadSettings()
 {
 	QSettings settings;
 	m_serverhost = settings.value("engine/serverhost").toString();
-	m_loginport = settings.value("engine/loginport", 5000).toUInt();
-	m_asterisk = settings.value("engine/asterisk").toString();
+	m_userid = settings.value("engine/userid").toString();
 	m_autoconnect = settings.value("engine/autoconnect", false).toBool();
+	m_trytoreconnect = settings.value("engine/trytoreconnect", false).toBool();
+	m_trytoreconnectinterval = settings.value("engine/trytoreconnectinterval", 20*1000).toUInt();
+	m_asterisk = settings.value("engine/asterisk").toString();
 	m_protocol = settings.value("engine/protocol").toString();
-	m_extension = settings.value("engine/extension").toString();
+
+	m_enabled = settings.value("engine/enabled", true).toBool();
+	m_loginport = settings.value("engine/loginport", 5000).toUInt();
 	m_passwd = settings.value("engine/passwd").toString();
 	m_availstate = settings.value("engine/availstate", "available").toString();
 	m_keepaliveinterval = settings.value("engine/keepaliveinterval", 20*1000).toUInt();
-	m_trytoreconnect = settings.value("engine/trytoreconnect", false).toBool();
-	m_trytoreconnectinterval = settings.value("engine/trytoreconnectinterval", 20*1000).toUInt();
-	m_enabled = settings.value("engine/enabled", true).toBool();
 }
 
 /*!
@@ -100,18 +101,23 @@ void LoginEngine::loadSettings()
 void LoginEngine::saveSettings()
 {
 	QSettings settings;
-	settings.setValue("engine/serverhost", m_serverhost);
+	// these commented settings are saved by SwitchBoardEngine::saveSettings()
+	// in the Switchboard framework :
+	//
+	//	settings.setValue("engine/serverhost", m_serverhost);
+	//
+	//	settings.setValue("engine/userid", m_userid);
+	//	settings.setValue("engine/autoconnect", m_autoconnect);
+	//	settings.setValue("engine/trytoreconnect", m_trytoreconnect);
+	//	settings.setValue("engine/trytoreconnectinterval", m_trytoreconnectinterval);
+	//	settings.setValue("engine/asterisk", m_asterisk);
+	//	settings.setValue("engine/protocol", m_protocol);
+	
+	settings.setValue("engine/enabled", m_enabled);
 	settings.setValue("engine/loginport", m_loginport);
-	settings.setValue("engine/asterisk", m_asterisk);
-	settings.setValue("engine/autoconnect", m_autoconnect);
-	settings.setValue("engine/protocol", m_protocol);
-	settings.setValue("engine/extension", m_extension);
 	settings.setValue("engine/passwd", m_passwd);
 	settings.setValue("engine/availstate", m_availstate);
 	settings.setValue("engine/keepaliveinterval", m_keepaliveinterval);
-	settings.setValue("engine/trytoreconnect", m_trytoreconnect);
-	settings.setValue("engine/trytoreconnectinterval", m_trytoreconnectinterval);
-	settings.setValue("engine/enabled", m_enabled);
 }
 
 /*! \brief Start the connection to the server
@@ -134,7 +140,7 @@ void LoginEngine::stop()
 	outline.append(m_asterisk);
 	outline.append("/");
 	outline.append(m_protocol.toLower());
-	outline.append(m_extension);
+	outline.append(m_userid);
 	//qDebug() << "LoginEngine::stop()" << outline;
 	outline.append("\r\n");
 	m_udpsocket->writeDatagram( outline.toAscii(),
@@ -286,7 +292,7 @@ void LoginEngine::identifyToTheServer()
 	outline.append(m_asterisk);
 	outline.append("/");
 	outline.append(m_protocol.toLower());
-	outline.append(m_extension);
+	outline.append(m_userid);
 	qDebug() << "LoginEngine::identifyToTheServer() : " << outline;
 	outline.append("\r\n");
 	m_loginsocket->write(outline.toAscii());
@@ -388,7 +394,7 @@ void LoginEngine::keepLoginAlive()
 	outline.append(m_asterisk);
 	outline.append("/");
 	outline.append(m_protocol.toLower());
-	outline.append(m_extension);
+	outline.append(m_userid);
 	outline.append(" SESSIONID ");
 	outline.append(m_sessionid);
 	outline.append(" STATE ");

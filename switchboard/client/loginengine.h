@@ -49,10 +49,10 @@ public:
 	bool autoconnect() const {return m_autoconnect;};
 	void saveSettings();	//!< save settings
 	
-	//! set m_asterisk
-	void setAsterisk(const QString & ast) { m_asterisk = ast; };
-	//! get m_asterisk
-	const QString & asterisk() const { return m_asterisk; };
+	void setAddress(const QString & host) { m_serverhost = host; };	//! set m_serverhost
+	const QString & address() const { return m_serverhost; };	//! get m_serverhost
+	void setAsterisk(const QString & ast) { m_asterisk = ast; };	//! set m_asterisk
+	const QString & asterisk() const { return m_asterisk; };	//! get m_asterisk
 	//! set m_protocol
 	void setProtocol(const QString & proto) { m_protocol = proto; };
 	//! get m_protocol
@@ -62,10 +62,8 @@ public:
 	//! get m_loginport
 	const quint16 & loginPort() const { return m_loginport; };
 
-	//! set m_extension
-	void setExtension(const QString & ext) { m_extension = ext; };
-	//! get m_extension
-	const QString & extension() const { return m_extension; };
+	void setUserId(const QString & userid) { m_userid = userid; }; //! set m_userid
+	const QString & userId() const { return m_userid; };           //! get m_userid
 	//! set dial context ?
 	void setDialContext(const QString & context) { m_dialcontext = context; };
 	//! get dial context
@@ -133,7 +131,7 @@ private:
 	QHostAddress m_serveraddress;	//!< Resolved address of the login server
 	QString m_asterisk;		//!< asterisk id
 	QString m_protocol;		//!< protocol (SIP/IAX)
-	QString m_extension;	//!< phone extension
+	QString m_userid;	//!< phone userid
 	bool m_enabled;		//!< is enabled
 	QString m_passwd;	//!< password for account
 	QString m_dialcontext;	//!< Context of the phone, as returned by the xivo_daemon server

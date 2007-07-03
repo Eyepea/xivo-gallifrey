@@ -79,13 +79,12 @@ void SwitchBoardEngine::loadSettings()
 	QSettings settings;
 	m_serverhost = settings.value("engine/serverhost").toString();
 	m_sbport = settings.value("engine/serverport", 5003).toUInt();
+	m_userid = settings.value("engine/userid").toString();
 	m_autoconnect = settings.value("engine/autoconnect", false).toBool();
 	m_trytoreconnect = settings.value("engine/trytoreconnect", false).toBool();
 	m_trytoreconnectinterval = settings.value("engine/trytoreconnectinterval", 20*1000).toUInt();
 	m_asterisk = settings.value("engine/asterisk").toString();
 	m_protocol = settings.value("engine/protocol").toString();
-	//m_extension = settings.value("engine/extension").toString();
-	m_userid = settings.value("engine/userid").toString();
 }
 
 /*!
@@ -96,13 +95,12 @@ void SwitchBoardEngine::saveSettings()
 	QSettings settings;
 	settings.setValue("engine/serverhost", m_serverhost);
 	settings.setValue("engine/serverport", m_sbport);
+	settings.setValue("engine/userid", m_userid);
 	settings.setValue("engine/autoconnect", m_autoconnect);
 	settings.setValue("engine/trytoreconnect", m_trytoreconnect);
 	settings.setValue("engine/trytoreconnectinterval", m_trytoreconnectinterval);
 	settings.setValue("engine/asterisk", m_asterisk);
 	settings.setValue("engine/protocol", m_protocol);
-	//settings.setValue("engine/extension", m_extension);
-	settings.setValue("engine/userid", m_userid);
 }
 
 /* \brief set server address

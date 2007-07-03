@@ -142,25 +142,44 @@ SwitchBoardConfDialog::SwitchBoardConfDialog(SwitchBoardEngine * engine,
 
 void SwitchBoardConfDialog::saveAndClose()
 {
-	//m_loginengine->setUserId( m_userid->text() );
-	m_loginengine->setExtension( m_userid->text() );
-	m_loginengine->setLoginPort( m_loginport->text().toUInt() );
-	m_loginengine->setPassword( m_passwd->text() );
-	m_loginengine->setEnabled( m_presence->checkState() == Qt::Checked );
+	m_loginengine->setAddress( m_serverhost->text() );
+	m_loginengine->setUserId( m_userid->text() );
+	m_loginengine->setAutoconnect( m_autoconnect->checkState() == Qt::Checked );
 	m_loginengine->setTrytoreconnect( m_trytoreconnect->checkState() == Qt::Checked );
 	m_loginengine->setTrytoreconnectinterval( m_tryinterval_sbox->value()*1000 );
-	m_loginengine->saveSettings();
+	m_loginengine->setAsterisk( m_asterisk->text() );
+	m_loginengine->setProtocol( m_protocombo->currentText() );
+
+	m_loginengine->setEnabled( m_presence->checkState() == Qt::Checked );
+	m_loginengine->setLoginPort( m_loginport->text().toUInt() );
+	m_loginengine->setPassword( m_passwd->text() );
 	//m_window->setWidth( m_widthsb->value() );
 	//m_window->saveSettings();
 
 	m_engine->setAddress( m_serverhost->text(), m_sbport->text().toUInt() );
-	m_engine->setAutoconnect( m_autoconnect->checkState() == Qt::Checked );
-	m_engine->setAsterisk( m_asterisk->text() );
-	m_engine->setProtocol( m_protocombo->currentText() );
 	m_engine->setUserId( m_userid->text() );
+	m_engine->setAutoconnect( m_autoconnect->checkState() == Qt::Checked );
 	m_engine->setTrytoreconnect( m_trytoreconnect->checkState() == Qt::Checked );
 	m_engine->setTrytoreconnectinterval( m_tryinterval_sbox->value()*1000 );
+	m_engine->setAsterisk( m_asterisk->text() );
+	m_engine->setProtocol( m_protocombo->currentText() );
+
+	m_loginengine->saveSettings();
 	m_engine->saveSettings();
 	close();
 }
 
+// 	//	settings.setValue("engine/serverhost", m_serverhost);
+// 	//
+// 	//	settings.setValue("engine/userid", m_userid);
+// 	//	settings.setValue("engine/autoconnect", m_autoconnect);
+// 	//	settings.setValue("engine/trytoreconnect", m_trytoreconnect);
+// 	//	settings.setValue("engine/trytoreconnectinterval", m_trytoreconnectinterval);
+// 	//	settings.setValue("engine/asterisk", m_asterisk);
+// 	//	settings.setValue("engine/protocol", m_protocol);
+	
+// 	settings.setValue("engine/enabled", m_enabled);
+// 	settings.setValue("engine/loginport", m_loginport);
+// 	settings.setValue("engine/passwd", m_passwd);
+// 	settings.setValue("engine/availstate", m_availstate);
+// 	settings.setValue("engine/keepaliveinterval", m_keepaliveinterval);
