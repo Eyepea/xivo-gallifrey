@@ -528,18 +528,29 @@ class AMIClass:
 
 	# \brief Hangs up a Channel.
 	def hangup(self, channel, channel_peer):
+		ret = 0
 		try:
 			self.sendcommand('Hangup',
 					 [('Channel', channel)])
 			self.readresponse('')
-			self.sendcommand('Hangup',
-					 [('Channel', channel_peer)])
-			self.readresponse('')
-			return True
+			ret += 1
 		except self.AMIError, exc:
-			return False
+			pass
 		except Exception, exc:
-			return False
+			pass
+
+		if channel_peer != "":
+			try:
+				self.sendcommand('Hangup',
+						 [('Channel', channel_peer)])
+				self.readresponse('')
+				ret += 2
+			except self.AMIError, exc:
+				pass
+			except Exception, exc:
+				pass
+		
+		return ret
 
 	# \brief Originates a call from a phone towards another.
 	def originate(self, phoneproto, phonesrc, phonedst, locext):
@@ -610,8 +621,9 @@ def build_customers(searchpattern):
 			mailn = x[1]['mail'][0]
 		fullstatlist.append("%s;%s;%s;%s" %(tnum,cn,o,mailn))
 
+	uniq = {}
 	fullstatlist.sort()
-	for fsl in fullstatlist:
+	for fsl in [uniq.setdefault(e,e) for e in fullstatlist if e not in uniq]:
 		fullstat += ";" + fsl
 	fullstat += "\n"
 	return fullstat
@@ -887,21 +899,30 @@ def split_from_ui(fullname):
 # \return none
 def manage_tcp_connection(connid, allow_events):
     global AMIclasssock, AMIcomms, ins
+
+    try:
+	    requester_ip   = connid[1]
+	    requester_port = connid[2]
+	    requester      = requester_ip + ":" + str(requester_port)
+    except Exception, exc:
+	    log_debug("UI connection : could not get IP details of connid = %s : %s" %(str(connid),str(exc)))
+	    requester = str(connid)
+
     try:
 	    msg = connid[0].recv(BUFSIZE_LARGE)
     except Exception, exc:
 	    msg = ""
-	    log_debug("UI connection : a problem occured when recv from %s : %s" %(str(connid[0]),str(exc)))
+	    log_debug("UI connection : a problem occured when recv from %s : %s" %(requester, str(exc)))
     if len(msg) == 0:
 	    try:
 		    connid[0].close()
 		    ins.remove(connid[0])
 		    if allow_events == True:
 			    tcpopens_sb.remove(connid)
-			    log_debug("TCP (SB)  socket closed from " + connid[1] + " " + str(connid[2]))
+			    log_debug("TCP (SB)  socket closed from %s" %requester)
 		    else:
 			    tcpopens_php.remove(connid)
-			    log_debug("TCP (PHP) socket closed from " + connid[1] + " " + str(connid[2]))
+			    log_debug("TCP (PHP) socket closed from %s" %requester)
 	    except Exception, exc:
 		    log_debug("UI connection [%s] : a problem occured when trying to close %s : %s"
 			      %(msg, str(connid[0]), str(exc)))
@@ -913,13 +934,13 @@ def manage_tcp_connection(connid, allow_events):
 			connid[0].send(build_statuses())
 		except Exception, exc:
 			log_debug("UI connection [%s] : KO when sending to %s : %s"
-				  %(usefulmsg, str(connid[0]), str(exc)))
+				  %(usefulmsg, requester, str(exc)))
         elif usefulmsg == "callerids":
 		try:
 			connid[0].send(build_callerids())
 		except Exception, exc:
 			log_debug("UI connection [%s] : KO when sending to %s : %s"
-				  %(usefulmsg, str(connid[0]), str(exc)))
+				  %(usefulmsg, requester, str(exc)))
         elif usefulmsg == "infos":
 		try:
 			time_uptime = int(time.time() - time_start)
@@ -930,7 +951,7 @@ def manage_tcp_connection(connid, allow_events):
 			connid[0].send(reply + "\n")
 		except Exception, exc:
 			log_debug("UI connection [%s] : KO when sending to %s : %s"
-				  %(usefulmsg, str(connid[0]), str(exc)))
+				  %(usefulmsg, requester, str(exc)))
 
 
 	# debug/setup functions
@@ -941,7 +962,7 @@ def manage_tcp_connection(connid, allow_events):
 				k1.sort()
 				for kk in k1:
 					canal = plast.normal[kk].chann
-					connid[0].send("%10s %10s %6s [SIP : %15s - %4d s] %4d %s\n"
+					connid[0].send("%10s %10s %6s [SIP : %12s - %4d s] %4d %s\n"
 						       %(plast.astid,
 							 kk,
 							 plast.normal[kk].towatch,
@@ -951,7 +972,7 @@ def manage_tcp_connection(connid, allow_events):
 							 str(canal.keys())))
 		except Exception, exc:
 			log_debug("UI connection [%s] : KO when sending to %s : %s"
-				  %(usefulmsg, str(connid[0]), str(exc)))
+				  %(usefulmsg, requester, str(exc)))
         elif usefulmsg == "show_logged":
 		try:
 			userlist_lock.acquire()
@@ -961,24 +982,24 @@ def manage_tcp_connection(connid, allow_events):
 		except Exception, exc:
 			userlist_lock.release()
 			log_debug("UI connection [%s] : KO when sending to %s : %s"
-				  %(usefulmsg, str(connid[0]), str(exc)))
+				  %(usefulmsg, requester, str(exc)))
         elif usefulmsg == "show_ami":
                 try:
 			for amis in AMIsocks:
-				connid[0].send("off : %s\n" %(str(amis)))
+				connid[0].send("events off   : %s\n" %(str(amis)))
 			for amis in AMIcomms:
-				connid[0].send("on  : %s\n" %(str(amis)))
+				connid[0].send("events on    : %s\n" %(str(amis)))
 			for amis in AMIclasssock:
-				connid[0].send("cls : %s\n" %(str(amis)))
+				connid[0].send("sboard comms : %s\n" %(str(amis)))
 		except Exception, exc:
 			log_debug("UI connection [%s] : KO when sending to %s : %s"
-				  %(usefulmsg, str(connid[0]), str(exc)))
+				  %(usefulmsg, requester, str(exc)))
 	elif usefulmsg[0:5] == "label": # for inserting hand-written labels between calls when testing
                 try:
 			log_debug("USER LABEL : %s" %(usefulmsg[6:]))
 		except Exception, exc:
 			log_debug("UI connection [%s] : KO when sending to %s : %s"
-				  %(usefulmsg, str(connid[0]), str(exc)))
+				  %(usefulmsg, requester, str(exc)))
 
 
 	elif usefulmsg == "keepalive":
@@ -986,26 +1007,26 @@ def manage_tcp_connection(connid, allow_events):
 			connid[0].send("keepalive=\n")
 		except Exception, exc:
 			log_debug("UI connection [%s] : KO when sending to %s : %s"
-				  %(usefulmsg, str(connid[0]), str(exc)))
+				  %(usefulmsg, requester, str(exc)))
 	elif usefulmsg == "capabilities":
 		try:
 			connid[0].send("capabilities=%s\n" %capabilities)
 		except Exception, exc:
 			log_debug("UI connection [%s] : KO when sending to %s : %s"
-				  %(usefulmsg, str(connid[0]), str(exc)))
+				  %(usefulmsg, requester, str(exc)))
 	elif usefulmsg == "quit" or usefulmsg == "exit":
 		try:
 			connid[0].close()
 			ins.remove(connid[0])
 			if allow_events == True:
 				tcpopens_sb.remove(connid)
-				log_debug("TCP (SB)  socket closed from " + connid[1] + " " + str(connid[2]))
+				log_debug("TCP (SB)  socket closed from %s" %requester)
 			else:
 				tcpopens_php.remove(connid)
-				log_debug("TCP (PHP) socket closed from " + connid[1] + " " + str(connid[2]))
+				log_debug("TCP (PHP) socket closed from %s" %requester)
 		except Exception, exc:
 			log_debug("UI connection [%s] : a problem occured when trying to close %s : %s"
-				  %(usefulmsg, str(connid[0]), str(exc)))
+				  %(usefulmsg, requester, str(exc)))
 	elif usefulmsg != "":
 		l = usefulmsg.split()
 		if len(l) == 2 and l[0] == 'hangup':
@@ -1015,14 +1036,13 @@ def manage_tcp_connection(connid, allow_events):
 			if idassrc == -1:
 				connid[0].send("asterisk=%s::hangup KO : no such asterisk id (%s)\n" %(DAEMON, assrc))
 			else:
-				log_debug("attempting a HANGUP : " + str(l))
+				log_debug("%s is attempting a HANGUP : %s" %(requester, str(l)))
 				phone, channel = split_from_ui(l[1])
 				if phone in plist[idassrc].normal:
 					if channel in plist[idassrc].normal[phone].chann:
 						channel_peer = plist[idassrc].normal[phone].chann[channel].getChannelPeer()
-						log_debug("UI action : " + configs[idassrc].astid + \
-							  " : hanging up <" + channel + "> and <" + \
-							  channel_peer + ">")
+						log_debug("UI action : %s : hanging up <%s> and <%s>"
+							  %(configs[idassrc].astid , channel, channel_peer))
 						if not AMIclasssock[idassrc]:
 							log_debug("AMI was not connected - attempting to connect again")
 							AMIclasssock[idassrc] = connect_to_AMI((configs[idassrc].remoteaddr,
@@ -1031,8 +1051,8 @@ def manage_tcp_connection(connid, allow_events):
 											       configs[idassrc].ami_pass)
 						if AMIclasssock[idassrc]:
 							ret = AMIclasssock[idassrc].hangup(channel, channel_peer)
-							if ret:
-								connid[0].send("asterisk=%s::hangup successful\n" %DAEMON)
+							if ret > 0:
+								connid[0].send("asterisk=%s::hangup successful (%d)\n" %(DAEMON, ret))
 							else:
 								connid[0].send("asterisk=%s::hangup KO : socket request failed\n" %DAEMON)
 						else:
@@ -1048,7 +1068,7 @@ def manage_tcp_connection(connid, allow_events):
 				connid[0].send(build_customers(spattern))
 			except Exception, exc:
 				log_debug("UI connection : a problem occured when sending to %s : %s"
-					  %(str(connid[0]),str(exc)))
+					  %(requester, str(exc)))
 		elif len(l) == 3 and (l[0] == 'originate' or l[0] == 'transfer'):
 			idassrc = -1
 			assrc = l[1].split("/")[1]
@@ -1065,7 +1085,7 @@ def manage_tcp_connection(connid, allow_events):
 									       configs[idassrc].ami_pass)
 				if AMIclasssock[idassrc]:
 					if l[0] == 'originate':
-						log_debug("attempting a ORIGINATE : " + str(l))
+						log_debug("%s is attempting an ORIGINATE : %s" %(requester, str(l)))
 						if l[2].split("/")[1] != "":
 							ret = AMIclasssock[idassrc].originate(l[1].split("/")[3],
 											      l[1].split("/")[4],
@@ -1080,7 +1100,7 @@ def manage_tcp_connection(connid, allow_events):
 							connid[0].send("asterisk=%s::originate %s %s KO\n"
 								       %(DAEMON, l[1], l[2]))
 					elif l[0] == 'transfer':
-						log_debug("attempting a TRANSFER : " + str(l))
+						log_debug("%s is attempting a TRANSFER : %s" %(requester, str(l)))
 						phonesrc, phonesrcchan = split_from_ui(l[1])
 						if phonesrc == phonesrcchan:
 							connid[0].send("asterisk=%s::transfer KO : %s not a channel\n"
@@ -1105,7 +1125,7 @@ def manage_tcp_connection(connid, allow_events):
 			else:
 				connid[0].send("asterisk=%s::originate or transfer KO : asterisk id mismatch\n" %DAEMON)
 		elif len(l) >= 4 and l[0] == 'history':
-			log_debug("attempting a HISTORY : " + str(l))
+			log_debug("%s is attempting a HISTORY : %s" %(requester, str(l)))
 			idassrc = -1
                         l2 = l[1].split('/')
 			assrc = l2[1]
@@ -1130,21 +1150,23 @@ def manage_tcp_connection(connid, allow_events):
 				try:
 					connid[0].send(repstr + "\n")
 				except Exception, exc:
-					log_debug("(%s) error : history : (client %s:%d) : %s"
-						  %(assrc, connid[1], connid[2], str(exc)))
+					log_debug("(%s) error : history : (client %s) : %s"
+						  %(assrc, requester, str(exc)))
 					connid[0].send("history=\n")
 		elif len(l) >= 4 and l[0] == 'login':
-                    astnum = asteriskr[l[1]]
-                    #log_debug("%i %s" % (astnum,l[3]))
-                    user = finduser(astnum, l[2].lower() + l[3])
-                    if user == None:
-                        pass
-                    else:
-                        repstr = "loginok=" + user.get('context') + ";" + user.get('phonenum') + "\r\n"
-                        connid[0].send(repstr)
+			astnum = asteriskr[l[1]]
+			# log_debug("%i %s" % (astnum,l[3]))
+			userlist_lock.acquire()
+			user = finduser(astnum, l[2].lower() + l[3])
+			if user == None:
+				repstr = "loginKO="
+			else:
+				repstr = "loginok=" + user.get('context') + ";" + user.get('phonenum') + "\r\n"
+			userlist_lock.release()
+			connid[0].send(repstr)
 		elif allow_events == False: # i.e. if PHP-style connection
 			n = -1
-			if connid[1] in ip_reverse_php: n = ip_reverse_php[connid[1]]
+			if requester_ip in ip_reverse_php: n = ip_reverse_php[requester_ip]
 			if n == -1:
 				connid[0].send("XIVO CLI:CLIENT NOT ALLOWED\n")
 			else:
@@ -1162,8 +1184,8 @@ def manage_tcp_connection(connid, allow_events):
 							for x in s: connid[0].send(x)
 							connid[0].send("XIVO CLI:OK\n")
 						except Exception, exc:
-							log_debug("(%s) error : php command : (client %s:%d) : %s"
-								  %(configs[n].astid, connid[1], connid[2], str(exc)))
+							log_debug("(%s) error : php command : (client %s) : %s"
+								  %(configs[n].astid, requester, str(exc)))
 				except Exception, exc:
 					connid[0].send("XIVO CLI:KO Exception : %s\n" %(str(exc)))
 		else:
@@ -1441,6 +1463,9 @@ def handle_ami_event(astnum, idata):
 			clidn   = getvalue(x, "CallerIDName")
 			log_debug("AMI:Newcallerid: " + plist[astnum].astid + \
 				  " channel=" + chan + " callerid=" + clid + " calleridname=" + clidn)
+			# plist[astnum].normal_channel_fills(chan, clid,
+			# DUMMY_STATE, 0, DUMMY_DIR,
+			# DUMMY_RCHAN, DUMMY_EXTEN, "ami-ni0")
 		elif x.find("Newchannel;") == 7:
 			chan    = getvalue(x, "Channel")
 			clid    = getvalue(x, "CallerID")
@@ -1915,7 +1940,7 @@ class LineProp:
 	# \param status the status to set
 	# \param itime the elapsed time to set
 	def set_chan(self, ichan, status, itime, idir, peerch, peernum, mynum):
-		#print ichan, status, itime, idir, peerch, peernum, mynum
+		# print "<%s> <%s> <%s> <%s> <%s> <%s> <%s>" %(ichan, status, itime, idir, peerch, peernum, mynum)
 		if mynum == "<unknown>" and is_normal_channel(ichan):
 			mynum = channel_splitter(ichan)
 			#		if peernum == "<unknown>" and is_normal_channel(peerch):
@@ -2107,14 +2132,13 @@ class LoginHandler(SocketServer.StreamRequestHandler):
 			return [replystr, debugstr], [user, port, state, astnum]
 		passwd = list1[1]
 		
-		userlist_lock.acquire()
 		if astname_xivoc in asteriskr.keys():
 			astnum = asteriskr[astname_xivoc]
 		else:
 			replystr = "ERROR : asterisk name <%s> unknown" %astname_xivoc
 			debugstr += " / asterisk name unknown"
-			userlist_lock.release()
 			return [replystr, debugstr], [user, port, state, astnum]
+		userlist_lock.acquire()
 		e = finduser(astnum, user)
 		goodpass = (e != None) and (e.get('passwd') == passwd)
 		userlist_lock.release()
@@ -2160,7 +2184,7 @@ class LoginHandler(SocketServer.StreamRequestHandler):
 		else:
 			e['state'] = "undefinedstate"
 		userlist_lock.release()
-		
+
 		replystr = "OK SESSIONID %s %s %s" %(sessionid,context,capabilities)
 		debugstr += " / user %s, port %s, state %s, astnum %d : connected : %s" %(user,port,state,astnum,replystr)
 		return [replystr, debugstr], [user, port, state, astnum]
@@ -2171,12 +2195,20 @@ class LoginHandler(SocketServer.StreamRequestHandler):
 			self.wfile.write(rstr + "\r\n")
 			log_debug(dstr)
 			if astnum >= 0:
-				sipnumber = "SIP/" + user.split("sip")[1]
-				plist[astnum].normal[sipnumber].set_imstat(state)
-				plist[astnum].normal[sipnumber].update_time()
-				update_GUI_clients(astnum, sipnumber, "kfc-lin")
+				if user.find("sip") == 0:
+				        phoneid = "SIP/" + user.split("sip")[1]
+				elif user.find("iax") == 0:
+				        phoneid = "IAX/" + user.split("iax")[1]
+				else:
+					phoneid = ""
+				if phoneid in plist[astnum].normal:
+					plist[astnum].normal[phoneid].set_imstat(state)
+					plist[astnum].normal[phoneid].update_time()
+					update_GUI_clients(astnum, phoneid, "kfc-lin")
+				else:
+					log_debug("%s is not in my phone list" %phoneid)
 		except Exception, exc:
-			log_debug(str(exc))
+			log_debug("Exception occured : %s" %(str(exc)))
 
 
 ## \class IdentRequestHandler
@@ -2243,17 +2275,18 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
 					astnum = asteriskr[astname_xivoc]
 					user = list[1].split("/")[1]
 					userlist_lock.acquire()
-					if "sessiontimestamp" in userlist[astnum][user].keys():
-						del userlist[astnum][user]["sessionid"]
-						del userlist[astnum][user]["sessiontimestamp"]
-						del userlist[astnum][user]["ip"]
-						del userlist[astnum][user]["port"]
-						userlist[astnum][user]["state"] = "unknown"
-						sipnumber = "SIP/" + user.split("sip")[1]
-						if sipnumber in plist[astnum].normal:
-							plist[astnum].normal[sipnumber].set_imstat("unkown")
-							plist[astnum].normal[sipnumber].update_time()
-							update_GUI_clients(astnum, sipnumber, "kfc-dcc")
+					if user in userlist[astnum]:
+						if "sessiontimestamp" in userlist[astnum][user].keys():
+							del userlist[astnum][user]["sessionid"]
+							del userlist[astnum][user]["sessiontimestamp"]
+							del userlist[astnum][user]["ip"]
+							del userlist[astnum][user]["port"]
+							userlist[astnum][user]["state"] = "unknown"
+							sipnumber = "SIP/" + user.split("sip")[1]
+							if sipnumber in plist[astnum].normal:
+								plist[astnum].normal[sipnumber].set_imstat("unkown")
+								plist[astnum].normal[sipnumber].update_time()
+								update_GUI_clients(astnum, sipnumber, "kfc-dcc")
 					userlist_lock.release()
 				else:
 					response = "ERROR unknown asterisk name <%s>\r\n" %astname_xivoc
@@ -2680,7 +2713,7 @@ while True: # loops over the reloads
 			if len(tcpopens_sb) >= maxgui:
 				conn.close()
 			else:
-				log_debug("TCP (SB)  socket opened on   %s %s" %(UIsockparams[0],str(UIsockparams[1])))
+				log_debug("TCP (SB)  socket opened on   %s:%s" %(UIsockparams[0],str(UIsockparams[1])))
 				# appending the opened socket to the ones watched
 				ins.append(conn)
 				conn.setblocking(0)
@@ -2688,7 +2721,7 @@ while True: # loops over the reloads
 		# the new UI (PHP) connections are catched here
 	        elif PHPUIsock in i:
 			[conn, PHPUIsockparams] = PHPUIsock.accept()
-			log_debug("TCP (PHP) socket opened on   %s %s" %(PHPUIsockparams[0],str(PHPUIsockparams[1])))
+			log_debug("TCP (PHP) socket opened on   %s:%s" %(PHPUIsockparams[0],str(PHPUIsockparams[1])))
 			# appending the opened socket to the ones watched
 			ins.append(conn)
 			conn.setblocking(0)
