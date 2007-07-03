@@ -124,7 +124,6 @@ def find_features_db(exten, family, key, comment, context):
 			sys.stderr.flush()
 			res = line.split('(')[1]
 			value = res.split(')')[0]
-			agi_verbose(value)
 			return value
 	except:
 		agi_verbose("No features found !")
