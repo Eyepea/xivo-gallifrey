@@ -80,6 +80,8 @@ void SwitchBoardEngine::loadSettings()
 	m_serverhost = settings.value("engine/serverhost").toString();
 	m_sbport = settings.value("engine/serverport", 5003).toUInt();
 	m_autoconnect = settings.value("engine/autoconnect", false).toBool();
+	m_trytoreconnect = settings.value("engine/trytoreconnect", false).toBool();
+	m_trytoreconnectinterval = settings.value("engine/trytoreconnectinterval", 20*1000).toUInt();
 	m_asterisk = settings.value("engine/asterisk").toString();
 	m_protocol = settings.value("engine/protocol").toString();
 	//m_extension = settings.value("engine/extension").toString();
@@ -95,6 +97,8 @@ void SwitchBoardEngine::saveSettings()
 	settings.setValue("engine/serverhost", m_serverhost);
 	settings.setValue("engine/serverport", m_sbport);
 	settings.setValue("engine/autoconnect", m_autoconnect);
+	settings.setValue("engine/trytoreconnect", m_trytoreconnect);
+	settings.setValue("engine/trytoreconnectinterval", m_trytoreconnectinterval);
 	settings.setValue("engine/asterisk", m_asterisk);
 	settings.setValue("engine/protocol", m_protocol);
 	//settings.setValue("engine/extension", m_extension);
@@ -179,6 +183,7 @@ void SwitchBoardEngine::socketConnected()
 {
 	qDebug() << "socketConnected()";
 	started();
+	stopTryAgainTimer();
 	/* do the login/identification ? */
 	m_pendingcommand = "login " + m_asterisk + " "
 	                   + m_protocol + " " + m_userid;
@@ -194,6 +199,7 @@ void SwitchBoardEngine::socketDisconnected()
 	qDebug() << "socketDisconnected()";
 	stopped();
 	emitTextMessage(tr("Connection lost with Presence Server"));
+	startTryAgainTimer();
 	//removePeers();
 	//connectSocket();
 }
@@ -567,13 +573,71 @@ quint16 SwitchBoardEngine::sbport() const
 	return m_sbport;
 }
 
-/*! \brief implement timer event
+/*! \brief implement timer event
  *
  * does nothing
  */
 void SwitchBoardEngine::timerEvent(QTimerEvent * event)
 {
+	int timerId = event->timerId();
+	//qDebug() << "SwitchBoardEngine::timerEvent() timerId=" << timerId;
+	if(timerId == m_try_timerid) {
+		start();
+		event->accept();
+	} else {
+		event->ignore();
+	}
 	return;
-	//
+}
+
+void SwitchBoardEngine::setTrytoreconnect(bool b)
+{
+	m_trytoreconnect = b;
+}
+
+bool SwitchBoardEngine::trytoreconnect() const
+{
+	return m_trytoreconnect;
+}
+
+void SwitchBoardEngine::stopTryAgainTimer()
+{
+	if( m_try_timerid > 0 )
+	{
+		killTimer(m_try_timerid);
+		m_try_timerid = 0;
+	}
+}
+
+void SwitchBoardEngine::startTryAgainTimer()
+{
+	if( m_try_timerid == 0 && m_trytoreconnect )
+	{
+		m_try_timerid = startTimer(m_trytoreconnectinterval);
+	}
+}
+
+uint SwitchBoardEngine::trytoreconnectinterval() const
+{
+	return m_trytoreconnectinterval;
+}
+
+/*!
+ * Setter for property m_trytoreconnectinterval
+ * Restart timer if the value changed.
+ *
+ * \sa trytoreconnectinterval
+ */
+void SwitchBoardEngine::setTrytoreconnectinterval(uint i)
+{
+	if( m_trytoreconnectinterval != i )
+	{
+		m_trytoreconnectinterval = i;
+		if(m_try_timerid > 0)
+		{
+			killTimer(m_try_timerid);
+			m_try_timerid = startTimer(m_trytoreconnectinterval);
+		}
+	}
 }
 

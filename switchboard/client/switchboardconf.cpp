@@ -91,6 +91,18 @@ SwitchBoardConfDialog::SwitchBoardConfDialog(SwitchBoardEngine * engine,
 	layout->addWidget(m_autoconnect, line, 0, 1, 0);
 	line++;
 
+	m_trytoreconnect = new QCheckBox(tr("Try to reconnect"), this);
+	m_trytoreconnect->setCheckState( m_engine->trytoreconnect()?Qt::Checked:Qt::Unchecked );
+	layout->addWidget(m_trytoreconnect, line, 0, 1, 0);
+	line++;
+
+	layout->addWidget( new QLabel( tr("Try to reconnect interval"), this), line, 0);
+	m_tryinterval_sbox = new QSpinBox(this);
+	m_tryinterval_sbox->setRange(1, 120);
+	m_tryinterval_sbox->setValue(m_engine->trytoreconnectinterval() / 1000);
+	layout->addWidget( m_tryinterval_sbox, line, 1);
+	line++;
+
 	QLabel * lblasterisk = new QLabel( tr("Asterisk server :"), this);
 	layout->addWidget( lblasterisk, line, 0 );
 	m_asterisk = new QLineEdit( m_engine->asterisk(), this );
@@ -135,12 +147,18 @@ void SwitchBoardConfDialog::saveAndClose()
 	m_engine->setAsterisk( m_asterisk->text() );
 	m_engine->setProtocol( m_protocombo->currentText() );
 	m_engine->setUserId( m_userid->text() );
+
+	m_engine->setTrytoreconnect( m_trytoreconnect->checkState() == Qt::Checked );
+	m_engine->setTrytoreconnectinterval( m_tryinterval_sbox->value()*1000 );
+
 	//m_loginengine->setUserId( m_userid->text() );
 	m_loginengine->setExtension( m_userid->text() );
 	m_loginengine->setLoginPort( m_loginport->text().toUInt() );
 	m_loginengine->setPassword( m_passwd->text() );
 	m_loginengine->setEnabled( m_presence->checkState() == Qt::Checked );
 	m_loginengine->saveSettings();
+	m_loginengine->setTrytoreconnect( m_trytoreconnect->checkState() == Qt::Checked );
+	m_loginengine->setTrytoreconnectinterval( m_tryinterval_sbox->value()*1000 );
 	m_engine->saveSettings();
 	//m_window->setWidth( m_widthsb->value() );
 	//m_window->saveSettings();

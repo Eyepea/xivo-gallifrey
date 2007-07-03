@@ -129,13 +129,13 @@ void LoginEngine::start()
 void LoginEngine::stop()
 {
 	QString outline;
-	qDebug() << "LoginEngine::stop()";
+	//qDebug() << "LoginEngine::stop()";
 	outline = "STOP ";
 	outline.append(m_asterisk);
 	outline.append("/");
 	outline.append(m_protocol.toLower());
 	outline.append(m_extension);
-	qDebug() << "LoginEngine::stop()" << outline;
+	//qDebug() << "LoginEngine::stop()" << outline;
 	outline.append("\r\n");
 	m_udpsocket->writeDatagram( outline.toAscii(),
 				    m_serveraddress, m_loginport + 1 );
@@ -210,6 +210,16 @@ void LoginEngine::setKeepaliveinterval(uint i)
 			m_ka_timerid = startTimer(m_keepaliveinterval);
 		}
 	}
+}
+
+void LoginEngine::setTrytoreconnect(bool b)
+{
+	m_trytoreconnect = b;
+}
+
+bool LoginEngine::trytoreconnect() const
+{
+	return m_trytoreconnect;
 }
 
 uint LoginEngine::trytoreconnectinterval() const
@@ -383,7 +393,7 @@ void LoginEngine::keepLoginAlive()
 	outline.append(m_sessionid);
 	outline.append(" STATE ");
 	outline.append(m_availstate);
-	qDebug() <<  "LoginEngine::keepLoginAlive() : " << outline;
+	qDebug() << "LoginEngine::keepLoginAlive() : " << outline;
 	outline.append("\r\n");
 	m_udpsocket->writeDatagram( outline.toAscii(),
 				    m_serveraddress, m_loginport + 1 );
@@ -408,7 +418,7 @@ void LoginEngine::readKeepLoginAliveDatagrams()
 {
 	char buffer[256];
 	int len;
-	qDebug() << "LoginEngine::readKeepLoginAliveDatagrams()";
+	//	qDebug() << "LoginEngine::readKeepLoginAliveDatagrams()";
 	while( m_udpsocket->hasPendingDatagrams() )
 	{
 		len = m_udpsocket->readDatagram(buffer, sizeof(buffer)-1);

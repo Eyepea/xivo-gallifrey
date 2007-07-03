@@ -51,6 +51,8 @@ private:
 	QLineEdit * m_loginport;	//!< server port (presence)
 //	QSpinBox * m_widthsb;
 	QCheckBox * m_autoconnect;	//!< autoconnect checkbox
+	QCheckBox * m_trytoreconnect;	//!< "Try to reconnect" Checkbox
+	QSpinBox  * m_tryinterval_sbox;	//!< "Try to reconnect" interval
 	QCheckBox * m_presence;		//!< connect to presence server checkbox
 	QLineEdit * m_asterisk;	//!< asterisk server id
 	QComboBox * m_protocombo;	//!< protocol(SIP/IAX/...) combo

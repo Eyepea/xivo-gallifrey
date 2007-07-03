@@ -81,6 +81,8 @@ public:
 	
 	const EngineState state() const;	//!< Engine state (Logged/Not Logged)
 	void setState(EngineState state);	//!< see state()
+	bool trytoreconnect() const;		//!< try to reconnect flag
+	void setTrytoreconnect(bool b);		//!< set try to reconnect flag
 	uint trytoreconnectinterval() const;	//!< try to reconnect interval
 	void setTrytoreconnectinterval(uint);	//!< set try to reconnect interval
 	//! returns availability status
@@ -140,8 +142,8 @@ private:
 	QString m_capabilities;	//!< List of capabilities issued by the server after a successful login
 	EngineState m_state;	//!< State of the engine (Logged/Not Logged)
 	uint m_keepaliveinterval;	//!< Keep alive interval (in msec)
-	uint m_trytoreconnectinterval;	//!< Try to reconnect interval (in msec)
 	bool m_trytoreconnect;	//!< "try to reconnect" flag
+	uint m_trytoreconnectinterval;	//!< Try to reconnect interval (in msec)
 	int m_ka_timerid;			//!< timer id for keep alive
 	int m_try_timerid;			//!< timer id for try to reconnect
 	int m_pendingkeepalivemsg;	//!< number of keepalivemsg sent without response

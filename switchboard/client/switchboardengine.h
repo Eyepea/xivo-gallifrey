@@ -43,10 +43,13 @@ public:
 	quint16 sbport() const;
 //	quint16 loginport() const;
 	const QString & host() const;
-	//! set m_autoconnect
-	void setAutoconnect(bool b) { m_autoconnect = b;};
-	//! get m_autoconnect
-	bool autoconnect() const {return m_autoconnect;};
+	void setAutoconnect(bool b) { m_autoconnect = b;}; //! set m_autoconnect
+	bool autoconnect() const {return m_autoconnect;};  //! get m_autoconnect
+	bool trytoreconnect() const;		//!< try to reconnect flag
+	void setTrytoreconnect(bool b);		//!< set try to reconnect flag
+	uint trytoreconnectinterval() const;	//!< try to reconnect interval
+	void setTrytoreconnectinterval(uint);	//!< set try to reconnect interval
+
 	//! save settings
 	void saveSettings();
 	//! set m_asterisk
@@ -133,12 +136,17 @@ signals:
 	//! the directory search response has been received.
 	void directoryResponse(const QString &);
 private:
+	void startTryAgainTimer();	//!< Start the "try to reconnect" timer
+	void stopTryAgainTimer();	//!< Stop the "try to reconnect" timer
 	QTcpSocket * m_socket;	//!< socket to connect to the server
 	int m_timer;	//!< timer id
 	QString m_serverhost;	//!< server host name
 	quint16 m_sbport;	//!< port to connect to server
 	//quint16 m_loginport;	//!< port to login to server
 	bool m_autoconnect;	//!< Autoconnect to server at startup
+	bool m_trytoreconnect;	//!< "try to reconnect" flag
+	uint m_trytoreconnectinterval;	//!< Try to reconnect interval (in msec)
+	int m_try_timerid;			//!< timer id for try to reconnect
 	QString m_pendingcommand;	//!< command to be sent to the server.
 	QHash<QString, QString> m_callerids;	//!< List of caller Ids
 	// poste à utiliser pour les commandes "DIAL"
