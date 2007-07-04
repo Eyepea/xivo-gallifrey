@@ -1,22 +1,75 @@
-#!/usr/bin/env python2
-# vim: set et sw=4:
-"""agi
+"""
+For using this library please see the exemple :
 
-This module contains functions and classes to implment AGI scripts in python.
-pyvr
+    agi = AGI()
+    #agi.appexec('festival','Welcome to Klass Technologies.  Thank you for calling.')
+    #agi.appexec('festival','This is a test of the text to speech engine.')
+    #agi.appexec('festival','Press 1 for sales ')
+    #agi.appexec('festival','Press 2 for customer support ')
+    #agi.hangup()
+    #agi.goto_on_exit(extension='1234', priority='1')
+    #sys.exit(0)
+    #agi.say_digits('123', [4,'5',6])
+    #agi.say_digits([4,5,6])
+    #agi.say_number('1234')
+    #agi.say_number('01234')  # 668
+    #agi.say_number('0xf5')   # 245
+    agi.get_data('demo-congrats')
+    agi.hangup()
+    sys.exit(0)
+    #agi.record_file('pyst-test') #FAILS
+    #agi.stream_file('demo-congrats', [1,2,3,4,5,6,7,8,9,0,'#','*'])
+    #agi.appexec('background','demo-congrats')
 
-{'agi_callerid' : 'mars.putland.int',
- 'agi_channel'  : 'IAX[kputland@kputland]/119',
- 'agi_context'  : 'default',
- 'agi_dnid'     : '666',
- 'agi_enhanced' : '0.0',
- 'agi_extension': '666',
- 'agi_language' : 'en',
- 'agi_priority' : '1',
- 'agi_rdnis'    : '',
- 'agi_request'  : 'pyst',
- 'agi_type'     : 'IAX'}
+    try:
+        agi.appexec('backgrounder','demo-congrats')
+    except AGIAppError:
+        sys.stderr.write("Handled exception for missing application backgrounder\n")
 
+    agi.set_variable('foo','bar')
+    agi.get_variable('foo')
+
+    try:
+        agi.get_variable('foobar')
+    except AGIAppError:
+        sys.stderr.write("Handled exception for missing variable foobar\n")
+
+    try:
+        agi.database_put('foo', 'bar', 'foobar')
+        agi.database_put('foo', 'baz', 'foobaz')
+        agi.database_put('foo', 'bat', 'foobat')
+        v = agi.database_get('foo', 'bar')
+        sys.stderr.write('DBVALUE foo:bar = %s\n' % v)
+        v = agi.database_get('bar', 'foo')
+        sys.stderr.write('DBVALUE foo:bar = %s\n' % v)
+        agi.database_del('foo', 'bar')
+        agi.database_deltree('foo')
+    except AGIDBError:
+        sys.stderr.write("Handled exception for missing database entry bar:foo\n")
+
+    agi.hangup()
+"""
+
+__version__ = "$Revision$ $Date$"
+__license__ = """
+    Copyright (C) 2004 Karl Putland 
+    Upstream Author: Karl Putland <kputland@users.sourceforge.net>
+
+    Copyright (C) 2007, Proformatique
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2.1 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
 import sys, pprint, re
@@ -626,52 +679,3 @@ class AGI:
         Does nothing
         """
         self.execute('NOOP')
-
-if __name__=='__main__':
-    agi = AGI()
-    #agi.appexec('festival','Welcome to Klass Technologies.  Thank you for calling.')
-    #agi.appexec('festival','This is a test of the text to speech engine.')
-    #agi.appexec('festival','Press 1 for sales ')
-    #agi.appexec('festival','Press 2 for customer support ')
-    #agi.hangup()
-    #agi.goto_on_exit(extension='1234', priority='1')
-    #sys.exit(0)
-    #agi.say_digits('123', [4,'5',6])
-    #agi.say_digits([4,5,6])
-    #agi.say_number('1234')
-    #agi.say_number('01234')  # 668
-    #agi.say_number('0xf5')   # 245
-    agi.get_data('demo-congrats')
-    agi.hangup()
-    sys.exit(0)
-    #agi.record_file('pyst-test') #FAILS
-    #agi.stream_file('demo-congrats', [1,2,3,4,5,6,7,8,9,0,'#','*'])
-    #agi.appexec('background','demo-congrats')
-
-    try:
-        agi.appexec('backgrounder','demo-congrats')
-    except AGIAppError:
-        sys.stderr.write("Handled exception for missing application backgrounder\n")
-
-    agi.set_variable('foo','bar')
-    agi.get_variable('foo')
-
-    try:
-        agi.get_variable('foobar')
-    except AGIAppError:
-        sys.stderr.write("Handled exception for missing variable foobar\n")
-
-    try:
-        agi.database_put('foo', 'bar', 'foobar')
-        agi.database_put('foo', 'baz', 'foobaz')
-        agi.database_put('foo', 'bat', 'foobat')
-        v = agi.database_get('foo', 'bar')
-        sys.stderr.write('DBVALUE foo:bar = %s\n' % v)
-        v = agi.database_get('bar', 'foo')
-        sys.stderr.write('DBVALUE foo:bar = %s\n' % v)
-        agi.database_del('foo', 'bar')
-        agi.database_deltree('foo')
-    except AGIDBError:
-        sys.stderr.write("Handled exception for missing database entry bar:foo\n")
-
-    agi.hangup()
