@@ -57,6 +57,7 @@ from provsup import ProvGeneralConf as pgc
 from Phones import *
 
 from agi import *
+agi = AGI()
 
 def agi_verbose_debug(txt):
 	if pgc['debug_agi']:
