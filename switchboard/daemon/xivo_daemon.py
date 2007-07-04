@@ -541,18 +541,16 @@ class AMIClass:
 # \return a string containing the full customers list
 # \sa manage_tcp_connection
 def build_customers(searchpattern):
-	if "dir_db_uri" in xivoconf_general.keys():
-		dir_db_uri = xivoconf_general["dir_db_uri"]
+	if dir_db_displayfields == "":
+		ndfields = 0
 	else:
-		dir_db_uri = ""
-	
-	ndfields = len(xivoconf_general["dir_db_displayfields"].split(";"))
+		ndfields = len(dir_db_displayfields.split(";"))
 	fullstat = "directory-response=%d;%s" %(ndfields,
-						xivoconf_general["dir_db_displayfields"])
+						dir_db_displayfields)
 	fullstatlist = []
 	dbkind = dir_db_uri.split(":")[0]
 	if dbkind == "ldap":
-		ldapid = myLDAP(xivoconf_general["dir_db_uri"])
+		ldapid = myLDAP(dir_db_uri)
 		if searchpattern == "" or searchpattern == "*":
 			result = ldapid.getldap("(|(cn=*)(o=*)(telephoneNumber=*)(mobile=*)(mail=*))",
 						['cn','o','telephoneNumber','mobile','mail'])
@@ -576,12 +574,12 @@ def build_customers(searchpattern):
 				mailn = x[1]['mail'][0]
 			fullstatlist.append("%s;%s;%s;%s" %(tnum,cn,o,mailn))
 	elif dbkind != "":
-		if xivoconf_general["dir_db_matchingfields"] == "":
+		if dir_db_matchingfields == "":
 			log_debug("dir_db_matchingfields is empty - could not proceed directory-search request")
-		elif ndfields != len(xivoconf_general["dir_db_matchingfields"].split(";")):
+		elif ndfields != len(dir_db_matchingfields.split(";")):
 			log_debug("dir_db_matchingfields and dir_db_displayfields do not have the same number of fields - could not proceed directory-search request")
 		else:
-			fnames = xivoconf_general["dir_db_matchingfields"].split(";")
+			fnames = dir_db_matchingfields.split(";")
 			selectline  = ""
 			for fname in fnames:
 				selectline += "%s, " %fname
@@ -595,7 +593,7 @@ def build_customers(searchpattern):
 			conn = anysql.connect_by_uri(dir_db_uri)
 			cursor = conn.cursor()
 			sql = "SELECT %s FROM %s %s;" %(selectline[:-2],
-							xivoconf_general["dir_db_tablename"],
+							dir_db_tablename,
 							whereline[:-4])
 			cursor.execute(sql)
 			result = cursor.fetchall()
@@ -2521,7 +2519,11 @@ while True: # loops over the reloads
 	with_sip = True
 	with_advert = False
 	nukeast = False
-
+	dir_db_uri = ""
+	dir_db_displayfields = ""
+	dir_db_matchingfields = ""
+	dir_db_tablename = ""
+	
 	xivoconf = ConfigParser.ConfigParser()
 	xivoconf.readfp(open(xivoconffile))
 	xivoconf_general = dict(xivoconf.items("general"))
@@ -2555,6 +2557,14 @@ while True: # loops over the reloads
 		gui_filename = xivoconf_general["guifile"]
 	if "nukeast" in xivoconf_general:
 		nukeast = True
+	if "dir_db_uri" in xivoconf_general:
+		dir_db_uri = xivoconf_general["dir_db_uri"]
+	if "dir_db_displayfields" in xivoconf_general:
+		dir_db_displayfields = xivoconf_general["dir_db_displayfields"]
+	if "dir_db_matchingfields" in xivoconf_general:
+		dir_db_matchingfields = xivoconf_general["dir_db_matchingfields"]
+	if "dir_db_tablename" in xivoconf_general:
+		dir_db_tablename = xivoconf_general["dir_db_tablename"]
 
 	if "noami" in xivoconf_general: with_ami = False
 	if "nosip" in xivoconf_general: with_sip = False
