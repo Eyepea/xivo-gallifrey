@@ -111,7 +111,6 @@ import encodings.utf_8
 import getopt
 import ldap
 import md5
-import MySQLdb
 import os
 import random
 import re
@@ -119,7 +118,6 @@ import select
 import signal
 import socket
 import SocketServer
-import sqlite
 import sys
 import syslog
 import threading
@@ -145,6 +143,9 @@ debug_mode = (sys.argv.count('-d') > 0)
 
 # XIVO lib-python modules imports
 import daemonize
+import anysql
+from BackSQL import backmysql
+from BackSQL import backsqlite
 
 # XIVO modules
 import xivo_ami
@@ -182,23 +183,35 @@ DAEMON = "daemon-announce"
 
 ## \class myLDAP
 class myLDAP:
-        def __init__(self, ihost, iport, iuser, ipass):
+        def __init__(self, iuri):
                 try:
-                        self.l = ldap.initialize("ldap://%s:%s" %(ihost, iport))
+			addport = iuri.split("@")[1].split("/")[0]
+			userpass = iuri.split("@")[0].split("://")[1]
+			self.dbname = iuri.split("@")[1].split("/")[1]
+			
+			self.user = userpass.split(":")[0]
+			self.passwd = userpass.split(":")[1]
+			self.uri  = "ldap://" + addport
+                        self.l = ldap.initialize(self.uri)
                         self.l.protocol_version = ldap.VERSION3
-                        self.l.simple_bind_s(iuser, ipass)
+                        self.l.simple_bind_s(self.user, self.passwd)
                         
                 except ldap.LDAPError, exc:
                         print exc
                         sys.exit()
 
-        def getldap(self, ibase, filter, attrib):
+        def getldap(self, filter, attrib):
                 try:
-                        resultat = self.l.search_s(ibase,
+                        resultat = self.l.search_s(self.dbname,
                                                    ldap.SCOPE_SUBTREE,
                                                    filter,
                                         	   attrib)
 			return resultat
+		except ldap.LDAPError, exc:
+			print exc
+	def close(self):
+		try:
+			pass
 		except ldap.LDAPError, exc:
 			print exc
 
@@ -247,38 +260,38 @@ def log_debug(string):
 # \param nlines the number of lines to fetch for the given phone
 # \param kind kind of list (ingoing, outgoing, missed calls)
 def update_history_call(astn, techno, phoneid, phonenum, nlines, kind):
-    global xivoconf_general
-    results = []
-    try:
-        conn = MySQLdb.connect(host = xivoconf_general["cdr_db_address"],
-                               port = int(xivoconf_general["cdr_db_port"]),
-                               user = xivoconf_general["cdr_db_username"],
-                               passwd = xivoconf_general["cdr_db_passwd"],
-                               db = xivoconf_general["cdr_db_basename"],
-                               charset = 'utf8')
-        cursor = conn.cursor()
-        table = xivoconf_general["cdr_db_tablename"]
-        sql = "SELECT calldate, clid, src, dst, dcontext, channel, dstchannel, " \
-              "lastapp, lastdata, duration, billsec, disposition, amaflags, " \
-              "accountcode, uniqueid, userfield FROM %s " % (table)
-        if kind == "0": # outgoing calls (answered)
-            sql += "WHERE disposition='ANSWERED' "
-            sql += "AND channel LIKE '%s/%s-%%' " \
-                   "ORDER BY calldate DESC LIMIT %s" % (techno, phoneid, nlines)
-        elif kind == "1": # incoming calls (answered)
-            sql += "WHERE disposition='ANSWERED' "
-            sql += "AND dstchannel LIKE '%s/%s-%%' " \
-                   "ORDER BY calldate DESC LIMIT %s" % (techno, phoneid, nlines)
-        else: # missed calls (received but not answered)
-            sql += "WHERE disposition!='ANSWERED' "
-            sql += "AND dstchannel LIKE '%s/%s-%%' " \
-                   "ORDER BY calldate DESC LIMIT %s" % (techno, phoneid, nlines)
-        cursor.execute(sql)
-        results = cursor.fetchall()
-        conn.close()
-    except Exception, exc:
-        log_debug("Connection to MySQL failed <%s>" %(str(exc)))
-    return results
+	results = []
+	if configs[astn].cdr_db_uri == "":
+		log_debug("%s : no CDR uri defined for this asterisk - see cdr_db_uri parameter" %configs[astn].astid)
+	else:
+		try:
+			conn = anysql.connect_by_uri(configs[astn].cdr_db_uri)
+			# charset = 'utf8' ?
+
+			cursor = conn.cursor()
+			table = "cdr" # configs[astn].cdr_db_tablename
+			sql = "SELECT calldate, clid, src, dst, dcontext, channel, dstchannel, " \
+			      "lastapp, lastdata, duration, billsec, disposition, amaflags, " \
+			      "accountcode, uniqueid, userfield FROM %s " % (table)
+			if kind == "0": # outgoing calls (answered)
+				sql += "WHERE disposition='ANSWERED' "
+				sql += "AND channel LIKE '%s/%s-%%' " \
+				       "ORDER BY calldate DESC LIMIT %s" % (techno, phoneid, nlines)
+			elif kind == "1": # incoming calls (answered)
+				sql += "WHERE disposition='ANSWERED' "
+				sql += "AND dstchannel LIKE '%s/%s-%%' " \
+				       "ORDER BY calldate DESC LIMIT %s" % (techno, phoneid, nlines)
+			else: # missed calls (received but not answered)
+				sql += "WHERE disposition!='ANSWERED' "
+				sql += "AND dstchannel LIKE '%s/%s-%%' " \
+				       "ORDER BY calldate DESC LIMIT %s" % (techno, phoneid, nlines)
+			cursor.execute(sql)
+			results = cursor.fetchall()
+			conn.close()
+		except Exception, exc:
+			log_debug("--- exception --- %s : Connection to DataBase %s failed in History request : %s"
+				  %(configs[astn].astid, xivoconf_general["cdr_db_uri"], str(exc)))
+	return results
 
 
 ## \brief Extracts the main SIP properties from a received packet
@@ -315,7 +328,7 @@ def read_sip_properties(data):
 			elif x.find("tag=") >= 0:     btag = x.split("tag=")[1].split(";")[0]
 
 	except Exception, exc:
-		log_debug("problem occured in read_sip_properties : " + str(exc))
+		log_debug("--- exception --- read_sip_properties : " + str(exc))
 
 	return [cseq, msg, cid, account, len(lines), ret, bbranch, btag, authenticate]
 
@@ -386,7 +399,7 @@ class AMIClass:
 					log_debug("retrying AMI command " + action)
 					self.sendcommand(action, args)
 			except Exception, exc:
-				log_debug("AMI not connected : " + str(exc))
+				log_debug("--- exception --- AMI not connected : " + str(exc))
 	# \brief For debug.
 	def printresponse_forever(self):
 		while True:
@@ -528,36 +541,73 @@ class AMIClass:
 # \return a string containing the full customers list
 # \sa manage_tcp_connection
 def build_customers(searchpattern):
-	global xivoconf_general
-	fullstat = "directory-response=" + xivoconf_general["dir_db_fields"]
-	ldapid = myLDAP(xivoconf_general["dir_db_address"],
-			int(xivoconf_general["dir_db_port"]),
-			xivoconf_general["dir_db_username"],
-			xivoconf_general["dir_db_passwd"])
-	if searchpattern == "" or searchpattern == "*":
-		result = ldapid.getldap(xivoconf_general["dir_db_basename"],
-					"(|(cn=*)(o=*)(telephoneNumber=*)(mobile=*)(mail=*))",
-					['cn','o','telephoneNumber','mobile','mail'])
+	if "dir_db_uri" in xivoconf_general.keys():
+		dir_db_uri = xivoconf_general["dir_db_uri"]
 	else:
-		result = ldapid.getldap(xivoconf_general["dir_db_basename"],
-					"(|(cn=*%s*)(o=*%s*)(telephoneNumber=*%s*)(mobile=*%s*)(mail=*%s*))"
-					%(searchpattern,searchpattern,searchpattern,searchpattern,searchpattern),
-					['cn','o','telephoneNumber','mobile','mail'])
-
+		dir_db_uri = ""
+	
+	ndfields = len(xivoconf_general["dir_db_displayfields"].split(";"))
+	fullstat = "directory-response=%d;%s" %(ndfields,
+						xivoconf_general["dir_db_displayfields"])
 	fullstatlist = []
-	for x in result:
-		[tnum, cn, o, mailn] = ["", "", "", ""]
-		if 'telephoneNumber' in x[1].keys():
-			tnum = x[1]['telephoneNumber'][0].replace(" ", "")
-		elif 'mobile' in x[1].keys():
-			tnum = x[1]['mobile'][0].replace(" ", "")
-		if 'cn' in x[1].keys():
-			cn = x[1]['cn'][0]
-		if 'o' in x[1].keys():
-			o = x[1]['o'][0]
-		if 'mail' in x[1].keys():
-			mailn = x[1]['mail'][0]
-		fullstatlist.append("%s;%s;%s;%s" %(tnum,cn,o,mailn))
+	dbkind = dir_db_uri.split(":")[0]
+	if dbkind == "ldap":
+		ldapid = myLDAP(xivoconf_general["dir_db_uri"])
+		if searchpattern == "" or searchpattern == "*":
+			result = ldapid.getldap("(|(cn=*)(o=*)(telephoneNumber=*)(mobile=*)(mail=*))",
+						['cn','o','telephoneNumber','mobile','mail'])
+		else:
+			result = ldapid.getldap("(|(cn=*%s*)(o=*%s*)(telephoneNumber=*%s*)(mobile=*%s*)(mail=*%s*))"
+						%(searchpattern,searchpattern,searchpattern,searchpattern,searchpattern),
+						['cn','o','telephoneNumber','mobile','mail'])
+		ldapid.close()
+
+		for x in result:
+			[tnum, cn, o, mailn] = ["", "", "", ""]
+			if 'telephoneNumber' in x[1].keys():
+				tnum = x[1]['telephoneNumber'][0].replace(" ", "")
+			elif 'mobile' in x[1].keys():
+				tnum = x[1]['mobile'][0].replace(" ", "")
+			if 'cn' in x[1].keys():
+				cn = x[1]['cn'][0]
+			if 'o' in x[1].keys():
+				o = x[1]['o'][0]
+			if 'mail' in x[1].keys():
+				mailn = x[1]['mail'][0]
+			fullstatlist.append("%s;%s;%s;%s" %(tnum,cn,o,mailn))
+	elif dbkind != "":
+		if xivoconf_general["dir_db_matchingfields"] == "":
+			log_debug("dir_db_matchingfields is empty - could not proceed directory-search request")
+		elif ndfields != len(xivoconf_general["dir_db_matchingfields"].split(";")):
+			log_debug("dir_db_matchingfields and dir_db_displayfields do not have the same number of fields - could not proceed directory-search request")
+		else:
+			fnames = xivoconf_general["dir_db_matchingfields"].split(";")
+			selectline  = ""
+			for fname in fnames:
+				selectline += "%s, " %fname
+			if searchpattern == "":
+				whereline = ""
+			else:
+				whereline = " WHERE "
+				for fname in fnames:
+					whereline += "%s REGEXP '%s' OR " %(fname, searchpattern)
+
+			conn = anysql.connect_by_uri(dir_db_uri)
+			cursor = conn.cursor()
+			sql = "SELECT %s FROM %s %s;" %(selectline[:-2],
+							xivoconf_general["dir_db_tablename"],
+							whereline[:-4])
+			cursor.execute(sql)
+			result = cursor.fetchall()
+			conn.close()
+
+			for x in result:
+				linetodisplay = ""
+				for z in x:
+					linetodisplay += "%s;" %(str(z))
+				fullstatlist.append("%s" %(linetodisplay[:-1]))
+	else:
+		log_debug("no database method defined - please fill the dir_db_uri field")
 
 	uniq = {}
 	fullstatlist.sort()
@@ -654,7 +704,7 @@ def update_GUI_clients(astnum, phonenum, fromwhom):
 		try:
 			tcpclient[0].send(strupdate + "\n")
 		except Exception, exc:
-			log_debug("send has failed on %s : %s" %(str(tcpclient[0]),str(exc)))
+			log_debug("--- exception --- send has failed on %s : %s" %(str(tcpclient[0]),str(exc)))
 	verboselog(strupdate, False, True)
 
 
@@ -843,14 +893,14 @@ def manage_tcp_connection(connid, allow_events):
 	    requester_port = connid[2]
 	    requester      = requester_ip + ":" + str(requester_port)
     except Exception, exc:
-	    log_debug("UI connection : could not get IP details of connid = %s : %s" %(str(connid),str(exc)))
+	    log_debug("--- exception --- UI connection : could not get IP details of connid = %s : %s" %(str(connid),str(exc)))
 	    requester = str(connid)
 
     try:
 	    msg = connid[0].recv(BUFSIZE_LARGE)
     except Exception, exc:
 	    msg = ""
-	    log_debug("UI connection : a problem occured when recv from %s : %s" %(requester, str(exc)))
+	    log_debug("--- exception --- UI connection : a problem occured when recv from %s : %s" %(requester, str(exc)))
     if len(msg) == 0:
 	    try:
 		    connid[0].close()
@@ -862,7 +912,7 @@ def manage_tcp_connection(connid, allow_events):
 			    tcpopens_php.remove(connid)
 			    log_debug("TCP (PHP) socket closed from %s" %requester)
 	    except Exception, exc:
-		    log_debug("UI connection [%s] : a problem occured when trying to close %s : %s"
+		    log_debug("--- exception --- UI connection [%s] : a problem occured when trying to close %s : %s"
 			      %(msg, str(connid[0]), str(exc)))
     else:
         # what if more lines ???
@@ -871,13 +921,13 @@ def manage_tcp_connection(connid, allow_events):
 		try:
 			connid[0].send(build_statuses())
 		except Exception, exc:
-			log_debug("UI connection [%s] : KO when sending to %s : %s"
+			log_debug("--- exception --- UI connection [%s] : KO when sending to %s : %s"
 				  %(usefulmsg, requester, str(exc)))
         elif usefulmsg == "callerids":
 		try:
 			connid[0].send(build_callerids())
 		except Exception, exc:
-			log_debug("UI connection [%s] : KO when sending to %s : %s"
+			log_debug("--- exception --- UI connection [%s] : KO when sending to %s : %s"
 				  %(usefulmsg, requester, str(exc)))
         elif usefulmsg == "infos":
 		try:
@@ -888,7 +938,7 @@ def manage_tcp_connection(connid, allow_events):
 				reply += ":%s:%d" %(tcpo[1],tcpo[2])
 			connid[0].send(reply + "\n")
 		except Exception, exc:
-			log_debug("UI connection [%s] : KO when sending to %s : %s"
+			log_debug("--- exception --- UI connection [%s] : KO when sending to %s : %s"
 				  %(usefulmsg, requester, str(exc)))
 
 
@@ -909,7 +959,7 @@ def manage_tcp_connection(connid, allow_events):
 							 len(canal),
 							 str(canal.keys())))
 		except Exception, exc:
-			log_debug("UI connection [%s] : KO when sending to %s : %s"
+			log_debug("--- exception --- UI connection [%s] : KO when sending to %s : %s"
 				  %(usefulmsg, requester, str(exc)))
         elif usefulmsg == "show_logged":
 		try:
@@ -919,7 +969,7 @@ def manage_tcp_connection(connid, allow_events):
 			userlist_lock.release()
 		except Exception, exc:
 			userlist_lock.release()
-			log_debug("UI connection [%s] : KO when sending to %s : %s"
+			log_debug("--- exception --- UI connection [%s] : KO when sending to %s : %s"
 				  %(usefulmsg, requester, str(exc)))
         elif usefulmsg == "show_ami":
                 try:
@@ -930,13 +980,13 @@ def manage_tcp_connection(connid, allow_events):
 			for amis in AMIclasssock:
 				connid[0].send("sboard comms : %s\n" %(str(amis)))
 		except Exception, exc:
-			log_debug("UI connection [%s] : KO when sending to %s : %s"
+			log_debug("--- exception --- UI connection [%s] : KO when sending to %s : %s"
 				  %(usefulmsg, requester, str(exc)))
 	elif usefulmsg[0:5] == "label": # for inserting hand-written labels between calls when testing
                 try:
 			log_debug("USER LABEL : %s" %(usefulmsg[6:]))
 		except Exception, exc:
-			log_debug("UI connection [%s] : KO when sending to %s : %s"
+			log_debug("--- exception --- UI connection [%s] : KO when sending to %s : %s"
 				  %(usefulmsg, requester, str(exc)))
 
 
@@ -944,13 +994,13 @@ def manage_tcp_connection(connid, allow_events):
 		try:
 			connid[0].send("keepalive=\n")
 		except Exception, exc:
-			log_debug("UI connection [%s] : KO when sending to %s : %s"
+			log_debug("--- exception --- UI connection [%s] : KO when sending to %s : %s"
 				  %(usefulmsg, requester, str(exc)))
 	elif usefulmsg == "capabilities":
 		try:
 			connid[0].send("capabilities=%s\n" %capabilities)
 		except Exception, exc:
-			log_debug("UI connection [%s] : KO when sending to %s : %s"
+			log_debug("--- exception --- UI connection [%s] : KO when sending to %s : %s"
 				  %(usefulmsg, requester, str(exc)))
 	elif usefulmsg == "quit" or usefulmsg == "exit":
 		try:
@@ -963,7 +1013,7 @@ def manage_tcp_connection(connid, allow_events):
 				tcpopens_php.remove(connid)
 				log_debug("TCP (PHP) socket closed from %s" %requester)
 		except Exception, exc:
-			log_debug("UI connection [%s] : a problem occured when trying to close %s : %s"
+			log_debug("--- exception --- UI connection [%s] : a problem occured when trying to close %s : %s"
 				  %(usefulmsg, requester, str(exc)))
 	elif usefulmsg != "":
 		l = usefulmsg.split()
@@ -1005,7 +1055,7 @@ def manage_tcp_connection(connid, allow_events):
 				spattern = ' '.join(l[1:])
 				connid[0].send(build_customers(spattern))
 			except Exception, exc:
-				log_debug("UI connection : a problem occured when sending to %s : %s"
+				log_debug("--- exception --- UI connection : a problem occured when sending to %s : %s"
 					  %(requester, str(exc)))
 		elif len(l) == 3 and (l[0] == 'originate' or l[0] == 'transfer'):
 			idassrc = -1
@@ -1078,8 +1128,12 @@ def manage_tcp_connection(connid, allow_events):
 				repstr = "history="
 				separ = ";"
 				for x in hist:
-					repstr += x[0].isoformat() + separ + x[1] \
-						 + separ + str(x[10]) + separ + x[11]
+					try:
+						repstr += x[0].isoformat() + separ + x[1] \
+							  + separ + str(x[10]) + separ + x[11]
+					except:
+						repstr += x[0] + separ + x[1] \
+							  + separ + str(x[10]) + separ + x[11]
                                         if l[3]=='0':
                                             repstr += separ + x[3] + separ + 'OUT'
                                         else:   # display callerid for incoming calls
@@ -1088,7 +1142,7 @@ def manage_tcp_connection(connid, allow_events):
 				try:
 					connid[0].send(repstr + "\n")
 				except Exception, exc:
-					log_debug("(%s) error : history : (client %s) : %s"
+					log_debug("--- exception --- (%s) error : history : (client %s) : %s"
 						  %(assrc, requester, str(exc)))
 					connid[0].send("history=\n")
 		elif len(l) >= 4 and l[0] == 'login':
@@ -1122,7 +1176,7 @@ def manage_tcp_connection(connid, allow_events):
 							for x in s: connid[0].send(x)
 							connid[0].send("XIVO CLI:OK\n")
 						except Exception, exc:
-							log_debug("(%s) error : php command : (client %s) : %s"
+							log_debug("--- exception --- (%s) error : php command : (client %s) : %s"
 								  %(configs[n].astid, requester, str(exc)))
 				except Exception, exc:
 					connid[0].send("XIVO CLI:KO Exception : %s\n" %(str(exc)))
@@ -1251,7 +1305,7 @@ def handle_ami_event(astnum, idata):
 				handle_ami_event_dial(listkeys, astnum, src, dst, clid, clidn)
 				#print "dial", context, x
 			except Exception, exc:
-				log_debug("an exception occured in handle_ami_event_dial : " + str(exc))
+				log_debug("--- exception --- handle_ami_event_dial : " + str(exc))
 		elif x.find("Link;") == 7:
 			src     = getvalue(x, "Channel1")
 			dst     = getvalue(x, "Channel2")
@@ -1262,7 +1316,7 @@ def handle_ami_event(astnum, idata):
 				handle_ami_event_link(listkeys, astnum, src, dst, clid1, clid2)
 				#print "link", context, x
 			except Exception, exc:
-				log_debug("an exception occured in handle_ami_event_link : " + str(exc))
+				log_debug("--- exception --- handle_ami_event_link : " + str(exc))
 		elif x.find("Unlink;") == 7:
 			# there might be something to parse here
 			src   = getvalue(x, "Channel1")
@@ -1273,7 +1327,7 @@ def handle_ami_event(astnum, idata):
 				handle_ami_event_unlink(listkeys, astnum, src, dst, clid1, clid2)
 				#print "unlink", context, x
 			except Exception, exc:
-				log_debug("an exception occured in handle_ami_event_unlink : " + str(exc))
+				log_debug("--- exception --- handle_ami_event_unlink : " + str(exc))
 		elif x.find("Hangup;") == 7:
 			chan  = getvalue(x, "Channel")
 			cause = getvalue(x, "Cause-txt")
@@ -1281,7 +1335,7 @@ def handle_ami_event(astnum, idata):
 				#print x
 				handle_ami_event_hangup(listkeys, astnum, chan, cause)
 			except Exception, exc:
-				log_debug("an exception occured in handle_ami_event_hangup: " + str(exc))
+				log_debug("--- exception --- handle_ami_event_hangup: " + str(exc))
 		elif x.find("Reload;") == 7:
 			# warning : "reload" as well as "reload manager" can appear here
 			log_debug("AMI:Reload: " + plist[astnum].astid)
@@ -1393,19 +1447,19 @@ def handle_ami_event(astnum, idata):
 									   DUMMY_STATE, 0, DUMMY_DIR,
 									   channel_p1, n1, "ami-er1")
 				except Exception, exc:
-					log_debug("%s : renaming (ami-er1) failed : %s" %(configs[astnum].astid,str(exc)))
+					log_debug("--- exception --- %s : renaming (ami-er1) failed : %s" %(configs[astnum].astid,str(exc)))
 
 				try:
 					plist[astnum].normal_channel_fills(channel_p1, DUMMY_CLID,
 									   DUMMY_STATE, 0, DUMMY_DIR,
 									   channel_new, n2, "ami-er2")
 				except Exception, exc:
-					log_debug("%s : renaming (ami-er2) failed : %s" %(configs[astnum].astid,str(exc)))
+					log_debug("--- exception --- %s : renaming (ami-er2) failed : %s" %(configs[astnum].astid,str(exc)))
 
 				try:
 					plist[astnum].normal_channel_hangup(channel_old, "ami-er3")
 				except Exception, exc:
-					log_debug("%s : renaming (ami-er3 = hangup) failed : %s" %(configs[astnum].astid,str(exc)))
+					log_debug("--- exception --- %s : renaming (ami-er3 = hangup) failed : %s" %(configs[astnum].astid,str(exc)))
 
 			else:
 				log_debug("AMI:Rename:A: %s : old=%s new=%s"
@@ -1611,7 +1665,7 @@ def update_sipnumlist(astnum):
 	try:
 		sipnuml = configs[astnum].update_userlist_fromurl(astnum)
 	except Exception, exc:
-		log_debug("%s : update_userlist_fromurl failed : %s" %(configs[astnum].astid,str(exc)))
+		log_debug("--- exception --- %s : update_userlist_fromurl failed : %s" %(configs[astnum].astid,str(exc)))
 		sipnuml = {}
 	for x in configs[astnum].extrachannels.split(","):
 		if x != "": sipnuml[x] = [x, "", "", x.split("/")[1], ""]
@@ -1730,7 +1784,7 @@ class PhoneList:
 			try:
 				tcpclient[0].send(strupdate + "\n")
 			except Exception, exc:
-				log_debug("send has failed on %s : %s" %(str(tcpclient[0]),str(exc)))
+				log_debug("--- exception --- send has failed on %s : %s" %(str(tcpclient[0]),str(exc)))
 		verboselog(strupdate, False, True)
 
 	def normal_channel_fills(self, chan_src, num_src,
@@ -2001,7 +2055,8 @@ class AsteriskRemote:
 		     ami_pass = "xivouser",
 		     portsipclt = 5005,
 		     portsipsrv = 5060,
-		     mysipaccounts = ""):
+		     mysipaccounts = "",
+		     cdr_db_uri = ""):
 
 		self.astid = astid
 		self.userlisturl = userlisturl
@@ -2014,6 +2069,7 @@ class AsteriskRemote:
 		self.ami_port = ami_port
 		self.ami_login = ami_login
 		self.ami_pass = ami_pass
+		self.cdr_db_uri = cdr_db_uri
 		self.xivosbs = {}
 		self.contexts = {}
 		for msa in mysipaccounts.split(","):
@@ -2032,7 +2088,7 @@ class AsteriskRemote:
 		try:
 			f = urllib.urlopen(self.userlisturl)
 		except Exception, exc:
-			log_debug("%s : unable to open URL %s : %s" %(self.astid, self.userlisturl, str(exc)))
+			log_debug("--- exception --- %s : unable to open URL %s : %s" %(self.astid, self.userlisturl, str(exc)))
 			return numlist
 
 		try:
@@ -2057,7 +2113,7 @@ class AsteriskRemote:
 							self.contexts[sso_context] = sso_phoneid
 			log_debug("%s : found contexts = %s / xivosbs = %s" %(self.astid, str(self.contexts), str(self.xivosbs)))
 		except Exception, exc:
-			log_debug("%s : a problem occured when building phone list and xivosb accounts : %s" %(self.astid, str(exc)))
+			log_debug("--- exception --- %s : a problem occured when building phone list and xivosb accounts : %s" %(self.astid, str(exc)))
 			return numlist
 		
 		try:
@@ -2094,7 +2150,7 @@ class AsteriskRemote:
 							adduser(astn, sso_tech + sso_phoneid, sso_passwd, sso_context, sso_phonenum)
 						numlist[argg] = fullname, firstname, lastname, sso_phonenum, sso_context
 				except Exception, exc:
-					log_debug("%s : a problem occured when building phone list : %s" %(self.astid, str(exc)))
+					log_debug("--- exception --- %s : a problem occured when building phone list : %s" %(self.astid, str(exc)))
 					return numlist
 		finally:
 			f.close()
@@ -2253,7 +2309,7 @@ class LoginHandler(SocketServer.StreamRequestHandler):
 				else:
 					log_debug("%s is not in my phone list" %phoneid)
 		except Exception, exc:
-			log_debug("Exception occured : %s" %(str(exc)))
+			log_debug("--- exception --- %s" %(str(exc)))
 
 
 ## \class IdentRequestHandler
@@ -2526,6 +2582,7 @@ while True: # loops over the reloads
 			ami_pass = "xivouser"
 			sip_port = 5060
 			sip_presence = ""
+			cdr_db_uri = ""
 
 			if "localaddr" in xivoconf_local:
 				localaddr = xivoconf_local["localaddr"]
@@ -2547,6 +2604,8 @@ while True: # loops over the reloads
 				sip_port = int(xivoconf_local["sip_port"])
 			if "sip_presence" in xivoconf_local:
 				sip_presence = xivoconf_local["sip_presence"]
+			if "cdr_db_uri" in xivoconf_local:
+				cdr_db_uri = xivoconf_local["cdr_db_uri"]
 
 			configs.append(AsteriskRemote(i,
 						      userlisturl,
@@ -2559,7 +2618,9 @@ while True: # loops over the reloads
 						      ami_pass,
 						      port_switchboard_base_sip + n,
 						      sip_port,
-						      sip_presence))
+						      sip_presence,
+						      cdr_db_uri))
+
 			ip_reverse_sht[ipaddress] = n
 			ip_reverse_php[ipaddress_php] = n
 			save_for_next_packet_events.append("")
@@ -2777,14 +2838,14 @@ while True: # loops over the reloads
 			try:
 				manage_tcp_connection(conn, True)
 			except Exception, exc:
-				log_debug("a problem occured when managing SB tcp connection : " + str(exc))
+				log_debug("--- exception --- SB tcp connection : " + str(exc))
 		# open UI (PHP) connections
 	        elif filter(lambda j: j[0] in i, tcpopens_php):
 			conn = filter(lambda j: j[0] in i, tcpopens_php)[0]
 			try:
 				manage_tcp_connection(conn, False)
 			except Exception, exc:
-				log_debug("a problem occured when managing PHP tcp connection : " + str(exc))
+				log_debug("-- exception --- PHP tcp connection : " + str(exc))
 		# advertising from other xivo_daemon's around
 		elif xdal in i:
 			[data, addrsip] = xdal.recvfrom(BUFSIZE_UDP)
