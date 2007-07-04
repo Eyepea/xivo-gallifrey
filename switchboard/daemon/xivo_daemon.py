@@ -238,68 +238,6 @@ def log_debug(string):
 	return varlog(string)
 
 
-## \brief Function to load sso.php user file.
-# SIP, Zap, mISDN and IAX2 are taken into account there.
-# There would remain MGCP, CAPI, h323, ...
-# \param url the url where lies the sso, it can be file:/ as well as http://
-# \param sipaccount the name of the reserved sip account (typically xivosb)
-# \return the new phone numbers list
-# \sa update_sipnumlist
-def update_userlist_fromurl(astn, url, sipaccounts):
-	numlist = {}
-	try:
-		f = urllib.urlopen(url)
-	except Exception, exc:
-		log_debug("%s : unable to open URL %s : %s" %(configs[astn].astid, url, str(exc)))
-		return numlist
-	try:
-		for line in f:
-			# remove leading/tailing whitespaces
-			line = line.strip()
-			l = line.split('|')
-			
-			[sso_tech, sso_phoneid, sso_passwd, sso_dummy,
-			 sso_phonenum, sso_l5, sso_l6,
-			 fullname, firstname, lastname, sso_context] = ["", "", "", "", "", "", "", "", "", "", ""]
-
-			if len(l) == 11:
-				[sso_tech, sso_phoneid, sso_passwd, sso_dummy,
-				 sso_phonenum, sso_l5, sso_l6,
-				 fullname, firstname, lastname, sso_context] = l
-
-				if sso_l6 == "0": enabling = True
-				else:             enabling = False
-				sipaccount = ""
-				for z in sipaccounts:
-					if z[0] == sso_context:
-						sipaccount = z[1]
-						break
-				if sipaccount == "":
-					enabling = False
-					
-				# the <b> tag inside the string disables the drag&drop of the widget (4.2.3 ok, 4.2.1 ko)
-				#fullname = firstname + " " + lastname + " <b>" + sso_phoneid + "</b>"
-				fullname = firstname + " " + lastname + " <b>" + sso_phonenum + "</b>"
-			
-				# line is protocol | username | password | rightflag |
-				#         phone number | initialized | disabled(=1) | callerid
-				if sso_l5 == "1" and enabling and sso_phoneid != sipaccount and sso_phonenum != "":
-					if sso_tech == "sip":
-						argg = "SIP/" + sso_phoneid
-						adduser(astn, sso_tech + sso_phoneid, sso_passwd, sso_context, sso_phonenum)
-					elif sso_tech == "iax":
-						argg = "IAX2/" + sso_phoneid
-					elif sso_tech == "misdn":
-						argg = "mISDN/" + sso_phoneid
-					elif sso_tech == "zap":
-						argg = "Zap/" + sso_phoneid
-						adduser(astn, sso_tech + sso_phoneid, sso_passwd, sso_context, sso_phonenum)
-					numlist[argg] = fullname, firstname, lastname, sso_phonenum, sso_context
-	finally:
-		f.close()
-
-	return numlist
-
 
 ## \brief Function that fetches the call history into a database
 # \param astn the asterisk to connect to
@@ -738,11 +676,11 @@ def parseSIP(astnum, data, l_sipsock, l_addrsip):
 ##            k[0].send("asterisk=registered_" + configs[astnum].astid + "\n")
 
     uri = "sip:%s@%s" %(iaccount, configs[astnum].remoteaddr)
+    mycontext = ""
     mysippass = ""
-    for z in configs[astnum].mysipaccounts:
-	    if z[1] == iaccount:
-		    mycontext = z[0]
-		    mysippass = z[2]
+    if iaccount in configs[astnum].xivosbs.keys():
+	    mycontext = configs[astnum].xivosbs[iaccount][0]
+	    mysippass = configs[astnum].xivosbs[iaccount][1]
     md5_r1 = md5.md5(iaccount + ":asterisk:" + mysippass).hexdigest()
 
     #print "-----------", iaccount, mysippass
@@ -860,9 +798,9 @@ def parseSIP(astnum, data, l_sipsock, l_addrsip):
 # \return
 def do_sip_register(astnum, l_sipsock):
 	global configs
-	for sipacc in configs[astnum].mysipaccounts:
+	for sipacc in configs[astnum].xivosbs.keys():
 		command = xivo_sip.sip_register(configs[astnum],
-						"sip:" + sipacc[1], 1, "reg_cid@xivopy",
+						"sip:" + sipacc, 1, "reg_cid@xivopy",
 						2 * xivosb_register_frequency, "")
 		l_sipsock.sendto(command, (configs[astnum].remoteaddr, configs[astnum].portsipsrv))
 		# command = xivo_sip.sip_options(configs[astnum], "sip:" + configs[astnum].mysipname, cid, sipnum)
@@ -1671,7 +1609,7 @@ def update_sipnumlist(astnum):
 	sipnumlistold = filter(lambda j: plist[astnum].normal[j].towatch, plist[astnum].normal.keys())
 	sipnumlistold.sort()
 	try:
-		sipnuml = update_userlist_fromurl(astnum, configs[astnum].userlisturl, configs[astnum].mysipaccounts)
+		sipnuml = configs[astnum].update_userlist_fromurl(astnum)
 	except Exception, exc:
 		log_debug("%s : update_userlist_fromurl failed : %s" %(configs[astnum].astid,str(exc)))
 		sipnuml = {}
@@ -2076,11 +2014,92 @@ class AsteriskRemote:
 		self.ami_port = ami_port
 		self.ami_login = ami_login
 		self.ami_pass = ami_pass
-		self.mysipaccounts = []
-		sipaccs = mysipaccounts.split(";")
-		for sipacc in sipaccs:
-			[ctx, acc, zpass] = sipacc.split(",")
-			self.mysipaccounts.append([ctx, acc, zpass])
+		self.xivosbs = {}
+		self.contexts = {}
+		for msa in mysipaccounts.split(","):
+			self.xivosbs[msa] = ["", ""]
+
+
+	## \brief Function to load sso.php user file.
+	# SIP, Zap, mISDN and IAX2 are taken into account there.
+	# There would remain MGCP, CAPI, h323, ...
+	# \param url the url where lies the sso, it can be file:/ as well as http://
+	# \param sipaccount the name of the reserved sip account (typically xivosb)
+	# \return the new phone numbers list
+	# \sa update_sipnumlist
+	def update_userlist_fromurl(self, astn):
+		numlist = {}
+		try:
+			f = urllib.urlopen(self.userlisturl)
+		except Exception, exc:
+			log_debug("%s : unable to open URL %s : %s" %(self.astid, self.userlisturl, str(exc)))
+			return numlist
+
+		try:
+			phone_list = []
+			# builds the phone_list from the SSO
+			for line in f:
+				# remove leading/tailing whitespaces
+				line = line.strip()
+				l = line.split('|')
+				if len(l) == 11 and l[6] == "0":
+					phone_list.append(l)
+
+			# retrieves the xivosb account informations
+			for l in phone_list:
+				[sso_tech, sso_phoneid, sso_passwd, sso_dummy,
+				 sso_phonenum, sso_l5, sso_l6,
+				 fullname, firstname, lastname, sso_context] = l
+				for sipacc in self.xivosbs.keys():
+					if sipacc == sso_phoneid:
+						if sso_context not in self.contexts.keys():
+							self.xivosbs[sso_phoneid] = [sso_context, sso_passwd]
+							self.contexts[sso_context] = sso_phoneid
+			log_debug("%s : found contexts = %s / xivosbs = %s" %(self.astid, str(self.contexts), str(self.xivosbs)))
+		except Exception, exc:
+			log_debug("%s : a problem occured when building phone list and xivosb accounts : %s" %(self.astid, str(exc)))
+			return numlist
+		
+		try:
+			# updates other accounts
+			for l in phone_list:
+				try:
+					[sso_tech, sso_phoneid, sso_passwd, sso_dummy,
+					 sso_phonenum, sso_l5, sso_l6,
+					 fullname, firstname, lastname, sso_context] = l
+					
+					enabling = True
+					sipaccount = ""
+					if sso_context in self.contexts.keys():
+						sipaccount = self.contexts[sso_context]
+					if sipaccount == "":
+						enabling = False
+					
+					# the <b> tag inside the string disables the drag&drop of the widget (4.2.3 ok, 4.2.1 ko)
+					# fullname = firstname + " " + lastname + " <b>" + sso_phoneid + "</b>"
+					fullname = firstname + " " + lastname + " <b>" + sso_phonenum + "</b>"
+					
+					# line is protocol | username | password | rightflag |
+					#         phone number | initialized | disabled(=1) | callerid
+					if sso_l5 == "1" and enabling and sso_phoneid != sipaccount and sso_phonenum != "":
+						if sso_tech == "sip":
+							argg = "SIP/" + sso_phoneid
+							adduser(astn, sso_tech + sso_phoneid, sso_passwd, sso_context, sso_phonenum)
+						elif sso_tech == "iax":
+							argg = "IAX2/" + sso_phoneid
+						elif sso_tech == "misdn":
+							argg = "mISDN/" + sso_phoneid
+						elif sso_tech == "zap":
+							argg = "Zap/" + sso_phoneid
+							adduser(astn, sso_tech + sso_phoneid, sso_passwd, sso_context, sso_phonenum)
+						numlist[argg] = fullname, firstname, lastname, sso_phonenum, sso_context
+				except Exception, exc:
+					log_debug("%s : a problem occured when building phone list : %s" %(self.astid, str(exc)))
+					return numlist
+		finally:
+			f.close()
+		return numlist
+
 
 ## \brief Adds (or updates) a user in the userlist.
 # \param user the user to add
