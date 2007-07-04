@@ -13,7 +13,7 @@ __version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2007, Proformatique
 
-    This library is free software; you can redistribute it and/or
+    This software is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
     License as published by the Free Software Foundation; either
     version 2.1 of the License, or (at your option) any later version.
@@ -39,11 +39,13 @@ import ConfigParser
 from ConfigDict import *
 from agi import *
 
+agi = AGI()
+
 if len(sys.argv) > 1:
 	if sys.argv[1].isdigit():
 		exten = sys.argv[1]
 else:
-	agi_verbose("Sorry there is not number")
+	agi.verbose("Sorry there is not number !")
 	sys.exit()
 
 ring = "/etc/asterisk/xivo_ring.conf"
@@ -53,9 +55,13 @@ config.readfp(open(ring))
 
 phonetype = config.get('number', exten)
 
-agi_set_variable("RINGINTERNAL", config.get(phonetype, 'intern'))
-agi_set_variable("RINGEXTERNAL", config.get(phonetype, 'extern'))
-agi_set_variable("RINGGROUP", config.get(phonetype, 'group'))
+if not phonetype:
+	agi.verbose("Sorry there is no phonetype !")
+	sys.exit()
+
+agi.set_variable("RINGINTERNAL", config.get(phonetype, 'intern'))
+agi.set_variable("RINGEXTERNAL", config.get(phonetype, 'extern'))
+agi.set_variable("RINGGROUP", config.get(phonetype, 'group'))
 
 if phonetype == 'thomson':
-	agi_set_variable("ISTHOMSON", "1")
+	agi.set_variable("ISTHOMSON", "1")

@@ -13,7 +13,7 @@ __version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2007, Proformatique
 
-    This library is free software; you can redistribute it and/or
+    This software is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
     License as published by the Free Software Foundation; either
     version 2.1 of the License, or (at your option) any later version.
@@ -47,24 +47,28 @@ conf_obj = ConfigParser.ConfigParser()
 conf_obj.readfp(open(CONFIG_FILE))
 FillDictFromConfigSection(options, conf_obj, "db")
 
+agi = AGI()
 
 if len(sys.argv) != 2:
-	agi_verbose("Error no args found!")
+	agi.verbose("Error no args found!")
         sys.exit()
 
-# XXX TODO BUGBUG FIXME SATAN: the following lines make absolutely sense to me (Xilun - 2007-06-15)
-# XXX For me too :-) (Quintana - 2007-07-03)
-try:
-        exten = sys.argv[1]
-	query = "SELECT groupfeatures.name,groupfeatures.number,queue.timeout FROM groupfeatures,queue WHERE groupfeatures.name=queue.name AND groupfeatures.number='%s';" % exten
-except:
-	exten = sys.argv[1]
-	query = "SELECT groupfeatures.name,groupfeatures.number,queue.timeout FROM groupfeatures,queue WHERE groupfeatures.name=queue.name AND groupfeatures.name='%s';" % exten
+exten = sys.argv[1]
+
+# If is a call group search to groupfeatures.number
+# If is a call user and search a group for this user search to groupfeatures.name
+if exten.isdigit():
+	query = "SELECT groupfeatures.name,groupfeatures.number,queue.timeout FROM groupfeatures,queue \
+			WHERE groupfeatures.name=queue.name AND groupfeatures.number='%s';" % exten
+else:
+	query = "SELECT groupfeatures.name,groupfeatures.number,queue.timeout FROM groupfeatures,queue \
+			WHERE groupfeatures.name=queue.name AND groupfeatures.name='%s';" % exten
+
 
 try:
         conn = anysql.connect_by_uri(options['db_uri'])
 except:
-        agi_verbose("Unable to connect to %s" %options['db_uri'])
+        agi.verbose("Unable to connect to %s" %options['db_uri'])
         raise
 
 cursor = conn.cursor()
@@ -72,7 +76,7 @@ cursor.execute(query)
 r = cursor.fetchone()
 
 if not r:
-	agi_verbose("No ring group found")
+	agi.verbose("No ring group found")
 	sys.exit()
 
 name = r[0]
@@ -80,8 +84,8 @@ number = r[1]
 timeout = r[2]
 
 if name and number and timeout:
-	agi_set_variable("GEXT", "%s" % number)
-	agi_set_variable("GNAME", "%s" % name)
-	agi_set_variable("GTIMEOUT", "%s" % timeout)
+	agi.set_variable("GEXT", "%s" % number)
+	agi.set_variable("GNAME", "%s" % name)
+	agi.set_variable("GTIMEOUT", "%s" % timeout)
 else:
-	agi_verbose("There is an error")
+	agi.verbose("There is an error")

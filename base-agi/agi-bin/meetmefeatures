@@ -13,7 +13,7 @@ __version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2007, Proformatique
 
-    This library is free software; you can redistribute it and/or
+    This software is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
     License as published by the Free Software Foundation; either
     version 2.1 of the License, or (at your option) any later version.
@@ -47,16 +47,18 @@ conf_obj = ConfigParser.ConfigParser()
 conf_obj.readfp(open(CONFIG_FILE))
 FillDictFromConfigSection(options, conf_obj, "db")
 
+agi = AGI()
+
 try:
         exten = sys.argv[1]
 except:
-        agi_verbose("Error no args found!")
+        agi.verbose("Error no args found!")
         sys.exit()
 
 try:
         conn = anysql.connect_by_uri(options['db_uri'])
 except:
-        agi_verbose("Unable to connect to %s" %options['db_uri'])
+        agi.verbose("Unable to connect to %s" %options['db_uri'])
         raise
 
 cursor = conn.cursor()
@@ -65,7 +67,7 @@ cursor.execute(query)
 r = cursor.fetchone()
 
 if not r:
-        agi_verbose("No meetme found")
+        agi.verbose("No meetme found")
         sys.exit()
 
 mode = r[0]
@@ -96,6 +98,6 @@ try:
                 pass
         options = options + 's'
 
-        agi_set_variable("MEETMEOPTIONS", options )
+        agi.set_variable("MEETMEOPTIONS", options )
 except:
         pass

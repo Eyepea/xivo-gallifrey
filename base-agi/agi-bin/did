@@ -13,7 +13,7 @@ __version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2007, Proformatique
 
-    This library is free software; you can redistribute it and/or
+    This software is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
     License as published by the Free Software Foundation; either
     version 2.1 of the License, or (at your option) any later version.
@@ -49,16 +49,18 @@ FillDictFromConfigSection(options, conf_obj, "db")
 
 import string
 
+agi = AGI()
+
 try:
 	exten = sys.argv[1]
 except:
-	agi_verbose("Error no args found!")
+	agi.verbose("Error no args found!")
 	sys.exit()
 
 try:
 	conn = anysql.connect_by_uri(options['db_uri'])
 except:
-        agi_verbose("Unable to connect to %s" %options['db_uri'])
+        agi.verbose("Unable to connect to %s" %options['db_uri'])
         raise
 
 cursor = conn.cursor()
@@ -68,7 +70,7 @@ t = cursor.fetchone()
 
 
 if not t:
-	agi_verbose("No DID found !")
+	agi.verbose("No DID found !")
 	sys.exit()
 
 type = t[0]
@@ -78,8 +80,8 @@ if type == 'custom':
 	(apps, args) = t.custom.split('(')
 	(args, noargs) = args.split(')')
 	args = string.replace(args,',','|')
-	agi_answer()
-	agi_exec(apps, args)
+	agi.answer()
+	agi.appexec(apps, args)
 
 if type == 'meetme':
 	query = "SELECT number FROM meetmefeatures WHERE id=%d" % t[1]
@@ -90,8 +92,8 @@ if type == 'meetme':
 	g = cursor.fetchone()
 	number = g[0]
 	context = g[1]
-	agi_answer()
-	agi_exec("GOTO", "%s|%s|1" %(context,number))
+	agi.answer()
+	agi.appexec("GOTO", "%s|%s|1" %(context,number))
 
 if type == 'user':
 	query = "SELECT number,context FROM userfeatures WHERE id=%d" % typeid
@@ -102,8 +104,8 @@ if type == 'user':
 	g = cursor.fetchone()
 	number = g[0]
 	context = g[1]
-	agi_answer()
-	agi_exec("GOTO", "%s|%s|1" %(context,number))
+	agi.answer()
+	agi.appexec("GOTO", "%s|%s|1" %(context,number))
 
 if type == 'group':
 	query = "SELECT number,context FROM groupfeatures WHERE id=%d AND context!='did-extensions'" % typeid
@@ -111,5 +113,5 @@ if type == 'group':
 	g = cursor.fetchone()
 	number = g[0]
 	context = g[1]
-	agi_answer()
-	agi_exec("GOTO", "%s|%s|1" %(context,number))
+	agi.answer()
+	agi.appexec("GOTO", "%s|%s|1" %(context,number))

@@ -47,130 +47,89 @@ conf_obj = ConfigParser.ConfigParser()
 conf_obj.readfp(open(CONFIG_FILE))
 FillDictFromConfigSection(options, conf_obj, "db")
 
-import string, re
+def set_features_value(var, family, key, context, user):
+	if not family:
+		family = context + '/users/' + user 
+	else:
+		family = context + '/users/' + user + '/' + family
 
-def return_exit(error, playback=None):
-        agi_verbose("%s" % error)
-        if playback:
-                agi_exec("PLAYBACK", "%s" % playback)
-        sys.exit()
+	try:
+		v = agi.database_get(family, key)
+		agi.set_variable(var, v)
+	except:
+		pass
 
-def find_informations_by_extension(exten, context):
+def find_informations_for_user(exten, context):
 	try:
 		conn = anysql.connect_by_uri(options['db_uri'])
 	except:
-	        agi_verbose("Unable to connect to %s" %options['db_uri'])
+	        agi.verbose("Unable to connect to %s" %options['db_uri'])
         	raise
 
         query = "SELECT protocol,protocolid,ringseconds,simultcalls,musiconhold FROM userfeatures WHERE number='%s' and context='%s'" %(exten, context)
 	cursor = conn.cursor()
         cursor.execute(query)
-
         r = cursor.fetchone()
 
         if r:
                 proto = r[0]
-                protoid = r[1]
+		protoid = r[1]
                 ringcall = r[2]
                 nbcall = r[3]
-                moh = r[4]
+		moh = r[4]
 
 		try:
 			query = "SELECT name FROM usersip WHERE id=%d" % int(protoid)
 			cursor.execute(query)
-
 			n = cursor.fetchone()
-
 			name = n[0]
 		except:
-			return_exit("Error no name !", "invalid")
+			agi.verbose("Error no name !", "invalid")
 
 		try:
 			query = "SELECT groupfeatures.name FROM usergroup,groupfeatures WHERE userid='%d';" % int(protoid)
-			print query
 			cursor.execute(query)
-
 			d = cursor.fetchone()
-
 			queuename = d[0]
 		except:
 			queuename = 0
 
 		if not name:
-			return_exit("Error user not found!")
+			agi.verbose("Error user not found!")
 		else:
 			res = (proto, nbcall, ringcall, queuename, name, moh)
 
                 return res
 
-	return_exit("Error user not found!")
+	agi.verbose("Error user not found!")
 
-def find_features_db(exten, family, key, comment, context):
-	sys.stderr.write("DATABASE GET %s/users/%s%s %s\n" %(context, exten, family, key))
-	sys.stderr.flush()
-	sys.stdout.write("DATABASE GET %s/users/%s%s %s\n" %(context, exten, family, key))
-	sys.stdout.flush()
-	line = sys.stdin.readline().strip()
 
-	try:
-		if '200' not in line:
-			sys.stderr.write("FAIL (%s)\n" % line)
-			sys.stderr.flush()
-			agi_verbose("Wrong return " + line)
-		else:
-			sys.stderr.write("PASS (%s)\n" % line)
-			sys.stderr.flush()
-			res = line.split('(')[1]
-			value = res.split(')')[0]
-			return value
-	except:
-		return 0
-
+agi = AGI()
 
 if len(sys.argv) != 3:
-        return_exit("len argument not ok")
+        agi.verbose('len argument not ok!')
 
-env=""
-while(env != "\n"):
-	env = sys.stdin.readline()
-
+user = sys.argv[1]
 context = sys.argv[2]
 
-VMStatus = find_features_db(sys.argv[1], '', 'VM', 'Voicemail Souscription Status', context)
-DND = find_features_db(sys.argv[1], '', 'DND', 'Do Not Disturb', context)
-FUStatus = find_features_db(sys.argv[1], '/FWD/Unc', 'Status', 'Forward Inconditionel Status', context)
-FUNumber = find_features_db(sys.argv[1], '/FWD/Unc', 'Number', 'Forward Inconditionel Number', context)
-FBStatus = find_features_db(sys.argv[1], '/FWD/Busy', 'Status', 'Forward Busy Status', context)
-FBNumber = find_features_db(sys.argv[1], '/FWD/Busy', 'Number', 'Forward Busy Number', context)
-FRStatus = find_features_db(sys.argv[1], '/FWD/RNA', 'Status', 'Forward RNA Status', context)
-FRNumber = find_features_db(sys.argv[1], '/FWD/RNA', 'Number', 'Forward RNA Number', context)
-LDNumber = find_features_db(sys.argv[1], '', 'LDNumber', 'Last Dial Number', context)
-LCNumber = find_features_db(sys.argv[1], '', 'LCNumber', 'Last Calling Number', context)
-RCStatus = find_features_db(sys.argv[1], '', 'Record', 'Last Record Number', context)
-FFStatus= find_features_db(sys.argv[1], '', 'FindMe', 'Find Me Status', context)
-CSStatus= find_features_db(sys.argv[1], '', 'Screen', 'Screen Number', context)
-ISCHANMOBILELOGGED= find_features_db(sys.argv[1], '/AG', 'logged', '', context)
-CHANMOBILEAGENT= find_features_db(sys.argv[1], '/AG', 'chan', '', context)
+res = find_informations_for_user(user, context)
 
-res = find_informations_by_extension(sys.argv[1], context)
-agi_set_variable("VMStatus", "%s" % VMStatus)
-agi_set_variable("DND", "%s" % DND)
-agi_set_variable("FUStatus", "%s" % FUStatus)
-agi_set_variable("FUNumber", "%s" % FUNumber)
-agi_set_variable("FBStatus", "%s" % FBStatus)
-agi_set_variable("FBNumber", "%s" % FBNumber)
-agi_set_variable("FRStatus", "%s" % FRStatus)
-agi_set_variable("FRNumber", "%s" % FRNumber)
-agi_set_variable("LDNumber", "%s" % LDNumber)
-agi_set_variable("LCNumber", "%s" % LCNumber)
-agi_set_variable("RCStatus", "%s" % RCStatus)
-agi_set_variable("FFStatus", "%s" % FFStatus)
-agi_set_variable("CSStatus", "%s" % CSStatus)
-agi_set_variable("PROTO", "%s" %res[0])
-agi_set_variable("NBC", "%s" %res[1])
-agi_set_variable("NBS", "%s" %res[2])
-agi_set_variable("QUEUENAME", "%s" %res[3])
-agi_set_variable("NAME", "%s" %res[4])
-agi_set_variable("MOH", "%s" %res[5])
-agi_set_variable("CHANMOBILEAGENT", "%s" % CHANMOBILEAGENT)
-agi_set_variable("ISCHANMOBILELOGGED", "%s" % ISCHANMOBILELOGGED)
+set_features_value('DND', '', 'DND', context, user)
+set_features_value('VMStatus', '', 'VM', context, user)
+set_features_value('FUStatus', 'FWD/Unc', 'Status', context, user)
+set_features_value('FUNumber', 'FWD/Unc', 'Number', context, user)
+set_features_value('FBStatus', 'FWD/Busy', 'Status', context, user)
+set_features_value('FBNumber', 'FWD/Busy', 'Number', context, user)
+set_features_value('FRStatus', 'FWD/RNA', 'Status', context, user)
+set_features_value('FRNumber', 'FWD/RNA', 'Number', context, user)
+set_features_value('RCStatus', '', 'Record', context, user)
+set_features_value('CSStatus', '', 'Screen', context, user)
+
+agi.set_variable('PROTO', '%s' % res[0])
+agi.set_variable('NBC', '%s' % res[1])
+agi.set_variable('NBS', '%s' % res[2])
+agi.set_variable('QUEUENAME', '%s' % res[3])
+agi.set_variable('NAME', '%s' % res[4])
+agi.set_variable('MOH', '%s' % res[5])
+
+sys.exit(0)
