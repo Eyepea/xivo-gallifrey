@@ -280,7 +280,9 @@ class RT_Mount(RT_node):
 
 	def lookup_mnt(self, path, pos):
 		"""Finds and returns the best matching mounted subtree
-		begining with path[pos:]"""
+		begining with path[pos:]
+		Returns None, -1 if none found, else returns 
+		(position_of_remaining_part_of_path, sub_res_tree_instance) """
 		found_rt, found_pos = None, -1
 		mntpts = self._mount_points
 		while pos < len(path):
