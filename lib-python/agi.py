@@ -1,30 +1,12 @@
 """
-For using this library please see the exemple :
+To use this library please see the example :
 
     agi = AGI()
-    #agi.appexec('festival','Welcome to Klass Technologies.  Thank you for calling.')
-    #agi.appexec('festival','This is a test of the text to speech engine.')
-    #agi.appexec('festival','Press 1 for sales ')
-    #agi.appexec('festival','Press 2 for customer support ')
-    #agi.hangup()
-    #agi.goto_on_exit(extension='1234', priority='1')
-    #sys.exit(0)
-    #agi.say_digits('123', [4,'5',6])
-    #agi.say_digits([4,5,6])
-    #agi.say_number('1234')
-    #agi.say_number('01234')  # 668
-    #agi.say_number('0xf5')   # 245
-    agi.get_data('demo-congrats')
-    agi.hangup()
-    sys.exit(0)
-    #agi.record_file('pyst-test') #FAILS
-    #agi.stream_file('demo-congrats', [1,2,3,4,5,6,7,8,9,0,'#','*'])
-    #agi.appexec('background','demo-congrats')
 
     try:
         agi.appexec('backgrounder','demo-congrats')
     except AGIAppError:
-        sys.stderr.write("Handled exception for missing application backgrounder\n")
+        agi.verbose("Handled exception for missing application backgrounder")
 
     agi.set_variable('foo','bar')
     agi.get_variable('foo')
@@ -32,20 +14,18 @@ For using this library please see the exemple :
     try:
         agi.get_variable('foobar')
     except AGIAppError:
-        sys.stderr.write("Handled exception for missing variable foobar\n")
+        agi.verbose("Handled exception for missing variable foobar")
 
     try:
         agi.database_put('foo', 'bar', 'foobar')
         agi.database_put('foo', 'baz', 'foobaz')
         agi.database_put('foo', 'bat', 'foobat')
         v = agi.database_get('foo', 'bar')
-        sys.stderr.write('DBVALUE foo:bar = %s\n' % v)
         v = agi.database_get('bar', 'foo')
-        sys.stderr.write('DBVALUE foo:bar = %s\n' % v)
         agi.database_del('foo', 'bar')
         agi.database_deltree('foo')
     except AGIDBError:
-        sys.stderr.write("Handled exception for missing database entry bar:foo\n")
+        agi.verbose("Handled exception for missing database entry bar:foo")
 
     agi.hangup()
 """
@@ -72,9 +52,20 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
+# Modifications by Proformatique from pyst-0.2:
+#     - AGI._quote does escaping
+#     - small optimization in AGI.send_command()
+#     - DEBUG_PASSTHROUGH in AGI.get_result() so that scripts can be tested
+#	as if 200 is returned to all AGI commands.
+#     - removed stderr
+#     - removed double quoting from database_get()
+
 import sys, pprint, re
 from types import ListType
 import signal
+from itertools import *
+
+DEBUG_PASSTHROUGH = 0
 
 DEFAULT_TIMEOUT = 2000 # 2sec timeout used as default for functions that take timeouts
 DEFAULT_RECORD  = 20000 # 20sec record time
@@ -116,18 +107,12 @@ class AGI:
     def __init__(self):
         self._got_sighup = False
         signal.signal(signal.SIGHUP, self._handle_sighup)  # handle SIGHUP
-        sys.stderr.write('ARGS: ')
-        sys.stderr.write(str(sys.argv))
-        sys.stderr.write('\n')
         self.env = {}
         self._get_agi_env()
 
     def _get_agi_env(self):
         while 1:
             line = sys.stdin.readline().strip()
-            sys.stderr.write('ENV LINE: ')
-            sys.stderr.write(line)
-            sys.stderr.write('\n')
             if line == '':
                 #blank line signals end
                 break
@@ -136,15 +121,9 @@ class AGI:
             data = data.strip()
             if key <> '':
                 self.env[key] = data
-        sys.stderr.write('class AGI: self.env = ')
-        sys.stderr.write(pprint.pformat(self.env))
-        sys.stderr.write('\n')
 
     def _quote(self, string):
-        return ''.join(['"', str(string), '"'])
-
-    def _agi_escape_string(self, s):
-        return s.replace('\\', '\\\\').replace('"', '\\"').replace('\n', ' ')
+        return '"%s"' %(str(string).replace('\\', '\\\\').replace('"', '\\"').replace('\n', ' '),)
 
     def _handle_sighup(self, signum, frame):
         """Handle the SIGHUP signal"""
@@ -157,7 +136,6 @@ class AGI:
         
     def execute(self, command, *args):
         self.test_hangup()
-
         try:
             self.send_command(command, *args)
             return self.get_result()
@@ -170,12 +148,9 @@ class AGI:
 
     def send_command(self, command, *args):
         """Send a command to Asterisk"""
-        command = command.strip()
-        command = '%s %s' % (command, ' '.join(map(str,args)))
-        command = command.strip()
+	command = (' '.join(chain((command.strip(),),imap(str,args)))).strip()
         if command[-1] != '\n':
             command += '\n'
-        sys.stderr.write('    COMMAND: %s' % command)
         sys.stdout.write(command)
         sys.stdout.flush()
 
@@ -184,14 +159,16 @@ class AGI:
         code = 0
         result = {'result':('','')}
         line = stdin.readline().strip()
-        sys.stderr.write('    RESULT_LINE: %s\n' % line)
         m = re_code.search(line)
         if m:
             code, response = m.groups()
-            try:
-                code = int(code)
-            except:
-                code = 200
+            if DEBUG_PASSTHROUGH:
+	        try:
+                    code = int(code)
+                except:
+                    code = 200
+	    else:
+	        code = int(code)
 
         if code == 200:
             for key,value,data in re_kv.findall(response):
@@ -203,8 +180,6 @@ class AGI:
 
                 if key == 'result' and value == '-1':
                     raise AGIAppError("Error executing application, or hangup")
-
-            sys.stderr.write('    RESULT_DICT: %s\n' % pprint.pformat(result))
             return result
         elif code == 510:
             raise AGIInvalidCommand(response)
@@ -222,7 +197,7 @@ class AGI:
 
     def _process_digit_list(self, digits):
         if type(digits) == ListType:
-            digits = ''.join(map(str, digits))
+            digits = ''.join(imap(str, digits))
         return self._quote(digits)
 
     def answer(self):
@@ -633,8 +608,6 @@ class AGI:
         is set and returns the variable in parenthesis
         example return code: 200 result=1 (testvariable)
         """
-        family = '"%s"' % family
-        key = '"%s"' % key
         result = self.execute('DATABASE GET', self._quote(family), self._quote(key))
         res, value = result['result']
         if res == '0':
