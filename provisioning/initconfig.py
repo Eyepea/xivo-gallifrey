@@ -60,12 +60,12 @@ from agi import *
 
 def agi_verbose_debug(txt):
 	if pgc['debug_agi']:
-		agi_verbose(txt)
+		agi.verbose(txt)
 
 def return_exit(error, playback=None):
-	agi_verbose("%s" % error)
+	agi.verbose("%s" % error)
 	if playback:
-		print "EXEC PLAYBACK \"%s\"" % agi_escape_string(playback)
+		agi.appexec("PLAYBACK", playback)
 	sys.exit(1)
 
 # TODO: use an RFC compliant regexp instead of
@@ -88,7 +88,7 @@ def phone_desc_by_ua(ua):
 		except:
 			r = None
 			for line in provsup.exception_traceback():
-				agi_verbose(line)
+				agi.verbose(line)
 			sys.exc_clear()
 		if r:
 			return r
@@ -111,7 +111,7 @@ def main():
 	if not user_ipv4:
 		return_exit("Could not parse Sip URI \"%s\"" % sip_uri)
 	sip_user, ipv4 = user_ipv4
-	macaddr = provsup.macaddr_from_ipv4(ipv4, agi_verbose)
+	macaddr = provsup.macaddr_from_ipv4(ipv4, agi.verbose)
 	if not macaddr:
 		return_exit("Could not find Mac Address from IPv4 \"%s\"" % ipv4)
 
@@ -145,7 +145,7 @@ def main():
 		reason = str(xcept)
 		status = 500
 		for line in provsup.exception_traceback():
-			agi_verbose(line)
+			agi.verbose(line)
 		sys.exc_clear()
 
 	if status != 200:
