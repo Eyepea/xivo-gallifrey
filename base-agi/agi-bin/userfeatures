@@ -62,23 +62,21 @@ def find_informations_by_extension(exten, context):
 	        agi_verbose("Unable to connect to %s" %options['db_uri'])
         	raise
 
-	# XXX TODO BUGBUG FIXME SATAN: will bug one day... at least I know the future... (Xilun - 2007-06-15)
-        query = "SELECT * FROM userfeatures WHERE number='%s' and context='%s'" %(exten, context)
+        query = "SELECT protocol,protocolid,ringseconds,simultcalls,musiconhold FROM userfeatures WHERE number='%s' and context='%s'" %(exten, context)
 	cursor = conn.cursor()
         cursor.execute(query)
 
         r = cursor.fetchone()
 
         if r:
-		# XXX TODO BUGBUG FIXME SATAN: will bug one day... at least I know the future... (Xilun - 2007-06-15)
-		idblah = r[2]
-                proto = r[1]
-                nbcall = r[11]
-                ringcall = r[9]
-		moh = r[13]
+                proto = r[0]
+                protoid = r[1]
+                ringcall = r[2]
+                nbcall = r[3]
+                moh = r[4]
 
 		try:
-			query = "SELECT name FROM usersip WHERE id=%d" % int(idblah)
+			query = "SELECT name FROM usersip WHERE id=%d" % int(protoid)
 			cursor.execute(query)
 
 			n = cursor.fetchone()
@@ -88,7 +86,7 @@ def find_informations_by_extension(exten, context):
 			return_exit("Error no name !", "invalid")
 
 		try:
-			query = "SELECT groupfeatures.name FROM usergroup,groupfeatures WHERE userid='%d';" % int(idblah)
+			query = "SELECT groupfeatures.name FROM usergroup,groupfeatures WHERE userid='%d';" % int(protoid)
 			print query
 			cursor.execute(query)
 
