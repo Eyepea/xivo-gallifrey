@@ -8,20 +8,22 @@ import socket
 # 3) utiliser getxml() ou sendtouser()
 
 class Fiche:
-	"""Fiche class"""
-	def __init__(self, sessionid=''):
-		self.sessionid = sessionid
-		self.infos = []
-		self.message = ''
-	def __str__(self):
-		return "Fiche : sessionid=" + self.sessionid + " infos=" + str(self.infos)
-	def addinfo(self, name, type, value):
+    """Fiche class"""
+    def __init__(self, sessionid=''):
+        self.sessionid = sessionid
+        self.infos = []
+        self.message = ''
+    def __str__(self):
+        return "Fiche : sessionid=" + self.sessionid + " infos=" + str(self.infos)
+    def __repr__(self):
+        return str(self)
+    def addinfo(self, name, type, value):
 		"""add a field in the profile"""
 		self.infos.append( (name, type, value) )
-	def setmessage(self, msg):
+    def setmessage(self, msg):
 		"""set the message to be displayed in systray message"""
 		self.message = msg
-	def getxml(self):
+    def getxml(self):
 		"""get a string containing the xml"""
 		s = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
 		s += '<profile sessionid="' + self.sessionid + '">\n'
@@ -35,7 +37,7 @@ class Fiche:
 		s += '</user>\n'
 		s += '</profile>\n'
 		return s
-	def sendtouser(self, address):
+    def sendtouser(self, address):
 		"""send the profile to a user using TCP"""
 		try:
 			s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -48,14 +50,15 @@ class Fiche:
 			fs.flush()
 			fs.close()
 			return True
-		except:
+		except Exception, e:
+                        #print e
 			return False
 
 def getuserlocation(shost, sport, user):
 	"""return None or the address and session id"""
 	try:
 		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		s.settimeout(0.1)
+		#s.settimeout(0.1)
 		s.connect((shost, sport))
 		fs = s.makefile("r")
 		s.send("QUERY " + user + "\r\n")
