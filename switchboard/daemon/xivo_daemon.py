@@ -266,7 +266,7 @@ def update_history_call(astn, techno, phoneid, phonenum, nlines, kind):
 	else:
 		try:
 			conn = anysql.connect_by_uri(configs[astn].cdr_db_uri)
-			# charset = 'utf8' ?
+			# charset = 'utf8' : add ?charset=utf8 to the URI
 
 			cursor = conn.cursor()
 			table = "cdr" # configs[astn].cdr_db_tablename
@@ -290,7 +290,7 @@ def update_history_call(astn, techno, phoneid, phonenum, nlines, kind):
 			conn.close()
 		except Exception, exc:
 			log_debug("--- exception --- %s : Connection to DataBase %s failed in History request : %s"
-				  %(configs[astn].astid, xivoconf_general["cdr_db_uri"], str(exc)))
+				  %(configs[astn].astid, configs[astn].cdr_db_uri, str(exc)))
 	return results
 
 
@@ -540,7 +540,24 @@ class AMIClass:
 # This should be done after a command called "customers".
 # \return a string containing the full customers list
 # \sa manage_tcp_connection
-def build_customers(searchpattern):
+def build_customers(requester, searchpattern):
+	dir_db_uri = ""
+	dir_db_displayfields = ""
+	dir_db_matchingfields = ""
+	dir_db_tablename = ""
+	
+	[astn, ctx] = ctx_by_requester[requester]
+	if ctx in configs[astn].contexts.keys():
+		xivocf = configs[astn].contexts[ctx]
+		if "dir_db_uri" in xivocf:
+			dir_db_uri = xivocf["dir_db_uri"]
+		if "dir_db_displayfields" in xivocf:
+			dir_db_displayfields = xivocf["dir_db_displayfields"]
+		if "dir_db_matchingfields" in xivocf:
+			dir_db_matchingfields = xivocf["dir_db_matchingfields"]
+		if "dir_db_tablename" in xivocf:
+			dir_db_tablename = xivocf["dir_db_tablename"]
+
 	if dir_db_displayfields == "":
 		ndfields = 0
 	else:
@@ -550,29 +567,39 @@ def build_customers(searchpattern):
 	fullstatlist = []
 	dbkind = dir_db_uri.split(":")[0]
 	if dbkind == "ldap":
-		ldapid = myLDAP(dir_db_uri)
-		if searchpattern == "" or searchpattern == "*":
-			result = ldapid.getldap("(|(cn=*)(o=*)(telephoneNumber=*)(mobile=*)(mail=*))",
-						['cn','o','telephoneNumber','mobile','mail'])
+		if dir_db_matchingfields == "":
+			log_debug("dir_db_matchingfields is empty - could not proceed directory-search request")
 		else:
-			result = ldapid.getldap("(|(cn=*%s*)(o=*%s*)(telephoneNumber=*%s*)(mobile=*%s*)(mail=*%s*))"
-						%(searchpattern,searchpattern,searchpattern,searchpattern,searchpattern),
-						['cn','o','telephoneNumber','mobile','mail'])
-		ldapid.close()
+			fnames = dir_db_matchingfields.split(";")
+			selectline = "(|"
+			fieldslist = []
+			for fname in fnames:
+				fieldslist.append(fname)
+				if searchpattern == "" or searchpattern == "*":
+					selectline += "(%s=*)" %fname
+				else:
+					selectline += "(%s=*%s*)" %(fname, searchpattern)
+			selectline += ")"
+			ldapid = myLDAP(dir_db_uri)
+			result = ldapid.getldap(selectline, fieldslist)
+			ldapid.close()
 
-		for x in result:
-			[tnum, cn, o, mailn] = ["", "", "", ""]
-			if 'telephoneNumber' in x[1].keys():
-				tnum = x[1]['telephoneNumber'][0].replace(" ", "")
-			elif 'mobile' in x[1].keys():
-				tnum = x[1]['mobile'][0].replace(" ", "")
-			if 'cn' in x[1].keys():
-				cn = x[1]['cn'][0]
-			if 'o' in x[1].keys():
-				o = x[1]['o'][0]
-			if 'mail' in x[1].keys():
-				mailn = x[1]['mail'][0]
-			fullstatlist.append("%s;%s;%s;%s" %(tnum,cn,o,mailn))
+			for x in result:
+				[tnum, cn, o, mailn] = ["", "", "", ""]
+				if 'telephoneNumber' in x[1].keys():
+					tnum = x[1]['telephoneNumber'][0].replace(" ", "")
+				elif 'mobile' in x[1].keys():
+					tnum = x[1]['mobile'][0].replace(" ", "")
+				if 'cn' in x[1].keys():
+					cn = x[1]['cn'][0]
+				if 'o' in x[1].keys():
+					o = x[1]['o'][0]
+				if 'mail' in x[1].keys():
+					mailn = x[1]['mail'][0]
+				if mailn != "":
+					fullstatlist.append("%s;%s;%s;mailto:%s" %(tnum,cn,o,mailn))
+				else:
+					fullstatlist.append("%s;%s;%s;" %(tnum,cn,o))
 	elif dbkind != "":
 		if dir_db_matchingfields == "":
 			log_debug("dir_db_matchingfields is empty - could not proceed directory-search request")
@@ -583,7 +610,7 @@ def build_customers(searchpattern):
 			selectline  = ""
 			for fname in fnames:
 				selectline += "%s, " %fname
-			if searchpattern == "":
+			if searchpattern == "" or searchpattern == "*":
 				whereline = ""
 			else:
 				whereline = " WHERE "
@@ -592,10 +619,10 @@ def build_customers(searchpattern):
 
 			conn = anysql.connect_by_uri(dir_db_uri)
 			cursor = conn.cursor()
-			sql = "SELECT %s FROM %s %s;" %(selectline[:-2],
-							dir_db_tablename,
-							whereline[:-4])
-			cursor.execute(sql)
+			sqlrequest = "SELECT %s FROM %s %s;" %(selectline[:-2],
+							       dir_db_tablename,
+							       whereline[:-4])
+			cursor.execute(sqlrequest)
 			result = cursor.fetchall()
 			conn.close()
 
@@ -726,9 +753,9 @@ def parseSIP(astnum, data, l_sipsock, l_addrsip):
     uri = "sip:%s@%s" %(iaccount, configs[astnum].remoteaddr)
     mycontext = ""
     mysippass = ""
-    if iaccount in configs[astnum].xivosbs.keys():
-	    mycontext = configs[astnum].xivosbs[iaccount][0]
-	    mysippass = configs[astnum].xivosbs[iaccount][1]
+    if iaccount in configs[astnum].xivosb_phoneids.keys():
+	    mycontext = configs[astnum].xivosb_phoneids[iaccount][0]
+	    mysippass = configs[astnum].xivosb_phoneids[iaccount][1]
     md5_r1 = md5.md5(iaccount + ":asterisk:" + mysippass).hexdigest()
 
     #print "-----------", iaccount, mysippass
@@ -846,7 +873,7 @@ def parseSIP(astnum, data, l_sipsock, l_addrsip):
 # \return
 def do_sip_register(astnum, l_sipsock):
 	global configs
-	for sipacc in configs[astnum].xivosbs.keys():
+	for sipacc in configs[astnum].xivosb_phoneids.keys():
 		command = xivo_sip.sip_register(configs[astnum],
 						"sip:" + sipacc, 1, "reg_cid@xivopy",
 						2 * xivosb_register_frequency, "")
@@ -906,6 +933,8 @@ def manage_tcp_connection(connid, allow_events):
 		    if allow_events == True:
 			    tcpopens_sb.remove(connid)
 			    log_debug("TCP (SB)  socket closed from %s" %requester)
+			    if requester in ctx_by_requester:
+				    del ctx_by_requester[requester]
 		    else:
 			    tcpopens_php.remove(connid)
 			    log_debug("TCP (PHP) socket closed from %s" %requester)
@@ -965,6 +994,7 @@ def manage_tcp_connection(connid, allow_events):
 			for user in userlist[0].keys():
 				connid[0].send("%s %s\n" %(user, userlist[0][user]))
 			userlist_lock.release()
+			connid[0].send("%s\n" %str(ctx_by_requester))
 		except Exception, exc:
 			userlist_lock.release()
 			log_debug("--- exception --- UI connection [%s] : KO when sending to %s : %s"
@@ -1051,7 +1081,7 @@ def manage_tcp_connection(connid, allow_events):
 			try:
 				if len(l) == 1: l.append("")
 				spattern = ' '.join(l[1:])
-				connid[0].send(build_customers(spattern))
+				connid[0].send(build_customers(requester, spattern))
 			except Exception, exc:
 				log_debug("--- exception --- UI connection : a problem occured when sending to %s : %s"
 					  %(requester, str(exc)))
@@ -1119,25 +1149,25 @@ def manage_tcp_connection(connid, allow_events):
 			if idassrc == -1:
 				connid[0].send("asterisk=%s::history KO : no such asterisk id\n" %DAEMON)
 			else:
-                                techno = l2[3]
-                                phoneid = l2[4]
-				phonenum = l2[5]
-				hist = update_history_call(idassrc, techno, phoneid, phonenum, l[2], l[3])
-				repstr = "history="
-				separ = ";"
-				for x in hist:
-					try:
-						repstr += x[0].isoformat() + separ + x[1] \
-							  + separ + str(x[10]) + separ + x[11]
-					except:
-						repstr += x[0] + separ + x[1] \
-							  + separ + str(x[10]) + separ + x[11]
-                                        if l[3]=='0':
-                                            repstr += separ + x[3] + separ + 'OUT'
-                                        else:   # display callerid for incoming calls
-                                            repstr += separ + x[1] + separ + 'IN'
-					repstr += ";"
 				try:
+					techno = l2[3]
+					phoneid = l2[4]
+					phonenum = l2[5]
+					hist = update_history_call(idassrc, techno, phoneid, phonenum, l[2], l[3])
+					repstr = "history="
+					separ = ";"
+					for x in hist:
+						try:
+							repstr += x[0].isoformat() + separ + x[1] \
+								  + separ + str(x[10]) + separ + x[11]
+						except:
+							repstr += x[0] + separ + x[1] \
+								  + separ + str(x[10]) + separ + x[11]
+						if l[3]=='0':
+							repstr += separ + x[3] + separ + 'OUT'
+						else:   # display callerid for incoming calls
+							repstr += separ + x[1] + separ + 'IN'
+						repstr += ";"
 					connid[0].send(repstr + "\n")
 				except Exception, exc:
 					log_debug("--- exception --- (%s) error : history : (client %s) : %s"
@@ -1152,6 +1182,7 @@ def manage_tcp_connection(connid, allow_events):
 				repstr = "loginKO="
 			else:
 				repstr = "loginok=" + user.get('context') + ";" + user.get('phonenum') + "\r\n"
+			ctx_by_requester[requester] = [astnum, user.get('context')]
 			userlist_lock.release()
 			connid[0].send(repstr)
 		elif allow_events == False: # i.e. if PHP-style connection
@@ -2053,7 +2084,8 @@ class AsteriskRemote:
 		     ami_pass = "xivouser",
 		     portsipclt = 5005,
 		     portsipsrv = 5060,
-		     mysipaccounts = "",
+		     sipaccounts = "",
+		     contexts = "",
 		     cdr_db_uri = ""):
 
 		self.astid = astid
@@ -2068,10 +2100,18 @@ class AsteriskRemote:
 		self.ami_login = ami_login
 		self.ami_pass = ami_pass
 		self.cdr_db_uri = cdr_db_uri
-		self.xivosbs = {}
+
+		self.xivosb_phoneids = {}
+		self.xivosb_contexts = {}
+		if sipaccounts != "":
+			for sipacc in sipaccounts.split(","):
+				self.xivosb_phoneids[sipacc] = ["", ""]
+
 		self.contexts = {}
-		for msa in mysipaccounts.split(","):
-			self.xivosbs[msa] = ["", ""]
+		if contexts != "":
+			for ctx in contexts.split(","):
+				if ctx in xivoconf.sections():
+					self.contexts[ctx] = dict(xivoconf.items(ctx))
 
 
 	## \brief Function to load sso.php user file.
@@ -2104,12 +2144,21 @@ class AsteriskRemote:
 				[sso_tech, sso_phoneid, sso_passwd, sso_dummy,
 				 sso_phonenum, sso_l5, sso_l6,
 				 fullname, firstname, lastname, sso_context] = l
-				for sipacc in self.xivosbs.keys():
+				for sipacc in self.xivosb_phoneids.keys():
 					if sipacc == sso_phoneid:
-						if sso_context not in self.contexts.keys():
-							self.xivosbs[sso_phoneid] = [sso_context, sso_passwd]
-							self.contexts[sso_context] = sso_phoneid
-			log_debug("%s : found contexts = %s / xivosbs = %s" %(self.astid, str(self.contexts), str(self.xivosbs)))
+						# if this phoneid is a "xivosb" one
+						if sso_context not in self.xivosb_contexts.keys():
+							# only ONE xivosb is allowed for a given context
+							# and a xivo_daemon
+							self.xivosb_phoneids[sso_phoneid] = [sso_context, sso_passwd]
+							self.xivosb_contexts[sso_context] = sso_phoneid
+						elif self.xivosb_phoneids[sso_phoneid][0] == "":
+							# removes this xivosb account from the list if no context has been filled
+							del self.xivosb_phoneids[sso_phoneid]
+			log_debug("%s : xivosb_contexts = %s"
+				  %(self.astid, str(self.xivosb_contexts)))
+			log_debug("%s : xivosb_phoneids = %s"
+				  %(self.astid, str(self.xivosb_phoneids)))
 		except Exception, exc:
 			log_debug("--- exception --- %s : a problem occured when building phone list and xivosb accounts : %s" %(self.astid, str(exc)))
 			return numlist
@@ -2118,35 +2167,32 @@ class AsteriskRemote:
 			# updates other accounts
 			for l in phone_list:
 				try:
+					# line is protocol | username | password | rightflag |
+					#         phone number | initialized | disabled(=1) | callerid |
+					#         firstname | lastname | context
 					[sso_tech, sso_phoneid, sso_passwd, sso_dummy,
 					 sso_phonenum, sso_l5, sso_l6,
 					 fullname, firstname, lastname, sso_context] = l
 					
-					enabling = True
-					sipaccount = ""
-					if sso_context in self.contexts.keys():
-						sipaccount = self.contexts[sso_context]
-					if sipaccount == "":
-						enabling = False
+					if sso_context in self.xivosb_contexts.keys():
+						sipaccount = self.xivosb_contexts[sso_context]
+
+						# the <b> tag inside the string disables the drag&drop of the widget (4.2.3 ok, 4.2.1 ko)
+						# fullname = firstname + " " + lastname + " <b>" + sso_phoneid + "</b>"
+						fullname = firstname + " " + lastname + " <b>" + sso_phonenum + "</b>"
 					
-					# the <b> tag inside the string disables the drag&drop of the widget (4.2.3 ok, 4.2.1 ko)
-					# fullname = firstname + " " + lastname + " <b>" + sso_phoneid + "</b>"
-					fullname = firstname + " " + lastname + " <b>" + sso_phonenum + "</b>"
-					
-					# line is protocol | username | password | rightflag |
-					#         phone number | initialized | disabled(=1) | callerid
-					if sso_l5 == "1" and enabling and sso_phoneid != sipaccount and sso_phonenum != "":
-						if sso_tech == "sip":
-							argg = "SIP/" + sso_phoneid
-							adduser(astn, sso_tech + sso_phoneid, sso_passwd, sso_context, sso_phonenum)
-						elif sso_tech == "iax":
-							argg = "IAX2/" + sso_phoneid
-						elif sso_tech == "misdn":
-							argg = "mISDN/" + sso_phoneid
-						elif sso_tech == "zap":
-							argg = "Zap/" + sso_phoneid
-							adduser(astn, sso_tech + sso_phoneid, sso_passwd, sso_context, sso_phonenum)
-						numlist[argg] = fullname, firstname, lastname, sso_phonenum, sso_context
+						if sso_l5 == "1" and sso_phoneid != sipaccount and sso_phonenum != "":
+							if sso_tech == "sip":
+								argg = "SIP/" + sso_phoneid
+								adduser(astn, sso_tech + sso_phoneid, sso_passwd, sso_context, sso_phonenum)
+							elif sso_tech == "iax":
+								argg = "IAX2/" + sso_phoneid
+							elif sso_tech == "misdn":
+								argg = "mISDN/" + sso_phoneid
+							elif sso_tech == "zap":
+								argg = "Zap/" + sso_phoneid
+								adduser(astn, sso_tech + sso_phoneid, sso_passwd, sso_context, sso_phonenum)
+							numlist[argg] = fullname, firstname, lastname, sso_phonenum, sso_context
 				except Exception, exc:
 					log_debug("--- exception --- %s : a problem occured when building phone list : %s" %(self.astid, str(exc)))
 					return numlist
@@ -2519,10 +2565,8 @@ while True: # loops over the reloads
 	with_sip = True
 	with_advert = False
 	nukeast = False
-	dir_db_uri = ""
-	dir_db_displayfields = ""
-	dir_db_matchingfields = ""
-	dir_db_tablename = ""
+
+	ctx_by_requester = {}
 	
 	xivoconf = ConfigParser.ConfigParser()
 	xivoconf.readfp(open(xivoconffile))
@@ -2557,14 +2601,6 @@ while True: # loops over the reloads
 		gui_filename = xivoconf_general["guifile"]
 	if "nukeast" in xivoconf_general:
 		nukeast = True
-	if "dir_db_uri" in xivoconf_general:
-		dir_db_uri = xivoconf_general["dir_db_uri"]
-	if "dir_db_displayfields" in xivoconf_general:
-		dir_db_displayfields = xivoconf_general["dir_db_displayfields"]
-	if "dir_db_matchingfields" in xivoconf_general:
-		dir_db_matchingfields = xivoconf_general["dir_db_matchingfields"]
-	if "dir_db_tablename" in xivoconf_general:
-		dir_db_tablename = xivoconf_general["dir_db_tablename"]
 
 	if "noami" in xivoconf_general: with_ami = False
 	if "nosip" in xivoconf_general: with_sip = False
@@ -2592,6 +2628,7 @@ while True: # loops over the reloads
 			ami_pass = "xivouser"
 			sip_port = 5060
 			sip_presence = ""
+			contexts = ""
 			cdr_db_uri = ""
 
 			if "localaddr" in xivoconf_local:
@@ -2614,6 +2651,8 @@ while True: # loops over the reloads
 				sip_port = int(xivoconf_local["sip_port"])
 			if "sip_presence" in xivoconf_local:
 				sip_presence = xivoconf_local["sip_presence"]
+			if "contexts" in xivoconf_local:
+				contexts = xivoconf_local["contexts"]
 			if "cdr_db_uri" in xivoconf_local:
 				cdr_db_uri = xivoconf_local["cdr_db_uri"]
 
@@ -2629,6 +2668,7 @@ while True: # loops over the reloads
 						      port_switchboard_base_sip + n,
 						      sip_port,
 						      sip_presence,
+						      contexts,
 						      cdr_db_uri))
 
 			ip_reverse_sht[ipaddress] = n
