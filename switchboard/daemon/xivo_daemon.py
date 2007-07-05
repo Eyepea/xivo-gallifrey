@@ -125,6 +125,9 @@ import time
 import urllib
 import _sre
 
+# fiche
+import sendfiche
+
 # XIVO lib-python modules initialization
 from xivo import ConfigPath
 from xivo.ConfigPath import *
@@ -174,6 +177,7 @@ DUMMY_STATE = ""
 # The user identifier will likely be its phone number
 
 PIDFILE = '/var/run/xivo_daemon.pid'
+#PIDFILE = './xivo_daemon.pid'
 BUFSIZE_LARGE = 8192
 BUFSIZE_UDP = 2048
 BUFSIZE_ANY = 512
@@ -2360,43 +2364,76 @@ class LoginHandler(SocketServer.StreamRequestHandler):
 # \brief Gives client identification to the profile pusher.
 # The connection is kept alive so several requests can be made on the same open TCP connection.
 class IdentRequestHandler(SocketServer.StreamRequestHandler):
-	def handle(self):
-		list0 = self.rfile.readline().strip().split(' ')
-		log_debug("IdentRequestHandler (TCP) : client = %s:%d / %s"
-			  %(self.client_address[0],self.client_address[1],str(list0)))
-		retline = 'ERROR\r\n'
-		if list0[0] == 'QUERY' and len(list0) == 2:
-			user = list0[1]
-			try:
-				astnum = ip_reverse_sht[self.client_address[0]]
-				userlist_lock.acquire()
-				e = finduser(astnum, user)
-				if e == None:
-					retline = 'ERROR USER <' + user + '> NOT FOUND\r\n'
-				else:
-					if e.has_key('ip') and e.has_key('port') \
-					       and e.has_key('state') and e.has_key('sessionid') \
-					       and e.has_key('sessiontimestamp'):
-						if time.time() - e.get('sessiontimestamp') > xivoclient_session_timeout:
-							retline = 'ERROR USER SESSION EXPIRED for <%s>\r\n' %user
-						else:
-							retline = 'USER ' + user
-							retline += ' SESSIONID ' + e.get('sessionid')
-							retline += ' IP ' + e.get('ip')
-							retline += ' PORT ' + e.get('port')
-							retline += ' STATE ' + e.get('state')
-							retline += '\r\n'
-					else:
-						retline = 'ERROR USER SESSION NOT DEFINED for <%s>\r\n' %user
-				userlist_lock.release()
-			except Exception, exc:
-				retline = 'ERROR (exception) : %s\r\n' %(str(exc))
-		try:
-			self.wfile.write(retline)
-		except Exception, exc:
-			# something bad happened.
-			log_debug("IdentRequestHandler/Exception: " + str(exc))
-			return
+    def handle(self):
+        line = self.rfile.readline().strip()
+        list0 = line.split(' ')
+        log_debug("IdentRequestHandler (TCP) : client = %s:%d / %s"
+                  %(self.client_address[0],self.client_address[1],str(list0)))
+        retline = 'ERROR\r\n'
+        # PUSH user callerid msg
+        m = re.match("PUSH (\S+) (\S+) ?(.*)", line)
+        if m != None:
+            user = m.group(1)
+            callerid = m.group(2)
+            msg = m.group(3)
+            #print 'user', user, 'callerid', callerid, 'msg="%s"'%msg
+            userlist_lock.acquire()
+            try:
+                #astnum = ip_reverse_sht[self.client_address[0]]
+                astnum = 0
+                e = finduser(astnum, user)
+                if e == None:
+                    retline = 'ERROR USER <' + user + '> NOT FOUND\r\n'
+                else:
+                    if e.has_key('ip') and e.has_key('port') \
+                       and e.has_key('state') and e.has_key('sessionid') \
+                       and e.has_key('sessiontimestamp'):
+                        if time.time() - e.get('sessiontimestamp') > xivoclient_session_timeout:
+                            retline = 'ERROR USER SESSION EXPIRED for <%s>\r\n' %user
+                        else:
+                            retline = 'USER %s STATE %s\r\n'%(user,e.get('state'))
+                            #print 'sendfiche', e, callerid, msg
+                            sendfiche.sendficheasync(e, callerid, msg)
+                    else:
+                        retline = 'ERROR USER SESSION NOT DEFINED for <%s>\r\n' %user
+            except Exception, exc:
+                #print "EXCEPTION:", str(exc)
+                retline = 'ERROR (exception) : %s\r\n' %(str(exc))
+            userlist_lock.release()
+        # QUERY user   (ex: QUERY sipnanard)
+        if list0[0] == 'QUERY' and len(list0) == 2:
+            user = list0[1]
+            userlist_lock.acquire()
+            try:
+                #astnum = ip_reverse_sht[self.client_address[0]]
+                astnum = 0
+                e = finduser(astnum, user)
+                if e == None:
+                    retline = 'ERROR USER <' + user + '> NOT FOUND\r\n'
+                else:
+                    if e.has_key('ip') and e.has_key('port') \
+                       and e.has_key('state') and e.has_key('sessionid') \
+                       and e.has_key('sessiontimestamp'):
+                        if time.time() - e.get('sessiontimestamp') > xivoclient_session_timeout:
+                            retline = 'ERROR USER SESSION EXPIRED for <%s>\r\n' %user
+                        else:
+                            retline = 'USER ' + user
+                            retline += ' SESSIONID ' + e.get('sessionid')
+                            retline += ' IP ' + e.get('ip')
+                            retline += ' PORT ' + e.get('port')
+                            retline += ' STATE ' + e.get('state')
+                            retline += '\r\n'
+                    else:
+                        retline = 'ERROR USER SESSION NOT DEFINED for <%s>\r\n' %user
+            except Exception, exc:
+                retline = 'ERROR (exception) : %s\r\n' %(str(exc))
+            userlist_lock.release()
+        try:
+            self.wfile.write(retline)
+        except Exception, exc:
+            # something bad happened.
+            log_debug("IdentRequestHandler/Exception: " + str(exc))
+            return
 
 
 ## \class KeepAliveHandler
