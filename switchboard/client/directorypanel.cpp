@@ -103,25 +103,27 @@ void DirectoryPanel::setSearchResponse(const QString & resp)
 	//qDebug() << "setSearchResponse()" << resp;
 	QStringList items = resp.split(";");
 	int ncolumns = items[0].toInt();
-	int nrows = ((items.size() - 1) / ncolumns) - 1;
-	m_table->setColumnCount(ncolumns);
-	m_table->setRowCount(nrows);
-	//qDebug() << items.size() << nrows << ncolumns ;
-	QStringList labelList;
-	for(i = 1; i <= ncolumns; i++)
-		labelList << items[i];
-	m_table->setHorizontalHeaderLabels( labelList );
-	for(y = 0; y < nrows; y++)
-		for(x = 0; x < ncolumns; x++)
-		{
-			QTableWidgetItem * item = new QTableWidgetItem(items[1+(1+y)*ncolumns+x]);
-			item->setFlags( Qt::ItemIsSelectable | Qt::ItemIsEnabled );
-			//item->setToolTip();
-			//item->setStatusTip();
-			//qDebug() << x << y << item->flags();
-			m_table->setItem( y, x, item );
-			//qDebug() << m_table->cellWidget( y, x );
-		}
+	if(ncolumns > 0) {
+		int nrows = ((items.size() - 1) / ncolumns) - 1;
+		m_table->setColumnCount(ncolumns);
+		m_table->setRowCount(nrows);
+		//qDebug() << items.size() << nrows << ncolumns ;
+		QStringList labelList;
+		for(i = 1; i <= ncolumns; i++)
+			labelList << items[i];
+		m_table->setHorizontalHeaderLabels( labelList );
+		for(y = 0; y < nrows; y++)
+			for(x = 0; x < ncolumns; x++)
+				{
+					QTableWidgetItem * item = new QTableWidgetItem(items[1+(1+y)*ncolumns+x]);
+					item->setFlags( Qt::ItemIsSelectable | Qt::ItemIsEnabled );
+					//item->setToolTip();
+					//item->setStatusTip();
+					//qDebug() << x << y << item->flags();
+					m_table->setItem( y, x, item );
+					//qDebug() << m_table->cellWidget( y, x );
+				}
+	}
 }
 
 /*! \brief start the search process
