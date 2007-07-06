@@ -4,7 +4,7 @@
 # $Revision: 703 $
 # $Date: 2007-05-23 17:13:57 +0200 (mer, 23 mai 2007) $
 #
-# Authors : Thomas Bernard, Corentin Le Gall
+# Authors : Thomas Bernard, Corentin Le Gall, Sylvain Boily
 #           Proformatique
 #           67, rue Voltaire
 #           92800 PUTEAUX
@@ -25,19 +25,25 @@
 # \brief XIVO CTI pushing AGI
 #
 
-import sys
-# XIVO modules
-import socket
+CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
+CONFIG_LIB_PATH = 'py_lib_path'
 
-## \brief Secures an output string for the AGI VERBOSE
-# \param s string to secure
-def agi_escape_string(s):
-    return s.replace('\\', '\\\\').replace('"', '\\"').replace('\n', ' ')
+# XIVO modules
+import sys
+import socket
+from xivo import ConfigPath
+from xivo.ConfigPath import *
+ConfiguredPathHelper(CONFIG_FILE, CONFIG_LIB_PATH)
+import ConfigParser
+from ConfigDict import *
+from agi import *
+
+agi = AGI()
 
 ## \brief Logs a message into the Asterisk CLI
 # \param txt message to send to the CLI
 def print_verbose(txt):
-    print "VERBOSE \"xivo_push : %s\"" % agi_escape_string(txt)
+    agi.verbose("xivo_push : %s" % txt)
 
 # ==============================================================================
 # Main Code starts here
@@ -67,7 +73,7 @@ list = fs.readline().strip().split(' ')
 fs.close()
 #print list
 if len(list) < 4 or list[0] == 'ERROR':
-	print_verbose("Could not localize user %s" %user)
+	print_verbose("Could not localize user %s" % user)
 	sys.exit(3)
 else:
     # USER xxx STATE xxx
@@ -75,22 +81,16 @@ else:
 
 # return status
 if clientstate == "available":
-	print "SET VARIABLE STATUS 0"
+	agi.set_variable('STATUS', 0)
 elif clientstate == "away":
-	print "SET VARIABLE STATUS 1"
+	agi.set_variable('STATUS', 1)
 elif clientstate == "donotdisturb":
-	print "SET VARIABLE STATUS 2"
+	agi.set_variable('STATUS', 2)
 elif clientstate == "outtolunch":
-	pass
-	#print "SET VARIABLE STATUS 2"
+	agi.set_variable('STATUS', 3)
 elif clientstate == "berightback":
-	pass
-	#print "SET VARIABLE STATUS 2"
+	agi.set_variable('STATUS', 4)
 else:
-	print_verbose("Unknown user's availability status : %s" %clientstate)
+	print_verbose("Unknown user's availability status : %s" % clientstate)
 
-#print "availability is currently :", clientstate
-
-sys.stdout.flush()
-sys.stderr.flush()
-
+# print_verbose("availability is currently : %s" % clientstate)
