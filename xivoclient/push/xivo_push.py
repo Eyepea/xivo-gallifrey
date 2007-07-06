@@ -1,10 +1,10 @@
 #! /usr/bin/python
 # vim: set fileencoding=utf-8 :
 #
-# $Revision$
-# $Date$
+# $Revision: 703 $
+# $Date: 2007-05-23 17:13:57 +0200 (mer, 23 mai 2007) $
 #
-# Authors : Thomas Bernard, Corentin Le Gall
+# Authors : Thomas Bernard, Corentin Le Gall, Sylvain Boily
 #           Proformatique
 #           67, rue Voltaire
 #           92800 PUTEAUX
@@ -25,210 +25,25 @@
 # \brief XIVO CTI pushing AGI
 #
 
-# debian.org modules
-import ConfigParser
-import ldap
-import os
-import MySQLdb
-import sqlite
-import site
-import socket
-import string
-import sys
-import _sre
+CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
+CONFIG_LIB_PATH = 'py_lib_path'
+
 # XIVO modules
-import generefiche
+import sys
+import socket
+from xivo import ConfigPath
+from xivo.ConfigPath import *
+ConfiguredPathHelper(CONFIG_FILE, CONFIG_LIB_PATH)
+import ConfigParser
+from ConfigDict import *
+from agi import *
 
-## \class Info
-class Info:
-	def __init__(self, ititle, itype, ivalue):
-		self.title = ititle
-		self.type = itype
-		self.value = ivalue
-	def getTitle(self):
-		return self.title
-	def getType(self):
-		return self.type
-	def getValue(self):
-		return self.value
-
-## \class myLDAP
-class myLDAP:
-	def __init__(self, ihost, iport, iuser, ipass):
-		try:
-			self.l = ldap.initialize("ldap://%s:%s" %(ihost, iport))
-			self.l.protocol_version = ldap.VERSION3
-			self.l.simple_bind_s(iuser, ipass)
-			
-		except ldap.LDAPError, e:
-			print e
-			sys.exit()
-
-	def getldap(self, ibase, filter, attrib):
-		try:
-			resultat = self.l.search_s(ibase,
-						   ldap.SCOPE_SUBTREE,
-						   filter,
-						   attrib)
-			return resultat
-		except ldap.LDAPError, e:
-			print e
-
-
-## \brief Secures an output string for the AGI VERBOSE
-# \param s string to secure
-def agi_escape_string(s):
-       return s.replace('\\', '\\\\').replace('"', '\\"').replace('\n', ' ')
-
+agi = AGI()
 
 ## \brief Logs a message into the Asterisk CLI
 # \param txt message to send to the CLI
 def print_verbose(txt):
-	print "VERBOSE \"xivo_push : %s\"" % agi_escape_string(txt)
-
-
-## \brief Returns the kind of database
-# \param cfg
-def get_dbkind(cfg):
-	try:
-		dbkind = cfg.get('general', 'db')
-	except:
-		dbkind = ""
-	return dbkind
-
-
-## \brief Returns informations fetched from the LDAP database
-# \param config
-# \param cid
-def get_ldap_infos(config, cid):
-	[callid, mail, name, firstname, company] = ["", "", "", "", ""]
-	ldapid = myLDAP(config.get('general', 'host'),
-			config.get('general', 'port'),
-			config.get('general', 'user'),
-			config.get('general', 'pass'))
-	result = ldapid.getldap(config.get('general', 'dbname'),
-				"(|(telephonenumber=%s)(mobile=%s)(pager=%s))" %(cid,cid,cid),
-				['cn','mail','sn','givenName','o'])
-	try:
-		who = result[0][1]
-		if 'cn' in who.keys():        callid    = who['cn'][0]
-		sys.stdout.write("SET CALLERID \"%s\"\n" %callid)
-		if 'mail' in who.keys():      mail      = who['mail'][0]
-		if 'givenName' in who.keys(): firstname = who['givenName'][0]
-		if 'sn' in who.keys():        name      = who['sn'][0]
-		if 'o' in who.keys():         company   = who['o'][0]
-	except:
-		print "No callerid from OX"
-	return [callid, mail, name, firstname, company]
-
-
-## \brief Returns informations fetched from the MySQL database
-# \param config configuration informations
-# \param cid callerid requested
-def get_mysql_infos(config, cid):
-	results = []
-	try:
-		conn = MySQLdb.connect(host = config.get('general', 'host'),
-				      port = int(config.get('general', 'port')),
-				      user = config.get('general', 'user'),
-				      passwd = config.get('general', 'pass'),
-				      db = config.get('general', 'dbname'))
-		cursor = conn.cursor()
-
-		searchname = config.get('general', 'dbmatch')
-		table = config.get('general', 'dbtable')
-		sql = "SELECT * FROM %s WHERE %s REGEXP '%s' LIMIT 1;" %(table,searchname,cid)
-	        cursor.execute(sql)
-		results = [cursor.fetchone()] # vs. fetchall() if needed
-		conn.close()
-
-	except Exception, e:
-		print_verbose("Connection to MySQL failed")
-
-	return results
-
-
-## \brief Returns informations fetched from the sqlite database
-# \param config configuration informations
-# \param cid callerid requested
-def get_sqlite_infos(config, cid):
-	results = []
-	try:
-		conn = sqlite.connect(db = config.get('general', 'dbname'))
-		cursor = conn.cursor()
-
-		searchname = config.get('general', 'dbmatch')
-		table = config.get('general', 'dbtable')
-		sql = "SELECT * FROM %s WHERE %s = '%s' LIMIT 1;" %(table,searchname,cid)
-	        cursor.execute(sql)
-		results = [cursor.fetchone()] # vs. fetchall() if needed
-		conn.close()
-
-	except Exception, e:
-		print_verbose("Connection to sqlite failed")
-
-	return results
-
-
-## \brief fills the variable fields according to the recetived data
-# \param callerid
-# \param x
-def set_fields_from_resultline(callerid, x):
-	field = {}
-	try:
-		field["fullnumber"] = x[0]
-		field["agency"]     = x[1]
-		field["refnumber"]  = x[2]
-		field["name"]       = x[3]
-		field["zipcode"]    = x[4]
-		field["town"]       = x[5]
-		field["medal"]      = x[6]
-	except Exception, e:
-		print_verbose("Customer not found in mysql db")
-		if len(callerid) == 9:
-			field["fullnumber"] = callerid
-		else:
-			field["fullnumber"] = ""
-
-	if len(field["fullnumber"]) == 9:
-		tmpnum = "0" + field["fullnumber"][0] + "." + \
-			 field["fullnumber"][1] + field["fullnumber"][2] + "." + \
-			 field["fullnumber"][3] + field["fullnumber"][4] + "." + \
-			 field["fullnumber"][5] + field["fullnumber"][6] + "." + \
-			 field["fullnumber"][7] + field["fullnumber"][8]
-		field["fullnumber"] = tmpnum
-
-	return field
-
-
-## \brief Builds the contents of the Sheet according to titles and default values
-# \param items
-# \param formats
-# \param flds
-def make_fields(items, formats, flds):
-	liste = []
-	for field_to_display in items:
-		# a "/" character splits the order of the field in the displayed popup
-		# and its kind
-		if field_to_display[0].find("|") >= 0:
-			kindoffield  = field_to_display[0].split("|")[1]
-
-			fieldtype    = field_to_display[1].split("|")[0]
-			argum        = field_to_display[1].split("|")[1]
-			defaultvalue = field_to_display[1].split("|")[2]
-
-			prestr = ""
-			poststr = ""
-			if kindoffield in formats.keys():
-				prestr = formats[kindoffield].split("|")[0]
-				poststr = formats[kindoffield].split("|")[1]
-			value = prestr + defaultvalue + poststr
-			if kindoffield in flds:
-				if flds[kindoffield] != "":
-					value = prestr + flds[kindoffield] + poststr
-			liste.append(Info(argum, fieldtype, value))
-	return liste
-
+    agi.verbose("xivo_push : %s" % txt)
 
 # ==============================================================================
 # Main Code starts here
@@ -247,98 +62,35 @@ else:
 	if len(sys.argv) > 6: msgext = sys.argv[6]
 	else: msgext = ""
 
-# 1/N : connects to the server to get IP address and port of the client
-z = generefiche.getuserlocation(shost, sport, user)
-if z == None:
-	print_verbose("Could not localize user %s" %user)
+# send the PUSH command to the server
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.connect((shost, sport))
+fs = s.makefile('r')
+s.send('PUSH ' + user + ' ' + callerid + ' ' + msgext + '\r\n')
+#s.send('QUERY ' + user + '\r\n')
+s.close()
+list = fs.readline().strip().split(' ')
+fs.close()
+#print list
+if len(list) < 4 or list[0] == 'ERROR':
+	print_verbose("Could not localize user %s" % user)
 	sys.exit(3)
-sessionid = z.get('sessionid')
-clientaddress = z.get('address')
-clientstate = z.get('state')
-
-# 2/N : opens the xivo_push.conf config file
-config = ConfigParser.ConfigParser()
-try:
-	config.readfp(open("/etc/asterisk/xivo_push.conf"))
-except:
-	try:
-		config.readfp(open("xivo_push.conf"))
-	except:
-		print_verbose("no xivo_push.conf file found")
-		sys.exit(2)
-
-# 3/N : reads the kind of database and the sheet's format
-databasekind = get_dbkind(config)
-fitems = config.items("fiche")
-fitems.sort()
-fformats = {}
-if "formats" in config.sections() :
-	for x in config.items("formats"):
-		fformats[x[0]] = x[1]
-
-# 4/N : reads the informations from the database and fills them into one ore more lists
-
-liste = []
-fields = {}
-
-if databasekind == "ldap":
-	fields["req_cid"] = callerid
-	fields["callidname"], fields["mail"], fields["name"], fields["firstname"], fields["company"] = get_ldap_infos(config, callerid)
-	if callerid in config.options('photo'):
-		fields["picture"] = config.get('photo', callerid)
-	liste = make_fields(fitems, fformats, fields)
-elif databasekind == "mysql" or databasekind == "sqlite":
-	listes = []
-	if databasekind == "mysql":
-		results = get_mysql_infos(config, callerid)
-	if databasekind == "sqlite":
-		results = get_sqlite_infos(config, callerid)
-	print_verbose("%d result(s) found for %s" %(len(results),callerid))
-	if len(results) > 0:
-		for z in xrange(len(results)):
-			fields = set_fields_from_resultline(callerid, results[z])
-			fields["req_cid"] = callerid
-			liste = make_fields(fitems, fformats, fields)
-			listes.append(liste)
-	else:
-		fields["req_cid"] = callerid
-		liste = make_fields(fitems, fformats, fields)
 else:
-	print_verbose("Database type %s not supported" %databasekind)
-	sys.exit(3)
+    # USER xxx STATE xxx
+    clientstate = list[3]
 
-# 5/N : sends the sheet to the connected peer
-
+# return status
 if clientstate == "available":
-	print "SET VARIABLE STATUS 0"
-
-	# this could be replaced by a loop if needed
-	fiche = generefiche.Fiche(sessionid)
-	fiche.setmessage(msgext)
-	for x in liste:
-		fiche.addinfo(x.getTitle(), x.getType(), x.getValue())
-	# connect to the client and send the stuff !
-	print "Sending Profile"
-	if fiche.sendtouser(clientaddress):
-		print "Profile sent"
-	else:
-		print_verbose("Could not send profile to user")
-
+	agi.set_variable('STATUS', 0)
 elif clientstate == "away":
-	print "SET VARIABLE STATUS 1"
+	agi.set_variable('STATUS', 1)
 elif clientstate == "donotdisturb":
-	print "SET VARIABLE STATUS 2"
+	agi.set_variable('STATUS', 2)
 elif clientstate == "outtolunch":
-	pass
-	#print "SET VARIABLE STATUS 2"
+	agi.set_variable('STATUS', 3)
 elif clientstate == "berightback":
-	pass
-	#print "SET VARIABLE STATUS 2"
+	agi.set_variable('STATUS', 4)
 else:
-	print_verbose("Unknown user's availability status : %s" %clientstate)
+	print_verbose("Unknown user's availability status : %s" % clientstate)
 
-print "availability is currently :", clientstate
-
-sys.stdout.flush()
-sys.stderr.flush()
-
+# print_verbose("availability is currently : %s" % clientstate)
