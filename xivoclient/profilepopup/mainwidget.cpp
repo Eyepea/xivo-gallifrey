@@ -267,8 +267,13 @@ void MainWidget::systrayActivated(QSystemTrayIcon::ActivationReason reason)
 		}
 		else
 		{
+#ifdef Q_WS_MAC
+			// try to reduce potential problems under MacOS X
+			setVisible(true);
+#else
 			// Toggle visibility
 			setVisible(!isVisible());
+#endif
 			if( isVisible() )
 			{
 				showNormal();
@@ -406,8 +411,10 @@ void MainWidget::hideEvent(QHideEvent *event)
 	//	event->ignore();
 	//else
 		event->accept();
+#ifndef Q_WS_MAC
 	if( QSystemTrayIcon::isSystemTrayAvailable() )
 		setVisible(false);
+#endif
 }
 
 /*! \brief Catch the Close event
@@ -420,9 +427,11 @@ void MainWidget::closeEvent(QCloseEvent *event)
 {
 	qDebug() << "MainWidget::closeEvent()";
 	//event->accept();
+#ifndef Q_WS_MAC
 	if( QSystemTrayIcon::isSystemTrayAvailable() )
 		setVisible( false );
 	else
+#endif
 		showMinimized();
 	event->ignore();
 }
