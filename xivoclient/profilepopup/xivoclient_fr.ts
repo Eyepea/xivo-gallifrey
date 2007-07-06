@@ -23,27 +23,27 @@
         <translation>Mot de passe</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="91"/>
+        <location filename="confwidget.cpp" line="101"/>
         <source>Autoconnect at startup</source>
         <translation>Connexion au démarrage</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="94"/>
+        <location filename="confwidget.cpp" line="104"/>
         <source>Keep alive interval</source>
         <translation>Délai de maintien de la connexion</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="99"/>
+        <location filename="confwidget.cpp" line="109"/>
         <source>Try to reconnect</source>
         <translation>Reconnexion automatique</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="102"/>
+        <location filename="confwidget.cpp" line="112"/>
         <source>Try to reconnect interval</source>
         <translation>Délai de reconnexion</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="108"/>
+        <location filename="confwidget.cpp" line="118"/>
         <source>Tab limit</source>
         <translation>Nombre maximum d&apos;onglets</translation>
     </message>
@@ -57,16 +57,21 @@
         <source>Asterisk Id name</source>
         <translation type="unfinished">Serveur Téléphonique</translation>
     </message>
+    <message>
+        <location filename="confwidget.cpp" line="85"/>
+        <source>TCP Mode (for NAT traversal)</source>
+        <translation type="unfinished">Mode TCP (pour réseaux NAT)</translation>
+    </message>
 </context>
 <context>
     <name>Engine</name>
     <message>
-        <location filename="engine.cpp" line="120"/>
+        <location filename="engine.cpp" line="125"/>
         <source>Unable to start the server: %1.</source>
         <translation>Impossible de se connecter au serveur: %1.</translation>
     </message>
     <message>
-        <location filename="engine.cpp" line="118"/>
+        <location filename="engine.cpp" line="123"/>
         <source>Critical error</source>
         <translation>Erreur critique</translation>
     </message>

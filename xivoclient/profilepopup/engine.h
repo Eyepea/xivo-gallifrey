@@ -64,6 +64,8 @@ public:
 	void setKeepaliveinterval(uint);	//!< set keep alive interval
 	uint trytoreconnectinterval() const;	//!< try to reconnect interval
 	void setTrytoreconnectinterval(uint);	//!< set try to reconnect interval
+	bool tcpmode() const { return m_tcpmode; };	//!< get tcp mode flag
+	void setTcpmode(bool b) { m_tcpmode = b; };	//!< set tcp mode flag
 	const QString & getAvailState() const {return m_availstate;} //!< returns availability status
 	void sendMessage(const QString &);      //!< Sends an instant message
 	const QString & getCapabilities() const {return m_capabilities;} //!< returns capabilities
@@ -100,6 +102,7 @@ private:
 	// parameters to connect to server
 	QString m_serverip;		//!< Host to the login server
 	ushort m_loginport;	//!< TCP port (UDP port for keep alive is +1)
+	bool m_tcpmode;	//!< use a unique outgoing TCP connection for everything
 	QString m_asterisk;		//!< Host to the login server
 	QString m_login;		//!< User login
 	QString m_passwd;		//!< User password

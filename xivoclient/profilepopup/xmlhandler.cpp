@@ -102,11 +102,11 @@ bool XmlHandler::endElement( const QString & /*namespaceURI*/,
 		if(m_popup)
 			m_popup->setMessage( m_infoValue );
 	}
-/*	else if( localName == QString("profile") )
+	else if( localName == QString("profile") )
 	{
 		if(m_popup)
 			m_popup->finishAndShow();
-	}*/
+	}
 	return true;
 }
 
@@ -123,8 +123,8 @@ bool XmlHandler::characters( const QString & ch )
 bool XmlHandler::endDocument()
 {
 	qDebug() << "XmlHandler::endDocument()";
-	if(m_popup)
-		m_popup->finishAndShow();
+	//if(m_popup)
+	//	m_popup->finishAndShow();
 	return true;
 }
 

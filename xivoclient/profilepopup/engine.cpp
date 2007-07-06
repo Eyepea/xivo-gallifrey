@@ -64,11 +64,13 @@ Engine::Engine(QObject *parent)
 	         this, SLOT(processLoginDialog()) );
 	connect( &m_loginsocket, SIGNAL(hostFound()),
 	         this, SLOT(serverHostFound()) );
-	initListenSocket();
+	if(!m_tcpmode)
+		initListenSocket();
 	connect( &m_listensocket, SIGNAL(newConnection()),
 	         this, SLOT(handleProfilePush()) );
 	// init UDP socket used for keep alive
-	m_udpsocket.bind();
+	//if(!m_tcpmode)
+		m_udpsocket.bind();
 	connect( &m_udpsocket, SIGNAL(readyRead()),
              this, SLOT(readKeepLoginAliveDatagrams()) );
 	
@@ -78,6 +80,7 @@ Engine::Engine(QObject *parent)
 
 /*!
  * Load settings using QSettings class which is portable.
+ * Use default values when settings are not found.
  */
 void Engine::loadSettings()
 {
@@ -88,6 +91,7 @@ void Engine::loadSettings()
 	m_login = settings.value("engine/login").toString();
 	m_passwd = settings.value("engine/passwd").toString();
 	m_autoconnect = settings.value("engine/autoconnect", false).toBool();
+	m_tcpmode = settings.value("engine/tcpmode", false).toBool();
 	m_availstate = settings.value("engine/availstate", "available").toString();
 	m_keepaliveinterval = settings.value("engine/keepaliveinterval", 20*1000).toUInt();
 	m_trytoreconnect = settings.value("engine/trytoreconnect", false).toBool();
@@ -109,6 +113,7 @@ void Engine::saveSettings()
 	settings.setValue("engine/keepaliveinterval", m_keepaliveinterval);
 	settings.setValue("engine/trytoreconnect", m_trytoreconnect);
 	settings.setValue("engine/trytoreconnectinterval", m_trytoreconnectinterval);
+	settings.setValue("engine/tcpmode", m_tcpmode);
 }
 
 void Engine::initListenSocket()
@@ -376,6 +381,16 @@ void Engine::processLoginDialog()
 	char buffer[256];
 	int len;
 	qDebug() << "Engine::processLoginDialog()";
+	if(m_tcpmode && (m_state == ELogged))
+	{
+		Popup * popup = new Popup(&m_loginsocket, m_sessionid);
+		connect( popup, SIGNAL(destroyed(QObject *)),
+		         this, SLOT(popupDestroyed(QObject *)) );
+		connect( popup, SIGNAL(wantsToBeShown(Popup *)),
+				 this, SLOT(profileToBeShown(Popup *)) );
+		popup->streamNewData();
+		return;
+	}
 	if(!m_loginsocket.canReadLine())
 	{
 		qDebug() << "no line ready to be read";
@@ -390,6 +405,7 @@ void Engine::processLoginDialog()
 		return;
 	}
 	QString readLine = QString::fromAscii(buffer);
+	qDebug() << ">>>" << readLine.trimmed();
 	QString outline;
 	if(readLine.startsWith("Send PASS"))
 	{
@@ -399,9 +415,16 @@ void Engine::processLoginDialog()
 	}
 	else if(readLine.startsWith("Send PORT"))
 	{
-		outline = "PORT ";
-		outline.append(QString::number(m_listenport));
-		outline.append("\r\n");
+		if(m_tcpmode)
+		{
+			outline = "TCPMODE\r\n";
+		}
+		else
+		{
+			outline = "PORT ";
+			outline.append(QString::number(m_listenport));
+			outline.append("\r\n");
+		}
 	}
 	else if(readLine.startsWith("Send STATE"))
 	{
@@ -419,7 +442,8 @@ void Engine::processLoginDialog()
 			m_context = sessionResp[3];
 		if(sessionResp.size() > 4)
 			m_capabilities = sessionResp[4];
-		m_loginsocket.close();
+		if(!m_tcpmode)
+			m_loginsocket.close();
 		setState(ELogged);
 		// start the keepalive timer
 		m_ka_timerid = startTimer(m_keepaliveinterval);

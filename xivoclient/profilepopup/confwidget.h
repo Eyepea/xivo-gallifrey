@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 */
 
-/* $Id: $ */
+/* $Id$ */
 #ifndef __CONFWIDGET_H__
 #define __CONFWIDGET_H__
 
@@ -66,6 +66,7 @@ private:
 	QCheckBox *m_trytoreconnect;	//!< "Try to reconnect" Checkbox
 	QSpinBox *m_tryinterval_sbox;	//!< "Try to reconnect" interval
 	QSpinBox *m_tablimit_sbox;	//!< Maximum number of tabs
+	QCheckBox *m_tcpmode;	//!< Use outgoing TCP connection
 	Engine *m_engine;			//!< Engine object parameters are commited to
 	MainWidget *m_mainwidget;	//!< MainWidget where some parameters are commited to
 };
