@@ -29,10 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QPushButton>
 #include <QRegExp>
 #include <QDebug>
-#include "searchpanel.h"
-#include "peerwidget.h"
 #include "dialpanel.h"
-#include "switchboardengine.h"
 
 /*! \brief Constructor
  */
