@@ -73,6 +73,12 @@ void LogEltWidget::contextMenuEvent(QContextMenuEvent *event)
  */
 void LogEltWidget::callBackPeer()
 {
-	emitDial(m_peer);
+	QStringList qsl1 = m_peer.split("<");
+	if (qsl1.size() > 1) {
+		QStringList qsl2 = qsl1[1].split(">");
+		emitDial(qsl2[0]);
+	} else {
+		emitDial(m_peer);
+	}
 }
 
