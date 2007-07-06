@@ -86,7 +86,12 @@ public:
 	//! returns availability status
 	const QString & getAvailState() const {return m_availstate;}
 	//! set m_enabled
-	void setEnabled(bool b) { m_enabled = b; };
+	void setEnabled(bool b) { 
+		if(b != m_enabled) {
+			m_enabled = b;
+			enabledChanged(b);
+		}
+	};
 	//! get m_enabled
 	bool enabled() { return m_enabled; };
 private:
@@ -95,6 +100,7 @@ private:
 protected:
 	void timerEvent(QTimerEvent *event);
 signals:
+	void enabledChanged(bool);	//!< signal 
 	void logged();	//!< signal emitted when the state becomes ELogged
 	void delogged();	//!< signal emitted when the state becomes ENotLogged
 public slots:

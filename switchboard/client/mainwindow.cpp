@@ -247,6 +247,9 @@ MainWindow::MainWindow(SwitchBoardEngine * engine, LoginEngine * loginengine)
 	// Availability actions :
 	m_availgrp = new QActionGroup( this );
 	m_availgrp->setExclusive(true);
+	m_availgrp->setEnabled(m_loginengine->enabled());
+	connect( m_loginengine, SIGNAL(enabledChanged(bool)),
+	         m_availgrp, SLOT(setEnabled(bool)) );
 
 	m_avact_avail = new QAction( tr("&Available"), this );
 	m_avact_avail->setCheckable(true);
