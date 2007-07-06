@@ -192,8 +192,8 @@ def make_fields(items, formats, flds):
 # opens the xivo_push.conf config file
 config = ConfigParser.ConfigParser()
 try:
-	#config.readfp(open("/etc/asterisk/xivo_push.conf"))
-	config.readfp(open("/home/nanard/xivo_push.conf"))
+	config.readfp(open("/etc/asterisk/xivo_push.conf"))
+	#config.readfp(open("/home/nanard/xivo_push.conf"))
 except:
 	try:
 		config.readfp(open("xivo_push.conf"))
@@ -211,7 +211,7 @@ if "formats" in config.sections() :
 		fformats[x[0]] = x[1]
 
 class FicheSender:
-    def __call__(self, sessionid, address, state, callerid, msg):
+    def __call__(self, sessionid, address, state, callerid, msg, tcpmode, socket):
         global databasekind, fitems, fformats
         #print 'FicheSend.__class__(%s, %s, %s)' % (sessionid, address, state)
         if state == 'available':
@@ -248,7 +248,15 @@ class FicheSender:
             fiche.setmessage(msg)
             for x in liste:
                 fiche.addinfo(x.getTitle(), x.getType(), x.getValue())
-            fiche.sendtouser(address)
+            if tcpmode:
+                #fs = socket.makefile('w')
+                #fs.write(fiche.getxml())
+                #fs.flush()
+                #fs.close()
+                socket.write(fiche.getxml())
+                socket.flush()
+            else:
+                fiche.sendtouser(address)
             print '*** fiche.sendtouser() finished!!! ***'
 
 
@@ -258,7 +266,12 @@ def sendficheasync(userinfo, callerid, msg):
               'address':(userinfo['ip'], int(userinfo['port'])),
               'state':userinfo['state'],
               'callerid':callerid,
-              'msg':msg}
+              'msg':msg,
+              'tcpmode':userinfo['tcpmode']}
+    if userinfo['tcpmode']:
+        params['socket'] = userinfo['socket']
+    else:
+        params['socket'] = None
     t = threading.Thread(None, sender, None, (), params)
     t.start()
 
