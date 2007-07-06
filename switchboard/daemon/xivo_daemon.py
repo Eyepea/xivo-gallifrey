@@ -2299,11 +2299,17 @@ class LoginHandler(SocketServer.StreamRequestHandler):
 		# asks for PORT
 		self.wfile.write('Send PORT command\r\n')
 		list1 = self.rfile.readline().strip().split(' ')
-		if len(list1) != 2 or list1[0] != 'PORT':
+                if list1[0] == 'TCPMODE':
+                    #print 'TCP MODE !'
+                    tcpmode = True
+                    port = -1
+		elif len(list1) != 2 or list1[0] != 'PORT':
 			replystr = "ERROR PORT"
 			debugstr += " / PORT KO"
 			return [replystr, debugstr], [user, port, state, astnum]
-		port = list1[1]
+                else:
+            		port = list1[1]
+                        tcpmode = False
 		
 		# asks for STATE
 		self.wfile.write('Send STATE command\r\n')
@@ -2317,22 +2323,28 @@ class LoginHandler(SocketServer.StreamRequestHandler):
 		# TODO : random pas au top, faire generation de session id plus luxe
 		sessionid = '%u' % random.randint(0,999999999)
 		userlist_lock.acquire()
-		if e.has_key('sessiontimestamp'):
+                try:
+		    if e.has_key('sessiontimestamp'):
 			if time.time() - e.get('sessiontimestamp') < xivoclient_session_timeout:
 				replystr = "ERROR ALREADY CONNECTED"
 				debugstr += " / USER %s already connected" %user
 				userlist_lock.release()
 				return [replystr, debugstr], [user, port, state, astnum]
-		e['sessionid'] = sessionid
-		e['sessiontimestamp'] = time.time()
-		e['ip'] = self.client_address[0]
-		e['port'] = port
-		context = e['context']
-		if state in allowed_states:
+		    e['sessionid'] = sessionid
+		    e['sessiontimestamp'] = time.time()
+		    e['ip'] = self.client_address[0]
+		    e['port'] = port
+                    e['tcpmode'] = tcpmode
+                    if tcpmode:
+                        print 'TCPMODE', self.request#, self.request.
+                        e['socket'] = self.request.makefile('w')
+		    context = e['context']
+		    if state in allowed_states:
 			e['state'] = state
-		else:
+		    else:
 			e['state'] = "undefinedstate"
-		userlist_lock.release()
+                finally:
+		    userlist_lock.release()
 
 		replystr = "OK SESSIONID %s %s %s" %(sessionid,context,capabilities)
 		debugstr += " / user %s, port %s, state %s, astnum %d : connected : %s" %(user,port,state,astnum,replystr)
@@ -2379,8 +2391,10 @@ class IdentRequestHandler(SocketServer.StreamRequestHandler):
             #print 'user', user, 'callerid', callerid, 'msg="%s"'%msg
             userlist_lock.acquire()
             try:
-                #astnum = ip_reverse_sht[self.client_address[0]]
-                astnum = 0
+                try:
+                    astnum = ip_reverse_sht[self.client_address[0]]
+                except:
+                    astnum = 0
                 e = finduser(astnum, user)
                 if e == None:
                     retline = 'ERROR USER <' + user + '> NOT FOUND\r\n'
@@ -2405,8 +2419,10 @@ class IdentRequestHandler(SocketServer.StreamRequestHandler):
             user = list0[1]
             userlist_lock.acquire()
             try:
-                #astnum = ip_reverse_sht[self.client_address[0]]
-                astnum = 0
+                try:
+                    astnum = ip_reverse_sht[self.client_address[0]]
+                except:
+                    astnum = 0
                 e = finduser(astnum, user)
                 if e == None:
                     retline = 'ERROR USER <' + user + '> NOT FOUND\r\n'
