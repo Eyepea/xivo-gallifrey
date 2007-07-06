@@ -92,9 +92,9 @@ for u in res:
 			except:
 				dest = None
 			if dest is not None:
-				dest_list = graph.get(user, [])
-				dest_list.append(dest)
-				graph[user] = dest_list
+                                dest_list = graph.setdefault(user, [])
+                                dest_list.append(dest)
+                                graph.setdefault(dest, [])
 
 if repr(loop(graph, user_src)) != None:
 	agi.set_variable('LOOP', 1)
