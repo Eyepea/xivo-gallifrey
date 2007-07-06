@@ -1,0 +1,101 @@
+#!/usr/bin/python
+#
+# Authors : Sylvain Boily, Guillaume Knispel
+#           Proformatique
+#           67, rue Voltaire
+#           92800 PUTEAUX
+#           (+33/0)1.41.38.99.60
+#           mailto:technique@proformatique.com
+#           (C) 2007 Proformatique
+#
+
+__version__ = "$Revision: 1041 $ $Date: 2007-07-04 16:13:37 +0200 (Wed, 04 Jul 2007) $"
+__license__ = """
+    Copyright (C) 2007, Proformatique
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2.1 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+"""
+
+CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
+CONFIG_LIB_PATH = 'py_lib_path'
+
+import sys
+from xivo import ConfigPath
+from xivo.ConfigPath import *
+ConfiguredPathHelper(CONFIG_FILE, CONFIG_LIB_PATH)
+import anysql
+from BackSQL import backsqlite
+from BackSQL import backmysql
+import ConfigParser
+from ConfigDict import *
+
+from antiloop import *
+
+from agi import *
+
+options = { "db_uri" : "" }
+conf_obj = ConfigParser.ConfigParser()
+conf_obj.readfp(open(CONFIG_FILE))
+FillDictFromConfigSection(options, conf_obj, "db")
+
+def get_all_users(context):
+        try:
+                conn = anysql.connect_by_uri(options['db_uri'])
+        except:
+                agi.verbose("Unable to connect to %s" %options['db_uri'])
+                raise
+
+        query = "SELECT name FROM userfeatures where context='%s'" % context
+        cursor = conn.cursor()
+        cursor.execute(query)
+        r = cursor.fetchall()
+
+	return r
+
+agi = AGI()
+
+if len(sys.argv) != 3:
+        agi.verbose('len argument not ok %s!')
+	sys.exit()
+
+user_src = sys.argv[1]
+context = sys.argv[2]
+res = get_all_users(context)
+
+graph = {}
+
+for u in res:
+	user = u[0]
+	families = ['/FWD/Unc', '/FWD/Busy', '/FWD/RNA']
+	for f in families:
+		try:
+			status = agi.database_get(context + '/users/' + user + f, 'Status')
+		except:
+			status = 0
+		if int(status):
+			family = context + '/users/' + user + f
+			key = 'Number'
+			try:
+				dest = agi.database_get(family, key)
+			except:
+				dest = None
+			if dest is not None:
+				dest_list = graph.get(user, [])
+				dest_list.append(dest)
+				graph[user] = dest_list
+
+if repr(loop(graph, user_src)) != None:
+	agi.set_variable('LOOP', 1)
+	agi.verbose('There is a loop on forward !')
