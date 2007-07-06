@@ -1,1 +1,0 @@
-../../xivoclient/push/sendfiche.py
