@@ -50,8 +50,10 @@ public:
 	void setServerport(ushort);			//!< see serverport()
 	const QString & serverast() const;	//!< id Name of the Asterisk server
 	void setServerAst(const QString &);	//!< see serverast()
-	const QString & login() const;		//!< login to identify to the server
-	void setLogin(const QString &);		//!< see login()
+	const QString & protocol() const;      	//!< protocol of the user to identify to the server
+	void setProtocol(const QString &);     	//!< see protocol()
+	const QString & userid() const;		//!< userid to identify to the server
+	void setUserId(const QString &);       	//!< see userid()
 	const QString & passwd() const;		//!< password to identify to the sever
 	void setPasswd(const QString &);	//!< see passwd()
 	const EngineState state() const;	//!< Engine state (Logged/Not Logged)
@@ -60,15 +62,16 @@ public:
 	void setAutoconnect(bool b);		//!< set auto connect flag
 	bool trytoreconnect() const;		//!< try to reconnect flag
 	void setTrytoreconnect(bool b);		//!< set try to reconnect flag
-	uint keepaliveinterval() const;		//!< keep alive interval
-	void setKeepaliveinterval(uint);	//!< set keep alive interval
 	uint trytoreconnectinterval() const;	//!< try to reconnect interval
 	void setTrytoreconnectinterval(uint);	//!< set try to reconnect interval
+	uint keepaliveinterval() const;		//!< keep alive interval
+	void setKeepaliveinterval(uint);	//!< set keep alive interval
 	bool tcpmode() const { return m_tcpmode; };	//!< get tcp mode flag
 	void setTcpmode(bool b) { m_tcpmode = b; };	//!< set tcp mode flag
 	const QString & getAvailState() const {return m_availstate;} //!< returns availability status
 	void sendMessage(const QString &);      //!< Sends an instant message
 	const QString & getCapabilities() const {return m_capabilities;} //!< returns capabilities
+
 signals:
 	void logged();	//!< signal emitted when the state becomes ELogged
 	void delogged();	//!< signal emitted when the state becomes ENotLogged
@@ -90,6 +93,7 @@ private slots:
 	void readKeepLoginAliveDatagrams();	//!< handle the responses to keep alive
 	void popupDestroyed(QObject *);	//!< know when a profile widget is destroyed *DEBUG*
 	void profileToBeShown(Popup *);	//!< a new profile must be displayed
+	void dialExtension(const QString &);
 protected:
 	void timerEvent(QTimerEvent *);	//!< recieve timer events
 private:
@@ -104,13 +108,14 @@ private:
 	ushort m_loginport;	//!< TCP port (UDP port for keep alive is +1)
 	bool m_tcpmode;	//!< use a unique outgoing TCP connection for everything
 	QString m_asterisk;		//!< Host to the login server
-	QString m_login;		//!< User login
+	QString m_protocol;		//!< User Protocol's login
+	QString m_userid;		//!< User Id
 	QString m_passwd;		//!< User password
 	uint m_keepaliveinterval;	//!< Keep alive interval (in msec)
-	uint m_trytoreconnectinterval;	//!< Try to reconnect interval (in msec)
 	// 
 	bool m_autoconnect;		//!< Auto connect flag
 	bool m_trytoreconnect;	//!< "try to reconnect" flag
+	uint m_trytoreconnectinterval;	//!< Try to reconnect interval (in msec)
 	//
 	QHostAddress m_serveraddress;	//!< Resolved address of the login server
 	QTcpSocket m_loginsocket;	//!< TCP socket used to login
@@ -121,7 +126,7 @@ private:
 	QTcpServer m_listensocket;	//!< TCP socket listening for profiles
 	QString m_sessionid;	//!< Session id obtained after a successful login
 	QString m_capabilities;	//!< List of capabilities issued by the server after a successful login
-	QString m_context;	//!< Context of the phone, as returned by the xivo_daemon server
+	QString m_dialcontext;	//!< Context of the phone, as returned by the xivo_daemon server
 	EngineState m_state;	//!< State of the engine (Logged/Not Logged)
 	int m_pendingkeepalivemsg;	//!< number of keepalivemsg sent without response
 	QString m_availstate;	//!< Availability state to send to the server

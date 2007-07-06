@@ -63,13 +63,13 @@ ConfWidget::ConfWidget(Engine *engine, MainWidget *parent)
 	m_protocombo = new QComboBox(this);
 	m_protocombo->addItem(QString("SIP"));
 	m_protocombo->addItem(QString("IAX"));
-	if( m_engine->login().left(3) == QString("sip") )
+	if( m_engine->protocol() == QString("sip") )
 		m_protocombo->setCurrentIndex(0);
 	else
 		m_protocombo->setCurrentIndex(1);
 
 	QLabel *lbllogin = new QLabel(tr("Login"), this);
-	m_linelogin = new QLineEdit(m_engine->login().mid(3), this);
+	m_linelogin = new QLineEdit(m_engine->userid(), this);
 
 	QLabel *lblpasswd = new QLabel(tr("Password"), this);
 	m_linepasswd = new QLineEdit(m_engine->passwd(), this);
@@ -100,16 +100,20 @@ ConfWidget::ConfWidget(Engine *engine, MainWidget *parent)
 
 	m_autoconnect = new QCheckBox(tr("Autoconnect at startup"), this);
 	m_autoconnect->setCheckState( m_engine->autoconnect()?Qt::Checked:Qt::Unchecked );
+
 	gridlayout->addWidget(m_autoconnect, line++, 0, 1, 0);
 	gridlayout->addWidget( new QLabel( tr("Keep alive interval"), this), line, 0);
+
 	m_kainterval_sbox = new QSpinBox(this);
 	m_kainterval_sbox->setRange(1, 120);
 	m_kainterval_sbox->setValue(m_engine->keepaliveinterval() / 1000);
 	gridlayout->addWidget( m_kainterval_sbox, line++, 1);
+
 	m_trytoreconnect = new QCheckBox(tr("Try to reconnect"), this);
 	m_trytoreconnect->setCheckState( m_engine->trytoreconnect()?Qt::Checked:Qt::Unchecked );
 	gridlayout->addWidget(m_trytoreconnect, line++, 0, 1, 0);
 	gridlayout->addWidget( new QLabel( tr("Try to reconnect interval"), this), line, 0);
+
 	m_tryinterval_sbox = new QSpinBox(this);
 	m_tryinterval_sbox->setRange(1, 120);
 	m_tryinterval_sbox->setValue(m_engine->trytoreconnectinterval() / 1000);
@@ -144,14 +148,15 @@ void ConfWidget::saveAndClose()
 	m_engine->setServerAst( m_lineast->text() );
 	//qDebug() << "login =" << m_linelogin->text();
 	//qDebug() << "protocol =" << m_protocombo->currentText().toLower();
-	m_engine->setLogin( m_protocombo->currentText().toLower() + m_linelogin->text() );
+	m_engine->setProtocol( m_protocombo->currentText().toLower() );
+	m_engine->setUserId( m_linelogin->text() );
 	//qDebug() << "password =" << m_linepasswd->text();
 	m_engine->setPasswd( m_linepasswd->text() );
 	//qDebug() << "autoconnect =" << m_autoconnect->checkState();
 	m_engine->setAutoconnect( m_autoconnect->checkState() == Qt::Checked );
 	//qDebug() << "trytoreconnect =" << m_trytoreconnect->checkState();
-	m_engine->setTrytoreconnect( m_trytoreconnect->checkState() == Qt::Checked );
 	m_engine->setKeepaliveinterval( m_kainterval_sbox->value()*1000 );
+	m_engine->setTrytoreconnect( m_trytoreconnect->checkState() == Qt::Checked );
 	m_engine->setTrytoreconnectinterval( m_tryinterval_sbox->value()*1000 );
 	m_engine->setTcpmode( m_tcpmode->checkState() == Qt::Checked );
 	m_engine->saveSettings();

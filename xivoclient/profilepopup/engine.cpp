@@ -35,7 +35,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  */
 Engine::Engine(QObject *parent)
 : QObject(parent),
-  m_serverip(""), m_loginport(0), m_asterisk(""), m_login(""), m_passwd(""),
+  m_serverip(""), m_loginport(0), m_asterisk(""), m_protocol(""), m_userid(""), m_passwd(""),
   m_listenport(0), m_sessionid(""), m_state(ENotLogged),
   m_pendingkeepalivemsg(0)
 {
@@ -88,14 +88,15 @@ void Engine::loadSettings()
 	m_serverip = settings.value("engine/serverhost").toString();
 	m_loginport = settings.value("engine/serverport", 5000).toUInt();
 	m_asterisk = settings.value("engine/serverastid").toString();
-	m_login = settings.value("engine/login").toString();
+	m_protocol = settings.value("engine/protocol").toString();
+	m_userid = settings.value("engine/userid").toString();
 	m_passwd = settings.value("engine/passwd").toString();
 	m_autoconnect = settings.value("engine/autoconnect", false).toBool();
+	m_trytoreconnect = settings.value("engine/trytoreconnect", false).toBool();
+	m_trytoreconnectinterval = settings.value("engine/trytoreconnectinterval", 20*1000).toUInt();
 	m_tcpmode = settings.value("engine/tcpmode", false).toBool();
 	m_availstate = settings.value("engine/availstate", "available").toString();
 	m_keepaliveinterval = settings.value("engine/keepaliveinterval", 20*1000).toUInt();
-	m_trytoreconnect = settings.value("engine/trytoreconnect", false).toBool();
-	m_trytoreconnectinterval = settings.value("engine/trytoreconnectinterval", 20*1000).toUInt();
 }
 
 /*!
@@ -107,12 +108,13 @@ void Engine::saveSettings()
 	settings.setValue("engine/serverhost", m_serverip);
 	settings.setValue("engine/serverport", m_loginport);
 	settings.setValue("engine/serverastid", m_asterisk);
-	settings.setValue("engine/login", m_login);
+	settings.setValue("engine/protocol", m_protocol);
+	settings.setValue("engine/userid", m_userid);
 	settings.setValue("engine/passwd", m_passwd);
 	settings.setValue("engine/autoconnect", m_autoconnect);
-	settings.setValue("engine/keepaliveinterval", m_keepaliveinterval);
 	settings.setValue("engine/trytoreconnect", m_trytoreconnect);
 	settings.setValue("engine/trytoreconnectinterval", m_trytoreconnectinterval);
+	settings.setValue("engine/keepaliveinterval", m_keepaliveinterval);
 	settings.setValue("engine/tcpmode", m_tcpmode);
 }
 
@@ -151,7 +153,8 @@ void Engine::stop()
 		outline.append(m_asterisk);
 		outline.append("/");
 	}
-	outline.append(m_login);
+	outline.append(m_protocol);
+	outline.append(m_userid);
 	outline.append("\r\n");
 
 	m_udpsocket.writeDatagram( outline.toAscii(),
@@ -209,6 +212,17 @@ void Engine::setDoNotDisturb()
 	setAvailState("donotdisturb");
 }
 
+void Engine::dialExtension(const QString & dst)
+{
+	QString outline;
+	qDebug() << "Engine::dialExtension()";
+	outline = "DIAL " + m_asterisk + "/" + m_protocol + "/" +
+		m_userid + "/" + m_dialcontext + " " + dst + "\r\n";
+	qDebug() << outline;
+	m_udpsocket.writeDatagram( outline.toAscii(),
+				   m_serveraddress, m_loginport + 1 );
+}
+
 // === Getter and Setters ===
 const QString & Engine::serverip() const
 {
@@ -241,14 +255,24 @@ void Engine::setServerport(ushort port)
 	m_loginport = port;
 }
 
-const QString & Engine::login() const
+const QString & Engine::userid() const
 {
-	return m_login;
+	return m_userid;
 }
 
-void Engine::setLogin(const QString & login)
+void Engine::setUserId(const QString & userid)
 {
-	m_login = login;
+	m_userid = userid;
+}
+
+const QString & Engine::protocol() const
+{
+	return m_protocol;
+}
+
+void Engine::setProtocol(const QString & protocol)
+{
+	m_protocol = protocol;
 }
 
 const QString & Engine::passwd() const
@@ -362,7 +386,8 @@ void Engine::identifyToTheServer()
 	outline = "LOGIN ";
 	outline.append(m_asterisk);
 	outline.append("/");
-	outline.append(m_login);
+	outline.append(m_protocol);
+	outline.append(m_userid);
 	outline.append("\r\n");
 	m_loginsocket.write(outline.toAscii());
 	m_loginsocket.flush();
@@ -439,7 +464,7 @@ void Engine::processLoginDialog()
 		if(sessionResp.size() > 2)
 			m_sessionid = sessionResp[2];
 		if(sessionResp.size() > 3)
-			m_context = sessionResp[3];
+			m_dialcontext = sessionResp[3];
 		if(sessionResp.size() > 4)
 			m_capabilities = sessionResp[4];
 		if(!m_tcpmode)
@@ -528,7 +553,8 @@ void Engine::keepLoginAlive()
 	QString outline = "ALIVE ";
 	outline.append(m_asterisk);
 	outline.append("/");
-	outline.append(m_login);
+	outline.append(m_protocol);
+	outline.append(m_userid);
 	outline.append(" SESSIONID ");
 	outline.append(m_sessionid);
 	outline.append(" STATE ");
@@ -568,7 +594,8 @@ void Engine::sendMessage(const QString & txt)
 		outline.append(m_asterisk);
 		outline.append("/");
 	}
-	outline.append(m_login);
+	outline.append(m_protocol);
+	outline.append(m_userid);
 	outline.append(" ");
 	outline.append(txt);
 	outline.append("\r\n");

@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QMainWindow>
 #include <QLineEdit>
 #include "engine.h"
+#include "dialpanel.h"
 
 class QSystemTrayIcon;
 class QTabWidget;
@@ -76,6 +77,8 @@ private:
 	QVBoxLayout * m_vboxwidgets;    //!< Panel of widgets
 	QLabel * m_messagetosendlabel;    //!< Label for message for switchboards
 	QLineEdit * m_messagetosend;    //!< Message to send to the connected switchboards
+	DialPanel * m_dial;
+	QLabel * m_directory;
 	QLabel * m_history;
 
 	int m_tablimit;		//!< Maximum number of tabs in m_tabwidget

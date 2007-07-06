@@ -39,6 +39,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include "confwidget.h"
 //#include "logwidget.h"
 #include "popup.h"
+#include "dialpanel.h"
 
 /*! \brief Constructor
  *
@@ -298,11 +299,17 @@ void MainWidget::setDisconnected()
 
 	QStringList capas = m_engine->getCapabilities().split(",");
 	for(int c = 0; c < capas.size(); c++) {
-		if(capas[c] == QString("switchboard")) {
+		if(capas[c] == QString("instantmessaging")) {
 			m_vboxwidgets->removeWidget(m_messagetosendlabel);
 			m_vboxwidgets->removeWidget(m_messagetosend);
 			delete m_messagetosendlabel;
 			delete m_messagetosend;
+		} else if(capas[c] == QString("dial")) {
+			m_vboxwidgets->removeWidget(m_dial);
+			delete m_dial;
+		} else if(capas[c] == QString("directory")) {
+			m_vboxwidgets->removeWidget(m_directory);
+			delete m_directory;
 		} else if(capas[c] == QString("history")) {
 			m_vboxwidgets->removeWidget(m_history);
 			delete m_history;
@@ -323,13 +330,21 @@ void MainWidget::setConnected()
 
 	QStringList capas = m_engine->getCapabilities().split(",");
 	for(int c = 0; c < capas.size(); c++) {
-		if(capas[c] == QString("switchboard")) {
+		if(capas[c] == QString("instantmessaging")) {
 			m_messagetosendlabel = new QLabel(tr("Tell the Switchboard :"));
 			m_messagetosend = new QLineEdit();
 			connect( m_messagetosend, SIGNAL(returnPressed()),
 				 this, SLOT(affTextChanged()) );
 			m_vboxwidgets->addWidget(m_messagetosendlabel, 0);
 			m_vboxwidgets->addWidget(m_messagetosend, 0);
+		} else if(capas[c] == QString("dial")) {
+			m_dial = new DialPanel();
+			connect( m_dial, SIGNAL(emitDial(const QString &)),
+				 m_engine, SLOT(dialExtension(const QString &)) );
+			m_vboxwidgets->addWidget(m_dial, 0);
+		} else if(capas[c] == QString("directory")) {
+			m_directory = new QLabel(tr("Directory search"));
+			m_vboxwidgets->addWidget(m_directory, 0);
 		} else if(capas[c] == QString("history")) {
 			m_history = new QLabel(tr("History"));
 			m_vboxwidgets->addWidget(m_history, 0);
