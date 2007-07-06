@@ -192,8 +192,8 @@ def make_fields(items, formats, flds):
 # opens the xivo_push.conf config file
 config = ConfigParser.ConfigParser()
 try:
-	#config.readfp(open("/etc/asterisk/xivo_push.conf"))
-	config.readfp(open("/home/nanard/xivo_push.conf"))
+	config.readfp(open("/etc/asterisk/xivo_push.conf"))
+	#config.readfp(open("/home/nanard/xivo_push.conf"))
 except:
 	try:
 		config.readfp(open("xivo_push.conf"))
