@@ -12,7 +12,7 @@ FREEZEPATH?=$(WRK_DIR)/../tools/python-freeze/
 default:
 
 prepare-tarball::
-	@${FREEZEPATH}/local_freeze.py ${FREEZEPATH}/freeze.py xivo_ami.py,xivo_sip.py,xivo_daemon.py
+	@${FREEZEPATH}/local_freeze.py ${FREEZEPATH}/freeze.py sendfiche.py,generefiche.py,xivo_ami.py,xivo_sip.py,xivo_daemon.py
 
 clean-tarball::
 	@find . ${FREEZEPATH} $(WRK_DIR)/../lib-python/ -name "*.pyc" -exec rm -f {} \;
