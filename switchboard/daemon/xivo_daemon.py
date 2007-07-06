@@ -1178,16 +1178,21 @@ def manage_tcp_connection(connid, allow_events):
 						  %(assrc, requester, str(exc)))
 					connid[0].send("history=\n")
 		elif len(l) >= 4 and l[0] == 'login':
-			astnum = asteriskr[l[1]]
-			# log_debug("%i %s" % (astnum,l[3]))
-			userlist_lock.acquire()
-			user = finduser(astnum, l[2].lower() + l[3])
-			if user == None:
-				repstr = "loginKO="
+			if l[1] in asteriskr:
+				astnum = asteriskr[l[1]]
+				# log_debug("%i %s" % (astnum,l[3]))
+				userlist_lock.acquire()
+				user = finduser(astnum, l[2].lower() + l[3])
+				if user == None:
+					repstr = "loginKO="
+					log_debug("no user found %s" %str(l))
+				else:
+					repstr = "loginok=" + user.get('context') + ";" + user.get('phonenum') + "\r\n"
+					ctx_by_requester[requester] = [astnum, user.get('context')]
+				userlist_lock.release()
 			else:
-				repstr = "loginok=" + user.get('context') + ";" + user.get('phonenum') + "\r\n"
-			ctx_by_requester[requester] = [astnum, user.get('context')]
-			userlist_lock.release()
+				repstr = "loginKO="
+				log_debug("login command attempt from SB : asterisk name <%s> unknown" %l[1])
 			connid[0].send(repstr)
 		elif allow_events == False: # i.e. if PHP-style connection
 			n = -1
@@ -2495,9 +2500,25 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
 				#user = list[1].split("/")[1]
 				for k in tcpopens_sb:
 					k[0].send("asterisk=%s::<%s>\n" %(list[1], list[2]))
+			elif len(list) == 3 and list[0] == 'DIAL':
+				log_debug("received a DIAL message : %s" %str(list))
+				try:
+					[astname_xivoc, proto, userid, context] = list[1].split("/")
+					exten = list[2]
+					idassrc = asteriskr[astname_xivoc]
+					proto = proto.lower()
+					user = proto + userid
+					# state = plist[astnum].normal[sipnumber].imstat"available"
+					state = "available"
+					ret = AMIclasssock[idassrc].originate(proto, userid, exten, context)
+				except Exception, exc:
+					log_debug("--- exception --- %s" %str(exc))
+				response = 'OK\r\n'
 			elif len(list) < 4 or list[0] != 'ALIVE' or list[2] != 'SESSIONID':
+				log_debug("received a message %s : ERROR" %str(list))
 				response = 'ERROR unknown\r\n'
 			else:
+				log_debug("received a message %s" %str(list))
 				astname_xivoc = list[1].split("/")[0]
 				if astname_xivoc in asteriskr.keys():
 					astnum = asteriskr[astname_xivoc]
