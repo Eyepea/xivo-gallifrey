@@ -2,11 +2,11 @@ BEGIN TRANSACTION;
 
 DROP TABLE i18n_cache;
 CREATE TABLE i18n_cache (
- dcreate integer unsigned NOT NULL default 0,
- dupdate integer unsigned NOT NULL default 0,
- locale varchar(7) NOT NULL default '',
- language varchar(3) NOT NULL default '',
- path varchar(255) NOT NULL default '',
+ dcreate integer unsigned NOT NULL DEFAULT 0,
+ dupdate integer unsigned NOT NULL DEFAULT 0,
+ locale varchar(7) NOT NULL DEFAULT '',
+ language varchar(3) NOT NULL DEFAULT '',
+ path varchar(255) NOT NULL DEFAULT '',
  obj longblob NOT NULL,
  PRIMARY KEY(locale,path)
 );
@@ -19,11 +19,11 @@ CREATE INDEX i18n_cache__idx__path ON i18n_cache(path);
 
 DROP TABLE session;
 CREATE TABLE session (
- sesskey varchar(32) NOT NULL default '',
- expire integer unsigned NOT NULL default 0,
+ sesskey varchar(32) NOT NULL DEFAULT '',
+ expire integer unsigned NOT NULL DEFAULT 0,
  data longblob NOT NULL,
- user_id integer unsigned default 0,
- start integer unsigned default 0,
+ user_id integer unsigned DEFAULT 0,
+ start integer unsigned DEFAULT 0,
  PRIMARY KEY(sesskey)
 );
 
@@ -34,14 +34,14 @@ CREATE INDEX session__idx__user_id ON session(user_id);
 DROP TABLE user;
 CREATE TABLE user (
  id integer unsigned,
- login varchar(255) NOT NULL default '',
- passwd varchar(255) NOT NULL default '',
- meta varchar(5) default 'user',
- valid tinyint(1) default 1,
- time integer unsigned NOT NULL default 0,
+ login varchar(255) NOT NULL DEFAULT '',
+ passwd varchar(255) NOT NULL DEFAULT '',
+ meta varchar(5) DEFAULT 'user',
+ valid tinyint(1) DEFAULT 1,
+ time integer unsigned NOT NULL DEFAULT 0,
  obj longblob NOT NULL,
- dcreate integer unsigned NOT NULL default 0,
- dupdate integer unsigned NOT NULL default 0,
+ dcreate integer unsigned NOT NULL DEFAULT 0,
+ dupdate integer unsigned NOT NULL DEFAULT 0,
  PRIMARY KEY(id)
 );
 

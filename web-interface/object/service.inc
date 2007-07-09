@@ -4,6 +4,7 @@ class xivo_service
 {
 	var $_ini	= array();
 	var $_conf	= array();
+	var $_uri	= null;
 
 	function xivo_service($ini)
 	{
@@ -60,6 +61,17 @@ class xivo_service
 
 		if(xivo::load_class($cname,$dir,$sname,false) === false)
 			trigger_error('Failed to load '.$name.' '.$sname.' service',E_USER_ERROR);
+
+		if(isset($init['general']['datastorage']) === true)
+		{
+			if(is_string($init['general']['datastorage']) === true)
+				$init['general']['datastorage'] = xivo_datastorage::get_param_uri($init['general']['datastorage']);
+			else if(isset($init['general']['datastorage']['type']) === false)
+				$init['general']['datastorage'] = false;
+
+			if($init['general']['datastorage'] === false)
+				trigger_error('Invalid datastorage in '.$name.' ini file',E_USER_ERROR);
+		}
 
 		$this->_set($name,new $cname($init));
 	}

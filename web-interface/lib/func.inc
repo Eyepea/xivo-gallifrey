@@ -32,15 +32,17 @@ function xivo_bool($bool)
 	switch($bool)
 	{
 		case 'y':
+		case 't':
+		case 'on':
 		case 'yes':
 		case 'true':
-		case 't':
 			$r = true;
 			break;
 		case 'n':
+		case 'f':
+		case 'off':
 		case 'no':
 		case 'false':
-		case 'f':
 			$r = false;
 			break;
 		default:
@@ -94,6 +96,71 @@ function xivo_uint($str=0,$def=0,$t=false)
 	return($str);
 }
 
+function xivo_cast_except($val,$except,$type='')
+{
+	$type = (string) $type;
+
+	if(is_scalar($except) === true)
+		$texcept = 'scalar';
+	else if(is_numeric($except) === true)
+		$texcept = 'numeric';
+	else
+		$texcept = strtolower(gettype($except));
+
+	switch($texcept.'-'.strtolower(gettype($val)))
+	{
+		case 'object-object':
+		case 'array-array':
+		case 'resource-resource':
+		case 'null-null':
+		case 'scalar-integer':
+		case 'scalar-double':
+		case 'scalar-boolean':
+		case 'scalar-string':
+		case 'numeric-integer':
+		case 'numeric-double':
+		case 'numeric-boolean':
+		case 'numeric-string':
+			return($val);
+	}
+
+	$except = (array) $except;
+
+	if(in_array($val,$except,true) === true)
+		return($val);
+
+	switch($type)
+	{
+		case 'xbool':
+		case 'xboolean':
+			$val = xivo_bool($val);
+			break;
+		case 'uint':
+		case 'uinteger':
+			$val = xivo_uint($val);
+			break;
+		case 'str':
+		case 'string':
+			$val = strval($val);
+			break;
+		case 'real':
+		case 'float':
+		case 'double':
+			$type = 'double';
+		case 'bool':
+		case 'boolean':
+		case 'int':
+		case 'integer':
+		case 'array':
+		case 'object':
+		case 'null':
+			$val = settype($val,$type);
+			break;
+	}
+
+	return($val);
+}
+
 function xivo_trunc(&$str,$nb=0,$chr=' ',$end='')
 {
 	$r = (string) $str;
@@ -121,19 +188,21 @@ function xivo_trunc(&$str,$nb=0,$chr=' ',$end='')
 function xivo_ak($k,&$a,$t=false,$f=false)
 {
 	$r = false;
+	$t = (bool) $t;
+	$f = (bool) $f;
 
 	if(is_scalar($k) === false || is_array($a) === false)
 		return($r);
 
-	if($f !== 'key')
+	if($f === false)
 	{
 		if(isset($a[$k]) === true)
-			$r = $t !== false ? $a[$k] : true;
+			$r = $t === true ? $a[$k] : true;
 		else
 			$r = false;
 	}
 	elseif(array_key_exists($k,$a) === true)
-		$r = $t !== false ? $a[$k] : true;
+		$r = $t === true ? $a[$k] : true;
 	else
 		$r = false;
 
@@ -143,75 +212,67 @@ function xivo_ak($k,&$a,$t=false,$f=false)
 function xivo_pk($k,&$a,$t=false,$f=false)
 {
 	$r = false;
+	$t = (bool) $t;
+	$f = (bool) $f;
 
 	if(is_scalar($k) === false || is_object($a) === false)
 		return($r);
 
-	if($f !== 'key')
+	if($f === false)
 	{
 		if(isset($a->{$k}) === true)
-			$r = $t !== false ? $a->{$k} : true;
+			$r = $t === true ? $a->{$k} : true;
 		else
 			$r = false;
 	}
 	elseif(array_key_exists($k,get_object_vars($a)) === true)
-		$r = $t !== false ? $a->{$k} : true;
+		$r = $t === true ? $a->{$k} : true;
 	else
 		$r = false;
 
 	return($r);
 }
 
-function xivo_issa($k,&$a,$t=false,$f=false)
+function xivo_issa($k,&$a,$t=false)
 {
 	$r = false;
+	$t = (bool) $t;
 
 	if(is_scalar($k) === false || is_array($a) === false)
 		return($r);
 
-	if($f !== 'key')
-	{
-		if(isset($a[$k]) === true)
-			$r = true;
-		else
-			return($r);
-	}
-	elseif(array_key_exists($k,$a) === true)
-		$r = true;
-	else
-		return($r);
-
-	if($r === true && is_array($a[$k]) === true)
-		$r = $t !== false ? $a[$k] : true;
-	else
-		$r = false;
+	if(isset($a[$k]) === true && is_array($a[$k]) === true)
+		$r = $t === true ? $a[$k] : true;
 
 	return($r);
 }
 
-function xivo_isso($k,&$a,$t=false,$f=false)
+function xivo_issa_val($k,&$a,$e=false)
 {
 	$r = false;
+	$e = (bool) $e;
 
-	if(is_scalar($k) === false || is_object($a) === false)
+	if(xivo_issa($k,$a) === false)
 		return($r);
 
-	if($f !== 'key')
-	{
-		if(isset($a->{$k}) === true)
-			$r = true;
-		else
-			return($r);
-	}
-	elseif(array_key_exists($k,get_object_vars($a)) === true)
-		$r = true;
-	else
-		return($r);
+	$r = array_values($a[$k]);
 
-	if($r === true && is_object($a->{$k}) === true)
-		$r = $t !== false ? $a->{$k} : true;
-	else
+	if($e === false && array_key_exists(0,$r) === false)
 		$r = false;
+		
+	return($r);
+}
+
+function xivo_isso($k,&$o,$t=false)
+{
+	$r = false;
+	$t = (bool) $t;
+
+	if(is_scalar($k) === false || is_object($o) === false)
+		return($r);
+
+	if(isset($o->{$k}) === true && is_object($o->{$k}) === true)
+		$r = $t === true ? $o->{$k} : true;
 
 	return($r);
 }
@@ -370,26 +431,28 @@ function xivo_str_multicut($str,$arr)
 
 function xivo_stript($str,$style=ENT_NOQUOTES)
 {
-	$r = (string) $str;
-
-	$r = preg_replace('/\s+/', ' ', $r);
-	$r = str_replace('\'','\\\'',$r);
-	$r = str_replace('"','\"',$r);
+	$r = preg_replace('/\s+/',' ',(string) $str);
+	$r = str_replace(array('\'','"'),array('\\\'','\"'),$r);
 
 	$r = xivo_htmlsc($r,$style);
 
 	return($r);
 }
 
+function xivo_eol($str)
+{
+	$r = preg_replace('#\r\n|\n|\r#',XIVO_EOL,(string) $str);
+
+	return($r);
+}
+
 function xivo_alttitle($str,$sc=true)
 {
-	$r = (string) $str;
 	$sc = (bool) $sc;
 
-	$r = preg_replace('/<.+?>/', '', $r);
-	$r = preg_replace('/\t+/', '', $r);
-	$r = preg_replace('/\s+/', ' ', $r);
-	$r = preg_replace('/&nbsp;| +/', ' ', $r);
+	$pat = array('/<.+?>/','/\t+/','/\s+/','/&nbsp;| +/');
+	$rep = array('','',' ',' ');
+	$r = preg_replace($pat,$rep,(string) $str);
 
 	if($sc !== false)
 		$r = xivo_htmlsc($r);
@@ -399,22 +462,15 @@ function xivo_alttitle($str,$sc=true)
 
 function xivo_notag($str)
 {
-	if(is_array($str) === true)
-		xivo_var_dump($str);
-	$r = (string) $str;
+	$pat = array('/<.+?>/','/\t+/','/&nbsp;| +/');
+	$rep = array('','',' ');
 
-	$r = preg_replace('/<.+?>/', '', $r);
-	$r = preg_replace('/\t+/', '', $r);
-	$r = preg_replace('/&nbsp;| +/', ' ', $r);
-
-	return($r);
+	return(preg_replace($pat,$rep,(string) $str));
 }
 
 function xivo_notagscript($str)
 {
-	$r = (string) $str;
-
-	$r = preg_replace('@<script[^>]*?>.*?</script>@si','',$r);
+	$r = preg_replace('@<script[^>]*?>.*?</script>@si','',(string) $str);
 
 	return($r);
 }
@@ -423,26 +479,22 @@ function xivo_tagreplace($str)
 {
 	$r = (string) $str;
 
-	$r = str_replace('"','&quot;',$r);
-	$r = str_replace('\'','&#039;',$r);
-	$r = str_replace('<','&lt;',$r);
-	$r = str_replace('>','&gt;',$r);
+	$pat = array('"','\'','<','>');
+	$rep = array('&quot;','&#039;','&lt;','&gt;');
+
+	$r = str_replace($pat,$rep,(string) $str);
 	
 	return($r);
 }
 
 function xivo_htmlsc($str,$style=ENT_QUOTES)
 {
-	$r = (string) $str;
-
-	return(htmlspecialchars($str,$style,'UTF-8'));
+	return(htmlspecialchars((string) $str,$style,'UTF-8'));
 }
 
 function xivo_htmlen($str,$style=ENT_QUOTES)
 {
-	$r = (string) $str;
-
-	return(htmlentities($r,$style,'UTF-8'));
+	return(htmlentities((string) $str,$style,'UTF-8'));
 }
 
 function xivo_malert($subject='',$msg='',$to='')
@@ -484,11 +536,7 @@ function xivo_get_aks(&$a,$empty=false)
 	$ak = array_keys($a);
 
 	if(($cnt = count($ak)) > 0 || $empty === true)
-	{
-		$r = array(
-			'keys' => $ak,
-			'cnt' => $cnt);	
-	}
+		$r = array('keys' => $ak,'cnt' => $cnt);	
 
 	return($r);
 }

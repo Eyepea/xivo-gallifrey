@@ -43,6 +43,8 @@
 
 <?=$form->text(array('desc' => $this->bbf('fm_recsnd'),'name' => 'recsnd','id' => 'it-recsnd','size' => 15,'default' => $element['recsnd']['default'],'value' => $this->varra('info','recsnd')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
+<?=$form->text(array('desc' => $this->bbf('fm_phonestatus'),'name' => 'phonestatus','id' => 'it-phonestatus','size' => 15,'default' => $element['phonestatus']['default'],'value' => $this->varra('info','phonestatus')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
 <?=$form->text(array('desc' => $this->bbf('fm_enablevm'),'name' => 'enablevm','id' => 'it-enablevm','size' => 15,'default' => $element['enablevm']['default'],'value' => $this->varra('info','enablevm')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 <?=$form->text(array('desc' => $this->bbf('fm_enablednd'),'name' => 'enablednd','id' => 'it-enablednd','size' => 15,'default' => $element['enablednd']['default'],'value' => $this->varra('info','enablednd')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>

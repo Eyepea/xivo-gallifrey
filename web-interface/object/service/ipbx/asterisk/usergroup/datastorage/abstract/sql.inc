@@ -28,6 +28,17 @@ class xivo_service_asterisk_usergroup_abstract_sql
 		return($r);
 	}
 
+	function get_where($arr)
+	{
+		if(($where = $this->_dso->where($arr)) === false)
+			return(false);
+
+		if(($r = $this->_dso->select_one($this->_param['table'],'id',$where)) !== false)
+			$r = $r['id'];
+
+		return($r);
+	}
+
 	function get_by_user($id)
 	{
 		if(($id = xivo_uint($id)) === 0)
@@ -106,6 +117,16 @@ class xivo_service_asterisk_usergroup_abstract_sql
 
 		if(isset($r[0]) === false)
 			$r = false;
+
+		return($r);
+	}
+
+	function get_all_where($arr)
+	{
+		if(($where = $this->_dso->where($arr)) === false)
+			return(false);
+
+		$r = $this->_dso->select_all($this->_param['table'],null,$where);
 
 		return($r);
 	}

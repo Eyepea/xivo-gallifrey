@@ -6,7 +6,7 @@ $array['element']['maxmessage'] = array();
 $array['element']['maxmessage']['default'] = 180;
 
 $array['element']['minmessage'] = array();
-$array['element']['minmessage']['default'] = 3;
+$array['element']['minmessage']['default'] = 2;
 
 $array['element']['maxsilence'] = array();
 $array['element']['maxsilence']['default'] = 0;
@@ -34,9 +34,9 @@ $array['filter']['minmessage'] = array('cast' => 'uint','between' => array(1,200
 $array['filter']['maxsilence'] = array('cast' => 'uint','between' => array(0,30));
 $array['filter']['review'] = array('bool' => true);
 $array['filter']['serveremail'] = array('preg' => '/^[a-z0-9@\-_\.]+$/i','maxlen' => 128);
-$array['filter']['fromstring'] = array('preg' => '/^[a-z0-9\-_\.]+$/i','maxlen' => 128);
+$array['filter']['fromstring'] = array('preg' => '/^[a-z0-9\-_\. ]+$/i','maxlen' => 128);
 $array['filter']['maxmsg'] = array('cast' => 'uint','between' => array(1,500));
 $array['filter']['emailsubject'] = array('maxlen' => 128);
-$array['filter']['emailbody'] = array('maxlen' => 1000);
+$array['filter']['emailbody'] = array('maxlen' => 1000,'eol' => true);
 
 ?>

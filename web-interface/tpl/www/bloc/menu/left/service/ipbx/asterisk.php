@@ -17,6 +17,9 @@
 		if($this->chk_policy('general_settings','queues') === true):
 			echo '<dd id="mn-general-settings--queues">',$url->href_html($this->bbf('mn_left_queues'),'service/ipbx/general_settings/queues'),'</dd>';
 		endif;
+		if($this->chk_policy('general_settings','agents') === true):
+			echo '<dd id="mn-general-settings--agents">',$url->href_html($this->bbf('mn_left_agents'),'service/ipbx/general_settings/agents'),'</dd>';
+		endif;
 		if($this->chk_policy('general_settings','sounds') === true):
 			echo '<dd id="mn-general-settings--sounds">',$url->href_html($this->bbf('mn_left_sounds'),'service/ipbx/general_settings/sounds','act=listdir'),'</dd>';
 		endif;

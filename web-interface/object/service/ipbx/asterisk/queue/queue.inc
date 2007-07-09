@@ -79,6 +79,28 @@ class xivo_service_asterisk_queue extends xivo_service_asterisk_abstract
 	{
 		return($this->_dso->delete($id));
 	}
+
+	function get_all_where($arr=array(),$disable=null)
+	{
+		$arr = (array) $arr;
+
+		if(($where = $this->get_elements_where($arr)) === false
+		|| ($list = $this->_dso->get_all_where($where,$disable)) === false
+		|| isset($list[0]) === false)
+			return(false);
+
+		$nb = count($list);
+
+		$r = array();
+
+		for($i = 0;$i < $nb;$i++)
+			$r[] = $list[$i];
+
+		if(isset($r[0]) === false)
+			$r = false;
+
+		return($r);
+	}
 }
 
 ?>

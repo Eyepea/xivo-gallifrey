@@ -29,8 +29,6 @@ switch($cat)
 			$_HTML->assign('info',$info);
 		break;
 	case 'policy':
-		//xivo_print_r(xivo_policy::get_tree());
-
 		if(isset($_QR['id']) === false || ($info = $_USR->get($_QR['id'])) === false
 		|| xivo_user::chk_authorize('admin',$info['meta']) === false)
 			xivo_go($_HTML->url('xivo/configuration'),'cat=list');

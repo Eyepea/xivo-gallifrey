@@ -7,6 +7,7 @@ if($_HTML->chk_policy(true) === false)
 
 $ami = &$ipbx->get_module('ami');
 $ami->cmd('reload');
+$ami->cmd('moh reload');
 
 if(isset($_SERVER['HTTP_REFERER']) === true)
 	xivo_go($_SERVER['HTTP_REFERER']);

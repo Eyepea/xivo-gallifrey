@@ -33,7 +33,7 @@
 	if($list === false || ($nb = count($list)) === 0):
 ?>
 	<tr class="sb-content">
-		<td colspan="8" class="td-single"><?=$this->bbf('no_meetme')?></td>
+		<td colspan="8" class="td-single"><?=$this->bbf('no_meetme');?></td>
 	</tr>
 <?php
 	else:
@@ -46,6 +46,12 @@
 			else:
 				$icon = 'enable';
 			endif;
+
+			if($ref['meetme']['pin'] === '')
+				$ref['meetme']['pin'] = '-';
+
+			if($ref['meetme']['admin-pin'] === '')
+				$ref['meetme']['admin-pin'] = '-';
 
 			$mod = $j % 2 === 0 ? 1 : 2;
 ?>

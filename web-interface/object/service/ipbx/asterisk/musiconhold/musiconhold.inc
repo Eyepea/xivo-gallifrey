@@ -24,6 +24,8 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 		$this->_sre = &$sre;
 		$this->_dso = &$dso;
 
+		$this->_dso->set_param('filename',$this->_filename);
+
 		if($this->_chk_mohpath() === false)
 			trigger_error('Invalid or missing music on hold path in '.$this->_sre->get_type().' ini file',E_USER_ERROR);
 
@@ -36,18 +38,15 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 
 		$this->_set_element_default('directory',$this->_mohpath);
 
-		if(($size = $this->_get_option_file_maxsize()) === false)
+		$upload = xivo_get_memory('upload_max_filesize');
+
+		if(($size = $this->_get_option_file_maxsize()) !== false && $upload < $size)
 		{
-			$upload = xivo_get_memory('upload_max_filesize');
-
-			if($upload < $size)
-			{
-				trigger_error('file max size in configuration file shoud be less than '.
-					      'upload_max_filesize php.ini directive',E_USER_ERROR);
-			}
-
-			$size = $upload;
+			trigger_error('file max size in configuration file shoud be less than '.
+				      'upload_max_filesize php.ini directive',E_USER_ERROR);
 		}
+		else
+			$size = $upload;
 
 		$this->_conf['option']['file']['size'] = $size;
 		$this->_musiconhold['conf'] = $this->_conf;
@@ -55,10 +54,9 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 
 	function _chk_mohpath()
 	{
-		if(xivo_issa('general',$this->_sre->_ini) === false
-		|| xivo_issa('path',$this->_sre->_ini['general']) === false
-		|| isset($this->_sre->_ini['general']['path']['musiconhold']) === false
-		|| ($this->_mohpath = xivo_file::is_d_rwx($this->_sre->_ini['general']['path']['musiconhold'])) === false)
+		if(xivo_issa($this->_name,$this->_sre->_ini) === false
+		|| isset($this->_sre->_ini[$this->_name]['path']) === false
+		|| ($this->_mohpath = xivo_file::is_d_rwx($this->_sre->_ini[$this->_name]['path'])) === false)
 			return(false);
 	}
 

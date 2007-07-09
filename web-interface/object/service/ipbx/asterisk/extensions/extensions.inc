@@ -36,10 +36,11 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 
 	function get($id,$disable=null)
 	{
-		$r = false;
+		if(is_array($id) === true && ($id = $this->get_where($id)) === false)
+			return(false);
 
 		if(($id = xivo_uint($id)) === 0 || ($r = $this->_dso->get($id,$disable)) === false)
-			return($r);
+			return(false);
 
 		$this->_origin = $r;
 		
@@ -78,15 +79,14 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 		return($r);
 	}
 
-	function get_where($arr,$disable=null)
+	function get_where($arr)
 	{
 		$arr = (array) $arr;
 
-		if(($where = $this->get_elements_where($arr)) === false
-		|| ($id = $this->_dso->get_where($where)) === false)
+		if(($where = $this->get_elements_where($arr)) === false)
 			return(false);
 
-		return($this->get($id,$disable));
+		return($this->_dso->get_where($where));
 	}
 
 	function add($arr,$id=0)

@@ -24,6 +24,9 @@ class xivo_service_asterisk_trunkfeatures extends xivo_service_asterisk_abstract
 
 	function get($id)
 	{
+		if(is_array($id) === true && ($id = $this->get_where($id)) === false)
+			return(false);
+
 		if(($id = xivo_uint($id)) === 0 || ($r = $this->_dso->get($id)) === false)
 			return(false);
 
@@ -96,6 +99,16 @@ class xivo_service_asterisk_trunkfeatures extends xivo_service_asterisk_abstract
 			return(false);
 
 		return($this->_dso->delete($id));
+	}
+
+	function get_where($arr)
+	{
+		$arr = (array) $arr;
+
+		if(($where = $this->get_elements_where($arr)) === false)
+			return(false);
+
+		return($this->_dso->get_where($where));
 	}
 }
 

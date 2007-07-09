@@ -32,7 +32,7 @@
 	if($list === false || ($nb = count($list)) === 0):
 ?>
 	<tr class="sb-content">
-		<td colspan="7" class="td-single"><?=$this->bbf('no_group')?></td>
+		<td colspan="7" class="td-single"><?=$this->bbf('no_group');?></td>
 	</tr>
 <?php
 	else:

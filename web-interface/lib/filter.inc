@@ -308,7 +308,7 @@ class xivo_filter
 
 		if(isset($arr['arrvalue']) === true)
 		{
-			if(isset($arr['chk']) === true && $arr['chk'] === 2 && isset($arr['chk']{0}) === false)
+			if($arr['chk'] === 2 && isset($value{0}) === false)
 				return('');
 
 			if($this->chk_array_value($arr['arrvalue'],$value) === false)
@@ -322,7 +322,7 @@ class xivo_filter
 
 		if(isset($arr['unarrvalue']) === true)
 		{
-			if(isset($arr['chk']) === true && $arr['chk'] === 2 && isset($arr['chk']{0}) === false)
+			if($arr['chk'] === 2 && isset($value{0}) === false)
 				return('');
 
 			if($this->chk_array_value($arr['unarrvalue'],$value) === false)
@@ -336,7 +336,7 @@ class xivo_filter
 
 		if(isset($arr['arrkey']) === true)
 		{
-			if(isset($arr['chk']) === true && $arr['chk'] === 2 && isset($arr['chk']{0}) === false)
+			if($arr['chk'] === 2 && isset($value{0}) === false)
 				return('');
 
 			if($this->chk_key_value($arr['arrkey'],$value) === false)
@@ -350,7 +350,7 @@ class xivo_filter
 
 		if(isset($arr['unarrkey']) === true)
 		{
-			if(isset($arr['chk']) === true && $arr['chk'] === 2 && isset($arr['chk']{0}) === false)
+			if($arr['chk'] === 2 && isset($value{0}) === false)
 				return('');
 
 			if($this->chk_key_value($arr['unarrkey'],$value) === true)
@@ -359,6 +359,9 @@ class xivo_filter
 				return(false);
 			}
 		}
+
+		if(isset($arr['eol']) === true)
+			$value = xivo_eol($value);
 
 		if(isset($arr['notag']) === false)
 			$value = xivo_notag($value);

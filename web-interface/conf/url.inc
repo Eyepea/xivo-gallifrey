@@ -7,6 +7,7 @@ $array['service/ipbx/general_settings/sipprotocol'] = 'service/ipbx/index.php/ge
 $array['service/ipbx/general_settings/iaxprotocol'] = 'service/ipbx/index.php/general_settings/iaxprotocol/';
 $array['service/ipbx/general_settings/voicemail'] = 'service/ipbx/index.php/general_settings/voicemail/';
 $array['service/ipbx/general_settings/queues'] = 'service/ipbx/index.php/general_settings/queues/';
+$array['service/ipbx/general_settings/agents'] = 'service/ipbx/index.php/general_settings/agents/';
 $array['service/ipbx/general_settings/sounds'] = 'service/ipbx/index.php/general_settings/sounds/';
 $array['service/ipbx/general_settings/musiconhold'] = 'service/ipbx/index.php/general_settings/musiconhold/';
 $array['service/ipbx/general_settings/extenfeatures'] = 'service/ipbx/index.php/general_settings/extenfeatures/';

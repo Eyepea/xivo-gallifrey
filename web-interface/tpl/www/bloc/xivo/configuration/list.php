@@ -19,7 +19,7 @@
 	if($list === false || ($arr = xivo_get_aks($list)) === false):
 ?>
 	<tr class="sb-content">
-		<td colspan="9" class="td-single"><?=$this->bbf('no_user')?></td>
+		<td colspan="9" class="td-single"><?=$this->bbf('no_user');?></td>
 	</tr>
 <?php
 	else:

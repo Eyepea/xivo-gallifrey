@@ -52,10 +52,17 @@ class xivo_service_asterisk_ami extends xivo_service_asterisk_abstract
 	{
 		$r = false;
 
+		$cmd = trim((string) $cmd);
+
+		if(preg_match('/[^\a\t\r\n\f\0\x0B\x1B]+/',$cmd,$match) !== 1)
+			return(false);
+
+		$cmd = $match[0];
+		
 		$this->_load_socket();
 
 		if($this->_socket->is_open() === false)
-			return($r);
+			return(false);
 
 		$r = $this->_socket->write($cmd);
 

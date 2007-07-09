@@ -64,12 +64,15 @@ do
 		$result['trunk']['allow'] = implode(',',$result['trunk']['allow']);
 	}
 
-	$infotfeatures = array();
-	$infotfeatures['trunk'] = 'iax';
-	$infotfeatures['trunkid'] = 0;
-	$infotfeatures['registerid'] = $registerid;
+	if($result['trunk']['type'] === 'friend')
+		$result['trunk']['username'] = $result['trunk']['name'];
 
-	if(($result['tfeatures'] = $tfeatures->chk_values($infotfeatures,true,true)) === false)
+	$_QR['tfeatures'] = array();
+	$_QR['tfeatures']['trunk'] = 'iax';
+	$_QR['tfeatures']['trunkid'] = 0;
+	$_QR['tfeatures']['registerid'] = $registerid;
+
+	if(($result['tfeatures'] = $tfeatures->chk_values($_QR['tfeatures'],true,true)) === false)
 	{
 		$add = false;
 		$result['tfeatures'] = $tfeatures->get_filter_result();

@@ -56,6 +56,6 @@ $array['filter']['musiconhold'] = array('set' => false,'chk' => 2,'maxlen' => 12
 $array['filter']['quiet'] = array('bool' => true);
 $array['filter']['record'] = array('bool' => true);
 $array['filter']['video'] = array('bool' => true);
-$array['filter']['context'] = array('set' => false,'chk' => 2,'unarrkey' => array('general','globals'),'preg' => '/^[a-z0-9_-]+$/','maxlen' => 80);
+$array['filter']['context'] = array('set' => false,'chk' => 2,'unarrkey' => array('general','globals','initconfig','hints','features'),'preg' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 80);
 
 ?>

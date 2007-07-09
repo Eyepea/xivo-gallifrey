@@ -28,6 +28,9 @@ Active renvoi occupation :
 ; fm_recsnd
 Enregistrement sonore :
 
+; fm_phonestatus
+Statut du téléphone :
+
 ; fm_enablevm
 Active messagerie vocale :
 

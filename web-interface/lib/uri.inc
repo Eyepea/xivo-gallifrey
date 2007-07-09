@@ -55,6 +55,8 @@ class xivo_uri
 
 		if(isset($arr['host'],$arr['host']{0}) === true)
 		{
+			$arr['host'] = (string) $arr['host'];
+
 			switch($type_host)
 			{
 				case $this->_host['ip_litteral']:
@@ -84,6 +86,7 @@ class xivo_uri
 
 		if(isset($arr['user'],$arr['user']{0}) === true)
 		{
+			$arr['user'] = (string) $arr['user'];
 			if($encode === true)
 				$arr['user'] = $this->encode($arr['user'],'user');
 
@@ -92,6 +95,7 @@ class xivo_uri
 
 		if(isset($arr['passwd'],$arr['passwd']{0}) === true)
 		{
+			$arr['passwd'] = (string) $arr['passwd'];
 			if($encode === true)
 				$arr['passwd'] = $this->encode($arr['passwd'],'passwd');
 
@@ -107,6 +111,7 @@ class xivo_uri
 
 		if(isset($arr['path'],$arr['path']{0}) === true)
 		{
+			$arr['path'] = (string) $arr['path'];
 			if($encode === false)
 				$path = $arr['path'];
 			else
@@ -127,6 +132,7 @@ class xivo_uri
 
 		if(isset($arr['fragment'],$arr['fragment']{0}) === true)
 		{
+			$arr['fragment'] = (string) $arr['fragment'];
 			if($encode === true)
 				$fragment = $this->encode($arr['fragment'],'fragment');
 			else
@@ -216,7 +222,7 @@ class xivo_uri
 			if($this->valid_path($uri['path']) === false)
 				return(false);
 
-			if(isset($authority) === true && $uri['path'][0] !== '/')
+			if(isset($authority) === true && $uri['path']{0} !== '/')
 				return(false);
 
 			if(isset($authority,$uri['scheme']) === false && ($pos = strpos($uri['path'],':')) !== false
@@ -399,6 +405,7 @@ class xivo_uri
 
 			if(isset($ref[0],$ref[0]{0}) === true)
 			{
+				$ref[0] = (string) $ref[0];
 				if($encode === true)
 				{
 					$key = $this->encode($ref[0],'query_key');
@@ -408,8 +415,10 @@ class xivo_uri
 					$r[$i] = $ref[0];
 			}
 
-			if(isset($ref[1],$ref[1]{0}) === false)
+			if(isset($ref[1]) === false)
 				continue;
+			
+			$ref[1] = (string) $ref[1];
 
 			if($encode === true)
 			{

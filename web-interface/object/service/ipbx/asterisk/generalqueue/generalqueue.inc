@@ -24,13 +24,15 @@ class xivo_service_asterisk_generalqueue extends xivo_service_asterisk_staticcon
 		$this->_sre = &$sre;
 		$this->_dso = &$dso;
 
+		$this->_dso->set_param('filename',$this->_filename);
+
 		$this->_load_config();
 		$this->_generalqueue['conf'] = $this->_conf;
 	}
 
 	function get_by_name($name,$disable=null)
 	{
-		return(parent::get_where(array('var_name' => $name),$disable));
+		return($this->get_where(array('var_name' => $name),$disable));
 	}
 
 	function get_where($arr,$disable=null)
@@ -73,7 +75,7 @@ class xivo_service_asterisk_generalqueue extends xivo_service_asterisk_staticcon
 		$arr = array();
 		$arr['var_val'] = $val;
 
-		if($val !== '' && $val !== null)
+		if($val !== null)
 			$arr['commented'] = $disable !== null ? $disable : 0;
 		else
 			$arr['commented'] = $disable !== null ? $disable : 1;

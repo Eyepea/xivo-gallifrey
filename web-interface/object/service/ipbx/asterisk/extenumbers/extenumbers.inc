@@ -25,6 +25,9 @@ class xivo_service_asterisk_extenumbers extends xivo_service_asterisk_abstract
 
 	function get($id)
 	{
+		if(is_array($id) === true && ($id = $this->get_where($id)) === false)
+			return(false);
+
 		if(($id = xivo_uint($id)) === 0 || ($r = $this->_dso->get($id)) === false)
 			return(false);
 
@@ -56,32 +59,14 @@ class xivo_service_asterisk_extenumbers extends xivo_service_asterisk_abstract
 		return($r);
 	}
 
-	function get_by_number_context($number,$context)
-	{
-		$arr = array();
-
-		$arr['number'] = $number;
-		$arr['context'] = $context;
-
-		return($this->get_where($arr));
-	}
-
 	function get_where($arr)
 	{
 		$arr = (array) $arr;
 
-		$where = array();
-
-		if(isset($arr['number']) === true)
-			$where['number'] = $arr['number'];
-
-		if(isset($arr['context']) === true)
-			$where['context'] = $arr['context'];
-
-		if(($id = $this->_dso->get_where($where)) === false)
+		if(($where = $this->get_elements_where($arr)) === false)
 			return(false);
 
-		return($this->get($id));
+		return($this->_dso->get_where($where));
 	}
 
 	function add($arr,$id=0)

@@ -33,7 +33,7 @@
 	if($list === false || ($nb = count($list)) === 0):
 ?>
 	<tr class="sb-content">
-		<td colspan="8" class="td-single"><?=$this->bbf('no_peer')?></td>
+		<td colspan="8" class="td-single"><?=$this->bbf('no_peer');?></td>
 	</tr>
 <?php
 	else:

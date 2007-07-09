@@ -29,6 +29,59 @@ class xivo_datastorage
 		return(isset($datastorage[$type]));
 	}
 
+	function get_param_uri($str)
+	{
+		xivo::load_class('xivo_uri');
+		$uri = new xivo_uri();
+
+		if(($arr = $uri->parse_uri($str)) === false || isset($arr['scheme']) === false)
+			return(false);
+
+		$r = array();
+		$r['type'] = $arr['scheme'];
+
+		if(isset($arr['authority']) === true)
+		{
+			if(isset($arr['authority']['user']) === true)
+				$r['user'] = $arr['authority']['user'];
+
+			if(isset($arr['authority']['passwd']) === true)
+				$r['pass'] = $arr['authority']['passwd'];
+
+			if(isset($arr['authority']['host']) === true)
+				$r['host'] = $arr['authority']['host'];
+
+			if(isset($arr['authority']['port']) === true)
+				$r['port'] = $arr['authority']['port'];
+		}
+
+		if(isset($arr['path']) === true)
+		{
+			if($arr['path']{0} === '/' && isset($arr['authority']) === true)
+				$r['db'] = substr($arr['path'],1);
+			else
+				$r['db'] = $arr['path'];
+		}
+
+		if(isset($arr['query']) === true)
+		{
+			$nb = count($arr['query']);
+
+			for($i = 0;$i < $nb;$i++)
+			{
+				if(isset($arr['query'][$i][0]{0}) === false)
+					continue;
+
+				if(isset($arr['query'][$i][1]) === true)
+					$r[$arr['query'][$i][0]] = $arr['query'][$i][1];
+				else
+					$r[$arr['query'][$i][0]] = '';
+			}
+		}
+
+		return($r);
+	}
+
 	function get_extension_name($type)
 	{
 		$r = false;

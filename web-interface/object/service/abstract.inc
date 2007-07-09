@@ -167,11 +167,27 @@ class xivo_service_abstract
 		$r = false;
 
 		$name = (string) $name;
+		$ini = $datastorage = false;
 
-		if(xivo_issa($name,$this->_ini) === false || xivo_issa('datastorage',$this->_ini[$name]) === false)
+		if(xivo_issa($name,$this->_ini) === true)
+			$ini = $this->_ini[$name];
+
+		if(isset($this->_ini['general']['datastorage']) === true)
+			$datastorage = $this->_ini['general']['datastorage'];
+
+		if($ini === false && $datastorage === false)
 			trigger_error('Invalid or missing datastorage '.$name.' in '.$this->_type.' ini file',E_USER_ERROR);
 
-		$datastorage = &$this->_ini[$name]['datastorage'];
+		if($ini !== false && isset($ini['datastorage']) === true)
+		{
+			if(is_string($ini['datastorage']) === true)
+				$datastorage = xivo_datastorage::get_param_uri($ini['datastorage']);
+			else
+				$datastorage = $ini['datastorage'];
+		}
+
+		if($datastorage === false)
+			trigger_error('Invalid or missing datastorage '.$name.' in '.$this->_type.' ini file',E_USER_ERROR);
 
 		if(isset($datastorage['type']) === false)
 			trigger_error('Missing datastorage type '.$name.' in '.$this->_type.' ini file',E_USER_ERROR);

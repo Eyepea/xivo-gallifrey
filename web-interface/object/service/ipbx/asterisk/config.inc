@@ -1,5 +1,22 @@
 <?php
 
+define('XIVO_SRE_IPBX_AST_CHAN_SIP','SIP');
+define('XIVO_SRE_IPBX_AST_CHAN_IAX','IAX2');
+define('XIVO_SRE_IPBX_AST_CHAN_LOCAL','local');
+define('XIVO_SRE_IPBX_AST_CHAN_AGENT','Agent');
+
+define('XIVO_SRE_IPBX_AST_PROTO_SIP','sip');
+define('XIVO_SRE_IPBX_AST_PROTO_IAX','iax');
+
+define('XIVO_SRE_IPBX_AST_CODEC_ALAW','alaw');
+define('XIVO_SRE_IPBX_AST_CODEC_G729','g729');
+define('XIVO_SRE_IPBX_AST_CODEC_GSM','gsm');
+define('XIVO_SRE_IPBX_AST_CODEC_ULAW','ulaw');
+
+define('XIVO_SRE_IPBX_AST_SNDFORMAT_WAV','wav');
+define('XIVO_SRE_IPBX_AST_SNDFORMAT_WAV49','wav49');
+define('XIVO_SRE_IPBX_AST_SNDFORMAT_GSM','gsm');
+
 $array = array();
 
 $array['section'] = array();
@@ -22,6 +39,9 @@ $array['section']['queue']['disabled'] = true;
 $array['section']['voicemail'] = array();
 $array['section']['voicemail']['disabled'] = true;
 
+$array['section']['agent'] = array();
+$array['section']['agent']['disabled'] = true;
+
 $array['module'] = array();
 
 $array['module']['extensions'] = array();
@@ -32,7 +52,7 @@ $array['module']['extenumbers']['datastorage'] = true;
 
 $array['module']['extenfeatures'] = array();
 $array['module']['extenfeatures']['disabled'] = true;
-$array['module']['extenfeatures']['datastorage'] = 'extensions';
+$array['module']['extenfeatures']['datastorage'] = true;
 
 $array['module']['configfiles'] = array();
 $array['module']['configfiles']['disabled'] = true;
@@ -122,15 +142,32 @@ $array['module']['musiconhold']['datastorage'] = true;
 $array['module']['didfeatures'] = array();
 $array['module']['didfeatures']['datastorage'] = true;
 
-$array['module']['cdr'] = array();
+$array['module']['generalagent'] = array();
+$array['module']['generalagent']['datastorage'] = true;
+$array['module']['generalagent']['section'] = 'agent';
+
 $array['module']['agent'] = array();
+$array['module']['agent']['datastorage'] = true;
+$array['module']['agent']['section'] = 'agent';
+
+$array['module']['agentfeatures'] = array();
+$array['module']['agentfeatures']['datastorage'] = true;
+$array['module']['agentfeatures']['section'] = 'agent';
+
+$array['module']['agentgroup'] = array();
+$array['module']['agentgroup']['datastorage'] = true;
+$array['module']['agentgroup']['section'] = 'agent';
+
+$array['module']['cdr'] = array();
 
 $array['protocol'] = array();
-$array['protocol']['sip'] = array('name' => 'sip','module' => 'usersip'); 
-$array['protocol']['iax'] = array('name' => 'iax2','module' => 'useriax'); 
+$array['protocol']['sip'] = array('name' => XIVO_SRE_IPBX_AST_PROTO_SIP,'module' => 'usersip'); 
+$array['protocol']['iax'] = array('name' => XIVO_SRE_IPBX_AST_PROTO_IAX,'module' => 'useriax'); 
 
-$array['interface'] = array();
-$array['interface']['sip'] = 'SIP';
-$array['interface']['iax'] = 'IAX2';
+$array['channel'] = array();
+$array['channel']['sip'] = XIVO_SRE_IPBX_AST_CHAN_SIP;
+$array['channel']['iax'] = XIVO_SRE_IPBX_AST_CHAN_IAX;
+$array['channel']['local'] = XIVO_SRE_IPBX_AST_CHAN_LOCAL;
+$array['channel']['agent'] = XIVO_SRE_IPBX_AST_CHAN_AGENT;
 
 ?>

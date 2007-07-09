@@ -255,14 +255,14 @@ class xivo_service_asterisk_extenfeatures extends xivo_service_asterisk_extensio
 		return(false);
 	}
 
-	function set_chk_value($key,$value,$default=null)
+	function set_chk_value($key,$value)
 	{
 		if(isset($value{0}) === true && $value{0} !== '_'
 		&& preg_match('/[0-9]/',$value) !== 0
 		&& preg_match('/[X\.\*#]/',$value) !== 0)
 			$value = '_'.$value;
 
-		return(parent::set_chk_value($key,$value,$default));
+		return(parent::set_chk_value($key,$value));
 	}
 
 	function get_all_where($arr=array(),$disable=null,$prepare=true)

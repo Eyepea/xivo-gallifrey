@@ -23,6 +23,8 @@ class xivo_service_asterisk_meetme extends xivo_service_asterisk_staticconf
 		$this->_sre = &$sre;
 		$this->_dso = &$dso;
 
+		$this->_dso->set_param('filename',$this->_filename);
+
 		$this->_load_config();
 	}
 
@@ -45,6 +47,7 @@ class xivo_service_asterisk_meetme extends xivo_service_asterisk_staticconf
 		$data['number'] = isset($val[0]) === true ? $val[0] : '';
 		$data['pin'] = isset($val[1]) === true ? $val[1] : '';
 		$data['admin-pin'] = isset($val[2]) === true ? $val[2] : '';
+		$data['commented'] = (bool) $data['commented'];
 
 		return($data);
 	}
@@ -92,6 +95,26 @@ class xivo_service_asterisk_meetme extends xivo_service_asterisk_staticconf
 		$arr['var_val'] = $val;
 
 		return(parent::edit($id,$arr));
+	}
+	
+	function enable($id)
+	{
+		if(($r = parent::get($id,true)) === false)
+			return(false);
+
+		$r['commented'] = false;
+
+		return(parent::edit($r['id'],$r));
+	}
+
+	function disable($id)
+	{
+		if(($r = parent::get($id,false)) === false)
+			return(false);
+
+		$r['commented'] = true;
+
+		return(parent::edit($r['id'],$r));
 	}
 }
 

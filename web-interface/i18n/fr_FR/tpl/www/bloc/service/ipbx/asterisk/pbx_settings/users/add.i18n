@@ -70,6 +70,9 @@ Remontée de fiche :
 ; fm_userfeatures_ringseconds
 Temps de sonnerie :
 
+; fm_userfeatures_ringseconds-opt0
+Illimité
+
 ; fm_userfeatures_ringseconds-opt
 %s secondes
 
@@ -81,6 +84,9 @@ Musique d'attente :
 
 ; fm_userfeatures_ringgroup
 Sonnerie :
+
+; fd-callgroup
+Groupes
 
 ; bt-ingroup
 Ajouter ->
@@ -94,6 +100,45 @@ Créer un groupe
 ; fm_usergroup
 Groupe de sonnerie :
 
+; col_group-name
+Nom
+
+; col_group-channel
+Canal
+
+; col_group-calllimit
+Nb Appels
+
+; no_group
+Aucun groupe d'interception
+
+; fd-queuegroup
+Files d'attente
+
+; col_queue-name
+Nom
+
+; col_queue-channel
+Canal
+
+; col_queue-penalty
+Pénalité
+
+; col_queue-calllimit
+Nb Appels
+
+; no_queue
+Aucune file d'attente
+
+; create_queue
+Créer une file d'attente
+
+; bt-inqueue
+Ajouter ->
+
+; bt-outqueue
+<- Enlever
+
 ; fm_codec-custom
 Personnaliser :
 
@@ -104,10 +149,10 @@ Désactiver :
 Activer :
 
 ; bt-upcodec
-Haut
+Monter
 
 ; bt-downcodec
-Bas
+Descendre
 
 ; bt-incodec
 Ajouter ->

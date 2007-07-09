@@ -48,7 +48,7 @@
 	if($list === false || ($nb = count($list)) === 0):
 ?>
 	<tr class="sb-content">
-		<td colspan="9" class="td-single"><?=$this->bbf('no_user')?></td>
+		<td colspan="9" class="td-single"><?=$this->bbf('no_user');?></td>
 	</tr>
 <?php
 	else:

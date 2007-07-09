@@ -1,0 +1,107 @@
+; title_content_name
+Agents > Ajouter un agent
+
+; fm_agentfeatures_firstname
+Prénom :
+
+; fm_agentfeatures_lastname
+Nom :
+
+; fm_agentfeatures_number
+Numéro :
+
+; fm_agentfeatures_passwd
+Mot de passe :
+
+; fm_agentfeatures_silent
+Désactiver l'annonce de connexion :
+
+; fm_agentfeatures_numgroup
+Groupe :
+
+; fm_agent_ackcall
+Appuyer sur # avant de prendre un appel :
+
+; fm_agent_ackcall-opt-no
+Non
+
+; fm_agent_ackcall-opt-yes
+Oui
+
+; fm_agent_ackcall-opt-always
+Toujours
+
+; fm_agent_autologoff
+Temps de sonnerie avant déconnexion : 
+
+; fm_agent_autologoff-opt0
+Illimité
+
+; fm_agent_autologoff-opt
+%s secondes
+
+; fm_agent_wrapuptime
+Délai de réattribution d'appel :
+
+; fm_agent_wrapuptime-opt0
+Désactivé
+
+; fm_agent_wrapuptime-opt
+%s secondes
+
+; fm_agent_maxlogintries
+Nombre de tentatives de connexion :
+
+; fm_agent_maxlogintries-opt0
+Illimité
+
+; fm_agent_maxlogintries-opt
+%s
+
+; fm_agent_goodbye
+Fichier son de fin d'un appel :
+
+; fm_agent_goodbye-opt-default
+Défaut
+
+; fm_agent_musiconhold
+Musique d'attente :
+
+; fm_agent_updatecdr
+Enregistrement dans les journaux d'appels :
+
+; fm_agent_recordagentcalls
+Enregistrement des appels :
+
+; fm_agent_createlink
+Ajouter le nom de l'enregistrement aux journaux d'appels :
+
+; fm_agent_recordformat
+Format d'enregistrement :
+
+; fm_agent_urlprefix
+URL d'accès aux enregistrements :
+
+; fm_agent_custom_beep
+Fichier son des beeps :
+
+; fm_agent_custom-beep-opt-default
+Défaut
+
+; bt-inqueue
+Ajouter ->
+
+; bt-outqueue
+<- Enlever
+
+; col_queue-name
+Nom
+
+; col_queue-penalty
+Pénalité
+
+; no_queue
+Aucune file d'attente
+
+; fm_bt-save
+Sauvegarder

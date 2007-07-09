@@ -27,7 +27,7 @@ if(is_array($gregister) === true && isset($gregister['var_val']) === true)
 	$info['register']['commented'] = $gregister['commented'];
 
 	if(preg_match('#^(([a-z0-9_\.-]+)(@[a-z0-9\.-]+)?):([a-z0-9_\.-]+)'.
-		      '(:[a-z0-9_\.-]+)?@([a-z0-9\.-]+)(:[0-9]+)?(/[0-9]+)?$#i',$gregister['var_val'],$register) === 1)
+		      '(:[a-z0-9_\.-]+)?@([a-z0-9\.-]+)(:[0-9]+)?(/[a-z0-9]+)?$#i',$gregister['var_val'],$register) === 1)
 	{
 		$info['register']['username'] = $register[1];
 		$info['register']['password'] = $register[4];
@@ -63,7 +63,7 @@ do
 
 	do
 	{
-		if(xivo_issa('register',$_QR) === false)
+		if(xivo_issa('register',$_QR) === false || $info['trunk']['commented'] === true)
 			break;
 
 		$result['register'] = array();
@@ -103,16 +103,22 @@ do
 		$result['trunk'] = $trunksip->get_filter_result();
 	}
 
+	$result['trunk']['commented'] = $info['trunk']['commented'];
+
 	if(is_array($result['trunk']['allow']) === true)
 	{
 		$allow = $result['trunk']['allow'];
 		$result['trunk']['allow'] = implode(',',$result['trunk']['allow']);
 	}
 
+	$info['tfeatures']['registercommented'] = 0;
+
 	if($register_active === false)
 	{
 		if($registerid !== 0)
 			$status['register'] = 'disable';
+
+		$info['tfeatures']['registercommented'] = 1;
 	}
 	else if($register !== '')
 	{
@@ -130,7 +136,14 @@ do
 		$result['tfeatures'] = $tfeatures->get_filter_result();
 	}
 
-	if($edit === false || $trunksip->edit($info['trunk']['id'],$result['trunk']) === false)
+	if($edit === false)
+	{
+		if($register === '')
+			$result['register'] = $info['register'];
+		break;
+	}
+
+	if($trunksip->edit($info['trunk']['id'],$result['trunk']) === false)
 		break;
 
 	switch($status['register'])

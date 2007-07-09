@@ -31,8 +31,8 @@
 
 <?=$form->text(array('desc' => $this->bbf('fm_emailsubject'),'name' => 'emailsubject','id' => 'it-subject','size' => 25,'value' => $this->varra('info','emailsubject')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<div id="emailbody" class="fm-field"><p><label id="lb-emailbody" for="it-emailbody"><?=$this->bbf('fm_emailbody')?></label></p>
-<?=$form->textarea(array('field' => false,'name' => 'emailbody','id' => 'it-emailbody','cols' => 60,'rows' => 5),$this->varra('info','emailbody'),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<div id="emailbody" class="fm-field"><p><label id="lb-emailbody" for="it-emailbody"><?=$this->bbf('fm_emailbody');?></label></p>
+<?=$form->textarea(array('field' => false,'name' => 'emailbody','label' => false,'id' => 'it-emailbody','cols' => 60,'rows' => 5),$this->varra('info','emailbody'),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 </div>
 
 <?=$form->submit(array('name' => 'submit','id' => 'it-submit','value' => $this->bbf('fm_bt-save')));?>

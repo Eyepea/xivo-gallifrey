@@ -25,28 +25,24 @@ class xivo_service_asterisk_sounds extends xivo_service_asterisk_abstract
 
 		$this->_load_config();
 
-		if(($size = $this->_get_option_file_maxsize()) === false)
+		$upload = xivo_get_memory('upload_max_filesize');
+
+		if(($size = $this->_get_option_file_maxsize()) !== false && $upload < $size)
 		{
-			$upload = xivo_get_memory('upload_max_filesize');
-
-			if($upload < $size)
-			{
-				trigger_error('file max size in configuration file shoud be less than '.
-					      'upload_max_filesize php.ini directive',E_USER_ERROR);
-			}
-
-			$size = $upload;
+			trigger_error('file max size in configuration file shoud be less than '.
+				      'upload_max_filesize php.ini directive',E_USER_ERROR);
 		}
+		else
+			$size = $upload;
 
 		$this->_conf['option']['file']['size'] = $size;
 	}
 
 	function _chk_sndpath()
 	{
-		if(xivo_issa('general',$this->_sre->_ini) === false
-		|| xivo_issa('path',$this->_sre->_ini['general']) === false
-		|| isset($this->_sre->_ini['general']['path']['sounds']) === false
-		|| ($this->_sndpath = xivo_file::is_d_rwx($this->_sre->_ini['general']['path']['sounds'])) === false)
+		if(xivo_issa($this->_name,$this->_sre->_ini) === false
+		|| isset($this->_sre->_ini[$this->_name]['path']) === false
+		|| ($this->_sndpath = xivo_file::is_d_rwx($this->_sre->_ini[$this->_name]['path'])) === false)
 			return(false);
 	}
 
@@ -290,9 +286,10 @@ class xivo_service_asterisk_sounds extends xivo_service_asterisk_abstract
 		return($r);
 	}
 
-	function get_list($dir='')
+	function get_list($dir='',$path=false)
 	{
 		$dir = (string) $dir;
+		$path = (bool) $path;
 
 		if(($match_file = $this->_get_option_file_name()) === false)
 			return(false);
@@ -312,7 +309,24 @@ class xivo_service_asterisk_sounds extends xivo_service_asterisk_abstract
 		if($r !== false && isset($r[0]) === false)
 			$r = false;
 
-		return($r);
+		if($r === false || $path === false)
+			return($r);
+
+		$arr = array();
+
+		$nb = count($r);
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			$file = $dir.XIVO_SEP_DIR.$r[$i];
+
+			if(($pos = strrpos($file,'.')) !== false)
+				$file = substr($file,0,$pos);
+
+			$arr[$file] = $r[$i];
+		}
+
+		return($arr);
 	}
 
 	function get_list_dirs()

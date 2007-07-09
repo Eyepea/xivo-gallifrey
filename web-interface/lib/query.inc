@@ -262,11 +262,55 @@ class xivo_query
 		return($r);
 	}
 
+	function encode_query($str,$type='')
+	{
+		$str = (string) $str;
+
+		$regexp = 'a-zA-Z0-9-\._~\!\$\'\(\)\*,;:@\/\? ';
+
+		if($type === 'val')
+			$regexp .= '=';
+		else if($type !== 'key')
+			return(urlencode($str));
+
+		if(preg_match_all('/[^'.$regexp.']+/',$str,$match,PREG_OFFSET_CAPTURE) === 0)
+			return($str);
+
+		$match = $match[0];
+		$nb = count($match);
+
+		$r = '';
+		$len = strlen($str);
+
+		if($match[0][1] > 0)
+			$r = mb_strcut($str,0,$match[0][1]);
+		
+		for($i = 0;$i < $nb;$i++)
+		{
+			$r .= urlencode($match[$i][0]);
+			$mlen = strlen($match[$i][0]);
+
+			if(isset($match[$i+1]) === true)
+			{
+				$pos = $match[$i][1] + $mlen;
+				$r .= mb_strcut($str,$pos,$match[$i+1][1] - $pos);
+				continue;
+			}
+
+			if(($match[$i][1] + $mlen) < $len)
+				$r .= mb_strcut($str,$match[$i][1] + $mlen);
+		}
+
+		$r = str_replace(' ','+',$r);
+
+		return($r);
+	}
+
 	function mk_query_str($a,$pre='',$key='',$sep='')
 	{
 		$r = '';
 		$a = (array) $a;
-		$sep = (string) $sep;
+		$pre = (string) $pre;
 		$key = (string) $key;
 		$sep = (string) $sep;
 
@@ -282,7 +326,7 @@ class xivo_query
 			return($r);
 
 		$r = array();
-	
+
 		for($i = 0;$i < $arr['cnt'];$i++)
 		{
 			$k = &$arr['keys'][$i];
@@ -294,9 +338,9 @@ class xivo_query
 				$tmp = $key.'['.$tmp.']';
 
 			if(is_array($v) === true || is_object($v) === true)
-				$r[] = xivo_query::mk_query_str($v,'','',$sep);
+				$r[] = xivo_query::mk_query_str($v,null,null,$sep);
 			else
-				$r[] = $tmp.'='.urlencode($v);
+				$r[] = xivo_query::encode_query($tmp,'key').'='.xivo_query::encode_query($v,'val');
 		}
 
 		return(implode($sep,$r));

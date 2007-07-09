@@ -4,13 +4,14 @@ $array = array();
 
 $array['exten'] = array();
 $array['exten']['voicemsg'] = array();
-$array['exten']['voicemsg']['_line'][] = array('priority' => 1,'app' => 'VoiceMailMain','appdata' => '${CALLERID(num)@default}');
+$array['exten']['voicemsg']['_line'][] = array('priority' => 1,'app' => 'VoiceMailMain','appdata' => '${CALLERID(num)}@${CONTEXT}|s');
 $array['exten']['voicemsg']['_line'][] = array('priority' => 2,'app' => 'Hangup','appdata' => '');
 
 $array['exten']['fwdundoall'] = array();
-$array['exten']['fwdundoall']['priority'] = 1;
-$array['exten']['fwdundoall']['app'] = 'Noop';
-$array['exten']['fwdundoall']['appdata'] = 'Not implemented undo all';
+$array['exten']['fwdundoall']['app'] = 'Macro';
+$array['exten']['fwdundoall']['_line'][] = array('priority' => 1,'appdata' => 'features|FWD/Unc/Status|||1');
+$array['exten']['fwdundoall']['_line'][] = array('priority' => 2,'appdata' => 'features|FWD/RNA/Status|||1');
+$array['exten']['fwdundoall']['_line'][] = array('priority' => 3,'appdata' => 'features|FWD/Busy/Status|all-forward-off|all-forward-off|1');
 
 $array['exten']['fwdundounc'] = array();
 $array['exten']['fwdundounc']['priority'] = 1;
@@ -33,10 +34,11 @@ $array['exten']['fwdunc']['appdata'] = '';
 $array['exten']['fwdunc']['_line'][] = array('priority' => 1,'app' => 'Answer');
 $array['exten']['fwdunc']['_line'][] = array('priority' => 2,'app' => 'Wait','appdata' => '0.5');
 $array['exten']['fwdunc']['_line'][] = array('priority' => 3,'appdata' => 'USER=${CALLERID(num)}');
-$array['exten']['fwdunc']['_line'][] = array('priority' => 4,'appdata' => 'DB(users/${USER}/FWD/Unc/Number)=${EXTEN:$<EXTNUMLEN>}');
-$array['exten']['fwdunc']['_line'][] = array('priority' => 5,'appdata' => 'DB(users/${USER}/FWD/Unc/Status)=1');
-$array['exten']['fwdunc']['_line'][] = array('priority' => 6,'app' => 'Playback','appdata' => 'forward-on');
-$array['exten']['fwdunc']['_line'][] = array('priority' => 7,'app' => 'Hangup');
+$array['exten']['fwdunc']['_line'][] = array('priority' => 4,'app' => 'Macro','appdata' => 'antiloops|${USER}|${CONTEXT}');
+$array['exten']['fwdunc']['_line'][] = array('priority' => 5,'appdata' => 'DB(${CONTEXT}/users/${USER}/FWD/Unc/Number)=${EXTEN:$<EXTNUMLEN>}');
+$array['exten']['fwdunc']['_line'][] = array('priority' => 6,'appdata' => 'DB(${CONTEXT}/users/${USER}/FWD/Unc/Status)=1');
+$array['exten']['fwdunc']['_line'][] = array('priority' => 7,'app' => 'Playback','appdata' => 'forward-on');
+$array['exten']['fwdunc']['_line'][] = array('priority' => 8,'app' => 'Hangup');
 
 $array['exten']['fwdrna'] = array();
 $array['exten']['fwdrna']['app'] = 'Set';
@@ -44,10 +46,11 @@ $array['exten']['fwdrna']['appdata'] = '';
 $array['exten']['fwdrna']['_line'][] = array('priority' => 1,'app' => 'Answer');
 $array['exten']['fwdrna']['_line'][] = array('priority' => 2,'app' => 'Wait','appdata' => '0.5');
 $array['exten']['fwdrna']['_line'][] = array('priority' => 3,'appdata' => 'USER=${CALLERID(num)}');
-$array['exten']['fwdrna']['_line'][] = array('priority' => 4,'appdata' => 'DB(users/${USER}/FWD/RNA/Number)=${EXTEN:$<EXTNUMLEN>}');
-$array['exten']['fwdrna']['_line'][] = array('priority' => 5,'appdata' => 'DB(users/${USER}/FWD/RNA/Status)=1');
-$array['exten']['fwdrna']['_line'][] = array('priority' => 6,'app' => 'Playback','appdata' => 'forward-on');
-$array['exten']['fwdrna']['_line'][] = array('priority' => 7,'app' => 'Hangup');
+$array['exten']['fwdrna']['_line'][] = array('priority' => 4,'app' => 'Macro','appdata' => 'antiloops|${USER}|${CONTEXT}');
+$array['exten']['fwdrna']['_line'][] = array('priority' => 5,'appdata' => 'DB(${CONTEXT}/users/${USER}/FWD/RNA/Number)=${EXTEN:$<EXTNUMLEN>}');
+$array['exten']['fwdrna']['_line'][] = array('priority' => 6,'appdata' => 'DB(${CONTEXT}/users/${USER}/FWD/RNA/Status)=1');
+$array['exten']['fwdrna']['_line'][] = array('priority' => 7,'app' => 'Playback','appdata' => 'forward-on');
+$array['exten']['fwdrna']['_line'][] = array('priority' => 8,'app' => 'Hangup');
 
 $array['exten']['fwdbusy'] = array();
 $array['exten']['fwdbusy']['app'] = 'Set';
@@ -55,21 +58,44 @@ $array['exten']['fwdbusy']['appdata'] = '';
 $array['exten']['fwdbusy']['_line'][] = array('priority' => 1,'app' => 'Answer');
 $array['exten']['fwdbusy']['_line'][] = array('priority' => 2,'app' => 'Wait','appdata' => '0.5');
 $array['exten']['fwdbusy']['_line'][] = array('priority' => 3,'appdata' => 'USER=${CALLERID(num)}');
-$array['exten']['fwdbusy']['_line'][] = array('priority' => 4,'appdata' => 'DB(users/${USER}/FWD/Busy/Number)=${EXTEN:$<EXTNUMLEN>}');
-$array['exten']['fwdbusy']['_line'][] = array('priority' => 5,'appdata' => 'DB(users/${USER}/FWD/Busy/Status)=1');
-$array['exten']['fwdbusy']['_line'][] = array('priority' => 6,'app' => 'Playback','appdata' => 'forward-on');
-$array['exten']['fwdbusy']['_line'][] = array('priority' => 7,'app' => 'Hangup');
+$array['exten']['fwdbusy']['_line'][] = array('priority' => 4,'app' => 'Macro','appdata' => 'antiloops|${USER}|${CONTEXT}');
+$array['exten']['fwdbusy']['_line'][] = array('priority' => 5,'appdata' => 'DB(${CONTEXT}/users/${USER}/FWD/Busy/Number)=${EXTEN:$<EXTNUMLEN>}');
+$array['exten']['fwdbusy']['_line'][] = array('priority' => 6,'appdata' => 'DB(${CONTEXT}/users/${USER}/FWD/Busy/Status)=1');
+$array['exten']['fwdbusy']['_line'][] = array('priority' => 7,'app' => 'Playback','appdata' => 'forward-on');
+$array['exten']['fwdbusy']['_line'][] = array('priority' => 8,'app' => 'Hangup');
 
 $array['exten']['recsnd'] = array();
 $array['exten']['recsnd']['app'] = 'Set';
 $array['exten']['recsnd']['appdata'] = 1;
-$array['exten']['recsnd']['_line'][] = array('priority' => 1,'app' => 'Wait');
+$array['exten']['recsnd']['_line'][] = array('priority' => 1,'app' => 'Playback','appdata' => 'record-message-after-beep');
 $array['exten']['recsnd']['_line'][] = array('priority' => 2,'appdata' => 'ROOT=/usr/share/asterisk/sounds/web-interface/recordings');
 $array['exten']['recsnd']['_line'][] = array('priority' => 3,'appdata' => 'FILE=${CALLERID(num)}-${EPOCH}');
 $array['exten']['recsnd']['_line'][] = array('priority' => 4,'app' => 'Record','appdata' => '${ROOT}/${FILE}:wav');
 $array['exten']['recsnd']['_line'][] = array('priority' => 5,'app' => 'Wait');
 $array['exten']['recsnd']['_line'][] = array('priority' => 6,'app' => 'Playback','appdata' => '${ROOT}/${FILE}');
 $array['exten']['recsnd']['_line'][] = array('priority' => 7,'app' => 'Hangup','appdata' => '');
+
+$array['exten']['phonestatus'] = array();
+$array['exten']['phonestatus']['app'] = 'Playback';
+$array['exten']['phonestatus']['appdata'] = '';
+$array['exten']['phonestatus']['_line'][] = array('priority' => 1,'app' => 'Answer');
+$array['exten']['phonestatus']['_line'][] = array('priority' => 2,'appdata' => 'status-phone');
+$array['exten']['phonestatus']['_line'][] = array('priority' => 3,'appdata' => 'forward-inc');
+$array['exten']['phonestatus']['_line'][] = array('priority' => 4,'app' => 'Macro','appdata' => 'checkdbfeatures|FWD/Unc/Status|1|FWD/Unc/Number');
+$array['exten']['phonestatus']['_line'][] = array('priority' => 5,'appdata' => 'forward-busy');
+$array['exten']['phonestatus']['_line'][] = array('priority' => 6,'app' => 'Macro','appdata' => 'checkdbfeatures|FWD/Busy/Status|1|FWD/Busy/Number');
+$array['exten']['phonestatus']['_line'][] = array('priority' => 7,'appdata' => 'forward-rna');
+$array['exten']['phonestatus']['_line'][] = array('priority' => 8,'app' => 'Macro','appdata' => 'checkdbfeatures|FWD/RNA/Status|1|FWD/RNA/Number');
+$array['exten']['phonestatus']['_line'][] = array('priority' => 9,'appdata' => 'vm-status');
+$array['exten']['phonestatus']['_line'][] = array('priority' => 10,'app' => 'Macro','appdata' => 'checkdbfeatures|VM');
+$array['exten']['phonestatus']['_line'][] = array('priority' => 11,'appdata' => 'screening-status');
+$array['exten']['phonestatus']['_line'][] = array('priority' => 12,'app' => 'Macro','appdata' => 'checkdbfeatures|Screen');
+$array['exten']['phonestatus']['_line'][] = array('priority' => 13,'appdata' => 'record-status');
+$array['exten']['phonestatus']['_line'][] = array('priority' => 14,'app' => 'Macro','appdata' => 'checkdbfeatures|Record');
+$array['exten']['phonestatus']['_line'][] = array('priority' => 15,'appdata' => 'dnd-status');
+$array['exten']['phonestatus']['_line'][] = array('priority' => 16,'app' => 'Macro','appdata' => 'checkdbfeatures|DND');
+$array['exten']['phonestatus']['_line'][] = array('priority' => 17,'appdata' => 'bye');
+$array['exten']['phonestatus']['_line'][] = array('priority' => 18,'app' => 'Hangup');
 
 $array['exten']['enablevm'] = array();
 $array['exten']['enablevm']['priority'] = 1;
@@ -89,12 +115,12 @@ $array['exten']['enablednd']['appdata'] = 'features|DND|dnd-on|dnd-off';
 $array['exten']['incallrec'] = array();
 $array['exten']['incallrec']['priority'] = 1;
 $array['exten']['incallrec']['app'] = 'Macro';
-$array['exten']['incallrec']['appdata'] = 'features|Record|to-record-call&on|to-record-call&off-duty';
+$array['exten']['incallrec']['appdata'] = 'features|Record|record-call-on|record-call-off';
 
 $array['exten']['incallfilter'] = array();
 $array['exten']['incallfilter']['priority'] = 1;
 $array['exten']['incallfilter']['app'] = 'Macro';
-$array['exten']['incallfilter']['appdata'] = 'features|Screen|screen-callee-options&on|screen-callee-options&off-duty';
+$array['exten']['incallfilter']['appdata'] = 'features|Screen|screening-on|screening-off';
 
 $array['exten']['pickup'] = array();
 $array['exten']['pickup']['priority'] = 1;
@@ -129,6 +155,9 @@ $array['element']['fwdbusy']['default'] = '*23.';
 $array['element']['recsnd'] = array();
 $array['element']['recsnd']['default'] = '*9';
 
+$array['element']['phonestatus'] = array();
+$array['element']['phonestatus']['default'] = '*10';
+
 $array['element']['enablevm'] = array();
 $array['element']['enablevm']['default'] = '*24';
 
@@ -154,6 +183,7 @@ $array['filter']['fwdunc'] = array('minlen' => 1,'maxlen' => 20,'preg' => '/^(_[
 $array['filter']['fwdrna'] = array('minlen' => 1,'maxlen' => 20,'preg' => '/^(_[0-9\*#]+(\.|[X]{3,11})|[0-9]+)$/');
 $array['filter']['fwdbusy'] = array('minlen' => 1,'maxlen' => 20,'preg' => '/^(_[0-9\*#]+(\.|[X]{3,11})|[0-9]+)$/i');
 $array['filter']['recsnd'] = array('minlen' => 1,'maxlen' => 20,'preg' => '/^(_[0-9\*#]+|[0-9]+)$/');
+$array['filter']['phonestatus'] = array('minlen' => 1,'maxlen' => 20,'preg' => '/^(_[0-9\*]+|[0-9]+)$/');
 $array['filter']['enablevm'] = array('minlen' => 1,'maxlen' => 20,'preg' => '/^(_[0-9\*#]+|[0-9]+)$/');
 $array['filter']['enablednd'] = array('minlen' => 1,'maxlen' => 20,'preg' => '/^(_[0-9\*#]+|[0-9]+)$/');
 $array['filter']['incallrec'] = array('minlen' => 1,'maxlen' => 20,'preg' => '/^(_[0-9\*#]+|[0-9]+)$/');

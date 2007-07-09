@@ -273,7 +273,7 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		{
 			$info = $this->_prepare($list[$i]);
 
-			if($info['context'] === '')
+			if($info['context'] === '' || $info['context'] === 'local-extensions')
 				$info['context'] = '#main';
 
 			$r[$info['context']] = $info['context'];
@@ -300,6 +300,11 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 
 			if(xivo_empty($info['number']) === true)
 				continue;
+
+			if($info['context'] !== '')
+				$info['number-context'] = $info['number'].'@'.$info['context'];
+			else
+				$info['number-context'] = $info['number'];
 
 			$r[] = $info;
 		}

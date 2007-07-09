@@ -25,6 +25,9 @@ class xivo_service_asterisk_meetmefeatures extends xivo_service_asterisk_abstrac
 
 	function get($id)
 	{
+		if(is_array($id) === true && ($id = $this->get_where($id)) === false)
+			return(false);
+
 		if(($id = xivo_uint($id)) === 0 || ($r = $this->_dso->get($id)) === false)
 			return(false);
 
@@ -54,14 +57,6 @@ class xivo_service_asterisk_meetmefeatures extends xivo_service_asterisk_abstrac
 			$r = $this->edit($this->_origin['id'],$this->_origin);
 
 		return($r);
-	}
-
-	function get_by_meetme($id)
-	{
-		if(($id = xivo_uint($id)) === 0 || ($id = $this->_dso->get_by_meetme($id)) === false)
-			return(false);
-
-		return($this->get($id));
 	}
 
 	function add($arr,$id=0)

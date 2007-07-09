@@ -1,0 +1,41 @@
+; title_content_name
+Agents > Ajouter un groupe
+
+; fm_agentgroup_name
+Nom :
+
+; fm_agents
+Agents :
+
+; bt-inagent
+Ajouter ->
+
+; bt-outagent
+<- Enlever
+
+; bt-upagent
+Monter
+
+; bt-downagent
+Descendre
+
+; bt-inqueue
+Ajouter ->
+
+; bt-outqueue
+<- Enlever
+
+; col_queue-name
+Nom
+
+; col_queue-penalty
+Pénalité
+
+; no_queue
+Aucune file d'attente
+
+; create_queue
+Créer une file d'attente
+
+; fm_bt-save
+Sauvegarder

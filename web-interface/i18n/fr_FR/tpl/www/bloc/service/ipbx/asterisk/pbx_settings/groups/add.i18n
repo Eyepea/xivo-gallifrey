@@ -16,5 +16,14 @@ Temps de sonnerie :
 ; fm_queue_timeout-opt
 %s secondes
 
+; fm_user
+Utilisateurs :
+
+; bt-inuser
+Ajouter ->
+
+; bt-outuser
+<- Enlever
+
 ; fm_bt-save
 Sauvegarder

@@ -30,7 +30,7 @@ switch($act)
 			$_QR['extenumbers']['context'] = 'did-extensions';
 
 			if(($result['extenumbers'] = $extenumbers->chk_values($_QR['extenumbers'],true,true)) === false
-			|| $extenumbers->get_where($result['extenumbers']) !== false)
+			|| $extenumbers->get($result['extenumbers']) !== false)
 			{
 				$add = false;
 				$result['extenumbers'] = $extenumbers->get_filter_result();
@@ -102,15 +102,15 @@ switch($act)
 		{
 			$total = count($list['users']);
 			xivo::load_class('xivo_sort');
-			$sort = new xivo_sort(array('key' => 'number'));
+			$sort = new xivo_sort(array('key' => 'number-context'));
 			usort($list['users'],array(&$sort,'num_usort'));
 		}
 
-		if(($list['groups'] = $gfeatures->get_all_number(false)) !== false)
+		if(($list['groups'] = $gfeatures->get_all_number()) !== false)
 		{
 			$total = count($list['groups']);
 			xivo::load_class('xivo_sort');
-			$sort = new xivo_sort(array('key' => 'number'));
+			$sort = new xivo_sort(array('key' => 'number-context'));
 			usort($list['groups'],array(&$sort,'num_usort'));
 		}
 
@@ -133,7 +133,9 @@ switch($act)
 		if(isset($_QR['id']) === false
 		|| ($info['dfeatures'] = $dfeatures->get($_QR['id'])) === false
 		|| ($info['did'] = $extensions->get($info['dfeatures']['extenid'])) === false
-		|| ($info['extenumbers'] = $extenumbers->get_by_number_context($info['did']['exten'],$info['did']['context'])) === false
+		|| ($info['extenumbers'] = $extenumbers->get(array(
+							'number' => $info['did']['exten'],
+							'context' => $info['did']['context']))) === false
 		|| ($info['dfeatures']['type'] !== 'custom' && $info['dfeatures']['commented'] === false
 		   && (($tyfeatures = &$ipbx->get_module($info['dfeatures']['type'].'features')) === false
 		   || ($info['tyfeatures'] = $tyfeatures->get($info['dfeatures']['typeid'])) === false
@@ -162,7 +164,7 @@ switch($act)
 			$_QR['extenumbers']['context'] = $info['extenumbers']['context'];
 
 			if(($result['extenumbers'] = $extenumbers->chk_values($_QR['extenumbers'],true,true)) === false
-			|| (($extenum = $extenumbers->get_where($result['extenumbers'])) !== false 
+			|| (($extenum = $extenumbers->get($result['extenumbers'])) !== false 
 			   && (int) $extenum['id'] !== (int) $info['extenumbers']['id']) === true)
 			{
 				$edit = false;
@@ -232,15 +234,15 @@ switch($act)
 		{
 			$total = count($list['users']);
 			xivo::load_class('xivo_sort');
-			$sort = new xivo_sort(array('key' => 'number'));
+			$sort = new xivo_sort(array('key' => 'number-context'));
 			usort($list['users'],array(&$sort,'num_usort'));
 		}
 
-		if(($list['groups'] = $gfeatures->get_all_number(false)) !== false)
+		if(($list['groups'] = $gfeatures->get_all_number()) !== false)
 		{
 			$total = count($list['groups']);
 			xivo::load_class('xivo_sort');
-			$sort = new xivo_sort(array('key' => 'number'));
+			$sort = new xivo_sort(array('key' => 'number-context'));
 			usort($list['groups'],array(&$sort,'num_usort'));
 		}
 
@@ -266,7 +268,9 @@ switch($act)
 		if(isset($_QR['id']) === false
 		|| ($info['dfeatures'] = $dfeatures->get($_QR['id'])) === false
 		|| ($info['did'] = $extensions->get($info['dfeatures']['extenid'])) === false
-		|| ($info['extenumbers'] = $extenumbers->get_by_number_context($info['did']['exten'],$info['did']['context'])) === false)
+		|| ($info['extenumbers'] = $extenumbers->get(array(
+							'number' => $info['did']['exten'],
+							'context' => $info['did']['context']))) === false)
 			xivo_go($_HTML->url('service/ipbx/call_management/did'),$param);
 
 		do
@@ -293,19 +297,18 @@ switch($act)
 	case 'deletes':
 		$param['page'] = $page;
 
-		if(xivo_issa('dids',$_QR) === false)
+		if(($values = xivo_issa_val('dids',$_QR)) === false)
 			xivo_go($_HTML->url('service/ipbx/call_management/did'),$param);
 
-		$values = array_values($_QR['dids']);
-
-		if(($nb = count($values)) === 0)
-			xivo_go($_HTML->url('service/ipbx/call_management/did'),$param);
+		$nb = count($values);
 
 		for($i = 0;$i < $nb;$i++)
 		{
 			if(($info['dfeatures'] = $dfeatures->get($_QR['dids'][$i])) === false
 			|| ($info['did'] = $extensions->get($info['dfeatures']['extenid'])) === false
-			|| ($info['extenumbers'] = $extenumbers->get_by_number_context($info['did']['exten'],$info['did']['context'])) === false)
+			|| ($info['extenumbers'] = $extenumbers->get(array(
+								'number' => $info['did']['exten'],
+								'context' => $info['did']['context']))) === false)
 				continue;
 
 			if($dfeatures->delete($info['dfeatures']['id']) === false)
@@ -331,13 +334,10 @@ switch($act)
 		$param['page'] = $page;
 		$disable = $act === 'disables' ? true : false;
 
-		if(xivo_issa('dids',$_QR) === false)
+		if(($values = xivo_issa_val('dids',$_QR)) === false)
 			xivo_go($_HTML->url('service/ipbx/call_management/did'),$param);
 
-		$values = array_values($_QR['dids']);
-
-		if(($nb = count($values)) === 0)
-			xivo_go($_HTML->url('service/ipbx/call_management/did'),$param);
+		$nb = count($values);
 
 		for($i = 0;$i < $nb;$i++)
 		{

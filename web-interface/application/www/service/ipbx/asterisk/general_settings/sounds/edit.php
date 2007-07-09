@@ -30,7 +30,10 @@ do
 	$newfilename = $info['dirname'].XIVO_SEP_DIR.$info['filename'];
 
 	if($sounds->edit($filename,$newfilename) === true)
+	{
+		$param['dir'] = $info['dirname'];
 		xivo_go($_HTML->url('service/ipbx/general_settings/sounds'),$param);
+	}
 
 	$info['filename'] = $info['file']['basename'];
 }

@@ -21,12 +21,14 @@ $array['element']['lastname'] = array();
 $array['element']['lastname']['default'] = '';
 
 $array['element']['ringseconds'] = array();
-$array['element']['ringseconds']['value'] = array(5,10,15,20,25,30,35,40,45,50,55,60);
+$array['element']['ringseconds']['value'] = array(0,5,10,15,20,25,30,35,40,45,50,55,60);
 $array['element']['ringseconds']['default'] = 30;
+$array['element']['ringseconds']['setdef'] = true;
 
 $array['element']['simultcalls'] = array();
 $array['element']['simultcalls']['value'] = array(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20);
 $array['element']['simultcalls']['default'] = 5;
+$array['element']['simultcalls']['setdef'] = true;
 
 $array['element']['popupwidget'] = array();
 $array['element']['popupwidget']['value'] = array(0,1);
@@ -51,9 +53,9 @@ $array['filter']['firstname'] = array('chk' => 2,'maxlen' => 128);
 $array['filter']['lastname'] = array('chk' => 2,'maxlen' => 128);
 $array['filter']['name'] = array('minlen' => 1,'maxlen' => 80);
 $array['filter']['number'] = array('set' => false,'chk' => 2,'preg' => '/^[0-9\*#]+$/','maxlen' => 40);
-$array['filter']['context'] = array('set' => false,'chk' => 2,'unarrkey' => array('general','globals'),'preg' => '/^[a-z0-9_-]+$/','maxlen' => 80);
-$array['filter']['ringseconds'] = array('arrkey' => array(5,10,15,20,25,30,35,40,45,50,55,60));
-$array['filter']['simultcalls'] = array('cast' => 'uint','between' => array(1,20));
+$array['filter']['context'] = array('set' => false,'chk' => 2,'unarrkey' => array('general','globals','hints','features'),'preg' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 80);
+$array['filter']['ringseconds'] = array('set' => false,'chk' => 2,'arrkey' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
+$array['filter']['simultcalls'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,20));
 $array['filter']['popupwidget'] = array('bool' => true);
 $array['filter']['ringgroup'] = array('bool' => true);
 $array['filter']['musiconhold'] = array('set' => false,'chk' => 2,'maxlen' => 128);

@@ -64,12 +64,12 @@ do
 		$result['trunk']['allow'] = implode(',',$result['trunk']['allow']);
 	}
 
-	$infotfeatures = array();
-	$infotfeatures['trunk'] = 'sip';
-	$infotfeatures['trunkid'] = 0;
-	$infotfeatures['registerid'] = $registerid;
+	$_QR['tfeatures'] = array();
+	$_QR['tfeatures']['trunk'] = 'sip';
+	$_QR['tfeatures']['trunkid'] = 0;
+	$_QR['tfeatures']['registerid'] = $registerid;
 
-	if(($result['tfeatures'] = $tfeatures->chk_values($infotfeatures,true,true)) === false)
+	if(($result['tfeatures'] = $tfeatures->chk_values($_QR['tfeatures'],true,true)) === false)
 	{
 		$add = false;
 		$result['tfeatures'] = $tfeatures->get_filter_result();

@@ -22,8 +22,8 @@ Ajouter un répertoire
 ; toolbar_adv_menu_add_file
 Ajouter un fichier
 
-; toolbar_fm_directory-main
-Principal
+; toolbar_fm_directory
+-- Répertoire --
 
-; toolbar_fm_category-main
-Principale
+; toolbar_fm_category
+-- Catégorie --

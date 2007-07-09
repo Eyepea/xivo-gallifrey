@@ -112,6 +112,28 @@ class xivo_service_asterisk_abstract
 		return($this->_conf['element'][$key]['default']);
 	}
 
+	function isset_element_default($key)
+	{
+		$key = (string) $key;
+
+		if(xivo_issa('element',$this->_conf) === false || xivo_issa($key,$this->_conf['element']) === false
+		|| xivo_ak('setdef',$this->_conf['element'][$key],true) === false)
+			return(false);
+
+		return(true);
+	}
+
+	function unset_element_default($key)
+	{
+		$key = (string) $key;
+
+		if(xivo_issa('element',$this->_conf) === true && xivo_issa($key,$this->_conf['element']) === true
+		&& isset($this->_conf['element'][$key]['setdef']) === true && $this->_conf['element'][$key]['setdef'] === false)
+			return(true);
+
+		return(false);
+	}
+
 	function get_element_copy($key)
 	{
 		$key = (string) $key;
@@ -271,6 +293,10 @@ class xivo_service_asterisk_abstract
 			else if($val === null && $this->isnull_element_value($key) === false)
 				$val = '';
 
+			if($val === '' && $this->isset_element_default($key) === true
+			&& ($dval = $this->get_element_default($key)) !== false)
+				$val = $dval;
+
 			if(($ckey = $this->get_element_copy($key)) !== false && $val !== '')
 				$rs[$ckey] = $r[$ckey] = $val;
 
@@ -321,25 +347,31 @@ class xivo_service_asterisk_abstract
 		return(false);
 	}
 
-	function set_chk_value($key,$value,$default=null)
+	function set_chk_value($key,$value)
 	{
 		$r = '';
 		
 		if(($val = $this->chk_value($key,$value)) !== false)
 		{
 			if(($sval = $this->_set_value($key,$val)) !== false)
-				$val = $sval;
-
-			if($val === '' && $this->isnull_element_value($key) === true)
-				$val = null;
-			else if($val === null && $this->isnull_element_value($key) === false)
-				$val = '';
-
-			return($val);
+				$r = $sval;
+			else
+				$r = $val;
 		}
 
-		if($default !== null || ($default = $this->get_element_default($key)) !== false)
-			return($default);
+		if($r === '' && $this->isnull_element_value($key) === true)
+			$r = null;
+		else if($r === null && $this->isnull_element_value($key) === false)
+			$r = '';
+
+		if($r === '')
+		{
+			if(($dval = $this->get_element_default($key)) === false
+			|| $this->unset_element_default($key) === true)
+				return($r);
+
+			$r = $dval;
+		}
 
 		return($r);
 	}

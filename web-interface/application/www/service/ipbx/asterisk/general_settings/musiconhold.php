@@ -32,6 +32,11 @@ switch($act)
 		$action = $act;
 		break;
 	case 'addfile':
+		if($list_cats === false)
+		{
+			$action = $act = 'list';
+			break;
+		}
 	case 'editfile':
 	case 'listfile':
 	case 'deletefile':

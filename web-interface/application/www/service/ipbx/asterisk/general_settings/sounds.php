@@ -28,6 +28,11 @@ switch($act)
 		$action = $act;
 		break;
 	case 'add':
+		if($list_dirs === false)
+		{
+			$param['act'] = $action = $act = 'listdir';
+			break;
+		}
 	case 'edit':
 	case 'delete':
 	case 'list':

@@ -19,7 +19,8 @@ if(($users = $ipbx->get_users_list()) !== false)
 			(int) (bool) $ref['protocol']['commented'],'|',
 			addcslashes($ref['protocol']['callerid'],'|'),'|',
 			addcslashes($ref['ufeatures']['firstname'],'|'),'|',
-			addcslashes($ref['ufeatures']['lastname'],'|'),"\n";
+			addcslashes($ref['ufeatures']['lastname'],'|'),'|',
+			addcslashes($ref['ufeatures']['context'],'|'),"\n";
 	}
 }
 

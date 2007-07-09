@@ -232,15 +232,16 @@ class xivo_service_asterisk_autoprov extends xivo_service_asterisk_abstract
 		return(true);
 	}
 
-	function informative($arr,$mod)
+	function authoritative($arr,$mod)
 	{
 		if(is_array($arr) === false)
 			return(false);
 
 		$arr['actions'] = 'no';
+		$arr['isinalan'] = 0;
 
 		if(($mod !== 'guest' && $mod !== 'prov') === true
-		|| $this->_send_sockprov_mode('informative',$arr,$mod) === false)
+		|| $this->_send_sockprov_mode('authoritative',$arr,$mod) === false)
 			return(false);
 
 		return(true);
@@ -263,6 +264,9 @@ class xivo_service_asterisk_autoprov extends xivo_service_asterisk_abstract
 
 	function get($macaddr)
 	{
+		if(is_array($macaddr) === true && ($macaddr = $this->get_where($macaddr)) === false)
+			return(false);
+
 		if(($r = $this->_dso->get($macaddr)) === false)
 			return(false);
 
@@ -271,43 +275,14 @@ class xivo_service_asterisk_autoprov extends xivo_service_asterisk_abstract
 		return($r);
 	}
 
-	function get_by_iduserfeatures($id)
-	{
-		if(($id = xivo_uint($id)) === 0)
-			return(false);
-
-		$arr = array();
-
-		$arr['iduserfeatures'] = $id;
-
-		return($this->get_where($arr));
-	}
-
 	function get_where($arr)
 	{
 		$arr = (array) $arr;
 
-		$where = array();
-
-		if(isset($arr['macaddr']) === true)
-			$where['macaddr'] = $arr['macaddr'];
-
-		if(isset($arr['vendor']) === true)
-			$where['vendor'] = $arr['vendor'];
-
-		if(isset($arr['model']) === true)
-			$where['model'] = $arr['model'];
-
-		if(isset($arr['proto']) === true)
-			$where['proto'] = $arr['proto'];
-
-		if(isset($arr['iduserfeatures']) === true)
-			$where['iduserfeatures'] = $arr['iduserfeatures'];
-
-		if(($id = $this->_dso->get_where($where)) === false)
+		if(($where = $this->get_elements_where($arr)) === false)
 			return(false);
 
-		return($this->get($id));
+		return($this->_dso->get_where($where));
 	}
 }
 

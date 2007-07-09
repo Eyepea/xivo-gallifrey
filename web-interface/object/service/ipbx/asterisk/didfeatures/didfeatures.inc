@@ -23,9 +23,12 @@ class xivo_service_asterisk_didfeatures extends xivo_service_asterisk_abstract
 		$this->_load_config();
 	}
 
-	function get($id)
+	function get($id,$disable=null)
 	{
-		if(($id = xivo_uint($id)) === 0 || ($r = $this->_dso->get($id)) === false)
+		if(is_array($id) === true && ($id = $this->get_where($id,$disable)) === false)
+			return(false);
+
+		if(($id = xivo_uint($id)) === 0 || ($r = $this->_dso->get($id,$disable)) === false)
 			return(false);
 
 		$this->_origin = $r;
@@ -33,30 +36,6 @@ class xivo_service_asterisk_didfeatures extends xivo_service_asterisk_abstract
 		$r['commented'] = (bool) $r['commented'];
 
 		return($r);
-	}
-
-	function get_where($arr)
-	{
-		$arr = (array) $arr;
-
-		$where = array();
-
-		if(isset($arr['extenid']) === true)
-			$where['extenid'] = $arr['extenid'];
-
-		if(isset($arr['type']) === true)
-			$where['type'] = $arr['type'];
-
-		if(isset($arr['typeid']) === true)
-			$where['typeid'] = $arr['typeid'];
-
-		if(isset($arr['custom']) === true)
-			$where['custom'] = $arr['custom'];
-
-		if(($id = $this->_dso->get_where($where)) === false)
-			return(false);
-
-		return($this->get($id));
 	}
 
 	function add_origin()
@@ -82,14 +61,14 @@ class xivo_service_asterisk_didfeatures extends xivo_service_asterisk_abstract
 		return($r);
 	}
 
-	function get_by_extenid($id)
+	function get_where($arr,$disable=null)
 	{
-		if(($id = xivo_uint($id)) === 0)
+		$arr = (array) $arr;
+
+		if(($where = $this->get_elements_where($arr)) === false)
 			return(false);
 
-		$r = $this->get_where(array('extenid' => $id));
-
-		return($r);
+		return($this->_dso->get_where($where,$disable));
 	}
 
 	function add($arr,$id=0)
@@ -123,46 +102,28 @@ class xivo_service_asterisk_didfeatures extends xivo_service_asterisk_abstract
 	{
 		$arr = (array) $arr;
 
-		if(is_array($values) === false || ($values = $this->chk_set_values($values,true,true)) === false)
+		if(is_array($values) === false
+		|| ($where = $this->get_elements_where($arr)) === false
+		|| ($values = $this->chk_set_values($values,true,true)) === false)
 			return(false);
-
-		$where = array();
-
-		if(isset($arr['id']) === true)
-			$where['id'] = $arr['id'];
-
-		if(isset($arr['extenid']) === true)
-			$where['extenid'] = $arr['extenid'];
-
-		if(isset($arr['type']) === true)
-			$where['type'] = $arr['type'];
-
-		if(isset($arr['typeid']) === true)
-			$where['typeid'] = $arr['typeid'];
-
-		if(isset($arr['custom']) === true)
-			$where['custom'] = $arr['custom'];
-
-		if(isset($arr['commented']) === true)
-			$where['commented'] = $arr['commented'];
 
 		return($this->_dso->edit_where($where,$values));
 	}
 
-	function edit_list_where($arr,$values)
+	function edit_list($arr,$values)
 	{
 		$r = false;
 
 		if(is_array($arr) === false || ($values = $this->chk_set_values($values,true,true)) === false)
 			return($r);
 
-		$arr_values = array_values($arr);
+		$list = array_values($arr);
 
-		if(($nb = count($arr_values)) === 0)
+		if(($nb = count($list)) === 0)
 			return($r);
 
 		for($i = 0;$i < $nb;$i++)
-			$this->_dso->edit_where(array('id' => $arr[$i]),$values);
+			$this->edit($list[$i],$values);
 
 		return(true);
 	}
@@ -171,19 +132,8 @@ class xivo_service_asterisk_didfeatures extends xivo_service_asterisk_abstract
 	{
 		$arr = (array) $arr;
 
-		$where = array();
-
-		if(isset($arr['extenid']) === true)
-			$where['extenid'] = $arr['extenid'];
-
-		if(isset($arr['type']) === true)
-			$where['type'] = $arr['type'];
-
-		if(isset($arr['typeid']) === true)
-			$where['typeid'] = $arr['typeid'];
-
-		if(isset($arr['custom']) === true)
-			$where['custom'] = $arr['custom'];
+		if(($where = $this->get_elements_where($arr)) === false)
+			return(false);
 
 		if(($r = $this->_dso->get_list_where($where,$disable)) !== false && isset($r[0]) === false)
 			$r = false;

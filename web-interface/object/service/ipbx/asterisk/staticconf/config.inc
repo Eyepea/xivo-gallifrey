@@ -8,6 +8,12 @@ $array['element']['commented']['value'] = array(0,1);
 $array['element']['commented']['default'] = 0;
 $array['element']['commented']['set'] = true;
 
+$array['element']['cat_metric'] = array();
+$array['element']['cat_metric']['default'] = 0;
+
+$array['element']['var_metric'] = array();
+$array['element']['var_metric']['default'] = 0;
+
 $array['element']['filename'] = array();
 $array['element']['filename']['default'] = '';
 
@@ -19,6 +25,7 @@ $array['element']['var_name']['default'] = '';
 
 $array['element']['var_val'] = array();
 $array['element']['var_val']['default'] = '';
+
 
 $array['filter'] = array();
 $array['filter']['commented'] = array('bool' => true);

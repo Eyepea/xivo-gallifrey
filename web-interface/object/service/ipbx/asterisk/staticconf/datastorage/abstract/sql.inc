@@ -1,15 +1,12 @@
 <?php
 
-class xivo_service_asterisk_staticconf_abstract_sql
-{
-	var $_dso	= null;
+xivo_file::required(array(XIVO_PATH_OBJECT,'service','ipbx','asterisk','staticconf','datastorage','abstract','datastorage.inc'),true);
 
+class xivo_service_asterisk_staticconf_abstract_sql extends xivo_service_asterisk_staticconf_abstract_datastorage
+{
 	function _init(&$dso,$param=array())
 	{
-		if(is_object($dso) === false)
-			trigger_error('Invalid Datastorage object',E_USER_ERROR);
-
-		$this->_dso = &$dso;
+		parent::_init(&$dso);
 
 		$param = (array) $param;
 
@@ -22,7 +19,7 @@ class xivo_service_asterisk_staticconf_abstract_sql
 		if(($id = xivo_uint($id)) === 0)
 			return(false);
 
-		$where = 'id = '.$id;
+		$where = 'id = '.$id.' AND filename = \''.$this->_dso->escape_string($this->_param['filename']).'\'';
 
 		if($disable !== null)
 			$where .= ' AND commented = '.intval((bool) $disable);
@@ -102,10 +99,10 @@ class xivo_service_asterisk_staticconf_abstract_sql
 
 	function get_list($disable=null)
 	{
-		$where = '';
+		$where = ' WHERE filename = \''.$this->_dso->escape_string($this->_param['filename']).'\'';
 
 		if($disable !== null)
-			$where = ' WHERE commented = '.intval((bool) $disable);
+			$where .= ' AND commented = '.intval((bool) $disable);
 
 		$rs = $this->_dso->query('SELECT id FROM '.$this->_param['table'].$where);
 
@@ -155,10 +152,10 @@ class xivo_service_asterisk_staticconf_abstract_sql
 
 	function get_all($disable=null)
 	{
-		$where = '';
+		$where = 'filename = \''.$this->_dso->escape_string($this->_param['filename']).'\'';
 
 		if($disable !== null)
-			$where = 'commented = '.intval((bool) $disable);
+			$where = ' AND commented = '.intval((bool) $disable);
 
 		$r = $this->_dso->select_all($this->_param['table'],null,$where);
 

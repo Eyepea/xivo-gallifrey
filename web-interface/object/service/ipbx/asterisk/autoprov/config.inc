@@ -14,9 +14,12 @@ $array['autoprov']['list']['method'] = 'GET';
 $array['autoprov']['list']['protocol'] = 'tcp';
 $array['autoprov']['list']['timeout'] = array('sec' => 60,'usec' => 0);
 
+$array['element'] = array();
+
 $array['element']['modact'] = array();
 $array['element']['modact']['value'] = array('guest','prov');
 $array['element']['modact']['default'] = '';
+$array['element']['modact']['unset'] = true;
 
 $array['element']['macaddr'] = array();
 $array['element']['macaddr']['default'] = '';

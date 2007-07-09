@@ -27,7 +27,8 @@ class xivo_service_asterisk_uservoicemail extends xivo_service_asterisk_abstract
 	{
 		$r = false;
 
-		$disable = $disable !== null ? (bool) $disable : null;
+		if(is_array($id) === true && ($id = $this->get_where($id)) === false)
+			return(false);
 
 		if(($id = xivo_uint($id)) === 0 || ($r = $this->_dso->get($id,$disable)) === false)
 			return($r);
@@ -37,15 +38,6 @@ class xivo_service_asterisk_uservoicemail extends xivo_service_asterisk_abstract
 		$r['commented'] = (bool) $r['commented'];
 
 		return($r);
-	}
-
-	function get_by_mailbox($mailbox,$disable=null)
-	{
-		if(($mailbox = xivo_digit($mailbox)) === false
-		|| ($id = $this->get_where(array('mailbox' => $mailbox))) === false)
-			return(false);
-
-		return($this->get($id,$disable));
 	}
 
 	function add_origin()
@@ -79,9 +71,9 @@ class xivo_service_asterisk_uservoicemail extends xivo_service_asterisk_abstract
 		if(($id = xivo_uint($id)) !== 0)
 			$arr['id'] = $id;
 
-		if(isset($arr['mailbox']) === true)
+		if(isset($arr['mailbox'],$arr['context']) === true)
 		{
-			$where = array('mailbox' => $arr['mailbox']);
+			$where = array('mailbox' => $arr['mailbox'],'context' => $arr['context']);
 
 			if(($whereid = $this->get_where($where)) !== false)
 				return(false);
@@ -98,9 +90,9 @@ class xivo_service_asterisk_uservoicemail extends xivo_service_asterisk_abstract
 		if($disable !== null)
 			$arr['commented'] = (bool) $disable === false ? 0 : 1;
 
-		if(isset($arr['mailbox']) === true)
+		if(isset($arr['mailbox'],$arr['context']) === true)
 		{
-			$where = array('mailbox' => $arr['mailbox']);
+			$where = array('mailbox' => $arr['mailbox'],'context' => $arr['context']);
 
 			if(($whereid = $this->get_where($where)) !== false && (int) $whereid !== $id)
 				return(false);

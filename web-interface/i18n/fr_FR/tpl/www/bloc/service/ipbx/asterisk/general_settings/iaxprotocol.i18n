@@ -11,7 +11,7 @@ Adresse IP d'écoute :
 Délai de rejet (anti DOS) :
 
 ; fm_tos
-Tos :
+TOS :
 
 ; fm_qualify
 Supervision :
@@ -44,10 +44,10 @@ Codecs activés :
 Langages :
 
 ; bt-upcodec
-Haut
+Monter
 
 ; bt-downcodec
-Bas
+Descendre
 
 ; bt-incodec
 Ajouter ->

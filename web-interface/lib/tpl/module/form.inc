@@ -37,6 +37,7 @@ class xivo_tpl_form extends xivo_tpl_module
 		$this->_param['null'] = false;
 		$this->_param['bbf'] = false;
 		$this->_param['bbf_paramarray'] = false;
+		$this->_param['browse'] = false;
 
 		if(isset($v['name']) === true)
 			$this->_param['name'] = xivo_htmlsc($v['name']);
@@ -160,6 +161,14 @@ class xivo_tpl_form extends xivo_tpl_module
 
 		if(isset($v['bbf']) === true && is_bool($v['bbf']) === false)
 			$this->_param['bbf'] = $this->_mk_param_bbf($v);
+
+		if(isset($v['browse']) === true)
+		{
+			$v['browse'] = array_values((array) $v['browse']);
+
+			if(isset($v['browse'][0]) === true)
+				$this->_param['browse'] = $v['browse'];
+		}
 	}
 
 	function _mk_param_value($value,&$v)
@@ -643,12 +652,15 @@ class xivo_tpl_form extends xivo_tpl_module
 						}
 						break;
 					case 'mixvalue':
-						if($render[3] === $this->_param['bbf'][1].$render[1])
+						$tmp = $render[3];
+						$render[3] = $this->bbf($this->_param['bbf'][1].$tmp);
+
+						if($render[3] === $this->_param['bbf'][1].$tmp)
 						{
 							if(is_array($param) === true)
 								$render[3] = $this->bbf($this->_param['bbf'][1],$param);
 							else
-								$render[3] = $this->bbf($this->_param['bbf'][1],$render[3]);
+								$render[3] = $this->bbf($this->_param['bbf'][1],$tmp);
 						}
 						break;
 				}
@@ -688,14 +700,15 @@ class xivo_tpl_form extends xivo_tpl_module
 						}
 						break;
 					case 'mixvalue':
-						$render[2] = $this->bbf($this->_param['bbf'][1].$render[2]);
+						$tmp = $render[2];
+						$render[2] = $this->bbf($this->_param['bbf'][1].$tmp);
 
-						if($render[2] === $this->_param['bbf'][1].$render[2])
+						if($render[2] === $this->_param['bbf'][1].$tmp)
 						{
 							if(is_array($param) === true)
 								$render[2] = $this->bbf($this->_param['bbf'][1],$param);
 							else
-								$render[2] = $this->bbf($this->_param['bbf'][1],$render[2]);
+								$render[2] = $this->bbf($this->_param['bbf'][1],$tmp);
 						}
 						break;
 				}
@@ -820,8 +833,19 @@ class xivo_tpl_form extends xivo_tpl_module
 		for($i = 0;$i < $arr['cnt'];$i++)
 		{
 			$k = &$arr['keys'][$i];
-
 			$ref = &$a[$k];
+
+			if($this->_param['browse'] !== false
+			&& ($nb = count($this->_param['browse'])) !== 0)
+			{
+				for($j = 0;$j < $nb;$j++)
+				{
+					if(xivo_issa($this->_param['browse'][$j],$ref) === false)
+						break;
+
+					$ref = &$ref[$this->_param['browse'][$j]];
+				}
+			}
 
 			if(is_array($ref) === true)
 			{

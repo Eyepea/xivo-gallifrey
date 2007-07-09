@@ -14,7 +14,7 @@ $localexten = $hintsexten = &$ipbx->get_module('extensions');
 $dfeatures = &$ipbx->get_module('didfeatures');
 $autoprov = &$ipbx->get_module('autoprov');
 
-$info = $localexten_where = $extenum_where = $hints_where = $dfeatures_where = array();
+$info = $localexten_where = $extenum_where = $hints_where = $dfeatures_where = $quser_where = array();
 
 $dfeatures_where['type'] = 'user';
 $dfeatures_where['commented'] = 0;
@@ -24,26 +24,22 @@ $hints_where['context'] = 'hints';
 $localexten_where['app'] = 'Macro';
 $localexten_where['appdata'] = 'superuser';
 
+$quser_where['usertype'] = 'user';
+
 for($i = 0;$i < $arr['cnt'];$i++)
 {
 	$k = &$arr['keys'][$i];
 
-	if(is_array($_QR['users'][$k]) === false || ($protocol = &$ipbx->get_protocol_module($k)) === false)
+	if(($protocol = &$ipbx->get_protocol_module($k)) === false
+	|| ($v = xivo_issa_val($k,$_QR['users'])) === false)
 		continue;
 
-	$v = array_values($_QR['users'][$k]);
-
-	if(($nb = count($v)) === 0)
-		continue;
+	$nb = count($v);
 
 	for($j = 0;$j < $nb;$j++)
 	{
 		if(($info['ufeatures'] = $ufeatures->get_by_protocol($v[$j],$k)) === false
-		|| ($info['protocol'] = $protocol->get($info['ufeatures']['protocolid'])) === false
-		|| ($interface = $ipbx->mk_interface($info['protocol']['name'],
-						     $info['ufeatures']['protocol'],
-			   		  	     $info['ufeatures']['number'],
-			   		  	     $info['protocol']['context'])) === false)
+		|| ($info['protocol'] = $protocol->get($info['ufeatures']['protocolid'])) === false)
 			continue;
 
 		if($protocol->delete($info['protocol']['id']) === false)
@@ -62,7 +58,7 @@ for($i = 0;$i < $arr['cnt'];$i++)
 		else
 			$localexten_where['context'] = $info['protocol']['context'];
 
-		if(($info['localexten'] = $localexten->get_where($localexten_where)) !== false
+		if(($info['localexten'] = $localexten->get($localexten_where)) !== false
 		&& $localexten->delete($info['localexten']['id']) === false)
 		{
 			$protocol->add_origin();
@@ -77,7 +73,7 @@ for($i = 0;$i < $arr['cnt'];$i++)
 
 		$dfeatures_where['typeid'] = $info['ufeatures']['id'];
 
-		if(($info['extenumbers'] = $extenumbers->get_where($extenum_where)) !== false)
+		if(($info['extenumbers'] = $extenumbers->get($extenum_where)) !== false)
 		{
 			if($extenumbers->delete($info['extenumbers']['id']) === false
 			|| (($info['dfeatures'] = $dfeatures->get_list_where($dfeatures_where,false)) !== false
@@ -101,7 +97,7 @@ for($i = 0;$i < $arr['cnt'];$i++)
 		$info['hints'] = false;
 
 		if($hints_where['app'] !== false
-		&& ($info['hints'] = $hintsexten->get_where($hints_where)) !== false
+		&& ($info['hints'] = $hintsexten->get($hints_where)) !== false
 		&& $hintsexten->delete($info['hints']['id']) === false)
 		{
 			$protocol->add_origin();
@@ -114,12 +110,14 @@ for($i = 0;$i < $arr['cnt'];$i++)
 				$extenumbers->add_origin();
 
 			if($info['dfeatures'] !== false)
-				$dfeatures->edit_list_where($info['dfeatures'],array('commented' => 0));
+				$dfeatures->edit_list($info['dfeatures'],array('commented' => 0));
 			continue;
 		}
 
-		if($qmember->get_list_by_interface($interface) !== false
-		&& $qmember->delete_by_interface($interface) === false)
+		$quser_where['userid'] = $info['ufeatures']['id'];
+
+		if($qmember->get_where($quser_where) !== false
+		&& $qmember->delete_where($quser_where) === false)
 		{
 			$protocol->add_origin();
 			$ufeatures->add_origin();
@@ -131,7 +129,7 @@ for($i = 0;$i < $arr['cnt'];$i++)
 				$extenumbers->add_origin();
 
 			if($info['dfeatures'] !== false)
-				$dfeatures->edit_list_where($info['dfeatures'],array('commented' => 0));
+				$dfeatures->edit_list($info['dfeatures'],array('commented' => 0));
 
 			if($info['hints'] !== false)
 				$hintsexten->add_origin();
@@ -141,10 +139,12 @@ for($i = 0;$i < $arr['cnt'];$i++)
 		if(($info['usergroup'] = $ugroup->get_by_user($info['ufeatures']['id'])) !== false)
 			$ugroup->delete($info['usergroup']['id']);
 
-		if(($info['voicemail'] = $voicemail->get_by_mailbox($info['ufeatures']['number'])) !== false)
+		if(($info['voicemail'] = $voicemail->get(array(
+						'mailbox' => $info['ufeatures']['number'],
+						'context' => $info['ufeatures']['context']))) !== false)
 			$voicemail->delete($info['voicemail']['id']);
 
-		if($autoprov->get_by_iduserfeatures($info['ufeatures']['id']) !== false)
+		if($autoprov->get(array('iduserfeatures' => $info['ufeatures']['id'])) !== false)
 			$autoprov->userdeleted($info['ufeatures']['id']);
 	}
 }

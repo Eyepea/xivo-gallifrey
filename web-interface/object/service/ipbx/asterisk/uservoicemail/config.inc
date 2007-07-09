@@ -25,7 +25,7 @@ $array['element']['delete']['set'] = true;
 
 $array['element']['context'] = array();
 $array['element']['context']['default'] = 'default';
-$array['element']['context']['set'] = true;
+$array['element']['context']['setdef'] = true;
 
 $array['element']['mailbox'] = array();
 $array['element']['mailbox']['default'] = '';
@@ -33,10 +33,10 @@ $array['element']['mailbox']['default'] = '';
 $array['filter'] = array();
 $array['filter']['fullname'] = array('maxlen' => 150);
 $array['filter']['password'] = array('preg' => '/^[0-9\*#]+$/','maxlen' => 5);
-$array['filter']['email'] = array('func' => 'xivo_filter::chk_email');
+$array['filter']['email'] = array('set' => false,'chk' => 2,'func' => 'xivo_filter::chk_email');
 $array['filter']['attach'] = array('bool' => true);
 $array['filter']['delete'] = array('bool' => true);
-$array['filter']['context'] = array('chk' => 2,'set' => false,'maxlen' => 50);
+$array['filter']['context'] = array('set' => false,'chk' => 2,'unarrkey' => array('general','globals','hints','features'),'preg' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 80);
 $array['filter']['mailbox'] = array('minlen' => 1,'maxlen' => 11,'cast' => 'digit');
 
 ?>

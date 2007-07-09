@@ -76,6 +76,19 @@ class xivo_service_asterisk_queue_abstract_sql
 
 		return($r);
 	}
+
+	function get_all_where($arr,$disable=null)
+	{
+		if(($where = $this->_dso->where($arr)) === false)
+			return(false);
+
+		if($disable !== null)
+			$where .= ' AND commented = '.intval((bool) $disable);
+
+		$r = $this->_dso->select_all($this->_param['table'],null,$where);
+
+		return($r);
+	}
 }
 
 ?>

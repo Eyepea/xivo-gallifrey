@@ -5,7 +5,6 @@
 	$info = $this->vars('info');
 	$element = $this->vars('element');
 
-	$group_list = $this->vars('group_list');
 	$moh_list = $this->vars('moh_list');
 	$autoprov_list = $this->vars('autoprov_list');
 
@@ -56,7 +55,7 @@
 
 <?=$form->checkbox(array('desc' => $this->bbf('fm_userfeatures_popupwidget'),'name' => 'ufeatures[popupwidget]','labelid' => 'ufeatures-popupwidget','default' => $element['ufeatures']['popupwidget']['default'],'checked' => $info['ufeatures']['popupwidget']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_userfeatures_ringseconds'),'name' => 'ufeatures[ringseconds]','labelid' => 'ufeatures-ringseconds','bbf' => array('paramkey','fm_userfeatures_ringseconds-opt'),'key' => false,'default' => $element['ufeatures']['ringseconds']['default'],'value' => (isset($info['ufeatures']['ringseconds']) === true ? (int) $info['ufeatures']['ringseconds'] : null)),$element['ufeatures']['ringseconds']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_userfeatures_ringseconds'),'name' => 'ufeatures[ringseconds]','labelid' => 'ufeatures-ringseconds','bbf' => array('mixkey','fm_userfeatures_ringseconds-opt'),'key' => false,'default' => $element['ufeatures']['ringseconds']['default'],'value' => (isset($info['ufeatures']['ringseconds']) === true ? (int) $info['ufeatures']['ringseconds'] : null)),$element['ufeatures']['ringseconds']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 <?=$form->slt(array('desc' => $this->bbf('fm_userfeatures_simultcalls'),'name' => 'ufeatures[simultcalls]','labelid' => 'ufeatures-simultcalls','key' => false,'default' => $element['ufeatures']['simultcalls']['default'],'value' => (isset($info['ufeatures']['simultcalls']) === true ? (int) $info['ufeatures']['simultcalls'] : null)),$element['ufeatures']['simultcalls']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
@@ -65,45 +64,7 @@
 </div>
 
 <div id="sb-part-group" class="b-nodisplay">
-
-<?php
-	if($this->vars('group') === true):
-?>
-		<div id="grouplist" class="fm-field">
-			<div>
-
-		<?=$form->slt(array('name' => 'grouplist','label' => false,'id' => 'it-grouplist','key_val' => 'id','key' => 'name','multiple' => true,'size' => 5,'field' => false),$group_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"')?>
-
-			</div>
-			<div id="inout-group">
-
-		<a href="#" onclick="xivo_ingroup(); return(false);" title="<?=$this->bbf('bt-ingroup')?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt-ingroup'),'id="bt-ingroup" border="0"');?></a><br />
-
-		<a href="#" onclick="xivo_outgroup(); return(false);" title="<?=$this->bbf('bt-outgroup')?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt-outgroup'),'id="bt-outgroup" border="0"');?></a>
-
-			</div>
-			<div class="txt-left">
-
-		<?=$form->slt(array('name' => 'group[]','label' => false,'id' => 'it-group','multiple' => true,'size' => 5,'field' => false,'key' => 'name','key_val' => 'id'),$info['protocol']['group'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
-
-			</div>
-		</div>
-		<div class="clearboth">
-
-		<?=$form->checkbox(array('desc' => $this->bbf('fm_userfeatures_ringgroup'),'name' => 'ufeatures[ringgroup]','labelid' => 'ufeatures-ringgroup','default' => $element['ufeatures']['ringgroup']['default'],'checked' => $ringgroup),(empty($info['protocol']['group']) === true ? 'disabled="disabled" ' : '').'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';" onclick="xivo_eid(\'ringgroup\').style.display = this.checked == true ? \'block\' : \'none\';"');?>
-
-			<div id="ringgroup"<?=($ringgroup !== true ? ' class="b-nodisplay"' : '')?>>
-
-		<?=$form->slt(array('desc' => $this->bbf('fm_usergroup'),'name' => 'usergroup','id' => 'it-usergroup','key' => 'name','key_val' => 'id','value' => $info['usergroup']['groupid']),$info['protocol']['group'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
-
-			</div>
-		</div>
-<?php
-	else:
-		echo '<div class="txt-center">',$url->href_html($this->bbf('create_group'),'service/ipbx/pbx_settings/groups','act=add'),'</div>';
-	endif;
-?>
-
+	<?=$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/groups');?>
 </div>
 
 <div id="sb-part-codec" class="b-nodisplay">
@@ -114,17 +75,17 @@
 
 <?=$form->slt(array('desc' => $this->bbf('fm_protocol_codec-disallow'),'name' => 'protocol[disallow]','labelid' => 'iax-protocol-disallow','key' => false),$element['protocol']['iax']['disallow']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<div id="codeclist" class="fm-field"><p><label id="lb-codeclist" for="it-codeclist" onclick="xivo_eid('it-'+xivo_protocol+'-codeclist').focus();"><?=$this->bbf('fm_protocol_codec-allow')?></label></p>
+<div id="codeclist" class="fm-field"><p><label id="lb-codeclist" for="it-codeclist" onclick="xivo_eid('it-'+xivo_protocol+'-codeclist').focus();"><?=$this->bbf('fm_protocol_codec-allow');?></label></p>
 	<div>
-		<?=$form->slt(array('name' => 'codeclist','label' => false,'id' => 'it-sip-codeclist','key_val' => 'id','multiple' => true,'size' => 5,'field' => false,'key' => false),$element['protocol']['sip']['allow']['value'],'class="codeclisted" onfocus="this.className=\'it-mfocus codeclisted\';" onblur="this.className=\'it-mblur codeclisted\';"')?>
-		<?=$form->slt(array('name' => 'codeclist','label' => false,'id' => 'it-iax-codeclist','key_val' => 'id','multiple' => true,'size' => 5,'field' => false,'key' => false),$element['protocol']['iax']['allow']['value'],'class="codeclisted" onfocus="this.className=\'it-mfocus codeclisted\';" onblur="this.className=\'it-mblur codeclisted\';"')?>
+		<?=$form->slt(array('name' => 'codeclist','label' => false,'id' => 'it-sip-codeclist','key_val' => 'id','multiple' => true,'size' => 5,'field' => false,'key' => false),$element['protocol']['sip']['allow']['value'],'class="codeclisted" onfocus="this.className=\'it-mfocus codeclisted\';" onblur="this.className=\'it-mblur codeclisted\';"');?>
+		<?=$form->slt(array('name' => 'codeclist','label' => false,'id' => 'it-iax-codeclist','key_val' => 'id','multiple' => true,'size' => 5,'field' => false,'key' => false),$element['protocol']['iax']['allow']['value'],'class="codeclisted" onfocus="this.className=\'it-mfocus codeclisted\';" onblur="this.className=\'it-mblur codeclisted\';"');?>
 
 	</div>
 	<div id="inout-codec">
 
-		<a href="#" onclick="xivo_fm_move_selected('it-'+xivo_protocol+'-codeclist','it-'+xivo_protocol+'-codec'); return(false);" title="<?=$this->bbf('bt-incodec')?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt-incodec'),'id="bt-incodec" border="0"');?></a><br />
+		<a href="#" onclick="xivo_fm_move_selected('it-'+xivo_protocol+'-codeclist','it-'+xivo_protocol+'-codec'); return(false);" title="<?=$this->bbf('bt-incodec');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt-incodec'),'id="bt-incodec" border="0"');?></a><br />
 
-		<a href="#" onclick="xivo_fm_move_selected('it-'+xivo_protocol+'-codec','it-'+xivo_protocol+'-codeclist'); return(false);" title="<?=$this->bbf('bt-outcodec')?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt-outcodec'),'id="bt-outcodec" border="0"');?></a>
+		<a href="#" onclick="xivo_fm_move_selected('it-'+xivo_protocol+'-codec','it-'+xivo_protocol+'-codeclist'); return(false);" title="<?=$this->bbf('bt-outcodec');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt-outcodec'),'id="bt-outcodec" border="0"');?></a>
 
 	</div>
 	<div id="select-codec" class="txt-left">
@@ -135,9 +96,9 @@
 
 		<div id="updown-codec" class="txt-left">
 
-			<a href="#" onclick="xivo_fm_order_selected('it-'+xivo_protocol+'-codec',1); return(false);" title="<?=$this->bbf('bt-upcodec')?>"><?=$url->img_html('img/site/button/row-up.gif',$this->bbf('bt-upcodec'),'id="bt-upcodec" border="0"');?></a><br />
+			<a href="#" onclick="xivo_fm_order_selected('it-'+xivo_protocol+'-codec',1); return(false);" title="<?=$this->bbf('bt-upcodec');?>"><?=$url->img_html('img/site/button/row-up.gif',$this->bbf('bt-upcodec'),'id="bt-upcodec" border="0"');?></a><br />
 
-			<a href="#" onclick="xivo_fm_order_selected('it-'+xivo_protocol+'-codec',-1); return(false);" title="<?=$this->bbf('bt-downcodec')?>"><?=$url->img_html('img/site/button/row-down.gif',$this->bbf('bt-downcodec'),'id="bt-downcodec" border="0"');?></a>
+			<a href="#" onclick="xivo_fm_order_selected('it-'+xivo_protocol+'-codec',-1); return(false);" title="<?=$this->bbf('bt-downcodec');?>"><?=$url->img_html('img/site/button/row-down.gif',$this->bbf('bt-downcodec'),'id="bt-downcodec" border="0"');?></a>
 
 		</div>
 	</div>
@@ -198,7 +159,11 @@
 
 	<?=$form->text(array('desc' => $this->bbf('fm_protocol_callerid'),'name' => 'protocol[callerid]','labelid' => 'protocol-callerid','value' => $info['protocol']['callerid'],'size' => 15,'notag' => false),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-	<?=$form->slt(array('desc' => $this->bbf('fm_userfeatures_musiconhold'),'name' => 'ufeatures[musiconhold]','labelid' => 'ufeatures-musiconhold','key' => 'category','empty' => true,'default' => $element['ufeatures']['musiconhold']['default'],'value' => $info['ufeatures']['musiconhold']),$moh_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?php
+	if($moh_list !== false):
+		echo $form->slt(array('desc' => $this->bbf('fm_userfeatures_musiconhold'),'name' => 'ufeatures[musiconhold]','labelid' => 'ufeatures-musiconhold','key' => 'category','empty' => true,'default' => $element['ufeatures']['musiconhold']['default'],'value' => $info['ufeatures']['musiconhold']),$moh_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');
+	endif;
+?>
 
 	<?=$form->slt(array('desc' => $this->bbf('fm_protocol_host'),'name' => 'protocol[host-dynamic]','labelid' => 'sip-protocol-host-dynamic','bbf' => 'fm_protocol_host-','key' => false,'value' => ($host_static === true ? 'static' : 'dynamic')),$element['protocol']['sip']['host-dynamic']['value'],'onchange="xivo_chg_attrib(\'fm_host\',\'fd-sip-protocol-host-static\',(this.value == \'dynamic\' ? 0 : 1))" onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
@@ -228,7 +193,7 @@
 
 	<?=$form->checkbox(array('desc' => $this->bbf('fm_protocol_qualify'),'name' => 'protocol[qualify]','labelid' => 'iax-protocol-qualify','default' => $element['protocol']['iax']['qualify']['default'],'checked' => $info['protocol']['qualify']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<div id="comment" class="fm-field"><p><label id="lb-ufeatures-comment" for="it-ufeatures-comment"><?=$this->bbf('fm_userfeatures_comment')?></label></p>
+<div id="comment" class="fm-field"><p><label id="lb-ufeatures-comment" for="it-ufeatures-comment"><?=$this->bbf('fm_userfeatures_comment');?></label></p>
 <?=$form->textarea(array('field' => false,'label' => false,'name' => 'ufeatures[comment]','id' => 'it-ufeatures-comment','cols' => 60,'rows' => 5),$info['ufeatures']['comment'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 </div>
 

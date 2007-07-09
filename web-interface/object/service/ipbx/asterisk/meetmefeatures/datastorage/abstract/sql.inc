@@ -28,17 +28,6 @@ class xivo_service_asterisk_meetmefeatures_abstract_sql
 		return($r);
 	}
 
-	function get_by_meetme($id)
-	{
-		if(($id = xivo_uint($id)) === 0)
-			return(false);
-
-		if(($r = $this->_dso->select_one($this->_param['table'],'id','meetmeid = '.$id)) !== false)
-			$r = $r['id'];
-
-		return($r);
-	}
-
 	function get_where($arr)
 	{
 		if(($where = $this->_dso->where($arr)) === false)

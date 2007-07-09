@@ -34,6 +34,17 @@ class xivo_service_asterisk_queuemember_abstract_sql
 		return($r);
 	}
 
+	function get_where($arr)
+	{
+		if(($where = $this->_dso->where($arr)) === false)
+			return(false);
+
+		if(($r = $this->_dso->select_one($this->_param['table'],'queue_name',$where)) !== false)
+			$r = $r['queue_name'];
+
+		return($r);
+	}
+
 	function add($arr)
 	{
 		$r = $this->_dso->insert($this->_param['table'],$arr);
@@ -77,16 +88,12 @@ class xivo_service_asterisk_queuemember_abstract_sql
 		return($r);
 	}
 
-	function delete_by_name($name)
+	function delete_where($arr)
 	{
-		$r = $this->_dso->delete($this->_param['table'],'name = \''.$this->_dso->escape_string($name).'\'');
+		if(($where = $this->_dso->where($arr)) === false)
+			return(false);
 
-		return($r);
-	}
-
-	function delete_by_interface($interface)
-	{
-		$r = $this->_dso->delete($this->_param['table'],'interface = \''.$this->_dso->escape_string($interface).'\'');
+		$r = $this->_dso->delete($this->_param['table'],$where);
 
 		return($r);
 	}
@@ -117,32 +124,6 @@ class xivo_service_asterisk_queuemember_abstract_sql
 		return($r);
 	}
 
-	function get_list_by_interface($interface,$disable=null)
-	{
-		$where = ' WHERE interface = \''.$this->_dso->escape_string($interface).'\'';
-
-		if($disable !== null)
-			$where .= ' AND commented = '.intval((bool) $disable);
-
-		$rs = $this->_dso->query('SELECT queue_name, interface FROM '.$this->_param['table'].$where);
-
-		if($rs === false)
-			return(false);
-
-		$r = array();
-
-		while($rw = $this->_dso->fetch_assoc($rs))
-			$r[] = $rw;
-
-		if($this->_dso->is_free() === true)
-			$this->_dso->free($rs);
-
-		if(isset($r[0]) === false)
-			$r = false;
-
-		return($r);
-	}
-
 	function get_nb_by_name($name,$disable=null)
 	{
 		$where = 'queue_name = \''.$this->_dso->escape_string($name).'\'';
@@ -150,10 +131,35 @@ class xivo_service_asterisk_queuemember_abstract_sql
 		if($disable !== null)
 			$where .= ' AND commented = '.intval((bool) $disable);
 
-		$r = $this->_dso->select_one($this->_param['table'],'COUNT(queue_name) AS cnt',$where);
+		$r = $this->_dso->select_one($this->_param['table'],'COUNT(*) AS cnt',$where);
 
 		if($r !== false)
 			$r = (int) $r['cnt'];
+
+		return($r);
+	}
+
+	function get_all($disable=null)
+	{
+		$where = '';
+
+		if($disable !== null)
+			$where = 'commented = '.intval((bool) $disable);
+
+		$r = $this->_dso->select_all($this->_param['table'],null,$where);
+
+		return($r);
+	}
+
+	function get_all_where($arr,$disable=null)
+	{
+		if(($where = $this->_dso->where($arr)) === false)
+			return(false);
+
+		if($disable !== null)
+			$where .= ' AND commented = '.intval((bool) $disable);
+
+		$r = $this->_dso->select_all($this->_param['table'],null,$where);
 
 		return($r);
 	}

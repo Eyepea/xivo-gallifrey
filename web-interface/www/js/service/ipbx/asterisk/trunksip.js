@@ -4,8 +4,6 @@ var xivo_itrunk = 0;
 
 var xivo_elt_trunk = new Array();
 
-xivo_elt_trunk['it-trunk-username'] = new Array();
-xivo_elt_trunk['it-trunk-username']['property'] = 'readOnly|false:boolean;className|it-enabled';
 xivo_elt_trunk['fd-trunk-port'] = new Array();
 xivo_elt_trunk['fd-trunk-port']['style'] = 'display:block';
 xivo_elt_trunk['it-trunk-port'] = new Array();
@@ -70,7 +68,6 @@ xivo_fm_trunk['peer'] = xivo_clone(xivo_elt_trunk);
 xivo_attrib_register('fm_trunk-peer',xivo_fm_trunk['peer']);
 
 xivo_fm_trunk['friend'] = xivo_clone(xivo_elt_trunk);
-xivo_fm_trunk['friend']['it-trunk-username']['property'] = 'readOnly|true:boolean;className|it-readonly';
 
 xivo_attrib_register('fm_trunk-friend',xivo_fm_trunk['friend']);
 
@@ -135,9 +132,6 @@ function xivo_chgtrunk(trunk)
 	xivo_trunk = trunk.value;
 
 	xivo_chg_attrib('fm_trunk-'+xivo_trunk,'links',0,1);
-
-	if(xivo_trunk == 'friend' && xivo_eid('it-trunk-name') != false && xivo_eid('it-trunk-username') != false)
-		xivo_eid('it-trunk-username').value = xivo_eid('it-trunk-name').value;
 
 	if(xivo_trunk == 'user')
 		return(true);

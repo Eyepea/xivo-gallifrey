@@ -13,7 +13,7 @@
 		<li><a href="#" onclick="xivo_fm['fm-did-list']['act'].value = 'disables'; xivo_fm['fm-did-list'].submit();"><?=$this->bbf('toolbar_adv_menu_disable');?></a></li>
 		<li><a href="#" onclick="this.tmp = xivo_fm['fm-did-list']['act'].value; xivo_fm['fm-did-list']['act'].value = 'deletes'; return(confirm('<?=xivo_stript($this->bbf('toolbar_adv_menu_delete_confirm'));?>') ? xivo_fm['fm-did-list'].submit() : xivo_fm['fm-did-list']['act'] = this.tmp); "><?=$this->bbf('toolbar_adv_menu_delete');?></a></li>
 	</ul>
-</div><a href="#" onmouseover="xivo_eid('advanced-menu').style.display = 'block';" onmouseout="xivo_eid('advanced-menu').style.display = 'none';"><?=$url->img_html('img/menu/top/toolbar/bt-more.gif',$this->bbf('toolbar_opt_advanced'),'border="0"')?></a>
+</div><a href="#" onmouseover="xivo_eid('advanced-menu').style.display = 'block';" onmouseout="xivo_eid('advanced-menu').style.display = 'none';"><?=$url->img_html('img/menu/top/toolbar/bt-more.gif',$this->bbf('toolbar_opt_advanced'),'border="0"');?></a>
 
 <?php
 	endif;

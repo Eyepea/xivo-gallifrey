@@ -27,7 +27,7 @@
 	if($list === false || ($nb = count($list)) === 0):
 ?>
 	<tr class="sb-content">
-		<td colspan="4" class="td-single"><?=$this->bbf('no_file')?></td>
+		<td colspan="4" class="td-single"><?=$this->bbf('no_file');?></td>
 	</tr>
 <?php
 	else:
@@ -38,7 +38,7 @@
 			$mod = $j % 2 === 0 ? 1 : 2;
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=$mod?>on2">
-		<td class="td-left txt-left" colspan="2"><?=$url->href_html($ref,'service/ipbx/general_settings/sounds',array('act' => 'download','dir' => $dir,'id' => $ref,'page' => $pager['page']));?></td>
+		<td class="td-left txt-left curpointer" colspan="2" onclick="location.href = this.firstChild;"><?=$url->href_html($ref,'service/ipbx/general_settings/sounds',array('act' => 'download','dir' => $dir,'id' => $ref,'page' => $pager['page']));?></td>
 		<td class="td-right" colspan="2">
 		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/general_settings/sounds',array('act' => 'edit','dir' => $dir,'id' => $ref),null,$this->bbf('opt_modify'));?>
 		<?=$url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'service/ipbx/general_settings/sounds',array('act' => 'delete','dir' => $dir,'id' => $ref,'page' => $pager['page']),'onclick="return(confirm(\''.xivo_stript($this->bbf('opt_delete_confirm')).'\') ? true : false);"',$this->bbf('opt_delete'));?>

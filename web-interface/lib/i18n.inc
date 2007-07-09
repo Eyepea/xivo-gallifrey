@@ -6,6 +6,7 @@ class xivo_i18n
 	var $_dso	= null;
 	var $_load	= array();
 	var $_copy	= false;
+	var $_loop	= array();
 
 	function xivo_i18n()
 	{
@@ -181,44 +182,38 @@ class xivo_i18n
 	{
 		$r = false;
 
+		if($this->_get_file_info($file,$namespace) === false)
+			return($r);
 
-		if($this->_get_file_info($file,$namespace) !== false)
+		if($this->_get_cache_file() === true)
+			return(true);
+
+		if(xivo_ak('filei18n',$this->_file,true) === false)
 		{
-			if($this->_get_cache_file() === false)
-			{
-				if($this->_mk_cache_file() === true)
-					$r = $this->_get_cache_file();
-			}
-			else $r = true;
-
-			//$this->_mk_load_file();
+			trigger_error('I18N file not found',E_USER_WARNING);
+			return($r);
 		}
+
+		if(isset($this->_loop[$this->_file['filei18n']]) === true)
+		{
+			trigger_error('I18N file already loaded: '.$this->_file['filei18n'],E_USER_WARNING);
+			return($r);
+		}
+
+		$this->_loop[$this->_file['filei18n']] = 1;
+
+		if($this->_mk_cache_file() === true)
+			$r = $this->_get_cache_file();
 
 		return($r);
 	}
 
 	function load_file($file,$namespace='')
 	{
-		$this->_file = $this->_load = array();
 		$this->_copy = false;
+		$this->_file = $this->_load = $this->_loop = array();
 
 		return($this->_load_file($file,$namespace));
-	}
-
-	function _mk_load_file()
-	{
-		$load = $this->_load;
-		$this->_load = array();
-
-		if(($arr = xivo_get_aks($load)) === false)
-			return(false);
-
-		for($i = 0;$i < $arr['cnt']; $i++)
-		{
-			$k = &$arr['keys'][$i];
-
-			$this->load_file($k,$load[$k]);
-		}
 	}
 
 	function _set_babelfish($namespace,$value)
@@ -283,7 +278,10 @@ class xivo_i18n
 				if(xivo_issa($namespace,$babelfish) === false || isset($babelfish[$namespace][$name]) === false)
 				{
 					if(xivo_issa('_empty_',$babelfish) === false || isset($babelfish['_empty_'][$name]) === false)
+					{
+						//trigger_error('Undefined translation: '.$name,E_USER_NOTICE);
 						return($name);
+					}
 					else
 						$namespace = '_empty_';
 				}
@@ -292,7 +290,6 @@ class xivo_i18n
 
 				if(empty($value) === false)
 					$r = vsprintf(xivo_printf_strip($r,count($value)),$value);
-
 				break;
 		}
 
@@ -337,9 +334,6 @@ class xivo_i18n
 		$file .= '.i18n';
 
 		$path = ltrim($dir.XIVO_SEP_DIR.$file,XIVO_SEP_DIR);
-
-		//if((xivo_ak('path',$this->_file,true) === $path && xivo_issa('copy',$this->_file) === true) === false)
-		//	$this->_file = array();
 
 		if($namespace !== '' && $namespace !== '_empty_')
 			$path = trim(str_replace('::',XIVO_SEP_DIR,$namespace).XIVO_SEP_DIR.$path,XIVO_SEP_DIR);
@@ -387,9 +381,6 @@ class xivo_i18n
 		$cache['dcreate'] = isset($this->_file['filectime']) === true ? $this->_file['filectime'] : 0;
 		$cache['dupdate'] = $this->_file['filemtime'];
 
-		//if(xivo_issa('copy',$this->_file) === true && $this->_file['path'] === $this->_file['copy']['path'])
-		//	$cache['locale'] = $this->chk_locale($this->_file['copy']['locale']);
-		//else
 		$cache['locale'] = $this->chk_locale($this->_file['locale']);
 
 		$cache['obj']['content'] = $this->_parse_file();
@@ -488,7 +479,6 @@ class xivo_i18n
 			}
 
 			$this->_set_babelfish($namespace,$ref_file['content']);
-			//$this->_load = $cp_file['load'];
 		}
 
 		return($r);

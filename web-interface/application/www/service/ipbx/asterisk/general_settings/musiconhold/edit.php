@@ -13,7 +13,7 @@ do
 		break;
 
 	if(($result = $musiconhold->chk_values($_QR,true,true)) === false
-	|| ($result['mode'] === 'custom' && $result['application'] === '') === true)
+	|| ($result['mode'] === 'custom' && (string) $result['application'] === '') === true)
 	{
 		$info = $musiconhold->get_filter_result();
 		break;

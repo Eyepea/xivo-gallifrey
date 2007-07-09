@@ -41,6 +41,9 @@ class xivo_service_asterisk_staticconf extends xivo_service_asterisk_abstract
 		$where = array();
 		$where['filename'] = $this->_filename;
 
+		if(isset($arr['id']) === true)
+			$where['id'] = (int) $arr['id'];
+
 		if(isset($arr['category']) === true)
 			$where['category'] = $arr['category'];
 
@@ -49,6 +52,12 @@ class xivo_service_asterisk_staticconf extends xivo_service_asterisk_abstract
 
 		if(isset($arr['var_val']) === true)
 			$where['var_val'] = $arr['var_val'];
+
+		if(isset($arr['cat_metric']) === true)
+			$where['cat_metric'] = $arr['cat_metric'];
+
+		if(isset($arr['var_metric']) === true)
+			$where['var_metric'] = $arr['var_metric'];
 
 		if(($id = $this->_dso->get_where($where)) === false)
 			return(false);
@@ -92,10 +101,15 @@ class xivo_service_asterisk_staticconf extends xivo_service_asterisk_abstract
 		$r['var_name'] = $arr['var_name'];
 		$r['var_val'] = $arr['var_val'];
 
+		if(isset($arr['cat_metric']) === true)
+			$r['cat_metric'] = (int) $arr['cat_metric'];
+
+		if(isset($arr['var_metric']) === true)
+			$r['var_metric'] = (int) $arr['var_metric'];
+
 		if(isset($arr['commented']) === true)
 			$r['commented'] = (bool) $arr['commented'];
-		else if($this->disable_element_value($arr['var_name']) === true
-		&& ($arr['var_val'] === '' || $arr['var_val'] === null) === true)
+		else if($arr['var_val'] === null)
 			$r['commented'] = true;
 		else
 			$r['commented'] = false;
@@ -165,14 +179,25 @@ class xivo_service_asterisk_staticconf extends xivo_service_asterisk_abstract
 		$r = array();
 
 		$r['filename'] = $this->_filename;
-		$r['category'] = $arr['category'];
-		$r['var_name'] = $arr['var_name'];
-		$r['var_val'] = $arr['var_val'];
+
+		if(isset($arr['category']) === true)
+			$r['category'] = $arr['category'];
+
+		if(isset($arr['var_name']) === true)
+			$r['var_name'] = $arr['var_name'];
+
+		if(array_key_exists('var_val',$arr) === true)
+			$r['var_val'] = $arr['var_val'];
+
+		if(isset($arr['cat_metric']) === true)
+			$r['cat_metric'] = (int) $arr['cat_metric'];
+
+		if(isset($arr['var_metric']) === true)
+			$r['var_metric'] = (int) $arr['var_metric'];
 
 		if(isset($arr['commented']) === true)
 			$r['commented'] = (bool) $arr['commented'];
-		else if($this->disable_element_value($arr['var_name']) === true
-		&& ($arr['var_val'] === '' || $arr['var_val'] === null) === true)
+		else if(array_key_exists('var_val',$arr) === true && $arr['var_val'] === null)
 			$r['commented'] = true;
 		else
 			$r['commented'] = false;
@@ -307,6 +332,16 @@ class xivo_service_asterisk_staticconf extends xivo_service_asterisk_abstract
 			return(false);
 
 		return($this->_dso->delete($id));
+	}
+
+	function delete_where($arr)
+	{
+		$arr = (array) $arr;
+
+		if(($where = $this->get_elements_where($arr)) === false)
+			return(false);
+
+		return($this->_dso->delete_where($where));
 	}
 
 	function delete_by_category($category)

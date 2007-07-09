@@ -25,12 +25,25 @@ class xivo_service_asterisk_usergroup extends xivo_service_asterisk_abstract
 
 	function get($id)
 	{
+		if(is_array($id) === true && ($id = $this->get_where($id)) === false)
+			return(false);
+
 		if(($id = xivo_uint($id)) === 0 || ($r = $this->_dso->get($id)) === false)
 			return(false);
 
 		$this->_origin = $r;
 
 		return($r);
+	}
+
+	function get_where($arr)
+	{
+		$arr = (array) $arr;
+
+		if(($where = $this->get_elements_where($arr)) === false)
+			return(false);
+
+		return($this->_dso->get_where($where));
 	}
 
 	function get_by_user($id)
@@ -105,6 +118,28 @@ class xivo_service_asterisk_usergroup extends xivo_service_asterisk_abstract
 			return(false);
 
 		return($this->_dso->delete_by_group($id));
+	}
+
+	function get_all_where($arr=array())
+	{
+		$arr = (array) $arr;
+
+		if(($where = $this->get_elements_where($arr)) === false
+		|| ($list = $this->_dso->get_all_where($where)) === false
+		|| isset($list[0]) === false)
+			return(false);
+
+		$nb = count($list);
+
+		$r = array();
+
+		for($i = 0;$i < $nb;$i++)
+			$r[] = $list[$i];
+
+		if(isset($r[0]) === false)
+			$r = false;
+
+		return($r);
 	}
 }
 

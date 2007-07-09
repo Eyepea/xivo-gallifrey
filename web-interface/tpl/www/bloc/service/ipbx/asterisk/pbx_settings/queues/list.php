@@ -22,7 +22,7 @@
 		<th class="th-left xspan"><span class="span-left">&nbsp;</span></th>
 		<th class="th-center"><?=$this->bbf('col_name');?></th>
 		<th class="th-center"><?=$this->bbf('col_number');?></th>
-		<th class="th-center"><?=$this->bbf('col_number-users');?></th>
+		<th class="th-center"><?=$this->bbf('col_number-members');?></th>
 		<th class="th-center" id="col-action" colspan="2"><?=$this->bbf('col_action');?></th>
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
 	</tr>
@@ -32,7 +32,7 @@
 	if($list === false || ($nb = count($list)) === 0):
 ?>
 	<tr class="sb-content">
-		<td colspan="7" class="td-single"><?=$this->bbf('no_queue')?></td>
+		<td colspan="7" class="td-single"><?=$this->bbf('no_queue');?></td>
 	</tr>
 <?php
 	else:
@@ -43,17 +43,12 @@
 			$mod = $j % 2 === 0 ? 1 : 2;
 ?>
 	<tr class="sb-content l-infos-<?=$mod?>on2">
-		<td class="td-left txt-left" colspan="2"><?=$ref['gfeatures']['name']?></td>
-		<td><?=(xivo_empty($ref['gfeatures']['number']) === false ? $ref['gfeatures']['number'] : '-')?></td>
+		<td class="td-left txt-left" colspan="2"><?=$ref['qfeatures']['name']?></td>
+		<td><?=(xivo_empty($ref['qfeatures']['number']) === false ? $ref['qfeatures']['number'] : '-')?></td>
 		<td><?=$ref['nb_qmember']?></td>
 		<td class="td-right" colspan="3">
-		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/pbx_settings/groups',array('act' => 'edit','id' => $ref['gfeatures']['id']),null,$this->bbf('opt_modify'));?>
-
-<?php
-	if($ref['nb_qmember'] === 0):
-		echo $url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'service/ipbx/pbx_settings/groups',array('act' => 'delete','id' => $ref['gfeatures']['id'],'page' => $pager['page']),'onclick="return(confirm(\''.xivo_stript($this->bbf('opt_delete_confirm')).'\') ? true : false);"',$this->bbf('opt_delete'));
-	endif;
-?>
+		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/pbx_settings/queues',array('act' => 'edit','id' => $ref['qfeatures']['id']),null,$this->bbf('opt_modify'));?>
+		<?=$url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'service/ipbx/pbx_settings/queues',array('act' => 'delete','id' => $ref['qfeatures']['id'],'page' => $pager['page']),'onclick="return(confirm(\''.xivo_stript($this->bbf('opt_delete_confirm')).'\') ? true : false);"',$this->bbf('opt_delete'));?>
 		</td>
 	</tr>
 <?php

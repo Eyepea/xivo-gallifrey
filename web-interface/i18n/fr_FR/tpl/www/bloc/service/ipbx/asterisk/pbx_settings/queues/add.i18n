@@ -49,6 +49,9 @@ Musique d'attente :
 ; fm_queue_announce
 Annonce :
 
+; fm_queue_context 
+Contexte de sortie :
+
 ; fm_queue_strategy
 Stratégie :
 
@@ -59,7 +62,10 @@ Niveau de service :
 Poids :
 
 ; fm_queue_timeout
-Délai d'attente pour joindre un agent :
+Délai d'attente pour joindre un membre :
+
+; fm_queue_timeout-opt0
+Désactivé
 
 ; fm_queue_timeout-opt
 %s secondes
@@ -67,26 +73,29 @@ Délai d'attente pour joindre un agent :
 ; fm_queue_retry
 Temps d'attente avant rappel des membres :
 
+; fm_queue_retry-opt0
+Désactivé
+
 ; fm_queue_retry-opt
 %s secondes
 
 ; fm_queue_wrapuptime
-Délai de réatribution d'appel :
+Délai de réattribution d'appel :
 
 ; fm_queue_wrapuptime-opt0
-0 seconde
+Désactivé
 
 ; fm_queue_wrapuptime-opt
 %s secondes
 
 ; fm_queue_maxlen 
-Nombre de personne autorisé à attendre :
+Nombre de personnes autorisées à attendre :
 
 ; fm_queue_announce-frequency
 Fréquence d'annonce de position :
 
 ; fm_queue_announce-frequency-opt0
-0 seconde
+Désactivée
 
 ; fm_queue_announce-frequency-opt15
 15 secondes
@@ -128,7 +137,7 @@ Fréquence d'annonce de position :
 Fréquence d'annonce :
 
 ; fm_queue_periodic-announce-frequency-opt0
-0 seconde
+Désactivée
 
 ; fm_queue_periodic-announce-frequency-opt15
 15 secondes
@@ -182,7 +191,7 @@ Une fois
 Arrondi du temps d'attente :
 
 ; fm_queue_announce-round-seconds-opt0
-0 seconde
+Désactivé
 
 ; fm_queue_announce-round-seconds-opt
 %s secondes
@@ -221,7 +230,7 @@ Strict
 Activer les événements (AMI) :
 
 ; fm_queue_eventmemberstatus
-Activer les événements agents (AMI) :
+Activer les événements des membres (AMI) :
 
 ; fm_queue_reportholdtime
 Activer le rapport d'attente d'un appelant :
@@ -230,13 +239,13 @@ Activer le rapport d'attente d'un appelant :
 Temps d'attente avant de passer l'appel :
 
 ; fm_queue_memberdelay-opt0
-0 seconde
+Désactivé
 
 ; fm_queue_memberdelay-opt
 %s secondes
 
 ; fm_queue_timeoutrestart
-Délai de réinitialisation du temps de réponse d'un agent :
+Délai de réinitialisation du temps de réponse d'un membre :
 
 ; fm_queue_queue-youarenext
 Vous serez le prochain :

@@ -103,7 +103,7 @@ class xivo_session_abstract_sql
 		{
 			$where = 'sesskey = \''.$this->_dso->escape_string($key).'\'';
 
-			if(($r = $this->_dso->select_one($this->_param['table'],'COUNT(sesskey) AS cnt',$where)) !== false)
+			if(($r = $this->_dso->select_one($this->_param['table'],'COUNT(*) AS cnt',$where)) !== false)
 			{
 				if($r['cnt'] > 0)
 				{

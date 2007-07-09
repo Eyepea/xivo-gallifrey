@@ -7,6 +7,7 @@ $array['element']['bindport']['default'] = 5060;
 
 $array['element']['bindaddr'] = array();
 $array['element']['bindaddr']['default'] = '0.0.0.0';
+$array['element']['bindaddr']['null'] = true;
 
 $array['element']['srvlookup'] = array();
 $array['element']['srvlookup']['value'] = array('no','yes');
@@ -19,14 +20,15 @@ $array['element']['language']['default'] = 'en';
 
 $array['element']['realm'] = array();
 $array['element']['realm']['default'] = '';
+$array['element']['realm']['null'] = true;
 
 $array['element']['tos'] = array();
 $array['element']['tos']['value'] = array('none','lowdelay','throughput','reliability','mincost');
 $array['element']['tos']['default'] = 'lowdelay';
 
 $array['element']['dtmfmode'] = array();
-$array['element']['dtmfmode']['value'] = array('','rfc2833','inband','info');
-$array['element']['dtmfmode']['default'] = '';
+$array['element']['dtmfmode']['value'] = array('rfc2833','inband','info');
+$array['element']['dtmfmode']['default'] = 'info';
 
 $array['element']['relaxdtmf'] = array();
 $array['element']['relaxdtmf']['value'] = array('no','yes');
@@ -35,9 +37,11 @@ $array['element']['relaxdtmf']['set'] = true;
 
 $array['element']['externip'] = array();
 $array['element']['externip']['default'] = '';
+$array['element']['externip']['null'] = true;
 
 $array['element']['localnet'] = array();
 $array['element']['localnet']['default'] = '';
+$array['element']['localnet']['null'] = true;
 
 $array['element']['context'] = array();
 $array['element']['context']['default'] = '';
@@ -84,11 +88,16 @@ $array['element']['videosupport']['set'] = true;
 
 $array['element']['disallow'] = array();
 $array['element']['disallow']['value'] = array('all');
-$array['element']['disallow']['default'] = '';
+$array['element']['disallow']['default'] = 'all';
 
 $array['element']['allow'] = array();
-$array['element']['allow']['value'] = array('gsm','alaw','ulaw','g729');
+$array['element']['allow']['value'] = array(
+					XIVO_SRE_IPBX_AST_CODEC_ALAW,
+					XIVO_SRE_IPBX_AST_CODEC_G729,
+					XIVO_SRE_IPBX_AST_CODEC_GSM,
+					XIVO_SRE_IPBX_AST_CODEC_ULAW);
 $array['element']['allow']['default'] = '';
+$array['element']['allow']['null'] = true;
 
 $array['element']['register'] = array();
 $array['element']['register']['default'] = '';
@@ -107,7 +116,7 @@ $array['filter']['qualify'] = array('bool' => true);
 $array['filter']['rtcachefriends'] = array('bool' => true);
 $array['filter']['allowguest'] = array('bool' => true);
 $array['filter']['tos'] = array('arrkey' => array('none','lowdelay','throughput','reliability','mincost'));
-$array['filter']['dtmfmode'] = array('arrkey' => array('','rfc2833','inband','info'));
+$array['filter']['dtmfmode'] = array('arrkey' => array('rfc2833','inband','info'));
 $array['filter']['relaxdtmf'] = array('bool' => true);
 $array['filter']['externip'] = array('func' => 'xivo_filter::chk_host_ipv4_strict');
 $array['filter']['localnet'] = array('preg' => '/^[0-9\.\/]+$/','maxlen' => 128);
@@ -116,13 +125,17 @@ $array['filter']['musicclass'] = array('maxlen' => 128);
 $array['filter']['checkmwi'] = array('cast' => 'uint','maxlen' => 4);
 $array['filter']['vmexten'] = array('preg' => '/^[a-z0-9\*#]+$/i','maxlen' => 128);
 $array['filter']['videosupport'] = array('bool' => true);
-$array['filter']['disallow'] = array('set' => false);
-$array['filter']['allow'] = array('set' => false,'arrvalue' => array('gsm','alaw','ulaw','g729'));
+$array['filter']['disallow'] = array('set' => false,'chk' => 2,'arrkey' => array('all'));
+$array['filter']['allow'] = array('set' => false,'arrvalue' => array(
+						XIVO_SRE_IPBX_AST_CODEC_ALAW,
+						XIVO_SRE_IPBX_AST_CODEC_G729,
+						XIVO_SRE_IPBX_AST_CODEC_GSM,
+						XIVO_SRE_IPBX_AST_CODEC_ULAW));
 $array['filter']['register_username'] = array('preg' => '/^[a-z0-9_@\.-]+$/i');
 $array['filter']['register_authuser'] = array('set' => false,'chk' => 2,'preg' => '/^[a-z0-9_\.-]+$/i');
 $array['filter']['register_password'] = array('preg' => '/^[a-z0-9_\.-]+$/i');
 $array['filter']['register_host'] = array('func' => 'xivo_filter::chk_host_ipv4_strict');
 $array['filter']['register_port'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,65535));
-$array['filter']['register_contact'] = array('set' => false,'chk' => 2,'cast' => 'uint','maxlen' => 6);
+$array['filter']['register_contact'] = array('set' => false,'chk' => 2,'preg' => '/^[a-z0-9]+$/i');
 
 ?>

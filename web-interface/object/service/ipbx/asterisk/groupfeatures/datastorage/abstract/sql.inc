@@ -18,7 +18,7 @@ class xivo_service_asterisk_groupfeatures_abstract_sql
 			$this->_param['table'] = (string) $param['table'];
 	}
 
-	function get($id,$disable=null)
+	function get($id,$disable=null,$delete=false)
 	{
 		if(($id = xivo_uint($id)) === 0)
 			return(false);
@@ -28,18 +28,24 @@ class xivo_service_asterisk_groupfeatures_abstract_sql
 		if($disable !== null)
 			$where .= ' AND commented = '.intval((bool) $disable);
 
+		if($delete !== null)
+			$where .= ' AND deleted = '.intval((bool) $delete);
+
 		$r = $this->_dso->select_one($this->_param['table'],null,$where);
 
 		return($r);
 	}
 
-	function get_where($arr,$disable=null)
+	function get_where($arr,$disable=null,$delete=false)
 	{
 		if(($where = $this->_dso->where($arr)) === false)
 			return(false);
 
 		if($disable !== null)
 			$where .= ' AND commented = '.intval((bool) $disable);
+
+		if($delete !== null)
+			$where .= ' AND deleted = '.intval((bool) $delete);
 
 		if(($r = $this->_dso->select_one($this->_param['table'],'id',$where)) !== false)
 			$r = $r['id'];
@@ -77,12 +83,15 @@ class xivo_service_asterisk_groupfeatures_abstract_sql
 		return($r);
 	}
 
-	function get_list($disable=null)
+	function get_list($disable=null,$delete=false)
 	{
-		$where = '';
+		$where = 'WHERE 1';
 
 		if($disable !== null)
-			$where = ' WHERE commented = '.intval((bool) $disable);
+			$where .= ' AND commented = '.intval((bool) $disable);
+
+		if($delete !== null)
+			$where .= ' AND deleted = '.intval((bool) $delete);
 
 		$rs = $this->_dso->query('SELECT id FROM '.$this->_param['table'].$where);
 
@@ -103,12 +112,15 @@ class xivo_service_asterisk_groupfeatures_abstract_sql
 		return($r);
 	}
 
-	function get_all($disable=null)
+	function get_all($disable=null,$delete=false)
 	{
-		$where = '';
+		$where = '1';
 
 		if($disable !== null)
-			$where = 'commented = '.intval((bool) $disable);
+			$where .= ' AND commented = '.intval((bool) $disable);
+
+		if($delete !== null)
+			$where .= ' AND deleted = '.intval((bool) $delete);
 
 		$r = $this->_dso->select_all($this->_param['table'],null,$where);
 
@@ -117,7 +129,7 @@ class xivo_service_asterisk_groupfeatures_abstract_sql
 
 	function get_last()
 	{
-		$r = $this->_dso->select_one($this->_param['table'],'COUNT(id) AS cnt, MAX(id) AS id');
+		$r = $this->_dso->select_one($this->_param['table'],'COUNT(*) AS cnt, MAX(id) AS id');
 
 		if($r !== false)	
 			$r = $r['cnt'] > 0 ? $r['id'] : 0;
@@ -129,7 +141,7 @@ class xivo_service_asterisk_groupfeatures_abstract_sql
 	{
 		$r = false;
 
-		$r = $this->_dso->select_one($this->_param['table'],'id','commented = 1','ORDER BY id ASC');
+		$r = $this->_dso->select_one($this->_param['table'],'id','deleted = 1','ORDER BY id ASC');
 
 		if($r !== false)
 			$r = $r['id'];
@@ -141,7 +153,7 @@ class xivo_service_asterisk_groupfeatures_abstract_sql
 	{
 		$where = 'id IN(\''.implode('\',\'',array_map(array(&$this->_dso,'escape_string'), $arr)).'\')';
 
-		$rs = $this->_dso->query('SELECT id FROM '.$this->_param['table'].' WHERE '.$where.' AND commented = 0');
+		$rs = $this->_dso->query('SELECT id FROM '.$this->_param['table'].' WHERE '.$where.' AND deleted = 0');
 
 		if($rs === false)
 			return(false);

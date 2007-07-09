@@ -1,0 +1,20 @@
+; col_group
+Groupe
+
+; col_number-agents
+Nombre d'agents
+
+; col_action
+Action
+
+; no_group
+Aucun groupe d'agents trouvé
+
+; opt_modify
+Modifier
+
+; opt_delete
+Supprimer
+
+; opt_delete_confirm
+Etes-vous certain de vouloir supprimer ce groupe d'agents ?

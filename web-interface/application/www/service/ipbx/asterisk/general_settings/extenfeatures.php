@@ -13,6 +13,7 @@ if(isset($_QR['fm_send']) === true)
 	$extenfeatures->replace_exten_by_name('fwdrna',$extenfeatures->set_chk_value('fwdrna',$_QRY->get_qr('fwdrna')));
 	$extenfeatures->replace_exten_by_name('fwdbusy',$extenfeatures->set_chk_value('fwdbusy',$_QRY->get_qr('fwdbusy')));
 	$extenfeatures->replace_exten_by_name('recsnd',$extenfeatures->set_chk_value('recsnd',$_QRY->get_qr('recsnd')));
+	$extenfeatures->replace_exten_by_name('phonestatus',$extenfeatures->set_chk_value('phonestatus',$_QRY->get_qr('phonestatus')));
 	$extenfeatures->replace_exten_by_name('enablevm',$extenfeatures->set_chk_value('enablevm',$_QRY->get_qr('enablevm')));
 	$extenfeatures->replace_exten_by_name('enablednd',$extenfeatures->set_chk_value('enablednd',$_QRY->get_qr('enablednd')));
 	$extenfeatures->replace_exten_by_name('incallrec',$extenfeatures->set_chk_value('incallrec',$_QRY->get_qr('incallrec')));

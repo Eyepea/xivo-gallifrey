@@ -20,6 +20,74 @@ $qmember = &$ipbx->get_module('queuemember');
 $voicemail = &$ipbx->get_module('uservoicemail');
 $autoprov = &$ipbx->get_module('autoprov');
 
+$gmember_slt = $gmember_unslt = false;
+
+if(($groups = $ipbx->get_group_user($info['ufeatures']['id'])) !== false)
+{
+	xivo::load_class('xivo_sort');
+	$sort = new xivo_sort(array('browse' => 'queue','key' => 'name'));
+	usort($groups,array(&$sort,'str_usort'));
+
+	$gmember_slt = $gmember_unslt = array();
+
+	$nb = count($groups);
+
+	for($i = 0;$i < $nb;$i++)
+	{
+		$name = &$groups[$i]['queue']['name'];
+
+		if($groups[$i]['member'] !== false)
+			$gmember_slt[$name] = $groups[$i]['member'];
+		else
+			$gmember_unslt[$name] = $name;
+	}
+
+	if(empty($gmember_slt) === true)
+		$gmember_slt = false;
+
+	if(empty($gmember_unslt) === true)
+	{
+		$gmember_unslt = false;
+
+		if($gmember_slt === false)
+			$groups = false;
+	}
+}
+
+$qmember_slt = $qmember_unslt = false;
+
+if(($queues = $ipbx->get_queue_user($info['ufeatures']['id'])) !== false)
+{
+	xivo::load_class('xivo_sort');
+	$sort = new xivo_sort(array('browse' => 'queue','key' => 'name'));
+	usort($queues,array(&$sort,'str_usort'));
+
+	$qmember_slt = $qmember_unslt = array();
+
+	$nb = count($queues);
+
+	for($i = 0;$i < $nb;$i++)
+	{
+		$name = &$queues[$i]['queue']['name'];
+
+		if($queues[$i]['member'] !== false)
+			$qmember_slt[$name] = $queues[$i]['member'];
+		else
+			$qmember_unslt[$name] = $name;
+	}
+
+	if(empty($qmember_slt) === true)
+		$qmember_slt = false;
+
+	if(empty($qmember_unslt) === true)
+	{
+		$qmember_unslt = false;
+
+		if($qmember_slt === false)
+			$queues = false;
+	}
+}
+
 if(($moh_list = $musiconhold->get_all_category(null,false)) !== false)
 	ksort($moh_list);
 
@@ -27,14 +95,16 @@ if(($autoprov_list = $autoprov->get_autoprov_list()) !== false)
 	ksort($autoprov_list);
 
 $info['usergroup'] = $ugroup->get_by_user($info['ufeatures']['id']);
-$info['voicemail'] = $voicemail->get_by_mailbox($info['protocol']['mailbox']);
-$info['autoprov'] = $autoprov->get_by_iduserfeatures($info['ufeatures']['id']);
+$info['voicemail'] = $voicemail->get(array(
+					'mailbox' => $info['ufeatures']['number'],
+					'context' => $info['ufeatures']['context']));
+$info['autoprov'] = $autoprov->get(array('iduserfeatures' => $info['ufeatures']['id']));
 
 $allow = $info['protocol']['allow'];
-$groups = $info['protocol']['callgroup'];
 
 $status = $result = array();
-$status['localexten'] = $status['extenumbers'] = $status['hints'] = $status['usergroup'] = $status['voicemail'] = false;
+$status['localexten'] = $status['extenumbers'] = $status['hints'] = false;
+$status['queue'] = $status['group'] = $status['usergroup'] = $status['voicemail'] = false;
 
 $edit = true;
 
@@ -70,7 +140,7 @@ do
 		$edit = false;
 		$result['protocol'] = array_merge($info['protocol'],$protocol->get_filter_result());
 	}
-
+	
 	if(is_array($result['protocol']['allow']) === true)
 	{
 		$allow = $result['protocol']['allow'];
@@ -104,7 +174,7 @@ do
 
 		$localexten = $extensions;
 
-		if(($info['localexten'] = $localexten->get_where($exten_where)) !== false)
+		if(($info['localexten'] = $localexten->get($exten_where)) !== false)
 		{
 			if($result['ufeatures']['number'] === '')
 				$status['localexten'] = 'delete';
@@ -163,7 +233,7 @@ do
 		else
 			$exten_where['context'] = $info['protocol']['context'];
 
-		if(($info['extenumbers'] = $extenumbers->get_where($exten_where)) !== false)
+		if(($info['extenumbers'] = $extenumbers->get($exten_where)) !== false)
 		{
 			if($result['ufeatures']['number'] === '')
 				$status['extenumbers'] = 'delete';
@@ -172,7 +242,7 @@ do
 				$status['extenumbers'] = 'edit';
 
 				if(($result['extenumbers'] = $extenumbers->chk_values($exten_numbers,true,true)) === false
-				|| (($extenum = $extenumbers->get_where($result['extenumbers'])) !== false
+				|| (($extenum = $extenumbers->get($result['extenumbers'])) !== false
 				   && (int) $extenum['id'] !== (int) $info['extenumbers']['id']) === true)
 				{
 					$edit = false;
@@ -230,7 +300,7 @@ do
 
 			$hintsexten = $extensions;
 
-			if(($info['hints'] = $hintsexten->get_where($exten_where)) !== false)
+			if(($info['hints'] = $hintsexten->get($exten_where)) !== false)
 			{
 				$status['hints'] = 'edit';
 
@@ -264,56 +334,216 @@ do
 		}
 	}
 
-	$groups = array();
+	$ugroup_where = array(
+			'usertype' => 'user',
+			'userid' => $info['ufeatures']['id'],
+			'category' => 'group');
 
-	if(xivo_issa('group',$_QR) !== false)
+	if(isset($_QR['usergroup']) === false || xivo_bool($result['ufeatures']['ringgroup']) === false)
+		$_QR['usergroup'] = false;
+
+	$usergroup = false;
+	$callgroup = array();
+	$group_add = $group_edit = $group_del = $group_tmp = array();
+
+	if(($group_slt = xivo_issa_val('group-select',$_QR)) !== false && xivo_issa('group',$_QR) !== false)
 	{
-		$arr_group = array_values($_QR['group']);
+		$nb = count($group_slt);
+		$ugroup_info = $ugroup_where;
 
-		if(($nb = count($arr_group)) !== 0)
+		for($i = 0;$i < $nb;$i++)
 		{
-			$usergroup = false;
+			$qname = &$group_slt[$i];
+			$ugroup_info['queue_name'] = $qname;
 
-			if(isset($_QR['usergroup']) === false || xivo_bool($result['ufeatures']['ringgroup']) === false)
-				$_QR['usergroup'] = false;
-
-			for($i = 0;$i < $nb;$i++)
+			if(isset($group_tmp[$qname]) === true || isset($_QR['group'][$qname]) === false
+			|| ($chantype = xivo_ak('chantype',$_QR['group'][$qname],true)) === false
+			|| ($chantype !== 'default' && $chantype !== XIVO_SRE_IPBX_AST_CHAN_LOCAL) === true
+			|| ($chantype === XIVO_SRE_IPBX_AST_CHAN_LOCAL
+			   && $result['ufeatures']['number'] === '') === true
+			|| ($gid = $gfeatures->get_where(array('name' => $qname))) === false)
 			{
-				if(($ginfo = $gfeatures->get($arr_group[$i],false)) === false)
-					continue;
+				if(isset($gmember_slt[$qname]) === true)
+				{
+					$status['group'] = true;
+					$group_tmp[$qname] = 1;
+					$group_del[] = $ugroup_info;
+				}
+				continue;
+			}
+		
+			if(isset($gmember_unslt[$qname]) === true)
+				$ref_group = &$group_add;
+			else if(isset($gmember_slt[$qname]) === true)
+				$ref_group = &$group_edit;
+			else
+				continue;
 
-				$groups[] = $ginfo['id'];
+			if($chantype === 'default')
+			{
+				$ugroup_info['interface'] = $ipbx->mk_interface(
+								$result['protocol']['name'],
+								$result['ufeatures']['protocol']);
 
-				if($_QR['usergroup'] !== false && (int) $ginfo['id'] === (int) $_QR['usergroup'])
-					$usergroup = $ginfo['id'];
+				$ugroup_info['channel'] = $ipbx->get_channel_by_protocol($result['ufeatures']['protocol']);
+			}
+			else if($chantype === XIVO_SRE_IPBX_AST_CHAN_LOCAL)
+			{
+				$ugroup_info['interface'] = $ipbx->mk_interface(
+								$result['protocol']['name'],
+								null,
+								$result['ufeatures']['number'],
+								$result['ufeatures']['context']);
+
+				$ugroup_info['channel'] = XIVO_SRE_IPBX_AST_CHAN_LOCAL;
 			}
 
-			if(isset($groups[0]) === false)
-				$usergroup = false;
+			$ugroup_tmp = array_merge($_QR['group'][$qname],$ugroup_info);
 
-			if($info['usergroup'] !== false)
+			if(($ginfo = $qmember->chk_values($ugroup_tmp,true,true)) !== false)
 			{
-				$result['usergroup'] = $info['usergroup'];
-				$result['usergroup']['groupid'] = $usergroup;
-
-				if($usergroup === false)
-					$status['usergroup'] = 'delete';
-				else if(($result['usergroup'] = $ugroup->chk_values($result['usergroup'],true,true)) === false)
-					$result['usergroup'] = array_merge($info['usergroup'],$ugroup->get_filter_result());
-				else
-					$status['usergroup'] = 'edit';
+				$status['group'] = true;
+				$group_tmp[$qname] = 1;
+				$ref_group[] = $ginfo;
+				$callgroup[] = $gid;
+			
+				if($_QR['usergroup'] !== false && $_QR['usergroup'] === $qname)
+					$usergroup = $gid;
 			}
-			else if($usergroup !== false)
+		}
+	}
+
+	if($gmember_slt !== false)
+	{
+		$group_slt = array_keys($gmember_slt);
+		$ugroup_info = $ugroup_where;
+
+		$nb = count($group_slt);
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			$qname = &$group_slt[$i];
+			if(isset($group_tmp[$qname]) === true)
+				continue;
+
+			$status['group'] = true;
+			$ugroup_info['queue_name'] = $qname;
+			$group_del[] = $ugroup_info;
+		}
+	}
+
+	if($info['usergroup'] !== false)
+	{
+		$result['usergroup'] = $info['usergroup'];
+		$result['usergroup']['groupid'] = $usergroup;
+
+		if($usergroup === false)
+			$status['usergroup'] = 'delete';
+		else if(($result['usergroup'] = $ugroup->chk_values($result['usergroup'],true,true)) === false)
+			$result['usergroup'] = array_merge($info['usergroup'],$ugroup->get_filter_result());
+		else
+			$status['usergroup'] = 'edit';
+	}
+	else if($usergroup !== false)
+	{
+		$result['usergroup'] = array();
+		$result['usergroup']['userid'] = $info['ufeatures']['id'];
+		$result['usergroup']['groupid'] = $usergroup;
+
+		if(($result['usergroup'] = $ugroup->chk_values($result['usergroup'],true,true)) === false)
+			$result['usergroup'] = $ugroup->get_filter_result();
+		else
+			$status['usergroup'] = 'add';
+	}
+
+	$uqueue_where = array(
+			'usertype' => 'user',
+			'userid' => $info['ufeatures']['id'],
+			'category' => 'queue');
+
+	$queue_add = $queue_edit = $queue_del = $queue_tmp = array();
+
+	if(($queue_slt = xivo_issa_val('queue-select',$_QR)) !== false && xivo_issa('queue',$_QR) !== false)
+	{
+		$nb = count($queue_slt);
+		$uqueue_info = $uqueue_where;
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			$qname = &$queue_slt[$i];
+			$uqueue_info['queue_name'] = $qname;
+
+			if(isset($queue_tmp[$qname]) === true
+			|| isset($_QR['queue'][$qname],$_QR['queue'][$qname]['chantype']) === false
+			|| ($_QR['queue'][$qname]['chantype'] !== 'default'
+			   && $_QR['queue'][$qname]['chantype'] !== XIVO_SRE_IPBX_AST_CHAN_LOCAL) === true
+			|| ($_QR['queue'][$qname]['chantype'] === XIVO_SRE_IPBX_AST_CHAN_LOCAL
+			   && $result['ufeatures']['number'] === '') === true)
 			{
-				$result['usergroup'] = array();
-				$result['usergroup']['userid'] = $info['ufeatures']['id'];
-				$result['usergroup']['groupid'] = $usergroup;
-
-				if(($result['usergroup'] = $ugroup->chk_values($result['usergroup'],true,true)) === false)
-					$result['usergroup'] = $ugroup->get_filter_result();
-				else
-					$status['usergroup'] = 'add';
+				if(isset($qmember_slt[$qname]) === true)
+				{
+					$status['queue'] = true;
+					$queue_tmp[$qname] = 1;
+					$queue_del[] = $uqueue_info;
+				}
+				continue;
 			}
+
+			$chantype = &$_QR['queue'][$qname]['chantype'];
+
+			if(isset($qmember_unslt[$qname]) === true)
+				$ref_queue = &$queue_add;
+			else if(isset($qmember_slt[$qname]) === true)
+				$ref_queue = &$queue_edit;
+			else
+				continue;
+
+			if($chantype === 'default')
+			{
+				$uqueue_info['interface'] = $ipbx->mk_interface(
+								$result['protocol']['name'],
+								$result['ufeatures']['protocol']);
+
+				$uqueue_info['channel'] = $ipbx->get_channel_by_protocol($result['ufeatures']['protocol']);
+			}
+			else if($chantype === XIVO_SRE_IPBX_AST_CHAN_LOCAL)
+			{
+				$uqueue_info['interface'] = $ipbx->mk_interface(
+								$result['protocol']['name'],
+								null,
+								$result['ufeatures']['number'],
+								$result['ufeatures']['context']);
+
+				$uqueue_info['channel'] = XIVO_SRE_IPBX_AST_CHAN_LOCAL;
+			}
+
+			$uqueue_tmp = array_merge($_QR['queue'][$qname],$uqueue_info);
+
+			if(($qinfo = $qmember->chk_values($uqueue_tmp,true,true)) !== false)
+			{
+				$status['queue'] = true;
+				$queue_tmp[$qname] = 1;
+				$ref_queue[] = $qinfo;
+			}
+		}
+	}
+
+	if($qmember_slt !== false)
+	{
+		$queue_slt = array_keys($qmember_slt);
+		$uqueue_info = $uqueue_where;
+
+		$nb = count($queue_slt);
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			$qname = &$queue_slt[$i];
+			if(isset($queue_tmp[$qname]) === true)
+				continue;
+
+			$status['queue'] = true;
+			$uqueue_info['queue_name'] = $qname;
+			$queue_del[] = $uqueue_info;
 		}
 	}
 
@@ -329,6 +559,7 @@ do
 		else
 		{
 			$_QR['voicemail']['mailbox'] = $result['ufeatures']['number'];
+			$_QR['voicemail']['context'] = $result['ufeatures']['context'];
 
 			if(($result['voicemail'] = $voicemail->chk_values($_QR['voicemail'],true,true)) === false)
 				$result['voicemail'] = array_merge($info['voicemail'],$voicemail->get_filter_result());
@@ -341,6 +572,7 @@ do
 	else if($result['ufeatures']['number'] !== '' && xivo_issa('voicemail',$_QR) === true)
 	{
 		$_QR['voicemail']['mailbox'] = $result['ufeatures']['number'];
+		$_QR['voicemail']['context'] = $result['ufeatures']['context'];
 
 		if(($result['voicemail'] = $voicemail->chk_values($_QR['voicemail'],true,true)) === false)
 			$result['voicemail'] = $voicemail->get_filter_result();
@@ -365,7 +597,7 @@ do
 		}
 	}
 	else if(xivo_issa('autoprov',$_QR) === true && is_array($autoprov_list) === true
-	&& isset($_QR['autoprov']['vendormodel'],$_QR['autoprov']['macaddr']) === true)
+	&& isset($_QR['autoprov']['vendormodel'],$_QR['autoprov']['macaddr'],$_QR['autoprov']['modact']) === true)
 	{
 		if(($pos = strpos($_QR['autoprov']['vendormodel'],'.')) === false)
 			$_QR['autoprov']['vendormodel'] = '';
@@ -412,20 +644,20 @@ do
 
 	if($chg_protocol === true)
 	{
-		if(($protocol_id = $protocol->add($result['protocol'])) === false)
+		if(($protocolid = $protocol->add($result['protocol'])) === false)
 			break;
 
 		$old_protocol->delete($info['protocol']['id']);
 	}
 	else
 	{
-		$protocol_id = $info['protocol']['id'];
+		$protocolid = $info['protocol']['id'];
 		
-		if($protocol->edit($protocol_id,$result['protocol']) === false)
+		if($protocol->edit($protocolid,$result['protocol']) === false)
 			break;
 	}
 
-	$result['ufeatures']['protocolid'] = $protocol_id;
+	$result['ufeatures']['protocolid'] = $protocolid;
 
 	if($ufeatures->edit($info['ufeatures']['id'],$result['ufeatures'],$provisioning) === false)
 	{
@@ -433,7 +665,7 @@ do
 			$protocol->edit_origin();
 		else
 		{
-			$protocol->delete($protocol_id);
+			$protocol->delete($protocolid);
 			$old_protocol->add_origin();
 		}
 		break;
@@ -460,7 +692,7 @@ do
 			$protocol->edit_origin();
 		else
 		{
-			$protocol->delete($protocol_id);
+			$protocol->delete($protocolid);
 			$old_protocol->add_origin();
 		}
 
@@ -501,7 +733,7 @@ do
 			$protocol->edit_origin();
 		else
 		{
-			$protocol->delete($protocol_id);
+			$protocol->delete($protocolid);
 			$old_protocol->add_origin();
 		}
 
@@ -550,7 +782,7 @@ do
 			$protocol->edit_origin();
 		else
 		{
-			$protocol->delete($protocol_id);
+			$protocol->delete($protocolid);
 			$old_protocol->add_origin();
 		}
 
@@ -589,93 +821,86 @@ do
 				$extenumbers->add_origin();
 
 				if($rs_dfeatures === true)
-					$dfeatures->edit_list_where($info['dfeatures'],array('commented' => 0));
+					$dfeatures->edit_list($info['dfeatures'],array('commented' => 0));
 				break 2;
 			default:
 				break 2;
 		}
 	}
 
-	$interface = $ipbx->mk_interface($info['protocol']['name'],
-					 $info['ufeatures']['protocol'],
-					 $info['ufeatures']['number'],
-					 $info['protocol']['context']);
+	if(isset($callgroup[0]) === false)
+		$callgroup_list = '';
+	else
+		$callgroup_list = implode(',',$callgroup);
 
-	$new_interface = $ipbx->mk_interface($result['protocol']['name'],
-					     $result['ufeatures']['protocol'],
-				     	     $result['ufeatures']['number'],
-				     	     $result['protocol']['context']);
-
-	if(isset($groups[0]) === false || $interface === false)
+	if($protocol->edit($protocolid,array('callgroup' => $callgroup_list)) === false)
 	{
-		$protocol->edit($protocol_id,array('callgroup' => ''));
-
-		if($info['usergroup'] !== false)
-			$ugroup->delete($info['usergroup']['id']);
-
-		if($interface !== false)
-			$qmember->delete_by_interface($interface);
+		$callgroup = array();
+		$status['group'] = false;
+		$status['usergroup'] = 'delete';
 	}
-	else if($new_interface !== false)
+
+	if($status['group'] === true)
 	{
-		$qmember_list = false;
+		if(isset($group_add[0]) === true)
+			$qmember->add_list($group_add);
 
-		if($chg_protocol === true)
-			$qmember->delete_by_interface($interface);
-		else
-			$qmember_list = $qmember->get_list_by_interface($interface);
-
-		if($qmember_list !== false && $qmember->delete_by_interface($interface) === false)
-			$protocol->edit($protocol_id,array('callgroup' => $info['protocol']['callgroup']));
-		else
+		if(($nb = count($group_edit)) !== 0)
 		{
-			$nb = count($groups);
-
 			for($i = 0;$i < $nb;$i++)
 			{
-				if(($ginfo = $gfeatures->get($groups[$i],false)) === false)
-				{
-					unset($groups[$i]);
-					continue;
-				}
-
-				$mqinfo = array('queue_name'	=> $ginfo['name'],
-						'interface'	=> $new_interface,
-						'call-limit'	=> $result['ufeatures']['simultcalls']);
-
-				if(($mqinfo = $qmember->chk_values($mqinfo,true,true)) === false || $qmember->add($mqinfo) === false)
-				{
-					unset($groups[$i]);
-					continue;
-				}
+				$ugroup_where['queue_name'] = $group_edit[$i]['queue_name'];
+				$qmember->edit_where($ugroup_where,$group_edit[$i]);
 			}
+		}
 
-			if(($grp_list = implode(',',$groups)) === '' && $status['usergroup'] === 'edit')
-				$status['usergroup'] = 'delete';
-
-			if($protocol->edit($protocol_id,array('callgroup' => $grp_list)) === false)
+		if(($nb = count($group_del)) !== 0)
+		{
+			for($i = 0;$i < $nb;$i++)
 			{
-				if($status['usergroup'] === 'edit')
-					$status['usergroup'] = 'delete';
-
-				$qmember->delete_by_interface($new_interface);
+				$ugroup_where['queue_name'] = $group_del[$i]['queue_name'];
+				$qmember->delete_where($ugroup_where);
 			}
+		}
+	}
 
-			switch($status['usergroup'])
+	switch($status['usergroup'])
+	{
+		case 'add':
+			if(in_array($result['usergroup']['groupid'],$callgroup) === true)
+				$ugroup->add($result['usergroup']);
+			break;
+		case 'edit':
+			if(in_array($result['usergroup']['groupid'],$callgroup) === true)
+				$ugroup->edit($info['usergroup']['id'],$result['usergroup']);
+			else
+				$ugroup->delete($info['usergroup']['id']);
+			break;
+		case 'delete':
+			$ugroup->delete($info['usergroup']['id']);
+			break;
+	}
+
+	if($status['queue'] === true)
+	{
+		if(isset($queue_add[0]) === true)
+			$qmember->add_list($queue_add);
+
+		if(($nb = count($queue_edit)) !== 0)
+		{
+			for($i = 0;$i < $nb;$i++)
 			{
-				case 'add':
-					if(in_array($result['usergroup']['groupid'],$groups) === true)
-						$ugroup->add($result['usergroup']);
-					break;
-				case 'edit':
-					if(in_array($result['usergroup']['groupid'],$groups) === true)
-						$ugroup->edit($info['usergroup']['id'],$result['usergroup']);
-					else
-						$ugroup->delete($info['usergroup']['id']);
-					break;
-				case 'delete':
-					$ugroup->delete($info['usergroup']['id']);
-					break;
+				$uqueue_where['queue_name'] = $queue_edit[$i]['queue_name'];
+				$qmember->edit_where($uqueue_where,$queue_edit[$i]);
+			}
+		}
+
+		if(($nb = count($queue_del)) !== 0)
+		{
+			for($i = 0;$i < $nb;$i++)
+			{
+				$uqueue_where['queue_name'] = $queue_del[$i]['queue_name'];
+				$qmember->delete_where($uqueue_where);
 			}
 		}
 	}
@@ -698,62 +923,22 @@ do
 
 	if($send_autoprov === true)
 	{
-		if($info['autoprov'] !== false)
-			$autoprov->notification($result['autoprov'],$result['autoprov']['modact']);
+		if($info['autoprov'] !== false && (bool) $info['autoprov']['isinalan'] === true)
+			$autoprov->notification($result['autoprov'],$_QR['autoprov']['modact']);
 		else
-			$autoprov->informative($result['autoprov'],$result['autoprov']['modact']);
+			$autoprov->authoritative($result['autoprov'],$_QR['autoprov']['modact']);
 	}
 
 	xivo_go($_HTML->url('service/ipbx/pbx_settings/users'),$param);
 }
 while(false);
 
-$group = false;
-$group_list = $return['protocol']['group'] = array();
-
-if(($group_list = $gfeatures->get_list(false)) !== false)
-{
-	$group = true;
-
-	if(empty($groups) === true)
-		$gelt = $group_list;
-	else
-	{
-		$gelt = array_values(array_diff($group_list,$groups));
-		$grp = array_values(array_diff($groups,$gelt));
-
-		if(isset($grp[0]) === false)
-			$grp = $group_list;
-
-		$nb = count($grp);
-
-		for($i = 0;$i < $nb;$i++)
-		{
-			if(($ginfo = $gfeatures->get($grp[$i],false)) === false)
-				continue;
-
-			$return['protocol']['group'][] = $ginfo;
-		}
-	}
-
-	$group_list = array();
-
-	$nb = count($gelt);
-
-	for($i = 0;$i < $nb;$i++)
-	{
-		if(($ginfo = $gfeatures->get($gelt[$i],false)) === false)
-			continue;
-		
-		$group_list[] = $ginfo;
-	}
-}
-
 $element = array();
 $element['protocol'] = $ipbx->get_protocol_element();
 $element['ufeatures'] = $ufeatures->get_element();
 $element['voicemail'] = $voicemail->get_element();
 $element['autoprov'] = $autoprov->get_element();
+$element['qmember'] = $qmember->get_element();
 
 if(xivo_issa('allow',$element['protocol']['sip']) === true && xivo_issa('value',$element['protocol']['sip']['allow']) === true)
 {
@@ -791,8 +976,12 @@ $return['protocol']['allow'] = $allow;
 $_HTML->assign('id',$info['ufeatures']['id']);
 $_HTML->assign('info',$return);
 $_HTML->assign('ract',$act);
-$_HTML->assign('group',$group);
-$_HTML->assign('group_list',$group_list);
+$_HTML->assign('groups',$groups);
+$_HTML->assign('gmember_slt',$gmember_slt);
+$_HTML->assign('gmember_unslt',$gmember_unslt);
+$_HTML->assign('queues',$queues);
+$_HTML->assign('qmember_slt',$qmember_slt);
+$_HTML->assign('qmember_unslt',$qmember_unslt);
 $_HTML->assign('protocol',$ipbx->get_protocol());
 $_HTML->assign('element',$element);
 $_HTML->assign('moh_list',$moh_list);

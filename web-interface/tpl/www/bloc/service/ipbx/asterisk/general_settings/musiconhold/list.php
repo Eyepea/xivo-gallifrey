@@ -27,7 +27,7 @@
 	if($list === false || ($nb = count($list)) === 0):
 ?>
 	<tr class="sb-content">
-		<td colspan="5" class="td-single"><?=$this->bbf('no_category')?></td>
+		<td colspan="5" class="td-single"><?=$this->bbf('no_category');?></td>
 	</tr>
 <?php
 	else:
@@ -38,7 +38,7 @@
 			$mod = $j % 2 === 0 ? 1 : 2;
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=$mod?>on2">
-		<td class="td-left txt-left curpointer" colspan="2" onclick="location.href = '<?=$url->href('service/ipbx/general_settings/musiconhold',array('act' => 'listfile','cat' => $ref['category']));?>';"><?=$ref['category']?></td>
+		<td class="td-left txt-left curpointer" colspan="2" onclick="location.href = this.firstChild;"><?=$url->href_html($ref['category'],'service/ipbx/general_settings/musiconhold',array('act' => 'listfile','cat' => $ref['category']));?></td>
 		<td><?=$ref['mode']?></td>
 		<td class="td-right" colspan="2">
 		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/general_settings/musiconhold',array('act' => 'edit','id' => $ref['category']),null,$this->bbf('opt_modify'));?>

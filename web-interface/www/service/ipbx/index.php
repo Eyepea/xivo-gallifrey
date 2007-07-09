@@ -10,6 +10,7 @@ $service_name = $ipbx->get_name();
 
 $dhtml = &$_HTML->get_module('dhtml');
 $dhtml->set_css('css/service/ipbx/'.$service_name.'.css');
+$dhtml->set_js('js/service/ipbx/'.$service_name.'.js');
 
 $_HTML->load_i18n_file('struct/service/ipbx/'.$service_name);
 

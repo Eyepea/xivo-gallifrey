@@ -31,7 +31,14 @@ class xivo_service_asterisk_queuemember extends xivo_service_asterisk_abstract
 
 		$this->_origin = $r;
 
+		$r = $this->_prepare($r);
+
 		return($r);
+	}
+
+	function _prepare($data)
+	{
+		return($data);
 	}
 
 	function add_origin()
@@ -57,27 +64,39 @@ class xivo_service_asterisk_queuemember extends xivo_service_asterisk_abstract
 		return($r);
 	}
 
-	function get_list_by_interface($interface,$disable=null)
+	function get_nb_by_name($name,$disable=null)
 	{
-		$r = false;
+		$name = (string) $name;
 
-		$interface = (string) $interface;
+		return($this->_dso->get_nb_by_name($name,$disable));
+	}
 
-		if(($list = $this->_dso->get_list_by_interface($interface)) === false
+	function get_where($arr)
+	{
+		$arr = (array) $arr;
+
+		if(($where = $this->get_elements_where($arr)) === false)
+			return(false);
+
+		return($this->_dso->get_where($where));
+	}
+
+	function get_all_where($arr=array(),$disable=null,$prepare=true)
+	{
+		$arr = (array) $arr;
+		$prepare = (bool) $prepare;
+
+		if(($where = $this->get_elements_where($arr)) === false
+		|| ($list = $this->_dso->get_all_where($where,$disable)) === false
 		|| isset($list[0]) === false)
-			return($r);
+			return(false);
 
-		$r = array();
-	
 		$nb = count($list);
 
-		for($i = 0;$i < $nb;$i++)
-		{
-			if(($rs = $this->get($list[$i],$disable)) === false)
-				continue;
+		$r = array();
 
-			$r[] = $rs;
-		}
+		for($i = 0;$i < $nb;$i++)
+			$r[] = $prepare === true ? $this->_prepare($list[$i]) : $list[$i];
 
 		if(isset($r[0]) === false)
 			$r = false;
@@ -85,11 +104,40 @@ class xivo_service_asterisk_queuemember extends xivo_service_asterisk_abstract
 		return($r);
 	}
 
-	function get_nb_by_name($name,$disable=null)
+	function get_all_by_category($arr=array(),$disable=null,$prepare=true)
 	{
-		$name = (string) $name;
+		$r = false;
+		$arr = (array) $arr;
+		$prepare = (bool) $prepare;
 
-		return($this->_dso->get_nb_by_name($name,$disable));
+		if(empty($arr) === true)
+		{
+			if(($list = $this->_dso->get_all($disable)) === false)
+				return($r);
+		}
+		else if(($where = $this->get_elements_where($arr)) === false
+		|| ($list = $this->_dso->get_all_where($where,$disable)) === false)
+				return($r);
+
+		if(isset($list[0]) === false)
+			return($r);
+
+		$nb = count($list);
+
+		$r = array();
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			if(isset($r[$list[$i]['category']]) === false)
+				$r[$list[$i]['category']] = array();
+
+			$r[$list[$i]['category']][] = $list[$i];
+		}
+
+		if(empty($r) === true)
+			$r = false;
+
+		return($r);
 	}
 
 	function add($arr)
@@ -98,6 +146,31 @@ class xivo_service_asterisk_queuemember extends xivo_service_asterisk_abstract
 			return(false);
 
 		return($this->_dso->add($arr));
+	}
+
+	function add_list($arr,$values=null)
+	{
+		if(is_array($values) === false
+		&& (($nb = xivo_uint($arr)) === 0 || ($values = $this->chk_set_values($values,true,true)) === false) === true)
+			return(false);
+
+		if(is_array($values) === true)
+		{
+			for($i = 0;$i < $nb;$i++)
+				$this->add($values);
+		}
+		else if(is_array($arr) === false)
+			return(false);
+
+		$list = array_values($arr);
+
+		if(($nb = count($list)) === 0)
+			return(false);
+
+		for($i = 0;$i < $nb;$i++)
+			$this->add($list[$i]);
+
+		return(true);
 	}
 
 	function edit($ids,$arr)
@@ -132,18 +205,14 @@ class xivo_service_asterisk_queuemember extends xivo_service_asterisk_abstract
 		return($this->_dso->delete($ids));
 	}
 
-	function delete_by_name($name)
+	function delete_where($arr)
 	{
-		$name = (string) $name;
+		$arr = (array) $arr;
 
-		return($this->_dso->delete_by_name($name));
-	}
+		if(($where = $this->get_elements_where($arr)) === false)
+			return(false);
 
-	function delete_by_interface($interface)
-	{
-		$interface = (string) $interface;
-
-		return($this->_dso->delete_by_interface($interface));
+		return($this->_dso->delete_where($where));
 	}
 }
 

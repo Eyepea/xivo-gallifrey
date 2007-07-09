@@ -26,7 +26,7 @@
 	if($list === false || ($nb = count($list)) === 0):
 ?>
 	<tr class="sb-content">
-		<td colspan="4" class="td-single"><?=$this->bbf('no_file')?></td>
+		<td colspan="4" class="td-single"><?=$this->bbf('no_file');?></td>
 	</tr>
 <?php
 	else:

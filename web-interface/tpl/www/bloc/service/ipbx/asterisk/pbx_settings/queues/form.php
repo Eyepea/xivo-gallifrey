@@ -4,8 +4,12 @@
 	$element = $this->vars('element');
 	$info = $this->vars('info');
 
-	$member_slt = $this->vars('member_slt');
-	$member_list = $this->vars('member_list');
+	$user_slt = $this->vars('user_slt');
+	$user_list = $this->vars('user_list');
+	$agent_slt = $this->vars('agent_slt');
+	$agent_list = $this->vars('agent_list');
+	$agroup_slt = $this->vars('agroup_slt');
+	$agroup_list = $this->vars('agroup_list');
 	$moh_list = $this->vars('moh_list');
 	$announce_list = $this->vars('announce_list');
 ?>
@@ -18,23 +22,23 @@
 
 <?=$form->slt(array('desc' => $this->bbf('fm_qfeatures_timeout'),'name' => 'qfeatures[timeout]','labelid' => 'qfeatures-timeout','bbf' => array('paramkey','fm_qfeatures_timeout-opt'),'key' => false,'default' => $element['qfeatures']['timeout']['default'],'value' => (int) $info['qfeatures']['timeout'] ),$element['qfeatures']['timeout']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_qfeatures_data-quality'),'name' => 'qfeatures[data_quality]','labelid' => 'qfeatures-data-quality','default' => $element['qfeatures']['data_quality']['default'],'checked' => $element['qfeatures']['data_quality']['default']),$info['qfeatures']['data_quality'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_qfeatures_data-quality'),'name' => 'qfeatures[data_quality]','labelid' => 'qfeatures-data-quality','default' => $element['qfeatures']['data_quality']['default'],'checked' => $info['qfeatures']['data_quality']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_qfeatures_hitting-callee'),'name' => 'qfeatures[hitting_callee]','labelid' => 'qfeatures-hitting-callee','default' => $element['qfeatures']['hitting_callee']['default'],'checked' => $element['qfeatures']['hitting_callee']['default']),$info['qfeatures']['hitting_callee'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_qfeatures_hitting-callee'),'name' => 'qfeatures[hitting_callee]','labelid' => 'qfeatures-hitting-callee','default' => $element['qfeatures']['hitting_callee']['default'],'checked' => $info['qfeatures']['hitting_callee']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_qfeatures_hitting-caller'),'name' => 'qfeatures[hitting_caller]','labelid' => 'qfeatures-hitting-caller','default' => $element['qfeatures']['hitting_caller']['default'],'checked' => $element['qfeatures']['hitting_caller']['default']),$info['qfeatures']['hitting_caller'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_qfeatures_hitting-caller'),'name' => 'qfeatures[hitting_caller]','labelid' => 'qfeatures-hitting-caller','default' => $element['qfeatures']['hitting_caller']['default'],'checked' => $info['qfeatures']['hitting_caller']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_qfeatures_retries'),'name' => 'qfeatures[retries]','labelid' => 'qfeatures-retries','default' => $element['qfeatures']['retries']['default'],'checked' => $element['qfeatures']['retries']['default']),$info['qfeatures']['retries'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_qfeatures_retries'),'name' => 'qfeatures[retries]','labelid' => 'qfeatures-retries','default' => $element['qfeatures']['retries']['default'],'checked' => $info['qfeatures']['retries']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_qfeatures_ring'),'name' => 'qfeatures[ring]','labelid' => 'qfeatures-ring','default' => $element['qfeatures']['ring']['default'],'checked' => $element['qfeatures']['ring']['default']),$info['qfeatures']['ring'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_qfeatures_ring'),'name' => 'qfeatures[ring]','labelid' => 'qfeatures-ring','default' => $element['qfeatures']['ring']['default'],'checked' => $info['qfeatures']['ring']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_qfeatures_transfer-user'),'name' => 'qfeatures[transfer_user]','labelid' => 'qfeatures-transfer-user','default' => $element['qfeatures']['transfer_user']['default'],'checked' => $element['qfeatures']['transfer_user']['default']),$info['qfeatures']['transfer_user'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_qfeatures_transfer-user'),'name' => 'qfeatures[transfer_user]','labelid' => 'qfeatures-transfer-user','default' => $element['qfeatures']['transfer_user']['default'],'checked' => $info['qfeatures']['transfer_user']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_qfeatures_transfer-call'),'name' => 'qfeatures[transfer_call]','labelid' => 'qfeatures-transfer-call','default' => $element['qfeatures']['transfer_call']['default'],'checked' => $element['qfeatures']['transfer_call']['default']),$info['qfeatures']['transfer_call'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_qfeatures_transfer-call'),'name' => 'qfeatures[transfer_call]','labelid' => 'qfeatures-transfer-call','default' => $element['qfeatures']['transfer_call']['default'],'checked' => $info['qfeatures']['transfer_call']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_qfeatures_write-caller'),'name' => 'qfeatures[write_caller]','labelid' => 'qfeatures-write-caller','default' => $element['qfeatures']['write_caller']['default'],'checked' => $element['qfeatures']['write_caller']['default']),$info['qfeatures']['write_caller'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_qfeatures_write-caller'),'name' => 'qfeatures[write_caller]','labelid' => 'qfeatures-write-caller','default' => $element['qfeatures']['write_caller']['default'],'checked' => $info['qfeatures']['write_caller']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_qfeatures_write-calling'),'name' => 'qfeatures[write_calling]','labelid' => 'qfeatures-write-calling','default' => $element['qfeatures']['write_calling']['default'],'checked' => $element['qfeatures']['write_calling']['default']),$info['qfeatures']['write_calling'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_qfeatures_write-calling'),'name' => 'qfeatures[write_calling]','labelid' => 'qfeatures-write-calling','default' => $element['qfeatures']['write_calling']['default'],'checked' => $info['qfeatures']['write_calling']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 <?=$form->slt(array('desc' => $this->bbf('fm_queue_musiconhold'),'name' => 'queue[musiconhold]','labelid' => 'queue-musiconhold','key' => 'category','empty' => true,'default' => $element['queue']['musiconhold']['default'],'value' => $info['queue']['musiconhold']),$moh_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
@@ -48,17 +52,19 @@ endif;
 
 ?>
 
+<?=$form->text(array('desc' => $this->bbf('fm_queue_context'),'name' => 'queue[context]','labelid' => 'queue-context','size' => 15,'default' => $element['queue']['context']['default'],'value' => $info['queue']['context']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
 <?=$form->slt(array('desc' => $this->bbf('fm_queue_strategy'),'name' => 'queue[strategy]','labelid' => 'queue-strategy','key' => false,'default' => $element['queue']['strategy']['default'],'value' => $info['queue']['strategy']),$element['queue']['strategy']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 <?=$form->text(array('desc' => $this->bbf('fm_queue_servicelevel'),'name' => 'queue[servicelevel]','labelid' => 'queue-servicelevel','size' => 15,'default' => $element['queue']['servicelevel']['default'],'value' => $info['queue']['servicelevel']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_queue_timeout'),'name' => 'queue[timeout]','labelid' => 'queue-timeout','bbf' => array('paramkey','fm_queue_timeout-opt'),'key' => false,'default' => $element['queue']['timeout']['default'],'value' => (int) $info['queue']['timeout'] ),$element['queue']['timeout']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_queue_timeout'),'name' => 'queue[timeout]','labelid' => 'queue-timeout','bbf' => array('mixkey','fm_queue_timeout-opt'),'key' => false,'default' => $element['queue']['timeout']['default'],'value' => xivo_cast_except($info['queue']['timeout'],null,'uint')),$element['queue']['timeout']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_queue_retry'),'name' => 'queue[retry]','labelid' => 'queue-retry','bbf' => array('paramkey','fm_queue_retry-opt'),'key' => false,'default' => $element['queue']['retry']['default'],'value' => (int) $info['queue']['retry']),$element['queue']['retry']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_queue_retry'),'name' => 'queue[retry]','labelid' => 'queue-retry','bbf' => array('mixkey','fm_queue_retry-opt'),'key' => false,'default' => $element['queue']['retry']['default'],'value' => xivo_cast_except($info['queue']['retry'],null,'uint')),$element['queue']['retry']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 <?=$form->slt(array('desc' => $this->bbf('fm_queue_weight'),'name' => 'queue[weight]','labelid' => 'queue-weight','key' => false,'default' => $element['queue']['weight']['default'],'value' => (int) $info['queue']['weight']),$element['queue']['weight']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_queue_wrapuptime'),'name' => 'queue[wrapuptime]','labelid' => 'queue-wrapuptime','bbf' => array('mixkey','fm_queue_wrapuptime-opt'),'key' => false,'default' => $element['queue']['wrapuptime']['default'],'value' => (isset($info['queue']['wrapuptime']) === true ? (int) $info['queue']['wrapuptime'] : null)),$element['queue']['wrapuptime']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_queue_wrapuptime'),'name' => 'queue[wrapuptime]','labelid' => 'queue-wrapuptime','default' => $element['queue']['wrapuptime']['default'],'value' => xivo_cast_except($info['queue']['wrapuptime'],null,'uint'),'bbf' => array('mixvalue','fm_queue_wrapuptime-opt')),$element['queue']['wrapuptime']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 <?=$form->text(array('desc' => $this->bbf('fm_queue_maxlen'),'name' => 'queue[maxlen]','labelid' => 'queue-maxlen','size' => 15,'default' => $element['queue']['maxlen']['default'],'value' => $info['queue']['maxlen']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
@@ -72,71 +78,129 @@ endif;
 
 <?=$form->slt(array('desc' => $this->bbf('fm_queue_monitor-format'),'name' => 'queue[monitor-format]','labelid' => 'queue-monitor-format','empty' => true,'key' => false,'default' => $element['queue']['monitor-format']['default'],'value' => $info['queue']['monitor-format']),$element['queue']['monitor-format']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_queue_monitor-join'),'name' => 'queue[monitor-join]','labelid' => 'queue-monitor-join','default' => $element['queue']['monitor-join']['default'],'checked' => $element['queue']['monitor-join']['default']),$info['queue']['monitor-join'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_queue_monitor-join'),'name' => 'queue[monitor-join]','labelid' => 'queue-monitor-join','default' => $element['queue']['monitor-join']['default'],'checked' => $info['queue']['monitor-join']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 <?=$form->slt(array('desc' => $this->bbf('fm_queue_joinempty'),'name' => 'queue[joinempty]','labelid' => 'queue-joinempty','bbf' => 'fm_queue_joinempty-opt-','key' => false,'default' => $element['queue']['joinempty']['default'],'value' => $info['queue']['joinempty']),$element['queue']['joinempty']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 <?=$form->slt(array('desc' => $this->bbf('fm_queue_leavewhenempty'),'name' => 'queue[leavewhenempty]','labelid' => 'queue-leavewhenempty','bbf' => 'fm_queue_leavewhenempty-opt-','key' => false,'default' => $element['queue']['leavewhenempty']['default'],'value' => $info['queue']['leavewhenempty']),$element['queue']['leavewhenempty']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_queue_eventwhencalled'),'name' => 'queue[eventwhencalled]','labelid' => 'queue-eventwhencalled','default' => $element['queue']['eventwhencalled']['default'],'checked' => $element['queue']['eventwhencalled']['default']),$info['queue']['eventwhencalled'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_queue_eventwhencalled'),'name' => 'queue[eventwhencalled]','labelid' => 'queue-eventwhencalled','default' => $element['queue']['eventwhencalled']['default'],'checked' => $info['queue']['eventwhencalled']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_queue_eventmemberstatus'),'name' => 'queue[eventmemberstatus]','labelid' => 'queue-eventmemberstatus','default' => $element['queue']['eventmemberstatus']['default'],'checked' => $element['queue']['eventmemberstatus']['default']),$info['queue']['eventmemberstatus'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_queue_eventmemberstatus'),'name' => 'queue[eventmemberstatus]','labelid' => 'queue-eventmemberstatus','default' => $element['queue']['eventmemberstatus']['default'],'checked' => $info['queue']['eventmemberstatus']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_queue_reportholdtime'),'name' => 'queue[reportholdtime]','labelid' => 'queue-reportholdtime','default' => $element['queue']['reportholdtime']['default'],'checked' => $element['queue']['reportholdtime']['default']),$info['queue']['reportholdtime'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_queue_reportholdtime'),'name' => 'queue[reportholdtime]','labelid' => 'queue-reportholdtime','default' => $element['queue']['reportholdtime']['default'],'checked' => $info['queue']['reportholdtime']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 <?=$form->slt(array('desc' => $this->bbf('fm_queue_memberdelay'),'name' => 'queue[memberdelay]','labelid' => 'queue-memberdelay','bbf' => array('mixkey','fm_queue_memberdelay-opt'),'key' => false,'default' => $element['queue']['memberdelay']['default'],'value' => (int) $info['queue']['memberdelay'] ),$element['queue']['memberdelay']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_queue_timeoutrestart'),'name' => 'queue[timeoutrestart]','labelid' => 'queue-timeoutrestart','default' => $element['queue']['timeoutrestart']['default'],'checked' => $element['queue']['timeoutrestart']['default']),$info['queue']['timeoutrestart'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_queue_timeoutrestart'),'name' => 'queue[timeoutrestart]','labelid' => 'queue-timeoutrestart','default' => $element['queue']['timeoutrestart']['default'],'checked' => $info['queue']['timeoutrestart']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_queue_queue-youarenext'),'name' => 'queue[queue-youarenext]','labelid' => 'queue-queue-youarenext','empty' => $this->bbf('fm_queue_queue-youarenext-opt-default'),'key' => false,'default' => $element['queue']['queue-youarenext']['default'],'value' => $info['queue']['queue-youarenext']),$announce_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_queue_queue-youarenext'),'name' => 'queue[queue-youarenext]','labelid' => 'queue-queue-youarenext','empty' => $this->bbf('fm_queue_queue-youarenext-opt-default'),'default' => $element['queue']['queue-youarenext']['default'],'value' => $info['queue']['queue-youarenext']),$announce_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_queue_queue-thereare'),'name' => 'queue[queue-thereare]','labelid' => 'queue-queue-thereare','empty' => $this->bbf('fm_queue_queue-thereare-opt-default'),'key' => false,'default' => $element['queue']['queue-thereare']['default'],'value' => $info['queue']['queue-thereare']),$announce_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_queue_queue-thereare'),'name' => 'queue[queue-thereare]','labelid' => 'queue-queue-thereare','empty' => $this->bbf('fm_queue_queue-thereare-opt-default'),'default' => $element['queue']['queue-thereare']['default'],'value' => $info['queue']['queue-thereare']),$announce_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_queue_queue-callswaiting'),'name' => 'queue[queue-callswaiting]','labelid' => 'queue-queue-callswaiting','empty' => $this->bbf('fm_queue_queue-callswaiting-opt-default'),'key' => false,'default' => $element['queue']['queue-callswaiting']['default'],'value' => $info['queue']['queue-callswaiting']),$announce_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_queue_queue-callswaiting'),'name' => 'queue[queue-callswaiting]','labelid' => 'queue-queue-callswaiting','empty' => $this->bbf('fm_queue_queue-callswaiting-opt-default'),'default' => $element['queue']['queue-callswaiting']['default'],'value' => $info['queue']['queue-callswaiting']),$announce_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_queue_queue-holdtime'),'name' => 'queue[queue-holdtime]','labelid' => 'queue-queue-holdtime','empty' => $this->bbf('fm_queue_queue-holdtime-opt-default'),'key' => false,'default' => $element['queue']['queue-holdtime']['default'],'value' => $info['queue']['queue-holdtime']),$announce_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_queue_queue-holdtime'),'name' => 'queue[queue-holdtime]','labelid' => 'queue-queue-holdtime','empty' => $this->bbf('fm_queue_queue-holdtime-opt-default'),'default' => $element['queue']['queue-holdtime']['default'],'value' => $info['queue']['queue-holdtime']),$announce_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_queue_queue-minutes'),'name' => 'queue[queue-minutes]','labelid' => 'queue-queue-minutes','empty' => $this->bbf('fm_queue_queue-minutes-opt-default'),'key' => false,'default' => $element['queue']['queue-minutes']['default'],'value' => $info['queue']['queue-minutes']),$announce_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_queue_queue-minutes'),'name' => 'queue[queue-minutes]','labelid' => 'queue-queue-minutes','empty' => $this->bbf('fm_queue_queue-minutes-opt-default'),'default' => $element['queue']['queue-minutes']['default'],'value' => $info['queue']['queue-minutes']),$announce_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_queue_queue-seconds'),'name' => 'queue[queue-seconds]','labelid' => 'queue-queue-seconds','empty' => $this->bbf('fm_queue_queue-seconds-opt-default'),'key' => false,'default' => $element['queue']['queue-seconds']['default'],'value' => $info['queue']['queue-seconds']),$announce_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_queue_queue-seconds'),'name' => 'queue[queue-seconds]','labelid' => 'queue-queue-seconds','empty' => $this->bbf('fm_queue_queue-seconds-opt-default'),'default' => $element['queue']['queue-seconds']['default'],'value' => $info['queue']['queue-seconds']),$announce_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_queue_queue-thankyou'),'name' => 'queue[queue-thankyou]','labelid' => 'queue-queue-thankyou','empty' => $this->bbf('fm_queue_queue-thankyou-opt-default'),'key' => false,'default' => $element['queue']['queue-thankyou']['default'],'value' => $info['queue']['queue-thankyou']),$announce_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_queue_queue-thankyou'),'name' => 'queue[queue-thankyou]','labelid' => 'queue-queue-thankyou','empty' => $this->bbf('fm_queue_queue-thankyou-opt-default'),'default' => $element['queue']['queue-thankyou']['default'],'value' => $info['queue']['queue-thankyou']),$announce_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_queue_queue-lessthan'),'name' => 'queue[queue-lessthan]','labelid' => 'queue-queue-lessthan','empty' => $this->bbf('fm_queue_queue-lessthan-opt-default'),'key' => false,'default' => $element['queue']['queue-lessthan']['default'],'value' => $info['queue']['queue-lessthan']),$announce_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_queue_queue-lessthan'),'name' => 'queue[queue-lessthan]','labelid' => 'queue-queue-lessthan','empty' => $this->bbf('fm_queue_queue-lessthan-opt-default'),'default' => $element['queue']['queue-lessthan']['default'],'value' => $info['queue']['queue-lessthan']),$announce_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_queue_queue-reporthold'),'name' => 'queue[queue-reporthold]','labelid' => 'queue-queue-reporthold','empty' => $this->bbf('fm_queue_queue-reporthold-opt-default'),'key' => false,'default' => $element['queue']['queue-reporthold']['default'],'value' => $info['queue']['queue-reporthold']),$announce_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_queue_queue-reporthold'),'name' => 'queue[queue-reporthold]','labelid' => 'queue-queue-reporthold','empty' => $this->bbf('fm_queue_queue-reporthold-opt-default'),'default' => $element['queue']['queue-reporthold']['default'],'value' => $info['queue']['queue-reporthold']),$announce_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_queue_periodic-announce'),'name' => 'queue[periodic-announce]','labelid' => 'queue-periodic-announce','empty' => $this->bbf('fm_queue_periodic-announce-opt-default'),'key' => false,'default' => $element['queue']['periodic-announce']['default'],'value' => $info['queue']['periodic-announce']),$announce_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_queue_periodic-announce'),'name' => 'queue[periodic-announce]','labelid' => 'queue-periodic-announce','empty' => $this->bbf('fm_queue_periodic-announce-opt-default'),'default' => $element['queue']['periodic-announce']['default'],'value' => $info['queue']['periodic-announce']),$announce_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<div id="sb-part-member">
+<div id="sb-part-user">
 
 <?php
-	if($member_list !== false):
+	if($user_list !== false):
 ?>
-		<div id="memberlist" class="fm-field">
-			<div>
+		<div id="userlist" class="fm-field fm-multilist">
+			<div class="slt-outlist">
 
-		<?=$form->slt(array('name' => 'memberlist','label' => false,'id' => 'it-memberlist','multiple' => true,'size' => 5,'field' => false),$member_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"')?>
-
-			</div>
-			<div id="inout-member">
-
-		<a href="#" onclick="xivo_fm_move_selected('it-memberlist','it-member'); return(false);" title="<?=$this->bbf('bt-inmember')?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt-inmember'),'id="bt-inmember" border="0"');?></a><br />
-
-		<a href="#" onclick="xivo_fm_move_selected('it-member','it-memberlist'); return(false);" title="<?=$this->bbf('bt-outmember')?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt-outmember'),'id="bt-outmember" border="0"');?></a>
+		<?=$form->slt(array('name' => 'userlist','label' => false,'id' => 'it-userlist','multiple' => true,'size' => 5,'field' => false,'key' => 'fullname'),$user_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 			</div>
-			<div class="txt-left">
+			<div class="inout-list">
 
-		<?=$form->slt(array('name' => 'member[]','label' => false,'id' => 'it-member','multiple' => true,'size' => 5,'field' => false,'key' => 'name','key_val' => 'id'),$member_slt,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+		<a href="#" onclick="xivo_fm_move_selected('it-userlist','it-user'); return(false);" title="<?=$this->bbf('bt-inuser');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt-inuser'),'class="bt-inlist" id="bt-inuser" border="0"');?></a><br />
+
+		<a href="#" onclick="xivo_fm_move_selected('it-user','it-userlist'); return(false);" title="<?=$this->bbf('bt-outuser');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt-outuser'),'class="bt-outlist" id="bt-outuser" border="0"');?></a>
+
+			</div>
+			<div class="slt-inlist">
+
+		<?=$form->slt(array('name' => 'user[]','label' => false,'id' => 'it-user','multiple' => true,'size' => 5,'field' => false,'key' => 'fullname'),$user_slt,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 			</div>
 		</div>
+		<div class="clearboth"></div>
 <?php
 	else:
-		echo '<div class="txt-center">',$url->href_html($this->bbf('create_member'),'service/ipbx/pbx_settings/users','act=add'),'</div>';
+		echo '<div class="txt-center">',$url->href_html($this->bbf('create_user'),'service/ipbx/pbx_settings/users','act=add'),'</div>';
 	endif;
 ?>
 
 </div>
-<div class="clearboth"></div>
+
+<div id="sb-part-agent">
+<?php
+	if($agroup_list !== false):
+?>
+		<div id="agrouplist" class="fm-field fm-multilist">
+			<div class="slt-outlist">
+
+		<?=$form->slt(array('name' => 'agrouplist','label' => false,'id' => 'it-agrouplist','multiple' => true,'size' => 5,'field' => false,'key' => 'fullname'),$agroup_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
+			</div>
+			<div class="inout-list">
+
+		<a href="#" onclick="xivo_fm_move_selected('it-agrouplist','it-agroup'); return(false);" title="<?=$this->bbf('bt-inagroup');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt-inagroup'),'class="bt-inlist" id="bt-inagroup" border="0"');?></a><br />
+
+		<a href="#" onclick="xivo_fm_move_selected('it-agroup','it-agrouplist'); return(false);" title="<?=$this->bbf('bt-outagroup');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt-outagroup'),'class="bt-outlist" id="bt-outagroup" border="0"');?></a>
+
+			</div>
+			<div class="slt-inlist">
+
+		<?=$form->slt(array('name' => 'agroup[]','label' => false,'id' => 'it-agroup','multiple' => true,'size' => 5,'field' => false,'key' => 'fullname'),$agroup_slt,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
+			</div>
+		</div>
+		<div class="clearboth"></div>
+<?php
+		if($agent_list !== false):
+?>
+		<div id="agentlist" class="fm-field fm-multilist">
+			<div class="slt-outlist">
+
+		<?=$form->slt(array('name' => 'agentlist','label' => false,'id' => 'it-agentlist','multiple' => true,'size' => 5,'field' => false,'key' => 'fullname'),$agent_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
+			</div>
+			<div class="inout-list">
+
+		<a href="#" onclick="xivo_fm_move_selected('it-agentlist','it-agent'); return(false);" title="<?=$this->bbf('bt-inagent');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt-inagent'),'class="bt-inlist" id="bt-inagent" border="0"');?></a><br />
+
+		<a href="#" onclick="xivo_fm_move_selected('it-agent','it-agentlist'); return(false);" title="<?=$this->bbf('bt-outagent');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt-outagent'),'class="bt-outlist" id="bt-outagent" border="0"');?></a>
+
+			</div>
+			<div class="slt-inlist">
+
+		<?=$form->slt(array('name' => 'agent[]','label' => false,'id' => 'it-agent','multiple' => true,'size' => 5,'field' => false,'key' => 'fullname'),$agent_slt,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
+			</div>
+		</div>
+		<div class="clearboth"></div>
+<?php
+		else:
+			echo '<div class="txt-center">',$url->href_html($this->bbf('create_agent'),'service/ipbx/pbx_settings/agents','act=addagent'),'</div>';
+		endif;
+
+	else:
+		echo '<div class="txt-center">',$url->href_html($this->bbf('create_agent-group'),'service/ipbx/pbx_settings/agents','act=add'),'</div>';
+	endif;
+?>
+</div>

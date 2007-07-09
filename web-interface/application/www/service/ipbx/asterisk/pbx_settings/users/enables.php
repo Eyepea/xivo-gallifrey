@@ -11,14 +11,11 @@ for($i = 0;$i < $arr['cnt'];$i++)
 {
 	$k = &$arr['keys'][$i];
 
-	if(is_array($_QR['users'][$k]) === false
-	|| ($protocol = &$ipbx->get_protocol_module($k)) === false)
+	if(($protocol = &$ipbx->get_protocol_module($k)) === false
+	|| ($v = xivo_issa_val($k,$_QR['users'])) === false)
 		continue;
 
-	$v = array_values($_QR['users'][$k]);
-
-	if(($nb = count($v)) === 0)
-		continue;
+	$nb = count($v);
 
 	for($j = 0;$j < $nb;$j++)
 		$protocol->disable($v[$j],$disable);

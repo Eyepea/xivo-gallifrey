@@ -15,11 +15,7 @@ $param['page'] = $page;
 if(isset($_QR['id']) === false
 || ($info['ufeatures'] = $ufeatures->get($_QR['id'])) === false
 || ($protocol = &$ipbx->get_protocol_module($info['ufeatures']['protocol'])) === false
-|| ($info['protocol'] = $protocol->get($info['ufeatures']['protocolid'])) === false
-|| ($interface = $ipbx->mk_interface($info['protocol']['name'],
-				     $info['ufeatures']['protocol'],
-			     	     $info['ufeatures']['number'],
-			     	     $info['protocol']['context'])) === false)
+|| ($info['protocol'] = $protocol->get($info['ufeatures']['protocolid'])) === false)
 	xivo_go($_HTML->url('service/ipbx/pbx_settings/users'),$param);
 
 do
@@ -43,7 +39,7 @@ do
 	else
 		$localexten_where['context'] = $info['protocol']['context'];
 
-	if(($info['localexten'] = $localexten->get_where($localexten_where)) !== false
+	if(($info['localexten'] = $localexten->get($localexten_where)) !== false
 	&& $localexten->delete($info['localexten']['id']) === false)
 	{
 		$protocol->add_origin();
@@ -57,7 +53,7 @@ do
 
 	$info['dfeatures'] = false;
 
-	if(($info['extenumbers'] = $extenumbers->get_where($extenum_where)) !== false)
+	if(($info['extenumbers'] = $extenumbers->get($extenum_where)) !== false)
 	{
 		$dfeatures = &$ipbx->get_module('didfeatures');
 		$dfeatures_where = array();
@@ -89,7 +85,7 @@ do
 	$info['hints'] = false;
 
 	if($hints_where['app'] !== false
-	&& ($info['hints'] = $hintsexten->get_where($hints_where)) !== false
+	&& ($info['hints'] = $hintsexten->get($hints_where)) !== false
 	&& $hintsexten->delete($info['hints']['id']) === false)
 	{
 		$protocol->add_origin();
@@ -102,12 +98,16 @@ do
 			$extenumbers->add_origin();
 
 		if($info['dfeatures'] !== false)
-			$dfeatures->edit_list_where($info['dfeatures'],array('commented' => 0));
+			$dfeatures->edit_list($info['dfeatures'],array('commented' => 0));
 		break;
 	}
 
-	if($qmember->get_list_by_interface($interface) !== false
-	&& $qmember->delete_by_interface($interface) === false)
+	$quser_where = array();
+	$quser_where['usertype'] = 'user';
+	$quser_where['userid'] = $info['ufeatures']['id'];
+
+	if($qmember->get_where($quser_where) !== false
+	&& $qmember->delete_where($quser_where) === false)
 	{
 		$protocol->add_origin();
 		$ufeatures->add_origin();
@@ -119,7 +119,7 @@ do
 			$extenumbers->add_origin();
 
 		if($info['dfeatures'] !== false)
-			$dfeatures->edit_list_where($info['dfeatures'],array('commented' => 0));
+			$dfeatures->edit_list($info['dfeatures'],array('commented' => 0));
 
 		if($info['hints'] !== false)
 			$hintsexten->add_origin();
@@ -129,10 +129,12 @@ do
 	if(($info['usergroup'] = $ugroup->get_by_user($info['ufeatures']['id'])) !== false)
 		$ugroup->delete($info['usergroup']['id']);
 
-	if(($info['voicemail'] = $voicemail->get_by_mailbox($info['ufeatures']['number'])) !== false)
+	if(($info['voicemail'] = $voicemail->get(array(
+						'mailbox' => $info['ufeatures']['number'],
+						'context' => $info['ufeatures']['context']))) !== false)
 		$voicemail->delete($info['voicemail']['id']);
 
-	if($autoprov->get_by_iduserfeatures($info['ufeatures']['id']) !== false)
+	if($autoprov->get(array('iduserfeatures' => $info['ufeatures']['id'])) !== false)
 		$autoprov->userdeleted($info['ufeatures']['id']);
 }
 while(false);

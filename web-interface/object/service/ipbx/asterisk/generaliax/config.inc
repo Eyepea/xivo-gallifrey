@@ -7,6 +7,7 @@ $array['element']['bindport']['default'] = 4569;
 
 $array['element']['bindaddr'] = array();
 $array['element']['bindaddr']['default'] = '0.0.0.0';
+$array['element']['bindaddr']['null'] = true;
 
 $array['element']['delayreject']['value'] = array('no','yes');
 $array['element']['delayreject']['default'] = 'no';
@@ -49,11 +50,16 @@ $array['element']['rtcachefriends']['set'] = true;
 
 $array['element']['disallow'] = array();
 $array['element']['disallow']['value'] = array('all');
-$array['element']['disallow']['default'] = '';
+$array['element']['disallow']['default'] = 'all';
 
 $array['element']['allow'] = array();
-$array['element']['allow']['value'] = array('gsm','alaw','ulaw','g729');
+$array['element']['allow']['value'] = array(
+					XIVO_SRE_IPBX_AST_CODEC_ALAW,
+					XIVO_SRE_IPBX_AST_CODEC_G729,
+					XIVO_SRE_IPBX_AST_CODEC_GSM,
+					XIVO_SRE_IPBX_AST_CODEC_ULAW);
 $array['element']['allow']['default'] = '';
+$array['element']['allow']['null'] = true;
 
 $array['element']['register'] = array();
 $array['element']['register']['default'] = '';
@@ -71,15 +77,17 @@ $array['filter']['dropcount'] = array('cast' => 'uint','maxlen' => 2);
 $array['filter']['maxexcessbuffer'] = array('cast' => 'uint','maxlen' => 3);
 $array['filter']['minexcessbuffer'] = array('cast' => 'uint','maxlen' => 2);
 $array['filter']['jittershrinkrate'] = array('cast' => 'uint','maxlen' => 2);
-$array['filter']['disallow'] = array('set' => false);
-$array['filter']['allow'] = array('set' => false,'arrvalue' => array('gsm','alaw','ulaw','g729'));
+$array['filter']['disallow'] = array('set' => false,'chk' => 2,'arrkey' => array('all'));
+$array['filter']['allow'] = array('set' => false,'arrvalue' => array(
+							XIVO_SRE_IPBX_AST_CODEC_ALAW,
+							XIVO_SRE_IPBX_AST_CODEC_G729,
+							XIVO_SRE_IPBX_AST_CODEC_GSM,
+							XIVO_SRE_IPBX_AST_CODEC_ULAW));
 $array['filter']['register_username'] = array('preg' => '/^[a-z0-9_@\.-]+$/i');
 $array['filter']['register_authuser'] = array('set' => false,'chk' => 2,'preg' => '/^[a-z0-9_\.-]+$/i');
 $array['filter']['register_password'] = array('preg' => '/^[a-z0-9_\.-]+$/i');
 $array['filter']['register_host'] = array('func' => 'xivo_filter::chk_host_ipv4_strict');
 $array['filter']['register_port'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,65535));
-$array['filter']['register_contact'] = array('set' => false,'chk' => 2,'cast' => 'uint','maxlen' => 6);
-/*
-$array['filter']['register'] = array('preg' => '#^([a-z0-9_\.-]+)(@([a-z0-9-]+)(\.[a-z0-9-]+)*(\.[a-z]{2,4})|@([1-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))?:([a-z0-9_\.-]+)(:[a-z0-9_\.-]+)?@(([a-z0-9-]+)(\.[a-z0-9-]+)*(\.[a-z]{2,4})|([1-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))(:([1-5][0-9]{1,4}|[1-9]([0-9]{1,3})?|6[0-4][0-9]{1,3}|65[0-4][0-9]{1,2}|655[0-2][0-9]|6553[0-5]))?(/[0-9]+)?$#i');
-*/
+$array['filter']['register_contact'] = array('set' => false,'chk' => 2,'preg' => '/^[a-z0-9]+$/i');
+
 ?>

@@ -12,7 +12,8 @@
 			var xivo_api_path_info = '<?=$this->get_option('api_path_info');?>';
 			var xivo_tooltips = '&nbsp;';
 		</script>
-		<!-- Date: <?=strftime('%Y-%m-%d %H:%M')?> -->
+		<!-- Date: <?=gmstrftime('%Y-%m-%d %H:%M:%S');?> GMT -->
+
 <?php
 	$this->file_include('bloc/meta');
 

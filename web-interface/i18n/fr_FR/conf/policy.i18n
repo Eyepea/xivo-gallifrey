@@ -25,6 +25,9 @@ Messageries vocales
 ; ply_service-ipbx-general_settings-queues
 Files d'attente
 
+; ply_service-ipbx-general_settings-agents
+Agents
+
 ; ply_service-ipbx-general_settings-sounds
 Fichiers sons
 
@@ -43,11 +46,11 @@ Utilisateurs
 ; ply_service-ipbx-pbx_settings-groups
 Groupes
 
-; ply_service-ipbx-pbx_settings-queues
-Files d'attente
-
 ; ply_service-ipbx-pbx_settings-meetme
 Chambres de conférence
+
+; ply_service-ipbx-pbx_settings-queues
+Files d'attente
 
 ; ply_service-ipbx-pbx_settings-agents
 Agents
