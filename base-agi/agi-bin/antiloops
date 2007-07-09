@@ -57,7 +57,7 @@ def get_all_users(context):
                 agi.verbose("Unable to connect to %s" %options['db_uri'])
                 raise
 
-        query = "SELECT name FROM userfeatures where context='%s'" % context
+        query = "SELECT name FROM userfeatures WHERE context='%s'" % context
         cursor = conn.cursor()
         cursor.execute(query)
         r = cursor.fetchall()
@@ -96,6 +96,11 @@ for u in res:
                                 dest_list.append(dest)
                                 graph.setdefault(dest, [])
 
-if repr(loop(graph, user_src)) != None:
+# XXX: modify the graph so that a potentialy overwritten transfer is removed,
+# and that the to be configured transfer is in the graph.
+
+might_loop = loop(graph, user_src)
+if might_loop is not None:
 	agi.set_variable('LOOP', 1)
 	agi.verbose('There is a loop on forward !')
+	agi.verbose(repr(might_loop))
