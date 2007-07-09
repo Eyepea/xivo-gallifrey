@@ -379,7 +379,7 @@ class AMIClass:
 	def connect(self):
 		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		s.connect(self.address)
-		self.f = s.makefile()
+		self.f = s.makefile('r', 0)
 		s.close()
 		str = self.f.readline()
 		#print str,
@@ -517,6 +517,7 @@ class AMIClass:
 						       ('Context', locext),
 						       ('Priority', '1'),
 						       ('CallerID', "0" + phonesrc),
+#						       ('CallerID', "%s calls %s <%s>" %(phonesrc, phonedst, phonesrc)),
 						       ('Async', 'true')])
 			self.readresponse('')
 			return True
@@ -1147,16 +1148,12 @@ def manage_tcp_connection(connid, allow_events):
 		elif len(l) >= 4 and l[0] == 'history':
 			log_debug("%s is attempting a HISTORY : %s" %(requester, str(l)))
 			idassrc = -1
-                        l2 = l[1].split('/')
-			assrc = l2[1]
+			[dummyp, assrc, dummyx, techno, phoneid, phonenum] = l[1].split('/')
 			if assrc in asteriskr: idassrc = asteriskr[assrc]
 			if idassrc == -1:
 				connid[0].send("asterisk=%s::history KO : no such asterisk id\n" %DAEMON)
 			else:
 				try:
-					techno = l2[3]
-					phoneid = l2[4]
-					phonenum = l2[5]
 					hist = update_history_call(idassrc, techno, phoneid, phonenum, l[2], l[3])
 					repstr = "history="
 					separ = ";"
@@ -2333,7 +2330,6 @@ class LoginHandler(SocketServer.StreamRequestHandler):
 			if time.time() - e.get('sessiontimestamp') < xivoclient_session_timeout:
 				replystr = "ERROR ALREADY CONNECTED"
 				debugstr += " / USER %s already connected" %user
-				userlist_lock.release()
 				return [replystr, debugstr], [user, port, state, astnum]
 		    e['sessionid'] = sessionid
 		    e['sessiontimestamp'] = time.time()
@@ -2463,104 +2459,110 @@ class IdentRequestHandler(SocketServer.StreamRequestHandler):
 # It could be a good thing to give a numerical code to each error.
 class KeepAliveHandler(SocketServer.DatagramRequestHandler):
 	def handle(self):
-		log_debug("KeepAliveHandler    (UDP) : client = %s:%d"
-			  %(self.client_address[0],self.client_address[1]))
-		astname_xivoc = ""
+		requester = "%s:%d" %(self.client_address[0],self.client_address[1])
+		log_debug("KeepAliveHandler    (UDP) : client = %s" %requester)
+		astnum = -1
+		response = "ERROR unknown"
+		do_state_update = False
+
 		try:
 			ip = self.client_address[0]
 			list = self.request[0].strip().split(' ')
 			timestamp = time.time()
-			# ALIVE user SESSIONID sessionid
-			if len(list) == 2 and list[0] == 'STOP':
-				response = 'DISC\r\n'
-				astname_xivoc = list[1].split("/")[0]
-				if astname_xivoc in asteriskr.keys():
-					astnum = asteriskr[astname_xivoc]
-					user = list[1].split("/")[1]
-					userlist_lock.acquire()
-					if user in userlist[astnum]:
-						if "sessiontimestamp" in userlist[astnum][user].keys():
-							del userlist[astnum][user]["sessionid"]
-							del userlist[astnum][user]["sessiontimestamp"]
-							del userlist[astnum][user]["ip"]
-							del userlist[astnum][user]["port"]
-							userlist[astnum][user]["state"] = "unknown"
-							sipnumber = "SIP/" + user.split("sip")[1]
-							if sipnumber in plist[astnum].normal:
-								plist[astnum].normal[sipnumber].set_imstat("unkown")
-								plist[astnum].normal[sipnumber].update_time()
-								update_GUI_clients(astnum, sipnumber, "kfc-dcc")
-					userlist_lock.release()
-				else:
-					response = "ERROR unknown asterisk name <%s>\r\n" %astname_xivoc
-			elif len(list) == 3 and list[0] == 'MESSAGE':
-				response = 'SENT\r\n'
-				#astname_xivoc = list[1].split("/")[0]
-				#astnum = asteriskr[astname_xivoc]
-				#user = list[1].split("/")[1]
-				for k in tcpopens_sb:
-					k[0].send("asterisk=%s::<%s>\n" %(list[1], list[2]))
-			elif len(list) == 3 and list[0] == 'DIAL':
-				log_debug("received a DIAL message : %s" %str(list))
-				try:
-					[astname_xivoc, proto, userid, context] = list[1].split("/")
-					exten = list[2]
-					idassrc = asteriskr[astname_xivoc]
-					proto = proto.lower()
-					user = proto + userid
-					# state = plist[astnum].normal[sipnumber].imstat"available"
-					state = "available"
-					ret = AMIclasssock[idassrc].originate(proto, userid, exten, context)
-				except Exception, exc:
-					log_debug("--- exception --- %s" %str(exc))
-				response = 'OK\r\n'
-			elif len(list) < 4 or list[0] != 'ALIVE' or list[2] != 'SESSIONID':
-				log_debug("received a message %s : ERROR" %str(list))
-				response = 'ERROR unknown\r\n'
-			else:
-				log_debug("received a message %s" %str(list))
-				astname_xivoc = list[1].split("/")[0]
-				if astname_xivoc in asteriskr.keys():
-					astnum = asteriskr[astname_xivoc]
-					user = list[1].split("/")[1]
-					sessionid = list[3]
-					state = "undefinedstate"
-					if len(list) >= 6:
-						state = list[5]
-					userlist_lock.acquire()
-					e = finduser(astnum, user)
-					if e == None:
-						response = 'ERROR user unknown\r\n'
-					else:
-						if e.has_key("sessionid"):
-							if sessionid == e['sessionid'] and ip == e['ip'] and \
-							       e['sessiontimestamp'] + xivoclient_session_timeout > timestamp:
-								if state in allowed_states:
-									e['state'] = state
-								else:
-									e['state'] = "undefinedstate"
-								e['sessiontimestamp'] = timestamp
-								response = 'OK\r\n'
-							else:
-								response = 'ERROR SESSION EXPIRED OR INVALID\r\n'
-						else:
-							response = 'ERROR SESSION EXPIRED OR INVALID\r\n'
-					userlist_lock.release()
-				else:
-					response = "ERROR unknown asterisk name <%s>\r\n" %astname_xivoc
-		except Exception, exc:
-			response = 'ERROR (exception) : %s\r\n' %(str(exc))
-		self.request[1].sendto(response, self.client_address)
-		
-		if response == 'OK\r\n':
+			log_debug("received the message <%s> from %s" %(str(list), requester))
+
+			if len(list) < 4:
+				raise NameError, "not enough arguments (%d < 4)" %(len(list))
+			if list[0] != 'ALIVE' and list[0] != 'STOP' and list[0] != 'COMMAND':
+				raise NameError, "command %s not allowed" %(list[0])
+			if list[2] != 'SESSIONID':
+				raise NameError, "no SESSIONID defined"
+			[astname_xivoc, user] = list[1].split("/")
+			if astname_xivoc not in asteriskr.keys():
+				raise NameError, "unknown asterisk name <%s>" %astname_xivoc
+			
 			astnum = asteriskr[astname_xivoc]
-			if astnum >= 0:
+			sessionid = list[3]
+
+			# first we check that the requester has the good sessionid and that its
+			# session has not expired
+			userlist_lock.acquire()
+			e = finduser(astnum, user)
+			if e == None:
+				userlist_lock.release()
+				raise NameError, "unknown user %s" %user
+			else:
+				if e.has_key('sessionid') and e.has_key('ip') and e.has_key('sessiontimestamp') and \
+				       sessionid == e['sessionid'] and ip == e['ip'] and \
+				       ip == e['ip'] and \
+				       e['sessiontimestamp'] + xivoclient_session_timeout > timestamp:
+					e['sessiontimestamp'] = timestamp
+					response = 'OK'
+				else:
+					userlist_lock.release()
+					raise NameError, "session expired"
+			userlist_lock.release()
+			
+			
+			if list[0] == 'ALIVE' and len(list) == 6 and list[4] == 'STATE':
+				# ALIVE user SESSIONID sessionid STATE state
+				state = list[5]
+				if state in allowed_states:
+					e['state'] = state
+				else:
+					e['state'] = "undefinedstate"
+				do_state_update = True
+				response = 'OK'
+			elif list[0] == 'STOP' and len(list) == 4:
+				# STOP user SESSIONID sessionid
+				response = 'DISC'
+				userlist_lock.acquire()
+				del e['sessionid']
+				del e['sessiontimestamp']
+				del e['ip']
+				del e['port']
+				e["state"] = "unknown"
 				sipnumber = "SIP/" + user.split("sip")[1]
 				if sipnumber in plist[astnum].normal:
-					if(plist[astnum].normal[sipnumber].imstat != state):
-						plist[astnum].normal[sipnumber].set_imstat(state)
-						plist[astnum].normal[sipnumber].update_time()
-						update_GUI_clients(astnum, sipnumber, "kfc-kah")
+					plist[astnum].normal[sipnumber].set_imstat("unkown")
+					plist[astnum].normal[sipnumber].update_time()
+					update_GUI_clients(astnum, sipnumber, "kfc-dcc")
+				userlist_lock.release()
+
+			elif list[0] == 'COMMAND':
+				try:
+					if list[4] == 'DIAL' and len(list) == 7:
+						[astname_xivoc, proto, userid, context] = list[5].split("/")
+						exten = list[6]
+						astnum = asteriskr[astname_xivoc]
+						proto = proto.lower()
+						ret = AMIclasssock[astnum].originate(proto, userid, exten, context)
+					elif list[4] == 'MESSAGE' and len(list) == 5:
+						response = 'SENT'
+						for k in tcpopens_sb:
+							k[0].send("asterisk=%s::<%s>\n" %(list[1], list[4]))
+					else:
+						pass
+				except Exception, exc:
+					log_debug("--- exception --- (command) %s" %str(exc))
+				response = 'OK'
+			else:
+				log_debug("unknown message <%s> - sending back an error" %str(list))
+				response = 'ERROR unknown'
+		except Exception, exc:
+			response = 'ERROR : %s' %(str(exc))
+
+		# whatever has been received, we must reply something to the client who asked
+		log_debug("replying <%s> to %s" %(response, requester))
+		self.request[1].sendto(response + '\r\n', self.client_address)
+
+		if do_state_update:
+			sipnumber = "SIP/" + user.split("sip")[1]
+			if sipnumber in plist[astnum].normal:
+				if(plist[astnum].normal[sipnumber].imstat != state):
+					plist[astnum].normal[sipnumber].set_imstat(state)
+					plist[astnum].normal[sipnumber].update_time()
+					update_GUI_clients(astnum, sipnumber, "kfc-kah")
 
 
 ## \class MyTCPServer
