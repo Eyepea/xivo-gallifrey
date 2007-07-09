@@ -137,10 +137,9 @@ void LoginEngine::stop()
 	QString outline;
 	//qDebug() << "LoginEngine::stop()";
 	outline = "STOP ";
-	outline.append(m_asterisk);
-	outline.append("/");
-	outline.append(m_protocol.toLower());
-	outline.append(m_userid);
+	outline.append(m_asterisk + "/" + m_protocol.toLower() + m_userid);
+	outline.append(" SESSIONID ");
+	outline.append(m_sessionid);
 	//qDebug() << "LoginEngine::stop()" << outline;
 	outline.append("\r\n");
 	m_udpsocket->writeDatagram( outline.toAscii(),
@@ -289,10 +288,7 @@ void LoginEngine::identifyToTheServer()
 	qDebug() << "LoginEngine::identifyToTheServer()" << m_loginsocket->peerAddress();
 	m_serveraddress = m_loginsocket->peerAddress();
 	outline = "LOGIN ";
-	outline.append(m_asterisk);
-	outline.append("/");
-	outline.append(m_protocol.toLower());
-	outline.append(m_userid);
+	outline.append(m_asterisk + "/" + m_protocol.toLower() + m_userid);
 	qDebug() << "LoginEngine::identifyToTheServer() : " << outline;
 	outline.append("\r\n");
 	m_loginsocket->write(outline.toAscii());
@@ -391,10 +387,7 @@ void LoginEngine::keepLoginAlive()
 		return;
 	}
 	QString outline = "ALIVE ";
-	outline.append(m_asterisk);
-	outline.append("/");
-	outline.append(m_protocol.toLower());
-	outline.append(m_userid);
+	outline.append(m_asterisk + "/" + m_protocol.toLower() + m_userid);
 	outline.append(" SESSIONID ");
 	outline.append(m_sessionid);
 	outline.append(" STATE ");

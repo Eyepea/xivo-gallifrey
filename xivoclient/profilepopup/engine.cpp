@@ -146,15 +146,11 @@ void Engine::start()
  */
 void Engine::stop()
 {
-	QString outline;
 	qDebug() << "Engine::stop()";
-	outline = "STOP ";
-	if(m_asterisk.length() > 0) {
-		outline.append(m_asterisk);
-		outline.append("/");
-	}
-	outline.append(m_protocol);
-	outline.append(m_userid);
+	QString outline = "STOP ";
+	outline.append(m_asterisk + "/" + m_protocol + m_userid);
+	outline.append(" SESSIONID ");
+	outline.append(m_sessionid);
 	outline.append("\r\n");
 
 	m_udpsocket.writeDatagram( outline.toAscii(),
@@ -214,10 +210,15 @@ void Engine::setDoNotDisturb()
 
 void Engine::dialExtension(const QString & dst)
 {
-	QString outline;
 	qDebug() << "Engine::dialExtension()";
-	outline = "DIAL " + m_asterisk + "/" + m_protocol + "/" +
-		m_userid + "/" + m_dialcontext + " " + dst + "\r\n";
+	QString outline = "COMMAND ";
+	outline.append(m_asterisk + "/" + m_protocol + m_userid);
+	outline.append(" SESSIONID ");
+	outline.append(m_sessionid);
+	outline.append(" DIAL ");
+	outline.append(m_asterisk + "/" + m_protocol + "/" +
+		       m_userid + "/" + m_dialcontext + " " + dst);
+	outline.append("\r\n");
 	qDebug() << outline;
 	m_udpsocket.writeDatagram( outline.toAscii(),
 				   m_serveraddress, m_loginport + 1 );
@@ -380,10 +381,9 @@ void Engine::setState(EngineState state)
  */
 void Engine::identifyToTheServer()
 {
-	QString outline;
 	qDebug() << "Engine::identifyToTheServer()" << m_loginsocket.peerAddress();
 	m_serveraddress = m_loginsocket.peerAddress();
-	outline = "LOGIN ";
+	QString outline = "LOGIN ";
 	outline.append(m_asterisk);
 	outline.append("/");
 	outline.append(m_protocol);
@@ -551,10 +551,7 @@ void Engine::keepLoginAlive()
 		return;
 	}
 	QString outline = "ALIVE ";
-	outline.append(m_asterisk);
-	outline.append("/");
-	outline.append(m_protocol);
-	outline.append(m_userid);
+	outline.append(m_asterisk + "/" + m_protocol + m_userid);
 	outline.append(" SESSIONID ");
 	outline.append(m_sessionid);
 	outline.append(" STATE ");
@@ -589,14 +586,11 @@ void Engine::sendMessage(const QString & txt)
 		startTryAgainTimer();
 		return;
 	}
-	QString outline = "MESSAGE ";
-	if(m_asterisk.length() > 0) {
-		outline.append(m_asterisk);
-		outline.append("/");
-	}
-	outline.append(m_protocol);
-	outline.append(m_userid);
-	outline.append(" ");
+	QString outline = "COMMAND ";
+	outline.append(m_asterisk + "/" + m_protocol + m_userid);
+	outline.append(" SESSIONID ");
+	outline.append(m_sessionid);
+	outline.append(" MESSAGE ");
 	outline.append(txt);
 	outline.append("\r\n");
 	qDebug() <<  "Engine::sendMessage()" << outline;
