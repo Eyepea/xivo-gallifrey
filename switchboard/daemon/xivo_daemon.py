@@ -184,6 +184,7 @@ BUFSIZE_ANY = 512
 
 socket.setdefaulttimeout(2)
 DAEMON = "daemon-announce"
+HISTSEPAR = ";"
 
 ## \class myLDAP
 class myLDAP:
@@ -256,7 +257,7 @@ def log_debug(string):
 
 
 
-## \brief Function that fetches the call history into a database
+## \brief Function that fetches the call history from a database
 # \param astn the asterisk to connect to
 # \param techno technology (SIP/IAX/ZAP/etc...)
 # \param phoneid phone id
@@ -296,6 +297,34 @@ def update_history_call(astn, techno, phoneid, phonenum, nlines, kind):
 			log_debug("--- exception --- %s : Connection to DataBase %s failed in History request : %s"
 				  %(configs[astn].astid, configs[astn].cdr_db_uri, str(exc)))
 	return results
+
+
+def build_history_string(requester_id, nlines, kind):
+	log_debug("<%s> <%s> <%s>" %(requester_id, nlines, kind))
+	[dummyp, assrc, dummyx, techno, phoneid, phonenum] = requester_id.split('/')
+	if assrc in asteriskr:
+		idassrc = asteriskr[assrc]
+		reply = "history="
+		try:
+			hist = update_history_call(idassrc, techno, phoneid, phonenum, nlines, kind)
+			for x in hist:
+				try:
+					reply += x[0].isoformat() + HISTSEPAR + x[1] \
+						 + HISTSEPAR + str(x[10]) + HISTSEPAR + x[11]
+				except:
+					reply += x[0] + HISTSEPAR + x[1] \
+						 + HISTSEPAR + str(x[10]) + HISTSEPAR + x[11]
+				if kind == '0':
+					reply += HISTSEPAR + x[3] + HISTSEPAR + 'OUT'
+				else:   # display callerid for incoming calls
+					reply += HISTSEPAR + x[1] + HISTSEPAR + 'IN'
+				reply += ";"
+		except Exception, exc:
+			log_debug("--- exception --- (%s) error : history : (client %s) : %s"
+				  %(assrc, requester, str(exc)))
+	else:
+		reply = "asterisk=%s::history KO : no such asterisk id\n" %DAEMON
+	return reply
 
 
 ## \brief Extracts the main SIP properties from a received packet
@@ -545,13 +574,12 @@ class AMIClass:
 # This should be done after a command called "customers".
 # \return a string containing the full customers list
 # \sa manage_tcp_connection
-def build_customers(requester, searchpattern):
+def build_customers(astn, ctx, searchpattern):
 	dir_db_uri = ""
 	dir_db_displayfields = ""
 	dir_db_matchingfields = ""
 	dir_db_tablename = ""
 	
-	[astn, ctx] = ctx_by_requester[requester]
 	if ctx in configs[astn].contexts.keys():
 		xivocf = configs[astn].contexts[ctx]
 		if "dir_db_uri" in xivocf:
@@ -646,6 +674,10 @@ def build_customers(requester, searchpattern):
 	fullstat += "\n"
 	return fullstat
 
+
+def build_customers_fromrequester(requester, searchpattern):
+	[astn, ctx] = ctx_by_requester[requester]
+	return build_customers(astn, ctx, searchpattern)
 
 ## \brief Builds the full list of callerIDNames in order to send them to the requesting client.
 # This should be done after a command called "callerid".
@@ -1086,7 +1118,7 @@ def manage_tcp_connection(connid, allow_events):
 			try:
 				if len(l) == 1: l.append("")
 				spattern = ' '.join(l[1:])
-				connid[0].send(build_customers(requester, spattern))
+				connid[0].send(build_customers_fromrequester(requester, spattern))
 			except Exception, exc:
 				log_debug("--- exception --- UI connection : a problem occured when sending to %s : %s"
 					  %(requester, str(exc)))
@@ -1147,33 +1179,9 @@ def manage_tcp_connection(connid, allow_events):
 				connid[0].send("asterisk=%s::originate or transfer KO : asterisk id mismatch\n" %DAEMON)
 		elif len(l) >= 4 and l[0] == 'history':
 			log_debug("%s is attempting a HISTORY : %s" %(requester, str(l)))
-			idassrc = -1
-			[dummyp, assrc, dummyx, techno, phoneid, phonenum] = l[1].split('/')
-			if assrc in asteriskr: idassrc = asteriskr[assrc]
-			if idassrc == -1:
-				connid[0].send("asterisk=%s::history KO : no such asterisk id\n" %DAEMON)
-			else:
-				try:
-					hist = update_history_call(idassrc, techno, phoneid, phonenum, l[2], l[3])
-					repstr = "history="
-					separ = ";"
-					for x in hist:
-						try:
-							repstr += x[0].isoformat() + separ + x[1] \
-								  + separ + str(x[10]) + separ + x[11]
-						except:
-							repstr += x[0] + separ + x[1] \
-								  + separ + str(x[10]) + separ + x[11]
-						if l[3]=='0':
-							repstr += separ + x[3] + separ + 'OUT'
-						else:   # display callerid for incoming calls
-							repstr += separ + x[1] + separ + 'IN'
-						repstr += ";"
-					connid[0].send(repstr + "\n")
-				except Exception, exc:
-					log_debug("--- exception --- (%s) error : history : (client %s) : %s"
-						  %(assrc, requester, str(exc)))
-					connid[0].send("history=\n")
+			[dummyh, requester_id, nlines, kind] = l
+			repstr = build_history_string(requester_id, nlines, kind)
+			connid[0].send(repstr + "\n")
 		elif len(l) >= 4 and l[0] == 'login':
 			if l[1] in asteriskr:
 				astnum = asteriskr[l[1]]
@@ -2559,9 +2567,11 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
 							k[0].send("asterisk=%s::<%s>\n" %(list[1], list[5]))
 						response = 'SENT'
 					elif list[4] == 'HISTORY':
-						pass
-					elif list[4] == 'DIRSEARCH':
-						pass
+						repstr = build_history_string(list[5], list[6], list[7])
+						response = 'HISTORY %s' %repstr
+					elif list[4] == 'DIRECTORY':
+						repstr = build_customers(astnum, e['context'], list[5])
+						response = 'DIRECTORY %s' %repstr
 					else:
 						pass
 				except Exception, exc:
