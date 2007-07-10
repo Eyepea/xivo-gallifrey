@@ -70,6 +70,7 @@ if len(sys.argv) != 3:
         agi.verbose('len argument not ok %s!')
 	sys.exit()
 
+# XXX: Using agi.get_variable() instead argv
 user_src = sys.argv[1]
 context = sys.argv[2]
 res = get_all_users(context)
