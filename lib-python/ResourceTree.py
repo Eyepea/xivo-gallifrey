@@ -91,10 +91,10 @@ class RT_node(object):
 		else:
 			return None
 
-	def ctx_path(self, path):
+	def ctx_path(self, path, ctx = None):
 		"""Entry point to call on the root node to initiate a lookup
 		of the resource identified by path. """
-		return self.fenter(None, (None,None)+tuple(path), 2)
+		return self.fenter(ctx, (None,None)+tuple(path), 2)
 
 class RT_Set(RT_node):
 
