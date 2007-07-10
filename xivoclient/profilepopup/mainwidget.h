@@ -77,6 +77,7 @@ private:
 
 	QWidget * m_wid;	//!< Main widget
 	QTabWidget * m_tabwidget;	//!< Area to display profiles
+	QTabWidget * m_qtabwidget;	//!< Area to display function tabs
 	QVBoxLayout * m_vboxwidgets;    //!< Panel of widgets
 	QLabel * m_messagetosendlabel;    //!< Label for message for switchboards
 	QLineEdit * m_messagetosend;    //!< Message to send to the connected switchboards
