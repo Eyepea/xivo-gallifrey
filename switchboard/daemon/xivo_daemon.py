@@ -1827,14 +1827,15 @@ class PhoneList:
 				 chan_dst, num_dst, comment):
 		phoneid_src = channel_splitter(chan_src)
 		phoneid_dst = channel_splitter(chan_dst)
-			
+
 		if phoneid_src not in self.normal.keys():
 			self.normal[phoneid_src] = LineProp(phoneid_src.split("/")[0],
 							    phoneid_src.split("/")[1],
 							    phoneid_src.split("/")[1],
 							    "which-context?", "sipstatus?", False)
-		self.normal[phoneid_src].set_chan(chan_src, action, timeup, direction, chan_dst, num_dst, num_src)
-		self.update_GUI_clients(phoneid_src, comment + "F")
+		do_update = self.normal[phoneid_src].set_chan(chan_src, action, timeup, direction, chan_dst, num_dst, num_src)
+		if do_update:
+			self.update_GUI_clients(phoneid_src, comment + "F")
 
 
 	def normal_channel_hangup(self, chan_src, comment):
@@ -1994,6 +1995,7 @@ class LineProp:
 	# \param itime the elapsed time to set
 	def set_chan(self, ichan, status, itime, idir, peerch, peernum, mynum):
 		# print "<%s> <%s> <%s> <%s> <%s> <%s> <%s>" %(ichan, status, itime, idir, peerch, peernum, mynum)
+		do_update = True
 		if mynum == "<unknown>" and is_normal_channel(ichan):
 			mynum = channel_splitter(ichan)
 			#		if peernum == "<unknown>" and is_normal_channel(peerch):
@@ -2005,17 +2007,31 @@ class LineProp:
 		newpeernum = peernum
 		newmynum = mynum
 		if ichan in self.chann:
-			if status  == "": newstatus = self.chann[ichan].getStatus()
-			if idir    == "": newdir = self.chann[ichan].getDirection()
-			if peerch  == "": newpeerch = self.chann[ichan].getChannelPeer()
-			if peernum == "": newpeernum = self.chann[ichan].getChannelNum()
-			if mynum   == "": newmynum = self.chann[ichan].getChannelMyNum()
-		firsttime = time.time()
-		self.chann[ichan] = ChannelStatus(newstatus, itime, newdir,
-						  newpeerch, newpeernum, firsttime - itime,
-						  newmynum)
-		for ic in self.chann:
-			self.chann[ic].updateDeltaTime(int(firsttime - self.chann[ic].getTime()))
+			thischannel = self.chann[ichan]
+			if status  == "": newstatus = thischannel.getStatus()
+			if idir    == "": newdir = thischannel.getDirection()
+			if peerch  == "": newpeerch = thischannel.getChannelPeer()
+			if peernum == "": newpeernum = thischannel.getChannelNum()
+			if mynum   == "": newmynum = thischannel.getChannelMyNum()
+
+			# mynum != thischannel.getChannelMyNum()
+			# when dialing "*10", there are many successive newextens occuring, that reset
+			# the time counter to 0
+			if status == thischannel.getStatus() and \
+			   idir == thischannel.getDirection() and \
+			   peerch == thischannel.getChannelPeer() and \
+			   peernum == thischannel.getChannelNum():
+				do_update = False
+
+		if do_update:
+			firsttime = time.time()
+			self.chann[ichan] = ChannelStatus(newstatus, itime, newdir,
+							  newpeerch, newpeernum, firsttime - itime,
+							  newmynum)
+			for ic in self.chann:
+				self.chann[ic].updateDeltaTime(int(firsttime - self.chann[ic].getTime()))
+		return do_update
+
 
 	##  \brief Hangs up a Channel.
 	# \param ichan the Channel to hangup.
@@ -2515,7 +2531,6 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
 				response = 'OK'
 			elif list[0] == 'STOP' and len(list) == 4:
 				# STOP user SESSIONID sessionid
-				response = 'DISC'
 				userlist_lock.acquire()
 				del e['sessionid']
 				del e['sessiontimestamp']
@@ -2528,6 +2543,7 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
 					plist[astnum].normal[sipnumber].update_time()
 					update_GUI_clients(astnum, sipnumber, "kfc-dcc")
 				userlist_lock.release()
+				response = 'DISC'
 
 			elif list[0] == 'COMMAND':
 				try:
@@ -2537,20 +2553,23 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
 						astnum = asteriskr[astname_xivoc]
 						proto = proto.lower()
 						ret = AMIclasssock[astnum].originate(proto, userid, exten, context)
-					elif list[4] == 'MESSAGE' and len(list) == 5:
-						response = 'SENT'
+						response = 'OK'
+					elif list[4] == 'MESSAGE' and len(list) == 6:
 						for k in tcpopens_sb:
-							k[0].send("asterisk=%s::<%s>\n" %(list[1], list[4]))
+							k[0].send("asterisk=%s::<%s>\n" %(list[1], list[5]))
+						response = 'SENT'
+					elif list[4] == 'HISTORY':
+						pass
+					elif list[4] == 'DIRSEARCH':
+						pass
 					else:
 						pass
 				except Exception, exc:
 					log_debug("--- exception --- (command) %s" %str(exc))
-				response = 'OK'
 			else:
-				log_debug("unknown message <%s> - sending back an error" %str(list))
-				response = 'ERROR unknown'
+				raise NameError, "unknown message <%s>" %str(list)
 		except Exception, exc:
-			response = 'ERROR : %s' %(str(exc))
+			response = 'ERROR %s' %(str(exc))
 
 		# whatever has been received, we must reply something to the client who asked
 		log_debug("replying <%s> to %s" %(response, requester))
