@@ -96,6 +96,16 @@ for u in res:
                                 dest_list.append(dest)
                                 graph.setdefault(dest, [])
 
+try:
+        # XXX: possible bug if change the number for forward
+        user_dest = agi.get_variable('MACRO_EXTEN')[3:]
+except AGIAppError:
+        agi.verbose("Handled exception for missing variable MACRO_EXTEN")
+
+agi.verbose(user_dest)
+dest_list = graph.setdefault(user_src, [])
+dest_list.append(user_dest)
+
 # XXX: modify the graph so that a potentialy overwritten transfer is removed,
 # and that the to be configured transfer is in the graph.
 
