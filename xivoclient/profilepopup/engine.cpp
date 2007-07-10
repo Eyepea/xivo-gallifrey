@@ -21,12 +21,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 #include <QDebug>
 #include <QTcpSocket>
+#include <QTime>
 #include <QThread>
 #include <QMessageBox>
 #include <QSettings>
 #include <QTimerEvent>
 #include "engine.h"
 #include "popup.h"
+#include "logeltwidget.h"
 
 /*!
  * This constructor initialize the UDP socket and
@@ -206,6 +208,43 @@ void Engine::setDoNotDisturb()
 {
 	//qDebug() << "setDoNotDistrurb()";
 	setAvailState("donotdisturb");
+}
+
+void Engine::searchDirectory(const QString & text)
+{
+	qDebug() << "Engine::searchDirectory()";
+	QString outline = "COMMAND ";
+	outline.append(m_asterisk + "/" + m_protocol + m_userid);
+	outline.append(" SESSIONID ");
+	outline.append(m_sessionid);
+	outline.append(" DIRECTORY ");
+	outline.append(text);
+	outline.append("\r\n");
+	qDebug() << outline;
+	m_udpsocket.writeDatagram( outline.toAscii(),
+				   m_serveraddress, m_loginport + 1 );
+}
+
+/*! \brief ask history for an extension 
+ */
+void Engine::requestHistory(const QString & peer, int mode)
+{
+	/* mode = 0 : Out calls
+	 * mode = 1 : In calls
+	 * mode = 2 : Missed calls */
+	if(mode >= 0) {
+		qDebug() << "Engine::requestHistory()";
+		QString outline = "COMMAND ";
+		outline.append(m_asterisk + "/" + m_protocol + m_userid);
+		outline.append(" SESSIONID ");
+		outline.append(m_sessionid);
+		outline.append(" HISTORY ");
+		outline.append(peer + " 10 " + QString::number(mode));
+		outline.append("\r\n");
+		qDebug() << outline;
+		m_udpsocket.writeDatagram( outline.toAscii(),
+					   m_serveraddress, m_loginport + 1 );
+	}
 }
 
 void Engine::dialExtension(const QString & dst)
@@ -607,7 +646,7 @@ void Engine::sendMessage(const QString & txt)
  */
 void Engine::readKeepLoginAliveDatagrams()
 {
-	char buffer[256];
+	char buffer[2048];
 	int len;
 	qDebug() << "Engine::readKeepLoginAliveDatagrams()";
 	while( m_udpsocket.hasPendingDatagrams() )
@@ -617,13 +656,42 @@ void Engine::readKeepLoginAliveDatagrams()
 			continue;
 		buffer[len] = '\0';
 		//		qDebug() << len << ":" << buffer;
-		if(buffer[0] != 'O' && buffer[0] != 'S' || buffer[1] !='K' && buffer[1] !='E')
-		{
+		QStringList qsl = QString(buffer).trimmed().split(" ");
+		QString reply = qsl[0];
+		qDebug() << reply;
+		if(reply == "DISC") {
 			stopKeepAliveTimer();
 			setState(ENotLogged);
 			startTryAgainTimer();
+		} else if(reply == "HISTORY") {
+			QStringList list = QString(buffer).trimmed().split("=");
+			processHistory(list[1].split(";"));
+		} else if(reply == "DIRECTORY") {
+			QStringList list = QString(buffer).trimmed().split("=");
+			directoryResponse(list[1]);
 		}
 		m_pendingkeepalivemsg = 0;
+	}
+}
+
+void Engine::processHistory(const QStringList & histlist)
+{
+	int i;
+	for(i=0; i+6<=histlist.size(); i+=6)
+	{
+		// DateTime; CallerID; duration; Status?; peer; IN/OUT
+		//qDebug() << histlist[i+0] << histlist[i+1]
+		//         << histlist[i+2] << histlist[i+3]
+		//         << histlist[i+4] << histlist[i+5];
+		QDateTime dt = QDateTime::fromString(histlist[i+0], Qt::ISODate);
+		QString callerid = histlist[i+1];
+		int duration = histlist[i+2].toInt();
+		QString status = histlist[i+3];
+		QString peer = histlist[i+4];
+		LogEltWidget::Direction d;
+		d = (histlist[i+5] == "IN") ? LogEltWidget::InCall : LogEltWidget::OutCall;
+		//qDebug() << dt << callerid << duration << peer << d;
+		updateLogEntry(dt, duration, peer, (int)d);
 	}
 }
 

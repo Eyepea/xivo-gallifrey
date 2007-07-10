@@ -37,9 +37,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QVBoxLayout>
 #include "mainwidget.h"
 #include "confwidget.h"
-//#include "logwidget.h"
 #include "popup.h"
 #include "dialpanel.h"
+#include "logwidget.h"
+#include "directorypanel.h"
 
 /*! \brief Constructor
  *
@@ -342,16 +343,39 @@ void MainWidget::setConnected()
 				 this, SLOT(affTextChanged()) );
 			m_vboxwidgets->addWidget(m_messagetosendlabel, 0);
 			m_vboxwidgets->addWidget(m_messagetosend, 0);
+
 		} else if(capas[c] == QString("dial")) {
 			m_dial = new DialPanel();
 			connect( m_dial, SIGNAL(emitDial(const QString &)),
 				 m_engine, SLOT(dialExtension(const QString &)) );
 			m_vboxwidgets->addWidget(m_dial, 0);
+
 		} else if(capas[c] == QString("directory")) {
-			m_directory = new QLabel(tr("Directory search"));
+			m_directory = new DirectoryPanel(this);
 			m_vboxwidgets->addWidget(m_directory, 0);
+
+			connect( m_directory, SIGNAL(searchDirectory(const QString &)),
+				 m_engine, SLOT(searchDirectory(const QString &)) );
+			connect( m_directory, SIGNAL(emitDial(const QString &)),
+				 m_engine, SLOT(dialExtension(const QString &)) );
+			connect( m_directory, SIGNAL(transferCall(const QString &, const QString &)),
+				 m_engine, SLOT(transferCall(const QString &, const QString &)) );
+			connect( m_directory, SIGNAL(originateCall(const QString &, const QString &)),
+				 m_engine, SLOT(originateCall(const QString &, const QString &)) );
+
+			connect( m_engine, SIGNAL(directoryResponse(const QString &)),
+				 m_directory, SLOT(setSearchResponse(const QString &)) );
+			connect( m_engine, SIGNAL(updateMyCalls(const QStringList &, const QStringList &, const QStringList &)),
+				 m_directory, SIGNAL(updateMyCalls(const QStringList &, const QStringList &, const QStringList &)) );
+			connect( m_engine, SIGNAL(stopped()),
+				 m_directory, SLOT(stop()) );
+
 		} else if(capas[c] == QString("history")) {
-			m_history = new QLabel(tr("History"));
+			m_history = new LogWidget(m_engine, this);
+			connect( m_history, SIGNAL(askHistory(const QString &, int)),
+				 m_engine, SLOT(requestHistory(const QString &, int)) );
+			connect( m_engine, SIGNAL(updateLogEntry(const QDateTime &, int, const QString &, int)),
+				 m_history, SLOT(addLogEntry(const QDateTime &, int, const QString &, int)) );
 			m_vboxwidgets->addWidget(m_history, 0);
 		}
 

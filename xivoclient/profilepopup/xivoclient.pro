@@ -12,10 +12,10 @@ CONFIG += static
 # Input
 HEADERS += confwidget.h engine.h mainwidget.h popup.h
 HEADERS += xmlhandler.h remotepicwidget.h urllabel.h
-HEADERS += dialpanel.h
+HEADERS += dialpanel.h logwidget.h logeltwidget.h directorypanel.h extendedtablewidget.h peerchannel.h
 SOURCES += confwidget.cpp engine.cpp main.cpp mainwidget.cpp popup.cpp
 SOURCES += xmlhandler.cpp remotepicwidget.cpp urllabel.cpp
-SOURCES += dialpanel.cpp
+SOURCES += dialpanel.cpp logwidget.cpp logeltwidget.cpp directorypanel.cpp extendedtablewidget.cpp peerchannel.cpp
 QT += network
 QT += xml
 RESOURCES += appli.qrc

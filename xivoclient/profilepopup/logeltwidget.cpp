@@ -1,0 +1,1 @@
+../../switchboard/client/logeltwidget.cpp

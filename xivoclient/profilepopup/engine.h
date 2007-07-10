@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QTcpSocket>
 #include <QTcpServer>
 #include <QUdpSocket>
+#include <QTime>
 #include <QTimer>
 
 class Popup;
@@ -76,6 +77,10 @@ signals:
 	void logged();	//!< signal emitted when the state becomes ELogged
 	void delogged();	//!< signal emitted when the state becomes ENotLogged
 	void newProfile(Popup *);	//!< signal emitted when a new profile has to be shown
+	//! a log entry has to be updated.
+	void updateLogEntry(const QDateTime &, int, const QString &, int);
+	//! the directory search response has been received.
+	void directoryResponse(const QString &);
 public slots:
 	void start();	//!< start the connection process.
 	void stop();	//!< stop the engine
@@ -84,6 +89,8 @@ public slots:
 	void setBeRightBack();	//!< set user status as "be right back"
 	void setOutToLunch();	//!< set user status as "out to lunch"
 	void setDoNotDisturb();	//!< set user status as "do not disturb"
+	void searchDirectory(const QString &);
+	void requestHistory(const QString &, int);
 private slots:
 	void identifyToTheServer();	//!< perform the first login step
 	void processLoginDialog();	//!< perform the following login steps
@@ -102,6 +109,7 @@ private:
 	void startTryAgainTimer();	//!< Start the "try to reconnect" timer
 	void stopTryAgainTimer();	//!< Stop the "try to reconnect" timer
 	void setAvailState(const QString &);	//!< set Availability state
+	void processHistory(const QStringList &);
 
 	// parameters to connect to server
 	QString m_serverip;		//!< Host to the login server
