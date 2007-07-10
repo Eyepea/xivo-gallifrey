@@ -55,6 +55,7 @@ private:
 	LoginEngine * m_loginengine;	//!< Login Engine
 	SwitchBoardWindow * m_widget;	//!< Widget to display peers
 
+	QMenu * m_avail;	//!< Availability submenu
 	QAction * m_loginact;	//!< "Log in" Action
 	QAction * m_logoffact;	//!< "Log off" Action
 	QAction * m_startact;	//!< "Start" Action

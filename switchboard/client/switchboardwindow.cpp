@@ -150,6 +150,7 @@ void SwitchBoardWindow::removePeerFromLayout(const QString & ext)
 	for(i=0; i < m_peerlist.count(); i++) {
 		if(ext == m_peerlist[i].ext()) {
 			m_layout->setItemPosition(i, QPoint(-1, -1));
+			savePositions();
 			return;
 		}
 	}
@@ -252,6 +253,7 @@ void SwitchBoardWindow::dropEvent(QDropEvent * event)
 		}
 	}
 	event->acceptProposedAction();
+	savePositions();
 }
 
 /*! \brief Save the positions of Peer Widgets

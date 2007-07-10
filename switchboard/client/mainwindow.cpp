@@ -288,8 +288,11 @@ MainWindow::MainWindow(SwitchBoardEngine * engine, LoginEngine * loginengine)
 	else
 		m_avact_avail->setChecked( true );
 
-	QMenu * avail = menuBar()->addMenu(tr("&Availability"));
-	avail->addActions( m_availgrp->actions() );
+	m_avail = menuBar()->addMenu(tr("&Availability"));
+	m_avail->addActions( m_availgrp->actions() );
+	m_avail->setEnabled(m_loginengine->enabled());
+	connect( m_loginengine, SIGNAL(enabledChanged(bool)),
+	         m_avail, SLOT(setEnabled(bool)) );
 
 	QMenu * helpmenu = menuBar()->addMenu(tr("&Help"));
 	helpmenu->addAction(tr("&About XIVO Switchboard"), this, SLOT(about()));
