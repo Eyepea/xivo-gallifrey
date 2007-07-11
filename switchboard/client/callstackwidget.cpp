@@ -136,7 +136,9 @@ void CallStackWidget::hupchan(const QString & hangupchan)
 /*! \brief Reset the Widget */
 void CallStackWidget::reset()
 {
+	//qDebug() << "CallStackWidget::reset()";
 	m_monitoredPeer = "";
+	monitoredPeerChanged(m_monitoredPeer);
 	emptyList();
 	changeTitle("");
 	m_calllist.clear();
@@ -257,11 +259,11 @@ void CallStackWidget::dropEvent(QDropEvent *event)
 		return;
 	}
 	QString text = event->mimeData()->text();
-	//qDebug() << "CallStackWidget::dropEvent()" << text;
 	emptyList();
 	m_monitoredPeer = text;
 	monitoredPeerChanged(text);
 	QString name = QString::fromUtf8(event->mimeData()->data("name"));
+	//qDebug() << "CallStackWidget::dropEvent()" << text << name;
 	changeTitle(tr("Monitoring : ") + name);
 	updateDisplay();
 	event->acceptProposedAction();

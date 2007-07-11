@@ -564,7 +564,7 @@ void SwitchBoardEngine::requestHistory(const QString & peer, int mode)
 	 * mode = 1 : In calls
 	 * mode = 2 : Missed calls */
 	//qDebug() << "SwitchBoardEngine::requestHistory()" << peer;
-	if(mode >= 0) {
+	if((mode >= 0) && (m_socket->state() == QAbstractSocket::ConnectedState)) {
 		m_pendingcommand = "history " + peer + " 10 " + QString::number(mode);
 		sendCommand();
 	}

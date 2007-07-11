@@ -160,7 +160,8 @@ void LogWidget::setPeerToDisplay(const QString & peer)
 void LogWidget::timerEvent(QTimerEvent * event)
 {
 	//qDebug() << "LogWidget::timerEvent() id=" << event->timerId();
-	askHistory(m_peer, mode());
+	if(m_peer.size() > 0)
+		askHistory(m_peer, mode());
 }
 
 /*! \brief return the mode (out/in or missed)
