@@ -1,4 +1,4 @@
-"""Freeze a list by only allowing calls to state-preserving methods
+"""Read-Only List Proxy that only allows calls to state-preserving methods
 
 Copyright (C) 2007, Proformatique
 
@@ -23,7 +23,7 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-class FrozenListProxy(object):
+class ROListProxy(object):
 
 	__slots__ = ['__underlying']
 
