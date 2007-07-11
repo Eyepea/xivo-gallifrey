@@ -798,6 +798,8 @@ def parseSIP(astnum, data, l_sipsock, l_addrsip):
     #print "-----------", iaccount, mysippass
     #print data
     #print "================================="
+
+    realm = "asterisk"
     
     if imsg == "REGISTER":
 	    if iret == 401:
@@ -805,7 +807,8 @@ def parseSIP(astnum, data, l_sipsock, l_addrsip):
 		    nonce    = iauth.split("nonce=\"")[1].split("\"")[0]
 		    md5_r2   = md5.md5(imsg   + ":" + uri).hexdigest()
 		    response = md5.md5(md5_r1 + ":" + nonce + ":" + md5_r2).hexdigest()
-		    auth = "Authorization: Digest username=\"%s\", realm=\"asterisk\", nonce=\"%s\", uri=\"%s\", response=\"%s\", algorithm=MD5\r\n" %(iaccount, nonce, uri, response)
+		    auth = "Authorization: Digest username=\"%s\", realm=\"%s\", nonce=\"%s\", uri=\"%s\", response=\"%s\", algorithm=MD5\r\n" \
+			   %(iaccount, realm, nonce, uri, response)
 		    command = xivo_sip.sip_register(configs[astnum],
 						    "sip:" + iaccount, 1, "reg_cid@xivopy",
 						    2 * xivosb_register_frequency, auth)
@@ -855,7 +858,8 @@ def parseSIP(astnum, data, l_sipsock, l_addrsip):
 			    nonce    = iauth.split("nonce=\"")[1].split("\"")[0]
 			    md5_r2   = md5.md5(imsg   + ":" + uri).hexdigest()
 			    response = md5.md5(md5_r1 + ":" + nonce + ":" + md5_r2).hexdigest()
-			    auth = "Authorization: Digest username=\"%s\", realm=\"asterisk\", nonce=\"%s\", uri=\"%s\", response=\"%s\", algorithm=MD5\r\n" %(iaccount, nonce, uri, response)
+			    auth = "Authorization: Digest username=\"%s\", realm=\"%s\", nonce=\"%s\", uri=\"%s\", response=\"%s\", algorithm=MD5\r\n" \
+				   %(iaccount, realm, nonce, uri, response)
 			    command = xivo_sip.sip_subscribe(configs[astnum], "sip:" + iaccount, 1,
 							     icid,
 							     plist[astnum].normal[sipphone].phonenum,
@@ -2556,22 +2560,34 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
 			elif list[0] == 'COMMAND':
 				try:
 					if list[4] == 'DIAL' and len(list) == 7:
-						[astname_xivoc, proto, userid, context] = list[5].split("/")
-						exten = list[6]
-						astnum = asteriskr[astname_xivoc]
-						proto = proto.lower()
-						ret = AMIclasssock[astnum].originate(proto, userid, exten, context)
-						response = 'OK'
+						if "dial" in capabilities.split(","):
+							[astname_xivoc, proto, userid, context] = list[5].split("/")
+							exten = list[6]
+							astnum = asteriskr[astname_xivoc]
+							proto = proto.lower()
+							ret = AMIclasssock[astnum].originate(proto, userid, exten, context)
+							response = 'OK'
+						else:
+							raise NameError, "dial not allowed"
 					elif list[4] == 'MESSAGE' and len(list) == 6:
-						for k in tcpopens_sb:
-							k[0].send("asterisk=%s::<%s>\n" %(list[1], list[5]))
-						response = 'SENT'
+						if "instantmessaging" in capabilities.split(","):
+							for k in tcpopens_sb:
+								k[0].send("asterisk=%s::<%s>\n" %(list[1], list[5]))
+							response = 'SENT'
+						else:
+							raise NameError, "instantmessaging not allowed"
 					elif list[4] == 'HISTORY':
-						repstr = build_history_string(list[5], list[6], list[7])
-						response = 'HISTORY %s' %repstr
+						if "history" in capabilities.split(","):
+							repstr = build_history_string(list[5], list[6], list[7])
+							response = 'HISTORY %s' %repstr
+						else:
+							raise NameError, "history not allowed"
 					elif list[4] == 'DIRECTORY':
-						repstr = build_customers(astnum, e['context'], list[5])
-						response = 'DIRECTORY %s' %repstr
+						if "directory" in capabilities.split(","):
+							repstr = build_customers(astnum, e['context'], list[5])
+							response = 'DIRECTORY %s' %repstr
+						else:
+							raise NameError, "directory not allowed"
 					else:
 						pass
 				except Exception, exc:

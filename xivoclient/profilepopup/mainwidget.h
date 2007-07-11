@@ -49,6 +49,7 @@ public:
 	MainWidget(Engine *engine, QWidget *parent=0);
 	int tablimit() const;	//!< getter for m_tablimit
 	void setTablimit(int);	//!< setter for m_tablimit
+	void setForceTabs(bool);//!< setter for m_forcetabs
 private slots:
 	void popupConf();
 	void setDisconnected();
@@ -84,6 +85,7 @@ private:
 	DialPanel * m_dial;
 	DirectoryPanel * m_directory;
 	LogWidget * m_history;
+	bool m_forcetabs;    //!< Flag to allow the display of "unallowed" tabs, useful to test server-side capabilities
 
 	int m_tablimit;		//!< Maximum number of tabs in m_tabwidget
 	// actions :

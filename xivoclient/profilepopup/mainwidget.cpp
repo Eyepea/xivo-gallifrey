@@ -296,29 +296,124 @@ void MainWidget::systrayMsgClicked()
 	raise();
 }
 
+//! Disable the Start Button and set the green indicator
+void MainWidget::setConnected()
+{
+	setForceTabs(false);
+	m_connectact->setEnabled(false);
+	m_disconnectact->setEnabled(true);
+	QString allcapas = "customerinfo,history,directory,dial,instantmessaging";
+	QStringList display_capas = allcapas.split(",");
+	QStringList allowed_capas = m_engine->getCapabilities().split(",");
+
+	for(int j = 0; j < display_capas.size(); j++) {
+		QString dc = display_capas[j];
+		bool allowed = false;
+		if(m_forcetabs)
+			allowed = true;
+		else {
+			for(int c = 0; c < allowed_capas.size(); c++) {
+				QString ac = allowed_capas[c];
+				if(ac == dc) allowed = true;
+			}
+		}
+		if(allowed) {
+			qDebug() << "adding" << dc;
+			if(dc == QString("instantmessaging")) {
+				m_messagetosend = new QLineEdit();
+				connect( m_messagetosend, SIGNAL(returnPressed()),
+					 this, SLOT(affTextChanged()) );
+				m_qtabwidget->addTab(m_messagetosend, tr("Messages"));
+
+			} else if(dc == QString("dial")) {
+				m_dial = new DialPanel();
+				connect( m_dial, SIGNAL(emitDial(const QString &)),
+					 m_engine, SLOT(dialExtension(const QString &)) );
+				m_vboxwidgets->addWidget(m_dial, 0);
+				
+			} else if(dc == QString("customerinfo")) {
+				m_tabwidget = new QTabWidget();
+				m_qtabwidget->addTab(m_tabwidget, tr("Sheets"));
+				
+			} else if(dc == QString("directory")) {
+				m_directory = new DirectoryPanel(this);
+				
+				connect( m_directory, SIGNAL(searchDirectory(const QString &)),
+					 m_engine, SLOT(searchDirectory(const QString &)) );
+				connect( m_directory, SIGNAL(emitDial(const QString &)),
+					 m_engine, SLOT(dialExtension(const QString &)) );
+				// 			connect( m_directory, SIGNAL(transferCall(const QString &, const QString &)),
+				// 				 m_engine, SLOT(transferCall(const QString &, const QString &)) );
+				// 			connect( m_directory, SIGNAL(originateCall(const QString &, const QString &)),
+				// 				 m_engine, SLOT(originateCall(const QString &, const QString &)) );
+				
+				connect( m_engine, SIGNAL(directoryResponse(const QString &)),
+					 m_directory, SLOT(setSearchResponse(const QString &)) );
+				// 			connect( m_engine, SIGNAL(updateMyCalls(const QStringList &, const QStringList &, const QStringList &)),
+				// 				 m_directory, SIGNAL(updateMyCalls(const QStringList &, const QStringList &, const QStringList &)) );
+				// 			connect( m_engine, SIGNAL(stopped()),
+				// 				 m_directory, SLOT(stop()) );
+				
+				//			m_vboxwidgets->addWidget(m_directory, 0);
+				m_qtabwidget->addTab(m_directory, tr("Directory"));
+				
+			} else if(dc == QString("history")) {
+				m_history = new LogWidget(m_engine, this);
+				connect( m_history, SIGNAL(askHistory(const QString &, int)),
+					 m_engine, SLOT(requestHistory(const QString &, int)) );
+				connect( m_engine, SIGNAL(updateLogEntry(const QDateTime &, int, const QString &, int)),
+					 m_history, SLOT(addLogEntry(const QDateTime &, int, const QString &, int)) );
+				//			m_vboxwidgets->addWidget(m_history, 0);
+				m_qtabwidget->addTab(m_history, tr("History"));
+			}
+		}
+	}
+
+	//	LogWidget * logwidget = new LogWidget(m_engine, m_wid);
+
+	if(m_systrayIcon)
+		m_systrayIcon->setIcon(m_icon);
+	statusBar()->showMessage(tr("Connected"));
+}
+
 //! Enable the Start Button and set the red indicator
 void MainWidget::setDisconnected()
 {
 	m_connectact->setEnabled(true);
 	m_disconnectact->setEnabled(false);
+	QString allcapas = "customerinfo,history,directory,dial,instantmessaging";
+	QStringList display_capas = allcapas.split(",");
+	QStringList allowed_capas = m_engine->getCapabilities().split(",");
 
-	QStringList capas = m_engine->getCapabilities().split(",");
-	for(int c = 0; c < capas.size(); c++) {
-		if(capas[c] == QString("instantmessaging")) {
-			m_vboxwidgets->removeWidget(m_messagetosend);
-			delete m_messagetosend;
-		} else if(capas[c] == QString("dial")) {
-			m_vboxwidgets->removeWidget(m_dial);
-			delete m_dial;
-		} else if(capas[c] == QString("customerinfo")) {
-			m_vboxwidgets->removeWidget(m_tabwidget);
-			delete m_tabwidget;
-		} else if(capas[c] == QString("directory")) {
-			m_vboxwidgets->removeWidget(m_directory);
-			delete m_directory;
-		} else if(capas[c] == QString("history")) {
-			m_vboxwidgets->removeWidget(m_history);
-			delete m_history;
+	for(int j = 0; j < display_capas.size(); j++) {
+		QString dc = display_capas[j];
+		bool allowed = false;
+		if(m_forcetabs)
+			allowed = true;
+		else {
+			for(int c = 0; c < allowed_capas.size(); c++) {
+				QString ac = allowed_capas[c];
+				if(ac == dc) allowed = true;
+			}
+		}
+		if(allowed) {
+			qDebug() << "removing" << dc;
+			if(dc == QString("instantmessaging")) {
+				m_vboxwidgets->removeWidget(m_messagetosend);
+				delete m_messagetosend;
+			} else if(dc == QString("dial")) {
+				m_vboxwidgets->removeWidget(m_dial);
+				delete m_dial;
+			} else if(dc == QString("customerinfo")) {
+				m_vboxwidgets->removeWidget(m_tabwidget);
+				delete m_tabwidget;
+			} else if(dc == QString("directory")) {
+				m_vboxwidgets->removeWidget(m_directory);
+				delete m_directory;
+			} else if(dc == QString("history")) {
+				m_vboxwidgets->removeWidget(m_history);
+				delete m_history;
+			}
 		}
 	}
 
@@ -327,71 +422,9 @@ void MainWidget::setDisconnected()
 	statusBar()->showMessage(tr("Disconnected"));
 }
 
-//! Disable the Start Button and set the green indicator
-void MainWidget::setConnected()
+void MainWidget::setForceTabs(bool force)
 {
-	m_connectact->setEnabled(false);
-	m_disconnectact->setEnabled(true);
-	qDebug() << m_engine->getCapabilities();
-
-	QStringList capas = m_engine->getCapabilities().split(",");
-	
-	for(int c = 0; c < capas.size(); c++) {
-		if(capas[c] == QString("instantmessaging")) {
-			m_messagetosend = new QLineEdit();
-			connect( m_messagetosend, SIGNAL(returnPressed()),
-				 this, SLOT(affTextChanged()) );
-			m_qtabwidget->addTab(m_messagetosend, tr("Messages"));
-
-		} else if(capas[c] == QString("dial")) {
-			m_dial = new DialPanel();
-			connect( m_dial, SIGNAL(emitDial(const QString &)),
-				 m_engine, SLOT(dialExtension(const QString &)) );
-			m_vboxwidgets->addWidget(m_dial, 0);
-			
-		} else if(capas[c] == QString("customerinfo")) {
-			m_tabwidget = new QTabWidget();
-			m_qtabwidget->addTab(m_tabwidget, tr("Sheets"));
-
-		} else if(capas[c] == QString("directory")) {
-			m_directory = new DirectoryPanel(this);
-
-			connect( m_directory, SIGNAL(searchDirectory(const QString &)),
-				 m_engine, SLOT(searchDirectory(const QString &)) );
-			connect( m_directory, SIGNAL(emitDial(const QString &)),
-				 m_engine, SLOT(dialExtension(const QString &)) );
-// 			connect( m_directory, SIGNAL(transferCall(const QString &, const QString &)),
-// 				 m_engine, SLOT(transferCall(const QString &, const QString &)) );
-// 			connect( m_directory, SIGNAL(originateCall(const QString &, const QString &)),
-// 				 m_engine, SLOT(originateCall(const QString &, const QString &)) );
-
-			connect( m_engine, SIGNAL(directoryResponse(const QString &)),
-				 m_directory, SLOT(setSearchResponse(const QString &)) );
-// 			connect( m_engine, SIGNAL(updateMyCalls(const QStringList &, const QStringList &, const QStringList &)),
-// 				 m_directory, SIGNAL(updateMyCalls(const QStringList &, const QStringList &, const QStringList &)) );
-// 			connect( m_engine, SIGNAL(stopped()),
-// 				 m_directory, SLOT(stop()) );
-
-			//			m_vboxwidgets->addWidget(m_directory, 0);
-			m_qtabwidget->addTab(m_directory, tr("Directory"));
-
-		} else if(capas[c] == QString("history")) {
-			m_history = new LogWidget(m_engine, this);
-			connect( m_history, SIGNAL(askHistory(const QString &, int)),
-				 m_engine, SLOT(requestHistory(const QString &, int)) );
-			connect( m_engine, SIGNAL(updateLogEntry(const QDateTime &, int, const QString &, int)),
-				 m_history, SLOT(addLogEntry(const QDateTime &, int, const QString &, int)) );
-			//			m_vboxwidgets->addWidget(m_history, 0);
-			m_qtabwidget->addTab(m_history, tr("History"));
-		}
-
-	}
-
-	//	LogWidget * logwidget = new LogWidget(m_engine, m_wid);
-
-	if(m_systrayIcon)
-		m_systrayIcon->setIcon(m_icon);
-	statusBar()->showMessage(tr("Connected"));
+	m_forcetabs = force;
 }
 
 /*!
