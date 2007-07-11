@@ -664,10 +664,10 @@ void Engine::readKeepLoginAliveDatagrams()
 			setState(ENotLogged);
 			startTryAgainTimer();
 		} else if(reply == "HISTORY") {
-			QStringList list = QString(buffer).trimmed().split("=");
+			QStringList list = QString::fromUtf8(buffer).trimmed().split("=");
 			processHistory(list[1].split(";"));
 		} else if(reply == "DIRECTORY") {
-			QStringList list = QString(buffer).trimmed().split("=");
+			QStringList list = QString::fromUtf8(buffer).trimmed().split("=");
 			directoryResponse(list[1]);
 		}
 		m_pendingkeepalivemsg = 0;
