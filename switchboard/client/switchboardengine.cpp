@@ -83,6 +83,7 @@ void SwitchBoardEngine::loadSettings()
 	m_autoconnect = settings.value("engine/autoconnect", false).toBool();
 	m_trytoreconnect = settings.value("engine/trytoreconnect", false).toBool();
 	m_trytoreconnectinterval = settings.value("engine/trytoreconnectinterval", 20*1000).toUInt();
+	m_historysize = settings.value("engine/historysize", 8).toUInt();
 	m_asterisk = settings.value("engine/asterisk").toString();
 	m_protocol = settings.value("engine/protocol").toString();
 }
@@ -99,6 +100,7 @@ void SwitchBoardEngine::saveSettings()
 	settings.setValue("engine/autoconnect", m_autoconnect);
 	settings.setValue("engine/trytoreconnect", m_trytoreconnect);
 	settings.setValue("engine/trytoreconnectinterval", m_trytoreconnectinterval);
+	settings.setValue("engine/historysize", m_historysize);
 	settings.setValue("engine/asterisk", m_asterisk);
 	settings.setValue("engine/protocol", m_protocol);
 }
@@ -574,8 +576,9 @@ void SwitchBoardEngine::requestHistory(const QString & peer, int mode)
 	 * mode = 1 : In calls
 	 * mode = 2 : Missed calls */
 	//qDebug() << "SwitchBoardEngine::requestHistory()" << peer;
+	// m_historysize = 12;
 	if((mode >= 0) && (m_socket->state() == QAbstractSocket::ConnectedState)) {
-		m_pendingcommand = "history " + peer + " 10 " + QString::number(mode);
+		m_pendingcommand = "history " + peer + " " + QString::number(m_historysize) + " " + QString::number(mode);
 		sendCommand();
 	}
 }
@@ -640,6 +643,16 @@ void SwitchBoardEngine::startTryAgainTimer()
 uint SwitchBoardEngine::trytoreconnectinterval() const
 {
 	return m_trytoreconnectinterval;
+}
+
+void SwitchBoardEngine::setHistorySize(uint size)
+{
+	m_historysize = size;
+}
+
+uint SwitchBoardEngine::historysize() const
+{
+	return m_historysize;
 }
 
 /*!

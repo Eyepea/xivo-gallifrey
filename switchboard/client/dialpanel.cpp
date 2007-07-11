@@ -51,7 +51,7 @@ DialPanel::DialPanel(QWidget * parent)
 	         this, SLOT(inputValidated()) );
 	//connect( m_input, SIGNAL(editTextChanged(const QString &)),
 	//         this, SLOT(textEdited(const QString &)) );
-	QPushButton * dialButton = new QPushButton( tr("&Dial"), this);
+	QPushButton * dialButton = new QPushButton( tr("Dial"), this);
 	connect( dialButton, SIGNAL(clicked()),
 	         this, SLOT(inputValidated()) );
 

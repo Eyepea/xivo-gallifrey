@@ -49,6 +49,8 @@ public:
 	void setTrytoreconnect(bool b);		//!< set try to reconnect flag
 	uint trytoreconnectinterval() const;	//!< try to reconnect interval
 	void setTrytoreconnectinterval(uint);	//!< set try to reconnect interval
+	uint historysize() const;	//!< history size
+	void setHistorySize(uint size);	//!< set history size
 
 	//! save settings
 	void saveSettings();
@@ -142,6 +144,7 @@ private:
 	void stopTryAgainTimer();	//!< Stop the "try to reconnect" timer
 	QTcpSocket * m_socket;	//!< socket to connect to the server
 	int m_timer;	//!< timer id
+	int m_historysize;
 	QString m_serverhost;	//!< server host name
 	quint16 m_sbport;	//!< port to connect to server
 	//quint16 m_loginport;	//!< port to login to server

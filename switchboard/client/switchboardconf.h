@@ -53,6 +53,7 @@ private:
 	QCheckBox * m_autoconnect;	//!< autoconnect checkbox
 	QCheckBox * m_trytoreconnect;	//!< "Try to reconnect" Checkbox
 	QSpinBox  * m_tryinterval_sbox;	//!< "Try to reconnect" interval
+	QSpinBox  * m_history_sbox;	//!< History size
 	QCheckBox * m_presence;		//!< connect to presence server checkbox
 	QLineEdit * m_asterisk;	//!< asterisk server id
 	QComboBox * m_protocombo;	//!< protocol(SIP/IAX/...) combo

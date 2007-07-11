@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 */
 
 #include <QGridLayout>
+#include <QDebug>
 #include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
@@ -103,6 +104,13 @@ SwitchBoardConfDialog::SwitchBoardConfDialog(SwitchBoardEngine * engine,
 	layout->addWidget( m_tryinterval_sbox, line, 1);
 	line++;
 
+	layout->addWidget( new QLabel( tr("History size"), this), line, 0);
+	m_history_sbox = new QSpinBox(this);
+	m_history_sbox->setRange(1, 20);
+	m_history_sbox->setValue(m_engine->historysize());
+	layout->addWidget( m_history_sbox, line, 1);
+	line++;
+
 	QLabel * lblasterisk = new QLabel( tr("Asterisk server :"), this);
 	layout->addWidget( lblasterisk, line, 0 );
 	m_asterisk = new QLineEdit( m_engine->asterisk(), this );
@@ -134,8 +142,13 @@ SwitchBoardConfDialog::SwitchBoardConfDialog(SwitchBoardEngine * engine,
 	vlayout->addLayout( layout );
 
 	QDialogButtonBox * btnbox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
+	//	QDialogButtonBox * btnbox = new QDialogButtonBox(Qt::Horizontal, this);
+	//	QPushButton * cbutton = btnbox->addButton(tr("Cancel"), QDialogButtonBox::RejectRole);
+	//	QPushButton * obutton = btnbox->addButton(tr("OK"), QDialogButtonBox::AcceptRole);
+	//	obutton->setDefault(true);
 	connect( btnbox, SIGNAL(accepted()), this, SLOT(saveAndClose()) );
 	connect( btnbox, SIGNAL(rejected()), this, SLOT(close()) );
+	btnbox->button(QDialogButtonBox::Ok)->setDefault(true);
 	vlayout->addWidget(btnbox);
 	
 }
@@ -161,6 +174,7 @@ void SwitchBoardConfDialog::saveAndClose()
 	m_engine->setAutoconnect( m_autoconnect->checkState() == Qt::Checked );
 	m_engine->setTrytoreconnect( m_trytoreconnect->checkState() == Qt::Checked );
 	m_engine->setTrytoreconnectinterval( m_tryinterval_sbox->value()*1000 );
+	m_engine->setHistorySize( m_history_sbox->value() );
 	m_engine->setAsterisk( m_asterisk->text() );
 	m_engine->setProtocol( m_protocombo->currentText() );
 

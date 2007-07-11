@@ -43,13 +43,14 @@ DirectoryPanel::DirectoryPanel(QWidget * parent)
 	QVBoxLayout * vlayout = new QVBoxLayout(this);
 	vlayout->setMargin(0);
 	QLabel * titleLbl = new QLabel( tr("Directory"), this );
-	vlayout->addWidget( titleLbl, 0, Qt::AlignCenter );
+	//	vlayout->addWidget( titleLbl, 0, Qt::AlignCenter );
 	QHBoxLayout * hlayout = new QHBoxLayout();
+	hlayout->addWidget( titleLbl, 0 );
 	m_searchText = new QLineEdit(this);
 	connect( m_searchText, SIGNAL(returnPressed()),
 	         this, SLOT(startSearch()) );
 	hlayout->addWidget( m_searchText );
-	m_searchButton = new QPushButton( tr("Sea&rch"), this );
+	m_searchButton = new QPushButton( tr("Search"), this );
 	connect( m_searchButton, SIGNAL(clicked()),
 	         this, SLOT(startSearch()) );
 	hlayout->addWidget( m_searchButton );
