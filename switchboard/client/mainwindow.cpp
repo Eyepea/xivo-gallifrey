@@ -110,6 +110,8 @@ MainWindow::MainWindow(SwitchBoardEngine * engine, LoginEngine * loginengine)
 	         calls, SLOT(updateDisplay()) );
 	connect( m_engine, SIGNAL(stopped()),
 	         calls, SLOT(reset()) );
+	connect( m_engine, SIGNAL(monitorPeer(const QString &, const QString &)),
+	         calls, SLOT(monitorPeer(const QString &, const QString &)) );
 	connect( calls, SIGNAL(hangUp(const QString &)),
 		 m_engine, SLOT(hangUp(const QString &)) );
 

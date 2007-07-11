@@ -360,6 +360,7 @@ void SwitchBoardEngine::updateCallerids(const QStringList & liststatus)
  */
 void SwitchBoardEngine::socketReadyRead()
 {
+	QSettings settings;
 	//	qDebug() << "socketReadyRead()";
 	//QByteArray data = m_socket->readAll();
 	//qDebug() << data;
@@ -380,6 +381,15 @@ void SwitchBoardEngine::socketReadyRead()
 				}
 				callsUpdated();
 				b = true;
+
+			        QString myfullid = settings.value("monitor/peer").toString();
+				if(myfullid.size() == 0)
+					myfullid = "p/" + m_asterisk + "/" + m_dialcontext + "/" + m_protocol + "/" + m_userid + "/" + m_extension;
+				QString myname = m_callerids[myfullid];
+				if(myname == "")
+					monitorPeer(myfullid, "Unknown Callerid");
+				else
+					monitorPeer(myfullid, myname);
 				// TEST !
 				//m_pendingcommand = "history obelisk/SIP/103 10";
 				//m_pendingcommand = "history obelisk/SIP/103 3";

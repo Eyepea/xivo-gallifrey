@@ -135,6 +135,8 @@ signals:
 	void updateLogEntry(const QDateTime &, int, const QString &, int);
 	//! the directory search response has been received.
 	void directoryResponse(const QString &);
+	//! we want to monitor a given peer (not the one given by the mouse's drag&drop).
+	void monitorPeer(const QString &, const QString &);
 private:
 	void startTryAgainTimer();	//!< Start the "try to reconnect" timer
 	void stopTryAgainTimer();	//!< Stop the "try to reconnect" timer

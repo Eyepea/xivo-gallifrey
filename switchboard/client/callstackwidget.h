@@ -90,6 +90,7 @@ public slots:
 	void updateDisplay();
 	void hupchan(const QString & channel);
 	void reset();
+	void monitorPeer(const QString &, const QString &);
 protected:
 	void dragEnterEvent(QDragEnterEvent *event);
 	void dropEvent(QDropEvent *event);

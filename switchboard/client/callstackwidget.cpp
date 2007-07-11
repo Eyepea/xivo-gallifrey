@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QVBoxLayout>
 #include <QDragEnterEvent>
 #include <QDebug>
+#include <QSettings>
 #include "callstackwidget.h"
 #include "callwidget.h"
 #include "xivoconsts.h"
@@ -137,11 +138,9 @@ void CallStackWidget::hupchan(const QString & hangupchan)
 void CallStackWidget::reset()
 {
 	//qDebug() << "CallStackWidget::reset()";
-	m_monitoredPeer = "";
-	monitoredPeerChanged(m_monitoredPeer);
-	emptyList();
-	changeTitle("");
 	m_calllist.clear();
+	QString empty = "";
+	monitorPeer(empty, empty);
 }
 
 /*!
@@ -246,9 +245,29 @@ void CallStackWidget::dragEnterEvent(QDragEnterEvent *event)
 	}
 }
 
+/*! \brief updates the peer to be monitored
+ *
+ * can be called from reset(), dropEvent(), or at the beginning
+ * of a session
+ */
+void CallStackWidget::monitorPeer(const QString & monit_peer, const QString & name)
+{
+	QSettings settings;
+	emptyList();
+	m_monitoredPeer = monit_peer;
+	monitoredPeerChanged(m_monitoredPeer);
+	if(name.size() > 0)
+		changeTitle(tr("Monitoring : ") + name);
+	else
+		changeTitle("");
+	updateDisplay();
+	if(monit_peer.size() > 0)
+		settings.setValue("monitor/peer", monit_peer);
+}
+
 /*! \brief receive drop Events.
  *
- * check if the dropped "text" is a Peer "id" 
+ * check if the dropped "text" is a Peer "id"
  * and start to monitor it
  */
 void CallStackWidget::dropEvent(QDropEvent *event)
@@ -259,13 +278,8 @@ void CallStackWidget::dropEvent(QDropEvent *event)
 		return;
 	}
 	QString text = event->mimeData()->text();
-	emptyList();
-	m_monitoredPeer = text;
-	monitoredPeerChanged(text);
 	QString name = QString::fromUtf8(event->mimeData()->data("name"));
-	//qDebug() << "CallStackWidget::dropEvent()" << text << name;
-	changeTitle(tr("Monitoring : ") + name);
-	updateDisplay();
+	monitorPeer(text, name);
 	event->acceptProposedAction();
 }
 
