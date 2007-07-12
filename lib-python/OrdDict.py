@@ -76,12 +76,11 @@ class ordDict(dict):
 		return (self[k] for k in self.__seq)
 	def keys(self):
 		return self.__seq[:]
-	def pop(self, *args):
-		r = super(ordDict, self).pop(*args)
-		try:
-			self.__seq.remove(args[0])
-		except ValueError:
-			pass # any arror already catched by super dict
+	def pop(self, key, *more):
+		rm_from_list = key in self
+		r = super(ordDict, self).pop(key, *more)
+		if rm_from_list:
+			self.__seq.remove(key)
 		return r
 	def popitem(self):
 		(k,v) = super(ordDict, self).popitem()
@@ -91,8 +90,7 @@ class ordDict(dict):
 		try:
 			return self[k]
 		except KeyError:
-			super(ordDict, self).__setitem__(k,d)
-			self.__seq.append(k)
+			self[k] = d
 			return d
 	def update(self, *E, **F):
 		if len(E) > 1:
