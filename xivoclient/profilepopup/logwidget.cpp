@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
    $Date: 2007-06-15 18:45:30 +0200 (ven, 15 jun 2007) $
 */
 
+#include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QLayoutItem>
 #include <QLabel>
@@ -45,7 +46,7 @@ LogWidget::LogWidget(Engine * engine, QWidget * parent)
 	layout->setSpacing(2);
 	QGroupBox * groupBox = new QGroupBox( tr("Call history"), this );
 	groupBox->setAlignment( Qt::AlignHCenter );
-	QVBoxLayout * vbox = new QVBoxLayout( groupBox );
+	QHBoxLayout * vbox = new QHBoxLayout( groupBox );
 
 	m_radioNone = new QRadioButton( tr("&None"), groupBox );
 	m_radioNone->setChecked( true );
@@ -53,18 +54,18 @@ LogWidget::LogWidget(Engine * engine, QWidget * parent)
 	         this, SLOT(modeChanged(bool)) );
 	vbox->addWidget( m_radioNone );
 
-	m_radioOut = new QRadioButton( tr("&Outgoing calls"), groupBox );
+	m_radioOut = new QRadioButton( tr("&Outgoing"), groupBox );
 	//m_radioOut->setChecked( true );
 	connect( m_radioOut, SIGNAL(toggled(bool)),
 	         this, SLOT(modeChanged(bool)) );
 	vbox->addWidget( m_radioOut );
 
-	m_radioIn = new QRadioButton( tr("&Incoming calls"), groupBox );
+	m_radioIn = new QRadioButton( tr("&Incoming"), groupBox );
 	connect( m_radioIn, SIGNAL(toggled(bool)),
 	         this, SLOT(modeChanged(bool)) );
 	vbox->addWidget( m_radioIn );
 
-	m_radioMissed = new QRadioButton( tr("&Missed calls"), groupBox );
+	m_radioMissed = new QRadioButton( tr("&Missed"), groupBox );
 	connect( m_radioMissed, SIGNAL(toggled(bool)),
 	         this, SLOT(modeChanged(bool)) );
 	vbox->addWidget( m_radioMissed );
@@ -162,7 +163,8 @@ void LogWidget::setPeerToDisplay(const QString & peer)
 void LogWidget::timerEvent(QTimerEvent * event)
 {
 	//qDebug() << "LogWidget::timerEvent() id=" << event->timerId();
-	askHistory(m_peer, mode());
+	if(m_peer.size() > 0)
+		askHistory(m_peer, mode());
 }
 
 /*! \brief return the mode (out/in or missed)

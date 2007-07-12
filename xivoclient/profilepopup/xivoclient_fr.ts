@@ -78,7 +78,12 @@
     <message>
         <location filename="../../switchboard/client/dialpanel.cpp" line="54"/>
         <source>&amp;Dial</source>
-        <translation>&amp;Composer</translation>
+        <translation type="obsolete">&amp;Composer</translation>
+    </message>
+    <message>
+        <location filename="../../switchboard/client/dialpanel.cpp" line="54"/>
+        <source>Dial</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -86,12 +91,22 @@
     <message>
         <location filename="../../switchboard/client/directorypanel.cpp" line="45"/>
         <source>Directory</source>
-        <translation type="unfinished">Répertoire</translation>
+        <translation type="obsolete">Répertoire</translation>
     </message>
     <message>
         <location filename="../../switchboard/client/directorypanel.cpp" line="52"/>
         <source>Sea&amp;rch</source>
-        <translation type="unfinished">&amp;Recherche</translation>
+        <translation type="obsolete">&amp;Recherche</translation>
+    </message>
+    <message>
+        <location filename="../../switchboard/client/directorypanel.cpp" line="45"/>
+        <source>Di&amp;rectory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../switchboard/client/directorypanel.cpp" line="53"/>
+        <source>Search</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -136,29 +151,44 @@
 <context>
     <name>LogWidget</name>
     <message>
-        <location filename="logwidget.cpp" line="46"/>
+        <location filename="logwidget.cpp" line="47"/>
         <source>Call history</source>
         <translation>Historique des appels</translation>
     </message>
     <message>
-        <location filename="logwidget.cpp" line="50"/>
+        <location filename="logwidget.cpp" line="51"/>
         <source>&amp;None</source>
-        <translation>&amp;Aucun</translation>
+        <translation>A&amp;ucun</translation>
     </message>
     <message>
         <location filename="logwidget.cpp" line="56"/>
         <source>&amp;Outgoing calls</source>
-        <translation>Appels &amp;sortants</translation>
+        <translation type="obsolete">Appels &amp;sortants</translation>
     </message>
     <message>
         <location filename="logwidget.cpp" line="62"/>
         <source>&amp;Incoming calls</source>
-        <translation>Appels &amp;entrants</translation>
+        <translation type="obsolete">Appels &amp;entrants</translation>
     </message>
     <message>
         <location filename="logwidget.cpp" line="67"/>
         <source>&amp;Missed calls</source>
-        <translation>Appels &amp;manqués</translation>
+        <translation type="obsolete">Appels &amp;manqués</translation>
+    </message>
+    <message>
+        <location filename="logwidget.cpp" line="57"/>
+        <source>&amp;Outgoing</source>
+        <translation>&amp;Sortants</translation>
+    </message>
+    <message>
+        <location filename="logwidget.cpp" line="63"/>
+        <source>&amp;Incoming</source>
+        <translation>&amp;Entrants</translation>
+    </message>
+    <message>
+        <location filename="logwidget.cpp" line="68"/>
+        <source>&amp;Missed</source>
+        <translation>&amp;Manqués</translation>
     </message>
 </context>
 <context>
@@ -249,17 +279,17 @@
         <translation>A propos de &amp;Qt</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="327"/>
+        <location filename="mainwidget.cpp" line="422"/>
         <source>Disconnected</source>
         <translation>Déconnecté</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="394"/>
+        <location filename="mainwidget.cpp" line="376"/>
         <source>Connected</source>
         <translation>Connecté</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="407"/>
+        <location filename="mainwidget.cpp" line="440"/>
         <source>Incoming call</source>
         <translation>Appel entrant</translation>
     </message>
@@ -279,12 +309,12 @@
         <translation>&amp;A propos de XIVO Client</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="488"/>
+        <location filename="mainwidget.cpp" line="521"/>
         <source>About XIVO Client</source>
         <translation>A propos de XIVO Client</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="499"/>
+        <location filename="mainwidget.cpp" line="532"/>
         <source>&lt;h3&gt;XIVO Client&lt;/h3&gt;&lt;p&gt;This application shows to the user the profile associated with incoming phone calls.&lt;/p&gt;&lt;p&gt;Version : %1&lt;/p&gt;&lt;p&gt;(C) 2007 &lt;b&gt;Proformatique&lt;/b&gt; &lt;a href=&quot;http://www.proformatique.com&quot;&gt;http://www.proformatique.com&lt;/a&gt;&lt;/p&gt;&lt;p&gt;67 rue Voltaire 92800 Puteaux FRANCE&lt;/p&gt;&lt;p&gt;E-mail : technique@proformatique.com&lt;/p&gt;&lt;p&gt;(+33/0)1.41.38.99.60&lt;/p&gt;&lt;p&gt;Author : Thomas Bernard&lt;/p&gt;</source>
         <translation type="unfinished">&lt;h3&gt;Client XIVO&lt;/h3&gt;&lt;p&gt;Cette application présente à l&apos;utilisateur les fiches associées aux appels entrants.&lt;/p&gt;&lt;p&gt;Version : %1&lt;/p&gt;&lt;p&gt;(c) 2007 &lt;b&gt;Proformatique&lt;/b&gt; &lt;a href=&quot;http://www.proformatique.com/&quot;&gt;http://www.proformatique.com/&lt;/a&gt;&lt;/p&gt;&lt;p&gt;67 rue Voltaire 92800 Puteaux FRANCE&lt;/p&gt;&lt;p&gt;E-mail : technique@proformatique.com&lt;/p&gt;&lt;p&gt;+33 (0)1 41 38 99 60&lt;/p&gt;&lt;p&gt;Author : Thomas Bernard&lt;/p&gt;</translation>
     </message>
@@ -294,7 +324,7 @@
         <translation type="obsolete">Message pour le Standard :</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="385"/>
+        <location filename="mainwidget.cpp" line="367"/>
         <source>History</source>
         <translation>Historique</translation>
     </message>
@@ -309,17 +339,17 @@
         <translation type="obsolete">Carnet d&apos;adresses</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="344"/>
+        <location filename="mainwidget.cpp" line="326"/>
         <source>Messages</source>
         <translation>Messages</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="354"/>
+        <location filename="mainwidget.cpp" line="336"/>
         <source>Sheets</source>
         <translation>Fiches</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="376"/>
+        <location filename="mainwidget.cpp" line="358"/>
         <source>Directory</source>
         <translation>Répertoire</translation>
     </message>
