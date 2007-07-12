@@ -48,13 +48,13 @@ class ordDict(dict):
 		for k,v in seq:
 			self[k] = v
 	def __delitem__(self, k):
-		super(ordDict, self).__delitem__(k)
+		dict.__delitem__(self, k)
 		self.__seq.remove(k)
 	def __iter__(self):
 		return iter(self.__seq)
 	def __setitem__(self, k, v):
 		plen = len(self)
-		super(ordDict, self).__setitem__(k,v)
+		dict.__setitem__(self,k,v)
 		if len(self) != plen:
 			self.__seq.append(k)
 	def __repr__(self):
@@ -62,7 +62,7 @@ class ordDict(dict):
 		# builtin non ordered dictionaries
 		return ''.join(chain('{', flatten_seq(repr_dict_seqseq(self, self.__seq)), '}'))
 	def clear(self):
-		super(ordDict, self).clear()
+		dict.clear(self)
 		del self.__seq[:]
 	def copy(self):
 		return ordDict(self.iteritems())
@@ -78,13 +78,16 @@ class ordDict(dict):
 		return self.__seq[:]
 	def pop(self, key, *more):
 		rm_from_list = key in self
-		r = super(ordDict, self).pop(key, *more)
+		r = dict.pop(self, key, *more)
 		if rm_from_list:
 			self.__seq.remove(key)
 		return r
 	def popitem(self):
-		(k,v) = super(ordDict, self).popitem()
-		self.__seq.remove(k)
+		try:
+			k = self.__seq.pop()
+		except IndexError:
+			raise KeyError, 'popitem(): dictionary is empty'
+		v = dict.pop(self, k)
 		return (k,v)
 	def setdefault(self,k,d=None):
 		try:
