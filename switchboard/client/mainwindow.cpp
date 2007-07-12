@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 */
 
-/* $Revision $
+/* $Revision$
    $Date$
 */
 
@@ -80,6 +80,8 @@ MainWindow::MainWindow(SwitchBoardEngine * engine, LoginEngine * loginengine)
 	: m_engine(engine), m_loginengine(loginengine)
 {
 	statusBar();	// This creates the status bar.
+	m_status = new QLabel();
+	statusBar()->addPermanentWidget(m_status);
 	setWindowIcon(QIcon(":/xivoicon.png"));
 	setWindowTitle("Xivo Switchboard");
 
@@ -334,6 +336,10 @@ void MainWindow::engineStarted()
 {
 	m_stopact->setEnabled(true);
 	m_startact->setDisabled(true);
+	// set status icon to green
+	QPixmap greensquare(15,15);
+	greensquare.fill(Qt::green);
+	m_status->setPixmap(greensquare);
 }
 
 /*!
@@ -344,6 +350,10 @@ void MainWindow::engineStopped()
 {
 	m_stopact->setDisabled(true);
 	m_startact->setEnabled(true);
+	// set status icon to red
+	QPixmap greensquare(15,15);
+	greensquare.fill(Qt::red);
+	m_status->setPixmap(greensquare);
 }
 
 /*!

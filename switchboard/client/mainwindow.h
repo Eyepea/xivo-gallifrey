@@ -29,6 +29,7 @@ class QSplitter;
 class LoginEngine;
 class SwitchBoardEngine;
 class SwitchBoardWindow;
+class QLabel;
 
 /*! \brief Main window splitted to display peers and calls
  */
@@ -66,6 +67,8 @@ private:
 	QAction * m_avact_dnd;		//!< "Do not disturb" action
 	QAction * m_avact_otl;		//!< "out to lunch" action
 	QAction * m_avact_away;		//!< "away" action
+
+	QLabel * m_status;	//!< status indicator
 };
 
 #endif
