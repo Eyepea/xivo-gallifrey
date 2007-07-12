@@ -42,11 +42,11 @@ DirectoryPanel::DirectoryPanel(QWidget * parent)
 {
 	QVBoxLayout * vlayout = new QVBoxLayout(this);
 	vlayout->setMargin(0);
-	QLabel * titleLbl = new QLabel( tr("Directory"), this );
-	//	vlayout->addWidget( titleLbl, 0, Qt::AlignCenter );
+	QLabel * titleLbl = new QLabel( tr("Di&rectory"), this );
+	vlayout->addWidget( titleLbl, 0, Qt::AlignCenter );
 	QHBoxLayout * hlayout = new QHBoxLayout();
-	hlayout->addWidget( titleLbl, 0 );
 	m_searchText = new QLineEdit(this);
+	titleLbl->setBuddy(m_searchText);
 	connect( m_searchText, SIGNAL(returnPressed()),
 	         this, SLOT(startSearch()) );
 	hlayout->addWidget( m_searchText );

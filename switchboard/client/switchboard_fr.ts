@@ -53,13 +53,13 @@
     <name>DirectoryPanel</name>
     <message>
         <location filename="directorypanel.cpp" line="45"/>
-        <source>Directory</source>
-        <translation type="unfinished">Répertoire</translation>
+        <source>Di&amp;rectory</source>
+        <translation>&amp;Répertoire</translation>
     </message>
     <message>
-        <location filename="directorypanel.cpp" line="53"/>
+        <location filename="directorypanel.cpp" line="54"/>
         <source>Search</source>
-        <translation type="unfinished">Rechercher</translation>
+        <translation>Rechercher</translation>
     </message>
     <message>
         <location filename="directorypanel.cpp" line="103"/>
