@@ -53,12 +53,12 @@ $array['filter']['firstname'] = array('chk' => 2,'maxlen' => 128);
 $array['filter']['lastname'] = array('chk' => 2,'maxlen' => 128);
 $array['filter']['name'] = array('minlen' => 1,'maxlen' => 80);
 $array['filter']['number'] = array('set' => false,'chk' => 2,'preg' => '/^[0-9\*#]+$/','maxlen' => 40);
-$array['filter']['context'] = array('set' => false,'chk' => 2,'unarrkey' => array('general','globals','hints','features'),'preg' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 80);
+$array['filter']['context'] = array('set' => false,'chk' => 2,'unarrkey' => array('general','globals','hints','features','authentification','zonemessages'),'preg' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 80);
 $array['filter']['ringseconds'] = array('set' => false,'chk' => 2,'arrkey' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
 $array['filter']['simultcalls'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,20));
 $array['filter']['popupwidget'] = array('bool' => true);
 $array['filter']['ringgroup'] = array('bool' => true);
-$array['filter']['musiconhold'] = array('set' => false,'chk' => 2,'maxlen' => 128);
+$array['filter']['musiconhold'] = array('set' => false,'chk' => 2,'maxlen' => 20);
 $array['filter']['comment'] = array('chk' => 2,'maxlen' => 1000);
 
 ?>

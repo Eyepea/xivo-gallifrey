@@ -48,6 +48,9 @@ $menu = &$_HTML->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_infos('meta'));
 $menu->set_left('left/service/ipbx/asterisk');
 
+$dhtml = &$_HTML->get_module('dhtml');
+$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/sipprotocol.js');
+
 $_HTML->assign('bloc','general_settings/iaxprotocol');
 $_HTML->assign('service_name',$service_name);
 $_HTML->set_struct('service/ipbx/index');

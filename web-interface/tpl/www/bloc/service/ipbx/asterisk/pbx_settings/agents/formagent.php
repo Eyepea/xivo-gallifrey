@@ -14,6 +14,8 @@
 	$qmember_unslt = $this->vars('qmember_unslt');
 ?>
 
+<div id="sb-part-general">
+
 <?=$form->text(array('desc' => $this->bbf('fm_agentfeatures_firstname'),'name' => 'afeatures[firstname]','labelid' => 'afeatures-firstname','value' => $info['afeatures']['firstname'],'default' => $element['afeatures']['firstname']['default'],'size' => 15),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 <?=$form->text(array('desc' => $this->bbf('fm_agentfeatures_lastname'),'name' => 'afeatures[lastname]','labelid' => 'afeatures-lastname','value' => $info['afeatures']['lastname'],'default' => $element['afeatures']['lastname']['default'],'size' => 15),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
@@ -26,33 +28,9 @@
 
 <?=$form->slt(array('desc' => $this->bbf('fm_agentfeatures_numgroup'),'name' => 'afeatures[numgroup]','labelid' => 'afeatures-numgroup','browse' => 'agroup','key' => 'name','key_val' => 'id','default' => $this->vars('group'),'value' => $info['afeatures']['numgroup']),$list_grps,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_agent_ackcall'),'name' => 'agent[ackcall]','labelid' => 'agent-ackcall','key' => false,'bbf' => array('concatkey','fm_agent_ackcall-opt-'),'default' => $element['agent']['ackcall']['default'],'value' => $info['agent']['ackcall']),$element['agent']['ackcall']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+</div>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_agent_autologoff'),'name' => 'agent[autologoff]','labelid' => 'agent-autologoff','key' => false,'default' => $element['agent']['autologoff']['default'],'value' => xivo_cast_except($info['agent']['autologoff'],null,'uint'),'bbf' => array('mixkey','fm_agent_autologoff-opt')),$element['agent']['autologoff']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
-
-<?=$form->slt(array('desc' => $this->bbf('fm_agent_wrapuptime'),'name' => 'agent[wrapuptime]','labelid' => 'agent-wrapuptime','default' => $element['agent']['wrapuptime']['default'],'value' => xivo_cast_except($info['agent']['wrapuptime'],null,'uint'),'bbf' => array('mixvalue','fm_agent_wrapuptime-opt')),$element['agent']['wrapuptime']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
-
-<?=$form->slt(array('desc' => $this->bbf('fm_agent_maxlogintries'),'name' => 'agent[maxlogintries]','labelid' => 'agent-maxlogintries','key' => false,'default' => $element['agent']['maxlogintries']['default'],'value' => xivo_cast_except($info['agent']['maxlogintries'],null,'uint'),'bbf' => array('mixkey','fm_agent_maxlogintries-opt')),$element['agent']['maxlogintries']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
-
-<?=$form->slt(array('desc' => $this->bbf('fm_agent_goodbye'),'name' => 'agent[goodbye]','labelid' => 'agent-goodbye','empty' => $this->bbf('fm_agent_goodbye-opt-default'),'default' => $element['agent']['goodbye']['default'],'value' => $info['agent']['goodbye']),$beep_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
-
-<?php
-	if($moh_list !== false):
-		echo $form->slt(array('desc' => $this->bbf('fm_agent_musiconhold'),'name' => 'agent[musiconhold]','labelid' => 'agent-musiconhold','key' => 'category','empty' => true,'default' => $element['agent']['musiconhold']['default'],'value' => $info['agent']['musiconhold']),$moh_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');
-	endif;
-?>
-
-<?=$form->checkbox(array('desc' => $this->bbf('fm_agent_updatecdr'),'name' => 'agent[updatecdr]','labelid' => 'agent-updatecdr','default' => $element['agent']['updatecdr']['default'],'checked' => $info['agent']['updatecdr']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
-
-<?=$form->checkbox(array('desc' => $this->bbf('fm_agent_recordagentcalls'),'name' => 'agent[recordagentcalls]','labelid' => 'agent-recordagentcalls','default' => $element['agent']['recordagentcalls']['default'],'checked' => $info['agent']['recordagentcalls']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
-
-<?=$form->checkbox(array('desc' => $this->bbf('fm_agent_createlink'),'name' => 'agent[createlink]','labelid' => 'agent-createlink','default' => $element['agent']['createlink']['default'],'checked' => $info['agent']['createlink']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
-
-<?=$form->slt(array('desc' => $this->bbf('fm_agent_recordformat'),'name' => 'agent[recordformat]','labelid' => 'agent-recordformat','key' => false,'default' => $element['agent']['recordformat']['default'],'value' => $info['agent']['recordformat']),$element['agent']['recordformat']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
-
-<?=$form->text(array('desc' => $this->bbf('fm_agent_urlprefix'),'name' => 'agent[urlprefix]','labelid' => 'agent-urlprefix','value' => $info['agent']['urlprefix'],'default' => $element['agent']['urlprefix']['default'],'size' => 15),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
-
-<?=$form->slt(array('desc' => $this->bbf('fm_agent_custom_beep'),'name' => 'agent[custom_beep]','labelid' => 'agent-custom-beep','empty' => $this->bbf('fm_agent_custom-beep-opt-default'),'default' => $element['agent']['custom_beep']['default'],'value' => $info['agent']['custom_beep']),$beep_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<div id="sb-part-queue" class="b-nodisplay">
 
 <?php
 	if($queues !== false && ($nb = count($queues)) !== 0):
@@ -114,3 +92,37 @@
 		echo '<div class="txt-center">',$url->href_html($this->bbf('create_queue'),'service/ipbx/pbx_settings/queues','act=add'),'</div>';
 	endif;
 ?>
+
+</div>
+
+<div id="sb-part-advanced" class="b-nodisplay">
+
+<?=$form->slt(array('desc' => $this->bbf('fm_agent_ackcall'),'name' => 'agent[ackcall]','labelid' => 'agent-ackcall','key' => false,'bbf' => array('concatkey','fm_agent_ackcall-opt-'),'default' => $element['agent']['ackcall']['default'],'value' => $info['agent']['ackcall']),$element['agent']['ackcall']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
+<?=$form->slt(array('desc' => $this->bbf('fm_agent_autologoff'),'name' => 'agent[autologoff]','labelid' => 'agent-autologoff','key' => false,'default' => $element['agent']['autologoff']['default'],'value' => xivo_cast_except($info['agent']['autologoff'],null,'uint'),'bbf' => array('mixkey','fm_agent_autologoff-opt')),$element['agent']['autologoff']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
+<?=$form->slt(array('desc' => $this->bbf('fm_agent_wrapuptime'),'name' => 'agent[wrapuptime]','labelid' => 'agent-wrapuptime','default' => $element['agent']['wrapuptime']['default'],'value' => xivo_cast_except($info['agent']['wrapuptime'],null,'uint'),'bbf' => array('mixvalue','fm_agent_wrapuptime-opt')),$element['agent']['wrapuptime']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
+<?=$form->slt(array('desc' => $this->bbf('fm_agent_maxlogintries'),'name' => 'agent[maxlogintries]','labelid' => 'agent-maxlogintries','key' => false,'default' => $element['agent']['maxlogintries']['default'],'value' => xivo_cast_except($info['agent']['maxlogintries'],null,'uint'),'bbf' => array('mixkey','fm_agent_maxlogintries-opt')),$element['agent']['maxlogintries']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
+<?=$form->slt(array('desc' => $this->bbf('fm_agent_goodbye'),'name' => 'agent[goodbye]','labelid' => 'agent-goodbye','empty' => $this->bbf('fm_agent_goodbye-opt-default'),'default' => $element['agent']['goodbye']['default'],'value' => $info['agent']['goodbye']),$beep_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
+<?php
+	if($moh_list !== false):
+		echo $form->slt(array('desc' => $this->bbf('fm_agent_musiconhold'),'name' => 'agent[musiconhold]','labelid' => 'agent-musiconhold','key' => 'category','empty' => true,'default' => $element['agent']['musiconhold']['default'],'value' => $info['agent']['musiconhold']),$moh_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');
+	endif;
+?>
+
+<?=$form->checkbox(array('desc' => $this->bbf('fm_agent_updatecdr'),'name' => 'agent[updatecdr]','labelid' => 'agent-updatecdr','default' => $element['agent']['updatecdr']['default'],'checked' => $info['agent']['updatecdr']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
+<?=$form->checkbox(array('desc' => $this->bbf('fm_agent_recordagentcalls'),'name' => 'agent[recordagentcalls]','labelid' => 'agent-recordagentcalls','default' => $element['agent']['recordagentcalls']['default'],'checked' => $info['agent']['recordagentcalls']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
+<?=$form->checkbox(array('desc' => $this->bbf('fm_agent_createlink'),'name' => 'agent[createlink]','labelid' => 'agent-createlink','default' => $element['agent']['createlink']['default'],'checked' => $info['agent']['createlink']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
+<?=$form->slt(array('desc' => $this->bbf('fm_agent_recordformat'),'name' => 'agent[recordformat]','labelid' => 'agent-recordformat','key' => false,'default' => $element['agent']['recordformat']['default'],'value' => $info['agent']['recordformat']),$element['agent']['recordformat']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
+<?=$form->text(array('desc' => $this->bbf('fm_agent_urlprefix'),'name' => 'agent[urlprefix]','labelid' => 'agent-urlprefix','value' => $info['agent']['urlprefix'],'default' => $element['agent']['urlprefix']['default'],'size' => 15),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
+<?=$form->slt(array('desc' => $this->bbf('fm_agent_custom_beep'),'name' => 'agent[custom_beep]','labelid' => 'agent-custom-beep','empty' => $this->bbf('fm_agent_custom-beep-opt-default'),'default' => $element['agent']['custom_beep']['default'],'value' => $info['agent']['custom_beep']),$beep_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
+</div>

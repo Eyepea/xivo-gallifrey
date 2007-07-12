@@ -69,7 +69,7 @@ class xivo_service_asterisk_extenfeatures extends xivo_service_asterisk_extensio
 
 		$this->_filter = &$this->_extensions['filter'];
 
-		$r = $this->chk_values($arr);
+		$r = $this->chk_values($arr,false);
 
 		$this->_conf = &$this->_exfeatures['conf'];
 		$this->_filter = &$this->_exfeatures['filter'];

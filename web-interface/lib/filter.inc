@@ -102,7 +102,7 @@ class xivo_filter
 		$ip = (string) $ip;
 
 		if(xivo_filter::chk_ipv4($ip) === true
-		&& preg_match('#^([1-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.'.
+		&& preg_match('#^([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.'.
 				'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.'.
 				'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.'.
 				'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$#i',$ip) === 1)
@@ -149,6 +149,14 @@ class xivo_filter
 
 		switch($type)
 		{
+			case 'specials':
+				return(xivo_cast_specials($value));
+			case 'numspecials':
+				return(xivo_cast_numspecials($value));
+			case 'alphaspecials':
+				return(xivo_cast_alphaspecials($value));
+			case 'alphanumspecials':
+				return(xivo_cast_alphanumspecials($value));
 			case 'digit':
 				$cast = xivo_digit($value);
 
@@ -295,65 +303,74 @@ class xivo_filter
 
 			$arr = &$this->_content[$key];
 
-			$arr['set'] = isset($arr['set']) === false ? true : (bool) $arr['set'];
+			$set = isset($arr['set']) === false ? true : (bool) $arr['set'];
 	
-			if($arr['set'] === false && $value === null)
+			if($set === false && $value === null)
 				return($value);
 		}
 
-		$arr['chk'] = isset($arr['chk']) === false ? 1 : xivo_uint($arr['chk']);
+		$chk = isset($arr['chk']) === false ? 1 : xivo_uint($arr['chk']);
+		$strict = isset($arr['strict']) === false ? true : false;
 
 		if(isset($arr['bool']) === true)
 			return($this->chk_bool($value));
 
 		if(isset($arr['arrvalue']) === true)
 		{
-			if($arr['chk'] === 2 && isset($value{0}) === false)
+			if($chk === 2 && isset($value{0}) === false)
 				return('');
 
-			if($this->chk_array_value($arr['arrvalue'],$value) === false)
+			$arrvalue = $this->chk_array_value($arr['arrvalue'],$value);
+
+			if($arrvalue === false && $strict === true)
 			{
 				$this->_mk_err($key,'invalid value');
 				return(false);
 			}
 
-			return($value);
+			if($arrvalue === true)
+				return($value);
 		}
 
 		if(isset($arr['unarrvalue']) === true)
 		{
-			if($arr['chk'] === 2 && isset($value{0}) === false)
+			if($chk === 2 && isset($value{0}) === false)
 				return('');
 
-			if($this->chk_array_value($arr['unarrvalue'],$value) === false)
+			$unarrvalue = $this->chk_unarray_value($arr['unarrvalue'],$value);
+
+			if($unarrvalue === false)
 			{
 				$this->_mk_err($key,'invalid value');
 				return(false);
 			}
-
-			return($value);
 		}
 
 		if(isset($arr['arrkey']) === true)
 		{
-			if($arr['chk'] === 2 && isset($value{0}) === false)
+			if($chk === 2 && isset($value{0}) === false)
 				return('');
 
-			if($this->chk_key_value($arr['arrkey'],$value) === false)
+			$arrkey = $this->chk_key_value($arr['arrkey'],$value);
+
+			if($arrkey === false && $strict === true)
 			{
 				$this->_mk_err($key,'invalid value');
 				return(false);
 			}
 
-			return($value);
+			if($arrkey === true)
+				return($value);
 		}
 
 		if(isset($arr['unarrkey']) === true)
 		{
-			if($arr['chk'] === 2 && isset($value{0}) === false)
+			if($chk === 2 && isset($value{0}) === false)
 				return('');
 
-			if($this->chk_key_value($arr['unarrkey'],$value) === true)
+			$unarrkey = $this->chk_key_value($arr['unarrkey'],$value);
+
+			if($unarrkey === true)
 			{
 				$this->_mk_err($key,'invalid value');
 				return(false);
@@ -370,19 +387,19 @@ class xivo_filter
 	
 		$len = strlen($value);
 
-		if($arr['chk'] === 0 && $len > 0)
+		if($chk === 0 && $len > 0)
 		{
 			$this->_mk_err($key,'no empty');
 			return(false);
 		}
 	
-		if($arr['chk'] === 1 && $len === 0)
+		if($chk === 1 && $len === 0)
 		{
 			$this->_mk_err($key,'empty');
 			return(false);
 		}
 	
-		if($arr['chk'] === 2 && $len === 0)
+		if($chk === 2 && $len === 0)
 		{
 			$this->_mk_result($key);
 			return('');
@@ -481,9 +498,9 @@ class xivo_filter
 		if($set === false && isset($v[$key]) === false)
 			return(true);
 	
-		$arr['set'] = isset($arr['set']) === false ? true : (bool) $arr['set'];
+		$set = isset($arr['set']) === false ? true : (bool) $arr['set'];
 	
-		if($arr['set'] === true)
+		if($set === true)
 		{
 			if(isset($v[$key]) === false && isset($arr['bool']) === true)
 				$v[$key] = null;

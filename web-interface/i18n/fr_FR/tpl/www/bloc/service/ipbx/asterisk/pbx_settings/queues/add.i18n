@@ -1,6 +1,54 @@
 ; title_content_name
 Files d'attente > Ajouter
 
+; smenu_general
+Général
+
+; smenu_announces
+Annonces
+
+; smenu_members
+Membres
+
+; smenu_application
+Application
+
+; smenu_advanced
+Avancé
+
+; add_announce
+Ajouter une annonce
+
+; fld-users
+Utilisateurs
+
+; fld-agents
+Agents
+
+; bt-inuser
+Ajouter ->
+
+; bt-outuser
+<- Enlever
+
+; fm_agentgroup
+Groupes :
+
+; bt-inagroup
+Ajouter ->
+
+; bt-outagroup
+<- Enlever
+
+; fm_agent
+Agents :
+
+; bt-inagent
+Ajouter ->
+
+; bt-outagent
+<- Enlever
+
 ; fm_qfeatures_name
 Nom :
 
@@ -12,6 +60,9 @@ Contexte :
 
 ; fm_qfeatures_timeout
 Délai d'attente :
+
+; fm_qfeatures_timeout-opt0
+Désactivé
 
 ; fm_qfeatures_timeout-opt
 %s secondes
@@ -98,40 +149,40 @@ Fréquence d'annonce de position :
 Désactivée
 
 ; fm_queue_announce-frequency-opt15
-15 secondes
+15 sec.
 
 ; fm_queue_announce-frequency-opt30
-30 secondes
+30 sec.
 
 ; fm_queue_announce-frequency-opt45
-45 secondes
+45 sec.
 
 ; fm_queue_announce-frequency-opt60
-1 minute
+1 min.
 
 ; fm_queue_announce-frequency-opt75
-1 minute 15 secondes
+1 min. 15 sec.
 
 ; fm_queue_announce-frequency-opt90
-1 minute 30 secondes
+1 min. 30 sec.
 
 ; fm_queue_announce-frequency-opt105
-1 minute 45 secondes
+1 min. 45 sec.
 
 ; fm_queue_announce-frequency-opt120
-2 minutes
+2 min.
 
 ; fm_queue_announce-frequency-opt180
-3 minutes
+3 min.
 
 ; fm_queue_announce-frequency-opt240
-4 minutes
+4 min.
 
 ; fm_queue_announce-frequency-opt300
-5 minutes
+5 min.
 
 ; fm_queue_announce-frequency-opt
-%s minutes %s secondes
+%s min. %s sec.
 
 ; fm_queue_periodic-announce-frequency
 Fréquence d'annonce :
@@ -140,40 +191,40 @@ Fréquence d'annonce :
 Désactivée
 
 ; fm_queue_periodic-announce-frequency-opt15
-15 secondes
+15 sec.
 
 ; fm_queue_periodic-announce-frequency-opt30
-30 secondes
+30 sec.
 
 ; fm_queue_periodic-announce-frequency-opt45
-45 secondes
+45 sec.
 
 ; fm_queue_periodic-announce-frequency-opt60
-1 minute
+1 min.
 
 ; fm_queue_periodic-announce-frequency-opt75
-1 minute 15 secondes
+1 min. 15 sec.
 
 ; fm_queue_periodic-announce-frequency-opt90
-1 minute 30 secondes
+1 min. 30 sec.
 
 ; fm_queue_periodic-announce-frequency-opt105
-1 minute 45 secondes
+1 min. 45 sec.
 
 ; fm_queue_periodic-announce-frequency-opt120
-2 minutes
+2 min.
 
 ; fm_queue_periodic-announce-frequency-opt180
-3 minutes
+3 min.
 
 ; fm_queue_periodic-announce-frequency-opt240
-4 minutes
+4 min.
 
 ; fm_queue_periodic-announce-frequency-opt300
-5 minutes
+5 min.
 
 ; fm_queue_periodic-announce-frequency-opt
-%s minutes %s secondes
+%s min. %s sec.
 
 ; fm_queue_announce-holdtime
 Annoncer le temps d'attente :
@@ -302,7 +353,7 @@ Temps d'attente d'un appelant :
 Défaut
 
 ; fm_queue_periodic-announce
-Annonce :
+Annonce périodique :
 
 ; fm_queue_periodic-announce-opt-default
 Défaut

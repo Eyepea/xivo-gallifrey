@@ -118,7 +118,7 @@ class xivo_service_asterisk_meetmefeatures extends xivo_service_asterisk_abstrac
 
 		if(is_array($values) === false
 		|| ($where = $this->get_elements_where($arr)) === false
-		|| ($values = $this->chk_set_values($values,true,true)) === false)
+		|| ($values = $this->chk_set_values($values)) === false)
 			return(false);
 
 		return($this->_dso->edit_where($where,$values));

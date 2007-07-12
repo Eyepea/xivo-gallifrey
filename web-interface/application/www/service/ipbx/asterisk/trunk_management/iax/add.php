@@ -52,7 +52,7 @@ do
 
 	$registerid = 0;
 
-	if(($result['trunk'] = $trunkiax->chk_values($_QR['trunk'],true,true)) === false)
+	if(($result['trunk'] = $trunkiax->chk_values($_QR['trunk'])) === false)
 	{
 		$add = false;
 		$result['trunk'] = $trunkiax->get_filter_result();
@@ -72,7 +72,7 @@ do
 	$_QR['tfeatures']['trunkid'] = 0;
 	$_QR['tfeatures']['registerid'] = $registerid;
 
-	if(($result['tfeatures'] = $tfeatures->chk_values($_QR['tfeatures'],true,true)) === false)
+	if(($result['tfeatures'] = $tfeatures->chk_values($_QR['tfeatures'])) === false)
 	{
 		$add = false;
 		$result['tfeatures'] = $tfeatures->get_filter_result();

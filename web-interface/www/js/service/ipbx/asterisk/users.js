@@ -138,9 +138,9 @@ xivo_fm_protocol['sip']['fd-sip-protocol-qualify']['style'] = 'display:block';
 xivo_fm_protocol['sip']['it-sip-protocol-qualify']['property'] = 'disabled|false:boolean';
 xivo_fm_protocol['sip']['fd-sip-protocol-disallow']['style'] = 'display:block';
 xivo_fm_protocol['sip']['it-sip-protocol-disallow']['property'] = 'disabled|false:boolean';
-xivo_fm_protocol['sip']['it-sip-codeclist']['style'] = 'display:block';
+xivo_fm_protocol['sip']['it-sip-codeclist']['style'] = 'display:inline';
 xivo_fm_protocol['sip']['it-sip-codeclist']['property'] = 'disabled|false:boolean';
-xivo_fm_protocol['sip']['it-sip-codec']['style'] = 'display:block';
+xivo_fm_protocol['sip']['it-sip-codec']['style'] = 'display:inline';
 xivo_fm_protocol['sip']['it-sip-codec']['property'] = 'disabled|false:boolean';
 
 xivo_attrib_register('fm_protocol-sip',xivo_fm_protocol['sip']);
@@ -164,9 +164,9 @@ xivo_fm_protocol['iax']['fd-iax-protocol-qualify']['style'] = 'display:block';
 xivo_fm_protocol['iax']['it-iax-protocol-qualify']['property'] = 'disabled|false:boolean';
 xivo_fm_protocol['iax']['fd-iax-protocol-disallow']['style'] = 'display:block';
 xivo_fm_protocol['iax']['it-iax-protocol-disallow']['property'] = 'disabled|false:boolean';
-xivo_fm_protocol['iax']['it-iax-codeclist']['style'] = 'display:block';
+xivo_fm_protocol['iax']['it-iax-codeclist']['style'] = 'display:inline';
 xivo_fm_protocol['iax']['it-iax-codeclist']['property'] = 'disabled|false:boolean';
-xivo_fm_protocol['iax']['it-iax-codec']['style'] = 'display:block';
+xivo_fm_protocol['iax']['it-iax-codec']['style'] = 'display:inline';
 xivo_fm_protocol['iax']['it-iax-codec']['property'] = 'disabled|false:boolean';
 xivo_fm_protocol['iax']['it-autoprov-modact']['property'] = 'disabled|true:boolean;className|it-disabled';
 xivo_fm_protocol['iax']['it-autoprov-vendormodel']['property'] = 'disabled|true:boolean;className|it-disabled';
@@ -215,22 +215,22 @@ xivo_fm_codec['it-sip-protocol-disallow']['property'] = new Array('disabled|fals
 xivo_fm_codec['it-sip-protocol-disallow']['link'] = 'it-sip-codeclist';
 
 xivo_fm_codec['it-sip-codeclist'] = new Array();
-xivo_fm_codec['it-sip-codeclist']['property'] = new Array('disabled|false:boolean;className|it-enabled codeclisted','disabled|true:boolean;className|it-disabled codeclisted;selectedIndex|-1');
+xivo_fm_codec['it-sip-codeclist']['property'] = new Array('disabled|false:boolean;className|it-enabled','disabled|true:boolean;className|it-disabled;selectedIndex|-1');
 xivo_fm_codec['it-sip-codeclist']['link'] = 'it-sip-codec';
 
 xivo_fm_codec['it-sip-codec'] = new Array();
-xivo_fm_codec['it-sip-codec']['property'] = new Array('disabled|false:boolean;className|it-enabled codecselected','disabled|true:boolean;className|it-disabled codecselected;selectedIndex|-1');
+xivo_fm_codec['it-sip-codec']['property'] = new Array('disabled|false:boolean;className|it-enabled','disabled|true:boolean;className|it-disabled;selectedIndex|-1');
 
 xivo_fm_codec['it-iax-protocol-disallow'] = new Array();
 xivo_fm_codec['it-iax-protocol-disallow']['property'] = new Array('disabled|false:boolean;className|it-enabled','disabled|true:boolean;className|it-disabled');
 xivo_fm_codec['it-iax-protocol-disallow']['link'] = 'it-iax-codeclist';
 
 xivo_fm_codec['it-iax-codeclist'] = new Array();
-xivo_fm_codec['it-iax-codeclist']['property'] = new Array('disabled|false:boolean;className|it-enabled codeclisted','disabled|true:boolean;className|it-disabled codeclisted');
+xivo_fm_codec['it-iax-codeclist']['property'] = new Array('disabled|false:boolean;className|it-enabled','disabled|true:boolean;className|it-disabled');
 xivo_fm_codec['it-iax-codeclist']['link'] = 'it-iax-codec';
 
 xivo_fm_codec['it-iax-codec'] = new Array();
-xivo_fm_codec['it-iax-codec']['property'] = new Array('disabled|false:boolean;className|it-enabled codecselected','disabled|true:boolean;className|it-disabled codecselected;selectedIndex|-1');
+xivo_fm_codec['it-iax-codec']['property'] = new Array('disabled|false:boolean;className|it-enabled','disabled|true:boolean;className|it-disabled;selectedIndex|-1');
 
 xivo_attrib_register('fm_codec',xivo_fm_codec);
 
@@ -436,17 +436,7 @@ function xivo_outgroup()
 	return(true);
 }
 
-window.onload = function()
-{
-	if(xivo_eid('it-protocol-protocol') != false)
-		xivo_chgprotocol(xivo_eid('it-protocol-protocol'));
-
-	if(xivo_eid('smenu-tab-1') != false)
-	{
-		xivo_smenu['bak']['smenu-tab-1'] = xivo_eid('smenu-tab-1').className;
-		xivo_smenu_click(xivo_eid('smenu-tab-1'),'moc','sb-part-general');
-	}
-
-	if(xivo_eid('it-voicemail-active') != false)
-		xivo_chg_attrib('fm_voicemail','it-voicemail-fullname',(xivo_eid('it-voicemail-active').checked == true ? 0 : 1));
-}
+xivo_winload += 'if(xivo_eid(\'it-protocol-protocol\') != false)\n' +
+		'xivo_chgprotocol(xivo_eid(\'it-protocol-protocol\'));\n' +
+		'if(xivo_eid(\'it-voicemail-active\') != false)\n' +
+		'xivo_chg_attrib(\'fm_voicemail\',\'it-voicemail-fullname\',(xivo_eid(\'it-voicemail-active\').checked == true ? 0 : 1));\n';

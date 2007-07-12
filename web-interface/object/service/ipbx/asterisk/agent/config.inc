@@ -21,18 +21,10 @@ $array['element']['autologoff']['setdef'] = true;
 
 $array['element']['wrapuptime'] = array();
 $array['element']['wrapuptime']['value'] = array(0,
-						 5000 => 5,
-						 10000 => 10,
-						 15000 => 15,
-						 20000 => 20,
-						 25000 => 25,
-						 30000 => 30,
-						 35000 => 35,
-						 40000 => 40,
-						 45000 => 45,
-						 50000 => 50,
-						 55000 => 55,
-						 60000 => 60);
+						 5000 => 5,10000 => 10,15000 => 15,
+						 20000 => 20,25000 => 25,30000 => 30,
+						 35000 => 35,40000 => 40,45000 => 45,
+						 50000 => 50,55000 => 55,60000 => 60);
 $array['element']['wrapuptime']['default'] = 0;
 $array['element']['wrapuptime']['setdef'] = true;
 
@@ -86,7 +78,7 @@ $array['filter']['autologoff'] = array('set' => false,'chk' => 2,'arrkey' => arr
 $array['filter']['wrapuptime'] = array('set' => false,'chk' => 2,'arrkey' => array(0,5000,10000,15000,20000,25000,30000,35000,40000,45000,50000,55000,60000));
 $array['filter']['maxlogintries'] = array('set' => false,'chk' => 2,'arrkey' => array(0,1,2,3,4,5,6,7,8,9,10));
 $array['filter']['goodbye'] = array('set' => false,'chk' => 2,'maxlen' => 128);
-$array['filter']['musiconhold'] = array('set' => false,'chk' => 2,'maxlen' => 128);
+$array['filter']['musiconhold'] = array('set' => false,'chk' => 2,'maxlen' => 20);
 $array['filter']['updatecdr'] = array('bool' => true);
 $array['filter']['recordagentcalls'] = array('bool' => true);
 $array['filter']['createlink'] = array('bool' => true);

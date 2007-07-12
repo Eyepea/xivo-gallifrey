@@ -1,6 +1,15 @@
 ; title_content_name
 Agents > Ajouter un agent
 
+; smenu_general
+Général
+
+; smenu_queues
+Files d'attente
+
+; smenu_advanced
+Avancé
+
 ; fm_agentfeatures_firstname
 Prénom :
 

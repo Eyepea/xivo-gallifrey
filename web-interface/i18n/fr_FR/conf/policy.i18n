@@ -59,13 +59,16 @@ Agents
 Gestion des appels
 
 ; ply_service-ipbx-call_management-did
-SDA
+Appels entrants
 
 ; ply_service-ipbx-call_management-ivr
-IVR
+Menus vocaux
 
 ; ply_service-ipbx-call_management-cdr
-CDR
+Journaux d'appels
+
+; ply_service-ipbx-call_management-outcall
+Appels sortants
 
 ; ply_service-ipbx-trunk_management
 Gestion des interconnexions

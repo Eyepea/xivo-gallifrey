@@ -26,7 +26,7 @@ Conférence
 Personnalisé
 
 ; no_did
-Aucune SDA trouvée
+Aucun appel entrant trouvé
 
 ; opt_modify
 Modifier
@@ -35,4 +35,4 @@ Modifier
 Supprimer
 
 ; opt_delete_confirm
-Etes-vous certain de vouloir supprimer cette SDA ?
+Etes-vous certain de vouloir supprimer cet appel entrant ?

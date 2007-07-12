@@ -36,7 +36,7 @@ switch($act)
 
 			$result = array();
 
-			if(($result['gfeatures'] = $gfeatures->chk_values($_QR['gfeatures'],true,true)) === false)
+			if(($result['gfeatures'] = $gfeatures->chk_values($_QR['gfeatures'])) === false)
 			{
 				$add = false;
 				$result['gfeatures'] = $gfeatures->get_filter_result();
@@ -44,7 +44,7 @@ switch($act)
 
 			$_QR['queue']['name'] = $result['gfeatures']['name'];
 
-			if(($result['queue'] = $queue->chk_values($_QR['queue'],true,true)) === false)
+			if(($result['queue'] = $queue->chk_values($_QR['queue'])) === false)
 			{
 				$add = false;
 				$result['queue'] = $queue->get_filter_result();
@@ -65,7 +65,7 @@ switch($act)
 				else
 					$local_exten['context'] = $result['gfeatures']['context'];
 
-				if(($result['local_exten'] = $extensions->chk_values($local_exten,true,true)) === false)
+				if(($result['local_exten'] = $extensions->chk_values($local_exten)) === false)
 				{
 					$add = false;
 					$result['local_exten'] = $extensions->get_filter_result();
@@ -75,7 +75,7 @@ switch($act)
 				$exten_numbers['number'] = $result['local_exten']['exten'];
 				$exten_numbers['context'] = $result['local_exten']['context'];
 
-				if(($result['extenumbers'] = $extenumbers->chk_values($exten_numbers,true,true)) === false
+				if(($result['extenumbers'] = $extenumbers->chk_values($exten_numbers)) === false
 				|| $extenumbers->get($result['extenumbers']) !== false)
 				{
 					$add = false;
@@ -109,7 +109,7 @@ switch($act)
 					$mqinfo['interface'] = $ref['interface'];
 					$mqinfo['channel'] = $ref['channel'];
 
-					if(($mqinfo = $qmember->chk_values($mqinfo,true,true)) === false)
+					if(($mqinfo = $qmember->chk_values($mqinfo)) === false)
 						continue;
 
 					if($add === true)
@@ -212,7 +212,7 @@ switch($act)
 
 			$return = &$result;
 
-			if(($result['gfeatures'] = $gfeatures->chk_values($_QR['gfeatures'],true,true)) === false)
+			if(($result['gfeatures'] = $gfeatures->chk_values($_QR['gfeatures'])) === false)
 			{
 				$edit = false;
 				$result['mfeatures'] = array_merge($info['gfeatures'],$gfeatures->get_filter_result());
@@ -220,7 +220,7 @@ switch($act)
 
 			$_QR['queue']['name'] = $result['gfeatures']['name'];
 
-			if(($result['queue'] = $queue->chk_values($_QR['queue'],true,true)) === false)
+			if(($result['queue'] = $queue->chk_values($_QR['queue'])) === false)
 			{
 				$edit = false;
 				$result['queue'] = $queue->get_filter_result();
@@ -252,7 +252,7 @@ switch($act)
 					else
 						$local_exten['context'] = $result['gfeatures']['context'];
 
-					if(($result['localexten'] = $extensions->chk_values($local_exten,true,true)) === false)
+					if(($result['localexten'] = $extensions->chk_values($local_exten)) === false)
 					{
 						$edit = false;
 						$result['localexten'] = array_merge($info['localexten'],$extensions->get_filter_result());
@@ -272,7 +272,7 @@ switch($act)
 				else
 					$local_exten['context'] = $result['gfeatures']['context'];
 
-				if(($result['localexten'] = $extensions->chk_values($local_exten,true,true)) === false)
+				if(($result['localexten'] = $extensions->chk_values($local_exten)) === false)
 				{
 					$edit = false;
 					$result['localexten'] = $extensions->get_filter_result();
@@ -303,7 +303,7 @@ switch($act)
 				{
 					$status['extenumbers'] = 'edit';
 
-					if(($result['extenumbers'] = $extenumbers->chk_values($exten_numbers,true,true)) === false
+					if(($result['extenumbers'] = $extenumbers->chk_values($exten_numbers)) === false
 					|| (($extenum = $extenumbers->get($result['extenumbers'])) !== false
 					   && (int) $extenum['id'] !== (int) $info['extenumbers']['id']) === true)
 					{
@@ -316,7 +316,7 @@ switch($act)
 			{
 				$status['extenumbers'] = 'add';
 
-				if(($result['extenumbers'] = $extenumbers->chk_values($exten_numbers,true,true)) === false)
+				if(($result['extenumbers'] = $extenumbers->chk_values($exten_numbers)) === false)
 				{
 					$edit = false;
 					$result['extenumbers'] = $extenumbers->get_filter_result();
@@ -360,7 +360,7 @@ switch($act)
 					$mqinfo['interface'] = $ref['interface'];
 					$mqinfo['channel'] = $ref['channel'];
 
-					if(($mqinfo = $qmember->chk_values($mqinfo,true,true)) === false)
+					if(($mqinfo = $qmember->chk_values($mqinfo)) === false)
 						continue;
 
 					if($edit === true)

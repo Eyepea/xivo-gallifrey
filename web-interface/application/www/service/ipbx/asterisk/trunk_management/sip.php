@@ -17,6 +17,7 @@ switch($act)
 	case 'edit':
 		$dhtml = &$_HTML->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/trunksip.js');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 	case 'delete':
 	case 'deletes':
 	case 'list':

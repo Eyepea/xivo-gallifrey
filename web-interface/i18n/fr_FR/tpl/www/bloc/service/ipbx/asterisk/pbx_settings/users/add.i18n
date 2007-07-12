@@ -85,7 +85,7 @@ Musique d'attente :
 ; fm_userfeatures_ringgroup
 Sonnerie :
 
-; fd-callgroup
+; fld-callgroup
 Groupes
 
 ; bt-ingroup
@@ -112,7 +112,7 @@ Nb Appels
 ; no_group
 Aucun groupe d'interception
 
-; fd-queuegroup
+; fld-queuegroup
 Files d'attente
 
 ; col_queue-name

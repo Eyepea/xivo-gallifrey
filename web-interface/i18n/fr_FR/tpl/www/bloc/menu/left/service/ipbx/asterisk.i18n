@@ -44,13 +44,16 @@ Files d'attente
 Agents
 
 ; mn_left_did
-SDA
+Appels entrants
 
 ; mn_left_ivr
-IVR
+Menus vocaux 
 
 ; mn_left_cdr
 Journaux d'appels
+
+; mn_left_outcall
+Appels sortants
 
 ; mn_left_ti_trunk_management
 Gestion des interconnexions

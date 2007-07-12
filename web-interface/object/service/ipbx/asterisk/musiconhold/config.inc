@@ -4,7 +4,7 @@ $array = array();
 
 $array['option'] = array();
 $array['option']['dir'] = array();
-$array['option']['dir']['name'] = '/^[a-z0-9_-]{1,50}$/';
+$array['option']['dir']['name'] = '/^[a-z0-9_-]{1,20}$/';
 
 $array['option']['file'] = array();
 $array['option']['file']['name'] = '/^[a-z0-9_-]{1,50}\.(mp3|wav|ogg)$/i';
@@ -38,7 +38,7 @@ $array['element']['filename'] = array();
 $array['element']['filename']['unset'] = true;
 
 $array['filter'] = array();
-$array['filter']['category'] = array('unarrkey' => array('general'),'preg' => '/^[a-z0-9_-]+$/','minlen' => 1,'maxlen' => 50);
+$array['filter']['category'] = array('unarrkey' => array('general'),'preg' => '/^[a-z0-9_-]+$/','minlen' => 1,'maxlen' => 20);
 $array['filter']['mode'] = array('arrkey' => array('files','custom','quietmp3','mp3','mp3nb','quietmp3nb'));
 $array['filter']['application'] = array('set' => false,'chk' => 2,'maxlen' => 128);
 $array['filter']['random'] = array('bool' => true);

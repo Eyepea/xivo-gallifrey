@@ -67,7 +67,7 @@ switch($act)
 
 			$_QR['agroup']['groupid'] = 0;
 
-			if(($result['agroup'] = $agroup->chk_values($_QR['agroup'],true,true)) === false)
+			if(($result['agroup'] = $agroup->chk_values($_QR['agroup'])) === false)
 			{
 				$add = false;
 				$result['agroup'] = $agroup->get_filter_result();
@@ -122,7 +122,7 @@ switch($act)
 
 					$aqueue_tmp = array_merge($_QR['queue'][$qname],$aqueue_info);
 
-					if(($qinfo = $qmember->chk_values($aqueue_tmp,true,true)) !== false)
+					if(($qinfo = $qmember->chk_values($aqueue_tmp)) !== false)
 					{
 						$queue_tmp[$qname] = 1;
 						$queue_add[] = $qinfo;
@@ -200,6 +200,9 @@ switch($act)
 		$_HTML->assign('agent_unslt',$agent_unslt);
 		$_HTML->assign('info',$result);
 		$_HTML->assign('element',$element);
+
+		$dhtml = &$_HTML->get_module('dhtml');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 		break;
 	case 'edit':
 		$edit = true;
@@ -284,7 +287,7 @@ switch($act)
 
 			$_QR['agroup']['groupid'] = $info['agent']['id'];
 
-			if(($result['agroup'] = $agroup->chk_values($_QR['agroup'],true,true)) === false)
+			if(($result['agroup'] = $agroup->chk_values($_QR['agroup'])) === false)
 			{
 				$edit = false;
 				$result['agroup'] = $agroup->get_filter_result();
@@ -361,7 +364,7 @@ switch($act)
 
 					$aqueue_tmp = array_merge($_QR['queue'][$qname],$aqueue_info);
 
-					if(($qinfo = $qmember->chk_values($aqueue_tmp,true,true)) !== false)
+					if(($qinfo = $qmember->chk_values($aqueue_tmp)) !== false)
 					{
 						$edit_queue = true;
 						$queue_tmp[$qname] = 1;
@@ -491,6 +494,9 @@ switch($act)
 		$_HTML->assign('queues',$queues);
 		$_HTML->assign('qmember_slt',$qmember_slt);
 		$_HTML->assign('qmember_unslt',$qmember_unslt);
+
+		$dhtml = &$_HTML->get_module('dhtml');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 		break;
 	case 'delete':
 		$param['page'] = $page;
@@ -610,7 +616,7 @@ switch($act)
 
 			$_QR['afeatures']['agentid'] = 0;
 
-			if(($result['afeatures'] = $afeatures->chk_values($_QR['afeatures'],true,true)) === false)
+			if(($result['afeatures'] = $afeatures->chk_values($_QR['afeatures'])) === false)
 			{
 				$add = false;
 				$result['afeatures'] = $afeatures->get_filter_result();
@@ -627,7 +633,7 @@ switch($act)
 			$_QR['agent']['agent'] = rtrim($agentval,',');
 			$_QR['agent']['group'] = $result['afeatures']['numgroup'];
 
-			if(($result['agent'] = $agent->chk_values($_QR['agent'],true,true)) === false)
+			if(($result['agent'] = $agent->chk_values($_QR['agent'])) === false)
 			{
 				$add = false;
 				$result['agent'] = $agent->get_filter_result();
@@ -659,7 +665,7 @@ switch($act)
 
 					$aqueue_tmp = array_merge($_QR['queue'][$qname],$aqueue_info);
 
-					if(($qinfo = $qmember->chk_values($aqueue_tmp,true,true)) !== false)
+					if(($qinfo = $qmember->chk_values($aqueue_tmp)) !== false)
 					{
 						$queue_tmp[$qname] = 1;
 						$queue_add[] = $qinfo;
@@ -674,7 +680,7 @@ switch($act)
 
 			if(($afeaturesid = $afeatures->add($result['afeatures'])) === false)
 			{
-				$agent->delete($agentid);
+				$agent->delete_agent($agentid);
 				break;
 			}
 
@@ -704,6 +710,9 @@ switch($act)
 		$_HTML->assign('moh_list',$moh_list);
 		$_HTML->assign('beep_list',$beep_list);
 		$_HTML->assign('goodbye_list',$goodbye_list);
+
+		$dhtml = &$_HTML->get_module('dhtml');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 		break;
 	case 'editagent':
 		if($list_grps === false)
@@ -791,7 +800,7 @@ switch($act)
 
 			$_QR['afeatures']['agentid'] = $info['afeatures']['agentid'];
 
-			if(($result['afeatures'] = $afeatures->chk_values($_QR['afeatures'],true,true)) === false)
+			if(($result['afeatures'] = $afeatures->chk_values($_QR['afeatures'])) === false)
 			{
 				$edit = false;
 				$result['afeatures'] = $afeatures->get_filter_result();
@@ -808,7 +817,7 @@ switch($act)
 			$_QR['agent']['agent'] = rtrim($agentval,',');
 			$_QR['agent']['group'] = $result['afeatures']['numgroup'];
 
-			if(($result['agent'] = $agent->chk_values($_QR['agent'],true,true)) === false)
+			if(($result['agent'] = $agent->chk_values($_QR['agent'])) === false)
 			{
 				$edit = false;
 				$result['agent'] = $agent->get_filter_result();
@@ -859,7 +868,7 @@ switch($act)
 
 					$aqueue_tmp = array_merge($_QR['queue'][$qname],$aqueue_info);
 
-					if(($qinfo = $qmember->chk_values($aqueue_tmp,true,true)) !== false)
+					if(($qinfo = $qmember->chk_values($aqueue_tmp)) !== false)
 					{
 						$edit_queue = true;
 						$queue_tmp[$qname] = 1;
@@ -941,6 +950,9 @@ switch($act)
 		$_HTML->assign('moh_list',$moh_list);
 		$_HTML->assign('beep_list',$beep_list);
 		$_HTML->assign('goodbye_list',$goodbye_list);
+
+		$dhtml = &$_HTML->get_module('dhtml');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 		break;
 	case 'deleteagent':
 		if(($info['agroup'] = $agroup->get($group)) === false)

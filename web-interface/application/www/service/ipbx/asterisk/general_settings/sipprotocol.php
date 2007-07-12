@@ -8,13 +8,15 @@ if(($moh_list = $musiconhold->get_all_category(null,false)) !== false)
 
 if(isset($_QR['fm_send']) === true)
 {
-	if($moh_list === false || isset($_QR['musicclass'],$moh_list[$_QR['musicclass']]) === false)
-		$_QR['musicclass'] = '';
+	if($moh_list === false || isset($_QR['musiconhold'],$moh_list[$_QR['musiconhold']]) === false)
+		$_QR['musiconhold'] = '';
 
-	$externip = $generalsip->set_chk_value('externip',$_QRY->get_qr('externip'));
+	xivo_print_r($_QR);
+	xivo_print_r($generalsip->chk_values($_QR));
+	die();
 
-	if(xivo_empty($externip) === true || isset($_QR['localnet']) === false)
-		$_QR['localnet'] = '';
+	if(xivo_empty($result['externip']) === true)
+		$result['localnet'] = '';
 
 	$generalsip->replace_val_by_name('bindport',$generalsip->set_chk_value('bindport',$_QRY->get_qr('bindport')));
 	$generalsip->replace_val_by_name('bindaddr',$generalsip->set_chk_value('bindaddr',$_QRY->get_qr('bindaddr')));
@@ -61,6 +63,9 @@ if(xivo_issa('allow',$element) === true && xivo_issa('value',$element['allow']) 
 $_HTML->assign('info',$info);
 $_HTML->assign('element',$element);
 $_HTML->assign('moh_list',$moh_list);
+
+$dhtml = &$_HTML->get_module('dhtml');
+$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 
 $menu = &$_HTML->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_infos('meta'));

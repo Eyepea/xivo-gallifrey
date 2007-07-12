@@ -15,7 +15,7 @@ $array['element']['host']['default'] = 'dynamic';
 $array['element']['host']['setdef'] = true;
 
 $array['element']['dtmfmode'] = array();
-$array['element']['dtmfmode']['value'] = array('rfc2833','inband','info');
+$array['element']['dtmfmode']['value'] = array('rfc2833','inband','info','auto');
 $array['element']['dtmfmode']['default'] = 'info';
 $array['element']['dtmfmode']['setdef'] = true;
 
@@ -97,12 +97,12 @@ $array['filter']['callerid'] = array('chk' => 2,'maxlen' => 80,'notag' => false)
 $array['filter']['name'] = array('minlen' => 1,'maxlen' => 80);
 $array['filter']['secret'] = array('set' => false,'chk' => 2,'minlen' => 1,'maxlen' => 80);
 $array['filter']['host'] = array('set' => false,'chk' => 2);
-$array['filter']['dtmfmode'] = array('set' => false,'chk' => 2,'arrkey' => array('rfc2833','inband','info'));
+$array['filter']['dtmfmode'] = array('set' => false,'chk' => 2,'arrkey' => array('rfc2833','inband','info','auto'));
 $array['filter']['canreinvite'] = array('bool' => true);
 $array['filter']['amaflags'] = array('set' => false,'chk' => 2,'arrkey' => array('default','omit','billing','documentation'));
 $array['filter']['accountcode'] = array('set' => false,'chk' => 2,'maxlen' => 20);
 $array['filter']['callgroup'] = array('set' => false,'chk' => 2,'preg' => '/^([0-9]+[,]?)*$/','maxlen' => 10);
-$array['filter']['context'] = array('set' => false,'chk' => 2,'unarrkey' => array('general','globals','hints','features'),'preg' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 80);
+$array['filter']['context'] = array('set' => false,'chk' => 2,'unarrkey' => array('general','globals','hints','features','authentication','zonemessages'),'preg' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 80);
 $array['filter']['call-limit'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,30));
 $array['filter']['nat'] = array('bool' => true);
 $array['filter']['qualify'] = array('bool' => true);

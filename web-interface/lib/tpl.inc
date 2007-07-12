@@ -242,6 +242,17 @@ class xivo_tpl
 		$r = null;
 
 		$name = (string) $name;
+
+		if(is_scalar($keys) === true)
+		{
+			$keys = (string) $keys;
+
+			if(xivo_issa($name,$this->_var) === false || isset($this->_var[$name][$keys]) === false)
+				return($r);
+
+			return($this->_var[$name][$keys]);
+		}
+		
 		$keys = array_values((array) $keys);
 
 		if(xivo_issa($name,$this->_var) === false || ($nb = count($keys)) === 0)

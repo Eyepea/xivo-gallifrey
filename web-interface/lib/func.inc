@@ -96,6 +96,49 @@ function xivo_uint($str=0,$def=0,$t=false)
 	return($str);
 }
 
+function xivo_cast_specials($str,$type='')
+{
+	$str = (string) $str;
+
+	$toto = preg_quote(' !"#$%&\'()*+,-./:;<=>?@[\]^_`{|}~');
+
+	$reg = ' \!"#\$%&\'\(\)\*\+,-\.\/\:;\<\=\>\?\\\@\[\]\^_`\{\|\}~';
+
+	switch($type)
+	{
+		case 'num':
+			$reg .= '0-9';
+			break;
+		case 'alpha':
+			$reg .= 'a-zA-Z';
+			break;
+		case 'alphanum':
+			$reg .= 'a-zA-Z0-9';
+			break;
+	}
+
+
+	if(preg_match('/^['.$reg.']+$/',$str) === 1)
+		return(true);
+
+	return(false);
+}
+
+function xivo_cast_numspecials($str)
+{
+	return(xivo_cast_specials($str,'num'));
+}
+
+function xivo_cast_alphaspecials($str)
+{
+	return(xivo_cast_specials($str,'alpha'));
+}
+
+function xivo_cast_alphanumspecials($str)
+{
+	return(xivo_cast_specials($str,'alphanum'));
+}
+
 function xivo_cast_except($val,$except,$type='')
 {
 	$type = (string) $type;

@@ -9,8 +9,5 @@ xivo_fm_musiconhold['it-application']['property'] = new Array('disabled|true:boo
 
 xivo_attrib_register('fm_musiconhold',xivo_fm_musiconhold);
 
-window.onload = function()
-{
-	if(xivo_is_undef('it-application') == false)
-		xivo_chg_attrib('fm_musiconhold','fd-application',(xivo_eid('it-mode').value != 'custom' ? 0 : 1));
-}
+xivo_winload += 'if(xivo_is_undef(\'it-application\') == false)\n' +
+		'xivo_chg_attrib(\'fm_musiconhold\',\'fd-application\',(xivo_eid(\'it-mode\').value != \'custom\' ? 0 : 1));\n';

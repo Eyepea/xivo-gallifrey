@@ -33,7 +33,7 @@ switch($act)
 			if($moh_list === false || isset($_QR['mfeatures']['musiconhold'],$moh_list[$_QR['mfeatures']['musiconhold']]) === false)
 				$_QR['mfeatures']['musiconhold'] = '';
 
-			if(($result['meetme'] = $meetme->chk_values($_QR['meetme'],true,true)) === false)
+			if(($result['meetme'] = $meetme->chk_values($_QR['meetme'])) === false)
 			{
 				$add = false;
 				$result['meetme'] = $meetme->get_filter_result();
@@ -54,7 +54,7 @@ switch($act)
 			$_QR['mfeatures']['meetmeid'] = 0;
 			$_QR['mfeatures']['number'] = $result['meetme']['number'];
 
-			if(($result['mfeatures'] = $mfeatures->chk_values($_QR['mfeatures'],true,true)) === false)
+			if(($result['mfeatures'] = $mfeatures->chk_values($_QR['mfeatures'])) === false)
 			{
 				$add = false;
 				$result['mfeatures'] = $mfeatures->get_filter_result();
@@ -75,7 +75,7 @@ switch($act)
 				else
 					$local_exten['context'] = $result['mfeatures']['context'];
 
-				if(($result['local_exten'] = $extensions->chk_values($local_exten,true,true)) === false)
+				if(($result['local_exten'] = $extensions->chk_values($local_exten)) === false)
 				{
 					$add = false;
 					$result['local_exten'] = $extensions->get_filter_result();
@@ -85,7 +85,7 @@ switch($act)
 				$exten_numbers['number'] = $result['local_exten']['exten'];
 				$exten_numbers['context'] = $result['local_exten']['context'];
 
-				if(($result['extenumbers'] = $extenumbers->chk_values($exten_numbers,true,true)) === false
+				if(($result['extenumbers'] = $extenumbers->chk_values($exten_numbers)) === false
 				|| $extenumbers->get($result['extenumbers']) !== false)
 				{
 					$add = false;
@@ -160,7 +160,7 @@ switch($act)
 			if($moh_list === false || isset($_QR['mfeatures']['musiconhold'],$moh_list[$_QR['mfeatures']['musiconhold']]) === false)
 				$_QR['mfeatures']['musiconhold'] = '';
 
-			if(($result['meetme'] = $meetme->chk_values($_QR['meetme'],true,true)) === false)
+			if(($result['meetme'] = $meetme->chk_values($_QR['meetme'])) === false)
 			{
 				$edit = false;
 				$result['meetme'] = $meetme->get_filter_result();
@@ -181,7 +181,7 @@ switch($act)
 			$_QR['mfeatures']['meetmeid'] = $info['meetme']['id'];
 			$_QR['mfeatures']['number'] = $result['meetme']['number'];
 
-			if(($result['mfeatures'] = $mfeatures->chk_values($_QR['mfeatures'],true,true)) === false)
+			if(($result['mfeatures'] = $mfeatures->chk_values($_QR['mfeatures'])) === false)
 			{
 				$edit = false;
 				$result['mfeatures'] = $mfeatures->get_filter_result();
@@ -213,7 +213,7 @@ switch($act)
 					else
 						$local_exten['context'] = $result['mfeatures']['context'];
 
-					if(($result['localexten'] = $extensions->chk_values($local_exten,true,true)) === false)
+					if(($result['localexten'] = $extensions->chk_values($local_exten)) === false)
 					{
 						$edit = false;
 						$result['localexten'] = array_merge($info['localexten'],$extensions->get_filter_result());
@@ -233,7 +233,7 @@ switch($act)
 				else
 					$local_exten['context'] = $result['mfeatures']['context'];
 
-				if(($result['localexten'] = $extensions->chk_values($local_exten,true,true)) === false)
+				if(($result['localexten'] = $extensions->chk_values($local_exten)) === false)
 				{
 					$edit = false;
 					$result['localexten'] = $extensions->get_filter_result();
@@ -264,7 +264,7 @@ switch($act)
 				{
 					$status['extenumbers'] = 'edit';
 
-					if(($result['extenumbers'] = $extenumbers->chk_values($exten_numbers,true,true)) === false
+					if(($result['extenumbers'] = $extenumbers->chk_values($exten_numbers)) === false
 					|| (($extenum = $extenumbers->get($result['extenumbers'])) !== false
 					   && (int) $extenum['id'] !== (int) $info['extenumbers']['id']) === true)
 					{
@@ -277,7 +277,7 @@ switch($act)
 			{
 				$status['extenumbers'] = 'add';
 
-				if(($result['extenumbers'] = $extenumbers->chk_values($exten_numbers,true,true)) === false)
+				if(($result['extenumbers'] = $extenumbers->chk_values($exten_numbers)) === false)
 				{
 					$edit = false;
 					$result['extenumbers'] = $extenumbers->get_filter_result();

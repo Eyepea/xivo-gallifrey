@@ -6,7 +6,7 @@ $array['tree']['service'] = array();
 $array['tree']['service']['ipbx'] = array();
 $array['tree']['service']['ipbx']['general_settings'] = array('sipprotocol' => true,'iaxprotocol' => true,'voicemail' => true,'queues' => true,'agents' => true,'sounds' => true,'musiconhold' => true,'extenfeatures' => true);
 $array['tree']['service']['ipbx']['pbx_settings'] = array('users' => true,'groups' => true,'meetme' => true,'queues' => true,'agents' => true);
-$array['tree']['service']['ipbx']['call_management'] = array('did' => true,'ivr' => true,'cdr' => true);
+$array['tree']['service']['ipbx']['call_management'] = array('did' => true,'ivr' => true,'cdr' => true,'outcall' => true);
 $array['tree']['service']['ipbx']['trunk_management'] = array('sip' => true,'iax' => true);
 $array['tree']['service']['ipbx']['system_management'] = array('configfiles' => true,'isdncard' => true,'modules' => true,'manager' => true);
 $array['tree']['service']['ipbx']['control_system'] = array('reload' => true);

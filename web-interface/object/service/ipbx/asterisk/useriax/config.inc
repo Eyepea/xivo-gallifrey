@@ -75,7 +75,7 @@ $array['filter']['host'] = array('set' => false,'chk' => 2);
 $array['filter']['amaflags'] = array('set' => false,'chk' => 2,'arrkey' => array('default','omit','billing','documentation'));
 $array['filter']['accountcode'] = array('set' => false,'chk' => 2,'maxlen' => 20);
 $array['filter']['callgroup'] = array('set' => false,'chk' => 2,'preg' => '/^([0-9]+[,]?)*$/','maxlen' => 10);
-$array['filter']['context'] = array('set' => false,'chk' => 2,'unarrkey' => array('general','globals','initconfig','hints','features'),'preg' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 80);
+$array['filter']['context'] = array('set' => false,'chk' => 2,'unarrkey' => array('general','globals','initconfig','hints','features','zonemessages'),'preg' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 80);
 $array['filter']['call-limit'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,30));
 $array['filter']['qualify'] = array('bool' => true);
 $array['filter']['disallow'] = array('set' => false,'chk' => 2,'arrkey' => array('all'));

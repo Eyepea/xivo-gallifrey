@@ -259,10 +259,9 @@ class xivo_service_asterisk_abstract
 		return($this->_filter->get_result());
 	}
 
-	function chk_values($arr,$set=false,$default=false,$setval=true)
+	function chk_values($arr,$set=true,$setval=true)
 	{
 		$set = (bool) $set;
-		$default = (bool) $default;
 		$setval = (bool) $setval;
 
 		if($this->_filter === null && $this->_load_filter() === false)
@@ -285,8 +284,6 @@ class xivo_service_asterisk_abstract
 
 			if(($sval = $this->_set_value($key,$val)) !== false)
 				$val = $sval;
-			else if($default === true && ($dval = $this->get_element_default($key)) !== false)
-				$val = $dval;
 
 			if($val === '' && $this->isnull_element_value($key) === true)
 				$val = null;
@@ -309,9 +306,9 @@ class xivo_service_asterisk_abstract
 		return($r);
 	}
 
-	function chk_set_values($arr,$set=false,$default=false)
+	function chk_set_values($arr,$set=true)
 	{
-		$r = $this->chk_values($arr,$set,$default,false);
+		$r = $this->chk_values($arr,$set,false);
 
 		if(empty($r) === true)
 			$r = false;

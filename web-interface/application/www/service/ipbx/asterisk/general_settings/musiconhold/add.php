@@ -5,12 +5,18 @@ do
 	if(isset($_QR['fm_send']) === false)
 		break;
 
-	if(($result = $musiconhold->chk_values($_QR,true,true)) === false
+	unset($_QR['filename']);
+
+	if(($result = $musiconhold->chk_values($_QR)) === false
 	|| ($result['mode'] === 'custom' && (string) $result['application'] === '') === true)
 	{
+		xivo_var_dump($musiconhold->get_filter_err());
 		$info = $musiconhold->get_filter_result();
 		break;
 	}
+
+	xivo_print_r($result);
+	die();
 
 	if($musiconhold->add_category($result) !== false)
 		xivo_go($_HTML->url('service/ipbx/general_settings/musiconhold'),$param);

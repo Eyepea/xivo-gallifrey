@@ -87,11 +87,11 @@ xivo_fm_codec['it-trunk-disallow']['property'] = new Array('disabled|false:boole
 xivo_fm_codec['it-trunk-disallow']['link'] = 'it-codeclist';
 
 xivo_fm_codec['it-codeclist'] = new Array();
-xivo_fm_codec['it-codeclist']['property'] = new Array('disabled|false:boolean;className|it-enabled codeclisted','disabled|true:boolean;className|it-disabled codeclisted;selectedIndex|-1');
+xivo_fm_codec['it-codeclist']['property'] = new Array('disabled|false:boolean;className|it-enabled','disabled|true:boolean;className|it-disabled;selectedIndex|-1');
 xivo_fm_codec['it-codeclist']['link'] = 'it-codec';
 
 xivo_fm_codec['it-codec'] = new Array();
-xivo_fm_codec['it-codec']['property'] = new Array('disabled|false:boolean;className|it-enabled codecselected','disabled|true:boolean;className|it-disabled codecselected;selectedIndex|-1');
+xivo_fm_codec['it-codec']['property'] = new Array('disabled|false:boolean;className|it-enabled','disabled|true:boolean;className|it-disabled;selectedIndex|-1');
 
 xivo_attrib_register('fm_codec',xivo_fm_codec);
 
@@ -142,21 +142,9 @@ function xivo_chgtrunk(trunk)
 		xivo_chg_attrib('fm_host','fd-trunk-host-static',(host_dynamic.value == 'dynamic' ? 0 : 1));
 }
 
-window.onload = function()
-{
-	if(xivo_eid('it-trunk-type') != false)
-		xivo_chgtrunk(xivo_eid('it-trunk-type'));
-
-	if(xivo_eid('smenu-tab-1') != false)
-	{
-		xivo_smenu['bak']['smenu-tab-1'] = xivo_eid('smenu-tab-1').className;
-		xivo_smenu_click(xivo_eid('smenu-tab-1'),'moc','sb-part-general');
-	}
-
-	if(xivo_eid('it-register-active') != false)
-		xivo_chg_attrib('fm_register','it-register-username',(xivo_eid('it-register-active').checked == true ? 0 : 1));
-
-	if(xivo_eid('it-codec-active') != false)
-		xivo_chg_attrib('fm_codec','it-trunk-disallow',(xivo_eid('it-codec-active').checked == true ? 0 : 1));
-}
-
+xivo_winload += 'if(xivo_eid(\'it-trunk-type\') != false)\n' +
+		'xivo_chgtrunk(xivo_eid(\'it-trunk-type\'));\n' +
+		'if(xivo_eid(\'it-register-active\') != false)\n' +
+		'xivo_chg_attrib(\'fm_register\',\'it-register-username\',(xivo_eid(\'it-register-active\').checked == true ? 0 : 1));\n' +
+		'if(xivo_eid(\'it-codec-active\') != false)\n' +
+		'xivo_chg_attrib(\'fm_codec\',\'it-trunk-disallow\',(xivo_eid(\'it-codec-active\').checked == true ? 0 : 1));\n';

@@ -1,71 +1,326 @@
 ; title_content_name
 Propriétés du protocole SIP
 
+; smenu_general
+Général
+
+; smenu_network
+Réseau
+
+; smenu_signalling
+Signalisation
+
+; smenu_default
+Défaut
+
+; smenu_realtime
+Temps réel
+
 ; fm_bindport
 Port :
 
 ; fm_bindaddr
 Adresse IP d'écoute :
 
-; fm_channel-lang
-Langages :
+; fm_videosupport
+Support vidéo :
 
-; fm_realm
-Nom de domaine :
-
-; fm_srvlookup
-Requête DNS :
-
-; fm_maxexpiry
-Temps d'expiration :
-
-; fm_defaultexpiry
-Temps d'expiration par défaut :
-
-; fm_useragent
-Agent d'utilisateur :
-
-; fm_nat
-NAT :
-
-; fm_qualify
-Supervision :
-
-; fm_rtcachefriends
-Mise en cache des comptes :
+; fm_autocreatepeer
+Création automatique d'un utilisateur :
 
 ; fm_allowguest
 Accepter un appel non authentifié :
 
-; fm_tos
-TOS :
+; fm_allowguest-opt-no
+Non
 
-; fm_dtmfmode
-DTMF :
+; fm_allowguest-opt-yes
+Oui
 
-; fm_relaxdtmf
-RelaxDTMF :
+; fm_allowguest-opt-osp
+OSP
 
-; fm_externip
-Adresse IP externe :
+; fm_promiscredir
+Support des redirections 302 :
 
-; fm_localnet
-Réseau local :
+; fm_autodomain
+Domaine automatique :
 
-; fm_context
-Contexte :
+; fm_domain
+Domaine :
 
-; fm_musicclass
-Musique d'attente :
+; fm_allowexternaldomains
+Accepter les domaines externes :
+
+; fm_usereqphone
+Ajouter ";user=phone" dans l'URI :
+
+; fm_realm
+Realm :
+
+; fm_alwaysauthreject
+Rejeter les invitations et enregistrements :
+
+; fm_useragent
+User-Agent :
 
 ; fm_checkmwi
 Vérification de la messagerie vocale :
 
-; fm_videosupport
-Support vidéo :
+; fm_checkmwi-opt0
+Désactivée
 
-; fm_vmexten
-Numéro du répondeur :
+; fm_checkmwi-opt
+%s secondes
+
+; fm_regcontext
+Context d'enregistrement :
+
+; fm_callerid
+Nom d'appel :
+
+; fm_fromdomain
+Réécriture du champ From-Domain :
+
+; fm_sipdebug
+Débogage :
+
+; fm_dumphistory
+Sauvegarde de l'historique :
+
+; fm_recordhistory
+Enregistrement de l'historique :
+
+; fm_callevents
+Evénements des appels (AMI) :
+
+; fm_ospauth
+Authentification OSP :
+
+; fm_ospauth-opt-no
+Non
+
+; fm_ospauth-opt-proxy
+Proxy
+
+; fm_ospauth-opt-gateway
+Passerelle
+
+; fm_ospauth-opt-exclusive
+Exclusive
+
+; fm_tos
+TOS :
+
+; fm_localnet
+Réseau local :
+
+; fm_externip
+Adresse IP externe :
+
+; fm_externhost
+Domaine externe :
+
+; fm_externrefresh
+Temps de rafraîchissement du domaine externe :
+
+; fm_externrefresh-opt1
+1 sec.
+
+; fm_externrefresh-opt10
+10 sec.
+
+; fm_externrefresh-opt20
+20 sec.
+
+; fm_externrefresh-opt30
+30 sec.
+
+; fm_externrefresh-opt40
+40 sec.
+
+; fm_externrefresh-opt50
+50 sec.
+
+; fm_externrefresh-opt60
+1 min.
+
+; fm_externrefresh-opt120
+2 min.
+
+; fm_externrefresh-opt
+%s min. %s sec.
+
+; fm_outboundproxy
+Proxy Outbound :
+
+; fm_outboundproxyport
+Port du proxy Outbound :
+
+; fm_relaxdtmf
+RelaxDTMF :
+
+; fm_compactheaders
+Compacter les en-têtes :
+
+; fm_rtptimeout
+Délai d'attente pour le RTP :
+
+; fm_rtptimeout-opt0
+Désactivé
+
+; fm_rtptimeout-opt
+%s secondes
+
+; fm_rtpholdtimeout
+Délai du RTP sur attente :
+
+; fm_rtpholdtimeout-opt0
+Désactivé
+
+; fm_rtpholdtimeout-opt
+%s secondes
+
+; fm_rtpkeepalive
+Présence du RTP :
+
+; fm_rtpkeepalive-opt0
+Désactivée
+
+; fm_rtpkeepalive-opt
+%s secondes
+
+; fm_notifymimetype
+Notification du type de MIME :
+
+; fm_srvlookup
+Requête DNS :
+
+; fm_pedantic
+Pédant :
+
+; fm_maxexpiry
+Durée maximum :
+
+; fm_maxexpiry-opt1
+1 sec.
+
+; fm_maxexpiry-opt900
+15 min.
+
+; fm_maxexpiry-opt1800
+30 min.
+
+; fm_maxexpiry-opt2700
+45 min.
+
+; fm_maxexpiry-opt3600
+1 heure
+
+; fm_maxexpiry-opt7200
+2 heures
+
+; fm_maxexpiry-opt
+%s heure %s min.
+
+; fm_defaultexpiry
+Durée par défaut :
+
+; fm_defaultexpiry-opt1
+1 sec.
+
+; fm_defaultexpiry-opt10
+10 sec.
+
+; fm_defaultexpiry-opt20
+20 sec.
+
+; fm_defaultexpiry-opt30
+30 sec.
+
+; fm_defaultexpiry-opt40
+40 sec.
+
+; fm_defaultexpiry-opt50
+50 sec.
+
+; fm_defaultexpiry-opt60
+1 min.
+
+; fm_defaultexpiry-opt120
+2 min.
+
+; fm_defaultexpiry-opt180
+3 min.
+
+; fm_defaultexpiry-opt240
+4 min.
+
+; fm_defaultexpiry-opt
+%s min. %s sec.
+
+; fm_registertimeout
+Délai d'enregistrement :
+
+; fm_registertimeout-opt1
+1 sec.
+
+; fm_registertimeout-opt10
+10 sec.
+
+; fm_registertimeout-opt20
+20 sec.
+
+; fm_registertimeout-opt30
+30 sec.
+
+; fm_registertimeout-opt40
+40 sec.
+
+; fm_registertimeout-opt50
+50 sec.
+
+; fm_registertimeout-opt60
+1 min.
+
+; fm_registertimeout-opt120
+2 min.
+
+; fm_registertimeout-opt
+%s min. %s sec.
+
+; fm_registerattempts
+Nombre de tentative d'enregistrement :
+
+; fm_registerattempts-opt0
+Illimité
+
+; fm_registerattempts-opt10
+10 sec.
+
+; fm_registerattempts-opt20
+20 sec.
+
+; fm_registerattempts-opt30
+30 sec.
+
+; fm_registerattempts-opt40
+40 sec.
+
+; fm_registerattempts-opt50
+50 sec.
+
+; fm_registerattempts-opt60
+1 min.
+
+; fm_registerattempts-opt120
+2 min.
+
+; fm_registerattempts-opt
+%s min. %s sec.
+
+; fm_notifyringing
+Notification de sonnerie :
 
 ; fm_codec-disallow
 Codecs désactivés :
@@ -84,6 +339,144 @@ Ajouter ->
 
 ; bt-outcodec
 <- Enlever
+
+; fm_context
+Contexte :
+
+; fm_nat
+NAT :
+
+; fm_nat-opt-no
+Non
+
+; fm_nat-opt-yes
+Oui
+
+; fm_nat-opt-never
+Jamais
+
+; fm_nat-opt-route
+Route
+
+; fm_dtmfmode
+DTMF :
+
+; fm_qualify
+Supervision :
+
+; fm_qualify-optno
+Non
+
+; fm_qualify-optyes
+Oui
+
+; fm_qualify-opt
+%s millisecondes
+
+; fm_useclientcode
+Code client :
+
+; fm_progressinband
+Evénement RING dans la bande :
+
+; fm_progressinband-opt-no
+Non
+
+; fm_progressinband-opt-yes
+Oui
+
+; fm_progressinband-opt-never
+Jamais
+
+; fm_language
+Langages :
+
+; fm_musiconhold
+Musique d'attente :
+
+; fm_vmexten
+Numéro du répondeur :
+
+; fm_trustrpid
+Faire confiance au Remote-Party-ID :
+
+; fm_sendrpid
+Envoyer le Remote-Party-ID :
+
+; fm_canreinvite
+Invite :
+
+; fm_canreinvite-opt-no
+Non
+
+; fm_canreinvite-opt-yes
+Oui
+
+; fm_canreinvite-opt-update
+Mise à jour
+
+; fm_insecure
+Insécurité :
+
+; fm_insecure-opt-port
+Port
+
+; fm_insecure-opt-invite
+Invite
+
+; fm_insecure-opt-all
+Tout
+
+; fm_rtcachefriends
+Mise en cache des comptes :
+
+; fm_rtupdate
+Mise à jour du cache :
+
+; fm_ignoreregexpire
+Ignorer l'expiration :
+
+; fm_rtautoclear
+Suppression automatique du cache :
+
+; fm_rtautoclear-optno
+Non
+
+; fm_rtautoclear-optyes
+Oui
+
+; fm_rtautoclear-opt1
+1 sec.
+
+; fm_rtautoclear-opt10
+10 sec.
+
+; fm_rtautoclear-opt20
+20 sec.
+
+; fm_rtautoclear-opt30
+30 sec.
+
+; fm_rtautoclear-opt40
+40 sec.
+
+; fm_rtautoclear-opt50
+50 sec.
+
+; fm_rtautoclear-opt60
+1 min.
+
+; fm_rtautoclear-opt120
+2 min.
+
+; fm_rtautoclear-opt180
+3 min.
+
+; fm_rtautoclear-opt240
+4 min.
+
+; fm_rtautoclear-opt
+%s min. %s sec.
 
 ; fm_bt-save
 Sauvegarder

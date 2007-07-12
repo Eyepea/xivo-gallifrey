@@ -59,6 +59,9 @@ switch($act)
 
 			if($announce_list !== false)
 			{
+				if(isset($_QR['queue']['announce'],$announce_list[$_QR['queue']['announce']]) === false)
+					$_QR['queue']['announce'] = '';
+
 				if(isset($_QR['queue']['queue-youarenext'],$announce_list[$_QR['queue']['queue-youarenext']]) === false)
 					$_QR['queue']['queue-youarenext'] = '';
 
@@ -91,6 +94,7 @@ switch($act)
 			}
 			else
 			{
+				$_QR['queue']['announce'] = '';
 				$_QR['queue']['queue-youarenext'] = $_QR['queue']['queue-thereare'] = '';
 				$_QR['queue']['queue-callswaiting'] = $_QR['queue']['queue-holdtime'] = '';
 				$_QR['queue']['queue-minutes'] = $_QR['queue']['seconds'] = '';
@@ -100,7 +104,7 @@ switch($act)
 
 			$result = array();
 
-			if(($result['qfeatures'] = $qfeatures->chk_values($_QR['qfeatures'],true,true)) === false)
+			if(($result['qfeatures'] = $qfeatures->chk_values($_QR['qfeatures'])) === false)
 			{
 				$add = false;
 				$result['qfeatures'] = $qfeatures->get_filter_result();
@@ -109,7 +113,7 @@ switch($act)
 			$_QR['queue']['category'] = 'queue';
 			$_QR['queue']['name'] = $result['qfeatures']['name'];
 
-			if(($result['queue'] = $queue->chk_values($_QR['queue'],true,true)) === false)
+			if(($result['queue'] = $queue->chk_values($_QR['queue'])) === false)
 			{
 				$add = false;
 				$result['queue'] = $queue->get_filter_result();
@@ -130,7 +134,7 @@ switch($act)
 				else
 					$local_exten['context'] = $result['qfeatures']['context'];
 
-				if(($result['local_exten'] = $extensions->chk_values($local_exten,true,true)) === false)
+				if(($result['local_exten'] = $extensions->chk_values($local_exten)) === false)
 				{
 					$add = false;
 					$result['local_exten'] = $extensions->get_filter_result();
@@ -140,7 +144,7 @@ switch($act)
 				$exten_numbers['number'] = $result['local_exten']['exten'];
 				$exten_numbers['context'] = $result['local_exten']['context'];
 
-				if(($result['extenumbers'] = $extenumbers->chk_values($exten_numbers,true,true)) === false
+				if(($result['extenumbers'] = $extenumbers->chk_values($exten_numbers)) === false
 				|| $extenumbers->get_where($result['extenumbers']) !== false)
 				{
 					$add = false;
@@ -177,7 +181,7 @@ switch($act)
 					$mqinfo['interface'] = $ref['interface'];
 					$mqinfo['channel'] = $ref['channel'];
 
-					if(($mqinfo = $qmember->chk_values($mqinfo,true,true)) === false)
+					if(($mqinfo = $qmember->chk_values($mqinfo)) === false)
 						continue;
 
 					if($add === true)
@@ -223,7 +227,7 @@ switch($act)
 					$mqinfo['interface'] = $ref['interface'];
 					$mqinfo['channel'] = $ref['channel'];
 
-					if(($mqinfo = $qmember->chk_values($mqinfo,true,true)) === false)
+					if(($mqinfo = $qmember->chk_values($mqinfo)) === false)
 						continue;
 
 					if($add === true)
@@ -269,7 +273,7 @@ switch($act)
 					$mqinfo['interface'] = $ref['interface'];
 					$mqinfo['channel'] = $ref['channel'];
 
-					if(($mqinfo = $qmember->chk_values($mqinfo,true,true)) === false)
+					if(($mqinfo = $qmember->chk_values($mqinfo)) === false)
 						continue;
 
 					if($add === true)
@@ -335,6 +339,9 @@ switch($act)
 		$_HTML->assign('announce_list',$announce_list);
 		$_HTML->assign('element',$element);
 		$_HTML->assign('info',$result);
+
+		$dhtml = &$_HTML->get_module('dhtml');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 		break;
 	case 'edit':
 		$edit = true;
@@ -439,6 +446,9 @@ switch($act)
 
 			if($announce_list !== false)
 			{
+				if(isset($_QR['queue']['announce'],$announce_list[$_QR['queue']['announce']]) === false)
+					$_QR['queue']['announce'] = '';
+
 				if(isset($_QR['queue']['queue-youarenext'],$announce_list[$_QR['queue']['queue-youarenext']]) === false)
 					$_QR['queue']['queue-youarenext'] = '';
 
@@ -471,6 +481,7 @@ switch($act)
 			}
 			else
 			{
+				$_QR['queue']['announce'] = '';
 				$_QR['queue']['queue-youarenext'] = $_QR['queue']['queue-thereare'] = '';
 				$_QR['queue']['queue-callswaiting'] = $_QR['queue']['queue-holdtime'] = '';
 				$_QR['queue']['queue-minutes'] = $_QR['queue']['seconds'] = '';
@@ -480,7 +491,7 @@ switch($act)
 
 			$return = &$result;
 
-			if(($result['qfeatures'] = $qfeatures->chk_values($_QR['qfeatures'],true,true)) === false)
+			if(($result['qfeatures'] = $qfeatures->chk_values($_QR['qfeatures'])) === false)
 			{
 				$edit = false;
 				$result['qfeatures'] = array_merge($info['qfeatures'],$qfeatures->get_filter_result());
@@ -489,7 +500,7 @@ switch($act)
 			$_QR['queue']['name'] = $result['qfeatures']['name'];
 			$_QR['queue']['category'] = 'queue';
 
-			if(($result['queue'] = $queue->chk_values($_QR['queue'],true,true)) === false)
+			if(($result['queue'] = $queue->chk_values($_QR['queue'])) === false)
 			{
 				$edit = false;
 				$result['queue'] = $queue->get_filter_result();
@@ -521,7 +532,7 @@ switch($act)
 					else
 						$local_exten['context'] = $result['qfeatures']['context'];
 
-					if(($result['localexten'] = $extensions->chk_values($local_exten,true,true)) === false)
+					if(($result['localexten'] = $extensions->chk_values($local_exten)) === false)
 					{
 						$edit = false;
 						$result['localexten'] = array_merge($info['localexten'],$extensions->get_filter_result());
@@ -541,7 +552,7 @@ switch($act)
 				else
 					$local_exten['context'] = $result['qfeatures']['context'];
 
-				if(($result['localexten'] = $extensions->chk_values($local_exten,true,true)) === false)
+				if(($result['localexten'] = $extensions->chk_values($local_exten)) === false)
 				{
 					$edit = false;
 					$result['localexten'] = $extensions->get_filter_result();
@@ -572,7 +583,7 @@ switch($act)
 				{
 					$status['extenumbers'] = 'edit';
 
-					if(($result['extenumbers'] = $extenumbers->chk_values($exten_numbers,true,true)) === false
+					if(($result['extenumbers'] = $extenumbers->chk_values($exten_numbers)) === false
 					|| (($extenum = $extenumbers->get($result['extenumbers'])) !== false
 					   && (int) $extenum['id'] !== (int) $info['extenumbers']['id']) === true)
 					{
@@ -585,7 +596,7 @@ switch($act)
 			{
 				$status['extenumbers'] = 'add';
 
-				if(($result['extenumbers'] = $extenumbers->chk_values($exten_numbers,true,true)) === false)
+				if(($result['extenumbers'] = $extenumbers->chk_values($exten_numbers)) === false)
 				{
 					$edit = false;
 					$result['extenumbers'] = $extenumbers->get_filter_result();
@@ -640,7 +651,7 @@ switch($act)
 					$mqinfo['interface'] = $ref['interface'];
 					$mqinfo['channel'] = $ref['channel'];
 
-					if(($mqinfo = $qmember->chk_values($mqinfo,true,true)) === false)
+					if(($mqinfo = $qmember->chk_values($mqinfo)) === false)
 						continue;
 
 					if($edit === true)
@@ -712,7 +723,7 @@ switch($act)
 					$mqinfo['interface'] = $ref['interface'];
 					$mqinfo['channel'] = $ref['channel'];
 
-					if(($mqinfo = $qmember->chk_values($mqinfo,true,true)) === false)
+					if(($mqinfo = $qmember->chk_values($mqinfo)) === false)
 						continue;
 
 					if($edit === true)
@@ -784,7 +795,7 @@ switch($act)
 					$mqinfo['interface'] = $ref['interface'];
 					$mqinfo['channel'] = $ref['channel'];
 
-					if(($mqinfo = $qmember->chk_values($mqinfo,true,true)) === false)
+					if(($mqinfo = $qmember->chk_values($mqinfo)) === false)
 						continue;
 
 					if($edit === true)
@@ -1176,6 +1187,9 @@ switch($act)
 		$_HTML->assign('id',$info['qfeatures']['id']);
 		$_HTML->assign('info',$return);
 		$_HTML->assign('element',$element);
+
+		$dhtml = &$_HTML->get_module('dhtml');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 		break;
 	case 'delete':
 		$param['page'] = $page;

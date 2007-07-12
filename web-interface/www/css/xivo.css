@@ -84,6 +84,16 @@ pre {text-align: left;}
 .fm-field .fm-desc {display: block;float: left;text-align: right;width: 50%;}
 .fm-field p {padding-bottom: 2px;}
 
+.fm-multilist {text-align: center;width: 100%;}
+.fm-multilist div {float: left;width: 45%;}
+.fm-multilist .inout-list {width: 10%;}
+.fm-multilist .bt-inlist, .fm-multilist .bt-outlist, .fm-multilist .bt-uplist, .fm-multilist .bt-downlist {margin: 10px 0px 10px 2px;}
+.fm-multilist .slt-inlist {text-align: left;}
+.fm-multilist .slt-outlist {text-align: right;}
+.fm-multilist .slt-inlist select, .fm-multilist .slt-outlist select {min-width: 120px;width: auto;}
+.fm-multilist .slt-inlist select {float: left;}
+.fm-multilist .bt-updown {width: 20px;}
+
 .txt-left {text-align: left;}
 .txt-center {text-align: center;}
 .txt-right {text-align: right;}

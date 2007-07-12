@@ -78,7 +78,7 @@ $array['filter']['name'] = array('maxlen' => 80);
 $array['filter']['username'] = array('set' => false,'chk' => 2,'maxlen' => 80);
 $array['filter']['secret'] = array('set' => false,'chk' => 2,'maxlen' => 80);
 $array['filter']['callerid'] = array('set' => false,'chk' => 2,'maxlen' => 80);
-$array['filter']['context'] = array('set' => false,'chk' => 2,'maxlen' => 80);
+$array['filter']['context'] = array('set' => false,'chk' => 2,'unarrkey' => array('general','globals','hints','features','zonemessages'),'preg' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 80);
 $array['filter']['call-limit'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,30));
 $array['filter']['host'] = array('set' => false,'chk' => 2);
 $array['filter']['type'] = array('set' => false,'chk' => 2,'arrkey' => array('peer','user','friend'));

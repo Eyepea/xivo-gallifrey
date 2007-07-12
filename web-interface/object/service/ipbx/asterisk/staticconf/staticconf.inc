@@ -280,7 +280,7 @@ class xivo_service_asterisk_staticconf extends xivo_service_asterisk_abstract
 
 		if(is_array($val) === false
 		|| ($where = $this->get_elements_where($arr)) === false
-		|| ($values = $this->chk_set_values($val,true,true)) === false)
+		|| ($values = $this->chk_set_values($val)) === false)
 			return(false);
 
 		return($this->_dso->edit_where($where,$values,$disable));

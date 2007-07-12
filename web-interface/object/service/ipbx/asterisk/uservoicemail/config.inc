@@ -36,7 +36,7 @@ $array['filter']['password'] = array('preg' => '/^[0-9\*#]+$/','maxlen' => 5);
 $array['filter']['email'] = array('set' => false,'chk' => 2,'func' => 'xivo_filter::chk_email');
 $array['filter']['attach'] = array('bool' => true);
 $array['filter']['delete'] = array('bool' => true);
-$array['filter']['context'] = array('set' => false,'chk' => 2,'unarrkey' => array('general','globals','hints','features'),'preg' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 80);
+$array['filter']['context'] = array('set' => false,'chk' => 2,'unarrkey' => array('general','globals','hints','features','zonemessages'),'preg' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 80);
 $array['filter']['mailbox'] = array('minlen' => 1,'maxlen' => 11,'cast' => 'digit');
 
 ?>

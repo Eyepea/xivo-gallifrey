@@ -3,6 +3,9 @@
 ?>
 <div class="b-infos b-form">
 	<h3 class="sb-top xspan"><span class="span-left">&nbsp;</span><span class="span-center"><?=$this->bbf('title_content_name');?></span><span class="span-right">&nbsp;</span></h3>
+	
+	<?=$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/agents/submenuagent');?>
+
 	<div class="sb-content">
 <form action="#" method="post" accept-charset="utf-8" onsubmit="xivo_fm_select('it-queue');">
 

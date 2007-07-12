@@ -29,7 +29,7 @@ switch($act)
 
 			$_QR['extenumbers']['context'] = 'did-extensions';
 
-			if(($result['extenumbers'] = $extenumbers->chk_values($_QR['extenumbers'],true,true)) === false
+			if(($result['extenumbers'] = $extenumbers->chk_values($_QR['extenumbers'])) === false
 			|| $extenumbers->get($result['extenumbers']) !== false)
 			{
 				$add = false;
@@ -44,7 +44,7 @@ switch($act)
 				$didexten['app'] = 'Macro';
 				$didexten['appdata'] = 'superdid';
 
-				if(($result['did'] = $extensions->chk_values($didexten,true,true)) === false)
+				if(($result['did'] = $extensions->chk_values($didexten)) === false)
 				{
 					$add = false;
 					$result['did'] = $extensions->get_filter_result();
@@ -60,7 +60,7 @@ switch($act)
 			else
 				unset($_QR['dfeatures']['custom']);
 
-			if(($result['dfeatures'] = $dfeatures->chk_values($_QR['dfeatures'],true,true)) === false
+			if(($result['dfeatures'] = $dfeatures->chk_values($_QR['dfeatures'])) === false
 			|| ($result['dfeatures']['type'] !== 'custom'
 			   && (($tyfeatures = &$ipbx->get_module($result['dfeatures']['type'].'features')) === false
 			   || ($result['tyfeatures'] = $tyfeatures->get($result['dfeatures']['typeid'],false)) === false
@@ -163,7 +163,7 @@ switch($act)
 
 			$_QR['extenumbers']['context'] = $info['extenumbers']['context'];
 
-			if(($result['extenumbers'] = $extenumbers->chk_values($_QR['extenumbers'],true,true)) === false
+			if(($result['extenumbers'] = $extenumbers->chk_values($_QR['extenumbers'])) === false
 			|| (($extenum = $extenumbers->get($result['extenumbers'])) !== false 
 			   && (int) $extenum['id'] !== (int) $info['extenumbers']['id']) === true)
 			{
@@ -176,13 +176,15 @@ switch($act)
 				$didexten['exten'] = $result['extenumbers']['number'];
 				$didexten['context'] = $result['extenumbers']['context'];
 
-				if(($result['did'] = $extensions->chk_values($didexten,true,true)) === false)
+				if(($result['did'] = $extensions->chk_values($didexten)) === false)
 				{
 					$edit = false;
 					$result['did'] = $extensions->get_filter_result();
 				}
 				else
 					$_QR['dfeatures']['number'] = $result['extenumbers']['number'];
+
+				$result['did']['commented'] = $info['did']['commented'];
 			}
 
 			$_QR['dfeatures']['extenid'] = $info['dfeatures']['extenid'];
@@ -192,7 +194,7 @@ switch($act)
 			else
 				unset($_QR['dfeatures']['custom']);
 
-			if(($result['dfeatures'] = $dfeatures->chk_values($_QR['dfeatures'],true,true)) === false
+			if(($result['dfeatures'] = $dfeatures->chk_values($_QR['dfeatures'])) === false
 			|| ($result['dfeatures']['type'] !== 'custom'
 				&& (($tyfeatures = &$ipbx->get_module($result['dfeatures']['type'].'features')) === false
 				|| ($result['tyfeatures'] = $tyfeatures->get($result['dfeatures']['typeid'],false)) === false

@@ -1,6 +1,12 @@
 ; title_content_name
 Agents > Ajouter un groupe
 
+; smenu_general
+Général
+
+; smenu_queues
+Files d'attente
+
 ; fm_agentgroup_name
 Nom :
 

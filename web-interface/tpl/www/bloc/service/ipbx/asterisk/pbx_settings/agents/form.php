@@ -16,6 +16,8 @@
 	$qmember_unslt = $this->vars('qmember_unslt');
 ?>
 
+<div id="sb-part-general">
+
 <?=$form->text(array('desc' => $this->bbf('fm_agentgroup_name'),'name' => 'agroup[name]','labelid' => 'agroup-name','size' => 25,'default' => $element['agroup']['name']['default'],'value' => $info['agroup']['name']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 <?php
@@ -46,11 +48,15 @@
 
 	</div>
 </div>
-
 <div class="clearboth"></div>
 <?php
 	endif;
+?>
+</div>
 
+<div id="sb-part-queue" class="b-nodisplay">
+
+<?php
 	if($queues !== false && ($nb = count($queues)) !== 0):
 ?>
 	<div id="queuelist" class="fm-field fm-multilist">
@@ -110,3 +116,5 @@
 		echo '<div class="txt-center">',$url->href_html($this->bbf('create_queue'),'service/ipbx/pbx_settings/queues','act=add'),'</div>';
 	endif;
 ?>
+
+</div>

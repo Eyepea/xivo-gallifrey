@@ -16,8 +16,8 @@
 	$ringgroup = xivo_bool($info['ufeatures']['ringgroup']);
 ?>
 
-<fieldset id="fd-group">
-	<legend><?=$this->bbf('fd-callgroup');?></legend>
+<fieldset id="fld-group">
+	<legend><?=$this->bbf('fld-callgroup');?></legend>
 <?php
 	if($groups !== false && ($nb = count($groups)) !== 0):
 ?>
@@ -92,8 +92,8 @@
 	endif;
 ?>
 </fieldset>
-<fieldset id="fd-queue">
-	<legend><?=$this->bbf('fd-queuegroup');?></legend>
+<fieldset id="fld-queue">
+	<legend><?=$this->bbf('fld-queuegroup');?></legend>
 <?php
 	if($queues !== false && ($nb = count($queues)) !== 0):
 ?>

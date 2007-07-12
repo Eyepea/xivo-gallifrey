@@ -1,3 +1,25 @@
+var xivo_conf = new Array();
+xivo_conf['attrib'] = new Array();
+xivo_conf['eid'] = new Array();
+
+var xivo_smenu = new Array();
+xivo_smenu['click'] = new Array();
+xivo_smenu['click']['id'] = '';
+xivo_smenu['click']['class'] = '';
+xivo_smenu['bak'] = new Array();
+xivo_smenu['before'] = new Array();
+xivo_smenu['before']['id'] = '';
+xivo_smenu['before']['class'] = '';
+xivo_smenu['display'] = '';
+
+var xivo_dprog = new Array();
+xivo_dprog['current'] = new Array();
+xivo_dprog['bak'] = new Array();
+xivo_dprog['display'] = new Array();
+
+var xivo_fm = document.forms;
+var xivo_winload = '';
+
 function xivo_bwcheck()
 {
 	this.ver = navigator.appVersion;
@@ -16,7 +38,6 @@ function xivo_bwcheck()
 }
 
 var xivo_bw = xivo_bwcheck();
-var xivo_fm = document.forms;
 
 function xivo_open_center(url,name,width,height,param)
 {
@@ -65,25 +86,6 @@ function xivo_str_repeat(str,len)
 
 	return(r);
 }
-
-var xivo_conf = new Array();
-xivo_conf['attrib'] = new Array();
-xivo_conf['eid'] = new Array();
-
-var xivo_smenu = new Array();
-xivo_smenu['click'] = new Array();
-xivo_smenu['click']['id'] = '';
-xivo_smenu['click']['class'] = '';
-xivo_smenu['bak'] = new Array();
-xivo_smenu['before'] = new Array();
-xivo_smenu['before']['id'] = '';
-xivo_smenu['before']['class'] = '';
-xivo_smenu['display'] = '';
-
-var xivo_dprog = new Array();
-xivo_dprog['current'] = new Array();
-xivo_dprog['bak'] = new Array();
-xivo_dprog['display'] = new Array();
 
 function xivo_eid(id)
 {

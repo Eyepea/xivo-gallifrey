@@ -4,21 +4,6 @@
 #s-asterisk #index .sb-content dl {width: 50%;}
 #s-asterisk #index .sb-content dt {padding-top: 10px;font-weight: bold;}
 
-#s-asterisk .sb-content #comment, #s-asterisk .sb-content #emailbody, #s-asterisk #codeclist {text-align: center;width: 100%;}
-#s-asterisk #codeclist #it-codeclist, #s-asterisk #codeclist .codeclisted {float: right;}
-#s-asterisk #userlist #it-group, #s-asterisk #codeclist #it-codeclist, #s-asterisk #codeclist #it-codec, #s-asterisk #codeclist .codeclisted, #s-asterisk #codeclist .codecselected {min-width: 120px;width: auto;}
-#s-asterisk #codeclist div {float: left;width: 45%;}
-#s-asterisk #codeclist #inout-codec {width: 10%;}
-#s-asterisk #codeclist #bt-incodec, #s-asterisk #codeclist #bt-outcodec {margin: 10px 0px 10px 2px;}
-#s-asterisk #codeclist #bt-upcodec, #s-asterisk #codeclist #bt-downcodec {margin: 10px 0px 10px 2px;}
-#s-asterisk #codeclist #select-codec #it-codec, #s-asterisk #codeclist .codecselected {float: left;}
+#s-asterisk .sb-content #comment, #s-asterisk .sb-content #emailbody {text-align: center;width: 100%;}
 
-.fm-multilist {text-align: center;width: 100%;}
-.fm-multilist div {float: left;width: 45%;}
-.fm-multilist .inout-list {width: 10%;}
-.fm-multilist .bt-inlist, .fm-multilist .bt-outlist, .fm-multilist .bt-uplist, .fm-multilist .bt-downlist {margin: 10px 0px 10px 2px;}
-.fm-multilist .slt-inlist {text-align: left;}
-.fm-multilist .slt-outlist {text-align: right;}
-.fm-multilist .slt-inlist select, .fm-multilist .slt-outlist select {min-width: 120px;width: auto;}
-.fm-multilist .slt-inlist select {float: left;}
-.fm-multilist .bt-updown {width: 20px;}
+#sb-part-queue .sb-list th {width: 50%;}

@@ -83,7 +83,7 @@ do
 	if(xivo_issa('allow',$_QR['protocol']) === false)
 		unset($_QR['protocol']['allow'],$_QR['protocol']['disallow']);
 
-	if(($result['protocol'] = $protocol->chk_values($_QR['protocol'],true,true)) === false)
+	if(($result['protocol'] = $protocol->chk_values($_QR['protocol'])) === false)
 	{
 		$add = false;
 		$result['protocol'] = $protocol->get_filter_result();
@@ -100,7 +100,7 @@ do
 	$_QR['ufeatures']['protocol'] = $_QR['protocol']['protocol'];
 	$_QR['ufeatures']['protocolid'] = 0;
 
-	if(($result['ufeatures'] = $ufeatures->chk_values($_QR['ufeatures'],true,true)) === false)
+	if(($result['ufeatures'] = $ufeatures->chk_values($_QR['ufeatures'])) === false)
 	{
 		$add = false;
 		$result['ufeatures'] = $ufeatures->get_filter_result();
@@ -123,7 +123,7 @@ do
 		else
 			$local_exten['context'] = $result['protocol']['context'];
 
-		if(($result['local_exten'] = $extensions->chk_values($local_exten,true,true)) === false)
+		if(($result['local_exten'] = $extensions->chk_values($local_exten)) === false)
 		{
 			$add = false;
 			$result['local_exten'] = $extensions->get_filter_result();
@@ -142,7 +142,7 @@ do
 		$exten_numbers['number'] = $result['local_exten']['exten'];
 		$exten_numbers['context'] = $result['local_exten']['context'];
 
-		if(($result['extenumbers'] = $extenumbers->chk_values($exten_numbers,true,true)) === false
+		if(($result['extenumbers'] = $extenumbers->chk_values($exten_numbers)) === false
 		|| $extenumbers->get($result['extenumbers']) !== false)
 		{
 			$add = false;
@@ -157,7 +157,7 @@ do
 			$hints['exten'] = $result['ufeatures']['number'];
 			$hints['priority'] = -1;
 
-			if(($result['hints'] = $extensions->chk_values($hints,true,true)) === false)
+			if(($result['hints'] = $extensions->chk_values($hints)) === false)
 			{
 				$add = false;
 				$result['hints'] = $extensions->get_filter_result();
@@ -218,7 +218,7 @@ do
 
 			$ugroup_tmp = array_merge($_QR['group'][$qname],$ugroup_info);
 
-			if(($ginfo = $qmember->chk_values($ugroup_tmp,true,true)) !== false)
+			if(($ginfo = $qmember->chk_values($ugroup_tmp)) !== false)
 			{
 				$group_tmp[$qname] = 1;
 				$group_add[] = $ginfo;
@@ -236,7 +236,7 @@ do
 		$result['usergroup']['userid'] = 0;
 		$result['usergroup']['groupid'] = $usergroup;
 
-		if(($result['usergroup'] = $ugroup->chk_values($result['usergroup'],true,true)) === false)
+		if(($result['usergroup'] = $ugroup->chk_values($result['usergroup'])) === false)
 			$result['usergroup'] = $ugroup->get_filter_result();
 		else
 			$add_usergroup = true; 
@@ -290,7 +290,7 @@ do
 
 			$uqueue_tmp = array_merge($_QR['queue'][$qname],$uqueue_info);
 
-			if(($qinfo = $qmember->chk_values($uqueue_tmp,true,true)) !== false)
+			if(($qinfo = $qmember->chk_values($uqueue_tmp)) !== false)
 			{
 				$queue_tmp[$qname] = 1;
 				$queue_add[] = $qinfo;
@@ -307,7 +307,7 @@ do
 
 		$_QR['voicemail']['context'] = $result['ufeatures']['context'];
 
-		if(($result['voicemail'] = $voicemail->chk_values($_QR['voicemail'],true,true)) === false)
+		if(($result['voicemail'] = $voicemail->chk_values($_QR['voicemail'])) === false)
 			$result['voicemail'] = $voicemail->get_filter_result();
 		else
 			$add_voicemail = true;
@@ -355,7 +355,7 @@ do
 		$_QR['autoprov']['proto'] = $result['ufeatures']['protocol'];
 		$_QR['autoprov']['iduserfeatures'] = 0;
 		
-		if(($result['autoprov'] = $autoprov->chk_values($_QR['autoprov'],true,true)) === false)
+		if(($result['autoprov'] = $autoprov->chk_values($_QR['autoprov'])) === false)
 			$result['autoprov'] = $autoprov->get_filter_result();
 		else
 			$send_autoprov = true;
@@ -510,5 +510,6 @@ $_HTML->assign('autoprov_list',$autoprov_list);
 
 $dhtml = &$_HTML->get_module('dhtml');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users.js');
+$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 
 ?>

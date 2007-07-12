@@ -12,7 +12,9 @@ do
 	if(isset($_QR['fm_send']) === false)
 		break;
 
-	if(($result = $musiconhold->chk_values($_QR,true,true)) === false
+	unset($_QR['filename']);
+
+	if(($result = $musiconhold->chk_values($_QR)) === false
 	|| ($result['mode'] === 'custom' && (string) $result['application'] === '') === true)
 	{
 		$info = $musiconhold->get_filter_result();

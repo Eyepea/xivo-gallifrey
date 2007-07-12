@@ -97,7 +97,7 @@ do
 	}
 	while(false);
 
-	if(($result['trunk'] = $trunkiax->chk_values($_QR['trunk'],true,true)) === false)
+	if(($result['trunk'] = $trunkiax->chk_values($_QR['trunk'])) === false)
 	{
 		$edit = false;
 		$result['trunk'] = $trunkiax->get_filter_result();
@@ -133,7 +133,7 @@ do
 
 	$info['tfeatures']['registerid'] = $registerid;
 
-	if(($result['tfeatures'] = $tfeatures->chk_values($info['tfeatures'],true,true)) === false)
+	if(($result['tfeatures'] = $tfeatures->chk_values($info['tfeatures'])) === false)
 	{
 		$edit = false;
 		$result['tfeatures'] = $tfeatures->get_filter_result();

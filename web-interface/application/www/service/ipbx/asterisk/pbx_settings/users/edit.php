@@ -135,7 +135,7 @@ do
 		$old_protocol = &$protocol;
 	}
 
-	if(($result['protocol'] = $protocol->chk_values($_QR['protocol'],true,true)) === false)
+	if(($result['protocol'] = $protocol->chk_values($_QR['protocol'])) === false)
 	{
 		$edit = false;
 		$result['protocol'] = array_merge($info['protocol'],$protocol->get_filter_result());
@@ -152,7 +152,7 @@ do
 	$_QR['ufeatures']['protocol'] = $_QR['protocol']['protocol'];
 	$_QR['ufeatures']['protocolid'] = 0;
 
-	if(($result['ufeatures'] = $ufeatures->chk_values($_QR['ufeatures'],true,true)) === false)
+	if(($result['ufeatures'] = $ufeatures->chk_values($_QR['ufeatures'])) === false)
 	{
 		$edit = false;
 		$result['ufeatures'] = array_merge($info['ufeatures'],$ufeatures->get_filter_result());
@@ -190,7 +190,7 @@ do
 				else
 					$local_exten['context'] = $result['protocol']['context'];
 
-				if(($result['localexten'] = $localexten->chk_values($local_exten,true,true)) === false)
+				if(($result['localexten'] = $localexten->chk_values($local_exten)) === false)
 				{
 					$edit = false;
 					$result['localexten'] = array_merge($info['localexten'],$localexten->get_filter_result());
@@ -210,7 +210,7 @@ do
 			else
 				$local_exten['context'] = $result['protocol']['context'];
 
-			if(($result['localexten'] = $localexten->chk_values($local_exten,true,true)) === false)
+			if(($result['localexten'] = $localexten->chk_values($local_exten)) === false)
 			{
 				$edit = false;
 				$result['localexten'] = $localexten->get_filter_result();
@@ -241,7 +241,7 @@ do
 			{
 				$status['extenumbers'] = 'edit';
 
-				if(($result['extenumbers'] = $extenumbers->chk_values($exten_numbers,true,true)) === false
+				if(($result['extenumbers'] = $extenumbers->chk_values($exten_numbers)) === false
 				|| (($extenum = $extenumbers->get($result['extenumbers'])) !== false
 				   && (int) $extenum['id'] !== (int) $info['extenumbers']['id']) === true)
 				{
@@ -254,7 +254,7 @@ do
 		{
 			$status['extenumbers'] = 'add';
 
-			if(($result['extenumbers'] = $extenumbers->chk_values($exten_numbers,true,true)) === false)
+			if(($result['extenumbers'] = $extenumbers->chk_values($exten_numbers)) === false)
 			{
 				$edit = false;
 				$result['extenumbers'] = $extenumbers->get_filter_result();
@@ -310,7 +310,7 @@ do
 
 				if($result['ufeatures']['number'] === '')
 					$status['hints'] = 'delete';
-				else if(($result['hints'] = $hintsexten->chk_values($hints,true,true)) === false)
+				else if(($result['hints'] = $hintsexten->chk_values($hints)) === false)
 				{
 					$edit = false;
 					$result['hints'] = $hintsexten->get_filter_result();
@@ -325,7 +325,7 @@ do
 				$hints['priority'] = -1;
 				$hints['app'] = $hints_interface;
 
-				if(($result['hints'] = $hintsexten->chk_values($hints,true,true)) === false)
+				if(($result['hints'] = $hintsexten->chk_values($hints)) === false)
 				{
 					$edit = false;
 					$result['hints'] = $hintsexten->get_filter_result();
@@ -400,7 +400,7 @@ do
 
 			$ugroup_tmp = array_merge($_QR['group'][$qname],$ugroup_info);
 
-			if(($ginfo = $qmember->chk_values($ugroup_tmp,true,true)) !== false)
+			if(($ginfo = $qmember->chk_values($ugroup_tmp)) !== false)
 			{
 				$status['group'] = true;
 				$group_tmp[$qname] = 1;
@@ -439,7 +439,7 @@ do
 
 		if($usergroup === false)
 			$status['usergroup'] = 'delete';
-		else if(($result['usergroup'] = $ugroup->chk_values($result['usergroup'],true,true)) === false)
+		else if(($result['usergroup'] = $ugroup->chk_values($result['usergroup'])) === false)
 			$result['usergroup'] = array_merge($info['usergroup'],$ugroup->get_filter_result());
 		else
 			$status['usergroup'] = 'edit';
@@ -450,7 +450,7 @@ do
 		$result['usergroup']['userid'] = $info['ufeatures']['id'];
 		$result['usergroup']['groupid'] = $usergroup;
 
-		if(($result['usergroup'] = $ugroup->chk_values($result['usergroup'],true,true)) === false)
+		if(($result['usergroup'] = $ugroup->chk_values($result['usergroup'])) === false)
 			$result['usergroup'] = $ugroup->get_filter_result();
 		else
 			$status['usergroup'] = 'add';
@@ -519,7 +519,7 @@ do
 
 			$uqueue_tmp = array_merge($_QR['queue'][$qname],$uqueue_info);
 
-			if(($qinfo = $qmember->chk_values($uqueue_tmp,true,true)) !== false)
+			if(($qinfo = $qmember->chk_values($uqueue_tmp)) !== false)
 			{
 				$status['queue'] = true;
 				$queue_tmp[$qname] = 1;
@@ -561,7 +561,7 @@ do
 			$_QR['voicemail']['mailbox'] = $result['ufeatures']['number'];
 			$_QR['voicemail']['context'] = $result['ufeatures']['context'];
 
-			if(($result['voicemail'] = $voicemail->chk_values($_QR['voicemail'],true,true)) === false)
+			if(($result['voicemail'] = $voicemail->chk_values($_QR['voicemail'])) === false)
 				$result['voicemail'] = array_merge($info['voicemail'],$voicemail->get_filter_result());
 			else
 				$status['voicemail'] = 'edit';
@@ -574,7 +574,7 @@ do
 		$_QR['voicemail']['mailbox'] = $result['ufeatures']['number'];
 		$_QR['voicemail']['context'] = $result['ufeatures']['context'];
 
-		if(($result['voicemail'] = $voicemail->chk_values($_QR['voicemail'],true,true)) === false)
+		if(($result['voicemail'] = $voicemail->chk_values($_QR['voicemail'])) === false)
 			$result['voicemail'] = $voicemail->get_filter_result();
 		else
 			$status['voicemail'] = 'add';
@@ -590,7 +590,7 @@ do
 			$aprovinfo['modact'] = $_QR['autoprov']['modact'];
 			$aprovinfo['proto'] = $result['ufeatures']['protocol'];
 
-			if(($result['autoprov'] = $autoprov->chk_values($aprovinfo,true,true)) === false)
+			if(($result['autoprov'] = $autoprov->chk_values($aprovinfo)) === false)
 				$result['autoprov'] = $autoprov->get_filter_result();
 			else
 				$send_autoprov = true;
@@ -633,7 +633,7 @@ do
 		$_QR['autoprov']['proto'] = $result['ufeatures']['protocol'];
 		$_QR['autoprov']['iduserfeatures'] = $info['ufeatures']['id'];
 		
-		if(($result['autoprov'] = $autoprov->chk_values($_QR['autoprov'],true,true)) === false)
+		if(($result['autoprov'] = $autoprov->chk_values($_QR['autoprov'])) === false)
 			$result['autoprov'] = $autoprov->get_filter_result();
 		else
 			$send_autoprov = true;
@@ -989,5 +989,6 @@ $_HTML->assign('autoprov_list',$autoprov_list);
 
 $dhtml = &$_HTML->get_module('dhtml');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users.js');
+$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 
 ?>
