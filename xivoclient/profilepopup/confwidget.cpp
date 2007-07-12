@@ -129,6 +129,7 @@ ConfWidget::ConfWidget(Engine *engine, MainWidget *parent)
 	QDialogButtonBox * btnbox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
 	connect( btnbox, SIGNAL(accepted()), this, SLOT(saveAndClose()) );
 	connect( btnbox, SIGNAL(rejected()), this, SLOT(close()) );
+	btnbox->button(QDialogButtonBox::Ok)->setDefault(true);
 
 	vlayout->addLayout(gridlayout);
 	vlayout->addWidget(btnbox);
