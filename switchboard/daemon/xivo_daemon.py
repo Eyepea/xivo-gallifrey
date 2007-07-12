@@ -628,10 +628,11 @@ def build_customers(astn, ctx, searchpattern):
 					o = x[1]['o'][0]
 				if 'mail' in x[1].keys():
 					mailn = x[1]['mail'][0]
-				if mailn != "":
-					fullstatlist.append("%s;%s;%s;mailto:%s" %(tnum,cn,o,mailn))
-				else:
-					fullstatlist.append("%s;%s;%s;" %(tnum,cn,o))
+				fullstatlist.append("%s;%s;%s;%s" %(tnum,cn,o,mailn))
+#				if mailn != "":
+#					fullstatlist.append("%s;%s;%s;mailto:%s" %(tnum,cn,o,mailn))
+#				else:
+#					fullstatlist.append("%s;%s;%s;" %(tnum,cn,o))
 	elif dbkind != "":
 		if dir_db_matchingfields == "":
 			log_debug("dir_db_matchingfields is empty - could not proceed directory-search request")
@@ -2583,6 +2584,33 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
 							response = 'HISTORY %s' %repstr
 						else:
 							raise NameError, "history not allowed"
+##					elif list[4] == 'PEERS':
+##						if "peers" in capabilities.split(","):
+##							repstr = build_peers(list[5], list[6], list[7])
+##							response = 'PEERS %s' %repstr
+##						else:
+##							raise NameError, "peers not allowed"
+					elif list[4] == 'FEATURES' and len(list) >= 6:
+						if "features" in capabilities.split(","):
+							# GET / SET
+							#							repstr = build_features(list[5], list[6], list[7])
+							if list[5] == 'GET':
+								repstr = ""
+								for key in ["VM", "Record", "Screen", "DND",
+									    "FWD/Busy/Status", "FWD/Busy/Number",
+									    "FWD/RNA/Status",  "FWD/RNA/Number",
+									    "FWD/Unc/Status",  "FWD/Unc/Number"]:
+									fullcomm = "database get %s/users/%s %s" %(e['context'], user.split("sip")[1], key)
+									reply = AMIclasssock[astnum].execclicommand(fullcomm)
+									for r in reply:
+										if r.find("Value: ") == 0:
+											repstr += "%s;%s;" %(key, r.rstrip().split(" ")[1])
+								response = 'FEATURES %s' %repstr
+							elif list[5] == 'SET':
+								repstr = ""
+								response = 'FEATURES %s' %repstr
+						else:
+							raise NameError, "features not allowed"
 					elif list[4] == 'DIRECTORY':
 						if "directory" in capabilities.split(","):
 							repstr = build_customers(astnum, e['context'], list[5])
