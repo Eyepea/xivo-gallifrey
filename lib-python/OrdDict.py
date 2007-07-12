@@ -23,76 +23,95 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-from itertools import tee
+import operator
+
+from ROListProxy import *
+from pyfunc import *
+
+def repr_dict_seqseq(dct, key_seq):
+	first = True
+	for k in iter(key_seq):
+		if not first:
+			yield (', ',)
+		yield (repr(k), ': ', repr(dct[k]))
+		first = False
+
+# XXX: unit tests
 
 missing = object()
 class ordDict(dict):
-	__slots__ = ('_seq',)
-	def __init__(self, seq = missing):
-		if seq is not missing:
-			seq1,seq2 = tee(seq)
-			self._seq = [k for (k,v) in seq1]
-			super(ordDict, self).__init__(seq2)
-		else:
-			self._seq = []
-			super(ordDict, self).__init__()
+	__slots__ = ('__seq', '__seq_ro')
+	def __init__(self, seq = []):
+		super(ordDict, self).__init__()
+		self.__seq = []
+		self.__seq_ro = ROListProxy(self.__seq)
+		for k,v in seq:
+			self[k] = v
 	def __delitem__(self, k):
 		super(ordDict, self).__delitem__(k)
-		self._seq.remove(k)
+		self.__seq.remove(k)
 	def __iter__(self):
-		return iter(self._seq)
+		return iter(self.__seq)
 	def __setitem__(self, k, v):
 		plen = len(self)
 		super(ordDict, self).__setitem__(k,v)
 		if len(self) != plen:
-			self._seq.append(k)
+			self.__seq.append(k)
+	def __repr__(self):
+		# Maybe representation should be differentiated from plain 
+		# builtin non ordered dictionaries
+		return ''.join(chain('{', flatten_seq(repr_dict_seqseq(self, self.__seq)), '}'))
 	def clear(self):
 		super(ordDict, self).clear()
-		self._seq = []
+		del self.__seq[:]
 	def copy(self):
 		return ordDict(self.iteritems())
 	def items(self):
-		return [(k,self[k]) for k in self._seq]
+		return [(k,self[k]) for k in self.__seq]
 	def iteritems(self):
-		return ((k,self[k]) for k in self._seq)
+		return ((k,self[k]) for k in self.__seq)
 	def iterkeys(self):
-		return iter(self._seq)
+		return iter(self.__seq)
 	def itervalues(self):
-		return (self[k] for k in self._seq)
+		return (self[k] for k in self.__seq)
 	def keys(self):
-		return self._seq[:]
+		return self.__seq[:]
 	def pop(self, *args):
 		r = super(ordDict, self).pop(*args)
 		try:
-			self._seq.remove(args[0])
+			self.__seq.remove(args[0])
 		except ValueError:
 			pass # any arror already catched by super dict
 		return r
 	def popitem(self):
 		(k,v) = super(ordDict, self).popitem()
-		self._seq.remove(k)
+		self.__seq.remove(k)
 		return (k,v)
 	def setdefault(self,k,d=None):
 		try:
 			return self[k]
 		except KeyError:
 			super(ordDict, self).__setitem__(k,d)
-			self._seq.append(k)
+			self.__seq.append(k)
 			return d
-	def update(self, E=missing, **F):
-		if isinstance(E, dict):
-			for k,v in E.iteritems():
-				self[k] = v
-		elif E is not missing:
-			for k,v in E:
-				self[k] = v
+	def update(self, *E, **F):
+		if len(E) > 1:
+			raise TypeError, 'update expected at most 1 arguments, got %d' % len(E)
+		if E:
+			try:
+				for k,v in E[0].iteritems():
+					self[k] = v
+			except AttributeError:
+				for k,v in E[0]:
+					self[k] = v
 		for k,v in F.iteritems():
 			self[k] = v
 	def values(self):
-		return [self[k] for k in self._seq]
+		return [self[k] for k in self.__seq]
 	def reverse(self):
-		self._seq.reverse()
+		self.__seq.reverse()
 	def sort(self):
-		self._seq.sort()
+		self.__seq.sort()
+	_seq = property(operator.attrgetter('_ordDict__seq_ro'))
 
 __all__ = ['ordDict']
