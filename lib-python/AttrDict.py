@@ -52,9 +52,11 @@ import operator
 
 missing = object()
 class AttrDict(object):
+	"""WARNING: no call to super(AttrDict, self).__init__ in
+	AttrDict.__init__ """
 	__slots__ = ('__attr_dict',)
 	def __init__(self, dct):
-		super(AttrDict, self).__setattr__('_AttrDict__attr_dict', dct)
+		object.__setattr__(self, '_AttrDict__attr_dict', dct)
 	def __repr__(self):
 		return ''.join(('AttrDict(', repr(self.__attr_dict), ')'))
 	def __lt__(self, y):
@@ -90,7 +92,7 @@ class AttrDict(object):
 		if '_' != attr[0]:
 			self.__attr_dict[attr] = value
 		elif '_attr' == attr[0:5]:
-			super(AttrDict, self).__setattr__('_AttrDict_'+attr, value)
+			object.__setattr__(self, '_AttrDict_'+attr, value)
 		else:
 			setattr(self.__attr_dict, attr[1:], value)
 	def __delattr__(self, attr):
