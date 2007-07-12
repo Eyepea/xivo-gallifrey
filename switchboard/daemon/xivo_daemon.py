@@ -300,7 +300,6 @@ def update_history_call(astn, techno, phoneid, phonenum, nlines, kind):
 
 
 def build_history_string(requester_id, nlines, kind):
-	log_debug("<%s> <%s> <%s>" %(requester_id, nlines, kind))
 	[dummyp, assrc, dummyx, techno, phoneid, phonenum] = requester_id.split('/')
 	if assrc in asteriskr:
 		idassrc = asteriskr[assrc]
@@ -1109,7 +1108,8 @@ def manage_tcp_connection(connid, allow_events):
 						if AMIclasssock[idassrc]:
 							ret = AMIclasssock[idassrc].hangup(channel, channel_peer)
 							if ret > 0:
-								connid[0].send("asterisk=%s::hangup successful (%d)\n" %(DAEMON, ret))
+								connid[0].send("asterisk=%s::hangup OK (%d) %s\n"
+									       %(DAEMON, ret, l[1]))
 							else:
 								connid[0].send("asterisk=%s::hangup KO : socket request failed\n" %DAEMON)
 						else:
@@ -1151,11 +1151,11 @@ def manage_tcp_connection(connid, allow_events):
 						else:
 							ret = False
 						if ret:
-							connid[0].send("asterisk=%s::originate %s %s successful\n"
-								       %(DAEMON, l[1], l[2]))
+							connid[0].send("asterisk=%s::originate OK (ast %d) %s %s\n"
+								       %(DAEMON, idassrc, l[1], l[2]))
 						else:
-							connid[0].send("asterisk=%s::originate %s %s KO\n"
-								       %(DAEMON, l[1], l[2]))
+							connid[0].send("asterisk=%s::originate KO (ast %d) %s %s\n"
+								       %(DAEMON, idassrc, l[1], l[2]))
 					elif l[0] == 'transfer':
 						log_debug("%s is attempting a TRANSFER : %s" %(requester, str(l)))
 						phonesrc, phonesrcchan = split_from_ui(l[1])
@@ -1175,10 +1175,11 @@ def manage_tcp_connection(connid, allow_events):
 													     l[2].split("/")[5],
 													     "local-extensions")
 									if ret:
-										connid[0].send("asterisk=%s::transfer successful %s\n"
-											       %(DAEMON, str(idassrc)))
+										connid[0].send("asterisk=%s::transfer OK (ast %d) %s %s\n"
+											       %(DAEMON, idassrc, l[1], l[2]))
 									else:
-										connid[0].send("asterisk=%s::transfer KO\n" %DAEMON)
+										connid[0].send("asterisk=%s::transfer KO (ast %d) %s %s\n"
+											       %(DAEMON, idassrc, l[1], l[2]))
 			else:
 				connid[0].send("asterisk=%s::originate or transfer KO : asterisk id mismatch\n" %DAEMON)
 		elif len(l) >= 4 and l[0] == 'history':
