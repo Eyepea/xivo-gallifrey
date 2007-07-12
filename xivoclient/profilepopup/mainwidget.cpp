@@ -302,7 +302,7 @@ void MainWidget::setConnected()
 	setForceTabs(false);
 	m_connectact->setEnabled(false);
 	m_disconnectact->setEnabled(true);
-	QString allcapas = "customerinfo,history,directory,dial,instantmessaging";
+	QString allcapas = "customerinfo,history,directory,dial,peers,features";
 	QStringList display_capas = allcapas.split(",");
 	QStringList allowed_capas = m_engine->getCapabilities().split(",");
 
@@ -334,6 +334,14 @@ void MainWidget::setConnected()
 			} else if(dc == QString("customerinfo")) {
 				m_tabwidget = new QTabWidget();
 				m_qtabwidget->addTab(m_tabwidget, tr("Sheets"));
+				
+			} else if(dc == QString("peers")) {
+				m_peerswidget = new QLabel("Peers");
+				m_qtabwidget->addTab(m_peerswidget, tr("Contacts"));
+				
+			} else if(dc == QString("features")) {
+				m_featureswidget = new QLabel("Features");
+				m_qtabwidget->addTab(m_featureswidget, tr("Features"));
 				
 			} else if(dc == QString("directory")) {
 				m_directory = new DirectoryPanel(this);
@@ -381,7 +389,7 @@ void MainWidget::setDisconnected()
 {
 	m_connectact->setEnabled(true);
 	m_disconnectact->setEnabled(false);
-	QString allcapas = "customerinfo,history,directory,dial,instantmessaging";
+	QString allcapas = "customerinfo,history,directory,dial,peers,features";
 	QStringList display_capas = allcapas.split(",");
 	QStringList allowed_capas = m_engine->getCapabilities().split(",");
 
@@ -407,6 +415,12 @@ void MainWidget::setDisconnected()
 			} else if(dc == QString("customerinfo")) {
 				m_vboxwidgets->removeWidget(m_tabwidget);
 				delete m_tabwidget;
+			} else if(dc == QString("peers")) {
+				m_vboxwidgets->removeWidget(m_peerswidget);
+				delete m_peerswidget;
+			} else if(dc == QString("features")) {
+				m_vboxwidgets->removeWidget(m_featureswidget);
+				delete m_featureswidget;
 			} else if(dc == QString("directory")) {
 				m_vboxwidgets->removeWidget(m_directory);
 				delete m_directory;

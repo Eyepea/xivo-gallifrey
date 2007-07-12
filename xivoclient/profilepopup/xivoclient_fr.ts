@@ -279,17 +279,17 @@
         <translation>A propos de &amp;Qt</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="422"/>
+        <location filename="mainwidget.cpp" line="436"/>
         <source>Disconnected</source>
         <translation>Déconnecté</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="376"/>
+        <location filename="mainwidget.cpp" line="384"/>
         <source>Connected</source>
         <translation>Connecté</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="440"/>
+        <location filename="mainwidget.cpp" line="454"/>
         <source>Incoming call</source>
         <translation>Appel entrant</translation>
     </message>
@@ -309,12 +309,12 @@
         <translation>&amp;A propos de XIVO Client</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="521"/>
+        <location filename="mainwidget.cpp" line="535"/>
         <source>About XIVO Client</source>
         <translation>A propos de XIVO Client</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="532"/>
+        <location filename="mainwidget.cpp" line="546"/>
         <source>&lt;h3&gt;XIVO Client&lt;/h3&gt;&lt;p&gt;This application shows to the user the profile associated with incoming phone calls.&lt;/p&gt;&lt;p&gt;Version : %1&lt;/p&gt;&lt;p&gt;(C) 2007 &lt;b&gt;Proformatique&lt;/b&gt; &lt;a href=&quot;http://www.proformatique.com&quot;&gt;http://www.proformatique.com&lt;/a&gt;&lt;/p&gt;&lt;p&gt;67 rue Voltaire 92800 Puteaux FRANCE&lt;/p&gt;&lt;p&gt;E-mail : technique@proformatique.com&lt;/p&gt;&lt;p&gt;(+33/0)1.41.38.99.60&lt;/p&gt;&lt;p&gt;Author : Thomas Bernard&lt;/p&gt;</source>
         <translation type="unfinished">&lt;h3&gt;Client XIVO&lt;/h3&gt;&lt;p&gt;Cette application présente à l&apos;utilisateur les fiches associées aux appels entrants.&lt;/p&gt;&lt;p&gt;Version : %1&lt;/p&gt;&lt;p&gt;(c) 2007 &lt;b&gt;Proformatique&lt;/b&gt; &lt;a href=&quot;http://www.proformatique.com/&quot;&gt;http://www.proformatique.com/&lt;/a&gt;&lt;/p&gt;&lt;p&gt;67 rue Voltaire 92800 Puteaux FRANCE&lt;/p&gt;&lt;p&gt;E-mail : technique@proformatique.com&lt;/p&gt;&lt;p&gt;+33 (0)1 41 38 99 60&lt;/p&gt;&lt;p&gt;Author : Thomas Bernard&lt;/p&gt;</translation>
     </message>
@@ -324,7 +324,7 @@
         <translation type="obsolete">Message pour le Standard :</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="367"/>
+        <location filename="mainwidget.cpp" line="375"/>
         <source>History</source>
         <translation>Historique</translation>
     </message>
@@ -349,9 +349,19 @@
         <translation>Fiches</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="358"/>
+        <location filename="mainwidget.cpp" line="366"/>
         <source>Directory</source>
         <translation>Répertoire</translation>
+    </message>
+    <message>
+        <location filename="mainwidget.cpp" line="340"/>
+        <source>Contacts</source>
+        <translation type="unfinished">Contacts</translation>
+    </message>
+    <message>
+        <location filename="mainwidget.cpp" line="344"/>
+        <source>Features</source>
+        <translation type="unfinished">Renvois, etc ...</translation>
     </message>
 </context>
 <context>
