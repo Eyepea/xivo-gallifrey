@@ -17,9 +17,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 */
 
-/* $Revision: $
-   $Date: 2007-06-04 16:29:18 +0200 (Mon, 04 Jun 2007) $
-*/
+/* $Id$
+ * $Revision$
+ * $Date$
+ */
 
 #include <QApplication>
 #include <QSettings>
@@ -66,6 +67,11 @@ MainWidget::MainWidget(Engine *engine, QWidget *parent)
 	//layout->setSizeConstraint(QLayout::SetFixedSize);	// remove minimize and maximize button
 	setWindowTitle(QString("Xivo Client"));
 	setWindowIcon(QIcon(":/xivoicon.png"));
+	m_status = new QLabel();
+	QPixmap red(15,15);
+	red.fill(Qt::red);
+	m_status->setPixmap(red);
+	statusBar()->addPermanentWidget(m_status);
 	statusBar()->clearMessage();
 	
 	m_wid = new QWidget();
@@ -302,6 +308,10 @@ void MainWidget::setConnected()
 	setForceTabs(false);
 	m_connectact->setEnabled(false);
 	m_disconnectact->setEnabled(true);
+	// display a green status indicator
+	QPixmap green(15,15);
+	green.fill(Qt::green);
+	m_status->setPixmap(green);
 	QString allcapas = "customerinfo,history,directory,dial,peers,features";
 	QStringList display_capas = allcapas.split(",");
 	QStringList allowed_capas = m_engine->getCapabilities().split(",");
@@ -389,6 +399,10 @@ void MainWidget::setDisconnected()
 {
 	m_connectact->setEnabled(true);
 	m_disconnectact->setEnabled(false);
+	// set a red status indicator
+	QPixmap red(15,15);
+	red.fill(Qt::red);
+	m_status->setPixmap(red);
 	QString allcapas = "customerinfo,history,directory,dial,peers,features";
 	QStringList display_capas = allcapas.split(",");
 	QStringList allowed_capas = m_engine->getCapabilities().split(",");
