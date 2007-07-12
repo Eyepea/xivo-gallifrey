@@ -25,7 +25,7 @@ __license__ = """
 
 class ROListProxy(object):
 
-	__slots__ = ['__underlying']
+	__slots__ = ('__underlying',)
 
 	ALLOWED = ('count', 'index')
 
