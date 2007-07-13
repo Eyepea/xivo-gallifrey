@@ -81,6 +81,10 @@ signals:
 	void updateLogEntry(const QDateTime &, int, const QString &, int);
 	//! the directory search response has been received.
 	void directoryResponse(const QString &);
+	void voiceMailChanged(bool);
+	void callRecordingChanged(bool);
+	void callFilteringChanged(bool);
+	void dndChanged(bool);
 public slots:
 	void start();	//!< start the connection process.
 	void stop();	//!< stop the engine
@@ -91,6 +95,14 @@ public slots:
 	void setDoNotDisturb();	//!< set user status as "do not disturb"
 	void searchDirectory(const QString &);
 	void requestHistory(const QString &, int);
+	void setVoiceMail(bool);
+	void setCallRecording(bool);
+	void setCallFiltering(bool);
+	void setDnd(bool);
+	void setUncondForward(bool, const QString &);
+	void setForwardOnBusy(bool, const QString &);
+	void setForwardOnUnavailable(bool, const QString &);
+	void askFeatures();
 private slots:
 	void identifyToTheServer();	//!< perform the first login step
 	void processLoginDialog();	//!< perform the following login steps

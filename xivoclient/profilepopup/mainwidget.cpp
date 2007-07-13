@@ -42,6 +42,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include "dialpanel.h"
 #include "logwidget.h"
 #include "directorypanel.h"
+#include "servicepanel.h"
 
 /*! \brief Constructor
  *
@@ -350,9 +351,35 @@ void MainWidget::setConnected()
 				m_qtabwidget->addTab(m_peerswidget, tr("Contacts"));
 				
 			} else if(dc == QString("features")) {
-				m_featureswidget = new QLabel("Features");
-				m_qtabwidget->addTab(m_featureswidget, tr("Features"));
-				
+				QWidget * w = new ServicePanel(this);
+				m_qtabwidget->addTab(w, tr("Services"));
+				connect( w, SIGNAL(voiceMailToggled(bool)),
+				         m_engine, SLOT(setVoiceMail(bool)) );
+				connect( m_engine, SIGNAL(voiceMailChanged(bool)),
+				         w, SLOT(setVoiceMail(bool)) );
+				connect( w, SIGNAL(callRecordingToggled(bool)),
+				         m_engine, SLOT(setCallRecording(bool)) );
+				connect( m_engine, SIGNAL(callRecordingChanged(bool)),
+				         w, SLOT(setCallRecording(bool)) );
+				connect( w, SIGNAL(callFilteringToggled(bool)),
+				         m_engine, SLOT(setCallFiltering(bool)) );
+				connect( m_engine, SIGNAL(callFilteringChanged(bool)),
+				         w, SLOT(setCallFiltering(bool)) );
+				connect( w, SIGNAL(dndToggled(bool)),
+				         m_engine, SLOT(setDnd(bool)) );
+				connect( m_engine, SIGNAL(dndChanged(bool)),
+				         w, SLOT(setDnd(bool)) );
+				connect( w, SIGNAL(uncondForwardChanged(bool, const QString &)),
+				         m_engine, SLOT(setUncondForward(bool, const QString &)) );
+				connect( w, SIGNAL(forwardOnBusyChanged(bool, const QString &)),
+				         m_engine, SLOT(setForwardOnBusy(bool, const QString &)) );
+				connect( w, SIGNAL(forwardOnUnavailableChanged(bool, const QString &)),
+				         m_engine, SLOT(setForwardOnUnavailable(bool, const QString &)) );
+				//
+	//m_qtabwidget->addTab(new ServicePanel(this), tr("Services"));
+				//m_featureswidget = new QLabel("Features");
+				//m_qtabwidget->addTab(m_featureswidget, tr("Features"));
+				m_engine->askFeatures();
 			} else if(dc == QString("directory")) {
 				m_directory = new DirectoryPanel(this);
 				
@@ -392,6 +419,8 @@ void MainWidget::setConnected()
 	if(m_systrayIcon)
 		m_systrayIcon->setIcon(m_icon);
 	statusBar()->showMessage(tr("Connected"));
+	// test
+	//m_qtabwidget->addTab(new ServicePanel(this), tr("Services"));
 }
 
 //! Enable the Start Button and set the red indicator

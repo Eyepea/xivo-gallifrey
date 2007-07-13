@@ -263,6 +263,146 @@ void Engine::dialExtension(const QString & dst)
 				   m_serveraddress, m_loginport + 1 );
 }
 
+void Engine::setVoiceMail(bool b)
+{
+	QString outline = "COMMAND ";
+	outline.append(m_asterisk + "/" + m_protocol + m_userid);
+	outline.append(" SESSIONID ");
+	outline.append(m_sessionid);
+	outline.append(" FEATURES PUT VM ");
+	outline.append(b?"1":"0");
+	outline.append("\r\n");
+	qDebug() << outline;
+	m_udpsocket.writeDatagram( outline.toAscii(),
+				   m_serveraddress, m_loginport + 1 );
+}
+
+void Engine::setCallRecording(bool b)
+{
+	QString outline = "COMMAND ";
+	outline.append(m_asterisk + "/" + m_protocol + m_userid);
+	outline.append(" SESSIONID ");
+	outline.append(m_sessionid);
+	outline.append(" FEATURES PUT Record ");
+	outline.append(b?"1":"0");
+	outline.append("\r\n");
+	qDebug() << outline;
+	m_udpsocket.writeDatagram( outline.toAscii(),
+				   m_serveraddress, m_loginport + 1 );
+}
+
+void Engine::setCallFiltering(bool b)
+{
+	QString outline = "COMMAND ";
+	outline.append(m_asterisk + "/" + m_protocol + m_userid);
+	outline.append(" SESSIONID ");
+	outline.append(m_sessionid);
+	outline.append(" FEATURES PUT Screen ");
+	outline.append(b?"1":"0");
+	outline.append("\r\n");
+	qDebug() << outline;
+	m_udpsocket.writeDatagram( outline.toAscii(),
+				   m_serveraddress, m_loginport + 1 );
+}
+
+void Engine::setDnd(bool b)
+{
+	QString outline = "COMMAND ";
+	outline.append(m_asterisk + "/" + m_protocol + m_userid);
+	outline.append(" SESSIONID ");
+	outline.append(m_sessionid);
+	outline.append(" FEATURES PUT DND ");
+	outline.append(b?"1":"0");
+	outline.append("\r\n");
+	qDebug() << outline;
+	m_udpsocket.writeDatagram( outline.toAscii(),
+				   m_serveraddress, m_loginport + 1 );
+}
+
+void Engine::setForwardOnUnavailable(bool b, const QString & dst)
+{
+	QString outline = "COMMAND ";
+	outline.append(m_asterisk + "/" + m_protocol + m_userid);
+	outline.append(" SESSIONID ");
+	outline.append(m_sessionid);
+	outline.append(" FEATURES PUT FWD/RNA/Status ");
+	outline.append(b?"1":"0");
+	outline.append("\r\n");
+	qDebug() << outline;
+	m_udpsocket.writeDatagram( outline.toAscii(),
+				   m_serveraddress, m_loginport + 1 );
+	outline = "COMMAND ";
+	outline.append(m_asterisk + "/" + m_protocol + m_userid);
+	outline.append(" SESSIONID ");
+	outline.append(m_sessionid);
+	outline.append(" FEATURES PUT FWD/RNA/Number ");
+	outline.append(dst);
+	outline.append("\r\n");
+	qDebug() << outline;
+	m_udpsocket.writeDatagram( outline.toAscii(),
+				   m_serveraddress, m_loginport + 1 );
+}
+
+void Engine::setForwardOnBusy(bool b, const QString & dst)
+{
+	QString outline = "COMMAND ";
+	outline.append(m_asterisk + "/" + m_protocol + m_userid);
+	outline.append(" SESSIONID ");
+	outline.append(m_sessionid);
+	outline.append(" FEATURES PUT FWD/Busy/Status ");
+	outline.append(b?"1":"0");
+	outline.append("\r\n");
+	qDebug() << outline;
+	m_udpsocket.writeDatagram( outline.toAscii(),
+				   m_serveraddress, m_loginport + 1 );
+	outline = "COMMAND ";
+	outline.append(m_asterisk + "/" + m_protocol + m_userid);
+	outline.append(" SESSIONID ");
+	outline.append(m_sessionid);
+	outline.append(" FEATURES PUT FWD/Busy/Number ");
+	outline.append(dst);
+	outline.append("\r\n");
+	qDebug() << outline;
+	m_udpsocket.writeDatagram( outline.toAscii(),
+				   m_serveraddress, m_loginport + 1 );
+}
+
+void Engine::setUncondForward(bool b, const QString & dst)
+{
+	QString outline = "COMMAND ";
+	outline.append(m_asterisk + "/" + m_protocol + m_userid);
+	outline.append(" SESSIONID ");
+	outline.append(m_sessionid);
+	outline.append(" FEATURES PUT FWD/Unc/Status ");
+	outline.append(b?"1":"0");
+	outline.append("\r\n");
+	qDebug() << outline;
+	m_udpsocket.writeDatagram( outline.toAscii(),
+				   m_serveraddress, m_loginport + 1 );
+	outline = "COMMAND ";
+	outline.append(m_asterisk + "/" + m_protocol + m_userid);
+	outline.append(" SESSIONID ");
+	outline.append(m_sessionid);
+	outline.append(" FEATURES PUT FWD/Unc/Number ");
+	outline.append(dst);
+	outline.append("\r\n");
+	qDebug() << outline;
+	m_udpsocket.writeDatagram( outline.toAscii(),
+				   m_serveraddress, m_loginport + 1 );
+}
+
+void Engine::askFeatures()
+{
+	QString outline = "COMMAND ";
+	outline.append(m_asterisk + "/" + m_protocol + m_userid);
+	outline.append(" SESSIONID ");
+	outline.append(m_sessionid);
+	outline.append(" FEATURES GET\r\n");
+	qDebug() << outline;
+	m_udpsocket.writeDatagram( outline.toAscii(),
+				   m_serveraddress, m_loginport + 1 );
+}
+
 // === Getter and Setters ===
 const QString & Engine::serverip() const
 {
@@ -656,9 +796,9 @@ void Engine::readKeepLoginAliveDatagrams()
 			continue;
 		buffer[len] = '\0';
 		//		qDebug() << len << ":" << buffer;
-		QStringList qsl = QString(buffer).trimmed().split(" ");
+		QStringList qsl = QString::fromUtf8(buffer).trimmed().split(" ");
 		QString reply = qsl[0];
-		qDebug() << reply;
+		qDebug() << qsl;//reply;
 		if(reply == "DISC") {
 			stopKeepAliveTimer();
 			setState(ENotLogged);
@@ -669,6 +809,22 @@ void Engine::readKeepLoginAliveDatagrams()
 		} else if(reply == "DIRECTORY") {
 			QStringList list = QString::fromUtf8(buffer).trimmed().split("=");
 			directoryResponse(list[1]);
+		} else if(reply == "FEATURES") {
+			QStringList list = qsl[1].split(";");
+			qDebug() << list.size();
+			if(list.size() > 1)
+			{
+				for(int i=0; i<list.size()-1; i+=2)
+				{
+					qDebug() << i << list[i] << list[i+1];
+					if(list[i] == "VM")
+						voiceMailChanged(list[i+1]=="1");
+					else if(list[1] == "DND")
+						dndChanged(list[i+1]=="1");
+					else if(list[1] == "Screen")
+						callFilteringChanged(list[i+1]=="1");
+				}
+			}
 		}
 		m_pendingkeepalivemsg = 0;
 	}
