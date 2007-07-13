@@ -146,7 +146,7 @@ CREATE TABLE queue (
  'announce-round-seconds' tinyint unsigned,
  'announce-holdtime' varchar(4),
  retry tinyint unsigned,
- wrapuptime tinyint unsigned,
+ wrapuptime integer unsigned,
  maxlen integer unsigned,
  servicelevel integer,
  strategy varchar(11),

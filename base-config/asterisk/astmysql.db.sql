@@ -151,7 +151,7 @@ CREATE TABLE `queue` (
  `announce-round-seconds` tinyint unsigned,
  `announce-holdtime` varchar(4),
  `retry` tinyint unsigned,
- `wrapuptime` tinyint unsigned,
+ `wrapuptime` int(11) unsigned,
  `maxlen` int(11) unsigned,
  `servicelevel` int(11),
  `strategy` varchar(11),
