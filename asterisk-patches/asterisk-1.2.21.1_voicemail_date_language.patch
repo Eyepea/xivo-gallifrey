@@ -1,0 +1,29 @@
+diff -Nurp asterisk-1.2.21.1.orig/apps/app_voicemail.c asterisk-1.2.21.1/apps/app_voicemail.c
+--- asterisk-1.2.21.1.orig/apps/app_voicemail.c	2007-07-11 15:51:02.000000000 +0200
++++ asterisk-1.2.21.1/apps/app_voicemail.c	2007-07-13 13:01:27.000000000 +0200
+@@ -49,6 +49,7 @@
+ #include <sys/mman.h>
+ #include <time.h>
+ #include <dirent.h>
++#include <locale.h>
+ 
+ #include "asterisk.h"
+ 
+@@ -1685,6 +1686,7 @@ static int sendmail(char *srcemail, stru
+ 	struct vm_zone *the_zone = NULL;
+ 	int len_passdata;
+ 	char *passdata2;
++	locale_t loc;
+ 
+ 	if (vmu && ast_strlen_zero(vmu->email)) {
+ 		ast_log(LOG_WARNING, "E-mail address missing for mailbox [%s].  E-mail will not be sent.\n", vmu->mailbox);
+@@ -1735,7 +1737,8 @@ static int sendmail(char *srcemail, stru
+ 		fprintf(p, "Date: %s\n", date);
+ 
+ 		/* Set date format for voicemail mail */
+-		strftime(date, sizeof(date), emaildateformat, &tm);
++		loc = newlocale (LC_ALL_MASK, "", NULL);
++		strftime_l(date, sizeof(date), emaildateformat, &tm, loc);
+ 
+ 		if (*fromstring) {
+ 			struct ast_channel *ast = ast_channel_alloc(0);
