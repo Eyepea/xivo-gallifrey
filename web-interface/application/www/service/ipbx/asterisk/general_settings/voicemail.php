@@ -10,7 +10,7 @@ if(isset($_QR['fm_send']) === true)
 	$minmessage = $generalvoicemail->set_chk_value('minmessage',$_QRY->get_qr('minmessage'));
 	$maxsilence = $generalvoicemail->set_chk_value('maxsilence',$_QRY->get_qr('maxsilence'));
 
-	if($maxsilence > $minmessage)
+	if(($maxsilence * 1000) <= $minmessage)
 		$maxsilence = xivo_uint($generalvoicemail->get_element_default('maxsilence'));
 
 	$generalvoicemail->replace_val_by_name('maxmessage',$generalvoicemail->set_chk_value('maxmessage',$_QRY->get_qr('maxmessage')));

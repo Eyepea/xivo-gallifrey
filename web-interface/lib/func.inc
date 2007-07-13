@@ -143,10 +143,10 @@ function xivo_cast_except($val,$except,$type='')
 {
 	$type = (string) $type;
 
-	if(is_scalar($except) === true)
-		$texcept = 'scalar';
-	else if(is_numeric($except) === true)
+	if(is_numeric($except) === true)
 		$texcept = 'numeric';
+	else if(is_scalar($except) === true)
+		$texcept = 'scalar';
 	else
 		$texcept = strtolower(gettype($except));
 
@@ -162,7 +162,6 @@ function xivo_cast_except($val,$except,$type='')
 		case 'scalar-string':
 		case 'numeric-integer':
 		case 'numeric-double':
-		case 'numeric-boolean':
 		case 'numeric-string':
 			return($val);
 	}

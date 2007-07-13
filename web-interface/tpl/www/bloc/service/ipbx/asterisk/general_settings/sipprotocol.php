@@ -9,6 +9,24 @@
 		$dhtml = &$this->get_module('dhtml');
 		$dhtml->write_js('xivo_form_success(\''.xivo_stript($this->bbf('fm_success-save')).'\');');
 	endif;
+
+	if(($ntos = xivo_uint($this->varra('info','tos'))) !== 0):
+		$tos = $ntos;
+	else:
+		$tos = $this->varra('info','tos');
+	endif;
+
+	if(($nqualify = xivo_uint($this->varra('info','qualify'))) !== 0):
+		$qualify = $nqualify;
+	else:
+		$qualify = $this->varra('info','qualify');
+	endif;
+
+	if(($nrtautoclear = xivo_uint($this->varra('info','rtautoclear'))) !== 0):
+		$rtautoclear = $nrtautoclear;
+	else:
+		$rtautoclear = $this->varra('info','rtautoclear');
+	endif;
 ?>
 <div class="b-infos b-form">
 	<h3 class="sb-top xspan"><span class="span-left">&nbsp;</span><span class="span-center"><?=$this->bbf('title_content_name');?></span><span class="span-right">&nbsp;</span></h3>
@@ -67,7 +85,7 @@
 
 <?=$form->text(array('desc' => $this->bbf('fm_useragent'),'name' => 'useragent','labelid' => 'useragent','size' => 15,'value' => $this->varra('info','useragent'),'default' => $element['useragent']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_checkmwi'),'name' => 'checkmwi','labelid' => 'checkmwi','key' => false,'bbf' => array('mixkey','fm_checkmwi-opt'),'value' => $this->varra('info','checkmwi'),'default' => $element['checkmwi']['default']),$element['checkmwi']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_checkmwi'),'name' => 'checkmwi','labelid' => 'checkmwi','key' => false,'bbf' => array('mixkey','fm_checkmwi-opt'),'value' => xivo_cast_except($this->varra('info','checkmwi'),null,'uint'),'default' => $element['checkmwi']['default']),$element['checkmwi']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 <?=$form->text(array('desc' => $this->bbf('fm_regcontext'),'name' => 'regcontext','labelid' => 'regcontext','size' => 15,'value' => $this->varra('info','regcontext'),'default' => $element['regcontext']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
@@ -83,7 +101,7 @@
 
 <?=$form->checkbox(array('desc' => $this->bbf('fm_callevents'),'name' => 'callevents','labelid' => 'callevents','checked' => $this->varra('info','callevents'),'default' => $element['callevents']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_tos'),'name' => 'tos','labelid' => 'tos','key' => false,'value' => $this->varra('info','tos'),'default' => $element['tos']['default']),$element['tos']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_tos'),'name' => 'tos','labelid' => 'tos','key' => false,'value' => $tos,'default' => $element['tos']['default']),$element['tos']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 <?=$form->slt(array('desc' => $this->bbf('fm_ospauth'),'name' => 'ospauth','labelid' => 'ospauth','key' => false,'bbf' => array('concatvalue','fm_ospauth-opt-'),'value' => $this->varra('info','ospauth'),'default' => $element['ospauth']['default']),$element['ospauth']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
@@ -97,7 +115,7 @@
 
 <?=$form->text(array('desc' => $this->bbf('fm_externhost'),'name' => 'externhost','labelid' => 'externhost','size' => 15,'value' => $this->varra('info','externhost'),'default' => $element['externhost']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_externrefresh'),'name' => 'externrefresh','labelid' => 'externrefresh','bbf' => array('mixkey','fm_externrefresh-opt','paramarray'),'value' => $this->varra('info','externrefresh'),'default' => $element['externrefresh']['default']),$element['externrefresh']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_externrefresh'),'name' => 'externrefresh','labelid' => 'externrefresh','bbf' => array('mixkey','fm_externrefresh-opt','paramarray'),'value' => xivo_cast_except($this->varra('info','externrefresh'),null,'uint'),'default' => $element['externrefresh']['default']),$element['externrefresh']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 <?=$form->text(array('desc' => $this->bbf('fm_outboundproxy'),'name' => 'outboundproxy','labelid' => 'outboundproxy','size' => 15,'value' => $this->varra('info','outboundproxy'),'default' => $element['outboundproxy']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
@@ -111,11 +129,11 @@
 
 <?=$form->checkbox(array('desc' => $this->bbf('fm_compactheaders'),'name' => 'compactheaders','labelid' => 'compactheaders','checked' => $this->varra('info','compactheaders'),'default' => $element['compactheaders']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_rtptimeout'),'name' => 'rtptimeout','labelid' => 'rtptimeout','key' => false,'bbf' => array('mixkey','fm_rtptimeout-opt'),'value' => $this->varra('info','rtptimeout'),'default' => $element['rtptimeout']['default']),$element['rtptimeout']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_rtptimeout'),'name' => 'rtptimeout','labelid' => 'rtptimeout','key' => false,'bbf' => array('mixkey','fm_rtptimeout-opt'),'value' => xivo_cast_except($this->varra('info','rtptimeout'),null,'uint'),'default' => $element['rtptimeout']['default']),$element['rtptimeout']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_rtpholdtimeout'),'name' => 'rtpholdtimeout','labelid' => 'rtpholdtimeout','key' => false,'bbf' => array('mixkey','fm_rtptimeout-opt'),'value' => $this->varra('info','rtpholdtimeout'),'default' => $element['rtpholdtimeout']['default']),$element['rtpholdtimeout']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_rtpholdtimeout'),'name' => 'rtpholdtimeout','labelid' => 'rtpholdtimeout','key' => false,'bbf' => array('mixkey','fm_rtptimeout-opt'),'value' => xivo_cast_except($this->varra('info','rtpholdtimeout'),null,'uint'),'default' => $element['rtpholdtimeout']['default']),$element['rtpholdtimeout']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_rtpkeepalive'),'name' => 'rtpkeepalive','labelid' => 'rtpkeepalive','key' => false,'bbf' => array('mixkey','fm_rtpkeepalive-opt'),'value' => $this->varra('info','rtpkeepalive'),'default' => $element['rtpkeepalive']['default']),$element['rtpkeepalive']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_rtpkeepalive'),'name' => 'rtpkeepalive','labelid' => 'rtpkeepalive','key' => false,'bbf' => array('mixkey','fm_rtpkeepalive-opt'),'value' => xivo_cast_except($this->varra('info','rtpkeepalive'),null,'uint'),'default' => $element['rtpkeepalive']['default']),$element['rtpkeepalive']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 <?=$form->slt(array('desc' => $this->bbf('fm_notifymimetype'),'name' => 'notifymimetype','labelid' => 'notifymimetype','key' => false,'value' => $this->varra('info','notifymimetype'),'default' => $element['notifymimetype']['default']),$element['notifymimetype']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
@@ -123,17 +141,17 @@
 
 <?=$form->checkbox(array('desc' => $this->bbf('fm_pedantic'),'name' => 'pedantic','labelid' => 'pedantic','checked' => $this->varra('info','pedantic'),'default' => $element['pedantic']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_maxexpiry'),'name' => 'maxexpiry','labelid' => 'maxexpiry','bbf' => array('mixkey','fm_maxexpiry-opt','paramarray'),'value' => $this->varra('info','maxexpiry'),'default' => $element['maxexpiry']['default']),$element['maxexpiry']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_maxexpiry'),'name' => 'maxexpiry','labelid' => 'maxexpiry','bbf' => array('mixkey','fm_maxexpiry-opt','paramarray'),'value' => xivo_cast_except($this->varra('info','maxexpiry'),null,'uint'),'default' => $element['maxexpiry']['default']),$element['maxexpiry']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_defaultexpiry'),'name' => 'defaultexpiry','labelid' => 'defaultexpiry','bbf' => array('mixkey','fm_defaultexpiry-opt','paramarray'),'value' => $this->varra('info','defaultexpiry'),'default' => $element['defaultexpiry']['default']),$element['defaultexpiry']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_defaultexpiry'),'name' => 'defaultexpiry','labelid' => 'defaultexpiry','bbf' => array('mixkey','fm_defaultexpiry-opt','paramarray'),'value' => xivo_cast_except($this->varra('info','defaultexpiry'),null,'uint'),'default' => $element['defaultexpiry']['default']),$element['defaultexpiry']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_registertimeout'),'name' => 'registertimeout','labelid' => 'registertimeout','bbf' => array('mixkey','fm_registertimeout-opt','paramarray'),'value' => $this->varra('info','registertimeout'),'default' => $element['registertimeout']['default']),$element['registertimeout']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_registertimeout'),'name' => 'registertimeout','labelid' => 'registertimeout','bbf' => array('mixkey','fm_registertimeout-opt','paramarray'),'value' => xivo_cast_except($this->varra('info','registertimeout'),null,'uint'),'default' => $element['registertimeout']['default']),$element['registertimeout']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_registerattempts'),'name' => 'registerattempts','labelid' => 'registerattempts','bbf' => array('mixkey','fm_registerattempts-opt','paramarray'),'value' => $this->varra('info','registerattempts'),'default' => $element['registerattempts']['default']),$element['registerattempts']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_registerattempts'),'name' => 'registerattempts','labelid' => 'registerattempts','bbf' => array('mixkey','fm_registerattempts-opt','paramarray'),'value' => xivo_cast_except($this->varra('info','registerattempts'),null,'uint'),'default' => $element['registerattempts']['default']),$element['registerattempts']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 <?=$form->checkbox(array('desc' => $this->bbf('fm_notifyringing'),'name' => 'notifyringing','labelid' => 'notifyringing','checked' => $this->varra('info','notifyringing'),'default' => $element['notifyringing']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_codec-disallow'),'name' => 'disallow','labelid' => 'disallow','key' => false),array('all'),'onfocus="this.className=\'it-mfocus it-disabled\';" onblur="this.className=\'it-mblur it-disabled\';" class="it-disabled" disabled="disabled"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_codec-disallow'),'name' => 'disallow','labelid' => 'disallow','key' => false,'bbf' => array('concatvalue','fm_codec-disallow-opt-')),$element['disallow']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 <div id="codeclist" class="fm-field fm-multilist"><p><label id="lb-codeclist" for="it-codeclist"><?=$this->bbf('fm_codec-allow');?></label></p>
 	<div class="slt-outlist">
@@ -171,7 +189,7 @@
 
 <?=$form->slt(array('desc' => $this->bbf('fm_dtmfmode'),'name' => 'dtmfmode','labelid' => 'dtmfmode','key' => false,'value' => $this->varra('info','dtmfmode'),'default' => $element['dtmfmode']['default']),$element['dtmfmode']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_qualify'),'name' => 'qualify','labelid' => 'qualify','key' => false,'bbf' => array('mixkey','fm_qualify-opt'),'value' => $this->varra('info','qualify'),'default' => $element['qualify']['default']),$element['qualify']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_qualify'),'name' => 'qualify','labelid' => 'qualify','key' => false,'bbf' => array('mixkey','fm_qualify-opt'),'value' => $qualify,'default' => $element['qualify']['default']),$element['qualify']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 <?=$form->checkbox(array('desc' => $this->bbf('fm_useclientcode'),'name' => 'useclientcode','labelid' => 'useclientcode','checked' => $this->varra('info','useclientcode'),'default' => $element['useclientcode']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
@@ -181,7 +199,7 @@
 
 <?php
 	if($moh_list !== false):
-		echo $form->slt(array('desc' => $this->bbf('fm_musiconhold'),'name' => 'musiconhold','labelid' => 'musiconhold','key' => 'category','empty' => true,'value' => $this->varra('info','musiconhold'),'default' => $element['musiconhold']['default']),$moh_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');
+		echo $form->slt(array('desc' => $this->bbf('fm_musiconhold'),'name' => 'musiconhold','labelid' => 'musiconhold','key' => 'category','value' => $this->varra('info','musiconhold'),'default' => $element['musiconhold']['default']),$moh_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');
 	endif;
 ?>
 
@@ -193,7 +211,7 @@
 
 <?=$form->slt(array('desc' => $this->bbf('fm_canreinvite'),'name' => 'canreinvite','labelid' => 'canreinvite','key' => false,'bbf' => array('concatvalue','fm_canreinvite-opt-'),'value' => $this->varra('info','canreinvite'),'default' => $element['canreinvite']['default']),$element['canreinvite']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_insecure'),'name' => 'insecure','labelid' => 'insecure','bbf' => array('concatvalue','fm_insecure-opt-'),'value' => $this->varra('info','insecure'),'default' => $element['insecure']['default']),$element['insecure']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_insecure'),'name' => 'insecure','labelid' => 'insecure','empty' => true,'bbf' => array('concatvalue','fm_insecure-opt-'),'value' => $this->varra('info','insecure'),'default' => $element['insecure']['default']),$element['insecure']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 </div>
 
@@ -205,7 +223,7 @@
 
 <?=$form->checkbox(array('desc' => $this->bbf('fm_ignoreregexpire'),'name' => 'ignoreregexpire','labelid' => 'ignoreregexpire','checked' => $this->varra('info','ignoreregexpire'),'default' => $element['ignoreregexpire']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_rtautoclear'),'name' => 'rtautoclear','labelid' => 'rtautoclear','bbf' => array('mixkey','fm_rtautoclear-opt','paramarray'),'value' => $this->varra('info','rtautoclear'),'default' => $element['rtautoclear']['default']),$element['rtautoclear']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_rtautoclear'),'name' => 'rtautoclear','labelid' => 'rtautoclear','bbf' => array('mixkey','fm_rtautoclear-opt','paramarray'),'value' => $rtautoclear,'default' => $element['rtautoclear']['default']),$element['rtautoclear']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 </div>
 

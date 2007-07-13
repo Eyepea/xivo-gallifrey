@@ -10,13 +10,9 @@ do
 	if(($result = $musiconhold->chk_values($_QR)) === false
 	|| ($result['mode'] === 'custom' && (string) $result['application'] === '') === true)
 	{
-		xivo_var_dump($musiconhold->get_filter_err());
 		$info = $musiconhold->get_filter_result();
 		break;
 	}
-
-	xivo_print_r($result);
-	die();
 
 	if($musiconhold->add_category($result) !== false)
 		xivo_go($_HTML->url('service/ipbx/general_settings/musiconhold'),$param);

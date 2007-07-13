@@ -325,6 +325,9 @@ Notification de sonnerie :
 ; fm_codec-disallow
 Codecs désactivés :
 
+; fm_codec-disallow-opt-all
+Tous
+
 ; fm_codec-allow
 Codecs activés :
 

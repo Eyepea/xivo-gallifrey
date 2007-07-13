@@ -9,7 +9,7 @@ $array['element']['minmessage'] = array();
 $array['element']['minmessage']['default'] = 2;
 
 $array['element']['maxsilence'] = array();
-$array['element']['maxsilence']['default'] = 0;
+$array['element']['maxsilence']['default'] = 1;
 
 $array['element']['review'] = array();
 $array['element']['review']['value'] = array('no','yes');

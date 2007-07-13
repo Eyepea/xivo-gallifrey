@@ -132,6 +132,7 @@ $array['element']['outboundproxyport']['null'] = true;
 $array['element']['disallow'] = array();
 $array['element']['disallow']['value'] = array('all');
 $array['element']['disallow']['default'] = 'all';
+$array['element']['disallow']['setdef'] = true;
 
 $array['element']['allow'] = array();
 $array['element']['allow']['value'] = array(
@@ -214,6 +215,7 @@ $array['element']['notifyringing']['set'] = true;
 
 $array['element']['context'] = array();
 $array['element']['context']['default'] = 'default';
+$array['element']['context']['setdef'] = true;
 
 $array['element']['nat'] = array();
 $array['element']['nat']['value'] = array('no','yes','never','route');
@@ -241,7 +243,8 @@ $array['element']['language']['value'] = array('en','fr');
 $array['element']['language']['default'] = 'fr';
 
 $array['element']['musiconhold'] = array();
-$array['element']['musiconhold']['default'] = '';
+$array['element']['musiconhold']['default'] = 'default';
+$array['element']['musiconhold']['setdef'] = true;
 
 $array['element']['vmexten'] = array();
 $array['element']['vmexten']['default'] = '*98';
