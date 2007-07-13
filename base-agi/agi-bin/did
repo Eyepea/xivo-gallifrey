@@ -64,10 +64,9 @@ except:
         raise
 
 cursor = conn.cursor()
-query = "SELECT type,typeid,custom FROM didfeatures WHERE number='%s'" % exten
+query = "SELECT type,typeid,custom FROM didfeatures WHERE commented=0 and number='%s'" % exten
 cursor.execute(query)
 t = cursor.fetchone()
-
 
 if not t:
 	agi.verbose("No DID found !")
@@ -90,10 +89,14 @@ if type == 'meetme':
 	query = "SELECT number,context FROM extenumbers WHERE number='%s' AND context!='did-extensions'" % m[0]
 	cursor.execute(query)
 	g = cursor.fetchone()
-	number = g[0]
-	context = g[1]
-	agi.answer()
-	agi.appexec("GOTO", "%s|%s|1" %(context,number))
+	if g:
+		number = g[0]
+		context = g[1]
+		agi.answer()
+		agi.appexec("GOTO", "%s|%s|1" %(context,number))
+	else:
+		agi.verbose('Error : No number found for this meetme')
+		sys.exit()
 
 if type == 'user':
 	query = "SELECT number,context FROM userfeatures WHERE id=%d" % typeid
@@ -102,16 +105,24 @@ if type == 'user':
 	query = "SELECT number,context FROM extenumbers WHERE number='%s' AND context='%s'" %(u[0], u[1])
 	cursor.execute(query)
 	g = cursor.fetchone()
-	number = g[0]
-	context = g[1]
-	agi.answer()
-	agi.appexec("GOTO", "%s|%s|1" %(context,number))
+	if g:
+		number = g[0]
+		context = g[1]
+		agi.answer()
+		agi.appexec("GOTO", "%s|%s|1" %(context,number))
+	else:
+		agi.verbose('Error : No number found for this user')
+		sys.exit()
 
 if type == 'group':
 	query = "SELECT number,context FROM groupfeatures WHERE id=%d AND context!='did-extensions'" % typeid
 	cursor.execute(query)
 	g = cursor.fetchone()
-	number = g[0]
-	context = g[1]
-	agi.answer()
-	agi.appexec("GOTO", "%s|%s|1" %(context,number))
+	if g:
+		number = g[0]
+		context = g[1]
+		agi.answer()
+		agi.appexec("GOTO", "%s|%s|1" %(context,number))
+	else:
+		agi.verbose('Error : No number found for this group')
+		sys.exit()
