@@ -1561,6 +1561,24 @@ def handle_ami_event(astnum, idata):
 								   DUMMY_RCHAN, exten, "ami-ne0")
 			else:
 				pass
+			if x.find("Application: Set;AppData: DB") > 0:
+				try:
+					# appdata = DB(local-extensions/users/103/DND)=0
+					appdata = getvalue(x, "AppData")
+					[ctx, grp, userid, feature] = appdata.split("(")[1].split(")=")[0].split("/", 3)
+					value = appdata.split(")=")[1]
+					dbfamily = "%s/%s/%s" %(ctx, grp, userid)
+					if dbfamily in requestersocket_by_featureid:
+						# requestersocket_lock.acquire()
+						mysock = requestersocket_by_featureid[dbfamily].request[1]
+						mysock.sendto("FEATURES UPDATE %s/sip%s %s %s"
+							      %(plist[astnum].astid, userid, feature, value),
+							      requestersocket_by_featureid[dbfamily].client_address)
+						# requestersocket_lock.release()
+					else:
+						pass
+				except Exception, exc:
+					log_debug("--- exception --- (newexten, appdata) %s" %str(exc))
 		elif x.find("MessageWaiting;") == 7:
 			mwi_string = getvalue(x,"Mailbox") + " waiting=" + getvalue(x,"Waiting") \
 				     + "; new=" + getvalue(x, "New") + "; old=" + getvalue(x, "Old")
@@ -2291,11 +2309,11 @@ class LoginHandler(SocketServer.StreamRequestHandler):
 		replystr = "ERROR"
 		debugstr = "LoginRequestHandler (TCP) : client = %s:%d" %(self.client_address[0], self.client_address[1])
 		list1 = self.rfile.readline().strip().split(' ') # list1 should be "[LOGIN <asteriskname>/sip<nnn>]"
-		if len(list1) != 2 or list1[0] != 'LOGIN':
+		if len(list1) < 2 or len(list1) > 3 or list1[0] != 'LOGIN':
 			replystr = "ERROR : wrong number of arguments"
 			debugstr += " / LOGIN error args"
 			return [replystr, debugstr], [user, port, state, astnum]
-		
+
 		if list1[1].find("/") >= 0:
 			astname_xivoc = list1[1].split("/")[0]
 			user = list1[1].split("/")[1]
@@ -2304,6 +2322,13 @@ class LoginHandler(SocketServer.StreamRequestHandler):
 			debugstr += " / LOGIN error ID"
 			return [replystr, debugstr], [user, port, state, astnum]
 		
+		whoami = ""
+		if len(list1) == 3:
+			whoami = list1[2]
+		if whoami not in ["XC", "SB"]:
+			log_debug("WARNING : %s/%s attempts to log in from %s:%d but has given no meaningful XC/SB hint"
+				  %(astname_xivoc, user, self.client_address[0], self.client_address[1]))
+
 		# asks for PASS
 		self.wfile.write('Send PASS for authentication\r\n')
 		list1 = self.rfile.readline().strip().split(' ')
@@ -2596,19 +2621,31 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
 							#							repstr = build_features(list[5], list[6], list[7])
 							if list[5] == 'GET':
 								repstr = ""
+								dbfamily = "%s/users/%s" %(e['context'], user.split("sip")[1])
 								for key in ["VM", "Record", "Screen", "DND",
 									    "FWD/Busy/Status", "FWD/Busy/Number",
 									    "FWD/RNA/Status",  "FWD/RNA/Number",
 									    "FWD/Unc/Status",  "FWD/Unc/Number"]:
-									fullcomm = "database get %s/users/%s %s" %(e['context'], user.split("sip")[1], key)
+									fullcomm = "database get %s %s" %(dbfamily, key)
 									reply = AMIclasssock[astnum].execclicommand(fullcomm)
 									for r in reply:
 										if r.find("Value: ") == 0:
 											repstr += "%s;%s;" %(key, r.rstrip().split(" ")[1])
 								response = 'FEATURES %s' %repstr
-							elif list[5] == 'SET':
-								repstr = ""
-								response = 'FEATURES %s' %repstr
+								requestersocket_by_featureid[dbfamily] = self
+							elif list[5] == 'PUT' and len(list) >= 8:
+								key = list[6]
+								value = list[7]
+								fullcomm = "database put %s/users/%s %s %s" %(e['context'],
+													      user.split("sip")[1],
+													      key,
+													      value)
+								reply = AMIclasssock[astnum].execclicommand(fullcomm)
+								repstr = "KO"
+								for r in reply:
+									if r.rstrip() == "Updated database successfully":
+										repstr = "OK"
+								response = 'FEATURES PUT %s' %repstr
 						else:
 							raise NameError, "features not allowed"
 					elif list[4] == 'DIRECTORY':
@@ -2717,6 +2754,7 @@ while True: # loops over the reloads
 	nukeast = False
 
 	ctx_by_requester = {}
+	requestersocket_by_featureid = {}
 	
 	xivoconf = ConfigParser.ConfigParser()
 	xivoconf.readfp(open(xivoconffile))
