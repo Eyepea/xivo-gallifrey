@@ -1570,10 +1570,10 @@ def handle_ami_event(astnum, idata):
 					dbfamily = "%s/%s/%s" %(ctx, grp, userid)
 					if dbfamily in requestersocket_by_featureid:
 						# requestersocket_lock.acquire()
-						mysock = requestersocket_by_featureid[dbfamily].request[1]
-						mysock.sendto("FEATURES UPDATE %s/sip%s %s %s"
-							      %(plist[astnum].astid, userid, feature, value),
-							      requestersocket_by_featureid[dbfamily].client_address)
+						ka_object = requestersocket_by_featureid[dbfamily]
+						mysock = ka_object.request[1]
+						mysock.sendto("FEATURES UPDATE %s %s" %(feature, value),
+							      ka_object.client_address)
 						# requestersocket_lock.release()
 					else:
 						pass
@@ -2621,7 +2621,8 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
 							#							repstr = build_features(list[5], list[6], list[7])
 							if list[5] == 'GET':
 								repstr = ""
-								dbfamily = "%s/users/%s" %(e['context'], user.split("sip")[1])
+								dbfamily = "%s/users/%s" %(e['context'],
+											   e['phonenum'])
 								for key in ["VM", "Record", "Screen", "DND",
 									    "FWD/Busy/Status", "FWD/Busy/Number",
 									    "FWD/RNA/Status",  "FWD/RNA/Number",
@@ -2637,7 +2638,7 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
 								key = list[6]
 								value = list[7]
 								fullcomm = "database put %s/users/%s %s %s" %(e['context'],
-													      user.split("sip")[1],
+													      e['phonenum'],
 													      key,
 													      value)
 								reply = AMIclasssock[astnum].execclicommand(fullcomm)
