@@ -498,7 +498,7 @@ CREATE INDEX generalvoicemail__idx__var_name ON generalvoicemail(var_name);
 
 INSERT INTO generalvoicemail VALUES(1,0,'voicemail.conf','general','maxmessage',180);
 INSERT INTO generalvoicemail VALUES(2,0,'voicemail.conf','general','minmessage',2);
-INSERT INTO generalvoicemail VALUES(3,0,'voicemail.conf','general','maxsilence',0);
+INSERT INTO generalvoicemail VALUES(3,0,'voicemail.conf','general','maxsilence',1);
 INSERT INTO generalvoicemail VALUES(4,0,'voicemail.conf','general','review','yes');
 INSERT INTO generalvoicemail VALUES(5,0,'voicemail.conf','general','serveremail','voicemail@xivo');
 INSERT INTO generalvoicemail VALUES(6,0,'voicemail.conf','general','fromstring','XIVO PBX');
