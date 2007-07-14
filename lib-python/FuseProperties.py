@@ -27,16 +27,24 @@ from operator import attrgetter as _attrgetter
 
 def _burn_fuse(attrname):
 	def burn_fuse(self, v):
-		if v: object.__setattr__(self, attrname, True)
+		if v: setattr(self, attrname, True)
 	return burn_fuse
 
 def _set_fused_protected(attrname, fusename, fv = lambda x:x):
 	def set_fused_bool(self, v):
-		if not object.__getattr__(self, fusename):
-			object.__setattr__(self, attrname, fv(v))
+		if not getattr(self, fusename):
+			setattr(self, attrname, fv(v))
 		else:
 			raise AttributeError, "can't set attribute: burned fuse"
 	return set_fused_bool
+
+def _set_fused_multiple(mainfuse_name, subfuses_seq):
+	def set_fused_multiple(self, v):
+		if v:
+			setattr(self, mainfuse_name, True)
+			for f in subfuses_seq:
+				setattr(self, f, True)
+	return set_fused_multiple
 
 def prop_fuse(attrname):
 	return property(_attrgetter(attrname), _burn_fuse(attrname))
@@ -48,3 +56,7 @@ def prop_fused_bool(attrname, fusename):
 def prop_fused_access(attrname, fusename):
 	return property(_attrgetter(attrname),
 		        _set_fused_protected(attrname, fusename))
+
+def prop_fuse_multiple(mainfuse_name, subfuses_seq):
+	return property(_attrgetter(mainfuse_name),
+	                _set_fused_multiple(mainfuse_name, subfuses_seq))
