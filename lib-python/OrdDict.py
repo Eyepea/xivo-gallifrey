@@ -99,10 +99,10 @@ class ordDict(dict):
 		if len(E) > 1:
 			raise TypeError, 'update expected at most 1 arguments, got %d' % len(E)
 		if E:
-			try:
+			if hasattr(E[0], 'iteritems'):
 				for k,v in E[0].iteritems():
 					self[k] = v
-			except AttributeError:
+			else:
 				for k,v in E[0]:
 					self[k] = v
 		for k,v in F.iteritems():
