@@ -819,9 +819,9 @@ void Engine::readKeepLoginAliveDatagrams()
 					qDebug() << i << list[i] << list[i+1];
 					if(list[i] == "VM")
 						voiceMailChanged(list[i+1]=="1");
-					else if(list[1] == "DND")
+					else if(list[i] == "DND")
 						dndChanged(list[i+1]=="1");
-					else if(list[1] == "Screen")
+					else if(list[i] == "Screen")
 						callFilteringChanged(list[i+1]=="1");
 				}
 			}
