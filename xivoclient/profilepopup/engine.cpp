@@ -778,6 +778,26 @@ void Engine::sendMessage(const QString & txt)
 	m_pendingkeepalivemsg++;
 }
 
+void Engine::initFeatureFields(const QString & field, const QString & value)
+{
+	//	qDebug() << field << value;
+	if(field == "VM")
+		voiceMailChanged(value == "1");
+	else if(field == "DND")
+		dndChanged(value == "1");
+	else if(field == "Screen")
+		callFilteringChanged(value == "1");
+	else if(field == "Record")
+		callRecordingChanged(value == "1");
+	else if(field == "FWD/Unc") {
+		uncondForwardChanged(value.split(":")[0] == "1", value.split(":")[1]);
+	} else if(field == "FWD/Busy") {
+		forwardOnBusyChanged(value.split(":")[0] == "1", value.split(":")[1]);
+	} else if(field == "FWD/RNA") {
+		forwardOnUnavailableChanged(value.split(":")[0] == "1", value.split(":")[1]);
+	}
+}
+
 /*!
  * Process incoming UDP datagrams which are likely to be 
  * response from keep alive messages.
@@ -810,26 +830,14 @@ void Engine::readKeepLoginAliveDatagrams()
 			QStringList list = QString::fromUtf8(buffer).trimmed().split("=");
 			directoryResponse(list[1]);
 		} else if(reply == "FEATURES") {
-			if((qsl.size() == 4) && (qsl[1] == "UPDATE")) {
-				qDebug() << qsl[2] << qsl[3];
-				if(qsl[2] == "VM")
-					voiceMailChanged(qsl[3] == "1");
-				else if(qsl[2] == "DND")
-					dndChanged(qsl[3] == "1");
-				else if(qsl[2] == "Screen")
-					callFilteringChanged(qsl[3] == "1");
-			} else {
+			if((qsl.size() == 4) && (qsl[1] == "UPDATE"))
+				initFeatureFields(qsl[2], qsl[3]);
+			else {
 				QStringList list = qsl[1].split(";");
-				qDebug() << list.size();
+				//				qDebug() << list.size();
 				if(list.size() > 1) {
 					for(int i=0; i<list.size()-1; i+=2) {
-						qDebug() << i << list[i] << list[i+1];
-						if(list[i] == "VM")
-							voiceMailChanged(list[i+1]=="1");
-						else if(list[i] == "DND")
-							dndChanged(list[i+1]=="1");
-						else if(list[i] == "Screen")
-							callFilteringChanged(list[i+1]=="1");
+						initFeatureFields(list[i], list[i+1]);
 					}
 				}
 			}

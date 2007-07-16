@@ -33,6 +33,9 @@ private slots:
 	void uncondForwardToggled(bool);
 	void forwardOnBusyToggled(bool);
 	void forwardOnUnavailableToggled(bool);
+	void toggleUncondIfAllowed(const QString &);
+	void toggleOnBusyIfAllowed(const QString &);
+	void toggleOnUnavailIfAllowed(const QString &);
 private:
 	QCheckBox * m_voicemail;
 	QCheckBox * m_callrecording;

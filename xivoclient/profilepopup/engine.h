@@ -85,6 +85,9 @@ signals:
 	void callRecordingChanged(bool);
 	void callFilteringChanged(bool);
 	void dndChanged(bool);
+	void uncondForwardChanged(bool, const QString &);
+	void forwardOnBusyChanged(bool, const QString &);
+	void forwardOnUnavailableChanged(bool, const QString &);
 public slots:
 	void start();	//!< start the connection process.
 	void stop();	//!< stop the engine
@@ -122,6 +125,7 @@ private:
 	void stopTryAgainTimer();	//!< Stop the "try to reconnect" timer
 	void setAvailState(const QString &);	//!< set Availability state
 	void processHistory(const QStringList &);
+	void initFeatureFields(const QString &, const QString &);
 
 	// parameters to connect to server
 	QString m_serverip;		//!< Host to the login server

@@ -356,28 +356,37 @@ void MainWidget::setConnected()
 				         m_engine, SLOT(setVoiceMail(bool)) );
 				connect( m_engine, SIGNAL(voiceMailChanged(bool)),
 				         m_featureswidget, SLOT(setVoiceMail(bool)) );
+
 				connect( m_featureswidget, SIGNAL(callRecordingToggled(bool)),
 				         m_engine, SLOT(setCallRecording(bool)) );
 				connect( m_engine, SIGNAL(callRecordingChanged(bool)),
 				         m_featureswidget, SLOT(setCallRecording(bool)) );
+
 				connect( m_featureswidget, SIGNAL(callFilteringToggled(bool)),
 				         m_engine, SLOT(setCallFiltering(bool)) );
 				connect( m_engine, SIGNAL(callFilteringChanged(bool)),
 				         m_featureswidget, SLOT(setCallFiltering(bool)) );
+
 				connect( m_featureswidget, SIGNAL(dndToggled(bool)),
 				         m_engine, SLOT(setDnd(bool)) );
 				connect( m_engine, SIGNAL(dndChanged(bool)),
 				         m_featureswidget, SLOT(setDnd(bool)) );
+
 				connect( m_featureswidget, SIGNAL(uncondForwardChanged(bool, const QString &)),
 				         m_engine, SLOT(setUncondForward(bool, const QString &)) );
+				connect( m_engine, SIGNAL(uncondForwardChanged(bool, const QString &)),
+				         m_featureswidget, SLOT(setUncondForward(bool, const QString &)) );
+
 				connect( m_featureswidget, SIGNAL(forwardOnBusyChanged(bool, const QString &)),
 				         m_engine, SLOT(setForwardOnBusy(bool, const QString &)) );
+				connect( m_engine, SIGNAL(forwardOnBusyChanged(bool, const QString &)),
+				         m_featureswidget, SLOT(setForwardOnBusy(bool, const QString &)) );
+
 				connect( m_featureswidget, SIGNAL(forwardOnUnavailableChanged(bool, const QString &)),
 				         m_engine, SLOT(setForwardOnUnavailable(bool, const QString &)) );
+				connect( m_engine, SIGNAL(forwardOnUnavailableChanged(bool, const QString &)),
+				         m_featureswidget, SLOT(setForwardOnUnavailable(bool, const QString &)) );
 				//
-	//m_qtabwidget->addTab(new ServicePanel(this), tr("Services"));
-				//m_featureswidget = new QLabel("Features");
-				//m_qtabwidget->addTab(m_featureswidget, tr("Features"));
 				m_engine->askFeatures();
 			} else if(dc == QString("directory")) {
 				m_directory = new DirectoryPanel(this);
