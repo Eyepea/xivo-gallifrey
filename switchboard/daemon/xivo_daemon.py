@@ -2623,15 +2623,27 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
 								repstr = ""
 								dbfamily = "%s/users/%s" %(e['context'],
 											   e['phonenum'])
-								for key in ["VM", "Record", "Screen", "DND",
-									    "FWD/Busy/Status", "FWD/Busy/Number",
-									    "FWD/RNA/Status",  "FWD/RNA/Number",
-									    "FWD/Unc/Status",  "FWD/Unc/Number"]:
+								for key in ["VM", "Record", "Screen", "DND"]:
 									fullcomm = "database get %s %s" %(dbfamily, key)
 									reply = AMIclasssock[astnum].execclicommand(fullcomm)
 									for r in reply:
 										if r.find("Value: ") == 0:
 											repstr += "%s;%s;" %(key, r.rstrip().split(" ")[1])
+								for key in ["FWD/Unc", "FWD/Busy", "FWD/RNA"]:
+									fullcomm = "database get %s %s/Status" %(dbfamily, key)
+									reply = AMIclasssock[astnum].execclicommand(fullcomm)
+									keystatus = ""
+									for r in reply:
+										if r.find("Value: ") == 0:
+											keystatus = r.rstrip().split(" ")[1]
+
+									fullcomm = "database get %s %s/Number" %(dbfamily, key)
+									reply = AMIclasssock[astnum].execclicommand(fullcomm)
+									keynumber = ""
+									for r in reply:
+										if r.find("Value: ") == 0:
+											keynumber = r.rstrip().split(" ")[1]
+									repstr += "%s;%s:%s;" %(key, keystatus, keynumber)
 								response = 'FEATURES %s' %repstr
 								requestersocket_by_featureid[dbfamily] = self
 							elif list[5] == 'PUT' and len(list) >= 8:
@@ -2646,7 +2658,7 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
 								for r in reply:
 									if r.rstrip() == "Updated database successfully":
 										repstr = "OK"
-								response = 'FEATURES PUT %s' %repstr
+								response = 'FEATURES PUT %s %s %s' %(repstr, key, value)
 						else:
 							raise NameError, "features not allowed"
 					elif list[4] == 'DIRECTORY':
