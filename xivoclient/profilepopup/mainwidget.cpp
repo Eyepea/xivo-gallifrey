@@ -376,16 +376,28 @@ void MainWidget::setConnected()
 				         m_engine, SLOT(setUncondForward(bool, const QString &)) );
 				connect( m_engine, SIGNAL(uncondForwardChanged(bool, const QString &)),
 				         m_featureswidget, SLOT(setUncondForward(bool, const QString &)) );
+				connect( m_engine, SIGNAL(uncondForwardChanged(bool)),
+				         m_featureswidget, SLOT(setUncondForward(bool)) );
+				connect( m_engine, SIGNAL(uncondForwardChanged(const QString &)),
+				         m_featureswidget, SLOT(setUncondForward(const QString &)) );
 
 				connect( m_featureswidget, SIGNAL(forwardOnBusyChanged(bool, const QString &)),
 				         m_engine, SLOT(setForwardOnBusy(bool, const QString &)) );
 				connect( m_engine, SIGNAL(forwardOnBusyChanged(bool, const QString &)),
 				         m_featureswidget, SLOT(setForwardOnBusy(bool, const QString &)) );
+				connect( m_engine, SIGNAL(forwardOnBusyChanged(bool)),
+				         m_featureswidget, SLOT(setForwardOnBusy(bool)) );
+				connect( m_engine, SIGNAL(forwardOnBusyChanged(const QString &)),
+				         m_featureswidget, SLOT(setForwardOnBusy(const QString &)) );
 
 				connect( m_featureswidget, SIGNAL(forwardOnUnavailableChanged(bool, const QString &)),
 				         m_engine, SLOT(setForwardOnUnavailable(bool, const QString &)) );
 				connect( m_engine, SIGNAL(forwardOnUnavailableChanged(bool, const QString &)),
 				         m_featureswidget, SLOT(setForwardOnUnavailable(bool, const QString &)) );
+				connect( m_engine, SIGNAL(forwardOnUnavailableChanged(bool)),
+				         m_featureswidget, SLOT(setForwardOnUnavailable(bool)) );
+				connect( m_engine, SIGNAL(forwardOnUnavailableChanged(const QString &)),
+				         m_featureswidget, SLOT(setForwardOnUnavailable(const QString &)) );
 				//
 				m_engine->askFeatures();
 			} else if(dc == QString("directory")) {

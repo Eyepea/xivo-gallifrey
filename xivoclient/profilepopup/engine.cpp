@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 */
 
-/* $Id: switchboardengine.cpp 795 2007-06-01 13:53:02Z nanard $ */
+/* $Id$ */
 
 #include <QDebug>
 #include <QTcpSocket>
@@ -789,13 +789,24 @@ void Engine::initFeatureFields(const QString & field, const QString & value)
 		callFilteringChanged(value == "1");
 	else if(field == "Record")
 		callRecordingChanged(value == "1");
-	else if(field == "FWD/Unc") {
+	else if(field == "FWD/Unc")
 		uncondForwardChanged(value.split(":")[0] == "1", value.split(":")[1]);
-	} else if(field == "FWD/Busy") {
+	else if(field == "FWD/Unc/Status")
+		uncondForwardChanged(value == "1");
+	else if(field == "FWD/Unc/Number")
+		uncondForwardChanged(value);
+	else if(field == "FWD/Busy")
 		forwardOnBusyChanged(value.split(":")[0] == "1", value.split(":")[1]);
-	} else if(field == "FWD/RNA") {
+	else if(field == "FWD/Busy/Status")
+		forwardOnBusyChanged(value == "1");
+	else if(field == "FWD/Busy/Number")
+		forwardOnBusyChanged(value);
+	else if(field == "FWD/RNA")
 		forwardOnUnavailableChanged(value.split(":")[0] == "1", value.split(":")[1]);
-	}
+	else if(field == "FWD/RNA/Status")
+		forwardOnUnavailableChanged(value == "1");
+	else if(field == "FWD/RNA/Number")
+		forwardOnUnavailableChanged(value);
 }
 
 /*!

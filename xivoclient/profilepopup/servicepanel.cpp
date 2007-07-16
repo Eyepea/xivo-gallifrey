@@ -143,9 +143,19 @@ void ServicePanel::setDnd(bool b)
 
 void ServicePanel::setUncondForward(bool b, const QString & dest)
 {
-	qDebug() << "ServicePanel::setUncondForward" << b << dest;
+	//qDebug() << "ServicePanel::setUncondForward" << b << dest;
 	m_uncondforwarddest->setText(dest);
 	m_uncondforward->setChecked(b);
+}
+
+void ServicePanel::setUncondForward(bool b)
+{
+	m_uncondforward->setChecked(b);
+}
+
+void ServicePanel::setUncondForward(const QString & dest)
+{
+	m_uncondforwarddest->setText(dest);
 }
 
 void ServicePanel::setForwardOnBusy(bool b, const QString & dest)
@@ -155,10 +165,30 @@ void ServicePanel::setForwardOnBusy(bool b, const QString & dest)
 	m_forwardonbusy->setChecked(b);
 }
 
+void ServicePanel::setForwardOnBusy(bool b)
+{
+	m_forwardonbusy->setChecked(b);
+}
+
+void ServicePanel::setForwardOnBusy(const QString & dest)
+{
+	m_forwardonbusydest->setText(dest);
+}
+
 void ServicePanel::setForwardOnUnavailable(bool b, const QString & dest)
 {
 	//qDebug() << "ServicePanel::setForwardOnUnavailable";
 	m_forwardonunavailabledest->setText(dest);
 	m_forwardonunavailable->setChecked(b);
+}
+
+void ServicePanel::setForwardOnUnavailable(bool b)
+{
+	m_forwardonunavailable->setChecked(b);
+}
+
+void ServicePanel::setForwardOnUnavailable(const QString & dest)
+{
+	m_forwardonunavailabledest->setText(dest);
 }
 

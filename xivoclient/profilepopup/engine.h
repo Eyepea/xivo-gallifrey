@@ -86,8 +86,14 @@ signals:
 	void callFilteringChanged(bool);
 	void dndChanged(bool);
 	void uncondForwardChanged(bool, const QString &);
+	void uncondForwardChanged(bool);
+	void uncondForwardChanged(const QString &);
 	void forwardOnBusyChanged(bool, const QString &);
+	void forwardOnBusyChanged(bool);
+	void forwardOnBusyChanged(const QString &);
 	void forwardOnUnavailableChanged(bool, const QString &);
+	void forwardOnUnavailableChanged(bool);
+	void forwardOnUnavailableChanged(const QString &);
 public slots:
 	void start();	//!< start the connection process.
 	void stop();	//!< stop the engine

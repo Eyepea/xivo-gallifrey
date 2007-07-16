@@ -27,8 +27,14 @@ public slots:
 	void setCallFiltering(bool);
 	void setDnd(bool);
 	void setUncondForward(bool, const QString &);
+	void setUncondForward(bool);
+	void setUncondForward(const QString &);
 	void setForwardOnBusy(bool, const QString &);
+	void setForwardOnBusy(bool);
+	void setForwardOnBusy(const QString &);
 	void setForwardOnUnavailable(bool, const QString &);
+	void setForwardOnUnavailable(bool);
+	void setForwardOnUnavailable(const QString &);
 private slots:
 	void uncondForwardToggled(bool);
 	void forwardOnBusyToggled(bool);
