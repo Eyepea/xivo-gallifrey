@@ -567,7 +567,7 @@ void Engine::identifyToTheServer()
 	outline.append("/");
 	outline.append(m_protocol);
 	outline.append(m_userid);
-	outline.append("\r\n");
+	outline.append(" XC\r\n");
 	m_loginsocket.write(outline.toAscii());
 	m_loginsocket.flush();
 	qDebug() << outline;

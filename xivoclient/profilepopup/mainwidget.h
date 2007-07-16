@@ -86,7 +86,7 @@ private:
 	DirectoryPanel * m_directory;
 	LogWidget * m_history;
 	QLabel * m_peerswidget;
-	QLabel * m_featureswidget;
+	QWidget * m_featureswidget;
 	bool m_forcetabs;    //!< Flag to allow the display of "unallowed" tabs, useful to test server-side capabilities
 
 	int m_tablimit;		//!< Maximum number of tabs in m_tabwidget

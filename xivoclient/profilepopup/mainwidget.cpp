@@ -313,8 +313,7 @@ void MainWidget::setConnected()
 	QPixmap green(15,15);
 	green.fill(Qt::green);
 	m_status->setPixmap(green);
-	QString allcapas = "customerinfo,history,directory,dial,peers,features";
-	QStringList display_capas = allcapas.split(",");
+	QStringList display_capas = QString("customerinfo,features,history,directory,peers,dial").split(",");
 	QStringList allowed_capas = m_engine->getCapabilities().split(",");
 
 	for(int j = 0; j < display_capas.size(); j++) {
@@ -351,29 +350,29 @@ void MainWidget::setConnected()
 				m_qtabwidget->addTab(m_peerswidget, tr("Contacts"));
 				
 			} else if(dc == QString("features")) {
-				QWidget * w = new ServicePanel(this);
-				m_qtabwidget->addTab(w, tr("Services"));
-				connect( w, SIGNAL(voiceMailToggled(bool)),
+				m_featureswidget = new ServicePanel(this);
+				m_qtabwidget->addTab(m_featureswidget, tr("Services"));
+				connect( m_featureswidget, SIGNAL(voiceMailToggled(bool)),
 				         m_engine, SLOT(setVoiceMail(bool)) );
 				connect( m_engine, SIGNAL(voiceMailChanged(bool)),
-				         w, SLOT(setVoiceMail(bool)) );
-				connect( w, SIGNAL(callRecordingToggled(bool)),
+				         m_featureswidget, SLOT(setVoiceMail(bool)) );
+				connect( m_featureswidget, SIGNAL(callRecordingToggled(bool)),
 				         m_engine, SLOT(setCallRecording(bool)) );
 				connect( m_engine, SIGNAL(callRecordingChanged(bool)),
-				         w, SLOT(setCallRecording(bool)) );
-				connect( w, SIGNAL(callFilteringToggled(bool)),
+				         m_featureswidget, SLOT(setCallRecording(bool)) );
+				connect( m_featureswidget, SIGNAL(callFilteringToggled(bool)),
 				         m_engine, SLOT(setCallFiltering(bool)) );
 				connect( m_engine, SIGNAL(callFilteringChanged(bool)),
-				         w, SLOT(setCallFiltering(bool)) );
-				connect( w, SIGNAL(dndToggled(bool)),
+				         m_featureswidget, SLOT(setCallFiltering(bool)) );
+				connect( m_featureswidget, SIGNAL(dndToggled(bool)),
 				         m_engine, SLOT(setDnd(bool)) );
 				connect( m_engine, SIGNAL(dndChanged(bool)),
-				         w, SLOT(setDnd(bool)) );
-				connect( w, SIGNAL(uncondForwardChanged(bool, const QString &)),
+				         m_featureswidget, SLOT(setDnd(bool)) );
+				connect( m_featureswidget, SIGNAL(uncondForwardChanged(bool, const QString &)),
 				         m_engine, SLOT(setUncondForward(bool, const QString &)) );
-				connect( w, SIGNAL(forwardOnBusyChanged(bool, const QString &)),
+				connect( m_featureswidget, SIGNAL(forwardOnBusyChanged(bool, const QString &)),
 				         m_engine, SLOT(setForwardOnBusy(bool, const QString &)) );
-				connect( w, SIGNAL(forwardOnUnavailableChanged(bool, const QString &)),
+				connect( m_featureswidget, SIGNAL(forwardOnUnavailableChanged(bool, const QString &)),
 				         m_engine, SLOT(setForwardOnUnavailable(bool, const QString &)) );
 				//
 	//m_qtabwidget->addTab(new ServicePanel(this), tr("Services"));
@@ -432,8 +431,7 @@ void MainWidget::setDisconnected()
 	QPixmap red(15,15);
 	red.fill(Qt::red);
 	m_status->setPixmap(red);
-	QString allcapas = "customerinfo,history,directory,dial,peers,features";
-	QStringList display_capas = allcapas.split(",");
+	QStringList display_capas = QString("customerinfo,features,history,directory,peers,dial").split(",");
 	QStringList allowed_capas = m_engine->getCapabilities().split(",");
 
 	for(int j = 0; j < display_capas.size(); j++) {
