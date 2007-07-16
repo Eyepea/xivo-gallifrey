@@ -1000,8 +1000,8 @@ def manage_tcp_connection(connid, allow_events):
         elif usefulmsg == "infos":
 		try:
 			time_uptime = int(time.time() - time_start)
-			reply = "infos=$Revision$;uptime=%d s;maxgui=%d;conngui=%d" \
-				%(time_uptime,maxgui,len(tcpopens_sb))
+			reply = "infos=version=%s;uptime=%d s;maxgui=%d;conngui=%d" \
+				%(__version__.split()[1], time_uptime, maxgui, len(tcpopens_sb))
 			for tcpo in tcpopens_sb:
 				reply += ":%s:%d" %(tcpo[1],tcpo[2])
 			connid[0].send(reply + "\n")
@@ -2402,7 +2402,7 @@ class LoginHandler(SocketServer.StreamRequestHandler):
                 finally:
 		    userlist_lock.release()
 
-		replystr = "OK SESSIONID %s %s %s" %(sessionid,context,capabilities)
+		replystr = "OK SESSIONID %s %s %s %s" %(sessionid, context, capabilities, __version__.split()[1])
 		debugstr += " / user %s, port %s, state %s, astnum %d : connected : %s" %(user,port,state,astnum,replystr)
 		return [replystr, debugstr], [user, port, state, astnum]
 
