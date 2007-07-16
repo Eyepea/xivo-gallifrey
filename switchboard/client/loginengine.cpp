@@ -289,6 +289,7 @@ void LoginEngine::identifyToTheServer()
 	m_serveraddress = m_loginsocket->peerAddress();
 	outline = "LOGIN ";
 	outline.append(m_asterisk + "/" + m_protocol.toLower() + m_userid);
+	outline.append(" SB");
 	qDebug() << "LoginEngine::identifyToTheServer() : " << outline;
 	outline.append("\r\n");
 	m_loginsocket->write(outline.toAscii());
