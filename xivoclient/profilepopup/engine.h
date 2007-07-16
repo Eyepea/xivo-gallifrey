@@ -156,6 +156,7 @@ private:
 	QTcpServer m_listensocket;	//!< TCP socket listening for profiles
 	QString m_sessionid;	//!< Session id obtained after a successful login
 	QString m_capabilities;	//!< List of capabilities issued by the server after a successful login
+	int m_version;	//!< Version issued by the server after a successful login
 	QString m_dialcontext;	//!< Context of the phone, as returned by the xivo_daemon server
 	EngineState m_state;	//!< State of the engine (Logged/Not Logged)
 	int m_pendingkeepalivemsg;	//!< number of keepalivemsg sent without response

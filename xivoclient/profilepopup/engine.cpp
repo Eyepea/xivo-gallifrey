@@ -30,6 +30,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include "popup.h"
 #include "logeltwidget.h"
 
+const int REQUIRED_SERVER_VERSION = 1150;
+
 /*!
  * This constructor initialize the UDP socket and
  * the TCP listening socket.
@@ -646,8 +648,17 @@ void Engine::processLoginDialog()
 			m_dialcontext = sessionResp[3];
 		if(sessionResp.size() > 4)
 			m_capabilities = sessionResp[4];
+		m_version = -1;
+		if(sessionResp.size() > 5)
+			m_version = sessionResp[5].toInt();
 		if(!m_tcpmode)
 			m_loginsocket.close();
+		if((m_version > 0) && (m_version < REQUIRED_SERVER_VERSION)) {
+			qDebug() << "Your server version is" << m_version << "which is too old. The required one is at least :" << REQUIRED_SERVER_VERSION;
+			m_loginsocket.close();
+			stop();
+			return;
+		}
 		setState(ELogged);
 		// start the keepalive timer
 		m_ka_timerid = startTimer(m_keepaliveinterval);
