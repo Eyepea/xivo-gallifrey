@@ -75,7 +75,7 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-from xml.dom.minidom import parse, getDOMImplementation
+from xml.dom.minidom import parse, parseString, getDOMImplementation
 from itertools import *
 from AttrDict import *
 from CtrlMap import *
@@ -160,14 +160,18 @@ def elem_pinst_rec(doc, x, indent, level):
 	else:
 		return [doc.createTextNode(str(x))], ELT_SCALAR
 
-def xml_pinst(x, root_name, indent='\t'):
+def xmlstr_pinst(x, root_name, indent='\t'):
 	doc = DOM_Imple.createDocument(None, root_name, None)
 	subs,stype = elem_pinst_rec(doc, x, indent, 1)
 	fill_one(doc, doc.documentElement, subs, stype, indent, 0)
 	return doc.toxml()
 
-def pinst_xml_parse(filename_or_file, parser=None, bufsize=None):
+def pinst_xmlfile(filename_or_file, parser=None, bufsize=None):
 	dom = parse(filename_or_file, parser, bufsize)
 	return pinst_dom(dom.documentElement)
 
-__all__ = ['xml_pinst', 'pinst_xml_parse']
+def pinst_xmlstr(string, parser=None):
+	dom = parseString(string, parser)
+	return pinst_dom(dom.documentElement)
+
+__all__ = ['xmlstr_pinst', 'pinst_xmlstr', 'pinst_xmlfile']
