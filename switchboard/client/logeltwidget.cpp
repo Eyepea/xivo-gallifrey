@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 */
 
 #include <QHBoxLayout>
+#include <QGridLayout>
 #include <QLabel>
 #include <QMenu>
 #include <QDebug>
@@ -32,27 +33,33 @@ LogEltWidget::LogEltWidget( const QString & peer, Direction d,
 : QWidget(parent), m_dateTime(dt), m_peer(peer), m_direction(d)
 {
 //	qDebug() << "  LogEltWidget::LogEltWidget()" << peer << d << dt << duration << parent;
-	QHBoxLayout * layout = new QHBoxLayout( this );
-	layout->setMargin(0);
+	QGridLayout * glayout = new QGridLayout( this );
+	//	QHBoxLayout * layout1 = new QHBoxLayout( this );
+	//	layout1->setMargin(0);
+
+	QLabel * lblpeer = new QLabel( peer, this );
+	lblpeer->setFont(QFont("helvetica", 10, QFont::Bold));
+	glayout->addWidget(lblpeer, 0, 0);
 
 	QLabel * lbldt = new QLabel( dt.toString(Qt::SystemLocaleDate), this );
-	layout->addWidget(lbldt);
+	lbldt->setFont(QFont("helvetica", 10, QFont::Light));
+	glayout->addWidget(lbldt, 1, 0);
 
 	QLabel * lblduration = new QLabel( this );
 	int min = duration / 60;
 	int sec = duration % 60;
-	lblduration->setText((min?(QString::number(min) + "m"):"") + QString::number(sec) + "s");
-	layout->addWidget(lblduration);
-
-	QLabel * lblpeer = new QLabel( peer, this );
-	layout->addWidget(lblpeer);
+	lblduration->setText("[ " + (min?(QString::number(min) + "m"):"") + QString::number(sec) + "s ]");
+	lblduration->setFont(QFont("helvetica", 10, QFont::Light));
+	glayout->addWidget(lblduration, 1, 1);
 
 	/*	QLabel * lbldir = new QLabel( this );
 	  lbldir->setText((d == OutCall)?"<=":"=>");
-	  layout->addWidget(lbldir);
+	  glayout->addWidget(lbldir);
 	*/
 
-	layout->addStretch(1);
+	glayout->setColumnStretch(0, 0);
+	glayout->setColumnStretch(1, 0);
+	glayout->setColumnStretch(2, 1);
 
 	m_dialAction = new QAction( tr("&Call back"), this );
 	m_dialAction->setStatusTip( tr("Call back the correspondent") );
