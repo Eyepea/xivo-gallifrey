@@ -810,19 +810,27 @@ void Engine::readKeepLoginAliveDatagrams()
 			QStringList list = QString::fromUtf8(buffer).trimmed().split("=");
 			directoryResponse(list[1]);
 		} else if(reply == "FEATURES") {
-			QStringList list = qsl[1].split(";");
-			qDebug() << list.size();
-			if(list.size() > 1)
-			{
-				for(int i=0; i<list.size()-1; i+=2)
-				{
-					qDebug() << i << list[i] << list[i+1];
-					if(list[i] == "VM")
-						voiceMailChanged(list[i+1]=="1");
-					else if(list[i] == "DND")
-						dndChanged(list[i+1]=="1");
-					else if(list[i] == "Screen")
-						callFilteringChanged(list[i+1]=="1");
+			if((qsl.size() == 4) && (qsl[1] == "UPDATE")) {
+				qDebug() << qsl[2] << qsl[3];
+				if(qsl[2] == "VM")
+					voiceMailChanged(qsl[3] == "1");
+				else if(qsl[2] == "DND")
+					dndChanged(qsl[3] == "1");
+				else if(qsl[2] == "Screen")
+					callFilteringChanged(qsl[3] == "1");
+			} else {
+				QStringList list = qsl[1].split(";");
+				qDebug() << list.size();
+				if(list.size() > 1) {
+					for(int i=0; i<list.size()-1; i+=2) {
+						qDebug() << i << list[i] << list[i+1];
+						if(list[i] == "VM")
+							voiceMailChanged(list[i+1]=="1");
+						else if(list[i] == "DND")
+							dndChanged(list[i+1]=="1");
+						else if(list[i] == "Screen")
+							callFilteringChanged(list[i+1]=="1");
+					}
 				}
 			}
 		}
