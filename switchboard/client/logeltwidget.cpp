@@ -39,24 +39,33 @@ LogEltWidget::LogEltWidget( const QString & peer, Direction d,
 
 	QLabel * lblpeer = new QLabel( peer, this );
 	lblpeer->setFont(QFont("helvetica", 10, QFont::Bold));
+	lblpeer->setMargin(0);
 	glayout->addWidget(lblpeer, 0, 0);
 
-	QLabel * lbldt = new QLabel( dt.toString(Qt::SystemLocaleDate), this );
+	QLabel * lbldt = new QLabel( dt.toString(Qt::SystemLocaleDate) + "   ", this );
 	lbldt->setFont(QFont("helvetica", 10, QFont::Light));
+	lbldt->setMargin(0);
 	glayout->addWidget(lbldt, 1, 0);
 
 	QLabel * lblduration = new QLabel( this );
 	int min = duration / 60;
 	int sec = duration % 60;
-	lblduration->setText("[ " + (min?(QString::number(min) + "m"):"") + QString::number(sec) + "s ]");
+	lblduration->setText((min?(QString::number(min) + "min "):"") + QString::number(sec) + "s");
 	lblduration->setFont(QFont("helvetica", 10, QFont::Light));
+	lblduration->setMargin(0);
+	lblduration->setFrameStyle(QFrame::StyledPanel);
 	glayout->addWidget(lblduration, 1, 1);
+
+	QLabel * lbldummy = new QLabel( "", this );
+	lbldummy->setMargin(0);
+	glayout->addWidget(lbldummy, 1, 2);
 
 	/*	QLabel * lbldir = new QLabel( this );
 	  lbldir->setText((d == OutCall)?"<=":"=>");
 	  glayout->addWidget(lbldir);
 	*/
 
+	glayout->setSpacing(0);
 	glayout->setColumnStretch(0, 0);
 	glayout->setColumnStretch(1, 0);
 	glayout->setColumnStretch(2, 1);

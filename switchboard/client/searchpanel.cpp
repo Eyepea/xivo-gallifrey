@@ -77,9 +77,9 @@ void SearchPanel::updatePeer(const QString & ext,
 			     const QString & sipstatus,
 			     const QString & vmstatus,
 			     const QString & queuestatus,
- 								   const QStringList & chanIds,
-								   const QStringList & chanStates,
-								   const QStringList & chanOthers)
+			     const QStringList & chanIds,
+			     const QStringList & chanStates,
+			     const QStringList & chanOthers)
 {
 	int i;
 	//qDebug() << "SearchPanel::updatePeer" << ext << name << status << avail << corrname;

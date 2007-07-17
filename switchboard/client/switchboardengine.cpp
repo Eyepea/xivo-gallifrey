@@ -392,10 +392,6 @@ void SwitchBoardEngine::socketReadyRead()
 					monitorPeer(myfullid, "Unknown Callerid");
 				else
 					monitorPeer(myfullid, myname);
-				// TEST !
-				//m_pendingcommand = "history obelisk/SIP/103 10";
-				//m_pendingcommand = "history obelisk/SIP/103 3";
-				//sendCommand();
 			} else if(list[0] == "loginok") {
 				QStringList params = list[1].split(";");
 				if(params.size() > 1) {
