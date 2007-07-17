@@ -16,6 +16,7 @@ __license__ = """
 """
 
 import SocketServer
+from SocketServer import socket
 
 class ThreadingHTTPServer(SocketServer.ThreadingTCPServer):
 	"""Same as HTTPServer, but derivates from ThreadingTCPServer instead
