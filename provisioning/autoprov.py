@@ -7,7 +7,9 @@ Copyright (C) 2007, Proformatique
 
 __version__ = "$Revision$ $Date$"
 
-GETOPT_SHORTOPTS	= 'b:l:dfc:'
+CONFIG_FILE		= '/etc/xivo/provisioning.conf' # can be overridded by cmd line param
+CONFIG_LIB_PATH		= 'py_lib_path'
+GETOPT_SHORTOPTS	= 'b:l:dfc:p:h'
 PIDFILE			= "/var/run/autoprov.pid"
 TABLE			= "phone"
 UF_TABLE		= "userfeatures"
@@ -17,23 +19,46 @@ TECH			= "sip" # only allowed tech right now
 import encodings.latin_1
 import _sre
 import sys
+
+def help_screen():
+	print >> sys.stderr, \
+"""Syntax:
+%s [-b <dburi>] [-l <loglevel>] [-d] [-f] [-c <conffile>] [-p <pidfile>] [-h]
+
+-b <dburi>	Override Database URI with <dburi>
+-l <loglevel>	Emit traces with <loglevel> details, must be one of:
+		emerg, alert, crit, err, warning, notice, info, debug
+-d		Don't call the main function, for installation test purposes
+-f		Foreground, don't daemonize
+-c <conffile>	Use <conffile> instead of %s
+-p <pidfile>	Use <pidfile> instead of %s
+-h		Display this help screen and exit
+""" % (sys.argv[0], repr(CONFIG_FILE), repr(PIDFILE))
+	sys.exit(1)
+
 # === BEGIN of early configuration handling, so that the sys.path can be altered
-CONFIG_FILE = '/etc/xivo/provisioning.conf' # can be overridded by cmd line param
-CONFIG_LIB_PATH = 'py_lib_path'
-from getopt import getopt
+from getopt import getopt, GetoptError
 from xivo import ConfigPath
 from xivo.ConfigPath import *
 def config_path():
 	global CONFIG_FILE
-	opts,args = getopt(sys.argv[1:], GETOPT_SHORTOPTS)
-	for v in [v for k,v in opts if k == '-c']:
-		CONFIG_FILE = v
+	try:
+		opts,args = getopt(sys.argv[1:], GETOPT_SHORTOPTS)
+	except GetoptError, x:
+		print >> sys.stderr, x
+		help_screen()
+	for k,v in opts: # DO NOT MERGE THE TWO LOOPS
+		if k == '-h':
+			help_screen()
+	for k,v in opts:
+		if k == '-c':
+			CONFIG_FILE = v
 	ConfiguredPathHelper(CONFIG_FILE, CONFIG_LIB_PATH)
 config_path()
 # === END of early configuration handling
 
 
-# Loading personal modules is possible from this point
+# Loading Xivo modules is possible from this point
 
 import timeoutsocket
 from timeoutsocket import Timeout
@@ -47,12 +72,9 @@ import anysql
 from BackSQL import backsqlite
 from BackSQL import backmysql
 
-import BaseHTTPServer
-from BaseHTTPServer import HTTPServer
 from BaseHTTPServer import BaseHTTPRequestHandler
 
-import SocketServer
-from SocketServer import socket
+from ThreadingHTTPServer import *
 
 import provsup
 from provsup import ProvGeneralConf as pgc
@@ -342,6 +364,18 @@ class CommonProvContext:
 		self.dbinfos = dbinfos
 		self.rwlock = rwlock
 
+class Error(Exception): pass
+class BadRequest(Error): pass
+class MissingParam(BadRequest): pass
+class ConflictError(Error): pass
+class NotFoundError(Error): pass
+
+ExceptToHTTP = {
+	BadRequest: 400,
+	ConflictError: 409,
+	NotFoundError: 404
+}
+
 def __mode_dependant_provlogic_locked(mode, ctx, phone, config):
 	"""This function resolves conflicts or abort by raising an exception
 	for the current provisioning in progress.
@@ -352,12 +386,12 @@ def __mode_dependant_provlogic_locked(mode, ctx, phone, config):
 		existing_phone = ctx.dbinfos.phone_by_iduserfeatures(config['iduserfeatures'])
 		if existing_phone:
 			syslogf(SYSLOG_WARNING, "__mode_dependant_provlogic_locked(): User %s already has a locally provisioned phone, not trying to provision a remote one" % config['iduserfeatures'])
-			raise RuntimeError, "User %s already has a locally provisioned phone, not trying to provision a remote one" % config['iduserfeatures']
+			raise ConflictError, "User %s already has a locally provisioned phone, not trying to provision a remote one" % config['iduserfeatures']
 		ctx.dbinfos.delete_guest_by_mac(phone['macaddr'])
 		existing_phone = ctx.dbinfos.phone_by_macaddr(phone['macaddr'])
 		if existing_phone:
 			syslogf(SYSLOG_WARNING, "__mode_dependant_provlogic_locked(): Phone %s already locally provisioned, not trying to provision it for remote operations" % phone['macaddr'])
-			raise RuntimeError, "Phone %s already locally provisioned, not trying to provision it for remote operations" % phone['macaddr']
+			raise ConflictError, "Phone %s already locally provisioned, not trying to provision it for remote operations" % phone['macaddr']
 	elif mode == 'authoritative':
 		syslogf(SYSLOG_DEBUG, "__mode_dependant_provlogic_locked() in authoritative mode for phone %s and user %s" % (phone['macaddr'], config['iduserfeatures']))
 		existing_phone = ctx.dbinfos.phone_by_iduserfeatures(config['iduserfeatures'])
@@ -386,18 +420,18 @@ def __provisioning(mode, ctx, phone):
 			"__provisioning(): the only protocol supported " +\
 			"right now is SIP, but I got %s" \
 			% phone["proto"])
-		raise ValueError, "Unknown protocol '%s' != sip" % (phone["proto"],)
+		raise BadRequest, "Unknown protocol '%s' != sip" % (phone["proto"],)
 
 	syslogf(SYSLOG_NOTICE, "__provisioning(): handling phone %s" % str(phone))
 
 	if (not phone["vendor"]) or (not phone["model"]):
 		syslogf(SYSLOG_ERR, "__provisioning(): Missing model or vendor in phone %s" % str(phone))
-		raise ValueError, "Missing model or vendor in phone %s" % str(phone)
+		raise BadRequest, "Missing model or vendor in phone %s" % str(phone)
 
 	if "provcode" in phone and phone["provcode"] != "0" and \
 	   not provsup.well_formed_provcode(phone["provcode"]):
 		syslogf(SYSLOG_ERR, "__provisioning(): Invalid provcode %s" % (phone["provcode"],))
-		raise ValueError, "Invalid provcode %s" % (phone["provcode"],)
+		raise NotFoundError, "Invalid provcode %s" % (phone["provcode"],)
 
 	if phone["actions"] != "no":
 		if "ipv4" not in phone:
@@ -405,12 +439,12 @@ def __provisioning(mode, ctx, phone):
 			phone["ipv4"] = provsup.ipv4_from_macaddr(phone["macaddr"], lambda x: syslogf(SYSLOG_ERR, x))
 		if phone["ipv4"] is None:
 			syslogf(SYSLOG_ERR, "__provisioning(): No IP address found for Mac Address %s" % (phone["macaddr"],))
-			raise RuntimeError, "No IP address found for Mac Address %s" % (phone["macaddr"],)
+			raise NotFoundError, "No IP address found for Mac Address %s" % (phone["macaddr"],)
 
 	syslogf(SYSLOG_DEBUG, "__provisioning(): locking phone %s" % (phone["macaddr"],))
 	if not ctx.maclocks.try_acquire(phone["macaddr"]):
 	    syslogf(SYSLOG_WARNING, "__provisioning(): Operation already in progress for %s" % (phone["macaddr"],))
-	    raise RuntimeError, "Operation already in progress for phone %s" % (phone["macaddr"],)
+	    raise ConflictError, "Operation already in progress for phone %s" % (phone["macaddr"],)
 	try:
 	    syslogf(SYSLOG_DEBUG, "__provisioning(): phone class from vendor")
 	    prov_class = provsup.PhoneClasses[phone["vendor"]] # TODO also use model
@@ -438,7 +472,7 @@ def __provisioning(mode, ctx, phone):
 		    syslogf(SYSLOG_DEBUG, "__provisioning(): locking user %s" % config['iduserfeatures'])
 		    if not ctx.userlocks.try_acquire(config['iduserfeatures']):
 			syslogf(SYSLOG_WARNING, "__provisioning(): Operation already in progress for user %s" % config['iduserfeatures'])
-			raise RuntimeError, "Operation already in progress for user %s" % config['iduserfeatures']
+			raise ConflictError, "Operation already in progress for user %s" % config['iduserfeatures']
 		    try:
 			syslogf(SYSLOG_NOTICE, "__provisioning(): AUTOPROV'isioning phone %s with config %s" % (str(phone),str(config)))
 			__mode_dependant_provlogic_locked(mode, ctx, phone, config)
@@ -450,7 +484,7 @@ def __provisioning(mode, ctx, phone):
 			ctx.userlocks.release(config['iduserfeatures'])
 		else:
 		    syslogf(SYSLOG_ERR, "__provisioning(): not AUTOPROV'isioning phone %s cause no config found or no iduserfeatures in config" % (str(phone),))
-
+		    raise NotFoundError, "no config found or no iduserfeatures in config for phone %s" % (str(phone),)
 	finally:
 	    syslogf(SYSLOG_DEBUG, "__provisioning(): unlocking phone %s" % (phone["macaddr"],))
 	    ctx.maclocks.release(phone["macaddr"])
@@ -460,7 +494,7 @@ def __userdeleted(ctx, iduserfeatures):
 	syslogf(SYSLOG_NOTICE, "__userdeleted(): handling deletion of user %s" % iduserfeatures)
 	if not ctx.userlocks.try_acquire(iduserfeatures):
 		syslogf(SYSLOG_WARNING, "__userdeleted(): Operation already in progress for user %s" % iduserfeatures)
-		raise RuntimeError, "Operation already in progress for user %s" % iduserfeatures
+		raise ConflictError, "Operation already in progress for user %s" % iduserfeatures
 	try:
 		phone = ctx.dbinfos.phone_by_iduserfeatures(iduserfeatures)
 		if phone:
@@ -486,7 +520,7 @@ def lock_and_provision(mode, ctx, phone):
 	"""
 	syslogf(SYSLOG_DEBUG, "Entering lock_and_provision(phone=%s)" % str(phone))
 	if not ctx.rwlock.acquire_read(pgc['excl_del_lock_to_s']):
-		raise RuntimeError, "Could not acquire the global lock in shared mode"
+		raise ConflictError, "Could not acquire the global lock in shared mode"
 	try:
 		__provisioning(mode, ctx, phone)
 	finally:
@@ -501,7 +535,7 @@ def lock_and_userdel(ctx, iduserfeatures):
 	"""
 	syslogf(SYSLOG_DEBUG, "Entering lock_and_userdel %s" % iduserfeatures)
 	if not ctx.rwlock.acquire_write(pgc['excl_del_lock_to_s']):
-		raise RuntimeError, "Could not acquire the global lock in exclusive mode"
+		raise ConflictError, "Could not acquire the global lock in exclusive mode"
 	try:
 		__userdeleted(ctx, iduserfeatures)
 	finally:
@@ -514,9 +548,6 @@ def clean_at_startup(ctx):
 	for phone in orphans:
 		syslogf(SYSLOG_NOTICE, "clean_at_startup(): about to remove orphan %s at startup" % str(phone))
 		lock_and_userdel(ctx, phone['iduserfeatures'])
-
-class MissingParam(Exception):
-	pass
 
 class ProvHttpHandler(BaseHTTPRequestHandler):
 	"""ThreadingHTTPServer will create one instance of this class for the
@@ -668,7 +699,7 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 		self.get_posted()
 		if "mode" not in self.posted:
 			syslogf(SYSLOG_ERR, "handle_prov(): No mode posted")
-			raise ValueError, "No mode posted"
+			raise BadRequest, "No mode posted"
 
 		if self.posted["mode"] == "authoritative" or \
 		   self.posted["mode"] == "informative":
@@ -691,14 +722,19 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 			lock_and_userdel(self.my_ctx, userinfo['iduserfeatures'])
 		else:
 			syslogf(SYSLOG_ERR, "handle_prov(): Unknown mode %s" % (self.posted["mode"],))
-			raise ValueError, "Unknown mode %s" % (self.posted["mode"],)
-	    except:
+			raise BadRequest, "Unknown mode %s" % (self.posted["mode"],)
+	    except Exception, x:
 		syslogf(SYSLOG_NOTICE, "handle_prov(): action FAILED - phone %s - userinfo %s" % (str(phone),str(userinfo)))
 		tb_line_list = traceback.format_exception(*sys.exc_info())
 		err_to_send = "<pre>\n" + cgi.escape(''.join(tb_line_list)) + "</pre>\n"
 		for line in tb_line_list:
 			syslogf(SYSLOG_ERR, line.rstrip())
-		self.send_error_explain(500, err_to_send) # XXX
+		errcode = 500
+		for t,rcode in ExceptToHTTP.iteritems():
+			if isinstance(x, t):
+				errcode = rcode
+				break
+		self.send_error_explain(errcode, err_to_send)
 		sys.exc_clear()
 		return
 	    syslogf(SYSLOG_NOTICE, "handle_prov(): provisioning OK for phone %s" % (str(phone),))
@@ -726,20 +762,6 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 		if self.path == '/list':
 			self.handle_list()
 		else: self.answer_404()
-
-class ThreadingHTTPServer(SocketServer.ThreadingTCPServer):
-	"""Same as HTTPServer, but derivates from ThreadingTCPServer instead
-	of TCPServer so that any instance of ProvHttpHandler created for any
-	incoming connection runs in its own thread.
-	
-	"""
-	allow_reuse_address = 1    # Seems to make sense in testing environment
-	def server_bind(self):
-		"""Override server_bind to store the server name."""
-		SocketServer.TCPServer.server_bind(self)
-		host, port = self.socket.getsockname()[:2]
-		self.server_name = socket.getfqdn(host)
-		self.server_port = port
 
 def log_stderr_and_syslog(x):
 	"""This function logs the string x to both stderr and the system log.
@@ -795,11 +817,6 @@ dontlauchmain = False
 foreground = False
 log_level = SYSLOG_NOTICE
 
-# l: log filter up to EMERG, ALERT, CRIT, ERR, WARNING, NOTICE, INFO or DEBUG
-# d: don't launch the main function (useful for python -i invocations)
-# f: keep the program on foreground, don't daemonize
-# b: override the default DB URI
-
 dburi_override = None
 log_level_override = None
 opts,args = getopt(sys.argv[1:], GETOPT_SHORTOPTS)
@@ -812,6 +829,8 @@ for k,v in opts:
 		foreground = True
 	elif '-b' == k:
 		dburi_override = v
+	elif '-p' == k:
+		PIDFILE = v
 
 provsup.LoadConfig(CONFIG_FILE)
 

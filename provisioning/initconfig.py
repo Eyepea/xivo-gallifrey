@@ -24,28 +24,47 @@ __license__ = """
     License along with this library; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
-GETOPT_SHORTOPTS = 'c:'
+
+CONFIG_FILE		= '/etc/xivo/provisioning.conf' # can be overridded by cmd line param
+CONFIG_LIB_PATH		= 'py_lib_path'
+GETOPT_SHORTOPTS	= 'c:h'
 
 import sys
 
+def help_screen():
+	print >> sys.stderr, \
+"""Syntax:
+%s [-c <conffile>] [-h] <sip_uri> <provisioning_code> <user_agent>
+
+-c <conffile>	Use <conffile> instead of %s
+-h		Display this help screen and exit
+""" % (sys.argv[0], repr(CONFIG_FILE))
+	sys.exit(1)
+
 # === BEGIN of early configuration handling, so that the sys.path can be altered
-CONFIG_FILE = '/etc/xivo/provisioning.conf' # can be overridded by cmd line param
-CONFIG_LIB_PATH = 'py_lib_path'
-from getopt import getopt
+from getopt import getopt, GetoptError
 from xivo import ConfigPath
 from xivo.ConfigPath import *
 def config_path():
 	global CONFIG_FILE
-	opts,args = getopt(sys.argv[1:], GETOPT_SHORTOPTS)
+	try:
+		opts,args = getopt(sys.argv[1:], GETOPT_SHORTOPTS)
+	except GetoptError, x:
+		print >> sys.stderr, x
+		help_screen()
 	sys.argv[1:] = args # strip options for legacy code behind
-	for v in [v for k,v in opts if k == '-c']:
-		CONFIG_FILE = v
+	for k,v in opts: # DO NOT MERGE THE TWO LOOPS
+		if k == '-h':
+			help_screen()
+	for k,v in opts:
+		if k == '-c':
+			CONFIG_FILE = v
 	ConfiguredPathHelper(CONFIG_FILE, CONFIG_LIB_PATH)
 config_path()
 # === END of early configuration handling
 
 
-# Loading personnal modules is possible from this point
+# Loading Xivo modules is possible from this point
 
 import timeoutsocket
 from timeoutsocket import Timeout
