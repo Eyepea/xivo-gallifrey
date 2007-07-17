@@ -30,7 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include "popup.h"
 #include "logeltwidget.h"
 
-const int REQUIRED_SERVER_VERSION = 1150;
+const int REQUIRED_SERVER_VERSION = 1160;
 
 /*!
  * This constructor initialize the UDP socket and
