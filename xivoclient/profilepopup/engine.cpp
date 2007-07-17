@@ -30,7 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include "popup.h"
 #include "logeltwidget.h"
 
-const int REQUIRED_SERVER_VERSION = 1160;
+const int REQUIRED_SERVER_VERSION = 1165;
 
 /*!
  * This constructor initialize the UDP socket and
@@ -935,12 +935,9 @@ void Engine::updatePeers(const QStringList & liststatus)
 	           InstMessAvail, SIPPresStatus, VoiceMailStatus, QueueStatus,
 	           chanIds, chanStates, chanOthers);
 
-// 	if(   (m_userid == liststatus[3])
-// 	   && (m_dialcontext == liststatus[5]))
-// 	{
-// 		//qDebug() << "glop";
-// 		updateMyCalls(chanIds, chanStates, chanOthers);
-// 	}
+	//  	if(   (m_userid == liststatus[3]) && (m_dialcontext == liststatus[5])) {
+	// 		updateMyCalls(chanIds, chanStates, chanOthers);
+	// 	}
 }
 
 /*!
@@ -963,11 +960,12 @@ void Engine::readKeepLoginAliveDatagrams()
 		//		qDebug() << len << ":" << buffer;
 		QStringList qsl = QString::fromUtf8(buffer).trimmed().split(" ");
 		QString reply = qsl[0];
-		qDebug() << qsl;//reply;
+		
 		if(reply == "DISC") {
 			stopKeepAliveTimer();
 			setState(ENotLogged);
 			startTryAgainTimer();
+			qDebug() << qsl; //reply;
 		} else if(reply == "HISTORY") {
 			QStringList list = QString::fromUtf8(buffer).trimmed().split("=");
 			processHistory(list[1].split(";"));
@@ -986,22 +984,28 @@ void Engine::readKeepLoginAliveDatagrams()
 					}
 				}
 			}
+			qDebug() << qsl; //reply;
 		} else if(reply == "PEERS") {
 			QStringList listpeers = QString::fromUtf8(buffer).trimmed().split("=")[1].split(";");
 			for(int i = 0 ; i < listpeers.size() - 1; i++) {
 				QStringList liststatus = listpeers[i].split(":");
 				updatePeers(liststatus);
 			}
-			qDebug() << "end of PEERS reception";
 		} else if(reply == "CALLERIDS") {
 			QStringList listpeers = QString::fromUtf8(buffer).trimmed().split("=")[1].split(";");
 			for(int i = 0 ; i < listpeers.size() - 1; i++) {
 				QStringList liststatus = listpeers[i].split(":");
 				updateCallerids(liststatus);
 			}
-			qDebug() << "end of CALLERIDS reception";
 			askPeers();
+		} else if(reply == "PEERUPDATE") {
+			QStringList liststatus = QString::fromUtf8(buffer).trimmed().split("=")[1].split(":");
+			updatePeers(liststatus);
+			qDebug() << qsl; //reply;
+		} else {
+			qDebug() << qsl; //reply;
 		}
+		
 		m_pendingkeepalivemsg = 0;
 	}
 }
