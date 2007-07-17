@@ -249,6 +249,23 @@ void Engine::requestHistory(const QString & peer, int mode)
 	}
 }
 
+/*! \brief ask for Peer's statuses
+ */
+void Engine::requestPeers(void)
+{
+	qDebug() << "Engine::requestPeers()";
+	QString outline = "COMMAND ";
+	outline.append(m_asterisk + "/" + m_protocol + m_userid);
+	outline.append(" SESSIONID ");
+	outline.append(m_sessionid);
+	outline.append(" PEERS ");
+	outline.append("a b c");
+	outline.append("\r\n");
+	qDebug() << outline;
+	m_udpsocket.writeDatagram( outline.toAscii(),
+				   m_serveraddress, m_loginport + 1 );
+}
+
 void Engine::dialExtension(const QString & dst)
 {
 	qDebug() << "Engine::dialExtension()";
@@ -400,6 +417,30 @@ void Engine::askFeatures()
 	outline.append(" SESSIONID ");
 	outline.append(m_sessionid);
 	outline.append(" FEATURES GET\r\n");
+	qDebug() << outline;
+	m_udpsocket.writeDatagram( outline.toAscii(),
+				   m_serveraddress, m_loginport + 1 );
+}
+
+void Engine::askPeers()
+{
+	QString outline = "COMMAND ";
+	outline.append(m_asterisk + "/" + m_protocol + m_userid);
+	outline.append(" SESSIONID ");
+	outline.append(m_sessionid);
+	outline.append(" PEERS\r\n");
+	qDebug() << outline;
+	m_udpsocket.writeDatagram( outline.toAscii(),
+				   m_serveraddress, m_loginport + 1 );
+}
+
+void Engine::askCallerIds()
+{
+	QString outline = "COMMAND ";
+	outline.append(m_asterisk + "/" + m_protocol + m_userid);
+	outline.append(" SESSIONID ");
+	outline.append(m_sessionid);
+	outline.append(" CALLERIDS\r\n");
 	qDebug() << outline;
 	m_udpsocket.writeDatagram( outline.toAscii(),
 				   m_serveraddress, m_loginport + 1 );
@@ -820,6 +861,88 @@ void Engine::initFeatureFields(const QString & field, const QString & value)
 		forwardOnUnavailableChanged(value);
 }
 
+/*! \brief update a caller id 
+ */
+void Engine::updateCallerids(const QStringList & liststatus)
+{
+	QString pname = "p/" + liststatus[1] + "/" + liststatus[5] + "/"
+		+ liststatus[2] + "/" + liststatus[3] + "/" + liststatus[4];
+	QString pcid = liststatus[6];
+	// liststatus[7] => group informations
+	m_callerids[pname] = pcid;
+}
+
+/*! \brief update Peers 
+ *
+ * update peers and calls
+ */
+void Engine::updatePeers(const QStringList & liststatus)
+{
+	const int nfields0 = 11; // 0th order size (per-phone/line informations)
+	const int nfields1 = 6;  // 1st order size (per-channel informations)
+	QStringList chanIds;
+	QStringList chanStates;
+	QStringList chanOthers;
+
+	// liststatus[0] is a dummy field, only used for debug on the daemon side
+	// p/(asteriskid)/(context)/(protocol)/(phoneid)/(phonenum)
+	
+	if(liststatus.count() < 11)
+	{
+		// not valid
+		qDebug() << "Bad data from the server :" << liststatus;
+		return;
+	}
+
+	//<who>:<asterisk_id>:<tech(SIP/IAX/...)>:<phoneid>:<numero>:<contexte>:<dispo>:<etat SIP/XML>:<etat VM>:<etat Queues>: <nombre de liaisons>:
+	QString context = liststatus[5];
+	QString pname   = "p/" + liststatus[1] + "/" + context + "/"
+		+ liststatus[2] + "/" + liststatus[3] + "/" + liststatus[4];
+	QString InstMessAvail   = liststatus[6];
+	QString SIPPresStatus   = liststatus[7];
+	QString VoiceMailStatus = liststatus[8];
+	QString QueueStatus     = liststatus[9];
+	int nchans = liststatus[10].toInt();
+
+	if(liststatus.size() == nfields0 + nfields1 * nchans) {
+		for(int i = 0; i < nchans; i++) {
+			//  <channel>:<etat du channel>:<nb de secondes dans cet etat>:<to/from>:<channel en liaison>:<numero en liaison>
+			int refn = nfields0 + nfields1 * i;
+			QString displayedNum;
+			
+			SIPPresStatus = liststatus[refn + 1];
+			chanIds << ("c/" + liststatus[1] + "/" + context + "/" + liststatus[refn]);
+			chanStates << liststatus[refn + 1];
+			if((liststatus[refn + 5] == "") ||
+			   (liststatus[refn + 5] == "<Unknown>") ||
+			   (liststatus[refn + 5] == "<unknown>") ||
+			   (liststatus[refn + 5] == "anonymous") ||
+			   (liststatus[refn + 5] == "(null)"))
+				displayedNum = tr("Unknown Number");
+			else
+				displayedNum = liststatus[refn + 5];
+
+			chanOthers << displayedNum;
+// 			updateCall("c/" + liststatus[1] + "/" + context + "/" + liststatus[refn],
+// 				   liststatus[refn + 1],
+// 				   liststatus[refn + 2].toInt(), liststatus[refn + 3],
+// 				   liststatus[refn + 4], displayedNum,
+// 				   pname);
+		}
+	}
+
+	updatePeer(pname, m_callerids[pname],
+	           InstMessAvail, SIPPresStatus, VoiceMailStatus, QueueStatus,
+	           chanIds, chanStates, chanOthers);
+
+// 	if(   (m_userid == liststatus[3])
+// 	   && (m_dialcontext == liststatus[5]))
+// 	{
+// 		//qDebug() << "glop";
+// 		updateMyCalls(chanIds, chanStates, chanOthers);
+// 	}
+}
+
 /*!
  * Process incoming UDP datagrams which are likely to be 
  * response from keep alive messages.
@@ -863,6 +986,21 @@ void Engine::readKeepLoginAliveDatagrams()
 					}
 				}
 			}
+		} else if(reply == "PEERS") {
+			QStringList listpeers = QString::fromUtf8(buffer).trimmed().split("=")[1].split(";");
+			for(int i = 0 ; i < listpeers.size() - 1; i++) {
+				QStringList liststatus = listpeers[i].split(":");
+				updatePeers(liststatus);
+			}
+			qDebug() << "end of PEERS reception";
+		} else if(reply == "CALLERIDS") {
+			QStringList listpeers = QString::fromUtf8(buffer).trimmed().split("=")[1].split(";");
+			for(int i = 0 ; i < listpeers.size() - 1; i++) {
+				QStringList liststatus = listpeers[i].split(":");
+				updateCallerids(liststatus);
+			}
+			qDebug() << "end of CALLERIDS reception";
+			askPeers();
 		}
 		m_pendingkeepalivemsg = 0;
 	}

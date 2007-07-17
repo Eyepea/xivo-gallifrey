@@ -5,6 +5,18 @@
 	<file>xivoicon-green.png</file>
 	<file>xivoicon-grey.png</file>
 	<file>xivoclient_fr.qm</file>
+        <file>phone-blue.png</file>
+        <file>phone-green.png</file>
+        <file>phone-grey.png</file>
+        <file>phone-orange.png</file>
+        <file>phone-red.png</file>
+        <file>phone-yellow.png</file>
+        <file>personal-blue.png</file>
+        <file>personal-green.png</file>
+        <file>personal-grey.png</file>
+        <file>personal-orange.png</file>
+        <file>personal-red.png</file>
+        <file>personal-yellow.png</file>
 </qresource>
 </RCC>
 

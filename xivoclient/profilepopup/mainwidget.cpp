@@ -43,6 +43,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include "logwidget.h"
 #include "directorypanel.h"
 #include "servicepanel.h"
+#include "searchpanel.h"
 
 /*! \brief Constructor
  *
@@ -346,9 +347,21 @@ void MainWidget::setConnected()
 				m_qtabwidget->addTab(m_tabwidget, tr("Sheets"));
 				
 			} else if(dc == QString("peers")) {
-				m_peerswidget = new QLabel("Peers");
+				m_peerswidget = new SearchPanel(this);
 				m_qtabwidget->addTab(m_peerswidget, tr("Contacts"));
+
+				connect( m_engine, SIGNAL(updatePeer(const QString &, const QString &,
+								     const QString &, const QString &,
+								     const QString &, const QString &,
+								     const QStringList &, const QStringList &,
+								     const QStringList &)),
+					 m_peerswidget, SLOT(updatePeer(const QString &, const QString &,
+									const QString &, const QString &,
+									const QString &, const QString &,
+									const QStringList &, const QStringList &,
+									const QStringList &)) );
 				
+				m_engine->askCallerIds();
 			} else if(dc == QString("features")) {
 				m_featureswidget = new ServicePanel(this);
 				m_qtabwidget->addTab(m_featureswidget, tr("Services"));

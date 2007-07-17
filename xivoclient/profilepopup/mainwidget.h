@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include "dialpanel.h"
 #include "logwidget.h"
 #include "directorypanel.h"
+#include "searchpanel.h"
 
 class QSystemTrayIcon;
 class QTabWidget;
@@ -85,7 +86,7 @@ private:
 	DialPanel * m_dial;
 	DirectoryPanel * m_directory;
 	LogWidget * m_history;
-	QLabel * m_peerswidget;
+	SearchPanel * m_peerswidget;
 	QWidget * m_featureswidget;
 	bool m_forcetabs;    //!< Flag to allow the display of "unallowed" tabs, useful to test server-side capabilities
 

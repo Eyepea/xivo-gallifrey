@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #define __ENGINE_H__
 
 // QT includes.
+#include <QHash>
 #include <QObject>
 #include <QTcpSocket>
 #include <QTcpServer>
@@ -94,6 +95,15 @@ signals:
 	void forwardOnUnavailableChanged(bool, const QString &);
 	void forwardOnUnavailableChanged(bool);
 	void forwardOnUnavailableChanged(const QString &);
+	void updatePeer(const QString & ext,
+	                const QString & name,
+			const QString & imavail,
+			const QString & sipstatus,
+			const QString & vmstatus,
+			const QString & queuestatus,
+			const QStringList & chanIds,
+			const QStringList & chanStates,
+			const QStringList & chanOthers);
 public slots:
 	void start();	//!< start the connection process.
 	void stop();	//!< stop the engine
@@ -104,6 +114,7 @@ public slots:
 	void setDoNotDisturb();	//!< set user status as "do not disturb"
 	void searchDirectory(const QString &);
 	void requestHistory(const QString &, int);
+	void requestPeers(void);
 	void setVoiceMail(bool);
 	void setCallRecording(bool);
 	void setCallFiltering(bool);
@@ -112,6 +123,8 @@ public slots:
 	void setForwardOnBusy(bool, const QString &);
 	void setForwardOnUnavailable(bool, const QString &);
 	void askFeatures();
+	void askPeers();
+	void askCallerIds();
 private slots:
 	void identifyToTheServer();	//!< perform the first login step
 	void processLoginDialog();	//!< perform the following login steps
@@ -122,6 +135,7 @@ private slots:
 	void popupDestroyed(QObject *);	//!< know when a profile widget is destroyed *DEBUG*
 	void profileToBeShown(Popup *);	//!< a new profile must be displayed
 	void dialExtension(const QString &);
+	void updatePeers(const QStringList &);
 protected:
 	void timerEvent(QTimerEvent *);	//!< recieve timer events
 private:
@@ -132,6 +146,7 @@ private:
 	void setAvailState(const QString &);	//!< set Availability state
 	void processHistory(const QStringList &);
 	void initFeatureFields(const QString &, const QString &);
+	void updateCallerids(const QStringList &);
 
 	// parameters to connect to server
 	QString m_serverip;		//!< Host to the login server
@@ -161,6 +176,7 @@ private:
 	EngineState m_state;	//!< State of the engine (Logged/Not Logged)
 	int m_pendingkeepalivemsg;	//!< number of keepalivemsg sent without response
 	QString m_availstate;	//!< Availability state to send to the server
+	QHash<QString, QString> m_callerids;	//!< List of caller Ids
 };
 
 #endif
