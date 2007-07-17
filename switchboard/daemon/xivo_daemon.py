@@ -2609,16 +2609,8 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
 							response = 'HISTORY %s' %repstr
 						else:
 							raise NameError, "history not allowed"
-##					elif list[4] == 'PEERS':
-##						if "peers" in capabilities.split(","):
-##							repstr = build_peers(list[5], list[6], list[7])
-##							response = 'PEERS %s' %repstr
-##						else:
-##							raise NameError, "peers not allowed"
 					elif list[4] == 'FEATURES' and len(list) >= 6:
 						if "features" in capabilities.split(","):
-							# GET / SET
-							#							repstr = build_features(list[5], list[6], list[7])
 							if list[5] == 'GET':
 								repstr = ""
 								dbfamily = "%s/users/%s" %(e['context'],
@@ -2667,6 +2659,18 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
 							response = 'DIRECTORY %s' %repstr
 						else:
 							raise NameError, "directory not allowed"
+					elif list[4] == 'PEERS':
+						if "peers" in capabilities.split(","):
+							repstr = build_statuses()
+							response = 'PEERS %s' %repstr
+						else:
+							raise NameError, "peers not allowed"
+					elif list[4] == 'CALLERIDS':
+						if "peers" in capabilities.split(","):
+							repstr = build_callerids()
+							response = 'CALLERIDS %s' %repstr
+						else:
+							raise NameError, "peers not allowed"
 					else:
 						pass
 				except Exception, exc:
