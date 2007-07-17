@@ -768,6 +768,13 @@ def update_GUI_clients(astnum, phonenum, fromwhom):
 		except Exception, exc:
 			log_debug("--- exception --- send has failed on %s : %s" %(str(tcpclient[0]),str(exc)))
 	verboselog(strupdate, False, True)
+	for dbfamily in requestersocket_by_featureid:
+		# requestersocket_lock.acquire()
+		ka_object = requestersocket_by_featureid[dbfamily]
+		mysock = ka_object.request[1]
+		mysock.sendto("PEERUPDATE %s" %(strupdate),
+			      ka_object.client_address)
+		# requestersocket_lock.release()
 
 
 ## \brief Handles the SIP messages according to their meaning (reply to a formerly sent message).
@@ -1853,6 +1860,13 @@ class PhoneList:
 			except Exception, exc:
 				log_debug("--- exception --- send has failed on %s : %s" %(str(tcpclient[0]),str(exc)))
 		verboselog(strupdate, False, True)
+		for dbfamily in requestersocket_by_featureid:
+			# requestersocket_lock.acquire()
+			ka_object = requestersocket_by_featureid[dbfamily]
+			mysock = ka_object.request[1]
+			mysock.sendto("PEERUPDATE %s" %(strupdate),
+				      ka_object.client_address)
+			# requestersocket_lock.release()
 
 	def normal_channel_fills(self, chan_src, num_src,
 				 action, timeup, direction,
