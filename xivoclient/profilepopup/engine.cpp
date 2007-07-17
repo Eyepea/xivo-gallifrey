@@ -694,7 +694,7 @@ void Engine::processLoginDialog()
 			m_version = sessionResp[5].toInt();
 		if(!m_tcpmode)
 			m_loginsocket.close();
-		if((m_version > 0) && (m_version < REQUIRED_SERVER_VERSION)) {
+		if(m_version < REQUIRED_SERVER_VERSION) {
 			qDebug() << "Your server version is" << m_version << "which is too old. The required one is at least :" << REQUIRED_SERVER_VERSION;
 			m_loginsocket.close();
 			stop();
