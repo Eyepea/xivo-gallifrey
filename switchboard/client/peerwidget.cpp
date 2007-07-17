@@ -30,7 +30,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QMenu>
 #include <QDebug>
 #include "peerwidget.h"
-#include "switchboardengine.h"
 #include "switchboardwindow.h"
 #include "xivoconsts.h"
 

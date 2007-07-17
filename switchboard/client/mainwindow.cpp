@@ -79,8 +79,11 @@ QLabel * LeftPanel::titleLabel()
 MainWindow::MainWindow(SwitchBoardEngine * engine, LoginEngine * loginengine)
 	: m_engine(engine), m_loginengine(loginengine)
 {
+	QPixmap redsquare(15,15);
+	redsquare.fill(Qt::red);
 	statusBar();	// This creates the status bar.
 	m_status = new QLabel();
+	m_status->setPixmap(redsquare);
 	statusBar()->addPermanentWidget(m_status);
 	setWindowIcon(QIcon(":/xivoicon.png"));
 	setWindowTitle("Xivo Switchboard");
@@ -351,9 +354,9 @@ void MainWindow::engineStopped()
 	m_stopact->setDisabled(true);
 	m_startact->setEnabled(true);
 	// set status icon to red
-	QPixmap greensquare(15,15);
-	greensquare.fill(Qt::red);
-	m_status->setPixmap(greensquare);
+	QPixmap redsquare(15,15);
+	redsquare.fill(Qt::red);
+	m_status->setPixmap(redsquare);
 }
 
 /*!

@@ -76,6 +76,8 @@ LogWidget::LogWidget(SwitchBoardEngine * engine, QWidget * parent)
 	QWidget * widget = new QWidget( this );
 	scrollArea->setWidget( widget );
 	m_layout = new QVBoxLayout( widget );
+	m_layout->setMargin(0);
+	m_layout->setSpacing(0);
 	m_layout->addStretch(1);
 	layout->addWidget( scrollArea );
 }

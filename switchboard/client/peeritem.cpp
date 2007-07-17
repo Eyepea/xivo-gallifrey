@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QDebug>
 #include "peeritem.h"
 #include "peerwidget.h"
-#include "mainwindow.h"
 
 /*! \brief Constructor
  *
@@ -55,22 +54,22 @@ void Peer::updateStatus(const QString & imavail,
 	//qDebug() << imavail << sipstatus;
 	if(imavail == "available") {
 		m_peerwidget->setGreen(1);
-		display_imavail = MainWindow::tr("Available");
+		display_imavail = PeerWidget::tr("Available");
 	} else if(imavail == "away") {
 		m_peerwidget->setBlue(1);/*setDarkGreen(1);*/
-		display_imavail = MainWindow::tr("Away");
+		display_imavail = PeerWidget::tr("Away");
 	} else if(imavail == "donotdisturb") {
 		m_peerwidget->setRed(1);
-		display_imavail = MainWindow::tr("Do not disturb");
+		display_imavail = PeerWidget::tr("Do not disturb");
 	} else if(imavail == "berightback") {
 		m_peerwidget->setOrange(1);
-		display_imavail = MainWindow::tr("Be Right Back");
+		display_imavail = PeerWidget::tr("Be Right Back");
 	} else if(imavail == "outtolunch") {
 		m_peerwidget->setYellow(1);
-		display_imavail = MainWindow::tr("Out To Lunch");
+		display_imavail = PeerWidget::tr("Out To Lunch");
 	} else if(imavail == "unknown") {
 		m_peerwidget->setGray(1);
-		display_imavail = MainWindow::tr("Unknown");
+		display_imavail = PeerWidget::tr("Unknown");
 	} else {
 		m_peerwidget->setGray(1);
 		display_imavail = imavail;
@@ -79,19 +78,19 @@ void Peer::updateStatus(const QString & imavail,
 
 	if(sipstatus == "Ready") {
 		m_peerwidget->setGreen(0);
-		display_sipstatus = MainWindow::tr("Ready");
+		display_sipstatus = PeerWidget::tr("Ready");
 	} else if(sipstatus == "Ringing") {
 		m_peerwidget->setBlue(0);/*setCyan(0);*/
-		display_sipstatus = MainWindow::tr("Ringing");
+		display_sipstatus = PeerWidget::tr("Ringing");
 	} else if(sipstatus == "Calling") {
 		m_peerwidget->setYellow(0);
-		display_sipstatus = MainWindow::tr("Calling");
+		display_sipstatus = PeerWidget::tr("Calling");
 	} else if(sipstatus == "On the phone") {
 		m_peerwidget->setRed(0);
-		display_sipstatus = MainWindow::tr("On the phone");
+		display_sipstatus = PeerWidget::tr("On the phone");
 	} else if(sipstatus == "Not online") {
 		m_peerwidget->setGray(0);
-		display_sipstatus = MainWindow::tr("Not online");
+		display_sipstatus = PeerWidget::tr("Not online");
 	} else {
 		m_peerwidget->setGray(0);
 		display_sipstatus = sipstatus;
