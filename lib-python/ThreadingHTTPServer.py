@@ -15,6 +15,8 @@ __license__ = """
         http://www.python.org/download/releases/2.4.4/license/
 """
 
+import SocketServer
+
 class ThreadingHTTPServer(SocketServer.ThreadingTCPServer):
 	"""Same as HTTPServer, but derivates from ThreadingTCPServer instead
 	of TCPServer so that any instance of ProvHttpHandler created for any
