@@ -95,6 +95,8 @@ void SearchPanel::updatePeer(const QString & ext,
 	}
 	Peer peer(ext, name);
 	PeerWidget * peerwidget = new PeerWidget(ext, name, this);
+	connect( peerwidget, SIGNAL(emitDial(const QString &)),
+	         m_engine, SLOT(dialExtension(const QString &)) );
 	m_peerlayout->addWidget( peerwidget );
 	if( !name.contains(m_input->text(), Qt::CaseInsensitive) )
 	{

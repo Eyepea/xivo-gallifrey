@@ -360,7 +360,7 @@ void MainWidget::setConnected()
 									const QString &, const QString &,
 									const QStringList &, const QStringList &,
 									const QStringList &)) );
-				
+				m_peerswidget->setEngine(m_engine);
 				m_engine->askCallerIds();
 			} else if(dc == QString("features")) {
 				m_featureswidget = new ServicePanel(this);

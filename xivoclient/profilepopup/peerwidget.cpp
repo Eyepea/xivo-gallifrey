@@ -176,8 +176,9 @@ void PeerWidget::removeFromPanel()
  */
 void PeerWidget::dial()
 {
-//	qDebug() << "PeerWidget::dial()" << m_id;
-	emitDial( m_id );
+	//	qDebug() << "PeerWidget::dial()" << m_id;
+	QStringList peerinfo = m_id.split("/");
+	if (peerinfo.size() > 5) emitDial( peerinfo[5] );
 }
 
 /*! \brief mouse press. store position
