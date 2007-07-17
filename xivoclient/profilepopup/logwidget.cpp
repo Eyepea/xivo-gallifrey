@@ -43,10 +43,12 @@ LogWidget::LogWidget(Engine * engine, QWidget * parent)
 {
 	QVBoxLayout * layout = new QVBoxLayout(this);
 	layout->setMargin(0);
-	layout->setSpacing(2);
+	layout->setSpacing(0);
 	QGroupBox * groupBox = new QGroupBox( tr("Call history"), this );
 	groupBox->setAlignment( Qt::AlignHCenter );
 	QHBoxLayout * vbox = new QHBoxLayout( groupBox );
+	vbox->setMargin(0);
+	vbox->setSpacing(0);
 
 	m_radioNone = new QRadioButton( tr("&None"), groupBox );
 	m_radioNone->setChecked( true );
@@ -73,12 +75,15 @@ LogWidget::LogWidget(Engine * engine, QWidget * parent)
 	layout->addWidget( groupBox );
 	QScrollArea * scrollArea = new QScrollArea( this );
 	scrollArea->setWidgetResizable( true );
+
 	QWidget * widget = new QWidget( this );
 	scrollArea->setWidget( widget );
-	m_layout = new QVBoxLayout( widget );
-	m_layout->addStretch(1);
-	layout->addWidget( scrollArea );
 
+	m_layout = new QVBoxLayout( widget );
+	m_layout->setMargin(0);
+	m_layout->setSpacing(0);
+	m_layout->addStretch(0);
+	layout->addWidget( scrollArea );
 	m_peer = "p/" + m_engine->serverast() + "/" + "contexte" +  "/" + m_engine->protocol() + "/" + m_engine->userid() + "/" + m_engine->userid();
 }
 

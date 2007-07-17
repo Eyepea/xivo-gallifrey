@@ -75,6 +75,7 @@ LogWidget::LogWidget(SwitchBoardEngine * engine, QWidget * parent)
 	layout->addWidget( groupBox );
 	QScrollArea * scrollArea = new QScrollArea( this );
 	scrollArea->setWidgetResizable( true );
+
 	QWidget * widget = new QWidget( this );
 	scrollArea->setWidget( widget );
 
@@ -82,7 +83,6 @@ LogWidget::LogWidget(SwitchBoardEngine * engine, QWidget * parent)
 	m_layout->setMargin(0);
 	m_layout->setSpacing(0);
 	m_layout->addStretch(0);
-
 	layout->addWidget( scrollArea );
 }
 
