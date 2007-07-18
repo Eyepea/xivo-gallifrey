@@ -289,11 +289,11 @@ void LoginEngine::identifyToTheServer()
 	m_serveraddress = m_loginsocket->peerAddress();
 	outline = "LOGIN ";
 	outline.append(m_asterisk + "/" + m_protocol.toLower() + m_userid);
-#ifdef Q_WS_X11
+#if defined(Q_WS_X11)
 	outline.append(" SB@X11");
-#elif Q_WS_WIN
+#elif defined(Q_WS_WIN)
 	outline.append(" SB@WIN");
-#elif Q_WS_MAC
+#elif defined(Q_WS_MAC)
 	outline.append(" SB@MAC");
 #else
 	outline.append(" SB@unknown");

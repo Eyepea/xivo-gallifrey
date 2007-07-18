@@ -610,11 +610,11 @@ void Engine::identifyToTheServer()
 	outline.append("/");
 	outline.append(m_protocol);
 	outline.append(m_userid);
-#ifdef Q_WS_X11
+#if defined(Q_WS_X11)
 	outline.append(" XC@X11");
-#elif Q_WS_WIN
+#elif defined(Q_WS_WIN)
 	outline.append(" XC@WIN");
-#elif Q_WS_MAC
+#elif defined(Q_WS_MAC)
 	outline.append(" XC@MAC");
 #else
 	outline.append(" XC@unknown");
