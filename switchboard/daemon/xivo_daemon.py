@@ -2337,11 +2337,18 @@ class LoginHandler(SocketServer.StreamRequestHandler):
 			return [replystr, debugstr], [user, port, state, astnum]
 		
 		whoami = ""
+		whatsmyos = ""
 		if len(list1) == 3:
-			whoami = list1[2]
+			nwhoami = list1[2].split("@")
+			whoami  = nwhoami[0]
+			if len(nwhoami) == 2:
+				whatsmyos = nwhoami[1]
 		if whoami not in ["XC", "SB"]:
-			log_debug("WARNING : %s/%s attempts to log in from %s:%d but has given no meaningful XC/SB hint"
-				  %(astname_xivoc, user, self.client_address[0], self.client_address[1]))
+			log_debug("WARNING : %s/%s attempts to log in from %s:%d but has given no meaningful XC/SB hint (%s)"
+				  %(astname_xivoc, user, self.client_address[0], self.client_address[1], whoami))
+		if whatsmyos not in ["X11", "WIN", "MAC"]:
+			log_debug("WARNING : %s/%s attempts to log in from %s:%d but has given no meaningful OS hint (%s)"
+				  %(astname_xivoc, user, self.client_address[0], self.client_address[1], whatsmyos))
 
 		# asks for PASS
 		self.wfile.write('Send PASS for authentication\r\n')
@@ -2404,6 +2411,8 @@ class LoginHandler(SocketServer.StreamRequestHandler):
 		    e['sessiontimestamp'] = time.time()
 		    e['ip'] = self.client_address[0]
 		    e['port'] = port
+		    e['cticlienttype'] = whoami
+		    e['cticlientos'] = whatsmyos
                     e['tcpmode'] = tcpmode
                     if tcpmode:
                         print 'TCPMODE', self.request#, self.request.
@@ -2589,7 +2598,10 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
 				del e['sessiontimestamp']
 				del e['ip']
 				del e['port']
-				e["state"] = "unknown"
+				del e['state']
+				del e['tcpmode']
+				del e['cticlienttype']
+				del e['cticlientos']
 				sipnumber = "SIP/" + user.split("sip")[1]
 				if sipnumber in plist[astnum].normal:
 					plist[astnum].normal[sipnumber].set_imstat("unkown")
