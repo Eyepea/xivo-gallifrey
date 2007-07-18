@@ -610,7 +610,16 @@ void Engine::identifyToTheServer()
 	outline.append("/");
 	outline.append(m_protocol);
 	outline.append(m_userid);
-	outline.append(" XC\r\n");
+#ifdef Q_WS_X11
+	outline.append(" XC@X11");
+#elif Q_WS_WIN
+	outline.append(" XC@WIN");
+#elif Q_WS_MAC
+	outline.append(" XC@MAC");
+#else
+	outline.append(" XC@unknown");
+#endif
+	outline.append("\r\n");
 	m_loginsocket.write(outline.toAscii());
 	m_loginsocket.flush();
 	qDebug() << outline;
