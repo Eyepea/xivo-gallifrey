@@ -86,12 +86,12 @@
 <context>
     <name>LogEltWidget</name>
     <message>
-        <location filename="logeltwidget.cpp" line="64"/>
+        <location filename="logeltwidget.cpp" line="73"/>
         <source>&amp;Call back</source>
         <translation>R&amp;appeler</translation>
     </message>
     <message>
-        <location filename="logeltwidget.cpp" line="65"/>
+        <location filename="logeltwidget.cpp" line="74"/>
         <source>Call back the correspondent</source>
         <translation>Rappeler le correspondant</translation>
     </message>
@@ -104,22 +104,22 @@
         <translation>Historique des appels</translation>
     </message>
     <message>
-        <location filename="logwidget.cpp" line="51"/>
+        <location filename="logwidget.cpp" line="53"/>
         <source>&amp;None</source>
         <translation>A&amp;ucun</translation>
     </message>
     <message>
-        <location filename="logwidget.cpp" line="57"/>
+        <location filename="logwidget.cpp" line="59"/>
         <source>&amp;Outgoing</source>
         <translation>&amp;Sortants</translation>
     </message>
     <message>
-        <location filename="logwidget.cpp" line="63"/>
+        <location filename="logwidget.cpp" line="65"/>
         <source>&amp;Incoming</source>
         <translation>&amp;Entrants</translation>
     </message>
     <message>
-        <location filename="logwidget.cpp" line="68"/>
+        <location filename="logwidget.cpp" line="70"/>
         <source>&amp;Missed</source>
         <translation>&amp;Manqués</translation>
     </message>
@@ -188,8 +188,8 @@
     </message>
     <message>
         <location filename="mainwindow.cpp" line="389"/>
-        <source>&lt;h3&gt;XIVO Switchboard&lt;/h3&gt;&lt;p&gt;This application displays the status of the ongoing phone calls.&lt;/p&gt;&lt;p&gt;Version : %1&lt;/p&gt;&lt;p&gt;(C) 2007 &lt;b&gt;Proformatique&lt;/b&gt; &lt;a href=&quot;http://www.proformatique.com&quot;&gt;http://www.proformatique.com&lt;/a&gt;&lt;/p&gt;&lt;p&gt;67 rue Voltaire 92800 Puteaux FRANCE&lt;/p&gt;&lt;p&gt;E-mail : technique@proformatique.com&lt;/p&gt;&lt;p&gt;(+33/0)1.41.38.99.60&lt;/p&gt;&lt;p&gt;Author : Thomas Bernard&lt;/p&gt;</source>
-        <translation>&lt;h3&gt;XIVO Switchboard&lt;/h3&gt;&lt;p&gt;Cette application affiche le statut des appels téléphoniques en cours.&lt;/p&gt;&lt;p&gt;Version : %1&lt;/p&gt;&lt;p&gt;(C) 2007 &lt;b&gt;Proformatique&lt;/b&gt; &lt;a href=&quot;http://www.proformatique.com&quot;&gt;http://www.proformatique.com&lt;/a&gt;&lt;/p&gt;&lt;p&gt;67 rue Voltaire 92800 Puteaux FRANCE&lt;/p&gt;&lt;p&gt;E-mail : technique@proformatique.com&lt;/p&gt;&lt;p&gt;(+33/0)1.41.38.99.60&lt;/p&gt;&lt;p&gt;Auteur : Thomas Bernard&lt;/p&gt;</translation>
+        <source>&lt;h3&gt;XIVO Switchboard&lt;/h3&gt;&lt;p&gt;This application displays the status of the ongoing phone calls.&lt;/p&gt;&lt;p&gt;Version : %1&lt;/p&gt;&lt;p&gt;(C) 2007 &lt;b&gt;Proformatique&lt;/b&gt; &lt;a href=&quot;http://www.proformatique.com&quot;&gt;http://www.proformatique.com&lt;/a&gt;&lt;/p&gt;&lt;p&gt;67 rue Voltaire 92800 Puteaux FRANCE&lt;/p&gt;&lt;p&gt;E-mail : technique@proformatique.com&lt;/p&gt;&lt;p&gt;(+33/0)1.41.38.99.60&lt;/p&gt;&lt;p&gt;Authors : Thomas Bernard, Corentin Le Gall&lt;/p&gt;</source>
+        <translation>&lt;h3&gt;XIVO Switchboard&lt;/h3&gt;&lt;p&gt;Cette application affiche le statut des appels téléphoniques en cours.&lt;/p&gt;&lt;p&gt;Version : %1&lt;/p&gt;&lt;p&gt;(C) 2007 &lt;b&gt;Proformatique&lt;/b&gt; &lt;a href=&quot;http://www.proformatique.com&quot;&gt;http://www.proformatique.com&lt;/a&gt;&lt;/p&gt;&lt;p&gt;67 rue Voltaire 92800 Puteaux FRANCE&lt;/p&gt;&lt;p&gt;E-mail : technique@proformatique.com&lt;/p&gt;&lt;p&gt;(+33/0)1.41.38.99.60&lt;/p&gt;&lt;p&gt;Auteurs : Thomas Bernard, Corentin Le Gall&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="261"/>
@@ -429,22 +429,22 @@
         <translation>Erreur réseau inconnue</translation>
     </message>
     <message>
-        <location filename="switchboardengine.cpp" line="458"/>
+        <location filename="switchboardengine.cpp" line="454"/>
         <source>Peers&apos; status updated</source>
         <translation>Statut des postes mis à jour</translation>
     </message>
     <message>
-        <location filename="switchboardengine.cpp" line="429"/>
+        <location filename="switchboardengine.cpp" line="425"/>
         <source> said : </source>
         <translation> dit : </translation>
     </message>
     <message>
-        <location filename="switchboardengine.cpp" line="429"/>
+        <location filename="switchboardengine.cpp" line="425"/>
         <source>Unknown</source>
         <translation>Inconnu</translation>
     </message>
     <message>
-        <location filename="switchboardengine.cpp" line="607"/>
+        <location filename="switchboardengine.cpp" line="603"/>
         <source>Attempting to reconnect to server</source>
         <translation>Tentative de reconnexion au serveur</translation>
     </message>

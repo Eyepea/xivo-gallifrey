@@ -6,6 +6,7 @@ TEMPLATE = app
 TARGET = 
 DEPENDPATH += .
 INCLUDEPATH += .
+CONFIG -= debug
 CONFIG += static
 
 # Input

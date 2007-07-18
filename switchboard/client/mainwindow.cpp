@@ -386,6 +386,6 @@ void MainWindow::about()
 			      "<p>67 rue Voltaire 92800 Puteaux FRANCE</p>"
 			      "<p>E-mail : technique@proformatique.com</p>"
 			      "<p>(+33/0)1.41.38.99.60</p>"
-			      "<p>Author : Thomas Bernard</p>").arg(applicationVersion) );
+			      "<p>Authors : Thomas Bernard, Corentin Le Gall</p>").arg(applicationVersion) );
 }
 
