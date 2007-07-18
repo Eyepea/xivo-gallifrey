@@ -4,6 +4,7 @@
 # set PATH and CC to include cross compiling tools for cross compilation, e.g.
 # export PATH=/path/to/toolchain/powerpc-linux-gnu/bin:$PATH
 # export CC=gcc
+#
 
 # you can override default options by calling make OPTIONS=...
 CFLAGS ?= -O2
