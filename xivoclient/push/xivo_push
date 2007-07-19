@@ -50,23 +50,29 @@ def print_verbose(txt):
 # ==============================================================================
 
 if len(sys.argv) < 6:
-	print "Usage :", sys.argv[0], "<server> <port> <proto> <user> <callerid> [<msgext>]"
+	print "Usage :", sys.argv[0], "<server> <port> <proto> <user> <calleridnum> [<msgext>] [<calleridname>]"
 	sys.exit(1)
 else:
 	shost = sys.argv[1]
 	sport = int(sys.argv[2])
 	proto = sys.argv[3]
 	exten = sys.argv[4]
-	callerid = sys.argv[5]
+	calleridnum = sys.argv[5]
 	user = proto + exten
-	if len(sys.argv) > 6: msgext = sys.argv[6]
-	else: msgext = ""
+	if len(sys.argv) > 6:
+		msgext = sys.argv[6]
+	else:
+		msgext = ""
+	if len(sys.argv) > 7:
+		calleridname = sys.argv[7]
+	else:
+		calleridname = ""
 
 # send the PUSH command to the server
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((shost, sport))
 fs = s.makefile('r')
-s.send('PUSH ' + user + ' ' + callerid + ' ' + msgext + '\r\n')
+s.send('PUSH ' + user + ' ' + calleridnum + ' ' + msgext + '\r\n')
 #s.send('QUERY ' + user + '\r\n')
 s.close()
 list = fs.readline().strip().split(' ')
