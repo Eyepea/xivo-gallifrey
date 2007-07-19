@@ -335,7 +335,7 @@ void MainWidget::setConnected()
 				m_messagetosend = new QLineEdit();
 				connect( m_messagetosend, SIGNAL(returnPressed()),
 					 this, SLOT(affTextChanged()) );
-				m_qtabwidget->addTab(m_messagetosend, tr("Messages"));
+				m_qtabwidget->addTab(m_messagetosend, tr("&Messages"));
 
 			} else if(dc == QString("dial")) {
 				m_dial = new DialPanel();
@@ -345,11 +345,11 @@ void MainWidget::setConnected()
 				
 			} else if(dc == QString("customerinfo")) {
 				m_tabwidget = new QTabWidget();
-				m_qtabwidget->addTab(m_tabwidget, tr("Sheets"));
+				m_qtabwidget->addTab(m_tabwidget, tr("&Sheets"));
 				
 			} else if(dc == QString("peers")) {
 				m_peerswidget = new SearchPanel(this);
-				m_qtabwidget->addTab(m_peerswidget, tr("Contacts"));
+				m_qtabwidget->addTab(m_peerswidget, tr("&Contacts"));
 
 				connect( m_engine, SIGNAL(updatePeer(const QString &, const QString &,
 								     const QString &, const QString &,
@@ -365,7 +365,7 @@ void MainWidget::setConnected()
 				m_engine->askCallerIds();
 			} else if(dc == QString("features")) {
 				m_featureswidget = new ServicePanel(this);
-				m_qtabwidget->addTab(m_featureswidget, tr("Services"));
+				m_qtabwidget->addTab(m_featureswidget, tr("S&ervices"));
 				connect( m_featureswidget, SIGNAL(voiceMailToggled(bool)),
 				         m_engine, SLOT(setVoiceMail(bool)) );
 				connect( m_engine, SIGNAL(voiceMailChanged(bool)),
@@ -434,7 +434,7 @@ void MainWidget::setConnected()
 				// 				 m_directory, SLOT(stop()) );
 				
 				//			m_vboxwidgets->addWidget(m_directory, 0);
-				m_qtabwidget->addTab(m_directory, tr("Directory"));
+				m_qtabwidget->addTab(m_directory, tr("&Directory"));
 				
 			} else if(dc == QString("history")) {
 				m_history = new LogWidget(m_engine, this);
@@ -443,7 +443,7 @@ void MainWidget::setConnected()
 				connect( m_engine, SIGNAL(updateLogEntry(const QDateTime &, int, const QString &, int)),
 					 m_history, SLOT(addLogEntry(const QDateTime &, int, const QString &, int)) );
 				//			m_vboxwidgets->addWidget(m_history, 0);
-				m_qtabwidget->addTab(m_history, tr("History"));
+				m_qtabwidget->addTab(m_history, tr("&History"));
 			}
 		}
 	}
