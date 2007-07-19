@@ -28,8 +28,20 @@ from pyfunc import *
 from ReplTuple import *
 from ResourceTree import *
 from collections import NamedTuple
+from BaseHTTPServer import BaseHTTPRequestHandler
 
-REST_METHODS = ('GET', 'HEAD', 'PUT', 'POST', 'DELETE')
+RESPONSES = BaseHTTPRequestHandler.responses
+# keys:		rest/http method
+# values:	entity payload in client request
+REST_METHODS = {
+	'GET':		(False,),
+	'HEAD':		(False,),	#XXX keep it or not ? (if dropped, special
+					# handling will be done in the HTTP 
+					# connector to provide HEAD there
+	'PUT':		(True,),
+	'POST':		(True,),
+	'DELETE':	(False,),
+}
 
 # ConTypeDesc:
 # Content-Type descriptor when communicating with an adaptor.
@@ -86,8 +98,22 @@ def ConTypePossible(contype_match, contype_desc):
 def CountSupplCtmCtd(ctm, ctd):
 	return len(ctd.extens) - len(ctm.params)
 
-class Rest404Error(ValueError): pass
-class Rest406Error(ValueError): pass
+
+
+class RestError(Exception):
+	def __init__(self, msg=''):
+		self.message = msg
+		Exception.__init__(self, msg)
+	def __repr__(self):
+		return self.message
+	__str__ = __repr__
+
+class RestErrorCode(RestError):
+	def __init__(self, code, strcat = None):
+		if not strcat: strcat = ''
+		else: strcat = ' - ' + strcat
+		RestError.__init__(self, RESPONSES[code][0] + strcat)
+		self.response_code = code
 
 # XXX do locking (at least minimal support)
 
@@ -200,22 +226,23 @@ class RestDispatcher(object):
 		return None
 	def dispatch_in(self, path, method, payload, seq_dico_ctd_q):
 		if method not in REST_METHODS:
-			raise Rest404Error, "501 Evil method"
+			raise RestErrorCode(501)
 		ctx = self.ctx_path(path, CtxType(None, None, method, path))
 		if ctx is None:
-			raise Rest404Error, "404 BAH!"
+			raise RestErrorCode(404)
 		sa = self.select_adaptor(ctx, seq_dico_ctd_q)
 		if sa is None:
-			raise Rest406Error, "406 BabelPowah"
+			raise RestErrorCode(406)
 		adaptor = sa.adaptor_fact(sa)
 		if adaptor is None:
-			raise Rest500Error, "500 Bad (adaptor) :/"
+			raise RestErrorCode(500, 'adaptor')
 		payload_int = adaptor.to_internal(sa, payload)
 		del payload
 		app = ctx.application_factory()
 		if app is None:
-			raise Rest500Error, "500 Bad (application) :/"
+			raise RestErrorCode(500, 'application')
 		app.req_in(ctx, adaptor, sa, payload_int)
 
-__all__ = ['ConTypeDesc', 'ConTypeMatch', 'CtxType',
-           'ConTypePossible', 'CountSupplCtmCtd', 'RestDispatcher']
+__all__ = ['ConTypeDesc', 'ConTypeMatch', 'CtxType', 'ConTypePossible',
+           'CountSupplCtmCtd', 'RestDispatcher', 'REST_METHODS',
+	   'RestError', 'RestErrorCode']
