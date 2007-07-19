@@ -468,5 +468,10 @@
         <source>Unknown Number</source>
         <translation>Numéro Inconnu</translation>
     </message>
+    <message>
+        <location filename="switchboardengine.cpp" line="392"/>
+        <source>Unknown CallerId</source>
+        <translation>CallerId Inconnu</translation>
+    </message>
 </context>
 </TS>

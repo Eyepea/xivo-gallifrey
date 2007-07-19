@@ -389,7 +389,7 @@ void SwitchBoardEngine::socketReadyRead()
 					myfullid = "p/" + m_asterisk + "/" + m_dialcontext + "/" + m_protocol + "/" + m_userid + "/" + m_extension;
 				QString myname = m_callerids[myfullid];
 				if(myname == "")
-					monitorPeer(myfullid, "Unknown Callerid");
+					monitorPeer(myfullid, tr("Unknown CallerId") + " (" + myfullid + ")");
 				else
 					monitorPeer(myfullid, myname);
 			} else if(list[0] == "loginok") {
