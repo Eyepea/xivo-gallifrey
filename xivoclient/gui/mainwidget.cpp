@@ -346,11 +346,11 @@ void MainWidget::setConnected()
 				connect( m_dial, SIGNAL(emitDial(const QString &)),
 					 m_engine, SLOT(dialExtension(const QString &)) );
 				m_vboxwidgets->addWidget(m_dial, 0);
-				
+
 			} else if(dc == QString("customerinfo")) {
 				m_tabwidget = new QTabWidget();
 				m_qtabwidget->addTab(m_tabwidget, tr("&Sheets"));
-				
+
 			} else if(dc == QString("peers")) {
 				m_peerswidget = new SearchPanel(this);
 				m_qtabwidget->addTab(m_peerswidget, tr("&Contacts"));
@@ -367,6 +367,7 @@ void MainWidget::setConnected()
 									const QStringList &)) );
 				m_peerswidget->setEngine(m_engine);
 				m_engine->askCallerIds();
+
 			} else if(dc == QString("features")) {
 				m_featureswidget = new ServicePanel(this);
 				m_qtabwidget->addTab(m_featureswidget, tr("S&ervices"));
@@ -453,6 +454,8 @@ void MainWidget::setConnected()
 	}
 
 	//	LogWidget * logwidget = new LogWidget(m_engine, m_wid);
+	m_cinfo_index = m_qtabwidget->indexOf(m_tabwidget);
+	qDebug() << "the index of customer-info widget is" << m_cinfo_index;
 
 	if(m_systrayIcon)
 		m_systrayIcon->setIcon(m_icon);
@@ -540,6 +543,8 @@ void MainWidget::showNewProfile(Popup * popup)
 		int index = m_tabwidget->addTab(popup, currentTimeStr);
 		qDebug() << "added tab" << index;
 		m_tabwidget->setCurrentIndex(index);
+		if(m_cinfo_index > -1)
+			m_qtabwidget->setCurrentIndex(m_cinfo_index);
 		if(index >= m_tablimit)
 		{
 			// close the first widget
