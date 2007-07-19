@@ -1,41 +1,254 @@
 ; title_content_name
 Propriétés du protocole IAX
 
+; smenu_general
+Général
+
+; smenu_jitterbuffer
+Jitter Buffer
+
+; smenu_default
+Défaut
+
+; smenu_realtime
+Temps réel
+
+; smenu_advanced
+Avancé
+
 ; fm_bindport
 Port :
 
 ; fm_bindaddr
-Adresse IP d'écoute :
+Adresse IP :
+
+; fm_iaxcompat
+Compatibilité IAX :
+
+; fm_authdebug
+Débogage de l'authentification :
 
 ; fm_delayreject
-Délai de rejet (anti DOS) :
+Délai de rejet :
+
+; fm_trunkfreq
+Fréquence des interconnexions :
+
+; fm_trunkfreq-opt
+%s millisecondes
+
+; fm_trunktimestamps
+Ajoute un timestamp individuel :
+
+; fm_regcontext
+Context d'enregistrement :
+
+; fm_minregexpire
+Expiration minimum d'enregistrement :
+
+; fm_minregexpire-opt0
+Désactivée
+
+; fm_minregexpire-opt10
+10 sec.
+
+; fm_minregexpire-opt20
+20 sec.
+
+; fm_minregexpire-opt30
+30 sec.
+
+; fm_minregexpire-opt40
+40 sec.
+
+; fm_minregexpire-opt50
+50 sec.
+
+; fm_minregexpire-opt60
+1 min.
+
+; fm_minregexpire-opt120
+2 min.
+
+; fm_minregexpire-opt
+%s min. %s sec.
+
+; fm_maxregexpire
+Expiration maximum d'enregistrement :
+
+; fm_maxregexpire-opt0
+Désactivée
+
+; fm_maxregexpire-opt10
+10 sec.
+
+; fm_maxregexpire-opt20
+20 sec.
+
+; fm_maxregexpire-opt30
+30 sec.
+
+; fm_maxregexpire-opt40
+40 sec.
+
+; fm_maxregexpire-opt50
+50 sec.
+
+; fm_maxregexpire-opt60
+1 min.
+
+; fm_maxregexpire-opt120
+2 min.
+
+; fm_maxregexpire-opt
+%s min. %s sec.
+
+; fm_bandwidth
+Bande passante :
+
+; fm_bandwidth-opt-low
+Faible
+
+; fm_bandwidth-opt-medium
+Moyenne
+
+; fm_bandwidth-opt-high
+Elevée
 
 ; fm_tos
 TOS :
 
-; fm_qualify
-Supervision :
-
-; fm_rtcachefriends
-Mise en cache des comptes :
-
 ; fm_jitterbuffer
-Activation du jitterbuffer :
+Jitter buffer :
+
+; fm_forcejitterbuffer
+Forcer Jitter buffer :
 
 ; fm_dropcount
-Compteur de drop :
+Compteur de saut :
 
-; fm_maxexcessbuffer
-Buffer maximum :
+; fm_maxjitterbuffer
+Jitter buffer maximum :
 
-; fm_minexcessbuffer
-Buffer minimum :
+; fm_maxjitterbuffer-opt0
+Désactivé
+
+; fm_maxjitterbuffer-opt
+%s millisecondes
+
+; fm_maxjitterinterps
+Nombre maximum d'interpolation de frames :
+
+; fm_maxjitterinterps-opt0
+Désactivé
+
+; fm_maxjitterinterps-opt
+%s
+
+; fm_resyncthreshold
+Resynchronisation en cas de délai trop important :
+
+; fm_resyncthreshold-opt-1
+Désactivé
+
+; fm_resyncthreshold-opt0
+0 milliseconde
+
+; fm_resyncthreshold-opt
+%s millisecondes
 
 ; fm_jittershrinkrate
-Shrink rate :
+Contrôle du débit :
+
+; fm_jittershrinkrate-opt0
+Désactivé
+
+; fm_jittershrinkrate-opt
+%s
+
+; fm_minexcessbuffer
+Dépassement minimum du buffer :
+
+; fm_minexcessbuffer-opt0
+Désactivé
+
+; fm_minexcessbuffer-opt
+%s
+
+; fm_maxexcessbuffer
+Dépassement maximum du buffer :
+
+; fm_maxexcessbuffer-opt0
+Désactivé
+
+; fm_maxexcessbuffer-opt
+%s
+
+; fm_accountcode
+Code de compte :
+
+; fm_amaflags
+Drapeaux de facturation :
+
+; fm_amaflags-opt-default
+Défaut
+
+; fm_amaflags-opt-billing
+Facturation
+
+; fm_amaflags-opt-omit
+Omission
+
+; fm_amaflags-opt-documentation
+Documentation
+
+; fm_mailboxdetail
+Recevoir le nombre de messages :
+
+; fm_language
+Langages :
+
+; fm_encryption
+Chiffrage :
+
+; fm_encryption-opt-no
+Non
+
+; fm_encryption-opt-yes
+Oui
+
+; fm_encryption-opt-aes128
+AES 128
+
+; fm_maxauthreq
+Maximum AUTHREQs authorisé :
+
+; fm_maxauthreq-opt0
+Désactivé
+
+; fm_maxauthreq-opt
+%s
+
+; fm_codecpriority
+Priorité des codecs :
+
+; fm_codecpriority-opt-caller
+Appelant
+
+; fm_codecpriority-opt-disabled
+Désactivée
+
+; fm_codecpriority-opt-reqonly
+Requête seulement
+
+; fm_codecpriority-opt-host
+Hôte
 
 ; fm_codec-disallow
 Codecs désactivés :
+
+; fm_codec-disallow-opt-all
+Tous
 
 ; fm_codec-allow
 Codecs activés :
@@ -54,6 +267,93 @@ Ajouter ->
 
 ; bt-outcodec
 <- Enlever
+
+; fm_rtcachefriends
+Mise en cache des comptes :
+
+; fm_rtupdate
+Mise à jour du cache :
+
+; fm_rtignoreregexpire
+Ignorer l'expiration :
+
+; fm_rtautoclear
+Suppression automatique du cache :
+
+; fm_rtautoclear-optno
+Non
+
+; fm_rtautoclear-optyes
+Oui
+
+; fm_rtautoclear-opt1
+1 sec.
+
+; fm_rtautoclear-opt10
+10 sec.
+
+; fm_rtautoclear-opt20
+20 sec.
+
+; fm_rtautoclear-opt30
+30 sec.
+
+; fm_rtautoclear-opt40
+40 sec.
+
+; fm_rtautoclear-opt50
+50 sec.
+
+; fm_rtautoclear-opt60
+1 min.
+
+; fm_rtautoclear-opt120
+2 min.
+
+; fm_rtautoclear-opt180
+3 min.
+
+; fm_rtautoclear-opt240
+4 min.
+
+; fm_rtautoclear-opt
+%s min. %s sec.
+
+; fm_pingtime
+Ping time :
+
+; fm_pingtime-opt0
+0 seconde
+
+; fm_pingtime-opt
+%s secondes
+
+; fm_lagrqtime
+Temps de latence RQ :
+
+; fm_lagrqtime-opt0
+0 seconde
+
+; fm_lagrqtime-opt
+%s secondes
+
+; fm_nochecksums
+Désactiver UDP checksums :
+
+; fm_notransfer
+Interdiction des transfers :
+
+; fm_autokill
+Auto destruction :
+
+; fm_autokill-optno
+Non
+
+; fm_autokill-optyes
+Oui
+
+; fm_autokill-opt
+%s millisecondes
 
 ; fm_bt-save
 Sauvegarder

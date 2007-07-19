@@ -1,17 +1,323 @@
 ; title_content_name
 Propriétés des messageries vocales
 
-; fm_maxmessage
-Taille maximum d'un message :
+; smenu_general
+Général
+
+; smenu_voicemenu
+Menu vocal
+
+; smenu_email
+E-mail
+
+; smenu_pager
+Bipeur
+
+; smenu_adsi
+ADSI
+
+; smenu_advanced
+Avancé
+
+; fm_maxmsg
+Nombre maximum de messages :
+
+; fm_silencethreshold
+Sensibilité de détection d'un silence :
 
 ; fm_minmessage
-Taille minimum d'un message :
+Durée minimun d'un message :
+
+; fm_minmessage-opt0
+Désactivée
+
+; fm_minmessage-opt1
+1 sec.
+
+; fm_minmessage-opt2
+2 sec.
+
+; fm_minmessage-opt3
+3 sec.
+
+; fm_minmessage-opt4
+4 sec.
+
+; fm_minmessage-opt5
+5 sec.
+
+; fm_minmessage-opt6
+6 sec.
+
+; fm_minmessage-opt7
+7 sec.
+
+; fm_minmessage-opt8
+8 sec.
+
+; fm_minmessage-opt9
+9 sec.
+
+; fm_minmessage-opt10
+10 sec.
+
+; fm_minmessage-opt20
+20 sec.
+
+; fm_minmessage-opt30
+30 sec.
+
+; fm_minmessage-opt40
+40 sec.
+
+; fm_minmessage-opt50
+50 sec.
+
+; fm_minmessage-opt60
+1 min.
+
+; fm_minmessage-opt120
+2 min.
+
+; fm_minmessage-opt180
+3 min.
+
+; fm_minmessage-opt240
+4 min.
+
+; fm_minmessage-opt300
+5 min.
+
+; fm_minmessage-opt360
+6 min.
+
+; fm_minmessage-opt
+%s sec. %s min.
+
+; fm_maxmessage
+Durée maximum d'un message :
+
+; fm_maxmessage-opt0
+Désactivée
+
+; fm_maxmessage-opt1
+1 sec.
+
+; fm_maxmessage-opt2
+2 sec.
+
+; fm_maxmessage-opt3
+3 sec.
+
+; fm_maxmessage-opt4
+4 sec.
+
+; fm_maxmessage-opt5
+5 sec.
+
+; fm_maxmessage-opt6
+6 sec.
+
+; fm_maxmessage-opt7
+7 sec.
+
+; fm_maxmessage-opt8
+8 sec.
+
+; fm_maxmessage-opt9
+9 sec.
+
+; fm_maxmessage-opt10
+10 sec.
+
+; fm_maxmessage-opt20
+20 sec.
+
+; fm_maxmessage-opt30
+30 sec.
+
+; fm_maxmessage-opt40
+40 sec.
+
+; fm_maxmessage-opt50
+50 sec.
+
+; fm_maxmessage-opt60
+1 min.
+
+; fm_maxmessage-opt120
+2 min.
+
+; fm_maxmessage-opt180
+3 min.
+
+; fm_maxmessage-opt240
+4 min.
+
+; fm_maxmessage-opt300
+5 min.
+
+; fm_maxmessage-opt360
+6 min.
+
+; fm_maxmessage-opt
+%s sec. %s min.
 
 ; fm_maxsilence
-Temps maximum de silence :
+Durée maximum d'un silence :
+
+; fm_maxsilence-opt1
+1 seconde
+
+; fm_maxsilence-opt
+%s secondes
 
 ; fm_review
-Revoir les messages :
+Réécouter ou réenregistrer un message :
+
+; fm_operator
+Mise en relation avec un opérateur :
+
+; fm_format
+Formats d'enregistrement :
+
+; fm_maxlogins
+Nombre maximum de tentatives pour s'authentifier :
+
+; fm_envelope
+Enoncer la date et l'heure :
+
+; fm_saycid
+Enoncer le nom :
+
+; fm_cidinternalcontexts
+Contexte interne :
+
+; fm_sayduration
+Enoncer la durée :
+
+; fm_saydurationm
+Durée minimum pour l'énoncer :
+
+; fm_saydurationm-opt1
+1 minute
+
+; fm_saydurationm-opt
+%s minutes
+
+; fm_forcename
+Forcer l'enregistrement du nom :
+
+; fm_forcegreetings
+Forcer l'enregistrement du message d'accueil :
+
+; fm_maxgreet
+Durée maximum du message d'accueil :
+
+; fm_maxgreet-opt0
+Désactivée
+
+; fm_maxgreet-opt1
+1 sec.
+
+; fm_maxgreet-opt2
+2 sec.
+
+; fm_maxgreet-opt3
+3 sec.
+
+; fm_maxgreet-opt4
+4 sec.
+
+; fm_maxgreet-opt5
+5 sec.
+
+; fm_maxgreet-opt6
+6 sec.
+
+; fm_maxgreet-opt7
+7 sec.
+
+; fm_maxgreet-opt8
+8 sec.
+
+; fm_maxgreet-opt9
+9 sec.
+
+; fm_maxgreet-opt10
+10 sec.
+
+; fm_maxgreet-opt20
+20 sec.
+
+; fm_maxgreet-opt30
+30 sec.
+
+; fm_maxgreet-opt40
+40 sec.
+
+; fm_maxgreet-opt50
+50 sec.
+
+; fm_maxgreet-opt60
+1 min.
+
+; fm_maxgreet-opt120
+2 min.
+
+; fm_maxgreet-opt180
+3 min.
+
+; fm_maxgreet-opt240
+4 min.
+
+; fm_maxgreet-opt300
+5 min.
+
+; fm_maxgreet-opt360
+6 min.
+
+; fm_maxgreet-opt
+%s sec. %s min.
+
+; fm_skipms
+Saut de l'avance rapide et retour rapide :
+
+; fm_skipms-opt1
+1 seconde
+
+; fm_skipms-opt
+%s secondes
+
+; fm_sendvoicemail
+Laisser un message :
+
+; fm_usedirectory
+Utiliser l'annuaire pour transférer ou laisser un message :
+
+; fm_nextaftercmd
+Lecture automatique du message suivant :
+
+; fm_dialout
+Contexte d'appel externe :
+
+; fm_callback
+Contexte de rappel :
+
+; fm_exitcontext
+Contexte de sortie :
+
+; fm_attach
+Joindre le fichier audio :
+
+; fm_attachformat
+Format du fichier joint :
+
+; fm_mailcmd
+Programme d'envoi d'e-mail :
+
+; fm_charset
+Encodage :
 
 ; fm_serveremail
 E-mail expéditeur :
@@ -19,14 +325,50 @@ E-mail expéditeur :
 ; fm_fromstring
 Expéditeur :
 
-; fm_maxmsg
-Nombre maximum de message :
+; fm_emaildateformat
+Format de la date :
+
+; fm_pbxskip
+Enlever "[PBX]:" du sujet :
 
 ; fm_emailsubject
-Sujet des messages :
+Sujet :
 
 ; fm_emailbody
-Corps des messages :
+Corps :
+
+; fm_pagerfromstring
+Expéditeur :
+
+; fm_pagersubject
+Sujet :
+
+; fm_pagerbody
+Corps :
+
+; fm_adsifdn
+Numéro du descripteur :
+
+; fm_adsisec
+Code de sécurité :
+
+; fm_adsiver
+Version :
+
+; fm_searchcontexts
+Recherche des contextes :
+
+; fm_externpass
+Programme externe pour changer le mot de passe :
+
+; fm_externnotify
+Programme externe pour notifier un nouveau message :
+
+; fm_odbcstorage
+Système ODBC :
+
+; fm_odbctable
+Table ODBC :
 
 ; fm_bt-save
 Sauvegarder

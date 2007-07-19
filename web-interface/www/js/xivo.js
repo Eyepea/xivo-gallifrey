@@ -462,14 +462,20 @@ function xivo_fm_move_selected(from,to)
 	if ((from = xivo_eid(from)) == false || (to = xivo_eid(to)) == false || from.type != 'select-multiple' || to.type != 'select-multiple')
 		return(false);
 
-	var len = from.options.length - 1;
+	var len = to.options.length;
+
+	for(var i = 0;i < len;i++)
+		to.options[i].selected = false;
+
+	len = from.options.length - 1;
 	
-	for(var i = len; i >= 0; i--)
+	for(i = len; i >= 0; i--)
 	{
 		if(from.options[i].selected != true)
 			continue;
 
 		to.options[to.options.length] = new Option(from.options[i].text,from.options[i].value);
+		to.options[to.options.length-1].selected = true;
 		from.options[i] = null;	
 	}
 

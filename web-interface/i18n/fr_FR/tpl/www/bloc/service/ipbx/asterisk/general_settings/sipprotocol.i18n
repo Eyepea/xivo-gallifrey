@@ -20,7 +20,7 @@ Temps réel
 Port :
 
 ; fm_bindaddr
-Adresse IP d'écoute :
+Adresse IP :
 
 ; fm_videosupport
 Support vidéo :
@@ -158,7 +158,7 @@ Proxy Outbound :
 Port du proxy Outbound :
 
 ; fm_relaxdtmf
-RelaxDTMF :
+Relax DTMF :
 
 ; fm_compactheaders
 Compacter les en-têtes :
@@ -197,7 +197,7 @@ Notification du type de MIME :
 Requête DNS :
 
 ; fm_pedantic
-Pédant :
+Conforme aux standards :
 
 ; fm_maxexpiry
 Durée maximum :

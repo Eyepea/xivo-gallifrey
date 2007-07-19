@@ -4,51 +4,127 @@
 
 	$element = $this->vars('element');
 
-	if(($jitter = $this->varra('info','jitterbuffer')) === null)
-		$jitter = $element['jitterbuffer']['default'];
-	else
-		$jitter = xivo_bool($jitter);
-
 	if($this->vars('fm_save') === true):
 		$dhtml = &$this->get_module('dhtml');
 		$dhtml->write_js('xivo_form_success(\''.xivo_stript($this->bbf('fm_success-save')).'\');');
 	endif;
+
+	if(($ntos = xivo_uint($this->varra('info','tos'))) !== 0):
+		$tos = $ntos;
+	else:
+		$tos = $this->varra('info','tos');
+	endif;
+
+	if(($nrtautoclear = xivo_uint($this->varra('info','rtautoclear'))) !== 0):
+		$rtautoclear = $nrtautoclear;
+	else:
+		$rtautoclear = $this->varra('info','rtautoclear');
+	endif;
+
+	if(($nautokill = xivo_uint($this->varra('info','autokill'))) !== 0):
+		$autokill = $nautokill;
+	else:
+		$autokill = $this->varra('info','autokill');
+	endif;
 ?>
 <div class="b-infos b-form">
 	<h3 class="sb-top xspan"><span class="span-left">&nbsp;</span><span class="span-center"><?=$this->bbf('title_content_name');?></span><span class="span-right">&nbsp;</span></h3>
-	<div class="sb-content">
+
+<div class="sb-smenu">
+	<ul>
+		<li id="smenu-tab-1" class="moo" onclick="xivo_smenu_click(this,'moc','sb-part-general');" onmouseout="xivo_smenu_out(this,'moo');" onmouseover="xivo_smenu_over(this,'mov');">
+			<div><span class="span-center"><a href="#" onclick="xivo_smenu_click(this,'moc','sb-part-general'); return(false);"><?=$this->bbf('smenu_general');?></a></span></div><span class="span-right">&nbsp;</span>
+		</li>
+		<li id="smenu-tab-2" class="moo" onclick="xivo_smenu_click(this,'moc','sb-part-jitterbuffer');" onmouseout="xivo_smenu_out(this,'moo');" onmouseover="xivo_smenu_over(this,'mov');">
+			<div><span class="span-center"><a href="#" onclick="xivo_smenu_click(this,'moc','sb-part-jitterbuffer'); return(false);"><?=$this->bbf('smenu_jitterbuffer');?></a></span></div><span class="span-right">&nbsp;</span>
+		</li>
+		<li id="smenu-tab-3" class="moo" onclick="xivo_smenu_click(this,'moc','sb-part-default');" onmouseout="xivo_smenu_out(this,'moo');" onmouseover="xivo_smenu_over(this,'mov');">
+			<div><span class="span-center"><a href="#" onclick="xivo_smenu_click(this,'moc','sb-part-default'); return(false);"><?=$this->bbf('smenu_default');?></a></span></div><span class="span-right">&nbsp;</span>
+		</li>
+		<li id="smenu-tab-4" class="moo" onclick="xivo_smenu_click(this,'moc','sb-part-realtime');" onmouseout="xivo_smenu_out(this,'moo');" onmouseover="xivo_smenu_over(this,'mov');">
+			<div><span class="span-center"><a href="#" onclick="xivo_smenu_click(this,'moc','sb-part-realtime'); return(false);"><?=$this->bbf('smenu_realtime');?></a></span></div><span class="span-right">&nbsp;</span>
+		</li>
+		<li id="smenu-tab-5" class="moo-last" onclick="xivo_smenu_click(this,'moc','sb-part-advanced',1);" onmouseout="xivo_smenu_out(this,'moo',1);" onmouseover="xivo_smenu_over(this,'mov',1);">
+			<div><span class="span-center"><a href="#" onclick="xivo_smenu_click(this,'moc','sb-part-advanced'); return(false);"><?=$this->bbf('smenu_advanced');?></a></span></div><span class="span-right">&nbsp;</span>
+		</li>
+	</ul>
+</div>
+
+<div class="sb-content">
 <form action="#" method="post" accept-charset="utf-8" onsubmit="xivo_fm_select('it-codec');">
 
 <?=$form->hidden(array('name' => XIVO_SESS_NAME,'value' => XIVO_SESS_ID));?>
 <?=$form->hidden(array('name' => 'fm_send','value' => '1'));?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_bindport'),'name' => 'bindport','id' => 'it-bindport','default' => $element['bindport']['default'],'value' => $this->varra('info','bindport')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<div id="sb-part-general">
 
-<?=$form->text(array('desc' => $this->bbf('fm_bindaddr'),'name' => 'bindaddr','id' => 'it-bindaddr','size' => 15,'default' => $element['bindaddr']['default'],'value' => $this->varra('info','bindaddr')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_bindport'),'name' => 'bindport','labelid' => 'bindport','value' => $this->varra('info','bindport'),'default' => $element['bindport']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_delayreject'),'name' => 'delayreject','id' => 'it-delayreject','default' => $element['delayreject']['default'],'checked' => $this->varra('info','delayreject')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_bindaddr'),'name' => 'bindaddr','labelid' => 'bindaddr','size' => 15,'value' => $this->varra('info','bindaddr'),'default' => $element['bindaddr']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_channel-lang'),'name' => 'language','id' => 'it-language','key' => false,'default' => $element['language']['default'],'value' => $this->varra('info','language')),$element['language']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_iaxcompat'),'name' => 'iaxcompat','labelid' => 'iaxcompat','checked' => $this->varra('info','iaxcompat'),'default' => $element['iaxcompat']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_tos'),'name' => 'tos','id' => 'it-tos','key' => false,'default' => $element['tos']['default'],'value' => $this->varra('info','tos')),$element['tos']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_authdebug'),'name' => 'authdebug','labelid' => 'authdebug','checked' => $this->varra('info','authdebug'),'default' => $element['authdebug']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_qualify'),'name' => 'qualify','id' => 'it-qualify','default' => $element['qualify']['default'],'checked' => $this->varra('info','qualify')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_delayreject'),'name' => 'delayreject','labelid' => 'delayreject','checked' => $this->varra('info','delayreject'),'default' => $element['delayreject']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_rtcachefriends'),'name' => 'rtcachefriends','id' => 'it-rtcachefriends','default' => $element['rtcachefriends']['default'],'checked' => $this->varra('info','rtcachefriends')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_trunkfreq'),'name' => 'trunkfreq','labelid' => 'trunkfreq','key' => false,'bbf' => array('paramkey','fm_trunkfreq-opt'),'value' => xivo_cast_except($this->varra('info','trunkfreq'),null,'uint'),'default' => $element['trunkfreq']['default']),$element['trunkfreq']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_jitterbuffer'),'name' => 'jitterbuffer','id' => 'it-jitterbuffer','checked' => $jitter),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';" onclick="xivo_eid(\'jitter\').style.display = this.checked == true ? \'block\' : \'none\';"');?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_trunktimestamps'),'name' => 'trunktimestamps','labelid' => 'trunktimestamps','checked' => $this->varra('info','trunktimestamps'),'default' => $element['trunktimestamps']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<div id="jitter"<?=($jitter !== true ? ' class="b-nodisplay"' : '')?>>
-	<?=$form->text(array('desc' => $this->bbf('fm_dropcount'),'name' => 'dropcount','id' => 'it-dropcount','default' => $element['dropcount']['default'],'value' => $this->varra('info','dropcount')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_regcontext'),'name' => 'regcontext','labelid' => 'regcontext','size' => 15,'value' => $this->varra('info','regcontext'),'default' => $element['regcontext']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-	<?=$form->text(array('desc' => $this->bbf('fm_maxexcessbuffer'),'name' => 'maxexcessbuffer','id' => 'it-maxexcessbuffer','default' => $element['maxexcessbuffer']['default'],'value' => $this->varra('info','maxexcessbuffer')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_minregexpire'),'name' => 'minregexpire','labelid' => 'minregexpire','bbf' => array('mixkey','fm_minregexpire-opt','paramarray'),'value' => xivo_cast_except($this->varra('info','minregexpire'),null,'uint'),'default' => $element['minregexpire']['default']),$element['minregexpire']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-	<?=$form->text(array('desc' => $this->bbf('fm_minexcessbuffer'),'name' => 'minexcessbuffer','id' => 'it-minexcessbuffer','default' => $element['minexcessbuffer']['default'],'value' => $this->varra('info','minexcessbuffer')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_maxregexpire'),'name' => 'maxregexpire','labelid' => 'maxregexpire','bbf' => array('mixkey','fm_maxregexpire-opt','paramarray'),'value' => xivo_cast_except($this->varra('info','maxregexpire'),null,'uint'),'default' => $element['maxregexpire']['default']),$element['maxregexpire']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-	<?=$form->text(array('desc' => $this->bbf('fm_jittershrinkrate'),'name' => 'jittershrinkrate','id' => 'it-jittershrinkrate','default' => $element['jittershrinkrate']['default'],'value' => $this->varra('info','jittershrinkrate')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_bandwidth'),'name' => 'bandwidth','labelid' => 'bandwidth','key' => false,'bbf' => array('concatvalue','fm_bandwidth-opt-'),'value' => $this->varra('info','bandwidth'),'default' => $element['bandwidth']['default']),$element['bandwidth']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
+<?=$form->slt(array('desc' => $this->bbf('fm_tos'),'name' => 'tos','labelid' => 'tos','key' => false,'value' => $tos,'default' => $element['tos']['default']),$element['tos']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
 </div>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_codec-disallow'),'name' => 'disallow','labelid' => 'disallow','key' => false),array('all'),'onfocus="this.className=\'it-mfocus it-disabled\';" onblur="this.className=\'it-mblur it-disabled\';" class="it-disabled" disabled="disabled"');?>
+<div id="sb-part-jitterbuffer" class="b-nodisplay">
+
+<?=$form->checkbox(array('desc' => $this->bbf('fm_jitterbuffer'),'name' => 'jitterbuffer','labelid' => 'jitterbuffer','checked' => $this->varra('info','jitterbuffer'),'default' => $element['jitterbuffer']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
+<?=$form->checkbox(array('desc' => $this->bbf('fm_forcejitterbuffer'),'name' => 'forcejitterbuffer','labelid' => 'forcejitterbuffer','checked' => $this->varra('info','forcejitterbuffer'),'default' => $element['forcejitterbuffer']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
+<?=$form->slt(array('desc' => $this->bbf('fm_dropcount'),'name' => 'dropcount','labelid' => 'dropcount','key' => false,'value' => xivo_cast_except($this->varra('info','dropcount'),null,'uint'),'default' => $element['dropcount']['default']),$element['dropcount']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
+<?=$form->slt(array('desc' => $this->bbf('fm_maxjitterbuffer'),'name' => 'maxjitterbuffer','labelid' => 'maxjitterbuffer','key' => false,'bbf' => array('mixkey','fm_maxjitterbuffer-opt'),'value' => xivo_cast_except($this->varra('info','maxjitterbuffer'),null,'uint'),'default' => $element['maxjitterbuffer']['default']),$element['maxjitterbuffer']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
+<?=$form->slt(array('desc' => $this->bbf('fm_maxjitterinterps'),'name' => 'maxjitterinterps','labelid' => 'maxjitterinterps','bbf' => array('mixkey','fm_maxjitterinterps-opt'),'key' => false,'value' => xivo_cast_except($this->varra('info','maxjitterinterps'),null,'uint'),'default' => $element['maxjitterinterps']['default']),$element['maxjitterinterps']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
+<?=$form->slt(array('desc' => $this->bbf('fm_resyncthreshold'),'name' => 'resyncthreshold','labelid' => 'resyncthreshold','key' => false,'bbf' => array('mixkey','fm_resyncthreshold-opt'),'value' => xivo_cast_except($this->varra('info','resyncthreshold'),null,'uint'),'default' => $element['resyncthreshold']['default']),$element['resyncthreshold']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
+<?=$form->slt(array('desc' => $this->bbf('fm_minexcessbuffer'),'name' => 'minexcessbuffer','labelid' => 'minexcessbuffer','bbf' => array('mixkey','fm_minexcessbuffer-opt'),'key' => false,'value' => xivo_cast_except($this->varra('info','minexcessbuffer'),null,'uint'),'default' => $element['minexcessbuffer']['default']),$element['minexcessbuffer']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
+<?=$form->slt(array('desc' => $this->bbf('fm_maxexcessbuffer'),'name' => 'maxexcessbuffer','labelid' => 'maxexcessbuffer','bbf' => array('mixkey','fm_maxexcessbuffer-opt'),'key' => false,'value' => xivo_cast_except($this->varra('info','maxexcessbuffer'),null,'uint'),'default' => $element['maxexcessbuffer']['default']),$element['maxexcessbuffer']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
+<?=$form->slt(array('desc' => $this->bbf('fm_jittershrinkrate'),'name' => 'jittershrinkrate','labelid' => 'jittershrinkrate','bbf' => array('mixkey','fm_jittershrinkrate-opt'),'key' => false,'value' => xivo_cast_except($this->varra('info','jittershrinkrate'),null,'uint'),'default' => $element['jittershrinkrate']['default']),$element['jittershrinkrate']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
+</div>
+
+<div id="sb-part-default" class="b-nodisplay">
+
+<?=$form->text(array('desc' => $this->bbf('fm_accountcode'),'name' => 'accountcode','labelid' => 'accountcode','size' => 15,'value' => $this->varra('info','accountcode'),'default' => $element['accountcode']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
+<?=$form->slt(array('desc' => $this->bbf('fm_amaflags'),'name' => 'amaflags','labelid' => 'amaflags','key' => false,'bbf' => array('concatvalue','fm_amaflags-opt-'),'value' => $this->varra('info','amaflags'),'default' => $element['amaflags']['default']),$element['amaflags']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
+<?=$form->checkbox(array('desc' => $this->bbf('fm_mailboxdetail'),'name' => 'mailboxdetail','labelid' => 'mailboxdetail','checked' => $this->varra('info','mailboxdetail'),'default' => $element['mailboxdetail']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
+<?=$form->checkbox(array('desc' => $this->bbf('fm_notransfer'),'name' => 'notransfer','labelid' => 'notransfer','checked' => $this->varra('info','notransfer'),'default' => $element['notransfer']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
+<?=$form->slt(array('desc' => $this->bbf('fm_language'),'name' => 'language','labelid' => 'language','key' => false,'value' => $this->varra('info','language'),'default' => $element['language']['default']),$element['language']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
+<?=$form->slt(array('desc' => $this->bbf('fm_encryption'),'name' => 'encryption','labelid' => 'encryption','key' => false,'bbf' => array('concatvalue','fm_encryption-opt-'),'value' => $this->varra('info','encryption'),'default' => $element['encryption']['default']),$element['encryption']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
+<?=$form->slt(array('desc' => $this->bbf('fm_maxauthreq'),'name' => 'maxauthreq','labelid' => 'maxauthreq','bbf' => array('mixkey','fm_maxauthreq-opt'),'key' => false,'value' => xivo_cast_except($this->varra('info','maxauthreq'),null,'uint'),'default' => $element['maxauthreq']['default']),$element['maxauthreq']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
+<?=$form->slt(array('desc' => $this->bbf('fm_codecpriority'),'name' => 'codecpriority','labelid' => 'codecpriority','key' => false,'bbf' => array('concatvalue','fm_codecpriority-opt-'),'value' => $this->varra('info','codecpriority'),'default' => $element['codecpriority']['default']),$element['codecpriority']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
+<?=$form->slt(array('desc' => $this->bbf('fm_codec-disallow'),'name' => 'disallow','labelid' => 'disallow','key' => false,'bbf' => array('concatvalue','fm_codec-disallow-opt-')),$element['disallow']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 <div id="codeclist" class="fm-field fm-multilist"><p><label id="lb-codeclist" for="it-codeclist"><?=$this->bbf('fm_codec-allow');?></label></p>
 	<div class="slt-outlist">
@@ -75,6 +151,32 @@
 	</div>
 </div>
 <div class="clearboth"></div>
+
+</div>
+
+<div id="sb-part-realtime" class="b-nodisplay">
+
+<?=$form->checkbox(array('desc' => $this->bbf('fm_rtcachefriends'),'name' => 'rtcachefriends','labelid' => 'rtcachefriends','checked' => $this->varra('info','rtcachefriends'),'default' => $element['rtcachefriends']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
+<?=$form->checkbox(array('desc' => $this->bbf('fm_rtupdate'),'name' => 'rtupdate','labelid' => 'rtupdate','checked' => $this->varra('info','rtupdate'),'default' => $element['rtupdate']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
+<?=$form->checkbox(array('desc' => $this->bbf('fm_rtignoreregexpire'),'name' => 'rtignoreregexpire','labelid' => 'rtignoreregexpire','checked' => $this->varra('info','rtignoreregexpire'),'default' => $element['rtignoreregexpire']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
+<?=$form->slt(array('desc' => $this->bbf('fm_rtautoclear'),'name' => 'rtautoclear','labelid' => 'rtautoclear','bbf' => array('mixkey','fm_rtautoclear-opt','paramarray'),'value' => $rtautoclear,'default' => $element['rtautoclear']['default']),$element['rtautoclear']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
+</div>
+
+<div id="sb-part-advanced" class="b-nodisplay">
+
+<?=$form->slt(array('desc' => $this->bbf('fm_pingtime'),'name' => 'pingtime','labelid' => 'pingtime','bbf' => array('mixkey','fm_pingtime-opt'),'key' => false,'value' => xivo_cast_except($this->varra('info','pingtime'),null,'uint'),'default' => $element['pingtime']['default']),$element['pingtime']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
+<?=$form->slt(array('desc' => $this->bbf('fm_lagrqtime'),'name' => 'lagrqtime','labelid' => 'lagrqtime','bbf' => array('mixkey','fm_lagrqtime-opt'),'key' => false,'value' => xivo_cast_except($this->varra('info','lagrqtime'),null,'uint'),'default' => $element['lagrqtime']['default']),$element['lagrqtime']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
+<?=$form->checkbox(array('desc' => $this->bbf('fm_nochecksums'),'name' => 'nochecksums','labelid' => 'nochecksums','checked' => $this->varra('info','nochecksums'),'default' => $element['nochecksums']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
+<?=$form->slt(array('desc' => $this->bbf('fm_autokill'),'name' => 'autokill','labelid' => 'autokill','key' => false,'bbf' => array('mixkey','fm_autokill-opt'),'value' => $autokill,'default' => $element['autokill']['default']),$element['autokill']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
+</div>
 
 		<?=$form->submit(array('name' => 'submit','id' => 'it-submit','value' => $this->bbf('fm_bt-save')));?>
 </form>

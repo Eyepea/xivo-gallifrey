@@ -57,10 +57,10 @@ $array['element']['createlink']['set'] = true;
 
 $array['element']['recordformat'] = array();
 $array['element']['recordformat']['value'] = array(
-						XIVO_SRE_IPBX_AST_SNDFORMAT_WAV,
-						XIVO_SRE_IPBX_AST_SNDFORMAT_WAV49,
-						XIVO_SRE_IPBX_AST_SNDFORMAT_GSM);
-$array['element']['recordformat']['default'] = XIVO_SRE_IPBX_AST_SNDFORMAT_WAV;
+						XIVO_SRE_IPBX_AST_FORMAT_AUDIO_WAV,
+						XIVO_SRE_IPBX_AST_FORMAT_AUDIO_WAV49,
+						XIVO_SRE_IPBX_AST_FORMAT_AUDIO_GSM);
+$array['element']['recordformat']['default'] = XIVO_SRE_IPBX_AST_FORMAT_AUDIO_WAV;
 $array['element']['recordformat']['setdef'] = true;
 
 $array['element']['urlprefix'] = array();
@@ -83,9 +83,9 @@ $array['filter']['updatecdr'] = array('bool' => true);
 $array['filter']['recordagentcalls'] = array('bool' => true);
 $array['filter']['createlink'] = array('bool' => true);
 $array['filter']['recordformat'] = array('arrkey' => array(
-					XIVO_SRE_IPBX_AST_SNDFORMAT_WAV,
-					XIVO_SRE_IPBX_AST_SNDFORMAT_WAV49,
-					XIVO_SRE_IPBX_AST_SNDFORMAT_GSM));
+					XIVO_SRE_IPBX_AST_FORMAT_AUDIO_WAV,
+					XIVO_SRE_IPBX_AST_FORMAT_AUDIO_WAV49,
+					XIVO_SRE_IPBX_AST_FORMAT_AUDIO_GSM));
 $array['filter']['urlprefix'] = array('set' => false,'chk' => 2,'minlen' => 3,'maxlen' => 128);
 $array['filter']['custom_beep'] = array('set' => false,'chk' => 2,'maxlen' => 50);
 

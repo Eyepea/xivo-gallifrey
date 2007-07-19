@@ -157,8 +157,22 @@ class xivo_filter
 				return(xivo_cast_alphaspecials($value));
 			case 'alphanumspecials':
 				return(xivo_cast_alphanumspecials($value));
+			case 'print':
+				$cast = xivo_print($value);
+
+				return(($cast === false ? false : true));
+			case 'printable':
+				return(xivo_printable($value));
+			case 'printable_crlf':
+				return(xivo_printable_crlf($value));
+			case 'printable_tab':
+				return(xivo_printable_tab($value));
 			case 'digit':
 				$cast = xivo_digit($value);
+
+				return(($cast === false ? false : true));
+			case 'xdigit':
+				$cast = xivo_xdigit($value);
 
 				return(($cast === false ? false : true));
 			case 'uint':

@@ -29,7 +29,7 @@ pre {text-align: left;}
 #bc-head {width: 970px;margin: 0px 15px;}
 /* #bc-head table {width: 970px;} */
 /* #bc-head td {padding: 5px;text-align: center;} */
-#bc-main {width: 970px;margin: 0px 15px;padding-top: 20px;float: left;}
+#bc-main {width: 970px;margin: 0px 15px;padding-top: 20px;}
 * html #bc-main {float: none;}
 /* #bc-main {border: 1px solid red;border-top-width: 0px;border-bottom-width: 0px;background-color: #333;} */
 #bc-foot h5 {border: 1px solid #82b550;border-top-width: 0px;}

@@ -22,31 +22,25 @@ $allow = $info['trunk']['allow'];
 
 $edit = true;
 
-if(is_array($gregister) === true && isset($gregister['var_val']) === true)
+if(xivo_ak('var_val',$gregister) === true)
 {
 	$info['register']['commented'] = $gregister['commented'];
 
-	if(preg_match('#^(([a-z0-9_\.-]+)(@[a-z0-9\.-]+)?):([a-z0-9_\.-]+)'.
-		      '(:[a-z0-9_\.-]+)?@([a-z0-9\.-]+)(:[0-9]+)?(/[a-z0-9]+)?$#i',$gregister['var_val'],$register) === 1)
+	if(preg_match('#^((?:[a-z0-9_\.-]+)(?:@[a-z0-9\.-]+)?)(:[a-z0-9_\.-]+)?'.
+		      '@([a-z0-9\.-]+)(:[0-9]{1,5})?$#i',$gregister['var_val'],$register) === 1)
 	{
 		$info['register']['username'] = $register[1];
-		$info['register']['password'] = $register[4];
-		$info['register']['host'] = $register[6];
+		$info['register']['host'] = $register[3];
 
-		if(isset($register[5]) === true && $register[5] !== '')
-			$info['register']['authuser'] = substr($register[5],1);
+		if(isset($register[2]) === true && $register[2] !== '')
+			$info['register']['password'] = substr($register[2],1);
 		else
-			$info['register']['authuser'] = '';
+			$info['register']['password'] = '';
 
-		if(isset($register[7]) === true && $register[7] !== '')
-			$info['register']['port'] = substr($register[7],1);
+		if(isset($register[4]) === true && $register[4] !== '')
+			$info['register']['port'] = substr($register[4],1);
 		else
 			$info['register']['port'] = '';
-
-		if(isset($register[8]) === true && $register[8] !== '')
-			$info['register']['contact'] = substr($register[8],1);
-		else
-			$info['register']['contact'] = '';
 	}
 }
 
@@ -69,31 +63,26 @@ do
 		$result['register'] = array();
 		$result['register']['commented'] = 0;
 
-		if(isset($_QR['register']['username'],$_QR['register']['password'],$_QR['register']['host']) === false)
+		if(isset($_QR['register']['username'],$_QR['register']['host']) === false)
 			break;
 
 		$register_active = true;
 
 		if(($result['register']['username'] = $generaliax->chk_value('register_username',$_QR['register']['username'])) === false
-		|| ($result['register']['password'] = $generaliax->chk_value('register_password',$_QR['register']['password'])) === false
 		|| ($result['register']['host'] = $generaliax->chk_value('register_host',$_QR['register']['host'])) === false)
 			break;
 
-		$register = $result['register']['username'].':'.$result['register']['password'];
+		$register = $result['register']['username'];
 
-		if(isset($_QR['register']['authuser']) === true
-		&& ($result['register']['authuser'] = $generaliax->set_chk_value('register_authuser',$_QR['register']['authuser'])) !== '')
-			$register .= ':'.$result['register']['authuser'];
+		if(isset($_QR['register']['password']) === true
+		&& ($result['register']['password'] = $generaliax->set_chk_value('register_password',$_QR['register']['password'])) !== '')
+			$register .= ':'.$result['register']['password'];
 
 		$register .= '@'.$result['register']['host'];
 
 		if(isset($_QR['register']['port']) === true
 		&& ($result['register']['port'] = $generaliax->set_chk_value('register_port',$_QR['register']['port'])) !== '')
 			$register .= ':'.$result['register']['port'];
-
-		if(isset($_QR['register']['contact']) === true
-		&& ($result['register']['contact'] = $generaliax->set_chk_value('register_contact',$_QR['register']['contact'])) !== '')
-			$register .= '/'.$result['register']['contact'];
 	}
 	while(false);
 

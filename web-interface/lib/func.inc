@@ -81,6 +81,26 @@ function xivo_digit($str=0,$def=null,$t=false)
 	return($r);	
 }
 
+function xivo_xdigit($str=0,$def=null,$t=false)
+{
+	$r = false;
+
+	$t = (bool) $t;
+
+	if(ctype_xdigit($str) === true)
+		return($str);
+	
+	if($def === null)
+		return($r);
+
+	if($t === true)
+		$r = ctype_xdigit($def) === true ? $def : false;
+	else
+		$r = $def;
+
+	return($r);	
+}
+
 function xivo_uint($str=0,$def=0,$t=false)
 {
 	$str = (int) $str;
@@ -96,13 +116,74 @@ function xivo_uint($str=0,$def=0,$t=false)
 	return($str);
 }
 
+function xivo_print($str='',$def=null,$t=false)
+{
+	$r = false;
+
+	$t = (bool) $t;
+
+	if(xivo_printable($str,'print') === true)
+		return($str);
+	
+	if($def === null)
+		return($r);
+
+	if($t === true)
+		$r = xivo_printable($def,'print') === true ? $def : false;
+	else
+		$r = $def;
+
+	return($r);
+}
+
+function xivo_printable($str,$type='')
+{
+	$type = strtolower((string) $type);
+
+	$reg = '\x00-\x08\x0B\x0C\x0E-\x1F\7F';
+
+	switch($type)
+	{
+		case 'crlf':
+			$reg .= '\x09';
+			break;
+		case 'tab':
+			$reg .= '\x0A\x0D';
+			break;
+		case 'print':
+			$reg .= '\x09\x0A\x0D';
+			break;
+		case 'strict':
+			return(ctype_print($str));
+	}
+
+	if(preg_match('/^[^'.$reg.']+$/',$str) === 1)
+		return(true);
+
+	return(false);
+}
+
+function xivo_printable_crlf($str)
+{
+	return(xivo_printable($str,'crlf'));
+}
+
+function xivo_printable_tab($str)
+{
+	return(xivo_printable($str,'tab'));
+}
+
+function xivo_printable_strict($str)
+{
+	return(xivo_printable($str,'strict'));
+}
+
 function xivo_cast_specials($str,$type='')
 {
 	$str = (string) $str;
+	$type = strtolower((string) $type);
 
-	$toto = preg_quote(' !"#$%&\'()*+,-./:;<=>?@[\]^_`{|}~');
-
-	$reg = ' \!"#\$%&\'\(\)\*\+,-\.\/\:;\<\=\>\?\\\@\[\]\^_`\{\|\}~';
+	$reg = '\x20-\x2F\x3A-\x40\x5B-\x60\x7B-\x7E';
 
 	switch($type)
 	{
@@ -116,7 +197,6 @@ function xivo_cast_specials($str,$type='')
 			$reg .= 'a-zA-Z0-9';
 			break;
 	}
-
 
 	if(preg_match('/^['.$reg.']+$/',$str) === 1)
 		return(true);

@@ -8,14 +8,34 @@ define('XIVO_SRE_IPBX_AST_CHAN_AGENT','Agent');
 define('XIVO_SRE_IPBX_AST_PROTO_SIP','sip');
 define('XIVO_SRE_IPBX_AST_PROTO_IAX','iax');
 
-define('XIVO_SRE_IPBX_AST_CODEC_ALAW','alaw');
-define('XIVO_SRE_IPBX_AST_CODEC_G729','g729');
-define('XIVO_SRE_IPBX_AST_CODEC_GSM','gsm');
-define('XIVO_SRE_IPBX_AST_CODEC_ULAW','ulaw');
+define('XIVO_SRE_IPBX_AST_CODEC_AUDIO_G723','g723');
+define('XIVO_SRE_IPBX_AST_CODEC_AUDIO_GSM','gsm');
+define('XIVO_SRE_IPBX_AST_CODEC_AUDIO_ULAW','ulaw');
+define('XIVO_SRE_IPBX_AST_CODEC_AUDIO_ALAW','alaw');
+define('XIVO_SRE_IPBX_AST_CODEC_AUDIO_G726','g726');
+define('XIVO_SRE_IPBX_AST_CODEC_AUDIO_ADPCM','adpcm');
+define('XIVO_SRE_IPBX_AST_CODEC_AUDIO_SLIN','slin');
+define('XIVO_SRE_IPBX_AST_CODEC_AUDIO_LPC10','lpc10');
+define('XIVO_SRE_IPBX_AST_CODEC_AUDIO_G729','g729');
+define('XIVO_SRE_IPBX_AST_CODEC_AUDIO_SPEEX','speex');
+define('XIVO_SRE_IPBX_AST_CODEC_AUDIO_ILBC','ilbc');
 
-define('XIVO_SRE_IPBX_AST_SNDFORMAT_WAV','wav');
-define('XIVO_SRE_IPBX_AST_SNDFORMAT_WAV49','wav49');
-define('XIVO_SRE_IPBX_AST_SNDFORMAT_GSM','gsm');
+define('XIVO_SRE_IPBX_AST_CODEC_IMAGE_JPEG','jpeg');
+define('XIVO_SRE_IPBX_AST_CODEC_IMAGE_PNG','png');
+
+define('XIVO_SRE_IPBX_AST_CODEC_VIDEO_H261','h261');
+define('XIVO_SRE_IPBX_AST_CODEC_VIDEO_H263','h263');
+define('XIVO_SRE_IPBX_AST_CODEC_VIDEO_H263P','h263p');
+
+define('XIVO_SRE_IPBX_AST_FORMAT_AUDIO_WAV','wav');
+define('XIVO_SRE_IPBX_AST_FORMAT_AUDIO_WAV49','wav49');
+define('XIVO_SRE_IPBX_AST_FORMAT_AUDIO_GSM','gsm');
+define('XIVO_SRE_IPBX_AST_FORMAT_AUDIO_OGG','ogg');
+define('XIVO_SRE_IPBX_AST_FORMAT_AUDIO_ULAW','ulaw');
+define('XIVO_SRE_IPBX_AST_FORMAT_AUDIO_ALAW','alaw');
+define('XIVO_SRE_IPBX_AST_FORMAT_AUDIO_AU','au');
+define('XIVO_SRE_IPBX_AST_FORMAT_AUDIO_VOX','vox');
+define('XIVO_SRE_IPBX_AST_FORMAT_AUDIO_SLIN','slin');
 
 $array = array();
 
@@ -170,4 +190,32 @@ $array['channel']['iax'] = XIVO_SRE_IPBX_AST_CHAN_IAX;
 $array['channel']['local'] = XIVO_SRE_IPBX_AST_CHAN_LOCAL;
 $array['channel']['agent'] = XIVO_SRE_IPBX_AST_CHAN_AGENT;
 
+$array['format'] = array();
+$array['format'][XIVO_SRE_IPBX_AST_FORMAT_AUDIO_WAV] = array(
+							'type' => 'audio',
+							'extension' => 'wav');
+$array['format'][XIVO_SRE_IPBX_AST_FORMAT_AUDIO_WAV49] = array(
+							'type' => 'audio',
+							'extension' => 'WAV');
+$array['format'][XIVO_SRE_IPBX_AST_FORMAT_AUDIO_GSM] = array(
+							'type' => 'audio',
+							'extension' => 'gsm');
+$array['format'][XIVO_SRE_IPBX_AST_FORMAT_AUDIO_OGG] = array(
+							'type' => 'audio',
+							'extension' => 'ogg');
+$array['format'][XIVO_SRE_IPBX_AST_FORMAT_AUDIO_ULAW] = array(
+							'type' => 'audio',
+							'extension' => array('ul','ulaw','um','pcm'));
+$array['format'][XIVO_SRE_IPBX_AST_FORMAT_AUDIO_ALAW] = array(
+							'type' => 'audio',
+							'extension' => array('al','alaw'));
+$array['format'][XIVO_SRE_IPBX_AST_FORMAT_AUDIO_AU] = array(
+							'type' => 'audio',
+							'extension' => 'au');
+$array['format'][XIVO_SRE_IPBX_AST_FORMAT_AUDIO_VOX] = array(
+							'type' => 'audio',
+							'extension' => 'vox');
+$array['format'][XIVO_SRE_IPBX_AST_FORMAT_AUDIO_SLIN] = array(
+							'type' => 'audio',
+							'extension' => array('sln','raw'));
 ?>

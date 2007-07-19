@@ -3,8 +3,8 @@
 
 <meta name="keywords" content="">
 <meta name="description" lang="<?=xivo_user::get_infos('language');?>" content="">
-<meta name="author" content="Xivo">
-<meta name="publisher" content="Xivo">
+<meta name="author" content="XIVO">
+<meta name="publisher" content="XIVO">
 <meta name="classification" content="Communication">
 <meta name="distribution" content="global">
 <meta name="revisit-after" content="5days">

@@ -122,7 +122,7 @@ Désactivé
 %s secondes
 
 ; fm_queue_retry
-Temps d'attente avant rappel des membres :
+Délai d'attente avant rappel des membres :
 
 ; fm_queue_retry-opt0
 Désactivé
@@ -287,7 +287,7 @@ Activer les événements des membres (AMI) :
 Activer le rapport d'attente d'un appelant :
 
 ; fm_queue_memberdelay
-Temps d'attente avant de passer l'appel :
+Délai d'attente avant de passer l'appel :
 
 ; fm_queue_memberdelay-opt0
 Désactivé
@@ -317,7 +317,7 @@ Appel en attente :
 Défaut
 
 ; fm_queue_queue-holdtime
-Temps d'attente est de :
+Durée d'attente est de :
 
 ; fm_queue_queue-holdtime-opt-default
 Défaut
@@ -347,7 +347,7 @@ Reste plus que :
 Défaut
 
 ; fm_queue_queue-reporthold
-Temps d'attente d'un appelant :
+Durée d'attente d'un appelant :
 
 ; fm_queue_queue-reporthold-opt-default
 Défaut

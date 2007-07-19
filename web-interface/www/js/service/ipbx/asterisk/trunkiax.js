@@ -95,11 +95,7 @@ xivo_fm_register['it-register-username']['link'] = 'it-register-password';
 
 xivo_fm_register['it-register-password'] = new Array();
 xivo_fm_register['it-register-password']['property'] = new Array('disabled|false:boolean;className|it-enabled','disabled|true:boolean;className|it-disabled');
-xivo_fm_register['it-register-password']['link'] = 'it-register-authuser';
-
-xivo_fm_register['it-register-authuser'] = new Array();
-xivo_fm_register['it-register-authuser']['property'] = new Array('disabled|false:boolean;className|it-enabled','disabled|true:boolean;className|it-disabled');
-xivo_fm_register['it-register-authuser']['link'] = 'it-register-host';
+xivo_fm_register['it-register-password']['link'] = 'it-register-host';
 
 xivo_fm_register['it-register-host'] = new Array();
 xivo_fm_register['it-register-host']['property'] = new Array('disabled|false:boolean;className|it-enabled','disabled|true:boolean;className|it-disabled');
@@ -107,10 +103,6 @@ xivo_fm_register['it-register-host']['link'] = 'it-register-port';
 
 xivo_fm_register['it-register-port'] = new Array();
 xivo_fm_register['it-register-port']['property'] = new Array('disabled|false:boolean;className|it-enabled','disabled|true:boolean;className|it-disabled');
-xivo_fm_register['it-register-port']['link'] = 'it-register-contact';
-
-xivo_fm_register['it-register-contact'] = new Array();
-xivo_fm_register['it-register-contact']['property'] = new Array('disabled|false:boolean;className|it-enabled','disabled|true:boolean;className|it-disabled');
 
 xivo_attrib_register('fm_register',xivo_fm_register);
 

@@ -59,6 +59,24 @@ class xivo_service_asterisk_generaliax extends xivo_service_asterisk_staticconf
 		return(parent::edit($id,$arr));
 	}
 
+	function replace_val_list($arr,$disable=null)
+	{
+		$arr = (array) $arr;
+
+		if(($list = xivo_get_aks($arr)) === false)
+			return(false);
+
+		for($i = 0;$i < $list['cnt'];$i++)
+		{
+			$name = &$list['keys'][$i];
+			$val = &$arr[$name];
+
+			$this->replace_val_by_name($name,$val,$disable);
+		}
+
+		return(true);
+	}
+
 	function replace_by_name($name,$arr)
 	{
 		$arr = (array) $arr;

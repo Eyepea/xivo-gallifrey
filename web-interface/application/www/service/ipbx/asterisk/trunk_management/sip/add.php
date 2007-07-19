@@ -28,15 +28,20 @@ do
 			break;
 
 		if(($result['register']['username'] = $generalsip->chk_value('register_username',$_QR['register']['username'])) === false
-		|| ($result['register']['password'] = $generalsip->chk_value('register_password',$_QR['register']['password'])) === false
 		|| ($result['register']['host'] = $generalsip->chk_value('register_host',$_QR['register']['host'])) === false)
 			break;
 
-		$register = $result['register']['username'].':'.$result['register']['password'];
+		$register = $result['register']['username'];
 
-		if(isset($_QR['register']['authuser']) === true
-		&& ($result['register']['authuser'] = $generalsip->set_chk_value('register_authuser',$_QR['register']['authuser'])) !== '')
-			$register .= ':'.$result['register']['authuser'];
+		if(isset($_QR['register']['password']) === true
+		&& ($result['register']['password'] = $generalsip->set_chk_value('register_password',$_QR['register']['password'])) !== '')
+		{
+			$register .= ':'.$result['register']['password'];
+
+			if(isset($_QR['register']['authuser']) === true
+			&& ($result['register']['authuser'] = $generalsip->set_chk_value('register_authuser',$_QR['register']['authuser'])) !== '')
+				$register .= ':'.$result['register']['authuser'];
+		}
 
 		$register .= '@'.$result['register']['host'];
 

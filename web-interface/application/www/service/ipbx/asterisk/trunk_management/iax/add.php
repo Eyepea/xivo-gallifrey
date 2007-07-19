@@ -28,25 +28,20 @@ do
 			break;
 
 		if(($result['register']['username'] = $generaliax->chk_value('register_username',$_QR['register']['username'])) === false
-		|| ($result['register']['password'] = $generaliax->chk_value('register_password',$_QR['register']['password'])) === false
 		|| ($result['register']['host'] = $generaliax->chk_value('register_host',$_QR['register']['host'])) === false)
 			break;
 
-		$register = $result['register']['username'].':'.$result['register']['password'];
+		$register = $result['register']['username'];
 
-		if(isset($_QR['register']['authuser']) === true
-		&& ($result['register']['authuser'] = $generaliax->set_chk_value('register_authuser',$_QR['register']['authuser'])) !== '')
-			$register .= ':'.$result['register']['authuser'];
+		if(isset($_QR['register']['password']) === true
+		&& ($result['register']['password'] = $generaliax->set_chk_value('register_password',$_QR['register']['password'])) !== '')
+			$register .= ':'.$result['register']['password'];
 
 		$register .= '@'.$result['register']['host'];
 
 		if(isset($_QR['register']['port']) === true
 		&& ($result['register']['port'] = $generaliax->set_chk_value('register_port',$_QR['register']['port'])) !== '')
 			$register .= ':'.$result['register']['port'];
-
-		if(isset($_QR['register']['contact']) === true
-		&& ($result['register']['contact'] = $generaliax->set_chk_value('register_contact',$_QR['register']['contact'])) !== '')
-			$register .= '/'.$result['register']['contact'];
 	}
 	while(false);
 
