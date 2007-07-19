@@ -286,7 +286,7 @@
     <message>
         <location filename="mainwidget.cpp" line="611"/>
         <source>About XIVO Client</source>
-        <translation>A propos du Client XIVO</translation>
+        <translation>A propos de XIVO Client</translation>
     </message>
     <message>
         <location filename="mainwidget.cpp" line="446"/>
@@ -319,14 +319,24 @@
         <translation>&amp;Services</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="622"/>
-        <source>&lt;h3&gt;XIVO Client&lt;/h3&gt;&lt;p&gt;This application shows to the user the profile associated with incoming phone calls.&lt;/p&gt;&lt;p&gt;Version : %1&lt;/p&gt;&lt;p&gt;(C) 2007 &lt;b&gt;Proformatique&lt;/b&gt; &lt;a href=&quot;http://www.proformatique.com&quot;&gt;http://www.proformatique.com&lt;/a&gt;&lt;/p&gt;&lt;p&gt;67 rue Voltaire 92800 Puteaux FRANCE&lt;/p&gt;&lt;p&gt;E-mail : technique@proformatique.com&lt;/p&gt;&lt;p&gt;(+33/0)1.41.38.99.60&lt;/p&gt;&lt;p&gt;Authors : Thomas Bernard, Corentin Le Gall&lt;/p&gt;</source>
-        <translation>&lt;h3&gt;Client XIVO&lt;/h3&gt;&lt;p&gt;Cette application présente à l&apos;utilisateur les fiches associées aux appels entrants.&lt;/p&gt;&lt;p&gt;Version : %1&lt;/p&gt;&lt;p&gt;(c) 2007 &lt;b&gt;Proformatique&lt;/b&gt; &lt;a href=&quot;http://www.proformatique.com/&quot;&gt;http://www.proformatique.com/&lt;/a&gt;&lt;/p&gt;&lt;p&gt;67 rue Voltaire 92800 Puteaux FRANCE&lt;/p&gt;&lt;p&gt;E-mail : technique@proformatique.com&lt;/p&gt;&lt;p&gt;+33 (0)1 41 38 99 60&lt;/p&gt;&lt;p&gt;Auteurs : Thomas Bernard, Corentin Le Gall&lt;/p&gt;</translation>
+        <location filename="mainwidget.cpp" line="620"/>
+        <source>&lt;p&gt;This application allows a given phone user to :&lt;/p&gt;&lt;p&gt;* receive customer informations related to incoming calls&lt;/p&gt;&lt;p&gt;* manage her/his voicemail and transfers&lt;/p&gt;&lt;p&gt;* know her/his calls history&lt;/p&gt;&lt;p&gt;* access the phones and addresses&apos; directory&lt;/p&gt;&lt;p&gt;* see her/his buddies&lt;/p&gt;&lt;p&gt;* originate a dial towards some number&lt;/p&gt;</source>
+        <translation>&lt;p&gt;Cette application permet à un utilisateur de téléphone de :&lt;/p&gt;&lt;p&gt;* recevoir des fiches à propos de ses appels entrants&lt;/p&gt;&lt;p&gt;* gérer son répondeur et ses renvois&lt;/p&gt;&lt;p&gt;* connaître son historique d&apos;appels&lt;/p&gt;&lt;p&gt;* consulter le répertoire téléphonique&lt;/p&gt;&lt;p&gt;* voir ses collègues&lt;/p&gt;&lt;p&gt;* composer un numéro&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="70"/>
-        <source>XIVO Client</source>
-        <translation>Client XIVO</translation>
+        <location filename="mainwidget.cpp" line="625"/>
+        <source>Authors : </source>
+        <translation>Auteurs : </translation>
+    </message>
+    <message>
+        <location filename="mainwidget.cpp" line="626"/>
+        <source>License : </source>
+        <translation>Licence : </translation>
+    </message>
+    <message>
+        <location filename="mainwidget.cpp" line="620"/>
+        <source>Version : </source>
+        <translation>Version : </translation>
     </message>
 </context>
 <context>

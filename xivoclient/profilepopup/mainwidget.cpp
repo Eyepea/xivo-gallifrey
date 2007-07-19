@@ -67,7 +67,7 @@ MainWidget::MainWidget(Engine *engine, QWidget *parent)
 	
 	//setWindowFlags(Qt::Dialog);
 	//layout->setSizeConstraint(QLayout::SetFixedSize);	// remove minimize and maximize button
-	setWindowTitle(tr("XIVO Client"));
+	setWindowTitle("XIVO Client");
 	setWindowIcon(QIcon(":/xivoicon.png"));
 	resize(500, 400);
 	m_status = new QLabel();
@@ -609,16 +609,21 @@ void MainWidget::about()
 	QString applicationVersion("0.1");
 	QMessageBox::about(this,
 			   tr("About XIVO Client"),
-			   tr("<h3>XIVO Client</h3>"
-			      "<p>This application shows to the user the profile associated"
-			      " with incoming phone calls.</p>"
-			      "<p>Version : %1</p>"
-			      "<p>(C) 2007 <b>Proformatique</b> "
-			      "<a href=\"http://www.proformatique.com\">"
-			      "http://www.proformatique.com</a></p>"
-			      "<p>67 rue Voltaire 92800 Puteaux FRANCE</p>"
-			      "<p>E-mail : technique@proformatique.com</p>"
-			      "<p>(+33/0)1.41.38.99.60</p>"
-			      "<p>Authors : Thomas Bernard, Corentin Le Gall</p>").arg(applicationVersion) );
+			   "<h3>XIVO Client</h3>" +
+			   tr("<p>This application allows a given phone user to :</p>"
+			      "<p>* receive customer informations related to incoming calls</p>"
+			      "<p>* manage her/his voicemail and transfers</p>"
+			      "<p>* know her/his calls history</p>"
+			      "<p>* access the phones and addresses' directory</p>"
+			      "<p>* see her/his buddies</p>"
+			      "<p>* originate a dial towards some number</p>") +
+			   "<p><b>" + tr("Version : ") + QString("</b>%1</p>").arg(applicationVersion) +
+			   "<hr><p>(C) 2007 <a href=http://www.proformatique.com><b>Proformatique</b></a></p>"
+			   "<p>67 rue Voltaire 92800 Puteaux FRANCE</p>"
+			   "<p><b>E-mail : </b>technique@proformatique.com</p>"
+			   "<p>(+33 / 0) 1.41.38.99.60</p>" +
+			   "<p><b>" + tr("Authors : ") + "</b>Thomas Bernard, Corentin Le Gall</p>" +
+			   "<hr><p><b>" + tr("License : ") + "</b>" +
+			   "<a href=http://www.gnu.org/licenses/gpl-2.0.txt>GNU General Public Licence v.2</a></p>");
 }
 

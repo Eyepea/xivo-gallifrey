@@ -86,7 +86,7 @@ MainWindow::MainWindow(SwitchBoardEngine * engine, LoginEngine * loginengine)
 	m_status->setPixmap(redsquare);
 	statusBar()->addPermanentWidget(m_status);
 	setWindowIcon(QIcon(":/xivoicon.png"));
-	setWindowTitle(tr("XIVO Switchboard"));
+	setWindowTitle("XIVO Switchboard");
 
 	m_splitter = new QSplitter(this);
 	m_leftSplitter = new QSplitter(Qt::Vertical, m_splitter);
@@ -376,16 +376,16 @@ void MainWindow::about()
 	QString applicationVersion("0.1");
 	QMessageBox::about(this,
 			   tr("About XIVO SwitchBoard"),
-	                   tr("<h3>XIVO Switchboard</h3>"
-			      "<p>This application displays the status of the"
-			      " ongoing phone calls.</p>"
-			      "<p>Version : %1</p>"
-			      "<p>(C) 2007 <b>Proformatique</b> "
-			      "<a href=\"http://www.proformatique.com\">"
-			      "http://www.proformatique.com</a></p>"
-			      "<p>67 rue Voltaire 92800 Puteaux FRANCE</p>"
-			      "<p>E-mail : technique@proformatique.com</p>"
-			      "<p>(+33/0)1.41.38.99.60</p>"
-			      "<p>Authors : Thomas Bernard, Corentin Le Gall</p>").arg(applicationVersion) );
+			   "<h3>XIVO Switchboard</h3>" +
+			   tr("<p>This application displays the status of the"
+			      " ongoing phone calls.</p>") +
+			   "<p><b>" + tr("Version : ") + QString("</b>%1</p>").arg(applicationVersion) +
+			   "<hr><p>(C) 2007 <a href=http://www.proformatique.com><b>Proformatique</b></a></p>"
+			   "<p>67 rue Voltaire 92800 Puteaux FRANCE</p>"
+			   "<p><b>E-mail : </b>technique@proformatique.com</p>"
+			   "<p>(+33 / 0) 1.41.38.99.60</p>" +
+			   "<p><b>" + tr("Authors : ") + "</b>Thomas Bernard, Corentin Le Gall</p>" +
+			   "<hr><p><b>" + tr("License : ") + "</b>" +
+			   "<a href=http://www.gnu.org/licenses/gpl-2.0.txt>GNU General Public Licence v.2</a></p>");
 }
 

@@ -187,11 +187,6 @@
         <translation>&amp;A propos du SwitchBoard XIVO</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="389"/>
-        <source>&lt;h3&gt;XIVO Switchboard&lt;/h3&gt;&lt;p&gt;This application displays the status of the ongoing phone calls.&lt;/p&gt;&lt;p&gt;Version : %1&lt;/p&gt;&lt;p&gt;(C) 2007 &lt;b&gt;Proformatique&lt;/b&gt; &lt;a href=&quot;http://www.proformatique.com&quot;&gt;http://www.proformatique.com&lt;/a&gt;&lt;/p&gt;&lt;p&gt;67 rue Voltaire 92800 Puteaux FRANCE&lt;/p&gt;&lt;p&gt;E-mail : technique@proformatique.com&lt;/p&gt;&lt;p&gt;(+33/0)1.41.38.99.60&lt;/p&gt;&lt;p&gt;Authors : Thomas Bernard, Corentin Le Gall&lt;/p&gt;</source>
-        <translation>&lt;h3&gt;XIVO Switchboard&lt;/h3&gt;&lt;p&gt;Cette application affiche le statut des appels téléphoniques en cours.&lt;/p&gt;&lt;p&gt;Version : %1&lt;/p&gt;&lt;p&gt;(C) 2007 &lt;b&gt;Proformatique&lt;/b&gt; &lt;a href=&quot;http://www.proformatique.com&quot;&gt;http://www.proformatique.com&lt;/a&gt;&lt;/p&gt;&lt;p&gt;67 rue Voltaire 92800 Puteaux FRANCE&lt;/p&gt;&lt;p&gt;E-mail : technique@proformatique.com&lt;/p&gt;&lt;p&gt;(+33/0)1.41.38.99.60&lt;/p&gt;&lt;p&gt;Auteurs : Thomas Bernard, Corentin Le Gall&lt;/p&gt;</translation>
-    </message>
-    <message>
         <location filename="mainwindow.cpp" line="261"/>
         <source>&amp;Available</source>
         <translation>&amp;Disponible</translation>
@@ -220,6 +215,26 @@
         <location filename="mainwindow.cpp" line="298"/>
         <source>&amp;Availability</source>
         <translation>&amp;Disponibilité</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="382"/>
+        <source>&lt;p&gt;This application displays the status of the ongoing phone calls.&lt;/p&gt;</source>
+        <translation>&lt;p&gt;Cette application affiche le statut des appels téléphoniques en cours.&lt;/p&gt;</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="382"/>
+        <source>Version : </source>
+        <translation>Version : </translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="387"/>
+        <source>Authors : </source>
+        <translation>Auteurs : </translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="388"/>
+        <source>License : </source>
+        <translation>Licence : </translation>
     </message>
 </context>
 <context>
