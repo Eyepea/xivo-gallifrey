@@ -1010,7 +1010,7 @@ void Engine::readKeepLoginAliveDatagrams()
 		} else if(reply == "PEERUPDATE") {
 			QStringList liststatus = QString::fromUtf8(buffer).trimmed().split("=")[1].split(":");
 			QString isupdate = QString::fromUtf8(buffer).trimmed().split("=")[0];
-			if(isupdate == "update") {
+			if(isupdate == "PEERUPDATE update") {
 				updatePeers(liststatus);
 				qDebug() << qsl; //reply;
 			}

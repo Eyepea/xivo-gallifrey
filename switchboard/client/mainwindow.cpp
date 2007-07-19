@@ -86,7 +86,7 @@ MainWindow::MainWindow(SwitchBoardEngine * engine, LoginEngine * loginengine)
 	m_status->setPixmap(redsquare);
 	statusBar()->addPermanentWidget(m_status);
 	setWindowIcon(QIcon(":/xivoicon.png"));
-	setWindowTitle("Xivo Switchboard");
+	setWindowTitle(tr("XIVO Switchboard"));
 
 	m_splitter = new QSplitter(this);
 	m_leftSplitter = new QSplitter(Qt::Vertical, m_splitter);

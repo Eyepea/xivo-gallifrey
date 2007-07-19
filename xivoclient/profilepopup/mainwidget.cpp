@@ -67,7 +67,7 @@ MainWidget::MainWidget(Engine *engine, QWidget *parent)
 	
 	//setWindowFlags(Qt::Dialog);
 	//layout->setSizeConstraint(QLayout::SetFixedSize);	// remove minimize and maximize button
-	setWindowTitle(QString("Xivo Client"));
+	setWindowTitle(tr("XIVO Client"));
 	setWindowIcon(QIcon(":/xivoicon.png"));
 	resize(500, 400);
 	m_status = new QLabel();

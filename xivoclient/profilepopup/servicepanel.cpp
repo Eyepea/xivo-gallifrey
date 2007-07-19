@@ -33,7 +33,6 @@ ServicePanel::ServicePanel(QWidget * parent)
 	layout->addWidget(m_dnd, line, 0, 1, 0);
 	line++;
 
-
 	m_uncondforward = new QCheckBox(tr("&Unconditional Forward"), this);
 	layout->addWidget(m_uncondforward, line, 0, 1, 0);
 	line++;
@@ -80,6 +79,10 @@ ServicePanel::ServicePanel(QWidget * parent)
 		this, SLOT(toggleOnUnavailIfAllowed(const QString &)));
 	connect(m_forwardonunavailable, SIGNAL(toggled(bool)),
 	        this, SLOT(forwardOnUnavailableToggled(bool)));
+
+	QLabel * dummy = new QLabel(this);
+	layout->addWidget(dummy, line, 0, 1, 0, Qt::AlignTop);
+	line ++;
 }
 
 void ServicePanel::toggleUncondIfAllowed(const QString & text)

@@ -196,6 +196,7 @@ void PeerWidget::mousePressEvent(QMouseEvent *event)
  */
 void PeerWidget::mouseMoveEvent(QMouseEvent *event)
 {
+	return; // does not show the "drag and drop" feature ...
 	if (!(event->buttons() & Qt::LeftButton))
 		return;
 	if ((event->pos() - m_dragstartpos).manhattanLength()
