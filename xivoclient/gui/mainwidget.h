@@ -103,6 +103,7 @@ private:
 	QAction * m_avact_brb;		//!< "Be Right Back" Action
 	QAction * m_avact_otl;		//!< "Out To Lunch" Action
 	QAction * m_avact_dnd;		//!< "Do not disturb" action
+	QMenu * m_avail;
 
 	QLabel * m_status;	//!< status indicator
 };

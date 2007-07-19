@@ -201,7 +201,7 @@
     <message>
         <location filename="mainwidget.cpp" line="118"/>
         <source>&amp;Connect</source>
-        <translation>&amp;Connexion</translation>
+        <translation>&amp;Connecter</translation>
     </message>
     <message>
         <location filename="mainwidget.cpp" line="119"/>
@@ -216,7 +216,7 @@
     <message>
         <location filename="mainwidget.cpp" line="122"/>
         <source>Disconnect from the server</source>
-        <translation>Déconnecter du serveur</translation>
+        <translation>Se déconnecter du serveur</translation>
     </message>
     <message>
         <location filename="mainwidget.cpp" line="134"/>
@@ -254,17 +254,17 @@
         <translation>A propos de &amp;Qt</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="512"/>
+        <location filename="mainwidget.cpp" line="516"/>
         <source>Disconnected</source>
         <translation>Déconnecté</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="455"/>
+        <location filename="mainwidget.cpp" line="459"/>
         <source>Connected</source>
         <translation>Connecté</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="530"/>
+        <location filename="mainwidget.cpp" line="534"/>
         <source>Incoming call</source>
         <translation>Appel entrant</translation>
     </message>
@@ -284,57 +284,57 @@
         <translation>&amp;A propos du Client XIVO</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="611"/>
+        <location filename="mainwidget.cpp" line="615"/>
         <source>About XIVO Client</source>
         <translation>A propos de XIVO Client</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="446"/>
+        <location filename="mainwidget.cpp" line="450"/>
         <source>&amp;History</source>
         <translation>&amp;Historique</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="338"/>
+        <location filename="mainwidget.cpp" line="342"/>
         <source>&amp;Messages</source>
         <translation>&amp;Messages</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="348"/>
+        <location filename="mainwidget.cpp" line="352"/>
         <source>&amp;Sheets</source>
         <translation>F&amp;iches</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="437"/>
+        <location filename="mainwidget.cpp" line="441"/>
         <source>&amp;Directory</source>
         <translation>&amp;Répertoire</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="352"/>
+        <location filename="mainwidget.cpp" line="356"/>
         <source>&amp;Contacts</source>
         <translation>&amp;Contacts</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="368"/>
+        <location filename="mainwidget.cpp" line="372"/>
         <source>S&amp;ervices</source>
         <translation>&amp;Services</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="620"/>
+        <location filename="mainwidget.cpp" line="624"/>
         <source>&lt;p&gt;This application allows a given phone user to :&lt;/p&gt;&lt;p&gt;* receive customer informations related to incoming calls&lt;/p&gt;&lt;p&gt;* manage her/his voicemail and transfers&lt;/p&gt;&lt;p&gt;* know her/his calls history&lt;/p&gt;&lt;p&gt;* access the phones and addresses&apos; directory&lt;/p&gt;&lt;p&gt;* see her/his buddies&lt;/p&gt;&lt;p&gt;* originate a dial towards some number&lt;/p&gt;</source>
         <translation>&lt;p&gt;Cette application permet à un utilisateur de téléphone de :&lt;/p&gt;&lt;p&gt;* recevoir des fiches à propos de ses appels entrants&lt;/p&gt;&lt;p&gt;* gérer son répondeur et ses renvois&lt;/p&gt;&lt;p&gt;* connaître son historique d&apos;appels&lt;/p&gt;&lt;p&gt;* consulter le répertoire téléphonique&lt;/p&gt;&lt;p&gt;* voir ses collègues&lt;/p&gt;&lt;p&gt;* composer un numéro&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="625"/>
+        <location filename="mainwidget.cpp" line="629"/>
         <source>Authors : </source>
         <translation>Auteurs : </translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="626"/>
+        <location filename="mainwidget.cpp" line="630"/>
         <source>License : </source>
         <translation>Licence : </translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="620"/>
+        <location filename="mainwidget.cpp" line="624"/>
         <source>Version : </source>
         <translation>Version : </translation>
     </message>

@@ -183,8 +183,8 @@ void MainWidget::createMenus()
 	filemenu->addSeparator();
 	filemenu->addAction( m_quitact );
 
-	QMenu * avail = menuBar()->addMenu(tr("&Availability"));
-	avail->addActions( m_availgrp->actions() );
+	m_avail = menuBar()->addMenu(tr("&Availability"));
+	m_avail->addActions( m_availgrp->actions() );
 
 	QMenu * helpmenu = menuBar()->addMenu(tr("&Help"));
 	helpmenu->addAction( tr("&About XIVO Client"), this, SLOT(about()) );
@@ -224,9 +224,13 @@ void MainWidget::createSystrayIcon()
 {
 	m_systrayIcon = new QSystemTrayIcon(m_icongrey, this);
 	QMenu * menu = new QMenu(QString("SystrayMenu"), this);
-	menu->addActions( m_availgrp->actions() );
-	menu->addSeparator();
 	menu->addAction(m_cfgact);
+	menu->addSeparator();
+	menu->addMenu(m_avail);
+	menu->addSeparator();
+	menu->addAction(m_connectact);
+	menu->addAction(m_disconnectact);
+	menu->addSeparator();
 	menu->addAction(m_quitact);
 	m_systrayIcon->setContextMenu( menu );
 	m_systrayIcon->show();
