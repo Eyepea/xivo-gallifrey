@@ -544,8 +544,8 @@ class AMIClass:
 						       ('Exten', phonedst),
 						       ('Context', locext),
 						       ('Priority', '1'),
-						       ('CallerID', "0" + phonesrc),
-#						       ('CallerID', "%s calls %s <%s>" %(phonesrc, phonedst, phonesrc)),
+						       ('CallerID', "calls %s <%s>" %(phonedst, phonedst)),
+						       ('Variable', 'ORIGINATE_SRC=%s' %phonesrc),
 						       ('Async', 'true')])
 			self.readresponse('')
 			return True
