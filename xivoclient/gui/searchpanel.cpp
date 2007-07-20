@@ -59,7 +59,7 @@ void SearchPanel::setEngine(Engine * engine)
 void SearchPanel::affTextChanged(const QString & text)
 {
 	int i;
-	qDebug() << "affTextChanged" << text;
+	//qDebug() << "affTextChanged" << text;
 	for(i = 0; i < m_peerlist.count(); i++)
 	{
 		if( m_peerlist[i].name().contains(text, Qt::CaseInsensitive) )
@@ -82,7 +82,7 @@ void SearchPanel::updatePeer(const QString & ext,
 			     const QStringList & chanOthers)
 {
 	int i;
-	//	qDebug() << "SearchPanel::updatePeer()" << ext << name << imavail << sipstatus << chanIds;
+       	//qDebug() << "SearchPanel::updatePeer()" << ext << name << imavail << sipstatus << chanIds;
 	for(i = 0; i < m_peerlist.count(); i++)
 	{
 		if(ext == m_peerlist[i].ext())
@@ -113,6 +113,7 @@ void SearchPanel::updatePeer(const QString & ext,
 void SearchPanel::removePeer(const QString & ext)
 {
 	int i;
+	//qDebug() << "SearchPanel::removePeer()" << ext;
 	for(i = 0; i < m_peerlist.size(); i++)
 	{
 		if(m_peerlist[i].ext() == ext)
@@ -131,6 +132,7 @@ void SearchPanel::removePeer(const QString & ext)
 void SearchPanel::removePeers()
 {
 	int i;
+	//qDebug() << "SearchPanel::removePeers()";
 	for(i = 0; i < m_peerlist.size(); i++)
 	{
 		PeerWidget * peerwidget = m_peerlist[i].getWidget();

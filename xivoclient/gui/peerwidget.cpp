@@ -44,6 +44,7 @@ m_person_green(":/personal-green.png"), m_person_red(":/personal-red.png"),
 m_person_orange(":/personal-orange.png"), m_person_gray(":/personal-grey.png"),
 m_person_yellow(":/personal-yellow.png"), m_person_blue(":/personal-blue.png")
 {
+	//qDebug() << "PeerWidget::PeerWidget()" << id;
 	QHBoxLayout * layout = new QHBoxLayout(this);
 	layout->setSpacing(2);
 	layout->setMargin(2);
@@ -384,7 +385,7 @@ void PeerWidget::addChannel(const QString & id, const QString & state, const QSt
  */
 void PeerWidget::updateMyCalls(const QStringList & chanIds,
                                const QStringList & chanStates,
-							   const QStringList & chanOthers)
+			       const QStringList & chanOthers)
 {
 	while(!m_mychannels.isEmpty())
 		delete m_mychannels.takeFirst();

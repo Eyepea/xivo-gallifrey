@@ -89,6 +89,7 @@ private:
 	SearchPanel * m_peerswidget;
 	QWidget * m_featureswidget;
 	bool m_forcetabs;    //!< Flag to allow the display of "unallowed" tabs, useful to test server-side capabilities
+	bool m_presence;
 
 	int m_tablimit;		//!< Maximum number of tabs in m_tabwidget
 	int m_cinfo_index;

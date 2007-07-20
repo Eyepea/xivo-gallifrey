@@ -186,7 +186,7 @@ void MainWidget::createMenus()
 
 	m_avail = menuBar()->addMenu(tr("&Availability"));
 	m_avail->addActions( m_availgrp->actions() );
-	m_avail->setEnabled(m_engine->state() == Engine::ELogged);
+	m_avail->setEnabled( m_engine->state() == Engine::ELogged);
 	connect( m_engine, SIGNAL(availAllowChanged(bool)),
 	         m_avail, SLOT(setEnabled(bool)) );
 
@@ -323,8 +323,9 @@ void MainWidget::setConnected()
 	QPixmap green(15,15);
 	green.fill(Qt::green);
 	m_status->setPixmap(green);
-	QStringList display_capas = QString("customerinfo,features,history,directory,peers,dial").split(",");
+	QStringList display_capas = QString("customerinfo,features,history,directory,peers,dial,presence").split(",");
 	QStringList allowed_capas = m_engine->getCapabilities().split(",");
+	m_presence = false;
 
 	for(int j = 0; j < display_capas.size(); j++) {
 		QString dc = display_capas[j];
@@ -354,6 +355,9 @@ void MainWidget::setConnected()
 			} else if(dc == QString("customerinfo")) {
 				m_tabwidget = new QTabWidget();
 				m_qtabwidget->addTab(m_tabwidget, tr("&Sheets"));
+
+			} else if(dc == QString("presence")) {
+				m_presence = true;
 
 			} else if(dc == QString("peers")) {
 				m_peerswidget = new SearchPanel(this);
@@ -477,7 +481,7 @@ void MainWidget::setDisconnected()
 	QPixmap red(15,15);
 	red.fill(Qt::red);
 	m_status->setPixmap(red);
-	QStringList display_capas = QString("customerinfo,features,history,directory,peers,dial").split(",");
+	QStringList display_capas = QString("customerinfo,features,history,directory,peers,dial,presence").split(",");
 	QStringList allowed_capas = m_engine->getCapabilities().split(",");
 
 	for(int j = 0; j < display_capas.size(); j++) {
@@ -503,6 +507,7 @@ void MainWidget::setDisconnected()
 				m_vboxwidgets->removeWidget(m_tabwidget);
 				delete m_tabwidget;
 			} else if(dc == QString("peers")) {
+				m_peerswidget->removePeers();
 				m_vboxwidgets->removeWidget(m_peerswidget);
 				delete m_peerswidget;
 			} else if(dc == QString("features")) {

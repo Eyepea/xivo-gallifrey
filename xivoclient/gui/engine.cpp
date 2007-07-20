@@ -943,6 +943,7 @@ void Engine::readKeepLoginAliveDatagrams()
 		buffer[len] = '\0';
 		QStringList qsl = QString::fromUtf8(buffer).trimmed().split(" ");
 		QString reply = qsl[0];
+		//qDebug() << reply;
 		if(reply == "DISC") {
 			// stopKeepAliveTimer();
 			setState(ENotLogged);

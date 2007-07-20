@@ -768,13 +768,13 @@ def update_GUI_clients(astnum, phonenum, fromwhom):
 		except Exception, exc:
 			log_debug("--- exception --- send has failed on %s : %s" %(str(tcpclient[0]),str(exc)))
 	verboselog(strupdate, False, True)
-	for dbfamily in requestersocket_by_featureid:
-		# requestersocket_lock.acquire()
-		ka_object = requestersocket_by_featureid[dbfamily]
+	for loginid in requestersocket_by_login:
+                userlist_lock.acquire()
+		ka_object = requestersocket_by_login[loginid]
 		mysock = ka_object.request[1]
 		mysock.sendto("PEERUPDATE %s" %(strupdate),
 			      ka_object.client_address)
-		# requestersocket_lock.release()
+                userlist_lock.release()
 
 
 ## \brief Handles the SIP messages according to their meaning (reply to a formerly sent message).
@@ -1860,13 +1860,13 @@ class PhoneList:
 			except Exception, exc:
 				log_debug("--- exception --- send has failed on %s : %s" %(str(tcpclient[0]),str(exc)))
 		verboselog(strupdate, False, True)
-		for dbfamily in requestersocket_by_featureid:
-			# requestersocket_lock.acquire()
-			ka_object = requestersocket_by_featureid[dbfamily]
+		for loginid in requestersocket_by_login:
+                        userlist_lock.acquire()
+			ka_object = requestersocket_by_login[loginid]
 			mysock = ka_object.request[1]
 			mysock.sendto("PEERUPDATE %s" %(strupdate),
 				      ka_object.client_address)
-			# requestersocket_lock.release()
+                        userlist_lock.release()
 
 	def normal_channel_fills(self, chan_src, num_src,
 				 action, timeup, direction,
@@ -2602,6 +2602,7 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
 				del e['tcpmode']
 				del e['cticlienttype']
 				del e['cticlientos']
+                                del requestersocket_by_login[list[1]]
 				sipnumber = "SIP/" + user.split("sip")[1]
 				if sipnumber in plist[astnum].normal:
 					plist[astnum].normal[sipnumber].set_imstat("unkown")
@@ -2612,6 +2613,9 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
 
 			elif list[0] == 'COMMAND':
 				try:
+                                        userlist_lock.acquire()
+                                        requestersocket_by_login[list[1]] = self
+                                        userlist_lock.release()
 					if list[4] == 'DIAL' and len(list) == 7:
 						if "dial" in capabilities.split(","):
 							[astname_xivoc, proto, userid, context] = list[5].split("/")
@@ -2798,7 +2802,8 @@ while True: # loops over the reloads
 
 	ctx_by_requester = {}
 	requestersocket_by_featureid = {}
-	
+        requestersocket_by_login = {}
+
 	xivoconf = ConfigParser.ConfigParser()
 	xivoconf.readfp(open(xivoconffile))
 	xivoconf_general = dict(xivoconf.items("general"))
