@@ -2434,7 +2434,7 @@ class LoginHandler(SocketServer.StreamRequestHandler):
 			[rstr, dstr], [user, port, state, astnum] = self.logintalk()
 			self.wfile.write(rstr + "\r\n")
 			log_debug(dstr)
-			if astnum >= 0:
+			if rstr.split()[0] == 'OK' and astnum >= 0:
 				if user.find("sip") == 0:
 				        phoneid = "SIP/" + user.split("sip")[1]
 				elif user.find("iax") == 0:

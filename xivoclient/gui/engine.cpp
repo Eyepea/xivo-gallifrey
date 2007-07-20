@@ -543,7 +543,7 @@ void Engine::setKeepaliveinterval(uint i)
 	}
 }
 
-const EngineState Engine::state() const
+const Engine::EngineState Engine::state() const
 {
 	return m_state;
 }
@@ -560,13 +560,14 @@ void Engine::setState(EngineState state)
 	if(state != m_state)
 	{
 		m_state = state;
-		if(state == ELogged)
-		{
+		if(state == ELogged) {
 			stopTryAgainTimer();
+			availAllowChanged(true);
 			logged();
-		}
-		else if(state == ENotLogged)
+		} else if(state == ENotLogged) {
+			availAllowChanged(false);
 			delogged();
+		}
 	}
 }
 
@@ -942,7 +943,6 @@ void Engine::readKeepLoginAliveDatagrams()
 		buffer[len] = '\0';
 		QStringList qsl = QString::fromUtf8(buffer).trimmed().split(" ");
 		QString reply = qsl[0];
-		qDebug() << qsl;
 		if(reply == "DISC") {
 			// stopKeepAliveTimer();
 			setState(ENotLogged);

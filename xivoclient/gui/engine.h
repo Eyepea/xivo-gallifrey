@@ -77,6 +77,7 @@ public:
 	void setHistorySize(uint size);	//!< set history size
 
 signals:
+	void availAllowChanged(bool);	//!< signal 
 	void logged();	//!< signal emitted when the state becomes ELogged
 	void delogged();	//!< signal emitted when the state becomes ENotLogged
 	void newProfile(Popup *);	//!< signal emitted when a new profile has to be shown

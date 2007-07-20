@@ -75,6 +75,17 @@ LoginEngine::LoginEngine(QObject * parent)
 }
 
 /*!
+ *
+ */
+void LoginEngine::setEnabled(bool b) {
+	if(b != m_enabled) {
+		m_enabled = b;
+		if(state() == ELogged)
+			availAllowChanged(b);
+	}
+}
+
+/*!
  * Load Settings from the registery/configuration file
  */
 void LoginEngine::loadSettings()
@@ -129,11 +140,6 @@ void LoginEngine::start()
 	if(m_enabled)
 		m_loginsocket->connectToHost(m_serverhost, m_loginport);
 }
-
-//	stopKeepAliveTimer();
-//	stopTryAgainTimer();
-//	setState(ENotLogged);
-//	m_sessionid = "";
 
 /*! \brief close the connection to the server
  */
@@ -276,13 +282,14 @@ void LoginEngine::setState(EngineState state)
 	if(state != m_state)
 	{
 		m_state = state;
-		if(state == ELogged)
-		{
+		if(state == ELogged) {
 			stopTryAgainTimer();
+			if(m_enabled) availAllowChanged(true);
 			logged();
-		}
-		else if(state == ENotLogged)
+		} else if(state == ENotLogged) {
+			availAllowChanged(false);
 			delogged();
+		}
 	}
 }
 

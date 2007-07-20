@@ -254,9 +254,6 @@ MainWindow::MainWindow(SwitchBoardEngine * engine, LoginEngine * loginengine)
 	// Availability actions :
 	m_availgrp = new QActionGroup( this );
 	m_availgrp->setExclusive(true);
-	m_availgrp->setEnabled(m_loginengine->enabled());
-	connect( m_loginengine, SIGNAL(enabledChanged(bool)),
-	         m_availgrp, SLOT(setEnabled(bool)) );
 
 	m_avact_avail = new QAction( tr("&Available"), this );
 	m_avact_avail->setCheckable(true);
@@ -297,8 +294,8 @@ MainWindow::MainWindow(SwitchBoardEngine * engine, LoginEngine * loginengine)
 
 	m_avail = menuBar()->addMenu(tr("&Availability"));
 	m_avail->addActions( m_availgrp->actions() );
-	m_avail->setEnabled(m_loginengine->enabled());
-	connect( m_loginengine, SIGNAL(enabledChanged(bool)),
+	m_avail->setEnabled( m_loginengine->enabled() );
+	connect( m_loginengine, SIGNAL(availAllowChanged(bool)),
 	         m_avail, SLOT(setEnabled(bool)) );
 
 	QMenu * helpmenu = menuBar()->addMenu(tr("&Help"));

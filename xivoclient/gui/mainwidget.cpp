@@ -39,6 +39,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include "mainwidget.h"
 #include "confwidget.h"
 #include "popup.h"
+#include "engine.h"
 #include "dialpanel.h"
 #include "logwidget.h"
 #include "directorypanel.h"
@@ -185,6 +186,9 @@ void MainWidget::createMenus()
 
 	m_avail = menuBar()->addMenu(tr("&Availability"));
 	m_avail->addActions( m_availgrp->actions() );
+	m_avail->setEnabled(m_engine->state() == Engine::ELogged);
+	connect( m_engine, SIGNAL(availAllowChanged(bool)),
+	         m_avail, SLOT(setEnabled(bool)) );
 
 	QMenu * helpmenu = menuBar()->addMenu(tr("&Help"));
 	helpmenu->addAction( tr("&About XIVO Client"), this, SLOT(about()) );
