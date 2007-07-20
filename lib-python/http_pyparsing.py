@@ -26,6 +26,7 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
+from string import hexdigits
 from pyparsing import Word, Suppress, ZeroOrMore, QuotedString, \
                       Group, LineEnd, Optional
 
@@ -46,7 +47,14 @@ HTTP_TRANSFER_CODING = Optional( Group( HTTP_TRANSFER_EXTENSION ) ) + ZeroOrMore
 
 HTTP_TRANSFER_CODING_LINE = HTTP_TRANSFER_CODING + LineEnd()
 
+
+HTTP_CHUNK_EXTENSION = HTTP_TOKEN + Optional( Suppress( '=' ) + HTTP_VALUE )
+HTTP_CHUNK_HEADER = Word( hexdigits ) + Group( ZeroOrMore( Suppress( ';' ) + Group( HTTP_CHUNK_EXTENSION ) ) )
+
+HTTP_CHUNK_HEADER_LINE = HTTP_CHUNK_HEADER + LineEnd()
+
 __all__ = [ 'HTTP_CHAR', 'HTTP_SEPARATORS', 'HTTP_CTLS', 'HTTP_TOKCHAR',
             'HTTP_TOKEN', 'HTTP_QUOTED', 'HTTP_VALUE', 'HTTP_PARAMETER',
 	    'HTTP_TRANSFER_EXTENSION', 'HTTP_TRANSFER_CODING',
-	    'HTTP_TRANSFER_CODING_LINE' ]
+	    'HTTP_TRANSFER_CODING_LINE', 'HTTP_CHUNK_EXTENSION',
+	    'HTTP_CHUNK_HEADER', 'HTTP_CHUNK_HEADER_LINE' ]
