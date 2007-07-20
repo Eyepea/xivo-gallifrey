@@ -2,6 +2,9 @@
 
 Copyright (C) 2007, Proformatique
 
+WARNING: This parser is _extremely_ slow, you can expect it to consume up to about
+         1 million CPU cycles per output field. Use with care or optimize it!
+
 """
 
 __version__ = "$Revision$ $Date$"
@@ -23,7 +26,8 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-from pyparsing import Word, Suppress, ZeroOrMore, QuotedString, Group, LineEnd
+from pyparsing import Word, Suppress, ZeroOrMore, QuotedString, \
+                      Group, LineEnd, Optional
 
 __BYTES_VAL = ''.join(map(chr,xrange(0,256)))
 
@@ -38,7 +42,7 @@ HTTP_VALUE = HTTP_TOKEN | HTTP_QUOTED
 HTTP_PARAMETER = HTTP_TOKEN + Suppress( '=' ) + HTTP_VALUE
 
 HTTP_TRANSFER_EXTENSION = HTTP_TOKEN + Group( ZeroOrMore( Suppress( ';' ) + Group( HTTP_PARAMETER ) ) )
-HTTP_TRANSFER_CODING = Group( HTTP_TRANSFER_EXTENSION ) + ZeroOrMore( Suppress( ',' ) + Group( HTTP_TRANSFER_EXTENSION ) )
+HTTP_TRANSFER_CODING = Optional( Group( HTTP_TRANSFER_EXTENSION ) ) + ZeroOrMore( Suppress( ',' ) + Optional( Group( HTTP_TRANSFER_EXTENSION ) ) )
 
 HTTP_TRANSFER_CODING_LINE = HTTP_TRANSFER_CODING + LineEnd()
 
