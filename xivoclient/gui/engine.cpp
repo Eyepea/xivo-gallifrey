@@ -156,12 +156,13 @@ void Engine::stop()
 	outline.append(" SESSIONID ");
 	outline.append(m_sessionid);
 	outline.append("\r\n");
-
 	m_udpsocket.writeDatagram( outline.toAscii(),
 				   m_serveraddress, m_loginport + 1 );
+
 	stopKeepAliveTimer();
 	stopTryAgainTimer();
 	setState(ENotLogged);
+	m_sessionid = "";
 }
 
 /*!
@@ -518,16 +519,6 @@ bool Engine::autoconnect() const
 	return m_autoconnect;
 }
 
-void Engine::setTrytoreconnect(bool b)
-{
-	m_trytoreconnect = b;
-}
-
-bool Engine::trytoreconnect() const
-{
-	return m_trytoreconnect;
-}
-
 uint Engine::keepaliveinterval() const
 {
 	return m_keepaliveinterval;
@@ -552,28 +543,9 @@ void Engine::setKeepaliveinterval(uint i)
 	}
 }
 
-uint Engine::trytoreconnectinterval() const
+const EngineState Engine::state() const
 {
-	return m_trytoreconnectinterval;
-}
-
-/*!
- * Setter for property m_trytoreconnectinterval
- * Restart timer if the value changed.
- *
- * \sa trytoreconnectinterval
- */
-void Engine::setTrytoreconnectinterval(uint i)
-{
-	if( m_trytoreconnectinterval != i )
-	{
-		m_trytoreconnectinterval = i;
-		if(m_try_timerid > 0)
-		{
-			killTimer(m_try_timerid);
-			m_try_timerid = startTimer(m_trytoreconnectinterval);
-		}
-	}
+	return m_state;
 }
 
 /*!
@@ -790,24 +762,26 @@ void Engine::keepLoginAlive()
 		startTryAgainTimer();
 		return;
 	}
-	QString outline = "ALIVE ";
-	outline.append(m_asterisk + "/" + m_protocol + m_userid);
-	outline.append(" SESSIONID ");
-	outline.append(m_sessionid);
-	outline.append(" STATE ");
-	outline.append(m_availstate);
-	outline.append("\r\n");
-	qDebug() <<  "Engine::keepLoginAlive()" << outline;
-	m_udpsocket.writeDatagram( outline.toAscii(),
-	                           m_serveraddress, m_loginport + 1 );
-	m_pendingkeepalivemsg++;
-	// if the last keepalive msg has not been answered, send this one
-	// twice
-	if(m_pendingkeepalivemsg > 1)
-	{
+	if(m_state == ELogged) {
+		QString outline = "ALIVE ";
+		outline.append(m_asterisk + "/" + m_protocol + m_userid);
+		outline.append(" SESSIONID ");
+		outline.append(m_sessionid);
+		outline.append(" STATE ");
+		outline.append(m_availstate);
+		outline.append("\r\n");
+		qDebug() <<  "Engine::keepLoginAlive()" << outline;
 		m_udpsocket.writeDatagram( outline.toAscii(),
-	    	                       m_serveraddress, m_loginport + 1 );
+					   m_serveraddress, m_loginport + 1 );
 		m_pendingkeepalivemsg++;
+		// if the last keepalive msg has not been answered, send this one
+		// twice
+		if(m_pendingkeepalivemsg > 1)
+			{
+				m_udpsocket.writeDatagram( outline.toAscii(),
+							   m_serveraddress, m_loginport + 1 );
+				m_pendingkeepalivemsg++;
+			}
 	}
 }
 
@@ -966,14 +940,13 @@ void Engine::readKeepLoginAliveDatagrams()
 		if(len == 0)
 			continue;
 		buffer[len] = '\0';
-		//		qDebug() << len << ":" << buffer;
 		QStringList qsl = QString::fromUtf8(buffer).trimmed().split(" ");
 		QString reply = qsl[0];
-		
+		qDebug() << qsl;
 		if(reply == "DISC") {
-			stopKeepAliveTimer();
+			// stopKeepAliveTimer();
 			setState(ENotLogged);
-			startTryAgainTimer();
+			// startTryAgainTimer();
 			qDebug() << qsl; //reply;
 		} else if(reply == "HISTORY") {
 			QStringList list = QString::fromUtf8(buffer).trimmed().split("=");
@@ -1052,6 +1025,16 @@ void Engine::stopKeepAliveTimer()
 	}
 }
 
+void Engine::setTrytoreconnect(bool b)
+{
+	m_trytoreconnect = b;
+}
+
+bool Engine::trytoreconnect() const
+{
+	return m_trytoreconnect;
+}
+
 void Engine::stopTryAgainTimer()
 {
 	if( m_try_timerid > 0 )
@@ -1069,22 +1052,51 @@ void Engine::startTryAgainTimer()
 	}
 }
 
+void Engine::setHistorySize(uint size)
+{
+	m_historysize = size;
+}
+
+uint Engine::historysize() const
+{
+	return m_historysize;
+}
+
+uint Engine::trytoreconnectinterval() const
+{
+	return m_trytoreconnectinterval;
+}
+
+/*!
+ * Setter for property m_trytoreconnectinterval
+ * Restart timer if the value changed.
+ *
+ * \sa trytoreconnectinterval
+ */
+void Engine::setTrytoreconnectinterval(uint i)
+{
+	if( m_trytoreconnectinterval != i )
+	{
+		m_trytoreconnectinterval = i;
+		if(m_try_timerid > 0)
+		{
+			killTimer(m_try_timerid);
+			m_try_timerid = startTimer(m_trytoreconnectinterval);
+		}
+	}
+}
+
 void Engine::timerEvent(QTimerEvent * event)
 {
 	int timerId = event->timerId();
-	qDebug() << "Engine::timerEvent() timerId=" << timerId;
-	if(timerId == m_ka_timerid)
-	{
+	qDebug() << "Engine::timerEvent() timerId=" << timerId << m_ka_timerid << m_try_timerid;
+	if(timerId == m_ka_timerid) {
 		keepLoginAlive();
 		event->accept();
-	}
-	else if(timerId == m_try_timerid)
-	{
+	} else if(timerId == m_try_timerid) {
 		start();
 		event->accept();
-	}
-	else
-	{
+	} else {
 		event->ignore();
 	}
 }

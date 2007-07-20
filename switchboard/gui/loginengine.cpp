@@ -130,23 +130,31 @@ void LoginEngine::start()
 		m_loginsocket->connectToHost(m_serverhost, m_loginport);
 }
 
+//	stopKeepAliveTimer();
+//	stopTryAgainTimer();
+//	setState(ENotLogged);
+//	m_sessionid = "";
+
 /*! \brief close the connection to the server
  */
 void LoginEngine::stop()
 {
-	QString outline;
-	//qDebug() << "LoginEngine::stop()";
-	outline = "STOP ";
-	outline.append(m_asterisk + "/" + m_protocol.toLower() + m_userid);
-	outline.append(" SESSIONID ");
-	outline.append(m_sessionid);
-	//qDebug() << "LoginEngine::stop()" << outline;
-	outline.append("\r\n");
-	m_udpsocket->writeDatagram( outline.toAscii(),
-				    m_serveraddress, m_loginport + 1 );
+	qDebug() << "LoginEngine::stop()";
+	if(m_sessionid != "") {
+		QString outline;
+		outline = "STOP ";
+		outline.append(m_asterisk + "/" + m_protocol.toLower() + m_userid);
+		outline.append(" SESSIONID ");
+		outline.append(m_sessionid);
+		//qDebug() << "LoginEngine::stop()" << outline;
+		outline.append("\r\n");
+		m_udpsocket->writeDatagram( outline.toAscii(),
+					    m_serveraddress, m_loginport + 1 );
+	}
 	stopKeepAliveTimer();
 	stopTryAgainTimer();
 	setState(ENotLogged);
+	m_sessionid = "";
 	m_loginsocket->disconnectFromHost();
 }
 
@@ -249,6 +257,11 @@ void LoginEngine::setTrytoreconnectinterval(uint i)
 			m_try_timerid = startTimer(m_trytoreconnectinterval);
 		}
 	}
+}
+
+const LoginEngine::EngineState LoginEngine::state() const
+{
+	return m_state;
 }
 
 /*!
@@ -384,6 +397,7 @@ void LoginEngine::processLoginDialog()
  */ 
 void LoginEngine::keepLoginAlive()
 {
+	qDebug() << "LoginEngine::keepLoginAlive()";
 	// got to disconnected state if more than xx keepalive messages
 	// have been left without response.
 	if(m_pendingkeepalivemsg > 1)
@@ -395,24 +409,26 @@ void LoginEngine::keepLoginAlive()
 		startTryAgainTimer();
 		return;
 	}
-	QString outline = "ALIVE ";
-	outline.append(m_asterisk + "/" + m_protocol.toLower() + m_userid);
-	outline.append(" SESSIONID ");
-	outline.append(m_sessionid);
-	outline.append(" STATE ");
-	outline.append(m_availstate);
-	qDebug() << "LoginEngine::keepLoginAlive() : " << outline;
-	outline.append("\r\n");
-	m_udpsocket->writeDatagram( outline.toAscii(),
-				    m_serveraddress, m_loginport + 1 );
-	m_pendingkeepalivemsg++;
-	// if the last keepalive msg has not been answered, send this one
-	// twice
-	if(m_pendingkeepalivemsg > 1)
-	{
+	if(m_state == ELogged) {
+		QString outline = "ALIVE ";
+		outline.append(m_asterisk + "/" + m_protocol.toLower() + m_userid);
+		outline.append(" SESSIONID ");
+		outline.append(m_sessionid);
+		outline.append(" STATE ");
+		outline.append(m_availstate);
+		qDebug() << "LoginEngine::keepLoginAlive() : " << outline;
+		outline.append("\r\n");
 		m_udpsocket->writeDatagram( outline.toAscii(),
 					    m_serveraddress, m_loginport + 1 );
 		m_pendingkeepalivemsg++;
+		// if the last keepalive msg has not been answered, send this one
+		// twice
+		if(m_pendingkeepalivemsg > 1)
+			{
+				m_udpsocket->writeDatagram( outline.toAscii(),
+							    m_serveraddress, m_loginport + 1 );
+				m_pendingkeepalivemsg++;
+			}
 	}
 }
 
@@ -424,7 +440,7 @@ void LoginEngine::keepLoginAlive()
  */
 void LoginEngine::readKeepLoginAliveDatagrams()
 {
-	char buffer[256];
+	char buffer[2048];
 	int len;
 	//	qDebug() << "LoginEngine::readKeepLoginAliveDatagrams()";
 	while( m_udpsocket->hasPendingDatagrams() )
@@ -433,14 +449,13 @@ void LoginEngine::readKeepLoginAliveDatagrams()
 		if(len == 0)
 			continue;
 		buffer[len] = '\0';
-		QString qsbuffer = QString::fromAscii(buffer);
-		qsbuffer.remove(QChar('\r')).remove(QChar('\n'));
-		qDebug() << "LoginEngine::readKeepLoginAliveDatagrams() : " << qsbuffer;
-		if(buffer[0] != 'O' && buffer[0] != 'S' || buffer[1] !='K' && buffer[1] !='E')
-		{
-			stopKeepAliveTimer();
+		QStringList qsl = QString::fromUtf8(buffer).trimmed().split(" ");
+		QString reply = qsl[0];
+
+		if(reply == "DISC") {
+			// stopKeepAliveTimer();
 			setState(ENotLogged);
-			startTryAgainTimer();
+ 			// startTryAgainTimer();
 		}
 		m_pendingkeepalivemsg = 0;
 	}
@@ -479,19 +494,14 @@ void LoginEngine::startTryAgainTimer()
 void LoginEngine::timerEvent(QTimerEvent * event)
 {
 	int timerId = event->timerId();
-	//qDebug() << "LoginEngine::timerEvent() timerId=" << timerId;
-	if(timerId == m_ka_timerid)
-	{
+	qDebug() << "LoginEngine::timerEvent() timerId=" << timerId << m_ka_timerid << m_try_timerid;
+	if(timerId == m_ka_timerid) {
 		keepLoginAlive();
 		event->accept();
-	}
-	else if(timerId == m_try_timerid)
-	{
+	} else if(timerId == m_try_timerid) {
 		start();
 		event->accept();
-	}
-	else
-	{
+	} else {
 		event->ignore();
 	}
 }

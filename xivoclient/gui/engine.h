@@ -73,6 +73,8 @@ public:
 	const QString & getAvailState() const {return m_availstate;} //!< returns availability status
 	void sendMessage(const QString &);      //!< Sends an instant message
 	const QString & getCapabilities() const {return m_capabilities;} //!< returns capabilities
+	uint historysize() const;	//!< history size
+	void setHistorySize(uint size);	//!< set history size
 
 signals:
 	void logged();	//!< signal emitted when the state becomes ELogged
@@ -162,6 +164,7 @@ private:
 	bool m_trytoreconnect;	//!< "try to reconnect" flag
 	uint m_trytoreconnectinterval;	//!< Try to reconnect interval (in msec)
 	//
+	int m_historysize;
 	QHostAddress m_serveraddress;	//!< Resolved address of the login server
 	QTcpSocket m_loginsocket;	//!< TCP socket used to login
 	ushort m_listenport;		//!< Port where we are listening for profiles

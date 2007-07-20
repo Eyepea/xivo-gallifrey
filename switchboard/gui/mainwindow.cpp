@@ -339,6 +339,7 @@ void MainWindow::engineStarted()
 {
 	m_stopact->setEnabled(true);
 	m_startact->setDisabled(true);
+	m_loginengine->start();
 	// set status icon to green
 	QPixmap greensquare(15,15);
 	greensquare.fill(Qt::green);
@@ -353,6 +354,7 @@ void MainWindow::engineStopped()
 {
 	m_stopact->setDisabled(true);
 	m_startact->setEnabled(true);
+	m_loginengine->stop();
 	// set status icon to red
 	QPixmap redsquare(15,15);
 	redsquare.fill(Qt::red);

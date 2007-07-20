@@ -126,7 +126,9 @@ void SwitchBoardEngine::start()
  */
 void SwitchBoardEngine::stop()
 {
+	qDebug() << "SwitchBoardEngine::stop()";
 	m_socket->disconnectFromHost();
+	stopTryAgainTimer();
 }
 
 /*! \brief initiate connection to the server
@@ -455,15 +457,6 @@ void SwitchBoardEngine::socketReadyRead()
 	}
 }
 
-// void SwitchBoardEngine::timerEvent(QTimerEvent * event)
-// {
-// 	// event->timerId() !
-// 	//	qDebug() << event;
-// 	//	m_socket->connectToHost(m_host, m_port);
-// 	//m_pendingcommand = "history obelisk/SIP/103 3";
-// 	//sendCommand();
-// }
-
 /*! \brief send an originate command to the server
  */
 void SwitchBoardEngine::originateCall(const QString & src, const QString & dst)
@@ -591,24 +584,6 @@ quint16 SwitchBoardEngine::sbport() const
 	return m_sbport;
 }
 
-/*! \brief implement timer event
- *
- * does nothing
- */
-void SwitchBoardEngine::timerEvent(QTimerEvent * event)
-{
-	int timerId = event->timerId();
-	qDebug() << "SwitchBoardEngine::timerEvent() timerId=" << timerId;
-	if(timerId == m_try_timerid) {
-		emitTextMessage(tr("Attempting to reconnect to server"));
-		start();
-		event->accept();
-	} else {
-		event->ignore();
-	}
-	return;
-}
-
 void SwitchBoardEngine::setTrytoreconnect(bool b)
 {
 	m_trytoreconnect = b;
@@ -636,11 +611,6 @@ void SwitchBoardEngine::startTryAgainTimer()
 	}
 }
 
-uint SwitchBoardEngine::trytoreconnectinterval() const
-{
-	return m_trytoreconnectinterval;
-}
-
 void SwitchBoardEngine::setHistorySize(uint size)
 {
 	m_historysize = size;
@@ -649,6 +619,11 @@ void SwitchBoardEngine::setHistorySize(uint size)
 uint SwitchBoardEngine::historysize() const
 {
 	return m_historysize;
+}
+
+uint SwitchBoardEngine::trytoreconnectinterval() const
+{
+	return m_trytoreconnectinterval;
 }
 
 /*!
@@ -667,6 +642,23 @@ void SwitchBoardEngine::setTrytoreconnectinterval(uint i)
 			killTimer(m_try_timerid);
 			m_try_timerid = startTimer(m_trytoreconnectinterval);
 		}
+	}
+}
+
+/*! \brief implement timer event
+ *
+ * does nothing
+ */
+void SwitchBoardEngine::timerEvent(QTimerEvent * event)
+{
+	int timerId = event->timerId();
+	qDebug() << "SwitchBoardEngine::timerEvent() timerId=" << timerId;
+	if(timerId == m_try_timerid) {
+		emitTextMessage(tr("Attempting to reconnect to server"));
+		start();
+		event->accept();
+	} else {
+		event->ignore();
 	}
 }
 
