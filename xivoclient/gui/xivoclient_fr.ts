@@ -66,17 +66,17 @@
 <context>
     <name>DialPanel</name>
     <message>
-        <location filename="../../switchboard/client/dialpanel.cpp" line="41"/>
+        <location filename="../../switchboard/gui/dialpanel.cpp" line="41"/>
         <source>Enter &amp;Number :</source>
         <translation>&amp;Numéro :</translation>
     </message>
     <message>
-        <location filename="../../switchboard/client/dialpanel.cpp" line="45"/>
+        <location filename="../../switchboard/gui/dialpanel.cpp" line="45"/>
         <source>Input here the phone number to dial</source>
         <translation>Entrer ici le numéro à composer</translation>
     </message>
     <message>
-        <location filename="../../switchboard/client/dialpanel.cpp" line="54"/>
+        <location filename="../../switchboard/gui/dialpanel.cpp" line="54"/>
         <source>Dial</source>
         <translation>Composer</translation>
     </message>
@@ -84,12 +84,12 @@
 <context>
     <name>DirectoryPanel</name>
     <message>
-        <location filename="../../switchboard/client/directorypanel.cpp" line="45"/>
+        <location filename="../../switchboard/gui/directorypanel.cpp" line="45"/>
         <source>Di&amp;rectory</source>
         <translation>&amp;Répertoire</translation>
     </message>
     <message>
-        <location filename="../../switchboard/client/directorypanel.cpp" line="53"/>
+        <location filename="../../switchboard/gui/directorypanel.cpp" line="53"/>
         <source>Search</source>
         <translation>Recherche</translation>
     </message>
@@ -115,12 +115,12 @@
 <context>
     <name>ExtendedTableWidget</name>
     <message>
-        <location filename="../../switchboard/client/extendedtablewidget.cpp" line="55"/>
+        <location filename="../../switchboard/gui/extendedtablewidget.cpp" line="55"/>
         <source>&amp;Dial</source>
         <translation>&amp;Composer</translation>
     </message>
     <message>
-        <location filename="../../switchboard/client/extendedtablewidget.cpp" line="58"/>
+        <location filename="../../switchboard/gui/extendedtablewidget.cpp" line="58"/>
         <source>&amp;Transfer</source>
         <translation>&amp;Transférer</translation>
     </message>
@@ -128,12 +128,12 @@
 <context>
     <name>LogEltWidget</name>
     <message>
-        <location filename="../../switchboard/client/logeltwidget.cpp" line="73"/>
+        <location filename="../../switchboard/gui/logeltwidget.cpp" line="73"/>
         <source>&amp;Call back</source>
         <translation>&amp;Rappeler</translation>
     </message>
     <message>
-        <location filename="../../switchboard/client/logeltwidget.cpp" line="74"/>
+        <location filename="../../switchboard/gui/logeltwidget.cpp" line="74"/>
         <source>Call back the correspondent</source>
         <translation>Rappeler le correspondant</translation>
     </message>
@@ -254,17 +254,17 @@
         <translation>A propos de &amp;Qt</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="516"/>
+        <location filename="mainwidget.cpp" line="519"/>
         <source>Disconnected</source>
         <translation>Déconnecté</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="459"/>
+        <location filename="mainwidget.cpp" line="462"/>
         <source>Connected</source>
         <translation>Connecté</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="534"/>
+        <location filename="mainwidget.cpp" line="537"/>
         <source>Incoming call</source>
         <translation>Appel entrant</translation>
     </message>
@@ -284,12 +284,12 @@
         <translation>&amp;A propos du Client XIVO</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="615"/>
+        <location filename="mainwidget.cpp" line="620"/>
         <source>About XIVO Client</source>
         <translation>A propos de XIVO Client</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="450"/>
+        <location filename="mainwidget.cpp" line="451"/>
         <source>&amp;History</source>
         <translation>&amp;Historique</translation>
     </message>
@@ -304,7 +304,7 @@
         <translation>F&amp;iches</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="441"/>
+        <location filename="mainwidget.cpp" line="442"/>
         <source>&amp;Directory</source>
         <translation>&amp;Répertoire</translation>
     </message>
@@ -314,27 +314,27 @@
         <translation>&amp;Contacts</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="372"/>
+        <location filename="mainwidget.cpp" line="373"/>
         <source>S&amp;ervices</source>
         <translation>&amp;Services</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="624"/>
+        <location filename="mainwidget.cpp" line="629"/>
         <source>&lt;p&gt;This application allows a given phone user to :&lt;/p&gt;&lt;p&gt;* receive customer informations related to incoming calls&lt;/p&gt;&lt;p&gt;* manage her/his voicemail and transfers&lt;/p&gt;&lt;p&gt;* know her/his calls history&lt;/p&gt;&lt;p&gt;* access the phones and addresses&apos; directory&lt;/p&gt;&lt;p&gt;* see her/his buddies&lt;/p&gt;&lt;p&gt;* originate a dial towards some number&lt;/p&gt;</source>
         <translation>&lt;p&gt;Cette application permet à un utilisateur de téléphone de :&lt;/p&gt;&lt;p&gt;* recevoir des fiches à propos de ses appels entrants&lt;/p&gt;&lt;p&gt;* gérer son répondeur et ses renvois&lt;/p&gt;&lt;p&gt;* connaître son historique d&apos;appels&lt;/p&gt;&lt;p&gt;* consulter le répertoire téléphonique&lt;/p&gt;&lt;p&gt;* voir ses collègues&lt;/p&gt;&lt;p&gt;* composer un numéro&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="629"/>
+        <location filename="mainwidget.cpp" line="634"/>
         <source>Authors : </source>
         <translation>Auteurs : </translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="630"/>
+        <location filename="mainwidget.cpp" line="635"/>
         <source>License : </source>
         <translation>Licence : </translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="624"/>
+        <location filename="mainwidget.cpp" line="629"/>
         <source>Version : </source>
         <translation>Version : </translation>
     </message>
@@ -342,67 +342,67 @@
 <context>
     <name>PeerWidget</name>
     <message>
-        <location filename="../../switchboard/client/peeritem.cpp" line="57"/>
+        <location filename="../../switchboard/gui/peeritem.cpp" line="57"/>
         <source>Available</source>
         <translation>Disponible</translation>
     </message>
     <message>
-        <location filename="../../switchboard/client/peeritem.cpp" line="60"/>
+        <location filename="../../switchboard/gui/peeritem.cpp" line="60"/>
         <source>Away</source>
         <translation>Occupé</translation>
     </message>
     <message>
-        <location filename="../../switchboard/client/peeritem.cpp" line="63"/>
+        <location filename="../../switchboard/gui/peeritem.cpp" line="63"/>
         <source>Do not disturb</source>
         <translation>Ne Pas Déranger</translation>
     </message>
     <message>
-        <location filename="../../switchboard/client/peeritem.cpp" line="66"/>
+        <location filename="../../switchboard/gui/peeritem.cpp" line="66"/>
         <source>Be Right Back</source>
         <translation>Bientôt De Retour</translation>
     </message>
     <message>
-        <location filename="../../switchboard/client/peeritem.cpp" line="69"/>
+        <location filename="../../switchboard/gui/peeritem.cpp" line="69"/>
         <source>Out To Lunch</source>
         <translation>Parti Déjeuner</translation>
     </message>
     <message>
-        <location filename="../../switchboard/client/peeritem.cpp" line="72"/>
+        <location filename="../../switchboard/gui/peeritem.cpp" line="72"/>
         <source>Unknown</source>
         <translation>Inconnue</translation>
     </message>
     <message>
-        <location filename="../../switchboard/client/peeritem.cpp" line="81"/>
+        <location filename="../../switchboard/gui/peeritem.cpp" line="81"/>
         <source>Ready</source>
         <translation>Libre</translation>
     </message>
     <message>
-        <location filename="../../switchboard/client/peeritem.cpp" line="84"/>
+        <location filename="../../switchboard/gui/peeritem.cpp" line="84"/>
         <source>Ringing</source>
         <translation>Se fait appeler</translation>
     </message>
     <message>
-        <location filename="../../switchboard/client/peeritem.cpp" line="87"/>
+        <location filename="../../switchboard/gui/peeritem.cpp" line="87"/>
         <source>Calling</source>
         <translation>Appelle</translation>
     </message>
     <message>
-        <location filename="../../switchboard/client/peeritem.cpp" line="90"/>
+        <location filename="../../switchboard/gui/peeritem.cpp" line="90"/>
         <source>On the phone</source>
         <translation>En communication</translation>
     </message>
     <message>
-        <location filename="../../switchboard/client/peeritem.cpp" line="93"/>
+        <location filename="../../switchboard/gui/peeritem.cpp" line="93"/>
         <source>Not online</source>
         <translation>Pas en ligne</translation>
     </message>
     <message>
-        <location filename="../../switchboard/client/peeritem.cpp" line="100"/>
+        <location filename="../../switchboard/gui/peeritem.cpp" line="100"/>
         <source>SIP Presence : </source>
         <translation>Présence SIP : </translation>
     </message>
     <message>
-        <location filename="../../switchboard/client/peeritem.cpp" line="101"/>
+        <location filename="../../switchboard/gui/peeritem.cpp" line="101"/>
         <source>Availability : </source>
         <translation>Disponibilité : </translation>
     </message>
