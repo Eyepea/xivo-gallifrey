@@ -272,7 +272,7 @@ $array['filter']['format'] = array('arrvalue' => array(
 $array['filter']['maxlogins'] = array('arrkey' => array(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20));
 $array['filter']['envelope'] = array('bool' => true);
 $array['filter']['saycid'] = array('bool' => true);
-$array['filter']['cidinternalcontexts'] = array('arrkey' => array('default'));
+$array['filter']['cidinternalcontexts'] = array('set' => false,'chk' => 2,'arrkey' => array('default'));
 $array['filter']['sayduration'] = array('bool' => true);
 $array['filter']['saydurationm'] = array('arrkey' => array(1,2,3,4,5,10,15,20,25,30,35,40,45,50,55,60));
 $array['filter']['forcename'] = array('bool' => true);
@@ -300,7 +300,7 @@ $array['filter']['exitcontext'] = array('set' => false,'chk' => 2,'maxlen' => 80
 $array['filter']['attach'] = array('bool' => true);
 $array['filter']['mailcmd'] = array('set' => false,'chk' => 2,'cast' => 'alphanumspecials','maxlen' => 160);
 $array['filter']['serveremail'] = array('set' => false,'chk' => 2,'preg' => '/^[a-z0-9@\-_\.]+$/i','maxlen' => 80);
-$array['filter']['charset'] = array('arrkey' => array('UTF-8'));
+$array['filter']['charset'] = array('set' => false,'chk' => 2,'arrkey' => array('UTF-8'));
 $array['filter']['fromstring'] = array('set' => false,'chk' => 2,'preg' => '/^[a-z0-9\-_\. ]+$/i','maxlen' => 100);
 $array['filter']['emaildateformat'] = array('set' => false,'chk' => 2,'cast' => 'print','maxlen' => 32);
 $array['filter']['pbxskip'] = array('bool' => true);

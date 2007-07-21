@@ -181,6 +181,12 @@ Mise en relation avec un opérateur :
 ; fm_format
 Formats d'enregistrement :
 
+; bt-informat
+Ajouter ->
+
+; bt-outformat
+<- Enlever
+
 ; fm_maxlogins
 Nombre maximum de tentatives pour s'authentifier :
 
@@ -197,7 +203,7 @@ Contexte interne :
 Enoncer la durée :
 
 ; fm_saydurationm
-Durée minimum pour l'énoncer :
+Temps minimum pour énoncer la durée :
 
 ; fm_saydurationm-opt1
 1 minute

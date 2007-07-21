@@ -97,7 +97,7 @@
 
 <?=$form->slt(array('desc' => $this->bbf('fm_maxgreet'),'name' => 'maxgreet','labelid' => 'maxgreet','bbf' => array('mixkey','fm_maxgreet-opt','paramarray'),'value' => xivo_cast_except($this->varra('info','maxgreet'),null,'uint'),'default' => $element['maxgreet']['default']),$element['maxgreet']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_skipms'),'name' => 'skipms','labelid' => 'skipms','bbf' => array('mixkey','fm_skipms-opt'),'value' => xivo_cast_except($this->varra('info','skipms'),null,'uint'),'default' => $element['skipms']['default']),$element['skipms']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_skipms'),'name' => 'skipms','labelid' => 'skipms','bbf' => array('mixvalue','fm_skipms-opt'),'value' => xivo_cast_except($this->varra('info','skipms'),null,'uint'),'default' => $element['skipms']['default']),$element['skipms']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 <?=$form->checkbox(array('desc' => $this->bbf('fm_sendvoicemail'),'name' => 'sendvoicemail','labelid' => 'sendvoicemail','checked' => $this->varra('info','sendvoicemail'),'default' => $element['sendvoicemail']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
@@ -155,7 +155,7 @@
 
 <?=$form->text(array('desc' => $this->bbf('fm_adsisec'),'name' => 'adsisec','labelid' => 'adsisec','value' => $this->varra('info','adsisec'),'default' => $element['adsisec']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_adsiver'),'name' => 'adsiver','labelid' => 'adsiver','size' => 15,'value' => $this->varra('info','adsiver'),'default' => $element['adsiver']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_adsiver'),'name' => 'adsiver','labelid' => 'adsiver','size' => 5,'value' => $this->varra('info','adsiver'),'default' => $element['adsiver']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 </div>
 

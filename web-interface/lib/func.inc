@@ -157,7 +157,7 @@ function xivo_printable($str,$type='')
 			return(ctype_print($str));
 	}
 
-	if(preg_match('/^[^'.$reg.']+$/',$str) === 1)
+	if(preg_match('/['.$reg.']/',$str) === 0)
 		return(true);
 
 	return(false);

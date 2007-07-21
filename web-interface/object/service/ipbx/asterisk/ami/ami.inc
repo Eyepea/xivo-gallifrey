@@ -54,7 +54,7 @@ class xivo_service_asterisk_ami extends xivo_service_asterisk_abstract
 
 		$cmd = trim((string) $cmd);
 
-		if(preg_match('/[^\a\t\r\n\f\0\x0B\x1B]+/',$cmd,$match) !== 1)
+		if(xivo_printable_strict($cmd) === false)
 			return(false);
 
 		$cmd = $match[0];

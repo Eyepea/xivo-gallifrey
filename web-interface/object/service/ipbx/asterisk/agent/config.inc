@@ -71,7 +71,7 @@ $array['element']['custom_beep']['default'] = 'beep';
 $array['element']['custom_beep']['setdef'] = true;
 
 $array['filter'] = array();
-$array['filter']['agent'] = array('preg' => '/^[0-9\*#]+(,[0-9\*#]*(,[^,\a\t\r\n\f\0\x0B\x1B]+)?)?$/','minlen' => 1,'maxlen' => 128);
+$array['filter']['agent'] = array('minlen' => 1,'maxlen' => 128,'cast' => 'print','preg' => '/^[0-9\*#]+(,[0-9\*#]*(,[^,]+)?)?$/');
 $array['filter']['group'] = array('cast' => 'uint','between' => array(1,63));
 $array['filter']['ackcall'] = array('arrkey' => array('no','yes','always'));
 $array['filter']['autologoff'] = array('set' => false,'chk' => 2,'arrkey' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));

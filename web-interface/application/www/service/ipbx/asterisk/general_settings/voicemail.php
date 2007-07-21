@@ -6,11 +6,16 @@ if(isset($_QR['fm_send']) === true)
 {
 	$add = true;
 
+	unset($_QR['mailcmd'],$_QR['cidinternalcontexts'],$_QR['charset'],$_QR['externpass']);
+
 	if(($result = $generalvoicemail->chk_values($_QR)) === false)
 	{
 		$add = false;
 		$result = $generalvoicemail->get_filter_result();
 	}
+
+	if($result['minmessage'] > $result['maxmessage'])
+		$result['minmessage'] = $result['maxmessage'];
 
 	if($add === true)
 	{

@@ -32,8 +32,8 @@ $array['filter']['agentid'] = array('cast' => 'uint');
 $array['filter']['numgroup'] = array('cast' => 'uint','between' => array(1,63));
 $array['filter']['number'] = array('preg' => '/^[0-9\*#]+$/','minlen' => 1,'maxlen' => 40);
 $array['filter']['passwd'] = array('set' => false,'chk' => 2,'preg' => '/^[0-9\*#]+$/','minlen' => 1,'maxlen' => 40);
-$array['filter']['firstname'] = array('set' => false,'chk' => 2,'maxlen' => 128,'preg' => '/^[^,\a\t\r\n\f\0\x0B\x1B]+$/');
-$array['filter']['lastname'] = array('set' => false,'chk' => 2,'maxlen' => 128,'preg' => '/^[^,\a\t\r\n\f\0\x0B\x1B]+$/');
+$array['filter']['firstname'] = array('set' => false,'chk' => 2,'maxlen' => 128,'cast' => 'print');
+$array['filter']['lastname'] = array('set' => false,'chk' => 2,'maxlen' => 128,'cast' => 'print');
 $array['filter']['silent'] = array('bool' => true);
 
 ?>
