@@ -115,7 +115,7 @@ $array = array(/*
 	'RO' => array('default' => 'ro_RO','locale' => array('ro_RO' => 1)),
 	'RS' => array('default' => 'sr_RS','locale' => array('sr_RS' => 1)),
 	'RU' => array('default' => 'ru_RU','locale' => array('ru_RU' => 1,'tt_RU' => 1)),
-	'UA' => array('locale' => array('ru_UA' => 1,'uk_UA' => 1,'crh_UA')),
+	'UA' => array('locale' => array('ru_UA' => 1,'uk_UA' => 1,'crh_UA' => 1)),
 	'RW' => array('default' => 'rw_RW','locale' => array('rw_RW' => 1)),
 	'LK' => array('default' => 'si_LK','locale' => array('si_LK' => 1)),
 	'SK' => array('default' => 'sk_SK','locale' => array('sk_SK' => 1)),
