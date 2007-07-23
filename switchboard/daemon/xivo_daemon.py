@@ -679,31 +679,6 @@ def build_customers_fromrequester(requester, searchpattern):
 	[astn, ctx] = ctx_by_requester[requester]
 	return build_customers(astn, ctx, searchpattern)
 
-## \brief Builds the full list of callerIDNames in order to send them to the requesting client.
-# This should be done after a command called "callerid".
-# \return a string containing the full callerIDs list
-# \sa manage_tcp_connection
-def build_callerids():
-	global plist
-	fullstat = "callerids="
-	for n in items_asterisks:
-		sskeys = filter(lambda j: plist[n].normal[j].towatch, plist[n].normal.keys())
-		sskeys.sort()
-		for phonenum in sskeys:
-			phoneinfo = "cid:" + plist[n].astid + ":" \
-				    + plist[n].normal[phonenum].tech + ":" \
-				    + plist[n].normal[phonenum].phoneid + ":" \
-				    + plist[n].normal[phonenum].phonenum + ":" \
-				    + plist[n].normal[phonenum].context + ":" \
-				    + plist[n].normal[phonenum].calleridfull + ":" \
-				    + plist[n].normal[phonenum].calleridfirst + ":" \
-				    + plist[n].normal[phonenum].calleridlast
-			#+ ":" \
-			#    + "groupinfos/technique"
-			fullstat += phoneinfo + ";"
-	fullstat += "\n"
-	return fullstat
-
 
 ## \brief Builds the base status (no channel information) for one phone identifier
 # \param phoneid the "pointer" to the Asterisk phone statuses
@@ -720,6 +695,16 @@ def build_basestatus(phoneid):
 	return basestatus
 
 
+## \brief Builds the base status (no channel information) for one phone identifier
+# \param phoneid the "pointer" to the Asterisk phone statuses
+# \return the string containing the base status of the phone
+def build_cidstatus(phoneid):
+	cidstatus = phoneid.calleridfull + ":" \
+		     + phoneid.calleridfirst + ":" \
+		     + phoneid.calleridlast
+	return cidstatus
+
+
 ## \brief Builds the channel-by-channel part for the hints/update replies.
 # \param phoneid the "pointer" to the Asterisk phone statuses
 # \return the string containing the statuses for each channel of the given phone
@@ -734,6 +719,32 @@ def build_fullstatlist(phoneid):
 			 phoneid.chann[chan].getChannelPeer() + ":" + \
 			 phoneid.chann[chan].getChannelNum()
 	return fstat
+
+
+## \brief Builds the full list of callerIDNames in order to send them to the requesting client.
+# This should be done after a command called "callerid".
+# \return a string containing the full callerIDs list
+# \sa manage_tcp_connection
+def build_callerids():
+	global plist
+	fullstat = "callerids="
+	for n in items_asterisks:
+		plist_normal_keys = filter(lambda j: plist[n].normal[j].towatch, plist[n].normal.keys())
+		plist_normal_keys.sort()
+		for phonenum in plist_normal_keys:
+			phoneinfo = "cid:" + plist[n].astid + ":" \
+				    + plist[n].normal[phonenum].tech + ":" \
+				    + plist[n].normal[phonenum].phoneid + ":" \
+				    + plist[n].normal[phonenum].phonenum + ":" \
+				    + plist[n].normal[phonenum].context + ":" \
+				    + plist[n].normal[phonenum].calleridfull + ":" \
+				    + plist[n].normal[phonenum].calleridfirst + ":" \
+				    + plist[n].normal[phonenum].calleridlast
+			#+ ":" \
+			#    + "groupinfos/technique"
+			fullstat += phoneinfo + ";"
+	fullstat += "\n"
+	return fullstat
 
 
 ## \brief Builds the full list of phone statuses in order to send them to the requesting client.
@@ -1784,7 +1795,8 @@ def update_sipnumlist(astnum):
 				if snl in plist[astnum].normal:
 					plist[astnum].normal[snl].set_callerid(sipnuml[snl])
 
-				lstadd += "add:" + configs[astnum].astid + ":" + build_basestatus(plist[astnum].normal[snl]) + ":0;"
+				lstadd += "add:" + configs[astnum].astid + ":" + build_basestatus(plist[astnum].normal[snl]) + ":0:" \
+                                          + build_cidstatus(plist[astnum].normal[snl]) + ";"
 		if lstdel != "":
 			strupdate = "peerremove=" + lstdel
 			for k in tcpopens_sb:
@@ -2358,7 +2370,7 @@ class LoginHandler(SocketServer.StreamRequestHandler):
 			debugstr += " / PASS error"
 			return [replystr, debugstr], [user, port, state, astnum]
 		passwd = list1[1]
-		
+
 		if astname_xivoc in asteriskr.keys():
 			astnum = asteriskr[astname_xivoc]
 		else:
@@ -2594,6 +2606,10 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
 			elif list[0] == 'STOP' and len(list) == 4:
 				# STOP user SESSIONID sessionid
 				userlist_lock.acquire()
+                                if list[1] in requestersocket_by_login:
+                                        del requestersocket_by_login[list[1]]
+                                else:
+                                        log_debug("warning : %s unknown" %(list[1]))
 				del e['sessionid']
 				del e['sessiontimestamp']
 				del e['ip']
@@ -2602,7 +2618,6 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
 				del e['tcpmode']
 				del e['cticlienttype']
 				del e['cticlientos']
-                                del requestersocket_by_login[list[1]]
 				sipnumber = "SIP/" + user.split("sip")[1]
 				if sipnumber in plist[astnum].normal:
 					plist[astnum].normal[sipnumber].set_imstat("unkown")
