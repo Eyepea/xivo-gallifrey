@@ -7,7 +7,7 @@ Copyright (C) 2007, Proformatique
 
 __version__ = "$Revision$ $Date$"
 
-CONFIG_FILE		= '/etc/xivo/provisioning.conf' # can be overridded by cmd line param
+CONFIG_FILE		= '/etc/xivo/provisioning.conf' # can be overridden by cmd line param
 CONFIG_LIB_PATH		= 'py_lib_path'
 GETOPT_SHORTOPTS	= 'b:l:dfc:p:h'
 PIDFILE			= "/var/run/autoprov.pid"
@@ -84,6 +84,8 @@ from moresynchro import RWLock
 from moresynchro import ListLock
 import daemonize
 
+import except_tb
+
 def name_from_first_last(first, last):
 	"Construct full name from first and last."
 	if first and last:
@@ -123,7 +125,7 @@ class SQLBackEnd:
 		try:
 			a = foobar(conn, *remain)
 		except:
-			provsup.log_current_exception()
+			except_tb.syslog_exception()
 			a = None
 		conn.close()
 		return a
@@ -808,9 +810,7 @@ def main(log_level, foreground):
 	except SystemExit:
 		raise
 	except:
-		daemonize.log_exception(log_stderr_and_syslog)
-		syslog.closelog()
-		return
+		except_tb.log_exception(log_stderr_and_syslog)
 	syslog.closelog()
 
 dontlauchmain = False

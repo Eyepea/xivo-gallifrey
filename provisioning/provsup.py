@@ -14,6 +14,8 @@ from easyslog import *
 from ConfigDict import *
 from ConfigParser import ConfigParser
 
+from except_tb import *
+
 ProvGeneralConf = {
 	'database_uri':			"sqlite:/var/lib/asterisk/astsqlite?timeout_ms=150",
 	'excl_del_lock_to_s':		45,
@@ -147,24 +149,6 @@ def txtsubst(lines, variables, target_file = None):
 	if target_file:
 		syslogf("In process of generating file \"%s\"" % (target_file,))
 	return map(lambda line: linesubst(line, variables), lines)
-
-def exception_traceback():
-	"""Returns a backtrace of the current exception in a list of strings,
-	not terminated by newlines.
-	
-	"""
-	return map(lambda x: x.rstrip(), traceback.format_exception(*sys.exc_info()))
-
-def log_current_exception(loglevel=SYSLOG_ERR, noclear=False):
-	"""Log a backtrace of the current exception in the system logs, with
-	the desired log level. Clear the current exception at end of command
-	if 'noclear' is False.
-	
-	"""
-	for line in exception_traceback():
-		syslogf(loglevel, line)
-	if not noclear:
-		sys.exc_clear()
 
 def get_netdev_list():
 	"Get a view of network interfaces as seen by Linux"
