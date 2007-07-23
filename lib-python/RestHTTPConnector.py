@@ -35,10 +35,14 @@ from http_pyparsing import HTTP_TRANSFER_CODING_LINE, HTTP_CHUNK_HEADER_LINE, \
 from operator import attrgetter
 from pyparsing import ParseException
 from easyslog import *
+from except_tb import *
+
+import re, cgi
 
 class InvalidHeader(Exception): pass
 class UnsupportedEncoding(Exception): pass
 class InvalidQ(Exception): pass
+class DoubleAnswer(Exception): pass
 
 __BYTES_VAL = ''.join(map(chr,xrange(0,256)))
 
@@ -122,6 +126,11 @@ def httpmedia_contypedesc(ctd):
 	return ';'.join(chain(('/'.join((type,subtype)),),imap(param_to_str, iter(ctd.extens))))
 
 class RestHTTPHandler(BaseHTTPRequestHandler):
+	
+	SLASH_RE = re.compile('/+')
+	
+	# XXX: NO ENTITY IN CASE OF 'HEAD', NEVER!
+	# (probably need to replace send_error() calls because of that)
 	
 	def __init__(self, request, client_address, server):
 		self.rest_request = request
@@ -286,6 +295,18 @@ class RestHTTPHandler(BaseHTTPRequestHandler):
 		# RestDispatcher, see also rest_handle()
 		self.rest_answered = True
 	
+	def rest_xcept_sender(self, x):
+		return lambda s:self.rest_answer(
+			x.response_code,
+			''.join(('<pre>\n', cgi.escape(s), '</pre>\n')),
+			ConTypeDesc('text','html',frozenset())
+		)
+	
+	def rest_parse_path(self):
+		# XXX: handle ../
+		self.rest_path = [el for el in self.SLASH_RE.split(self.path) if el]
+		return True
+	
 	def rest_handle(self):
 		"Rest specific code for this HTTP request handler."
 		try:
@@ -293,23 +314,26 @@ class RestHTTPHandler(BaseHTTPRequestHandler):
 				return
 			if not self.rest_parse_accept():
 				return
+			if not self.rest_parse_path():
+				return
 			try:
 				self.rest_dispatcher.dispatch_in(
 					self.rest_path, self.command,
 					self.rest_payload, self.rest_content_type,
-					self.rest_accept)
+					self.rest_accept, self)
 				# XXX this would be functionally/conceptually better in
 				# RestDispatcher, see also rest_answer()
 				if not self.rest_answered:
 					raise RestErrorCode(500, "no answer sent by application")
 			except RestErrorCode, x:
-				self.send_error(x.response_code, str(x))
+				# self.send_error(x.response_code, str(x))
+				log_full_exception(self.rest_xcept_sender(x),
+						   SYSLOG_EXCEPT(SYSLOG_ERR))
 		except DoubleAnswer, x:
-			# XXX backtrace
-			syslogf(str(x))
+			syslog_exception(SYSLOG_ERR)
 		except Exception, x:
-			# XXX backtrace
-			self.send_error(500, str(x))
+			log_full_exception(self.rest_xcept_sender(RestErrorCode(500, str(x))),
+			                   SYSLOG_EXCEPT(SYSLOG_ERR))
 	
 	def handle_one_request(self):
         	"""Handle a single HTTP request.
@@ -355,6 +379,7 @@ class RestHTTPRegistrar(object):
 		self.__http_server.rest_connector = self
 		self.__http_server_thread = Thread(
 			None, self.__http_server.serve_forever, None, (), {})
+		self.__http_server_thread.start()
 		# self.__http_server.serve_forever()
 	
 	dispatcher = property(attrgetter('_RestHTTPRegistrar__dispatcher'))
