@@ -21,13 +21,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #define __MAINWINDOW_H__
 
 #include <QMainWindow>
+#include <QSystemTrayIcon>
+#include <QTabWidget>
+#include "loginengine.h"
 
 class QAction;
 class QActionGroup;
 class QCloseEvent;
 class QSplitter;
 class LoginEngine;
-class SwitchBoardEngine;
+class BaseEngine;
 class SwitchBoardWindow;
 class QLabel;
 
@@ -38,7 +41,7 @@ class MainWindow : public QMainWindow
 	Q_OBJECT
 public:
 	//! Constructor
-	MainWindow(SwitchBoardEngine *, LoginEngine *);
+	MainWindow(BaseEngine *, LoginEngine *);
 	//! Destructor
 	virtual ~MainWindow();
 private slots:
@@ -46,15 +49,19 @@ private slots:
 	void engineStopped();
 	void engineStarted();
 	void loginengineStarted();
+	//	void systrayActivated(QSystemTrayIcon::ActivationReason);
+	//	void systrayMsgClicked();
+	void showNewProfile(Popup *);	//!< display a Profile widget
 	void about();
 private:
 	QSplitter * m_splitter;	//!< Splitter to separate right/left panels
 	QSplitter * m_leftSplitter;	//!< Vertical splitter on the left
 	QSplitter * m_middleSplitter;	//!< vertical splitter in the middle
 	QSplitter * m_rightSplitter;	//!< Vertical splitter on the right
-	SwitchBoardEngine * m_engine;	//!< Engine
+	BaseEngine * m_engine;	//!< Engine
 	LoginEngine * m_loginengine;	//!< Login Engine
 	SwitchBoardWindow * m_widget;	//!< Widget to display peers
+	QTabWidget * m_tabwidget;	//!< Area to display profiles
 
 	QMenu * m_avail;	//!< Availability submenu
 	QAction * m_loginact;	//!< "Log in" Action

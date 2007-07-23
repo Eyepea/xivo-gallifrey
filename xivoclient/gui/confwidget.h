@@ -44,15 +44,15 @@ public:
 	/*! \brief Constructor
 	 *
 	 * Construct the widget and its layout.
-	 * Fill widgets with values got from the Engine object.
+	 * Fill widgets with values got from the BaseEngine object.
 	 * Once constructed, the Widget is ready to be shown.
-	 * \param engine	related Engine object where parameters will be modified
+	 * \param engine	related BaseEngine object where parameters will be modified
 	 * \param parent	parent QWidget
 	 */
-	ConfWidget(Engine *engine, MainWidget *parent);
-	//ConfWidget(Engine *engine, QWidget *parent = 0);
+	ConfWidget(BaseEngine *engine, MainWidget *parent);
+	//ConfWidget(BaseEngine *engine, QWidget *parent = 0);
 private slots:
-	//! Save the configuration to the Engine object and close
+	//! Save the configuration to the BaseEngine object and close
 	void saveAndClose();
 private:
 	QLineEdit *m_lineip;		//!< IP/hostname of the server
@@ -67,7 +67,7 @@ private:
 	QSpinBox *m_tryinterval_sbox;	//!< "Try to reconnect" interval
 	QSpinBox *m_tablimit_sbox;	//!< Maximum number of tabs
 	QCheckBox *m_tcpmode;	//!< Use outgoing TCP connection
-	Engine *m_engine;			//!< Engine object parameters are commited to
+	BaseEngine *m_engine;			//!< BaseEngine object parameters are commited to
 	MainWidget *m_mainwidget;	//!< MainWidget where some parameters are commited to
 };
 

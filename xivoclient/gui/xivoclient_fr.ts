@@ -1,6 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS><TS version="1.1" language="fr">
 <context>
+    <name>BaseEngine</name>
+    <message>
+        <location filename="engine.cpp" line="131"/>
+        <source>Unable to start the server: %1.</source>
+        <translation>Impossible de se connecter au serveur: %1.</translation>
+    </message>
+    <message>
+        <location filename="engine.cpp" line="129"/>
+        <source>Critical error</source>
+        <translation>Erreur critique</translation>
+    </message>
+    <message>
+        <location filename="engine.cpp" line="930"/>
+        <source>Unknown Number</source>
+        <translation>Numéro Inconnu</translation>
+    </message>
+</context>
+<context>
     <name>ConfWidget</name>
     <message>
         <location filename="confwidget.cpp" line="52"/>
@@ -92,24 +110,6 @@
         <location filename="../../switchboard/gui/directorypanel.cpp" line="53"/>
         <source>Search</source>
         <translation>Recherche</translation>
-    </message>
-</context>
-<context>
-    <name>Engine</name>
-    <message>
-        <location filename="engine.cpp" line="131"/>
-        <source>Unable to start the server: %1.</source>
-        <translation>Impossible de se connecter au serveur: %1.</translation>
-    </message>
-    <message>
-        <location filename="engine.cpp" line="129"/>
-        <source>Critical error</source>
-        <translation>Erreur critique</translation>
-    </message>
-    <message>
-        <location filename="engine.cpp" line="930"/>
-        <source>Unknown Number</source>
-        <translation>Numéro Inconnu</translation>
     </message>
 </context>
 <context>

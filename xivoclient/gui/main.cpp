@@ -16,7 +16,13 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 */
+
+/* $Id: main.cpp 942 2007-06-20 16:39:01Z nanard $
+   $Date: 2007-06-20 18:39:01 +0200 (mer, 20 jun 2007) $
+*/
+
 #include <QApplication>
+#include <QFile>
 #include <QLocale>
 #include <QTranslator>
 #include "mainwidget.h"
@@ -38,9 +44,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  * \brief program entry point
  *
  * Set some static Qt parametters for using QSettings,
- * instanciate a MainWidget window and a Engine object.
+ * instanciate a MainWidget window and a BaseEngine object.
  *
- * \sa MainWidget, Engine
+ * \sa MainWidget, BaseEngine
  */
 int main(int argc, char * * argv)
 {
@@ -49,10 +55,20 @@ int main(int argc, char * * argv)
 	QCoreApplication::setOrganizationDomain("xivo.fr");
 	QCoreApplication::setApplicationName("XivoClient");
 	QApplication app(argc, argv);
-	QTranslator translator;
-	translator.load(QString(":/xivoclient_") + locale);
-	app.installTranslator(&translator);
-	Engine engine;
+
+	QFile qssFile("xivo.qss");
+	if(qssFile.open(QIODevice::ReadOnly | QIODevice::Text))
+	{
+		app.setStyleSheet( QString(qssFile.readAll()) );
+		qssFile.close();
+	}
+
+	QTranslator qtTranslator;
+	qtTranslator.load(QString(":/xivoclient_") + locale);
+	app.installTranslator(&qtTranslator);
+
+	BaseEngine engine;
+	
 	MainWidget main(&engine);
 	main.show();
 	//main.dumpObjectTree();

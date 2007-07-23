@@ -38,7 +38,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  *
  * build layout and child widgets.
  */
-LogWidget::LogWidget(Engine * engine, QWidget * parent)
+LogWidget::LogWidget(BaseEngine * engine, QWidget * parent)
 : QWidget(parent), m_engine(engine), m_timer(-1)
 {
 	QVBoxLayout * layout = new QVBoxLayout(this);

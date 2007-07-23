@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QDialog>
 
 class LoginEngine;
-class SwitchBoardEngine;
+class BaseEngine;
 class SwitchBoardWindow;
 class QLineEdit;
 class QSpinBox;
@@ -36,14 +36,14 @@ class SwitchBoardConfDialog : public QDialog
 {
 	Q_OBJECT
 public:
-	SwitchBoardConfDialog(SwitchBoardEngine * engine,
+	SwitchBoardConfDialog(BaseEngine * engine,
 	                      LoginEngine * loginengine,
 	                      SwitchBoardWindow * window,
 	                      QWidget *parent = 0);
 private slots:
 	void saveAndClose();	//!< save configuration and close dialog
 private:
-	SwitchBoardEngine * m_engine;	//!< switchboard engine
+	BaseEngine * m_engine;	//!< switchboard engine
 	LoginEngine * m_loginengine;	//!< presence server engine
 	SwitchBoardWindow * m_window;	//!< main application window
 	QLineEdit * m_serverhost;	//!< server host

@@ -51,7 +51,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  * This Constructor creates the 3 buttons in a
  * vertical box layout and connect signals with slots.
  */
-MainWidget::MainWidget(Engine *engine, QWidget *parent)
+MainWidget::MainWidget(BaseEngine *engine, QWidget *parent)
 	: QMainWindow(parent), m_engine(engine), m_systrayIcon(0),
 	  m_icon(":/xivoicon.png"), m_icongrey(":/xivoicon-grey.png")
 {
@@ -186,7 +186,7 @@ void MainWidget::createMenus()
 
 	m_avail = menuBar()->addMenu(tr("&Availability"));
 	m_avail->addActions( m_availgrp->actions() );
-	m_avail->setEnabled( m_engine->state() == Engine::ELogged);
+	m_avail->setEnabled( m_engine->state() == BaseEngine::ELogged);
 	connect( m_engine, SIGNAL(availAllowChanged(bool)),
 	         m_avail, SLOT(setEnabled(bool)) );
 

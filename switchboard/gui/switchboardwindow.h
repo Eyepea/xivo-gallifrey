@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include "peerslayout.h"
 #include "peeritem.h"
 
-class SwitchBoardEngine;
+class BaseEngine;
 class QGridLayout;
 class QMouseEvent;
 
@@ -42,7 +42,7 @@ public:
 	SwitchBoardWindow( QWidget * parent = 0);
 	//! Destructor
 	virtual ~SwitchBoardWindow();
-	void setEngine(SwitchBoardEngine *);
+	void setEngine(BaseEngine *);
 	int width() const;	//!< get width property
 	void setWidth(int);	//!< set width property
 	void saveSettings() const;
@@ -69,7 +69,7 @@ private:
 	//QGridLayout * m_layout;
 	PeersLayout * m_layout;	//!< Grid Layout for displaying peers
 	QList<Peer> m_peerlist;	//!< Peer list
-	SwitchBoardEngine * m_engine;	//!< engine to connect to peer widgets
+	BaseEngine * m_engine;	//!< engine to connect to peer widgets
 	int m_width;	//!< width property
 };
 

@@ -35,7 +35,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include "confwidget.h"
 #include "mainwidget.h"
 
-ConfWidget::ConfWidget(Engine *engine, MainWidget *parent)
+ConfWidget::ConfWidget(BaseEngine *engine, MainWidget *parent)
 : QDialog(parent), m_engine(engine)
 {
 	m_mainwidget = parent;
@@ -137,7 +137,7 @@ ConfWidget::ConfWidget(Engine *engine, MainWidget *parent)
 
 /*!
  * This slot saves the configuration (which is stored in displayed
- * widgets) to the Engine object
+ * widgets) to the BaseEngine object
  * and also to the main window object and then call close()
  */
 void ConfWidget::saveAndClose()

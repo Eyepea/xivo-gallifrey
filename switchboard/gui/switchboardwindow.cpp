@@ -63,10 +63,10 @@ void SwitchBoardWindow::saveSettings() const
 
 /*! \brief setter for m_engine
  *
- * set SwitchBoardEngine object to be used to connect to
+ * set BaseEngine object to be used to connect to
  * peer object slot/signals.
  */
-void SwitchBoardWindow::setEngine(SwitchBoardEngine * engine)
+void SwitchBoardWindow::setEngine(BaseEngine * engine)
 {
 	m_engine = engine;
 }

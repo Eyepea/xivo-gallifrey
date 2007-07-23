@@ -1,6 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS><TS version="1.1" language="sv">
 <context>
+    <name>BaseEngine</name>
+    <message>
+        <location filename="switchboardengine.cpp" line="201"/>
+        <source>Connection lost with Presence Server</source>
+        <translation>Connexion perdue avec le serveur de présence</translation>
+    </message>
+    <message>
+        <location filename="switchboardengine.cpp" line="224"/>
+        <source>Connection refused</source>
+        <translation>Connexion refusée</translation>
+    </message>
+    <message>
+        <location filename="switchboardengine.cpp" line="233"/>
+        <source>Host not found</source>
+        <translation>Hôte non trouvé</translation>
+    </message>
+    <message>
+        <location filename="switchboardengine.cpp" line="236"/>
+        <source>Unknown socket error</source>
+        <translation>Erreur réseau inconnue</translation>
+    </message>
+    <message>
+        <location filename="switchboardengine.cpp" line="454"/>
+        <source>Peers&apos; status updated</source>
+        <translation>Statut des postes mis à jour</translation>
+    </message>
+    <message>
+        <location filename="switchboardengine.cpp" line="425"/>
+        <source> said : </source>
+        <translation> dit : </translation>
+    </message>
+    <message>
+        <location filename="switchboardengine.cpp" line="425"/>
+        <source>Unknown</source>
+        <translation>Inconnu</translation>
+    </message>
+    <message>
+        <location filename="switchboardengine.cpp" line="603"/>
+        <source>Attempting to reconnect to server</source>
+        <translation>Tentative de reconnexion au serveur</translation>
+    </message>
+    <message>
+        <location filename="switchboardengine.cpp" line="312"/>
+        <source>Unknown Number</source>
+        <translation>Numéro Inconnu</translation>
+    </message>
+    <message>
+        <location filename="switchboardengine.cpp" line="392"/>
+        <source>Unknown CallerId</source>
+        <translation>CallerId Inconnu</translation>
+    </message>
+</context>
+<context>
     <name>CallStackWidget</name>
     <message>
         <location filename="callstackwidget.cpp" line="260"/>
@@ -419,59 +472,6 @@
         <location filename="switchboardconf.cpp" line="107"/>
         <source>History size</source>
         <translation>Taille de l&apos;historique</translation>
-    </message>
-</context>
-<context>
-    <name>SwitchBoardEngine</name>
-    <message>
-        <location filename="switchboardengine.cpp" line="201"/>
-        <source>Connection lost with Presence Server</source>
-        <translation>Connexion perdue avec le serveur de présence</translation>
-    </message>
-    <message>
-        <location filename="switchboardengine.cpp" line="224"/>
-        <source>Connection refused</source>
-        <translation>Connexion refusée</translation>
-    </message>
-    <message>
-        <location filename="switchboardengine.cpp" line="233"/>
-        <source>Host not found</source>
-        <translation>Hôte non trouvé</translation>
-    </message>
-    <message>
-        <location filename="switchboardengine.cpp" line="236"/>
-        <source>Unknown socket error</source>
-        <translation>Erreur réseau inconnue</translation>
-    </message>
-    <message>
-        <location filename="switchboardengine.cpp" line="454"/>
-        <source>Peers&apos; status updated</source>
-        <translation>Statut des postes mis à jour</translation>
-    </message>
-    <message>
-        <location filename="switchboardengine.cpp" line="425"/>
-        <source> said : </source>
-        <translation> dit : </translation>
-    </message>
-    <message>
-        <location filename="switchboardengine.cpp" line="425"/>
-        <source>Unknown</source>
-        <translation>Inconnu</translation>
-    </message>
-    <message>
-        <location filename="switchboardengine.cpp" line="603"/>
-        <source>Attempting to reconnect to server</source>
-        <translation>Tentative de reconnexion au serveur</translation>
-    </message>
-    <message>
-        <location filename="switchboardengine.cpp" line="312"/>
-        <source>Unknown Number</source>
-        <translation>Numéro Inconnu</translation>
-    </message>
-    <message>
-        <location filename="switchboardengine.cpp" line="392"/>
-        <source>Unknown CallerId</source>
-        <translation>CallerId Inconnu</translation>
     </message>
 </context>
 </TS>

@@ -22,12 +22,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 */
 
 #include <QDebug>
+#include <QMessageBox>
 #include <QSettings>
 #include <QStringList>
 #include <QTcpSocket>
 #include <QTime>
 #include <QTimerEvent>
+
 #include "loginengine.h"
+#include "popup.h"
 
 /*! \brief Constructor.
  *
@@ -41,8 +44,9 @@ LoginEngine::LoginEngine(QObject * parent)
 {
 	m_ka_timerid = 0;
 	m_try_timerid = 0;
-	m_loginsocket = new QTcpSocket(this);
-	m_udpsocket   = new QUdpSocket(this);
+	m_loginsocket  = new QTcpSocket(this);
+	m_udpsocket    = new QUdpSocket(this);
+	m_listensocket = new QTcpServer(this);
 	loadSettings();
 	setAvailState(m_availstate);
 	
@@ -59,13 +63,19 @@ LoginEngine::LoginEngine(QObject * parent)
 	   void readyRead ()
 	*/
 
-	// Connect socket signals
+	// init listen socket for profile push
 	connect( m_loginsocket, SIGNAL(connected()),
 	         this, SLOT(identifyToTheServer()) );
 	connect( m_loginsocket, SIGNAL(readyRead()),
 	         this, SLOT(processLoginDialog()) );
-	
+	connect( m_loginsocket, SIGNAL(hostFound()),
+	         this, SLOT(serverHostFound()) );
+	if(!m_tcpmode)
+		initListenSocket();
+	connect( m_listensocket, SIGNAL(newConnection()),
+	         this, SLOT(handleProfilePush()) );
 	// init UDP socket used for keep alive
+	//if(!m_tcpmode)
 	m_udpsocket->bind();
 	connect( m_udpsocket, SIGNAL(readyRead()),
 		 this, SLOT(readKeepLoginAliveDatagrams()) );
@@ -96,6 +106,7 @@ void LoginEngine::loadSettings()
 	m_autoconnect = settings.value("engine/autoconnect", false).toBool();
 	m_trytoreconnect = settings.value("engine/trytoreconnect", false).toBool();
 	m_trytoreconnectinterval = settings.value("engine/trytoreconnectinterval", 20*1000).toUInt();
+	m_tcpmode = settings.value("engine/tcpmode", false).toBool();
 	m_asterisk = settings.value("engine/asterisk").toString();
 	m_protocol = settings.value("engine/protocol").toString();
 
@@ -112,7 +123,7 @@ void LoginEngine::loadSettings()
 void LoginEngine::saveSettings()
 {
 	QSettings settings;
-	// these commented settings are saved by SwitchBoardEngine::saveSettings()
+	// these commented settings are saved by BaseEngine::saveSettings()
 	// in the Switchboard framework :
 	//
 	//	settings.setValue("engine/serverhost", m_serverhost);
@@ -129,6 +140,19 @@ void LoginEngine::saveSettings()
 	settings.setValue("engine/passwd", m_passwd);
 	settings.setValue("engine/availstate", m_availstate);
 	settings.setValue("engine/keepaliveinterval", m_keepaliveinterval);
+}
+
+void LoginEngine::initListenSocket()
+{
+	if (!m_listensocket->listen())
+	{
+		QMessageBox::critical(NULL, tr("Critical error"),
+		                            tr("Unable to start the server: %1.")
+		                            .arg(m_listensocket->errorString()));
+		return;
+	}
+	m_listenport = m_listensocket->serverPort();
+	qDebug() << "LoginEngine::initListenSocket()" << m_listenport;
 }
 
 /*! \brief Start the connection to the server
@@ -336,6 +360,15 @@ void LoginEngine::processLoginDialog()
 	char buffer[256];
 	int len;
 	qDebug() << "LoginEngine::processLoginDialog()";
+	if(m_tcpmode && (m_state == ELogged)) {
+		Popup * popup = new Popup(m_loginsocket, m_sessionid);
+		connect( popup, SIGNAL(destroyed(QObject *)),
+		         this, SLOT(popupDestroyed(QObject *)) );
+		connect( popup, SIGNAL(wantsToBeShown(Popup *)),
+			 this, SLOT(profileToBeShown(Popup *)) );
+		popup->streamNewData();
+		return;
+	}
 	if(!m_loginsocket->canReadLine())
 	{
 		qDebug() << "no line ready to be read";
@@ -358,8 +391,13 @@ void LoginEngine::processLoginDialog()
 	}
 	else if(readLine.startsWith("Send PORT"))
 	{
-		outline = "PORT ";
-		outline.append(QString::number(0)); // m_listenport
+		if(m_tcpmode) {
+			outline = "TCPMODE";
+		} else {
+			outline = "PORT ";
+			outline.append(QString::number(m_listenport));
+		}
+		qDebug() << "LoginEngine::processLoginDialog()" << m_listenport;
 	}
 	else if(readLine.startsWith("Send STATE"))
 	{
@@ -396,6 +434,53 @@ void LoginEngine::processLoginDialog()
 	outline.append("\r\n");
 	m_loginsocket->write(outline.toAscii());
 	m_loginsocket->flush();
+}
+
+/*!
+ * This slot is connected to the hostFound() signal of the
+ * m_loginsocket
+ */
+void LoginEngine::serverHostFound()
+{
+	qDebug() << "LoginEngine::serverHostFound()" << m_loginsocket->peerAddress();
+}
+
+/*!
+ * This slot method is called when a pending connection is
+ * waiting on the m_listensocket.
+ * It processes the incoming data and create a popup to display it.
+ */
+void LoginEngine::handleProfilePush()
+{
+	qDebug() << "LoginEngine::handleProfilePush()";
+	QTcpSocket *connection = m_listensocket->nextPendingConnection();
+	connect( connection, SIGNAL(disconnected()),
+	         connection, SLOT(deleteLater()));
+	// signals sur la socket : connected() disconnected()
+	// error() hostFound() stateChanged()
+	// iodevice : readyRead() aboutToClose() bytesWritten()
+	//
+	qDebug() << connection->peerAddress().toString() << connection->peerPort();
+	// Get Data and Popup the profile if ok
+	Popup * popup = new Popup(connection, m_sessionid);
+	connect( popup, SIGNAL(destroyed(QObject *)),
+	         this, SLOT(popupDestroyed(QObject *)) );
+	connect( popup, SIGNAL(wantsToBeShown(Popup *)),
+	         this, SLOT(profileToBeShown(Popup *)) );
+}
+
+void LoginEngine::popupDestroyed(QObject * obj)
+{
+	qDebug() << "Popup destroyed" << obj;
+	//qDebug() << "========================";
+	//obj->dumpObjectTree();
+	//qDebug() << "========================";
+}
+
+void LoginEngine::profileToBeShown(Popup * popup)
+{
+	qDebug() << "LoginEngine::profileToBeShown()";
+	newProfile( popup );
 }
 
 /*!

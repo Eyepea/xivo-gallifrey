@@ -33,14 +33,14 @@ class Popup;
 //! Profile popup engine
 /*! The engine object is containing all the code to
  *  handle network connection and requests */
-class Engine: public QObject
+class BaseEngine: public QObject
 {
 	Q_OBJECT
 public:
-	//! Enum for Engine state logged/not logged
+	//! Enum for BaseEngine state logged/not logged
 	typedef enum {ENotLogged, ELogged } EngineState;
 	//! Constructor
-	Engine(QObject *parent = 0);
+	BaseEngine(QObject *parent = 0);
 
 	void loadSettings();		//!< load server settings
 	void saveSettings();		//!< save server settings
@@ -137,6 +137,7 @@ private slots:
 	void readKeepLoginAliveDatagrams();	//!< handle the responses to keep alive
 	void popupDestroyed(QObject *);	//!< know when a profile widget is destroyed *DEBUG*
 	void profileToBeShown(Popup *);	//!< a new profile must be displayed
+
 	void dialExtension(const QString &);
 	void updatePeers(const QStringList &);
 protected:
@@ -167,12 +168,12 @@ private:
 	//
 	int m_historysize;
 	QHostAddress m_serveraddress;	//!< Resolved address of the login server
-	QTcpSocket m_loginsocket;	//!< TCP socket used to login
+	QTcpSocket * m_loginsocket;	//!< TCP socket used to login
+	QUdpSocket * m_udpsocket;      	//!< UDP socket used for keep alive
+	QTcpServer * m_listensocket;	//!< TCP socket listening for profiles
 	ushort m_listenport;		//!< Port where we are listening for profiles
 	int m_ka_timerid;			//!< timer id for keep alive
 	int m_try_timerid;			//!< timer id for try to reconnect
-	QUdpSocket m_udpsocket;		//!< UDP socket used for keep alive
-	QTcpServer m_listensocket;	//!< TCP socket listening for profiles
 	QString m_sessionid;	//!< Session id obtained after a successful login
 	QString m_capabilities;	//!< List of capabilities issued by the server after a successful login
 	int m_version;	//!< Version issued by the server after a successful login

@@ -30,14 +30,14 @@ class QDateTime;
 
 /*! \brief Class which handle connection with the Xivo CTI server
  */
-class SwitchBoardEngine: public QObject
+class BaseEngine: public QObject
 {
 	Q_OBJECT
 public:
 	//! Enum for Engine state logged/not logged
 	typedef enum {ENotLogged, ELogged } EngineState;
 	
-	SwitchBoardEngine(QObject * parent = 0);
+	BaseEngine(QObject * parent = 0);
 	//! set address used to connect to the server
 	void setAddress(const QString & host, quint16 port);
 	quint16 sbport() const;

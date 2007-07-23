@@ -17,15 +17,19 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 */
 
-/* $Id$ */
+/* $Id$
+ * $Revision$
+   $Date$
+*/
 
 #include <QDebug>
-#include <QTcpSocket>
-#include <QTime>
-#include <QThread>
 #include <QMessageBox>
 #include <QSettings>
+#include <QTcpSocket>
+#include <QThread>
+#include <QTime>
 #include <QTimerEvent>
+
 #include "engine.h"
 #include "popup.h"
 #include "logeltwidget.h"
@@ -37,7 +41,7 @@ const int REQUIRED_SERVER_VERSION = 1165;
  * the TCP listening socket.
  * It also connects signals with the right slots.
  */
-Engine::Engine(QObject *parent)
+BaseEngine::BaseEngine(QObject *parent)
 : QObject(parent),
   m_serverip(""), m_loginport(0), m_asterisk(""), m_protocol(""), m_userid(""), m_passwd(""),
   m_listenport(0), m_sessionid(""), m_state(ENotLogged),
@@ -45,6 +49,9 @@ Engine::Engine(QObject *parent)
 {
 	m_ka_timerid = 0;
 	m_try_timerid = 0;
+	m_loginsocket  = new QTcpSocket(this);
+	m_udpsocket    = new QUdpSocket(this);
+	m_listensocket = new QTcpServer(this);
 	loadSettings();
 	setAvailState(m_availstate);
 	
@@ -62,21 +69,21 @@ Engine::Engine(QObject *parent)
 	*/
 
 	// init listen socket for profile push
-	connect( &m_loginsocket, SIGNAL(connected()),
+	connect( m_loginsocket, SIGNAL(connected()),
 	         this, SLOT(identifyToTheServer()) );
-	connect( &m_loginsocket, SIGNAL(readyRead()),
+	connect( m_loginsocket, SIGNAL(readyRead()),
 	         this, SLOT(processLoginDialog()) );
-	connect( &m_loginsocket, SIGNAL(hostFound()),
+	connect( m_loginsocket, SIGNAL(hostFound()),
 	         this, SLOT(serverHostFound()) );
 	if(!m_tcpmode)
 		initListenSocket();
-	connect( &m_listensocket, SIGNAL(newConnection()),
+	connect( m_listensocket, SIGNAL(newConnection()),
 	         this, SLOT(handleProfilePush()) );
 	// init UDP socket used for keep alive
 	//if(!m_tcpmode)
-		m_udpsocket.bind();
-	connect( &m_udpsocket, SIGNAL(readyRead()),
-             this, SLOT(readKeepLoginAliveDatagrams()) );
+	m_udpsocket->bind();
+	connect( m_udpsocket, SIGNAL(readyRead()),
+		 this, SLOT(readKeepLoginAliveDatagrams()) );
 	
 	if(m_autoconnect)
 		start();
@@ -86,7 +93,7 @@ Engine::Engine(QObject *parent)
  * Load settings using QSettings class which is portable.
  * Use default values when settings are not found.
  */
-void Engine::loadSettings()
+void BaseEngine::loadSettings()
 {
 	QSettings settings;
 	m_serverip = settings.value("engine/serverhost").toString();
@@ -106,7 +113,7 @@ void Engine::loadSettings()
 /*!
  * Save settings using QSettings class which is portable.
  */
-void Engine::saveSettings()
+void BaseEngine::saveSettings()
 {
 	QSettings settings;
 	settings.setValue("engine/serverhost", m_serverip);
@@ -122,42 +129,43 @@ void Engine::saveSettings()
 	settings.setValue("engine/tcpmode", m_tcpmode);
 }
 
-void Engine::initListenSocket()
+void BaseEngine::initListenSocket()
 {
-	if (!m_listensocket.listen())
+	if (!m_listensocket->listen())
 	{
 		QMessageBox::critical(NULL, tr("Critical error"),
 		                            tr("Unable to start the server: %1.")
-		                            .arg(m_listensocket.errorString()));
+		                            .arg(m_listensocket->errorString()));
 		return;
 	}
-	m_listenport = m_listensocket.serverPort();
+	m_listenport = m_listensocket->serverPort();
+	qDebug() << "BaseEngine::initListenSocket()" << m_listenport;
 }
 
 /*!
  * This method start the login process by connection
  * to the server.
  */
-void Engine::start()
+void BaseEngine::start()
 {
-	qDebug() << "Engine::start()";
-	m_loginsocket.abort();
-	m_loginsocket.connectToHost(m_serverip, m_loginport);
+	qDebug() << "BaseEngine::start()";
+	m_loginsocket->abort();
+	m_loginsocket->connectToHost(m_serverip, m_loginport);
 }
 
 /*!
  * This method disconnect the engine from the the server
  */
-void Engine::stop()
+void BaseEngine::stop()
 {
-	qDebug() << "Engine::stop()";
+	qDebug() << "BaseEngine::stop()";
 	QString outline = "STOP ";
 	outline.append(m_asterisk + "/" + m_protocol + m_userid);
 	outline.append(" SESSIONID ");
 	outline.append(m_sessionid);
 	outline.append("\r\n");
-	m_udpsocket.writeDatagram( outline.toAscii(),
-				   m_serveraddress, m_loginport + 1 );
+	m_udpsocket->writeDatagram( outline.toAscii(),
+				    m_serveraddress, m_loginport + 1 );
 
 	stopKeepAliveTimer();
 	stopTryAgainTimer();
@@ -174,7 +182,7 @@ void Engine::stop()
  * \sa setOutToLunch()
  * \sa setDoNotDisturb()
  */
-void Engine::setAvailState(const QString & newstate)
+void BaseEngine::setAvailState(const QString & newstate)
 {
 	if(m_availstate != newstate)
 	{
@@ -185,37 +193,37 @@ void Engine::setAvailState(const QString & newstate)
 	}
 }
 
-void Engine::setAvailable()
+void BaseEngine::setAvailable()
 {
 	//qDebug() << "setAvailable()";
 	setAvailState("available");
 }
 
-void Engine::setAway()
+void BaseEngine::setAway()
 {
 	//qDebug() << "setAway()";
 	setAvailState("away");
 }
 
-void Engine::setBeRightBack()
+void BaseEngine::setBeRightBack()
 {
 	setAvailState("berightback");
 }
 
-void Engine::setOutToLunch()
+void BaseEngine::setOutToLunch()
 {
 	setAvailState("outtolunch");
 }
 
-void Engine::setDoNotDisturb()
+void BaseEngine::setDoNotDisturb()
 {
 	//qDebug() << "setDoNotDistrurb()";
 	setAvailState("donotdisturb");
 }
 
-void Engine::searchDirectory(const QString & text)
+void BaseEngine::searchDirectory(const QString & text)
 {
-	qDebug() << "Engine::searchDirectory()";
+	qDebug() << "BaseEngine::searchDirectory()";
 	QString outline = "COMMAND ";
 	outline.append(m_asterisk + "/" + m_protocol + m_userid);
 	outline.append(" SESSIONID ");
@@ -224,19 +232,19 @@ void Engine::searchDirectory(const QString & text)
 	outline.append(text);
 	outline.append("\r\n");
 	qDebug() << outline;
-	m_udpsocket.writeDatagram( outline.toAscii(),
-				   m_serveraddress, m_loginport + 1 );
+	m_udpsocket->writeDatagram( outline.toAscii(),
+				    m_serveraddress, m_loginport + 1 );
 }
 
 /*! \brief ask history for an extension 
  */
-void Engine::requestHistory(const QString & peer, int mode)
+void BaseEngine::requestHistory(const QString & peer, int mode)
 {
 	/* mode = 0 : Out calls
 	 * mode = 1 : In calls
 	 * mode = 2 : Missed calls */
 	if(mode >= 0) {
-		qDebug() << "Engine::requestHistory()";
+		qDebug() << "BaseEngine::requestHistory()";
 		QString outline = "COMMAND ";
 		outline.append(m_asterisk + "/" + m_protocol + m_userid);
 		outline.append(" SESSIONID ");
@@ -245,16 +253,16 @@ void Engine::requestHistory(const QString & peer, int mode)
 		outline.append(peer + " 10 " + QString::number(mode));
 		outline.append("\r\n");
 		qDebug() << outline;
-		m_udpsocket.writeDatagram( outline.toAscii(),
-					   m_serveraddress, m_loginport + 1 );
+		m_udpsocket->writeDatagram( outline.toAscii(),
+					    m_serveraddress, m_loginport + 1 );
 	}
 }
 
 /*! \brief ask for Peer's statuses
  */
-void Engine::requestPeers(void)
+void BaseEngine::requestPeers(void)
 {
-	qDebug() << "Engine::requestPeers()";
+	qDebug() << "BaseEngine::requestPeers()";
 	QString outline = "COMMAND ";
 	outline.append(m_asterisk + "/" + m_protocol + m_userid);
 	outline.append(" SESSIONID ");
@@ -263,13 +271,13 @@ void Engine::requestPeers(void)
 	outline.append("a b c");
 	outline.append("\r\n");
 	qDebug() << outline;
-	m_udpsocket.writeDatagram( outline.toAscii(),
-				   m_serveraddress, m_loginport + 1 );
+	m_udpsocket->writeDatagram( outline.toAscii(),
+				    m_serveraddress, m_loginport + 1 );
 }
 
-void Engine::dialExtension(const QString & dst)
+void BaseEngine::dialExtension(const QString & dst)
 {
-	qDebug() << "Engine::dialExtension()";
+	qDebug() << "BaseEngine::dialExtension()";
 	QString outline = "COMMAND ";
 	outline.append(m_asterisk + "/" + m_protocol + m_userid);
 	outline.append(" SESSIONID ");
@@ -279,11 +287,11 @@ void Engine::dialExtension(const QString & dst)
 		       m_userid + "/" + m_dialcontext + " " + dst);
 	outline.append("\r\n");
 	qDebug() << outline;
-	m_udpsocket.writeDatagram( outline.toAscii(),
+	m_udpsocket->writeDatagram( outline.toAscii(),
 				   m_serveraddress, m_loginport + 1 );
 }
 
-void Engine::setVoiceMail(bool b)
+void BaseEngine::setVoiceMail(bool b)
 {
 	QString outline = "COMMAND ";
 	outline.append(m_asterisk + "/" + m_protocol + m_userid);
@@ -293,11 +301,11 @@ void Engine::setVoiceMail(bool b)
 	outline.append(b?"1":"0");
 	outline.append("\r\n");
 	qDebug() << outline;
-	m_udpsocket.writeDatagram( outline.toAscii(),
+	m_udpsocket->writeDatagram( outline.toAscii(),
 				   m_serveraddress, m_loginport + 1 );
 }
 
-void Engine::setCallRecording(bool b)
+void BaseEngine::setCallRecording(bool b)
 {
 	QString outline = "COMMAND ";
 	outline.append(m_asterisk + "/" + m_protocol + m_userid);
@@ -307,11 +315,11 @@ void Engine::setCallRecording(bool b)
 	outline.append(b?"1":"0");
 	outline.append("\r\n");
 	qDebug() << outline;
-	m_udpsocket.writeDatagram( outline.toAscii(),
+	m_udpsocket->writeDatagram( outline.toAscii(),
 				   m_serveraddress, m_loginport + 1 );
 }
 
-void Engine::setCallFiltering(bool b)
+void BaseEngine::setCallFiltering(bool b)
 {
 	QString outline = "COMMAND ";
 	outline.append(m_asterisk + "/" + m_protocol + m_userid);
@@ -321,11 +329,11 @@ void Engine::setCallFiltering(bool b)
 	outline.append(b?"1":"0");
 	outline.append("\r\n");
 	qDebug() << outline;
-	m_udpsocket.writeDatagram( outline.toAscii(),
+	m_udpsocket->writeDatagram( outline.toAscii(),
 				   m_serveraddress, m_loginport + 1 );
 }
 
-void Engine::setDnd(bool b)
+void BaseEngine::setDnd(bool b)
 {
 	QString outline = "COMMAND ";
 	outline.append(m_asterisk + "/" + m_protocol + m_userid);
@@ -335,11 +343,11 @@ void Engine::setDnd(bool b)
 	outline.append(b?"1":"0");
 	outline.append("\r\n");
 	qDebug() << outline;
-	m_udpsocket.writeDatagram( outline.toAscii(),
+	m_udpsocket->writeDatagram( outline.toAscii(),
 				   m_serveraddress, m_loginport + 1 );
 }
 
-void Engine::setForwardOnUnavailable(bool b, const QString & dst)
+void BaseEngine::setForwardOnUnavailable(bool b, const QString & dst)
 {
 	QString outline = "COMMAND ";
 	outline.append(m_asterisk + "/" + m_protocol + m_userid);
@@ -349,7 +357,7 @@ void Engine::setForwardOnUnavailable(bool b, const QString & dst)
 	outline.append(b?"1":"0");
 	outline.append("\r\n");
 	qDebug() << outline;
-	m_udpsocket.writeDatagram( outline.toAscii(),
+	m_udpsocket->writeDatagram( outline.toAscii(),
 				   m_serveraddress, m_loginport + 1 );
 	outline = "COMMAND ";
 	outline.append(m_asterisk + "/" + m_protocol + m_userid);
@@ -359,11 +367,11 @@ void Engine::setForwardOnUnavailable(bool b, const QString & dst)
 	outline.append(dst);
 	outline.append("\r\n");
 	qDebug() << outline;
-	m_udpsocket.writeDatagram( outline.toAscii(),
+	m_udpsocket->writeDatagram( outline.toAscii(),
 				   m_serveraddress, m_loginport + 1 );
 }
 
-void Engine::setForwardOnBusy(bool b, const QString & dst)
+void BaseEngine::setForwardOnBusy(bool b, const QString & dst)
 {
 	QString outline = "COMMAND ";
 	outline.append(m_asterisk + "/" + m_protocol + m_userid);
@@ -373,7 +381,7 @@ void Engine::setForwardOnBusy(bool b, const QString & dst)
 	outline.append(b?"1":"0");
 	outline.append("\r\n");
 	qDebug() << outline;
-	m_udpsocket.writeDatagram( outline.toAscii(),
+	m_udpsocket->writeDatagram( outline.toAscii(),
 				   m_serveraddress, m_loginport + 1 );
 	outline = "COMMAND ";
 	outline.append(m_asterisk + "/" + m_protocol + m_userid);
@@ -383,11 +391,11 @@ void Engine::setForwardOnBusy(bool b, const QString & dst)
 	outline.append(dst);
 	outline.append("\r\n");
 	qDebug() << outline;
-	m_udpsocket.writeDatagram( outline.toAscii(),
+	m_udpsocket->writeDatagram( outline.toAscii(),
 				   m_serveraddress, m_loginport + 1 );
 }
 
-void Engine::setUncondForward(bool b, const QString & dst)
+void BaseEngine::setUncondForward(bool b, const QString & dst)
 {
 	QString outline = "COMMAND ";
 	outline.append(m_asterisk + "/" + m_protocol + m_userid);
@@ -397,7 +405,7 @@ void Engine::setUncondForward(bool b, const QString & dst)
 	outline.append(b?"1":"0");
 	outline.append("\r\n");
 	qDebug() << outline;
-	m_udpsocket.writeDatagram( outline.toAscii(),
+	m_udpsocket->writeDatagram( outline.toAscii(),
 				   m_serveraddress, m_loginport + 1 );
 	outline = "COMMAND ";
 	outline.append(m_asterisk + "/" + m_protocol + m_userid);
@@ -407,11 +415,11 @@ void Engine::setUncondForward(bool b, const QString & dst)
 	outline.append(dst);
 	outline.append("\r\n");
 	qDebug() << outline;
-	m_udpsocket.writeDatagram( outline.toAscii(),
+	m_udpsocket->writeDatagram( outline.toAscii(),
 				   m_serveraddress, m_loginport + 1 );
 }
 
-void Engine::askFeatures()
+void BaseEngine::askFeatures()
 {
 	QString outline = "COMMAND ";
 	outline.append(m_asterisk + "/" + m_protocol + m_userid);
@@ -419,11 +427,11 @@ void Engine::askFeatures()
 	outline.append(m_sessionid);
 	outline.append(" FEATURES GET\r\n");
 	qDebug() << outline;
-	m_udpsocket.writeDatagram( outline.toAscii(),
+	m_udpsocket->writeDatagram( outline.toAscii(),
 				   m_serveraddress, m_loginport + 1 );
 }
 
-void Engine::askPeers()
+void BaseEngine::askPeers()
 {
 	QString outline = "COMMAND ";
 	outline.append(m_asterisk + "/" + m_protocol + m_userid);
@@ -431,11 +439,11 @@ void Engine::askPeers()
 	outline.append(m_sessionid);
 	outline.append(" PEERS\r\n");
 	qDebug() << outline;
-	m_udpsocket.writeDatagram( outline.toAscii(),
+	m_udpsocket->writeDatagram( outline.toAscii(),
 				   m_serveraddress, m_loginport + 1 );
 }
 
-void Engine::askCallerIds()
+void BaseEngine::askCallerIds()
 {
 	QString outline = "COMMAND ";
 	outline.append(m_asterisk + "/" + m_protocol + m_userid);
@@ -443,83 +451,83 @@ void Engine::askCallerIds()
 	outline.append(m_sessionid);
 	outline.append(" CALLERIDS\r\n");
 	qDebug() << outline;
-	m_udpsocket.writeDatagram( outline.toAscii(),
+	m_udpsocket->writeDatagram( outline.toAscii(),
 				   m_serveraddress, m_loginport + 1 );
 }
 
 // === Getter and Setters ===
-const QString & Engine::serverip() const
+const QString & BaseEngine::serverip() const
 {
 	return m_serverip;
 }
 
-const QString & Engine::serverast() const
+const QString & BaseEngine::serverast() const
 {
 	return m_asterisk;
 }
 
-void Engine::setServerip(const QString & serverip)
+void BaseEngine::setServerip(const QString & serverip)
 {
 	m_serverip = serverip;
 }
 
-void Engine::setServerAst(const QString & serverast)
+void BaseEngine::setServerAst(const QString & serverast)
 {
 	m_asterisk = serverast;
 }
 
-ushort Engine::serverport() const
+ushort BaseEngine::serverport() const
 {
 	return m_loginport;
 }
 
-void Engine::setServerport(ushort port)
+void BaseEngine::setServerport(ushort port)
 {
-	//qDebug( "Engine::setServerport(%hu)", port);
+	//qDebug( "BaseEngine::setServerport(%hu)", port);
 	m_loginport = port;
 }
 
-const QString & Engine::userid() const
+const QString & BaseEngine::userid() const
 {
 	return m_userid;
 }
 
-void Engine::setUserId(const QString & userid)
+void BaseEngine::setUserId(const QString & userid)
 {
 	m_userid = userid;
 }
 
-const QString & Engine::protocol() const
+const QString & BaseEngine::protocol() const
 {
 	return m_protocol;
 }
 
-void Engine::setProtocol(const QString & protocol)
+void BaseEngine::setProtocol(const QString & protocol)
 {
 	m_protocol = protocol;
 }
 
-const QString & Engine::passwd() const
+const QString & BaseEngine::passwd() const
 {
 	return m_passwd;
 }
 
-void Engine::setPasswd(const QString & passwd)
+void BaseEngine::setPasswd(const QString & passwd)
 {
 	m_passwd = passwd;
 }
 
-void Engine::setAutoconnect(bool b)
+void BaseEngine::setAutoconnect(bool b)
 {
 	m_autoconnect = b;
 }
 
-bool Engine::autoconnect() const
+bool BaseEngine::autoconnect() const
 {
 	return m_autoconnect;
 }
 
-uint Engine::keepaliveinterval() const
+uint BaseEngine::keepaliveinterval() const
 {
 	return m_keepaliveinterval;
 }
@@ -530,7 +538,7 @@ uint Engine::keepaliveinterval() const
  *
  * \sa keepaliveinterval
  */
-void Engine::setKeepaliveinterval(uint i)
+void BaseEngine::setKeepaliveinterval(uint i)
 {
 	if(i != m_keepaliveinterval)
 	{
@@ -543,7 +551,7 @@ void Engine::setKeepaliveinterval(uint i)
 	}
 }
 
-const Engine::EngineState Engine::state() const
+const BaseEngine::EngineState BaseEngine::state() const
 {
 	return m_state;
 }
@@ -555,7 +563,7 @@ const Engine::EngineState Engine::state() const
  * If the state is becoming ENotLogged, the
  * signal delogged() is thrown.
  */
-void Engine::setState(EngineState state)
+void BaseEngine::setState(EngineState state)
 {
 	if(state != m_state)
 	{
@@ -574,10 +582,10 @@ void Engine::setState(EngineState state)
 /*!
  * Perform the first login step once the TCP connection is established.
  */
-void Engine::identifyToTheServer()
+void BaseEngine::identifyToTheServer()
 {
-	qDebug() << "Engine::identifyToTheServer()" << m_loginsocket.peerAddress();
-	m_serveraddress = m_loginsocket.peerAddress();
+	qDebug() << "BaseEngine::identifyToTheServer()" << m_loginsocket->peerAddress();
+	m_serveraddress = m_loginsocket->peerAddress();
 	QString outline = "LOGIN ";
 	outline.append(m_asterisk);
 	outline.append("/");
@@ -593,8 +601,8 @@ void Engine::identifyToTheServer()
 	outline.append(" XC@unknown");
 #endif
 	outline.append("\r\n");
-	m_loginsocket.write(outline.toAscii());
-	m_loginsocket.flush();
+	m_loginsocket->write(outline.toAscii());
+	m_loginsocket->flush();
 	qDebug() << outline;
 }
 
@@ -605,31 +613,31 @@ void Engine::identifyToTheServer()
  *   just reading the session id from server response.
  * The state is changed accordingly.
  */
-void Engine::processLoginDialog()
+void BaseEngine::processLoginDialog()
 {
 	char buffer[256];
 	int len;
-	qDebug() << "Engine::processLoginDialog()";
+	qDebug() << "BaseEngine::processLoginDialog()";
 	if(m_tcpmode && (m_state == ELogged))
 	{
-		Popup * popup = new Popup(&m_loginsocket, m_sessionid);
+		Popup * popup = new Popup(m_loginsocket, m_sessionid);
 		connect( popup, SIGNAL(destroyed(QObject *)),
 		         this, SLOT(popupDestroyed(QObject *)) );
 		connect( popup, SIGNAL(wantsToBeShown(Popup *)),
-				 this, SLOT(profileToBeShown(Popup *)) );
+			 this, SLOT(profileToBeShown(Popup *)) );
 		popup->streamNewData();
 		return;
 	}
-	if(!m_loginsocket.canReadLine())
+	if(!m_loginsocket->canReadLine())
 	{
 		qDebug() << "no line ready to be read";
 		return;
 	}
-	len = m_loginsocket.readLine(buffer, sizeof(buffer));
+	len = m_loginsocket->readLine(buffer, sizeof(buffer));
 	if(len<0)
 	{
 		qDebug() << "readLine() returned -1, closing socket";
-		m_loginsocket.close();
+		m_loginsocket->close();
 		setState(ENotLogged);
 		return;
 	}
@@ -644,16 +652,13 @@ void Engine::processLoginDialog()
 	}
 	else if(readLine.startsWith("Send PORT"))
 	{
-		if(m_tcpmode)
-		{
-			outline = "TCPMODE\r\n";
-		}
-		else
-		{
+		if(m_tcpmode) {
+			outline = "TCPMODE";
+		} else {
 			outline = "PORT ";
 			outline.append(QString::number(m_listenport));
-			outline.append("\r\n");
 		}
+		outline.append("\r\n");
 	}
 	else if(readLine.startsWith("Send STATE"))
 	{
@@ -675,10 +680,10 @@ void Engine::processLoginDialog()
 		if(sessionResp.size() > 5)
 			m_version = sessionResp[5].toInt();
 		if(!m_tcpmode)
-			m_loginsocket.close();
+			m_loginsocket->close();
 		if(m_version < REQUIRED_SERVER_VERSION) {
 			qDebug() << "Your server version is" << m_version << "which is too old. The required one is at least :" << REQUIRED_SERVER_VERSION;
-			m_loginsocket.close();
+			m_loginsocket->close();
 			stop();
 			return;
 		}
@@ -691,22 +696,22 @@ void Engine::processLoginDialog()
 	{
 		readLine.remove(QChar('\r')).remove(QChar('\n'));
 		qDebug() << "Response from server not recognized, closing" << readLine;
-		m_loginsocket.close();
+		m_loginsocket->close();
 		setState(ENotLogged);
 		return;
 	}
 	qDebug() << outline;
-	m_loginsocket.write(outline.toAscii());
-	m_loginsocket.flush();
+	m_loginsocket->write(outline.toAscii());
+	m_loginsocket->flush();
 }
 
 /*!
  * This slot is connected to the hostFound() signal of the
  * m_loginsocket
  */
-void Engine::serverHostFound()
+void BaseEngine::serverHostFound()
 {
-	qDebug() << "Engine::serverHostFound()" << m_loginsocket.peerAddress();
+	qDebug() << "BaseEngine::serverHostFound()" << m_loginsocket->peerAddress();
 }
 
 /*!
@@ -714,10 +719,10 @@ void Engine::serverHostFound()
  * waiting on the m_listensocket.
  * It processes the incoming data and create a popup to display it.
  */
-void Engine::handleProfilePush()
+void BaseEngine::handleProfilePush()
 {
-	qDebug( "Engine::handleProfilePush()" );
-	QTcpSocket *connection = m_listensocket.nextPendingConnection();
+	qDebug( "BaseEngine::handleProfilePush()" );
+	QTcpSocket *connection = m_listensocket->nextPendingConnection();
 	connect( connection, SIGNAL(disconnected()),
 	         connection, SLOT(deleteLater()));
 	// signals sur la socket : connected() disconnected()
@@ -733,7 +738,7 @@ void Engine::handleProfilePush()
 	         this, SLOT(profileToBeShown(Popup *)) );
 }
 
-void Engine::popupDestroyed(QObject * obj)
+void BaseEngine::popupDestroyed(QObject * obj)
 {
 	qDebug() << "Popup destroyed" << obj;
 	//qDebug() << "========================";
@@ -741,7 +746,7 @@ void Engine::popupDestroyed(QObject * obj)
 	//qDebug() << "========================";
 }
 
-void Engine::profileToBeShown(Popup * popup)
+void BaseEngine::profileToBeShown(Popup * popup)
 {
 	newProfile( popup );
 }
@@ -750,7 +755,7 @@ void Engine::profileToBeShown(Popup * popup)
  * Send a keep alive message to the login server.
  * The message is sent in a datagram through m_udpsocket
  */ 
-void Engine::keepLoginAlive()
+void BaseEngine::keepLoginAlive()
 {
 	// got to disconnected state if more than xx keepalive messages
 	// have been left without response.
@@ -771,15 +776,15 @@ void Engine::keepLoginAlive()
 		outline.append(" STATE ");
 		outline.append(m_availstate);
 		outline.append("\r\n");
-		qDebug() <<  "Engine::keepLoginAlive()" << outline;
-		m_udpsocket.writeDatagram( outline.toAscii(),
+		qDebug() <<  "BaseEngine::keepLoginAlive()" << outline;
+		m_udpsocket->writeDatagram( outline.toAscii(),
 					   m_serveraddress, m_loginport + 1 );
 		m_pendingkeepalivemsg++;
 		// if the last keepalive msg has not been answered, send this one
 		// twice
 		if(m_pendingkeepalivemsg > 1)
 			{
-				m_udpsocket.writeDatagram( outline.toAscii(),
+				m_udpsocket->writeDatagram( outline.toAscii(),
 							   m_serveraddress, m_loginport + 1 );
 				m_pendingkeepalivemsg++;
 			}
@@ -790,7 +795,7 @@ void Engine::keepLoginAlive()
  * Send a keep alive message to the login server.
  * The message is sent in a datagram through m_udpsocket
  */ 
-void Engine::sendMessage(const QString & txt)
+void BaseEngine::sendMessage(const QString & txt)
 {
 	if(m_pendingkeepalivemsg > 1)
 	{
@@ -808,13 +813,13 @@ void Engine::sendMessage(const QString & txt)
 	outline.append(" MESSAGE ");
 	outline.append(txt);
 	outline.append("\r\n");
-	qDebug() <<  "Engine::sendMessage()" << outline;
-	m_udpsocket.writeDatagram( outline.toAscii(),
+	qDebug() <<  "BaseEngine::sendMessage()" << outline;
+	m_udpsocket->writeDatagram( outline.toAscii(),
 	                           m_serveraddress, m_loginport + 1 );
 	m_pendingkeepalivemsg++;
 }
 
-void Engine::initFeatureFields(const QString & field, const QString & value)
+void BaseEngine::initFeatureFields(const QString & field, const QString & value)
 {
 	//	qDebug() << field << value;
 	if(field == "VM")
@@ -847,7 +852,7 @@ void Engine::initFeatureFields(const QString & field, const QString & value)
 
 /*! \brief update a caller id 
  */
-void Engine::updateCallerids(const QStringList & liststatus)
+void BaseEngine::updateCallerids(const QStringList & liststatus)
 {
 	QString pname = "p/" + liststatus[1] + "/" + liststatus[5] + "/"
 		+ liststatus[2] + "/" + liststatus[3] + "/" + liststatus[4];
@@ -860,7 +865,7 @@ void Engine::updateCallerids(const QStringList & liststatus)
  *
  * update peers and calls
  */
-void Engine::updatePeers(const QStringList & liststatus)
+void BaseEngine::updatePeers(const QStringList & liststatus)
 {
 	const int nfields0 = 11; // 0th order size (per-phone/line informations)
 	const int nfields1 = 6;  // 1st order size (per-channel informations)
@@ -930,14 +935,14 @@ void Engine::updatePeers(const QStringList & liststatus)
  * If the response is not 'OK', goes to
  * the "not connected" state.
  */
-void Engine::readKeepLoginAliveDatagrams()
+void BaseEngine::readKeepLoginAliveDatagrams()
 {
 	char buffer[2048];
 	int len;
-	qDebug() << "Engine::readKeepLoginAliveDatagrams()";
-	while( m_udpsocket.hasPendingDatagrams() )
+	qDebug() << "BaseEngine::readKeepLoginAliveDatagrams()";
+	while( m_udpsocket->hasPendingDatagrams() )
 	{
-		len = m_udpsocket.readDatagram(buffer, sizeof(buffer)-1);
+		len = m_udpsocket->readDatagram(buffer, sizeof(buffer)-1);
 		if(len == 0)
 			continue;
 		buffer[len] = '\0';
@@ -988,6 +993,14 @@ void Engine::readKeepLoginAliveDatagrams()
 				updatePeers(liststatus);
 				qDebug() << qsl; //reply;
 			}
+			if(isupdate == "PEERUPDATE peeradd") {
+				//updatePeers(liststatus);
+				qDebug() << isupdate;
+			}
+			if(isupdate == "PEERUPDATE peerremove") {
+				//updatePeers(liststatus);
+				qDebug() << isupdate;
+			}
 		} else {
 			qDebug() << qsl; //reply;
 		}
@@ -996,7 +1009,7 @@ void Engine::readKeepLoginAliveDatagrams()
 	}
 }
 
-void Engine::processHistory(const QStringList & histlist)
+void BaseEngine::processHistory(const QStringList & histlist)
 {
 	int i;
 	for(i=0; i+6<=histlist.size(); i+=6)
@@ -1017,7 +1030,7 @@ void Engine::processHistory(const QStringList & histlist)
 	}
 }
 
-void Engine::stopKeepAliveTimer()
+void BaseEngine::stopKeepAliveTimer()
 {
 	if( m_ka_timerid > 0 )
 	{
@@ -1026,17 +1039,17 @@ void Engine::stopKeepAliveTimer()
 	}
 }
 
-void Engine::setTrytoreconnect(bool b)
+void BaseEngine::setTrytoreconnect(bool b)
 {
 	m_trytoreconnect = b;
 }
 
-bool Engine::trytoreconnect() const
+bool BaseEngine::trytoreconnect() const
 {
 	return m_trytoreconnect;
 }
 
-void Engine::stopTryAgainTimer()
+void BaseEngine::stopTryAgainTimer()
 {
 	if( m_try_timerid > 0 )
 	{
@@ -1045,7 +1058,7 @@ void Engine::stopTryAgainTimer()
 	}
 }
 
-void Engine::startTryAgainTimer()
+void BaseEngine::startTryAgainTimer()
 {
 	if( m_try_timerid == 0 && m_trytoreconnect )
 	{
@@ -1053,17 +1066,17 @@ void Engine::startTryAgainTimer()
 	}
 }
 
-void Engine::setHistorySize(uint size)
+void BaseEngine::setHistorySize(uint size)
 {
 	m_historysize = size;
 }
 
-uint Engine::historysize() const
+uint BaseEngine::historysize() const
 {
 	return m_historysize;
 }
 
-uint Engine::trytoreconnectinterval() const
+uint BaseEngine::trytoreconnectinterval() const
 {
 	return m_trytoreconnectinterval;
 }
@@ -1074,7 +1087,7 @@ uint Engine::trytoreconnectinterval() const
  *
  * \sa trytoreconnectinterval
  */
-void Engine::setTrytoreconnectinterval(uint i)
+void BaseEngine::setTrytoreconnectinterval(uint i)
 {
 	if( m_trytoreconnectinterval != i )
 	{
@@ -1087,10 +1100,10 @@ void Engine::setTrytoreconnectinterval(uint i)
 	}
 }
 
-void Engine::timerEvent(QTimerEvent * event)
+void BaseEngine::timerEvent(QTimerEvent * event)
 {
 	int timerId = event->timerId();
-	qDebug() << "Engine::timerEvent() timerId=" << timerId << m_ka_timerid << m_try_timerid;
+	qDebug() << "BaseEngine::timerEvent() timerId=" << timerId << m_ka_timerid << m_try_timerid;
 	if(timerId == m_ka_timerid) {
 		keepLoginAlive();
 		event->accept();

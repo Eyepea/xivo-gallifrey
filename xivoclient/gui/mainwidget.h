@@ -47,7 +47,7 @@ class MainWidget: public QMainWindow
 	Q_OBJECT
 public:
 	//! Constructor
-	MainWidget(Engine *engine, QWidget *parent=0);
+	MainWidget(BaseEngine *engine, QWidget *parent=0);
 	int tablimit() const;	//!< getter for m_tablimit
 	void setTablimit(int);	//!< setter for m_tablimit
 	void setForceTabs(bool);//!< setter for m_forcetabs
@@ -69,7 +69,7 @@ private:
 	void createMenus();		//!< Create Menus
 	void createSystrayIcon();	//!< Create the systray Icon and its menu
 private:
-	Engine * m_engine;			//!< pointer to the Engine used
+	BaseEngine * m_engine;			//!< pointer to the BaseEngine used
 	//QPushButton * m_btnstart;	//!< Start Button
 	QSystemTrayIcon * m_systrayIcon;	//!< System Tray Icon
 	//QIcon m_iconred;	//!< Icon object with red indicator

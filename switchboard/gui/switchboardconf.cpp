@@ -38,7 +38,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 /*! \brief constructor
  */
-SwitchBoardConfDialog::SwitchBoardConfDialog(SwitchBoardEngine * engine,
+SwitchBoardConfDialog::SwitchBoardConfDialog(BaseEngine * engine,
                                              LoginEngine * loginengine,
                                              SwitchBoardWindow * window,
                                              QWidget * parent)

@@ -33,11 +33,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 /*! \brief Constructor.
  *
- * Construct the SwitchBoardEngine object and load settings.
+ * Construct the BaseEngine object and load settings.
  * The TcpSocket Object used to communicate with the server
  * is created and connected to the right slots/signals
  */
-SwitchBoardEngine::SwitchBoardEngine(QObject * parent)
+BaseEngine::BaseEngine(QObject * parent)
 : QObject(parent)
 {
 	m_socket = new QTcpSocket(this);
@@ -74,7 +74,7 @@ SwitchBoardEngine::SwitchBoardEngine(QObject * parent)
 /*!
  * Load Settings from the registery/configuration file
  */
-void SwitchBoardEngine::loadSettings()
+void BaseEngine::loadSettings()
 {
 	QSettings settings;
 	m_serverhost = settings.value("engine/serverhost").toString();
@@ -91,7 +91,7 @@ void SwitchBoardEngine::loadSettings()
 /*!
  * Save Settings to the registery/configuration file
  */
-void SwitchBoardEngine::saveSettings()
+void BaseEngine::saveSettings()
 {
 	QSettings settings;
 	settings.setValue("engine/serverhost", m_serverhost);
@@ -109,7 +109,7 @@ void SwitchBoardEngine::saveSettings()
  *
  * Set server host name and server port
  */
-void SwitchBoardEngine::setAddress(const QString & host, quint16 port)
+void BaseEngine::setAddress(const QString & host, quint16 port)
 {
 	m_serverhost = host;
 	m_sbport = port;
@@ -117,23 +117,23 @@ void SwitchBoardEngine::setAddress(const QString & host, quint16 port)
 
 /*! \brief Start the connection to the server
  */
-void SwitchBoardEngine::start()
+void BaseEngine::start()
 {
 	connectSocket();
 }
 
 /*! \brief close the connection to the server
  */
-void SwitchBoardEngine::stop()
+void BaseEngine::stop()
 {
-	qDebug() << "SwitchBoardEngine::stop()";
+	qDebug() << "BaseEngine::stop()";
 	m_socket->disconnectFromHost();
 	stopTryAgainTimer();
 }
 
 /*! \brief initiate connection to the server
  */
-void SwitchBoardEngine::connectSocket()
+void BaseEngine::connectSocket()
 {
 	m_socket->connectToHost(m_serverhost, m_sbport);
 }
@@ -143,7 +143,7 @@ void SwitchBoardEngine::connectSocket()
  *
  * \sa m_pendingcommand
  */
-void SwitchBoardEngine::sendCommand()
+void BaseEngine::sendCommand()
 {
 	m_socket->write((m_pendingcommand + "\r\n"/*"\n"*/).toAscii());
 	qDebug() << ">>>" << m_pendingcommand;
@@ -156,7 +156,7 @@ void SwitchBoardEngine::sendCommand()
  *
  * \sa Logwidget
  */
-void SwitchBoardEngine::processHistory(const QStringList & histlist)
+void BaseEngine::processHistory(const QStringList & histlist)
 {
 	int i;
 	for(i=0; i+6<=histlist.size(); i+=6)
@@ -181,7 +181,7 @@ void SwitchBoardEngine::processHistory(const QStringList & histlist)
 
 /*! \brief called when the socket is first connected
  */
-void SwitchBoardEngine::socketConnected()
+void BaseEngine::socketConnected()
 {
 	qDebug() << "socketConnected()";
 	started();
@@ -196,7 +196,7 @@ void SwitchBoardEngine::socketConnected()
 
 /*! \brief called when the socket is disconnected from the server
  */
-void SwitchBoardEngine::socketDisconnected()
+void BaseEngine::socketDisconnected()
 {
 	qDebug() << "socketDisconnected()";
 	stopped();
@@ -210,14 +210,14 @@ void SwitchBoardEngine::socketDisconnected()
  *
  * Do nothing...
  */
-void SwitchBoardEngine::socketHostFound()
+void BaseEngine::socketHostFound()
 {
 	qDebug() << "socketHostFound()";
 }
 
 /*! \brief catch socket errors
  */
-void SwitchBoardEngine::socketError(QAbstractSocket::SocketError socketError)
+void BaseEngine::socketError(QAbstractSocket::SocketError socketError)
 {
 	qDebug() << "socketError(" << socketError << ")";
 	switch(socketError)
@@ -246,7 +246,7 @@ void SwitchBoardEngine::socketError(QAbstractSocket::SocketError socketError)
  *
  * useless...
  */
-void SwitchBoardEngine::socketStateChanged(QAbstractSocket::SocketState socketState)
+void BaseEngine::socketStateChanged(QAbstractSocket::SocketState socketState)
 {
 	qDebug() << "socketStateChanged(" << socketState << ")";
 	if(socketState == QAbstractSocket::ConnectedState) {
@@ -263,7 +263,7 @@ void SwitchBoardEngine::socketStateChanged(QAbstractSocket::SocketState socketSt
  *
  * update peers and calls
  */
-void SwitchBoardEngine::updatePeers(const QStringList & liststatus)
+void BaseEngine::updatePeers(const QStringList & liststatus)
 {
 	const int nfields0 = 11; // 0th order size (per-phone/line informations)
 	const int nfields1 = 6;  // 1st order size (per-channel informations)
@@ -348,7 +348,7 @@ void SwitchBoardEngine::updatePeers(const QStringList & liststatus)
 
 /*! \brief update a caller id 
  */
-void SwitchBoardEngine::updateCallerids(const QStringList & liststatus)
+void BaseEngine::updateCallerids(const QStringList & liststatus)
 {
 	QString pname = "p/" + liststatus[1] + "/" + liststatus[5] + "/"
 		+ liststatus[2] + "/" + liststatus[3] + "/" + liststatus[4];
@@ -362,7 +362,7 @@ void SwitchBoardEngine::updateCallerids(const QStringList & liststatus)
  *
  * Read and process the data from the server.
  */
-void SwitchBoardEngine::socketReadyRead()
+void BaseEngine::socketReadyRead()
 {
 	QSettings settings;
 	//	qDebug() << "socketReadyRead()";
@@ -406,6 +406,7 @@ void SwitchBoardEngine::socketReadyRead()
 				QStringList listpeers = list[1].split(";");
 				for(int i = 0 ; i < listpeers.size() - 1; i++) {
 					QStringList liststatus = listpeers[i].split(":");
+					qDebug() << liststatus;
 					updateCallerids(liststatus);
 				}
 				//callsUpdated();
@@ -431,6 +432,14 @@ void SwitchBoardEngine::socketReadyRead()
 				QStringList listpeers = list[1].split(";");
 				for(int i = 0 ; i < listpeers.size() - 1; i++) {
 					QStringList liststatus = listpeers[i].split(":");
+					if(liststatus.size() > 13) {
+						QStringList listcids = liststatus;
+						listcids[6] = liststatus[11];
+						listcids[7] = liststatus[12];
+						listcids[8] = liststatus[13];
+						// remove [> 8] elements ?
+						updateCallerids(listcids);
+					}
 					updatePeers(liststatus);
 				}
 			} else if(list[0] == QString("peerremove")) {
@@ -459,9 +468,9 @@ void SwitchBoardEngine::socketReadyRead()
 
 /*! \brief send an originate command to the server
  */
-void SwitchBoardEngine::originateCall(const QString & src, const QString & dst)
+void BaseEngine::originateCall(const QString & src, const QString & dst)
 {
-	qDebug() << "SwitchBoardEngine::originateCall()" << src << dst;
+	qDebug() << "BaseEngine::originateCall()" << src << dst;
 	QStringList dstlist = dst.split("/");
 	if(dstlist.size()>5)
 	{
@@ -479,9 +488,9 @@ void SwitchBoardEngine::originateCall(const QString & src, const QString & dst)
 
 /*! \brief dial (originate with known src)
  */
-void SwitchBoardEngine::dialFullChannel(const QString & dst)
+void BaseEngine::dialFullChannel(const QString & dst)
 {
-	qDebug() << "SwitchBoardEngine::dialFullChannel()" << dst;
+	qDebug() << "BaseEngine::dialFullChannel()" << dst;
 	m_pendingcommand = "originate p/" +
 		m_asterisk + "/" + m_dialcontext + "/" + m_protocol + "/" +
 		m_userid + "/" + m_extension + " " + dst;
@@ -490,9 +499,9 @@ void SwitchBoardEngine::dialFullChannel(const QString & dst)
 
 /*! \brief dial (originate with known src)
  */
-void SwitchBoardEngine::dialExtension(const QString & dst)
+void BaseEngine::dialExtension(const QString & dst)
 {
-	qDebug() << "SwitchBoardEngine::dialExtension()" << dst;
+	qDebug() << "BaseEngine::dialExtension()" << dst;
 	m_pendingcommand = "originate p/" +
 		m_asterisk + "/" + m_dialcontext + "/" + m_protocol + "/" + 
 		m_userid + "/" + m_extension + " p/" +
@@ -502,9 +511,9 @@ void SwitchBoardEngine::dialExtension(const QString & dst)
 
 /*! \brief send a transfer call command to the server
  */
-void SwitchBoardEngine::transferCall(const QString & src, const QString & dst)
+void BaseEngine::transferCall(const QString & src, const QString & dst)
 {
-	qDebug() << "SwitchBoardEngine::transferCall()" << src << dst;
+	qDebug() << "BaseEngine::transferCall()" << src << dst;
 	QStringList dstlist = dst.split("/");
 	if(dstlist.size() >= 6)
 	{
@@ -526,9 +535,9 @@ void SwitchBoardEngine::transferCall(const QString & src, const QString & dst)
  *
  * \sa transferCall
  */
-void SwitchBoardEngine::interceptCall(const QString & src)
+void BaseEngine::interceptCall(const QString & src)
 {
-	qDebug() << "SwitchBoardEngine::interceptCall()" << src;
+	qDebug() << "BaseEngine::interceptCall()" << src;
 	m_pendingcommand = "transfer " + src + " p/"
 	        + m_asterisk + "/" + m_dialcontext + "/"
 			+ m_protocol + "/" + "/" + m_extension; 
@@ -539,9 +548,9 @@ void SwitchBoardEngine::interceptCall(const QString & src)
  *
  * send a hang up command to the server
  */
-void SwitchBoardEngine::hangUp(const QString & channel)
+void BaseEngine::hangUp(const QString & channel)
 {
-	qDebug() << "SwitchBoardEngine::hangUp()" << channel;
+	qDebug() << "BaseEngine::hangUp()" << channel;
 	m_pendingcommand = "hangup " + channel;
 	sendCommand();
 }
@@ -550,21 +559,21 @@ void SwitchBoardEngine::hangUp(const QString & channel)
  *
  * \sa directoryResponse()
  */
-void SwitchBoardEngine::searchDirectory(const QString & text)
+void BaseEngine::searchDirectory(const QString & text)
 {
-	qDebug() << "SwitchBoardEngine::searchDirectory()" << text;
+	qDebug() << "BaseEngine::searchDirectory()" << text;
 	m_pendingcommand = "directory-search " + text;
 	sendCommand();
 }
 
 /*! \brief ask history for an extension 
  */
-void SwitchBoardEngine::requestHistory(const QString & peer, int mode)
+void BaseEngine::requestHistory(const QString & peer, int mode)
 {
 	/* mode = 0 : Out calls
 	 * mode = 1 : In calls
 	 * mode = 2 : Missed calls */
-	//qDebug() << "SwitchBoardEngine::requestHistory()" << peer;
+	//qDebug() << "BaseEngine::requestHistory()" << peer;
 	// m_historysize = 12;
 	if((mode >= 0) && (m_socket->state() == QAbstractSocket::ConnectedState)) {
 		m_pendingcommand = "history " + peer + " " + QString::number(m_historysize) + " " + QString::number(mode);
@@ -573,28 +582,28 @@ void SwitchBoardEngine::requestHistory(const QString & peer, int mode)
 }
 
 /*! \brief get server host */
-const QString & SwitchBoardEngine::host() const
+const QString & BaseEngine::host() const
 {
 	return m_serverhost;
 }
 
 /*! \brief get server port */
-quint16 SwitchBoardEngine::sbport() const
+quint16 BaseEngine::sbport() const
 {
 	return m_sbport;
 }
 
-void SwitchBoardEngine::setTrytoreconnect(bool b)
+void BaseEngine::setTrytoreconnect(bool b)
 {
 	m_trytoreconnect = b;
 }
 
-bool SwitchBoardEngine::trytoreconnect() const
+bool BaseEngine::trytoreconnect() const
 {
 	return m_trytoreconnect;
 }
 
-void SwitchBoardEngine::stopTryAgainTimer()
+void BaseEngine::stopTryAgainTimer()
 {
 	if( m_try_timerid > 0 )
 	{
@@ -603,7 +612,7 @@ void SwitchBoardEngine::stopTryAgainTimer()
 	}
 }
 
-void SwitchBoardEngine::startTryAgainTimer()
+void BaseEngine::startTryAgainTimer()
 {
 	if( m_try_timerid == 0 && m_trytoreconnect )
 	{
@@ -611,17 +620,17 @@ void SwitchBoardEngine::startTryAgainTimer()
 	}
 }
 
-void SwitchBoardEngine::setHistorySize(uint size)
+void BaseEngine::setHistorySize(uint size)
 {
 	m_historysize = size;
 }
 
-uint SwitchBoardEngine::historysize() const
+uint BaseEngine::historysize() const
 {
 	return m_historysize;
 }
 
-uint SwitchBoardEngine::trytoreconnectinterval() const
+uint BaseEngine::trytoreconnectinterval() const
 {
 	return m_trytoreconnectinterval;
 }
@@ -632,7 +641,7 @@ uint SwitchBoardEngine::trytoreconnectinterval() const
  *
  * \sa trytoreconnectinterval
  */
-void SwitchBoardEngine::setTrytoreconnectinterval(uint i)
+void BaseEngine::setTrytoreconnectinterval(uint i)
 {
 	if( m_trytoreconnectinterval != i )
 	{
@@ -649,10 +658,10 @@ void SwitchBoardEngine::setTrytoreconnectinterval(uint i)
  *
  * does nothing
  */
-void SwitchBoardEngine::timerEvent(QTimerEvent * event)
+void BaseEngine::timerEvent(QTimerEvent * event)
 {
 	int timerId = event->timerId();
-	qDebug() << "SwitchBoardEngine::timerEvent() timerId=" << timerId;
+	qDebug() << "BaseEngine::timerEvent() timerId=" << timerId;
 	if(timerId == m_try_timerid) {
 		emitTextMessage(tr("Attempting to reconnect to server"));
 		start();

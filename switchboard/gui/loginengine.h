@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QTcpServer>
 #include <QUdpSocket>
 
+class Popup;
 class QTimer;
 class QDateTime;
 
@@ -98,6 +99,7 @@ signals:
 	void availAllowChanged(bool);	//!< signal 
 	void logged();	//!< signal emitted when the state becomes ELogged
 	void delogged();	//!< signal emitted when the state becomes ENotLogged
+	void newProfile(Popup *);	//!< signal emitted when a new profile has to be shown
 public slots:
 	void start();
 	void stop();
@@ -109,24 +111,36 @@ public slots:
 private slots:
 	void identifyToTheServer();	//!< perform the first login step
 	void processLoginDialog();	//!< perform the following login steps
+	void handleProfilePush();	//!< called when receiving a profile
+	void serverHostFound();		//!< called when the host name resolution succeded
 	void keepLoginAlive();		//!< Send a UDP datagram to keep session alive
 	void readKeepLoginAliveDatagrams();	//!< handle the responses to keep alive
+	void popupDestroyed(QObject *);	//!< know when a profile widget is destroyed *DEBUG*
+	void profileToBeShown(Popup *);	//!< a new profile must be displayed
+
 	void setKeepaliveinterval(uint);	//!< set keep alive interval
 signals:
 	void started();		//!< emited when the engine is started
 	void stopped();		//!< emited when the engine is stopped
 	void emitTextMessage(const QString &);	//!< some message have to be emited
 private:
+	void initListenSocket();	//!< initialize the socket listening to profile
 	void stopKeepAliveTimer();	//!< Stop the keep alive timer if running
 	void startTryAgainTimer();	//!< Start the "try to reconnect" timer
 	void stopTryAgainTimer();	//!< Stop the "try to reconnect" timer
 	void setAvailState(const QString &);	//!< set Availability state
+	void processHistory(const QStringList &);
+	void initFeatureFields(const QString &, const QString &);
+	void updateCallerids(const QStringList &);
 
 	QTcpSocket * m_loginsocket;	//!< socket to login to the server
-	QUdpSocket * m_udpsocket;		//!< UDP socket used for keep alive
+	QUdpSocket * m_udpsocket;      	//!< UDP socket used for keep alive
+	QTcpServer * m_listensocket;	//!< TCP socket listening for profiles
+	ushort m_listenport;		//!< Port where we are listening for profiles
 	int m_timer;	//!< timer id
 	QString m_serverhost;	//!< server host name
 	quint16 m_loginport;	//!< port to login to server
+	bool m_tcpmode;	//!< use a unique outgoing TCP connection for everything
 	bool m_autoconnect;	//!< Autoconnect to server at startup ?
 	// poste à utiliser pour les commandes "DIAL"
 	QHostAddress m_serveraddress;	//!< Resolved address of the login server

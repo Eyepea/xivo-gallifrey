@@ -33,6 +33,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QCloseEvent>
 #include <QVBoxLayout>
 #include <QDebug>
+#include <QTabWidget>
 #include "mainwindow.h"
 #include "loginengine.h"
 #include "switchboardengine.h"
@@ -44,6 +45,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include "dialpanel.h"
 #include "directorypanel.h"
 #include "displaymessages.h"
+#include "servicepanel.h"
+#include "popup.h"
 
 /*! \brief Widget containing the CallStackWidget and a Title QLabel
  */
@@ -76,7 +79,7 @@ QLabel * LeftPanel::titleLabel()
  * displaying calls and a right panel for peers.
  * The geometry is restored from settings.
  */
-MainWindow::MainWindow(SwitchBoardEngine * engine, LoginEngine * loginengine)
+MainWindow::MainWindow(BaseEngine * engine, LoginEngine * loginengine)
 	: m_engine(engine), m_loginengine(loginengine)
 {
 	QPixmap redsquare(15,15);
@@ -91,18 +94,26 @@ MainWindow::MainWindow(SwitchBoardEngine * engine, LoginEngine * loginengine)
 	m_splitter = new QSplitter(this);
 	m_leftSplitter = new QSplitter(Qt::Vertical, m_splitter);
 
+
+	/* (0, 0) "position" : Calls */
 	QScrollArea * areaCalls = new QScrollArea(this);
 	LeftPanel * leftPanel = new LeftPanel(areaCalls, m_leftSplitter);
-	//QScrollArea * areaLog = new QScrollArea(m_leftSplitter);
-	//areaLog->setWidgetResizable(true);
-	//LogWidget * logwidget = new LogWidget(m_engine, areaLog);
-	LogWidget * logwidget = new LogWidget(m_engine, m_leftSplitter);
-	//areaLog->setWidget(logwidget);
+
+
+	/* (0, 1) "position" : Tabs */
+	QTabWidget * tabwidget = new QTabWidget(m_leftSplitter);
+
+	DisplayMessagesPanel * lbl = new DisplayMessagesPanel(tabwidget);
+	tabwidget->addTab(lbl, "Messages");
+
+	ServicePanel * featureswidget = new ServicePanel(this);
+	tabwidget->addTab(featureswidget, "Services");
+
+	LogWidget * logwidget = new LogWidget(m_engine, tabwidget);
 	connect( engine, SIGNAL(updateLogEntry(const QDateTime &, int, const QString &, int)),
 	         logwidget, SLOT(addLogEntry(const QDateTime &, int, const QString &, int)) );
+	tabwidget->addTab(logwidget, "History");
 
- 	//QScrollArea * dialArea = new QScrollArea(leftsplitter);
- 	//dialArea->setWidgetResizable(false);
 
 	CallStackWidget * calls = new CallStackWidget(areaCalls);
 	connect( calls, SIGNAL(changeTitle(const QString &)),
@@ -188,8 +199,10 @@ MainWindow::MainWindow(SwitchBoardEngine * engine, LoginEngine * loginengine)
 	connect( engine, SIGNAL(removePeer(const QString &)),
 	         searchpanel, SLOT(removePeer(const QString &)) );
 	
-	DisplayMessagesPanel * lbl = new DisplayMessagesPanel(m_rightSplitter);
-	
+	m_tabwidget = new QTabWidget(m_rightSplitter);
+	connect( loginengine, SIGNAL(newProfile(Popup *)),
+	         this, SLOT(showNewProfile(Popup *)) );
+
 	DialPanel * dialpanel = new DialPanel(m_rightSplitter);
 	connect( dialpanel, SIGNAL(emitDial(const QString &)),
 	         engine, SLOT(dialExtension(const QString &)) );
@@ -364,6 +377,45 @@ void MainWindow::engineStopped()
 void MainWindow::loginengineStarted()
 {
 	m_engine->setDialContext(m_loginengine->dialContext());
+}
+
+/*!
+ * Display the new profile in the tabbed area
+ * and show a message with the systray icon
+ */
+void MainWindow::showNewProfile(Popup * popup)
+{
+	qDebug() << "MainWindow::showNewProfile()";
+	QTime currentTime = QTime::currentTime();
+	QString currentTimeStr = currentTime.toString("hh:mm:ss");
+	/*	if(m_systrayIcon)
+	  {
+	  m_systrayIcon->showMessage(tr("Incoming call"),
+	  currentTimeStr + "\n"
+	  + popup->message() );
+	  }*/
+	if(m_tabwidget)
+	{
+		int index = m_tabwidget->addTab(popup, currentTimeStr);
+		qDebug() << "added tab" << index;
+		m_tabwidget->setCurrentIndex(index);
+// 		if(m_cinfo_index > -1)
+// 			m_qtabwidget->setCurrentIndex(m_cinfo_index);
+//		if(index >= m_tablimit)
+		if(index >= 5)
+		{
+			// close the first widget
+			m_tabwidget->widget(0)->close();
+		}
+		// show the window and give it the focus.
+		setVisible(true);
+		activateWindow();
+		raise();
+	}
+	else
+	{
+		popup->show();
+	}
 }
 
 /*! \brief Display the about box

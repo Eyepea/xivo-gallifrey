@@ -49,7 +49,7 @@ SearchPanel::SearchPanel(QWidget * parent)
 	vlayout->addWidget(scrollarea);
 }
 
-void SearchPanel::setEngine(Engine * engine)
+void SearchPanel::setEngine(BaseEngine * engine)
 {
 	m_engine = engine;
 }
