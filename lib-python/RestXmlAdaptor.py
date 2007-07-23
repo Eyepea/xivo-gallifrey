@@ -26,16 +26,22 @@ __license__ = """
 from RestDispatcher import *
 from PinstXml import *
 
-xml_ctm = ConTypeMatch(
-	strict = False,
-	static = True,
-	type = 'text',
-	subtype = 'xml',
-	params = frozenset(),
-	fdynam = None
-)
-
 class RestXmlRegistrar(object):
+	
+	XML_CTM = ConTypeMatch(
+		strict = False,
+		static = True,
+		type = 'text',
+		subtype = 'xml',
+		params = frozenset(),
+		fdynam = None
+	)
+	
+	XML_CTD = ConTypeDesc(
+		type = 'text',
+		subtype = 'xml',
+		extens = frozenset()
+	)
 	
 	def __init__(self):
 		self.__dispatcher = None
@@ -49,7 +55,7 @@ class RestXmlRegistrar(object):
 		if self.__dispatcher is not None:
 			raise ValueError, "Already registred"
 		self.__dispatcher = dispatcher
-		return [xml_ctm]
+		return [self.XML_CTM]
 	
 	def get_transfact(self):
 		"""Returns a callable that takes a SelectedAdaptor argument
@@ -61,6 +67,9 @@ class RestXmlRegistrar(object):
 	# XXX: would be better to allow progressive loading/parsing of the 
 	# payload, which would be quite simple using a file like interface
 	# on the socket :)
+	
+	def get_content_type_desc(self):
+		return self.XML_CTD
 	
 	def to_internal(self, selected_adaptor, payload):
 		"""Translate an Xml Payload (of a supported informal 'schema')
@@ -83,3 +92,5 @@ class RestXmlRegistrar(object):
 		if not payload_int:
 			return None
 		return xmlstr_pinst(*payload_int)
+
+__all__ = ['RestXmlRegistrar']
