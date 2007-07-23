@@ -34,6 +34,7 @@ from http_pyparsing import HTTP_TRANSFER_CODING_LINE, HTTP_CHUNK_HEADER_LINE, \
                            HTTP_TOKCHAR
 from operator import attrgetter
 from pyparsing import ParseException
+from easyslog import *
 
 class InvalidHeader(Exception): pass
 class UnsupportedEncoding(Exception): pass
@@ -112,6 +113,14 @@ def content_type_line(s):
 	ps = HTTP_CONTENT_TYPE_LINE.parseString(s)
 	return present_media(ps)
 
+#ConTypeDesc = NamedTuple('ConTypeDesc', 'type subtype extens')
+def httpmedia_contypedesc(ctd):
+	if ctd.type is None: type = '*'
+	else: type = ctd.type
+	if ctd.subtype is None: subtype = '*'
+	else: subtype = ctd.subtype
+	return ';'.join(chain(('/'.join((type,subtype)),),imap(param_to_str, iter(ctd.extens))))
+
 class RestHTTPHandler(BaseHTTPRequestHandler):
 	
 	def __init__(self, request, client_address, server):
@@ -124,6 +133,7 @@ class RestHTTPHandler(BaseHTTPRequestHandler):
 		self.rest_payload = None
 		self.rest_content_type = None
 		self.rest_accept = None
+		self.rest_answered = False
 		BaseHTTPRequestHandler.__init__(self, request, client_address, server)
 	
 	def has_payload(self):
@@ -257,19 +267,49 @@ class RestHTTPHandler(BaseHTTPRequestHandler):
 			return False
 		return True
 	
+	def rest_answer(self, anscode=204, adapted_payload = None, ctd = None):
+		if self.rest_answered:
+			raise DoubleAnswer, "Trying to answer twice"
+		# TODO: progressive (chunked) answer if possible and necessary
+		self.send_response(anscode)
+		if adapted_payload is not None:
+			content_type = httpmedia_contypedesc(ctd)
+			self.send_header("Content-Type", content_type)
+			self.send_header("Content-Length", len(adapted_payload))
+			self.send_header("Cache-Control", "no-cache")	# XXX
+			self.send_header("Pragma", "no-cache")		# XXX
+		self.end_headers()
+		if (adapted_payload is not None) and (self.command != 'HEAD'):
+			self.wfile.write(adapted_payload)
+		self.wfile.flush()
+		# XXX this would be functionally/conceptually better in
+		# RestDispatcher, see also rest_handle()
+		self.rest_answered = True
+	
 	def rest_handle(self):
 		"Rest specific code for this HTTP request handler."
-		if not self.rest_client_payload():
-			return
-		if not self.rest_parse_accept():
-			return
 		try:
-			self.rest_dispatcher.dispatch_in(
-				self.rest_path, self.command,
-				self.rest_payload, self.rest_content_type,
-				self.rest_accept)
-		except RestErrorCode, x:
-			self.send_error(x.response_code, str(x))
+			if not self.rest_client_payload():
+				return
+			if not self.rest_parse_accept():
+				return
+			try:
+				self.rest_dispatcher.dispatch_in(
+					self.rest_path, self.command,
+					self.rest_payload, self.rest_content_type,
+					self.rest_accept)
+				# XXX this would be functionally/conceptually better in
+				# RestDispatcher, see also rest_answer()
+				if not self.rest_answered:
+					raise RestErrorCode(500, "no answer sent by application")
+			except RestErrorCode, x:
+				self.send_error(x.response_code, str(x))
+		except DoubleAnswer, x:
+			# XXX backtrace
+			syslogf(str(x))
+		except Exception, x:
+			# XXX backtrace
+			self.send_error(500, str(x))
 	
 	def handle_one_request(self):
         	"""Handle a single HTTP request.
@@ -319,4 +359,4 @@ class RestHTTPRegistrar(object):
 	
 	dispatcher = property(attrgetter('_RestHTTPRegistrar__dispatcher'))
 
-all = ['RestHTTPRegistrar', 'RestHTTPHandler']
+__all__ = ['RestHTTPRegistrar', 'RestHTTPHandler']
