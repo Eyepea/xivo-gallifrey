@@ -154,6 +154,11 @@ class RestDispatcher(object):
 		for ctm in presentation_lst:
 			del self.__presentation[ctm]
 	# XXX: complete special handling of Q==0
+	# XXX only prioritize
+	#   str, str, non empty frozenset of (k,v)
+	# above
+	#   str, str, empty frozenset of (k,v)
+	# if same type/subtype
 	def select_adaptor(self, ctx, seq_dico_ctd_q):
 		"""Given a request context 'ctx' and a prioritized list
 		(highest first) of dictionaries associating a Q value (as in
