@@ -30,12 +30,37 @@ from easyslog import *
 def LOGLINE_STDERR(x):
 	print >> sys.stderr, x
 
+def SYSLOG_EXCEPT(loglevel):
+	return lambda x:syslogf(loglevel,x)
+
+def exception_raw_traceback():
+	"""Returns a backtrace of the current exception in a list of strings,
+	terminated by newlines.
+	
+	"""
+	return traceback.format_exception(*sys.exc_info())
+
 def exception_traceback():
 	"""Returns a backtrace of the current exception in a list of strings,
 	not terminated by newlines.
 	
 	"""
-	return map(lambda x: x.rstrip(), traceback.format_exception(*sys.exc_info()))
+	return map(lambda x: x.rstrip(), exception_raw_traceback())
+
+def log_full_exception(logfull_func = None, logline_func = None, noclear = False):
+	"""Log the current exception using the 'logline_func' for each right
+	stripped line first, then the whole traceback in a single multiline
+	string using the 'logfull_func'
+	Clear the current exception at end of command if 'noclear' is False.
+	"""
+	tb_line_list = exception_raw_traceback()
+	if logline_func:
+		for line in tb_line_list:
+			logline_func(line.rstrip())
+	if logfull_func:
+		logfull_func(''.join(tb_line_list))
+	if not noclear:
+		sys.exc_clear()
 
 def log_exception(logline_func = LOGLINE_STDERR, noclear = False):
 	"""Log the current exception using the passed 'logline_func' function.
@@ -53,7 +78,8 @@ def syslog_exception(loglevel=SYSLOG_ERR, noclear=False):
 	if 'noclear' is False.
 	
 	"""
-	log_exception(lambda x:syslogf(loglevel,x), noclear)
+	log_exception(SYSLOG_EXCEPT(loglevel), noclear)
 
-__all__ = [ 'exception_traceback', 'log_exception', 'syslog_exception',
-            'LOGLINE_STDERR' ]
+__all__ = [ 'exception_raw_traceback', 'exception_traceback', 'log_exception',
+            'syslog_exception', 'log_full_exception', 'LOGLINE_STDERR',
+	    'SYSLOG_EXCEPT' ]
