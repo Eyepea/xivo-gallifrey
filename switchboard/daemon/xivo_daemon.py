@@ -607,9 +607,9 @@ def build_customers(astn, ctx, searchpattern):
 			fieldslist = []
 			for fname in fnames:
 				fieldslist.append(fname)
-				if searchpattern == "" or searchpattern == "*":
+				if searchpattern == "*":
 					selectline += "(%s=*)" %fname
-				else:
+				elif searchpattern != "":
 					selectline += "(%s=*%s*)" %(fname, searchpattern)
 			selectline += ")"
 			ldapid = myLDAP(dir_db_uri)
@@ -643,9 +643,9 @@ def build_customers(astn, ctx, searchpattern):
 			selectline  = ""
 			for fname in fnames:
 				selectline += "%s, " %fname
-			if searchpattern == "" or searchpattern == "*":
+			if searchpattern == "*":
 				whereline = ""
-			else:
+			elif searchpattern != "":
 				whereline = " WHERE "
 				for fname in fnames:
 					whereline += "%s REGEXP '%s' OR " %(fname, searchpattern)
@@ -684,25 +684,25 @@ def build_customers_fromrequester(requester, searchpattern):
 # \param phoneid the "pointer" to the Asterisk phone statuses
 # \return the string containing the base status of the phone
 def build_basestatus(phoneid):
-	basestatus = phoneid.tech + ":" \
-		     + phoneid.phoneid  + ":" \
-		     + phoneid.phonenum  + ":" \
-		     + phoneid.context  + ":" \
-		     + phoneid.imstat  + ":" \
-		     + phoneid.sipstatus  + ":" \
-		     + phoneid.voicemail  + ":" \
-		     + phoneid.queueavail
-	return basestatus
+	basestatus = [phoneid.tech,
+		      phoneid.phoneid,
+		      phoneid.phonenum,
+		      phoneid.context,
+		      phoneid.imstat,
+		      phoneid.sipstatus,
+		      phoneid.voicemail,
+		      phoneid.queueavail]
+	return ":".join(basestatus)
 
 
 ## \brief Builds the base status (no channel information) for one phone identifier
 # \param phoneid the "pointer" to the Asterisk phone statuses
 # \return the string containing the base status of the phone
 def build_cidstatus(phoneid):
-	cidstatus = phoneid.calleridfull + ":" \
-		     + phoneid.calleridfirst + ":" \
-		     + phoneid.calleridlast
-	return cidstatus
+	cidstatus = [phoneid.calleridfull,
+		     phoneid.calleridfirst,
+		     phoneid.calleridlast]
+	return ":".join(cidstatus)
 
 
 ## \brief Builds the channel-by-channel part for the hints/update replies.
@@ -732,17 +732,17 @@ def build_callerids():
 		plist_normal_keys = filter(lambda j: plist[n].normal[j].towatch, plist[n].normal.keys())
 		plist_normal_keys.sort()
 		for phonenum in plist_normal_keys:
-			phoneinfo = "cid:" + plist[n].astid + ":" \
-				    + plist[n].normal[phonenum].tech + ":" \
-				    + plist[n].normal[phonenum].phoneid + ":" \
-				    + plist[n].normal[phonenum].phonenum + ":" \
-				    + plist[n].normal[phonenum].context + ":" \
-				    + plist[n].normal[phonenum].calleridfull + ":" \
-				    + plist[n].normal[phonenum].calleridfirst + ":" \
-				    + plist[n].normal[phonenum].calleridlast
-			#+ ":" \
+			phoneinfo = ["cid",
+				     plist[n].astid,
+				     plist[n].normal[phonenum].tech,
+				     plist[n].normal[phonenum].phoneid,
+				     plist[n].normal[phonenum].phonenum,
+				     plist[n].normal[phonenum].context,
+				     plist[n].normal[phonenum].calleridfull,
+				     plist[n].normal[phonenum].calleridfirst,
+				     plist[n].normal[phonenum].calleridlast]
 			#    + "groupinfos/technique"
-			fullstat += phoneinfo + ";"
+			fullstat += ":".join(phoneinfo) + ";"
 	fullstat += "\n"
 	return fullstat
 
@@ -2524,12 +2524,8 @@ class IdentRequestHandler(SocketServer.StreamRequestHandler):
                         if time.time() - e.get('sessiontimestamp') > xivoclient_session_timeout:
                             retline = 'ERROR USER SESSION EXPIRED for <%s>\r\n' %user
                         else:
-                            retline = 'USER ' + user
-                            retline += ' SESSIONID ' + e.get('sessionid')
-                            retline += ' IP ' + e.get('ip')
-                            retline += ' PORT ' + e.get('port')
-                            retline += ' STATE ' + e.get('state')
-                            retline += '\r\n'
+                            retline = 'USER %s SESSIONID %s IP %s PORT %s STATE %s\r\n' \
+				      %(user, e.get('sessionid'), e.get('ip'), e.get('port'), e.get('state'))
                     else:
                         retline = 'ERROR USER SESSION NOT DEFINED for <%s>\r\n' %user
             except Exception, exc:
