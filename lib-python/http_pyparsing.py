@@ -53,14 +53,18 @@ HTTP_CHUNK_HEADER = Word( hexdigits ) + Group( ZeroOrMore( Suppress( ';' ) + Gro
 HTTP_CHUNK_HEADER_LINE = HTTP_CHUNK_HEADER + LineEnd()
 
 
-HTTP_MEDIA_RANGE = Group( HTTP_TOKEN + Suppress( '/' ) + HTTP_TOKEN ) + Group( ZeroOrMore( Suppress( ';' ) + Group( HTTP_PARAMETER ) ) )
-HTTP_ACCEPT_HEADER = Optional( Group( HTTP_MEDIA_RANGE ) ) + ZeroOrMore( Suppress( ',' ) + Optional( Group( HTTP_MEDIA_RANGE ) ) )
+HTTP_MEDIA = Group( HTTP_TOKEN + Suppress( '/' ) + HTTP_TOKEN ) + Group( ZeroOrMore( Suppress( ';' ) + Group( HTTP_PARAMETER ) ) )
+HTTP_ACCEPT_HEADER = Optional( Group( HTTP_MEDIA ) ) + ZeroOrMore( Suppress( ',' ) + Optional( Group( HTTP_MEDIA ) ) )
 HTTP_ACCEPT_HEADER_LINE = HTTP_ACCEPT_HEADER + LineEnd()
+
+
+HTTP_CONTENT_TYPE_LINE = HTTP_MEDIA + LineEnd()
 
 
 __all__ = [ 'HTTP_CHAR', 'HTTP_SEPARATORS', 'HTTP_CTLS', 'HTTP_TOKCHAR',
             'HTTP_TOKEN', 'HTTP_QUOTED', 'HTTP_VALUE', 'HTTP_PARAMETER',
 	    'HTTP_TRANSFER_EXTENSION', 'HTTP_TRANSFER_CODING',
 	    'HTTP_TRANSFER_CODING_LINE', 'HTTP_CHUNK_EXTENSION',
-	    'HTTP_CHUNK_HEADER', 'HTTP_CHUNK_HEADER_LINE', 'HTTP_MEDIA_RANGE',
-	    'HTTP_ACCEPT_HEADER', 'HTTP_ACCEPT_HEADER_LINE' ]
+	    'HTTP_CHUNK_HEADER', 'HTTP_CHUNK_HEADER_LINE', 'HTTP_MEDIA',
+	    'HTTP_ACCEPT_HEADER', 'HTTP_ACCEPT_HEADER_LINE',
+	    'HTTP_CONTENT_TYPE_LINE' ]
