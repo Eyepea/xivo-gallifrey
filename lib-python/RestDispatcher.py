@@ -265,8 +265,6 @@ class RestDispatcher(object):
 					best_ctm_for_ctd,
 					ctd, 1.0)
 	def dispatch_in(self, path, method, payload, ctd_in, accept_ctd_q, connector):
-		# XXX: adaptor should not be used for payload -> to internal
-		# because it comes from Accept, add another one from Content-Type
 		if method not in REST_METHODS:
 			raise RestErrorCode(501)
 		ctx = self.ctx_path(path, CtxType(None, None, method, path))
