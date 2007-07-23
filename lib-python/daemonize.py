@@ -2,6 +2,8 @@
 
 Copyright (C) 2007, Proformatique
 
+WARNING: Linux only module, needs /proc/
+
 """
 
 __version__ = "$Revision$ $Date$"
@@ -25,23 +27,13 @@ __license__ = """
 
 import os, re, sys, errno, os.path, traceback
 
+from except_tb import *
+
 SLASH_PROC = os.sep + 'proc'
 PROG_SLINK = 'exe'
 PROG_CMDLN = 'cmdline'
 
-LOGLINE_STDERR = lambda x: sys.stderr.write(x+'\n')
-
 class DaemonError(Exception): pass
-
-def log_exception(logline_func = LOGLINE_STDERR, noclear = False):
-	"""Log the current exception using the passed 'logline_func' function.
-	'logline_func' will be called one line at a time, without any trailing
-	\\n (or \\r). Clear the current exception at end of command if
-	'noclear' is False. """
-	for x in map(lambda x: x.rstrip(), traceback.format_exception(*sys.exc_info())):
-		logline_func(x)
-	if not noclear:
-		sys.exc_clear()
 
 def remove_if_stale_pidfile(pidfile, logline_func = LOGLINE_STDERR):
     """If the given 'pidfile' does not exists, do nothing.
