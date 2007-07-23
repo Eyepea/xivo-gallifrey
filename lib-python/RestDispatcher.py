@@ -29,6 +29,9 @@ from ReplTuple import *
 from ResourceTree import *
 from collections import NamedTuple
 from BaseHTTPServer import BaseHTTPRequestHandler
+from AttrDict import *
+from CtrlMap import *
+from OrdDict import *
 
 RESPONSES = BaseHTTPRequestHandler.responses
 # keys:		rest/http method
@@ -42,6 +45,9 @@ REST_METHODS = {
 	'POST':		(True,),
 	'DELETE':	(False,),
 }
+
+def empty_container():
+	return AttrDict(CtrlMap(ordDict()))
 
 # ConTypeDesc:
 # Content-Type descriptor when communicating with an adaptor.
@@ -66,8 +72,8 @@ ConTypeMatch = NamedTuple('ConTypeMatch', 'strict static type subtype params fdy
 
 # Using CtxType is not really mandatory as most of our Rest modules will
 # just access the context with something like ctx.method or
-# ctx.cdt_classes_factory(), etc..
-CtxType = ReplTuple('CtxType', 'cdt_classes_factory application_factory method path')
+# ctx.ctd_classes_factory(), etc..
+CtxType = ReplTuple('CtxType', 'ctd_classes_factory application_factory method path')
 
 # Returned by RestDispatcher.select_adaptor():
 SelectedAdaptor = NamedTuple('SelectedAdaptor', 'adaptor_fact contype_match contype_desc q')
@@ -172,17 +178,17 @@ class RestDispatcher(object):
 		just read the code.
 		- if no match has been found, None is returned instead of the
 		tuple. """
-		# cdt_classes: list of list of ConTypeDesc allowed by the
+		# ctd_classes: list of list of ConTypeDesc allowed by the
 		# application, first lists being of highest priorities, and every
 		# ConTypeDesc within a given list being of the same priority
-		cdt_classes = ctx.cdt_classes_factory()
-		for cdt_class in cdt_classes:
+		ctd_classes = ctx.ctd_classes_factory()
+		for ctd_class in ctd_classes:
 			# keys in behav: strict static
 			behav = { (False, False): set(), (False, True): set(),
 			          (True, False):  set(), (True, True):  set(), }
-			for cdt in cdt_class:
+			for ctd in ctd_class:
 				for ctm in self.__presentation:
-					if ConTypePossible(ctm, cdt):
+					if ConTypePossible(ctm, ctd):
 						behav[ctm[0:2]].add(ctm)
 			# seq_dico_ctd_q contains a prioritized list (highest
 			# first) of dictionaries associating a Q value (as in
@@ -205,6 +211,7 @@ class RestDispatcher(object):
 						# selected from first match in (strict, static) matchers first
 						# to (loose, dynamic) last.
 						best_adaptor_for_ctd = None
+						best_ctm_for_ctd = None
 						best_min_suppl = sys.maxint
 						q_for_best = 42
 						for ctm in behav[behav_k]:
@@ -216,38 +223,72 @@ class RestDispatcher(object):
 								if suppl < best_min_suppl:
 									best_adaptor_for_ctd = self.__presentation[ctm]
 									best_min_suppl = suppl
+									best_ctm_for_ctd = ctm
 									q_for_best = cur_q
 							if best_min_suppl == 0:
 								break
 						if best_adaptor_for_ctd is not None:
 							if q_for_best > best_Q:
 								best_ctd = ctd
-								best_ctm = ctm
+								best_ctm = best_ctm_for_ctd
 								best_adaptor_fact = best_adaptor_for_ctd
 								best_Q = q_for_best
 							this_ctd_done = True
 				if best_adaptor_fact is not None:
 					return SelectedAdaptor(best_adaptor_fact, best_ctm, best_ctd, best_Q)
-		return None
-	def dispatch_in(self, path, method, payload, seq_dico_ctd_q):
+	def adaptor_from_ctd(self, ctd):
+		# XXX: merge with select_adaptor() ?
+		behav = { (False, False): set(), (False, True): set(),
+			  (True, False):  set(), (True, True):  set(), }
+		for ctm in self.__presentation:
+			if ConTypePossible(ctm, ctd):
+				behav[ctm[0:2]].add(ctm)
+		done = False
+		for behav_k in ((True, True), (True, False), (False, True), (False, False)):
+			if done:
+				break
+			best_adaptor_for_ctd = None
+			best_ctm_for_ctd = None
+			best_min_suppl = sys.maxint
+			for ctm in behav[behav_k]:
+				if behav_k[0]:	# strict match
+					suppl = 0
+				else:		# loose match
+					suppl = CountSupplCtmCtd(ctm, ctd)
+				if suppl < best_min_suppl:
+					best_adaptor_for_ctd = self.__presentation[ctm]
+					best_ctm_for_ctd = ctm
+					best_min_suppl = suppl
+			if best_adaptor_for_ctd is not None:
+				return SelectedAdaptor(
+					best_adaptor_for_ctd,
+					best_ctm_for_ctd,
+					ctd, 1.0)
+	def dispatch_in(self, path, method, payload, ctd_in, accept_ctd_q, connector):
+		# XXX: adaptor should not be used for payload -> to internal
+		# because it comes from Accept, add another one from Content-Type
 		if method not in REST_METHODS:
 			raise RestErrorCode(501)
 		ctx = self.ctx_path(path, CtxType(None, None, method, path))
 		if ctx is None:
 			raise RestErrorCode(404)
-		sa = self.select_adaptor(ctx, seq_dico_ctd_q)
+		sai = self.adaptor_from_ctd(ctd_in)
+		if sai is None:
+			raise RestErrorCode(415)
+		adapt_in = sai.adaptor_fact(sai)
+		payload_int = adapt_in.to_internal(sai, payload)
+		del payload
+		sa = self.select_adaptor(ctx, accept_ctd_q)
 		if sa is None:
 			raise RestErrorCode(406)
 		adaptor = sa.adaptor_fact(sa)
 		if adaptor is None:
 			raise RestErrorCode(500, 'adaptor')
-		payload_int = adaptor.to_internal(sa, payload)
-		del payload
 		app = ctx.application_factory()
 		if app is None:
 			raise RestErrorCode(500, 'application')
-		app.req_in(ctx, adaptor, sa, payload_int)
+		app.req_in(ctx, adaptor, sa, payload_int, connector)
 
 __all__ = ['ConTypeDesc', 'ConTypeMatch', 'CtxType', 'ConTypePossible',
            'CountSupplCtmCtd', 'RestDispatcher', 'REST_METHODS',
-	   'RestError', 'RestErrorCode']
+	   'RestError', 'RestErrorCode', 'empty_container']
