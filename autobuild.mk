@@ -14,6 +14,13 @@ SVNREV=$(shell svn info | grep "Last Changed Rev" | sed "s/.*: //")
 XIVO_REV=$(MAINREV)~svn$(SVNREV)
 
 
+tarball-pkg:
+	@if [ -z "$(DEB_PKG_LIST)" ]; then \
+		echo "$(DEB_PKG)"; \
+	else \
+		echo "$(DEB_PKG_LIST)"; \
+	fi
+
 tarball-dep:
 	@echo "$(DEB_TB_DEPS)"
 
