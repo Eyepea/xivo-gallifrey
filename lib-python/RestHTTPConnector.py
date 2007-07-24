@@ -295,15 +295,23 @@ class RestHTTPHandler(BaseHTTPRequestHandler):
 		# RestDispatcher, see also rest_handle()
 		self.rest_answered = True
 	
+	def rest_err_msg(self, errno, s):
+		lit = ''.join(('<pre>\n', cgi.escape(s), '</pre>\n'))
+		return self.error_message_format % {
+			'code': errno,
+			'message': lit,
+			'explain': self.responses[errno][1]
+		}
+	
 	def rest_xcept_sender(self, x):
 		return lambda s:self.rest_answer(
 			x.response_code,
-			''.join(('<pre>\n', cgi.escape(s), '</pre>\n')),
+			self.rest_err_msg(x.response_code, s),
 			ConTypeDesc('text','html',frozenset())
 		)
 	
 	def rest_parse_path(self):
-		# XXX: handle ../
+		# XXX: handle ../ path components
 		self.rest_path = [el for el in self.SLASH_RE.split(self.path) if el]
 		return True
 	

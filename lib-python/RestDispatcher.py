@@ -270,12 +270,15 @@ class RestDispatcher(object):
 		ctx = self.ctx_path(path, CtxType(None, None, method, path))
 		if ctx is None:
 			raise RestErrorCode(404)
-		sai = self.adaptor_from_ctd(ctd_in)
-		if sai is None:
-			raise RestErrorCode(415)
-		adapt_in = sai.adaptor_fact(sai)
-		payload_int = adapt_in.to_internal(sai, payload)
-		del payload
+		if payload is not None:
+			sai = self.adaptor_from_ctd(ctd_in)
+			if sai is None:
+				raise RestErrorCode(415)
+			adapt_in = sai.adaptor_fact(sai)
+			payload_int = adapt_in.to_internal(sai, payload)
+			del payload
+		else:
+			payload_int = None
 		sa = self.select_adaptor(ctx, accept_ctd_q)
 		if sa is None:
 			raise RestErrorCode(406)
