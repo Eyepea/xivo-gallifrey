@@ -236,149 +236,75 @@ void LoginEngine::setDoNotDisturb()
 	setAvailState("donotdisturb");
 }
 
+void LoginEngine::sendCommand(const QString & command)
+{
+	if(m_state == ELogged) {
+		QString outline = "COMMAND ";
+		outline.append(m_asterisk + "/" + m_protocol.toLower() + m_userid);
+		outline.append(" SESSIONID " + m_sessionid + " " + command + "\r\n");
+		qDebug() << outline;
+		m_udpsocket->writeDatagram( outline.toAscii(),
+					    m_serveraddress, m_loginport + 1 );
+	} else {
+		qDebug() << "not logged in : command not sent :" << command;
+	}
+}
 
 void LoginEngine::setVoiceMail(bool b)
 {
-	QString outline = "COMMAND ";
-	outline.append(m_asterisk + "/" + m_protocol.toLower() + m_userid);
-	outline.append(" SESSIONID ");
-	outline.append(m_sessionid);
-	outline.append(" FEATURES PUT VM ");
-	outline.append(b?"1":"0");
-	outline.append("\r\n");
-	qDebug() << outline;
-	m_udpsocket->writeDatagram( outline.toAscii(),
-				    m_serveraddress, m_loginport + 1 );
+	sendCommand("FEATURES PUT VM " + QString(b ? "1" : "0"));
 }
 
 void LoginEngine::setCallRecording(bool b)
 {
-	QString outline = "COMMAND ";
-	outline.append(m_asterisk + "/" + m_protocol.toLower() + m_userid);
-	outline.append(" SESSIONID ");
-	outline.append(m_sessionid);
-	outline.append(" FEATURES PUT Record ");
-	outline.append(b?"1":"0");
-	outline.append("\r\n");
-	qDebug() << outline;
-	m_udpsocket->writeDatagram( outline.toAscii(),
-				    m_serveraddress, m_loginport + 1 );
+	sendCommand("FEATURES PUT Record " + QString(b ? "1" : "0"));
 }
 
 void LoginEngine::setCallFiltering(bool b)
 {
-	QString outline = "COMMAND ";
-	outline.append(m_asterisk + "/" + m_protocol.toLower() + m_userid);
-	outline.append(" SESSIONID ");
-	outline.append(m_sessionid);
-	outline.append(" FEATURES PUT Screen ");
-	outline.append(b?"1":"0");
-	outline.append("\r\n");
-	qDebug() << outline;
-	m_udpsocket->writeDatagram( outline.toAscii(),
-				    m_serveraddress, m_loginport + 1 );
+	sendCommand("FEATURES PUT Screen " + QString(b ? "1" : "0"));
 }
 
 void LoginEngine::setDnd(bool b)
 {
-	QString outline = "COMMAND ";
-	outline.append(m_asterisk + "/" + m_protocol.toLower() + m_userid);
-	outline.append(" SESSIONID ");
-	outline.append(m_sessionid);
-	outline.append(" FEATURES PUT DND ");
-	outline.append(b?"1":"0");
-	outline.append("\r\n");
-	qDebug() << outline;
-	m_udpsocket->writeDatagram( outline.toAscii(),
-				    m_serveraddress, m_loginport + 1 );
+	sendCommand("FEATURES PUT DND " + QString(b ? "1" : "0"));
 }
 
 void LoginEngine::setForwardOnUnavailable(bool b, const QString & dst)
 {
-	QString outline = "COMMAND ";
-	outline.append(m_asterisk + "/" + m_protocol.toLower() + m_userid);
-	outline.append(" SESSIONID ");
-	outline.append(m_sessionid);
-	outline.append(" FEATURES PUT FWD/RNA/Status ");
-	outline.append(b?"1":"0");
-	outline.append("\r\n");
-	qDebug() << outline;
-	m_udpsocket->writeDatagram( outline.toAscii(),
-				    m_serveraddress, m_loginport + 1 );
-	outline = "COMMAND ";
-	outline.append(m_asterisk + "/" + m_protocol.toLower() + m_userid);
-	outline.append(" SESSIONID ");
-	outline.append(m_sessionid);
-	outline.append(" FEATURES PUT FWD/RNA/Number ");
-	outline.append(dst);
-	outline.append("\r\n");
-	qDebug() << outline;
-	m_udpsocket->writeDatagram( outline.toAscii(),
-				    m_serveraddress, m_loginport + 1 );
+	sendCommand("FEATURES PUT FWD/RNA/Status " + QString(b ? "1" : "0"));
+	sendCommand("FEATURES PUT FWD/RNA/Number " + dst);
 }
 
 void LoginEngine::setForwardOnBusy(bool b, const QString & dst)
 {
-	QString outline = "COMMAND ";
-	outline.append(m_asterisk + "/" + m_protocol.toLower() + m_userid);
-	outline.append(" SESSIONID ");
-	outline.append(m_sessionid);
-	outline.append(" FEATURES PUT FWD/Busy/Status ");
-	outline.append(b?"1":"0");
-	outline.append("\r\n");
-	qDebug() << outline;
-	m_udpsocket->writeDatagram( outline.toAscii(),
-				    m_serveraddress, m_loginport + 1 );
-	outline = "COMMAND ";
-	outline.append(m_asterisk + "/" + m_protocol.toLower() + m_userid);
-	outline.append(" SESSIONID ");
-	outline.append(m_sessionid);
-	outline.append(" FEATURES PUT FWD/Busy/Number ");
-	outline.append(dst);
-	outline.append("\r\n");
-	qDebug() << outline;
-	m_udpsocket->writeDatagram( outline.toAscii(),
-				    m_serveraddress, m_loginport + 1 );
+	sendCommand("FEATURES PUT FWD/Busy/Status " + QString(b ? "1" : "0"));
+	sendCommand("FEATURES PUT FWD/Busy/Number " + dst);
 }
 
 void LoginEngine::setUncondForward(bool b, const QString & dst)
 {
-	QString outline = "COMMAND ";
-	outline.append(m_asterisk + "/" + m_protocol.toLower() + m_userid);
-	outline.append(" SESSIONID ");
-	outline.append(m_sessionid);
-	outline.append(" FEATURES PUT FWD/Unc/Status ");
-	outline.append(b?"1":"0");
-	outline.append("\r\n");
-	qDebug() << outline;
-	m_udpsocket->writeDatagram( outline.toAscii(),
-				    m_serveraddress, m_loginport + 1 );
-	outline = "COMMAND ";
-	outline.append(m_asterisk + "/" + m_protocol.toLower() + m_userid);
-	outline.append(" SESSIONID ");
-	outline.append(m_sessionid);
-	outline.append(" FEATURES PUT FWD/Unc/Number ");
-	outline.append(dst);
-	outline.append("\r\n");
-	qDebug() << outline;
-	m_udpsocket->writeDatagram( outline.toAscii(),
-				    m_serveraddress, m_loginport + 1 );
+	sendCommand("FEATURES PUT FWD/Unc/Status " + QString(b ? "1" : "0"));
+	sendCommand("FEATURES PUT FWD/Unc/Number " + dst);
 }
 
 void LoginEngine::askFeatures()
 {
-	QString outline = "COMMAND ";
-	outline.append(m_asterisk + "/" + m_protocol.toLower() + m_userid);
-	outline.append(" SESSIONID ");
-	outline.append(m_sessionid);
-	outline.append(" FEATURES GET\r\n");
-	qDebug() << outline;
-	m_udpsocket->writeDatagram( outline.toAscii(),
-				    m_serveraddress, m_loginport + 1 );
+	sendCommand("FEATURES GET");
+}
+
+void LoginEngine::askPeers()
+{
+	sendCommand("PEERS");
+}
+
+void LoginEngine::askCallerIds()
+{
+	sendCommand("CALLERIDS");
 }
 
 // === Getter and Setters ===
-/*! \brief get server host */
+/*! \brief get server IP address */
 const QString & LoginEngine::serverip() const
 {
 	return m_serverip;
@@ -486,18 +412,19 @@ void LoginEngine::setState(EngineState state)
 void LoginEngine::identifyToTheServer()
 {
 	QString outline;
+	QString whatami("SB");
 	qDebug() << "LoginEngine::identifyToTheServer()" << m_loginsocket->peerAddress();
 	m_serveraddress = m_loginsocket->peerAddress();
 	outline = "LOGIN ";
 	outline.append(m_asterisk + "/" + m_protocol.toLower() + m_userid);
 #if defined(Q_WS_X11)
-	outline.append(" SB@X11");
+	outline.append(" " + whatami + "@X11");
 #elif defined(Q_WS_WIN)
-	outline.append(" SB@WIN");
+	outline.append(" " + whatami + "@WIN");
 #elif defined(Q_WS_MAC)
-	outline.append(" SB@MAC");
+	outline.append(" " + whatami + "@MAC");
 #else
-	outline.append(" SB@unknown");
+	outline.append(" " + whatami + "@unknown");
 #endif
 	qDebug() << "LoginEngine::identifyToTheServer() : " << outline;
 	outline.append("\r\n");
@@ -554,7 +481,6 @@ void LoginEngine::processLoginDialog()
 			outline = "PORT ";
 			outline.append(QString::number(m_listenport));
 		}
-		qDebug() << "LoginEngine::processLoginDialog()" << m_listenport;
 	}
 	else if(readLine.startsWith("Send STATE"))
 	{
@@ -586,7 +512,6 @@ void LoginEngine::processLoginDialog()
 		setState(ENotLogged);
 		return;
 	}
-	
 	qDebug() << "LoginEngine::processLoginDialog() : " << outline;
 	outline.append("\r\n");
 	m_loginsocket->write(outline.toAscii());
@@ -628,15 +553,12 @@ void LoginEngine::handleProfilePush()
 
 void LoginEngine::popupDestroyed(QObject * obj)
 {
-	qDebug() << "Popup destroyed" << obj;
-	//qDebug() << "========================";
+	qDebug() << "LoginEngine::popupDestroyed()" << obj;
 	//obj->dumpObjectTree();
-	//qDebug() << "========================";
 }
 
 void LoginEngine::profileToBeShown(Popup * popup)
 {
-	qDebug() << "LoginEngine::profileToBeShown()";
 	newProfile( popup );
 }
 
@@ -679,6 +601,25 @@ void LoginEngine::keepLoginAlive()
 				m_pendingkeepalivemsg++;
 			}
 	}
+}
+
+/*!
+ * Send a keep alive message to the login server.
+ * The message is sent in a datagram through m_udpsocket
+ */ 
+void LoginEngine::sendMessage(const QString & txt)
+{
+	if(m_pendingkeepalivemsg > 1)
+	{
+		qDebug() << "m_pendingkeepalivemsg" << m_pendingkeepalivemsg << "=> 0";
+		stopKeepAliveTimer();
+		setState(ENotLogged);
+		m_pendingkeepalivemsg = 0;
+		startTryAgainTimer();
+		return;
+	}
+	sendCommand("MESSAGE " + txt);
+	m_pendingkeepalivemsg++;
 }
 
 void LoginEngine::initFeatureFields(const QString & field, const QString & value)

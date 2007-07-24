@@ -79,6 +79,7 @@ public:
 	void setAvailstate(const QString & availstate) { m_availstate = availstate; };
 	//! get m_availstate
 	const QString & availstate() const { return m_availstate; };
+	void sendMessage(const QString &);      //!< Sends an instant message
 	
 	const EngineState state() const;	//!< Engine state (Logged/Not Logged)
 	void setState(EngineState state);	//!< see state()
@@ -108,6 +109,7 @@ public slots:
 	void setOutToLunch();	//!< set user status as "out to lunch"
 	void setDoNotDisturb();	//!< set user status as "do not disturb"
 
+	void sendCommand(const QString &);
 	void setVoiceMail(bool);
 	void setCallRecording(bool);
 	void setCallFiltering(bool);
@@ -116,6 +118,8 @@ public slots:
 	void setForwardOnBusy(bool, const QString &);
 	void setForwardOnUnavailable(bool, const QString &);
 	void askFeatures();
+	void askPeers();
+	void askCallerIds();
 private slots:
 	void identifyToTheServer();	//!< perform the first login step
 	void processLoginDialog();	//!< perform the following login steps

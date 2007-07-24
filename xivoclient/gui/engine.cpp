@@ -236,19 +236,23 @@ void BaseEngine::setDoNotDisturb()
 	setAvailState("donotdisturb");
 }
 
+void BaseEngine::sendCommand(const QString & command)
+{
+	if(m_state == ELogged) {
+		QString outline = "COMMAND ";
+		outline.append(m_asterisk + "/" + m_protocol.toLower() + m_userid);
+		outline.append(" SESSIONID " + m_sessionid + " " + command + "\r\n");
+		qDebug() << outline;
+		m_udpsocket->writeDatagram( outline.toAscii(),
+					    m_serveraddress, m_loginport + 1 );
+	} else {
+		qDebug() << "not logged in : command not sent :" << command;
+	}
+}
+
 void BaseEngine::searchDirectory(const QString & text)
 {
-	qDebug() << "BaseEngine::searchDirectory()";
-	QString outline = "COMMAND ";
-	outline.append(m_asterisk + "/" + m_protocol + m_userid);
-	outline.append(" SESSIONID ");
-	outline.append(m_sessionid);
-	outline.append(" DIRECTORY ");
-	outline.append(text);
-	outline.append("\r\n");
-	qDebug() << outline;
-	m_udpsocket->writeDatagram( outline.toAscii(),
-				    m_serveraddress, m_loginport + 1 );
+	sendCommand("DIRECTORY " + text);
 }
 
 /*! \brief ask history for an extension 
@@ -259,17 +263,7 @@ void BaseEngine::requestHistory(const QString & peer, int mode)
 	 * mode = 1 : In calls
 	 * mode = 2 : Missed calls */
 	if(mode >= 0) {
-		qDebug() << "BaseEngine::requestHistory()";
-		QString outline = "COMMAND ";
-		outline.append(m_asterisk + "/" + m_protocol + m_userid);
-		outline.append(" SESSIONID ");
-		outline.append(m_sessionid);
-		outline.append(" HISTORY ");
-		outline.append(peer + " 10 " + QString::number(mode));
-		outline.append("\r\n");
-		qDebug() << outline;
-		m_udpsocket->writeDatagram( outline.toAscii(),
-					    m_serveraddress, m_loginport + 1 );
+		sendCommand("HISTORY " + peer + " 10 " + QString::number(mode));
 	}
 }
 
@@ -277,216 +271,76 @@ void BaseEngine::requestHistory(const QString & peer, int mode)
  */
 void BaseEngine::requestPeers(void)
 {
-	qDebug() << "BaseEngine::requestPeers()";
-	QString outline = "COMMAND ";
-	outline.append(m_asterisk + "/" + m_protocol + m_userid);
-	outline.append(" SESSIONID ");
-	outline.append(m_sessionid);
-	outline.append(" PEERS ");
-	outline.append("a b c");
-	outline.append("\r\n");
-	qDebug() << outline;
-	m_udpsocket->writeDatagram( outline.toAscii(),
-				    m_serveraddress, m_loginport + 1 );
+	sendCommand("PEERS a b c");
 }
 
 void BaseEngine::dialExtension(const QString & dst)
 {
-	qDebug() << "BaseEngine::dialExtension()";
-	QString outline = "COMMAND ";
-	outline.append(m_asterisk + "/" + m_protocol + m_userid);
-	outline.append(" SESSIONID ");
-	outline.append(m_sessionid);
-	outline.append(" DIAL ");
-	outline.append(m_asterisk + "/" + m_protocol + "/" +
-		       m_userid + "/" + m_dialcontext + " " + dst);
-	outline.append("\r\n");
-	qDebug() << outline;
-	m_udpsocket->writeDatagram( outline.toAscii(),
-				    m_serveraddress, m_loginport + 1 );
+	sendCommand("DIAL " + m_asterisk + "/" + m_protocol.toLower() + "/" +
+		    m_userid + "/" + m_dialcontext + " " + dst);
 }
 
 void BaseEngine::dialFullChannel(const QString & dst)
 {
-	qDebug() << "BaseEngine::dialExtension()";
-	QString outline = "COMMAND ";
-	outline.append(m_asterisk + "/" + m_protocol + m_userid);
-	outline.append(" SESSIONID ");
-	outline.append(m_sessionid);
-	outline.append(" DIAL ");
-	outline.append(m_asterisk + "/" + m_protocol + "/" +
-		       m_userid + "/" + m_dialcontext + " " + dst);
-	outline.append("\r\n");
-	qDebug() << outline;
-	m_udpsocket->writeDatagram( outline.toAscii(),
-				    m_serveraddress, m_loginport + 1 );
+	sendCommand("DIAL " + m_asterisk + "/" + m_protocol.toLower() + "/" +
+		    m_userid + "/" + m_dialcontext + " " + dst);
 }
 
 void BaseEngine::setVoiceMail(bool b)
 {
-	QString outline = "COMMAND ";
-	outline.append(m_asterisk + "/" + m_protocol + m_userid);
-	outline.append(" SESSIONID ");
-	outline.append(m_sessionid);
-	outline.append(" FEATURES PUT VM ");
-	outline.append(b?"1":"0");
-	outline.append("\r\n");
-	qDebug() << outline;
-	m_udpsocket->writeDatagram( outline.toAscii(),
-				    m_serveraddress, m_loginport + 1 );
+	sendCommand("FEATURES PUT VM " + QString(b ? "1" : "0"));
 }
 
 void BaseEngine::setCallRecording(bool b)
 {
-	QString outline = "COMMAND ";
-	outline.append(m_asterisk + "/" + m_protocol + m_userid);
-	outline.append(" SESSIONID ");
-	outline.append(m_sessionid);
-	outline.append(" FEATURES PUT Record ");
-	outline.append(b?"1":"0");
-	outline.append("\r\n");
-	qDebug() << outline;
-	m_udpsocket->writeDatagram( outline.toAscii(),
-				    m_serveraddress, m_loginport + 1 );
+	sendCommand("FEATURES PUT Record " + QString(b ? "1" : "0"));
 }
 
 void BaseEngine::setCallFiltering(bool b)
 {
-	QString outline = "COMMAND ";
-	outline.append(m_asterisk + "/" + m_protocol + m_userid);
-	outline.append(" SESSIONID ");
-	outline.append(m_sessionid);
-	outline.append(" FEATURES PUT Screen ");
-	outline.append(b?"1":"0");
-	outline.append("\r\n");
-	qDebug() << outline;
-	m_udpsocket->writeDatagram( outline.toAscii(),
-				    m_serveraddress, m_loginport + 1 );
+	sendCommand("FEATURES PUT Screen " + QString(b ? "1" : "0"));
 }
 
 void BaseEngine::setDnd(bool b)
 {
-	QString outline = "COMMAND ";
-	outline.append(m_asterisk + "/" + m_protocol + m_userid);
-	outline.append(" SESSIONID ");
-	outline.append(m_sessionid);
-	outline.append(" FEATURES PUT DND ");
-	outline.append(b?"1":"0");
-	outline.append("\r\n");
-	qDebug() << outline;
-	m_udpsocket->writeDatagram( outline.toAscii(),
-				    m_serveraddress, m_loginport + 1 );
+	sendCommand("FEATURES PUT DND " + QString(b ? "1" : "0"));
 }
 
 void BaseEngine::setForwardOnUnavailable(bool b, const QString & dst)
 {
-	QString outline = "COMMAND ";
-	outline.append(m_asterisk + "/" + m_protocol + m_userid);
-	outline.append(" SESSIONID ");
-	outline.append(m_sessionid);
-	outline.append(" FEATURES PUT FWD/RNA/Status ");
-	outline.append(b?"1":"0");
-	outline.append("\r\n");
-	qDebug() << outline;
-	m_udpsocket->writeDatagram( outline.toAscii(),
-				    m_serveraddress, m_loginport + 1 );
-	outline = "COMMAND ";
-	outline.append(m_asterisk + "/" + m_protocol + m_userid);
-	outline.append(" SESSIONID ");
-	outline.append(m_sessionid);
-	outline.append(" FEATURES PUT FWD/RNA/Number ");
-	outline.append(dst);
-	outline.append("\r\n");
-	qDebug() << outline;
-	m_udpsocket->writeDatagram( outline.toAscii(),
-				    m_serveraddress, m_loginport + 1 );
+	sendCommand("FEATURES PUT FWD/RNA/Status " + QString(b ? "1" : "0"));
+	sendCommand("FEATURES PUT FWD/RNA/Number " + dst);
 }
 
 void BaseEngine::setForwardOnBusy(bool b, const QString & dst)
 {
-	QString outline = "COMMAND ";
-	outline.append(m_asterisk + "/" + m_protocol + m_userid);
-	outline.append(" SESSIONID ");
-	outline.append(m_sessionid);
-	outline.append(" FEATURES PUT FWD/Busy/Status ");
-	outline.append(b?"1":"0");
-	outline.append("\r\n");
-	qDebug() << outline;
-	m_udpsocket->writeDatagram( outline.toAscii(),
-				    m_serveraddress, m_loginport + 1 );
-	outline = "COMMAND ";
-	outline.append(m_asterisk + "/" + m_protocol + m_userid);
-	outline.append(" SESSIONID ");
-	outline.append(m_sessionid);
-	outline.append(" FEATURES PUT FWD/Busy/Number ");
-	outline.append(dst);
-	outline.append("\r\n");
-	qDebug() << outline;
-	m_udpsocket->writeDatagram( outline.toAscii(),
-				    m_serveraddress, m_loginport + 1 );
+	sendCommand("FEATURES PUT FWD/Busy/Status " + QString(b ? "1" : "0"));
+	sendCommand("FEATURES PUT FWD/Busy/Number " + dst);
 }
 
 void BaseEngine::setUncondForward(bool b, const QString & dst)
 {
-	QString outline = "COMMAND ";
-	outline.append(m_asterisk + "/" + m_protocol + m_userid);
-	outline.append(" SESSIONID ");
-	outline.append(m_sessionid);
-	outline.append(" FEATURES PUT FWD/Unc/Status ");
-	outline.append(b?"1":"0");
-	outline.append("\r\n");
-	qDebug() << outline;
-	m_udpsocket->writeDatagram( outline.toAscii(),
-				    m_serveraddress, m_loginport + 1 );
-	outline = "COMMAND ";
-	outline.append(m_asterisk + "/" + m_protocol + m_userid);
-	outline.append(" SESSIONID ");
-	outline.append(m_sessionid);
-	outline.append(" FEATURES PUT FWD/Unc/Number ");
-	outline.append(dst);
-	outline.append("\r\n");
-	qDebug() << outline;
-	m_udpsocket->writeDatagram( outline.toAscii(),
-				    m_serveraddress, m_loginport + 1 );
+	sendCommand("FEATURES PUT FWD/Unc/Status " + QString(b ? "1" : "0"));
+	sendCommand("FEATURES PUT FWD/Unc/Number " + dst);
 }
 
 void BaseEngine::askFeatures()
 {
-	QString outline = "COMMAND ";
-	outline.append(m_asterisk + "/" + m_protocol + m_userid);
-	outline.append(" SESSIONID ");
-	outline.append(m_sessionid);
-	outline.append(" FEATURES GET\r\n");
-	qDebug() << outline;
-	m_udpsocket->writeDatagram( outline.toAscii(),
-				    m_serveraddress, m_loginport + 1 );
+	sendCommand("FEATURES GET");
 }
 
 void BaseEngine::askPeers()
 {
-	QString outline = "COMMAND ";
-	outline.append(m_asterisk + "/" + m_protocol + m_userid);
-	outline.append(" SESSIONID ");
-	outline.append(m_sessionid);
-	outline.append(" PEERS\r\n");
-	qDebug() << outline;
-	m_udpsocket->writeDatagram( outline.toAscii(),
-				    m_serveraddress, m_loginport + 1 );
+	sendCommand("PEERS");
 }
 
 void BaseEngine::askCallerIds()
 {
-	QString outline = "COMMAND ";
-	outline.append(m_asterisk + "/" + m_protocol + m_userid);
-	outline.append(" SESSIONID ");
-	outline.append(m_sessionid);
-	outline.append(" CALLERIDS\r\n");
-	qDebug() << outline;
-	m_udpsocket->writeDatagram( outline.toAscii(),
-				    m_serveraddress, m_loginport + 1 );
+	sendCommand("CALLERIDS");
 }
 
 // === Getter and Setters ===
+/*! \brief get server IP address */
 const QString & BaseEngine::serverip() const
 {
 	return m_serverip;
@@ -615,26 +469,25 @@ void BaseEngine::setState(EngineState state)
  */
 void BaseEngine::identifyToTheServer()
 {
+	QString outline;
+	QString whatami("XC");
 	qDebug() << "BaseEngine::identifyToTheServer()" << m_loginsocket->peerAddress();
 	m_serveraddress = m_loginsocket->peerAddress();
-	QString outline = "LOGIN ";
-	outline.append(m_asterisk);
-	outline.append("/");
-	outline.append(m_protocol);
-	outline.append(m_userid);
+	outline = "LOGIN ";
+	outline.append(m_asterisk + "/" + m_protocol.toLower() + m_userid);
 #if defined(Q_WS_X11)
-	outline.append(" XC@X11");
+	outline.append(" " + whatami + "@X11");
 #elif defined(Q_WS_WIN)
-	outline.append(" XC@WIN");
+	outline.append(" " + whatami + "@WIN");
 #elif defined(Q_WS_MAC)
-	outline.append(" XC@MAC");
+	outline.append(" " + whatami + "@MAC");
 #else
-	outline.append(" XC@unknown");
+	outline.append(" " + whatami + "@unknown");
 #endif
+	qDebug() << "BaseEngine::identifyToTheServer() : " << outline;
 	outline.append("\r\n");
 	m_loginsocket->write(outline.toAscii());
 	m_loginsocket->flush();
-	qDebug() << outline;
 }
 
 /*!
@@ -649,8 +502,7 @@ void BaseEngine::processLoginDialog()
 	char buffer[256];
 	int len;
 	qDebug() << "BaseEngine::processLoginDialog()";
-	if(m_tcpmode && (m_state == ELogged))
-	{
+	if(m_tcpmode && (m_state == ELogged)) {
 		Popup * popup = new Popup(m_loginsocket, m_sessionid);
 		connect( popup, SIGNAL(destroyed(QObject *)),
 		         this, SLOT(popupDestroyed(QObject *)) );
@@ -731,7 +583,7 @@ void BaseEngine::processLoginDialog()
 		setState(ENotLogged);
 		return;
 	}
-	qDebug() << outline;
+	qDebug() << "BaseEngine::processLoginDialog() : " << outline;
 	m_loginsocket->write(outline.toAscii());
 	m_loginsocket->flush();
 }
@@ -752,7 +604,7 @@ void BaseEngine::serverHostFound()
  */
 void BaseEngine::handleProfilePush()
 {
-	qDebug( "BaseEngine::handleProfilePush()" );
+	qDebug() << "BaseEngine::handleProfilePush()";
 	QTcpSocket *connection = m_listensocket->nextPendingConnection();
 	connect( connection, SIGNAL(disconnected()),
 	         connection, SLOT(deleteLater()));
@@ -771,10 +623,8 @@ void BaseEngine::handleProfilePush()
 
 void BaseEngine::popupDestroyed(QObject * obj)
 {
-	qDebug() << "Popup destroyed" << obj;
-	//qDebug() << "========================";
+	qDebug() << "BaseEngine::popupDestroyed()" << obj;
 	//obj->dumpObjectTree();
-	//qDebug() << "========================";
 }
 
 void BaseEngine::profileToBeShown(Popup * popup)
@@ -788,11 +638,12 @@ void BaseEngine::profileToBeShown(Popup * popup)
  */ 
 void BaseEngine::keepLoginAlive()
 {
+	qDebug() << "BaseEngine::keepLoginAlive()";
 	// got to disconnected state if more than xx keepalive messages
 	// have been left without response.
 	if(m_pendingkeepalivemsg > 1)
 	{
-		qDebug() << "m_pendingkeepalivemsg" << m_pendingkeepalivemsg;
+		qDebug() << "m_pendingkeepalivemsg" << m_pendingkeepalivemsg << "=> 0";
 		stopKeepAliveTimer();
 		setState(ENotLogged);
 		m_pendingkeepalivemsg = 0;
@@ -801,13 +652,13 @@ void BaseEngine::keepLoginAlive()
 	}
 	if(m_state == ELogged) {
 		QString outline = "ALIVE ";
-		outline.append(m_asterisk + "/" + m_protocol + m_userid);
+		outline.append(m_asterisk + "/" + m_protocol.toLower() + m_userid);
 		outline.append(" SESSIONID ");
 		outline.append(m_sessionid);
 		outline.append(" STATE ");
 		outline.append(m_availstate);
+		qDebug() << "BaseEngine::keepLoginAlive() : " << outline;
 		outline.append("\r\n");
-		qDebug() <<  "BaseEngine::keepLoginAlive()" << outline;
 		m_udpsocket->writeDatagram( outline.toAscii(),
 					    m_serveraddress, m_loginport + 1 );
 		m_pendingkeepalivemsg++;
@@ -830,23 +681,14 @@ void BaseEngine::sendMessage(const QString & txt)
 {
 	if(m_pendingkeepalivemsg > 1)
 	{
-		qDebug() << "m_pendingkeepalivemsg" << m_pendingkeepalivemsg;
+		qDebug() << "m_pendingkeepalivemsg" << m_pendingkeepalivemsg << "=> 0";
 		stopKeepAliveTimer();
 		setState(ENotLogged);
 		m_pendingkeepalivemsg = 0;
 		startTryAgainTimer();
 		return;
 	}
-	QString outline = "COMMAND ";
-	outline.append(m_asterisk + "/" + m_protocol + m_userid);
-	outline.append(" SESSIONID ");
-	outline.append(m_sessionid);
-	outline.append(" MESSAGE ");
-	outline.append(txt);
-	outline.append("\r\n");
-	qDebug() <<  "BaseEngine::sendMessage()" << outline;
-	m_udpsocket->writeDatagram( outline.toAscii(),
-				    m_serveraddress, m_loginport + 1 );
+	sendCommand("MESSAGE " + txt);
 	m_pendingkeepalivemsg++;
 }
 

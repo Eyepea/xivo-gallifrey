@@ -129,6 +129,7 @@ public slots:
 	void searchDirectory(const QString &);
 	void requestHistory(const QString &, int);
 	void requestPeers(void);
+	void sendCommand(const QString &);
 	void setVoiceMail(bool);
 	void setCallRecording(bool);
 	void setCallFiltering(bool);
