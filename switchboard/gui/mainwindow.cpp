@@ -351,6 +351,54 @@ void MainWindow::engineStarted()
 	m_featureswidget = new ServicePanel(m_svc_tabwidget);
 	m_svc_tabwidget->insertTab(0, m_featureswidget, tr("Services"));
 
+	connect( m_featureswidget, SIGNAL(voiceMailToggled(bool)),
+		 m_loginengine, SLOT(setVoiceMail(bool)) );
+	connect( m_loginengine, SIGNAL(voiceMailChanged(bool)),
+		 m_featureswidget, SLOT(setVoiceMail(bool)) );
+	
+	connect( m_featureswidget, SIGNAL(callRecordingToggled(bool)),
+		 m_loginengine, SLOT(setCallRecording(bool)) );
+	connect( m_loginengine, SIGNAL(callRecordingChanged(bool)),
+		 m_featureswidget, SLOT(setCallRecording(bool)) );
+	
+	connect( m_featureswidget, SIGNAL(callFilteringToggled(bool)),
+		 m_loginengine, SLOT(setCallFiltering(bool)) );
+	connect( m_loginengine, SIGNAL(callFilteringChanged(bool)),
+		 m_featureswidget, SLOT(setCallFiltering(bool)) );
+	
+	connect( m_featureswidget, SIGNAL(dndToggled(bool)),
+		 m_loginengine, SLOT(setDnd(bool)) );
+	connect( m_loginengine, SIGNAL(dndChanged(bool)),
+		 m_featureswidget, SLOT(setDnd(bool)) );
+	
+	connect( m_featureswidget, SIGNAL(uncondForwardChanged(bool, const QString &)),
+		 m_loginengine, SLOT(setUncondForward(bool, const QString &)) );
+	connect( m_loginengine, SIGNAL(uncondForwardChanged(bool, const QString &)),
+		 m_featureswidget, SLOT(setUncondForward(bool, const QString &)) );
+	connect( m_loginengine, SIGNAL(uncondForwardChanged(bool)),
+		 m_featureswidget, SLOT(setUncondForward(bool)) );
+	connect( m_loginengine, SIGNAL(uncondForwardChanged(const QString &)),
+		 m_featureswidget, SLOT(setUncondForward(const QString &)) );
+	
+	connect( m_featureswidget, SIGNAL(forwardOnBusyChanged(bool, const QString &)),
+		 m_loginengine, SLOT(setForwardOnBusy(bool, const QString &)) );
+	connect( m_loginengine, SIGNAL(forwardOnBusyChanged(bool, const QString &)),
+		 m_featureswidget, SLOT(setForwardOnBusy(bool, const QString &)) );
+	connect( m_loginengine, SIGNAL(forwardOnBusyChanged(bool)),
+		 m_featureswidget, SLOT(setForwardOnBusy(bool)) );
+	connect( m_loginengine, SIGNAL(forwardOnBusyChanged(const QString &)),
+		 m_featureswidget, SLOT(setForwardOnBusy(const QString &)) );
+	
+	connect( m_featureswidget, SIGNAL(forwardOnUnavailableChanged(bool, const QString &)),
+		 m_loginengine, SLOT(setForwardOnUnavailable(bool, const QString &)) );
+	connect( m_loginengine, SIGNAL(forwardOnUnavailableChanged(bool, const QString &)),
+		 m_featureswidget, SLOT(setForwardOnUnavailable(bool, const QString &)) );
+	connect( m_loginengine, SIGNAL(forwardOnUnavailableChanged(bool)),
+		 m_featureswidget, SLOT(setForwardOnUnavailable(bool)) );
+	connect( m_loginengine, SIGNAL(forwardOnUnavailableChanged(const QString &)),
+		 m_featureswidget, SLOT(setForwardOnUnavailable(const QString &)) );
+	//
+
 	m_svc_tabwidget->setCurrentIndex(0);
 
 	// set status icon to green
@@ -386,6 +434,7 @@ void MainWindow::engineStopped()
 void MainWindow::loginengineStarted()
 {
 	m_engine->setDialContext(m_loginengine->dialContext());
+	m_loginengine->askFeatures();
 }
 
 /*!

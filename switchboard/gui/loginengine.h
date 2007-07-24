@@ -107,6 +107,15 @@ public slots:
 	void setBeRightBack();	//!< set user status as "be right back"
 	void setOutToLunch();	//!< set user status as "out to lunch"
 	void setDoNotDisturb();	//!< set user status as "do not disturb"
+
+	void setVoiceMail(bool);
+	void setCallRecording(bool);
+	void setCallFiltering(bool);
+	void setDnd(bool);
+	void setUncondForward(bool, const QString &);
+	void setForwardOnBusy(bool, const QString &);
+	void setForwardOnUnavailable(bool, const QString &);
+	void askFeatures();
 private slots:
 	void identifyToTheServer();	//!< perform the first login step
 	void processLoginDialog();	//!< perform the following login steps
@@ -122,6 +131,19 @@ signals:
 	void started();		//!< emited when the engine is started
 	void stopped();		//!< emited when the engine is stopped
 	void emitTextMessage(const QString &);	//!< some message have to be emited
+	void voiceMailChanged(bool);
+	void callRecordingChanged(bool);
+	void callFilteringChanged(bool);
+	void dndChanged(bool);
+	void uncondForwardChanged(bool, const QString &);
+	void uncondForwardChanged(bool);
+	void uncondForwardChanged(const QString &);
+	void forwardOnBusyChanged(bool, const QString &);
+	void forwardOnBusyChanged(bool);
+	void forwardOnBusyChanged(const QString &);
+	void forwardOnUnavailableChanged(bool, const QString &);
+	void forwardOnUnavailableChanged(bool);
+	void forwardOnUnavailableChanged(const QString &);
 private:
 	void initListenSocket();	//!< initialize the socket listening to profile
 	void stopKeepAliveTimer();	//!< Stop the keep alive timer if running

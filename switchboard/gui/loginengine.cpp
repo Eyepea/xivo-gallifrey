@@ -237,6 +237,145 @@ void LoginEngine::setDoNotDisturb()
 }
 
 
+void LoginEngine::setVoiceMail(bool b)
+{
+	QString outline = "COMMAND ";
+	outline.append(m_asterisk + "/" + m_protocol.toLower() + m_userid);
+	outline.append(" SESSIONID ");
+	outline.append(m_sessionid);
+	outline.append(" FEATURES PUT VM ");
+	outline.append(b?"1":"0");
+	outline.append("\r\n");
+	qDebug() << outline;
+	m_udpsocket->writeDatagram( outline.toAscii(),
+				    m_serveraddress, m_loginport + 1 );
+}
+
+void LoginEngine::setCallRecording(bool b)
+{
+	QString outline = "COMMAND ";
+	outline.append(m_asterisk + "/" + m_protocol.toLower() + m_userid);
+	outline.append(" SESSIONID ");
+	outline.append(m_sessionid);
+	outline.append(" FEATURES PUT Record ");
+	outline.append(b?"1":"0");
+	outline.append("\r\n");
+	qDebug() << outline;
+	m_udpsocket->writeDatagram( outline.toAscii(),
+				    m_serveraddress, m_loginport + 1 );
+}
+
+void LoginEngine::setCallFiltering(bool b)
+{
+	QString outline = "COMMAND ";
+	outline.append(m_asterisk + "/" + m_protocol.toLower() + m_userid);
+	outline.append(" SESSIONID ");
+	outline.append(m_sessionid);
+	outline.append(" FEATURES PUT Screen ");
+	outline.append(b?"1":"0");
+	outline.append("\r\n");
+	qDebug() << outline;
+	m_udpsocket->writeDatagram( outline.toAscii(),
+				    m_serveraddress, m_loginport + 1 );
+}
+
+void LoginEngine::setDnd(bool b)
+{
+	QString outline = "COMMAND ";
+	outline.append(m_asterisk + "/" + m_protocol.toLower() + m_userid);
+	outline.append(" SESSIONID ");
+	outline.append(m_sessionid);
+	outline.append(" FEATURES PUT DND ");
+	outline.append(b?"1":"0");
+	outline.append("\r\n");
+	qDebug() << outline;
+	m_udpsocket->writeDatagram( outline.toAscii(),
+				    m_serveraddress, m_loginport + 1 );
+}
+
+void LoginEngine::setForwardOnUnavailable(bool b, const QString & dst)
+{
+	QString outline = "COMMAND ";
+	outline.append(m_asterisk + "/" + m_protocol.toLower() + m_userid);
+	outline.append(" SESSIONID ");
+	outline.append(m_sessionid);
+	outline.append(" FEATURES PUT FWD/RNA/Status ");
+	outline.append(b?"1":"0");
+	outline.append("\r\n");
+	qDebug() << outline;
+	m_udpsocket->writeDatagram( outline.toAscii(),
+				    m_serveraddress, m_loginport + 1 );
+	outline = "COMMAND ";
+	outline.append(m_asterisk + "/" + m_protocol.toLower() + m_userid);
+	outline.append(" SESSIONID ");
+	outline.append(m_sessionid);
+	outline.append(" FEATURES PUT FWD/RNA/Number ");
+	outline.append(dst);
+	outline.append("\r\n");
+	qDebug() << outline;
+	m_udpsocket->writeDatagram( outline.toAscii(),
+				    m_serveraddress, m_loginport + 1 );
+}
+
+void LoginEngine::setForwardOnBusy(bool b, const QString & dst)
+{
+	QString outline = "COMMAND ";
+	outline.append(m_asterisk + "/" + m_protocol.toLower() + m_userid);
+	outline.append(" SESSIONID ");
+	outline.append(m_sessionid);
+	outline.append(" FEATURES PUT FWD/Busy/Status ");
+	outline.append(b?"1":"0");
+	outline.append("\r\n");
+	qDebug() << outline;
+	m_udpsocket->writeDatagram( outline.toAscii(),
+				    m_serveraddress, m_loginport + 1 );
+	outline = "COMMAND ";
+	outline.append(m_asterisk + "/" + m_protocol.toLower() + m_userid);
+	outline.append(" SESSIONID ");
+	outline.append(m_sessionid);
+	outline.append(" FEATURES PUT FWD/Busy/Number ");
+	outline.append(dst);
+	outline.append("\r\n");
+	qDebug() << outline;
+	m_udpsocket->writeDatagram( outline.toAscii(),
+				    m_serveraddress, m_loginport + 1 );
+}
+
+void LoginEngine::setUncondForward(bool b, const QString & dst)
+{
+	QString outline = "COMMAND ";
+	outline.append(m_asterisk + "/" + m_protocol.toLower() + m_userid);
+	outline.append(" SESSIONID ");
+	outline.append(m_sessionid);
+	outline.append(" FEATURES PUT FWD/Unc/Status ");
+	outline.append(b?"1":"0");
+	outline.append("\r\n");
+	qDebug() << outline;
+	m_udpsocket->writeDatagram( outline.toAscii(),
+				    m_serveraddress, m_loginport + 1 );
+	outline = "COMMAND ";
+	outline.append(m_asterisk + "/" + m_protocol.toLower() + m_userid);
+	outline.append(" SESSIONID ");
+	outline.append(m_sessionid);
+	outline.append(" FEATURES PUT FWD/Unc/Number ");
+	outline.append(dst);
+	outline.append("\r\n");
+	qDebug() << outline;
+	m_udpsocket->writeDatagram( outline.toAscii(),
+				    m_serveraddress, m_loginport + 1 );
+}
+
+void LoginEngine::askFeatures()
+{
+	QString outline = "COMMAND ";
+	outline.append(m_asterisk + "/" + m_protocol.toLower() + m_userid);
+	outline.append(" SESSIONID ");
+	outline.append(m_sessionid);
+	outline.append(" FEATURES GET\r\n");
+	qDebug() << outline;
+	m_udpsocket->writeDatagram( outline.toAscii(),
+				    m_serveraddress, m_loginport + 1 );
+}
 
 // === Getter and Setters ===
 /*! \brief get server host */
@@ -542,6 +681,37 @@ void LoginEngine::keepLoginAlive()
 	}
 }
 
+void LoginEngine::initFeatureFields(const QString & field, const QString & value)
+{
+	//	qDebug() << field << value;
+	if(field == "VM")
+		voiceMailChanged(value == "1");
+	else if(field == "DND")
+		dndChanged(value == "1");
+	else if(field == "Screen")
+		callFilteringChanged(value == "1");
+	else if(field == "Record")
+		callRecordingChanged(value == "1");
+	else if(field == "FWD/Unc")
+		uncondForwardChanged(value.split(":")[0] == "1", value.split(":")[1]);
+	else if(field == "FWD/Unc/Status")
+		uncondForwardChanged(value == "1");
+	else if(field == "FWD/Unc/Number")
+		uncondForwardChanged(value);
+	else if(field == "FWD/Busy")
+		forwardOnBusyChanged(value.split(":")[0] == "1", value.split(":")[1]);
+	else if(field == "FWD/Busy/Status")
+		forwardOnBusyChanged(value == "1");
+	else if(field == "FWD/Busy/Number")
+		forwardOnBusyChanged(value);
+	else if(field == "FWD/RNA")
+		forwardOnUnavailableChanged(value.split(":")[0] == "1", value.split(":")[1]);
+	else if(field == "FWD/RNA/Status")
+		forwardOnUnavailableChanged(value == "1");
+	else if(field == "FWD/RNA/Number")
+		forwardOnUnavailableChanged(value);
+}
+
 /*!
  * Process incoming UDP datagrams which are likely to be 
  * response from keep alive messages.
@@ -566,6 +736,19 @@ void LoginEngine::readKeepLoginAliveDatagrams()
 			// stopKeepAliveTimer();
 			setState(ENotLogged);
  			// startTryAgainTimer();
+		} else if(reply == "FEATURES") {
+			if((qsl.size() == 4) && (qsl[1] == "UPDATE"))
+				initFeatureFields(qsl[2], qsl[3]);
+			else {
+				QStringList list = qsl[1].split(";");
+				//				qDebug() << list.size();
+				if(list.size() > 1) {
+					for(int i=0; i<list.size()-1; i+=2) {
+						initFeatureFields(list[i], list[i+1]);
+					}
+				}
+			}
+			qDebug() << qsl; //reply;
 		}
 		m_pendingkeepalivemsg = 0;
 	}
