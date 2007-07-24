@@ -1,7 +1,7 @@
 # This file describes the network interfaces available on your system
 # and how to activate them. For more information, see interfaces(5).
 
-# $Revision: 1154 $ $Date: 2007-07-17 10:40:27 +0200 (Tue, 17 Jul 2007) $
+# $Revision$ $Date$
 
 # The loopback network interface
 auto lo
