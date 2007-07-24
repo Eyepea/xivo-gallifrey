@@ -84,6 +84,9 @@ public:
 	bool enabled() { return m_enabled; };
 	void setIsASwitchboard(bool);
 	bool isASwitchboard();
+	void deleteRemovables();
+	void addRemovable(const QMetaObject * metaobject);
+	bool isRemovable(const QMetaObject * metaobject);
 signals:
 	void availAllowChanged(bool);	//!< signal 
 	void logged();	//!< signal emitted when the state becomes ELogged
@@ -193,6 +196,7 @@ private:
 	QString m_availstate;	//!< Availability state to send to the server
 	QHash<QString, QString> m_callerids;	//!< List of caller Ids
 	// GUI client capabilities
+	QList<const QMetaObject *> m_removable;
 	bool m_is_a_switchboard;
 };
 

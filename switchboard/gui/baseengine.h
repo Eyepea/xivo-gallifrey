@@ -80,16 +80,11 @@ public:
 	const QString & dialContext() const { return m_dialcontext; };
 	void setIsASwitchboard(bool);
 	bool isASwitchboard();
-private:
-	void connectSocket();
-	void loadSettings();	//!< load settings
-	void sendCommand();
-	void processHistory(const QStringList &);
+	void deleteRemovables();
+	void addRemovable(const QMetaObject * metaobject);
+	bool isRemovable(const QMetaObject * metaobject);
 protected:
 	void timerEvent(QTimerEvent *event);
-signals:
-	void logged();	//!< signal emitted when the state becomes ELogged
-	void delogged();	//!< signal emitted when the state becomes ENotLogged
 public slots:
 	void start();
 	void stop();
@@ -111,6 +106,8 @@ private slots:
 	void socketReadyRead();
 	void hangUp(const QString & peer);
 signals:
+	void logged();	//!< signal emitted when the state becomes ELogged
+	void delogged();	//!< signal emitted when the state becomes ENotLogged
 	//! connected to the server
 	void started();
 	//! disconnected from the server
@@ -146,8 +143,13 @@ signals:
 	//! we want to monitor a given peer (not the one given by the mouse's drag&drop).
 	void monitorPeer(const QString &, const QString &);
 private:
+	void connectSocket();
+	void loadSettings();	//!< load settings
+	void sendCommand();
+	void processHistory(const QStringList &);
 	void startTryAgainTimer();	//!< Start the "try to reconnect" timer
 	void stopTryAgainTimer();	//!< Stop the "try to reconnect" timer
+
 	QTcpSocket * m_socket;	//!< socket to connect to the server
 	int m_timer;	//!< timer id
 	int m_historysize;
@@ -170,6 +172,7 @@ private:
 	QString m_sessionid;	//!< Session id obtained after a successful login
 	QString m_capabilities;	//!< List of capabilities issued by the server after a successful login
 	// GUI client capabilities
+	QList<const QMetaObject *> m_removable;
 	bool m_is_a_switchboard; 
 };
 

@@ -36,7 +36,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include "xivoconsts.h"
 
 SwitchBoardWindow::SwitchBoardWindow(QWidget * parent)
-: QWidget(parent), m_engine(0)
+	: QWidget(parent), m_engine(0)
 {
 	m_layout = new PeersLayout(this);
 	QSettings settings;
@@ -111,6 +111,7 @@ void SwitchBoardWindow::updatePeer(const QString & ext,
 	QSettings settings;
 	Peer peer(ext, name);
 	PeerWidget * peerwidget = new PeerWidget(ext, name, this);
+	peerwidget->setEngine(m_engine);
 	connect( peerwidget, SIGNAL(originateCall(const QString&, const QString&)),
 	         m_engine, SLOT(originateCall(const QString&, const QString&)) );
 	connect( peerwidget, SIGNAL(transferCall(const QString&, const QString&)),

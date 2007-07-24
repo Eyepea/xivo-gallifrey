@@ -97,6 +97,7 @@ void SearchPanel::updatePeer(const QString & ext,
 	}
 	Peer peer(ext, name);
 	PeerWidget * peerwidget = new PeerWidget(ext, name, this);
+	peerwidget->setEngine(m_engine);
 	if(m_engine->isASwitchboard()) {
 		connect( peerwidget, SIGNAL(originateCall(const QString&, const QString&)),
 			 m_engine, SLOT(originateCall(const QString&, const QString&)) );
@@ -155,4 +156,3 @@ void SearchPanel::removePeers()
 	}
 	m_peerlist.clear();
 }
-

@@ -627,6 +627,8 @@ void MainWidget::changeEvent(QEvent *event)
 void MainWidget::about()
 {
 	QString applicationVersion("0.1");
+	QString revision("$Revision$ 0");
+	QString revdate("$Date$ 0 0");
 	QMessageBox::about(this,
 			   tr("About XIVO Client"),
 			   "<h3>XIVO Client</h3>" +
@@ -637,7 +639,10 @@ void MainWidget::about()
 			      "<p>* access the phones and addresses' directory</p>"
 			      "<p>* see her/his buddies</p>"
 			      "<p>* originate a dial towards some number</p>") +
-			   "<p><b>" + tr("Version : ") + QString("</b>%1</p>").arg(applicationVersion) +
+			   "<p><b>" + tr("Version : ") + QString("</b>%1 (").arg(applicationVersion) +
+			   "<b>svn : " + QString("</b>%1 @ %2 %3)</p>").arg(revision.split(" ")[1],
+									    revdate.split(" ")[1],
+									    revdate.split(" ")[2]) +
 			   "<hr><p>(C) 2007 <a href=http://www.proformatique.com><b>Proformatique</b></a></p>"
 			   "<p>67 rue Voltaire 92800 Puteaux FRANCE</p>"
 			   "<p><b>E-mail : </b>technique@proformatique.com</p>"

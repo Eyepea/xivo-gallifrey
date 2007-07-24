@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QPixmap>
 #include <QPoint>
 #include "peerchannel.h"
+#include "baseengine.h"
 
 class QLabel;
 
@@ -39,7 +40,8 @@ public:
 	~PeerWidget();
 	void clearChanList();
 	void addChannel(const QString &, const QString &, const QString &);
-	void setName(const QString & name);
+	void setName(const QString &);
+	void setEngine(BaseEngine *);
 protected:
 	void mouseMoveEvent(QMouseEvent * event);
 	void mousePressEvent(QMouseEvent * event);
@@ -83,6 +85,7 @@ private slots:
 	void removeFromPanel();
 	void dial();
 private:
+	BaseEngine * m_engine;
 	QLabel * m_statelbl;	//!< Peer state display (ringing, online, ...)
 	QLabel * m_availlbl;	//!< Peer state display from XIVO CTI Client
 	QLabel * m_textlbl;		//!< text label : to display peer name

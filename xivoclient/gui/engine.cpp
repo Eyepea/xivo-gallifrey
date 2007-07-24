@@ -54,6 +54,7 @@ BaseEngine::BaseEngine(QObject *parent)
 	m_listensocket = new QTcpServer(this);
 	loadSettings();
 	setAvailState(m_availstate);
+	deleteRemovables();
 	
 	/*  QTcpSocket signals :
 	    void connected ()
@@ -1153,4 +1154,22 @@ void BaseEngine::setIsASwitchboard(bool b)
 bool BaseEngine::isASwitchboard()
 {
 	return m_is_a_switchboard;
+}
+
+void BaseEngine::deleteRemovables()
+{
+	m_removable.clear();
+}
+
+void BaseEngine::addRemovable(const QMetaObject * metaobject)
+{
+	m_removable.append(metaobject);
+}
+
+bool BaseEngine::isRemovable(const QMetaObject * metaobject)
+{
+	for(int i = 0; i < m_removable.count() ; i++)
+		if (metaobject == m_removable[i])
+			return true;
+	return false;
 }

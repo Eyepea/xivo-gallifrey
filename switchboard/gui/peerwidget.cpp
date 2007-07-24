@@ -30,21 +30,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QMenu>
 #include <QDebug>
 #include "peerwidget.h"
-#include "switchboardwindow.h"
 #include "xivoconsts.h"
 
 /*! \brief Constructor
  */
 PeerWidget::PeerWidget(const QString & id, const QString & name,
-                       QWidget * parent/*, int size*/)
-: QWidget(parent)/*, m_square(size,size)*/, m_id(id), m_name(name),
-m_phone_green(":/phone-green.png"), m_phone_red(":/phone-red.png"),
-m_phone_orange(":/phone-orange.png"), m_phone_gray(":/phone-grey.png"),
-m_phone_yellow(":/phone-yellow.png"), m_phone_blue(":/phone-blue.png"),
-m_person_green(":/personal-green.png"), m_person_red(":/personal-red.png"),
-m_person_orange(":/personal-orange.png"), m_person_gray(":/personal-grey.png"),
-m_person_yellow(":/personal-yellow.png"), m_person_blue(":/personal-blue.png")
+                       QWidget * parent)
+	: QWidget(parent), m_id(id), m_name(name),
+	  m_phone_green(":/phone-green.png"), m_phone_red(":/phone-red.png"),
+	  m_phone_orange(":/phone-orange.png"), m_phone_gray(":/phone-grey.png"),
+	  m_phone_yellow(":/phone-yellow.png"), m_phone_blue(":/phone-blue.png"),
+	  m_person_green(":/personal-green.png"), m_person_red(":/personal-red.png"),
+	  m_person_orange(":/personal-orange.png"), m_person_gray(":/personal-grey.png"),
+	  m_person_yellow(":/personal-yellow.png"), m_person_blue(":/personal-blue.png")
 {
+	//qDebug() << "PeerWidget::PeerWidget()" << id;
 	QHBoxLayout * layout = new QHBoxLayout(this);
 	layout->setSpacing(2);
 	layout->setMargin(2);
@@ -177,8 +177,13 @@ void PeerWidget::removeFromPanel()
  */
 void PeerWidget::dial()
 {
-//	qDebug() << "PeerWidget::dial()" << m_id;
-	emitDial( m_id );
+	//qDebug() << "PeerWidget::dial()" << m_id;
+	if(m_engine->isASwitchboard())
+		emitDial( m_id );
+	else {
+		QStringList peerinfo = m_id.split("/");
+		if (peerinfo.size() > 5) emitDial( peerinfo[5] );
+	}
 }
 
 /*! \brief mouse press. store position
@@ -196,6 +201,8 @@ void PeerWidget::mousePressEvent(QMouseEvent *event)
  */
 void PeerWidget::mouseMoveEvent(QMouseEvent *event)
 {
+	if (!m_engine->isASwitchboard())
+		return;
 	if (!(event->buttons() & Qt::LeftButton))
 		return;
 	if ((event->pos() - m_dragstartpos).manhattanLength()
@@ -309,49 +316,38 @@ void PeerWidget::transferChan(const QString & chan)
 void PeerWidget::contextMenuEvent(QContextMenuEvent * event)
 {
 	QMenu contextMenu(this);
-	//contextMenu.addAction("&Test");
 	contextMenu.addAction(m_dialAction);
-	// add remove action only if we are in the central widget.
-	qDebug() << parentWidget();
-/*	if(parentWidget())
-	{
-		qDebug() << parentWidget()->objectName();
-		qDebug() << parentWidget()->metaObject();
-		qDebug() << &SwitchBoardWindow::staticMetaObject;
-		qDebug() << parentWidget()->metaObject()->className();
-		qDebug() << (&SwitchBoardWindow::staticMetaObject == parentWidget()->metaObject());
-	}*/
-	if(parentWidget() && (&SwitchBoardWindow::staticMetaObject == parentWidget()->metaObject()))
-		contextMenu.addAction(m_removeAction);
-	if( !m_channels.empty() )
-	{
-		QMenu * interceptMenu = new QMenu( tr("&Intercept"), &contextMenu );
-		QMenu * hangupMenu = new QMenu( tr("&Hangup"), &contextMenu );
+	if(m_engine->isASwitchboard()) {
+		// add remove action only if we are in the central widget.
+		if(parentWidget() && m_engine->isRemovable(parentWidget()->metaObject()))
+			contextMenu.addAction(m_removeAction);
+		if( !m_channels.empty() ) {
+			QMenu * interceptMenu = new QMenu( tr("&Intercept"), &contextMenu );
+			QMenu * hangupMenu = new QMenu( tr("&Hangup"), &contextMenu );
+			
+			QListIterator<PeerChannel *> i(m_channels);
+			while(i.hasNext()) {
+				const PeerChannel * channel = i.next();
+				interceptMenu->addAction(channel->otherPeer(),
+							 channel, SLOT(intercept()));
+				hangupMenu->addAction(channel->otherPeer(),
+						      channel, SLOT(hangUp()));
+			}
+			contextMenu.addMenu(interceptMenu);
+			contextMenu.addMenu(hangupMenu);
+		}
+		if( !m_mychannels.empty() ) {
+			QMenu * transferMenu = new QMenu( tr("&Transfer"), &contextMenu );
+			QListIterator<PeerChannel *> i(m_mychannels);
+			while(i.hasNext()) {
+				const PeerChannel * channel = i.next();
+				transferMenu->addAction(channel->otherPeer(),
+							channel, SLOT(transfer()));
+			}
+			contextMenu.addMenu(transferMenu);
+		}
+	}
 
-		QListIterator<PeerChannel *> i(m_channels);
-		while(i.hasNext())
-		{
-			const PeerChannel * channel = i.next();
-			interceptMenu->addAction(channel->otherPeer(),
-			                         channel, SLOT(intercept()));
-			hangupMenu->addAction(channel->otherPeer(),
-			                      channel, SLOT(hangUp()));
-		}
-		contextMenu.addMenu(interceptMenu);
-		contextMenu.addMenu(hangupMenu);
-	}
-	if( !m_mychannels.empty() )
-	{
-		QMenu * transferMenu = new QMenu( tr("&Transfer"), &contextMenu );
-		QListIterator<PeerChannel *> i(m_mychannels);
-		while(i.hasNext())
-		{
-			const PeerChannel * channel = i.next();
-			transferMenu->addAction(channel->otherPeer(),
-			                        channel, SLOT(transfer()));
-		}
-		contextMenu.addMenu(transferMenu);
-	}
 	contextMenu.exec(event->globalPos());
 }
 
@@ -381,7 +377,7 @@ void PeerWidget::addChannel(const QString & id, const QString & state, const QSt
  */
 void PeerWidget::updateMyCalls(const QStringList & chanIds,
                                const QStringList & chanStates,
-							   const QStringList & chanOthers)
+			       const QStringList & chanOthers)
 {
 	while(!m_mychannels.isEmpty())
 		delete m_mychannels.takeFirst();
@@ -402,3 +398,12 @@ void PeerWidget::setName(const QString & name)
 	m_textlbl->setText(m_name);
 }
 
+/*! \brief setter for m_engine
+ *
+ * set BaseEngine object to be used to connect to
+ * peer object slot/signals.
+ */
+void PeerWidget::setEngine(BaseEngine * engine)
+{
+	m_engine = engine;
+}
