@@ -85,9 +85,11 @@ private slots:
 	void removeFromPanel();
 	void dial();
 private:
-	BaseEngine * m_engine;
+	BaseEngine * m_engine;  //!< Base Engine reference
 	QLabel * m_statelbl;	//!< Peer state display (ringing, online, ...)
 	QLabel * m_availlbl;	//!< Peer state display from XIVO CTI Client
+	QLabel * m_voicelbl;
+	QLabel * m_fwdlbl;
 	QLabel * m_textlbl;		//!< text label : to display peer name
 	//QPixmap m_square;		//!< pixmap used to display the states
 	QPoint m_dragstartpos;	//!< drag start position

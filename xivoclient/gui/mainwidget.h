@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 */
 #ifndef __MAINWIDGET_H__
 #define __MAINWIDGET_H__
+
 #include <QWidget>
 #include <QLabel>
 #include <QVBoxLayout>
@@ -47,7 +48,7 @@ class MainWidget: public QMainWindow
 	Q_OBJECT
 public:
 	//! Constructor
-	MainWidget(BaseEngine *engine, QWidget *parent=0);
+	MainWidget(BaseEngine *, QWidget * parent=0);
 	int tablimit() const;	//!< getter for m_tablimit
 	void setTablimit(int);	//!< setter for m_tablimit
 	void setForceTabs(bool);//!< setter for m_forcetabs

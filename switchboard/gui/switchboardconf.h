@@ -22,13 +22,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 #include <QDialog>
 
-class LoginEngine;
-class BaseEngine;
-class SwitchBoardWindow;
-class QLineEdit;
-class QSpinBox;
 class QCheckBox;
 class QComboBox;
+class QLineEdit;
+class QSpinBox;
+
+class BaseEngine;
+class LoginEngine;
+class MainWindow;
+class SwitchBoardWindow;
 
 /*! \brief Configuration dialog
  */
@@ -39,7 +41,7 @@ public:
 	SwitchBoardConfDialog(BaseEngine * engine,
 	                      LoginEngine * loginengine,
 	                      SwitchBoardWindow * window,
-	                      QWidget *parent = 0);
+	                      MainWindow *parent);
 private slots:
 	void saveAndClose();	//!< save configuration and close dialog
 private:
@@ -54,11 +56,13 @@ private:
 	QCheckBox * m_trytoreconnect;	//!< "Try to reconnect" Checkbox
 	QSpinBox  * m_tryinterval_sbox;	//!< "Try to reconnect" interval
 	QSpinBox  * m_history_sbox;	//!< History size
+	QSpinBox  * m_tablimit_sbox;	//!< Maximum number of tabs
 	QCheckBox * m_presence;		//!< connect to presence server checkbox
 	QLineEdit * m_asterisk;	//!< asterisk server id
 	QComboBox * m_protocombo;	//!< protocol(SIP/IAX/...) combo
 	QLineEdit * m_userid;	//!< user id
 	QLineEdit * m_passwd;	//!< password (for presence server)
+	MainWindow *m_mainwindow;	//!< MainWidget where some parameters are commited to
 };
 
 #endif

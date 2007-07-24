@@ -20,19 +20,26 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #ifndef __MAINWINDOW_H__
 #define __MAINWINDOW_H__
 
+#include <QWidget>
 #include <QMainWindow>
 #include <QSystemTrayIcon>
 #include <QTabWidget>
 #include "loginengine.h"
+#include "servicepanel.h"
+#include "logwidget.h"
+#include "callstackwidget.h"
 
 class QAction;
 class QActionGroup;
 class QCloseEvent;
-class QSplitter;
-class LoginEngine;
-class BaseEngine;
-class SwitchBoardWindow;
 class QLabel;
+class QSplitter;
+
+class BaseEngine;
+class LoginEngine;
+class LogWidget;
+class ServicePanel;
+class SwitchBoardWindow;
 
 /*! \brief Main window splitted to display peers and calls
  */
@@ -41,7 +48,9 @@ class MainWindow : public QMainWindow
 	Q_OBJECT
 public:
 	//! Constructor
-	MainWindow(BaseEngine *, LoginEngine *);
+	MainWindow(BaseEngine *, LoginEngine *, QWidget * parent=0);
+	int tablimit() const;	//!< getter for m_tablimit
+	void setTablimit(int);	//!< setter for m_tablimit
 	//! Destructor
 	virtual ~MainWindow();
 private slots:
@@ -62,6 +71,12 @@ private:
 	LoginEngine * m_loginengine;	//!< Login Engine
 	SwitchBoardWindow * m_widget;	//!< Widget to display peers
 	QTabWidget * m_tabwidget;	//!< Area to display profiles
+	QTabWidget * m_svc_tabwidget;	//!< Area to display messages, services and histories
+	ServicePanel * m_featureswidget;
+	LogWidget * m_logwidget;
+	CallStackWidget * calls;
+
+	int m_tablimit;		//!< Maximum number of tabs in m_tabwidget
 
 	QMenu * m_avail;	//!< Availability submenu
 	QAction * m_loginact;	//!< "Log in" Action

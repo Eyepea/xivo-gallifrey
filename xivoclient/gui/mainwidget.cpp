@@ -51,7 +51,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  * This Constructor creates the 3 buttons in a
  * vertical box layout and connect signals with slots.
  */
-MainWidget::MainWidget(BaseEngine *engine, QWidget *parent)
+MainWidget::MainWidget(BaseEngine *engine, QWidget * parent)
 	: QMainWindow(parent), m_engine(engine), m_systrayIcon(0),
 	  m_icon(":/xivoicon.png"), m_icongrey(":/xivoicon-grey.png")
 {
@@ -196,7 +196,7 @@ void MainWidget::createMenus()
 }
 
 /*!
- * tablimit property is defining the maximum
+ * tablimit property defines the maximum
  * number of profile that can be displayed in the Tabbed
  * widget.
  *

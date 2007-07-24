@@ -79,8 +79,8 @@ QLabel * LeftPanel::titleLabel()
  * displaying calls and a right panel for peers.
  * The geometry is restored from settings.
  */
-MainWindow::MainWindow(BaseEngine * engine, LoginEngine * loginengine)
-	: m_engine(engine), m_loginengine(loginengine)
+MainWindow::MainWindow(BaseEngine * engine, LoginEngine * loginengine, QWidget * parent)
+	: QMainWindow(parent), m_engine(engine), m_loginengine(loginengine)
 {
 	QPixmap redsquare(15,15);
 	redsquare.fill(Qt::red);
@@ -94,28 +94,18 @@ MainWindow::MainWindow(BaseEngine * engine, LoginEngine * loginengine)
 	m_splitter = new QSplitter(this);
 	m_leftSplitter = new QSplitter(Qt::Vertical, m_splitter);
 
-
 	/* (0, 0) "position" : Calls */
 	QScrollArea * areaCalls = new QScrollArea(this);
 	LeftPanel * leftPanel = new LeftPanel(areaCalls, m_leftSplitter);
 
 
 	/* (0, 1) "position" : Tabs */
-	QTabWidget * tabwidget = new QTabWidget(m_leftSplitter);
+	m_svc_tabwidget = new QTabWidget(m_leftSplitter);
 
-	DisplayMessagesPanel * lbl = new DisplayMessagesPanel(tabwidget);
-	tabwidget->addTab(lbl, tr("Messages"));
+	DisplayMessagesPanel * lbl = new DisplayMessagesPanel(m_svc_tabwidget);
+	m_svc_tabwidget->addTab(lbl, tr("Messages"));
 
-	ServicePanel * featureswidget = new ServicePanel(this);
-	tabwidget->addTab(featureswidget, tr("Services"));
-
-	LogWidget * logwidget = new LogWidget(m_engine, tabwidget);
-	connect( engine, SIGNAL(updateLogEntry(const QDateTime &, int, const QString &, int)),
-	         logwidget, SLOT(addLogEntry(const QDateTime &, int, const QString &, int)) );
-	tabwidget->addTab(logwidget, tr("History"));
-
-
-	CallStackWidget * calls = new CallStackWidget(areaCalls);
+	calls = new CallStackWidget(areaCalls);
 	connect( calls, SIGNAL(changeTitle(const QString &)),
 	         leftPanel->titleLabel(), SLOT(setText(const QString &)) );
 	connect( m_engine, SIGNAL(updateCall(const QString &, const QString &, int, const QString &,
@@ -130,13 +120,6 @@ MainWindow::MainWindow(BaseEngine * engine, LoginEngine * loginengine)
 	         calls, SLOT(monitorPeer(const QString &, const QString &)) );
 	connect( calls, SIGNAL(hangUp(const QString &)),
 		 m_engine, SLOT(hangUp(const QString &)) );
-
-	connect( calls, SIGNAL(monitoredPeerChanged(const QString &)),
-	         logwidget, SLOT(setPeerToDisplay(const QString &)) );
-	connect( logwidget, SIGNAL(askHistory(const QString &, int)),
-	         m_engine, SLOT(requestHistory(const QString &, int)) );
-	connect( engine, SIGNAL(stopped()),
-	         logwidget, SLOT(clear()) );
 
 	m_middleSplitter = new QSplitter( Qt::Vertical, m_splitter);
 
@@ -212,6 +195,7 @@ MainWindow::MainWindow(BaseEngine * engine, LoginEngine * loginengine)
 
 	// restore splitter settings
 	QSettings settings;
+	m_tablimit = settings.value("display/tablimit", 5).toInt();
 	m_splitter->restoreState(settings.value("display/splitterSizes").toByteArray());
 	m_leftSplitter->restoreState(settings.value("display/leftSplitterSizes").toByteArray());
 	m_middleSplitter->restoreState(settings.value("display/middleSplitterSizes").toByteArray());
@@ -351,6 +335,24 @@ void MainWindow::engineStarted()
 	m_stopact->setEnabled(true);
 	m_startact->setDisabled(true);
 	m_loginengine->start();
+
+	m_logwidget = new LogWidget(m_engine, m_svc_tabwidget);
+	m_svc_tabwidget->insertTab(0, m_logwidget, tr("History"));
+
+	connect( m_engine, SIGNAL(updateLogEntry(const QDateTime &, int, const QString &, int)),
+	         m_logwidget, SLOT(addLogEntry(const QDateTime &, int, const QString &, int)) );
+	connect( m_logwidget, SIGNAL(askHistory(const QString &, int)),
+	         m_engine, SLOT(requestHistory(const QString &, int)) );
+	connect( m_engine, SIGNAL(stopped()),
+	         m_logwidget, SLOT(clear()) );
+	connect( calls, SIGNAL(monitoredPeerChanged(const QString &)),
+	         m_logwidget, SLOT(setPeerToDisplay(const QString &)) );
+
+	m_featureswidget = new ServicePanel(m_svc_tabwidget);
+	m_svc_tabwidget->insertTab(0, m_featureswidget, tr("Services"));
+
+	m_svc_tabwidget->setCurrentIndex(0);
+
 	// set status icon to green
 	QPixmap greensquare(15,15);
 	greensquare.fill(Qt::green);
@@ -366,6 +368,12 @@ void MainWindow::engineStopped()
 	m_stopact->setDisabled(true);
 	m_startact->setEnabled(true);
 	m_loginengine->stop();
+
+	m_svc_tabwidget->removeTab(m_svc_tabwidget->indexOf(m_featureswidget));
+	delete m_featureswidget;
+	m_svc_tabwidget->removeTab(m_svc_tabwidget->indexOf(m_logwidget));
+	delete m_logwidget;
+
 	// set status icon to red
 	QPixmap redsquare(15,15);
 	redsquare.fill(Qt::red);
@@ -378,6 +386,30 @@ void MainWindow::engineStopped()
 void MainWindow::loginengineStarted()
 {
 	m_engine->setDialContext(m_loginengine->dialContext());
+}
+
+/*!
+ * tablimit property defines the maximum
+ * number of profile that can be displayed in the Tabbed
+ * widget.
+ *
+ * \sa setTablimit
+ * \sa m_tablimit
+ */
+int MainWindow::tablimit() const
+{
+	return m_tablimit;
+}
+
+/*!
+ * \sa tablimit
+ * \sa m_tablimit
+ */
+void MainWindow::setTablimit(int tablimit)
+{
+	QSettings settings;
+	m_tablimit = tablimit;
+	settings.setValue("display/tablimit", m_tablimit);
 }
 
 /*!
@@ -400,10 +432,7 @@ void MainWindow::showNewProfile(Popup * popup)
 		int index = m_tabwidget->addTab(popup, currentTimeStr);
 		qDebug() << "added tab" << index;
 		m_tabwidget->setCurrentIndex(index);
-// 		if(m_cinfo_index > -1)
-// 			m_qtabwidget->setCurrentIndex(m_cinfo_index);
-//		if(index >= m_tablimit)
-		if(index >= 5)
+		if(index >= m_tablimit)
 		{
 			// close the first widget
 			m_tabwidget->widget(0)->close();

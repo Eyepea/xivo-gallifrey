@@ -39,15 +39,14 @@ ConfWidget::ConfWidget(BaseEngine *engine, MainWidget *parent)
 : QDialog(parent), m_engine(engine)
 {
 	m_mainwidget = parent;
+	setModal(true);
 	// the object will be destroyed when closed
 	setAttribute(Qt::WA_DeleteOnClose);
-	setModal(true);
-	QVBoxLayout *vlayout = new QVBoxLayout(this);
-
 	setWindowTitle("Configuration");
 
+	QVBoxLayout * vlayout = new QVBoxLayout(this);
 	/* grid layout for the editable values */
-	QGridLayout *gridlayout = new QGridLayout();
+	QGridLayout * gridlayout = new QGridLayout();
 
 	QLabel *lblip = new QLabel(tr("Server Host"), this);
 	m_lineip = new QLineEdit(m_engine->serverip(), this);
@@ -113,7 +112,6 @@ ConfWidget::ConfWidget(BaseEngine *engine, MainWidget *parent)
 	m_trytoreconnect->setCheckState( m_engine->trytoreconnect()?Qt::Checked:Qt::Unchecked );
 	gridlayout->addWidget(m_trytoreconnect, line++, 0, 1, 0);
 	gridlayout->addWidget( new QLabel( tr("Try to reconnect interval"), this), line, 0);
-
 	m_tryinterval_sbox = new QSpinBox(this);
 	m_tryinterval_sbox->setRange(1, 120);
 	m_tryinterval_sbox->setValue(m_engine->trytoreconnectinterval() / 1000);

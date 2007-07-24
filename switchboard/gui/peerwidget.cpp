@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
    $Date$
 */
 
+#include <QGridLayout>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPixmap>
@@ -45,22 +46,37 @@ PeerWidget::PeerWidget(const QString & id, const QString & name,
 	  m_person_yellow(":/personal-yellow.png"), m_person_blue(":/personal-blue.png")
 {
 	//qDebug() << "PeerWidget::PeerWidget()" << id;
-	QHBoxLayout * layout = new QHBoxLayout(this);
+	//	QHBoxLayout * layout = new QHBoxLayout(this);
+	QGridLayout * layout = new QGridLayout(this);
 	layout->setSpacing(2);
 	layout->setMargin(2);
 	m_statelbl = new QLabel(this);
 	m_availlbl = new QLabel(this);
+	/*
+	  m_voicelbl = new QLabel(this);
+	  m_fwdlbl   = new QLabel(this);
+	*/
 	m_statelbl->setPixmap( m_phone_gray );
 	m_availlbl->setPixmap( m_person_gray );
-	layout->addWidget( m_statelbl, 0, Qt::AlignLeft );
-	layout->addWidget( m_availlbl, 0, Qt::AlignLeft );
+	/*
+	  m_voicelbl->setPixmap( m_person_gray );
+	  m_fwdlbl->setPixmap( m_phone_gray );
+	*/
+	layout->addWidget( m_statelbl, 0, 0, Qt::AlignLeft );
+	layout->addWidget( m_availlbl, 0, 1, Qt::AlignLeft );
+	/*
+	  layout->addWidget( m_voicelbl, 1, 0, Qt::AlignLeft );
+	  layout->addWidget( m_fwdlbl,   1, 1, Qt::AlignLeft );
+	*/
 	//qDebug() << "new PeerWidget: id=" << m_id << "name=" << m_name;
 	m_textlbl = new QLabel(m_name.isEmpty()?m_id:m_name, this);
 	// set TextInteraction Flags so the mouse clicks are not catched by the
 	// QLabel widget
 	m_textlbl->setTextInteractionFlags( Qt::NoTextInteraction );
-	layout->addWidget( m_textlbl, 0, Qt::AlignLeft );
-	layout->addStretch(1);
+	layout->addWidget( m_textlbl, 0, 2, Qt::AlignLeft );
+	layout->setColumnStretch(0, 0);
+	layout->setColumnStretch(1, 0);
+	layout->setColumnStretch(2, 1);
 	// to be able to receive drop
 	setAcceptDrops(true);
 	m_removeAction = new QAction( tr("&Remove"), this);
