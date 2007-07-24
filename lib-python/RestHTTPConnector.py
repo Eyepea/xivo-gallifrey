@@ -68,9 +68,9 @@ def q_from_str(s):
 	try:
 		q = float(s)
 	except ValueError:
-		raise InvalidQ, "Invalid Q: %s" % repr(s)
+		raise InvalidQ, "invalid Q %r" % s
 	if (q < 0.0) or (q > 1.0):
-		raise InvalidQ, "Invalid Q: %s" % repr(s)
+		raise InvalidQ, "invalid Q %r" % s
 	return q
 
 def quote(s, delim = '"', escape = '\\'):
@@ -89,7 +89,7 @@ def present_one_media_range(media_range):
 	type = string_starNone(media_range[0][0])
 	subtype = string_starNone(media_range[0][1])
 	if (type is None) and (subtype is not None):
-		raise InvalidHeader, "In Accept header, invalid media-range  - %s" % media_range_to_str(media_range)
+		raise InvalidHeader, "invalid media-range - %s" % media_range_to_str(media_range)
 	q = 1.0
 	dct = {}
 	for k,v in media_range[1]:
@@ -99,7 +99,7 @@ def present_one_media_range(media_range):
 		dct[k.lower()] = v
 	fzset = frozenset(dct.iteritems())
 	if fzset and (subtype is None):
-		raise InvalidHeader, "In Accept header, invalid media-range  - %s" % media_range_to_str(media_range)
+		raise InvalidHeader, "invalid media-range - %s" % media_range_to_str(media_range)
 	return ConTypeDesc(type, subtype, fzset), q
 
 def accept_line(s):
@@ -129,8 +129,8 @@ class RestHTTPHandler(BaseHTTPRequestHandler):
 	
 	SLASH_RE = re.compile('/+')
 	
-	# XXX: NO ENTITY IN CASE OF 'HEAD', NEVER!
-	# (probably need to replace send_error() calls because of that)
+	# NOTE: send_error() from BaseHTTPRequestHandler correctly handle HEAD
+	# requests :)
 	
 	def __init__(self, request, client_address, server):
 		self.rest_request = request
@@ -173,21 +173,21 @@ class RestHTTPHandler(BaseHTTPRequestHandler):
 					self.rest_accept[3][media] = q
 			return True
 		except (ParseException,InvalidHeader,InvalidQ), x:
-			self.send_error(400, "Bad Accept header: %s" %x)
+			self.send_error(400, "Bad Accept header: %s" % x)
 			return False
 	
 	def rest_is_chunked(self):
 		if 'Transfer-Encoding' in self.headers:
 			codlst,coddct = transfer_coding(self.headers['Transfer-Encoding'])
 			if not codlst:
-				raise InvalidHeader, "'Transfer-Encoding' HTTP header is empty"
+				raise InvalidHeader, "Transfer-Encoding header is empty"
 			if len(codlst) == 1:
 				zzz = codlst[0].lower()
 				if 'identity' == zzz:
 					return False
 				if 'chunked' == zzz:
 					return True
-				raise UnsupportedEncoding, "Unsupported 'Transfer-Encoding' - %s" % repr(self.headers['Transfer-Encoding'])
+			raise UnsupportedEncoding, "Unsupported Transfer-Encoding header: %r" % self.headers['Transfer-Encoding']
 		else:
 			return False
 	
@@ -206,7 +206,7 @@ class RestHTTPHandler(BaseHTTPRequestHandler):
 			try:
 				sz,ext = chunk_header(chunk_head_line)
 			except ParseException:
-				self.send_error(400, "Invalid chunk header")
+				self.send_error(400, "Bad chunk header: %r" % chunk_head_line)
 				return False
 			if sz == 0:
 				break
@@ -232,11 +232,11 @@ class RestHTTPHandler(BaseHTTPRequestHandler):
 			self.rest_content_type = content_type_line(self.headers['Content-Type'])
 			return True
 		except (ParseException,InvalidHeader), x:
-			self.send_error(400, "Invalid 'Transfer-Encoding' header")
+			self.send_error(400, "Bad Content-Type header: %s" % x)
 			return False
 	
 	def rest_get_payload(self):
-		if not rest_get_content_type():
+		if not self.rest_get_content_type():
 			return False
 		try:
 			if self.rest_is_chunked():
@@ -244,7 +244,7 @@ class RestHTTPHandler(BaseHTTPRequestHandler):
 			else:
 				return self.rest_get_payload_identity()
 		except (ParseException,InvalidHeader), x:
-			self.send_error(400, "Invalid 'Transfer-Encoding' header")
+			self.send_error(400, "Invalid Transfer-Encoding header: %s" % x)
 			return False
 		except UnsupportedEncoding, x:
 			self.send_error(501, str(x))

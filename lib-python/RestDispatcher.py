@@ -265,30 +265,54 @@ class RestDispatcher(object):
 					best_ctm_for_ctd,
 					ctd, 1.0)
 	def dispatch_in(self, path, method, payload, ctd_in, accept_ctd_q, connector):
+		# XXX: catch exceptions on adaptor an translate to http response code
 		if method not in REST_METHODS:
 			raise RestErrorCode(501)
+		# === APPLICATION LOOKUP ===
 		ctx = self.ctx_path(path, CtxType(None, None, method, path))
 		if ctx is None:
 			raise RestErrorCode(404)
+		# === REQUEST PAYLOAD ADAPTATION ===
 		if payload is not None:
 			sai = self.adaptor_from_ctd(ctd_in)
 			if sai is None:
 				raise RestErrorCode(415)
 			adapt_in = sai.adaptor_fact(sai)
-			payload_int = adapt_in.to_internal(sai, payload)
-			del payload
+			req_payload,req_ctd = adapt_in.to_internal(sai, payload)
 		else:
-			payload_int = None
-		sa = self.select_adaptor(ctx, accept_ctd_q)
-		if sa is None:
-			raise RestErrorCode(406)
-		adaptor = sa.adaptor_fact(sa)
-		if adaptor is None:
-			raise RestErrorCode(500, 'adaptor')
+			req_payload,req_ctd = None,None
+		del payload
+		# === SELECTION OF OUTPUT ADAPTOR ===
+		# TODO: early detection if request requires an output entity
+		# and don't even launch the application in this case if no
+		# accept_ctd_q
+		if accept_ctd_q is not None:
+			sa = self.select_adaptor(ctx, accept_ctd_q)
+			if sa is None:
+				raise RestErrorCode(406)
+			adaptor = sa.adaptor_fact(sa)
+			if adaptor is None:
+				raise RestErrorCode(500, 'adaptor')
+		else:
+			adaptor,sa = None,None
+		del accept_ctd_q
+		# === APPLICATION DEREFERENCIATION ===
 		app = ctx.application_factory()
 		if app is None:
 			raise RestErrorCode(500, 'application')
-		app.req_in(ctx, adaptor, sa, payload_int, connector)
+		# === CALL TO APPLICATION ===
+		rcode,tree_rootname = app.req_in(ctx, req_payload)
+		# === OUTPUT ADAPTATION ===
+		if tree_rootname:
+			if adaptor is not None:
+				out_payload,out_ctd = adaptor.to_external(sa, tree_rootname)
+			else:
+				raise RestErrorCode(406)
+		else:
+			out_payload,out_ctd = None,None
+		del tree_rootname
+		# === SEND ANSWER ===
+		connector.rest_answer(rcode, out_payload, out_ctd)
 
 __all__ = ['ConTypeDesc', 'ConTypeMatch', 'CtxType', 'ConTypePossible',
            'CountSupplCtmCtd', 'RestDispatcher', 'REST_METHODS',

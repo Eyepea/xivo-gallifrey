@@ -68,9 +68,6 @@ class RestXmlRegistrar(object):
 	# payload, which would be quite simple using a file like interface
 	# on the socket :)
 	
-	def get_content_type_desc(self):
-		return self.XML_CTD
-	
 	def to_internal(self, selected_adaptor, payload):
 		"""Translate an Xml Payload (of a supported informal 'schema')
 		into an internal representation made of a tree of Python
@@ -81,7 +78,7 @@ class RestXmlRegistrar(object):
 		"""
 		if not payload:
 			return None
-		return pinst_xmlstr(payload)
+		return pinst_xmlstr(payload),self.XML_CTD
 
 	def to_external(self, selected_adaptor, payload_int):
 		"""Translate an internal representation into an Xml Payload.
@@ -91,6 +88,6 @@ class RestXmlRegistrar(object):
 		"""
 		if not payload_int:
 			return None
-		return xmlstr_pinst(*payload_int)
+		return xmlstr_pinst(*payload_int),self.XML_CTD
 
 __all__ = ['RestXmlRegistrar']

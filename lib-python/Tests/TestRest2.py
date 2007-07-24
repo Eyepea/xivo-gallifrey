@@ -67,11 +67,8 @@ class BoundedIfaceCls:
 		r['allow'] = ','.join(allow_by_iface_name(self.ni, self.iface.get_iface_name()))
 		r['static'] = self.desc._static_options.get_tree_repr(self.iface)
 		return r
-	def req_in(self, ctx, adaptor, sa, payload_int, connector):
-		out_ctd = adaptor.get_content_type_desc()
-		out_payl = adaptor.to_external(sa, (self.get_tree_repr(), self.iface.get_iface_name()))
-		connector.rest_answer(200, out_payl, out_ctd)
-		
+	def req_in(self, ctx, req_payload):
+		return 200, (self.get_tree_repr(), self.iface.get_iface_name())
 
 class OneInterfaceCls(RT_Set):
 	def __init__(self):
@@ -108,15 +105,13 @@ class InterfacesCls(SelfXmlVisit, RT_Dyn):
 		ni = NetworkInterfaces(file(self._eni_filename))
 		ni.parse()
 		return ni
-	def req_in(self, ctx, adaptor, sa, payload_int, connector):
+	def req_in(self, ctx, req_payload):
 		r = empty_container()
 		ni = self.parse_ni()
 		for iface in ni.iteriface():
 			r[iface.get_iface_name()] = \
 				BoundedIfaceCls(self._subtree, ni, iface).get_tree_repr()
-		out_ctd = adaptor.get_content_type_desc()
-		out_payl = adaptor.to_external(sa, (r, 'interfaces'))
-		connector.rest_answer(200, out_payl, out_ctd)
+		return 200, (r, 'interfaces')
 
 # selected_adaptor, payload_int
 
