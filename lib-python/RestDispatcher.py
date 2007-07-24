@@ -234,7 +234,7 @@ class RestDispatcher(object):
 								best_adaptor_fact = best_adaptor_for_ctd
 								best_Q = q_for_best
 							this_ctd_done = True
-				if best_adaptor_fact is not None:
+				if (best_adaptor_fact is not None) and (best_Q != 0):
 					return SelectedAdaptor(best_adaptor_fact, best_ctm, best_ctd, best_Q)
 	def adaptor_from_ctd(self, ctd):
 		# XXX: merge with select_adaptor() ?
