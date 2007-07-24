@@ -1,4 +1,5 @@
-/* XIVO switchboard
+/*
+XIVO switchboard
 Copyright (C) 2007  Proformatique
 
 This program is free software; you can redistribute it and/or
@@ -17,8 +18,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 */
 
 /* $Id$ */
-#ifndef __SWITCHBOARDENGINE_H__
-#define __SWITCHBOARDENGINE_H__
+
+#ifndef __BASEENGINE_H__
+#define __BASEENGINE_H__
+
+// QT includes.
 #include <QHash>
 #include <QObject>
 #include <QTcpSocket>
@@ -74,6 +78,8 @@ public:
 	void setDialContext(const QString & context) { m_dialcontext = context; };
 	//! get m_dialcontext
 	const QString & dialContext() const { return m_dialcontext; };
+	void setIsASwitchboard(bool);
+	bool isASwitchboard();
 private:
 	void connectSocket();
 	void loadSettings();	//!< load settings
@@ -163,6 +169,8 @@ private:
 	QString m_dialcontext;	//!< Context of the phone, as returned by the xivo_daemon server
 	QString m_sessionid;	//!< Session id obtained after a successful login
 	QString m_capabilities;	//!< List of capabilities issued by the server after a successful login
+	// GUI client capabilities
+	bool m_is_a_switchboard; 
 };
 
 #endif

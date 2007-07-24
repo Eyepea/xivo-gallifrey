@@ -16,8 +16,11 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 */
-#ifndef __ENGINE_H__
-#define __ENGINE_H__
+
+/* $Id$ */
+
+#ifndef __BASEENGINE_H__
+#define __BASEENGINE_H__
 
 // QT includes.
 #include <QHash>
@@ -79,6 +82,8 @@ public:
 	void setEnabled(bool b);
 	//! get m_enabled
 	bool enabled() { return m_enabled; };
+	void setIsASwitchboard(bool);
+	bool isASwitchboard();
 signals:
 	void availAllowChanged(bool);	//!< signal 
 	void logged();	//!< signal emitted when the state becomes ELogged
@@ -142,6 +147,7 @@ private slots:
 	void profileToBeShown(Popup *);	//!< a new profile must be displayed
 
 	void dialExtension(const QString &);
+	void dialFullChannel(const QString &);
 	void updatePeers(const QStringList &);
 protected:
 	void timerEvent(QTimerEvent *);	//!< recieve timer events
@@ -186,6 +192,8 @@ private:
 	int m_pendingkeepalivemsg;	//!< number of keepalivemsg sent without response
 	QString m_availstate;	//!< Availability state to send to the server
 	QHash<QString, QString> m_callerids;	//!< List of caller Ids
+	// GUI client capabilities
+	bool m_is_a_switchboard;
 };
 
 #endif

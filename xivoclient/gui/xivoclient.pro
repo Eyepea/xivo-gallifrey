@@ -19,8 +19,8 @@ HEADERS += $${SBDIR}/peerwidget.h     $${SBDIR}/peeritem.h            $${SBDIR}/
 
 SOURCES += confwidget.cpp engine.cpp main.cpp mainwidget.cpp popup.cpp
 SOURCES += xmlhandler.cpp remotepicwidget.cpp urllabel.cpp servicepanel.cpp
-SOURCES += searchpanel.cpp peerwidget.cpp
-SOURCES += $${SBDIR}/logwidget.cpp
+SOURCES += peerwidget.cpp
+SOURCES += $${SBDIR}/logwidget.cpp           $${SBDIR}/searchpanel.cpp
 SOURCES += $${SBDIR}/dialpanel.cpp           $${SBDIR}/logeltwidget.cpp $${SBDIR}/directorypanel.cpp
 SOURCES += $${SBDIR}/extendedtablewidget.cpp $${SBDIR}/peerchannel.cpp  $${SBDIR}/peeritem.cpp
 

@@ -493,7 +493,8 @@ void BaseEngine::dialFullChannel(const QString & dst)
 	qDebug() << "BaseEngine::dialFullChannel()" << dst;
 	m_pendingcommand = "originate p/" +
 		m_asterisk + "/" + m_dialcontext + "/" + m_protocol + "/" +
-		m_userid + "/" + m_extension + " " + dst;
+		m_userid + "/" + m_extension +
+		" " + dst;
 	sendCommand();
 }
 
@@ -504,8 +505,8 @@ void BaseEngine::dialExtension(const QString & dst)
 	qDebug() << "BaseEngine::dialExtension()" << dst;
 	m_pendingcommand = "originate p/" +
 		m_asterisk + "/" + m_dialcontext + "/" + m_protocol + "/" + 
-		m_userid + "/" + m_extension + " p/" +
-		m_asterisk + "/" + m_dialcontext + "/" + "/" + "/" + dst;
+		m_userid + "/" + m_extension +
+		" p/" + m_asterisk + "/" + m_dialcontext + "/" + "/" + "/" + dst;
 	sendCommand();
 }
 
@@ -671,3 +672,12 @@ void BaseEngine::timerEvent(QTimerEvent * event)
 	}
 }
 
+void BaseEngine::setIsASwitchboard(bool b)
+{
+	m_is_a_switchboard = b;
+}
+
+bool BaseEngine::isASwitchboard()
+{
+	return m_is_a_switchboard;
+}

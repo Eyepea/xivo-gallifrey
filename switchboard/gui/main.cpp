@@ -60,6 +60,7 @@ int main(int argc, char * * argv)
 	app.installTranslator(&qtTranslator);
 
 	BaseEngine engine;
+	engine.setIsASwitchboard(true);
 	LoginEngine login_engine;
 	
 	MainWindow main(&engine, &login_engine);

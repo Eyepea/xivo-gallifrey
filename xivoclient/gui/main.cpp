@@ -68,7 +68,7 @@ int main(int argc, char * * argv)
 	app.installTranslator(&qtTranslator);
 
 	BaseEngine engine;
-	
+	engine.setIsASwitchboard(false);
 	MainWidget main(&engine);
 	main.show();
 	//main.dumpObjectTree();

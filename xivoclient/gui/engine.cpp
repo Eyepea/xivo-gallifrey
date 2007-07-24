@@ -305,6 +305,22 @@ void BaseEngine::dialExtension(const QString & dst)
 				    m_serveraddress, m_loginport + 1 );
 }
 
+void BaseEngine::dialFullChannel(const QString & dst)
+{
+	qDebug() << "BaseEngine::dialExtension()";
+	QString outline = "COMMAND ";
+	outline.append(m_asterisk + "/" + m_protocol + m_userid);
+	outline.append(" SESSIONID ");
+	outline.append(m_sessionid);
+	outline.append(" DIAL ");
+	outline.append(m_asterisk + "/" + m_protocol + "/" +
+		       m_userid + "/" + m_dialcontext + " " + dst);
+	outline.append("\r\n");
+	qDebug() << outline;
+	m_udpsocket->writeDatagram( outline.toAscii(),
+				    m_serveraddress, m_loginport + 1 );
+}
+
 void BaseEngine::setVoiceMail(bool b)
 {
 	QString outline = "COMMAND ";
@@ -1129,3 +1145,12 @@ void BaseEngine::timerEvent(QTimerEvent * event)
 	}
 }
 
+void BaseEngine::setIsASwitchboard(bool b)
+{
+	m_is_a_switchboard = b;
+}
+
+bool BaseEngine::isASwitchboard()
+{
+	return m_is_a_switchboard;
+}
