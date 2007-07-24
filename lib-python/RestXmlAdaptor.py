@@ -76,18 +76,22 @@ class RestXmlRegistrar(object):
 		NamedTuple('SelectedAdaptor',
 		           'adaptor_fact contype_match contype_desc q')
 		"""
+		# TODO: accept a list of strings payload?
 		if not payload:
 			return None
 		return pinst_xmlstr(payload),self.XML_CTD
 
 	def to_external(self, selected_adaptor, payload_int):
 		"""Translate an internal representation into an Xml Payload.
+		Returns a tuple of:
+			a list of strings representing the entity
+			a content-type description of this representation
 		selected_adaptor is a:
 		NamedTuple('SelectedAdaptor',
 		           'adaptor_fact contype_match contype_desc q')
 		"""
 		if not payload_int:
 			return None
-		return xmlstr_pinst(*payload_int),self.XML_CTD
+		return [xmlstr_pinst(*payload_int),'\n'],self.XML_CTD
 
 __all__ = ['RestXmlRegistrar']

@@ -133,20 +133,27 @@ class RestHTTPHandler(BaseHTTPRequestHandler):
 	
 	SLASH_RE = re.compile('/+')
 	
+	protocol_version = "HTTP/1.1"
+	
 	# NOTE: send_error() from BaseHTTPRequestHandler correctly handle HEAD
 	# requests :)
 	
+	def reset_request_attributes(self):
+		self.req_path = None
+		self.req_payload = None
+		self.req_content_type = None
+		self.req_accept = None
+		self.req_answered = False
+	
 	def __init__(self, request, client_address, server):
+		# Connection attributes
 		self.rest_request = request
 		self.rest_client_address = client_address
 		self.rest_server = server
-		self.rest_connector = server.rest_connector
-		self.rest_dispatcher = self.rest_connector.dispatcher
-		self.rest_path = None
-		self.rest_payload = None
-		self.rest_content_type = None
-		self.rest_accept = None
-		self.rest_answered = False
+		self.rest_master_connector = server.rest_master_connector
+		self.rest_dispatcher = self.rest_master_connector.dispatcher
+		# prepare to handle the initial request
+		self.reset_request_attributes()
 		BaseHTTPRequestHandler.__init__(self, request, client_address, server)
 	
 	def has_payload(self):
@@ -157,7 +164,7 @@ class RestHTTPHandler(BaseHTTPRequestHandler):
 	# above
 	#   str, str, empty frozenset of (k,v)
 	# if same type/subtype
-	# probably implies merge of self.rest_accept[0] and self.rest_accept[1]
+	# probably implies merge of self.req_accept[0] and self.req_accept[1]
 	def rest_parse_accept(self):
 		"Parse the accept headers in format required by RestDispatcher."
 		try:
@@ -165,16 +172,16 @@ class RestHTTPHandler(BaseHTTPRequestHandler):
 				pacc = accept_line(self.headers['Accept'])
 			else:
 				pacc = accept_line('*/*')
-			self.rest_accept = [{},{},{},{}]
+			self.req_accept = [{},{},{},{}]
 			for media,q in pacc:
 				if media.extens:
-					self.rest_accept[0][media] = q
+					self.req_accept[0][media] = q
 				elif media.subtype:
-					self.rest_accept[1][media] = q
+					self.req_accept[1][media] = q
 				elif media.type:
-					self.rest_accept[2][media] = q
+					self.req_accept[2][media] = q
 				else:
-					self.rest_accept[3][media] = q
+					self.req_accept[3][media] = q
 			return True
 		except (ParseException,InvalidHeader,InvalidQ), x:
 			self.send_error(400, "Bad Accept header: %s" % x)
@@ -219,13 +226,13 @@ class RestHTTPHandler(BaseHTTPRequestHandler):
 			if not_empty_line:
 				self.send_error(400, "Message chunk not followed by line return")
 				return False
-		self.rest_payload = ''.join(full_in_prog)
+		self.req_payload = ''.join(full_in_prog)
 		return True
 	
 	def rest_get_payload_identity(self):
 		payload_length = int(self.headers['Content-Length'])
 		# XXX: higher bound limit
-		self.rest_payload = ''.join(self.rest_get_frags_bytenb(payload_length))
+		self.req_payload = ''.join(self.rest_get_frags_bytenb(payload_length))
 		return True
 
 	def rest_get_content_type(self):
@@ -233,7 +240,7 @@ class RestHTTPHandler(BaseHTTPRequestHandler):
 			self.send_error(415, "Please provide a Content-Type header")
 			return False
 		try:
-			self.rest_content_type = content_type_line(self.headers['Content-Type'])
+			self.req_content_type = content_type_line(self.headers['Content-Type'])
 			return True
 		except (ParseException,InvalidHeader), x:
 			self.send_error(400, "Bad Content-Type header: %s" % x)
@@ -281,23 +288,24 @@ class RestHTTPHandler(BaseHTTPRequestHandler):
 		return True
 	
 	def rest_answer(self, anscode=204, adapted_payload = None, ctd = None):
-		if self.rest_answered:
+		if self.req_answered:
 			raise DoubleAnswer, "Trying to answer twice"
 		# TODO: progressive (chunked) answer if possible and necessary
 		self.send_response(anscode)
-		if adapted_payload is not None:
+		if adapted_payload:
 			content_type = httpmedia_contypedesc(ctd)
 			self.send_header("Content-Type", content_type)
-			self.send_header("Content-Length", len(adapted_payload))
+			self.send_header("Content-Length", sum(map(len, adapted_payload)))
 			self.send_header("Cache-Control", "no-cache")	# XXX
 			self.send_header("Pragma", "no-cache")		# XXX
 		self.end_headers()
-		if (adapted_payload is not None) and (self.command != 'HEAD'):
-			self.wfile.write(adapted_payload)
+		if adapted_payload and (self.command != 'HEAD'):
+			for paychunk in adapted_payload:
+				self.wfile.write(paychunk)
 		self.wfile.flush()
 		# XXX this would be functionally/conceptually better in
 		# RestDispatcher, see also rest_handle()
-		self.rest_answered = True
+		self.req_answered = True
 	
 	def rest_err_msg(self, errno, s):
 		lit = ''.join(('<pre>\n', cgi.escape(s), '</pre>\n'))
@@ -310,7 +318,7 @@ class RestHTTPHandler(BaseHTTPRequestHandler):
 	def rest_xcept_sender(self, x):
 		return lambda s:self.rest_answer(
 			x.response_code,
-			self.rest_err_msg(x.response_code, s),
+			[self.rest_err_msg(x.response_code, s)],
 			ConTypeDesc('text','html',frozenset())
 		)
 	
@@ -328,14 +336,14 @@ class RestHTTPHandler(BaseHTTPRequestHandler):
 		# === FILTER OUT ./ COMPONENTS ===
 		path = filter(lambda x:x!='.', path)
 		# === TRANSFORM ../ COMPONENTS ===
-		self.rest_path = []
+		self.req_path = []
 		while path:
 			elem = path.pop(0)
 			if elem == '..':
-				if self.rest_path:
-					self.rest_path.pop()
+				if self.req_path:
+					self.req_path.pop()
 			else:
-				self.rest_path.append(elem)
+				self.req_path.append(elem)
 		return True
 	
 	def rest_handle(self):
@@ -349,12 +357,12 @@ class RestHTTPHandler(BaseHTTPRequestHandler):
 				return
 			try:
 				self.rest_dispatcher.dispatch_in(
-					self.rest_path, self.command,
-					self.rest_payload, self.rest_content_type,
-					self.rest_accept, self)
+					self.req_path, self.command,
+					self.req_payload, self.req_content_type,
+					self.req_accept, self)
 				# XXX this would be functionally/conceptually better in
 				# RestDispatcher, see also rest_answer()
-				if not self.rest_answered:
+				if not self.req_answered:
 					raise RestErrorCode(500, "no answer sent by application")
 			except RestErrorCode, x:
 				# self.send_error(x.response_code, str(x))
@@ -381,6 +389,8 @@ class RestHTTPHandler(BaseHTTPRequestHandler):
         	if not self.parse_request(): # An error code has been sent, just exit
         		return
 		self.rest_handle()
+		# prepare to handle a second request in a keep-alive connection
+		self.reset_request_attributes()
 
 class RestHTTPRegistrar(object):
 	
@@ -407,7 +417,7 @@ class RestHTTPRegistrar(object):
 			raise ValueError, "Must be registred before trying to start the listener"
 		self.__http_server = ThreadingHTTPServer(
 			(self.__listen_ip, self.__listen_port), RestHTTPHandler)
-		self.__http_server.rest_connector = self
+		self.__http_server.rest_master_connector = self
 		self.__http_server_thread = Thread(
 			None, self.__http_server.serve_forever, None, (), {})
 		self.__http_server_thread.start()
