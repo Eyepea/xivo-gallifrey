@@ -2,6 +2,9 @@
 
 Copyright (C) 2007, Proformatique
 
+NOTE: this module does syslogging of exceptions that occur while handling an
+HTTP request.
+
 """
 
 __version__ = "$Revision$ $Date$"
@@ -36,6 +39,7 @@ from operator import attrgetter
 from pyparsing import ParseException
 from easyslog import *
 from except_tb import *
+from urisup import uri_help_split, PATH, InvalidURIError
 
 import re, cgi
 
@@ -311,8 +315,27 @@ class RestHTTPHandler(BaseHTTPRequestHandler):
 		)
 	
 	def rest_parse_path(self):
-		# XXX: handle ../ path components
-		self.rest_path = [el for el in self.SLASH_RE.split(self.path) if el]
+		# === PARSE URI ===
+		try:
+			path = uri_help_split(self.path)[PATH]
+		except InvalidURIError, x:
+			self.send_error(400, "bad URI: %s" % x)
+			return False
+		# === SPLIT URI PATH ===
+		if not path:
+			path = '/'
+		path = filter(bool, path.split('/'))
+		# === FILTER OUT ./ COMPONENTS ===
+		path = filter(lambda x:x!='.', path)
+		# === TRANSFORM ../ COMPONENTS ===
+		self.rest_path = []
+		while path:
+			elem = path.pop(0)
+			if elem == '..':
+				if self.rest_path:
+					self.rest_path.pop()
+			else:
+				self.rest_path.append(elem)
 		return True
 	
 	def rest_handle(self):
