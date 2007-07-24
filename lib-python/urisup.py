@@ -23,6 +23,7 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
+from itertools import chain
 import uriparse, re, string
 
 # Near RFC 3986 definitions
@@ -44,22 +45,21 @@ IPV_FUTURE_RE = 'v[\da-fA-F]+\.[' \
                 + re.escape(UNRESERVED + SUB_DELIMS + ':') \
                 + ']+'
 
-BYTES_VAL = ''.join(map(chr, range(0,256)))
+BYTES_VAL = ''.join(map(chr,range(0,256)))
 
-def __not_in_re_strip_pct(charset):
-	return re.compile('[^'
-	                  + re.escape(charset.translate(BYTES_VAL, '%'))
-	                  + ']')
+def __allow_to_encdct(charset):
+	enc_charset = set(iter(charset.replace('%','')))
+	return dict(((k in enc_charset) and (k,k) or (k,'%%%02X'%ord(k)) for k in BYTES_VAL))
 
-USER_ENCRE = __not_in_re_strip_pct(USER_CHAR)
-PASSWD_ENCRE = __not_in_re_strip_pct(PASSWD_CHAR)
-REG_NAME_ENCRE = __not_in_re_strip_pct(REG_NAME_CHAR)
-P_ENCRE = __not_in_re_strip_pct(PCHAR)
-FRAG_ENCRE = __not_in_re_strip_pct(QUEFRAG_CHAR)
-# QUERY_ENCRE is reserved for query encoding, that is spaces are not percent
-# encoded but translated in plus ' ' -> '+'
-QUERY_KEY_ENCRE = __not_in_re_strip_pct(QUEFRAG_CHAR.translate(BYTES_VAL, '&+=') + ' ')
-QUERY_VAL_ENCRE = __not_in_re_strip_pct(QUEFRAG_CHAR.translate(BYTES_VAL, '&+') + ' ')
+USER_ENCDCT = __allow_to_encdct(USER_CHAR)
+PASSWD_ENCDCT = __allow_to_encdct(PASSWD_CHAR)
+REG_NAME_ENCDCT = __allow_to_encdct(REG_NAME_CHAR)
+P_ENCDCT = __allow_to_encdct(PCHAR)
+FRAG_ENCDCT = __allow_to_encdct(QUEFRAG_CHAR)
+# QUERY_ENCDCT is reserved for query encoding, that is spaces are not percent
+# encoded but translated into plus ' ' -> '+'
+QUERY_KEY_ENCDCT = __allow_to_encdct(QUEFRAG_CHAR.translate(BYTES_VAL, '&+=') + ' ')
+QUERY_VAL_ENCDCT = __allow_to_encdct(QUEFRAG_CHAR.translate(BYTES_VAL, '&+') + ' ')
 
 # Host type alternatives:
 HOST_IP_LITERAL = 1
@@ -205,6 +205,8 @@ class InvalidQueryError(InvalidURIError):
 class InvalidFragmentError(InvalidURIError):
     """Invalid content for the fragment part of an URI"""
 
+PERCENT_CODE_RE = re.compile('\%[\da-fA-F][\da-fA-F]')
+
 def pct_decode(s):
 	"""Returns the percent-decoded version of string s
 	
@@ -223,33 +225,25 @@ def pct_decode(s):
 	"""
 	if s is None:
 		return None
-	ro = re.compile('\%[\da-fA-F][\da-fA-F]')
-	m = ro.search(s)
-	while m:
-		s = s[:m.start()] + chr(int(m.group()[1:], 16)) + s[m.end():]
-		m = ro.search(s)
-	return s
+	split = PERCENT_CODE_RE.split(s)
+	findall = map(lambda e: chr(int(e[1:],16)), PERCENT_CODE_RE.findall(s))
+	findall.append('')
+	return ''.join(chain(*zip(split,findall)))
 
-def pct_encode(s, reo):
-	"""Uses the compiled regex object reo to find the first forbidden
-	character in s and percent encode it. Iterate through the remaining
-	right part of the string to treat it in whole.
+def pct_encode(s, encdct):
+	"""Returns a translated version of s where each character is mapped to a
+	string thanks to the encdct dictionary.
+	
+	Uses the encdct parameter to construct a string from parameter s where
+	each character k from s is replaced by the value corresponding to key k
+	in encdct. It happens that callers use dictionaries smartly constructed
+	so that this function will perform percent-encoding quickly when called
+	whith such a dictionary.
 	
 	"""
 	if s is None:
 		return None
-	a = [s]
-	while a[-1]:
-		m = reo.search(a[-1])
-		if not m:
-			a.append('')
-		else:
-			r = a[-1][m.start()+1:]
-			t = a[-1][:m.start()] + '%' + \
-			    ('%02X' % ord(m.group()[0]))
-			a[-1] = t
-			a.append(r)
-	return ''.join(a)
+	return ''.join(map(encdct.__getitem__,s))
 
 def query_elt_decode(s):
 	"""Returns the percent-decoded version of string s, after a
@@ -263,14 +257,15 @@ def query_elt_decode(s):
 		return None
 	return pct_decode(s.replace('+', ' '))
 
-def query_elt_encode(s, reo):
-	"""Query encode a string, using the regex object reo to find forbidden
-	characters. '+' must be found by reo. ' ' must not be found by reo.
+def query_elt_encode(s, encdct):
+	"""Query encode a string, using the encdct parameter to do character
+	conversions. '+' must be converted (percent encoded) by pct_encode()
+	with the same s and encdct parameters, while ' ' must not be converted.
 	
 	"""
 	if s is None:
 		return None
-	return pct_encode(s, reo).replace(' ', '+')
+	return pct_encode(s, encdct).replace(' ', '+')
 
 def host_type(host):
 	"""Correctly classifies correct RFC 3986 compliant hostnames, but
@@ -448,7 +443,7 @@ def uri_tree_normalize(uri_tree):
 	
 	"""
 	scheme, authority, path, query, fragment = uri_tree
-	if authority and (filter(lambda x: bool(x), authority) == ()):
+	if authority and (filter(bool, authority) == ()):
 		authority = None
 	if query:
 		query = filter(lambda (x,y): bool(x) or bool(y), query)
@@ -594,14 +589,14 @@ def uri_tree_encode(uri_tree, type_host = HOST_REG_NAME):
 	if authority:
 		user, passwd, host, port = authority
 		if user:
-			user = pct_encode(user, USER_ENCRE)
+			user = pct_encode(user, USER_ENCDCT)
 		if passwd:
-			passwd = pct_encode(passwd, PASSWD_ENCRE)
+			passwd = pct_encode(passwd, PASSWD_ENCDCT)
 		if host and type_host == HOST_REG_NAME:
-			host = pct_encode(host, REG_NAME_ENCRE)
+			host = pct_encode(host, REG_NAME_ENCDCT)
 		authority = (user, passwd, host, port)
 	if path:
-		path = pct_encode(path, P_ENCRE)
+		path = pct_encode(path, P_ENCDCT)
 		if (not authority) and (not scheme):
 			# check for path-noscheme special case
 			sppath = path.split('/', 1)
@@ -611,11 +606,11 @@ def uri_tree_encode(uri_tree, type_host = HOST_REG_NAME):
 				path = '/'.join(sppath)
 	if query:
 		query = tuple(map(lambda (x,y):
-		                           (query_elt_encode(x, QUERY_KEY_ENCRE),
-		                            query_elt_encode(y, QUERY_VAL_ENCRE)),
+		                           (query_elt_encode(x, QUERY_KEY_ENCDCT),
+		                            query_elt_encode(y, QUERY_VAL_ENCDCT)),
 		                  query))
 	if fragment:
-		fragment = pct_encode(fragment, FRAG_ENCRE)
+		fragment = pct_encode(fragment, FRAG_ENCDCT)
 	return (scheme, authority, path, query, fragment)
 
 def uri_unsplit_tree(uri_tree):
