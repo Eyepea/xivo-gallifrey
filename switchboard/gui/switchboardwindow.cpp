@@ -31,7 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QSettings>
 #include <QMouseEvent>
 #include "switchboardwindow.h"
-#include "switchboardengine.h"
+#include "baseengine.h"
 #include "peerwidget.h"
 #include "xivoconsts.h"
 

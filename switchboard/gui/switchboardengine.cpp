@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QSettings>
 #include <QTime>
 #include <QStringList>
-#include "switchboardengine.h"
+#include "baseengine.h"
 #include "switchboardwindow.h"
 #include "astchannel.h"
 #include "logeltwidget.h"

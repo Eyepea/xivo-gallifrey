@@ -41,17 +41,17 @@ public:
 	typedef enum {ENotLogged, ELogged } EngineState;
 	//! Constructor
 	BaseEngine(QObject *parent = 0);
-
 	void loadSettings();		//!< load server settings
 	void saveSettings();		//!< save server settings
 
 	// setter/getter for properties
 	const QString & serverip() const;	//!< Host of the login server
 	void setServerip(const QString &);	//!< see serverip()
-	ushort serverport() const;			//!< TCP port for connection to server
-	void setServerport(ushort);			//!< see serverport()
 	const QString & serverast() const;	//!< id Name of the Asterisk server
 	void setServerAst(const QString &);	//!< see serverast()
+
+	ushort serverport() const;			//!< TCP port for connection to server
+	void setServerport(ushort);			//!< see serverport()
 	const QString & protocol() const;      	//!< protocol of the user to identify to the server
 	void setProtocol(const QString &);     	//!< see protocol()
 	const QString & userid() const;		//!< userid to identify to the server
@@ -75,7 +75,10 @@ public:
 	const QString & getCapabilities() const {return m_capabilities;} //!< returns capabilities
 	uint historysize() const;	//!< history size
 	void setHistorySize(uint size);	//!< set history size
-
+	//! set m_enabled
+	void setEnabled(bool b);
+	//! get m_enabled
+	bool enabled() { return m_enabled; };
 signals:
 	void availAllowChanged(bool);	//!< signal 
 	void logged();	//!< signal emitted when the state becomes ELogged
@@ -159,6 +162,7 @@ private:
 	QString m_asterisk;		//!< Host to the login server
 	QString m_protocol;		//!< User Protocol's login
 	QString m_userid;		//!< User Id
+	bool m_enabled;		       	//!< is enabled
 	QString m_passwd;		//!< User password
 	uint m_keepaliveinterval;	//!< Keep alive interval (in msec)
 	// 

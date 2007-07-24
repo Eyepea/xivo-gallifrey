@@ -35,8 +35,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QDebug>
 #include <QTabWidget>
 #include "mainwindow.h"
+#include "baseengine.h"
 #include "loginengine.h"
-#include "switchboardengine.h"
 #include "switchboardwindow.h"
 #include "switchboardconf.h"
 #include "callstackwidget.h"
@@ -104,15 +104,15 @@ MainWindow::MainWindow(BaseEngine * engine, LoginEngine * loginengine)
 	QTabWidget * tabwidget = new QTabWidget(m_leftSplitter);
 
 	DisplayMessagesPanel * lbl = new DisplayMessagesPanel(tabwidget);
-	tabwidget->addTab(lbl, "Messages");
+	tabwidget->addTab(lbl, tr("Messages"));
 
 	ServicePanel * featureswidget = new ServicePanel(this);
-	tabwidget->addTab(featureswidget, "Services");
+	tabwidget->addTab(featureswidget, tr("Services"));
 
 	LogWidget * logwidget = new LogWidget(m_engine, tabwidget);
 	connect( engine, SIGNAL(updateLogEntry(const QDateTime &, int, const QString &, int)),
 	         logwidget, SLOT(addLogEntry(const QDateTime &, int, const QString &, int)) );
-	tabwidget->addTab(logwidget, "History");
+	tabwidget->addTab(logwidget, tr("History"));
 
 
 	CallStackWidget * calls = new CallStackWidget(areaCalls);

@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QDebug>
 #include "searchpanel.h"
 #include "peerwidget.h"
-#include "engine.h"
+#include "baseengine.h"
 
 SearchPanel::SearchPanel(QWidget * parent)
 : QWidget(parent)

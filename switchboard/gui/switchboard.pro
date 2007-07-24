@@ -12,7 +12,7 @@ CONFIG += static
 
 # Input
 HEADERS += peerwidget.h switchboardwindow.h
-HEADERS += switchboardengine.h mainwindow.h
+HEADERS += baseengine.h mainwindow.h
 HEADERS += switchboardconf.h callwidget.h callstackwidget.h
 HEADERS += astchannel.h peerslayout.h searchpanel.h
 HEADERS += peeritem.h logeltwidget.h logwidget.h dialpanel.h

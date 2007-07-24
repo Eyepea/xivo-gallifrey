@@ -39,7 +39,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  * is created and connected to the right slots/signals
  */
 LoginEngine::LoginEngine(QObject * parent)
-	: QObject(parent), m_loginport(0), m_sessionid(""),
+	: QObject(parent),
+	  m_loginport(0), m_sessionid(""),
 	  m_state(ENotLogged), m_pendingkeepalivemsg(0)
 {
 	m_ka_timerid = 0;
@@ -85,23 +86,12 @@ LoginEngine::LoginEngine(QObject * parent)
 }
 
 /*!
- *
- */
-void LoginEngine::setEnabled(bool b) {
-	if(b != m_enabled) {
-		m_enabled = b;
-		if(state() == ELogged)
-			availAllowChanged(b);
-	}
-}
-
-/*!
  * Load Settings from the registery/configuration file
  */
 void LoginEngine::loadSettings()
 {
 	QSettings settings;
-	m_serverhost = settings.value("engine/serverhost").toString();
+	m_serverip = settings.value("engine/serverhost").toString();
 	m_userid = settings.value("engine/userid").toString();
 	m_autoconnect = settings.value("engine/autoconnect", false).toBool();
 	m_trytoreconnect = settings.value("engine/trytoreconnect", false).toBool();
@@ -126,7 +116,7 @@ void LoginEngine::saveSettings()
 	// these commented settings are saved by BaseEngine::saveSettings()
 	// in the Switchboard framework :
 	//
-	//	settings.setValue("engine/serverhost", m_serverhost);
+	//	settings.setValue("engine/serverhost", m_serverip);
 	//
 	//	settings.setValue("engine/userid", m_userid);
 	//	settings.setValue("engine/autoconnect", m_autoconnect);
@@ -140,6 +130,17 @@ void LoginEngine::saveSettings()
 	settings.setValue("engine/passwd", m_passwd);
 	settings.setValue("engine/availstate", m_availstate);
 	settings.setValue("engine/keepaliveinterval", m_keepaliveinterval);
+}
+
+/*!
+ *
+ */
+void LoginEngine::setEnabled(bool b) {
+	if(b != m_enabled) {
+		m_enabled = b;
+		if(state() == ELogged)
+			availAllowChanged(b);
+	}
 }
 
 void LoginEngine::initListenSocket()
@@ -159,10 +160,10 @@ void LoginEngine::initListenSocket()
  */
 void LoginEngine::start()
 {
-	qDebug() << "LoginEngine::start()" << m_serverhost << m_loginport << m_enabled;
+	qDebug() << "LoginEngine::start()" << m_serverip << m_loginport << m_enabled;
 	m_loginsocket->abort();
 	if(m_enabled)
-		m_loginsocket->connectToHost(m_serverhost, m_loginport);
+		m_loginsocket->connectToHost(m_serverip, m_loginport);
 }
 
 /*! \brief close the connection to the server
@@ -171,8 +172,7 @@ void LoginEngine::stop()
 {
 	qDebug() << "LoginEngine::stop()";
 	if(m_sessionid != "") {
-		QString outline;
-		outline = "STOP ";
+		QString outline = "STOP ";
 		outline.append(m_asterisk + "/" + m_protocol.toLower() + m_userid);
 		outline.append(" SESSIONID ");
 		outline.append(m_sessionid);
@@ -234,6 +234,30 @@ void LoginEngine::setDoNotDisturb()
 {
 	//qDebug() << "setDoNotDistrurb()";
 	setAvailState("donotdisturb");
+}
+
+
+
+// === Getter and Setters ===
+/*! \brief get server host */
+const QString & LoginEngine::serverip() const
+{
+	return m_serverip;
+}
+
+const QString & LoginEngine::serverast() const
+{
+	return m_asterisk;
+}
+
+void LoginEngine::setServerip(const QString & serverip)
+{
+	m_serverip = serverip;
+}
+
+void LoginEngine::setServerAst(const QString & serverast)
+{
+	m_asterisk = serverast;
 }
 
 /*!
@@ -315,12 +339,6 @@ void LoginEngine::setState(EngineState state)
 			delogged();
 		}
 	}
-}
-
-/*! \brief get server host */
-const QString & LoginEngine::host() const
-{
-	return m_serverhost;
 }
 
 /*!

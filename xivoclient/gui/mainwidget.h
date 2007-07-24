@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QSystemTrayIcon>
 #include <QMainWindow>
 #include <QLineEdit>
-#include "engine.h"
+#include "baseengine.h"
 #include "dialpanel.h"
 #include "logwidget.h"
 #include "directorypanel.h"

@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include "searchpanel.h"
 #include "peerwidget.h"
 #include "displaymessages.h"
-#include "switchboardengine.h"
+#include "baseengine.h"
 
 /*! \brief Constructor
  *

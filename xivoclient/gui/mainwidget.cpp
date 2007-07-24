@@ -39,7 +39,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include "mainwidget.h"
 #include "confwidget.h"
 #include "popup.h"
-#include "engine.h"
+#include "baseengine.h"
 #include "dialpanel.h"
 #include "logwidget.h"
 #include "directorypanel.h"
@@ -451,6 +451,8 @@ void MainWidget::setConnected()
 				
 			} else if(dc == QString("history")) {
 				m_history = new LogWidget(m_engine, this);
+				m_history->setPeerToDisplay("p/" + m_engine->serverast() + "/" + "contexte" +  "/" +
+							    m_engine->protocol() + "/" + m_engine->userid() + "/" + m_engine->userid());
 				connect( m_history, SIGNAL(askHistory(const QString &, int)),
 					 m_engine, SLOT(requestHistory(const QString &, int)) );
 				connect( m_engine, SIGNAL(updateLogEntry(const QDateTime &, int, const QString &, int)),

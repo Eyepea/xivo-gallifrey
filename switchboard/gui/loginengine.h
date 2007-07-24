@@ -41,19 +41,21 @@ class LoginEngine: public QObject
 public:
 	//! Enum for Engine state logged/not logged
 	typedef enum {ENotLogged, ELogged } EngineState;
-	
+	//! Constructor
 	LoginEngine(QObject * parent = 0);
-	const QString & host() const;
+	void loadSettings();		//!< load server settings
+	void saveSettings();		//!< save server settings
+	
+	// setter/getter for properties
+	const QString & serverip() const;	//!< Host of the login server
+	void setServerip(const QString &);	//!< see serverip()
+	const QString & serverast() const;	//!< id Name of the Asterisk server
+	void setServerAst(const QString &);	//!< see serverast()
+
 	//! set m_autoconnect
 	void setAutoconnect(bool b) { m_autoconnect = b;};
 	//! get m_autoconnect
 	bool autoconnect() const {return m_autoconnect;};
-	void saveSettings();	//!< save settings
-	
-	void setAddress(const QString & host) { m_serverhost = host; };	//! set m_serverhost
-	const QString & address() const { return m_serverhost; };	//! get m_serverhost
-	void setAsterisk(const QString & ast) { m_asterisk = ast; };	//! set m_asterisk
-	const QString & asterisk() const { return m_asterisk; };	//! get m_asterisk
 	//! set m_protocol
 	void setProtocol(const QString & proto) { m_protocol = proto; };
 	//! get m_protocol
@@ -90,9 +92,6 @@ public:
 	void setEnabled(bool b);
 	//! get m_enabled
 	bool enabled() { return m_enabled; };
-private:
-	//void connectSocket();
-	void loadSettings();	//!< load settings
 protected:
 	void timerEvent(QTimerEvent *event);
 signals:
@@ -138,7 +137,7 @@ private:
 	QTcpServer * m_listensocket;	//!< TCP socket listening for profiles
 	ushort m_listenport;		//!< Port where we are listening for profiles
 	int m_timer;	//!< timer id
-	QString m_serverhost;	//!< server host name
+	QString m_serverip;	//!< server host name
 	quint16 m_loginport;	//!< port to login to server
 	bool m_tcpmode;	//!< use a unique outgoing TCP connection for everything
 	bool m_autoconnect;	//!< Autoconnect to server at startup ?

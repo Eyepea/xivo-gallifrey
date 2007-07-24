@@ -32,7 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QComboBox>
 #include <QCheckBox>
 #include "switchboardconf.h"
-#include "switchboardengine.h"
+#include "baseengine.h"
 #include "switchboardwindow.h"
 #include "loginengine.h"
 
@@ -155,12 +155,12 @@ SwitchBoardConfDialog::SwitchBoardConfDialog(BaseEngine * engine,
 
 void SwitchBoardConfDialog::saveAndClose()
 {
-	m_loginengine->setAddress( m_serverhost->text() );
+	m_loginengine->setServerip( m_serverhost->text() );
 	m_loginengine->setUserId( m_userid->text() );
 	m_loginengine->setAutoconnect( m_autoconnect->checkState() == Qt::Checked );
 	m_loginengine->setTrytoreconnect( m_trytoreconnect->checkState() == Qt::Checked );
 	m_loginengine->setTrytoreconnectinterval( m_tryinterval_sbox->value()*1000 );
-	m_loginengine->setAsterisk( m_asterisk->text() );
+	m_loginengine->setServerAst( m_asterisk->text() );
 	m_loginengine->setProtocol( m_protocombo->currentText() );
 
 	m_loginengine->setEnabled( m_presence->checkState() == Qt::Checked );

@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QLocale>
 #include <QTranslator>
 #include "mainwidget.h"
-#include "engine.h"
+#include "baseengine.h"
 
 /*! \mainpage Profile Popup
  *

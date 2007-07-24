@@ -3,52 +3,52 @@
 <context>
     <name>BaseEngine</name>
     <message>
-        <location filename="switchboardengine.cpp" line="201"/>
+        <location filename="switchboardengine.cpp" line="203"/>
         <source>Connection lost with Presence Server</source>
         <translation>Connexion perdue avec le serveur de présence</translation>
     </message>
     <message>
-        <location filename="switchboardengine.cpp" line="224"/>
+        <location filename="switchboardengine.cpp" line="226"/>
         <source>Connection refused</source>
         <translation>Connexion refusée</translation>
     </message>
     <message>
-        <location filename="switchboardengine.cpp" line="233"/>
+        <location filename="switchboardengine.cpp" line="235"/>
         <source>Host not found</source>
         <translation>Hôte non trouvé</translation>
     </message>
     <message>
-        <location filename="switchboardengine.cpp" line="236"/>
+        <location filename="switchboardengine.cpp" line="238"/>
         <source>Unknown socket error</source>
         <translation>Erreur réseau inconnue</translation>
     </message>
     <message>
-        <location filename="switchboardengine.cpp" line="454"/>
+        <location filename="switchboardengine.cpp" line="465"/>
         <source>Peers&apos; status updated</source>
         <translation>Statut des postes mis à jour</translation>
     </message>
     <message>
-        <location filename="switchboardengine.cpp" line="425"/>
+        <location filename="switchboardengine.cpp" line="428"/>
         <source> said : </source>
         <translation> dit : </translation>
     </message>
     <message>
-        <location filename="switchboardengine.cpp" line="425"/>
+        <location filename="switchboardengine.cpp" line="428"/>
         <source>Unknown</source>
         <translation>Inconnu</translation>
     </message>
     <message>
-        <location filename="switchboardengine.cpp" line="603"/>
+        <location filename="switchboardengine.cpp" line="666"/>
         <source>Attempting to reconnect to server</source>
         <translation>Tentative de reconnexion au serveur</translation>
     </message>
     <message>
-        <location filename="switchboardengine.cpp" line="312"/>
+        <location filename="switchboardengine.cpp" line="314"/>
         <source>Unknown Number</source>
         <translation>Numéro Inconnu</translation>
     </message>
     <message>
-        <location filename="switchboardengine.cpp" line="392"/>
+        <location filename="switchboardengine.cpp" line="394"/>
         <source>Unknown CallerId</source>
         <translation>CallerId Inconnu</translation>
     </message>
@@ -178,116 +178,144 @@
     </message>
 </context>
 <context>
+    <name>LoginEngine</name>
+    <message>
+        <location filename="loginengine.cpp" line="150"/>
+        <source>Critical error</source>
+        <translation>Erreur critique</translation>
+    </message>
+    <message>
+        <location filename="loginengine.cpp" line="152"/>
+        <source>Unable to start the server: %1.</source>
+        <translation>Impossible de lancer le serveur: %1.</translation>
+    </message>
+</context>
+<context>
     <name>MainWindow</name>
     <message>
-        <location filename="mainwindow.cpp" line="225"/>
+        <location filename="mainwindow.cpp" line="238"/>
         <source>&amp;File</source>
         <translation>&amp;Fichier</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="227"/>
+        <location filename="mainwindow.cpp" line="240"/>
         <source>S&amp;tart</source>
         <translation>&amp;Démarrer</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="235"/>
+        <location filename="mainwindow.cpp" line="248"/>
         <source>Sto&amp;p</source>
         <translation>&amp;Arrêter</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="244"/>
+        <location filename="mainwindow.cpp" line="257"/>
         <source>&amp;Configure</source>
         <translation>&amp;Configuration</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="249"/>
+        <location filename="mainwindow.cpp" line="262"/>
         <source>&amp;Quit</source>
         <translation>&amp;Quitter</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="304"/>
+        <location filename="mainwindow.cpp" line="314"/>
         <source>&amp;Help</source>
         <translation>&amp;Aide</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="306"/>
+        <location filename="mainwindow.cpp" line="316"/>
         <source>About &amp;Qt</source>
         <translation>A propos de &amp;Qt</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="228"/>
+        <location filename="mainwindow.cpp" line="241"/>
         <source>Start</source>
         <translation>Connexion</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="236"/>
+        <location filename="mainwindow.cpp" line="249"/>
         <source>Stop</source>
         <translation>Déconnexion</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="245"/>
+        <location filename="mainwindow.cpp" line="258"/>
         <source>Open the configuration dialog</source>
         <translation>Ouvre la fenêtre de configuration</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="378"/>
+        <location filename="mainwindow.cpp" line="429"/>
         <source>About XIVO SwitchBoard</source>
         <translation>A propos du SwitchBoard XIVO</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="305"/>
+        <location filename="mainwindow.cpp" line="315"/>
         <source>&amp;About XIVO Switchboard</source>
         <translation>&amp;A propos du SwitchBoard XIVO</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="261"/>
+        <location filename="mainwindow.cpp" line="271"/>
         <source>&amp;Available</source>
         <translation>&amp;Disponible</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="266"/>
+        <location filename="mainwindow.cpp" line="276"/>
         <source>A&amp;way</source>
         <translation>&amp;Occupé</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="271"/>
+        <location filename="mainwindow.cpp" line="281"/>
         <source>&amp;Be Right Back</source>
         <translation>&amp;Bientôt De Retour</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="276"/>
+        <location filename="mainwindow.cpp" line="286"/>
         <source>&amp;Out To Lunch</source>
         <translation>P&amp;arti Déjeuner</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="281"/>
+        <location filename="mainwindow.cpp" line="291"/>
         <source>&amp;Do not disturb</source>
         <translation>&amp;Ne Pas Déranger</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="298"/>
+        <location filename="mainwindow.cpp" line="308"/>
         <source>&amp;Availability</source>
         <translation>&amp;Disponibilité</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="382"/>
+        <location filename="mainwindow.cpp" line="433"/>
         <source>&lt;p&gt;This application displays the status of the ongoing phone calls.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Cette application affiche le statut des appels téléphoniques en cours.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="382"/>
+        <location filename="mainwindow.cpp" line="433"/>
         <source>Version : </source>
         <translation>Version : </translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="387"/>
+        <location filename="mainwindow.cpp" line="438"/>
         <source>Authors : </source>
         <translation>Auteurs : </translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="388"/>
+        <location filename="mainwindow.cpp" line="439"/>
         <source>License : </source>
         <translation>Licence : </translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="107"/>
+        <source>Messages</source>
+        <translation>Messages</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="110"/>
+        <source>Services</source>
+        <translation>Services</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="115"/>
+        <source>History</source>
+        <translation>Historique</translation>
     </message>
 </context>
 <context>
@@ -394,11 +422,77 @@
     </message>
 </context>
 <context>
+    <name>Popup</name>
+    <message>
+        <location filename="../../xivoclient/gui/popup.cpp" line="56"/>
+        <source>Incoming call</source>
+        <translation>Appel entrant</translation>
+    </message>
+    <message>
+        <location filename="../../xivoclient/gui/popup.cpp" line="63"/>
+        <source>&amp;Answer</source>
+        <translation>Répo&amp;ndre</translation>
+    </message>
+    <message>
+        <location filename="../../xivoclient/gui/popup.cpp" line="66"/>
+        <source>&amp;Dismiss</source>
+        <translation>Ref&amp;user</translation>
+    </message>
+    <message>
+        <location filename="../../xivoclient/gui/popup.cpp" line="69"/>
+        <source>&amp;Close</source>
+        <translation>&amp;Fermer</translation>
+    </message>
+</context>
+<context>
     <name>SearchPanel</name>
     <message>
         <location filename="searchpanel.cpp" line="34"/>
         <source>N&amp;ame or number to search :</source>
         <translation>N&amp;om ou numéro à rechercher :</translation>
+    </message>
+</context>
+<context>
+    <name>ServicePanel</name>
+    <message>
+        <location filename="../../xivoclient/gui/servicepanel.cpp" line="15"/>
+        <source>Voice &amp;Mail</source>
+        <translation>&amp;Répondeur</translation>
+    </message>
+    <message>
+        <location filename="../../xivoclient/gui/servicepanel.cpp" line="20"/>
+        <source>Call &amp;Recording</source>
+        <translation>&amp;Enregistrement</translation>
+    </message>
+    <message>
+        <location filename="../../xivoclient/gui/servicepanel.cpp" line="25"/>
+        <source>Call &amp;Filtering</source>
+        <translation>Fil&amp;trage d&apos;appel</translation>
+    </message>
+    <message>
+        <location filename="../../xivoclient/gui/servicepanel.cpp" line="30"/>
+        <source>Do Not &amp;Disturb</source>
+        <translation>&amp;Ne Pas Déranger</translation>
+    </message>
+    <message>
+        <location filename="../../xivoclient/gui/servicepanel.cpp" line="36"/>
+        <source>&amp;Unconditional Forward</source>
+        <translation>Renvoi &amp;Inconditionnel</translation>
+    </message>
+    <message>
+        <location filename="../../xivoclient/gui/servicepanel.cpp" line="71"/>
+        <source>Destination</source>
+        <translation>Destination</translation>
+    </message>
+    <message>
+        <location filename="../../xivoclient/gui/servicepanel.cpp" line="52"/>
+        <source>Forward on &amp;Busy</source>
+        <translation>Renvoi sur Oc&amp;cupation</translation>
+    </message>
+    <message>
+        <location filename="../../xivoclient/gui/servicepanel.cpp" line="68"/>
+        <source>Forward on &amp;No Reply</source>
+        <translation>Renvoi sur N&amp;on Réponse</translation>
     </message>
 </context>
 <context>

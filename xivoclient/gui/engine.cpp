@@ -25,12 +25,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QDebug>
 #include <QMessageBox>
 #include <QSettings>
+#include <QStringList>
 #include <QTcpSocket>
-#include <QThread>
 #include <QTime>
 #include <QTimerEvent>
 
-#include "engine.h"
+#include "baseengine.h"
 #include "popup.h"
 #include "logeltwidget.h"
 
@@ -42,10 +42,10 @@ const int REQUIRED_SERVER_VERSION = 1165;
  * It also connects signals with the right slots.
  */
 BaseEngine::BaseEngine(QObject *parent)
-: QObject(parent),
-  m_serverip(""), m_loginport(0), m_asterisk(""), m_protocol(""), m_userid(""), m_passwd(""),
-  m_listenport(0), m_sessionid(""), m_state(ENotLogged),
-  m_pendingkeepalivemsg(0)
+	: QObject(parent),
+	  m_serverip(""), m_loginport(0), m_asterisk(""), m_protocol(""), m_userid(""), m_passwd(""),
+	  m_listenport(0), m_sessionid(""), m_state(ENotLogged),
+	  m_pendingkeepalivemsg(0)
 {
 	m_ka_timerid = 0;
 	m_try_timerid = 0;
@@ -129,6 +129,17 @@ void BaseEngine::saveSettings()
 	settings.setValue("engine/tcpmode", m_tcpmode);
 }
 
+/*!
+ *
+ */
+void BaseEngine::setEnabled(bool b) {
+	if(b != m_enabled) {
+		m_enabled = b;
+		if(state() == ELogged)
+			availAllowChanged(b);
+	}
+}
+
 void BaseEngine::initListenSocket()
 {
 	if (!m_listensocket->listen())
@@ -148,9 +159,10 @@ void BaseEngine::initListenSocket()
  */
 void BaseEngine::start()
 {
-	qDebug() << "BaseEngine::start()";
+	qDebug() << "BaseEngine::start()" << m_serverip << m_loginport << m_enabled;
 	m_loginsocket->abort();
-	m_loginsocket->connectToHost(m_serverip, m_loginport);
+	if(m_enabled)
+		m_loginsocket->connectToHost(m_serverip, m_loginport);
 }
 
 /*!
@@ -159,14 +171,16 @@ void BaseEngine::start()
 void BaseEngine::stop()
 {
 	qDebug() << "BaseEngine::stop()";
-	QString outline = "STOP ";
-	outline.append(m_asterisk + "/" + m_protocol + m_userid);
-	outline.append(" SESSIONID ");
-	outline.append(m_sessionid);
-	outline.append("\r\n");
-	m_udpsocket->writeDatagram( outline.toAscii(),
-				    m_serveraddress, m_loginport + 1 );
-
+	if(m_sessionid != "") {
+		QString outline = "STOP ";
+		outline.append(m_asterisk + "/" + m_protocol.toLower() + m_userid);
+		outline.append(" SESSIONID ");
+		outline.append(m_sessionid);
+		//qDebug() << "LoginEngine::stop()" << outline;
+		outline.append("\r\n");
+		m_udpsocket->writeDatagram( outline.toAscii(),
+					    m_serveraddress, m_loginport + 1 );
+	}
 	stopKeepAliveTimer();
 	stopTryAgainTimer();
 	setState(ENotLogged);
@@ -288,7 +302,7 @@ void BaseEngine::dialExtension(const QString & dst)
 	outline.append("\r\n");
 	qDebug() << outline;
 	m_udpsocket->writeDatagram( outline.toAscii(),
-				   m_serveraddress, m_loginport + 1 );
+				    m_serveraddress, m_loginport + 1 );
 }
 
 void BaseEngine::setVoiceMail(bool b)
@@ -302,7 +316,7 @@ void BaseEngine::setVoiceMail(bool b)
 	outline.append("\r\n");
 	qDebug() << outline;
 	m_udpsocket->writeDatagram( outline.toAscii(),
-				   m_serveraddress, m_loginport + 1 );
+				    m_serveraddress, m_loginport + 1 );
 }
 
 void BaseEngine::setCallRecording(bool b)
@@ -316,7 +330,7 @@ void BaseEngine::setCallRecording(bool b)
 	outline.append("\r\n");
 	qDebug() << outline;
 	m_udpsocket->writeDatagram( outline.toAscii(),
-				   m_serveraddress, m_loginport + 1 );
+				    m_serveraddress, m_loginport + 1 );
 }
 
 void BaseEngine::setCallFiltering(bool b)
@@ -330,7 +344,7 @@ void BaseEngine::setCallFiltering(bool b)
 	outline.append("\r\n");
 	qDebug() << outline;
 	m_udpsocket->writeDatagram( outline.toAscii(),
-				   m_serveraddress, m_loginport + 1 );
+				    m_serveraddress, m_loginport + 1 );
 }
 
 void BaseEngine::setDnd(bool b)
@@ -344,7 +358,7 @@ void BaseEngine::setDnd(bool b)
 	outline.append("\r\n");
 	qDebug() << outline;
 	m_udpsocket->writeDatagram( outline.toAscii(),
-				   m_serveraddress, m_loginport + 1 );
+				    m_serveraddress, m_loginport + 1 );
 }
 
 void BaseEngine::setForwardOnUnavailable(bool b, const QString & dst)
@@ -358,7 +372,7 @@ void BaseEngine::setForwardOnUnavailable(bool b, const QString & dst)
 	outline.append("\r\n");
 	qDebug() << outline;
 	m_udpsocket->writeDatagram( outline.toAscii(),
-				   m_serveraddress, m_loginport + 1 );
+				    m_serveraddress, m_loginport + 1 );
 	outline = "COMMAND ";
 	outline.append(m_asterisk + "/" + m_protocol + m_userid);
 	outline.append(" SESSIONID ");
@@ -368,7 +382,7 @@ void BaseEngine::setForwardOnUnavailable(bool b, const QString & dst)
 	outline.append("\r\n");
 	qDebug() << outline;
 	m_udpsocket->writeDatagram( outline.toAscii(),
-				   m_serveraddress, m_loginport + 1 );
+				    m_serveraddress, m_loginport + 1 );
 }
 
 void BaseEngine::setForwardOnBusy(bool b, const QString & dst)
@@ -382,7 +396,7 @@ void BaseEngine::setForwardOnBusy(bool b, const QString & dst)
 	outline.append("\r\n");
 	qDebug() << outline;
 	m_udpsocket->writeDatagram( outline.toAscii(),
-				   m_serveraddress, m_loginport + 1 );
+				    m_serveraddress, m_loginport + 1 );
 	outline = "COMMAND ";
 	outline.append(m_asterisk + "/" + m_protocol + m_userid);
 	outline.append(" SESSIONID ");
@@ -392,7 +406,7 @@ void BaseEngine::setForwardOnBusy(bool b, const QString & dst)
 	outline.append("\r\n");
 	qDebug() << outline;
 	m_udpsocket->writeDatagram( outline.toAscii(),
-				   m_serveraddress, m_loginport + 1 );
+				    m_serveraddress, m_loginport + 1 );
 }
 
 void BaseEngine::setUncondForward(bool b, const QString & dst)
@@ -406,7 +420,7 @@ void BaseEngine::setUncondForward(bool b, const QString & dst)
 	outline.append("\r\n");
 	qDebug() << outline;
 	m_udpsocket->writeDatagram( outline.toAscii(),
-				   m_serveraddress, m_loginport + 1 );
+				    m_serveraddress, m_loginport + 1 );
 	outline = "COMMAND ";
 	outline.append(m_asterisk + "/" + m_protocol + m_userid);
 	outline.append(" SESSIONID ");
@@ -416,7 +430,7 @@ void BaseEngine::setUncondForward(bool b, const QString & dst)
 	outline.append("\r\n");
 	qDebug() << outline;
 	m_udpsocket->writeDatagram( outline.toAscii(),
-				   m_serveraddress, m_loginport + 1 );
+				    m_serveraddress, m_loginport + 1 );
 }
 
 void BaseEngine::askFeatures()
@@ -428,7 +442,7 @@ void BaseEngine::askFeatures()
 	outline.append(" FEATURES GET\r\n");
 	qDebug() << outline;
 	m_udpsocket->writeDatagram( outline.toAscii(),
-				   m_serveraddress, m_loginport + 1 );
+				    m_serveraddress, m_loginport + 1 );
 }
 
 void BaseEngine::askPeers()
@@ -440,7 +454,7 @@ void BaseEngine::askPeers()
 	outline.append(" PEERS\r\n");
 	qDebug() << outline;
 	m_udpsocket->writeDatagram( outline.toAscii(),
-				   m_serveraddress, m_loginport + 1 );
+				    m_serveraddress, m_loginport + 1 );
 }
 
 void BaseEngine::askCallerIds()
@@ -452,7 +466,7 @@ void BaseEngine::askCallerIds()
 	outline.append(" CALLERIDS\r\n");
 	qDebug() << outline;
 	m_udpsocket->writeDatagram( outline.toAscii(),
-				   m_serveraddress, m_loginport + 1 );
+				    m_serveraddress, m_loginport + 1 );
 }
 
 // === Getter and Setters ===
@@ -778,14 +792,14 @@ void BaseEngine::keepLoginAlive()
 		outline.append("\r\n");
 		qDebug() <<  "BaseEngine::keepLoginAlive()" << outline;
 		m_udpsocket->writeDatagram( outline.toAscii(),
-					   m_serveraddress, m_loginport + 1 );
+					    m_serveraddress, m_loginport + 1 );
 		m_pendingkeepalivemsg++;
 		// if the last keepalive msg has not been answered, send this one
 		// twice
 		if(m_pendingkeepalivemsg > 1)
 			{
 				m_udpsocket->writeDatagram( outline.toAscii(),
-							   m_serveraddress, m_loginport + 1 );
+							    m_serveraddress, m_loginport + 1 );
 				m_pendingkeepalivemsg++;
 			}
 	}
@@ -815,7 +829,7 @@ void BaseEngine::sendMessage(const QString & txt)
 	outline.append("\r\n");
 	qDebug() <<  "BaseEngine::sendMessage()" << outline;
 	m_udpsocket->writeDatagram( outline.toAscii(),
-	                           m_serveraddress, m_loginport + 1 );
+				    m_serveraddress, m_loginport + 1 );
 	m_pendingkeepalivemsg++;
 }
 
