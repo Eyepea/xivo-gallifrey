@@ -189,8 +189,10 @@ MainWindow::MainWindow(BaseEngine * engine, LoginEngine * loginengine, QWidget *
 
 	DialPanel * dialpanel = new DialPanel(m_rightSplitter);
 	connect( dialpanel, SIGNAL(emitDial(const QString &)),
-	         engine, SLOT(dialExtension(const QString &)) );
-	
+	         m_engine, SLOT(dialExtension(const QString &)) );
+        connect( dialpanel, SIGNAL(originateCall(const QString&, const QString&)),
+	         m_engine, SLOT(originateCall(const QString&, const QString&)) );
+
 	setCentralWidget(m_splitter);
 
 	// restore splitter settings

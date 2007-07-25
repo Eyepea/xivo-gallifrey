@@ -209,12 +209,17 @@ void SwitchBoardWindow::setWidth(int width)
 	m_width = width;
 }
 
-void SwitchBoardWindow::mousePressEvent(QMouseEvent * event)
-{
-	qDebug() << "SwitchBoardWindow::mousePressEvent" << event;
-	qDebug() << "   " << event->x() << event->y() << event->pos();
-	qDebug() << "   " << event->globalX() << event->globalY() << event->globalPos();
-}
+// void SwitchBoardWindow::mouseMoveEvent(QMouseEvent * event)
+// {
+// 	qDebug() << "SwitchBoardWindow::mouseMoveEvent()" << event;
+// }
+
+// void SwitchBoardWindow::mousePressEvent(QMouseEvent * event)
+// {
+// 	qDebug() << "SwitchBoardWindow::mousePressEvent()" << event;
+// 	qDebug() << "   " << event->x() << event->y() << event->pos();
+// 	qDebug() << "   " << event->globalX() << event->globalY() << event->globalPos();
+// }
 
 /*!
  * This method accept or reject the drag event.
@@ -223,7 +228,7 @@ void SwitchBoardWindow::mousePressEvent(QMouseEvent * event)
  */
 void SwitchBoardWindow::dragEnterEvent(QDragEnterEvent * event)
 {
-	//qDebug() << "SwitchBoardWindow::dragEnterEvent" << event->mimeData()->formats();
+        qDebug() << "SwitchBoardWindow::dragEnterEvent()" << event->mimeData()->formats();
 	if(event->mimeData()->hasFormat(PEER_MIMETYPE))
 		event->acceptProposedAction();
 }
@@ -239,7 +244,7 @@ void SwitchBoardWindow::dropEvent(QDropEvent * event)
 {
 	int i;
 	QString text = event->mimeData()->text();
-	qDebug() << "SwitchBoardWindow::dropEvent" << event
+	qDebug() << "SwitchBoardWindow::dropEvent()" << event
 	         << text;
 	qDebug() << "  " << event->pos() << m_layout->getPosInGrid(event->pos());
 	//

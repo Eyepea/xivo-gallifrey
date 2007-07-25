@@ -48,7 +48,8 @@ public:
 	void saveSettings() const;
 	void savePositions() const;
 protected:
-	void mousePressEvent(QMouseEvent *);	//!< Catch mouse press events
+/*         void mousePressEvent(QMouseEvent *);	//!< Catch mouse press events */
+/*         void mouseMoveEvent(QMouseEvent *); */
 	void dragEnterEvent(QDragEnterEvent *);
 	void dropEvent(QDropEvent *);
 public slots:

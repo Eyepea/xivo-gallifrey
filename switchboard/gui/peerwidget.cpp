@@ -290,7 +290,7 @@ void PeerWidget::dropEvent(QDropEvent *event)
 {
 	QString from = event->mimeData()->text();
 	QString to = m_id;
-	qDebug() << "dropEvent() :" << from << "on" << to;
+	qDebug() << "PeerWidget::dropEvent() :" << from << "on" << to;
 	qDebug() << " possibleActions=" << event->possibleActions();
 	qDebug() << " proposedAction=" << event->proposedAction();
 	switch(event->proposedAction())

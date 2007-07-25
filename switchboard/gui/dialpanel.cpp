@@ -21,20 +21,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
    $Date$
 */
 
+#include <QComboBox>
+#include <QDebug>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
-#include <QComboBox>
-#include <QScrollArea>
+#include <QMouseEvent>
 #include <QPushButton>
 #include <QRegExp>
-#include <QDebug>
+#include <QScrollArea>
 #include "dialpanel.h"
+#include "xivoconsts.h"
 
 /*! \brief Constructor
  */
 DialPanel::DialPanel(QWidget * parent)
-: QWidget(parent)
+        : QWidget(parent)
 {
 	QHBoxLayout * vlayout = new QHBoxLayout(this);
 	vlayout->setMargin(0);
@@ -55,6 +57,8 @@ DialPanel::DialPanel(QWidget * parent)
 	connect( dialButton, SIGNAL(clicked()),
 	         this, SLOT(inputValidated()) );
 
+        setAcceptDrops(true);
+
 	vlayout->addWidget( lbl, 0, Qt::AlignCenter );
 	vlayout->addWidget( m_input, 0, Qt::AlignCenter );
 	vlayout->addWidget( dialButton, 0, Qt::AlignCenter );
@@ -66,6 +70,47 @@ void DialPanel::textEdited(const QString & text)
 	qDebug() << "DialPane::textEdited()" << text;
 }*/
 
+void DialPanel::dragEnterEvent(QDragEnterEvent * event)
+{
+        qDebug() << "DialPanel::dragEnterEvent()" << event;
+	if(event->mimeData()->hasFormat(PEER_MIMETYPE))
+                event->acceptProposedAction();
+}
+
+void DialPanel::dropEvent(QDropEvent * event)
+{
+	QString ext;
+	QString originator = event->mimeData()->text();
+	if(m_input->lineEdit()) {
+                qDebug() << "DialPanel::dropEvent()" << event << originator << m_input->lineEdit()->text();
+                ext = m_input->lineEdit()->text();
+                ext.remove(QRegExp("[\\s\\.]")); // remove spaces and full stop characters
+                if(ext.length() == 0)	// do nothing if the string is empty
+                        return;
+                originateCall(originator, m_input->lineEdit()->text());
+                m_input->insertItem(0, ext); // ajout à l'historique
+                // supprimer les occurences les plus anciennes du meme numero
+                for(int i=1; i<m_input->count(); ) {
+                        if(ext == m_input->itemText(i)) {
+                                m_input->removeItem(i);
+                        }
+                        else
+                                i++;
+                }
+                m_input->clearEditText();
+        }
+}
+
+// void DialPanel::mouseMoveEvent(QMouseEvent *event)
+// {
+// 	qDebug() << "DialPanel::mouseMoveEvent()" << event;
+// }
+
+// void DialPanel::mousePressEvent(QMouseEvent *event)
+// {
+// 	qDebug() << "DialPanel::mousePressEvent()" << event;
+// }
+
 /*! \brief the input was validated
  *
  * check the input and call emitDial() if ok.
@@ -76,22 +121,20 @@ void DialPanel::inputValidated()
 	if(m_input->lineEdit())
 	{
 		ext = m_input->lineEdit()->text();
-	}
-	ext.remove(QRegExp("[\\s\\.]")); // remove spaces and full stop characters
-	if(ext.length() == 0)	// do nothing if the string is empty
-		return;
-	emitDial( ext );
-	m_input->insertItem(0, ext); // ajout à l'historique
-	// supprimer les occurences les plus anciennes du meme numero
-	for(int i=1; i<m_input->count(); )
-	{
-		if(ext == m_input->itemText(i))
-		{
-			m_input->removeItem(i);
-		}
-		else
-			i++;
-	}
-	m_input->clearEditText();
+                ext.remove(QRegExp("[\\s\\.]")); // remove spaces and full stop characters
+                if(ext.length() == 0)	// do nothing if the string is empty
+                        return;
+                emitDial( ext );
+                m_input->insertItem(0, ext); // ajout à l'historique
+                // supprimer les occurences les plus anciennes du meme numero
+                for(int i=1; i<m_input->count(); ) {
+                        if(ext == m_input->itemText(i)) {
+                                m_input->removeItem(i);
+                        }
+                        else
+                                i++;
+                }
+                m_input->clearEditText();
+        }
 }
 
