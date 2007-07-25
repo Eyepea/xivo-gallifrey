@@ -726,6 +726,50 @@ def build_fullstatlist(phoneid):
         return ''.join(fstat)
 
 
+## \brief Builds the features reply.
+def build_features(astnum, reqlist, socketid):
+        dbfamily = "%s/users/%s" %(reqlist[6], reqlist[7])
+        if reqlist[5] == 'GET':
+                repstr = ""
+                for key in ["VM", "Record", "Screen", "DND"]:
+                        fullcomm = "database get %s %s" %(dbfamily, key)
+                        reply = AMIclasssock[astnum].execclicommand(fullcomm)
+                        for r in reply:
+                                if r.find("Value: ") == 0:
+                                        repstr += "%s;%s;" %(key, r.rstrip().split(" ")[1])
+
+                for key in ["FWD/Unc", "FWD/Busy", "FWD/RNA"]:
+                        fullcomm = "database get %s %s/Status" %(dbfamily, key)
+                        reply = AMIclasssock[astnum].execclicommand(fullcomm)
+                        keystatus = ""
+                        for r in reply:
+                                if r.find("Value: ") == 0:
+                                        keystatus = r.rstrip().split(" ")[1]
+
+                        fullcomm = "database get %s %s/Number" %(dbfamily, key)
+                        reply = AMIclasssock[astnum].execclicommand(fullcomm)
+                        keynumber = ""
+                        for r in reply:
+                                if r.find("Value: ") == 0:
+                                        keynumber = r.rstrip().split(" ")[1]
+                        repstr += "%s;%s:%s;" %(key, keystatus, keynumber)
+                response = repstr
+                requestersocket_by_featureid[dbfamily] = socketid
+
+        elif reqlist[5] == 'PUT' and len(reqlist) >= 10:
+                key = reqlist[8]
+                value = reqlist[9]
+                fullcomm = "database put %s %s %s" %(dbfamily, key, value)
+                reply = AMIclasssock[astnum].execclicommand(fullcomm)
+                repstr = "KO"
+                for r in reply:
+                        if r.rstrip() == "Updated database successfully":
+                                repstr = "OK"
+                response = 'PUT %s %s %s' %(repstr, key, value)
+
+        return response
+
+
 ## \brief Builds the full list of callerIDNames in order to send them to the requesting client.
 # This should be done after a command called "callerid".
 # \return a string containing the full callerIDs list
@@ -2246,9 +2290,9 @@ class AsteriskRemote:
                                                         # and a xivo_daemon
                                                         self.xivosb_phoneids[sso_phoneid] = [sso_context, sso_passwd]
                                                         self.xivosb_contexts[sso_context] = sso_phoneid
-                                                elif self.xivosb_phoneids[sso_phoneid][0] == "":
-                                                        # removes this xivosb account from the list if no context has been filled
-                                                        del self.xivosb_phoneids[sso_phoneid]
+                                                # elif self.xivosb_phoneids[sso_phoneid][0] == "":
+                                                # #removes this xivosb account from the list if no context has been filled
+                                                # del self.xivosb_phoneids[sso_phoneid]
                         log_debug("%s : xivosb_contexts = %s"
                                   %(self.astid, str(self.xivosb_contexts)))
                         log_debug("%s : xivosb_phoneids = %s"
@@ -2399,7 +2443,7 @@ class LoginHandler(SocketServer.StreamRequestHandler):
                         userlist_lock.release()
                 if not goodpass:
                         replystr = "ERROR : WRONG LOGIN PASSWD"
-                        debugstr += " / PASS KO for %s on asterisk #%d" %(user,astnum)
+                        debugstr += " / PASS KO (%s given) for %s on asterisk #%d" %(passwd, user,astnum)
                         return [replystr, debugstr], [user, port, state, astnum]
                 
                 # asks for PORT
@@ -2670,48 +2714,10 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
                                                         response = 'HISTORY %s' %repstr
                                                 else:
                                                         raise NameError, "history not allowed"
-                                        elif list[4] == 'FEATURES' and len(list) >= 6:
+                                        elif list[4] == 'FEATURES' and len(list) >= 8:
                                                 if "features" in capabilities.split(","):
-                                                        if list[5] == 'GET':
-                                                                repstr = ""
-                                                                dbfamily = "%s/users/%s" %(e['context'],
-                                                                                           e['phonenum'])
-                                                                for key in ["VM", "Record", "Screen", "DND"]:
-                                                                        fullcomm = "database get %s %s" %(dbfamily, key)
-                                                                        reply = AMIclasssock[astnum].execclicommand(fullcomm)
-                                                                        for r in reply:
-                                                                                if r.find("Value: ") == 0:
-                                                                                        repstr += "%s;%s;" %(key, r.rstrip().split(" ")[1])
-                                                                for key in ["FWD/Unc", "FWD/Busy", "FWD/RNA"]:
-                                                                        fullcomm = "database get %s %s/Status" %(dbfamily, key)
-                                                                        reply = AMIclasssock[astnum].execclicommand(fullcomm)
-                                                                        keystatus = ""
-                                                                        for r in reply:
-                                                                                if r.find("Value: ") == 0:
-                                                                                        keystatus = r.rstrip().split(" ")[1]
-
-                                                                        fullcomm = "database get %s %s/Number" %(dbfamily, key)
-                                                                        reply = AMIclasssock[astnum].execclicommand(fullcomm)
-                                                                        keynumber = ""
-                                                                        for r in reply:
-                                                                                if r.find("Value: ") == 0:
-                                                                                        keynumber = r.rstrip().split(" ")[1]
-                                                                        repstr += "%s;%s:%s;" %(key, keystatus, keynumber)
-                                                                response = 'FEATURES %s' %repstr
-                                                                requestersocket_by_featureid[dbfamily] = self
-                                                        elif list[5] == 'PUT' and len(list) >= 8:
-                                                                key = list[6]
-                                                                value = list[7]
-                                                                fullcomm = "database put %s/users/%s %s %s" %(e['context'],
-                                                                                                              e['phonenum'],
-                                                                                                              key,
-                                                                                                              value)
-                                                                reply = AMIclasssock[astnum].execclicommand(fullcomm)
-                                                                repstr = "KO"
-                                                                for r in reply:
-                                                                        if r.rstrip() == "Updated database successfully":
-                                                                                repstr = "OK"
-                                                                response = 'FEATURES PUT %s %s %s' %(repstr, key, value)
+                                                        repstr = build_features(astnum, list, self)
+                                                        response = 'FEATURES %s' %repstr
                                                 else:
                                                         raise NameError, "features not allowed"
                                         elif list[4] == 'DIRECTORY':
