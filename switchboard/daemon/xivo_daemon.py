@@ -180,6 +180,9 @@ PIDFILE = '/var/run/xivo_daemon.pid'
 #PIDFILE = '/home/xilun/xivo_daemon.pid'
 # TODO: command line parameter
 
+#PIDFILE = '/home/xilun/xivo_daemon.pid'
+# TODO: command line parameter
+
 BUFSIZE_LARGE = 8192
 BUFSIZE_UDP = 2048
 BUFSIZE_ANY = 512
@@ -715,11 +718,11 @@ def build_fullstatlist(phoneid):
         fstat = [str(nchans)]
         for chan,phone_chan in phoneid.chann.iteritems():
                 fstat.extend((":", chan, ":",
-                        phone_chan.getStatus(), ":", 
-                        str(phone_chan.getDeltaTime()), ":",
-                        phone_chan.getDirection(), ":",
-                        phone_chan.getChannelPeer(), ":",
-                        phone_chan.getChannelNum()))
+                              phone_chan.getStatus(), ":",
+                              str(phone_chan.getDeltaTime()), ":",
+                              phone_chan.getDirection(), ":",
+                              phone_chan.getChannelPeer(), ":",
+                              phone_chan.getChannelNum()))
         return ''.join(fstat)
 
 
@@ -814,7 +817,7 @@ def parseSIP(astnum, data, l_sipsock, l_addrsip):
     mycontext = ""
     mysippass = ""
     if iaccount in configs[astnum].xivosb_phoneids:
-            mycontext, mysippass = configs[astnum].xivosb_phoneids[iaccount][0]
+            mycontext, mysippass = configs[astnum].xivosb_phoneids[iaccount]
     md5_r1 = md5.md5(iaccount + ":asterisk:" + mysippass).hexdigest()
 
     #print "-----------", iaccount, mysippass
@@ -1188,7 +1191,7 @@ def manage_tcp_connection(connid, allow_events):
                                                                        %(DAEMON, phonesrcchan))
                                                 else:
                                                         if phonesrc in plist[idassrc].normal:
-                                                                channellist = plist[idassrc].normal[phonesrc]
+                                                                channellist = plist[idassrc].normal[phonesrc].chann
                                                                 nopens = len(channellist)
                                                                 if nopens == 0:
                                                                         connid[0].send("asterisk=%s::transfer KO - no channel opened on %s\n"
@@ -1511,7 +1514,7 @@ def handle_ami_event(astnum, idata):
                                 else:
                                         phone_p2 = channel_splitter(channel_p2)
                                         n1 = plist[astnum].normal[phone_old].chann[channel_old].getChannelNum()
-                                        n2 = plist[astnum].normal[phone_p2].chann[channel_p2].getChannelNum()   
+                                        n2 = plist[astnum].normal[phone_p2].chann[channel_p2].getChannelNum()
 
                                 log_debug("updating channels <%s> (%s) and <%s> (%s) and hanging up <%s>"
                                           %(channel_new, n1, channel_p1, n2, channel_old))
@@ -1882,10 +1885,9 @@ class PhoneList:
                         except Exception, exc:
                                 log_debug("--- exception --- send has failed on %s : %s" %(str(tcpclient[0]),str(exc)))
                 verboselog(strupdate, False, True)
-                for loginid in requestersocket_by_login:
+                for ka_object in requestersocket_by_login.itervalues():
                         userlist_lock.acquire()
                         try:
-                                ka_object = requestersocket_by_login[loginid]
                                 mysock = ka_object.request[1]
                                 mysock.sendto("PEERUPDATE %s" %(strupdate),
                                               ka_object.client_address)
@@ -2404,9 +2406,9 @@ class LoginHandler(SocketServer.StreamRequestHandler):
                 self.wfile.write('Send PORT command\r\n')
                 list1 = self.rfile.readline().strip().split(' ')
                 if list1[0] == 'TCPMODE':
-                    #print 'TCP MODE !'
-                    tcpmode = True
-                    port = -1
+                        #print 'TCP MODE !'
+                        tcpmode = True
+                        port = -1
                 elif len(list1) != 2 or list1[0] != 'PORT':
                         replystr = "ERROR PORT"
                         debugstr += " / PORT KO"
@@ -2497,62 +2499,62 @@ class IdentRequestHandler(SocketServer.StreamRequestHandler):
             userlist_lock.acquire()
             try:
               try:
-                try:
-                    astnum = ip_reverse_sht[self.client_address[0]]
-                except:
-                    astnum = 0
-                e = finduser(astnum, user)
-                if e == None:
-                    retline = 'ERROR USER <' + user + '> NOT FOUND\r\n'
-                elif e.has_key('ip') and e.has_key('port') \
-                     and e.has_key('state') and e.has_key('sessionid') \
-                     and e.has_key('sessiontimestamp'):
-                        if time.time() - e.get('sessiontimestamp') > xivoclient_session_timeout:
-                            retline = 'ERROR USER SESSION EXPIRED for <%s>\r\n' %user
-                        else:
-                            retline = 'USER %s STATE %s\r\n'%(user,e.get('state'))
-                            #print 'sendfiche', e, callerid, msg
-                            sendfiche.sendficheasync(e, callerid, msg)
-                else:
-                        retline = 'ERROR USER SESSION NOT DEFINED for <%s>\r\n' %user
+                      try:
+                              astnum = ip_reverse_sht[self.client_address[0]]
+                      except:
+                              astnum = 0
+                      e = finduser(astnum, user)
+                      if e == None:
+                              retline = 'ERROR USER <' + user + '> NOT FOUND\r\n'
+                      elif e.has_key('ip') and e.has_key('port') \
+                               and e.has_key('state') and e.has_key('sessionid') \
+                               and e.has_key('sessiontimestamp'):
+                              if time.time() - e.get('sessiontimestamp') > xivoclient_session_timeout:
+                                      retline = 'ERROR USER SESSION EXPIRED for <%s>\r\n' %user
+                              else:
+                                      retline = 'USER %s STATE %s\r\n'%(user,e.get('state'))
+                                      # print 'sendfiche', e, callerid, msg
+                                      sendfiche.sendficheasync(e, callerid, msg)
+                      else:
+                              retline = 'ERROR USER SESSION NOT DEFINED for <%s>\r\n' %user
               except Exception, exc:
-                #print "EXCEPTION:", str(exc)
-                retline = 'ERROR (exception) : %s\r\n' %(str(exc))
+                      # print "EXCEPTION:", str(exc)
+                      retline = 'ERROR (exception) : %s\r\n' %(str(exc))
             finally:
-              userlist_lock.release()
+                    userlist_lock.release()
         # QUERY user   (ex: QUERY sipnanard)
         if list0[0] == 'QUERY' and len(list0) == 2:
             user = list0[1]
             userlist_lock.acquire()
             try:
               try:
-                try:
-                    astnum = ip_reverse_sht[self.client_address[0]]
-                except:
-                    astnum = 0
-                e = finduser(astnum, user)
-                if e == None:
-                    retline = 'ERROR USER <' + user + '> NOT FOUND\r\n'
-                elif e.has_key('ip') and e.has_key('port') \
-                     and e.has_key('state') and e.has_key('sessionid') \
-                     and e.has_key('sessiontimestamp'):
-                        if time.time() - e.get('sessiontimestamp') > xivoclient_session_timeout:
-                            retline = 'ERROR USER SESSION EXPIRED for <%s>\r\n' %user
-                        else:
-                            retline = 'USER %s SESSIONID %s IP %s PORT %s STATE %s\r\n' \
-                                      %(user, e.get('sessionid'), e.get('ip'), e.get('port'), e.get('state'))
-                else:
-                        retline = 'ERROR USER SESSION NOT DEFINED for <%s>\r\n' %user
+                      try:
+                              astnum = ip_reverse_sht[self.client_address[0]]
+                      except:
+                              astnum = 0
+                      e = finduser(astnum, user)
+                      if e == None:
+                              retline = 'ERROR USER <' + user + '> NOT FOUND\r\n'
+                      elif e.has_key('ip') and e.has_key('port') \
+                               and e.has_key('state') and e.has_key('sessionid') \
+                               and e.has_key('sessiontimestamp'):
+                              if time.time() - e.get('sessiontimestamp') > xivoclient_session_timeout:
+                                      retline = 'ERROR USER SESSION EXPIRED for <%s>\r\n' %user
+                              else:
+                                      retline = 'USER %s SESSIONID %s IP %s PORT %s STATE %s\r\n' \
+                                                %(user, e.get('sessionid'), e.get('ip'), e.get('port'), e.get('state'))
+                      else:
+                              retline = 'ERROR USER SESSION NOT DEFINED for <%s>\r\n' %user
               except Exception, exc:
-                retline = 'ERROR (exception) : %s\r\n' %(str(exc))
+                      retline = 'ERROR (exception) : %s\r\n' %(str(exc))
             finally:
-              userlist_lock.release()
+                    userlist_lock.release()
         try:
-            self.wfile.write(retline)
+                self.wfile.write(retline)
         except Exception, exc:
-            # something bad happened.
-            log_debug("IdentRequestHandler/Exception: " + str(exc))
-            return
+                # something bad happened.
+                log_debug("IdentRequestHandler/Exception: " + str(exc))
+                return
 
 
 ## \class KeepAliveHandler
@@ -2594,8 +2596,8 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
                                 if e == None:
                                         raise NameError, "unknown user %s" %user
                                 if e.has_key('sessionid') and e.has_key('ip') and e.has_key('sessiontimestamp') \
-                                   and sessionid == e['sessionid'] and ip == e['ip'] \
-                                   and  e['sessiontimestamp'] + xivoclient_session_timeout > timestamp:
+                                       and sessionid == e['sessionid'] and ip == e['ip'] \
+                                       and e['sessiontimestamp'] + xivoclient_session_timeout > timestamp:
                                         e['sessiontimestamp'] = timestamp
                                         response = 'OK'
                                 else:
