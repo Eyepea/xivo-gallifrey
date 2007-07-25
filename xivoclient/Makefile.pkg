@@ -9,6 +9,10 @@ DEB_TB_SCRAMBLED = "0"
 
 default:
 
+tarball-pkg:
+	# return concatenated source package list
+	@$(MAKE) -C push -f Makefile.pkg tarball-pkg
+
 tarball-dep:
 	# return concatenated tarball deps for each module
 	@$(MAKE) -C push -f Makefile.pkg tarball-dep
