@@ -55,6 +55,7 @@ MainWidget::MainWidget(BaseEngine *engine, QWidget * parent)
 	: QMainWindow(parent), m_engine(engine), m_systrayIcon(0),
 	  m_icon(":/xivoicon.png"), m_icongrey(":/xivoicon-grey.png")
 {
+	QSettings settings;
 	createActions();
 	createMenus();
 	if( QSystemTrayIcon::isSystemTrayAvailable() )
@@ -70,7 +71,11 @@ MainWidget::MainWidget(BaseEngine *engine, QWidget * parent)
 	//layout->setSizeConstraint(QLayout::SetFixedSize);	// remove minimize and maximize button
 	setWindowTitle("XIVO Client");
 	setWindowIcon(QIcon(":/xivoicon.png"));
+
+        // to be better defined
 	resize(500, 400);
+	restoreGeometry(settings.value("display/mainwingeometry").toByteArray());
+
 	m_status = new QLabel();
 	QPixmap red(15,15);
 	red.fill(Qt::red);
@@ -86,10 +91,13 @@ MainWidget::MainWidget(BaseEngine *engine, QWidget * parent)
 
 	setCentralWidget(m_wid);
 
-	QSettings settings;
 	m_tablimit = settings.value("display/tablimit", 5).toInt();
 }
 
+MainWidget::~MainWidget()
+{
+        savePositions();
+}
 
 void MainWidget::affTextChanged()
 {
@@ -321,6 +329,7 @@ void MainWidget::setConnected()
 	m_disconnectact->setEnabled(true);
 	// display a green status indicator
 	QPixmap green(15,15);
+        QSettings settings;
 	green.fill(Qt::green);
 	m_status->setPixmap(green);
 	QStringList display_capas = QString("customerinfo,features,history,directory,peers,dial,presence").split(",");
@@ -379,6 +388,14 @@ void MainWidget::setConnected()
 			} else if(dc == QString("features")) {
 				m_featureswidget = new ServicePanel(this);
 				m_qtabwidget->addTab(m_featureswidget, tr("S&ervices"));
+
+                                connect( m_engine, SIGNAL(disconnectFeatures()),
+                                         m_featureswidget, SLOT(DisConnect()) );
+                                connect( m_engine, SIGNAL(connectFeatures()),
+                                         m_featureswidget, SLOT(Connect()) );
+                                connect( m_engine, SIGNAL(resetFeatures()),
+                                         m_featureswidget, SLOT(Reset()) );
+
 				connect( m_featureswidget, SIGNAL(voiceMailToggled(bool)),
 				         m_engine, SLOT(setVoiceMail(bool)) );
 				connect( m_engine, SIGNAL(voiceMailChanged(bool)),
@@ -426,7 +443,7 @@ void MainWidget::setConnected()
 				connect( m_engine, SIGNAL(forwardOnUnavailableChanged(const QString &)),
 				         m_featureswidget, SLOT(setForwardOnUnavailable(const QString &)) );
 				//
-				m_engine->askFeatures();
+				m_engine->askFeatures("peer/to/define");
 			} else if(dc == QString("directory")) {
 				m_directory = new DirectoryPanel(this);
 				
@@ -463,6 +480,9 @@ void MainWidget::setConnected()
 		}
 	}
 
+        qDebug() << "display/lastfocusedtab =" << settings.value("display/lastfocusedtab");
+        m_qtabwidget->setCurrentIndex(settings.value("display/lastfocusedtab").toInt());
+
 	//	LogWidget * logwidget = new LogWidget(m_engine, m_wid);
 	m_cinfo_index = m_qtabwidget->indexOf(m_tabwidget);
 	qDebug() << "the index of customer-info widget is" << m_cinfo_index;
@@ -481,10 +501,13 @@ void MainWidget::setDisconnected()
 	m_disconnectact->setEnabled(false);
 	// set a red status indicator
 	QPixmap red(15,15);
+        QSettings settings;
 	red.fill(Qt::red);
 	m_status->setPixmap(red);
 	QStringList display_capas = QString("customerinfo,features,history,directory,peers,dial,presence").split(",");
 	QStringList allowed_capas = m_engine->getCapabilities().split(",");
+
+        settings.setValue("display/lastfocusedtab", m_qtabwidget->currentIndex());
 
 	for(int j = 0; j < display_capas.size(); j++) {
 		QString dc = display_capas[j];
@@ -533,6 +556,13 @@ void MainWidget::setDisconnected()
 void MainWidget::setForceTabs(bool force)
 {
 	m_forcetabs = force;
+}
+
+void MainWidget::savePositions() const
+{
+	qDebug() << "MainWidget::savePositions()";
+        QSettings settings;
+        settings.setValue("display/mainwingeometry", saveGeometry());
 }
 
 /*!

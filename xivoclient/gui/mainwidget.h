@@ -49,6 +49,8 @@ class MainWidget: public QMainWindow
 public:
 	//! Constructor
 	MainWidget(BaseEngine *, QWidget * parent=0);
+	//! Destructor
+        ~MainWidget();
 	int tablimit() const;	//!< getter for m_tablimit
 	void setTablimit(int);	//!< setter for m_tablimit
 	void setForceTabs(bool);//!< setter for m_forcetabs
@@ -69,6 +71,7 @@ private:
 	void createActions();	//!< Create Actions (for menus)
 	void createMenus();		//!< Create Menus
 	void createSystrayIcon();	//!< Create the systray Icon and its menu
+        void savePositions() const;
 private:
 	BaseEngine * m_engine;			//!< pointer to the BaseEngine used
 	//QPushButton * m_btnstart;	//!< Start Button

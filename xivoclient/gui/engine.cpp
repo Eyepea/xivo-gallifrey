@@ -34,7 +34,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include "popup.h"
 #include "logeltwidget.h"
 
-const int REQUIRED_SERVER_VERSION = 1165;
+const int REQUIRED_SERVER_VERSION = 1239;
 
 /*!
  * This constructor initialize the UDP socket and
@@ -288,45 +288,46 @@ void BaseEngine::dialFullChannel(const QString & dst)
 
 void BaseEngine::setVoiceMail(bool b)
 {
-	sendCommand("FEATURES PUT VM " + QString(b ? "1" : "0"));
+	sendCommand("FEATURES PUT " + m_dialcontext + " " + m_userid + " VM " + QString(b ? "1" : "0"));
 }
 
 void BaseEngine::setCallRecording(bool b)
 {
-	sendCommand("FEATURES PUT Record " + QString(b ? "1" : "0"));
+	sendCommand("FEATURES PUT " + m_dialcontext + " " + m_userid + " Record " + QString(b ? "1" : "0"));
 }
 
 void BaseEngine::setCallFiltering(bool b)
 {
-	sendCommand("FEATURES PUT Screen " + QString(b ? "1" : "0"));
+	sendCommand("FEATURES PUT " + m_dialcontext + " " + m_userid + " Screen " + QString(b ? "1" : "0"));
 }
 
 void BaseEngine::setDnd(bool b)
 {
-	sendCommand("FEATURES PUT DND " + QString(b ? "1" : "0"));
+	sendCommand("FEATURES PUT " + m_dialcontext + " " + m_userid + " DND " + QString(b ? "1" : "0"));
 }
 
 void BaseEngine::setForwardOnUnavailable(bool b, const QString & dst)
 {
-	sendCommand("FEATURES PUT FWD/RNA/Status " + QString(b ? "1" : "0"));
-	sendCommand("FEATURES PUT FWD/RNA/Number " + dst);
+	sendCommand("FEATURES PUT " + m_dialcontext + " " + m_userid + " FWD/RNA/Status " + QString(b ? "1" : "0"));
+	sendCommand("FEATURES PUT " + m_dialcontext + " " + m_userid + " FWD/RNA/Number " + dst);
 }
 
 void BaseEngine::setForwardOnBusy(bool b, const QString & dst)
 {
-	sendCommand("FEATURES PUT FWD/Busy/Status " + QString(b ? "1" : "0"));
-	sendCommand("FEATURES PUT FWD/Busy/Number " + dst);
+	sendCommand("FEATURES PUT " + m_dialcontext + " " + m_userid + " FWD/Busy/Status " + QString(b ? "1" : "0"));
+	sendCommand("FEATURES PUT " + m_dialcontext + " " + m_userid + " FWD/Busy/Number " + dst);
 }
 
 void BaseEngine::setUncondForward(bool b, const QString & dst)
 {
-	sendCommand("FEATURES PUT FWD/Unc/Status " + QString(b ? "1" : "0"));
-	sendCommand("FEATURES PUT FWD/Unc/Number " + dst);
+	sendCommand("FEATURES PUT " + m_dialcontext + " " + m_userid + " FWD/Unc/Status " + QString(b ? "1" : "0"));
+	sendCommand("FEATURES PUT " + m_dialcontext + " " + m_userid + " FWD/Unc/Number " + dst);
 }
 
-void BaseEngine::askFeatures()
+void BaseEngine::askFeatures(const QString & peer)
 {
-	sendCommand("FEATURES GET");
+        qDebug() << "BaseEngine::askFeatures()" << peer;
+	sendCommand("FEATURES GET " + m_dialcontext + " " + m_userid);
 }
 
 void BaseEngine::askPeers()
@@ -836,14 +837,15 @@ void BaseEngine::readKeepLoginAliveDatagrams()
 		} else if(reply == "FEATURES") {
 			if((qsl.size() == 4) && (qsl[1] == "UPDATE"))
 				initFeatureFields(qsl[2], qsl[3]);
-			else {
+			else if(qsl[1] != "PUT") { // do nothing when receiving 'ACK's from XD
 				QStringList list = qsl[1].split(";");
-				//				qDebug() << list.size();
-				if(list.size() > 1) {
-					for(int i=0; i<list.size()-1; i+=2) {
+                                disconnectFeatures();
+                                resetFeatures();
+				//qDebug() << list.size();
+				if(list.size() > 1)
+					for(int i=0; i<list.size()-1; i+=2)
 						initFeatureFields(list[i], list[i+1]);
-					}
-				}
+                                connectFeatures();
 			}
 			qDebug() << qsl; //reply;
 		} else if(reply == "PEERS") {

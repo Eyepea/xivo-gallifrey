@@ -118,6 +118,9 @@ signals:
 			const QStringList & chanIds,
 			const QStringList & chanStates,
 			const QStringList & chanOthers);
+        void disconnectFeatures();
+        void connectFeatures();
+        void resetFeatures();
 public slots:
 	void start();	//!< start the connection process.
 	void stop();	//!< stop the engine
@@ -137,7 +140,7 @@ public slots:
 	void setUncondForward(bool, const QString &);
 	void setForwardOnBusy(bool, const QString &);
 	void setForwardOnUnavailable(bool, const QString &);
-	void askFeatures();
+	void askFeatures(const QString &);
 	void askPeers();
 	void askCallerIds();
 private slots:

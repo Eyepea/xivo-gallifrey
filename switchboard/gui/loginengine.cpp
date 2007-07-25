@@ -252,45 +252,53 @@ void LoginEngine::sendCommand(const QString & command)
 
 void LoginEngine::setVoiceMail(bool b)
 {
-	sendCommand("FEATURES PUT VM " + QString(b ? "1" : "0"));
+	sendCommand("FEATURES PUT " + m_ctx + " " + m_phn + " VM " + QString(b ? "1" : "0"));
 }
 
 void LoginEngine::setCallRecording(bool b)
 {
-	sendCommand("FEATURES PUT Record " + QString(b ? "1" : "0"));
+	sendCommand("FEATURES PUT " + m_ctx + " " + m_phn + " Record " + QString(b ? "1" : "0"));
 }
 
 void LoginEngine::setCallFiltering(bool b)
 {
-	sendCommand("FEATURES PUT Screen " + QString(b ? "1" : "0"));
+	sendCommand("FEATURES PUT " + m_ctx + " " + m_phn + " Screen " + QString(b ? "1" : "0"));
 }
 
 void LoginEngine::setDnd(bool b)
 {
-	sendCommand("FEATURES PUT DND " + QString(b ? "1" : "0"));
+	sendCommand("FEATURES PUT " + m_ctx + " " + m_phn + " DND " + QString(b ? "1" : "0"));
 }
 
 void LoginEngine::setForwardOnUnavailable(bool b, const QString & dst)
 {
-	sendCommand("FEATURES PUT FWD/RNA/Status " + QString(b ? "1" : "0"));
-	sendCommand("FEATURES PUT FWD/RNA/Number " + dst);
+	sendCommand("FEATURES PUT " + m_ctx + " " + m_phn + " FWD/RNA/Status " + QString(b ? "1" : "0"));
+	sendCommand("FEATURES PUT " + m_ctx + " " + m_phn + " FWD/RNA/Number " + dst);
 }
 
 void LoginEngine::setForwardOnBusy(bool b, const QString & dst)
 {
-	sendCommand("FEATURES PUT FWD/Busy/Status " + QString(b ? "1" : "0"));
-	sendCommand("FEATURES PUT FWD/Busy/Number " + dst);
+	sendCommand("FEATURES PUT " + m_ctx + " " + m_phn + " FWD/Busy/Status " + QString(b ? "1" : "0"));
+	sendCommand("FEATURES PUT " + m_ctx + " " + m_phn + " FWD/Busy/Number " + dst);
 }
 
 void LoginEngine::setUncondForward(bool b, const QString & dst)
 {
-	sendCommand("FEATURES PUT FWD/Unc/Status " + QString(b ? "1" : "0"));
-	sendCommand("FEATURES PUT FWD/Unc/Number " + dst);
+	sendCommand("FEATURES PUT " + m_ctx + " " + m_phn + " FWD/Unc/Status " + QString(b ? "1" : "0"));
+	sendCommand("FEATURES PUT " + m_ctx + " " + m_phn + " FWD/Unc/Number " + dst);
 }
 
-void LoginEngine::askFeatures()
+void LoginEngine::askFeatures(const QString & peer)
 {
-	sendCommand("FEATURES GET");
+        qDebug() << "BaseEngine::askFeatures()" << peer;
+        m_ctx = m_dialcontext;
+        m_phn = m_userid;
+        QStringList peerp = peer.split("/");
+        if(peerp.size() == 6) {
+                m_ctx = peerp[2];
+                m_phn = peerp[5];
+        }
+        sendCommand("FEATURES GET " + m_ctx + " " + m_phn);
 }
 
 void LoginEngine::askPeers()
@@ -680,14 +688,15 @@ void LoginEngine::readKeepLoginAliveDatagrams()
 		} else if(reply == "FEATURES") {
 			if((qsl.size() == 4) && (qsl[1] == "UPDATE"))
 				initFeatureFields(qsl[2], qsl[3]);
-			else {
+			else if(qsl[1] != "PUT") { // do nothing when receiving 'ACK's from XD
 				QStringList list = qsl[1].split(";");
-				//				qDebug() << list.size();
-				if(list.size() > 1) {
-					for(int i=0; i<list.size()-1; i+=2) {
+                                disconnectFeatures();
+                                resetFeatures();
+				//qDebug() << list.size();
+				if(list.size() > 1)
+					for(int i=0; i<list.size()-1; i+=2)
 						initFeatureFields(list[i], list[i+1]);
-					}
-				}
+                                connectFeatures();
 			}
 			qDebug() << qsl; //reply;
 		}

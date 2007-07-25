@@ -21,6 +21,7 @@ signals:
 	void uncondForwardChanged(bool, const QString &);
 	void forwardOnBusyChanged(bool, const QString &);
 	void forwardOnUnavailableChanged(bool, const QString &);
+	void askFeatures(const QString &); //!< need features to be updated !
 public slots:
 	void setVoiceMail(bool);
 	void setCallRecording(bool);
@@ -35,6 +36,10 @@ public slots:
 	void setForwardOnUnavailable(bool, const QString &);
 	void setForwardOnUnavailable(bool);
 	void setForwardOnUnavailable(const QString &);
+        void setPeerToDisplay(const QString &);
+        void Connect();
+        void DisConnect();
+        void Reset();
 private slots:
 	void uncondForwardToggled(bool);
 	void forwardOnBusyToggled(bool);
@@ -43,6 +48,7 @@ private slots:
 	void toggleOnBusyIfAllowed(const QString &);
 	void toggleOnUnavailIfAllowed(const QString &);
 private:
+        QString m_peer;
 	QCheckBox * m_voicemail;
 	QCheckBox * m_callrecording;
 	QCheckBox * m_callfiltering;

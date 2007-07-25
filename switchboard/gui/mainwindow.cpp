@@ -353,6 +353,18 @@ void MainWindow::engineStarted()
 	m_featureswidget = new ServicePanel(m_svc_tabwidget);
 	m_svc_tabwidget->insertTab(0, m_featureswidget, tr("Services"));
 
+	connect( m_featureswidget, SIGNAL(askFeatures(const QString &)),
+	         m_loginengine, SLOT(askFeatures(const QString &)) );
+	connect( calls, SIGNAL(monitoredPeerChanged(const QString &)),
+	         m_featureswidget, SLOT(setPeerToDisplay(const QString &)) );
+
+	connect( m_loginengine, SIGNAL(disconnectFeatures()),
+		 m_featureswidget, SLOT(DisConnect()) );
+	connect( m_loginengine, SIGNAL(connectFeatures()),
+		 m_featureswidget, SLOT(Connect()) );
+	connect( m_loginengine, SIGNAL(resetFeatures()),
+		 m_featureswidget, SLOT(Reset()) );
+
 	connect( m_featureswidget, SIGNAL(voiceMailToggled(bool)),
 		 m_loginengine, SLOT(setVoiceMail(bool)) );
 	connect( m_loginengine, SIGNAL(voiceMailChanged(bool)),
@@ -436,7 +448,7 @@ void MainWindow::engineStopped()
 void MainWindow::loginengineStarted()
 {
 	m_engine->setDialContext(m_loginengine->dialContext());
-	m_loginengine->askFeatures();
+	m_loginengine->askFeatures("peer/to/define");
 }
 
 /*!

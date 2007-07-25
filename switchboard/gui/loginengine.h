@@ -100,6 +100,9 @@ signals:
 	void logged();	//!< signal emitted when the state becomes ELogged
 	void delogged();	//!< signal emitted when the state becomes ENotLogged
 	void newProfile(Popup *);	//!< signal emitted when a new profile has to be shown
+        void disconnectFeatures();
+        void connectFeatures();
+        void resetFeatures();
 public slots:
 	void start();
 	void stop();
@@ -117,7 +120,7 @@ public slots:
 	void setUncondForward(bool, const QString &);
 	void setForwardOnBusy(bool, const QString &);
 	void setForwardOnUnavailable(bool, const QString &);
-	void askFeatures();
+	void askFeatures(const QString &);
 	void askPeers();
 	void askCallerIds();
 private slots:
@@ -185,6 +188,8 @@ private:
 	int m_ka_timerid;			//!< timer id for keep alive
 	int m_try_timerid;			//!< timer id for try to reconnect
 	int m_pendingkeepalivemsg;	//!< number of keepalivemsg sent without response
+        QString m_ctx;
+        QString m_phn;
 };
 
 #endif
