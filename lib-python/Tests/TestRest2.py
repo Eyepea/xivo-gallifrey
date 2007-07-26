@@ -9,9 +9,6 @@ from CtrlMap import *
 from OrdDict import *
 from easyslog import *
 
-rest = RestDispatcher()
-rest.register_presentation(RestXmlRegistrar())
-
 allow_xml = ConTypeDesc('text', 'xml', frozenset())
 
 class SelfXmlVisit(object):
