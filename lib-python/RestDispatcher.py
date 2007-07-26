@@ -125,7 +125,7 @@ class RestErrorCode(RestError):
 
 class RestDispatcher(object):
 	def __init__(self):
-		self.__res_root = RT_Mount()
+		self.__res_root = MountTree()
 		self.__connector = None # xxx support multiple connectors
 		self.__presentation = {}
 		self.__reverse_adapt = {}

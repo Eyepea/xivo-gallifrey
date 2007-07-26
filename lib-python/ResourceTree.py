@@ -23,35 +23,25 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
+from types import MethodType
 from pyfunc import *
 
 # NOTE: paths are tuples in this module
-# TODO: a generic fenter which call fvisit() when visitable(), then
-# overloadable methods ?
 
-class RT_node(object):
-
-	"""Both base class of all Resource Trees, and possible near
-	complete implementation of leaves nodes - fvisit() just need to
-	be overridden to do that. """
-
-	def __init__(self, ropen = True):
-		"""When ropen is True, if there is no subpath remaining when this
-		node is being scanned to look for a resource, it'll be visited
-		(by call of the fvisit() method). This behavior is dictated by
-		the visitable() so it can be modified by overloading it. """
-		self._ropen = bool(ropen)
-
-	def visitable(self, ctx, path, pos):
-		"""If this function returns True, this node will immediately
-		be visited by entering fvisit() regardless of whether
-		path[pos:] is empty. """
-		return self._ropen and pos >= len(path)
-
+class Node(object):
+	
+	"""Base class of all Resource Trees including leaves nodes"""
+	
 	@staticmethod
-	def fin(ctx, path, pos):
-		"""fin() is called before entering the fenter() functions of
-		childs to transform the current context.
+	def fin(ctx, path, pos, eaten):
+		"""fin() is called when looking for child applications, to check
+		if the lookup must continue and to transform the local context
+		to one that will be passed to the fenter() method of childs.
+		
+		- ctx: local context
+		- path: complete path of the request
+		- pos: current position in the path
+		- pos + eaten: child position in the path
 		
 		It must return a tuple (new_ctx, cont) where new_ctx is the
 		transformed context and cont evaluates to True if traversal
@@ -59,115 +49,185 @@ class RT_node(object):
 		In the last case, the caller will return None regardless of
 		new_ctx returned by this function. """
 		return (ctx, True)
-
+	
 	@staticmethod
-	def fout(ctx, path, pos):
-		"""fout() is called after the return of the fenter() function
-		of the child, and can return a transformed new ctx if needed."""
+	def fout(ctx, path, pos, eaten):
+		"""fout() is called just after the return of the fenter() method
+		of the child, and can return a transformed new ctx if needed.
+		
+		Same parameters as in fin(). """
 		return ctx
-
+	
+	@staticmethod
+	def visitable(ctx, path, pos):
+		"""If and only if this method returns something True, the current
+		node will immediately be visited by entering fvisit(). This will
+		happen regardless of whether path[pos:] is empty.
+		
+		This default method from Node just returns False.
+		
+		Same parameters (but eaten) as in fin(). """
+		return False
+	
 	@staticmethod
 	def fvisit(ctx, path, pos):
 		"""fvisit() is called to visit the current node. It returns
 		a context, typically a new or a transformed one. It can also
 		return None to indicate a (not so) late dynamic detection of
-		a non existing resource."""
-		return None
-
-	def fenter_child(self, child_t, ctx, path, pos, eaten):
-		"""Typically called by base and overloaded versions of fenter()
-		to factorise code, when traversal of a child tree is needed. """
-		ctx, cont = self.fin(ctx, path, pos)
+		a non existing resource.
+		
+		Also see visitable().
+		
+		Same parameters (but eaten) as in fin(). """
+		return ctx
+	
+	@staticmethod
+	def lookup_sub(ctx, path, pos):
+		"""Finds and returns the next direct child identified by path[pos]
+		and possibly path[pos+1], path[pos+2], ...
+		
+		Returns both the object describing the child and the number of
+		path component consumed from path[pos] to select this child, in
+		a tuple.
+		
+		If no child has been found returns (None, -1) --
+		Node.lookup_sub() only does that. """
+		return None, -1
+	
+	@classmethod
+	def fenter_child(cls, child_t, ctx, path, pos, eaten):
+		"""Standard factorized logic to fenter() a child.
+		
+		This is the place where our local fin() and fout() are called
+		around the fenter() of the child call.
+		
+		Same parameters as in fin(), plus:
+		- child_t: child object to enter.
+		"""
+		ctx, cont = cls.fin(ctx, path, pos, eaten)
 		if not cont:
 			return None
 		else:
-			return self.fout(child_t.fenter(ctx, path, pos + eaten), path, pos)
-
-	def fenter(self, ctx, path, pos):
-		"""Called to do a lookup of the resource at peth[pos:]
-		in this subtree. """
-		if self.visitable(ctx, path, pos):
-			return self.fvisit(ctx, path, pos)
+			return cls.fout(child_t.fenter(ctx, path, pos + eaten),
+			                path, pos, eaten)
+	
+	@classmethod
+	def fenter(cls, ctx, path, pos):
+		"""Lookup method called to choose which node is to be visited.
+		
+		Uses visitable(), fvisit(), lookup_sub() and fenter_child(). """
+		if cls.visitable(ctx, path, pos):
+			return cls.fvisit(ctx, path, pos)
+		child_t, eaten = cls.lookup_sub(ctx, path, pos)
+		if child_t:
+			return cls.fenter_child(child_t, ctx, path, pos, eaten)
 		else:
 			return None
-
-	def ctx_path(self, path, ctx = None):
+	
+	@classmethod
+	def ctx_path(cls, path, ctx = None):
 		"""Entry point to call on the root node to initiate a lookup
 		of the resource identified by path. """
+		return cls.fenter(ctx, (None,None)+tuple(path), 2)
+
+from easyslog import * #XXXXXX
+class VisitableNode(Node):
+	
+	"Defines a visitable node when at end of path. "
+	
+	@staticmethod
+	def visitable(ctx, path, pos):
+		syslogf(str(ctx))
+		syslogf(str(path))
+		syslogf(str(pos))
+		return pos >= len(path)
+
+
+class NodeInst(Node):
+	
+	"""Base class of Resource Trees when subtree lookup is performed by an
+	instance and not the class itself. """
+	
+	def fenter_child(self, child_t, ctx, path, pos, eaten):
+		"Instance method version of Node.fenter_child(). "
+		ctx, cont = self.fin(ctx, path, pos, eaten)
+		if not cont:
+			return None
+		else:
+			return self.fout(child_t.fenter(ctx, path, pos + eaten),
+			                path, pos, eaten)
+	
+	def fenter(self, ctx, path, pos):
+		"Instance method version of Node.fenter(). "
+		if self.visitable(ctx, path, pos):
+			return self.fvisit(ctx, path, pos)
+		child_t, eaten = self.lookup_sub(ctx, path, pos)
+		if child_t:
+			return self.fenter_child(child_t, ctx, path, pos, eaten)
+		else:
+			return None
+	
+	def ctx_path(self, path, ctx = None):
+		"Instance method version of Node.ctx_path(). "
 		return self.fenter(ctx, (None,None)+tuple(path), 2)
 
-class RT_Set(RT_node):
 
-	"""Resource Tree containing a finite ordered set of statically
-	named subtrees. """
-
-	def __init__(self, ropen, odict_subtree):
-		"""When ropen is True, if there is no subpath remaining when this
-		node is being scanned to look for a resource, it'll be visited
-		(by call of the fvisit() method). This behavior is dictated by
-		the visitable() so it can be modified by overloading it.
-		
-		odict_subtree is an ordered dictionary in which keys are node
-		names and values instances of RT_node (or a subclass). """
-		self._odict_subtree = odict_subtree
-		super(RT_Set, self).__init__(ropen)
-
-	def fenter(self, ctx, path, pos):
-		if self.visitable(ctx, path, pos):
-			return self.fvisit(ctx, path, pos)
-		elif (pos < len(path)) and (path[pos] in self._odict_subtree):
-			return self.fenter_child(self._odict_subtree[path[pos]], ctx, path, pos, 1)
+class SetTree(Node):
+	
+	"""Resource Tree containing a finite set of statically named
+	subtrees. You can use an OrdDict to handle the actual set so that it
+	will be ordered.
+	
+	Your derived class needs to provide:
+	 - SUBNAME_CLASS        mapping of child names (as keys) and
+	                        their associated classes (values)
+	"""
+	
+	@classmethod
+	def lookup_sub(cls, ctx, path, pos):
+		if (pos < len(path)) and (path[pos] in cls.SUBNAME_CLASS):
+			return cls.SUBNAME_CLASS[path[pos]], 1
 		else:
-			return None
+			return None, -1
 
-class RT_Dyn(RT_node):
 
-	"""Resource Tree containing dynamically addressable resources."""
-
-	def __init__(self, ropen, args_val, subtree):
-		"""When ropen is True, if there is no subpath remaining when this
-		node is being scanned to look for a resource, it'll be visited
-		(by call of the fvisit() method). This behavior is dictated by
-		the visitable() so it can be modified by overloading it.
-		
-		args_val is a list, whose length is the depth of the dynamic
-		portion at top of this subtree that is handled by this instance,
-		and which contains functions that will be called with the
-		corresponding name of the subdirectory at the matching depth of
-		the path being looked up.
-		
-		subtree is a Resource Tree instance that will be traversed when
-		all functions of args_val validated their respective node name.
-		subtree can use the path[pos-len(args_val):pos-1] slice of the
-		path if it needs to know its name. """
-		self._args_val = list(args_val)
-		self._subtree = subtree
-		super(RT_Dyn, self).__init__(ropen)
-
-	def fenter(self, ctx, path, pos):
-		if self.visitable(ctx, path, pos):
-			return self.fvisit(ctx, path, pos)
-		elif (len(path) - pos >= len(self._args_val)
-		      and all(val(path[pos+i])
-		              for i,val in enumerate(self._args_val))):
-			return self.fenter_child(self._subtree, ctx, path, pos, len(self._args_val))
+class DynTree(Node):
+	
+	"""Resource Tree containing dynamically addressable resources.
+	
+	Your derived class needs to provide:
+	 - subpath_ok()         Either classmethod or staticmethod.
+	                        The number of parameter will be introspected so
+	                        the same number of components from the path will
+				be passed to this function to check whether they
+				can identify a resource.
+	 - SUBCLASS             Class of the childs
+	"""
+	
+	@classmethod
+	def lookup_sub(cls, ctx, path, pos):
+		sublen = cls.subpath_ok.func_code.co_argcount \
+		         - isinstance(cls.subpath_ok, MethodType)
+		if len(path) - pos >= sublen \
+		   and cls.subpath_ok(*path[pos:pos+sublen]):
+			return cls.SUBCLASS, sublen
 		else:
-			return None
+			return None, -1
 
-# TODO: introspection on / of RT_Mount
-# (needs changing visitable()...)
 
-class RT_MountError(ValueError): pass
+class MountError(ValueError): pass
 
-class RT_Mount(RT_node):
-
+class MountTree(NodeInst):
+	
 	"""A Resource Tree on which one can dynamically mount other Resource
-	Trees.
+	Trees. Because of the inherently dynamic behavior of this concept and
+	in contrast to Node, SetTree and DynTree, management of subtree lookup
+	will be performed by an instance of this class -- not the class itself.
 	
 	The behavior of the mount() and umount() methods is very similar to
 	the one of the Unix mount/umount concept, except you don't have to
-	precreate mount points: for example if you mount something on
-	('configuration', 'ethernet') in a previously empty RT_Mount instance,
+	pre-create mount points: for example if you mount something on
+	('configuration', 'ethernet') in a previously empty MountTree instance,
 	both 'configuration' and 'ethernet' internal nodes would be
 	automatically created. When later you umount it, 'ethernet' will be
 	automatically destroyed and if it has no sibling remaining (that could
@@ -210,7 +270,7 @@ class RT_Mount(RT_node):
 	  - Allowed
 		rt.mount(('configuration'), subrt_T)
 		rt.mount(('configuration'), subrt_S)
-		rt.mount(('configuration', 'ethernert'), subrt_b)
+		rt.mount(('configuration', 'ethernet'), subrt_b)
 	  - Allowed
 		rt.mount(('configuration'), subrt_T)
 		rt.mount(('configuration'), subrt_S)
@@ -222,18 +282,13 @@ class RT_Mount(RT_node):
 		rt.umount(('configuration'), subrt_T)
 	
 	"""
-
-	def __init__(self, ropen = False):
+	
+	def __init__(self):
 		self._mount_points = {}  # { name: [sub_mnt_pts, mntstk] }
-		                         # where mstk is a stack of rt_node 
+		                         # where mstk is a stack of Node objects
 		                         # with the top element being in use
-		super(RT_Mount, self).__init__(ropen)
-
-	@staticmethod
-	def visitable(ctx, path, pos):
-		"This node is never directly visitable."
-		return False
-
+		super(MountTree, self).__init__()
+	
 	def mount(self, subtree, path):
 		"""Mount subtree on path if nothing is already mounted 
 		on a subpath. You can't mount something on the root. """
@@ -253,7 +308,7 @@ class RT_Mount(RT_node):
 			mntpts[path[pos]][1].insert(0, subtree)
 		else:
 			mntpts[path[pos]] = [{},[subtree]]
-
+	
 	def _umount_rec(self, mntpts, path, pos, subtree):
 		if path[pos] not in mntpts:
 			raise RT_MountError, "Nothing mounted there"
@@ -269,7 +324,7 @@ class RT_Mount(RT_node):
 			sub,mntstk = mntpts[path[pos]]
 		if (not sub) and (not mntstk):
 			del mntpts[path[pos]]
-
+	
 	def umount(self, subtree, path):
 		"""Unmount subtree from path. There should be no mounted child
 		(checked) and the given subtree must be on top of all mounts
@@ -277,30 +332,22 @@ class RT_Mount(RT_node):
 		if not path:
 			raise RT_MountError, "Can't umount the root"
 		self._umount_rec(self._mount_points, path, 0, subtree)
-
-	def lookup_mnt(self, path, pos):
+	
+	def lookup_sub(self, ctx, path, pos):
 		"""Finds and returns the best matching mounted subtree
 		begining with path[pos:]
 		Returns None, -1 if none found, else returns 
 		(position_of_remaining_part_of_path, sub_res_tree_instance) """
 		found_rt, found_pos = None, -1
 		mntpts = self._mount_points
-		while pos < len(path):
-			if path[pos] not in mntpts:
+		for i in xrange(0,len(path)-pos):
+			if path[pos+i] not in mntpts:
 				break
-			if len(mntpts[path[pos]][1]) > 0:
-				found_rt, found_pos = mntpts[path[pos]][1][0], pos + 1
-			mntpts = mntpts[path[pos]][0]
-			pos += 1
+			if len(mntpts[path[pos+i]][1]) > 0:
+				found_rt, found_pos = mntpts[path[pos+i]][1][0], i + 1
+			mntpts = mntpts[path[pos+i]][0]
 		return found_rt, found_pos
 
-	def fenter(self, ctx, path, pos):
-		if self.visitable(ctx, path, pos):
-			return self.fvisit(ctx, path, pos)
-		found_rt, found_pos = self.lookup_mnt(path, pos)
-		if found_pos >= 0:
-			return self.fenter_child(found_rt, ctx, path, pos, found_pos - pos)
-		else:
-			return None
 
-__all__ = ['RT_node', 'RT_Set', 'RT_Dyn', 'RT_Mount']
+__all__ = [ 'Node', 'VisitableNode', 'NodeInst', 'SetTree', 'DynTree',
+            'MountTree', 'MountError' ]
