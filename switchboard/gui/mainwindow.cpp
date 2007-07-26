@@ -120,6 +120,8 @@ MainWindow::MainWindow(BaseEngine * engine, LoginEngine * loginengine, QWidget *
 	         calls, SLOT(monitorPeer(const QString &, const QString &)) );
 	connect( calls, SIGNAL(hangUp(const QString &)),
 		 m_engine, SLOT(hangUp(const QString &)) );
+	connect( calls, SIGNAL(transferToNumber(const QString &)),
+		 m_engine, SLOT(transferToNumber(const QString &)) );
 
 	m_middleSplitter = new QSplitter( Qt::Vertical, m_splitter);
 
@@ -192,6 +194,8 @@ MainWindow::MainWindow(BaseEngine * engine, LoginEngine * loginengine, QWidget *
 	         m_engine, SLOT(dialExtension(const QString &)) );
         connect( dialpanel, SIGNAL(originateCall(const QString&, const QString&)),
 	         m_engine, SLOT(originateCall(const QString&, const QString&)) );
+	connect( dialpanel, SIGNAL(textEdited(const QString &)),
+                 m_engine, SLOT(textEdited(const QString &)) );
 
 	setCentralWidget(m_splitter);
 

@@ -41,9 +41,9 @@ protected:
         void dragEnterEvent(QDragEnterEvent *);
 	void dropEvent(QDropEvent *);
 public slots:
-	//void textEdited(const QString &);
 	void inputValidated();
 signals:
+	void textEdited(const QString &);
 	void emitDial(const QString &);		//!< dial a number
 	void originateCall(const QString &, const QString &);   	//!< originates a number
 private:

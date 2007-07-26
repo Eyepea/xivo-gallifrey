@@ -470,11 +470,28 @@ void BaseEngine::socketReadyRead()
 
 /*! \brief send an originate command to the server
  */
+void BaseEngine::transferToNumber(const QString & chan)
+{
+        if(m_numbertodial.size() > 0) {
+                qDebug() << "BaseEngine::transferToNumber()" << chan << m_numbertodial;
+                transferCall(chan, m_numbertodial);
+        }
+}
+
+/*! \brief send an originate command to the server
+ */
+void BaseEngine::textEdited(const QString & text)
+{
+        m_numbertodial = text;
+}
+
+/*! \brief send an originate command to the server
+ */
 void BaseEngine::originateCall(const QString & src, const QString & dst)
 {
 	qDebug() << "BaseEngine::originateCall()" << src << dst;
 	QStringList dstlist = dst.split("/");
-	if(dstlist.size()>5)
+	if(dstlist.size() > 5)
 	{
 		m_pendingcommand = "originate " + src + " " + dst;
 		//		+ dstlist[0] + "/" + dstlist[1] + "/" + m_dialcontext + "/"

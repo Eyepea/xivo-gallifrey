@@ -51,8 +51,8 @@ DialPanel::DialPanel(QWidget * parent)
 	m_input->setInsertPolicy( QComboBox::NoInsert );
 	connect( m_input->lineEdit(), SIGNAL(returnPressed()),
 	         this, SLOT(inputValidated()) );
-	//connect( m_input, SIGNAL(editTextChanged(const QString &)),
-	//         this, SLOT(textEdited(const QString &)) );
+	connect( m_input, SIGNAL(editTextChanged(const QString &)),
+	         this, SIGNAL(textEdited(const QString &)) );
 	QPushButton * dialButton = new QPushButton( tr("Dial"), this);
 	connect( dialButton, SIGNAL(clicked()),
 	         this, SLOT(inputValidated()) );
@@ -64,11 +64,10 @@ DialPanel::DialPanel(QWidget * parent)
 	vlayout->addWidget( dialButton, 0, Qt::AlignCenter );
 }
 
-/*
-void DialPanel::textEdited(const QString & text)
-{
-	qDebug() << "DialPane::textEdited()" << text;
-}*/
+// void DialPanel::textEdited(const QString & text)
+// {
+//         qDebug() << "DialPanel::textEdited()" << text;
+// }
 
 void DialPanel::dragEnterEvent(QDragEnterEvent * event)
 {

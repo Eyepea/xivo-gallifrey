@@ -134,6 +134,13 @@ void CallStackWidget::hupchan(const QString & hangupchan)
 	hangUp(hangupchan);
 }
 
+/*! \brief transfers the channel to a number
+ */
+void CallStackWidget::transftonumberchan(const QString & chan)
+{
+	transferToNumber(chan);
+}
+
 /*! \brief Reset the Widget */
 void CallStackWidget::reset()
 {
@@ -220,6 +227,8 @@ void CallStackWidget::updateDisplay()
 								 this);
 			connect( callwidget, SIGNAL(doHangUp(const QString &)),
 			         this, SLOT(hupchan(const QString &)) );
+			connect( callwidget, SIGNAL(doTransferToNumber(const QString &)),
+			         this, SLOT(transftonumberchan(const QString &)) );
 			m_afflist.append(callwidget);
 			//m_layout->addWidget(callwidget, 0, Qt::AlignTop);
 			m_layout->insertWidget(m_layout->count() - 1, callwidget,

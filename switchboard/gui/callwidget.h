@@ -70,8 +70,10 @@ private:
 	void updateCallTimeLabel();
 signals:
 	void doHangUp(const QString &);	//!< hang up the channel
+	void doTransferToNumber(const QString &);	//!< transfers the channel
 public slots:
 	void hangUp();
+	void transferToNumber();
 private:
 	QPoint m_dragstartpos;	//!< used for drag
 	QString m_channelme;	//!< channel identifier
@@ -89,6 +91,7 @@ private:
 	QPixmap m_call_gray;	//!< gray phone icon
 	QDateTime m_startTime;	//!< call start date/time
 	QAction * m_hangUpAction;	//!< Hang Up Action
+        QAction * m_transferToNumberAction;	//!< Transfer to Number Action
 };
 
 

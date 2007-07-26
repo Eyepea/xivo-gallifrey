@@ -88,13 +88,15 @@ protected:
 public slots:
 	void start();
 	void stop();
-	void originateCall(const QString & src, const QString & dst);
-	void dialFullChannel(const QString & dst);
-	void dialExtension(const QString & dst);
-	void transferCall(const QString & src, const QString & dst);
-	void interceptCall(const QString & src);
+	void originateCall(const QString &, const QString &);
+	void dialFullChannel(const QString &);
+	void dialExtension(const QString &);
+	void transferCall(const QString &, const QString &);
+	void interceptCall(const QString &);
 	void searchDirectory(const QString &);
 	void requestHistory(const QString &, int);
+        void transferToNumber(const QString &);
+        void textEdited(const QString &);
 private slots:
 	void updatePeers(const QStringList & liststatus);
 	void updateCallerids(const QStringList & liststatus);
@@ -171,6 +173,7 @@ private:
 	QString m_dialcontext;	//!< Context of the phone, as returned by the xivo_daemon server
 	QString m_sessionid;	//!< Session id obtained after a successful login
 	QString m_capabilities;	//!< List of capabilities issued by the server after a successful login
+        QString m_numbertodial;
 	// GUI client capabilities
 	QList<const QMetaObject *> m_removable;
 	bool m_is_a_switchboard; 

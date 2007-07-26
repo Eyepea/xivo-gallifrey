@@ -90,6 +90,11 @@ m_call_gray(":/phone-grey.png")
 	m_hangUpAction->setStatusTip( tr("Hang up/Close the channel") );
 	connect( m_hangUpAction, SIGNAL(triggered()),
 	         this, SLOT(hangUp()) );
+
+	m_transferToNumberAction = new QAction( tr("&Transfer to number"), this);
+	m_transferToNumberAction->setStatusTip( tr("Transfer the channel to the dialed number") );
+	connect( m_transferToNumberAction, SIGNAL(triggered()),
+	         this, SLOT(transferToNumber()) );
 }
 
 /*! \brief update time displayed in m_lbl_time
@@ -234,12 +239,22 @@ void CallWidget::hangUp()
 	doHangUp( m_channelme );
 }
 
+/*! \brief transfers the channel to a number
+ */
+void CallWidget::transferToNumber()
+{
+        //qDebug() << "CallWidget::transferToNumber()" << m_channelme;
+        doTransferToNumber( m_channelme );
+}
+
 /*! \brief open the context menu
  */
 void CallWidget::contextMenuEvent(QContextMenuEvent *event)
 {
 	QMenu contextMenu(this);
 	contextMenu.addAction(m_hangUpAction);
+        // m_transferToNumberAction only if there is something written
+	contextMenu.addAction(m_transferToNumberAction);
 	contextMenu.exec(event->globalPos());
 }
 
