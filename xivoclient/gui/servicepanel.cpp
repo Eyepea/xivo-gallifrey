@@ -50,7 +50,16 @@ ServicePanel::ServicePanel(QWidget * parent)
 	QLabel * dummy = new QLabel(this);
 	layout->addWidget(dummy, line++, 0, 1, 0, Qt::AlignTop);
 
+
         Reset();
+
+	connect(m_uncondforwarddest, SIGNAL(textChanged(const QString &)),
+		this, SLOT(toggleUncondIfAllowed(const QString &)));
+	connect(m_forwardonbusydest, SIGNAL(textChanged(const QString &)),
+		this, SLOT(toggleOnBusyIfAllowed(const QString &)));
+	connect(m_forwardonunavailabledest, SIGNAL(textChanged(const QString &)),
+		this, SLOT(toggleOnUnavailIfAllowed(const QString &)));
+
         Connect();
 }
 
@@ -65,16 +74,10 @@ void ServicePanel::Connect()
 	        this, SIGNAL(callFilteringToggled(bool)));
 	connect(m_dnd, SIGNAL(toggled(bool)),
 	        this, SIGNAL(dndToggled(bool)));
-	connect(m_uncondforwarddest, SIGNAL(textChanged(const QString &)),
-		this, SLOT(toggleUncondIfAllowed(const QString &)));
 	connect(m_uncondforward, SIGNAL(toggled(bool)),
 	        this, SLOT(uncondForwardToggled(bool)));
-	connect(m_forwardonbusydest, SIGNAL(textChanged(const QString &)),
-		this, SLOT(toggleOnBusyIfAllowed(const QString &)));
 	connect(m_forwardonbusy, SIGNAL(toggled(bool)),
 	        this, SLOT(forwardOnBusyToggled(bool)));
-	connect(m_forwardonunavailabledest, SIGNAL(textChanged(const QString &)),
-		this, SLOT(toggleOnUnavailIfAllowed(const QString &)));
 	connect(m_forwardonunavailable, SIGNAL(toggled(bool)),
 	        this, SLOT(forwardOnUnavailableToggled(bool)));
 }
@@ -90,18 +93,19 @@ void ServicePanel::DisConnect()
                    this, SIGNAL(callFilteringToggled(bool)));
 	disconnect(m_dnd, SIGNAL(toggled(bool)),
                    this, SIGNAL(dndToggled(bool)));
-	disconnect(m_uncondforwarddest, SIGNAL(textChanged(const QString &)),
-                   this, SLOT(toggleUncondIfAllowed(const QString &)));
 	disconnect(m_uncondforward, SIGNAL(toggled(bool)),
                    this, SLOT(uncondForwardToggled(bool)));
-	disconnect(m_forwardonbusydest, SIGNAL(textChanged(const QString &)),
-                   this, SLOT(toggleOnBusyIfAllowed(const QString &)));
 	disconnect(m_forwardonbusy, SIGNAL(toggled(bool)),
                    this, SLOT(forwardOnBusyToggled(bool)));
-	disconnect(m_forwardonunavailabledest, SIGNAL(textChanged(const QString &)),
-                   this, SLOT(toggleOnUnavailIfAllowed(const QString &)));
 	disconnect(m_forwardonunavailable, SIGNAL(toggled(bool)),
                    this, SLOT(forwardOnUnavailableToggled(bool)));
+
+// 	disconnect(m_uncondforwarddest, SIGNAL(textChanged(const QString &)),
+//                    this, SLOT(toggleUncondIfAllowed(const QString &)));
+// 	disconnect(m_forwardonbusydest, SIGNAL(textChanged(const QString &)),
+//                    this, SLOT(toggleOnBusyIfAllowed(const QString &)));
+// 	disconnect(m_forwardonunavailabledest, SIGNAL(textChanged(const QString &)),
+//                    this, SLOT(toggleOnUnavailIfAllowed(const QString &)));
 }
 
 void ServicePanel::Reset()
