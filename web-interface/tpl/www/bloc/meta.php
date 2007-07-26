@@ -11,7 +11,7 @@
 <meta name="copyright" content="Copyright <?=strftime('%Y');?> Xivo">
 <meta name="title" content="Xivo">
 
-<link rel="shortcut icon" href="<?=$this->url('favicon.ico');?>">
+<link rel="shortcut icon" href="<?=$this->file_time($this->url('favicon.ico'));?>">
 
 <link rel="stylesheet" type="text/css" href="<?=$this->file_time($this->url('css/xivo.css'));?>">
 <script type="text/javascript" src="<?=$this->file_time($this->url('js/xivo.js'));?>"></script>

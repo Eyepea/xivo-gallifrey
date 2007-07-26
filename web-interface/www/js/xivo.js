@@ -100,6 +100,32 @@ function xivo_eid(id)
 		return(false);
 }
 
+function xivo_etag(tag,obj,nb)
+{
+	if(xivo_is_string(tag) == false)
+		return(false);
+
+	if(xivo_is_undef(obj) == true)
+		obj = document;
+	
+	if(xivo_is_object(obj) == false)
+		return(false);
+
+	if(xivo_is_undef(obj.getElementsByTagName) == true)
+		return(false);
+
+	if(xivo_is_undef(nb) == true)
+		return(obj.getElementsByTagName(tag));
+
+	if(xivo_is_uint(nb) == false)
+		nb = 0;
+
+	if(xivo_is_undef(obj.getElementsByTagName(tag)[nb]) == true)
+		return(false);
+		
+	return(obj.getElementsByTagName(tag)[nb]);
+}
+
 function xivo_attrib_register(id,arr)
 {
 	if(xivo_is_undef(xivo_conf['attrib'][id]) == true)
@@ -351,6 +377,16 @@ function xivo_chg_attrib(name,id,type,link)
 	}
 }
 
+function xivo_is_string(s)
+{
+	var r = false;
+
+	if(typeof(s) == 'string')
+		r = true;
+
+	return(r);
+}
+
 function xivo_is_array(a)
 {
 	return((a instanceof Array));
@@ -360,7 +396,7 @@ function xivo_is_object(o)
 {
 	var r = false;
 
-	if(typeof(o) == 'object' && xivo_is_array(a) == false)
+	if(typeof(o) == 'object' && xivo_is_array(o) == false)
 		r = true;
 
 	return(r);
@@ -371,6 +407,43 @@ function xivo_is_undef(v)
 	var r = false;
 
 	if(typeof(v) == 'undefined')
+		r = true;
+
+	return(r);
+}
+
+function xivo_is_number(n)
+{
+	var r = false;
+
+	if(xivo_is_undef(Number(n)) == false)
+		r = true;
+
+	return(r);
+}
+
+function xivo_is_int(i)
+{
+	var r = false;
+	var y = parseInt(i);
+
+	if(isNaN(y) == true)
+		return(r);
+
+	if(i == y && i.toString() == y.toString())
+		r = true;
+
+	return(r);
+}
+
+function xivo_is_uint(i)
+{
+	var r = false;
+
+	if(xivo_is_int(i) == false)
+		return(r);
+
+	if(i >= 0)
 		r = true;
 
 	return(r);

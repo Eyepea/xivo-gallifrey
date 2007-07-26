@@ -31,27 +31,21 @@ class xivo_i18n_locale
 
 	function is_valid($locale)
 	{
-		$r = false;
-
 		$locale = preg_replace('/([a-z]{2,3})([\._\- ]*)([a-z]{2,3})/ie',"strtolower('\\1').'_'.strtoupper('\\3')",$locale);
 
-		if(xivo_issa($locale,$this->_conf) === true)
-		{
-			$r = $locale;
-		}
+		if(xivo_issa($locale,$this->_conf) === false)
+			return(false);
 
-		return($r);
+		return($locale);
 	}
 
 	function get_info($locale)
 	{
-		$r = false;
+		if(($locale = $this->is_valid($locale)) === false)
+			return(false);
 
-		if(($locale = $this->is_valid($locale)) !== false)
-		{
-			$r = $this->_conf[$locale];
-			$r['locale'] = $locale;
-		}
+		$r = $this->_conf[$locale];
+		$r['locale'] = $locale;
 
 		return($r);
 	}
@@ -74,6 +68,11 @@ class xivo_i18n_locale
 			$r = $this->_conf[$locale]['lang'];
 
 		return($r);
+	}
+
+	function get_list()
+	{
+		return($this->_conf);
 	}
 }
 

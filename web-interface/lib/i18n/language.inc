@@ -32,34 +32,36 @@ class xivo_i18n_language
 
 	function is_valid($lang)
 	{
-		$r = false;
-
 		$lang = strtolower((string) $lang);
 
-		if(xivo_issa($lang,$this->_conf) === true)
-		{
-			$r = $lang;
-		}
+		if(xivo_issa($lang,$this->_conf) === false)
+			return(false);
 
-		return($r);
+		return($lang);
 	}
 
 	function get_info($lang)
 	{
-		$r = false;
+		if(($lang = $this->is_valid($lang)) === false)
+			return(false);
 
-		if(($lang = $this->is_valid($lang)) !== false)
-		{
-			$r = $this->_conf[$lang];
-			$r['lang'] = $lang;
-		}
+		$r = $this->_conf[$lang];
+		$r['lang'] = $lang;
 
 		return($r);
 	}
 
 	function exists_default($lang)
 	{
+		if(($lang = $this->is_valid($lang)) === false)
+			return(false);
+
 		return(xivo_ak('default',$this->_conf[$lang],true));	
+	}
+
+	function get_list()
+	{
+		return($this->_conf);
 	}
 }
 

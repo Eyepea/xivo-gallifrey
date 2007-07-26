@@ -32,34 +32,57 @@ class xivo_i18n_territory
 
 	function is_valid($territo)
 	{
-		$r = false;
-
 		$territo = strtoupper((string) $territo);
 
-		if(xivo_issa($territo,$this->_conf) === true)
-		{
-			$r = $territo;
-		}
+		if(xivo_issa($territo,$this->_conf) === false)
+			return(false);
 
-		return($r);
+		return($territo);
 	}
 
 	function get_info($territo)
 	{
-		$r = false;
+		if(($territo = $this->is_valid($territo)) === false)
+			return(false);
 
-		if(($territo = $this->is_valid($territo)) !== false)
-		{
-			$r = $this->_conf[$territo];
-			$r['territo'] = $territo;
-		}
+		$r = $this->_conf[$territo];
+		$r['territo'] = $territo;
 
 		return($r);
 	}
 
+	function get_timezone($territo)
+	{
+		if(($territo = $this->is_valid($territo)) === false
+		|| xivo_issa('tz',$this->_conf[$territo]) === false
+		|| count($this->_conf[$territo]['tz']) !== 1)
+			return(false);
+
+		reset($this->_conf[$territo]['tz']);
+
+		return(key($this->_conf[$territo]['tz']));
+	}
+	
+	function get_timezone_list($territo)
+	{
+		if(($territo = $this->is_valid($territo)) === false
+		|| xivo_issa('tz',$this->_conf[$territo]) === false)
+			return(false);
+
+		return($this->_conf[$territo]['tz']);	
+	}
+
 	function exists_default($territo)
 	{
-		return(xivo_ak('default',$this->_conf[$lang],true));	
+		if(($territo = $this->is_valid($territo)) === false)
+			return(false);
+
+		return(xivo_ak('default',$this->_conf[$territo],true));	
+	}
+
+	function get_list()
+	{
+		return($this->_conf);
 	}
 }
 

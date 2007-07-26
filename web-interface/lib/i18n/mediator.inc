@@ -5,13 +5,15 @@ class xivo_i18n_mediator
 	var $_mediator = array(
 				'language'	=> null,
 				'locale'	=> null,
-				'territory'	=> null);
+				'territory'	=> null,
+				'timezone'	=> null);
 
 	var $_attrib = array(
 				'browser'	=> array(),
 				'language'	=> '',
+				'locale'	=> '',
 				'territory'	=> '',
-				'locale'	=> '');
+				'timezone'	=> '');
 
 	function xivo_i18n_mediator()
 	{
@@ -24,9 +26,13 @@ class xivo_i18n_mediator
 		if(xivo::load_class('xivo::i18n::territory') === false)
 			return(false);
 
+		if(xivo::load_class('xivo::i18n::timezone') === false)
+			return(false);
+
 		$this->_mediator['language'] = new xivo_i18n_language();
 		$this->_mediator['locale'] = new xivo_i18n_locale();
 		$this->_mediator['territory'] = new xivo_i18n_territory();
+		$this->_mediator['timezone'] = new xivo_i18n_timezone();
 		$this->_get_browser_info();
 	}
 
@@ -107,15 +113,11 @@ class xivo_i18n_mediator
 
 	function get_browser_language()
 	{
-		$r = false;
+		if(empty($this->_attrib['browser']) === true)
+			return(false);
 
-		if(empty($this->_attrib['browser']) === false)
-		{
-			reset($this->_attrib['browser']);
-			$r = key($this->_attrib['browser']);
-		}
-
-		return($r);
+		reset($this->_attrib['browser']);
+		return(key($this->_attrib['browser']));
 	}
 
 	function get_browser_territory($lang='')
@@ -223,6 +225,39 @@ class xivo_i18n_mediator
 		return($this->_mediator['territory']->get_info($territo));
 	}
 
+	function set_timezone($tz='')
+	{
+		$r = false;
+
+		$tz = (string) $tz;
+
+		if($tz !== '' && ($tz = $this->chk_timezone($tz)) !== false)
+			$r = $tz;
+		else if(empty($this->_attrib['territory']) === true)
+			$this->set_territory();
+
+		if($r === false && empty($this->_attrib['territory']) === false
+		&& ($tz = $this->get_def_timezone($this->_attrib['territory'])) !== false)
+			$r = $tz;
+
+		return($r);
+	}
+
+	function chk_timezone($tz)
+	{
+		return($this->_mediator['timezone']->is_valid($tz));
+	}
+
+	function get_timezone_info($tz='')
+	{
+		$tz = (string) $tz;
+
+		if($tz === '')
+			$tz = $this->set_timezone();
+
+		return($this->_mediator['timezone']->get_info($tz));
+	}
+
 	function set_locale($lang=false,$territo=false)
 	{
 		$r = false;
@@ -260,6 +295,9 @@ class xivo_i18n_mediator
 
 		$this->_set_locale($r);
 
+		if(empty($this->_attrib['territory']) === false)
+			$this->set_timezone();
+
 		return(($this->_attrib['locale'] = $r));
 	}
 
@@ -272,15 +310,11 @@ class xivo_i18n_mediator
 
 		$locales = array();
 
-		if(xivo_issa('charset',$info) === true)
+		if(($value = xivo_issa_val('charset',$info)) !== false
+		&& ($nb = count($value)) !== 0)
 		{
-			$value = array_values($info['charset']);
-
-			if(($nb = count($value)) !== 0)
-			{
-				for($i = 0;$i < $nb;$i++)
-					$locales[] = $info['locale'].'.'.$info['charset'][$i];
-			}
+			for($i = 0;$i < $nb;$i++)
+				$locales[] = $info['locale'].'.'.$info['charset'][$i];
 		}
 
 		$locales[] = $info['locale'];
@@ -311,9 +345,7 @@ class xivo_i18n_mediator
 		$locale = $locale === '' ? $this->_attrib['locale'] : (string) $locale;
 
 		if(empty($locale) === false && ($locale = $this->chk_locale($locale)) !== false)
-		{
 			$r = $this->_mediator['locale']->get_language($locale);
-		}
 
 		return($r);
 	}
@@ -325,9 +357,20 @@ class xivo_i18n_mediator
 		$locale = $locale === '' ? $this->_attrib['locale'] : (string) $locale;
 
 		if(empty($locale) === false && ($locale = $this->chk_locale($locale)) !== false)
-		{
 			$r = $this->_mediator['locale']->get_territory($locale);
-		}
+
+		return($r);
+	}
+
+	function get_timezone($locale='')
+	{
+		$r = false;
+
+		$locale = $locale === '' ? $this->_attrib['locale'] : (string) $locale;
+
+		if(empty($locale) === false && ($locale = $this->chk_locale($locale)) !== false
+		&& ($territo = $this->_mediator['locale']->get_territory($locale)) !== false)
+			$r = $this->get_def_timezone($territo);
 
 		return($r);
 	}
@@ -338,9 +381,7 @@ class xivo_i18n_mediator
 
 		if(($lang = $this->chk_language($lang)) !== false
 		&& ($locale = $this->_mediator['language']->exists_default($lang)) !== false)
-		{
 			$r = $this->_mediator['locale']->get_territory($locale);	
-		}
 
 		return($r);
 	}
@@ -351,11 +392,37 @@ class xivo_i18n_mediator
 
 		if(($territo = $this->chk_territory($territo)) !== false
 		&& ($locale = $this->_mediator['territory']->exists_default($territo)) !== false)
-		{
 			$r = $this->_mediator['locale']->get_language($locale);
-		}
 
 		return($r);
+	}
+
+	function get_def_timezone($territo)
+	{
+		if(($tz = $this->_mediator['territory']->get_timezone($territo)) === false)
+			return(false);
+
+		return($tz);
+	}
+
+	function get_territory_list()
+	{
+		return($this->_mediator['territory']->get_list());
+	}
+
+	function get_language_list()
+	{
+		return($this->_mediator['language']->get_list());
+	}
+
+	function get_locale_list()
+	{
+		return($this->_mediator['locale']->get_list());
+	}
+
+	function get_timezone_list()
+	{
+		return($this->_mediator['timezone']->get_list());
 	}
 }
 

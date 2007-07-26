@@ -8,7 +8,28 @@
 		$dhtml = &$this->get_module('dhtml');
 		$dhtml->write_js('xivo_form_success(\''.xivo_stript($this->bbf('fm_success-save')).'\');');
 	endif;
+
+	$format = $this->varra('voicemail','format');
+
+	if(is_array($format) === true && empty($format) === false):
+		$attachformat = true;
+	else:
+		$attachformat = false;
+	endif;
+
+	$zonemessages = $this->vars('zonemessages');
+
+	if(($zmsg = xivo_get_aks($zonemessages)) !== false):
+		$zmsg_nb = $zmsg['cnt'];
+	else:
+		$zmsg_nb = 0;
+	endif;
 ?>
+<script type="text/javascript">
+<!--
+	var xivo_nb_timezone = <?=$zmsg_nb?>;
+-->
+</script>
 <div class="b-infos b-form">
 	<h3 class="sb-top xspan"><span class="span-left">&nbsp;</span><span class="span-center"><?=$this->bbf('title_content_name');?></span><span class="span-right">&nbsp;</span></h3>
 
@@ -26,10 +47,13 @@
 		<li id="smenu-tab-4" class="moo" onclick="xivo_smenu_click(this,'moc','sb-part-pager');" onmouseout="xivo_smenu_out(this,'moo');" onmouseover="xivo_smenu_over(this,'mov');">
 			<div><span class="span-center"><a href="#" onclick="xivo_smenu_click(this,'moc','sb-part-pager'); return(false);"><?=$this->bbf('smenu_pager');?></a></span></div><span class="span-right">&nbsp;</span>
 		</li>
-		<li id="smenu-tab-5" class="moo" onclick="xivo_smenu_click(this,'moc','sb-part-adsi');" onmouseout="xivo_smenu_out(this,'moo');" onmouseover="xivo_smenu_over(this,'mov');">
+		<li id="smenu-tab-5" class="moo" onclick="xivo_smenu_click(this,'moc','sb-part-timezone');" onmouseout="xivo_smenu_out(this,'moo');" onmouseover="xivo_smenu_over(this,'mov');">
+			<div><span class="span-center"><a href="#" onclick="xivo_smenu_click(this,'moc','sb-part-timezone'); return(false);"><?=$this->bbf('smenu_timezones');?></a></span></div><span class="span-right">&nbsp;</span>
+		</li>
+		<li id="smenu-tab-6" class="moo" onclick="xivo_smenu_click(this,'moc','sb-part-adsi');" onmouseout="xivo_smenu_out(this,'moo');" onmouseover="xivo_smenu_over(this,'mov');">
 			<div><span class="span-center"><a href="#" onclick="xivo_smenu_click(this,'moc','sb-part-adsi'); return(false);"><?=$this->bbf('smenu_adsi');?></a></span></div><span class="span-right">&nbsp;</span>
 		</li>
-		<li id="smenu-tab-6" class="moo-last" onclick="xivo_smenu_click(this,'moc','sb-part-advanced',1);" onmouseout="xivo_smenu_out(this,'moo',1);" onmouseover="xivo_smenu_over(this,'mov',1);">
+		<li id="smenu-tab-7" class="moo-last" onclick="xivo_smenu_click(this,'moc','sb-part-advanced',1);" onmouseout="xivo_smenu_out(this,'moo',1);" onmouseover="xivo_smenu_over(this,'mov',1);">
 			<div><span class="span-center"><a href="#" onclick="xivo_smenu_click(this,'moc','sb-part-advanced'); return(false);"><?=$this->bbf('smenu_advanced');?></a></span></div><span class="span-right">&nbsp;</span>
 		</li>
 	</ul>
@@ -43,33 +67,33 @@
 
 <div id="sb-part-general">
 
-<?=$form->slt(array('desc' => $this->bbf('fm_maxmsg'),'name' => 'maxmsg','labelid' => 'maxmsg','key' => false,'value' => xivo_cast_except($this->varra('info','maxmsg'),null,'uint'),'default' => $element['maxmsg']['default']),$element['maxmsg']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_voicemail-maxmsg'),'name' => 'voicemail[maxmsg]','labelid' => 'voicemail-maxmsg','key' => false,'value' => xivo_cast_except($this->varra('voicemail','maxmsg'),null,'uint'),'default' => $element['voicemail']['maxmsg']['default']),$element['voicemail']['maxmsg']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_silencethreshold'),'name' => 'silencethreshold','labelid' => 'silencethreshold','key' => false,'value' => xivo_cast_except($this->varra('info','silencethreshold'),null,'uint'),'default' => $element['silencethreshold']['default']),$element['silencethreshold']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_voicemail-silencethreshold'),'name' => 'voicemail[silencethreshold]','labelid' => 'voicemail-silencethreshold','key' => false,'value' => xivo_cast_except($this->varra('voicemail','silencethreshold'),null,'uint'),'default' => $element['voicemail']['silencethreshold']['default']),$element['voicemail']['silencethreshold']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_minmessage'),'name' => 'minmessage','labelid' => 'minmessage','bbf' => array('mixkey','fm_minmessage-opt','paramarray'),'value' => xivo_cast_except($this->varra('info','minmessage'),null,'uint'),'default' => $element['minmessage']['default']),$element['minmessage']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_voicemail-minmessage'),'name' => 'voicemail[minmessage]','labelid' => 'voicemail-minmessage','bbf' => array('mixkey','fm_voicemail-minmessage-opt','paramarray'),'value' => xivo_cast_except($this->varra('voicemail','minmessage'),null,'uint'),'default' => $element['voicemail']['minmessage']['default']),$element['voicemail']['minmessage']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_maxmessage'),'name' => 'maxmessage','labelid' => 'maxmessage','bbf' => array('mixkey','fm_maxmessage-opt','paramarray'),'value' => xivo_cast_except($this->varra('info','maxmessage'),null,'uint'),'default' => $element['maxmessage']['default']),$element['maxmessage']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_voicemail-maxmessage'),'name' => 'voicemail[maxmessage]','labelid' => 'voicemail-maxmessage','bbf' => array('mixkey','fm_voicemail-maxmessage-opt','paramarray'),'value' => xivo_cast_except($this->varra('voicemail','maxmessage'),null,'uint'),'default' => $element['voicemail']['maxmessage']['default']),$element['voicemail']['maxmessage']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_maxsilence'),'name' => 'maxsilence','labelid' => 'maxsilence','key' => false,'bbf' => array('mixkey','fm_maxsilence-opt'),'value' => xivo_cast_except($this->varra('info','maxsilence'),null,'uint'),'default' => $element['maxsilence']['default']),$element['maxsilence']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_voicemail-maxsilence'),'name' => 'voicemail[maxsilence]','labelid' => 'voicemail-maxsilence','key' => false,'bbf' => array('mixkey','fm_voicemail-maxsilence-opt'),'value' => xivo_cast_except($this->varra('voicemail','maxsilence'),null,'uint'),'default' => $element['voicemail']['maxsilence']['default']),$element['voicemail']['maxsilence']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_review'),'name' => 'review','labelid' => 'review','checked' => $this->varra('info','review'),'default' => $element['review']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail-review'),'name' => 'voicemail[review]','labelid' => 'voicemail-review','checked' => $this->varra('voicemail','review'),'default' => $element['voicemail']['review']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_operator'),'name' => 'operator','labelid' => 'operator','checked' => $this->varra('info','operator'),'default' => $element['operator']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail-operator'),'name' => 'voicemail[operator]','labelid' => 'voicemail-operator','checked' => $this->varra('voicemail','operator'),'default' => $element['voicemail']['operator']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<div id="formatlist" class="fm-field fm-multilist"><p><label id="lb-formatlist" for="it-formatlist"><?=$this->bbf('fm_format');?></label></p>
+<div id="formatlist" class="fm-field fm-multilist"><p><label id="lb-formatlist" for="it-formatlist"><?=$this->bbf('fm_voicemail-format');?></label></p>
 	<div class="slt-outlist">
-		<?=$form->slt(array('name' => 'formatlist','label' => false,'id' => 'it-formatlist','key_val' => 'id','multiple' => true,'size' => 5,'field' => false,'key' => false),$element['format']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+		<?=$form->slt(array('name' => 'voicemail[formatlist]','label' => false,'id' => 'it-voicemail-formatlist','multiple' => true,'size' => 5,'field' => false,'key' => false),$element['voicemail']['format']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 	</div>
 	<div class="inout-list">
 
-		<a href="#" onclick="xivo_fm_move_selected('it-formatlist','it-format'); return(false);" title="<?=$this->bbf('bt-informat');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt-informat'),'class="bt-inlist" id="bt-informat" border="0"');?></a><br />
+		<a href="#" onclick="xivo_informat(); return(false);" title="<?=$this->bbf('bt-informat');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt-informat'),'class="bt-inlist" id="bt-informat" border="0"');?></a><br />
 
-		<a href="#" onclick="xivo_fm_move_selected('it-format','it-formatlist'); return(false);" title="<?=$this->bbf('bt-outformat');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt-outformat'),'class="bt-outlist" id="bt-outformat" border="0"');?></a>
+		<a href="#" onclick="xivo_outformat(); return(false);" title="<?=$this->bbf('bt-outformat');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt-outformat'),'class="bt-outlist" id="bt-outformat" border="0"');?></a>
 	</div>
 	<div class="slt-inlist">
 
-		<?=$form->slt(array('name' => 'format[]','label' => false,'id' => 'it-format','multiple' => true,'size' => 5,'field' => false,'key' => false),$this->varra('info','format'),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+		<?=$form->slt(array('name' => 'voicemail[format][]','label' => false,'id' => 'it-voicemail-format','multiple' => true,'size' => 5,'field' => false,'key' => false),$format,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 	</div>
 </div>
@@ -79,97 +103,149 @@
 
 <div id="sb-part-voicemenu" class="b-nodisplay">
 
-<?=$form->slt(array('desc' => $this->bbf('fm_maxlogins'),'name' => 'maxlogins','labelid' => 'maxlogins','key' => false,'value' => xivo_cast_except($this->varra('info','maxlogins'),null,'uint'),'default' => $element['maxlogins']['default']),$element['maxlogins']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_voicemail-maxlogins'),'name' => 'voicemail[maxlogins]','labelid' => 'voicemail-maxlogins','key' => false,'value' => xivo_cast_except($this->varra('voicemail','maxlogins'),null,'uint'),'default' => $element['voicemail']['maxlogins']['default']),$element['voicemail']['maxlogins']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_envelope'),'name' => 'envelope','labelid' => 'envelope','checked' => $this->varra('info','envelope'),'default' => $element['envelope']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail-envelope'),'name' => 'voicemail[envelope]','labelid' => 'voicemail-envelope','checked' => $this->varra('voicemail','envelope'),'default' => $element['voicemail']['envelope']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_saycid'),'name' => 'saycid','labelid' => 'saycid','checked' => $this->varra('info','saycid'),'default' => $element['saycid']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail-saycid'),'name' => 'voicemail[saycid]','labelid' => 'voicemail-saycid','checked' => $this->varra('voicemail','saycid'),'default' => $element['voicemail']['saycid']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_cidinternalcontexts'),'name' => 'cidinternalcontexts','labelid' => 'cidinternalcontexts','size' => 15,'value' => $this->varra('info','cidinternalcontexts'),'default' => $element['cidinternalcontexts']['default']),'class="it-readonly" readonly="readonly"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_voicemail-cidinternalcontexts'),'name' => 'voicemail[cidinternalcontexts]','labelid' => 'voicemail-cidinternalcontexts','size' => 15,'value' => $this->varra('voicemail','cidinternalcontexts'),'default' => $element['voicemail']['cidinternalcontexts']['default']),'class="it-readonly" readonly="readonly"');?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_sayduration'),'name' => 'sayduration','labelid' => 'sayduration','checked' => $this->varra('info','sayduration'),'default' => $element['sayduration']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail-sayduration'),'name' => 'voicemail[sayduration]','labelid' => 'voicemail-sayduration','checked' => $this->varra('voicemail','sayduration'),'default' => $element['voicemail']['sayduration']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_saydurationm'),'name' => 'saydurationm','labelid' => 'saydurationm','key' => false,'bbf' => array('mixkey','fm_saydurationm-opt'),'value' => xivo_cast_except($this->varra('info','saydurationm'),null,'uint'),'default' => $element['saydurationm']['default']),$element['saydurationm']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_voicemail-saydurationm'),'name' => 'voicemail[saydurationm]','labelid' => 'voicemail-saydurationm','key' => false,'bbf' => array('mixkey','fm_voicemail-saydurationm-opt'),'value' => xivo_cast_except($this->varra('voicemail','saydurationm'),null,'uint'),'default' => $element['voicemail']['saydurationm']['default']),$element['voicemail']['saydurationm']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_forcename'),'name' => 'forcename','labelid' => 'forcename','checked' => $this->varra('info','forcename'),'default' => $element['forcename']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail-forcename'),'name' => 'voicemail[forcename]','labelid' => 'voicemail-forcename','checked' => $this->varra('voicemail','forcename'),'default' => $element['voicemail']['forcename']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_forcegreetings'),'name' => 'forcegreetings','labelid' => 'forcegreetings','checked' => $this->varra('info','forcegreetings'),'default' => $element['forcegreetings']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail-forcegreetings'),'name' => 'voicemail[forcegreetings]','labelid' => 'voicemail-forcegreetings','checked' => $this->varra('voicemail','forcegreetings'),'default' => $element['voicemail']['forcegreetings']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_maxgreet'),'name' => 'maxgreet','labelid' => 'maxgreet','bbf' => array('mixkey','fm_maxgreet-opt','paramarray'),'value' => xivo_cast_except($this->varra('info','maxgreet'),null,'uint'),'default' => $element['maxgreet']['default']),$element['maxgreet']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_voicemail-maxgreet'),'name' => 'voicemail[maxgreet]','labelid' => 'voicemail-maxgreet','bbf' => array('mixkey','fm_voicemail-maxgreet-opt','paramarray'),'value' => xivo_cast_except($this->varra('voicemail','maxgreet'),null,'uint'),'default' => $element['voicemail']['maxgreet']['default']),$element['voicemail']['maxgreet']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_skipms'),'name' => 'skipms','labelid' => 'skipms','bbf' => array('mixvalue','fm_skipms-opt'),'value' => xivo_cast_except($this->varra('info','skipms'),null,'uint'),'default' => $element['skipms']['default']),$element['skipms']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_voicemail-skipms'),'name' => 'voicemail[skipms]','labelid' => 'voicemail-skipms','bbf' => array('mixvalue','fm_voicemail-skipms-opt'),'value' => xivo_cast_except($this->varra('voicemail','skipms'),null,'uint'),'default' => $element['voicemail']['skipms']['default']),$element['voicemail']['skipms']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_sendvoicemail'),'name' => 'sendvoicemail','labelid' => 'sendvoicemail','checked' => $this->varra('info','sendvoicemail'),'default' => $element['sendvoicemail']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail-sendvoicemail'),'name' => 'voicemail[sendvoicemail]','labelid' => 'voicemail-sendvoicemail','checked' => $this->varra('voicemail','sendvoicemail'),'default' => $element['voicemail']['sendvoicemail']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_usedirectory'),'name' => 'usedirectory','labelid' => 'usedirectory','checked' => $this->varra('info','usedirectory'),'default' => $element['usedirectory']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail-usedirectory'),'name' => 'voicemail[usedirectory]','labelid' => 'voicemail-usedirectory','checked' => $this->varra('voicemail','usedirectory'),'default' => $element['voicemail']['usedirectory']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_nextaftercmd'),'name' => 'nextaftercmd','labelid' => 'nextaftercmd','checked' => $this->varra('info','nextaftercmd'),'default' => $element['nextaftercmd']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail-nextaftercmd'),'name' => 'voicemail[nextaftercmd]','labelid' => 'voicemail-nextaftercmd','checked' => $this->varra('voicemail','nextaftercmd'),'default' => $element['voicemail']['nextaftercmd']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_dialout'),'name' => 'dialout','labelid' => 'dialout','size' => 15,'value' => $this->varra('info','dialout'),'default' => $element['dialout']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_voicemail-dialout'),'name' => 'voicemail[dialout]','labelid' => 'voicemail-dialout','size' => 15,'value' => $this->varra('voicemail','dialout'),'default' => $element['voicemail']['dialout']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_callback'),'name' => 'callback','labelid' => 'callback','size' => 15,'value' => $this->varra('info','callback'),'default' => $element['callback']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_voicemail-callback'),'name' => 'voicemail[callback]','labelid' => 'voicemail-callback','size' => 15,'value' => $this->varra('voicemail','callback'),'default' => $element['voicemail']['callback']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_exitcontext'),'name' => 'exitcontext','labelid' => 'exitcontext','size' => 15,'value' => $this->varra('info','exitcontext'),'default' => $element['exitcontext']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_voicemail-exitcontext'),'name' => 'voicemail[exitcontext]','labelid' => 'voicemail-exitcontext','size' => 15,'value' => $this->varra('voicemail','exitcontext'),'default' => $element['voicemail']['exitcontext']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 </div>
 
 <div id="sb-part-email" class="b-nodisplay">
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_attach'),'name' => 'attach','labelid' => 'attach','checked' => $this->varra('info','attach'),'default' => $element['attach']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail-attach'),'name' => 'voicemail[attach]','labelid' => 'voicemail-attach','checked' => $this->varra('voicemail','attach'),'default' => $element['voicemail']['attach']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_mailcmd'),'name' => 'mailcmd','labelid' => 'mailcmd','size' => 15,'value' => $this->varra('info','mailcmd'),'default' => $element['mailcmd']['default']),'class="it-readonly" readonly="readonly"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_voicemail-attachformat'),'name' => 'voicemail[attachformat]','labelid' => 'voicemail-attachformat','key' => false),$format,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"'.($attachformat === false ? 'class="it-disabled" disabled="disabled"' : ''));?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_charset'),'name' => 'charset','labelid' => 'charset','size' => 15,'value' => $this->varra('info','charset'),'default' => $element['charset']['default']),'class="it-readonly" readonly="readonly"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_voicemail-mailcmd'),'name' => 'voicemail[mailcmd]','labelid' => 'voicemail-mailcmd','size' => 15,'value' => $this->varra('voicemail','mailcmd'),'default' => $element['voicemail']['mailcmd']['default']),'class="it-readonly" readonly="readonly"');?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_serveremail'),'name' => 'serveremail','labelid' => 'serveremail','size' => 15,'value' => $this->varra('info','serveremail'),'default' => $element['serveremail']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_voicemail-charset'),'name' => 'voicemail[charset]','labelid' => 'voicemail-charset','size' => 15,'value' => $this->varra('voicemail','charset'),'default' => $element['voicemail']['charset']['default']),'class="it-readonly" readonly="readonly"');?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_fromstring'),'name' => 'fromstring','labelid' => 'fromstring','size' => 15,'value' => $this->varra('info','fromstring'),'default' => $element['fromstring']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_voicemail-serveremail'),'name' => 'voicemail[serveremail]','labelid' => 'voicemail-serveremail','size' => 15,'value' => $this->varra('voicemail','serveremail'),'default' => $element['voicemail']['serveremail']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_emaildateformat'),'name' => 'emaildateformat','labelid' => 'emaildateformat','size' => 15,'value' => $this->varra('info','emaildateformat'),'default' => $element['emaildateformat']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_voicemail-fromstring'),'name' => 'voicemail[fromstring]','labelid' => 'voicemail-fromstring','size' => 15,'value' => $this->varra('voicemail','fromstring'),'default' => $element['voicemail']['fromstring']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_pbxskip'),'name' => 'pbxskip','labelid' => 'pbxskip','checked' => $this->varra('info','pbxskip'),'default' => $element['pbxskip']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_voicemail-emaildateformat'),'name' => 'voicemail[emaildateformat]','labelid' => 'voicemail-emaildateformat','size' => 15,'value' => $this->varra('voicemail','emaildateformat'),'default' => $element['voicemail']['emaildateformat']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_emailsubject'),'name' => 'emailsubject','labelid' => 'emailsubject','size' => 15,'value' => $this->varra('info','emailsubject'),'default' => $element['emailsubject']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail-pbxskip'),'name' => 'voicemail[pbxskip]','labelid' => 'voicemail-pbxskip','checked' => $this->varra('voicemail','pbxskip'),'default' => $element['voicemail']['pbxskip']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<div id="emailbody" class="fm-field"><p><label id="lb-emailbody" for="it-emailbody"><?=$this->bbf('fm_emailbody');?></label></p>
-<?=$form->textarea(array('field' => false,'name' => 'emailbody','label' => false,'id' => 'it-emailbody','cols' => 60,'rows' => 10),$this->varra('info','emailbody'),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_voicemail-emailsubject'),'name' => 'voicemail[emailsubject]','labelid' => 'voicemail-emailsubject','size' => 15,'value' => $this->varra('voicemail','emailsubject'),'default' => $element['voicemail']['emailsubject']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+
+<div id="emailbody" class="fm-field"><p><label id="lb-emailbody" for="it-emailbody"><?=$this->bbf('fm_voicemail-emailbody');?></label></p>
+<?=$form->textarea(array('field' => false,'name' => 'voicemail[emailbody]','label' => false,'id' => 'it-voicemail-emailbody','cols' => 60,'rows' => 10),$this->varra('voicemail','emailbody'),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 </div>
 
 </div>
 
 <div id="sb-part-pager" class="b-nodisplay">
 
-<?=$form->text(array('desc' => $this->bbf('fm_pagerfromstring'),'name' => 'pagerfromstring','labelid' => 'pagerfromstring','size' => 15,'value' => $this->varra('info','pagerfromstring'),'default' => $element['pagerfromstring']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_voicemail-pagerfromstring'),'name' => 'voicemail[pagerfromstring]','labelid' => 'voicemail-pagerfromstring','size' => 15,'value' => $this->varra('voicemail','pagerfromstring'),'default' => $element['voicemail']['pagerfromstring']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_pagersubject'),'name' => 'pagersubject','labelid' => 'pagersubject','size' => 15,'value' => $this->varra('info','pagersubject'),'default' => $element['pagersubject']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_voicemail-pagersubject'),'name' => 'voicemail[pagersubject]','labelid' => 'voicemail-pagersubject','size' => 15,'value' => $this->varra('voicemail','pagersubject'),'default' => $element['voicemail']['pagersubject']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<div id="pagerbody" class="fm-field txt-center"><p><label id="lb-pagerbody" for="it-pagerbody"><?=$this->bbf('fm_pagerbody');?></label></p>
-<?=$form->textarea(array('field' => false,'name' => 'pagerbody','label' => false,'id' => 'it-pagerbody','cols' => 60,'rows' => 4),$this->varra('info','pagerbody'),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<div id="pagerbody" class="fm-field txt-center"><p><label id="lb-pagerbody" for="it-pagerbody"><?=$this->bbf('fm_voicemail-pagerbody');?></label></p>
+<?=$form->textarea(array('field' => false,'name' => 'voicemail[pagerbody]','label' => false,'id' => 'it-voicemail-pagerbody','cols' => 60,'rows' => 4),$this->varra('voicemail','pagerbody'),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+</div>
+
+</div>
+
+<div id="sb-part-timezone" class="b-nodisplay">
+
+<div class="sb-list">
+	<table cellspacing="0" cellpadding="0" border="0">
+		<thead>
+		<tr class="sb-top">
+			<th class="th-left"><?=$this->bbf('col_timezone-name');?></th>
+			<th class="th-center"><?=$this->bbf('col_timezone-timezone');?></th>
+			<th class="th-center"><?=$this->bbf('col_timezone-options');?></th>
+			<th class="th-right"><?=$url->href_html($url->img_html('img/site/button/add.gif',$this->bbf('col_timezone-add'),'border="0"'),'#',null,'onclick="xivo_timezone(this);"',$this->bbf('col_timezone-add'));?></th>
+		</tr>
+		</thead>
+		<tbody id="timezones">
+<?php
+	if($zmsg_nb !== 0):
+		for($i = 0;$i < $zmsg['cnt'];$i++):
+			$key = &$zmsg['keys'][$i];
+			$val = &$zonemessages[$key];
+?>
+		<tr class="fm-field">
+			<td class="td-left txt-left"><?=$form->text(array('field' => false,'name' => 'zonemessages[name][]','id' => false,'label' => false,'value' => $val['name'],'default' => $element['zonemessages']['name']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?></td>
+			<td><?=$form->slt(array('field' => false,'name' => 'zonemessages[timezone][]','key' => true,'id' => false,'label' => false,'value' => $val['timezone'],'default' => $element['zonemessages']['timezone']['default']),$this->vars('timezone_list'),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?></td>
+			<td><?=$form->text(array('field' => false,'name' => 'zonemessages[msg_format][]','id' => false,'label' => false,'size' => 25,'value' => $val['msg_format'],'default' => $element['zonemessages']['msg_format']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?></td>
+			<td class="td-right txt-right"><?=$url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'#',null,'onclick="xivo_timezone(this,1);"',$this->bbf('opt_delete'));?></td>
+		</tr>
+<?php
+		endfor;
+	endif;
+?>
+		</tbody>
+		<tfoot>
+		<tr id="no-timezone"<?=($zmsg !== false ? ' class="b-nodisplay"' : '')?>>
+			<td colspan="4" class="td-single"><?=$this->bbf('no_timezone');?></td>
+		</tr>
+		</tfoot>
+	</table>
+	<table class="b-nodisplay" cellspacing="0" cellpadding="0" border="0">
+		<tbody id="ex-timezone">
+		<tr class="fm-field">
+			<td class="td-left txt-left"><?=$form->text(array('field' => false,'name' => 'zonemessages[name][]','id' => false,'label' => false,'default' => $element['zonemessages']['name']['default']),'disabled="disabled" onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?></td>
+			<td><?=$form->slt(array('field' => false,'name' => 'zonemessages[timezone][]','key' => true,'id' => false,'label' => false,'default' => $element['zonemessages']['timezone']['default']),$this->vars('timezone_list'),'disabled="disabled" onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?></td>
+			<td><?=$form->text(array('field' => false,'name' => 'zonemessages[msg_format][]','id' => false,'label' => false,'size' => 25,'default' => $element['zonemessages']['msg_format']['default']),'disabled="disabled" onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?></td>
+			<td class="td-right txt-right"><?=$url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'#',null,'onclick="xivo_timezone(this,1);"',$this->bbf('opt_delete'));?></td>
+		</tr>
+		</tbody>
+	</table>
 </div>
 
 </div>
 
 <div id="sb-part-adsi" class="b-nodisplay">
 
-<?=$form->text(array('desc' => $this->bbf('fm_adsifdn'),'name' => 'adsifdn','labelid' => 'adsifdn','value' => $this->varra('info','adsifdn'),'default' => $element['adsifdn']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_voicemail-adsifdn'),'name' => 'voicemail[adsifdn]','labelid' => 'voicemail-adsifdn','value' => $this->varra('voicemail','adsifdn'),'default' => $element['voicemail']['adsifdn']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_adsisec'),'name' => 'adsisec','labelid' => 'adsisec','value' => $this->varra('info','adsisec'),'default' => $element['adsisec']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_voicemail-adsisec'),'name' => 'voicemail[adsisec]','labelid' => 'voicemail-adsisec','value' => $this->varra('voicemail','adsisec'),'default' => $element['voicemail']['adsisec']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_adsiver'),'name' => 'adsiver','labelid' => 'adsiver','size' => 5,'value' => $this->varra('info','adsiver'),'default' => $element['adsiver']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_voicemail-adsiver'),'name' => 'voicemail[adsiver]','labelid' => 'voicemail-adsiver','size' => 5,'value' => $this->varra('voicemail','adsiver'),'default' => $element['voicemail']['adsiver']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 </div>
 
 <div id="sb-part-advanced" class="b-nodisplay">
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_searchcontexts'),'name' => 'searchcontexts','labelid' => 'searchcontexts','checked' => $this->varra('info','searchcontexts'),'default' => $element['searchcontexts']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail-searchcontexts'),'name' => 'voicemail[searchcontexts]','labelid' => 'voicemail-searchcontexts','checked' => $this->varra('voicemail','searchcontexts'),'default' => $element['voicemail']['searchcontexts']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_externpass'),'name' => 'externpass','labelid' => 'externpass','size' => 15,'value' => $this->varra('info','externpass'),'default' => $element['externpass']['default']),'class="it-readonly" readonly="readonly"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_voicemail-externpass'),'name' => 'voicemail[externpass]','labelid' => 'voicemail-externpass','size' => 15,'value' => $this->varra('voicemail','externpass'),'default' => $element['voicemail']['externpass']['default']),'class="it-readonly" readonly="readonly"');?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_externnotify'),'name' => 'externnotify','labelid' => 'externnotify','size' => 15,'value' => $this->varra('info','externnotify'),'default' => $element['externnotify']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_voicemail-externnotify'),'name' => 'voicemail[externnotify]','labelid' => 'voicemail-externnotify','size' => 15,'value' => $this->varra('voicemail','externnotify'),'default' => $element['voicemail']['externnotify']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_odbcstorage'),'name' => 'odbcstorage','labelid' => 'odbcstorage','size' => 15,'value' => $this->varra('info','odbcstorage'),'default' => $element['odbcstorage']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_voicemail-odbcstorage'),'name' => 'voicemail[odbcstorage]','labelid' => 'voicemail-odbcstorage','size' => 15,'value' => $this->varra('voicemail','odbcstorage'),'default' => $element['voicemail']['odbcstorage']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_odbctable'),'name' => 'odbctable','labelid' => 'odbctable','size' => 15,'value' => $this->varra('info','odbctable'),'default' => $element['odbctable']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_voicemail-odbctable'),'name' => 'voicemail[odbctable]','labelid' => 'voicemail-odbctable','size' => 15,'value' => $this->varra('voicemail','odbctable'),'default' => $element['voicemail']['odbctable']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 </div>
 

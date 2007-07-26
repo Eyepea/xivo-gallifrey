@@ -51,6 +51,11 @@ class xivo_i18n
 		return(xivo_i18n::mediator('info','language',$lang));
 	}
 
+	function get_language_list()
+	{
+		return(xivo_i18n::mediator('list','language'));
+	}
+
 	function get_territory($locale='')
 	{
 		return(xivo_i18n::mediator('get','territory',$locale));
@@ -76,6 +81,11 @@ class xivo_i18n
 		return(xivo_i18n::mediator('info','territory',$territo));
 	}
 
+	function get_territory_list()
+	{
+		return(xivo_i18n::mediator('list','territory'));
+	}
+
 	function attrib_locale()
 	{
 		return(xivo_i18n::mediator('attrib','locale'));
@@ -94,6 +104,41 @@ class xivo_i18n
 	function get_locale_info($locale='')
 	{
 		return(xivo_i18n::mediator('info','locale',$locale));
+	}
+
+	function get_locale_list()
+	{
+		return(xivo_i18n::mediator('list','locale'));
+	}
+
+	function get_timezone($locale='')
+	{
+		return(xivo_i18n::mediator('get','timezone',$locale));
+	}
+
+	function attrib_timezone()
+	{
+		return(xivo_i18n::mediator('attrib','timezone'));
+	}
+
+	function chk_timezone($tz)
+	{
+		return(xivo_i18n::mediator('chk','timezone',$tz));
+	}
+
+	function set_timezone($tz='')
+	{
+		return(xivo_i18n::mediator('set','timezone',$tz));
+	}
+
+	function get_timezone_info($tz='')
+	{
+		return(xivo_i18n::mediator('info','timezone',$tz));
+	}
+
+	function get_timezone_list()
+	{
+		return(xivo_i18n::mediator('list','timezone'));
 	}
 
 	function mediator($func,$name,$value='')
@@ -130,6 +175,9 @@ class xivo_i18n
 					case 'territory':
 						$r = $mediator->get_territory($value);
 						break;
+					case 'timezone':
+						$r = $mediator->get_timezone($value);
+						break;
 				}
 				break;
 			case 'set':
@@ -142,7 +190,21 @@ class xivo_i18n
 						$r = $mediator->set_territory($value);
 						break;
 					case 'locale':
+						if(is_array($value) === false)
+							$value = array(0 => false,1 => false);
+						else
+						{
+							if(isset($value[0]) === false)
+								$value[0] = false;
+						
+							if(isset($value[1]) === false)
+								$value[1] = false;
+						}
+
 						$r = $mediator->set_locale($value[0],$value[1]);
+						break;
+					case 'timezone':
+						$r = $mediator->set_timezone($value);
 						break;
 				}
 				break;
@@ -158,6 +220,9 @@ class xivo_i18n
 					case 'locale':
 						$r = $mediator->chk_locale($value);
 						break;
+					case 'timezone':
+						$r = $mediator->chk_timezone($value);
+						break;
 				}
 				break;
 			case 'info':
@@ -171,6 +236,25 @@ class xivo_i18n
 						break;
 					case 'locale':
 						$r = $mediator->get_locale_info($value);
+						break;
+					case 'timezone':
+						$r = $mediator->get_timezone_info($value);
+						break;
+				}
+			case 'list':
+				switch($name)
+				{
+					case 'language':
+						$r = $mediator->get_language_list();
+						break;
+					case 'territory':
+						$r = $mediator->get_territory_list();
+						break;
+					case 'locale':
+						$r = $mediator->get_locale_list();
+						break;
+					case 'timezone':
+						$r = $mediator->get_timezone_list();
 						break;
 				}
 		}

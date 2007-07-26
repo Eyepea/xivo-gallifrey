@@ -107,8 +107,8 @@ pre {text-align: left;}
 #bpc-simple #b-content {width: 970px;padding: 0px 2px;}
 
 #b-tmenu #loginbox {color: #fff;float: right;margin: 0px 20px 20px;background-image: url(../img/menu/top/login/bg.gif);background-repeat: repeat-x;background-position: left top;}
-#b-tmenu #loginbox span {font-size: 9pt;padding: 0px 30px 3px;vertical-align: top;}
-#b-tmenu #loginbox span b {color: #055a82;}
+#b-tmenu #loginbox span {font-size: 9pt;padding: 0px 30px 3px;vertical-align: 6px;color: #c6e3ff;}
+#b-tmenu #loginbox span b {color: #fff;}
 
 /*#b-tmenu .login {font-size: 1pt;text-align: right;vertical-align: top;margin: 0px 20px 20px auto;width: 300px;}
 #b-tmenu .login h1 {font-size: 9pt;background-image: url(../img/menu/top/login/bg.gif);background-position: left bottom;}
@@ -153,10 +153,11 @@ pre {text-align: left;}
 #b-tmenu #tooltips .fm-success {color: #82b550;}
 #b-tmenu #tooltips .fm-error {color: #e8eeff;}
 
+
 #b-tmenu #toolbar {height: 19px;text-align: right;background-image: url(../img/menu/top/toolbar/bg.gif); background-repeat: repeat-x;padding-right: 50px;}
 #b-tmenu #toolbar .sb-advanced-menu {position: absolute;width: 970px;}
 #b-tmenu #toolbar .fm-field {margin: 0px;padding: 0px;width: auto;}
-#b-tmenu #toolbar .fm-field input {vertical-align: top;margin-top: 2px;}
+#b-tmenu #toolbar .fm-field input {vertical-align: top;margin-top: 1px;}
 #b-tmenu #toolbar .fm-field .itb-image {margin: 0px;}
 #b-tmenu #toolbar #advanced-menu {width: auto;float: right;display: none;background-color: #beddfb;border: 1px solid #057ab1;padding: 2px 4px;}
 #b-tmenu #toolbar #advanced-menu li {text-align: left;}

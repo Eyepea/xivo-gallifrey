@@ -400,16 +400,16 @@ do
 
 			$ugroup_tmp = array_merge($_QR['group'][$qname],$ugroup_info);
 
-			if(($ginfo = $qmember->chk_values($ugroup_tmp)) !== false)
-			{
-				$status['group'] = true;
-				$group_tmp[$qname] = 1;
-				$ref_group[] = $ginfo;
-				$callgroup[] = $gid;
+			if(($ginfo = $qmember->chk_values($ugroup_tmp)) === false)
+				continue;
+
+			$status['group'] = true;
+			$group_tmp[$qname] = 1;
+			$ref_group[] = $ginfo;
+			$callgroup[] = $gid;
 			
-				if($_QR['usergroup'] !== false && $_QR['usergroup'] === $qname)
-					$usergroup = $gid;
-			}
+			if($_QR['usergroup'] !== false && $_QR['usergroup'] === $qname)
+				$usergroup = $gid;
 		}
 	}
 
@@ -519,12 +519,12 @@ do
 
 			$uqueue_tmp = array_merge($_QR['queue'][$qname],$uqueue_info);
 
-			if(($qinfo = $qmember->chk_values($uqueue_tmp)) !== false)
-			{
-				$status['queue'] = true;
-				$queue_tmp[$qname] = 1;
-				$ref_queue[] = $qinfo;
-			}
+			if(($qinfo = $qmember->chk_values($uqueue_tmp)) === false)
+				continue;
+
+			$status['queue'] = true;
+			$queue_tmp[$qname] = 1;
+			$ref_queue[] = $qinfo;
 		}
 	}
 
@@ -842,6 +842,15 @@ do
 
 	if($status['group'] === true)
 	{
+		if(($nb = count($group_del)) !== 0)
+		{
+			for($i = 0;$i < $nb;$i++)
+			{
+				$ugroup_where['queue_name'] = $group_del[$i]['queue_name'];
+				$qmember->delete_where($ugroup_where);
+			}
+		}
+
 		if(isset($group_add[0]) === true)
 			$qmember->add_list($group_add);
 
@@ -851,15 +860,6 @@ do
 			{
 				$ugroup_where['queue_name'] = $group_edit[$i]['queue_name'];
 				$qmember->edit_where($ugroup_where,$group_edit[$i]);
-			}
-		}
-
-		if(($nb = count($group_del)) !== 0)
-		{
-			for($i = 0;$i < $nb;$i++)
-			{
-				$ugroup_where['queue_name'] = $group_del[$i]['queue_name'];
-				$qmember->delete_where($ugroup_where);
 			}
 		}
 	}
@@ -883,6 +883,15 @@ do
 
 	if($status['queue'] === true)
 	{
+		if(($nb = count($queue_del)) !== 0)
+		{
+			for($i = 0;$i < $nb;$i++)
+			{
+				$uqueue_where['queue_name'] = $queue_del[$i]['queue_name'];
+				$qmember->delete_where($uqueue_where);
+			}
+		}
+
 		if(isset($queue_add[0]) === true)
 			$qmember->add_list($queue_add);
 
@@ -892,15 +901,6 @@ do
 			{
 				$uqueue_where['queue_name'] = $queue_edit[$i]['queue_name'];
 				$qmember->edit_where($uqueue_where,$queue_edit[$i]);
-			}
-		}
-
-		if(($nb = count($queue_del)) !== 0)
-		{
-			for($i = 0;$i < $nb;$i++)
-			{
-				$uqueue_where['queue_name'] = $queue_del[$i]['queue_name'];
-				$qmember->delete_where($uqueue_where);
 			}
 		}
 	}
@@ -962,13 +962,13 @@ if(xivo_issa('allow',$element['protocol']['iax']) === true && xivo_issa('value',
 	}
 }
 
-if($info['usergroup'] === false)
+if(isset($return['usergroup']) === false || empty($return['usergroup']) === true)
 	$return['usergroup'] = null;
 
-if($info['voicemail'] === false)
+if(isset($return['voicemail']) === false || empty($return['voicemail']) === true)
 	$return['voicemail'] = null;
 
-if($info['autoprov'] === false)
+if(isset($return['autoprov']) === false || empty($return['autoprov']) === true)
 	$return['autoprov'] = null;
 
 $return['protocol']['allow'] = $allow;

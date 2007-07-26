@@ -19,17 +19,23 @@ class xivo_filter
 		$a = (array) $this->_content;
 		$set = (bool) $set;
 
+		$this->_reset_err();
+
 		if(($arr = xivo_get_aks($a)) === false)
 			return(false);
 
 		for($i = 0;$i < $arr['cnt'];$i++)
 		{
 			$key = &$arr['keys'][$i];
-
 			$this->_chk_key_val($key,$a,$v,$set);
 		}
 
 		return(($this->_err['nb'] > 0 ? false : true));
+	}
+
+	function _reset_err()
+	{
+		$this->_err = array('msg' => array(),'nb' => 0);
 	}
 
 	function get_result()

@@ -204,6 +204,7 @@ xivo_fm_grp['out-group']['link'][1] = new Array('ringgroup',1,1);
 
 xivo_fm_grp['it-ufeatures-ringgroup'] = new Array();
 xivo_fm_grp['it-ufeatures-ringgroup']['property'] = new Array('disabled|false:boolean','disabled|true:boolean');
+
 xivo_fm_grp['ringgroup'] = new Array();
 xivo_fm_grp['ringgroup']['style'] = new Array('display:block','display:none');
 

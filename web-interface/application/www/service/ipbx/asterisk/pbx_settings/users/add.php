@@ -218,15 +218,15 @@ do
 
 			$ugroup_tmp = array_merge($_QR['group'][$qname],$ugroup_info);
 
-			if(($ginfo = $qmember->chk_values($ugroup_tmp)) !== false)
-			{
-				$group_tmp[$qname] = 1;
-				$group_add[] = $ginfo;
-				$callgroup[] = $gid;
+			if(($ginfo = $qmember->chk_values($ugroup_tmp)) === false)
+				continue;
+
+			$group_tmp[$qname] = 1;
+			$group_add[] = $ginfo;
+			$callgroup[] = $gid;
 			
-				if($_QR['usergroup'] !== false && $_QR['usergroup'] === $qname)
-					$usergroup = $gid;
-			}
+			if($_QR['usergroup'] !== false && $_QR['usergroup'] === $qname)
+				$usergroup = $gid;
 		}
 	}
 
@@ -290,11 +290,11 @@ do
 
 			$uqueue_tmp = array_merge($_QR['queue'][$qname],$uqueue_info);
 
-			if(($qinfo = $qmember->chk_values($uqueue_tmp)) !== false)
-			{
-				$queue_tmp[$qname] = 1;
-				$queue_add[] = $qinfo;
-			}
+			if(($qinfo = $qmember->chk_values($uqueue_tmp)) === false)
+				continue;
+
+			$queue_tmp[$qname] = 1;
+			$queue_add[] = $qinfo;
 		}
 	}
 

@@ -7,7 +7,8 @@ $array['option']['dir'] = array();
 $array['option']['dir']['name'] = '/^[a-z0-9_-]{1,20}$/';
 
 $array['option']['file'] = array();
-$array['option']['file']['name'] = '/^[a-z0-9_-]{1,50}\.(mp3|wav|ogg)$/i';
+$array['option']['file']['name'] = '/^['.XIVO_SRE_IPBX_AST_REGEX_AUDIO_FILE_PATTERN.']'.
+				    XIVO_SRE_IPBX_AST_REGEX_AUDIO_FILE_LENGTH.'\.(mp3|wav|ogg)$/';
 $array['option']['file']['extension'] = array();
 $array['option']['file']['extension']['mp3'] = true;
 $array['option']['file']['extension']['wav'] = true;
@@ -42,6 +43,7 @@ $array['filter']['category'] = array('unarrkey' => array('general'),'preg' => '/
 $array['filter']['mode'] = array('arrkey' => array('files','custom','quietmp3','mp3','mp3nb','quietmp3nb'));
 $array['filter']['application'] = array('set' => false,'chk' => 2,'maxlen' => 128);
 $array['filter']['random'] = array('bool' => true);
-$array['filter']['filename'] = array('set' => false,'preg' => '/^[a-z0-9_-]{1,50}\.(mp3|wav|ogg)$/i');
+$array['filter']['filename'] = array('set' => false,'preg' => '/^['.XIVO_SRE_IPBX_AST_REGEX_AUDIO_FILE_PATTERN.']'.
+							       XIVO_SRE_IPBX_AST_REGEX_AUDIO_FILE_LENGTH.'\.(mp3|wav|ogg)$/');
 
 ?>

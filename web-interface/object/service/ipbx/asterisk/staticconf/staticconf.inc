@@ -378,9 +378,8 @@ class xivo_service_asterisk_staticconf extends xivo_service_asterisk_abstract
 		if(($list = $this->_prepare_get_all_where($arr,$disable)) === false)
 			return(false);
 
-		$nb = count($list);
-
 		$r = array();
+		$nb = count($list);
 
 		for($i = 0;$i < $nb;$i++)
 			$r[$list[$i]['var_name']] = $list[$i]['var_val'];

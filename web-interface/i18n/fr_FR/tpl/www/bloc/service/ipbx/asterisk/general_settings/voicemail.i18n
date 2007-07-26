@@ -13,172 +13,175 @@ E-mail
 ; smenu_pager
 Bipeur
 
+; smenu_timezones
+Fuseaux horaires
+
 ; smenu_adsi
 ADSI
 
 ; smenu_advanced
 Avancé
 
-; fm_maxmsg
+; fm_voicemail-maxmsg
 Nombre maximum de messages :
 
-; fm_silencethreshold
+; fm_voicemail-silencethreshold
 Sensibilité de détection d'un silence :
 
-; fm_minmessage
+; fm_voicemail-minmessage
 Durée minimun d'un message :
 
-; fm_minmessage-opt0
+; fm_voicemail-minmessage-opt0
 Désactivée
 
-; fm_minmessage-opt1
+; fm_voicemail-minmessage-opt1
 1 sec.
 
-; fm_minmessage-opt2
+; fm_voicemail-minmessage-opt2
 2 sec.
 
-; fm_minmessage-opt3
+; fm_voicemail-minmessage-opt3
 3 sec.
 
-; fm_minmessage-opt4
+; fm_voicemail-minmessage-opt4
 4 sec.
 
-; fm_minmessage-opt5
+; fm_voicemail-minmessage-opt5
 5 sec.
 
-; fm_minmessage-opt6
+; fm_voicemail-minmessage-opt6
 6 sec.
 
-; fm_minmessage-opt7
+; fm_voicemail-minmessage-opt7
 7 sec.
 
-; fm_minmessage-opt8
+; fm_voicemail-minmessage-opt8
 8 sec.
 
-; fm_minmessage-opt9
+; fm_voicemail-minmessage-opt9
 9 sec.
 
-; fm_minmessage-opt10
+; fm_voicemail-minmessage-opt10
 10 sec.
 
-; fm_minmessage-opt20
+; fm_voicemail-minmessage-opt20
 20 sec.
 
-; fm_minmessage-opt30
+; fm_voicemail-minmessage-opt30
 30 sec.
 
-; fm_minmessage-opt40
+; fm_voicemail-minmessage-opt40
 40 sec.
 
-; fm_minmessage-opt50
+; fm_voicemail-minmessage-opt50
 50 sec.
 
-; fm_minmessage-opt60
+; fm_voicemail-minmessage-opt60
 1 min.
 
-; fm_minmessage-opt120
+; fm_voicemail-minmessage-opt120
 2 min.
 
-; fm_minmessage-opt180
+; fm_voicemail-minmessage-opt180
 3 min.
 
-; fm_minmessage-opt240
+; fm_voicemail-minmessage-opt240
 4 min.
 
-; fm_minmessage-opt300
+; fm_voicemail-minmessage-opt300
 5 min.
 
-; fm_minmessage-opt360
+; fm_voicemail-minmessage-opt360
 6 min.
 
-; fm_minmessage-opt
+; fm_voicemail-minmessage-opt
 %s sec. %s min.
 
-; fm_maxmessage
+; fm_voicemail-maxmessage
 Durée maximum d'un message :
 
-; fm_maxmessage-opt0
+; fm_voicemail-maxmessage-opt0
 Désactivée
 
-; fm_maxmessage-opt1
+; fm_voicemail-maxmessage-opt1
 1 sec.
 
-; fm_maxmessage-opt2
+; fm_voicemail-maxmessage-opt2
 2 sec.
 
-; fm_maxmessage-opt3
+; fm_voicemail-maxmessage-opt3
 3 sec.
 
-; fm_maxmessage-opt4
+; fm_voicemail-maxmessage-opt4
 4 sec.
 
-; fm_maxmessage-opt5
+; fm_voicemail-maxmessage-opt5
 5 sec.
 
-; fm_maxmessage-opt6
+; fm_voicemail-maxmessage-opt6
 6 sec.
 
-; fm_maxmessage-opt7
+; fm_voicemail-maxmessage-opt7
 7 sec.
 
-; fm_maxmessage-opt8
+; fm_voicemail-maxmessage-opt8
 8 sec.
 
-; fm_maxmessage-opt9
+; fm_voicemail-maxmessage-opt9
 9 sec.
 
-; fm_maxmessage-opt10
+; fm_voicemail-maxmessage-opt10
 10 sec.
 
-; fm_maxmessage-opt20
+; fm_voicemail-maxmessage-opt20
 20 sec.
 
-; fm_maxmessage-opt30
+; fm_voicemail-maxmessage-opt30
 30 sec.
 
-; fm_maxmessage-opt40
+; fm_voicemail-maxmessage-opt40
 40 sec.
 
-; fm_maxmessage-opt50
+; fm_voicemail-maxmessage-opt50
 50 sec.
 
-; fm_maxmessage-opt60
+; fm_voicemail-maxmessage-opt60
 1 min.
 
-; fm_maxmessage-opt120
+; fm_voicemail-maxmessage-opt120
 2 min.
 
-; fm_maxmessage-opt180
+; fm_voicemail-maxmessage-opt180
 3 min.
 
-; fm_maxmessage-opt240
+; fm_voicemail-maxmessage-opt240
 4 min.
 
-; fm_maxmessage-opt300
+; fm_voicemail-maxmessage-opt300
 5 min.
 
-; fm_maxmessage-opt360
+; fm_voicemail-maxmessage-opt360
 6 min.
 
-; fm_maxmessage-opt
+; fm_voicemail-maxmessage-opt
 %s sec. %s min.
 
-; fm_maxsilence
+; fm_voicemail-maxsilence
 Durée maximum d'un silence :
 
-; fm_maxsilence-opt1
+; fm_voicemail-maxsilence-opt1
 1 seconde
 
-; fm_maxsilence-opt
+; fm_voicemail-maxsilence-opt
 %s secondes
 
-; fm_review
+; fm_voicemail-review
 Réécouter ou réenregistrer un message :
 
-; fm_operator
+; fm_voicemail-operator
 Mise en relation avec un opérateur :
 
-; fm_format
+; fm_voicemail-format
 Formats d'enregistrement :
 
 ; bt-informat
@@ -187,193 +190,208 @@ Ajouter ->
 ; bt-outformat
 <- Enlever
 
-; fm_maxlogins
+; fm_voicemail-maxlogins
 Nombre maximum de tentatives pour s'authentifier :
 
-; fm_envelope
+; fm_voicemail-envelope
 Enoncer la date et l'heure :
 
-; fm_saycid
+; fm_voicemail-saycid
 Enoncer le nom :
 
-; fm_cidinternalcontexts
+; fm_voicemail-cidinternalcontexts
 Contexte interne :
 
-; fm_sayduration
+; fm_voicemail-sayduration
 Enoncer la durée :
 
-; fm_saydurationm
+; fm_voicemail-saydurationm
 Temps minimum pour énoncer la durée :
 
-; fm_saydurationm-opt1
+; fm_voicemail-saydurationm-opt1
 1 minute
 
-; fm_saydurationm-opt
+; fm_voicemail-saydurationm-opt
 %s minutes
 
-; fm_forcename
+; fm_voicemail-forcename
 Forcer l'enregistrement du nom :
 
-; fm_forcegreetings
+; fm_voicemail-forcegreetings
 Forcer l'enregistrement du message d'accueil :
 
-; fm_maxgreet
+; fm_voicemail-maxgreet
 Durée maximum du message d'accueil :
 
-; fm_maxgreet-opt0
+; fm_voicemail-maxgreet-opt0
 Désactivée
 
-; fm_maxgreet-opt1
+; fm_voicemail-maxgreet-opt1
 1 sec.
 
-; fm_maxgreet-opt2
+; fm_voicemail-maxgreet-opt2
 2 sec.
 
-; fm_maxgreet-opt3
+; fm_voicemail-maxgreet-opt3
 3 sec.
 
-; fm_maxgreet-opt4
+; fm_voicemail-maxgreet-opt4
 4 sec.
 
-; fm_maxgreet-opt5
+; fm_voicemail-maxgreet-opt5
 5 sec.
 
-; fm_maxgreet-opt6
+; fm_voicemail-maxgreet-opt6
 6 sec.
 
-; fm_maxgreet-opt7
+; fm_voicemail-maxgreet-opt7
 7 sec.
 
-; fm_maxgreet-opt8
+; fm_voicemail-maxgreet-opt8
 8 sec.
 
-; fm_maxgreet-opt9
+; fm_voicemail-maxgreet-opt9
 9 sec.
 
-; fm_maxgreet-opt10
+; fm_voicemail-maxgreet-opt10
 10 sec.
 
-; fm_maxgreet-opt20
+; fm_voicemail-maxgreet-opt20
 20 sec.
 
-; fm_maxgreet-opt30
+; fm_voicemail-maxgreet-opt30
 30 sec.
 
-; fm_maxgreet-opt40
+; fm_voicemail-maxgreet-opt40
 40 sec.
 
-; fm_maxgreet-opt50
+; fm_voicemail-maxgreet-opt50
 50 sec.
 
-; fm_maxgreet-opt60
+; fm_voicemail-maxgreet-opt60
 1 min.
 
-; fm_maxgreet-opt120
+; fm_voicemail-maxgreet-opt120
 2 min.
 
-; fm_maxgreet-opt180
+; fm_voicemail-maxgreet-opt180
 3 min.
 
-; fm_maxgreet-opt240
+; fm_voicemail-maxgreet-opt240
 4 min.
 
-; fm_maxgreet-opt300
+; fm_voicemail-maxgreet-opt300
 5 min.
 
-; fm_maxgreet-opt360
+; fm_voicemail-maxgreet-opt360
 6 min.
 
-; fm_maxgreet-opt
+; fm_voicemail-maxgreet-opt
 %s sec. %s min.
 
-; fm_skipms
+; fm_voicemail-skipms
 Saut de l'avance rapide et retour rapide :
 
-; fm_skipms-opt1
+; fm_voicemail-skipms-opt1
 1 seconde
 
-; fm_skipms-opt
+; fm_voicemail-skipms-opt
 %s secondes
 
-; fm_sendvoicemail
+; fm_voicemail-sendvoicemail
 Laisser un message :
 
-; fm_usedirectory
+; fm_voicemail-usedirectory
 Utiliser l'annuaire pour transférer ou laisser un message :
 
-; fm_nextaftercmd
+; fm_voicemail-nextaftercmd
 Lecture automatique du message suivant :
 
-; fm_dialout
+; fm_voicemail-dialout
 Contexte d'appel externe :
 
-; fm_callback
+; fm_voicemail-callback
 Contexte de rappel :
 
-; fm_exitcontext
+; fm_voicemail-exitcontext
 Contexte de sortie :
 
-; fm_attach
+; fm_voicemail-attach
 Joindre le fichier audio :
 
-; fm_attachformat
+; fm_voicemail-attachformat
 Format du fichier joint :
 
-; fm_mailcmd
+; fm_voicemail-mailcmd
 Programme d'envoi d'e-mail :
 
-; fm_charset
+; fm_voicemail-charset
 Encodage :
 
-; fm_serveremail
+; fm_voicemail-serveremail
 E-mail expéditeur :
 
-; fm_fromstring
+; fm_voicemail-fromstring
 Expéditeur :
 
-; fm_emaildateformat
+; fm_voicemail-emaildateformat
 Format de la date :
 
-; fm_pbxskip
+; fm_voicemail-pbxskip
 Enlever "[PBX]:" du sujet :
 
-; fm_emailsubject
+; fm_voicemail-emailsubject
 Sujet :
 
-; fm_emailbody
+; fm_voicemail-emailbody
 Corps :
 
-; fm_pagerfromstring
+; fm_voicemail-pagerfromstring
 Expéditeur :
 
-; fm_pagersubject
+; fm_voicemail-pagersubject
 Sujet :
 
-; fm_pagerbody
+; fm_voicemail-pagerbody
 Corps :
 
-; fm_adsifdn
+; col_timezone-name
+Nom
+
+; col_timezone-timezone
+Fuseau horaire
+
+; col_timezone-options
+Options
+
+; col_timezone-add
+Ajouter
+
+; opt_delete
+Supprimer
+
+; fm_voicemail-adsifdn
 Numéro du descripteur :
 
-; fm_adsisec
+; fm_voicemail-adsisec
 Code de sécurité :
 
-; fm_adsiver
+; fm_voicemail-adsiver
 Version :
 
-; fm_searchcontexts
+; fm_voicemail-searchcontexts
 Recherche des contextes :
 
-; fm_externpass
+; fm_voicemail-externpass
 Programme externe pour changer le mot de passe :
 
-; fm_externnotify
+; fm_voicemail-externnotify
 Programme externe pour notifier un nouveau message :
 
-; fm_odbcstorage
+; fm_voicemail-odbcstorage
 Système ODBC :
 
-; fm_odbctable
+; fm_voicemail-odbctable
 Table ODBC :
 
 ; fm_bt-save

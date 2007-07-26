@@ -68,7 +68,8 @@ $array['element']['format']['value'] = array(
 					XIVO_SRE_IPBX_AST_FORMAT_AUDIO_AU,
 					XIVO_SRE_IPBX_AST_FORMAT_AUDIO_VOX,
 					XIVO_SRE_IPBX_AST_FORMAT_AUDIO_SLIN);
-$array['element']['format']['default'] = XIVO_SRE_IPBX_AST_FORMAT_AUDIO_WAV;
+$array['element']['format']['default'] = '';
+$array['element']['format']['null'] = true;
 
 $array['element']['maxlogins'] = array();
 $array['element']['maxlogins']['value'] = array(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20);
@@ -259,7 +260,7 @@ $array['filter']['maxsilence'] = array('arrkey' => array(1,2,3,4,5,6,7,8,9,10,
 						21,22,23,24,25,26,27,28,29,30));
 $array['filter']['review'] = array('bool' => true);
 $array['filter']['operator'] = array('bool' => true);
-$array['filter']['format'] = array('arrvalue' => array(
+$array['filter']['format'] = array('set' => false,'chk' => 2,'arrvalue' => array(
 					XIVO_SRE_IPBX_AST_FORMAT_AUDIO_WAV,
 					XIVO_SRE_IPBX_AST_FORMAT_AUDIO_WAV49,
 					XIVO_SRE_IPBX_AST_FORMAT_AUDIO_GSM,

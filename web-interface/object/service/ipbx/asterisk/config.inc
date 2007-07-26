@@ -37,6 +37,9 @@ define('XIVO_SRE_IPBX_AST_FORMAT_AUDIO_AU','au');
 define('XIVO_SRE_IPBX_AST_FORMAT_AUDIO_VOX','vox');
 define('XIVO_SRE_IPBX_AST_FORMAT_AUDIO_SLIN','slin');
 
+define('XIVO_SRE_IPBX_AST_REGEX_AUDIO_FILE_PATTERN','a-zA-Z0-9_-');
+define('XIVO_SRE_IPBX_AST_REGEX_AUDIO_FILE_LENGTH','{1,50}');
+
 $array = array();
 
 $array['section'] = array();
@@ -151,6 +154,10 @@ $array['module']['queuemember']['section'] = 'queue';
 $array['module']['generalvoicemail'] = array();
 $array['module']['generalvoicemail']['datastorage'] = true;
 $array['module']['generalvoicemail']['section'] = 'voicemail';
+
+$array['module']['zonemessages'] = array();
+$array['module']['zonemessages']['datastorage'] = true;
+$array['module']['zonemessages']['section'] = 'voicemail';
 
 $array['module']['uservoicemail'] = array();
 $array['module']['uservoicemail']['datastorage'] = true;

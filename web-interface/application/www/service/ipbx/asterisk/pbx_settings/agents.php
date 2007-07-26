@@ -65,6 +65,8 @@ switch($act)
 			if(isset($_QR['fm_send']) === false || xivo_issa('agroup',$_QR) === false)
 				break;
 
+			$result = array();
+
 			$_QR['agroup']['groupid'] = 0;
 
 			if(($result['agroup'] = $agroup->chk_values($_QR['agroup'])) === false)
@@ -287,6 +289,8 @@ switch($act)
 
 			$_QR['agroup']['groupid'] = $info['agent']['id'];
 
+			$return = &$result;
+
 			if(($result['agroup'] = $agroup->chk_values($_QR['agroup'])) === false)
 			{
 				$edit = false;
@@ -453,6 +457,15 @@ switch($act)
 
 			if($edit_queue === true)
 			{
+				if(($nb = count($queue_del)) !== 0)
+				{
+					for($i = 0;$i < $nb;$i++)
+					{
+						$aqueue_where['queue_name'] = $queue_del[$i]['queue_name'];
+						$qmember->delete_where($aqueue_where);
+					}
+				}
+
 				if(isset($queue_add[0]) === true)
 					$qmember->add_list($queue_add);
 
@@ -462,15 +475,6 @@ switch($act)
 					{
 						$aqueue_where['queue_name'] = $queue_edit[$i]['queue_name'];
 						$qmember->edit_where($aqueue_where,$queue_edit[$i]);
-					}
-				}
-
-				if(($nb = count($queue_del)) !== 0)
-				{
-					for($i = 0;$i < $nb;$i++)
-					{
-						$aqueue_where['queue_name'] = $queue_del[$i]['queue_name'];
-						$qmember->delete_where($aqueue_where);
 					}
 				}
 			}
@@ -605,6 +609,8 @@ switch($act)
 
 			$group = $param['group'] = $info['agroup']['id'];
 
+			$result = array();
+
 			if($moh_list === false || isset($_QR['agent']['musiconhold'],$moh_list[$_QR['agent']['musiconhold']]) === false)
 				$_QR['agent']['musiconhold'] = '';
 
@@ -665,11 +671,11 @@ switch($act)
 
 					$aqueue_tmp = array_merge($_QR['queue'][$qname],$aqueue_info);
 
-					if(($qinfo = $qmember->chk_values($aqueue_tmp)) !== false)
-					{
-						$queue_tmp[$qname] = 1;
-						$queue_add[] = $qinfo;
-					}
+					if(($qinfo = $qmember->chk_values($aqueue_tmp)) === false)
+						continue;
+
+					$queue_tmp[$qname] = 1;
+					$queue_add[] = $qinfo;
 				}
 			}
 
@@ -868,12 +874,12 @@ switch($act)
 
 					$aqueue_tmp = array_merge($_QR['queue'][$qname],$aqueue_info);
 
-					if(($qinfo = $qmember->chk_values($aqueue_tmp)) !== false)
-					{
-						$edit_queue = true;
-						$queue_tmp[$qname] = 1;
-						$ref_queue[] = $qinfo;
-					}
+					if(($qinfo = $qmember->chk_values($aqueue_tmp)) === false)
+						continue;
+
+					$edit_queue = true;
+					$queue_tmp[$qname] = 1;
+					$ref_queue[] = $qinfo;
 				}
 			}
 

@@ -8,18 +8,18 @@ if(($moh_list = $musiconhold->get_all_category(null,false)) !== false)
 
 if(isset($_QR['fm_send']) === true)
 {
-	$add = true;
+	$edit = true;
 
 	if($moh_list === false || isset($_QR['musiconhold'],$moh_list[$_QR['musiconhold']]) === false)
 		$_QR['musiconhold'] = '';
 
 	if(($result = $generalsip->chk_values($_QR)) === false)
 	{
-		$add = false;
+		$edit = false;
 		$result = $generalsip->get_filter_result();
 	}
 
-	if($add === true)
+	if($edit === true)
 	{
 		if(xivo_empty($result['externip']) === true)
 			$result['localnet'] = null;
@@ -35,13 +35,13 @@ if(isset($_QR['fm_send']) === true)
 $info = $generalsip->get_name_val(null,false);
 $element = $generalsip->get_element();
 
-if(xivo_issa('allow',$element) === true && xivo_issa('value',$element['allow']) === true)
+if(xivo_issa('allow',$element) === true
+&& xivo_issa('value',$element['allow']) === true
+&& xivo_ak('allow',$info) === true
+&& empty($info['allow']) === false)
 {
-	if(xivo_ak('allow',$info) === true && empty($info['allow']) === false)
-	{
-		$info['allow'] = explode(',',$info['allow']);
-		$element['allow']['value'] = array_diff($element['allow']['value'],$info['allow']);
-	}
+	$info['allow'] = explode(',',$info['allow']);
+	$element['allow']['value'] = array_diff($element['allow']['value'],$info['allow']);
 }
 
 $_HTML->assign('info',$info);

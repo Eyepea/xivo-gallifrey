@@ -4,15 +4,15 @@ $generaliax = &$ipbx->get_module('generaliax');
 
 if(isset($_QR['fm_send']) === true)
 {
-	$add = true;
+	$edit = true;
 
 	if(($result = $generaliax->chk_values($_QR)) === false)
 	{
-		$add = false;
+		$edit = false;
 		$result = $generaliax->get_filter_result();
 	}
 
-	if($add === true)
+	if($edit === true)
 	{
 		if($result['minregexpire'] > $result['maxregexpire'])
 			$result['minregexpire'] = $result['maxregexpire'];
@@ -31,13 +31,13 @@ if(isset($_QR['fm_send']) === true)
 $info = $generaliax->get_name_val(null,false);
 $element = $generaliax->get_element();
 
-if(xivo_issa('allow',$element) === true && xivo_issa('value',$element['allow']) === true)
+if(xivo_issa('allow',$element) === true
+&& xivo_issa('value',$element['allow']) === true
+&& xivo_ak('allow',$info) === true
+&& empty($info['allow']) === false)
 {
-	if(xivo_ak('allow',$info) === true && empty($info['allow']) === false)
-	{
-		$info['allow'] = explode(',',$info['allow']);
-		$element['allow']['value'] = array_diff($element['allow']['value'],$info['allow']);
-	}
+	$info['allow'] = explode(',',$info['allow']);
+	$element['allow']['value'] = array_diff($element['allow']['value'],$info['allow']);
 }
 
 $_HTML->assign('info',$info);
