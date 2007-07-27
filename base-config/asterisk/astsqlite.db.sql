@@ -251,7 +251,7 @@ CREATE TABLE useriax (
  defaultip varchar(15),
  host varchar(31) NOT NULL DEFAULT 'dynamic',
  language char(2),
- mailbox varchar(50),
+ mailbox varchar(128),
  deny varchar(95),
  permit varchar(95),
  qualify char(3),
@@ -275,7 +275,7 @@ CREATE TABLE uservoicemail (
  id integer unsigned,
  customer_id varchar(11) NOT NULL DEFAULT '0',
  context varchar(80) NOT NULL DEFAULT '',
- mailbox varchar(11) NOT NULL DEFAULT '0',
+ mailbox varchar(40) NOT NULL DEFAULT '0',
  password varchar(5) NOT NULL DEFAULT '0',
  fullname varchar(150) NOT NULL DEFAULT '',
  email varchar(50) NOT NULL DEFAULT '',
@@ -321,6 +321,7 @@ CREATE TABLE userfeatures (
  simultcalls tinyint unsigned DEFAULT 1,
  popupwidget tinyint(1) DEFAULT 0,
  musiconhold varchar(128) NOT NULL DEFAULT '',
+ outnumber varchar(40) NOT NULL DEFAULT '',
  comment text DEFAULT '',
  PRIMARY KEY(id)
 );
@@ -442,7 +443,7 @@ INSERT INTO generalsip VALUES(4,0,'sip.conf','general','language','fr');
 INSERT INTO generalsip VALUES(5,0,'sip.conf','general','maxexpiry',3600);
 INSERT INTO generalsip VALUES(6,0,'sip.conf','general','defaultexpiry',120);
 INSERT INTO generalsip VALUES(7,0,'sip.conf','general','useragent','Xivo PBX');
-INSERT INTO generalsip VALUES(8,0,'sip.conf','general','nat','yes');
+INSERT INTO generalsip VALUES(8,0,'sip.conf','general','nat','no');
 INSERT INTO generalsip VALUES(9,0,'sip.conf','general','qualify','yes');
 INSERT INTO generalsip VALUES(10,0,'sip.conf','general','rtcachefriends','yes');
 INSERT INTO generalsip VALUES(11,0,'sip.conf','general','allowguest','yes');
@@ -554,7 +555,7 @@ CREATE TABLE usersip (
  host varchar(31) NOT NULL,
  insecure varchar(11),
  language char(2),
- mailbox varchar(50),
+ mailbox varchar(128),
  md5secret varchar(80),
  nat varchar(5) NOT NULL DEFAULT 'no',
  deny varchar(95),
