@@ -26,7 +26,7 @@ __license__ = """
 from types import MethodType
 from pyfunc import *
 
-# NOTE: paths are tuples in this module
+# NOTE: paths are tuples of their splitted components in this module
 
 class Node(object):
 	
@@ -61,8 +61,7 @@ class Node(object):
 	@staticmethod
 	def visitable(ctx, path, pos):
 		"""If and only if this method returns something True, the current
-		node will immediately be visited by entering fvisit(). This will
-		happen regardless of whether path[pos:] is empty.
+		node will immediately be visited by entering fvisit().
 		
 		This default method from Node just returns False.
 		
@@ -79,7 +78,7 @@ class Node(object):
 		Also see visitable().
 		
 		Same parameters (but eaten) as in fin(). """
-		return ctx
+		return None
 	
 	@staticmethod
 	def lookup_sub(ctx, path, pos):
@@ -130,18 +129,21 @@ class Node(object):
 		of the resource identified by path. """
 		return cls.fenter(ctx, (None,None)+tuple(path), 2)
 
-from easyslog import * #XXXXXX
 class VisitableNode(Node):
 	
 	"Defines a visitable node when at end of path. "
 	
 	@staticmethod
 	def visitable(ctx, path, pos):
-		syslogf(str(ctx))
-		syslogf(str(path))
-		syslogf(str(pos))
+		"""Decides to visit the node when path[pos:] is empty.
+		Also see Node.visitable() """
 		return pos >= len(path)
 
+	@staticmethod
+	def fvisit(ctx, path, pos):
+		"""Returns ctx which can be a useful default for a visitable
+		node when dispatching is done by the parent in .fin() """
+		return ctx
 
 class NodeInst(Node):
 	
@@ -185,6 +187,8 @@ class SetTree(Node):
 	
 	@classmethod
 	def lookup_sub(cls, ctx, path, pos):
+		"""Does a simple lookup in cls.SUBNAME_CLASS, taking the child
+		class identified by path[pos] when it exists in there. """
 		if (pos < len(path)) and (path[pos] in cls.SUBNAME_CLASS):
 			return cls.SUBNAME_CLASS[path[pos]], 1
 		else:
@@ -206,6 +210,11 @@ class DynTree(Node):
 	
 	@classmethod
 	def lookup_sub(cls, ctx, path, pos):
+		"""Let sublen be the number of (non class/instance) parameters of
+		the method cls.subpath_ok(), if this latter returns True when
+		called with the right number of path components from the current
+		position then lookup_sub() returns child subclass cls.SUBCLASS
+		and the number of path components the child is away from here. """
 		sublen = cls.subpath_ok.func_code.co_argcount \
 		         - isinstance(cls.subpath_ok, MethodType)
 		if len(path) - pos >= sublen \
