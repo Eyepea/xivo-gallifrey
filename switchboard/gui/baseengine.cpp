@@ -56,7 +56,7 @@ BaseEngine::BaseEngine(QObject * parent)
 	m_sbsocket     = new QTcpSocket(this);
 	m_loginsocket  = new QTcpSocket(this);
 	m_udpsocket    = new QUdpSocket(this);
-	m_listensocket = new QTcpServer(this);
+	m_listenserver = new QTcpServer(this);
 	loadSettings();
 	deleteRemovables();
 	setAvailState(m_availstate);
@@ -79,27 +79,27 @@ BaseEngine::BaseEngine(QObject * parent)
 	        this, SLOT(socketConnected()));
 	connect(m_sbsocket, SIGNAL(disconnected()),
 	        this, SLOT(socketDisconnected()));
-	connect(m_sbsocket, SIGNAL(hostFound()), this, SLOT(socketHostFound()));
+	connect(m_sbsocket, SIGNAL(hostFound()),
+                this, SLOT(socketHostFound()));
 	connect(m_sbsocket, SIGNAL(error(QAbstractSocket::SocketError)),
 	        this, SLOT(socketError(QAbstractSocket::SocketError)));
 	connect(m_sbsocket, SIGNAL(stateChanged(QAbstractSocket::SocketState)),
 	        this, SLOT(socketStateChanged(QAbstractSocket::SocketState)));
 	connect(m_sbsocket, SIGNAL(readyRead()), this, SLOT(socketReadyRead()));
         
-	// init listen socket for profile push
+	// init login socket for profile push
 	connect( m_loginsocket, SIGNAL(connected()),
 	         this, SLOT(identifyToTheServer()) );
 	connect( m_loginsocket, SIGNAL(readyRead()),
 	         this, SLOT(processLoginDialog()) );
 	connect( m_loginsocket, SIGNAL(hostFound()),
 	         this, SLOT(serverHostFound()) );
-	if(!m_tcpmode)
-		initListenSocket();
-	connect( m_listensocket, SIGNAL(newConnection()),
+        
+	// init listen server for profile push
+	connect( m_listenserver, SIGNAL(newConnection()),
 	         this, SLOT(handleProfilePush()) );
+        
 	// init UDP socket used for keep alive
-	//if(!m_tcpmode)
-	m_udpsocket->bind();
 	connect( m_udpsocket, SIGNAL(readyRead()),
 		 this, SLOT(readKeepLoginAliveDatagrams()) );
         
@@ -113,10 +113,14 @@ BaseEngine::BaseEngine(QObject * parent)
  */
 void BaseEngine::loadSettings()
 {
+        //qDebug() << "BaseEngine::loadSettings()";
 	QSettings settings;
 	m_serverhost = settings.value("engine/serverhost").toString();
 	m_loginport  = settings.value("engine/loginport", 5000).toUInt();
 	m_sbport     = settings.value("engine/serverport", 5003).toUInt();
+
+        m_enabled_presence = settings.value("engine/fct_presence", false).toBool();
+        m_enabled_cinfo    = settings.value("engine/fct_cinfo",    false).toBool();
 
 	m_asterisk   = settings.value("engine/asterisk").toString();
 	m_protocol   = settings.value("engine/protocol").toString();
@@ -139,10 +143,14 @@ void BaseEngine::loadSettings()
  */
 void BaseEngine::saveSettings()
 {
+        //qDebug() << "BaseEngine::saveSettings()";
 	QSettings settings;
 	settings.setValue("engine/serverhost", m_serverhost);
 	settings.setValue("engine/loginport",  m_loginport);
 	settings.setValue("engine/serverport", m_sbport);
+
+	settings.setValue("engine/fct_presence", m_enabled_presence);
+	settings.setValue("engine/fct_cinfo",    m_enabled_cinfo);
 
 	settings.setValue("engine/asterisk",   m_asterisk);
 	settings.setValue("engine/protocol",   m_protocol);
@@ -163,35 +171,39 @@ void BaseEngine::saveSettings()
 /*!
  *
  */
-void BaseEngine::setEnabled(bool b) {
-	if(b != m_enabled) {
-		m_enabled = b;
+void BaseEngine::setEnabledPresence(bool b) {
+	if(b != m_enabled_presence) {
+		m_enabled_presence = b;
 		if(state() == ELogged)
 			availAllowChanged(b);
 	}
 }
 
+bool BaseEngine::enabled_presence() {
+        return m_enabled_presence;
+}
+
+void BaseEngine::setEnabledCInfo(bool b) {
+	if(b != m_enabled_cinfo)
+		m_enabled_cinfo = b;
+}
+
+bool BaseEngine::enabled_cinfo() {
+        return m_enabled_cinfo;
+}
+
 void BaseEngine::initListenSocket()
 {
-	if (!m_listensocket->listen())
+	qDebug() << "BaseEngine::initListenSocket()";
+	if (!m_listenserver->listen())
 	{
 		QMessageBox::critical(NULL, tr("Critical error"),
 		                            tr("Unable to start the server: %1.")
-		                            .arg(m_listensocket->errorString()));
+		                            .arg(m_listenserver->errorString()));
 		return;
 	}
-	m_listenport = m_listensocket->serverPort();
+	m_listenport = m_listenserver->serverPort();
 	qDebug() << "BaseEngine::initListenSocket()" << m_listenport;
-}
-
-/* \brief set server address
- *
- * Set server host name and server port
- */
-void BaseEngine::setAddress(const QString & host, quint16 port)
-{
-	m_serverhost = host;
-	m_sbport = port;
 }
 
 /*! \brief Starts the connection to the server
@@ -200,8 +212,10 @@ void BaseEngine::setAddress(const QString & host, quint16 port)
  */
 void BaseEngine::start()
 {
-	qDebug() << "BaseEngine::start()" << m_serverhost << m_loginport << m_enabled;
-        //	m_loginsocket->abort();
+	qDebug() << "BaseEngine::start()" << m_serverhost << m_loginport << m_enabled_presence << m_enabled_cinfo;
+	if(m_enabled_cinfo && (!m_tcpmode))
+		initListenSocket();
+	m_udpsocket->bind();
         connectSocket();
 }
 
@@ -220,7 +234,14 @@ void BaseEngine::stop()
 		m_udpsocket->writeDatagram( outline.toAscii(),
 					    m_serveraddress, m_loginport + 1 );
 	}
+
+        m_udpsocket->close();
+
+        m_listenserver->close();
+        m_listenport = 0;
+
 	m_sbsocket->disconnectFromHost();
+
 	stopKeepAliveTimer();
 	stopTryAgainTimer();
 	setState(ENotLogged);
@@ -234,6 +255,7 @@ void BaseEngine::connectSocket()
         qDebug() << m_serverhost << m_sbport << m_loginport;
         if(m_is_a_switchboard)
                 m_sbsocket->connectToHost(m_serverhost, m_sbport);
+        //        if(m_enabled_presence)
         m_loginsocket->connectToHost(m_serverhost, m_loginport);
 }
 
@@ -364,11 +386,19 @@ void BaseEngine::socketDisconnected()
 
 /*! \brief cat host found socket signal
  *
- * Do nothing...
+ * This slot is connected to the hostFound() signal of the m_sbsocket
  */
 void BaseEngine::socketHostFound()
 {
-	qDebug() << "socketHostFound()";
+	qDebug() << "BaseEngine::socketHostFound()" << m_sbsocket->peerAddress();
+}
+
+/*! \brief cat host found socket signal
+ * This slot is connected to the hostFound() signal of the m_loginsocket
+ */
+void BaseEngine::serverHostFound()
+{
+	qDebug() << "BaseEngine::serverHostFound()" << m_loginsocket->peerAddress();
 }
 
 /*! \brief catch socket errors
@@ -594,12 +624,8 @@ void BaseEngine::socketReadyRead()
 			}
 		}
 	}
-	if(b) {
-		//QTime currentTime = QTime::currentTime();
-		//QString currentTimeStr = currentTime.toString("hh:mm:ss");
-		//emitTextMessage(tr("Peers' status updated at ") + currentTimeStr);
+	if(b)
 		emitTextMessage(tr("Peers' status updated"));
-	}
 }
 
 /*! \brief send an originate command to the server
@@ -746,11 +772,21 @@ void BaseEngine::requestHistory(const QString & peer, int mode)
                                 sendTCPCommand();
                         }
                 } else
-                        sendUDPCommand("HISTORY " + peer + " " + /*QString::number(m_historysize)*/"10" + " " + QString::number(mode));
+                        sendUDPCommand("HISTORY " + peer + " " + QString::number(m_historysize) + " " + QString::number(mode));
         }
 }
 
 // === Getter and Setters ===
+/* \brief set server address
+ *
+ * Set server host name and server port
+ */
+void BaseEngine::setAddress(const QString & host, quint16 port)
+{
+	m_serverhost = host;
+	m_sbport = port;
+}
+
 /*! \brief get server IP address */
 const QString & BaseEngine::serverip() const
 {
@@ -1181,7 +1217,7 @@ void BaseEngine::setState(EngineState state)
 		m_state = state;
 		if(state == ELogged) {
 			stopTryAgainTimer();
-			if(m_enabled) availAllowChanged(true);
+			if(m_enabled_presence) availAllowChanged(true);
 			logged();
 		} else if(state == ENotLogged) {
 			availAllowChanged(false);
@@ -1273,7 +1309,10 @@ void BaseEngine::processLoginDialog()
 	else if(readLine.startsWith("Send STATE"))
 	{
 		outline = "STATE ";
-		outline.append(m_availstate);
+                if(m_enabled_presence)
+                        outline.append(m_availstate);
+                else
+                        outline.append("unknown");
 	}
 	else if(readLine.startsWith("OK SESSIONID"))
 	{
@@ -1317,29 +1356,23 @@ void BaseEngine::processLoginDialog()
 }
 
 /*!
- * This slot is connected to the hostFound() signal of the m_sbsocket
- */
-void BaseEngine::serverHostFound()
-{
-	qDebug() << "BaseEngine::serverHostFound()" << m_sbsocket->peerAddress();
-}
-
-/*!
  * This slot method is called when a pending connection is
- * waiting on the m_listensocket.
+ * waiting on the m_listenserver.
  * It processes the incoming data and create a popup to display it.
  */
 void BaseEngine::handleProfilePush()
 {
 	qDebug() << "BaseEngine::handleProfilePush()";
-	QTcpSocket *connection = m_listensocket->nextPendingConnection();
+	QTcpSocket * connection = m_listenserver->nextPendingConnection();
 	connect( connection, SIGNAL(disconnected()),
 	         connection, SLOT(deleteLater()));
+
 	// signals sur la socket : connected() disconnected()
 	// error() hostFound() stateChanged()
 	// iodevice : readyRead() aboutToClose() bytesWritten()
-	//
+
 	qDebug() << connection->peerAddress().toString() << connection->peerPort();
+
 	// Get Data and Popup the profile if ok
 	Popup * popup = new Popup(connection, m_sessionid);
 	connect( popup, SIGNAL(destroyed(QObject *)),
@@ -1383,7 +1416,10 @@ void BaseEngine::keepLoginAlive()
 		outline.append(" SESSIONID ");
 		outline.append(m_sessionid);
 		outline.append(" STATE ");
-		outline.append(m_availstate);
+                if(m_enabled_presence)
+                        outline.append(m_availstate);
+                else
+                        outline.append("unknown");
 		qDebug() << "BaseEngine::keepLoginAlive() : " << outline;
 		outline.append("\r\n");
 		m_udpsocket->writeDatagram( outline.toAscii(),

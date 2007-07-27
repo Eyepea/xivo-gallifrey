@@ -76,5 +76,6 @@ private:
 	QSpinBox  * m_tablimit_sbox;	//!< Maximum number of tabs
 	QCheckBox * m_tcpmode;		//!< Use outgoing TCP connection
 	QCheckBox * m_presence;		//!< connect to presence server checkbox
+	QCheckBox * m_cinfo;		//!< customer info checkbox
 };
 #endif

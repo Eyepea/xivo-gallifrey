@@ -11,26 +11,26 @@ CONFIG -= debug
 CONFIG += static
 
 # Input
-HEADERS += peerwidget.h switchboardwindow.h
-HEADERS += baseengine.h mainwidget.h
-HEADERS += $${XCDIR}/confwidget.h callwidget.h callstackwidget.h
+HEADERS += mainwidget.h switchboardwindow.h
+HEADERS += baseengine.h
+HEADERS += callwidget.h callstackwidget.h peerwidget.h
 HEADERS += astchannel.h peerslayout.h searchpanel.h
 HEADERS += peeritem.h logeltwidget.h logwidget.h dialpanel.h
 HEADERS += directorypanel.h displaymessages.h
 HEADERS += peerchannel.h extendedtablewidget.h
 HEADERS += xivoconsts.h
 HEADERS += $${XCDIR}/servicepanel.h $${XCDIR}/popup.h $${XCDIR}/urllabel.h $${XCDIR}/xmlhandler.h
-HEADERS += $${XCDIR}/remotepicwidget.h
+HEADERS += $${XCDIR}/remotepicwidget.h $${XCDIR}/confwidget.h
 
-SOURCES += main.cpp peerwidget.cpp switchboardwindow.cpp
-SOURCES += baseengine.cpp mainwidget.cpp
-SOURCES += $${XCDIR}/confwidget.cpp callwidget.cpp callstackwidget.cpp
+SOURCES += main.cpp mainwidget.cpp switchboardwindow.cpp
+SOURCES += baseengine.cpp
+SOURCES += callwidget.cpp callstackwidget.cpp peerwidget.cpp
 SOURCES += astchannel.cpp peerslayout.cpp searchpanel.cpp
 SOURCES += peeritem.cpp logeltwidget.cpp logwidget.cpp dialpanel.cpp
 SOURCES += directorypanel.cpp displaymessages.cpp
 SOURCES += peerchannel.cpp extendedtablewidget.cpp
 SOURCES += $${XCDIR}/servicepanel.cpp $${XCDIR}/popup.cpp $${XCDIR}/urllabel.cpp $${XCDIR}/xmlhandler.cpp
-SOURCES += $${XCDIR}/remotepicwidget.cpp
+SOURCES += $${XCDIR}/remotepicwidget.cpp $${XCDIR}/confwidget.cpp
 
 QT += network
 QT += xml

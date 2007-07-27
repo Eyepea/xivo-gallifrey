@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QDebug>
 #include <QDialogButtonBox>
 #include <QGridLayout>
+#include <QGroupBox>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
@@ -73,9 +74,30 @@ ConfWidget::ConfWidget(BaseEngine * engine,
 	gridlayout->addWidget(lbllport, line, 0);
 	gridlayout->addWidget(m_loginport, line++, 1);
 
-	m_presence = new QCheckBox(tr("Presence reporting"), this);
-	m_presence->setCheckState(m_engine->enabled()?Qt::Checked:Qt::Unchecked);
-	gridlayout->addWidget(m_presence, line++, 0, 1, 0);
+        //
+        // Box for Enabled Functions Definition
+	QGroupBox * groupBox = new QGroupBox( tr("Functions"), this );
+	groupBox->setAlignment( Qt::AlignHCenter );
+	QVBoxLayout * vbox = new QVBoxLayout( groupBox );
+	vbox->setMargin(0);
+	vbox->setSpacing(0);
+
+	m_presence = new QCheckBox(tr("Presence reporting"), groupBox);
+	m_presence->setCheckState(m_engine->enabled_presence() ? Qt::Checked : Qt::Unchecked);
+	vbox->addWidget( m_presence );
+	m_cinfo = new QCheckBox(tr("Customer Info"), groupBox);
+	m_cinfo->setCheckState(m_engine->enabled_cinfo() ? Qt::Checked : Qt::Unchecked);
+	vbox->addWidget( m_cinfo );
+
+	gridlayout->addWidget(groupBox, line++, 0, 1, 0);
+        //
+
+        // Box for Connexion Definition
+        //	QGroupBox * groupBox_conn = new QGroupBox( tr("Identification"), this );
+        //	groupBox_conn->setAlignment( Qt::AlignHCenter );
+        //	QVBoxLayout * vbox_conn = new QVBoxLayout( groupBox_conn );
+        //	vbox_conn->setMargin(0);
+        //	vbox_conn->setSpacing(0);
 
 	QLabel * lblasterisk = new QLabel(tr("Asterisk Id Name"), this);
 	m_asterisk = new QLineEdit(m_engine->serverast(), this);
@@ -156,7 +178,9 @@ ConfWidget::ConfWidget(BaseEngine * engine,
  */
 void ConfWidget::saveAndClose()
 {
-	m_engine->setAddress(m_serverhost->text(), m_sbport->text().toUShort());
+        //qDebug() << "ConfWidget::saveAndClose()";
+        if(m_engine->isASwitchboard())
+                m_engine->setAddress(m_serverhost->text(), m_sbport->text().toUShort());
 	m_engine->setServerip(m_serverhost->text());
 	m_engine->setLoginPort(m_loginport->text().toUShort());
 
@@ -170,7 +194,9 @@ void ConfWidget::saveAndClose()
 	m_engine->setTrytoreconnectinterval(m_tryinterval_sbox->value()*1000);
 	m_engine->setKeepaliveinterval(m_kainterval_sbox->value()*1000);
 
-	m_engine->setEnabled(m_presence->checkState() == Qt::Checked);
+	m_engine->setEnabledPresence(m_presence->checkState() == Qt::Checked);
+	m_engine->setEnabledCInfo(m_cinfo->checkState() == Qt::Checked);
+
 	m_engine->setHistorySize(m_history_sbox->value());
 	m_engine->setTcpmode(m_tcpmode->checkState() == Qt::Checked);
 	m_mainwindow->setTablimit(m_tablimit_sbox->value());

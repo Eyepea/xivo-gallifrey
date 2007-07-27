@@ -3,62 +3,62 @@
 <context>
     <name>BaseEngine</name>
     <message>
-        <location filename="../../switchboard/gui/baseengine.cpp" line="180"/>
+        <location filename="../../switchboard/gui/baseengine.cpp" line="201"/>
         <source>Unable to start the server: %1.</source>
         <translation>Impossible de se connecter au serveur: %1.</translation>
     </message>
     <message>
-        <location filename="../../switchboard/gui/baseengine.cpp" line="178"/>
+        <location filename="../../switchboard/gui/baseengine.cpp" line="199"/>
         <source>Critical error</source>
         <translation>Erreur critique</translation>
     </message>
     <message>
-        <location filename="../../switchboard/gui/baseengine.cpp" line="463"/>
+        <location filename="../../switchboard/gui/baseengine.cpp" line="485"/>
         <source>Unknown Number</source>
         <translation>Numéro Inconnu</translation>
     </message>
     <message>
-        <location filename="../../switchboard/gui/baseengine.cpp" line="359"/>
+        <location filename="../../switchboard/gui/baseengine.cpp" line="381"/>
         <source>Connection lost with Presence Server</source>
         <translation>Connexion perdue avec le Serveur de Présence</translation>
     </message>
     <message>
-        <location filename="../../switchboard/gui/baseengine.cpp" line="382"/>
+        <location filename="../../switchboard/gui/baseengine.cpp" line="404"/>
         <source>Connection refused</source>
         <translation>Connexion refusée</translation>
     </message>
     <message>
-        <location filename="../../switchboard/gui/baseengine.cpp" line="391"/>
+        <location filename="../../switchboard/gui/baseengine.cpp" line="413"/>
         <source>Host not found</source>
         <translation>Hôte non trouvé</translation>
     </message>
     <message>
-        <location filename="../../switchboard/gui/baseengine.cpp" line="394"/>
+        <location filename="../../switchboard/gui/baseengine.cpp" line="416"/>
         <source>Unknown socket error</source>
         <translation>Erreur de socket inconnue</translation>
     </message>
     <message>
-        <location filename="../../switchboard/gui/baseengine.cpp" line="530"/>
+        <location filename="../../switchboard/gui/baseengine.cpp" line="552"/>
         <source>Unknown CallerId</source>
         <translation>CallerId Inconnu</translation>
     </message>
     <message>
-        <location filename="../../switchboard/gui/baseengine.cpp" line="564"/>
+        <location filename="../../switchboard/gui/baseengine.cpp" line="586"/>
         <source> said : </source>
         <translation> a dit : </translation>
     </message>
     <message>
-        <location filename="../../switchboard/gui/baseengine.cpp" line="564"/>
+        <location filename="../../switchboard/gui/baseengine.cpp" line="586"/>
         <source>Unknown</source>
         <translation>Inconnue</translation>
     </message>
     <message>
-        <location filename="../../switchboard/gui/baseengine.cpp" line="601"/>
+        <location filename="../../switchboard/gui/baseengine.cpp" line="623"/>
         <source>Peers&apos; status updated</source>
         <translation>Status des postes mis à jour</translation>
     </message>
     <message>
-        <location filename="../../switchboard/gui/baseengine.cpp" line="1027"/>
+        <location filename="../../switchboard/gui/baseengine.cpp" line="1049"/>
         <source>Attempting to reconnect to server</source>
         <translation>Tentative de reconnexion au serveur</translation>
     </message>
@@ -66,84 +66,94 @@
 <context>
     <name>ConfWidget</name>
     <message>
-        <location filename="confwidget.cpp" line="57"/>
+        <location filename="confwidget.cpp" line="58"/>
         <source>Server Host</source>
         <translation>Adresse serveur</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="96"/>
+        <location filename="confwidget.cpp" line="118"/>
         <source>Login</source>
         <translation>Identifiant de connexion</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="101"/>
+        <location filename="confwidget.cpp" line="123"/>
         <source>Password</source>
         <translation>Mot de passe</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="111"/>
+        <location filename="confwidget.cpp" line="133"/>
         <source>Autoconnect at startup</source>
         <translation>Connexion au démarrage</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="124"/>
+        <location filename="confwidget.cpp" line="146"/>
         <source>Keep alive interval</source>
         <translation>Délai de maintien de la connexion</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="115"/>
+        <location filename="confwidget.cpp" line="137"/>
         <source>Try to reconnect</source>
         <translation>Reconnexion automatique</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="118"/>
+        <location filename="confwidget.cpp" line="140"/>
         <source>Try to reconnect interval</source>
         <translation>Délai de reconnexion</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="130"/>
+        <location filename="confwidget.cpp" line="152"/>
         <source>Tab limit</source>
         <translation>Nombre maximum d&apos;onglets</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="85"/>
+        <location filename="confwidget.cpp" line="107"/>
         <source>Protocol</source>
         <translation>Protocole</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="107"/>
+        <location filename="confwidget.cpp" line="129"/>
         <source>TCP Mode (for NAT traversal)</source>
         <translation>Mode TCP (pour réseaux NAT)</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="51"/>
+        <location filename="confwidget.cpp" line="52"/>
         <source>Configuration</source>
         <translation>Configuration</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="63"/>
+        <location filename="confwidget.cpp" line="64"/>
         <source>Switchboard Port</source>
         <translation>Port du Switchboard</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="76"/>
+        <location filename="confwidget.cpp" line="85"/>
         <source>Presence reporting</source>
-        <translation>Report de la présence</translation>
+        <translation>Rapport de Présence</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="80"/>
+        <location filename="confwidget.cpp" line="102"/>
         <source>Asterisk Id Name</source>
         <translation>Nom de l&apos;Asterisk</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="137"/>
+        <location filename="confwidget.cpp" line="159"/>
         <source>History size</source>
         <translation>Taille de l&apos;historique</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="70"/>
+        <location filename="confwidget.cpp" line="71"/>
         <source>Login Port</source>
         <translation>Port de Login</translation>
+    </message>
+    <message>
+        <location filename="confwidget.cpp" line="79"/>
+        <source>Functions</source>
+        <translation>Fonctions</translation>
+    </message>
+    <message>
+        <location filename="confwidget.cpp" line="88"/>
+        <source>Customer Info</source>
+        <translation>Remontée de Fiches</translation>
     </message>
 </context>
 <context>

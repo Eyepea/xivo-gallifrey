@@ -221,12 +221,6 @@ MainWidget::MainWidget(BaseEngine * engine, QWidget * parent)
 	
 	connect(m_engine, SIGNAL(logged()),
  		this, SLOT(loginengineStarted()) );
-#if 0
-	connect(m_engine, SIGNAL(logged()),
-		m_engine, SLOT(start()) );
-	connect(m_engine, SIGNAL(delogged()),
-		m_engine, SLOT(stop()) );
-#endif
 }
 
 /*! \brief Destructor
@@ -249,8 +243,6 @@ void MainWidget::createActions()
 	
 	m_startact = new QAction(tr("S&tart"), this);
 	m_startact->setStatusTip(tr("Start"));
-	connect(m_startact, SIGNAL(triggered()),
-		m_engine, SLOT(start()) );
 	connect(m_startact, SIGNAL(triggered()),
 		m_engine, SLOT(start()) );
 	menu->addAction(m_startact);
@@ -317,7 +309,7 @@ void MainWidget::createActions()
 
 	m_avail = menuBar()->addMenu(tr("&Availability"));
 	m_avail->addActions( m_availgrp->actions() );
-	m_avail->setEnabled( m_engine->enabled() );
+	m_avail->setEnabled( m_engine->enabled_presence() );
 	connect( m_engine, SIGNAL(availAllowChanged(bool)),
 	         m_avail, SLOT(setEnabled(bool)) );
 
@@ -344,7 +336,7 @@ void MainWidget::engineStarted()
 {
 	m_stopact->setEnabled(true);
 	m_startact->setDisabled(true);
-	m_engine->start();
+        //	m_engine->start();
 
 	m_logwidget = new LogWidget(m_engine, m_svc_tabwidget);
 	m_svc_tabwidget->insertTab(0, m_logwidget, tr("History"));

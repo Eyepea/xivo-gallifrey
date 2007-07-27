@@ -334,6 +334,7 @@ void MainWidget::setConnected()
 	greensquare.fill(Qt::green);
 	m_status->setPixmap(greensquare);
 	QStringList display_capas = QString("customerinfo,features,history,directory,peers,dial,presence").split(",");
+        qDebug() << "MainWidget::setConnected()" << m_engine->enabled_presence() << m_engine->enabled_cinfo();
 	QStringList allowed_capas = m_engine->getCapabilities().split(",");
 	m_presence = false;
 
@@ -362,7 +363,7 @@ void MainWidget::setConnected()
 					 m_engine, SLOT(dialExtension(const QString &)) );
 				m_vboxwidgets->addWidget(m_dial, 0);
 
-			} else if(dc == QString("customerinfo")) {
+			} else if((dc == QString("customerinfo")) && (m_engine->enabled_cinfo())) {
 				m_tabwidget = new QTabWidget();
 				m_qtabwidget->addTab(m_tabwidget, tr("&Sheets"));
 
@@ -529,7 +530,7 @@ void MainWidget::setDisconnected()
 			} else if(dc == QString("dial")) {
 				m_vboxwidgets->removeWidget(m_dial);
 				delete m_dial;
-			} else if(dc == QString("customerinfo")) {
+			} else if((dc == QString("customerinfo")) && (m_qtabwidget->indexOf(m_tabwidget) > -1)) {
 				m_vboxwidgets->removeWidget(m_tabwidget);
 				delete m_tabwidget;
 			} else if(dc == QString("peers")) {

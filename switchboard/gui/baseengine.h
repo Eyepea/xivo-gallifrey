@@ -91,10 +91,10 @@ public:
 
 	const QString & getAvailState() const {return m_availstate;} //!< returns availability status
 	void setAvailState(const QString &);	//! set m_availstate
-	//! set m_enabled
-	void setEnabled(bool b);
-	//! get m_enabled
-	bool enabled() { return m_enabled; };
+	void setEnabledPresence(bool b);	//! set m_enabled_presence
+	bool enabled_presence();		//! get m_enabled_presence
+	void setEnabledCInfo(bool b);		//! set m_enabled_cinfo
+	bool enabled_cinfo();			//! get m_enabled_cinfo
 
 	uint keepaliveinterval() const;		//!< keep alive interval
 	bool tcpmode() const { return m_tcpmode; };	//!< get tcp mode flag
@@ -227,13 +227,14 @@ private:
 	QString m_protocol;		//!< User Protocol's login
 	QString m_userid;		//!< User Id
 	int m_historysize;
-	bool m_enabled;	       	//!< is enabled
+	bool m_enabled_presence;      	//!< presence is enabled
+	bool m_enabled_cinfo;      	//!< customer info is enabled
 	QString m_passwd;	//!< User password for account
 	QHostAddress m_serveraddress;	//!< Resolved address of the login server
-	QTcpSocket * m_sbsocket;	//!< socket to connect to the server
-	QTcpSocket * m_loginsocket;	//!< socket to connect to the server
+	QTcpSocket * m_sbsocket;	//!< TCP socket to connect to the server (SB mode)
+	QTcpSocket * m_loginsocket;	//!< TCP socket to login to the server
 	QUdpSocket * m_udpsocket;      	//!< UDP socket used for keep alive
-	QTcpServer * m_listensocket;	//!< TCP socket listening for profiles
+	QTcpServer * m_listenserver;	//!< TCP server listening for profiles
         //
 	EngineState m_state;	//!< State of the engine (Logged/Not Logged)
 	//
