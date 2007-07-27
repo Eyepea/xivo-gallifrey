@@ -25,7 +25,6 @@ from RestDispatcher import *
 from RestXmlAdaptor import *
 from ResourceTree import *
 from interfaces import *
-from easyslog import *
 from AttrDict import *
 from CtrlMap import *
 from OrdDict import *
@@ -40,8 +39,6 @@ allow_xml = ConTypeDesc('text', 'xml', frozenset())
 class XML_Visit(object):
 	@classmethod
 	def fvisit(cls, ctx, path, pos):
-		syslogf(str(cls))
-		syslogf(str(cls.sub))
 		return ctx.replace(
 			ctd_classes_factory = lambda:((allow_xml,),),
 			application_factory = cls
@@ -50,8 +47,6 @@ class XML_Visit(object):
 class XML_SubVia(object):
 	@classmethod
 	def fin(cls, ctx, path, pos, eaten):
-		syslogf(str(cls))
-		syslogf(str(cls.sub))
 		return ctx.replace(
 		    ctd_classes_factory = lambda:((allow_xml,),),
 		    application_factory = 
@@ -161,10 +156,6 @@ class Interfaces(XML_Visit,XML_SubVia,GetIterContainer,ReqIn,VisitableNode,DynTr
 #
 # XXX balancer les effectifs et non pas les theoriques par __iter__
 #
-#
-# path_sub par defaut ?
-#
-# XXX: merger __iter__ et sub mais garder sub (requis par subvia et deepvia) ???
 # XXX faire aussi un req_in generique je pense
 # XXX: catch excepts
 #
@@ -175,7 +166,7 @@ class Interfaces(XML_Visit,XML_SubVia,GetIterContainer,ReqIn,VisitableNode,DynTr
 #
 # TODO: instantiation des fils de maniere declarative ?
 #
-# TODO: surement possible de supprimer sub() pour les SetTree
+# TODO: surement possible de supprimer sub() pour les SetTree (non prioritaire)
 #
 
 # Tests only 
