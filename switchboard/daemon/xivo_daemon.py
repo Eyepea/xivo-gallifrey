@@ -848,133 +848,133 @@ def update_GUI_clients(astnum, phonenum, fromwhom):
 # \return True if it is an OPTIONS packet
 # \sa read_sip_properties
 def parseSIP(astnum, data, l_sipsock, l_addrsip):
-    global tcpopens_sb, plist, configs
-    spret = False
-    [icseq, imsg, icid, iaccount, ilength, iret, ibranch, itag, iauth] = read_sip_properties(data)
-    # if ilength != 11:
-    #print "###", astnum, ilength, icseq, icid, iaccount, imsg, iret, ibranch, itag
+        global tcpopens_sb, plist, configs
+        spret = False
+        [icseq, imsg, icid, iaccount, ilength, iret, ibranch, itag, iauth] = read_sip_properties(data)
+        # if ilength != 11:
+        #print "###", astnum, ilength, icseq, icid, iaccount, imsg, iret, ibranch, itag
 ##    if imsg == "REGISTER" and iret == 200 and icid == "reg_cid@xivopy":
 ##        for k in tcpopens_sb:
 ##            k[0].send("asterisk=registered_" + configs[astnum].astid + "\n")
 
-    uri = "sip:%s@%s" %(iaccount, configs[astnum].remoteaddr)
-    mycontext = ""
-    mysippass = ""
-    if iaccount in configs[astnum].xivosb_phoneids:
-            mycontext, mysippass = configs[astnum].xivosb_phoneids[iaccount]
-    md5_r1 = md5.md5(iaccount + ":asterisk:" + mysippass).hexdigest()
+        uri = "sip:%s@%s" %(iaccount, configs[astnum].remoteaddr)
+        mycontext = ""
+        mysippass = ""
+        if iaccount in configs[astnum].xivosb_phoneids:
+                mycontext, mysippass = configs[astnum].xivosb_phoneids[iaccount]
+        md5_r1 = md5.md5(iaccount + ":asterisk:" + mysippass).hexdigest()
 
-    #print "-----------", iaccount, mysippass
-    #print data
-    #print "================================="
+        #print "-----------", iaccount, mysippass
+        #print data
+        #print "================================="
 
-    realm = "asterisk"
-    
-    if imsg == "REGISTER":
-            if iret == 401:
-                    # log_debug("%s : REGISTER %s Passwd?" %(configs[astnum].astid, iaccount))
-                    nonce    = iauth.split("nonce=\"")[1].split("\"")[0]
-                    md5_r2   = md5.md5(imsg   + ":" + uri).hexdigest()
-                    response = md5.md5(md5_r1 + ":" + nonce + ":" + md5_r2).hexdigest()
-                    auth = "Authorization: Digest username=\"%s\", realm=\"%s\", nonce=\"%s\", uri=\"%s\", response=\"%s\", algorithm=MD5\r\n" \
-                           %(iaccount, realm, nonce, uri, response)
-                    command = xivo_sip.sip_register(configs[astnum],
-                                                    "sip:" + iaccount, 1, "reg_cid@xivopy",
-                                                    2 * xivosb_register_frequency, auth)
-                    l_sipsock.sendto(command, (configs[astnum].remoteaddr, configs[astnum].portsipsrv))
-            elif iret == 403:
-                    log_debug("%s : REGISTER %s Unauthorized" %(configs[astnum].astid, iaccount))
-            elif iret == 100:
-                    # log_debug("%s : REGISTER %s Trying" %(configs[astnum].astid, iaccount))
-                    pass
-            elif iret == 200:
-                    # log_debug("%s : REGISTER %s OK" %(configs[astnum].astid, iaccount))
-                    rdc = ''.join(random.sample('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijkLmnopqrstuvwxyz0123456789',6)) + "-" + hex(int(time.time()))[:1:-1]
-                    if nukeast: rdc = 'unique-callid-string'
-                    for sipnum,normval in plist[astnum].normal.iteritems():
-                            if sipnum.find("SIP/") == 0:
-                                    if mycontext == normval.context:
-                                            dtnow = time.time() - normval.lasttime
-                                            if dtnow > (2 * xivosb_register_frequency):
-                                                    if normval.sipstatus != "Timeout":
-                                                            normval.set_sipstatus("Timeout")
-                                                            update_GUI_clients(astnum, sipnum, "sip-tmo")
-                                                    else:
-                                                            pass
-                                            else:
-                                                    pass
-                                            cid = rdc + "-subsxivo-" + sipnum.split("/")[1] + "@" + configs[astnum].localaddr
-                                            command = xivo_sip.sip_subscribe(configs[astnum], "sip:" + iaccount,
-                                                                             1, cid, normval.phonenum,
-                                                                             2 * xivosb_register_frequency, "")
-                                            l_sipsock.sendto(command, (configs[astnum].remoteaddr, configs[astnum].portsipsrv))
-                                    else:
-                                            pass
-                            else:
-                                    pass
-            else:
-                    log_debug("%s : REGISTER %s Failed (code %d)"
-                              %(configs[astnum].astid, iaccount, iret))
-
-
-    elif imsg == "SUBSCRIBE":
-            sipphone = "SIP/" + icid.split("@")[0].split("-subsxivo-")[1]
-            if sipphone in plist[astnum].normal: # else : send sth anyway ?
-                    normv = plist[astnum].normal[sipphone]
-                    normv.set_lasttime(time.time())
-                    if iret == 401:
-                            # log_debug("%s : SUBSCRIBE %s Passwd? %s" %(configs[astnum].astid, iaccount, icid))
-                            nonce    = iauth.split("nonce=\"")[1].split("\"")[0]
-                            md5_r2   = md5.md5(imsg   + ":" + uri).hexdigest()
-                            response = md5.md5(md5_r1 + ":" + nonce + ":" + md5_r2).hexdigest()
-                            auth = "Authorization: Digest username=\"%s\", realm=\"%s\", nonce=\"%s\", uri=\"%s\", response=\"%s\", algorithm=MD5\r\n" \
-                                   %(iaccount, realm, nonce, uri, response)
-                            command = xivo_sip.sip_subscribe(configs[astnum], "sip:" + iaccount,
-                                                             1, icid, normv.phonenum,
-                                                             2 * xivosb_register_frequency, auth)
-                            l_sipsock.sendto(command, (configs[astnum].remoteaddr, configs[astnum].portsipsrv))
-                    elif iret == 403:
-                            log_debug("%s : SUBSCRIBE %s Unauthorized %s" %(configs[astnum].astid, iaccount, icid))
-                            if normv.sipstatus != "Fail" + str(iret):
-                                    normv.set_sipstatus("Fail" + str(iret))
-                                    update_GUI_clients(astnum, sipphone, "sip_403")
-                            else:
-                                    pass
-                    elif iret == 100:
-                            # log_debug("%s : SUBSCRIBE %s Trying %s" %(configs[astnum].astid, iaccount, icid))
-                            pass
-                    elif iret == 200:
-                            # log_debug("%s : SUBSCRIBE %s OK %s" %(configs[astnum].astid, iaccount, icid))
-                            pass
-                    else:
-                            log_debug("%s : SUBSCRIBE %s Failed (code %d) %s"
-                                      %(configs[astnum].astid, iaccount, iret, icid))
-                            if normv.sipstatus != "Fail" + str(iret):
-                                    normv.set_sipstatus("Fail" + str(iret))
-                                    update_GUI_clients(astnum, sipphone, "sip-fai")
+        realm = "asterisk"
+        
+        if imsg == "REGISTER":
+                if iret == 401:
+                        # log_debug("%s : REGISTER %s Passwd?" %(configs[astnum].astid, iaccount))
+                        nonce    = iauth.split("nonce=\"")[1].split("\"")[0]
+                        md5_r2   = md5.md5(imsg   + ":" + uri).hexdigest()
+                        response = md5.md5(md5_r1 + ":" + nonce + ":" + md5_r2).hexdigest()
+                        auth = "Authorization: Digest username=\"%s\", realm=\"%s\", nonce=\"%s\", uri=\"%s\", response=\"%s\", algorithm=MD5\r\n" \
+                               %(iaccount, realm, nonce, uri, response)
+                        command = xivo_sip.sip_register(configs[astnum],
+                                                        "sip:" + iaccount, 1, "reg_cid@xivopy",
+                                                        2 * xivosb_register_frequency, auth)
+                        l_sipsock.sendto(command, (configs[astnum].remoteaddr, configs[astnum].portsipsrv))
+                elif iret == 403:
+                        log_debug("%s : REGISTER %s Unauthorized" %(configs[astnum].astid, iaccount))
+                elif iret == 100:
+                        # log_debug("%s : REGISTER %s Trying" %(configs[astnum].astid, iaccount))
+                        pass
+                elif iret == 200:
+                        # log_debug("%s : REGISTER %s OK" %(configs[astnum].astid, iaccount))
+                        rdc = ''.join(random.sample('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijkLmnopqrstuvwxyz0123456789',6)) + "-" + hex(int(time.time()))[:1:-1]
+                        if nukeast: rdc = 'unique-callid-string'
+                        for sipnum,normval in plist[astnum].normal.iteritems():
+                                if sipnum.find("SIP/") == 0:
+                                        if mycontext == normval.context:
+                                                dtnow = time.time() - normval.lasttime
+                                                if dtnow > (2 * xivosb_register_frequency):
+                                                        if normval.sipstatus != "Timeout":
+                                                                normval.set_sipstatus("Timeout")
+                                                                update_GUI_clients(astnum, sipnum, "sip-tmo")
+                                                        else:
+                                                                pass
+                                                else:
+                                                        pass
+                                                cid = rdc + "-subsxivo-" + sipnum.split("/")[1] + "@" + configs[astnum].localaddr
+                                                command = xivo_sip.sip_subscribe(configs[astnum], "sip:" + iaccount,
+                                                                                 1, cid, normval.phonenum,
+                                                                                 2 * xivosb_register_frequency, "")
+                                                l_sipsock.sendto(command, (configs[astnum].remoteaddr, configs[astnum].portsipsrv))
+                                        else:
+                                                pass
+                                else:
+                                        pass
+                else:
+                        log_debug("%s : REGISTER %s Failed (code %d)"
+                                  %(configs[astnum].astid, iaccount, iret))
 
 
-    elif imsg == "OPTIONS" or imsg == "NOTIFY":
-            command = xivo_sip.sip_ok(configs[astnum], "sip:" + iaccount,
-                                      icseq, icid, iaccount, imsg, ibranch, itag)
-            l_sipsock.sendto(command,(configs[astnum].remoteaddr, l_addrsip[1]))
-            if imsg == "NOTIFY":
-                    sipnum, sippresence = tellpresence(data)
-                    if [sipnum, sippresence] != [None, None]:
-                            sipphone = "SIP/" + icid.split("@")[0].split("-subsxivo-")[1] # vs. sipnum
-                            if sipphone in plist[astnum].normal:
-                                    normv = plist[astnum].normal[sipphone]
-                                    normv.set_lasttime(time.time())
-                                    if normv.sipstatus != sippresence:
-                                            normv.set_sipstatus(sippresence)
-                                            update_GUI_clients(astnum, sipphone, "SIP-NTFY")
-                                    else:
-                                            pass
-                            else:
-                                    pass
-            else:
-                    spret = True
-    return spret
+        elif imsg == "SUBSCRIBE":
+                sipphone = "SIP/" + icid.split("@")[0].split("-subsxivo-")[1]
+                if sipphone in plist[astnum].normal: # else : send sth anyway ?
+                        normv = plist[astnum].normal[sipphone]
+                        normv.set_lasttime(time.time())
+                        if iret == 401:
+                                # log_debug("%s : SUBSCRIBE %s Passwd? %s" %(configs[astnum].astid, iaccount, icid))
+                                nonce    = iauth.split("nonce=\"")[1].split("\"")[0]
+                                md5_r2   = md5.md5(imsg   + ":" + uri).hexdigest()
+                                response = md5.md5(md5_r1 + ":" + nonce + ":" + md5_r2).hexdigest()
+                                auth = "Authorization: Digest username=\"%s\", realm=\"%s\", nonce=\"%s\", uri=\"%s\", response=\"%s\", algorithm=MD5\r\n" \
+                                       %(iaccount, realm, nonce, uri, response)
+                                command = xivo_sip.sip_subscribe(configs[astnum], "sip:" + iaccount,
+                                                                 1, icid, normv.phonenum,
+                                                                 2 * xivosb_register_frequency, auth)
+                                l_sipsock.sendto(command, (configs[astnum].remoteaddr, configs[astnum].portsipsrv))
+                        elif iret == 403:
+                                log_debug("%s : SUBSCRIBE %s Unauthorized %s" %(configs[astnum].astid, iaccount, icid))
+                                if normv.sipstatus != "Fail" + str(iret):
+                                        normv.set_sipstatus("Fail" + str(iret))
+                                        update_GUI_clients(astnum, sipphone, "sip_403")
+                                else:
+                                        pass
+                        elif iret == 100:
+                                # log_debug("%s : SUBSCRIBE %s Trying %s" %(configs[astnum].astid, iaccount, icid))
+                                pass
+                        elif iret == 200:
+                                # log_debug("%s : SUBSCRIBE %s OK %s" %(configs[astnum].astid, iaccount, icid))
+                                pass
+                        else:
+                                log_debug("%s : SUBSCRIBE %s Failed (code %d) %s"
+                                          %(configs[astnum].astid, iaccount, iret, icid))
+                                if normv.sipstatus != "Fail" + str(iret):
+                                        normv.set_sipstatus("Fail" + str(iret))
+                                        update_GUI_clients(astnum, sipphone, "sip-fai")
+
+
+        elif imsg == "OPTIONS" or imsg == "NOTIFY":
+                command = xivo_sip.sip_ok(configs[astnum], "sip:" + iaccount,
+                                          icseq, icid, iaccount, imsg, ibranch, itag)
+                l_sipsock.sendto(command,(configs[astnum].remoteaddr, l_addrsip[1]))
+                if imsg == "NOTIFY":
+                        sipnum, sippresence = tellpresence(data)
+                        if [sipnum, sippresence] != [None, None]:
+                                sipphone = "SIP/" + icid.split("@")[0].split("-subsxivo-")[1] # vs. sipnum
+                                if sipphone in plist[astnum].normal:
+                                        normv = plist[astnum].normal[sipphone]
+                                        normv.set_lasttime(time.time())
+                                        if normv.sipstatus != sippresence:
+                                                normv.set_sipstatus(sippresence)
+                                                update_GUI_clients(astnum, sipphone, "SIP-NTFY")
+                                        else:
+                                                pass
+                                else:
+                                        pass
+                else:
+                        spret = True
+        return spret
 
 
 ## \brief Sends a SIP register + n x SIP subscribe messages.
@@ -1021,288 +1021,288 @@ def split_from_ui(fullname):
 # (for switchboard) or to events-disallowed ones (for php CLI commands)
 # \return none
 def manage_tcp_connection(connid, allow_events):
-    global AMIclasssock, AMIcomms, ins
+        global AMIclasssock, AMIcomms, ins
 
-    try:
-            requester_ip   = connid[1]
-            requester_port = connid[2]
-            requester      = requester_ip + ":" + str(requester_port)
-    except Exception, exc:
-            log_debug("--- exception --- UI connection : could not get IP details of connid = %s : %s" %(str(connid),str(exc)))
-            requester = str(connid)
+        try:
+                requester_ip   = connid[1]
+                requester_port = connid[2]
+                requester      = requester_ip + ":" + str(requester_port)
+        except Exception, exc:
+                log_debug("--- exception --- UI connection : could not get IP details of connid = %s : %s" %(str(connid),str(exc)))
+                requester = str(connid)
 
-    try:
-            msg = connid[0].recv(BUFSIZE_LARGE)
-    except Exception, exc:
-            msg = ""
-            log_debug("--- exception --- UI connection : a problem occured when recv from %s : %s" %(requester, str(exc)))
-    if len(msg) == 0:
-            try:
-                    connid[0].close()
-                    ins.remove(connid[0])
-                    if allow_events == True:
-                            tcpopens_sb.remove(connid)
-                            log_debug("TCP (SB)  socket closed from %s" %requester)
-                            if requester in ctx_by_requester:
-                                    del ctx_by_requester[requester]
-                    else:
-                            tcpopens_php.remove(connid)
-                            log_debug("TCP (PHP) socket closed from %s" %requester)
-            except Exception, exc:
-                    log_debug("--- exception --- UI connection [%s] : a problem occured when trying to close %s : %s"
-                              %(msg, str(connid[0]), str(exc)))
-    else:
-        # what if more lines ???
-        usefulmsg = msg.split("\r\n")[0].split("\n")[0]
-        if usefulmsg == "hints":
-                try:
-                        connid[0].send(build_statuses())
-                except Exception, exc:
-                        log_debug("--- exception --- UI connection [%s] : KO when sending to %s : %s"
-                                  %(usefulmsg, requester, str(exc)))
-        elif usefulmsg == "callerids":
-                try:
-                        connid[0].send(build_callerids())
-                except Exception, exc:
-                        log_debug("--- exception --- UI connection [%s] : KO when sending to %s : %s"
-                                  %(usefulmsg, requester, str(exc)))
-        elif usefulmsg == "infos":
-                try:
-                        time_uptime = int(time.time() - time_start)
-                        reply = "infos=version=%s;uptime=%d s;maxgui=%d;conngui=%d" \
-                                %(__version__.split()[1], time_uptime, maxgui, len(tcpopens_sb))
-                        for tcpo in tcpopens_sb:
-                                reply += ":%s:%d" %(tcpo[1],tcpo[2])
-                        connid[0].send(reply + "\n")
-                except Exception, exc:
-                        log_debug("--- exception --- UI connection [%s] : KO when sending to %s : %s"
-                                  %(usefulmsg, requester, str(exc)))
-
-
-        # debug/setup functions
-        elif usefulmsg == "show_phones":
-                try:
-                        for plast in plist:
-                                k1 = plast.normal.keys()
-                                k1.sort()
-                                for kk in k1:
-                                        canal = plast.normal[kk].chann
-                                        connid[0].send("%10s %10s %6s [SIP : %12s - %4d s] %4d %s\n"
-                                                       %(plast.astid,
-                                                         kk,
-                                                         plast.normal[kk].towatch,
-                                                         plast.normal[kk].sipstatus,
-                                                         int(time.time() - plast.normal[kk].lasttime),
-                                                         len(canal),
-                                                         str(canal.keys())))
-                except Exception, exc:
-                        log_debug("--- exception --- UI connection [%s] : KO when sending to %s : %s"
-                                  %(usefulmsg, requester, str(exc)))
-        elif usefulmsg == "show_logged":
-                try:
-                        userlist_lock.acquire()
-                        try:
-                                for user,info in userlist[0].iteritems():
-                                        connid[0].send("%s %s\n" %(user, info))
-                        finally:
-                                userlist_lock.release()
-                        connid[0].send("%s\n" %str(ctx_by_requester))
-                except Exception, exc:
-                        log_debug("--- exception --- UI connection [%s] : KO when sending to %s : %s"
-                                  %(usefulmsg, requester, str(exc)))
-        elif usefulmsg == "show_ami":
-                try:
-                        for amis in AMIsocks:
-                                connid[0].send("events off   : %s\n" %(str(amis)))
-                        for amis in AMIcomms:
-                                connid[0].send("events on    : %s\n" %(str(amis)))
-                        for amis in AMIclasssock:
-                                connid[0].send("sboard comms : %s\n" %(str(amis)))
-                except Exception, exc:
-                        log_debug("--- exception --- UI connection [%s] : KO when sending to %s : %s"
-                                  %(usefulmsg, requester, str(exc)))
-        elif usefulmsg[0:5] == "label": # for inserting hand-written labels between calls when testing
-                try:
-                        log_debug("USER LABEL : %s" %(usefulmsg[6:]))
-                except Exception, exc:
-                        log_debug("--- exception --- UI connection [%s] : KO when sending to %s : %s"
-                                  %(usefulmsg, requester, str(exc)))
-
-
-        elif usefulmsg == "keepalive":
-                try:
-                        connid[0].send("keepalive=\n")
-                except Exception, exc:
-                        log_debug("--- exception --- UI connection [%s] : KO when sending to %s : %s"
-                                  %(usefulmsg, requester, str(exc)))
-        elif usefulmsg == "capabilities":
-                try:
-                        connid[0].send("capabilities=%s\n" %capabilities)
-                except Exception, exc:
-                        log_debug("--- exception --- UI connection [%s] : KO when sending to %s : %s"
-                                  %(usefulmsg, requester, str(exc)))
-        elif usefulmsg == "quit" or usefulmsg == "exit":
+        try:
+                msg = connid[0].recv(BUFSIZE_LARGE)
+        except Exception, exc:
+                msg = ""
+                log_debug("--- exception --- UI connection : a problem occured when recv from %s : %s" %(requester, str(exc)))
+        if len(msg) == 0:
                 try:
                         connid[0].close()
                         ins.remove(connid[0])
                         if allow_events == True:
                                 tcpopens_sb.remove(connid)
                                 log_debug("TCP (SB)  socket closed from %s" %requester)
+                                if requester in ctx_by_requester:
+                                        del ctx_by_requester[requester]
                         else:
                                 tcpopens_php.remove(connid)
                                 log_debug("TCP (PHP) socket closed from %s" %requester)
                 except Exception, exc:
                         log_debug("--- exception --- UI connection [%s] : a problem occured when trying to close %s : %s"
-                                  %(usefulmsg, requester, str(exc)))
-        elif usefulmsg != "":
-                l = usefulmsg.split()
-                if len(l) == 2 and l[0] == 'hangup':
-                        idassrc = -1
-                        assrc = l[1].split("/")[1]
-                        if assrc in asteriskr: idassrc = asteriskr[assrc]
-                        if idassrc == -1:
-                                connid[0].send("asterisk=%s::hangup KO : no such asterisk id (%s)\n" %(DAEMON, assrc))
-                        else:
-                                log_debug("%s is attempting a HANGUP : %s" %(requester, str(l)))
-                                phone, channel = split_from_ui(l[1])
-                                if phone in plist[idassrc].normal:
-                                        if channel in plist[idassrc].normal[phone].chann:
-                                                channel_peer = plist[idassrc].normal[phone].chann[channel].getChannelPeer()
-                                                log_debug("UI action : %s : hanging up <%s> and <%s>"
-                                                          %(configs[idassrc].astid , channel, channel_peer))
-                                                if not AMIclasssock[idassrc]:
-                                                        log_debug("AMI was not connected - attempting to connect again")
-                                                        AMIclasssock[idassrc] = connect_to_AMI((configs[idassrc].remoteaddr,
-                                                                                                configs[idassrc].ami_port),
-                                                                                               configs[idassrc].ami_login,
-                                                                                               configs[idassrc].ami_pass)
-                                                if AMIclasssock[idassrc]:
-                                                        ret = AMIclasssock[idassrc].hangup(channel, channel_peer)
-                                                        if ret > 0:
-                                                                connid[0].send("asterisk=%s::hangup OK (%d) %s\n"
-                                                                               %(DAEMON, ret, l[1]))
-                                                        else:
-                                                                connid[0].send("asterisk=%s::hangup KO : socket request failed\n" %DAEMON)
-                                                else:
-                                                        connid[0].send("asterisk=%s::hangup KO : no socket available\n" %DAEMON)
-                                        else:
-                                                connid[0].send("asterisk=%s::hangup KO : no such channel\n" %DAEMON)
-                                else:
-                                        connid[0].send("asterisk=%s::hangup KO : no such phone\n" %DAEMON)
-                elif len(l) >= 1 and l[0] == 'directory-search':
+                                  %(msg, str(connid[0]), str(exc)))
+        else:
+                # what if more lines ???
+                usefulmsg = msg.split("\r\n")[0].split("\n")[0]
+                if usefulmsg == "hints":
                         try:
-                                if len(l) == 1: l.append("")
-                                spattern = ' '.join(l[1:])
-                                connid[0].send(build_customers_fromrequester(requester, spattern))
+                                connid[0].send(build_statuses())
                         except Exception, exc:
-                                log_debug("--- exception --- UI connection : a problem occured when sending to %s : %s"
-                                          %(requester, str(exc)))
-                elif len(l) == 3 and (l[0] == 'originate' or l[0] == 'transfer'):
-                        idassrc = -1
-                        assrc = l[1].split("/")[1]
-                        if assrc in asteriskr: idassrc = asteriskr[assrc]
-                        idasdst = -1
-                        asdst = l[2].split("/")[1]
-                        if asdst in asteriskr: idasdst = asteriskr[asdst]
-                        if idassrc != -1 and idassrc == idasdst:
-                                if not AMIclasssock[idassrc]:
-                                        "AMI was not connected - attempting to connect again"
-                                        AMIclasssock[idassrc] = connect_to_AMI((configs[idassrc].remoteaddr,
-                                                                                configs[idassrc].ami_port),
-                                                                               configs[idassrc].ami_login,
-                                                                               configs[idassrc].ami_pass)
-                                if AMIclasssock[idassrc]:
-                                        if l[0] == 'originate':
-                                                log_debug("%s is attempting an ORIGINATE : %s" %(requester, str(l)))
-                                                if l[2].split("/")[1] != "":
-                                                        ret = AMIclasssock[idassrc].originate(l[1].split("/")[3],
-                                                                                              l[1].split("/")[4],
-                                                                                              l[2].split("/")[5],
-                                                                                              l[2].split("/")[2])
-                                                else:
-                                                        ret = False
-                                                if ret:
-                                                        connid[0].send("asterisk=%s::originate OK (ast %d) %s %s\n"
-                                                                       %(DAEMON, idassrc, l[1], l[2]))
-                                                else:
-                                                        connid[0].send("asterisk=%s::originate KO (ast %d) %s %s\n"
-                                                                       %(DAEMON, idassrc, l[1], l[2]))
-                                        elif l[0] == 'transfer':
-                                                log_debug("%s is attempting a TRANSFER : %s" %(requester, str(l)))
-                                                phonesrc, phonesrcchan = split_from_ui(l[1])
-                                                if phonesrc == phonesrcchan:
-                                                        connid[0].send("asterisk=%s::transfer KO : %s not a channel\n"
-                                                                       %(DAEMON, phonesrcchan))
-                                                else:
-                                                        if phonesrc in plist[idassrc].normal:
-                                                                channellist = plist[idassrc].normal[phonesrc].chann
-                                                                nopens = len(channellist)
-                                                                if nopens == 0:
-                                                                        connid[0].send("asterisk=%s::transfer KO - no channel opened on %s\n"
-                                                                                       %(DAEMON, phonesrc))
-                                                                else:
-                                                                        tchan = channellist[phonesrcchan].getChannelPeer()
-                                                                        ret = AMIclasssock[idassrc].transfer(tchan,
-                                                                                                             l[2].split("/")[5],
-                                                                                                             "local-extensions")
-                                                                        if ret:
-                                                                                connid[0].send("asterisk=%s::transfer OK (ast %d) %s %s\n"
-                                                                                               %(DAEMON, idassrc, l[1], l[2]))
-                                                                        else:
-                                                                                connid[0].send("asterisk=%s::transfer KO (ast %d) %s %s\n"
-                                                                                               %(DAEMON, idassrc, l[1], l[2]))
-                        else:
-                                connid[0].send("asterisk=%s::originate or transfer KO : asterisk id mismatch\n" %DAEMON)
-                elif len(l) >= 4 and l[0] == 'history':
-                        log_debug("%s is attempting a HISTORY : %s" %(requester, str(l)))
-                        [dummyh, requester_id, nlines, kind] = l
-                        repstr = build_history_string(requester_id, nlines, kind)
-                        connid[0].send(repstr + "\n")
-                elif len(l) >= 4 and l[0] == 'login':
-                        if l[1] in asteriskr:
-                                astnum = asteriskr[l[1]]
-                                # log_debug("%i %s" % (astnum,l[3]))
+                                log_debug("--- exception --- UI connection [%s] : KO when sending to %s : %s"
+                                          %(usefulmsg, requester, str(exc)))
+                elif usefulmsg == "callerids":
+                        try:
+                                connid[0].send(build_callerids())
+                        except Exception, exc:
+                                log_debug("--- exception --- UI connection [%s] : KO when sending to %s : %s"
+                                          %(usefulmsg, requester, str(exc)))
+                elif usefulmsg == "infos":
+                        try:
+                                time_uptime = int(time.time() - time_start)
+                                reply = "infos=version=%s;uptime=%d s;maxgui=%d;conngui=%d" \
+                                        %(__version__.split()[1], time_uptime, maxgui, len(tcpopens_sb))
+                                for tcpo in tcpopens_sb:
+                                        reply += ":%s:%d" %(tcpo[1],tcpo[2])
+                                connid[0].send(reply + "\n")
+                        except Exception, exc:
+                                log_debug("--- exception --- UI connection [%s] : KO when sending to %s : %s"
+                                          %(usefulmsg, requester, str(exc)))
+
+
+                # debug/setup functions
+                elif usefulmsg == "show_phones":
+                        try:
+                                for plast in plist:
+                                        k1 = plast.normal.keys()
+                                        k1.sort()
+                                        for kk in k1:
+                                                canal = plast.normal[kk].chann
+                                                connid[0].send("%10s %10s %6s [SIP : %12s - %4d s] %4d %s\n"
+                                                               %(plast.astid,
+                                                                 kk,
+                                                                 plast.normal[kk].towatch,
+                                                                 plast.normal[kk].sipstatus,
+                                                                 int(time.time() - plast.normal[kk].lasttime),
+                                                                 len(canal),
+                                                                 str(canal.keys())))
+                        except Exception, exc:
+                                log_debug("--- exception --- UI connection [%s] : KO when sending to %s : %s"
+                                          %(usefulmsg, requester, str(exc)))
+                elif usefulmsg == "show_logged":
+                        try:
                                 userlist_lock.acquire()
                                 try:
-                                        user = finduser(astnum, l[2].lower() + l[3])
-                                        if user == None:
-                                                repstr = "loginKO="
-                                                log_debug("no user found %s" %str(l))
-                                        else:
-                                                repstr = "loginok=" + user.get('context') + ";" + user.get('phonenum') + "\r\n"
-                                                ctx_by_requester[requester] = [astnum, user.get('context')]
+                                        for user,info in userlist[0].iteritems():
+                                                connid[0].send("%s %s\n" %(user, info))
                                 finally:
                                         userlist_lock.release()
-                        else:
-                                repstr = "loginKO="
-                                log_debug("login command attempt from SB : asterisk name <%s> unknown" %l[1])
-                        connid[0].send(repstr)
-                elif allow_events == False: # i.e. if PHP-style connection
-                        n = -1
-                        if requester_ip in ip_reverse_php: n = ip_reverse_php[requester_ip]
-                        if n == -1:
-                                connid[0].send("XIVO CLI:CLIENT NOT ALLOWED\n")
-                        else:
-                                connid[0].send("XIVO CLI:" + configs[n].astid + "\n")
+                                connid[0].send("%s\n" %str(ctx_by_requester))
+                        except Exception, exc:
+                                log_debug("--- exception --- UI connection [%s] : KO when sending to %s : %s"
+                                          %(usefulmsg, requester, str(exc)))
+                elif usefulmsg == "show_ami":
+                        try:
+                                for amis in AMIsocks:
+                                        connid[0].send("events off   : %s\n" %(str(amis)))
+                                for amis in AMIcomms:
+                                        connid[0].send("events on    : %s\n" %(str(amis)))
+                                for amis in AMIclasssock:
+                                        connid[0].send("sboard comms : %s\n" %(str(amis)))
+                        except Exception, exc:
+                                log_debug("--- exception --- UI connection [%s] : KO when sending to %s : %s"
+                                          %(usefulmsg, requester, str(exc)))
+                elif usefulmsg[0:5] == "label": # for inserting hand-written labels between calls when testing
+                        try:
+                                log_debug("USER LABEL : %s" %(usefulmsg[6:]))
+                        except Exception, exc:
+                                log_debug("--- exception --- UI connection [%s] : KO when sending to %s : %s"
+                                          %(usefulmsg, requester, str(exc)))
+
+
+                elif usefulmsg == "keepalive":
+                        try:
+                                connid[0].send("keepalive=\n")
+                        except Exception, exc:
+                                log_debug("--- exception --- UI connection [%s] : KO when sending to %s : %s"
+                                          %(usefulmsg, requester, str(exc)))
+                elif usefulmsg == "capabilities":
+                        try:
+                                connid[0].send("capabilities=%s\n" %capabilities)
+                        except Exception, exc:
+                                log_debug("--- exception --- UI connection [%s] : KO when sending to %s : %s"
+                                          %(usefulmsg, requester, str(exc)))
+                elif usefulmsg == "quit" or usefulmsg == "exit":
+                        try:
+                                connid[0].close()
+                                ins.remove(connid[0])
+                                if allow_events == True:
+                                        tcpopens_sb.remove(connid)
+                                        log_debug("TCP (SB)  socket closed from %s" %requester)
+                                else:
+                                        tcpopens_php.remove(connid)
+                                        log_debug("TCP (PHP) socket closed from %s" %requester)
+                        except Exception, exc:
+                                log_debug("--- exception --- UI connection [%s] : a problem occured when trying to close %s : %s"
+                                          %(usefulmsg, requester, str(exc)))
+                elif usefulmsg != "":
+                        l = usefulmsg.split()
+                        if len(l) == 2 and l[0] == 'hangup':
+                                idassrc = -1
+                                assrc = l[1].split("/")[1]
+                                if assrc in asteriskr: idassrc = asteriskr[assrc]
+                                if idassrc == -1:
+                                        connid[0].send("asterisk=%s::hangup KO : no such asterisk id (%s)\n" %(DAEMON, assrc))
+                                else:
+                                        log_debug("%s is attempting a HANGUP : %s" %(requester, str(l)))
+                                        phone, channel = split_from_ui(l[1])
+                                        if phone in plist[idassrc].normal:
+                                                if channel in plist[idassrc].normal[phone].chann:
+                                                        channel_peer = plist[idassrc].normal[phone].chann[channel].getChannelPeer()
+                                                        log_debug("UI action : %s : hanging up <%s> and <%s>"
+                                                                  %(configs[idassrc].astid , channel, channel_peer))
+                                                        if not AMIclasssock[idassrc]:
+                                                                log_debug("AMI was not connected - attempting to connect again")
+                                                                AMIclasssock[idassrc] = connect_to_AMI((configs[idassrc].remoteaddr,
+                                                                                                        configs[idassrc].ami_port),
+                                                                                                       configs[idassrc].ami_login,
+                                                                                                       configs[idassrc].ami_pass)
+                                                        if AMIclasssock[idassrc]:
+                                                                ret = AMIclasssock[idassrc].hangup(channel, channel_peer)
+                                                                if ret > 0:
+                                                                        connid[0].send("asterisk=%s::hangup OK (%d) %s\n"
+                                                                                       %(DAEMON, ret, l[1]))
+                                                                else:
+                                                                        connid[0].send("asterisk=%s::hangup KO : socket request failed\n" %DAEMON)
+                                                        else:
+                                                                connid[0].send("asterisk=%s::hangup KO : no socket available\n" %DAEMON)
+                                                else:
+                                                        connid[0].send("asterisk=%s::hangup KO : no such channel\n" %DAEMON)
+                                        else:
+                                                connid[0].send("asterisk=%s::hangup KO : no such phone\n" %DAEMON)
+                        elif len(l) >= 1 and l[0] == 'directory-search':
                                 try:
-                                        if not AMIclasssock[n]:
-                                                log_debug("AMI was not connected - attempting to connect again")
-                                                AMIclasssock[n] = connect_to_AMI((configs[n].remoteaddr,
-                                                                                  configs[n].ami_port),
-                                                                                 configs[n].ami_login,
-                                                                                 configs[n].ami_pass)
-                                        if AMIclasssock[n]:
-                                                s = AMIclasssock[n].execclicommand(usefulmsg.strip())
-                                                try:
-                                                        for x in s: connid[0].send(x)
-                                                        connid[0].send("XIVO CLI:OK\n")
-                                                except Exception, exc:
-                                                        log_debug("--- exception --- (%s) error : php command : (client %s) : %s"
-                                                                  %(configs[n].astid, requester, str(exc)))
+                                        if len(l) == 1: l.append("")
+                                        spattern = ' '.join(l[1:])
+                                        connid[0].send(build_customers_fromrequester(requester, spattern))
                                 except Exception, exc:
-                                        connid[0].send("XIVO CLI:KO Exception : %s\n" %(str(exc)))
-                else:
-                        connid[0].send("XIVO CLI:NOT ALLOWED from Switchboard\n")
+                                        log_debug("--- exception --- UI connection : a problem occured when sending to %s : %s"
+                                                  %(requester, str(exc)))
+                        elif len(l) == 3 and (l[0] == 'originate' or l[0] == 'transfer'):
+                                idassrc = -1
+                                assrc = l[1].split("/")[1]
+                                if assrc in asteriskr: idassrc = asteriskr[assrc]
+                                idasdst = -1
+                                asdst = l[2].split("/")[1]
+                                if asdst in asteriskr: idasdst = asteriskr[asdst]
+                                if idassrc != -1 and idassrc == idasdst:
+                                        if not AMIclasssock[idassrc]:
+                                                "AMI was not connected - attempting to connect again"
+                                                AMIclasssock[idassrc] = connect_to_AMI((configs[idassrc].remoteaddr,
+                                                                                        configs[idassrc].ami_port),
+                                                                                       configs[idassrc].ami_login,
+                                                                                       configs[idassrc].ami_pass)
+                                        if AMIclasssock[idassrc]:
+                                                if l[0] == 'originate':
+                                                        log_debug("%s is attempting an ORIGINATE : %s" %(requester, str(l)))
+                                                        if l[2].split("/")[1] != "":
+                                                                ret = AMIclasssock[idassrc].originate(l[1].split("/")[3],
+                                                                                                      l[1].split("/")[4],
+                                                                                                      l[2].split("/")[5],
+                                                                                                      l[2].split("/")[2])
+                                                        else:
+                                                                ret = False
+                                                        if ret:
+                                                                connid[0].send("asterisk=%s::originate OK (ast %d) %s %s\n"
+                                                                               %(DAEMON, idassrc, l[1], l[2]))
+                                                        else:
+                                                                connid[0].send("asterisk=%s::originate KO (ast %d) %s %s\n"
+                                                                               %(DAEMON, idassrc, l[1], l[2]))
+                                                elif l[0] == 'transfer':
+                                                        log_debug("%s is attempting a TRANSFER : %s" %(requester, str(l)))
+                                                        phonesrc, phonesrcchan = split_from_ui(l[1])
+                                                        if phonesrc == phonesrcchan:
+                                                                connid[0].send("asterisk=%s::transfer KO : %s not a channel\n"
+                                                                               %(DAEMON, phonesrcchan))
+                                                        else:
+                                                                if phonesrc in plist[idassrc].normal:
+                                                                        channellist = plist[idassrc].normal[phonesrc].chann
+                                                                        nopens = len(channellist)
+                                                                        if nopens == 0:
+                                                                                connid[0].send("asterisk=%s::transfer KO - no channel opened on %s\n"
+                                                                                               %(DAEMON, phonesrc))
+                                                                        else:
+                                                                                tchan = channellist[phonesrcchan].getChannelPeer()
+                                                                                ret = AMIclasssock[idassrc].transfer(tchan,
+                                                                                                                     l[2].split("/")[5],
+                                                                                                                     "local-extensions")
+                                                                                if ret:
+                                                                                        connid[0].send("asterisk=%s::transfer OK (ast %d) %s %s\n"
+                                                                                                       %(DAEMON, idassrc, l[1], l[2]))
+                                                                                else:
+                                                                                        connid[0].send("asterisk=%s::transfer KO (ast %d) %s %s\n"
+                                                                                                       %(DAEMON, idassrc, l[1], l[2]))
+                                else:
+                                        connid[0].send("asterisk=%s::originate or transfer KO : asterisk id mismatch\n" %DAEMON)
+                        elif len(l) >= 4 and l[0] == 'history':
+                                log_debug("%s is attempting a HISTORY : %s" %(requester, str(l)))
+                                [dummyh, requester_id, nlines, kind] = l
+                                repstr = build_history_string(requester_id, nlines, kind)
+                                connid[0].send(repstr + "\n")
+                        elif len(l) >= 4 and l[0] == 'login':
+                                if l[1] in asteriskr:
+                                        astnum = asteriskr[l[1]]
+                                        # log_debug("%i %s" % (astnum,l[3]))
+                                        userlist_lock.acquire()
+                                        try:
+                                                user = finduser(astnum, l[2].lower() + l[3])
+                                                if user == None:
+                                                        repstr = "loginKO="
+                                                        log_debug("no user found %s" %str(l))
+                                                else:
+                                                        repstr = "loginok=" + user.get('context') + ";" + user.get('phonenum') + "\r\n"
+                                                        ctx_by_requester[requester] = [astnum, user.get('context')]
+                                        finally:
+                                                userlist_lock.release()
+                                else:
+                                        repstr = "loginKO="
+                                        log_debug("login command attempt from SB : asterisk name <%s> unknown" %l[1])
+                                connid[0].send(repstr)
+                        elif allow_events == False: # i.e. if PHP-style connection
+                                n = -1
+                                if requester_ip in ip_reverse_php: n = ip_reverse_php[requester_ip]
+                                if n == -1:
+                                        connid[0].send("XIVO CLI:CLIENT NOT ALLOWED\n")
+                                else:
+                                        connid[0].send("XIVO CLI:" + configs[n].astid + "\n")
+                                        try:
+                                                if not AMIclasssock[n]:
+                                                        log_debug("AMI was not connected - attempting to connect again")
+                                                        AMIclasssock[n] = connect_to_AMI((configs[n].remoteaddr,
+                                                                                          configs[n].ami_port),
+                                                                                         configs[n].ami_login,
+                                                                                         configs[n].ami_pass)
+                                                if AMIclasssock[n]:
+                                                        s = AMIclasssock[n].execclicommand(usefulmsg.strip())
+                                                        try:
+                                                                for x in s: connid[0].send(x)
+                                                                connid[0].send("XIVO CLI:OK\n")
+                                                        except Exception, exc:
+                                                                log_debug("--- exception --- (%s) error : php command : (client %s) : %s"
+                                                                          %(configs[n].astid, requester, str(exc)))
+                                        except Exception, exc:
+                                                connid[0].send("XIVO CLI:KO Exception : %s\n" %(str(exc)))
+                        else:
+                                connid[0].send("XIVO CLI:NOT ALLOWED from Switchboard\n")
 
 
 ## \brief Tells whether a channel is a "normal" one, i.e. SIP, IAX2, mISDN, Zap
@@ -2344,15 +2344,15 @@ class AsteriskRemote:
 # \param passwd the user's passwd
 # \return none
 def adduser(astn, user, passwd, context, phonenum):
-    global userlist
-    if userlist[astn].has_key(user):
-        userlist[astn][user]['passwd'] = passwd
-        userlist[astn][user]['context'] = context
-    else:
-        userlist[astn][user] = {'user':user,
-                                'passwd':passwd,
-                                'context':context,
-                                'phonenum':phonenum}
+        global userlist
+        if userlist[astn].has_key(user):
+                userlist[astn][user]['passwd'] = passwd
+                userlist[astn][user]['context'] = context
+        else:
+                userlist[astn][user] = {'user':user,
+                                        'passwd':passwd,
+                                        'context':context,
+                                        'phonenum':phonenum}
 
 ## \brief Deletes a user from the userlist.
 # \param user the user to delete
@@ -2474,28 +2474,28 @@ class LoginHandler(SocketServer.StreamRequestHandler):
                 sessionid = '%u' % random.randint(0,999999999)
                 userlist_lock.acquire()
                 try:
-                    if e.has_key('sessiontimestamp'):
-                        if time.time() - e.get('sessiontimestamp') < xivoclient_session_timeout:
-                                replystr = "ERROR ALREADY CONNECTED"
-                                debugstr += " / USER %s already connected" %user
-                                return [replystr, debugstr], [user, port, state, astnum]
-                    e['sessionid'] = sessionid
-                    e['sessiontimestamp'] = time.time()
-                    e['ip'] = self.client_address[0]
-                    e['port'] = port
-                    e['cticlienttype'] = whoami
-                    e['cticlientos'] = whatsmyos
-                    e['tcpmode'] = tcpmode
-                    if tcpmode:
-                        print 'TCPMODE', self.request#, self.request.
-                        e['socket'] = self.request.makefile('w')
-                    context = e['context']
-                    if state in allowed_states:
-                        e['state'] = state
-                    else:
-                        e['state'] = "undefinedstate"
+                        if e.has_key('sessiontimestamp'):
+                                if time.time() - e.get('sessiontimestamp') < xivoclient_session_timeout:
+                                        replystr = "ERROR ALREADY CONNECTED"
+                                        debugstr += " / USER %s already connected" %user
+                                        return [replystr, debugstr], [user, port, state, astnum]
+                        e['sessionid'] = sessionid
+                        e['sessiontimestamp'] = time.time()
+                        e['ip'] = self.client_address[0]
+                        e['port'] = port
+                        e['cticlienttype'] = whoami
+                        e['cticlientos'] = whatsmyos
+                        e['tcpmode'] = tcpmode
+                        if tcpmode:
+                                print 'TCPMODE', self.request#, self.request.
+                                e['socket'] = self.request.makefile('w')
+                        context = e['context']
+                        if state in allowed_states:
+                                e['state'] = state
+                        else:
+                                e['state'] = "undefinedstate"
                 finally:
-                    userlist_lock.release()
+                        userlist_lock.release()
 
                 replystr = "OK SESSIONID %s %s %s %s" %(sessionid, context, capabilities, __version__.split()[1])
                 debugstr += " / user %s, port %s, state %s, astnum %d : connected : %s" %(user,port,state,astnum,replystr)
@@ -2527,78 +2527,78 @@ class LoginHandler(SocketServer.StreamRequestHandler):
 # \brief Gives client identification to the profile pusher.
 # The connection is kept alive so several requests can be made on the same open TCP connection.
 class IdentRequestHandler(SocketServer.StreamRequestHandler):
-    def handle(self):
-        line = self.rfile.readline().strip()
-        list0 = line.split(' ')
-        log_debug("IdentRequestHandler (TCP) : client = %s:%d / %s"
-                  %(self.client_address[0],self.client_address[1],str(list0)))
-        retline = 'ERROR\r\n'
-        # PUSH user callerid msg
-        m = re.match("PUSH (\S+) (\S+) ?(.*)", line)
-        if m != None:
-            user = m.group(1)
-            callerid = m.group(2)
-            msg = m.group(3)
-            #print 'user', user, 'callerid', callerid, 'msg="%s"'%msg
-            userlist_lock.acquire()
-            try:
-              try:
-                      try:
-                              astnum = ip_reverse_sht[self.client_address[0]]
-                      except:
-                              astnum = 0
-                      e = finduser(astnum, user)
-                      if e == None:
-                              retline = 'ERROR USER <' + user + '> NOT FOUND\r\n'
-                      elif e.has_key('ip') and e.has_key('port') \
-                               and e.has_key('state') and e.has_key('sessionid') \
-                               and e.has_key('sessiontimestamp'):
-                              if time.time() - e.get('sessiontimestamp') > xivoclient_session_timeout:
-                                      retline = 'ERROR USER SESSION EXPIRED for <%s>\r\n' %user
-                              else:
-                                      retline = 'USER %s STATE %s\r\n'%(user,e.get('state'))
-                                      # print 'sendfiche', e, callerid, msg
-                                      sendfiche.sendficheasync(e, callerid, msg)
-                      else:
-                              retline = 'ERROR USER SESSION NOT DEFINED for <%s>\r\n' %user
-              except Exception, exc:
-                      # print "EXCEPTION:", str(exc)
-                      retline = 'ERROR (exception) : %s\r\n' %(str(exc))
-            finally:
-                    userlist_lock.release()
-        # QUERY user   (ex: QUERY sipnanard)
-        if list0[0] == 'QUERY' and len(list0) == 2:
-            user = list0[1]
-            userlist_lock.acquire()
-            try:
-              try:
-                      try:
-                              astnum = ip_reverse_sht[self.client_address[0]]
-                      except:
-                              astnum = 0
-                      e = finduser(astnum, user)
-                      if e == None:
-                              retline = 'ERROR USER <' + user + '> NOT FOUND\r\n'
-                      elif e.has_key('ip') and e.has_key('port') \
-                               and e.has_key('state') and e.has_key('sessionid') \
-                               and e.has_key('sessiontimestamp'):
-                              if time.time() - e.get('sessiontimestamp') > xivoclient_session_timeout:
-                                      retline = 'ERROR USER SESSION EXPIRED for <%s>\r\n' %user
-                              else:
-                                      retline = 'USER %s SESSIONID %s IP %s PORT %s STATE %s\r\n' \
-                                                %(user, e.get('sessionid'), e.get('ip'), e.get('port'), e.get('state'))
-                      else:
-                              retline = 'ERROR USER SESSION NOT DEFINED for <%s>\r\n' %user
-              except Exception, exc:
-                      retline = 'ERROR (exception) : %s\r\n' %(str(exc))
-            finally:
-                    userlist_lock.release()
-        try:
-                self.wfile.write(retline)
-        except Exception, exc:
-                # something bad happened.
-                log_debug("IdentRequestHandler/Exception: " + str(exc))
-                return
+        def handle(self):
+                line = self.rfile.readline().strip()
+                list0 = line.split(' ')
+                log_debug("IdentRequestHandler (TCP) : client = %s:%d / %s"
+                          %(self.client_address[0],self.client_address[1],str(list0)))
+                retline = 'ERROR\r\n'
+                # PUSH user callerid msg
+                m = re.match("PUSH (\S+) (\S+) ?(.*)", line)
+                if m != None:
+                        user = m.group(1)
+                        callerid = m.group(2)
+                        msg = m.group(3)
+                        #print 'user', user, 'callerid', callerid, 'msg="%s"'%msg
+                        userlist_lock.acquire()
+                        try:
+                                try:
+                                        try:
+                                                astnum = ip_reverse_sht[self.client_address[0]]
+                                        except:
+                                                astnum = 0
+                                        e = finduser(astnum, user)
+                                        if e == None:
+                                                retline = 'ERROR USER <' + user + '> NOT FOUND\r\n'
+                                        elif e.has_key('ip') and e.has_key('port') \
+                                                 and e.has_key('state') and e.has_key('sessionid') \
+                                                 and e.has_key('sessiontimestamp'):
+                                                if time.time() - e.get('sessiontimestamp') > xivoclient_session_timeout:
+                                                        retline = 'ERROR USER SESSION EXPIRED for <%s>\r\n' %user
+                                                else:
+                                                        retline = 'USER %s STATE %s\r\n'%(user,e.get('state'))
+                                                        # print 'sendfiche', e, callerid, msg
+                                                        sendfiche.sendficheasync(e, callerid, msg)
+                                        else:
+                                                retline = 'ERROR USER SESSION NOT DEFINED for <%s>\r\n' %user
+                                except Exception, exc:
+                                        # print "EXCEPTION:", str(exc)
+                                        retline = 'ERROR (exception) : %s\r\n' %(str(exc))
+                        finally:
+                                userlist_lock.release()
+                # QUERY user   (ex: QUERY sipnanard)
+                if list0[0] == 'QUERY' and len(list0) == 2:
+                        user = list0[1]
+                        userlist_lock.acquire()
+                        try:
+                                try:
+                                        try:
+                                                astnum = ip_reverse_sht[self.client_address[0]]
+                                        except:
+                                                astnum = 0
+                                        e = finduser(astnum, user)
+                                        if e == None:
+                                                retline = 'ERROR USER <' + user + '> NOT FOUND\r\n'
+                                        elif e.has_key('ip') and e.has_key('port') \
+                                                 and e.has_key('state') and e.has_key('sessionid') \
+                                                 and e.has_key('sessiontimestamp'):
+                                                if time.time() - e.get('sessiontimestamp') > xivoclient_session_timeout:
+                                                        retline = 'ERROR USER SESSION EXPIRED for <%s>\r\n' %user
+                                                else:
+                                                        retline = 'USER %s SESSIONID %s IP %s PORT %s STATE %s\r\n' \
+                                                                  %(user, e.get('sessionid'), e.get('ip'), e.get('port'), e.get('state'))
+                                        else:
+                                                retline = 'ERROR USER SESSION NOT DEFINED for <%s>\r\n' %user
+                                except Exception, exc:
+                                        retline = 'ERROR (exception) : %s\r\n' %(str(exc))
+                        finally:
+                                userlist_lock.release()
+                try:
+                        self.wfile.write(retline)
+                except Exception, exc:
+                        # something bad happened.
+                        log_debug("IdentRequestHandler/Exception: " + str(exc))
+                        return
 
 
 ## \class KeepAliveHandler
@@ -3062,135 +3062,135 @@ while True: # loops over the reloads
 
         # Receive messages
         while not askedtoquit:
-            try:
-                    [i, o, e] = select.select(ins, [], [], xivosb_register_frequency)
-            except Exception, exc:
-                    if askedtoquit:
-                            try:
-                                    os.unlink(PIDFILE)
-                            except Exception, exc:
-                                    print exc
-                            if debug_mode:
-                                    # Close files and sockets
-                                    evtfile.close()
-                                    guifile.close()
-                            sys.exit(5)
-                    else:
-                            askedtoquit = True
-                            for s in ins:
-                                    s.close()
-                            continue
-            if i:
-                if loginserver.socket in i:
-                        loginserver.handle_request()
-                elif requestserver.socket in i:
-                        requestserver.handle_request()
-                elif keepaliveserver.socket in i:
-                        keepaliveserver.handle_request()
-                # SIP incoming packets are catched here
-                elif filter(lambda j: j in SIPsocks, i):
-                        res = filter(lambda j: j in SIPsocks, i)[0]
-                        for n in items_asterisks:
-                                if SIPsocks[n] is res: break
-                        [data, addrsip] = SIPsocks[n].recvfrom(BUFSIZE_UDP)
-                        is_an_options_packet = parseSIP(n, data, SIPsocks[n], addrsip)
-                        # if the packet is an OPTIONS one (sent for instance when * is restarted)
-                        if is_an_options_packet:
-                                log_debug(configs[n].astid + " : do_sip_register (parse SIP) " + time.strftime("%H:%M:%S", time.localtime()))
+                try:
+                        [i, o, e] = select.select(ins, [], [], xivosb_register_frequency)
+                except Exception, exc:
+                        if askedtoquit:
                                 try:
-                                        update_sipnumlist(n)
-                                        if with_ami: update_amisocks(n)
-                                        if with_sip: do_sip_register(n, SIPsocks[n])
-                                        lastrequest_time[n] = time.time()
+                                        os.unlink(PIDFILE)
                                 except Exception, exc:
-                                        log_debug(configs[n].astid + " : failed while updating lists and sockets : %s" %(str(exc)))
-                # these AMI connections are used in order to manage AMI commands with incoming events
-                elif filter(lambda j: j in AMIsocks, i):
-                        res = filter(lambda j: j in AMIsocks, i)[0]
-                        for n in items_asterisks:
-                                if AMIsocks[n] is res: break
-                        try:
-                                a = AMIsocks[n].recv(BUFSIZE_ANY)
-                                if len(a) == 0: # end of connection from server side : closing socket
-                                        log_debug(configs[n].astid + " : AMI (events = on)  : CLOSING")
-                                        AMIsocks[n].close()
-                                        ins.remove(AMIsocks[n])
-                                        AMIsocks[n] = -1
-                                else:
-                                        handle_ami_event(n, a)
-                        except Exception, exc:
-                                pass
-                # these AMI connections are used in order to manage AMI commands without events
-                elif filter(lambda j: j in AMIcomms, i):
-                        res = filter(lambda j: j in AMIcomms, i)[0]
-                        for n in items_asterisks:
-                                if AMIcomms[n] is res: break
-                        try:
-                                a = AMIcomms[n].recv(BUFSIZE_ANY)
-                                if len(a) == 0: # end of connection from server side : closing socket
-                                        log_debug(configs[n].astid + " : AMI (events = off) : CLOSING")
-                                        AMIcomms[n].close()
-                                        ins.remove(AMIcomms[n])
-                                        AMIcomms[n] = -1
-                                else:
-                                        handle_ami_status(n, a)
-                        except Exception, exc:
-                                pass
-                # the new UI (SB) connections are catched here
-                elif UIsock in i:
-                        [conn, UIsockparams] = UIsock.accept()
-                        if len(tcpopens_sb) >= maxgui:
-                                conn.close()
+                                        print exc
+                                if debug_mode:
+                                        # Close files and sockets
+                                        evtfile.close()
+                                        guifile.close()
+                                sys.exit(5)
                         else:
-                                log_debug("TCP (SB)  socket opened on   %s:%s" %(UIsockparams[0],str(UIsockparams[1])))
+                                askedtoquit = True
+                                for s in ins:
+                                        s.close()
+                                continue
+                if i:
+                        if loginserver.socket in i:
+                                loginserver.handle_request()
+                        elif requestserver.socket in i:
+                                requestserver.handle_request()
+                        elif keepaliveserver.socket in i:
+                                keepaliveserver.handle_request()
+                        # SIP incoming packets are catched here
+                        elif filter(lambda j: j in SIPsocks, i):
+                                res = filter(lambda j: j in SIPsocks, i)[0]
+                                for n in items_asterisks:
+                                        if SIPsocks[n] is res: break
+                                [data, addrsip] = SIPsocks[n].recvfrom(BUFSIZE_UDP)
+                                is_an_options_packet = parseSIP(n, data, SIPsocks[n], addrsip)
+                                # if the packet is an OPTIONS one (sent for instance when * is restarted)
+                                if is_an_options_packet:
+                                        log_debug(configs[n].astid + " : do_sip_register (parse SIP) " + time.strftime("%H:%M:%S", time.localtime()))
+                                        try:
+                                                update_sipnumlist(n)
+                                                if with_ami: update_amisocks(n)
+                                                if with_sip: do_sip_register(n, SIPsocks[n])
+                                                lastrequest_time[n] = time.time()
+                                        except Exception, exc:
+                                                log_debug(configs[n].astid + " : failed while updating lists and sockets : %s" %(str(exc)))
+                        # these AMI connections are used in order to manage AMI commands with incoming events
+                        elif filter(lambda j: j in AMIsocks, i):
+                                res = filter(lambda j: j in AMIsocks, i)[0]
+                                for n in items_asterisks:
+                                        if AMIsocks[n] is res: break
+                                try:
+                                        a = AMIsocks[n].recv(BUFSIZE_ANY)
+                                        if len(a) == 0: # end of connection from server side : closing socket
+                                                log_debug(configs[n].astid + " : AMI (events = on)  : CLOSING")
+                                                AMIsocks[n].close()
+                                                ins.remove(AMIsocks[n])
+                                                AMIsocks[n] = -1
+                                        else:
+                                                handle_ami_event(n, a)
+                                except Exception, exc:
+                                        pass
+                        # these AMI connections are used in order to manage AMI commands without events
+                        elif filter(lambda j: j in AMIcomms, i):
+                                res = filter(lambda j: j in AMIcomms, i)[0]
+                                for n in items_asterisks:
+                                        if AMIcomms[n] is res: break
+                                try:
+                                        a = AMIcomms[n].recv(BUFSIZE_ANY)
+                                        if len(a) == 0: # end of connection from server side : closing socket
+                                                log_debug(configs[n].astid + " : AMI (events = off) : CLOSING")
+                                                AMIcomms[n].close()
+                                                ins.remove(AMIcomms[n])
+                                                AMIcomms[n] = -1
+                                        else:
+                                                handle_ami_status(n, a)
+                                except Exception, exc:
+                                        pass
+                        # the new UI (SB) connections are catched here
+                        elif UIsock in i:
+                                [conn, UIsockparams] = UIsock.accept()
+                                if len(tcpopens_sb) >= maxgui:
+                                        conn.close()
+                                else:
+                                        log_debug("TCP (SB)  socket opened on   %s:%s" %(UIsockparams[0],str(UIsockparams[1])))
+                                        # appending the opened socket to the ones watched
+                                        ins.append(conn)
+                                        conn.setblocking(0)
+                                        tcpopens_sb.append([conn, UIsockparams[0], UIsockparams[1]])
+                        # the new UI (PHP) connections are catched here
+                        elif PHPUIsock in i:
+                                [conn, PHPUIsockparams] = PHPUIsock.accept()
+                                log_debug("TCP (PHP) socket opened on   %s:%s" %(PHPUIsockparams[0],str(PHPUIsockparams[1])))
                                 # appending the opened socket to the ones watched
                                 ins.append(conn)
                                 conn.setblocking(0)
-                                tcpopens_sb.append([conn, UIsockparams[0], UIsockparams[1]])
-                # the new UI (PHP) connections are catched here
-                elif PHPUIsock in i:
-                        [conn, PHPUIsockparams] = PHPUIsock.accept()
-                        log_debug("TCP (PHP) socket opened on   %s:%s" %(PHPUIsockparams[0],str(PHPUIsockparams[1])))
-                        # appending the opened socket to the ones watched
-                        ins.append(conn)
-                        conn.setblocking(0)
-                        tcpopens_php.append([conn, PHPUIsockparams[0], PHPUIsockparams[1]])
-                # open UI (SB) connections
-                elif filter(lambda j: j[0] in i, tcpopens_sb):
-                        conn = filter(lambda j: j[0] in i, tcpopens_sb)[0]
-                        try:
-                                manage_tcp_connection(conn, True)
-                        except Exception, exc:
-                                log_debug("--- exception --- SB tcp connection : " + str(exc))
-                # open UI (PHP) connections
-                elif filter(lambda j: j[0] in i, tcpopens_php):
-                        conn = filter(lambda j: j[0] in i, tcpopens_php)[0]
-                        try:
-                                manage_tcp_connection(conn, False)
-                        except Exception, exc:
-                                log_debug("-- exception --- PHP tcp connection : " + str(exc))
-                # advertising from other xivo_daemon's around
-                elif xdal in i:
-                        [data, addrsip] = xdal.recvfrom(BUFSIZE_UDP)
-                        log_debug("a xivo_daemon is around : " + str(addrsip))
-                else:
-                        log_debug("unknown socket " + str(i))
-        
-                for n in items_asterisks:
-                        if (time.time() - lastrequest_time[n]) > xivosb_register_frequency:
-                                lastrequest_time[n] = time.time()
-                                log_debug(configs[n].astid + " : do_sip_register (computed timeout) " + time.strftime("%H:%M:%S", time.localtime()))
+                                tcpopens_php.append([conn, PHPUIsockparams[0], PHPUIsockparams[1]])
+                        # open UI (SB) connections
+                        elif filter(lambda j: j[0] in i, tcpopens_sb):
+                                conn = filter(lambda j: j[0] in i, tcpopens_sb)[0]
                                 try:
-                                        update_sipnumlist(n)
-                                        if with_ami: update_amisocks(n)
-                                        if with_sip: do_sip_register(n, SIPsocks[n])
+                                        manage_tcp_connection(conn, True)
                                 except Exception, exc:
-                                        log_debug(configs[n].astid + " : failed while updating lists and sockets : %s" %(str(exc)))
-            else: # when nothing happens on the sockets, we fall here sooner or later
-                    log_debug("do_sip_register (select's timeout) " + time.strftime("%H:%M:%S", time.localtime()))
-                    for n in items_asterisks:
-                            lastrequest_time[n] = time.time()
-                            update_sipnumlist(n)
-                            if with_ami: update_amisocks(n)
-                            if with_sip: do_sip_register(n, SIPsocks[n])
+                                        log_debug("--- exception --- SB tcp connection : " + str(exc))
+                        # open UI (PHP) connections
+                        elif filter(lambda j: j[0] in i, tcpopens_php):
+                                conn = filter(lambda j: j[0] in i, tcpopens_php)[0]
+                                try:
+                                        manage_tcp_connection(conn, False)
+                                except Exception, exc:
+                                        log_debug("-- exception --- PHP tcp connection : " + str(exc))
+                        # advertising from other xivo_daemon's around
+                        elif xdal in i:
+                                [data, addrsip] = xdal.recvfrom(BUFSIZE_UDP)
+                                log_debug("a xivo_daemon is around : " + str(addrsip))
+                        else:
+                                log_debug("unknown socket " + str(i))
+                
+                        for n in items_asterisks:
+                                if (time.time() - lastrequest_time[n]) > xivosb_register_frequency:
+                                        lastrequest_time[n] = time.time()
+                                        log_debug(configs[n].astid + " : do_sip_register (computed timeout) " + time.strftime("%H:%M:%S", time.localtime()))
+                                        try:
+                                                update_sipnumlist(n)
+                                                if with_ami: update_amisocks(n)
+                                                if with_sip: do_sip_register(n, SIPsocks[n])
+                                        except Exception, exc:
+                                                log_debug(configs[n].astid + " : failed while updating lists and sockets : %s" %(str(exc)))
+                else: # when nothing happens on the sockets, we fall here sooner or later
+                        log_debug("do_sip_register (select's timeout) " + time.strftime("%H:%M:%S", time.localtime()))
+                        for n in items_asterisks:
+                                lastrequest_time[n] = time.time()
+                                update_sipnumlist(n)
+                                if with_ami: update_amisocks(n)
+                                if with_sip: do_sip_register(n, SIPsocks[n])
 
