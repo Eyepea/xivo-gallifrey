@@ -125,7 +125,7 @@ class Node(object):
 			return None
 	
 	@classmethod
-	def ctx_path(cls, path, ctx = None):
+	def ctx_path(cls, path, ctx):
 		"""Entry point to call on the root node to initiate a lookup
 		of the resource identified by path. """
 		return cls.fenter(ctx, (None,None)+tuple(path), 2)
@@ -167,7 +167,7 @@ class NodeInst(Node):
 		else:
 			return None
 	
-	def ctx_path(self, path, ctx = None):
+	def ctx_path(self, path, ctx):
 		"Instance method version of Node.ctx_path(). "
 		return self.fenter(ctx, (None,None)+tuple(path), 2)
 
