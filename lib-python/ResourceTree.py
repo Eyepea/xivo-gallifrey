@@ -181,16 +181,16 @@ class SetTree(Node):
 	will be ordered.
 	
 	Your derived class needs to provide:
-	 - SUBNAME_CLASS        mapping of child names (as keys) and
-	                        their associated classes (values)
+	 - SUBNAME_OBJ          mapping of child names (as keys) and
+	                        their associated description object (in values)
 	"""
 	
 	@classmethod
 	def lookup_sub(cls, ctx, path, pos):
-		"""Does a simple lookup in cls.SUBNAME_CLASS, taking the child
+		"""Does a simple lookup in cls.SUBNAME_OBJ, taking the child
 		class identified by path[pos] when it exists in there. """
-		if (pos < len(path)) and (path[pos] in cls.SUBNAME_CLASS):
-			return cls.SUBNAME_CLASS[path[pos]], 1
+		if (pos < len(path)) and (path[pos] in cls.SUBNAME_OBJ):
+			return cls.SUBNAME_OBJ[path[pos]], 1
 		else:
 			return None, -1
 
@@ -205,7 +205,7 @@ class DynTree(Node):
 	                        the same number of components from the path will
 				be passed to this function to check whether they
 				can identify a resource.
-	 - SUBCLASS             Class of the childs
+	 - SUBOBJ               Object describing the childs
 	"""
 	
 	@classmethod
@@ -213,13 +213,14 @@ class DynTree(Node):
 		"""Let sublen be the number of (non class/instance) parameters of
 		the method cls.subpath_ok(), if this latter returns True when
 		called with the right number of path components from the current
-		position then lookup_sub() returns child subclass cls.SUBCLASS
-		and the number of path components the child is away from here. """
+		position then lookup_sub() returns childs description object
+		cls.SUBOBJ and the number of path components the child is away
+		from here. """
 		sublen = cls.subpath_ok.func_code.co_argcount \
 		         - isinstance(cls.subpath_ok, MethodType)
 		if len(path) - pos >= sublen \
 		   and cls.subpath_ok(*path[pos:pos+sublen]):
-			return cls.SUBCLASS, sublen
+			return cls.SUBOBJ, sublen
 		else:
 			return None, -1
 
@@ -252,23 +253,23 @@ class MountTree(NodeInst):
 	different from the one of Unix mounts, this use case has been
 	explicitely disabled. Ex:
 	  - The following sequence is allowed
-		rt.mount(('configuration'), subrt_a)
+		rt.mount(('configuration',), subrt_a)
 		rt.mount(('configuration', 'ethernet'), subrt_b)
 	  - The following sequence is forbidden (an exception will be raised
 	    during the second call and the state of rt won't change)
 		rt.mount(('configuration', 'ethernet'), subrt_b)
-		rt.mount(('configuration'), subrt_a)
+		rt.mount(('configuration',), subrt_a)
 	
 	You can't unmount something that has childs mounted on subpaths:
 	  - Allowed:
-		rt.mount(('configuration'), subrt_a)
+		rt.mount(('configuration',), subrt_a)
 		rt.mount(('configuration', 'ethernet'), subrt_b)
 		rt.umount(('configuration', 'ethernet'), subrt_b)
-		rt.umount(('configuration'), subrt_a)
+		rt.umount(('configuration',), subrt_a)
 	  - Disallowed:
-		rt.mount(('configuration'), subrt_a)
+		rt.mount(('configuration',), subrt_a)
 		rt.mount(('configuration', 'ethernet'), subrt_b)
-		rt.umount(('configuration'), subrt_a)
+		rt.umount(('configuration',), subrt_a)
 	
 	If a resource tree T is mounted on A and has no mounted childs on a
 	subpath of A, it is possible to mount an other resource tree S on A
@@ -277,18 +278,18 @@ class MountTree(NodeInst):
 	This rule does not overload the previous ones, both can be used at the
 	same time and every constraints must apply:
 	  - Allowed
-		rt.mount(('configuration'), subrt_T)
-		rt.mount(('configuration'), subrt_S)
+		rt.mount(('configuration',), subrt_T)
+		rt.mount(('configuration',), subrt_S)
 		rt.mount(('configuration', 'ethernet'), subrt_b)
 	  - Allowed
-		rt.mount(('configuration'), subrt_T)
-		rt.mount(('configuration'), subrt_S)
-		rt.umount(('configuration'), subrt_S)
-		rt.umount(('configuration'), subrt_T)
+		rt.mount(('configuration',), subrt_T)
+		rt.mount(('configuration',), subrt_S)
+		rt.umount(('configuration',), subrt_S)
+		rt.umount(('configuration',), subrt_T)
 	  - Disallowed
-		rt.mount(('configuration'), subrt_T)
-		rt.mount(('configuration'), subrt_S)
-		rt.umount(('configuration'), subrt_T)
+		rt.mount(('configuration',), subrt_T)
+		rt.mount(('configuration',), subrt_S)
+		rt.umount(('configuration',), subrt_T)
 	
 	"""
 	
@@ -299,8 +300,8 @@ class MountTree(NodeInst):
 		super(MountTree, self).__init__()
 	
 	def mount(self, subtree, path):
-		"""Mount subtree on path if nothing is already mounted 
-		on a subpath. You can't mount something on the root. """
+		"""Mount subtree on path if nothing is already mounted on a
+		subpath. You can't mount anything directly on the root. """
 		pos = 0
 		mntpts = self._mount_points
 		if not path:
@@ -336,17 +337,17 @@ class MountTree(NodeInst):
 	
 	def umount(self, subtree, path):
 		"""Unmount subtree from path. There should be no mounted child
-		(checked) and the given subtree must be on top of all mounts
-		on this path. """
+		(this is checked) and the given subtree must be on top of all
+		mounts on this path. """
 		if not path:
 			raise RT_MountError, "Can't umount the root"
 		self._umount_rec(self._mount_points, path, 0, subtree)
 	
 	def lookup_sub(self, ctx, path, pos):
-		"""Finds and returns the best matching mounted subtree
-		begining with path[pos:]
-		Returns None, -1 if none found, else returns 
-		(position_of_remaining_part_of_path, sub_res_tree_instance) """
+		"""Finds and returns the best matching mounted subtree begining
+		with path[pos:]
+		Returns (None, -1) if none found, else returns the child subtree
+		object and the number of path components it's away from here. """
 		found_rt, found_pos = None, -1
 		mntpts = self._mount_points
 		for i in xrange(0,len(path)-pos):

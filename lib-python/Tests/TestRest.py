@@ -94,17 +94,17 @@ class StaticOption(ReqIn,VisitableNode):
 		return self.attr
 
 class StaticOptions(XML_DeepVia,GetIterContainer,ReqIn,VisitableNode,SetTree):
-	SUBNAME_CLASS = ordDict((('address',StaticOption),
-			         ('netmask',StaticOption),
-				 ('broadcast',StaticOption),
-				 ('gateway',StaticOption)))
+	SUBNAME_OBJ = ordDict((('address',StaticOption),
+	                       ('netmask',StaticOption),
+	                       ('broadcast',StaticOption),
+	                       ('gateway',StaticOption)))
 	def __init__(self, ni, iface, me):
 		self.ni = ni
 		self.iface = iface
 		self.me = me
 	def __iter__(self):
 		return (StaticOption(self.ni, self.iface, attr)
-		        for attr in self.SUBNAME_CLASS)
+		        for attr in self.SUBNAME_OBJ)
 	def sub(self, p):
 		return StaticOption(self.ni, self.iface, p[0])
 	def get_name(self):
@@ -124,18 +124,18 @@ class BaseIfaceAttr(ReqIn,VisitableNode):
 		return self.attr
 
 class Interface(XML_DeepVia,GetIterContainer,ReqIn,VisitableNode,SetTree):
-	SUBNAME_CLASS = ordDict((('family',BaseIfaceAttr),
-			         ('method',BaseIfaceAttr),
-				 ('allow',BaseIfaceAttr),
-				 ('static',StaticOptions)))
+	SUBNAME_OBJ = ordDict((('family',BaseIfaceAttr),
+	                       ('method',BaseIfaceAttr),
+	                       ('allow',BaseIfaceAttr),
+	                       ('static',StaticOptions)))
 	def __init__(self, ni, iface):
 		self.ni = ni
 		self.iface = iface
 	def __iter__(self):
 		return (subcls(self.ni, self.iface, attr) 
-		        for (attr,subcls) in self.SUBNAME_CLASS.iteritems())
+		        for (attr,subcls) in self.SUBNAME_OBJ.iteritems())
 	def sub(self, p):
-		return self.SUBNAME_CLASS[p[0]](self.ni, self.iface, p[0])
+		return self.SUBNAME_OBJ[p[0]](self.ni, self.iface, p[0])
 	def get_name(self):
 		return self.iface.get_iface_name()
 
@@ -143,7 +143,7 @@ class Interfaces(XML_Visit,XML_SubVia,GetIterContainer,ReqIn,VisitableNode,DynTr
 	
 	ENI_FILENAME = '/etc/network/interfaces'
 	
-	SUBCLASS = Interface
+	SUBOBJ = Interface
 	@staticmethod
 	def subpath_ok(iface_name):
 		return 0 == iface_name.find('eth')
