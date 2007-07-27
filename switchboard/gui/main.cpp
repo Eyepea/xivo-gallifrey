@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QTranslator>
 #include "switchboardwindow.h"
 #include "baseengine.h"
-#include "mainwindow.h"
+#include "mainwidget.h"
 
 /*! \fn main
  *
@@ -61,7 +61,7 @@ int main(int argc, char * * argv)
 	BaseEngine engine;
         engine.setIsASwitchboard(true);
 
-	MainWindow main(&engine);
+	MainWidget main(&engine);
 	main.show();
 	//main.dumpObjectTree();
 	//engine.startTimer(1000);

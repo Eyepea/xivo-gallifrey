@@ -46,10 +46,9 @@ const int REQUIRED_SERVER_VERSION = 1239;
  * It also connects signals with the right slots.
  */
 BaseEngine::BaseEngine(QObject * parent)
-        : QObject(parent),
-          m_serverhost(""), m_loginport(0), m_asterisk(""), m_protocol(""), m_userid(""), m_passwd(""),
-          m_listenport(0), m_sessionid(""), m_state(ENotLogged),
-          m_pendingkeepalivemsg(0)
+        : QObject(parent), m_listenport(0), m_serverhost(""), m_loginport(0), m_sbport(0),
+          m_asterisk(""), m_protocol(""), m_userid(""), m_passwd(""),
+          m_state(ENotLogged), m_pendingkeepalivemsg(0), m_sessionid("")
 {
 	m_ka_timerid = 0;
 	m_try_timerid = 0;

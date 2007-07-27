@@ -21,15 +21,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #ifndef __CONFWIDGET_H__
 #define __CONFWIDGET_H__
 
-#include <QWidget>
+#include <QCheckBox>
+#include <QComboBox>
 #include <QDialog>
 #include <QLineEdit>
-#include "baseengine.h"
+#include <QSpinBox>
 
-class QSpinBox;
-class QCheckBox;
-class QComboBox;
-class MainWidget;
+#include "baseengine.h"
+#include "mainwidget.h"
 
 /*! \brief Configuration Window
  *
@@ -56,21 +55,26 @@ private slots:
 	//! Save the configuration to the BaseEngine object and close
 	void saveAndClose();
 private:
-	QLineEdit *m_serverhost;	//!< IP/hostname of the server
-	QLineEdit *m_loginport;		//!< port of the server
-	QLineEdit *m_asterisk;		//!< id name of the Asterisk server
-	QComboBox *m_protocombo;	//!< Protocol SIP/IAX
-	QLineEdit *m_userid;		//!< user login
-	QLineEdit *m_linepasswd;	//!< user password
-	QCheckBox *m_autoconnect;	//!< Auto connect checkbox
-	QSpinBox *m_kainterval_sbox;	//!< Keep alive interval
-	QCheckBox *m_trytoreconnect;	//!< "Try to reconnect" Checkbox
-	QSpinBox *m_tryinterval_sbox;	//!< "Try to reconnect" interval
-	QSpinBox *m_tablimit_sbox;	//!< Maximum number of tabs
-	QCheckBox *m_tcpmode;	//!< Use outgoing TCP connection
-	BaseEngine *m_engine;			//!< BaseEngine object parameters are commited to
-	MainWidget *m_mainwindow;	//!< MainWidget where some parameters are commited to
+	BaseEngine * m_engine;		//!< BaseEngine object parameters are commited to
+	MainWidget * m_mainwindow;	//!< MainWidget where some parameters are commited to
+
+	QLineEdit * m_serverhost;	//!< IP/hostname of the server
+	QLineEdit * m_sbport;		//!< server port (switchboard)
+	QLineEdit * m_loginport;	//!< port of the server
+
+	QCheckBox * m_autoconnect;	//!< Auto connect checkbox
+	QCheckBox * m_trytoreconnect;	//!< "Try to reconnect" Checkbox
+	QSpinBox  * m_tryinterval_sbox;	//!< "Try to reconnect" interval
+	QSpinBox  * m_kainterval_sbox;	//!< Keep alive interval
+
+	QLineEdit * m_asterisk;		//!< id name of the Asterisk server
+	QComboBox * m_protocombo;	//!< Protocol SIP/IAX
+	QLineEdit * m_userid;		//!< user login
+	QLineEdit * m_passwd;		//!< user password
+
+	QSpinBox  * m_history_sbox;	//!< History size
+	QSpinBox  * m_tablimit_sbox;	//!< Maximum number of tabs
+	QCheckBox * m_tcpmode;		//!< Use outgoing TCP connection
+	QCheckBox * m_presence;		//!< connect to presence server checkbox
 };
-
 #endif
-

@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 */
 
 /* $Id$ */
-#ifndef __MAINWINDOW_H__
-#define __MAINWINDOW_H__
+#ifndef __MAINWIDGET_H__
+#define __MAINWIDGET_H__
 
 #include <QWidget>
 #include <QMainWindow>
@@ -42,16 +42,16 @@ class SwitchBoardWindow;
 
 /*! \brief Main window splitted to display peers and calls
  */
-class MainWindow : public QMainWindow
+class MainWidget : public QMainWindow
 {
 	Q_OBJECT
 public:
 	//! Constructor
-	MainWindow(BaseEngine *, QWidget * parent=0);
+	MainWidget(BaseEngine *, QWidget * parent=0);
 	int tablimit() const;	//!< getter for m_tablimit
 	void setTablimit(int);	//!< setter for m_tablimit
 	//! Destructor
-	virtual ~MainWindow();
+	virtual ~MainWidget();
 private slots:
 	void showConfDialog();
 	void engineStopped();

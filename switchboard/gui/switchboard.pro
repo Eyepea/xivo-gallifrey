@@ -12,8 +12,8 @@ CONFIG += static
 
 # Input
 HEADERS += peerwidget.h switchboardwindow.h
-HEADERS += baseengine.h mainwindow.h
-HEADERS += switchboardconf.h callwidget.h callstackwidget.h
+HEADERS += baseengine.h mainwidget.h
+HEADERS += $${XCDIR}/confwidget.h callwidget.h callstackwidget.h
 HEADERS += astchannel.h peerslayout.h searchpanel.h
 HEADERS += peeritem.h logeltwidget.h logwidget.h dialpanel.h
 HEADERS += directorypanel.h displaymessages.h
@@ -23,8 +23,8 @@ HEADERS += $${XCDIR}/servicepanel.h $${XCDIR}/popup.h $${XCDIR}/urllabel.h $${XC
 HEADERS += $${XCDIR}/remotepicwidget.h
 
 SOURCES += main.cpp peerwidget.cpp switchboardwindow.cpp
-SOURCES += baseengine.cpp mainwindow.cpp
-SOURCES += switchboardconf.cpp callwidget.cpp callstackwidget.cpp
+SOURCES += baseengine.cpp mainwidget.cpp
+SOURCES += $${XCDIR}/confwidget.cpp callwidget.cpp callstackwidget.cpp
 SOURCES += astchannel.cpp peerslayout.cpp searchpanel.cpp
 SOURCES += peeritem.cpp logeltwidget.cpp logwidget.cpp dialpanel.cpp
 SOURCES += directorypanel.cpp displaymessages.cpp

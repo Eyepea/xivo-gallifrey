@@ -37,6 +37,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include "mainwidget.h"
 #include "baseengine.h"
 
+/*! \brief constructor
+ */
 ConfWidget::ConfWidget(BaseEngine * engine,
                        MainWidget * parent)
         : QDialog(parent), m_engine(engine)
@@ -57,13 +59,13 @@ ConfWidget::ConfWidget(BaseEngine * engine,
 	gridlayout->addWidget(lblhost, line, 0);
 	gridlayout->addWidget(m_serverhost, line++, 1);
 
-//         if(m_engine->isASwitchboard()) {
-//                 QLabel * lblsbport = new QLabel(tr("Switchboard Port"), this);
-//                 m_sbport = new QLineEdit(QString::number(m_engine->sbPort()), this);
-//                 m_sbport->setInputMask("5003");
-//                 gridlayout->addWidget(lblsbport, line, 0);
-//                 gridlayout->addWidget(m_sbport, line++, 1);
-//         }
+        if(m_engine->isASwitchboard()) {
+                QLabel * lblsbport = new QLabel(tr("Switchboard Port"), this);
+                m_sbport = new QLineEdit(QString::number(m_engine->sbPort()), this);
+                m_sbport->setInputMask("5003");
+                gridlayout->addWidget(lblsbport, line, 0);
+                gridlayout->addWidget(m_sbport, line++, 1);
+        }
 
 	QLabel * lbllport = new QLabel(tr("Login Port"), this);
 	m_loginport = new QLineEdit(QString::number(m_engine->loginPort()), this);
@@ -71,8 +73,9 @@ ConfWidget::ConfWidget(BaseEngine * engine,
 	gridlayout->addWidget(lbllport, line, 0);
 	gridlayout->addWidget(m_loginport, line++, 1);
 
-
-
+	m_presence = new QCheckBox(tr("Presence reporting"), this);
+	m_presence->setCheckState(m_engine->enabled()?Qt::Checked:Qt::Unchecked);
+	gridlayout->addWidget(m_presence, line++, 0, 1, 0);
 
 	QLabel * lblasterisk = new QLabel(tr("Asterisk Id Name"), this);
 	m_asterisk = new QLineEdit(m_engine->serverast(), this);
@@ -83,7 +86,7 @@ ConfWidget::ConfWidget(BaseEngine * engine,
 	m_protocombo = new QComboBox(this);
 	m_protocombo->addItem(QString("SIP"));
 	m_protocombo->addItem(QString("IAX"));
-	if(m_engine->protocol() == QString("sip"))
+	if(m_engine->protocol().toLower() == QString("sip"))
 		m_protocombo->setCurrentIndex(0);
 	else
 		m_protocombo->setCurrentIndex(1);
@@ -96,28 +99,18 @@ ConfWidget::ConfWidget(BaseEngine * engine,
 	gridlayout->addWidget(m_userid, line++, 1);
 
 	QLabel * lblpasswd = new QLabel(tr("Password"), this);
-	m_linepasswd = new QLineEdit(m_engine->password(), this);
-	m_linepasswd->setEchoMode(QLineEdit::Password);
+	m_passwd = new QLineEdit(m_engine->password(), this);
+	m_passwd->setEchoMode(QLineEdit::Password);
 	gridlayout->addWidget(lblpasswd, line, 0);
-	gridlayout->addWidget(m_linepasswd, line++, 1);
+	gridlayout->addWidget(m_passwd, line++, 1);
 
 	m_tcpmode = new QCheckBox(tr("TCP Mode (for NAT traversal)"), this);
 	m_tcpmode->setCheckState(m_engine->tcpmode()?Qt::Checked:Qt::Unchecked);
 	gridlayout->addWidget(m_tcpmode, line++, 0, 1, 0);
-
-
-
-
-
+        
 	m_autoconnect = new QCheckBox(tr("Autoconnect at startup"), this);
 	m_autoconnect->setCheckState(m_engine->autoconnect()?Qt::Checked:Qt::Unchecked);
 	gridlayout->addWidget(m_autoconnect, line++, 0, 1, 0);
-
-	gridlayout->addWidget(new QLabel(tr("Keep alive interval"), this), line, 0);
-	m_kainterval_sbox = new QSpinBox(this);
-	m_kainterval_sbox->setRange(1, 120);
-	m_kainterval_sbox->setValue(m_engine->keepaliveinterval() / 1000);
-	gridlayout->addWidget(m_kainterval_sbox, line++, 1);
 
 	m_trytoreconnect = new QCheckBox(tr("Try to reconnect"), this);
 	m_trytoreconnect->setCheckState(m_engine->trytoreconnect()?Qt::Checked:Qt::Unchecked);
@@ -128,12 +121,24 @@ ConfWidget::ConfWidget(BaseEngine * engine,
 	m_tryinterval_sbox->setValue(m_engine->trytoreconnectinterval() / 1000);
 	gridlayout->addWidget(m_tryinterval_sbox, line++, 1);
 
+	gridlayout->addWidget(new QLabel(tr("Keep alive interval"), this), line, 0);
+	m_kainterval_sbox = new QSpinBox(this);
+	m_kainterval_sbox->setRange(1, 120);
+	m_kainterval_sbox->setValue(m_engine->keepaliveinterval() / 1000);
+	gridlayout->addWidget(m_kainterval_sbox, line++, 1);
+
 	QLabel * lbltablimit = new QLabel(tr("Tab limit"), this);
 	gridlayout->addWidget(lbltablimit, line, 0);
 	m_tablimit_sbox = new QSpinBox(this);
 	m_tablimit_sbox->setRange(0, 99);
 	m_tablimit_sbox->setValue(m_mainwindow->tablimit());
 	gridlayout->addWidget(m_tablimit_sbox, line++, 1);
+
+	gridlayout->addWidget(new QLabel(tr("History size"), this), line, 0);
+	m_history_sbox = new QSpinBox(this);
+	m_history_sbox->setRange(1, 20);
+	m_history_sbox->setValue(m_engine->historysize());
+	gridlayout->addWidget(m_history_sbox, line++, 1);
 
 	QDialogButtonBox * btnbox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
 	connect(btnbox, SIGNAL(accepted()), this, SLOT(saveAndClose()));
@@ -151,20 +156,25 @@ ConfWidget::ConfWidget(BaseEngine * engine,
  */
 void ConfWidget::saveAndClose()
 {
+	m_engine->setAddress(m_serverhost->text(), m_sbport->text().toUShort());
 	m_engine->setServerip(m_serverhost->text());
+	m_engine->setLoginPort(m_loginport->text().toUShort());
+
+	m_engine->setServerAst(m_asterisk->text());
+	m_engine->setProtocol(m_protocombo->currentText().toLower());
 	m_engine->setUserId(m_userid->text());
+	m_engine->setPassword(m_passwd->text());
+
 	m_engine->setAutoconnect(m_autoconnect->checkState() == Qt::Checked);
 	m_engine->setTrytoreconnect(m_trytoreconnect->checkState() == Qt::Checked);
 	m_engine->setTrytoreconnectinterval(m_tryinterval_sbox->value()*1000);
-	m_engine->setServerAst(m_asterisk->text());
-	m_engine->setProtocol(m_protocombo->currentText().toLower());
-
-	m_engine->setLoginPort(m_loginport->text().toUShort());
-	m_engine->setPassword(m_linepasswd->text());
 	m_engine->setKeepaliveinterval(m_kainterval_sbox->value()*1000);
+
+	m_engine->setEnabled(m_presence->checkState() == Qt::Checked);
+	m_engine->setHistorySize(m_history_sbox->value());
 	m_engine->setTcpmode(m_tcpmode->checkState() == Qt::Checked);
-	m_engine->saveSettings();
 	m_mainwindow->setTablimit(m_tablimit_sbox->value());
+
+	m_engine->saveSettings();
 	close();
 }
-

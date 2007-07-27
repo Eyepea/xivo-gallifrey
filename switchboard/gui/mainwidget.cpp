@@ -34,10 +34,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QVBoxLayout>
 #include <QDebug>
 #include <QTabWidget>
-#include "mainwindow.h"
+#include "mainwidget.h"
 #include "baseengine.h"
 #include "switchboardwindow.h"
-#include "switchboardconf.h"
+#include "confwidget.h"
 #include "callstackwidget.h"
 #include "searchpanel.h"
 #include "logwidget.h"
@@ -78,7 +78,7 @@ QLabel * LeftPanel::titleLabel()
  * displaying calls and a right panel for peers.
  * The geometry is restored from settings.
  */
-MainWindow::MainWindow(BaseEngine * engine, QWidget * parent)
+MainWidget::MainWidget(BaseEngine * engine, QWidget * parent)
 	: QMainWindow(parent), m_engine(engine)
 {
 	QSettings settings;
@@ -233,7 +233,7 @@ MainWindow::MainWindow(BaseEngine * engine, QWidget * parent)
  *
  * The Geometry settings are saved for use by the new instance
  */
-MainWindow::~MainWindow()
+MainWidget::~MainWidget()
 {
 	QSettings settings;
 	settings.setValue("display/splitterSizes", m_splitter->saveState());
@@ -243,7 +243,7 @@ MainWindow::~MainWindow()
 	settings.setValue("display/mainwingeometry", saveGeometry());
 }
 
-void MainWindow::createActions()
+void MainWidget::createActions()
 {
 	QMenu * menu = menuBar()->addMenu(tr("&File"));
 	
@@ -328,11 +328,11 @@ void MainWindow::createActions()
 
 /*! \brief show the Configuration Dialog
  *
- * create and execute a new SwitchBoardConfDialog
+ * create and execute a new ConfWidget
  */
-void MainWindow::showConfDialog()
+void MainWidget::showConfDialog()
 {
-	SwitchBoardConfDialog * conf = new SwitchBoardConfDialog(m_engine, this);
+	ConfWidget * conf = new ConfWidget(m_engine, this);
 	qDebug() << "<<  " << conf->exec();
 }
 
@@ -340,7 +340,7 @@ void MainWindow::showConfDialog()
  * enable the "Stop" action and disable "Start" Action.
  * \sa engineStopped()
  */
-void MainWindow::engineStarted()
+void MainWidget::engineStarted()
 {
 	m_stopact->setEnabled(true);
 	m_startact->setDisabled(true);
@@ -433,7 +433,7 @@ void MainWindow::engineStarted()
  * disable the "Stop" action and enable "Start" Action.
  * \sa engineStarted()
  */
-void MainWindow::engineStopped()
+void MainWidget::engineStopped()
 {
 	m_stopact->setDisabled(true);
 	m_startact->setEnabled(true);
@@ -453,7 +453,7 @@ void MainWindow::engineStopped()
 /*!
  * enable the "Log off" action and disable "Login" Action.
  */
-void MainWindow::loginengineStarted()
+void MainWidget::loginengineStarted()
 {
 	m_engine->setDialContext(m_engine->dialContext());
 	m_engine->askFeatures("peer/to/define");
@@ -467,7 +467,7 @@ void MainWindow::loginengineStarted()
  * \sa setTablimit
  * \sa m_tablimit
  */
-int MainWindow::tablimit() const
+int MainWidget::tablimit() const
 {
 	return m_tablimit;
 }
@@ -476,7 +476,7 @@ int MainWindow::tablimit() const
  * \sa tablimit
  * \sa m_tablimit
  */
-void MainWindow::setTablimit(int tablimit)
+void MainWidget::setTablimit(int tablimit)
 {
 	QSettings settings;
 	m_tablimit = tablimit;
@@ -487,9 +487,9 @@ void MainWindow::setTablimit(int tablimit)
  * Display the new profile in the tabbed area
  * and show a message with the systray icon
  */
-void MainWindow::showNewProfile(Popup * popup)
+void MainWidget::showNewProfile(Popup * popup)
 {
-	qDebug() << "MainWindow::showNewProfile()";
+	qDebug() << "MainWidget::showNewProfile()";
 	QTime currentTime = QTime::currentTime();
 	QString currentTimeStr = currentTime.toString("hh:mm:ss");
 	/*	if(m_systrayIcon)
@@ -523,7 +523,7 @@ void MainWindow::showNewProfile(Popup * popup)
  *
  * use QMessageBox::about() to display the application about box
  */
-void MainWindow::about()
+void MainWidget::about()
 {
 	QString applicationVersion("0.1");
 	QString revision("$Revision$ 0");
