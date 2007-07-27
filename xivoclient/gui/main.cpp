@@ -17,8 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 */
 
-/* $Id: main.cpp 942 2007-06-20 16:39:01Z nanard $
-   $Date: 2007-06-20 18:39:01 +0200 (mer, 20 jun 2007) $
+/* $Id$
+   $Date$
 */
 
 #include <QApplication>
