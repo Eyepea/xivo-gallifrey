@@ -699,7 +699,7 @@ class NetworkInterfaces(SplittedStanzas):
 		pos_sz = find(lambda (pos,sz): sz.get_iface_name() == iface_name,
 		              self.enumiface())
 		if pos_sz is None:
-			raise KeyError, repr(iface_name)
+			raise KeyError, iface_name
 		return pos_sz
 	def allow_iface(self, iface_name, what = 'auto'):
 		if iface_name in self.get_allow_list(what):
@@ -800,7 +800,7 @@ class NetworkInterfaces(SplittedStanzas):
 		"Returns the first interface stanza with given iface_name"
 		sz = find(lambda x: x.get_iface_name() == iface_name, self.iteriface())
 		if sz is None:
-			raise KeyError, repr(iface_name)
+			raise KeyError, iface_name
 		return sz
 	def iterlines(self):
 		return flatten_seq(self.stanza_list)
