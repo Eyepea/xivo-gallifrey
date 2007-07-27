@@ -36,7 +36,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QTabWidget>
 #include "mainwindow.h"
 #include "baseengine.h"
-#include "loginengine.h"
 #include "switchboardwindow.h"
 #include "switchboardconf.h"
 #include "callstackwidget.h"
@@ -79,17 +78,21 @@ QLabel * LeftPanel::titleLabel()
  * displaying calls and a right panel for peers.
  * The geometry is restored from settings.
  */
-MainWindow::MainWindow(BaseEngine * engine, LoginEngine * loginengine, QWidget * parent)
-	: QMainWindow(parent), m_engine(engine), m_loginengine(loginengine)
+MainWindow::MainWindow(BaseEngine * engine, QWidget * parent)
+	: QMainWindow(parent), m_engine(engine)
 {
+	QSettings settings;
 	QPixmap redsquare(15,15);
 	redsquare.fill(Qt::red);
 	statusBar();	// This creates the status bar.
 	m_status = new QLabel();
 	m_status->setPixmap(redsquare);
 	statusBar()->addPermanentWidget(m_status);
+	statusBar()->clearMessage();
 	setWindowIcon(QIcon(":/xivoicon.png"));
 	setWindowTitle("XIVO Switchboard");
+
+	createActions();
 
 	m_splitter = new QSplitter(this);
 	m_leftSplitter = new QSplitter(Qt::Vertical, m_splitter);
@@ -186,7 +189,7 @@ MainWindow::MainWindow(BaseEngine * engine, LoginEngine * loginengine, QWidget *
 	         searchpanel, SLOT(removePeer(const QString &)) );
 	
 	m_tabwidget = new QTabWidget(m_rightSplitter);
-	connect( loginengine, SIGNAL(newProfile(Popup *)),
+	connect( m_engine, SIGNAL(newProfile(Popup *)),
 	         this, SLOT(showNewProfile(Popup *)) );
 
 	DialPanel * dialpanel = new DialPanel(m_rightSplitter);
@@ -200,14 +203,13 @@ MainWindow::MainWindow(BaseEngine * engine, LoginEngine * loginengine, QWidget *
 	setCentralWidget(m_splitter);
 
 	// restore splitter settings
-	QSettings settings;
 	m_tablimit = settings.value("display/tablimit", 5).toInt();
 	m_splitter->restoreState(settings.value("display/splitterSizes").toByteArray());
 	m_leftSplitter->restoreState(settings.value("display/leftSplitterSizes").toByteArray());
 	m_middleSplitter->restoreState(settings.value("display/middleSplitterSizes").toByteArray());
 	m_rightSplitter->restoreState(settings.value("display/rightSplitterSizes").toByteArray());
-
 	restoreGeometry(settings.value("display/mainwingeometry").toByteArray());
+
  	connect(m_engine, SIGNAL(emitTextMessage(const QString &)),
  	        statusBar(), SLOT(showMessage(const QString &)));
 	connect(m_engine, SIGNAL(emitTextMessage(const QString &)),
@@ -217,94 +219,14 @@ MainWindow::MainWindow(BaseEngine * engine, LoginEngine * loginengine, QWidget *
 	connect(m_engine, SIGNAL(stopped()),
 	        this, SLOT(engineStopped()));
 	
-	connect(m_loginengine, SIGNAL(logged()),
+	connect(m_engine, SIGNAL(logged()),
  		this, SLOT(loginengineStarted()) );
 #if 0
-	connect(m_loginengine, SIGNAL(logged()),
+	connect(m_engine, SIGNAL(logged()),
 		m_engine, SLOT(start()) );
-	connect(m_loginengine, SIGNAL(delogged()),
+	connect(m_engine, SIGNAL(delogged()),
 		m_engine, SLOT(stop()) );
 #endif
-	
-	QMenu * menu = menuBar()->addMenu(tr("&File"));
-	
-	m_startact = new QAction(tr("S&tart"), this);
-	m_startact->setStatusTip(tr("Start"));
-	connect(m_startact, SIGNAL(triggered()),
-		m_engine, SLOT(start()) );
-	connect(m_startact, SIGNAL(triggered()),
-		m_loginengine, SLOT(start()) );
-	menu->addAction(m_startact);
-
-	m_stopact = new QAction(tr("Sto&p"), this);
-	m_stopact->setStatusTip(tr("Stop"));
-	connect(m_stopact, SIGNAL(triggered()),
-		m_engine, SLOT(stop()) );
-	connect(m_stopact, SIGNAL(triggered()),
-		m_loginengine, SLOT(stop()) );
-	m_stopact->setDisabled(true);
-	menu->addAction(m_stopact);
-
-	QAction * conf = new QAction(tr("&Configure"), this);
-	conf->setStatusTip(tr("Open the configuration dialog"));
-	connect(conf, SIGNAL(triggered()), this, SLOT(showConfDialog()));
-	menu->addAction(conf);
-
-	QAction * quit = new QAction(tr("&Quit"), this);
-	connect(quit, SIGNAL(triggered()), m_loginengine, SLOT(stop()) );
-	connect(quit, SIGNAL(triggered()), qApp, SLOT(quit()));
-	menu->addAction(quit);
-
-	// Availability actions :
-	m_availgrp = new QActionGroup( this );
-	m_availgrp->setExclusive(true);
-
-	m_avact_avail = new QAction( tr("&Available"), this );
-	m_avact_avail->setCheckable(true);
-	connect( m_avact_avail, SIGNAL(triggered()),
-	         m_loginengine, SLOT(setAvailable()) );
-	m_availgrp->addAction( m_avact_avail );
-	m_avact_away = new QAction( tr("A&way"), this );
-	m_avact_away->setCheckable(true);
-	connect( m_avact_away, SIGNAL(triggered()),
-	         m_loginengine, SLOT(setAway()) );
-	m_availgrp->addAction( m_avact_away );
-	m_avact_brb = new QAction( tr("&Be Right Back"), this );
-	m_avact_brb->setCheckable(true);
-	connect( m_avact_brb, SIGNAL(triggered()),
-	         m_loginengine, SLOT(setBeRightBack()) );
-	m_availgrp->addAction( m_avact_brb );
-	m_avact_otl = new QAction( tr("&Out To Lunch"), this );
-	m_avact_otl->setCheckable(true);
-	connect( m_avact_otl, SIGNAL(triggered()),
-	         m_loginengine, SLOT(setOutToLunch()) );
-	m_availgrp->addAction( m_avact_otl );
-	m_avact_dnd = new QAction( tr("&Do not disturb"), this );
-	m_avact_dnd->setCheckable(true);
-	connect( m_avact_dnd, SIGNAL(triggered()),
-	         m_loginengine, SLOT(setDoNotDisturb()) );
-	m_availgrp->addAction( m_avact_dnd );
-
-	if(m_loginengine->getAvailState() == QString("berightback"))
-		m_avact_brb->setChecked( true );
-	else if(m_loginengine->getAvailState() == QString("donotdisturb"))
-		m_avact_dnd->setChecked( true );
-	else if(m_loginengine->getAvailState() == QString("away"))
-		m_avact_away->setChecked( true );
-	else if(m_loginengine->getAvailState() == QString("outtolunch"))
-		m_avact_otl->setChecked( true );
-	else
-		m_avact_avail->setChecked( true );
-
-	m_avail = menuBar()->addMenu(tr("&Availability"));
-	m_avail->addActions( m_availgrp->actions() );
-	m_avail->setEnabled( m_loginengine->enabled() );
-	connect( m_loginengine, SIGNAL(availAllowChanged(bool)),
-	         m_avail, SLOT(setEnabled(bool)) );
-
-	QMenu * helpmenu = menuBar()->addMenu(tr("&Help"));
-	helpmenu->addAction(tr("&About XIVO Switchboard"), this, SLOT(about()));
-	helpmenu->addAction(tr("About &Qt"), qApp, SLOT(aboutQt()));
 }
 
 /*! \brief Destructor
@@ -321,14 +243,96 @@ MainWindow::~MainWindow()
 	settings.setValue("display/mainwingeometry", saveGeometry());
 }
 
+void MainWindow::createActions()
+{
+	QMenu * menu = menuBar()->addMenu(tr("&File"));
+	
+	m_startact = new QAction(tr("S&tart"), this);
+	m_startact->setStatusTip(tr("Start"));
+	connect(m_startact, SIGNAL(triggered()),
+		m_engine, SLOT(start()) );
+	connect(m_startact, SIGNAL(triggered()),
+		m_engine, SLOT(start()) );
+	menu->addAction(m_startact);
+
+	m_stopact = new QAction(tr("Sto&p"), this);
+	m_stopact->setStatusTip(tr("Stop"));
+	connect(m_stopact, SIGNAL(triggered()),
+		m_engine, SLOT(stop()) );
+	connect(m_stopact, SIGNAL(triggered()),
+		m_engine, SLOT(stop()) );
+	m_stopact->setDisabled(true);
+	menu->addAction(m_stopact);
+
+	QAction * conf = new QAction(tr("&Configure"), this);
+	conf->setStatusTip(tr("Open the configuration dialog"));
+	connect(conf, SIGNAL(triggered()), this, SLOT(showConfDialog()));
+	menu->addAction(conf);
+
+	QAction * quit = new QAction(tr("&Quit"), this);
+	connect(quit, SIGNAL(triggered()), m_engine, SLOT(stop()) );
+	connect(quit, SIGNAL(triggered()), qApp, SLOT(quit()));
+	menu->addAction(quit);
+
+	// Availability actions :
+	m_availgrp = new QActionGroup( this );
+	m_availgrp->setExclusive(true);
+
+	m_avact_avail = new QAction( tr("&Available"), this );
+	m_avact_avail->setCheckable(true);
+	connect( m_avact_avail, SIGNAL(triggered()),
+	         m_engine, SLOT(setAvailable()) );
+	m_availgrp->addAction( m_avact_avail );
+	m_avact_away = new QAction( tr("A&way"), this );
+	m_avact_away->setCheckable(true);
+	connect( m_avact_away, SIGNAL(triggered()),
+	         m_engine, SLOT(setAway()) );
+	m_availgrp->addAction( m_avact_away );
+	m_avact_brb = new QAction( tr("&Be Right Back"), this );
+	m_avact_brb->setCheckable(true);
+	connect( m_avact_brb, SIGNAL(triggered()),
+	         m_engine, SLOT(setBeRightBack()) );
+	m_availgrp->addAction( m_avact_brb );
+	m_avact_otl = new QAction( tr("&Out To Lunch"), this );
+	m_avact_otl->setCheckable(true);
+	connect( m_avact_otl, SIGNAL(triggered()),
+	         m_engine, SLOT(setOutToLunch()) );
+	m_availgrp->addAction( m_avact_otl );
+	m_avact_dnd = new QAction( tr("&Do not disturb"), this );
+	m_avact_dnd->setCheckable(true);
+	connect( m_avact_dnd, SIGNAL(triggered()),
+	         m_engine, SLOT(setDoNotDisturb()) );
+	m_availgrp->addAction( m_avact_dnd );
+
+	if(m_engine->getAvailState() == QString("berightback"))
+		m_avact_brb->setChecked( true );
+	else if(m_engine->getAvailState() == QString("donotdisturb"))
+		m_avact_dnd->setChecked( true );
+	else if(m_engine->getAvailState() == QString("away"))
+		m_avact_away->setChecked( true );
+	else if(m_engine->getAvailState() == QString("outtolunch"))
+		m_avact_otl->setChecked( true );
+	else
+		m_avact_avail->setChecked( true );
+
+	m_avail = menuBar()->addMenu(tr("&Availability"));
+	m_avail->addActions( m_availgrp->actions() );
+	m_avail->setEnabled( m_engine->enabled() );
+	connect( m_engine, SIGNAL(availAllowChanged(bool)),
+	         m_avail, SLOT(setEnabled(bool)) );
+
+	QMenu * helpmenu = menuBar()->addMenu(tr("&Help"));
+	helpmenu->addAction(tr("&About XIVO Switchboard"), this, SLOT(about()));
+	helpmenu->addAction(tr("About &Qt"), qApp, SLOT(aboutQt()));
+}
+
 /*! \brief show the Configuration Dialog
  *
  * create and execute a new SwitchBoardConfDialog
  */
 void MainWindow::showConfDialog()
 {
-	SwitchBoardConfDialog * conf = new SwitchBoardConfDialog(m_engine, m_loginengine,
-								 m_widget, this);
+	SwitchBoardConfDialog * conf = new SwitchBoardConfDialog(m_engine, this);
 	qDebug() << "<<  " << conf->exec();
 }
 
@@ -340,7 +344,7 @@ void MainWindow::engineStarted()
 {
 	m_stopact->setEnabled(true);
 	m_startact->setDisabled(true);
-	m_loginengine->start();
+	m_engine->start();
 
 	m_logwidget = new LogWidget(m_engine, m_svc_tabwidget);
 	m_svc_tabwidget->insertTab(0, m_logwidget, tr("History"));
@@ -358,62 +362,62 @@ void MainWindow::engineStarted()
 	m_svc_tabwidget->insertTab(0, m_featureswidget, tr("Services"));
 
 	connect( m_featureswidget, SIGNAL(askFeatures(const QString &)),
-	         m_loginengine, SLOT(askFeatures(const QString &)) );
+	         m_engine, SLOT(askFeatures(const QString &)) );
 	connect( calls, SIGNAL(monitoredPeerChanged(const QString &)),
 	         m_featureswidget, SLOT(setPeerToDisplay(const QString &)) );
 
-	connect( m_loginengine, SIGNAL(disconnectFeatures()),
+	connect( m_engine, SIGNAL(disconnectFeatures()),
 		 m_featureswidget, SLOT(DisConnect()) );
-	connect( m_loginengine, SIGNAL(connectFeatures()),
+	connect( m_engine, SIGNAL(connectFeatures()),
 		 m_featureswidget, SLOT(Connect()) );
-	connect( m_loginengine, SIGNAL(resetFeatures()),
+	connect( m_engine, SIGNAL(resetFeatures()),
 		 m_featureswidget, SLOT(Reset()) );
 
 	connect( m_featureswidget, SIGNAL(voiceMailToggled(bool)),
-		 m_loginengine, SLOT(setVoiceMail(bool)) );
-	connect( m_loginengine, SIGNAL(voiceMailChanged(bool)),
+		 m_engine, SLOT(setVoiceMail(bool)) );
+	connect( m_engine, SIGNAL(voiceMailChanged(bool)),
 		 m_featureswidget, SLOT(setVoiceMail(bool)) );
 	
 	connect( m_featureswidget, SIGNAL(callRecordingToggled(bool)),
-		 m_loginengine, SLOT(setCallRecording(bool)) );
-	connect( m_loginengine, SIGNAL(callRecordingChanged(bool)),
+		 m_engine, SLOT(setCallRecording(bool)) );
+	connect( m_engine, SIGNAL(callRecordingChanged(bool)),
 		 m_featureswidget, SLOT(setCallRecording(bool)) );
 	
 	connect( m_featureswidget, SIGNAL(callFilteringToggled(bool)),
-		 m_loginengine, SLOT(setCallFiltering(bool)) );
-	connect( m_loginengine, SIGNAL(callFilteringChanged(bool)),
+		 m_engine, SLOT(setCallFiltering(bool)) );
+	connect( m_engine, SIGNAL(callFilteringChanged(bool)),
 		 m_featureswidget, SLOT(setCallFiltering(bool)) );
 	
 	connect( m_featureswidget, SIGNAL(dndToggled(bool)),
-		 m_loginengine, SLOT(setDnd(bool)) );
-	connect( m_loginengine, SIGNAL(dndChanged(bool)),
+		 m_engine, SLOT(setDnd(bool)) );
+	connect( m_engine, SIGNAL(dndChanged(bool)),
 		 m_featureswidget, SLOT(setDnd(bool)) );
 	
 	connect( m_featureswidget, SIGNAL(uncondForwardChanged(bool, const QString &)),
-		 m_loginengine, SLOT(setUncondForward(bool, const QString &)) );
-	connect( m_loginengine, SIGNAL(uncondForwardChanged(bool, const QString &)),
+		 m_engine, SLOT(setUncondForward(bool, const QString &)) );
+	connect( m_engine, SIGNAL(uncondForwardChanged(bool, const QString &)),
 		 m_featureswidget, SLOT(setUncondForward(bool, const QString &)) );
-	connect( m_loginengine, SIGNAL(uncondForwardChanged(bool)),
+	connect( m_engine, SIGNAL(uncondForwardChanged(bool)),
 		 m_featureswidget, SLOT(setUncondForward(bool)) );
-	connect( m_loginengine, SIGNAL(uncondForwardChanged(const QString &)),
+	connect( m_engine, SIGNAL(uncondForwardChanged(const QString &)),
 		 m_featureswidget, SLOT(setUncondForward(const QString &)) );
 	
 	connect( m_featureswidget, SIGNAL(forwardOnBusyChanged(bool, const QString &)),
-		 m_loginengine, SLOT(setForwardOnBusy(bool, const QString &)) );
-	connect( m_loginengine, SIGNAL(forwardOnBusyChanged(bool, const QString &)),
+		 m_engine, SLOT(setForwardOnBusy(bool, const QString &)) );
+	connect( m_engine, SIGNAL(forwardOnBusyChanged(bool, const QString &)),
 		 m_featureswidget, SLOT(setForwardOnBusy(bool, const QString &)) );
-	connect( m_loginengine, SIGNAL(forwardOnBusyChanged(bool)),
+	connect( m_engine, SIGNAL(forwardOnBusyChanged(bool)),
 		 m_featureswidget, SLOT(setForwardOnBusy(bool)) );
-	connect( m_loginengine, SIGNAL(forwardOnBusyChanged(const QString &)),
+	connect( m_engine, SIGNAL(forwardOnBusyChanged(const QString &)),
 		 m_featureswidget, SLOT(setForwardOnBusy(const QString &)) );
 	
 	connect( m_featureswidget, SIGNAL(forwardOnUnavailableChanged(bool, const QString &)),
-		 m_loginengine, SLOT(setForwardOnUnavailable(bool, const QString &)) );
-	connect( m_loginengine, SIGNAL(forwardOnUnavailableChanged(bool, const QString &)),
+		 m_engine, SLOT(setForwardOnUnavailable(bool, const QString &)) );
+	connect( m_engine, SIGNAL(forwardOnUnavailableChanged(bool, const QString &)),
 		 m_featureswidget, SLOT(setForwardOnUnavailable(bool, const QString &)) );
-	connect( m_loginengine, SIGNAL(forwardOnUnavailableChanged(bool)),
+	connect( m_engine, SIGNAL(forwardOnUnavailableChanged(bool)),
 		 m_featureswidget, SLOT(setForwardOnUnavailable(bool)) );
-	connect( m_loginengine, SIGNAL(forwardOnUnavailableChanged(const QString &)),
+	connect( m_engine, SIGNAL(forwardOnUnavailableChanged(const QString &)),
 		 m_featureswidget, SLOT(setForwardOnUnavailable(const QString &)) );
 	//
 
@@ -433,7 +437,7 @@ void MainWindow::engineStopped()
 {
 	m_stopact->setDisabled(true);
 	m_startact->setEnabled(true);
-	m_loginengine->stop();
+	m_engine->stop();
 
 	m_svc_tabwidget->removeTab(m_svc_tabwidget->indexOf(m_featureswidget));
 	delete m_featureswidget;
@@ -451,8 +455,8 @@ void MainWindow::engineStopped()
  */
 void MainWindow::loginengineStarted()
 {
-	m_engine->setDialContext(m_loginengine->dialContext());
-	m_loginengine->askFeatures("peer/to/define");
+	m_engine->setDialContext(m_engine->dialContext());
+	m_engine->askFeatures("peer/to/define");
 }
 
 /*!

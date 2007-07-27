@@ -11,14 +11,14 @@ CONFIG -= debug
 CONFIG += static
 
 # Input
-HEADERS += confwidget.h baseengine.h mainwidget.h
+HEADERS += confwidget.h $${SBDIR}/baseengine.h mainwidget.h
 HEADERS += popup.h xmlhandler.h remotepicwidget.h urllabel.h
 HEADERS += servicepanel.h
 HEADERS += $${SBDIR}/dialpanel.h      $${SBDIR}/logwidget.h           $${SBDIR}/logeltwidget.h
 HEADERS += $${SBDIR}/directorypanel.h $${SBDIR}/extendedtablewidget.h $${SBDIR}/peerchannel.h
 HEADERS += $${SBDIR}/peerwidget.h     $${SBDIR}/peeritem.h            $${SBDIR}/searchpanel.h
 
-SOURCES += confwidget.cpp engine.cpp mainwidget.cpp main.cpp
+SOURCES += confwidget.cpp $${SBDIR}/baseengine.cpp mainwidget.cpp main.cpp
 SOURCES += popup.cpp xmlhandler.cpp remotepicwidget.cpp urllabel.cpp
 SOURCES += servicepanel.cpp
 SOURCES += $${SBDIR}/logwidget.cpp           $${SBDIR}/searchpanel.cpp  $${SBDIR}/peerwidget.cpp

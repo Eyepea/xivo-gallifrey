@@ -69,6 +69,7 @@ int main(int argc, char * * argv)
 
 	BaseEngine engine;
 	engine.setIsASwitchboard(false);
+
 	MainWidget main(&engine);
 	main.show();
 	//main.dumpObjectTree();

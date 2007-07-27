@@ -49,17 +49,18 @@ public:
 	 * \param engine	related BaseEngine object where parameters will be modified
 	 * \param parent	parent QWidget
 	 */
-	ConfWidget(BaseEngine *engine, MainWidget *parent);
+	ConfWidget(BaseEngine *,
+                   MainWidget *);
 	//ConfWidget(BaseEngine *engine, QWidget *parent = 0);
 private slots:
 	//! Save the configuration to the BaseEngine object and close
 	void saveAndClose();
 private:
-	QLineEdit *m_lineip;		//!< IP/hostname of the server
-	QLineEdit *m_lineport;		//!< port of the server
-	QLineEdit *m_lineast;		//!< id name of the Asterisk server
+	QLineEdit *m_serverhost;	//!< IP/hostname of the server
+	QLineEdit *m_loginport;		//!< port of the server
+	QLineEdit *m_asterisk;		//!< id name of the Asterisk server
 	QComboBox *m_protocombo;	//!< Protocol SIP/IAX
-	QLineEdit *m_linelogin;		//!< user login
+	QLineEdit *m_userid;		//!< user login
 	QLineEdit *m_linepasswd;	//!< user password
 	QCheckBox *m_autoconnect;	//!< Auto connect checkbox
 	QSpinBox *m_kainterval_sbox;	//!< Keep alive interval
@@ -68,7 +69,7 @@ private:
 	QSpinBox *m_tablimit_sbox;	//!< Maximum number of tabs
 	QCheckBox *m_tcpmode;	//!< Use outgoing TCP connection
 	BaseEngine *m_engine;			//!< BaseEngine object parameters are commited to
-	MainWidget *m_mainwidget;	//!< MainWidget where some parameters are commited to
+	MainWidget *m_mainwindow;	//!< MainWidget where some parameters are commited to
 };
 
 #endif

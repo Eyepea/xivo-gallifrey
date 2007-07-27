@@ -56,32 +56,34 @@ MainWidget::MainWidget(BaseEngine *engine, QWidget * parent)
 	  m_icon(":/xivoicon.png"), m_icongrey(":/xivoicon-grey.png")
 {
 	QSettings settings;
+	QPixmap redsquare(15,15);
+	redsquare.fill(Qt::red);
+	statusBar();	// This creates the status bar.
+	m_status = new QLabel();
+	m_status->setPixmap(redsquare);
+	statusBar()->addPermanentWidget(m_status);
+	statusBar()->clearMessage();
+	setWindowIcon(QIcon(":/xivoicon.png"));
+	setWindowTitle("XIVO Client");
+	//setWindowFlags(Qt::Dialog);
+	//layout->setSizeConstraint(QLayout::SetFixedSize);	// remove minimize and maximize button
+
 	createActions();
 	createMenus();
 	if( QSystemTrayIcon::isSystemTrayAvailable() )
 		createSystrayIcon();
 
-	connect( engine, SIGNAL(logged()), this, SLOT(setConnected()) );
-	connect( engine, SIGNAL(delogged()), this, SLOT(setDisconnected()) );
-	connect( engine, SIGNAL(newProfile(Popup *)),
+	connect( m_engine, SIGNAL(logged()),
+                 this, SLOT(setConnected()) );
+	connect( m_engine, SIGNAL(delogged()),
+                 this, SLOT(setDisconnected()) );
+	connect( m_engine, SIGNAL(newProfile(Popup *)),
 	         this, SLOT(showNewProfile(Popup *)) );
-
 	
-	//setWindowFlags(Qt::Dialog);
-	//layout->setSizeConstraint(QLayout::SetFixedSize);	// remove minimize and maximize button
-	setWindowTitle("XIVO Client");
-	setWindowIcon(QIcon(":/xivoicon.png"));
 
         // to be better defined
 	resize(500, 400);
 	restoreGeometry(settings.value("display/mainwingeometry").toByteArray());
-
-	m_status = new QLabel();
-	QPixmap red(15,15);
-	red.fill(Qt::red);
-	m_status->setPixmap(red);
-	statusBar()->addPermanentWidget(m_status);
-	statusBar()->clearMessage();
 	
 	m_wid = new QWidget();
 
@@ -106,7 +108,6 @@ void MainWidget::affTextChanged()
 	m_engine->sendMessage(txt.toUtf8());
 	m_messagetosend->setText("");
 }
-
 
 void MainWidget::createActions()
 {
@@ -328,10 +329,10 @@ void MainWidget::setConnected()
 	m_connectact->setEnabled(false);
 	m_disconnectact->setEnabled(true);
 	// display a green status indicator
-	QPixmap green(15,15);
+	QPixmap greensquare(15,15);
         QSettings settings;
-	green.fill(Qt::green);
-	m_status->setPixmap(green);
+	greensquare.fill(Qt::green);
+	m_status->setPixmap(greensquare);
 	QStringList display_capas = QString("customerinfo,features,history,directory,peers,dial,presence").split(",");
 	QStringList allowed_capas = m_engine->getCapabilities().split(",");
 	m_presence = false;
@@ -469,7 +470,7 @@ void MainWidget::setConnected()
 			} else if(dc == QString("history")) {
 				m_history = new LogWidget(m_engine, this);
 				m_history->setPeerToDisplay("p/" + m_engine->serverast() + "/" + "contexte" +  "/" +
-							    m_engine->protocol() + "/" + m_engine->userid() + "/" + m_engine->userid());
+							    m_engine->protocol() + "/" + m_engine->userId() + "/" + m_engine->userId());
 				connect( m_history, SIGNAL(askHistory(const QString &, int)),
 					 m_engine, SLOT(requestHistory(const QString &, int)) );
 				connect( m_engine, SIGNAL(updateLogEntry(const QDateTime &, int, const QString &, int)),

@@ -27,28 +27,49 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QObject>
 #include <QTcpSocket>
 #include <QTcpServer>
+#include <QTime>
+#include <QTimer>
 #include <QUdpSocket>
 
-class QTimer;
-class QDateTime;
+#include "popup.h"
 
-/*! \brief Class which handle connection with the Xivo CTI server
- */
+/*! \brief Class which handles connection with the Xivo CTI server
+ *   + Profile popup engine
+ *  The engine object is containing all the code to
+ *  handle network connection and requests */
 class BaseEngine: public QObject
 {
 	Q_OBJECT
 public:
-	//! Enum for Engine state logged/not logged
+	//! Enum for BaseEngine state logged/not logged
 	typedef enum {ENotLogged, ELogged } EngineState;
-	
+	//! Constructor
 	BaseEngine(QObject * parent = 0);
+	void loadSettings();		//!< load server settings
+
+	// setter/getter for properties
 	//! set address used to connect to the server
-	void setAddress(const QString & host, quint16 port);
-	quint16 sbport() const;
-//	quint16 loginport() const;
-	const QString & host() const;
-	void setAutoconnect(bool b) { m_autoconnect = b;}; //! set m_autoconnect
-	bool autoconnect() const {return m_autoconnect;};  //! get m_autoconnect
+	void setAddress(const QString &, quint16);
+	void setServerip(const QString &);	//!< see serverip()
+	const quint16 sbPort() const;
+	const QString & serverip() const;	//!< Host of the login server
+	const quint16 loginPort() const;	//!< TCP port for connection to server
+	void setLoginPort(const quint16 &);	//!< see loginPort()
+
+	const QString & serverast() const;	//!< id Name of the Asterisk server
+	void setServerAst(const QString &);	//!< see serverast()
+	const QString & protocol() const;      	//!< protocol of the user to identify to the server
+	void setProtocol(const QString &);     	//!< see protocol()
+	const QString & userId() const;		//!< userid to identify to the server
+	void setUserId(const QString &);       	//!< see userid()
+	const QString & password() const;	//!< password to identify to the sever
+	void setPassword(const QString &);	//!< see password()
+
+	const QString & dialContext() const;	//! get m_dialcontext
+	void setDialContext(const QString &);	//! set m_dialcontext
+
+	bool autoconnect() const;		//!< auto connect flag
+	void setAutoconnect(bool b);		//!< set auto connect flag
 	bool trytoreconnect() const;		//!< try to reconnect flag
 	void setTrytoreconnect(bool b);		//!< set try to reconnect flag
 	uint trytoreconnectinterval() const;	//!< try to reconnect interval
@@ -56,38 +77,34 @@ public:
 	uint historysize() const;	//!< history size
 	void setHistorySize(uint size);	//!< set history size
 
-	//! save settings
-	void saveSettings();
-	//! set m_asterisk
-	void setAsterisk(const QString & ast) { m_asterisk = ast; };
-	//! get m_asterisk
-	const QString & asterisk() const { return m_asterisk; };
-	//! set m_protocol
-	void setProtocol(const QString & proto) { m_protocol = proto; };
-	//! get m_protocol
-	const QString & protocol() const { return m_protocol; };
-	//! set m_extension
-	//void setExtension(const QString & ext) { m_extension = ext; };
-	//! get m_extension
-	//const QString & extension() const { return m_extension; };
-	//! set m_userid
-	void setUserId(const QString & userid) { m_userid = userid; };
-	//! get m_userid
-	const QString & userId() const { return m_userid; };
-	//! set m_dialcontext
-	void setDialContext(const QString & context) { m_dialcontext = context; };
-	//! get m_dialcontext
-	const QString & dialContext() const { return m_dialcontext; };
+	void saveSettings();		//!< save server settings
+
 	void setIsASwitchboard(bool);
 	bool isASwitchboard();
 	void deleteRemovables();
 	void addRemovable(const QMetaObject * metaobject);
 	bool isRemovable(const QMetaObject * metaobject);
+	void sendMessage(const QString &);      //!< Sends an instant message
+        
+	const EngineState state() const;	//!< Engine state (Logged/Not Logged)
+	void setState(EngineState state);	//!< see state()
+
+	const QString & getAvailState() const {return m_availstate;} //!< returns availability status
+	void setAvailState(const QString &);	//! set m_availstate
+	//! set m_enabled
+	void setEnabled(bool b);
+	//! get m_enabled
+	bool enabled() { return m_enabled; };
+
+	uint keepaliveinterval() const;		//!< keep alive interval
+	bool tcpmode() const { return m_tcpmode; };	//!< get tcp mode flag
+	void setTcpmode(bool b) { m_tcpmode = b; };	//!< set tcp mode flag
+	const QString & getCapabilities() const {return m_capabilities;} //!< returns capabilities
 protected:
-	void timerEvent(QTimerEvent *event);
+	void timerEvent(QTimerEvent *);	//!< receive timer events
 public slots:
-	void start();
-	void stop();
+	void start();	//!< start the connection process.
+	void stop();	//!< stop the engine
 	void originateCall(const QString &, const QString &);
 	void dialFullChannel(const QString &);
 	void dialExtension(const QString &);
@@ -95,11 +112,37 @@ public slots:
 	void interceptCall(const QString &);
 	void searchDirectory(const QString &);
 	void requestHistory(const QString &, int);
+        void requestPeers(void);
         void transferToNumber(const QString &);
         void textEdited(const QString &);
+	void setAvailable();	//!< set user status as "available"
+	void setAway();			//!< set user status as "away"
+	void setBeRightBack();	//!< set user status as "be right back"
+	void setOutToLunch();	//!< set user status as "out to lunch"
+	void setDoNotDisturb();	//!< set user status as "do not disturb"
+	void sendUDPCommand(const QString &);
+	void setVoiceMail(bool);
+	void setCallRecording(bool);
+	void setCallFiltering(bool);
+	void setDnd(bool);
+	void setUncondForward(bool, const QString &);
+	void setForwardOnBusy(bool, const QString &);
+	void setForwardOnUnavailable(bool, const QString &);
+	void askFeatures(const QString &);
+	void askPeers();
+	void askCallerIds();
+	void setKeepaliveinterval(uint);	//!< set keep alive interval
 private slots:
-	void updatePeers(const QStringList & liststatus);
-	void updateCallerids(const QStringList & liststatus);
+	void identifyToTheServer();	//!< perform the first login step
+	void processLoginDialog();	//!< perform the following login steps
+	void handleProfilePush();	//!< called when receiving a profile
+	void serverHostFound();		//!< called when the host name resolution succeded
+	void keepLoginAlive();		//!< Send a UDP datagram to keep session alive
+	void readKeepLoginAliveDatagrams();	//!< handle the responses to keep alive
+	void popupDestroyed(QObject *);	//!< know when a profile widget is destroyed *DEBUG*
+	void profileToBeShown(Popup *);	//!< a new profile must be displayed
+	void updatePeers(const QStringList &);
+	// void updateCallerids(const QStringList &);
 	void socketConnected();
 	void socketDisconnected();
 	void socketHostFound();
@@ -110,6 +153,8 @@ private slots:
 signals:
 	void logged();	//!< signal emitted when the state becomes ELogged
 	void delogged();	//!< signal emitted when the state becomes ENotLogged
+	void availAllowChanged(bool);	//!< signal 
+	void newProfile(Popup *);	//!< signal emitted when a new profile has to be shown
 	//! connected to the server
 	void started();
 	//! disconnected from the server
@@ -131,52 +176,90 @@ signals:
 	//void showCalls(const QString & tomonitor, const QString & callerid);
 	//! call list is updated
 	void callsUpdated();
+	//! the server requested a peer remove
+	void removePeer(const QString &);
+	//! we want to monitor a given peer (not the one given by the mouse's drag&drop).
+	void monitorPeer(const QString &, const QString &);
 	//! update informations about a peer
 	void updatePeer(const QString &, const QString &,
 	                const QString &, const QString &,
 	                const QString &, const QString &,
 	                const QStringList &, const QStringList &, const QStringList &);
-	//! the server requested a peer remove
-	void removePeer(const QString &);
 	//! a log entry has to be updated.
 	void updateLogEntry(const QDateTime &, int, const QString &, int);
 	//! the directory search response has been received.
 	void directoryResponse(const QString &);
-	//! we want to monitor a given peer (not the one given by the mouse's drag&drop).
-	void monitorPeer(const QString &, const QString &);
+        void disconnectFeatures();
+        void connectFeatures();
+        void resetFeatures();
+	void voiceMailChanged(bool);
+	void callRecordingChanged(bool);
+	void callFilteringChanged(bool);
+	void dndChanged(bool);
+	void uncondForwardChanged(bool, const QString &);
+	void uncondForwardChanged(bool);
+	void uncondForwardChanged(const QString &);
+	void forwardOnBusyChanged(bool, const QString &);
+	void forwardOnBusyChanged(bool);
+	void forwardOnBusyChanged(const QString &);
+	void forwardOnUnavailableChanged(bool, const QString &);
+	void forwardOnUnavailableChanged(bool);
+	void forwardOnUnavailableChanged(const QString &);
 private:
-	void connectSocket();
-	void loadSettings();	//!< load settings
-	void sendCommand();
-	void processHistory(const QStringList &);
+	void initListenSocket();	//!< initialize the socket listening to profile
+	void stopKeepAliveTimer();	//!< Stop the keep alive timer if running
 	void startTryAgainTimer();	//!< Start the "try to reconnect" timer
 	void stopTryAgainTimer();	//!< Stop the "try to reconnect" timer
-
-	QTcpSocket * m_socket;	//!< socket to connect to the server
+	void processHistory(const QStringList &);
+	void initFeatureFields(const QString &, const QString &);
+	void updateCallerids(const QStringList &);
+	void connectSocket();
+	void sendTCPCommand();
+        //
+	ushort m_listenport;		//!< Port where we are listening for profiles
 	int m_timer;	//!< timer id
+	bool m_tcpmode;	//!< use a unique outgoing TCP connection for everything
+	// parameters to connect to server
+	QString m_serverhost;		//!< Host to the login server
+	quint16 m_loginport;		//!< TCP port (UDP port for keep alive is +1)
+	quint16 m_sbport;		//!< port to connect to server
+	QString m_asterisk;		//!< Host to the login server
+	QString m_protocol;		//!< User Protocol's login
+	QString m_userid;		//!< User Id
 	int m_historysize;
-	QString m_serverhost;	//!< server host name
-	quint16 m_sbport;	//!< port to connect to server
-	//quint16 m_loginport;	//!< port to login to server
+	bool m_enabled;	       	//!< is enabled
+	QString m_passwd;	//!< User password for account
+	QHostAddress m_serveraddress;	//!< Resolved address of the login server
+	QTcpSocket * m_sbsocket;	//!< socket to connect to the server
+	QTcpSocket * m_loginsocket;	//!< socket to connect to the server
+	QUdpSocket * m_udpsocket;      	//!< UDP socket used for keep alive
+	QTcpServer * m_listensocket;	//!< TCP socket listening for profiles
+        //
+	EngineState m_state;	//!< State of the engine (Logged/Not Logged)
+	//
 	bool m_autoconnect;	//!< Autoconnect to server at startup
 	bool m_trytoreconnect;	//!< "try to reconnect" flag
 	uint m_trytoreconnectinterval;	//!< Try to reconnect interval (in msec)
+	uint m_keepaliveinterval;	//!< Keep alive interval (in msec)
+	//
+	int m_ka_timerid;			//!< timer id for keep alive
 	int m_try_timerid;			//!< timer id for try to reconnect
+	int m_pendingkeepalivemsg;	//!< number of keepalivemsg sent without response
+	int m_version;	//!< Version issued by the server after a successful login
 	QString m_pendingcommand;	//!< command to be sent to the server.
-	QHash<QString, QString> m_callerids;	//!< List of caller Ids
 	// poste à utiliser pour les commandes "DIAL"
-	QHostAddress m_serveraddress;	//!< Resolved address of the login server
-	QString m_asterisk;		//!< asterisk server id of "my phone"
-	QString m_protocol;		//!< protocol (SIP/IAX/ZAP...) for "my phone"
 	QString m_extension;	//!< extension for "my phone"
-	QString m_userid;		//!< userid
+        QString m_numbertodial;
 	QString m_dialcontext;	//!< Context of the phone, as returned by the xivo_daemon server
 	QString m_sessionid;	//!< Session id obtained after a successful login
 	QString m_capabilities;	//!< List of capabilities issued by the server after a successful login
-        QString m_numbertodial;
+	QHash<QString, QString> m_callerids;	//!< List of caller Ids
 	// GUI client capabilities
 	QList<const QMetaObject *> m_removable;
-	bool m_is_a_switchboard; 
+	bool m_is_a_switchboard;
+	QString m_availstate;	//!< Availability state to send to the server
+        QString m_ctx;
+        QString m_phn;
 };
 
 #endif

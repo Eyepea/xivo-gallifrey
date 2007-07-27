@@ -28,7 +28,6 @@ class QLineEdit;
 class QSpinBox;
 
 class BaseEngine;
-class LoginEngine;
 class MainWindow;
 class SwitchBoardWindow;
 
@@ -38,15 +37,12 @@ class SwitchBoardConfDialog : public QDialog
 {
 	Q_OBJECT
 public:
-	SwitchBoardConfDialog(BaseEngine * engine,
-	                      LoginEngine * loginengine,
-	                      SwitchBoardWindow * window,
-	                      MainWindow *parent);
+	SwitchBoardConfDialog(BaseEngine *,
+	                      MainWindow *);
 private slots:
 	void saveAndClose();	//!< save configuration and close dialog
 private:
 	BaseEngine * m_engine;	//!< switchboard engine
-	LoginEngine * m_loginengine;	//!< presence server engine
 	SwitchBoardWindow * m_window;	//!< main application window
 	QLineEdit * m_serverhost;	//!< server host
 	QLineEdit * m_sbport;		//!< server port (switchboard)

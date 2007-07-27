@@ -26,7 +26,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QLocale>
 #include <QTranslator>
 #include "switchboardwindow.h"
-#include "loginengine.h"
 #include "baseengine.h"
 #include "mainwindow.h"
 
@@ -60,10 +59,9 @@ int main(int argc, char * * argv)
 	app.installTranslator(&qtTranslator);
 
 	BaseEngine engine;
-	engine.setIsASwitchboard(true);
-	LoginEngine login_engine;
-	
-	MainWindow main(&engine, &login_engine);
+        engine.setIsASwitchboard(true);
+
+	MainWindow main(&engine);
 	main.show();
 	//main.dumpObjectTree();
 	//engine.startTimer(1000);

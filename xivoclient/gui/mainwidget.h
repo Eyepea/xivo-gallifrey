@@ -48,7 +48,8 @@ class MainWidget: public QMainWindow
 	Q_OBJECT
 public:
 	//! Constructor
-	MainWidget(BaseEngine *, QWidget * parent=0);
+	MainWidget(BaseEngine *,
+                   QWidget * parent=0);
 	//! Destructor
         ~MainWidget();
 	int tablimit() const;	//!< getter for m_tablimit
