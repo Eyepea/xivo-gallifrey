@@ -35,14 +35,25 @@ import sys, re
 from xivo import ConfigPath
 from xivo.ConfigPath import *
 ConfiguredPathHelper(CONFIG_FILE, CONFIG_LIB_PATH)
+import anysql
+from BackSQL import backsqlite
+from BackSQL import backmysql
 import ConfigParser
 from ConfigDict import *
 from agi import *
 
-# This is the configuration file, please do not change the path because if was editable by xivo web interface
-outcall = "/etc/asterisk/xivo_outcall.conf"
+options = { "db_uri" : "" }
+conf_obj = ConfigParser.ConfigParser()
+conf_obj.readfp(open(CONFIG_FILE))
+FillDictFromConfigSection(options, conf_obj, "db")
+
+import string
 
 agi = AGI()
+
+
+# This is the configuration file, please do not change the path because if was editable by xivo web interface
+outcall = "/etc/asterisk/xivo_outcall.conf"
 
 try:
 	config = ConfigParser.ConfigParser()
@@ -52,12 +63,15 @@ except IOError:
 	raise
 
 # This function returns all informations for a specific provider
-def get_provider(provider):
+def get_provider(provider, return_callerid):
 	agi.set_variable("PROVIDER", provider)
 	agi.set_variable("EXTERNPREFIX", config.get(provider, 'externprefix'))
 	agi.set_variable("PREFIX", config.get(provider, 'prefix'))
 	agi.set_variable("CHAN", config.get(provider, 'chan'))
-	agi.set_variable("EXTERNNUM", config.get(provider, 'externnum'))
+	if not return_callerid:
+		agi.set_variable("EXTERNNUM", config.get(provider, 'externnum'))
+	else:
+		agi.set_variable("EXTERNNUM", return_callerid)
 	agi.set_variable("SETCALLERID", config.get(provider, 'setcallerid'))
 	agi.set_variable("USEENUM", config.get(provider, 'useenum'))
 	agi.set_variable("TIMETOCALL", config.get(provider, 'timetocall'))
@@ -82,9 +96,38 @@ def get_general():
 	agi.set_variable("SPECIALPROVIDER", config.get('general', 'specialprovider'))
 	agi.set_variable("PROVIDERS", providers)
 
+def set_outcallerid(callerid):
+	try:
+		conn = anysql.connect_by_uri(options['db_uri'])
+	except:
+		agi.verbose("Unable to connect to %s" %options['db_uri'])
+		raise
+
+	cursor = conn.cursor()
+	query = "SELECT outnumber FROM userfeatures WHERE number='%s'" % callerid
+	cursor.execute(query)
+	t = cursor.fetchone()
+
+	if not t:
+		agi.verbose("No callerid found !")
+
+	else:
+		callerid = t[0]
+		agi.set_callerid(callerid)
+		return callerid
+
 # If no argnument script return all general configuration
 # First argument must be a phone number 
 # Second argument must be a provider setup on config file
+
+#if len(sys.argv) != 4:
+#	agi.verbose("Error args incorrect")
+#	sys.exit()
+
+
+#exten = sys.argv[1]
+
+
 if len(sys.argv) > 1:
 	if sys.argv[1].isdigit() or re.search("^\+", sys.argv[1]):
 		exten = sys.argv[1]
@@ -97,8 +140,11 @@ if len(sys.argv) > 1:
 	else:
 		context = ""
 	
+	callerid = sys.argv[3]
+	return_callerid = set_outcallerid(callerid)
+	
 	if provider:
-		get_provider(provider)
+		get_provider(provider, return_callerid)
 		sys.exit()
 	else:
 		get_general()
@@ -118,7 +164,7 @@ if len(sys.argv) > 1:
 						if exten[:len(config.get(s, 'prefix'))] == config.get(s, 'prefix'):
 							if (not config.has_option(s, 'context')) or \
 							       (config.has_option(s, 'context') and context == config.get(s, 'context')):
-								get_provider(s)
+								get_provider(s, return_callerid)
 								sys.exit()
 							else:
 								agi.verbose("Found no provider for this number %s and context %s!" %(exten,context))
@@ -133,7 +179,7 @@ if len(sys.argv) > 1:
 									if r.findall(exten)[0]:
 										if (not config.has_option(s, 'context')) or \
 										       (config.has_option(s, 'context') and context == config.get(s, 'context')):
-											get_provider(s)
+											get_provider(s, return_callerid)
 											sys.exit()
 										else:
 											agi.verbose("Found no provider in this context %s!" %(context))
