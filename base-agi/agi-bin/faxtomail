@@ -55,11 +55,13 @@ if len(sys.argv) != 4:
 	agi.verbose("Missing arguments")
 	sys.exit()
 
+
 if sys.argv[1].isdigit():
+	agi.verbose("OK, argv[1] is a phone number!")
 	callexten = sys.argv[1]
 else:
-	agi.verbose("Error it's not a phone number!")
-	sys.exit()
+	agi.verbose("Error, argv[1] is not a phone number!")
+	callexten = "Numéro Inconnu"
 
 filename = sys.argv[2]
 filepdf = string.replace(filename,".tif",".pdf")
