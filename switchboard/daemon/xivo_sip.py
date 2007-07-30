@@ -17,23 +17,28 @@ import random
 # \param expires the expiration time
 # \return the built message
 def sip_register(cfg, me, cseq, callid, expires, authentication):
-    here = cfg.localaddr + ":" + str(cfg.portsipclt)
-    raddr = cfg.remoteaddr
-    #raddr = "192.168.0.255"
-    command = "REGISTER sip:" + raddr + " SIP/2.0\r\n"
-    command += "Via: SIP/2.0/UDP " + here + ";branch=" + str(random.randrange(1000000)) + "\r\n"
-    command += "To: <" + me + "@" + raddr + ">\r\n"
-    command += "From: <" + me + "@" + raddr + ">;tag=" + str(random.randrange(1000000)) + "\r\n"
-    command += "Call-ID: " + callid + "\r\n"
-    command += "CSeq: " + str(cseq) + " REGISTER\r\n"
-    command += "Max-Forwards: 70\r\n"
-    command += "Contact: <" + me + "@" + here + ">\r\n"
-    command += authentication
-    command += "User-Agent: Switchboard Watcher\r\n"
-    command += "Expires: %d\r\n" %expires
-    command += "Content-Length: 0\r\n"
-    command += "\r\n"
-    return command
+        here = "%s:%d" %(cfg.localaddr, cfg.portsipclt)
+        raddr = cfg.remoteaddr
+        # raddr = "192.168.0.255"
+        try:
+                command = ["REGISTER sip:%s SIP/2.0"       %(raddr),
+                           "Via: SIP/2.0/UDP %s;branch=%s" %(here, str(random.randrange(1000000))),
+                           "To: <%s@%s>"                   %(me, raddr),
+                           "From: <%s@%s>;tag=%s"          %(me, raddr, str(random.randrange(1000000))),
+                           "Call-ID: %s"                   %(callid),
+                           "CSeq: %d REGISTER"             %(cseq),
+                           "Max-Forwards: 70",
+                           "Contact: <%s@%s>"              %(me, here)]
+                if authentication is not "" : command.append(authentication)
+                command.extend(("User-Agent: Switchboard Watcher",
+                                "Expires: %d"                   %(expires),
+                                "Content-Length: 0"))
+                command.append("\r\n")
+                return '\r\n'.join(command)
+        except Exception, exc:
+                print "sip_register : exception occured in %s" %str(exc)
+                return '\r\n'
+
 
 ## \brief Builds a SIP SUBSCRIBE message.
 # \param cfg the Asterisk properties
@@ -43,23 +48,29 @@ def sip_register(cfg, me, cseq, callid, expires, authentication):
 # \param expires the expiration time
 # \return the built message
 def sip_subscribe(cfg, me, cseq, callid, sipnumber, expires, authentication):
-    here = cfg.localaddr + ":" + str(cfg.portsipclt)
-    command = "SUBSCRIBE sip:" + sipnumber + "@" + cfg.remoteaddr + " SIP/2.0\r\n"
-    command += "Via: SIP/2.0/UDP " + here + ";branch=" + str(random.randrange(1000000)) + "\r\n"
-    command += "To: <sip:" + sipnumber + "@" + cfg.remoteaddr + ">\r\n"
-    command += "From: <" + me + "@" + cfg.remoteaddr + ">;tag=" + str(random.randrange(1000000)) + "\r\n"
-    command += "Call-ID: " + callid + "\r\n"
-    command += "CSeq: " + str(cseq) + " SUBSCRIBE\r\n"
-    command += "Max-Forwards: 70\r\n"
-    command += "Event: presence\r\n"
-    command += "Accept: application/pidf+xml\r\n"
-    command += "Contact: <" + me + "@" + here + ">\r\n"
-    command += authentication
-    command += "User-Agent: Switchboard Watcher\r\n"
-    command += "Expires: %d\r\n" %expires
-    command += "Content-Length: 0\r\n"
-    command += "\r\n"
-    return command
+        here = "%s:%d" %(cfg.localaddr, cfg.portsipclt)
+        raddr = cfg.remoteaddr
+        try:
+                command = ["SUBSCRIBE sip:%s@%s SIP/2.0"   %(sipnumber, raddr),
+                           "Via: SIP/2.0/UDP %s;branch=%s" %(here, str(random.randrange(1000000))),
+                           "To: <sip:%s@%s>"               %(sipnumber, raddr),
+                           "From: <%s@%s>;tag=%s"          %(me, raddr, str(random.randrange(1000000))),
+                           "Call-ID: %s"                   %(callid),
+                           "CSeq: %d SUBSCRIBE"            %(cseq),
+                           "Max-Forwards: 70",
+                           "Event: presence",
+                           "Accept: application/pidf+xml",
+                           "Contact: <%s@%s>"              %(me, here)]
+                if authentication is not "" : command.append(authentication)
+                command.extend(("User-Agent: Switchboard Watcher",
+                                "Expires: %d"                   %(expires),
+                                "Content-Length: 0"))
+                command.append("\r\n")
+                return '\r\n'.join(command)
+        except Exception, exc:
+                print "sip_subscribe : exception occured in %s" %str(exc)
+                return '\r\n'
+
 
 ## \brief Builds a SIP OPTIONS message.
 # \param cfg the Asterisk properties
@@ -68,21 +79,25 @@ def sip_subscribe(cfg, me, cseq, callid, sipnumber, expires, authentication):
 # \param sipnumber the SIP numner
 # \return the built message
 def sip_options(cfg, me, callid, sipnumber):
-    here = cfg.localaddr + ":" + str(cfg.portsipclt)
-    raddr = cfg.remoteaddr
-    command = "OPTIONS sip:" + sipnumber + "@" + raddr + " SIP/2.0\r\n"
-    command += "Via: SIP/2.0/UDP " + here + ";branch=" + str(random.randrange(1000000)) + "\r\n"
-    command += "From: <" + me + "@" + here + ">;tag=" + str(random.randrange(1000000)) + "\r\n"
-    command += "To: <sip:" + sipnumber + "@" + raddr + ">\r\n"
-    command += "Contact: <" + me + "@" + here + ">\r\n"
-    command += "Call-ID: " + callid + "\r\n"
-    command += "CSeq: 102 OPTIONS\r\n"
-    command += "User-Agent: Switchboard Watcher\r\n"
-    command += "Max-Forwards: 70\r\n"
-    command += "Allow: INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, SUBSCRIBE, NOTIFY\r\n"
-    command += "Content-Length: 0\r\n"
-    command += "\r\n"
-    return command
+        here = "%s:%d" %(cfg.localaddr, cfg.portsipclt)
+        raddr = cfg.remoteaddr
+        try:
+                command = ["OPTIONS sip:%s@%s SIP/2.0"     %(sipnumber, raddr),
+                           "Via: SIP/2.0/UDP %s;branch=%s" %(here, str(random.randrange(1000000))),
+                           "From: <%s@%s>;tag=%s"          %(me, here, str(random.randrange(1000000))),
+                           "To: <sip:%s@%s>"               %(sipnumber, raddr),
+                           "Call-ID: %s"                   %(callid),
+                           "CSeq: 102 OPTIONS",
+                           "User-Agent: Switchboard Watcher",
+                           "Max-Forwards: 70",
+                           "Allow: INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, SUBSCRIBE, NOTIFY",
+                           "Content-Length: 0"]
+                command.append("\r\n")
+                return '\r\n'.join(command)
+        except Exception, exc:
+                print "sip_options : exception occured in %s" %str(exc)
+                return '\r\n'
+
 
 ## \brief Builds a SIP OK message (in order to reply to OPTIONS (qualify) and
 # NOTIFY (when presence subscription)).
@@ -92,15 +107,19 @@ def sip_options(cfg, me, callid, sipnumber):
 # \param callid the callerID to send
 # \return the built message
 def sip_ok(cfg, me, cseq, callid, sipnumber, smsg, lbranch, ltag):
-    here = cfg.localaddr + ":" + str(cfg.portsipclt)
-    command = "SIP/2.0 200 OK\r\n"
-    command += "Via: SIP/2.0/UDP " + here + ";branch=" + lbranch + "\r\n"
-    command += "From: <" + sipnumber + "@" + cfg.remoteaddr + ">;tag=" + ltag + "\r\n"
-    command += "To: <" + me + "@" + cfg.remoteaddr + ">\r\n"
-    command += "Call-ID: " + callid + "\r\n"
-    command += "CSeq: " + str(cseq) + " " + smsg + "\r\n"
-    command += "User-Agent: Switchboard Watcher\r\n"
-    command += "Content-Length: 0\r\n"
-    command += "\r\n"
-    return command
-
+        here = "%s:%d" %(cfg.localaddr, cfg.portsipclt)
+        raddr = cfg.remoteaddr
+        try:
+                command = ["SIP/2.0 200 OK",
+                           "Via: SIP/2.0/UDP %s;branch=%s" %(here, lbranch),
+                           "From: <%s@%s>;tag=%s"          %(sipnumber, raddr, ltag),
+                           "To: <sip:%s@%s>"               %(me, raddr),
+                           "Call-ID: %s"                   %(callid),
+                           "CSeq: %d %s"                   %(cseq, smsg),
+                           "User-Agent: Switchboard Watcher",
+                           "Content-Length: 0"]
+                command.append("\r\n")
+                return '\r\n'.join(command)
+        except Exception, exc:
+                print "sip_ok : exception occured in %s" %str(exc)
+                return '\r\n'

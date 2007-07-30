@@ -876,7 +876,7 @@ def parseSIP(astnum, data, l_sipsock, l_addrsip):
                         nonce    = iauth.split("nonce=\"")[1].split("\"")[0]
                         md5_r2   = md5.md5(imsg   + ":" + uri).hexdigest()
                         response = md5.md5(md5_r1 + ":" + nonce + ":" + md5_r2).hexdigest()
-                        auth = "Authorization: Digest username=\"%s\", realm=\"%s\", nonce=\"%s\", uri=\"%s\", response=\"%s\", algorithm=MD5\r\n" \
+                        auth = "Authorization: Digest username=\"%s\", realm=\"%s\", nonce=\"%s\", uri=\"%s\", response=\"%s\", algorithm=MD5" \
                                %(iaccount, realm, nonce, uri, response)
                         command = xivo_sip.sip_register(configs[astnum],
                                                         "sip:" + iaccount, 1, "reg_cid@xivopy",
@@ -927,7 +927,7 @@ def parseSIP(astnum, data, l_sipsock, l_addrsip):
                                 nonce    = iauth.split("nonce=\"")[1].split("\"")[0]
                                 md5_r2   = md5.md5(imsg   + ":" + uri).hexdigest()
                                 response = md5.md5(md5_r1 + ":" + nonce + ":" + md5_r2).hexdigest()
-                                auth = "Authorization: Digest username=\"%s\", realm=\"%s\", nonce=\"%s\", uri=\"%s\", response=\"%s\", algorithm=MD5\r\n" \
+                                auth = "Authorization: Digest username=\"%s\", realm=\"%s\", nonce=\"%s\", uri=\"%s\", response=\"%s\", algorithm=MD5" \
                                        %(iaccount, realm, nonce, uri, response)
                                 command = xivo_sip.sip_subscribe(configs[astnum], "sip:" + iaccount,
                                                                  1, icid, normv.phonenum,
