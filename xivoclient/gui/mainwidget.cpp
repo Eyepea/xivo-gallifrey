@@ -22,29 +22,30 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  * $Date$
  */
 
-#include <QApplication>
-#include <QSettings>
-#include <QSystemTrayIcon>
-#include <QMenu>
-#include <QMenuBar>
-#include <QStatusBar>
-#include <QTabWidget>
 #include <QAction>
+#include <QApplication>
+#include <QDebug>
 #include <QHideEvent>
 #include <QLabel>
-#include <QTime>
+#include <QMenu>
+#include <QMenuBar>
 #include <QMessageBox>
-#include <QDebug>
+#include <QSettings>
+#include <QStatusBar>
+#include <QSystemTrayIcon>
+#include <QTabWidget>
+#include <QTime>
 #include <QVBoxLayout>
-#include "mainwidget.h"
-#include "confwidget.h"
-#include "popup.h"
+
 #include "baseengine.h"
+#include "confwidget.h"
 #include "dialpanel.h"
-#include "logwidget.h"
 #include "directorypanel.h"
-#include "servicepanel.h"
+#include "logwidget.h"
+#include "mainwidget.h"
+#include "popup.h"
 #include "searchpanel.h"
+#include "servicepanel.h"
 
 /*! \brief Constructor
  *

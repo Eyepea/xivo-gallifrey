@@ -22,21 +22,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 #include <QWidget>
 #include <QMainWindow>
+#include <QSplitter>
 #include <QSystemTrayIcon>
 #include <QTabWidget>
-#include "servicepanel.h"
-#include "logwidget.h"
-#include "callstackwidget.h"
-#include "popup.h"
 
 class QAction;
 class QActionGroup;
 class QCloseEvent;
 class QLabel;
-class QSplitter;
 
 class BaseEngine;
+class CallStackWidget;
 class LogWidget;
+class Popup;
 class ServicePanel;
 class SwitchBoardWindow;
 
@@ -48,10 +46,11 @@ class MainWidget : public QMainWindow
 public:
 	//! Constructor
 	MainWidget(BaseEngine *, QWidget * parent=0);
-	int tablimit() const;	//!< getter for m_tablimit
-	void setTablimit(int);	//!< setter for m_tablimit
 	//! Destructor
 	virtual ~MainWidget();
+
+	int tablimit() const;	//!< getter for m_tablimit
+	void setTablimit(int);	//!< setter for m_tablimit
 private slots:
 	void showConfDialog();
 	void engineStopped();

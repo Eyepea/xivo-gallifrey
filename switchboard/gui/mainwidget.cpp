@@ -21,31 +21,33 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
    $Date$
 */
 
-#include <QStatusBar>
-#include <QMenuBar>
+
 #include <QApplication>
-#include <QMessageBox>
-#include <QSplitter>
-#include <QScrollArea>
-#include <QLineEdit>
-#include <QLabel>
-#include <QSettings>
 #include <QCloseEvent>
-#include <QVBoxLayout>
 #include <QDebug>
+#include <QLabel>
+#include <QLineEdit>
+#include <QMenuBar>
+#include <QMessageBox>
+#include <QScrollArea>
+#include <QSettings>
+#include <QSplitter>
+#include <QStatusBar>
 #include <QTabWidget>
-#include "mainwidget.h"
+#include <QVBoxLayout>
+
 #include "baseengine.h"
-#include "switchboardwindow.h"
-#include "confwidget.h"
 #include "callstackwidget.h"
-#include "searchpanel.h"
-#include "logwidget.h"
+#include "confwidget.h"
 #include "dialpanel.h"
 #include "directorypanel.h"
 #include "displaymessages.h"
-#include "servicepanel.h"
+#include "logwidget.h"
+#include "mainwidget.h"
 #include "popup.h"
+#include "searchpanel.h"
+#include "servicepanel.h"
+#include "switchboardwindow.h"
 
 /*! \brief Widget containing the CallStackWidget and a Title QLabel
  */
@@ -218,7 +220,6 @@ MainWidget::MainWidget(BaseEngine * engine, QWidget * parent)
 	        this, SLOT(engineStarted()));
 	connect(m_engine, SIGNAL(stopped()),
 	        this, SLOT(engineStopped()));
-	
 	connect(m_engine, SIGNAL(logged()),
  		this, SLOT(loginengineStarted()) );
 }
@@ -251,19 +252,20 @@ void MainWidget::createActions()
 	m_stopact->setStatusTip(tr("Stop"));
 	connect(m_stopact, SIGNAL(triggered()),
 		m_engine, SLOT(stop()) );
-	connect(m_stopact, SIGNAL(triggered()),
-		m_engine, SLOT(stop()) );
 	m_stopact->setDisabled(true);
 	menu->addAction(m_stopact);
 
 	QAction * conf = new QAction(tr("&Configure"), this);
 	conf->setStatusTip(tr("Open the configuration dialog"));
-	connect(conf, SIGNAL(triggered()), this, SLOT(showConfDialog()));
+	connect(conf, SIGNAL(triggered()),
+		this, SLOT(showConfDialog()));
 	menu->addAction(conf);
 
 	QAction * quit = new QAction(tr("&Quit"), this);
-	connect(quit, SIGNAL(triggered()), m_engine, SLOT(stop()) );
-	connect(quit, SIGNAL(triggered()), qApp, SLOT(quit()));
+	connect(quit, SIGNAL(triggered()),
+		m_engine, SLOT(stop()) );
+	connect(quit, SIGNAL(triggered()),
+		qApp, SLOT(quit()));
 	menu->addAction(quit);
 
 	// Availability actions :
@@ -336,7 +338,6 @@ void MainWidget::engineStarted()
 {
 	m_stopact->setEnabled(true);
 	m_startact->setDisabled(true);
-        //	m_engine->start();
 
 	m_logwidget = new LogWidget(m_engine, m_svc_tabwidget);
 	m_svc_tabwidget->insertTab(0, m_logwidget, tr("History"));
@@ -429,12 +430,17 @@ void MainWidget::engineStopped()
 {
 	m_stopact->setDisabled(true);
 	m_startact->setEnabled(true);
-	m_engine->stop();
 
-	m_svc_tabwidget->removeTab(m_svc_tabwidget->indexOf(m_featureswidget));
-	delete m_featureswidget;
-	m_svc_tabwidget->removeTab(m_svc_tabwidget->indexOf(m_logwidget));
-	delete m_logwidget;
+	int index_features = m_svc_tabwidget->indexOf(m_featureswidget);
+	if(index_features > -1) {
+	        m_svc_tabwidget->removeTab(m_svc_tabwidget->indexOf(m_featureswidget));
+		delete m_featureswidget;
+	}
+	int index_logs = m_svc_tabwidget->indexOf(m_logwidget);
+	if(index_logs > -1) {
+	        m_svc_tabwidget->removeTab(m_svc_tabwidget->indexOf(m_logwidget));
+		delete m_logwidget;
+	}
 
 	// set status icon to red
 	QPixmap redsquare(15,15);
@@ -447,7 +453,6 @@ void MainWidget::engineStopped()
  */
 void MainWidget::loginengineStarted()
 {
-	m_engine->setDialContext(m_engine->dialContext());
 	m_engine->askFeatures("peer/to/define");
 }
 

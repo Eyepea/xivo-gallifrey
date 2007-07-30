@@ -17,8 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 */
 
 /* $Id$ */
-#include <QWidget>
 #include <QDebug>
+#include <QWidget>
+
 #include "peerslayout.h"
 
 PeersLayout::PeersLayout(QWidget * parent)
@@ -107,7 +108,7 @@ void PeersLayout::addItem(QLayoutItem * item)
  */
 void PeersLayout::setGeometry(const QRect & r)
 {
-	//qDebug() << "PeersLayout::setGeometry" << r;
+	qDebug() << "PeersLayout::setGeometry" << r;
 	QSize itemSize = maxItemSize();
 	int i, x, y;
 	for(i = 0; i<m_list.size(); i++)

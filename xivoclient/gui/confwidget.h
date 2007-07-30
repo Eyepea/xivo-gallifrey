@@ -27,8 +27,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QLineEdit>
 #include <QSpinBox>
 
-#include "baseengine.h"
-#include "mainwidget.h"
+class BaseEngine;
+class MainWidget;
 
 /*! \brief Configuration Window
  *

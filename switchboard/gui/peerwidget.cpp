@@ -30,6 +30,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QApplication>
 #include <QMenu>
 #include <QDebug>
+
+#include "baseengine.h"
+#include "peerchannel.h"
 #include "peerwidget.h"
 #include "xivoconsts.h"
 

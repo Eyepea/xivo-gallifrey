@@ -22,10 +22,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QWidget>
 #include <QPixmap>
 #include <QPoint>
-#include "peerchannel.h"
-#include "baseengine.h"
 
 class QLabel;
+
+class BaseEngine;
+class PeerChannel;
 
 /*! \brief Widget to display a Peer status
  *

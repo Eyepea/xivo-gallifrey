@@ -1,5 +1,5 @@
 /*
-XIVO switchboard : 
+XIVO CTI Clients : Xivo Client + Switchboard
 Copyright (C) 2007  Proformatique
 
 This program is free software; you can redistribute it and/or
@@ -46,9 +46,11 @@ const int REQUIRED_SERVER_VERSION = 1239;
  * It also connects signals with the right slots.
  */
 BaseEngine::BaseEngine(QObject * parent)
-        : QObject(parent), m_listenport(0), m_serverhost(""), m_loginport(0), m_sbport(0),
+        : QObject(parent),
+	  m_serverhost(""), m_loginport(0), m_sbport(0),
           m_asterisk(""), m_protocol(""), m_userid(""), m_passwd(""),
-          m_state(ENotLogged), m_pendingkeepalivemsg(0), m_sessionid("")
+          m_sessionid(""), m_state(ENotLogged),
+	  m_listenport(0), m_pendingkeepalivemsg(0)
 {
 	m_ka_timerid = 0;
 	m_try_timerid = 0;
@@ -59,7 +61,6 @@ BaseEngine::BaseEngine(QObject * parent)
 	m_listenserver = new QTcpServer(this);
 	loadSettings();
 	deleteRemovables();
-	setAvailState(m_availstate);
 
         /*  QTcpSocket signals :
             void connected ()
@@ -73,7 +74,7 @@ BaseEngine::BaseEngine(QObject * parent)
            void bytesWritten ( qint64 bytes )
            void readyRead ()
         */
-        
+
 	// Connect socket signals
 	connect(m_sbsocket, SIGNAL(connected()),
 	        this, SLOT(socketConnected()));
@@ -85,15 +86,16 @@ BaseEngine::BaseEngine(QObject * parent)
 	        this, SLOT(socketError(QAbstractSocket::SocketError)));
 	connect(m_sbsocket, SIGNAL(stateChanged(QAbstractSocket::SocketState)),
 	        this, SLOT(socketStateChanged(QAbstractSocket::SocketState)));
-	connect(m_sbsocket, SIGNAL(readyRead()), this, SLOT(socketReadyRead()));
+	connect(m_sbsocket, SIGNAL(readyRead()),
+                this, SLOT(socketReadyRead()));
         
 	// init login socket for profile push
 	connect( m_loginsocket, SIGNAL(connected()),
 	         this, SLOT(identifyToTheServer()) );
-	connect( m_loginsocket, SIGNAL(readyRead()),
-	         this, SLOT(processLoginDialog()) );
 	connect( m_loginsocket, SIGNAL(hostFound()),
 	         this, SLOT(serverHostFound()) );
+        connect( m_loginsocket, SIGNAL(readyRead()),
+	         this, SLOT(processLoginDialog()) );
         
 	// init listen server for profile push
 	connect( m_listenserver, SIGNAL(newConnection()),
@@ -105,6 +107,13 @@ BaseEngine::BaseEngine(QObject * parent)
         
 	if(m_autoconnect)
 		start();
+}
+
+/*! \brief Destructor
+ */
+BaseEngine::~BaseEngine()
+{
+        qDebug() << "BaseEngine::~BaseEngine()";
 }
 
 /*!
@@ -213,6 +222,10 @@ void BaseEngine::initListenSocket()
 void BaseEngine::start()
 {
 	qDebug() << "BaseEngine::start()" << m_serverhost << m_loginport << m_enabled_presence << m_enabled_cinfo;
+	// (In case the TCP sockets were attempting to connect ...) aborts them first
+	m_sbsocket->abort();
+	m_loginsocket->abort();
+
 	if(m_enabled_cinfo && (!m_tcpmode))
 		initListenSocket();
 	m_udpsocket->bind();
@@ -220,7 +233,7 @@ void BaseEngine::start()
 }
 
 /*! \brief Closes the connection to the server
- * This method disconnect the engine from the the server
+ * This method disconnect the engine from the server
  */
 void BaseEngine::stop()
 {
@@ -255,8 +268,22 @@ void BaseEngine::connectSocket()
         qDebug() << m_serverhost << m_sbport << m_loginport;
         if(m_is_a_switchboard)
                 m_sbsocket->connectToHost(m_serverhost, m_sbport);
-        //        if(m_enabled_presence)
         m_loginsocket->connectToHost(m_serverhost, m_loginport);
+}
+
+bool BaseEngine::tcpmode() const
+{
+        return m_tcpmode;
+}
+
+void BaseEngine::setTcpmode(bool b)
+{
+        m_tcpmode = b;
+}
+
+const QString & BaseEngine::getCapabilities() const
+{
+        return m_capabilities;
 }
 
 /*!
@@ -270,13 +297,17 @@ void BaseEngine::connectSocket()
  */
 void BaseEngine::setAvailState(const QString & newstate)
 {
-	if(m_availstate != newstate)
-	{
+	if(m_availstate != newstate) {
 		QSettings settings;
 		m_availstate = newstate;
 		settings.setValue("engine/availstate", m_availstate);
 		keepLoginAlive();
 	}
+}
+
+const QString & BaseEngine::getAvailState() const
+{
+        return m_availstate;
 }
 
 void BaseEngine::setAvailable()
@@ -361,7 +392,7 @@ void BaseEngine::processHistory(const QStringList & histlist)
  */
 void BaseEngine::socketConnected()
 {
-	qDebug() << "socketConnected()";
+	qDebug() << "BaseEngine::socketConnected()";
 	started();
 	stopTryAgainTimer();
 	/* do the login/identification ? */
@@ -376,7 +407,7 @@ void BaseEngine::socketConnected()
  */
 void BaseEngine::socketDisconnected()
 {
-	qDebug() << "socketDisconnected()";
+	qDebug() << "BaseEngine::socketDisconnected()";
 	stopped();
 	emitTextMessage(tr("Connection lost with Presence Server"));
 	startTryAgainTimer();
@@ -405,7 +436,7 @@ void BaseEngine::serverHostFound()
  */
 void BaseEngine::socketError(QAbstractSocket::SocketError socketError)
 {
-	qDebug() << "socketError(" << socketError << ")";
+	qDebug() << "BaseEngine::socketError(" << socketError << ")";
 	switch(socketError)
 	{
 	case QAbstractSocket::ConnectionRefusedError:
@@ -434,7 +465,7 @@ void BaseEngine::socketError(QAbstractSocket::SocketError socketError)
  */
 void BaseEngine::socketStateChanged(QAbstractSocket::SocketState socketState)
 {
-	qDebug() << "socketStateChanged(" << socketState << ")";
+	qDebug() << "BaseEngine::socketStateChanged(" << socketState << ")";
 	if(socketState == QAbstractSocket::ConnectedState) {
 		if(m_timer != -1)
 		{
@@ -1212,8 +1243,7 @@ const BaseEngine::EngineState BaseEngine::state() const
  */
 void BaseEngine::setState(EngineState state)
 {
-	if(state != m_state)
-	{
+	if(state != m_state) {
 		m_state = state;
 		if(state == ELogged) {
 			stopTryAgainTimer();
@@ -1427,12 +1457,11 @@ void BaseEngine::keepLoginAlive()
 		m_pendingkeepalivemsg++;
 		// if the last keepalive msg has not been answered, send this one
 		// twice
-		if(m_pendingkeepalivemsg > 1)
-			{
-				m_udpsocket->writeDatagram( outline.toAscii(),
-							    m_serveraddress, m_loginport + 1 );
-				m_pendingkeepalivemsg++;
-			}
+		if(m_pendingkeepalivemsg > 1) {
+                        m_udpsocket->writeDatagram( outline.toAscii(),
+                                                    m_serveraddress, m_loginport + 1 );
+                        m_pendingkeepalivemsg++;
+                }
 	}
 }
 
@@ -1442,8 +1471,7 @@ void BaseEngine::keepLoginAlive()
  */ 
 void BaseEngine::sendMessage(const QString & txt)
 {
-	if(m_pendingkeepalivemsg > 1)
-	{
+	if(m_pendingkeepalivemsg > 1) {
 		qDebug() << "m_pendingkeepalivemsg" << m_pendingkeepalivemsg << "=> 0";
 		stopKeepAliveTimer();
 		setState(ENotLogged);

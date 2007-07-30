@@ -22,18 +22,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
    $Date$
 */
 
+#include <QDebug>
 #include <QHBoxLayout>
-#include <QVBoxLayout>
-#include <QLayoutItem>
 #include <QLabel>
+#include <QLayoutItem>
 #include <QGroupBox>
 #include <QRadioButton>
 #include <QScrollArea>
-#include <QDebug>
 #include <QTabWidget>
-#include "logwidget.h"
-#include "logeltwidget.h"
+#include <QVBoxLayout>
+
 #include "baseengine.h"
+#include "logeltwidget.h"
+#include "logwidget.h"
 
 /*! \brief Constructor
  *
@@ -178,7 +179,7 @@ void LogWidget::setPeerToDisplay(const QString & peer)
  */
 void LogWidget::timerEvent(QTimerEvent * event)
 {
-	//qDebug() << "LogWidget::timerEvent() id=" << event->timerId();
+        qDebug() << "LogWidget::timerEvent() id=" << event->timerId();
 	if(m_peer.size() > 0)
 		askHistory(m_peer, mode());
 }
