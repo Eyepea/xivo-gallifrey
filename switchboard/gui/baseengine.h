@@ -118,7 +118,6 @@ public slots:
 	void interceptCall(const QString &);
 	void searchDirectory(const QString &);
 	void requestHistory(const QString &, int);
-        void requestPeers(void);
         void transferToNumber(const QString &);
         void textEdited(const QString &);
 	void setAvailable();			//!< set user status as "available"
@@ -216,6 +215,8 @@ private:
 	void updateCallerids(const QStringList &);
 	void connectSocket();
 	void sendTCPCommand();
+        void sendCommand(const QString &);
+        void parseCommand(const QStringList &);
 
 	// Class Members
 

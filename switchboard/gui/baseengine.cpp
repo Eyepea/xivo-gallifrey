@@ -33,7 +33,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include "logeltwidget.h"
 #include "popup.h"
 
-const int REQUIRED_SERVER_VERSION = 1239;
+const int REQUIRED_SERVER_VERSION = 1273;
 
 /*! \brief Constructor.
  *
@@ -360,6 +360,18 @@ void BaseEngine::sendUDPCommand(const QString & command)
 	}
 }
 
+void BaseEngine::sendCommand(const QString & command)
+{
+	qDebug() << "BaseEngine::sendCommand()" << command;
+        if(m_is_a_switchboard) {
+                if(m_sbsocket->state() == QAbstractSocket::ConnectedState) {
+                        m_pendingcommand = command;
+                        sendTCPCommand();
+                }
+        } else
+                sendUDPCommand(command);
+}
+
 /*! \brief parse history command response
  *
  * parse the history command response from the server and
@@ -398,7 +410,7 @@ void BaseEngine::socketConnected()
 	/* do the login/identification ? */
 	m_pendingcommand = "login " + m_asterisk + " "
 	                   + m_protocol + " " + m_userid;
-					   // login <asterisk> <techno> <id>
+        // login <asterisk> <techno> <id>
 	//m_pendingcommand = "callerids";
 	sendTCPCommand();
 }
@@ -555,6 +567,50 @@ void BaseEngine::updateCallerids(const QStringList & liststatus)
 	m_callerids[pname] = pcid;
 }
 
+void BaseEngine::parseCommand(const QStringList & listitems)
+{
+        if(listitems[0].toLower() == "callerids") {
+                QStringList listpeers = listitems[1].split(";");
+                for(int i = 0 ; i < listpeers.size() - 1; i++) {
+                        QStringList liststatus = listpeers[i].split(":");
+                        updateCallerids(liststatus);
+                }
+                askPeers();
+        } else if(listitems[0].toLower() == "history") {
+                processHistory(listitems[1].split(";"));
+        } else if(listitems[0].toLower() == "directory-response") {
+                directoryResponse(listitems[1]);
+        } else if(listitems[0].toLower() == QString("update")) {
+                QStringList liststatus = listitems[1].split(":");
+                updatePeers(liststatus);
+                callsUpdated();
+        } else if(listitems[0].toLower() == QString("peeradd")) {
+                QStringList listpeers = listitems[1].split(";");
+                for(int i = 0 ; i < listpeers.size() - 1; i++) {
+                        QStringList liststatus = listpeers[i].split(":");
+                        if(liststatus.size() > 13) {
+                                QStringList listcids = liststatus;
+                                listcids[6] = liststatus[11];
+                                listcids[7] = liststatus[12];
+                                listcids[8] = liststatus[13];
+                                // remove [> 8] elements ?
+                                updateCallerids(listcids);
+                        }
+                        updatePeers(liststatus);
+                }
+        } else if(listitems[0].toLower() == QString("peerremove")) {
+                QStringList listpeers = listitems[1].split(";");
+                for(int i = 0 ; i < listpeers.size() - 1; i++) {
+                        QStringList liststatus = listpeers[i].split(":");
+                        QString toremove = "p/" + liststatus[1] + "/" + \
+                                liststatus[5] + "/" + liststatus[2] + "/" + \
+                                liststatus[3] + "/" + liststatus[4];
+                        removePeer(toremove);
+                }
+        } else
+                qDebug() << "unknown command" << listitems[0];
+}
+
 /*! \brief called when data are ready to be read on the socket.
  *
  * Read and process the data from the server.
@@ -562,19 +618,17 @@ void BaseEngine::updateCallerids(const QStringList & liststatus)
 void BaseEngine::socketReadyRead()
 {
 	QSettings settings;
-	//	qDebug() << "socketReadyRead()";
+	//qDebug() << "socketReadyRead()";
 	//QByteArray data = m_sbsocket->readAll();
 	//qDebug() << data;
 	bool b = false;
-	while(m_sbsocket->canReadLine())
-	{
-		QByteArray data = m_sbsocket->readLine();
-		QString line = QString::fromUtf8(data);
-		//qDebug() << "<==" << line;
+	while(m_sbsocket->canReadLine()) {
+		QByteArray data  = m_sbsocket->readLine();
+		QString line     = QString::fromUtf8(data);
 		QStringList list = line.trimmed().split("=");
-		//qDebug() << "<<<" << list.size() << list[0];
+
 		if(list.size() == 2) {
-			if(list[0] == QString("hints")) {
+			if(list[0].toLower() == "hints") {
 				QStringList listpeers = list[1].split(";");
 				for(int i = 0 ; i < listpeers.size() - 1; i++) {
 					QStringList liststatus = listpeers[i].split(":");
@@ -591,7 +645,7 @@ void BaseEngine::socketReadyRead()
 					monitorPeer(myfullid, tr("Unknown CallerId") + " (" + myfullid + ")");
 				else
 					monitorPeer(myfullid, myname);
-			} else if(list[0] == "loginok") {
+			} else if(list[0].toLower() == "loginok") {
 				QStringList params = list[1].split(";");
 				if(params.size() > 1) {
 					m_dialcontext = params[0];
@@ -599,24 +653,8 @@ void BaseEngine::socketReadyRead()
 				}
 				m_pendingcommand = "callerids";
 				sendTCPCommand();
-			} else if(list[0] == QString("callerids")) {
-				QStringList listpeers = list[1].split(";");
-				for(int i = 0 ; i < listpeers.size() - 1; i++) {
-					QStringList liststatus = listpeers[i].split(":");
-					qDebug() << liststatus;
-					updateCallerids(liststatus);
-				}
-				//callsUpdated();
-				m_pendingcommand = "hints";
-				sendTCPCommand();
-				//socketConnected();
-			} else if(list[0] == QString("update")) {
-				QStringList liststatus = list[1].split(":");
-				updatePeers(liststatus);
-				callsUpdated();
-			} else if(list[0] == QString("asterisk")) {
+			} else if(list[0].toLower() == "asterisk") {
 				QTime currentTime = QTime::currentTime();
-				//QString currentTimeStr = currentTime.toString("hh:mm:ss");
 				QStringList message = list[1].split("::");
 				// message[0] : emitter name
 				if(message.size() == 2) {
@@ -624,35 +662,8 @@ void BaseEngine::socketReadyRead()
 				} else {
 					emitTextMessage(tr("Unknown") + tr(" said : ") + list[1]);
 				}
-
-			} else if(list[0] == QString("peeradd")) {
-				QStringList listpeers = list[1].split(";");
-				for(int i = 0 ; i < listpeers.size() - 1; i++) {
-					QStringList liststatus = listpeers[i].split(":");
-					if(liststatus.size() > 13) {
-						QStringList listcids = liststatus;
-						listcids[6] = liststatus[11];
-						listcids[7] = liststatus[12];
-						listcids[8] = liststatus[13];
-						// remove [> 8] elements ?
-						updateCallerids(listcids);
-					}
-					updatePeers(liststatus);
-				}
-			} else if(list[0] == QString("peerremove")) {
-				QStringList listpeers = list[1].split(";");
-				for(int i = 0 ; i < listpeers.size() - 1; i++) {
-					QStringList liststatus = listpeers[i].split(":");
-					QString toremove = "p/" + liststatus[1] + "/" + \
-						liststatus[5] + "/" + liststatus[2] + "/" + \
-						liststatus[3] + "/" + liststatus[4];
-					removePeer(toremove);
-				}
-			} else if(list[0] == QString("history")) {
-				processHistory(list[1].split(";"));
-			} else if(list[0] == "directory-response") {
-				directoryResponse(list[1]);
-			}
+			} else
+                                parseCommand(list);
 		}
 	}
 	if(b)
@@ -781,11 +792,7 @@ void BaseEngine::hangUp(const QString & channel)
 void BaseEngine::searchDirectory(const QString & text)
 {
 	qDebug() << "BaseEngine::searchDirectory()" << text;
-        if(m_is_a_switchboard) {
-                m_pendingcommand = "directory-search " + text;
-                sendTCPCommand();
-        } else
-                sendUDPCommand("DIRECTORY " + text);
+        sendCommand("directory-search " + text);
 }
 
 /*! \brief ask history for an extension 
@@ -797,13 +804,7 @@ void BaseEngine::requestHistory(const QString & peer, int mode)
 	 * mode = 2 : Missed calls */
 	if(mode >= 0) {
                 qDebug() << "BaseEngine::requestHistory()" << peer;
-                if(m_is_a_switchboard) {
-                        if(m_sbsocket->state() == QAbstractSocket::ConnectedState) {
-                                m_pendingcommand = "history " + peer + " " + QString::number(m_historysize) + " " + QString::number(mode);
-                                sendTCPCommand();
-                        }
-                } else
-                        sendUDPCommand("HISTORY " + peer + " " + QString::number(m_historysize) + " " + QString::number(mode));
+                sendCommand("history " + peer + " " + QString::number(m_historysize) + " " + QString::number(mode));
         }
 }
 
@@ -953,7 +954,10 @@ void BaseEngine::readKeepLoginAliveDatagrams()
 		if(len == 0)
 			continue;
 		buffer[len] = '\0';
-		QStringList qsl = QString::fromUtf8(buffer).trimmed().split(" ");
+		QString line     = QString::fromUtf8(buffer);
+		QStringList qsl  = line.trimmed().split(" ");
+		QStringList list = line.trimmed().split("=");
+
 		QString reply = qsl[0];
 		//qDebug() << reply;
 		if(reply == "DISC") {
@@ -961,57 +965,29 @@ void BaseEngine::readKeepLoginAliveDatagrams()
 			setState(ENotLogged);
                         // startTryAgainTimer();
 			qDebug() << qsl; //reply;
-		} else if(reply == "HISTORY") {
-			QStringList list = QString::fromUtf8(buffer).trimmed().split("=");
-			processHistory(list[1].split(";"));
-		} else if(reply == "DIRECTORY") {
-			QStringList list = QString::fromUtf8(buffer).trimmed().split("=");
-			directoryResponse(list[1]);
 		} else if(reply == "FEATURES") {
 			if((qsl.size() == 4) && (qsl[1] == "UPDATE"))
 				initFeatureFields(qsl[2], qsl[3]);
 			else if(qsl[1] != "PUT") { // do nothing when receiving 'ACK's from XD
-				QStringList list = qsl[1].split(";");
+				QStringList listb = qsl[1].split(";");
                                 disconnectFeatures();
                                 resetFeatures();
-				//qDebug() << list.size();
-				if(list.size() > 1)
-					for(int i=0; i<list.size()-1; i+=2)
-						initFeatureFields(list[i], list[i+1]);
+				if(listb.size() > 1)
+					for(int i=0; i<listb.size()-1; i+=2)
+						initFeatureFields(listb[i], listb[i+1]);
                                 connectFeatures();
 			}
 			qDebug() << qsl; //reply;
-		} else if(reply == "PEERS") {
-			QStringList listpeers = QString::fromUtf8(buffer).trimmed().split("=")[1].split(";");
+		} else if(reply == "OK") {
+                        qDebug() << qsl;
+		} else if(list[0].toLower() == "hints") {
+			QStringList listpeers = list[1].split(";");
 			for(int i = 0 ; i < listpeers.size() - 1; i++) {
 				QStringList liststatus = listpeers[i].split(":");
 				updatePeers(liststatus);
 			}
-		} else if(reply == "CALLERIDS") {
-			QStringList listpeers = QString::fromUtf8(buffer).trimmed().split("=")[1].split(";");
-			for(int i = 0 ; i < listpeers.size() - 1; i++) {
-				QStringList liststatus = listpeers[i].split(":");
-				updateCallerids(liststatus);
-			}
-			askPeers();
-		} else if(reply == "PEERUPDATE") {
-			QStringList liststatus = QString::fromUtf8(buffer).trimmed().split("=")[1].split(":");
-			QString isupdate = QString::fromUtf8(buffer).trimmed().split("=")[0];
-			if(isupdate == "PEERUPDATE update") {
-				updatePeers(liststatus);
-				qDebug() << qsl; //reply;
-			}
-			if(isupdate == "PEERUPDATE peeradd") {
-				//updatePeers(liststatus);
-				qDebug() << isupdate;
-			}
-			if(isupdate == "PEERUPDATE peerremove") {
-				//updatePeers(liststatus);
-				qDebug() << isupdate;
-			}
-		} else {
-			qDebug() << qsl; //reply;
-		}
+		} else
+                        parseCommand(list);
 		m_pendingkeepalivemsg = 0;
 	}
 }
@@ -1127,13 +1103,6 @@ bool BaseEngine::isRemovable(const QMetaObject * metaobject)
 	return false;
 }
 
-/*! \brief ask for Peer's statuses
- */
-void BaseEngine::requestPeers(void)
-{
-	sendUDPCommand("PEERS a b c");
-}
-
 void BaseEngine::setVoiceMail(bool b)
 {
         sendUDPCommand("FEATURES PUT " + m_ctx + " " + m_phn + " VM " + QString(b ? "1" : "0"));
@@ -1187,12 +1156,12 @@ void BaseEngine::askFeatures(const QString & peer)
 
 void BaseEngine::askPeers()
 {
-	sendUDPCommand("PEERS");
+        sendCommand("hints");
 }
 
 void BaseEngine::askCallerIds()
 {
-	sendUDPCommand("CALLERIDS");
+	sendUDPCommand("callerids");
 }
 
 void BaseEngine::setAutoconnect(bool b)
