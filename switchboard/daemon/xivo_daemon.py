@@ -1296,6 +1296,7 @@ def manage_tcp_connection(connid, allow_events):
                                                         try:
                                                                 for x in s: connid[0].send(x)
                                                                 connid[0].send("XIVO CLI:OK\n")
+								connid[0].close()
                                                         except Exception, exc:
                                                                 log_debug("--- exception --- (%s) error : php command : (client %s) : %s"
                                                                           %(configs[n].astid, requester, str(exc)))
