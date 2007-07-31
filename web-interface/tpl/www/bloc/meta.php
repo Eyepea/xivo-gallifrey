@@ -1,15 +1,12 @@
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <meta http-equiv="content-language" content="<?=xivo_user::get_infos('language');?>">
 
-<meta name="keywords" content="">
-<meta name="description" lang="<?=xivo_user::get_infos('language');?>" content="">
+<meta name="robots" content="none">
 <meta name="author" content="XIVO">
-<meta name="publisher" content="XIVO">
-<meta name="classification" content="Communication">
-<meta name="distribution" content="global">
-<meta name="revisit-after" content="5days">
-<meta name="copyright" content="Copyright <?=strftime('%Y');?> Xivo">
-<meta name="title" content="Xivo">
+<meta name="publisher" content="Proformatique">
+<meta name="distribution" content="iu">
+<meta name="copyright" content="Copyright <?=strftime('%Y');?> XIVO">
+<meta name="title" content="XIVO">
 
 <link rel="shortcut icon" href="<?=$this->file_time($this->url('favicon.ico'));?>">
 

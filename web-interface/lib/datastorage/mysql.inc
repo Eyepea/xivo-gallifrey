@@ -20,6 +20,9 @@ class xivo_datastorage_mysql extends xivo_datastorage_abstract_sql
 	var $_flag	= 0;
 	var $_type	= 'mysql';
 	var $_free	= true;
+	var $_date	= array('datetime'	=> '%Y-%m-%d %H:%i:%s',
+				'date'		=> '%Y-%m-%d',
+				'time'		=> '%H:%i:%s');
 
 	function xivo_datastorage_mysql($param=array())
 	{
@@ -72,8 +75,14 @@ class xivo_datastorage_mysql extends xivo_datastorage_abstract_sql
 
 	function quote_identifier($name)
 	{
-		$name = str_replace('`','``',$name);
-		return('`'.$name.'`');
+		$r = '';
+
+		$name = (string) $name;
+
+		if(isset($name{0}) === true)
+			$r = '`'.str_replace('`','``',$name).'`';
+		
+		return($r);
 	}
 
 	function _set_flag()
@@ -221,6 +230,42 @@ class xivo_datastorage_mysql extends xivo_datastorage_abstract_sql
 	function fetch_assoc($r=false)
 	{
 		return(mysql_fetch_assoc(($r !== false ? $r : $this->_result)));
+	}
+
+	function _expr_typetime($type='',$col='',$time='localtime',$format='')
+	{
+		$type = $type !== '' ? strtolower((string) $type) : 'date';
+		$col = $this->quote_identifier($col);
+		$time = $time !== '' ? strtolower((string) $time) : 'localtime';
+		$format = (string) $format;
+
+		if(($type !== 'unix' && $type !== 'date') === true
+		|| ($time !== 'localtime' && $time !== 'utc') === true)
+			return(false);
+
+		if($type === 'unix')
+			$func = 'UNIX_TIMESTAMP';
+		else
+			$func = 'DATE_FORMAT';
+
+		if($col === '')
+		{
+			$col = ($time === 'utc' ? 'UTC_' : 'LOCAL').'TIMESTAMP()';
+
+			if($type === 'unix')
+				$col = 'UNIX_TIMESTAMP('.$col.')';
+		}
+		else if($time === 'utc')
+		{
+			$col = 'CONVERT_TZ('.$func.'('.$col.',\'%Y-%m-%d %H:%i:%s\'),@@session.time_zone,\'+00:00\')';
+
+			if($type === 'unix')
+				$col = 'UNIX_TIMESTAMP('.$col.')';
+		}
+
+		$r = $func.'('.$col.($format !== '' ? ',\''.$format.'\'' : '').')';
+
+		return($r);
 	}
 }
 

@@ -463,7 +463,7 @@ class xivo_uri
 		$len = strlen($str);
 
 		if($match[0][1] > 0)
-			$r = mb_strcut($str,0,$match[0][1]);
+			$r = substr($str,0,$match[0][1]);
 		
 		for($i = 0;$i < $nb;$i++)
 		{
@@ -473,12 +473,12 @@ class xivo_uri
 			if(isset($match[$i+1]) === true)
 			{
 				$pos = $match[$i][1] + $mlen;
-				$r .= mb_strcut($str,$pos,$match[$i+1][1] - $pos);
+				$r .= substr($str,$pos,$match[$i+1][1] - $pos);
 				continue;
 			}
 
 			if(($match[$i][1] + $mlen) < $len)
-				$r .= mb_strcut($str,$match[$i][1] + $mlen);
+				$r .= substr($str,$match[$i][1] + $mlen);
 		}
 
 		return($r);

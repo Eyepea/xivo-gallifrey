@@ -59,7 +59,7 @@
 			echo '<dd id="mn-call-management--ivr"><a href="#">',$this->bbf('mn_left_ivr'),'</a></dd>';
 		endif;
 		if($this->chk_policy('call_management','cdr') === true):
-			echo '<dd id="mn-call-management--cdr"><a href="#">',$this->bbf('mn_left_cdr'),'</a></dd>';
+			echo '<dd id="mn-call-management--cdr">',$url->href_html($this->bbf('mn_left_cdr'),'service/ipbx/call_management/cdr'),'</dd>';
 		endif;
 		if($this->chk_policy('call_management','outcall') === true):
 			echo '<dd id="mn-call-management--outcall"><a href="#">',$this->bbf('mn_left_outcall'),'</a></dd>';

@@ -116,27 +116,27 @@ function xivo_uint($str=0,$def=0,$t=false)
 	return($str);
 }
 
-function xivo_print($str='',$def=null,$t=false)
+function xivo_cprint($str='',$def=null,$t=false)
 {
 	$r = false;
 
 	$t = (bool) $t;
 
-	if(xivo_printable($str,'print') === true)
+	if(xivo_cast_print($str,'print') === true)
 		return($str);
 	
 	if($def === null)
 		return($r);
 
 	if($t === true)
-		$r = xivo_printable($def,'print') === true ? $def : false;
+		$r = xivo_cast_print($def,'print') === true ? $def : false;
 	else
 		$r = $def;
 
 	return($r);
 }
 
-function xivo_printable($str,$type='')
+function xivo_cast_print($str,$type='')
 {
 	$type = strtolower((string) $type);
 
@@ -163,19 +163,19 @@ function xivo_printable($str,$type='')
 	return(false);
 }
 
-function xivo_printable_crlf($str)
+function xivo_cast_print_crlf($str)
 {
-	return(xivo_printable($str,'crlf'));
+	return(xivo_cast_print($str,'crlf'));
 }
 
-function xivo_printable_tab($str)
+function xivo_cast_print_tab($str)
 {
-	return(xivo_printable($str,'tab'));
+	return(xivo_cast_print($str,'tab'));
 }
 
-function xivo_printable_strict($str)
+function xivo_cast_print_strict($str)
 {
-	return(xivo_printable($str,'strict'));
+	return(xivo_cast_print($str,'strict'));
 }
 
 function xivo_cast_specials($str,$type='')

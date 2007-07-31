@@ -6,4 +6,7 @@
 
 #s-asterisk .sb-content #comment, #s-asterisk .sb-content #emailbody, #s-asterisk .sb-context #pagerbody {text-align: center;width: 100%;}
 
-#sb-part-queue .sb-list th {width: 50%;}
+#s-asterisk #sb-part-queue .sb-list th {width: 50%;}
+#s-asterisk #sr-cdr .fm-multifield .fm-desc {width: 40%;}
+#s-asterisk #sr-cdr .fm-desc-inline .fm-multifield {width: auto;display: inline;padding: 0px 10px;}
+#s-asterisk #sr-cdr .fm-desc-inline .fm-multifield label {padding: 0px;}

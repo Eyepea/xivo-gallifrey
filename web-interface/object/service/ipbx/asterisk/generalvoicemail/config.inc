@@ -303,13 +303,13 @@ $array['filter']['mailcmd'] = array('set' => false,'chk' => 2,'cast' => 'alphanu
 $array['filter']['serveremail'] = array('set' => false,'chk' => 2,'preg' => '/^[a-z0-9@\-_\.]+$/i','maxlen' => 80);
 $array['filter']['charset'] = array('set' => false,'chk' => 2,'arrkey' => array('UTF-8'));
 $array['filter']['fromstring'] = array('set' => false,'chk' => 2,'preg' => '/^[a-z0-9\-_\. ]+$/i','maxlen' => 100);
-$array['filter']['emaildateformat'] = array('set' => false,'chk' => 2,'cast' => 'print','maxlen' => 32);
+$array['filter']['emaildateformat'] = array('set' => false,'chk' => 2,'cast' => 'cprint','maxlen' => 32);
 $array['filter']['pbxskip'] = array('bool' => true);
-$array['filter']['emailsubject'] = array('set' => false,'chk' => 2,'maxlen' => 256,'cast' => 'print');
-$array['filter']['emailbody'] = array('set' => false,'chk' => 2,'maxlen' => 1000,'cast' => 'printable','eol' => true);
+$array['filter']['emailsubject'] = array('set' => false,'chk' => 2,'maxlen' => 256,'cast' => 'cprint');
+$array['filter']['emailbody'] = array('set' => false,'chk' => 2,'maxlen' => 1000,'cast' => 'print','eol' => true);
 $array['filter']['pagerfromstring'] = array('set' => false,'chk' => 2,'preg' => '/^[a-z0-9\-_\. ]+$/i','maxlen' => 100);
-$array['filter']['pagersubject'] = array('set' => false,'chk' => 2,'maxlen' => 256,'cast' => 'print');
-$array['filter']['pagerbody'] = array('set' => false,'chk' => 2,'maxlen' => 512,'preg' => 'printable','eol' => true);
+$array['filter']['pagersubject'] = array('set' => false,'chk' => 2,'maxlen' => 256,'cast' => 'cprint');
+$array['filter']['pagerbody'] = array('set' => false,'chk' => 2,'maxlen' => 512,'cast' => 'print','eol' => true);
 $array['filter']['adsifdn'] = array('set' => false,'chk' => 2,'cast' => 'xdigit','maxlen' => 8);
 $array['filter']['adsisec'] = array('set' => false,'chk' => 2,'cast' => 'xdigit','maxlen' => 8);
 $array['filter']['adsiver'] = array('set' => false,'chk' => 2,'cast' => 'int','between' => array(-1,255));

@@ -2,8 +2,12 @@
 
 define('XIVO_SRE_IPBX_AST_CHAN_SIP','SIP');
 define('XIVO_SRE_IPBX_AST_CHAN_IAX','IAX2');
-define('XIVO_SRE_IPBX_AST_CHAN_LOCAL','local');
+define('XIVO_SRE_IPBX_AST_CHAN_LOCAL','Local');
 define('XIVO_SRE_IPBX_AST_CHAN_AGENT','Agent');
+define('XIVO_SRE_IPBX_AST_CHAN_ZAP','Zap');
+define('XIVO_SRE_IPBX_AST_CHAN_CAPI','CAPI');
+define('XIVO_SRE_IPBX_AST_CHAN_MISDN','mISDN');
+define('XIVO_SRE_IPBX_AST_CHAN_MGCP','MGCP');
 
 define('XIVO_SRE_IPBX_AST_PROTO_SIP','sip');
 define('XIVO_SRE_IPBX_AST_PROTO_IAX','iax');
@@ -36,6 +40,17 @@ define('XIVO_SRE_IPBX_AST_FORMAT_AUDIO_ALAW','alaw');
 define('XIVO_SRE_IPBX_AST_FORMAT_AUDIO_AU','au');
 define('XIVO_SRE_IPBX_AST_FORMAT_AUDIO_VOX','vox');
 define('XIVO_SRE_IPBX_AST_FORMAT_AUDIO_SLIN','slin');
+
+define('XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_DEFAULT','default');
+define('XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_OMIT','omit');
+define('XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_BILLING','billing');
+define('XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_DOCUMENTATION','documentation');
+
+define('XIVO_SRE_IPBX_AST_CDR_DISPOSITION_NOANSWER','NO ANSWER');
+define('XIVO_SRE_IPBX_AST_CDR_DISPOSITION_FAILED','FAILED');
+define('XIVO_SRE_IPBX_AST_CDR_DISPOSITION_BUSY','BUSY');
+define('XIVO_SRE_IPBX_AST_CDR_DISPOSITION_ANSWERED','ANSWERED');
+define('XIVO_SRE_IPBX_AST_CDR_DISPOSITION_UNKNOWN','UNKNOWN');
 
 define('XIVO_SRE_IPBX_AST_REGEX_AUDIO_FILE_PATTERN','a-zA-Z0-9_-');
 define('XIVO_SRE_IPBX_AST_REGEX_AUDIO_FILE_LENGTH','{1,50}');
@@ -186,6 +201,7 @@ $array['module']['agentgroup']['datastorage'] = true;
 $array['module']['agentgroup']['section'] = 'agent';
 
 $array['module']['cdr'] = array();
+$array['module']['cdr']['datastorage'] = true;
 
 $array['protocol'] = array();
 $array['protocol']['sip'] = array('name' => XIVO_SRE_IPBX_AST_PROTO_SIP,'module' => 'usersip'); 

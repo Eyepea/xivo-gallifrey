@@ -54,7 +54,7 @@ class xivo_service_asterisk_ami extends xivo_service_asterisk_abstract
 
 		$cmd = trim((string) $cmd);
 
-		if(xivo_printable_strict($cmd) === false)
+		if(xivo_cast_print_strict($cmd) === false)
 			return(false);
 
 		$cmd = $match[0];

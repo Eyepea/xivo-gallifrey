@@ -27,11 +27,8 @@ pre {text-align: left;}
 
 #bc-body {width: 1000px;margin: 0px auto;vertical-align: top;text-align: left;}
 #bc-head {width: 970px;margin: 0px 15px;}
-/* #bc-head table {width: 970px;} */
-/* #bc-head td {padding: 5px;text-align: center;} */
 #bc-main {width: 970px;margin: 0px 15px;padding-top: 20px;}
 * html #bc-main {float: none;}
-/* #bc-main {border: 1px solid red;border-top-width: 0px;border-bottom-width: 0px;background-color: #333;} */
 #bc-foot h5 {border: 1px solid #82b550;border-top-width: 0px;}
 
 #bc-foot h6 {text-align: center;color: #999;font-size: 7pt;margin-top: 10px;}
@@ -57,13 +54,8 @@ pre {text-align: left;}
 
 #b-content {width: 760px;}
 #b-lmenu {width: 200px;float: left;margin-left: 2px;}
-/*#b-lmenu dd {padding: 2px 2px 2px 8px;background-color: #fabb11;border: 1px dashed #f48d12;}*/
 #bc-content {float: left;margin-left: 6px;}
-/*
-#b-content .b-title {border: 0px solid #666;border-bottom-width: 1px;padding-top: 2px;}
-#b-content .b-title h2 {padding-left: 5px;border: 0px solid #000;border-bottom-width: 1px;}
-#b-content .b-rubric {margin: 5px 36px;}
-*/
+
 .fm-field {padding: 3px;}
 .fm-field {text-align: left;}
 .fm-field input {padding: 0px 2px;}
@@ -82,6 +74,9 @@ pre {text-align: left;}
 .fm-field input.it-readonly, .fm-field select.it-readonly, .fm-field textarea.it-readonly {color: #000;}
 
 .fm-field .fm-desc {display: block;float: left;text-align: right;width: 50%;}
+.fm-desc-inline {padding: 2px;width: auto;text-align: center;}
+.fm-desc-inline label {padding: 0px 10px;}
+.fm-desc-inline .fm-desc {display: inline;float: none;width: auto;}
 .fm-field p {padding-bottom: 2px;}
 
 .fm-multilist {text-align: center;width: 100%;}
@@ -110,21 +105,16 @@ pre {text-align: left;}
 #b-tmenu #loginbox span {font-size: 9pt;padding: 0px 30px 3px;vertical-align: 6px;color: #c6e3ff;}
 #b-tmenu #loginbox span b {color: #fff;}
 
-/*#b-tmenu .login {font-size: 1pt;text-align: right;vertical-align: top;margin: 0px 20px 20px auto;width: 300px;}
-#b-tmenu .login h1 {font-size: 9pt;background-image: url(../img/menu/top/login/bg.gif);background-position: left bottom;}
-*/
 #b-tmenu #toolbox {clear: both;}
 #b-tmenu #logo {width: 103px;float: left;}
 
-/*#b-tmenu .nav {text-align: left;height: 22px;padding: 3px 0px 0px 107px;background-image: url(../img/menu/top/bg.gif);background-repeat: repeat-x;}
-#b-tmenu .nav, #b-tmenu .nav a {color: #fff;font-weight: bold;font-size: 9pt;}*/
 #b-tmenu .nav {width: 762px;text-align: left;height: 22px;padding: 3px 0px 0px 208px;background-image: url(../img/menu/top/bg.gif);background-repeat: repeat-x;}
 #b-tmenu .nav, #b-tmenu .nav a {color: #fff;font-weight: bold;font-size: 9pt;}
 #b-tmenu .nav {cursor: default;}
 #b-tmenu .nav a {cursor: pointer;}
 #b-tmenu .nav li, #b-tmenu .nav .moo {float: left;background-repeat: repeat-x;background-image: url(../img/menu/top/bt-bg-2.gif);background-position: left top;margin-right: 20px;}
 
-* html #b-tmenu .nav {position: absolute;padding-left: 105px;/*padding-left: 97px;width: 770px;*/}
+* html #b-tmenu .nav {position: absolute;padding-left: 105px;}
 
 #b-tmenu .nav li span {padding: 3px 0px;height: 16px;width: 11px;float: left;background-repeat: no-repeat;background-position: left top;}
 #b-tmenu .nav li .span-center {padding: 2px 8px;width: auto;}
@@ -134,15 +124,6 @@ pre {text-align: left;}
 #b-tmenu .nav .mov {background-image: url(../img/menu/top/bt-bg-1.gif);}
 #b-tmenu .nav .mov .span-left {background-image: url(../img/menu/top/bt-l-1.gif);}
 #b-tmenu .nav .mov .span-right {background-image: url(../img/menu/top/bt-r-1.gif);}
-/*
-#b-tmenu .nav li span {padding: 4px 0px; background-repeat: no-repeat;}
-#b-tmenu .nav li .span-left, #b-tmenu .nav .moo .span-left {padding-left: 15px;background-position: left top;background-image: url(../img/menu/top/bt-l-2.gif);}
-#b-tmenu .nav li .span-right, #b-tmenu .nav .moo .span-right {padding-right: 15px;background-position: right top;background-image: url(../img/menu/top/bt-r-2.gif);}
-
-#b-tmenu .nav .mov {background-image: url(../img/menu/top/bt-bg-1.gif);}
-#b-tmenu .nav .mov .span-left {background-image: url(../img/menu/top/bt-l-1.gif);}
-#b-tmenu .nav .mov .span-right {background-image: url(../img/menu/top/bt-r-1.gif);}
-*/
 #b-tmenu .nav .mov ul {display: block;}
 
 #b-tmenu .nav ul ul {clear: both;position: relative;width: auto;margin: 0px 1px;display: none;}
@@ -152,7 +133,6 @@ pre {text-align: left;}
 #b-tmenu #tooltips {margin-left: 103px;text-align: center;height: 32px;padding-top: 4px;font-weight: bold;}
 #b-tmenu #tooltips .fm-success {color: #82b550;}
 #b-tmenu #tooltips .fm-error {color: #e8eeff;}
-
 
 #b-tmenu #toolbar {height: 19px;text-align: right;background-image: url(../img/menu/top/toolbar/bg.gif); background-repeat: repeat-x;padding-right: 50px;}
 #b-tmenu #toolbar .sb-advanced-menu {position: absolute;width: 970px;}
@@ -275,8 +255,6 @@ pre {text-align: left;}
 #r-login .b-field .fm-desc {display: inline;float: none;text-align: left;width: auto;}
 #r-login .sb-top .span-center, #r-login .sb-foot .span-center {width: 400px;}
 
-/*.b-list table {width: 1000px;}*/
-
 #r-user #cat-policy table {border: 0px solid #9e9e9e;border-bottom-width: 1px;}
 #r-user #cat-policy table th {background-color: #a5c5e4;width: 735px;padding: 3px 0px;border: 1px solid #7f99b1;border-bottom-width: 0px;}
 #r-user #cat-policy table input {margin: 0px 2px;}
@@ -297,23 +275,3 @@ pre {text-align: left;}
 #r-help dl {padding-bottom: 10px;}
 #r-help dt {font-weight: bold;padding-top: 4px;}
 #r-help dd {padding-left: 20px;}
-
-/*
-#b-tmenu #mn-guest table {width: 750px;}
-#b-tmenu #mn-guest th {width: 272px;}
-#b-tmenu #mn-guest td {width: 478px;background-image: url(/i/menu/top/guest/bg.gif);background-repeat: repeat-x;font-weight: bold;text-align: right;vertical-align: bottom;padding: 0px 4px 4px 0px;}
-
-#r-subscribe dt {font-weight: bold;font-size: 10pt;color: #8dcff3;}
-#r-subscribe #b-result dd {margin: 10px;}
-#r-subscribe dd table {width: 638px; margin-bottom: 15px;}
-#r-subscribe dd table table {width: 392px; margin-bottom: 0px;}
-#r-subscribe dd table table th {padding: 5px;width: 200px;text-align: right;vertical-align: top;font-size: 8pt;}
-#r-subscribe dd table table th small {font-weight: normal;}
-#r-subscribe dd td {padding: 2px;}
-#r-subscribe dd table td {vertical-align: top;}
-#r-subscribe dd table td td {vertical-align: middle;}
-#r-subscribe dd dl {background-color: #454545;width: 220px;margin-left: 10px;border: 1px solid #666;margin-top: 4px;}
-#r-subscribe dd dt {text-align: center;font-size: 8pt;padding: 2px;}
-#r-subscribe dd dd {padding: 4px;font-size: 8pt;}
-#r-subscribe .fm-fieldsubmit {text-align: right;}
-*/

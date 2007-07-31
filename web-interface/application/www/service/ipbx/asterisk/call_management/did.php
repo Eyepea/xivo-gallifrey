@@ -377,6 +377,6 @@ $_HTML->assign('act',$act);
 $_HTML->assign('bloc','call_management/did/'.$act);
 $_HTML->assign('service_name',$service_name);
 $_HTML->set_struct('service/ipbx/index');
-$_HTML->display('index',true);
+$_HTML->display('index');
 
 ?>

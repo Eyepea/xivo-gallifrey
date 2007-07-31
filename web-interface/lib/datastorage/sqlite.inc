@@ -9,6 +9,9 @@ class xivo_datastorage_sqlite extends xivo_datastorage_abstract_sql
 			'persist'	=> false);
 
 	var $_type	= 'sqlite';
+	var $_date	= array('datetime'	=> '%Y-%m-%d %H:%M:%S',
+				'date'		=> '%Y-%m-%d',
+				'time'		=> '%H:%M:%S');
 
 	function xivo_datastorage_sqlite($param=array())
 	{
@@ -34,8 +37,14 @@ class xivo_datastorage_sqlite extends xivo_datastorage_abstract_sql
 
 	function quote_identifier($name)
 	{
-		$name = str_replace('"','""',$name);
-		return('"'.$name.'"');
+		$r = '';
+
+		$name = (string) $name;
+
+		if(isset($name{0}) === true)
+			$r = '"'.str_replace('"','""',$name).'"';
+		
+		return($r);
 	}
 
 	function _chk_db()
@@ -149,6 +158,28 @@ class xivo_datastorage_sqlite extends xivo_datastorage_abstract_sql
 	function fetch_assoc($r=false)
 	{
 		return(sqlite_fetch_array(($r !== false ? $r : $this->_result),SQLITE_ASSOC));
+	}
+
+	function _expr_typetime($type='',$col='',$time='localtime',$format='')
+	{
+		$col = $this->quote_identifier($col);
+		$time = $time !== '' ? strtolower((string) $time) : 'localtime';
+		$format = (string) $format;
+
+		if($time !== 'localtime' && $time !== 'utc')
+			return(false);
+
+		if($col === '')
+			$col = '\'now\'';
+
+		$col = 'datetime('.$col.',\''.$time.'\')';
+		
+		if($format === '')
+			$r = $col;
+		else
+			$r = 'strftime(\''.$format.'\','.$col.')';
+
+		return($r);
 	}
 }
 

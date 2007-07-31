@@ -293,6 +293,140 @@ class xivo_datastorage_abstract_sql
 
 		return($r);
 	}
+
+	function search($col,$pattern,$format='exact')
+	{
+		$col = $this->quote_identifier((string) $col);
+		$pattern = (string) $pattern;
+		$format = (string) $format;
+
+		if($col === '' || strlen($pattern) === 0)
+			return(false);
+
+		$func = 'LIKE';
+
+		switch($format)
+		{
+			case 'begin':
+				$pattern = '%'.$this->_escape_search($pattern);
+				break;
+			case 'contain':
+				$pattern = '%'.$this->_escape_search($pattern).'%';
+				break;
+			case 'end':
+				$pattern = $this->_escape_search($pattern).'%';
+				break;
+			default:
+				$func = '=';
+		}
+
+		$r = $col.' '.$func.' \''.$this->escape_string($pattern).'\'';
+
+		return($r);
+	}
+
+	function _escape_search($str)
+	{
+		$r = str_replace(array('%','_'),array('\%','\_'),(string) $str);
+
+		return($r);
+	}
+
+	function search_exact($col,$pattern)
+	{
+		return($this->search($col,$pattern,'exact'));
+	}
+
+	function search_begin($col,$pattern)
+	{
+		return($this->search($col,$pattern,'begin'));
+	}
+
+	function search_contain($col,$pattern)
+	{
+		return($this->search($col,$pattern,'contain'));
+	}
+
+	function search_end($col,$pattern)
+	{
+		return($this->search($col,$pattern,'end'));
+	}
+
+	function _cond_typetime($type,$col,$dbeg,$dend='',$format='',$time='')
+	{
+		$dbeg = (string) $dbeg;
+		$dend = (string) $dend;
+		$format = $format !== '' ? (string) $format : 'date';
+		$lowerformat = strtolower($format);
+
+		if(isset($this->_date[$lowerformat]) === true)
+			$format = $this->_date[$lowerformat];
+
+		if($dbeg === '' || ($expr_dbeg = $this->_format_typetime($format,$type,$col,$time)) === false)
+			return(false);
+
+		if($dend === '')
+			$r = $expr_dbeg.' = \''.$this->escape_string($dbeg).'\'';
+		else
+			$r = $expr_dbeg.' BETWEEN \''.$this->escape_string($dbeg).'\' AND \''.$this->escape_string($dend).'\'';
+		
+		return($r);
+	}
+
+	function _format_typetime($format,$type='',$col='',$time='')
+	{
+		return($this->_expr_typetime($type,$col,$time,$format));
+	}
+
+	function cond_date($col,$dbeg,$dend='',$format='',$time='')
+	{
+		return($this->_cond_typetime('date',$col,$dbeg,$dend,$format,$time));
+	}
+
+	function format_date($format,$col='',$time='')
+	{
+		return($this->_format_typetime('date',$col,$time,$format));
+	}
+
+	function datetime_from_date($col='',$time='')
+	{
+		return($this->_expr_typetime('date',$col,$time,$this->_date['datetime']));
+	}
+
+	function date_from_date($col='',$time='')
+	{
+		return($this->_expr_typetime('date',$col,$time,$this->_date['date']));
+	}
+
+	function time_from_date($col='',$time='')
+	{
+		return($this->_expr_typetime('date',$col,$time,$this->_date['time']));
+	}
+
+	function cond_unixtime($col,$dbeg,$dend='',$format='',$time='')
+	{
+		return($this->_cond_typetime('unix',$col,$dbeg,$dend,$format,$time));
+	}
+
+	function format_unixtime($format,$col='',$time='')
+	{
+		return($this->_format_typetime($col,'unix',$time,$format));
+	}
+
+	function datetime_from_unixtime($col='',$time='')
+	{
+		return($this->_expr_typetime('unix',$col,$time,$this->_date['datetime']));
+	}
+
+	function date_from_unixtime($col='',$time='')
+	{
+		return($this->_expr_typetime('unix',$col,$time,$this->_date['date']));
+	}
+
+	function time_from_unixtime($col='',$time='')
+	{
+		return($this->_expr_typetime('unix',$col,$time,$this->_date['time']));
+	}
 }
 
 ?>

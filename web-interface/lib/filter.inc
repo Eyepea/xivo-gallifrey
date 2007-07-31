@@ -163,16 +163,16 @@ class xivo_filter
 				return(xivo_cast_alphaspecials($value));
 			case 'alphanumspecials':
 				return(xivo_cast_alphanumspecials($value));
-			case 'print':
-				$cast = xivo_print($value);
+			case 'cprint':
+				$cast = xivo_cprint($value);
 
 				return(($cast === false ? false : true));
-			case 'printable':
-				return(xivo_printable($value));
-			case 'printable_crlf':
-				return(xivo_printable_crlf($value));
-			case 'printable_tab':
-				return(xivo_printable_tab($value));
+			case 'print':
+				return(xivo_cast_print($value));
+			case 'print_crlf':
+				return(xivo_cast_print_crlf($value));
+			case 'print_tab':
+				return(xivo_cast_print_tab($value));
 			case 'digit':
 				$cast = xivo_digit($value);
 
