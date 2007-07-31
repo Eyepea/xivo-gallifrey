@@ -1,4 +1,5 @@
-/* XIVO switchboard
+/*
+XIVO switchboard
 Copyright (C) 2007  Proformatique
 
 This program is free software; you can redistribute it and/or
@@ -16,11 +17,18 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 */
 
+/* $Revision$
+   $Date$
+*/
+
 #ifndef __CALLWIDGET_H__
 #define __CALLWIDGET_H__
-#include <QWidget>
+
+// QT includes.
 #include <QDateTime>
+#include <QMenu>
 #include <QObject>
+#include <QWidget>
 
 class QLabel;
 
@@ -36,6 +44,8 @@ class CallWidget : public QWidget
 public:
 	//! Default constructor
 	CallWidget(QWidget * parent = 0);
+        ~CallWidget();
+
 	//CallWidget(const QString & tomonitor,
 	//	   QWidget * parent = 0);
 	CallWidget(const QString & channelme,
@@ -92,6 +102,7 @@ private:
 	QDateTime m_startTime;	//!< call start date/time
 	QAction * m_hangUpAction;	//!< Hang Up Action
         QAction * m_transferToNumberAction;	//!< Transfer to Number Action
+        QMenu * m_contextMenu;
 };
 
 

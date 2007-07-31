@@ -97,6 +97,13 @@ m_call_gray(":/phone-grey.png")
 	         this, SLOT(transferToNumber()) );
 }
 
+/*! \brief Destructor
+ */
+CallWidget::~CallWidget()
+{
+        qDebug() << "CallWidget::~CallWidget()";
+}
+
 /*! \brief update time displayed in m_lbl_time
  */
 void CallWidget::updateCallTimeLabel()
@@ -251,11 +258,12 @@ void CallWidget::transferToNumber()
  */
 void CallWidget::contextMenuEvent(QContextMenuEvent *event)
 {
-	QMenu contextMenu(this);
-	contextMenu.addAction(m_hangUpAction);
+        m_contextMenu = new QMenu(this);
+	m_contextMenu->addAction(m_hangUpAction);
+
         // m_transferToNumberAction only if there is something written
-	contextMenu.addAction(m_transferToNumberAction);
-	contextMenu.exec(event->globalPos());
+	m_contextMenu->addAction(m_transferToNumberAction);
+	m_contextMenu->exec(event->globalPos());
 }
 
 /*
