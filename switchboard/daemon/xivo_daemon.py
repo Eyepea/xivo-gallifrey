@@ -578,11 +578,13 @@ class AMIClass:
 # This should be done after a command called "customers".
 # \return a string containing the full customers list
 # \sa manage_tcp_connection
-def build_customers(astn, ctx, searchpattern):
+def build_customers(astn, ctx, searchpatterns):
         dir_db_uri = ""
         dir_db_displayfields = ""
         dir_db_matchingfields = ""
         dir_db_tablename = ""
+        
+        searchpattern = ' '.join(searchpatterns)
         
         if ctx in configs[astn].contexts:
                 xivocf = configs[astn].contexts[ctx]
@@ -678,11 +680,6 @@ def build_customers(astn, ctx, searchpattern):
                 fullstat += ";" + fsl
         fullstat += "\n"
         return fullstat
-
-
-def build_customers_fromrequester(requester, searchpattern):
-        [astn, ctx] = ctx_by_requester[requester]
-        return build_customers(astn, ctx, searchpattern)
 
 
 ## \brief Builds the base status (no channel information) for one phone identifier
@@ -828,13 +825,14 @@ def update_GUI_clients(astnum, phonenum, fromwhom):
                 try:
                         tcpclient[0].send(strupdate + "\n")
                 except Exception, exc:
-                        log_debug("--- exception --- send has failed on %s : %s" %(str(tcpclient[0]),str(exc)))
+                        log_debug("--- exception --- send update has failed on %s : %s"
+                                  %(str(tcpclient[0]),str(exc)))
         verboselog(strupdate, False, True)
         for ka_object in requestersocket_by_login.itervalues():
                 userlist_lock.acquire()
                 try:
                         mysock = ka_object.request[1]
-                        mysock.sendto("PEERUPDATE %s" %(strupdate),
+                        mysock.sendto(strupdate,
                                       ka_object.client_address)
                 finally:
                         userlist_lock.release()
@@ -1052,6 +1050,10 @@ def manage_tcp_connection(connid, allow_events):
                         log_debug("--- exception --- UI connection [%s] : a problem occured when trying to close %s : %s"
                                   %(msg, str(connid[0]), str(exc)))
         else:
+                if requester in ctx_by_requester:
+                        [astnum_requester, ctx_requester] = ctx_by_requester[requester]
+
+
                 # what if more lines ???
                 usefulmsg = msg.split("\r\n")[0].split("\n")[0]
                 if usefulmsg == "hints":
@@ -1189,14 +1191,19 @@ def manage_tcp_connection(connid, allow_events):
                                                         connid[0].send("asterisk=%s::hangup KO : no such channel\n" %DAEMON)
                                         else:
                                                 connid[0].send("asterisk=%s::hangup KO : no such phone\n" %DAEMON)
-                        elif len(l) >= 1 and l[0] == 'directory-search':
+                        elif l[0] == 'directory-search':
+                                log_debug("%s is attempting a directory-search : %s" %(requester, str(l)))
                                 try:
-                                        if len(l) == 1: l.append("")
-                                        spattern = ' '.join(l[1:])
-                                        connid[0].send(build_customers_fromrequester(requester, spattern))
+                                        repstr = build_customers(astnum_requester, ctx_requester, l[1:])
+                                        connid[0].send(repstr)
                                 except Exception, exc:
                                         log_debug("--- exception --- UI connection : a problem occured when sending to %s : %s"
                                                   %(requester, str(exc)))
+                        elif len(l) >= 4 and l[0] == 'history':
+                                log_debug("%s is attempting a history : %s" %(requester, str(l)))
+                                [dummyh, requester_id, nlines, kind] = l
+                                repstr = build_history_string(requester_id, nlines, kind)
+                                connid[0].send(repstr + "\n")
                         elif len(l) == 3 and (l[0] == 'originate' or l[0] == 'transfer'):
                                 idassrc = -1
                                 assrc = l[1].split("/")[1]
@@ -1253,11 +1260,6 @@ def manage_tcp_connection(connid, allow_events):
                                                                                                        %(DAEMON, idassrc, l[1], l[2]))
                                 else:
                                         connid[0].send("asterisk=%s::originate or transfer KO : asterisk id mismatch\n" %DAEMON)
-                        elif len(l) >= 4 and l[0] == 'history':
-                                log_debug("%s is attempting a HISTORY : %s" %(requester, str(l)))
-                                [dummyh, requester_id, nlines, kind] = l
-                                repstr = build_history_string(requester_id, nlines, kind)
-                                connid[0].send(repstr + "\n")
                         elif len(l) >= 4 and l[0] == 'login':
                                 if l[1] in asteriskr:
                                         astnum = asteriskr[l[1]]
@@ -1279,11 +1281,12 @@ def manage_tcp_connection(connid, allow_events):
                                 connid[0].send(repstr)
                         elif allow_events == False: # i.e. if PHP-style connection
                                 n = -1
+                                xivo_cli_php_header = "XIVO-CLI-PHP"
                                 if requester_ip in ip_reverse_php: n = ip_reverse_php[requester_ip]
                                 if n == -1:
-                                        connid[0].send("XIVO CLI:CLIENT NOT ALLOWED\n")
+                                        connid[0].send("%s:KO <NOT ALLOWED>\n" %(xivo_cli_php_header))
                                 else:
-                                        connid[0].send("XIVO CLI:" + configs[n].astid + "\n")
+                                        connid[0].send("%s:ID <%s>\n" %(xivo_cli_php_header, configs[n].astid))
                                         try:
                                                 if not AMIclasssock[n]:
                                                         log_debug("AMI was not connected - attempting to connect again")
@@ -1292,18 +1295,24 @@ def manage_tcp_connection(connid, allow_events):
                                                                                          configs[n].ami_login,
                                                                                          configs[n].ami_pass)
                                                 if AMIclasssock[n]:
-                                                        s = AMIclasssock[n].execclicommand(usefulmsg.strip())
+                                                        try:
+                                                                s = AMIclasssock[n].execclicommand(usefulmsg.strip())
+                                                        except Exception, exc:
+                                                                log_debug("--- exception --- (%s) error : php command <%s> : (client %s) : %s"
+                                                                          %(configs[n].astid, str(usefulmsg.strip()), requester, str(exc)))
                                                         try:
                                                                 for x in s: connid[0].send(x)
-                                                                connid[0].send("XIVO CLI:OK\n")
-								connid[0].close()
+                                                                connid[0].send("%s:OK\n" %(xivo_cli_php_header))
+                                                                connid[0].close()
+                                                                ins.remove(connid[0])
+                                                                log_debug("TCP (PHP) socket closed towards %s" %requester)
                                                         except Exception, exc:
-                                                                log_debug("--- exception --- (%s) error : php command : (client %s) : %s"
-                                                                          %(configs[n].astid, requester, str(exc)))
+                                                                log_debug("--- exception --- (%s) error : php command <%s> : (client %s) : %s"
+                                                                          %(configs[n].astid, str(usefulmsg.strip()), requester, str(exc)))
                                         except Exception, exc:
-                                                connid[0].send("XIVO CLI:KO Exception : %s\n" %(str(exc)))
+                                                connid[0].send("%s:KO <Exception : %s>\n" %(xivo_cli_php_header, str(exc)))
                         else:
-                                connid[0].send("XIVO CLI:NOT ALLOWED from Switchboard\n")
+                                connid[0].send("%s:KO <NOT ALLOWED from Switchboard>\n" %(xivo_cli_php_header))
 
 
 ## \brief Tells whether a channel is a "normal" one, i.e. SIP, IAX2, mISDN, Zap
@@ -1857,14 +1866,38 @@ def update_sipnumlist(astnum):
                                           + build_cidstatus(plist[astnum].normal[snl]) + ";"
                 if lstdel != "":
                         strupdate = "peerremove=" + lstdel
-                        for k in tcpopens_sb:
-                                k[0].send(strupdate + "\n")
+                        for tcpclient in tcpopens_sb:
+                                try:
+                                        tcpclient[0].send(strupdate + "\n")
+                                except Exception, exc:
+                                        log_debug("--- exception --- send peerremove has failed on %s : %s"
+                                                  %(str(tcpclient[0]),str(exc)))
                         verboselog(strupdate, False, True)
+                        for ka_object in requestersocket_by_login.itervalues():
+                                userlist_lock.acquire()
+                                try:
+                                        mysock = ka_object.request[1]
+                                        mysock.sendto(strupdate,
+                                                      ka_object.client_address)
+                                finally:
+                                        userlist_lock.release()
                 if lstadd != "":
                         strupdate = "peeradd=" + lstadd
-                        for k in tcpopens_sb:
-                                k[0].send(strupdate + "\n")
+                        for tcpclient in tcpopens_sb:
+                                try:
+                                        tcpclient[0].send(strupdate + "\n")
+                                except Exception, exc:
+                                        log_debug("--- exception --- send peeradd has failed on %s : %s"
+                                                  %(str(tcpclient[0]),str(exc)))
                         verboselog(strupdate, False, True)
+                        for ka_object in requestersocket_by_login.itervalues():
+                                userlist_lock.acquire()
+                                try:
+                                        mysock = ka_object.request[1]
+                                        mysock.sendto(strupdate,
+                                                      ka_object.client_address)
+                                finally:
+                                        userlist_lock.release()
 
 
 ## \brief Connects to the AMI through AMIClass.
@@ -1934,7 +1967,7 @@ class PhoneList:
                         userlist_lock.acquire()
                         try:
                                 mysock = ka_object.request[1]
-                                mysock.sendto("PEERUPDATE %s" %(strupdate),
+                                mysock.sendto(strupdate,
                                               ka_object.client_address)
                         finally:
                                 userlist_lock.release()
@@ -2602,6 +2635,23 @@ class IdentRequestHandler(SocketServer.StreamRequestHandler):
                         return
 
 
+def parse_command_and_build_reply(me, myargs):
+        repstr = ""
+        if myargs[0] == 'history':
+                if "history" in capabilities.split(","):
+                        repstr = build_history_string(myargs[1], myargs[2], myargs[3])
+        elif myargs[0] == 'directory-search':
+                if "directory" in capabilities.split(","):
+                        repstr = build_customers(me[0], me[1], myargs[1:])
+        elif myargs[0] == 'callerids':
+                if "peers" in capabilities.split(","):
+                        repstr = build_callerids()
+        elif myargs[0] == 'hints':
+                if "peers" in capabilities.split(","):
+                        repstr = build_statuses()
+        return repstr
+
+
 ## \class KeepAliveHandler
 # \brief It receives UDP datagrams and sends back a datagram containing whether
 # "OK" or "ERROR <error-text>".
@@ -2692,6 +2742,7 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
                                                 requestersocket_by_login[list[1]] = self
                                         finally:
                                                 userlist_lock.release()
+
                                         if list[4] == 'DIAL' and len(list) == 7:
                                                 if "dial" in capabilities.split(","):
                                                         [astname_xivoc, proto, userid, context] = list[5].split("/")
@@ -2709,38 +2760,14 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
                                                         response = 'SENT'
                                                 else:
                                                         raise NameError, "instantmessaging not allowed"
-                                        elif list[4] == 'HISTORY':
-                                                if "history" in capabilities.split(","):
-                                                        repstr = build_history_string(list[5], list[6], list[7])
-                                                        response = 'HISTORY %s' %repstr
-                                                else:
-                                                        raise NameError, "history not allowed"
                                         elif list[4] == 'FEATURES' and len(list) >= 8:
                                                 if "features" in capabilities.split(","):
                                                         repstr = build_features(astnum, list, self)
                                                         response = 'FEATURES %s' %repstr
                                                 else:
                                                         raise NameError, "features not allowed"
-                                        elif list[4] == 'DIRECTORY':
-                                                if "directory" in capabilities.split(","):
-                                                        repstr = build_customers(astnum, e['context'], list[5])
-                                                        response = 'DIRECTORY %s' %repstr
-                                                else:
-                                                        raise NameError, "directory not allowed"
-                                        elif list[4] == 'PEERS':
-                                                if "peers" in capabilities.split(","):
-                                                        repstr = build_statuses()
-                                                        response = 'PEERS %s' %repstr
-                                                else:
-                                                        raise NameError, "peers not allowed"
-                                        elif list[4] == 'CALLERIDS':
-                                                if "peers" in capabilities.split(","):
-                                                        repstr = build_callerids()
-                                                        response = 'CALLERIDS %s' %repstr
-                                                else:
-                                                        raise NameError, "peers not allowed"
                                         else:
-                                                pass
+                                                response = parse_command_and_build_reply([astnum, e['context']], list[4:])
                                 except Exception, exc:
                                         log_debug("--- exception --- (command) %s" %str(exc))
                         else:
@@ -2956,7 +2983,7 @@ while True: # loops over the reloads
         # TODO: maybe we should listen on only one interface (localhost ?)
         requestserver = MyTCPServer(('', port_request), IdentRequestHandler)
         # Do we need a Threading server for the keep alive ? I dont think so,
-        # packets processing is non blocking so thead creation/start/stop/delete
+        # packets processing is non blocking so thread creation/start/stop/delete
         # overhead is not worth it.
         # keepaliveserver = SocketServer.ThreadingUDPServer(('', port_keepalive), KeepAliveHandler)
         keepaliveserver = SocketServer.UDPServer(('', port_keepalive), KeepAliveHandler)
