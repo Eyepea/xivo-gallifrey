@@ -181,8 +181,11 @@ class SetTree(Node):
 	will be ordered.
 	
 	Your derived class needs to provide:
-	 - SUBNAME_OBJ          mapping of child names (as keys) and
-	                        their associated description object (in values)
+	 - SUBNAME_OBJ      mapping of child names (keys) to associated
+	                    indexable objects (values). For a given child name,
+	                    cls.SUBNAME_OBJ[child_name][0] must contain the
+	                    corresponding Resource Tree description object of
+	                    that child.
 	"""
 	
 	@classmethod
@@ -190,7 +193,7 @@ class SetTree(Node):
 		"""Does a simple lookup in cls.SUBNAME_OBJ, taking the child
 		class identified by path[pos] when it exists in there. """
 		if (pos < len(path)) and (path[pos] in cls.SUBNAME_OBJ):
-			return cls.SUBNAME_OBJ[path[pos]], 1
+			return cls.SUBNAME_OBJ[path[pos]][0], 1
 		else:
 			return None, -1
 
@@ -200,12 +203,12 @@ class DynTree(Node):
 	"""Resource Tree containing dynamically addressable resources.
 	
 	Your derived class needs to provide:
-	 - subpath_ok()         Either classmethod or staticmethod.
-	                        The number of parameter will be introspected so
-	                        the same number of components from the path will
-				be passed to this function to check whether they
-				can identify a resource.
-	 - SUBOBJ               Object describing the childs
+	 - subpath_ok()     Either classmethod or staticmethod.
+	                    The number of parameter will be introspected so the
+	                    same number of components from the path will be
+	                    passed to this function whose goal is to check
+	                    whether the name of a resource is well-formed.
+	 - SUBOBJ           Object describing the childs
 	"""
 	
 	@classmethod
@@ -344,7 +347,7 @@ class MountTree(NodeInst):
 		self._umount_rec(self._mount_points, path, 0, subtree)
 	
 	def lookup_sub(self, ctx, path, pos):
-		"""Finds and returns the best matching mounted subtree begining
+		"""Finds and returns the best matching mounted subtree beginning
 		with path[pos:]
 		Returns (None, -1) if none found, else returns the child subtree
 		object and the number of path components it's away from here. """
