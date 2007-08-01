@@ -1,4 +1,6 @@
 #VPD1020D49S_IAD_TELCFG
+;
+;
 ;########################################################
 ;#### Config Script For EVM3 running V8.3 on VxWorks ####
 ;#### version : V-0517                               ####
@@ -308,6 +310,8 @@ set coding 0 adaptive_playout       adj_immed
 ;#set coding 0 aer_gl_nlp_clip     -2
 ;#set coding 0 aer_gl_pnlp_gain     1
 ;
+set coding 0 rtp_digit_repetitions 1
+
 set coding 0 valid
 ;
 ;=========================
@@ -347,6 +351,9 @@ set coding 1 adaptive_playout       adj_immed
 ;#set coding 1 aer_gl_nlp_clip     -2
 ;#set coding 1 aer_gl_pnlp_gain     1
 ;
+
+set coding 1 rtp_digit_repetitions 1
+
 set coding 1 valid
 ;
 ;=========================
@@ -387,6 +394,9 @@ set coding 2 adaptive_playout       adj_immed
 ;#set coding 2 aer_gl_nlp_clip     -2
 ;#set coding 2 aer_gl_pnlp_gain     1
 ;
+
+set coding 2 rtp_digit_repetitions 1
+
 set coding 2 valid
 ;
 ;=========================
@@ -427,6 +437,9 @@ set coding 3 adaptive_playout       adj_immed
 ;#set coding 3 aer_gl_nlp_clip     -2
 ;#set coding 3 aer_gl_pnlp_gain     1
 ;
+
+set coding 3 rtp_digit_repetitions 1
+
 set coding 3 valid
 ;
 ;
