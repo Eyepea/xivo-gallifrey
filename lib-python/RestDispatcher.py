@@ -301,7 +301,7 @@ class RestDispatcher(object):
 		if app is None:
 			raise RestErrorCode(500, 'application')
 		# === CALL TO APPLICATION ===
-		rcode,tree_rootname = app.req_in(ctx, req_payload)
+		rcode,tree_rootname = app.request(ctx, req_payload)
 		# === OUTPUT ADAPTATION ===
 		if tree_rootname:
 			if adaptor is not None:

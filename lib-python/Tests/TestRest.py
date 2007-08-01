@@ -67,7 +67,7 @@ class GetIterContainer(object):
 		return r
 
 class ReqIn(object):
-	def req_in(self, ctx, req_payload):
+	def request(self, ctx, req_payload):
 		return 200, (self.get_tree(), self.get_name())
 
 
