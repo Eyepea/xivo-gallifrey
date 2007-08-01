@@ -386,8 +386,8 @@ class RestHTTPHandler(BaseHTTPRequestHandler):
         	if not self.raw_requestline:
 			self.close_connection = 1
 			return
-        	if not self.parse_request(): # An error code has been sent, just exit
-        		return
+        	if not self.parse_request():
+        		return # An error code has been sent, just exit
 		self.rest_handle()
 		# prepare to handle a second request in a keep-alive connection
 		self.reset_request_attributes()

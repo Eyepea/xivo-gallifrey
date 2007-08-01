@@ -595,6 +595,8 @@ class NetworkInterfacesStanza(Stanza):
 	#		return (opt for opt in self.options_list if opt[0] == k)
 	def simple_get_option(self, opt_name):
 		return self.options_dict[opt_name]
+	def simple_has_option(self, opt_name):
+		return opt_name in self.options_dict
 	def _option_finder(self, pos, line, state, opt_name):
 		return state and split_pad(line.strip(), 1)[0] == opt_name
 	def set_or_change_opt(self, opt_name, opt_value):

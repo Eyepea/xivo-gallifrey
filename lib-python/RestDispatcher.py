@@ -277,8 +277,8 @@ class RestDispatcher(object):
 			sai = self.adaptor_from_ctd(ctd_in)
 			if sai is None:
 				raise RestErrorCode(415)
-			adapt_in = sai.adaptor_fact(sai)
-			req_payload,req_ctd = adapt_in.to_internal(sai, payload)
+			req_payload,req_ctd = \
+				sai.adaptor_fact(sai).to_internal(sai, payload)
 		else:
 			req_payload,req_ctd = None,None
 		del payload
