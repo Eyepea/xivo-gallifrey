@@ -209,6 +209,7 @@ void BaseEngine::initListenSocket()
 		QMessageBox::critical(NULL, tr("Critical error"),
 		                            tr("Unable to start the server: %1.")
 		                            .arg(m_listenserver->errorString()));
+                m_listenserver->close();
 		return;
 	}
 	m_listenport = m_listenserver->serverPort();
@@ -222,9 +223,12 @@ void BaseEngine::initListenSocket()
 void BaseEngine::start()
 {
 	qDebug() << "BaseEngine::start()" << m_serverhost << m_loginport << m_enabled_presence << m_enabled_cinfo;
+
 	// (In case the TCP sockets were attempting to connect ...) aborts them first
 	m_sbsocket->abort();
 	m_loginsocket->abort();
+        m_listenserver->close();
+        m_udpsocket->abort();
 
 	if(m_enabled_cinfo && (!m_tcpmode))
 		initListenSocket();
@@ -965,6 +969,11 @@ void BaseEngine::readKeepLoginAliveDatagrams()
 			setState(ENotLogged);
                         // startTryAgainTimer();
 			qDebug() << qsl; //reply;
+		} else if(reply == "ERROR") {
+                        stopKeepAliveTimer();
+                        stop();
+                        m_pendingkeepalivemsg = 0;
+                        startTryAgainTimer();
 		} else if(reply == "FEATURES") {
 			if((qsl.size() == 4) && (qsl[1] == "UPDATE"))
 				initFeatureFields(qsl[2], qsl[3]);
