@@ -17,6 +17,7 @@
         <file>personal-orange.png</file>
         <file>personal-red.png</file>
         <file>personal-yellow.png</file>
+	<file>connected.png</file>
+	<file>disconnected.png</file>
 </qresource>
 </RCC>
-

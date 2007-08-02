@@ -57,8 +57,7 @@ MainWidget::MainWidget(BaseEngine *engine, QWidget * parent)
 	  m_icon(":/xivoicon.png"), m_icongrey(":/xivoicon-grey.png")
 {
 	QSettings settings;
-	QPixmap redsquare(15,15);
-	redsquare.fill(Qt::red);
+	QPixmap redsquare(":/disconnected.png");
 	statusBar();	// This creates the status bar.
 	m_status = new QLabel();
 	m_status->setPixmap(redsquare);
@@ -329,10 +328,9 @@ void MainWidget::setConnected()
 	setForceTabs(false);
 	m_connectact->setEnabled(false);
 	m_disconnectact->setEnabled(true);
-	// display a green status indicator
-	QPixmap greensquare(15,15);
         QSettings settings;
-	greensquare.fill(Qt::green);
+	// display a green status indicator
+	QPixmap greensquare(":/connected.png");
 	m_status->setPixmap(greensquare);
 	QStringList display_capas = QString("customerinfo,features,history,directory,peers,dial,presence").split(",");
         qDebug() << "MainWidget::setConnected()" << m_engine->enabled_presence() << m_engine->enabled_cinfo();
@@ -502,11 +500,10 @@ void MainWidget::setDisconnected()
 {
 	m_connectact->setEnabled(true);
 	m_disconnectact->setEnabled(false);
-	// set a red status indicator
-	QPixmap red(15,15);
         QSettings settings;
-	red.fill(Qt::red);
-	m_status->setPixmap(red);
+	// set a red status indicator
+	QPixmap redsquare(":/disconnected.png");
+	m_status->setPixmap(redsquare);
 	QStringList display_capas = QString("customerinfo,features,history,directory,peers,dial,presence").split(",");
 	QStringList allowed_capas = m_engine->getCapabilities().split(",");
 

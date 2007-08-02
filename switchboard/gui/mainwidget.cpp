@@ -84,8 +84,7 @@ MainWidget::MainWidget(BaseEngine * engine, QWidget * parent)
 	: QMainWindow(parent), m_engine(engine)
 {
 	QSettings settings;
-	QPixmap redsquare(15,15);
-	redsquare.fill(Qt::red);
+	QPixmap redsquare(":/disconnected.png");
 	statusBar();	// This creates the status bar.
 	m_status = new QLabel();
 	m_status->setPixmap(redsquare);
@@ -417,8 +416,7 @@ void MainWidget::engineStarted()
 	m_svc_tabwidget->setCurrentIndex(0);
 
 	// set status icon to green
-	QPixmap greensquare(15,15);
-	greensquare.fill(Qt::green);
+	QPixmap greensquare(":/connected.png");
 	m_status->setPixmap(greensquare);
 }
 
@@ -443,8 +441,7 @@ void MainWidget::engineStopped()
 	}
 
 	// set status icon to red
-	QPixmap redsquare(15,15);
-	redsquare.fill(Qt::red);
+	QPixmap redsquare(":/disconnected.png");
 	m_status->setPixmap(redsquare);
 }
 
