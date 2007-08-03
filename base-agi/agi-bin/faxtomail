@@ -61,7 +61,7 @@ if sys.argv[1].isdigit():
 	callexten = sys.argv[1]
 else:
 	agi.verbose("Error, argv[1] is not a phone number!")
-	callexten = "Numéro Inconnu"
+	callexten = "Anonyme"
 
 filename = sys.argv[2]
 filepdf = string.replace(filename,".tif",".pdf")
