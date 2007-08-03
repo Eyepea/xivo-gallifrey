@@ -27,6 +27,7 @@
 
 CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
 CONFIG_LIB_PATH = 'py_lib_path'
+CONFIG_XIVO_DAEMON = '/etc/asterisk/xivo_daemon.conf'
 
 # XIVO modules
 import sys
@@ -43,11 +44,22 @@ agi = AGI()
 ## \brief Logs a message into the Asterisk CLI
 # \param txt message to send to the CLI
 def print_verbose(txt):
-    agi.verbose("xivo_push : %s" % txt)
+        agi.verbose("xivo_push : %s" % txt)
 
 # ==============================================================================
 # Main Code starts here
 # ==============================================================================
+
+xivocapas = ConfigParser.ConfigParser()
+xivocapas.readfp(open(CONFIG_XIVO_DAEMON))
+xivocapas_general = dict(xivocapas.items("general"))
+if 'capabilities' in xivocapas_general:
+        xcapa = xivocapas_general['capabilities'].split(",")
+        if 'customerinfo' not in xcapa:
+                sys.exit(2)
+else:
+        sys.exit(2)
+
 
 if len(sys.argv) < 6:
 	print "Usage :", sys.argv[0], "<server> <port> <proto> <user> <calleridnum> [<msgext>] [<calleridname>]"
@@ -68,12 +80,12 @@ else:
 	else:
 		calleridname = ""
 
+
 # send the PUSH command to the server
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((shost, sport))
 fs = s.makefile('r')
 s.send('PUSH ' + user + ' ' + calleridnum + ' ' + msgext + '\r\n')
-#s.send('QUERY ' + user + '\r\n')
 s.close()
 list = fs.readline().strip().split(' ')
 fs.close()
