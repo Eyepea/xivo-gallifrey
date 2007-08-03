@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# parameters
+DEST_PATH=tarballs
+
+##########################################################################
+
 usage()
 {
 	echo "Usage: $0 <version> <destination>"
@@ -8,15 +13,6 @@ usage()
 UPVERSION=$1
 if [ -z "${UPVERSION}" ]; then
 	usage
-	exit 1
-fi
-DEST_PATH=$2
-if [ -z "${DEST_PATH}" ]; then
-	usage
-	exit 1
-fi
-if [ ! -d "${DEST_PATH}" ]; then
-	"Destination does not exists or is not a directory"
 	exit 1
 fi
 
