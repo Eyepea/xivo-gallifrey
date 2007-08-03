@@ -216,7 +216,7 @@ private:
 	void connectSocket();
 	void sendTCPCommand();
         void sendCommand(const QString &);
-        void parseCommand(const QStringList &);
+        bool parseCommand(const QStringList &);
 
 	// Class Members
 

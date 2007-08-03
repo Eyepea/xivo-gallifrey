@@ -117,8 +117,10 @@ void MainWidget::createActions()
 
 	m_quitact = new QAction(tr("&Quit"), this);
 	m_quitact->setStatusTip(tr("Close the application"));
-	connect( m_quitact, SIGNAL(triggered()), m_engine, SLOT(stop()) );
-	connect( m_quitact, SIGNAL(triggered()), qApp, SLOT(quit()) );
+	connect( m_quitact, SIGNAL(triggered()),
+                 m_engine, SLOT(stop()) );
+	connect( m_quitact, SIGNAL(triggered()),
+                 qApp, SLOT(quit()) );
 
 	m_systrayact = new QAction(tr("To S&ystray"), this);
 	m_systrayact->setStatusTip(tr("Go to the system tray"));
@@ -127,10 +129,12 @@ void MainWidget::createActions()
 
 	m_connectact = new QAction(tr("&Connect"), this);
 	m_connectact->setStatusTip(tr("Connect to the server"));
-	connect( m_connectact, SIGNAL(triggered()), m_engine, SLOT(start()) );
+	connect( m_connectact, SIGNAL(triggered()),
+                 m_engine, SLOT(start()) );
 	m_disconnectact = new QAction(tr("&Disconnect"), this);
 	m_disconnectact->setStatusTip(tr("Disconnect from the server"));
-	connect( m_disconnectact, SIGNAL(triggered()), m_engine, SLOT(stop()) );
+	connect( m_disconnectact, SIGNAL(triggered()),
+                 m_engine, SLOT(stop()) );
 	//QActionGroup * connectgroup = new QActionGroup(this);
 	//connectgroup->addAction( m_connectact );
 	//connectgroup->addAction( m_disconnectact );
@@ -278,7 +282,7 @@ void MainWidget::popupConf()
  * of the MainWidget on a simple left click. */
 void MainWidget::systrayActivated(QSystemTrayIcon::ActivationReason reason)
 {
-	qDebug() << " systrayActivated() reason=" << reason
+	qDebug() << "MainWidget::systrayActivated() reason=" << reason
 	         << "visible=" << isVisible() << " hidden=" << isHidden()
 	         << "active=" << isActiveWindow();
 	// QSystemTrayIcon::DoubleClick
@@ -359,7 +363,7 @@ void MainWidget::setConnected()
 			} else if(dc == QString("dial")) {
 				m_dial = new DialPanel();
 				connect( m_dial, SIGNAL(emitDial(const QString &)),
-					 m_engine, SLOT(dialExtension(const QString &)) );
+					 m_engine, SLOT(dialFullChannel(const QString &)) );
 				m_vboxwidgets->addWidget(m_dial, 0);
 
 			} else if((dc == QString("customerinfo")) && (m_engine->enabled_cinfo())) {
@@ -384,7 +388,6 @@ void MainWidget::setConnected()
 									const QStringList &, const QStringList &,
 									const QStringList &)) );
 				m_peerswidget->setEngine(m_engine);
-				m_engine->askCallerIds();
 
 			} else if(dc == QString("features")) {
 				m_featureswidget = new ServicePanel(this);
@@ -447,11 +450,11 @@ void MainWidget::setConnected()
 				m_engine->askFeatures("peer/to/define");
 			} else if(dc == QString("directory")) {
 				m_directory = new DirectoryPanel(this);
-				
+                                
 				connect( m_directory, SIGNAL(searchDirectory(const QString &)),
 					 m_engine, SLOT(searchDirectory(const QString &)) );
 				connect( m_directory, SIGNAL(emitDial(const QString &)),
-					 m_engine, SLOT(dialExtension(const QString &)) );
+					 m_engine, SLOT(dialFullChannel(const QString &)) );
 				// 			connect( m_directory, SIGNAL(transferCall(const QString &, const QString &)),
 				// 				 m_engine, SLOT(transferCall(const QString &, const QString &)) );
 				// 			connect( m_directory, SIGNAL(originateCall(const QString &, const QString &)),

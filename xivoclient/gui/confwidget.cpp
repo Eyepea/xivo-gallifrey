@@ -163,8 +163,10 @@ ConfWidget::ConfWidget(BaseEngine * engine,
 	gridlayout->addWidget(m_history_sbox, line++, 1);
 
 	QDialogButtonBox * btnbox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
-	connect(btnbox, SIGNAL(accepted()), this, SLOT(saveAndClose()));
-	connect(btnbox, SIGNAL(rejected()), this, SLOT(close()));
+	connect(btnbox, SIGNAL(accepted()),
+                this, SLOT(saveAndClose()));
+	connect(btnbox, SIGNAL(rejected()),
+                this, SLOT(close()));
 	btnbox->button(QDialogButtonBox::Ok)->setDefault(true);
 
 	vlayout->addLayout(gridlayout);
@@ -178,7 +180,7 @@ ConfWidget::ConfWidget(BaseEngine * engine,
  */
 void ConfWidget::saveAndClose()
 {
-        //qDebug() << "ConfWidget::saveAndClose()";
+        qDebug() << "ConfWidget::saveAndClose()";
         if(m_engine->isASwitchboard())
                 m_engine->setAddress(m_serverhost->text(), m_sbport->text().toUShort());
 	m_engine->setServerip(m_serverhost->text());
@@ -202,5 +204,5 @@ void ConfWidget::saveAndClose()
 	m_mainwindow->setTablimit(m_tablimit_sbox->value());
 
 	m_engine->saveSettings();
-	close();
+        close();
 }

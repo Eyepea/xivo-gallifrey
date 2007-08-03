@@ -135,9 +135,9 @@ MainWidget::MainWidget(BaseEngine * engine, QWidget * parent)
 	areaPeers->setWidgetResizable(true);
 
  	m_widget = new SwitchBoardWindow(areaPeers);
- 	m_widget->setEngine(engine);
-	engine->addRemovable(m_widget->metaObject());
-	connect( engine, SIGNAL(updatePeer(const QString &, const QString &,
+ 	m_widget->setEngine(m_engine);
+	m_engine->addRemovable(m_widget->metaObject());
+	connect( m_engine, SIGNAL(updatePeer(const QString &, const QString &,
 	                                   const QString &, const QString &,
 	                                   const QString &, const QString &,
 					   const QStringList &, const QStringList &,
@@ -147,34 +147,34 @@ MainWidget::MainWidget(BaseEngine * engine, QWidget * parent)
 					   const QString &, const QString &,
 					   const QStringList &, const QStringList &,
 					   const QStringList &)) );
-	connect( engine, SIGNAL(stopped()),
+	connect( m_engine, SIGNAL(stopped()),
 	         m_widget, SLOT(removePeers()) );
-	connect( engine, SIGNAL(removePeer(const QString &)),
+	connect( m_engine, SIGNAL(removePeer(const QString &)),
 	         m_widget, SLOT(removePeer(const QString &)) );
  	areaPeers->setWidget(m_widget);
  	areaCalls->setWidget(calls);
 	
 	DirectoryPanel * dirpanel = new DirectoryPanel(m_middleSplitter);
 	connect( dirpanel, SIGNAL(searchDirectory(const QString &)),
-	         engine, SLOT(searchDirectory(const QString &)) );
-	connect( engine, SIGNAL(directoryResponse(const QString &)),
+	         m_engine, SLOT(searchDirectory(const QString &)) );
+	connect( m_engine, SIGNAL(directoryResponse(const QString &)),
 	         dirpanel, SLOT(setSearchResponse(const QString &)) );
 	connect( dirpanel, SIGNAL(emitDial(const QString &)),
-	         engine, SLOT(dialExtension(const QString &)) );
+	         m_engine, SLOT(dialExtension(const QString &)) );
 	connect( dirpanel, SIGNAL(transferCall(const QString &, const QString &)),
-	         engine, SLOT(transferCall(const QString &, const QString &)) );
+	         m_engine, SLOT(transferCall(const QString &, const QString &)) );
 	connect( dirpanel, SIGNAL(originateCall(const QString &, const QString &)),
-	         engine, SLOT(originateCall(const QString &, const QString &)) );
-	connect( engine, SIGNAL(updateMyCalls(const QStringList &, const QStringList &, const QStringList &)),
+	         m_engine, SLOT(originateCall(const QString &, const QString &)) );
+	connect( m_engine, SIGNAL(updateMyCalls(const QStringList &, const QStringList &, const QStringList &)),
 	         dirpanel, SIGNAL(updateMyCalls(const QStringList &, const QStringList &, const QStringList &)) );
-	connect( engine, SIGNAL(stopped()),
+	connect( m_engine, SIGNAL(stopped()),
 	         dirpanel, SLOT(stop()) );
 
 	m_rightSplitter = new QSplitter(Qt::Vertical, m_splitter);
 
 	SearchPanel * searchpanel = new SearchPanel(m_rightSplitter);
-	searchpanel->setEngine(engine);
-	connect( engine, SIGNAL(updatePeer(const QString &, const QString &,
+	searchpanel->setEngine(m_engine);
+	connect( m_engine, SIGNAL(updatePeer(const QString &, const QString &,
 	                                   const QString &, const QString &,
 	                                   const QString &, const QString &,
 					   const QStringList &, const QStringList &,
@@ -184,9 +184,9 @@ MainWidget::MainWidget(BaseEngine * engine, QWidget * parent)
 					      const QString &, const QString &,
 					      const QStringList &, const QStringList &,
 					      const QStringList &)) );
-	connect( engine, SIGNAL(stopped()),
+	connect( m_engine, SIGNAL(stopped()),
 	         searchpanel, SLOT(removePeers()) );
-	connect( engine, SIGNAL(removePeer(const QString &)),
+	connect( m_engine, SIGNAL(removePeer(const QString &)),
 	         searchpanel, SLOT(removePeer(const QString &)) );
 	
 	m_tabwidget = new QTabWidget(m_rightSplitter);
@@ -335,6 +335,7 @@ void MainWidget::showConfDialog()
  */
 void MainWidget::engineStarted()
 {
+	qDebug() << "MainWidget::engineStarted()";
 	m_stopact->setEnabled(true);
 	m_startact->setDisabled(true);
 

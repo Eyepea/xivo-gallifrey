@@ -33,7 +33,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include "logeltwidget.h"
 #include "popup.h"
 
-const int REQUIRED_SERVER_VERSION = 1273;
+const int REQUIRED_SERVER_VERSION = 1299;
 
 /*! \brief Constructor.
  *
@@ -409,13 +409,11 @@ void BaseEngine::processHistory(const QStringList & histlist)
 void BaseEngine::socketConnected()
 {
 	qDebug() << "BaseEngine::socketConnected()";
-	started();
 	stopTryAgainTimer();
 	/* do the login/identification ? */
 	m_pendingcommand = "login " + m_asterisk + " "
 	                   + m_protocol + " " + m_userid;
         // login <asterisk> <techno> <id>
-	//m_pendingcommand = "callerids";
 	sendTCPCommand();
 }
 
@@ -571,8 +569,10 @@ void BaseEngine::updateCallerids(const QStringList & liststatus)
 	m_callerids[pname] = pcid;
 }
 
-void BaseEngine::parseCommand(const QStringList & listitems)
+bool BaseEngine::parseCommand(const QStringList & listitems)
 {
+	QSettings settings;
+        bool b = false;
         if(listitems[0].toLower() == "callerids") {
                 QStringList listpeers = listitems[1].split(";");
                 for(int i = 0 ; i < listpeers.size() - 1; i++) {
@@ -611,8 +611,52 @@ void BaseEngine::parseCommand(const QStringList & listitems)
                                 liststatus[3] + "/" + liststatus[4];
                         removePeer(toremove);
                 }
-        } else
+        } else if(listitems[0].toLower() == QString("hints")) {
+                QStringList listpeers = listitems[1].split(";");
+                for(int i = 0 ; i < listpeers.size() - 1; i++) {
+                        QStringList liststatus = listpeers[i].split(":");
+                        updatePeers(liststatus);
+                }
+
+                b = true;
+
+                if(m_is_a_switchboard) {
+                        callsUpdated();
+                        QString myfullid = settings.value("monitor/peer").toString();
+                        if(myfullid.size() == 0)
+                                myfullid = "p/" + m_asterisk + "/" + m_dialcontext + "/" + m_protocol + "/" + m_userid + "/" + m_extension;
+                        QString myname = m_callerids[myfullid];
+                        if(myname == "")
+                                monitorPeer(myfullid, tr("Unknown CallerId") + " (" + myfullid + ")");
+                        else
+                                monitorPeer(myfullid, myname);
+                }
+        } else if(listitems[0].toLower() == QString("message")) {
+                QTime currentTime = QTime::currentTime();
+                QStringList message = listitems[1].split("::");
+                // message[0] : emitter name
+                if(message.size() == 2) {
+                        emitTextMessage(message[0] + tr(" said : ") + message[1]);
+                } else {
+                        emitTextMessage(tr("Unknown") + tr(" said : ") + listitems[1]);
+                }
+        } else if(listitems[0].toLower() == QString("featuresupdate")) {
+                QStringList listpeers = listitems[1].split(";");
+                initFeatureFields(listpeers[0], listpeers[1]);
+        } else if(listitems[0].toLower() == QString("featuresget")) {
+                QStringList listpeers = listitems[1].split(";");
+                disconnectFeatures();
+                resetFeatures();
+                if(listpeers.size() > 1)
+                        for(int i=0; i<listpeers.size()-1; i+=2)
+                                initFeatureFields(listpeers[i], listpeers[i+1]);
+                connectFeatures();
+        } else if(listitems[0].toLower() == QString("featuresput")) {
+                qDebug() << "received ack from featuresput :" << listitems;
+        } else if(listitems[0] != "")
                 qDebug() << "unknown command" << listitems[0];
+
+        return b;
 }
 
 /*! \brief called when data are ready to be read on the socket.
@@ -621,10 +665,8 @@ void BaseEngine::parseCommand(const QStringList & listitems)
  */
 void BaseEngine::socketReadyRead()
 {
-	QSettings settings;
-	//qDebug() << "socketReadyRead()";
+        //qDebug() << "BaseEngine::socketReadyRead()";
 	//QByteArray data = m_sbsocket->readAll();
-	//qDebug() << data;
 	bool b = false;
 	while(m_sbsocket->canReadLine()) {
 		QByteArray data  = m_sbsocket->readLine();
@@ -632,49 +674,25 @@ void BaseEngine::socketReadyRead()
 		QStringList list = line.trimmed().split("=");
 
 		if(list.size() == 2) {
-			if(list[0].toLower() == "hints") {
-				QStringList listpeers = list[1].split(";");
-				for(int i = 0 ; i < listpeers.size() - 1; i++) {
-					QStringList liststatus = listpeers[i].split(":");
-					updatePeers(liststatus);
-				}
-				callsUpdated();
-				b = true;
-
-			        QString myfullid = settings.value("monitor/peer").toString();
-				if(myfullid.size() == 0)
-					myfullid = "p/" + m_asterisk + "/" + m_dialcontext + "/" + m_protocol + "/" + m_userid + "/" + m_extension;
-				QString myname = m_callerids[myfullid];
-				if(myname == "")
-					monitorPeer(myfullid, tr("Unknown CallerId") + " (" + myfullid + ")");
-				else
-					monitorPeer(myfullid, myname);
-			} else if(list[0].toLower() == "loginok") {
+                        if(list[0].toLower() == "loginok") {
+                                started();
 				QStringList params = list[1].split(";");
 				if(params.size() > 1) {
 					m_dialcontext = params[0];
 					m_extension = params[1];
 				}
-				m_pendingcommand = "callerids";
-				sendTCPCommand();
-			} else if(list[0].toLower() == "asterisk") {
-				QTime currentTime = QTime::currentTime();
-				QStringList message = list[1].split("::");
-				// message[0] : emitter name
-				if(message.size() == 2) {
-					emitTextMessage(message[0] + tr(" said : ") + message[1]);
-				} else {
-					emitTextMessage(tr("Unknown") + tr(" said : ") + list[1]);
-				}
+				askCallerIds();
+			} else if(list[0].toLower() == "loginko") {
+                                stop();
 			} else
-                                parseCommand(list);
+                                b = parseCommand(list);
 		}
 	}
 	if(b)
 		emitTextMessage(tr("Peers' status updated"));
 }
 
-/*! \brief send an originate command to the server
+/*! \brief transfers to the typed number
  */
 void BaseEngine::transferToNumber(const QString & chan)
 {
@@ -716,15 +734,10 @@ void BaseEngine::originateCall(const QString & src, const QString & dst)
 void BaseEngine::dialFullChannel(const QString & dst)
 {
 	qDebug() << "BaseEngine::dialFullChannel()" << dst;
-        if(m_is_a_switchboard) {
-                m_pendingcommand = "originate p/" +
-                        m_asterisk + "/" + m_dialcontext + "/" + m_protocol + "/" +
-                        m_userid + "/" + m_extension +
-                        " " + dst;
-                sendTCPCommand();
-        } else
-                sendUDPCommand("DIAL " + m_asterisk + "/" + m_protocol.toLower() + "/" +
-                               m_userid + "/" + m_dialcontext + " " + dst);
+        sendCommand("originate p/" +
+                    m_asterisk + "/" + m_dialcontext + "/" + m_protocol + "/" +
+                    m_userid + "/" + m_extension +
+                    " " + dst);
 }
 
 /*! \brief dial (originate with known src)
@@ -732,15 +745,10 @@ void BaseEngine::dialFullChannel(const QString & dst)
 void BaseEngine::dialExtension(const QString & dst)
 {
 	qDebug() << "BaseEngine::dialExtension()" << dst;
-        if(m_is_a_switchboard) {
-                m_pendingcommand = "originate p/" +
-                        m_asterisk + "/" + m_dialcontext + "/" + m_protocol + "/" + 
-                        m_userid + "/" + m_extension +
-                        " p/" + m_asterisk + "/" + m_dialcontext + "/" + "/" + "/" + dst;
-                sendTCPCommand();
-        } else
-                sendUDPCommand("DIAL " + m_asterisk + "/" + m_protocol.toLower() + "/" +
-                               m_userid + "/" + m_dialcontext + " " + dst);
+        sendCommand("originate p/" +
+                    m_asterisk + "/" + m_dialcontext + "/" + m_protocol + "/" + 
+                    m_userid + "/" + m_extension +
+                    " " + "p/" + m_asterisk + "/" + m_dialcontext + "/" + "/" + "/" + dst);
 }
 
 /*! \brief send a transfer call command to the server
@@ -963,39 +971,17 @@ void BaseEngine::readKeepLoginAliveDatagrams()
 		QStringList list = line.trimmed().split("=");
 
 		QString reply = qsl[0];
-		//qDebug() << reply;
+
 		if(reply == "DISC") {
-			// stopKeepAliveTimer();
 			setState(ENotLogged);
-                        // startTryAgainTimer();
 			qDebug() << qsl; //reply;
 		} else if(reply == "ERROR") {
+			qDebug() << "BaseEngine::readKeepLoginAliveDatagrams()" << qsl;
                         stopKeepAliveTimer();
                         stop();
                         m_pendingkeepalivemsg = 0;
                         startTryAgainTimer();
-		} else if(reply == "FEATURES") {
-			if((qsl.size() == 4) && (qsl[1] == "UPDATE"))
-				initFeatureFields(qsl[2], qsl[3]);
-			else if(qsl[1] != "PUT") { // do nothing when receiving 'ACK's from XD
-				QStringList listb = qsl[1].split(";");
-                                disconnectFeatures();
-                                resetFeatures();
-				if(listb.size() > 1)
-					for(int i=0; i<listb.size()-1; i+=2)
-						initFeatureFields(listb[i], listb[i+1]);
-                                connectFeatures();
-			}
-			qDebug() << qsl; //reply;
-		} else if(reply == "OK") {
-                        qDebug() << qsl;
-		} else if(list[0].toLower() == "hints") {
-			QStringList listpeers = list[1].split(";");
-			for(int i = 0 ; i < listpeers.size() - 1; i++) {
-				QStringList liststatus = listpeers[i].split(":");
-				updatePeers(liststatus);
-			}
-		} else
+		} else if(reply != "OK")
                         parseCommand(list);
 		m_pendingkeepalivemsg = 0;
 	}
@@ -1114,40 +1100,40 @@ bool BaseEngine::isRemovable(const QMetaObject * metaobject)
 
 void BaseEngine::setVoiceMail(bool b)
 {
-        sendUDPCommand("FEATURES PUT " + m_ctx + " " + m_phn + " VM " + QString(b ? "1" : "0"));
+        sendCommand("featuresput " + m_ctx + " " + m_phn + " VM " + QString(b ? "1" : "0"));
 }
 
 void BaseEngine::setCallRecording(bool b)
 {
-	sendUDPCommand("FEATURES PUT " + m_ctx + " " + m_phn + " Record " + QString(b ? "1" : "0"));
+	sendCommand("featuresput " + m_ctx + " " + m_phn + " Record " + QString(b ? "1" : "0"));
 }
 
 void BaseEngine::setCallFiltering(bool b)
 {
-	sendUDPCommand("FEATURES PUT " + m_ctx + " " + m_phn + " Screen " + QString(b ? "1" : "0"));
+	sendCommand("featuresput " + m_ctx + " " + m_phn + " Screen " + QString(b ? "1" : "0"));
 }
 
 void BaseEngine::setDnd(bool b)
 {
-	sendUDPCommand("FEATURES PUT " + m_ctx + " " + m_phn + " DND " + QString(b ? "1" : "0"));
+	sendCommand("featuresput " + m_ctx + " " + m_phn + " DND " + QString(b ? "1" : "0"));
 }
 
 void BaseEngine::setForwardOnUnavailable(bool b, const QString & dst)
 {
-	sendUDPCommand("FEATURES PUT " + m_ctx + " " + m_phn + " FWD/RNA/Status " + QString(b ? "1" : "0"));
-	sendUDPCommand("FEATURES PUT " + m_ctx + " " + m_phn + " FWD/RNA/Number " + dst);
+	sendCommand("featuresput " + m_ctx + " " + m_phn + " FWD/RNA/Status " + QString(b ? "1" : "0"));
+	sendCommand("featuresput " + m_ctx + " " + m_phn + " FWD/RNA/Number " + dst);
 }
 
 void BaseEngine::setForwardOnBusy(bool b, const QString & dst)
 {
-	sendUDPCommand("FEATURES PUT " + m_ctx + " " + m_phn + " FWD/Busy/Status " + QString(b ? "1" : "0"));
-	sendUDPCommand("FEATURES PUT " + m_ctx + " " + m_phn + " FWD/Busy/Number " + dst);
+	sendCommand("featuresput " + m_ctx + " " + m_phn + " FWD/Busy/Status " + QString(b ? "1" : "0"));
+	sendCommand("featuresput " + m_ctx + " " + m_phn + " FWD/Busy/Number " + dst);
 }
 
 void BaseEngine::setUncondForward(bool b, const QString & dst)
 {
-	sendUDPCommand("FEATURES PUT " + m_ctx + " " + m_phn + " FWD/Unc/Status " + QString(b ? "1" : "0"));
-	sendUDPCommand("FEATURES PUT " + m_ctx + " " + m_phn + " FWD/Unc/Number " + dst);
+	sendCommand("featuresput " + m_ctx + " " + m_phn + " FWD/Unc/Status " + QString(b ? "1" : "0"));
+	sendCommand("featuresput " + m_ctx + " " + m_phn + " FWD/Unc/Number " + dst);
 }
 
 void BaseEngine::askFeatures(const QString & peer)
@@ -1160,7 +1146,7 @@ void BaseEngine::askFeatures(const QString & peer)
                 m_ctx = peerp[2];
                 m_phn = peerp[5];
         }
-        sendUDPCommand("FEATURES GET " + m_ctx + " " + m_phn);
+        sendCommand("featuresget " + m_ctx + " " + m_phn);
 }
 
 void BaseEngine::askPeers()
@@ -1170,7 +1156,7 @@ void BaseEngine::askPeers()
 
 void BaseEngine::askCallerIds()
 {
-	sendUDPCommand("callerids");
+	sendCommand("callerids");
 }
 
 void BaseEngine::setAutoconnect(bool b)
@@ -1326,6 +1312,7 @@ void BaseEngine::processLoginDialog()
 	{
 		readLine.remove(QChar('\r')).remove(QChar('\n'));
 		QStringList sessionResp = readLine.split(" ");
+		qDebug() << sessionResp;
 		if(sessionResp.size() > 2)
 			m_sessionid = sessionResp[2];
 		if(sessionResp.size() > 3)
@@ -1347,6 +1334,8 @@ void BaseEngine::processLoginDialog()
 		setState(ELogged);
 		// start the keepalive timer
 		m_ka_timerid = startTimer(m_keepaliveinterval);
+                if(! m_is_a_switchboard)
+                        askCallerIds();
 		return;
 	}
 	else
@@ -1449,15 +1438,5 @@ void BaseEngine::keepLoginAlive()
  */ 
 void BaseEngine::sendMessage(const QString & txt)
 {
-	if(m_pendingkeepalivemsg > 1) {
-		qDebug() << "m_pendingkeepalivemsg" << m_pendingkeepalivemsg << "=> 0";
-		stopKeepAliveTimer();
-		setState(ENotLogged);
-		m_pendingkeepalivemsg = 0;
-		startTryAgainTimer();
-		return;
-	}
-	sendUDPCommand("MESSAGE " + txt);
-	m_pendingkeepalivemsg++;
+	sendCommand("message " + txt);
 }
-
