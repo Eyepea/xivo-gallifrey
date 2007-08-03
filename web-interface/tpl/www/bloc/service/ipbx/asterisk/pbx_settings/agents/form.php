@@ -16,7 +16,7 @@
 	$qmember_unslt = $this->vars('qmember_unslt');
 ?>
 
-<div id="sb-part-general">
+<div id="sb-part-first">
 
 <?=$form->text(array('desc' => $this->bbf('fm_agentgroup_name'),'name' => 'agroup[name]','labelid' => 'agroup-name','size' => 25,'default' => $element['agroup']['name']['default'],'value' => $info['agroup']['name']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
@@ -26,7 +26,7 @@
 
 <div id="agentlist" class="fm-field fm-multilist"><p><label id="lb-agentlist" for="it-agentlist"><?=$this->bbf('fm_agents');?></label></p>
 	<div class="slt-outlist">
-		<?=$form->slt(array('name' => 'agentlist','label' => false,'id' => 'it-agentlist','browse' => 'sort','key' => 'fullname-number','key_val' => 'id','multiple' => true,'size' => 5,'field' => false),$agent_unslt,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+		<?=$form->slt(array('name' => 'agentlist','label' => false,'id' => 'it-agentlist','browse' => 'sort','key' => 'fullname-number','overkey' => 'id','multiple' => true,'size' => 5,'field' => false),$agent_unslt,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 	</div>
 	<div class="inout-list">
 
@@ -36,7 +36,7 @@
 	</div>
 	<div class="slt-inlist">
 
-		<?=$form->slt(array('name' => 'agent-select[]','label' => false,'id' => 'it-agent','browse' => 'sort','key' => 'fullname-number','key_val' => 'id','multiple' => true,'size' => 5,'field' => false),$agent_slt,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+		<?=$form->slt(array('name' => 'agent-select[]','label' => false,'id' => 'it-agent','browse' => 'sort','key' => 'fullname-number','overkey' => 'id','multiple' => true,'size' => 5,'field' => false),$agent_slt,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 		<div class="bt-updown">
 
@@ -54,7 +54,7 @@
 ?>
 </div>
 
-<div id="sb-part-queue" class="b-nodisplay">
+<div id="sb-part-last" class="b-nodisplay">
 
 <?php
 	if($queues !== false && ($nb = count($queues)) !== 0):
@@ -74,7 +74,7 @@
 		</div>
 		<div class="slt-inlist">
 
-		<?=$form->slt(array('name' => 'queue-select[]','label' => false,'id' => 'it-queue','multiple' => true,'size' => 5,'field' => false,'key' => 'queue_name','key_val' => 'queue_name'),$qmember_slt,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+		<?=$form->slt(array('name' => 'queue-select[]','label' => false,'id' => 'it-queue','multiple' => true,'size' => 5,'field' => false,'key' => 'queue_name','overkey' => 'queue_name'),$qmember_slt,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 		</div>
 	</div>

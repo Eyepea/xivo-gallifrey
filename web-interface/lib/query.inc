@@ -283,7 +283,7 @@ class xivo_query
 		$len = strlen($str);
 
 		if($match[0][1] > 0)
-			$r = mb_strcut($str,0,$match[0][1]);
+			$r = substr($str,0,$match[0][1]);
 		
 		for($i = 0;$i < $nb;$i++)
 		{
@@ -293,12 +293,12 @@ class xivo_query
 			if(isset($match[$i+1]) === true)
 			{
 				$pos = $match[$i][1] + $mlen;
-				$r .= mb_strcut($str,$pos,$match[$i+1][1] - $pos);
+				$r .= substr($str,$pos,$match[$i+1][1] - $pos);
 				continue;
 			}
 
 			if(($match[$i][1] + $mlen) < $len)
-				$r .= mb_strcut($str,$match[$i][1] + $mlen);
+				$r .= substr($str,$match[$i][1] + $mlen);
 		}
 
 		$r = str_replace(' ','+',$r);
@@ -306,13 +306,14 @@ class xivo_query
 		return($r);
 	}
 
-	function mk_query_str($a,$pre='',$key='',$sep='')
+	function mk_query_str($a,$pre='',$key='',$sep='',$empty=true)
 	{
 		$r = '';
 		$a = (array) $a;
 		$pre = (string) $pre;
 		$key = (string) $key;
 		$sep = (string) $sep;
+		$empty = (bool) $empty;
 
 		if($sep === '')
 		{
@@ -339,8 +340,8 @@ class xivo_query
 
 			if(is_array($v) === true || is_object($v) === true)
 				$r[] = xivo_query::mk_query_str($v,null,null,$sep);
-			else
-				$r[] = xivo_query::encode_query($tmp,'key').'='.xivo_query::encode_query($v,'val');
+			else if(($val = xivo_query::encode_query($v,'val')) !== '')
+				$r[] = xivo_query::encode_query($tmp,'key').'='.$val;
 		}
 
 		return(implode($sep,$r));
@@ -372,11 +373,6 @@ class xivo_query
 
 		return(($ref = &$value));
 	}
-}
-
-function xivo_mk_query($a,$pre='',$key='',$sep='')
-{
-	return(xivo_query::mk_query_str($a,$pre,$key,$sep));
 }
 
 ?>

@@ -382,17 +382,22 @@ class xivo_tpl
 		include($this->get_option('tpl_path').XIVO_SEP_DIR.$this->get_file('structure'));
 	}
 
-	function display($page,$overload_i18n=false,$ext='')
+	function display($page,$overload_i18n=false,$sep_dir=false,$ext='')
 	{
-		$page = ltrim((string) $page,XIVO_SEP_DIR);
+		$sep_dir = (bool) $sep_dir;
+		$page = $sep_dir === false ? ltrim((string) $page,XIVO_SEP_DIR) : (string) $page;
 		$overload_i18n = (bool) $overload_i18n;
 		$ext = (string) $ext;
 
 		if($ext === '')
 			$ext = 'php';
 
-		$page = 'struct'.XIVO_SEP_DIR.'page'.XIVO_SEP_DIR.$page.'.'.$ext;
-		$path = $this->get_option('tpl_path').XIVO_SEP_DIR.$page;
+		if($sep_dir === false)
+			$page = XIVO_SEP_DIR.'struct'.XIVO_SEP_DIR.'page'.XIVO_SEP_DIR.$page.'.'.$ext;
+		else
+			$page .= '.'.$ext;
+
+		$path = $this->get_option('tpl_path').$page;
 
 		if($overload_i18n === true)
 			$this->set_option('overload_i18n',true);

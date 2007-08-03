@@ -11,6 +11,10 @@ xivo_smenu['before'] = new Array();
 xivo_smenu['before']['id'] = '';
 xivo_smenu['before']['class'] = '';
 xivo_smenu['display'] = '';
+xivo_smenu['tab'] = 'smenu-tab-1';
+xivo_smenu['class'] = 'moc';
+xivo_smenu['part'] = 'sb-part-first';
+xivo_smenu['last'] = false;
 
 var xivo_dprog = new Array();
 xivo_dprog['current'] = new Array();

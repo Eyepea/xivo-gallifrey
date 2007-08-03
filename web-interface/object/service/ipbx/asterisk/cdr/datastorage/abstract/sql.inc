@@ -2,6 +2,7 @@
 
 class xivo_service_asterisk_cdr_abstract_sql
 {
+	var $_cnt	= 0;
 	var $_param	= array('table' => 'cdr');
 	var $_dso	= null;
 
@@ -18,12 +19,43 @@ class xivo_service_asterisk_cdr_abstract_sql
 			$this->_param['table'] = (string) $param['table'];
 	}
 
-	function search($arr)
+	function get_cnt()
+	{
+		if(isset($this->_cnt) === false)
+			$this->_cnt = 0;
+
+		return(xivo_uint($this->_cnt));
+	}
+
+	function search($arr,$order=null,$limit=null)
+	{
+		if(($where = $this->_search_where($arr)) === false)
+			return(false);
+
+		$this->_dso->order($order);
+		$this->_dso->limit($limit);
+
+		$select = '*, '.$this->_dso->unix_timestamp('calldate').' AS callunixtime';
+
+		$r = $this->_dso->select_all($this->_param['table'],$select,$where);
+
+		$this->_dso->order();
+		$this->_dso->limit();
+
+		if(empty($r) === true)
+			$r = false;
+		else
+			$this->_cnt = $this->_dso->select_count($this->_param['table'],null,$where);
+
+		return($r);
+	}
+
+	function _search_where($arr)
 	{
 		if(is_array($arr) === false)
 			return(false);
 
-		$where = '';
+		$where = array();
 
 		if(isset($arr['dbeg']) === true)
 		{
@@ -42,33 +74,61 @@ class xivo_service_asterisk_cdr_abstract_sql
 			else
 				$dend = '';
 
-			$where .= ' AND '.$this->_dso->cond_date('calldate',$dbeg,$dend,$format);
+			if(($rs = $this->_dso->cond_date('calldate',$dbeg,$dend,$format)) !== false)
+				$where[] = $rs;
 		}
 
 		if(isset($arr['channel']) === true)
-			$where .= ' AND '.$this->_dso->search_exact('channel',$arr['channel']);
+		{
+			if(is_array($arr['channel']) === true)
+				$rs = $this->_dso->search_not_begin('channel',$arr['channel']);
+			else
+				$rs = $this->_dso->search_begin('channel',$arr['channel']);
 
-		if(isset($arr['disposition']) === true)
-			$where .= ' AND '.$this->_dso->search_exact('disposition',$arr['disposition']);
+			if($rs !== false)
+				$where[] = $rs;
+		}
 
-		if(xivo_issa('src',$arr) === true)
-			$where .= ' AND '.$this->_dso->search('src',$arr['src']['pattern'],$arr['src']['type']);
+		if(isset($arr['disposition']) === true
+		&& ($rs = $this->_dso->search_exact('disposition',$arr['disposition'])) !== false)
+			$where[] = $rs;
 
-		if(xivo_issa('clid',$arr) === true)
-			$where .= ' AND '.$this->_dso->search('src',$arr['clid']['pattern'],$arr['clid']['type']);
+		if(isset($arr['amaflags']) === true
+		&& ($rs = $this->_dso->search_exact('amaflags',$arr['amaflags'])) !== false)
+			$where[] = $rs;
 
-		if(xivo_issa('accountcode',$arr) === true)
-			$where .= ' AND '.$this->_dso->search('accountcode',$arr['accountcode']['pattern'],$arr['accountcode']['type']);
+		if(xivo_issa('src',$arr) === true
+		&& ($rs = $this->_dso->search('src',$arr['src']['pattern'],$arr['src']['type'])) !== false)
+			$where[] = $rs;
 
-		if(xivo_issa('userfield',$arr) === true)
-			$where .= ' AND '.$this->_dso->search('userfield',$arr['userfield']['pattern'],$arr['userfield']['type']);
+		if(xivo_issa('dst',$arr) === true
+		&& ($rs = $this->_dso->search('dst',$arr['dst']['pattern'],$arr['dst']['type'])) !== false)
+			$where[] = $rs;
 
-		if($where === '')
-			return(false);
+		if(xivo_issa('clid',$arr) === true
+		&& ($rs = $this->_dso->search('clid',$arr['clid']['pattern'],$arr['clid']['type'])) !== false)
+			$where[] = $rs;
 
-		$r = $this->_dso->select_all($this->_param['table'],null,'1 '.$where,'LIMIT 10');
+		if(xivo_issa('accountcode',$arr) === true
+		&& ($rs = $this->_dso->search('accountcode',$arr['accountcode']['pattern'],$arr['accountcode']['type'])) !== false)
+			$where[] = $rs;
 
-		if(empty($r) === true)
+		if(xivo_issa('userfield',$arr) === true
+		&& ($rs = $this->_dso->search('userfield',$arr['userfield']['pattern'],$arr['userfield']['type'])) !== false)
+			$where[] = $rs;
+
+		if(isset($arr['dubeg']) === true)
+		{
+			if(isset($arr['duend']) === true)
+				$rs = $this->_dso->between('duration',$arr['dubeg'],$arr['duend']);
+			else
+				$rs = $this->_dso->search_exact('duration',$arr['dubeg']);
+
+			if($rs !== false)
+				$where[] = $rs;
+		}
+
+		if(($r = implode(' AND ',$where)) === '')
 			$r = false;
 
 		return($r);

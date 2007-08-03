@@ -254,7 +254,7 @@ class xivo_socket
 		if(($this->_error = $this->error()) === false)
 			$this->_error = 'unknown';
 
-		trigger_error($str.'Error: '.$this->_error.' - Errno: '.$this->_errno,E_USER_ERROR);
+		trigger_error($str.'Error: '.$this->_error.' - Errno: '.$this->_errno,E_USER_WARNING);
 	}
 
 	function connect()
@@ -281,16 +281,19 @@ class xivo_socket
 
 	function read_binary($length=4096)
 	{
-		$r = false;
-
 		$length = xivo_uint($length);
 
-		if($length !== 0 && is_resource($this->_link) === true)
-		{
-			$r = '';
+		if($length === 0 || is_resource($this->_link) === false)
+			return(false);
+		
+		$r = '';
 
-			while(($read = socket_read($this->_link,$length,PHP_BINARY_READ)) !== '')
-				$r .= $read;
+		while(($read = socket_read($this->_link,$length,PHP_BINARY_READ)))
+		{
+			if($read === '' || $read === false)
+				break;
+
+			$r .= $read;
 		}
 
 		return($r);
@@ -298,16 +301,19 @@ class xivo_socket
 
 	function read_normal($length=4096)
 	{
-		$r = false;
-
 		$length = xivo_uint($length);
 
-		if($length !== 0 && is_resource($this->_link) === true)
-		{
-			$r = '';
+		if($length === 0 || is_resource($this->_link) === false)
+			return(false);
 
-			while(($read = socket_read($this->_link,$length,PHP_BINARY_READ)) !== '')
-				$r .= $read;
+		$r = '';
+
+		while(($read = socket_read($this->_link,$length,PHP_NORMAL_READ)))
+		{
+			if($read === '' || $read === false)
+				break;
+
+			$r .= $read;
 		}
 
 		return($r);
@@ -390,20 +396,20 @@ class xivo_socket
 
 	function set_option($level,$option,$value=array())
 	{
+		$r = false;
+
 		if(is_resource($this->_link) === true && ($option = $this->_chk_option('set',$option)) !== false)
 			$r = socket_set_option($this->_link,$this->_chk_level($level),$option,$value);
-		else
-			$r = false;
 
 		return($r);
 	}
 
 	function get_option($level,$option)
 	{
+		$r = false;
+
 		if(is_resource($this->_link) === true && ($option = $this->_chk_option('get',$option)) !== false)
 			$r = socket_get_option($this->_link,$this->_chk_level($level),$option);
-		else
-			$r = false;
 
 		return($r);
 	}

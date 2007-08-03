@@ -8,7 +8,7 @@
 
 	$page = $url->pager($pager['pages'],$pager['page'],$pager['prev'],$pager['next'],'service/ipbx/pbx_settings/agents',array('act' => $act));
 ?>
-<div class="b-list">
+<div id="sr-agentgroup" class="b-list">
 <?php
 	if($page !== ''):
 		echo '<div class="b-page">',$page,'</div>';

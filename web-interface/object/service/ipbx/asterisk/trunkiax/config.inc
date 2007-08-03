@@ -90,15 +90,15 @@ $array['filter']['name'] = array('maxlen' => 80);
 $array['filter']['username'] = array('set' => false,'chk' => 2,'maxlen' => 80);
 $array['filter']['secret'] = array('set' => false,'chk' => 2,'maxlen' => 80);
 $array['filter']['callerid'] = array('set' => false,'chk' => 2,'maxlen' => 80);
-$array['filter']['context'] = array('set' => false,'chk' => 2,'unarrkey' => array('general','globals','hints','features','zonemessages'),'preg' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 80);
+$array['filter']['context'] = array('set' => false,'chk' => 2,'nokey' => array('general','globals','hints','features','zonemessages'),'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 80);
 $array['filter']['call-limit'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,30));
 $array['filter']['host'] = array('set' => false,'chk' => 2);
-$array['filter']['type'] = array('set' => false,'chk' => 2,'arrkey' => array('peer','user','friend'));
+$array['filter']['type'] = array('set' => false,'chk' => 2,'key' => array('peer','user','friend'));
 $array['filter']['notransfer'] = array('bool' => true);
 $array['filter']['trunk'] = array('bool' => true);
 $array['filter']['qualify'] = array('bool' => true);
-$array['filter']['disallow'] = array('set' => false,'chk' => 2,'arrkey' => array('all'));
-$array['filter']['allow'] = array('set' => false,'chk' => 2,'arrvalue' => array(
+$array['filter']['disallow'] = array('set' => false,'chk' => 2,'key' => array('all'));
+$array['filter']['allow'] = array('set' => false,'chk' => 2,'value' => array(
 						XIVO_SRE_IPBX_AST_CODEC_AUDIO_G723,
 						XIVO_SRE_IPBX_AST_CODEC_AUDIO_GSM,
 						XIVO_SRE_IPBX_AST_CODEC_AUDIO_ULAW,
@@ -117,7 +117,7 @@ $array['filter']['allow'] = array('set' => false,'chk' => 2,'arrvalue' => array(
 						XIVO_SRE_IPBX_AST_CODEC_VIDEO_H263P));
 $array['filter']['port'] = array('set' => false,'cast' => 'uint','between' => array(1,65535));
 $array['filter']['ipaddr'] = array('set' => false,'chk' => 2);
-$array['filter']['host-dynamic'] = array('set' => false,'arrkey' => array('dynamic','static'));
+$array['filter']['host-dynamic'] = array('set' => false,'key' => array('dynamic','static'));
 $array['filter']['host-static'] = array('set' => false,'func' => 'xivo_filter::chk_host_ipv4_strict');
 
 ?>

@@ -22,8 +22,8 @@ $array['element']['deleted']['set'] = true;
 
 $array['filter'] = array();
 $array['filter']['groupid'] = array('cast' => 'uint');
-$array['filter']['name'] = array('preg' => '/^[a-z0-9_\.-]+$/i','minlen' => 1,'maxlen' => 128);
-$array['filter']['groups'] = array('set' => false,'chk' => 2,'preg' => '/^([0-9]{1,2}[,]?)*$/','maxlen' => 255);
+$array['filter']['name'] = array('regexp' => '/^[a-z0-9_\.-]+$/i','minlen' => 1,'maxlen' => 128);
+$array['filter']['groups'] = array('set' => false,'chk' => 2,'regexp' => '/^([0-9]{1,2}[,]?)*$/','maxlen' => 255);
 $array['filter']['deleted'] = array('bool' => true);
 
 ?>

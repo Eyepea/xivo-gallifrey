@@ -56,7 +56,7 @@ class xivo_session_abstract_sql
 
 		$rs = $this->_dso->query('SELECT user_id, data, expire FROM '.$this->_param['table'].
 					 ' WHERE sesskey = \''.$this->_dso->escape_string($key).'\''.
-					 ' AND expire >= '.gmmktime());
+					 ' AND expire >= '.gmmktime(),true);
 
 		if($rs !== false)
 		{
@@ -103,39 +103,36 @@ class xivo_session_abstract_sql
 		{
 			$where = 'sesskey = \''.$this->_dso->escape_string($key).'\'';
 
-			if(($r = $this->_dso->select_one($this->_param['table'],'COUNT(*) AS cnt',$where)) !== false)
+			if(($r = $this->_dso->select_count($this->_param['table'],null,$where)) !== false)
 			{
-				if($r['cnt'] > 0)
+				if($r > 0)
 				{
-					$arr = array(
-						'user_id'	=> $this->_attrib['user_id'],
-						'expire'	=> $expire,
-						'data'		=> $val);
+					$arr = array();
+					$arr['user_id'] = $this->_attrib['user_id'];
+					$arr['expire'] = $expire;
+					$arr['data'] = $val;
 
 					$rs = $this->_dso->update($this->_param['table'],$arr,$where);
 
-					if($rs !== false)
-					{
-						if($this->_dso->affected_rows() === 0)
-							$this->_insert = true;
-					}
+					if($rs !== false && $this->_dso->affected_rows() === 0)
+						$this->_insert = true;
 				}
 				else
 					$this->_insert = true;
 			}
 		}
 
-		if($this->_insert === true)
-		{
-			$arr = array(
-				'user_id'	=> $this->_attrib['user_id'],
-				'sesskey'	=> $key,
-				'start'		=> $now,
-				'expire'	=> $expire,
-				'data'		=> $val);
+		if($this->_insert !== true)
+			return(true);
 
-			$this->_dso->replace($this->_param['table'],$arr);
-		}
+		$arr = array();
+		$arr['user_id'] = $this->_attrib['user_id'];
+		$arr['sesskey'] = $key;
+		$arr['start'] = $now;
+		$arr['expire'] = $expire;
+		$arr['data'] = $val;
+
+		$this->_dso->replace($this->_param['table'],$arr);
 
 		return(true);
 	}

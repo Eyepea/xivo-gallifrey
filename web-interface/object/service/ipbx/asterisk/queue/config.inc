@@ -170,35 +170,35 @@ $array['element']['periodic-announce']['default'] = '';
 $array['element']['periodic-announce']['null'] = true;
 
 $array['filter'] = array();
-$array['filter']['name'] = array('preg' => '/^[a-z0-9_\.-]+$/i','minlen' => 1,'maxlen' => 128);
-$array['filter']['timeout'] = array('set' => false,'chk' => 2,'arrkey' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
+$array['filter']['name'] = array('regexp' => '/^[a-z0-9_\.-]+$/i','minlen' => 1,'maxlen' => 128);
+$array['filter']['timeout'] = array('set' => false,'chk' => 2,'key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
 $array['filter']['musiconhold'] = array('set' => false,'chk' => 2,'maxlen' => 20);
 $array['filter']['announce'] = array('set' => false,'chk' => 2,'maxlen' => 128);
-$array['filter']['strategy'] = array('set' => false,'chk' => 2,'arrkey' => array('ringall','roundrobin','leastrecent','fewestcalls','random','rrmemory'));
+$array['filter']['strategy'] = array('set' => false,'chk' => 2,'key' => array('ringall','roundrobin','leastrecent','fewestcalls','random','rrmemory'));
 $array['filter']['servicelevel'] = array('set' => false,'chk' => 2,'cast' => 'int');
-$array['filter']['context'] = array('set' => false,'chk' => 2,'unarrkey' => array('general','globals','initconfig','hints','features'),'preg' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 80);
-$array['filter']['retry'] = array('set' => false,'chk' => 2,'arrkey' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
+$array['filter']['context'] = array('set' => false,'chk' => 2,'nokey' => array('general','globals','initconfig','hints','features'),'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 80);
+$array['filter']['retry'] = array('set' => false,'chk' => 2,'key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
 $array['filter']['weight'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,10));
-$array['filter']['wrapuptime'] = array('set' => false,'chk' => 2,'arrkey' => array(0,5000,10000,15000,20000,
+$array['filter']['wrapuptime'] = array('set' => false,'chk' => 2,'key' => array(0,5000,10000,15000,20000,
 										   25000,30000,35000,40000,
 										   45000,50000,55000,60000));
 $array['filter']['maxlen'] = array('set' => false,'chk' => 2,'cast' => 'uint');
-$array['filter']['announce-frequency'] = array('set' => false,'chk' => 2,'arrkey' => array(0,15,30,45,60,75,90,105,120,135,
+$array['filter']['announce-frequency'] = array('set' => false,'chk' => 2,'key' => array(0,15,30,45,60,75,90,105,120,135,
 											   150,165,180,210,225,240,255,270,
 											   285,300));
-$array['filter']['periodic-announce-frequency'] = array('set' => false,'chk' => 2,'arrkey' => array(0,15,30,45,60,75,90,105,120,135,
+$array['filter']['periodic-announce-frequency'] = array('set' => false,'chk' => 2,'key' => array(0,15,30,45,60,75,90,105,120,135,
 											   150,165,180,210,225,240,255,270,
 											   285,300));
-$array['filter']['announce-holdtime'] = array('set' => false,'chk' => 2,'arrkey' => array('no','yes','once'));
-$array['filter']['announce-round-seconds'] = array('set' => false,'chk' => 2,'arrkey' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
-$array['filter']['monitor-format'] = array('set' => false,'chk' => 2,'arrkey' => array('gsm','wav','wav49'));
+$array['filter']['announce-holdtime'] = array('set' => false,'chk' => 2,'key' => array('no','yes','once'));
+$array['filter']['announce-round-seconds'] = array('set' => false,'chk' => 2,'key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
+$array['filter']['monitor-format'] = array('set' => false,'chk' => 2,'key' => array('gsm','wav','wav49'));
 $array['filter']['monitor-join'] = array('bool' => true);
-$array['filter']['joinempty'] = array('set' => false,'chk' => 2,'arrkey' => array('no','yes','strict'));
-$array['filter']['leavewhenempty'] = array('set' => false,'chk' => 2,'arrkey' => array('no','yes','strict'));
+$array['filter']['joinempty'] = array('set' => false,'chk' => 2,'key' => array('no','yes','strict'));
+$array['filter']['leavewhenempty'] = array('set' => false,'chk' => 2,'key' => array('no','yes','strict'));
 $array['filter']['eventwhencalled'] = array('bool' => true);
 $array['filter']['eventmemberstatus'] = array('bool' => true);
 $array['filter']['reportholdtime'] = array('bool' => true);
-$array['filter']['memberdelay'] = array('set' => false,'chk' => 2,'arrkey' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
+$array['filter']['memberdelay'] = array('set' => false,'chk' => 2,'key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
 $array['filter']['timeoutrestart'] = array('bool' => true);
 $array['filter']['queue-youarenext'] = array('set' => false,'chk' => 2,'maxlen' => 128);
 $array['filter']['queue-thereare'] = array('set' => false,'chk' => 2,'maxlen' => 128);
@@ -210,6 +210,6 @@ $array['filter']['queue-thankyou'] = array('set' => false,'chk' => 2,'maxlen' =>
 $array['filter']['queue-lessthan'] = array('set' => false,'chk' => 2,'maxlen' => 128);
 $array['filter']['queue-reporthold'] = array('set' => false,'chk' => 2,'maxlen' => 128);
 $array['filter']['periodic-announce'] = array('set' => false,'chk' => 2,'maxlen' => 128);
-$array['filter']['category'] = array('arrkey' => array('queue','group'));
+$array['filter']['category'] = array('key' => array('queue','group'));
 
 ?>

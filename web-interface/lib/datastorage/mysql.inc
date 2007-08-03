@@ -136,7 +136,7 @@ class xivo_datastorage_mysql extends xivo_datastorage_abstract_sql
 		return($r);
 	}
 
-	function query($q,$o=false)
+	function query($q,$b=false,$o=false)
 	{
 		$this->_query = (string) $q;
 		$o = (bool) $o;
@@ -177,6 +177,11 @@ class xivo_datastorage_mysql extends xivo_datastorage_abstract_sql
 			$r = mysql_error($this->_link);
 
 		return($r);
+	}
+
+	function update($t,&$data,$w='',$escape=true,$o='')
+	{
+		return($this->_insertupdate('update',$t,$data,$w,$escape,true,$o,true,true));
 	}
 
 	function affected_rows()
@@ -232,7 +237,15 @@ class xivo_datastorage_mysql extends xivo_datastorage_abstract_sql
 		return(mysql_fetch_assoc(($r !== false ? $r : $this->_result)));
 	}
 
-	function _expr_typetime($type='',$col='',$time='localtime',$format='')
+	function unix_timestamp($col='',$time='localtime')
+	{
+		if(($r = $this->_expr_typetime('date',$col,$time,$this->_date['datetime'])) !== false)
+			$r = 'UNIX_TIMESTAMP('.$r.')';
+
+		return($r);
+	}
+
+	function _expr_typetime($type='',$col='',$time='',$format='')
 	{
 		$type = $type !== '' ? strtolower((string) $type) : 'date';
 		$col = $this->quote_identifier($col);
@@ -244,13 +257,13 @@ class xivo_datastorage_mysql extends xivo_datastorage_abstract_sql
 			return(false);
 
 		if($type === 'unix')
-			$func = 'UNIX_TIMESTAMP';
+			$func = 'FROM_UNIXTIME';
 		else
 			$func = 'DATE_FORMAT';
 
 		if($col === '')
 		{
-			$col = ($time === 'utc' ? 'UTC_' : 'LOCAL').'TIMESTAMP()';
+			$col = ($time === 'utc' ? 'UTC' : 'CURRENT').'_TIMESTAMP()';
 
 			if($type === 'unix')
 				$col = 'UNIX_TIMESTAMP('.$col.')';

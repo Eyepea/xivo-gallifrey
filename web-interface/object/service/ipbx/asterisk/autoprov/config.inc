@@ -7,12 +7,14 @@ $array['autoprov'] = array();
 $array['autoprov']['prov']['url'] = '/prov';
 $array['autoprov']['prov']['method'] = 'POST';
 $array['autoprov']['prov']['protocol'] = 'tcp';
-$array['autoprov']['prov']['timeout'] = array('sec' => 60,'usec' => 0);
+$array['autoprov']['prov']['sndtimeo'] = array('sec' => 60,'usec' => 0);
+$array['autoprov']['prov']['rcvtimeo'] = array('sec' => 60,'usec' => 0);
 
 $array['autoprov']['list']['url'] = '/list';
 $array['autoprov']['list']['method'] = 'GET';
 $array['autoprov']['list']['protocol'] = 'tcp';
-$array['autoprov']['list']['timeout'] = array('sec' => 60,'usec' => 0);
+$array['autoprov']['list']['sndtimeo'] = array('sec' => 60,'usec' => 0);
+$array['autoprov']['list']['rcvtimeo'] = array('sec' => 60,'usec' => 0);
 
 $array['element'] = array();
 
@@ -37,11 +39,11 @@ $array['element']['iduserfeatures'] = array();
 $array['element']['iduserfeatures']['default'] = '';
 
 $array['filter'] = array();
-$array['filter']['modact'] = array('set' => false,'arrkey' => array('guest','prov'));
-$array['filter']['macaddr'] = array('minlen' => 11,'maxlen' => 17,'preg' => '/^([A-F0-9]{2}:){5}([A-F0-9]{2})$/');
-$array['filter']['vendor'] = array('maxlen' => 16,'preg' => '/^([0-9a-z\-_]+)$/');
-$array['filter']['model'] = array('maxlen' => 16,'preg' => '/^([0-9a-z\-_]+)$/');
-$array['filter']['proto'] = array('arrkey' => array('sip'));
+$array['filter']['modact'] = array('set' => false,'key' => array('guest','prov'));
+$array['filter']['macaddr'] = array('minlen' => 11,'maxlen' => 17,'regexp' => '/^([A-F0-9]{2}:){5}([A-F0-9]{2})$/');
+$array['filter']['vendor'] = array('maxlen' => 16,'regexp' => '/^([0-9a-z\-_]+)$/');
+$array['filter']['model'] = array('maxlen' => 16,'regexp' => '/^([0-9a-z\-_]+)$/');
+$array['filter']['proto'] = array('key' => array('sip'));
 $array['filter']['iduserfeatures'] = array('cast' => 'uint');
 
 ?>

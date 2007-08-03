@@ -32,10 +32,13 @@ class xivo_service_asterisk_cdr extends xivo_service_asterisk_abstract
 		return($r);
 	}
 
-	function search($arr)
+	function get_cnt()
 	{
-		$r = false;
+		return($this->_dso->get_cnt());
+	}
 
+	function search($arr,$order=null,$limit=null)
+	{
 		if(is_array($arr) === false)
 			return(false);
 
@@ -43,28 +46,39 @@ class xivo_service_asterisk_cdr extends xivo_service_asterisk_abstract
 
 		if(isset($arr['dbeg'],$arr['dbeg']{0}) === true)
 		{
-			if(($dbeg = $this->_chk_date($arr['dbeg'])) === false)
+			$date = array('dbeg' => null,'dend' => null);
+
+			if(isset($arr['dend'],$arr['dend']{0}) === true
+			&& ($date = xivo_filter::chk_between_date($arr['dbeg'],$arr['dend'])) === false)
+				return(false);
+			else if(($date['dbeg'] = xivo_filter::chk_date($arr['dbeg'])) === false)
 				return(false);
 
-			$search['dbeg'] = $dbeg['date'];
+			if($date['dbeg']['dateint'] > strftime($date['dbeg']['format']))
+				return(false);
+			else
+				$search['dbeg'] = $date['dbeg']['date'];
 
-			if(isset($arr['dend'],$arr['dend']{0}) === true)
-			{
-				if(($dend = $this->_chk_date($arr['dend'],$dbeg['dateint'])) === false)
-					return(false);
-
-				$search['dend'] = $dend['date'];
-			}
+			if($date['dend'] !== null && $date['dend']['dateint'] > strftime($date['dend']['format']))
+				return(false);
+			else
+				$search['dend'] = $date['dend']['date'];
 		}
 
 		if(isset($arr['channel'],$arr['channel']{0}) === true)
-			$search['channel'] = $arr['channel'];
+			$search['channel'] = $this->_search_channel($arr['channel']);
 
 		if(isset($arr['disposition'],$arr['disposition']{0}) === true)
 			$search['disposition'] = $arr['disposition'];
 
+		if(isset($arr['amaflags'],$arr['amaflags']{0}) === true)
+			$search['amaflags'] = $arr['amaflags'];
+
 		if(isset($arr['src'],$arr['src']{0},$arr['srcformat']) === true)
 			$search['src'] = array('pattern' => $arr['src'],'type' => $arr['srcformat']);
+
+		if(isset($arr['dst'],$arr['dst']{0},$arr['dstformat']) === true)
+			$search['dst'] = array('pattern' => $arr['dst'],'type' => $arr['dstformat']);
 
 		if(isset($arr['clid'],$arr['clid']{0},$arr['clidformat']) === true)
 			$search['clid'] = array('pattern' => $arr['clid'],'type' => $arr['clidformat']);
@@ -75,53 +89,78 @@ class xivo_service_asterisk_cdr extends xivo_service_asterisk_abstract
 		if(isset($arr['userfield'],$arr['userfield']{0},$arr['userfieldformat']) === true)
 			$search['userfield'] = array('pattern' => $arr['userfield'],'type' => $arr['userfieldformat']);
 
-		$r = $this->_dso->search($search);
+		if(isset($arr['dubeg'],$arr['dubeg']{0},$arr['dubegunit']) === true)
+		{
+			if($arr['dubegunit'] === 'minutes')
+				$dubeg = $arr['dubeg'] * 60;
+			else
+				$dubeg = $arr['dubeg'];
 
-		return($r);
+			if(isset($arr['duend'],$arr['duend']{0},$arr['duendunit']) === true)
+			{
+				if($arr['duendunit'] === 'minutes')
+					$duend = $arr['duend'] * 60;
+				else
+					$duend = $arr['duend'];
+
+				if($dubeg <= $duend)
+					$search['duend'] = $duend;
+			}
+			$search['dubeg'] = $dubeg;
+		}
+
+		if(($result = $this->_dso->search($search,$order,$limit)) === false)
+			return(null);
+
+		$nb = count($result);
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			$ref = &$result[$i];
+
+			if(isset($ref['amaflags']) === false)
+				$ref['amaflags'] = 0;
+
+			$ref['amaflagsmeta'] = $this->amaflags_meta($ref['amaflags']);
+		}
+
+		return($result);
 	}
 
-	function _chk_date($date,$dbeg='')
+	function _search_channel($channel)
 	{
-		$r = array();
+		if($channel !== 'others')
+			return($channel);
 
-		$date = (string) $date;
-		$dbeg = (string) $dbeg;
+		$channel = $this->get_element_value('channel');
+		unset($channel['others']);
+		$channel = array_keys($channel);
 
-		if($dbeg !== '' && ($dbeg = xivo_uint($dbeg)) === 0)
-			return(false);
+		return($channel);
+	}
 
-		if($dbeg === 0)
-			$dbeg = '';
+	function amaflags_meta($int)
+	{
+		$int = xivo_uint($int);
 
-		if(preg_match('/^(2[0-9]{3})(?:-(0?[1-9]|1[0-2])(?:-(0?[1-9]|1[0-9]|2[0-9]|3[0-1]))?)?$/',$date,$match) !== 1)
-			return(false);
+		$amaflags = $this->get_element_value('amaflags');
 
-		$timeformat = '%Y';
-		$r['date'] = $r['dateint'] = $match[1];
+		if(isset($amaflags[$int]) === true)
+			return($amaflags[$int]);
 
-		if(isset($match[2]) === true)
-		{
-			$timeformat .= '%m';
-			$month = sprintf('%02u',$match[2]);
-			$r['date'] .= '-'.$month;
-			$r['dateint'] .= $month;
-		}
+		return(XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_META_DEFAULT);
+	}
 
-		if(isset($match[3]) === true)
-		{
-			$timeformat .= '%d';
-			$day = sprintf('%02u',$match[3]);
-			$r['date'] .= '-'.$day;
-			$r['dateint'] .= $day;
-		}
+	function channel_meta($str)
+	{
+		$str = (string) $str;
 
-		if($r['dateint'] > strftime($timeformat))
-			return(false);
+		$channels = $this->get_element_value('channel');
 
-		if($dbeg !== '' && (strlen($r['dateint']) !== strlen($dbeg) || $r['dateint'] > $dbeg) === true)
-			return(false);
+		if(isset($channels[$str]) === true)
+			return($channels[$str]);
 
-		return($r);
+		return(false);
 	}
 }
 

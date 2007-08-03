@@ -14,8 +14,8 @@ $array['element']['admin-pin'] = array();
 $array['element']['admin-pin']['default'] = '';
 
 $array['filter'] = array();
-$array['filter']['number'] = array('preg' => '/^[0-9\*#]+$/','minlen' => 1,'maxlen' => 40);
-$array['filter']['pin'] = array('set' => false,'chk' => 2,'preg' => '/^[0-9\*#]+$/','maxlen' => 40);
-$array['filter']['admin-pin'] = array('set' => false,'chk' => 2,'preg' => '/^[0-9\*#]+$/','maxlen' => 40);
+$array['filter']['number'] = array('regexp' => '/^[0-9\*#]+$/','minlen' => 1,'maxlen' => 40);
+$array['filter']['pin'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9\*#]+$/','maxlen' => 40);
+$array['filter']['admin-pin'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9\*#]+$/','maxlen' => 40);
 
 ?>

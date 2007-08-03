@@ -31,7 +31,7 @@ class xivo_tpl_form extends xivo_tpl_module
 		$this->_param['label'] = true;
 		$this->_param['field'] = false;
 		$this->_param['key'] = null;
-		$this->_param['key_val'] = false;
+		$this->_param['overkey'] = false;
 		$this->_param['empty'] = false;
 		$this->_param['optgroup'] = false;
 		$this->_param['null'] = false;
@@ -78,8 +78,8 @@ class xivo_tpl_form extends xivo_tpl_module
 		if(isset($v['key']) === true)
 			$this->_param['key'] = $v['key'];
 
-		if(isset($v['key_val']) === true)
-			$this->_param['key_val'] = $v['key_val'];
+		if(isset($v['overkey']) === true)
+			$this->_param['overkey'] = $v['overkey'];
 
 		if(isset($v['empty']) === true && $v['empty'] !== false)
 			$this->_param['empty'] = $v['empty'] === true ? true : $this->_mk_param_value($v['empty'],$v);
@@ -95,10 +95,10 @@ class xivo_tpl_form extends xivo_tpl_module
 			else
 				$this->_param['optgroup']['key'] = null;
 
-			if(isset($ref_ogrp['key_val']) === true)
-				$this->_param['optgroup']['key_val'] = $ref_ogrp['key_val'];
+			if(isset($ref_ogrp['overkey']) === true)
+				$this->_param['optgroup']['overkey'] = $ref_ogrp['overkey'];
 			else
-				$this->_param['optgroup']['key_val'] = false;
+				$this->_param['optgroup']['overkey'] = false;
 
 			if(isset($ref_ogrp['bbf']) === true && is_bool($ref_ogrp['bbf']) === false)
 				$this->_param['optgroup']['bbf'] = $this->_mk_param_bbf($ref_ogrp);
@@ -751,10 +751,10 @@ class xivo_tpl_form extends xivo_tpl_module
 
 	function _mk_slt_option_param_array($key,$ref)
 	{
-		if($this->_param['key_val'] !== false
-		&& isset($ref[$this->_param['key_val']]) === true
-		&& is_scalar($ref[$this->_param['key_val']]) === true)
-			$key = $ref[$this->_param['key_val']];
+		if($this->_param['overkey'] !== false
+		&& isset($ref[$this->_param['overkey']]) === true
+		&& is_scalar($ref[$this->_param['overkey']]) === true)
+			$key = $ref[$this->_param['overkey']];
 
 		$render = false;
 
@@ -853,12 +853,12 @@ class xivo_tpl_form extends xivo_tpl_module
 				{
 					$param = $this->_param['optgroup'];
 
-					if($param['key_val'] !== false
-					&& isset($ref[$param['key_val']]) === true
-					&& is_scalar($ref[$param['key_val']]) === true)
+					if($param['overkey'] !== false
+					&& isset($ref[$param['overkey']]) === true
+					&& is_scalar($ref[$param['overkey']]) === true)
 					{
-						$k = $ref[$param['key_val']];
-						unset($ref[$param['key_val']]);
+						$k = $ref[$param['overkey']];
+						unset($ref[$param['overkey']]);
 					}
 
 					$render = false;

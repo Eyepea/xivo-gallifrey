@@ -241,26 +241,26 @@ $array['element']['odbctable']['default'] = '';
 $array['element']['odbctable']['null'] = true;
 
 $array['filter'] = array();
-$array['filter']['maxmsg'] = array('arrkey' => array(1,10,15,20,25,50,75,100,
+$array['filter']['maxmsg'] = array('key' => array(1,10,15,20,25,50,75,100,
 				     125,150,175,200,300,400,500,600,700,800,900,
 				     1000,2000,3000,4000,5000,6000,7000,8000,9000,9999));
-$array['filter']['silencethreshold'] = array('arrkey' => array(0,2,4,8,16,32,64,128,256,512));
-$array['filter']['minmessage'] = array('arrkey' => array(0,1,2,3,4,5,6,7,8,9,
+$array['filter']['silencethreshold'] = array('key' => array(0,2,4,8,16,32,64,128,256,512));
+$array['filter']['minmessage'] = array('key' => array(0,1,2,3,4,5,6,7,8,9,
 							10,20,30,40,50,60,70,80,90,
 							100,110,120,130,140,150,160,170,180,190,
 							200,210,220,230,240,250,260,270,280,290,
 							300,310,320,330,340,350,360));
-$array['filter']['maxmessage'] = array('arrkey' => array(0,1,2,3,4,5,6,7,8,9,
+$array['filter']['maxmessage'] = array('key' => array(0,1,2,3,4,5,6,7,8,9,
 							10,20,30,40,50,60,70,80,90,
 							100,110,120,130,140,150,160,170,180,190,
 							200,210,220,230,240,250,260,270,280,290,
 							300,310,320,330,340,350,360));
-$array['filter']['maxsilence'] = array('arrkey' => array(1,2,3,4,5,6,7,8,9,10,
+$array['filter']['maxsilence'] = array('key' => array(1,2,3,4,5,6,7,8,9,10,
 						11,12,13,14,15,16,17,18,19,20,
 						21,22,23,24,25,26,27,28,29,30));
 $array['filter']['review'] = array('bool' => true);
 $array['filter']['operator'] = array('bool' => true);
-$array['filter']['format'] = array('set' => false,'chk' => 2,'arrvalue' => array(
+$array['filter']['format'] = array('set' => false,'chk' => 2,'value' => array(
 					XIVO_SRE_IPBX_AST_FORMAT_AUDIO_WAV,
 					XIVO_SRE_IPBX_AST_FORMAT_AUDIO_WAV49,
 					XIVO_SRE_IPBX_AST_FORMAT_AUDIO_GSM,
@@ -270,44 +270,44 @@ $array['filter']['format'] = array('set' => false,'chk' => 2,'arrvalue' => array
 					XIVO_SRE_IPBX_AST_FORMAT_AUDIO_AU,
 					XIVO_SRE_IPBX_AST_FORMAT_AUDIO_VOX,
 					XIVO_SRE_IPBX_AST_FORMAT_AUDIO_SLIN));
-$array['filter']['maxlogins'] = array('arrkey' => array(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20));
+$array['filter']['maxlogins'] = array('key' => array(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20));
 $array['filter']['envelope'] = array('bool' => true);
 $array['filter']['saycid'] = array('bool' => true);
-$array['filter']['cidinternalcontexts'] = array('set' => false,'chk' => 2,'arrkey' => array('default'));
+$array['filter']['cidinternalcontexts'] = array('set' => false,'chk' => 2,'key' => array('default'));
 $array['filter']['sayduration'] = array('bool' => true);
-$array['filter']['saydurationm'] = array('arrkey' => array(1,2,3,4,5,10,15,20,25,30,35,40,45,50,55,60));
+$array['filter']['saydurationm'] = array('key' => array(1,2,3,4,5,10,15,20,25,30,35,40,45,50,55,60));
 $array['filter']['forcename'] = array('bool' => true);
 $array['filter']['forcegreetings'] = array('bool' => true);
-$array['filter']['maxgreet'] = array('arrkey' => array(0,1,2,3,4,5,6,7,8,9,
+$array['filter']['maxgreet'] = array('key' => array(0,1,2,3,4,5,6,7,8,9,
 							10,20,30,40,50,60,70,80,90,
 							100,110,120,130,140,150,160,170,180,190,
 							200,210,220,230,240,250,260,270,280,290,
 							300,310,320,330,340,350,360));
-$array['filter']['skipms'] = array('arrkey' => array(1000,2000,3000,4000,5000,6000,7000,8000,9000,
+$array['filter']['skipms'] = array('key' => array(1000,2000,3000,4000,5000,6000,7000,8000,9000,
 							10000,15000,20000,25000,30000,35000,40000,
 							45000,50000,55000,60000));
 $array['filter']['sendvoicemail'] = array('bool' => true);
 $array['filter']['usedirectory'] = array('bool' => true);
 $array['filter']['nextaftercmd'] = array('bool' => true);
 $array['filter']['dialout'] = array('set' => false,'chk' => 2,'maxlen' => 80,
-					'preg' => '/^(?!macro-)[a-z0-9_-]+$/',
-					'unarrkey' => array('general','globals','hints','features'));
+					'regexp' => '/^(?!macro-)[a-z0-9_-]+$/',
+					'nokey' => array('general','globals','hints','features'));
 $array['filter']['callback'] = array('set' => false,'chk' => 2,'maxlen' => 80,
-					'preg' => '/^(?!macro-)[a-z0-9_-]+$/',
-					'unarrkey' => array('general','globals','hints','features'));
+					'regexp' => '/^(?!macro-)[a-z0-9_-]+$/',
+					'nokey' => array('general','globals','hints','features'));
 $array['filter']['exitcontext'] = array('set' => false,'chk' => 2,'maxlen' => 80,
-					'preg' => '/^(?!macro-)[a-z0-9_-]+$/',
-					'unarrkey' => array('general','globals','hints','features'));
+					'regexp' => '/^(?!macro-)[a-z0-9_-]+$/',
+					'nokey' => array('general','globals','hints','features'));
 $array['filter']['attach'] = array('bool' => true);
 $array['filter']['mailcmd'] = array('set' => false,'chk' => 2,'cast' => 'alphanumspecials','maxlen' => 160);
-$array['filter']['serveremail'] = array('set' => false,'chk' => 2,'preg' => '/^[a-z0-9@\-_\.]+$/i','maxlen' => 80);
-$array['filter']['charset'] = array('set' => false,'chk' => 2,'arrkey' => array('UTF-8'));
-$array['filter']['fromstring'] = array('set' => false,'chk' => 2,'preg' => '/^[a-z0-9\-_\. ]+$/i','maxlen' => 100);
+$array['filter']['serveremail'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9@\-_\.]+$/i','maxlen' => 80);
+$array['filter']['charset'] = array('set' => false,'chk' => 2,'key' => array('UTF-8'));
+$array['filter']['fromstring'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9\-_\. ]+$/i','maxlen' => 100);
 $array['filter']['emaildateformat'] = array('set' => false,'chk' => 2,'cast' => 'cprint','maxlen' => 32);
 $array['filter']['pbxskip'] = array('bool' => true);
 $array['filter']['emailsubject'] = array('set' => false,'chk' => 2,'maxlen' => 256,'cast' => 'cprint');
 $array['filter']['emailbody'] = array('set' => false,'chk' => 2,'maxlen' => 1000,'cast' => 'print','eol' => true);
-$array['filter']['pagerfromstring'] = array('set' => false,'chk' => 2,'preg' => '/^[a-z0-9\-_\. ]+$/i','maxlen' => 100);
+$array['filter']['pagerfromstring'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9\-_\. ]+$/i','maxlen' => 100);
 $array['filter']['pagersubject'] = array('set' => false,'chk' => 2,'maxlen' => 256,'cast' => 'cprint');
 $array['filter']['pagerbody'] = array('set' => false,'chk' => 2,'maxlen' => 512,'cast' => 'print','eol' => true);
 $array['filter']['adsifdn'] = array('set' => false,'chk' => 2,'cast' => 'xdigit','maxlen' => 8);

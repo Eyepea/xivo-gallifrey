@@ -36,7 +36,7 @@
 		</div>
 		<div class="slt-inlist">
 
-		<?=$form->slt(array('name' => 'group-select[]','label' => false,'id' => 'it-group','multiple' => true,'size' => 5,'field' => false,'key' => 'queue_name','key_val' => 'queue_name'),$gmember_slt,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+		<?=$form->slt(array('name' => 'group-select[]','label' => false,'id' => 'it-group','multiple' => true,'size' => 5,'field' => false,'key' => 'queue_name','overkey' => 'queue_name'),$gmember_slt,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 		</div>
 	</div>
@@ -112,7 +112,7 @@
 		</div>
 		<div class="slt-inlist">
 
-		<?=$form->slt(array('name' => 'queue-select[]','label' => false,'id' => 'it-queue','multiple' => true,'size' => 5,'field' => false,'key' => 'queue_name','key_val' => 'queue_name'),$qmember_slt,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+		<?=$form->slt(array('name' => 'queue-select[]','label' => false,'id' => 'it-queue','multiple' => true,'size' => 5,'field' => false,'key' => 'queue_name','overkey' => 'queue_name'),$qmember_slt,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 		</div>
 	</div>

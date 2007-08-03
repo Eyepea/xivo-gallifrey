@@ -111,17 +111,17 @@ $array['filter']['name'] = array('maxlen' => 80);
 $array['filter']['username'] = array('set' => false,'chk' => 2,'maxlen' => 80);
 $array['filter']['secret'] = array('set' => false,'chk' => 2,'maxlen' => 80);
 $array['filter']['callerid'] = array('set' => false,'chk' => 2,'maxlen' => 80);
-$array['filter']['context'] = array('set' => false,'chk' => 2,'unarrkey' => array('general','globals','hints','features','authentication','zonemessages'),'preg' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 80);
+$array['filter']['context'] = array('set' => false,'chk' => 2,'nokey' => array('general','globals','hints','features','authentication','zonemessages'),'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 80);
 $array['filter']['call-limit'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,30));
 $array['filter']['host'] = array('set' => false,'chk' => 2);
-$array['filter']['dtmfmode'] = array('set' => false,'chk' => 2,'arrkey' => array('rfc2833','inband','info','auto'));
-$array['filter']['type'] = array('set' => false,'chk' => 2,'arrkey' => array('peer','user','friend'));
+$array['filter']['dtmfmode'] = array('set' => false,'chk' => 2,'key' => array('rfc2833','inband','info','auto'));
+$array['filter']['type'] = array('set' => false,'chk' => 2,'key' => array('peer','user','friend'));
 $array['filter']['nat'] = array('bool' => true);
 $array['filter']['qualify'] = array('bool' => true);
 $array['filter']['canreinvite'] = array('bool' => true);
-$array['filter']['insecure'] = array('set' => false,'chk' => 2,'arrkey' => array('port','invite','port,invite'));
-$array['filter']['disallow'] = array('set' => false,'chk' => 2,'arrkey' => array('all'));
-$array['filter']['allow'] = array('set' => false,'chk' => 2,'arrvalue' => array(
+$array['filter']['insecure'] = array('set' => false,'chk' => 2,'key' => array('port','invite','port,invite'));
+$array['filter']['disallow'] = array('set' => false,'chk' => 2,'key' => array('all'));
+$array['filter']['allow'] = array('set' => false,'chk' => 2,'value' => array(
 						XIVO_SRE_IPBX_AST_CODEC_AUDIO_G723,
 						XIVO_SRE_IPBX_AST_CODEC_AUDIO_GSM,
 						XIVO_SRE_IPBX_AST_CODEC_AUDIO_ULAW,
@@ -144,7 +144,7 @@ $array['filter']['regexten'] = array('set' => false,'chk' => 2);
 $array['filter']['setvar'] = array('set' => false,'chk' => 2);
 $array['filter']['fromuser'] = array('set' => false,'chk' => 2,'maxlen' => 80);
 $array['filter']['fromdomain'] = array('set' => false,'chk' => 2,'func' => 'xivo_filter::chk_host_ipv4_strict');
-$array['filter']['host-dynamic'] = array('set' => false,'arrkey' => array('dynamic','static'));
+$array['filter']['host-dynamic'] = array('set' => false,'key' => array('dynamic','static'));
 $array['filter']['host-static'] = array('set' => false,'func' => 'xivo_filter::chk_host_ipv4_strict');
 
 ?>

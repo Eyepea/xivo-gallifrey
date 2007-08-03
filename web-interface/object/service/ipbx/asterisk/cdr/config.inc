@@ -12,26 +12,38 @@ $array['element']['dend']['unset'] = true;
 
 $array['element']['channel'] = array();
 $array['element']['channel']['value'] = array(
-					XIVO_SRE_IPBX_AST_CHAN_SIP,
-					XIVO_SRE_IPBX_AST_CHAN_IAX,
-					XIVO_SRE_IPBX_AST_CHAN_LOCAL,
-					XIVO_SRE_IPBX_AST_CHAN_AGENT,
-					XIVO_SRE_IPBX_AST_CHAN_ZAP,
-					XIVO_SRE_IPBX_AST_CHAN_CAPI,
-					XIVO_SRE_IPBX_AST_CHAN_MISDN,
-					XIVO_SRE_IPBX_AST_CHAN_MGCP,
-					'others',
-					'unknown');
+			XIVO_SRE_IPBX_AST_CHAN_SIP	=> XIVO_SRE_IPBX_AST_CHAN_SIP,
+			XIVO_SRE_IPBX_AST_CHAN_IAX	=> XIVO_SRE_IPBX_AST_CHAN_IAX,
+			XIVO_SRE_IPBX_AST_CHAN_LOCAL	=> XIVO_SRE_IPBX_AST_CHAN_LOCAL,
+			XIVO_SRE_IPBX_AST_CHAN_AGENT	=> XIVO_SRE_IPBX_AST_CHAN_AGENT,
+			XIVO_SRE_IPBX_AST_CHAN_ZAP	=> XIVO_SRE_IPBX_AST_CHAN_ZAP,
+			XIVO_SRE_IPBX_AST_CHAN_CAPI	=> XIVO_SRE_IPBX_AST_CHAN_CAPI,
+			XIVO_SRE_IPBX_AST_CHAN_MISDN	=> XIVO_SRE_IPBX_AST_CHAN_MISDN,
+			XIVO_SRE_IPBX_AST_CHAN_MGCP	=> XIVO_SRE_IPBX_AST_CHAN_MGCP,
+			XIVO_SRE_IPBX_AST_CHAN_SCCP	=> XIVO_SRE_IPBX_AST_CHAN_SCCP,
+			XIVO_SRE_IPBX_AST_CHAN_H323	=> XIVO_SRE_IPBX_AST_CHAN_H323,
+			XIVO_SRE_IPBX_AST_CHAN_OH323	=> XIVO_SRE_IPBX_AST_CHAN_OH323,
+			XIVO_SRE_IPBX_AST_CHAN_OOH323	=> XIVO_SRE_IPBX_AST_CHAN_OOH323,
+			XIVO_SRE_IPBX_AST_CHAN_UNKNOWN	=> 'unknown',
+			'others'			=> 'others');
 $array['element']['channel']['default'] = '';
 
 $array['element']['disposition'] = array();
 $array['element']['disposition']['value'] = array(
-					XIVO_SRE_IPBX_AST_CDR_DISPOSITION_NOANSWER,
-					XIVO_SRE_IPBX_AST_CDR_DISPOSITION_FAILED,
-					XIVO_SRE_IPBX_AST_CDR_DISPOSITION_BUSY,
 					XIVO_SRE_IPBX_AST_CDR_DISPOSITION_ANSWERED,
+					XIVO_SRE_IPBX_AST_CDR_DISPOSITION_NOANSWER,
+					XIVO_SRE_IPBX_AST_CDR_DISPOSITION_BUSY,
+					XIVO_SRE_IPBX_AST_CDR_DISPOSITION_FAILED,
 					XIVO_SRE_IPBX_AST_CDR_DISPOSITION_UNKNOWN);
 $array['element']['disposition']['default'] = '';
+
+$array['element']['amaflags'] = array();
+$array['element']['amaflags']['value'] = array(
+	XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_DEFAULT		=> XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_META_DEFAULT,
+	XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_OMIT		=> XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_META_OMIT,
+	XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_BILLING		=> XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_META_BILLING,
+	XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_DOCUMENTATION	=> XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_META_DOCUMENTATION);
+$array['element']['amaflags']['default'] = '';
 
 $array['element']['src'] = array();
 $array['element']['src']['default'] = '';
@@ -88,21 +100,21 @@ $array['element']['duend']['default'] = '';
 $array['element']['duend']['unset'] = true;
 
 $array['element']['dubegunit'] = array();
-$array['element']['dubegunit']['default'] = 'second';
+$array['element']['dubegunit']['default'] = 'seconds';
 $array['element']['dubegunit']['value'] = array('seconds','minutes');
 $array['element']['dubegunit']['unset'] = true;
 
 $array['element']['duendunit'] = array();
-$array['element']['duendunit']['default'] = 'second';
+$array['element']['duendunit']['default'] = 'seconds';
 $array['element']['duendunit']['value'] = array('seconds','minutes');
 $array['element']['duendunit']['unset'] = true;
 
 $array['filter'] = array();
-$array['filter']['dbeg'] = array('set' => false,'chk' => 2,'minlen' => 4,'maxlen' => 10,
-				 'preg' => '/^2[0-9]{3}(-(0?[1-9]|1[0-2])(-(0?[1-9]|1[0-9]|2[0-9]|3[0-1]))?)?$/');
+$array['filter']['dbeg'] = array('minlen' => 4,'maxlen' => 10,
+				 'regexp' => '/^2[0-9]{3}(-(0?[1-9]|1[0-2])(-(0?[1-9]|1[0-9]|2[0-9]|3[0-1]))?)?$/');
 $array['filter']['dend'] = array('set' => false,'chk' => 2,'minlen' => 4,'maxlen' => 10,
-				 'preg' => '/^2[0-9]{3}(-(0?[1-9]|1[0-2])(-(0?[1-9]|1[0-9]|2[0-9]|3[0-1]))?)?$/');
-$array['filter']['channel'] = array('set' => false,'chk' => 2,'arrkey' => array(
+				 'regexp' => '/^2[0-9]{3}(-(0?[1-9]|1[0-2])(-(0?[1-9]|1[0-9]|2[0-9]|3[0-1]))?)?$/');
+$array['filter']['channel'] = array('set' => false,'chk' => 2,'key' => array(
 					XIVO_SRE_IPBX_AST_CHAN_SIP,
 					XIVO_SRE_IPBX_AST_CHAN_IAX,
 					XIVO_SRE_IPBX_AST_CHAN_LOCAL,
@@ -111,27 +123,36 @@ $array['filter']['channel'] = array('set' => false,'chk' => 2,'arrkey' => array(
 					XIVO_SRE_IPBX_AST_CHAN_CAPI,
 					XIVO_SRE_IPBX_AST_CHAN_MISDN,
 					XIVO_SRE_IPBX_AST_CHAN_MGCP,
-					'others',
-					'unknown'));
-$array['filter']['disposition'] = array('set' => false,'chk' => 2,'arrkey' => array(
-					XIVO_SRE_IPBX_AST_CDR_DISPOSITION_NOANSWER,
-					XIVO_SRE_IPBX_AST_CDR_DISPOSITION_FAILED,
-					XIVO_SRE_IPBX_AST_CDR_DISPOSITION_BUSY,
+					XIVO_SRE_IPBX_AST_CHAN_SCCP,
+					XIVO_SRE_IPBX_AST_CHAN_H323,
+					XIVO_SRE_IPBX_AST_CHAN_OH323,
+					XIVO_SRE_IPBX_AST_CHAN_OOH323,
+					XIVO_SRE_IPBX_AST_CHAN_UNKNOWN,
+					'others'));
+$array['filter']['disposition'] = array('set' => false,'chk' => 2,'key' => array(
 					XIVO_SRE_IPBX_AST_CDR_DISPOSITION_ANSWERED,
+					XIVO_SRE_IPBX_AST_CDR_DISPOSITION_NOANSWER,
+					XIVO_SRE_IPBX_AST_CDR_DISPOSITION_BUSY,
+					XIVO_SRE_IPBX_AST_CDR_DISPOSITION_FAILED,
 					XIVO_SRE_IPBX_AST_CDR_DISPOSITION_UNKNOWN));
+$array['filter']['amaflags'] = array('set' => false,'chk' => 2,'key' => array(
+				XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_DEFAULT,
+				XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_OMIT,
+				XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_BILLING,
+				XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_DOCUMENTATION));
 $array['filter']['src'] = array('set' => false,'chk' => 2,'cast' => 'cprint','maxlen' => 80);
-$array['filter']['srcformat'] = array('arrkey' => array('exact','begin','contain','end'));
+$array['filter']['srcformat'] = array('key' => array('exact','begin','contain','end'));
 $array['filter']['dst'] = array('set' => false,'chk' => 2,'cast' => 'cprint','maxlen' => 80);
-$array['filter']['dstformat'] = array('arrkey' => array('exact','begin','contain','end'));
-$array['filter']['clid'] = array('set' => false,'chk' => 2,'cast' => 'cprint','maxlen' => 80);
-$array['filter']['clidformat'] = array('arrkey' => array('exact','begin','contain','end'));
-$array['filter']['accountcode'] = array('set' => false,'chk' => 2,'preg' => '/^[a-z0-9_-]+$/i','maxlen' => 20);
-$array['filter']['accountcodeformat'] = array('arrkey' => array('exact','begin','contain','end'));
-$array['filter']['userfield'] = array('set' => false,'chk' => 2,'preg' => '/^[a-z0-9_-]+$/i','maxlen' => 255);
-$array['filter']['userfieldformat'] = array('arrkey' => array('exact','begin','contain','end'));
+$array['filter']['dstformat'] = array('key' => array('exact','begin','contain','end'));
+$array['filter']['clid'] = array('set' => false,'chk' => 2,'cast' => 'cprint','maxlen' => 80,'notag' => false);
+$array['filter']['clidformat'] = array('key' => array('exact','begin','contain','end'));
+$array['filter']['accountcode'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_-]+$/i','maxlen' => 20);
+$array['filter']['accountcodeformat'] = array('key' => array('exact','begin','contain','end'));
+$array['filter']['userfield'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_-]+$/i','maxlen' => 255);
+$array['filter']['userfieldformat'] = array('key' => array('exact','begin','contain','end'));
 $array['filter']['dubeg'] = array('set' => false,'chk' => 2,'cast' => 'uint','maxlen' => 5);
 $array['filter']['duend'] = array('set' => false,'chk' => 2,'cast' => 'uint','maxlen' => 5);
-$array['filter']['dubegunit'] = array('arrkey' => array('seconds','minutes'));
-$array['filter']['duendunit'] = array('arrkey' => array('seconds','minutes'));
+$array['filter']['dubegunit'] = array('key' => array('seconds','minutes'));
+$array['filter']['duendunit'] = array('key' => array('seconds','minutes'));
 
 ?>

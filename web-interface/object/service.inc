@@ -16,6 +16,9 @@ class xivo_service
 
 		$this->_ini = $ini;
 
+		if(isset($_SESSION['_SRE']) === false)
+			$_SESSION['_SRE'] = array();
+
 		for($i = 0;$i < $arr['cnt'];$i++)
 		{
 			$k = $arr['keys'][$i];
@@ -47,15 +50,25 @@ class xivo_service
 		$label = 'XIVO_SRE_'.$name_up.'_LABEL';
 		$version = 'XIVO_SRE_'.$name_up.'_VERSION';
 
+		if(isset($_SESSION['_SRE'][$name]) === false)
+			$_SESSION['_SRE'][$name] = array();
+
+		if(isset($_SESSION['_SRE'][$name][$sname]) === false)
+			$_SESSION['_SRE'][$name][$sname] = array();
+
+		if(isset($_SESSION['_SRE'][$name][$sname]['ini']) === false)
+			$_SESSION['_SRE'][$name][$sname]['ini'] = array('general' => array());
+
+		if(isset($_SESSION['_SRE'][$name][$sname]['infos']) === false)
+			$_SESSION['_SRE'][$name][$sname]['infos'] = array();
+
+		$sess_ini = &$_SESSION['_SRE'][$name][$sname]['ini'];
+
 		if(isset($init['general']['label']) === true && is_string($init['general']['label']) === true)
-			define($label,$init['general']['label']);
-		else
-			define($label,'Undefined');
+			$sess_ini['general']['label'] = $init['general']['label'];
 
 		if(isset($init['general']['version']) === true && is_string($init['general']['version']) === true)
-			define($version,$init['general']['version']);
-		else
-			define($version,'Undefined');
+			$sess_ini['general']['version'] = $init['general']['version'];
 
 		$dir = XIVO_PATH_OBJECT.XIVO_SEP_DIR.'service'.XIVO_SEP_DIR.$name;
 

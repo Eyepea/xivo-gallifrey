@@ -86,15 +86,12 @@ class xivo_datastorage_sqlite extends xivo_datastorage_abstract_sql
 		$o = (bool) $o;
 
 		if($b === true)
-		{
-			if(($this->_result = sqlite_query($this->_query,$this->_link)) === false && $o !== false)
-				$this->halt();
-		}
+			$this->_result = sqlite_query($this->_query,$this->_link);
 		else
-		{
-			if(($this->_result = sqlite_unbuffered_query($this->_query,$this->_link)) === false && $o !== false)
-				$this->halt();
-		}
+			$this->_result = sqlite_unbuffered_query($this->_query,$this->_link);
+
+		if($this->_result === false && $o !== false)
+			$this->halt();
 
 		return($this->_result);
 	}
@@ -160,7 +157,12 @@ class xivo_datastorage_sqlite extends xivo_datastorage_abstract_sql
 		return(sqlite_fetch_array(($r !== false ? $r : $this->_result),SQLITE_ASSOC));
 	}
 
-	function _expr_typetime($type='',$col='',$time='localtime',$format='')
+	function unix_timestamp($col='',$time='localtime')
+	{
+		return($this->_expr_typetime(null,$col,$time,'%s'));
+	}
+
+	function _expr_typetime($type='',$col='',$time='',$format='')
 	{
 		$col = $this->quote_identifier($col);
 		$time = $time !== '' ? strtolower((string) $time) : 'localtime';

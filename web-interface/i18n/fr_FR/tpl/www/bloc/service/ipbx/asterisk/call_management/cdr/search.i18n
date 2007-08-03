@@ -1,0 +1,266 @@
+; title_content_name
+Journaux d'appels
+
+; smenu_search
+Recherche
+
+; smenu_result
+Résultats
+
+; smenu_exportcsv
+Export CSV
+
+; number_cdr-result
+Résultat(s) : %s
+
+; fm_dbeg
+Date de début :
+
+; fm_dend
+Date de fin :
+
+; fm_channel
+Canal :
+
+; fm_channel-optothers
+Autres
+
+; fm_channel-optunknown
+Inconnu
+
+; fm_channel-opt
+%s
+
+; fm_disposition
+Statut de l'appel :
+
+; fm_disposition-opt-ANSWERED
+Répondu
+
+; "fm_disposition-opt-NO ANSWER"
+Pas de réponse
+
+; fm_disposition-opt-BUSY
+Occupé
+
+; fm_disposition-opt-FAILED
+Echoué
+
+; fm_disposition-opt-UNKNOWN
+Inconnu
+
+; fm_amaflags
+Drapeau de facturation :
+
+; fm_amaflags-opt-default
+Défaut
+
+; fm_amaflags-opt-billing
+Facturation
+
+; fm_amaflags-opt-omit
+Omission
+
+; fm_amaflags-opt-documentation
+Documentation
+
+; fm_src
+Appelant :
+
+; fm_srcformat-opt-exact
+Exact
+
+; fm_srcformat-opt-begin
+Commence par
+
+; fm_srcformat-opt-contain
+Contient
+
+; fm_srcformat-opt-end
+Fini par
+
+; fm_dst
+Appelé :
+
+; fm_dstformat-opt-exact
+Exact
+
+; fm_dstformat-opt-begin
+Commence par
+
+; fm_dstformat-opt-contain
+Contient
+
+; fm_dstformat-opt-end
+Fini par
+
+; fm_clid
+Nom d'appel :
+
+; fm_clidformat-opt-exact
+Exact
+
+; fm_clidformat-opt-begin
+Commence par
+
+; fm_clidformat-opt-contain
+Contient
+
+; fm_clidformat-opt-end
+Fini par
+
+; fm_accountcode
+Numéro d'accompte :
+
+; fm_accountcodeformat-opt-exact
+Exact
+
+; fm_accountcodeformat-opt-begin
+Commence par
+
+; fm_accountcodeformat-opt-contain
+Contient
+
+; fm_accountcodeformat-opt-end
+Fini par
+
+; fm_userfield
+Champs utilisateur :
+
+; fm_userfieldformat-opt-exact
+Exact
+
+; fm_userfieldformat-opt-begin
+Commence par
+
+; fm_userfieldformat-opt-contain
+Contient
+
+; fm_userfieldformat-opt-end
+Fini par
+
+; fm_dubeg
+Début de la durée :
+
+; fm_dubegunit-opt-seconds
+Secondes
+
+; fm_dubegunit-opt-minutes
+Minutes
+
+; fm_duend
+Fin de la durée :
+
+; fm_duendunit-opt-seconds
+Secondes
+
+; fm_duendunit-opt-minutes
+Minutes
+
+; fm_bt-search
+Chercher
+
+; col_calldate
+Date d'appel
+
+; col_src
+Appelant
+
+; col_dst
+Appelé
+
+; col_duration
+Durée
+
+; entry_duration-sec
+%02d sec.
+
+; entry_duration-minsec
+%s min. %02d sec.
+
+; entry_duration-hourminsec
+%sh%02d %02d sec.
+
+; entry_duration-dayhourminsec
+%s jour(s) %sh%02d %02d sec.
+
+; entry_channel
+Canal :
+
+; entry_channel-unknown
+Inconnu
+
+; entry_disposition
+Statut de l'appel :
+
+; entry_disposition-ANSWERED
+Répondu
+
+; "entry_disposition-NO ANSWER"
+Pas de réponse
+
+; entry_disposition-BUSY
+Occupé
+
+; entry_disposition-FAILED
+Echoué
+
+; entry_disposition-UNKNOWN
+Inconnu
+
+; entry_amaflagsmeta
+Drapeau de facturation :
+
+; entry_amaflagsmeta-default
+Défaut
+
+; entry_amaflagsmeta-billing
+Facturation
+
+; entry_amaflagsmeta-omit
+Omission
+
+; entry_amaflagsmeta-documentation
+Documentation
+
+; entry_clid
+Nom d'appel :
+
+; entry_accountcode
+Numéro d'accompte :
+
+; entry_userfield
+Champs utilisateur :
+
+; entry_dcontext
+Contexte :
+
+; entry_dstchannel
+Canal de destination :
+
+; entry_billsec
+Durée réelle :
+
+; entry_billsec-sec
+%02d sec.
+
+; entry_billsec-minsec
+%s min. %02d sec.
+
+; entry_billsec-hourminsec
+%sh%02d %02d sec.
+
+; entry_billsec-dayhourminsec
+%s jour(s) %sh%02d %02d sec.
+
+; entry_lastapp
+Dernière application :
+
+; entry_lastdata
+Dernière donnée :
+
+; entry_uniqueid
+Identifiant unique :
+
+; no_cdr-result
+Aucune entrée dans les journaux d'appels correspond à votre recherche

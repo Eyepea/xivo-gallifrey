@@ -642,7 +642,16 @@ class xivo_i18n
 						$this->_load = $_load; 
 						$this->_file = $_file;
 					}
-					else if(preg_match('/^;(\t| )*([a-z0-9-_]+)$/',$line,$match) === 1)
+					else if(preg_match('/^;(\t| )*([a-zA-Z0-9-_]+)$/',$line,$match) === 1)
+					{
+						$txt = true;
+						$key = $match[2];
+
+						if(isset($r[$key]) === true)
+							$txt = false;
+					}
+					else if(preg_match('/^;(\t| )*"([a-zA-Z0-9_ -]+)"$/',$line,$match) === 1
+					&& strpos($match[2],'  ') === false)
 					{
 						$txt = true;
 						$key = $match[2];

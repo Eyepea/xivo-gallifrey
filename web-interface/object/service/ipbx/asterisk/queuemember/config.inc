@@ -40,17 +40,17 @@ $array['element']['category'] = array();
 $array['element']['category']['value'] = array('queue','group');
 
 $array['filter'] = array();
-$array['filter']['queue_name'] = array('preg' => '/^[a-z0-9_\.-]+$/i','minlen' => 1,'maxlen' => 128);
-$array['filter']['interface'] = array('preg' => '/^[a-z0-9#\*\.\/_@:-]+$/i','minlen' => 1,'maxlen' => 128);
+$array['filter']['queue_name'] = array('regexp' => '/^[a-z0-9_\.-]+$/i','minlen' => 1,'maxlen' => 128);
+$array['filter']['interface'] = array('regexp' => '/^[a-z0-9#\*\.\/_@:-]+$/i','minlen' => 1,'maxlen' => 128);
 $array['filter']['penalty'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,20));
 $array['filter']['call-limit'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,20));
-$array['filter']['usertype'] = array('arrkey' => array('user','agent'));
+$array['filter']['usertype'] = array('key' => array('user','agent'));
 $array['filter']['userid'] = array('cast' => 'uint');
-$array['filter']['channel'] = array('arrkey' => array(
+$array['filter']['channel'] = array('key' => array(
 							XIVO_SRE_IPBX_AST_CHAN_SIP,
 							XIVO_SRE_IPBX_AST_CHAN_IAX,
 							XIVO_SRE_IPBX_AST_CHAN_LOCAL,
 							XIVO_SRE_IPBX_AST_CHAN_AGENT));
-$array['filter']['category'] = array('arrkey' => array('queue','group'));
+$array['filter']['category'] = array('key' => array('queue','group'));
 
 ?>

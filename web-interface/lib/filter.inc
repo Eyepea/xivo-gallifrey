@@ -27,7 +27,7 @@ class xivo_filter
 		for($i = 0;$i < $arr['cnt'];$i++)
 		{
 			$key = &$arr['keys'][$i];
-			$this->_chk_key_val($key,$a,$v,$set);
+			$this->_chk_key_value($key,$a,$v,$set);
 		}
 
 		return(($this->_err['nb'] > 0 ? false : true));
@@ -63,6 +63,55 @@ class xivo_filter
 	function _mk_result($key,$val='')
 	{
 		$this->_result[$key] = $val;
+	}
+
+	function chk_date($date)
+	{
+		$r = array();
+
+		$date = (string) $date;
+		$format = $year = $month = $day = '';
+
+		if(preg_match('/^(2[0-9]{3})(?:-(0?[1-9]|1[0-2])(?:-(0?[1-9]|1[0-9]|2[0-9]|3[0-1]))?)?$/',$date,$match) !== 1)
+			return(false);
+
+		$r['format'] = '%Y';
+		$year = $r['date'] = $r['dateint'] = $match[1];
+
+		if(isset($match[2]) === true)
+		{
+			$r['format'] .= '%m';
+			$month = sprintf('%02u',$match[2]);
+			$r['date'] .= '-'.$month;
+			$r['dateint'] .= $month;
+		}
+
+		if(isset($match[3]) === true)
+		{
+			$r['format'] .= '%d';
+			$day = sprintf('%02u',$match[3]);
+			$r['date'] .= '-'.$day;
+			$r['dateint'] .= $day;
+
+			if(checkdate($month,$day,$year) === false)
+				return(false);
+		}
+
+		return($r);
+	}
+
+	function chk_between_date($dbeg,$dend)
+	{
+		if(($dbeg = xivo_filter::chk_date($dbeg)) === false
+		|| ($dend = xivo_filter::chk_date($dend)) === false)
+			return(false);
+
+		if($dbeg['format'] !== $dend['format'] || $dbeg['dateint'] > $dend['dateint'])
+			return(false);
+
+		$r = array('dbeg' => $dbeg,'dend' => $dend);
+
+		return($r);
 	}
 
 	function chk_email($email,$strict=false)
@@ -241,7 +290,7 @@ class xivo_filter
 		{
 			$func = (string) $func;
 
-			$afunc = explode('::',$func);
+			$afunc = explode('::',$func,2);
 
 			if(isset($afunc[0],$afunc[1]) === true)
 			{
@@ -268,7 +317,7 @@ class xivo_filter
 		return(call_user_func($func,$value));
 	}
 
-	function chk_key_value($arr,$value)
+	function chk_array_key($arr,$value)
 	{
 		if(is_array($arr) === false)
 			return(false);
@@ -276,7 +325,7 @@ class xivo_filter
 		return(in_array($value,$arr));
 	}
 
-	function chk_unarray_value($arr,$value)
+	function chk_noarray_value($arr,$value)
 	{
 		if(is_array($arr) === false || is_array($value) === false)
 			return(false);
@@ -335,12 +384,12 @@ class xivo_filter
 		if(isset($arr['bool']) === true)
 			return($this->chk_bool($value));
 
-		if(isset($arr['arrvalue']) === true)
+		if(isset($arr['value']) === true)
 		{
 			if($chk === 2 && isset($value{0}) === false)
 				return('');
 
-			$arrvalue = $this->chk_array_value($arr['arrvalue'],$value);
+			$arrvalue = $this->chk_array_value($arr['value'],$value);
 
 			if($arrvalue === false && $strict === true)
 			{
@@ -352,26 +401,26 @@ class xivo_filter
 				return($value);
 		}
 
-		if(isset($arr['unarrvalue']) === true)
+		if(isset($arr['novalue']) === true)
 		{
 			if($chk === 2 && isset($value{0}) === false)
 				return('');
 
-			$unarrvalue = $this->chk_unarray_value($arr['unarrvalue'],$value);
+			$noarrvalue = $this->chk_noarray_value($arr['novalue'],$value);
 
-			if($unarrvalue === false)
+			if($noarrvalue === false)
 			{
 				$this->_mk_err($key,'invalid value');
 				return(false);
 			}
 		}
 
-		if(isset($arr['arrkey']) === true)
+		if(isset($arr['key']) === true)
 		{
 			if($chk === 2 && isset($value{0}) === false)
 				return('');
 
-			$arrkey = $this->chk_key_value($arr['arrkey'],$value);
+			$arrkey = $this->chk_array_key($arr['key'],$value);
 
 			if($arrkey === false && $strict === true)
 			{
@@ -383,14 +432,14 @@ class xivo_filter
 				return($value);
 		}
 
-		if(isset($arr['unarrkey']) === true)
+		if(isset($arr['nokey']) === true)
 		{
 			if($chk === 2 && isset($value{0}) === false)
 				return('');
 
-			$unarrkey = $this->chk_key_value($arr['unarrkey'],$value);
+			$noarrkey = $this->chk_array_key($arr['nokey'],$value);
 
-			if($unarrkey === true)
+			if($noarrkey === true)
 			{
 				$this->_mk_err($key,'invalid value');
 				return(false);
@@ -459,24 +508,12 @@ class xivo_filter
 			return(false);
 		}
 
-		if(isset($arr['preg']) === true && preg_match((string) $arr['preg'],$value) !== 1)
+		if(isset($arr['regexp']) === true && preg_match((string) $arr['regexp'],$value) !== 1)
 		{
 			$this->_mk_err($key,'preg false');
 			return(false);
 		}
 	
-		if(isset($arr['ereg']) === true && ereg((string) $arr['ereg'],$value) === false)
-		{
-			$this->_mk_err($key,'ereg false');
-			return(false);
-		}
-	
-		if(isset($arr['eregi']) === true && eregi((string) $arr['eregi'],$value) === false)
-		{
-			$this->_mk_err($key,'eregi false');
-			return(false);
-		}
-
 		return($value);
 	}
 
@@ -501,7 +538,7 @@ class xivo_filter
 		return($value);
 	}
 
-	function _chk_key_val($key,&$a,&$v,$set=true)
+	function _chk_key_value($key,&$a,&$v,$set=true)
 	{
 		$a = (array) $a;
 		$v = (array) $v;

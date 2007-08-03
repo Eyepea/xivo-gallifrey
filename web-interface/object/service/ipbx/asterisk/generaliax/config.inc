@@ -107,8 +107,12 @@ $array['element']['accountcode']['default'] = '';
 $array['element']['accountcode']['null'] = true;
 
 $array['element']['amaflags'] = array();
-$array['element']['amaflags']['value'] = array('default','omit','billing','documentation');
-$array['element']['amaflags']['default'] = 'default';
+$array['element']['amaflags']['value'] = array(
+				XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_META_DEFAULT,
+				XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_META_OMIT,
+				XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_META_BILLING,
+				XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_META_DOCUMENTATION);
+$array['element']['amaflags']['default'] = XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_META_DEFAULT;
 
 $array['element']['mailboxdetail'] = array();
 $array['element']['mailboxdetail']['value'] = array('no','yes');
@@ -224,37 +228,41 @@ $array['filter']['bindaddr'] = array('set' => false,'chk' => 2,'func' => 'xivo_f
 $array['filter']['iaxcompat'] = array('bool' => true);
 $array['filter']['authdebug'] = array('bool' => true);
 $array['filter']['delayreject'] = array('bool' => true);
-$array['filter']['trunkfreq'] = array('arrkey' => array(10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100));
+$array['filter']['trunkfreq'] = array('key' => array(10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100));
 $array['filter']['trunktimestamps'] = array('bool' => true);
 $array['filter']['regcontext'] = array('set' => false,'chk' => 2,'maxlen' => 80,
-					'preg' => '/^(?!macro-)[a-z0-9_-]+$/',
-					'unarrkey' => array('general','globals','hints','features'));
-$array['filter']['minregexpire'] = array('arrkey' => array(0,10,20,30,40,50,60,70,80,90,100,110,120));
-$array['filter']['maxregexpire'] = array('arrkey' => array(0,10,20,30,40,50,60,70,80,90,100,110,120));
-$array['filter']['bandwidth'] = array('arrkey' => array('low','medium','high'));
-$array['filter']['tos'] = array('arrkey' => array('none','lowdelay','throughput','reliability','mincost',
+					'regexp' => '/^(?!macro-)[a-z0-9_-]+$/',
+					'nokey' => array('general','globals','hints','features'));
+$array['filter']['minregexpire'] = array('key' => array(0,10,20,30,40,50,60,70,80,90,100,110,120));
+$array['filter']['maxregexpire'] = array('key' => array(0,10,20,30,40,50,60,70,80,90,100,110,120));
+$array['filter']['bandwidth'] = array('key' => array('low','medium','high'));
+$array['filter']['tos'] = array('key' => array('none','lowdelay','throughput','reliability','mincost',
 					  1,2,3,4,5,6,7,8,9,10,
 					  11,12,13,14,15,16,17,18,19,20,
 					  21,22,23,24,25,26,27,28,29,30,31));
 $array['filter']['jitterbuffer'] = array('bool' => true);
 $array['filter']['forcejitterbuffer'] = array('bool' => true);
-$array['filter']['dropcount'] = array('arrkey' => array(0,1,2,3,4,5,6,7,8,9,10));
-$array['filter']['maxjitterbuffer'] = array('arrkey' => array(0,250,500,750,1000,1250,1500,1750,2000));
-$array['filter']['maxjitterinterps'] = array('arrkey' => array(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20));
-$array['filter']['resyncthreshold'] = array('arrkey' => array(-1,0,250,500,750,1000,1250,1500,1750,2000));
-$array['filter']['minexcessbuffer'] = array('arrkey' => array(0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100));
-$array['filter']['maxexcessbuffer'] = array('arrkey' => array(0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100));
-$array['filter']['jittershrinkrate'] = array('arrkey' => array(0,1,2,3,4,5,6,7,8,9,10));
-$array['filter']['accountcode'] = array('set' => false,'chk' => 2,'maxlen' => 20,'preg' => '/^[a-z0-9_-]+$/i');
-$array['filter']['amaflags'] = array('arrkey' => array('default','omit','billing','documentation'));
+$array['filter']['dropcount'] = array('key' => array(0,1,2,3,4,5,6,7,8,9,10));
+$array['filter']['maxjitterbuffer'] = array('key' => array(0,250,500,750,1000,1250,1500,1750,2000));
+$array['filter']['maxjitterinterps'] = array('key' => array(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20));
+$array['filter']['resyncthreshold'] = array('key' => array(-1,0,250,500,750,1000,1250,1500,1750,2000));
+$array['filter']['minexcessbuffer'] = array('key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100));
+$array['filter']['maxexcessbuffer'] = array('key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100));
+$array['filter']['jittershrinkrate'] = array('key' => array(0,1,2,3,4,5,6,7,8,9,10));
+$array['filter']['accountcode'] = array('set' => false,'chk' => 2,'maxlen' => 20,'regexp' => '/^[a-z0-9_-]+$/i');
+$array['filter']['amaflags'] = array('key' => array(
+				XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_META_DEFAULT,
+				XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_META_OMIT,
+				XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_META_BILLING,
+				XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_META_DOCUMENTATION));
 $array['filter']['mailboxdetail'] = array('bool' => true);
 $array['filter']['notransfer'] = array('bool' => true);
-$array['filter']['language'] = array('arrkey' => array('en','fr'));
-$array['filter']['encryption'] = array('arrkey' => array('no','yes','aes128'));
-$array['filter']['maxauthreq'] = array('arrkey' => array(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20));
-$array['filter']['codecpriority'] = array('arrkey' => array('disabled','host','caller','reqonly'));
-$array['filter']['disallow'] = array('set' => false,'chk' => 2,'arrkey' => array('all'));
-$array['filter']['allow'] = array('set' => false,'chk' => 2,'arrvalue' => array(
+$array['filter']['language'] = array('key' => array('en','fr'));
+$array['filter']['encryption'] = array('key' => array('no','yes','aes128'));
+$array['filter']['maxauthreq'] = array('key' => array(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20));
+$array['filter']['codecpriority'] = array('key' => array('disabled','host','caller','reqonly'));
+$array['filter']['disallow'] = array('set' => false,'chk' => 2,'key' => array('all'));
+$array['filter']['allow'] = array('set' => false,'chk' => 2,'value' => array(
 						XIVO_SRE_IPBX_AST_CODEC_AUDIO_G723,
 						XIVO_SRE_IPBX_AST_CODEC_AUDIO_GSM,
 						XIVO_SRE_IPBX_AST_CODEC_AUDIO_ULAW,
@@ -277,13 +285,13 @@ $array['filter']['rtignoreregexpire'] = array('bool' => true);
 $array['filter']['rtautoclear'] = array('yes','no',1,10,20,30,40,50,60,70,80,90,
 					100,110,120,130,140,150,160,170,180,
 					190,200,210,220,230,240);
-$array['filter']['pingtime'] = array('arrkey' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
-$array['filter']['lagrqtime'] = array('arrkey' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
+$array['filter']['pingtime'] = array('key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
+$array['filter']['lagrqtime'] = array('key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
 $array['filter']['nochecksums'] = array('bool' => true);
-$array['filter']['autokill'] = array('arrkey' => array('no','yes',500,1000,1500,2000,2500,3000,3500,4000));
+$array['filter']['autokill'] = array('key' => array('no','yes',500,1000,1500,2000,2500,3000,3500,4000));
 
-$array['filter']['register_username'] = array('set' => false,'preg' => '/^[a-z0-9_@\.-]+$/i','maxlen' => 80);
-$array['filter']['register_password'] = array('set' => false,'chk' => 2,'preg' => '/^([a-z0-9_\.-]+|\[[a-z0-9\+\/]+={0,2}\])$/i','maxlen' => 80);
+$array['filter']['register_username'] = array('set' => false,'regexp' => '/^[a-z0-9_@\.-]+$/i','maxlen' => 80);
+$array['filter']['register_password'] = array('set' => false,'chk' => 2,'regexp' => '/^([a-z0-9_\.-]+|\[[a-z0-9\+\/]+={0,2}\])$/i','maxlen' => 80);
 $array['filter']['register_host'] = array('set' => false,'func' => 'xivo_filter::chk_host_ipv4_strict','maxlen' => 64);
 $array['filter']['register_port'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,65535));
 

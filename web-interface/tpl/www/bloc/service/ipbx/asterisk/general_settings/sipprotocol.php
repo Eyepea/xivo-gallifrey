@@ -33,8 +33,8 @@
 
 <div class="sb-smenu">
 	<ul>
-		<li id="smenu-tab-1" class="moo" onclick="xivo_smenu_click(this,'moc','sb-part-general');" onmouseout="xivo_smenu_out(this,'moo');" onmouseover="xivo_smenu_over(this,'mov');">
-			<div><span class="span-center"><a href="#" onclick="xivo_smenu_click(this,'moc','sb-part-general'); return(false);"><?=$this->bbf('smenu_general');?></a></span></div><span class="span-right">&nbsp;</span>
+		<li id="smenu-tab-1" class="moo" onclick="xivo_smenu_click(this,'moc','sb-part-first');" onmouseout="xivo_smenu_out(this,'moo');" onmouseover="xivo_smenu_over(this,'mov');">
+			<div><span class="span-center"><a href="#" onclick="xivo_smenu_click(this,'moc','sb-part-first'); return(false);"><?=$this->bbf('smenu_general');?></a></span></div><span class="span-right">&nbsp;</span>
 		</li>
 		<li id="smenu-tab-2" class="moo" onclick="xivo_smenu_click(this,'moc','sb-part-network');" onmouseout="xivo_smenu_out(this,'moo');" onmouseover="xivo_smenu_over(this,'mov');">
 			<div><span class="span-center"><a href="#" onclick="xivo_smenu_click(this,'moc','sb-part-network'); return(false);"><?=$this->bbf('smenu_network');?></a></span></div><span class="span-right">&nbsp;</span>
@@ -45,8 +45,8 @@
 		<li id="smenu-tab-4" class="moo" onclick="xivo_smenu_click(this,'moc','sb-part-default');" onmouseout="xivo_smenu_out(this,'moo');" onmouseover="xivo_smenu_over(this,'mov');">
 			<div><span class="span-center"><a href="#" onclick="xivo_smenu_click(this,'moc','sb-part-default'); return(false);"><?=$this->bbf('smenu_default');?></a></span></div><span class="span-right">&nbsp;</span>
 		</li>
-		<li id="smenu-tab-5" class="moo-last" onclick="xivo_smenu_click(this,'moc','sb-part-realtime',1);" onmouseout="xivo_smenu_out(this,'moo',1);" onmouseover="xivo_smenu_over(this,'mov',1);">
-			<div><span class="span-center"><a href="#" onclick="xivo_smenu_click(this,'moc','sb-part-realtime'); return(false);"><?=$this->bbf('smenu_realtime');?></a></span></div><span class="span-right">&nbsp;</span>
+		<li id="smenu-tab-5" class="moo-last" onclick="xivo_smenu_click(this,'moc','sb-part-last',1);" onmouseout="xivo_smenu_out(this,'moo',1);" onmouseover="xivo_smenu_over(this,'mov',1);">
+			<div><span class="span-center"><a href="#" onclick="xivo_smenu_click(this,'moc','sb-part-last'); return(false);"><?=$this->bbf('smenu_realtime');?></a></span></div><span class="span-right">&nbsp;</span>
 		</li>
 	</ul>
 </div>
@@ -57,7 +57,7 @@
 <?=$form->hidden(array('name' => XIVO_SESS_NAME,'value' => XIVO_SESS_ID));?>
 <?=$form->hidden(array('name' => 'fm_send','value' => '1'));?>
 
-<div id="sb-part-general">
+<div id="sb-part-first">
 
 <?=$form->text(array('desc' => $this->bbf('fm_bindport'),'name' => 'bindport','labelid' => 'bindport','value' => $this->varra('info','bindport'),'default' => $element['bindport']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
@@ -155,7 +155,7 @@
 
 <div id="codeclist" class="fm-field fm-multilist"><p><label id="lb-codeclist" for="it-codeclist"><?=$this->bbf('fm_codec-allow');?></label></p>
 	<div class="slt-outlist">
-		<?=$form->slt(array('name' => 'codeclist','label' => false,'id' => 'it-codeclist','key_val' => 'id','multiple' => true,'size' => 5,'field' => false,'key' => false),$element['allow']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+		<?=$form->slt(array('name' => 'codeclist','label' => false,'id' => 'it-codeclist','overkey' => 'id','multiple' => true,'size' => 5,'field' => false,'key' => false),$element['allow']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 	</div>
 	<div class="inout-list">
 
@@ -215,7 +215,7 @@
 
 </div>
 
-<div id="sb-part-realtime" class="b-nodisplay">
+<div id="sb-part-last" class="b-nodisplay">
 
 <?=$form->checkbox(array('desc' => $this->bbf('fm_rtcachefriends'),'name' => 'rtcachefriends','labelid' => 'rtcachefriends','checked' => $this->varra('info','rtcachefriends'),'default' => $element['rtcachefriends']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 

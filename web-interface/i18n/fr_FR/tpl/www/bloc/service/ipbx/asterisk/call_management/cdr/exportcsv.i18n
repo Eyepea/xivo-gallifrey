@@ -1,0 +1,85 @@
+; load ./search
+
+; fm_dbeg
+Date de début
+
+; fm_dend
+Date de fin
+
+; fm_channel
+Canal
+
+; fm_disposition
+Statut de l'appel
+
+; fm_amaflags
+Drapeau de facturation
+
+; fm_src
+Appelant
+
+; fm_dst
+Appelé
+
+; fm_clid
+Nom d'appel
+
+; fm_accountcode
+Numéro d'accompte
+
+; fm_userfield
+Champs utilisateur
+
+; fm_dubeg
+Début de la durée
+
+; fm_dubeg-seconds
+%s seconde(s)
+
+; fm_dubeg-minutes
+%s minute(s)
+
+; fm_duend
+Fin de la durée
+
+; fm_duend-seconds
+%s seconde(s)
+
+; fm_duend-minutes
+%s minute(s)
+
+; col_channel
+Canal
+
+; col_disposition
+Statut de l'appel
+
+; col_amaflags
+Drapeau de facturation
+
+; col_clid
+Nom d'appel
+
+; col_accountcode
+Numéro d'accompte
+
+; col_userfield
+Champs utilisateur
+
+; col_dcontext
+Contexte
+
+; col_dstchannel
+Canal de destination
+
+; col_billsec
+Durée réelle
+
+; col_lastapp
+Dernière application
+
+; col_lastdata
+Dernière donnée
+
+; col_uniqueid
+Identifiant unique

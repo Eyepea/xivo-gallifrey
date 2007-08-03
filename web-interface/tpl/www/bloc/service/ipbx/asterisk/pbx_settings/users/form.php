@@ -41,7 +41,7 @@
 	endif;
 ?>
 
-<div id="sb-part-general">
+<div id="sb-part-first">
 
 <?=$form->text(array('desc' => $this->bbf('fm_userfeatures_firstname'),'name' => 'ufeatures[firstname]','labelid' => 'ufeatures-firstname','value' => $info['ufeatures']['firstname'],'size' => 15),'onchange="xivo_chgname();" onfocus="xivo_cpyname(); this.className=\'it-mfocus\';" onblur="xivo_chgname(); this.className=\'it-mblur\';"');?>
 
@@ -82,8 +82,8 @@
 		</label>
 	</p>
 	<div class="slt-outlist">
-		<?=$form->slt(array('name' => 'codeclist','label' => false,'id' => 'it-sip-codeclist','key_val' => 'id','multiple' => true,'size' => 5,'field' => false,'key' => false),$element['protocol']['sip']['allow']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
-		<?=$form->slt(array('name' => 'codeclist','label' => false,'id' => 'it-iax-codeclist','key_val' => 'id','multiple' => true,'size' => 5,'field' => false,'key' => false),$element['protocol']['iax']['allow']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+		<?=$form->slt(array('name' => 'codeclist','label' => false,'id' => 'it-sip-codeclist','overkey' => 'id','multiple' => true,'size' => 5,'field' => false,'key' => false),$element['protocol']['sip']['allow']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+		<?=$form->slt(array('name' => 'codeclist','label' => false,'id' => 'it-iax-codeclist','overkey' => 'id','multiple' => true,'size' => 5,'field' => false,'key' => false),$element['protocol']['iax']['allow']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 	</div>
 	<div class="inout-list">
 		<a href="#" onclick="xivo_fm_move_selected('it-'+xivo_protocol+'-codeclist','it-'+xivo_protocol+'-codec'); return(false);" title="<?=$this->bbf('bt-incodec');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt-incodec'),'class="bt-inlist" id="bt-incodec" border="0"');?></a><br />
@@ -138,7 +138,7 @@
 	if(is_array($info['autoprov']) === false):
 ?>
 
-	<?=$form->slt(array('desc' => $this->bbf('fm_autoprov_vendormodel'),'name' => 'autoprov[vendormodel]','labelid' => 'autoprov-vendormodel','optgroup' => array('key' => 'name'),'empty' => true,'key' => 'label','key_val' => 'path','value' => $vendormodel),$autoprov_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+	<?=$form->slt(array('desc' => $this->bbf('fm_autoprov_vendormodel'),'name' => 'autoprov[vendormodel]','labelid' => 'autoprov-vendormodel','optgroup' => array('key' => 'name'),'empty' => true,'key' => 'label','overkey' => 'path','value' => $vendormodel),$autoprov_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 	<?=$form->text(array('desc' => $this->bbf('fm_autoprov_macaddr'),'name' => 'autoprov[macaddr]','labelid' => 'autoprov-macaddr','value' => $info['autoprov']['macaddr'],'size' => 15),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
@@ -158,7 +158,7 @@
 ?>
 </div>
 
-<div id="sb-part-advanced" class="b-nodisplay">
+<div id="sb-part-last" class="b-nodisplay">
 
 	<?=$form->text(array('desc' => $this->bbf('fm_protocol_callerid'),'name' => 'protocol[callerid]','labelid' => 'protocol-callerid','value' => $info['protocol']['callerid'],'size' => 15,'notag' => false),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 

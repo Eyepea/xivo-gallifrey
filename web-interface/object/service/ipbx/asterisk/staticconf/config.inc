@@ -29,7 +29,7 @@ $array['element']['var_val']['default'] = '';
 
 $array['filter'] = array();
 $array['filter']['commented'] = array('bool' => true);
-$array['filter']['filename'] = array('preg' => '/^[a-z0-9_-]+\.(conf|ael)$/i','maxlen' => 128);
+$array['filter']['filename'] = array('regexp' => '/^[a-z0-9_-]+\.(conf|ael)$/i','maxlen' => 128);
 $array['filter']['category'] = array('set' => false,'chk' => 2,'maxlen' => 128);
 $array['filter']['var_name'] = array('set' => false,'chk' => 2,'maxlen' => 128);
 $array['filter']['var_val'] = array('set' => false,'chk' => 2,'maxlen' => 128);

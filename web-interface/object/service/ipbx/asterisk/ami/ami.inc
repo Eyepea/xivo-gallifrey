@@ -38,35 +38,75 @@ class xivo_service_asterisk_ami extends xivo_service_asterisk_abstract
 		xivo::load_class('xivo_socket');
 		$this->_socket = new xivo_socket($this->_conf['socket']);
 
-		if(xivo_issa('timeout',$this->_conf['sockect']) === true)
+		if(xivo_issa('sndtimeo',$this->_conf['socket']) === true)
 		{
 			$this->_socket->set_option(null,
 						   'sndtimeo',
-						   $this->_conf['socket']['timeout']);
+						   $this->_conf['socket']['sndtimeo']);
+		}
+		
+		if(xivo_issa('rcvtimeo',$this->_conf['socket']) === true)
+		{
+			$this->_socket->set_option(null,
+						   'rcvtimeo',
+						   $this->_conf['socket']['rcvtimeo']);
 		}
 
 		return(true);
 	}
 
-	function cmd($cmd)
+	function cmd($cmd,$read=false)
 	{
 		$r = false;
 
 		$cmd = trim((string) $cmd);
+		$read = (bool) $read;
 
 		if(xivo_cast_print_strict($cmd) === false)
 			return(false);
 
-		$cmd = $match[0];
-		
 		$this->_load_socket();
 
 		if($this->_socket->is_open() === false)
 			return(false);
 
-		$r = $this->_socket->write($cmd);
+		if(($r = $this->_socket->write($cmd)) !== false && $read === true)
+			$r = $this->_parse_cti_recv($this->_socket->read_binary());
 
 		$this->_socket->close();
+
+		return($r);
+	}
+
+	function _parse_cti_recv($recv)
+	{
+		$recv = (string) $recv;
+		$recv = str_replace("\r",'',$recv);
+		$recv = explode("\n",$recv);
+
+		if(($nb = count($recv)) === 0)
+			return(false);
+		
+		$r = array();
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			$msg = explode(':',$recv[$i],2);
+
+			if(isset($msg[1]) === false)
+				$msg[1] = '';
+
+			if($msg[0] === 'XIVO-CLI-PHP')
+			{
+				if(substr($msg[1],0,2) === 'KO')
+					return(false);
+				continue;
+			}
+			else if($msg[0] === 'Privilege')
+				continue;
+
+			$r[] = $recv[$i];
+		}
 
 		return($r);
 	}

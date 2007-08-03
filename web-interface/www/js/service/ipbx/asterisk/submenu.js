@@ -1,3 +1,3 @@
-xivo_winload += 'if(xivo_eid(\'smenu-tab-1\') != false)\n{\n' +
-		'xivo_smenu[\'bak\'][\'smenu-tab-1\'] = xivo_eid(\'smenu-tab-1\').className;\n' +
-		'xivo_smenu_click(xivo_eid(\'smenu-tab-1\'),\'moc\',\'sb-part-general\');\n}\n';
+xivo_winload += 'if(xivo_eid(xivo_smenu[\'tab\']) != false)\n{\n' +
+		'xivo_smenu[\'bak\'][xivo_smenu[\'tab\']] = xivo_eid(xivo_smenu[\'tab\']).className;\n' +
+		'xivo_smenu_click(xivo_eid(xivo_smenu[\'tab\']),xivo_smenu[\'class\'],xivo_smenu[\'part\'],xivo_smenu[\'last\']);\n}\n';

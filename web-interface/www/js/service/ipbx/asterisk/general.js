@@ -54,11 +54,12 @@ function xivo_timezone(obj,del)
 	{
 		if(xivo_is_object(obj) == false
 		|| xivo_is_object(obj.parentNode) == false
+		|| xivo_is_object(obj.parentNode.parentNode) == false
 		|| xivo_is_object(obj.parentNode.parentNode) == false)
 			return(false);
 
 		node = obj.parentNode.parentNode;
-		node.innerHTML = '';
+		node.parentNode.removeChild(node);
 
 		xivo_nb_timezone--;
 

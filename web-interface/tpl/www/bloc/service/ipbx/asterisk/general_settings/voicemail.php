@@ -1,11 +1,11 @@
 <?php
 	$form = &$this->get_module('form');
 	$url = &$this->get_module('url');
+	$dhtml = &$this->get_module('dhtml');
 
 	$element = $this->vars('element');
 
 	if($this->vars('fm_save') === true):
-		$dhtml = &$this->get_module('dhtml');
 		$dhtml->write_js('xivo_form_success(\''.xivo_stript($this->bbf('fm_success-save')).'\');');
 	endif;
 
@@ -21,22 +21,18 @@
 
 	if(($zmsg = xivo_get_aks($zonemessages)) !== false):
 		$zmsg_nb = $zmsg['cnt'];
+		$dhtml->write_js('xivo_nb_timezone = '.$zmsg_nb.';');
 	else:
 		$zmsg_nb = 0;
 	endif;
 ?>
-<script type="text/javascript">
-<!--
-	var xivo_nb_timezone = <?=$zmsg_nb?>;
--->
-</script>
 <div class="b-infos b-form">
 	<h3 class="sb-top xspan"><span class="span-left">&nbsp;</span><span class="span-center"><?=$this->bbf('title_content_name');?></span><span class="span-right">&nbsp;</span></h3>
 
 <div class="sb-smenu">
 	<ul>
-		<li id="smenu-tab-1" class="moo" onclick="xivo_smenu_click(this,'moc','sb-part-general');" onmouseout="xivo_smenu_out(this,'moo');" onmouseover="xivo_smenu_over(this,'mov');">
-			<div><span class="span-center"><a href="#" onclick="xivo_smenu_click(this,'moc','sb-part-general'); return(false);"><?=$this->bbf('smenu_general');?></a></span></div><span class="span-right">&nbsp;</span>
+		<li id="smenu-tab-1" class="moo" onclick="xivo_smenu_click(this,'moc','sb-part-first');" onmouseout="xivo_smenu_out(this,'moo');" onmouseover="xivo_smenu_over(this,'mov');">
+			<div><span class="span-center"><a href="#" onclick="xivo_smenu_click(this,'moc','sb-part-first'); return(false);"><?=$this->bbf('smenu_general');?></a></span></div><span class="span-right">&nbsp;</span>
 		</li>
 		<li id="smenu-tab-2" class="moo" onclick="xivo_smenu_click(this,'moc','sb-part-voicemenu');" onmouseout="xivo_smenu_out(this,'moo');" onmouseover="xivo_smenu_over(this,'mov');">
 			<div><span class="span-center"><a href="#" onclick="xivo_smenu_click(this,'moc','sb-part-voicemenu'); return(false);"><?=$this->bbf('smenu_voicemenu');?></a></span></div><span class="span-right">&nbsp;</span>
@@ -53,8 +49,8 @@
 		<li id="smenu-tab-6" class="moo" onclick="xivo_smenu_click(this,'moc','sb-part-adsi');" onmouseout="xivo_smenu_out(this,'moo');" onmouseover="xivo_smenu_over(this,'mov');">
 			<div><span class="span-center"><a href="#" onclick="xivo_smenu_click(this,'moc','sb-part-adsi'); return(false);"><?=$this->bbf('smenu_adsi');?></a></span></div><span class="span-right">&nbsp;</span>
 		</li>
-		<li id="smenu-tab-7" class="moo-last" onclick="xivo_smenu_click(this,'moc','sb-part-advanced',1);" onmouseout="xivo_smenu_out(this,'moo',1);" onmouseover="xivo_smenu_over(this,'mov',1);">
-			<div><span class="span-center"><a href="#" onclick="xivo_smenu_click(this,'moc','sb-part-advanced'); return(false);"><?=$this->bbf('smenu_advanced');?></a></span></div><span class="span-right">&nbsp;</span>
+		<li id="smenu-tab-7" class="moo-last" onclick="xivo_smenu_click(this,'moc','sb-part-last',1);" onmouseout="xivo_smenu_out(this,'moo',1);" onmouseover="xivo_smenu_over(this,'mov',1);">
+			<div><span class="span-center"><a href="#" onclick="xivo_smenu_click(this,'moc','sb-part-last'); return(false);"><?=$this->bbf('smenu_advanced');?></a></span></div><span class="span-right">&nbsp;</span>
 		</li>
 	</ul>
 </div>
@@ -65,7 +61,7 @@
 <?=$form->hidden(array('name' => XIVO_SESS_NAME,'value' => XIVO_SESS_ID));?>
 <?=$form->hidden(array('name' => 'fm_send','value' => '1'));?>
 
-<div id="sb-part-general">
+<div id="sb-part-first">
 
 <?=$form->slt(array('desc' => $this->bbf('fm_voicemail-maxmsg'),'name' => 'voicemail[maxmsg]','labelid' => 'voicemail-maxmsg','key' => false,'value' => xivo_cast_except($this->varra('voicemail','maxmsg'),null,'uint'),'default' => $element['voicemail']['maxmsg']['default']),$element['voicemail']['maxmsg']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
@@ -235,7 +231,7 @@
 
 </div>
 
-<div id="sb-part-advanced" class="b-nodisplay">
+<div id="sb-part-last" class="b-nodisplay">
 
 <?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail-searchcontexts'),'name' => 'voicemail[searchcontexts]','labelid' => 'voicemail-searchcontexts','checked' => $this->varra('voicemail','searchcontexts'),'default' => $element['voicemail']['searchcontexts']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 

@@ -39,11 +39,11 @@ $array['element']['filename'] = array();
 $array['element']['filename']['unset'] = true;
 
 $array['filter'] = array();
-$array['filter']['category'] = array('unarrkey' => array('general'),'preg' => '/^[a-z0-9_-]+$/','minlen' => 1,'maxlen' => 20);
-$array['filter']['mode'] = array('arrkey' => array('files','custom','quietmp3','mp3','mp3nb','quietmp3nb'));
+$array['filter']['category'] = array('nokey' => array('general'),'regexp' => '/^[a-z0-9_-]+$/','minlen' => 1,'maxlen' => 20);
+$array['filter']['mode'] = array('key' => array('files','custom','quietmp3','mp3','mp3nb','quietmp3nb'));
 $array['filter']['application'] = array('set' => false,'chk' => 2,'maxlen' => 128);
 $array['filter']['random'] = array('bool' => true);
-$array['filter']['filename'] = array('set' => false,'preg' => '/^['.XIVO_SRE_IPBX_AST_REGEX_AUDIO_FILE_PATTERN.']'.
+$array['filter']['filename'] = array('set' => false,'regexp' => '/^['.XIVO_SRE_IPBX_AST_REGEX_AUDIO_FILE_PATTERN.']'.
 							       XIVO_SRE_IPBX_AST_REGEX_AUDIO_FILE_LENGTH.'\.(mp3|wav|ogg)$/');
 
 ?>

@@ -16,6 +16,72 @@ class xivo_service_asterisk extends xivo_service_abstract
 			trigger_error('Invalid parameter in '.__CLASS__,E_USER_ERROR);
 
 		$this->_ini = $ini;
+
+		$this->_get_service_information();
+	}
+
+	function _get_service_information()
+	{
+		$uppertype = strtoupper($this->_type);
+		$define_label = 'XIVO_SRE_'.$uppertype.'_LABEL';
+		$define_version = 'XIVO_SRE_'.$uppertype.'_VERSION';
+
+		if(isset($_SESSION['_SRE'][$this->_type][$this->_name]) === false)
+		{
+			define($define_label,'undefined');
+			define($define_version,'undefined');
+
+			return(false);
+		}
+
+		$sess_sre = &$_SESSION['_SRE'][$this->_type][$this->_name];
+
+		$label = $version = false;
+
+		if(xivo_issa('infos',$sess_sre) === true
+		&& isset($sess_sre['infos']['label'],$sess_sre['infos']['version']) === true)
+		{
+			$label = (string) $sess_sre['infos']['label'];
+			$version = (string) $sess_sre['infos']['version'];
+		}
+		else if(($ami = &$this->get_module('ami')) !== false
+		&& ($infos = $ami->cmd('show version',true)) !== false
+		&& is_array($infos) === true && isset($infos[0]) === true)
+		{
+			$infos = explode(' ',$infos[0],3);
+
+			if(isset($infos[0]) === true)
+			{
+				$label = (string) $infos[0];
+				$sess_sre['infos']['label'] = $label;
+			}
+
+			if(isset($infos[1]) === true)
+			{
+				$version = (string) $infos[1];
+				$sess_sre['infos']['version'] = $version;
+			}
+		}
+
+		if(($label === false || $version === false) === true
+		&& xivo_issa('ini',$sess_sre) === true
+		&& xivo_issa('general',$sess_sre['ini']) === true)
+		{
+			if($label === false && isset($sess_sre['ini']['general']['label']) === true)
+				$label = (string) $sess_sre['ini']['general']['label'];
+
+			if($version === false && isset($sess_sre['ini']['general']['version']) === true)
+				$version = (string) $sess_sre['ini']['general']['version'];
+		}
+		
+		if($label === false)
+			$label = 'undefined';
+
+		if($version === false)
+			$version = 'undefined';
+
+		define($define_label,$label);
+		define($define_version,$version);
 	}
 
 	function get_users_search($name,$protocols=array(),$disable=null)
@@ -750,12 +816,16 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 	function chk_channel($channel)
 	{
+		$channel = strtolower((string) $channel);
+
 		return($this->_chk_exists_cfg('channel',$channel));
 	}
 
 	function chk_channel_by_protocol($protocol)
 	{
 		$r = false;
+
+		$protocol = strtolower((string) $protocol);
 
 		if($this->chk_protocol($protocol) === true && $this->chk_channel($protocol) === true)
 			$r = true;
@@ -767,6 +837,8 @@ class xivo_service_asterisk extends xivo_service_abstract
 	{
 		$r = false;
 
+		$protocol = strtolower((string) $protocol);
+
 		if($this->chk_channel_by_protocol($protocol) === true)
 			$r = $this->_conf['channel'][$protocol];
 
@@ -775,6 +847,8 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 	function chk_channel_by_interface($interface)
 	{
+		$interface = strtolower((string) $interface);
+
 		if(($pos = strpos($interface,'/')) !== false)
 			$interface = substr($interface,0,$pos);
 
@@ -788,6 +862,8 @@ class xivo_service_asterisk extends xivo_service_abstract
 	function get_channel($channel)
 	{
 		$r = false;
+
+		$channel = strtolower((string) $channel);
 
 		if($this->chk_channel($channel) === true)
 			$r = $this->_conf['channel'][$channel];

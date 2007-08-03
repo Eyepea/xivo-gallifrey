@@ -11,7 +11,7 @@ $array['element']['context'] = array();
 $array['element']['context']['default'] = '';
 
 $array['filter'] = array();
-$array['filter']['number'] = array('minlen' => 1,'maxlen' => 80,'preg' => '/^[0-9\*#]+$/');
-$array['filter']['context'] = array('unarrkey' => array('general','globals','hints','features'),'preg' => '/^(?!macro-)[a-z0-9_-]+$/','minlen' => 1,'maxlen' => 80);
+$array['filter']['number'] = array('minlen' => 1,'maxlen' => 80,'regexp' => '/^[0-9\*#]+$/');
+$array['filter']['context'] = array('nokey' => array('general','globals','hints','features'),'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','minlen' => 1,'maxlen' => 80);
 
 ?>

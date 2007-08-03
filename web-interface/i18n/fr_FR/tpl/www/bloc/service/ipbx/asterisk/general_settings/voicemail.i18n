@@ -370,6 +370,9 @@ Ajouter
 ; opt_delete
 Supprimer
 
+; no_timezone
+Aucun fuseau horaire
+
 ; fm_voicemail-adsifdn
 Numéro du descripteur :
 

@@ -51,11 +51,18 @@ class xivo_service_asterisk_autoprov extends xivo_service_asterisk_abstract
 		xivo::load_class('xivo_socket');
 		$this->_sockprov[$type] = new xivo_socket($this->_autoprov[$type]);
 
-		if(xivo_issa('timeout',$this->_autoprov[$type]) === true)
+		if(xivo_issa('sndtimeo',$this->_autoprov[$type]) === true)
 		{
 			$this->_sockprov[$type]->set_option(null,
 							    'sndtimeo',
-							    $this->_autoprov[$type]['timeout']);
+							    $this->_autoprov[$type]['sndtimeo']);
+		}
+
+		if(xivo_issa('rcvtimeo',$this->_autoprov[$type]) === true)
+		{
+			$this->_sockprov[$type]->set_option(null,
+							    'rcvtimeo',
+							    $this->_autoprov[$type]['rcvtimeo']);
 		}
 
 		return(true);
@@ -72,7 +79,7 @@ class xivo_service_asterisk_autoprov extends xivo_service_asterisk_abstract
 	
 		if(($write = $this->_mk_sockprov_http('list')) === false
 		|| $this->_sockprov['list']->write($write) === false
-		|| ($read = $this->_sockprov['list']->read_normal()) === false
+		|| ($read = $this->_sockprov['list']->read_binary()) === false
 		|| ($recv = $this->_parse_sockprov_recv($read)) === false)
 		{
 			$this->_sockprov['list']->close();
@@ -153,7 +160,7 @@ class xivo_service_asterisk_autoprov extends xivo_service_asterisk_abstract
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			$header = explode(': ',$recv[$i]);
+			$header = explode(': ',$recv[$i],2);
 
 			if($i === 0 && $header[0] !== '' && isset($header[1]) === false)
 				$r['status'] = $header[0];

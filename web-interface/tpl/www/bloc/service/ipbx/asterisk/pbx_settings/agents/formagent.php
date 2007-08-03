@@ -14,7 +14,7 @@
 	$qmember_unslt = $this->vars('qmember_unslt');
 ?>
 
-<div id="sb-part-general">
+<div id="sb-part-first">
 
 <?=$form->text(array('desc' => $this->bbf('fm_agentfeatures_firstname'),'name' => 'afeatures[firstname]','labelid' => 'afeatures-firstname','value' => $info['afeatures']['firstname'],'default' => $element['afeatures']['firstname']['default'],'size' => 15),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
@@ -26,7 +26,7 @@
 
 <?=$form->checkbox(array('desc' => $this->bbf('fm_agentfeatures_silent'),'name' => 'afeatures[silent]','labelid' => 'afeatures-silent','default' => $element['afeatures']['silent']['default'],'checked' => $info['afeatures']['silent']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_agentfeatures_numgroup'),'name' => 'afeatures[numgroup]','labelid' => 'afeatures-numgroup','browse' => 'agroup','key' => 'name','key_val' => 'id','default' => $this->vars('group'),'value' => $info['afeatures']['numgroup']),$list_grps,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->slt(array('desc' => $this->bbf('fm_agentfeatures_numgroup'),'name' => 'afeatures[numgroup]','labelid' => 'afeatures-numgroup','browse' => 'agroup','key' => 'name','overkey' => 'id','default' => $this->vars('group'),'value' => $info['afeatures']['numgroup']),$list_grps,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 </div>
 
@@ -50,7 +50,7 @@
 		</div>
 		<div class="slt-inlist">
 
-		<?=$form->slt(array('name' => 'queue-select[]','label' => false,'id' => 'it-queue','multiple' => true,'size' => 5,'field' => false,'key' => 'queue_name','key_val' => 'queue_name'),$qmember_slt,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+		<?=$form->slt(array('name' => 'queue-select[]','label' => false,'id' => 'it-queue','multiple' => true,'size' => 5,'field' => false,'key' => 'queue_name','overkey' => 'queue_name'),$qmember_slt,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 		</div>
 	</div>
@@ -95,7 +95,7 @@
 
 </div>
 
-<div id="sb-part-advanced" class="b-nodisplay">
+<div id="sb-part-last" class="b-nodisplay">
 
 <?=$form->slt(array('desc' => $this->bbf('fm_agent_ackcall'),'name' => 'agent[ackcall]','labelid' => 'agent-ackcall','key' => false,'bbf' => array('concatkey','fm_agent_ackcall-opt-'),'default' => $element['agent']['ackcall']['default'],'value' => $info['agent']['ackcall']),$element['agent']['ackcall']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 

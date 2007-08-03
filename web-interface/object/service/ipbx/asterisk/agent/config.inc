@@ -71,18 +71,18 @@ $array['element']['custom_beep']['default'] = 'beep';
 $array['element']['custom_beep']['setdef'] = true;
 
 $array['filter'] = array();
-$array['filter']['agent'] = array('minlen' => 1,'maxlen' => 128,'cast' => 'cprint','preg' => '/^[0-9\*#]+(,[0-9\*#]*(,[^,]+)?)?$/');
+$array['filter']['agent'] = array('minlen' => 1,'maxlen' => 128,'cast' => 'cprint','regexp' => '/^[0-9\*#]+(,[0-9\*#]*(,[^,]+)?)?$/');
 $array['filter']['group'] = array('cast' => 'uint','between' => array(1,63));
-$array['filter']['ackcall'] = array('arrkey' => array('no','yes','always'));
-$array['filter']['autologoff'] = array('set' => false,'chk' => 2,'arrkey' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
-$array['filter']['wrapuptime'] = array('set' => false,'chk' => 2,'arrkey' => array(0,5000,10000,15000,20000,25000,30000,35000,40000,45000,50000,55000,60000));
-$array['filter']['maxlogintries'] = array('set' => false,'chk' => 2,'arrkey' => array(0,1,2,3,4,5,6,7,8,9,10));
+$array['filter']['ackcall'] = array('key' => array('no','yes','always'));
+$array['filter']['autologoff'] = array('set' => false,'chk' => 2,'key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
+$array['filter']['wrapuptime'] = array('set' => false,'chk' => 2,'key' => array(0,5000,10000,15000,20000,25000,30000,35000,40000,45000,50000,55000,60000));
+$array['filter']['maxlogintries'] = array('set' => false,'chk' => 2,'key' => array(0,1,2,3,4,5,6,7,8,9,10));
 $array['filter']['goodbye'] = array('set' => false,'chk' => 2,'maxlen' => 128);
 $array['filter']['musiconhold'] = array('set' => false,'chk' => 2,'maxlen' => 20);
 $array['filter']['updatecdr'] = array('bool' => true);
 $array['filter']['recordagentcalls'] = array('bool' => true);
 $array['filter']['createlink'] = array('bool' => true);
-$array['filter']['recordformat'] = array('arrkey' => array(
+$array['filter']['recordformat'] = array('key' => array(
 					XIVO_SRE_IPBX_AST_FORMAT_AUDIO_WAV,
 					XIVO_SRE_IPBX_AST_FORMAT_AUDIO_WAV49,
 					XIVO_SRE_IPBX_AST_FORMAT_AUDIO_GSM));

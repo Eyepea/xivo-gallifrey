@@ -14,7 +14,7 @@
 	$announce_list = $this->vars('announce_list');
 ?>
 
-<div id="sb-part-general">
+<div id="sb-part-first">
 
 <?=$form->text(array('desc' => $this->bbf('fm_qfeatures_name'),'name' => 'qfeatures[name]','labelid' => 'qfeatures-name','size' => 15,'default' => $element['qfeatures']['name']['default'],'value' => $info['qfeatures']['name']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
@@ -188,7 +188,7 @@ endif;
 
 </div>
 
-<div id="sb-part-advanced" class="b-nodisplay">
+<div id="sb-part-last" class="b-nodisplay">
 
 <?=$form->text(array('desc' => $this->bbf('fm_qfeatures_context'),'name' => 'qfeatures[context]','labelid' => 'qfeatures-context','size' => 15,'default' => $element['qfeatures']['context']['default'],'value' => $info['qfeatures']['context']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 

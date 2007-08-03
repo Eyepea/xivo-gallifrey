@@ -84,14 +84,14 @@ $array['filter']['callerid'] = array('chk' => 2,'maxlen' => 80,'notag' => false)
 $array['filter']['name'] = array('minlen' => 1,'maxlen' => 80);
 $array['filter']['secret'] = array('set' => false,'chk' => 2,'minlen' => 1,'maxlen' => 80);
 $array['filter']['host'] = array('set' => false,'chk' => 2);
-$array['filter']['amaflags'] = array('set' => false,'chk' => 2,'arrkey' => array('default','omit','billing','documentation'));
+$array['filter']['amaflags'] = array('set' => false,'chk' => 2,'key' => array('default','omit','billing','documentation'));
 $array['filter']['accountcode'] = array('set' => false,'chk' => 2,'maxlen' => 20);
-$array['filter']['callgroup'] = array('set' => false,'chk' => 2,'preg' => '/^([0-9]+[,]?)*$/','maxlen' => 10);
-$array['filter']['context'] = array('set' => false,'chk' => 2,'unarrkey' => array('general','globals','initconfig','hints','features','zonemessages'),'preg' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 80);
+$array['filter']['callgroup'] = array('set' => false,'chk' => 2,'regexp' => '/^([0-9]+[,]?)*$/','maxlen' => 10);
+$array['filter']['context'] = array('set' => false,'chk' => 2,'nokey' => array('general','globals','initconfig','hints','features','zonemessages'),'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 80);
 $array['filter']['call-limit'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,30));
 $array['filter']['qualify'] = array('bool' => true);
-$array['filter']['disallow'] = array('set' => false,'chk' => 2,'arrkey' => array('all'));
-$array['filter']['allow'] = array('set' => false,'chk' => 2,'arrvalue' => array(
+$array['filter']['disallow'] = array('set' => false,'chk' => 2,'key' => array('all'));
+$array['filter']['allow'] = array('set' => false,'chk' => 2,'value' => array(
 						XIVO_SRE_IPBX_AST_CODEC_AUDIO_G723,
 						XIVO_SRE_IPBX_AST_CODEC_AUDIO_GSM,
 						XIVO_SRE_IPBX_AST_CODEC_AUDIO_ULAW,
@@ -108,7 +108,7 @@ $array['filter']['allow'] = array('set' => false,'chk' => 2,'arrvalue' => array(
 						XIVO_SRE_IPBX_AST_CODEC_VIDEO_H261,
 						XIVO_SRE_IPBX_AST_CODEC_VIDEO_H263,
 						XIVO_SRE_IPBX_AST_CODEC_VIDEO_H263P));
-$array['filter']['host-dynamic'] = array('set' => false,'arrkey' => array('dynamic','static'));
+$array['filter']['host-dynamic'] = array('set' => false,'key' => array('dynamic','static'));
 $array['filter']['host-static'] = array('set' => false,'func' => 'xivo_filter::chk_host_ipv4_strict');
 $array['filter']['port'] = array('set' => false,'chk' => 2);
 $array['filter']['ipaddr'] = array('set' => false,'chk' => 2);

@@ -283,12 +283,12 @@ function xivo_cast_except($val,$except,$type='')
 	return($val);
 }
 
-function xivo_trunc(&$str,$nb=0,$chr=' ',$end='')
+function xivo_trunc(&$str,$nb=0,$end='',$chr=null)
 {
 	$r = (string) $str;
 	$nb = (int) $nb;
-	$chr = (string) $chr;
 	$end = (string) $end;
+	$chr = $chr === null ? ' ' : (string) $chr;
 	
 	$len = strlen($r);
 
@@ -458,7 +458,7 @@ function xivo_go($v='',$k='')
 		$qry = &$query->qstring_raw_str();
 	}
 	else if(is_array($k) === true)
-		$qry = xivo_mk_query($k);
+		$qry = xivo_query_str($k);
 	else if($k !== '' && $k !== false)
 		$qry = (string) $k;
 	else $qry = '';
@@ -623,17 +623,15 @@ function xivo_malert($subject='',$msg='',$to='')
 {
 	$subject = (string) $subject;
 	$msg = (string) $msg;
-	$mail = xivo_chk_email($to);
+	$mail = $to !== '' ? xivo_chk_email($to) : '';
 
 	$h  = 'MIME-Version: 1.0'."\n";
 	$h .= 'Content-type: text/html; charset=utf-8'."\n";
 	$h .= 'Content-Transfer-Encoding: 8bit'."\n";
 
 	if($mail === false)
-	{
 		return(trigger_error('Invalid e-mail',E_USER_WARNING));
-	}
-	else if($mail === '' && defined('XIVO_ROOT_MAIL') && xivo_chk_email(XIVO_ROOT_MAIL))
+	else if($mail === '' && defined('XIVO_ROOT_MAIL') === true && xivo_chk_email(XIVO_ROOT_MAIL) !== false)
 	{
 		$mail = 'TECK XIVO <'.XIVO_ROOT_MAIL.'>';
 		$h .= 'To: '.$mail."\n";
@@ -677,6 +675,12 @@ function xivo_last_key(&$a,$sort=SORT_NUMERIC)
 	return($r);
 }
 
+function xivo_query_str($a,$pre='',$key='',$sep='',$empty=true)
+{
+	xivo::load_class('xivo_query');
+	return(xivo_query::mk_query_str($a,$pre,$key,$sep,$empty));
+}
+
 function xivo_genpwd($str='')
 {
 	$r  = (string) $str;
@@ -688,6 +692,50 @@ function xivo_genpwd($str='')
 		$r .= xivo_genpwd($r);
 
 	return(substr($r,1,8));
+}
+
+function xivo_calc_duration($beg,$end,$diff=false,$unset=false)
+{
+	$r = array();
+
+	$unset = (bool) $unset;
+
+	if(is_numeric($diff) === true)
+		$r['diff'] = $diff;
+	else
+	{
+		$r['beg'] = $beg;
+		$r['end'] = $end;
+		$r['diff'] = $end - $beg;
+	}
+
+	$r['s']  = $r['diff'];
+	$r['d']  = floor($r['s'] / 86400);
+	$r['s'] -= $r['d'] * 86400;
+	$r['h']  = floor($r['s'] / 3600);
+	$r['s'] -= $r['h'] * 3600;
+	$r['m']  = floor($r['s'] / 60);
+	$r['s'] -= $r['m'] * 60;
+
+	if($unset === false)
+		return($r);
+	
+	unset($r['beg'],$r['end'],$r['diff']);
+
+	if($r['d'] === (float) 0)
+		unset($r['d']);
+	else
+		return($r);
+
+	if($r['h'] === (float) 0)
+		unset($r['h']);
+	else
+		return($r);
+
+	if($r['m'] === (float) 0)
+		unset($r['m']);
+
+	return($r);
 }
 
 function xivo_calc_page($page,$nb,$total)
@@ -780,122 +828,6 @@ function xivo_mk_order($a,$def,$order='',$desc=true)
 	return($r);
 }
 
-function xivo_mk_date($date)
-{
-	$r = false;
-
-	$date = (string) $date;
-
-	if(empty($date) === true)
-		return($r);
-
-	if(preg_match('@^(2[0-9]{3})-(0?[1-9]|1[0-2])-(0?[1-9]|[1-2][0-9]|3[0-1])$@',$date,$out) === 1 && checkdate($out[2],$out[3],$out[1]) === true)
-	{
-		$r = array('y' => $out[1],'m' => $out[2],'d' => $out[3],'cnt' => 3,'str' => $date,'int' => $out[1].$out[2].$out[3],'unix' => mktime(0,0,0,$out[2],$out[3],$out[1]));
-	}
-	elseif(preg_match('@^(2[0-9]{3})-(0?[1-9]|1[0-2])$@',$date,$out) === 1)
-	{
-		$r = array('y' => $out[1],'m' => $out[2],'cnt' => 2,'str' => $date,'int' => $out[1].$out[2],'unix' => mktime(0,0,0,$out[2],1,$out[1]));
-	}
-	elseif(preg_match('@^(2[0-9]{3})$@',$date,$out) === 1)
-	{
-		$r = array('y' => $out[1],'cnt' => 1,'str' => $date,'int' => $out[1],'unix' => mktime(0,0,0,1,1,$out[1]));
-	}
-
-	return($r);
-}
-
-function xivo_chk_date($dbeg='',$dend='',$strict=false)
-{
-	$r = array('cnt' => 0,'chk' => 2,'beg' => array(),'end' => array(),'sql' => array());
-
-	$strict = (bool) $strict;
-
-	if(($dbeg = &xivo_mk_date($dbeg)) === false)
-	{
-		if($strict === true)
-			$r = false;
-		else
-			$r = &xivo_date_def();
-
-		return($r);
-	}
-
-	$r['beg'] = $dbeg;
-
-	$date = &xivo_date_def($dbeg['cnt']);
-		
-	if($date['beg']['int'] < $dbeg['int'])
-	{
-		$dbeg = $date['beg'];
-		$dbeg['cnt'] = $date['cnt'];
-		$r['beg'] = $dbeg;
-	}
-
-	if(empty($dend) === false && ($dend = &xivo_mk_date($dend)) !== false)
-	{
-		if($dbeg['cnt'] !== $dend['cnt'] || $dend['int'] < $dbeg['int'])
-			$r['end'] = null;
-		else if(($dmax = &xivo_date_interval($dbeg)) !== false && $dend['int'] > $dmax['int'])
-		{
-			if(($r['end'] = &xivo_mk_date($dmax['str'])) === false)
-				$r['end'] = null;
-		}
-		else
-			$r['end'] = $dend;
-
-		if($r['end'] !== null)
-		{
-			if($date['beg']['int'] < $r['end']['int'])
-			{
-				$r['end'] = $date['beg'];
-				$r['end']['cnt'] = $date['cnt'];
-			}
-		}
-	}
-	else $r['end'] = null;
-
-	$r['chk'] = 1;
-	$r['cnt'] = $r['beg']['cnt'];
-
-	return($r);
-}
-
-function xivo_date_def($type=3)
-{
-	$type = (int) $type;
-
-	$arr = array(
-		1 => array('str' => '%Y','int' => '%Y'),
-		2 => array('str' => '%Y-%m','int' => '%Y%m'),
-		3 => array('str' => '%Y-%m-%d','int' => '%Y%m%d'));
-
-	if(isset($arr[$type]) === false)
-		$type = 3;
-
-	$r = array('cnt' => 0,'chk' => 2,'beg' => array(),'end' => array(),'sql' => array());
-
-	$r['chk'] = 1;
-	$r['cnt'] = $type;
-	$r['beg'] = array(
-		'str'	=> strftime($arr[$type]['str']),
-		'int'	=> strftime($arr[$type]['int']));
-
-	switch($type)
-	{
-		case 3:
-			$r['beg']['d'] = strftime('%d');
-		case 2:
-			$r['beg']['m'] = strftime('%m');
-		case 1:
-			$r['beg']['y'] = strftime('%Y');
-	}
-
-	$r['end'] = null;
-
-	return($r);
-}
-
 function xivo_gmlcstrftime($format,$time)
 {
 	$r = false;
@@ -929,49 +861,6 @@ function xivo_gmlcstrftime($format,$time)
 	return($r);
 }
 
-function xivo_date_interval($dbeg)
-{
-	$r = false;
-
-	if(xivo_ak('cnt',$dbeg) === true)
-	{
-		$date = array('y' => strftime('%Y'),'m' => 1,'d' => 1);
-
-		switch($dbeg['cnt'])
-		{
-			case 3:
-				$date['d'] = $dbeg['d'];
-			case 2:
-				$date['m'] = $dbeg['m'];
-			case 1:
-				$date['y'] = $dbeg['y'];
-		}
-
-		$arr = array(1 => '%Y',2 => '%Y-%m',3 => '%Y-%m-%d');
-
-		$r = array();
-		$r['int'] = '';
-		$r['str'] = strftime($arr[$dbeg['cnt']],mktime(0,0,0,$date['m']+18,$date['d'],$date['y']));
-
-		$dmax = explode('-',$r['str']);
-
-		switch($dbeg['cnt'])
-		{
-			case 3:
-				$r['int'] = $dmax[2];
-				$r['d'] = $dmax[2];
-			case 2:
-				$r['int'] = $dmax[1].$r['int'];
-				$r['m'] = $dmax[1];
-			case 1:
-				$r['int'] = $dmax[0].$r['int'];
-				$r['y'] = $dmax[0];
-		}
-	}
-
-	return($r);
-}
-
 function xivo_printf_strip($format,$argc=0)
 {
 	$format = (string) $format;
@@ -1000,34 +889,6 @@ function xivo_printf_strip($format,$argc=0)
 	}
 
 	return($format);
-}
-
-function xivo_uncompress(&$data,$level=6)
-{
-	$r = (string) $data;
-	$level = (int) $level;
-
-	if($level < 0 || $level > 9)
-		$level = 6;
-
-	if(extension_loaded('zlib') === true)
-		$r = gzcompress($r,$level);
-
-	return($r);
-}
-
-function xivo_compress(&$data,$level=6)
-{
-	$r = (string) $data;
-	$level = (int) $level;
-
-	if($level < 0 || $level > 9)
-		$level = 6;
-
-	if(extension_loaded('zlib') === true)
-		$r = gzcompress($r,$level);
-
-	return($r);
 }
 
 ?>

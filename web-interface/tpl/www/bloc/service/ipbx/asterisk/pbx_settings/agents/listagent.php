@@ -14,7 +14,7 @@
 			    'service/ipbx/pbx_settings/agents',
 			    array('act' => $act,'group' => $group));
 ?>
-<div class="b-list">
+<div id="sr-agent" class="b-list">
 <?php
 	if($page !== ''):
 		echo '<div class="b-page">',$page,'</div>';

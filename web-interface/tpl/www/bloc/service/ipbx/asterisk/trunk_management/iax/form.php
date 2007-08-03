@@ -36,7 +36,7 @@
 	endif;
 ?>
 
-<div id="sb-part-general">
+<div id="sb-part-first">
 
 <?=$form->text(array('desc' => $this->bbf('fm_trunk_name'),'name' => 'trunk[name]','labelid' => 'trunk-name','size' => 15,'value' => $info['trunk']['name']),'onchange="xivo_eid(\'it-trunk-username\').value = xivo_trunk == \'friend\' ? this.value : xivo_eid(\'it-trunk-username\').value;" onfocus="xivo_eid(\'it-trunk-username\').value = xivo_trunk == \'friend\' ? this.value : xivo_eid(\'it-trunk-username\').value; this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
@@ -78,7 +78,7 @@
 
 <div id="codeclist" class="fm-field fm-multilist"><p><label id="lb-codeclist" for="it-codeclist"><?=$this->bbf('fm_trunk_codec-allow');?></label></p>
 	<div class="slt-outlist">
-		<?=$form->slt(array('name' => 'codeclist','label' => false,'id' => 'it-codeclist','key_val' => 'id','multiple' => true,'size' => 5,'field' => false,'key' => false),$element['trunk']['allow']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+		<?=$form->slt(array('name' => 'codeclist','label' => false,'id' => 'it-codeclist','overkey' => 'id','multiple' => true,'size' => 5,'field' => false,'key' => false),$element['trunk']['allow']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 	</div>
 	<div class="inout-list">
 
@@ -104,7 +104,7 @@
 
 </div>
 
-<div id="sb-part-advanced" class="b-nodisplay">
+<div id="sb-part-last" class="b-nodisplay">
 
 <?=$form->text(array('desc' => $this->bbf('fm_trunk_context'),'name' => 'trunk[context]','labelid' => 'trunk-context','size' => 15,'value' => $info['trunk']['context']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 

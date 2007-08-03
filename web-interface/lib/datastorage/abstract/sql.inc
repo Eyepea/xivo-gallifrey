@@ -10,6 +10,8 @@ class xivo_datastorage_abstract_sql
 	var $_result	= false;
 	var $_debug	= false;
 	var $_free	= false;
+	var $_order	= array();
+	var $_limit	= array();
 
 	function set_param($name,$value)
 	{
@@ -67,6 +69,37 @@ class xivo_datastorage_abstract_sql
 		return((bool) $this->_free);
 	}
 
+	function select_one($t,$s='',$w='',$o='')
+	{
+		$t = trim((string) $t);
+		$s = trim((string) $s);
+		$w = trim((string) $w);
+		$o = trim((string) $o);
+		$this->limit(1);
+
+		if($s === '')
+			$s = '*';
+
+		if($o !== '')
+			$o = ' '.$o;
+
+		$o .= $this->_mk_order();
+		$o .= $this->_mk_limit();
+		$this->limit();
+
+		$q = sprintf('SELECT %s FROM %s WHERE %s%s',$s,$t,($w !== '' ? $w : 1),$o);
+
+		if($this->query($q) === false)
+			return(false);
+
+		$r = $this->fetch_assoc();
+
+		if($this->_free === true)
+			$this->free();
+
+		return($r);
+	}
+
 	function select_all($t,$s='',$w='',$o='')
 	{
 		$t = trim((string) $t);
@@ -80,6 +113,9 @@ class xivo_datastorage_abstract_sql
 		if($o !== '')
 			$o = ' '.$o;
 
+		$o .= $this->_mk_order();
+		$o .= $this->_mk_limit();
+
 		$q = sprintf('SELECT %s FROM %s WHERE %s%s',$s,$t,($w !== '' ? $w : 1),$o);
 
 		if($this->query($q) === false)
@@ -88,12 +124,7 @@ class xivo_datastorage_abstract_sql
 		$r = array();
 
 		for($i = 0;$m = $this->fetch_assoc();$i++)
-		{
-			if($m === false)
-				break;
-
 			$r[$i] = $m;
-		}
 
 		if($this->_free === true)
 			$this->free();
@@ -101,7 +132,7 @@ class xivo_datastorage_abstract_sql
 		return($r);
 	}
 
-	function select_one($t,$s='',$w='',$o='')
+	function select_count($t,$s='',$w='',$o='')
 	{
 		$t = trim((string) $t);
 		$s = trim((string) $s);
@@ -111,18 +142,16 @@ class xivo_datastorage_abstract_sql
 		if($s === '')
 			$s = '*';
 
-		if($o === '')
-			$o = ' ';
-		else
-			$o = ' '.$o.' ';
+		if($o !== '')
+			$o = ' '.$o;
 
-		$r = false;
-		$q = sprintf('SELECT %s FROM %s WHERE %s%s%s',$s,$t,($w !== '' ? $w : 1),$o,'LIMIT 1');
+		$q = sprintf('SELECT COUNT(%s) FROM %s WHERE %s%s',$s,$t,($w !== '' ? $w : 1),$o);
 
 		if($this->query($q) === false)
-			return($r);
+			return(false);
 
-		$r = $this->fetch_assoc();
+		if(($r = $this->fetch_row()) !== false)
+			$r = (int) $r[0];
 
 		if($this->_free === true)
 			$this->free();
@@ -132,17 +161,17 @@ class xivo_datastorage_abstract_sql
 
 	function insert($t,&$data,$escape=true)
 	{
-		return($this->_insertupdate('INSERT INTO',$t,$data,null,$escape));
+		return($this->_insertupdate('insert',$t,$data,null,$escape));
 	}
 
 	function update($t,&$data,$w='',$escape=true,$o='')
 	{
-		return($this->_insertupdate('UPDATE',$t,$data,$w,$escape,true,$o));
+		return($this->_insertupdate('update',$t,$data,$w,$escape,true,$o));
 	}
 
 	function replace($t,&$data,$escape=true)
 	{
-		return($this->_insertupdate('REPLACE INTO',$t,$data,null,$escape));
+		return($this->_insertupdate('replace',$t,$data,null,$escape));
 	}
 
 	function delete($t,$w='',$o='')
@@ -153,7 +182,10 @@ class xivo_datastorage_abstract_sql
 
 		if($o !== '')
 			$o = ' '.$o;
-	
+
+		$o .= $this->_mk_order();
+		$o .= $this->_mk_limit();
+
 		$q = sprintf('DELETE FROM %s WHERE %s%s',$t,($w !== '' ? $w : 1),$o);
 
 		return(($this->query($q) !== false ? true : false));
@@ -163,13 +195,13 @@ class xivo_datastorage_abstract_sql
 	{
 		$r = false;
 	
-		if(($where = $this->_separator($data,$sep=' AND ',$escape,true,false)) !== false)
-		{
-			$r = $where['str'];
+		if(($where = $this->_separator($data,$sep=' AND ',$escape,true,false)) === false)
+			return($r);
 
-			if(trim($r) === '')
-				$r = false;
-		}
+		$r = $where['str'];
+
+		if(trim($r) === '')
+			$r = false;
 
 		return($r);
 	}
@@ -178,29 +210,53 @@ class xivo_datastorage_abstract_sql
 	{
 		$r = false;
 
-		if(($where = $this->_separator($data,$sep=' AND ',$escape,true,false,'!=')) !== false)
-		{
-			$r = $where['str'];
+		if(($where = $this->_separator($data,$sep=' AND ',$escape,true,false,'!=')) === false)
+			return($r);
 
-			if(trim($r) === '')
-				$r = false;
-		}
+		$r = $where['str'];
+
+		if(trim($r) === '')
+			$r = false;
 
 		return($r);	
 	}
 
-	function _insertupdate($p,$t,&$data,$w='',$escape=true,$set=false,$o='')
+	function _insertupdate($p,$t,&$data,$w='',$escape=true,$set=false,$o='',$order=false,$limit=false)
 	{
-		$p = (string) $p;
-		$t = (string) $t;
-		$w = (string) $w;
+		$p = strtolower((string) $p);
+		$t = trim((string) $t);
+		$w = trim((string) $w);
 		$set = (bool) $set;
-		$o = (string) $o;
+		$o = trim((string) $o);
+		$order = (bool) $order;
+		$limit = (bool) $limit;
 
 		$r = false;
 
 		if(($values = $this->_separator($data,',',$escape,$set)) === false)
 			return($r);
+
+		if($o !== '')
+			$o = ' '.$o;
+
+		switch($p)
+		{
+			case 'insert':
+			case 'replace':
+				$p = strtoupper($p).' INTO';
+				break;
+			case 'update':
+				$p = 'UPDATE';
+
+				if($order === true)
+					$o .= $this->_mk_order();
+
+				if($limit === true)
+					$o .= $this->_mk_limit();
+				break;
+			default:
+				return($r);
+		}
 
 		if($set === true)
 			$q = sprintf('%s %s SET %s',$p,$t,$values['str']);
@@ -294,33 +350,199 @@ class xivo_datastorage_abstract_sql
 		return($r);
 	}
 
-	function search($col,$pattern,$format='exact')
+	function between($col,$beg,$end)
 	{
-		$col = $this->quote_identifier((string) $col);
-		$pattern = (string) $pattern;
-		$format = (string) $format;
+		$r = '';
 
-		if($col === '' || strlen($pattern) === 0)
+		$col = $this->quote_identifier($col);
+		$beg = $this->escape_string($beg);
+		$end = $this->escape_string($end);
+
+		if(isset($beg{0},$end{0}) === false)
+			return($r);
+
+		$r = sprintf('%s BETWEEN \'%s\' AND \'%s\'',$col,$beg,$end);
+
+		return($r);
+	}
+
+	function order($col='',$sort='')
+	{
+		if(is_array($col) === true)
+		{
+			if(($arr = xivo_get_aks($col)) === false)
+				return(false);
+
+			$order = array();
+
+			for($i = 0;$i < $arr['cnt'];$i++)
+			{
+				$key = &$arr['keys'][$i];
+				$val = $col[$key];
+
+				if($key === '' || ($val = $this->_chk_sort($val)) === false)
+					continue;
+
+				$order[] = sprintf('%s %s',$this->quote_identifier($key),$val);
+			}
+
+			if(isset($order[0]) === false)
+				return(false);
+
+			$this->_order = array_merge($this->_order,$order);
+
+			return(true);
+		}
+
+		$col = (string) $col;
+		$sort = (string) $sort;
+
+		if($col !== '')
+		{
+			if(($sort = $this->_chk_sort($sort)) === false)
+				return(false);
+
+			$this->_order[] = sprintf('%s %s',$this->quote_identifier($col),$sort);
+			return(true);
+		}
+		else if($sort === '')
+		{
+			$this->_order = array();
+			return(null);
+		}
+
+		return(false);
+	}
+
+	function _mk_order()
+	{
+		$r = '';
+
+		if(is_array($this->_order) === false || isset($this->_order[0]) === false)
+			return($r);
+
+		if(($r = implode(',',$this->_order)) !== '')
+			$r = ' ORDER BY '.$r;
+
+		return($r);
+	}
+
+	function _chk_sort($sort='')
+	{
+		$sort = strtoupper((string) $sort);
+
+		switch($sort)
+		{
+			case 'D':
+			case 'DESC':
+			case SORT_DESC:
+				return('DESC');
+			case '':
+			case 'A':
+			case 'ASC':
+			case SORT_ASC:
+				return('ASC');
+		}
+
+		return(false);
+	}
+
+	function limit($offset='',$line='')
+	{
+		if(is_array($offset) === true && isset($offset[0]) === true)
+		{
+			if(isset($offset[1]) === true)
+				$line = $offset[1];
+
+			$offset = $offset[0];
+		}
+
+		$offset = (string) $offset;
+		$line = (string) $line;
+
+		if($offset !== '')
+		{
+			$this->_limit[0] = xivo_uint($offset);
+
+			if($line !== '')
+				$this->_limit[1] = xivo_uint($line);
+			
+			return(true);
+		}
+
+		$this->_limit = array();
+
+		return(($line === '' ? null : false));
+	}
+
+	function _mk_limit()
+	{
+		$r = '';
+
+		if(is_array($this->_limit) === false || isset($this->_limit[0]) === false)
+			return($r);
+
+		$r = ' LIMIT '.xivo_uint($this->_limit[0]);
+
+		if(isset($this->_limit[1]) === true)
+			$r .= ','.xivo_uint($this->_limit[1]);
+
+		return($r);
+	}
+
+	function _search($col,$pattern,$format='',$not=false)
+	{
+		$col = $this->quote_identifier($col);
+		$format = $format !== '' ? strtolower((string) $format) : 'exact';
+		$not = (bool) $not;
+
+		if(is_scalar($pattern) === true)
+			$pattern = array((string) $pattern);
+		else if(is_array($pattern) !== true)
 			return(false);
 
-		$func = 'LIKE';
+		if($col === '')
+			return(false);
+
+		$func = $not === true ? 'NOT LIKE' : 'LIKE';
+
+		$search_format = '%s %s ';
 
 		switch($format)
 		{
 			case 'begin':
-				$pattern = '%'.$this->_escape_search($pattern);
+				$search_format .= '\'%s%%\'';
 				break;
 			case 'contain':
-				$pattern = '%'.$this->_escape_search($pattern).'%';
+				$search_format .= '\'%%%s%%\'';
 				break;
 			case 'end':
-				$pattern = $this->_escape_search($pattern).'%';
+				$search_format .= '\'%%%s\'';
 				break;
 			default:
-				$func = '=';
+				$func = $not === false ? '=' : '!=';
+				$search_format .= '\'%s\'';
 		}
 
-		$r = $col.' '.$func.' \''.$this->escape_string($pattern).'\'';
+		$value = array_values($pattern);
+
+		if(($nb = count($value)) === 0)
+			return(false);
+
+		$r = '';
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			$pattern = $this->escape_string($this->_escape_search($value[$i]));
+
+			if(strlen($pattern) === 0)
+				continue;
+
+			if($i > 0)
+				$r .= ' AND ';
+
+			$r .= sprintf($search_format,$col,$func,$pattern);
+		}
 
 		return($r);
 	}
@@ -330,6 +552,16 @@ class xivo_datastorage_abstract_sql
 		$r = str_replace(array('%','_'),array('\%','\_'),(string) $str);
 
 		return($r);
+	}
+
+	function search($col,$pattern,$format='')
+	{
+		return($this->_search($col,$pattern,$format,false));
+	}
+
+	function search_not($col,$pattern,$format='')
+	{
+		return($this->_search($col,$pattern,$format,true));
 	}
 
 	function search_exact($col,$pattern)
@@ -350,6 +582,26 @@ class xivo_datastorage_abstract_sql
 	function search_end($col,$pattern)
 	{
 		return($this->search($col,$pattern,'end'));
+	}
+
+	function search_not_exact($col,$pattern)
+	{
+		return($this->search_not($col,$pattern,'exact'));
+	}
+
+	function search_not_begin($col,$pattern)
+	{
+		return($this->search_not($col,$pattern,'begin'));
+	}
+
+	function search_not_contain($col,$pattern)
+	{
+		return($this->search_not($col,$pattern,'contain'));
+	}
+
+	function search_not_end($col,$pattern)
+	{
+		return($this->search_not($col,$pattern,'end'));
 	}
 
 	function _cond_typetime($type,$col,$dbeg,$dend='',$format='',$time='')

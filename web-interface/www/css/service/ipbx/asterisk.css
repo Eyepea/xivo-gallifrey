@@ -6,7 +6,13 @@
 
 #s-asterisk .sb-content #comment, #s-asterisk .sb-content #emailbody, #s-asterisk .sb-context #pagerbody {text-align: center;width: 100%;}
 
-#s-asterisk #sb-part-queue .sb-list th {width: 50%;}
+#s-asterisk #sr-agentgroup .sb-list th, #s-asterisk #sr-agent .sb-list th {width: 50%;}
 #s-asterisk #sr-cdr .fm-multifield .fm-desc {width: 40%;}
 #s-asterisk #sr-cdr .fm-desc-inline .fm-multifield {width: auto;display: inline;padding: 0px 10px;}
 #s-asterisk #sr-cdr .fm-desc-inline .fm-multifield label {padding: 0px;}
+#s-asterisk #sr-cdr .sb-list .b-total {float: left;}
+#s-asterisk #sr-cdr .sb-list table {margin-top: 0px;}
+#s-asterisk #sr-cdr .sb-list table .cdr-infos td {padding: 4px;}
+#s-asterisk #sr-cdr .sb-list table .cdr-infos dl {width: 50%; float: left;text-align: left;}
+#s-asterisk #sr-cdr .sb-list table .cdr-infos dt {padding-right: 2px;display: inline;font-weight: bold;}
+#s-asterisk #sr-cdr .sb-list table .cdr-infos dd {display: inline;}
