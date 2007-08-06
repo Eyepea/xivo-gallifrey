@@ -16,7 +16,7 @@ if [ -z "${UPVERSION}" ]; then
 	exit 1
 fi
 
-FILENAME="asterisk_${UPVERSION}~dfsg.orig.tar.gz"
+FILENAME="asterisk_${UPVERSION}.dfsg.orig.tar.gz"
 
 if [ -e "${DEST_PATH}/${FILENAME}" ]; then
 	echo "A tarball already exist for this version ; remove it if you want to regenerate."
