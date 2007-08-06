@@ -8,20 +8,19 @@ include ../autobuild.mk
 include ../autobuild-classic.mk
 
 DEB_PKG = "asterisk"
-TMP_DIR := $(shell mktemp -d)
+TARBALL_DIR := $(shell mktemp -d)
 
 ASTVER = $(shell cat ASTERISK-VERSION)
 TARBALL_NAME = "asterisk_$(ASTVER).dfsg.orig.tar.gz"
-TARBALL_DIR = "$(TMP_DIR)/asterisk-$(ASTVER)"
 XIVO_REV = $(ASTVER).dfsg+pf.$(MAINREV)~svn$(SVNREV)
 
 
 default:
 
 prepare-tarball::
-	tar -x -C ${TMP_DIR} -f tarballs/$(TARBALL_NAME)
+	cp tarballs/$(TARBALL_NAME) ${TARBALL_DIR}
 	@cp -a patches ${TARBALL_DIR}
 
 clean-tarball::
-	@rm -rf ${TMP_DIR}
+	@rm -rf ${TARBALL_DIR}
 
