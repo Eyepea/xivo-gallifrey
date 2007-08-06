@@ -1,3 +1,6 @@
+#!/usr/bin/make -f
+# -*- mode: makefile; coding: utf-8 -*-
+#
 # $Revision$
 # $Date$
 #
@@ -6,6 +9,7 @@
 # export CC=gcc
 
 include ../autobuild.mk
+include ../autobuild-classic.mk
 
 DEB_PKG="pf-asterisk-res-sqlite2"
 DEB_TB_DEPS=""

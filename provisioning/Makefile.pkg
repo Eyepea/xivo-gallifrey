@@ -1,7 +1,11 @@
+#!/usr/bin/make -f
+# -*- mode: makefile; coding: utf-8 -*-
+#
 # $Revision$
 # $Date$
 
 include ../autobuild.mk
+include ../autobuild-classic.mk
 
 DEB_PKG="pf-xivo-provisioning"
 DEB_TB_DEPS="python2.4-dev upx-ucl"

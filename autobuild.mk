@@ -1,8 +1,11 @@
+#!/usr/bin/make -f
+# -*- mode: makefile; coding: utf-8 -*-
 
 # parameters
 WRK_DIR ?= $(shell pwd)
 TARBALL_DIR = .
 DEB_DESTDIR ?= $(WRK_DIR)/..
+DEB_TAR_COMMON_OPTIONS = --exclude .svn
 DEB_TAR_EXTRA_OPTIONS ?=
 DEB_TB_DEPS ?=
 DEB_TB_SCRAMBLED ?= "0"
@@ -30,12 +33,10 @@ tarball-scrambled:
 tarball: prepare-tarball do-tarball clean-tarball
 
 remove-tarball::
-	@rm -f $(DEB_DESTDIR)/$(DEB_PKG)_*.orig.tar.gz
 
 prepare-tarball:: remove-tarball
 
 do-tarball::
-	tar zcf $(DEB_DESTDIR)/$(DEB_PKG)_$(XIVO_REV).orig.tar.gz -C ${TARBALL_DIR} --exclude .svn $(DEB_TAR_EXTRA_OPTIONS) .
 
 clean-tarball::
 
