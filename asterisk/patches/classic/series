@@ -1,3 +1,4 @@
+# $Id$
 # patches coming from debian original package (former 00list)
 
 patch.CVE-2006-2898.patch
@@ -39,8 +40,6 @@ pf_voicemail_date_language.patch
 #
 # sys_readline.patch
 # sys_editline.patch
-# libpri_bristuffed.patch
-# bristuff.patch
 # apprecord_sprintf.patch
 # 95_conf_sample.patch
 # 18_debian-libedit.patch
