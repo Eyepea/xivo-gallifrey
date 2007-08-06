@@ -1,7 +1,8 @@
-diff -Nurp asterisk-1.2.23.orig/channels/chan_sip.c asterisk-1.2.23/channels/chan_sip.c
---- asterisk-1.2.23.orig/channels/chan_sip.c	2007-08-02 13:51:58.000000000 +0200
-+++ asterisk-1.2.23/channels/chan_sip.c	2007-08-02 14:02:04.000000000 +0200
-@@ -1946,9 +1946,9 @@ static int create_addr(struct sip_pvt *d
+Index: asterisk-1.2.23~dfsg/channels/chan_sip.c
+===================================================================
+--- asterisk-1.2.23~dfsg.orig/channels/chan_sip.c	2007-08-06 14:30:05.000000000 +0200
++++ asterisk-1.2.23~dfsg/channels/chan_sip.c	2007-08-06 14:33:56.000000000 +0200
+@@ -1946,9 +1946,9 @@
  	struct ast_hostent ahp;
  	struct sip_peer *p;
  	int found=0;
@@ -13,7 +14,7 @@ diff -Nurp asterisk-1.2.23.orig/channels/chan_sip.c asterisk-1.2.23/channels/cha
  	char peer[256];
  
  	ast_copy_string(peer, opeer, sizeof(peer));
-@@ -1986,7 +1986,14 @@ static int create_addr(struct sip_pvt *d
+@@ -1986,7 +1986,14 @@
  				portno = tportno;
  			}
  		}
@@ -29,7 +30,7 @@ diff -Nurp asterisk-1.2.23.orig/channels/chan_sip.c asterisk-1.2.23/channels/cha
  		if (hp) {
  			ast_copy_string(dialog->tohost, peer, sizeof(dialog->tohost));
  			memcpy(&dialog->sa.sin_addr, hp->h_addr, sizeof(dialog->sa.sin_addr));
-@@ -5189,6 +5196,7 @@ static int transmit_state_notify(struct 
+@@ -5189,6 +5196,7 @@
  	enum state { NOTIFY_OPEN, NOTIFY_INUSE, NOTIFY_CLOSED } local_state = NOTIFY_OPEN;
  	char *pidfstate = "--";
  	char *pidfnote= "Ready";
@@ -37,7 +38,7 @@ diff -Nurp asterisk-1.2.23.orig/channels/chan_sip.c asterisk-1.2.23/channels/cha
  
  	memset(from, 0, sizeof(from));
  	memset(to, 0, sizeof(to));
-@@ -5303,12 +5311,18 @@ static int transmit_state_notify(struct 
+@@ -5303,12 +5311,18 @@
  		ast_build_string(&t, &maxbytes, "<atom id=\"%s\">\n", p->exten);
  		ast_build_string(&t, &maxbytes, "<address uri=\"%s;user=ip\" priority=\"0.800000\">\n", mto);
  		ast_build_string(&t, &maxbytes, "<status status=\"%s\" />\n", (local_state ==  NOTIFY_OPEN) ? "open" : (local_state == NOTIFY_INUSE) ? "inuse" : "closed");
@@ -58,7 +59,7 @@ diff -Nurp asterisk-1.2.23.orig/channels/chan_sip.c asterisk-1.2.23/channels/cha
  		ast_build_string(&t, &maxbytes, "<pp:person><status>\n");
  		if (pidfstate[0] != '-')
  			ast_build_string(&t, &maxbytes, "<ep:activities><ep:%s/></ep:activities>\n", pidfstate);
-@@ -5319,17 +5333,55 @@ static int transmit_state_notify(struct 
+@@ -5319,17 +5333,55 @@
  		if (pidfstate[0] == 'b') /* Busy? Still open ... */
  			ast_build_string(&t, &maxbytes, "<status><basic>open</basic></status>\n");
  		else
@@ -120,7 +121,7 @@ diff -Nurp asterisk-1.2.23.orig/channels/chan_sip.c asterisk-1.2.23/channels/cha
  		ast_build_string(&t, &maxbytes, "</dialog>\n</dialog-info>\n");
  		break;
  	case NONE:
-@@ -6885,10 +6937,12 @@ static int get_destination(struct sip_pv
+@@ -6885,10 +6937,12 @@
  }
  
  /*! \brief  get_sip_pvt_byid_locked: Lock interface lock and find matching pvt lock  ---*/
@@ -135,7 +136,7 @@ diff -Nurp asterisk-1.2.23.orig/channels/chan_sip.c asterisk-1.2.23/channels/cha
  	/* Search interfaces and find the match */
  	ast_mutex_lock(&iflock);
  	sip_pvt_ptr = iflist;
-@@ -6896,6 +6950,27 @@ static struct sip_pvt *get_sip_pvt_byid_
+@@ -6896,6 +6950,27 @@
  		if (!strcmp(sip_pvt_ptr->callid, callid)) {
  			/* Go ahead and lock it (and its owner) before returning */
  			ast_mutex_lock(&sip_pvt_ptr->lock);
@@ -163,7 +164,7 @@ diff -Nurp asterisk-1.2.23.orig/channels/chan_sip.c asterisk-1.2.23/channels/cha
  			if (sip_pvt_ptr->owner) {
  				while(ast_mutex_trylock(&sip_pvt_ptr->owner->lock)) {
  					ast_mutex_unlock(&sip_pvt_ptr->lock);
-@@ -6918,7 +6993,7 @@ static int get_refer_info(struct sip_pvt
+@@ -6918,7 +6993,7 @@
  {
  
  	char *p_refer_to = NULL, *p_referred_by = NULL, *h_refer_to = NULL, *h_referred_by = NULL, *h_contact = NULL;
@@ -172,7 +173,7 @@ diff -Nurp asterisk-1.2.23.orig/channels/chan_sip.c asterisk-1.2.23/channels/cha
  	struct sip_request *req = NULL;
  	struct sip_pvt *sip_pvt_ptr = NULL;
  	struct ast_channel *chan = NULL, *peer = NULL;
-@@ -6963,6 +7038,8 @@ static int get_refer_info(struct sip_pvt
+@@ -6963,6 +7038,8 @@
  	if (referred_by)
  		referred_by += 4;
  	
@@ -181,7 +182,7 @@ diff -Nurp asterisk-1.2.23.orig/channels/chan_sip.c asterisk-1.2.23/channels/cha
  	if ((ptr = strchr(refer_to, '?'))) {
  		/* Search for arguments */
  		*ptr = '\0';
-@@ -6970,10 +7047,7 @@ static int get_refer_info(struct sip_pvt
+@@ -6970,10 +7047,7 @@
  		if (!strncasecmp(ptr, "REPLACES=", 9)) {
  			char *p;
  			replace_callid = ast_strdupa(ptr + 9);
@@ -193,7 +194,7 @@ diff -Nurp asterisk-1.2.23.orig/channels/chan_sip.c asterisk-1.2.23/channels/cha
  			ast_uri_decode(replace_callid);
  			if ((ptr = strchr(replace_callid, '%'))) 
  				*ptr = '\0';
-@@ -7015,13 +7089,13 @@ static int get_refer_info(struct sip_pvt
+@@ -7015,13 +7089,13 @@
  		ast_copy_string(sip_pvt->referred_by, "", sizeof(sip_pvt->referred_by));
  		ast_copy_string(sip_pvt->refer_contact, "", sizeof(sip_pvt->refer_contact));
  		sip_pvt->refer_call = NULL;
@@ -210,7 +211,7 @@ diff -Nurp asterisk-1.2.23.orig/channels/chan_sip.c asterisk-1.2.23/channels/cha
  		} else {
  			ast_log(LOG_NOTICE, "Supervised transfer requested, but unable to find callid '%s'.  Both legs must reside on Asterisk box to transfer at this time.\n", replace_callid);
  			/* XXX The refer_to could contain a call on an entirely different machine, requiring an 
-@@ -8890,8 +8964,11 @@ static void handle_request_info(struct s
+@@ -8890,8 +8964,11 @@
  {
  	char buf[1024];
  	unsigned int event;
@@ -223,7 +224,7 @@ diff -Nurp asterisk-1.2.23.orig/channels/chan_sip.c asterisk-1.2.23/channels/cha
  	/* Need to check the media/type */
  	if (!strcasecmp(get_header(req, "Content-Type"), "application/dtmf-relay") ||
  	    !strcasecmp(get_header(req, "Content-Type"), "application/vnd.nortelnetworks.digits")) {
-@@ -8971,7 +9048,7 @@ static void handle_request_info(struct s
+@@ -8971,7 +9048,7 @@
  	/* if (get_msg_text(buf, sizeof(buf), req)) { */
  
  	ast_log(LOG_WARNING, "Unable to parse INFO message from %s. Content %s\n", p->callid, buf);
@@ -232,7 +233,7 @@ diff -Nurp asterisk-1.2.23.orig/channels/chan_sip.c asterisk-1.2.23/channels/cha
  	return;
  }
  
-@@ -10604,13 +10681,16 @@ static int handle_request_options(struct
+@@ -10604,13 +10681,16 @@
  static int handle_request_invite(struct sip_pvt *p, struct sip_request *req, int debug, int ignore, int seqno, struct sockaddr_in *sin, int *recount, char *e)
  {
  	int res = 1;
@@ -253,7 +254,7 @@ diff -Nurp asterisk-1.2.23.orig/channels/chan_sip.c asterisk-1.2.23/channels/cha
  
  	/* Find out what they support */
  	if (!p->sipoptions) {
-@@ -10631,6 +10711,20 @@ static int handle_request_invite(struct 
+@@ -10631,6 +10711,20 @@
  		}
  	}
  
@@ -274,7 +275,7 @@ diff -Nurp asterisk-1.2.23.orig/channels/chan_sip.c asterisk-1.2.23/channels/cha
  	/* Check if this is a loop */
  	/* This happens since we do not properly support SIP domain
  	   handling yet... -oej */
-@@ -10723,7 +10817,7 @@ static int handle_request_invite(struct 
+@@ -10723,7 +10817,7 @@
  		extract_uri(p, req);
  		build_contact(p);
  
@@ -283,7 +284,7 @@ diff -Nurp asterisk-1.2.23.orig/channels/chan_sip.c asterisk-1.2.23/channels/cha
  			if (gotdest < 0)
  				transmit_response_reliable(p, "404 Not Found", req, 1);
  			else
-@@ -10743,8 +10837,41 @@ static int handle_request_invite(struct 
+@@ -10743,8 +10837,41 @@
  			/* Save Record-Route for any later requests we make on this dialogue */
  			build_route(p, req, 0);
  			if (c) {
@@ -327,7 +328,7 @@ diff -Nurp asterisk-1.2.23.orig/channels/chan_sip.c asterisk-1.2.23/channels/cha
  			}
  		}
  		
-@@ -11228,7 +11355,7 @@ static int handle_request_subscribe(stru
+@@ -11228,7 +11355,7 @@
  			ast_set_flag(p, SIP_NEEDDESTROY);	
  			return 0;
  		} else {
@@ -336,7 +337,7 @@ diff -Nurp asterisk-1.2.23.orig/channels/chan_sip.c asterisk-1.2.23/channels/cha
  
  			transmit_response(p, "200 OK", req);
  			transmit_state_notify(p, firststate, 1, 1, 0);	/* Send first notification */
-@@ -11239,6 +11366,7 @@ static int handle_request_subscribe(stru
+@@ -11239,6 +11366,7 @@
  			   for it to expire and send NOTIFY messages to the peer only to have them
  			   ignored (or generate errors)
  			*/
@@ -344,7 +345,7 @@ diff -Nurp asterisk-1.2.23.orig/channels/chan_sip.c asterisk-1.2.23/channels/cha
  			ast_mutex_lock(&iflock);
  			for (p_old = iflist; p_old; p_old = p_old->next) {
  				if (p_old == p)
-@@ -11259,6 +11387,7 @@ static int handle_request_subscribe(stru
+@@ -11259,6 +11387,7 @@
  				ast_mutex_unlock(&p_old->lock);
  			}
  			ast_mutex_unlock(&iflock);
@@ -352,7 +353,7 @@ diff -Nurp asterisk-1.2.23.orig/channels/chan_sip.c asterisk-1.2.23/channels/cha
  		}
  		if (!p->expiry)
  			ast_set_flag(p, SIP_NEEDDESTROY);
-@@ -11493,6 +11622,14 @@ static int handle_request(struct sip_pvt
+@@ -11493,6 +11622,14 @@
  		if (!p->lastinvite && ast_strlen_zero(p->randdata))
  			ast_set_flag(p, SIP_NEEDDESTROY);	
  		break;
