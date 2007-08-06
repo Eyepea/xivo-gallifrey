@@ -1,0 +1,28 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## vm_he.dpatch by Tzafrir Cohen <tzafrir.cohen@xorcom.com>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Add Hebrew support to the voicemail app. 
+
+@DPATCH@
+Index: asterisk-1.2.23~dfsg/apps/app_voicemail.c
+===================================================================
+--- asterisk-1.2.23~dfsg.orig/apps/app_voicemail.c	2007-08-06 12:02:00.000000000 +0200
++++ asterisk-1.2.23~dfsg/apps/app_voicemail.c	2007-08-06 12:02:02.000000000 +0200
+@@ -156,6 +156,7 @@
+ 	\arg \b gr - Greek
+ 	\arg \b no - Norwegian
+ 	\arg \b se - Swedish
++	\arg \b he - Hebrew
+ 
+ German requires the following additional soundfile:
+ \arg \b 1F	einE (feminine)
+@@ -3743,6 +3744,8 @@
+ 		res = ast_say_date_with_format(chan, t, AST_DIGIT_ANY, chan->language, "'vm-received' Q 'digits/at' HM", NULL);
+ 	else if (!strcasecmp(chan->language,"nl"))	/* DUTCH syntax */
+ 		res = ast_say_date_with_format(chan, t, AST_DIGIT_ANY, chan->language, "'vm-received' q 'digits/nl-om' HM", NULL);
++	else if (!strcasecmp(chan->language,"he"))	/* HEBREW syntax */
++		res = ast_say_date_with_format(chan, t, AST_DIGIT_ANY, chan->language, "'vm-received' q 'digits/at' HM", NULL);
+  	else if (!strcasecmp(chan->language,"it"))      /* ITALIAN syntax */
+ 		res = ast_say_date_with_format(chan, t, AST_DIGIT_ANY, chan->language, "'vm-received' q 'digits/at' 'digits/hours' k 'digits/e' M 'digits/minutes'", NULL);
+ 	else if (!strcasecmp(chan->language,"gr"))

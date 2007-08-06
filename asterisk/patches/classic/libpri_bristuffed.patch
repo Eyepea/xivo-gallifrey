@@ -1,0 +1,28 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## libpri_bristuffed.dpatch by Tzafrir Cohen <tzafrir.cohen@xorcom.com>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: use libpri-bristuffed instead of libpri for building chan_zap.
+## DP: libpri-bristuffed is a debian-specific name for a copy of libpri 
+## DP: with the bristuff patch.
+
+@DPATCH@
+diff -urNad asterisk-1.2.1.dfsg/channels/Makefile /tmp/dpep.ozZKXW/asterisk-1.2.1.dfsg/channels/Makefile
+--- asterisk-1.2.1.dfsg/channels/Makefile	2005-12-31 16:06:04.000000000 +0200
++++ /tmp/dpep.ozZKXW/asterisk-1.2.1.dfsg/channels/Makefile	2005-12-31 16:07:39.000000000 +0200
+@@ -91,10 +91,15 @@
+   CHANNEL_LIBS+=chan_alsa.so
+ endif
+ 
++ifneq ($(wildcard $(CROSS_COMPILE_TARGET)/usr/lib/libpri-bristuffed.so.1),)
++  CFLAGS+=-DZAPATA_PRI -I/usr/include/bristuffed
++  ZAPPRI=-lpri-bristuffed
++else
+ ifneq ($(wildcard $(CROSS_COMPILE_TARGET)/usr/lib/libpri.so.1)$(wildcard $(CROSS_COMPILE_TARGET)/usr/local/lib/libpri.so.1),)
+   CFLAGS+=-DZAPATA_PRI
+   ZAPPRI=-lpri
+ endif
++endif
+ 
+ ifneq ($(wildcard $(CROSS_COMPILE_TARGET)/usr/lib/libmfcr2.so.1)$(wildcard $(CROSS_COMPILE_TARGET)/usr/local/lib/libmfcr2.so.1),)
+   CFLAGS+=-DZAPATA_R2

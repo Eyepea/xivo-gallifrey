@@ -1,0 +1,22 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 110_fpm-sounds.dpatch by Jose Carlos Garcia Sogo <jsogo@debian.org>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Don't try to install non-dfsg sounds from source
+
+@DPATCH@
+Index: asterisk-1.2.23~dfsg/Makefile
+===================================================================
+--- asterisk-1.2.23~dfsg.orig/Makefile	2007-08-06 12:01:52.000000000 +0200
++++ asterisk-1.2.23~dfsg/Makefile	2007-08-06 12:01:58.000000000 +0200
+@@ -797,10 +797,6 @@
+ 			exit 1; \
+ 		fi; \
+ 	done
+-	mkdir -p $(DESTDIR)$(ASTVARLIBDIR)/mohmp3 ; \
+-	for x in sounds/moh/*.mp3 sounds/moh/LICENSE; do \
+-		$(INSTALL) -m 644 $$x $(DESTDIR)$(ASTVARLIBDIR)/mohmp3 ; \
+-	done
+ 	rm -f $(DESTDIR)$(ASTVARLIBDIR)/mohmp3/sample-hold.mp3
+ 	mkdir -p $(DESTDIR)$(ASTSPOOLDIR)/voicemail/default/1234/INBOX
+ 	:> $(DESTDIR)$(ASTSPOOLDIR)/voicemail/default/1234/unavail.gsm

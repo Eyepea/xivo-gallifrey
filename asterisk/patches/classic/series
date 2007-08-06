@@ -1,0 +1,44 @@
+# patches coming from debian original package (former 00list)
+
+patch.CVE-2006-2898.patch
+# ukcid probably conflicts with bristuff
+ukcid.patch
+option_detach.patch
+30_ast-data-dir.patch
+40_initgroups.patch
+50_debian-libgsm.patch
+#95_conf_sample.patch
+98_fpm-sounds.patch
+#sys_readline
+func_odbc_12.patch
+brazilian_syntax.patch
+vm_he.patch
+pubkey_jnctn.patch
+nomarch.patch
+chanzap_disable_r2.patch
+correct_pid_display.patch
+zap_restart.patch
+backport_playdtmf.patch
+cdr_sqlite3_custom.patch
+less_docs.patch
+Makefile_hostcc.patch
+Makefile_clean.patch
+daemon_color.patch
+h323_fix_1217.patch
+no_misdn_build.patch
+
+# proformatique specific patches
+
+pf_intercept_monitored.patch
+pf_queue_call_limit.patch
+pf_voicemail_date_language.patch
+
+
+# the following ones were in debian patches directory
+# but not refered to in the 00list :
+#
+#
+#
+#
+#
+

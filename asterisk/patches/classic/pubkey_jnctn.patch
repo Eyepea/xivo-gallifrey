@@ -1,0 +1,20 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## pubkey_jnctn.dpatch by Tzafrir Cohen <tzafrir.cohen@xorcom.com>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Public key for Junction Networks. From http://www.jnctn.net/jnctn.pub
+## DP: at Wed, 12 Oct 2005 23:35:06 +0200
+## DP: See also http://www.junctionnetworks.com/Asterisk-config.htm
+
+@DPATCH@
+Index: asterisk-1.2.23~dfsg/keys/jnctn.pub
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ asterisk-1.2.23~dfsg/keys/jnctn.pub	2007-08-06 12:02:03.000000000 +0200
+@@ -0,0 +1,6 @@
++-----BEGIN PUBLIC KEY-----
++MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDWaDv4190BpeL5K+Yuq5Q7+vPs
++FVrkibbIp+Io1gCQ6CGZJbR0kUZvTdf58bBdG0zqf6azFN8XPaNz9PVLDl+KgHwU
++3Ilu//eX8ph8Wu+Oxs/ymi/hzKm+Cd6aty94zYuqiegc0KdrjvU5TLQAkIQpiB6k
++CvuIm0R0XXQjj3R7LwIDAQAB
++-----END PUBLIC KEY-----

@@ -1,0 +1,24 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## daemon_color.dpatch by Tzafrir Cohen <tzafrir.cohen@xorcom.com>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Enable color support even in a daemonized Asterisk. This is 
+## DP: done by assuming the default value 'xterm' for TERM.
+## DP: See upstream bug http://bugs.digium.com/view.php?id=9048
+
+@DPATCH@
+Index: asterisk-1.2.23~dfsg/term.c
+===================================================================
+--- asterisk-1.2.23~dfsg.orig/term.c	2007-08-06 11:56:52.000000000 +0200
++++ asterisk-1.2.23~dfsg/term.c	2007-08-06 12:02:21.000000000 +0200
+@@ -79,8 +79,8 @@
+ 	int termfd = -1, parseokay = 0, i;
+ 
+ 	if (!term)
+-		return 0;
+-	if (!option_console || option_nocolor || !option_nofork)
++		term="xterm";
++	if (option_nocolor)
+ 		return 0;
+ 
+ 	for (i=0 ;; i++) {

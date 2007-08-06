@@ -1,0 +1,22 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## conf_sample.dpatch by Jose Carlos Garcia Sogo <jsogo@debian.org>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: No description.
+
+@DPATCH@
+diff -urNad asterisk-1.2.7.1.dfsg~/configs/modules.conf.sample asterisk-1.2.7.1.dfsg/configs/modules.conf.sample
+--- asterisk-1.2.7.1.dfsg~/configs/modules.conf.sample	2005-11-29 18:24:39.000000000 +0000
++++ asterisk-1.2.7.1.dfsg/configs/modules.conf.sample	2006-04-21 17:28:48.000000000 +0100
+@@ -45,7 +45,10 @@
+ ; By default, load OSS only (automatically) and do not load ALSA
+ ;
+ noload => chan_alsa.so
+-;noload => chan_oss.so
++noload => chan_oss.so
++;
++; h323 modules can be unstable so don't load by default
++noload => chan_h323.so
+ ;
+ ; Module names listed in "global" section will have symbols globally
+ ; exported to modules loaded after them.

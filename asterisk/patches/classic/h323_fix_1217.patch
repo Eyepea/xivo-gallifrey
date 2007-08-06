@@ -1,0 +1,31 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## h323_fix_1217.dpatch by Tzafrir Cohen <tzafrir.cohen@xorcom.com>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Upstream changeset 58008 broke h323 building. Revert it.
+## DP: (Should probably be fixed by 1.2.18) 
+## DP: Upstream issue: http://bugs.digium.com/view.php?id=9501
+
+@DPATCH@
+Index: asterisk-1.2.23~dfsg/channels/h323/Makefile
+===================================================================
+--- asterisk-1.2.23~dfsg.orig/channels/h323/Makefile	2007-08-06 11:56:52.000000000 +0200
++++ asterisk-1.2.23~dfsg/channels/h323/Makefile	2007-08-06 12:02:22.000000000 +0200
+@@ -21,8 +21,7 @@
+ OPENH323DIR=$(HOME)/openh323
+ endif
+ 
+-clean:
+-	rm -f *.so *.o .depend
++-include $(OPENH323DIR)/openh323u.mak
+ 
+ $(SOURCES)::	$(SOURCES:.cxx=.cpp)
+ 	ln -f $< $@
+@@ -31,7 +30,6 @@
+ 	touch $(SOURCES)
+ 
+ libchanh323.a:	$(OBJS)
+-	include $(OPENH323DIR)/openh323u.mak
+ 	ar crv $@ $(OBJS)
+ 
+ Makefile.ast:	FORCE

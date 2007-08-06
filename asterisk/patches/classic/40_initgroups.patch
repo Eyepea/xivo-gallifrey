@@ -1,0 +1,23 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 40_initgroups.dpatch by Kilian Krause <kk@verfaction.de>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: does initialize groups of asterisk user if no -G is given.
+## -- applied upstream for 1.2
+
+@DPATCH@
+Index: asterisk-1.2.23~dfsg/asterisk.c
+===================================================================
+--- asterisk-1.2.23~dfsg.orig/asterisk.c	2007-08-06 12:01:52.000000000 +0200
++++ asterisk-1.2.23~dfsg/asterisk.c	2007-08-06 12:01:54.000000000 +0200
+@@ -2243,6 +2243,10 @@
+ 				exit(1);
+ 			}
+ 		}
++		if (!rungroup && initgroups(runuser, pw->pw_gid)) {
++			ast_log(LOG_WARNING, "Unable to initialize supplementary group list for %s\n", runuser);
++			exit(1);
++		}
+ 		if (setuid(pw->pw_uid)) {
+ 			ast_log(LOG_WARNING, "Unable to setuid to %d (%s)\n", (int)pw->pw_uid, runuser);
+ 			exit(1);

@@ -1,0 +1,22 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## Makefile_hostcc.dpatch by Kilian Krause <kilian@debian.org>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Remove gcc hardcoding (Closes: #316802)
+
+@DPATCH@
+Index: asterisk-1.2.23~dfsg/Makefile
+===================================================================
+--- asterisk-1.2.23~dfsg.orig/Makefile	2007-08-06 12:02:04.000000000 +0200
++++ asterisk-1.2.23~dfsg/Makefile	2007-08-06 12:02:19.000000000 +0200
+@@ -19,8 +19,8 @@
+ # CROSS_COMPILE=/opt/montavista/pro/devkit/arm/xscale_be/bin/xscale_be-
+ # CROSS_COMPILE_BIN=/opt/montavista/pro/devkit/arm/xscale_be/bin/
+ # CROSS_COMPILE_TARGET=/opt/montavista/pro/devkit/arm/xscale_be/target
+-CC=$(CROSS_COMPILE)gcc
+-HOST_CC=gcc
++#CC=$(CROSS_COMPILE)gcc
++HOST_CC=$(CC)
+ # CROSS_ARCH=Linux
+ # CROSS_PROC=arm
+ # SUB_PROC=xscale # or maverick

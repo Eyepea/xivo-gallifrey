@@ -1,0 +1,62 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## codecs_Makefile.dpatch by Mark Purcell <msp@debian.org>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Use installed libgsm if availble
+
+@DPATCH@
+Index: asterisk-1.2.23~dfsg/codecs/codec_gsm.c
+===================================================================
+--- asterisk-1.2.23~dfsg.orig/codecs/codec_gsm.c	2007-08-06 12:01:30.000000000 +0200
++++ asterisk-1.2.23~dfsg/codecs/codec_gsm.c	2007-08-06 12:01:56.000000000 +0200
+@@ -45,7 +45,7 @@
+ #include "asterisk/logger.h"
+ #include "asterisk/channel.h"
+ 
+-#include "gsm/inc/gsm.h"
++#include <gsm/gsm.h>
+ #include "../formats/msgsm.h"
+ 
+ /* Sample frame data */
+Index: asterisk-1.2.23~dfsg/codecs/Makefile
+===================================================================
+--- asterisk-1.2.23~dfsg.orig/codecs/Makefile	2007-08-06 12:01:30.000000000 +0200
++++ asterisk-1.2.23~dfsg/codecs/Makefile	2007-08-06 12:01:56.000000000 +0200
+@@ -73,8 +73,9 @@
+ endif
+ 
+ 
+-LIBGSM=gsm/lib/libgsm.a
+-LIBGSMT=gsm/lib/libgsm.a
++LIBGSM=-lgsm
++# We don't build libgsm but use the system's one.
++LIBGSMT=
+ LIBLPC10=lpc10/liblpc10.a
+ 
+ ifeq ($(findstring BSD,${OSARCH}),BSD)
+Index: asterisk-1.2.23~dfsg/formats/Makefile
+===================================================================
+--- asterisk-1.2.23~dfsg.orig/formats/Makefile	2007-08-06 12:01:30.000000000 +0200
++++ asterisk-1.2.23~dfsg/formats/Makefile	2007-08-06 12:01:56.000000000 +0200
+@@ -33,8 +33,6 @@
+   CFLAGS+=-I$(CROSS_COMPILE_TARGET)/usr/local/include -L$(CROSS_COMPILE_TARGET)/usr/local/lib
+ endif
+ 
+-GSMLIB=../codecs/gsm/lib/libgsm.a
+-
+ ifeq (${OSARCH},CYGWIN)
+ CYGSOLINK=-Wl,--out-implib=lib$@.a -Wl,--export-all-symbols
+ CYGSOLIB=-L.. -L. -lasterisk.dll
+@@ -53,6 +51,12 @@
+   include .depend
+ endif
+ 
++format_gsm.so : format_gsm.o
++	$(CC) $(SOLINK) -o $@ $< -lgsm
++
++format_wav_gsm.so : format_wav_gsm.o
++	$(CC) $(SOLINK) -o $@ $< -lgsm
++
+ format_mp3.so : format_mp3.o
+ 	$(CC) $(SOLINK) -o $@ ${CYGSOLINK} $< ${CYGSOLIB} -lm
+ 

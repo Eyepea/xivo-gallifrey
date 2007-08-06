@@ -1,0 +1,20 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## Makefile_clean.dpatch by Kilian Krause <kilian@debian.org>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Unsuccessful cleanup is not an error. Fixes #393659.
+
+@DPATCH@
+Index: asterisk-1.2.23~dfsg/Makefile
+===================================================================
+--- asterisk-1.2.23~dfsg.orig/Makefile	2007-08-06 12:02:19.000000000 +0200
++++ asterisk-1.2.23~dfsg/Makefile	2007-08-06 12:02:20.000000000 +0200
+@@ -537,7 +537,7 @@
+ 	for x in $(SUBDIRS); do $(MAKE) -C $$x || exit 1 ; done
+ 
+ clean:
+-	for x in $(SUBDIRS); do $(MAKE) -C $$x clean || exit 1 ; done
++	for x in $(SUBDIRS); do $(MAKE) -C $$x clean || true ; done
+ 	rm -f *.o *.so asterisk .depend
+ 	rm -f defaults.h
+ 	rm -f include/asterisk/build.h
