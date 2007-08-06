@@ -906,7 +906,7 @@ def parseSIP(astnum, data, l_sipsock, l_addrsip):
                         auth = "Authorization: Digest username=\"%s\", realm=\"%s\", nonce=\"%s\", uri=\"%s\", response=\"%s\", algorithm=MD5" \
                                %(iaccount, realm, nonce, uri, response)
                         command = xivo_sip.sip_register(configs[astnum],
-                                                        "sip:" + iaccount, 1, "reg_cid@xivopy",
+                                                        iaccount, 1, "reg_cid@xivopy",
                                                         2 * xivosb_register_frequency, auth)
                         l_sipsock.sendto(command, (configs[astnum].remoteaddr, configs[astnum].portsipsrv))
                 elif iret == 403:
@@ -931,7 +931,7 @@ def parseSIP(astnum, data, l_sipsock, l_addrsip):
                                                 else:
                                                         pass
                                                 cid = rdc + "-subsxivo-" + sipnum.split("/")[1] + "@" + configs[astnum].localaddr
-                                                command = xivo_sip.sip_subscribe(configs[astnum], "sip:" + iaccount,
+                                                command = xivo_sip.sip_subscribe(configs[astnum], iaccount,
                                                                                  1, cid, normval.phonenum,
                                                                                  2 * xivosb_register_frequency, "")
                                                 l_sipsock.sendto(command, (configs[astnum].remoteaddr, configs[astnum].portsipsrv))
@@ -956,7 +956,7 @@ def parseSIP(astnum, data, l_sipsock, l_addrsip):
                                 response = md5.md5(md5_r1 + ":" + nonce + ":" + md5_r2).hexdigest()
                                 auth = "Authorization: Digest username=\"%s\", realm=\"%s\", nonce=\"%s\", uri=\"%s\", response=\"%s\", algorithm=MD5" \
                                        %(iaccount, realm, nonce, uri, response)
-                                command = xivo_sip.sip_subscribe(configs[astnum], "sip:" + iaccount,
+                                command = xivo_sip.sip_subscribe(configs[astnum], iaccount,
                                                                  1, icid, normv.phonenum,
                                                                  2 * xivosb_register_frequency, auth)
                                 l_sipsock.sendto(command, (configs[astnum].remoteaddr, configs[astnum].portsipsrv))
@@ -982,8 +982,8 @@ def parseSIP(astnum, data, l_sipsock, l_addrsip):
 
 
         elif imsg == "OPTIONS" or imsg == "NOTIFY":
-                command = xivo_sip.sip_ok(configs[astnum], "sip:" + iaccount,
-                                          icseq, icid, iaccount, imsg, ibranch, itag)
+                command = xivo_sip.sip_ok(configs[astnum], iaccount,
+                                          icseq, icid, imsg, ibranch, itag)
                 l_sipsock.sendto(command,(configs[astnum].remoteaddr, l_addrsip[1]))
                 if imsg == "NOTIFY":
                         sipnum, sippresence = tellpresence(data)
@@ -1012,10 +1012,10 @@ def do_sip_register(astnum, l_sipsock):
         global configs
         for sipacc in configs[astnum].xivosb_phoneids:
                 command = xivo_sip.sip_register(configs[astnum],
-                                                "sip:" + sipacc, 1, "reg_cid@xivopy",
+                                                sipacc, 1, "reg_cid@xivopy",
                                                 2 * xivosb_register_frequency, "")
                 l_sipsock.sendto(command, (configs[astnum].remoteaddr, configs[astnum].portsipsrv))
-                # command = xivo_sip.sip_options(configs[astnum], "sip:" + configs[astnum].mysipname, cid, sipnum)
+                # command = xivo_sip.sip_options(configs[astnum], configs[astnum].mysipname, cid, sipnum)
 
 
 ## \brief Splits a channel name, allowing for instance local-extensions-3fb2,1 to be correctly split.
