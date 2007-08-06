@@ -1,6 +1,7 @@
-diff -Nurp asterisk-1.2.21.1.orig/apps/app_voicemail.c asterisk-1.2.21.1/apps/app_voicemail.c
---- asterisk-1.2.21.1.orig/apps/app_voicemail.c	2007-07-11 15:51:02.000000000 +0200
-+++ asterisk-1.2.21.1/apps/app_voicemail.c	2007-07-13 13:01:27.000000000 +0200
+Index: asterisk-1.2.23~dfsg/apps/app_voicemail.c
+===================================================================
+--- asterisk-1.2.23~dfsg.orig/apps/app_voicemail.c	2007-08-06 14:30:04.000000000 +0200
++++ asterisk-1.2.23~dfsg/apps/app_voicemail.c	2007-08-06 14:34:04.000000000 +0200
 @@ -49,6 +49,7 @@
  #include <sys/mman.h>
  #include <time.h>
@@ -9,7 +10,7 @@ diff -Nurp asterisk-1.2.21.1.orig/apps/app_voicemail.c asterisk-1.2.21.1/apps/ap
  
  #include "asterisk.h"
  
-@@ -1685,6 +1686,7 @@ static int sendmail(char *srcemail, stru
+@@ -1687,6 +1688,7 @@
  	struct vm_zone *the_zone = NULL;
  	int len_passdata;
  	char *passdata2;
@@ -17,7 +18,7 @@ diff -Nurp asterisk-1.2.21.1.orig/apps/app_voicemail.c asterisk-1.2.21.1/apps/ap
  
  	if (vmu && ast_strlen_zero(vmu->email)) {
  		ast_log(LOG_WARNING, "E-mail address missing for mailbox [%s].  E-mail will not be sent.\n", vmu->mailbox);
-@@ -1735,7 +1737,8 @@ static int sendmail(char *srcemail, stru
+@@ -1737,7 +1739,8 @@
  		fprintf(p, "Date: %s\n", date);
  
  		/* Set date format for voicemail mail */
