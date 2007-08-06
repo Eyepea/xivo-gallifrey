@@ -1,11 +1,3 @@
-#! /bin/sh /usr/share/dpatch/dpatch-run
-## nomarch.dpatch by Kilian Krause <kilian@debian.org>
-##
-## All lines beginning with `## DP:' are a description of the patch.
-## DP: Don't optimize for i686 anywhere
-## -- upstream will move to configure with 1.4
-
-@DPATCH@
 Index: asterisk-1.2.23~dfsg/Makefile
 ===================================================================
 --- asterisk-1.2.23~dfsg.orig/Makefile	2007-08-06 12:01:58.000000000 +0200

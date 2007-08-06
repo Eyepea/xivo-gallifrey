@@ -1,12 +1,3 @@
-#! /bin/sh /usr/share/dpatch/dpatch-run
-## ukcid.dpatch by Tzafrir Cohen <tzafrir.cohen@xorcom.com>
-##
-## All lines beginning with `## DP:' are a description of the patch.
-## DP: A backport of playdtmf. See http://bugs.digium.com/view.php?id=6682
-## DP: patch: svn diff -r 10646:13356 http://svn.digium.com/svn/asterisk/team/oej/test-this-branch/apps/app_senddtmf.c
-## DP: From: http://www.lusyn.com/asterisk/patches.html
-
-@DPATCH@
 Index: asterisk-1.2.23~dfsg/apps/app_senddtmf.c
 ===================================================================
 --- asterisk-1.2.23~dfsg.orig/apps/app_senddtmf.c	2007-08-06 12:01:27.000000000 +0200

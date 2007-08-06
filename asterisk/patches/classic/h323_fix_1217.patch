@@ -1,12 +1,3 @@
-#! /bin/sh /usr/share/dpatch/dpatch-run
-## h323_fix_1217.dpatch by Tzafrir Cohen <tzafrir.cohen@xorcom.com>
-##
-## All lines beginning with `## DP:' are a description of the patch.
-## DP: Upstream changeset 58008 broke h323 building. Revert it.
-## DP: (Should probably be fixed by 1.2.18) 
-## DP: Upstream issue: http://bugs.digium.com/view.php?id=9501
-
-@DPATCH@
 Index: asterisk-1.2.23~dfsg/channels/h323/Makefile
 ===================================================================
 --- asterisk-1.2.23~dfsg.orig/channels/h323/Makefile	2007-08-06 11:56:52.000000000 +0200

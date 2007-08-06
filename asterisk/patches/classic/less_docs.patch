@@ -1,11 +1,3 @@
-#! /bin/sh /usr/share/dpatch/dpatch-run
-## less_docs.dpatch by Tzafrir Cohen <tzafrir.cohen@xorcom.com>
-##
-## All lines beginning with `## DP:' are a description of the patch.
-## DP: As noone really uses most of the API documentation, let's leave
-## DP: just the important bits
-
-@DPATCH@
 Index: asterisk-1.2.23~dfsg/contrib/asterisk-ng-doxygen
 ===================================================================
 --- asterisk-1.2.23~dfsg.orig/contrib/asterisk-ng-doxygen	2007-08-06 12:01:26.000000000 +0200

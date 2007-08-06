@@ -1,10 +1,3 @@
-#! /bin/sh /usr/share/dpatch/dpatch-run
-## cdr_sqlite3_custom.dpatch by  <neuromancer@localhost.localdomain>
-##
-## All lines beginning with `## DP:' are a description of the patch.
-## DP: No description.
-
-@DPATCH@
 Index: asterisk-1.2.23~dfsg/cdr/Makefile
 ===================================================================
 --- asterisk-1.2.23~dfsg.orig/cdr/Makefile	2007-08-06 12:01:27.000000000 +0200

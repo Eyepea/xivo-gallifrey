@@ -1,10 +1,3 @@
-#! /bin/sh /usr/share/dpatch/dpatch-run
-## correct_ps_display.dpatch by Kilian Krause <kilian@debian.org>
-##
-## All lines beginning with `## DP:' are a description of the patch.
-## DP: Display the correct pid in the asterisk console. Closes: 338646
-## DP: Upstream bug: #7098 . Fixed in 1.4 and in 1.2 branch (remove on 1.2.8)
-@DPATCH@
 Index: asterisk-1.2.23~dfsg/asterisk.c
 ===================================================================
 --- asterisk-1.2.23~dfsg.orig/asterisk.c	2007-08-06 12:01:54.000000000 +0200

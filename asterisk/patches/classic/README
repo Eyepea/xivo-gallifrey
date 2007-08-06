@@ -1,0 +1,182 @@
+# $Revision$
+# $Date$
+#
+# Supplementary informations as concerning patches that are added
+# to Asterisk in XIVO
+#
+# The current Asterisk base version is 1.2.23.
+# Better indication shall be provided by the file ASTERISK-VERSION
+# in the SVN tree.
+#
+
+###################################
+#
+# Proformatique-developed patches
+#
+###################################
+
+pf_intercept_monitored.patch
+        A monitoring phone can intercept a call by pressing the blinking button.
+        Adapted from :
+        http://bugs.digium.com/view.php?id=5014
+        http://rmdir.de/~michael/pickup-mgernoth-2006-10-03.patch
+
+pf_queue_call_limit.patch
+        An upper limit can be set on the queue lengths.
+
+pf_voicemail_date_language.patch
+        The date language is appropriately set in the main body of voicemail-issued
+        e-mails.
+
+###################################
+#
+# Debian-provided patches
+#
+###################################
+
+18_debian-libedit.patch                 NOT INCLUDED
+        ## debian-libedit.dpatch by Mark Purcell <msp@debian.org>
+        ## DP: Patch asterisk to use installed libedit
+
+30_ast-data-dir.patch                   INCLUDED
+        Environment variables for directories.
+        ## ast_data_dir.dpatch by Mark Purcell <msp@debian.org>
+        ## DP: Patch to make Asterisk conform with the Linux File System Hierarchy Standard (FHS)
+        ## DP: Places read-only architecture-independent data under /usr/share/asterisk (autoconf --datadir)
+        ## DP: not /var/lib/asterisk
+        ## (in short make ASTVARLIBDIR become ASTDATADIR)
+        ## -- was applied upstream for 1.2. Full transition in 1.4.
+
+40_initgroups.patch                     INCLUDED
+        ## 40_initgroups.dpatch by Kilian Krause <kk@verfaction.de>
+        ## DP: does initialize groups of asterisk user if no -G is given.
+        ## -- applied upstream for 1.2
+
+50_debian-libgsm.patch                  INCLUDED
+        ## codecs_Makefile.dpatch by Mark Purcell <msp@debian.org>
+        ## DP: Use installed libgsm if availble
+
+95_conf_sample.patch                    NOT INCLUDED
+        ## conf_sample.dpatch by Jose Carlos Garcia Sogo <jsogo@debian.org>
+
+98_fpm-sounds.patch                     INCLUDED
+        ## conf_sample.dpatch by Jose Carlos Garcia Sogo <jsogo@debian.org>
+
+apprecord_sprintf.patch                 NOT INCLUDED
+        ## apprecord_sprintf.dpatch by Tzafrir Cohen <tzafrir.cohen@xorcom.com>
+        ## DP: Fix format string issue in app_record.
+        ## DP: http://bugs.digium.com/view.php?id=7811
+
+backport_playdtmf.patch                 INCLUDED
+        ## ukcid.dpatch by Tzafrir Cohen <tzafrir.cohen@xorcom.com>
+        ## DP: A backport of playdtmf. See http://bugs.digium.com/view.php?id=6682
+        ## DP: patch: svn diff -r 10646:13356 http://svn.digium.com/svn/asterisk/team/oej/test-this-branch/apps/app_senddtmf.c
+        ## DP: From: http://www.lusyn.com/asterisk/patches.html
+
+brazilian_syntax.patch                  INCLUDED
+        ## brazilian_syntax.dpatch by Celso Fassoni <celso.fassoni@gmail.com>
+        ## DP: Brazilian portuguese syntax for VoiceMail() and Say* apps
+        ## DP: at Wed Apr 26 17:25:54 BRT 2006
+
+cdr_sqlite3_custom.patch                INCLUDED
+        ## cdr_sqlite3_custom.dpatch by  <neuromancer@localhost.localdomain>
+
+chanzap_disable_r2.patch                INCLUDED
+        ## chanzap_disable_r2.dpatch by Tzafrir Cohen <tzafrir.cohen@xorcom.com>
+        ## DP: disable the nunfunctional support for R2 in chan_zap
+        ## -- applied upstream for trunk (1.4.x)
+
+correct_pid_display.patch               INCLUDED
+        ## correct_ps_display.dpatch by Kilian Krause <kilian@debian.org>
+        ## DP: Display the correct pid in the asterisk console. Closes: 338646
+        ## DP: Upstream bug: #7098 . Fixed in 1.4 and in 1.2 branch (remove on 1.2.8)
+
+daemon_color.patch                      INCLUDED
+        ## daemon_color.dpatch by Tzafrir Cohen <tzafrir.cohen@xorcom.com>
+        ## DP: Enable color support even in a daemonized Asterisk. This is
+        ## DP: done by assuming the default value 'xterm' for TERM.
+        ## DP: See upstream bug http://bugs.digium.com/view.php?id=9048
+
+func_odbc_12.patch                      INCLUDED
+        ## func_odbc_12.dpatch by Tzafrir Cohen <tzafrir.cohen@xorcom.com>
+        ## DP: The backport of func_odbc from
+        ## DP: http://svncommunity.digium.com/svn/func_odbc/1.2/ , revision 9
+        ## DP: Code will be merged into trunk in 1.4.
+
+h323_fix_1217.patch                     INCLUDED
+        ## h323_fix_1217.dpatch by Tzafrir Cohen <tzafrir.cohen@xorcom.com>
+        ## DP: Upstream changeset 58008 broke h323 building. Revert it.
+        ## DP: (Should probably be fixed by 1.2.18)
+        ## DP: Upstream issue: http://bugs.digium.com/view.php?id=9501
+
+less_docs.patch                         INCLUDED
+        ## less_docs.dpatch by Tzafrir Cohen <tzafrir.cohen@xorcom.com>
+        ## DP: As noone really uses most of the API documentation, let's leave
+        ## DP: just the important bits
+
+Makefile_clean.patch                    INCLUDED
+        ## Makefile_clean.dpatch by Kilian Krause <kilian@debian.org>
+        ## DP: Unsuccessful cleanup is not an error. Fixes #393659.
+
+Makefile_hostcc.patch                   INCLUDED
+        ## Makefile_hostcc.dpatch by Kilian Krause <kilian@debian.org>
+        ## DP: Remove gcc hardcoding (Closes: #316802)
+
+nomarch.patch                           INCLUDED
+        ## nomarch.dpatch by Kilian Krause <kilian@debian.org>
+        ## DP: Don't optimize for i686 anywhere
+        ## -- upstream will move to configure with 1.4
+
+no_misdn_build.patch                    INCLUDED
+        ## no_misdn_build.dpatch by Marc Dequ-bènes (Duck) <mdequenes@proformatique.com>-A
+        ## DP: does initialize groups of asterisk user if no -G is given.
+
+option_detach.patch                     INCLUDED
+        ## option_detach.dpatch by Tzafrir Cohen <tzafrir.cohen@xorcom.com>
+        ## DP: when running asterisk -F: detach, even if -v or -d was given
+        ## -- applied upstream as -F option to *force* forking
+        ## -- in trunk (will be 1.4.x)
+
+patch.CVE-2006-2898.patch               INCLUDED
+        ## 99_CVE-2006-2898.dpatch by Joey Schulze <joey@debian.org>
+        ## DP: Bug in the IAX2 channel allows remote attackers to craft
+        ## DP: a denial of service.
+
+pubkey_jnctn.patch                      INCLUDED
+        ## pubkey_jnctn.dpatch by Tzafrir Cohen <tzafrir.cohen@xorcom.com>
+        ## DP: Public key for Junction Networks. From http://www.jnctn.net/jnctn.pub
+        ## DP: at Wed, 12 Oct 2005 23:35:06 +0200
+        ## DP: See also http://www.junctionnetworks.com/Asterisk-config.htm
+
+sys_editline.patch                      NOT INCLUDED
+        ## sys_readline.dpatch by Tzafrir Cohen <tzafrir.cohen@xorcom.com>
+        ## DP: Use the system copy of editline
+
+sys_readline.patch                      NOT INCLUDED
+        ## sys_readline.dpatch by Tzafrir Cohen <tzafrir.cohen@xorcom.com>
+        ## DP: Use the system copy of editline
+
+ukcid.patch                             INCLUDED
+        ## ukcid.dpatch by Tzafrir Cohen <tzafrir.cohen@xorcom.com>
+        ## DP: Support for UK Caller-ID in X100P cards: asterisk part.
+        ## DP: From: http://www.lusyn.com/asterisk/patches.html
+        ## DP: Updated for Asterisk 1.2.15: the chan_conf struct.
+
+vm_he.patch                             INCLUDED
+        ## vm_he.dpatch by Tzafrir Cohen <tzafrir.cohen@xorcom.com>
+        ## DP: Add Hebrew support to the voicemail app.
+
+zap_restart.patch                       INCLUDED
+        ## zap_restart.dpatch by Tzafrir Cohen <tzafrir.cohen@xorcom.com>
+        ## DP: Adds a CLI command "zap restart" that destroys all zaptel channels and
+        ## DP: re-loads zaptel configuration from scratch.
+        ## DP: Thus we have a "reload" for zaptel
+        ## -- applied upstream in trunk (1.4.x)
+
+
+# Flavour-specific patches
+
+bristuff.patch                          NOT INCLUDED
+
+libpri_bristuffed.patch                 NOT INCLUDED
+

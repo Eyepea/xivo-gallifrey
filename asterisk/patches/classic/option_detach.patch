@@ -1,12 +1,3 @@
-#! /bin/sh /usr/share/dpatch/dpatch-run
-## option_detach.dpatch by Tzafrir Cohen <tzafrir.cohen@xorcom.com>
-##
-## All lines beginning with `## DP:' are a description of the patch.
-## DP: when running asterisk -F: detach, even if -v or -d was given
-## -- applied upstream as -F option to *force* forking
-## -- in trunk (will be 1.4.x)
-
-@DPATCH@
 Index: asterisk-1.2.23~dfsg/asterisk.c
 ===================================================================
 --- asterisk-1.2.23~dfsg.orig/asterisk.c	2007-08-06 12:01:31.000000000 +0200

@@ -1,10 +1,3 @@
-#! /bin/sh /usr/share/dpatch/dpatch-run
-## vm_he.dpatch by Tzafrir Cohen <tzafrir.cohen@xorcom.com>
-##
-## All lines beginning with `## DP:' are a description of the patch.
-## DP: Add Hebrew support to the voicemail app. 
-
-@DPATCH@
 Index: asterisk-1.2.23~dfsg/apps/app_voicemail.c
 ===================================================================
 --- asterisk-1.2.23~dfsg.orig/apps/app_voicemail.c	2007-08-06 12:02:00.000000000 +0200

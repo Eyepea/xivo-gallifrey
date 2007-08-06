@@ -1,15 +1,3 @@
-#! /bin/sh /usr/share/dpatch/dpatch-run
-## ast_data_dir.dpatch by Mark Purcell <msp@debian.org>
-## Updated by Marc Dequènes (Duck) <mdequenes@proformatique.com>
-##
-## All lines beginning with `## DP:' are a description of the patch.
-## DP: Patch to make Asterisk conform with the Linux File System Hierarchy Standard (FHS)
-## DP: Places read-only architecture-independent data under /usr/share/asterisk (autoconf --datadir)
-## DP: not /var/lib/asterisk
-## (in short make ASTVARLIBDIR become ASTDATADIR)
-## -- was applied upstream for 1.2. Full transition in 1.4.
-
-@DPATCH@
 Index: asterisk-1.2.23~dfsg/apps/app_dial.c
 ===================================================================
 --- asterisk-1.2.23~dfsg.orig/apps/app_dial.c	2007-08-06 12:01:31.000000000 +0200

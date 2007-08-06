@@ -1,11 +1,3 @@
-#! /bin/sh /usr/share/dpatch/dpatch-run
-## brazilian_syntax.dpatch by Celso Fassoni <celso.fassoni@gmail.com>
-##
-## All lines beginning with `## DP:' are a description of the patch.
-## DP: Brazilian portuguese syntax for VoiceMail() and Say* apps
-## DP: at Wed Apr 26 17:25:54 BRT 2006
-
-@DPATCH@
 Index: asterisk-1.2.23~dfsg/apps/app_sayunixtime.c
 ===================================================================
 --- asterisk-1.2.23~dfsg.orig/apps/app_sayunixtime.c	2007-08-06 12:01:29.000000000 +0200

@@ -1,11 +1,3 @@
-#! /bin/sh /usr/share/dpatch/dpatch-run
-## 40_initgroups.dpatch by Kilian Krause <kk@verfaction.de>
-##
-## All lines beginning with `## DP:' are a description of the patch.
-## DP: does initialize groups of asterisk user if no -G is given.
-## -- applied upstream for 1.2
-
-@DPATCH@
 Index: asterisk-1.2.23~dfsg/asterisk.c
 ===================================================================
 --- asterisk-1.2.23~dfsg.orig/asterisk.c	2007-08-06 12:01:52.000000000 +0200
