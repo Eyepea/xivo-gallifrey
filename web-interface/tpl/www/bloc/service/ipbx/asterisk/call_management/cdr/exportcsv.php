@@ -14,58 +14,102 @@ header('Cache-Control: must-revalidate');
 header('Content-Type: text/csv');
 header('Content-Disposition: attachment; filename=xivo_cdr-'.strftime('%Y-%m-%d-%H:%M:%S').'.csv');
 
-echo '"',$this->bbf('fm_dbeg'),'";"',$info['dbeg'],'"',"\n";
+echo	'"',str_replace('"','""',$this->bbf('fm_dbeg')),'";',
+	'"',str_replace('"','""',$info['dbeg']),'"',"\n";
 	
 if($info['dend'] !== '')
-	echo '"',$this->bbf('fm_dend'),'";"',$info['dend'],'"',"\n";
+{
+	echo	'"',str_replace('"','""',$this->bbf('fm_dend')),'";',
+		'"',str_replace('"','""',$info['dend']),'"',"\n";
+}
 
 if($info['channel'] !== '')
 {
 	if($info['channel'] === XIVO_SRE_IPBX_AST_CHAN_UNKNOWN)
 		$info['channel'] = $this->bbf('fm_channel-optunknown');
 
-	echo '"',$this->bbf('fm_channel'),'";"',$info['channel'],'"',"\n";
+	echo	'"',str_replace('"','""',$this->bbf('fm_channel')),'";',
+		'"',str_replace('"','""',$info['channel']),'"',"\n";
 }
 
 if($info['disposition'] !== '')
-	echo '"',$this->bbf('fm_disposition'),'";"',$this->bbf('fm_disposition-opt-'.$info['disposition']),'"',"\n";
+{
+	echo	'"',str_replace('"','""',$this->bbf('fm_disposition')),'";',
+		'"',str_replace('"','""',$this->bbf('fm_disposition-opt-'.$info['disposition'])),'"',"\n";
+}
 
 if($info['amaflags'] !== '')
-	echo '"',$this->bbf('fm_amaflags'),'";"',$this->bbf('fm_amaflags-opt-'.$info['amaflagsmeta']),'"',"\n";
+{
+	echo	'"',str_replace('"','""',$this->bbf('fm_amaflags')),'";',
+		'"',str_replace('"','""',$this->bbf('fm_amaflags-opt-'.$info['amaflagsmeta'])),'"',"\n";
+}
 
 if($info['src'] !== '')
-	echo '"',$this->bbf('fm_src'),'";"',$info['src'],'"',"\n";
+{
+	echo	'"',str_replace('"','""',$this->bbf('fm_src')),'";',
+		'"',str_replace('"','""',$info['src']),'"',"\n";
+}
 
 if($info['dst'] !== '')
-	echo '"',$this->bbf('fm_dst'),'";"',$info['dst'],'"',"\n";
+{
+	echo	'"',str_replace('"','""',$this->bbf('fm_dst')),'";',
+		'"',str_replace('"','""',$info['dst']),'"',"\n";
+}
 
 if($info['clid'] !== '')
-	echo '"',$this->bbf('fm_clid'),'";"',$info['clid'],'"',"\n";
+{
+	echo	'"',str_replace('"','""',$this->bbf('fm_clid')),'";',
+		'"',str_replace('"','""',$info['clid']),'"',"\n";
+}
 
 if($info['accountcode'] !== '')
-	echo '"',$this->bbf('fm_accountcode'),'";"',$info['accountcode'],'"',"\n";
+{
+	echo	'"',str_replace('"','""',$this->bbf('fm_accountcode')),'";',
+		'"',str_replace('"','""',$info['accountcode']),'"',"\n";
+}
 
 if($info['userfield'] !== '')
-	echo '"',$this->bbf('fm_userfield'),'";"',$info['userfield'],'"',"\n";
+{
+	echo	'"',str_replace('"','""',$this->bbf('fm_userfield')),'";',
+		'"',str_replace('"','""',$info['userfield']),'"',"\n";
+}
 
 if($info['dubeg'] !== '')
-	echo '"',$this->bbf('fm_dubeg'),'";"',$this->bbf('fm_dubeg-'.$info['dubegunit'],$info['dubeg']),'"',"\n";
+{
+	echo	'"',str_replace('"','""',$this->bbf('fm_dubeg')),'";',
+		'"',str_replace('"','""',$this->bbf('fm_dubeg-'.$info['dubegunit'],$info['dubeg'])),'"',"\n";
+}
 
 if($info['duend'] !== '')
-	echo '"',$this->bbf('fm_duend'),'";"',$this->bbf('fm_duend-'.$info['duendunit'],$info['duend']),'"',"\n";
+{
+	echo	'"',str_replace('"','""',$this->bbf('fm_duend')),'";',
+		'"',str_replace('"','""',$this->bbf('fm_duend-'.$info['duendunit'],$info['duend'])),'"',"\n";
+}
 
 echo "\n";
 
 if($result === null || ($nb = count($result)) === 0)
 {
-	echo $this->bbf('no_cdr-result');
+	echo	$this->bbf('no_cdr-result');
 	die();
 }
 
-echo	'"',$this->bbf('col_calldate'),'";"',$this->bbf('col_src'),'";"',$this->bbf('col_dst'),'";"',$this->bbf('col_duration'),'";'.
-	'"',$this->bbf('col_channel'),'";"',$this->bbf('col_disposition'),'";"',$this->bbf('col_amaflags'),'";"',$this->bbf('col_clid'),'";'.
-	'"',$this->bbf('col_accountcode'),'";"',$this->bbf('col_userfield'),'";"',$this->bbf('col_dcontext'),'";"',$this->bbf('col_dstchannel'),'";'.
-	'"',$this->bbf('col_billsec'),'";"',$this->bbf('col_lastapp'),'";"',$this->bbf('col_lastdata'),'";"',$this->bbf('col_uniqueid'),'"',"\n";
+echo	'"',str_replace('"','""',$this->bbf('col_calldate')),'";',
+	'"',str_replace('"','""',$this->bbf('col_src')),'";',
+	'"',str_replace('"','""',$this->bbf('col_dst')),'";',
+	'"',str_replace('"','""',$this->bbf('col_duration')),'";',
+	'"',str_replace('"','""',$this->bbf('col_channel')),'";',
+	'"',str_replace('"','""',$this->bbf('col_disposition')),'";',
+	'"',str_replace('"','""',$this->bbf('col_amaflags')),'";',
+	'"',str_replace('"','""',$this->bbf('col_clid')),'";',
+	'"',str_replace('"','""',$this->bbf('col_accountcode')),'";',
+	'"',str_replace('"','""',$this->bbf('col_userfield')),'";',
+	'"',str_replace('"','""',$this->bbf('col_dcontext')),'";',
+	'"',str_replace('"','""',$this->bbf('col_dstchannel')),'";',
+	'"',str_replace('"','""',$this->bbf('col_billsec')),'";',
+	'"',str_replace('"','""',$this->bbf('col_lastapp')),'";',
+	'"',str_replace('"','""',$this->bbf('col_lastdata')),'";',
+	'"',str_replace('"','""',$this->bbf('col_uniqueid')),'"',"\n";
 
 for($i = 0;$i < $nb;$i++)
 {
@@ -74,11 +118,22 @@ for($i = 0;$i < $nb;$i++)
 	if($ref['channel'] === XIVO_SRE_IPBX_AST_CHAN_UNKNOWN)
 		$ref['channel'] = $this->bbf('entry_channel-unknown');
 
-	echo	'"',strftime($this->bbf('date_format_yymmddhhiiss'),$ref['callunixtime']),'";'.
-		'"',$ref['src'],'";"',$ref['dst'],'";"',$ref['duration'],'";"',$ref['channel'],'";',
-		'"',$this->bbf('entry_disposition-'.$ref['disposition']),'";"',$this->bbf('entry_amaflagsmeta-'.$ref['amaflagsmeta']),'";',
-		'"',$ref['clid'],'";"',$ref['accountcode'],'";"',$ref['userfield'],'";"',$ref['dcontext'],'";"',$ref['dstchannel'],'";',
-		'"',$ref['billsec'],'";"',$ref['lastapp'],'";"',$ref['lastdata'],'";"',$ref['uniqueid'],'"',"\n";
+	echo	'"',str_replace('"','""',strftime($this->bbf('date_format_yymmddhhiiss'),$ref['callunixtime'])),'";',
+		'"',str_replace('"','""',$ref['src']),'";',
+		'"',str_replace('"','""',$ref['dst']),'";',
+		'"',str_replace('"','""',$ref['duration']),'";',
+		'"',str_replace('"','""',$ref['channel']),'";',
+		'"',str_replace('"','""',$this->bbf('entry_disposition-'.$ref['disposition'])),'";',
+		'"',str_replace('"','""',$this->bbf('entry_amaflagsmeta-'.$ref['amaflagsmeta'])),'";',
+		'"',str_replace('"','""',$ref['clid']),'";',
+		'"',str_replace('"','""',$ref['accountcode']),'";',
+		'"',str_replace('"','""',$ref['userfield']),'";',
+		'"',str_replace('"','""',$ref['dcontext']),'";',
+		'"',str_replace('"','""',$ref['dstchannel']),'";',
+		'"',str_replace('"','""',$ref['billsec']),'";',
+		'"',str_replace('"','""',$ref['lastapp']),'";',
+		'"',str_replace('"','""',$ref['lastdata']),'";',
+		'"',str_replace('"','""',$ref['uniqueid']),'"',"\n";
 }
 
 die();

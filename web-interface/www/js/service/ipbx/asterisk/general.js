@@ -36,54 +36,27 @@ function xivo_outformat()
 	return(true);
 }
 
-var xivo_nb_timezone = 0;
-var xivo_node_timezone = '';
-
-function xivo_timezone(obj,del)
+function xivo_extentype(obj)
 {
-	del = xivo_is_undef(del) == true || del == 0 ? 0 : 1;
-
-	if(xivo_node_timezone === false)
+	if(xivo_is_undef(obj) == true
+	|| xivo_is_object(obj) == false
+	|| xivo_is_object(obj.parentNode) == false
+	|| xivo_is_object(obj.parentNode.parentNode) == false)
 		return(false);
 
-	if(xivo_node_timezone == ''
-	&& (xivo_node_timezone = xivo_etag('tr',xivo_eid('ex-timezone'),0)) == false)
-		return(false);
-
-	if(del == 1)
+	if(obj.value == 'extension')
 	{
-		if(xivo_is_object(obj) == false
-		|| xivo_is_object(obj.parentNode) == false
-		|| xivo_is_object(obj.parentNode.parentNode) == false
-		|| xivo_is_object(obj.parentNode.parentNode) == false)
-			return(false);
-
-		node = obj.parentNode.parentNode;
-		node.parentNode.removeChild(node);
-
-		xivo_nb_timezone--;
-
-		if(xivo_nb_timezone == 0)
-			xivo_eid('no-timezone').style.display = 'table-row';
+		extension_style = 'block';
+		range_style = 'none';
 	}
 	else
 	{
-		if(xivo_eid('ex-timezone') == false)
-			return(false);
-
-		xivo_nb_timezone++;
-
-		if(xivo_nb_timezone > 0)
-			xivo_eid('no-timezone').style.display = 'none';
-
-		var xivo_node_tzclone = xivo_node_timezone.cloneNode(true);
-
-		xivo_etag('input',xivo_node_tzclone,0).disabled = false;
-		xivo_etag('input',xivo_node_tzclone,1).disabled = false;
-		xivo_etag('select',xivo_node_tzclone,0).disabled = false;
-
-		xivo_eid('timezones').appendChild(xivo_node_tzclone);
+		extension_style = 'none';
+		range_style = 'block';
 	}
+
+	xivo_etag('div',obj.parentNode.parentNode,0).style.display = extension_style;
+	xivo_etag('div',obj.parentNode.parentNode,1).style.display = range_style;
 
 	return(true);
 }

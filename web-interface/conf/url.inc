@@ -11,6 +11,7 @@ $array['service/ipbx/general_settings/agents'] = 'service/ipbx/index.php/general
 $array['service/ipbx/general_settings/sounds'] = 'service/ipbx/index.php/general_settings/sounds/';
 $array['service/ipbx/general_settings/musiconhold'] = 'service/ipbx/index.php/general_settings/musiconhold/';
 $array['service/ipbx/general_settings/extenfeatures'] = 'service/ipbx/index.php/general_settings/extenfeatures/';
+$array['service/ipbx/general_settings/outcall'] = 'service/ipbx/index.php/general_settings/outcall/';
 $array['service/ipbx/pbx_settings/users'] = 'service/ipbx/index.php/pbx_settings/users/';
 $array['service/ipbx/pbx_settings/groups'] = 'service/ipbx/index.php/pbx_settings/groups/';
 $array['service/ipbx/pbx_settings/meetme'] = 'service/ipbx/index.php/pbx_settings/meetme/';

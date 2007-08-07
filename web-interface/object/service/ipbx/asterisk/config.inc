@@ -90,6 +90,9 @@ $array['section']['voicemail']['disabled'] = true;
 $array['section']['agent'] = array();
 $array['section']['agent']['disabled'] = true;
 
+$array['section']['outcall'] = array();
+$array['section']['outcall']['disabled'] = true;
+
 $array['module'] = array();
 
 $array['module']['extensions'] = array();
@@ -212,6 +215,10 @@ $array['module']['agentgroup']['section'] = 'agent';
 
 $array['module']['cdr'] = array();
 $array['module']['cdr']['datastorage'] = true;
+
+$array['module']['generaloutcall'] = array();
+$array['module']['generaloutcall']['datastorage'] = true;
+$array['module']['generaloutcall']['section'] = 'outcall';
 
 $array['protocol'] = array();
 $array['protocol']['sip'] = array('name' => XIVO_SRE_IPBX_AST_PROTO_SIP,'module' => 'usersip'); 

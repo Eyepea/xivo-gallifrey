@@ -604,8 +604,8 @@ class xivo_i18n
 					$txt = false;
 					break;
 				case ';':
-					if(preg_match('/^;(\t| )*copy(\t| )+([a-z]{2,3}_[A-Z]{2})$/',$line,$matchcopy) === 1
-					&& ($locale = $this->chk_locale($matchcopy[3])) !== false)
+					if(preg_match('/^;(?:\t| )*copy(\t| )+([a-z]{2,3}_[A-Z]{2})$/',$line,$matchcopy) === 1
+					&& ($locale = $this->chk_locale($matchcopy[2])) !== false)
 					{
 						if($priority !== 0)
 							continue;
@@ -620,7 +620,7 @@ class xivo_i18n
 
 						$this->_file = $_file;
 					}
-					else if(preg_match('/^;(\t| )*load(\t| )+'.
+					else if(preg_match('/^;(?:\t| )*load(\t| )+'.
 							   '(\.\\'.XIVO_SEP_DIR.')?([a-z0-9-_\\'.XIVO_SEP_DIR.']+)$/i',$line,$matchload) === 1)
 					{
 						if($priority > 3)
@@ -633,7 +633,10 @@ class xivo_i18n
 						$_load = $this->_load;
 						$_copy = $this->_copy;
 
-						$filename = $matchload[3] !== '' ? $this->_file['dirname'].XIVO_SEP_DIR.$matchload[4] : $matchload[4];
+						$filename = $matchload[3];
+
+						if($matchload[2] !== '')
+							$filename = $this->_file['dirname'].XIVO_SEP_DIR.$filename;
 
 						if($this->_load_file($filename,$this->_file['namespace']) !== false)
 							$_load[$filename] = 1;
@@ -642,19 +645,20 @@ class xivo_i18n
 						$this->_load = $_load; 
 						$this->_file = $_file;
 					}
-					else if(preg_match('/^;(\t| )*([a-zA-Z0-9-_]+)$/',$line,$match) === 1)
+					else if(preg_match('/^;(?:\t| )*([a-zA-Z0-9-_]+)$/',$line,$match) === 1)
 					{
 						$txt = true;
-						$key = $match[2];
+						$key = $match[1];
 
 						if(isset($r[$key]) === true)
 							$txt = false;
 					}
-					else if(preg_match('/^;(\t| )*"([a-zA-Z0-9_ -]+)"$/',$line,$match) === 1
-					&& strpos($match[2],'  ') === false)
+					else if(preg_match('/^;(?:\t| )*"([a-zA-Z0-9_ -]+)"$/',$line,$match) === 1
+					&& strpos($match[1],'  ') === false
+					&& $match[1]{0} !== ' ' && substr($match[1],-1,1) !== ' ')
 					{
 						$txt = true;
-						$key = $match[2];
+						$key = $match[1];
 
 						if(isset($r[$key]) === true)
 							$txt = false;

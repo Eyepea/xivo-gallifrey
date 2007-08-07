@@ -37,6 +37,9 @@ Musiques d'attente
 ; ply_service-ipbx-general_settings-extenfeatures
 Extensions
 
+; ply_service-ipbx-general_settings-outcall
+Appels sortants
+
 ; ply_service-ipbx-pbx_settings
 Paramètres PBX
 

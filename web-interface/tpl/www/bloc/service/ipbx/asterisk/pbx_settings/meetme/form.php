@@ -14,11 +14,11 @@
 
 <?=$form->text(array('desc' => $this->bbf('fm_meetme_admin-pin'),'name' => 'meetme[admin-pin]','labelid' => 'meetme-admin-pin','size' => 25,'default' => $element['meetme']['admin-pin']['default'],'value' => $info['meetme']['admin-pin']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_meetmefeatures_mode'),'name' => 'mfeatures[mode]','labelid' => 'mfeatures-mode','bbf' => 'fm_meetmefeatures_mode-','key' => false,'default' => $element['mfeatures']['mode']['default'],'value' => $info['mfeatures']['mode']),$element['mfeatures']['mode']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->select(array('desc' => $this->bbf('fm_meetmefeatures_mode'),'name' => 'mfeatures[mode]','labelid' => 'mfeatures-mode','bbf' => 'fm_meetmefeatures_mode-','key' => false,'default' => $element['mfeatures']['mode']['default'],'value' => $info['mfeatures']['mode']),$element['mfeatures']['mode']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 <?php
 	if($moh_list !== false):
-		echo $form->slt(array('desc' => $this->bbf('fm_meetmefeatures_musiconhold'),'name' => 'mfeatures[musiconhold]','labelid' => 'mfeatures-musiconhold','key' => 'category','empty' => true,'default' => $element['mfeatures']['musiconhold']['default'],'value' => $info['mfeatures']['musiconhold']),$moh_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');
+		echo $form->select(array('desc' => $this->bbf('fm_meetmefeatures_musiconhold'),'name' => 'mfeatures[musiconhold]','labelid' => 'mfeatures-musiconhold','key' => 'category','empty' => true,'default' => $element['mfeatures']['musiconhold']['default'],'value' => $info['mfeatures']['musiconhold']),$moh_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');
 	endif;
 ?>
 

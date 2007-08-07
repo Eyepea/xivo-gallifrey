@@ -28,17 +28,17 @@
 
 <div class="fm-field">
 <?=$form->text(array('desc' => $this->bbf('fm_fwdunc'),'name' => 'fwdunc','field' => false,'id' => 'it-fwdunc','size' => 15,'default' => $element['fwdunc']['default'],'value' => $this->varra('info','fwdunc')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
-<?=$form->slt(array('field' => false,'name' => 'list-fwdunc','id' => 'it-list-fwdunc','key' => false,'empty' => true),array('*',range(3,11)),'onchange="xivo_exten_pattern(\'it-fwdunc\',this.value);"');?>
+<?=$form->select(array('field' => false,'name' => 'list-fwdunc','id' => 'it-list-fwdunc','key' => false,'empty' => true),array('*',range(3,11)),'onchange="xivo_exten_pattern(\'it-fwdunc\',this.value);"');?>
 </div>
 
 <div class="fm-field">
 <?=$form->text(array('desc' => $this->bbf('fm_fwdrna'),'name' => 'fwdrna','field' => false,'id' => 'it-fwdrna','size' => 15,'default' => $element['fwdrna']['default'],'value' => $this->varra('info','fwdrna')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
-<?=$form->slt(array('field' => false,'name' => 'list-fwdrna','id' => 'it-list-fwdrna','key' => false,'empty' => true),array('*',range(3,11)),'onchange="xivo_exten_pattern(\'it-fwdrna\',this.value);"');?>
+<?=$form->select(array('field' => false,'name' => 'list-fwdrna','id' => 'it-list-fwdrna','key' => false,'empty' => true),array('*',range(3,11)),'onchange="xivo_exten_pattern(\'it-fwdrna\',this.value);"');?>
 </div>
 
 <div class="fm-field">
 <?=$form->text(array('desc' => $this->bbf('fm_fwdbusy'),'name' => 'fwdbusy','field' => false,'id' => 'it-fwdbusy','size' => 15,'default' => $element['fwdbusy']['default'],'value' => $this->varra('info','fwdbusy')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
-<?=$form->slt(array('field' => false,'name' => 'list-fwdbusy','id' => 'it-list-fwdbusy','key' => false,'empty' => true),array('*',range(3,11)),'onchange="xivo_exten_pattern(\'it-fwdbusy\',this.value);"');?>
+<?=$form->select(array('field' => false,'name' => 'list-fwdbusy','id' => 'it-list-fwdbusy','key' => false,'empty' => true),array('*',range(3,11)),'onchange="xivo_exten_pattern(\'it-fwdbusy\',this.value);"');?>
 </div>
 
 <?=$form->text(array('desc' => $this->bbf('fm_recsnd'),'name' => 'recsnd','id' => 'it-recsnd','size' => 15,'default' => $element['recsnd']['default'],'value' => $this->varra('info','recsnd')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
@@ -55,7 +55,7 @@
 
 <div class="fm-field">
 <?=$form->text(array('desc' => $this->bbf('fm_pickup'),'name' => 'pickup','field' => false,'id' => 'it-pickup','size' => 15,'default' => $element['pickup']['default'],'value' => $this->varra('info','pickup')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
-<?=$form->slt(array('field' => false,'name' => 'list-pickup','id' => 'it-list-pickup','key' => false,'empty' => true),array('*',range(3,11)),'onchange="xivo_exten_pattern(\'it-pickup\',this.value);"');?>
+<?=$form->select(array('field' => false,'name' => 'list-pickup','id' => 'it-list-pickup','key' => false,'empty' => true),array('*',range(3,11)),'onchange="xivo_exten_pattern(\'it-pickup\',this.value);"');?>
 </div>
 
 	<?=$form->submit(array('name' => 'submit','id' => 'it-submit','value' => $this->bbf('fm_bt-save')));?>

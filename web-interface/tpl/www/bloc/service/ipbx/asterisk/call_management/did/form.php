@@ -9,13 +9,13 @@
 
 <?=$form->text(array('desc' => $this->bbf('fm_extenumbers_number'),'name' => 'extenumbers[number]','labelid' => 'extenumbers-number','size' => 15,'default' => $element['extenumbers']['number']['default'],'value' => $info['extenumbers']['number']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_dfeatures_type'),'name' => 'dfeatures[type]','labelid' => 'dfeatures-type','key' => false,'bbf' => array('concatvalue','fm_dfeatures_type-'),'default' => $element['dfeatures']['type']['default'],'value' => $info['dfeatures']['type']),$element['dfeatures']['type']['value'],'onchange="xivo_chgtype(this);" onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->select(array('desc' => $this->bbf('fm_dfeatures_type'),'name' => 'dfeatures[type]','labelid' => 'dfeatures-type','key' => false,'bbf' => array('concatvalue','fm_dfeatures_type-'),'default' => $element['dfeatures']['type']['default'],'value' => $info['dfeatures']['type']),$element['dfeatures']['type']['value'],'onchange="xivo_chgtype(this);" onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 <?php
 	if(empty($list['users']) === false):
 ?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_dfeatures_typeid'),'name' => 'dfeatures[typeid]','labelid' => 'dfeatures-user-typeid','key' => 'number-context','overkey' => 'id','default' => $element['dfeatures']['typeid']['default'],'value' => $info['dfeatures']['typeid']),$list['users'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->select(array('desc' => $this->bbf('fm_dfeatures_typeid'),'name' => 'dfeatures[typeid]','labelid' => 'dfeatures-user-typeid','key' => 'number-context','altkey' => 'id','default' => $element['dfeatures']['typeid']['default'],'value' => $info['dfeatures']['typeid']),$list['users'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 <?php
 	else:
@@ -25,7 +25,7 @@
 	if(empty($list['groups']) === false):
 ?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_dfeatures_typeid'),'name' => 'dfeatures[typeid]','labelid' => 'dfeatures-group-typeid','key' => 'number-context','overkey' => 'id','default' => $element['dfeatures']['typeid']['default'],'value' => $info['dfeatures']['typeid']),$list['groups'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->select(array('desc' => $this->bbf('fm_dfeatures_typeid'),'name' => 'dfeatures[typeid]','labelid' => 'dfeatures-group-typeid','key' => 'number-context','altkey' => 'id','default' => $element['dfeatures']['typeid']['default'],'value' => $info['dfeatures']['typeid']),$list['groups'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 <?php
 	else:
@@ -35,7 +35,7 @@
 	if(empty($list['meetme']) === false):
 ?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_dfeatures_typeid'),'name' => 'dfeatures[typeid]','labelid' => 'dfeatures-meetme-typeid','key' => 'number','overkey' => 'id','default' => $element['dfeatures']['typeid']['default'],'value' => $info['dfeatures']['typeid']),$list['meetme'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->select(array('desc' => $this->bbf('fm_dfeatures_typeid'),'name' => 'dfeatures[typeid]','labelid' => 'dfeatures-meetme-typeid','key' => 'number','altkey' => 'id','default' => $element['dfeatures']['typeid']['default'],'value' => $info['dfeatures']['typeid']),$list['meetme'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 <?php
 	else:

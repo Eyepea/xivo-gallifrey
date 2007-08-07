@@ -29,6 +29,9 @@
 		if($this->chk_policy('general_settings','extenfeatures') === true):
 			echo '<dd id="mn-general-settings--extenfeatures">',$url->href_html($this->bbf('mn_left_extenfeatures'),'service/ipbx/general_settings/extenfeatures'),'</dd>';
 		endif;
+		if($this->chk_policy('general_settings','outcall') === true):
+			echo '<dd id="mn-general-settings--outcall">',$url->href_html($this->bbf('mn_left_outcall'),'service/ipbx/general_settings/outcall'),'</dd>';
+		endif;
 	endif;
 
 	if($this->chk_policy('pbx_settings') === true):

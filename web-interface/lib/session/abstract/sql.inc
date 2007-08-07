@@ -76,7 +76,7 @@ class xivo_session_abstract_sql
 				$this->_dso->free($rs);
 		}
 
-		$this->_crc = strlen($r.$this->_attrib['user_id']).crc32($r.$this->_attrib['user_id']);
+		$this->_crc = sha1($r.$this->_attrib['user_id']);
 
 		return($r);
 	}
@@ -92,9 +92,9 @@ class xivo_session_abstract_sql
 
 		$now = gmmktime();
 		$expire = $now + $this->_time;
-		$crc = strlen($val.$this->_attrib['user_id']).crc32($val.$this->_attrib['user_id']);
+		$crc = sha1($val.$this->_attrib['user_id']);
 
-		if($this->_insert === false && empty($this->_crc) === false && $this->_crc === $crc)
+		if($this->_insert === false && $this->_crc !== '' && $this->_crc === $crc)
 			return(true);
 
 		$val = rawurlencode($val);

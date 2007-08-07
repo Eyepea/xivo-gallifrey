@@ -30,10 +30,10 @@ class xivo_tpl_dhtml extends xivo_tpl_module
 		$where = (string) $where;
 		$files = (array) $files;
 
-		if(($cnt = count($files)) === 0)
+		if(($nb = count($files)) === 0)
 			return(null);
 
-		for($i = 0;$i < $cnt;$i++)
+		for($i = 0;$i < $nb;$i++)
 		{
 			if(isset($files[$i]) === false)
 				continue;
@@ -63,10 +63,10 @@ class xivo_tpl_dhtml extends xivo_tpl_module
 	{
 		$a = (array) $a;
 
-		if(($cnt = count($a)) === 0)
+		if(($nb = count($a)) === 0)
 			return(null);
 			
-		for($i = 0;$i < $cnt;$i++)
+		for($i = 0;$i < $nb;$i++)
 		{
 			if(isset($a[$i]) === false)
 				continue;
@@ -84,10 +84,10 @@ class xivo_tpl_dhtml extends xivo_tpl_module
 	{
 		$a = (array) $a;
 
-		if(($cnt = count($a)) === 0)
+		if(($nb = count($a)) === 0)
 			return(null);
 
-		for($i = 0;$i < $cnt;$i++)
+		for($i = 0;$i < $nb;$i++)
 		{
 			if(isset($a[$i]) === false)
 				continue;
@@ -104,22 +104,22 @@ class xivo_tpl_dhtml extends xivo_tpl_module
 	{
 		$r = '';
 
-		if(is_array($this->_js) === true && ($nb = count($this->_js)) > 0)
+		if(is_array($this->_js) === false || ($nb = count($this->_js)) === 0)
+			return($r);
+
+		for($i = 0;$i < $nb;$i++)
 		{
-			for($i = 0;$i < $nb;$i++)
-			{
-				$file = $this->_js[$i];
+			$file = $this->_js[$i];
 
-				if(isset($file{0}) === false)
-					continue;
+			if(isset($file{0}) === false)
+				continue;
 
-				$file = $this->file_time($file);
+			$file = $this->file_time($file);
 
-				if($file{0} !== '/')
-					$file = $this->get_option('script_root').'/'.$file;
+			if($file{0} !== '/')
+				$file = $this->get_option('script_root').'/'.$file;
 
-				$r .= '<script type="text/javascript" src="'.$file.'"></script>'."\n";
-			}
+			$r .= '<script type="text/javascript" src="'.$file.'"></script>'."\n";
 		}
 	
 		return($r);
@@ -129,22 +129,22 @@ class xivo_tpl_dhtml extends xivo_tpl_module
 	{
 		$r = '';
 
-		if(is_array($this->_css) === true && ($nb = count($this->_css)) > 0)
+		if(is_array($this->_css) === false || ($nb = count($this->_css)) === 0)
+			return($r);
+
+		for($i = 0;$i < $nb;$i++)
 		{
-			for($i = 0;$i < $nb;$i++)
-			{
-				$file = $this->_css[$i];
+			$file = $this->_css[$i];
 
-				if(isset($file{0}) === false)
-					continue;
+			if(isset($file{0}) === false)
+				continue;
 
-				$file = $this->file_time($file);
+			$file = $this->file_time($file);
 
-				if($file{0} !== '/')
-					$file = $this->get_option('script_root').'/'.$file;
+			if($file{0} !== '/')
+				$file = $this->get_option('script_root').'/'.$file;
 
-				$r .= '<link rel="stylesheet" type="text/css" href="'.$file.'">'."\n";
-			}
+			$r .= '<link rel="stylesheet" type="text/css" href="'.$file.'">'."\n";
 		}
 
 		return($r);
@@ -154,18 +154,21 @@ class xivo_tpl_dhtml extends xivo_tpl_module
 	{
 		$r = '';
 
-		if(xivo_issa($where,$this->_inc['js']) === true && ($nb = count($this->_inc['js'][$where])) > 0)
-		{
-			for($i = 0;$i < $nb;$i++)
-				$r .= $this->_load_file($this->_inc['js'][$where][$i])."\n"; 
+		if(xivo_issa($where,$this->_inc['js']) === false || ($nb = count($this->_inc['js'][$where])) === 0)
+			return(false);
 
-			if($r !== '')
-				$this->write_js($r);
-		}
+		for($i = 0;$i < $nb;$i++)
+			$r .= $this->_load_file($this->_inc['js'][$where][$i])."\n"; 
+
+		if($r !== '')
+			$this->write_js($r);
 	}
 
 	function write_js($str)
 	{
+		if(is_array($str) === true)
+			$str = implode("\n",$str);
+
 		$str = (string) $str;
 
 		echo '<script type="text/javascript">',"\n",'<!--',"\n",$str,"\n",'-->',"\n",'</script>',"\n";
@@ -173,6 +176,9 @@ class xivo_tpl_dhtml extends xivo_tpl_module
 
 	function write_css($str)
 	{
+		if(is_array($str) === true)
+			$str = implode("\n",$str);
+
 		$str = (string) $str;
 
 		echo '<style type="text/css">',"\n",'<!--',"\n",$str,"\n",'-->',"\n",'</style>',"\n";
@@ -182,14 +188,14 @@ class xivo_tpl_dhtml extends xivo_tpl_module
 	{
 		$r = '';
 
-		if(is_array($this->_inc['css']) === true && ($nb = count($this->_inc['css'])) > 0)
-		{
-			for($i = 0;$i < $nb;$i++)
-				$r .= $this->_load_file($this->_inc['css'][$i]);
+		if(is_array($this->_inc['css']) === false || ($nb = count($this->_inc['css'])) === 0)
+			return(false);
 
-			if($r !== '')
-				$this->write_css($r);
-		}
+		for($i = 0;$i < $nb;$i++)
+			$r .= $this->_load_file($this->_inc['css'][$i]);
+
+		if($r !== '')
+			$this->write_css($r);
 	}
 
 	function _load_file($file)

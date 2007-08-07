@@ -14,7 +14,7 @@
 
 <?=$form->text(array('desc' => $this->bbf('fm_filename'),'name' => 'filename','labelid' => 'filename','size' => 15,'value' => $info['filename']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_dirname'),'name' => 'dirname','labelid' => 'it-dirname','key' => false,'value' => $info['dirname']),$this->vars('list_dirs'),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->select(array('desc' => $this->bbf('fm_dirname'),'name' => 'dirname','labelid' => 'it-dirname','key' => false,'value' => $info['dirname']),$this->vars('list_dirs'),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 <?=$form->submit(array('name' => 'submit','id' => 'it-submit','value' => $this->bbf('fm_bt-save')));?>
 </form>

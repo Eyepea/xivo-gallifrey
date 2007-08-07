@@ -183,7 +183,7 @@ $array['filter']['fwdunc'] = array('minlen' => 1,'maxlen' => 20,'regexp' => '/^(
 $array['filter']['fwdrna'] = array('minlen' => 1,'maxlen' => 20,'regexp' => '/^(_[0-9\*#]+(\.|[X]{3,11})|[0-9]+)$/');
 $array['filter']['fwdbusy'] = array('minlen' => 1,'maxlen' => 20,'regexp' => '/^(_[0-9\*#]+(\.|[X]{3,11})|[0-9]+)$/i');
 $array['filter']['recsnd'] = array('minlen' => 1,'maxlen' => 20,'regexp' => '/^(_[0-9\*#]+|[0-9]+)$/');
-$array['filter']['phonestatus'] = array('minlen' => 1,'maxlen' => 20,'regexp' => '/^(_[0-9\*]+|[0-9]+)$/');
+$array['filter']['phonestatus'] = array('minlen' => 1,'maxlen' => 20,'regexp' => '/^(_[0-9\*#]+|[0-9]+)$/');
 $array['filter']['enablevm'] = array('minlen' => 1,'maxlen' => 20,'regexp' => '/^(_[0-9\*#]+|[0-9]+)$/');
 $array['filter']['enablednd'] = array('minlen' => 1,'maxlen' => 20,'regexp' => '/^(_[0-9\*#]+|[0-9]+)$/');
 $array['filter']['incallrec'] = array('minlen' => 1,'maxlen' => 20,'regexp' => '/^(_[0-9\*#]+|[0-9]+)$/');

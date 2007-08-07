@@ -104,10 +104,11 @@ class xivo_service_abstract
 			if(isset($ref['disabled']) === false || $ref['disabled'] === false)
 				return(true);
 
-			if(xivo_issa('section',$this->_ini['general']) === false)
+			if(xivo_issa('section',$this->_ini['general']) === false
+			|| isset($this->_ini['general']['section'][$section]) === false)
 				return(true);
 
-			if((bool) xivo_ak($section,$this->_ini['general']['section'],true) === false)
+			if((bool) $this->_ini['general']['section'][$section] === false)
 				return(false);
 		}
 		else
@@ -118,7 +119,8 @@ class xivo_service_abstract
 			if(xivo_issa($name,$this->_ini) === false || isset($this->_ini[$name]['disable']) === false)
 				return(true);
 
-			return((bool) $this->_ini[$name]['disable']);
+			if((bool) $this->_ini[$name]['disable'] === false)
+				return(false);
 		}
 
 		return(true);

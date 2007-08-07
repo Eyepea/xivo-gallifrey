@@ -13,7 +13,7 @@
 
 <?=$form->password(array('name' => 'password','id' => 'it-password','size' => 25,'value' => $this->bbf('fm_password')),'onfocus="this.value = this.value == \''.xivo_stript($this->bbf('fm_password')).'\' ? \'\' : this.value; this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_language'),'name' => 'language','id' => 'it-language'),array('fr' => 'Français'));?>
+<?=$form->select(array('desc' => $this->bbf('fm_language'),'name' => 'language','id' => 'it-language'),array('fr' => 'Français'));?>
 
 <?=$form->submit(array('name' => 'submit','id' => 'it-submit','value' => $this->bbf('fm_bt-connection')));?>
 </div>

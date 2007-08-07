@@ -21,6 +21,8 @@ xivo_dprog['current'] = new Array();
 xivo_dprog['bak'] = new Array();
 xivo_dprog['display'] = new Array();
 
+var xivo_tlist = new Array();
+
 var xivo_fm = document.forms;
 var xivo_winload = '';
 
@@ -747,6 +749,49 @@ function xivo_fm_unshift_pop_opt_select(from,text,value,chk,num)
 	return(true);
 }
 
+function xivo_fm_field_disabled(obj,disable)
+{
+	var i = 0;
+
+	if(xivo_is_undef(disable) == true)
+		disable = false;
+
+	disable = Boolean(disable);
+
+	var tag_input = false;
+	var tag_select = false;
+	var tag_textarea = false;
+
+	if(xivo_is_object(obj) == false)
+		return(false);
+
+	if((tag_input = xivo_etag('input',obj)) != false)
+	{
+		var tag_input_nb = tag_input.length;
+
+		for(i = 0;i < tag_input_nb;i++)
+			tag_input[i].disabled = disable;
+	}
+
+	if((tag_select = xivo_etag('select',obj)) != false)
+	{
+		var tag_select_nb = tag_select.length;
+
+		for(i = 0;i < tag_select_nb;i++)
+			tag_select[i].disabled = disable;
+	}
+
+	if((tag_textarea = xivo_etag('textarea',obj)) != false)
+	{
+		var tag_textarea_nb = tag_textarea.length;
+
+		for(i = 0;i < tag_textarea_nb;i++)
+			tag_textarea[i].disabled = disable;
+	}
+
+	return(true);
+}
+
 function xivo_clone(obj)
 {
 	if(typeof(obj) != 'object')
@@ -893,6 +938,63 @@ function xivo_smenu_over(obj,cname,last)
 	}
 
 	obj.className = cname;
+
+	return(true);
+}
+
+function xivo_table_list(name,obj,del)
+{
+	del = xivo_is_undef(del) == true || del == 0 ? 0 : 1;
+
+	if(xivo_is_undef(xivo_tlist[name]) == true
+	|| xivo_is_array(xivo_tlist[name]) == false)
+	{
+		xivo_tlist[name] = new Array();
+		xivo_tlist[name]['cnt'] = 0;
+		xivo_tlist[name]['node'] = '';
+	}
+
+	var ref = xivo_tlist[name];
+
+	if(ref['node'] === false)
+		return(false);
+
+	if(ref['node'] == ''
+	&& (ref['node'] = xivo_etag('tr',xivo_eid('ex-'+name),0)) == false)
+		return(false);
+
+	if(del == 1)
+	{
+		if(xivo_is_object(obj) == false
+		|| xivo_is_object(obj.parentNode) == false
+		|| xivo_is_object(obj.parentNode.parentNode) == false
+		|| xivo_is_object(obj.parentNode.parentNode.parentNode) == false)
+			return(false);
+
+		node = obj.parentNode.parentNode;
+		node.parentNode.removeChild(node);
+
+		ref['cnt']--;
+
+		if(ref['cnt'] == 0)
+			xivo_eid('no-'+name).style.display = 'table-row';
+	}
+	else
+	{
+		if(xivo_eid('ex-'+name) == false)
+			return(false);
+
+		ref['cnt']++;
+
+		if(ref['cnt'] > 0)
+			xivo_eid('no-'+name).style.display = 'none';
+
+		var xivo_node_clone = ref['node'].cloneNode(true);
+
+		xivo_fm_field_disabled(xivo_node_clone,false);
+
+		xivo_eid(name).appendChild(xivo_node_clone);
+	}
 
 	return(true);
 }

@@ -31,7 +31,7 @@ class xivo_tpl_form extends xivo_tpl_module
 		$this->_param['label'] = true;
 		$this->_param['field'] = false;
 		$this->_param['key'] = null;
-		$this->_param['overkey'] = false;
+		$this->_param['altkey'] = false;
 		$this->_param['empty'] = false;
 		$this->_param['optgroup'] = false;
 		$this->_param['null'] = false;
@@ -78,8 +78,8 @@ class xivo_tpl_form extends xivo_tpl_module
 		if(isset($v['key']) === true)
 			$this->_param['key'] = $v['key'];
 
-		if(isset($v['overkey']) === true)
-			$this->_param['overkey'] = $v['overkey'];
+		if(isset($v['altkey']) === true)
+			$this->_param['altkey'] = $v['altkey'];
 
 		if(isset($v['empty']) === true && $v['empty'] !== false)
 			$this->_param['empty'] = $v['empty'] === true ? true : $this->_mk_param_value($v['empty'],$v);
@@ -95,10 +95,10 @@ class xivo_tpl_form extends xivo_tpl_module
 			else
 				$this->_param['optgroup']['key'] = null;
 
-			if(isset($ref_ogrp['overkey']) === true)
-				$this->_param['optgroup']['overkey'] = $ref_ogrp['overkey'];
+			if(isset($ref_ogrp['altkey']) === true)
+				$this->_param['optgroup']['altkey'] = $ref_ogrp['altkey'];
 			else
-				$this->_param['optgroup']['overkey'] = false;
+				$this->_param['optgroup']['altkey'] = false;
 
 			if(isset($ref_ogrp['bbf']) === true && is_bool($ref_ogrp['bbf']) === false)
 				$this->_param['optgroup']['bbf'] = $this->_mk_param_bbf($ref_ogrp);
@@ -367,7 +367,7 @@ class xivo_tpl_form extends xivo_tpl_module
 		return($this->_render);
 	}
 
-	function bimg($v,$o='')
+	function image($v,$o='')
 	{
 		$v = (array) $v;
 		$o = (string) $o;
@@ -558,7 +558,7 @@ class xivo_tpl_form extends xivo_tpl_module
 		}
 	}
 
-	function slt($v,$a=array(),$o='',$more=array())
+	function select($v,$a=array(),$o='',$more=array())
 	{
 		$this->_render = '';
 
@@ -751,10 +751,10 @@ class xivo_tpl_form extends xivo_tpl_module
 
 	function _mk_slt_option_param_array($key,$ref)
 	{
-		if($this->_param['overkey'] !== false
-		&& isset($ref[$this->_param['overkey']]) === true
-		&& is_scalar($ref[$this->_param['overkey']]) === true)
-			$key = $ref[$this->_param['overkey']];
+		if($this->_param['altkey'] !== false
+		&& isset($ref[$this->_param['altkey']]) === true
+		&& is_scalar($ref[$this->_param['altkey']]) === true)
+			$key = $ref[$this->_param['altkey']];
 
 		$render = false;
 
@@ -853,12 +853,12 @@ class xivo_tpl_form extends xivo_tpl_module
 				{
 					$param = $this->_param['optgroup'];
 
-					if($param['overkey'] !== false
-					&& isset($ref[$param['overkey']]) === true
-					&& is_scalar($ref[$param['overkey']]) === true)
+					if($param['altkey'] !== false
+					&& isset($ref[$param['altkey']]) === true
+					&& is_scalar($ref[$param['altkey']]) === true)
 					{
-						$k = $ref[$param['overkey']];
-						unset($ref[$param['overkey']]);
+						$k = $ref[$param['altkey']];
+						unset($ref[$param['altkey']]);
 					}
 
 					$render = false;

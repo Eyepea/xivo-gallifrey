@@ -1,8 +1,8 @@
 <?php
 
-class xivo_service_asterisk_agentfeatures_abstract_sql
+class xivo_service_asterisk_generaloutcall_abstract_sql
 {
-	var $_param	= array('table' => 'agentfeatures');
+	var $_param	= array('table' => 'generaloutcall');
 	var $_dso	= null;
 
 	function _init(&$dso,$param=array())
@@ -106,21 +106,6 @@ class xivo_service_asterisk_agentfeatures_abstract_sql
 
 		if(isset($r[0]) === false)
 			$r = false;
-
-		return($r);
-	}
-
-	function get_nb_by_group($group,$disable=null)
-	{
-		if(($group = xivo_uint($group)) === 0)
-			return(false);
-
-		$where = 'numgroup = '.$group;
-
-		if($disable !== null)
-			$where .= ' AND commented = '.intval((bool) $disable);
-
-		$r = $this->_dso->select_count($this->_param['table'],null,$where);
 
 		return($r);
 	}

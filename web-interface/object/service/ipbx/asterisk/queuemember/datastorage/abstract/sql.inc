@@ -131,10 +131,7 @@ class xivo_service_asterisk_queuemember_abstract_sql
 		if($disable !== null)
 			$where .= ' AND commented = '.intval((bool) $disable);
 
-		$r = $this->_dso->select_one($this->_param['table'],'COUNT(*) AS cnt',$where);
-
-		if($r !== false)
-			$r = (int) $r['cnt'];
+		$r = $this->_dso->select_count($this->_param['table'],null,$where);
 
 		return($r);
 	}

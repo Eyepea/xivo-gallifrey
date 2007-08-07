@@ -12,7 +12,7 @@
 
 <?=$form->text(array('desc' => $this->bbf('fm_category'),'name' => 'category','labelid' => 'category','size' => 15,'default' => $element['category']['default'],'value' => $this->varra('info','category')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
-<?=$form->slt(array('desc' => $this->bbf('fm_mode'),'name' => 'mode','labelid' => 'mode','key' => false,'default' => $element['mode']['default'],'value' => $this->varra('info','mode')),$element['mode']['value'],'onchange="xivo_chg_attrib(\'fm_musiconhold\',\'fd-application\',(this.value != \'custom\' ? 0 : 1));" onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->select(array('desc' => $this->bbf('fm_mode'),'name' => 'mode','labelid' => 'mode','key' => false,'default' => $element['mode']['default'],'value' => $this->varra('info','mode')),$element['mode']['value'],'onchange="xivo_chg_attrib(\'fm_musiconhold\',\'fd-application\',(this.value != \'custom\' ? 0 : 1));" onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 <?=$form->text(array('desc' => $this->bbf('fm_application'),'name' => 'application','labelid' => 'application','size' => 15,'default' => $element['application']['default'],'value' => $this->varra('info','application')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 

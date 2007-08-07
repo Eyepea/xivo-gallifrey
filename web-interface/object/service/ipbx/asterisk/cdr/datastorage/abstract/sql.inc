@@ -47,6 +47,9 @@ class xivo_service_asterisk_cdr_abstract_sql
 		else
 			$this->_cnt = $this->_dso->select_count($this->_param['table'],null,$where);
 
+		if($this->_cnt === false)
+			$r = false;
+
 		return($r);
 	}
 
