@@ -84,7 +84,7 @@ MainWidget::MainWidget(BaseEngine * engine, QWidget * parent)
 	: QMainWindow(parent), m_engine(engine)
 {
 	QSettings settings;
-	QPixmap redsquare(":/disconnected.png");
+	QPixmap redsquare("../../xivoclient/gui/disconnected.png");
 	statusBar();	// This creates the status bar.
 	m_status = new QLabel();
 	m_status->setPixmap(redsquare);
@@ -417,7 +417,7 @@ void MainWidget::engineStarted()
 	m_svc_tabwidget->setCurrentIndex(0);
 
 	// set status icon to green
-	QPixmap greensquare(":/connected.png");
+	QPixmap greensquare("../../xivoclient/gui/connected.png");
 	m_status->setPixmap(greensquare);
 }
 
@@ -442,7 +442,7 @@ void MainWidget::engineStopped()
 	}
 
 	// set status icon to red
-	QPixmap redsquare(":/disconnected.png");
+	QPixmap redsquare("../../xivoclient/gui/disconnected.png");
 	m_status->setPixmap(redsquare);
 }
 

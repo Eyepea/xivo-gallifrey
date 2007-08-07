@@ -423,7 +423,7 @@ void BaseEngine::socketDisconnected()
 {
 	qDebug() << "BaseEngine::socketDisconnected()";
 	stopped();
-	emitTextMessage(tr("Connection lost with Presence Server"));
+	emitTextMessage(tr("Connection lost with XIVO Daemon"));
 	startTryAgainTimer();
 	//removePeers();
 	//connectSocket();
