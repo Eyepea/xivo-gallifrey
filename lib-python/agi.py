@@ -65,7 +65,6 @@ from types import ListType
 import signal
 from itertools import *
 
-DEBUG_PASSTHROUGH = 0
 
 DEFAULT_TIMEOUT = 2000 # 2sec timeout used as default for functions that take timeouts
 DEFAULT_RECORD  = 20000 # 20sec record time
@@ -109,6 +108,7 @@ class AGI:
         signal.signal(signal.SIGHUP, self._handle_sighup)  # handle SIGHUP
         self.env = {}
         self._get_agi_env()
+	self.DEBUG_PASSTHROUGH = 0
 
     def _get_agi_env(self):
         while 1:
@@ -162,7 +162,7 @@ class AGI:
         m = re_code.search(line)
         if m:
             code, response = m.groups()
-            if DEBUG_PASSTHROUGH:
+            if self.DEBUG_PASSTHROUGH:
 	        try:
                     code = int(code)
                 except:
