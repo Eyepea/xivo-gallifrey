@@ -41,14 +41,14 @@ CallWidget::CallWidget(const QString & channelme,
 		       const QString & channelpeer,
 		       const QString & exten,
                        QWidget * parent)
-: QWidget(parent), m_square(16,16),
-m_call_yellow(":/phone-yellow.png"),
-m_call_blue(":/phone-blue.png"),
-m_call_red(":/phone-red.png"),
-m_call_gray(":/phone-grey.png")
+        : QWidget(parent), m_square(16,16),
+          m_call_yellow(":xivoclient/gui/phone-yellow.png"),
+          m_call_blue  (":xivoclient/gui/phone-blue.png"),
+          m_call_red   (":xivoclient/gui/phone-red.png"),
+          m_call_gray  (":xivoclient/gui/phone-grey.png")
 {
 	QGridLayout * layout = new QGridLayout(this);
-
+        
 // 	m_callerid = callerid;
 // 	m_calleridname = calleridname;
  	m_channelme = channelme;

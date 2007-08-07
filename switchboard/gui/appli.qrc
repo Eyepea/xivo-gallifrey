@@ -1,19 +1,19 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
-	<file>xivoicon.png</file>
+	<file>../../xivoclient/gui/xivoicon.png</file>
 	<file>switchboard_fr.qm</file>
-	<file>phone-blue.png</file>
-	<file>phone-green.png</file>
-	<file>phone-grey.png</file>
-	<file>phone-orange.png</file>
-	<file>phone-red.png</file>
-	<file>phone-yellow.png</file>
-	<file>personal-blue.png</file>
-	<file>personal-green.png</file>
-	<file>personal-grey.png</file>
-	<file>personal-orange.png</file>
-	<file>personal-red.png</file>
-	<file>personal-yellow.png</file>
+	<file>../../xivoclient/gui/phone-blue.png</file>
+	<file>../../xivoclient/gui/phone-green.png</file>
+	<file>../../xivoclient/gui/phone-grey.png</file>
+	<file>../../xivoclient/gui/phone-orange.png</file>
+	<file>../../xivoclient/gui/phone-red.png</file>
+	<file>../../xivoclient/gui/phone-yellow.png</file>
+	<file>../../xivoclient/gui/personal-blue.png</file>
+	<file>../../xivoclient/gui/personal-green.png</file>
+	<file>../../xivoclient/gui/personal-grey.png</file>
+	<file>../../xivoclient/gui/personal-orange.png</file>
+	<file>../../xivoclient/gui/personal-red.png</file>
+	<file>../../xivoclient/gui/personal-yellow.png</file>
 	<file>../../xivoclient/gui/connected.png</file>
 	<file>../../xivoclient/gui/disconnected.png</file>
 </qresource>

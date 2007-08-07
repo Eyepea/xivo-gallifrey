@@ -5,6 +5,6 @@ QPushButton {
 }
 
 /*SwitchBoardWindow {
-  background-image: url(xivoicon.png);
+  background-image: url(../../xivoclient/gui/xivoicon.png);
 }*/
 

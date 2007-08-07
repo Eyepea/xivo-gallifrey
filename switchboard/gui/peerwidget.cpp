@@ -41,12 +41,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 PeerWidget::PeerWidget(const QString & id, const QString & name,
                        QWidget * parent)
 	: QWidget(parent), m_id(id), m_name(name),
-	  m_phone_green(":/phone-green.png"), m_phone_red(":/phone-red.png"),
-	  m_phone_orange(":/phone-orange.png"), m_phone_gray(":/phone-grey.png"),
-	  m_phone_yellow(":/phone-yellow.png"), m_phone_blue(":/phone-blue.png"),
-	  m_person_green(":/personal-green.png"), m_person_red(":/personal-red.png"),
-	  m_person_orange(":/personal-orange.png"), m_person_gray(":/personal-grey.png"),
-	  m_person_yellow(":/personal-yellow.png"), m_person_blue(":/personal-blue.png")
+	  m_phone_green (":xivoclient/gui/phone-green.png"),
+          m_phone_red   (":xivoclient/gui/phone-red.png"),
+	  m_phone_orange(":xivoclient/gui/phone-orange.png"),
+          m_phone_gray  (":xivoclient/gui/phone-grey.png"),
+	  m_phone_yellow(":xivoclient/gui/phone-yellow.png"),
+          m_phone_blue  (":xivoclient/gui/phone-blue.png"),
+	  m_person_green (":xivoclient/gui/personal-green.png"),
+          m_person_red   (":xivoclient/gui/personal-red.png"),
+	  m_person_orange(":xivoclient/gui/personal-orange.png"),
+          m_person_gray  (":xivoclient/gui/personal-grey.png"),
+	  m_person_yellow(":xivoclient/gui/personal-yellow.png"),
+          m_person_blue  (":xivoclient/gui/personal-blue.png")
 {
 	//qDebug() << "PeerWidget::PeerWidget()" << id;
 	//	QHBoxLayout * layout = new QHBoxLayout(this);

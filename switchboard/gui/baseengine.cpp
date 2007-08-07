@@ -1326,9 +1326,11 @@ void BaseEngine::processLoginDialog()
 		if(!m_tcpmode)
 			m_loginsocket->close();
 		if(m_version < REQUIRED_SERVER_VERSION) {
-			qDebug() << "Your server version is" << m_version << "which is too old. The required one is at least :" << REQUIRED_SERVER_VERSION;
 			m_loginsocket->close();
 			stop();
+                        QMessageBox::critical(NULL, tr("Critical error"),
+                                              tr("Your server version is %1 which is too old.\n").arg(m_version) +
+                                              tr("The required one is at least %1.").arg(REQUIRED_SERVER_VERSION));
 			return;
 		}
 		setState(ELogged);
