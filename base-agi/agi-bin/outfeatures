@@ -120,14 +120,6 @@ def set_outcallerid(callerid):
 # First argument must be a phone number 
 # Second argument must be a provider setup on config file
 
-#if len(sys.argv) != 4:
-#	agi.verbose("Error args incorrect")
-#	sys.exit()
-
-
-#exten = sys.argv[1]
-
-
 if len(sys.argv) > 1:
 	if sys.argv[1].isdigit() or re.search("^\+", sys.argv[1]):
 		exten = sys.argv[1]
@@ -139,9 +131,11 @@ if len(sys.argv) > 1:
 		context = sys.argv[2]
 	else:
 		context = ""
-	
-	callerid = sys.argv[3]
-	return_callerid = set_outcallerid(callerid)
+
+	return_callerid = ''
+	if len(sys.argv) > 3:
+		callerid = sys.argv[3]
+		return_callerid = set_outcallerid(callerid)
 	
 	if provider:
 		get_provider(provider, return_callerid)
