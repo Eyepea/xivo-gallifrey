@@ -48,6 +48,8 @@ public slots:
 			const QStringList & chanOthers);
 	void removePeer(const QString & ext);
 	void removePeers();
+signals:
+	void askCallerIds();
 private:
 	BaseEngine * m_engine;	//!< engine object reference
 	QList<Peer> m_peerlist;	//!< Peer list

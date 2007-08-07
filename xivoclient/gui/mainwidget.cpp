@@ -199,7 +199,7 @@ void MainWidget::createMenus()
 
 	m_avail = menuBar()->addMenu(tr("&Availability"));
 	m_avail->addActions( m_availgrp->actions() );
-	m_avail->setEnabled( m_engine->enabled_presence() );
+	m_avail->setEnabled( m_engine->enabledPresence() );
 	connect( m_engine, SIGNAL(availAllowChanged(bool)),
 	         m_avail, SLOT(setEnabled(bool)) );
 
@@ -337,7 +337,7 @@ void MainWidget::setConnected()
 	QPixmap greensquare(":/connected.png");
 	m_status->setPixmap(greensquare);
 	QStringList display_capas = QString("customerinfo,features,history,directory,peers,dial,presence").split(",");
-        qDebug() << "MainWidget::setConnected()" << m_engine->enabled_presence() << m_engine->enabled_cinfo();
+        qDebug() << "MainWidget::setConnected()" << m_engine->enabledPresence() << m_engine->enabledCInfo();
 	QStringList allowed_capas = m_engine->getCapabilities().split(",");
 	m_presence = false;
 
@@ -366,7 +366,7 @@ void MainWidget::setConnected()
 					 m_engine, SLOT(dialFullChannel(const QString &)) );
 				m_vboxwidgets->addWidget(m_dial, 0);
 
-			} else if((dc == QString("customerinfo")) && (m_engine->enabled_cinfo())) {
+			} else if((dc == QString("customerinfo")) && (m_engine->enabledCInfo())) {
 				m_tabwidget = new QTabWidget();
 				m_qtabwidget->addTab(m_tabwidget, tr("&Sheets"));
 
@@ -387,6 +387,9 @@ void MainWidget::setConnected()
 									const QString &, const QString &,
 									const QStringList &, const QStringList &,
 									const QStringList &)) );
+				connect( m_peerswidget, SIGNAL(askCallerIds()),
+					 m_engine, SLOT(askCallerIds()) );
+
 				m_peerswidget->setEngine(m_engine);
 
 			} else if(dc == QString("features")) {

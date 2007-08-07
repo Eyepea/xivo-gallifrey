@@ -60,13 +60,11 @@ ConfWidget::ConfWidget(BaseEngine * engine,
 	gridlayout->addWidget(lblhost, line, 0);
 	gridlayout->addWidget(m_serverhost, line++, 1);
 
-        if(m_engine->isASwitchboard()) {
-                QLabel * lblsbport = new QLabel(tr("Switchboard Port"), this);
-                m_sbport = new QLineEdit(QString::number(m_engine->sbPort()), this);
-                m_sbport->setInputMask("5003");
-                gridlayout->addWidget(lblsbport, line, 0);
-                gridlayout->addWidget(m_sbport, line++, 1);
-        }
+        QLabel * lblsbport = new QLabel(tr("Switchboard Port"), this);
+        m_sbport = new QLineEdit(QString::number(m_engine->sbPort()), this);
+        m_sbport->setInputMask("5003");
+        gridlayout->addWidget(lblsbport, line, 0);
+        gridlayout->addWidget(m_sbport, line++, 1);
 
 	QLabel * lbllport = new QLabel(tr("Login Port"), this);
 	m_loginport = new QLineEdit(QString::number(m_engine->loginPort()), this);
@@ -83,10 +81,10 @@ ConfWidget::ConfWidget(BaseEngine * engine,
 	vbox->setSpacing(0);
 
 	m_presence = new QCheckBox(tr("Presence reporting"), groupBox);
-	m_presence->setCheckState(m_engine->enabled_presence() ? Qt::Checked : Qt::Unchecked);
+	m_presence->setCheckState(m_engine->enabledPresence() ? Qt::Checked : Qt::Unchecked);
 	vbox->addWidget( m_presence );
 	m_cinfo = new QCheckBox(tr("Customer Info"), groupBox);
-	m_cinfo->setCheckState(m_engine->enabled_cinfo() ? Qt::Checked : Qt::Unchecked);
+	m_cinfo->setCheckState(m_engine->enabledCInfo() ? Qt::Checked : Qt::Unchecked);
 	vbox->addWidget( m_cinfo );
 
 	gridlayout->addWidget(groupBox, line++, 0, 1, 0);
@@ -181,8 +179,7 @@ ConfWidget::ConfWidget(BaseEngine * engine,
 void ConfWidget::saveAndClose()
 {
         qDebug() << "ConfWidget::saveAndClose()";
-        if(m_engine->isASwitchboard())
-                m_engine->setAddress(m_serverhost->text(), m_sbport->text().toUShort());
+        m_engine->setAddress(m_serverhost->text(), m_sbport->text().toUShort());
 	m_engine->setServerip(m_serverhost->text());
 	m_engine->setLoginPort(m_loginport->text().toUShort());
 

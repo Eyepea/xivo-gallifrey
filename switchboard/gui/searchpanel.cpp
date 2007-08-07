@@ -53,7 +53,9 @@ SearchPanel::SearchPanel(QWidget * parent)
 
 void SearchPanel::setEngine(BaseEngine * engine)
 {
+        qDebug() << "SearchPanel::setEngine()";
 	m_engine = engine;
+        askCallerIds();
 }
 
 /*! \brief apply the search

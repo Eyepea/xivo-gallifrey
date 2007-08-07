@@ -96,9 +96,9 @@ public:
 	const QString & getAvailState() const;	//!< returns availability status
 	void setAvailState(const QString &);	//! set m_availstate
 	void setEnabledPresence(bool b);	//! set m_enabled_presence
-	bool enabled_presence();		//! get m_enabled_presence
+	bool enabledPresence();			//! get m_enabled_presence
 	void setEnabledCInfo(bool b);		//! set m_enabled_cinfo
-	bool enabled_cinfo();			//! get m_enabled_cinfo
+	bool enabledCInfo();			//! get m_enabled_cinfo
 
 	uint keepaliveinterval() const;		//!< keep alive interval
 	bool tcpmode() const;			//!< get tcp mode flag
@@ -159,8 +159,6 @@ signals:
 	void delogged();			//!< signal emitted when the state becomes ENotLogged
 	void availAllowChanged(bool);		//!< signal 
 	void newProfile(Popup *);		//!< signal emitted when a new profile has to be shown
-	void started();				//! connected to the server
-	void stopped();				//! disconnected from the server
 	void emitTextMessage(const QString &);	//! message to be displayed to the user.
 
 	//! a call

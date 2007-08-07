@@ -55,7 +55,6 @@ private slots:
 	void showConfDialog();
 	void engineStopped();
 	void engineStarted();
-	void loginengineStarted();
 	//	void systrayActivated(QSystemTrayIcon::ActivationReason);
 	//	void systrayMsgClicked();
 	void showNewProfile(Popup *);	//!< display a Profile widget

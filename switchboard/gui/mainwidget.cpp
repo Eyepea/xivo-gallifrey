@@ -118,7 +118,7 @@ MainWidget::MainWidget(BaseEngine * engine, QWidget * parent)
 				     const QString &, const QString &, const QString &)) );
 	connect( m_engine, SIGNAL(callsUpdated()),
 	         calls, SLOT(updateDisplay()) );
-	connect( m_engine, SIGNAL(stopped()),
+	connect( m_engine, SIGNAL(delogged()),
 	         calls, SLOT(reset()) );
 	connect( m_engine, SIGNAL(monitorPeer(const QString &, const QString &)),
 	         calls, SLOT(monitorPeer(const QString &, const QString &)) );
@@ -147,7 +147,7 @@ MainWidget::MainWidget(BaseEngine * engine, QWidget * parent)
 					   const QString &, const QString &,
 					   const QStringList &, const QStringList &,
 					   const QStringList &)) );
-	connect( m_engine, SIGNAL(stopped()),
+	connect( m_engine, SIGNAL(delogged()),
 	         m_widget, SLOT(removePeers()) );
 	connect( m_engine, SIGNAL(removePeer(const QString &)),
 	         m_widget, SLOT(removePeer(const QString &)) );
@@ -167,28 +167,30 @@ MainWidget::MainWidget(BaseEngine * engine, QWidget * parent)
 	         m_engine, SLOT(originateCall(const QString &, const QString &)) );
 	connect( m_engine, SIGNAL(updateMyCalls(const QStringList &, const QStringList &, const QStringList &)),
 	         dirpanel, SIGNAL(updateMyCalls(const QStringList &, const QStringList &, const QStringList &)) );
-	connect( m_engine, SIGNAL(stopped()),
+	connect( m_engine, SIGNAL(delogged()),
 	         dirpanel, SLOT(stop()) );
 
 	m_rightSplitter = new QSplitter(Qt::Vertical, m_splitter);
 
-	SearchPanel * searchpanel = new SearchPanel(m_rightSplitter);
-	searchpanel->setEngine(m_engine);
+	SearchPanel * m_searchpanel = new SearchPanel(m_rightSplitter);
 	connect( m_engine, SIGNAL(updatePeer(const QString &, const QString &,
-	                                   const QString &, const QString &,
-	                                   const QString &, const QString &,
-					   const QStringList &, const QStringList &,
-					   const QStringList &)),
-	         searchpanel, SLOT(updatePeer(const QString &, const QString &,
-					      const QString &, const QString &,
-					      const QString &, const QString &,
-					      const QStringList &, const QStringList &,
-					      const QStringList &)) );
-	connect( m_engine, SIGNAL(stopped()),
-	         searchpanel, SLOT(removePeers()) );
+                                             const QString &, const QString &,
+                                             const QString &, const QString &,
+                                             const QStringList &, const QStringList &,
+                                             const QStringList &)),
+	         m_searchpanel, SLOT(updatePeer(const QString &, const QString &,
+                                                const QString &, const QString &,
+                                                const QString &, const QString &,
+                                                const QStringList &, const QStringList &,
+                                                const QStringList &)) );
+        connect( m_searchpanel, SIGNAL(askCallerIds()),
+                 m_engine, SLOT(askCallerIds()) );
+	connect( m_engine, SIGNAL(delogged()),
+	         m_searchpanel, SLOT(removePeers()) );
 	connect( m_engine, SIGNAL(removePeer(const QString &)),
-	         searchpanel, SLOT(removePeer(const QString &)) );
-	
+	         m_searchpanel, SLOT(removePeer(const QString &)) );
+        m_searchpanel->setEngine(m_engine);
+
 	m_tabwidget = new QTabWidget(m_rightSplitter);
 	connect( m_engine, SIGNAL(newProfile(Popup *)),
 	         this, SLOT(showNewProfile(Popup *)) );
@@ -211,16 +213,14 @@ MainWidget::MainWidget(BaseEngine * engine, QWidget * parent)
 	m_rightSplitter->restoreState(settings.value("display/rightSplitterSizes").toByteArray());
 	restoreGeometry(settings.value("display/mainwingeometry").toByteArray());
 
- 	connect(m_engine, SIGNAL(emitTextMessage(const QString &)),
- 	        statusBar(), SLOT(showMessage(const QString &)));
-	connect(m_engine, SIGNAL(emitTextMessage(const QString &)),
-	        lbl, SLOT(addMessage(const QString &)));
-	connect(m_engine, SIGNAL(started()),
-	        this, SLOT(engineStarted()));
-	connect(m_engine, SIGNAL(stopped()),
-	        this, SLOT(engineStopped()));
-	connect(m_engine, SIGNAL(logged()),
- 		this, SLOT(loginengineStarted()) );
+ 	connect( m_engine, SIGNAL(emitTextMessage(const QString &)),
+                 statusBar(), SLOT(showMessage(const QString &)));
+	connect( m_engine, SIGNAL(emitTextMessage(const QString &)),
+                 lbl, SLOT(addMessage(const QString &)));
+	connect( m_engine, SIGNAL(logged()),
+	         this, SLOT(engineStarted()));
+	connect( m_engine, SIGNAL(delogged()),
+                 this, SLOT(engineStopped()));
 }
 
 /*! \brief Destructor
@@ -310,7 +310,7 @@ void MainWidget::createActions()
 
 	m_avail = menuBar()->addMenu(tr("&Availability"));
 	m_avail->addActions( m_availgrp->actions() );
-	m_avail->setEnabled( m_engine->enabled_presence() );
+	m_avail->setEnabled( m_engine->enabledPresence() );
 	connect( m_engine, SIGNAL(availAllowChanged(bool)),
 	         m_avail, SLOT(setEnabled(bool)) );
 
@@ -335,87 +335,103 @@ void MainWidget::showConfDialog()
  */
 void MainWidget::engineStarted()
 {
-	qDebug() << "MainWidget::engineStarted()";
-	m_stopact->setEnabled(true);
-	m_startact->setDisabled(true);
+	QStringList display_capas = QString("customerinfo,history,features,directory,peers,dial,presence").split(",");
+        QStringList allowed_capas = m_engine->getCapabilities().split(",");
 
-	m_logwidget = new LogWidget(m_engine, m_svc_tabwidget);
-	m_svc_tabwidget->insertTab(0, m_logwidget, tr("History"));
+        for (int j = 0; j < display_capas.size(); j++) {
+		QString dc = display_capas[j];
+		bool allowed = false;
+                for(int c = 0; c < allowed_capas.size(); c++) {
+                        QString ac = allowed_capas[c];
+                        if(ac == dc) allowed = true;
+                }
+		if (allowed) {
+			qDebug() << "adding" << dc;
 
-	connect( m_engine, SIGNAL(updateLogEntry(const QDateTime &, int, const QString &, int)),
-	         m_logwidget, SLOT(addLogEntry(const QDateTime &, int, const QString &, int)) );
-	connect( m_logwidget, SIGNAL(askHistory(const QString &, int)),
-	         m_engine, SLOT(requestHistory(const QString &, int)) );
-	connect( m_engine, SIGNAL(stopped()),
-	         m_logwidget, SLOT(clear()) );
-	connect( calls, SIGNAL(monitoredPeerChanged(const QString &)),
-	         m_logwidget, SLOT(setPeerToDisplay(const QString &)) );
+			if (dc == QString("history")) {
+                                m_logwidget = new LogWidget(m_engine, m_svc_tabwidget);
+                                m_svc_tabwidget->insertTab(0, m_logwidget, tr("History"));
 
-	m_featureswidget = new ServicePanel(m_svc_tabwidget);
-	m_svc_tabwidget->insertTab(0, m_featureswidget, tr("Services"));
+                                connect( m_engine, SIGNAL(updateLogEntry(const QDateTime &, int, const QString &, int)),
+                                         m_logwidget, SLOT(addLogEntry(const QDateTime &, int, const QString &, int)) );
+                                connect( m_logwidget, SIGNAL(askHistory(const QString &, int)),
+                                         m_engine, SLOT(requestHistory(const QString &, int)) );
+                                connect( m_engine, SIGNAL(delogged()),
+                                         m_logwidget, SLOT(clear()) );
+                                connect( calls, SIGNAL(monitoredPeerChanged(const QString &)),
+                                         m_logwidget, SLOT(setPeerToDisplay(const QString &)) );
+                        } else if (dc == QString("features")) {
 
-	connect( m_featureswidget, SIGNAL(askFeatures(const QString &)),
-	         m_engine, SLOT(askFeatures(const QString &)) );
-	connect( calls, SIGNAL(monitoredPeerChanged(const QString &)),
-	         m_featureswidget, SLOT(setPeerToDisplay(const QString &)) );
+                                m_featureswidget = new ServicePanel(m_svc_tabwidget);
+                                m_svc_tabwidget->insertTab(0, m_featureswidget, tr("Services"));
 
-	connect( m_engine, SIGNAL(disconnectFeatures()),
-		 m_featureswidget, SLOT(DisConnect()) );
-	connect( m_engine, SIGNAL(connectFeatures()),
-		 m_featureswidget, SLOT(Connect()) );
-	connect( m_engine, SIGNAL(resetFeatures()),
-		 m_featureswidget, SLOT(Reset()) );
+                                connect( m_featureswidget, SIGNAL(askFeatures(const QString &)),
+                                         m_engine, SLOT(askFeatures(const QString &)) );
+                                connect( calls, SIGNAL(monitoredPeerChanged(const QString &)),
+                                         m_featureswidget, SLOT(setPeerToDisplay(const QString &)) );
 
-	connect( m_featureswidget, SIGNAL(voiceMailToggled(bool)),
-		 m_engine, SLOT(setVoiceMail(bool)) );
-	connect( m_engine, SIGNAL(voiceMailChanged(bool)),
-		 m_featureswidget, SLOT(setVoiceMail(bool)) );
+                                connect( m_engine, SIGNAL(disconnectFeatures()),
+                                         m_featureswidget, SLOT(DisConnect()) );
+                                connect( m_engine, SIGNAL(connectFeatures()),
+                                         m_featureswidget, SLOT(Connect()) );
+                                connect( m_engine, SIGNAL(resetFeatures()),
+                                         m_featureswidget, SLOT(Reset()) );
+
+                                connect( m_featureswidget, SIGNAL(voiceMailToggled(bool)),
+                                         m_engine, SLOT(setVoiceMail(bool)) );
+                                connect( m_engine, SIGNAL(voiceMailChanged(bool)),
+                                         m_featureswidget, SLOT(setVoiceMail(bool)) );
 	
-	connect( m_featureswidget, SIGNAL(callRecordingToggled(bool)),
-		 m_engine, SLOT(setCallRecording(bool)) );
-	connect( m_engine, SIGNAL(callRecordingChanged(bool)),
-		 m_featureswidget, SLOT(setCallRecording(bool)) );
+                                connect( m_featureswidget, SIGNAL(callRecordingToggled(bool)),
+                                         m_engine, SLOT(setCallRecording(bool)) );
+                                connect( m_engine, SIGNAL(callRecordingChanged(bool)),
+                                         m_featureswidget, SLOT(setCallRecording(bool)) );
 	
-	connect( m_featureswidget, SIGNAL(callFilteringToggled(bool)),
-		 m_engine, SLOT(setCallFiltering(bool)) );
-	connect( m_engine, SIGNAL(callFilteringChanged(bool)),
-		 m_featureswidget, SLOT(setCallFiltering(bool)) );
+                                connect( m_featureswidget, SIGNAL(callFilteringToggled(bool)),
+                                         m_engine, SLOT(setCallFiltering(bool)) );
+                                connect( m_engine, SIGNAL(callFilteringChanged(bool)),
+                                         m_featureswidget, SLOT(setCallFiltering(bool)) );
 	
-	connect( m_featureswidget, SIGNAL(dndToggled(bool)),
-		 m_engine, SLOT(setDnd(bool)) );
-	connect( m_engine, SIGNAL(dndChanged(bool)),
-		 m_featureswidget, SLOT(setDnd(bool)) );
+                                connect( m_featureswidget, SIGNAL(dndToggled(bool)),
+                                         m_engine, SLOT(setDnd(bool)) );
+                                connect( m_engine, SIGNAL(dndChanged(bool)),
+                                         m_featureswidget, SLOT(setDnd(bool)) );
 	
-	connect( m_featureswidget, SIGNAL(uncondForwardChanged(bool, const QString &)),
-		 m_engine, SLOT(setUncondForward(bool, const QString &)) );
-	connect( m_engine, SIGNAL(uncondForwardChanged(bool, const QString &)),
-		 m_featureswidget, SLOT(setUncondForward(bool, const QString &)) );
-	connect( m_engine, SIGNAL(uncondForwardChanged(bool)),
-		 m_featureswidget, SLOT(setUncondForward(bool)) );
-	connect( m_engine, SIGNAL(uncondForwardChanged(const QString &)),
-		 m_featureswidget, SLOT(setUncondForward(const QString &)) );
+                                connect( m_featureswidget, SIGNAL(uncondForwardChanged(bool, const QString &)),
+                                         m_engine, SLOT(setUncondForward(bool, const QString &)) );
+                                connect( m_engine, SIGNAL(uncondForwardChanged(bool, const QString &)),
+                                         m_featureswidget, SLOT(setUncondForward(bool, const QString &)) );
+                                connect( m_engine, SIGNAL(uncondForwardChanged(bool)),
+                                         m_featureswidget, SLOT(setUncondForward(bool)) );
+                                connect( m_engine, SIGNAL(uncondForwardChanged(const QString &)),
+                                         m_featureswidget, SLOT(setUncondForward(const QString &)) );
 	
-	connect( m_featureswidget, SIGNAL(forwardOnBusyChanged(bool, const QString &)),
-		 m_engine, SLOT(setForwardOnBusy(bool, const QString &)) );
-	connect( m_engine, SIGNAL(forwardOnBusyChanged(bool, const QString &)),
-		 m_featureswidget, SLOT(setForwardOnBusy(bool, const QString &)) );
-	connect( m_engine, SIGNAL(forwardOnBusyChanged(bool)),
-		 m_featureswidget, SLOT(setForwardOnBusy(bool)) );
-	connect( m_engine, SIGNAL(forwardOnBusyChanged(const QString &)),
-		 m_featureswidget, SLOT(setForwardOnBusy(const QString &)) );
+                                connect( m_featureswidget, SIGNAL(forwardOnBusyChanged(bool, const QString &)),
+                                         m_engine, SLOT(setForwardOnBusy(bool, const QString &)) );
+                                connect( m_engine, SIGNAL(forwardOnBusyChanged(bool, const QString &)),
+                                         m_featureswidget, SLOT(setForwardOnBusy(bool, const QString &)) );
+                                connect( m_engine, SIGNAL(forwardOnBusyChanged(bool)),
+                                         m_featureswidget, SLOT(setForwardOnBusy(bool)) );
+                                connect( m_engine, SIGNAL(forwardOnBusyChanged(const QString &)),
+                                         m_featureswidget, SLOT(setForwardOnBusy(const QString &)) );
 	
-	connect( m_featureswidget, SIGNAL(forwardOnUnavailableChanged(bool, const QString &)),
-		 m_engine, SLOT(setForwardOnUnavailable(bool, const QString &)) );
-	connect( m_engine, SIGNAL(forwardOnUnavailableChanged(bool, const QString &)),
-		 m_featureswidget, SLOT(setForwardOnUnavailable(bool, const QString &)) );
-	connect( m_engine, SIGNAL(forwardOnUnavailableChanged(bool)),
-		 m_featureswidget, SLOT(setForwardOnUnavailable(bool)) );
-	connect( m_engine, SIGNAL(forwardOnUnavailableChanged(const QString &)),
-		 m_featureswidget, SLOT(setForwardOnUnavailable(const QString &)) );
-	//
+                                connect( m_featureswidget, SIGNAL(forwardOnUnavailableChanged(bool, const QString &)),
+                                         m_engine, SLOT(setForwardOnUnavailable(bool, const QString &)) );
+                                connect( m_engine, SIGNAL(forwardOnUnavailableChanged(bool, const QString &)),
+                                         m_featureswidget, SLOT(setForwardOnUnavailable(bool, const QString &)) );
+                                connect( m_engine, SIGNAL(forwardOnUnavailableChanged(bool)),
+                                         m_featureswidget, SLOT(setForwardOnUnavailable(bool)) );
+                                connect( m_engine, SIGNAL(forwardOnUnavailableChanged(const QString &)),
+                                         m_featureswidget, SLOT(setForwardOnUnavailable(const QString &)) );
+                                m_engine->askFeatures("peer/to/define");
+                        }
+                }
+        }
 
 	m_svc_tabwidget->setCurrentIndex(0);
 
+	m_stopact->setEnabled(true);
+	m_startact->setDisabled(true);
 	// set status icon to green
 	QPixmap greensquare(":xivoclient/gui/connected.png");
 	m_status->setPixmap(greensquare);
@@ -427,31 +443,40 @@ void MainWidget::engineStarted()
  */
 void MainWidget::engineStopped()
 {
+	QStringList display_capas = QString("customerinfo,history,features,directory,peers,dial,presence").split(",");
+        QStringList allowed_capas = m_engine->getCapabilities().split(",");
+
+	for(int j = 0; j < display_capas.size(); j++) {
+		QString dc = display_capas[j];
+		bool allowed = false;
+                for(int c = 0; c < allowed_capas.size(); c++) {
+                        QString ac = allowed_capas[c];
+                        if(ac == dc) allowed = true;
+                }
+		if(allowed) {
+			qDebug() << "removing" << dc;
+
+                        if(dc == QString("features")) {
+                                int index_features = m_svc_tabwidget->indexOf(m_featureswidget);
+                                if(index_features > -1) {
+                                        m_svc_tabwidget->removeTab(m_svc_tabwidget->indexOf(m_featureswidget));
+                                        delete m_featureswidget;
+                                }
+                        } else if(dc == QString("history")) {
+                                int index_logs = m_svc_tabwidget->indexOf(m_logwidget);
+                                if(index_logs > -1) {
+                                        m_svc_tabwidget->removeTab(m_svc_tabwidget->indexOf(m_logwidget));
+                                        delete m_logwidget;
+                                }
+                        }
+                }
+        }
+
 	m_stopact->setDisabled(true);
 	m_startact->setEnabled(true);
-
-	int index_features = m_svc_tabwidget->indexOf(m_featureswidget);
-	if(index_features > -1) {
-	        m_svc_tabwidget->removeTab(m_svc_tabwidget->indexOf(m_featureswidget));
-		delete m_featureswidget;
-	}
-	int index_logs = m_svc_tabwidget->indexOf(m_logwidget);
-	if(index_logs > -1) {
-	        m_svc_tabwidget->removeTab(m_svc_tabwidget->indexOf(m_logwidget));
-		delete m_logwidget;
-	}
-
 	// set status icon to red
 	QPixmap redsquare(":xivoclient/gui/disconnected.png");
 	m_status->setPixmap(redsquare);
-}
-
-/*!
- * enable the "Log off" action and disable "Login" Action.
- */
-void MainWidget::loginengineStarted()
-{
-	m_engine->askFeatures("peer/to/define");
 }
 
 /*!

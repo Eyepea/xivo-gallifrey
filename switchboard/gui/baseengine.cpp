@@ -49,6 +49,7 @@ BaseEngine::BaseEngine(QObject * parent)
         : QObject(parent),
 	  m_serverhost(""), m_loginport(0), m_sbport(0),
           m_asterisk(""), m_protocol(""), m_userid(""), m_passwd(""),
+          m_enabled_presence(false), m_enabled_cinfo(false),
           m_sessionid(""), m_state(ENotLogged),
 	  m_listenport(0), m_pendingkeepalivemsg(0)
 {
@@ -61,6 +62,8 @@ BaseEngine::BaseEngine(QObject * parent)
 	m_listenserver = new QTcpServer(this);
 	loadSettings();
 	deleteRemovables();
+
+        qDebug() << "BaseEngine::BaseEngine() : tcpmode =" << m_tcpmode;
 
         /*  QTcpSocket signals :
             void connected ()
@@ -188,7 +191,7 @@ void BaseEngine::setEnabledPresence(bool b) {
 	}
 }
 
-bool BaseEngine::enabled_presence() {
+bool BaseEngine::enabledPresence() {
         return m_enabled_presence;
 }
 
@@ -197,7 +200,7 @@ void BaseEngine::setEnabledCInfo(bool b) {
 		m_enabled_cinfo = b;
 }
 
-bool BaseEngine::enabled_cinfo() {
+bool BaseEngine::enabledCInfo() {
         return m_enabled_cinfo;
 }
 
@@ -230,9 +233,12 @@ void BaseEngine::start()
         m_listenserver->close();
         m_udpsocket->abort();
 
-	if(m_enabled_cinfo && (!m_tcpmode))
-		initListenSocket();
-	m_udpsocket->bind();
+        if(! m_tcpmode) {
+                if(m_enabled_cinfo)
+                        initListenSocket();
+                m_udpsocket->bind();
+        }
+
         connectSocket();
 }
 
@@ -242,17 +248,19 @@ void BaseEngine::start()
 void BaseEngine::stop()
 {
 	qDebug() << "BaseEngine::stop()";
-	if(m_sessionid != "") {
-		QString outline = "STOP ";
-		outline.append(m_asterisk + "/" + m_protocol.toLower() + m_userid);
-		outline.append(" SESSIONID ");
-		outline.append(m_sessionid);
-		outline.append("\r\n");
-		m_udpsocket->writeDatagram( outline.toAscii(),
-					    m_serveraddress, m_loginport + 1 );
-	}
 
-        m_udpsocket->close();
+        if(! m_tcpmode) {
+                if(m_sessionid != "") {
+                        QString outline = "STOP ";
+                        outline.append(m_asterisk + "/" + m_protocol.toLower() + m_userid);
+                        outline.append(" SESSIONID ");
+                        outline.append(m_sessionid);
+                        outline.append("\r\n");
+                        m_udpsocket->writeDatagram( outline.toAscii(),
+                                                    m_serveraddress, m_loginport + 1 );
+                }
+                m_udpsocket->close();
+        }
 
         m_listenserver->close();
         m_listenport = 0;
@@ -269,10 +277,13 @@ void BaseEngine::stop()
  */
 void BaseEngine::connectSocket()
 {
-        qDebug() << m_serverhost << m_sbport << m_loginport;
-        if(m_is_a_switchboard)
+        if(m_tcpmode) {
+                qDebug() << "BaseEngine::connectSocket()" << m_serverhost << m_sbport;
                 m_sbsocket->connectToHost(m_serverhost, m_sbport);
-        m_loginsocket->connectToHost(m_serverhost, m_loginport);
+        } else {
+                qDebug() << "BaseEngine::connectSocket()" << m_serverhost << m_loginport;
+                m_loginsocket->connectToHost(m_serverhost, m_loginport);
+        }
 }
 
 bool BaseEngine::tcpmode() const
@@ -346,12 +357,13 @@ void BaseEngine::setDoNotDisturb()
  */
 void BaseEngine::sendTCPCommand()
 {
+	qDebug() << "BaseEngine::sendTCPCommand()" << m_pendingcommand;
 	m_sbsocket->write((m_pendingcommand + "\r\n"/*"\n"*/).toAscii());
-	qDebug() << ">>>" << m_pendingcommand;
 }
 
 void BaseEngine::sendUDPCommand(const QString & command)
 {
+	qDebug() << "BaseEngine::sendUDPCommand()" << command;
 	if(m_state == ELogged) {
 		QString outline = "COMMAND ";
 		outline.append(m_asterisk + "/" + m_protocol.toLower() + m_userid);
@@ -366,8 +378,7 @@ void BaseEngine::sendUDPCommand(const QString & command)
 
 void BaseEngine::sendCommand(const QString & command)
 {
-	qDebug() << "BaseEngine::sendCommand()" << command;
-        if(m_is_a_switchboard) {
+        if(m_tcpmode) {
                 if(m_sbsocket->state() == QAbstractSocket::ConnectedState) {
                         m_pendingcommand = command;
                         sendTCPCommand();
@@ -422,7 +433,7 @@ void BaseEngine::socketConnected()
 void BaseEngine::socketDisconnected()
 {
 	qDebug() << "BaseEngine::socketDisconnected()";
-	stopped();
+        delogged();
 	emitTextMessage(tr("Connection lost with XIVO Daemon"));
 	startTryAgainTimer();
 	//removePeers();
@@ -613,6 +624,7 @@ bool BaseEngine::parseCommand(const QStringList & listitems)
                 }
         } else if(listitems[0].toLower() == QString("hints")) {
                 QStringList listpeers = listitems[1].split(";");
+                qDebug() << "BaseEngine::parseCommand() : hints" << listpeers;
                 for(int i = 0 ; i < listpeers.size() - 1; i++) {
                         QStringList liststatus = listpeers[i].split(":");
                         updatePeers(liststatus);
@@ -675,13 +687,16 @@ void BaseEngine::socketReadyRead()
 
 		if(list.size() == 2) {
                         if(list[0].toLower() == "loginok") {
-                                started();
 				QStringList params = list[1].split(";");
+                                qDebug() << "BaseEngine::socketReadyRead()" << params;
 				if(params.size() > 1) {
 					m_dialcontext = params[0];
 					m_extension = params[1];
+                                        m_capabilities = params[2];
 				}
-				askCallerIds();
+                                logged();
+                                if(m_is_a_switchboard) /* ask here because not ready when the widget builds up */
+                                        askCallerIds();
 			} else if(list[0].toLower() == "loginko") {
                                 stop();
 			} else
@@ -827,6 +842,7 @@ void BaseEngine::requestHistory(const QString & peer, int mode)
  */
 void BaseEngine::setAddress(const QString & host, quint16 port)
 {
+        qDebug() << "BaseEngine::setAddress()" << port;
 	m_serverhost = host;
 	m_sbport = port;
 }
@@ -1056,13 +1072,12 @@ void BaseEngine::timerEvent(QTimerEvent * event)
 	int timerId = event->timerId();
         qDebug() << "BaseEngine::timerEvent() timerId=" << timerId << m_ka_timerid << m_try_timerid;
 	if(timerId == m_ka_timerid) {
-                if(! m_is_a_switchboard) {
+                if(! m_tcpmode) {
                         keepLoginAlive();
                         event->accept();
                 }
         } else if(timerId == m_try_timerid) {
-                if(m_is_a_switchboard)
-                        emitTextMessage(tr("Attempting to reconnect to server"));
+                emitTextMessage(tr("Attempting to reconnect to server"));
 		start();
 		event->accept();
 	} else {
@@ -1156,6 +1171,7 @@ void BaseEngine::askPeers()
 
 void BaseEngine::askCallerIds()
 {
+        qDebug() << "BaseEngine::askCallerIds()";
 	sendCommand("callerids");
 }
 
@@ -1336,7 +1352,7 @@ void BaseEngine::processLoginDialog()
 		setState(ELogged);
 		// start the keepalive timer
 		m_ka_timerid = startTimer(m_keepaliveinterval);
-                if(! m_is_a_switchboard)
+                if(m_is_a_switchboard) /* ask here because not ready when the widget builds up */
                         askCallerIds();
 		return;
 	}
