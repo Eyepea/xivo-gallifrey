@@ -1,7 +1,7 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
-	<file>../../xivoclient/gui/xivoicon.png</file>
 	<file>switchboard_fr.qm</file>
+	<file>../../xivoclient/gui/xivoicon.png</file>
 	<file>../../xivoclient/gui/phone-blue.png</file>
 	<file>../../xivoclient/gui/phone-green.png</file>
 	<file>../../xivoclient/gui/phone-grey.png</file>

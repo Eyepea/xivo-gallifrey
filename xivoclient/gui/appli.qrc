@@ -1,10 +1,10 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
+	<file>xivoclient_fr.qm</file>
 	<file>xivoicon.png</file>
 	<file>xivoicon-red.png</file>
 	<file>xivoicon-green.png</file>
 	<file>xivoicon-grey.png</file>
-	<file>xivoclient_fr.qm</file>
         <file>phone-blue.png</file>
         <file>phone-green.png</file>
         <file>phone-grey.png</file>
@@ -17,6 +17,18 @@
         <file>personal-orange.png</file>
         <file>personal-red.png</file>
         <file>personal-yellow.png</file>
+	<file>../../xivoclient/gui/phone-blue.png</file>
+	<file>../../xivoclient/gui/phone-green.png</file>
+	<file>../../xivoclient/gui/phone-grey.png</file>
+	<file>../../xivoclient/gui/phone-orange.png</file>
+	<file>../../xivoclient/gui/phone-red.png</file>
+	<file>../../xivoclient/gui/phone-yellow.png</file>
+	<file>../../xivoclient/gui/personal-blue.png</file>
+	<file>../../xivoclient/gui/personal-green.png</file>
+	<file>../../xivoclient/gui/personal-grey.png</file>
+	<file>../../xivoclient/gui/personal-orange.png</file>
+	<file>../../xivoclient/gui/personal-red.png</file>
+	<file>../../xivoclient/gui/personal-yellow.png</file>
 	<file>connected.png</file>
 	<file>disconnected.png</file>
 </qresource>

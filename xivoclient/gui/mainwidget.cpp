@@ -199,7 +199,7 @@ void MainWidget::createMenus()
 
 	m_avail = menuBar()->addMenu(tr("&Availability"));
 	m_avail->addActions( m_availgrp->actions() );
-	m_avail->setEnabled( m_engine->state() == BaseEngine::ELogged);
+	m_avail->setEnabled( m_engine->enabled_presence() );
 	connect( m_engine, SIGNAL(availAllowChanged(bool)),
 	         m_avail, SLOT(setEnabled(bool)) );
 
