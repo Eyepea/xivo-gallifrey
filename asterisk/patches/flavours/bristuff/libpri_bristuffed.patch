@@ -7,10 +7,11 @@
 ## DP: with the bristuff patch.
 
 @DPATCH@
-diff -urNad asterisk-1.2.1.dfsg/channels/Makefile /tmp/dpep.ozZKXW/asterisk-1.2.1.dfsg/channels/Makefile
---- asterisk-1.2.1.dfsg/channels/Makefile	2005-12-31 16:06:04.000000000 +0200
-+++ /tmp/dpep.ozZKXW/asterisk-1.2.1.dfsg/channels/Makefile	2005-12-31 16:07:39.000000000 +0200
-@@ -91,10 +91,15 @@
+Index: asterisk-1.2.23~dfsg/channels/Makefile
+===================================================================
+--- asterisk-1.2.23~dfsg.orig/channels/Makefile	2007-08-07 12:22:51.000000000 +0200
++++ asterisk-1.2.23~dfsg/channels/Makefile	2007-08-07 12:22:58.000000000 +0200
+@@ -102,10 +102,15 @@
    CHANNEL_LIBS+=chan_alsa.so
  endif
  
@@ -24,5 +25,5 @@ diff -urNad asterisk-1.2.1.dfsg/channels/Makefile /tmp/dpep.ozZKXW/asterisk-1.2.
  endif
 +endif
  
- ifneq ($(wildcard $(CROSS_COMPILE_TARGET)/usr/lib/libmfcr2.so.1)$(wildcard $(CROSS_COMPILE_TARGET)/usr/local/lib/libmfcr2.so.1),)
-   CFLAGS+=-DZAPATA_R2
+ ifneq ($(wildcard $(CROSS_COMPILE_TARGET)/usr/lib/libgsmat.so.1)$(wildcard $(CROSS_COMPILE_TARGET)/usr/local/lib/libgsmat.so.1),)
+   CFLAGS+=-DZAPATA_GSM
