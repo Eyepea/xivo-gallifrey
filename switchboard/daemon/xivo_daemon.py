@@ -1076,8 +1076,8 @@ def manage_tcp_connection(connid, allow_events):
                         log_debug("--- exception --- UI connection [%s] : a problem occured when trying to close %s : %s"
                                   %(msg, str(connid[0]), str(exc)))
         else:
-                # what if more lines ???
-                usefulmsg = msg.split("\r\n")[0].split("\n")[0]
+            for usefulmsgpart in msg.split("\n"):
+                usefulmsg = usefulmsgpart.split("\r")[0]
                 if usefulmsg == "infos":
                         try:
                                 time_uptime = int(time.time() - time_start)
@@ -1202,19 +1202,8 @@ def manage_tcp_connection(connid, allow_events):
                                                         connid[0].send("message=%s::hangup KO : no such channel\n" %DAEMON)
                                         else:
                                                 connid[0].send("message=%s::hangup KO : no such phone\n" %DAEMON)
-                        elif l[0] == 'history' or l[0] == 'directory-search' or \
-                                 l[0] == 'featuresget' or l[0] == 'featuresput' or \
-                                 l[0] == 'hints' or l[0] == 'callerids' or l[0] == 'message':
-                                log_debug("%s is attempting a %s : %s" %(requester, l[0], str(l)))
-                                try:
-                                        if requester in userinfo_by_requester:
-                                                repstr = parse_command_and_build_reply(userinfo_by_requester[requester], l)
-                                                connid[0].send(repstr + "\n")
-                                except Exception, exc:
-                                        log_debug("--- exception --- UI connection [%s] : a problem occured when sending to %s : %s"
-                                                  %(l[0], requester, str(exc)))
                         elif len(l) == 3 and (l[0] == 'originate' or l[0] == 'transfer'):
-                                [dummyp, ast_src, context_src, proto_src, userid_src] = l[1].split("/")
+                                [dummyp, ast_src, context_src, proto_src, userid_src, exten_src] = l[1].split("/")
                                 [dummyp, ast_dst, context_dst, proto_dst, userid_dst, exten_dst] = l[2].split("/")
                                 idast_src = -1
                                 idast_dst = -1
@@ -1269,6 +1258,17 @@ def manage_tcp_connection(connid, allow_events):
                                                                                                        %(DAEMON, idast_src, l[1], l[2]))
                                 else:
                                         connid[0].send("message=%s::originate or transfer KO : asterisk id mismatch\n" %DAEMON)
+                        elif l[0] == 'history' or l[0] == 'directory-search' or \
+                                 l[0] == 'featuresget' or l[0] == 'featuresput' or \
+                                 l[0] == 'hints' or l[0] == 'callerids' or l[0] == 'message':
+                                log_debug("%s is attempting a %s : %s" %(requester, l[0], str(l)))
+                                try:
+                                        if requester in userinfo_by_requester:
+                                                repstr = parse_command_and_build_reply(userinfo_by_requester[requester], l)
+                                                connid[0].send(repstr + "\n")
+                                except Exception, exc:
+                                        log_debug("--- exception --- UI connection [%s] : a problem occured when sending to %s : %s"
+                                                  %(l[0], requester, str(exc)))
                         elif len(l) >= 4 and l[0] == 'login':
                                 if l[1] in asteriskr:
                                         astnum = asteriskr[l[1]]
@@ -1284,7 +1284,6 @@ def manage_tcp_connection(connid, allow_events):
                                                         for capa in capabilities_list:
                                                                 if (map_capas[capa] & user.get('capas')):
                                                                         capa_user.append(capa)
-                                                        print ",".join(capa_user)
                                                         repstr = "loginok=%s;%s;%s\n" %(user.get('context'),
                                                                                         user.get('phonenum'),
                                                                                         ",".join(capa_user))
