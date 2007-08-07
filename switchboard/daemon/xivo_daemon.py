@@ -305,22 +305,22 @@ def update_history_call(astn, techno, phoneid, phonenum, nlines, kind):
 
                         cursor = conn.cursor()
                         table = "cdr" # configs[astn].cdr_db_tablename
-                        sql = "SELECT calldate, clid, src, dst, dcontext, channel, dstchannel, " \
-                              "lastapp, lastdata, duration, billsec, disposition, amaflags, " \
-                              "accountcode, uniqueid, userfield FROM %s " % (table)
+                        sql = ["SELECT calldate, clid, src, dst, dcontext, channel, dstchannel, " \
+                               "lastapp, lastdata, duration, billsec, disposition, amaflags, " \
+                               "accountcode, uniqueid, userfield FROM %s " % (table)]
                         if kind == "0": # outgoing calls (answered)
-                                sql += "WHERE disposition='ANSWERED' "
-                                sql += "AND channel LIKE '%s/%s-%%' " \
-                                       "ORDER BY calldate DESC LIMIT %s" % (techno, phoneid, nlines)
+                                sql.append("WHERE disposition='ANSWERED' ")
+                                sql.append("AND channel LIKE '%s/%s-%%' " \
+                                           "ORDER BY calldate DESC LIMIT %s" % (techno, phoneid, nlines))
                         elif kind == "1": # incoming calls (answered)
-                                sql += "WHERE disposition='ANSWERED' "
-                                sql += "AND dstchannel LIKE '%s/%s-%%' " \
-                                       "ORDER BY calldate DESC LIMIT %s" % (techno, phoneid, nlines)
+                                sql.append("WHERE disposition='ANSWERED' ")
+                                sql.append("AND dstchannel LIKE '%s/%s-%%' " \
+                                           "ORDER BY calldate DESC LIMIT %s" % (techno, phoneid, nlines))
                         else: # missed calls (received but not answered)
-                                sql += "WHERE disposition!='ANSWERED' "
-                                sql += "AND dstchannel LIKE '%s/%s-%%' " \
-                                       "ORDER BY calldate DESC LIMIT %s" % (techno, phoneid, nlines)
-                        cursor.execute(sql)
+                                sql.append("WHERE disposition!='ANSWERED' ")
+                                sql.append("AND dstchannel LIKE '%s/%s-%%' " \
+                                           "ORDER BY calldate DESC LIMIT %s" % (techno, phoneid, nlines))
+                        cursor.execute(''.join(sql))
                         results = cursor.fetchall()
                         conn.close()
                 except Exception, exc:
@@ -672,7 +672,7 @@ def build_customers(astn, ctx, searchpatterns):
                         log_debug("dir_db_matchingfields and dir_db_displayfields do not have the same number of fields - could not proceed directory-search request")
                 else:
                         fnames = dir_db_matchingfields.split(";")
-                        selectline  = ""
+                        selectline = ""
                         for fname in fnames:
                                 selectline += "%s, " %fname
                         if searchpattern == "*":
@@ -875,14 +875,11 @@ def update_GUI_clients(astnum, phonenum, fromwhom):
 # \return True if it is an OPTIONS packet
 # \sa read_sip_properties
 def parseSIP(astnum, data, l_sipsock, l_addrsip):
-        global tcpopens_sb, plist, configs
+        global plist, configs
         spret = False
         [icseq, imsg, icid, iaccount, ilength, iret, ibranch, itag, iauth] = read_sip_properties(data)
         # if ilength != 11:
         #print "###", astnum, ilength, icseq, icid, iaccount, imsg, iret, ibranch, itag
-##    if imsg == "REGISTER" and iret == 200 and icid == "reg_cid@xivopy":
-##        for k in tcpopens_sb:
-##            k[0].send("message=registered_" + configs[astnum].astid + "\n")
 
         uri = "sip:%s@%s" %(iaccount, configs[astnum].remoteaddr)
         mycontext = ""
@@ -905,8 +902,8 @@ def parseSIP(astnum, data, l_sipsock, l_addrsip):
                         response = md5.md5(md5_r1 + ":" + nonce + ":" + md5_r2).hexdigest()
                         auth = "Authorization: Digest username=\"%s\", realm=\"%s\", nonce=\"%s\", uri=\"%s\", response=\"%s\", algorithm=MD5" \
                                %(iaccount, realm, nonce, uri, response)
-                        command = xivo_sip.sip_register(configs[astnum],
-                                                        iaccount, 1, "reg_cid@xivopy",
+                        command = xivo_sip.sip_register(configs[astnum], iaccount,
+                                                        1, "reg_cid@xivopy",
                                                         2 * xivosb_register_frequency, auth)
                         l_sipsock.sendto(command, (configs[astnum].remoteaddr, configs[astnum].portsipsrv))
                 elif iret == 403:
@@ -1011,8 +1008,8 @@ def parseSIP(astnum, data, l_sipsock, l_addrsip):
 def do_sip_register(astnum, l_sipsock):
         global configs
         for sipacc in configs[astnum].xivosb_phoneids:
-                command = xivo_sip.sip_register(configs[astnum],
-                                                sipacc, 1, "reg_cid@xivopy",
+                command = xivo_sip.sip_register(configs[astnum], sipacc,
+                                                1, "reg_cid@xivopy",
                                                 2 * xivosb_register_frequency, "")
                 l_sipsock.sendto(command, (configs[astnum].remoteaddr, configs[astnum].portsipsrv))
                 # command = xivo_sip.sip_options(configs[astnum], configs[astnum].mysipname, cid, sipnum)
@@ -1208,7 +1205,7 @@ def manage_tcp_connection(connid, allow_events):
                         elif l[0] == 'history' or l[0] == 'directory-search' or \
                                  l[0] == 'featuresget' or l[0] == 'featuresput' or \
                                  l[0] == 'hints' or l[0] == 'callerids' or l[0] == 'message':
-                                log_debug("%s is attempting a %s : %s" %(l[0], requester, str(l)))
+                                log_debug("%s is attempting a %s : %s" %(requester, l[0], str(l)))
                                 try:
                                         if requester in userinfo_by_requester:
                                                 repstr = parse_command_and_build_reply(userinfo_by_requester[requester], l)
@@ -1283,7 +1280,14 @@ def manage_tcp_connection(connid, allow_events):
                                                         repstr = "loginko=\n"
                                                         log_debug("no user found %s" %str(l))
                                                 else:
-                                                        repstr = "loginok=" + user.get('context') + ";" + user.get('phonenum') + "\r\n"
+                                                        capa_user = []
+                                                        for capa in capabilities_list:
+                                                                if (map_capas[capa] & user.get('capas')):
+                                                                        capa_user.append(capa)
+                                                        print ",".join(capa_user)
+                                                        repstr = "loginok=%s;%s;%s\n" %(user.get('context'),
+                                                                                        user.get('phonenum'),
+                                                                                        ",".join(capa_user))
                                                         userinfo_by_requester[requester] = [astnum,
                                                                                             user.get('context'),
                                                                                             None,
@@ -2370,9 +2374,6 @@ class AsteriskRemote:
                                         
                                         if sso_context in self.xivosb_contexts:
                                                 sipaccount = self.xivosb_contexts[sso_context]
-                                                
-                                                # the <b> tag inside the string disables the drag&drop of the widget (4.2.3 ok, 4.2.1 ko)
-                                                # fullname = firstname + " " + lastname + " <b>" + sso_phoneid + "</b>"
                                                 fullname = firstname + " " + lastname + " <b>" + sso_phonenum + "</b>"
                                                 
                                                 if sso_l5 == "1" and sso_phoneid != sipaccount and sso_phonenum != "":
@@ -2558,7 +2559,7 @@ class LoginHandler(SocketServer.StreamRequestHandler):
                         capalist_user = e['capas']
                         conngui_xc = conngui_xc + 1
                         if tcpmode:
-                                print 'TCPMODE', self.request#, self.request.
+                                print 'TCPMODE', self.request
                                 e['socket'] = self.request.makefile('w')
                         context = e['context']
                         if state in allowed_states:
@@ -2624,38 +2625,37 @@ class IdentRequestHandler(SocketServer.StreamRequestHandler):
                         user = list0[1]
                         action = "QUERY"
 
-                if action != "":
-                        userlist_lock.acquire()
-                        try:
-                                try:
-                                        try:
-                                                astnum = ip_reverse_sht[self.client_address[0]]
-                                        except:
-                                                astnum = 0
-                                        e = finduser(astnum, user)
-                                        if e == None:
-                                                retline = 'ERROR USER <' + user + '> NOT FOUND\r\n'
-                                        elif e.has_key('ip') and e.has_key('port') \
-                                                 and e.has_key('state') and e.has_key('sessionid') \
-                                                 and e.has_key('sessiontimestamp'):
-                                                if time.time() - e.get('sessiontimestamp') > xivoclient_session_timeout:
-                                                        retline = 'ERROR USER SESSION EXPIRED for <%s>\r\n' %user
-                                                else:
-                                                        capalist = (e['capas'] & capalist_server)
-                                                        if (capalist & CAPA_CUSTINFO):
-                                                                if action == "PUSH":
-                                                                        retline = 'USER %s STATE %s\r\n'%(user,e.get('state'))
-                                                                        # print 'sendfiche', e, callerid, msg
-                                                                        sendfiche.sendficheasync(e, callerid, msg)
-                                                                elif action == "QUERY":
-                                                                        retline = 'USER %s SESSIONID %s IP %s PORT %s STATE %s\r\n' \
-                                                                                  %(user, e.get('sessionid'), e.get('ip'), e.get('port'), e.get('state'))
-                                        else:
-                                                retline = 'ERROR USER SESSION NOT DEFINED for <%s>\r\n' %user
-                                except Exception, exc:
-                                        retline = 'ERROR (exception) : %s\r\n' %(str(exc))
-                        finally:
-                                userlist_lock.release()
+                if action == "":
+			return
+
+		userlist_lock.acquire()
+		try:
+			try:
+				astnum = ip_reverse_sht[self.client_address[0]]
+				e = finduser(astnum, user)
+				if e == None:
+					retline = 'ERROR USER <' + user + '> NOT FOUND\r\n'
+				elif e.has_key('ip') and e.has_key('port') \
+					 and e.has_key('state') and e.has_key('sessionid') \
+					 and e.has_key('sessiontimestamp'):
+					if time.time() - e.get('sessiontimestamp') > xivoclient_session_timeout:
+						retline = 'ERROR USER SESSION EXPIRED for <%s>\r\n' %user
+					else:
+						capalist = (e['capas'] & capalist_server)
+						if (capalist & CAPA_CUSTINFO):
+							if action == "PUSH":
+								retline = 'USER %s STATE %s\r\n'%(user,e.get('state'))
+								# print 'sendfiche', e, callerid, msg
+								sendfiche.sendficheasync(e, callerid, msg)
+							elif action == "QUERY":
+								retline = 'USER %s SESSIONID %s IP %s PORT %s STATE %s\r\n' \
+									  %(user, e.get('sessionid'), e.get('ip'), e.get('port'), e.get('state'))
+				else:
+					retline = 'ERROR USER SESSION NOT DEFINED for <%s>\r\n' %user
+			except Exception, exc:
+				retline = 'ERROR (exception) : %s\r\n' %(str(exc))
+		finally:
+			userlist_lock.release()
 
                 try:
                         self.wfile.write(retline)
