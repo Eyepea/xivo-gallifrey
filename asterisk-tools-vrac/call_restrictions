@@ -1,0 +1,66 @@
+#!/usr/bin/python
+
+import ConfigParser, os, sys, re
+
+CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
+CONFIG_LIB_PATH = 'py_lib_path'
+
+import sys
+from xivo import ConfigPath
+from xivo.ConfigPath import *
+ConfiguredPathHelper(CONFIG_FILE, CONFIG_LIB_PATH)
+import anysql
+from BackSQL import backsqlite
+from BackSQL import backmysql
+import ConfigParser
+from ConfigDict import *
+from agi import *
+
+options = { "db_uri" : "" }
+conf_obj = ConfigParser.ConfigParser()
+conf_obj.readfp(open(CONFIG_FILE))
+FillDictFromConfigSection(options, conf_obj, "db")
+
+agi = AGI()
+agi.DEBUG_PASSTHROUGH=0
+
+rules = '/etc/asterisk/xivo_call_restrictions.conf'
+
+parser = ConfigParser.ConfigParser()
+read = parser.readfp(open(rules))
+
+if len(sys.argv) != 3:
+        agi.verbose('Sorry it missing arguments')
+        sys.exit()
+
+called_number = sys.argv[1]
+user_number = sys.argv[2]
+
+sections = parser.sections()
+
+for each in sections:
+        regexp = parser.get(each,'regexp')
+        if re.search(regexp,called_number):
+                users_list = parser.get(each,'users')
+                for user in users_list.split(','):
+                        if user == 'all':
+				agi.verbose('Access not restricted')
+                                sys.exit()
+                        if user == user_number:
+                                agi.verbose('Access allowed')
+                                sys.exit()
+                        else:
+                                agi.verbose('Access denied')
+
+                agi.verbose('User is not allowed to dial this numbers')
+                agi.appexec('Busy','5')
+                agi.appexec('Hangup')
+                sys.exit()
+        else:
+                agi.verbose('Called number dont match regexp')
+
+agi.verbose('THE END Number dont match any regexp')
+agi.appexec('Busy','5')
+agi.appexec('Hangup')
+sys.exit()
+
