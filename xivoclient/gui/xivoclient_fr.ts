@@ -3,64 +3,86 @@
 <context>
     <name>BaseEngine</name>
     <message>
-        <location filename="../../switchboard/gui/baseengine.cpp" line="201"/>
+        <location filename="../../switchboard/gui/baseengine.cpp" line="214"/>
         <source>Unable to start the server: %1.</source>
         <translation>Impossible de se connecter au serveur: %1.</translation>
     </message>
     <message>
-        <location filename="../../switchboard/gui/baseengine.cpp" line="199"/>
+        <location filename="../../switchboard/gui/baseengine.cpp" line="212"/>
         <source>Critical error</source>
         <translation>Erreur critique</translation>
     </message>
     <message>
-        <location filename="../../switchboard/gui/baseengine.cpp" line="485"/>
+        <location filename="../../switchboard/gui/baseengine.cpp" line="551"/>
         <source>Unknown Number</source>
         <translation>Numéro Inconnu</translation>
     </message>
     <message>
         <location filename="../../switchboard/gui/baseengine.cpp" line="381"/>
         <source>Connection lost with Presence Server</source>
-        <translation>Connexion perdue avec le Serveur de Présence</translation>
+        <translation type="obsolete">Connexion perdue avec le Serveur de Présence</translation>
     </message>
     <message>
-        <location filename="../../switchboard/gui/baseengine.cpp" line="404"/>
+        <location filename="../../switchboard/gui/baseengine.cpp" line="470"/>
         <source>Connection refused</source>
         <translation>Connexion refusée</translation>
     </message>
     <message>
-        <location filename="../../switchboard/gui/baseengine.cpp" line="413"/>
+        <location filename="../../switchboard/gui/baseengine.cpp" line="479"/>
         <source>Host not found</source>
         <translation>Hôte non trouvé</translation>
     </message>
     <message>
-        <location filename="../../switchboard/gui/baseengine.cpp" line="416"/>
+        <location filename="../../switchboard/gui/baseengine.cpp" line="482"/>
         <source>Unknown socket error</source>
         <translation>Erreur de socket inconnue</translation>
     </message>
     <message>
-        <location filename="../../switchboard/gui/baseengine.cpp" line="552"/>
+        <location filename="../../switchboard/gui/baseengine.cpp" line="644"/>
         <source>Unknown CallerId</source>
         <translation>CallerId Inconnu</translation>
     </message>
     <message>
-        <location filename="../../switchboard/gui/baseengine.cpp" line="586"/>
+        <location filename="../../switchboard/gui/baseengine.cpp" line="655"/>
         <source> said : </source>
         <translation> a dit : </translation>
     </message>
     <message>
-        <location filename="../../switchboard/gui/baseengine.cpp" line="586"/>
+        <location filename="../../switchboard/gui/baseengine.cpp" line="655"/>
         <source>Unknown</source>
         <translation>Inconnue</translation>
     </message>
     <message>
-        <location filename="../../switchboard/gui/baseengine.cpp" line="623"/>
+        <location filename="../../switchboard/gui/baseengine.cpp" line="720"/>
         <source>Peers&apos; status updated</source>
         <translation>Status des postes mis à jour</translation>
     </message>
     <message>
-        <location filename="../../switchboard/gui/baseengine.cpp" line="1049"/>
+        <location filename="../../switchboard/gui/baseengine.cpp" line="1093"/>
         <source>Attempting to reconnect to server</source>
         <translation>Tentative de reconnexion au serveur</translation>
+    </message>
+    <message>
+        <location filename="../../switchboard/gui/baseengine.cpp" line="439"/>
+        <source>Connection lost with XIVO Daemon</source>
+        <translation>Connexion perdue avec le Daemon XIVO</translation>
+    </message>
+    <message>
+        <location filename="../../switchboard/gui/baseengine.cpp" line="1368"/>
+        <source>Version Error</source>
+        <translation>Erreur de Version</translation>
+    </message>
+    <message>
+        <location filename="../../switchboard/gui/baseengine.cpp" line="1369"/>
+        <source>Your server version is %1 which is too old.
+</source>
+        <translation>La version de votre serveur est trop ancienne : %1.
+</translation>
+    </message>
+    <message>
+        <location filename="../../switchboard/gui/baseengine.cpp" line="1370"/>
+        <source>The required one is at least %1.</source>
+        <translation>Celle requise est au moins %1.</translation>
     </message>
 </context>
 <context>
@@ -71,47 +93,47 @@
         <translation>Adresse serveur</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="118"/>
+        <location filename="confwidget.cpp" line="116"/>
         <source>Login</source>
         <translation>Identifiant de connexion</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="123"/>
+        <location filename="confwidget.cpp" line="121"/>
         <source>Password</source>
         <translation>Mot de passe</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="133"/>
+        <location filename="confwidget.cpp" line="131"/>
         <source>Autoconnect at startup</source>
         <translation>Connexion au démarrage</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="146"/>
+        <location filename="confwidget.cpp" line="144"/>
         <source>Keep alive interval</source>
         <translation>Délai de maintien de la connexion</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="137"/>
+        <location filename="confwidget.cpp" line="135"/>
         <source>Try to reconnect</source>
         <translation>Reconnexion automatique</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="140"/>
+        <location filename="confwidget.cpp" line="138"/>
         <source>Try to reconnect interval</source>
         <translation>Délai de reconnexion</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="152"/>
+        <location filename="confwidget.cpp" line="150"/>
         <source>Tab limit</source>
         <translation>Nombre maximum d&apos;onglets</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="107"/>
+        <location filename="confwidget.cpp" line="105"/>
         <source>Protocol</source>
         <translation>Protocole</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="129"/>
+        <location filename="confwidget.cpp" line="127"/>
         <source>TCP Mode (for NAT traversal)</source>
         <translation>Mode TCP (pour réseaux NAT)</translation>
     </message>
@@ -121,37 +143,37 @@
         <translation>Configuration</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="64"/>
+        <location filename="confwidget.cpp" line="63"/>
         <source>Switchboard Port</source>
         <translation>Port du Switchboard</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="85"/>
+        <location filename="confwidget.cpp" line="83"/>
         <source>Presence reporting</source>
         <translation>Rapport de Présence</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="102"/>
+        <location filename="confwidget.cpp" line="100"/>
         <source>Asterisk Id Name</source>
         <translation>Nom de l&apos;Asterisk</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="159"/>
+        <location filename="confwidget.cpp" line="157"/>
         <source>History size</source>
         <translation>Taille de l&apos;historique</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="71"/>
+        <location filename="confwidget.cpp" line="69"/>
         <source>Login Port</source>
         <translation>Port de Login</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="79"/>
+        <location filename="confwidget.cpp" line="77"/>
         <source>Functions</source>
         <translation>Fonctions</translation>
     </message>
     <message>
-        <location filename="confwidget.cpp" line="88"/>
+        <location filename="confwidget.cpp" line="86"/>
         <source>Customer Info</source>
         <translation>Remontée de Fiches</translation>
     </message>
@@ -216,27 +238,27 @@
 <context>
     <name>LogWidget</name>
     <message>
-        <location filename="../../switchboard/gui/logwidget.cpp" line="59"/>
+        <location filename="../../switchboard/gui/logwidget.cpp" line="60"/>
         <source>Call history</source>
         <translation>Historique des appels</translation>
     </message>
     <message>
-        <location filename="../../switchboard/gui/logwidget.cpp" line="65"/>
+        <location filename="../../switchboard/gui/logwidget.cpp" line="66"/>
         <source>&amp;None</source>
         <translation>A&amp;ucun</translation>
     </message>
     <message>
-        <location filename="../../switchboard/gui/logwidget.cpp" line="71"/>
+        <location filename="../../switchboard/gui/logwidget.cpp" line="72"/>
         <source>&amp;Outgoing</source>
         <translation>&amp;Sortants</translation>
     </message>
     <message>
-        <location filename="../../switchboard/gui/logwidget.cpp" line="77"/>
+        <location filename="../../switchboard/gui/logwidget.cpp" line="78"/>
         <source>&amp;Incoming</source>
         <translation>&amp;Entrants</translation>
     </message>
     <message>
-        <location filename="../../switchboard/gui/logwidget.cpp" line="82"/>
+        <location filename="../../switchboard/gui/logwidget.cpp" line="83"/>
         <source>&amp;Missed</source>
         <translation>&amp;Manqués</translation>
     </message>
@@ -264,152 +286,152 @@
         <translation>Fermer l&apos;application</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="123"/>
+        <location filename="mainwidget.cpp" line="125"/>
         <source>To S&amp;ystray</source>
         <translation>&amp;Minimiser</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="124"/>
+        <location filename="mainwidget.cpp" line="126"/>
         <source>Go to the system tray</source>
         <translation>Minimiser l&apos;application dans la zone de notification système</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="128"/>
+        <location filename="mainwidget.cpp" line="130"/>
         <source>&amp;Connect</source>
         <translation>&amp;Connecter</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="129"/>
+        <location filename="mainwidget.cpp" line="131"/>
         <source>Connect to the server</source>
         <translation>Se connecter au serveur</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="131"/>
+        <location filename="mainwidget.cpp" line="134"/>
         <source>&amp;Disconnect</source>
         <translation>&amp;Déconnecter</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="132"/>
+        <location filename="mainwidget.cpp" line="135"/>
         <source>Disconnect from the server</source>
         <translation>Se déconnecter du serveur</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="144"/>
+        <location filename="mainwidget.cpp" line="148"/>
         <source>&amp;Available</source>
         <translation>&amp;Disponible</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="151"/>
+        <location filename="mainwidget.cpp" line="155"/>
         <source>A&amp;way</source>
         <translation>&amp;Occupé</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="166"/>
+        <location filename="mainwidget.cpp" line="170"/>
         <source>&amp;Do not disturb</source>
         <translation>&amp;Ne Pas Déranger</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="187"/>
+        <location filename="mainwidget.cpp" line="191"/>
         <source>&amp;File</source>
         <translation>&amp;Fichier</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="196"/>
+        <location filename="mainwidget.cpp" line="200"/>
         <source>&amp;Availability</source>
         <translation>&amp;Disponibilité</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="202"/>
+        <location filename="mainwidget.cpp" line="206"/>
         <source>&amp;Help</source>
         <translation>&amp;Aide</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="204"/>
+        <location filename="mainwidget.cpp" line="208"/>
         <source>About &amp;Qt</source>
         <translation>A propos de &amp;Qt</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="554"/>
+        <location filename="mainwidget.cpp" line="586"/>
         <source>Disconnected</source>
         <translation>Déconnecté</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="493"/>
+        <location filename="mainwidget.cpp" line="499"/>
         <source>Connected</source>
         <translation>Connecté</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="579"/>
+        <location filename="mainwidget.cpp" line="611"/>
         <source>Incoming call</source>
         <translation>Appel entrant</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="156"/>
+        <location filename="mainwidget.cpp" line="160"/>
         <source>&amp;Be Right Back</source>
         <translation>&amp;Bientôt De Retour</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="161"/>
+        <location filename="mainwidget.cpp" line="165"/>
         <source>&amp;Out To Lunch</source>
         <translation>&amp;Parti Déjeuner</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="203"/>
+        <location filename="mainwidget.cpp" line="207"/>
         <source>&amp;About XIVO Client</source>
         <translation>&amp;A propos du Client XIVO</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="664"/>
+        <location filename="mainwidget.cpp" line="696"/>
         <source>About XIVO Client</source>
         <translation>A propos de XIVO Client</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="479"/>
+        <location filename="mainwidget.cpp" line="485"/>
         <source>&amp;History</source>
         <translation>&amp;Historique</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="357"/>
+        <location filename="mainwidget.cpp" line="361"/>
         <source>&amp;Messages</source>
         <translation>&amp;Messages</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="367"/>
+        <location filename="mainwidget.cpp" line="371"/>
         <source>&amp;Sheets</source>
         <translation>F&amp;iches</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="468"/>
+        <location filename="mainwidget.cpp" line="474"/>
         <source>&amp;Directory</source>
         <translation>&amp;Répertoire</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="374"/>
+        <location filename="mainwidget.cpp" line="378"/>
         <source>&amp;Contacts</source>
         <translation>&amp;Contacts</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="391"/>
+        <location filename="mainwidget.cpp" line="397"/>
         <source>S&amp;ervices</source>
         <translation>&amp;Services</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="673"/>
+        <location filename="mainwidget.cpp" line="705"/>
         <source>&lt;p&gt;This application allows a given phone user to :&lt;/p&gt;&lt;p&gt;* receive customer informations related to incoming calls&lt;/p&gt;&lt;p&gt;* manage her/his voicemail and transfers&lt;/p&gt;&lt;p&gt;* know her/his calls history&lt;/p&gt;&lt;p&gt;* access the phones and addresses&apos; directory&lt;/p&gt;&lt;p&gt;* see her/his buddies&lt;/p&gt;&lt;p&gt;* originate a dial towards some number&lt;/p&gt;</source>
         <translation>&lt;p&gt;Cette application permet à un utilisateur de téléphone de :&lt;/p&gt;&lt;p&gt;* recevoir des fiches à propos de ses appels entrants&lt;/p&gt;&lt;p&gt;* gérer son répondeur et ses renvois&lt;/p&gt;&lt;p&gt;* connaître son historique d&apos;appels&lt;/p&gt;&lt;p&gt;* consulter le répertoire téléphonique&lt;/p&gt;&lt;p&gt;* voir ses collègues&lt;/p&gt;&lt;p&gt;* composer un numéro&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="681"/>
+        <location filename="mainwidget.cpp" line="713"/>
         <source>Authors : </source>
         <translation>Auteurs : </translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="682"/>
+        <location filename="mainwidget.cpp" line="714"/>
         <source>License : </source>
         <translation>Licence : </translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="673"/>
+        <location filename="mainwidget.cpp" line="705"/>
         <source>Version : </source>
         <translation>Version : </translation>
     </message>
@@ -417,102 +439,102 @@
 <context>
     <name>PeerWidget</name>
     <message>
-        <location filename="../../switchboard/gui/peeritem.cpp" line="57"/>
+        <location filename="../../switchboard/gui/peeritem.cpp" line="58"/>
         <source>Available</source>
         <translation>Disponible</translation>
     </message>
     <message>
-        <location filename="../../switchboard/gui/peeritem.cpp" line="60"/>
+        <location filename="../../switchboard/gui/peeritem.cpp" line="61"/>
         <source>Away</source>
         <translation>Occupé</translation>
     </message>
     <message>
-        <location filename="../../switchboard/gui/peeritem.cpp" line="63"/>
+        <location filename="../../switchboard/gui/peeritem.cpp" line="64"/>
         <source>Do not disturb</source>
         <translation>Ne Pas Déranger</translation>
     </message>
     <message>
-        <location filename="../../switchboard/gui/peeritem.cpp" line="66"/>
+        <location filename="../../switchboard/gui/peeritem.cpp" line="67"/>
         <source>Be Right Back</source>
         <translation>Bientôt De Retour</translation>
     </message>
     <message>
-        <location filename="../../switchboard/gui/peeritem.cpp" line="69"/>
+        <location filename="../../switchboard/gui/peeritem.cpp" line="70"/>
         <source>Out To Lunch</source>
         <translation>Parti Déjeuner</translation>
     </message>
     <message>
-        <location filename="../../switchboard/gui/peeritem.cpp" line="72"/>
+        <location filename="../../switchboard/gui/peeritem.cpp" line="73"/>
         <source>Unknown</source>
         <translation>Inconnue</translation>
     </message>
     <message>
-        <location filename="../../switchboard/gui/peeritem.cpp" line="81"/>
+        <location filename="../../switchboard/gui/peeritem.cpp" line="82"/>
         <source>Ready</source>
         <translation>Libre</translation>
     </message>
     <message>
-        <location filename="../../switchboard/gui/peeritem.cpp" line="84"/>
+        <location filename="../../switchboard/gui/peeritem.cpp" line="85"/>
         <source>Ringing</source>
         <translation>Se fait appeler</translation>
     </message>
     <message>
-        <location filename="../../switchboard/gui/peeritem.cpp" line="87"/>
+        <location filename="../../switchboard/gui/peeritem.cpp" line="88"/>
         <source>Calling</source>
         <translation>Appelle</translation>
     </message>
     <message>
-        <location filename="../../switchboard/gui/peeritem.cpp" line="90"/>
+        <location filename="../../switchboard/gui/peeritem.cpp" line="91"/>
         <source>On the phone</source>
         <translation>En communication</translation>
     </message>
     <message>
-        <location filename="../../switchboard/gui/peeritem.cpp" line="93"/>
+        <location filename="../../switchboard/gui/peeritem.cpp" line="94"/>
         <source>Not online</source>
         <translation>Pas en ligne</translation>
     </message>
     <message>
-        <location filename="../../switchboard/gui/peeritem.cpp" line="100"/>
+        <location filename="../../switchboard/gui/peeritem.cpp" line="101"/>
         <source>SIP Presence : </source>
         <translation>Présence SIP : </translation>
     </message>
     <message>
-        <location filename="../../switchboard/gui/peeritem.cpp" line="101"/>
+        <location filename="../../switchboard/gui/peeritem.cpp" line="102"/>
         <source>Availability : </source>
         <translation>Disponibilité : </translation>
     </message>
     <message>
-        <location filename="../../switchboard/gui/peerwidget.cpp" line="82"/>
+        <location filename="../../switchboard/gui/peerwidget.cpp" line="91"/>
         <source>&amp;Remove</source>
         <translation>&amp;Enlever</translation>
     </message>
     <message>
-        <location filename="../../switchboard/gui/peerwidget.cpp" line="83"/>
+        <location filename="../../switchboard/gui/peerwidget.cpp" line="92"/>
         <source>Remove this peer from the panel</source>
         <translation>Enlever ce poste du tableau</translation>
     </message>
     <message>
-        <location filename="../../switchboard/gui/peerwidget.cpp" line="86"/>
+        <location filename="../../switchboard/gui/peerwidget.cpp" line="95"/>
         <source>&amp;Call</source>
         <translation>&amp;Appeler</translation>
     </message>
     <message>
-        <location filename="../../switchboard/gui/peerwidget.cpp" line="87"/>
+        <location filename="../../switchboard/gui/peerwidget.cpp" line="96"/>
         <source>Call this peer</source>
         <translation>Appeler ce poste</translation>
     </message>
     <message>
-        <location filename="../../switchboard/gui/peerwidget.cpp" line="341"/>
+        <location filename="../../switchboard/gui/peerwidget.cpp" line="350"/>
         <source>&amp;Intercept</source>
         <translation>&amp;Intercepter</translation>
     </message>
     <message>
-        <location filename="../../switchboard/gui/peerwidget.cpp" line="342"/>
+        <location filename="../../switchboard/gui/peerwidget.cpp" line="351"/>
         <source>&amp;Hangup</source>
         <translation>&amp;Raccrocher</translation>
     </message>
     <message>
-        <location filename="../../switchboard/gui/peerwidget.cpp" line="356"/>
+        <location filename="../../switchboard/gui/peerwidget.cpp" line="365"/>
         <source>&amp;Transfer</source>
         <translation>&amp;Transférer</translation>
     </message>

@@ -669,7 +669,7 @@ bool BaseEngine::parseCommand(const QStringList & listitems)
                 connectFeatures();
         } else if(listitems[0].toLower() == QString("featuresput")) {
                 qDebug() << "received ack from featuresput :" << listitems;
-        } else if(listitems[0] != "")
+        } else if((listitems[0] != "") && (listitems[0] == "______"))
                 qDebug() << "unknown command" << listitems[0];
 
         return b;
@@ -693,13 +693,22 @@ void BaseEngine::socketReadyRead()
                         if(list[0].toLower() == "loginok") {
 				QStringList params = list[1].split(";");
                                 qDebug() << "BaseEngine::socketReadyRead()" << params;
+                                m_version = -1;
 				if(params.size() > 2) {
 					m_dialcontext = params[0];
 					m_extension = params[1];
                                         m_capabilities = params[2];
-                                        logged();
-                                        if(m_is_a_switchboard) /* ask here because not ready when the widget builds up */
-                                                askCallerIds();
+                                        if(params.size() > 3)
+                                                m_version = params[3].toInt();
+                                        if(m_version < REQUIRED_SERVER_VERSION) {
+                                                QMessageBox::critical(NULL, tr("Version Error"),
+                                                                      tr("Your server version is %1 which is too old.\n").arg(m_version) +
+                                                                      tr("The required one is at least %1.").arg(REQUIRED_SERVER_VERSION));
+                                        } else {
+                                                logged();
+                                                if(m_is_a_switchboard) /* ask here because not ready when the widget builds up */
+                                                        askCallerIds();
+                                        }
                                 }
 			} else if(list[0].toLower() == "loginko") {
                                 stop();
@@ -1258,7 +1267,7 @@ void BaseEngine::setMyClientId()
 #elif defined(Q_WS_MAC)
         m_clientid = QString(whatami + "@MAC");
 #else
-        m_clientid = QString(whatami + "@unknwon");
+        m_clientid = QString(whatami + "@unknown");
 #endif
 }
 
@@ -1356,7 +1365,7 @@ void BaseEngine::processLoginDialog()
 		if(m_version < REQUIRED_SERVER_VERSION) {
 			m_loginsocket->close();
 			stop();
-                        QMessageBox::critical(NULL, tr("Critical error"),
+                        QMessageBox::critical(NULL, tr("Version Error"),
                                               tr("Your server version is %1 which is too old.\n").arg(m_version) +
                                               tr("The required one is at least %1.").arg(REQUIRED_SERVER_VERSION));
 			return;
