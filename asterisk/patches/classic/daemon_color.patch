@@ -1,7 +1,7 @@
-Index: asterisk-1.2.23~dfsg/term.c
+Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/term.c
 ===================================================================
---- asterisk-1.2.23~dfsg.orig/term.c	2007-08-06 11:56:52.000000000 +0200
-+++ asterisk-1.2.23~dfsg/term.c	2007-08-06 12:02:21.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/term.c	2007-08-08 14:42:37.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/term.c	2007-08-08 14:43:22.000000000 +0200
 @@ -79,8 +79,8 @@
  	int termfd = -1, parseokay = 0, i;
  

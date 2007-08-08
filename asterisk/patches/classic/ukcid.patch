@@ -1,7 +1,7 @@
-Index: asterisk-1.2.23~dfsg/channels/chan_zap.c
+Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_zap.c
 ===================================================================
---- asterisk-1.2.23~dfsg.orig/channels/chan_zap.c	2007-08-06 12:01:32.000000000 +0200
-+++ asterisk-1.2.23~dfsg/channels/chan_zap.c	2007-08-06 12:01:47.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/channels/chan_zap.c	2007-08-07 19:44:04.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_zap.c	2007-08-08 14:30:18.000000000 +0200
 @@ -1103,6 +1103,14 @@
  	return 0;
  }
@@ -17,7 +17,7 @@ Index: asterisk-1.2.23~dfsg/channels/chan_zap.c
  static int alloc_sub(struct zt_pvt *p, int x)
  {
  	ZT_BUFFERINFO bi;
-@@ -6001,6 +6009,120 @@
+@@ -5995,6 +6003,120 @@
  			}
  		}
  #endif
@@ -138,7 +138,7 @@ Index: asterisk-1.2.23~dfsg/channels/chan_zap.c
  		/* If we want caller id, we're in a prering state due to a polarity reversal
  		 * and we're set to use a polarity reversal to trigger the start of caller id,
  		 * grab the caller id and wait for ringing to start... */
-@@ -10540,6 +10662,8 @@
+@@ -10534,6 +10656,8 @@
  				chan_conf.cid_start = CID_START_RING;
  			else if (!strcasecmp(v->value, "polarity"))
  				chan_conf.cid_start = CID_START_POLARITY;
@@ -147,10 +147,10 @@ Index: asterisk-1.2.23~dfsg/channels/chan_zap.c
  			else if (ast_true(v->value))
  				chan_conf.cid_start = CID_START_RING;
  		} else if (!strcasecmp(v->name, "threewaycalling")) {
-Index: asterisk-1.2.23~dfsg/include/asterisk/callerid.h
+Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/include/asterisk/callerid.h
 ===================================================================
---- asterisk-1.2.23~dfsg.orig/include/asterisk/callerid.h	2007-08-06 12:01:32.000000000 +0200
-+++ asterisk-1.2.23~dfsg/include/asterisk/callerid.h	2007-08-06 12:01:47.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/include/asterisk/callerid.h	2005-11-29 19:24:39.000000000 +0100
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/include/asterisk/callerid.h	2007-08-08 14:30:18.000000000 +0200
 @@ -44,6 +44,7 @@
  
  #define CID_START_RING	1

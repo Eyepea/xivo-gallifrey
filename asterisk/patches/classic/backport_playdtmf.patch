@@ -1,7 +1,7 @@
-Index: asterisk-1.2.23~dfsg/apps/app_senddtmf.c
+Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_senddtmf.c
 ===================================================================
---- asterisk-1.2.23~dfsg.orig/apps/app_senddtmf.c	2007-08-06 12:01:27.000000000 +0200
-+++ asterisk-1.2.23~dfsg/apps/app_senddtmf.c	2007-08-06 12:02:15.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/apps/app_senddtmf.c	2007-08-08 14:42:40.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_senddtmf.c	2007-08-08 14:43:11.000000000 +0200
 @@ -41,6 +41,7 @@
  #include "asterisk/options.h"
  #include "asterisk/utils.h"

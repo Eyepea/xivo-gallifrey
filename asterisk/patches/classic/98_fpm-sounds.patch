@@ -1,7 +1,7 @@
-Index: asterisk-1.2.23~dfsg/Makefile
+Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/Makefile
 ===================================================================
---- asterisk-1.2.23~dfsg.orig/Makefile	2007-08-06 12:01:52.000000000 +0200
-+++ asterisk-1.2.23~dfsg/Makefile	2007-08-06 12:01:58.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/Makefile	2007-08-08 14:30:23.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/Makefile	2007-08-08 14:30:30.000000000 +0200
 @@ -797,10 +797,6 @@
  			exit 1; \
  		fi; \

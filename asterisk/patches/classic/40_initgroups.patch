@@ -1,7 +1,7 @@
-Index: asterisk-1.2.23~dfsg/asterisk.c
+Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/asterisk.c
 ===================================================================
---- asterisk-1.2.23~dfsg.orig/asterisk.c	2007-08-06 12:01:52.000000000 +0200
-+++ asterisk-1.2.23~dfsg/asterisk.c	2007-08-06 12:01:54.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/asterisk.c	2007-08-08 14:30:23.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/asterisk.c	2007-08-08 14:30:25.000000000 +0200
 @@ -2243,6 +2243,10 @@
  				exit(1);
  			}

@@ -1,7 +1,7 @@
-Index: asterisk-1.2.23~dfsg/channels/h323/Makefile
+Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/h323/Makefile
 ===================================================================
---- asterisk-1.2.23~dfsg.orig/channels/h323/Makefile	2007-08-06 11:56:52.000000000 +0200
-+++ asterisk-1.2.23~dfsg/channels/h323/Makefile	2007-08-06 12:02:22.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/channels/h323/Makefile	2007-08-08 14:42:37.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/h323/Makefile	2007-08-08 14:43:25.000000000 +0200
 @@ -21,8 +21,7 @@
  OPENH323DIR=$(HOME)/openh323
  endif

@@ -1,7 +1,7 @@
-Index: asterisk-1.2.23~dfsg/channels/Makefile
+Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/Makefile
 ===================================================================
---- asterisk-1.2.23~dfsg.orig/channels/Makefile	2007-08-06 12:01:28.000000000 +0200
-+++ asterisk-1.2.23~dfsg/channels/Makefile	2007-08-06 12:02:05.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/channels/Makefile	2007-08-08 14:42:42.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/Makefile	2007-08-08 14:43:04.000000000 +0200
 @@ -107,11 +107,6 @@
    ZAPPRI=-lpri
  endif

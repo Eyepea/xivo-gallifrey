@@ -1,8 +1,8 @@
-Index: asterisk-1.2.23~dfsg/channels/chan_zap.c
+Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_zap.c
 ===================================================================
---- asterisk-1.2.23~dfsg.orig/channels/chan_zap.c	2007-08-06 12:01:47.000000000 +0200
-+++ asterisk-1.2.23~dfsg/channels/chan_zap.c	2007-08-06 12:02:14.000000000 +0200
-@@ -9842,6 +9842,47 @@
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/channels/chan_zap.c	2007-08-08 14:42:40.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_zap.c	2007-08-08 14:43:08.000000000 +0200
+@@ -9836,6 +9836,47 @@
  	return RESULT_FAILURE;
  }
  
@@ -50,7 +50,7 @@ Index: asterisk-1.2.23~dfsg/channels/chan_zap.c
  static int zap_show_channels(int fd, int argc, char **argv)
  {
  #define FORMAT "%7s %-10.10s %-15.15s %-10.10s %-20.20s\n"
-@@ -10151,6 +10192,10 @@
+@@ -10145,6 +10186,10 @@
  	"Usage: zap destroy channel <chan num>\n"
  	"	DON'T USE THIS UNLESS YOU KNOW WHAT YOU ARE DOING.  Immediately removes a given channel, whether it is in use or not\n";
  
@@ -61,7 +61,7 @@ Index: asterisk-1.2.23~dfsg/channels/chan_zap.c
  static struct ast_cli_entry zap_cli[] = {
  	{ { "zap", "show", "cadences", NULL }, handle_zap_show_cadences,
  	  "List cadences", zap_show_cadences_help },
-@@ -10160,6 +10205,8 @@
+@@ -10154,6 +10199,8 @@
  	  "Show information on a channel", show_channel_usage },
  	{ {"zap", "destroy", "channel", NULL}, zap_destroy_channel,
  	  "Destroy a channel", destroy_channel_usage },

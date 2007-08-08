@@ -1,7 +1,7 @@
-Index: asterisk-1.2.23~dfsg/configs/func_odbc.conf.sample
+Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/configs/func_odbc.conf.sample
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ asterisk-1.2.23~dfsg/configs/func_odbc.conf.sample	2007-08-06 12:01:59.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/configs/func_odbc.conf.sample	2007-08-08 14:42:50.000000000 +0200
 @@ -0,0 +1,38 @@
 +;
 +; func_odbc.conf
@@ -41,10 +41,10 @@ Index: asterisk-1.2.23~dfsg/configs/func_odbc.conf.sample
 +write=UPDATE presence SET location='${SQL_ESC(${VAL1})}' WHERE id='${SQL_ESC(${ARG1})}'
 +;prefix=OFFICE		; Changes this function from ODBC_PRESENCE to OFFICE_PRESENCE
 +
-Index: asterisk-1.2.23~dfsg/funcs/func_array.c
+Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/funcs/func_array.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ asterisk-1.2.23~dfsg/funcs/func_array.c	2007-08-06 12:01:59.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/funcs/func_array.c	2007-08-08 14:42:50.000000000 +0200
 @@ -0,0 +1,191 @@
 +/*
 + * Asterisk -- An open source telephony toolkit.
@@ -237,10 +237,10 @@ Index: asterisk-1.2.23~dfsg/funcs/func_array.c
 +	return ASTERISK_GPL_KEY;
 +}
 +
-Index: asterisk-1.2.23~dfsg/funcs/func_odbc.c
+Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/funcs/func_odbc.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ asterisk-1.2.23~dfsg/funcs/func_odbc.c	2007-08-06 12:01:59.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/funcs/func_odbc.c	2007-08-08 14:42:50.000000000 +0200
 @@ -0,0 +1,658 @@
 +/*
 + * Asterisk -- An open source telephony toolkit.

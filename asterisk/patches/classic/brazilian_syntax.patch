@@ -1,7 +1,7 @@
-Index: asterisk-1.2.23~dfsg/apps/app_sayunixtime.c
+Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_sayunixtime.c
 ===================================================================
---- asterisk-1.2.23~dfsg.orig/apps/app_sayunixtime.c	2007-08-06 12:01:29.000000000 +0200
-+++ asterisk-1.2.23~dfsg/apps/app_sayunixtime.c	2007-08-06 12:02:00.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/apps/app_sayunixtime.c	2007-08-08 14:42:48.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_sayunixtime.c	2007-08-08 14:42:53.000000000 +0200
 @@ -85,6 +85,8 @@
  		format = "A dBY HMS";
  	} else if ( !strcasecmp(chan->language, "de" ) ) {
@@ -11,10 +11,10 @@ Index: asterisk-1.2.23~dfsg/apps/app_sayunixtime.c
  	} else {
  		format = "ABdY 'digits/at' IMp";
  	} 
-Index: asterisk-1.2.23~dfsg/apps/app_voicemail.c
+Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_voicemail.c
 ===================================================================
---- asterisk-1.2.23~dfsg.orig/apps/app_voicemail.c	2007-08-06 12:01:29.000000000 +0200
-+++ asterisk-1.2.23~dfsg/apps/app_voicemail.c	2007-08-06 12:02:00.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/apps/app_voicemail.c	2007-08-08 14:42:48.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_voicemail.c	2007-08-08 14:42:53.000000000 +0200
 @@ -145,6 +145,7 @@
  /*! \page vmlang Voicemail Language Syntaxes Supported
  
@@ -114,10 +114,10 @@ Index: asterisk-1.2.23~dfsg/apps/app_voicemail.c
  		return vm_browse_messages_pt(chan, vms, vmu);
  	} else if (!strcasecmp(chan->language, "gr")){
  		return vm_browse_messages_gr(chan, vms, vmu);   /* GREEK */
-Index: asterisk-1.2.23~dfsg/say.c
+Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/say.c
 ===================================================================
---- asterisk-1.2.23~dfsg.orig/say.c	2007-08-06 12:01:29.000000000 +0200
-+++ asterisk-1.2.23~dfsg/say.c	2007-08-06 12:02:00.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/say.c	2007-08-08 14:42:48.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/say.c	2007-08-08 14:42:53.000000000 +0200
 @@ -396,6 +396,7 @@
  static int ast_say_time_fr(struct ast_channel *chan, time_t t, const char *ints, const char *lang);
  static int ast_say_time_nl(struct ast_channel *chan, time_t t, const char *ints, const char *lang);

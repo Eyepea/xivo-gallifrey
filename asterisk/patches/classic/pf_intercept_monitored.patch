@@ -1,7 +1,7 @@
-Index: asterisk-1.2.23~dfsg/channels/chan_sip.c
+Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_sip.c
 ===================================================================
---- asterisk-1.2.23~dfsg.orig/channels/chan_sip.c	2007-08-06 14:30:05.000000000 +0200
-+++ asterisk-1.2.23~dfsg/channels/chan_sip.c	2007-08-06 14:33:56.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/channels/chan_sip.c	2007-08-08 14:42:37.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_sip.c	2007-08-08 14:43:30.000000000 +0200
 @@ -1946,9 +1946,9 @@
  	struct ast_hostent ahp;
  	struct sip_peer *p;
@@ -328,32 +328,7 @@ Index: asterisk-1.2.23~dfsg/channels/chan_sip.c
  			}
  		}
  		
-@@ -11228,7 +11355,7 @@
- 			ast_set_flag(p, SIP_NEEDDESTROY);	
- 			return 0;
- 		} else {
--			struct sip_pvt *p_old;
-+			/* struct sip_pvt *p_old; */
- 
- 			transmit_response(p, "200 OK", req);
- 			transmit_state_notify(p, firststate, 1, 1, 0);	/* Send first notification */
-@@ -11239,6 +11366,7 @@
- 			   for it to expire and send NOTIFY messages to the peer only to have them
- 			   ignored (or generate errors)
- 			*/
-+                        /*
- 			ast_mutex_lock(&iflock);
- 			for (p_old = iflist; p_old; p_old = p_old->next) {
- 				if (p_old == p)
-@@ -11259,6 +11387,7 @@
- 				ast_mutex_unlock(&p_old->lock);
- 			}
- 			ast_mutex_unlock(&iflock);
-+                        */
- 		}
- 		if (!p->expiry)
- 			ast_set_flag(p, SIP_NEEDDESTROY);
-@@ -11493,6 +11622,14 @@
+@@ -11493,6 +11620,14 @@
  		if (!p->lastinvite && ast_strlen_zero(p->randdata))
  			ast_set_flag(p, SIP_NEEDDESTROY);	
  		break;

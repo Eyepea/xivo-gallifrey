@@ -1,7 +1,7 @@
-Index: asterisk-1.2.23~dfsg/apps/app_dial.c
+Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_dial.c
 ===================================================================
---- asterisk-1.2.23~dfsg.orig/apps/app_dial.c	2007-08-06 12:01:31.000000000 +0200
-+++ asterisk-1.2.23~dfsg/apps/app_dial.c	2007-08-06 12:01:52.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/apps/app_dial.c	2007-07-03 14:34:14.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_dial.c	2007-08-08 14:30:23.000000000 +0200
 @@ -985,7 +985,8 @@
  				goto out;
  			}
@@ -12,10 +12,10 @@ Index: asterisk-1.2.23~dfsg/apps/app_dial.c
  			if( ast_fileexists(privintro,NULL,NULL ) > 0 && strncmp(privcid,"NOCALLERID",10) != 0) {
  				/* the DELUX version of this code would allow this caller the
  				   option to hear and retape their previously recorded intro.
-Index: asterisk-1.2.23~dfsg/asterisk.c
+Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/asterisk.c
 ===================================================================
---- asterisk-1.2.23~dfsg.orig/asterisk.c	2007-08-06 12:01:50.000000000 +0200
-+++ asterisk-1.2.23~dfsg/asterisk.c	2007-08-06 12:01:52.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/asterisk.c	2007-08-08 14:30:20.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/asterisk.c	2007-08-08 14:30:23.000000000 +0200
 @@ -216,6 +216,7 @@
  char ast_config_AST_SPOOL_DIR[AST_CONFIG_MAX_PATH];
  char ast_config_AST_MONITOR_DIR[AST_CONFIG_MAX_PATH];
@@ -41,10 +41,10 @@ Index: asterisk-1.2.23~dfsg/asterisk.c
  		} else if (!strcasecmp(v->name, "astlogdir")) {
  			ast_copy_string(ast_config_AST_LOG_DIR, v->value, sizeof(ast_config_AST_LOG_DIR));
  		} else if (!strcasecmp(v->name, "astagidir")) {
-Index: asterisk-1.2.23~dfsg/build_tools/make_defaults_h
+Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/build_tools/make_defaults_h
 ===================================================================
---- asterisk-1.2.23~dfsg.orig/build_tools/make_defaults_h	2007-08-06 12:01:31.000000000 +0200
-+++ asterisk-1.2.23~dfsg/build_tools/make_defaults_h	2007-08-06 12:01:52.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/build_tools/make_defaults_h	2005-06-20 19:26:08.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/build_tools/make_defaults_h	2007-08-08 14:30:23.000000000 +0200
 @@ -11,6 +11,7 @@
  #define AST_MODULE_DIR "${INSTALL_PATH}${MODULES_DIR}"
  #define AST_SPOOL_DIR  "${INSTALL_PATH}${ASTSPOOLDIR}"
@@ -63,10 +63,10 @@ Index: asterisk-1.2.23~dfsg/build_tools/make_defaults_h
 +#define AST_IMAGES     "${INSTALL_PATH}${ASTDATADIR}/images"
  
  END
-Index: asterisk-1.2.23~dfsg/channels/chan_iax2.c
+Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_iax2.c
 ===================================================================
---- asterisk-1.2.23~dfsg.orig/channels/chan_iax2.c	2007-08-06 12:01:41.000000000 +0200
-+++ asterisk-1.2.23~dfsg/channels/chan_iax2.c	2007-08-06 12:01:52.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/channels/chan_iax2.c	2007-08-08 14:30:13.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_iax2.c	2007-08-08 14:30:23.000000000 +0200
 @@ -1398,7 +1398,7 @@
  		cur = cur->next;
  	}
@@ -76,10 +76,10 @@ Index: asterisk-1.2.23~dfsg/channels/chan_iax2.c
  	fwd = opendir(dir);
  	if (fwd) {
  		while((de = readdir(fwd))) {
-Index: asterisk-1.2.23~dfsg/configs/musiconhold.conf.sample
+Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/configs/musiconhold.conf.sample
 ===================================================================
---- asterisk-1.2.23~dfsg.orig/configs/musiconhold.conf.sample	2007-08-06 12:01:31.000000000 +0200
-+++ asterisk-1.2.23~dfsg/configs/musiconhold.conf.sample	2007-08-06 12:01:52.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/configs/musiconhold.conf.sample	2005-11-29 19:24:39.000000000 +0100
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/configs/musiconhold.conf.sample	2007-08-08 14:30:23.000000000 +0200
 @@ -4,7 +4,7 @@
  
  [default]
@@ -89,10 +89,10 @@ Index: asterisk-1.2.23~dfsg/configs/musiconhold.conf.sample
  
  ; valid mode options:
  ; quietmp3 	-- default
-Index: asterisk-1.2.23~dfsg/file.c
+Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/file.c
 ===================================================================
---- asterisk-1.2.23~dfsg.orig/file.c	2007-08-06 12:01:31.000000000 +0200
-+++ asterisk-1.2.23~dfsg/file.c	2007-08-06 12:01:52.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/file.c	2007-06-22 16:52:18.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/file.c	2007-08-08 14:30:23.000000000 +0200
 @@ -316,7 +316,7 @@
  	} else {
  		char tmp[AST_CONFIG_MAX_PATH] = "";
@@ -102,10 +102,10 @@ Index: asterisk-1.2.23~dfsg/file.c
  		fnsize = strlen(tmp) + strlen(filename) + strlen(type) + 3;
  		fn = malloc(fnsize);
  		if (fn)
-Index: asterisk-1.2.23~dfsg/image.c
+Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/image.c
 ===================================================================
---- asterisk-1.2.23~dfsg.orig/image.c	2007-08-06 12:01:31.000000000 +0200
-+++ asterisk-1.2.23~dfsg/image.c	2007-08-06 12:01:52.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/image.c	2006-03-24 15:48:11.000000000 +0100
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/image.c	2007-08-08 14:30:23.000000000 +0200
 @@ -108,9 +108,9 @@
  			snprintf(buf, len, "%s.%s", filename, ext);
  	} else {
@@ -118,10 +118,10 @@ Index: asterisk-1.2.23~dfsg/image.c
  	}
  }
  
-Index: asterisk-1.2.23~dfsg/include/asterisk.h
+Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/include/asterisk.h
 ===================================================================
---- asterisk-1.2.23~dfsg.orig/include/asterisk.h	2007-08-06 12:01:31.000000000 +0200
-+++ asterisk-1.2.23~dfsg/include/asterisk.h	2007-08-06 12:01:52.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/include/asterisk.h	2007-04-09 04:49:06.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/include/asterisk.h	2007-08-08 14:30:23.000000000 +0200
 @@ -31,6 +31,7 @@
  extern char ast_config_AST_SPOOL_DIR[AST_CONFIG_MAX_PATH];
  extern char ast_config_AST_MONITOR_DIR[AST_CONFIG_MAX_PATH];
@@ -130,10 +130,10 @@ Index: asterisk-1.2.23~dfsg/include/asterisk.h
  extern char ast_config_AST_LOG_DIR[AST_CONFIG_MAX_PATH];
  extern char ast_config_AST_AGI_DIR[AST_CONFIG_MAX_PATH];
  extern char ast_config_AST_DB[AST_CONFIG_MAX_PATH];
-Index: asterisk-1.2.23~dfsg/Makefile
+Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/Makefile
 ===================================================================
---- asterisk-1.2.23~dfsg.orig/Makefile	2007-08-06 12:01:31.000000000 +0200
-+++ asterisk-1.2.23~dfsg/Makefile	2007-08-06 12:01:52.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/Makefile	2007-07-16 20:33:02.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/Makefile	2007-08-08 14:30:23.000000000 +0200
 @@ -113,6 +113,7 @@
  ifneq ($(OSARCH),SunOS)
    ASTLIBDIR=$(INSTALL_PREFIX)/usr/lib/asterisk

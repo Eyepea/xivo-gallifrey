@@ -1,7 +1,7 @@
-Index: asterisk-1.2.23~dfsg/Makefile
+Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/Makefile
 ===================================================================
---- asterisk-1.2.23~dfsg.orig/Makefile	2007-08-06 12:02:04.000000000 +0200
-+++ asterisk-1.2.23~dfsg/Makefile	2007-08-06 12:02:19.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/Makefile	2007-08-08 14:43:02.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/Makefile	2007-08-08 14:43:17.000000000 +0200
 @@ -19,8 +19,8 @@
  # CROSS_COMPILE=/opt/montavista/pro/devkit/arm/xscale_be/bin/xscale_be-
  # CROSS_COMPILE_BIN=/opt/montavista/pro/devkit/arm/xscale_be/bin/
