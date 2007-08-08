@@ -7,7 +7,7 @@ AutoHangUpTimer=0
 AutoRejectTimer=0
 AutoStopTimer=0
 CaLogPrefix=
-DateFlag=0
+DateFlag=2
 Disable_call_progress=0
 DoNotDisturb_AbHour=0
 DoNotDisturb_AbMin=0
@@ -23,7 +23,7 @@ Hide_Phone_Number_Display=0
 HideMissedCall=0
 Key_Echo=1
 LCDvoltLevel=0
-LanguageType=0
+LanguageType=1
 LocalMusicOnHold=1
 ManualLog=0
 OptionVisible=0000
@@ -37,7 +37,7 @@ RingToneMP3=0
 RingToneMP4=0
 Shortcut_one=0
 Shortcut_two=0
-TimeFlag=0
+TimeFlag=1
 Transfer_to_voice_mail=1
 
 
@@ -213,8 +213,8 @@ UnRegister_priorFlgMP1=1
 UnRegister_priorFlgMP2=1
 UnRegister_priorFlgMP3=1
 UnRegister_priorFlgMP4=1
-VoiceMailAddr=
-VoiceMailTelNum=
+VoiceMailAddr=192.168.0.254
+VoiceMailTelNum=*98
 VoiceMailPort=5060
 
 
@@ -283,8 +283,8 @@ FTPPWD=
 
 [ntp]
 NtpDaylight=1
-NTPFlag=0
-NtpIP=
+NTPFlag=1
+NtpIP=192.168.0.254
 NtpMode=0
 NtpSyncTime=1
 NtpZoneNum=23
