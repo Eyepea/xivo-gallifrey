@@ -1054,12 +1054,18 @@ def split_from_ui(fullname):
 
 
 def originate_or_transfer(requester, l):
-        print "src = %s - dst = %s" %(l[1], l[2])
-        [dummyp, ast_src, context_src, proto_src, userid_src, exten_src] = l[1].split("/")
-        if len(l[2].split("/")) == 6:
-                [dummyp, ast_dst, context_dst, proto_dst, userid_dst, exten_dst] = l[2].split("/")
+        src_split = l[1].split("/")
+        dst_split = l[2].split("/")
+
+        if len(src_split) == 5:
+                [dummyp, ast_src, context_src, proto_src, userid_src] = src_split
+        elif len(src_split) == 6:
+                [dummyp, ast_src, context_src, proto_src, userid_src, dummy_exten_src] = src_split
+
+        if len(dst_split) == 6:
+                [dummyp, ast_dst, context_dst, proto_dst, userid_dst, exten_dst] = dst_split
         else:
-                [dummyp, ast_dst, context_dst, proto_dst, userid_dst, exten_dst] = l[1].split("/")
+                [dummyp, ast_dst, context_dst, proto_dst, userid_dst, exten_dst] = src_split
                 exten_dst = l[2]
         idast_src = -1
         idast_dst = -1
@@ -1309,9 +1315,15 @@ def manage_tcp_connection(connid, allow_events):
                                                                         capa_user.append(capa)
                                                         user['state'] = l[4]
                                                         [user['cticlienttype'], user['cticlientos']] = l[5].split("@")
-                                                        repstr = "loginok=%s;%s;%s\n" %(user.get('context'),
-                                                                                        user.get('phonenum'),
-                                                                                        ",".join(capa_user))
+                                                        user['sessionid'] = '%u' % random.randint(0,999999999)
+                                                        user['sessiontimestamp'] = time.time()
+                                                        user['ip'] = requester_ip
+                                                        user['port'] = -1
+                                                        user['tcpmode'] = True
+                                                        repstr = "loginok=%s;%s;%s;%s\n" %(user.get('context'),
+                                                                                           user.get('phonenum'),
+                                                                                           ",".join(capa_user),
+                                                                                           __version__.split()[1])
                                                         userinfo_by_requester[requester] = [astnum,
                                                                                             user.get('context'),
                                                                                             None,
@@ -1832,11 +1844,11 @@ def update_sipnumlist(astnum):
         try:
                 for user,infos in userlist[astnum].iteritems():
                         if "sessiontimestamp" in infos:
-                                if time.time() - infos["sessiontimestamp"] > xivoclient_session_timeout:
-                                        del infos["sessionid"]
-                                        del infos["sessiontimestamp"]
-                                        del infos["ip"]
-                                        del infos["port"]
+                                if time.time() - infos['sessiontimestamp'] > xivoclient_session_timeout:
+                                        del infos['sessionid']
+                                        del infos['sessiontimestamp']
+                                        del infos['ip']
+                                        del infos['port']
                                         conngui_xc = conngui_xc - 1
                                         infos["state"] = "unknown"
                                         sipnumber = "SIP/" + user.split("sip")[1]
