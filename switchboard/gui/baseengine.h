@@ -100,6 +100,8 @@ public:
 	void setEnabledCInfo(bool b);		//! set m_enabled_cinfo
 	bool enabledCInfo();			//! get m_enabled_cinfo
 
+	void setMyClientId();			//! set m_clientid
+
 	uint keepaliveinterval() const;		//!< keep alive interval
 	bool tcpmode() const;			//!< get tcp mode flag
 	void setTcpmode(bool b);		//!< set tcp mode flag
@@ -247,6 +249,7 @@ private:
 	QString m_dialcontext;		//!< Context of the phone, as returned by the xivo_daemon server
 	QString m_capabilities;		//!< List of capabilities issued by the server after a successful login
 	QString m_sessionid;		//!< Session id obtained after a successful login
+	QString m_clientid;		//!< Client Identifier
 	QHash<QString, QString> m_callerids;	//!< List of caller Ids
 	int m_version;			//!< Version issued by the server after a successful login
 
@@ -267,8 +270,9 @@ private:
 	int m_pendingkeepalivemsg;	//!< number of keepalivemsg sent without response
 	QString m_pendingcommand;	//!< command to be sent to the server.
         QString m_numbertodial;		//!< Number dialed in
-        QString m_ctx;
-        QString m_phn;
+
+        QString m_monitored_context;	//!< Context of the Monitored Phone (on SB, or one's own on XC)
+        QString m_monitored_userid;	//!< UserId of the Monitored Phone (on SB, or one's own on XC)
 };
 
 #endif

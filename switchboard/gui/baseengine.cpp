@@ -33,7 +33,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include "logeltwidget.h"
 #include "popup.h"
 
-const int REQUIRED_SERVER_VERSION = 1299;
+const int REQUIRED_SERVER_VERSION = 1334;
 
 /*! \brief Constructor.
  *
@@ -357,18 +357,19 @@ void BaseEngine::setDoNotDisturb()
  */
 void BaseEngine::sendTCPCommand()
 {
-	qDebug() << "BaseEngine::sendTCPCommand()" << m_pendingcommand;
+	// qDebug() << "BaseEngine::sendTCPCommand()" << m_pendingcommand;
 	m_sbsocket->write((m_pendingcommand + "\r\n"/*"\n"*/).toAscii());
 }
 
 void BaseEngine::sendUDPCommand(const QString & command)
 {
-	qDebug() << "BaseEngine::sendUDPCommand()" << command;
+	// qDebug() << "BaseEngine::sendUDPCommand()" << command;
 	if(m_state == ELogged) {
 		QString outline = "COMMAND ";
 		outline.append(m_asterisk + "/" + m_protocol.toLower() + m_userid);
-		outline.append(" SESSIONID " + m_sessionid + " " + command + "\r\n");
-		qDebug() << outline;
+		outline.append(" SESSIONID " + m_sessionid + " " + command);
+		qDebug() << "BaseEngine::sendUDPCommand()" << outline;
+                outline.append("\r\n");
 		m_udpsocket->writeDatagram( outline.toAscii(),
 					    m_serveraddress, m_loginport + 1 );
 	} else {
@@ -422,8 +423,9 @@ void BaseEngine::socketConnected()
 	qDebug() << "BaseEngine::socketConnected()";
 	stopTryAgainTimer();
 	/* do the login/identification ? */
+        setMyClientId();
 	m_pendingcommand = "login " + m_asterisk + " "
-	                   + m_protocol + " " + m_userid;
+                + m_protocol + " " + m_userid + " " + m_availstate + " " + m_clientid;
         // login <asterisk> <techno> <id>
 	sendTCPCommand();
 }
@@ -654,7 +656,9 @@ bool BaseEngine::parseCommand(const QStringList & listitems)
                 }
         } else if(listitems[0].toLower() == QString("featuresupdate")) {
                 QStringList listpeers = listitems[1].split(";");
-                initFeatureFields(listpeers[0], listpeers[1]);
+                if(listpeers.size() == 5)
+                        if((m_monitored_context == listpeers[0]) && (m_monitored_userid == listpeers[2]))
+                                initFeatureFields(listpeers[3], listpeers[4]);
         } else if(listitems[0].toLower() == QString("featuresget")) {
                 QStringList listpeers = listitems[1].split(";");
                 disconnectFeatures();
@@ -689,14 +693,14 @@ void BaseEngine::socketReadyRead()
                         if(list[0].toLower() == "loginok") {
 				QStringList params = list[1].split(";");
                                 qDebug() << "BaseEngine::socketReadyRead()" << params;
-				if(params.size() > 1) {
+				if(params.size() > 2) {
 					m_dialcontext = params[0];
 					m_extension = params[1];
                                         m_capabilities = params[2];
-				}
-                                logged();
-                                if(m_is_a_switchboard) /* ask here because not ready when the widget builds up */
-                                        askCallerIds();
+                                        logged();
+                                        if(m_is_a_switchboard) /* ask here because not ready when the widget builds up */
+                                                askCallerIds();
+                                }
 			} else if(list[0].toLower() == "loginko") {
                                 stop();
 			} else
@@ -1115,53 +1119,53 @@ bool BaseEngine::isRemovable(const QMetaObject * metaobject)
 
 void BaseEngine::setVoiceMail(bool b)
 {
-        sendCommand("featuresput " + m_ctx + " " + m_phn + " VM " + QString(b ? "1" : "0"));
+        sendCommand("featuresput " + m_monitored_context + " " + m_monitored_userid + " VM " + QString(b ? "1" : "0"));
 }
 
 void BaseEngine::setCallRecording(bool b)
 {
-	sendCommand("featuresput " + m_ctx + " " + m_phn + " Record " + QString(b ? "1" : "0"));
+	sendCommand("featuresput " + m_monitored_context + " " + m_monitored_userid + " Record " + QString(b ? "1" : "0"));
 }
 
 void BaseEngine::setCallFiltering(bool b)
 {
-	sendCommand("featuresput " + m_ctx + " " + m_phn + " Screen " + QString(b ? "1" : "0"));
+	sendCommand("featuresput " + m_monitored_context + " " + m_monitored_userid + " Screen " + QString(b ? "1" : "0"));
 }
 
 void BaseEngine::setDnd(bool b)
 {
-	sendCommand("featuresput " + m_ctx + " " + m_phn + " DND " + QString(b ? "1" : "0"));
+	sendCommand("featuresput " + m_monitored_context + " " + m_monitored_userid + " DND " + QString(b ? "1" : "0"));
 }
 
 void BaseEngine::setForwardOnUnavailable(bool b, const QString & dst)
 {
-	sendCommand("featuresput " + m_ctx + " " + m_phn + " FWD/RNA/Status " + QString(b ? "1" : "0"));
-	sendCommand("featuresput " + m_ctx + " " + m_phn + " FWD/RNA/Number " + dst);
+	sendCommand("featuresput " + m_monitored_context + " " + m_monitored_userid + " FWD/RNA/Status " + QString(b ? "1" : "0"));
+	sendCommand("featuresput " + m_monitored_context + " " + m_monitored_userid + " FWD/RNA/Number " + dst);
 }
 
 void BaseEngine::setForwardOnBusy(bool b, const QString & dst)
 {
-	sendCommand("featuresput " + m_ctx + " " + m_phn + " FWD/Busy/Status " + QString(b ? "1" : "0"));
-	sendCommand("featuresput " + m_ctx + " " + m_phn + " FWD/Busy/Number " + dst);
+	sendCommand("featuresput " + m_monitored_context + " " + m_monitored_userid + " FWD/Busy/Status " + QString(b ? "1" : "0"));
+	sendCommand("featuresput " + m_monitored_context + " " + m_monitored_userid + " FWD/Busy/Number " + dst);
 }
 
 void BaseEngine::setUncondForward(bool b, const QString & dst)
 {
-	sendCommand("featuresput " + m_ctx + " " + m_phn + " FWD/Unc/Status " + QString(b ? "1" : "0"));
-	sendCommand("featuresput " + m_ctx + " " + m_phn + " FWD/Unc/Number " + dst);
+	sendCommand("featuresput " + m_monitored_context + " " + m_monitored_userid + " FWD/Unc/Status " + QString(b ? "1" : "0"));
+	sendCommand("featuresput " + m_monitored_context + " " + m_monitored_userid + " FWD/Unc/Number " + dst);
 }
 
 void BaseEngine::askFeatures(const QString & peer)
 {
         qDebug() << "BaseEngine::askFeatures()" << peer;
-        m_ctx = m_dialcontext;
-        m_phn = m_userid;
+        m_monitored_context = m_dialcontext;
+        m_monitored_userid = m_userid;
         QStringList peerp = peer.split("/");
         if(peerp.size() == 6) {
-                m_ctx = peerp[2];
-                m_phn = peerp[5];
+                m_monitored_context = peerp[2];
+                m_monitored_userid = peerp[5];
         }
-        sendCommand("featuresget " + m_ctx + " " + m_phn);
+        sendCommand("featuresget " + m_monitored_context + " " + m_monitored_userid);
 }
 
 void BaseEngine::askPeers()
@@ -1237,29 +1241,37 @@ void BaseEngine::setState(EngineState state)
 }
 
 /*!
+ * Builds a string defining who is the client (SB or XC @ (X11, WIN, MAC))
+*/
+void BaseEngine::setMyClientId()
+{
+        QString whatami;
+        if(m_is_a_switchboard)
+                whatami = QString("SB");
+        else
+                whatami = QString("XC");
+
+#if defined(Q_WS_X11)
+        m_clientid = QString(whatami + "@X11");
+#elif defined(Q_WS_WIN)
+        m_clientid = QString(whatami + "@WIN");
+#elif defined(Q_WS_MAC)
+        m_clientid = QString(whatami + "@MAC");
+#else
+        m_clientid = QString(whatami + "@unknwon");
+#endif
+}
+
+/*!
  * Perform the first login step once the TCP connection is established.
  */
 void BaseEngine::identifyToTheServer()
 {
 	QString outline;
-	QString whatami;
-        if(m_is_a_switchboard)
-                whatami = QString("SB");
-        else
-                whatami = QString("XC");
-	qDebug() << "BaseEngine::identifyToTheServer()" << m_loginsocket->peerAddress();
 	m_serveraddress = m_loginsocket->peerAddress();
-	outline = "LOGIN ";
-	outline.append(m_asterisk + "/" + m_protocol.toLower() + m_userid);
-#if defined(Q_WS_X11)
-	outline.append(" " + whatami + "@X11");
-#elif defined(Q_WS_WIN)
-	outline.append(" " + whatami + "@WIN");
-#elif defined(Q_WS_MAC)
-	outline.append(" " + whatami + "@MAC");
-#else
-	outline.append(" " + whatami + "@unknown");
-#endif
+	qDebug() << "BaseEngine::identifyToTheServer()" << m_serveraddress;
+        setMyClientId();
+	outline.append("LOGIN " + m_asterisk + "/" + m_protocol.toLower() + m_userid + " " + m_clientid);
 	qDebug() << "BaseEngine::identifyToTheServer() : " << outline;
 	outline.append("\r\n");
 	m_loginsocket->write(outline.toAscii());

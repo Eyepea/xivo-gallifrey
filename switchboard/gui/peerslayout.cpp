@@ -108,7 +108,7 @@ void PeersLayout::addItem(QLayoutItem * item)
  */
 void PeersLayout::setGeometry(const QRect & r)
 {
-	qDebug() << "PeersLayout::setGeometry" << r;
+	//qDebug() << "PeersLayout::setGeometry" << r;
 	QSize itemSize = maxItemSize();
 	int i, x, y;
 	for(i = 0; i<m_list.size(); i++)
