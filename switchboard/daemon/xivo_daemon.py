@@ -202,6 +202,7 @@ CAPA_FEATURES    = 1 << 5
 CAPA_PEERS       = 1 << 6
 CAPA_MESSAGE     = 1 << 7
 CAPA_SWITCHBOARD = 1 << 8
+CAPA_AGENTS      = 1 << 9
 
 map_capas = {
         'customerinfo'     : CAPA_CUSTINFO,
@@ -212,7 +213,8 @@ map_capas = {
         'features'         : CAPA_FEATURES,
         'peers'            : CAPA_PEERS,
         'instantmessaging' : CAPA_MESSAGE,
-        'switchboard'      : CAPA_SWITCHBOARD
+        'switchboard'      : CAPA_SWITCHBOARD,
+        'agents'           : CAPA_AGENTS
         }
 
 
@@ -402,11 +404,13 @@ def read_sip_properties(data):
 def tellpresence(data):
         num, stat = [None, None]
         lines = data.split("\n")
+        state_not_active = ""
 
         for x in lines:
                 if x.find("Subscription-State:") == 0:
-                        if x.find("Subscription-State: active") < 0:
-                                log_debug(x)
+                        if x.find("Subscription-State: active") < 0 and \
+                               x.find("Subscription-State: terminated") < 0:
+                                state_not_active = x
                 if x.find("<note>") == 0:
                         if x.find("Ready") >= 0:          stat = "Ready"
                         elif x.find("On the phone") >= 0: stat = "On the phone"
@@ -415,6 +419,8 @@ def tellpresence(data):
                         elif x.find("Unavailable") >= 0:  stat = "Unavailable"
                         else:                             stat = "XivoUnknown"
                 if x.find("<tuple id") == 0: num = x.split("\"")[1]
+        if state_not_active != "":
+                log_debug("%s (%s) %s" %(num, stat, state_not_active))
         return [num, stat]
 
 
@@ -775,7 +781,6 @@ def build_features_get(astnum, reqlist, socketid):
                                 keynumber = r.rstrip().split(" ")[1]
 
                 repstr += "%s;%s:%s;" %(key, keystatus, keynumber)
-        requestersocket_by_featureid[dbfamily] = socketid
         return repstr
 
 
@@ -840,23 +845,16 @@ def build_statuses():
         return ''.join(fullstat)
 
 
-## \brief Sends a status update to all the connected xivo-switchboard(-like) clients.
-# \param astnum the asterisk numerical identifier
-# \param phonenum the phone identifier
-# \param fromwhom a string that tells who has requested such an update
-# \return none
-def update_GUI_clients(astnum, phonenum, fromwhom):
-        global tcpopens_sb, plist
-        phoneinfo = fromwhom + ":" + plist[astnum].astid + ":" + build_basestatus(plist[astnum].normal[phonenum])
-        fstatlist = build_fullstatlist(plist[astnum].normal[phonenum])
-        strupdate = "update=" + phoneinfo + ":" + fstatlist
+def send_msg_to_cti_clients(strupdate):
+        # sends to TCP ports
         for tcpclient in tcpopens_sb:
                 try:
                         tcpclient[0].send(strupdate + "\n")
                 except Exception, exc:
-                        log_debug("--- exception --- send update has failed on %s : %s"
-                                  %(str(tcpclient[0]),str(exc)))
-        verboselog(strupdate, False, True)
+                        log_debug("--- exception --- send %s has failed on %s : %s"
+                                  %(strupdate.split('=')[0],
+                                    str(tcpclient[0]),
+                                    str(exc)))
         for ka_object in requestersocket_by_login.itervalues():
                 userlist_lock.acquire()
                 try:
@@ -865,6 +863,22 @@ def update_GUI_clients(astnum, phonenum, fromwhom):
                                       ka_object.client_address)
                 finally:
                         userlist_lock.release()
+
+
+## \brief Sends a status update to all the connected xivo-switchboard(-like) clients.
+# \param astnum the asterisk numerical identifier
+# \param phonenum the phone identifier
+# \param fromwhom a string that tells who has requested such an update
+# \return none
+def update_GUI_clients(astnum, phonenum, fromwhom):
+        global plist
+        phoneinfo = fromwhom + ":" + plist[astnum].astid + ":" + build_basestatus(plist[astnum].normal[phonenum])
+        fstatlist = build_fullstatlist(plist[astnum].normal[phonenum])
+        strupdate = "update=" + phoneinfo + ":" + fstatlist
+
+        send_msg_to_cti_clients(strupdate)
+
+        verboselog(strupdate, False, True)
 
 
 ## \brief Handles the SIP messages according to their meaning (reply to a formerly sent message).
@@ -904,7 +918,7 @@ def parseSIP(astnum, data, l_sipsock, l_addrsip):
                                %(iaccount, realm, nonce, uri, response)
                         command = xivo_sip.sip_register(configs[astnum], iaccount,
                                                         1, "reg_cid@xivopy",
-                                                        2 * xivosb_register_frequency, auth)
+                                                        (xivosb_register_frequency + 2), auth)
                         l_sipsock.sendto(command, (configs[astnum].remoteaddr, configs[astnum].portsipsrv))
                 elif iret == 403:
                         log_debug("%s : REGISTER %s Unauthorized" %(configs[astnum].astid, iaccount))
@@ -930,7 +944,7 @@ def parseSIP(astnum, data, l_sipsock, l_addrsip):
                                                 cid = rdc + "-subsxivo-" + sipnum.split("/")[1] + "@" + configs[astnum].localaddr
                                                 command = xivo_sip.sip_subscribe(configs[astnum], iaccount,
                                                                                  1, cid, normval.phonenum,
-                                                                                 2 * xivosb_register_frequency, "")
+                                                                                 (xivosb_register_frequency + 2), "")
                                                 l_sipsock.sendto(command, (configs[astnum].remoteaddr, configs[astnum].portsipsrv))
                                         else:
                                                 pass
@@ -955,7 +969,7 @@ def parseSIP(astnum, data, l_sipsock, l_addrsip):
                                        %(iaccount, realm, nonce, uri, response)
                                 command = xivo_sip.sip_subscribe(configs[astnum], iaccount,
                                                                  1, icid, normv.phonenum,
-                                                                 2 * xivosb_register_frequency, auth)
+                                                                 (xivosb_register_frequency + 2), auth)
                                 l_sipsock.sendto(command, (configs[astnum].remoteaddr, configs[astnum].portsipsrv))
                         elif iret == 403:
                                 log_debug("%s : SUBSCRIBE %s Unauthorized %s" %(configs[astnum].astid, iaccount, icid))
@@ -1010,7 +1024,7 @@ def do_sip_register(astnum, l_sipsock):
         for sipacc in configs[astnum].xivosb_phoneids:
                 command = xivo_sip.sip_register(configs[astnum], sipacc,
                                                 1, "reg_cid@xivopy",
-                                                2 * xivosb_register_frequency, "")
+                                                (xivosb_register_frequency + 2), "")
                 l_sipsock.sendto(command, (configs[astnum].remoteaddr, configs[astnum].portsipsrv))
                 # command = xivo_sip.sip_options(configs[astnum], configs[astnum].mysipname, cid, sipnum)
 
@@ -1037,6 +1051,69 @@ def split_from_ui(fullname):
                 phone = s1[3] + "/" + channel_splitter(s1[4])
                 channel = s1[3] + "/" + s1[4]
         return [phone, channel]
+
+
+def originate_or_transfer(requester, l):
+        print "src = %s - dst = %s" %(l[1], l[2])
+        [dummyp, ast_src, context_src, proto_src, userid_src, exten_src] = l[1].split("/")
+        if len(l[2].split("/")) == 6:
+                [dummyp, ast_dst, context_dst, proto_dst, userid_dst, exten_dst] = l[2].split("/")
+        else:
+                [dummyp, ast_dst, context_dst, proto_dst, userid_dst, exten_dst] = l[1].split("/")
+                exten_dst = l[2]
+        idast_src = -1
+        idast_dst = -1
+        if ast_src in asteriskr: idast_src = asteriskr[ast_src]
+        if ast_dst in asteriskr: idast_dst = asteriskr[ast_dst]
+        if idast_src != -1 and idast_src == idast_dst:
+                if not AMIclasssock[idast_src]:
+                        "AMI was not connected - attempting to connect again"
+                        AMIclasssock[idast_src] = connect_to_AMI((configs[idast_src].remoteaddr,
+                                                                  configs[idast_src].ami_port),
+                                                                 configs[idast_src].ami_login,
+                                                                 configs[idast_src].ami_pass)
+                if AMIclasssock[idast_src]:
+                        if l[0] == 'originate':
+                                log_debug("%s is attempting an ORIGINATE : %s" %(requester, str(l)))
+                                if ast_dst != "":
+                                        ret = AMIclasssock[idast_src].originate(proto_src,
+                                                                                userid_src,
+                                                                                exten_dst,
+                                                                                context_dst)
+                                else:
+                                        ret = False
+                                if ret:
+                                        connid[0].send("message=%s::originate OK (ast %d) %s %s\n"
+                                                       %(DAEMON, idast_src, l[1], l[2]))
+                                else:
+                                        connid[0].send("message=%s::originate KO (ast %d) %s %s\n"
+                                                       %(DAEMON, idast_src, l[1], l[2]))
+                        elif l[0] == 'transfer':
+                                log_debug("%s is attempting a TRANSFER : %s" %(requester, str(l)))
+                                phonesrc, phonesrcchan = split_from_ui(l[1])
+                                if phonesrc == phonesrcchan:
+                                        connid[0].send("message=%s::transfer KO : %s not a channel\n"
+                                                       %(DAEMON, phonesrcchan))
+                                else:
+                                        if phonesrc in plist[idast_src].normal:
+                                                channellist = plist[idast_src].normal[phonesrc].chann
+                                                nopens = len(channellist)
+                                                if nopens == 0:
+                                                        connid[0].send("message=%s::transfer KO - no channel opened on %s\n"
+                                                                       %(DAEMON, phonesrc))
+                                                else:
+                                                        tchan = channellist[phonesrcchan].getChannelPeer()
+                                                        ret = AMIclasssock[idast_src].transfer(tchan,
+                                                                                               exten_dst,
+                                                                                               "local-extensions")
+                                                        if ret:
+                                                                connid[0].send("message=%s::transfer OK (ast %d) %s %s\n"
+                                                                               %(DAEMON, idast_src, l[1], l[2]))
+                                                        else:
+                                                                connid[0].send("message=%s::transfer KO (ast %d) %s %s\n"
+                                                                               %(DAEMON, idast_src, l[1], l[2]))
+        else:
+                connid[0].send("message=%s::originate or transfer KO : asterisk id mismatch\n" %DAEMON)
 
 
 ## \brief Deals with requests from the UI clients.
@@ -1203,61 +1280,7 @@ def manage_tcp_connection(connid, allow_events):
                                         else:
                                                 connid[0].send("message=%s::hangup KO : no such phone\n" %DAEMON)
                         elif len(l) == 3 and (l[0] == 'originate' or l[0] == 'transfer'):
-                                [dummyp, ast_src, context_src, proto_src, userid_src, exten_src] = l[1].split("/")
-                                [dummyp, ast_dst, context_dst, proto_dst, userid_dst, exten_dst] = l[2].split("/")
-                                idast_src = -1
-                                idast_dst = -1
-                                if ast_src in asteriskr: idast_src = asteriskr[ast_src]
-                                if ast_dst in asteriskr: idast_dst = asteriskr[ast_dst]
-                                if idast_src != -1 and idast_src == idast_dst:
-                                        if not AMIclasssock[idast_src]:
-                                                "AMI was not connected - attempting to connect again"
-                                                AMIclasssock[idast_src] = connect_to_AMI((configs[idast_src].remoteaddr,
-                                                                                        configs[idast_src].ami_port),
-                                                                                       configs[idast_src].ami_login,
-                                                                                       configs[idast_src].ami_pass)
-                                        if AMIclasssock[idast_src]:
-                                                if l[0] == 'originate':
-                                                        log_debug("%s is attempting an ORIGINATE : %s" %(requester, str(l)))
-                                                        if ast_dst != "":
-                                                                ret = AMIclasssock[idast_src].originate(proto_src,
-                                                                                                        userid_src,
-                                                                                                        exten_dst,
-                                                                                                        context_dst)
-                                                        else:
-                                                                ret = False
-                                                        if ret:
-                                                                connid[0].send("message=%s::originate OK (ast %d) %s %s\n"
-                                                                               %(DAEMON, idast_src, l[1], l[2]))
-                                                        else:
-                                                                connid[0].send("message=%s::originate KO (ast %d) %s %s\n"
-                                                                               %(DAEMON, idast_src, l[1], l[2]))
-                                                elif l[0] == 'transfer':
-                                                        log_debug("%s is attempting a TRANSFER : %s" %(requester, str(l)))
-                                                        phonesrc, phonesrcchan = split_from_ui(l[1])
-                                                        if phonesrc == phonesrcchan:
-                                                                connid[0].send("message=%s::transfer KO : %s not a channel\n"
-                                                                               %(DAEMON, phonesrcchan))
-                                                        else:
-                                                                if phonesrc in plist[idast_src].normal:
-                                                                        channellist = plist[idast_src].normal[phonesrc].chann
-                                                                        nopens = len(channellist)
-                                                                        if nopens == 0:
-                                                                                connid[0].send("message=%s::transfer KO - no channel opened on %s\n"
-                                                                                               %(DAEMON, phonesrc))
-                                                                        else:
-                                                                                tchan = channellist[phonesrcchan].getChannelPeer()
-                                                                                ret = AMIclasssock[idast_src].transfer(tchan,
-                                                                                                                       exten_dst,
-                                                                                                                       "local-extensions")
-                                                                                if ret:
-                                                                                        connid[0].send("message=%s::transfer OK (ast %d) %s %s\n"
-                                                                                                       %(DAEMON, idast_src, l[1], l[2]))
-                                                                                else:
-                                                                                        connid[0].send("message=%s::transfer KO (ast %d) %s %s\n"
-                                                                                                       %(DAEMON, idast_src, l[1], l[2]))
-                                else:
-                                        connid[0].send("message=%s::originate or transfer KO : asterisk id mismatch\n" %DAEMON)
+                                originate_or_transfer(requester, l)
                         elif l[0] == 'history' or l[0] == 'directory-search' or \
                                  l[0] == 'featuresget' or l[0] == 'featuresput' or \
                                  l[0] == 'hints' or l[0] == 'callerids' or l[0] == 'message':
@@ -1269,7 +1292,7 @@ def manage_tcp_connection(connid, allow_events):
                                 except Exception, exc:
                                         log_debug("--- exception --- UI connection [%s] : a problem occured when sending to %s : %s"
                                                   %(l[0], requester, str(exc)))
-                        elif len(l) >= 4 and l[0] == 'login':
+                        elif len(l) >= 6 and l[0] == 'login':
                                 if l[1] in asteriskr:
                                         astnum = asteriskr[l[1]]
                                         # log_debug("%i %s" % (astnum,l[3]))
@@ -1284,6 +1307,8 @@ def manage_tcp_connection(connid, allow_events):
                                                         for capa in capabilities_list:
                                                                 if (map_capas[capa] & user.get('capas')):
                                                                         capa_user.append(capa)
+                                                        user['state'] = l[4]
+                                                        [user['cticlienttype'], user['cticlientos']] = l[5].split("@")
                                                         repstr = "loginok=%s;%s;%s\n" %(user.get('context'),
                                                                                         user.get('phonenum'),
                                                                                         ",".join(capa_user))
@@ -1667,23 +1692,9 @@ def handle_ami_event(astnum, idata):
                                         appdata = getvalue(x, "AppData")
                                         [ctx, grp, userid, feature] = appdata.split("(")[1].split(")=")[0].split("/", 3)
                                         value = appdata.split(")=")[1]
-                                        strupdate = "featuresupdate=%s;%s" %(feature, value)
-                                        for tcpclient in tcpopens_sb:
-                                                try:
-                                                        tcpclient[0].send(strupdate + "\n")
-                                                except Exception, exc:
-                                                        log_debug("--- exception --- send featuresupdate has failed on %s : %s"
-                                                                  %(str(tcpclient[0]),str(exc)))
-                                        dbfamily = "%s/%s/%s" %(ctx, grp, userid)
-                                        if dbfamily in requestersocket_by_featureid:
-                                                # XXX CHECK WARNING TODO
-                                                # requestersocket_lock.acquire()
-                                                ka_object = requestersocket_by_featureid[dbfamily]
-                                                mysock = ka_object.request[1]
-                                                mysock.sendto(strupdate, ka_object.client_address)
-                                                # requestersocket_lock.release()
-                                        else:
-                                                pass
+                                        strupdate = "featuresupdate=%s;%s;%s;%s;%s" %(ctx, grp, userid, feature, value)
+                                        send_msg_to_cti_clients(strupdate)
+
                                 except Exception, exc:
                                         log_debug("--- exception --- (newexten, appdata) %s" %str(exc))
                 elif x.find("MessageWaiting;") == 7:
@@ -1891,38 +1902,14 @@ def update_sipnumlist(astnum):
                                           + build_cidstatus(plist[astnum].normal[snl]) + ";"
                 if lstdel != "":
                         strupdate = "peerremove=" + lstdel
-                        for tcpclient in tcpopens_sb:
-                                try:
-                                        tcpclient[0].send(strupdate + "\n")
-                                except Exception, exc:
-                                        log_debug("--- exception --- send peerremove has failed on %s : %s"
-                                                  %(str(tcpclient[0]),str(exc)))
+                        send_msg_to_cti_clients(strupdate)
                         verboselog(strupdate, False, True)
-                        for ka_object in requestersocket_by_login.itervalues():
-                                userlist_lock.acquire()
-                                try:
-                                        mysock = ka_object.request[1]
-                                        mysock.sendto(strupdate,
-                                                      ka_object.client_address)
-                                finally:
-                                        userlist_lock.release()
+
+
                 if lstadd != "":
                         strupdate = "peeradd=" + lstadd
-                        for tcpclient in tcpopens_sb:
-                                try:
-                                        tcpclient[0].send(strupdate + "\n")
-                                except Exception, exc:
-                                        log_debug("--- exception --- send peeradd has failed on %s : %s"
-                                                  %(str(tcpclient[0]),str(exc)))
+                        send_msg_to_cti_clients(strupdate)
                         verboselog(strupdate, False, True)
-                        for ka_object in requestersocket_by_login.itervalues():
-                                userlist_lock.acquire()
-                                try:
-                                        mysock = ka_object.request[1]
-                                        mysock.sendto(strupdate,
-                                                      ka_object.client_address)
-                                finally:
-                                        userlist_lock.release()
 
 
 ## \brief Connects to the AMI through AMIClass.
@@ -1982,20 +1969,9 @@ class PhoneList:
                 if self.normal[phonenum].towatch: fstr = "update="
                 else:                             fstr = "______="
                 strupdate = fstr + phoneinfo + ":" + fstatlist
-                for tcpclient in tcpopens_sb:
-                        try:
-                                tcpclient[0].send(strupdate + "\n")
-                        except Exception, exc:
-                                log_debug("--- exception --- send has failed on %s : %s" %(str(tcpclient[0]),str(exc)))
+                send_msg_to_cti_clients(strupdate)
                 verboselog(strupdate, False, True)
-                for ka_object in requestersocket_by_login.itervalues():
-                        userlist_lock.acquire()
-                        try:
-                                mysock = ka_object.request[1]
-                                mysock.sendto(strupdate,
-                                              ka_object.client_address)
-                        finally:
-                                userlist_lock.release()
+
 
         def normal_channel_fills(self, chan_src, num_src,
                                  action, timeup, direction,
@@ -2415,7 +2391,7 @@ def adduser(astn, user, passwd, context, phonenum, cinfo_allowed):
                 else:
                         userlist[astn][user]['capas'] = 0
                 # this list shall be defined through more options in SSO
-                userlist[astn][user]['capas'] |= (CAPA_HISTORY | CAPA_DIRECTORY | CAPA_PEERS | CAPA_PRESENCE | CAPA_DIAL | CAPA_FEATURES)
+                userlist[astn][user]['capas'] |= (CAPA_HISTORY | CAPA_DIRECTORY | CAPA_PEERS | CAPA_PRESENCE | CAPA_DIAL | CAPA_FEATURES | CAPA_AGENTS)
 
 
 ## \brief Deletes a user from the userlist.
@@ -2555,12 +2531,12 @@ class LoginHandler(SocketServer.StreamRequestHandler):
                         e['cticlienttype'] = whoami
                         e['cticlientos'] = whatsmyos
                         e['tcpmode'] = tcpmode
-                        capalist_user = e['capas']
+                        capalist_user = e.get('capas')
                         conngui_xc = conngui_xc + 1
                         if tcpmode:
                                 print 'TCPMODE', self.request
                                 e['socket'] = self.request.makefile('w')
-                        context = e['context']
+                        context = e.get('context')
                         if state in allowed_states:
                                 e['state'] = state
                         else:
@@ -2640,7 +2616,7 @@ class IdentRequestHandler(SocketServer.StreamRequestHandler):
 					if time.time() - e.get('sessiontimestamp') > xivoclient_session_timeout:
 						retline = 'ERROR USER SESSION EXPIRED for <%s>\r\n' %user
 					else:
-						capalist = (e['capas'] & capalist_server)
+						capalist = (e.get('capas') & capalist_server)
 						if (capalist & CAPA_CUSTINFO):
 							if action == "PUSH":
 								retline = 'USER %s STATE %s\r\n'%(user,e.get('state'))
@@ -2688,17 +2664,10 @@ def parse_command_and_build_reply(me, myargs):
                                 repstr = build_features_put(me[0], myargs[1:], me[2])
                 elif myargs[0] == 'message':
                         if (capalist & CAPA_MESSAGE):
-                                for k in tcpopens_sb:
-                                        k[0].send("message=%s::<%s>\n" %(me[3], myargs[1]))
+                                send_msg_to_cti_clients("message=%s::<%s>\n" %(me[3], myargs[1]))
                 elif myargs[0] == 'originate':
                         if (capalist & CAPA_DIAL):
-                                [dummyp, ast_src, context_src, proto_src, userid_src, dummy_phoneid_src] = myargs[1].split("/")
-                                idast_src = -1
-                                if ast_src in asteriskr: idast_src = asteriskr[ast_src]
-                                ret = AMIclasssock[idast_src].originate(proto_src.lower(),
-                                                                        userid_src,
-                                                                        myargs[2],
-                                                                        context_src)
+                                originate_or_transfer("aaa", ["originate", myargs[1], myargs[2]])
         except Exception, exc:
                 log_debug("--- exception --- (parse_command_and_build_reply) %s %s" %(str(myargs), str(exc)))
         return repstr
@@ -2746,11 +2715,11 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
                                 if e == None:
                                         raise NameError, "unknown user %s" %user
                                 if e.has_key('sessionid') and e.has_key('ip') and e.has_key('sessiontimestamp') \
-                                       and sessionid == e['sessionid'] and ip == e['ip'] \
-                                       and e['sessiontimestamp'] + xivoclient_session_timeout > timestamp:
+                                       and sessionid == e.get('sessionid') and ip == e.get('ip') \
+                                       and e.get('sessiontimestamp') + xivoclient_session_timeout > timestamp:
                                         e['sessiontimestamp'] = timestamp
                                         response = 'OK'
-                                        capalist_user = e['capas']
+                                        capalist_user = e.get('capas')
                                 else:
                                         raise NameError, "session expired"
                         finally:
@@ -2901,7 +2870,6 @@ while True: # loops over the reloads
         nukeast = False
 
         userinfo_by_requester = {}
-        requestersocket_by_featureid = {}
         requestersocket_by_login = {}
 
         xivoconf = ConfigParser.ConfigParser()
