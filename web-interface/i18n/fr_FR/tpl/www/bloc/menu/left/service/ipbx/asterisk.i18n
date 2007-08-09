@@ -4,83 +4,95 @@ IPBX
 ; mn_left_ti_generalsettings
 Paramètres globaux
 
-; mn_left_sip_protocol
+; mn_left_generalsettings-sip
 Protocole SIP
 
-; mn_left_iax_protocol
+; mn_left_generalsettings-iax
 Protocole IAX
 
-; mn_left_voicemail
+; mn_left_generalsettings-voicemail
 Messageries vocales
 
-; mn_left_sounds
+; mn_left_generalsettings-queues
+Files d'attente
+
+; mn_left_generalsettings-agents
+Agents
+
+; mn_left_generalsettings-sounds
 Fichiers sons
 
-; mn_left_musiconhold
+; mn_left_generalsettings-musiconhold
 Musiques d'attente
 
-; mn_left_extenfeatures
+; mn_left_generalsettings-extenfeatures
 Extensions
+
+; mn_left_generalsettings-outcall
+Appels sortants
 
 ; mn_left_ti_pbxsettings
 Paramètres PBX
 
-; mn_left_users
+; mn_left_pbxsettings-users
 Utilisateurs
 
-; mn_left_groups
+; mn_left_pbxsettings-groups
 Groupes
 
-; mn_left_ti_call_management
-Gestion des appels
-
-; mn_left_meetme
+; mn_left_pbxsettings-meetme
 Chambres de conférence
 
-; mn_left_queues
+; mn_left_pbxsettings-queues
 Files d'attente
 
-; mn_left_agents
+; mn_left_pbxsettings-agents
 Agents
 
-; mn_left_did
+; mn_left_ti_callmanagement
+Gestion des appels
+
+; mn_left_callmanagement-did
 Appels entrants
 
-; mn_left_ivr
+; mn_left_callmanagement-ivr
 Menus vocaux 
 
-; mn_left_cdr
+; mn_left_callmamagement-cdr
 Journaux d'appels
 
-; mn_left_outcall
+; mn_left_callmamagement-outcall
 Appels sortants
 
-; mn_left_ti_trunk_management
+; mn_left_ti_trunkmanagement
 Gestion des interconnexions
 
-; mn_left_trunk_sip
-SIP
+; mn_left_trunkmanagement-sip
+Protocole SIP
 
-; mn_left_trunk_iax
-IAX
+; mn_left_trunkmanagement-iax
+Protocole IAX
 
-; mn_left_ti_system_management
+; mn_left_trunkmanagement-custom
+Personnaliser
+
+; mn_left_ti_systemmanagement
 Configuration IPBX
 
-; mn_left_config_files
+; mn_left_systemmanagement-configfiles
 Fichiers de configuration
 
-; mn_left_system_hardware
+; mn_left_systemmanagement-systemhardware
 Gestion cartes ISDN
 
-; mn_left_modules_settings
+; mn_left_systemmanagement-modulessettings
 Gestion des modules
 
-; mn_left_manager
+; mn_left_systemmanagement-manager
 Gestion du manager
 
-; mn_left_ti_control_system
+; mn_left_ti_controlsystem
 Système de contrôle
 
-; mn_left_ipbx_reload
+; mn_left_controlsystem-ipbxreload
 Recharger %s

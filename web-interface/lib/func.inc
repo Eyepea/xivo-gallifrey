@@ -61,6 +61,19 @@ function xivo_empty($val,$str=true)
 	return(true);
 }
 
+function xivo_haslen($val,$key=null)
+{
+	if($key !== null && isset($val[$key]) === true)
+		$val = $val[$key];
+	
+	if(is_scalar($val) === false)
+		return(false);
+
+	$val = (string) $val;
+
+	return(isset($val{0}));
+}
+
 function xivo_digit($str=0,$def=null,$t=false)
 {
 	$r = false;
@@ -399,6 +412,35 @@ function xivo_isso($k,&$o,$t=false)
 	return($r);
 }
 
+function xivo_group_array($ref,&$arr)
+{
+	if(xivo_issa($ref,$arr) === false
+	|| ($nb = count($arr[$ref])) === 0
+	|| ($list = xivo_get_aks($arr)) === false)
+		return(false);
+
+	$r = array();
+
+	for($i = 0;$i < $list['cnt'];$i++)
+	{
+		$key = $list['keys'][$i];
+		$val = &$arr[$key];
+
+		if(is_array($val) === false)
+			continue;
+
+		for($j = 0;$j < $nb;$j++)
+		{
+			if(isset($r[$j]) === false)
+				$r[$j] = array();
+
+			$r[$j][$key] = isset($val[$j]) === false ? '' : $val[$j];
+		}
+	}
+
+	return($r);
+}
+
 function xivo_unserialize(&$str)
 {
 	$r = array();
@@ -665,12 +707,12 @@ function xivo_last_key(&$a,$sort=SORT_NUMERIC)
 {
 	$r = false;
 
-	if(is_array($a) === true)
-	{
-		$ak = array_keys($a);
-		ksort($ak,$sort);
-		$r = end($ak);
-	}
+	if(is_array($a) === false)
+		return($r);
+
+	$ak = array_keys($a);
+	ksort($ak,$sort);
+	$r = end($ak);
 
 	return($r);
 }

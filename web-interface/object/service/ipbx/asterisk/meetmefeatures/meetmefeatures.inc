@@ -71,7 +71,7 @@ class xivo_service_asterisk_meetmefeatures extends xivo_service_asterisk_abstrac
 		{
 			$where = array('name' => $arr['name']);
 
-			if(($whereid = $this->get_where($where)) !== false)
+			if($this->get_where($where) !== false)
 				return(false);
 		}
 
@@ -79,7 +79,7 @@ class xivo_service_asterisk_meetmefeatures extends xivo_service_asterisk_abstrac
 		{
 			$where = array('number' => $arr['number']);
 
-			if(($whereid = $this->get_where($where)) !== false)
+			if($this->get_where($where) !== false)
 				return(false);
 		}
 

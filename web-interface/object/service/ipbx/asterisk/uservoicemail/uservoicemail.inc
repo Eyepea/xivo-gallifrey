@@ -75,7 +75,7 @@ class xivo_service_asterisk_uservoicemail extends xivo_service_asterisk_abstract
 		{
 			$where = array('mailbox' => $arr['mailbox'],'context' => $arr['context']);
 
-			if(($whereid = $this->get_where($where)) !== false)
+			if($this->get_where($where) !== false)
 				return(false);
 		}
 

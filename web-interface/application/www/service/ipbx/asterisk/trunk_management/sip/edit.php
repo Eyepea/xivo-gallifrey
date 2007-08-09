@@ -63,7 +63,6 @@ do
 
 	$register = '';
 	$result['register'] = null;
-	$generalsip = &$ipbx->get_module('generalsip');
 
 	do
 	{

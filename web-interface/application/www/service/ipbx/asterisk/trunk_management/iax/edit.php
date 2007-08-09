@@ -53,7 +53,6 @@ do
 
 	$register = '';
 	$result['register'] = null;
-	$generaliax = &$ipbx->get_module('generaliax');
 
 	do
 	{

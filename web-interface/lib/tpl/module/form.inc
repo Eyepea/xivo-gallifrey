@@ -731,15 +731,13 @@ class xivo_tpl_form extends xivo_tpl_module
 		{
 			switch($param['bbf'][0])
 			{
+				case 'param':
 				case 'paramkey':
-					$render = $this->bbf($param['bbf'][1],$render);
-					break;
 				case 'paramvalue':
 					$render = $this->bbf($param['bbf'][1],$render);
 					break;
+				case 'concat':
 				case 'concatkey':
-					$render = $this->bbf($param['bbf'][1].$render);
-					break;
 				case 'concatvalue':
 					$render = $this->bbf($param['bbf'][1].$render);
 					break;

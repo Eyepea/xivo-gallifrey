@@ -123,7 +123,7 @@ class xivo_service_asterisk_cdr_abstract_sql
 		if(isset($arr['dubeg']) === true)
 		{
 			if(isset($arr['duend']) === true)
-				$rs = $this->_dso->between('duration',$arr['dubeg'],$arr['duend']);
+				$rs = $this->_dso->between_value('duration',$arr['dubeg'],$arr['duend']);
 			else
 				$rs = $this->_dso->search_exact('duration',$arr['dubeg']);
 

@@ -21,7 +21,11 @@
 
 	if(($zmsg = xivo_get_aks($zonemessages)) !== false):
 		$zmsg_nb = $zmsg['cnt'];
-		$dhtml->write_js('xivo_nb_timezone = '.$zmsg_nb.';');
+		$zmsg_js = array();
+		$zmsg_js[0] = 'xivo_tlist[\'timezone\'] = new Array();';
+		$zmsg_js[1] = 'xivo_tlist[\'timezone\'][\'cnt\'] = '.$zmsg_nb.';';
+
+		$dhtml->write_js($zmsg_js);
 	else:
 		$zmsg_nb = 0;
 	endif;
@@ -202,7 +206,7 @@
 ?>
 		</tbody>
 		<tfoot>
-		<tr id="no-timezone"<?=($zmsg !== false ? ' class="b-nodisplay"' : '')?>>
+		<tr id="no-timezone"<?=($zmsg_nb !== 0 ? ' class="b-nodisplay"' : '')?>>
 			<td colspan="4" class="td-single"><?=$this->bbf('no_timezone');?></td>
 		</tr>
 		</tfoot>

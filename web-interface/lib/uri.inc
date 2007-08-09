@@ -45,7 +45,7 @@ class xivo_uri
 		if(is_array($arr) === false)
 			return(false);
 
-		if(isset($arr['scheme'],$arr['scheme']{0}) === true)
+		if(xivo_haslen($arr,'scheme') === true)
 		{
 			if($this->valid_scheme($arr['scheme']) === false)
 				return(false);
@@ -53,7 +53,7 @@ class xivo_uri
 			$scheme = $arr['scheme'];
 		}
 
-		if(isset($arr['host'],$arr['host']{0}) === true)
+		if(xivo_haslen($arr,'host') === true)
 		{
 			$arr['host'] = (string) $arr['host'];
 
@@ -76,7 +76,7 @@ class xivo_uri
 			$hostport = $arr['host'];
 		}
 
-		if(isset($arr['port'],$arr['port']{0}) === true)
+		if(xivo_haslen($arr,'port') === true)
 		{
 			if($this->valid_port($arr['port']) === false)
 				return(false);
@@ -84,7 +84,7 @@ class xivo_uri
 			$hostport .= ':'.$arr['port'];
 		}
 
-		if(isset($arr['user'],$arr['user']{0}) === true)
+		if(xivo_haslen($arr,'user') === true)
 		{
 			$arr['user'] = (string) $arr['user'];
 			if($encode === true)
@@ -93,7 +93,7 @@ class xivo_uri
 			$userinfo = $arr['user'];
 		}
 
-		if(isset($arr['passwd'],$arr['passwd']{0}) === true)
+		if(xivo_haslen($arr,'passwd') === true)
 		{
 			$arr['passwd'] = (string) $arr['passwd'];
 			if($encode === true)
@@ -109,7 +109,7 @@ class xivo_uri
 		else if($hostport !== '')
 			$authority = $hostport;
 
-		if(isset($arr['path'],$arr['path']{0}) === true)
+		if(xivo_haslen($arr,'path') === true)
 		{
 			$arr['path'] = (string) $arr['path'];
 			if($encode === false)
@@ -130,7 +130,7 @@ class xivo_uri
 		if(xivo_issa('query',$arr) === true)
 			$query = $this->build_query($arr['query'],$encode);
 
-		if(isset($arr['fragment'],$arr['fragment']{0}) === true)
+		if(xivo_haslen($arr,'fragment') === true)
 		{
 			$arr['fragment'] = (string) $arr['fragment'];
 			if($encode === true)
@@ -239,7 +239,7 @@ class xivo_uri
 			{
 				$ref = &$uri['query'][$i];
 
-				if(isset($ref[0],$ref[0]{0}) === true)
+				if(xivo_haslen($ref,0) === true)
 				{
 					if($this->valid_query($ref[0]) === false)
 						return(false);
@@ -248,7 +248,7 @@ class xivo_uri
 						$ref[0] = urldecode($ref[0]);
 				}
 
-				if(isset($ref[1],$ref[1]{0}) === false)
+				if(xivo_haslen($ref,1) === false)
 					continue;
 			
 				if($this->valid_query($ref[1]) === false)
@@ -280,19 +280,19 @@ class xivo_uri
 
 		$r = array();
 
-		if(isset($match[2],$match[2]{0}) === true)
+		if(xivo_haslen($match,2) === true)
 			$r['scheme'] = $match[2];
 
-		if(isset($match[4],$match[4]{0}) === true)
+		if(xivo_haslen($match,4) === true)
 			$r['authority'] = $match[4];
 
-		if(isset($match[5],$match[5]{0}) === true)
+		if(xivo_haslen($match,5) === true)
 			$r['path'] = $match[5];
 
-		if(isset($match[7],$match[7]{0}) === true)
+		if(xivo_haslen($match,7) === true)
 			$r['query'] = $match[7];
 
-		if(isset($match[9],$match[9]{0}) === true)
+		if(xivo_haslen($match,9) === true)
 			$r['fragment'] = $match[9];
 
 		return($r);
@@ -403,7 +403,7 @@ class xivo_uri
 			$ref = &$query[$i];
 			$r[$i] = '';
 
-			if(isset($ref[0],$ref[0]{0}) === true)
+			if(xivo_haslen($ref,0) === true)
 			{
 				$ref[0] = (string) $ref[0];
 				if($encode === true)
@@ -415,7 +415,7 @@ class xivo_uri
 					$r[$i] = $ref[0];
 			}
 
-			if(isset($ref[1]) === false)
+			if(xivo_haslen($ref,1) === false)
 				continue;
 			
 			$ref[1] = (string) $ref[1];
@@ -436,7 +436,7 @@ class xivo_uri
 	{
 		$host = (string) $host;
 
-		if(isset($host{0}) === false)
+		if(xivo_haslen($host) === false)
 			return($this->_host['reg_name']);
 		else if($host{0} === '[')
 			return($this->_host['ip_litteral']);

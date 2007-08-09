@@ -102,7 +102,7 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		{
 			$where = array('name' => $arr['name'],'protocol' => $arr['protocol']);
 
-			if(($whereid = $this->get_where($where)) !== false)
+			if($this->get_where($where) !== false)
 				return(false);
 		}
 

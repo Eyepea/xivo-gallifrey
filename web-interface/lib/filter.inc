@@ -199,7 +199,7 @@ class xivo_filter
 
 	function chk_cast($type,$value)
 	{
-		if(isset($value{0}) === false)
+		if(xivo_haslen($value) === false)
 			return(null);
 
 		switch($type)
@@ -386,7 +386,7 @@ class xivo_filter
 
 		if(isset($arr['value']) === true)
 		{
-			if($chk === 2 && isset($value{0}) === false)
+			if($chk === 2 && xivo_haslen($value) === false)
 				return('');
 
 			$arrvalue = $this->chk_array_value($arr['value'],$value);
@@ -403,7 +403,7 @@ class xivo_filter
 
 		if(isset($arr['novalue']) === true)
 		{
-			if($chk === 2 && isset($value{0}) === false)
+			if($chk === 2 && xivo_haslen($value) === false)
 				return('');
 
 			$noarrvalue = $this->chk_noarray_value($arr['novalue'],$value);
@@ -417,7 +417,7 @@ class xivo_filter
 
 		if(isset($arr['key']) === true)
 		{
-			if($chk === 2 && isset($value{0}) === false)
+			if($chk === 2 && xivo_haslen($value) === false)
 				return('');
 
 			$arrkey = $this->chk_array_key($arr['key'],$value);
@@ -434,7 +434,7 @@ class xivo_filter
 
 		if(isset($arr['nokey']) === true)
 		{
-			if($chk === 2 && isset($value{0}) === false)
+			if($chk === 2 && xivo_haslen($value) === false)
 				return('');
 
 			$noarrkey = $this->chk_array_key($arr['nokey'],$value);

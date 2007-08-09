@@ -64,16 +64,6 @@ class xivo_service_asterisk_generaloutcall_abstract_sql
 		return($r);
 	}
 
-	function edit_where($arr,$values)
-	{
-		if(($where = $this->_dso->where($arr)) === false)
-			return(false);
-
-		$r = $this->_dso->update($this->_param['table'],$values,$where);
-
-		return($r);
-	}
-
 	function delete($id)
 	{
 		if(($id = xivo_uint($id)) === 0)
@@ -84,41 +74,32 @@ class xivo_service_asterisk_generaloutcall_abstract_sql
 		return($r);
 	}
 
-	function get_list($disable=null)
-	{
-		$where = '';
-
-		if($disable !== null)
-			$where = ' WHERE commented = '.intval((bool) $disable);
-
-		$rs = $this->_dso->query('SELECT id FROM '.$this->_param['table'].$where);
-
-		if($rs === false)
-			return(false);
-
-		$r = array();
-
-		while($rw = $this->_dso->fetch_assoc($rs))
-			$r[] = $rw['id'];
-
-		if($this->_dso->is_free() === true)
-			$this->_dso->free($rs);
-
-		if(isset($r[0]) === false)
-			$r = false;
-
-		return($r);
-	}
-
-	function get_all_where($arr,$disable=null)
+	function get_all_where($arr,$disable=null,$order=null)
 	{
 		if(($where = $this->_dso->where($arr)) === false)
 			return(false);
+
+		$this->_dso->order($order);
 
 		if($disable !== null)
 			$where .= ' AND commented = '.intval((bool) $disable);
 
 		$r = $this->_dso->select_all($this->_param['table'],null,$where);
+
+		$this->_dso->order();
+
+		return($r);
+	}
+
+	function exists_range($val)
+	{
+		$val = xivo_uint($val);
+
+		if(($where = $this->_dso->between_column($val,'rangebeg','rangeend')) === '')
+			return(null);
+
+		if(($r = $this->_dso->select_one($this->_param['table'],'id',$where)) !== false)
+			$r = $r['id'];
 
 		return($r);
 	}

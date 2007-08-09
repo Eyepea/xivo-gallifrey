@@ -954,6 +954,12 @@ function xivo_table_list(name,obj,del)
 		xivo_tlist[name]['node'] = '';
 	}
 
+	if(xivo_is_undef(xivo_tlist[name]['cnt']) == true)
+		xivo_tlist[name]['cnt'] = 0;
+
+	if(xivo_is_undef(xivo_tlist[name]['node']) == true)
+		xivo_tlist[name]['node'] = '';
+
 	var ref = xivo_tlist[name];
 
 	if(ref['node'] === false)

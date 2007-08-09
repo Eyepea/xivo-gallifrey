@@ -1,0 +1,47 @@
+; title_content_name
+Propriétés des appels sortants
+
+; smenu_emergency
+Numéros d'urgence
+
+; smenu_special
+Numéros spéciaux
+
+; create_trunk
+Créer une interconnexion
+
+; col_emergency-trunk
+Interconnexion
+
+; col_emergency-extenmode
+Mode
+
+; col_emergency-exten
+Extension
+
+; col_emergency-add
+Ajouter
+
+; opt_delete
+Supprimer
+
+; no_emergency
+Aucun numéro d'urgence
+
+; fm_emergency-trunk-opt-custom
+Personnaliser
+
+; fm_emergency-trunk-opt-sip
+Protocole SIP
+
+; fm_emergency-trunk-opt-iax
+Protocole IAX
+
+; fm_emergency-extenmode-opt-range
+Intervalle
+
+; fm_emergency-extenmode-opt-extension
+Extension
+
+; fm_bt-save
+Sauvegarder

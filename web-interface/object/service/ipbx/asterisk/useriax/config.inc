@@ -81,7 +81,7 @@ $array['element']['call-limit']['setdef'] = true;
 
 $array['filter'] = array();
 $array['filter']['callerid'] = array('chk' => 2,'maxlen' => 80,'notag' => false);
-$array['filter']['name'] = array('minlen' => 1,'maxlen' => 80);
+$array['filter']['name'] = array('minlen' => 1,'maxlen' => 80,'regexp' => '/^[a-z0-9_-]+$/i');
 $array['filter']['secret'] = array('set' => false,'chk' => 2,'minlen' => 1,'maxlen' => 80);
 $array['filter']['host'] = array('set' => false,'chk' => 2);
 $array['filter']['amaflags'] = array('set' => false,'chk' => 2,'key' => array('default','omit','billing','documentation'));

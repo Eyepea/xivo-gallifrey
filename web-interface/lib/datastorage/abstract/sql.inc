@@ -224,7 +224,7 @@ class xivo_datastorage_abstract_sql
 	function _insertupdate($p,$t,&$data,$w='',$escape=true,$set=false,$o='',$order=false,$limit=false)
 	{
 		$p = strtolower((string) $p);
-		$t = trim((string) $t);
+		$t = $this->quote_identifier(trim((string) $t));
 		$w = trim((string) $w);
 		$set = (bool) $set;
 		$o = trim((string) $o);
@@ -350,18 +350,42 @@ class xivo_datastorage_abstract_sql
 		return($r);
 	}
 
-	function between($col,$beg,$end)
+	function between_value($col,$beg,$end)
 	{
 		$r = '';
-
+	
 		$col = $this->quote_identifier($col);
 		$beg = $this->escape_string($beg);
 		$end = $this->escape_string($end);
 
-		if(isset($beg{0},$end{0}) === false)
+		if(isset($col{0},$beg{0},$end{0}) === false)
 			return($r);
 
 		$r = sprintf('%s BETWEEN \'%s\' AND \'%s\'',$col,$beg,$end);
+
+		return($r);
+	}
+
+	function between_column($val,$beg,$end)
+	{
+		$r = '';
+
+		$beg = $this->quote_identifier($beg);
+		$end = $this->quote_identifier($end);
+
+		if(isset($beg{0},$end{0}) === false)
+			return($r);
+
+		switch(gettype($val))
+		{
+			case 'integer':
+			case 'float':
+				break;
+			default:
+				$val = '\''.$this->escape_string(strval($val)).'\'';
+		}
+
+		$r = sprintf('%s BETWEEN %s AND %s',$val,$beg,$end);
 
 		return($r);
 	}

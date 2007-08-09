@@ -119,7 +119,7 @@ class xivo_service_asterisk_autoprov extends xivo_service_asterisk_abstract
 
 		if(empty($r) === true)
 			$r = false;
-
+			
 		return($r);
 	}
 

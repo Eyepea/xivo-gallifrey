@@ -102,6 +102,17 @@ class xivo_service_asterisk_trunkfeatures_abstract_sql
 
 		return($r);
 	}
+
+	function get_all($order=null)
+	{
+		$this->_dso->order($order);
+
+		$r = $this->_dso->select_all($this->_param['table']);
+
+		$this->_dso->order();
+
+		return($r);
+	}
 }
 
 ?>

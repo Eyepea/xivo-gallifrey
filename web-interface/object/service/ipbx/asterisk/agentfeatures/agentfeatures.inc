@@ -81,7 +81,7 @@ class xivo_service_asterisk_agentfeatures extends xivo_service_asterisk_abstract
 		{
 			$where = array('number' => $arr['number']);
 
-			if(($whereid = $this->get_where($where)) !== false)
+			if($this->get_where($where) !== false)
 				return(false);
 		}
 

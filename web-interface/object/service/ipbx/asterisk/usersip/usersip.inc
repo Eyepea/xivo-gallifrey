@@ -80,7 +80,7 @@ class xivo_service_asterisk_usersip extends xivo_service_asterisk_abstract
 		{
 			$where = array('name' => $arr['name']);
 
-			if(($whereid = $this->get_where($where)) !== false)
+			if($this->get_where($where) !== false)
 				return(false);
 		}
 

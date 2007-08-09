@@ -69,7 +69,7 @@ class xivo_datastorage
 
 			for($i = 0;$i < $nb;$i++)
 			{
-				if(isset($arr['query'][$i][0]{0}) === false)
+				if(xivo_haslen($arr['query'][$i],0) === false)
 					continue;
 
 				if(isset($arr['query'][$i][1]) === true)

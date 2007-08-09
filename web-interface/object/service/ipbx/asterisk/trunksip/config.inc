@@ -107,7 +107,7 @@ $array['element']['call-limit']['default'] = 0;
 $array['element']['call-limit']['setdef'] = true;
 
 $array['filter'] = array();
-$array['filter']['name'] = array('maxlen' => 80);
+$array['filter']['name'] = array('minlen' => 1,'maxlen' => 80,'regexp' => '/^[a-z0-9_-]+$/i');
 $array['filter']['username'] = array('set' => false,'chk' => 2,'maxlen' => 80);
 $array['filter']['secret'] = array('set' => false,'chk' => 2,'maxlen' => 80);
 $array['filter']['callerid'] = array('set' => false,'chk' => 2,'maxlen' => 80);

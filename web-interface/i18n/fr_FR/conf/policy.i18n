@@ -13,10 +13,10 @@ IPBX
 ; ply_service-ipbx-general_settings
 Paramètres globaux
 
-; ply_service-ipbx-general_settings-sipprotocol
+; ply_service-ipbx-general_settings-sip
 Protocole SIP
 
-; ply_service-ipbx-general_settings-iaxprotocol
+; ply_service-ipbx-general_settings-iax
 Protocole IAX
 
 ; ply_service-ipbx-general_settings-voicemail
@@ -77,10 +77,13 @@ Appels sortants
 Gestion des interconnexions
 
 ; ply_service-ipbx-trunk_management-sip
-SIP
+Protocole SIP
 
 ; ply_service-ipbx-trunk_management-iax
-IAX
+Protocole IAX
+
+; ply_service-ipbx-trunk_management-custom
+Personnaliser
 
 ; ply_service-ipbx-system_management
 Configuration IPBX

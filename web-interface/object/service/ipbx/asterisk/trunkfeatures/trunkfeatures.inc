@@ -61,7 +61,6 @@ class xivo_service_asterisk_trunkfeatures extends xivo_service_asterisk_abstract
 	function get_by_trunk($id,$trunk)
 	{
 		if(($id = xivo_uint($id)) === 0
-		|| $this->_sre->chk_protocol($trunk) === false
 		|| ($id = $this->_dso->get_by_trunk($id,$trunk)) === false)
 			return(false);
 
@@ -76,18 +75,12 @@ class xivo_service_asterisk_trunkfeatures extends xivo_service_asterisk_abstract
 		if(($id = xivo_uint($id)) !== 0)
 			$arr['id'] = $id;
 
-		if($this->_sre->chk_protocol($arr['trunk']) === false)
-			return(false);
-
 		return($this->_dso->add($arr));
 	}
 
 	function edit($id,$arr)
 	{
 		if(($id = xivo_uint($id)) === 0 || is_array($arr) === false)
-			return(false);
-
-		if(isset($arr['trunk']) === true && $this->_sre->chk_protocol($arr['trunk']) === false)
 			return(false);
 
 		return($this->_dso->edit($id,$arr));
@@ -109,6 +102,24 @@ class xivo_service_asterisk_trunkfeatures extends xivo_service_asterisk_abstract
 			return(false);
 
 		return($this->_dso->get_where($where));
+	}
+
+	function get_all($order=null)
+	{
+		if(($list = $this->_dso->get_all($order)) === false)
+			return(false);
+
+		$nb = count($list);
+
+		$r = array();
+
+		for($i = 0;$i < $nb;$i++)
+			$r[] = $list[$i];
+
+		if(isset($r[0]) === false)
+			$r = false;
+
+		return($r);
 	}
 }
 

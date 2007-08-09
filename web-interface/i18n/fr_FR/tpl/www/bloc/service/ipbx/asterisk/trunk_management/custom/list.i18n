@@ -1,0 +1,20 @@
+; col_name
+Nom
+
+; col_interface
+Interface
+
+; col_action
+Action
+
+; no_trunk
+Aucune interconnexion personnalisée trouvée
+
+; opt_modify
+Modifier
+
+; opt_delete_confirm
+Etes-vous certain de vouloir supprimer cette interconnexion ?
+
+; opt_delete
+Supprimer

@@ -3,10 +3,24 @@
 	$url = &$this->get_module('url');
 
 	$element = $this->vars('element');
+	$info = $this->vars('info');
+	$trunks_list = $this->vars('trunks_list');
 
 	if($this->vars('fm_save') === true):
 		$dhtml = &$this->get_module('dhtml');
 		$dhtml->write_js('xivo_form_success(\''.xivo_stript($this->bbf('fm_success-save')).'\');');
+	endif;
+
+	if($info['emergency'] !== false):
+		$egency_nb = count($info['emergency']);
+		$egency_js = array();
+		$egency_js[0] = 'xivo_tlist[\'emergency\'] = new Array();';
+		$egency_js[1] = 'xivo_tlist[\'emergency\'][\'cnt\'] = '.$egency_nb.';';
+
+		$dhtml = &$this->get_module('dhtml');
+		$dhtml->write_js($egency_js);
+	else:
+		$egency_nb = 0;
 	endif;
 ?>
 <div class="b-infos b-form">
@@ -24,6 +38,15 @@
 </div>
 	
 	<div class="sb-content">
+
+<?php
+
+if($trunks_list === false):
+	echo '<div class="txt-center">',$url->href_html($this->bbf('create_trunk'),'service/ipbx/trunk_management/sip','act=add'),'</div>';
+else:
+
+?>
+
 <form action="#" method="post" accept-charset="utf-8">
 
 <?=$form->hidden(array('name' => XIVO_SESS_NAME,'value' => XIVO_SESS_ID));?>
@@ -36,33 +59,58 @@
 		<thead>
 		<tr class="sb-top">
 			<th class="th-left"><?=$this->bbf('col_emergency-trunk');?></th>
-			<th class="th-center"><?=$this->bbf('col_emergency-extentype');?></th>
+			<th class="th-center"><?=$this->bbf('col_emergency-extenmode');?></th>
 			<th class="th-center"><?=$this->bbf('col_emergency-exten');?></th>
 			<th class="th-right"><?=$url->href_html($url->img_html('img/site/button/add.gif',$this->bbf('col_emergency-add'),'border="0"'),'#',null,'onclick="xivo_table_list(\'emergency\',this);"',$this->bbf('col_emergency-add'));?></th>
 		</tr>
 		</thead>
 		<tbody id="emergency">
 <?php
-/*
-	if($zmsg_nb !== 0):
-		for($i = 0;$i < $zmsg['cnt'];$i++):
-			$key = &$zmsg['keys'][$i];
-			$val = &$emergency[$key];
+	if($egency_nb !== 0):
+		for($i = 0;$i < $egency_nb;$i++):
+			$ref = &$info['emergency'][$i];
+
+			if($ref['exten'] === ''):
+				$extenmode = 'range';
+				$extendisplay = ' class="b-nodisplay"';
+				$rangedisplay = '';
+			else:
+				$extenmode = 'extension';
+				$extendisplay = '';
+				$rangedisplay = ' class="b-nodisplay"';
+			endif;
 ?>
 		<tr class="fm-field">
-			<td class="td-left txt-left"><?=$form->text(array('field' => false,'name' => 'emergency[provider][]','id' => false,'label' => false,'value' => $val['name'],'default' => $element['emergency']['name']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?></td>
-			<td><?=$form->select(array('field' => false,'name' => 'emergency[timezone][]','key' => true,'id' => false,'label' => false,'value' => $val['timezone'],'default' => $element['emergency']['timezone']['default']),$this->vars('timezone_list'),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?></td>
-			<td><?=$form->text(array('field' => false,'name' => 'emergency[msg_format][]','id' => false,'label' => false,'size' => 25,'value' => $val['msg_format'],'default' => $element['emergency']['msg_format']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?></td>
-			<td class="td-right txt-right"><?=$url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'#',null,'onclick="xivo_table_list(\'timezone\',this,1);"',$this->bbf('opt_delete'));?></td>
+			<td class="td-left txt-left">
+<?php
+			if(isset($ref['id']) === true):
+				echo $form->hidden(array('name' => 'emergency[id][]','value' => $ref['id']));
+			endif;
+
+			echo $form->select(array('field' => false,'name' => 'emergency[trunkfeaturesid][]','id' => false,'label' => false,'browse' => 'trunk','key' => 'name','altkey' => 'trunkfeaturesid','optgroup' => array('key' => true,'bbf' => array('concat','fm_emergency-trunk-opt-')),'value' => $ref['trunkfeaturesid'],'default' => $element['trunkfeaturesid']['default']),$trunks_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');
+?>
+			</td>
+			<td><?=$form->select(array('field' => false,'name' => 'emergency[extenmode][]','key' => false,'id' => false,'label' => false,'bbf' => array('concatkey','fm_emergency-extenmode-opt-'),'value' => $extenmode,'default' => $element['extenmode']['default']),$element['extenmode']['value'],'onchange="xivo_extenmode(this);" onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?></td>
+			<td>
+				<div<?=$extendisplay?>>
+				<?=$form->text(array('field' => false,'name' => 'emergency[exten][]','id' => false,'label' => false,'size' => 15,'value' => $ref['exten'],'default' => $element['exten']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+				</div>
+				<div<?=$rangedisplay?>>
+				<?=$form->text(array('field' => false,'name' => 'emergency[rangebeg][]','id' => false,'label' => false,'size' => 5,'value' => $ref['rangebeg'],'default' => $element['rangebeg']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+				<?=$form->text(array('field' => false,'name' => 'emergency[rangeend][]','id' => false,'label' => false,'size' => 5,'value' => $ref['rangeend'],'default' => $element['rangeend']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+				</div>
+			</td>
+			
+			<td class="td-right txt-right"><?=$url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'#',null,'onclick="xivo_table_list(\'emergency\',this,1);"',$this->bbf('opt_delete'));?></td>
 		</tr>
+
 <?php
 		endfor;
 	endif;
-*/
 ?>
 		</tbody>
 		<tfoot>
-		<tr id="no-emergency">
+		<tr id="no-emergency"<?=($egency_nb !== 0 ? ' class="b-nodisplay"' : '')?>>
 			<td colspan="4" class="td-single"><?=$this->bbf('no_emergency');?></td>
 		</tr>
 		</tfoot>
@@ -70,13 +118,13 @@
 	<table class="b-nodisplay" cellspacing="0" cellpadding="0" border="0">
 		<tbody id="ex-emergency">
 		<tr class="fm-field">
-			<td class="td-left txt-left"><?=$form->text(array('field' => false,'name' => 'emergency[trunkid][]','id' => false,'label' => false,'default' => $element['trunkid']['default']),'disabled="disabled" onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?></td>
-			<td><?=$form->select(array('field' => false,'name' => 'emergency[extentype][]','key' => false,'id' => false,'label' => false,'default' => $element['extentype']['default']),$element['extentype']['value'],'onchange="xivo_extentype(this);" disabled="disabled" onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?></td>
+			<td class="td-left txt-left"><?=$form->select(array('field' => false,'name' => 'emergency[trunkfeaturesid][]','id' => false,'label' => false,'browse' => 'trunk','key' => 'name','altkey' => 'trunkfeaturesid','optgroup' => array('key' => true,'bbf' => array('concat','fm_emergency-trunk-opt-')),'default' => $element['trunkfeaturesid']['default']),$trunks_list,'disabled="disabled" onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?></td>
+			<td><?=$form->select(array('field' => false,'name' => 'emergency[extenmode][]','key' => false,'id' => false,'label' => false,'bbf' => array('concatkey','fm_emergency-extenmode-opt-'),'default' => $element['extenmode']['default']),$element['extenmode']['value'],'onchange="xivo_extenmode(this);" disabled="disabled" onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?></td>
 			<td>
-				<div<?=($element['extentype']['default'] === 'extension' ? '' : ' class="b-nodisplay"')?>>
+				<div<?=($element['extenmode']['default'] === 'extension' ? '' : ' class="b-nodisplay"')?>>
 				<?=$form->text(array('field' => false,'name' => 'emergency[exten][]','id' => false,'label' => false,'size' => 15,'default' => $element['exten']['default']),'disabled="disabled" onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 				</div>
-				<div<?=($element['extentype']['default'] !== 'extension' ? '' : ' class="b-nodisplay"')?>>
+				<div<?=($element['extenmode']['default'] !== 'extension' ? '' : ' class="b-nodisplay"')?>>
 				<?=$form->text(array('field' => false,'name' => 'emergency[rangebeg][]','id' => false,'label' => false,'size' => 5,'default' => $element['rangebeg']['default']),'disabled="disabled" onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 				<?=$form->text(array('field' => false,'name' => 'emergency[rangeend][]','id' => false,'label' => false,'size' => 5,'default' => $element['rangeend']['default']),'disabled="disabled" onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 				</div>
@@ -93,6 +141,10 @@
 <?=$form->submit(array('name' => 'submit','id' => 'it-submit','value' => $this->bbf('fm_bt-save')));?>
 
 </form>
+<?php
+	endif;
+?>
+
 	</div>
 	<div class="sb-foot xspan"><span class="span-left">&nbsp;</span><span class="span-center">&nbsp;</span><span class="span-right">&nbsp;</span></div>
 </div>

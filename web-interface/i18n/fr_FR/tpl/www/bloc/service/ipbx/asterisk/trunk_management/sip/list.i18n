@@ -16,7 +16,7 @@ Approvisionnement
 ; col_action
 Action
 
-; no_peer
+; no_trunk
 Aucune interconnexion SIP trouvée
 
 ; opt_modify

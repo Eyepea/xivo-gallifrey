@@ -36,7 +36,7 @@ function xivo_outformat()
 	return(true);
 }
 
-function xivo_extentype(obj)
+function xivo_extenmode(obj)
 {
 	if(xivo_is_undef(obj) == true
 	|| xivo_is_object(obj) == false

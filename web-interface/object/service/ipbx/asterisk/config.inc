@@ -143,6 +143,11 @@ $array['module']['userfeatures']['datastorage'] = true;
 
 $array['module']['autoprov'] = array();
 $array['module']['autoprov']['datastorage'] = true;
+$array['module']['autoprov']['disabled'] = true;
+
+$array['module']['trunkcustom'] = array();
+$array['module']['trunkcustom']['datastorage'] = true;
+$array['module']['trunkcustom']['disabled'] = true;
 
 $array['module']['trunkfeatures'] = array();
 $array['module']['trunkfeatures']['datastorage'] = true;
@@ -193,9 +198,11 @@ $array['module']['uservoicemail']['section'] = 'voicemail';
 
 $array['module']['musiconhold'] = array();
 $array['module']['musiconhold']['datastorage'] = true;
+$array['module']['musiconhold']['disabled'] = true;
 
 $array['module']['didfeatures'] = array();
 $array['module']['didfeatures']['datastorage'] = true;
+$array['module']['didfeatures']['disabled'] = true;
 
 $array['module']['generalagent'] = array();
 $array['module']['generalagent']['datastorage'] = true;
@@ -215,6 +222,7 @@ $array['module']['agentgroup']['section'] = 'agent';
 
 $array['module']['cdr'] = array();
 $array['module']['cdr']['datastorage'] = true;
+$array['module']['cdr']['disabled'] = true;
 
 $array['module']['generaloutcall'] = array();
 $array['module']['generaloutcall']['datastorage'] = true;
