@@ -28,9 +28,6 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-# XXX TODO BUGBUG FIXME SATAN: any print or sys.stdout.write is probably a bug,
-# remove every prints and include the correct modules (Xilun - 2007-06-15)
-
 CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
 CONFIG_LIB_PATH = 'py_lib_path'
 
@@ -54,7 +51,7 @@ import operator, string
 try:
         conn = anysql.connect_by_uri(options['db_uri'])
 except:
-        print "VERBOSE \"Unable to connect to %s\"" %options['db_uri']
+        print "Unable to connect to %s" %options['db_uri']
         raise
 
 cursor = conn.cursor()
@@ -64,7 +61,7 @@ cursor.execute(query)
 r = cursor.fetchall()
 
 if not r:
-	print "Erreur there is no context!"
+	# No context time to exit
 	sys.exit()
 
 # This is the configuration file, please do not change the path because if was editable by xivo web interface
@@ -74,7 +71,7 @@ try:
         config = ConfigParser.ConfigParser()
         config.readfp(open(outcall))
 except IOError:
-        print "VERBOSE \"Configuration file not found : %s\"" % outcall
+        print "Configuration file not found : %s" % outcall
         raise
 
 if not config.has_section('template'):
