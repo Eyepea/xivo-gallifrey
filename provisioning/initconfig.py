@@ -169,7 +169,7 @@ def main():
 		sys.exc_clear()
 
 	if status != 200:
-		return_exit("Provisioning failure; %s" % reason)
+		return_exit("Provisioning failure; %s" % reason, "prov-error")
 
 if __name__ == '__main__':
 	main()
