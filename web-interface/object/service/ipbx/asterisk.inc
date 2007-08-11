@@ -20,6 +20,15 @@ class xivo_service_asterisk extends xivo_service_abstract
 		$this->_get_service_information();
 	}
 
+	function required($arr,$once=false,$includable=false)
+	{
+		$arr = (array) $arr;
+
+		array_unshift($arr,dirname(__FILE__).XIVO_SEP_DIR.$this->_name);
+
+		return(xivo_file::required($arr,$once,$includable));
+	}
+
 	function _get_service_information()
 	{
 		$uppertype = strtoupper($this->_type);
@@ -162,7 +171,8 @@ class xivo_service_asterisk extends xivo_service_abstract
 	{
 		$tfeatures = &$this->get_module('trunkfeatures');
 
-		if(($rs = $tfeatures->get_all(array('trunk' => SORT_ASC))) === false || ($nb = count($rs)) === 0)
+		if(($rs = $tfeatures->get_all(null,null,true,array('trunk' => SORT_ASC))) === false
+		|| ($nb = count($rs)) === 0)
 			return(false);
 
 		$r = $info = $trunk = array();

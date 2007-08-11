@@ -63,7 +63,9 @@ function xivo_empty($val,$str=true)
 
 function xivo_haslen($val,$key=null)
 {
-	if($key !== null && isset($val[$key]) === true)
+	if($key !== null &&
+	is_array($val) === true
+	&& isset($val[$key]) === true)
 		$val = $val[$key];
 	
 	if(is_scalar($val) === false)

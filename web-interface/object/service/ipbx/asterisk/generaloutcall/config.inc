@@ -33,8 +33,8 @@ $array['element']['commented']['default'] = 0;
 $array['element']['commented']['set'] = true;
 
 $array['filter'] = array();
-$array['filter']['rangebeg'] = array('set' => false,'chk' => 2,'maxlen' => 20,'regexp' => '/^[0-9]+/');
-$array['filter']['rangeend'] = array('set' => false,'chk' => 2,'maxlen' => 20,'regexp' => '/^[0-9]+/');
+$array['filter']['rangebeg'] = array('set' => false,'chk' => 2,'maxlen' => 20,'cast' => 'uint');
+$array['filter']['rangeend'] = array('set' => false,'chk' => 2,'maxlen' => 20,'cast' => 'uint');
 $array['filter']['exten'] = array('set' => false,'chk' => 2,'maxlen' => 19,'regexp' => '/^((?![_]?(\.|\!))|[_]?[0-9NXZ\*#\-\[\]]+(\.|\!)?)$/');
 $array['filter']['extenhash'] = array('set' => false,'chk' => 2,'maxlen' => 40,'cast' => 'xdigit');
 $array['filter']['trunkfeaturesid'] = array('cast' => 'uint');

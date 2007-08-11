@@ -5,7 +5,7 @@
 ?>
 
 <div id="toolbox">
-<div id="logo"><?=$url->img_html('img/menu/top/logo.gif');?></div>
+<div id="logo"><?=$url->img_html('img/menu/top/logo.gif',XIVO_SOFT_LABEL);?></div>
 <div class="nav">
          <ul>
 <?php

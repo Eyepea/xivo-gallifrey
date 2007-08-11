@@ -1,6 +1,6 @@
 <?php
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'service','ipbx','asterisk','staticconf','datastorage','mysql.inc'),true);
+xivo_service_asterisk::required(array('staticconf','datastorage','mysql.inc'),true);
 
 class xivo_service_asterisk_generalqueue_mysql extends xivo_service_asterisk_staticconf_mysql
 {

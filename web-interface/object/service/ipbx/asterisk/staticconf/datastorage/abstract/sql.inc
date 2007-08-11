@@ -1,6 +1,6 @@
 <?php
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'service','ipbx','asterisk','staticconf','datastorage','abstract','datastorage.inc'),true);
+xivo_service_asterisk::required(array('staticconf','datastorage','abstract','datastorage.inc'),true);
 
 class xivo_service_asterisk_staticconf_abstract_sql extends xivo_service_asterisk_staticconf_abstract_datastorage
 {

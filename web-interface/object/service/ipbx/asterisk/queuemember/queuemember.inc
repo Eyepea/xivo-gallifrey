@@ -1,6 +1,6 @@
 <?php
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'service','ipbx','asterisk','abstract.inc'),true);
+xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
 
 class xivo_service_asterisk_queuemember extends xivo_service_asterisk_abstract
 {
@@ -34,11 +34,6 @@ class xivo_service_asterisk_queuemember extends xivo_service_asterisk_abstract
 		$r = $this->_prepare($r);
 
 		return($r);
-	}
-
-	function _prepare($data)
-	{
-		return($data);
 	}
 
 	function add_origin()
@@ -104,23 +99,22 @@ class xivo_service_asterisk_queuemember extends xivo_service_asterisk_abstract
 		return($r);
 	}
 
-	function get_all_by_category($arr=array(),$disable=null,$prepare=true)
+	function get_all_by_category($arr=array(),$disable=null)
 	{
-		$r = false;
 		$arr = (array) $arr;
 		$prepare = (bool) $prepare;
 
 		if(empty($arr) === true)
 		{
 			if(($list = $this->_dso->get_all($disable)) === false)
-				return($r);
+				return(false);
 		}
 		else if(($where = $this->get_elements_where($arr)) === false
 		|| ($list = $this->_dso->get_all_where($where,$disable)) === false)
-				return($r);
+				return(false);
 
 		if(isset($list[0]) === false)
-			return($r);
+			return(false);
 
 		$nb = count($list);
 

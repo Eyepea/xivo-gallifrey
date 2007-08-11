@@ -22,7 +22,7 @@ Extension
 ; col_emergency-add
 Ajouter
 
-; opt_delete
+; opt_emergency-delete
 Supprimer
 
 ; no_emergency
@@ -43,5 +43,41 @@ Intervalle
 ; fm_emergency-extenmode-opt-extension
 Extension
 
+; col_special-trunk
+Interconnexion
+
+; col_special-extenmode
+Mode
+
+; col_special-exten
+Extension
+
+; col_special-add
+Ajouter
+
+; opt_special-delete
+Supprimer
+
+; no_special
+Aucun numéro spécial
+
+; fm_special-trunk-opt-custom
+Personnaliser
+
+; fm_special-trunk-opt-sip
+Protocole SIP
+
+; fm_special-trunk-opt-iax
+Protocole IAX
+
+; fm_special-extenmode-opt-range
+Intervalle
+
+; fm_special-extenmode-opt-extension
+Extension
+
 ; fm_bt-save
 Sauvegarder
+
+; fm_success-save
+Propriétés des appels sortants sauvegardés avec succès

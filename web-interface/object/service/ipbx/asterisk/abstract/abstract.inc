@@ -10,6 +10,11 @@ class xivo_service_asterisk_abstract
 		return($this->_name);
 	}
 
+	function _prepare($data)
+	{
+		return($data);
+	}
+
 	function _chk_exists_cfg($type,$name)
 	{
 		$r = false;
@@ -194,7 +199,11 @@ class xivo_service_asterisk_abstract
 		if(empty($this->_conf) === false)
 			return(null);
 
-		$dir = dirname(__FILE__).XIVO_SEP_DIR.$this->_name.XIVO_SEP_DIR.'config';
+		$dir = XIVO_PATH_OBJECT.XIVO_SEP_DIR.'service'.
+		       XIVO_SEP_DIR.'ipbx'.
+		       XIVO_SEP_DIR.'asterisk'.
+		       XIVO_SEP_DIR.$this->_name.
+		       XIVO_SEP_DIR.'config';
 
 		if(($this->_conf = xivo_gat::get_file($dir)) === false)
 			$this->_conf = array();
@@ -218,23 +227,26 @@ class xivo_service_asterisk_abstract
 		return($r);
 	}
 
-	function get_all($disable=null)
+	function get_all($disable=null,$delete=null,$prepare=true,$order=null,$limit=null)
 	{
-		$r = false;
+		$prepare = (bool) $prepare;
 
-		if(($list = $this->get_list()) === false)
-			return($r);
+		if(($list = $this->_dso->get_all($disable,$delete,$order,$limit)) === false)
+			return(false);
 
 		$nb = count($list);
 
 		$r = array();
 
-		for($i = 0;$i < $nb;$i++)
+		if($prepare === true)
 		{
-			if(($info = $this->get($list[$i],$disable)) === false)
-				continue;
-
-			$r[] = $info;
+			for($i = 0;$i < $nb;$i++)
+				$r[] = $this->_prepare($list[$i]);
+		}
+		else
+		{
+			for($i = 0;$i < $nb;$i++)
+				$r[] = $list[$i];
 		}
 
 		if(isset($r[0]) === false)
@@ -242,7 +254,7 @@ class xivo_service_asterisk_abstract
 
 		return($r);
 	}
-	
+
 	function get_filter_err()
 	{
 		if($this->_filter === null)

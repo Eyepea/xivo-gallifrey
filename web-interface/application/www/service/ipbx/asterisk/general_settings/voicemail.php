@@ -37,42 +37,26 @@ if(isset($_QR['fm_send']) === true && xivo_issa('voicemail',$_QR) === true)
 
 	$result['zonemessages'] = array();
 
-	if(xivo_issa('zonemessages',$_QR) === true && xivo_issa('timezone',$_QR['zonemessages']) === true
-	&& xivo_issa('msg_format',$_QR['zonemessages']) === true
-	&& ($val = xivo_issa_val('name',$_QR['zonemessages'])) !== false)
+	if(xivo_issa('zonemessages',$_QR) === true
+	&& ($arr_zmsg = xivo_group_array('name',$_QR['zonemessages'])) !== false)
 	{
-		$ref_timezone = &$_QR['zonemessages']['timezone'];
-		$ref_msgformat = &$_QR['zonemessages']['msg_format'];
-
-		$nb = count($val);
+		$nb = count($arr_zmsg);
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			$name = &$val[$i];
+			$ref = &$arr_zmsg[$i];
 
-			if(isset($zone_tmp[$name]) === true)
+			if(isset($zone_tmp[$ref['name']]) === true)
 				continue;
 
-			if(isset($ref_timezone[$i],$ref_msgformat[$i]) === false)
-			{
-				if($info['zonemessages'] !== false && isset($info['zonemessages'][$name]) === true)
-					$zone_del[] = $info['zonemessages'][$name]['id'];
-				continue;
-			}
-
-			$zmsg_tmp = array();
-			$zmsg_tmp['name'] = $name;
-			$zmsg_tmp['timezone'] = $ref_timezone[$i];
-			$zmsg_tmp['msg_format'] = $ref_msgformat[$i];
-
-			if(($zinfo = $zonemessages->chk_values($zmsg_tmp)) === false
+			if(($zinfo = $zonemessages->chk_values($ref)) === false
 			|| $zonemessages->chk_msg_format($zinfo['msg_format']) === false)
 				continue;
 
 			$edit_zone = true;
-			$zone_tmp[$name] = 1;
-			$zone_edit[$name] = $zinfo['timezone'].'|'.$zinfo['msg_format'];
-			$result['zonemessages'][$name] = $zinfo;
+			$zone_tmp[$ref['name']] = 1;
+			$zone_edit[$ref['name']] = $zinfo['timezone'].'|'.$zinfo['msg_format'];
+			$result['zonemessages'][$ref['name']] = $zinfo;
 		}
 	}
 

@@ -1,6 +1,6 @@
 <?php
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'service','ipbx','asterisk','abstract.inc'),true);
+xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
 
 class xivo_service_asterisk_cdr extends xivo_service_asterisk_abstract
 {
@@ -48,7 +48,7 @@ class xivo_service_asterisk_cdr extends xivo_service_asterisk_abstract
 		{
 			$date = array('dbeg' => null,'dend' => null);
 
-			if(xivo_haslen($arr,'dend') === true)
+			if(xivo_haslen($arr,'dend') === true
 			&& ($date = xivo_filter::chk_between_date($arr['dbeg'],$arr['dend'])) === false)
 				return(false);
 			else if(($date['dbeg'] = xivo_filter::chk_date($arr['dbeg'])) === false)

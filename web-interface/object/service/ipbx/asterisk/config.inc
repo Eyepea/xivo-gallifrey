@@ -228,6 +228,10 @@ $array['module']['generaloutcall'] = array();
 $array['module']['generaloutcall']['datastorage'] = true;
 $array['module']['generaloutcall']['section'] = 'outcall';
 
+$array['module']['outcall'] = array();
+$array['module']['outcall']['datastorage'] = true;
+$array['module']['outcall']['section'] = 'outcall';
+
 $array['protocol'] = array();
 $array['protocol']['sip'] = array('name' => XIVO_SRE_IPBX_AST_PROTO_SIP,'module' => 'usersip'); 
 $array['protocol']['iax'] = array('name' => XIVO_SRE_IPBX_AST_PROTO_IAX,'module' => 'useriax'); 

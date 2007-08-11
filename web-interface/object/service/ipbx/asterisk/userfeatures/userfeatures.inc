@@ -1,6 +1,6 @@
 <?php
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'service','ipbx','asterisk','abstract.inc'),true);
+xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
 
 class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 {
@@ -37,11 +37,6 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		$r = $this->_prepare($r);
 
 		return($r);
-	}
-
-	function _prepare($data)
-	{
-		return($data);
 	}
 
 	function add_origin()
@@ -204,24 +199,6 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 	function get_search($value)
 	{
 		if(($list = $this->_dso->get_search($value)) === false)
-			return(false);
-
-		$nb = count($list);
-
-		$r = array();
-
-		for($i = 0;$i < $nb;$i++)
-			$r[] = $this->_prepare($list[$i]);
-
-		if(isset($r[0]) === false)
-			$r = false;
-
-		return($r);
-	}
-
-	function get_all()
-	{
-		if(($list = $this->_dso->get_all()) === false)
 			return(false);
 
 		$nb = count($list);

@@ -1,6 +1,6 @@
 <?php
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'service','ipbx','asterisk','abstract.inc'),true);
+xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
 
 class xivo_service_asterisk_trunkfeatures extends xivo_service_asterisk_abstract
 {
@@ -102,24 +102,6 @@ class xivo_service_asterisk_trunkfeatures extends xivo_service_asterisk_abstract
 			return(false);
 
 		return($this->_dso->get_where($where));
-	}
-
-	function get_all($order=null)
-	{
-		if(($list = $this->_dso->get_all($order)) === false)
-			return(false);
-
-		$nb = count($list);
-
-		$r = array();
-
-		for($i = 0;$i < $nb;$i++)
-			$r[] = $list[$i];
-
-		if(isset($r[0]) === false)
-			$r = false;
-
-		return($r);
 	}
 }
 

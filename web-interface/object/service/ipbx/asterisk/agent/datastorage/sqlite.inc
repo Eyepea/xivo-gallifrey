@@ -1,6 +1,6 @@
 <?php
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'service','ipbx','asterisk','agent','datastorage','abstract','sql.inc'),true);
+xivo_service_asterisk::required(array('agent','datastorage','abstract','sql.inc'),true);
 
 class xivo_service_asterisk_agent_sqlite extends xivo_service_asterisk_agent_abstract_sql
 {

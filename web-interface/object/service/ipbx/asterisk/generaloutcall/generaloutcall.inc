@@ -1,6 +1,6 @@
 <?php
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'service','ipbx','asterisk','abstract.inc'),true);
+xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
 
 class xivo_service_asterisk_generaloutcall extends xivo_service_asterisk_abstract
 {
@@ -88,7 +88,7 @@ class xivo_service_asterisk_generaloutcall extends xivo_service_asterisk_abstrac
 			|| $this->_dso->exists_range($arr['rangeend']) !== false)
 				return(false);
 
-			$arr['exten'] = '';
+			$arr['exten'] = $arr['extenhash'] = '';
 		}
 		else if(isset($arr['exten']) === true
 		&& ($exten = $this->chk_exten($arr['exten'])) !== false)
@@ -98,11 +98,18 @@ class xivo_service_asterisk_generaloutcall extends xivo_service_asterisk_abstrac
 
 			$where = array('extenhash' => $arr['extenhash']);
 
-			if(ctype_digit($arr['exten']) === false && $arr['exten']{0} !== '_')
-				$arr['exten'] = '_'.$arr['exten'];
-
 			if($this->get_where($where) !== false)
 				return(false);
+
+			if($arr['exten']{0} === '_')
+			{
+				$subexten = substr($arr['exten'],1);
+
+				if(ctype_digit($subexten) === true)
+					$arr['exten'] = $subexten;
+			}
+			else if(ctype_digit($arr['exten']) === false)
+					$arr['exten'] = '_'.$arr['exten'];
 		}
 		else
 			return(false);
@@ -133,7 +140,7 @@ class xivo_service_asterisk_generaloutcall extends xivo_service_asterisk_abstrac
 			&& (int) $rangeid !== $id)
 				return(false);
 
-			$arr['exten'] = '';
+			$arr['exten'] = $arr['extenhash'] = '';
 		}
 		else if(xivo_haslen($arr,'exten') === true)
 		{
@@ -148,8 +155,15 @@ class xivo_service_asterisk_generaloutcall extends xivo_service_asterisk_abstrac
 			if(($whereid = $this->get_where($where)) !== false && (int) $whereid !== $id)
 				return(false);
 
-			if(ctype_digit($arr['exten']) === false && $arr['exten']{0} !== '_')
-				$arr['exten'] = '_'.$arr['exten'];
+			if($arr['exten']{0} === '_')
+			{
+				$subexten = substr($arr['exten'],1);
+
+				if(ctype_digit($subexten) === true)
+					$arr['exten'] = $subexten;
+			}
+			else if(ctype_digit($arr['exten']) === false)
+					$arr['exten'] = '_'.$arr['exten'];
 		}
 		else
 			unset($arr['rangebeg'],$arr['rangeend'],$arr['exten']);
@@ -198,15 +212,6 @@ class xivo_service_asterisk_generaloutcall extends xivo_service_asterisk_abstrac
 		return($r);
 	}
 
-	function _realexten_pattern($str)
-	{
-		$str = preg_replace('/(\d)/','[\1]',(string) $str);
-		$pat = array('_','X','Z','N');
-		$rep = array('','[0123456789]','[123456879]','[23456789]');
-
-		return(str_replace($pat,$rep,$str));
-	}
-
 	function chk_exten($str)
 	{
 		$str = (string) $str;
@@ -239,6 +244,12 @@ class xivo_service_asterisk_generaloutcall extends xivo_service_asterisk_abstrac
 			$nsplit = $split[$i+1];
 
 			$arr = array();
+
+			if(isset($nsplit{1}) === false)
+			{
+				$r .= $nsplit{0};
+				continue;
+			}
 
 			if(preg_match('/^(\d*)(\d-\d)(\d*)$/',$nsplit,$match) === 1)
 			{
@@ -287,7 +298,7 @@ class xivo_service_asterisk_generaloutcall extends xivo_service_asterisk_abstrac
 					$arr[$num] = 1;
 				}
 			}
-		
+	
 			ksort($arr);
 
 			$r .= '['.implode('',array_keys($arr)).']';
@@ -301,18 +312,25 @@ class xivo_service_asterisk_generaloutcall extends xivo_service_asterisk_abstrac
 		$beg = (string) $beg;
 		$end = (string) $end;
 
-		if(ctype_digit($beg) === false
-		|| ctype_digit($end) === false
-		|| $beg >= $end)
+		if($beg === '' || $end === '' || $beg >= $end)
 			return(false);
 
 		return(true);
 	}
 
+	function _realexten_pattern($str)
+	{
+		$str = preg_replace('/\[(\d)\]/','\\1',(string) $str);
+		$pat = array('_','X','Z','N');
+		$rep = array('','[0123456789]','[123456879]','[23456789]');
+
+		return(str_replace($pat,$rep,$str));
+	}
+
 	function _regexten_pattern($str)
 	{
-		$pat = array('X','Z','N','.','!');
-		$rep = array('[0-9]','[1-9]','[2-9]','+','*');
+		$pat = array('_','*','X','Z','N','.','!');
+		$rep = array('','\*','[0-9]','[1-9]','[2-9]','[0-9#\*]+','[0-9#\*]*');
 
 		return(str_replace($pat,$rep,(string) $str));
 	}

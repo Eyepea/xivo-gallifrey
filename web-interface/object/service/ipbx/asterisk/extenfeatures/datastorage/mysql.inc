@@ -1,6 +1,6 @@
 <?php
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'service','ipbx','asterisk','extensions','datastorage','mysql.inc'),true);
+xivo_service_asterisk::required(array('extensions','datastorage','mysql.inc'),true);
 
 class xivo_service_asterisk_extenfeatures_mysql extends xivo_service_asterisk_extensions_mysql
 {

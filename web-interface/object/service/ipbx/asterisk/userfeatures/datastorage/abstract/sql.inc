@@ -1,6 +1,8 @@
 <?php
 
-class xivo_service_asterisk_userfeatures_abstract_sql
+xivo_service_asterisk::required(array('abstract','datastorage','abstract','sql.inc'),true);
+
+class xivo_service_asterisk_userfeatures_abstract_sql extends xivo_service_asterisk_abstract_sql
 {
 	var $_param	= array('table' => 'userfeatures');
 	var $_dso	= null;
@@ -119,13 +121,6 @@ class xivo_service_asterisk_userfeatures_abstract_sql
 
 		if(isset($r[0]) === false)
 			$r = false;
-
-		return($r);
-	}
-
-	function get_all()
-	{
-		$r = $this->_dso->select_all($this->_param['table']);
 
 		return($r);
 	}

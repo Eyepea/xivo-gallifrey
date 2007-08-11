@@ -36,7 +36,11 @@ class xivo_service_abstract
 
 		$file = $module.'.inc';
 
-		$dir = XIVO_PATH_OBJECT.XIVO_SEP_DIR.'service'.XIVO_SEP_DIR.$this->_type.XIVO_SEP_DIR.$this->_name.XIVO_SEP_DIR.$module;
+		$dir = XIVO_PATH_OBJECT.XIVO_SEP_DIR.'service'.
+		       XIVO_SEP_DIR.$this->_type.
+		       XIVO_SEP_DIR.$this->_name.
+		       XIVO_SEP_DIR.$module;
+
 		$class = 'xivo_service_'.$this->_name.'_'.$module;
 
 		if(xivo_file::load_file($file,$dir,true) === false)
@@ -50,13 +54,15 @@ class xivo_service_abstract
 
 	function _load_config()
 	{
-		if(empty($this->_conf) === true)
-		{
-			$dir = XIVO_PATH_OBJECT.XIVO_SEP_DIR.'service'.XIVO_SEP_DIR.$this->_type.XIVO_SEP_DIR.$this->_name;
+		if(empty($this->_conf) === false)
+			return(null);
 	
-			if(($this->_conf = xivo_gat::load_get('config',$dir,$this->_name)) === false)
-				trigger_error('Failed to load '.$this->_name.' configuration',E_USER_ERROR);
-		}
+		$dir = XIVO_PATH_OBJECT.XIVO_SEP_DIR.'service'.
+		       XIVO_SEP_DIR.$this->_type.
+		       XIVO_SEP_DIR.$this->_name;
+	
+		if(($this->_conf = xivo_gat::load_get('config',$dir,$this->_name)) === false)
+			trigger_error('Failed to load '.$this->_name.' configuration',E_USER_ERROR);
 	}
 
 	function &call_module($name,$func,$args=null)

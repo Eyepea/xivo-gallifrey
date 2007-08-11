@@ -65,7 +65,7 @@
 			echo '<dd id="mn-call-management--cdr">',$url->href_html($this->bbf('mn_left_callmamagement-cdr'),'service/ipbx/call_management/cdr'),'</dd>';
 		endif;
 		if($this->chk_policy('call_management','outcall') === true):
-			echo '<dd id="mn-call-management--outcall"><a href="#">',$this->bbf('mn_left_callmamagement-outcall'),'</a></dd>';
+			echo '<dd id="mn-call-management--outcall">',$url->href_html($this->bbf('mn_left_callmamagement-outcall'),'service/ipbx/call_management/outcall'),'</dd>';
 		endif;
 	endif;
 

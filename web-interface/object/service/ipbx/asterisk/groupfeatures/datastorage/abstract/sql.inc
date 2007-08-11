@@ -1,6 +1,8 @@
 <?php
 
-class xivo_service_asterisk_groupfeatures_abstract_sql
+xivo_service_asterisk::required(array('abstract','datastorage','abstract','sql.inc'),true);
+
+class xivo_service_asterisk_groupfeatures_abstract_sql extends xivo_service_asterisk_abstract_sql
 {
 	var $_param	= array('table' => 'groupfeatures');
 	var $_dso	= null;
@@ -108,21 +110,6 @@ class xivo_service_asterisk_groupfeatures_abstract_sql
 
 		if(isset($r[0]) === false)
 			$r = false;
-
-		return($r);
-	}
-
-	function get_all($disable=null,$delete=false)
-	{
-		$where = '1';
-
-		if($disable !== null)
-			$where .= ' AND commented = '.intval((bool) $disable);
-
-		if($delete !== null)
-			$where .= ' AND deleted = '.intval((bool) $delete);
-
-		$r = $this->_dso->select_all($this->_param['table'],null,$where);
 
 		return($r);
 	}

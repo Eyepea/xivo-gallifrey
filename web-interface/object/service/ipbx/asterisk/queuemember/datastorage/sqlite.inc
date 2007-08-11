@@ -1,6 +1,6 @@
 <?php
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'service','ipbx','asterisk','queuemember','datastorage','abstract','sql.inc'),true);
+xivo_service_asterisk::required(array('queuemember','datastorage','abstract','sql.inc'),true);
 
 class xivo_service_asterisk_queuemember_sqlite extends xivo_service_asterisk_queuemember_abstract_sql
 {

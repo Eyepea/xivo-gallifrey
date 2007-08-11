@@ -1,6 +1,6 @@
 <?php
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'service','ipbx','asterisk','userfeatures','datastorage','abstract','sql.inc'),true);
+xivo_service_asterisk::required(array('userfeatures','datastorage','abstract','sql.inc'),true);
 
 class xivo_service_asterisk_userfeatures_sqlite extends xivo_service_asterisk_userfeatures_abstract_sql
 {

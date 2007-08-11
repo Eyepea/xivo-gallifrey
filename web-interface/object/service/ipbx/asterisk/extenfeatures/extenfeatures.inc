@@ -1,6 +1,6 @@
 <?php
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'service','ipbx','asterisk','extensions','extensions.inc'),true);
+xivo_service_asterisk::required(array('extensions','extensions.inc'),true);
 
 class xivo_service_asterisk_extenfeatures extends xivo_service_asterisk_extensions
 {

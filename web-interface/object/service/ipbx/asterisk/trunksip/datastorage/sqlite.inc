@@ -1,6 +1,6 @@
 <?php
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'service','ipbx','asterisk','trunksip','datastorage','abstract','sql.inc'),true);
+xivo_service_asterisk::required(array('trunksip','datastorage','abstract','sql.inc'),true);
 
 class xivo_service_asterisk_trunksip_sqlite extends xivo_service_asterisk_trunksip_abstract_sql
 {

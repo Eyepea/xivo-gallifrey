@@ -1,6 +1,8 @@
 <?php
 
-class xivo_service_asterisk_queuemember_abstract_sql
+xivo_service_asterisk::required(array('abstract','datastorage','abstract','sql.inc'),true);
+
+class xivo_service_asterisk_queuemember_abstract_sql extends xivo_service_asterisk_abstract_sql
 {
 	var $_param	= array('table' => 'queuemember');
 	var $_dso	= null;
@@ -132,18 +134,6 @@ class xivo_service_asterisk_queuemember_abstract_sql
 			$where .= ' AND commented = '.intval((bool) $disable);
 
 		$r = $this->_dso->select_count($this->_param['table'],null,$where);
-
-		return($r);
-	}
-
-	function get_all($disable=null)
-	{
-		$where = '';
-
-		if($disable !== null)
-			$where = 'commented = '.intval((bool) $disable);
-
-		$r = $this->_dso->select_all($this->_param['table'],null,$where);
 
 		return($r);
 	}

@@ -1,6 +1,6 @@
 <?php
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'service','ipbx','asterisk','uservoicemail','datastorage','abstract','sql.inc'),true);
+xivo_service_asterisk::required(array('uservoicemail','datastorage','abstract','sql.inc'),true);
 
 class xivo_service_asterisk_uservoicemail_mysql extends xivo_service_asterisk_uservoicemail_abstract_sql
 {
