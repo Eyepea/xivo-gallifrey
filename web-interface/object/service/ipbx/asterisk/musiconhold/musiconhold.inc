@@ -308,7 +308,7 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 	{
 		$r = false;
 
-		$name = (string) $name;
+		$name = strval($name);
 
 		if(($match_dir = $this->_get_option_dir_name()) === false
 		|| preg_match($match_dir,$name) !== 1)

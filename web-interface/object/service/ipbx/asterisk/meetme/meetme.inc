@@ -10,7 +10,7 @@ class xivo_service_asterisk_meetme extends xivo_service_asterisk_staticconf
 	var $_category	= 'rooms';
 	var $_var_name	= 'conf';
 	var $_filter	= null;
-	var $_origin	= null;
+	var $_origin	= false;
 
 	function xivo_service_asterisk_meetme(&$sre,&$dso)
 	{
@@ -31,7 +31,7 @@ class xivo_service_asterisk_meetme extends xivo_service_asterisk_staticconf
 	function get($id,$disable=null)
 	{
 		if(($r = parent::get($id,$disable)) === false)
-			return($r);
+			return(false);
 
 		$this->_origin = $r;
 
@@ -50,16 +50,6 @@ class xivo_service_asterisk_meetme extends xivo_service_asterisk_staticconf
 		$data['commented'] = (bool) $data['commented'];
 
 		return($data);
-	}
-
-	function add_origin()
-	{
-		return($this->_origin('add'));
-	}
-
-	function edit_origin()
-	{
-		return($this->_origin('edit'));
 	}
 
 	function _origin($type)

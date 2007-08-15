@@ -4,7 +4,9 @@ $param['page'] = $page;
 
 if(isset($_QR['id']) === false
 || ($info['trunk'] = $trunkiax->get($_QR['id'])) === false
-|| ($info['tfeatures'] = $tfeatures->get_by_trunk($info['trunk']['id'],'iax')) === false)
+|| ($info['tfeatures'] = $tfeatures->get_where(array(
+					'trunkid' => $info['trunk']['id'],
+					'trunk' => 'iax'))) === false)
 	xivo_go($_HTML->url('service/ipbx/trunk_management/iax'),$param);
 
 do

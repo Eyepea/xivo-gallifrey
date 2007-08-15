@@ -9,7 +9,7 @@ $disable = $act === 'disables' ? true : false;
 	
 for($i = 0;$i < $arr['cnt'];$i++)
 {
-	$k = &$arr['keys'][$i];
+	$k = $arr['keys'][$i];
 
 	if(($protocol = &$ipbx->get_protocol_module($k)) === false
 	|| ($v = xivo_issa_val($k,$_QR['users'])) === false)
@@ -18,7 +18,7 @@ for($i = 0;$i < $arr['cnt'];$i++)
 	$nb = count($v);
 
 	for($j = 0;$j < $nb;$j++)
-		$protocol->disable($v[$j],$disable);
+		$protocol->disable(strval($v[$j]),$disable);
 }
 
 xivo_go($_HTML->url('service/ipbx/pbx_settings/users'),$param);

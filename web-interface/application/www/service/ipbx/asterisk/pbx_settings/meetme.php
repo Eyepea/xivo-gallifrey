@@ -86,7 +86,7 @@ switch($act)
 				$exten_numbers['context'] = $result['local_exten']['context'];
 
 				if(($result['extenumbers'] = $extenumbers->chk_values($exten_numbers)) === false
-				|| $extenumbers->get($result['extenumbers']) !== false)
+				|| $extenumbers->get_where($result['extenumbers']) !== false)
 				{
 					$add = false;
 					$result['extenumbers'] = $extenumbers->get_filter_result();
@@ -141,7 +141,7 @@ switch($act)
 
 		if(isset($_QR['id']) === false
 		|| ($info['meetme'] = $meetme->get($_QR['id'])) === false
-		|| ($info['mfeatures'] = $mfeatures->get(array('meetmeid' => $info['meetme']['id']))) === false)
+		|| ($info['mfeatures'] = $mfeatures->get_where(array('meetmeid' => $info['meetme']['id']))) === false)
 			xivo_go($_HTML->url('service/ipbx/pbx_settings/meetme'),$param);
 
 		$musiconhold = &$ipbx->get_module('musiconhold');
@@ -197,7 +197,7 @@ switch($act)
 			else
 				$exten_where['context'] = $info['mfeatures']['context'];
 
-			if(($info['localexten'] = $extensions->get($exten_where)) !== false)
+			if(($info['localexten'] = $extensions->get_where($exten_where)) !== false)
 			{
 				if($result['mfeatures']['number'] === '')
 					$status['localexten'] = 'delete';
@@ -256,7 +256,7 @@ switch($act)
 			else
 				$exten_where['context'] = $info['mfeatures']['context'];
 
-			if(($info['extenumbers'] = $extenumbers->get($exten_where)) !== false)
+			if(($info['extenumbers'] = $extenumbers->get_where($exten_where)) !== false)
 			{
 				if($result['mfeatures']['number'] === '')
 					$status['extenumbers'] = 'delete';
@@ -265,7 +265,7 @@ switch($act)
 					$status['extenumbers'] = 'edit';
 
 					if(($result['extenumbers'] = $extenumbers->chk_values($exten_numbers)) === false
-					|| (($extenum = $extenumbers->get($result['extenumbers'])) !== false
+					|| (($extenum = $extenumbers->get_where($result['extenumbers'])) !== false
 					   && (int) $extenum['id'] !== (int) $info['extenumbers']['id']) === true)
 					{
 						$edit = false;
@@ -386,7 +386,7 @@ switch($act)
 
 		if(isset($_QR['id']) === false
 		|| ($info['meetme'] = $meetme->get($_QR['id'])) === false
-		|| ($info['mfeatures'] = $mfeatures->get(array('meetmeid' => $info['meetme']['id']))) === false)
+		|| ($info['mfeatures'] = $mfeatures->get_where(array('meetmeid' => $info['meetme']['id']))) === false)
 			xivo_go($_HTML->url('service/ipbx/pbx_settings/meetme'),$param);
 
 		do
@@ -410,7 +410,7 @@ switch($act)
 			else
 				$localexten_where['context'] = $info['mfeatures']['context'];
 
-			if(($info['extensions'] = $extensions->get($localexten_where)) !== false
+			if(($info['extensions'] = $extensions->get_where($localexten_where)) !== false
 			&& $extensions->delete($info['extensions']['id']) === false)
 			{
 				$meetme->add_origin();
@@ -424,7 +424,7 @@ switch($act)
 
 			$info['dfeatures'] = false;
 
-			if(($info['extenumbers'] = $extenumbers->get($extenum_where)) !== false)
+			if(($info['extenumbers'] = $extenumbers->get_where($extenum_where)) !== false)
 			{
 				$dfeatures = &$ipbx->get_module('didfeatures');
 				$dfeatures_where = array();
@@ -466,10 +466,12 @@ switch($act)
 
 			for($i = 0;$i < $nb;$i++)
 			{
+				$id = strval($val[$i]);
+
 				if($disable === true)
-					$meetme->disable($val[$i]);
+					$meetme->disable($id);
 				else
-					$meetme->enable($val[$i]);
+					$meetme->enable($id);
 			}
 		}
 		while(false);
@@ -478,7 +480,6 @@ switch($act)
 		break;
 	case 'deletes':
 		$param['page'] = $page;
-		$extensions = &$ipbx->get_module('extensions');
 		$dfeatures = &$ipbx->get_module('didfeatures');
 
 		$localexten_where = $extenum_where = $dfeatures_where = array();
@@ -495,8 +496,10 @@ switch($act)
 
 			for($i = 0;$i < $nb;$i++)
 			{
-				if(($info['meetme'] = $meetme->get($val[$i])) === false
-				|| ($info['mfeatures'] = $mfeatures->get(array('meetmeid' => $info['meetme']['id']))) === false)
+				$id = strval($val[$i]);
+
+				if(($info['meetme'] = $meetme->get($id)) === false
+				|| ($info['mfeatures'] = $mfeatures->get_where(array('meetmeid' => $info['meetme']['id']))) === false)
 					continue;
 
 				if($meetme->delete($info['meetme']['id']) === false)
@@ -515,7 +518,7 @@ switch($act)
 				else
 					$localexten_where['context'] = $info['mfeatures']['context'];
 
-				if(($info['extensions'] = $extensions->get($localexten_where)) !== false
+				if(($info['extensions'] = $extensions->get_where($localexten_where)) !== false
 				&& $extensions->delete($info['extensions']['id']) === false)
 				{
 					$meetme->add_origin();
@@ -530,7 +533,7 @@ switch($act)
 
 				$dfeatures_where['typeid'] = $info['mfeatures']['id'];
 
-				if(($info['extenumbers'] = $extenumbers->get($extenum_where)) !== false)
+				if(($info['extenumbers'] = $extenumbers->get_where($extenum_where)) !== false)
 				{
 					if($extenumbers->delete($info['extenumbers']['id']) === false
 					|| (($info['dfeatures'] = $dfeatures->get_list_where($dfeatures_where,false)) !== false

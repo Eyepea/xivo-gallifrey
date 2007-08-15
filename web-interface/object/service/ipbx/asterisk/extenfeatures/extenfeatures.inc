@@ -265,11 +265,11 @@ class xivo_service_asterisk_extenfeatures extends xivo_service_asterisk_extensio
 		return(parent::set_chk_value($key,$value));
 	}
 
-	function get_all_where($arr=array(),$disable=null,$prepare=true)
+	function get_all_where($arr,$disable=null,$prepare=true,$order=null,$limit=null)
 	{
 		$this->_conf = &$this->_extensions['conf'];
 
-		$r = parent::get_all_where($arr,$disable,$prepare);
+		$r = parent::get_all_where($arr,$disable,null,$prepare,$order=null,$limit=null);
 
 		$this->_conf = &$this->_exfeatures['conf'];
 

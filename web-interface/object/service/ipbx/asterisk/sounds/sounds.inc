@@ -95,8 +95,8 @@ class xivo_service_asterisk_sounds extends xivo_service_asterisk_abstract
 	{
 		$r = false;
 
-		$name = (string) $name;
-		$dir = (string) $dir;
+		$name = strval($name);
+		$dir = strval($dir);
 		$exists = (bool) $exists;
 
 		if(($extensions = $this->_get_option_file_extension()) === false
@@ -124,8 +124,8 @@ class xivo_service_asterisk_sounds extends xivo_service_asterisk_abstract
 	{
 		$r = false;
 
-		$name = (string) $name;
-		$dir = (string) $dir;
+		$name = strval($name);
+		$dir = strval($dir);
 
 		if(($file = $this->_chk_file($name,$dir,true)) === false)
 			return($r);
@@ -193,7 +193,7 @@ class xivo_service_asterisk_sounds extends xivo_service_asterisk_abstract
 	{
 		$r = false;
 
-		$name = (string) $name;
+		$name = strval($name);
 
 		if(($match_dir = $this->_get_option_dir_name()) === false
 		|| preg_match($match_dir,$name) !== 1)

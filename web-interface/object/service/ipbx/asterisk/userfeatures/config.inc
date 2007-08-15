@@ -14,6 +14,15 @@ $array['provisioning_id']['iax']['range'] = 100000;
 
 $array['element'] = array();
 
+$array['element']['protocol'] = array();
+$array['element']['protocol']['default'] = '';
+
+$array['element']['protocolid'] = array();
+$array['element']['protocolid']['default'] = 0;
+
+$array['element']['provisioningid'] = array();
+$array['element']['provisioningid']['default'] = 0;
+
 $array['element']['firstname'] = array();
 $array['element']['firstname']['default'] = '';
 

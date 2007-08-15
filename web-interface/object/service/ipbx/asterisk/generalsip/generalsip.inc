@@ -153,6 +153,78 @@ class xivo_service_asterisk_generalsip extends xivo_service_asterisk_staticconf
 
 		return($r);
 	}
+
+	function parse_register($val)
+	{
+		$val = (string) $val;
+
+		if(preg_match('#^((?:[a-z0-9_\.-]+)(?:@[a-z0-9\.-]+)?)'.
+			      '(?:\:([a-z0-9_\.-]+)(:[a-z0-9_\.-]+)?)?'.
+			      '@([a-z0-9\.-]+)(:[0-9]{1,5})?(/[a-z0-9]+)?$#i',$val,$match) !== 1)
+			return(false);
+
+		$r = array();
+
+		$r['username'] = $match[1];
+		$r['host'] = $match[4];
+
+		if(isset($match[2]) === true)
+			$r['password'] = $match[2];
+		else
+			$r['password'] = '';
+
+		if($r['password'] !== '' && isset($match[3]) === true && $match[3] !== '')
+			$r['authuser'] = substr($match[3],1);
+		else
+			$r['authuser'] = '';
+
+		if(isset($match[5]) === true && $match[5] !== '')
+			$r['port'] = substr($match[5],1);
+		else
+			$r['port'] = '';
+
+		if(isset($match[6]) === true && $match[6] !== '')
+			$r['contact'] = substr($match[6],1);
+		else
+			$r['contact'] = '';
+
+		return($r);
+	}
+
+	function build_register($arr)
+	{
+		$r = array('str' => '','arr' => array());
+
+		if(is_array($arr) === false
+		|| isset($arr['username'],$arr['host']) === false
+		|| ($r['arr']['username'] = $this->chk_value('register_username',$arr['username'])) === false
+		|| ($r['arr']['host'] = $this->chk_value('register_host',$arr['host'])) === false)
+			return(false);
+
+		$r['str'] = $r['arr']['username'];
+
+		if(isset($arr['password']) === true
+		&& ($r['arr']['password'] = $this->set_chk_value('register_password',$arr['password'])) !== '')
+		{
+			$r['str'] .= ':'.$r['arr']['password'];
+
+			if(isset($arr['authuser']) === true
+			&& ($r['arr']['authuser'] = $this->set_chk_value('register_authuser',$arr['authuser'])) !== '')
+				$r['str'] .= ':'.$r['arr']['authuser'];
+		}
+
+		$r['str'] .= '@'.$r['arr']['host'];
+
+		if(isset($arr['port']) === true
+		&& ($r['arr']['port'] = $this->set_chk_value('register_port',$arr['port'])) !== '')
+			$r['str'] .= ':'.$r['arr']['port'];
+
+		if(isset($arr['contact']) === true
+		&& ($r['arr']['contact'] = $this->set_chk_value('register_contact',$arr['contact'])) !== '')
+			$r['str'] .= '/'.$r['arr']['contact'];
+
+		return($r);
+	}
 }
 
 ?>

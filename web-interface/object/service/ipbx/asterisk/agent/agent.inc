@@ -11,7 +11,7 @@ class xivo_service_asterisk_agent extends xivo_service_asterisk_staticconf
 	var $_cat_metric	= 1;
 	var $_filter		= null;
 	var $_callpath		= '';
-	var $_origin		= null;
+	var $_origin		= false;
 	var $_agent		= array();
 
 	function xivo_service_asterisk_agent(&$sre,&$dso)
@@ -47,7 +47,7 @@ class xivo_service_asterisk_agent extends xivo_service_asterisk_staticconf
 	function get($id,$disable=null)
 	{
 		if(($r = parent::get($id,$disable)) === false)
-			return($r);
+			return(false);
 
 		$this->_origin = $r;
 
@@ -78,29 +78,6 @@ class xivo_service_asterisk_agent extends xivo_service_asterisk_staticconf
 		$data['commented'] = (bool) $data['commented'];
 
 		return($data);
-	}
-
-	function add_origin()
-	{
-		return($this->_origin('add'));
-	}
-
-	function edit_origin()
-	{
-		return($this->_origin('edit'));
-	}
-
-	function _origin($type)
-	{
-		if(($type !== 'add' && $type !== 'edit') === true || is_array($this->_origin) === false)
-			return(false);
-
-		if($type === 'add')
-			$r = parent::add($this->_origin,$this->_origin['id']);
-		else
-			$r = parent::edit($this->_origin['id'],$this->_origin);
-
-		return($r);
 	}
 
 	function add_group($group,$list=array(),$id=0)
@@ -180,6 +157,19 @@ class xivo_service_asterisk_agent extends xivo_service_asterisk_staticconf
 		$this->_origin = $r;
 
 		$r = $this->_prepare($r);
+
+		return($r);
+	}
+
+	function _origin($type)
+	{
+		if(($type !== 'add' && $type !== 'edit') === true || is_array($this->_origin) === false)
+			return(false);
+
+		if($type === 'add')
+			$r = parent::add($this->_origin,$this->_origin['id']);
+		else
+			$r = parent::edit($this->_origin['id'],$this->_origin);
 
 		return($r);
 	}

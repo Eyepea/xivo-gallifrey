@@ -1,7 +1,7 @@
 <?php
 
 $act = isset($_QR['act']) === true ? $_QR['act'] : '';
-$dir = isset($_QR['dir']) === true ? $_QR['dir'] : '';
+$dir = isset($_QR['dir']) === true ? strval($_QR['dir']) : '';
 $page = isset($_QR['page']) === true ? xivo_uint($_QR['page'],1) : 1;
 
 $param = array();

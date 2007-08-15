@@ -1,10 +1,10 @@
 <?php
 
 $act = isset($_QR['act']) === true ? $_QR['act'] : '';
-$ract = isset($_QR['ract']) === true ? $_QR['ract'] : '';
+$ract = isset($_QR['ract']) === true ? strval($_QR['ract']) : '';
 $page = isset($_QR['page']) === true ? xivo_uint($_QR['page'],1) : 1;
-$search = isset($_QR['search']) === true ? $_QR['search'] : '';
-$context = isset($_QR['context']) === true ? $_QR['context'] : '';
+$search = isset($_QR['search']) === true ? strval($_QR['search']) : '';
+$context = isset($_QR['context']) === true ? strval($_QR['context']) : '';
 
 $param = array();
 $param['act'] = 'list';

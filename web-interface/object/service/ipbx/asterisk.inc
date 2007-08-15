@@ -232,7 +232,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 			$info['gfeatures'] = $rs[$i];
 
 			if(($info['queue'] = $queue->get($info['gfeatures']['name'],$disable)) === false
-			|| ($info['nb_qmember'] = $qmember->get_nb_by_name($info['queue']['name'],$disable)) === false)
+			|| ($info['nb_qmember'] = $qmember->get_nb(array('queue_name' => $info['queue']['name']),$disable)) === false)
 				continue;
 
 			$r[] = $info;
@@ -260,7 +260,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 			$info['qfeatures'] = $rs[$i];
 
 			if(($info['queue'] = $queue->get($info['qfeatures']['name'],$disable)) === false
-			|| ($info['nb_qmember'] = $qmember->get_nb_by_name($info['queue']['name'],$disable)) === false)
+			|| ($info['nb_qmember'] = $qmember->get_nb(array('queue_name' => $info['queue']['name']),$disable)) === false)
 				continue;
 
 			$r[] = $info;
@@ -333,7 +333,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 			$info['agroup'] = $rs[$i];
 
 			if(($info['agent'] = $agent->get($info['agroup']['groupid'],$disable)) === false
-			|| ($info['nb_agent'] = $afeatures->get_nb_by_group($info['agroup']['id'],$disable)) === false)
+			|| ($info['nb_agent'] = $afeatures->get_nb(array('numgroup' => $info['agroup']['id']),$disable)) === false)
 				continue;
 
 			$r[] = $info;
@@ -539,7 +539,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 		{
 			$info['meetme'] = $rs[$i];
 
-			if(($info['mfeatures'] = $mfeatures->get(array('meetmeid' => $info['meetme']['id']))) === false)
+			if(($info['mfeatures'] = $mfeatures->get_where(array('meetmeid' => $info['meetme']['id']))) === false)
 				continue;
 
 			$r[] = $info;
@@ -710,8 +710,8 @@ class xivo_service_asterisk extends xivo_service_abstract
 			$info['did'] = $rs[$i];
 			$info['tyfeatures'] = false;
 
-			if(($info['dfeatures'] = $dfeatures->get(array('extenid' => $info['did']['id']))) === false
-			|| ($info['extenumbers'] = $extenumbers->get(array(
+			if(($info['dfeatures'] = $dfeatures->get_where(array('extenid' => $info['did']['id']))) === false
+			|| ($info['extenumbers'] = $extenumbers->get_where(array(
 									'number' => $info['did']['exten'],
 									'context' => $info['did']['context']))) === false
 			|| ($info['dfeatures']['type'] !== 'custom' && $info['dfeatures']['commented'] === false
@@ -736,7 +736,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 	function chk_protocol($name)
 	{
-		$name = (string) $name;
+		$name = strval($name);
 
 		return($this->_chk_exists_cfg('protocol',$name));
 	}
@@ -745,7 +745,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 	{
 		$r = false;
 
-		$name = (string) $name;
+		$name = strval($name);
 
 		if($this->chk_protocol($name) === true)
 			$r = xivo_ak('name',$this->_conf['protocol'][$name],true);
@@ -757,7 +757,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 	{
 		$r = false;
 
-		$name = (string) $name;
+		$name = strval($name);
 
 		if(($arr = xivo_get_aks($this->_conf['protocol'])) === false)
 			return($r);
@@ -780,8 +780,6 @@ class xivo_service_asterisk extends xivo_service_abstract
 	function get_protocol_module_name($name)
 	{
 		$r = false;
-
-		$name = (string) $name;
 
 		if($this->chk_protocol($name) === true)
 			$r = xivo_ak('module',$this->_conf['protocol'][$name],true);
@@ -874,7 +872,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 	function chk_channel($channel)
 	{
-		$channel = strtolower((string) $channel);
+		$channel = strtolower(strval($channel));
 
 		return($this->_chk_exists_cfg('channel',$channel));
 	}
@@ -883,7 +881,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 	{
 		$r = false;
 
-		$protocol = strtolower((string) $protocol);
+		$protocol = strtolower(strval($protocol));
 
 		if($this->chk_protocol($protocol) === true && $this->chk_channel($protocol) === true)
 			$r = true;
@@ -895,7 +893,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 	{
 		$r = false;
 
-		$protocol = strtolower((string) $protocol);
+		$protocol = strtolower(strval($protocol));
 
 		if($this->chk_channel_by_protocol($protocol) === true)
 			$r = $this->_conf['channel'][$protocol];
@@ -905,7 +903,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 	function chk_channel_by_interface($interface)
 	{
-		$interface = strtolower((string) $interface);
+		$interface = strtolower(strval($interface));
 
 		if(($pos = strpos($interface,'/')) !== false)
 			$interface = substr($interface,0,$pos);
@@ -921,7 +919,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 	{
 		$r = false;
 
-		$channel = strtolower((string) $channel);
+		$channel = strtolower(strval($channel));
 
 		if($this->chk_channel($channel) === true)
 			$r = $this->_conf['channel'][$channel];
@@ -931,7 +929,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 	function mk_agent_interface($number,$group=false)
 	{
-		$number = (string) $number;
+		$number = strval($number);
 		$group = (bool) $group;
 
 		if(ctype_digit($number) === false)
@@ -949,11 +947,11 @@ class xivo_service_asterisk extends xivo_service_abstract
 	{
 		$r = false;
 
-		$name = (string) $name;
-		$protocol = (string) $protocol;
-		$number = (string) $number;
-		$context = (string) $context;
-		$channel = (string) $channel;
+		$name = strval($name);
+		$protocol = strval($protocol);
+		$number = strval($number);
+		$context = strval($context);
+		$channel = strval($channel);
 
 		if($number !== '')
 		{

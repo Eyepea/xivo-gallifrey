@@ -1,7 +1,7 @@
 <?php
 
 $act = isset($_QR['act']) === true ? $_QR['act'] : '';
-$group = isset($_QR['group']) === true ? $_QR['group'] : '';
+$group = isset($_QR['group']) === true ? strval($_QR['group']) : '';
 $page = isset($_QR['page']) === true ? xivo_uint($_QR['page'],1) : 1;
 
 $agent = &$ipbx->get_module('agent');

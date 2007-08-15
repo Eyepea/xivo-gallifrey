@@ -76,7 +76,7 @@ switch($act)
 				$exten_numbers['context'] = $result['local_exten']['context'];
 
 				if(($result['extenumbers'] = $extenumbers->chk_values($exten_numbers)) === false
-				|| $extenumbers->get($result['extenumbers']) !== false)
+				|| $extenumbers->get_where($result['extenumbers']) !== false)
 				{
 					$add = false;
 					$result['extenumbers'] = $extenumbers->get_filter_result();
@@ -236,7 +236,7 @@ switch($act)
 			else
 				$exten_where['context'] = $info['gfeatures']['context'];
 
-			if(($info['localexten'] = $extensions->get($exten_where)) !== false)
+			if(($info['localexten'] = $extensions->get_where($exten_where)) !== false)
 			{
 				if($result['gfeatures']['number'] === '')
 					$status['localexten'] = 'delete';
@@ -295,7 +295,7 @@ switch($act)
 			else
 				$exten_where['context'] = $info['gfeatures']['context'];
 
-			if(($info['extenumbers'] = $extenumbers->get($exten_where)) !== false)
+			if(($info['extenumbers'] = $extenumbers->get_where($exten_where)) !== false)
 			{
 				if($result['gfeatures']['number'] === '')
 					$status['extenumbers'] = 'delete';
@@ -304,7 +304,7 @@ switch($act)
 					$status['extenumbers'] = 'edit';
 
 					if(($result['extenumbers'] = $extenumbers->chk_values($exten_numbers)) === false
-					|| (($extenum = $extenumbers->get($result['extenumbers'])) !== false
+					|| (($extenum = $extenumbers->get_where($result['extenumbers'])) !== false
 					   && (int) $extenum['id'] !== (int) $info['extenumbers']['id']) === true)
 					{
 						$edit = false;
@@ -555,7 +555,7 @@ switch($act)
 					$ugroup = $ipbx->get_module('usergroup');
 
 					if(($rs_gmember = $qmember->delete_where($guser_where)) !== false)
-						$ugroup->delete_by_group($info['gfeatures']['id']);
+						$ugroup->delete_where(array('groupid' => $info['gfeatures']['id']));
 					break;
 				default:
 					$rs_gmember = null;
@@ -627,7 +627,7 @@ switch($act)
 		if(isset($_QR['id']) === false
 		|| ($info['gfeatures'] = $gfeatures->get($_QR['id'])) === false
 		|| ($info['queue'] = $queue->get($info['gfeatures']['name'],false)) === false
-		|| $qmember->get_nb_by_name($info['queue']['name']) !== 0)
+		|| $qmember->get_nb(array('queue_name' => $info['queue']['name'])) !== 0)
 			xivo_go($_HTML->url('service/ipbx/pbx_settings/groups'),$param);
 
 		do
@@ -651,7 +651,7 @@ switch($act)
 			else
 				$localexten_where['context'] = $info['gfeatures']['context'];
 
-			if(($info['extensions'] = $extensions->get($localexten_where)) !== false
+			if(($info['extensions'] = $extensions->get_where($localexten_where)) !== false
 			&& $extensions->delete($info['extensions']['id']) === false)
 			{
 				$gfeatures->recover($info['gfeatures']['id']);
@@ -665,7 +665,7 @@ switch($act)
 
 			$info['dfeatures'] = false;
 
-			if(($info['extenumbers'] = $extenumbers->get($extenum_where)) !== false)
+			if(($info['extenumbers'] = $extenumbers->get_where($extenum_where)) !== false)
 			{
 				$dfeatures = &$ipbx->get_module('didfeatures');
 				$dfeatures_where = array();

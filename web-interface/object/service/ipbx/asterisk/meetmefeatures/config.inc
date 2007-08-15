@@ -4,9 +4,6 @@ $array = array();
 
 $array['element'] = array();
 
-$array['element']['id'] = array();
-$array['element']['id']['default'] = '';
-
 $array['element']['name'] = array();
 $array['element']['name']['default'] = '';
 

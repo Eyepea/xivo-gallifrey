@@ -145,7 +145,7 @@ switch($act)
 				$exten_numbers['context'] = $result['local_exten']['context'];
 
 				if(($result['extenumbers'] = $extenumbers->chk_values($exten_numbers)) === false
-				|| $extenumbers->get_where($result['extenumbers']) !== false)
+				|| $extenumbers->get_id($result['extenumbers']) !== false)
 				{
 					$add = false;
 					$result['extenumbers'] = $extenumbers->get_filter_result();
@@ -516,7 +516,7 @@ switch($act)
 			else
 				$exten_where['context'] = $info['qfeatures']['context'];
 
-			if(($info['localexten'] = $extensions->get($exten_where)) !== false)
+			if(($info['localexten'] = $extensions->get_where($exten_where)) !== false)
 			{
 				if($result['qfeatures']['number'] === '')
 					$status['localexten'] = 'delete';
@@ -575,7 +575,7 @@ switch($act)
 			else
 				$exten_where['context'] = $info['qfeatures']['context'];
 
-			if(($info['extenumbers'] = $extenumbers->get($exten_where)) !== false)
+			if(($info['extenumbers'] = $extenumbers->get_where($exten_where)) !== false)
 			{
 				if($result['qfeatures']['number'] === '')
 					$status['extenumbers'] = 'delete';
@@ -584,7 +584,7 @@ switch($act)
 					$status['extenumbers'] = 'edit';
 
 					if(($result['extenumbers'] = $extenumbers->chk_values($exten_numbers)) === false
-					|| (($extenum = $extenumbers->get($result['extenumbers'])) !== false
+					|| (($extenum = $extenumbers->get_where($result['extenumbers'])) !== false
 					   && (int) $extenum['id'] !== (int) $info['extenumbers']['id']) === true)
 					{
 						$edit = false;
@@ -1221,7 +1221,7 @@ switch($act)
 			else
 				$localexten_where['context'] = $info['qfeatures']['context'];
 
-			if(($info['extensions'] = $extensions->get($localexten_where)) !== false
+			if(($info['extensions'] = $extensions->get_where($localexten_where)) !== false
 			&& $extensions->delete($info['extensions']['id']) === false)
 			{
 				$qfeatures->delete($info['qfeatures']['id']);
@@ -1235,7 +1235,7 @@ switch($act)
 
 			$info['dfeatures'] = false;
 
-			if(($info['extenumbers'] = $extenumbers->get($extenum_where)) !== false)
+			if(($info['extenumbers'] = $extenumbers->get_where($extenum_where)) !== false)
 			{
 				$dfeatures = &$ipbx->get_module('didfeatures');
 				$dfeatures_where = array();
@@ -1261,7 +1261,7 @@ switch($act)
 
 			$qmember_where = array('queue_name' => $info['qfeatures']['name']);
 
-			if($qmember->get_where($qmember_where) !== false
+			if($qmember->get_id($qmember_where) !== false
 			&& $qmember->delete_where($qmember_where) === false)
 			{
 				$qfeatures->delete($info['qfeatures']['id']);

@@ -20,91 +20,98 @@ class xivo_service_asterisk_useriax_abstract_sql extends xivo_service_asterisk_a
 			$this->_param['table'] = (string) $param['table'];
 	}
 
-	function get($id,$disable=null)
+	function get($arr,$disable=null)
 	{
-		if(($id = xivo_uint($id)) === 0)
-			return(false);
+		if(is_array($arr) === false)
+		{
+			if(($arr = xivo_uint($arr)) !== 0)
+				$arr = array('id' => $arr);
+			else
+				return(false);
+		}
 
-		$where = 'id = '.$id.' AND category = \'user\'';
+		$arr['category'] = 'user';
 
-		if($disable !== null)
-			$where .= ' AND commented = '.intval((bool) $disable);
-
-		$r = $this->_dso->select_one($this->_param['table'],null,$where);
-
-		return($r);
+		return(parent::get($arr,$disable));
 	}
 
-	function get_where($arr,$disable=null)
+	function get_id($arr,$disable=null)
 	{
-		if(($where = $this->_dso->where($arr)) === false)
-			return(false);
+		if(is_array($arr) === false)
+		{
+			if(($arr = xivo_uint($arr)) !== 0)
+				$arr = array('id' => $arr);
+			else
+				return(false);
+		}
 
-		if($disable !== null)
-			$where .= ' AND commented = '.intval((bool) $disable);
+		$arr['category'] = 'user';
 
-		$where .= ' AND category = \'user\'';
-
-		if(($r = $this->_dso->select_one($this->_param['table'],'id',$where)) !== false)
-			$r = $r['id'];
-
-		return($r);
+		return(parent::get($arr,$disable,null,true));
 	}
 
-	function add($arr)
+	function edit($id,$arr,$disable=null)
 	{
-		$r = false;
+		if(is_array($id) === false)
+		{
+			if(($id = xivo_uint($id)) !== 0)
+				$id = array('id' => $id);
+			else
+				return(false);
+		}
 
-		if($this->_dso->insert($this->_param['table'],$arr) === true)
-			$r = $this->_dso->insert_id();
+		$id['category'] = 'user';
 
-		return($r);
+		return(parent::edit($id,$arr,$disable));
 	}
 
-	function edit($id,$arr)
+	function delete($arr,$disable=null)
 	{
-		if(($id = xivo_uint($id)) === 0)
-			return(false);
+		if(is_array($arr) === false)
+		{
+			if(($arr = xivo_uint($arr)) !== 0)
+				$arr = array('id' => $arr);
+			else
+				return(false);
+		}
 
-		$r = $this->_dso->update($this->_param['table'],$arr,'id = '.$id.' AND category = \'user\'');
+		$arr['category'] = 'user';
 
-		return($r);
+		return(parent::delete($arr,$disable));
 	}
 
-	function delete($id)
+	function get_list($disable=null,$order=null,$limit=null)
 	{
-		if(($id = xivo_uint($id)) === 0)
-			return(false);
+		$arr = array('category' => 'user');
 
-		$r = $this->_dso->delete($this->_param['table'],'id = '.$id.' AND category = \'user\'');
-
-		return($r);
+		return(parent::get_list_where($arr,$disable,null,$order,$limit));
 	}
 
-	function get_list($disable=null)
+	function get_list_where($arr,$disable=null,$order=null,$limit=null)
 	{
-		$where = ' WHERE category = \'user\'';
-
-		if($disable !== null)
-			$where .= ' AND commented = '.intval((bool) $disable);
-
-		$rs = $this->_dso->query('SELECT id FROM '.$this->_param['table'].$where);
-
-		if($rs === false)
+		if(is_array($arr) === false || empty($arr) === true)
 			return(false);
 
-		$r = array();
+		$arr['category'] = 'user';
 
-		while($rw = $this->_dso->fetch_assoc($rs))
-			$r[] = $rw['id'];
+		return(parent::get_list_where($arr,$disable,null,$order,$limit));
+	}
 
-		if($this->_dso->is_free() === true)
-			$this->_dso->free($rs);
+	function get_all($disable=null,$order=null,$limit=null)
+	{
+		$arr = array('category' => 'user');
 
-		if(isset($r[0]) === false)
-			$r = false;
+		return(parent::get_list_where($arr,$disable,null,$order,$limit,true));
+	}
 
-		return($r);
+	function get_all_where($arr,$disable=null,$order=null,$limit=null)
+	{
+		if(is_array($arr) === false || empty($arr) === true)
+			return(false);
+
+		$arr['category'] = 'user';
+
+		return(parent::get_list_where($arr,$disable,null,$order,$limit,true));
 	}
 }
 

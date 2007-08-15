@@ -7,7 +7,7 @@ class xivo_service_asterisk_useriax extends xivo_service_asterisk_abstract
 	var $_dso	= null;
 	var $_name	= 'useriax';
 	var $_filter	= null;	
-	var $_origin	= null;
+	var $_origin	= false;
 
 	function xivo_service_asterisk_useriax(&$sre,&$dso)
 	{
@@ -23,45 +23,15 @@ class xivo_service_asterisk_useriax extends xivo_service_asterisk_abstract
 		$this->_load_config();
 	}
 
-	function add_origin()
+	function _prepare($data)
 	{
-		return($this->_origin('add'));
-	}
+		$initialized = $this->_conf['initialized'].':'.$data['name'].'@';
 
-	function edit_origin()
-	{
-		return($this->_origin('edit'));
-	}
+		$data['initialized'] = false;
+		$data['commented'] = $data['commented'] !== '0' ? true : false;
+		$data['callgroup'] = empty($data['callgroup']) === false ? explode(',',$data['callgroup']) : '';
 
-	function _origin($type)
-	{
-		if(($type !== 'add' && $type !== 'edit') === true || is_array($this->_origin) === false)
-			return(false);
-
-		if($type === 'add')
-			$r = $this->add($this->_origin,$this->_origin['id']);
-		else
-			$r = $this->edit($this->_origin['id'],$this->_origin);
-
-		return($r);
-	}
-
-	function get($id,$disable=null)
-	{
-		$r = false;
-
-		if(($id = xivo_uint($id)) === 0 || ($r = $this->_dso->get($id,$disable)) === false)
-			return($r);
-
-		$this->_origin = $r;
-
-		$initialized = $this->_conf['initialized'].':'.$r['name'].'@';
-
-		$r['initialized'] = false;
-		$r['commented'] = $r['commented'] !== '0' ? true : false;
-		$r['callgroup'] = empty($r['callgroup']) === false ? explode(',',$r['callgroup']) : '';
-
-		return($r);
+		return($data);
 	}
 
 	function add($arr,$id=0)
@@ -78,17 +48,15 @@ class xivo_service_asterisk_useriax extends xivo_service_asterisk_abstract
 		{
 			$where = array('name' => $arr['name']);
 
-			if($this->get_where($where) !== false)
+			if($this->get_id($where) !== false)
 				return(false);
 		}
 
 		return($this->_dso->add($arr));
 	}
 
-	function edit($id,$arr)
+	function edit($id,$arr,$disable=null)
 	{
-		$r = false;
-
 		if(($id = xivo_uint($id)) === 0 || is_array($arr) === false)
 			return(false);
 
@@ -98,47 +66,11 @@ class xivo_service_asterisk_useriax extends xivo_service_asterisk_abstract
 		{
 			$where = array('name' => $arr['name']);
 
-			if(($whereid = $this->get_where($where)) !== false && (int) $whereid !== $id)
+			if(($whereid = $this->get_id($where)) !== false && $whereid !== $id)
 				return(false);
 		}
 
-		return($this->_dso->edit($id,$arr));
-	}
-
-	function disable($id,$value=false)
-	{
-		if(($id = xivo_uint($id)) === 0)
-			return(false);
-
-		$value = (bool) $value === false ? 0 : 1;
-
-		return($this->_dso->edit($id,array('commented' => $value)));
-	}
-
-	function delete($id)
-	{
-		if(($id = xivo_uint($id)) === 0)
-			return(false);
-
-		return($this->_dso->delete($id));
-	}
-	
-	function get_search($name,$disable=null)
-	{
-		if(($r = $this->_dso->get_search($name,$disable)) !== false && isset($r[0]) === false)
-			$r = false;
-
-		return($r);
-	}
-
-	function get_where($arr)
-	{
-		$arr = (array) $arr;
-
-		if(($where = $this->get_elements_where($arr)) === false)
-			return(false);
-
-		return($this->_dso->get_where($where));
+		return($this->_dso->edit($id,$arr,$disable));
 	}
 }
 

@@ -39,7 +39,7 @@ do
 	else
 		$localexten_where['context'] = $info['protocol']['context'];
 
-	if(($info['localexten'] = $localexten->get($localexten_where)) !== false
+	if(($info['localexten'] = $localexten->get_where($localexten_where)) !== false
 	&& $localexten->delete($info['localexten']['id']) === false)
 	{
 		$protocol->add_origin();
@@ -53,7 +53,7 @@ do
 
 	$info['dfeatures'] = false;
 
-	if(($info['extenumbers'] = $extenumbers->get($extenum_where)) !== false)
+	if(($info['extenumbers'] = $extenumbers->get_where($extenum_where)) !== false)
 	{
 		$dfeatures = &$ipbx->get_module('didfeatures');
 		$dfeatures_where = array();
@@ -85,7 +85,7 @@ do
 	$info['hints'] = false;
 
 	if($hints_where['app'] !== false
-	&& ($info['hints'] = $hintsexten->get($hints_where)) !== false
+	&& ($info['hints'] = $hintsexten->get_where($hints_where)) !== false
 	&& $hintsexten->delete($info['hints']['id']) === false)
 	{
 		$protocol->add_origin();
@@ -106,7 +106,7 @@ do
 	$quser_where['usertype'] = 'user';
 	$quser_where['userid'] = $info['ufeatures']['id'];
 
-	if($qmember->get_where($quser_where) !== false
+	if($qmember->get_id($quser_where) !== false
 	&& $qmember->delete_where($quser_where) === false)
 	{
 		$protocol->add_origin();
@@ -126,15 +126,12 @@ do
 		break;
 	}
 
-	if(($info['usergroup'] = $ugroup->get_by_user($info['ufeatures']['id'])) !== false)
-		$ugroup->delete($info['usergroup']['id']);
+	$ugroup->delete_where(array('userid' => $info['ufeatures']['id']));
 
-	if(($info['voicemail'] = $voicemail->get(array(
-						'mailbox' => $info['ufeatures']['number'],
-						'context' => $info['ufeatures']['context']))) !== false)
-		$voicemail->delete($info['voicemail']['id']);
+	$voicemail->delete_where(array('mailbox' => $info['ufeatures']['number'],
+				       'context' => $info['ufeatures']['context']));
 
-	if($autoprov->get(array('iduserfeatures' => $info['ufeatures']['id'])) !== false)
+	if($autoprov->get_where(array('iduserfeatures' => $info['ufeatures']['id'])) !== false)
 		$autoprov->userdeleted($info['ufeatures']['id']);
 }
 while(false);

@@ -6,7 +6,9 @@ $return = &$info;
 
 if(isset($_QR['id']) === false
 || ($info['trunk'] = $trunksip->get($_QR['id'])) === false
-|| ($info['tfeatures'] = $tfeatures->get_by_trunk($info['trunk']['id'],'sip')) === false)
+|| ($info['tfeatures'] = $tfeatures->get_where(array(
+					'trunkid' => $info['trunk']['id'],
+					'trunk' => 'sip'))) === false)
 	xivo_go($_HTML->url('service/ipbx/trunk_management/sip'),$param);
 
 $registerid = (int) $info['tfeatures']['registerid'];
@@ -22,36 +24,11 @@ $allow = $info['trunk']['allow'];
 
 $edit = true;
 
-if(xivo_ak('var_val',$gregister) === true)
+if(xivo_ak('var_val',$gregister) === true
+&& ($pregister = $generalsip->parse_register($gregister['var_val'])) !== false)
 {
+	$info['register'] = $pregister;
 	$info['register']['commented'] = $gregister['commented'];
-
-	if(preg_match('#^((?:[a-z0-9_\.-]+)(?:@[a-z0-9\.-]+)?)(?:\:([a-z0-9_\.-]+)(:[a-z0-9_\.-]+)?)?'.
-		      '@([a-z0-9\.-]+)(:[0-9]{1,5})?(/[a-z0-9]+)?$#i',$gregister['var_val'],$register) === 1)
-	{
-		$info['register']['username'] = $register[1];
-		$info['register']['host'] = $register[4];
-
-		if(isset($register[2]) === true)
-			$info['register']['password'] = $register[2];
-		else
-			$info['register']['password'] = '';
-
-		if($info['register']['password'] !== '' && isset($register[3]) === true && $register[3] !== '')
-			$info['register']['authuser'] = substr($register[3],1);
-		else
-			$info['register']['authuser'] = '';
-
-		if(isset($register[5]) === true && $register[5] !== '')
-			$info['register']['port'] = substr($register[5],1);
-		else
-			$info['register']['port'] = '';
-
-		if(isset($register[6]) === true && $register[6] !== '')
-			$info['register']['contact'] = substr($register[6],1);
-		else
-			$info['register']['contact'] = '';
-	}
 }
 
 do
@@ -77,31 +54,12 @@ do
 
 		$register_active = true;
 
-		if(($result['register']['username'] = $generalsip->chk_value('register_username',$_QR['register']['username'])) === false
-		|| ($result['register']['host'] = $generalsip->chk_value('register_host',$_QR['register']['host'])) === false)
+		if(($bregister = $generalsip->build_register($_QR['register'])) === false)
 			break;
 
-		$register = $result['register']['username'];
-
-		if(isset($_QR['register']['password']) === true
-		&& ($result['register']['password'] = $generalsip->set_chk_value('register_password',$_QR['register']['password'])) !== '')
-		{
-			$register .= ':'.$result['register']['password'];
-
-			if(isset($_QR['register']['authuser']) === true
-			&& ($result['register']['authuser'] = $generalsip->set_chk_value('register_authuser',$_QR['register']['authuser'])) !== '')
-				$register .= ':'.$result['register']['authuser'];
-		}
-
-		$register .= '@'.$result['register']['host'];
-
-		if(isset($_QR['register']['port']) === true
-		&& ($result['register']['port'] = $generalsip->set_chk_value('register_port',$_QR['register']['port'])) !== '')
-			$register .= ':'.$result['register']['port'];
-
-		if(isset($_QR['register']['contact']) === true
-		&& ($result['register']['contact'] = $generalsip->set_chk_value('register_contact',$_QR['register']['contact'])) !== '')
-			$register .= '/'.$result['register']['contact'];
+		$register = $bregister['str'];
+		$result['register'] = $bregister['arr'];
+		$result['register']['commented'] = 0;
 	}
 	while(false);
 
@@ -204,15 +162,14 @@ do
 
 $element['trunk'] = $trunksip->get_element();
 
-if(xivo_issa('allow',$element['trunk']) === true && xivo_issa('value',$element['trunk']['allow']) === true)
+if(xivo_issa('allow',$element['trunk']) === true
+&& xivo_issa('value',$element['trunk']['allow']) === true
+&& empty($allow) === false)
 {
-	if(empty($allow) === false)
-	{
-		if(is_array($allow) === false)
-			$allow = explode(',',$allow);
+	if(is_array($allow) === false)
+		$allow = explode(',',$allow);
 
-		$element['trunk']['allow']['value'] = array_diff($element['trunk']['allow']['value'],$allow);
-	}
+	$element['trunk']['allow']['value'] = array_diff($element['trunk']['allow']['value'],$allow);
 }
 
 if(empty($info['register']) === true)

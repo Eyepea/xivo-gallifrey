@@ -16,9 +16,9 @@ $tfeatures_where['trunk'] = 'iax';
 
 for($i = 0;$i < $nb;$i++)
 {
-	$tfeatures_where['trunkiax'] = $arr[$i];
+	$tfeatures_where['trunkid'] = strval($arr[$i]);
 
-	if(($info['tfeatures'] = $tfeatures->get($tfeatures_where)) === false)
+	if(($info['tfeatures'] = $tfeatures->get_where($tfeatures_where)) === false)
 		continue;
 
 	if((int) $info['tfeatures']['registerid'] !== 0)
@@ -29,7 +29,7 @@ for($i = 0;$i < $nb;$i++)
 			$generaliax->enable($info['tfeatures']['registerid']);
 	}
 	
-	$trunkiax->disable($arr[$i],$disable);
+	$trunkiax->disable($info['tfeatures']['trunkid'],$disable);
 }
 
 xivo_go($_HTML->url('service/ipbx/trunk_management/iax'),$param);

@@ -7,7 +7,7 @@ class xivo_service_asterisk_queue extends xivo_service_asterisk_abstract
 	var $_dso	= null;
 	var $_name	= 'queue';
 	var $_filter	= null;
-	var $_origin	= null;
+	var $_origin	= false;
 
 	function xivo_service_asterisk_queue(&$sre,&$dso)
 	{
@@ -25,24 +25,22 @@ class xivo_service_asterisk_queue extends xivo_service_asterisk_abstract
 
 	function get($id,$disable=null)
 	{
-		if(($r = $this->_dso->get($id,$disable)) === false)
-			return($r);
+		if(is_scalar($id) === false
+		|| ($r = $this->_dso->get($id,$disable)) === false)
+			return(false);
 
 		$this->_origin = $r;
 
-		$r['commented'] = (bool) $r['commented'];
+		$r = $this->_prepare($r);
 
 		return($r);
 	}
 
-	function add_origin()
+	function _prepare($data)
 	{
-		return($this->_origin('add'));
-	}
+		$data['commented'] = (bool) $data['commented'];
 
-	function edit_origin()
-	{
-		return($this->_origin('edit'));
+		return($data);
 	}
 
 	function _origin($type)
@@ -66,40 +64,18 @@ class xivo_service_asterisk_queue extends xivo_service_asterisk_abstract
 
 	function edit($id,$arr,$disable=null)
 	{
-		if(is_array($arr) === false)
+		if(is_scalar($id) === false || is_array($arr) === false)
 			return(false);
 
-		if($disable !== null)
-			$arr['commented'] = (bool) $disable === false ? 0 : 1;
-
-		return($this->_dso->edit($id,$arr));
+		return($this->_dso->edit($id,$arr,$disable));
 	}
 
-	function delete($id)
+	function delete($id,$disable=null)
 	{
+		if(is_scalar($id) === false)
+			return(false);
+
 		return($this->_dso->delete($id));
-	}
-
-	function get_all_where($arr=array(),$disable=null)
-	{
-		$arr = (array) $arr;
-
-		if(($where = $this->get_elements_where($arr)) === false
-		|| ($list = $this->_dso->get_all_where($where,$disable)) === false
-		|| isset($list[0]) === false)
-			return(false);
-
-		$nb = count($list);
-
-		$r = array();
-
-		for($i = 0;$i < $nb;$i++)
-			$r[] = $list[$i];
-
-		if(isset($r[0]) === false)
-			$r = false;
-
-		return($r);
 	}
 }
 

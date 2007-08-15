@@ -30,7 +30,7 @@ switch($act)
 			$_QR['extenumbers']['context'] = 'did-extensions';
 
 			if(($result['extenumbers'] = $extenumbers->chk_values($_QR['extenumbers'])) === false
-			|| $extenumbers->get($result['extenumbers']) !== false)
+			|| $extenumbers->get_where($result['extenumbers']) !== false)
 			{
 				$add = false;
 				$result['extenumbers'] = $extenumbers->get_filter_result();
@@ -133,7 +133,7 @@ switch($act)
 		if(isset($_QR['id']) === false
 		|| ($info['dfeatures'] = $dfeatures->get($_QR['id'])) === false
 		|| ($info['did'] = $extensions->get($info['dfeatures']['extenid'])) === false
-		|| ($info['extenumbers'] = $extenumbers->get(array(
+		|| ($info['extenumbers'] = $extenumbers->get_where(array(
 							'number' => $info['did']['exten'],
 							'context' => $info['did']['context']))) === false
 		|| ($info['dfeatures']['type'] !== 'custom' && $info['dfeatures']['commented'] === false
@@ -164,7 +164,7 @@ switch($act)
 			$_QR['extenumbers']['context'] = $info['extenumbers']['context'];
 
 			if(($result['extenumbers'] = $extenumbers->chk_values($_QR['extenumbers'])) === false
-			|| (($extenum = $extenumbers->get($result['extenumbers'])) !== false 
+			|| (($extenum = $extenumbers->get_where($result['extenumbers'])) !== false 
 			   && (int) $extenum['id'] !== (int) $info['extenumbers']['id']) === true)
 			{
 				$edit = false;
@@ -270,7 +270,7 @@ switch($act)
 		if(isset($_QR['id']) === false
 		|| ($info['dfeatures'] = $dfeatures->get($_QR['id'])) === false
 		|| ($info['did'] = $extensions->get($info['dfeatures']['extenid'])) === false
-		|| ($info['extenumbers'] = $extenumbers->get(array(
+		|| ($info['extenumbers'] = $extenumbers->get_where(array(
 							'number' => $info['did']['exten'],
 							'context' => $info['did']['context']))) === false)
 			xivo_go($_HTML->url('service/ipbx/call_management/did'),$param);
@@ -306,9 +306,9 @@ switch($act)
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			if(($info['dfeatures'] = $dfeatures->get($_QR['dids'][$i])) === false
+			if(($info['dfeatures'] = $dfeatures->get($values[$i])) === false
 			|| ($info['did'] = $extensions->get($info['dfeatures']['extenid'])) === false
-			|| ($info['extenumbers'] = $extenumbers->get(array(
+			|| ($info['extenumbers'] = $extenumbers->get_where(array(
 								'number' => $info['did']['exten'],
 								'context' => $info['did']['context']))) === false)
 				continue;
@@ -343,7 +343,7 @@ switch($act)
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			if(($info['dfeatures'] = $dfeatures->get($_QR['dids'][$i])) === false
+			if(($info['dfeatures'] = $dfeatures->get($values[$i])) === false
 			|| ($info['did'] = $extensions->get($info['dfeatures']['extenid'])) === false)
 				continue;
 

@@ -7,7 +7,7 @@ class xivo_service_asterisk_agentgroup extends xivo_service_asterisk_abstract
 	var $_dso	= null;
 	var $_name	= 'agentgroup';
 	var $_filter	= null;
-	var $_origin	= null;
+	var $_origin	= false;
 
 	function xivo_service_asterisk_agentgroup(&$sre,&$dso)
 	{
@@ -25,17 +25,17 @@ class xivo_service_asterisk_agentgroup extends xivo_service_asterisk_abstract
 
 	function get($id,$disable=null,$delete=false)
 	{
-		if(is_array($id) === true && ($id = $this->get_where($id,$disable,$delete)) === false)
-			return(false);
+		return(parent::get($id,$disable,$delete));
+	}
 
-		if(($id = xivo_uint($id)) === 0 || ($r = $this->_dso->get($id,$disable,$delete)) === false)
-			return(false);
+	function get_id($arr,$disable=null,$delete=false)
+	{
+		return(parent::get_id($arr,$disable,$delete));
+	}
 
-		$this->_origin = $r;
-
-		$r = $this->_prepare($r);
-
-		return($r);
+	function get_where($arr,$disable=null,$delete=false)
+	{
+		return(parent::get_where($arr,$disable,$delete));
 	}
 
 	function _prepare($data)
@@ -58,39 +58,6 @@ class xivo_service_asterisk_agentgroup extends xivo_service_asterisk_abstract
 			$r = false;
 
 		return($r);
-	}
-
-	function add_origin()
-	{
-		return($this->_origin('add'));
-	}
-
-	function edit_origin()
-	{
-		return($this->_origin('edit'));
-	}
-
-	function _origin($type)
-	{
-		if(($type !== 'add' && $type !== 'edit') === true || is_array($this->_origin) === false)
-			return(false);
-
-		if($type === 'add')
-			$r = $this->add($this->_origin);
-		else
-			$r = $this->edit($this->_origin['id'],$this->_origin);
-
-		return($r);
-	}
-
-	function get_where($arr,$disable=null,$delete=false)
-	{
-		$arr = (array) $arr;
-
-		if(($where = $this->get_elements_where($arr)) === false)
-			return(false);
-
-		return($this->_dso->get_where($where,$disable,$delete));
 	}
 
 	function add($arr)
@@ -118,7 +85,7 @@ class xivo_service_asterisk_agentgroup extends xivo_service_asterisk_abstract
 		{
 			$where = array('name' => $arr['name']);
 
-			if($this->get_where($where) !== false)
+			if($this->get_id($where) !== false)
 				return(false);
 		}
 
@@ -130,7 +97,7 @@ class xivo_service_asterisk_agentgroup extends xivo_service_asterisk_abstract
 		return($r);
 	}
 
-	function edit($id,$arr)
+	function edit($id,$arr,$disable=null,$delete=false)
 	{
 		if(($id = xivo_uint($id)) === 0 || is_array($arr) === false)
 			return(false);
@@ -139,50 +106,44 @@ class xivo_service_asterisk_agentgroup extends xivo_service_asterisk_abstract
 		{
 			$where = array('name' => $arr['name']);
 
-			if(($whereid = $this->get_where($where)) !== false && (int) $whereid !== $id)
+			if(($whereid = $this->get_id($where)) !== false && $whereid !== $id)
 				return(false);
 		}
 
-		return($this->_dso->edit($id,$arr));
+		return($this->_dso->edit($id,$arr,$disable,$delete));
 	}
 
-	function delete($id)
+	function edit_where($id,$arr,$disable=null,$delete=false)
 	{
-		return($this->edit($id,array('deleted' => true)));
+		return(parent::edit_where($id,$arr,$disable,$delete));
 	}
 
-	function recover($id)
+	function delete($id,$disable=null)
 	{
-		return($this->edit($id,array('deleted' => false)));
+		return($this->edit($id,array('deleted' => true),$disable));
 	}
 
-	function disable($id)
+	function delete_where($id,$disable=null)
 	{
-		return($this->edit($id,array('commented' => true)));
+		return(parent::edit_where($id,array('deleted' => true),$disable));
 	}
 
-	function enable($id)
+	function recover($id,$disable=null)
 	{
-		return($this->edit($id,array('commented' => false)));
+		return($this->edit($id,array('deleted' => false),$disable,true));
 	}
 
-	function edit_where($arr,$values)
+	function recover_where($id,$disable=null)
 	{
-		$arr = (array) $arr;
-
-		if(is_array($values) === false
-		|| ($where = $this->get_elements_where($arr)) === false
-		|| ($values = $this->chk_set_values($values)) === false)
-			return(false);
-
-		return($this->_dso->edit_where($where,$values));
+		return(parent::edit_where($id,array('deleted' => true),$disable,true));
 	}
 
 	function edit_list($arr,$values)
 	{
 		$r = false;
 
-		if(is_array($arr) === false || ($values = $this->chk_set_values($values)) === false)
+		if(is_array($arr) === false
+		|| ($values = $this->chk_values($values,true,false,false)) === false)
 			return($r);
 
 		$list = array_values($arr);
@@ -196,22 +157,24 @@ class xivo_service_asterisk_agentgroup extends xivo_service_asterisk_abstract
 		return(true);
 	}
 
-	function get_list_where($arr=array(),$disable=null,$delete=false)
+	function get_list($disable=null,$delete=false,$order=null,$limit=null)
 	{
-		$arr = (array) $arr;
-
-		if(($where = $this->get_elements_where($arr)) === false)
-			return(false);
-
-		if(($r = $this->_dso->get_list_where($where,$disable,$delete)) !== false && isset($r[0]) === false)
-			$r = false;
-
-		return($r);
+		return(parent::get_list($disable,$delete,$order,$limit));
 	}
 
-	function get_all($disable=null,$delete=false)
+	function get_list_where($arr,$disable=null,$delete=false,$order=null,$limit=null)
 	{
-		return(parent::get_all($disable,$delete));
+		return(parent::get_list_where($arr,$disable,$delete,$order,$limit));
+	}
+
+	function get_all($disable=null,$delete=false,$prepare=true,$order=null,$limit=null)
+	{
+		return(parent::get_all($disable,$delete,$prepare,$order,$limit));
+	}
+
+	function get_all_where($arr,$disable=null,$delete=false,$prepare=true,$order=null,$limit=null)
+	{
+		return(parent::get_all_where($arr,$disable,$delete,$prepare,$order,$limit));
 	}
 }
 

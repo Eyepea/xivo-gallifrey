@@ -24,34 +24,12 @@ do
 		$result['register'] = array();
 		$result['register']['commented'] = 0;
 
-		if(isset($_QR['register']['username'],$_QR['register']['password'],$_QR['register']['host']) === false)
+		if(($bregister = $generalsip->build_register($_QR['register'])) === false)
 			break;
 
-		if(($result['register']['username'] = $generalsip->chk_value('register_username',$_QR['register']['username'])) === false
-		|| ($result['register']['host'] = $generalsip->chk_value('register_host',$_QR['register']['host'])) === false)
-			break;
-
-		$register = $result['register']['username'];
-
-		if(isset($_QR['register']['password']) === true
-		&& ($result['register']['password'] = $generalsip->set_chk_value('register_password',$_QR['register']['password'])) !== '')
-		{
-			$register .= ':'.$result['register']['password'];
-
-			if(isset($_QR['register']['authuser']) === true
-			&& ($result['register']['authuser'] = $generalsip->set_chk_value('register_authuser',$_QR['register']['authuser'])) !== '')
-				$register .= ':'.$result['register']['authuser'];
-		}
-
-		$register .= '@'.$result['register']['host'];
-
-		if(isset($_QR['register']['port']) === true
-		&& ($result['register']['port'] = $generalsip->set_chk_value('register_port',$_QR['register']['port'])) !== '')
-			$register .= ':'.$result['register']['port'];
-
-		if(isset($_QR['register']['contact']) === true
-		&& ($result['register']['contact'] = $generalsip->set_chk_value('register_contact',$_QR['register']['contact'])) !== '')
-			$register .= '/'.$result['register']['contact'];
+		$register = $bregister['str'];
+		$result['register'] = $bregister['arr'];
+		$result['register']['commented'] = 0;
 	}
 	while(false);
 
@@ -104,15 +82,14 @@ do
 
 $element['trunk'] = $trunksip->get_element();
 
-if(xivo_issa('allow',$element['trunk']) === true && xivo_issa('value',$element['trunk']['allow']) === true)
+if(xivo_issa('allow',$element['trunk']) === true
+&& xivo_issa('value',$element['trunk']['allow']) === true
+&& empty($allow) === false)
 {
-	if(empty($allow) === false)
-	{
-		if(is_array($allow) === false)
-			$allow = explode(',',$allow);
+	if(is_array($allow) === false)
+		$allow = explode(',',$allow);
 
-		$element['trunk']['allow']['value'] = array_diff($element['trunk']['allow']['value'],$allow);
-	}
+	$element['trunk']['allow']['value'] = array_diff($element['trunk']['allow']['value'],$allow);
 }
 
 if($result !== null)

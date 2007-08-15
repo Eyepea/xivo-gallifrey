@@ -20,135 +20,95 @@ class xivo_service_asterisk_queuemember_abstract_sql extends xivo_service_asteri
 			$this->_param['table'] = (string) $param['table'];
 	}
 
-	function get($ids,$disable=null)
+	function get($arr,$disable=null)
 	{
-		if(is_array($ids) === false)
+		if(is_array($arr) === false)
 			return(false);
 
-		$where = 'queue_name = \''.$this->_dso->escape_string($ids['queue_name']).'\''.
-			 ' AND interface = \''.$this->_dso->escape_string($ids['interface']).'\'';
-
-		if($disable !== null)
-			$where .= ' AND commented = '.intval((bool) $disable);
-
-		$r = $this->_dso->select_one($this->_param['table'],null,$where);
-
-		return($r);
+		return(parent::get($arr,$disable));
 	}
 
-	function get_where($arr)
+	function get_id($arr,$disable=null)
 	{
-		if(($where = $this->_dso->where($arr)) === false)
+		if(($arr = parent::get($arr,$disable)) === false)
 			return(false);
 
-		if(($r = $this->_dso->select_one($this->_param['table'],'queue_name',$where)) !== false)
-			$r = $r['queue_name'];
+		$r = array();
+		$r['queue_name'] = $arr['queue_name'];
+		$r['interface'] = $arr['interface'];
 
 		return($r);
 	}
 
 	function add($arr)
 	{
-		$r = $this->_dso->insert($this->_param['table'],$arr);
-
-		return($r);
+		return(parent::add($arr,false));
 	}
 
-	function edit($ids,$arr)
+	function edit($id,$arr,$disable=null)
 	{
-		if(is_array($ids) === false)
+		if(is_array($id) === false)
 			return(false);
 
-		$where = 'queue_name = \''.$this->_dso->escape_string($ids['queue_name']).'\''.
-			 ' AND interface = \''.$this->_dso->escape_string($ids['interface']).'\'';
-
-		$r = $this->_dso->update($this->_param['table'],$arr,$where);
-
-		return($r);
+		return(parent::edit($id,$arr,$disable));
 	}
 
-	function edit_where($arr,$values)
+	function delete($arr,$disable=null)
 	{
-		if(($where = $this->_dso->where($arr)) === false)
+		if(is_array($arr) === false)
 			return(false);
 
-		$r = $this->_dso->update($this->_param['table'],$values,$where);
-
-		return($r);
+		return(parent::delete($arr,$disable));
 	}
-
-	function delete($ids)
+	
+	function get_list($disable=null,$order=null,$limit=null)
 	{
-		if(is_array($ids) === false)
+		if(($list = parent::get_list($disable,null,$order,$limit)) === false
+		|| isset($list[0]) === false)
 			return(false);
 
-		$where = 'queue_name = \''.$this->_dso->escape_string($ids['queue_name']).'\''.
-			 ' AND interface = \''.$this->_dso->escape_string($ids['interface']).'\'';
-
-		$r = $this->_dso->delete($this->_param['table'],$where);
-
-		return($r);
-	}
-
-	function delete_where($arr)
-	{
-		if(($where = $this->_dso->where($arr)) === false)
-			return(false);
-
-		$r = $this->_dso->delete($this->_param['table'],$where);
-
-		return($r);
-	}
-
-	function get_list($disable=null)
-	{
-		$where = '';
-
-		if($disable !== null)
-			$where = ' WHERE commented = '.intval((bool) $disable);
-
-		$rs = $this->_dso->query('SELECT queue_name, interface FROM '.$this->_param['table'].$where);
-
-		if($rs === false)
-			return(false);
+		$nb = count($list);
 
 		$r = array();
 
-		while($rw = $this->_dso->fetch_assoc($rs))
-			$r[] = $rw;
-
-		if($this->_dso->is_free() === true)
-			$this->_dso->free($rs);
+		for($i = 0;$i < $nb;$i++)
+			$r[] = array('queue_name' => $list[$i]['queue_name'],
+				     'interface' => $list[$i]['interface']);
 
 		if(isset($r[0]) === false)
-			$r = false;
-
-		return($r);
-	}
-
-	function get_nb_by_name($name,$disable=null)
-	{
-		$where = 'queue_name = \''.$this->_dso->escape_string($name).'\'';
-
-		if($disable !== null)
-			$where .= ' AND commented = '.intval((bool) $disable);
-
-		$r = $this->_dso->select_count($this->_param['table'],null,$where);
-
-		return($r);
-	}
-
-	function get_all_where($arr,$disable=null)
-	{
-		if(($where = $this->_dso->where($arr)) === false)
 			return(false);
 
-		if($disable !== null)
-			$where .= ' AND commented = '.intval((bool) $disable);
+		return($r);
+	}
 
-		$r = $this->_dso->select_all($this->_param['table'],null,$where);
+	function get_list_where($arr,$disable=null,$order=null,$limit=null)
+	{
+		if(($list = parent::get_list_where($arr,$disable,null,$order,$limit)) === false
+		|| isset($list[0]) === false)
+			return(false);
+
+		$nb = count($list);
+
+		$r = array();
+
+		for($i = 0;$i < $nb;$i++)
+			$r[] = array('queue_name' => $list[$i]['queue_name'],
+				     'interface' => $list[$i]['interface']);
+
+		if(isset($r[0]) === false)
+			return(false);
 
 		return($r);
+	}
+
+	function get_all($disable=null,$order=null,$limit=null)
+	{
+		return(parent::get_list($disable,null,$order,$limit,true));
+	}
+
+	function get_all_where($arr,$disable=null,$order=null,$limit=null)
+	{
+		return(parent::get_list_where($arr,$disable,null,$order,$limit,true));
 	}
 }
 

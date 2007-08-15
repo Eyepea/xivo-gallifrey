@@ -20,45 +20,70 @@ class xivo_service_asterisk_autoprov_abstract_sql extends xivo_service_asterisk_
 			$this->_param['table'] = (string) $param['table'];
 	}
 
-	function get($macaddr)
+	function get($id)
 	{
-		$where = 'macaddr = \''.$this->_dso->escape_string($macaddr).'\'';
-
-		$r = $this->_dso->select_one($this->_param['table'],null,$where);
-
-		return($r);
-	}
-
-	function get_where($arr)
-	{
-		if(($where = $this->_dso->where($arr)) === false)
+		if(is_string($id) === false)
 			return(false);
 
-		if(($r = $this->_dso->select_one($this->_param['table'],'macaddr',$where)) !== false)
-			$r = $r['macaddr'];
+		$arr = array('macaddr' => $id);
 
-		return($r);
+		return(parent::get($arr));
 	}
 
-	function get_list()
+	function get_id($arr)
 	{
-		$rs = $this->_dso->query('SELECT macaddr FROM '.$this->_param['table']);
-
-		if($rs === false)
+		if(($r = parent::get($arr)) === false)
 			return(false);
+
+		return($r['macaddr']);
+	}
+	
+	function get_list($disable=null,$order=null,$limit=null)
+	{
+		if(($list = parent::get_list($disable,null,$order,$limit)) === false
+		|| isset($list[0]) === false)
+			return(false);
+
+		$nb = count($list);
 
 		$r = array();
 
-		while($rw = $this->_dso->fetch_assoc($rs))
-			$r[] = $rw['macaddr'];
-
-		if($this->_dso->is_free() === true)
-			$this->_dso->free($rs);
+		for($i = 0;$i < $nb;$i++)
+			$r[] = $list[$i]['macaddr'];
 
 		if(isset($r[0]) === false)
-			$r = false;
+			return(false);
 
 		return($r);
+	}
+
+	function get_list_where($arr,$disable=null,$order=null,$limit=null)
+	{
+		if(($list = parent::get_list_where($arr,$disable,null,$order,$limit)) === false
+		|| isset($list[0]) === false)
+			return(false);
+
+		$nb = count($list);
+
+		$r = array();
+
+		for($i = 0;$i < $nb;$i++)
+			$r[] = $list[$i]['macaddr'];
+
+		if(isset($r[0]) === false)
+			return(false);
+
+		return($r);
+	}
+
+	function get_all($disable=null,$order=null,$limit=null)
+	{
+		return(parent::get_list($disable,null,$order,$limit,true));
+	}
+
+	function get_all_where($arr,$disable=null,$order=null,$limit=null)
+	{
+		return(parent::get_list_where($arr,$disable,null,$order,$limit,true));
 	}
 }
 

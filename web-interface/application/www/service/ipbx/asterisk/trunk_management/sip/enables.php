@@ -16,9 +16,9 @@ $tfeatures_where['trunk'] = 'sip';
 
 for($i = 0;$i < $nb;$i++)
 {
-	$tfeatures_where['trunksip'] = $arr[$i];
+	$tfeatures_where['trunkid'] = strval($arr[$i]);
 
-	if(($info['tfeatures'] = $tfeatures->get($tfeatures_where)) === false)
+	if(($info['tfeatures'] = $tfeatures->get_where($tfeatures_where)) === false)
 		continue;
 
 	if((int) $info['tfeatures']['registerid'] !== 0)
@@ -29,7 +29,7 @@ for($i = 0;$i < $nb;$i++)
 			$generalsip->enable($info['tfeatures']['registerid']);
 	}
 	
-	$trunksip->disable($arr[$i],$disable);
+	$trunksip->disable($info['tfeatures']['trunkid'],$disable);
 }
 
 xivo_go($_HTML->url('service/ipbx/trunk_management/sip'),$param);

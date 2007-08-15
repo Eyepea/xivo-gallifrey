@@ -22,74 +22,93 @@ class xivo_service_asterisk_queue_abstract_sql extends xivo_service_asterisk_abs
 
 	function get($id,$disable=null)
 	{
-		$where = 'name = \''.$this->_dso->escape_string($id).'\'';
+		if(is_scalar($id) === false)
+			return(false);
 
-		if($disable !== null)
-			$where .= ' AND commented = '.intval((bool) $disable);
+		$arr = array('name' => $id);
 
-		$r = $this->_dso->select_one($this->_param['table'],null,$where);
+		return(parent::get($arr,$disable));
+	}
 
-		return($r);
+	function get_id($arr,$disable=null)
+	{
+		if(($r = parent::get($arr,$disable)) === false)
+			return(false);
+
+		return($r['name']);
 	}
 
 	function add($arr)
 	{
-		$r = $this->_dso->insert($this->_param['table'],$arr);
-
-		return($r);
+		return(parent::add($arr,false));
 	}
 
-	function edit($id,$arr)
+	function edit($id,$arr,$disable=null)
 	{
-		$r = $this->_dso->update($this->_param['table'],$arr,'name = \''.$this->_dso->escape_string($id).'\'');
-
-		return($r);
-	}
-
-	function delete($id)
-	{
-		$r = $this->_dso->delete($this->_param['table'],'name = \''.$this->_dso->escape_string($id).'\'');
-
-		return($r);
-	}
-
-	function get_list($disable=null)
-	{
-		$where = '';
-
-		if($disable !== null)
-			$where = ' WHERE commented = '.intval((bool) $disable);
-
-		$rs = $this->_dso->query('SELECT name FROM '.$this->_param['table'].$where);
-
-		if($rs === false)
+		if(is_scalar($id) === false)
 			return(false);
+
+		$id = array('name' => $id);
+
+		return(parent::edit($id,$arr,$disable));
+	}
+
+	function delete($id,$disable=null)
+	{
+		if(is_scalar($id) === false)
+			return(false);
+
+		$id = array('name' => $id);
+
+		return(parent::delete($id,$disable));
+	}
+	
+	function get_list($disable=null,$order=null,$limit=null)
+	{
+		if(($list = parent::get_list($disable,null,$order,$limit)) === false
+		|| isset($list[0]) === false)
+			return(false);
+
+		$nb = count($list);
 
 		$r = array();
 
-		while($rw = $this->_dso->fetch_assoc($rs))
-			$r[] = $rw['name'];
-
-		if($this->_dso->is_free() === true)
-			$this->_dso->free($rs);
+		for($i = 0;$i < $nb;$i++)
+			$r[] = $list[$i]['name'];
 
 		if(isset($r[0]) === false)
-			$r = false;
+			return(false);
 
 		return($r);
 	}
 
-	function get_all_where($arr,$disable=null)
+	function get_list_where($arr,$disable=null,$order=null,$limit=null)
 	{
-		if(($where = $this->_dso->where($arr)) === false)
+		if(($list = parent::get_list_where($arr,$disable,null,$order,$limit)) === false
+		|| isset($list[0]) === false)
 			return(false);
 
-		if($disable !== null)
-			$where .= ' AND commented = '.intval((bool) $disable);
+		$nb = count($list);
 
-		$r = $this->_dso->select_all($this->_param['table'],null,$where);
+		$r = array();
+
+		for($i = 0;$i < $nb;$i++)
+			$r[] = $list[$i]['name'];
+
+		if(isset($r[0]) === false)
+			return(false);
 
 		return($r);
+	}
+
+	function get_all($disable=null,$order=null,$limit=null)
+	{
+		return(parent::get_list($disable,null,$order,$limit,true));
+	}
+
+	function get_all_where($arr,$disable=null,$order=null,$limit=null)
+	{
+		return(parent::get_list_where($arr,$disable,null,$order,$limit,true));
 	}
 }
 

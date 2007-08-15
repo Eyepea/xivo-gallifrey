@@ -19,7 +19,8 @@ class xivo_service_asterisk_staticconf extends xivo_service_asterisk_abstract
 
 	function get($id,$disable=null)
 	{
-		if(($id = xivo_uint($id)) === 0 || ($r = $this->_dso->get($id,$disable)) === false)
+		if(($id = xivo_uint($id)) === 0
+		|| ($r = $this->_dso->get($id,$disable)) === false)
 			return(false);
 
 		$r = $this->_prepare($r);
@@ -279,8 +280,8 @@ class xivo_service_asterisk_staticconf extends xivo_service_asterisk_abstract
 		$arr['filename'] = $this->_filename;
 
 		if(is_array($val) === false
-		|| ($where = $this->get_elements_where($arr)) === false
-		|| ($values = $this->chk_set_values($val)) === false)
+		|| ($where = $this->get_element_where($arr)) === false
+		|| ($values = $this->chk_values($val,true,false,false)) === false)
 			return(false);
 
 		return($this->_dso->edit_where($where,$values,$disable));
@@ -338,7 +339,7 @@ class xivo_service_asterisk_staticconf extends xivo_service_asterisk_abstract
 	{
 		$arr = (array) $arr;
 
-		if(($where = $this->get_elements_where($arr)) === false)
+		if(($where = $this->get_element_where($arr)) === false)
 			return(false);
 
 		return($this->_dso->delete_where($where));
@@ -365,7 +366,7 @@ class xivo_service_asterisk_staticconf extends xivo_service_asterisk_abstract
 
 		$arr['filename'] = $this->_filename;
 
-		if(($where = $this->get_elements_where($arr)) === false
+		if(($where = $this->get_element_where($arr)) === false
 		|| ($r = $this->_dso->get_list_where($where,$disable)) === false
 		|| isset($r[0]) === false)
 			$r = false;
@@ -483,7 +484,7 @@ class xivo_service_asterisk_staticconf extends xivo_service_asterisk_abstract
 
 		$arr['filename'] = $this->_filename;
 
-		if(($where = $this->get_elements_where($arr)) === false
+		if(($where = $this->get_element_where($arr)) === false
 		|| ($r = $this->_dso->get_all_where($where,$disable)) === false
 		|| isset($r[0]) === false)
 			$r = false;

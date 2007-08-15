@@ -33,7 +33,7 @@ class xivo_service_asterisk_configfiles extends xivo_service_asterisk_abstract
 	{
 		$r = false;
 
-		$name = (string) $name;
+		$name = strval($name);
 
 		if(preg_match('/^[a-zA-Z0-9_-]+\.conf$/',$name) === 1)
 			$r = xivo_file::is_f_rw($this->_cfgpath.XIVO_SEP_DIR.$name);
@@ -45,9 +45,8 @@ class xivo_service_asterisk_configfiles extends xivo_service_asterisk_abstract
 	{
 		$r = false;
 
-		$name = (string) $name;
-
-		if(($file = $this->_chk_file($name)) === false || ($content = file_get_contents($file)) === false)
+		if(($file = $this->_chk_file($name)) === false
+		|| ($content = file_get_contents($file)) === false)
 			return($r);
 
 		$r = array();
@@ -62,7 +61,6 @@ class xivo_service_asterisk_configfiles extends xivo_service_asterisk_abstract
 	{
 		$r = false;
 
-		$name = (string) $name;
 		$contents = xivo_eol($contents);
 
 		if(($file = $this->_chk_file($name)) !== false)

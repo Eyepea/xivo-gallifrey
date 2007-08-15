@@ -6,7 +6,9 @@ $return = &$info;
 
 if(isset($_QR['id']) === false
 || ($info['trunk'] = $trunkiax->get($_QR['id'])) === false
-|| ($info['tfeatures'] = $tfeatures->get_by_trunk($info['trunk']['id'],'iax')) === false)
+|| ($info['tfeatures'] = $tfeatures->get_where(array(
+					'trunkid' => $info['trunk']['id'],
+					'trunk' => 'iax'))) === false)
 	xivo_go($_HTML->url('service/ipbx/trunk_management/iax'),$param);
 
 $registerid = (int) $info['tfeatures']['registerid'];
@@ -22,26 +24,11 @@ $allow = $info['trunk']['allow'];
 
 $edit = true;
 
-if(xivo_ak('var_val',$gregister) === true)
+if(xivo_ak('var_val',$gregister) === true
+&& ($pregister = $generaliax->parse_register($gregister['var_val'])) !== false)
 {
+	$info['register'] = $pregister;
 	$info['register']['commented'] = $gregister['commented'];
-
-	if(preg_match('#^((?:[a-z0-9_\.-]+)(?:@[a-z0-9\.-]+)?)(:[a-z0-9_\.-]+)?'.
-		      '@([a-z0-9\.-]+)(:[0-9]{1,5})?$#i',$gregister['var_val'],$register) === 1)
-	{
-		$info['register']['username'] = $register[1];
-		$info['register']['host'] = $register[3];
-
-		if(isset($register[2]) === true && $register[2] !== '')
-			$info['register']['password'] = substr($register[2],1);
-		else
-			$info['register']['password'] = '';
-
-		if(isset($register[4]) === true && $register[4] !== '')
-			$info['register']['port'] = substr($register[4],1);
-		else
-			$info['register']['port'] = '';
-	}
 }
 
 do
@@ -67,21 +54,12 @@ do
 
 		$register_active = true;
 
-		if(($result['register']['username'] = $generaliax->chk_value('register_username',$_QR['register']['username'])) === false
-		|| ($result['register']['host'] = $generaliax->chk_value('register_host',$_QR['register']['host'])) === false)
+		if(($bregister = $generaliax->build_register($_QR['register'])) === false)
 			break;
 
-		$register = $result['register']['username'];
-
-		if(isset($_QR['register']['password']) === true
-		&& ($result['register']['password'] = $generaliax->set_chk_value('register_password',$_QR['register']['password'])) !== '')
-			$register .= ':'.$result['register']['password'];
-
-		$register .= '@'.$result['register']['host'];
-
-		if(isset($_QR['register']['port']) === true
-		&& ($result['register']['port'] = $generaliax->set_chk_value('register_port',$_QR['register']['port'])) !== '')
-			$register .= ':'.$result['register']['port'];
+		$register = $bregister['str'];
+		$result['register'] = $bregister['arr'];
+		$result['register']['commented'] = 0;
 	}
 	while(false);
 
@@ -187,15 +165,14 @@ do
 
 $element['trunk'] = $trunkiax->get_element();
 
-if(xivo_issa('allow',$element['trunk']) === true && xivo_issa('value',$element['trunk']['allow']) === true)
+if(xivo_issa('allow',$element['trunk']) === true
+&& xivo_issa('value',$element['trunk']['allow']) === true
+&& empty($allow) === false)
 {
-	if(empty($allow) === false)
-	{
-		if(is_array($allow) === false)
-			$allow = explode(',',$allow);
+	if(is_array($allow) === false)
+		$allow = explode(',',$allow);
 
-		$element['trunk']['allow']['value'] = array_diff($element['trunk']['allow']['value'],$allow);
-	}
+	$element['trunk']['allow']['value'] = array_diff($element['trunk']['allow']['value'],$allow);
 }
 
 if(empty($info['register']) === true)

@@ -69,7 +69,7 @@ class xivo_filter
 	{
 		$r = array();
 
-		$date = (string) $date;
+		$date = strval($date);
 		$format = $year = $month = $day = '';
 
 		if(preg_match('/^(2[0-9]{3})(?:-(0?[1-9]|1[0-2])(?:-(0?[1-9]|1[0-9]|2[0-9]|3[0-1]))?)?$/',$date,$match) !== 1)
@@ -117,7 +117,7 @@ class xivo_filter
 	function chk_email($email,$strict=false)
 	{
 		$nb = 0;
-		$email = strtolower((string) $email);
+		$email = strtolower(strval($email));
 		$strict = (bool) $strict;
 		$len = strlen($email);
 
@@ -144,7 +144,7 @@ class xivo_filter
 
 	function chk_ipv4($ip)
 	{
-		$ip = (string) $ip;
+		$ip = strval($ip);
 	
 		if(($long = ip2long($ip)) === -1 || $long === false)
 			return(false);
@@ -154,7 +154,7 @@ class xivo_filter
 
 	function chk_ipv4_strict($ip)
 	{
-		$ip = (string) $ip;
+		$ip = strval($ip);
 
 		if(xivo_filter::chk_ipv4($ip) === true
 		&& preg_match('#^([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.'.
@@ -168,7 +168,7 @@ class xivo_filter
 
 	function chk_host($host)
 	{
-		$host = (string) $host;
+		$host = strval($host);
 
 		if(preg_match('#^[a-z0-9-]+(\.[a-z0-9-]+)*\.[a-z]{2,4}$#i',$host) === 1)
 			return(true);
@@ -444,6 +444,12 @@ class xivo_filter
 				$this->_mk_err($key,'invalid value');
 				return(false);
 			}
+		}
+
+		if(is_scalar($value) === false)
+		{
+			$this->_mk_err($key,'invalid value');
+			return(false);
 		}
 
 		if(isset($arr['eol']) === true)

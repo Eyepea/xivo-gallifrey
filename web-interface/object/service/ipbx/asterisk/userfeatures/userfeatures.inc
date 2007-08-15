@@ -7,7 +7,7 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 	var $_dso	= null;
 	var $_name	= 'userfeatures';
 	var $_filter	= null;
-	var $_origin	= null;
+	var $_origin	= false;
 
 	function xivo_service_asterisk_userfeatures(&$sre,&$dso)
 	{
@@ -27,7 +27,8 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 	{
 		$orig = (bool) $orig;
 
-		if(($id = xivo_uint($id)) === 0 || ($r = $this->_dso->get($id)) === false
+		if(($id = xivo_uint($id)) === 0
+		|| ($r = $this->_dso->get($id)) === false
 		|| ($r['protocol'] = $this->_sre->get_protocol_by_protocol_name($r['protocol'])) === false)
 			return(false);
 
@@ -39,45 +40,33 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		return($r);
 	}
 
-	function add_origin()
+	function get_where($arr,$orig=true)
 	{
-		return($this->_origin('add'));
-	}
+		$orig = (bool) $orig;
 
-	function edit_origin()
-	{
-		return($this->_origin('edit'));
-	}
-
-	function _origin($type)
-	{
-		if(($type !== 'add' && $type !== 'edit') === true || is_array($this->_origin) === false)
+		if(is_array($arr) === false
+		|| ($where = $this->get_element_where($arr)) === false
+		|| ($r = $this->_dso->get($where)) === false)
 			return(false);
 
-		if($type === 'add')
-			$r = $this->add($this->_origin,$this->_origin['id']);
-		else
-			$r = $this->edit($this->_origin['id'],$this->_origin);
+		if($orig === true)
+			$this->_origin = $r;
+
+		$r = $this->_prepare($r);
 
 		return($r);
 	}
 
-	function get_by_provisioning($id)
-	{
-		if(($id = xivo_uint($id)) === 0 || ($id = $this->_dso->get_by_provisioning($id)) === false)
-			return(false);
-
-		return($this->get($id));
-	}
-
 	function get_by_protocol($id,$protocol)
 	{
+		$r = false;
+
 		if(($id = xivo_uint($id)) === 0
 		|| ($protocol = $this->_sre->get_protocol_name($protocol)) === false
-		|| ($id = $this->_dso->get_by_protocol($id,$protocol)) === false)
-			return(false);
+		|| ($r = $this->get_where(array('protocolid' => $id,'protocol' => $protocol))) === false)
+			return($r);
 
-		return($this->get($id));
+		return($r);
 	}
 
 	function add($arr,$id=0)
@@ -97,7 +86,7 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		{
 			$where = array('name' => $arr['name'],'protocol' => $arr['protocol']);
 
-			if($this->get_where($where) !== false)
+			if($this->get_id($where) !== false)
 				return(false);
 		}
 
@@ -117,7 +106,7 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 
 		$r = $ref['prefix'].substr(crc32(uniqid(rand(),true)),1,$len);
 
-		if($r > $min && $r < $max && $this->_dso->get_by_provisioning($r) === false)
+		if($r > $min && $r < $max && $this->get_id(array('provisioningid' => $r)) === false)
 			return($r);
 		else
 			$r = $this->_mk_provisioning_id($protocol);
@@ -148,7 +137,7 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 				$where['protocol'] = $info['protocol'];
 		}
 
-		if(($whereid = $this->get_where($where)) !== false && (int) $whereid !== $id)
+		if(($whereid = $this->get_id($where)) !== false && $whereid !== $id)
 			return(false);
 
 		if(isset($arr['protocol']) === true)
@@ -164,36 +153,6 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		}
 
 		return($this->_dso->edit($id,$arr));
-	}
-
-	function edit_where($arr,$values)
-	{
-		$arr = (array) $arr;
-
-		if(is_array($values) === false
-		|| ($where = $this->get_elements_where($arr)) === false
-		|| ($values = $this->chk_set_values($values)) === false)
-			return(false);
-
-		return($this->_dso->edit_where($where,$values));
-	}
-
-	function delete($id)
-	{
-		if(($id = xivo_uint($id)) === 0)
-			return(false);
-
-		return($this->_dso->delete($id));
-	}
-
-	function get_where($arr)
-	{
-		$arr = (array) $arr;
-
-		if(($where = $this->get_elements_where($arr)) === false)
-			return(false);
-
-		return($this->_dso->get_where($where));
 	}
 
 	function get_search($value)
@@ -214,32 +173,9 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		return($r);
 	}
 
-	function get_all_where($arr=array(),$prepare=true)
-	{
-		$arr = (array) $arr;
-		$prepare = (bool) $prepare;
-
-		if(($where = $this->get_elements_where($arr)) === false
-		|| ($list = $this->_dso->get_all_where($where)) === false
-		|| isset($list[0]) === false)
-			return(false);
-
-		$nb = count($list);
-
-		$r = array();
-
-		for($i = 0;$i < $nb;$i++)
-			$r[] = $prepare === true ? $this->_prepare($list[$i]) : $list[$i];
-
-		if(isset($r[0]) === false)
-			$r = false;
-
-		return($r);
-	}
-
 	function get_all_context()
 	{
-		if(($list = $this->_dso->get_all()) === false)
+		if(($list = $this->get_all()) === false)
 			return(false);
 
 		$nb = count($list);
@@ -248,7 +184,7 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			$info = $this->_prepare($list[$i]);
+			$info = $list[$i];
 
 			if($info['context'] === '' || $info['context'] === 'local-extensions')
 				$info['context'] = '#main';
@@ -264,7 +200,7 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 
 	function get_all_number()
 	{
-		if(($list = $this->_dso->get_all()) === false)
+		if(($list = $this->get_all()) === false)
 			return(false);
 
 		$nb = count($list);
@@ -273,7 +209,7 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			$info = $this->_prepare($list[$i]);
+			$info = $list[$i];
 
 			if(xivo_empty($info['number']) === true)
 				continue;

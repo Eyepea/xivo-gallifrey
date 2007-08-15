@@ -7,7 +7,7 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 	var $_dso	= null;
 	var $_name	= 'extensions';
 	var $_filter	= null;
-	var $_origin	= null;
+	var $_origin	= false;
 
 	function xivo_service_asterisk_extensions(&$sre,&$dso)
 	{
@@ -34,59 +34,11 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 			$this->_conf = array();
 	}
 
-	function get($id,$disable=null)
-	{
-		if(is_array($id) === true && ($id = $this->get_where($id)) === false)
-			return(false);
-
-		if(($id = xivo_uint($id)) === 0 || ($r = $this->_dso->get($id,$disable)) === false)
-			return(false);
-
-		$this->_origin = $r;
-		
-		$r = $this->_prepare($r);
-
-		return($r);
-	}
-
 	function _prepare($data)
 	{
 		$data['commented'] = (bool) $data['commented'];
 
 		return($data);
-	}
-
-	function add_origin()
-	{
-		return($this->_origin('add'));
-	}
-
-	function edit_origin()
-	{
-		return($this->_origin('edit'));
-	}
-
-	function _origin($type)
-	{
-		if(($type !== 'add' && $type !== 'edit') === true || is_array($this->_origin) === false)
-			return(false);
-
-		if($type === 'add')
-			$r = $this->add($this->_origin,$this->_origin['id']);
-		else
-			$r = $this->edit($this->_origin['id'],$this->_origin);
-
-		return($r);
-	}
-
-	function get_where($arr)
-	{
-		$arr = (array) $arr;
-
-		if(($where = $this->get_elements_where($arr)) === false)
-			return(false);
-
-		return($this->_dso->get_where($where));
 	}
 
 	function add($arr,$id=0)
@@ -108,47 +60,42 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 		if(isset($arr['name']) === true)
 			$r['name'] = (string) $arr['name'];
 
-		if(isset($arr['commented']) === true)
-			$r['commented'] = (bool) $arr['commented'];
-		else
+		if(isset($arr['commented']) === false)
 			$r['commented'] = false;
 
 		return($this->_dso->add($r));
 	}
 
-	function edit($id,$arr)
+	function edit($id,$arr,$disable=null)
 	{
 		if(($id = xivo_uint($id)) === 0 || is_array($arr) === false)
 			return(false);
 
 		$r = array();
 
-		$r['context'] = $arr['context'];
-		$r['exten'] = $arr['exten'];
-		$r['priority'] = $arr['priority'];
-		$r['app'] = $arr['app'];
-		$r['appdata'] = $arr['appdata'];
+		if(isset($arr['context']) === true)
+			$r['context'] = (string) $arr['context'];
+
+		if(isset($arr['exten']) === true)
+			$r['exten'] = (string) $arr['exten'];
+
+		if(isset($arr['priority']) === true)
+			$r['priority'] = (string) $arr['priority'];
+
+		if(isset($arr['app']) === true)
+			$r['app'] = (string) $arr['app'];
+
+		if(isset($arr['appdata']) === true)
+			$r['appdata'] = (string) $arr['appdata'];
 
 		if(isset($arr['name']) === true)
 			$r['name'] = (string) $arr['name'];
 
-		if(isset($arr['commented']) === true)
-			$r['commented'] = (bool) $arr['commented'];
-		else
+		if(isset($arr['commented']) === false)
 			$r['commented'] = false;
 
-		return($this->_dso->edit($id,$r));
+		return($this->_dso->edit($id,$r,$disable));
 	}
-
-        function disable($id,$value=false)
-        {
-                if(($id = xivo_uint($id)) === 0)
-                        return(false);
-
-                $value = (bool) $value === false ? 0 : 1;
-
-                return($this->_dso->edit($id,array('commented' => $value)));
-        }
 
 	function get_name_exten($arr=array(),$disable=null)
 	{
@@ -170,54 +117,6 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 			$r = false;
 
 		return($r);
-	}
-
-	function get_list_where($arr=array(),$disable=null)
-	{
-		$arr = (array) $arr;
-
-		if(($where = $this->get_elements_where($arr)) === false
-		|| ($r = $this->_dso->get_list_where($where,$disable)) === false
-		|| isset($r[0]) === false)
-			$r = false;
-
-		return($r);
-	}
-
-	function get_all_where($arr=array(),$disable=null,$prepare=true)
-	{
-		$arr = (array) $arr;
-		$prepare = (bool) $prepare;
-
-		if(($where = $this->get_elements_where($arr)) === false
-		|| ($list = $this->_dso->get_all_where($where,$disable)) === false
-		|| isset($list[0]) === false)
-			return(false);
-
-		$nb = count($list);
-
-		$r = array();
-
-		for($i = 0;$i < $nb;$i++)
-			$r[] = $prepare === true ? $this->_prepare($list[$i]) : $list[$i];
-
-		if(isset($r[0]) === false)
-			$r = false;
-
-		return($r);
-	}
-
-	function delete($id)
-	{
-		if(($id = xivo_uint($id)) === 0)
-			return(false);
-
-		return($this->_dso->delete($id));
-	}
-
-	function delete_by_name($name)
-	{
-		return($this->_dso->delete_where(array('name' => $name)));
 	}
 }
 

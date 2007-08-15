@@ -27,7 +27,7 @@ function xivo_get_memory($value,$name=true)
 
 function xivo_bool($bool)
 {
-	$bool = strtolower($bool);
+	$bool = strtolower(strval($bool));
 
 	switch($bool)
 	{
@@ -195,7 +195,7 @@ function xivo_cast_print_strict($str)
 
 function xivo_cast_specials($str,$type='')
 {
-	$str = (string) $str;
+	$str = strval($str);
 	$type = strtolower((string) $type);
 
 	$reg = '\x20-\x2F\x3A-\x40\x5B-\x60\x7B-\x7E';
@@ -300,7 +300,7 @@ function xivo_cast_except($val,$except,$type='')
 
 function xivo_trunc(&$str,$nb=0,$end='',$chr=null)
 {
-	$r = (string) $str;
+	$r = strval($str);
 	$nb = (int) $nb;
 	$end = (string) $end;
 	$chr = $chr === null ? ' ' : (string) $chr;
@@ -525,7 +525,7 @@ function xivo_go($v='',$k='')
 function xivo_chk_email($email,$strict=false)
 {
 	$nb = 0;
-	$email = strtolower((string) $email);
+	$email = strtolower(strval($email));
 	$strict = (bool) $strict;
 	$len = strlen($email);
 
@@ -597,7 +597,7 @@ function xivo_str_multicut($str,$arr)
 
 function xivo_stript($str,$style=ENT_NOQUOTES)
 {
-	$r = preg_replace('/\s+/',' ',(string) $str);
+	$r = preg_replace('/\s+/',' ',strval($str));
 	$r = str_replace(array('\'','"'),array('\\\'','\"'),$r);
 
 	$r = xivo_htmlsc($r,$style);
@@ -607,7 +607,7 @@ function xivo_stript($str,$style=ENT_NOQUOTES)
 
 function xivo_eol($str)
 {
-	$r = preg_replace('#\r\n|\n|\r#',XIVO_EOL,(string) $str);
+	$r = preg_replace('#\r\n|\n|\r#',XIVO_EOL,strval($str));
 
 	return($r);
 }
@@ -618,7 +618,7 @@ function xivo_alttitle($str,$sc=true)
 
 	$pat = array('/<.+?>/','/\t+/','/\s+/','/&nbsp;| +/');
 	$rep = array('','',' ',' ');
-	$r = preg_replace($pat,$rep,(string) $str);
+	$r = preg_replace($pat,$rep,strval($str));
 
 	if($sc !== false)
 		$r = xivo_htmlsc($r);
@@ -631,36 +631,34 @@ function xivo_notag($str)
 	$pat = array('/<.+?>/','/\t+/','/&nbsp;| +/');
 	$rep = array('','',' ');
 
-	return(preg_replace($pat,$rep,(string) $str));
+	return(preg_replace($pat,$rep,strval($str)));
 }
 
 function xivo_notagscript($str)
 {
-	$r = preg_replace('@<script[^>]*?>.*?</script>@si','',(string) $str);
+	$r = preg_replace('@<script[^>]*?>.*?</script>@si','',strval($str));
 
 	return($r);
 }
 
 function xivo_tagreplace($str)
 {
-	$r = (string) $str;
-
 	$pat = array('"','\'','<','>');
 	$rep = array('&quot;','&#039;','&lt;','&gt;');
 
-	$r = str_replace($pat,$rep,(string) $str);
+	$r = str_replace($pat,$rep,strval($str));
 	
 	return($r);
 }
 
 function xivo_htmlsc($str,$style=ENT_QUOTES)
 {
-	return(htmlspecialchars((string) $str,$style,'UTF-8'));
+	return(htmlspecialchars(strval($str),$style,'UTF-8'));
 }
 
 function xivo_htmlen($str,$style=ENT_QUOTES)
 {
-	return(htmlentities((string) $str,$style,'UTF-8'));
+	return(htmlentities(strval($str),$style,'UTF-8'));
 }
 
 function xivo_malert($subject='',$msg='',$to='')

@@ -139,6 +139,58 @@ class xivo_service_asterisk_generaliax extends xivo_service_asterisk_staticconf
 
 		return($r);
 	}
+
+	function parse_register($val)
+	{
+		$val = (string) $val;
+
+		if(preg_match('#^((?:[a-z0-9_\.-]+)(?:@[a-z0-9\.-]+)?)'.
+			      '(:[a-z0-9_\.-]+)?'.
+			      '@([a-z0-9\.-]+)(:[0-9]{1,5})?$#i',$val,$match) !== 1)
+			return(false);
+
+		$r = array();
+
+		$r['username'] = $match[1];
+		$r['host'] = $match[3];
+
+		if(isset($match[2]) === true && $match[2] !== '')
+			$r['password'] = substr($match[2],1);
+		else
+			$r['password'] = '';
+
+		if(isset($match[4]) === true && $match[4] !== '')
+			$r['port'] = substr($match[4],1);
+		else
+			$r['port'] = '';
+
+		return($r);
+	}
+
+	function build_register($arr)
+	{
+		$r = array('str' => '','arr' => array());
+
+		if(is_array($arr) === false
+		|| isset($arr['username'],$arr['host']) === false
+		|| ($r['arr']['username'] = $this->chk_value('register_username',$arr['username'])) === false
+		|| ($r['arr']['host'] = $this->chk_value('register_host',$arr['host'])) === false)
+			return(false);
+
+		$r['str'] = $r['arr']['username'];
+
+		if(isset($arr['password']) === true
+		&& ($r['arr']['password'] = $this->set_chk_value('register_password',$arr['password'])) !== '')
+			$r['str'] .= ':'.$r['arr']['password'];
+
+		$r['str'] .= '@'.$r['arr']['host'];
+
+		if(isset($arr['port']) === true
+		&& ($r['arr']['port'] = $this->set_chk_value('register_port',$arr['port'])) !== '')
+			$r['str'] .= ':'.$r['arr']['port'];
+
+		return($r);
+	}
 }
 
 ?>

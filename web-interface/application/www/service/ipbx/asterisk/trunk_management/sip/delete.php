@@ -4,7 +4,9 @@ $param['page'] = $page;
 
 if(isset($_QR['id']) === false
 || ($info['trunk'] = $trunksip->get($_QR['id'])) === false
-|| ($info['tfeatures'] = $tfeatures->get_by_trunk($info['trunk']['id'],'sip')) === false)
+|| ($info['tfeatures'] = $tfeatures->get_where(array(
+					'trunkid' => $info['trunk']['id'],
+					'trunk' => 'sip'))) === false)
 	xivo_go($_HTML->url('service/ipbx/trunk_management/sip'),$param);
 
 do

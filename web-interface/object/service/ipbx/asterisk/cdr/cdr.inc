@@ -22,16 +22,6 @@ class xivo_service_asterisk_cdr extends xivo_service_asterisk_abstract
 		$this->_load_config();
 	}
 
-	function get($id)
-	{
-		if(($id = xivo_uint($id)) === 0 || ($r = $this->_dso->get($id)) === false)
-			return(false);
-
-		$this->_origin = $r;
-
-		return($r);
-	}
-
 	function get_cnt()
 	{
 		return($this->_dso->get_cnt());

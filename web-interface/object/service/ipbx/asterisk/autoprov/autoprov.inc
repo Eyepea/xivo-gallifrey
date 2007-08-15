@@ -25,6 +25,16 @@ class xivo_service_asterisk_autoprov extends xivo_service_asterisk_abstract
 		$this->_chk_autoprov();
 	}
 
+	function get($macaddr)
+	{
+		if(($r = $this->_dso->get($macaddr)) === false)
+			return(false);
+
+		$this->_origin = $r;
+
+		return($r);
+	}
+
 	function _chk_autoprov()
 	{
 		if(xivo_issa($this->_name,$this->_sre->_ini) === false
@@ -267,29 +277,6 @@ class xivo_service_asterisk_autoprov extends xivo_service_asterisk_abstract
 			return(false);
 
 		return(true);
-	}
-
-	function get($macaddr)
-	{
-		if(is_array($macaddr) === true && ($macaddr = $this->get_where($macaddr)) === false)
-			return(false);
-
-		if(($r = $this->_dso->get($macaddr)) === false)
-			return(false);
-
-		$this->_origin = $r;
-
-		return($r);
-	}
-
-	function get_where($arr)
-	{
-		$arr = (array) $arr;
-
-		if(($where = $this->get_elements_where($arr)) === false)
-			return(false);
-
-		return($this->_dso->get_where($where));
 	}
 }
 

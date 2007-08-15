@@ -9,10 +9,10 @@ $nb = count($arr);
 
 for($i = 0;$i < $nb;$i++)
 {
-	$id = &$_QR['peers'][$i];
-
 	if(($info['trunk'] = $trunkiax->get($id)) === false
-	|| ($info['tfeatures'] = $tfeatures->get_by_trunk($info['trunk']['id'],'iax')) === false)
+	|| ($info['tfeatures'] = $tfeatures->get_where(array(
+					'trunkid' => $info['trunk']['id'],
+					'trunk' => 'iax'))) === false)
 		continue;
 
 	if($trunkiax->delete($info['trunk']['id']) === false)

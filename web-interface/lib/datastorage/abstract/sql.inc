@@ -293,22 +293,13 @@ class xivo_datastorage_abstract_sql
 		{
 			$key = &$arr['keys'][$i];
 
-			if(is_array($val[$key]) === true && isset($val[$key]['type'],$val[$key]['data']) === true)
-			{
-				$type = (string) $val[$key]['type'];
-				$data = &$val[$key]['data'];
-			}
-			else
-			{
-				$type = gettype($val[$key]);
-				$data = &$val[$key];
-			}
+			$type = gettype($val[$key]);
+			$data = &$val[$key];
 
 			switch($type)
 			{
 				case 'boolean':
 					$data = intval($data);
-				case 'func':
 				case 'integer':
 				case 'float':
 				case 'NULL':

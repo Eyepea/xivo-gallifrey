@@ -11,7 +11,7 @@ class xivo_service_asterisk_zonemessages extends xivo_service_asterisk_staticcon
 	var $_cat_metric	= 1;
 	var $_var_metric	= 0;
 	var $_filter		= null;
-	var $_origin		= null;
+	var $_origin		= false;
 	var $_zonemessages	= array();
 
 	function xivo_service_asterisk_zonemessages(&$sre,&$dso)
@@ -36,7 +36,7 @@ class xivo_service_asterisk_zonemessages extends xivo_service_asterisk_staticcon
 	function get($id,$disable=null)
 	{
 		if(($r = parent::get($id,$disable)) === false)
-			return($r);
+			return(false);
 
 		$this->_origin = $r;
 
@@ -78,16 +78,6 @@ class xivo_service_asterisk_zonemessages extends xivo_service_asterisk_staticcon
 		$data['commented'] = (bool) $data['commented'];
 
 		return($data);
-	}
-
-	function add_origin()
-	{
-		return($this->_origin('add'));
-	}
-
-	function edit_origin()
-	{
-		return($this->_origin('edit'));
 	}
 
 	function _origin($type)

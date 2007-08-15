@@ -143,7 +143,7 @@ do
 		$exten_numbers['context'] = $result['local_exten']['context'];
 
 		if(($result['extenumbers'] = $extenumbers->chk_values($exten_numbers)) === false
-		|| $extenumbers->get($result['extenumbers']) !== false)
+		|| $extenumbers->get_where($result['extenumbers']) !== false)
 		{
 			$add = false;
 			$result['extenumbers'] = $extenumbers->get_filter_result();
@@ -194,7 +194,7 @@ do
 			|| ($chantype !== 'default' && $chantype !== XIVO_SRE_IPBX_AST_CHAN_LOCAL) === true
 			|| ($chantype === XIVO_SRE_IPBX_AST_CHAN_LOCAL
 			   && $result['ufeatures']['number'] === '') === true
-			|| ($gid = $gfeatures->get_where(array('name' => $qname))) === false)
+			|| ($gid = $gfeatures->get_id(array('name' => $qname))) === false)
 				continue;
 		
 			if($chantype === 'default')

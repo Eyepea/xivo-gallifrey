@@ -6,7 +6,8 @@ $info = array();
 
 $return = &$info;
 
-if(isset($_QR['id']) === false || ($info['ufeatures'] = $ufeatures->get($_QR['id'])) === false
+if(isset($_QR['id']) === false
+|| ($info['ufeatures'] = $ufeatures->get($_QR['id'])) === false
 || ($protocol = &$ipbx->get_protocol_module($info['ufeatures']['protocol'])) === false
 || ($info['protocol'] = $protocol->get($info['ufeatures']['protocolid'])) === false)
 	xivo_go($_HTML->url('service/ipbx/pbx_settings/users'),$param);
@@ -94,11 +95,11 @@ if(($moh_list = $musiconhold->get_all_category(null,false)) !== false)
 if(($autoprov_list = $autoprov->get_autoprov_list()) !== false)
 	ksort($autoprov_list);
 
-$info['usergroup'] = $ugroup->get_by_user($info['ufeatures']['id']);
-$info['voicemail'] = $voicemail->get(array(
+$info['usergroup'] = $ugroup->get_where(array('userid' => $info['ufeatures']['id']));
+$info['voicemail'] = $voicemail->get_where(array(
 					'mailbox' => $info['ufeatures']['number'],
 					'context' => $info['ufeatures']['context']));
-$info['autoprov'] = $autoprov->get(array('iduserfeatures' => $info['ufeatures']['id']));
+$info['autoprov'] = $autoprov->get_where(array('iduserfeatures' => $info['ufeatures']['id']));
 
 $allow = $info['protocol']['allow'];
 
@@ -174,7 +175,7 @@ do
 
 		$localexten = $extensions;
 
-		if(($info['localexten'] = $localexten->get($exten_where)) !== false)
+		if(($info['localexten'] = $localexten->get_where($exten_where)) !== false)
 		{
 			if($result['ufeatures']['number'] === '')
 				$status['localexten'] = 'delete';
@@ -233,7 +234,7 @@ do
 		else
 			$exten_where['context'] = $info['protocol']['context'];
 
-		if(($info['extenumbers'] = $extenumbers->get($exten_where)) !== false)
+		if(($info['extenumbers'] = $extenumbers->get_where($exten_where)) !== false)
 		{
 			if($result['ufeatures']['number'] === '')
 				$status['extenumbers'] = 'delete';
@@ -242,7 +243,7 @@ do
 				$status['extenumbers'] = 'edit';
 
 				if(($result['extenumbers'] = $extenumbers->chk_values($exten_numbers)) === false
-				|| (($extenum = $extenumbers->get($result['extenumbers'])) !== false
+				|| (($extenum = $extenumbers->get_where($result['extenumbers'])) !== false
 				   && (int) $extenum['id'] !== (int) $info['extenumbers']['id']) === true)
 				{
 					$edit = false;
@@ -300,7 +301,7 @@ do
 
 			$hintsexten = $extensions;
 
-			if(($info['hints'] = $hintsexten->get($exten_where)) !== false)
+			if(($info['hints'] = $hintsexten->get_where($exten_where)) !== false)
 			{
 				$status['hints'] = 'edit';
 
@@ -361,7 +362,7 @@ do
 			|| ($chantype !== 'default' && $chantype !== XIVO_SRE_IPBX_AST_CHAN_LOCAL) === true
 			|| ($chantype === XIVO_SRE_IPBX_AST_CHAN_LOCAL
 			   && $result['ufeatures']['number'] === '') === true
-			|| ($gid = $gfeatures->get_where(array('name' => $qname))) === false)
+			|| ($gid = $gfeatures->get_id(array('name' => $qname))) === false)
 			{
 				if(isset($gmember_slt[$qname]) === true)
 				{
@@ -911,7 +912,8 @@ do
 			$voicemail->add($result['voicemail']);
 			break;
 		case 'edit':
-			$voicemail->edit($info['voicemail']['id'],$result['voicemail'],false);
+			$result['voicemail']['commented'] = 0;
+			$voicemail->edit($info['voicemail']['id'],$result['voicemail']);
 			break;
 		case 'delete':
 			$voicemail->delete($info['voicemail']['id']);

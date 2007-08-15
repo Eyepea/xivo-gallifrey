@@ -20,125 +20,26 @@ class xivo_service_asterisk_userfeatures_abstract_sql extends xivo_service_aster
 			$this->_param['table'] = (string) $param['table'];
 	}
 
-	function get($id)
-	{
-		if(($id = xivo_uint($id)) === 0)
-			return(false);
-
-		$r = $this->_dso->select_one($this->_param['table'],null,'id = '.$id);
-
-		return($r);
-	}
-
-	function get_where($arr)
-	{
-		if(($where = $this->_dso->where($arr)) === false)
-			return(false);
-
-		if(($r = $this->_dso->select_one($this->_param['table'],'id',$where)) !== false)
-			$r = $r['id'];
-
-		return($r);
-	}
-
-	function get_by_protocol($id,$protocol)
-	{
-		if(($id = xivo_uint($id)) === 0)
-			return(false);
-
-		$where = 'protocolid = '.$id.' AND protocol = \''.$this->_dso->escape_string($protocol).'\'';
-
-		if(($r = $this->_dso->select_one($this->_param['table'],'id',$where)) !== false)
-			$r = $r['id'];
-
-		return($r);
-	}
-
-	function get_by_provisioning($id)
-	{
-		$where = 'provisioningid = \''.$this->_dso->escape_string($id).'\'';
-
-		if(($r = $this->_dso->select_one($this->_param['table'],'id',$where)) !== false)
-			$r = $r['id'];
-
-		return($r);
-	}
-
-	function add($arr)
-	{
-		$r = false;
-
-		if($this->_dso->insert($this->_param['table'],$arr) === true)
-			$r = $this->_dso->insert_id();
-
-		return($r);
-	}
-
-	function edit($id,$arr)
-	{
-		if(($id = xivo_uint($id)) === 0)
-			return(false);
-
-		$r = $this->_dso->update($this->_param['table'],$arr,'id = '.$id);
-
-		return($r);
-	}
-
-	function edit_where($arr,$values)
-	{
-		if(($where = $this->_dso->where($arr)) === false)
-			return(false);
-
-		$r = $this->_dso->update($this->_param['table'],$values,$where);
-
-		return($r);
-	}
-
-	function delete($id)
-	{
-		if(($id = xivo_uint($id)) === 0)
-			return(false);
-
-		$r = $this->_dso->delete($this->_param['table'],'id = '.$id);
-
-		return($r);
-	}
-
-	function get_list()
-	{
-		$rs = $this->_dso->query('SELECT id FROM '.$this->_param['table']);
-
-		if($rs === false)
-			return(false);
-
-		$r = array();
-
-		while($rw = $this->_dso->fetch_assoc($rs))
-			$r[] = $rw['id'];
-
-		if($this->_dso->is_free() === true)
-			$this->_dso->free($rs);
-
-		if(isset($r[0]) === false)
-			$r = false;
-
-		return($r);
-	}
-
 	function get_search($value)
 	{
-		$value = $this->_dso->escape_string($value);
-		$like = 'LIKE \'%'.$value.'%\'';
-		$where = 'firstname '.$like.' OR lastname '.$like.' OR number '.$like.' OR name '.$like.' OR context '.$like;
+		$where = array();
 
-		$r = $this->_dso->select_all($this->_param['table'],null,$where);
+		if(($rs = $this->_dso->search_contain('firstname',$value)) !== false)
+			$where[] = $rs;
 
-		return($r);
-	}
+		if(($rs = $this->_dso->search_contain('lastname',$value)) !== false)
+			$where[] = $rs;
 
-	function get_all_where($arr)
-	{
-		if(($where = $this->_dso->where($arr)) === false)
+		if(($rs = $this->_dso->search_contain('number',$value)) !== false)
+			$where[] = $rs;
+
+		if(($rs = $this->_dso->search_contain('name',$value)) !== false)
+			$where[] = $rs;
+
+		if(($rs = $this->_dso->search_contain('context',$value)) !== false)
+			$where[] = $rs;
+
+		if(($where = implode(' OR ',$where)) === '')
 			return(false);
 
 		$r = $this->_dso->select_all($this->_param['table'],null,$where);

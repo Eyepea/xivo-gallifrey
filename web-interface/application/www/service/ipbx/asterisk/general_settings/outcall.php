@@ -9,8 +9,8 @@ $return = &$info;
 
 $order = array('exten' => SORT_ASC,'rangebeg' => SORT_ASC);
 
-$info['emergency'] = $generaloutcall->get_all_where(array('type' => 'emergency'),null,$order);
-$info['special'] = $generaloutcall->get_all_where(array('type' => 'special'),null,$order);
+$info['emergency'] = $generaloutcall->get_all_where(array('type' => 'emergency'),null,null,true,$order);
+$info['special'] = $generaloutcall->get_all_where(array('type' => 'special'),null,null,true,$order);
 
 $fm_save = false;
 
@@ -36,6 +36,7 @@ if(isset($_QR['fm_send']) === true)
 		$partname = $arr_part[$i];
 
 		$genoutcall_add = $genoutcall_edit = $genoutcall_del = array();
+		$result[$partname] = array();
 
 		if(xivo_issa($partname,$_QR) === true
 		&& ($arr_outcall = xivo_group_array('trunkfeaturesid',$_QR[$partname])) !== false)
@@ -55,12 +56,13 @@ if(isset($_QR['fm_send']) === true)
 				if(($eginfo = $generaloutcall->chk_values($ref)) === false)
 				{
 					$fm_save = false;
+					$outcallerr = $generaloutcall->get_filter_result();
 					$outcallerr['_error'] = true;
-					$result[$partname][] = $generaloutcall->get_filter_result();
+					$result[$partname][] = $outcallerr;
 					continue;
 				}
 				
-				if($tfeatures->get($eginfo['trunkfeaturesid']) === false)
+				if($tfeatures->get_id($eginfo['trunkfeaturesid']) === false)
 				{
 					$fm_save = false;
 					$eginfo['_error'] = true;
@@ -72,6 +74,16 @@ if(isset($_QR['fm_send']) === true)
 					$eginfo['rangebeg'] = $eginfo['rangeend'] = '';
 				else
 					$eginfo['exten'] = '';
+
+				if(xivo_haslen($eginfo,'rangebeg') === false
+				&& xivo_haslen($eginfo,'rangeend') === false
+				&& xivo_haslen($eginfo,'exten') === false)
+				{
+					$fm_save = false;
+					$eginfo['_error'] = true;
+					$result[$partname][] = $eginfo;
+					continue;
+				}
 
 				if($outcallid !== 0)
 					$genoutcall_edit[$outcallid] = $eginfo;
@@ -88,8 +100,6 @@ if(isset($_QR['fm_send']) === true)
 					$generaloutcall->delete($info[$partname][$j]['id']);
 			}
 		}
-
-		$result[$partname] = array();
 
 		$outcallkeys = array_keys($genoutcall_edit);
 
