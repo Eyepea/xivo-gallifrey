@@ -69,6 +69,7 @@ public:
 	const QString & password() const;	//!< password to identify to the sever
 	void setPassword(const QString &);	//!< see password()
 
+	const QString & phoneNum() const;	//! get m_extension
 	const QString & dialContext() const;	//! get m_dialcontext
 	void setDialContext(const QString &);	//! set m_dialcontext
 

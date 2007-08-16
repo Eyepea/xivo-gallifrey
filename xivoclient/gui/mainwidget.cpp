@@ -475,8 +475,13 @@ void MainWidget::setConnected()
 				
 			} else if(dc == QString("history")) {
 				m_history = new LogWidget(m_engine, this);
-				m_history->setPeerToDisplay("p/" + m_engine->serverast() + "/" + "contexte" +  "/" +
-							    m_engine->protocol() + "/" + m_engine->userId() + "/" + m_engine->userId());
+                                qDebug() << "MainWidget::setConnected()" << m_engine->phoneNum();
+				m_history->setPeerToDisplay("p/" +
+                                                            m_engine->serverast() + "/" +
+                                                            m_engine->dialContext() +  "/" +
+							    m_engine->protocol() + "/" +
+                                                            m_engine->userId() + "/" +
+                                                            m_engine->phoneNum());
 				connect( m_history, SIGNAL(askHistory(const QString &, int)),
 					 m_engine, SLOT(requestHistory(const QString &, int)) );
 				connect( m_engine, SIGNAL(updateLogEntry(const QDateTime &, int, const QString &, int)),

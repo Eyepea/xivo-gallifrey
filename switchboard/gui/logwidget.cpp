@@ -208,7 +208,7 @@ void LogWidget::modeChanged(bool b)
 	if(b && m_peer.size() > 0)
 	{
 		clear();
-		askHistory( m_peer, mode() );
+		askHistory(m_peer, mode());
 	}
 }
 

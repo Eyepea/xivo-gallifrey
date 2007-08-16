@@ -927,6 +927,11 @@ void BaseEngine::setPassword(const QString & passwd)
 	m_passwd = passwd;
 }
 
+const QString & BaseEngine::phoneNum() const
+{
+	return m_extension;
+}
+
 const QString & BaseEngine::dialContext() const
 {
 	return m_dialcontext;
@@ -986,7 +991,7 @@ void BaseEngine::initFeatureFields(const QString & field, const QString & value)
  */
 void BaseEngine::readKeepLoginAliveDatagrams()
 {
-	char buffer[2048];
+	char buffer[65536];
 	int len;
 	qDebug() << "BaseEngine::readKeepLoginAliveDatagrams()";
 	while( m_udpsocket->hasPendingDatagrams() )
@@ -1350,16 +1355,19 @@ void BaseEngine::processLoginDialog()
 		readLine.remove(QChar('\r')).remove(QChar('\n'));
 		QStringList sessionResp = readLine.split(" ");
 		qDebug() << sessionResp;
+		m_version = -1;
 		if(sessionResp.size() > 2)
-			m_sessionid = sessionResp[2];
+			m_sessionid =    sessionResp[2];
 		if(sessionResp.size() > 3)
-			m_dialcontext = sessionResp[3];
+			m_dialcontext =  sessionResp[3];
 		if(sessionResp.size() > 4)
 			m_capabilities = sessionResp[4];
-		qDebug() << m_dialcontext << m_capabilities;
-		m_version = -1;
 		if(sessionResp.size() > 5)
-			m_version = sessionResp[5].toInt();
+			m_version =      sessionResp[5].toInt();
+		if(sessionResp.size() > 6)
+			m_extension =    sessionResp[6];
+		qDebug() << m_sessionid << m_dialcontext << m_capabilities << m_version << m_extension;
+
 		if(!m_tcpmode)
 			m_loginsocket->close();
 		if(m_version < REQUIRED_SERVER_VERSION) {
