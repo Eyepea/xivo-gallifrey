@@ -991,33 +991,39 @@ void BaseEngine::initFeatureFields(const QString & field, const QString & value)
  */
 void BaseEngine::readKeepLoginAliveDatagrams()
 {
-	char buffer[65536];
-	int len;
+        char * buffer;
+        int size, nread;
 	qDebug() << "BaseEngine::readKeepLoginAliveDatagrams()";
 	while( m_udpsocket->hasPendingDatagrams() )
 	{
-		len = m_udpsocket->readDatagram(buffer, sizeof(buffer)-1);
-		if(len == 0)
-			continue;
-		buffer[len] = '\0';
-		QString line     = QString::fromUtf8(buffer);
-		QStringList qsl  = line.trimmed().split(" ");
-		QStringList list = line.trimmed().split("=");
+                size = m_udpsocket->pendingDatagramSize();
+                buffer = (char *) malloc(size + 1);
+                nread = m_udpsocket->readDatagram(buffer, size);
+                if(nread != size)
+                        qDebug() << "BaseEngine::readKeepLoginAliveDatagrams() warning :" << nread << "!=" << size;
+                if(nread > 0) {
+                        buffer[nread] = '\0';
+                        QString line     = QString::fromUtf8(buffer);
+                        QStringList qsl  = line.trimmed().split(" ");
+                        QStringList list = line.trimmed().split("=");
 
-		QString reply = qsl[0];
+                        QString reply = qsl[0];
 
-		if(reply == "DISC") {
-			setState(ENotLogged);
-			qDebug() << qsl; //reply;
-		} else if(reply == "ERROR") {
-			qDebug() << "BaseEngine::readKeepLoginAliveDatagrams()" << qsl;
-                        stopKeepAliveTimer();
-                        stop();
+                        if(reply == "DISC") {
+                                setState(ENotLogged);
+                                qDebug() << qsl; //reply;
+                        } else if(reply == "ERROR") {
+                                qDebug() << "BaseEngine::readKeepLoginAliveDatagrams()" << qsl;
+                                stopKeepAliveTimer();
+                                stop();
+                                m_pendingkeepalivemsg = 0;
+                                startTryAgainTimer();
+                        } else if(reply != "OK")
+                                parseCommand(list);
                         m_pendingkeepalivemsg = 0;
-                        startTryAgainTimer();
-		} else if(reply != "OK")
-                        parseCommand(list);
-		m_pendingkeepalivemsg = 0;
+                }
+
+                free(buffer);
 	}
 }
 
