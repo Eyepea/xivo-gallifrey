@@ -1,7 +1,7 @@
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_queue.c
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/apps/app_queue.c	2007-08-08 14:42:36.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_queue.c	2007-08-08 14:43:35.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/apps/app_queue.c	2007-08-16 10:13:52.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_queue.c	2007-08-16 12:55:38.000000000 +0200
 @@ -43,6 +43,8 @@
   *    - Failout timer passed as optional app parameter
   *    - Optional monitoring of calls, started when call is answered

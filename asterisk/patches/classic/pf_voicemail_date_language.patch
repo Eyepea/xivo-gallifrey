@@ -1,7 +1,7 @@
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_voicemail.c
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/apps/app_voicemail.c	2007-08-08 14:42:56.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_voicemail.c	2007-08-08 14:43:38.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/apps/app_voicemail.c	2007-08-16 10:13:51.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_voicemail.c	2007-08-16 12:55:43.000000000 +0200
 @@ -49,6 +49,7 @@
  #include <sys/mman.h>
  #include <time.h>
