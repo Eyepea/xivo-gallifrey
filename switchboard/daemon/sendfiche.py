@@ -275,6 +275,7 @@ class FicheSender:
 
 def sendficheasync(userinfo, callerid, msg):
         sender = FicheSender()
+        log_debug('sendficheasync : %s %s %s' % (userinfo, callerid, msg))
         params = {'sessionid':userinfo['sessionid'],
                   'address':(userinfo['ip'], int(userinfo['port'])),
                   'state':userinfo['state'],
@@ -285,7 +286,6 @@ def sendficheasync(userinfo, callerid, msg):
                 params['socket'] = userinfo['socket']
         else:
                 params['socket'] = None
-        log_debug('sendficheasync : %s' % str(params))
         t = threading.Thread(None, sender, None, (), params)
         t.start()
 

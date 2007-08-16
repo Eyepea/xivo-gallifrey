@@ -25,18 +25,16 @@ class Fiche:
             self.message = msg
     def getxml(self):
             """get a string containing the xml"""
-            s = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
-            s += '<profile sessionid="' + self.sessionid + '">\n'
-            s += '<user>\n'
-            if len(self.message)>0:
-                    s += '<message>' + self.message + '</message>\n'
+            s = ['<?xml version="1.0" encoding="utf-8"?>']
+            s.append('<profile sessionid="%s">' % self.sessionid)
+            s.append('<user>')
+            if len(self.message) > 0:
+                    s.append('<message>%s</message>' % self.message)
             for (name, type, value) in self.infos:
-                    s += '<info name="' + name + '" type="' + type + '">'
-                    s += '<![CDATA[' + value + ']]>'
-                    s += '</info>\n'
-            s += '</user>\n'
-            s += '</profile>\n'
-            return s
+                    s.append('<info name="%s" type="%s"><![CDATA[%s]]></info>' %(name, type, value))
+            s.append('</user>')
+            s.append('</profile>')
+            return ''.join(s)
     def sendtouser(self, address):
             """send the profile to a user using TCP"""
             try:

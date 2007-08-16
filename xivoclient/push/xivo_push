@@ -94,8 +94,8 @@ if len(list) < 4 or list[0] == 'ERROR':
 	print_verbose("Could not localize user %s" % user)
 	sys.exit(3)
 else:
-    # USER xxx STATE xxx
-    clientstate = list[3]
+        # USER xxx STATE xxx
+        clientstate = list[3]
 
 # return status
 if clientstate == "available":

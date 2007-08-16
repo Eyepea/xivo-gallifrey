@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
    $Date$
 */
 
+#include <QBuffer>
 #include <QDebug>
 #include <QMessageBox>
 #include <QSettings>
@@ -714,7 +715,21 @@ void BaseEngine::socketReadyRead()
                                 stop();
 			} else
                                 b = parseCommand(list);
-		}
+		} else if(list.size() > 2) {
+                        // we get here when receiving a customer info in tcp mode
+                        qDebug() << "BaseEngine::socketReadyRead() (FICHE)" << line;
+                        QBuffer * inputstream = new QBuffer(this);
+                        Popup * popup = new Popup(inputstream, "aaa");
+                        connect( popup, SIGNAL(destroyed(QObject *)),
+                                 this, SLOT(popupDestroyed(QObject *)) );
+                        connect( popup, SIGNAL(wantsToBeShown(Popup *)),
+                                 this, SLOT(profileToBeShown(Popup *)) );
+
+                        inputstream->open(QIODevice::ReadWrite);
+                        qDebug() << "BaseEngine::socketReadyRead()" << inputstream->openMode();
+                        inputstream->write(line.toUtf8());
+                        inputstream->close();
+                }
 	}
 	if(b)
 		emitTextMessage(tr("Peers' status updated"));
@@ -997,7 +1012,7 @@ void BaseEngine::readKeepLoginAliveDatagrams()
 	while( m_udpsocket->hasPendingDatagrams() )
 	{
                 size = m_udpsocket->pendingDatagramSize();
-                buffer = (char *) malloc(size + 1);
+                buffer = new char[size + 1];
                 nread = m_udpsocket->readDatagram(buffer, size);
                 if(nread != size)
                         qDebug() << "BaseEngine::readKeepLoginAliveDatagrams() warning :" << nread << "!=" << size;
@@ -1006,9 +1021,9 @@ void BaseEngine::readKeepLoginAliveDatagrams()
                         QString line     = QString::fromUtf8(buffer);
                         QStringList qsl  = line.trimmed().split(" ");
                         QStringList list = line.trimmed().split("=");
-
+                        
                         QString reply = qsl[0];
-
+                        
                         if(reply == "DISC") {
                                 setState(ENotLogged);
                                 qDebug() << qsl; //reply;
@@ -1023,7 +1038,7 @@ void BaseEngine::readKeepLoginAliveDatagrams()
                         m_pendingkeepalivemsg = 0;
                 }
 
-                free(buffer);
+                delete [] buffer;
 	}
 }
 
@@ -1310,15 +1325,15 @@ void BaseEngine::processLoginDialog()
 	char buffer[256];
 	int len;
 	qDebug() << "BaseEngine::processLoginDialog()";
-	if(m_tcpmode && (m_state == ELogged)) {
-		Popup * popup = new Popup(m_loginsocket, m_sessionid);
-		connect( popup, SIGNAL(destroyed(QObject *)),
-		         this, SLOT(popupDestroyed(QObject *)) );
-		connect( popup, SIGNAL(wantsToBeShown(Popup *)),
-			 this, SLOT(profileToBeShown(Popup *)) );
-		popup->streamNewData();
-		return;
-	}
+// 	if(m_tcpmode && (m_state == ELogged)) {
+// 		Popup * popup = new Popup(m_loginsocket, m_sessionid);
+// 		connect( popup, SIGNAL(destroyed(QObject *)),
+// 		         this, SLOT(popupDestroyed(QObject *)) );
+// 		connect( popup, SIGNAL(wantsToBeShown(Popup *)),
+// 			 this, SLOT(profileToBeShown(Popup *)) );
+// 		popup->streamNewData();
+// 		return;
+// 	}
 	if(!m_loginsocket->canReadLine())
 	{
 		qDebug() << "no line ready to be read";

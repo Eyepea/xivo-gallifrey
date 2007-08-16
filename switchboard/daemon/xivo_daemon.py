@@ -1318,8 +1318,9 @@ def manage_tcp_connection(connid, allow_events):
                                                         user['sessionid'] = '%u' % random.randint(0,999999999)
                                                         user['sessiontimestamp'] = time.time()
                                                         user['ip'] = requester_ip
-                                                        user['port'] = -1
+                                                        user['port'] = str(requester_port)
                                                         user['tcpmode'] = True
+                                                        user['socket'] = connid[0].makefile('w')
                                                         repstr = "loginok=%s;%s;%s;%s\n" %(user.get('context'),
                                                                                            user.get('phonenum'),
                                                                                            ",".join(capa_user),
@@ -2505,7 +2506,7 @@ class LoginHandler(SocketServer.StreamRequestHandler):
                 if list1[0] == 'TCPMODE':
                         #print 'TCP MODE !'
                         tcpmode = True
-                        port = -1
+                        port = '-1'
                 elif len(list1) != 2 or list1[0] != 'PORT':
                         replystr = "ERROR PORT"
                         debugstr += " / PORT KO"
@@ -2560,8 +2561,13 @@ class LoginHandler(SocketServer.StreamRequestHandler):
                 for capa in capabilities_list:
                         if (map_capas[capa] & capalist_user):
                                 capa_user.append(capa)
-                replystr = "OK SESSIONID %s %s %s %s" %(sessionid, context, ",".join(capa_user), __version__.split()[1])
-                debugstr += " / user %s, port %s, state %s, astnum %d : connected : %s" %(user,port,state,astnum,replystr)
+                replystr = "OK SESSIONID %s %s %s %s %s" %(sessionid, context,
+                                                           ",".join(capa_user),
+                                                           __version__.split()[1],
+                                                           "exten")
+                debugstr += " / user %s, port %s, state %s, astnum %d, cticlient %s/%s : connected : %s" %(user, port, state, astnum,
+                                                                                                           whoami, whatsmyos,
+                                                                                                           replystr)
                 return [replystr, debugstr], [user, port, state, astnum]
 
         def handle(self):
@@ -2631,8 +2637,7 @@ class IdentRequestHandler(SocketServer.StreamRequestHandler):
 						capalist = (e.get('capas') & capalist_server)
 						if (capalist & CAPA_CUSTINFO):
 							if action == "PUSH":
-								retline = 'USER %s STATE %s\r\n'%(user,e.get('state'))
-								# print 'sendfiche', e, callerid, msg
+								retline = 'USER %s STATE %s\r\n' %(user, e.get('state'))
 								sendfiche.sendficheasync(e, callerid, msg)
 							elif action == "QUERY":
 								retline = 'USER %s SESSIONID %s IP %s PORT %s STATE %s\r\n' \
