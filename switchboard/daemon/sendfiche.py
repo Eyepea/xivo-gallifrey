@@ -1,28 +1,30 @@
 # Thomas Bernard
 
 import ConfigParser
-import threading, sys
 import ldap
+import sys
+import syslog
+import threading
 
 import generefiche
 
 #
 ## \class Info
 class Info:
-    def __init__(self, ititle, itype, ivalue):
-        self.title = ititle
-        self.type = itype
-        self.value = ivalue
-    def __str__(self):
-        return self.title + '(' + self.type + ')="' + self.value + '"'
-    def __repr__(self):
-        return str(self)
-    def getTitle(self):
-        return self.title
-    def getType(self):
-        return self.type
-    def getValue(self):
-        return self.value
+        def __init__(self, ititle, itype, ivalue):
+                self.title = ititle
+                self.type = itype
+                self.value = ivalue
+        def __str__(self):
+                return self.title + '(' + self.type + ')="' + self.value + '"'
+        def __repr__(self):
+                return str(self)
+        def getTitle(self):
+                return self.title
+        def getType(self):
+                return self.type
+        def getValue(self):
+                return self.value
 
 ## \class myLDAP
 class myLDAP:
@@ -32,8 +34,8 @@ class myLDAP:
 			self.l.protocol_version = ldap.VERSION3
 			self.l.simple_bind_s(iuser, ipass)
 			
-		except ldap.LDAPError, e:
-			print e
+		except ldap.LDAPError, exc:
+			log_debug('except ldap.LDAPError : %s' % str(exc))
 			sys.exit()
 
 	def getldap(self, ibase, filter, attrib):
@@ -43,8 +45,8 @@ class myLDAP:
 						   filter,
 						   attrib)
 			return resultat
-		except ldap.LDAPError, e:
-			print e
+		except ldap.LDAPError, exc:
+			log_debug('except ldap.LDAPError : %s' % str(exc))
 
 ## \brief Returns the kind of database
 # \param cfg
@@ -55,6 +57,15 @@ def get_dbkind(cfg):
 		dbkind = ""
 	return dbkind
 
+
+def varlog(string):
+        syslog.syslog(syslog.LOG_NOTICE, "sendfiche : " + string)
+        return 0
+
+def log_debug(string):
+#        if debug_mode:
+        print "#debug# (sendfiche) " + string
+        return varlog(string)
 
 ## \brief Returns informations fetched from the LDAP database
 # \param config
@@ -76,8 +87,8 @@ def get_ldap_infos(config, cid):
 		if 'givenName' in who.keys(): firstname = who['givenName'][0]
 		if 'sn' in who.keys():        name      = who['sn'][0]
 		if 'o' in who.keys():         company   = who['o'][0]
-	except Exception, e:
-		print "No callerid from OX", e, result
+	except Exception, exc:
+                log_debug('No callerid from OX : %s : %s' %(str(exc), str(result)))
 	return [callid, mail, name, firstname, company]
 
 
@@ -102,7 +113,7 @@ def get_mysql_infos(config, cid):
 		conn.close()
 
 	except Exception, e:
-		print "Connection to MySQL failed", config.get('general', 'host')
+                log_debug('Connection to MySQL failed : %s' % config.get('general', 'host'))
 
 	return results
 
@@ -124,7 +135,7 @@ def get_sqlite_infos(config, cid):
 		conn.close()
 
 	except Exception, e:
-		print_verbose("Connection to sqlite failed")
+                log_debug('Connection to sqlite failed')
 
 	return results
 
@@ -143,7 +154,7 @@ def set_fields_from_resultline(callerid, x):
 		field["town"]       = x[5]
 		field["medal"]      = x[6]
 	except Exception, e:
-		print_verbose("Customer not found in mysql db")
+                log_debug('Customer not found in mysql db')
 		if len(callerid) == 9:
 			field["fullnumber"] = callerid
 		else:
@@ -199,7 +210,7 @@ except:
 	try:
 		config.readfp(open("xivo_push.conf"))
 	except:
-		print "no xivo_push.conf file found"
+                log_debug('no xivo_push.conf file found')
 		sys.exit(2)
 
 # reads the kind of database and the sheet's format
@@ -219,62 +230,62 @@ class FicheSender:
             liste = []
             fields = {}
 
+            log_debug('databasekind = %s' % databasekind)
             if databasekind == "ldap":
-                fields["req_cid"] = callerid
-                fields["callidname"], fields["mail"], fields["name"], fields["firstname"], fields["company"] = get_ldap_infos(config, callerid)
-                if callerid in config.options('photo'):
-                    fields["picture"] = config.get('photo', callerid)
-                print "=====", fields
-                liste = make_fields(fitems, fformats, fields)
-                print "=====", liste
-            elif databasekind == "mysql" or databasekind == "sqlite":
-                listes = []
-                if databasekind == "mysql":
-                    results = get_mysql_infos(config, callerid)
-                if databasekind == "sqlite":
-                    results = get_sqlite_infos(config, callerid)
-            #print_verbose("%d result(s) found for %s" %(len(results),callerid))
-                if len(results) > 0:
-                    for z in xrange(len(results)):
-                        fields = set_fields_from_resultline(callerid, results[z])
-                        fields["req_cid"] = callerid
-                        liste = make_fields(fitems, fformats, fields)
-                        listes.append(liste)
-                else:
                     fields["req_cid"] = callerid
+                    fields["callidname"], fields["mail"], fields["name"], fields["firstname"], fields["company"] = get_ldap_infos(config, callerid)
+                    if callerid in config.options('photo'):
+                            fields["picture"] = config.get('photo', callerid)
+                    log_debug('fields = %s' % str(fields))
                     liste = make_fields(fitems, fformats, fields)
+                    log_debug('liste = %s' % str(liste))
+            elif databasekind == "mysql" or databasekind == "sqlite":
+                    listes = []
+                    if databasekind == "mysql":
+                            results = get_mysql_infos(config, callerid)
+                    elif databasekind == "sqlite":
+                            results = get_sqlite_infos(config, callerid)
+                    # log_debug("%d result(s) found for %s" %(len(results),callerid))
+                    if len(results) > 0:
+                            for z in xrange(len(results)):
+                                    fields = set_fields_from_resultline(callerid, results[z])
+                                    fields["req_cid"] = callerid
+                                    liste = make_fields(fitems, fformats, fields)
+                                    listes.append(liste)
+                    else:
+                            fields["req_cid"] = callerid
+                            liste = make_fields(fitems, fformats, fields)
 
-            print "*=*", address
+            log_debug('address = %s' % str(address))
             fiche = generefiche.Fiche(sessionid)
             fiche.setmessage(msg)
             for x in liste:
-                fiche.addinfo(x.getTitle(), x.getType(), x.getValue())
+                    fiche.addinfo(x.getTitle(), x.getType(), x.getValue())
             if tcpmode:
-                #fs = socket.makefile('w')
-                #fs.write(fiche.getxml())
-                #fs.flush()
-                #fs.close()
-                socket.write(fiche.getxml())
-                socket.flush()
+                    #fs = socket.makefile('w')
+                    #fs.write(fiche.getxml())
+                    #fs.flush()
+                    #fs.close()
+                    socket.write(fiche.getxml())
+                    socket.flush()
             else:
-                fiche.sendtouser(address)
-            print '*** fiche.sendtouser() finished!!! ***'
+                    fiche.sendtouser(address)
+            log_debug('fiche.sendtouser() finished')
 
 
 def sendficheasync(userinfo, callerid, msg):
-    sender = FicheSender()
-    params = {'sessionid':userinfo['sessionid'],
-              'address':(userinfo['ip'], int(userinfo['port'])),
-              'state':userinfo['state'],
-              'callerid':callerid,
-              'msg':msg,
-              'tcpmode':userinfo['tcpmode']}
-    if userinfo['tcpmode']:
-        params['socket'] = userinfo['socket']
-    else:
-        params['socket'] = None
-    t = threading.Thread(None, sender, None, (), params)
-    t.start()
-
-
+        sender = FicheSender()
+        params = {'sessionid':userinfo['sessionid'],
+                  'address':(userinfo['ip'], int(userinfo['port'])),
+                  'state':userinfo['state'],
+                  'callerid':callerid,
+                  'msg':msg,
+                  'tcpmode':userinfo['tcpmode']}
+        if userinfo['tcpmode']:
+                params['socket'] = userinfo['socket']
+        else:
+                params['socket'] = None
+        log_debug('sendficheasync : %s' % str(params))
+        t = threading.Thread(None, sender, None, (), params)
+        t.start()
 
