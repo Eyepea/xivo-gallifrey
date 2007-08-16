@@ -2326,12 +2326,14 @@ class AsteriskRemote:
                                         phone_list.append(l)
 
                         # retrieves the xivosb account informations
+                        found_xivosb = False
                         for l in phone_list:
                                 [sso_tech, sso_phoneid, sso_passwd, sso_cinfo_allowed,
                                  sso_phonenum, sso_l5, sso_l6,
                                  fullname, firstname, lastname, sso_context] = l
                                 for sipacc in self.xivosb_phoneids:
                                         if sipacc == sso_phoneid:
+                                                found_xivosb = True
                                                 # if this phoneid is a "xivosb" one
                                                 if sso_context not in self.xivosb_contexts:
                                                         # only ONE xivosb is allowed for a given context
@@ -2341,6 +2343,8 @@ class AsteriskRemote:
                                                 # elif self.xivosb_phoneids[sso_phoneid][0] == "":
                                                 # #removes this xivosb account from the list if no context has been filled
                                                 # del self.xivosb_phoneids[sso_phoneid]
+                        if not found_xivosb:
+                                log_debug("%s : WARNING : no xivosb-like account has been found on this asterisk" % self.astid)
                         log_debug("%s : xivosb_contexts = %s"
                                   %(self.astid, str(self.xivosb_contexts)))
                         log_debug("%s : xivosb_phoneids = %s"
