@@ -1,7 +1,7 @@
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_sip.c
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/channels/chan_sip.c	2007-08-08 14:42:37.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_sip.c	2007-08-08 14:43:30.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/channels/chan_sip.c	2007-07-23 16:32:07.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_sip.c	2007-08-16 10:15:38.000000000 +0200
 @@ -1946,9 +1946,9 @@
  	struct ast_hostent ahp;
  	struct sip_peer *p;
@@ -328,7 +328,19 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_sip.c
  			}
  		}
  		
-@@ -11493,6 +11620,14 @@
+@@ -11251,7 +11378,10 @@
+ 				if (!strcmp(p_old->username, p->username)) {
+ 					if (!strcmp(p_old->exten, p->exten) &&
+ 					    !strcmp(p_old->context, p->context)) {
+-						ast_set_flag(p_old, SIP_NEEDDESTROY);
++                                                if(strncmp(get_header(req, "User-Agent"), "THOMSON ST20", 12) == 0) {
++                                                        ast_set_flag(p, SIP_NEEDDESTROY);
++                                                } else
++                                                        ast_set_flag(p_old, SIP_NEEDDESTROY);
+ 						ast_mutex_unlock(&p_old->lock);
+ 						break;
+ 					}
+@@ -11493,6 +11623,14 @@
  		if (!p->lastinvite && ast_strlen_zero(p->randdata))
  			ast_set_flag(p, SIP_NEEDDESTROY);	
  		break;
