@@ -130,7 +130,7 @@ do
 		}
 
 		$callerid = preg_replace('/<'.preg_quote($result['ufeatures']['number']).'>$/','',$result['protocol']['callerid']);
-		$callerid = trim($callerid).' <'.$result['ufeatures']['number'].'>';
+		$callerid = trim(str_replace(array('<','>','"'),'',$callerid)).' <'.$result['ufeatures']['number'].'>';
 
 		if(($result['protocol']['callerid'] = $protocol->set_chk_value('callerid',$callerid)) === false)
 		{

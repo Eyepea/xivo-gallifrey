@@ -230,7 +230,7 @@ $array['filter']['authdebug'] = array('bool' => true);
 $array['filter']['delayreject'] = array('bool' => true);
 $array['filter']['trunkfreq'] = array('key' => array(10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100));
 $array['filter']['trunktimestamps'] = array('bool' => true);
-$array['filter']['regcontext'] = array('set' => false,'chk' => 2,'maxlen' => 80,
+$array['filter']['regcontext'] = array('set' => false,'chk' => 2,'maxlen' => 39,
 					'regexp' => '/^(?!macro-)[a-z0-9_-]+$/',
 					'nokey' => array('general','globals','hints','features'));
 $array['filter']['minregexpire'] = array('key' => array(0,10,20,30,40,50,60,70,80,90,100,110,120));

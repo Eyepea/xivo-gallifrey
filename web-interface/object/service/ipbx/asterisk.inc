@@ -714,11 +714,13 @@ class xivo_service_asterisk extends xivo_service_abstract
 			|| ($info['extenumbers'] = $extenumbers->get_where(array(
 									'number' => $info['did']['exten'],
 									'context' => $info['did']['context']))) === false
-			|| ($info['dfeatures']['type'] !== 'custom' && $info['dfeatures']['commented'] === false
-			   && (($tyfeatures = &$this->get_module($info['dfeatures']['type'].'features')) === false
-			   || ($info['tyfeatures'] = $tyfeatures->get($info['dfeatures']['typeid'])) === false
-			   || xivo_empty($info['tyfeatures']['number']) === true) === true) === true)
+			|| ($info['dfeatures']['commented'] === false
+			   && ($info['tyfeatures'] = $dfeatures->is_valid($info['dfeatures']['type'],
+		   							  $info['dfeatures']['typeid'])) === false) === true)
 				continue;
+
+			if($info['tyfeatures'] === true)
+				$info['tyfeatures'] = false;
 
 			$r[] = $info;
 		}

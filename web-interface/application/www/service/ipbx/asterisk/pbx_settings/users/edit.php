@@ -269,7 +269,8 @@ do
 			if($info['ufeatures']['number'] !== '')
 			{
 				$callerid = preg_replace('/<'.preg_quote($info['ufeatures']['number']).'>$/','',$result['protocol']['callerid']);
-				$result['protocol']['callerid'] = trim($callerid);
+				$callerid = trim(str_replace(array('<','>','"'),'',$callerid));
+				$result['protocol']['callerid'] = $callerid;
 			}
 		}
 		else
@@ -279,7 +280,7 @@ do
 			else
 			{
 				$callerid = preg_replace('/<'.preg_quote($info['ufeatures']['number']).'>$/','',$result['protocol']['callerid']);
-				$callerid = trim($callerid);
+				$callerid = trim(str_replace(array('<','>','"'),'',$callerid));
 			}
 
 			$callerid .= ' <'.$result['ufeatures']['number'].'>';

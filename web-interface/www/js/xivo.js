@@ -867,6 +867,22 @@ function xivo_smenu_click(obj,cname,part,last)
 	obj.className = last == false ? cname : cname+'-last';
 }
 
+function xivo_smenu_fmsubmit(obj)
+{
+	if(xivo_is_object(obj) == false
+	|| obj.nodeName.toLowerCase() != 'form'
+	|| xivo_is_undef(obj['fm_smenu-tab']) == true
+	|| xivo_is_undef(obj['fm_smenu-part']) == true
+	|| xivo_smenu['click']['id'] == ''
+	|| xivo_smenu['display'] == '')
+		return(false);
+
+	obj['fm_smenu-tab'].value = xivo_smenu['click']['id'];
+	obj['fm_smenu-part'].value = xivo_smenu['display'];
+
+	return(true);
+}
+
 function xivo_smenu_out(obj,cname,last)
 {
 	if(xivo_is_undef(obj.id) == true || obj.id == '' || xivo_smenu['click']['id'] == obj.id)

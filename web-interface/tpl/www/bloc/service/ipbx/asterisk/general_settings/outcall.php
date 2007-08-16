@@ -6,32 +6,40 @@
 	$element = $this->vars('element');
 	$info = $this->vars('info');
 	$trunks_list = $this->vars('trunks_list');
+	$smenu = $this->vars('fm_smenu');
+
+	$outcall_js = array();
 
 	if($this->vars('fm_save') === true):
-		$dhtml->write_js('xivo_form_success(\''.xivo_stript($this->bbf('fm_success-save')).'\');');
+		$outcall_js[] = 'xivo_form_success(\''.xivo_stript($this->bbf('fm_success-save')).'\');';
+	endif;
+
+	if(($smenu_tab = $this->vars('fm_smenu_tab')) !== '' && ($smenu_part = $this->vars('fm_smenu_part')) !== ''):
+		$outcall_js[] = 'xivo_smenu[\'tab\'] = \''.xivo_stript($smenu_tab).'\';';
+		$outcall_js[] = 'xivo_smenu[\'part\'] = \''.xivo_stript($smenu_part).'\';';
+
+		if($smenu_part === 'sb-part-last'):
+			$outcall_js[] = 'xivo_smenu[\'last\'] = true;';
+		endif;
 	endif;
 
 	if($info['emergency'] !== false):
 		$egency_nb = count($info['emergency']);
-		$egency_js = array();
-		$egency_js[0] = 'xivo_tlist[\'emergency\'] = new Array();';
-		$egency_js[1] = 'xivo_tlist[\'emergency\'][\'cnt\'] = '.$egency_nb.';';
-
-		$dhtml->write_js($egency_js);
+		$outcall_js[] = 'xivo_tlist[\'emergency\'] = new Array();';
+		$outcall_js[] = 'xivo_tlist[\'emergency\'][\'cnt\'] = '.$egency_nb.';';
 	else:
 		$egency_nb = 0;
 	endif;
 
 	if($info['special'] !== false):
 		$special_nb = count($info['special']);
-		$special_js = array();
-		$special_js[0] = 'xivo_tlist[\'special\'] = new Array();';
-		$special_js[1] = 'xivo_tlist[\'special\'][\'cnt\'] = '.$special_nb.';';
-
-		$dhtml->write_js($special_js);
+		$outcall_js[] = 'xivo_tlist[\'special\'] = new Array();';
+		$outcall_js[] = 'xivo_tlist[\'special\'][\'cnt\'] = '.$special_nb.';';
 	else:
 		$special_nb = 0;
 	endif;
+
+	$dhtml->write_js($outcall_js);
 ?>
 <div class="b-infos b-form">
 	<h3 class="sb-top xspan"><span class="span-left">&nbsp;</span><span class="span-center"><?=$this->bbf('title_content_name');?></span><span class="span-right">&nbsp;</span></h3>
@@ -57,12 +65,14 @@ else:
 
 ?>
 
-<form action="#" method="post" accept-charset="utf-8">
+<form action="#" method="post" accept-charset="utf-8" onsubmit="xivo_smenu_fmsubmit(this);">
 
 <?=$form->hidden(array('name' => XIVO_SESS_NAME,'value' => XIVO_SESS_ID));?>
 <?=$form->hidden(array('name' => 'fm_send','value' => '1'));?>
+<?=$form->hidden(array('name' => 'fm_smenu-tab','value' => 'smenu-tab-1'));?>
+<?=$form->hidden(array('name' => 'fm_smenu-part','value' => 'sb-part-first'));?>
 
-<div id="sb-part-first">
+<div id="sb-part-first" class="b-nodisplay">
 
 <div class="sb-list">
 	<table cellspacing="0" cellpadding="0" border="0">

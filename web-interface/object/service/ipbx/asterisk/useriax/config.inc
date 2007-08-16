@@ -66,6 +66,9 @@ $array['element']['context']['default'] = '';
 $array['element']['username'] = array();
 $array['element']['username']['default'] = '';
 
+$array['element']['mailbox'] = array();
+$array['element']['mailbox']['default'] = '';
+
 $array['element']['host-static'] = array();
 $array['element']['host-static']['copy'] = 'host';
 $array['element']['host-static']['unset'] = true;
@@ -80,14 +83,14 @@ $array['element']['call-limit']['default'] = 0;
 $array['element']['call-limit']['setdef'] = true;
 
 $array['filter'] = array();
-$array['filter']['callerid'] = array('chk' => 2,'maxlen' => 80,'notag' => false);
-$array['filter']['name'] = array('minlen' => 1,'maxlen' => 80,'regexp' => '/^[a-z0-9_-]+$/i');
+$array['filter']['callerid'] = array('chk' => 2,'maxlen' => 160,'notag' => false);
+$array['filter']['name'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[a-z0-9_-]+$/i');
 $array['filter']['secret'] = array('set' => false,'chk' => 2,'minlen' => 1,'maxlen' => 80);
 $array['filter']['host'] = array('set' => false,'chk' => 2);
 $array['filter']['amaflags'] = array('set' => false,'chk' => 2,'key' => array('default','omit','billing','documentation'));
 $array['filter']['accountcode'] = array('set' => false,'chk' => 2,'maxlen' => 20);
-$array['filter']['callgroup'] = array('set' => false,'chk' => 2,'regexp' => '/^([0-9]+[,]?)*$/','maxlen' => 10);
-$array['filter']['context'] = array('set' => false,'chk' => 2,'nokey' => array('general','globals','initconfig','hints','features','zonemessages'),'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 80);
+$array['filter']['callgroup'] = array('set' => false,'chk' => 2,'regexp' => '/^([0-9]+[,]?)*$/','maxlen' => 180);
+$array['filter']['context'] = array('set' => false,'chk' => 2,'nokey' => array('general','globals','initconfig','hints','features','zonemessages'),'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 39);
 $array['filter']['call-limit'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,30));
 $array['filter']['qualify'] = array('bool' => true);
 $array['filter']['disallow'] = array('set' => false,'chk' => 2,'key' => array('all'));
@@ -112,6 +115,7 @@ $array['filter']['host-dynamic'] = array('set' => false,'key' => array('dynamic'
 $array['filter']['host-static'] = array('set' => false,'func' => 'xivo_filter::chk_host_ipv4_strict');
 $array['filter']['port'] = array('set' => false,'chk' => 2);
 $array['filter']['ipaddr'] = array('set' => false,'chk' => 2);
-$array['filter']['username'] = array('set' => false,'chk' => 2);
+$array['filter']['username'] = array('set' => false,'chk' => 2,'maxlen' => 80);
+$array['filter']['mailbox'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9#\*]{1,40}(@[a-z0-9@_\-]{1,39})?$/','maxlen' => 80);
 
 ?>

@@ -61,10 +61,7 @@ switch($act)
 				unset($_QR['dfeatures']['custom']);
 
 			if(($result['dfeatures'] = $dfeatures->chk_values($_QR['dfeatures'])) === false
-			|| ($result['dfeatures']['type'] !== 'custom'
-			   && (($tyfeatures = &$ipbx->get_module($result['dfeatures']['type'].'features')) === false
-			   || ($result['tyfeatures'] = $tyfeatures->get($result['dfeatures']['typeid'],false)) === false
-			   || xivo_empty($result['tyfeatures']['number']) === true) === true) === true)
+			|| $dfeatures->is_valid($result['dfeatures']['type'],$result['dfeatures']['typeid']) === false)
 			{
 				$add = false;
 				$result['dfeatures'] = $dfeatures->get_filter_result();
@@ -136,10 +133,9 @@ switch($act)
 		|| ($info['extenumbers'] = $extenumbers->get_where(array(
 							'number' => $info['did']['exten'],
 							'context' => $info['did']['context']))) === false
-		|| ($info['dfeatures']['type'] !== 'custom' && $info['dfeatures']['commented'] === false
-		   && (($tyfeatures = &$ipbx->get_module($info['dfeatures']['type'].'features')) === false
-		   || ($info['tyfeatures'] = $tyfeatures->get($info['dfeatures']['typeid'])) === false
-		   || xivo_empty($info['tyfeatures']['number']) === true) === true) === true)
+		|| ($info['dfeatures']['commented'] === false
+		   && $dfeatures->is_valid($info['dfeatures']['type'],
+		   			   $info['dfeatures']['typeid']) === false) === true)
 			xivo_go($_HTML->url('service/ipbx/call_management/did'),$param);
 
 		if($info['dfeatures']['commented'] === true)
@@ -195,10 +191,7 @@ switch($act)
 				unset($_QR['dfeatures']['custom']);
 
 			if(($result['dfeatures'] = $dfeatures->chk_values($_QR['dfeatures'])) === false
-			|| ($result['dfeatures']['type'] !== 'custom'
-				&& (($tyfeatures = &$ipbx->get_module($result['dfeatures']['type'].'features')) === false
-				|| ($result['tyfeatures'] = $tyfeatures->get($result['dfeatures']['typeid'],false)) === false
-				|| xivo_empty($result['tyfeatures']['number']) === true) === true) === true)
+			|| $dfeatures->is_valid($result['dfeatures']['type'],$result['dfeatures']['typeid']) === false)
 			{
 				$edit = false;
 				$result['dfeatures'] = array_merge($info['dfeatures'],$dfeatures->get_filter_result());
@@ -310,10 +303,8 @@ switch($act)
 			|| ($info['did'] = $extensions->get($info['dfeatures']['extenid'])) === false
 			|| ($info['extenumbers'] = $extenumbers->get_where(array(
 								'number' => $info['did']['exten'],
-								'context' => $info['did']['context']))) === false)
-				continue;
-
-			if($dfeatures->delete($info['dfeatures']['id']) === false)
+								'context' => $info['did']['context']))) === false
+			|| $dfeatures->delete($info['dfeatures']['id']) === false)
 				continue;
 
 			if($extensions->delete($info['did']['id']) === false)

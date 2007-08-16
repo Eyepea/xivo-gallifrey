@@ -49,10 +49,10 @@ $array['filter']['meetmeid'] = array('cast' => 'uint');
 $array['filter']['number'] = array('regexp' => '/^[0-9\*#]+$/','minlen' => 1,'maxlen' => 40);
 $array['filter']['mode'] = array('key' => array('all','talk','listen'));
 $array['filter']['exit'] = array('bool' => true);
-$array['filter']['musiconhold'] = array('set' => false,'chk' => 2,'maxlen' => 20);
+$array['filter']['musiconhold'] = array('set' => false,'chk' => 2,'maxlen' => 128);
 $array['filter']['quiet'] = array('bool' => true);
 $array['filter']['record'] = array('bool' => true);
 $array['filter']['video'] = array('bool' => true);
-$array['filter']['context'] = array('set' => false,'chk' => 2,'nokey' => array('general','globals','initconfig','hints','features'),'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 80);
+$array['filter']['context'] = array('set' => false,'chk' => 2,'nokey' => array('general','globals','initconfig','hints','features'),'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 39);
 
 ?>

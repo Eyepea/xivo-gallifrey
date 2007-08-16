@@ -92,7 +92,9 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 			$r['name'] = (string) $arr['name'];
 
 		if(isset($arr['commented']) === false)
-			$r['commented'] = false;
+			$arr['commented'] = false;
+
+		$r['commented'] = intval((bool) $arr['commented']);
 
 		return($this->_dso->edit($id,$r,$disable));
 	}

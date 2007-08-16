@@ -344,7 +344,7 @@ $array['filter']['realm'] = array('regexp' => '/[^"]/','maxlen' => 64);
 $array['filter']['alwaysauthreject'] = array('bool' => true);
 $array['filter']['useragent'] = array('cast' => 'alphanumspecials','maxlen' => 80);
 $array['filter']['checkmwi'] = array('key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
-$array['filter']['regcontext'] = array('set' => false,'chk' => 2,'maxlen' => 80,
+$array['filter']['regcontext'] = array('set' => false,'chk' => 2,'maxlen' => 39,
 					'regexp' => '/^(?!macro-)[a-z0-9_-]+$/',
 					'nokey' => array('general','globals','hints','features','authentification'));
 $array['filter']['callerid'] = array('regexp' => '/^[a-z0-9_-]+$/i','maxlen' => 80);
@@ -397,7 +397,7 @@ $array['filter']['defaultexpiry'] = array('key' => array(1,10,20,30,40,50,60,70,
 $array['filter']['registertimeout'] = array('key' => array(1,10,20,30,40,50,60,70,80,90,100,110,120));
 $array['filter']['registerattempts'] = array('key' => array(0,10,20,30,40,50,60,70,80,90,100,110,120));
 $array['filter']['notifyringing'] = array('bool' => true);
-$array['filter']['context'] = array('set' => false,'chk' => 2,'maxlen' => 80,
+$array['filter']['context'] = array('set' => false,'chk' => 2,'maxlen' => 39,
 				    'regexp' => '/^(?!macro-)[a-z0-9_-]+$/',
 				    'nokey' => array('general','globals','hints','features','authentification'));
 $array['filter']['nat'] = array('key' => array('no','yes','never','route'));
@@ -407,7 +407,7 @@ $array['filter']['useclientcode'] = array('bool' => true);
 $array['filter']['progressinband'] = array('key' => array('yes','no','never'));
 $array['filter']['language'] = array('key' => array('en','fr'));
 $array['filter']['musiconhold'] = array('set' => false,'chk' => 2,'maxlen' => 20);
-$array['filter']['vmexten'] = array('regexp' => '/^[a-z0-9\*#]+$/i','maxlen' => 80);
+$array['filter']['vmexten'] = array('regexp' => '/^[0-9#\*]+$/i','maxlen' => 40);
 $array['filter']['trustrpid'] = array('bool' => true);
 $array['filter']['sendrpid'] = array('bool' => true);
 $array['filter']['canreinvite'] = array('key' => array('yes','no','update'));

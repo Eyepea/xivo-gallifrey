@@ -24,6 +24,8 @@ class xivo_service_asterisk_generalagent extends xivo_service_asterisk_staticcon
 		$this->_sre = &$sre;
 		$this->_dso = &$dso;
 
+		$this->_dso->set_param('filename',$this->_filename);
+
 		$this->_load_config();
 		$this->_generalagent['conf'] = $this->_conf;
 	}

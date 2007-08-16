@@ -86,11 +86,11 @@ $array['element']['call-limit']['default'] = 0;
 $array['element']['call-limit']['setdef'] = true;
 
 $array['filter'] = array();
-$array['filter']['name'] = array('minlen' => 1,'maxlen' => 80,'regexp' => '/^[a-z0-9_-]+$/i');
+$array['filter']['name'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[a-z0-9_-]+$/i');
 $array['filter']['username'] = array('set' => false,'chk' => 2,'maxlen' => 80);
 $array['filter']['secret'] = array('set' => false,'chk' => 2,'maxlen' => 80);
-$array['filter']['callerid'] = array('set' => false,'chk' => 2,'maxlen' => 80);
-$array['filter']['context'] = array('set' => false,'chk' => 2,'nokey' => array('general','globals','hints','features','zonemessages'),'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 80);
+$array['filter']['callerid'] = array('set' => false,'chk' => 2,'maxlen' => 160);
+$array['filter']['context'] = array('set' => false,'chk' => 2,'nokey' => array('general','globals','hints','features','zonemessages'),'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 39);
 $array['filter']['call-limit'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,30));
 $array['filter']['host'] = array('set' => false,'chk' => 2);
 $array['filter']['type'] = array('set' => false,'chk' => 2,'key' => array('peer','user','friend'));

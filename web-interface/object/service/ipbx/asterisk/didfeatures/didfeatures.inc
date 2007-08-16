@@ -48,6 +48,31 @@ class xivo_service_asterisk_didfeatures extends xivo_service_asterisk_abstract
 
 		return(true);
 	}
+
+	function is_valid($type,$typeid,$disable=null)
+	{
+		$type = strval($type);
+		$typeid = (int) $typeid;
+
+		switch($type)
+		{
+			case 'custom':
+				return(true);
+			case 'user':
+			case 'group':
+			case 'meetme':
+				break;
+			default:
+				return(false);
+		}
+
+		if(($features = $this->_sre->get_module($type.'features')) === false
+		|| ($tyfeatures = $features->get($typeid,$disable)) === false
+		|| xivo_empty($tyfeatures['number']) === true)
+			return(false);
+
+		return($tyfeatures);
+	}
 }
 
 ?>

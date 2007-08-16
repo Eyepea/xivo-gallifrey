@@ -13,9 +13,16 @@ $info['emergency'] = $generaloutcall->get_all_where(array('type' => 'emergency')
 $info['special'] = $generaloutcall->get_all_where(array('type' => 'special'),null,null,true,$order);
 
 $fm_save = false;
+$fm_smenu_tab = $fm_smenu_part = '';
 
 if(isset($_QR['fm_send']) === true)
 {
+	if(isset($_QR['fm_smenu-tab'],$_QR['fm_smenu-part']) === true)
+	{
+		$fm_smenu_tab = strval($_QR['fm_smenu-tab']);
+		$fm_smenu_part = strval($_QR['fm_smenu-part']);
+	}
+
 	$fm_save = true;
 	$return = &$result;
 
@@ -148,6 +155,8 @@ if(isset($_QR['fm_send']) === true)
 }
 
 $_HTML->assign('fm_save',$fm_save);
+$_HTML->assign('fm_smenu_tab',$fm_smenu_tab);
+$_HTML->assign('fm_smenu_part',$fm_smenu_part);
 $_HTML->assign('element',$generaloutcall->get_element());
 $_HTML->assign('info',$return);
 $_HTML->assign('trunks_list',$trunks_list);

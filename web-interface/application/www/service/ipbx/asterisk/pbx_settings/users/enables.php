@@ -6,7 +6,7 @@ if(xivo_issa('users',$_QR) === false || ($arr = xivo_get_aks($_QR['users'])) ===
 	xivo_go($_HTML->url('service/ipbx/pbx_settings/users'),$param);
 
 $disable = $act === 'disables' ? true : false;
-	
+
 for($i = 0;$i < $arr['cnt'];$i++)
 {
 	$k = $arr['keys'][$i];

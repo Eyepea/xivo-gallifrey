@@ -39,10 +39,8 @@ for($i = 0;$i < $arr['cnt'];$i++)
 	for($j = 0;$j < $nb;$j++)
 	{
 		if(($info['ufeatures'] = $ufeatures->get_by_protocol($v[$j],$k)) === false
-		|| ($info['protocol'] = $protocol->get($info['ufeatures']['protocolid'])) === false)
-			continue;
-
-		if($protocol->delete($info['protocol']['id']) === false)
+		|| ($info['protocol'] = $protocol->get($info['ufeatures']['protocolid'])) === false
+		|| $protocol->delete($info['protocol']['id']) === false)
 			continue;
 
 		if($ufeatures->delete($info['ufeatures']['id']) === false)

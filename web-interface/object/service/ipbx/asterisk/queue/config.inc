@@ -176,7 +176,7 @@ $array['filter']['musiconhold'] = array('set' => false,'chk' => 2,'maxlen' => 20
 $array['filter']['announce'] = array('set' => false,'chk' => 2,'maxlen' => 128);
 $array['filter']['strategy'] = array('set' => false,'chk' => 2,'key' => array('ringall','roundrobin','leastrecent','fewestcalls','random','rrmemory'));
 $array['filter']['servicelevel'] = array('set' => false,'chk' => 2,'cast' => 'int');
-$array['filter']['context'] = array('set' => false,'chk' => 2,'nokey' => array('general','globals','initconfig','hints','features'),'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 80);
+$array['filter']['context'] = array('set' => false,'chk' => 2,'nokey' => array('general','globals','initconfig','hints','features'),'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 39);
 $array['filter']['retry'] = array('set' => false,'chk' => 2,'key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
 $array['filter']['weight'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,10));
 $array['filter']['wrapuptime'] = array('set' => false,'chk' => 2,'key' => array(0,5000,10000,15000,20000,

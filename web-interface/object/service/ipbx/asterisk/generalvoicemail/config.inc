@@ -289,13 +289,13 @@ $array['filter']['skipms'] = array('key' => array(1000,2000,3000,4000,5000,6000,
 $array['filter']['sendvoicemail'] = array('bool' => true);
 $array['filter']['usedirectory'] = array('bool' => true);
 $array['filter']['nextaftercmd'] = array('bool' => true);
-$array['filter']['dialout'] = array('set' => false,'chk' => 2,'maxlen' => 80,
+$array['filter']['dialout'] = array('set' => false,'chk' => 2,'maxlen' => 39,
 					'regexp' => '/^(?!macro-)[a-z0-9_-]+$/',
 					'nokey' => array('general','globals','hints','features'));
-$array['filter']['callback'] = array('set' => false,'chk' => 2,'maxlen' => 80,
+$array['filter']['callback'] = array('set' => false,'chk' => 2,'maxlen' => 39,
 					'regexp' => '/^(?!macro-)[a-z0-9_-]+$/',
 					'nokey' => array('general','globals','hints','features'));
-$array['filter']['exitcontext'] = array('set' => false,'chk' => 2,'maxlen' => 80,
+$array['filter']['exitcontext'] = array('set' => false,'chk' => 2,'maxlen' => 39,
 					'regexp' => '/^(?!macro-)[a-z0-9_-]+$/',
 					'nokey' => array('general','globals','hints','features'));
 $array['filter']['attach'] = array('bool' => true);

@@ -499,10 +499,8 @@ switch($act)
 				$id = strval($val[$i]);
 
 				if(($info['meetme'] = $meetme->get($id)) === false
-				|| ($info['mfeatures'] = $mfeatures->get_where(array('meetmeid' => $info['meetme']['id']))) === false)
-					continue;
-
-				if($meetme->delete($info['meetme']['id']) === false)
+				|| ($info['mfeatures'] = $mfeatures->get_where(array('meetmeid' => $info['meetme']['id']))) === false
+				|| $meetme->delete($info['meetme']['id']) === false)
 					continue;
 
 				if($mfeatures->delete($info['mfeatures']['id']) === false)

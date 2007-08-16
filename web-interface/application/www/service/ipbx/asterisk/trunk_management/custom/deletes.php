@@ -7,15 +7,15 @@ if(($arr = xivo_issa_val('peers',$_QR)) === false)
 
 $nb = count($arr);
 
+$tfeatures_where = array();
+$tfeatures_where['trunk'] = 'custom';
+
 for($i = 0;$i < $nb;$i++)
 {
-	if(($info['trunk'] = $trunkcustom->get($id)) === false
-	|| ($info['tfeatures'] = $tfeatures->get_where(array(
-					'trunkid' => $info['trunk']['id'],
-					'trunk' => 'custom'))) === false)
-		continue;
+	$tfeatures_where['trunkid'] = strval($arr[$i]);
 
-	if($trunkcustom->delete($info['trunk']['id']) === false)
+	if(($info['tfeatures'] = $tfeatures->get_where($tfeatures_where)) === false
+	|| $trunkcustom->delete($info['tfeatures']['trunkid']) === false)
 		continue;
 
 	if($tfeatures->delete($info['tfeatures']['id']) === false)

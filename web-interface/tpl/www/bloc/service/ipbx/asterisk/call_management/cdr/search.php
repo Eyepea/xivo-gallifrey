@@ -16,11 +16,13 @@
 	
 	$page = $exportcsv = '';
 
+	$js_result = array();
+
 	if($result === false):
-		$js_result = 'xivo_smenu[\'last\'] = true;';
+		$js_result[] = 'xivo_smenu[\'last\'] = true;';
 	else:
-		$js_result = 'xivo_smenu[\'tab\'] = \'smenu-tab-2\';'."\n".
-			     'xivo_smenu[\'part\'] = \'sb-part-result\';';
+		$js_result[] = 'xivo_smenu[\'tab\'] = \'smenu-tab-2\';';
+		$js_result[] = 'xivo_smenu[\'part\'] = \'sb-part-result\';';
 
 		if($info !== null):
 			$page_query = $info;
@@ -33,7 +35,6 @@
 					    'service/ipbx/call_management/cdr',
 					    $page_query);
 		endif;
-
 
 		$exportcsv_query = $info;
 		$exportcsv_query['search'] = 1;
