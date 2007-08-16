@@ -669,7 +669,7 @@ bool BaseEngine::parseCommand(const QStringList & listitems)
                 connectFeatures();
         } else if(listitems[0].toLower() == QString("featuresput")) {
                 qDebug() << "received ack from featuresput :" << listitems;
-        } else if((listitems[0] != "") && (listitems[0] == "______"))
+        } else if((listitems[0] != "") && (listitems[0] != "______"))
                 qDebug() << "unknown command" << listitems[0];
 
         return b;
