@@ -174,20 +174,20 @@ $array['element']['pickup'] = array();
 $array['element']['pickup']['default'] = '*8.';
 
 $array['filter'] = array();
-$array['filter']['voicemsg'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^(_[0-9\*#]+|[0-9]+)$/');
-$array['filter']['fwdundoall'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^(_[0-9\*#]+|[0-9]+)$/');
-$array['filter']['fwdundounc'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^(_[0-9\*#]+|[0-9]+)$/');
-$array['filter']['fwdundorna'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^(_[0-9\*#]+|[0-9]+)$/');
-$array['filter']['fwdundobusy'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^(_[0-9\*#]+|[0-9]+)$/');
-$array['filter']['fwdunc'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^(_[0-9\*#]+(\.|[X]{3,11})|[0-9]+)$/');
-$array['filter']['fwdrna'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^(_[0-9\*#]+(\.|[X]{3,11})|[0-9]+)$/');
-$array['filter']['fwdbusy'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^(_[0-9\*#]+(\.|[X]{3,11})|[0-9]+)$/i');
-$array['filter']['recsnd'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^(_[0-9\*#]+|[0-9]+)$/');
-$array['filter']['phonestatus'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^(_[0-9\*#]+|[0-9]+)$/');
-$array['filter']['enablevm'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^(_[0-9\*#]+|[0-9]+)$/');
-$array['filter']['enablednd'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^(_[0-9\*#]+|[0-9]+)$/');
-$array['filter']['incallrec'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^(_[0-9\*#]+|[0-9]+)$/');
-$array['filter']['incallfilter'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^(_[0-9\*#]+|[0-9]+)$/');
-$array['filter']['pickup'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^(_[0-9\*#]+(\.|[X]{3,11})|[0-9]+)$/');
+$array['filter']['voicemsg'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
+$array['filter']['fwdundoall'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
+$array['filter']['fwdundounc'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
+$array['filter']['fwdundorna'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
+$array['filter']['fwdundobusy'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
+$array['filter']['fwdunc'] = array('minlen' => 1,'maxlen' => 40);
+$array['filter']['fwdrna'] = array('minlen' => 1,'maxlen' => 40);
+$array['filter']['fwdbusy'] = array('minlen' => 1,'maxlen' => 40);
+$array['filter']['recsnd'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
+$array['filter']['phonestatus'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
+$array['filter']['enablevm'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
+$array['filter']['enablednd'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
+$array['filter']['incallrec'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
+$array['filter']['incallfilter'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
+$array['filter']['pickup'] = array('minlen' => 1,'maxlen' => 40);
 
 ?>

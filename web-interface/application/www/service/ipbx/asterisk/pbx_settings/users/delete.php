@@ -48,8 +48,9 @@ do
 	}
 
 	$extenum_where = array();
-	$extenum_where['number'] = $localexten_where['exten'];
+	$extenum_where['exten'] = $localexten_where['exten'];
 	$extenum_where['context'] = $localexten_where['context'];
+	$extenum_where['extenmode'] = 'extension';
 
 	$info['dfeatures'] = false;
 

@@ -7,7 +7,7 @@
 	$list = $this->vars('list');
 ?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_extenumbers_number'),'name' => 'extenumbers[number]','labelid' => 'extenumbers-number','size' => 15,'default' => $element['extenumbers']['number']['default'],'value' => $info['extenumbers']['number']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_extenumbers_exten'),'name' => 'extenumbers[exten]','labelid' => 'extenumbers-exten','size' => 15,'default' => $element['extenumbers']['exten']['default'],'value' => $info['extenumbers']['exten']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 
 <?=$form->select(array('desc' => $this->bbf('fm_dfeatures_type'),'name' => 'dfeatures[type]','labelid' => 'dfeatures-type','key' => false,'bbf' => array('concatvalue','fm_dfeatures_type-'),'default' => $element['dfeatures']['type']['default'],'value' => $info['dfeatures']['type']),$element['dfeatures']['type']['value'],'onchange="xivo_chgtype(this);" onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
 

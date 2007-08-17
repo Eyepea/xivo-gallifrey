@@ -219,7 +219,8 @@ do
 		}
 
 		$exten_numbers = array();
-		$exten_numbers['number'] = $result['ufeatures']['number'];
+		$exten_numbers['exten'] = $result['ufeatures']['number'];
+		$exten_numbers['extenmode'] = 'extension';
 
 		if($result['protocol']['context'] === '')
 			$exten_numbers['context'] = 'local-extensions';
@@ -227,7 +228,8 @@ do
 			$exten_numbers['context'] = $result['protocol']['context'];
 
 		$exten_where = array();
-		$exten_where['number'] = $info['ufeatures']['number'];
+		$exten_where['exten'] = $info['ufeatures']['number'];
+		$exten_where['extenmode'] = 'extension';
 
 		if($info['protocol']['context'] === '')
 			$exten_where['context'] = 'local-extensions';
@@ -243,8 +245,7 @@ do
 				$status['extenumbers'] = 'edit';
 
 				if(($result['extenumbers'] = $extenumbers->chk_values($exten_numbers)) === false
-				|| (($extenum = $extenumbers->get_where($result['extenumbers'])) !== false
-				   && (int) $extenum['id'] !== (int) $info['extenumbers']['id']) === true)
+				|| $extenumbers->exists($result['extenumbers'],$info['extenumbers']['id']) !== false)
 				{
 					$edit = false;
 					$result['extenumbers'] = array_merge($info['extenumbers'],$extenumbers->get_filter_result());
@@ -255,7 +256,8 @@ do
 		{
 			$status['extenumbers'] = 'add';
 
-			if(($result['extenumbers'] = $extenumbers->chk_values($exten_numbers)) === false)
+			if(($result['extenumbers'] = $extenumbers->chk_values($exten_numbers)) === false
+			|| $extenumbers->exists($result['extenumbers']) !== false)
 			{
 				$edit = false;
 				$result['extenumbers'] = $extenumbers->get_filter_result();
@@ -286,11 +288,7 @@ do
 			$callerid .= ' <'.$result['ufeatures']['number'].'>';
 		}
 			
-		if(($result['protocol']['callerid'] = $protocol->set_chk_value('callerid',$callerid)) === false)
-		{
-			$edit = false;
-			$result['protocol']['callerid'] = '';
-		}
+		$result['protocol']['callerid'] = $callerid;
 
 		$exten_where = array();
 		$exten_where['app'] = $ipbx->mk_interface($info['protocol']['name'],$info['ufeatures']['protocol']);

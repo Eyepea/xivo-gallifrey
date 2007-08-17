@@ -1,32 +1,102 @@
 <?php
 
 $extenfeatures = &$ipbx->get_module('extenfeatures');
+$extenumbers = &$ipbx->get_module('extenumbers');
 
-if(isset($_QR['fm_send']) === true)
-{
-	$extenfeatures->replace_exten_by_name('voicemsg',$extenfeatures->set_chk_value('voicemsg',$_QRY->get_qr('voicemsg')));
-	$extenfeatures->replace_exten_by_name('fwdundoall',$extenfeatures->set_chk_value('fwdundoall',$_QRY->get_qr('fwdundoall')));
-	$extenfeatures->replace_exten_by_name('fwdundounc',$extenfeatures->set_chk_value('fwdundounc',$_QRY->get_qr('fwdundounc')));
-	$extenfeatures->replace_exten_by_name('fwdundorna',$extenfeatures->set_chk_value('fwdundorna',$_QRY->get_qr('fwdundorna')));
-	$extenfeatures->replace_exten_by_name('fwdundobusy',$extenfeatures->set_chk_value('fwdundobusy',$_QRY->get_qr('fwdundobusy')));
-	$extenfeatures->replace_exten_by_name('fwdunc',$extenfeatures->set_chk_value('fwdunc',$_QRY->get_qr('fwdunc')));
-	$extenfeatures->replace_exten_by_name('fwdrna',$extenfeatures->set_chk_value('fwdrna',$_QRY->get_qr('fwdrna')));
-	$extenfeatures->replace_exten_by_name('fwdbusy',$extenfeatures->set_chk_value('fwdbusy',$_QRY->get_qr('fwdbusy')));
-	$extenfeatures->replace_exten_by_name('recsnd',$extenfeatures->set_chk_value('recsnd',$_QRY->get_qr('recsnd')));
-	$extenfeatures->replace_exten_by_name('phonestatus',$extenfeatures->set_chk_value('phonestatus',$_QRY->get_qr('phonestatus')));
-	$extenfeatures->replace_exten_by_name('enablevm',$extenfeatures->set_chk_value('enablevm',$_QRY->get_qr('enablevm')));
-	$extenfeatures->replace_exten_by_name('enablednd',$extenfeatures->set_chk_value('enablednd',$_QRY->get_qr('enablednd')));
-	$extenfeatures->replace_exten_by_name('incallrec',$extenfeatures->set_chk_value('incallrec',$_QRY->get_qr('incallrec')));
-	$extenfeatures->replace_exten_by_name('incallfilter',$extenfeatures->set_chk_value('incallfilter',$_QRY->get_qr('incallfilter')));
-	$extenfeatures->replace_exten_by_name('pickup',$extenfeatures->set_chk_value('pickup',$_QRY->get_qr('pickup')));
-
-	$_HTML->assign('fm_save',true);
-}
-
-$info = $extenfeatures->get_name_exten_for_display();
 $element = $extenfeatures->get_element();
 
-$_HTML->assign('info',$info);
+$info = $extenfeatures->get_name_exten();
+$return = &$info;
+
+$result = $error = array();
+
+$exten_numbers = array();
+$exten_numbers['context'] = '';
+$exten_numbers['extenmode'] = 'extension';
+
+if(isset($_QR['fm_send']) === true && ($arr = xivo_get_aks($element)) !== false)
+{
+	$return = &$result;
+
+	for($i = 0;$i < $arr['cnt'];$i++)
+	{
+		$key = &$arr['keys'][$i];
+
+		if(isset($_QR[$key]) === false)
+		{
+			$result[$key] = '';
+			$error[] = $key;
+			continue;
+		}
+	
+		$exten_numbers['exten'] = $_QR[$key];
+
+		if(($rs_extenumbers = $extenumbers->chk_values($exten_numbers)) === false
+		|| ($rs_extenfeatures = $extenfeatures->chk_value($key,$rs_extenumbers['exten'])) === false)
+		{
+			$result[$key] = '';
+			$error[] = $key;
+			continue;
+		}
+
+		$extenumbersid = false;
+
+		if(isset($info[$key]) === false)
+		{
+			if($extenumbers->exists($rs_extenumbers) !== false)
+			{
+				$result[$key] = '';
+				$error[] = $key;
+				continue;
+			}
+		}
+		else
+		{	
+			$exten_where = $exten_numbers;
+			$exten_where['exten'] = $info[$key];
+
+			if(($extenumbersid = $extenumbers->get_id($exten_where)) === false)
+				$extenumbersid = null;
+
+			if($extenumbers->exists($rs_extenumbers,$extenumbersid) !== false)
+			{
+				$result[$key] = '';
+				$error[] = $key;
+				continue;
+			}
+		}
+
+		if($extenumbersid === false || $extenumbersid === null)
+		{
+			if($extenumbers->add($rs_extenumbers) === false)
+			{
+				$result[$key] = '';
+				$error[] = $key;
+				continue;
+			}
+		}
+		else if($extenumbers->edit($extenumbersid,$rs_extenumbers) === false)
+		{
+			$result[$key] = '';
+			$error[] = $key;
+			continue;
+		}
+
+		$extenfeatures->replace_exten_by_name($key,$rs_extenfeatures);
+
+		$result[$key] = $rs_extenfeatures;
+
+		if(isset($result[$key]{0}) === true && $result[$key]{0} === '_')
+			$result[$key] = substr($result[$key],1);
+	}
+
+	if(isset($error[0]) === false)
+		$_HTML->assign('fm_save',true);
+}
+else $info = $extenfeatures->get_name_exten_for_display();
+
+$_HTML->assign('info',$return);
+$_HTML->assign('error',$error);
 $_HTML->assign('element',$element);
 
 $menu = &$_HTML->get_module('menu');

@@ -28,9 +28,10 @@ switch($act)
 			$result = array();
 
 			$_QR['extenumbers']['context'] = 'did-extensions';
+			$_QR['extenumbers']['extenmode'] = 'extension';
 
 			if(($result['extenumbers'] = $extenumbers->chk_values($_QR['extenumbers'])) === false
-			|| $extenumbers->get_where($result['extenumbers']) !== false)
+			|| $extenumbers->exists($result['extenumbers']) !== false)
 			{
 				$add = false;
 				$result['extenumbers'] = $extenumbers->get_filter_result();
@@ -38,7 +39,7 @@ switch($act)
 			else
 			{
 				$didexten = array();
-				$didexten['exten'] = $result['extenumbers']['number'];
+				$didexten['exten'] = $result['extenumbers']['exten'];
 				$didexten['context'] = $result['extenumbers']['context'];
 				$didexten['priority'] = 1;
 				$didexten['app'] = 'Macro';
@@ -50,7 +51,7 @@ switch($act)
 					$result['did'] = $extensions->get_filter_result();
 				}
 				else
-					$_QR['dfeatures']['number'] = $result['extenumbers']['number'];
+					$_QR['dfeatures']['number'] = $result['extenumbers']['exten'];
 			}
 
 			$_QR['dfeatures']['extenid'] = 0;
@@ -131,8 +132,9 @@ switch($act)
 		|| ($info['dfeatures'] = $dfeatures->get($_QR['id'])) === false
 		|| ($info['did'] = $extensions->get($info['dfeatures']['extenid'])) === false
 		|| ($info['extenumbers'] = $extenumbers->get_where(array(
-							'number' => $info['did']['exten'],
-							'context' => $info['did']['context']))) === false
+							'exten' => $info['did']['exten'],
+							'context' => $info['did']['context'],
+							'extenmode' => 'extension'))) === false
 		|| ($info['dfeatures']['commented'] === false
 		   && $dfeatures->is_valid($info['dfeatures']['type'],
 		   			   $info['dfeatures']['typeid']) === false) === true)
@@ -158,10 +160,10 @@ switch($act)
 			$return = &$result;
 
 			$_QR['extenumbers']['context'] = $info['extenumbers']['context'];
+			$_QR['extenumbers']['extenmode'] = 'extension';
 
 			if(($result['extenumbers'] = $extenumbers->chk_values($_QR['extenumbers'])) === false
-			|| (($extenum = $extenumbers->get_where($result['extenumbers'])) !== false 
-			   && (int) $extenum['id'] !== (int) $info['extenumbers']['id']) === true)
+			|| $extenumbers->exists($result['extenumbers']) !== false)
 			{
 				$edit = false;
 				$result['extenumbers'] = array_merge($info['extenumbers'],$extenumbers->get_filter_result());
@@ -169,7 +171,7 @@ switch($act)
 			else
 			{
 				$didexten = $info['did'];
-				$didexten['exten'] = $result['extenumbers']['number'];
+				$didexten['exten'] = $result['extenumbers']['exten'];
 				$didexten['context'] = $result['extenumbers']['context'];
 
 				if(($result['did'] = $extensions->chk_values($didexten)) === false)
@@ -178,7 +180,7 @@ switch($act)
 					$result['did'] = $extensions->get_filter_result();
 				}
 				else
-					$_QR['dfeatures']['number'] = $result['extenumbers']['number'];
+					$_QR['dfeatures']['number'] = $result['extenumbers']['exten'];
 
 				$result['did']['commented'] = $info['did']['commented'];
 			}
@@ -264,8 +266,9 @@ switch($act)
 		|| ($info['dfeatures'] = $dfeatures->get($_QR['id'])) === false
 		|| ($info['did'] = $extensions->get($info['dfeatures']['extenid'])) === false
 		|| ($info['extenumbers'] = $extenumbers->get_where(array(
-							'number' => $info['did']['exten'],
-							'context' => $info['did']['context']))) === false)
+							'exten' => $info['did']['exten'],
+							'context' => $info['did']['context'],
+							'extenmode' => 'extension'))) === false)
 			xivo_go($_HTML->url('service/ipbx/call_management/did'),$param);
 
 		do
@@ -302,8 +305,9 @@ switch($act)
 			if(($info['dfeatures'] = $dfeatures->get($values[$i])) === false
 			|| ($info['did'] = $extensions->get($info['dfeatures']['extenid'])) === false
 			|| ($info['extenumbers'] = $extenumbers->get_where(array(
-								'number' => $info['did']['exten'],
-								'context' => $info['did']['context']))) === false
+								'exten' => $info['did']['exten'],
+								'context' => $info['did']['context'],
+								'extenmode' => 'extension'))) === false
 			|| $dfeatures->delete($info['dfeatures']['id']) === false)
 				continue;
 

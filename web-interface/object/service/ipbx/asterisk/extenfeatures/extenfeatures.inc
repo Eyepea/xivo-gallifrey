@@ -94,14 +94,12 @@ class xivo_service_asterisk_extenfeatures extends xivo_service_asterisk_extensio
 
 		$vars = array('$<EXTNUM>' => '','$<EXTNUMLEN>' => 0);
 
-		if(isset($arr['exten']) === true)
+		if(isset($arr['exten']) === true
+		&& preg_match('/^[_]?([0-9\*#]+)/',$arr['exten'],$extmatch) === 1)
 		{
-			if(preg_match('/^[_]?([0-9\*#]+)/',$arr['exten'],$extmatch) === 1)
-			{
-				$extnum = $extmatch[1];
-				$vars['$<EXTNUM>'] = $extnum;
-				$vars['$<EXTNUMLEN>'] = strlen($extnum);
-			}
+			$extnum = $extmatch[1];
+			$vars['$<EXTNUM>'] = $extnum;
+			$vars['$<EXTNUMLEN>'] = strlen($extnum);
 		}
 
 		$arr['appdata'] = strtr($arr['appdata'],$vars);
@@ -257,12 +255,44 @@ class xivo_service_asterisk_extenfeatures extends xivo_service_asterisk_extensio
 
 	function set_chk_value($key,$value)
 	{
-		if(isset($value{0}) === true && $value{0} !== '_'
-		&& preg_match('/[0-9]/',$value) !== 0
-		&& preg_match('/[X\.\*#]/',$value) !== 0)
-			$value = '_'.$value;
+		$value = $this->_clean_value($value);
 
 		return(parent::set_chk_value($key,$value));
+	}
+
+	function chk_value($key,$value)
+	{
+		$value = $this->_clean_value($value);
+
+		return(parent::chk_value($key,$value));
+	}
+
+	function _clean_value($value)
+	{
+		if(isset($value{0}) === true && $value{0} === '_')
+		{
+			$subvalue = substr($value,1);
+
+			if(preg_match('/[NXZ\-\[\]\!\.]/',$subvalue) === 0)
+				$value = $subvalue;
+
+			return($value);
+		}
+		else if(preg_match('/[NXZ\-\[\]\!\.]/',$value) !== 0)
+			$value = '_'.$value;
+
+		return($value);
+	}
+
+	function get_where($arr,$disable=null,$prepare=true,$order=null,$limit=null)
+	{
+		$this->_conf = &$this->_extensions['conf'];
+
+		$r = parent::get_where($arr,$disable,null,$prepare,$order=null,$limit=null);
+
+		$this->_conf = &$this->_exfeatures['conf'];
+
+		return($r);
 	}
 
 	function get_all_where($arr,$disable=null,$prepare=true,$order=null,$limit=null)

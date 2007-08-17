@@ -24,6 +24,8 @@ $hints_where['context'] = 'hints';
 $localexten_where['app'] = 'Macro';
 $localexten_where['appdata'] = 'superuser';
 
+$extenum_where['extenmode'] = 'extension';
+
 $quser_where['usertype'] = 'user';
 
 for($i = 0;$i < $arr['cnt'];$i++)
@@ -64,7 +66,7 @@ for($i = 0;$i < $arr['cnt'];$i++)
 			continue;
 		}
 
-		$extenum_where['number'] = $localexten_where['exten'];
+		$extenum_where['exten'] = $localexten_where['exten'];
 		$extenum_where['context'] = $localexten_where['context'];
 
 		$info['dfeatures'] = false;

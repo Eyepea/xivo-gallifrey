@@ -141,11 +141,12 @@ switch($act)
 				}
 
 				$exten_numbers = array();
-				$exten_numbers['number'] = $result['local_exten']['exten'];
+				$exten_numbers['exten'] = $result['local_exten']['exten'];
 				$exten_numbers['context'] = $result['local_exten']['context'];
+				$exten_numbers['extenmode'] = 'extension';
 
 				if(($result['extenumbers'] = $extenumbers->chk_values($exten_numbers)) === false
-				|| $extenumbers->get_id($result['extenumbers']) !== false)
+				|| $extenumbers->exists($result['extenumbers']) !== false)
 				{
 					$add = false;
 					$result['extenumbers'] = $extenumbers->get_filter_result();
@@ -560,7 +561,8 @@ switch($act)
 			}
 
 			$exten_numbers = array();
-			$exten_numbers['number'] = $result['qfeatures']['number'];
+			$exten_numbers['exten'] = $result['qfeatures']['number'];
+			$exten_numbers['extenmode'] = 'extension';
 
 			if($result['qfeatures']['context'] === '')
 				$exten_numbers['context'] = 'local-extensions';
@@ -568,7 +570,8 @@ switch($act)
 				$exten_numbers['context'] = $result['qfeatures']['context'];
 
 			$exten_where = array();
-			$exten_where['number'] = $info['qfeatures']['number'];
+			$exten_where['exten'] = $info['qfeatures']['number'];
+			$exten_where['extenmode'] = 'extension';
 
 			if($info['qfeatures']['context'] === '')
 				$exten_where['context'] = 'local-extensions';
@@ -584,8 +587,7 @@ switch($act)
 					$status['extenumbers'] = 'edit';
 
 					if(($result['extenumbers'] = $extenumbers->chk_values($exten_numbers)) === false
-					|| (($extenum = $extenumbers->get_where($result['extenumbers'])) !== false
-					   && (int) $extenum['id'] !== (int) $info['extenumbers']['id']) === true)
+					|| $extenumbers->exists($result['extenumbers'],$info['extenumbers']['id']) !== false)
 					{
 						$edit = false;
 						$result['extenumbers'] = array_merge($info['extenumbers'],$extenumbers->get_filter_result());
@@ -596,7 +598,8 @@ switch($act)
 			{
 				$status['extenumbers'] = 'add';
 
-				if(($result['extenumbers'] = $extenumbers->chk_values($exten_numbers)) === false)
+				if(($result['extenumbers'] = $extenumbers->chk_values($exten_numbers)) === false
+				|| $extenumbers->exists($result['extenumbers']) !== false)
 				{
 					$edit = false;
 					$result['extenumbers'] = $extenumbers->get_filter_result();
@@ -1230,8 +1233,9 @@ switch($act)
 			}
 
 			$extenum_where = array();
-			$extenum_where['number'] = $localexten_where['exten'];
+			$extenum_where['exten'] = $localexten_where['exten'];
 			$extenum_where['context'] = $localexten_where['context'];
+			$extenum_where['extenmode'] = 'extension';
 
 			$info['dfeatures'] = false;
 

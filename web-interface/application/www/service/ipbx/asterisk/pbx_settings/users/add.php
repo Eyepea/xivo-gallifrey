@@ -132,18 +132,15 @@ do
 		$callerid = preg_replace('/<'.preg_quote($result['ufeatures']['number']).'>$/','',$result['protocol']['callerid']);
 		$callerid = trim(str_replace(array('<','>','"'),'',$callerid)).' <'.$result['ufeatures']['number'].'>';
 
-		if(($result['protocol']['callerid'] = $protocol->set_chk_value('callerid',$callerid)) === false)
-		{
-			$add = false;
-			$result['protocol']['callerid'] = '';
-		}
+		$result['protocol']['callerid'] = $callerid;
 
 		$exten_numbers = array();
-		$exten_numbers['number'] = $result['local_exten']['exten'];
+		$exten_numbers['exten'] = $result['local_exten']['exten'];
 		$exten_numbers['context'] = $result['local_exten']['context'];
+		$exten_numbers['extenmode'] = 'extension';
 
 		if(($result['extenumbers'] = $extenumbers->chk_values($exten_numbers)) === false
-		|| $extenumbers->get_where($result['extenumbers']) !== false)
+		|| $extenumbers->exists($result['extenumbers']) !== false)
 		{
 			$add = false;
 			$result['extenumbers'] = $extenumbers->get_filter_result();

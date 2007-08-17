@@ -712,8 +712,9 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 			if(($info['dfeatures'] = $dfeatures->get_where(array('extenid' => $info['did']['id']))) === false
 			|| ($info['extenumbers'] = $extenumbers->get_where(array(
-									'number' => $info['did']['exten'],
-									'context' => $info['did']['context']))) === false
+									'exten' => $info['did']['exten'],
+									'context' => $info['did']['context'],
+									'extenmode' => 'extension'))) === false
 			|| ($info['dfeatures']['commented'] === false
 			   && ($info['tyfeatures'] = $dfeatures->is_valid($info['dfeatures']['type'],
 		   							  $info['dfeatures']['typeid'])) === false) === true)
