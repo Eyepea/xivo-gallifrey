@@ -63,7 +63,7 @@ config_path()
 import timeoutsocket
 from timeoutsocket import Timeout
 
-import os, cgi, thread, threading, traceback
+import os, cgi, thread, threading
 
 import syslog
 from easyslog import *
@@ -439,9 +439,11 @@ def __provisioning(mode, ctx, phone):
 		if "ipv4" not in phone:
 			syslogf(SYSLOG_DEBUG, "__provisioning(): trying to get IPv4 address from Mac Address %s" % (phone["macaddr"],))
 			phone["ipv4"] = provsup.ipv4_from_macaddr(phone["macaddr"], lambda x: syslogf(SYSLOG_ERR, x))
-		if phone["ipv4"] is None:
-			syslogf(SYSLOG_ERR, "__provisioning(): No IP address found for Mac Address %s" % (phone["macaddr"],))
-			raise NotFoundError, "No IP address found for Mac Address %s" % (phone["macaddr"],)
+			if phone["ipv4"] is None:
+				phone["actions"] = "no"
+		if phone["actions"] != "no" and phone["ipv4"] is None:
+			syslogf(SYSLOG_ERR, "__provisioning(): Actions enabled but got no IP address (for phone with Mac Address %s)" % (phone["macaddr"],))
+			raise NotFoundError, "Actions enabled but got no IP address (for phone with Mac Address %s)" % (phone["macaddr"],)
 
 	syslogf(SYSLOG_DEBUG, "__provisioning(): locking phone %s" % (phone["macaddr"],))
 	if not ctx.maclocks.try_acquire(phone["macaddr"]):
@@ -690,6 +692,12 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 		"Override default logging method."
 		syslogf(fmt % args)
 
+	def full_xcept_sender(self, errcode):
+		return lambda x:self.send_error_explain(
+			errcode,
+			''.join(("<pre>\n", cgi.escape(x), "</pre>\n"))
+		)
+
 	# Main handling functions
 
 	def handle_prov(self):
@@ -727,17 +735,13 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 			raise BadRequest, "Unknown mode %s" % (self.posted["mode"],)
 	    except Exception, x:
 		syslogf(SYSLOG_NOTICE, "handle_prov(): action FAILED - phone %s - userinfo %s" % (str(phone),str(userinfo)))
-		tb_line_list = traceback.format_exception(*sys.exc_info())
-		err_to_send = "<pre>\n" + cgi.escape(''.join(tb_line_list)) + "</pre>\n"
-		for line in tb_line_list:
-			syslogf(SYSLOG_ERR, line.rstrip())
 		errcode = 500
 		for t,rcode in ExceptToHTTP.iteritems():
 			if isinstance(x, t):
 				errcode = rcode
 				break
-		self.send_error_explain(errcode, err_to_send)
-		sys.exc_clear()
+		except_tb.log_full_exception(self.full_xcept_sender(errcode),
+		                             provsup.SYSLOG_EXCEPT(SYSLOG_ERR))
 		return
 	    syslogf(SYSLOG_NOTICE, "handle_prov(): provisioning OK for phone %s" % (str(phone),))
 	    self.send_response_lines(('Ok',))
