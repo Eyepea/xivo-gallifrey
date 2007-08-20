@@ -16,7 +16,7 @@ def varlog(string):
 
 def log_debug(string):
 #        if debug_mode:
-        print "#debug# (myLDAP) " + string
+        print "#debug# (xivo_ldap) " + string
         return varlog(string)
 
 ## \class xivo_ldap

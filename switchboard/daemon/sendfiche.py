@@ -64,7 +64,7 @@ def log_debug(string):
 # \param cid
 def get_ldap_infos(config, cid):
 	[callid, mail, name, firstname, company] = ["", "", "", "", ""]
-	ldapid = xivo_ldap.myLDAP(config.get('general', 'dir_db_uri'))
+	ldapid = xivo_ldap.xivo_ldap(config.get('general', 'dir_db_uri'))
 	result = ldapid.getldap("(|(telephonenumber=%s)(mobile=%s)(pager=%s))" %(cid,cid,cid),
 				['cn','mail','sn','givenName','o'])
 	try:

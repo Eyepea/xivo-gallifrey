@@ -615,7 +615,7 @@ def build_customers(astn, ctx, searchpatterns):
                                 elif searchpattern != "":
                                         selectline += "(%s=*%s*)" %(fname, searchpattern)
                         selectline += ")"
-                        ldapid = xivo_ldap.myLDAP(dir_db_uri)
+                        ldapid = xivo_ldap.xivo_ldap(dir_db_uri)
                         result = ldapid.getldap(selectline, fieldslist)
 
                         for x in result:
