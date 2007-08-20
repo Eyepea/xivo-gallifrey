@@ -34,6 +34,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include "logeltwidget.h"
 #include "popup.h"
 
+const int CLIENT_VERSION = 1365;
 const int REQUIRED_SERVER_VERSION = 1334;
 
 /*! \brief Constructor.
@@ -318,6 +319,7 @@ void BaseEngine::setAvailState(const QString & newstate)
 		m_availstate = newstate;
 		settings.setValue("engine/availstate", m_availstate);
 		keepLoginAlive();
+                sendCommand("availstate " + m_availstate);
 	}
 }
 
@@ -358,7 +360,7 @@ void BaseEngine::setDoNotDisturb()
  */
 void BaseEngine::sendTCPCommand()
 {
-	// qDebug() << "BaseEngine::sendTCPCommand()" << m_pendingcommand;
+        // qDebug() << "BaseEngine::sendTCPCommand()" << m_pendingcommand;
 	m_sbsocket->write((m_pendingcommand + "\r\n"/*"\n"*/).toAscii());
 }
 
@@ -426,7 +428,8 @@ void BaseEngine::socketConnected()
 	/* do the login/identification ? */
         setMyClientId();
 	m_pendingcommand = "login " + m_asterisk + " "
-                + m_protocol + " " + m_userid + " " + m_availstate + " " + m_clientid;
+                + m_protocol + " " + m_userid + " " + m_availstate + " "
+                + m_clientid + " " + m_passwd + " " + QString::number(CLIENT_VERSION);
         // login <asterisk> <techno> <id>
 	sendTCPCommand();
 }
@@ -694,16 +697,16 @@ void BaseEngine::socketReadyRead()
                         if(list[0].toLower() == "loginok") {
 				QStringList params = list[1].split(";");
                                 qDebug() << "BaseEngine::socketReadyRead()" << params;
-                                m_version = -1;
+                                m_version_server = -1;
 				if(params.size() > 2) {
 					m_dialcontext = params[0];
 					m_extension = params[1];
                                         m_capabilities = params[2];
                                         if(params.size() > 3)
-                                                m_version = params[3].toInt();
-                                        if(m_version < REQUIRED_SERVER_VERSION) {
+                                                m_version_server = params[3].toInt();
+                                        if(m_version_server < REQUIRED_SERVER_VERSION) {
                                                 QMessageBox::critical(NULL, tr("Version Error"),
-                                                                      tr("Your server version is %1 which is too old.\n").arg(m_version) +
+                                                                      tr("Your server version is %1 which is too old.\n").arg(m_version_server) +
                                                                       tr("The required one is at least %1.").arg(REQUIRED_SERVER_VERSION));
                                         } else {
                                                 logged();
@@ -1376,7 +1379,7 @@ void BaseEngine::processLoginDialog()
 		readLine.remove(QChar('\r')).remove(QChar('\n'));
 		QStringList sessionResp = readLine.split(" ");
 		qDebug() << sessionResp;
-		m_version = -1;
+		m_version_server = -1;
 		if(sessionResp.size() > 2)
 			m_sessionid =    sessionResp[2];
 		if(sessionResp.size() > 3)
@@ -1384,18 +1387,18 @@ void BaseEngine::processLoginDialog()
 		if(sessionResp.size() > 4)
 			m_capabilities = sessionResp[4];
 		if(sessionResp.size() > 5)
-			m_version =      sessionResp[5].toInt();
+			m_version_server = sessionResp[5].toInt();
 		if(sessionResp.size() > 6)
 			m_extension =    sessionResp[6];
-		qDebug() << m_sessionid << m_dialcontext << m_capabilities << m_version << m_extension;
+		qDebug() << m_sessionid << m_dialcontext << m_capabilities << m_version_server << m_extension;
 
 		if(!m_tcpmode)
 			m_loginsocket->close();
-		if(m_version < REQUIRED_SERVER_VERSION) {
+		if(m_version_server < REQUIRED_SERVER_VERSION) {
 			m_loginsocket->close();
 			stop();
                         QMessageBox::critical(NULL, tr("Version Error"),
-                                              tr("Your server version is %1 which is too old.\n").arg(m_version) +
+                                              tr("Your server version is %1 which is too old.\n").arg(m_version_server) +
                                               tr("The required one is at least %1.").arg(REQUIRED_SERVER_VERSION));
 			return;
 		}

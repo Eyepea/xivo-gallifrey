@@ -107,6 +107,11 @@ void SwitchBoardWindow::updatePeer(const QString & ext,
 			return;
 		}
 	}
+        
+        // if the name (i.e. full callerid info) has not been received yet, do not add as a peer
+        if(name.isEmpty())
+                return;
+        
 	// if not found in the peerlist, create a new Peer
 	QSettings settings;
 	Peer peer(ext, name);

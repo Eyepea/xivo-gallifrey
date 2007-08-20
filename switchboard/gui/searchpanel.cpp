@@ -97,6 +97,11 @@ void SearchPanel::updatePeer(const QString & ext,
 			return;
 		}
 	}
+        
+        // if the name (i.e. full callerid info) has not been received yet, do not add as a peer
+        if(name.isEmpty())
+                return;
+        
 	Peer peer(ext, name);
 	PeerWidget * peerwidget = new PeerWidget(ext, name, this);
 	peerwidget->setEngine(m_engine);

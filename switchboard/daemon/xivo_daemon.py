@@ -109,7 +109,6 @@ __version__ = "$Revision$ $Date$"
 import ConfigParser
 import encodings.utf_8
 import getopt
-import ldap
 import md5
 import os
 import random
@@ -153,6 +152,7 @@ from BackSQL import backsqlite
 # XIVO modules
 import xivo_ami
 import xivo_sip
+import xivo_ldap
 
 DIR_TO_STRING = ">"
 DIR_FROM_STRING = "<"
@@ -216,41 +216,6 @@ map_capas = {
         'switchboard'      : CAPA_SWITCHBOARD,
         'agents'           : CAPA_AGENTS
         }
-
-
-## \class myLDAP
-class myLDAP:
-        def __init__(self, iuri):
-                try:
-                        addport = iuri.split("@")[1].split("/")[0]
-                        userpass = iuri.split("@")[0].split("://")[1]
-                        self.dbname = iuri.split("@")[1].split("/")[1]
-                        
-                        self.user = userpass.split(":")[0]
-                        self.passwd = userpass.split(":")[1]
-                        self.uri  = "ldap://" + addport
-                        self.l = ldap.initialize(self.uri)
-                        self.l.protocol_version = ldap.VERSION3
-                        self.l.simple_bind_s(self.user, self.passwd)
-                        
-                except ldap.LDAPError, exc:
-                        print exc
-                        sys.exit()
-
-        def getldap(self, filter, attrib):
-                try:
-                        resultat = self.l.search_s(self.dbname,
-                                                   ldap.SCOPE_SUBTREE,
-                                                   filter,
-                                                   attrib)
-                        return resultat
-                except ldap.LDAPError, exc:
-                        print exc
-        def close(self):
-                try:
-                        pass
-                except ldap.LDAPError, exc:
-                        print exc
 
 
 ## \brief Logs actions to a log file, prepending them with a timestamp.
@@ -650,9 +615,8 @@ def build_customers(astn, ctx, searchpatterns):
                                 elif searchpattern != "":
                                         selectline += "(%s=*%s*)" %(fname, searchpattern)
                         selectline += ")"
-                        ldapid = myLDAP(dir_db_uri)
+                        ldapid = xivo_ldap.myLDAP(dir_db_uri)
                         result = ldapid.getldap(selectline, fieldslist)
-                        ldapid.close()
 
                         for x in result:
                                 [tnum, cn, o, mailn] = ["", "", "", ""]
@@ -1057,6 +1021,8 @@ def originate_or_transfer(requester, l):
         src_split = l[1].split("/")
         dst_split = l[2].split("/")
 
+        ret_message = "message=%s::originate_or_transfer KO from %s" %(DAEMON, requester)
+
         if len(src_split) == 5:
                 [dummyp, ast_src, context_src, proto_src, userid_src] = src_split
         elif len(src_split) == 6:
@@ -1089,37 +1055,32 @@ def originate_or_transfer(requester, l):
                                 else:
                                         ret = False
                                 if ret:
-                                        connid[0].send("message=%s::originate OK (ast %d) %s %s\n"
-                                                       %(DAEMON, idast_src, l[1], l[2]))
+                                        ret_message = "message=%s::originate OK (ast %d) %s %s" %(DAEMON, idast_src, l[1], l[2])
                                 else:
-                                        connid[0].send("message=%s::originate KO (ast %d) %s %s\n"
-                                                       %(DAEMON, idast_src, l[1], l[2]))
+                                        ret_message = "message=%s::originate KO (ast %d) %s %s" %(DAEMON, idast_src, l[1], l[2])
                         elif l[0] == 'transfer':
                                 log_debug("%s is attempting a TRANSFER : %s" %(requester, str(l)))
                                 phonesrc, phonesrcchan = split_from_ui(l[1])
                                 if phonesrc == phonesrcchan:
-                                        connid[0].send("message=%s::transfer KO : %s not a channel\n"
-                                                       %(DAEMON, phonesrcchan))
+                                        ret_message = "message=%s::transfer KO : %s not a channel" %(DAEMON, phonesrcchan)
                                 else:
                                         if phonesrc in plist[idast_src].normal:
                                                 channellist = plist[idast_src].normal[phonesrc].chann
                                                 nopens = len(channellist)
                                                 if nopens == 0:
-                                                        connid[0].send("message=%s::transfer KO - no channel opened on %s\n"
-                                                                       %(DAEMON, phonesrc))
+                                                        ret_message = "message=%s::transfer KO : no channel opened on %s" %(DAEMON, phonesrc)
                                                 else:
                                                         tchan = channellist[phonesrcchan].getChannelPeer()
                                                         ret = AMIclasssock[idast_src].transfer(tchan,
                                                                                                exten_dst,
                                                                                                "local-extensions")
                                                         if ret:
-                                                                connid[0].send("message=%s::transfer OK (ast %d) %s %s\n"
-                                                                               %(DAEMON, idast_src, l[1], l[2]))
+                                                                ret_message = "message=%s::transfer OK (ast %d) %s %s" %(DAEMON, idast_src, l[1], l[2])
                                                         else:
-                                                                connid[0].send("message=%s::transfer KO (ast %d) %s %s\n"
-                                                                               %(DAEMON, idast_src, l[1], l[2]))
+                                                                ret_message = "message=%s::transfer KO (ast %d) %s %s" %(DAEMON, idast_src, l[1], l[2])
         else:
-                connid[0].send("message=%s::originate or transfer KO : asterisk id mismatch\n" %DAEMON)
+                ret_message = "message=%s::originate or transfer KO : asterisk id mismatch" %DAEMON
+        return ret_message
 
 
 ## \brief Deals with requests from the UI clients.
@@ -1132,8 +1093,8 @@ def manage_tcp_connection(connid, allow_events):
 
         try:
                 requester_ip   = connid[1]
-                requester_port = connid[2]
-                requester      = requester_ip + ":" + str(requester_port)
+                requester_port = str(connid[2])
+                requester      = requester_ip + ":" + requester_port
         except Exception, exc:
                 log_debug("--- exception --- UI connection : could not get IP details of connid = %s : %s" %(str(connid),str(exc)))
                 requester = str(connid)
@@ -1151,6 +1112,19 @@ def manage_tcp_connection(connid, allow_events):
                                 tcpopens_sb.remove(connid)
                                 log_debug("TCP (SB)  socket closed from %s" %requester)
                                 if requester in userinfo_by_requester:
+                                        astnum  = userinfo_by_requester[requester][0]
+                                        astname = userinfo_by_requester[requester][1]
+                                        username = userinfo_by_requester[requester][2]
+                                        userlist_lock.acquire()
+                                        try:
+                                                userinfo = finduser(astname, username)
+                                                if userinfo == None:
+                                                        log_debug("no user found for %s/%s" %(astname, username))
+                                                else:
+                                                        disconnect_user(userinfo)
+                                                        send_availstate_update(astnum, username, "unknown")
+                                        finally:
+                                                userlist_lock.release()
                                         del userinfo_by_requester[requester]
                         else:
                                 tcpopens_php.remove(connid)
@@ -1166,7 +1140,7 @@ def manage_tcp_connection(connid, allow_events):
                                 time_uptime = int(time.time() - time_start)
                                 reply = "infos=version=%s;uptime=%d s;logged_sb=%d/%d;logged_xc=%d/%d" \
                                         %(__version__.split()[1], time_uptime,
-                                          len(tcpopens_sb), maxgui_sb, conngui_xc, maxgui_xc)
+                                          conngui_sb, maxgui_sb, conngui_xc, maxgui_xc)
                                 for tcpo in tcpopens_sb:
                                         reply += ":%s:%d" %(tcpo[1],tcpo[2])
                                 connid[0].send(reply + "\n")
@@ -1198,11 +1172,14 @@ def manage_tcp_connection(connid, allow_events):
                         try:
                                 userlist_lock.acquire()
                                 try:
-                                        for user,info in userlist[0].iteritems():
-                                                connid[0].send("%s %s\n" %(user, info))
+                                        for astname in userlist:
+                                                connid[0].send("on <%s> :\n" % astname)
+                                                for user,info in userlist[astname].iteritems():
+                                                        connid[0].send("%s %s\n" %(user, info))
                                 finally:
                                         userlist_lock.release()
-                                connid[0].send("%s\n" %str(userinfo_by_requester))
+                                if requester in userinfo_by_requester:
+                                        connid[0].send("%s\n" %str(userinfo_by_requester[requester]))
                         except Exception, exc:
                                 log_debug("--- exception --- UI connection [%s] : KO when sending to %s : %s"
                                           %(usefulmsg, requester, str(exc)))
@@ -1225,30 +1202,11 @@ def manage_tcp_connection(connid, allow_events):
                                           %(usefulmsg, requester, str(exc)))
 
 
-                elif usefulmsg == "keepalive":
-                        try:
-                                connid[0].send("keepalive=\n")
-                        except Exception, exc:
-                                log_debug("--- exception --- UI connection [%s] : KO when sending to %s : %s"
-                                          %(usefulmsg, requester, str(exc)))
                 elif usefulmsg == "capabilities":
                         try:
                                 connid[0].send("capabilities=%s\n" %("-".join(capabilities_list)))
                         except Exception, exc:
                                 log_debug("--- exception --- UI connection [%s] : KO when sending to %s : %s"
-                                          %(usefulmsg, requester, str(exc)))
-                elif usefulmsg == "quit" or usefulmsg == "exit":
-                        try:
-                                connid[0].close()
-                                ins.remove(connid[0])
-                                if allow_events == True:
-                                        tcpopens_sb.remove(connid)
-                                        log_debug("TCP (SB)  socket closed from %s" %requester)
-                                else:
-                                        tcpopens_php.remove(connid)
-                                        log_debug("TCP (PHP) socket closed from %s" %requester)
-                        except Exception, exc:
-                                log_debug("--- exception --- UI connection [%s] : a problem occured when trying to close %s : %s"
                                           %(usefulmsg, requester, str(exc)))
                 elif usefulmsg != "":
                         l = usefulmsg.split()
@@ -1286,10 +1244,15 @@ def manage_tcp_connection(connid, allow_events):
                                         else:
                                                 connid[0].send("message=%s::hangup KO : no such phone\n" %DAEMON)
                         elif len(l) == 3 and (l[0] == 'originate' or l[0] == 'transfer'):
-                                originate_or_transfer(requester, l)
+                                try:
+                                        message = originate_or_transfer(requester, l)
+                                        connid[0].send(message + '\n')
+                                except Exception, exc:
+                                        log_debug("--- exception --- originate_or_transfer %s %s : %s"
+                                                  %(requester, str(l), str(exc)))
                         elif l[0] == 'history' or l[0] == 'directory-search' or \
                                  l[0] == 'featuresget' or l[0] == 'featuresput' or \
-                                 l[0] == 'hints' or l[0] == 'callerids' or l[0] == 'message':
+                                 l[0] == 'hints' or l[0] == 'callerids' or l[0] == 'message' or l[0] == 'availstate':
                                 log_debug("%s is attempting a %s : %s" %(requester, l[0], str(l)))
                                 try:
                                         if requester in userinfo_by_requester:
@@ -1298,38 +1261,50 @@ def manage_tcp_connection(connid, allow_events):
                                 except Exception, exc:
                                         log_debug("--- exception --- UI connection [%s] : a problem occured when sending to %s : %s"
                                                   %(l[0], requester, str(exc)))
-                        elif len(l) >= 6 and l[0] == 'login':
+                        elif len(l) >= 8 and l[0] == 'login':
+                                # login <asterisk> sip 103 available SB@X11 passwd version
                                 if l[1] in asteriskr:
                                         astnum = asteriskr[l[1]]
                                         # log_debug("%i %s" % (astnum,l[3]))
+                                        sessionid = '%u' % random.randint(0,999999999)
+                                        [whoami, whatsmyos] = l[5].split("@")
+                                        state = l[4]
+                                        capa_user = []
+                                        password = l[6]
+                                        version = l[7]
+
                                         userlist_lock.acquire()
                                         try:
-                                                user = finduser(astnum, l[2].lower() + l[3])
-                                                if user == None:
+                                                userinfo = finduser(l[1], l[2].lower() + l[3])
+                                                if userinfo == None:
                                                         repstr = "loginko=\n"
                                                         log_debug("no user found %s" %str(l))
                                                 else:
-                                                        capa_user = []
-                                                        for capa in capabilities_list:
-                                                                if (map_capas[capa] & user.get('capas')):
-                                                                        capa_user.append(capa)
-                                                        user['state'] = l[4]
-                                                        [user['cticlienttype'], user['cticlientos']] = l[5].split("@")
-                                                        user['sessionid'] = '%u' % random.randint(0,999999999)
-                                                        user['sessiontimestamp'] = time.time()
-                                                        user['ip'] = requester_ip
-                                                        user['port'] = str(requester_port)
-                                                        user['tcpmode'] = True
-                                                        user['socket'] = connid[0].makefile('w')
-                                                        repstr = "loginok=%s;%s;%s;%s\n" %(user.get('context'),
-                                                                                           user.get('phonenum'),
-                                                                                           ",".join(capa_user),
-                                                                                           __version__.split()[1])
-                                                        userinfo_by_requester[requester] = [astnum,
-                                                                                            user.get('context'),
-                                                                                            None,
-                                                                                            l[1] + "/" + l[2] + l[3],
-                                                                                            user.get('capas')]
+                                                        reterror = check_user_connection(userinfo, whoami)
+                                                        if reterror is None:
+                                                                for capa in capabilities_list:
+                                                                        if (map_capas[capa] & userinfo.get('capas')):
+                                                                                capa_user.append(capa)
+
+                                                                connect_user(userinfo, sessionid,
+                                                                             requester_ip, requester_port,
+                                                                             whoami, whatsmyos, True, state)
+
+                                                                userinfo['socket'] = connid[0].makefile('w')
+                                                                
+                                                                repstr = "loginok=%s;%s;%s;%s\n" %(userinfo.get('context'),
+                                                                                                   userinfo.get('phonenum'),
+                                                                                                   ",".join(capa_user),
+                                                                                                   __version__.split()[1])
+                                                                userinfo_by_requester[requester] = [astnum,
+                                                                                                    l[1],
+                                                                                                    l[2].lower() + l[3],
+                                                                                                    userinfo.get('context'),
+                                                                                                    None,
+                                                                                                    userinfo.get('capas')]
+                                                                send_availstate_update(astnum, l[2].lower() + l[3], state)
+                                                        else:
+                                                                repstr = "loginko=\n"
                                         finally:
                                                 userlist_lock.release()
                                 else:
@@ -1839,32 +1814,23 @@ def update_amisocks(astnum):
 # \return none
 # \sa update_userlist_fromurl
 def update_sipnumlist(astnum):
-        global plist, configs, conngui_xc
+        global plist, configs
 
         userlist_lock.acquire()
         try:
-                for user,infos in userlist[astnum].iteritems():
-                        if "sessiontimestamp" in infos:
-                                if time.time() - infos['sessiontimestamp'] > xivoclient_session_timeout:
-                                        del infos['sessionid']
-                                        del infos['sessiontimestamp']
-                                        del infos['ip']
-                                        del infos['port']
-                                        conngui_xc = conngui_xc - 1
-                                        infos["state"] = "unknown"
-                                        sipnumber = "SIP/" + user.split("sip")[1]
-                                        if sipnumber in plist[astnum].normal:
-                                                plist[astnum].normal[sipnumber].set_imstat("unknown")
-                                                plist[astnum].normal[sipnumber].update_time()
-                                                update_GUI_clients(astnum, sipnumber, "kfc-dsc")
-                                        log_debug(plist[astnum].astid + " : timeout reached for " + sipnumber)
+                for user,userinfo in userlist[configs[astnum].astid].iteritems():
+                        if "sessiontimestamp" in userinfo:
+                                if time.time() - userinfo.get('sessiontimestamp') > xivoclient_session_timeout:
+                                        log_debug("%s : timeout reached for %s" %(plist[astnum].astid, user))
+                                        disconnect_user(userinfo)
+                                        send_availstate_update(astnum, user, "unknown")
         finally:
                 userlist_lock.release()
 
         sipnumlistold = filter(lambda j: plist[astnum].normal[j].towatch, plist[astnum].normal)
         sipnumlistold.sort()
         try:
-                sipnuml = configs[astnum].update_userlist_fromurl(astnum)
+                sipnuml = configs[astnum].update_userlist_fromurl()
         except Exception, exc:
                 log_debug("--- exception --- %s : update_userlist_fromurl failed : %s" %(configs[astnum].astid,str(exc)))
                 sipnuml = {}
@@ -2307,7 +2273,7 @@ class AsteriskRemote:
         # \param sipaccount the name of the reserved sip account (typically xivosb)
         # \return the new phone numbers list
         # \sa update_sipnumlist
-        def update_userlist_fromurl(self, astn):
+        def update_userlist_fromurl(self):
                 numlist = {}
                 try:
                         f = urllib.urlopen(self.userlisturl)
@@ -2371,14 +2337,14 @@ class AsteriskRemote:
                                                 if sso_l5 == "1" and sso_phoneid != sipaccount and sso_phonenum != "":
                                                         if sso_tech == "sip":
                                                                 argg = "SIP/" + sso_phoneid
-                                                                adduser(astn, sso_tech + sso_phoneid, sso_passwd, sso_context, sso_phonenum, sso_cinfo_allowed)
+                                                                adduser(self.astid, sso_tech + sso_phoneid, sso_passwd, sso_context, sso_phonenum, sso_cinfo_allowed)
                                                         elif sso_tech == "iax":
                                                                 argg = "IAX2/" + sso_phoneid
                                                         elif sso_tech == "misdn":
                                                                 argg = "mISDN/" + sso_phoneid
                                                         elif sso_tech == "zap":
                                                                 argg = "Zap/" + sso_phoneid
-                                                                adduser(astn, sso_tech + sso_phoneid, sso_passwd, sso_context, sso_phonenum, sso_cinfo_allowed)
+                                                                adduser(self.astid, sso_tech + sso_phoneid, sso_passwd, sso_context, sso_phonenum, sso_cinfo_allowed)
                                                         numlist[argg] = fullname, firstname, lastname, sso_phonenum, sso_context
                                 except Exception, exc:
                                         log_debug("--- exception --- %s : a problem occured when building phone list : %s" %(self.astid, str(exc)))
@@ -2392,39 +2358,100 @@ class AsteriskRemote:
 # \param user the user to add
 # \param passwd the user's passwd
 # \return none
-def adduser(astn, user, passwd, context, phonenum, cinfo_allowed):
+def adduser(astname, user, passwd, context, phonenum, cinfo_allowed):
         global userlist
-        if userlist[astn].has_key(user):
-                userlist[astn][user]['passwd'] = passwd
-                userlist[astn][user]['context'] = context
+        if userlist[astname].has_key(user):
+                userlist[astname][user]['passwd'] = passwd
+                userlist[astname][user]['context'] = context
         else:
-                userlist[astn][user] = {'user':user,
-                                        'passwd':passwd,
-                                        'context':context,
-                                        'phonenum':phonenum,
-                                        'capas':0}
+                userlist[astname][user] = {'user':user,
+                                           'passwd':passwd,
+                                           'context':context,
+                                           'phonenum':phonenum,
+                                           'capas':0}
                 if cinfo_allowed == '1':
-                        userlist[astn][user]['capas'] = CAPA_CUSTINFO
+                        userlist[astname][user]['capas'] = CAPA_CUSTINFO
                 else:
-                        userlist[astn][user]['capas'] = 0
+                        userlist[astname][user]['capas'] = 0
                 # this list shall be defined through more options in SSO
-                userlist[astn][user]['capas'] |= (CAPA_HISTORY | CAPA_DIRECTORY | CAPA_PEERS | CAPA_PRESENCE | CAPA_DIAL | CAPA_FEATURES | CAPA_AGENTS)
+                userlist[astname][user]['capas'] |= (CAPA_HISTORY | CAPA_DIRECTORY | CAPA_PEERS | CAPA_PRESENCE | CAPA_DIAL | CAPA_FEATURES | CAPA_AGENTS)
 
 
 ## \brief Deletes a user from the userlist.
 # \param user the user to delete
 # \return none
-def deluser(astn, user):
+def deluser(astname, user):
         global userlist
-        if userlist[astn].has_key(user):
-                userlist[astn].pop(user)
+        if userlist[astname].has_key(user):
+                userlist[astname].pop(user)
+
+
+def check_user_connection(userinfo, whoami):
+        if userinfo.has_key('sessiontimestamp'):
+                if time.time() - userinfo.get('sessiontimestamp') < xivoclient_session_timeout:
+                        return "already connected"
+        if whoami == 'XC':
+                if conngui_xc >= maxgui_xc:
+                        return "too much XC users connected %d >= %d" %(conngui_xc, maxgui_xc)
+        else:
+                if conngui_sb >= maxgui_sb:
+                        return "too much SB users connected %d >= %d" %(conngui_sb, maxgui_sb)
+        return None
+
+
+def connect_user(userinfo, sessionid, iip, iport,
+                 whoami, whatsmyos, tcpmode, state):
+        global conngui_xc, conngui_sb
+        try:
+                userinfo['sessionid'] = sessionid
+                userinfo['sessiontimestamp'] = time.time()
+                userinfo['ip'] = iip
+                userinfo['port'] = iport
+                userinfo['cticlienttype'] = whoami
+                userinfo['cticlientos'] = whatsmyos
+                userinfo['tcpmode'] = tcpmode
+
+                # if 'state' in userinfo:
+                # state = userinfo.get('state')
+                # update towards clients
+                if state in allowed_states:
+                        userinfo['state'] = state
+                else:
+                        userinfo['state'] = "undefinedstate"
+                if whoami == 'XC':
+                        conngui_xc = conngui_xc + 1
+                else:
+                        conngui_sb = conngui_sb + 1
+        except Exception, exc:
+                log_debug("--- exception --- connect_user %s : %s" %(str(userinfo), str(exc)))
+
+
+def disconnect_user(userinfo):
+        global conngui_xc, conngui_sb
+        try:
+                if userinfo.get('cticlienttype') == 'XC':
+                        conngui_xc = conngui_xc - 1
+                else:
+                        conngui_sb = conngui_sb - 1
+                del userinfo['sessionid']
+                del userinfo['sessiontimestamp']
+                del userinfo['ip']
+                del userinfo['port']
+                del userinfo['cticlienttype']
+                del userinfo['cticlientos']
+                del userinfo['tcpmode']
+                if 'socket' in userinfo:
+                        del userinfo['socket']
+        except Exception, exc:
+                log_debug("--- exception --- disconnect_user %s : %s" %(str(userinfo), str(exc)))
+
 
 ## \brief Returns the user from the list.
 # \param user searched for
 # \return user found, otherwise None
-def finduser(astn, user):
-        if astn >= 0 and astn < len(userlist):
-                u = userlist[astn].get(user)
+def finduser(astname, user):
+        if astname in userlist:
+                u = userlist[astname].get(user)
         else:
                 u = None
         return u
@@ -2446,7 +2473,6 @@ def finduser(astn, user):
 # supporting commands coming from the client in order to pilot asterisk.
 class LoginHandler(SocketServer.StreamRequestHandler):
         def logintalk(self):
-                global conngui_xc
                 [astnum, user, port, state] = [-1, "", "", ""]
                 replystr = "ERROR"
                 debugstr = "LoginRequestHandler (TCP) : client = %s:%d" %(self.client_address[0], self.client_address[1])
@@ -2495,8 +2521,8 @@ class LoginHandler(SocketServer.StreamRequestHandler):
                         return [replystr, debugstr], [user, port, state, astnum]
                 userlist_lock.acquire()
                 try:
-                        e = finduser(astnum, user)
-                        goodpass = (e != None) and (e.get('passwd') == passwd)
+                        userinfo = finduser(astname_xivoc, user)
+                        goodpass = (userinfo != None) and (userinfo.get('passwd') == passwd)
                 finally:
                         userlist_lock.release()
                 if not goodpass:
@@ -2530,49 +2556,39 @@ class LoginHandler(SocketServer.StreamRequestHandler):
                 
                 # TODO : random pas au top, faire generation de session id plus luxe
                 sessionid = '%u' % random.randint(0,999999999)
+                capa_user = []
+
                 userlist_lock.acquire()
                 try:
-                        if e.has_key('sessiontimestamp'):
-                                if time.time() - e.get('sessiontimestamp') < xivoclient_session_timeout:
-                                        replystr = "ERROR ALREADY CONNECTED"
-                                        debugstr += " / USER %s already connected" %user
-                                        return [replystr, debugstr], [user, port, state, astnum]
-                        if conngui_xc >= maxgui_xc:
-                                replystr = "ERROR %d USERS ALREADY CONNECTED (%d ALLOWED)" %(conngui_xc, maxgui_xc)
-                                debugstr += " / %d users already connected (%d allowed)" %(conngui_xc, maxgui_xc)
-                                return [replystr, debugstr], [user, port, state, astnum]
-                        e['sessionid'] = sessionid
-                        e['sessiontimestamp'] = time.time()
-                        e['ip'] = self.client_address[0]
-                        e['port'] = port
-                        e['cticlienttype'] = whoami
-                        e['cticlientos'] = whatsmyos
-                        e['tcpmode'] = tcpmode
-                        capalist_user = e.get('capas')
-                        conngui_xc = conngui_xc + 1
-                        if tcpmode:
-                                print 'TCPMODE', self.request
-                                e['socket'] = self.request.makefile('w')
-                        context = e.get('context')
-                        if state in allowed_states:
-                                e['state'] = state
+                        reterror = check_user_connection(userinfo, whoami)
+                        if reterror is None:
+                                for capa in capabilities_list:
+                                        if (map_capas[capa] & userinfo.get('capas')):
+                                                capa_user.append(capa)
+
+                                connect_user(userinfo, sessionid,
+                                             self.client_address[0], port,
+                                             whoami, whatsmyos, tcpmode, state)
+                                if tcpmode:
+                                        userinfo['socket'] = self.request.makefile('w')
+                                replystr = "OK SESSIONID %s %s %s %s %s" %(sessionid,
+                                                                           userinfo.get('context'),
+                                                                           ",".join(capa_user),
+                                                                           __version__.split()[1],
+                                                                           userinfo.get('phonenum'))
                         else:
-                                e['state'] = "undefinedstate"
+                                replystr = "ERROR USER %s (%s)" %(user, reterror)
+                                debugstr += " / USER %s (%s)" %(user, reterror)
+                                return [replystr, debugstr], [user, port, state, astnum]
+
                 finally:
                         userlist_lock.release()
 
-                capa_user = []
-                for capa in capabilities_list:
-                        if (map_capas[capa] & capalist_user):
-                                capa_user.append(capa)
-                replystr = "OK SESSIONID %s %s %s %s %s" %(sessionid, context,
-                                                           ",".join(capa_user),
-                                                           __version__.split()[1],
-                                                           "exten")
                 debugstr += " / user %s, port %s, state %s, astnum %d, cticlient %s/%s : connected : %s" %(user, port, state, astnum,
                                                                                                            whoami, whatsmyos,
                                                                                                            replystr)
                 return [replystr, debugstr], [user, port, state, astnum]
+
 
         def handle(self):
                 threading.currentThread().setName('login-%s:%d' %(self.client_address[0], self.client_address[1]))
@@ -2581,18 +2597,7 @@ class LoginHandler(SocketServer.StreamRequestHandler):
                         self.wfile.write(rstr + "\r\n")
                         log_debug(dstr)
                         if rstr.split()[0] == 'OK' and astnum >= 0:
-                                if user.find("sip") == 0:
-                                        phoneid = "SIP/" + user.split("sip")[1]
-                                elif user.find("iax") == 0:
-                                        phoneid = "IAX/" + user.split("iax")[1]
-                                else:
-                                        phoneid = ""
-                                if phoneid in plist[astnum].normal:
-                                        plist[astnum].normal[phoneid].set_imstat(state)
-                                        plist[astnum].normal[phoneid].update_time()
-                                        update_GUI_clients(astnum, phoneid, "kfc-lin")
-                                else:
-                                        log_debug("%s is not in my phone list" %phoneid)
+                                send_availstate_update(astnum, user, state)
                 except Exception, exc:
                         log_debug("--- exception --- %s" %(str(exc)))
 
@@ -2629,23 +2634,23 @@ class IdentRequestHandler(SocketServer.StreamRequestHandler):
 		try:
 			try:
 				astnum = ip_reverse_sht[self.client_address[0]]
-				e = finduser(astnum, user)
-				if e == None:
+				userinfo = finduser(configs[astnum].astid, user)
+				if userinfo == None:
 					retline = 'ERROR USER <' + user + '> NOT FOUND\r\n'
-				elif e.has_key('ip') and e.has_key('port') \
-					 and e.has_key('state') and e.has_key('sessionid') \
-					 and e.has_key('sessiontimestamp'):
-					if time.time() - e.get('sessiontimestamp') > xivoclient_session_timeout:
+				elif userinfo.has_key('ip') and userinfo.has_key('port') \
+					 and userinfo.has_key('state') and userinfo.has_key('sessionid') \
+					 and userinfo.has_key('sessiontimestamp'):
+					if time.time() - userinfo.get('sessiontimestamp') > xivoclient_session_timeout:
 						retline = 'ERROR USER SESSION EXPIRED for <%s>\r\n' %user
 					else:
-						capalist = (e.get('capas') & capalist_server)
+						capalist = (userinfo.get('capas') & capalist_server)
 						if (capalist & CAPA_CUSTINFO):
 							if action == "PUSH":
-								retline = 'USER %s STATE %s\r\n' %(user, e.get('state'))
-								sendfiche.sendficheasync(e, callerid, msg)
+								retline = 'USER %s STATE %s\r\n' %(user, userinfo.get('state'))
+								sendfiche.sendficheasync(userinfo, callerid, msg)
 							elif action == "QUERY":
 								retline = 'USER %s SESSIONID %s IP %s PORT %s STATE %s\r\n' \
-									  %(user, e.get('sessionid'), e.get('ip'), e.get('port'), e.get('state'))
+									  %(user, userinfo.get('sessionid'), userinfo.get('ip'), userinfo.get('port'), userinfo.get('state'))
 				else:
 					retline = 'ERROR USER SESSION NOT DEFINED for <%s>\r\n' %user
 			except Exception, exc:
@@ -2661,34 +2666,73 @@ class IdentRequestHandler(SocketServer.StreamRequestHandler):
                         return
 
 
+def send_availstate_update(astnum, username, state):
+        if username.find("sip") == 0:
+                phoneid = "SIP/" + username.split("sip")[1]
+        elif username.find("iax") == 0:
+                phoneid = "IAX/" + username.split("iax")[1]
+        else:
+                phoneid = ""
+
+        if phoneid in plist[astnum].normal:
+                if state == "unknown" or plist[astnum].normal[phoneid].imstat != state:
+                        plist[astnum].normal[phoneid].set_imstat(state)
+                        plist[astnum].normal[phoneid].update_time()
+                        update_GUI_clients(astnum, phoneid, "kfc-sau")
+        else:
+                log_debug("<%s> is not in my phone list" % phoneid)
+
+
+def update_availstate(astnum, astid, username, state):
+        do_state_update = False
+        userlist_lock.acquire()
+        try:
+                userinfo = finduser(astid, username)
+                if userinfo != None:
+                        if state in allowed_states:
+                                userinfo['state'] = state
+                        else:
+                                userinfo['state'] = "undefinedstate"
+                        do_state_update = True
+        finally:
+                userlist_lock.release()
+
+        if do_state_update:
+                send_availstate_update(astnum, username, state)
+
+
 def parse_command_and_build_reply(me, myargs):
         repstr = ""
+        astnum = me[0]
         try:
-                capalist = (me[4] & capalist_server)
+                capalist = (me[5] & capalist_server)
                 if myargs[0] == 'history':
                         if (capalist & CAPA_HISTORY):
                                 repstr = build_history_string(myargs[1], myargs[2], myargs[3])
                 elif myargs[0] == 'directory-search':
                         if (capalist & CAPA_DIRECTORY):
-                                repstr = build_customers(me[0], me[1], myargs[1:])
+                                repstr = build_customers(astnum, me[3], myargs[1:])
                 elif myargs[0] == 'callerids':
                         if (capalist & CAPA_PEERS):
                                 repstr = build_callerids()
+                elif myargs[0] == 'availstate':
+                        if (capalist & CAPA_PRESENCE):
+                                repstr = update_availstate(astnum, me[1], me[2], myargs[1])
                 elif myargs[0] == 'hints':
                         if (capalist & CAPA_PEERS):
                                 repstr = build_statuses()
                 elif myargs[0] == 'featuresget':
                         if (capalist & CAPA_FEATURES):
-                                repstr = build_features_get(me[0], myargs[1:], me[2])
+                                repstr = build_features_get(astnum, myargs[1:], me[4])
                 elif myargs[0] == 'featuresput':
                         if (capalist & CAPA_FEATURES):
-                                repstr = build_features_put(me[0], myargs[1:], me[2])
+                                repstr = build_features_put(astnum, myargs[1:], me[4])
                 elif myargs[0] == 'message':
                         if (capalist & CAPA_MESSAGE):
-                                send_msg_to_cti_clients("message=%s::<%s>\n" %(me[3], myargs[1]))
+                                send_msg_to_cti_clients("message=%s/%s::<%s>\n" %(me[1], me[2], myargs[1]))
                 elif myargs[0] == 'originate':
                         if (capalist & CAPA_DIAL):
-                                originate_or_transfer("aaa", ["originate", myargs[1], myargs[2]])
+                                originate_or_transfer("dummy", ["originate", myargs[1], myargs[2]])
         except Exception, exc:
                 log_debug("--- exception --- (parse_command_and_build_reply) %s %s" %(str(myargs), str(exc)))
         return repstr
@@ -2700,13 +2744,11 @@ def parse_command_and_build_reply(me, myargs):
 # It could be a good thing to give a numerical code to each error.
 class KeepAliveHandler(SocketServer.DatagramRequestHandler):
         def handle(self):
-                global conngui_xc
                 threading.currentThread().setName('keepalive-%s:%d' %(self.client_address[0], self.client_address[1]))
                 requester = "%s:%d" %(self.client_address[0],self.client_address[1])
                 log_debug("KeepAliveHandler    (UDP) : client = %s" %requester)
                 astnum = -1
                 response = "ERROR unknown"
-                do_state_update = False
 
                 try:
                         ip = self.client_address[0]
@@ -2732,15 +2774,15 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
                         # session has not expired
                         userlist_lock.acquire()
                         try:
-                                e = finduser(astnum, user)
-                                if e == None:
+                                userinfo = finduser(astname_xivoc, user)
+                                if userinfo == None:
                                         raise NameError, "unknown user %s" %user
-                                if e.has_key('sessionid') and e.has_key('ip') and e.has_key('sessiontimestamp') \
-                                       and sessionid == e.get('sessionid') and ip == e.get('ip') \
-                                       and e.get('sessiontimestamp') + xivoclient_session_timeout > timestamp:
-                                        e['sessiontimestamp'] = timestamp
+                                if userinfo.has_key('sessionid') and userinfo.has_key('ip') and userinfo.has_key('sessiontimestamp') \
+                                       and sessionid == userinfo.get('sessionid') and ip == userinfo.get('ip') \
+                                       and userinfo.get('sessiontimestamp') + xivoclient_session_timeout > timestamp:
+                                        userinfo['sessiontimestamp'] = timestamp
                                         response = 'OK'
-                                        capalist_user = e.get('capas')
+                                        capalist_user = userinfo.get('capas')
                                 else:
                                         raise NameError, "session expired"
                         finally:
@@ -2750,10 +2792,10 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
                                 # ALIVE user SESSIONID sessionid STATE state
                                 state = list[5]
                                 if state in allowed_states:
-                                        e['state'] = state
+                                        userinfo['state'] = state
                                 else:
-                                        e['state'] = "undefinedstate"
-                                do_state_update = True
+                                        userinfo['state'] = "undefinedstate"
+                                send_availstate_update(astnum, user, state)
                                 response = 'OK'
                         elif list[0] == 'STOP' and len(list) == 4:
                                 # STOP user SESSIONID sessionid
@@ -2763,20 +2805,8 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
                                                 del requestersocket_by_login[list[1]]
                                         else:
                                                 log_debug("warning : %s unknown" %(list[1]))
-                                        del e['sessionid']
-                                        del e['sessiontimestamp']
-                                        del e['ip']
-                                        del e['port']
-                                        del e['state']
-                                        del e['tcpmode']
-                                        del e['cticlienttype']
-                                        del e['cticlientos']
-                                        conngui_xc = conngui_xc - 1
-                                        sipnumber = "SIP/" + user.split("sip")[1]
-                                        if sipnumber in plist[astnum].normal:
-                                                plist[astnum].normal[sipnumber].set_imstat("unkown")
-                                                plist[astnum].normal[sipnumber].update_time()
-                                                update_GUI_clients(astnum, sipnumber, "kfc-dcc")
+                                        disconnect_user(userinfo)
+                                        send_availstate_update(astnum, user, "unknown")
                                 finally:
                                         userlist_lock.release()
                                 response = 'DISC'
@@ -2789,7 +2819,9 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
                                         finally:
                                                 userlist_lock.release()
                                         
-                                        response = parse_command_and_build_reply([astnum, e['context'], self, list[1], capalist_user], list[4:])
+                                        response = parse_command_and_build_reply([astnum, astname_xivoc, user,
+                                                                                  userinfo.get('context'), self, capalist_user],
+                                                                                 list[4:])
                                 except Exception, exc:
                                         log_debug("--- exception --- (command) %s" %str(exc))
                         else:
@@ -2800,14 +2832,6 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
                 # whatever has been received, we must reply something to the client who asked
                 log_debug("replying <%s> to %s" %(response, requester))
                 self.request[1].sendto(response + '\r\n', self.client_address)
-
-                if do_state_update:
-                        sipnumber = "SIP/" + user.split("sip")[1]
-                        if sipnumber in plist[astnum].normal:
-                                if(plist[astnum].normal[sipnumber].imstat != state):
-                                        plist[astnum].normal[sipnumber].set_imstat(state)
-                                        plist[astnum].normal[sipnumber].update_time()
-                                        update_GUI_clients(astnum, sipnumber, "kfc-kah")
 
 
 ## \class MyTCPServer
@@ -2883,6 +2907,7 @@ while True: # loops over the reloads
         maxgui_sb = 3
         maxgui_xc = 10
         conngui_xc = 0
+        conngui_sb = 0
         evt_filename = "/var/log/pf-xivo-cti-server/ami_events.log"
         gui_filename = "/var/log/pf-xivo-cti-server/gui.log"
         with_ami = True
@@ -3039,7 +3064,7 @@ while True: # loops over the reloads
                         guifile = False
 
         # user list initialized empty
-        userlist = []
+        userlist = {}
         userlist_lock = threading.Condition()
 
         plist = []
@@ -3057,7 +3082,7 @@ while True: # loops over the reloads
 
         for n in items_asterisks:
                 plist.append(PhoneList(configs[n].astid))
-                userlist.append({})
+                userlist[configs[n].astid] = {}
                 asteriskr[configs[n].astid] = n
                 AMIcomms.append(-1)
                 AMIsocks.append(-1)
@@ -3201,14 +3226,11 @@ while True: # loops over the reloads
                         # the new UI (SB) connections are catched here
                         elif UIsock in i:
                                 [conn, UIsockparams] = UIsock.accept()
-                                if len(tcpopens_sb) >= maxgui_sb:
-                                        conn.close()
-                                else:
-                                        log_debug("TCP (SB)  socket opened on   %s:%s" %(UIsockparams[0],str(UIsockparams[1])))
-                                        # appending the opened socket to the ones watched
-                                        ins.append(conn)
-                                        conn.setblocking(0)
-                                        tcpopens_sb.append([conn, UIsockparams[0], UIsockparams[1]])
+                                log_debug("TCP (SB)  socket opened on   %s:%s" %(UIsockparams[0],str(UIsockparams[1])))
+                                # appending the opened socket to the ones watched
+                                ins.append(conn)
+                                conn.setblocking(0)
+                                tcpopens_sb.append([conn, UIsockparams[0], UIsockparams[1]])
                         # the new UI (PHP) connections are catched here
                         elif PHPUIsock in i:
                                 [conn, PHPUIsockparams] = PHPUIsock.accept()
@@ -3223,7 +3245,7 @@ while True: # loops over the reloads
                                 try:
                                         manage_tcp_connection(conn, True)
                                 except Exception, exc:
-                                        log_debug("--- exception --- SB tcp connection : " + str(exc))
+                                        log_debug("--- exception --- XC/SB tcp connection : " + str(exc))
                         # open UI (PHP) connections
                         elif filter(lambda j: j[0] in i, tcpopens_php):
                                 conn = filter(lambda j: j[0] in i, tcpopens_php)[0]

@@ -138,10 +138,10 @@ MainWidget::MainWidget(BaseEngine * engine, QWidget * parent)
  	m_widget->setEngine(m_engine);
 	m_engine->addRemovable(m_widget->metaObject());
 	connect( m_engine, SIGNAL(updatePeer(const QString &, const QString &,
-	                                   const QString &, const QString &,
-	                                   const QString &, const QString &,
-					   const QStringList &, const QStringList &,
-					   const QStringList &)),
+                                             const QString &, const QString &,
+                                             const QString &, const QString &,
+                                             const QStringList &, const QStringList &,
+                                             const QStringList &)),
 	         m_widget, SLOT(updatePeer(const QString &, const QString &,
 					   const QString &, const QString &,
 					   const QString &, const QString &,

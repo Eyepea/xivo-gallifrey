@@ -77,8 +77,10 @@ PeerWidget::PeerWidget(const QString & id, const QString & name,
 	  layout->addWidget( m_voicelbl, 1, 0, Qt::AlignLeft );
 	  layout->addWidget( m_fwdlbl,   1, 1, Qt::AlignLeft );
 	*/
-	//qDebug() << "new PeerWidget: id=" << m_id << "name=" << m_name;
-	m_textlbl = new QLabel(m_name.isEmpty()?m_id:m_name, this);
+	m_textlbl = new QLabel(m_name.isEmpty() ? tr("(No callerid yet)") : m_name,
+                               this);
+        if(m_name.isEmpty())
+                qDebug() << "PeerWidget::PeerWidget()" << "the callerid information m_name is empty for :" << m_id;
 	// set TextInteraction Flags so the mouse clicks are not catched by the
 	// QLabel widget
 	m_textlbl->setTextInteractionFlags( Qt::NoTextInteraction );

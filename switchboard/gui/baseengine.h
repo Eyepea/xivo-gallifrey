@@ -252,7 +252,7 @@ private:
 	QString m_sessionid;		//!< Session id obtained after a successful login
 	QString m_clientid;		//!< Client Identifier
 	QHash<QString, QString> m_callerids;	//!< List of caller Ids
-	int m_version;			//!< Version issued by the server after a successful login
+	int m_version_server;		//!< Version issued by the server after a successful login
 
 	// Status variables
 	EngineState m_state;		//!< State of the engine (Logged/Not Logged)

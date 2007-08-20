@@ -1,12 +1,36 @@
 # Thomas Bernard
 
 import ConfigParser
+import getopt
 import ldap
 import sys
 import syslog
 import threading
 
 import generefiche
+
+# XIVO lib-python modules initialization
+from xivo import ConfigPath
+from xivo.ConfigPath import *
+xivoconffile            = "/etc/asterisk/xivo_push.conf"
+GETOPT_SHORTOPTS        = 'dc:'
+GETOPT_LONGOPTS         = ["daemon", "config="]
+CONFIG_LIB_PATH         = 'py_lib_path'
+def config_path():
+        global xivoconffile
+        for opt, arg in getopt.getopt(sys.argv[1:], "dc:", ["daemon", "config="])[0]:
+                if opt == "-c":
+                        xivoconffile = arg
+        ConfiguredPathHelper(xivoconffile, CONFIG_LIB_PATH)
+config_path()
+debug_mode = (sys.argv.count('-d') > 0)
+
+# XIVO lib-python modules imports
+import anysql
+
+import xivo_ldap
+
+
 
 #
 ## \class Info
@@ -26,38 +50,6 @@ class Info:
         def getValue(self):
                 return self.value
 
-## \class myLDAP
-class myLDAP:
-	def __init__(self, ihost, iport, iuser, ipass):
-		try:
-			self.l = ldap.initialize("ldap://%s:%s" %(ihost, iport))
-			self.l.protocol_version = ldap.VERSION3
-			self.l.simple_bind_s(iuser, ipass)
-			
-		except ldap.LDAPError, exc:
-			log_debug('except ldap.LDAPError : %s' % str(exc))
-			sys.exit()
-
-	def getldap(self, ibase, filter, attrib):
-		try:
-			resultat = self.l.search_s(ibase,
-						   ldap.SCOPE_SUBTREE,
-						   filter,
-						   attrib)
-			return resultat
-		except ldap.LDAPError, exc:
-			log_debug('except ldap.LDAPError : %s' % str(exc))
-
-## \brief Returns the kind of database
-# \param cfg
-def get_dbkind(cfg):
-	try:
-		dbkind = cfg.get('general', 'db')
-	except:
-		dbkind = ""
-	return dbkind
-
-
 def varlog(string):
         syslog.syslog(syslog.LOG_NOTICE, "sendfiche : " + string)
         return 0
@@ -72,12 +64,8 @@ def log_debug(string):
 # \param cid
 def get_ldap_infos(config, cid):
 	[callid, mail, name, firstname, company] = ["", "", "", "", ""]
-	ldapid = myLDAP(config.get('general', 'host'),
-			config.get('general', 'port'),
-			config.get('general', 'user'),
-			config.get('general', 'pass'))
-	result = ldapid.getldap(config.get('general', 'dbname'),
-				"(|(telephonenumber=%s)(mobile=%s)(pager=%s))" %(cid,cid,cid),
+	ldapid = xivo_ldap.myLDAP(config.get('general', 'dir_db_uri'))
+	result = ldapid.getldap("(|(telephonenumber=%s)(mobile=%s)(pager=%s))" %(cid,cid,cid),
 				['cn','mail','sn','givenName','o'])
 	try:
 		who = result[0][1]
@@ -92,17 +80,13 @@ def get_ldap_infos(config, cid):
 	return [callid, mail, name, firstname, company]
 
 
-## \brief Returns informations fetched from the MySQL database
+## \brief Returns informations fetched from the SQL database
 # \param config configuration informations
 # \param cid callerid requested
-def get_mysql_infos(config, cid):
+def get_sql_infos(config, cid):
 	results = []
 	try:
-		conn = MySQLdb.connect(host = config.get('general', 'host'),
-				      port = int(config.get('general', 'port')),
-				      user = config.get('general', 'user'),
-				      passwd = config.get('general', 'pass'),
-				      db = config.get('general', 'dbname'))
+		conn = anysql.connect(config.get('general', 'dir_db_uri'))
 		cursor = conn.cursor()
 
 		searchname = config.get('general', 'dbmatch')
@@ -112,30 +96,10 @@ def get_mysql_infos(config, cid):
 		results = [cursor.fetchone()] # vs. fetchall() if needed
 		conn.close()
 
-	except Exception, e:
-                log_debug('Connection to MySQL failed : %s' % config.get('general', 'host'))
-
-	return results
-
-
-## \brief Returns informations fetched from the sqlite database
-# \param config configuration informations
-# \param cid callerid requested
-def get_sqlite_infos(config, cid):
-	results = []
-	try:
-		conn = sqlite.connect(db = config.get('general', 'dbname'))
-		cursor = conn.cursor()
-
-		searchname = config.get('general', 'dbmatch')
-		table = config.get('general', 'dbtable')
-		sql = "SELECT * FROM %s WHERE %s = '%s' LIMIT 1;" %(table,searchname,cid)
-	        cursor.execute(sql)
-		results = [cursor.fetchone()] # vs. fetchall() if needed
-		conn.close()
-
-	except Exception, e:
-                log_debug('Connection to sqlite failed')
+	except Exception, exc:
+                log_debug('Connection to SQL <%s> failed : %s'
+                          % (config.get('general', 'db_uri'),
+                             str(exc)))
 
 	return results
 
@@ -153,8 +117,8 @@ def set_fields_from_resultline(callerid, x):
 		field["zipcode"]    = x[4]
 		field["town"]       = x[5]
 		field["medal"]      = x[6]
-	except Exception, e:
-                log_debug('Customer not found in mysql db')
+	except Exception, exc:
+                log_debug('Customer not found in SQL db : %s' % str(exc))
 		if len(callerid) == 9:
 			field["fullnumber"] = callerid
 		else:
@@ -203,9 +167,7 @@ def make_fields(items, formats, flds):
 # opens the xivo_push.conf config file
 config = ConfigParser.ConfigParser()
 try:
-	config.readfp(open("/etc/asterisk/xivo_push.conf"))
-	#config.readfp(open("/home/xilun/xivo/trunk/xivoclient/push/xivo_push.conf"))
-	# TODO: command line parameter
+	config.readfp(open(xivoconffile))
 except:
 	try:
 		config.readfp(open("xivo_push.conf"))
@@ -214,7 +176,6 @@ except:
 		sys.exit(2)
 
 # reads the kind of database and the sheet's format
-databasekind = get_dbkind(config)
 fitems = config.items("fiche")
 fitems.sort()
 fformats = {}
@@ -224,58 +185,56 @@ if "formats" in config.sections() :
 
 class FicheSender:
     def __call__(self, sessionid, address, state, callerid, msg, tcpmode, socket):
-        global databasekind, fitems, fformats
+        global fitems, fformats
         #print 'FicheSend.__class__(%s, %s, %s)' % (sessionid, address, state)
         if state == 'available':
-            liste = []
-            fields = {}
+                liste = []
+                fields = {}
 
-            log_debug('databasekind = %s' % databasekind)
-            if databasekind == "ldap":
-                    fields["req_cid"] = callerid
-                    fields["callidname"], fields["mail"], fields["name"], fields["firstname"], fields["company"] = get_ldap_infos(config, callerid)
-                    if callerid in config.options('photo'):
-                            fields["picture"] = config.get('photo', callerid)
-                    log_debug('fields = %s' % str(fields))
-                    liste = make_fields(fitems, fformats, fields)
-                    log_debug('liste = %s' % str(liste))
-            elif databasekind == "mysql" or databasekind == "sqlite":
-                    listes = []
-                    if databasekind == "mysql":
-                            results = get_mysql_infos(config, callerid)
-                    elif databasekind == "sqlite":
-                            results = get_sqlite_infos(config, callerid)
-                    # log_debug("%d result(s) found for %s" %(len(results),callerid))
-                    if len(results) > 0:
-                            for z in xrange(len(results)):
-                                    fields = set_fields_from_resultline(callerid, results[z])
-                                    fields["req_cid"] = callerid
-                                    liste = make_fields(fitems, fformats, fields)
-                                    listes.append(liste)
-                    else:
-                            fields["req_cid"] = callerid
-                            liste = make_fields(fitems, fformats, fields)
+                databasekind = config.get('general', 'dir_db_uri').split(':')[0]
+                log_debug('databasekind = %s' % databasekind)
+                if databasekind == "ldap":
+                        fields["req_cid"] = callerid
+                        fields["callidname"], fields["mail"], fields["name"], fields["firstname"], fields["company"] = get_ldap_infos(config, callerid)
+                        if callerid in config.options('photo'):
+                                fields["picture"] = config.get('photo', callerid)
+                        log_debug('fields = %s' % str(fields))
+                        liste = make_fields(fitems, fformats, fields)
+                        log_debug('liste = %s' % str(liste))
+                elif databasekind == "mysql" or databasekind == "sqlite":
+                        listes = []
+                        results = get_sql_infos(config, callerid)
+                        # log_debug("%d result(s) found for %s" %(len(results),callerid))
+                        if len(results) > 0:
+                                for z in xrange(len(results)):
+                                        fields = set_fields_from_resultline(callerid, results[z])
+                                        fields["req_cid"] = callerid
+                                        liste = make_fields(fitems, fformats, fields)
+                                        listes.append(liste)
+                        else:
+                                fields["req_cid"] = callerid
+                                liste = make_fields(fitems, fformats, fields)
 
-            log_debug('address = %s' % str(address))
-            fiche = generefiche.Fiche(sessionid)
-            fiche.setmessage(msg)
-            for x in liste:
-                    fiche.addinfo(x.getTitle(), x.getType(), x.getValue())
-            if tcpmode:
-                    #fs = socket.makefile('w')
-                    #fs.write(fiche.getxml())
-                    #fs.flush()
-                    #fs.close()
-                    socket.write(fiche.getxml())
-                    socket.flush()
-            else:
-                    fiche.sendtouser(address)
-            log_debug('fiche.sendtouser() finished')
+                log_debug('address = %s' % str(address))
+                fiche = generefiche.Fiche(sessionid)
+                fiche.setmessage(msg)
+                for x in liste:
+                        fiche.addinfo(x.getTitle(), x.getType(), x.getValue())
+                if tcpmode:
+                        #fs = socket.makefile('w')
+                        #fs.write(fiche.getxml())
+                        #fs.flush()
+                        #fs.close()
+                        socket.write(fiche.getxml())
+                        socket.flush()
+                else:
+                        fiche.sendtouser(address)
+                log_debug('fiche.sendtouser() finished')
 
 
 def sendficheasync(userinfo, callerid, msg):
         sender = FicheSender()
-        log_debug('sendficheasync : %s %s %s' % (userinfo, callerid, msg))
+        log_debug('sendficheasync : %s callerid=<%s> msg=<%s>' % (userinfo, callerid, msg))
         params = {'sessionid':userinfo['sessionid'],
                   'address':(userinfo['ip'], int(userinfo['port'])),
                   'state':userinfo['state'],

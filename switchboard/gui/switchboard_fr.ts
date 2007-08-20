@@ -8,79 +8,79 @@
         <translation type="obsolete">Connexion perdue avec le serveur de présence</translation>
     </message>
     <message>
-        <location filename="baseengine.cpp" line="470"/>
+        <location filename="baseengine.cpp" line="474"/>
         <source>Connection refused</source>
         <translation>Connexion refusée</translation>
     </message>
     <message>
-        <location filename="baseengine.cpp" line="479"/>
+        <location filename="baseengine.cpp" line="483"/>
         <source>Host not found</source>
         <translation>Hôte non trouvé</translation>
     </message>
     <message>
-        <location filename="baseengine.cpp" line="482"/>
+        <location filename="baseengine.cpp" line="486"/>
         <source>Unknown socket error</source>
         <translation>Erreur réseau inconnue</translation>
     </message>
     <message>
-        <location filename="baseengine.cpp" line="720"/>
+        <location filename="baseengine.cpp" line="738"/>
         <source>Peers&apos; status updated</source>
         <translation>Statut des postes mis à jour</translation>
     </message>
     <message>
-        <location filename="baseengine.cpp" line="655"/>
+        <location filename="baseengine.cpp" line="659"/>
         <source> said : </source>
         <translation> dit : </translation>
     </message>
     <message>
-        <location filename="baseengine.cpp" line="655"/>
+        <location filename="baseengine.cpp" line="659"/>
         <source>Unknown</source>
         <translation>Inconnu</translation>
     </message>
     <message>
-        <location filename="baseengine.cpp" line="1093"/>
+        <location filename="baseengine.cpp" line="1122"/>
         <source>Attempting to reconnect to server</source>
         <translation>Tentative de reconnexion au serveur</translation>
     </message>
     <message>
-        <location filename="baseengine.cpp" line="551"/>
+        <location filename="baseengine.cpp" line="555"/>
         <source>Unknown Number</source>
         <translation>Numéro Inconnu</translation>
     </message>
     <message>
-        <location filename="baseengine.cpp" line="644"/>
+        <location filename="baseengine.cpp" line="648"/>
         <source>Unknown CallerId</source>
         <translation>CallerId Inconnu</translation>
     </message>
     <message>
-        <location filename="baseengine.cpp" line="212"/>
+        <location filename="baseengine.cpp" line="214"/>
         <source>Critical error</source>
         <translation>Erreur critique</translation>
     </message>
     <message>
-        <location filename="baseengine.cpp" line="214"/>
+        <location filename="baseengine.cpp" line="216"/>
         <source>Unable to start the server: %1.</source>
         <translation>Impossible de lancer le serveur: %1.</translation>
     </message>
     <message>
-        <location filename="baseengine.cpp" line="439"/>
+        <location filename="baseengine.cpp" line="443"/>
         <source>Connection lost with XIVO Daemon</source>
         <translation>Connexion perdue avec le Daemon XIVO</translation>
     </message>
     <message>
-        <location filename="baseengine.cpp" line="1368"/>
+        <location filename="baseengine.cpp" line="1400"/>
         <source>Version Error</source>
         <translation>Erreur de Version</translation>
     </message>
     <message>
-        <location filename="baseengine.cpp" line="1369"/>
+        <location filename="baseengine.cpp" line="1401"/>
         <source>Your server version is %1 which is too old.
 </source>
         <translation>La version de votre serveur est trop ancienne : %1.
 </translation>
     </message>
     <message>
-        <location filename="baseengine.cpp" line="1370"/>
+        <location filename="baseengine.cpp" line="1402"/>
         <source>The required one is at least %1.</source>
         <translation>Celle requise est au moins %1.</translation>
     </message>
@@ -443,17 +443,17 @@
 <context>
     <name>PeerWidget</name>
     <message>
-        <location filename="peerwidget.cpp" line="91"/>
+        <location filename="peerwidget.cpp" line="93"/>
         <source>&amp;Remove</source>
         <translation>&amp;Enlever</translation>
     </message>
     <message>
-        <location filename="peerwidget.cpp" line="92"/>
+        <location filename="peerwidget.cpp" line="94"/>
         <source>Remove this peer from the panel</source>
         <translation>Enlever ce poste du tableau</translation>
     </message>
     <message>
-        <location filename="peerwidget.cpp" line="350"/>
+        <location filename="peerwidget.cpp" line="352"/>
         <source>&amp;Intercept</source>
         <translation>&amp;Intercepter</translation>
     </message>
@@ -463,22 +463,22 @@
         <translation>Présence SIP : </translation>
     </message>
     <message>
-        <location filename="peerwidget.cpp" line="351"/>
+        <location filename="peerwidget.cpp" line="353"/>
         <source>&amp;Hangup</source>
         <translation>&amp;Raccrocher</translation>
     </message>
     <message>
-        <location filename="peerwidget.cpp" line="95"/>
+        <location filename="peerwidget.cpp" line="97"/>
         <source>&amp;Call</source>
         <translation>&amp;Appeler</translation>
     </message>
     <message>
-        <location filename="peerwidget.cpp" line="96"/>
+        <location filename="peerwidget.cpp" line="98"/>
         <source>Call this peer</source>
         <translation>Appeler ce poste</translation>
     </message>
     <message>
-        <location filename="peerwidget.cpp" line="365"/>
+        <location filename="peerwidget.cpp" line="367"/>
         <source>&amp;Transfer</source>
         <translation>&amp;Transférer</translation>
     </message>
@@ -541,6 +541,11 @@
         <location filename="peeritem.cpp" line="94"/>
         <source>Not online</source>
         <translation>Pas en ligne</translation>
+    </message>
+    <message>
+        <location filename="peerwidget.cpp" line="80"/>
+        <source>(No callerid yet)</source>
+        <translation>(Callerid en attente)</translation>
     </message>
 </context>
 <context>
