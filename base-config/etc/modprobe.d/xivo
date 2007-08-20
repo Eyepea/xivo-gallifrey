@@ -1,0 +1,3 @@
+blacklist hisax
+blacklist hisax_fcpcipnp
+blacklist netjetpci
