@@ -1,7 +1,7 @@
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_sip.c
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/channels/chan_sip.c	2007-07-23 16:32:07.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_sip.c	2007-08-16 10:15:38.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/channels/chan_sip.c	2007-08-20 17:56:17.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_sip.c	2007-08-20 17:57:29.000000000 +0200
 @@ -1946,9 +1946,9 @@
  	struct ast_hostent ahp;
  	struct sip_peer *p;
@@ -59,7 +59,7 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_sip.c
  		ast_build_string(&t, &maxbytes, "<pp:person><status>\n");
  		if (pidfstate[0] != '-')
  			ast_build_string(&t, &maxbytes, "<ep:activities><ep:%s/></ep:activities>\n", pidfstate);
-@@ -5319,17 +5333,55 @@
+@@ -5319,17 +5333,53 @@
  		if (pidfstate[0] == 'b') /* Busy? Still open ... */
  			ast_build_string(&t, &maxbytes, "<status><basic>open</basic></status>\n");
  		else
@@ -85,8 +85,6 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_sip.c
 +				while ((chan = ast_channel_walk_locked(chan)) != NULL) {
 +					if (chan->_state == AST_STATE_RINGING && !strncasecmp(chan->name, "SIP", 3) &&
 +                                            chan->tech_pvt && !strncasecmp(chan->name, hint, hintlen)) {
-+                                                ast_log(LOG_WARNING, "<%s> %d\n", chan->name, chan->_state);
-+
 +						char iabuf[INET_ADDRSTRLEN];
 +						np = chan->tech_pvt;
 +                                                
@@ -121,7 +119,7 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_sip.c
  		ast_build_string(&t, &maxbytes, "</dialog>\n</dialog-info>\n");
  		break;
  	case NONE:
-@@ -6885,10 +6937,12 @@
+@@ -6885,10 +6935,12 @@
  }
  
  /*! \brief  get_sip_pvt_byid_locked: Lock interface lock and find matching pvt lock  ---*/
@@ -136,7 +134,7 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_sip.c
  	/* Search interfaces and find the match */
  	ast_mutex_lock(&iflock);
  	sip_pvt_ptr = iflist;
-@@ -6896,6 +6950,27 @@
+@@ -6896,6 +6948,27 @@
  		if (!strcmp(sip_pvt_ptr->callid, callid)) {
  			/* Go ahead and lock it (and its owner) before returning */
  			ast_mutex_lock(&sip_pvt_ptr->lock);
@@ -164,7 +162,7 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_sip.c
  			if (sip_pvt_ptr->owner) {
  				while(ast_mutex_trylock(&sip_pvt_ptr->owner->lock)) {
  					ast_mutex_unlock(&sip_pvt_ptr->lock);
-@@ -6918,7 +6993,7 @@
+@@ -6918,7 +6991,7 @@
  {
  
  	char *p_refer_to = NULL, *p_referred_by = NULL, *h_refer_to = NULL, *h_referred_by = NULL, *h_contact = NULL;
@@ -173,7 +171,7 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_sip.c
  	struct sip_request *req = NULL;
  	struct sip_pvt *sip_pvt_ptr = NULL;
  	struct ast_channel *chan = NULL, *peer = NULL;
-@@ -6963,6 +7038,8 @@
+@@ -6963,6 +7036,8 @@
  	if (referred_by)
  		referred_by += 4;
  	
@@ -182,7 +180,7 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_sip.c
  	if ((ptr = strchr(refer_to, '?'))) {
  		/* Search for arguments */
  		*ptr = '\0';
-@@ -6970,10 +7047,7 @@
+@@ -6970,10 +7045,7 @@
  		if (!strncasecmp(ptr, "REPLACES=", 9)) {
  			char *p;
  			replace_callid = ast_strdupa(ptr + 9);
@@ -194,7 +192,7 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_sip.c
  			ast_uri_decode(replace_callid);
  			if ((ptr = strchr(replace_callid, '%'))) 
  				*ptr = '\0';
-@@ -7015,13 +7089,13 @@
+@@ -7015,13 +7087,13 @@
  		ast_copy_string(sip_pvt->referred_by, "", sizeof(sip_pvt->referred_by));
  		ast_copy_string(sip_pvt->refer_contact, "", sizeof(sip_pvt->refer_contact));
  		sip_pvt->refer_call = NULL;
@@ -211,7 +209,7 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_sip.c
  		} else {
  			ast_log(LOG_NOTICE, "Supervised transfer requested, but unable to find callid '%s'.  Both legs must reside on Asterisk box to transfer at this time.\n", replace_callid);
  			/* XXX The refer_to could contain a call on an entirely different machine, requiring an 
-@@ -8890,8 +8964,11 @@
+@@ -8890,8 +8962,11 @@
  {
  	char buf[1024];
  	unsigned int event;
@@ -224,7 +222,7 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_sip.c
  	/* Need to check the media/type */
  	if (!strcasecmp(get_header(req, "Content-Type"), "application/dtmf-relay") ||
  	    !strcasecmp(get_header(req, "Content-Type"), "application/vnd.nortelnetworks.digits")) {
-@@ -8971,7 +9048,7 @@
+@@ -8971,7 +9046,7 @@
  	/* if (get_msg_text(buf, sizeof(buf), req)) { */
  
  	ast_log(LOG_WARNING, "Unable to parse INFO message from %s. Content %s\n", p->callid, buf);
@@ -233,7 +231,7 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_sip.c
  	return;
  }
  
-@@ -10604,13 +10681,16 @@
+@@ -10604,13 +10679,16 @@
  static int handle_request_invite(struct sip_pvt *p, struct sip_request *req, int debug, int ignore, int seqno, struct sockaddr_in *sin, int *recount, char *e)
  {
  	int res = 1;
@@ -254,7 +252,7 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_sip.c
  
  	/* Find out what they support */
  	if (!p->sipoptions) {
-@@ -10631,6 +10711,20 @@
+@@ -10631,6 +10709,20 @@
  		}
  	}
  
@@ -275,7 +273,7 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_sip.c
  	/* Check if this is a loop */
  	/* This happens since we do not properly support SIP domain
  	   handling yet... -oej */
-@@ -10723,7 +10817,7 @@
+@@ -10723,7 +10815,7 @@
  		extract_uri(p, req);
  		build_contact(p);
  
@@ -284,7 +282,7 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_sip.c
  			if (gotdest < 0)
  				transmit_response_reliable(p, "404 Not Found", req, 1);
  			else
-@@ -10743,8 +10837,41 @@
+@@ -10743,8 +10835,41 @@
  			/* Save Record-Route for any later requests we make on this dialogue */
  			build_route(p, req, 0);
  			if (c) {
@@ -328,7 +326,7 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_sip.c
  			}
  		}
  		
-@@ -11251,7 +11378,10 @@
+@@ -11251,7 +11376,10 @@
  				if (!strcmp(p_old->username, p->username)) {
  					if (!strcmp(p_old->exten, p->exten) &&
  					    !strcmp(p_old->context, p->context)) {
@@ -340,7 +338,7 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_sip.c
  						ast_mutex_unlock(&p_old->lock);
  						break;
  					}
-@@ -11493,6 +11623,14 @@
+@@ -11493,6 +11621,14 @@
  		if (!p->lastinvite && ast_strlen_zero(p->randdata))
  			ast_set_flag(p, SIP_NEEDDESTROY);	
  		break;
