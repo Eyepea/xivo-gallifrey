@@ -273,6 +273,8 @@ void BaseEngine::stop()
 	stopTryAgainTimer();
 	setState(ENotLogged);
 	m_sessionid = "";
+
+        m_callerids.clear();
 }
 
 /*! \brief initiate connection to the server
@@ -710,6 +712,7 @@ void BaseEngine::socketReadyRead()
                                                                       tr("The required one is at least %1.").arg(REQUIRED_SERVER_VERSION));
                                         } else {
                                                 logged();
+                                                m_ka_timerid = startTimer(m_keepaliveinterval);
                                                 if(m_is_a_switchboard) /* ask here because not ready when the widget builds up */
                                                         askCallerIds();
                                         }
@@ -839,8 +842,7 @@ void BaseEngine::interceptCall(const QString & src)
 void BaseEngine::hangUp(const QString & channel)
 {
 	qDebug() << "BaseEngine::hangUp()" << channel;
-	m_pendingcommand = "hangup " + channel;
-	sendTCPCommand();
+	sendCommand("hangup " + channel);
 }
 
 /*! \brief send the directory search command to the server
@@ -1114,10 +1116,8 @@ void BaseEngine::timerEvent(QTimerEvent * event)
 	int timerId = event->timerId();
         qDebug() << "BaseEngine::timerEvent() timerId=" << timerId << m_ka_timerid << m_try_timerid;
 	if(timerId == m_ka_timerid) {
-                if(! m_tcpmode) {
-                        keepLoginAlive();
-                        event->accept();
-                }
+                keepLoginAlive();
+                event->accept();
         } else if(timerId == m_try_timerid) {
                 emitTextMessage(tr("Attempting to reconnect to server"));
 		start();
@@ -1478,29 +1478,32 @@ void BaseEngine::keepLoginAlive()
 		startTryAgainTimer();
 		return;
 	}
-	if(m_state == ELogged) {
-		QString outline = "ALIVE ";
-		outline.append(m_asterisk + "/" + m_protocol.toLower() + m_userid);
-		outline.append(" SESSIONID ");
-		outline.append(m_sessionid);
-		outline.append(" STATE ");
-                if(m_enabled_presence)
-                        outline.append(m_availstate);
-                else
-                        outline.append("unknown");
-		qDebug() << "BaseEngine::keepLoginAlive() : " << outline;
-		outline.append("\r\n");
-		m_udpsocket->writeDatagram( outline.toAscii(),
-					    m_serveraddress, m_loginport + 1 );
-		m_pendingkeepalivemsg++;
-		// if the last keepalive msg has not been answered, send this one
-		// twice
-		if(m_pendingkeepalivemsg > 1) {
+        if(m_tcpmode)
+                sendCommand("availstate " + m_availstate);
+        else
+                if(m_state == ELogged) {
+                        QString outline = "ALIVE ";
+                        outline.append(m_asterisk + "/" + m_protocol.toLower() + m_userid);
+                        outline.append(" SESSIONID ");
+                        outline.append(m_sessionid);
+                        outline.append(" STATE ");
+                        if(m_enabled_presence)
+                                outline.append(m_availstate);
+                        else
+                                outline.append("unknown");
+                        qDebug() << "BaseEngine::keepLoginAlive() : " << outline;
+                        outline.append("\r\n");
                         m_udpsocket->writeDatagram( outline.toAscii(),
                                                     m_serveraddress, m_loginport + 1 );
                         m_pendingkeepalivemsg++;
+                        // if the last keepalive msg has not been answered, send this one
+                        // twice
+                        if(m_pendingkeepalivemsg > 1) {
+                                m_udpsocket->writeDatagram( outline.toAscii(),
+                                                            m_serveraddress, m_loginport + 1 );
+                                m_pendingkeepalivemsg++;
+                        }
                 }
-	}
 }
 
 /*!

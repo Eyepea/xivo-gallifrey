@@ -1020,7 +1020,6 @@ def split_from_ui(fullname):
 def originate_or_transfer(requester, l):
         src_split = l[1].split("/")
         dst_split = l[2].split("/")
-
         ret_message = "message=%s::originate_or_transfer KO from %s" %(DAEMON, requester)
 
         if len(src_split) == 5:
@@ -1055,9 +1054,9 @@ def originate_or_transfer(requester, l):
                                 else:
                                         ret = False
                                 if ret:
-                                        ret_message = "message=%s::originate OK (ast %d) %s %s" %(DAEMON, idast_src, l[1], l[2])
+                                        ret_message = "message=%s::originate OK (%s) %s %s" %(DAEMON, ast_src, l[1], l[2])
                                 else:
-                                        ret_message = "message=%s::originate KO (ast %d) %s %s" %(DAEMON, idast_src, l[1], l[2])
+                                        ret_message = "message=%s::originate KO (%s) %s %s" %(DAEMON, ast_src, l[1], l[2])
                         elif l[0] == 'transfer':
                                 log_debug("%s is attempting a TRANSFER : %s" %(requester, str(l)))
                                 phonesrc, phonesrcchan = split_from_ui(l[1])
@@ -1075,11 +1074,46 @@ def originate_or_transfer(requester, l):
                                                                                                exten_dst,
                                                                                                "local-extensions")
                                                         if ret:
-                                                                ret_message = "message=%s::transfer OK (ast %d) %s %s" %(DAEMON, idast_src, l[1], l[2])
+                                                                ret_message = "message=%s::transfer OK (%s) %s %s" %(DAEMON, ast_src, l[1], l[2])
                                                         else:
-                                                                ret_message = "message=%s::transfer KO (ast %d) %s %s" %(DAEMON, idast_src, l[1], l[2])
+                                                                ret_message = "message=%s::transfer KO (%s) %s %s" %(DAEMON, ast_src, l[1], l[2])
         else:
-                ret_message = "message=%s::originate or transfer KO : asterisk id mismatch" %DAEMON
+                ret_message = "message=%s::originate or transfer KO : asterisk id mismatch (%d %d)" %(DAEMON, idast_src, idast_dst)
+        return ret_message
+
+
+def hangup(requester, l):
+        idast_src = -1
+        ast_src = l[1].split("/")[1]
+        if ast_src in asteriskr: idast_src = asteriskr[ast_src]
+        if idast_src != -1:
+                log_debug("%s is attempting a HANGUP : %s" %(requester, str(l)))
+                phone, channel = split_from_ui(l[1])
+                if phone in plist[idast_src].normal:
+                        if channel in plist[idast_src].normal[phone].chann:
+                                channel_peer = plist[idast_src].normal[phone].chann[channel].getChannelPeer()
+                                log_debug("UI action : %s : hanging up <%s> and <%s>"
+                                          %(configs[idast_src].astid , channel, channel_peer))
+                                if not AMIclasssock[idast_src]:
+                                        log_debug("AMI was not connected - attempting to connect again")
+                                        AMIclasssock[idast_src] = connect_to_AMI((configs[idast_src].remoteaddr,
+                                                                                  configs[idast_src].ami_port),
+                                                                                 configs[idast_src].ami_login,
+                                                                                 configs[idast_src].ami_pass)
+                                if AMIclasssock[idast_src]:
+                                        ret = AMIclasssock[idast_src].hangup(channel, channel_peer)
+                                        if ret > 0:
+                                                ret_message = "message=%s::hangup OK (%d) %s" %(DAEMON, ret, l[1])
+                                        else:
+                                                ret_message = "message=%s::hangup KO : socket request failed" %DAEMON
+                                else:
+                                        ret_message = "message=%s::hangup KO : no socket available" %DAEMON
+                        else:
+                                ret_message = "message=%s::hangup KO : no such channel" %DAEMON
+                else:
+                        ret_message = "message=%s::hangup KO : no such phone" %DAEMON
+        else:
+                ret_message = "message=%s::hangup KO : no such asterisk id (%s)" %(DAEMON, ast_src)
         return ret_message
 
 
@@ -1210,49 +1244,10 @@ def manage_tcp_connection(connid, allow_events):
                                           %(usefulmsg, requester, str(exc)))
                 elif usefulmsg != "":
                         l = usefulmsg.split()
-                        if len(l) == 2 and l[0] == 'hangup':
-                                idast_src = -1
-                                ast_src = l[1].split("/")[1]
-                                if ast_src in asteriskr: idast_src = asteriskr[ast_src]
-                                if idast_src == -1:
-                                        connid[0].send("message=%s::hangup KO : no such asterisk id (%s)\n" %(DAEMON, ast_src))
-                                else:
-                                        log_debug("%s is attempting a HANGUP : %s" %(requester, str(l)))
-                                        phone, channel = split_from_ui(l[1])
-                                        if phone in plist[idast_src].normal:
-                                                if channel in plist[idast_src].normal[phone].chann:
-                                                        channel_peer = plist[idast_src].normal[phone].chann[channel].getChannelPeer()
-                                                        log_debug("UI action : %s : hanging up <%s> and <%s>"
-                                                                  %(configs[idast_src].astid , channel, channel_peer))
-                                                        if not AMIclasssock[idast_src]:
-                                                                log_debug("AMI was not connected - attempting to connect again")
-                                                                AMIclasssock[idast_src] = connect_to_AMI((configs[idast_src].remoteaddr,
-                                                                                                        configs[idast_src].ami_port),
-                                                                                                       configs[idast_src].ami_login,
-                                                                                                       configs[idast_src].ami_pass)
-                                                        if AMIclasssock[idast_src]:
-                                                                ret = AMIclasssock[idast_src].hangup(channel, channel_peer)
-                                                                if ret > 0:
-                                                                        connid[0].send("message=%s::hangup OK (%d) %s\n"
-                                                                                       %(DAEMON, ret, l[1]))
-                                                                else:
-                                                                        connid[0].send("message=%s::hangup KO : socket request failed\n" %DAEMON)
-                                                        else:
-                                                                connid[0].send("message=%s::hangup KO : no socket available\n" %DAEMON)
-                                                else:
-                                                        connid[0].send("message=%s::hangup KO : no such channel\n" %DAEMON)
-                                        else:
-                                                connid[0].send("message=%s::hangup KO : no such phone\n" %DAEMON)
-                        elif len(l) == 3 and (l[0] == 'originate' or l[0] == 'transfer'):
-                                try:
-                                        message = originate_or_transfer(requester, l)
-                                        connid[0].send(message + '\n')
-                                except Exception, exc:
-                                        log_debug("--- exception --- originate_or_transfer %s %s : %s"
-                                                  %(requester, str(l), str(exc)))
-                        elif l[0] == 'history' or l[0] == 'directory-search' or \
-                                 l[0] == 'featuresget' or l[0] == 'featuresput' or \
-                                 l[0] == 'hints' or l[0] == 'callerids' or l[0] == 'message' or l[0] == 'availstate':
+                        if l[0] == 'history' or l[0] == 'directory-search' or \
+                               l[0] == 'featuresget' or l[0] == 'featuresput' or \
+                               l[0] == 'hints' or l[0] == 'callerids' or l[0] == 'message' or l[0] == 'availstate' or \
+                               l[0] == 'originate' or l[0] == 'transfer' or l[0] == 'hangup':
                                 log_debug("%s is attempting a %s : %s" %(requester, l[0], str(l)))
                                 try:
                                         if requester in userinfo_by_requester:
@@ -1288,10 +1283,9 @@ def manage_tcp_connection(connid, allow_events):
 
                                                                 connect_user(userinfo, sessionid,
                                                                              requester_ip, requester_port,
-                                                                             whoami, whatsmyos, True, state)
+                                                                             whoami, whatsmyos, True, state,
+                                                                             connid[0].makefile('w'))
 
-                                                                userinfo['socket'] = connid[0].makefile('w')
-                                                                
                                                                 repstr = "loginok=%s;%s;%s;%s\n" %(userinfo.get('context'),
                                                                                                    userinfo.get('phonenum'),
                                                                                                    ",".join(capa_user),
@@ -2400,7 +2394,8 @@ def check_user_connection(userinfo, whoami):
 
 
 def connect_user(userinfo, sessionid, iip, iport,
-                 whoami, whatsmyos, tcpmode, state):
+                 whoami, whatsmyos, tcpmode, state,
+                 socket):
         global conngui_xc, conngui_sb
         try:
                 userinfo['sessionid'] = sessionid
@@ -2410,6 +2405,7 @@ def connect_user(userinfo, sessionid, iip, iport,
                 userinfo['cticlienttype'] = whoami
                 userinfo['cticlientos'] = whatsmyos
                 userinfo['tcpmode'] = tcpmode
+                userinfo['socket'] = socket
 
                 # if 'state' in userinfo:
                 # state = userinfo.get('state')
@@ -2429,18 +2425,18 @@ def connect_user(userinfo, sessionid, iip, iport,
 def disconnect_user(userinfo):
         global conngui_xc, conngui_sb
         try:
-                if userinfo.get('cticlienttype') == 'XC':
-                        conngui_xc = conngui_xc - 1
-                else:
-                        conngui_sb = conngui_sb - 1
-                del userinfo['sessionid']
-                del userinfo['sessiontimestamp']
-                del userinfo['ip']
-                del userinfo['port']
-                del userinfo['cticlienttype']
-                del userinfo['cticlientos']
-                del userinfo['tcpmode']
-                if 'socket' in userinfo:
+                if 'sessionid' in userinfo:
+                        if userinfo.get('cticlienttype') == 'XC':
+                                conngui_xc = conngui_xc - 1
+                        else:
+                                conngui_sb = conngui_sb - 1
+                        del userinfo['sessionid']
+                        del userinfo['sessiontimestamp']
+                        del userinfo['ip']
+                        del userinfo['port']
+                        del userinfo['cticlienttype']
+                        del userinfo['cticlientos']
+                        del userinfo['tcpmode']
                         del userinfo['socket']
         except Exception, exc:
                 log_debug("--- exception --- disconnect_user %s : %s" %(str(userinfo), str(exc)))
@@ -2568,9 +2564,9 @@ class LoginHandler(SocketServer.StreamRequestHandler):
 
                                 connect_user(userinfo, sessionid,
                                              self.client_address[0], port,
-                                             whoami, whatsmyos, tcpmode, state)
-                                if tcpmode:
-                                        userinfo['socket'] = self.request.makefile('w')
+                                             whoami, whatsmyos, tcpmode, state,
+                                             self.request.makefile('w'))
+
                                 replystr = "OK SESSIONID %s %s %s %s %s" %(sessionid,
                                                                            userinfo.get('context'),
                                                                            ",".join(capa_user),
@@ -2667,20 +2663,23 @@ class IdentRequestHandler(SocketServer.StreamRequestHandler):
 
 
 def send_availstate_update(astnum, username, state):
-        if username.find("sip") == 0:
-                phoneid = "SIP/" + username.split("sip")[1]
-        elif username.find("iax") == 0:
-                phoneid = "IAX/" + username.split("iax")[1]
-        else:
-                phoneid = ""
+        try:
+                if username.find("sip") == 0:
+                        phoneid = "SIP/" + username.split("sip")[1]
+                elif username.find("iax") == 0:
+                        phoneid = "IAX/" + username.split("iax")[1]
+                else:
+                        phoneid = ""
 
-        if phoneid in plist[astnum].normal:
-                if state == "unknown" or plist[astnum].normal[phoneid].imstat != state:
-                        plist[astnum].normal[phoneid].set_imstat(state)
-                        plist[astnum].normal[phoneid].update_time()
-                        update_GUI_clients(astnum, phoneid, "kfc-sau")
-        else:
-                log_debug("<%s> is not in my phone list" % phoneid)
+                if phoneid in plist[astnum].normal:
+                        if state == "unknown" or plist[astnum].normal[phoneid].imstat != state:
+                                plist[astnum].normal[phoneid].set_imstat(state)
+                                plist[astnum].normal[phoneid].update_time()
+                                update_GUI_clients(astnum, phoneid, "kfc-sau")
+                else:
+                        log_debug("<%s> is not in my phone list" % phoneid)
+        except Exception, exc:
+                log_debug('--- exception --- send_availstate_update : %s' % str(exc))
 
 
 def update_availstate(astnum, astid, username, state):
@@ -2699,6 +2698,7 @@ def update_availstate(astnum, astid, username, state):
 
         if do_state_update:
                 send_availstate_update(astnum, username, state)
+        return ""
 
 
 def parse_command_and_build_reply(me, myargs):
@@ -2730,9 +2730,12 @@ def parse_command_and_build_reply(me, myargs):
                 elif myargs[0] == 'message':
                         if (capalist & CAPA_MESSAGE):
                                 send_msg_to_cti_clients("message=%s/%s::<%s>\n" %(me[1], me[2], myargs[1]))
-                elif myargs[0] == 'originate':
+                elif myargs[0] == 'originate' or myargs[0] == 'transfer':
                         if (capalist & CAPA_DIAL):
-                                originate_or_transfer("dummy", ["originate", myargs[1], myargs[2]])
+                                repstr = originate_or_transfer("%s/%s" %(me[1], me[2]), [myargs[0], myargs[1], myargs[2]])
+                elif myargs[0] == 'hangup':
+                        if (capalist & CAPA_DIAL):
+                                repstr = hangup("%s/%s" %(me[1], me[2]), [myargs[0], myargs[1]])
         except Exception, exc:
                 log_debug("--- exception --- (parse_command_and_build_reply) %s %s" %(str(myargs), str(exc)))
         return repstr
