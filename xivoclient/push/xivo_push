@@ -61,25 +61,18 @@ else:
         sys.exit(2)
 
 
-if len(sys.argv) < 6:
+if len(sys.argv) < 1:
 	print "Usage :", sys.argv[0], "<server> <port> <proto> <user> <calleridnum> [<msgext>] [<calleridname>]"
 	sys.exit(1)
 else:
 	shost = sys.argv[1]
-	sport = int(sys.argv[2])
-	proto = sys.argv[3]
-	exten = sys.argv[4]
-	calleridnum = sys.argv[5]
+	sport = int(xivocapas.get('general', 'port_fiche_agi'))
+	proto = agi.get_variable('PROTO')
+	exten = agi.get_variable('NAME')
+	calleridnum = agi.env['agi_callerid']
+	msgext = agi.get_variable('CALLTYPE')
+	calleridname = agi.env['agi_calleridname']
 	user = proto + exten
-	if len(sys.argv) > 6:
-		msgext = sys.argv[6]
-	else:
-		msgext = ""
-	if len(sys.argv) > 7:
-		calleridname = sys.argv[7]
-	else:
-		calleridname = ""
-
 
 # send the PUSH command to the server
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -110,5 +103,3 @@ elif clientstate == "berightback":
 	agi.set_variable('STATUS', 4)
 else:
 	print_verbose("Unknown user's availability status : %s" % clientstate)
-
-# print_verbose("availability is currently : %s" % clientstate)
