@@ -534,7 +534,7 @@ void BaseEngine::updatePeers(const QStringList & liststatus)
 	//<who>:<asterisk_id>:<tech(SIP/IAX/...)>:<phoneid>:<numero>:<contexte>:<dispo>:<etat SIP/XML>:<etat VM>:<etat Queues>: <nombre de liaisons>:
 	QString context = liststatus[5];
 	QString pname   = "p/" + liststatus[1] + "/" + context + "/"
-		+ liststatus[2] + "/" + liststatus[3] + "/" + liststatus[4];
+		+ liststatus[2].toLower() + "/" + liststatus[3] + "/" + liststatus[4];
 	QString InstMessAvail   = liststatus[6];
 	QString SIPPresStatus   = liststatus[7];
 	QString VoiceMailStatus = liststatus[8];
@@ -582,7 +582,7 @@ void BaseEngine::updatePeers(const QStringList & liststatus)
 void BaseEngine::updateCallerids(const QStringList & liststatus)
 {
 	QString pname = "p/" + liststatus[1] + "/" + liststatus[5] + "/"
-		+ liststatus[2] + "/" + liststatus[3] + "/" + liststatus[4];
+		+ liststatus[2].toLower() + "/" + liststatus[3] + "/" + liststatus[4];
 	QString pcid = liststatus[6];
 	// liststatus[7] => group informations
 	m_callerids[pname] = pcid;
@@ -632,7 +632,6 @@ bool BaseEngine::parseCommand(const QStringList & listitems)
                 }
         } else if(listitems[0].toLower() == QString("hints")) {
                 QStringList listpeers = listitems[1].split(";");
-                qDebug() << "BaseEngine::parseCommand() : hints" << listpeers;
                 for(int i = 0 ; i < listpeers.size() - 1; i++) {
                         QStringList liststatus = listpeers[i].split(":");
                         updatePeers(liststatus);
@@ -643,10 +642,15 @@ bool BaseEngine::parseCommand(const QStringList & listitems)
                 if(m_is_a_switchboard) {
                         callsUpdated();
                         QString myfullid = settings.value("monitor/peer").toString();
-                        if(myfullid.size() == 0)
+                        if(myfullid.isEmpty())
                                 myfullid = "p/" + m_asterisk + "/" + m_dialcontext + "/" + m_protocol + "/" + m_userid + "/" + m_extension;
                         QString myname = m_callerids[myfullid];
-                        if(myname == "")
+                        if(myname.isEmpty()) {
+                                myfullid = "p/" + m_asterisk + "/" + m_dialcontext + "/" + m_protocol + "/" + m_userid + "/" + m_extension;
+                                myname = m_callerids[myfullid];
+                        }
+                        
+                        if(myname.isEmpty())
                                 monitorPeer(myfullid, tr("Unknown CallerId") + " (" + myfullid + ")");
                         else
                                 monitorPeer(myfullid, myname);
