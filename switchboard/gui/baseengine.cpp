@@ -765,17 +765,13 @@ void BaseEngine::originateCall(const QString & src, const QString & dst)
 	qDebug() << "BaseEngine::originateCall()" << src << dst;
 	QStringList dstlist = dst.split("/");
 	if(dstlist.size() > 5)
-	{
-		m_pendingcommand = "originate " + src + " " + dst;
-		//		+ dstlist[0] + "/" + dstlist[1] + "/" + m_dialcontext + "/"
-		//	+ dstlist[3] + "/" + dstlist[4] + "/" + dstlist[5];
-	}
+                sendCommand("originate " + src + " " + dst);
 	else
-	{
-		m_pendingcommand = "originate " + src + " p/" + m_asterisk + "/"
-		     + m_dialcontext + "/" + "/" + "/" + dst;
-	}
-	sendTCPCommand();
+                sendCommand("originate " + src + " p/" + m_asterisk + "/"
+                            + m_dialcontext + "/" + "/" + "/" + dst);
+
+        //		+ dstlist[0] + "/" + dstlist[1] + "/" + m_dialcontext + "/"
+        //	+ dstlist[3] + "/" + dstlist[4] + "/" + dstlist[5];
 }
 
 /*! \brief dial (originate with known src)
@@ -807,17 +803,12 @@ void BaseEngine::transferCall(const QString & src, const QString & dst)
 	qDebug() << "BaseEngine::transferCall()" << src << dst;
 	QStringList dstlist = dst.split("/");
 	if(dstlist.size() >= 6)
-	{
-		m_pendingcommand = "transfer " + src + " "
-			+ dstlist[0] + "/" + dstlist[1] + "/" + m_dialcontext + "/"
-			+ dstlist[3] + "/" + dstlist[4] + "/" + dstlist[5];
-	}
+                sendCommand("transfer " + src + " "
+                            + dstlist[0] + "/" + dstlist[1] + "/" + m_dialcontext + "/"
+                            + dstlist[3] + "/" + dstlist[4] + "/" + dstlist[5]);
 	else
-	{
-		m_pendingcommand = "transfer " + src + " p/" + m_asterisk + "/"
-		     + m_dialcontext + "/" + "/" + "/" + dst;
-	}
-	sendTCPCommand();
+                sendCommand("transfer " + src + " p/" + m_asterisk + "/"
+                            + m_dialcontext + "/" + "/" + "/" + dst);
 }
 
 /*! \brief intercept a call (a channel)
@@ -829,10 +820,9 @@ void BaseEngine::transferCall(const QString & src, const QString & dst)
 void BaseEngine::interceptCall(const QString & src)
 {
 	qDebug() << "BaseEngine::interceptCall()" << src;
-	m_pendingcommand = "transfer " + src + " p/"
-	        + m_asterisk + "/" + m_dialcontext + "/"
-			+ m_protocol + "/" + "/" + m_extension; 
-	sendTCPCommand();
+        sendCommand("transfer " + src + " p/"
+                    + m_asterisk + "/" + m_dialcontext + "/"
+                    + m_protocol + "/" + "/" + m_extension);
 }
 
 /*! \brief hang up a channel
