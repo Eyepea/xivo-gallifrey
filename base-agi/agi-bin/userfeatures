@@ -106,11 +106,8 @@ def find_informations_for_user(exten, context):
 
 agi = AGI()
 
-if len(sys.argv) != 3:
-        agi.verbose('len argument not ok!')
-
-user = sys.argv[1]
-context = sys.argv[2]
+user = agi.get_variable('MACRO_EXTEN')
+context = agi.get_variable('MACRO_CONTEXT')
 
 res = find_informations_for_user(user, context)
 
@@ -132,4 +129,6 @@ agi.set_variable('QUEUENAME', '%s' % res[3])
 agi.set_variable('NAME', '%s' % res[4])
 agi.set_variable('MOH', '%s' % res[5])
 
-sys.exit(0)
+if not res[0]:
+	agi.appexec('GOTO', '%s|s|CHANUNAVAIL' % agi.get_variable('CONTEXT'))
+

@@ -80,6 +80,7 @@ def get_provider(provider, return_callerid):
 	else:
 		agi.set_variable("STRIPNUM", config.get(provider, 'stripnum'))
 
+
 # This function return all informations from the general section, special number and emergency number
 def get_general():
 	providers = ''
@@ -120,27 +121,27 @@ def set_outcallerid(callerid):
 # First argument must be a phone number 
 # Second argument must be a provider setup on config file
 
-if len(sys.argv) > 1:
-	if sys.argv[1].isdigit() or re.search("^\+", sys.argv[1]):
-		exten = sys.argv[1]
+if len(sys.argv) > 0:
+	agi_exten = agi.get_variable('MACRO_EXTEN')
+	agi_context = agi.get_variable('MACRO_CONTEXT')
+	agi_callerid = agi.env['agi_callerid']
+
+	if agi_exten.isdigit() or re.search("^\+", agi_exten):
+		exten = agi_exten
 		provider = ""
 	else:
-		provider = sys.argv[1]
+		provider = agi_exten
 	
-	if len(sys.argv) > 2:
-		context = sys.argv[2]
-	else:
-		context = ""
+	context = agi_context
 
-	return_callerid = ''
-	if len(sys.argv) > 3:
-		callerid = sys.argv[3]
-		return_callerid = set_outcallerid(callerid)
-	
+	callerid = agi_callerid
+	return_callerid = set_outcallerid(callerid)
+
 	if provider:
 		get_provider(provider, return_callerid)
 		sys.exit()
 	else:
+
 		get_general()
 
 		try:
