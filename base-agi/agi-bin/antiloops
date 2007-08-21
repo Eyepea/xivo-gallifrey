@@ -66,10 +66,6 @@ def get_all_users(context):
 
 agi = AGI()
 
-if len(sys.argv) != 3:
-        agi.verbose('len argument not ok %s!')
-	sys.exit()
-
 user_src = agi.get_variable(agi.env['agi_callerid'])
 context = agi.get_variable('MACRO_CONTEXT')
 res = get_all_users(context)
