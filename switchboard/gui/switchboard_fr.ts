@@ -3,52 +3,47 @@
 <context>
     <name>BaseEngine</name>
     <message>
-        <location filename="baseengine.cpp" line="381"/>
-        <source>Connection lost with Presence Server</source>
-        <translation type="obsolete">Connexion perdue avec le serveur de présence</translation>
-    </message>
-    <message>
-        <location filename="baseengine.cpp" line="474"/>
+        <location filename="baseengine.cpp" line="476"/>
         <source>Connection refused</source>
         <translation>Connexion refusée</translation>
     </message>
     <message>
-        <location filename="baseengine.cpp" line="483"/>
+        <location filename="baseengine.cpp" line="485"/>
         <source>Host not found</source>
         <translation>Hôte non trouvé</translation>
     </message>
     <message>
-        <location filename="baseengine.cpp" line="486"/>
+        <location filename="baseengine.cpp" line="488"/>
         <source>Unknown socket error</source>
         <translation>Erreur réseau inconnue</translation>
     </message>
     <message>
-        <location filename="baseengine.cpp" line="738"/>
+        <location filename="baseengine.cpp" line="746"/>
         <source>Peers&apos; status updated</source>
         <translation>Statut des postes mis à jour</translation>
     </message>
     <message>
-        <location filename="baseengine.cpp" line="659"/>
+        <location filename="baseengine.cpp" line="665"/>
         <source> said : </source>
         <translation> dit : </translation>
     </message>
     <message>
-        <location filename="baseengine.cpp" line="659"/>
+        <location filename="baseengine.cpp" line="665"/>
         <source>Unknown</source>
         <translation>Inconnu</translation>
     </message>
     <message>
-        <location filename="baseengine.cpp" line="1122"/>
+        <location filename="baseengine.cpp" line="1117"/>
         <source>Attempting to reconnect to server</source>
         <translation>Tentative de reconnexion au serveur</translation>
     </message>
     <message>
-        <location filename="baseengine.cpp" line="555"/>
+        <location filename="baseengine.cpp" line="557"/>
         <source>Unknown Number</source>
         <translation>Numéro Inconnu</translation>
     </message>
     <message>
-        <location filename="baseengine.cpp" line="648"/>
+        <location filename="baseengine.cpp" line="654"/>
         <source>Unknown CallerId</source>
         <translation>CallerId Inconnu</translation>
     </message>
@@ -63,24 +58,24 @@
         <translation>Impossible de lancer le serveur: %1.</translation>
     </message>
     <message>
-        <location filename="baseengine.cpp" line="443"/>
+        <location filename="baseengine.cpp" line="445"/>
         <source>Connection lost with XIVO Daemon</source>
         <translation>Connexion perdue avec le Daemon XIVO</translation>
     </message>
     <message>
-        <location filename="baseengine.cpp" line="1400"/>
+        <location filename="baseengine.cpp" line="1395"/>
         <source>Version Error</source>
         <translation>Erreur de Version</translation>
     </message>
     <message>
-        <location filename="baseengine.cpp" line="1401"/>
+        <location filename="baseengine.cpp" line="1396"/>
         <source>Your server version is %1 which is too old.
 </source>
         <translation>La version de votre serveur est trop ancienne : %1.
 </translation>
     </message>
     <message>
-        <location filename="baseengine.cpp" line="1402"/>
+        <location filename="baseengine.cpp" line="1397"/>
         <source>The required one is at least %1.</source>
         <translation>Celle requise est au moins %1.</translation>
     </message>
@@ -212,7 +207,7 @@
 <context>
     <name>DialPanel</name>
     <message>
-        <location filename="dialpanel.cpp" line="56"/>
+        <location filename="dialpanel.cpp" line="57"/>
         <source>Dial</source>
         <translation>Composer</translation>
     </message>
@@ -222,7 +217,7 @@
         <translation>&amp;Numéro :</translation>
     </message>
     <message>
-        <location filename="dialpanel.cpp" line="47"/>
+        <location filename="dialpanel.cpp" line="48"/>
         <source>Input here the phone number to dial</source>
         <translation>Tapez ici le numéro à appeler</translation>
     </message>
@@ -415,27 +410,27 @@
         <translation>Services</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="552"/>
+        <location filename="mainwidget.cpp" line="554"/>
         <source>About XIVO SwitchBoard</source>
         <translation>A propos du SwitchBoard XIVO</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="556"/>
+        <location filename="mainwidget.cpp" line="558"/>
         <source>&lt;p&gt;This application displays the status of the ongoing phone calls.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Cette application affiche le statut des appels téléphoniques en cours.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="556"/>
+        <location filename="mainwidget.cpp" line="558"/>
         <source>Version : </source>
         <translation>Version : </translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="564"/>
+        <location filename="mainwidget.cpp" line="566"/>
         <source>Authors : </source>
         <translation>Auteurs : </translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="565"/>
+        <location filename="mainwidget.cpp" line="567"/>
         <source>License : </source>
         <translation>Licence : </translation>
     </message>
@@ -443,17 +438,17 @@
 <context>
     <name>PeerWidget</name>
     <message>
-        <location filename="peerwidget.cpp" line="93"/>
+        <location filename="peerwidget.cpp" line="94"/>
         <source>&amp;Remove</source>
         <translation>&amp;Enlever</translation>
     </message>
     <message>
-        <location filename="peerwidget.cpp" line="94"/>
+        <location filename="peerwidget.cpp" line="95"/>
         <source>Remove this peer from the panel</source>
         <translation>Enlever ce poste du tableau</translation>
     </message>
     <message>
-        <location filename="peerwidget.cpp" line="352"/>
+        <location filename="peerwidget.cpp" line="353"/>
         <source>&amp;Intercept</source>
         <translation>&amp;Intercepter</translation>
     </message>
@@ -463,22 +458,22 @@
         <translation>Présence SIP : </translation>
     </message>
     <message>
-        <location filename="peerwidget.cpp" line="353"/>
+        <location filename="peerwidget.cpp" line="354"/>
         <source>&amp;Hangup</source>
         <translation>&amp;Raccrocher</translation>
     </message>
     <message>
-        <location filename="peerwidget.cpp" line="97"/>
+        <location filename="peerwidget.cpp" line="98"/>
         <source>&amp;Call</source>
         <translation>&amp;Appeler</translation>
     </message>
     <message>
-        <location filename="peerwidget.cpp" line="98"/>
+        <location filename="peerwidget.cpp" line="99"/>
         <source>Call this peer</source>
         <translation>Appeler ce poste</translation>
     </message>
     <message>
-        <location filename="peerwidget.cpp" line="367"/>
+        <location filename="peerwidget.cpp" line="368"/>
         <source>&amp;Transfer</source>
         <translation>&amp;Transférer</translation>
     </message>
@@ -551,24 +546,29 @@
 <context>
     <name>Popup</name>
     <message>
-        <location filename="../../xivoclient/gui/popup.cpp" line="56"/>
+        <location filename="../../xivoclient/gui/popup.cpp" line="57"/>
         <source>Incoming call</source>
         <translation>Appel entrant</translation>
     </message>
     <message>
-        <location filename="../../xivoclient/gui/popup.cpp" line="63"/>
+        <location filename="../../xivoclient/gui/popup.cpp" line="64"/>
         <source>&amp;Answer</source>
         <translation>Répo&amp;ndre</translation>
     </message>
     <message>
-        <location filename="../../xivoclient/gui/popup.cpp" line="66"/>
-        <source>&amp;Dismiss</source>
+        <location filename="../../xivoclient/gui/popup.cpp" line="73"/>
+        <source>&amp;Close</source>
+        <translation>&amp;Fermer</translation>
+    </message>
+    <message>
+        <location filename="../../xivoclient/gui/popup.cpp" line="67"/>
+        <source>Di&amp;smiss</source>
         <translation>Ref&amp;user</translation>
     </message>
     <message>
-        <location filename="../../xivoclient/gui/popup.cpp" line="69"/>
-        <source>&amp;Close</source>
-        <translation>&amp;Fermer</translation>
+        <location filename="../../xivoclient/gui/popup.cpp" line="70"/>
+        <source>&amp;Dial</source>
+        <translation>&amp;Composer</translation>
     </message>
 </context>
 <context>
