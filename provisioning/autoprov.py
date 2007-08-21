@@ -460,6 +460,7 @@ def __provisioning(mode, ctx, phone):
 
 	    if "iduserfeatures" in phone and phone["iduserfeatures"] == "0":
 		    syslogf("__provisioning(): reinitializing provisioning to GUEST for phone %s" % (str(phone),))
+                    phone["isinalan"] = 0
 		    prov_inst.generate_reinitprov()
 		    __save_phone(mode, ctx, phone, None)
 		    prov_inst.action_reinit()
@@ -715,14 +716,25 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 		   self.posted["mode"] == "informative":
 			syslogf("handle_prov(): creating phone internal representation using full posted infos.")
 			phone = self.posted_phone_infos()
-                        if "isinalan" not in phone:
-                            phone["isinalan"] = 0
+			phonetype = self.my_infos.type_by_macaddr(phone["macaddr"])
+			phonedesc = self.my_infos.phone_by_macaddr(phone["macaddr"])
+                        isinalan = provsup.elem_or_none(phonedesc, "isinalan")
+                        if 'isinalan' not in phone:
+                                if isinalan is None:
+                                        phone["isinalan"] = 0
+                                else:
+                                        phone["isinalan"] = isinalan
 			lock_and_provision(self.posted['mode'], self.my_ctx, phone)
 		elif self.posted["mode"] == "notification":
 			syslogf("handle_prov(): creating phone internal representation using light posted infos.")
 			phone = self.posted_light_infos()
 			phonetype = self.my_infos.type_by_macaddr(phone["macaddr"])
-                        phone["isinalan"] = provsup.elem_or_none(phonetype, "isinalan")
+			phonedesc = self.my_infos.phone_by_macaddr(phone["macaddr"])
+                        isinalan = provsup.elem_or_none(phonedesc, "isinalan")
+                        if isinalan is None:
+                                phone["isinalan"] = 0
+                        else:
+                                phone["isinalan"] = isinalan
 			phone["vendor"] = provsup.elem_or_none(phonetype, "vendor")
 			phone["model"] = provsup.elem_or_none(phonetype, "model")
 			lock_and_provision(self.posted['mode'], self.my_ctx, phone)
