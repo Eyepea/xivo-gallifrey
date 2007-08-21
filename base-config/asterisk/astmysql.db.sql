@@ -372,7 +372,7 @@ INSERT INTO `extensions` VALUES(NULL,0,'features','_*23',1,'Macro','features|FWD
 INSERT INTO `extensions` VALUES(NULL,0,'features','_*21.',1,'Answer','','fwdunc');
 INSERT INTO `extensions` VALUES(NULL,0,'features','_*21.',2,'Wait',0.5,'fwdunc');
 INSERT INTO `extensions` VALUES(NULL,0,'features','_*21.',3,'Set','USER=${CALLERID(num)}','fwdunc');
-INSERT INTO `extensions` VALUES(NULL,0,'features','_*21.',4,'Macro','antiloops|${USER}|${CONTEXT}','fwdunc');
+INSERT INTO `extensions` VALUES(NULL,0,'features','_*21.',4,'Macro','antiloops','fwdunc');
 INSERT INTO `extensions` VALUES(NULL,0,'features','_*21.',5,'Set','DB(${CONTEXT}/users/${USER}/FWD/Unc/Number)=${EXTEN:3}','fwdunc');
 INSERT INTO `extensions` VALUES(NULL,0,'features','_*21.',6,'Set','DB(${CONTEXT}/users/${USER}/FWD/Unc/Status)=1','fwdunc');
 INSERT INTO `extensions` VALUES(NULL,0,'features','_*21.',7,'Playback','forward-on','fwdunc');
@@ -380,7 +380,7 @@ INSERT INTO `extensions` VALUES(NULL,0,'features','_*21.',8,'Hangup','','fwdunc'
 INSERT INTO `extensions` VALUES(NULL,0,'features','_*22.',1,'Answer','','fwdrna');
 INSERT INTO `extensions` VALUES(NULL,0,'features','_*22.',2,'Wait',0.5,'fwdrna');
 INSERT INTO `extensions` VALUES(NULL,0,'features','_*22.',3,'Set','USER=${CALLERID(num)}','fwdrna');
-INSERT INTO `extensions` VALUES(NULL,0,'features','_*22.',4,'Macro','antiloops|${USER}|${CONTEXT}','fwdrna');
+INSERT INTO `extensions` VALUES(NULL,0,'features','_*22.',4,'Macro','antiloops','fwdrna');
 INSERT INTO `extensions` VALUES(NULL,0,'features','_*22.',5,'Set','DB(${CONTEXT}/users/${USER}/FWD/RNA/Number)=${EXTEN:3}','fwdrna');
 INSERT INTO `extensions` VALUES(NULL,0,'features','_*22.',6,'Set','DB(${CONTEXT}/users/${USER}/FWD/RNA/Status)=1','fwdrna');
 INSERT INTO `extensions` VALUES(NULL,0,'features','_*22.',7,'Playback','forward-on','fwdrna');
@@ -388,7 +388,7 @@ INSERT INTO `extensions` VALUES(NULL,0,'features','_*22.',8,'Hangup','','fwdrna'
 INSERT INTO `extensions` VALUES(NULL,0,'features','_*23.',1,'Answer','','fwdbusy');
 INSERT INTO `extensions` VALUES(NULL,0,'features','_*23.',2,'Wait',0.5,'fwdbusy');
 INSERT INTO `extensions` VALUES(NULL,0,'features','_*23.',3,'Set','USER=${CALLERID(num)}','fwdbusy');
-INSERT INTO `extensions` VALUES(NULL,0,'features','_*23.',4,'Macro','antiloops|${USER}|${CONTEXT}','fwdbusy');
+INSERT INTO `extensions` VALUES(NULL,0,'features','_*23.',4,'Macro','antiloops','fwdbusy');
 INSERT INTO `extensions` VALUES(NULL,0,'features','_*23.',5,'Set','DB(${CONTEXT}/users/${USER}/FWD/Busy/Number)=${EXTEN:3}','fwdbusy');
 INSERT INTO `extensions` VALUES(NULL,0,'features','_*23.',6,'Set','DB(${CONTEXT}/users/${USER}/FWD/Busy/Status)=1','fwdbusy');
 INSERT INTO `extensions` VALUES(NULL,0,'features','_*23.',7,'Playback','forward-on','fwdbusy');
