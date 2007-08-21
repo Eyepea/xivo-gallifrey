@@ -41,7 +41,7 @@ bool XmlHandler::startElement( const QString & /*namespaceURI*/,
                                const QString & /*qName*/,
                                const QXmlAttributes & atts )
 {
-	qDebug() << "XmlHandler::startElement(" << localName << ")";
+	//qDebug() << "XmlHandler::startElement()" << localName;
 	if( localName == "info" )
 	{
 		m_isParsingInfo = true;
@@ -70,11 +70,11 @@ bool XmlHandler::endElement( const QString & /*namespaceURI*/,
                              const QString & localName,
                              const QString & /*qName*/)
 {
-	qDebug() << "endElement(" << localName << ")";
+	//qDebug() << "XmlHandler::endElement()" << localName;
 	m_isParsingInfo = false;
 	if( localName == QString("info") )
 	{
-		qDebug() << m_infoType << m_infoName << m_infoValue;
+		qDebug() << "XmlHandler::endElement()" << m_infoType << m_infoName << m_infoValue;
 		if( m_infoType == QString("text") )
 		{
 			if(m_popup)

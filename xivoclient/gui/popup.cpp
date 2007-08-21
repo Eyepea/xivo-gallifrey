@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QIcon>
 #include <QPushButton>
 #include <QDebug>
+
 #include "popup.h"
 #include "xmlhandler.h"
 #include "remotepicwidget.h"
@@ -35,9 +36,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  * \param parent		parent widget
  */
 Popup::Popup(QIODevice *inputstream, const QString & sessionid, QWidget *parent)
-: QWidget(parent), m_inputstream(inputstream),
-  m_xmlInputSource(inputstream), m_handler(this),
-  m_sessionid(sessionid)
+        : QWidget(parent), m_inputstream(inputstream),
+          m_xmlInputSource(inputstream), m_handler(this),
+          m_sessionid(sessionid)
 {
 	qDebug() << "Popup(" << inputstream << ")";
 	setAttribute(Qt::WA_DeleteOnClose);
@@ -63,12 +64,16 @@ Popup::Popup(QIODevice *inputstream, const QString & sessionid, QWidget *parent)
 		QPushButton * btn1 = new QPushButton(tr("&Answer"), this);
 		btn1->setEnabled(false);
 		hlayout->addWidget(btn1);
-		QPushButton * btn2 = new QPushButton(tr("&Dismiss"), this);
+		QPushButton * btn2 = new QPushButton(tr("Di&smiss"), this);
 		btn2->setEnabled(false);
 		hlayout->addWidget(btn2);
-		QPushButton * btn3 = new QPushButton(tr("&Close"), this);
-		connect( btn3, SIGNAL(clicked()), this, SLOT(close()) );
+		QPushButton * btn3 = new QPushButton(tr("&Dial"), this);
+                connect( btn3, SIGNAL(clicked()), this, SLOT(dialThisNumber()) );
 		hlayout->addWidget(btn3);
+		QPushButton * btn4 = new QPushButton(tr("&Close"), this);
+		connect( btn4, SIGNAL(clicked()), this, SLOT(close()) );
+		hlayout->addWidget(btn4);
+
 		m_vlayout->addLayout(hlayout);
 	}
 	setWindowIcon(QIcon(":/xivoicon.png"));
@@ -89,6 +94,8 @@ void Popup::addInfoText(const QString & name, const QString & value)
 void Popup::addInfoPhone(const QString & name, const QString & value)
 {
 	// at the moment we are not doing anything special...
+        qDebug() << "Popup::addInfoPhone()" << value;
+        m_callernum = value;
 	addInfoText(name, value);
 }
 
@@ -139,6 +146,12 @@ void Popup::streamNewData()
 		m_parsingStarted = b;
 	}
 	qDebug() << "parse returned" << b;
+}
+
+void Popup::dialThisNumber()
+{
+	qDebug() << "Popup::dialThisNumber()" << m_callernum;
+        emitDial(m_callernum);
 }
 
 void Popup::streamAboutToClose()

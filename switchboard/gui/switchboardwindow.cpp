@@ -23,13 +23,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 */
 
 #include <QDebug>
-#include <QLabel>
 #include <QGridLayout>
-#include <QPushButton>
-#include <QToolTip>
-#include <QPoint>
-#include <QSettings>
+#include <QLabel>
 #include <QMouseEvent>
+#include <QPoint>
+#include <QPushButton>
+#include <QSettings>
+#include <QToolTip>
+
 #include "switchboardwindow.h"
 #include "baseengine.h"
 #include "peerwidget.h"

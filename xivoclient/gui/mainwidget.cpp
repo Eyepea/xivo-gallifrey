@@ -79,7 +79,6 @@ MainWidget::MainWidget(BaseEngine *engine, QWidget * parent)
                  this, SLOT(setDisconnected()) );
 	connect( m_engine, SIGNAL(newProfile(Popup *)),
 	         this, SLOT(showNewProfile(Popup *)) );
-	
 
         // to be better defined
 	resize(500, 400);
@@ -629,6 +628,8 @@ void MainWidget::showNewProfile(Popup * popup)
 			// close the first widget
 			m_tabwidget->widget(0)->close();
 		}
+                connect( popup, SIGNAL(emitDial(const QString &)),
+                         m_engine, SLOT(dialExtension(const QString &)) );
 		// show the window and give it the focus.
 		setVisible(true);
 		activateWindow();

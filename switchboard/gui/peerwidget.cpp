@@ -84,6 +84,7 @@ PeerWidget::PeerWidget(const QString & id, const QString & name,
 	// set TextInteraction Flags so the mouse clicks are not catched by the
 	// QLabel widget
 	m_textlbl->setTextInteractionFlags( Qt::NoTextInteraction );
+	//m_textlbl->setFrameStyle(QFrame::StyledPanel);
 	layout->addWidget( m_textlbl, 0, 2, Qt::AlignLeft );
 	layout->setColumnStretch(0, 0);
 	layout->setColumnStretch(1, 0);

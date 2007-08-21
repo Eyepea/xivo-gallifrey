@@ -195,12 +195,12 @@ MainWidget::MainWidget(BaseEngine * engine, QWidget * parent)
 	connect( m_engine, SIGNAL(newProfile(Popup *)),
 	         this, SLOT(showNewProfile(Popup *)) );
 
-	DialPanel * dialpanel = new DialPanel(m_rightSplitter);
-	connect( dialpanel, SIGNAL(emitDial(const QString &)),
+        m_dialpanel = new DialPanel(m_rightSplitter);
+	connect( m_dialpanel, SIGNAL(emitDial(const QString &)),
 	         m_engine, SLOT(dialExtension(const QString &)) );
-        connect( dialpanel, SIGNAL(originateCall(const QString&, const QString&)),
+        connect( m_dialpanel, SIGNAL(originateCall(const QString&, const QString&)),
 	         m_engine, SLOT(originateCall(const QString&, const QString&)) );
-	connect( dialpanel, SIGNAL(textEdited(const QString &)),
+	connect( m_dialpanel, SIGNAL(textEdited(const QString &)),
                  m_engine, SLOT(textEdited(const QString &)) );
 
 	setCentralWidget(m_splitter);
@@ -528,6 +528,8 @@ void MainWidget::showNewProfile(Popup * popup)
 			// close the first widget
 			m_tabwidget->widget(0)->close();
 		}
+                connect( popup, SIGNAL(emitDial(const QString &)),
+                         m_engine, SLOT(dialExtension(const QString &)) );
 		// show the window and give it the focus.
 		setVisible(true);
 		activateWindow();

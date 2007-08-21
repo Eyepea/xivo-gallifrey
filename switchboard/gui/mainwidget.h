@@ -32,6 +32,7 @@ class QCloseEvent;
 class QLabel;
 
 class BaseEngine;
+class DialPanel;
 class CallStackWidget;
 class LogWidget;
 class Popup;
@@ -74,6 +75,7 @@ private:
 	LogWidget * m_logwidget;
 	CallStackWidget * calls;
 
+        DialPanel * m_dialpanel;
 	int m_tablimit;		//!< Maximum number of tabs in m_tabwidget
 
 	QMenu * m_avail;	//!< Availability submenu

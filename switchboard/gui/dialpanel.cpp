@@ -40,10 +40,11 @@ DialPanel::DialPanel(QWidget * parent)
 {
 	QHBoxLayout * vlayout = new QHBoxLayout(this);
 	vlayout->setMargin(0);
-	QLabel * lbl = new QLabel( tr("Enter &Number :"), this );
+        m_lbl = new QLabel( tr("Enter &Number :"), this );
+	//m_lbl->setFrameStyle(QFrame::StyledPanel);
 	//m_input = new QLineEdit( this );
 	m_input = new QComboBox( this );
-	lbl->setBuddy(m_input);
+	m_lbl->setBuddy(m_input);
 	m_input->setStatusTip( tr("Input here the phone number to dial") );
 	m_input->setEditable( true );
 	m_input->setMinimumContentsLength( 15 );
@@ -59,7 +60,7 @@ DialPanel::DialPanel(QWidget * parent)
 
         setAcceptDrops(true);
 
-	vlayout->addWidget( lbl, 0, Qt::AlignCenter );
+	vlayout->addWidget( m_lbl, 0, Qt::AlignCenter );
 	vlayout->addWidget( m_input, 0, Qt::AlignCenter );
 	vlayout->addWidget( dialButton, 0, Qt::AlignCenter );
 }

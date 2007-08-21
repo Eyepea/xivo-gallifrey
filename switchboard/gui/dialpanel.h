@@ -23,10 +23,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QWidget>
 #include <QList>
 
-class QVBoxLayout;
-class QLineEdit;
 class QComboBox;
+class QLabel;
+class QLineEdit;
 class QMouseEvent;
+class QVBoxLayout;
 
 /*! \brief Simple widget to enter a number and dial it
  */
@@ -48,6 +49,7 @@ signals:
 	void originateCall(const QString &, const QString &);   	//!< originates a number
 private:
 	//QLineEdit * m_input;
+        QLabel * m_lbl;
 	QComboBox * m_input;	//!< input widget
 };
 

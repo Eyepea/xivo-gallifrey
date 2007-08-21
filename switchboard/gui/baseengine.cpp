@@ -729,16 +729,17 @@ void BaseEngine::socketReadyRead()
                         // we get here when receiving a customer info in tcp mode
                         qDebug() << "BaseEngine::socketReadyRead() (FICHE)" << line;
                         QBuffer * inputstream = new QBuffer(this);
-                        Popup * popup = new Popup(inputstream, "aaa");
-                        connect( popup, SIGNAL(destroyed(QObject *)),
-                                 this, SLOT(popupDestroyed(QObject *)) );
-                        connect( popup, SIGNAL(wantsToBeShown(Popup *)),
-                                 this, SLOT(profileToBeShown(Popup *)) );
 
                         inputstream->open(QIODevice::ReadWrite);
                         qDebug() << "BaseEngine::socketReadyRead()" << inputstream->openMode();
                         inputstream->write(line.toUtf8());
                         inputstream->close();
+
+                        Popup * popup = new Popup(inputstream, "aaa");
+                        connect( popup, SIGNAL(destroyed(QObject *)),
+                                 this, SLOT(popupDestroyed(QObject *)) );
+                        connect( popup, SIGNAL(wantsToBeShown(Popup *)),
+                                 this, SLOT(profileToBeShown(Popup *)) );
                 }
 	}
 	if(b)
@@ -1451,6 +1452,7 @@ void BaseEngine::popupDestroyed(QObject * obj)
 
 void BaseEngine::profileToBeShown(Popup * popup)
 {
+        qDebug() << "BaseEngine::profileToBeShown()";
 	newProfile( popup );
 }
 

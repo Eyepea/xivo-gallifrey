@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include "peerslayout.h"
 
 PeersLayout::PeersLayout(QWidget * parent)
-: QLayout(parent), m_nb_rows(0), m_nb_columns(0)
+        : QLayout(parent), m_nb_rows(0), m_nb_columns(0)
 {
 	//qDebug() << "PeersLayout::PeersLayout(" << parent << ")";
 }
