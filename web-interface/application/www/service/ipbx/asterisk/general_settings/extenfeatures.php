@@ -30,9 +30,10 @@ if(isset($_QR['fm_send']) === true && ($arr = xivo_get_aks($element)) !== false)
 		}
 	
 		$exten_numbers['exten'] = $_QR[$key];
+		$exten_numbers['context'] = '';
 
-		if(($rs_extenumbers = $extenumbers->chk_values($exten_numbers)) === false
-		|| ($rs_extenfeatures = $extenfeatures->chk_value($key,$rs_extenumbers['exten'])) === false)
+		if(($extenumbers_rs = $extenumbers->chk_values($exten_numbers)) === false
+		|| ($extenfeatures_rs = $extenfeatures->chk_value($key,$extenumbers_rs['exten'])) === false)
 		{
 			$result[$key] = '';
 			$error[] = $key;
@@ -43,7 +44,7 @@ if(isset($_QR['fm_send']) === true && ($arr = xivo_get_aks($element)) !== false)
 
 		if(isset($info[$key]) === false)
 		{
-			if($extenumbers->exists($rs_extenumbers) !== false)
+			if($extenumbers->exists($extenumbers_rs) !== false)
 			{
 				$result[$key] = '';
 				$error[] = $key;
@@ -58,7 +59,7 @@ if(isset($_QR['fm_send']) === true && ($arr = xivo_get_aks($element)) !== false)
 			if(($extenumbersid = $extenumbers->get_id($exten_where)) === false)
 				$extenumbersid = null;
 
-			if($extenumbers->exists($rs_extenumbers,$extenumbersid) !== false)
+			if($extenumbers->exists($extenumbers_rs,$extenumbersid) !== false)
 			{
 				$result[$key] = '';
 				$error[] = $key;
@@ -68,23 +69,23 @@ if(isset($_QR['fm_send']) === true && ($arr = xivo_get_aks($element)) !== false)
 
 		if($extenumbersid === false || $extenumbersid === null)
 		{
-			if($extenumbers->add($rs_extenumbers) === false)
+			if($extenumbers->add($extenumbers_rs) === false)
 			{
 				$result[$key] = '';
 				$error[] = $key;
 				continue;
 			}
 		}
-		else if($extenumbers->edit($extenumbersid,$rs_extenumbers) === false)
+		else if($extenumbers->edit($extenumbersid,$extenumbers_rs) === false)
 		{
 			$result[$key] = '';
 			$error[] = $key;
 			continue;
 		}
 
-		$extenfeatures->replace_exten_by_name($key,$rs_extenfeatures);
+		$extenfeatures->replace_exten_by_name($key,$extenfeatures_rs);
 
-		$result[$key] = $rs_extenfeatures;
+		$result[$key] = $extenfeatures_rs;
 
 		if(isset($result[$key]{0}) === true && $result[$key]{0} === '_')
 			$result[$key] = substr($result[$key],1);

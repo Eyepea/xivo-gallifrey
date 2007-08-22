@@ -382,53 +382,40 @@ class xivo_tpl
 		include($this->get_option('tpl_path').XIVO_SEP_DIR.$this->get_file('structure'));
 	}
 
-	function display($page,$overload_i18n=false,$sep_dir=false,$ext='')
+	function display($page,$overload_i18n=false,$ext='')
 	{
-		$sep_dir = (bool) $sep_dir;
-		$page = $sep_dir === false ? ltrim((string) $page,XIVO_SEP_DIR) : (string) $page;
 		$overload_i18n = (bool) $overload_i18n;
 		$ext = (string) $ext;
+
+		if(xivo_haslen($page) === false)
+			return(false);
 
 		if($ext === '')
 			$ext = 'php';
 
-		if($sep_dir === false)
-			$page = XIVO_SEP_DIR.'struct'.XIVO_SEP_DIR.'page'.XIVO_SEP_DIR.$page.'.'.$ext;
-		else
+		if($page{0} === XIVO_SEP_DIR)
 			$page .= '.'.$ext;
+		else
+			$page = XIVO_SEP_DIR.'struct'.XIVO_SEP_DIR.'page'.XIVO_SEP_DIR.$page.'.'.$ext;
 
 		$path = $this->get_option('tpl_path').$page;
 
 		if($overload_i18n === true)
 			$this->set_option('overload_i18n',true);
 
-		if(xivo_file::is_i($path) === true)
-		{
-			$this->set_file('display',$path);
-
-			$this->load_i18n_file($page);
-
-			unset($page,$path);
-	
-			if($this->get_option('overload_i18n') === true)
-			{
-				ob_start();
-
-				if(xivo_file::is_i($this->get_option('tpl_path').XIVO_SEP_DIR.'prepend.'.$ext) === true)
-					include($this->get_option('tpl_path').XIVO_SEP_DIR.'prepend.'.$ext);
-
-				include($this->get_file('display'));
-
-				if(xivo_file::is_i($this->get_option('tpl_path').XIVO_SEP_DIR.'append.'.$ext) === true)
-					include($this->get_option('tpl_path').XIVO_SEP_DIR.'append.'.$ext);
-
-				ob_end_clean();
-
-				$this->set_option('overload_i18n',false);
-			}
-
-			ob_start();
+		if(xivo_file::is_i($path) === false)
+			return(false);
 		
+		$this->set_file('display',$path);
+
+		$this->load_i18n_file($page);
+
+		unset($page,$path);
+	
+		if($this->get_option('overload_i18n') === true)
+		{
+			ob_start();
+
 			if(xivo_file::is_i($this->get_option('tpl_path').XIVO_SEP_DIR.'prepend.'.$ext) === true)
 				include($this->get_option('tpl_path').XIVO_SEP_DIR.'prepend.'.$ext);
 
@@ -437,8 +424,22 @@ class xivo_tpl
 			if(xivo_file::is_i($this->get_option('tpl_path').XIVO_SEP_DIR.'append.'.$ext) === true)
 				include($this->get_option('tpl_path').XIVO_SEP_DIR.'append.'.$ext);
 
-			ob_end_flush();
+			ob_end_clean();
+
+			$this->set_option('overload_i18n',false);
 		}
+
+		ob_start();
+		
+		if(xivo_file::is_i($this->get_option('tpl_path').XIVO_SEP_DIR.'prepend.'.$ext) === true)
+			include($this->get_option('tpl_path').XIVO_SEP_DIR.'prepend.'.$ext);
+
+		include($this->get_file('display'));
+
+		if(xivo_file::is_i($this->get_option('tpl_path').XIVO_SEP_DIR.'append.'.$ext) === true)
+			include($this->get_option('tpl_path').XIVO_SEP_DIR.'append.'.$ext);
+
+		ob_end_flush();
 	}
 
 	function file_include($file,$arr=array(),$ext='')

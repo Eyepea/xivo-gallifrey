@@ -16,3 +16,5 @@
 #s-asterisk #sr-cdr .sb-list table .cdr-infos dl {width: 50%; float: left;text-align: left;}
 #s-asterisk #sr-cdr .sb-list table .cdr-infos dt {padding-right: 2px;display: inline;font-weight: bold;}
 #s-asterisk #sr-cdr .sb-list table .cdr-infos dd {display: inline;}
+#s-asterisk #sr-cdr #cal-dbeg {margin: 2px 0px 0px 220px;position: absolute;}
+#s-asterisk #sr-cdr #cal-dend {margin: 2px 0px 0px 415px;position: absolute;} 

@@ -2,17 +2,10 @@
 
 ; load conf/user
 
+; load conf/date
+
 ; html_title
 XIVO
-
-; date_format_yymmdd
-%d/%m/%Y
-
-; date_format_yymmddhhiiss
-%d/%m/%Y %H:%M:%S
-
-; date_format_hhiiss
-%H:%M:%S
 
 ; page_next
 Page suivante

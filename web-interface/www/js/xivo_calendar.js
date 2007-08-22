@@ -1,0 +1,249 @@
+function xivo_calendar_calc(d)
+{
+	if((d instanceof Date) == false)
+		d = new Date();
+
+	var r = new Array();
+
+	r['slt'] = new Array();
+	r['slt']['year'] = d.getFullYear();
+	r['slt']['month'] = d.getMonth();
+	r['slt']['realmonth'] = d.getMonth()+1;
+	r['slt']['day'] = d.getDate();
+	r['slt']['str'] = r['slt']['year'];
+	r['slt']['str'] += '-'+xivo_leadzero(r['slt']['realmonth']);
+	r['slt']['str'] += '-'+xivo_leadzero(r['slt']['day']);
+
+	r['time'] = d.getTime();
+
+	r['cal'] = new Array();
+
+	d.setDate(1);
+	var day = d.getDay();
+
+	if(day == 0)
+		day = -5;
+	else
+		day -= ((day - 1) * 2);
+
+	d.setDate(day);
+
+	var dateb = d.getDate();
+	var time = d.getTime();
+
+	for(i = 0;i < 42;i++)
+	{
+		d.setDate(dateb + i);
+		
+		r['cal'][i] = new Array();
+
+		r['cal'][i]['year'] = d.getFullYear();
+		r['cal'][i]['month'] = d.getMonth();
+		r['cal'][i]['realmonth'] = d.getMonth()+1;
+		r['cal'][i]['day'] = d.getDate();
+		r['cal'][i]['str'] = r['cal'][i]['year'];
+		r['cal'][i]['str'] += '-'+xivo_leadzero(r['cal'][i]['realmonth']);
+		r['cal'][i]['str'] += '-'+xivo_leadzero(r['cal'][i]['day']);
+
+		d.setTime(time);
+	}
+
+	return(r);
+}
+
+function xivo_calendar_html(disid,inid,str)
+{
+	if(xivo_is_undef(xivo_date_month) == true
+	|| xivo_is_undef(xivo_date_day) == true
+	|| xivo_is_array(xivo_date_month) == false 
+	|| xivo_is_array(xivo_date_day) == false
+	|| xivo_eid(disid) == false
+	|| xivo_eid(inid) == false)
+		return(false);
+
+	var t = new Date();
+	var d = new Date();
+	var rstr = '';
+
+	if(xivo_is_undef(str) == false && xivo_is_string(str) == true)
+	{
+		var result = str.match(/^(2[0-9]{3})(?:-(0?[1-9]|1[0-2])(?:-(0?[1-9]|1[0-9]|2[0-9]|3[0-1]))?)?$/);
+
+		if(result != null && xivo_is_undef(result[1]) == false && result[1] != '')
+		{
+			d.setYear(result[1]);
+			if(xivo_is_undef(result[2]) == false && result[2] != '')
+			{
+				d.setMonth(result[2]-1);
+
+				if(xivo_is_undef(result[3]) == false && result[3] != '')
+					d.setDate(result[3]);
+				else
+					d.setDate(1);
+			}
+			else
+				d.setMonth(0);
+		}
+
+		if(d == 'Invalid Date')
+			d = new Date();
+		else if(result != null && xivo_is_undef(result[3]) == false && result[3] != '')
+			rstr = d.getFullYear()+'-'+xivo_leadzero(d.getMonth()+1)+'-'+xivo_leadzero(d.getDate());
+		else
+			rstr = '';
+	}
+
+	var arr = xivo_calendar_calc(d);
+	var classname = '';
+	var len = arr['cal'].length;
+
+	var r = '<div class="clearboth xivo-calendar">';
+
+	var prev = new Date();
+	prev.setTime(arr['time']);
+
+	if(prev.getMonth() == 0)
+	{
+		prev.setYear(prev.getFullYear()-1);
+		prev.setMonth(11);
+	}
+	else
+		prev.setMonth(prev.getMonth()-1);
+
+	var next = new Date();
+	next.setTime(arr['time']);
+
+	if(next.getMonth() == 11)
+	{
+		next.setYear(next.getFullYear()+1);
+		next.setMonth(0);
+	}
+	else
+		next.setMonth(next.getMonth()+1);
+
+	var valprev = prev.getFullYear()+'-'+xivo_leadzero(prev.getMonth()+1);
+	var valnext = next.getFullYear()+'-'+xivo_leadzero(next.getMonth()+1);
+
+	var onclick = 'xivo_calendar_prevnext(\''+disid+'\',\''+inid+'\',\''+valprev+'\'); return(false);';
+	
+	r += '<span class="cal-prev"><a href="#" onclick="'+onclick+'">&laquo;<\/a><\/span>';
+
+	onclick = 'xivo_calendar_select(\''+disid+'\',\''+inid+'\',\''+arr['slt']['year']+'-'+xivo_leadzero(arr['slt']['realmonth'])+'\');';
+
+	r += '<span class="cal-month-year"><a href="#" onclick="'+onclick+'">';
+	r += xivo_date_month[arr['slt']['month']]+' '+arr['slt']['year'];
+	r += '<\/a><\/span>';
+
+	onclick = 'xivo_calendar_prevnext(\''+disid+'\',\''+inid+'\',\''+valnext+'\'); return(false);';
+
+	r += '<span class="cal-next" onclick="'+onclick+'"><a href="#">&raquo;<\/a><\/span>';
+
+	r += '<table cellspacing="0" cellpadding="0" border="0" class="clearboth">';
+
+	r += '<tr>';
+	r += '<th class="cal-day-0">'+xivo_date_day[1].charAt(0).toUpperCase()+'<\/th>';
+	r += '<th class="cal-day-1">'+xivo_date_day[2].charAt(0).toUpperCase()+'<\/th>';
+	r += '<th class="cal-day-2">'+xivo_date_day[3].charAt(0).toUpperCase()+'<\/th>';
+	r += '<th class="cal-day-3">'+xivo_date_day[4].charAt(0).toUpperCase()+'<\/th>';
+	r += '<th class="cal-day-4">'+xivo_date_day[5].charAt(0).toUpperCase()+'<\/th>';
+	r += '<th class="cal-day-5">'+xivo_date_day[6].charAt(0).toUpperCase()+'<\/th>';
+	r += '<th class="cal-day-6">'+xivo_date_day[0].charAt(0).toUpperCase()+'<\/th>';
+	r += '<\/tr>';
+
+	onmov = 'onmouseover="this.tmp = this.className; this.className = \'cal-day-focus\';"';
+	onmoo = 'onmouseout="this.className = this.tmp;"';
+
+	for(i = 0,mod = 0;i < len;i++,mod = i % 7)
+	{
+		if(arr['cal'][i]['month'] < arr['slt']['month'])
+			classname = 'cal-prev-month';
+		else if(arr['cal'][i]['month'] > arr['slt']['month'])
+			classname = 'cal-next-month';
+		else
+			classname = 'cal-cur-month';
+
+		classname += ' cal-day-'+mod;
+
+		if(rstr == arr['cal'][i]['str'])
+			classname += ' cal-day-slt';
+
+		onclick = 'onclick="xivo_calendar_select(\''+disid+'\',\''+inid+'\',\''+arr['cal'][i]['str']+'\');"';
+
+		if(mod == 0)
+			r += '<tr>';
+
+			r += '<td '+onmov+' '+onmoo+' class="'+classname+'" '+onclick+'>';
+			r += arr['cal'][i]['day'];
+			r += '<\/td>';
+
+		if(mod == 6)
+			r += '<\/tr>';
+	}
+
+	r += '<\/table><\/div>';
+
+	return(r);
+}
+
+function xivo_calendar_select(disid,inid,str)
+{
+	if(xivo_is_undef(str) == false)
+		xivo_eid(inid).value = str;
+
+	xivo_eid(disid).style.display = 'none';
+}
+
+
+function xivo_calendar_prevnext(disid,inid,str)
+{
+	xivo_eid(disid).innerHTML = xivo_calendar_html(disid,inid,str);
+	xivo_eid(disid).style.display = 'block';
+}
+
+function xivo_calendar_display(disid,inid,display)
+{
+	if((disobj = xivo_eid(disid)) == false
+	|| (inobj = xivo_eid(inid)) == false
+	|| xivo_is_undef(inobj.value) == true)
+		return(false);
+
+	if(xivo_is_undef(display) == true)
+	{
+		if(disobj.style.display == 'block')
+			display = false;
+		else
+			display = true;
+	}
+	else
+		display = new Boolean(display);
+
+	if(display == false)
+		disobj.style.display = 'none';
+	else
+	{
+		disobj.style.display = 'block';
+		disobj.innerHTML = xivo_calendar_html(disid,inid,inobj.value);
+	}
+
+	return(true);
+}
+
+function xivo_calendar_body(disid,inid)
+{
+	if((body = xivo_eid('bc-body')) == false)
+		return(false);
+
+	if(xivo_is_undef(disid) == true
+	|| xivo_is_undef(inid) == true)
+		body.onclick = null;
+	else
+	{
+		body.onclick = function ()
+		{
+			if(xivo_eid(disid).style.display == 'block')
+				xivo_calendar_select(disid,inid);
+		}
+	}
+
+	return(true);
+}

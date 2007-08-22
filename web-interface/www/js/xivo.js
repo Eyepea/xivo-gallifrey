@@ -810,6 +810,14 @@ function xivo_clone(obj)
 	return(r);
 }
 
+function xivo_leadzero(n)
+{
+	if (n < 10)
+		n = '0' + n;
+
+	return(n);
+}
+
 function xivo_smenu_click(obj,cname,part,last)
 {
 	if(xivo_is_undef(obj.id) == true || obj.id == '' || xivo_smenu['click']['id'] == obj.id)

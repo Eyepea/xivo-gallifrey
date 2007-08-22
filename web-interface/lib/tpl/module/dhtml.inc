@@ -27,21 +27,24 @@ class xivo_tpl_dhtml extends xivo_tpl_module
 	function _add_file($type,$files,$where='')
 	{
 		$type = (string) $type;
-		$where = (string) $where;
 		$files = (array) $files;
+		$where = (string) $where;
 
 		if(($nb = count($files)) === 0)
 			return(null);
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			if(isset($files[$i]) === false)
+			if(xivo_haslen($files,$i) === false)
 				continue;
 
-			$file = 'bloc'.XIVO_SEP_DIR.ltrim((string) $files[$i],XIVO_SEP_DIR);
+			if($files[$i]{0} === XIVO_SEP_DIR)
+				$file = $files[$i];
+			else
+				$file = XIVO_SEP_DIR.'bloc'.XIVO_SEP_DIR.$files[$i];
 
 			if(xivo_issa($type,$this->_inc) === false
-			|| xivo_file::is_f_r($this->get_option('tpl_path').XIVO_SEP_DIR.$file) === false)
+			|| xivo_file::is_f_r($this->get_option('tpl_path').$file) === false)
 				continue;
 
 			if($where !== '')

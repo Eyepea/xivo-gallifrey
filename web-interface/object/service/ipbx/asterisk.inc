@@ -689,8 +689,6 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 	function get_did_list($disable=null)
 	{
-		$r = false;
-
 		$extensions = &$this->get_module('extensions');
 		$dfeatures = &$this->get_module('didfeatures');
 		$extenumbers = &$this->get_module('extenumbers');
@@ -701,7 +699,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 		$where['appdata'] = 'superdid';
 
 		if(($rs = $extensions->get_all_where($where,$disable)) === false || ($nb = count($rs)) === 0)
-			return($r);
+			return(false);
 
 		$r = $info = array();
 
@@ -727,6 +725,39 @@ class xivo_service_asterisk extends xivo_service_abstract
 		}
 
 		if(isset($r[0]) === false)
+			$r = false;
+
+		return($r);
+	}
+
+	function get_generaloutcall_list($type=null,$disable=null)
+	{
+		$generaloutcall = &$this->get_module('generaloutcall');
+		$extenumbers = &$this->get_module('extenumbers');
+
+		if($type !== null
+		&& ($elementype = $generaloutcall->get_element_value('type')) !== false
+		&& in_array($type,$elementype,true) !== false)
+			$rs = $generaloutcall->get_all_where(array('type' => $type),$disable);
+		else
+			$rs = $generaloutcall->get_all($disable);
+
+		if($rs === false || ($nb = count($rs)) === 0)
+			return(false);
+
+		$r = $info = array();
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			$info['generaloutcall'] = $rs[$i];
+
+			if(($info['extenumbers'] = $extenumbers->get($info['generaloutcall']['extenid'])) === false)
+				continue;
+
+			$r[$info['generaloutcall']['id']] = $info;
+		}
+
+		if(empty($r) === true)
 			$r = false;
 
 		return($r);

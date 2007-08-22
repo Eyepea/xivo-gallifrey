@@ -25,7 +25,7 @@ $array['element']['name']['default'] = '';
 $array['filter'] = array();
 $array['filter']['context'] = array('regexp' => '/^[a-z0-9_-]+$/','chk' => 2,'maxlen' => 39);
 $array['filter']['exten'] = array('minlen' => 1,'maxlen' => 40);
-$array['filter']['priority'] = array('cast' => 'int');
+$array['filter']['priority'] = array('cast' => 'uint','between' => array(1,255));
 $array['filter']['app'] = array('minlen' => 1,'maxlen' => 20);
 $array['filter']['appdata'] = array('set' => false,'chk' => 2,'minlen' => 0,'maxlen' => 128,'notag' => false);
 $array['filter']['name'] = array('set' => false,'chk' => 2,'maxlen' => 128);

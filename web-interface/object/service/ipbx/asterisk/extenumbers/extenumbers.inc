@@ -150,11 +150,9 @@ class xivo_service_asterisk_extenumbers extends xivo_service_asterisk_abstract
 
 				$context = xivo_haslen($arr,'context') === true ? $arr['context'] : '';
 
-				if(($whereid = $this->_dso->exists_exten($where,$context)) !== false)
-				{
-					if($id !== null && $whereid !== $id)
-						return(true);
-				}
+				if(($whereid = $this->_dso->exists_exten($where,$context)) !== false
+				&& ($id === null || ($id !== null && $whereid !== $id) === true) === true)
+					return(true);
 				break;
 			case 'range':
 				if(xivo_haslen($arr,'rangebeg') === false
@@ -165,11 +163,23 @@ class xivo_service_asterisk_extenumbers extends xivo_service_asterisk_abstract
 				$context = xivo_haslen($arr,'context') === true ? $arr['context'] : '';
 
 				if(($rangeid = $this->_dso->exists_range($arr['rangebeg'],$context)) !== false
-				&& $id !== null && $whereid !== $id)
+				&& ($id === null || ($id !== null && $rangeid !== $id) === true) === true)
 					return(true);
 
 				if(($rangeid = $this->_dso->exists_range($arr['rangeend'],$context)) !== false
-				&& $id !== null && $whereid !== $id)
+				&& ($id === null || ($id !== null && $rangeid !== $id) === true) === true)
+					return(true);
+
+				$where = array();
+				$where['extenmode'] = 'extension';
+				$where['exten'] = $arr['rangebeg'];
+
+				if($this->_dso->exists_exten($where,$context) !== false)
+					return(true);
+
+				$where['exten'] = $arr['rangeend'];
+
+				if($this->_dso->exists_exten($where,$context) !== false)
 					return(true);
 				break;
 			default:
@@ -282,6 +292,8 @@ class xivo_service_asterisk_extenumbers extends xivo_service_asterisk_abstract
 
 	function _clean_exten($str)
 	{
+		$str = preg_replace('/\[(\d)\]/','\\1',(string) $str);
+
 		if(isset($str{0}) === true && $str{0} === '_')
 		{
 			$substr = substr($str,1);

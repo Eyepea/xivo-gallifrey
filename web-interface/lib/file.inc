@@ -76,7 +76,7 @@ class xivo_file
 
 		header('Pragma: no-cache');
 		header('Expires: 0');
-		header('Last-Modified: ' . date('D, d M Y H:i:s',$this->info['mtime']) . ' GMT+1');
+		header('Last-Modified: '.date('D, d M Y H:i:s',$this->info['mtime']).' '.strftime('%Z'));
 		header('Cache-Control: must-revalidate');
 		header('Content-Type: '.$this->info['mime']);
 		header('Content-Length: '.$this->info['size']);

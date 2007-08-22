@@ -9,7 +9,7 @@ if($result === false)
 	die();
 
 header('Expires: 0');
-header('Last-Modified: '.gmdate('D, d M Y H:i:s',mktime()).' '.strftime('%z'));
+header('Last-Modified: '.date('D, d M Y H:i:s',mktime()).' '.strftime('%Z'));
 header('Cache-Control: must-revalidate');
 header('Content-Type: text/csv');
 header('Content-Disposition: attachment; filename=xivo_cdr-'.strftime('%Y-%m-%d-%H:%M:%S').'.csv');
