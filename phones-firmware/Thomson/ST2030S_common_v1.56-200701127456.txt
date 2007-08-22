@@ -104,9 +104,9 @@ TransportFlgBK1=0
 USRPhoneFlg=0
 UnRegister_priorFlgMP1=1
 UnRegister_priorFlgBK1=1
-VoiceMailAddr=
-VoiceMailTelNum=
-VoiceMailPort=
+VoiceMailAddr=192.168.0.254
+VoiceMailTelNum=*98
+VoiceMailPort=5060
 
 
 [sys]
