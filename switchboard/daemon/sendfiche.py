@@ -235,7 +235,9 @@ class FicheSender:
                                 socket.flush()
                         else:
                                 fiche.sendtouser(address)
-                        log_debug('fiche.sendtouser() finished')
+                        log_debug('the customer info has been sent')
+                else:
+                        log_debug('the customer info has not been sent because inavailable state %s' % state)
 
 
 def sendficheasync(userinfo, callerid, msg):

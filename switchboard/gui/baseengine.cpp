@@ -591,7 +591,6 @@ void BaseEngine::updateCallerids(const QStringList & liststatus)
 bool BaseEngine::parseCommand(const QStringList & listitems)
 {
 	QSettings settings;
-        bool b = false;
         if(listitems[0].toLower() == "callerids") {
                 QStringList listpeers = listitems[1].split(";");
                 for(int i = 0 ; i < listpeers.size() - 1; i++) {
@@ -637,8 +636,6 @@ bool BaseEngine::parseCommand(const QStringList & listitems)
                         updatePeers(liststatus);
                 }
 
-                b = true;
-
                 if(m_is_a_switchboard) {
                         callsUpdated();
                         QString myfullid = settings.value("monitor/peer").toString();
@@ -655,6 +652,9 @@ bool BaseEngine::parseCommand(const QStringList & listitems)
                         else
                                 monitorPeer(myfullid, myname);
                 }
+
+                emitTextMessage(tr("Peers' status updated"));
+
         } else if(listitems[0].toLower() == QString("message")) {
                 QTime currentTime = QTime::currentTime();
                 QStringList message = listitems[1].split("::");
@@ -664,26 +664,59 @@ bool BaseEngine::parseCommand(const QStringList & listitems)
                 } else {
                         emitTextMessage(tr("Unknown") + tr(" said : ") + listitems[1]);
                 }
-        } else if(listitems[0].toLower() == QString("featuresupdate")) {
-                QStringList listpeers = listitems[1].split(";");
-                if(listpeers.size() == 5)
-                        if((m_monitored_context == listpeers[0]) && (m_monitored_userid == listpeers[2]))
-                                initFeatureFields(listpeers[3], listpeers[4]);
-        } else if(listitems[0].toLower() == QString("featuresget")) {
-                QStringList listpeers = listitems[1].split(";");
-                disconnectFeatures();
-                resetFeatures();
-                if(listpeers.size() > 1)
-                        for(int i=0; i<listpeers.size()-1; i+=2)
-                                initFeatureFields(listpeers[i], listpeers[i+1]);
-                connectFeatures();
+        } else if((listitems[0].toLower() == QString("featuresupdate")) && (listitems.size() == 2)) {
+                QStringList featuresupdate_list = listitems[1].split(";");
+                qDebug() << featuresupdate_list;
+                if(featuresupdate_list.size() == 5)
+                        if((m_monitored_asterisk == featuresupdate_list[0]) &&
+                           (m_monitored_context  == featuresupdate_list[1]) &&
+                           (m_monitored_userid   == featuresupdate_list[2]))
+                                initFeatureFields(featuresupdate_list[3], featuresupdate_list[4]);
+        } else if((listitems[0].toLower() == QString("featuresget")) && (listitems.size() == 2)) {
+                if(listitems[1] != "KO") {
+                        QStringList features_list = listitems[1].split(";");
+                        disconnectFeatures();
+                        resetFeatures();
+                        if(features_list.size() > 1)
+                                for(int i=0; i<features_list.size()-1; i+=2)
+                                        initFeatureFields(features_list[i], features_list[i+1]);
+                        connectFeatures();
+                        emitTextMessage(tr("Received Services data."));
+                } else
+                        emitTextMessage(tr("Could not retrieve the Services data."));
         } else if(listitems[0].toLower() == QString("featuresput")) {
                 qDebug() << "received ack from featuresput :" << listitems;
         } else if((listitems[0] != "") && (listitems[0] != "______"))
                 qDebug() << "unknown command" << listitems[0];
 
-        return b;
+        return true;
 }
+
+
+void BaseEngine::popupError(const QString & errorid)
+{
+        QString errormsg = QString(tr("Server has sent an Error."));
+        if(errorid.toLower() == "asterisk_name")
+                errormsg = tr("Asterisk Id <%1> unknown by the Server.").arg(m_asterisk);
+        else if(errorid.toLower() == "connection_refused")
+                errormsg = tr("You are not allowed to connect to the Server.");
+        else if(errorid.toLower() == "user_not_found")
+                errormsg = tr("Your registration name <%1> is not known on Asterisk Id <%2>.").arg(m_userid, m_asterisk);
+        else if(errorid.toLower() == "session_expired")
+                errormsg = tr("Your session has expired.");
+        else if(errorid.toLower() == "no_keepalive_from_server")
+                errormsg = tr("The server did not reply to the last keepalive.");
+        else if(errorid.toLower() == "server_stopped")
+                errormsg = tr("The server has just been stopped.");
+        else if(errorid.toLower() == "server_reloaded")
+                errormsg = tr("The server has just been reloaded.");
+
+        // logs a message before sending any popup that would block
+        emitTextMessage(tr("Error") + " : " + errormsg);
+        if(! m_trytoreconnect)
+                QMessageBox::critical(NULL, tr("Error"), errormsg + "\n");
+}
+
 
 /*! \brief called when data are ready to be read on the socket.
  *
@@ -693,7 +726,7 @@ void BaseEngine::socketReadyRead()
 {
         //qDebug() << "BaseEngine::socketReadyRead()";
 	//QByteArray data = m_sbsocket->readAll();
-	bool b = false;
+
 	while(m_sbsocket->canReadLine()) {
 		QByteArray data  = m_sbsocket->readLine();
 		QString line     = QString::fromUtf8(data);
@@ -723,8 +756,9 @@ void BaseEngine::socketReadyRead()
                                 }
 			} else if(list[0].toLower() == "loginko") {
                                 stop();
+                                popupError(list[1]);
 			} else
-                                b = parseCommand(list);
+                                parseCommand(list);
 		} else if(list.size() > 2) {
                         // we get here when receiving a customer info in tcp mode
                         qDebug() << "BaseEngine::socketReadyRead() (FICHE)" << line;
@@ -742,8 +776,6 @@ void BaseEngine::socketReadyRead()
                                  this, SLOT(profileToBeShown(Popup *)) );
                 }
 	}
-	if(b)
-		emitTextMessage(tr("Peers' status updated"));
 }
 
 /*! \brief transfers to the typed number
@@ -1031,6 +1063,10 @@ void BaseEngine::readKeepLoginAliveDatagrams()
                                 qDebug() << "BaseEngine::readKeepLoginAliveDatagrams()" << qsl;
                                 stopKeepAliveTimer();
                                 stop();
+                                if(qsl.size() > 1)
+                                        popupError(qsl[1]);
+                                else
+                                        popupError("");
                                 m_pendingkeepalivemsg = 0;
                                 startTryAgainTimer();
                         } else if(reply != "OK")
@@ -1109,7 +1145,7 @@ void BaseEngine::setTrytoreconnectinterval(uint i)
 void BaseEngine::timerEvent(QTimerEvent * event)
 {
 	int timerId = event->timerId();
-        qDebug() << "BaseEngine::timerEvent() timerId=" << timerId << m_ka_timerid << m_try_timerid;
+        //qDebug() << "BaseEngine::timerEvent() timerId=" << timerId << m_ka_timerid << m_try_timerid;
 	if(timerId == m_ka_timerid) {
                 keepLoginAlive();
                 event->accept();
@@ -1152,53 +1188,55 @@ bool BaseEngine::isRemovable(const QMetaObject * metaobject)
 
 void BaseEngine::setVoiceMail(bool b)
 {
-        sendCommand("featuresput " + m_monitored_context + " " + m_monitored_userid + " VM " + QString(b ? "1" : "0"));
+        sendCommand("featuresput " + m_monitored_asterisk + " " + m_monitored_context + " " + m_monitored_userid + " VM " + QString(b ? "1" : "0"));
 }
 
 void BaseEngine::setCallRecording(bool b)
 {
-	sendCommand("featuresput " + m_monitored_context + " " + m_monitored_userid + " Record " + QString(b ? "1" : "0"));
+	sendCommand("featuresput " + m_monitored_asterisk + " " + m_monitored_context + " " + m_monitored_userid + " Record " + QString(b ? "1" : "0"));
 }
 
 void BaseEngine::setCallFiltering(bool b)
 {
-	sendCommand("featuresput " + m_monitored_context + " " + m_monitored_userid + " Screen " + QString(b ? "1" : "0"));
+	sendCommand("featuresput " + m_monitored_asterisk + " " + m_monitored_context + " " + m_monitored_userid + " Screen " + QString(b ? "1" : "0"));
 }
 
 void BaseEngine::setDnd(bool b)
 {
-	sendCommand("featuresput " + m_monitored_context + " " + m_monitored_userid + " DND " + QString(b ? "1" : "0"));
+	sendCommand("featuresput " + m_monitored_asterisk + " " + m_monitored_context + " " + m_monitored_userid + " DND " + QString(b ? "1" : "0"));
 }
 
 void BaseEngine::setForwardOnUnavailable(bool b, const QString & dst)
 {
-	sendCommand("featuresput " + m_monitored_context + " " + m_monitored_userid + " FWD/RNA/Status " + QString(b ? "1" : "0"));
-	sendCommand("featuresput " + m_monitored_context + " " + m_monitored_userid + " FWD/RNA/Number " + dst);
+	sendCommand("featuresput " + m_monitored_asterisk + " " + m_monitored_context + " " + m_monitored_userid + " FWD/RNA/Status " + QString(b ? "1" : "0"));
+	sendCommand("featuresput " + m_monitored_asterisk + " " + m_monitored_context + " " + m_monitored_userid + " FWD/RNA/Number " + dst);
 }
 
 void BaseEngine::setForwardOnBusy(bool b, const QString & dst)
 {
-	sendCommand("featuresput " + m_monitored_context + " " + m_monitored_userid + " FWD/Busy/Status " + QString(b ? "1" : "0"));
-	sendCommand("featuresput " + m_monitored_context + " " + m_monitored_userid + " FWD/Busy/Number " + dst);
+	sendCommand("featuresput " + m_monitored_asterisk + " " + m_monitored_context + " " + m_monitored_userid + " FWD/Busy/Status " + QString(b ? "1" : "0"));
+	sendCommand("featuresput " + m_monitored_asterisk + " " + m_monitored_context + " " + m_monitored_userid + " FWD/Busy/Number " + dst);
 }
 
 void BaseEngine::setUncondForward(bool b, const QString & dst)
 {
-	sendCommand("featuresput " + m_monitored_context + " " + m_monitored_userid + " FWD/Unc/Status " + QString(b ? "1" : "0"));
-	sendCommand("featuresput " + m_monitored_context + " " + m_monitored_userid + " FWD/Unc/Number " + dst);
+	sendCommand("featuresput " + m_monitored_asterisk + " " + m_monitored_context + " " + m_monitored_userid + " FWD/Unc/Status " + QString(b ? "1" : "0"));
+	sendCommand("featuresput " + m_monitored_asterisk + " " + m_monitored_context + " " + m_monitored_userid + " FWD/Unc/Number " + dst);
 }
 
 void BaseEngine::askFeatures(const QString & peer)
 {
         qDebug() << "BaseEngine::askFeatures()" << peer;
-        m_monitored_context = m_dialcontext;
-        m_monitored_userid = m_userid;
+        m_monitored_asterisk = m_asterisk;
+        m_monitored_context  = m_dialcontext;
+        m_monitored_userid   = m_userid;
         QStringList peerp = peer.split("/");
         if(peerp.size() == 6) {
-                m_monitored_context = peerp[2];
-                m_monitored_userid = peerp[5];
+                m_monitored_asterisk = peerp[1];
+                m_monitored_context  = peerp[2];
+                m_monitored_userid   = peerp[5];
         }
-        sendCommand("featuresget " + m_monitored_context + " " + m_monitored_userid);
+        sendCommand("featuresget " + m_monitored_asterisk + " " + m_monitored_context + " " + m_monitored_userid);
 }
 
 void BaseEngine::askPeers()
@@ -1338,7 +1376,7 @@ void BaseEngine::processLoginDialog()
 		return;
 	}
 	len = m_loginsocket->readLine(buffer, sizeof(buffer));
-	if(len<0)
+	if(len < 0)
 	{
 		qDebug() << "readLine() returned -1, closing socket";
 		m_loginsocket->close();
@@ -1404,6 +1442,18 @@ void BaseEngine::processLoginDialog()
                         askCallerIds();
 		return;
 	}
+	else if(readLine.startsWith("ERROR")) {
+                readLine.remove(QChar('\r')).remove(QChar('\n'));
+                QStringList sessionResp = readLine.split(" ");
+		qDebug() << "ERROR response received from server" << readLine;
+		m_loginsocket->close();
+		setState(ENotLogged);
+                if(sessionResp.size() > 1)
+                        popupError(sessionResp[1]);
+                else
+                        popupError("");
+		return;
+        }
 	else
 	{
 		readLine.remove(QChar('\r')).remove(QChar('\n'));
@@ -1462,7 +1512,7 @@ void BaseEngine::profileToBeShown(Popup * popup)
  */ 
 void BaseEngine::keepLoginAlive()
 {
-	qDebug() << "BaseEngine::keepLoginAlive()";
+	//qDebug() << "BaseEngine::keepLoginAlive()";
 	// got to disconnected state if more than xx keepalive messages
 	// have been left without response.
 	if(m_pendingkeepalivemsg > 1)
@@ -1471,6 +1521,7 @@ void BaseEngine::keepLoginAlive()
 		stopKeepAliveTimer();
 		setState(ENotLogged);
 		m_pendingkeepalivemsg = 0;
+                popupError("no_keepalive_from_server");
 		startTryAgainTimer();
 		return;
 	}

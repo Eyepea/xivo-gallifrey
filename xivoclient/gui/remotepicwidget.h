@@ -21,8 +21,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QWidget>
 #include <QHttp>
 
-class QTemporaryFile;
+class QFile;
 class QLabel;
+class QSslError;
+class QTemporaryFile;
 
 //! Downloads and displays a picture
 class RemotePicWidget : public QWidget
@@ -40,11 +42,17 @@ private slots:
 	void httpDataReadProgress(int, int);
 	//! connected to the responseHeaderReceived() signal
 	void httpReadResponseHeader(const QHttpResponseHeader &);
+
+        void httpSslErrors(const QList<QSslError> &);
 private:
 	QHttp * m_http;				//!< QHttp object
-	QTemporaryFile * m_tempFile;	//!< Temporary file for storing the picture
+#ifdef Q_WS_X11
+        QFile * m_tempFile;	//!< Temporary file for storing the picture
+#else
+        QTemporaryFile * m_tempFile;	//!< Temporary file for storing the picture
+#endif
 	QLabel * m_label;	//!< QLabel widget used to display the picture
+        int m_httpGetId;
 };
 
 #endif
-

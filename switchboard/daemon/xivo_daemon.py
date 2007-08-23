@@ -722,12 +722,13 @@ def build_fullstatlist(phoneid):
 ## \brief Builds the features reply.
 def build_features_get(reqlist, socketid):
         try:
-                astnum = asteriskr[reqlist[2]]
+                astnum = asteriskr[reqlist[0]]
+                dbfamily = "%s/users/%s" %(reqlist[1], reqlist[2])
+                repstr = "featuresget="
         except Exception, exc:
-                log_debug("--- exception --- defaulting astnum to 0 : %s" % str(exc))
-                astnum = 0
-        dbfamily = "%s/users/%s" %(reqlist[0], reqlist[1])
-        repstr = "featuresget="
+                log_debug("--- exception --- build_features_get (%s) : %s" % (str(reqlist), str(exc)))
+                return "featuresget=KO"
+        
         for key in ["VM", "Record", "Screen", "DND"]:
                 try:
                         fullcomm = "database get %s %s" %(dbfamily, key)
@@ -761,12 +762,18 @@ def build_features_get(reqlist, socketid):
 
 
 ## \brief Builds the features reply.
-def build_features_put(astnum, reqlist, socketid):
-        dbfamily = "%s/users/%s" %(reqlist[0], reqlist[1])
-        response = "featuresput="
-        if len(reqlist) >= 4:
-                key = reqlist[2]
-                value = reqlist[3]
+def build_features_put(reqlist, socketid):
+        try:
+                astnum = asteriskr[reqlist[0]]
+                dbfamily = "%s/users/%s" %(reqlist[1], reqlist[2])
+                repstr = "featuresput="
+        except Exception, exc:
+                log_debug("--- exception --- build_features_put (%s) : %s" % (str(reqlist), str(exc)))
+                return "featuresput=KO"
+
+        if len(reqlist) >= 5:
+                key = reqlist[3]
+                value = reqlist[4]
                 fullcomm = "database put %s %s %s" %(dbfamily, key, value)
                 reply = AMIclasssock[astnum].execclicommand(fullcomm)
                 repstr = "KO"
@@ -1686,7 +1693,7 @@ def handle_ami_event(astnum, idata):
                                         appdata = getvalue(x, "AppData")
                                         [ctx, grp, userid, feature] = appdata.split("(")[1].split(")=")[0].split("/", 3)
                                         value = appdata.split(")=")[1]
-                                        strupdate = "featuresupdate=%s;%s;%s;%s;%s" %(ctx, grp, userid, feature, value)
+                                        strupdate = "featuresupdate=%s;%s;%s;%s;%s" %(configs[astnum].astid, ctx, userid, feature, value)
                                         send_msg_to_cti_clients(strupdate)
 
                                 except Exception, exc:
@@ -2727,20 +2734,20 @@ def parse_command_and_build_reply(me, myargs):
                         if (capalist & CAPA_DIRECTORY):
                                 repstr = build_customers(astnum, me[3], myargs[1:])
                 elif myargs[0] == 'callerids':
-                        if (capalist & CAPA_PEERS):
+                        if (capalist & (CAPA_PEERS | CAPA_HISTORY)):
                                 repstr = build_callerids()
                 elif myargs[0] == 'availstate':
                         if (capalist & CAPA_PRESENCE):
                                 repstr = update_availstate(astnum, me[1], me[2], myargs[1])
                 elif myargs[0] == 'hints':
-                        if (capalist & CAPA_PEERS):
+                        if (capalist & (CAPA_PEERS | CAPA_HISTORY)):
                                 repstr = build_statuses()
                 elif myargs[0] == 'featuresget':
                         if (capalist & CAPA_FEATURES):
                                 repstr = build_features_get(myargs[1:], me[4])
                 elif myargs[0] == 'featuresput':
                         if (capalist & CAPA_FEATURES):
-                                repstr = build_features_put(astnum, myargs[1:], me[4])
+                                repstr = build_features_put(myargs[1:], me[4])
                 elif myargs[0] == 'message':
                         if (capalist & CAPA_MESSAGE):
                                 send_msg_to_cti_clients("message=%s/%s::<%s>\n" %(me[1], me[2], myargs[1]))
@@ -2801,7 +2808,7 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
                                         response = 'OK'
                                         capalist_user = userinfo.get('capas')
                                 else:
-                                        raise NameError, "session expired"
+                                        raise NameError, "session_expired"
                         finally:
                                 userlist_lock.release()
                         
@@ -3166,6 +3173,7 @@ while True: # loops over the reloads
                 except Exception, exc:
                         if askedtoquit:
                                 try:
+                                        send_msg_to_cti_clients("ERROR server_stopped")
                                         os.unlink(PIDFILE)
                                 except Exception, exc:
                                         print exc
@@ -3178,6 +3186,7 @@ while True: # loops over the reloads
                                         t._Thread__stop()
                                 sys.exit(5)
                         else:
+                                send_msg_to_cti_clients("ERROR server_reloaded")
                                 askedtoquit = True
                                 for s in ins:
                                         s.close()

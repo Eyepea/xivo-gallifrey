@@ -111,11 +111,11 @@ void Popup::addInfoLink(const QString & name, const QString & value)
 
 void Popup::addInfoPicture(const QString & name, const QString & value)
 {
-	qDebug() << "Popup::addInfoPicture()" << value;
 	QUrl url(value);
+        qDebug() << "Popup::addInfoPicture()" << value << url.scheme();
 	//QUrl url = QUrl::fromEncoded(value);
 	// TODO: faire un widget special qui bouffe des Images HTTP ?
-	if(url.scheme() != QString("http"))
+	if((url.scheme() != QString("http")) && (url.scheme() != QString("https")))
 	{
 		QLabel *lbl = new QLabel( name, this );
 		QPixmap *face = new QPixmap( value );

@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  * \param popup Popup widget related to the XML stream
  */
 XmlHandler::XmlHandler( Popup *popup )
-: m_popup(popup), m_isParsingInfo(false)
+        : m_popup(popup), m_isParsingInfo(false)
 {
 	qDebug() << "XmlHandler::XmlHandler()";
 }

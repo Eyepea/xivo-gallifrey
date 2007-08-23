@@ -472,6 +472,8 @@ void MainWidget::engineStopped()
                 }
         }
 
+        m_tabwidget->clear();
+
 	m_stopact->setDisabled(true);
 	m_startact->setEnabled(true);
 	// set status icon to red

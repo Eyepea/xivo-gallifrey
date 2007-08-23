@@ -218,6 +218,7 @@ private:
 	void sendTCPCommand();
         void sendCommand(const QString &);
         bool parseCommand(const QStringList &);
+        void popupError(const QString &);
 
 	// Class Members
 
@@ -274,6 +275,7 @@ private:
 
         QString m_monitored_context;	//!< Context of the Monitored Phone (on SB, or one's own on XC)
         QString m_monitored_userid;	//!< UserId of the Monitored Phone (on SB, or one's own on XC)
+        QString m_monitored_asterisk;	//!< Asterisk Id of the Monitored Phone (on SB, or one's own on XC)
 };
 
 #endif
