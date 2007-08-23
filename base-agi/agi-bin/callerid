@@ -1,0 +1,89 @@
+#!/usr/bin/python
+#
+# Authors : Sylvain Boily, Guillaume Knispel
+#           Proformatique
+#           67, rue Voltaire
+#           92800 PUTEAUX
+#           (+33/0)1.41.38.99.60
+#           mailto:technique@proformatique.com
+#           (C) 2007 Proformatique
+#
+
+__version__ = "$Revision: 1041 $ $Date: 2007-07-04 16:13:37 +0200 (Wed, 04 Jul 2007) $"
+__license__ = """
+    Copyright (C) 2007, Proformatique
+
+    This software is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2.1 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+"""
+
+CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
+CONFIG_LIB_PATH = 'py_lib_path'
+
+import sys
+from xivo import ConfigPath
+from xivo.ConfigPath import *
+ConfiguredPathHelper(CONFIG_FILE, CONFIG_LIB_PATH)
+import anysql
+from BackSQL import backsqlite
+from BackSQL import backmysql
+import ConfigParser
+from ConfigDict import *
+
+from agi import *
+
+callerid_file = "/etc/asterisk/xivo_callerid.conf"
+
+config = ConfigParser.ConfigParser()
+config.readfp(open(callerid_file))
+
+agi = AGI()
+
+debug = 0
+if debug:
+	agi.DEBUG_PASSTHROUGH=1
+
+callername = config.get('general', 'name')
+callernum = config.get('general', 'number')
+len_callerid = int(config.get('general', 'len_callerid'))
+try:
+	len_add_callerid = int(config.get('general', 'len_add_callerid'))
+except:
+	len_add_callerid = None
+try:
+	addnum = int(config.get('general', 'addnum'))
+except:
+	addnum = None
+try:
+	stripnum = int(config.get('general', 'stripnum'))
+except:
+	stripnum = None
+
+if debug:
+	callerid = sys.argv[1]
+else:
+	callerid = agi.env['agi_callerid']
+
+if callerid.isdigit():
+	if not callerid:
+		agi.set_callerid("\"%s <%s>\"" %(callername, callernum))
+		sys.exit()
+	if stripnum != None:
+		agi.set_callerid(callerid[stripnum:])
+		callerid = callerid[stripnum:]
+	if addnum != None:
+		agi.set_callerid(str(addnum) + callerid)
+		callerid = str(addnum) + callerid
+	if len(callerid) < len_callerid:
+		agi.set_callerid(str(len_add_callerid) + callerid)
