@@ -65,16 +65,23 @@ except IOError:
 # This function returns all informations for a specific provider
 def get_provider(provider, return_callerid):
 	agi.set_variable("PROVIDER", provider)
-	agi.set_variable("EXTERNPREFIX", config.get(provider, 'externprefix'))
-	agi.set_variable("PREFIX", config.get(provider, 'prefix'))
-	agi.set_variable("CHAN", config.get(provider, 'chan'))
+	if config.has_option(provider, 'externprefix'):
+		agi.set_variable("EXTERNPREFIX", config.get(provider, 'externprefix'))
+	if config.has_option(provider, 'prefix'):
+		agi.set_variable("PREFIX", config.get(provider, 'prefix'))
+	if config.has_option(provider, 'chan'):
+		agi.set_variable("CHAN", config.get(provider, 'chan'))
+	agi.verbose(config.get(provider, 'chan'))
 	if not return_callerid:
 		agi.set_variable("EXTERNNUM", config.get(provider, 'externnum'))
 	else:
 		agi.set_variable("EXTERNNUM", return_callerid)
-	agi.set_variable("SETCALLERID", config.get(provider, 'setcallerid'))
-	agi.set_variable("USEENUM", config.get(provider, 'useenum'))
-	agi.set_variable("TIMETOCALL", config.get(provider, 'timetocall'))
+	if config.has_option(provider, 'setcallerid'):
+		agi.set_variable("SETCALLERID", config.get(provider, 'setcallerid'))
+	if config.has_option(provider, 'useenum'):
+		agi.set_variable("USEENUM", config.get(provider, 'useenum'))
+	if config.has_option(provider, 'timetocall'):
+		agi.set_variable("TIMETOCALL", config.get(provider, 'timetocall'))
 	if not config.get(provider, 'stripnum'):
 		agi.set_variable("STRIPNUM", "0")
 	else:
@@ -129,9 +136,10 @@ if len(sys.argv) > 0:
 	if agi_exten.isdigit() or re.search("^\+", agi_exten):
 		exten = agi_exten
 		provider = ""
-	else:
-		provider = agi_exten
 	
+	if len(sys.argv) == 2:
+		provider = sys.argv[1]
+
 	context = agi_context
 
 	callerid = agi_callerid
