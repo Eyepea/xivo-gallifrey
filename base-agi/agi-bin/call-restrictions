@@ -76,7 +76,7 @@ for each in parser.sections():
 				else:
 					agi.set_variable('GRANTED', 0)
 
-			agi.stream_file('fr/extra/vous_avez_pas_droit_necessaire_pour_numero')
+			agi.stream_file('no_right_number')
 			agi.set_variable('GRANTED', 0)
 			sys.exit()
 
