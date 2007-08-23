@@ -67,7 +67,7 @@ if len(sys.argv) < 1:
 else:
 	shost = sys.argv[1]
 	sport = int(xivocapas.get('general', 'port_fiche_agi'))
-	proto = agi.get_variable('PROTO')
+	proto = agi.get_variable('PROTO').lower()
 	exten = agi.get_variable('NAME')
 	calleridnum = agi.env['agi_callerid']
 	msgext = agi.get_variable('CALLTYPE')
