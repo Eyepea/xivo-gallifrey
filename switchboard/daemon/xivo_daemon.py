@@ -432,7 +432,7 @@ class AMIClass:
                                         log_debug("retrying AMI command " + action)
                                         self.sendcommand(action, args)
                         except Exception, exc:
-                                log_debug("--- exception --- AMI not connected : " + str(exc))
+                                log_debug("--- exception --- AMI not connected (action=%s args=%s) : %s" %(action, str(args), str(exc)))
         # \brief For debug.
         def printresponse_forever(self):
                 while True:
@@ -545,6 +545,7 @@ class AMIClass:
                                                        ('Exten', phonedst),
                                                        ('Context', locext),
                                                        ('Priority', '1'),
+#                                                       ('CallerID', "%s" %(phonesrc)),
                                                        ('CallerID', "calls %s <%s>" %(phonedst, phonedst)),
                                                        ('Variable', 'ORIGINATE_SRC=%s' %phonesrc),
                                                        ('Async', 'true')])
@@ -719,30 +720,41 @@ def build_fullstatlist(phoneid):
 
 
 ## \brief Builds the features reply.
-def build_features_get(astnum, reqlist, socketid):
+def build_features_get(reqlist, socketid):
+        try:
+                astnum = asteriskr[reqlist[2]]
+        except Exception, exc:
+                log_debug("--- exception --- defaulting astnum to 0 : %s" % str(exc))
+                astnum = 0
         dbfamily = "%s/users/%s" %(reqlist[0], reqlist[1])
         repstr = "featuresget="
         for key in ["VM", "Record", "Screen", "DND"]:
-                fullcomm = "database get %s %s" %(dbfamily, key)
-                reply = AMIclasssock[astnum].execclicommand(fullcomm)
-                for r in reply:
-                        if r.find("Value: ") == 0:
-                                repstr += "%s;%s;" %(key, r.rstrip().split(" ")[1])
+                try:
+                        fullcomm = "database get %s %s" %(dbfamily, key)
+                        reply = AMIclasssock[astnum].execclicommand(fullcomm)
+                        for r in reply:
+                                if r.find("Value: ") == 0:
+                                        repstr += "%s;%s;" %(key, r.rstrip().split(" ")[1])
+                except Exception, exc:
+                        log_debug("--- exception --- featuresget bool astnum=%d key=%s : %s" %(astnum, key, str(exc)))
 
         for key in ["FWD/Unc", "FWD/Busy", "FWD/RNA"]:
-                fullcomm = "database get %s %s/Status" %(dbfamily, key)
-                reply = AMIclasssock[astnum].execclicommand(fullcomm)
                 keystatus = ""
-                for r in reply:
-                        if r.find("Value: ") == 0:
-                                keystatus = r.rstrip().split(" ")[1]
-                                
-                fullcomm = "database get %s %s/Number" %(dbfamily, key)
-                reply = AMIclasssock[astnum].execclicommand(fullcomm)
                 keynumber = ""
-                for r in reply:
-                        if r.find("Value: ") == 0:
-                                keynumber = r.rstrip().split(" ")[1]
+                try:
+                        fullcomm = "database get %s %s/Status" %(dbfamily, key)
+                        reply = AMIclasssock[astnum].execclicommand(fullcomm)
+                        for r in reply:
+                                if r.find("Value: ") == 0:
+                                        keystatus = r.rstrip().split(" ")[1]
+
+                        fullcomm = "database get %s %s/Number" %(dbfamily, key)
+                        reply = AMIclasssock[astnum].execclicommand(fullcomm)
+                        for r in reply:
+                                if r.find("Value: ") == 0:
+                                        keynumber = r.rstrip().split(" ")[1]
+                except Exception, exc:
+                        log_debug("--- exception --- featuresget str astnum=%d key=%s : %s" %(astnum, key, str(exc)))
 
                 repstr += "%s;%s:%s;" %(key, keystatus, keynumber)
         return repstr
@@ -860,24 +872,23 @@ def parseSIP(astnum, data, l_sipsock, l_addrsip):
         #print "###", astnum, ilength, icseq, icid, iaccount, imsg, iret, ibranch, itag
 
         uri = "sip:%s@%s" %(iaccount, configs[astnum].remoteaddr)
+        realm = "asterisk"
         mycontext = ""
         mysippass = ""
         if iaccount in configs[astnum].xivosb_phoneids:
                 mycontext, mysippass = configs[astnum].xivosb_phoneids[iaccount]
-        md5_r1 = md5.md5(iaccount + ":asterisk:" + mysippass).hexdigest()
+        md5_r1 = md5.md5("%s:%s:%s" %(iaccount, realm, mysippass)).hexdigest()
 
         #print "-----------", iaccount, mysippass
         #print data
         #print "================================="
 
-        realm = "asterisk"
-        
         if imsg == "REGISTER":
                 if iret == 401:
                         # log_debug("%s : REGISTER %s Passwd?" %(configs[astnum].astid, iaccount))
                         nonce    = iauth.split("nonce=\"")[1].split("\"")[0]
                         md5_r2   = md5.md5(imsg   + ":" + uri).hexdigest()
-                        response = md5.md5(md5_r1 + ":" + nonce + ":" + md5_r2).hexdigest()
+                        response = md5.md5("%s:%s:%s" %(md5_r1, nonce, md5_r2)).hexdigest()
                         auth = "Authorization: Digest username=\"%s\", realm=\"%s\", nonce=\"%s\", uri=\"%s\", response=\"%s\", algorithm=MD5" \
                                %(iaccount, realm, nonce, uri, response)
                         command = xivo_sip.sip_register(configs[astnum], iaccount,
@@ -1085,6 +1096,7 @@ def originate_or_transfer(requester, l):
 def hangup(requester, l):
         idast_src = -1
         ast_src = l[1].split("/")[1]
+        ret_message = "message=%s::hangup KO from %s" %(DAEMON, requester)
         if ast_src in asteriskr: idast_src = asteriskr[ast_src]
         if idast_src != -1:
                 log_debug("%s is attempting a HANGUP : %s" %(requester, str(l)))
@@ -1272,7 +1284,7 @@ def manage_tcp_connection(connid, allow_events):
                                         try:
                                                 userinfo = finduser(l[1], l[2].lower() + l[3])
                                                 if userinfo == None:
-                                                        repstr = "loginko=\n"
+                                                        repstr = "loginko=user_not_found\n"
                                                         log_debug("no user found %s" %str(l))
                                                 else:
                                                         reterror = check_user_connection(userinfo, whoami)
@@ -1298,11 +1310,11 @@ def manage_tcp_connection(connid, allow_events):
                                                                                                     userinfo.get('capas')]
                                                                 send_availstate_update(astnum, l[2].lower() + l[3], state)
                                                         else:
-                                                                repstr = "loginko=\n"
+                                                                repstr = "loginko=connection_refused\n"
                                         finally:
                                                 userlist_lock.release()
                                 else:
-                                        repstr = "loginko=\n"
+                                        repstr = "loginko=asterisk_name\n"
                                         log_debug("login command attempt from SB : asterisk name <%s> unknown" %l[1])
                                 connid[0].send(repstr)
                         elif allow_events == False: # i.e. if PHP-style connection
@@ -2474,7 +2486,7 @@ class LoginHandler(SocketServer.StreamRequestHandler):
                 debugstr = "LoginRequestHandler (TCP) : client = %s:%d" %(self.client_address[0], self.client_address[1])
                 list1 = self.rfile.readline().strip().split(' ') # list1 should be "[LOGIN <asteriskname>/sip<nnn>]"
                 if len(list1) < 2 or len(list1) > 3 or list1[0] != 'LOGIN':
-                        replystr = "ERROR : wrong number of arguments"
+                        replystr = "ERROR number_of_arguments"
                         debugstr += " / LOGIN error args"
                         return [replystr, debugstr], [user, port, state, astnum]
 
@@ -2482,7 +2494,7 @@ class LoginHandler(SocketServer.StreamRequestHandler):
                         astname_xivoc = list1[1].split("/")[0]
                         user = list1[1].split("/")[1]
                 else:
-                        replystr = "ERROR : wrong ID format"
+                        replystr = "ERROR id_format"
                         debugstr += " / LOGIN error ID"
                         return [replystr, debugstr], [user, port, state, astnum]
                 
@@ -2504,7 +2516,7 @@ class LoginHandler(SocketServer.StreamRequestHandler):
                 self.wfile.write('Send PASS for authentication\r\n')
                 list1 = self.rfile.readline().strip().split(' ')
                 if len(list1) != 2 or list1[0] != 'PASS':
-                        replystr = "ERROR : wrong format for PASS reply"
+                        replystr = "ERROR pass_format"
                         debugstr += " / PASS error"
                         return [replystr, debugstr], [user, port, state, astnum]
                 passwd = list1[1]
@@ -2512,8 +2524,8 @@ class LoginHandler(SocketServer.StreamRequestHandler):
                 if astname_xivoc in asteriskr:
                         astnum = asteriskr[astname_xivoc]
                 else:
-                        replystr = "ERROR : asterisk name <%s> unknown" %astname_xivoc
-                        debugstr += " / asterisk name unknown"
+                        replystr = "ERROR asterisk_name"
+                        debugstr += " / asterisk name <%s> unknown" % astname_xivoc
                         return [replystr, debugstr], [user, port, state, astnum]
                 userlist_lock.acquire()
                 try:
@@ -2522,7 +2534,7 @@ class LoginHandler(SocketServer.StreamRequestHandler):
                 finally:
                         userlist_lock.release()
                 if not goodpass:
-                        replystr = "ERROR : WRONG LOGIN PASSWD"
+                        replystr = "ERROR login_passwd"
                         debugstr += " / PASS KO (%s given) for %s on asterisk #%d" %(passwd, user,astnum)
                         return [replystr, debugstr], [user, port, state, astnum]
                 
@@ -2608,7 +2620,7 @@ class IdentRequestHandler(SocketServer.StreamRequestHandler):
                 list0 = line.split(' ')
                 log_debug("IdentRequestHandler (TCP) : client = %s:%d / %s"
                           %(self.client_address[0],self.client_address[1],str(list0)))
-                retline = 'ERROR\r\n'
+                retline = 'ERROR'
                 action = ""
                 # PUSH user callerid msg
                 m = re.match("PUSH (\S+) (\S+) ?(.*)", line)
@@ -2632,30 +2644,30 @@ class IdentRequestHandler(SocketServer.StreamRequestHandler):
 				astnum = ip_reverse_sht[self.client_address[0]]
 				userinfo = finduser(configs[astnum].astid, user)
 				if userinfo == None:
-					retline = 'ERROR USER <' + user + '> NOT FOUND\r\n'
+					retline = 'ERROR USER <' + user + '> NOT FOUND'
 				elif userinfo.has_key('ip') and userinfo.has_key('port') \
 					 and userinfo.has_key('state') and userinfo.has_key('sessionid') \
 					 and userinfo.has_key('sessiontimestamp'):
 					if time.time() - userinfo.get('sessiontimestamp') > xivoclient_session_timeout:
-						retline = 'ERROR USER SESSION EXPIRED for <%s>\r\n' %user
+						retline = 'ERROR USER SESSION EXPIRED for <%s>' %user
 					else:
 						capalist = (userinfo.get('capas') & capalist_server)
 						if (capalist & CAPA_CUSTINFO):
 							if action == "PUSH":
-								retline = 'USER %s STATE %s\r\n' %(user, userinfo.get('state'))
-								sendfiche.sendficheasync(userinfo, callerid, msg)
+								calleridname = sendfiche.sendficheasync(userinfo, callerid, msg)
+								retline = 'USER %s STATE %s CIDNAME "%s"' %(user, userinfo.get('state'), calleridname)
 							elif action == "QUERY":
-								retline = 'USER %s SESSIONID %s IP %s PORT %s STATE %s\r\n' \
+								retline = 'USER %s SESSIONID %s IP %s PORT %s STATE %s' \
 									  %(user, userinfo.get('sessionid'), userinfo.get('ip'), userinfo.get('port'), userinfo.get('state'))
 				else:
-					retline = 'ERROR USER SESSION NOT DEFINED for <%s>\r\n' %user
+					retline = 'ERROR USER SESSION NOT DEFINED for <%s>' %user
 			except Exception, exc:
-				retline = 'ERROR (exception) : %s\r\n' %(str(exc))
+				retline = 'ERROR (exception) : %s' %(str(exc))
 		finally:
 			userlist_lock.release()
 
                 try:
-                        self.wfile.write(retline)
+                        self.wfile.write(retline + '\r\n')
                 except Exception, exc:
                         # something bad happened.
                         log_debug("IdentRequestHandler/Exception: " + str(exc))
@@ -2688,6 +2700,8 @@ def update_availstate(astnum, astid, username, state):
         try:
                 userinfo = finduser(astid, username)
                 if userinfo != None:
+                        if 'sessiontimestamp' in userinfo:
+                                userinfo['sessiontimestamp'] = time.time()
                         if state in allowed_states:
                                 userinfo['state'] = state
                         else:
@@ -2723,7 +2737,7 @@ def parse_command_and_build_reply(me, myargs):
                                 repstr = build_statuses()
                 elif myargs[0] == 'featuresget':
                         if (capalist & CAPA_FEATURES):
-                                repstr = build_features_get(astnum, myargs[1:], me[4])
+                                repstr = build_features_get(myargs[1:], me[4])
                 elif myargs[0] == 'featuresput':
                         if (capalist & CAPA_FEATURES):
                                 repstr = build_features_put(astnum, myargs[1:], me[4])
@@ -2942,7 +2956,7 @@ while True: # loops over the reloads
                 xivoclient_session_timeout = int(xivoconf_general["xivoclient_session_timeout"])
         if "xivosb_register_frequency" in xivoconf_general:
                 xivosb_register_frequency = int(xivoconf_general["xivosb_register_frequency"])
-        if "capabilities" in xivoconf_general:
+        if "capabilities" in xivoconf_general and xivoconf_general["capabilities"] != "":
                 capabilities_list = xivoconf_general["capabilities"].split(",")
                 for capa in capabilities_list:
                         if capa in map_capas: capalist_server |= map_capas[capa]
@@ -2987,6 +3001,7 @@ while True: # loops over the reloads
                         sip_presence = ""
                         contexts = ""
                         cdr_db_uri = ""
+                        realm = "asterisk"
 
                         if "localaddr" in xivoconf_local:
                                 localaddr = xivoconf_local["localaddr"]

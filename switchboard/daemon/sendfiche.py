@@ -63,14 +63,13 @@ def log_debug(string):
 # \param config
 # \param cid
 def get_ldap_infos(config, cid):
-	[callid, mail, name, firstname, company] = ["", "", "", "", ""]
+	[callid, mail, name, firstname, company] = [cid, "", "", "", ""]
 	ldapid = xivo_ldap.xivo_ldap(config.get('general', 'dir_db_uri'))
 	result = ldapid.getldap("(|(telephonenumber=%s)(mobile=%s)(pager=%s))" %(cid,cid,cid),
 				['cn','mail','sn','givenName','o'])
 	try:
 		who = result[0][1]
 		if 'cn' in who.keys():        callid    = who['cn'][0]
-		sys.stdout.write("SET CALLERID \"%s\"\n" %callid)
 		if 'mail' in who.keys():      mail      = who['mail'][0]
 		if 'givenName' in who.keys(): firstname = who['givenName'][0]
 		if 'sn' in who.keys():        name      = who['sn'][0]
@@ -140,7 +139,7 @@ def set_fields_from_resultline(callerid, x):
 # \param formats
 # \param flds
 def make_fields(items, formats, flds):
-	liste = []
+	fields_list = []
 	for field_to_display in items:
 		# a "/" character splits the order of the field in the displayed popup
 		# and its kind
@@ -160,8 +159,8 @@ def make_fields(items, formats, flds):
 			if kindoffield in flds:
 				if flds[kindoffield] != "":
 					value = prestr + flds[kindoffield] + poststr
-			liste.append(Info(argum, fieldtype, value))
-	return liste
+			fields_list.append(Info(argum, fieldtype, value))
+	return fields_list
 
 
 # opens the xivo_push.conf config file
@@ -183,53 +182,60 @@ if "formats" in config.sections() :
 	for x in config.items("formats"):
 		fformats[x[0]] = x[1]
 
-class FicheSender:
-    def __call__(self, sessionid, address, state, callerid, msg, tcpmode, socket):
-        global fitems, fformats
-        #print 'FicheSend.__class__(%s, %s, %s)' % (sessionid, address, state)
-        if state == 'available':
-                liste = []
-                fields = {}
 
-                databasekind = config.get('general', 'dir_db_uri').split(':')[0]
-                log_debug('databasekind = %s' % databasekind)
-                if databasekind == "ldap":
-                        fields["req_cid"] = callerid
-                        fields["callidname"], fields["mail"], fields["name"], fields["firstname"], fields["company"] = get_ldap_infos(config, callerid)
-                        if callerid in config.options('photo'):
-                                fields["picture"] = config.get('photo', callerid)
-                        log_debug('fields = %s' % str(fields))
-                        liste = make_fields(fitems, fformats, fields)
-                        log_debug('liste = %s' % str(liste))
-                elif databasekind == "mysql" or databasekind == "sqlite":
-                        listes = []
-                        results = get_sql_infos(config, callerid)
-                        # log_debug("%d result(s) found for %s" %(len(results),callerid))
-                        if len(results) > 0:
-                                for z in xrange(len(results)):
-                                        fields = set_fields_from_resultline(callerid, results[z])
-                                        fields["req_cid"] = callerid
-                                        liste = make_fields(fitems, fformats, fields)
-                                        listes.append(liste)
-                        else:
+def retrieve_callerid_data(callerid):
+        fields = {}
+        fields['callidname'] = callerid
+
+        fields_formatted = []
+
+        databasekind = config.get('general', 'dir_db_uri').split(':')[0]
+        log_debug('databasekind = %s' % databasekind)
+        if databasekind == "ldap":
+                fields["req_cid"] = callerid
+                fields["callidname"], fields["mail"], fields["name"], fields["firstname"], fields["company"] = get_ldap_infos(config, callerid)
+                if callerid in config.options('photo'):
+                        fields["picture"] = config.get('photo', callerid)
+                log_debug('fields = %s' % str(fields))
+                fields_formatted = make_fields(fitems, fformats, fields)
+                log_debug('fields_formatted = %s' % str(fields_formatted))
+        elif databasekind == "mysql" or databasekind == "sqlite":
+                lists = []
+                results = get_sql_infos(config, callerid)
+                # log_debug("%d result(s) found for %s" %(len(results),callerid))
+                if len(results) > 0:
+                        for z in xrange(len(results)):
+                                fields = set_fields_from_resultline(callerid, results[z])
                                 fields["req_cid"] = callerid
-                                liste = make_fields(fitems, fformats, fields)
-
-                log_debug('address = %s' % str(address))
-                fiche = generefiche.Fiche(sessionid)
-                fiche.setmessage(msg)
-                for x in liste:
-                        fiche.addinfo(x.getTitle(), x.getType(), x.getValue())
-                if tcpmode:
-                        #fs = socket.makefile('w')
-                        #fs.write(fiche.getxml())
-                        #fs.flush()
-                        #fs.close()
-                        socket.write(fiche.getxml())
-                        socket.flush()
+                                fields_formatted = make_fields(fitems, fformats, fields)
+                                lists.append(fields_formatted)
                 else:
-                        fiche.sendtouser(address)
-                log_debug('fiche.sendtouser() finished')
+                        fields["req_cid"] = callerid
+                        fields_formatted = make_fields(fitems, fformats, fields)
+        return [fields['callidname'], fields_formatted]
+
+
+class FicheSender:
+        def __call__(self, sessionid, address, state, callerid, msg, tcpmode, socket, todisplay):
+                # print 'FicheSend.__class__(%s, %s, %s)' % (sessionid, address, state)
+
+                # sessionid, address, state, msg, tcpmode, socket
+                if state == 'available':
+                        log_debug('address = %s' % str(address))
+                        fiche = generefiche.Fiche(sessionid)
+                        fiche.setmessage(msg)
+                        for x in todisplay:
+                                fiche.addinfo(x.getTitle(), x.getType(), x.getValue())
+                        if tcpmode:
+                                # fs = socket.makefile('w')
+                                # fs.write(fiche.getxml())
+                                # fs.flush()
+                                # fs.close()
+                                socket.write(fiche.getxml())
+                                socket.flush()
+                        else:
+                                fiche.sendtouser(address)
+                        log_debug('fiche.sendtouser() finished')
 
 
 def sendficheasync(userinfo, callerid, msg):
@@ -245,6 +251,11 @@ def sendficheasync(userinfo, callerid, msg):
                 params['socket'] = userinfo['socket']
         else:
                 params['socket'] = None
+
+        [calleridname, params['todisplay']] = retrieve_callerid_data(callerid)
+
         t = threading.Thread(None, sender, None, (), params)
         t.start()
+
+        return calleridname
 

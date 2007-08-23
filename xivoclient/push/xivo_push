@@ -80,17 +80,17 @@ s.connect((shost, sport))
 fs = s.makefile('r')
 s.send('PUSH ' + user + ' ' + calleridnum + ' ' + msgext + '\r\n')
 s.close()
-list = fs.readline().strip().split(' ')
+list = fs.readline().strip().split(' ', 5) # keeps the last items joined by their spaces
 fs.close()
-#print list
-if len(list) < 4 or list[0] == 'ERROR':
+if len(list) < 6 or list[0] == 'ERROR':
 	print_verbose("Could not localize user %s" % user)
 	sys.exit(3)
 else:
         # USER xxx STATE xxx
         clientstate = list[3]
 
-# return status
+agi.set_variable('CALLERID', list[5])
+
 if clientstate == "available":
 	agi.set_variable('STATUS', 0)
 elif clientstate == "away":
