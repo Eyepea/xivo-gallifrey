@@ -87,3 +87,7 @@ if callerid.isdigit():
 		callerid = str(addnum) + callerid
 	if len(callerid) < len_callerid:
 		agi.set_callerid(str(len_add_callerid) + callerid)
+else:
+	if not callerid:
+		agi.set_callerid("\"%s <%s>\"" %(callername, callernum))
+		sys.exit()
