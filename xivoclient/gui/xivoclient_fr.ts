@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS><TS version="1.1" language="fr">
+<defaultcodec></defaultcodec>
 <context>
     <name>BaseEngine</name>
     <message>
@@ -33,7 +34,7 @@
         <translation>Erreur de socket inconnue</translation>
     </message>
     <message>
-        <location filename="../../switchboard/gui/baseengine.cpp" line="654"/>
+        <location filename="../../switchboard/gui/baseengine.cpp" line="651"/>
         <source>Unknown CallerId</source>
         <translation>CallerId Inconnu</translation>
     </message>
@@ -48,12 +49,12 @@
         <translation>Inconnue</translation>
     </message>
     <message>
-        <location filename="../../switchboard/gui/baseengine.cpp" line="746"/>
+        <location filename="../../switchboard/gui/baseengine.cpp" line="656"/>
         <source>Peers&apos; status updated</source>
         <translation>Status des postes mis à jour</translation>
     </message>
     <message>
-        <location filename="../../switchboard/gui/baseengine.cpp" line="1117"/>
+        <location filename="../../switchboard/gui/baseengine.cpp" line="1161"/>
         <source>Attempting to reconnect to server</source>
         <translation>Tentative de reconnexion au serveur</translation>
     </message>
@@ -65,19 +66,84 @@
     <message>
         <location filename="../../switchboard/gui/baseengine.cpp" line="1395"/>
         <source>Version Error</source>
-        <translation>Erreur de Version</translation>
+        <translation type="obsolete">Erreur de Version</translation>
     </message>
     <message>
         <location filename="../../switchboard/gui/baseengine.cpp" line="1396"/>
         <source>Your server version is %1 which is too old.
 </source>
-        <translation>La version de votre serveur est trop ancienne : %1.
+        <translation type="obsolete">La version de votre serveur est trop ancienne : %1.
 </translation>
     </message>
     <message>
         <location filename="../../switchboard/gui/baseengine.cpp" line="1397"/>
         <source>The required one is at least %1.</source>
-        <translation>Celle requise est au moins %1.</translation>
+        <translation type="obsolete">Celle requise est au moins %1.</translation>
+    </message>
+    <message>
+        <location filename="../../switchboard/gui/baseengine.cpp" line="684"/>
+        <source>Received Services data.</source>
+        <translation>Reçu les informations pour les Services.</translation>
+    </message>
+    <message>
+        <location filename="../../switchboard/gui/baseengine.cpp" line="686"/>
+        <source>Could not retrieve the Services data.</source>
+        <translation>Impossible de rapatrier les données pour les Services.</translation>
+    </message>
+    <message>
+        <location filename="../../switchboard/gui/baseengine.cpp" line="698"/>
+        <source>Server has sent an Error.</source>
+        <translation>Le serveur a renvoyé une Erreur.</translation>
+    </message>
+    <message>
+        <location filename="../../switchboard/gui/baseengine.cpp" line="700"/>
+        <source>Asterisk Id &lt;%1&gt; unknown by the Server.</source>
+        <translation>Identifiant Asterisk &lt;%1&gt; inconnu du Serveur.</translation>
+    </message>
+    <message>
+        <location filename="../../switchboard/gui/baseengine.cpp" line="702"/>
+        <source>You are not allowed to connect to the Server.</source>
+        <translation>Vous n&apos;êtes pas autorisé à vous connecter au Serveur.</translation>
+    </message>
+    <message>
+        <location filename="../../switchboard/gui/baseengine.cpp" line="704"/>
+        <source>Your registration name &lt;%1&gt; is not known on Asterisk Id &lt;%2&gt;.</source>
+        <translation>Votre identifiant &lt;%1&gt; n&apos;est pas connu sur l&apos;Asterisk &lt;%2&gt;.</translation>
+    </message>
+    <message>
+        <location filename="../../switchboard/gui/baseengine.cpp" line="706"/>
+        <source>Your session has expired.</source>
+        <translation>Votre session a expiré.</translation>
+    </message>
+    <message>
+        <location filename="../../switchboard/gui/baseengine.cpp" line="708"/>
+        <source>The server did not reply to the last keepalive.</source>
+        <translation>Le serveur n&apos;a pas répondu au dernier keepalive.</translation>
+    </message>
+    <message>
+        <location filename="../../switchboard/gui/baseengine.cpp" line="710"/>
+        <source>The server has just been stopped.</source>
+        <translation>Le serveur vient d&apos;être arrêté.</translation>
+    </message>
+    <message>
+        <location filename="../../switchboard/gui/baseengine.cpp" line="712"/>
+        <source>The server has just been reloaded.</source>
+        <translation>Le serveur vient d&apos;être rechargé.</translation>
+    </message>
+    <message>
+        <location filename="../../switchboard/gui/baseengine.cpp" line="714"/>
+        <source>Your client version is too old for this server. Please upgrade it.</source>
+        <translation>La version de votre client est trop ancienne. Merci de la mettre à jour.</translation>
+    </message>
+    <message>
+        <location filename="../../switchboard/gui/baseengine.cpp" line="716"/>
+        <source>Your server version is too old for this client. Please upgrade it.</source>
+        <translation>La version de votre serveur est trop ancienne. Merci de la mettre à jour.</translation>
+    </message>
+    <message>
+        <location filename="../../switchboard/gui/baseengine.cpp" line="721"/>
+        <source>Error</source>
+        <translation>Erreur</translation>
     </message>
 </context>
 <context>
