@@ -1,5 +1,3 @@
-var xivo_type = '';
-
 var xivo_itype = 0;
 
 var xivo_elt_type = new Array();
@@ -63,9 +61,7 @@ function xivo_chgtype(type)
 	if(xivo_is_undef(xivo_fm_type[type.value]) == true)
 		return(false);
 
-	xivo_type = type.value;
-
-	xivo_chg_attrib('fm_type-'+xivo_type,'links',0,1);
+	xivo_chg_attrib('fm_type-'+type.value,'links',0,1);
 }
 
 xivo_winload += 'if(xivo_eid(\'it-dfeatures-type\') != false)\n' +

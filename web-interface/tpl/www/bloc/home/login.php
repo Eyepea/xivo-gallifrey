@@ -9,9 +9,9 @@
 <div class="b-field">
 <?=$form->hidden(array('name' => XIVO_SESS_NAME,'value' => XIVO_SESS_ID));?>
 
-<?=$form->text(array('name' => 'login','id' => 'it-login','size' => 25,'value' => $this->bbf('fm_login')),'onfocus="this.value = this.value == \''.xivo_stript($this->bbf('fm_login')).'\' ? \'\' : this.value; this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('name' => 'login','id' => 'it-login','size' => 25,'value' => $this->bbf('fm_login')),'onfocus="this.value = this.value == \''.xivo_stript($this->bbf('fm_login')).'\' ? \'\' : this.value; this.className=xivo_fm_onfocus_class;"');?>
 
-<?=$form->password(array('name' => 'password','id' => 'it-password','size' => 25,'value' => $this->bbf('fm_password')),'onfocus="this.value = this.value == \''.xivo_stript($this->bbf('fm_password')).'\' ? \'\' : this.value; this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->password(array('name' => 'password','id' => 'it-password','size' => 25,'value' => $this->bbf('fm_password')),'onfocus="this.value = this.value == \''.xivo_stript($this->bbf('fm_password')).'\' ? \'\' : this.value; this.className=xivo_fm_onfocus_class;"');?>
 
 <?=$form->select(array('desc' => $this->bbf('fm_language'),'name' => 'language','id' => 'it-language'),array('fr' => 'Français'));?>
 

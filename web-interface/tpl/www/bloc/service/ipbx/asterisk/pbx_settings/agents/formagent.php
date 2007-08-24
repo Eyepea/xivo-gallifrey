@@ -16,17 +16,17 @@
 
 <div id="sb-part-first">
 
-<?=$form->text(array('desc' => $this->bbf('fm_agentfeatures_firstname'),'name' => 'afeatures[firstname]','labelid' => 'afeatures-firstname','value' => $info['afeatures']['firstname'],'default' => $element['afeatures']['firstname']['default'],'size' => 15),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_agentfeatures_firstname'),'name' => 'afeatures[firstname]','labelid' => 'afeatures-firstname','value' => $info['afeatures']['firstname'],'default' => $element['afeatures']['firstname']['default'],'size' => 15));?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_agentfeatures_lastname'),'name' => 'afeatures[lastname]','labelid' => 'afeatures-lastname','value' => $info['afeatures']['lastname'],'default' => $element['afeatures']['lastname']['default'],'size' => 15),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_agentfeatures_lastname'),'name' => 'afeatures[lastname]','labelid' => 'afeatures-lastname','value' => $info['afeatures']['lastname'],'default' => $element['afeatures']['lastname']['default'],'size' => 15));?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_agentfeatures_number'),'name' => 'afeatures[number]','labelid' => 'afeatures-number','value' => $info['afeatures']['number'],'default' => $element['afeatures']['number']['default'],'size' => 15),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_agentfeatures_number'),'name' => 'afeatures[number]','labelid' => 'afeatures-number','value' => $info['afeatures']['number'],'default' => $element['afeatures']['number']['default'],'size' => 15));?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_agentfeatures_passwd'),'name' => 'afeatures[passwd]','labelid' => 'afeatures-passwd','value' => $info['afeatures']['passwd'],'default' => $element['afeatures']['passwd']['default'],'size' => 15),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_agentfeatures_passwd'),'name' => 'afeatures[passwd]','labelid' => 'afeatures-passwd','value' => $info['afeatures']['passwd'],'default' => $element['afeatures']['passwd']['default'],'size' => 15));?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_agentfeatures_silent'),'name' => 'afeatures[silent]','labelid' => 'afeatures-silent','default' => $element['afeatures']['silent']['default'],'checked' => $info['afeatures']['silent']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_agentfeatures_silent'),'name' => 'afeatures[silent]','labelid' => 'afeatures-silent','default' => $element['afeatures']['silent']['default'],'checked' => $info['afeatures']['silent']));?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_agentfeatures_numgroup'),'name' => 'afeatures[numgroup]','labelid' => 'afeatures-numgroup','browse' => 'agroup','key' => 'name','altkey' => 'id','default' => $this->vars('group'),'value' => $info['afeatures']['numgroup']),$list_grps,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->select(array('desc' => $this->bbf('fm_agentfeatures_numgroup'),'name' => 'afeatures[numgroup]','labelid' => 'afeatures-numgroup','browse' => 'agroup','key' => 'name','altkey' => 'id','default' => $this->vars('group'),'value' => $info['afeatures']['numgroup']),$list_grps);?>
 
 </div>
 
@@ -38,7 +38,7 @@
 	<div id="queuelist" class="fm-field fm-multilist">
 		<div class="slt-outlist">
 
-		<?=$form->select(array('name' => 'queuelist','label' => false,'id' => 'it-queuelist','multiple' => true,'size' => 5,'field' => false,'key' => false),$qmember_unslt,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+		<?=$form->select(array('name' => 'queuelist','label' => false,'id' => 'it-queuelist','multiple' => true,'size' => 5,'field' => false,'key' => false),$qmember_unslt);?>
 
 		</div>
 		<div class="inout-list">
@@ -50,7 +50,7 @@
 		</div>
 		<div class="slt-inlist">
 
-		<?=$form->select(array('name' => 'queue-select[]','label' => false,'id' => 'it-queue','multiple' => true,'size' => 5,'field' => false,'key' => 'queue_name','altkey' => 'queue_name'),$qmember_slt,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+		<?=$form->select(array('name' => 'queue-select[]','label' => false,'id' => 'it-queue','multiple' => true,'size' => 5,'field' => false,'key' => 'queue_name','altkey' => 'queue_name'),$qmember_slt);?>
 
 		</div>
 	</div>
@@ -77,7 +77,7 @@
 ?>
 			<tr id="queue-<?=$name?>" class="fm-field<?=$class?>">
 				<td class="td-left txt-left"><?=$name?></td>
-				<td class="td-right txt-right"><?=$form->select(array('field' => false,'name' => 'queue['.$name.'][penalty]','id' => false,'label' => false,'default' => $element['qmember']['penalty']['default'],'value' => $penalty),$element['qmember']['penalty']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?></td>
+				<td class="td-right txt-right"><?=$form->select(array('field' => false,'name' => 'queue['.$name.'][penalty]','id' => false,'label' => false,'default' => $element['qmember']['penalty']['default'],'value' => $penalty),$element['qmember']['penalty']['value']);?></td>
 			</tr>
 <?php
 		endfor;
@@ -97,32 +97,32 @@
 
 <div id="sb-part-last" class="b-nodisplay">
 
-<?=$form->select(array('desc' => $this->bbf('fm_agent_ackcall'),'name' => 'agent[ackcall]','labelid' => 'agent-ackcall','key' => false,'bbf' => array('concatkey','fm_agent_ackcall-opt-'),'default' => $element['agent']['ackcall']['default'],'value' => $info['agent']['ackcall']),$element['agent']['ackcall']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->select(array('desc' => $this->bbf('fm_agent_ackcall'),'name' => 'agent[ackcall]','labelid' => 'agent-ackcall','key' => false,'bbf' => array('concatkey','fm_agent_ackcall-opt-'),'default' => $element['agent']['ackcall']['default'],'value' => $info['agent']['ackcall']),$element['agent']['ackcall']['value']);?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_agent_autologoff'),'name' => 'agent[autologoff]','labelid' => 'agent-autologoff','key' => false,'default' => $element['agent']['autologoff']['default'],'value' => xivo_cast_except($info['agent']['autologoff'],null,'uint'),'bbf' => array('mixkey','fm_agent_autologoff-opt')),$element['agent']['autologoff']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->select(array('desc' => $this->bbf('fm_agent_autologoff'),'name' => 'agent[autologoff]','labelid' => 'agent-autologoff','key' => false,'default' => $element['agent']['autologoff']['default'],'value' => xivo_cast_except($info['agent']['autologoff'],null,'uint'),'bbf' => array('mixkey','fm_agent_autologoff-opt')),$element['agent']['autologoff']['value']);?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_agent_wrapuptime'),'name' => 'agent[wrapuptime]','labelid' => 'agent-wrapuptime','default' => $element['agent']['wrapuptime']['default'],'value' => xivo_cast_except($info['agent']['wrapuptime'],null,'uint'),'bbf' => array('mixvalue','fm_agent_wrapuptime-opt')),$element['agent']['wrapuptime']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->select(array('desc' => $this->bbf('fm_agent_wrapuptime'),'name' => 'agent[wrapuptime]','labelid' => 'agent-wrapuptime','default' => $element['agent']['wrapuptime']['default'],'value' => xivo_cast_except($info['agent']['wrapuptime'],null,'uint'),'bbf' => array('mixvalue','fm_agent_wrapuptime-opt')),$element['agent']['wrapuptime']['value']);?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_agent_maxlogintries'),'name' => 'agent[maxlogintries]','labelid' => 'agent-maxlogintries','key' => false,'default' => $element['agent']['maxlogintries']['default'],'value' => xivo_cast_except($info['agent']['maxlogintries'],null,'uint'),'bbf' => array('mixkey','fm_agent_maxlogintries-opt')),$element['agent']['maxlogintries']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->select(array('desc' => $this->bbf('fm_agent_maxlogintries'),'name' => 'agent[maxlogintries]','labelid' => 'agent-maxlogintries','key' => false,'default' => $element['agent']['maxlogintries']['default'],'value' => xivo_cast_except($info['agent']['maxlogintries'],null,'uint'),'bbf' => array('mixkey','fm_agent_maxlogintries-opt')),$element['agent']['maxlogintries']['value']);?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_agent_goodbye'),'name' => 'agent[goodbye]','labelid' => 'agent-goodbye','empty' => $this->bbf('fm_agent_goodbye-opt-default'),'default' => $element['agent']['goodbye']['default'],'value' => $info['agent']['goodbye']),$beep_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->select(array('desc' => $this->bbf('fm_agent_goodbye'),'name' => 'agent[goodbye]','labelid' => 'agent-goodbye','empty' => $this->bbf('fm_agent_goodbye-opt-default'),'default' => $element['agent']['goodbye']['default'],'value' => $info['agent']['goodbye']),$beep_list);?>
 
 <?php
 	if($moh_list !== false):
-		echo $form->select(array('desc' => $this->bbf('fm_agent_musiconhold'),'name' => 'agent[musiconhold]','labelid' => 'agent-musiconhold','key' => 'category','empty' => true,'default' => $element['agent']['musiconhold']['default'],'value' => $info['agent']['musiconhold']),$moh_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');
+		echo $form->select(array('desc' => $this->bbf('fm_agent_musiconhold'),'name' => 'agent[musiconhold]','labelid' => 'agent-musiconhold','key' => 'category','empty' => true,'default' => $element['agent']['musiconhold']['default'],'value' => $info['agent']['musiconhold']),$moh_list);
 	endif;
 ?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_agent_updatecdr'),'name' => 'agent[updatecdr]','labelid' => 'agent-updatecdr','default' => $element['agent']['updatecdr']['default'],'checked' => $info['agent']['updatecdr']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_agent_updatecdr'),'name' => 'agent[updatecdr]','labelid' => 'agent-updatecdr','default' => $element['agent']['updatecdr']['default'],'checked' => $info['agent']['updatecdr']));?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_agent_recordagentcalls'),'name' => 'agent[recordagentcalls]','labelid' => 'agent-recordagentcalls','default' => $element['agent']['recordagentcalls']['default'],'checked' => $info['agent']['recordagentcalls']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_agent_recordagentcalls'),'name' => 'agent[recordagentcalls]','labelid' => 'agent-recordagentcalls','default' => $element['agent']['recordagentcalls']['default'],'checked' => $info['agent']['recordagentcalls']));?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_agent_createlink'),'name' => 'agent[createlink]','labelid' => 'agent-createlink','default' => $element['agent']['createlink']['default'],'checked' => $info['agent']['createlink']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_agent_createlink'),'name' => 'agent[createlink]','labelid' => 'agent-createlink','default' => $element['agent']['createlink']['default'],'checked' => $info['agent']['createlink']));?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_agent_recordformat'),'name' => 'agent[recordformat]','labelid' => 'agent-recordformat','key' => false,'default' => $element['agent']['recordformat']['default'],'value' => $info['agent']['recordformat']),$element['agent']['recordformat']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->select(array('desc' => $this->bbf('fm_agent_recordformat'),'name' => 'agent[recordformat]','labelid' => 'agent-recordformat','key' => false,'default' => $element['agent']['recordformat']['default'],'value' => $info['agent']['recordformat']),$element['agent']['recordformat']['value']);?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_agent_urlprefix'),'name' => 'agent[urlprefix]','labelid' => 'agent-urlprefix','value' => $info['agent']['urlprefix'],'default' => $element['agent']['urlprefix']['default'],'size' => 15),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_agent_urlprefix'),'name' => 'agent[urlprefix]','labelid' => 'agent-urlprefix','value' => $info['agent']['urlprefix'],'default' => $element['agent']['urlprefix']['default'],'size' => 15));?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_agent_custom_beep'),'name' => 'agent[custom_beep]','labelid' => 'agent-custom-beep','empty' => $this->bbf('fm_agent_custom-beep-opt-default'),'default' => $element['agent']['custom_beep']['default'],'value' => $info['agent']['custom_beep']),$beep_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->select(array('desc' => $this->bbf('fm_agent_custom_beep'),'name' => 'agent[custom_beep]','labelid' => 'agent-custom-beep','empty' => $this->bbf('fm_agent_custom-beep-opt-default'),'default' => $element['agent']['custom_beep']['default'],'value' => $info['agent']['custom_beep']),$beep_list);?>
 
 </div>

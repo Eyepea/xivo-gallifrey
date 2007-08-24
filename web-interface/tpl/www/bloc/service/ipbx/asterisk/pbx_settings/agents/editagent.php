@@ -11,7 +11,7 @@
 
 <?=$form->hidden(array('name' => XIVO_SESS_NAME,'value' => XIVO_SESS_ID));?>
 <?=$form->hidden(array('name' => 'act','value' => 'editagent'));?>
-<?=$form->hidden(array('name' => 'fm_send','value' => '1'));?>
+<?=$form->hidden(array('name' => 'fm_send','value' => 1));?>
 <?=$form->hidden(array('name' => 'id','value' => $this->vars('id')));?>
 <?=$form->hidden(array('name' => 'group','value' => $this->vars('group')));?>
 

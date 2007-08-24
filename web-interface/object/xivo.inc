@@ -325,12 +325,23 @@ class xivo
 
 	function _cfg_infos_extension()
 	{
+		$prefix = $suffix = '';
+
+		if(defined('PHP_SHLIB_PREFIX') === true)
+			$prefix = PHP_SHLIB_PREFIX;
+
+		if(defined('PHP_SHLIB_SUFFIX') === true)
+			$suffix = PHP_SHLIB_SUFFIX;
+
 		switch(XIVO_OS_META)
 		{
 			default:
-				$this->_conf['xivo']['sys']['extension']['prefix'] = '';
-				$this->_conf['xivo']['sys']['extension']['suffix'] = 'so';
+				if($suffix === '')
+					$suffix = 'so';
 		}
+	
+		$this->_conf['xivo']['sys']['extension']['prefix'] = $prefix;
+		$this->_conf['xivo']['sys']['extension']['suffix'] = $suffix;
 
 		if($this->_conf['xivo']['ini']['safe_mode'] === true || $this->_conf['xivo']['ini']['enable_dl'] === false)
 			$this->_conf['xivo']['sys']['extension']['enable'] = false;

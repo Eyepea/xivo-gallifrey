@@ -11,7 +11,7 @@
 
 <?=$form->hidden(array('name' => XIVO_SESS_NAME,'value' => XIVO_SESS_ID));?>
 <?=$form->hidden(array('name' => 'act','value' => 'addagent'));?>
-<?=$form->hidden(array('name' => 'fm_send','value' => '1'));?>
+<?=$form->hidden(array('name' => 'fm_send','value' => 1));?>
 
 <?=$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/agents/formagent');?>
 

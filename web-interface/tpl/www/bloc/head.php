@@ -11,8 +11,10 @@
 			var xivo_sess_str = '<?=XIVO_SESS_STR?>';
 			var xivo_api_path_info = '<?=$this->get_option('api_path_info');?>';
 			var xivo_tooltips = '&nbsp;';
+			var xivo_fm_onfocus_class = 'it-mfocus';
+			var xivo_fm_onblur_class = 'it-mblur';
 		</script>
-		<!-- Date: <?=gmstrftime('%Y-%m-%d %H:%M:%S');?> GMT -->
+		<!-- Date: <?=gmstrftime('%Y-%m-%d %H:%M:%S %Z');?> -->
 
 <?php
 	$this->file_include('bloc/meta');

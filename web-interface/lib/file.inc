@@ -638,8 +638,6 @@ class xivo_file
 
 	function read_d($dir,$type='',$mode='',$match='')
 	{
-		$r = false;
-
 		$dir = (string) $dir;
 		$type = (string) $type;
 		$mode = (string) $mode;
@@ -665,7 +663,7 @@ class xivo_file
 		$mode = $nmode;
 
 		if(($mode !== '' || $type !== '') === true && xivo_file::is_x($dir) === false)
-			return($r);
+			return(false);
 
 		$r = array();
 
@@ -743,12 +741,10 @@ class xivo_file
 
 	function rmdir($dir)
 	{
-		$r = false;
-
 		if(($dir = xivo_file::is_d_rw($dir)) === false
 		|| xivo_file::is_d_rw(dirname($dir)) === false
 		|| ($list = xivo_file::read_d($dir)) === false)
-			return($r);
+			return(false);
 
 		if(isset($list[0]) === false)
 			return(rmdir($dir));

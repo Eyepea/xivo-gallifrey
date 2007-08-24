@@ -10,12 +10,12 @@
 <form action="#" enctype="multipart/form-data" method="post" accept-charset="utf-8">
 <?=$form->hidden(array('name' => 'max_file_size','value' => $option['file']['size']));?>
 <?=$form->hidden(array('name' => XIVO_SESS_NAME,'value' => XIVO_SESS_ID));?>
-<?=$form->hidden(array('name' => 'fm_send','value' => '1'));?>
+<?=$form->hidden(array('name' => 'fm_send','value' => 1));?>
 <?=$form->hidden(array('name' => 'act','value' => 'add'));?>
 
-<?=$form->file(array('desc' => $this->bbf('fm_filename'),'name' => 'filename','labelid' => 'filename','size' => 15,'value' => $info['filename']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->file(array('desc' => $this->bbf('fm_filename'),'name' => 'filename','labelid' => 'filename','size' => 15,'value' => $info['filename']));?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_dirname'),'name' => 'dirname','labelid' => 'it-dirname','key' => false,'value' => $info['dirname']),$this->vars('list_dirs'),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->select(array('desc' => $this->bbf('fm_dirname'),'name' => 'dirname','labelid' => 'it-dirname','key' => false,'value' => $info['dirname']),$this->vars('list_dirs'));?>
 
 <?=$form->submit(array('name' => 'submit','id' => 'it-submit','value' => $this->bbf('fm_bt-save')));?>
 </form>

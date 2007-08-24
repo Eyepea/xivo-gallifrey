@@ -18,7 +18,7 @@
 
 <div id="sb-part-first">
 
-<?=$form->text(array('desc' => $this->bbf('fm_agentgroup_name'),'name' => 'agroup[name]','labelid' => 'agroup-name','size' => 25,'default' => $element['agroup']['name']['default'],'value' => $info['agroup']['name']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_agentgroup_name'),'name' => 'agroup[name]','labelid' => 'agroup-name','size' => 25,'default' => $element['agroup']['name']['default'],'value' => $info['agroup']['name']));?>
 
 <?php
 	if($agents !== false):
@@ -26,7 +26,7 @@
 
 <div id="agentlist" class="fm-field fm-multilist"><p><label id="lb-agentlist" for="it-agentlist"><?=$this->bbf('fm_agents');?></label></p>
 	<div class="slt-outlist">
-		<?=$form->select(array('name' => 'agentlist','label' => false,'id' => 'it-agentlist','browse' => 'sort','key' => 'fullname-number','altkey' => 'id','multiple' => true,'size' => 5,'field' => false),$agent_unslt,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+		<?=$form->select(array('name' => 'agentlist','label' => false,'id' => 'it-agentlist','browse' => 'sort','key' => 'fullname-number','altkey' => 'id','multiple' => true,'size' => 5,'field' => false),$agent_unslt);?>
 	</div>
 	<div class="inout-list">
 
@@ -36,7 +36,7 @@
 	</div>
 	<div class="slt-inlist">
 
-		<?=$form->select(array('name' => 'agent-select[]','label' => false,'id' => 'it-agent','browse' => 'sort','key' => 'fullname-number','altkey' => 'id','multiple' => true,'size' => 5,'field' => false),$agent_slt,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+		<?=$form->select(array('name' => 'agent-select[]','label' => false,'id' => 'it-agent','browse' => 'sort','key' => 'fullname-number','altkey' => 'id','multiple' => true,'size' => 5,'field' => false),$agent_slt);?>
 
 		<div class="bt-updown">
 
@@ -62,7 +62,7 @@
 	<div id="queuelist" class="fm-field fm-multilist">
 		<div class="slt-outlist">
 
-		<?=$form->select(array('name' => 'queuelist','label' => false,'id' => 'it-queuelist','multiple' => true,'size' => 5,'field' => false,'key' => false),$qmember_unslt,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+		<?=$form->select(array('name' => 'queuelist','label' => false,'id' => 'it-queuelist','multiple' => true,'size' => 5,'field' => false,'key' => false),$qmember_unslt);?>
 
 		</div>
 		<div class="inout-list">
@@ -74,7 +74,7 @@
 		</div>
 		<div class="slt-inlist">
 
-		<?=$form->select(array('name' => 'queue-select[]','label' => false,'id' => 'it-queue','multiple' => true,'size' => 5,'field' => false,'key' => 'queue_name','altkey' => 'queue_name'),$qmember_slt,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+		<?=$form->select(array('name' => 'queue-select[]','label' => false,'id' => 'it-queue','multiple' => true,'size' => 5,'field' => false,'key' => 'queue_name','altkey' => 'queue_name'),$qmember_slt);?>
 
 		</div>
 	</div>
@@ -101,7 +101,7 @@
 ?>
 			<tr id="queue-<?=$name?>" class="fm-field<?=$class?>">
 				<td class="td-left txt-left"><?=$name?></td>
-				<td class="td-right txt-right"><?=$form->select(array('field' => false,'name' => 'queue['.$name.'][penalty]','id' => false,'label' => false,'default' => $element['qmember']['penalty']['default'],'value' => $penalty),$element['qmember']['penalty']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?></td>
+				<td class="td-right txt-right"><?=$form->select(array('field' => false,'name' => 'queue['.$name.'][penalty]','id' => false,'label' => false,'default' => $element['qmember']['penalty']['default'],'value' => $penalty),$element['qmember']['penalty']['value']);?></td>
 			</tr>
 <?php
 		endfor;

@@ -24,7 +24,7 @@
 	<div id="grouplist" class="fm-field fm-multilist">
 		<div class="slt-outlist">
 
-		<?=$form->select(array('name' => 'grouplist','label' => false,'id' => 'it-grouplist','multiple' => true,'size' => 5,'field' => false,'key' => false),$gmember_unslt,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+		<?=$form->select(array('name' => 'grouplist','label' => false,'id' => 'it-grouplist','multiple' => true,'size' => 5,'field' => false,'key' => false),$gmember_unslt);?>
 
 		</div>
 		<div class="inout-list">
@@ -36,18 +36,18 @@
 		</div>
 		<div class="slt-inlist">
 
-		<?=$form->select(array('name' => 'group-select[]','label' => false,'id' => 'it-group','multiple' => true,'size' => 5,'field' => false,'key' => 'queue_name','altkey' => 'queue_name'),$gmember_slt,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+		<?=$form->select(array('name' => 'group-select[]','label' => false,'id' => 'it-group','multiple' => true,'size' => 5,'field' => false,'key' => 'queue_name','altkey' => 'queue_name'),$gmember_slt);?>
 
 		</div>
 	</div>
 
 	<div class="clearboth">
 
-		<?=$form->checkbox(array('desc' => $this->bbf('fm_userfeatures_ringgroup'),'name' => 'ufeatures[ringgroup]','labelid' => 'ufeatures-ringgroup','default' => $element['ufeatures']['ringgroup']['default'],'checked' => $ringgroup),(empty($gmember_slt) === true ? 'disabled="disabled" ' : '').'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';" onclick="xivo_eid(\'ringgroup\').style.display = this.checked == true ? \'block\' : \'none\';"');?>
+		<?=$form->checkbox(array('desc' => $this->bbf('fm_userfeatures_ringgroup'),'name' => 'ufeatures[ringgroup]','labelid' => 'ufeatures-ringgroup','default' => $element['ufeatures']['ringgroup']['default'],'checked' => $ringgroup),(empty($gmember_slt) === true ? 'disabled="disabled" ' : '').'onclick="xivo_eid(\'ringgroup\').style.display = this.checked == true ? \'block\' : \'none\';"');?>
 
 		<div id="ringgroup"<?=($ringgroup !== true ? ' class="b-nodisplay"' : '')?>>
 
-		<?=$form->select(array('desc' => $this->bbf('fm_usergroup'),'name' => 'usergroup','id' => 'it-usergroup','key' => 'queue_name','value' => $info['usergroup']['groupid']),$gmember_slt,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+		<?=$form->select(array('desc' => $this->bbf('fm_usergroup'),'name' => 'usergroup','id' => 'it-usergroup','key' => 'queue_name','value' => $info['usergroup']['groupid']),$gmember_slt);?>
 		</div>
 
 	</div>
@@ -75,8 +75,8 @@
 ?>
 			<tr id="group-<?=$name?>" class="fm-field<?=$class?>">
 				<td class="td-left txt-left"><?=$name?></td>
-				<td><?=$form->select(array('field' => false,'name' => 'group['.$name.'][chantype]','id' => false,'label' => false,'key' => false,'default' => $element['qmember']['chantype']['default'],'value' => $ref['member']['channel']),$element['qmember']['chantype']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?></td>
-				<td class="td-right txt-right"><?=$form->select(array('field' => false,'name' => 'group['.$name.'][call-limit]','id' => false,'label' => false,'default' => $element['qmember']['call-limit']['default'],'value' => $calllimit),$element['qmember']['call-limit']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?></td>
+				<td><?=$form->select(array('field' => false,'name' => 'group['.$name.'][chantype]','id' => false,'label' => false,'key' => false,'default' => $element['qmember']['chantype']['default'],'value' => $ref['member']['channel']),$element['qmember']['chantype']['value']);?></td>
+				<td class="td-right txt-right"><?=$form->select(array('field' => false,'name' => 'group['.$name.'][call-limit]','id' => false,'label' => false,'default' => $element['qmember']['call-limit']['default'],'value' => $calllimit),$element['qmember']['call-limit']['value']);?></td>
 			</tr>
 <?php
 		endfor;
@@ -100,7 +100,7 @@
 	<div id="queuelist" class="fm-field fm-multilist">
 		<div class="slt-outlist">
 
-		<?=$form->select(array('name' => 'queuelist','label' => false,'id' => 'it-queuelist','multiple' => true,'size' => 5,'field' => false,'key' => false),$qmember_unslt,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+		<?=$form->select(array('name' => 'queuelist','label' => false,'id' => 'it-queuelist','multiple' => true,'size' => 5,'field' => false,'key' => false),$qmember_unslt);?>
 
 		</div>
 		<div class="inout-list">
@@ -112,7 +112,7 @@
 		</div>
 		<div class="slt-inlist">
 
-		<?=$form->select(array('name' => 'queue-select[]','label' => false,'id' => 'it-queue','multiple' => true,'size' => 5,'field' => false,'key' => 'queue_name','altkey' => 'queue_name'),$qmember_slt,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+		<?=$form->select(array('name' => 'queue-select[]','label' => false,'id' => 'it-queue','multiple' => true,'size' => 5,'field' => false,'key' => 'queue_name','altkey' => 'queue_name'),$qmember_slt);?>
 
 		</div>
 	</div>
@@ -142,9 +142,9 @@
 ?>
 			<tr id="queue-<?=$name?>" class="fm-field<?=$class?>">
 				<td class="td-left txt-left"><?=$name?></td>
-				<td><?=$form->select(array('field' => false,'name' => 'queue['.$name.'][chantype]','id' => false,'label' => false,'key' => false,'default' => $element['qmember']['chantype']['default'],'value' => $ref['member']['channel']),$element['qmember']['chantype']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?></td>
-				<td><?=$form->select(array('field' => false,'name' => 'queue['.$name.'][penalty]','id' => false,'label' => false,'default' => $element['qmember']['penalty']['default'],'value' => $penalty),$element['qmember']['penalty']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?></td>
-				<td class="td-right txt-right"><?=$form->select(array('field' => false,'name' => 'queue['.$name.'][call-limit]','id' => false,'label' => false,'default' => $element['qmember']['call-limit']['default'],'value' => $calllimit),$element['qmember']['call-limit']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?></td>
+				<td><?=$form->select(array('field' => false,'name' => 'queue['.$name.'][chantype]','id' => false,'label' => false,'key' => false,'default' => $element['qmember']['chantype']['default'],'value' => $ref['member']['channel']),$element['qmember']['chantype']['value']);?></td>
+				<td><?=$form->select(array('field' => false,'name' => 'queue['.$name.'][penalty]','id' => false,'label' => false,'default' => $element['qmember']['penalty']['default'],'value' => $penalty),$element['qmember']['penalty']['value']);?></td>
+				<td class="td-right txt-right"><?=$form->select(array('field' => false,'name' => 'queue['.$name.'][call-limit]','id' => false,'label' => false,'default' => $element['qmember']['call-limit']['default'],'value' => $calllimit),$element['qmember']['call-limit']['value']);?></td>
 			</tr>
 <?php
 		endfor;

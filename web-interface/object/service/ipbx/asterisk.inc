@@ -61,14 +61,14 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 			if(isset($infos[0]) === true)
 			{
-				$label = (string) $infos[0];
+				$label = $infos[0];
 				$sess_sre['infos']['label'] = $label;
-			}
 
-			if(isset($infos[1]) === true)
-			{
-				$version = (string) $infos[1];
-				$sess_sre['infos']['version'] = $version;
+				if(isset($infos[1]) === true)
+				{
+					$version = $infos[1];
+					$sess_sre['infos']['version'] = $version;
+				}
 			}
 		}
 
@@ -758,6 +758,45 @@ class xivo_service_asterisk extends xivo_service_abstract
 		}
 
 		if(empty($r) === true)
+			$r = false;
+
+		return($r);
+	}
+
+	function get_outcall_list($disable=null)
+	{
+		$outcall = &$this->get_module('outcall');
+		$extenumbers = &$this->get_module('extenumbers');
+		$tfeatures = &$this->get_module('trunkfeatures');
+
+		if(($rs = $outcall->get_all($disable)) === false || ($nb = count($rs)) === 0)
+			return(false);
+
+		$r = $info = $trunks = array();
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			$info['outcall'] = $rs[$i];
+			$info['extenumbers'] = false;
+
+			if(($info['tfeatures'] = $tfeatures->get($info['outcall']['trunkfeaturesid'])) === false
+			|| ($info['outcall']['mode'] !== 'numlen'
+			   && ($info['extenumbers'] = $extenumbers->get($info['outcall']['extenid'])) === false) === true)
+				continue;
+
+			if(isset($trunks[$info['tfeatures']['trunk']]) === false)
+				$trunks[$info['tfeatures']['trunk']] = &$this->get_module('trunk'.$info['tfeatures']['trunk']);
+
+			$trunkmodule = &$trunks[$info['tfeatures']['trunk']];
+
+			if($trunkmodule === false
+			|| ($info['trunk'] = $trunkmodule->get($info['tfeatures']['trunkid'],$disable)) === false)
+				continue;
+
+			$r[] = $info;
+		}
+
+		if(isset($r[0]) === false)
 			$r = false;
 
 		return($r);

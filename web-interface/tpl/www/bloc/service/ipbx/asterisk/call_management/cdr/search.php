@@ -80,62 +80,62 @@
 <form action="#" method="post" accept-charset="utf-8">
 
 <?=$form->hidden(array('name' => XIVO_SESS_NAME,'value' => XIVO_SESS_ID));?>
-<?=$form->hidden(array('name' => 'fm_send','value' => '1'));?>
+<?=$form->hidden(array('name' => 'fm_send','value' => 1));?>
 <?=$form->hidden(array('name' => 'act','value' => 'search'));?>
 
 <div class="fm-field fm-desc-inline">
 <div class="fm-multifield">
-<?=$form->text(array('desc' => $this->bbf('fm_dbeg'),'field' => false,'name' => 'dbeg','labelid' => 'dbeg','default' => $element['dbeg']['default'],'value' => $info['dbeg']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_dbeg'),'field' => false,'name' => 'dbeg','labelid' => 'dbeg','default' => $element['dbeg']['default'],'value' => $info['dbeg']));?>
 <a href="#" onclick="xivo_eid('cal-dend').style.display = xivo_eid('cal-dend').style.display == 'block' ? 'none'  : 'none'; xivo_calendar_display('cal-dbeg','it-dbeg');" onmouseover="xivo_calendar_body();" onmouseout="xivo_calendar_body('cal-dbeg','it-dbeg');" title="<?=$this->bbf('bt-showcalendar');?>"><?=$url->img_html('img/site/button/row-down.gif',$this->bbf('bt-showcalendar'),'id="bt-showcalbeg" border="0" style="vertical-align: bottom;padding-left: 2px;"');?></a>
 </div>
 <div id="cal-dbeg" onmouseover="xivo_calendar_body();" onmouseout="xivo_calendar_body('cal-dbeg','it-dbeg');" class="b-nodisplay"></div>
 <div class="fm-multifield">
-<?=$form->text(array('desc' => $this->bbf('fm_dend'),'field' => false,'name' => 'dend','labelid' => 'dend','value' => $info['dend']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_dend'),'field' => false,'name' => 'dend','labelid' => 'dend','value' => $info['dend']));?>
 <a href="#" onclick="xivo_eid('cal-dbeg').style.display = xivo_eid('cal-dbeg').style.display == 'block' ? 'none'  : 'none';xivo_calendar_display('cal-dend','it-dend');" onmouseover="xivo_calendar_body();" onmouseout="xivo_calendar_body('cal-dend','it-dend');" title="<?=$this->bbf('bt-showcalendar');?>"><?=$url->img_html('img/site/button/row-down.gif',$this->bbf('bt-showcalendar'),'id="bt-showcalend" border="0" style="vertical-align: bottom;padding-left: 2px;"');?></a>
 </div>
 <div id="cal-dend" onmouseover="xivo_calendar_body();" onmouseout="xivo_calendar_body('cal-dend','it-dend');" class="b-nodisplay"></div>
 </div>
 
-<?=$form->select(array('desc' => $this->bbf('fm_channel'),'name' => 'channel','labelid' => 'channel','empty' => true,'bbf' => array('mixvalue','fm_channel-opt'),'default' => $element['channel']['default'],'value' => $info['channel']),$element['channel']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->select(array('desc' => $this->bbf('fm_channel'),'name' => 'channel','labelid' => 'channel','empty' => true,'bbf' => array('mixvalue','fm_channel-opt'),'default' => $element['channel']['default'],'value' => $info['channel']),$element['channel']['value']);?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_disposition'),'name' => 'disposition','labelid' => 'disposition','empty' => true,'key' => false,'bbf' => array('concatkey','fm_disposition-opt-'),'default' => $element['disposition']['default'],'value' => $info['disposition']),$element['disposition']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->select(array('desc' => $this->bbf('fm_disposition'),'name' => 'disposition','labelid' => 'disposition','empty' => true,'key' => false,'bbf' => array('concatkey','fm_disposition-opt-'),'default' => $element['disposition']['default'],'value' => $info['disposition']),$element['disposition']['value']);?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_amaflags'),'name' => 'amaflags','labelid' => 'amaflags','empty' => true,'bbf' => array('mixvalue','fm_amaflags-opt-'),'default' => $element['amaflags']['default'],'value' => $amaflags),$element['amaflags']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->select(array('desc' => $this->bbf('fm_amaflags'),'name' => 'amaflags','labelid' => 'amaflags','empty' => true,'bbf' => array('mixvalue','fm_amaflags-opt-'),'default' => $element['amaflags']['default'],'value' => $amaflags),$element['amaflags']['value']);?>
 
 <div class="fm-field fm-multifield">
-<?=$form->text(array('desc' => $this->bbf('fm_src'),'field' => false,'name' => 'src','labelid' => 'src','size' => 15,'default' => $element['src']['default'],'value' => $info['src']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
-<?=$form->select(array('field' => false,'name' => 'srcformat','labelid' => 'srcformat','key' => false,'bbf' => array('concatkey','fm_srcformat-opt-'),'default' => $element['srcformat']['default'],'value' => $info['srcformat']),$element['srcformat']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_src'),'field' => false,'name' => 'src','labelid' => 'src','size' => 15,'default' => $element['src']['default'],'value' => $info['src']));?>
+<?=$form->select(array('field' => false,'name' => 'srcformat','labelid' => 'srcformat','key' => false,'bbf' => array('concatkey','fm_srcformat-opt-'),'default' => $element['srcformat']['default'],'value' => $info['srcformat']),$element['srcformat']['value']);?>
 </div>
 
 <div class="fm-field fm-multifield">
-<?=$form->text(array('desc' => $this->bbf('fm_dst'),'field' => false,'name' => 'dst','labelid' => 'dst','size' => 15,'default' => $element['dst']['default'],'value' => $info['dst']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
-<?=$form->select(array('field' => false,'name' => 'dstformat','labelid' => 'dstformat','key' => false,'bbf' => array('concatkey','fm_dstformat-opt-'),'default' => $element['dstformat']['default'],'value' => $info['dstformat']),$element['dstformat']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_dst'),'field' => false,'name' => 'dst','labelid' => 'dst','size' => 15,'default' => $element['dst']['default'],'value' => $info['dst']));?>
+<?=$form->select(array('field' => false,'name' => 'dstformat','labelid' => 'dstformat','key' => false,'bbf' => array('concatkey','fm_dstformat-opt-'),'default' => $element['dstformat']['default'],'value' => $info['dstformat']),$element['dstformat']['value']);?>
 </div>
 
 <div class="fm-field fm-multifield">
-<?=$form->text(array('desc' => $this->bbf('fm_clid'),'field' => false,'name' => 'clid','labelid' => 'clid','size' => 15,'notag' => false,'default' => $element['clid']['default'],'value' => $info['clid']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
-<?=$form->select(array('field' => false,'name' => 'clidformat','labelid' => 'clidformat','key' => false,'bbf' => array('concatkey','fm_clidformat-opt-'),'default' => $element['clidformat']['default'],'value' => $info['clidformat']),$element['clidformat']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_clid'),'field' => false,'name' => 'clid','labelid' => 'clid','size' => 15,'notag' => false,'default' => $element['clid']['default'],'value' => $info['clid']));?>
+<?=$form->select(array('field' => false,'name' => 'clidformat','labelid' => 'clidformat','key' => false,'bbf' => array('concatkey','fm_clidformat-opt-'),'default' => $element['clidformat']['default'],'value' => $info['clidformat']),$element['clidformat']['value']);?>
 </div>
 
 <div class="fm-field fm-multifield">
-<?=$form->text(array('desc' => $this->bbf('fm_accountcode'),'field' => false,'name' => 'accountcode','labelid' => 'accountcode','size' => 15,'default' => $element['accountcode']['default'],'value' => $info['accountcode']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
-<?=$form->select(array('field' => false,'name' => 'accountcodeformat','labelid' => 'accountcodeformat','key' => false,'bbf' => array('concatkey','fm_accountcodeformat-opt-'),'default' => $element['accountcodeformat']['default'],'value' => $info['accountcodeformat']),$element['accountcodeformat']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_accountcode'),'field' => false,'name' => 'accountcode','labelid' => 'accountcode','size' => 15,'default' => $element['accountcode']['default'],'value' => $info['accountcode']));?>
+<?=$form->select(array('field' => false,'name' => 'accountcodeformat','labelid' => 'accountcodeformat','key' => false,'bbf' => array('concatkey','fm_accountcodeformat-opt-'),'default' => $element['accountcodeformat']['default'],'value' => $info['accountcodeformat']),$element['accountcodeformat']['value']);?>
 </div>
 
 <div class="fm-field fm-multifield">
-<?=$form->text(array('desc' => $this->bbf('fm_userfield'),'field' => false,'name' => 'userfield','labelid' => 'userfield','size' => 15,'default' => $element['userfield']['default'],'value' => $info['userfield']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
-<?=$form->select(array('field' => false,'name' => 'userfieldformat','labelid' => 'userfieldformat','key' => false,'bbf' => array('concatkey','fm_userfieldformat-opt-'),'default' => $element['userfieldformat']['default'],'value' => $info['userfieldformat']),$element['userfieldformat']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_userfield'),'field' => false,'name' => 'userfield','labelid' => 'userfield','size' => 15,'default' => $element['userfield']['default'],'value' => $info['userfield']));?>
+<?=$form->select(array('field' => false,'name' => 'userfieldformat','labelid' => 'userfieldformat','key' => false,'bbf' => array('concatkey','fm_userfieldformat-opt-'),'default' => $element['userfieldformat']['default'],'value' => $info['userfieldformat']),$element['userfieldformat']['value']);?>
 </div>
 
 <div class="fm-field fm-desc-inline">
 <div class="fm-multifield">
-<?=$form->text(array('desc' => $this->bbf('fm_dubeg'),'field' => false,'name' => 'dubeg','labelid' => 'dubeg','default' => $element['dubeg']['default'],'value' => $info['dubeg']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
-<?=$form->select(array('field' => false,'name' => 'dubegunit','id' => 'dubegunit','label' => false,'key' => false,'bbf' => array('concatkey','fm_dubegunit-opt-'),'default' => $element['dubegunit']['default'],'value' => $info['dubegunit']),$element['dubegunit']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_dubeg'),'field' => false,'name' => 'dubeg','labelid' => 'dubeg','default' => $element['dubeg']['default'],'value' => $info['dubeg']));?>
+<?=$form->select(array('field' => false,'name' => 'dubegunit','id' => 'dubegunit','label' => false,'key' => false,'bbf' => array('concatkey','fm_dubegunit-opt-'),'default' => $element['dubegunit']['default'],'value' => $info['dubegunit']),$element['dubegunit']['value']);?>
 </div>
 
 <div class="fm-multifield">
-<?=$form->text(array('desc' => $this->bbf('fm_duend'),'field' => false,'name' => 'duend','labelid' => 'duend','value' => $info['duend']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
-<?=$form->select(array('field' => false,'name' => 'duendunit','id' => 'duendunit','label' => false,'key' => false,'bbf' => array('concatkey','fm_duendunit-opt-'),'default' => $element['duendunit']['default'],'value' => $info['duendunit']),$element['duendunit']['value'],'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_duend'),'field' => false,'name' => 'duend','labelid' => 'duend','value' => $info['duend']));?>
+<?=$form->select(array('field' => false,'name' => 'duendunit','id' => 'duendunit','label' => false,'key' => false,'bbf' => array('concatkey','fm_duendunit-opt-'),'default' => $element['duendunit']['default'],'value' => $info['duendunit']),$element['duendunit']['value']);?>
 </div>
 </div>
 

@@ -8,10 +8,10 @@
 <form action="#" method="post" accept-charset="utf-8">
 
 <?=$form->hidden(array('name' => XIVO_SESS_NAME,'value' => XIVO_SESS_ID));?>
-<?=$form->hidden(array('name' => 'fm_send','value' => '1'));?>
+<?=$form->hidden(array('name' => 'fm_send','value' => 1));?>
 <?=$form->hidden(array('name' => 'act','value' => 'adddir'));?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_dirname'),'name' => 'dirname','labelid' => 'dirname','size' => 15,'value' => $this->varra('info','dirname')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_dirname'),'name' => 'dirname','labelid' => 'dirname','size' => 15,'value' => $this->varra('info','dirname')));?>
 
 <?=$form->submit(array('name' => 'submit','id' => 'it-submit','value' => $this->bbf('fm_bt-save')));?>
 </form>

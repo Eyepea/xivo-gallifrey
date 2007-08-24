@@ -7,7 +7,7 @@ $dfeatures = &$ipbx->get_module('didfeatures');
 $extensions = &$ipbx->get_module('extensions');
 $extenumbers = &$ipbx->get_module('extenumbers');
 
-$info = $result = array();
+$info = array();
 
 $param = array();
 $param['act'] = 'list';
@@ -156,6 +156,8 @@ switch($act)
 		{
 			if(isset($_QR['fm_send']) === false || xivo_issa('extenumbers',$_QR) === false || xivo_issa('dfeatures',$_QR) === false)
 				break;
+
+			$result = array();
 
 			$return = &$result;
 

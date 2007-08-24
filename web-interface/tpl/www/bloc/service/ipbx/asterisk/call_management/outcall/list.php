@@ -21,9 +21,9 @@
 <table cellspacing="0" cellpadding="0" border="0">
 	<tr class="sb-top">
 		<th class="th-left xspan"><span class="span-left">&nbsp;</span></th>
+		<th class="th-center"><?=$this->bbf('col_name');?></th>
 		<th class="th-center"><?=$this->bbf('col_trunk');?></th>
 		<th class="th-center"><?=$this->bbf('col_mode');?></th>
-		<th class="th-center"><?=$this->bbf('col_mode-info');?></th>
 		<th class="th-center"><?=$this->bbf('col_context');?></th>
 		<th class="th-center" id="col-action" colspan="2"><?=$this->bbf('col_action');?></th>
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
@@ -47,16 +47,16 @@
 				$icon = 'enable';
 			endif;
 
-			$mode = $context = $mode_info = '-';
+			$mode = $context = '-';
 
 			$mod = $j % 2 === 0 ? 1 : 2;
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=$mod?>on2">
 		<td class="td-left"><?=$form->checkbox(array('name' => 'outcalls[]','value' => $ref['outcall']['id'],'label' => false,'id' => 'it-outcalls-'.$i,'checked' => false,'field' => false));?></td>
-		<td class="txt-left"><label for="it-outcalls-<?=$i?>" id="lb-outcalls-<?=$i?>"><?=$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"');?><?=$ref['extenumbers']['exten']?></label></td>
-		<td><?=$mode?></td>
-		<td><?=$mode_info?></td>
-		<td><?=$context?></td>
+		<td class="txt-left"><label for="it-outcalls-<?=$i?>" id="lb-outcalls-<?=$i?>"><?=$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"');?><?=$ref['outcall']['name']?></label></td>
+		<td><?=$this->bbf('outcall_trunk-'.$ref['tfeatures']['trunk'],$ref['trunk']['name']);?></td>
+		<td><?=$this->bbf('outcall_mode-'.$ref['outcall']['mode']);?></td>
+		<td><?=$ref['outcall']['context']?></td>
 		<td class="td-right" colspan="3">
 		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/call_management/outcall',array('act' => 'edit','id' => $ref['outcall']['id']),null,$this->bbf('opt_modify'));?>
 		<?=$url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'service/ipbx/call_management/outcall',array('act' => 'delete','id' => $ref['outcall']['id'],'page' => $pager['page']),'onclick="return(confirm(\''.xivo_stript($this->bbf('opt_delete_confirm')).'\') ? true : false);"',$this->bbf('opt_delete'));?>

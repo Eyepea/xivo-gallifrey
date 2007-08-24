@@ -269,6 +269,8 @@ class xivo_service_asterisk_extenfeatures extends xivo_service_asterisk_extensio
 
 	function _clean_value($value)
 	{
+		$value = preg_replace('/\[(\d)\]/','\\1',(string) $value);
+
 		if(isset($value{0}) === true && $value{0} === '_')
 		{
 			$subvalue = substr($value,1);

@@ -68,7 +68,7 @@ else:
 <form action="#" method="post" accept-charset="utf-8" onsubmit="xivo_smenu_fmsubmit(this);">
 
 <?=$form->hidden(array('name' => XIVO_SESS_NAME,'value' => XIVO_SESS_ID));?>
-<?=$form->hidden(array('name' => 'fm_send','value' => '1'));?>
+<?=$form->hidden(array('name' => 'fm_send','value' => 1));?>
 <?=$form->hidden(array('name' => 'fm_smenu-tab','value' => 'smenu-tab-1'));?>
 <?=$form->hidden(array('name' => 'fm_smenu-part','value' => 'sb-part-first'));?>
 
@@ -115,17 +115,17 @@ else:
 
 			echo $form->hidden(array('name' => 'emergency[id][]','value' => $id));
 
-			echo $form->select(array('field' => false,'name' => 'emergency[trunkfeaturesid][]','id' => false,'label' => false,'browse' => 'trunk','key' => 'name','altkey' => 'trunkfeaturesid','optgroup' => array('key' => true,'bbf' => array('concat','fm_emergency-trunk-opt-')),'value' => $ref['generaloutcall']['trunkfeaturesid'],'default' => $element['generaloutcall']['trunkfeaturesid']['default']),$trunks_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');
+			echo $form->select(array('field' => false,'name' => 'emergency[trunkfeaturesid][]','id' => false,'label' => false,'browse' => 'trunk','key' => 'name','altkey' => 'trunkfeaturesid','optgroup' => array('key' => true,'bbf' => array('concat','fm_emergency-trunk-opt-')),'value' => $ref['generaloutcall']['trunkfeaturesid'],'default' => $element['generaloutcall']['trunkfeaturesid']['default']),$trunks_list);
 ?>
 			</td>
-			<td><?=$form->select(array('field' => false,'name' => 'emergency[extenmode][]','key' => false,'id' => false,'label' => false,'bbf' => array('concatkey','fm_emergency-extenmode-opt-'),'value' => $ref['extenumbers']['extenmode'],'default' => $element['extenumbers']['extenmode']['default']),$element['extenumbers']['extenmode']['value'],'onchange="xivo_extenmode(this);" onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?></td>
+			<td><?=$form->select(array('field' => false,'name' => 'emergency[extenmode][]','key' => false,'id' => false,'label' => false,'bbf' => array('concatkey','fm_emergency-extenmode-opt-'),'value' => $ref['extenumbers']['extenmode'],'default' => $element['extenumbers']['extenmode']['default']),$element['extenumbers']['extenmode']['value'],'onchange="xivo_extenmode(this);"');?></td>
 			<td>
 				<div<?=$extendisplay?>>
-				<?=$form->text(array('field' => false,'name' => 'emergency[exten][]','id' => false,'label' => false,'size' => 15,'value' => $ref['extenumbers']['exten'],'default' => $element['extenumbers']['exten']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+				<?=$form->text(array('field' => false,'name' => 'emergency[exten][]','id' => false,'label' => false,'size' => 15,'value' => $ref['extenumbers']['exten'],'default' => $element['extenumbers']['exten']['default']));?>
 				</div>
 				<div<?=$rangedisplay?>>
-				<?=$form->text(array('field' => false,'name' => 'emergency[rangebeg][]','id' => false,'label' => false,'size' => 5,'value' => $ref['extenumbers']['rangebeg'],'default' => $element['extenumbers']['rangebeg']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
-				<?=$form->text(array('field' => false,'name' => 'emergency[rangeend][]','id' => false,'label' => false,'size' => 5,'value' => $ref['extenumbers']['rangeend'],'default' => $element['extenumbers']['rangeend']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+				<?=$form->text(array('field' => false,'name' => 'emergency[rangebeg][]','id' => false,'label' => false,'size' => 5,'value' => $ref['extenumbers']['rangebeg'],'default' => $element['extenumbers']['rangebeg']['default']));?>
+				<?=$form->text(array('field' => false,'name' => 'emergency[rangeend][]','id' => false,'label' => false,'size' => 5,'value' => $ref['extenumbers']['rangeend'],'default' => $element['extenumbers']['rangeend']['default']));?>
 				</div>
 			</td>
 			
@@ -146,15 +146,15 @@ else:
 	<table class="b-nodisplay" cellspacing="0" cellpadding="0" border="0">
 		<tbody id="ex-emergency">
 		<tr class="fm-field">
-			<td class="td-left txt-left"><?=$form->select(array('field' => false,'name' => 'emergency[trunkfeaturesid][]','id' => false,'label' => false,'browse' => 'trunk','key' => 'name','altkey' => 'trunkfeaturesid','optgroup' => array('key' => true,'bbf' => array('concat','fm_emergency-trunk-opt-')),'default' => $element['generaloutcall']['trunkfeaturesid']['default']),$trunks_list,'disabled="disabled" onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?></td>
-			<td><?=$form->select(array('field' => false,'name' => 'emergency[extenmode][]','key' => false,'id' => false,'label' => false,'bbf' => array('concatkey','fm_emergency-extenmode-opt-'),'default' => $element['extenumbers']['extenmode']['default']),$element['extenumbers']['extenmode']['value'],'onchange="xivo_extenmode(this);" disabled="disabled" onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?></td>
+			<td class="td-left txt-left"><?=$form->select(array('field' => false,'name' => 'emergency[trunkfeaturesid][]','id' => false,'label' => false,'browse' => 'trunk','key' => 'name','altkey' => 'trunkfeaturesid','optgroup' => array('key' => true,'bbf' => array('concat','fm_emergency-trunk-opt-')),'default' => $element['generaloutcall']['trunkfeaturesid']['default']),$trunks_list,'disabled="disabled"');?></td>
+			<td><?=$form->select(array('field' => false,'name' => 'emergency[extenmode][]','key' => false,'id' => false,'label' => false,'bbf' => array('concatkey','fm_emergency-extenmode-opt-'),'default' => $element['extenumbers']['extenmode']['default']),$element['extenumbers']['extenmode']['value'],'onchange="xivo_extenmode(this);" disabled="disabled"');?></td>
 			<td>
 				<div<?=($element['extenumbers']['extenmode']['default'] === 'extension' ? '' : ' class="b-nodisplay"')?>>
-				<?=$form->text(array('field' => false,'name' => 'emergency[exten][]','id' => false,'label' => false,'size' => 15,'default' => $element['extenumbers']['exten']['default']),'disabled="disabled" onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+				<?=$form->text(array('field' => false,'name' => 'emergency[exten][]','id' => false,'label' => false,'size' => 15,'default' => $element['extenumbers']['exten']['default']),'disabled="disabled"');?>
 				</div>
 				<div<?=($element['extenumbers']['extenmode']['default'] !== 'extension' ? '' : ' class="b-nodisplay"')?>>
-				<?=$form->text(array('field' => false,'name' => 'emergency[rangebeg][]','id' => false,'label' => false,'size' => 5,'default' => $element['extenumbers']['rangebeg']['default']),'disabled="disabled" onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
-				<?=$form->text(array('field' => false,'name' => 'emergency[rangeend][]','id' => false,'label' => false,'size' => 5,'default' => $element['extenumbers']['rangeend']['default']),'disabled="disabled" onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+				<?=$form->text(array('field' => false,'name' => 'emergency[rangebeg][]','id' => false,'label' => false,'size' => 5,'default' => $element['extenumbers']['rangebeg']['default']),'disabled="disabled"');?>
+				<?=$form->text(array('field' => false,'name' => 'emergency[rangeend][]','id' => false,'label' => false,'size' => 5,'default' => $element['extenumbers']['rangeend']['default']),'disabled="disabled"');?>
 				</div>
 			</td>
 			
@@ -209,17 +209,17 @@ else:
 
 			echo $form->hidden(array('name' => 'special[id][]','value' => $id));
 
-			echo $form->select(array('field' => false,'name' => 'special[trunkfeaturesid][]','id' => false,'label' => false,'browse' => 'trunk','key' => 'name','altkey' => 'trunkfeaturesid','optgroup' => array('key' => true,'bbf' => array('concat','fm_special-trunk-opt-')),'value' => $ref['generaloutcall']['trunkfeaturesid'],'default' => $element['generaloutcall']['trunkfeaturesid']['default']),$trunks_list,'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');
+			echo $form->select(array('field' => false,'name' => 'special[trunkfeaturesid][]','id' => false,'label' => false,'browse' => 'trunk','key' => 'name','altkey' => 'trunkfeaturesid','optgroup' => array('key' => true,'bbf' => array('concat','fm_special-trunk-opt-')),'value' => $ref['generaloutcall']['trunkfeaturesid'],'default' => $element['generaloutcall']['trunkfeaturesid']['default']),$trunks_list);
 ?>
 			</td>
-			<td><?=$form->select(array('field' => false,'name' => 'special[extenmode][]','key' => false,'id' => false,'label' => false,'bbf' => array('concatkey','fm_special-extenmode-opt-'),'value' => $ref['extenumbers']['extenmode'],'default' => $element['extenumbers']['extenmode']['default']),$element['extenumbers']['extenmode']['value'],'onchange="xivo_extenmode(this);" onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?></td>
+			<td><?=$form->select(array('field' => false,'name' => 'special[extenmode][]','key' => false,'id' => false,'label' => false,'bbf' => array('concatkey','fm_special-extenmode-opt-'),'value' => $ref['extenumbers']['extenmode'],'default' => $element['extenumbers']['extenmode']['default']),$element['extenumbers']['extenmode']['value'],'onchange="xivo_extenmode(this);"');?></td>
 			<td>
 				<div<?=$extendisplay?>>
-				<?=$form->text(array('field' => false,'name' => 'special[exten][]','id' => false,'label' => false,'size' => 15,'value' => $ref['extenumbers']['exten'],'default' => $element['extenumbers']['exten']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+				<?=$form->text(array('field' => false,'name' => 'special[exten][]','id' => false,'label' => false,'size' => 15,'value' => $ref['extenumbers']['exten'],'default' => $element['extenumbers']['exten']['default']));?>
 				</div>
 				<div<?=$rangedisplay?>>
-				<?=$form->text(array('field' => false,'name' => 'special[rangebeg][]','id' => false,'label' => false,'size' => 5,'value' => $ref['extenumbers']['rangebeg'],'default' => $element['extenumbers']['rangebeg']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
-				<?=$form->text(array('field' => false,'name' => 'special[rangeend][]','id' => false,'label' => false,'size' => 5,'value' => $ref['extenumbers']['rangeend'],'default' => $element['extenumbers']['rangeend']['default']),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+				<?=$form->text(array('field' => false,'name' => 'special[rangebeg][]','id' => false,'label' => false,'size' => 5,'value' => $ref['extenumbers']['rangebeg'],'default' => $element['extenumbers']['rangebeg']['default']));?>
+				<?=$form->text(array('field' => false,'name' => 'special[rangeend][]','id' => false,'label' => false,'size' => 5,'value' => $ref['extenumbers']['rangeend'],'default' => $element['extenumbers']['rangeend']['default']));?>
 				</div>
 			</td>
 			
@@ -240,15 +240,15 @@ else:
 	<table class="b-nodisplay" cellspacing="0" cellpadding="0" border="0">
 		<tbody id="ex-special">
 		<tr class="fm-field">
-			<td class="td-left txt-left"><?=$form->select(array('field' => false,'name' => 'special[trunkfeaturesid][]','id' => false,'label' => false,'browse' => 'trunk','key' => 'name','altkey' => 'trunkfeaturesid','optgroup' => array('key' => true,'bbf' => array('concat','fm_special-trunk-opt-')),'default' => $element['generaloutcall']['trunkfeaturesid']['default']),$trunks_list,'disabled="disabled" onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?></td>
-			<td><?=$form->select(array('field' => false,'name' => 'special[extenmode][]','key' => false,'id' => false,'label' => false,'bbf' => array('concatkey','fm_special-extenmode-opt-'),'default' => $element['extenumbers']['extenmode']['default']),$element['extenumbers']['extenmode']['value'],'onchange="xivo_extenmode(this);" disabled="disabled" onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?></td>
+			<td class="td-left txt-left"><?=$form->select(array('field' => false,'name' => 'special[trunkfeaturesid][]','id' => false,'label' => false,'browse' => 'trunk','key' => 'name','altkey' => 'trunkfeaturesid','optgroup' => array('key' => true,'bbf' => array('concat','fm_special-trunk-opt-')),'default' => $element['generaloutcall']['trunkfeaturesid']['default']),$trunks_list,'disabled="disabled"');?></td>
+			<td><?=$form->select(array('field' => false,'name' => 'special[extenmode][]','key' => false,'id' => false,'label' => false,'bbf' => array('concatkey','fm_special-extenmode-opt-'),'default' => $element['extenumbers']['extenmode']['default']),$element['extenumbers']['extenmode']['value'],'onchange="xivo_extenmode(this);" disabled="disabled"');?></td>
 			<td>
 				<div<?=($element['extenumbers']['extenmode']['default'] === 'extension' ? '' : ' class="b-nodisplay"')?>>
-				<?=$form->text(array('field' => false,'name' => 'special[exten][]','id' => false,'label' => false,'size' => 15,'default' => $element['extenumbers']['exten']['default']),'disabled="disabled" onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+				<?=$form->text(array('field' => false,'name' => 'special[exten][]','id' => false,'label' => false,'size' => 15,'default' => $element['extenumbers']['exten']['default']),'disabled="disabled"');?>
 				</div>
 				<div<?=($element['extenumbers']['extenmode']['default'] !== 'extension' ? '' : ' class="b-nodisplay"')?>>
-				<?=$form->text(array('field' => false,'name' => 'special[rangebeg][]','id' => false,'label' => false,'size' => 5,'default' => $element['extenumbers']['rangebeg']['default']),'disabled="disabled" onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
-				<?=$form->text(array('field' => false,'name' => 'special[rangeend][]','id' => false,'label' => false,'size' => 5,'default' => $element['extenumbers']['rangeend']['default']),'disabled="disabled" onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+				<?=$form->text(array('field' => false,'name' => 'special[rangebeg][]','id' => false,'label' => false,'size' => 5,'default' => $element['extenumbers']['rangebeg']['default']),'disabled="disabled"');?>
+				<?=$form->text(array('field' => false,'name' => 'special[rangeend][]','id' => false,'label' => false,'size' => 5,'default' => $element['extenumbers']['rangeend']['default']),'disabled="disabled"');?>
 				</div>
 			</td>
 			

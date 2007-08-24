@@ -13,9 +13,9 @@
 <form action="#" method="post" accept-charset="utf-8">
 
 <?=$form->hidden(array('name' => XIVO_SESS_NAME,'value' => XIVO_SESS_ID));?>
-<?=$form->hidden(array('name' => 'fm_send','value' => '1'));?>
+<?=$form->hidden(array('name' => 'fm_send','value' => 1));?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_persistentmembers'),'name' => 'persistentmembers','id' => 'it-persistentmembers','default' => $element['persistentmembers']['default'],'checked' => $this->varra('info','persistentmembers')),'onfocus="this.className=\'it-mfocus\';" onblur="this.className=\'it-mblur\';"');?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_persistentmembers'),'name' => 'persistentmembers','id' => 'it-persistentmembers','default' => $element['persistentmembers']['default'],'checked' => $this->varra('info','persistentmembers')));?>
 
 <?=$form->submit(array('name' => 'submit','id' => 'it-submit','value' => $this->bbf('fm_bt-save')));?>
 

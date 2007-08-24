@@ -536,6 +536,40 @@ function xivo_mk_dprog(id,h)
 	get.style.height = xivo_dprog['current'][id]['cheight']+'px';
 }
 
+function xivo_fm_onfocus_onblur()
+{
+	var arr = new Array();
+	arr[0] = 'input';
+	arr[1] = 'select';
+	arr[2] = 'textarea';
+
+	if(xivo_is_undef(xivo_fm_onfocus_class) == true
+	|| xivo_is_undef(xivo_fm_onblur_class) == true)
+		return(false);
+
+	for(var i = 0;i < 3;i++)
+	{
+		if((tag = xivo_etag(arr[i])) == false
+		|| (len = tag.length) == 0)
+			continue;
+
+		for(var j = 0;j < len;j++)
+		{
+			if(arr[i] == 'input' && tag[j].type != 'text'
+			&& tag[j].type != 'file' == true)
+				continue;
+
+			if(xivo_is_undef(tag[j].onfocus) == true)
+				tag[j].onfocus = function() { this.className = xivo_fm_onfocus_class; }
+
+			if(xivo_is_undef(tag[j].onblur) == true)
+				tag[j].onblur = function() { this.className = xivo_fm_onblur_class; }
+		}
+	}
+
+	return(true);
+}
+
 function xivo_fm_move_selected(from,to)
 {
 	if ((from = xivo_eid(from)) == false || (to = xivo_eid(to)) == false || from.type != 'select-multiple' || to.type != 'select-multiple')

@@ -1,0 +1,44 @@
+; col_name
+Nom
+
+; col_trunk
+Interconnexion
+
+; col_mode
+Mode
+
+; col_context
+Contexte
+
+; col_action
+Action
+
+; outcall_trunk-sip
+Protocole SIP : %s
+
+; outcall_trunk-iax
+Protocole IAX : %s
+
+; outcall_trunk-custom
+Personnalisée : %s
+
+; outcall_mode-numlen
+Taille du numéro
+
+; outcall_mode-extension
+Extension
+
+; outcall_mode-range
+Intervalle
+
+; no_outcall
+Aucun appel sortant trouvé
+
+; opt_modify
+Modifier
+
+; opt_delete
+Supprimer
+
+; opt_delete_confirm
+Etes-vous certain de vouloir supprimer cet appel sortant ?

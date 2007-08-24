@@ -1,0 +1,98 @@
+; title_content_name
+Appels sortants > Ajouter
+
+; fm_outcall_name
+Nom :
+
+; fm_outcall_trunk
+Interconnexion :
+
+; fm_outcall-trunk-opt-sip
+Protocole SIP
+
+; fm_outcall-trunk-opt-iax
+Protocole IAX
+
+; fm_outcall-trunk-opt-custom
+Personnalisée
+
+; fm_outcall_mode
+Mode :
+
+; fm_outcall_mode-opt-numlen
+Taille du numéro
+
+; fm_outcall_mode-opt-extension
+Extension
+
+; fm_outcall_mode-opt-range
+Intervalle
+
+; fm_outcall_numlen
+Taille du numéro :
+
+; fm_extenumbers_exten
+Extension :
+
+; fm_extenumbers_range
+Intervalle :
+
+; fm_outcall_context
+Contexte :
+
+; fm_outcall_externprefix
+Préfixe externe :
+
+; fm_outcall_prefix
+Préfixe :
+
+; fm_outcall_callerid
+Nom d'appel :
+
+; fm_outcall_setcallerid
+Activer le nom d'appel :
+
+; fm_outcall_stripnum
+Nombre de chiffres supprimés en partant du début :
+
+; fm_outcall_weight
+Poids :
+
+; fm_outcall_useenum
+Utiliser l'annuaire VOIP :
+
+; fm_outcall_hangupringtime
+Temps de sonnerie avant de raccrocher :
+
+; fm_outcall_hangupringtime-opt0
+Illimité
+
+; fm_outcall_hangupringtime-opt15
+15 secondes
+
+; fm_outcall_hangupringtime-opt30
+30 secondes
+
+; fm_outcall_hangupringtime-opt45
+45 secondes
+
+; fm_outcall_hangupringtime-opt60
+1 minute
+
+; fm_outcall_hangupringtime-opt120
+2 minutes
+
+; fm_outcall_hangupringtime-opt180
+3 minutes
+
+; fm_outcall_hangupringtime-opt240
+4 minutes
+
+; fm_outcall_hangupringtime-opt300
+5 minutes
+
+; fm_outcall_hangupringtime-opt
+%s min. %s sec.
+
+; fm_bt-save
+Sauvegarder
