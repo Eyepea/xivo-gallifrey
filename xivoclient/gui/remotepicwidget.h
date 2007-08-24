@@ -46,12 +46,12 @@ private slots:
         void httpSslErrors(const QList<QSslError> &);
 private:
 	QHttp * m_http;				//!< QHttp object
-#ifdef Q_WS_X11
-        QFile * m_tempFile;	//!< Temporary file for storing the picture
-#else
+#ifdef Q_WS_WIN
         QTemporaryFile * m_tempFile;	//!< Temporary file for storing the picture
+#else /* Q_WS_X11, Q_WS_MAC */
+        QFile * m_tempFile;		//!< Temporary file for storing the picture
 #endif
-	QLabel * m_label;	//!< QLabel widget used to display the picture
+	QLabel * m_label;		//!< QLabel widget used to display the picture
         int m_httpGetId;
 };
 

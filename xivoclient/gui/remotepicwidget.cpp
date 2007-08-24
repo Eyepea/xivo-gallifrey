@@ -51,14 +51,13 @@ void RemotePicWidget::startHttpRequest(const QString & urlstr)
                 connect( m_http, SIGNAL(sslErrors(const QList<QSslError> &)),
                          this, SLOT(httpSslErrors(const QList<QSslError> &)) );
 	}
-	if(!m_tempFile)
-	{
-#ifdef Q_WS_X11
-                m_tempFile = new QFile("/tmp/xivopush." + url.host() + url.path().replace("/", "."));
-                m_tempFile->open(QIODevice::ReadWrite);
-#else
+	if(!m_tempFile) {
+#ifdef Q_WS_WIN
                 m_tempFile = new QTemporaryFile(this);
                 m_tempFile->setAutoRemove(false);
+#else /* Q_WS_X11, Q_WS_MAC */
+                m_tempFile = new QFile("/tmp/xivopush." + url.host() + url.path().replace("/", "."));
+                m_tempFile->open(QIODevice::ReadWrite);
 #endif
 	}
 	qDebug() << m_tempFile->fileName() << m_tempFile->size() << url.host() << url.port() << url.scheme();
