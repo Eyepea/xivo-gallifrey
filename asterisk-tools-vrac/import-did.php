@@ -151,11 +151,11 @@
 
 	function help()
 	{
-		echo	'-host',"\t\t",'hostname',"\n",
-			'-port',"\t\t",'port',"\n",
-			'-csv',"\t\t",'csv file',"\n",
-			'-sess',"\t\t",'session id',"\n",
-			'-ssl',"\t\t",'enable ssl',"\n";
+		echo	'-h',"\t\t",'hostname',"\n",
+			'-p',"\t\t",'port',"\n",
+			'-c',"\t\t",'csv file',"\n",
+			'-s',"\t\t",'session id',"\n",
+			'-x',"\t\t",'enable ssl',"\n";
 
 		die();
 	}
