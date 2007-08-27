@@ -12,7 +12,7 @@ import sys
 __version__ = "$Revision$ $Date$"
 
 def varlog(string):
-        syslog.syslog(syslog.LOG_NOTICE, "xivo_ldap : " + string)
+        syslog.syslog(syslog.LOG_NOTICE, "xivo_ldap : requested URI=<%s>" % string)
         return 0
 
 def log_debug(string):
