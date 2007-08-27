@@ -7,6 +7,7 @@ Copyright (C) 2007, Proformatique
 
 import ldap
 import syslog
+import sys
 
 __version__ = "$Revision$ $Date$"
 
@@ -28,8 +29,8 @@ class xivo_ldap:
                         userpass = iuri.split("@")[0].split("://")[1]
                         self.dbname = iuri.split("@")[1].split("/")[1]
                         
-                        self.user = userpass.split(":")[0]
-                        self.passwd = userpass.split(":")[1]
+                        self.user = userpass.split(":", 1)[0]
+                        self.passwd = userpass.split(":", 1)[1]
                         self.uri  = "ldap://" + addport
                         self.l = ldap.initialize(self.uri)
                         self.l.protocol_version = ldap.VERSION3
@@ -37,7 +38,7 @@ class xivo_ldap:
                         
                 except ldap.LDAPError, exc:
 			log_debug('__init__ : exception ldap.LDAPError : %s' % str(exc))
-                        sys.exit()
+                        # sys.exit()
 
         def getldap(self, filter, attrib):
                 try:
