@@ -219,10 +219,25 @@ function ldap_search_name($gname)
 	if(($ldapbind = ldap_bind($ldapconn,XLDAP_USER,XLDAP_PASS)) === false)
 		return(false);
 
+	$filter = '';
+
+	// Added RX@EXA'2007 & modified by ADC@PF'2007 - search for telephone number
+	if(ctype_digit($gname) === true)
+	{
+		$len = strlen($gname);
+
+		for($i = 0;$i < $len;$filter .= $gname{$i}.(($i % 2) === 1 ? '*' : ''),$i++);
+
+		$filter = '(telephoneNumber='.$filter.')'.
+			  '(mobile='.$filter.')';
+	}
+	// Added RX@EXA'2007 & modified by ADC@PF'2007 - search for telephone number
+
 	$filter = '(|(sn='.$gname.'*)'.
 		  '(givenName='.$gname.'*)'.
 		  '(displayName='.$gname.'*)'.
-		  '(name='.$gname.'*))';
+		  '(name='.$gname.'*)'.
+		  $filter.')';
 
 	$field = array();
 	$field[] = 'sn';
