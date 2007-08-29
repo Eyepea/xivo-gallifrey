@@ -708,8 +708,8 @@ void MainWidget::changeEvent(QEvent *event)
 void MainWidget::about()
 {
 	QString applicationVersion("0.1");
-	QString revision("$Revision$ 0");
-	QString revdate("$Date$ 0 0");
+	QString revision = m_engine->getRevisionString();
+	QString revdate  = m_engine->getDateString();
 	QMessageBox::about(this,
 			   tr("About XIVO Client"),
 			   "<h3>XIVO Client</h3>" +

@@ -191,7 +191,7 @@ socket.setdefaulttimeout(2)
 DAEMON = "daemon-announce"
 HISTSEPAR = ";"
 XIVO_CLI_PHP_HEADER = "XIVO-CLI-PHP"
-REQUIRED_CLIENT_VERSION = 1440
+REQUIRED_CLIENT_VERSION = 1441
 
 # capabilities
 CAPA_CUSTINFO    = 1 <<  0
@@ -1229,7 +1229,7 @@ def manage_tcp_connection(connid, allow_events):
         else:
             for usefulmsgpart in msg.split("\n"):
                 usefulmsg = usefulmsgpart.split("\r")[0]
-                if usefulmsg == "infos":
+                if usefulmsg == "show_infos":
                         try:
                                 time_uptime = int(time.time() - time_start)
                                 reply = "infos=version=%s;uptime=%d s;logged_sb=%d/%d;logged_xc=%d/%d" \
@@ -1238,11 +1238,10 @@ def manage_tcp_connection(connid, allow_events):
                                 for tcpo in tcpopens_sb:
                                         reply += ":%s:%d" %(tcpo[1],tcpo[2])
                                 connid[0].send(reply + "\n")
+                                connid[0].send("%s:OK\n" %(XIVO_CLI_PHP_HEADER))
                         except Exception, exc:
                                 log_debug("--- exception --- UI connection [%s] : KO when sending to %s : %s"
                                           %(usefulmsg, requester, str(exc)))
-
-
                 # debug/setup functions
                 elif usefulmsg == "show_phones":
                         try:
@@ -1259,6 +1258,7 @@ def manage_tcp_connection(connid, allow_events):
                                                                  int(time.time() - plast.normal[kk].lasttime),
                                                                  len(canal),
                                                                  str(canal.keys())))
+                                connid[0].send("%s:OK\n" %(XIVO_CLI_PHP_HEADER))
                         except Exception, exc:
                                 log_debug("--- exception --- UI connection [%s] : KO when sending to %s : %s"
                                           %(usefulmsg, requester, str(exc)))
@@ -1274,6 +1274,7 @@ def manage_tcp_connection(connid, allow_events):
                                         userlist_lock.release()
                                 if requester in userinfo_by_requester:
                                         connid[0].send("%s\n" %str(userinfo_by_requester[requester]))
+                                connid[0].send("%s:OK\n" %(XIVO_CLI_PHP_HEADER))
                         except Exception, exc:
                                 log_debug("--- exception --- UI connection [%s] : KO when sending to %s : %s"
                                           %(usefulmsg, requester, str(exc)))
@@ -1285,6 +1286,7 @@ def manage_tcp_connection(connid, allow_events):
                                         connid[0].send("events on    : %s\n" %(str(amis)))
                                 for amis in AMIclasssock:
                                         connid[0].send("sboard comms : %s\n" %(str(amis)))
+                                connid[0].send("%s:OK\n" %(XIVO_CLI_PHP_HEADER))
                         except Exception, exc:
                                 log_debug("--- exception --- UI connection [%s] : KO when sending to %s : %s"
                                           %(usefulmsg, requester, str(exc)))
@@ -1298,7 +1300,7 @@ def manage_tcp_connection(connid, allow_events):
 
                 elif usefulmsg == "capabilities":
                         try:
-                                connid[0].send("capabilities=%s\n" %("-".join(capabilities_list)))
+                                connid[0].send("capabilities=%s\n" %(",".join(capabilities_list)))
                         except Exception, exc:
                                 log_debug("--- exception --- UI connection [%s] : KO when sending to %s : %s"
                                           %(usefulmsg, requester, str(exc)))
@@ -2556,7 +2558,8 @@ class LoginHandler(SocketServer.StreamRequestHandler):
                 replystr = "ERROR"
                 debugstr = "LoginRequestHandler (TCP) : client = %s:%d" %(self.client_address[0], self.client_address[1])
                 list1 = self.rfile.readline().strip().split(' ') # list1 should be "[LOGIN <asteriskname>/sip<nnn>]"
-                if len(list1) < 2 or len(list1) > 4 or list1[0] != 'LOGIN':
+                nlist1 = len(list1)
+                if nlist1 < 2 or nlist1 > 4 or list1[0] != 'LOGIN':
                         replystr = "ERROR number_of_arguments"
                         debugstr += " / LOGIN error args"
                         return [replystr, debugstr], [user, port, state, astnum]
@@ -2571,7 +2574,7 @@ class LoginHandler(SocketServer.StreamRequestHandler):
                 
                 whoami = ""
                 whatsmyos = ""
-                if len(list1) >= 3:
+                if nlist1 >= 3:
                         nwhoami = list1[2].split("@")
                         whoami  = nwhoami[0]
                         if len(nwhoami) == 2:
@@ -2583,7 +2586,7 @@ class LoginHandler(SocketServer.StreamRequestHandler):
                         log_debug("WARNING : %s/%s attempts to log in from %s:%d but has given no meaningful OS hint (%s)"
                                   %(astname_xivoc, user, self.client_address[0], self.client_address[1], whatsmyos))
 
-                if len(list1) >= 4:
+                if nlist1 >= 4:
                         clientversion = int(list1[3])
                         if clientversion < REQUIRED_CLIENT_VERSION:
                                 replystr = "ERROR version_client:%d;%d" % (clientversion, REQUIRED_CLIENT_VERSION)

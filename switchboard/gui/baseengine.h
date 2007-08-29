@@ -108,6 +108,8 @@ public:
 	bool tcpmode() const;			//!< get tcp mode flag
 	void setTcpmode(bool b);		//!< set tcp mode flag
 	const QString & getCapabilities() const;//!< returns capabilities
+        const QString & getRevisionString() const; //!< returns the Revision string of the engine
+        const QString & getDateString() const;     //!< returns the Date string of the engine
 protected:
 	void timerEvent(QTimerEvent *);		//!< receive timer events
 public slots:

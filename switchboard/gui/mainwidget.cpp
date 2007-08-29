@@ -549,8 +549,8 @@ void MainWidget::showNewProfile(Popup * popup)
 void MainWidget::about()
 {
 	QString applicationVersion("0.1");
-	QString revision("$Revision$ 0");
-	QString revdate("$Date$ 0 0");
+	QString revision = m_engine->getRevisionString();
+	QString revdate  = m_engine->getDateString();
 	QMessageBox::about(this,
 			   tr("About XIVO SwitchBoard"),
 			   "<h3>XIVO Switchboard</h3>" +

@@ -35,7 +35,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include "popup.h"
 
 const QString __version__("$Revision$");
-const int REQUIRED_SERVER_VERSION = 1440;
+const QString __date__("$Date$");
+const int REQUIRED_SERVER_VERSION = 1441;
 
 /*! \brief Constructor.
  *
@@ -419,6 +420,20 @@ void BaseEngine::processHistory(const QStringList & histlist)
 		//qDebug() << dt << callerid << duration << peer << d;
 		updateLogEntry(dt, duration, peer, (int)d);
 	}
+}
+
+/*! \brief to make other classes know the engine's version
+ */
+const QString & BaseEngine::getRevisionString() const
+{
+        return __version__;
+}
+
+/*! \brief  make other classes know the engine's date
+ */
+const QString & BaseEngine::getDateString() const
+{
+        return __date__;
 }
 
 /*! \brief called when the socket is first connected
