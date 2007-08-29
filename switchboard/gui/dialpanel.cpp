@@ -54,7 +54,11 @@ DialPanel::DialPanel(QWidget * parent)
 	         this, SLOT(inputValidated()) );
 	connect( m_input, SIGNAL(editTextChanged(const QString &)),
 	         this, SIGNAL(textEdited(const QString &)) );
-	QPushButton * dialButton = new QPushButton( tr("Dial"), this);
+        //	QPushButton * dialButton = new QPushButton(QIcon(":sipphone.png"), tr("Dial"), this);
+        QPushButton * dialButton = new QPushButton(QIcon(":switchboard/gui/sipphone.png"), "", this);
+
+        //QIcon(":xivoclient/gui/xivoicon.png"));
+
 	connect( dialButton, SIGNAL(clicked()),
 	         this, SLOT(inputValidated()) );
 

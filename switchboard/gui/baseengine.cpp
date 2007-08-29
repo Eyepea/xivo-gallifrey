@@ -34,8 +34,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include "logeltwidget.h"
 #include "popup.h"
 
-const int CLIENT_VERSION = 1365;
-const int REQUIRED_SERVER_VERSION = 1334;
+const QString __version__("$Revision$");
+const int REQUIRED_SERVER_VERSION = 1438;
 
 /*! \brief Constructor.
  *
@@ -429,9 +429,9 @@ void BaseEngine::socketConnected()
 	stopTryAgainTimer();
 	/* do the login/identification ? */
         setMyClientId();
-	m_pendingcommand = "login " + m_asterisk + " "
-                + m_protocol + " " + m_userid + " " + m_availstate + " "
-                + m_clientid + " " + m_passwd + " " + QString::number(CLIENT_VERSION);
+	m_pendingcommand = "login astid=" + m_asterisk + ";proto="
+                + m_protocol + ";userid=" + m_userid + ";state=" + m_availstate + ";ident="
+                + m_clientid + ";passwd=" + m_passwd + ";version=" + __version__.split(" ")[1];
         // login <asterisk> <techno> <id>
 	sendTCPCommand();
 }
@@ -441,7 +441,7 @@ void BaseEngine::socketConnected()
 void BaseEngine::socketDisconnected()
 {
 	qDebug() << "BaseEngine::socketDisconnected()";
-        delogged();
+        setState(ENotLogged); // calls delogged();
 	emitTextMessage(tr("Connection lost with XIVO Daemon"));
 	startTryAgainTimer();
 	//removePeers();
@@ -469,18 +469,19 @@ void BaseEngine::serverHostFound()
  */
 void BaseEngine::socketError(QAbstractSocket::SocketError socketError)
 {
-	qDebug() << "BaseEngine::socketError(" << socketError << ")";
-	switch(socketError)
-	{
+	switch(socketError) {
 	case QAbstractSocket::ConnectionRefusedError:
 		emitTextMessage(tr("Connection refused"));
 		if(m_timer != -1)
-		{
+                        {
 			killTimer(m_timer);
 		 	m_timer = -1;
-		}
+                        }
 		//m_timer = startTimer(2000);
 		break;
+        case QAbstractSocket::RemoteHostClosedError:
+                popupError("connection_closed");
+                break;
 	case QAbstractSocket::HostNotFoundError:
 		emitTextMessage(tr("Host not found"));
 		break;
@@ -488,6 +489,7 @@ void BaseEngine::socketError(QAbstractSocket::SocketError socketError)
 		emitTextMessage(tr("Unknown socket error"));
 		break;
 	default:
+                qDebug() << "BaseEngine::socketError()" << socketError;
 		break;
 	}
 }
@@ -524,7 +526,7 @@ void BaseEngine::updatePeers(const QStringList & liststatus)
 	// liststatus[0] is a dummy field, only used for debug on the daemon side
 	// p/(asteriskid)/(context)/(protocol)/(phoneid)/(phonenum)
 	
-	if(liststatus.count() < 11)
+	if(liststatus.count() < nfields0)
 	{
 		// not valid
 		qDebug() << "Bad data from the server :" << liststatus;
@@ -636,22 +638,25 @@ bool BaseEngine::parseCommand(const QStringList & listitems)
                         updatePeers(liststatus);
                 }
 
-                if(m_is_a_switchboard) {
+                //                if(m_is_a_switchboard) {
                         callsUpdated();
                         QString myfullid = settings.value("monitor/peer").toString();
                         if(myfullid.isEmpty())
                                 myfullid = "p/" + m_asterisk + "/" + m_dialcontext + "/" + m_protocol + "/" + m_userid + "/" + m_extension;
-                        QString myname = m_callerids[myfullid];
-                        if(myname.isEmpty()) {
+                        QString m_fullname = m_callerids[myfullid];
+                        if(m_fullname.isEmpty()) {
                                 myfullid = "p/" + m_asterisk + "/" + m_dialcontext + "/" + m_protocol + "/" + m_userid + "/" + m_extension;
-                                myname = m_callerids[myfullid];
+                                m_fullname = m_callerids[myfullid];
                         }
                         
-                        if(myname.isEmpty())
+                        if(m_fullname.isEmpty())
                                 monitorPeer(myfullid, tr("Unknown CallerId") + " (" + myfullid + ")");
                         else
-                                monitorPeer(myfullid, myname);
-                }
+                                monitorPeer(myfullid, m_fullname);
+
+                        qDebug() << m_fullname;
+                        localUserDefined(m_fullname);
+                        //                }
 
                 emitTextMessage(tr("Peers' status updated"));
 
@@ -698,18 +703,60 @@ void BaseEngine::popupError(const QString & errorid)
         QString errormsg = QString(tr("Server has sent an Error."));
         if(errorid.toLower() == "asterisk_name")
                 errormsg = tr("Asterisk Id <%1> unknown by the Server.").arg(m_asterisk);
+
         else if(errorid.toLower() == "connection_refused")
                 errormsg = tr("You are not allowed to connect to the Server.");
+
         else if(errorid.toLower() == "user_not_found")
-                errormsg = tr("Your registration name <%1> is not known on Asterisk Id <%2>.").arg(m_userid, m_asterisk);
+                errormsg = tr("Your registration name <%1,%2> is not known on Asterisk Id <%3>.").arg(m_protocol, m_userid, m_asterisk);
+
         else if(errorid.toLower() == "session_expired")
                 errormsg = tr("Your session has expired.");
+
+        else if(errorid.toLower() == "login_passwd")
+                errormsg = tr("You entered a wrong login / password.");
+
         else if(errorid.toLower() == "no_keepalive_from_server")
                 errormsg = tr("The server did not reply to the last keepalive.");
+
+        else if(errorid.toLower() == "connection_closed")
+                errormsg = tr("The server has just closed the connection.");
+
         else if(errorid.toLower() == "server_stopped")
                 errormsg = tr("The server has just been stopped.");
+
         else if(errorid.toLower() == "server_reloaded")
                 errormsg = tr("The server has just been reloaded.");
+
+        else if(errorid.toLower() == "already_connected")
+                errormsg = tr("You are already connected.");
+
+        else if(errorid.startsWith("xcusers:")) {
+                QStringList userslist = errorid.split(":")[1].split(";");
+                errormsg = tr("Max number (%1) of XIVO Clients already reached.").arg(userslist[0]);
+        }
+        else if(errorid.startsWith("sbusers:")) {
+                QStringList userslist = errorid.split(":")[1].split(";");
+                errormsg = tr("Max number (%1) of XIVO Switchboards already reached.").arg(userslist[0]);
+        }
+        else if(errorid.startsWith("version_client:")) {
+                QStringList versionslist = errorid.split(":")[1].split(";");
+                if(versionslist.size() >= 2)
+                        errormsg = tr("Your client version (%1) is too old for this server.\n"
+                                      "Please upgrade it to %2 at least.").arg(versionslist[0], versionslist[1]);
+                else
+                        errormsg = tr("Your client version (%1) is too old for this server.\n"
+                                      "Please upgrade it.").arg(versionslist[0]);
+        }
+        else if(errorid.startsWith("version_server:")) {
+                QStringList versionslist = errorid.split(":")[1].split(";");
+                if(versionslist.size() >= 2)
+                        errormsg = tr("Your server version (%1) is too old for this client.\n"
+                                      "Please upgrade it to %2 at least.").arg(versionslist[0], versionslist[1]);
+                else
+                        errormsg = tr("Your server version (%1) is too old for this client.\n"
+                                      "Please upgrade it.").arg(versionslist[0]);
+        }
 
         // logs a message before sending any popup that would block
         emitTextMessage(tr("Error") + " : " + errormsg);
@@ -732,36 +779,9 @@ void BaseEngine::socketReadyRead()
 		QString line     = QString::fromUtf8(data);
 		QStringList list = line.trimmed().split("=");
 
-		if(list.size() == 2) {
-                        if(list[0].toLower() == "loginok") {
-				QStringList params = list[1].split(";");
-                                qDebug() << "BaseEngine::socketReadyRead()" << params;
-                                m_version_server = -1;
-				if(params.size() > 2) {
-					m_dialcontext = params[0];
-					m_extension = params[1];
-                                        m_capabilities = params[2];
-                                        if(params.size() > 3)
-                                                m_version_server = params[3].toInt();
-                                        if(m_version_server < REQUIRED_SERVER_VERSION) {
-                                                QMessageBox::critical(NULL, tr("Version Error"),
-                                                                      tr("Your server version is %1 which is too old.\n").arg(m_version_server) +
-                                                                      tr("The required one is at least %1.").arg(REQUIRED_SERVER_VERSION));
-                                        } else {
-                                                logged();
-                                                m_ka_timerid = startTimer(m_keepaliveinterval);
-                                                if(m_is_a_switchboard) /* ask here because not ready when the widget builds up */
-                                                        askCallerIds();
-                                        }
-                                }
-			} else if(list[0].toLower() == "loginko") {
-                                stop();
-                                popupError(list[1]);
-			} else
-                                parseCommand(list);
-		} else if(list.size() > 2) {
+		if(line.startsWith("<?xml")) {
                         // we get here when receiving a customer info in tcp mode
-                        qDebug() << "BaseEngine::socketReadyRead() (FICHE)" << line;
+                        qDebug() << "BaseEngine::socketReadyRead() (Customer Info)" << line;
                         QBuffer * inputstream = new QBuffer(this);
 
                         inputstream->open(QIODevice::ReadWrite);
@@ -774,6 +794,37 @@ void BaseEngine::socketReadyRead()
                                  this, SLOT(popupDestroyed(QObject *)) );
                         connect( popup, SIGNAL(wantsToBeShown(Popup *)),
                                  this, SLOT(profileToBeShown(Popup *)) );
+                } else if (list.size() == 2) {
+                        if(list[0].toLower() == "loginok") {
+				QStringList params = list[1].split(";");
+                                m_version_server = -1;
+                                QHash<QString, QString> params_list;
+                                for(int i = 0 ; i < params.size(); i++) {
+                                        QStringList params_couple = params[i].split(":");
+                                        if(params_couple.size() == 2)
+                                                params_list[params_couple[0]] = params_couple[1];
+                                }
+                                qDebug() << params_list;
+                                m_dialcontext    = params_list["context"];
+                                m_extension      = params_list["phonenum"];
+                                m_capabilities   = params_list["capas"];
+                                m_version_server = params_list["version"].toInt();
+                                m_forced_state   = params_list["state"];
+
+                                if(m_version_server < REQUIRED_SERVER_VERSION) {
+                                        stop();
+                                        popupError("version_server:" + QString::number(m_version_server) + ";" + QString::number(REQUIRED_SERVER_VERSION));
+                                } else {
+                                        setState(ELogged); // calls logged()
+                                        m_ka_timerid = startTimer(m_keepaliveinterval);
+                                        if(m_is_a_switchboard) /* ask here because not ready when the widget builds up */
+                                                askCallerIds();
+                                }
+			} else if(list[0].toLower() == "loginko") {
+                                stop();
+                                popupError(list[1]);
+			} else
+                                parseCommand(list);
                 }
 	}
 }
@@ -787,6 +838,7 @@ void BaseEngine::transferToNumber(const QString & chan)
                 transferCall(chan, m_numbertodial);
         }
 }
+
 
 /*! \brief send an originate command to the server
  */
@@ -982,6 +1034,11 @@ const QString & BaseEngine::phoneNum() const
 const QString & BaseEngine::dialContext() const
 {
 	return m_dialcontext;
+}
+
+const QString & BaseEngine::fullName() const
+{
+	return m_fullname;
 }
 
 void BaseEngine::setDialContext(const QString & dialcontext)
@@ -1380,7 +1437,7 @@ void BaseEngine::processLoginDialog()
 	{
 		qDebug() << "readLine() returned -1, closing socket";
 		m_loginsocket->close();
-		setState(ENotLogged);
+		setState(ENotLogged); // calls delogged()
 		return;
 	}
 	QString readLine = QString::fromAscii(buffer);
@@ -1409,38 +1466,39 @@ void BaseEngine::processLoginDialog()
 	}
 	else if(readLine.startsWith("OK SESSIONID"))
 	{
+                m_version_server = -1;
 		readLine.remove(QChar('\r')).remove(QChar('\n'));
 		QStringList sessionResp = readLine.split(" ");
 		qDebug() << sessionResp;
-		m_version_server = -1;
-		if(sessionResp.size() > 2)
+		if(sessionResp.size() == 4) {
 			m_sessionid =    sessionResp[2];
-		if(sessionResp.size() > 3)
-			m_dialcontext =  sessionResp[3];
-		if(sessionResp.size() > 4)
-			m_capabilities = sessionResp[4];
-		if(sessionResp.size() > 5)
-			m_version_server = sessionResp[5].toInt();
-		if(sessionResp.size() > 6)
-			m_extension =    sessionResp[6];
-		qDebug() << m_sessionid << m_dialcontext << m_capabilities << m_version_server << m_extension;
+                        QStringList params = sessionResp[3].split(";");
+                        QHash<QString, QString> params_list;
+                        for(int i = 0 ; i < params.size(); i++) {
+                                QStringList params_couple = params[i].split(":");
+                                if(params_couple.size() == 2)
+                                        params_list[params_couple[0]] = params_couple[1];
+                        }
+                        qDebug() << "BaseEngine::socketReadyRead()" << m_sessionid << params_list;
+                        m_dialcontext    = params_list["context"];
+                        m_extension      = params_list["phonenum"];
+                        m_capabilities   = params_list["capas"];
+                        m_version_server = params_list["version"].toInt();
+                        m_forced_state   = params_list["state"];
+                }
 
-		if(!m_tcpmode)
-			m_loginsocket->close();
-		if(m_version_server < REQUIRED_SERVER_VERSION) {
-			m_loginsocket->close();
-			stop();
-                        QMessageBox::critical(NULL, tr("Version Error"),
-                                              tr("Your server version is %1 which is too old.\n").arg(m_version_server) +
-                                              tr("The required one is at least %1.").arg(REQUIRED_SERVER_VERSION));
-			return;
-		}
-		setState(ELogged);
-		// start the keepalive timer
-		m_ka_timerid = startTimer(m_keepaliveinterval);
+                m_loginsocket->close();
+                if(m_version_server < REQUIRED_SERVER_VERSION) {
+                        stop();
+                        popupError("version_server:" + QString::number(m_version_server) + ";" + QString::number(REQUIRED_SERVER_VERSION));
+                        return;
+                }
+                setState(ELogged);
+                // start the keepalive timer
+                m_ka_timerid = startTimer(m_keepaliveinterval);
                 if(m_is_a_switchboard) /* ask here because not ready when the widget builds up */
                         askCallerIds();
-		return;
+                return;
 	}
 	else if(readLine.startsWith("ERROR")) {
                 readLine.remove(QChar('\r')).remove(QChar('\n'));

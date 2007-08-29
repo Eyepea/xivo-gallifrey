@@ -47,20 +47,20 @@ CallWidget::CallWidget(const QString & channelme,
           m_call_red   (":xivoclient/gui/phone-red.png"),
           m_call_gray  (":xivoclient/gui/phone-grey.png")
 {
-	QGridLayout * layout = new QGridLayout(this);
+	QGridLayout * gridlayout = new QGridLayout(this);
         
 // 	m_callerid = callerid;
 // 	m_calleridname = calleridname;
  	m_channelme = channelme;
 
-//	qDebug() << "spacing" << layout->spacing()
-//	         << ", margin" << layout->margin();
-//	layout->setSpacing(0);
-	//layout->setMargin(0);
+//	qDebug() << "spacing" << gridlayout->spacing()
+//	         << ", margin" << gridlayout->margin();
+//	gridlayout->setSpacing(0);
+	//gridlayout->setMargin(0);
 
-	layout->setColumnStretch(3, 1);
+	gridlayout->setColumnStretch(3, 1);
 	m_lbl_action = new QLabel(this);
-	layout->addWidget(m_lbl_action, 0, 0);
+	gridlayout->addWidget(m_lbl_action, 0, 0);
 	setActionPixmap(action);
 
 	m_lbl_time = new QLabel(this);
@@ -68,22 +68,26 @@ CallWidget::CallWidget(const QString & channelme,
 	m_startTime = QDateTime::currentDateTime().addSecs(-time);
 	startTimer(1000);
 	updateCallTimeLabel();
-	layout->addWidget(m_lbl_time, 1, 0);
+	gridlayout->addWidget(m_lbl_time, 1, 0);
 
-	m_lbl_direction = new QLabel(direction, this);
-	layout->addWidget(m_lbl_direction, 0, 1);
+	m_lbl_direction = new QLabel(this);
+        if(direction == ">")
+                m_lbl_direction->setPixmap(QPixmap(":rightarrow.png"));
+        else
+                m_lbl_direction->setPixmap(QPixmap(":leftarrow.png"));
+	gridlayout->addWidget(m_lbl_direction, 0, 1);
 
 	// 	m_lbl_channelpeer = new QLabel(channelpeer, this);
-	// 	layout->addWidget(m_lbl_channelpeer, 0, Qt::AlignLeft );
+	// 	gridlayout->addWidget(m_lbl_channelpeer, 0, Qt::AlignLeft );
 
 	m_lbl_exten = new QLabel(exten, this);
 	m_lbl_exten->setFont(QFont("courier", 10, QFont::Light));
-	layout->addWidget(m_lbl_exten, 0, 2);
+	gridlayout->addWidget(m_lbl_exten, 0, 2);
 
 	// for caller id information
 	QLabel * dummy = new QLabel("", this);
 	dummy->setFont(QFont("times", 10, QFont::Light, TRUE));
-	layout->addWidget(dummy, 1, 2);
+	gridlayout->addWidget(dummy, 1, 2);
 	//setAcceptDrops(true);
 	
 	m_hangUpAction = new QAction( tr("&Hangup"), this);
@@ -137,7 +141,11 @@ void CallWidget::updateWidget(const QString & action,
 	//qDebug() << time << m_startTime << m_startTime.secsTo(QDateTime::currentDateTime());
 	m_startTime = QDateTime::currentDateTime().addSecs(-time);
 	updateCallTimeLabel();
-	m_lbl_direction->setText(direction);
+        if(direction == ">")
+                m_lbl_direction->setPixmap(QPixmap(":rightarrow.png"));
+        else
+                m_lbl_direction->setPixmap(QPixmap(":leftarrow.png"));
+
 	//	m_lbl_channelpeer->setText(channelpeer);
 	m_lbl_exten->setText(exten);
 }

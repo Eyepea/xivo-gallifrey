@@ -51,26 +51,3 @@ class Fiche:
             except Exception, e:
                     #print e
                     return False
-
-def getuserlocation(shost, sport, user):
-	"""return None or the address and session id"""
-	try:
-		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		#s.settimeout(0.1)
-		s.connect((shost, sport))
-		fs = s.makefile("r")
-		s.send("QUERY " + user + "\r\n")
-		s.close()
-		list = fs.readline().strip().split(' ')
-		fs.close()
-		if len(list) < 8 or list[0] == 'ERROR':
-			return None
-		sessionid = list[3]
-		ip = list[5]
-		port = int(list[7])
-		state = list[9]
-		return {'address':(ip, port), 'sessionid':sessionid, 'state':state}
-	except:
-		return None
-
-

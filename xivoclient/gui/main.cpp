@@ -74,7 +74,7 @@ int main(int argc, char * * argv)
 	main.show();
 	//main.dumpObjectTree();
 	QObject::connect( &app, SIGNAL(lastWindowClosed()),
-	         &engine, SLOT(stop()) );
+                          &engine, SLOT(stop()) );
 	return app.exec();
 }
 

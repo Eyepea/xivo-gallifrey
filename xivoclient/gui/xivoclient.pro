@@ -13,7 +13,7 @@ CONFIG += static
 # Input
 HEADERS += mainwidget.h
 HEADERS += popup.h xmlhandler.h remotepicwidget.h urllabel.h
-HEADERS += servicepanel.h confwidget.h
+HEADERS += servicepanel.h confwidget.h identitydisplay.h
 HEADERS += $${SBDIR}/baseengine.h
 HEADERS += $${SBDIR}/dialpanel.h      $${SBDIR}/logwidget.h           $${SBDIR}/logeltwidget.h
 HEADERS += $${SBDIR}/directorypanel.h $${SBDIR}/extendedtablewidget.h $${SBDIR}/peerchannel.h
@@ -21,7 +21,7 @@ HEADERS += $${SBDIR}/peerwidget.h     $${SBDIR}/peeritem.h            $${SBDIR}/
 
 SOURCES += mainwidget.cpp main.cpp
 SOURCES += popup.cpp xmlhandler.cpp remotepicwidget.cpp urllabel.cpp
-SOURCES += servicepanel.cpp confwidget.cpp
+SOURCES += servicepanel.cpp confwidget.cpp identitydisplay.cpp
 SOURCES += $${SBDIR}/baseengine.cpp
 SOURCES += $${SBDIR}/logwidget.cpp           $${SBDIR}/searchpanel.cpp  $${SBDIR}/peerwidget.cpp
 SOURCES += $${SBDIR}/dialpanel.cpp           $${SBDIR}/logeltwidget.cpp $${SBDIR}/directorypanel.cpp

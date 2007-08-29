@@ -41,6 +41,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include "confwidget.h"
 #include "dialpanel.h"
 #include "directorypanel.h"
+#include "identitydisplay.h"
 #include "logwidget.h"
 #include "mainwidget.h"
 #include "popup.h"
@@ -88,7 +89,7 @@ MainWidget::MainWidget(BaseEngine *engine, QWidget * parent)
 
 	m_vboxwidgets = new QVBoxLayout(m_wid);
 	m_qtabwidget = new QTabWidget();
-	m_vboxwidgets->addWidget(m_qtabwidget, 1);
+        //	m_vboxwidgets->addWidget(m_qtabwidget, 1);
 
 	setCentralWidget(m_wid);
 
@@ -198,7 +199,7 @@ void MainWidget::createMenus()
 
 	m_avail = menuBar()->addMenu(tr("&Availability"));
 	m_avail->addActions( m_availgrp->actions() );
-	m_avail->setEnabled( m_engine->enabledPresence() );
+	m_avail->setEnabled( false );
 	connect( m_engine, SIGNAL(availAllowChanged(bool)),
 	         m_avail, SLOT(setEnabled(bool)) );
 
@@ -240,8 +241,8 @@ void MainWidget::createSystrayIcon()
 {
 	m_systrayIcon = new QSystemTrayIcon(m_icongrey, this);
 	QMenu * menu = new QMenu(QString("SystrayMenu"), this);
-	menu->addAction(m_cfgact);
-	menu->addSeparator();
+        menu->addAction(m_cfgact);
+        menu->addSeparator();
 	menu->addMenu(m_avail);
 	menu->addSeparator();
 	menu->addAction(m_connectact);
@@ -270,8 +271,8 @@ void MainWidget::createSystrayIcon()
  * m_engine, and then show it. */
 void MainWidget::popupConf()
 {
-	ConfWidget * conf = new ConfWidget(m_engine, this);
-	conf->show();
+	m_conf = new ConfWidget(m_engine, this);
+	m_conf->show();
 }
 
 /*! \brief process clicks to the systray icon
@@ -339,6 +340,12 @@ void MainWidget::setConnected()
         qDebug() << "MainWidget::setConnected()" << m_engine->enabledPresence() << m_engine->enabledCInfo();
 	QStringList allowed_capas = m_engine->getCapabilities().split(",");
 	m_presence = false;
+
+        m_infowidget = new IdentityDisplay();
+        connect( m_engine, SIGNAL(localUserDefined(const QString &)),
+                 m_infowidget, SLOT(setUser(const QString &)));
+        m_vboxwidgets->addWidget(m_infowidget, 0);
+        m_vboxwidgets->addWidget(m_qtabwidget, 1);
 
 	for(int j = 0; j < display_capas.size(); j++) {
 		QString dc = display_capas[j];
@@ -497,7 +504,8 @@ void MainWidget::setConnected()
 	//	LogWidget * logwidget = new LogWidget(m_engine, m_wid);
 	m_cinfo_index = m_qtabwidget->indexOf(m_tabwidget);
 	qDebug() << "the index of customer-info widget is" << m_cinfo_index;
-
+        //        m_infowidget->setText(tr("User : ") + m_engine->fullName());
+        //        m_infowidget->setText(tr("User : ") + QString("Corentin Le Gall <b>103</b>"));
 	if(m_systrayIcon)
 		m_systrayIcon->setIcon(m_icon);
 	statusBar()->showMessage(tr("Connected"));
@@ -535,8 +543,44 @@ void MainWidget::setDisconnected()
                                 int index_instantmessaging = m_qtabwidget->indexOf(m_messagetosend);
                                 if(index_instantmessaging > -1) {
                                         qDebug() << "removing" << dc << index_instantmessaging;
-                                        m_vboxwidgets->removeWidget(m_messagetosend);
+                                        m_qtabwidget->removeTab(index_instantmessaging);
                                         delete m_messagetosend;
+                                }
+			} else if(dc == QString("customerinfo")) {
+                                int index_customerinfo = m_qtabwidget->indexOf(m_tabwidget);
+                                if(index_customerinfo > -1) {
+                                        qDebug() << "removing" << dc << index_customerinfo;
+                                        m_qtabwidget->removeTab(index_customerinfo);
+                                        delete m_tabwidget;
+                                }
+			} else if(dc == QString("peers")) {
+                                int index_peers = m_qtabwidget->indexOf(m_peerswidget);
+                                if(index_peers > -1) {
+                                        qDebug() << "removing" << dc << index_peers;
+                                        m_peerswidget->removePeers();
+                                        m_qtabwidget->removeTab(index_peers);
+                                        delete m_peerswidget;
+                                }
+			} else if(dc == QString("features")) {
+                                int index_features = m_qtabwidget->indexOf(m_featureswidget);
+                                if(index_features > -1) {
+                                        qDebug() << "removing" << dc << index_features;
+                                        m_qtabwidget->removeTab(index_features);
+                                        delete m_featureswidget;
+                                }
+			} else if(dc == QString("directory")) {
+                                int index_directory = m_qtabwidget->indexOf(m_directory);
+                                if(index_directory > -1) {
+                                        qDebug() << "removing" << dc << index_directory;
+                                        m_qtabwidget->removeTab(index_directory);
+                                        delete m_directory;
+                                }
+			} else if(dc == QString("history")) {
+                                int index_history = m_qtabwidget->indexOf(m_history);
+                                if(index_history > -1) {
+                                        qDebug() << "removing" << dc << index_history;
+                                        m_qtabwidget->removeTab(index_history);
+                                        delete m_history;
                                 }
 			} else if(dc == QString("dial")) {
                                 int index_dial = m_vboxwidgets->indexOf(m_dial);
@@ -545,45 +589,13 @@ void MainWidget::setDisconnected()
                                         m_vboxwidgets->removeWidget(m_dial);
                                         delete m_dial;
                                 }
-			} else if(dc == QString("customerinfo")) {
-                                int index_customerinfo = m_qtabwidget->indexOf(m_tabwidget);
-                                if(index_customerinfo > -1) {
-                                        qDebug() << "removing" << dc << index_customerinfo;
-                                        m_vboxwidgets->removeWidget(m_tabwidget);
-                                        delete m_tabwidget;
-                                }
-			} else if(dc == QString("peers")) {
-                                int index_peers = m_qtabwidget->indexOf(m_peerswidget);
-                                if(index_peers > -1) {
-                                        qDebug() << "removing" << dc << index_peers;
-                                        m_peerswidget->removePeers();
-                                        m_vboxwidgets->removeWidget(m_peerswidget);
-                                        delete m_peerswidget;
-                                }
-			} else if(dc == QString("features")) {
-                                int index_features = m_qtabwidget->indexOf(m_featureswidget);
-                                if(index_features > -1) {
-                                        qDebug() << "removing" << dc << index_features;
-                                        m_vboxwidgets->removeWidget(m_featureswidget);
-                                        delete m_featureswidget;
-                                }
-			} else if(dc == QString("directory")) {
-                                int index_directory = m_qtabwidget->indexOf(m_directory);
-                                if(index_directory > -1) {
-                                        qDebug() << "removing" << dc << index_directory;
-                                        m_vboxwidgets->removeWidget(m_directory);
-                                        delete m_directory;
-                                }
-			} else if(dc == QString("history")) {
-                                int index_history = m_qtabwidget->indexOf(m_history);
-                                if(index_history > -1) {
-                                        qDebug() << "removing" << dc << index_history;
-                                        m_vboxwidgets->removeWidget(m_history);
-                                        delete m_history;
-                                }
 			}
 		}
 	}
+        
+        m_vboxwidgets->removeWidget(m_infowidget);
+        m_vboxwidgets->removeWidget(m_qtabwidget);
+        delete m_infowidget;
 
 	if(m_systrayIcon)
 		m_systrayIcon->setIcon(m_icongrey);

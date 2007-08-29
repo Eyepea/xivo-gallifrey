@@ -61,14 +61,14 @@ ConfWidget::ConfWidget(BaseEngine * engine,
 	gridlayout->addWidget(m_serverhost, line++, 1);
 
         QLabel * lblsbport = new QLabel(tr("Switchboard Port"), this);
-        m_sbport = new QLineEdit(QString::number(m_engine->sbPort()), this);
-        m_sbport->setInputMask("5003");
+        m_sbport = new QLineEdit( QString::number(m_engine->sbPort()), this);
+        m_sbport->setInputMask("99999");
         gridlayout->addWidget(lblsbport, line, 0);
         gridlayout->addWidget(m_sbport, line++, 1);
 
 	QLabel * lbllport = new QLabel(tr("Login Port"), this);
 	m_loginport = new QLineEdit(QString::number(m_engine->loginPort()), this);
-	m_loginport->setInputMask("5000");
+	m_loginport->setInputMask("99999");
 	gridlayout->addWidget(lbllport, line, 0);
 	gridlayout->addWidget(m_loginport, line++, 1);
 

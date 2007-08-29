@@ -102,6 +102,7 @@ public:
 	bool enabledCInfo();			//! get m_enabled_cinfo
 
 	void setMyClientId();			//! set m_clientid
+        const QString & fullName() const;	//!< returns full name of the logged-in user
 
 	uint keepaliveinterval() const;		//!< keep alive interval
 	bool tcpmode() const;			//!< get tcp mode flag
@@ -192,6 +193,7 @@ signals:
         void disconnectFeatures();
         void connectFeatures();
         void resetFeatures();
+        void localUserDefined(const QString &);
 	void voiceMailChanged(bool);
 	void callRecordingChanged(bool);
 	void callFilteringChanged(bool);
@@ -252,8 +254,10 @@ private:
 	QString m_capabilities;		//!< List of capabilities issued by the server after a successful login
 	QString m_sessionid;		//!< Session id obtained after a successful login
 	QString m_clientid;		//!< Client Identifier
+	QString m_forced_state;		//!< Forced state sent by the server
 	QHash<QString, QString> m_callerids;	//!< List of caller Ids
 	int m_version_server;		//!< Version issued by the server after a successful login
+        QString m_fullname;		//!< Full Name
 
 	// Status variables
 	EngineState m_state;		//!< State of the engine (Logged/Not Logged)

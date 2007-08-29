@@ -32,10 +32,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include "directorypanel.h"
 #include "searchpanel.h"
 
+class ConfWidget;
+class IdentityDisplay;
+class LogWidget;
+class QActionGroup;
 class QSystemTrayIcon;
 class QTabWidget;
-class QActionGroup;
-class LogWidget;
 
 /*! \brief Main window class
  *
@@ -91,6 +93,8 @@ private:
 	DialPanel * m_dial;
 	DirectoryPanel * m_directory;
 	LogWidget * m_history;
+        ConfWidget * m_conf;
+        IdentityDisplay * m_infowidget;
 	SearchPanel * m_peerswidget;
 	QWidget * m_featureswidget;
 	bool m_forcetabs;    //!< Flag to allow the display of "unallowed" tabs, useful to test server-side capabilities

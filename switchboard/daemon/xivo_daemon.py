@@ -191,18 +191,20 @@ socket.setdefaulttimeout(2)
 DAEMON = "daemon-announce"
 HISTSEPAR = ";"
 XIVO_CLI_PHP_HEADER = "XIVO-CLI-PHP"
+REQUIRED_CLIENT_VERSION = 1438
 
 # capabilities
-CAPA_CUSTINFO    = 1 << 0
-CAPA_PRESENCE    = 1 << 1
-CAPA_HISTORY     = 1 << 2
-CAPA_DIRECTORY   = 1 << 3
-CAPA_DIAL        = 1 << 4
-CAPA_FEATURES    = 1 << 5
-CAPA_PEERS       = 1 << 6
-CAPA_MESSAGE     = 1 << 7
-CAPA_SWITCHBOARD = 1 << 8
-CAPA_AGENTS      = 1 << 9
+CAPA_CUSTINFO    = 1 <<  0
+CAPA_PRESENCE    = 1 <<  1
+CAPA_HISTORY     = 1 <<  2
+CAPA_DIRECTORY   = 1 <<  3
+CAPA_DIAL        = 1 <<  4
+CAPA_FEATURES    = 1 <<  5
+CAPA_PEERS       = 1 <<  6
+CAPA_MESSAGE     = 1 <<  7
+CAPA_SWITCHBOARD = 1 <<  8
+CAPA_AGENTS      = 1 <<  9
+CAPA_FAX         = 1 << 10
 
 map_capas = {
         'customerinfo'     : CAPA_CUSTINFO,
@@ -214,7 +216,8 @@ map_capas = {
         'peers'            : CAPA_PEERS,
         'instantmessaging' : CAPA_MESSAGE,
         'switchboard'      : CAPA_SWITCHBOARD,
-        'agents'           : CAPA_AGENTS
+        'agents'           : CAPA_AGENTS,
+        'fax'              : CAPA_FAX
         }
 
 
@@ -575,106 +578,75 @@ class AMIClass:
 # This should be done after a command called "customers".
 # \return a string containing the full customers list
 # \sa manage_tcp_connection
-def build_customers(astn, ctx, searchpatterns):
-        dir_db_uri = ""
-        dir_db_displayfields = ""
-        dir_db_matchingfields = ""
-        dir_db_tablename = ""
-        
+def build_customers(ctx, searchpatterns):
         searchpattern = ' '.join(searchpatterns)
-        
-        if ctx in configs[astn].contexts:
-                xivocf = configs[astn].contexts[ctx]
-                if "dir_db_uri" in xivocf:
-                        dir_db_uri = xivocf["dir_db_uri"]
-                if "dir_db_displayfields" in xivocf:
-                        dir_db_displayfields = xivocf["dir_db_displayfields"]
-                if "dir_db_matchingfields" in xivocf:
-                        dir_db_matchingfields = xivocf["dir_db_matchingfields"]
-                if "dir_db_tablename" in xivocf:
-                        dir_db_tablename = xivocf["dir_db_tablename"]
+        if ctx in contexts_cl:
+                z = contexts_cl[ctx]
 
-        if dir_db_displayfields == "":
-                ndfields = 0
-        else:
-                ndfields = len(dir_db_displayfields.split(";"))
-        fullstat = "directory-response=%d;%s" %(ndfields,
-                                                dir_db_displayfields)
         fullstatlist = []
-        dbkind = dir_db_uri.split(":")[0]
+        fullstat_header = "directory-response=%d;" % len(z.search_valid_fields) + ';'.join(z.search_titles)
+
+        if searchpattern == "":
+                return fullstat_header
+
+        dbkind = z.uri.split(":")[0]
         if dbkind == "ldap":
-                if dir_db_matchingfields == "":
-                        log_debug("dir_db_matchingfields is empty - could not proceed directory-search request")
-                else:
-                        fnames = dir_db_matchingfields.split(";")
-                        selectline = "(|"
-                        fieldslist = []
-                        for fname in fnames:
-                                fieldslist.append(fname)
-                                if searchpattern == "*":
-                                        selectline += "(%s=*)" %fname
-                                elif searchpattern != "":
-                                        selectline += "(%s=*%s*)" %(fname, searchpattern)
-                        selectline += ")"
-                        ldapid = xivo_ldap.xivo_ldap(dir_db_uri)
-                        result = ldapid.getldap(selectline, fieldslist)
-
-                        for x in result:
-                                [tnum, cn, o, mailn] = ["", "", "", ""]
-                                if 'telephoneNumber' in x[1]:
-                                        tnum = x[1]['telephoneNumber'][0].replace(" ", "")
-                                elif 'mobile' in x[1]:
-                                        tnum = x[1]['mobile'][0].replace(" ", "")
-                                if 'cn' in x[1]:
-                                        cn = x[1]['cn'][0]
-                                if 'o' in x[1]:
-                                        o = x[1]['o'][0]
-                                if 'mail' in x[1]:
-                                        mailn = x[1]['mail'][0]
-                                fullstatlist.append("%s;%s;%s;%s" %(tnum,cn,o,mailn))
-#                               if mailn != "":
-#                                       fullstatlist.append("%s;%s;%s;mailto:%s" %(tnum,cn,o,mailn))
-#                               else:
-#                                       fullstatlist.append("%s;%s;%s;" %(tnum,cn,o))
-        elif dbkind != "":
-                if dir_db_matchingfields == "":
-                        log_debug("dir_db_matchingfields is empty - could not proceed directory-search request")
-                elif ndfields != len(dir_db_matchingfields.split(";")):
-                        log_debug("dir_db_matchingfields and dir_db_displayfields do not have the same number of fields - could not proceed directory-search request")
-                else:
-                        fnames = dir_db_matchingfields.split(";")
-                        selectline = ""
-                        for fname in fnames:
-                                selectline += "%s, " %fname
+                selectline = []
+                for fname in z.search_matching_fields:
                         if searchpattern == "*":
-                                whereline = ""
-                        elif searchpattern != "":
-                                whereline = " WHERE "
-                                for fname in fnames:
-                                        whereline += "%s REGEXP '%s' OR " %(fname, searchpattern)
+                                selectline.append("(%s=*)" % fname)
+                        else:
+                                selectline.append("(%s=*%s*)" %(fname, searchpattern))
 
-                        conn = anysql.connect_by_uri(dir_db_uri)
+                try:
+                        ldapid = xivo_ldap.xivo_ldap(z.uri)
+                        results = ldapid.getldap("(|%s)" % ''.join(selectline),
+                                        z.search_matching_fields)
+                        for result in results:
+                                result_v = {}
+                                for f in z.search_matching_fields:
+                                        if f in result[1]:
+                                                result_v[f] = result[1][f][0]
+                                fullstatlist.append(';'.join(z.result_by_valid_field(result_v)))
+                except Exception, exc:
+                        log_debug('--- exception --- ldaprequest : %s' % str(exc))
+
+        elif dbkind != "":
+                if searchpattern == "*":
+                        whereline = ""
+                else:
+                        wl = []
+                        for fname in z.search_matching_fields:
+                                wl.append("%s REGEXP '%s'" %(fname, searchpattern))
+                        whereline = "WHERE " + ' OR '.join(wl)
+
+                sqlrequest = "SELECT %s FROM %s %s;" %(', '.join(z.search_matching_fields),
+                                                       z.sqltable,
+                                                       whereline)
+                try:
+                        conn = anysql.connect_by_uri(z.uri)
                         cursor = conn.cursor()
-                        sqlrequest = "SELECT %s FROM %s %s;" %(selectline[:-2],
-                                                               dir_db_tablename,
-                                                               whereline[:-4])
                         cursor.execute(sqlrequest)
-                        result = cursor.fetchall()
+                        results = cursor.fetchall()
                         conn.close()
-
-                        for x in result:
-                                linetodisplay = ""
-                                for z in x:
-                                        linetodisplay += "%s;" %(str(z))
-                                fullstatlist.append("%s" %(linetodisplay[:-1]))
+                        for result in results:
+                                result_v = {}
+                                n = 0
+                                for f in z.search_matching_fields:
+                                        result_v[f] = result[n]
+                                        n += 1
+                                fullstatlist.append(';'.join(z.result_by_valid_field(result_v)))
+                except Exception, exc:
+                        log_debug('--- exception --- sqlrequest : %s' % str(exc))
         else:
-                log_debug("no database method defined - please fill the dir_db_uri field")
+                log_debug("no database method defined - please fill the dir_db_uri field of the <%s> context" % ctx)
 
         uniq = {}
         fullstatlist.sort()
+        fullstat_body = []
         for fsl in [uniq.setdefault(e,e) for e in fullstatlist if e not in uniq]:
-                fullstat += ";" + fsl
-        fullstat += "\n"
+                fullstat_body.append(fsl)
+        fullstat = fullstat_header + ";" + ';'.join(fullstat_body)
         return fullstat
 
 
@@ -879,12 +851,11 @@ def parseSIP(astnum, data, l_sipsock, l_addrsip):
         #print "###", astnum, ilength, icseq, icid, iaccount, imsg, iret, ibranch, itag
 
         uri = "sip:%s@%s" %(iaccount, configs[astnum].remoteaddr)
-        realm = "asterisk"
         mycontext = ""
         mysippass = ""
         if iaccount in configs[astnum].xivosb_phoneids:
                 mycontext, mysippass = configs[astnum].xivosb_phoneids[iaccount]
-        md5_r1 = md5.md5("%s:%s:%s" %(iaccount, realm, mysippass)).hexdigest()
+        md5_r1 = md5.md5("%s:%s:%s" %(iaccount, configs[astnum].realm, mysippass)).hexdigest()
 
         #print "-----------", iaccount, mysippass
         #print data
@@ -897,7 +868,7 @@ def parseSIP(astnum, data, l_sipsock, l_addrsip):
                         md5_r2   = md5.md5(imsg   + ":" + uri).hexdigest()
                         response = md5.md5("%s:%s:%s" %(md5_r1, nonce, md5_r2)).hexdigest()
                         auth = "Authorization: Digest username=\"%s\", realm=\"%s\", nonce=\"%s\", uri=\"%s\", response=\"%s\", algorithm=MD5" \
-                               %(iaccount, realm, nonce, uri, response)
+                               %(iaccount, configs[astnum].realm, nonce, uri, response)
                         command = xivo_sip.sip_register(configs[astnum], iaccount,
                                                         1, "reg_cid@xivopy",
                                                         (xivosb_register_frequency + 2), auth)
@@ -948,7 +919,7 @@ def parseSIP(astnum, data, l_sipsock, l_addrsip):
                                 md5_r2   = md5.md5(imsg   + ":" + uri).hexdigest()
                                 response = md5.md5(md5_r1 + ":" + nonce + ":" + md5_r2).hexdigest()
                                 auth = "Authorization: Digest username=\"%s\", realm=\"%s\", nonce=\"%s\", uri=\"%s\", response=\"%s\", algorithm=MD5" \
-                                       %(iaccount, realm, nonce, uri, response)
+                                       %(iaccount, configs[astnum].realm, nonce, uri, response)
                                 command = xivo_sip.sip_subscribe(configs[astnum], iaccount,
                                                                  1, icid, normv.phonenum,
                                                                  (xivosb_register_frequency + 2), auth)
@@ -1136,6 +1107,76 @@ def hangup(requester, l):
         return ret_message
 
 
+
+def manage_login(cfg, requester_ip, requester_port, socket):
+        global userinfo_by_requester
+        for argum in ['astid', 'proto', 'userid', 'state', 'ident', 'passwd', 'version']:
+                if argum not in cfg:
+                        repstr = "loginko=missing:%s" % argum
+                        return repstr
+
+        if cfg.get('astid') in asteriskr:
+                astnum   = asteriskr[cfg.get('astid')]
+        else:
+                log_debug("login command attempt from SB : asterisk name <%s> unknown" % cfg.get('astid'))
+                repstr = "loginko=asterisk_name"
+                return repstr
+        proto    = cfg.get('proto').lower()
+        userid   = cfg.get('userid')
+        state    = cfg.get('state')
+        [whoami, whatsmyos] = cfg.get('ident').split("@")
+        password = cfg.get('passwd')
+        version  = cfg.get('version')
+
+        if int(cfg.get('version')) < REQUIRED_CLIENT_VERSION:
+                repstr = "loginko=version_client:%s;%d" % (cfg.get('version'), REQUIRED_CLIENT_VERSION)
+                return repstr
+
+        capa_user = []
+        userlist_lock.acquire()
+        try:
+                userinfo = finduser(cfg.get('astid'), proto + userid)
+                if userinfo == None:
+                        repstr = "loginko=user_not_found"
+                        log_debug("no user found %s" % str(cfg))
+                elif password != userinfo['passwd']:
+                        repstr = "loginko=login_passwd"
+                else:
+                        reterror = check_user_connection(userinfo, whoami)
+                        if reterror is None:
+                                for capa in capabilities_list:
+                                        if (map_capas[capa] & userinfo.get('capas')):
+                                                capa_user.append(capa)
+
+                                sessionid = '%u' % random.randint(0,999999999)
+                                connect_user(userinfo, sessionid,
+                                             requester_ip, requester_port,
+                                             whoami, whatsmyos, True, state,
+                                             socket)
+
+                                repstr = "loginok=" \
+                                         "context:%s;phonenum:%s;capas:%s;" \
+                                         "version:%s;state:%s" %(userinfo.get('context'),
+                                                                 userinfo.get('phonenum'),
+                                                                 ",".join(capa_user),
+                                                                 __version__.split()[1],
+                                                                 userinfo.get('state'))
+                                userinfo_by_requester[requester_ip + ":" + requester_port] = [astnum,
+                                                                                              cfg.get('astid'),
+                                                                                              proto + userid,
+                                                                                              userinfo.get('context'),
+                                                                                              None,
+                                                                                              userinfo.get('capas')]
+                                send_availstate_update(astnum, proto + userid, state)
+                        else:
+                                repstr = "loginko=%s" % reterror
+        finally:
+                userlist_lock.release()
+
+        return repstr
+
+
+
 ## \brief Deals with requests from the UI clients.
 # \param connid connection identifier
 # \param allow_events tells if this connection belongs to events-allowed ones
@@ -1261,6 +1302,7 @@ def manage_tcp_connection(connid, allow_events):
                         except Exception, exc:
                                 log_debug("--- exception --- UI connection [%s] : KO when sending to %s : %s"
                                           %(usefulmsg, requester, str(exc)))
+
                 elif usefulmsg != "":
                         l = usefulmsg.split()
                         if l[0] == 'history' or l[0] == 'directory-search' or \
@@ -1275,55 +1317,23 @@ def manage_tcp_connection(connid, allow_events):
                                 except Exception, exc:
                                         log_debug("--- exception --- UI connection [%s] : a problem occured when sending to %s : %s"
                                                   %(l[0], requester, str(exc)))
-                        elif len(l) >= 8 and l[0] == 'login':
-                                # login <asterisk> sip 103 available SB@X11 passwd version
-                                if l[1] in asteriskr:
-                                        astnum = asteriskr[l[1]]
-                                        # log_debug("%i %s" % (astnum,l[3]))
-                                        sessionid = '%u' % random.randint(0,999999999)
-                                        [whoami, whatsmyos] = l[5].split("@")
-                                        state = l[4]
-                                        capa_user = []
-                                        password = l[6]
-                                        version = l[7]
+                        elif l[0] == 'login':
+                                try:
+                                        if len(l) == 2:
+                                                arglist = l[1].split(";")
+                                                cfg = {}
+                                                for argm in arglist:
+                                                        [param, value] = argm.split("=")
+                                                        cfg[param] = value
+                                                repstr = manage_login(cfg, requester_ip, requester_port, connid[0].makefile('w'))
+                                        else:
+                                                repstr = "loginko=version_client:0;%d" % REQUIRED_CLIENT_VERSION
+                                        connid[0].send(repstr + '\n')
+                                except Exception, exc:
+                                        log_debug("--- exception --- UI connection [%s] : a problem occured when sending to %s : %s"
+                                                  %(l[0], requester, str(exc)))
 
-                                        userlist_lock.acquire()
-                                        try:
-                                                userinfo = finduser(l[1], l[2].lower() + l[3])
-                                                if userinfo == None:
-                                                        repstr = "loginko=user_not_found\n"
-                                                        log_debug("no user found %s" %str(l))
-                                                else:
-                                                        reterror = check_user_connection(userinfo, whoami)
-                                                        if reterror is None:
-                                                                for capa in capabilities_list:
-                                                                        if (map_capas[capa] & userinfo.get('capas')):
-                                                                                capa_user.append(capa)
 
-                                                                connect_user(userinfo, sessionid,
-                                                                             requester_ip, requester_port,
-                                                                             whoami, whatsmyos, True, state,
-                                                                             connid[0].makefile('w'))
-
-                                                                repstr = "loginok=%s;%s;%s;%s\n" %(userinfo.get('context'),
-                                                                                                   userinfo.get('phonenum'),
-                                                                                                   ",".join(capa_user),
-                                                                                                   __version__.split()[1])
-                                                                userinfo_by_requester[requester] = [astnum,
-                                                                                                    l[1],
-                                                                                                    l[2].lower() + l[3],
-                                                                                                    userinfo.get('context'),
-                                                                                                    None,
-                                                                                                    userinfo.get('capas')]
-                                                                send_availstate_update(astnum, l[2].lower() + l[3], state)
-                                                        else:
-                                                                repstr = "loginko=connection_refused\n"
-                                        finally:
-                                                userlist_lock.release()
-                                else:
-                                        repstr = "loginko=asterisk_name\n"
-                                        log_debug("login command attempt from SB : asterisk name <%s> unknown" %l[1])
-                                connid[0].send(repstr)
                         elif allow_events == False: # i.e. if PHP-style connection
                                 n = -1
                                 if requester_ip in ip_reverse_php: n = ip_reverse_php[requester_ip]
@@ -2197,6 +2207,51 @@ class LineProp:
                         nichan = ichan.split("<ZOMBIE>")[0]
                 if nichan in self.chann: del self.chann[nichan]
 
+
+class Context:
+        def __init__(self):
+                self.uri = ""
+                self.sqltable = ""
+                self.search_titles = []
+                self.search_valid_fields = []
+                self.search_matching_fields = []
+                self.sheet_valid_fields = []
+                self.sheet_matching_fields = []
+                self.sheet_callidmatch = []
+        def setUri(self, uri):
+                self.uri = uri
+        def setSqlTable(self, sqltable):
+                self.sqltable = sqltable
+
+        def setSearchValidFields(self, vf):
+                self.search_valid_fields = vf
+                for x in vf:
+                        self.search_titles.append(x[0])
+        def setSearchMatchingFields(self, mf):
+                self.search_matching_fields = mf
+
+        def setSheetValidFields(self, vf):
+                self.sheet_valid_fields = vf
+        def setSheetMatchingFields(self, mf):
+                self.sheet_matching_fields = mf
+        def setSheetCallidMatch(self, cidm):
+                self.sheet_callidmatch = cidm
+
+        def result_by_valid_field(self, result):
+                reply_by_field = []
+                for [dummydispname, dbnames_list, keepspaces] in self.search_valid_fields:
+                        field_value = ""
+                        for dbname in dbnames_list:
+                                if dbname in result and field_value is "":
+                                        field_value = result[dbname]
+                        if keepspaces:
+                                reply_by_field.append(field_value)
+                        else:
+                                reply_by_field.append(field_value.replace(' ', ''))
+                return reply_by_field
+
+
+
 ## \class AsteriskRemote
 # \brief Properties of an Asterisk server
 class AsteriskRemote:
@@ -2251,7 +2306,8 @@ class AsteriskRemote:
                      portsipsrv = 5060,
                      sipaccounts = "",
                      contexts = "",
-                     cdr_db_uri = ""):
+                     cdr_db_uri = "",
+                     realm = "asterisk"):
 
                 self.astid = astid
                 self.userlisturl = userlisturl
@@ -2265,6 +2321,7 @@ class AsteriskRemote:
                 self.ami_login = ami_login
                 self.ami_pass = ami_pass
                 self.cdr_db_uri = cdr_db_uri
+                self.realm = realm
 
                 self.xivosb_phoneids = {}
                 self.xivosb_contexts = {}
@@ -2374,20 +2431,23 @@ class AsteriskRemote:
 def adduser(astname, user, passwd, context, phonenum, cinfo_allowed):
         global userlist
         if userlist[astname].has_key(user):
-                userlist[astname][user]['passwd'] = passwd
-                userlist[astname][user]['context'] = context
+                userlist[astname][user]['passwd']   = passwd
+                userlist[astname][user]['context']  = context
+                userlist[astname][user]['phonenum'] = phonenum
         else:
                 userlist[astname][user] = {'user':user,
                                            'passwd':passwd,
                                            'context':context,
                                            'phonenum':phonenum,
                                            'capas':0}
-                if cinfo_allowed == '1':
-                        userlist[astname][user]['capas'] = CAPA_CUSTINFO
-                else:
-                        userlist[astname][user]['capas'] = 0
-                # this list shall be defined through more options in SSO
-                userlist[astname][user]['capas'] |= (CAPA_HISTORY | CAPA_DIRECTORY | CAPA_PEERS | CAPA_PRESENCE | CAPA_DIAL | CAPA_FEATURES | CAPA_AGENTS)
+        if cinfo_allowed == '1':
+                userlist[astname][user]['capas'] = CAPA_CUSTINFO
+        else:
+                userlist[astname][user]['capas'] = 0
+        # this list shall be defined through more options in SSO
+        userlist[astname][user]['capas'] |= (CAPA_HISTORY  | CAPA_DIRECTORY | CAPA_PEERS |
+                                             CAPA_PRESENCE | CAPA_DIAL      | CAPA_FEATURES |
+                                             CAPA_AGENTS   | CAPA_FAX       | CAPA_SWITCHBOARD)
 
 
 ## \brief Deletes a user from the userlist.
@@ -2402,13 +2462,13 @@ def deluser(astname, user):
 def check_user_connection(userinfo, whoami):
         if userinfo.has_key('sessiontimestamp'):
                 if time.time() - userinfo.get('sessiontimestamp') < xivoclient_session_timeout:
-                        return "already connected"
+                        return "already_connected"
         if whoami == 'XC':
                 if conngui_xc >= maxgui_xc:
-                        return "too much XC users connected %d >= %d" %(conngui_xc, maxgui_xc)
+                        return "xcusers:%d" % maxgui_xc
         else:
                 if conngui_sb >= maxgui_sb:
-                        return "too much SB users connected %d >= %d" %(conngui_sb, maxgui_sb)
+                        return "sbusers:%d" % maxgui_sb
         return None
 
 
@@ -2426,9 +2486,13 @@ def connect_user(userinfo, sessionid, iip, iport,
                 userinfo['tcpmode'] = tcpmode
                 userinfo['socket'] = socket
 
+                # we first check if 'state' has already been set for this customer, in which case
+                # the CTI clients will be sent back this previous state
+
+                # NOT YET uncommented since the CTI clients do not currently handle it
                 # if 'state' in userinfo:
-                # state = userinfo.get('state')
-                # update towards clients
+                #         state = userinfo.get('state')
+                
                 if state in allowed_states:
                         userinfo['state'] = state
                 else:
@@ -2522,11 +2586,13 @@ class LoginHandler(SocketServer.StreamRequestHandler):
                 # asks for PASS
                 self.wfile.write('Send PASS for authentication\r\n')
                 list1 = self.rfile.readline().strip().split(' ')
-                if len(list1) != 2 or list1[0] != 'PASS':
+                if list1[0] == 'PASS':
+                        passwd = ""
+                        if len(list1) > 1: passwd = list1[1]
+                else:
                         replystr = "ERROR pass_format"
                         debugstr += " / PASS error"
                         return [replystr, debugstr], [user, port, state, astnum]
-                passwd = list1[1]
 
                 if astname_xivoc in asteriskr:
                         astnum = asteriskr[astname_xivoc]
@@ -2569,10 +2635,7 @@ class LoginHandler(SocketServer.StreamRequestHandler):
                         return [replystr, debugstr], [user, port, state, astnum]
                 state = list1[1]
                 
-                # TODO : random pas au top, faire generation de session id plus luxe
-                sessionid = '%u' % random.randint(0,999999999)
                 capa_user = []
-
                 userlist_lock.acquire()
                 try:
                         reterror = check_user_connection(userinfo, whoami)
@@ -2581,18 +2644,23 @@ class LoginHandler(SocketServer.StreamRequestHandler):
                                         if (map_capas[capa] & userinfo.get('capas')):
                                                 capa_user.append(capa)
 
+                                # TODO : random pas au top, faire generation de session id plus luxe
+                                sessionid = '%u' % random.randint(0,999999999)
                                 connect_user(userinfo, sessionid,
                                              self.client_address[0], port,
                                              whoami, whatsmyos, tcpmode, state,
                                              self.request.makefile('w'))
 
-                                replystr = "OK SESSIONID %s %s %s %s %s" %(sessionid,
-                                                                           userinfo.get('context'),
-                                                                           ",".join(capa_user),
-                                                                           __version__.split()[1],
-                                                                           userinfo.get('phonenum'))
+                                replystr = "OK SESSIONID %s " \
+                                           "context:%s;phonenum:%s;capas:%s;" \
+                                           "version:%s;state:%s" %(sessionid,
+                                                                   userinfo.get('context'),
+                                                                   userinfo.get('phonenum'),
+                                                                   ",".join(capa_user),
+                                                                   __version__.split()[1],
+                                                                   userinfo.get('state'))
                         else:
-                                replystr = "ERROR USER %s (%s)" %(user, reterror)
+                                replystr = "ERROR %s" % reterror
                                 debugstr += " / USER %s (%s)" %(user, reterror)
                                 return [replystr, debugstr], [user, port, state, astnum]
 
@@ -2624,56 +2692,67 @@ class IdentRequestHandler(SocketServer.StreamRequestHandler):
         def handle(self):
                 threading.currentThread().setName('ident-%s:%d' %(self.client_address[0], self.client_address[1]))
                 line = self.rfile.readline().strip()
-                list0 = line.split(' ')
-                log_debug("IdentRequestHandler (TCP) : client = %s:%d / %s"
-                          %(self.client_address[0],self.client_address[1],str(list0)))
+                log_debug("IdentRequestHandler (TCP) : client = %s:%d / <%s>"
+                          %(self.client_address[0],
+                            self.client_address[1],
+                            line))
                 retline = 'ERROR'
                 action = ""
                 # PUSH user callerid msg
-                m = re.match("PUSH (\S+) (\S+) ?(.*)", line)
+                m = re.match("PUSH (\S+) (\S+) <(\S*)> ?(.*)", line)
                 if m != None:
                         user = m.group(1)
                         callerid = m.group(2)
-                        msg = m.group(3)
-                        #print 'user', user, 'callerid', callerid, 'msg="%s"'%msg
+                        callerctx = m.group(3)
+                        msg = m.group(4)
                         action = "PUSH"
-                # QUERY user   (ex: QUERY sipnanard)
-                elif list0[0] == 'QUERY' and len(list0) == 2:
-                        user = list0[1]
-                        action = "QUERY"
+                else:
+                        log_debug('PUSH command <%s> invalid' % line)
+                        return
 
-                if action == "":
-			return
+                if callerctx in contexts_cl:
+                        ctxinfo = contexts_cl.get(callerctx)
+                else:
+                        log_debug('WARNING - no section has been defined for the context <%s>' % callerctx)
+                        ctxinfo = contexts_cl.get('')
 
 		userlist_lock.acquire()
 		try:
 			try:
 				astnum = ip_reverse_sht[self.client_address[0]]
 				userinfo = finduser(configs[astnum].astid, user)
+                                state_userinfo = 'unknown'
+                                
 				if userinfo == None:
-					retline = 'ERROR USER <' + user + '> NOT FOUND'
+					log_debug('User <%s> not found' % user)
 				elif userinfo.has_key('ip') and userinfo.has_key('port') \
 					 and userinfo.has_key('state') and userinfo.has_key('sessionid') \
 					 and userinfo.has_key('sessiontimestamp'):
 					if time.time() - userinfo.get('sessiontimestamp') > xivoclient_session_timeout:
-						retline = 'ERROR USER SESSION EXPIRED for <%s>' %user
+                                                log_debug('User <%s> session expired' % user)
+                                                userinfo = None
 					else:
 						capalist = (userinfo.get('capas') & capalist_server)
 						if (capalist & CAPA_CUSTINFO):
-							if action == "PUSH":
-								calleridname = sendfiche.sendficheasync(userinfo, callerid, msg)
-								retline = 'USER %s STATE %s CIDNAME "%s"' %(user, userinfo.get('state'), calleridname)
-							elif action == "QUERY":
-								retline = 'USER %s SESSIONID %s IP %s PORT %s STATE %s' \
-									  %(user, userinfo.get('sessionid'), userinfo.get('ip'), userinfo.get('port'), userinfo.get('state'))
+                                                        state_userinfo = userinfo.get('state')
+                                                else:
+                                                        userinfo = None
 				else:
-					retline = 'ERROR USER SESSION NOT DEFINED for <%s>' %user
+					log_debug('User <%s> session not defined' % user)
+                                        userinfo = None
+
+                                calleridname = sendfiche.sendficheasync(userinfo,
+                                                                        ctxinfo,
+                                                                        callerid,
+                                                                        msg)
+                                retline = 'USER %s STATE %s CIDNAME "%s <%s>"' %(user, state_userinfo, calleridname, callerid)
 			except Exception, exc:
-				retline = 'ERROR (exception) : %s' %(str(exc))
+				retline = 'ERROR PUSH %s' %(str(exc))
 		finally:
 			userlist_lock.release()
 
                 try:
+                        log_debug("PUSH : replying <%s>" % retline)
                         self.wfile.write(retline + '\r\n')
                 except Exception, exc:
                         # something bad happened.
@@ -2732,7 +2811,7 @@ def parse_command_and_build_reply(me, myargs):
                                 repstr = build_history_string(myargs[1], myargs[2], myargs[3])
                 elif myargs[0] == 'directory-search':
                         if (capalist & CAPA_DIRECTORY):
-                                repstr = build_customers(astnum, me[3], myargs[1:])
+                                repstr = build_customers(me[3], myargs[1:])
                 elif myargs[0] == 'callerids':
                         if (capalist & (CAPA_PEERS | CAPA_HISTORY)):
                                 repstr = build_callerids()
@@ -2760,6 +2839,17 @@ def parse_command_and_build_reply(me, myargs):
         except Exception, exc:
                 log_debug("--- exception --- (parse_command_and_build_reply) %s %s" %(str(myargs), str(exc)))
         return repstr
+
+
+def getboolean(fname, string):
+        if string not in fname:
+                return True
+        else:
+                value = fname.get(string)
+                if value in ['false', '0', 'False']:
+                        return False
+                else:
+                        return True
 
 
 ## \class KeepAliveHandler
@@ -2928,6 +3018,7 @@ while True: # loops over the reloads
         capabilities_list = []
         capalist_server = 0
         asterisklist = []
+        contextlist = []
         maxgui_sb = 3
         maxgui_xc = 10
         conngui_xc = 0
@@ -3032,8 +3123,17 @@ while True: # loops over the reloads
                                 sip_presence = xivoconf_local["sip_presence"]
                         if "contexts" in xivoconf_local:
                                 contexts = xivoconf_local["contexts"]
+                                if contexts != "":
+                                        for c in contexts.split(','):
+                                                contextlist.append(c)
                         if "cdr_db_uri" in xivoconf_local:
                                 cdr_db_uri = xivoconf_local["cdr_db_uri"]
+                        if "realm" in xivoconf_local:
+                                realm = xivoconf_local["realm"]
+                        for capauser, capadefs in xivoconf_local.iteritems():
+                                if capauser.find('capas_') == 0:
+                                        cuser = capauser[6:].split('/')
+                                        cdefs = capadefs.split(',')
 
                         configs.append(AsteriskRemote(i,
                                                       userlisturl,
@@ -3048,13 +3148,91 @@ while True: # loops over the reloads
                                                       sip_port,
                                                       sip_presence,
                                                       contexts,
-                                                      cdr_db_uri))
+                                                      cdr_db_uri,
+                                                      realm))
 
-                        ip_reverse_sht[ipaddress] = n
-                        ip_reverse_php[ipaddress_php] = n
+                        if ipaddress not in ip_reverse_sht:
+                                ip_reverse_sht[ipaddress] = n
+                        else:
+                                log_debug('WARNING - IP address already exists for asterisk #%d - can not set it for #%d'
+                                          % (ip_reverse_sht[ipaddress], n))
+                        if ipaddress_php not in ip_reverse_php:
+                                ip_reverse_php[ipaddress_php] = n
+                        else:
+                                log_debug('WARNING - IP address (PHP) already exists for asterisk #%d - can not set it for #%d'
+                                          % (ip_reverse_php[ipaddress_php], n))
                         save_for_next_packet_events.append("")
                         save_for_next_packet_status.append("")
                         n += 1
+
+
+        contexts_cl = {}
+        contexts_cl[''] = Context()
+        # loads the configuration for each context
+        for i in xivoconf.sections():
+                if i != "general" and i in contextlist:
+                        xivoconf_local = dict(xivoconf.items(i))
+                        dir_db_uri = ""
+                        dir_db_sqltable = ""
+
+                        if "dir_db_uri" in xivoconf_local:
+                                dir_db_uri = xivoconf_local["dir_db_uri"]
+                        if "dir_db_sqltable" in xivoconf_local:
+                                dir_db_sqltable = xivoconf_local["dir_db_sqltable"]
+
+                        z = Context()
+                        z.setUri(dir_db_uri)
+                        z.setSqlTable(dir_db_sqltable)
+
+                        fnames = {}
+                        snames = {}
+                        for field in xivoconf_local:
+                                if field.find('dir_db_search') == 0:
+                                        ffs = field.split('.')
+                                        if len(ffs) == 3:
+                                                if ffs[1] not in fnames:
+                                                        fnames[ffs[1]] = {}
+                                                fnames[ffs[1]][ffs[2]] = xivoconf_local[field]
+                                elif field.find('dir_db_sheet') == 0:
+                                        ffs = field.split('.')
+                                        if len(ffs) == 3:
+                                                if ffs[1] not in snames:
+                                                        snames[ffs[1]] = {}
+                                                snames[ffs[1]][ffs[2]] = xivoconf_local[field]
+                                        elif len(ffs) == 2 and ffs[1] == 'callidmatch':
+                                                z.setSheetCallidMatch(xivoconf_local[field].split(','))
+
+                        search_vfields = []
+                        search_mfields = []
+                        for fname in fnames.itervalues():
+                                if 'display' in fname and 'match' in fname:
+                                        dbnames = fname['match']
+                                        if dbnames != "":
+                                                dbnames_list = dbnames.split(",")
+                                                for dbn in dbnames_list:
+                                                        if dbn not in search_mfields:
+                                                                search_mfields.append(dbn)
+                                                keepspaces = getboolean(fname, 'space')
+                                                search_vfields.append([fname['display'], dbnames_list, keepspaces])
+                        z.setSearchValidFields(search_vfields)
+                        z.setSearchMatchingFields(search_mfields)
+                        
+                        sheet_vfields = []
+                        sheet_mfields = []
+                        for fname in snames.itervalues():
+                                if 'field' in fname and 'match' in fname:
+                                        dbnames = fname['match']
+                                        if dbnames != "":
+                                                dbnames_list = dbnames.split(",")
+                                                for dbn in dbnames_list:
+                                                        if dbn not in sheet_mfields:
+                                                                sheet_mfields.append(dbn)
+                                                sheet_vfields.append([fname['field'], dbnames_list, False])
+
+                        z.setSheetValidFields(sheet_vfields)
+                        z.setSheetMatchingFields(sheet_mfields)
+                        
+                        contexts_cl[i] = z
 
         # Instantiate the SocketServer Objects.
         loginserver = MyTCPServer(('', port_login), LoginHandler)
