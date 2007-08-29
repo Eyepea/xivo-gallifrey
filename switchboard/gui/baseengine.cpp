@@ -35,7 +35,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include "popup.h"
 
 const QString __version__("$Revision$");
-const int REQUIRED_SERVER_VERSION = 1438;
+const int REQUIRED_SERVER_VERSION = 1440;
 
 /*! \brief Constructor.
  *
@@ -706,6 +706,10 @@ void BaseEngine::popupError(const QString & errorid)
 
         else if(errorid.toLower() == "connection_refused")
                 errormsg = tr("You are not allowed to connect to the Server.");
+
+        else if(errorid.toLower() == "number_of_arguments")
+                errormsg = tr("The number of arguments sent is incorrect.\n"
+                              "Maybe a version issue ?");
 
         else if(errorid.toLower() == "user_not_found")
                 errormsg = tr("Your registration name <%1,%2> is not known on Asterisk Id <%3>.").arg(m_protocol, m_userid, m_asterisk);
@@ -1399,7 +1403,8 @@ void BaseEngine::identifyToTheServer()
 	m_serveraddress = m_loginsocket->peerAddress();
 	qDebug() << "BaseEngine::identifyToTheServer()" << m_serveraddress;
         setMyClientId();
-	outline.append("LOGIN " + m_asterisk + "/" + m_protocol.toLower() + m_userid + " " + m_clientid);
+	outline.append("LOGIN " + m_asterisk + "/" + m_protocol.toLower() + m_userid + \
+                       " " + m_clientid + " " + __version__.split(" ")[1]);
 	qDebug() << "BaseEngine::identifyToTheServer() : " << outline;
 	outline.append("\r\n");
 	m_loginsocket->write(outline.toAscii());

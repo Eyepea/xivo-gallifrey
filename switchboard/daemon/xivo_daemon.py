@@ -191,7 +191,7 @@ socket.setdefaulttimeout(2)
 DAEMON = "daemon-announce"
 HISTSEPAR = ";"
 XIVO_CLI_PHP_HEADER = "XIVO-CLI-PHP"
-REQUIRED_CLIENT_VERSION = 1438
+REQUIRED_CLIENT_VERSION = 1440
 
 # capabilities
 CAPA_CUSTINFO    = 1 <<  0
@@ -2556,7 +2556,7 @@ class LoginHandler(SocketServer.StreamRequestHandler):
                 replystr = "ERROR"
                 debugstr = "LoginRequestHandler (TCP) : client = %s:%d" %(self.client_address[0], self.client_address[1])
                 list1 = self.rfile.readline().strip().split(' ') # list1 should be "[LOGIN <asteriskname>/sip<nnn>]"
-                if len(list1) < 2 or len(list1) > 3 or list1[0] != 'LOGIN':
+                if len(list1) < 2 or len(list1) > 4 or list1[0] != 'LOGIN':
                         replystr = "ERROR number_of_arguments"
                         debugstr += " / LOGIN error args"
                         return [replystr, debugstr], [user, port, state, astnum]
@@ -2571,7 +2571,7 @@ class LoginHandler(SocketServer.StreamRequestHandler):
                 
                 whoami = ""
                 whatsmyos = ""
-                if len(list1) == 3:
+                if len(list1) >= 3:
                         nwhoami = list1[2].split("@")
                         whoami  = nwhoami[0]
                         if len(nwhoami) == 2:
@@ -2582,6 +2582,13 @@ class LoginHandler(SocketServer.StreamRequestHandler):
                 if whatsmyos not in ["X11", "WIN", "MAC"]:
                         log_debug("WARNING : %s/%s attempts to log in from %s:%d but has given no meaningful OS hint (%s)"
                                   %(astname_xivoc, user, self.client_address[0], self.client_address[1], whatsmyos))
+
+                if len(list1) >= 4:
+                        clientversion = int(list1[3])
+                        if clientversion < REQUIRED_CLIENT_VERSION:
+                                replystr = "ERROR version_client:%d;%d" % (clientversion, REQUIRED_CLIENT_VERSION)
+                                debugstr += " / Client version Error %d < %d" %(clientversion, REQUIRED_CLIENT_VERSION)
+                                return [replystr, debugstr], [user, port, state, astnum]
 
                 # asks for PASS
                 self.wfile.write('Send PASS for authentication\r\n')
