@@ -5,7 +5,7 @@ header('Content-Type: text/xml; charset=utf-8');
 $site = array();
 $site[] = 'https://localhost/service/ipbx/sso.php';
 
-define('PHONEBOOK_URL','http://192.168.0.254/phonebook/phonebook.php');
+define('PHONEBOOK_URL','http://192.168.0.254/phonebook/entreprise.php');
 
 define('XLDAP_ENABLE',true);
 define('XLDAP_HOST','');
@@ -221,7 +221,6 @@ function ldap_search_name($gname)
 
 	$filter = '';
 
-	// Added RX@EXA'2007 & modified by ADC@PF'2007 - search for telephone number
 	if(ctype_digit($gname) === true)
 	{
 		$len = strlen($gname);
@@ -231,13 +230,13 @@ function ldap_search_name($gname)
 		$filter = '(telephoneNumber='.$filter.')'.
 			  '(mobile='.$filter.')';
 	}
-	// Added RX@EXA'2007 & modified by ADC@PF'2007 - search for telephone number
 
-	$filter = '(|(sn='.$gname.'*)'.
+	$filter = '(|'.
+	          '(sn='.$gname.'*)'.
+		  $filter.
 		  '(givenName='.$gname.'*)'.
 		  '(displayName='.$gname.'*)'.
-		  '(name='.$gname.'*)'.
-		  $filter.')';
+		  '(name='.$gname.'*))';
 
 	$field = array();
 	$field[] = 'sn';
@@ -309,13 +308,21 @@ function format_phone($phone)
 {
 	$phone = trim((string) $phone);
 
+	if(isset($phone{0}) === false)
+		return($phone);
+
 	if($phone{0} === '+')
-		$phone = '000'.substr($phone,1);
+		$phone = '00'.substr($phone,1);
 
 	$phone = str_replace(array(' ','+'),'',$phone);
 
 	if(preg_match('@^(0033|33)(\(\d+\))?(\d+)$@',$phone,$match) !== 1)
+	{
+		if(isset($phone{9}) === true)
+			$phone = '0'.$phone;
+
 		return($phone);
+	}
 
 	$phone = '';
 
@@ -326,7 +333,10 @@ function format_phone($phone)
 
 	$phone = str_replace(array('(',')'),'',$phone);
 
-	if(isset($phone{9}) === false)
+	if(isset($phone{8}) === true && isset($phone{9}) === false)
+		$phone = '0'.$phone;
+
+	if(isset($phone{9}) === true)
 		$phone = '0'.$phone;
 
 	return($phone);

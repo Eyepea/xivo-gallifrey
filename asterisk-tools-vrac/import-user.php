@@ -67,7 +67,7 @@
 		if(isset($data[5],$data[5]{0}) === true)
 			$secret = trim($data[5]);
 		else
-			$secret = $number;
+			$secret = '';
 
 		if(isset($data[6],$data[6]{0}) === true)
 			$outnumber = trim($data[6]);
