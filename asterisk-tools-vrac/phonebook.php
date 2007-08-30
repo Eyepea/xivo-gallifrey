@@ -5,7 +5,7 @@ header('Content-Type: text/xml; charset=utf-8');
 $site = array();
 $site[] = 'https://localhost/service/ipbx/sso.php';
 
-define('PHONEBOOK_URL','http://192.168.0.254/phonebook/entreprise.php');
+define('PHONEBOOK_URL','http://192.168.0.254/phonebook/phonebook.php');
 
 define('XLDAP_ENABLE',true);
 define('XLDAP_HOST','');
