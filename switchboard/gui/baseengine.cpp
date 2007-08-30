@@ -669,7 +669,7 @@ bool BaseEngine::parseCommand(const QStringList & listitems)
                         else
                                 monitorPeer(myfullid, m_fullname);
 
-                        qDebug() << m_fullname;
+                        // qDebug() << m_fullname;
                         localUserDefined(m_fullname);
                         //                }
 

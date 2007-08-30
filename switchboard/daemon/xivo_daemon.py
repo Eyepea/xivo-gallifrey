@@ -278,9 +278,9 @@ def update_history_call(astn, techno, phoneid, phonenum, nlines, kind):
                         sql = ["SELECT calldate, clid, src, dst, dcontext, channel, dstchannel, " \
                                "lastapp, lastdata, duration, billsec, disposition, amaflags, " \
                                "accountcode, uniqueid, userfield FROM %s " % (table)]
-                        if kind == "0": # outgoing calls (answered)
-                                sql.append("WHERE disposition='ANSWERED' ")
-                                sql.append("AND channel LIKE '%s/%s-%%' " \
+                        if kind == "0": # outgoing calls (all)
+                                # sql.append("WHERE disposition='ANSWERED' ")
+                                sql.append("WHERE channel LIKE '%s/%s-%%' " \
                                            "ORDER BY calldate DESC LIMIT %s" % (techno, phoneid, nlines))
                         elif kind == "1": # incoming calls (answered)
                                 sql.append("WHERE disposition='ANSWERED' ")
@@ -1863,57 +1863,59 @@ def update_sipnumlist(astnum):
                 if x != "": sipnuml[x] = [x, "", "", x.split("/")[1], ""]
         sipnumlistnew = sipnuml.keys()
         sipnumlistnew.sort()
-        if sipnumlistnew != sipnumlistold:
-                lstdel = ""
-                lstadd = ""
-                for snl in sipnumlistold:
-                        if snl not in sipnumlistnew:
-                                lstdel += "del:" + configs[astnum].astid + ":" + build_basestatus(plist[astnum].normal[snl]) + ";"
-                                del plist[astnum].normal[snl] # or = "Absent"/0 ?
-                for snl in sipnumlistnew:
-                        if snl not in sipnumlistold:
-                                if snl.find("SIP") == 0:
-                                        plist[astnum].normal[snl] = LineProp("SIP",
-                                                                             snl.split("/")[1],
-                                                                             sipnuml[snl][3],
-                                                                             sipnuml[snl][4],
-                                                                             "BefSubs", True)
-                                elif snl.find("IAX2") == 0:
-                                        plist[astnum].normal[snl] = LineProp("IAX2",
-                                                                             snl.split("/")[1],
-                                                                             sipnuml[snl][3],
-                                                                             sipnuml[snl][4],
-                                                                             "Ready", True)
-                                elif snl.find("mISDN") == 0:
-                                        plist[astnum].normal[snl] = LineProp("mISDN",
-                                                                             snl.split("/")[1],
-                                                                             sipnuml[snl][3],
-                                                                             sipnuml[snl][4],
-                                                                             "Ready", True)
-                                elif snl.find("Zap") == 0:
-                                        plist[astnum].normal[snl] = LineProp("Zap",
-                                                                             snl.split("/")[1],
-                                                                             sipnuml[snl][3],
-                                                                             sipnuml[snl][4],
-                                                                             "Ready", True)
-                                else:
-                                        log_debug(snl + " format not supported")
 
-                                if snl in plist[astnum].normal:
-                                        plist[astnum].normal[snl].set_callerid(sipnuml[snl])
+        lstdel = ""
+        lstadd = ""
+        for snl in sipnumlistold:
+                if snl not in sipnumlistnew:
+                        lstdel += "del:" + configs[astnum].astid + ":" + build_basestatus(plist[astnum].normal[snl]) + ";"
+                        del plist[astnum].normal[snl] # or = "Absent"/0 ?
+                else:
+                        plist[astnum].normal[snl].updateIfNeeded(sipnuml[snl])
+        for snl in sipnumlistnew:
+                if snl not in sipnumlistold:
+                        if snl.find("SIP") == 0:
+                                plist[astnum].normal[snl] = LineProp("SIP",
+                                                                     snl.split("/")[1],
+                                                                     sipnuml[snl][3],
+                                                                     sipnuml[snl][4],
+                                                                     "BefSubs", True)
+                        elif snl.find("IAX2") == 0:
+                                plist[astnum].normal[snl] = LineProp("IAX2",
+                                                                     snl.split("/")[1],
+                                                                     sipnuml[snl][3],
+                                                                     sipnuml[snl][4],
+                                                                     "Ready", True)
+                        elif snl.find("mISDN") == 0:
+                                plist[astnum].normal[snl] = LineProp("mISDN",
+                                                                     snl.split("/")[1],
+                                                                     sipnuml[snl][3],
+                                                                     sipnuml[snl][4],
+                                                                     "Ready", True)
+                        elif snl.find("Zap") == 0:
+                                plist[astnum].normal[snl] = LineProp("Zap",
+                                                                     snl.split("/")[1],
+                                                                     sipnuml[snl][3],
+                                                                     sipnuml[snl][4],
+                                                                     "Ready", True)
+                        else:
+                                log_debug(snl + " format not supported")
+                                
+                        if snl in plist[astnum].normal:
+                                plist[astnum].normal[snl].set_callerid(sipnuml[snl])
 
-                                lstadd += "add:" + configs[astnum].astid + ":" + build_basestatus(plist[astnum].normal[snl]) + ":0:" \
-                                          + build_cidstatus(plist[astnum].normal[snl]) + ";"
-                if lstdel != "":
-                        strupdate = "peerremove=" + lstdel
-                        send_msg_to_cti_clients(strupdate)
-                        verboselog(strupdate, False, True)
+                        lstadd += "add:" + configs[astnum].astid + ":" + build_basestatus(plist[astnum].normal[snl]) + ":0:" \
+                                  + build_cidstatus(plist[astnum].normal[snl]) + ";"
+        if lstdel != "":
+                strupdate = "peerremove=" + lstdel
+                send_msg_to_cti_clients(strupdate)
+                verboselog(strupdate, False, True)
 
 
-                if lstadd != "":
-                        strupdate = "peeradd=" + lstadd
-                        send_msg_to_cti_clients(strupdate)
-                        verboselog(strupdate, False, True)
+        if lstadd != "":
+                strupdate = "peeradd=" + lstadd
+                send_msg_to_cti_clients(strupdate)
+                verboselog(strupdate, False, True)
 
 
 ## \brief Connects to the AMI through AMIClass.
@@ -2130,6 +2132,10 @@ class LineProp:
         def set_lasttime(self, ilasttime):
                 self.lasttime = ilasttime
         def set_callerid(self, icallerid):
+                self.calleridfull  = icallerid[0]
+                self.calleridfirst = icallerid[1]
+                self.calleridlast  = icallerid[2]
+        def updateIfNeeded(self, icallerid):
                 self.calleridfull  = icallerid[0]
                 self.calleridfirst = icallerid[1]
                 self.calleridlast  = icallerid[2]

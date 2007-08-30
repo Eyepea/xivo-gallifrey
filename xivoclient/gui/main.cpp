@@ -51,6 +51,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 int main(int argc, char * * argv)
 {
 	QString locale = QLocale::system().name();
+//	QApplication::setStyle(new XivoClientStyle());
 	QCoreApplication::setOrganizationName("Xivo");
 	QCoreApplication::setOrganizationDomain("xivo.fr");
 	QCoreApplication::setApplicationName("XivoClient");
@@ -75,6 +76,7 @@ int main(int argc, char * * argv)
 	//main.dumpObjectTree();
 	QObject::connect( &app, SIGNAL(lastWindowClosed()),
                           &engine, SLOT(stop()) );
+	//engine.startTimer(1000);
 	return app.exec();
 }
 

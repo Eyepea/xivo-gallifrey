@@ -25,7 +25,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QFile>
 #include <QLocale>
 #include <QTranslator>
-#include "switchboardwindow.h"
 #include "baseengine.h"
 #include "mainwidget.h"
 
@@ -64,6 +63,8 @@ int main(int argc, char * * argv)
 	MainWidget main(&engine);
 	main.show();
 	//main.dumpObjectTree();
+	QObject::connect( &app, SIGNAL(lastWindowClosed()),
+                          &engine, SLOT(stop()) );
 	//engine.startTimer(1000);
 	return app.exec();
 }

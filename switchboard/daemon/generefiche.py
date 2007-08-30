@@ -1,7 +1,13 @@
+#!/usr/bin/python
+# $Revision$
+# $Date$
+
 # Thomas Bernard
 # generateur de fiche XML pour la remontee de fiche
 
+import sys
 import socket
+import encodings.utf_8
 
 # 1) instancier
 # 2) ajouter des infos
@@ -34,7 +40,8 @@ class Fiche:
                     s.append('<info name="%s" type="%s"><![CDATA[%s]]></info>' %(name, type, value))
             s.append('</user>')
             s.append('</profile>')
-            return ''.join(s)
+            retstring = ''.join(s)
+            return retstring
     def sendtouser(self, address):
             """send the profile to a user using TCP"""
             try:

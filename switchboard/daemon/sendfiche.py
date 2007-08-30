@@ -1,3 +1,7 @@
+#!/usr/bin/python
+# $Revision$
+# $Date$
+
 # Thomas Bernard
 
 import ConfigParser
@@ -6,6 +10,7 @@ import ldap
 import sys
 import syslog
 import threading
+import encodings.utf_8
 
 import generefiche
 
@@ -259,7 +264,8 @@ class FicheSender:
                                 # fs.write(fiche.getxml())
                                 # fs.flush()
                                 # fs.close()
-                                socket.write(fiche.getxml())
+                                fxml = fiche.getxml()
+                                socket.write(fxml)
                                 socket.flush()
                         else:
                                 fiche.sendtouser(address)
