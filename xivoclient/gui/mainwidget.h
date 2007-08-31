@@ -58,7 +58,7 @@ public:
 	void setTablimit(int);	//!< setter for m_tablimit
 	void setForceTabs(bool);//!< setter for m_forcetabs
 private slots:
-	void popupConf();
+	void showConfDialog();
 	void setDisconnected();
 	void setConnected();
 	void systrayActivated(QSystemTrayIcon::ActivationReason);

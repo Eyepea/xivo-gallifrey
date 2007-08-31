@@ -30,6 +30,7 @@ ExtendedTableWidget::ExtendedTableWidget(QWidget * parent)
 {
 	setAcceptDrops(true);
         setAlternatingRowColors(true);
+        setStyleSheet("* {selection-background-color : blue}"); // #fff0e0 too light
 }
 
 /*! \brief Constructor

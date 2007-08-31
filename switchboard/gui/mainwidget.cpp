@@ -50,15 +50,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 /*! \brief Widget containing the CallStackWidget and a Title QLabel
  */
-class LeftPanel : public QWidget
-{
-public:
-	LeftPanel(QWidget *, QWidget * parent = 0);	//!< Constructor
-	QLabel * titleLabel();	//!< getter for m_titleLabel
-private:
-	QLabel * m_titleLabel;	//!< Title label property
-};
-
 LeftPanel::LeftPanel(QWidget * bottomWidget,QWidget * parent)
 : QWidget(parent)
 {
@@ -74,68 +65,110 @@ QLabel * LeftPanel::titleLabel()
 	return m_titleLabel;
 }
 
+
+
+
 /*!
  * Construct the Widget with all subwidgets : a left panel for
  * displaying calls and a right panel for peers.
  * The geometry is restored from settings.
  */
 MainWidget::MainWidget(BaseEngine * engine, QWidget * parent)
-	: QMainWindow(parent), m_engine(engine)
+	: QMainWindow(parent, Qt::FramelessWindowHint), m_engine(engine)
 {
 	QSettings settings;
 	QPixmap redsquare(":xivoclient/gui/disconnected.png");
 	statusBar();	// This creates the status bar.
 	m_status = new QLabel();
 	m_status->setPixmap(redsquare);
+	statusBar()->setStyleSheet("* {background : #ffe0b0}");
 	statusBar()->addPermanentWidget(m_status);
 	statusBar()->clearMessage();
 	setWindowIcon(QIcon(":xivoclient/gui/xivoicon.png"));
 	setWindowTitle("XIVO Switchboard");
 
 	createActions();
+	createMenus();
 
+	connect( m_engine, SIGNAL(logged()),
+	         this, SLOT(engineStarted()));
+	connect( m_engine, SIGNAL(delogged()),
+                 this, SLOT(engineStopped()));
+
+	restoreGeometry(settings.value("display/mainwingeometry").toByteArray());
+
+	m_wid = new QWidget();
+        m_wid->setStyleSheet("* {background : white}");
+	m_mainlayout = new QVBoxLayout(m_wid);
+        m_xivobg = new QLabel();
+        m_xivobg->setPixmap(QPixmap(":xivoclient/gui/xivo-login.png"));
+        m_mainlayout->addWidget(m_xivobg, 0, Qt::AlignHCenter | Qt::AlignVCenter);
+	setCentralWidget(m_wid);
+	m_tablimit = settings.value("display/tablimit", 5).toInt();
+}
+
+void MainWidget::buildSplitters()
+{
+	QSettings settings;
 	m_splitter = new QSplitter(this);
 	m_leftSplitter = new QSplitter(Qt::Vertical, m_splitter);
-
-	/* (0, 0) "position" : Calls */
-	QScrollArea * areaCalls = new QScrollArea(this);
-	LeftPanel * leftPanel = new LeftPanel(areaCalls, m_leftSplitter);
-
-
-	/* (0, 1) "position" : Tabs */
-	m_svc_tabwidget = new QTabWidget(m_leftSplitter);
-
-	DisplayMessagesPanel * lbl = new DisplayMessagesPanel(m_svc_tabwidget);
-	m_svc_tabwidget->addTab(lbl, tr("Messages"));
-
-	calls = new CallStackWidget(areaCalls);
-	connect( calls, SIGNAL(changeTitle(const QString &)),
-	         leftPanel->titleLabel(), SLOT(setText(const QString &)) );
-	connect( m_engine, SIGNAL(updateCall(const QString &, const QString &, int, const QString &,
-					     const QString &, const QString &, const QString &)),
-		 calls, SLOT(addCall(const QString &, const QString &, int, const QString &,
-				     const QString &, const QString &, const QString &)) );
-	connect( m_engine, SIGNAL(callsUpdated()),
-	         calls, SLOT(updateDisplay()) );
-	connect( m_engine, SIGNAL(delogged()),
-	         calls, SLOT(reset()) );
-	connect( m_engine, SIGNAL(monitorPeer(const QString &, const QString &)),
-	         calls, SLOT(monitorPeer(const QString &, const QString &)) );
-	connect( calls, SIGNAL(hangUp(const QString &)),
-		 m_engine, SLOT(hangUp(const QString &)) );
-	connect( calls, SIGNAL(transferToNumber(const QString &)),
-		 m_engine, SLOT(transferToNumber(const QString &)) );
-
 	m_middleSplitter = new QSplitter( Qt::Vertical, m_splitter);
+	m_rightSplitter = new QSplitter(Qt::Vertical, m_splitter);
 
-	//QScrollArea * areaPeers = new QScrollArea(m_splitter);
-	QScrollArea * areaPeers = new QScrollArea(m_middleSplitter);
-	areaCalls->setWidgetResizable(true);
-	areaPeers->setWidgetResizable(true);
+        // Left Splitter Definitions
+        m_areaCalls = new QScrollArea(m_leftSplitter);
+	m_areaCalls->setWidgetResizable(true);
+        m_leftpanel = new LeftPanel(m_areaCalls, m_leftSplitter);
+	m_calls = new CallStackWidget(m_areaCalls);
+ 	m_areaCalls->setWidget(m_calls);
+	m_svc_tabwidget = new QTabWidget(m_leftSplitter);
+	m_messages_widget = new DisplayMessagesPanel(m_svc_tabwidget);
+	m_svc_tabwidget->addTab(m_messages_widget, tr("Messages"));
+	m_leftSplitter->restoreState(settings.value("display/leftSplitterSizes").toByteArray());
 
- 	m_widget = new SwitchBoardWindow(areaPeers);
+	// Middle Splitter Definitions
+        m_areaPeers = new QScrollArea(m_middleSplitter);
+        m_areaPeers->setWidgetResizable(true);
+ 	m_widget = new SwitchBoardWindow(m_areaPeers);
  	m_widget->setEngine(m_engine);
 	m_engine->addRemovable(m_widget->metaObject());
+ 	m_areaPeers->setWidget(m_widget);
+	m_dirpanel = new DirectoryPanel(m_middleSplitter);
+	m_middleSplitter->restoreState(settings.value("display/middleSplitterSizes").toByteArray());
+
+        // Right Splitter Definitions
+        m_searchpanel = new SearchPanel(m_rightSplitter);
+        m_searchpanel->setEngine(m_engine);
+	m_tabwidget = new QTabWidget(m_rightSplitter);
+        m_tabwidget->setStyleSheet("* {background : white}");
+        m_dialpanel = new DialPanel(m_rightSplitter);
+	m_rightSplitter->restoreState(settings.value("display/rightSplitterSizes").toByteArray());
+
+	setCentralWidget(m_splitter);
+
+	// restore splitter settings
+        m_splitter->restoreState(settings.value("display/splitterSizes").toByteArray());
+
+	connect( m_calls, SIGNAL(changeTitle(const QString &)),
+	         m_leftpanel->titleLabel(), SLOT(setText(const QString &)) );
+	connect( m_engine, SIGNAL(newProfile(Popup *)),
+	         this, SLOT(showNewProfile(Popup *)) );
+	connect( m_engine, SIGNAL(emitTextMessage(const QString &)),
+                 m_messages_widget, SLOT(addMessage(const QString &)));
+	connect( m_engine, SIGNAL(updateCall(const QString &, const QString &, int, const QString &,
+					     const QString &, const QString &, const QString &)),
+		 m_calls, SLOT(addCall(const QString &, const QString &, int, const QString &,
+                                       const QString &, const QString &, const QString &)) );
+	connect( m_engine, SIGNAL(callsUpdated()),
+	         m_calls, SLOT(updateDisplay()) );
+	connect( m_engine, SIGNAL(delogged()),
+	         m_calls, SLOT(reset()) );
+	connect( m_engine, SIGNAL(monitorPeer(const QString &, const QString &)),
+	         m_calls, SLOT(monitorPeer(const QString &, const QString &)) );
+	connect( m_calls, SIGNAL(hangUp(const QString &)),
+		 m_engine, SLOT(hangUp(const QString &)) );
+	connect( m_calls, SIGNAL(transferToNumber(const QString &)),
+		 m_engine, SLOT(transferToNumber(const QString &)) );
 	connect( m_engine, SIGNAL(updatePeer(const QString &, const QString &,
                                              const QString &, const QString &,
                                              const QString &, const QString &,
@@ -150,28 +183,20 @@ MainWidget::MainWidget(BaseEngine * engine, QWidget * parent)
 	         m_widget, SLOT(removePeers()) );
 	connect( m_engine, SIGNAL(removePeer(const QString &)),
 	         m_widget, SLOT(removePeer(const QString &)) );
- 	areaPeers->setWidget(m_widget);
- 	areaCalls->setWidget(calls);
-	
-	DirectoryPanel * dirpanel = new DirectoryPanel(m_middleSplitter);
-	connect( dirpanel, SIGNAL(searchDirectory(const QString &)),
+	connect( m_dirpanel, SIGNAL(searchDirectory(const QString &)),
 	         m_engine, SLOT(searchDirectory(const QString &)) );
 	connect( m_engine, SIGNAL(directoryResponse(const QString &)),
-	         dirpanel, SLOT(setSearchResponse(const QString &)) );
-	connect( dirpanel, SIGNAL(emitDial(const QString &)),
+	         m_dirpanel, SLOT(setSearchResponse(const QString &)) );
+	connect( m_dirpanel, SIGNAL(emitDial(const QString &)),
 	         m_engine, SLOT(dialExtension(const QString &)) );
-	connect( dirpanel, SIGNAL(transferCall(const QString &, const QString &)),
+	connect( m_dirpanel, SIGNAL(transferCall(const QString &, const QString &)),
 	         m_engine, SLOT(transferCall(const QString &, const QString &)) );
-	connect( dirpanel, SIGNAL(originateCall(const QString &, const QString &)),
+	connect( m_dirpanel, SIGNAL(originateCall(const QString &, const QString &)),
 	         m_engine, SLOT(originateCall(const QString &, const QString &)) );
 	connect( m_engine, SIGNAL(updateMyCalls(const QStringList &, const QStringList &, const QStringList &)),
-	         dirpanel, SIGNAL(updateMyCalls(const QStringList &, const QStringList &, const QStringList &)) );
+	         m_dirpanel, SIGNAL(updateMyCalls(const QStringList &, const QStringList &, const QStringList &)) );
 	connect( m_engine, SIGNAL(delogged()),
-	         dirpanel, SLOT(stop()) );
-
-	m_rightSplitter = new QSplitter(Qt::Vertical, m_splitter);
-
-	SearchPanel * m_searchpanel = new SearchPanel(m_rightSplitter);
+	         m_dirpanel, SLOT(stop()) );
 	connect( m_engine, SIGNAL(updatePeer(const QString &, const QString &,
                                              const QString &, const QString &,
                                              const QString &, const QString &,
@@ -188,40 +213,43 @@ MainWidget::MainWidget(BaseEngine * engine, QWidget * parent)
 	         m_searchpanel, SLOT(removePeers()) );
 	connect( m_engine, SIGNAL(removePeer(const QString &)),
 	         m_searchpanel, SLOT(removePeer(const QString &)) );
-        m_searchpanel->setEngine(m_engine);
-
-	m_tabwidget = new QTabWidget(m_rightSplitter);
-        m_tabwidget->setStyleSheet("* {background : white}");
-	connect( m_engine, SIGNAL(newProfile(Popup *)),
-	         this, SLOT(showNewProfile(Popup *)) );
-
-        m_dialpanel = new DialPanel(m_rightSplitter);
 	connect( m_dialpanel, SIGNAL(emitDial(const QString &)),
 	         m_engine, SLOT(dialExtension(const QString &)) );
         connect( m_dialpanel, SIGNAL(originateCall(const QString&, const QString&)),
 	         m_engine, SLOT(originateCall(const QString&, const QString&)) );
 	connect( m_dialpanel, SIGNAL(textEdited(const QString &)),
                  m_engine, SLOT(textEdited(const QString &)) );
-
-	setCentralWidget(m_splitter);
-
-	// restore splitter settings
-	m_tablimit = settings.value("display/tablimit", 5).toInt();
-	m_splitter->restoreState(settings.value("display/splitterSizes").toByteArray());
-	m_leftSplitter->restoreState(settings.value("display/leftSplitterSizes").toByteArray());
-	m_middleSplitter->restoreState(settings.value("display/middleSplitterSizes").toByteArray());
-	m_rightSplitter->restoreState(settings.value("display/rightSplitterSizes").toByteArray());
-	restoreGeometry(settings.value("display/mainwingeometry").toByteArray());
-
  	connect( m_engine, SIGNAL(emitTextMessage(const QString &)),
                  statusBar(), SLOT(showMessage(const QString &)));
-	connect( m_engine, SIGNAL(emitTextMessage(const QString &)),
-                 lbl, SLOT(addMessage(const QString &)));
-	connect( m_engine, SIGNAL(logged()),
-	         this, SLOT(engineStarted()));
-	connect( m_engine, SIGNAL(delogged()),
-                 this, SLOT(engineStopped()));
 }
+
+void MainWidget::removeSplitters()
+{
+	QSettings settings;
+        // Left Splitter Definitions
+	delete m_messages_widget;
+	delete m_svc_tabwidget;
+        delete m_calls;
+        delete m_areaCalls;
+        delete m_leftpanel;
+
+	// Middle Splitter Definitions
+	delete m_dirpanel;
+ 	delete m_widget;
+        delete m_areaPeers;
+
+        // Right Splitter Definitions
+        delete m_dialpanel;
+	delete m_tabwidget;
+        delete m_searchpanel;
+
+        // Splitters
+        delete m_rightSplitter;
+        delete m_leftSplitter;
+        delete m_middleSplitter;
+        delete m_splitter;
+}
+
 
 /*! \brief Destructor
  *
@@ -229,12 +257,13 @@ MainWidget::MainWidget(BaseEngine * engine, QWidget * parent)
  */
 MainWidget::~MainWidget()
 {
+        //        qDebug() << "MainWidget::~MainWidget()";
 	QSettings settings;
-	settings.setValue("display/splitterSizes", m_splitter->saveState());
-	settings.setValue("display/leftSplitterSizes", m_leftSplitter->saveState());
-	settings.setValue("display/middleSplitterSizes", m_middleSplitter->saveState());
-	settings.setValue("display/rightSplitterSizes", m_rightSplitter->saveState());
 	settings.setValue("display/mainwingeometry", saveGeometry());
+}
+
+void MainWidget::createMenus()
+{
 }
 
 void MainWidget::createActions()
@@ -261,6 +290,7 @@ void MainWidget::createActions()
 	connect(quit, SIGNAL(triggered()),
 		qApp, SLOT(quit()));
 
+        menuBar()->setStyleSheet("* {background : #ffe0b0}");
 	QMenu * filemenu = menuBar()->addMenu(tr("&File"));
         filemenu->addAction(conf);
 	filemenu->addSeparator();
@@ -327,8 +357,9 @@ void MainWidget::createActions()
  */
 void MainWidget::showConfDialog()
 {
-	ConfWidget * conf = new ConfWidget(m_engine, this);
-	qDebug() << "<<  " << conf->exec();
+        m_conf = new ConfWidget(m_engine, this);
+        // m_conf->setStyleSheet();
+        m_conf->exec();
 }
 
 /*!
@@ -337,8 +368,11 @@ void MainWidget::showConfDialog()
  */
 void MainWidget::engineStarted()
 {
+        QSettings settings;
 	QStringList display_capas = QString("customerinfo,history,features,directory,peers,dial,presence").split(",");
         QStringList allowed_capas = m_engine->getCapabilities();
+
+        buildSplitters();
 
         for (int j = 0; j < display_capas.size(); j++) {
 		QString dc = display_capas[j];
@@ -360,7 +394,7 @@ void MainWidget::engineStarted()
                                          m_engine, SLOT(requestHistory(const QString &, int)) );
                                 connect( m_engine, SIGNAL(delogged()),
                                          m_logwidget, SLOT(clear()) );
-                                connect( calls, SIGNAL(monitoredPeerChanged(const QString &)),
+                                connect( m_calls, SIGNAL(monitoredPeerChanged(const QString &)),
                                          m_logwidget, SLOT(setPeerToDisplay(const QString &)) );
                         } else if (dc == QString("features")) {
 
@@ -369,7 +403,7 @@ void MainWidget::engineStarted()
 
                                 connect( m_featureswidget, SIGNAL(askFeatures(const QString &)),
                                          m_engine, SLOT(askFeatures(const QString &)) );
-                                connect( calls, SIGNAL(monitoredPeerChanged(const QString &)),
+                                connect( m_calls, SIGNAL(monitoredPeerChanged(const QString &)),
                                          m_featureswidget, SLOT(setPeerToDisplay(const QString &)) );
 
                                 connect( m_engine, SIGNAL(disconnectFeatures()),
@@ -445,8 +479,14 @@ void MainWidget::engineStarted()
  */
 void MainWidget::engineStopped()
 {
+        QSettings settings;
 	QStringList display_capas = QString("customerinfo,history,features,directory,peers,dial,presence").split(",");
         QStringList allowed_capas = m_engine->getCapabilities();
+
+	settings.setValue("display/splitterSizes", m_splitter->saveState());
+	settings.setValue("display/leftSplitterSizes", m_leftSplitter->saveState());
+	settings.setValue("display/middleSplitterSizes", m_middleSplitter->saveState());
+	settings.setValue("display/rightSplitterSizes", m_rightSplitter->saveState());
 
 	for(int j = 0; j < display_capas.size(); j++) {
 		QString dc = display_capas[j];
@@ -461,13 +501,13 @@ void MainWidget::engineStopped()
                         if(dc == QString("features")) {
                                 int index_features = m_svc_tabwidget->indexOf(m_featureswidget);
                                 if(index_features > -1) {
-                                        m_svc_tabwidget->removeTab(m_svc_tabwidget->indexOf(m_featureswidget));
+                                        m_svc_tabwidget->removeTab(index_features);
                                         delete m_featureswidget;
                                 }
                         } else if(dc == QString("history")) {
                                 int index_logs = m_svc_tabwidget->indexOf(m_logwidget);
                                 if(index_logs > -1) {
-                                        m_svc_tabwidget->removeTab(m_svc_tabwidget->indexOf(m_logwidget));
+                                        m_svc_tabwidget->removeTab(index_logs);
                                         delete m_logwidget;
                                 }
                         }
@@ -478,6 +518,17 @@ void MainWidget::engineStopped()
 
 	m_stopact->setDisabled(true);
 	m_startact->setEnabled(true);
+
+        removeSplitters();
+
+ 	m_wid = new QWidget();
+        m_wid->setStyleSheet("* {background : white}");
+ 	m_mainlayout = new QVBoxLayout(m_wid);
+        m_xivobg = new QLabel();
+        m_xivobg->setPixmap(QPixmap(":xivoclient/gui/xivo-login.png"));
+        m_mainlayout->addWidget(m_xivobg, 0, Qt::AlignHCenter | Qt::AlignVCenter);
+ 	setCentralWidget(m_wid);
+
 	// set status icon to red
 	QPixmap redsquare(":xivoclient/gui/disconnected.png");
 	m_status->setPixmap(redsquare);

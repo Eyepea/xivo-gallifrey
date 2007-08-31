@@ -20,5 +20,6 @@
 	<file>../../xivoclient/gui/personal-yellow.png</file>
 	<file>../../xivoclient/gui/connected.png</file>
 	<file>../../xivoclient/gui/disconnected.png</file>
+	<file>../../xivoclient/gui/xivo-login.png</file>
 </qresource>
 </RCC>

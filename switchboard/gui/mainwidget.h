@@ -30,12 +30,19 @@ class QAction;
 class QActionGroup;
 class QCloseEvent;
 class QLabel;
+class QScrollArea;
+class QVBoxLayout;
 
 class BaseEngine;
-class DialPanel;
 class CallStackWidget;
+class ConfWidget;
+class DialPanel;
+class DirectoryPanel;
+class DisplayMessagesPanel;
+class LeftPanel;
 class LogWidget;
 class Popup;
+class SearchPanel;
 class ServicePanel;
 class SwitchBoardWindow;
 
@@ -62,6 +69,9 @@ private slots:
 	void about();
 private:
         void createActions();
+        void createMenus();
+        void buildSplitters();
+        void removeSplitters();
 
 	QSplitter * m_splitter;	//!< Splitter to separate right/left panels
 	QSplitter * m_leftSplitter;	//!< Vertical splitter on the left
@@ -72,8 +82,18 @@ private:
 	QTabWidget * m_tabwidget;	//!< Area to display profiles
 	QTabWidget * m_svc_tabwidget;	//!< Area to display messages, services and histories
 	ServicePanel * m_featureswidget;
+        DisplayMessagesPanel * m_messages_widget;
+	DirectoryPanel * m_dirpanel;
 	LogWidget * m_logwidget;
-	CallStackWidget * calls;
+        LeftPanel * m_leftpanel;
+        QScrollArea * m_areaCalls;
+        QScrollArea * m_areaPeers;
+        SearchPanel * m_searchpanel;
+	CallStackWidget * m_calls;
+        ConfWidget * m_conf;
+        QLabel * m_xivobg;
+        QWidget * m_wid;
+        QVBoxLayout * m_mainlayout;
 
         DialPanel * m_dialpanel;
 	int m_tablimit;		//!< Maximum number of tabs in m_tabwidget
@@ -92,6 +112,20 @@ private:
 
 	QLabel * m_status;	//!< status indicator
 };
+
+
+
+/*! \brief Widget containing the CallStackWidget and a Title QLabel
+ */
+class LeftPanel : public QWidget
+{
+public:
+	LeftPanel(QWidget *, QWidget * parent = 0);	//!< Constructor
+	QLabel * titleLabel();	//!< getter for m_titleLabel
+private:
+	QLabel * m_titleLabel;	//!< Title label property
+};
+
 
 #endif
 

@@ -54,8 +54,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  * vertical box layout and connect signals with slots.
  */
 MainWidget::MainWidget(BaseEngine *engine, QWidget * parent)
-	: QMainWindow(parent), m_engine(engine), m_systrayIcon(0),
-          //        : QMainWindow(parent, Qt::FramelessWindowHint), m_engine(engine), m_systrayIcon(0),
+        : QMainWindow(parent, Qt::FramelessWindowHint), m_engine(engine), m_systrayIcon(0),
 	  m_icon(":/xivoicon.png"), m_icongrey(":/xivoicon-grey.png")
 {
 	QSettings settings;
@@ -90,17 +89,15 @@ MainWidget::MainWidget(BaseEngine *engine, QWidget * parent)
 	m_wid = new QWidget();
         m_wid->setStyleSheet("* {background : white}");
 	m_mainlayout = new QVBoxLayout(m_wid);
-
         m_xivobg = new QLabel();
         m_xivobg->setPixmap(QPixmap(":/xivo-login.png"));
         m_mainlayout->addWidget(m_xivobg, 0, Qt::AlignHCenter | Qt::AlignVCenter);
+	setCentralWidget(m_wid);
+	m_tablimit = settings.value("display/tablimit", 5).toInt();
 
         //        m_xivobg2 = new QLabel();
         //        m_xivobg2->setPixmap(QPixmap(":/xivo-client.png"));
         //        m_mainlayout->addWidget(m_xivobg2, 0, Qt::AlignHCenter | Qt::AlignVCenter);
-
-	setCentralWidget(m_wid);
-	m_tablimit = settings.value("display/tablimit", 5).toInt();
 }
 
 MainWidget::~MainWidget()
@@ -121,7 +118,7 @@ void MainWidget::createActions()
 	m_cfgact = new QAction(tr("&Configuration"), this);
 	m_cfgact->setStatusTip(tr("Configure account and connection options"));
 	connect( m_cfgact, SIGNAL(triggered()),
-                 this, SLOT(popupConf()) );
+                 this, SLOT(showConfDialog()) );
 
 	m_quitact = new QAction(tr("&Quit"), this);
 	m_quitact->setStatusTip(tr("Close the application"));
@@ -281,13 +278,14 @@ void MainWidget::createSystrayIcon()
  * create a new configuration widget/dialog which
  * will enable the user to modify connection options for
  * m_engine, and then show it. */
-void MainWidget::popupConf()
+void MainWidget::showConfDialog()
 {
 	m_conf = new ConfWidget(m_engine, this);
         m_conf->setStyleSheet("QLineEdit {background : white}\n"
                               "QSpinBox {background : white}\n"
+                              "QComboBox {background : white}\n"
                               "* {background : #ffe0b0}");
-	m_conf->show();
+	m_conf->exec();
 }
 
 /*! \brief process clicks to the systray icon
