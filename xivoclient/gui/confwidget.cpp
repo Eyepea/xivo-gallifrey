@@ -161,15 +161,16 @@ ConfWidget::ConfWidget(BaseEngine * engine,
 	m_history_sbox->setValue(m_engine->historysize());
 	gridlayout->addWidget(m_history_sbox, line++, 1);
 
-	QDialogButtonBox * btnbox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
-	connect(btnbox, SIGNAL(accepted()),
+	m_btnbox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
+        m_btnbox->setStyleSheet("* {background : #fff0e0}");
+	connect(m_btnbox, SIGNAL(accepted()),
                 this, SLOT(saveAndClose()));
-	connect(btnbox, SIGNAL(rejected()),
+	connect(m_btnbox, SIGNAL(rejected()),
                 this, SLOT(close()));
-	btnbox->button(QDialogButtonBox::Ok)->setDefault(true);
+	m_btnbox->button(QDialogButtonBox::Ok)->setDefault(true);
 
 	vlayout->addLayout(gridlayout);
-	vlayout->addWidget(btnbox);
+	vlayout->addWidget(m_btnbox);
 }
 
 /*!

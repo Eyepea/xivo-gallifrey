@@ -69,6 +69,7 @@ int main(int argc, char * * argv)
 	QTranslator qtTranslator;
 	qtTranslator.load(QString(":/xivoclient_") + locale);
 	app.installTranslator(&qtTranslator);
+        app.setQuitOnLastWindowClosed(false);
 
 	BaseEngine engine;
 	engine.setIsASwitchboard(false);
@@ -76,9 +77,8 @@ int main(int argc, char * * argv)
 	MainWidget main(&engine);
 	main.show();
 	//main.dumpObjectTree();
-	QObject::connect( &app, SIGNAL(lastWindowClosed()),
+ 	QObject::connect( &app, SIGNAL(lastWindowClosed()),
                           &engine, SLOT(stop()) );
 	//engine.startTimer(1000);
-	return app.exec();
+        return app.exec();
 }
-

@@ -27,6 +27,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QLineEdit>
 #include <QSpinBox>
 
+class QDialogButtonBox;
+
 class BaseEngine;
 class MainWidget;
 
@@ -77,5 +79,7 @@ private:
 	QCheckBox * m_tcpmode;		//!< Use outgoing TCP connection
 	QCheckBox * m_presence;		//!< connect to presence server checkbox
 	QCheckBox * m_cinfo;		//!< customer info checkbox
+
+        QDialogButtonBox * m_btnbox;	//!< Buttons box
 };
 #endif

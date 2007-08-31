@@ -55,6 +55,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  */
 MainWidget::MainWidget(BaseEngine *engine, QWidget * parent)
 	: QMainWindow(parent), m_engine(engine), m_systrayIcon(0),
+          //        : QMainWindow(parent, Qt::FramelessWindowHint), m_engine(engine), m_systrayIcon(0),
 	  m_icon(":/xivoicon.png"), m_icongrey(":/xivoicon-grey.png")
 {
 	QSettings settings;
@@ -62,6 +63,7 @@ MainWidget::MainWidget(BaseEngine *engine, QWidget * parent)
 	statusBar();	// This creates the status bar.
 	m_status = new QLabel();
 	m_status->setPixmap(redsquare);
+        statusBar()->setStyleSheet("* {background : #ffe0b0}");
 	statusBar()->addPermanentWidget(m_status);
 	statusBar()->clearMessage();
 	setWindowIcon(QIcon(":/xivoicon.png"));
@@ -118,7 +120,8 @@ void MainWidget::createActions()
 {
 	m_cfgact = new QAction(tr("&Configuration"), this);
 	m_cfgact->setStatusTip(tr("Configure account and connection options"));
-	connect( m_cfgact, SIGNAL(triggered()), this, SLOT(popupConf()) );
+	connect( m_cfgact, SIGNAL(triggered()),
+                 this, SLOT(popupConf()) );
 
 	m_quitact = new QAction(tr("&Quit"), this);
 	m_quitact->setStatusTip(tr("Close the application"));
@@ -129,7 +132,8 @@ void MainWidget::createActions()
 
 	m_systrayact = new QAction(tr("To S&ystray"), this);
 	m_systrayact->setStatusTip(tr("Go to the system tray"));
-	connect( m_systrayact, SIGNAL(triggered()), this, SLOT(hide()) );
+	connect( m_systrayact, SIGNAL(triggered()),
+                 this, SLOT(hide()) );
 	m_systrayact->setEnabled( QSystemTrayIcon::isSystemTrayAvailable() );
 
 	m_connectact = new QAction(tr("&Connect"), this);
@@ -193,6 +197,7 @@ void MainWidget::createActions()
 
 void MainWidget::createMenus()
 {
+        menuBar()->setStyleSheet("* {background : #ffe0b0}");
 	QMenu * filemenu = menuBar()->addMenu(tr("&File"));
 	filemenu->addAction( m_cfgact );
 	filemenu->addAction( m_systrayact );
@@ -209,6 +214,7 @@ void MainWidget::createMenus()
 	         m_avail, SLOT(setEnabled(bool)) );
 
 	QMenu * helpmenu = menuBar()->addMenu(tr("&Help"));
+        setStyleSheet("QMessageBox {background : #fff0e0}");
 	helpmenu->addAction( tr("&About XIVO Client"), this, SLOT(about()) );
 	helpmenu->addAction( tr("About &Qt"), qApp, SLOT(aboutQt()) );
 }
@@ -246,6 +252,7 @@ void MainWidget::createSystrayIcon()
 {
 	m_systrayIcon = new QSystemTrayIcon(m_icongrey, this);
 	QMenu * menu = new QMenu(QString("SystrayMenu"), this);
+        menu->setStyleSheet("* {background : #ffe0b0}");
         menu->addAction(m_cfgact);
         menu->addSeparator();
 	menu->addMenu(m_avail);
@@ -277,6 +284,9 @@ void MainWidget::createSystrayIcon()
 void MainWidget::popupConf()
 {
 	m_conf = new ConfWidget(m_engine, this);
+        m_conf->setStyleSheet("QLineEdit {background : white}\n"
+                              "QSpinBox {background : white}\n"
+                              "* {background : #ffe0b0}");
 	m_conf->show();
 }
 
@@ -346,6 +356,7 @@ void MainWidget::setConnected()
 	QStringList allowed_capas = m_engine->getCapabilities();
 
         m_mainlayout->removeWidget(m_xivobg);
+        delete m_xivobg;
 
         if(m_forcetabs || allowed_capas.contains("peers")) {
                 m_infowidget = new IdentityDisplay();
@@ -400,8 +411,6 @@ void MainWidget::setConnected()
 			} else if(dc == QString("features")) {
 				m_featureswidget = new ServicePanel(this);
 				m_qtabwidget->addTab(m_featureswidget, tr("S&ervices"));
-				//m_qtabwidget->setStyleSheet("* {background : white}");
-				//m_featureswidget->setStyleSheet("* {background : yellow}");
 
                                 connect( m_engine, SIGNAL(disconnectFeatures()),
                                          m_featureswidget, SLOT(DisConnect()) );
@@ -592,6 +601,8 @@ void MainWidget::setDisconnected()
         m_mainlayout->removeWidget(m_qtabwidget);
         delete m_qtabwidget;
 
+        m_xivobg = new QLabel();
+        m_xivobg->setPixmap(QPixmap(":/xivo-login.png"));
         m_mainlayout->addWidget(m_xivobg, 0, Qt::AlignHCenter | Qt::AlignVCenter);
 
 	if(m_systrayIcon)
@@ -707,10 +718,10 @@ void MainWidget::about()
 	QString applicationVersion("0.1");
 	QString revision = m_engine->getRevisionString();
 	QString revdate  = m_engine->getDateString();
-	QMessageBox::about(this,
-			   tr("About XIVO Client"),
-			   "<h3>XIVO Client</h3>" +
-			   tr("<p>This application allows a given phone user to :</p>"
+        QMessageBox::about(this,
+                           tr("About XIVO Client"),
+                           "<h3>XIVO Client</h3>" +
+                           tr("<p>This application allows a given phone user to :</p>"
 			      "<p>* receive customer informations related to incoming calls</p>"
 			      "<p>* manage her/his voicemail and transfers</p>"
 			      "<p>* know her/his calls history</p>"
