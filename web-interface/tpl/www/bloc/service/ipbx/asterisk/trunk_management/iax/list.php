@@ -62,9 +62,9 @@
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=$mod?>on2">
 		<td class="td-left"><?=$form->checkbox(array('name' => 'peers[]','value' => $ref['id'],'label' => false,'id' => 'it-peers-'.$i,'checked' => false,'field' => false));?></td>
 		<td class="txt-left"><label for="it-peers-<?=$i?>" id="lb-peers-<?=$i?>"><?=$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"');?><?=$ref['name']?></label></td>
-		<td><?=($ref['host'] === 'dynamic' ? $this->bbf('host_unknown') : $ref['host'])?></td>
-		<td><?=$this->bbf('connect_type_'.$connectype.'bound');?></td>
-		<td><?=($calllimit === 0 ? $this->bbf('call_unlimited') : $calllimit)?></td>
+		<td><?=($ref['host'] === 'dynamic' ? $this->bbf('trunk_host-unknown') : $ref['host'])?></td>
+		<td><?=$this->bbf('trunk_connect-'.$connectype.'bound');?></td>
+		<td><?=($calllimit === 0 ? $this->bbf('trunk_call-unlimited') : $calllimit)?></td>
 		<td class="td-right" colspan="3">
 		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/trunk_management/iax',array('act' => 'edit','id' => $ref['id']),null,$this->bbf('opt_modify'));?>
 		<?=$url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'service/ipbx/trunk_management/iax',array('act' => 'delete','id' => $ref['id'],'page' => $pager['page']),'onclick="return(confirm(\''.xivo_stript($this->bbf('opt_delete_confirm')).'\') ? true : false);"',$this->bbf('opt_delete'));?>

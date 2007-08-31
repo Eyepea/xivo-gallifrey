@@ -35,28 +35,3 @@ function xivo_outformat()
 
 	return(true);
 }
-
-function xivo_extenmode(obj)
-{
-	if(xivo_is_undef(obj) == true
-	|| xivo_is_object(obj) == false
-	|| xivo_is_object(obj.parentNode) == false
-	|| xivo_is_object(obj.parentNode.parentNode) == false)
-		return(false);
-
-	if(obj.value == 'extension')
-	{
-		extension_style = 'block';
-		range_style = 'none';
-	}
-	else
-	{
-		extension_style = 'none';
-		range_style = 'block';
-	}
-
-	xivo_etag('div',obj.parentNode.parentNode,0).style.display = extension_style;
-	xivo_etag('div',obj.parentNode.parentNode,1).style.display = range_style;
-
-	return(true);
-}

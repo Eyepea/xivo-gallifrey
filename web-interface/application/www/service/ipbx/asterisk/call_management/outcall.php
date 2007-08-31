@@ -18,72 +18,65 @@ switch($act)
 
 		$extenumbers = &$ipbx->get_module('extenumbers');
 		$tfeatures = &$ipbx->get_module('trunkfeatures');
+		$extensions = &$ipbx->get_module('extensions');
 		$trunks_list = $ipbx->get_trunks_list();
 
 		do
 		{
-			if(isset($_QR['fm_send']) === false || xivo_issa('outcall',$_QR) === false)
+			if(isset($_QR['fm_send']) === false
+			|| xivo_issa('outcall',$_QR) === false
+			|| xivo_issa('extenumbers',$_QR) === false)
 				break;
 
 			$result = array();
 
+			$_QR['outcall']['extenumid'] = 0;
+
 			if(($result['outcall'] = $outcall->chk_values($_QR['outcall'])) === false
-			|| $tfeatures->get_id($result['outcall']['trunkfeaturesid']) === false
-			|| ($result['outcall']['mode'] === 'numlen'
-			   && (int) $result['outcall']['numlen'] === 0) === true)
+			|| $tfeatures->get_id($result['outcall']['trunkfeaturesid']) === false)
 			{
 				$add = false;
 				$result['outcall'] = $outcall->get_filter_result();
 			}
 
-			$result['extenumbers'] = null;
+			$_QR['extenumbers']['context'] = $result['outcall']['context'];
 
-			do
+			if(($result['extenumbers'] = $extenumbers->chk_values($_QR['extenumbers'])) === false
+			|| $extenumbers->exists($result['extenumbers']) !== false)
 			{
-				if($result['outcall']['mode'] === 'numlen')
-					break;
-
-				if(xivo_issa('extenumbers',$_QR) === false)
-				{
-					$add = false;
-					break;
-				}
-
-				$_QR['extenumbers']['context'] = $result['outcall']['context'];
-				$_QR['extenumbers']['extenmode'] = $result['outcall']['mode'];
-
-				if(($result['extenumbers'] = $extenumbers->chk_values($_QR['extenumbers'])) !== false
-				&& $extenumbers->exists($result['extenumbers']) === false)
-					break;
-
 				$add = false;
 						
 				if($result['extenumbers'] === false)
 					$result['extenumbers'] = $extenumbers->get_filter_result();
 				else
-				{
 					$result['extenumbers']['exten'] = '';
-					$result['extenumbers']['rangebeg'] = '';
-					$result['extenumbers']['rangeend'] = '';
-				}
 			}
-			while(false);
 
-			if($add === false)
-				break;
-
-			$extenumid = 0;
-				
-			if($result['extenumbers'] !== null
-			&& ($extenumid = $extenumbers->add($result['extenumbers'])) === false)
-				break;
-
-			$result['outcall']['extenid'] = $extenumid;
-
-			if($outcall->add($result['outcall']) === false)
+			if($add === true)
 			{
-				if($extenumid !== 0)
-					$extenumbers->delete($extenumid);
+				if(($extensid = $extensions->new_exten('macro',
+						       array('appdata' => 'outfeatures'),
+						       $result['extenumbers']['exten'],
+						       $result['outcall']['context'])) === false
+				|| $extensions->set_exten('hangup',$extensid) === false)
+					$add = false;
+			}
+
+			if($add === false || ($extenumid = $extenumbers->add($result['extenumbers'])) === false)
+				break;
+
+			$result['outcall']['extenumid'] = $extenumid;
+
+			if(($outcallid = $outcall->add($result['outcall'])) === false)
+			{
+				$extenumbers->delete($extenumid);
+				break;
+			}
+
+			if($extensions->add_exten($extensid) === false)
+			{
+				$extensions->delete($extenumid);
+				$outcall->delete($outcallid);
 				break;
 			}
 
@@ -110,104 +103,70 @@ switch($act)
 		if(isset($_QR['id']) === false
 		|| ($info['outcall'] = $outcall->get($_QR['id'])) === false
 		|| ($info['tfeatures'] = $tfeatures->get($info['outcall']['trunkfeaturesid'])) === false
-		|| ($info['outcall']['mode'] !== 'numlen'
-		   && ($info['extenumbers'] = $extenumbers->get($info['outcall']['extenid'])) === false) === true)
+		|| ($info['extenumbers'] = $extenumbers->get($info['outcall']['extenumid'])) === false)
 			xivo_go($_HTML->url('service/ipbx/call_management/outcall'),$param);
 
 		$edit = true;
 
 		$return = &$info;
 
+		$extensions = &$ipbx->get_module('extensions');
 		$trunks_list = $ipbx->get_trunks_list();
 
 		do
 		{
-			if(isset($_QR['fm_send']) === false || xivo_issa('outcall',$_QR) === false)
+			if(isset($_QR['fm_send']) === false
+			|| xivo_issa('outcall',$_QR) === false
+			|| xivo_issa('extenumbers',$_QR) === false)
 				break;
 
 			$result = array();
 
 			$return = &$result;
 
+			$_QR['outcall']['extenumid'] = $info['extenumbers']['id'];
+
 			if(($result['outcall'] = $outcall->chk_values($_QR['outcall'])) === false
-			|| $tfeatures->get_id($result['outcall']['trunkfeaturesid']) === false
-			|| ($result['outcall']['mode'] === 'numlen'
-			   && (int) $result['outcall']['numlen'] === 0) === true)
+			|| $tfeatures->get_id($result['outcall']['trunkfeaturesid']) === false)
 			{
 				$edit = false;
 				$result['outcall'] = $outcall->get_filter_result();
 			}
 
-			$result['extenumbers'] = null;
+			$_QR['extenumbers']['context'] = $result['outcall']['context'];
 
-			do
+			if(($result['extenumbers'] = $extenumbers->chk_values($_QR['extenumbers'])) === false
+			|| $extenumbers->exists($result['extenumbers'],$info['extenumbers']['id']) !== false)
 			{
-				if($result['outcall']['mode'] === 'numlen')
-					break;
-
-				if(xivo_issa('extenumbers',$_QR) === false)
-				{
-					$edit = false;
-					break;
-				}
-
-				if($info['outcall']['mode'] === 'numlen')
-					$extenumid = null;
-				else
-					$extenumid = $info['outcall']['extenid'];
-
-				$_QR['extenumbers']['context'] = $result['outcall']['context'];
-				$_QR['extenumbers']['extenmode'] = $result['outcall']['mode'];
-
-				if(($result['extenumbers'] = $extenumbers->chk_values($_QR['extenumbers'])) !== false
-				&& $extenumbers->exists($result['extenumbers'],$extenumid) === false)
-					break;
-
 				$edit = false;
-						
+
 				if($result['extenumbers'] === false)
 					$result['extenumbers'] = $extenumbers->get_filter_result();
 				else
-				{
 					$result['extenumbers']['exten'] = '';
-					$result['extenumbers']['rangebeg'] = '';
-					$result['extenumbers']['rangeend'] = '';
-				}
 			}
-			while(false);
 
-			if($edit === false)
+			if($edit === false || $extenumbers->edit($info['extenumbers']['id'],$result['extenumbers']) === false)
 				break;
-
-			$extenumid = 0;
-
-			if($result['extenumbers'] === null)
-			{
-				if($info['extenumbers'] !== null
-				&& $extenumbers->delete($info['extenumbers']['id']) === false)
-					break;
-			}
-			else if($info['extenumbers'] !== null)
-			{
-				if($extenumbers->edit($info['extenumbers']['id'],$result['extenumbers']) === false)
-					break;
-
-				$extenumid = $info['extenumbers']['id'];
-			}
-			else if(($extenumid = $extenumbers->add($result['extenumbers'])) === false) 
-				break;
-
-			$result['outcall']['extenid'] = $extenumid;
 
 			if($outcall->edit($info['outcall']['id'],$result['outcall']) === false)
 			{
-				if($result['extenumbers'] === null)
-					$extenumbers->add_origin();
-				else if($info['extenumbers'] !== null)
-					$extenumbers->edit_origin();
-				else if($extenumid !== 0)
-					$extenumbers->delete($extenumid);
+				$extenumbers->edit_origin();
+				break;
+			}
 
+			$exten_where = array();
+			$exten_where['exten'] = $info['extenumbers']['exten'];
+			$exten_where['context'] = $info['outcall']['context'];
+
+			$exten_edit = array();
+			$exten_edit['exten'] = $result['extenumbers']['exten'];
+			$exten_edit['context'] = $result['outcall']['context'];
+
+			if($extensions->edit_where($exten_where,$exten_edit) === false)
+			{
+				$extenumbers->edit_origin();
+				$outcall->edit_origin();
 				break;
 			}
 
@@ -230,17 +189,24 @@ switch($act)
 		$param['page'] = $page;
 
 		$extenumbers = &$ipbx->get_module('extenumbers');
-
-		$info['extenumbers'] = false;
+		$extensions = &$ipbx->get_module('extensions');
 
 		if(isset($_QR['id']) === true
 		&& ($info['outcall'] = $outcall->get($_QR['id'])) !== false
-		&& ($info['outcall']['mode'] === 'numlen'
-		   || ($info['extenumbers'] = $extenumbers->get($info['outcall']['extenid'])) !== false) === true
+		&& ($info['extenumbers'] = $extenumbers->get($info['outcall']['extenumid'])) !== false
 		&& $outcall->delete($info['outcall']['id']) !== false)
 		{
-			if($info['extenumbers'] !== false && $extenumbers->delete($info['extenumbers']['id']) === false)
+			$exten_where = array();
+			$exten_where['exten'] = $info['extenumbers']['exten'];
+			$exten_where['context'] = $info['outcall']['context'];
+
+			if($extenumbers->delete($info['extenumbers']['id']) === false)
 				$outcall->add_origin();
+			else if($extensions->delete_where($exten_where) === false)
+			{
+				$extenumbers->add_origin();
+				$outcall->add_origin();
+			}
 		}
 
 		xivo_go($_HTML->url('service/ipbx/call_management/outcall'),$param);
@@ -252,21 +218,32 @@ switch($act)
 			xivo_go($_HTML->url('service/ipbx/call_management/outcall'),$param);
 
 		$extenumbers = &$ipbx->get_module('extenumbers');
+		$extensions = &$ipbx->get_module('extensions');
 
 		$nb = count($values);
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			$info['extenumbers'] = false;
-
 			if(($info['outcall'] = $outcall->get($values[$i])) === false
-			|| ($info['outcall']['mode'] !== 'numlen'
-			   && ($info['extenumbers'] = $extenumbers->get($info['outcall']['extenid'])) === false) === true
+			|| ($info['extenumbers'] = $extenumbers->get($info['outcall']['extenumid'])) === false
 			|| $outcall->delete($info['outcall']['id']) === false)
-			   	continue;
+				continue;
 
-			if($info['extenumbers'] !== false && $extenumbers->delete($info['extenumbers']['id']) === false)
+			if($extenumbers->delete($info['extenumbers']['id']) === false)
+			{
 				$outcall->add_origin();
+				continue;
+			}
+
+			$exten_where = array();
+			$exten_where['exten'] = $info['extenumbers']['exten'];
+			$exten_where['context'] = $info['outcall']['context'];
+
+			if($extensions->delete_where($exten_where) === true)
+				continue;
+
+			$extenumbers->add_origin();
+			$outcall->add_origin();
 		}
 
 		xivo_go($_HTML->url('service/ipbx/call_management/outcall'),$param);
@@ -275,14 +252,30 @@ switch($act)
 	case 'enables':
 		$param['page'] = $page;
 		$disable = $act === 'disables' ? true : false;
+		$invdisable = $disable === true ? false : true;
 
 		if(($values = xivo_issa_val('outcalls',$_QR)) === false)
 			xivo_go($_HTML->url('service/ipbx/call_management/outcall'),$param);
 
+		$extenumbers = &$ipbx->get_module('extenumbers');
+		$extensions = &$ipbx->get_module('extensions');
+
 		$nb = count($values);
 
 		for($i = 0;$i < $nb;$i++)
-			$outcall->disable($values[$i],$disable);
+		{
+			if(($info['outcall'] = $outcall->get($values[$i])) === false
+			|| ($info['extenumbers'] = $extenumbers->get($info['outcall']['extenumid'])) === false
+			|| $outcall->disable($info['outcall']['id'],$disable) === false)
+				continue;
+
+			$exten_where = array();
+			$exten_where['exten'] = $info['extenumbers']['exten'];
+			$exten_where['context'] = $info['outcall']['context'];
+
+			if($extensions->disable_where($exten_where,$disable) === false)
+				$outcall->disable($info['outcall']['id'],$invdisable);
+		}
 
 		xivo_go($_HTML->url('service/ipbx/call_management/outcall'),$param);
 		break;

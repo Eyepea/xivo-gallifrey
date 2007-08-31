@@ -22,8 +22,8 @@ Aucune chambre de conférence trouvée
 ; opt_modify
 Modifier
 
-; opt_delete_confirm
-Etes-vous certain de vouloir supprimer cette chambre de conférence ?
-
 ; opt_delete
 Supprimer
+
+; opt_delete_confirm
+Etes-vous certain de vouloir supprimer cette chambre de conférence ?

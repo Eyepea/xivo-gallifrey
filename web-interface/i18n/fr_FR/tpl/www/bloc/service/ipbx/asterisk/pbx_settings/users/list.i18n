@@ -16,6 +16,12 @@ Approvisionnement
 ; col_action
 Action
 
+; user_protocol-sip
+SIP
+
+; user_protocol-iax
+IAX
+
 ; no_user
 Aucun utilisateur trouvé
 

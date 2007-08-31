@@ -119,31 +119,24 @@ switch($act)
 				$result['queue'] = $queue->get_filter_result();
 			}
 
-			$local_exten = $exten_numbers = $result['qmember'] = null;
+			$localextenid = $exten_numbers = $result['qmember'] = null;
 
 			if($add === true && $result['qfeatures']['number'] !== '')
 			{
-				$local_exten = array();
-				$local_exten['exten'] = $result['qfeatures']['number'];
-				$local_exten['priority'] = 1;
-				$local_exten['app'] = 'Macro';
-				$local_exten['appdata'] = 'superqueue';
-
 				if($result['qfeatures']['context'] === '')
-					$local_exten['context'] = 'local-extensions';
+					$localextencontext = 'local-extensions';
 				else
-					$local_exten['context'] = $result['qfeatures']['context'];
+					$localextencontext = $result['qfeatures']['context'];
 
-				if(($result['local_exten'] = $extensions->chk_values($local_exten)) === false)
-				{
+				if(($localextenid = $extensions->new_exten('macro',
+								array('appdata' => 'superqueue'),
+								$result['qfeatures']['number'],
+								$localextencontext)) === false)
 					$add = false;
-					$result['local_exten'] = $extensions->get_filter_result();
-				}
 
 				$exten_numbers = array();
-				$exten_numbers['exten'] = $result['local_exten']['exten'];
-				$exten_numbers['context'] = $result['local_exten']['context'];
-				$exten_numbers['extenmode'] = 'extension';
+				$exten_numbers['exten'] = $result['qfeatures']['number'];
+				$exten_numbers['context'] = $localextencontext;
 
 				if(($result['extenumbers'] = $extenumbers->chk_values($exten_numbers)) === false
 				|| $extenumbers->exists($result['extenumbers']) !== false)
@@ -299,7 +292,7 @@ switch($act)
 				break;
 			}
 
-			if($local_exten !== null && ($local_extenid = $extensions->add($result['local_exten'])) === false)
+			if($localextenid !== null && $extensions->add_exten($localextenid) === false)
 			{
 				$qfeatures->delete($qfeaturesid);
 				$queue->delete($queueid);
@@ -311,8 +304,8 @@ switch($act)
 				$qfeatures->delete($qfeaturesid);
 				$queue->delete($queueid);
 
-				if($local_exten !== null)
-					$extensions->delete($local_extenid);
+				if($localextenid !== null)
+					$extensions->delete_exten($localextenid);
 				break;
 			}
 
@@ -350,8 +343,8 @@ switch($act)
 		$return = &$info;
 
 		if(isset($_QR['id']) === false
-		|| ($info['qfeatures'] = $qfeatures->get($_QR['id'],false)) === false
-		|| ($info['queue'] = $queue->get($info['qfeatures']['name'],false)) === false)
+		|| ($info['qfeatures'] = $qfeatures->get($_QR['id'])) === false
+		|| ($info['queue'] = $queue->get($info['qfeatures']['name'])) === false)
 			xivo_go($_HTML->url('service/ipbx/pbx_settings/queues'),$param);
 
 		$user_info = array();
@@ -406,8 +399,8 @@ switch($act)
 		$agroup_orig = $agroup_list;
 
 		$info['qagroup'] = $qmember->get_all_where(array('queue_name' => $info['qfeatures']['name'],
-								'usertype' => 'agent',
-								'category' => 'group'));
+								 'usertype' => 'agent',
+								 'category' => 'group'));
 
 		if($info['qagroup'] !== false && $agroup_list !== false)
 		{
@@ -507,62 +500,51 @@ switch($act)
 				$result['queue'] = $queue->get_filter_result();
 			}
 
-			$exten_where = array();
-			$exten_where['exten'] = $info['qfeatures']['number'];
-			$exten_where['app'] = 'Macro';
-			$exten_where['appdata'] = 'superqueue';
-
-			if($info['qfeatures']['context'] === '')
-				$exten_where['context'] = 'local-extensions';
-			else
-				$exten_where['context'] = $info['qfeatures']['context'];
-
-			if(($info['localexten'] = $extensions->get_where($exten_where)) !== false)
+			if($info['qfeatures']['number'] !== '')
 			{
-				if($result['qfeatures']['number'] === '')
-					$status['localexten'] = 'delete';
+				if($info['qfeatures']['context'] === '')
+					$localextencontext = 'local-extensions';
 				else
-				{
+					$localextencontext = $info['qfeatures']['context'];
+		
+				if($result['qfeatures']['context'] === '')
+					$localexteneditcontext = 'local-extensions';
+				else
+					$localexteneditcontext = $result['qfeatures']['context'];
+	
+				if(($info['localexten'] = $extensions->get_exten('macro',
+										 $info['qfeatures']['number'],
+										 $localextencontext,
+										 array('appdata' => 'superqueue'))) === false)
+					$edit = false;
+				else if($result['qfeatures']['number'] === '')
+					$status['localexten'] = 'delete';
+				else if(($localexten_edit = $extensions->chk_exten('macro',
+										   null,
+										   $result['qfeatures']['number'],
+										   $localexteneditcontext)) === false)
+					$edit = false;
+				else
 					$status['localexten'] = 'edit';
-
-					$local_exten = $info['localexten'];
-					$local_exten['exten'] = $result['qfeatures']['number'];
-
-					if($result['qfeatures']['context'] === '')
-						$local_exten['context'] = 'local-extensions';
-					else
-						$local_exten['context'] = $result['qfeatures']['context'];
-
-					if(($result['localexten'] = $extensions->chk_values($local_exten)) === false)
-					{
-						$edit = false;
-						$result['localexten'] = array_merge($info['localexten'],$extensions->get_filter_result());
-					}
-				}
 			}
 			else if($result['qfeatures']['number'] !== '')
 			{
 				$status['localexten'] = 'add';
-
-				$local_exten = $exten_where;
-				$local_exten['exten'] = $result['qfeatures']['number'];
-				$local_exten['priority'] = 1;
-
+	
 				if($result['qfeatures']['context'] === '')
-					$local_exten['context'] = 'local-extensions';
+					$localextencontext = 'local-extensions';
 				else
-					$local_exten['context'] = $result['qfeatures']['context'];
-
-				if(($result['localexten'] = $extensions->chk_values($local_exten)) === false)
-				{
+					$localextencontext = $result['qfeatures']['context'];
+	
+				if(($localextenid = $extensions->new_exten('macro',
+							array('appdata' => 'superqueue'),
+							$result['qfeatures']['number'],
+							$localextencontext)) === false)
 					$edit = false;
-					$result['localexten'] = $extensions->get_filter_result();
-				}
 			}
 
 			$exten_numbers = array();
 			$exten_numbers['exten'] = $result['qfeatures']['number'];
-			$exten_numbers['extenmode'] = 'extension';
 
 			if($result['qfeatures']['context'] === '')
 				$exten_numbers['context'] = 'local-extensions';
@@ -571,7 +553,6 @@ switch($act)
 
 			$exten_where = array();
 			$exten_where['exten'] = $info['qfeatures']['number'];
-			$exten_where['extenmode'] = 'extension';
 
 			if($info['qfeatures']['context'] === '')
 				$exten_where['context'] = 'local-extensions';
@@ -836,10 +817,10 @@ switch($act)
 			switch($status['localexten'])
 			{
 				case 'add':
-					$rs_localexten = $extensions->add($result['localexten']);
+					$rs_localexten = $extensions->add_exten($localextenid);
 					break;
 				case 'edit':
-					$rs_localexten = $extensions->edit($info['localexten']['id'],$result['localexten']);
+					$rs_localexten = $extensions->edit($info['localexten']['id'],$localexten_edit);
 					break;
 				case 'delete':
 					$rs_localexten = $extensions->delete($info['localexten']['id']);
@@ -895,7 +876,7 @@ switch($act)
 				switch($status['localexten'])
 				{
 					case 'add':
-						$extensions->delete($rs_localexten);
+						$extensions->delete_exten($localextenid);
 						break 2;
 					case 'edit':
 						$extensions->edit_origin();
@@ -943,7 +924,7 @@ switch($act)
 					switch($status['localexten'])
 					{
 						case 'add':
-							$extensions->delete($rs_localexten);
+							$extensions->delete_exten($localextenid);
 							break;
 						case 'edit':
 							$extensions->edit_origin();
@@ -1030,7 +1011,7 @@ switch($act)
 					switch($status['localexten'])
 					{
 						case 'add':
-							$extensions->delete($rs_localexten);
+							$extensions->delete_exten($localextenid);
 							break;
 						case 'edit':
 							$extensions->edit_origin();
@@ -1136,7 +1117,7 @@ switch($act)
 					switch($status['localexten'])
 					{
 						case 'add':
-							$extensions->delete($rs_localexten);
+							$extensions->delete_exten($localextenid);
 							break;
 						case 'edit':
 							$extensions->edit_origin();
@@ -1199,8 +1180,8 @@ switch($act)
 		$qmember = &$ipbx->get_module('queuemember');
 
 		if(isset($_QR['id']) === false
-		|| ($info['qfeatures'] = $qfeatures->get($_QR['id'],false)) === false
-		|| ($info['queue'] = $queue->get($info['qfeatures']['name'],false)) === false)
+		|| ($info['qfeatures'] = $qfeatures->get($_QR['id'])) === false
+		|| ($info['queue'] = $queue->get($info['qfeatures']['name'])) === false)
 			xivo_go($_HTML->url('service/ipbx/pbx_settings/queues'),$param);
 
 		do
@@ -1214,28 +1195,25 @@ switch($act)
 				break;
 			}
 
-			$localexten_where = array();
-			$localexten_where['exten'] = $info['qfeatures']['number'];
-			$localexten_where['app'] = 'Macro';
-			$localexten_where['appdata'] = 'superqueue';
-
 			if($info['qfeatures']['context'] === '')
-				$localexten_where['context'] = 'local-extensions';
+				$localextencontext = 'local-extensions';
 			else
-				$localexten_where['context'] = $info['qfeatures']['context'];
+				$localextencontext = $info['qfeatures']['context'];
 
-			if(($info['extensions'] = $extensions->get_where($localexten_where)) !== false
-			&& $extensions->delete($info['extensions']['id']) === false)
+			if(($info['localexten'] = $extensions->get_exten('macro',
+								 $info['qfeatures']['number'],
+								 $localextencontext,
+								 array('appdata' => 'superqueue'))) !== false
+			&& $extensions->delete($info['localexten']['id']) === false)
 			{
-				$qfeatures->delete($info['qfeatures']['id']);
+				$qfeatures->add_origin();
 				$queue->add_origin();
 				break;
 			}
 
 			$extenum_where = array();
-			$extenum_where['exten'] = $localexten_where['exten'];
-			$extenum_where['context'] = $localexten_where['context'];
-			$extenum_where['extenmode'] = 'extension';
+			$extenum_where['exten'] = $info['qfeatures']['number'];
+			$extenum_where['context'] = $localextencontext;
 
 			$info['dfeatures'] = false;
 
@@ -1251,7 +1229,7 @@ switch($act)
 				|| (($info['dfeatures'] = $dfeatures->get_list_where($dfeatures_where,false)) !== false
 				   && $dfeatures->edit_where($dfeatures_where,array('commented' => 1)) === false) === true)
 				{
-					$qfeatures->delete($info['qfeatures']['id']);
+					$qfeatures->add_origin();
 					$queue->add_origin();
 
 					if($info['localexten'] !== false)
@@ -1268,7 +1246,7 @@ switch($act)
 			if($qmember->get_id($qmember_where) !== false
 			&& $qmember->delete_where($qmember_where) === false)
 			{
-				$qfeatures->delete($info['qfeatures']['id']);
+				$qfeatures->add_origin();
 				$queue->add_origin();
 
 				if($info['localexten'] !== false)

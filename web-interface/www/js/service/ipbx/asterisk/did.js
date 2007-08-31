@@ -64,5 +64,10 @@ function xivo_chgtype(type)
 	xivo_chg_attrib('fm_type-'+type.value,'links',0,1);
 }
 
-xivo_winload += 'if(xivo_eid(\'it-dfeatures-type\') != false)\n' +
-		'xivo_chgtype(xivo_eid(\'it-dfeatures-type\'));\n';
+function xivo_did_onload()
+{
+	if(xivo_eid('it-dfeatures-type') != false)
+		xivo_chgtype(xivo_eid('it-dfeatures-type'));
+}
+
+xivo_winload.push('xivo_did_onload();');

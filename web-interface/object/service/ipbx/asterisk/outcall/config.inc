@@ -6,14 +6,35 @@ $array['element'] = array();
 $array['element']['name'] = array();
 $array['element']['name']['default'] = '';
 
+$array['element']['trunkfeaturesid'] = array();
+$array['element']['trunkfeaturesid']['default'] = '';
+
+$array['element']['context'] = array();
+$array['element']['context']['default'] = '';
+
 $array['element']['externprefix'] = array();
 $array['element']['externprefix']['default'] = '';
+
+$array['element']['stripnum'] = array();
+$array['element']['stripnum']['value'] = array(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20);
+$array['element']['stripnum']['default'] = 0;
+$array['element']['stripnum']['setdef'] = true;
+
+$array['element']['mode'] = array();
+$array['element']['mode']['value'] = array('wizard','extension');
+$array['element']['mode']['default'] = 'wizard';
 
 $array['element']['prefix'] = array();
 $array['element']['prefix']['default'] = '';
 
-$array['element']['trunkfeaturesid'] = array();
-$array['element']['trunkfeaturesid']['default'] = '';
+$array['element']['numlen'] = array();
+$array['element']['numlen']['value'] = array('*',1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,
+					     21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39);
+$array['element']['numlen']['default'] = '';
+
+$array['element']['extenumid'] = array();
+$array['element']['extenumid']['default'] = 0;
+$array['element']['extenumid']['setdef'] = true;
 
 $array['element']['callerid'] = array();
 $array['element']['callerid']['default'] = '';
@@ -22,21 +43,6 @@ $array['element']['setcallerid'] = array();
 $array['element']['setcallerid']['value'] = array(0,1);
 $array['element']['setcallerid']['default'] = 0;
 $array['element']['setcallerid']['set'] = true;
-
-$array['element']['stripnum'] = array();
-$array['element']['stripnum']['value'] = array(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20);
-$array['element']['stripnum']['default'] = 0;
-$array['element']['stripnum']['setdef'] = true;
-
-$array['element']['numlen'] = array();
-$array['element']['numlen']['value'] = array(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,
-					     21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40);
-$array['element']['numlen']['default'] = 0;
-$array['element']['numlen']['setdef'] = true;
-
-$array['element']['extenid'] = array();
-$array['element']['extenid']['default'] = 0;
-$array['element']['extenid']['setdef'] = true;
 
 $array['element']['weight'] = array();
 $array['element']['weight']['value'] = array(1,2,3,4,5,6,7,8,9,10);
@@ -58,13 +64,6 @@ $array['element']['hangupringtime']['value'] = array(0 => 0,15 => 15,30 => 30,45
 $array['element']['hangupringtime']['default'] = 0;
 $array['element']['hangupringtime']['setdef'] = true;
 
-$array['element']['mode'] = array();
-$array['element']['mode']['value'] = array('numlen','extension','range');
-$array['element']['mode']['default'] = 'numlen';
-
-$array['element']['context'] = array();
-$array['element']['context']['default'] = '';
-
 $array['element']['commented'] = array();
 $array['element']['commented']['value'] = array(0,1);
 $array['element']['commented']['default'] = 0;
@@ -72,21 +71,24 @@ $array['element']['commented']['set'] = true;
 
 $array['filter'] = array();
 $array['filter']['name'] = array('set' => false,'chk' => 2,'maxlen' => 20,'regexp' => '/^[a-z0-9_-]+$/');
-$array['filter']['externprefix'] = array('set' => false,'chk' => 2,'maxlen' => 20,'regexp' => '/^[0-9#\*]+$/');
-$array['filter']['prefix'] = array('set' => false,'chk' => 2,'maxlen' => 20,'regexp' => '/^[0-9#\*]+$/');
 $array['filter']['trunkfeaturesid'] = array('cast' => 'uint');
-$array['filter']['callerid'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_-]+$/i','maxlen' => 80);
-$array['filter']['setcallerid'] = array('bool' => true);
+$array['filter']['context'] = array('nokey' => array('general','globals','initconfig','hints','features'),'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 39);
+$array['filter']['externprefix'] = array('set' => false,'chk' => 2,'maxlen' => 20,'regexp' => '/^[0-9#\*]+$/');
 $array['filter']['stripnum'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,20));
-$array['filter']['numlen'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,40));
-$array['filter']['extenid'] = array('set' => false,'chk' => 2,'cast' => 'uint');
+$array['filter']['mode'] = array('key' => array('wizard','extension'));
+$array['filter']['prefix'] = array('set' => false,'chk' => 2,'maxlen' => 20,'regexp' => '/^[0-9#\*]+$/');
+$array['filter']['numlen'] = array('set' => false,'chk' => 2,'key' => array('*',1,2,3,4,5,6,7,8,9,
+									    10,11,12,13,14,15,16,17,18,19,20,
+					     				    21,22,23,24,25,26,27,28,29,30,
+									    31,32,33,34,35,36,37,38,39));
+$array['filter']['extenumid'] = array('cast' => 'uint');
+$array['filter']['setcallerid'] = array('bool' => true);
+$array['filter']['callerid'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_-]+$/i','maxlen' => 80);
 $array['filter']['weight'] = array('set' => false,'chk' => 2,'between' => array(1,10));
 $array['filter']['useenum'] = array('bool' => true);
 $array['filter']['hangupringtime'] = array('set' => false,'chk' => 2,'key' => array(0,15,30,45,60,75,90,105,120,135,
 										    150,165,180,210,225,240,255,270,
 										    285,300));
-$array['filter']['mode'] = array('key' => array('numlen','extension','range'));
-$array['filter']['context'] = array('nokey' => array('general','globals','initconfig','hints','features'),'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 39);
 $array['filter']['commented'] = array('bool' => true);
 
 ?>

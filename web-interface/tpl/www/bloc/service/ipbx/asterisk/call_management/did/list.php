@@ -46,7 +46,7 @@
 			if($ref['dfeatures']['commented'] === true):
 				$icon = 'unavailable';
 				$type = '-';
-			elseif($ref['did']['commented'] === true):
+			elseif($ref['didexten']['commented'] === true):
 				$icon = 'disable';
 			else:
 				$icon = 'enable';
@@ -68,7 +68,7 @@
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=$mod?>on2">
 		<td class="td-left"><?=$form->checkbox(array('name' => 'dids[]','value' => $ref['dfeatures']['id'],'label' => false,'id' => 'it-dids-'.$i,'checked' => false,'field' => false));?></td>
-		<td class="txt-left"><label for="it-dids-<?=$i?>" id="lb-dids-<?=$i?>"><?=$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"');?><?=$ref['did']['exten']?></label></td>
+		<td class="txt-left"><label for="it-dids-<?=$i?>" id="lb-dids-<?=$i?>"><?=$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"');?><?=$ref['didexten']['exten']?></label></td>
 		<td><?=$type?></td>
 		<td><?=$fullname?></td>
 		<td><?=$number?></td>

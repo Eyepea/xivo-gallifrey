@@ -50,31 +50,24 @@ switch($act)
 				$result['queue'] = $queue->get_filter_result();
 			}
 
-			$local_exten = $exten_numbers = $result['gmember'] = null;
+			$localextenid = $exten_numbers = $result['gmember'] = null;
 
 			if($add === true && $result['gfeatures']['number'] !== '')
 			{
-				$local_exten = array();
-				$local_exten['exten'] = $result['gfeatures']['number'];
-				$local_exten['priority'] = 1;
-				$local_exten['app'] = 'Macro';
-				$local_exten['appdata'] = 'supergroup';
-
 				if($result['gfeatures']['context'] === '')
-					$local_exten['context'] = 'local-extensions';
+					$localextencontext = 'local-extensions';
 				else
-					$local_exten['context'] = $result['gfeatures']['context'];
+					$localextencontext = $result['gfeatures']['context'];
 
-				if(($result['local_exten'] = $extensions->chk_values($local_exten)) === false)
-				{
+				if(($localextenid = $extensions->new_exten('macro',
+								array('appdata' => 'supergroup'),
+								$result['gfeatures']['number'],
+								$localextencontext)) === false)
 					$add = false;
-					$result['local_exten'] = $extensions->get_filter_result();
-				}
 
 				$exten_numbers = array();
-				$exten_numbers['exten'] = $result['local_exten']['exten'];
-				$exten_numbers['context'] = $result['local_exten']['context'];
-				$exten_numbers['extenmode'] = 'extension';
+				$exten_numbers['exten'] = $result['gfeatures']['number'];
+				$exten_numbers['context'] = $localextencontext;
 
 				if(($result['extenumbers'] = $extenumbers->chk_values($exten_numbers)) === false
 				|| $extenumbers->exists($result['extenumbers']) !== false)
@@ -135,7 +128,7 @@ switch($act)
 				break;
 			}
 
-			if($local_exten !== null && ($local_extenid = $extensions->add($result['local_exten'])) === false)
+			if($localextenid !== null && $extensions->add_exten($localextenid) === false)
 			{
 				$gfeatures->delete($gfeaturesid);
 				$queue->delete($queueid);
@@ -147,8 +140,8 @@ switch($act)
 				$gfeatures->delete($gfeaturesid);
 				$queue->delete($queueid);
 
-				if($local_exten !== null)
-					$extensions->delete($local_extenid);
+				if($localextenid !== null)
+					$extensions->delete_exten($localextenid);
 				break;
 			}
 
@@ -178,7 +171,7 @@ switch($act)
 
 		if(isset($_QR['id']) === false
 		|| ($info['gfeatures'] = $gfeatures->get($_QR['id'])) === false
-		|| ($info['queue'] = $queue->get($info['gfeatures']['name'],false)) === false)
+		|| ($info['queue'] = $queue->get($info['gfeatures']['name'])) === false)
 			xivo_go($_HTML->url('service/ipbx/pbx_settings/groups'),$param);
 
 		$user_orig = $user_list;
@@ -227,62 +220,51 @@ switch($act)
 				$result['queue'] = $queue->get_filter_result();
 			}
 
-			$exten_where = array();
-			$exten_where['exten'] = $info['gfeatures']['number'];
-			$exten_where['app'] = 'Macro';
-			$exten_where['appdata'] = 'supergroup';
-
-			if($info['gfeatures']['context'] === '')
-				$exten_where['context'] = 'local-extensions';
-			else
-				$exten_where['context'] = $info['gfeatures']['context'];
-
-			if(($info['localexten'] = $extensions->get_where($exten_where)) !== false)
+			if($info['gfeatures']['number'] !== '')
 			{
-				if($result['gfeatures']['number'] === '')
-					$status['localexten'] = 'delete';
+				if($info['gfeatures']['context'] === '')
+					$localextencontext = 'local-extensions';
 				else
-				{
+					$localextencontext = $info['gfeatures']['context'];
+		
+				if($result['gfeatures']['context'] === '')
+					$localexteneditcontext = 'local-extensions';
+				else
+					$localexteneditcontext = $result['gfeatures']['context'];
+	
+				if(($info['localexten'] = $extensions->get_exten('macro',
+										 $info['gfeatures']['number'],
+										 $localextencontext,
+										 array('appdata' => 'supergroup'))) === false)
+					$edit = false;
+				else if($result['gfeatures']['number'] === '')
+					$status['localexten'] = 'delete';
+				else if(($localexten_edit = $extensions->chk_exten('macro',
+										   null,
+										   $result['gfeatures']['number'],
+										   $localexteneditcontext)) === false)
+					$edit = false;
+				else
 					$status['localexten'] = 'edit';
-
-					$local_exten = $info['localexten'];
-					$local_exten['exten'] = $result['gfeatures']['number'];
-
-					if($result['gfeatures']['context'] === '')
-						$local_exten['context'] = 'local-extensions';
-					else
-						$local_exten['context'] = $result['gfeatures']['context'];
-
-					if(($result['localexten'] = $extensions->chk_values($local_exten)) === false)
-					{
-						$edit = false;
-						$result['localexten'] = array_merge($info['localexten'],$extensions->get_filter_result());
-					}
-				}
 			}
 			else if($result['gfeatures']['number'] !== '')
 			{
 				$status['localexten'] = 'add';
-
-				$local_exten = $exten_where;
-				$local_exten['exten'] = $result['gfeatures']['number'];
-				$local_exten['priority'] = 1;
-
+	
 				if($result['gfeatures']['context'] === '')
-					$local_exten['context'] = 'local-extensions';
+					$localextencontext = 'local-extensions';
 				else
-					$local_exten['context'] = $result['gfeatures']['context'];
-
-				if(($result['localexten'] = $extensions->chk_values($local_exten)) === false)
-				{
+					$localextencontext = $result['gfeatures']['context'];
+	
+				if(($localextenid = $extensions->new_exten('macro',
+							array('appdata' => 'supergroup'),
+							$result['gfeatures']['number'],
+							$localextencontext)) === false)
 					$edit = false;
-					$result['localexten'] = $extensions->get_filter_result();
-				}
 			}
 
 			$exten_numbers = array();
 			$exten_numbers['exten'] = $result['gfeatures']['number'];
-			$exten_numbers['extenmode'] = 'extension';
 
 			if($result['gfeatures']['context'] === '')
 				$exten_numbers['context'] = 'local-extensions';
@@ -291,7 +273,6 @@ switch($act)
 
 			$exten_where = array();
 			$exten_where['exten'] = $info['gfeatures']['number'];
-			$exten_where['extenmode'] = 'extension';
 
 			if($info['gfeatures']['context'] === '')
 				$exten_where['context'] = 'local-extensions';
@@ -402,10 +383,10 @@ switch($act)
 			switch($status['localexten'])
 			{
 				case 'add':
-					$rs_localexten = $extensions->add($result['localexten']);
+					$rs_localexten = $extensions->add_exten($localextenid);
 					break;
 				case 'edit':
-					$rs_localexten = $extensions->edit($info['localexten']['id'],$result['localexten']);
+					$rs_localexten = $extensions->edit($info['localexten']['id'],$localexten_edit);
 					break;
 				case 'delete':
 					$rs_localexten = $extensions->delete($info['localexten']['id']);
@@ -461,7 +442,7 @@ switch($act)
 				switch($status['localexten'])
 				{
 					case 'add':
-						$extensions->delete($rs_localexten);
+						$extensions->delete_exten($localextenid);
 						break 2;
 					case 'edit':
 						$extensions->edit_origin();
@@ -486,7 +467,7 @@ switch($act)
 					switch($status['localexten'])
 					{
 						case 'add':
-							$extensions->delete($rs_localexten);
+							$extensions->delete_exten($localextenid);
 							break;
 						case 'edit':
 							$extensions->edit_origin();
@@ -574,7 +555,7 @@ switch($act)
 					switch($status['localexten'])
 					{
 						case 'add':
-							$extensions->delete($rs_localexten);
+							$extensions->delete_exten($localextenid);
 							break;
 						case 'edit':
 							$extensions->edit_origin();
@@ -629,7 +610,7 @@ switch($act)
 
 		if(isset($_QR['id']) === false
 		|| ($info['gfeatures'] = $gfeatures->get($_QR['id'])) === false
-		|| ($info['queue'] = $queue->get($info['gfeatures']['name'],false)) === false
+		|| ($info['queue'] = $queue->get($info['gfeatures']['name'])) === false
 		|| $qmember->get_nb(array('queue_name' => $info['queue']['name'])) !== 0)
 			xivo_go($_HTML->url('service/ipbx/pbx_settings/groups'),$param);
 
@@ -644,18 +625,16 @@ switch($act)
 				break;
 			}
 
-			$localexten_where = array();
-			$localexten_where['exten'] = $info['gfeatures']['number'];
-			$localexten_where['app'] = 'Macro';
-			$localexten_where['appdata'] = 'supergroup';
-
 			if($info['gfeatures']['context'] === '')
-				$localexten_where['context'] = 'local-extensions';
+				$localextencontext = 'local-extensions';
 			else
-				$localexten_where['context'] = $info['gfeatures']['context'];
+				$localextencontext = $info['gfeatures']['context'];
 
-			if(($info['extensions'] = $extensions->get_where($localexten_where)) !== false
-			&& $extensions->delete($info['extensions']['id']) === false)
+			if(($info['localexten'] = $extensions->get_exten('macro',
+								 $info['gfeatures']['number'],
+								 $localextencontext,
+								 array('appdata' => 'supergroup'))) !== false
+			&& $extensions->delete($info['localexten']['id']) === false)
 			{
 				$gfeatures->recover($info['gfeatures']['id']);
 				$queue->add_origin();
@@ -663,9 +642,8 @@ switch($act)
 			}
 
 			$extenum_where = array();
-			$extenum_where['exten'] = $localexten_where['exten'];
-			$extenum_where['context'] = $localexten_where['context'];
-			$extenum_where['extenmode'] = 'extension';
+			$extenum_where['exten'] = $info['gfeatures']['number'];
+			$extenum_where['context'] = $localextencontext;
 
 			$info['dfeatures'] = false;
 

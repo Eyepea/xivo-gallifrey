@@ -4,8 +4,8 @@ Nom
 ; col_trunk
 Interconnexion
 
-; col_mode
-Mode
+; col_exten
+Extension
 
 ; col_context
 Contexte
@@ -21,15 +21,6 @@ Protocole IAX : %s
 
 ; outcall_trunk-custom
 Personnalisée : %s
-
-; outcall_mode-numlen
-Taille du numéro
-
-; outcall_mode-extension
-Extension
-
-; outcall_mode-range
-Intervalle
 
 ; no_outcall
 Aucun appel sortant trouvé

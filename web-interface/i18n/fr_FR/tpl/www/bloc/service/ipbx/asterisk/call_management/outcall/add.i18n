@@ -19,23 +19,17 @@ Personnalisée
 ; fm_outcall_mode
 Mode :
 
-; fm_outcall_mode-opt-numlen
-Taille du numéro
+; fm_outcall_mode-opt-wizard
+Wizard
 
 ; fm_outcall_mode-opt-extension
 Extension
-
-; fm_outcall_mode-opt-range
-Intervalle
 
 ; fm_outcall_numlen
 Taille du numéro :
 
 ; fm_extenumbers_exten
 Extension :
-
-; fm_extenumbers_range
-Intervalle :
 
 ; fm_outcall_context
 Contexte :
@@ -59,7 +53,7 @@ Nombre de chiffres supprimés en partant du début :
 Poids :
 
 ; fm_outcall_useenum
-Utiliser l'annuaire VOIP :
+Utiliser ENUM :
 
 ; fm_outcall_hangupringtime
 Temps de sonnerie avant de raccrocher :

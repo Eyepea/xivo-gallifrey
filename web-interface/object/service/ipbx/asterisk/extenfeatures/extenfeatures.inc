@@ -255,35 +255,16 @@ class xivo_service_asterisk_extenfeatures extends xivo_service_asterisk_extensio
 
 	function set_chk_value($key,$value)
 	{
-		$value = $this->_clean_value($value);
+		$value = $this->_sre->clean_exten($value);
 
 		return(parent::set_chk_value($key,$value));
 	}
 
 	function chk_value($key,$value)
 	{
-		$value = $this->_clean_value($value);
+		$value = $this->_sre->clean_exten($value);
 
 		return(parent::chk_value($key,$value));
-	}
-
-	function _clean_value($value)
-	{
-		$value = preg_replace('/\[(\d)\]/','\\1',(string) $value);
-
-		if(isset($value{0}) === true && $value{0} === '_')
-		{
-			$subvalue = substr($value,1);
-
-			if(preg_match('/[NXZ\-\[\]\!\.]/',$subvalue) === 0)
-				$value = $subvalue;
-
-			return($value);
-		}
-		else if(preg_match('/[NXZ\-\[\]\!\.]/',$value) !== 0)
-			$value = '_'.$value;
-
-		return($value);
 	}
 
 	function get_where($arr,$disable=null,$prepare=true,$order=null,$limit=null)

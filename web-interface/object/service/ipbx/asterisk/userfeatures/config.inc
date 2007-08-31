@@ -58,6 +58,20 @@ $array['element']['context']['default'] = '';
 $array['element']['musiconhold'] = array();
 $array['element']['musiconhold']['default'] = '';
 
+$array['element']['outcallerid'] = array();
+$array['element']['outcallerid']['value'] = array('default','anonymous');
+$array['element']['outcallerid']['default'] = 'default';
+$array['element']['outcallerid']['setdef'] = true;
+
+$array['element']['outcallerid-type'] = array();
+$array['element']['outcallerid-type']['value'] = array('default','anonymous','custom');
+$array['element']['outcallerid-type']['default'] = 'default';
+$array['element']['outcallerid-type']['unset'] = true;
+
+$array['element']['outcallerid-custom'] = array();
+$array['element']['outcallerid-custom']['default'] = '';
+$array['element']['outcallerid-custom']['unset'] = true;
+
 $array['filter'] = array();
 $array['filter']['protocol'] = array('set' => true);
 $array['filter']['protocolid'] = array('cast' => 'uint');
@@ -71,6 +85,7 @@ $array['filter']['simultcalls'] = array('set' => false,'chk' => 2,'cast' => 'uin
 $array['filter']['popupwidget'] = array('bool' => true);
 $array['filter']['ringgroup'] = array('bool' => true);
 $array['filter']['musiconhold'] = array('set' => false,'chk' => 2,'maxlen' => 20);
-$array['filter']['comment'] = array('chk' => 2,'maxlen' => 1000);
+$array['filter']['outcallerid'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_-]+$/i','maxlen' => 80);
+$array['filter']['comment'] = array('chk' => 2,'maxlen' => 1000,'cast' => 'print','eol' => true);
 
 ?>

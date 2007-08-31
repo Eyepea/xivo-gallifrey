@@ -66,8 +66,6 @@ switch($act)
 			{
 				$local_exten = array();
 				$local_exten['exten'] = $result['mfeatures']['number'];
-				$local_exten['priority'] = 1;
-				$local_exten['app'] = 'Macro';
 				$local_exten['appdata'] = 'supermeetme';
 
 				if($result['mfeatures']['context'] === '')
@@ -75,7 +73,7 @@ switch($act)
 				else
 					$local_exten['context'] = $result['mfeatures']['context'];
 
-				if(($result['local_exten'] = $extensions->chk_values($local_exten)) === false)
+				if(($result['local_exten'] = $extensions->chk_macro($local_exten)) === false)
 				{
 					$add = false;
 					$result['local_exten'] = $extensions->get_filter_result();
@@ -84,7 +82,6 @@ switch($act)
 				$exten_numbers = array();
 				$exten_numbers['exten'] = $result['local_exten']['exten'];
 				$exten_numbers['context'] = $result['local_exten']['context'];
-				$exten_numbers['extenmode'] = 'extension';
 
 				if(($result['extenumbers'] = $extenumbers->chk_values($exten_numbers)) === false
 				|| $extenumbers->exists($result['extenumbers']) !== false)
@@ -243,7 +240,6 @@ switch($act)
 
 			$exten_numbers = array();
 			$exten_numbers['exten'] = $result['mfeatures']['number'];
-			$exten_numbers['extenmode'] = 'extension';
 
 			if($result['mfeatures']['context'] === '')
 				$exten_numbers['context'] = 'local-extensions';
@@ -252,7 +248,6 @@ switch($act)
 
 			$exten_where = array();
 			$exten_where['exten'] = $info['mfeatures']['number'];
-			$exten_where['extenmode'] = 'extension';
 
 			if($info['mfeatures']['context'] === '')
 				$exten_where['context'] = 'local-extensions';
@@ -424,7 +419,6 @@ switch($act)
 			$extenum_where = array();
 			$extenum_where['exten'] = $localexten_where['exten'];
 			$extenum_where['context'] = $localexten_where['context'];
-			$extenum_where['extenmode'] = 'extension';
 
 			$info['dfeatures'] = false;
 
@@ -490,8 +484,6 @@ switch($act)
 
 		$localexten_where['app'] = 'Macro';
 		$localexten_where['appdata'] = 'supermeetme';
-
-		$extenum_where['extenmode'] = 'extension';
 
 		$dfeatures_where['type'] = 'meetme';
 		$dfeatures_where['commented'] = 0;

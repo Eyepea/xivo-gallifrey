@@ -7,6 +7,9 @@ Nombre de fichiers
 ; col_action
 Action
 
+; no_directory
+Aucun répertoire trouvé
+
 ; opt_modify
 Modifier
 
@@ -15,6 +18,3 @@ Supprimer
 
 ; opt_delete_confirm
 Etes-vous certain de vouloir supprimer ce répertoire ?
-
-; no_directory
-Aucun répertoire trouvé

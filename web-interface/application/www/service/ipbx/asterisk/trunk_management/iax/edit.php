@@ -63,6 +63,16 @@ do
 	}
 	while(false);
 
+	if(isset($_QR['trunk']['host-dynamic']) === true)
+		$_QR['trunk']['host'] = $_QR['trunk']['host-dynamic'];
+	else
+		$_QR['trunk']['host'] = '';
+
+	if(isset($_QR['trunk']['host-static']) === true && $_QR['trunk']['host'] === 'static')
+		$_QR['trunk']['host'] = $_QR['trunk']['host-static'];
+
+	unset($_QR['trunk']['host-dynamic'],$_QR['trunk']['host-static']);
+
 	if(($result['trunk'] = $trunkiax->chk_values($_QR['trunk'])) === false)
 	{
 		$edit = false;

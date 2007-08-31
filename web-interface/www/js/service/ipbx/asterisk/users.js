@@ -174,6 +174,17 @@ xivo_fm_protocol['iax']['it-autoprov-macaddr']['property'] = 'disabled|true:bool
 
 xivo_attrib_register('fm_protocol-iax',xivo_fm_protocol['iax']);
 
+var xivo_fm_outcallerid = new Array();
+
+xivo_fm_outcallerid['fd-ufeatures-outcallerid-custom'] = new Array();
+xivo_fm_outcallerid['fd-ufeatures-outcallerid-custom']['style'] = new Array('display:none','display:block');
+xivo_fm_outcallerid['fd-ufeatures-outcallerid-custom']['link'] = 'it-outcallerid-custom';
+
+xivo_fm_outcallerid['it-ufeatures-outcallerid-custom'] = new Array();
+xivo_fm_outcallerid['it-ufeatures-outcallerid-custom']['property'] = new Array('disabled|true:boolean','disabled|false:boolean');
+
+xivo_attrib_register('fm_outcallerid',xivo_fm_outcallerid);
+
 var xivo_fm_host = new Array();
 
 xivo_fm_host['fd-sip-protocol-host-static'] = new Array();
@@ -355,7 +366,7 @@ function xivo_chgprotocol(protocol)
 	var host_dynamic = xivo_eid('it-'+xivo_protocol+'-protocol-host-dynamic');
 
 	if(host_dynamic != false)
-		xivo_chg_attrib('fm_host','fd-'+xivo_protocol+'-protocol-host-static',(host_dynamic.value == 'dynamic' ? 0 : 1));
+		xivo_chg_attrib('fm_host','fd-'+xivo_protocol+'-protocol-host-static',(host_dynamic.value != 'static' ? 0 : 1));
 
 	if(xivo_eid('it-autoprov-modact') != false)
 		xivo_chg_attrib('fm_autoprov-'+xivo_protocol,'it-autoprov-modact',(xivo_eid('it-autoprov-modact').value != '' ? 0 : 1));
@@ -437,7 +448,16 @@ function xivo_outgroup()
 	return(true);
 }
 
-xivo_winload += 'if(xivo_eid(\'it-protocol-protocol\') != false)\n' +
-		'xivo_chgprotocol(xivo_eid(\'it-protocol-protocol\'));\n' +
-		'if(xivo_eid(\'it-voicemail-active\') != false)\n' +
-		'xivo_chg_attrib(\'fm_voicemail\',\'it-voicemail-fullname\',(xivo_eid(\'it-voicemail-active\').checked == true ? 0 : 1));\n';
+function xivo_user_onload()
+{
+	if(xivo_eid('it-protocol-protocol') != false)
+		xivo_chgprotocol(xivo_eid('it-protocol-protocol'));
+
+	if((voicemail = xivo_eid('it-voicemail-active')) != false)
+		xivo_chg_attrib('fm_voicemail','it-voicemail-fullname',(voicemail.checked == true ? 0 : 1));
+
+	if((outcallerid_type = xivo_eid('it-ufeatures-outcallerid-type')) != false)
+		xivo_chg_attrib('fm_outcallerid','fd-ufeatures-outcallerid-custom',(outcallerid_type.value != 'custom' ? 0 : 1));
+}
+
+xivo_winload.push('xivo_user_onload();');

@@ -56,7 +56,7 @@ if(isset($_QR['fm_send']) === true)
 			{
 				$exten_numbers = $arr_outcall[$j];
 
-				$genoutcallid = $gen_outcall['extenid'] = 0;
+				$genoutcallid = $gen_outcall['extenumid'] = 0;
 				$gen_outcall['trunkfeaturesid'] = $exten_numbers['trunkfeaturesid'];
 
 				if(isset($exten_numbers['id']) === true && $exten_numbers['id'] !== '')
@@ -70,7 +70,7 @@ if(isset($_QR['fm_send']) === true)
 						continue;
 					}
 
-					$gen_outcall['extenid'] = $info[$partname][$genoutcallid]['generaloutcall']['extenid'];
+					$gen_outcall['extenumid'] = $info[$partname][$genoutcallid]['generaloutcall']['extenumid'];
 				}
 
 				unset($exten_numbers['id'],$exten_numbers['trunkfeaturesid']);
@@ -122,7 +122,7 @@ if(isset($_QR['fm_send']) === true)
 				}
 				else
 				{
-					if($extenumbers->exists($extenumbers_rs,$genoutcall_rs['extenid']) !== false)
+					if($extenumbers->exists($extenumbers_rs,$genoutcall_rs['extenumid']) !== false)
 					{
 						$fm_save = false;
 						$result[$partname][] = $info_err;
@@ -153,14 +153,14 @@ if(isset($_QR['fm_send']) === true)
 					$info_rs['generaloutcall']['id'] = $ref['id'];
 					$info_rs['extenumbers'] = $refedit['extenumbers'];
 
-					if($extenumbers->edit($ref['extenid'],$refedit['extenumbers']) === false
+					if($extenumbers->edit($ref['extenumid'],$refedit['extenumbers']) === false
 					|| ($editgenoutcall = $generaloutcall->edit($ref['id'],$refedit['generaloutcall'])) === false)
 					{
 						$fm_save = false;
 						$info_rs['_error'] = true;
 
 						if($editgenoutcall === false)
-							$extenumbers->edit($ref['extenid'],$partinfo[$j]['extenumbers']);
+							$extenumbers->edit($ref['extenumid'],$partinfo[$j]['extenumbers']);
 					}
 
 					$result[$partname][] = $info_rs;
@@ -168,11 +168,11 @@ if(isset($_QR['fm_send']) === true)
 					continue;
 				}
 				
-				if($extenumbers->delete($ref['extenid']) === false)
+				if($extenumbers->delete($ref['extenumid']) === false)
 					continue;
 			
 				if($generaloutcall->delete($ref['id']) === false)
-					$extenumbers->add($partinfo[$j]['extenumbers'],$ref['extenid']);
+					$extenumbers->add($partinfo[$j]['extenumbers'],$ref['extenumid']);
 			}
 
 		}
@@ -187,7 +187,7 @@ if(isset($_QR['fm_send']) === true)
 				$info_rs['generaloutcall'] = $refadd['generaloutcall'];
 				$info_rs['extenumbers'] = $refadd['extenumbers'];
 
-				if(($extenid = $extenumbers->add($refadd['extenumbers'])) === false)
+				if(($extenumid = $extenumbers->add($refadd['extenumbers'])) === false)
 				{
 					$fm_save = false;
 					$info_rs['_error'] = true;
@@ -195,7 +195,7 @@ if(isset($_QR['fm_send']) === true)
 					continue;
 				}
 
-				$refadd['generaloutcall']['extenid'] = $extenid;
+				$refadd['generaloutcall']['extenumid'] = $extenumid;
 
 				if(($genoutcallid = $generaloutcall->add($refadd['generaloutcall'])) === false)
 				{
@@ -203,7 +203,7 @@ if(isset($_QR['fm_send']) === true)
 					$info_rs['_error'] = true;
 					$result[$partname][] = $info_rs;
 
-					$extenumbers->delete($extenid);
+					$extenumbers->delete($extenumid);
 					continue;
 				}
 

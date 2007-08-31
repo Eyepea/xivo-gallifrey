@@ -41,39 +41,13 @@ class xivo_service_asterisk_extenumbers extends xivo_service_asterisk_abstract
 
 		unset($arr['extenhash']);
 
-		if(isset($arr['extenmode']) === true)
-			$extenmode = $arr['extenmode'];
-		else if(xivo_haslen($arr,'exten') === true)
-			$extenmode = 'extension';
-		else if(xivo_haslen($arr,'rangebeg') === true
-		&& xivo_haslen($arr,'rangeend') === true)
-			$extenmode = 'range';
-		else
+		if(xivo_haslen($arr,'exten') === false
+		|| ($exten = $this->chk_exten($arr['exten'])) === false)
 			return(false);
 
-		switch($extenmode)
-		{
-			case 'extension':
-				if(isset($arr['exten']) === false
-				|| ($exten = $this->chk_exten($arr['exten'])) === false)
-					return(false);
+		$arr['extenhash'] = sha1($exten);
 
-				$arr['extenhash'] = sha1($exten);
-				$arr['rangebeg'] = $arr['rangeend'] = null;
-
-				$arr['exten'] = $this->_clean_exten($arr['exten']);
-				break;
-			case 'range':
-				if(isset($arr['rangebeg'],$arr['rangeend']) === false)
-					return(false);
-
-				$arr['exten'] = $arr['extenhash'] = '';
-				break;
-			default:
-				return(false);
-		}
-
-		$arr['extenmode'] = $extenmode;
+		$arr['exten'] = $this->_sre->clean_exten($arr['exten']);
 
 		return($this->_dso->add($arr));
 	}
@@ -85,44 +59,13 @@ class xivo_service_asterisk_extenumbers extends xivo_service_asterisk_abstract
 
 		unset($arr['extenhash']);
 
-		if(isset($arr['extenmode']) === true)
-			$extenmode = $arr['extenmode'];
-		else if(xivo_haslen($arr,'exten') === true)
-			$extenmode = 'extension';
-		else if(xivo_haslen($arr,'rangebeg') === true && xivo_haslen($arr,'rangeend') === true)
-			$extenmode = 'range';
-		else
-			$extenmode = '';
-
-		switch($extenmode)
+		if(xivo_haslen($arr,'exten') === true)
 		{
-			case 'extension':
-				$arr['extenmode'] = 'extension';
+			if(($exten = $this->chk_exten($arr['exten'])) === false)
+				return(false);
 
-				if(isset($arr['exten']) === false)
-				{
-					unset($arr['rangebeg'],$arr['rangeend'],$arr['exten']);
-					break;
-				}
-
-				if(($exten = $this->chk_exten($arr['exten'])) === false)
-					return(false);
-
-				$arr['extenhash'] = sha1($exten);
-				$arr['rangebeg'] = $arr['rangeend'] = null;
-
-				$arr['exten'] = $this->_clean_exten($arr['exten']);
-				break;
-			case 'range':
-				$arr['extenmode'] = 'range';
-
-				if(isset($arr['rangebeg'],$arr['rangeend']) === true)
-					break;
-			
-				unset($arr['rangebeg'],$arr['rangeend'],$arr['exten']);
-				break;
-			default:
-				unset($arr['extenmode'],$arr['rangebeg'],$arr['rangeend'],$arr['exten']);
+			$arr['extenhash'] = sha1($exten);
+			$arr['exten'] = $this->_sre->clean_exten($arr['exten']);
 		}
 
 		return($this->_dso->edit($id,$arr,$disable));
@@ -132,59 +75,23 @@ class xivo_service_asterisk_extenumbers extends xivo_service_asterisk_abstract
 	{
 		$id = $id !== null ? xivo_uint($id) : null;
 
-		if(is_array($arr) === false || isset($arr['extenmode'],$arr['extenmode']{0}) === false)
+		if(is_array($arr) === false)
 			return(null);
 
-		switch($arr['extenmode'])
-		{
-			case 'extension':
-				if(xivo_haslen($arr,'exten') === false
-				|| ($exten = $this->chk_exten($arr['exten'])) === false)
-					return(null);
+		if(xivo_haslen($arr,'exten') === false
+		|| ($exten = $this->chk_exten($arr['exten'])) === false)
+			return(null);
 
-				$extenhash = sha1($exten);
+		$extenhash = sha1($exten);
 
-				$where = array();
-				$where['extenhash'] = $extenhash;
-				$where['extenmode'] = $arr['extenmode'];
+		$where = array();
+		$where['extenhash'] = $extenhash;
 
-				$context = xivo_haslen($arr,'context') === true ? $arr['context'] : '';
+		$context = xivo_haslen($arr,'context') === true ? $arr['context'] : '';
 
-				if(($whereid = $this->_dso->exists_exten($where,$context)) !== false
-				&& ($id === null || ($id !== null && $whereid !== $id) === true) === true)
-					return(true);
-				break;
-			case 'range':
-				if(xivo_haslen($arr,'rangebeg') === false
-				|| xivo_haslen($arr,'rangeend') === false
-				|| $this->chk_range($arr['rangebeg'],$arr['rangeend']) === false)
-					return(null);
-
-				$context = xivo_haslen($arr,'context') === true ? $arr['context'] : '';
-
-				if(($rangeid = $this->_dso->exists_range($arr['rangebeg'],$context)) !== false
-				&& ($id === null || ($id !== null && $rangeid !== $id) === true) === true)
-					return(true);
-
-				if(($rangeid = $this->_dso->exists_range($arr['rangeend'],$context)) !== false
-				&& ($id === null || ($id !== null && $rangeid !== $id) === true) === true)
-					return(true);
-
-				$where = array();
-				$where['extenmode'] = 'extension';
-				$where['exten'] = $arr['rangebeg'];
-
-				if($this->_dso->exists_exten($where,$context) !== false)
-					return(true);
-
-				$where['exten'] = $arr['rangeend'];
-
-				if($this->_dso->exists_exten($where,$context) !== false)
-					return(true);
-				break;
-			default:
-				return(null);
-		}
+		if(($whereid = $this->_dso->exists_exten($where,$context)) !== false
+		&& ($id === null || ($id !== null && $whereid !== $id) === true) === true)
+			return(true);
 
 		return(false);
 	}
@@ -280,33 +187,6 @@ class xivo_service_asterisk_extenumbers extends xivo_service_asterisk_abstract
 		}
 
 		return($r);
-	}
-
-	function chk_range($beg,$end)
-	{
-		if(ctype_digit($beg) === false || ctype_digit($end) === false || $beg >= $end)
-			return(false);
-
-		return(true);
-	}
-
-	function _clean_exten($str)
-	{
-		$str = preg_replace('/\[(\d)\]/','\\1',(string) $str);
-
-		if(isset($str{0}) === true && $str{0} === '_')
-		{
-			$substr = substr($str,1);
-
-			if(preg_match('/[NXZ\-\[\]\!\.]/',$substr) === 0)
-				$str = $substr;
-
-			return($str);
-		}
-		else if(preg_match('/[NXZ\-\[\]\!\.]/',$str) !== 0)
-			$str = '_'.$str;
-
-		return($str);
 	}
 
 	function _realexten_pattern($str)

@@ -31,6 +31,9 @@ Ajouter ->
 ; bt-outuser
 <- Enlever
 
+; create_agent-agroup
+Créer un groupe d'agent
+
 ; fm_agentgroup
 Groupes :
 
@@ -39,6 +42,9 @@ Ajouter ->
 
 ; bt-outagroup
 <- Enlever
+
+; create_agent
+Créer un agent
 
 ; fm_agent
 Agents :

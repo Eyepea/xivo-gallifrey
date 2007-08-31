@@ -18,7 +18,7 @@ function xivo_exten_pattern(id,option)
 
 	option = Number(option);
 
-	if(option > 2 && option < 12)
+	if(option > 0 && option < 40)
 	{
 		id.value = value + xivo_str_repeat('X',option);
 		return(true);

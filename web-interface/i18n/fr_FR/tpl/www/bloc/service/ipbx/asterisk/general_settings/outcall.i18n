@@ -13,9 +13,6 @@ Créer une interconnexion
 ; col_emergency-trunk
 Interconnexion
 
-; col_emergency-extenmode
-Mode
-
 ; col_emergency-exten
 Extension
 
@@ -37,17 +34,8 @@ Protocole IAX
 ; fm_emergency-trunk-opt-custom
 Personnalisée
 
-; fm_emergency-extenmode-opt-range
-Intervalle
-
-; fm_emergency-extenmode-opt-extension
-Extension
-
 ; col_special-trunk
 Interconnexion
-
-; col_special-extenmode
-Mode
 
 ; col_special-exten
 Extension
@@ -69,12 +57,6 @@ Protocole IAX
 
 ; fm_special-trunk-opt-custom
 Personnalisée
-
-; fm_special-extenmode-opt-range
-Intervalle
-
-; fm_special-extenmode-opt-extension
-Extension
 
 ; fm_bt-save
 Sauvegarder

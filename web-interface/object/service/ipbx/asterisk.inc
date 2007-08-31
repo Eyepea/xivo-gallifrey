@@ -705,14 +705,13 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			$info['did'] = $rs[$i];
+			$info['didexten'] = $rs[$i];
 			$info['tyfeatures'] = false;
 
-			if(($info['dfeatures'] = $dfeatures->get_where(array('extenid' => $info['did']['id']))) === false
+			if(($info['dfeatures'] = $dfeatures->get_where(array('extenid' => $info['didexten']['id']))) === false
 			|| ($info['extenumbers'] = $extenumbers->get_where(array(
-									'exten' => $info['did']['exten'],
-									'context' => $info['did']['context'],
-									'extenmode' => 'extension'))) === false
+									'exten' => $info['didexten']['exten'],
+									'context' => $info['didexten']['context']))) === false
 			|| ($info['dfeatures']['commented'] === false
 			   && ($info['tyfeatures'] = $dfeatures->is_valid($info['dfeatures']['type'],
 		   							  $info['dfeatures']['typeid'])) === false) === true)
@@ -751,7 +750,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 		{
 			$info['generaloutcall'] = $rs[$i];
 
-			if(($info['extenumbers'] = $extenumbers->get($info['generaloutcall']['extenid'])) === false)
+			if(($info['extenumbers'] = $extenumbers->get($info['generaloutcall']['extenumid'])) === false)
 				continue;
 
 			$r[$info['generaloutcall']['id']] = $info;
@@ -777,11 +776,9 @@ class xivo_service_asterisk extends xivo_service_abstract
 		for($i = 0;$i < $nb;$i++)
 		{
 			$info['outcall'] = $rs[$i];
-			$info['extenumbers'] = false;
 
 			if(($info['tfeatures'] = $tfeatures->get($info['outcall']['trunkfeaturesid'])) === false
-			|| ($info['outcall']['mode'] !== 'numlen'
-			   && ($info['extenumbers'] = $extenumbers->get($info['outcall']['extenid'])) === false) === true)
+			|| ($info['extenumbers'] = $extenumbers->get($info['outcall']['extenumid'])) === false)
 				continue;
 
 			if(isset($trunks[$info['tfeatures']['trunk']]) === false)
@@ -1050,6 +1047,25 @@ class xivo_service_asterisk extends xivo_service_abstract
 		$r = $channel.'/'.$name;
 
 		return($r);
+	}
+
+	function clean_exten($str)
+	{
+		$str = preg_replace('/\[(\d)\]/','\\1',strval($str));
+
+		if(isset($str{0}) === true && $str{0} === '_')
+		{
+			$substr = substr($str,1);
+
+			if(preg_match('/[NXZ\-\[\]\!\.]/',$substr) === 0)
+				$str = $substr;
+
+			return($str);
+		}
+		else if(preg_match('/[NXZ\-\[\]\!\.]/',$str) !== 0)
+			$str = '_'.$str;
+
+		return($str);
 	}
 }
 

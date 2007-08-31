@@ -14,17 +14,10 @@ $localexten = $hintsexten = &$ipbx->get_module('extensions');
 $dfeatures = &$ipbx->get_module('didfeatures');
 $autoprov = &$ipbx->get_module('autoprov');
 
-$info = $localexten_where = $extenum_where = $hints_where = $dfeatures_where = $quser_where = array();
+$info = $extenum_where = $dfeatures_where = $quser_where = array();
 
 $dfeatures_where['type'] = 'user';
 $dfeatures_where['commented'] = 0;
-
-$hints_where['context'] = 'hints';
-
-$localexten_where['app'] = 'Macro';
-$localexten_where['appdata'] = 'superuser';
-
-$extenum_where['extenmode'] = 'extension';
 
 $quser_where['usertype'] = 'user';
 
@@ -51,14 +44,15 @@ for($i = 0;$i < $arr['cnt'];$i++)
 			continue;
 		}
 
-		$localexten_where['exten'] = $info['ufeatures']['number'];
-
 		if($info['protocol']['context'] === '')
-			$localexten_where['context'] = 'local-extensions';
+			$localextencontext = 'local-extensions';
 		else
-			$localexten_where['context'] = $info['protocol']['context'];
+			$localextencontext = $info['protocol']['context'];
 
-		if(($info['localexten'] = $localexten->get_where($localexten_where)) !== false
+		if(($info['localexten'] = $localexten->get_exten('macro',
+							 $info['ufeatures']['number'],
+							 $localextencontext,
+							 array('appdata' => 'superuser'))) !== false
 		&& $localexten->delete($info['localexten']['id']) === false)
 		{
 			$protocol->add_origin();
@@ -66,8 +60,8 @@ for($i = 0;$i < $arr['cnt'];$i++)
 			continue;
 		}
 
-		$extenum_where['exten'] = $localexten_where['exten'];
-		$extenum_where['context'] = $localexten_where['context'];
+		$extenum_where['exten'] = $info['ufeatures']['number'];
+		$extenum_where['context'] = $localextencontext;
 
 		$info['dfeatures'] = false;
 
@@ -91,13 +85,9 @@ for($i = 0;$i < $arr['cnt'];$i++)
 			}
 		}
 
-		$hints_where['exten'] = $info['ufeatures']['number'];
-		$hints_where['app'] = $ipbx->mk_interface($info['protocol']['name'],$info['ufeatures']['protocol']);
-
-		$info['hints'] = false;
-
-		if($hints_where['app'] !== false
-		&& ($info['hints'] = $hintsexten->get_where($hints_where)) !== false
+		if(($info['hints'] = $hintsexten->get_hints($info['protocol']['name'],
+							    $info['ufeatures']['protocol'],
+							    $info['ufeatures']['number'])) !== false
 		&& $hintsexten->delete($info['hints']['id']) === false)
 		{
 			$protocol->add_origin();

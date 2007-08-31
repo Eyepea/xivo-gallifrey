@@ -12,8 +12,7 @@ pre {text-align: left;}
 
 .i-image {margin: 0px;padding: 0px;}
 
-.b-nosize, .b-hnosize, .b-bnosize, .sb-foot {font-size: 1pt;margin: 0px;}
-.b-nosize2 {font-size: 2pt;margin: 0px;}
+.b-nosize, .sb-foot {font-size: 1pt;margin: 0px;}
 .b-nosize a {font-size: 1pt;margin: 0px;}
 
 .b-nodisplay {display: none;}
@@ -73,11 +72,17 @@ pre {text-align: left;}
 
 .fm-field input.it-readonly, .fm-field select.it-readonly, .fm-field textarea.it-readonly {color: #000;}
 
+.fm-field input.it-checkbox {margin: 0px 2px;padding: 0px;border: 0px solid #fff;background-color: transparent;}
+.fm-field input.it-radio {margin: 0px 2px;padding: 0px;border: 0px solid #fff;background-color: transparent;}
+
 .fm-field .fm-desc {display: block;float: left;text-align: right;width: 50%;}
 .fm-desc-inline {padding: 2px;width: auto;text-align: center;}
 .fm-desc-inline label {padding: 0px 10px;}
 .fm-desc-inline .fm-desc {display: inline;float: none;width: auto;}
 .fm-field p {padding-bottom: 2px;}
+
+.tooltips-over:hover {color: #ff9d03;}
+.tooltips-info {position: absolute;margin-top: 14px;display: none;padding: 5px;border: 1px solid #697e92;background-color: #e8eeff;}
 
 .fm-multilist {text-align: center;width: 100%;}
 .fm-multilist div {float: left;width: 45%;}

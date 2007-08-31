@@ -7,6 +7,9 @@ Type
 ; col_action
 Action
 
+; no_category
+Aucune catégorie trouvée
+
 ; opt_modify
 Modifier
 
@@ -15,6 +18,3 @@ Supprimer
 
 ; opt_delete_confirm
 Etes-vous certain de vouloir supprimer cette catégorie ?
-
-; no_category
-Aucune catégorie trouvée

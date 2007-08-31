@@ -31,7 +31,7 @@ class xivo_tpl_url extends xivo_tpl_module
 		$sep = $sep === null ? '&amp;' : (string) $sep;
 
 		if(is_array($param) === true)
-			$param = xivo_query_str($param,$pre,$key,$sep);
+			$param = xivo_query::mk_query_str($param,$pre,$key,$sep);
 		else
 			$param = (string) $param;
 

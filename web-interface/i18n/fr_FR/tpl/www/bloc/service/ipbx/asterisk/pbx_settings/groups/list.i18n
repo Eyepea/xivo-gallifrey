@@ -16,8 +16,8 @@ Aucun groupe trouvé
 ; opt_modify
 Modifier
 
-; opt_delete_confirm
-Etes-vous certain de vouloir supprimer ce groupe ?
-
 ; opt_delete
 Supprimer
+
+; opt_delete_confirm
+Etes-vous certain de vouloir supprimer ce groupe ?

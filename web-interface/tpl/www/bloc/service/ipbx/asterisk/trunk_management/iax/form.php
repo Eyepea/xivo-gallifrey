@@ -21,9 +21,8 @@
 		$reg_active = xivo_bool($reg_active) === true ? false : true;
 	endif;
 
-	if(($host = (string) $this->varra('info',array('trunk','host-static'))) !== ''):
-		$host_static = true;
-	elseif(($host = (string) $this->varra('info',array('trunk','host'))) === 'dynamic' || $host === ''):
+	if(($host = (string) $info['trunk']['host']) === ''
+	|| in_array($host,$element['trunk']['host']['value'],true) === true):
 		$host_static = false;
 	else:
 		$host_static = true;
@@ -48,7 +47,7 @@
 
 <?=$form->text(array('desc' => $this->bbf('fm_trunk_calllimit'),'name' => 'trunk[call-limit]','labelid' => 'trunk-calllimit','size' => 10,'value' => $calllimit));?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_trunk_host'),'name' => 'trunk[host-dynamic]','labelid' => 'trunk-host-dynamic','key' => false,'value' => ($host_static === true ? 'static' : 'dynamic')),$element['trunk']['host-dynamic']['value'],'onchange="xivo_chg_attrib(\'fm_host\',\'fd-trunk-host-static\',(this.value == \'dynamic\' ? 0 : 1))"');?>
+<?=$form->select(array('desc' => $this->bbf('fm_trunk_host'),'name' => 'trunk[host-dynamic]','labelid' => 'trunk-host-dynamic','bbf' => 'fm_trunk_host-','key' => false,'value' => ($host_static === true ? 'static' : $host)),$element['trunk']['host-dynamic']['value'],'onchange="xivo_chg_attrib(\'fm_host\',\'fd-trunk-host-static\',(this.value != \'static\' ? 0 : 1))"');?>
 
 <?=$form->text(array('desc' => '&nbsp;','name' => 'trunk[host-static]','labelid' => 'trunk-host-static','size' => 15,'value' => ($host_static === true ? $host : '')));?>
 
@@ -58,7 +57,7 @@
 
 <div id="sb-part-register" class="b-nodisplay">
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_register'),'name' => 'register-active','labelid' => 'register-active','checked' => $reg_active).($trunk_active === true ? ' disabled="disabled"' : '').' onclick="xivo_chg_attrib(\'fm_register\',\'it-register-username\',(this.checked == true ? 0 : 1))"');?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_register'),'name' => 'register-active','labelid' => 'register-active','checked' => $reg_active),($trunk_active === true ? ' disabled="disabled"' : '').' onclick="xivo_chg_attrib(\'fm_register\',\'it-register-username\',(this.checked == true ? 0 : 1))"');?>
 
 <?=$form->text(array('desc' => $this->bbf('fm_register_username'),'name' => 'register[username]','labelid' => 'register-username','size' => 15,'value' => $this->varra('info',array('register','username'))));?>
 

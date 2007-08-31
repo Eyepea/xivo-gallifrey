@@ -134,17 +134,6 @@ class xivo_service_asterisk_abstract
 		return(false);
 	}
 
-	function get_element_copy($key)
-	{
-		$key = (string) $key;
-
-		if(xivo_issa('element',$this->_conf) === false || xivo_issa($key,$this->_conf['element']) === false
-		|| isset($this->_conf['element'][$key]['copy']) === false)
-			return(false);
-
-		return($this->_conf['element'][$key]['copy']);
-	}
-
 	function isset_element_value($key)
 	{
 		$key = (string) $key;
@@ -423,6 +412,32 @@ class xivo_service_asterisk_abstract
 		return($this->edit($id,array('commented' => $value)));
 	}
 
+	function enable_where($id,$value=false)
+	{
+		if(is_array($id) === false
+		|| ($where = $this->get_element_where($id)) === false)
+			return(false);
+
+		$value = intval((bool) $value);
+
+		$r = $this->_dso->edit($where,array('commented' => $value));
+
+		return($r);
+	}
+
+	function disable_where($id,$value=true)
+	{
+		if(is_array($id) === false
+		|| ($where = $this->get_element_where($id)) === false)
+			return(false);
+
+		$value = intval((bool) $value);
+
+		$r = $this->_dso->edit($where,array('commented' => $value));
+
+		return($r);
+	}
+
 	function get_filter_err()
 	{
 		if($this->_filter === null)
@@ -474,9 +489,6 @@ class xivo_service_asterisk_abstract
 			if($val === '' && $this->isset_element_default($key) === true
 			&& ($dval = $this->get_element_default($key)) !== false)
 				$val = $dval;
-
-			if(($ckey = $this->get_element_copy($key)) !== false && $val !== '')
-				$rs[$ckey] = $r[$ckey] = $val;
 
 			if($this->unset_element_value($key) === true)
 				continue;

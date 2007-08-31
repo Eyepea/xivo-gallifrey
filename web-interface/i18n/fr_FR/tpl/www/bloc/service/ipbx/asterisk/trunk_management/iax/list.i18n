@@ -16,29 +16,29 @@ Approvisionnement
 ; col_action
 Action
 
+; trunk_host-unknown
+Hôte inconnu
+
+; trunk_connect-inbound
+Entrant
+
+; trunk_connect-outbound
+Sortant
+
+; trunk_connect-inoutbound
+Entrant/Sortant
+
+; trunk_call-unlimited
+Appels illimités
+
 ; no_trunk
 Aucune interconnexion IAX trouvée
 
 ; opt_modify
 Modifier
 
-; opt_delete_confirm
-Etes-vous certain de vouloir supprimer cette interconnexion ?
-
 ; opt_delete
 Supprimer
 
-; host_unknown
-Hôte inconnu
-
-; connect_type_inbound
-Entrant
-
-; connect_type_outbound
-Sortant
-
-; connect_type_inoutbound
-Entrant/Sortant
-
-; call_unlimited
-Appels illimités
+; opt_delete_confirm
+Etes-vous certain de vouloir supprimer cette interconnexion ?

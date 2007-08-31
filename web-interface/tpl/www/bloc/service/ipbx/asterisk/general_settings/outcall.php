@@ -79,7 +79,6 @@ else:
 		<thead>
 		<tr class="sb-top">
 			<th class="th-left"><?=$this->bbf('col_emergency-trunk');?></th>
-			<th class="th-center"><?=$this->bbf('col_emergency-extenmode');?></th>
 			<th class="th-center"><?=$this->bbf('col_emergency-exten');?></th>
 			<th class="th-right"><?=$url->href_html($url->img_html('img/site/button/add.gif',$this->bbf('col_emergency-add'),'border="0"'),'#',null,'onclick="xivo_table_list(\'emergency\',this);"',$this->bbf('col_emergency-add'));?></th>
 		</tr>
@@ -89,14 +88,6 @@ else:
 	if($egency_nb !== 0):
 		for($i = 0;$i < $egency_nb;$i++):
 			$ref = &$info['emergency'][$i];
-
-			if($ref['extenumbers']['extenmode'] === 'range'):
-				$extendisplay = ' class="b-nodisplay"';
-				$rangedisplay = '';
-			else:
-				$extendisplay = '';
-				$rangedisplay = ' class="b-nodisplay"';
-			endif;
 
 			if(isset($ref['_error']) === true):
 				$errdisplay = ' l-infos-error';
@@ -118,17 +109,7 @@ else:
 			echo $form->select(array('field' => false,'name' => 'emergency[trunkfeaturesid][]','id' => false,'label' => false,'browse' => 'trunk','key' => 'name','altkey' => 'trunkfeaturesid','optgroup' => array('key' => true,'bbf' => array('concat','fm_emergency-trunk-opt-')),'value' => $ref['generaloutcall']['trunkfeaturesid'],'default' => $element['generaloutcall']['trunkfeaturesid']['default']),$trunks_list);
 ?>
 			</td>
-			<td><?=$form->select(array('field' => false,'name' => 'emergency[extenmode][]','key' => false,'id' => false,'label' => false,'bbf' => array('concatkey','fm_emergency-extenmode-opt-'),'value' => $ref['extenumbers']['extenmode'],'default' => $element['extenumbers']['extenmode']['default']),$element['extenumbers']['extenmode']['value'],'onchange="xivo_extenmode(this);"');?></td>
-			<td>
-				<div<?=$extendisplay?>>
-				<?=$form->text(array('field' => false,'name' => 'emergency[exten][]','id' => false,'label' => false,'size' => 15,'value' => $ref['extenumbers']['exten'],'default' => $element['extenumbers']['exten']['default']));?>
-				</div>
-				<div<?=$rangedisplay?>>
-				<?=$form->text(array('field' => false,'name' => 'emergency[rangebeg][]','id' => false,'label' => false,'size' => 5,'value' => $ref['extenumbers']['rangebeg'],'default' => $element['extenumbers']['rangebeg']['default']));?>
-				<?=$form->text(array('field' => false,'name' => 'emergency[rangeend][]','id' => false,'label' => false,'size' => 5,'value' => $ref['extenumbers']['rangeend'],'default' => $element['extenumbers']['rangeend']['default']));?>
-				</div>
-			</td>
-			
+			<td><?=$form->text(array('field' => false,'name' => 'emergency[exten][]','id' => false,'label' => false,'size' => 15,'value' => $ref['extenumbers']['exten'],'default' => $element['extenumbers']['exten']['default']));?></td>
 			<td class="td-right txt-right"><?=$url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_emergency-delete'),'border="0"'),'#',null,'onclick="xivo_table_list(\'emergency\',this,1);"',$this->bbf('opt_emergency-delete'));?></td>
 		</tr>
 
@@ -139,7 +120,7 @@ else:
 		</tbody>
 		<tfoot>
 		<tr id="no-emergency"<?=($egency_nb !== 0 ? ' class="b-nodisplay"' : '')?>>
-			<td colspan="4" class="td-single"><?=$this->bbf('no_emergency');?></td>
+			<td colspan="3" class="td-single"><?=$this->bbf('no_emergency');?></td>
 		</tr>
 		</tfoot>
 	</table>
@@ -147,17 +128,7 @@ else:
 		<tbody id="ex-emergency">
 		<tr class="fm-field">
 			<td class="td-left txt-left"><?=$form->select(array('field' => false,'name' => 'emergency[trunkfeaturesid][]','id' => false,'label' => false,'browse' => 'trunk','key' => 'name','altkey' => 'trunkfeaturesid','optgroup' => array('key' => true,'bbf' => array('concat','fm_emergency-trunk-opt-')),'default' => $element['generaloutcall']['trunkfeaturesid']['default']),$trunks_list,'disabled="disabled"');?></td>
-			<td><?=$form->select(array('field' => false,'name' => 'emergency[extenmode][]','key' => false,'id' => false,'label' => false,'bbf' => array('concatkey','fm_emergency-extenmode-opt-'),'default' => $element['extenumbers']['extenmode']['default']),$element['extenumbers']['extenmode']['value'],'onchange="xivo_extenmode(this);" disabled="disabled"');?></td>
-			<td>
-				<div<?=($element['extenumbers']['extenmode']['default'] === 'extension' ? '' : ' class="b-nodisplay"')?>>
-				<?=$form->text(array('field' => false,'name' => 'emergency[exten][]','id' => false,'label' => false,'size' => 15,'default' => $element['extenumbers']['exten']['default']),'disabled="disabled"');?>
-				</div>
-				<div<?=($element['extenumbers']['extenmode']['default'] !== 'extension' ? '' : ' class="b-nodisplay"')?>>
-				<?=$form->text(array('field' => false,'name' => 'emergency[rangebeg][]','id' => false,'label' => false,'size' => 5,'default' => $element['extenumbers']['rangebeg']['default']),'disabled="disabled"');?>
-				<?=$form->text(array('field' => false,'name' => 'emergency[rangeend][]','id' => false,'label' => false,'size' => 5,'default' => $element['extenumbers']['rangeend']['default']),'disabled="disabled"');?>
-				</div>
-			</td>
-			
+			<td><?=$form->text(array('field' => false,'name' => 'emergency[exten][]','id' => false,'label' => false,'size' => 15,'default' => $element['extenumbers']['exten']['default']),'disabled="disabled"');?></td>
 			<td class="td-right txt-right"><?=$url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'#',null,'onclick="xivo_table_list(\'emergency\',this,1);"',$this->bbf('opt_delete'));?></td>
 		</tr>
 		</tbody>
@@ -173,7 +144,6 @@ else:
 		<thead>
 		<tr class="sb-top">
 			<th class="th-left"><?=$this->bbf('col_special-trunk');?></th>
-			<th class="th-center"><?=$this->bbf('col_special-extenmode');?></th>
 			<th class="th-center"><?=$this->bbf('col_special-exten');?></th>
 			<th class="th-right"><?=$url->href_html($url->img_html('img/site/button/add.gif',$this->bbf('col_special-add'),'border="0"'),'#',null,'onclick="xivo_table_list(\'special\',this);"',$this->bbf('col_special-add'));?></th>
 		</tr>
@@ -183,14 +153,6 @@ else:
 	if($special_nb !== 0):
 		for($i = 0;$i < $special_nb;$i++):
 			$ref = &$info['special'][$i];
-
-			if($ref['extenumbers']['extenmode'] === 'range'):
-				$extendisplay = ' class="b-nodisplay"';
-				$rangedisplay = '';
-			else:
-				$extendisplay = '';
-				$rangedisplay = ' class="b-nodisplay"';
-			endif;
 
 			if(isset($ref['_error']) === true):
 				$errdisplay = ' l-infos-error';
@@ -212,17 +174,7 @@ else:
 			echo $form->select(array('field' => false,'name' => 'special[trunkfeaturesid][]','id' => false,'label' => false,'browse' => 'trunk','key' => 'name','altkey' => 'trunkfeaturesid','optgroup' => array('key' => true,'bbf' => array('concat','fm_special-trunk-opt-')),'value' => $ref['generaloutcall']['trunkfeaturesid'],'default' => $element['generaloutcall']['trunkfeaturesid']['default']),$trunks_list);
 ?>
 			</td>
-			<td><?=$form->select(array('field' => false,'name' => 'special[extenmode][]','key' => false,'id' => false,'label' => false,'bbf' => array('concatkey','fm_special-extenmode-opt-'),'value' => $ref['extenumbers']['extenmode'],'default' => $element['extenumbers']['extenmode']['default']),$element['extenumbers']['extenmode']['value'],'onchange="xivo_extenmode(this);"');?></td>
-			<td>
-				<div<?=$extendisplay?>>
-				<?=$form->text(array('field' => false,'name' => 'special[exten][]','id' => false,'label' => false,'size' => 15,'value' => $ref['extenumbers']['exten'],'default' => $element['extenumbers']['exten']['default']));?>
-				</div>
-				<div<?=$rangedisplay?>>
-				<?=$form->text(array('field' => false,'name' => 'special[rangebeg][]','id' => false,'label' => false,'size' => 5,'value' => $ref['extenumbers']['rangebeg'],'default' => $element['extenumbers']['rangebeg']['default']));?>
-				<?=$form->text(array('field' => false,'name' => 'special[rangeend][]','id' => false,'label' => false,'size' => 5,'value' => $ref['extenumbers']['rangeend'],'default' => $element['extenumbers']['rangeend']['default']));?>
-				</div>
-			</td>
-			
+			<td><?=$form->text(array('field' => false,'name' => 'special[exten][]','id' => false,'label' => false,'size' => 15,'value' => $ref['extenumbers']['exten'],'default' => $element['extenumbers']['exten']['default']));?></td>
 			<td class="td-right txt-right"><?=$url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_emergency-delete'),'border="0"'),'#',null,'onclick="xivo_table_list(\'special\',this,1);"',$this->bbf('opt_emergency-delete'));?></td>
 		</tr>
 
@@ -233,7 +185,7 @@ else:
 		</tbody>
 		<tfoot>
 		<tr id="no-special"<?=($special_nb !== 0 ? ' class="b-nodisplay"' : '')?>>
-			<td colspan="4" class="td-single"><?=$this->bbf('no_special');?></td>
+			<td colspan="3" class="td-single"><?=$this->bbf('no_special');?></td>
 		</tr>
 		</tfoot>
 	</table>
@@ -241,17 +193,7 @@ else:
 		<tbody id="ex-special">
 		<tr class="fm-field">
 			<td class="td-left txt-left"><?=$form->select(array('field' => false,'name' => 'special[trunkfeaturesid][]','id' => false,'label' => false,'browse' => 'trunk','key' => 'name','altkey' => 'trunkfeaturesid','optgroup' => array('key' => true,'bbf' => array('concat','fm_special-trunk-opt-')),'default' => $element['generaloutcall']['trunkfeaturesid']['default']),$trunks_list,'disabled="disabled"');?></td>
-			<td><?=$form->select(array('field' => false,'name' => 'special[extenmode][]','key' => false,'id' => false,'label' => false,'bbf' => array('concatkey','fm_special-extenmode-opt-'),'default' => $element['extenumbers']['extenmode']['default']),$element['extenumbers']['extenmode']['value'],'onchange="xivo_extenmode(this);" disabled="disabled"');?></td>
-			<td>
-				<div<?=($element['extenumbers']['extenmode']['default'] === 'extension' ? '' : ' class="b-nodisplay"')?>>
-				<?=$form->text(array('field' => false,'name' => 'special[exten][]','id' => false,'label' => false,'size' => 15,'default' => $element['extenumbers']['exten']['default']),'disabled="disabled"');?>
-				</div>
-				<div<?=($element['extenumbers']['extenmode']['default'] !== 'extension' ? '' : ' class="b-nodisplay"')?>>
-				<?=$form->text(array('field' => false,'name' => 'special[rangebeg][]','id' => false,'label' => false,'size' => 5,'default' => $element['extenumbers']['rangebeg']['default']),'disabled="disabled"');?>
-				<?=$form->text(array('field' => false,'name' => 'special[rangeend][]','id' => false,'label' => false,'size' => 5,'default' => $element['extenumbers']['rangeend']['default']),'disabled="disabled"');?>
-				</div>
-			</td>
-			
+			<td><?=$form->text(array('field' => false,'name' => 'special[exten][]','id' => false,'label' => false,'size' => 15,'default' => $element['extenumbers']['exten']['default']),'disabled="disabled"');?></td>
 			<td class="td-right txt-right"><?=$url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_special-delete'),'border="0"'),'#',null,'onclick="xivo_table_list(\'special\',this,1);"',$this->bbf('opt_special-delete'));?></td>
 		</tr>
 		</tbody>

@@ -12,7 +12,6 @@ $result = $error = array();
 
 $exten_numbers = array();
 $exten_numbers['context'] = '';
-$exten_numbers['extenmode'] = 'extension';
 
 if(isset($_QR['fm_send']) === true && ($arr = xivo_get_aks($element)) !== false)
 {
@@ -103,9 +102,6 @@ $_HTML->assign('element',$element);
 $menu = &$_HTML->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_infos('meta'));
 $menu->set_left('left/service/ipbx/asterisk');
-
-$dhtml = &$_HTML->get_module('dhtml');
-$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/extenfeatures.js');
 
 $_HTML->assign('bloc','general_settings/extenfeatures');
 $_HTML->assign('service_name',$service_name);

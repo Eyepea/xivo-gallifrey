@@ -41,8 +41,8 @@ $array['element']['iduserfeatures']['default'] = '';
 $array['filter'] = array();
 $array['filter']['modact'] = array('set' => false,'key' => array('guest','prov'));
 $array['filter']['macaddr'] = array('minlen' => 11,'maxlen' => 17,'regexp' => '/^([A-F0-9]{2}:){5}([A-F0-9]{2})$/');
-$array['filter']['vendor'] = array('maxlen' => 16,'regexp' => '/^([0-9a-z\-_]+)$/');
-$array['filter']['model'] = array('maxlen' => 16,'regexp' => '/^([0-9a-z\-_]+)$/');
+$array['filter']['vendor'] = array('maxlen' => 16,'regexp' => '/^[a-z0-9\-_]+$/');
+$array['filter']['model'] = array('maxlen' => 16,'regexp' => '/^[a-z0-9\-_]+$/');
 $array['filter']['proto'] = array('key' => array('sip'));
 $array['filter']['iduserfeatures'] = array('cast' => 'uint');
 

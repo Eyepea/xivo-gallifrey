@@ -136,6 +136,16 @@ do
 		$old_protocol = &$protocol;
 	}
 
+	if(isset($_QR['protocol']['host-dynamic']) === true)
+		$_QR['protocol']['host'] = $_QR['protocol']['host-dynamic'];
+	else
+		$_QR['protocol']['host'] = '';
+
+	if(isset($_QR['protocol']['host-static']) === true && $_QR['protocol']['host'] === 'static')
+		$_QR['protocol']['host'] = $_QR['protocol']['host-static'];
+
+	unset($_QR['protocol']['host-dynamic'],$_QR['protocol']['host-static']);
+
 	if(($result['protocol'] = $protocol->chk_values($_QR['protocol'])) === false)
 	{
 		$edit = false;
@@ -153,6 +163,16 @@ do
 	$_QR['ufeatures']['protocol'] = $_QR['protocol']['protocol'];
 	$_QR['ufeatures']['protocolid'] = 0;
 
+	if(isset($_QR['ufeatures']['outcallerid-type']) === true)
+		$_QR['ufeatures']['outcallerid'] = $_QR['ufeatures']['outcallerid-type'];
+	else
+		$_QR['ufeatures']['outcallerid'] = '';
+
+	if(isset($_QR['ufeatures']['outcallerid-custom']) === true && $_QR['ufeatures']['outcallerid'] === 'custom')
+		$_QR['ufeatures']['outcallerid'] = $_QR['ufeatures']['outcallerid-custom'];
+
+	unset($_QR['ufeatures']['outcallerid-type'],$_QR['ufeatures']['outcallerid-custom']);
+
 	if(($result['ufeatures'] = $ufeatures->chk_values($_QR['ufeatures'])) === false)
 	{
 		$edit = false;
@@ -163,64 +183,53 @@ do
 
 	if($edit === true)
 	{
-		$exten_where = array();
-		$exten_where['exten'] = $info['ufeatures']['number'];
-		$exten_where['app'] = 'Macro';
-		$exten_where['appdata'] = 'superuser';
-
-		if($info['protocol']['context'] === '')
-			$exten_where['context'] = 'local-extensions';
-		else
-			$exten_where['context'] = $info['protocol']['context'];
-
 		$localexten = $extensions;
 
-		if(($info['localexten'] = $localexten->get_where($exten_where)) !== false)
+		if($info['ufeatures']['number'] !== '')
 		{
-			if($result['ufeatures']['number'] === '')
-				$status['localexten'] = 'delete';
+			if($info['protocol']['context'] === '')
+				$localextencontext = 'local-extensions';
 			else
-			{
+				$localextencontext = $info['protocol']['context'];
+	
+			if($result['protocol']['context'] === '')
+				$localexteneditcontext = 'local-extensions';
+			else
+				$localexteneditcontext = $result['protocol']['context'];
+
+			if(($info['localexten'] = $localexten->get_exten('macro',
+									 $info['ufeatures']['number'],
+									 $localextencontext,
+									 array('appdata' => 'superuser'))) === false)
+				$edit = false;
+			else if($result['ufeatures']['number'] === '')
+				$status['localexten'] = 'delete';
+			else if(($localexten_edit = $localexten->chk_exten('macro',
+									   null,
+									   $result['ufeatures']['number'],
+									   $localexteneditcontext)) === false)
+				$edit = false;
+			else
 				$status['localexten'] = 'edit';
-
-				$local_exten = $info['localexten'];
-				$local_exten['exten'] = $result['ufeatures']['number'];
-
-				if($result['protocol']['context'] === '')
-					$local_exten['context'] = 'local-extensions';
-				else
-					$local_exten['context'] = $result['protocol']['context'];
-
-				if(($result['localexten'] = $localexten->chk_values($local_exten)) === false)
-				{
-					$edit = false;
-					$result['localexten'] = array_merge($info['localexten'],$localexten->get_filter_result());
-				}
-			}
 		}
 		else if($result['ufeatures']['number'] !== '')
 		{
 			$status['localexten'] = 'add';
 
-			$local_exten = $exten_where;
-			$local_exten['exten'] = $result['ufeatures']['number'];
-			$local_exten['priority'] = 1;
-
 			if($result['protocol']['context'] === '')
-				$local_exten['context'] = 'local-extensions';
+				$localextencontext = 'local-extensions';
 			else
-				$local_exten['context'] = $result['protocol']['context'];
+				$localextencontext = $result['protocol']['context'];
 
-			if(($result['localexten'] = $localexten->chk_values($local_exten)) === false)
-			{
+			if(($localextenid = $localexten->new_exten('macro',
+						array('appdata' => 'superuser'),
+						$result['ufeatures']['number'],
+						$localextencontext)) === false)
 				$edit = false;
-				$result['localexten'] = $localexten->get_filter_result();
-			}
 		}
 
 		$exten_numbers = array();
 		$exten_numbers['exten'] = $result['ufeatures']['number'];
-		$exten_numbers['extenmode'] = 'extension';
 
 		if($result['protocol']['context'] === '')
 			$exten_numbers['context'] = 'local-extensions';
@@ -229,7 +238,6 @@ do
 
 		$exten_where = array();
 		$exten_where['exten'] = $info['ufeatures']['number'];
-		$exten_where['extenmode'] = 'extension';
 
 		if($info['protocol']['context'] === '')
 			$exten_where['context'] = 'local-extensions';
@@ -287,50 +295,36 @@ do
 
 			$callerid .= ' <'.$result['ufeatures']['number'].'>';
 		}
-			
+
+		$callerid = trim($callerid);
+
 		$result['protocol']['callerid'] = $callerid;
 
-		$exten_where = array();
-		$exten_where['app'] = $ipbx->mk_interface($info['protocol']['name'],$info['ufeatures']['protocol']);
+		$hintsexten = $extensions;
 
-		if(($hints_interface = $ipbx->mk_interface($result['protocol']['name'],$result['ufeatures']['protocol'])) !== false)
+		if($info['ufeatures']['number'] !== '')
 		{
-			$exten_where['context'] = 'hints';
-			$exten_where['exten'] = $info['ufeatures']['number'];
-
-			$hintsexten = $extensions;
-
-			if(($info['hints'] = $hintsexten->get_where($exten_where)) !== false)
-			{
+			if(($info['hints'] = $hintsexten->get_hints($info['protocol']['name'],
+								    $info['ufeatures']['protocol'],
+								    $info['ufeatures']['number'])) === false)
+				$edit = false;
+			else if($result['ufeatures']['number'] === '')
+				$status['hints'] = 'delete';
+			else if(($hints_edit = $hintsexten->chk_hints($result['protocol']['name'],
+								      $result['ufeatures']['protocol'],
+								      $result['ufeatures']['number'])) === false)
+				$edit = false;
+			else
 				$status['hints'] = 'edit';
+		}
+		else if($result['ufeatures']['number'] !== '')
+		{
+			$status['hints'] = 'add';
 
-				$hints = $info['hints'];
-				$hints['exten'] = $result['ufeatures']['number'];
-				$hints['app'] = $hints_interface;
-
-				if($result['ufeatures']['number'] === '')
-					$status['hints'] = 'delete';
-				else if(($result['hints'] = $hintsexten->chk_values($hints)) === false)
-				{
-					$edit = false;
-					$result['hints'] = $hintsexten->get_filter_result();
-				}
-			}
-			else if($result['ufeatures']['number'] !== '')
-			{
-				$status['hints'] = 'add';
-
-				$hints = $exten_where;
-				$hints['exten'] = $result['ufeatures']['number'];
-				$hints['priority'] = -1;
-				$hints['app'] = $hints_interface;
-
-				if(($result['hints'] = $hintsexten->chk_values($hints)) === false)
-				{
-					$edit = false;
-					$result['hints'] = $hintsexten->get_filter_result();
-				}
-			}
+			if(($hintsid = $hintsexten->new_hints($result['protocol']['name'],
+							      $result['ufeatures']['protocol'],
+							      $result['ufeatures']['number'])) === false)
+				$edit = false;
 		}
 	}
 
@@ -674,10 +668,10 @@ do
 	switch($status['localexten'])
 	{
 		case 'add':
-			$rs_localexten = $localexten->add($result['localexten']);
+			$rs_localexten = $localexten->add_exten($localextenid);
 			break;
 		case 'edit':
-			$rs_localexten = $localexten->edit($info['localexten']['id'],$result['localexten']);
+			$rs_localexten = $localexten->edit($info['localexten']['id'],$localexten_edit);
 			break;
 		case 'delete':
 			$rs_localexten = $localexten->delete($info['localexten']['id']);
@@ -748,7 +742,7 @@ do
 		switch($status['localexten'])
 		{
 			case 'add':
-				$localexten->delete($rs_localexten);
+				$localexten->delete_exten($localextenid);
 				break 2;
 			case 'edit':
 				$localexten->edit_origin();
@@ -764,10 +758,10 @@ do
 	switch($status['hints'])
 	{
 		case 'add':
-			$rs_hints = $hintsexten->add($result['hints']);
+			$rs_hints = $hintsexten->add_hints($hintsid);
 			break;
 		case 'edit':
-			$rs_hints = $hintsexten->edit($info['hints']['id'],$result['hints']);
+			$rs_hints = $hintsexten->edit($info['hints']['id'],$hints_edit);
 			break;
 		case 'delete':
 			$rs_hints = $hintsexten->delete($info['hints']['id']);
@@ -793,7 +787,7 @@ do
 			switch($status['localexten'])
 			{
 				case 'add':
-					$localexten->delete($rs_localexten);
+					$localexten->delete_exten($localextenid);
 					break;
 				case 'edit':
 					$localexten->edit_origin();
@@ -941,26 +935,24 @@ $element['voicemail'] = $voicemail->get_element();
 $element['autoprov'] = $autoprov->get_element();
 $element['qmember'] = $qmember->get_element();
 
-if(xivo_issa('allow',$element['protocol']['sip']) === true && xivo_issa('value',$element['protocol']['sip']['allow']) === true)
+if(xivo_issa('allow',$element['protocol']['sip']) === true
+&& xivo_issa('value',$element['protocol']['sip']['allow']) === true
+&& empty($allow) === false)
 {
-	if(empty($allow) === false)
-	{
-		if(is_array($allow) === false)
-			$allow = explode(',',$allow);
+	if(is_array($allow) === false)
+		$allow = explode(',',$allow);
 
-		$element['protocol']['sip']['allow']['value'] = array_diff($element['protocol']['sip']['allow']['value'],$allow);
-	}
+	$element['protocol']['sip']['allow']['value'] = array_diff($element['protocol']['sip']['allow']['value'],$allow);
 }
 
-if(xivo_issa('allow',$element['protocol']['iax']) === true && xivo_issa('value',$element['protocol']['iax']['allow']) === true)
+if(xivo_issa('allow',$element['protocol']['iax']) === true
+&& xivo_issa('value',$element['protocol']['iax']['allow']) === true
+&& empty($allow) === false)
 {
-	if(empty($allow) === false)
-	{
-		if(is_array($allow) === false)
-			$allow = explode(',',$allow);
+	if(is_array($allow) === false)
+		$allow = explode(',',$allow);
 
-		$element['protocol']['iax']['allow']['value'] = array_diff($element['protocol']['iax']['allow']['value'],$allow);
-	}
+	$element['protocol']['iax']['allow']['value'] = array_diff($element['protocol']['iax']['allow']['value'],$allow);
 }
 
 if(isset($return['usergroup']) === false || empty($return['usergroup']) === true)

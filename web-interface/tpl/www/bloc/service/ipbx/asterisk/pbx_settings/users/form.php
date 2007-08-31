@@ -26,15 +26,27 @@
 		$codec_active = true;
 	endif;
 
-	if(($host = (string) $this->varra('info',array('protocol','host-static'))) !== ''):
-		$host_static = true;
-	elseif(($host = (string) $this->varra('info',array('protocol','host'))) === 'dynamic' || $host === ''):
-		$host_static = false;
+	if(($host = (string) $info['protocol']['host']) === ''
+	|| in_array($host,$element['protocol']['sip']['host']['value'],true) === true):
+		$sip_host_static = false;
 	else:
-		$host_static = true;
+		$sip_host_static = true;
 	endif;
 
-	if(empty($info['autoprov']) === true):
+	if(in_array($host,$element['protocol']['iax']['host']['value'],true) === true):
+		$iax_host_static = false;
+	else:
+		$iax_host_static = true;
+	endif;
+
+	if(($outcallerid = (string) $info['ufeatures']['outcallerid']) === ''
+	|| in_array($outcallerid,$element['ufeatures']['outcallerid']['value'],true) === true):
+		$outcallerid_custom = false;
+	else:
+		$outcallerid_custom = true;
+	endif;
+
+	if(empty($info['autoprov']) === true || $info['autoprov']['vendor'] === ''):
 		$vendormodel = '';
 	else:
 		$vendormodel = $info['autoprov']['vendor'].'.'.$info['autoprov']['model'];
@@ -59,7 +71,7 @@
 
 <?=$form->select(array('desc' => $this->bbf('fm_userfeatures_simultcalls'),'name' => 'ufeatures[simultcalls]','labelid' => 'ufeatures-simultcalls','key' => false,'default' => $element['ufeatures']['simultcalls']['default'],'value' => (isset($info['ufeatures']['simultcalls']) === true ? (int) $info['ufeatures']['simultcalls'] : null)),$element['ufeatures']['simultcalls']['value']);?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_protocol_protocol'),'name' => 'protocol[protocol]','labelid' => 'protocol-protocol','key' => true,'value' => $info['ufeatures']['protocol']),$this->vars('protocol'),'onchange="xivo_chgprotocol(this);"');?>
+<?=$form->select(array('desc' => $this->bbf('fm_protocol_protocol'),'name' => 'protocol[protocol]','labelid' => 'protocol-protocol','bbf' => array('concatkey','fm_protocol_protocol-opt-'),'key' => true,'value' => $info['ufeatures']['protocol']),$this->vars('protocol'),'onchange="xivo_chgprotocol(this);"');?>
 
 </div>
 
@@ -120,9 +132,9 @@
 
 	<?=$form->text(array('desc' => $this->bbf('fm_voicemail_email'),'name' => 'voicemail[email]','labelid' => 'voicemail-email','value' => $info['voicemail']['email'],'size' => 15));?>
 
-	<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail_attach'),'name' => 'voicemail[attach]','labelid' => 'voicemail-attach','checked' => $this->varra('info',array('voicemail','attach'))));?>
+	<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail_attach'),'name' => 'voicemail[attach]','labelid' => 'voicemail-attach','checked' => $info['voicemail']['attach']));?>
 
-	<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail_delete'),'name' => 'voicemail[delete]','labelid' => 'voicemail-delete','checked' => $this->varra('info',array('voicemail','delete'))));?>
+	<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail_delete'),'name' => 'voicemail[delete]','labelid' => 'voicemail-delete','checked' => $info['voicemail']['delete']));?>
 
 </div>
 
@@ -135,7 +147,7 @@
 
 	endif;
 
-	if(is_array($info['autoprov']) === false):
+	if(is_array($info['autoprov']) === false || $vendormodel === ''):
 ?>
 
 	<?=$form->select(array('desc' => $this->bbf('fm_autoprov_vendormodel'),'name' => 'autoprov[vendormodel]','labelid' => 'autoprov-vendormodel','optgroup' => array('key' => 'name'),'empty' => true,'key' => 'label','altkey' => 'path','value' => $vendormodel),$autoprov_list);?>
@@ -162,19 +174,23 @@
 
 	<?=$form->text(array('desc' => $this->bbf('fm_protocol_callerid'),'name' => 'protocol[callerid]','labelid' => 'protocol-callerid','value' => $info['protocol']['callerid'],'size' => 15,'notag' => false));?>
 
+	<?=$form->select(array('desc' => $this->bbf('fm_ufeatures_outcallerid'),'name' => 'ufeatures[outcallerid-type]','labelid' => 'ufeatures-outcallerid-type','bbf' => 'fm_ufeatures_outcallerid-opt-','key' => false,'value' => ($outcallerid_custom === true ? 'custom' : $outcallerid)),$element['ufeatures']['outcallerid-type']['value'],'onchange="xivo_chg_attrib(\'fm_outcallerid\',\'fd-ufeatures-outcallerid-custom\',(this.value != \'custom\' ? 0 : 1))"');?>
+
+	<?=$form->text(array('desc' => '&nbsp;','name' => 'ufeatures[outcallerid-custom]','labelid' => 'ufeatures-outcallerid-custom','value' => ($outcallerid_custom === true ? $outcallerid : ''),'size' => 15));?>
+
 <?php
 	if($moh_list !== false):
 		echo $form->select(array('desc' => $this->bbf('fm_userfeatures_musiconhold'),'name' => 'ufeatures[musiconhold]','labelid' => 'ufeatures-musiconhold','key' => 'category','empty' => true,'default' => $element['ufeatures']['musiconhold']['default'],'value' => $info['ufeatures']['musiconhold']),$moh_list);
 	endif;
 ?>
 
-	<?=$form->select(array('desc' => $this->bbf('fm_protocol_host'),'name' => 'protocol[host-dynamic]','labelid' => 'sip-protocol-host-dynamic','bbf' => 'fm_protocol_host-','key' => false,'value' => ($host_static === true ? 'static' : 'dynamic')),$element['protocol']['sip']['host-dynamic']['value'],'onchange="xivo_chg_attrib(\'fm_host\',\'fd-sip-protocol-host-static\',(this.value == \'dynamic\' ? 0 : 1))"');?>
+	<?=$form->select(array('desc' => $this->bbf('fm_protocol_host'),'name' => 'protocol[host-dynamic]','labelid' => 'sip-protocol-host-dynamic','bbf' => 'fm_protocol_host-','key' => false,'value' => ($sip_host_static === true ? 'static' : $host)),$element['protocol']['sip']['host-dynamic']['value'],'onchange="xivo_chg_attrib(\'fm_host\',\'fd-sip-protocol-host-static\',(this.value != \'static\' ? 0 : 1))"');?>
 
-	<?=$form->text(array('desc' => '&nbsp;','name' => 'protocol[host-static]','labelid' => 'sip-protocol-host-static','size' => 15,'value' => ($host_static === true ? $host : '')));?>
+	<?=$form->text(array('desc' => '&nbsp;','name' => 'protocol[host-static]','labelid' => 'sip-protocol-host-static','size' => 15,'value' => ($sip_host_static === true ? $host : '')));?>
 
-	<?=$form->select(array('desc' => $this->bbf('fm_protocol_host'),'name' => 'protocol[host-dynamic]','labelid' => 'iax-protocol-host-dynamic','bbf' => 'fm_protocol_host-','key' => false,'value' => ($host_static === true ? 'static' : 'dynamic')),$element['protocol']['iax']['host-dynamic']['value'],'onchange="xivo_chg_attrib(\'fm_host\',\'fd-iax-protocol-host-static\',(this.value == \'dynamic\' ? 0 : 1))"');?>
+	<?=$form->select(array('desc' => $this->bbf('fm_protocol_host'),'name' => 'protocol[host-dynamic]','labelid' => 'iax-protocol-host-dynamic','bbf' => 'fm_protocol_host-','key' => false,'value' => ($iax_host_static === true ? 'static' : $host)),$element['protocol']['iax']['host-dynamic']['value'],'onchange="xivo_chg_attrib(\'fm_host\',\'fd-iax-protocol-host-static\',(this.value != \'static\' ? 0 : 1))"');?>
 
-	<?=$form->text(array('desc' => '&nbsp;','name' => 'protocol[host-static]','labelid' => 'iax-protocol-host-static','size' => 15,'value' => ($host_static === true ? $host : '')));?>
+	<?=$form->text(array('desc' => '&nbsp;','name' => 'protocol[host-static]','labelid' => 'iax-protocol-host-static','size' => 15,'value' => ($iax_host_static === true ? $host : '')));?>
 
 	<?=$form->select(array('desc' => $this->bbf('fm_protocol_dtmfmode'),'name' => 'protocol[dtmfmode]','labelid' => 'protocol-dtmfmode','key' => false,'value' => $this->varra('info',array('protocol','dtmfmode'))),$element['protocol']['sip']['dtmfmode']['value']);?>
 
@@ -184,9 +200,9 @@
 
 <?=$form->text(array('desc' => $this->bbf('fm_protocol_context'),'name' => 'protocol[context]','labelid' => 'iax-protocol-context','default' => $element['protocol']['iax']['context']['default'],'value' => $info['protocol']['context'],'size' => 15));?>
 
-	<?=$form->select(array('desc' => $this->bbf('fm_protocol_amaflags'),'name' => 'protocol[amaflags]','labelid' => 'sip-protocol-amaflags','key' => false,'default' => $element['protocol']['sip']['amaflags']['default'],'value' => $info['protocol']['amaflags']),$element['protocol']['sip']['amaflags']['value']);?>
+	<?=$form->select(array('desc' => $this->bbf('fm_protocol_amaflags'),'name' => 'protocol[amaflags]','labelid' => 'sip-protocol-amaflags','bbf' => 'fm_protocol_amaflags-opt-','key' => false,'default' => $element['protocol']['sip']['amaflags']['default'],'value' => $info['protocol']['amaflags']),$element['protocol']['sip']['amaflags']['value']);?>
 
-	<?=$form->select(array('desc' => $this->bbf('fm_protocol_amaflags'),'name' => 'protocol[amaflags]','labelid' => 'iax-protocol-amaflags','key' => false,'default' => $element['protocol']['sip']['amaflags']['default'],'value' => $info['protocol']['amaflags']),$element['protocol']['iax']['amaflags']['value']);?>
+	<?=$form->select(array('desc' => $this->bbf('fm_protocol_amaflags'),'name' => 'protocol[amaflags]','labelid' => 'iax-protocol-amaflags','bbf' => 'fm_protocol_amaflags-opt-','key' => false,'default' => $element['protocol']['sip']['amaflags']['default'],'value' => $info['protocol']['amaflags']),$element['protocol']['iax']['amaflags']['value']);?>
 
 	<?=$form->text(array('desc' => $this->bbf('fm_protocol_accountcode'),'name' => 'protocol[accountcode]','labelid' => 'protocol-accountcode','value' => $info['protocol']['accountcode'],'size' => 15));?>
 

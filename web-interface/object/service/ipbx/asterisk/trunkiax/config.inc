@@ -73,12 +73,11 @@ $array['element']['ipaddr'] = array();
 $array['element']['ipaddr']['default'] = '';
 
 $array['element']['host-static'] = array();
-$array['element']['host-static']['copy'] = 'host';
+$array['element']['host-static']['default'] = '';
 $array['element']['host-static']['unset'] = true;
 
 $array['element']['host-dynamic'] = array();
 $array['element']['host-dynamic']['value'] = array('dynamic','static');
-$array['element']['host-dynamic']['copy'] = 'host';
 $array['element']['host-dynamic']['unset'] = true;
 
 $array['element']['call-limit'] = array();
@@ -92,7 +91,7 @@ $array['filter']['secret'] = array('set' => false,'chk' => 2,'maxlen' => 80);
 $array['filter']['callerid'] = array('set' => false,'chk' => 2,'maxlen' => 160);
 $array['filter']['context'] = array('set' => false,'chk' => 2,'nokey' => array('general','globals','hints','features','zonemessages'),'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 39);
 $array['filter']['call-limit'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,30));
-$array['filter']['host'] = array('set' => false,'chk' => 2);
+$array['filter']['host'] = array('set' => false,'chk' => 2,'key' => array('dynamic','static'),'strict' => false,'func' => 'xivo_filter::chk_host_ipv4_strict');
 $array['filter']['type'] = array('set' => false,'chk' => 2,'key' => array('peer','user','friend'));
 $array['filter']['notransfer'] = array('bool' => true);
 $array['filter']['trunk'] = array('bool' => true);
@@ -117,7 +116,5 @@ $array['filter']['allow'] = array('set' => false,'chk' => 2,'value' => array(
 						XIVO_SRE_IPBX_AST_CODEC_VIDEO_H263P));
 $array['filter']['port'] = array('set' => false,'cast' => 'uint','between' => array(1,65535));
 $array['filter']['ipaddr'] = array('set' => false,'chk' => 2);
-$array['filter']['host-dynamic'] = array('set' => false,'key' => array('dynamic','static'));
-$array['filter']['host-static'] = array('set' => false,'func' => 'xivo_filter::chk_host_ipv4_strict');
 
 ?>

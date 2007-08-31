@@ -25,8 +25,12 @@ $array['element']['canreinvite']['default'] = 'no';
 $array['element']['canreinvite']['set'] = true;
 
 $array['element']['amaflags'] = array();
-$array['element']['amaflags']['value'] = array('default','omit','billing','documentation');
-$array['element']['amaflags']['default'] = 'documentation';
+$array['element']['amaflags']['value'] = array(
+					XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_META_DEFAULT,
+					XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_META_OMIT,
+					XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_META_BILLING,
+					XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_META_DOCUMENTATION);
+$array['element']['amaflags']['default'] = XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_META_DOCUMENTATION;
 $array['element']['amaflags']['setdef'] = true;
 
 $array['element']['nat'] = array();
@@ -66,12 +70,11 @@ $array['element']['allow']['default'] = '';
 $array['element']['allow']['null'] = true;
 
 $array['element']['host-static'] = array();
-$array['element']['host-static']['copy'] = 'host';
+$array['element']['host-static']['default'] = '';
 $array['element']['host-static']['unset'] = true;
 
 $array['element']['host-dynamic'] = array();
 $array['element']['host-dynamic']['value'] = array('dynamic','static');
-$array['element']['host-dynamic']['copy'] = 'host';
 $array['element']['host-dynamic']['unset'] = true;
 
 $array['element']['port'] = array();
@@ -111,10 +114,14 @@ $array['filter'] = array();
 $array['filter']['callerid'] = array('chk' => 2,'maxlen' => 80,'notag' => false);
 $array['filter']['name'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[a-z0-9_-]+$/i');
 $array['filter']['secret'] = array('set' => false,'chk' => 2,'minlen' => 1,'maxlen' => 80);
-$array['filter']['host'] = array('set' => false,'chk' => 2);
+$array['filter']['host'] = array('set' => false,'chk' => 2,'key' => array('dynamic','static'),'strict' => false,'func' => 'xivo_filter::chk_host_ipv4_strict');
 $array['filter']['dtmfmode'] = array('set' => false,'chk' => 2,'key' => array('rfc2833','inband','info','auto'));
 $array['filter']['canreinvite'] = array('bool' => true);
-$array['filter']['amaflags'] = array('set' => false,'chk' => 2,'key' => array('default','omit','billing','documentation'));
+$array['filter']['amaflags'] = array('set' => false,'chk' => 2,'key' => array(
+						XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_META_DEFAULT,
+						XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_META_OMIT,
+						XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_META_BILLING,
+						XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_META_DOCUMENTATION));
 $array['filter']['accountcode'] = array('set' => false,'chk' => 2,'maxlen' => 20);
 $array['filter']['callgroup'] = array('set' => false,'chk' => 2,'regexp' => '/^([0-9]+[,]?)*$/','maxlen' => 180);
 $array['filter']['context'] = array('set' => false,'chk' => 2,'nokey' => array('general','globals','hints','features','authentication','zonemessages'),'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 39);
@@ -139,8 +146,6 @@ $array['filter']['allow'] = array('set' => false,'chk' => 2,'value' => array(
 						XIVO_SRE_IPBX_AST_CODEC_VIDEO_H261,
 						XIVO_SRE_IPBX_AST_CODEC_VIDEO_H263,
 						XIVO_SRE_IPBX_AST_CODEC_VIDEO_H263P));
-$array['filter']['host-dynamic'] = array('set' => false,'key' => array('dynamic','static'));
-$array['filter']['host-static'] = array('set' => false,'func' => 'xivo_filter::chk_host_ipv4_strict');
 $array['filter']['port'] = array('set' => false,'chk' => 2);
 $array['filter']['ipaddr'] = array('set' => false,'chk' => 2);
 $array['filter']['regexten'] = array('set' => false,'chk' => 2);

@@ -35,23 +35,6 @@ class xivo_service_asterisk_extenumbers_abstract_sql extends xivo_service_asteri
 
 		return($r);
 	}
-
-	function exists_range($val,$context='')
-	{
-		$val = xivo_uint($val);
-		$context = (string) $context;
-
-		if(($where = $this->_dso->between_column($val,'rangebeg','rangeend')) === '')
-			return(null);
-
-		if($context !== '')
-			$where .= ' AND (context = \''.$this->_dso->escape_string($context).'\' OR context = \'\')';
-
-		if(($r = $this->_dso->select_one($this->_param['table'],'id',$where)) !== false)
-			$r = (int) $r['id'];
-
-		return($r);
-	}
 }
 
 ?>

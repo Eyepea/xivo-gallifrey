@@ -4,6 +4,9 @@ Fichiers
 ; col_action
 Action
 
+; no_file
+Aucun fichier trouvé
+
 ; opt_modify
 Modifier
 
@@ -12,6 +15,3 @@ Supprimer
 
 ; opt_delete_confirm
 Etes-vous certain de vouloir supprimer ce fichier ?
-
-; no_file
-Aucun fichier trouvé

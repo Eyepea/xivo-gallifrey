@@ -28,7 +28,6 @@ switch($act)
 			$result = array();
 
 			$_QR['extenumbers']['context'] = 'did-extensions';
-			$_QR['extenumbers']['extenmode'] = 'extension';
 
 			if(($result['extenumbers'] = $extenumbers->chk_values($_QR['extenumbers'])) === false
 			|| $extenumbers->exists($result['extenumbers']) !== false)
@@ -38,18 +37,11 @@ switch($act)
 			}
 			else
 			{
-				$didexten = array();
-				$didexten['exten'] = $result['extenumbers']['exten'];
-				$didexten['context'] = $result['extenumbers']['context'];
-				$didexten['priority'] = 1;
-				$didexten['app'] = 'Macro';
-				$didexten['appdata'] = 'superdid';
-
-				if(($result['did'] = $extensions->chk_values($didexten)) === false)
-				{
+				if(($didextenid = $extensions->new_exten('macro',
+								array('appdata' => 'superdid'),
+								$result['extenumbers']['exten'],
+								$result['extenumbers']['context'])) === false)
 					$add = false;
-					$result['did'] = $extensions->get_filter_result();
-				}
 				else
 					$_QR['dfeatures']['number'] = $result['extenumbers']['exten'];
 			}
@@ -71,7 +63,7 @@ switch($act)
 			if($add === false || ($extenumid = $extenumbers->add($result['extenumbers'])) === false)
 				break;
 
-			if(($result['dfeatures']['extenid'] = $extensions->add($result['did'])) === false)
+			if(($result['dfeatures']['extenid'] = $extensions->add_exten($didextenid)) === false)
 			{
 				$extenumbers->delete($extenumid);
 				break;
@@ -80,7 +72,7 @@ switch($act)
 			if($dfeatures->add($result['dfeatures']) === false)
 			{
 				$extenumbers->delete($extenumid);
-				$extensions->delete($result['dfeatures']['extenid']);
+				$extensions->delete_exten($didextenid);
 				break;
 			}
 
@@ -130,11 +122,10 @@ switch($act)
 	case 'edit':
 		if(isset($_QR['id']) === false
 		|| ($info['dfeatures'] = $dfeatures->get($_QR['id'])) === false
-		|| ($info['did'] = $extensions->get($info['dfeatures']['extenid'])) === false
+		|| ($info['didexten'] = $extensions->get($info['dfeatures']['extenid'])) === false
 		|| ($info['extenumbers'] = $extenumbers->get_where(array(
-							'exten' => $info['did']['exten'],
-							'context' => $info['did']['context'],
-							'extenmode' => 'extension'))) === false
+							'exten' => $info['didexten']['exten'],
+							'context' => $info['didexten']['context']))) === false
 		|| ($info['dfeatures']['commented'] === false
 		   && $dfeatures->is_valid($info['dfeatures']['type'],
 		   			   $info['dfeatures']['typeid']) === false) === true)
@@ -162,29 +153,24 @@ switch($act)
 			$return = &$result;
 
 			$_QR['extenumbers']['context'] = $info['extenumbers']['context'];
-			$_QR['extenumbers']['extenmode'] = 'extension';
 
 			if(($result['extenumbers'] = $extenumbers->chk_values($_QR['extenumbers'])) === false
-			|| $extenumbers->exists($result['extenumbers']) !== false)
+			|| $extenumbers->exists($result['extenumbers'],$info['extenumbers']['id']) !== false)
 			{
 				$edit = false;
 				$result['extenumbers'] = array_merge($info['extenumbers'],$extenumbers->get_filter_result());
 			}
 			else
 			{
-				$didexten = $info['did'];
-				$didexten['exten'] = $result['extenumbers']['exten'];
-				$didexten['context'] = $result['extenumbers']['context'];
-
-				if(($result['did'] = $extensions->chk_values($didexten)) === false)
-				{
+				if(($didexten_edit = $extensions->chk_exten('macro',
+									    null,
+									    $result['extenumbers']['exten'],
+									    $result['extenumbers']['context'])) === false)
 					$edit = false;
-					$result['did'] = $extensions->get_filter_result();
-				}
 				else
 					$_QR['dfeatures']['number'] = $result['extenumbers']['exten'];
 
-				$result['did']['commented'] = $info['did']['commented'];
+				$didexten_edit['commented'] = $info['didexten']['commented'];
 			}
 
 			$_QR['dfeatures']['extenid'] = $info['dfeatures']['extenid'];
@@ -204,7 +190,7 @@ switch($act)
 			if($edit === false || $extenumbers->edit($info['extenumbers']['id'],$result['extenumbers']) === false)
 				break;
 
-			if($extensions->edit($info['did']['id'],$result['did']) === false)
+			if($extensions->edit($info['didexten']['id'],$didexten_edit) === false)
 			{
 				$extenumbers->edit_origin();
 				break;
@@ -266,11 +252,10 @@ switch($act)
 
 		if(isset($_QR['id']) === false
 		|| ($info['dfeatures'] = $dfeatures->get($_QR['id'])) === false
-		|| ($info['did'] = $extensions->get($info['dfeatures']['extenid'])) === false
+		|| ($info['didexten'] = $extensions->get($info['dfeatures']['extenid'])) === false
 		|| ($info['extenumbers'] = $extenumbers->get_where(array(
-							'exten' => $info['did']['exten'],
-							'context' => $info['did']['context'],
-							'extenmode' => 'extension'))) === false)
+							'exten' => $info['didexten']['exten'],
+							'context' => $info['didexten']['context']))) === false)
 			xivo_go($_HTML->url('service/ipbx/call_management/did'),$param);
 
 		do
@@ -278,7 +263,7 @@ switch($act)
 			if($dfeatures->delete($info['dfeatures']['id']) === false)
 				break;
 
-			if($extensions->delete($info['did']['id']) === false)
+			if($extensions->delete($info['didexten']['id']) === false)
 			{
 				$dfeatures->add_origin();
 				break;
@@ -305,15 +290,14 @@ switch($act)
 		for($i = 0;$i < $nb;$i++)
 		{
 			if(($info['dfeatures'] = $dfeatures->get($values[$i])) === false
-			|| ($info['did'] = $extensions->get($info['dfeatures']['extenid'])) === false
+			|| ($info['didexten'] = $extensions->get($info['dfeatures']['extenid'])) === false
 			|| ($info['extenumbers'] = $extenumbers->get_where(array(
-								'exten' => $info['did']['exten'],
-								'context' => $info['did']['context'],
-								'extenmode' => 'extension'))) === false
+								'exten' => $info['didexten']['exten'],
+								'context' => $info['didexten']['context']))) === false
 			|| $dfeatures->delete($info['dfeatures']['id']) === false)
 				continue;
 
-			if($extensions->delete($info['did']['id']) === false)
+			if($extensions->delete($info['didexten']['id']) === false)
 			{
 				$dfeatures->add_origin();
 				continue;
@@ -341,10 +325,10 @@ switch($act)
 		for($i = 0;$i < $nb;$i++)
 		{
 			if(($info['dfeatures'] = $dfeatures->get($values[$i])) === false
-			|| ($info['did'] = $extensions->get($info['dfeatures']['extenid'])) === false)
+			|| ($info['didexten'] = $extensions->get($info['dfeatures']['extenid'])) === false)
 				continue;
 
-			$extensions->disable($info['did']['id'],$disable);
+			$extensions->disable($info['didexten']['id'],$disable);
 		}
 
 		xivo_go($_HTML->url('service/ipbx/call_management/did'),$param);
@@ -357,7 +341,7 @@ switch($act)
 		{
 			$total = count($did);
 			xivo::load_class('xivo_sort');
-			$sort = new xivo_sort(array('browse' => 'did','key' => 'exten'));
+			$sort = new xivo_sort(array('browse' => 'didexten','key' => 'exten'));
 			usort($did,array(&$sort,'num_usort'));
 		}
 

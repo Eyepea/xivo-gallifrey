@@ -127,9 +127,16 @@ function xivo_chgtrunk(trunk)
 		xivo_chg_attrib('fm_host','fd-trunk-host-static',(host_dynamic.value == 'dynamic' ? 0 : 1));
 }
 
-xivo_winload += 'if(xivo_eid(\'it-trunk-type\') != false)\n' +
-		'xivo_chgtrunk(xivo_eid(\'it-trunk-type\'));\n' +
-		'if(xivo_eid(\'it-register-active\') != false)\n' +
-		'xivo_chg_attrib(\'fm_register\',\'it-register-username\',(xivo_eid(\'it-register-active\').checked == true ? 0 : 1));\n' +
-		'if(xivo_eid(\'it-codec-active\') != false)\n' +
-		'xivo_chg_attrib(\'fm_codec\',\'it-trunk-disallow\',(xivo_eid(\'it-codec-active\').checked == true ? 0 : 1));\n';
+function xivo_trunk_onload()
+{
+	if(xivo_eid('it-trunk-type') != false)
+		xivo_chgtrunk(xivo_eid('it-trunk-type'));
+
+	if((regactive = xivo_eid('it-register-active')) != false)
+		xivo_chg_attrib('fm_register','it-register-username',(regactive.checked == true ? 0 : 1));
+
+	if((codecative = xivo_eid('it-codec-active')) != false)
+		xivo_chg_attrib('fm_codec','it-trunk-disallow',(codecative.checked == true ? 0 : 1));
+}
+
+xivo_winload.push('xivo_trunk_onload();');

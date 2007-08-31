@@ -25,9 +25,6 @@ Prénom :
 ; fm_userfeatures_lastname
 Nom :
 
-; fm_protocol_callerid
-Nom d'appel :
-
 ; fm_protocol_name
 Identifiant :
 
@@ -40,6 +37,12 @@ Type d'adressage IP :
 ; fm_protocol_protocol
 Protocole :
 
+; fm_protocol_protocol-opt-sip
+SIP
+
+; fm_protocol_protocol-opt-iax
+IAX
+
 ; fm_protocol_nat
 NAT :
 
@@ -48,6 +51,18 @@ Contexte :
 
 ; fm_protocol_amaflags
 Drapeau de facturation :
+
+; fm_protocol_amaflags-opt-default
+Défaut
+
+; fm_protocol_amaflags-opt-omit
+Omission
+
+; fm_protocol_amaflags-opt-billing
+Facturation
+
+; fm_protocol_amaflags-opt-documentation
+Documentation
 
 ; fm_protocol_canreinvite
 Invite :
@@ -180,6 +195,21 @@ Supprimer message après notification :
 
 ; fm_userfeatures_comment
 Commentaire :
+
+; fm_protocol_callerid
+Nom d'appel :
+
+; fm_ufeatures_outcallerid
+Nom d'appel sortant :
+
+; fm_ufeatures_outcallerid-opt-default
+Défaut
+
+; fm_ufeatures_outcallerid-opt-anonymous
+Anonyme
+
+; fm_ufeatures_outcallerid-opt-custom
+Personnaliser
 
 ; fm_protocol_host-dynamic
 Dynamique

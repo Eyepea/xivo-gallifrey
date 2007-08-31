@@ -153,6 +153,9 @@ function xivo_cprint($str='',$def=null,$t=false)
 
 function xivo_cast_print($str,$type='')
 {
+	if(is_scalar($str) === false)
+		return(false);
+
 	$type = strtolower((string) $type);
 
 	$reg = '\x00-\x08\x0B\x0C\x0E-\x1F\7F';
@@ -195,7 +198,9 @@ function xivo_cast_print_strict($str)
 
 function xivo_cast_specials($str,$type='')
 {
-	$str = strval($str);
+	if(is_scalar($str) === false)
+		return(false);
+
 	$type = strtolower((string) $type);
 
 	$reg = '\x20-\x2F\x3A-\x40\x5B-\x60\x7B-\x7E';
@@ -502,7 +507,7 @@ function xivo_go($v='',$k='')
 		$qry = &$query->qstring_raw_str();
 	}
 	else if(is_array($k) === true)
-		$qry = xivo_query_str($k);
+		$qry = xivo_query::mk_query_str($k);
 	else if($k !== '' && $k !== false)
 		$qry = (string) $k;
 	else $qry = '';
@@ -715,12 +720,6 @@ function xivo_last_key(&$a,$sort=SORT_NUMERIC)
 	$r = end($ak);
 
 	return($r);
-}
-
-function xivo_query_str($a,$pre='',$key='',$sep='',$empty=true)
-{
-	xivo::load_class('xivo_query');
-	return(xivo_query::mk_query_str($a,$pre,$key,$sep,$empty));
 }
 
 function xivo_genpwd($str='')
