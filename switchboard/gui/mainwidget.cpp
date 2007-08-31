@@ -191,6 +191,7 @@ MainWidget::MainWidget(BaseEngine * engine, QWidget * parent)
         m_searchpanel->setEngine(m_engine);
 
 	m_tabwidget = new QTabWidget(m_rightSplitter);
+        m_tabwidget->setStyleSheet("* {background : white}");
 	connect( m_engine, SIGNAL(newProfile(Popup *)),
 	         this, SLOT(showNewProfile(Popup *)) );
 
@@ -238,33 +239,35 @@ MainWidget::~MainWidget()
 
 void MainWidget::createActions()
 {
-	QMenu * menu = menuBar()->addMenu(tr("&File"));
-	
+	QAction * conf = new QAction(tr("&Configure"), this);
+	conf->setStatusTip(tr("Open the configuration dialog"));
+	connect(conf, SIGNAL(triggered()),
+		this, SLOT(showConfDialog()));
+
 	m_startact = new QAction(tr("S&tart"), this);
 	m_startact->setStatusTip(tr("Start"));
 	connect(m_startact, SIGNAL(triggered()),
 		m_engine, SLOT(start()) );
-	menu->addAction(m_startact);
 
 	m_stopact = new QAction(tr("Sto&p"), this);
 	m_stopact->setStatusTip(tr("Stop"));
 	connect(m_stopact, SIGNAL(triggered()),
 		m_engine, SLOT(stop()) );
 	m_stopact->setDisabled(true);
-	menu->addAction(m_stopact);
-
-	QAction * conf = new QAction(tr("&Configure"), this);
-	conf->setStatusTip(tr("Open the configuration dialog"));
-	connect(conf, SIGNAL(triggered()),
-		this, SLOT(showConfDialog()));
-	menu->addAction(conf);
 
 	QAction * quit = new QAction(tr("&Quit"), this);
 	connect(quit, SIGNAL(triggered()),
 		m_engine, SLOT(stop()) );
 	connect(quit, SIGNAL(triggered()),
 		qApp, SLOT(quit()));
-	menu->addAction(quit);
+
+	QMenu * filemenu = menuBar()->addMenu(tr("&File"));
+        filemenu->addAction(conf);
+	filemenu->addSeparator();
+	filemenu->addAction(m_startact);
+	filemenu->addAction(m_stopact);
+	filemenu->addSeparator();
+	filemenu->addAction(quit);
 
 	// Availability actions :
 	m_availgrp = new QActionGroup( this );
@@ -309,7 +312,7 @@ void MainWidget::createActions()
 
 	m_avail = menuBar()->addMenu(tr("&Availability"));
 	m_avail->addActions( m_availgrp->actions() );
-	m_avail->setEnabled( m_engine->enabledPresence() );
+	m_avail->setEnabled( m_engine->checkedPresence() );
 	connect( m_engine, SIGNAL(availAllowChanged(bool)),
 	         m_avail, SLOT(setEnabled(bool)) );
 
@@ -335,7 +338,7 @@ void MainWidget::showConfDialog()
 void MainWidget::engineStarted()
 {
 	QStringList display_capas = QString("customerinfo,history,features,directory,peers,dial,presence").split(",");
-        QStringList allowed_capas = m_engine->getCapabilities().split(",");
+        QStringList allowed_capas = m_engine->getCapabilities();
 
         for (int j = 0; j < display_capas.size(); j++) {
 		QString dc = display_capas[j];
@@ -443,7 +446,7 @@ void MainWidget::engineStarted()
 void MainWidget::engineStopped()
 {
 	QStringList display_capas = QString("customerinfo,history,features,directory,peers,dial,presence").split(",");
-        QStringList allowed_capas = m_engine->getCapabilities().split(",");
+        QStringList allowed_capas = m_engine->getCapabilities();
 
 	for(int j = 0; j < display_capas.size(); j++) {
 		QString dc = display_capas[j];

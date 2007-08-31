@@ -84,15 +84,20 @@ MainWidget::MainWidget(BaseEngine *engine, QWidget * parent)
         // to be better defined
 	resize(500, 400);
 	restoreGeometry(settings.value("display/mainwingeometry").toByteArray());
-	
+        
 	m_wid = new QWidget();
+        m_wid->setStyleSheet("* {background : white}");
+	m_mainlayout = new QVBoxLayout(m_wid);
 
-	m_vboxwidgets = new QVBoxLayout(m_wid);
-	m_qtabwidget = new QTabWidget();
-        //	m_vboxwidgets->addWidget(m_qtabwidget, 1);
+        m_xivobg = new QLabel();
+        m_xivobg->setPixmap(QPixmap(":/xivo-login.png"));
+        m_mainlayout->addWidget(m_xivobg, 0, Qt::AlignHCenter | Qt::AlignVCenter);
+
+        //        m_xivobg2 = new QLabel();
+        //        m_xivobg2->setPixmap(QPixmap(":/xivo-client.png"));
+        //        m_mainlayout->addWidget(m_xivobg2, 0, Qt::AlignHCenter | Qt::AlignVCenter);
 
 	setCentralWidget(m_wid);
-
 	m_tablimit = settings.value("display/tablimit", 5).toInt();
 }
 
@@ -337,28 +342,24 @@ void MainWidget::setConnected()
 	QPixmap greensquare(":/connected.png");
 	m_status->setPixmap(greensquare);
 	QStringList display_capas = QString("customerinfo,features,history,directory,peers,dial,presence").split(",");
-        qDebug() << "MainWidget::setConnected()" << m_engine->enabledPresence() << m_engine->enabledCInfo();
-	QStringList allowed_capas = m_engine->getCapabilities().split(",");
-	m_presence = false;
+        qDebug() << "MainWidget::setConnected()" << m_engine->checkedPresence() << m_engine->checkedCInfo();
+	QStringList allowed_capas = m_engine->getCapabilities();
 
-        m_infowidget = new IdentityDisplay();
-        connect( m_engine, SIGNAL(localUserDefined(const QString &)),
-                 m_infowidget, SLOT(setUser(const QString &)));
-        m_vboxwidgets->addWidget(m_infowidget, 0);
-        m_vboxwidgets->addWidget(m_qtabwidget, 1);
+        m_mainlayout->removeWidget(m_xivobg);
+
+        if(m_forcetabs || allowed_capas.contains("peers")) {
+                m_infowidget = new IdentityDisplay();
+                connect( m_engine, SIGNAL(localUserDefined(const QString &)),
+                         m_infowidget, SLOT(setUser(const QString &)));
+                m_mainlayout->addWidget(m_infowidget, 0);
+        }
+
+	m_qtabwidget = new QTabWidget();
+        m_mainlayout->addWidget(m_qtabwidget, 1);
 
 	for(int j = 0; j < display_capas.size(); j++) {
 		QString dc = display_capas[j];
-		bool allowed = false;
-		if(m_forcetabs)
-			allowed = true;
-		else {
-			for(int c = 0; c < allowed_capas.size(); c++) {
-				QString ac = allowed_capas[c];
-				if(ac == dc) allowed = true;
-			}
-		}
-		if(allowed) {
+		if(m_forcetabs || allowed_capas.contains(dc)) {
 			qDebug() << "adding" << dc;
 			if(dc == QString("instantmessaging")) {
 				m_messagetosend = new QLineEdit();
@@ -370,14 +371,12 @@ void MainWidget::setConnected()
 				m_dial = new DialPanel();
 				connect( m_dial, SIGNAL(emitDial(const QString &)),
 					 m_engine, SLOT(dialExtension(const QString &)) );
-				m_vboxwidgets->addWidget(m_dial, 0);
+				m_mainlayout->addWidget(m_dial, 0);
 
-			} else if((dc == QString("customerinfo")) && (m_engine->enabledCInfo())) {
+			} else if((dc == QString("customerinfo")) && (m_engine->checkedCInfo())) {
 				m_tabwidget = new QTabWidget();
+				m_tabwidget->setStyleSheet("* {background : white}");
 				m_qtabwidget->addTab(m_tabwidget, tr("&Sheets"));
-
-			} else if(dc == QString("presence")) {
-				m_presence = true;
 
 			} else if(dc == QString("peers")) {
 				m_peerswidget = new SearchPanel(this);
@@ -401,6 +400,8 @@ void MainWidget::setConnected()
 			} else if(dc == QString("features")) {
 				m_featureswidget = new ServicePanel(this);
 				m_qtabwidget->addTab(m_featureswidget, tr("S&ervices"));
+				//m_qtabwidget->setStyleSheet("* {background : white}");
+				//m_featureswidget->setStyleSheet("* {background : yellow}");
 
                                 connect( m_engine, SIGNAL(disconnectFeatures()),
                                          m_featureswidget, SLOT(DisConnect()) );
@@ -459,7 +460,7 @@ void MainWidget::setConnected()
 				m_engine->askFeatures("peer/to/define");
 			} else if(dc == QString("directory")) {
 				m_directory = new DirectoryPanel(this);
-                                
+
 				connect( m_directory, SIGNAL(searchDirectory(const QString &)),
 					 m_engine, SLOT(searchDirectory(const QString &)) );
 				connect( m_directory, SIGNAL(emitDial(const QString &)),
@@ -476,7 +477,7 @@ void MainWidget::setConnected()
 				// 			connect( m_engine, SIGNAL(stopped()),
 				// 				 m_directory, SLOT(stop()) );
 				
-				//			m_vboxwidgets->addWidget(m_directory, 0);
+				//			m_mainlayout->addWidget(m_directory, 0);
 				m_qtabwidget->addTab(m_directory, tr("&Directory"));
 				
 			} else if(dc == QString("history")) {
@@ -492,7 +493,7 @@ void MainWidget::setConnected()
 					 m_engine, SLOT(requestHistory(const QString &, int)) );
 				connect( m_engine, SIGNAL(updateLogEntry(const QDateTime &, int, const QString &, int)),
 					 m_history, SLOT(addLogEntry(const QDateTime &, int, const QString &, int)) );
-				//			m_vboxwidgets->addWidget(m_history, 0);
+				//			m_mainlayout->addWidget(m_history, 0);
 				m_qtabwidget->addTab(m_history, tr("&History"));
 			}
 		}
@@ -501,14 +502,12 @@ void MainWidget::setConnected()
         qDebug() << "display/lastfocusedtab =" << settings.value("display/lastfocusedtab");
         m_qtabwidget->setCurrentIndex(settings.value("display/lastfocusedtab").toInt());
 
-	//	LogWidget * logwidget = new LogWidget(m_engine, m_wid);
 	m_cinfo_index = m_qtabwidget->indexOf(m_tabwidget);
 	qDebug() << "the index of customer-info widget is" << m_cinfo_index;
-        //        m_infowidget->setText(tr("User : ") + m_engine->fullName());
-        //        m_infowidget->setText(tr("User : ") + QString("Corentin Le Gall <b>103</b>"));
 	if(m_systrayIcon)
 		m_systrayIcon->setIcon(m_icon);
 	statusBar()->showMessage(tr("Connected"));
+
 	// test
 	//m_qtabwidget->addTab(new ServicePanel(this), tr("Services"));
 }
@@ -523,22 +522,14 @@ void MainWidget::setDisconnected()
 	QPixmap redsquare(":/disconnected.png");
 	m_status->setPixmap(redsquare);
 	QStringList display_capas = QString("customerinfo,features,history,directory,peers,dial,presence").split(",");
-	QStringList allowed_capas = m_engine->getCapabilities().split(",");
+	QStringList allowed_capas = m_engine->getCapabilities();
 
-        settings.setValue("display/lastfocusedtab", m_qtabwidget->currentIndex());
+        if(m_qtabwidget->currentIndex() > -1)
+                settings.setValue("display/lastfocusedtab", m_qtabwidget->currentIndex());
 
 	for(int j = 0; j < display_capas.size(); j++) {
 		QString dc = display_capas[j];
-		bool allowed = false;
-		if(m_forcetabs)
-			allowed = true;
-		else {
-			for(int c = 0; c < allowed_capas.size(); c++) {
-				QString ac = allowed_capas[c];
-				if(ac == dc) allowed = true;
-			}
-		}
-		if(allowed) {
+                if(m_forcetabs || allowed_capas.contains(dc)) {
 			if(dc == QString("instantmessaging")) {
                                 int index_instantmessaging = m_qtabwidget->indexOf(m_messagetosend);
                                 if(index_instantmessaging > -1) {
@@ -583,19 +574,25 @@ void MainWidget::setDisconnected()
                                         delete m_history;
                                 }
 			} else if(dc == QString("dial")) {
-                                int index_dial = m_vboxwidgets->indexOf(m_dial);
+                                int index_dial = m_mainlayout->indexOf(m_dial);
                                 if(index_dial > -1) {
                                         qDebug() << "removing" << dc << index_dial;
-                                        m_vboxwidgets->removeWidget(m_dial);
+                                        m_mainlayout->removeWidget(m_dial);
                                         delete m_dial;
                                 }
 			}
 		}
 	}
         
-        m_vboxwidgets->removeWidget(m_infowidget);
-        m_vboxwidgets->removeWidget(m_qtabwidget);
-        delete m_infowidget;
+        if(m_forcetabs || allowed_capas.contains("peers")) {
+                m_mainlayout->removeWidget(m_infowidget);
+                delete m_infowidget;
+        }
+
+        m_mainlayout->removeWidget(m_qtabwidget);
+        delete m_qtabwidget;
+
+        m_mainlayout->addWidget(m_xivobg, 0, Qt::AlignHCenter | Qt::AlignVCenter);
 
 	if(m_systrayIcon)
 		m_systrayIcon->setIcon(m_icongrey);

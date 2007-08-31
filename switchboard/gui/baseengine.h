@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 // QT includes.
 #include <QHash>
 #include <QObject>
+#include <QStringList>
 #include <QTcpSocket>
 #include <QTcpServer>
 #include <QTime>
@@ -96,6 +97,10 @@ public:
 
 	const QString & getAvailState() const;	//!< returns availability status
 	void setAvailState(const QString &);	//! set m_availstate
+	void setCheckedPresence(bool b);	//! set m_checked_presence
+	bool checkedPresence();			//! get m_checked_presence
+	void setCheckedCInfo(bool b);		//! set m_checked_cinfo
+	bool checkedCInfo();			//! get m_checked_cinfo
 	void setEnabledPresence(bool b);	//! set m_enabled_presence
 	bool enabledPresence();			//! get m_enabled_presence
 	void setEnabledCInfo(bool b);		//! set m_enabled_cinfo
@@ -107,9 +112,9 @@ public:
 	uint keepaliveinterval() const;		//!< keep alive interval
 	bool tcpmode() const;			//!< get tcp mode flag
 	void setTcpmode(bool b);		//!< set tcp mode flag
-	const QString & getCapabilities() const;//!< returns capabilities
-        const QString & getRevisionString() const; //!< returns the Revision string of the engine
-        const QString & getDateString() const;     //!< returns the Date string of the engine
+	const QStringList & getCapabilities() const;	//!< returns capabilities
+        const QString & getRevisionString() const;	//!< returns the Revision string of the engine
+        const QString & getDateString() const;		//!< returns the Date string of the engine
 protected:
 	void timerEvent(QTimerEvent *);		//!< receive timer events
 public slots:
@@ -248,12 +253,14 @@ private:
 	int m_historysize;
 	bool m_enabled_presence;      	//!< presence is enabled
 	bool m_enabled_cinfo;      	//!< customer info is enabled
+	bool m_checked_presence;      	//!< presence is checked
+	bool m_checked_cinfo;      	//!< customer info is checked
 	bool m_tcpmode;			//!< use a unique outgoing TCP connection for everything
 
 	// Replies given by the server
 	QString m_extension;		//!< extension for "my phone"
 	QString m_dialcontext;		//!< Context of the phone, as returned by the xivo_daemon server
-	QString m_capabilities;		//!< List of capabilities issued by the server after a successful login
+	QStringList m_capabilities;	//!< List of capabilities issued by the server after a successful login
 	QString m_sessionid;		//!< Session id obtained after a successful login
 	QString m_clientid;		//!< Client Identifier
 	QString m_forced_state;		//!< Forced state sent by the server

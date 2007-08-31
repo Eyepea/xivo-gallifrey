@@ -1,5 +1,6 @@
 /* $Id$ */
 #include <QGridLayout>
+#include <QVBoxLayout>
 #include <QCheckBox>
 #include <QLineEdit>
 #include <QLabel>
@@ -12,55 +13,63 @@ ServicePanel::ServicePanel(QWidget * parent)
 {
         qDebug() << "ServicePanel::ServicePanel()";
 	int line = 0;
-	QGridLayout * layout = new QGridLayout(this);
+	QGridLayout * gridlayout = new QGridLayout();
+        //	layout->setContentsMargins(30, 0, 30, 0);
+        //	layout->setSpacing(0);
+	gridlayout->setMargin(0);
+	gridlayout->setSpacing(0);
 
 	m_voicemail = new QCheckBox(tr("Voice &Mail"), this);
-	layout->addWidget(m_voicemail, line++, 0, 1, 0);
+	gridlayout->addWidget(m_voicemail, line++, 0, 1, 0);
 	m_callrecording = new QCheckBox(tr("Call &Recording"), this);
-	layout->addWidget(m_callrecording, line++, 0, 1, 0);
+	gridlayout->addWidget(m_callrecording, line++, 0, 1, 0);
 	m_callfiltering = new QCheckBox(tr("Call &Filtering"), this);
-	layout->addWidget(m_callfiltering, line++, 0, 1, 0);
+	gridlayout->addWidget(m_callfiltering, line++, 0, 1, 0);
 	m_dnd = new QCheckBox(tr("Do Not &Disturb"), this);
-	layout->addWidget(m_dnd, line++, 0, 1, 0);
+	gridlayout->addWidget(m_dnd, line++, 0, 1, 0);
 
 	m_uncondforward = new QCheckBox(tr("&Unconditional Forward"), this);
-	layout->addWidget(m_uncondforward, line++, 0, 1, 0);
+	gridlayout->addWidget(m_uncondforward, line++, 0, 1, 0);
 	QLabel * lbluncond = new QLabel(tr("Destination"), this);
-	layout->addWidget(lbluncond, line, 0);
+	gridlayout->addWidget(lbluncond, line, 0);
 	m_uncondforwarddest = new QLineEdit(this);
 	m_uncondforward->setEnabled(false);
-	layout->addWidget(m_uncondforwarddest, line++, 1);
+	gridlayout->addWidget(m_uncondforwarddest, line++, 1);
 
 	m_forwardonbusy = new QCheckBox(tr("Forward on &Busy"), this);
-	layout->addWidget(m_forwardonbusy, line++, 0, 1, 0);
+	gridlayout->addWidget(m_forwardonbusy, line++, 0, 1, 0);
 	QLabel * lblonbusy = new QLabel(tr("Destination"), this);
-	layout->addWidget(lblonbusy, line, 0);
+	gridlayout->addWidget(lblonbusy, line, 0);
 	m_forwardonbusydest = new QLineEdit(this);
 	m_forwardonbusy->setEnabled(false);
-	layout->addWidget(m_forwardonbusydest, line++, 1);
+	gridlayout->addWidget(m_forwardonbusydest, line++, 1);
 
 	m_forwardonunavailable = new QCheckBox(tr("Forward on &No Reply"), this);
-	layout->addWidget(m_forwardonunavailable, line++, 0, 1, 0);
+	gridlayout->addWidget(m_forwardonunavailable, line++, 0, 1, 0);
 	QLabel * lblonunavailable = new QLabel(tr("Destination"), this);
-	layout->addWidget(lblonunavailable, line, 0);
+	gridlayout->addWidget(lblonunavailable, line, 0);
 	m_forwardonunavailabledest = new QLineEdit(this);
 	m_forwardonunavailable->setEnabled(false);
-	layout->addWidget(m_forwardonunavailabledest, line++, 1);
+	gridlayout->addWidget(m_forwardonunavailabledest, line++, 1);
 
-	QLabel * dummy = new QLabel(this);
-	layout->addWidget(dummy, line++, 0, 1, 0, Qt::AlignTop);
+        QVBoxLayout * vlayout = new QVBoxLayout(this);
+        vlayout->addLayout(gridlayout);
+        vlayout->addStretch();
+        vlayout->setSpacing(0);
+
+
+        this->setStyleSheet("* {background : white}");
 
 
         Reset();
-
 	connect(m_uncondforwarddest, SIGNAL(textChanged(const QString &)),
 		this, SLOT(toggleUncondIfAllowed(const QString &)));
 	connect(m_forwardonbusydest, SIGNAL(textChanged(const QString &)),
 		this, SLOT(toggleOnBusyIfAllowed(const QString &)));
 	connect(m_forwardonunavailabledest, SIGNAL(textChanged(const QString &)),
 		this, SLOT(toggleOnUnavailIfAllowed(const QString &)));
-
         Connect();
+
 }
 
 void ServicePanel::Connect()

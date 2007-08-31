@@ -17,6 +17,7 @@
         <file>personal-orange.png</file>
         <file>personal-red.png</file>
         <file>personal-yellow.png</file>
+	<file>xivo-login.png</file>
 	<file>../../switchboard/gui/sipphone.png</file>
 	<file>../../xivoclient/gui/phone-blue.png</file>
 	<file>../../xivoclient/gui/phone-green.png</file>

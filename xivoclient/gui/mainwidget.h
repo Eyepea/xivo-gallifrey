@@ -87,11 +87,13 @@ private:
 	QWidget * m_wid;	//!< Main widget
 	QTabWidget * m_tabwidget;	//!< Area to display profiles
 	QTabWidget * m_qtabwidget;	//!< Area to display function tabs
-	QVBoxLayout * m_vboxwidgets;    //!< Panel of widgets
+	QVBoxLayout * m_mainlayout;    //!< Panel of widgets
 	QLabel * m_messagetosendlabel;    //!< Label for message for switchboards
 	QLineEdit * m_messagetosend;    //!< Message to send to the connected switchboards
 	DialPanel * m_dial;
 	DirectoryPanel * m_directory;
+        QLabel * m_xivobg;
+        QLabel * m_xivobg2;
 	LogWidget * m_history;
         ConfWidget * m_conf;
         IdentityDisplay * m_infowidget;

@@ -81,10 +81,10 @@ ConfWidget::ConfWidget(BaseEngine * engine,
 	vbox->setSpacing(0);
 
 	m_presence = new QCheckBox(tr("Presence reporting"), groupBox);
-	m_presence->setCheckState(m_engine->enabledPresence() ? Qt::Checked : Qt::Unchecked);
+	m_presence->setCheckState(m_engine->checkedPresence() ? Qt::Checked : Qt::Unchecked);
 	vbox->addWidget( m_presence );
 	m_cinfo = new QCheckBox(tr("Customer Info"), groupBox);
-	m_cinfo->setCheckState(m_engine->enabledCInfo() ? Qt::Checked : Qt::Unchecked);
+	m_cinfo->setCheckState(m_engine->checkedCInfo() ? Qt::Checked : Qt::Unchecked);
 	vbox->addWidget( m_cinfo );
 
 	gridlayout->addWidget(groupBox, line++, 0, 1, 0);
@@ -132,7 +132,8 @@ ConfWidget::ConfWidget(BaseEngine * engine,
 	m_autoconnect->setCheckState(m_engine->autoconnect()?Qt::Checked:Qt::Unchecked);
 	gridlayout->addWidget(m_autoconnect, line++, 0, 1, 0);
 
-	m_trytoreconnect = new QCheckBox(tr("Try to reconnect"), this);
+	m_trytoreconnect = new QCheckBox(tr("Try to reconnect") + "\n" + \
+                                         tr("Checking this box disables the Error Popups"), this);
 	m_trytoreconnect->setCheckState(m_engine->trytoreconnect()?Qt::Checked:Qt::Unchecked);
 	gridlayout->addWidget(m_trytoreconnect, line++, 0, 1, 0);
 	gridlayout->addWidget(new QLabel(tr("Try to reconnect interval"), this), line, 0);
@@ -193,8 +194,8 @@ void ConfWidget::saveAndClose()
 	m_engine->setTrytoreconnectinterval(m_tryinterval_sbox->value()*1000);
 	m_engine->setKeepaliveinterval(m_kainterval_sbox->value()*1000);
 
-	m_engine->setEnabledPresence(m_presence->checkState() == Qt::Checked);
-	m_engine->setEnabledCInfo(m_cinfo->checkState() == Qt::Checked);
+	m_engine->setCheckedPresence(m_presence->checkState() == Qt::Checked);
+	m_engine->setCheckedCInfo(m_cinfo->checkState() == Qt::Checked);
 
 	m_engine->setHistorySize(m_history_sbox->value());
 	m_engine->setTcpmode(m_tcpmode->checkState() == Qt::Checked);

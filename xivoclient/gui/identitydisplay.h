@@ -22,8 +22,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QObject>
 #include <QWidget>
 #include <QList>
+#include <QLabel>
 
-class QLabel;
 class QGridLayout;
 
 /*! \brief Simple widget to enter a number and dial it
@@ -40,5 +40,19 @@ private:
         QLabel * m_lbl;
         QLabel * m_user;
 };
+
+
+
+
+class XivoLabel : public QLabel
+{
+    Q_OBJECT
+
+public:
+    XivoLabel(const QString &text, QWidget *parent = 0);
+
+    QSize sizeHint() const;
+};
+
 
 #endif

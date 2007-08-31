@@ -56,8 +56,7 @@ LogWidget::LogWidget(BaseEngine * engine, QWidget * parent)
 // 	QHBoxLayout * vbox_missed = new QHBoxLayout( tabwidget );
 // 	tabwidget->addTab(vbox_missed, tr("&Outgoing"));
 
-
-	QGroupBox * groupBox = new QGroupBox( tr("Call history"), this );
+	QGroupBox * groupBox = new QGroupBox( tr("Call History"), this );
 	groupBox->setAlignment( Qt::AlignHCenter );
 	QHBoxLayout * vbox = new QHBoxLayout( groupBox );
 	vbox->setMargin(0);
@@ -87,6 +86,9 @@ LogWidget::LogWidget(BaseEngine * engine, QWidget * parent)
 
 	layout->addWidget( groupBox );
 	QScrollArea * scrollArea = new QScrollArea( this );
+        //        this->setStyleSheet("* {background : #f9a22c}");
+        this->setStyleSheet("* {background : #ffe0b0}");
+        scrollArea->setStyleSheet("* {background : #fff0e0}");
 	scrollArea->setWidgetResizable( true );
 
 	QWidget * widget = new QWidget( this );
@@ -108,7 +110,7 @@ void LogWidget::addElement(const QString & peer, LogEltWidget::Direction d,
 {
 	//qDebug() << "LogWidget::addElement()" << peer << d << dt << duration;
 	int i, index = 0;
-	for(i = 0; i<m_layout->count(); i++)
+	for(i = 0; i < m_layout->count(); i++)
 	{
 		QWidget * widget = m_layout->itemAt( i )->widget();
 		if(widget)

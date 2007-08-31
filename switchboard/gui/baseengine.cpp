@@ -52,7 +52,7 @@ BaseEngine::BaseEngine(QObject * parent)
         : QObject(parent),
 	  m_serverhost(""), m_loginport(0), m_sbport(0),
           m_asterisk(""), m_protocol(""), m_userid(""), m_passwd(""),
-          m_enabled_presence(false), m_enabled_cinfo(false),
+          m_checked_presence(false), m_checked_cinfo(false),
           m_sessionid(""), m_state(ENotLogged),
 	  m_listenport(0), m_pendingkeepalivemsg(0)
 {
@@ -134,8 +134,8 @@ void BaseEngine::loadSettings()
 	m_loginport  = settings.value("engine/loginport", 5000).toUInt();
 	m_sbport     = settings.value("engine/serverport", 5003).toUInt();
 
-        m_enabled_presence = settings.value("engine/fct_presence", false).toBool();
-        m_enabled_cinfo    = settings.value("engine/fct_cinfo",    false).toBool();
+        m_checked_presence = settings.value("engine/fct_presence", false).toBool();
+        m_checked_cinfo    = settings.value("engine/fct_cinfo",    false).toBool();
 
 	m_asterisk   = settings.value("engine/asterisk").toString();
 	m_protocol   = settings.value("engine/protocol").toString();
@@ -164,8 +164,8 @@ void BaseEngine::saveSettings()
 	settings.setValue("engine/loginport",  m_loginport);
 	settings.setValue("engine/serverport", m_sbport);
 
-	settings.setValue("engine/fct_presence", m_enabled_presence);
-	settings.setValue("engine/fct_cinfo",    m_enabled_cinfo);
+	settings.setValue("engine/fct_presence", m_checked_presence);
+	settings.setValue("engine/fct_cinfo",    m_checked_cinfo);
 
 	settings.setValue("engine/asterisk",   m_asterisk);
 	settings.setValue("engine/protocol",   m_protocol);
@@ -186,23 +186,47 @@ void BaseEngine::saveSettings()
 /*!
  *
  */
-void BaseEngine::setEnabledPresence(bool b) {
-	if(b != m_enabled_presence) {
-		m_enabled_presence = b;
-		if(state() == ELogged)
+void BaseEngine::setCheckedPresence(bool b) {
+	if(b != m_checked_presence) {
+		m_checked_presence = b;
+		if((state() == ELogged) && m_enabled_presence) {
 			availAllowChanged(b);
+                }
 	}
 }
 
-bool BaseEngine::enabledPresence() {
-        return m_enabled_presence;
+/*!
+ *
+ */
+bool BaseEngine::checkedPresence() {
+        return m_checked_presence;
 }
 
+/*!
+ *
+ */
+void BaseEngine::setCheckedCInfo(bool b) {
+	if(b != m_checked_cinfo)
+		m_checked_cinfo = b;
+}
+
+/*!
+ *
+ */
+bool BaseEngine::checkedCInfo() {
+        return m_checked_cinfo;
+}
+
+/*!
+ *
+ */
 void BaseEngine::setEnabledCInfo(bool b) {
-	if(b != m_enabled_cinfo)
-		m_enabled_cinfo = b;
+        m_enabled_cinfo = b;
 }
 
+/*!
+ *
+ */
 bool BaseEngine::enabledCInfo() {
         return m_enabled_cinfo;
 }
@@ -228,7 +252,7 @@ void BaseEngine::initListenSocket()
  */
 void BaseEngine::start()
 {
-	qDebug() << "BaseEngine::start()" << m_serverhost << m_loginport << m_enabled_presence << m_enabled_cinfo;
+	qDebug() << "BaseEngine::start()" << m_serverhost << m_loginport << m_checked_presence << m_checked_cinfo;
 
 	// (In case the TCP sockets were attempting to connect ...) aborts them first
 	m_sbsocket->abort();
@@ -237,7 +261,7 @@ void BaseEngine::start()
         m_udpsocket->abort();
 
         if(! m_tcpmode) {
-                if(m_enabled_cinfo)
+                if(m_checked_cinfo)
                         initListenSocket();
                 m_udpsocket->bind();
         }
@@ -301,7 +325,7 @@ void BaseEngine::setTcpmode(bool b)
         m_tcpmode = b;
 }
 
-const QString & BaseEngine::getCapabilities() const
+const QStringList & BaseEngine::getCapabilities() const
 {
         return m_capabilities;
 }
@@ -487,11 +511,10 @@ void BaseEngine::socketError(QAbstractSocket::SocketError socketError)
 	switch(socketError) {
 	case QAbstractSocket::ConnectionRefusedError:
 		emitTextMessage(tr("Connection refused"));
-		if(m_timer != -1)
-                        {
+		if(m_timer != -1) {
 			killTimer(m_timer);
 		 	m_timer = -1;
-                        }
+                }
 		//m_timer = startTimer(2000);
 		break;
         case QAbstractSocket::RemoteHostClosedError:
@@ -826,7 +849,7 @@ void BaseEngine::socketReadyRead()
                                 qDebug() << params_list;
                                 m_dialcontext    = params_list["context"];
                                 m_extension      = params_list["phonenum"];
-                                m_capabilities   = params_list["capas"];
+                                m_capabilities   = params_list["capas"].split(",");
                                 m_version_server = params_list["version"].toInt();
                                 m_forced_state   = params_list["state"];
 
@@ -1302,7 +1325,7 @@ void BaseEngine::setUncondForward(bool b, const QString & dst)
 
 void BaseEngine::askFeatures(const QString & peer)
 {
-        qDebug() << "BaseEngine::askFeatures()" << peer;
+//        qDebug() << "BaseEngine::askFeatures()" << peer << m_asterisk << m_dialcontext << m_userid;
         m_monitored_asterisk = m_asterisk;
         m_monitored_context  = m_dialcontext;
         m_monitored_userid   = m_userid;
@@ -1377,10 +1400,13 @@ void BaseEngine::setState(EngineState state)
 	if(state != m_state) {
 		m_state = state;
 		if(state == ELogged) {
+                        m_enabled_presence = m_capabilities.contains("presence");
 			stopTryAgainTimer();
-			if(m_enabled_presence) availAllowChanged(true);
+			if(m_checked_presence && m_enabled_presence)
+                                availAllowChanged(true);
 			logged();
 		} else if(state == ENotLogged) {
+                        m_enabled_presence = false;
 			availAllowChanged(false);
 			delogged();
 		}
@@ -1479,7 +1505,7 @@ void BaseEngine::processLoginDialog()
 	else if(readLine.startsWith("Send STATE"))
 	{
 		outline = "STATE ";
-                if(m_enabled_presence)
+                if(m_checked_presence && m_enabled_presence)
                         outline.append(m_availstate);
                 else
                         outline.append("unknown");
@@ -1502,7 +1528,7 @@ void BaseEngine::processLoginDialog()
                         qDebug() << "BaseEngine::socketReadyRead()" << m_sessionid << params_list;
                         m_dialcontext    = params_list["context"];
                         m_extension      = params_list["phonenum"];
-                        m_capabilities   = params_list["capas"];
+                        m_capabilities   = params_list["capas"].split(",");
                         m_version_server = params_list["version"].toInt();
                         m_forced_state   = params_list["state"];
                 }
@@ -1612,7 +1638,7 @@ void BaseEngine::keepLoginAlive()
                         outline.append(" SESSIONID ");
                         outline.append(m_sessionid);
                         outline.append(" STATE ");
-                        if(m_enabled_presence)
+                        if(m_checked_presence && m_enabled_presence)
                                 outline.append(m_availstate);
                         else
                                 outline.append("unknown");

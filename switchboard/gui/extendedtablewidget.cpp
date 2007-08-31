@@ -26,9 +26,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 /*! \brief Constructor
  */
 ExtendedTableWidget::ExtendedTableWidget(QWidget * parent)
-: QTableWidget(parent)
+        : QTableWidget(parent)
 {
 	setAcceptDrops(true);
+        setAlternatingRowColors(true);
 }
 
 /*! \brief Constructor

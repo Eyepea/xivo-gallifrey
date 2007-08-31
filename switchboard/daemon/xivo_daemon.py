@@ -2136,9 +2136,14 @@ class LineProp:
                 self.calleridfirst = icallerid[1]
                 self.calleridlast  = icallerid[2]
         def updateIfNeeded(self, icallerid):
-                self.calleridfull  = icallerid[0]
-                self.calleridfirst = icallerid[1]
-                self.calleridlast  = icallerid[2]
+                if icallerid[0:3] != (self.calleridfull, self.calleridfirst, self.calleridlast):
+                        log_debug('updated parameters for user <%s/%s> : %s => %s'
+                                  % (self.tech, self.phoneid,
+                                     (self.calleridfull, self.calleridfirst, self.calleridlast),
+                                     icallerid[0:3]))
+                        self.calleridfull  = icallerid[0]
+                        self.calleridfirst = icallerid[1]
+                        self.calleridlast  = icallerid[2]
         ##  \brief Updates the time elapsed on a channel according to current time.
         def update_time(self):
                 nowtime = time.time()

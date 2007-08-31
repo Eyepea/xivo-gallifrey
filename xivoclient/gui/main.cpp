@@ -24,7 +24,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QApplication>
 #include <QFile>
 #include <QLocale>
+#include <QSplashScreen>
 #include <QTranslator>
+
 #include "mainwidget.h"
 #include "baseengine.h"
 

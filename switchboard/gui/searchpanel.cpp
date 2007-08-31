@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include "baseengine.h"
 
 SearchPanel::SearchPanel(QWidget * parent)
-: QWidget(parent)
+        : QWidget(parent)
 {
 	QVBoxLayout * vlayout = new QVBoxLayout(this);
 	vlayout->setMargin(0);
@@ -44,6 +44,7 @@ SearchPanel::SearchPanel(QWidget * parent)
 	scrollarea->setWidgetResizable(true);
 	QWidget * widget = new QWidget(scrollarea);
 	scrollarea->setWidget(widget);
+        scrollarea->setStyleSheet("* {background : #fff0e0}");
 	QVBoxLayout * scrollarealayout = new QVBoxLayout(widget);
 	m_peerlayout = new QVBoxLayout();
 	scrollarealayout->addLayout( m_peerlayout );
