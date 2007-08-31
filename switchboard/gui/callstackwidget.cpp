@@ -87,7 +87,7 @@ void Call::updateCall(const QString & action,
 /*! \brief Constructor
  */
 CallStackWidget::CallStackWidget(QWidget * parent)
-: QWidget(parent)
+        : QWidget(parent)
 {
 	m_layout = new QVBoxLayout(this);
 	//m_layout->setMargin();

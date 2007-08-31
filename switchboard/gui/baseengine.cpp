@@ -676,26 +676,28 @@ bool BaseEngine::parseCommand(const QStringList & listitems)
                         updatePeers(liststatus);
                 }
 
-                //                if(m_is_a_switchboard) {
-                        callsUpdated();
-                        QString myfullid = settings.value("monitor/peer").toString();
-                        if(myfullid.isEmpty())
-                                myfullid = "p/" + m_asterisk + "/" + m_dialcontext + "/" + m_protocol + "/" + m_userid + "/" + m_extension;
-                        QString m_fullname = m_callerids[myfullid];
-                        if(m_fullname.isEmpty()) {
-                                myfullid = "p/" + m_asterisk + "/" + m_dialcontext + "/" + m_protocol + "/" + m_userid + "/" + m_extension;
-                                m_fullname = m_callerids[myfullid];
+                callsUpdated();
+
+                QString myfullid   = "p/" + m_asterisk + "/" + m_dialcontext + "/" + m_protocol + "/" + m_userid + "/" + m_extension;
+                QString myfullname = m_callerids[myfullid];
+                localUserDefined(myfullname);
+
+                // Who do we monitor ?
+                // First look at the last monitored one
+                QString fullid_watched = settings.value("monitor/peer").toString();
+
+                // If there was nobody, let's watch ourselves.
+                if(fullid_watched.isEmpty())
+                        monitorPeer(myfullid, myfullname);
+                else {
+                        QString fullname_watched = m_callerids[fullid_watched];
+                        // If the CallerId value is empty, fallback to ourselves.
+                        if(fullname_watched.isEmpty())
+                                monitorPeer(myfullid, myfullname);
+                        else {
+                                monitorPeer(fullid_watched, fullname_watched);
                         }
-                        
-                        if(m_fullname.isEmpty())
-                                monitorPeer(myfullid, tr("Unknown CallerId") + " (" + myfullid + ")");
-                        else
-                                monitorPeer(myfullid, m_fullname);
-
-                        // qDebug() << m_fullname;
-                        localUserDefined(m_fullname);
-                        //                }
-
+                }
                 emitTextMessage(tr("Peers' status updated"));
 
         } else if(listitems[0].toLower() == QString("message")) {

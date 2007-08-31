@@ -20,7 +20,7 @@ HEADERS += directorypanel.h displaymessages.h
 HEADERS += peerchannel.h extendedtablewidget.h
 HEADERS += xivoconsts.h
 HEADERS += $${XCDIR}/servicepanel.h $${XCDIR}/popup.h $${XCDIR}/urllabel.h $${XCDIR}/xmlhandler.h
-HEADERS += $${XCDIR}/remotepicwidget.h $${XCDIR}/confwidget.h
+HEADERS += $${XCDIR}/remotepicwidget.h $${XCDIR}/confwidget.h $${XCDIR}/identitydisplay.h
 
 SOURCES += main.cpp mainwidget.cpp switchboardwindow.cpp
 SOURCES += baseengine.cpp
@@ -30,7 +30,7 @@ SOURCES += peeritem.cpp logeltwidget.cpp logwidget.cpp dialpanel.cpp
 SOURCES += directorypanel.cpp displaymessages.cpp
 SOURCES += peerchannel.cpp extendedtablewidget.cpp
 SOURCES += $${XCDIR}/servicepanel.cpp $${XCDIR}/popup.cpp $${XCDIR}/urllabel.cpp $${XCDIR}/xmlhandler.cpp
-SOURCES += $${XCDIR}/remotepicwidget.cpp $${XCDIR}/confwidget.cpp
+SOURCES += $${XCDIR}/remotepicwidget.cpp $${XCDIR}/confwidget.cpp $${XCDIR}/identitydisplay.cpp
 
 QT += network
 QT += xml

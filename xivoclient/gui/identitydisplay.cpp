@@ -31,6 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QPushButton>
 #include <QRegExp>
 #include <QScrollArea>
+
 #include "identitydisplay.h"
 #include "xivoconsts.h"
 
@@ -42,18 +43,14 @@ IdentityDisplay::IdentityDisplay(QWidget * parent)
 	QGridLayout * glayout = new QGridLayout(this);
         this->setStyleSheet("* {background : #fff0e0}");
 	// glayout->setMargin(0);
-        //        m_lbl = new QLabel( tr("Logged in User :"), this );
 	m_user = new XivoLabel( "", this );
         m_user->setStyleSheet("* {border: 3px solid #ffe0b0; border-radius: 5px; font-size: 20px}");
         m_user->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
         m_user->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-        qDebug() << "IdentityDisplay::IdentityDisplay() : label" << m_user->geometry() << m_user->sizeHint();
 
-        //	glayout->addWidget( m_lbl,  0, 0, Qt::AlignCenter );
 	glayout->addWidget( m_user, 0, 0, Qt::AlignCenter );
 	glayout->setColumnStretch( 0, 1 );
 	glayout->setRowStretch( 0, 1 );
-        qDebug() << "layout" << glayout->geometry();
 }
 
 
@@ -69,13 +66,11 @@ void IdentityDisplay::setUser(const QString & user)
 }
 
 
-
-
 XivoLabel::XivoLabel(const QString &text, QWidget *parent)
         : QLabel(parent)
 {
-    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-    setText(text);
+        setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+        setText(text);
 }
 
 QSize XivoLabel::sizeHint() const

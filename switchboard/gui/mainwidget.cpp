@@ -41,6 +41,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include "dialpanel.h"
 #include "directorypanel.h"
 #include "displaymessages.h"
+#include "identitydisplay.h"
 #include "logwidget.h"
 #include "mainwidget.h"
 #include "popup.h"
@@ -50,12 +51,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 /*! \brief Widget containing the CallStackWidget and a Title QLabel
  */
-LeftPanel::LeftPanel(QWidget * bottomWidget,QWidget * parent)
-: QWidget(parent)
+LeftPanel::LeftPanel(QWidget * bottomWidget, QWidget * parent)
+        : QWidget(parent)
 {
 	QVBoxLayout * layout = new QVBoxLayout(this);
 	layout->setMargin(0);
-	m_titleLabel = new QLabel("", this);
+	m_titleLabel = new QLabel("                     ", this);
+        m_titleLabel->setStyleSheet("* {border: 2px solid #ffe0b0; font-size: 15px}");
 	layout->addWidget(m_titleLabel, 0, Qt::AlignCenter);
 	layout->addWidget(bottomWidget, 1);
 }
@@ -110,7 +112,14 @@ MainWidget::MainWidget(BaseEngine * engine, QWidget * parent)
 void MainWidget::buildSplitters()
 {
 	QSettings settings;
+        m_infowidget = new IdentityDisplay(this);
 	m_splitter = new QSplitter(this);
+
+        m_mainlayout->removeWidget(m_xivobg);
+        delete m_xivobg;
+        m_mainlayout->addWidget(m_infowidget, 0);
+        m_mainlayout->addWidget(m_splitter, 1);
+
 	m_leftSplitter = new QSplitter(Qt::Vertical, m_splitter);
 	m_middleSplitter = new QSplitter( Qt::Vertical, m_splitter);
 	m_rightSplitter = new QSplitter(Qt::Vertical, m_splitter);
@@ -144,11 +153,13 @@ void MainWidget::buildSplitters()
         m_dialpanel = new DialPanel(m_rightSplitter);
 	m_rightSplitter->restoreState(settings.value("display/rightSplitterSizes").toByteArray());
 
-	setCentralWidget(m_splitter);
+        //	setCentralWidget(m_splitter);
 
 	// restore splitter settings
         m_splitter->restoreState(settings.value("display/splitterSizes").toByteArray());
 
+        connect( m_engine, SIGNAL(localUserDefined(const QString &)),
+                 m_infowidget, SLOT(setUser(const QString &)));
 	connect( m_calls, SIGNAL(changeTitle(const QString &)),
 	         m_leftpanel->titleLabel(), SLOT(setText(const QString &)) );
 	connect( m_engine, SIGNAL(newProfile(Popup *)),
@@ -347,6 +358,7 @@ void MainWidget::createActions()
 	         m_avail, SLOT(setEnabled(bool)) );
 
 	QMenu * helpmenu = menuBar()->addMenu(tr("&Help"));
+        setStyleSheet("QMessageBox {background : #fff0e0}");
 	helpmenu->addAction(tr("&About XIVO Switchboard"), this, SLOT(about()));
 	helpmenu->addAction(tr("About &Qt"), qApp, SLOT(aboutQt()));
 }
@@ -358,7 +370,10 @@ void MainWidget::createActions()
 void MainWidget::showConfDialog()
 {
         m_conf = new ConfWidget(m_engine, this);
-        // m_conf->setStyleSheet();
+        m_conf->setStyleSheet("QLineEdit {background : white}\n"
+                              "QSpinBox {background : white}\n"
+                              "QComboBox {background : white}\n"
+                              "* {background : #ffe0b0}");
         m_conf->exec();
 }
 

@@ -24,9 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QList>
 #include <QLabel>
 
-class QGridLayout;
-
-/*! \brief Simple widget to enter a number and dial it
+/*! \brief Identity Display
  */
 class IdentityDisplay : public QWidget
 {
@@ -37,7 +35,6 @@ protected:
 public slots:
 	void setUser(const QString &);
 private:
-        QLabel * m_lbl;
         QLabel * m_user;
 };
 

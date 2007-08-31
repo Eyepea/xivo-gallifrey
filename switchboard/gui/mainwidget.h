@@ -39,6 +39,7 @@ class ConfWidget;
 class DialPanel;
 class DirectoryPanel;
 class DisplayMessagesPanel;
+class IdentityDisplay;
 class LeftPanel;
 class LogWidget;
 class Popup;
@@ -94,6 +95,7 @@ private:
         QLabel * m_xivobg;
         QWidget * m_wid;
         QVBoxLayout * m_mainlayout;
+        IdentityDisplay * m_infowidget;
 
         DialPanel * m_dialpanel;
 	int m_tablimit;		//!< Maximum number of tabs in m_tabwidget
