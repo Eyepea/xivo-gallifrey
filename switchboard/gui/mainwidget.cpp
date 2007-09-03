@@ -332,6 +332,14 @@ void MainWidget::createActions()
 	         m_engine, SLOT(setDoNotDisturb()) );
 	m_availgrp->addAction( m_avact_dnd );
 
+        connect( m_engine, SIGNAL(changesAvailChecks()),
+                 this, SLOT(checksAvailState()) );
+
+        checksAvailState();
+}
+
+void MainWidget::checksAvailState()
+{
 	if (m_engine->getAvailState() == QString("berightback"))
 		m_avact_brb->setChecked( true );
 	else if (m_engine->getAvailState() == QString("donotdisturb"))
@@ -349,6 +357,7 @@ void MainWidget::createMenus()
         menuBar()->setStyleSheet("* {background : #ffe0b0}");
 	QMenu * filemenu = menuBar()->addMenu(tr("&File"));
 	filemenu->addAction( m_cfgact );
+
 	filemenu->addSeparator();
 	filemenu->addAction( m_connectact );
 	filemenu->addAction( m_disconnectact );

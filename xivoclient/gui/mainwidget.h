@@ -66,6 +66,7 @@ private slots:
 	void showNewProfile(Popup *);	//!< display a Profile widget
 	void about();
 	void affTextChanged();
+        void checksAvailState();
 protected:
 	void hideEvent(QHideEvent *event);	//!< Catch hide events
 	void closeEvent(QCloseEvent *event);

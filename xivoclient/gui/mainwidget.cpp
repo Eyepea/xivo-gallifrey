@@ -176,7 +176,15 @@ void MainWidget::createActions()
 	connect( m_avact_dnd, SIGNAL(triggered()),
 	         m_engine, SLOT(setDoNotDisturb()) );
 	m_availgrp->addAction( m_avact_dnd );
+        
+        connect( m_engine, SIGNAL(changesAvailChecks()),
+                 this, SLOT(checksAvailState()) );
+        
+        checksAvailState();
+}
 
+void MainWidget::checksAvailState()
+{
 	if (m_engine->getAvailState() == QString("berightback"))
 		m_avact_brb->setChecked( true );
 	else if (m_engine->getAvailState() == QString("donotdisturb"))

@@ -75,9 +75,9 @@ public:
 	void setDialContext(const QString &);	//! set m_dialcontext
 
 	bool autoconnect() const;		//!< auto connect flag
-	void setAutoconnect(bool b);		//!< set auto connect flag
+	void setAutoconnect(bool);		//!< set auto connect flag
 	bool trytoreconnect() const;		//!< try to reconnect flag
-	void setTrytoreconnect(bool b);		//!< set try to reconnect flag
+	void setTrytoreconnect(bool);		//!< set try to reconnect flag
 	uint trytoreconnectinterval() const;	//!< try to reconnect interval
 	void setTrytoreconnectinterval(uint);	//!< set try to reconnect interval
 	uint historysize() const;		//!< history size
@@ -96,7 +96,7 @@ public:
 	void setState(EngineState state);	//!< see state()
 
 	const QString & getAvailState() const;	//!< returns availability status
-	void setAvailState(const QString &);	//! set m_availstate
+	void setAvailState(const QString &, bool);	//! set m_availstate
 	void setCheckedPresence(bool b);	//! set m_checked_presence
 	bool checkedPresence();			//! get m_checked_presence
 	void setCheckedCInfo(bool b);		//! set m_checked_cinfo
@@ -214,6 +214,7 @@ signals:
 	void forwardOnUnavailableUpdated(bool, const QString &);
 	void forwardOnUnavailableUpdated(bool);
 	void forwardOnUnavailableUpdated(const QString &);
+        void changesAvailChecks();
 private:
 	void initListenSocket();	//!< initialize the socket listening to profile
 	void stopKeepAliveTimer();	//!< Stop the keep alive timer if running

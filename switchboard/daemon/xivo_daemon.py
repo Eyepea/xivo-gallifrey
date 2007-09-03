@@ -2506,11 +2506,12 @@ def connect_user(userinfo, sessionid, iip, iport,
 
                 # we first check if 'state' has already been set for this customer, in which case
                 # the CTI clients will be sent back this previous state
+                if 'state' in userinfo:
+                        futurestate = userinfo.get('state')
+                        # only if it was a "defined" state anyway
+                        if futurestate in allowed_states:
+                                state = futurestate
 
-                # NOT YET uncommented since the CTI clients do not currently handle it
-                # if 'state' in userinfo:
-                #         state = userinfo.get('state')
-                
                 if state in allowed_states:
                         userinfo['state'] = state
                 else:

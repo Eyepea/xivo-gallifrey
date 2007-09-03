@@ -339,13 +339,15 @@ const QStringList & BaseEngine::getCapabilities() const
  * \sa setOutToLunch()
  * \sa setDoNotDisturb()
  */
-void BaseEngine::setAvailState(const QString & newstate)
+void BaseEngine::setAvailState(const QString & newstate, bool comesFromServer)
 {
 	if(m_availstate != newstate) {
 		QSettings settings;
 		m_availstate = newstate;
 		settings.setValue("engine/availstate", m_availstate);
-		keepLoginAlive();
+                if (comesFromServer)
+                        changesAvailChecks();
+                keepLoginAlive();
                 sendCommand("availstate " + m_availstate);
 	}
 }
@@ -357,27 +359,27 @@ const QString & BaseEngine::getAvailState() const
 
 void BaseEngine::setAvailable()
 {
-	setAvailState("available");
+	setAvailState("available", false);
 }
 
 void BaseEngine::setAway()
 {
-	setAvailState("away");
+	setAvailState("away", false);
 }
 
 void BaseEngine::setBeRightBack()
 {
-	setAvailState("berightback");
+	setAvailState("berightback", false);
 }
 
 void BaseEngine::setOutToLunch()
 {
-	setAvailState("outtolunch");
+	setAvailState("outtolunch", false);
 }
 
 void BaseEngine::setDoNotDisturb()
 {
-	setAvailState("donotdisturb");
+	setAvailState("donotdisturb", false);
 }
 
 /*! \brief send a command to the server 
@@ -858,6 +860,7 @@ void BaseEngine::socketReadyRead()
                                         popupError("version_server:" + QString::number(m_version_server) + ";" + QString::number(REQUIRED_SERVER_VERSION));
                                 } else {
                                         setState(ELogged); // calls logged()
+                                        setAvailState(m_forced_state, true);
                                         m_ka_timerid = startTimer(m_keepaliveinterval);
                                         if(m_is_a_switchboard) /* ask here because not ready when the widget builds up */
                                                 askCallerIds();
@@ -1540,6 +1543,7 @@ void BaseEngine::processLoginDialog()
                         return;
                 }
                 setState(ELogged);
+                setAvailState(m_forced_state, true);
                 // start the keepalive timer
                 m_ka_timerid = startTimer(m_keepaliveinterval);
                 if(m_is_a_switchboard) /* ask here because not ready when the widget builds up */
