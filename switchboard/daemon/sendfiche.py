@@ -67,8 +67,8 @@ def log_debug(string):
         return varlog(string)
 
 ## \brief Returns informations fetched from the LDAP database
-# \param config
-# \param cid
+# \param cid callerid requested
+# \param ctxinfos context informations
 def get_ldap_infos(cid, ctxinfos):
         str_cidm = []
         for cidm in ctxinfos.sheet_callidmatch:
@@ -100,8 +100,8 @@ def get_ldap_infos(cid, ctxinfos):
 
 
 ## \brief Returns informations fetched from the SQL database
-# \param config configuration informations
 # \param cid callerid requested
+# \param ctxinfos context informations
 def get_sql_infos(cid, ctxinfos):
         str_cidm = []
         for cidm in ctxinfos.sheet_callidmatch:
@@ -180,31 +180,8 @@ def make_fields(items, formats, flds):
 	return fields_list
 
 
-# opens the xivo_daemon.conf config file
-config = ConfigParser.ConfigParser()
-try:
-	config.readfp(open(xivoconffile))
-except:
-	try:
-		config.readfp(open("xivo_daemon.conf"))
-	except:
-                log_debug('no xivo_daemon.conf file found')
-		sys.exit(2)
 
-# reads the kind of database and the sheet's format
-fitems = {}
-if config.has_section('sheet_display') :
-        fitems = config.items('sheet_display')
-        fitems.sort()
-else:
-        fitems = [("01|req_cid", "phone|Numero|Inconnu")]
-fformats = {}
-if config.has_section('sheet_extraformat') :
-	for x in config.items('sheet_extraformat'):
-		fformats[x[0]] = x[1]
-
-
-def retrieve_callerid_data(callerid, ctxinfos):
+def retrieve_callerid_data(callerid, ctxinfos, xdconfig):
         fields = {}
         fields["req_cid"] = callerid
         fields['callidname'] = callerid
@@ -233,9 +210,23 @@ def retrieve_callerid_data(callerid, ctxinfos):
         else:
                 log_debug("WARNING - The db_uri of the context has not been defined")
 
+        # reads the sheet informations from xivo_daemon config file
+        fitems = {}
+        if xdconfig.has_section('sheet_display') :
+                fitems = xdconfig.items('sheet_display')
+                fitems.sort()
+        else:
+                fitems = [("01|req_cid", "phone|Numero|Inconnu")]
+
+        fformats = {}
+        if xdconfig.has_section('sheet_extraformat') :
+                for x in xdconfig.items('sheet_extraformat'):
+                        fformats[x[0]] = x[1]
+
+
         # request for pictures in 'sheet_pictures' section
-        if config.has_section('sheet_pictures') and config.has_option('sheet_pictures', callerid):
-                fields["picture"] = config.get('sheet_pictures', callerid)
+        if xdconfig.has_section('sheet_pictures') and xdconfig.has_option('sheet_pictures', callerid):
+                fields["picture"] = xdconfig.get('sheet_pictures', callerid)
 
         # formats output according to filled-in values
         try:
@@ -274,7 +265,7 @@ class FicheSender:
                         log_debug('the customer info has not been sent because inavailable state %s' % state)
 
 
-def sendficheasync(userinfo, ctxinfos, callerid, msg):
+def sendficheasync(userinfo, ctxinfos, callerid, msg, xdconfig):
         params = {}
         if userinfo is not None:
                 sender = FicheSender()
@@ -290,7 +281,7 @@ def sendficheasync(userinfo, ctxinfos, callerid, msg):
                 else:
                         params['socket'] = None
 
-        [calleridname, params['todisplay']] = retrieve_callerid_data(callerid, ctxinfos)
+        [calleridname, params['todisplay']] = retrieve_callerid_data(callerid, ctxinfos, xdconfig)
 
         if userinfo is not None:
                 t = threading.Thread(None, sender, None, (), params)

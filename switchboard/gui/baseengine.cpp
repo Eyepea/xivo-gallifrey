@@ -471,8 +471,14 @@ void BaseEngine::socketConnected()
 	/* do the login/identification ? */
         setMyClientId();
 	m_pendingcommand = "login astid=" + m_asterisk + ";proto="
-                + m_protocol + ";userid=" + m_userid + ";state=" + m_availstate + ";ident="
-                + m_clientid + ";passwd=" + m_passwd + ";version=" + __version__.split(" ")[1];
+                + m_protocol + ";userid=" + m_userid + ";";
+        if(m_checked_presence)
+                m_pendingcommand += "state=" + m_availstate + ";";
+        else
+                m_pendingcommand += "state=unknown;";
+        m_pendingcommand += "state=" + m_availstate + ";";
+        m_pendingcommand += "ident=" + m_clientid   + ";";
+        m_pendingcommand += "passwd=" + m_passwd + ";version=" + __version__.split(" ")[1];
         // login <asterisk> <techno> <id>
 	sendTCPCommand();
 }
@@ -1508,7 +1514,7 @@ void BaseEngine::processLoginDialog()
 	else if(readLine.startsWith("Send STATE"))
 	{
 		outline = "STATE ";
-                if(m_checked_presence && m_enabled_presence)
+                if(m_checked_presence)
                         outline.append(m_availstate);
                 else
                         outline.append("unknown");

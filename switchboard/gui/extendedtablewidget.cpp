@@ -49,15 +49,17 @@ void ExtendedTableWidget::contextMenuEvent(QContextMenuEvent * event)
 	qDebug() << event->pos();
 	QTableWidgetItem * item = itemAt( event->pos() );
 	QRegExp re("\\+?[0-9\\s\\.]+");
-	if(item && re.exactMatch( item->text() ))
-	{
+	if(item && re.exactMatch( item->text() )) {
+                QString menuQSS("QMenu {border: 3px solid #ffa030 ; border-radius: 4px} ; QMenu::item {background-color: transparent}");
 		m_numberToDial = item->text();
 		qDebug() << "preparing to dial :" << m_numberToDial;
 		QMenu contextMenu(this);
 		contextMenu.addAction( tr("&Dial"), this, SLOT(dialNumber()) );
+                contextMenu.setStyleSheet(menuQSS);
 		if(!m_mychannels.empty())
 		{
 			QMenu * transferMenu = new QMenu(tr("&Transfer"), &contextMenu);
+                        transferMenu->setStyleSheet(menuQSS);
 			QListIterator<PeerChannel *> i(m_mychannels);
 			while(i.hasNext())
 			{

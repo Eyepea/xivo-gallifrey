@@ -354,7 +354,8 @@ void MainWidget::checksAvailState()
 
 void MainWidget::createMenus()
 {
-        menuBar()->setStyleSheet("* {background : #ffe0b0}");
+        menuBar()->setStyleSheet("* {background : #ffe0b0}\n"
+                                 "QMenuBar::item {background: transparent}");
 	QMenu * filemenu = menuBar()->addMenu(tr("&File"));
 	filemenu->addAction( m_cfgact );
 
@@ -371,7 +372,7 @@ void MainWidget::createMenus()
 	         m_avail, SLOT(setEnabled(bool)) );
 
 	QMenu * helpmenu = menuBar()->addMenu(tr("&Help"));
-        setStyleSheet("QMessageBox {background : #fff0e0}");
+        setStyleSheet("QMessageBox {background : #fff0e0} ; QMenu {border: 3px solid #ffa030 ; border-radius: 4px} ; QMenu::item {background-color: transparent}");
 	helpmenu->addAction(tr("&About XIVO Switchboard"), this, SLOT(about()));
 	helpmenu->addAction(tr("About &Qt"), qApp, SLOT(aboutQt()));
 }

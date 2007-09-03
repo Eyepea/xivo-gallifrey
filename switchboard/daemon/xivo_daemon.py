@@ -974,17 +974,16 @@ def parseSIP(astnum, data, l_sipsock, l_addrsip):
 
 
 ## \brief Sends a SIP register + n x SIP subscribe messages.
-# \param astnum the asterisk numerical identifier
+# \param config_ast the asterisk configuration structure
 # \param l_sipsock the SIP socket where to reply
 # \return
-def do_sip_register(astnum, l_sipsock):
-        global configs
-        for sipacc in configs[astnum].xivosb_phoneids:
-                command = xivo_sip.sip_register(configs[astnum], sipacc,
+def do_sip_register(config_ast, l_sipsock):
+        for sipacc in config_ast.xivosb_phoneids:
+                command = xivo_sip.sip_register(config_ast, sipacc,
                                                 1, "reg_cid@xivopy",
                                                 (xivosb_register_frequency + 2), "")
-                l_sipsock.sendto(command, (configs[astnum].remoteaddr, configs[astnum].portsipsrv))
-                # command = xivo_sip.sip_options(configs[astnum], configs[astnum].mysipname, cid, sipnum)
+                l_sipsock.sendto(command, (config_ast.remoteaddr, config_ast.portsipsrv))
+                # command = xivo_sip.sip_options(config_ast, config_ast.mysipname, cid, sipnum)
 
 
 ## \brief Splits a channel name, allowing for instance local-extensions-3fb2,1 to be correctly split.
@@ -1531,7 +1530,7 @@ def handle_ami_event(astnum, idata):
                 elif x.find("Reload;") == 7:
                         # warning : "reload" as well as "reload manager" can appear here
                         log_debug("AMI:Reload: " + plist[astnum].astid)
-                        do_sip_register(astnum, SIPsocks[astnum])
+                        do_sip_register(configs[astnum], SIPsocks[astnum])
                 elif x.find("Shutdown;") == 7:
                         log_debug("AMI:Shutdown: " + plist[astnum].astid)
                 elif x.find("Join;") == 7:
@@ -2771,7 +2770,8 @@ class IdentRequestHandler(SocketServer.StreamRequestHandler):
                                 calleridname = sendfiche.sendficheasync(userinfo,
                                                                         ctxinfo,
                                                                         callerid,
-                                                                        msg)
+                                                                        msg,
+                                                                        xivoconf)
                                 retline = 'USER %s STATE %s CIDNAME "%s <%s>"' %(user, state_userinfo, calleridname, callerid)
 			except Exception, exc:
 				retline = 'ERROR PUSH %s' %(str(exc))
@@ -3053,7 +3053,6 @@ while True: # loops over the reloads
         evt_filename = "/var/log/pf-xivo-cti-server/ami_events.log"
         gui_filename = "/var/log/pf-xivo-cti-server/gui.log"
         with_ami = True
-        with_sip = True
         with_advert = False
         nukeast = False
 
@@ -3099,7 +3098,6 @@ while True: # loops over the reloads
                 nukeast = True
 
         if "noami" in xivoconf_general: with_ami = False
-        if "nosip" in xivoconf_general: with_sip = False
         if "advert" in xivoconf_general: with_advert = True
 
         configs = []
@@ -3365,7 +3363,7 @@ while True: # loops over the reloads
                 try:
                         update_sipnumlist(n)
                         if with_ami: update_amisocks(n)
-                        if with_sip: do_sip_register(n, SIPsocks[n])
+                        do_sip_register(configs[n], SIPsocks[n])
                         lastrequest_time.append(time.time())
                 except Exception, exc:
                         log_debug(configs[n].astid + " : failed while updating lists and sockets : %s" %(str(exc)))
@@ -3419,7 +3417,7 @@ while True: # loops over the reloads
                                         try:
                                                 update_sipnumlist(n)
                                                 if with_ami: update_amisocks(n)
-                                                if with_sip: do_sip_register(n, SIPsocks[n])
+                                                do_sip_register(configs[n], SIPsocks[n])
                                                 lastrequest_time[n] = time.time()
                                         except Exception, exc:
                                                 log_debug(configs[n].astid + " : failed while updating lists and sockets : %s" %(str(exc)))
@@ -3499,7 +3497,7 @@ while True: # loops over the reloads
                                         try:
                                                 update_sipnumlist(n)
                                                 if with_ami: update_amisocks(n)
-                                                if with_sip: do_sip_register(n, SIPsocks[n])
+                                                do_sip_register(configs[n], SIPsocks[n])
                                         except Exception, exc:
                                                 log_debug(configs[n].astid + " : failed while updating lists and sockets : %s" %(str(exc)))
                 else: # when nothing happens on the sockets, we fall here sooner or later
@@ -3508,5 +3506,5 @@ while True: # loops over the reloads
                                 lastrequest_time[n] = time.time()
                                 update_sipnumlist(n)
                                 if with_ami: update_amisocks(n)
-                                if with_sip: do_sip_register(n, SIPsocks[n])
+                                do_sip_register(configs[n], SIPsocks[n])
 

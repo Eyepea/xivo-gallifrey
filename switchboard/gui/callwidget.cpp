@@ -267,8 +267,8 @@ void CallWidget::transferToNumber()
 void CallWidget::contextMenuEvent(QContextMenuEvent *event)
 {
         m_contextMenu = new QMenu(this);
+        m_contextMenu->setStyleSheet("QMenu {border: 3px solid #ffa030 ; border-radius: 4px} ; QMenu::item {background-color: transparent}");
 	m_contextMenu->addAction(m_hangUpAction);
-
         // m_transferToNumberAction only if there is something written
 	m_contextMenu->addAction(m_transferToNumberAction);
 	m_contextMenu->exec(event->globalPos());

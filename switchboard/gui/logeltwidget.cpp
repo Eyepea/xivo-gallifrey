@@ -81,6 +81,7 @@ LogEltWidget::LogEltWidget( const QString & peer, Direction d,
 void LogEltWidget::contextMenuEvent(QContextMenuEvent *event)
 {
 	QMenu contextMenu(this);
+        contextMenu.setStyleSheet("QMenu {border: 3px solid #ffa030 ; border-radius: 4px} ; QMenu::item {background-color: transparent}");
 	contextMenu.addAction( m_dialAction );
 	contextMenu.exec(event->globalPos());
 }

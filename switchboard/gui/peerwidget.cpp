@@ -343,16 +343,21 @@ void PeerWidget::transferChan(const QString & chan)
  */
 void PeerWidget::contextMenuEvent(QContextMenuEvent * event)
 {
+        QString menuQSS("QMenu {border: 3px solid #ffa030 ; border-radius: 4px}\n"
+                        "QMenu::item {background: transparent}\n");
 	QMenu contextMenu(this);
 	contextMenu.addAction(m_dialAction);
+        contextMenu.setStyleSheet(menuQSS);
 	if(m_engine->isASwitchboard()) {
 		// add remove action only if we are in the central widget.
 		if(parentWidget() && m_engine->isRemovable(parentWidget()->metaObject()))
 			contextMenu.addAction(m_removeAction);
 		if( !m_channels.empty() ) {
 			QMenu * interceptMenu = new QMenu( tr("&Intercept"), &contextMenu );
+                        interceptMenu->setStyleSheet(menuQSS);
 			QMenu * hangupMenu = new QMenu( tr("&Hangup"), &contextMenu );
-			
+                        hangupMenu->setStyleSheet(menuQSS);
+
 			QListIterator<PeerChannel *> i(m_channels);
 			while(i.hasNext()) {
 				const PeerChannel * channel = i.next();
@@ -366,6 +371,7 @@ void PeerWidget::contextMenuEvent(QContextMenuEvent * event)
 		}
 		if( !m_mychannels.empty() ) {
 			QMenu * transferMenu = new QMenu( tr("&Transfer"), &contextMenu );
+                        transferMenu->setStyleSheet(menuQSS);
 			QListIterator<PeerChannel *> i(m_mychannels);
 			while(i.hasNext()) {
 				const PeerChannel * channel = i.next();
