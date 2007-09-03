@@ -18,14 +18,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 */
 
 /* $Revision$
-   $Date$
-*/
+ * $Date$
+ */
 
+#include <QAction>
 #include <QApplication>
 #include <QCloseEvent>
 #include <QDebug>
 #include <QLabel>
 #include <QLineEdit>
+#include <QMenu>
 #include <QMenuBar>
 #include <QMessageBox>
 #include <QScrollArea>
@@ -96,9 +98,11 @@ MainWidget::MainWidget(BaseEngine * engine, QWidget * parent)
 	         this, SLOT(engineStarted()));
 	connect( m_engine, SIGNAL(delogged()),
                  this, SLOT(engineStopped()));
-
+	connect( m_engine, SIGNAL(newProfile(Popup *)),
+	         this, SLOT(showNewProfile(Popup *)) );
+	
 	restoreGeometry(settings.value("display/mainwingeometry").toByteArray());
-
+	
 	m_wid = new QWidget();
         m_wid->setStyleSheet("* {background : white}");
 	m_mainlayout = new QVBoxLayout(m_wid);
@@ -148,8 +152,8 @@ void MainWidget::buildSplitters()
         // Right Splitter Definitions
         m_searchpanel = new SearchPanel(m_rightSplitter);
         m_searchpanel->setEngine(m_engine);
-	m_tabwidget = new QTabWidget(m_rightSplitter);
-        m_tabwidget->setStyleSheet("* {background : white}");
+	m_cinfo_tabwidget = new QTabWidget(m_rightSplitter);
+        m_cinfo_tabwidget->setStyleSheet("* {background : white}");
         m_dialpanel = new DialPanel(m_rightSplitter);
 	m_rightSplitter->restoreState(settings.value("display/rightSplitterSizes").toByteArray());
 
@@ -162,8 +166,6 @@ void MainWidget::buildSplitters()
                  m_infowidget, SLOT(setUser(const QString &)));
 	connect( m_calls, SIGNAL(changeTitle(const QString &)),
 	         m_leftpanel->titleLabel(), SLOT(setText(const QString &)) );
-	connect( m_engine, SIGNAL(newProfile(Popup *)),
-	         this, SLOT(showNewProfile(Popup *)) );
 	connect( m_engine, SIGNAL(emitTextMessage(const QString &)),
                  m_messages_widget, SLOT(addMessage(const QString &)));
 	connect( m_engine, SIGNAL(updateCall(const QString &, const QString &, int, const QString &,
@@ -251,7 +253,7 @@ void MainWidget::removeSplitters()
 
         // Right Splitter Definitions
         delete m_dialpanel;
-	delete m_tabwidget;
+	delete m_cinfo_tabwidget;
         delete m_searchpanel;
 
         // Splitters
@@ -273,42 +275,32 @@ MainWidget::~MainWidget()
 	settings.setValue("display/mainwingeometry", saveGeometry());
 }
 
-void MainWidget::createMenus()
-{
-}
-
 void MainWidget::createActions()
 {
-	QAction * conf = new QAction(tr("&Configure"), this);
-	conf->setStatusTip(tr("Open the configuration dialog"));
-	connect(conf, SIGNAL(triggered()),
-		this, SLOT(showConfDialog()));
+	m_cfgact = new QAction(tr("Confi&gure"), this);
+	m_cfgact->setStatusTip(tr("Configure account and connection options"));
+	connect( m_cfgact, SIGNAL(triggered()),
+		 this, SLOT(showConfDialog()) );
 
-	m_startact = new QAction(tr("S&tart"), this);
-	m_startact->setStatusTip(tr("Start"));
-	connect(m_startact, SIGNAL(triggered()),
-		m_engine, SLOT(start()) );
+	m_quitact = new QAction(tr("&Quit"), this);
+	m_quitact->setStatusTip(tr("Close the application"));
+	connect( m_quitact, SIGNAL(triggered()),
+		 m_engine, SLOT(stop()) );
+	connect( m_quitact, SIGNAL(triggered()),
+		 qApp, SLOT(quit()) );
 
-	m_stopact = new QAction(tr("Sto&p"), this);
-	m_stopact->setStatusTip(tr("Stop"));
-	connect(m_stopact, SIGNAL(triggered()),
-		m_engine, SLOT(stop()) );
-	m_stopact->setDisabled(true);
+	m_connectact = new QAction(tr("&Connect"), this);
+	m_connectact->setStatusTip(tr("Connect to the server"));
+	connect( m_connectact, SIGNAL(triggered()),
+		 m_engine, SLOT(start()) );
 
-	QAction * quit = new QAction(tr("&Quit"), this);
-	connect(quit, SIGNAL(triggered()),
-		m_engine, SLOT(stop()) );
-	connect(quit, SIGNAL(triggered()),
-		qApp, SLOT(quit()));
+	m_disconnectact = new QAction(tr("&Disconnect"), this);
+	m_disconnectact->setStatusTip(tr("Disconnect from the server"));
+	connect( m_disconnectact, SIGNAL(triggered()),
+		 m_engine, SLOT(stop()) );
 
-        menuBar()->setStyleSheet("* {background : #ffe0b0}");
-	QMenu * filemenu = menuBar()->addMenu(tr("&File"));
-        filemenu->addAction(conf);
-	filemenu->addSeparator();
-	filemenu->addAction(m_startact);
-	filemenu->addAction(m_stopact);
-	filemenu->addSeparator();
-	filemenu->addAction(quit);
+	m_connectact->setEnabled(true);
+	m_disconnectact->setEnabled(false);
 
 	// Availability actions :
 	m_availgrp = new QActionGroup( this );
@@ -340,20 +332,32 @@ void MainWidget::createActions()
 	         m_engine, SLOT(setDoNotDisturb()) );
 	m_availgrp->addAction( m_avact_dnd );
 
-	if(m_engine->getAvailState() == QString("berightback"))
+	if (m_engine->getAvailState() == QString("berightback"))
 		m_avact_brb->setChecked( true );
-	else if(m_engine->getAvailState() == QString("donotdisturb"))
+	else if (m_engine->getAvailState() == QString("donotdisturb"))
 		m_avact_dnd->setChecked( true );
-	else if(m_engine->getAvailState() == QString("away"))
+	else if (m_engine->getAvailState() == QString("away"))
 		m_avact_away->setChecked( true );
-	else if(m_engine->getAvailState() == QString("outtolunch"))
+	else if (m_engine->getAvailState() == QString("outtolunch"))
 		m_avact_otl->setChecked( true );
 	else
 		m_avact_avail->setChecked( true );
+}
+
+void MainWidget::createMenus()
+{
+        menuBar()->setStyleSheet("* {background : #ffe0b0}");
+	QMenu * filemenu = menuBar()->addMenu(tr("&File"));
+	filemenu->addAction( m_cfgact );
+	filemenu->addSeparator();
+	filemenu->addAction( m_connectact );
+	filemenu->addAction( m_disconnectact );
+	filemenu->addSeparator();
+	filemenu->addAction( m_quitact );
 
 	m_avail = menuBar()->addMenu(tr("&Availability"));
 	m_avail->addActions( m_availgrp->actions() );
-	m_avail->setEnabled( m_engine->checkedPresence() );
+	m_avail->setEnabled( false );
 	connect( m_engine, SIGNAL(availAllowChanged(bool)),
 	         m_avail, SLOT(setEnabled(bool)) );
 
@@ -361,6 +365,30 @@ void MainWidget::createActions()
         setStyleSheet("QMessageBox {background : #fff0e0}");
 	helpmenu->addAction(tr("&About XIVO Switchboard"), this, SLOT(about()));
 	helpmenu->addAction(tr("About &Qt"), qApp, SLOT(aboutQt()));
+}
+
+/*!
+ * tablimit property defines the maximum
+ * number of profile that can be displayed in the Tabbed
+ * widget.
+ *
+ * \sa setTablimit
+ * \sa m_tablimit
+ */
+int MainWidget::tablimit() const
+{
+	return m_tablimit;
+}
+
+/*!
+ * \sa tablimit
+ * \sa m_tablimit
+ */
+void MainWidget::setTablimit(int tablimit)
+{
+	QSettings settings;
+	m_tablimit = tablimit;
+	settings.setValue("display/tablimit", m_tablimit);
 }
 
 /*! \brief show the Configuration Dialog
@@ -374,31 +402,26 @@ void MainWidget::showConfDialog()
                               "QSpinBox {background : white}\n"
                               "QComboBox {background : white}\n"
                               "* {background : #ffe0b0}");
-        m_conf->exec();
+	m_conf->exec();
 }
 
+
 /*!
- * enable the "Stop" action and disable "Start" Action.
+ * enables the "Disconnect" action and disables the "Connect" Action.
+ * sets the Green indicator
  * \sa engineStopped()
  */
 void MainWidget::engineStarted()
 {
         QSettings settings;
-	QStringList display_capas = QString("customerinfo,history,features,directory,peers,dial,presence").split(",");
-        QStringList allowed_capas = m_engine->getCapabilities();
+	QStringList display_capas = QString("customerinfo,features,history,directory,peers,dial,presence").split(",");
+	QStringList allowed_capas = m_engine->getCapabilities();
 
         buildSplitters();
 
         for (int j = 0; j < display_capas.size(); j++) {
 		QString dc = display_capas[j];
-		bool allowed = false;
-                for(int c = 0; c < allowed_capas.size(); c++) {
-                        QString ac = allowed_capas[c];
-                        if(ac == dc) allowed = true;
-                }
-		if (allowed) {
-			qDebug() << "adding" << dc;
-
+		if (allowed_capas.contains(dc)) {
 			if (dc == QString("history")) {
                                 m_logwidget = new LogWidget(m_engine, m_svc_tabwidget);
                                 m_svc_tabwidget->insertTab(0, m_logwidget, tr("History"));
@@ -429,50 +452,50 @@ void MainWidget::engineStarted()
                                          m_featureswidget, SLOT(Reset()) );
 
                                 connect( m_featureswidget, SIGNAL(voiceMailToggled(bool)),
-                                         m_engine, SLOT(setVoiceMail(bool)) );
+                                         m_engine, SLOT(featurePutVoiceMail(bool)) );
                                 connect( m_engine, SIGNAL(voiceMailChanged(bool)),
                                          m_featureswidget, SLOT(setVoiceMail(bool)) );
 	
                                 connect( m_featureswidget, SIGNAL(callRecordingToggled(bool)),
-                                         m_engine, SLOT(setCallRecording(bool)) );
+                                         m_engine, SLOT(featurePutCallRecording(bool)) );
                                 connect( m_engine, SIGNAL(callRecordingChanged(bool)),
                                          m_featureswidget, SLOT(setCallRecording(bool)) );
 	
                                 connect( m_featureswidget, SIGNAL(callFilteringToggled(bool)),
-                                         m_engine, SLOT(setCallFiltering(bool)) );
+                                         m_engine, SLOT(featurePutCallFiltering(bool)) );
                                 connect( m_engine, SIGNAL(callFilteringChanged(bool)),
                                          m_featureswidget, SLOT(setCallFiltering(bool)) );
 	
                                 connect( m_featureswidget, SIGNAL(dndToggled(bool)),
-                                         m_engine, SLOT(setDnd(bool)) );
+                                         m_engine, SLOT(featurePutDnd(bool)) );
                                 connect( m_engine, SIGNAL(dndChanged(bool)),
                                          m_featureswidget, SLOT(setDnd(bool)) );
-	
+                                
                                 connect( m_featureswidget, SIGNAL(uncondForwardChanged(bool, const QString &)),
-                                         m_engine, SLOT(setUncondForward(bool, const QString &)) );
-                                connect( m_engine, SIGNAL(uncondForwardChanged(bool, const QString &)),
+                                         m_engine, SLOT(featurePutUncondForward(bool, const QString &)) );
+                                connect( m_engine, SIGNAL(uncondForwardUpdated(bool, const QString &)),
                                          m_featureswidget, SLOT(setUncondForward(bool, const QString &)) );
-                                connect( m_engine, SIGNAL(uncondForwardChanged(bool)),
+                                connect( m_engine, SIGNAL(uncondForwardUpdated(bool)),
                                          m_featureswidget, SLOT(setUncondForward(bool)) );
-                                connect( m_engine, SIGNAL(uncondForwardChanged(const QString &)),
+                                connect( m_engine, SIGNAL(uncondForwardUpdated(const QString &)),
                                          m_featureswidget, SLOT(setUncondForward(const QString &)) );
 	
                                 connect( m_featureswidget, SIGNAL(forwardOnBusyChanged(bool, const QString &)),
-                                         m_engine, SLOT(setForwardOnBusy(bool, const QString &)) );
-                                connect( m_engine, SIGNAL(forwardOnBusyChanged(bool, const QString &)),
+                                         m_engine, SLOT(featurePutForwardOnBusy(bool, const QString &)) );
+                                connect( m_engine, SIGNAL(forwardOnBusyUpdated(bool, const QString &)),
                                          m_featureswidget, SLOT(setForwardOnBusy(bool, const QString &)) );
-                                connect( m_engine, SIGNAL(forwardOnBusyChanged(bool)),
+                                connect( m_engine, SIGNAL(forwardOnBusyUpdated(bool)),
                                          m_featureswidget, SLOT(setForwardOnBusy(bool)) );
-                                connect( m_engine, SIGNAL(forwardOnBusyChanged(const QString &)),
+                                connect( m_engine, SIGNAL(forwardOnBusyUpdated(const QString &)),
                                          m_featureswidget, SLOT(setForwardOnBusy(const QString &)) );
 	
                                 connect( m_featureswidget, SIGNAL(forwardOnUnavailableChanged(bool, const QString &)),
-                                         m_engine, SLOT(setForwardOnUnavailable(bool, const QString &)) );
-                                connect( m_engine, SIGNAL(forwardOnUnavailableChanged(bool, const QString &)),
+                                         m_engine, SLOT(featurePutForwardOnUnavailable(bool, const QString &)) );
+                                connect( m_engine, SIGNAL(forwardOnUnavailableUpdated(bool, const QString &)),
                                          m_featureswidget, SLOT(setForwardOnUnavailable(bool, const QString &)) );
-                                connect( m_engine, SIGNAL(forwardOnUnavailableChanged(bool)),
+                                connect( m_engine, SIGNAL(forwardOnUnavailableUpdated(bool)),
                                          m_featureswidget, SLOT(setForwardOnUnavailable(bool)) );
-                                connect( m_engine, SIGNAL(forwardOnUnavailableChanged(const QString &)),
+                                connect( m_engine, SIGNAL(forwardOnUnavailableUpdated(const QString &)),
                                          m_featureswidget, SLOT(setForwardOnUnavailable(const QString &)) );
                                 m_engine->askFeatures("peer/to/define");
                         }
@@ -481,22 +504,24 @@ void MainWidget::engineStarted()
 
 	m_svc_tabwidget->setCurrentIndex(0);
 
-	m_stopact->setEnabled(true);
-	m_startact->setDisabled(true);
+	statusBar()->showMessage(tr("Connected"));
+	m_connectact->setEnabled(false);
+	m_disconnectact->setEnabled(true);
 	// set status icon to green
 	QPixmap greensquare(":xivoclient/gui/connected.png");
 	m_status->setPixmap(greensquare);
 }
 
 /*!
- * disable the "Stop" action and enable "Start" Action.
+ * disables the "Disconnect" action and enables the "Connect" Action.
+ * sets the Red indicator
  * \sa engineStarted()
  */
 void MainWidget::engineStopped()
 {
         QSettings settings;
-	QStringList display_capas = QString("customerinfo,history,features,directory,peers,dial,presence").split(",");
-        QStringList allowed_capas = m_engine->getCapabilities();
+	QStringList display_capas = QString("customerinfo,features,history,directory,peers,dial,presence").split(",");
+	QStringList allowed_capas = m_engine->getCapabilities();
 
 	settings.setValue("display/splitterSizes", m_splitter->saveState());
 	settings.setValue("display/leftSplitterSizes", m_leftSplitter->saveState());
@@ -505,23 +530,16 @@ void MainWidget::engineStopped()
 
 	for(int j = 0; j < display_capas.size(); j++) {
 		QString dc = display_capas[j];
-		bool allowed = false;
-                for(int c = 0; c < allowed_capas.size(); c++) {
-                        QString ac = allowed_capas[c];
-                        if(ac == dc) allowed = true;
-                }
-		if(allowed) {
-			qDebug() << "removing" << dc;
-
-                        if(dc == QString("features")) {
+		if (allowed_capas.contains(dc)) {
+                        if (dc == QString("features")) {
                                 int index_features = m_svc_tabwidget->indexOf(m_featureswidget);
-                                if(index_features > -1) {
+                                if (index_features > -1) {
                                         m_svc_tabwidget->removeTab(index_features);
                                         delete m_featureswidget;
                                 }
-                        } else if(dc == QString("history")) {
+                        } else if (dc == QString("history")) {
                                 int index_logs = m_svc_tabwidget->indexOf(m_logwidget);
-                                if(index_logs > -1) {
+                                if (index_logs > -1) {
                                         m_svc_tabwidget->removeTab(index_logs);
                                         delete m_logwidget;
                                 }
@@ -529,13 +547,8 @@ void MainWidget::engineStopped()
                 }
         }
 
-        m_tabwidget->clear();
-
-	m_stopact->setDisabled(true);
-	m_startact->setEnabled(true);
-
+        m_cinfo_tabwidget->clear();
         removeSplitters();
-
  	m_wid = new QWidget();
         m_wid->setStyleSheet("* {background : white}");
  	m_mainlayout = new QVBoxLayout(m_wid);
@@ -544,33 +557,12 @@ void MainWidget::engineStopped()
         m_mainlayout->addWidget(m_xivobg, 0, Qt::AlignHCenter | Qt::AlignVCenter);
  	setCentralWidget(m_wid);
 
+	statusBar()->showMessage(tr("Disconnected"));
+	m_connectact->setEnabled(true);
+	m_disconnectact->setEnabled(false);
 	// set status icon to red
 	QPixmap redsquare(":xivoclient/gui/disconnected.png");
 	m_status->setPixmap(redsquare);
-}
-
-/*!
- * tablimit property defines the maximum
- * number of profile that can be displayed in the Tabbed
- * widget.
- *
- * \sa setTablimit
- * \sa m_tablimit
- */
-int MainWidget::tablimit() const
-{
-	return m_tablimit;
-}
-
-/*!
- * \sa tablimit
- * \sa m_tablimit
- */
-void MainWidget::setTablimit(int tablimit)
-{
-	QSettings settings;
-	m_tablimit = tablimit;
-	settings.setValue("display/tablimit", m_tablimit);
 }
 
 /*!
@@ -579,24 +571,23 @@ void MainWidget::setTablimit(int tablimit)
  */
 void MainWidget::showNewProfile(Popup * popup)
 {
-	qDebug() << "MainWidget::showNewProfile()";
 	QTime currentTime = QTime::currentTime();
 	QString currentTimeStr = currentTime.toString("hh:mm:ss");
-	/*	if(m_systrayIcon)
+	/*	if (m_systrayIcon)
 	  {
 	  m_systrayIcon->showMessage(tr("Incoming call"),
 	  currentTimeStr + "\n"
 	  + popup->message() );
 	  }*/
-	if(m_tabwidget)
+	if (m_cinfo_tabwidget)
 	{
-		int index = m_tabwidget->addTab(popup, currentTimeStr);
+		int index = m_cinfo_tabwidget->addTab(popup, currentTimeStr);
 		qDebug() << "added tab" << index;
-		m_tabwidget->setCurrentIndex(index);
-		if(index >= m_tablimit)
+		m_cinfo_tabwidget->setCurrentIndex(index);
+		if (index >= m_tablimit)
 		{
 			// close the first widget
-			m_tabwidget->widget(0)->close();
+			m_cinfo_tabwidget->widget(0)->close();
 		}
                 connect( popup, SIGNAL(emitDial(const QString &)),
                          m_engine, SLOT(dialExtension(const QString &)) );
@@ -611,9 +602,10 @@ void MainWidget::showNewProfile(Popup * popup)
 	}
 }
 
-/*! \brief Display the about box
+/*! \brief Displays the about box
  *
- * use QMessageBox::about() to display the application about box
+ * use QMessageBox::about() to display
+ * the version and informations about the application
  */
 void MainWidget::about()
 {

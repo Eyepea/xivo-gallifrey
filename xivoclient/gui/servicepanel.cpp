@@ -57,16 +57,14 @@ ServicePanel::ServicePanel(QWidget * parent)
         vlayout->addStretch();
         vlayout->setSpacing(0);
 
-
         this->setStyleSheet("* {background : white}");
 
-
         Reset();
-	connect(m_uncondforwarddest, SIGNAL(textChanged(const QString &)),
+	connect(m_uncondforwarddest, SIGNAL(textEdited(const QString &)),
 		this, SLOT(toggleUncondIfAllowed(const QString &)));
-	connect(m_forwardonbusydest, SIGNAL(textChanged(const QString &)),
+	connect(m_forwardonbusydest, SIGNAL(textEdited(const QString &)),
 		this, SLOT(toggleOnBusyIfAllowed(const QString &)));
-	connect(m_forwardonunavailabledest, SIGNAL(textChanged(const QString &)),
+	connect(m_forwardonunavailabledest, SIGNAL(textEdited(const QString &)),
 		this, SLOT(toggleOnUnavailIfAllowed(const QString &)));
         Connect();
 
@@ -75,45 +73,45 @@ ServicePanel::ServicePanel(QWidget * parent)
 void ServicePanel::Connect()
 {
         qDebug() << "ServicePanel::Connect()";
-	connect(m_voicemail, SIGNAL(toggled(bool)),
+	connect(m_voicemail, SIGNAL(clicked(bool)),
 	        this, SIGNAL(voiceMailToggled(bool)));
-	connect(m_callrecording, SIGNAL(toggled(bool)),
+	connect(m_callrecording, SIGNAL(clicked(bool)),
 	        this, SIGNAL(callRecordingToggled(bool)));
-	connect(m_callfiltering, SIGNAL(toggled(bool)),
+	connect(m_callfiltering, SIGNAL(clicked(bool)),
 	        this, SIGNAL(callFilteringToggled(bool)));
-	connect(m_dnd, SIGNAL(toggled(bool)),
+	connect(m_dnd, SIGNAL(clicked(bool)),
 	        this, SIGNAL(dndToggled(bool)));
-	connect(m_uncondforward, SIGNAL(toggled(bool)),
+	connect(m_uncondforward, SIGNAL(clicked(bool)),
 	        this, SLOT(uncondForwardToggled(bool)));
-	connect(m_forwardonbusy, SIGNAL(toggled(bool)),
+	connect(m_forwardonbusy, SIGNAL(clicked(bool)),
 	        this, SLOT(forwardOnBusyToggled(bool)));
-	connect(m_forwardonunavailable, SIGNAL(toggled(bool)),
+	connect(m_forwardonunavailable, SIGNAL(clicked(bool)),
 	        this, SLOT(forwardOnUnavailableToggled(bool)));
 }
 
 void ServicePanel::DisConnect()
 {
         qDebug() << "ServicePanel::DisConnect()";
-	disconnect(m_voicemail, SIGNAL(toggled(bool)),
+	disconnect(m_voicemail, SIGNAL(clicked(bool)),
                    this, SIGNAL(voiceMailToggled(bool)));
-	disconnect(m_callrecording, SIGNAL(toggled(bool)),
+	disconnect(m_callrecording, SIGNAL(clicked(bool)),
                    this, SIGNAL(callRecordingToggled(bool)));
-	disconnect(m_callfiltering, SIGNAL(toggled(bool)),
+	disconnect(m_callfiltering, SIGNAL(clicked(bool)),
                    this, SIGNAL(callFilteringToggled(bool)));
-	disconnect(m_dnd, SIGNAL(toggled(bool)),
+	disconnect(m_dnd, SIGNAL(clicked(bool)),
                    this, SIGNAL(dndToggled(bool)));
-	disconnect(m_uncondforward, SIGNAL(toggled(bool)),
+	disconnect(m_uncondforward, SIGNAL(clicked(bool)),
                    this, SLOT(uncondForwardToggled(bool)));
-	disconnect(m_forwardonbusy, SIGNAL(toggled(bool)),
+	disconnect(m_forwardonbusy, SIGNAL(clicked(bool)),
                    this, SLOT(forwardOnBusyToggled(bool)));
-	disconnect(m_forwardonunavailable, SIGNAL(toggled(bool)),
+	disconnect(m_forwardonunavailable, SIGNAL(clicked(bool)),
                    this, SLOT(forwardOnUnavailableToggled(bool)));
 
-// 	disconnect(m_uncondforwarddest, SIGNAL(textChanged(const QString &)),
+// 	disconnect(m_uncondforwarddest, SIGNAL(textEdited(const QString &)),
 //                    this, SLOT(toggleUncondIfAllowed(const QString &)));
-// 	disconnect(m_forwardonbusydest, SIGNAL(textChanged(const QString &)),
+// 	disconnect(m_forwardonbusydest, SIGNAL(textEdited(const QString &)),
 //                    this, SLOT(toggleOnBusyIfAllowed(const QString &)));
-// 	disconnect(m_forwardonunavailabledest, SIGNAL(textChanged(const QString &)),
+// 	disconnect(m_forwardonunavailabledest, SIGNAL(textEdited(const QString &)),
 //                    this, SLOT(toggleOnUnavailIfAllowed(const QString &)));
 }
 
@@ -137,25 +135,27 @@ void ServicePanel::toggleUncondIfAllowed(const QString & text)
 {
         bool allowed = (text.size() > 0);
         m_uncondforward->setEnabled(allowed);
-        //        if(allowed == false) m_uncondforward->setChecked(false);
-        //        uncondForwardChanged((m_uncondforward->checkState() == Qt::Checked),
-        //                             m_uncondforwarddest->text());
+        if(allowed == false) m_uncondforward->setChecked(false);
+        uncondForwardChanged((m_uncondforward->checkState() == Qt::Checked),
+                             m_uncondforwarddest->text());
 }
 
 void ServicePanel::toggleOnBusyIfAllowed(const QString & text)
 {
         bool allowed = (text.size() > 0);
         m_forwardonbusy->setEnabled(allowed);
-        //	forwardOnBusyChanged((m_forwardonbusy->checkState() == Qt::Checked),
-        //                             m_forwardonbusydest->text());
+        if(allowed == false) m_forwardonbusy->setChecked(false);
+        forwardOnBusyChanged((m_forwardonbusy->checkState() == Qt::Checked),
+                             m_forwardonbusydest->text());
 }
 
 void ServicePanel::toggleOnUnavailIfAllowed(const QString & text)
 {
         bool allowed = (text.size() > 0);
         m_forwardonunavailable->setEnabled(allowed);
-        //	forwardOnUnavailableChanged((m_forwardonunavailable->checkState() == Qt::Checked),
-        //                                    m_forwardonunavailabledest->text());
+        if(allowed == false) m_forwardonunavailable->setChecked(false);
+        forwardOnUnavailableChanged((m_forwardonunavailable->checkState() == Qt::Checked),
+                                    m_forwardonunavailabledest->text());
 }
 
 void ServicePanel::uncondForwardToggled(bool b)
@@ -193,11 +193,12 @@ void ServicePanel::setDnd(bool b)
 	m_dnd->setChecked(b);
 }
 
+
 void ServicePanel::setUncondForward(bool b, const QString & dest)
 {
-	//qDebug() << "ServicePanel::setUncondForward" << b << dest;
 	m_uncondforwarddest->setText(dest);
 	m_uncondforward->setChecked(b);
+        m_uncondforward->setEnabled(dest.size() > 0);
 }
 
 void ServicePanel::setUncondForward(bool b)
@@ -208,13 +209,15 @@ void ServicePanel::setUncondForward(bool b)
 void ServicePanel::setUncondForward(const QString & dest)
 {
 	m_uncondforwarddest->setText(dest);
+        m_uncondforward->setEnabled(dest.size() > 0);
 }
+
 
 void ServicePanel::setForwardOnBusy(bool b, const QString & dest)
 {
-	//qDebug() << "ServicePanel::setForwardOnBusy";
 	m_forwardonbusydest->setText(dest);
 	m_forwardonbusy->setChecked(b);
+	m_forwardonbusy->setEnabled(dest.size() > 0);
 }
 
 void ServicePanel::setForwardOnBusy(bool b)
@@ -225,13 +228,14 @@ void ServicePanel::setForwardOnBusy(bool b)
 void ServicePanel::setForwardOnBusy(const QString & dest)
 {
 	m_forwardonbusydest->setText(dest);
+	m_forwardonbusy->setEnabled(dest.size() > 0);
 }
 
 void ServicePanel::setForwardOnUnavailable(bool b, const QString & dest)
 {
-	//qDebug() << "ServicePanel::setForwardOnUnavailable";
 	m_forwardonunavailabledest->setText(dest);
 	m_forwardonunavailable->setChecked(b);
+	m_forwardonunavailable->setEnabled(dest.size() > 0);
 }
 
 void ServicePanel::setForwardOnUnavailable(bool b)
@@ -242,6 +246,7 @@ void ServicePanel::setForwardOnUnavailable(bool b)
 void ServicePanel::setForwardOnUnavailable(const QString & dest)
 {
 	m_forwardonunavailabledest->setText(dest);
+	m_forwardonunavailable->setEnabled(dest.size() > 0);
 }
 
 /*! \brief change the monitored peer

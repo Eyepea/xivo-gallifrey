@@ -137,13 +137,13 @@ public slots:
 	void setOutToLunch();			//!< set user status as "out to lunch"
 	void setDoNotDisturb();			//!< set user status as "do not disturb"
 	void sendUDPCommand(const QString &);
-	void setVoiceMail(bool);
-	void setCallRecording(bool);
-	void setCallFiltering(bool);
-	void setDnd(bool);
-	void setUncondForward(bool, const QString &);
-	void setForwardOnBusy(bool, const QString &);
-	void setForwardOnUnavailable(bool, const QString &);
+	void featurePutVoiceMail(bool);
+	void featurePutCallRecording(bool);
+	void featurePutCallFiltering(bool);
+	void featurePutDnd(bool);
+	void featurePutUncondForward(bool, const QString &);
+	void featurePutForwardOnBusy(bool, const QString &);
+	void featurePutForwardOnUnavailable(bool, const QString &);
 	void askFeatures(const QString &);
 	void askPeers();
 	void askCallerIds();
@@ -205,15 +205,15 @@ signals:
 	void callRecordingChanged(bool);
 	void callFilteringChanged(bool);
 	void dndChanged(bool);
-	void uncondForwardChanged(bool, const QString &);
-	void uncondForwardChanged(bool);
-	void uncondForwardChanged(const QString &);
-	void forwardOnBusyChanged(bool, const QString &);
-	void forwardOnBusyChanged(bool);
-	void forwardOnBusyChanged(const QString &);
-	void forwardOnUnavailableChanged(bool, const QString &);
-	void forwardOnUnavailableChanged(bool);
-	void forwardOnUnavailableChanged(const QString &);
+	void uncondForwardUpdated(bool, const QString &);
+	void uncondForwardUpdated(bool);
+	void uncondForwardUpdated(const QString &);
+	void forwardOnBusyUpdated(bool, const QString &);
+	void forwardOnBusyUpdated(bool);
+	void forwardOnBusyUpdated(const QString &);
+	void forwardOnUnavailableUpdated(bool, const QString &);
+	void forwardOnUnavailableUpdated(bool);
+	void forwardOnUnavailableUpdated(const QString &);
 private:
 	void initListenSocket();	//!< initialize the socket listening to profile
 	void stopKeepAliveTimer();	//!< Stop the keep alive timer if running

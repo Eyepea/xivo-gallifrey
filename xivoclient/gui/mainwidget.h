@@ -50,17 +50,17 @@ class MainWidget: public QMainWindow
 	Q_OBJECT
 public:
 	//! Constructor
-	MainWidget(BaseEngine *,
-                   QWidget * parent=0);
+	MainWidget(BaseEngine *, QWidget * parent=0);
 	//! Destructor
         ~MainWidget();
+
 	int tablimit() const;	//!< getter for m_tablimit
 	void setTablimit(int);	//!< setter for m_tablimit
 	void setForceTabs(bool);//!< setter for m_forcetabs
 private slots:
 	void showConfDialog();
-	void setDisconnected();
-	void setConnected();
+	void engineStopped();
+	void engineStarted();
 	void systrayActivated(QSystemTrayIcon::ActivationReason);
 	void systrayMsgClicked();
 	void showNewProfile(Popup *);	//!< display a Profile widget
@@ -75,7 +75,7 @@ private:
 	void createMenus();		//!< Create Menus
 	void createSystrayIcon();	//!< Create the systray Icon and its menu
         void savePositions() const;
-private:
+
 	BaseEngine * m_engine;			//!< pointer to the BaseEngine used
 	//QPushButton * m_btnstart;	//!< Start Button
 	QSystemTrayIcon * m_systrayIcon;	//!< System Tray Icon
@@ -85,15 +85,15 @@ private:
 	QIcon m_icongrey;	//!< greyed Icon Object
 
 	QWidget * m_wid;	//!< Main widget
-	QTabWidget * m_tabwidget;	//!< Area to display profiles
-	QTabWidget * m_qtabwidget;	//!< Area to display function tabs
+	QTabWidget * m_cinfo_tabwidget;	//!< Area to display profiles
+	QTabWidget * m_main_tabwidget;	//!< Area to display function tabs
 	QVBoxLayout * m_mainlayout;    //!< Panel of widgets
 	QLabel * m_messagetosendlabel;    //!< Label for message for switchboards
 	QLineEdit * m_messagetosend;    //!< Message to send to the connected switchboards
 	DialPanel * m_dial;
 	DirectoryPanel * m_directory;
         QLabel * m_xivobg;
-        QLabel * m_xivobg2;
+	//        QLabel * m_xivobg2;
 	LogWidget * m_history;
         ConfWidget * m_conf;
         IdentityDisplay * m_infowidget;
@@ -102,21 +102,22 @@ private:
 	bool m_forcetabs;    //!< Flag to allow the display of "unallowed" tabs, useful to test server-side capabilities
 	bool m_presence;
 
-	int m_tablimit;		//!< Maximum number of tabs in m_tabwidget
+	int m_tablimit;		//!< Maximum number of tabs in m_cinfo_tabwidget
 	int m_cinfo_index;
 	// actions :
 	QAction * m_cfgact;		//!< Configuration Action
-	QAction * m_quitact;	//!< Quit Action
-	QAction * m_systrayact;	//!< "Go to systray" action
-	QAction * m_connectact;	//!< "Connect" Action
+	QAction * m_quitact;		//!< Quit Action
+	QAction * m_systrayact;		//!< "Go to systray" action
+	QAction * m_connectact;		//!< "Connect" Action
 	QAction * m_disconnectact;	//!< "Disconnect" Action
 	QActionGroup * m_availgrp;	//!< group For Availability Actions
+
+	QMenu * m_avail;		//!< Availability submenu
 	QAction * m_avact_avail;	//!< Available Action
 	QAction * m_avact_away;		//!< Away Action
 	QAction * m_avact_brb;		//!< "Be Right Back" Action
 	QAction * m_avact_otl;		//!< "Out To Lunch" Action
 	QAction * m_avact_dnd;		//!< "Do not disturb" action
-	QMenu * m_avail;
 
 	QLabel * m_status;	//!< status indicator
 };

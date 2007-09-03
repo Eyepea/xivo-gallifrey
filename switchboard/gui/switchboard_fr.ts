@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS><TS version="1.1" language="fr">
+<defaultcodec></defaultcodec>
 <context>
     <name>BaseEngine</name>
     <message>
@@ -403,129 +404,144 @@ Merci de mettre à jour votre serveur.</translation>
 <context>
     <name>MainWidget</name>
     <message>
-        <location filename="mainwidget.cpp" line="135"/>
+        <location filename="mainwidget.cpp" line="139"/>
         <source>Messages</source>
         <translation>Messages</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="305"/>
+        <location filename="mainwidget.cpp" line="350"/>
         <source>&amp;File</source>
         <translation>&amp;Fichier</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="287"/>
-        <source>S&amp;tart</source>
-        <translation>&amp;Démarrer</translation>
-    </message>
-    <message>
-        <location filename="mainwidget.cpp" line="288"/>
-        <source>Start</source>
-        <translation>Connexion</translation>
-    </message>
-    <message>
-        <location filename="mainwidget.cpp" line="292"/>
-        <source>Sto&amp;p</source>
-        <translation>&amp;Arrêter</translation>
-    </message>
-    <message>
-        <location filename="mainwidget.cpp" line="293"/>
-        <source>Stop</source>
-        <translation>Déconnexion</translation>
-    </message>
-    <message>
-        <location filename="mainwidget.cpp" line="282"/>
-        <source>&amp;Configure</source>
-        <translation>&amp;Configuration</translation>
-    </message>
-    <message>
-        <location filename="mainwidget.cpp" line="283"/>
-        <source>Open the configuration dialog</source>
-        <translation>Ouvre la fenêtre de configuration</translation>
-    </message>
-    <message>
-        <location filename="mainwidget.cpp" line="298"/>
+        <location filename="mainwidget.cpp" line="285"/>
         <source>&amp;Quit</source>
         <translation>&amp;Quitter</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="317"/>
+        <location filename="mainwidget.cpp" line="309"/>
         <source>&amp;Available</source>
         <translation>&amp;Disponible</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="322"/>
+        <location filename="mainwidget.cpp" line="314"/>
         <source>A&amp;way</source>
         <translation>&amp;Occupé</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="327"/>
+        <location filename="mainwidget.cpp" line="319"/>
         <source>&amp;Be Right Back</source>
         <translation>&amp;Bientôt De Retour</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="332"/>
+        <location filename="mainwidget.cpp" line="324"/>
         <source>&amp;Out To Lunch</source>
         <translation>P&amp;arti Déjeuner</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="337"/>
+        <location filename="mainwidget.cpp" line="329"/>
         <source>&amp;Do not disturb</source>
         <translation>&amp;Ne Pas Déranger</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="354"/>
+        <location filename="mainwidget.cpp" line="358"/>
         <source>&amp;Availability</source>
         <translation>&amp;Disponibilité</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="360"/>
+        <location filename="mainwidget.cpp" line="364"/>
         <source>&amp;Help</source>
         <translation>&amp;Aide</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="362"/>
+        <location filename="mainwidget.cpp" line="366"/>
         <source>&amp;About XIVO Switchboard</source>
         <translation>&amp;A propos du SwitchBoard XIVO</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="363"/>
+        <location filename="mainwidget.cpp" line="367"/>
         <source>About &amp;Qt</source>
         <translation>A propos de &amp;Qt</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="404"/>
+        <location filename="mainwidget.cpp" line="427"/>
         <source>History</source>
         <translation>Historique</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="417"/>
+        <location filename="mainwidget.cpp" line="440"/>
         <source>Services</source>
         <translation>Services</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="624"/>
+        <location filename="mainwidget.cpp" line="616"/>
         <source>About XIVO SwitchBoard</source>
         <translation>A propos du SwitchBoard XIVO</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="628"/>
+        <location filename="mainwidget.cpp" line="620"/>
         <source>&lt;p&gt;This application displays the status of the ongoing phone calls.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Cette application affiche le statut des appels téléphoniques en cours.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="628"/>
+        <location filename="mainwidget.cpp" line="620"/>
         <source>Version : </source>
         <translation>Version : </translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="636"/>
+        <location filename="mainwidget.cpp" line="628"/>
         <source>Authors : </source>
         <translation>Auteurs : </translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="637"/>
+        <location filename="mainwidget.cpp" line="629"/>
         <source>License : </source>
         <translation>Licence : </translation>
+    </message>
+    <message>
+        <location filename="mainwidget.cpp" line="280"/>
+        <source>Confi&amp;gure</source>
+        <translation>Confi&amp;gurer</translation>
+    </message>
+    <message>
+        <location filename="mainwidget.cpp" line="281"/>
+        <source>Configure account and connection options</source>
+        <translation>Configurer votre compte et vos options de connexion</translation>
+    </message>
+    <message>
+        <location filename="mainwidget.cpp" line="286"/>
+        <source>Close the application</source>
+        <translation>Fermer l&apos;application</translation>
+    </message>
+    <message>
+        <location filename="mainwidget.cpp" line="292"/>
+        <source>&amp;Connect</source>
+        <translation>&amp;Connecter</translation>
+    </message>
+    <message>
+        <location filename="mainwidget.cpp" line="293"/>
+        <source>Connect to the server</source>
+        <translation>Se connecter au serveur</translation>
+    </message>
+    <message>
+        <location filename="mainwidget.cpp" line="297"/>
+        <source>&amp;Disconnect</source>
+        <translation>&amp;Déconnecter</translation>
+    </message>
+    <message>
+        <location filename="mainwidget.cpp" line="298"/>
+        <source>Disconnect from the server</source>
+        <translation>Se déconnecter du serveur</translation>
+    </message>
+    <message>
+        <location filename="mainwidget.cpp" line="507"/>
+        <source>Connected</source>
+        <translation>Connecté</translation>
+    </message>
+    <message>
+        <location filename="mainwidget.cpp" line="560"/>
+        <source>Disconnected</source>
+        <translation>Déconnecté</translation>
     </message>
 </context>
 <context>

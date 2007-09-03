@@ -80,7 +80,7 @@ private:
 	QSplitter * m_rightSplitter;	//!< Vertical splitter on the right
 	BaseEngine * m_engine;	//!< Engine
 	SwitchBoardWindow * m_widget;	//!< Widget to display peers
-	QTabWidget * m_tabwidget;	//!< Area to display profiles
+	QTabWidget * m_cinfo_tabwidget;	//!< Area to display profiles
 	QTabWidget * m_svc_tabwidget;	//!< Area to display messages, services and histories
 	ServicePanel * m_featureswidget;
         DisplayMessagesPanel * m_messages_widget;
@@ -98,14 +98,15 @@ private:
         IdentityDisplay * m_infowidget;
 
         DialPanel * m_dialpanel;
-	int m_tablimit;		//!< Maximum number of tabs in m_tabwidget
+	int m_tablimit;		//!< Maximum number of tabs in m_cinfo_tabwidget
 
-	QMenu * m_avail;	//!< Availability submenu
-	QAction * m_loginact;	//!< "Log in" Action
-	QAction * m_logoffact;	//!< "Log off" Action
-	QAction * m_startact;	//!< "Start" Action
-	QAction * m_stopact;	//!< "Stop" Action
+	QAction * m_cfgact;		//!< Configuration Action
+	QAction * m_quitact;		//!< Quit Action
+	QAction * m_connectact;		//!< "Start" Action
+	QAction * m_disconnectact;	//!< "Stop" Action
 	QActionGroup * m_availgrp;	//!< Availability action group
+
+	QMenu * m_avail;		//!< Availability submenu
 	QAction * m_avact_avail;	//!< "Available" action
 	QAction * m_avact_brb;		//!< "Be right back" action
 	QAction * m_avact_dnd;		//!< "Do not disturb" action

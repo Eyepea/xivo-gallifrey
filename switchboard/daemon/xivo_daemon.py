@@ -743,16 +743,21 @@ def build_features_put(reqlist, socketid):
                 log_debug("--- exception --- build_features_put (%s) : %s" % (str(reqlist), str(exc)))
                 return "featuresput=KO"
 
-        if len(reqlist) >= 5:
+        response = "PUT KO"
+        len_reqlist = len(reqlist)
+        if len_reqlist >= 4:
                 key = reqlist[3]
-                value = reqlist[4]
-                fullcomm = "database put %s %s %s" %(dbfamily, key, value)
+                if len_reqlist >= 5:
+                        value = reqlist[4]
+                else:
+                        value = ""
+                fullcomm = 'database put %s %s "%s"' %(dbfamily, key, value)
                 reply = AMIclasssock[astnum].execclicommand(fullcomm)
                 repstr = "KO"
                 for r in reply:
                         if r.rstrip() == "Updated database successfully":
                                 repstr = "OK"
-                response = 'PUT %s %s %s' %(repstr, key, value)
+                response = 'PUT %s %s "%s"' %(repstr, key, value)
         return response
 
 
