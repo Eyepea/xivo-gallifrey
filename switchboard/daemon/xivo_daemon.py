@@ -392,188 +392,6 @@ def tellpresence(data):
         return [num, stat]
 
 
-## \class AMIClass
-# AMI definition in order to interact with the Asterisk AMI.
-class AMIClass:
-        class AMIError(Exception):
-                def __init__(self, msg):
-                    self.msg = msg
-                def __str__(self):
-                    return msg
-
-        # \brief Class initialization.
-        def __init__(self, address, loginname, password):
-                self.address   = address
-                self.loginname = loginname
-                self.password  = password
-                self.i = 1
-        # \brief Connection to a socket.
-        def connect(self):
-                s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                s.connect(self.address)
-                self.f = s.makefile('r', 0)
-                s.close()
-                str = self.f.readline()
-                #print str,
-        # \brief Sending any AMI command.
-        def sendcommand(self, action, args):
-                ret = False
-                try:
-                        self.f.write('Action: ' + action + '\r\n')
-                        for (name, value) in args:
-                                self.f.write(name + ': ' + value + '\r\n')
-                        self.f.write('\r\n')
-                        self.f.flush()
-                        ret = True
-                except:
-                        ret = False
-                if ret == False:
-                        try:
-                                self.connect()
-                                self.login()
-                                if self:
-                                        log_debug("retrying AMI command " + action)
-                                        self.sendcommand(action, args)
-                        except Exception, exc:
-                                log_debug("--- exception --- AMI not connected (action=%s args=%s) : %s" %(action, str(args), str(exc)))
-        # \brief For debug.
-        def printresponse_forever(self):
-                while True:
-                        str = self.f.readline()
-                        self.i = self.i + 1
-        # \brief Reads a part of a reply.
-        def readresponsechunk(self):
-                start = True
-                list = []
-                while True:
-                        str = self.f.readline()
-                        #print "--------------", self.i, len(str), str,
-                        self.i = self.i + 1
-                        if start and str == '\r\n': continue
-                        start = False
-                        if str == '\r\n' or str == '': break
-                        l = [ x.strip() for x in str.split(': ') ]
-                        if len(l) == 2:
-                                list.append((l[0], l[1]))
-                return dict(list)
-        # \brief Reads the reply.
-        def readresponse(self, check):
-                first = self.readresponsechunk()
-                if first=={}: return []
-                if first['Response'] != 'Success':
-                        #and first['Response'] != 'Follows':
-                        if first.has_key('Message'):
-                                raise self.AMIError(first['Message'])
-                        else:
-                                raise self.AMIError('')
-                if check == '':
-                        return []
-                resp = []
-                while True:
-                        chunk = self.readresponsechunk()
-                        #print "chunk", chunk
-                        if chunk=={}:
-                                #print 'empty chunk'
-                                resp.append(first)
-                                break
-                        resp.append(chunk)
-                        if not chunk.has_key('Event'):
-                                continue
-                                #break
-                        if chunk['Event'] == check:
-                                break
-                return resp
-        # \brief Logins to the AMI.
-        def login(self):
-                try:
-                        self.sendcommand('login',
-                                         [('Username', self.loginname),
-                                          ('Secret', self.password),
-                                          ('Events', 'off')])
-                        self.readresponse('')
-                        return True
-                except self.AMIError, exc:
-                        return False
-                except Exception, exc:
-                        return False
-
-        # \brief Executes a CLI command.
-        def execclicommand(self, command):
-                # special procession for cli commands.
-                self.sendcommand('Command',
-                                 [('Command', command)])
-                resp = []
-                for i in (1, 2): str = self.f.readline()
-                while True:
-                        str = self.f.readline()
-                        #print self.i, len(str), str,
-                        self.i = self.i + 1
-                        if str == '\r\n' or str == '' or str == '--END COMMAND--\r\n':
-                                break
-                        resp.append(str)
-                return resp
-
-        # \brief Hangs up a Channel.
-        def hangup(self, channel, channel_peer):
-                ret = 0
-                try:
-                        self.sendcommand('Hangup',
-                                         [('Channel', channel)])
-                        self.readresponse('')
-                        ret += 1
-                except self.AMIError, exc:
-                        pass
-                except Exception, exc:
-                        pass
-
-                if channel_peer != "":
-                        try:
-                                self.sendcommand('Hangup',
-                                                 [('Channel', channel_peer)])
-                                self.readresponse('')
-                                ret += 2
-                        except self.AMIError, exc:
-                                pass
-                        except Exception, exc:
-                                pass
-                
-                return ret
-
-        # \brief Originates a call from a phone towards another.
-        def originate(self, phoneproto, phonesrc, phonedst, locext):
-                # originate a call btw src and dst
-                # src will ring first, and dst will ring when src responds
-                try:
-                        self.sendcommand('Originate', [('Channel', phoneproto + '/' + phonesrc),
-                                                       ('Exten', phonedst),
-                                                       ('Context', locext),
-                                                       ('Priority', '1'),
-#                                                       ('CallerID', "%s" %(phonesrc)),
-                                                       ('CallerID', "calls %s <%s>" %(phonedst, phonedst)),
-                                                       ('Variable', 'ORIGINATE_SRC=%s' %phonesrc),
-                                                       ('Async', 'true')])
-                        self.readresponse('')
-                        return True
-                except self.AMIError, exc:
-                        return False
-                except Exception, exc:
-                        return False
-
-        # \brief Transfers a channel towards a new extension.
-        def transfer(self, channel, extension, context):
-                try:
-                        self.sendcommand('Redirect', [('Channel', channel),
-                                                      ('Exten', extension),
-                                                      ('Context', context),
-                                                      ('Priority', '1')])
-                        self.readresponse('')
-                        return True
-                except self.AMIError, exc:
-                        return False
-                except Exception, exc:
-                        return False
-
-
 ## \brief Builds the full list of customers in order to send them to the requesting client.
 # This should be done after a command called "customers".
 # \return a string containing the full customers list
@@ -692,58 +510,50 @@ def build_fullstatlist(phoneid):
 
 
 ## \brief Builds the features reply.
-def build_features_get(reqlist, socketid):
-        try:
-                astnum = asteriskr[reqlist[0]]
-                dbfamily = "%s/users/%s" %(reqlist[1], reqlist[2])
-                repstr = "featuresget="
-        except Exception, exc:
-                log_debug("--- exception --- build_features_get (%s) : %s" % (str(reqlist), str(exc)))
-                return "featuresget=KO"
-        
+def build_features_get(reqlist):
+        dbfamily = "%s/users/%s" %(reqlist[1], reqlist[2])
+        repstr = "featuresget="
+
         for key in ["VM", "Record", "Screen", "DND"]:
                 try:
                         fullcomm = "database get %s %s" %(dbfamily, key)
-                        reply = AMIclasssock[astnum].execclicommand(fullcomm)
+                        reply = AMI_array_user_commands[reqlist[0]].execclicommand(fullcomm)
                         for r in reply:
-                                if r.find("Value: ") == 0:
-                                        repstr += "%s;%s;" %(key, r.rstrip().split(" ")[1])
+                                rep = r.rstrip()
+                                if rep.find("Value: ") == 0 and len(rep.split(' ')) == 2:
+                                        repstr += "%s;%s;" %(key, rep.split(' ')[1])
                 except Exception, exc:
-                        log_debug("--- exception --- featuresget bool astnum=%d key=%s : %s" %(astnum, key, str(exc)))
+                        log_debug("--- exception --- featuresget(bool) id=%s key=%s : %s" %(str(reqlist), key, str(exc)))
 
         for key in ["FWD/Unc", "FWD/Busy", "FWD/RNA"]:
                 keystatus = ""
                 keynumber = ""
                 try:
                         fullcomm = "database get %s %s/Status" %(dbfamily, key)
-                        reply = AMIclasssock[astnum].execclicommand(fullcomm)
+                        reply = AMI_array_user_commands[reqlist[0]].execclicommand(fullcomm)
                         for r in reply:
-                                if r.find("Value: ") == 0:
-                                        keystatus = r.rstrip().split(" ")[1]
+                                rep = r.rstrip()
+                                if rep.find("Value: ") == 0 and len(rep.split(' ')) == 2:
+                                        keystatus = rep.split(' ')[1]
 
                         fullcomm = "database get %s %s/Number" %(dbfamily, key)
-                        reply = AMIclasssock[astnum].execclicommand(fullcomm)
+                        reply = AMI_array_user_commands[reqlist[0]].execclicommand(fullcomm)
                         for r in reply:
-                                if r.find("Value: ") == 0:
-                                        keynumber = r.rstrip().split(" ")[1]
+                                rep = r.rstrip()
+                                if rep.find("Value: ") == 0 and len(rep.split(' ')) == 2:
+                                        keynumber = rep.split(' ')[1]
                 except Exception, exc:
-                        log_debug("--- exception --- featuresget str astnum=%d key=%s : %s" %(astnum, key, str(exc)))
+                        log_debug("--- exception --- featuresget(str) id=%s key=%s : %s" %(str(reqlist), key, str(exc)))
 
                 repstr += "%s;%s:%s;" %(key, keystatus, keynumber)
         return repstr
 
 
 ## \brief Builds the features reply.
-def build_features_put(reqlist, socketid):
-        try:
-                astnum = asteriskr[reqlist[0]]
-                dbfamily = "%s/users/%s" %(reqlist[1], reqlist[2])
-                repstr = "featuresput="
-        except Exception, exc:
-                log_debug("--- exception --- build_features_put (%s) : %s" % (str(reqlist), str(exc)))
-                return "featuresput=KO"
-
-        response = "PUT KO"
+def build_features_put(reqlist):
+        dbfamily = "%s/users/%s" %(reqlist[1], reqlist[2])
+        response = "featuresput="
+        
         len_reqlist = len(reqlist)
         if len_reqlist >= 4:
                 key = reqlist[3]
@@ -752,12 +562,12 @@ def build_features_put(reqlist, socketid):
                 else:
                         value = ""
                 fullcomm = 'database put %s %s "%s"' %(dbfamily, key, value)
-                reply = AMIclasssock[astnum].execclicommand(fullcomm)
+                reply = AMI_array_user_commands[reqlist[0]].execclicommand(fullcomm)
                 repstr = "KO"
                 for r in reply:
                         if r.rstrip() == "Updated database successfully":
                                 repstr = "OK"
-                response = 'PUT %s %s "%s"' %(repstr, key, value)
+                response = 'featuresput=%s;%s;"%s"' %(repstr, key, value)
         return response
 
 
@@ -1030,20 +840,14 @@ def originate_or_transfer(requester, l):
         if ast_src in asteriskr: idast_src = asteriskr[ast_src]
         if ast_dst in asteriskr: idast_dst = asteriskr[ast_dst]
         if idast_src != -1 and idast_src == idast_dst:
-                if not AMIclasssock[idast_src]:
-                        "AMI was not connected - attempting to connect again"
-                        AMIclasssock[idast_src] = connect_to_AMI((configs[idast_src].remoteaddr,
-                                                                  configs[idast_src].ami_port),
-                                                                 configs[idast_src].ami_login,
-                                                                 configs[idast_src].ami_pass)
-                if AMIclasssock[idast_src]:
+                if ast_src in AMI_array_user_commands and AMI_array_user_commands[ast_src]:
                         if l[0] == 'originate':
                                 log_debug("%s is attempting an ORIGINATE : %s" %(requester, str(l)))
                                 if ast_dst != "":
-                                        ret = AMIclasssock[idast_src].originate(proto_src,
-                                                                                userid_src,
-                                                                                exten_dst,
-                                                                                context_dst)
+                                        ret = AMI_array_user_commands[ast_src].originate(proto_src,
+                                                                              userid_src,
+                                                                              exten_dst,
+                                                                              context_dst)
                                 else:
                                         ret = False
                                 if ret:
@@ -1063,9 +867,9 @@ def originate_or_transfer(requester, l):
                                                         ret_message = "message=%s::transfer KO : no channel opened on %s" %(DAEMON, phonesrc)
                                                 else:
                                                         tchan = channellist[phonesrcchan].getChannelPeer()
-                                                        ret = AMIclasssock[idast_src].transfer(tchan,
-                                                                                               exten_dst,
-                                                                                               "local-extensions")
+                                                        ret = AMI_array_user_commands[ast_src].transfer(tchan,
+                                                                                             exten_dst,
+                                                                                             "local-extensions")
                                                         if ret:
                                                                 ret_message = "message=%s::transfer OK (%s) %s %s" %(DAEMON, ast_src, l[1], l[2])
                                                         else:
@@ -1088,14 +892,8 @@ def hangup(requester, l):
                                 channel_peer = plist[idast_src].normal[phone].chann[channel].getChannelPeer()
                                 log_debug("UI action : %s : hanging up <%s> and <%s>"
                                           %(configs[idast_src].astid , channel, channel_peer))
-                                if not AMIclasssock[idast_src]:
-                                        log_debug("AMI was not connected - attempting to connect again")
-                                        AMIclasssock[idast_src] = connect_to_AMI((configs[idast_src].remoteaddr,
-                                                                                  configs[idast_src].ami_port),
-                                                                                 configs[idast_src].ami_login,
-                                                                                 configs[idast_src].ami_pass)
-                                if AMIclasssock[idast_src]:
-                                        ret = AMIclasssock[idast_src].hangup(channel, channel_peer)
+                                if ast_src in AMI_array_user_commands and AMI_array_user_commands[ast_src]:
+                                        ret = AMI_array_user_commands[ast_src].hangup(channel, channel_peer)
                                         if ret > 0:
                                                 ret_message = "message=%s::hangup OK (%d) %s" %(DAEMON, ret, l[1])
                                         else:
@@ -1156,7 +954,7 @@ def manage_login(cfg, requester_ip, requester_port, socket):
                                 connect_user(userinfo, sessionid,
                                              requester_ip, requester_port,
                                              whoami, whatsmyos, True, state,
-                                             socket)
+                                             False, socket)
 
                                 repstr = "loginok=" \
                                          "context:%s;phonenum:%s;capas:%s;" \
@@ -1169,7 +967,6 @@ def manage_login(cfg, requester_ip, requester_port, socket):
                                                                                               cfg.get('astid'),
                                                                                               proto + userid,
                                                                                               userinfo.get('context'),
-                                                                                              None,
                                                                                               userinfo.get('capas')]
                                 send_availstate_update(astnum, proto + userid, state)
                         else:
@@ -1187,7 +984,7 @@ def manage_login(cfg, requester_ip, requester_port, socket):
 # (for switchboard) or to events-disallowed ones (for php CLI commands)
 # \return none
 def manage_tcp_connection(connid, allow_events):
-        global AMIclasssock, AMIcomms, ins
+        global AMI_array_user_commands, ins
 
         try:
                 requester_ip   = connid[1]
@@ -1233,6 +1030,7 @@ def manage_tcp_connection(connid, allow_events):
         else:
             for usefulmsgpart in msg.split("\n"):
                 usefulmsg = usefulmsgpart.split("\r")[0]
+                # debug/setup functions
                 if usefulmsg == "show_infos":
                         try:
                                 time_uptime = int(time.time() - time_start)
@@ -1242,11 +1040,11 @@ def manage_tcp_connection(connid, allow_events):
                                 for tcpo in tcpopens_sb:
                                         reply += ":%s:%d" %(tcpo[1],tcpo[2])
                                 connid[0].send(reply + "\n")
+                                connid[0].send("server capabilities = %s\n" %(",".join(capabilities_list)))
                                 connid[0].send("%s:OK\n" %(XIVO_CLI_PHP_HEADER))
                         except Exception, exc:
                                 log_debug("--- exception --- UI connection [%s] : KO when sending to %s : %s"
                                           %(usefulmsg, requester, str(exc)))
-                # debug/setup functions
                 elif usefulmsg == "show_phones":
                         try:
                                 for plast in plist:
@@ -1284,27 +1082,13 @@ def manage_tcp_connection(connid, allow_events):
                                           %(usefulmsg, requester, str(exc)))
                 elif usefulmsg == "show_ami":
                         try:
-                                for amis in AMIsocks:
-                                        connid[0].send("events off   : %s\n" %(str(amis)))
-                                for amis in AMIcomms:
-                                        connid[0].send("events on    : %s\n" %(str(amis)))
-                                for amis in AMIclasssock:
-                                        connid[0].send("sboard comms : %s\n" %(str(amis)))
+                                for amis in AMI_array_events_off:
+                                        connid[0].send("events off   : %s : %s\n" %(amis, str(AMI_array_events_off[amis])))
+                                for amis in AMI_array_events_on:
+                                        connid[0].send("events on    : %s : %s\n" %(amis, str(AMI_array_events_on[amis])))
+                                for amis in AMI_array_user_commands:
+                                        connid[0].send("commands     : %s : %s\n" %(amis, str(AMI_array_user_commands[amis])))
                                 connid[0].send("%s:OK\n" %(XIVO_CLI_PHP_HEADER))
-                        except Exception, exc:
-                                log_debug("--- exception --- UI connection [%s] : KO when sending to %s : %s"
-                                          %(usefulmsg, requester, str(exc)))
-                elif usefulmsg[0:5] == "label": # for inserting hand-written labels between calls when testing
-                        try:
-                                log_debug("USER LABEL : %s" %(usefulmsg[6:]))
-                        except Exception, exc:
-                                log_debug("--- exception --- UI connection [%s] : KO when sending to %s : %s"
-                                          %(usefulmsg, requester, str(exc)))
-
-
-                elif usefulmsg == "capabilities":
-                        try:
-                                connid[0].send("capabilities=%s\n" %(",".join(capabilities_list)))
                         except Exception, exc:
                                 log_debug("--- exception --- UI connection [%s] : KO when sending to %s : %s"
                                           %(usefulmsg, requester, str(exc)))
@@ -1346,20 +1130,15 @@ def manage_tcp_connection(connid, allow_events):
                                 if n == -1:
                                         connid[0].send("%s:KO <NOT ALLOWED>\n" %(XIVO_CLI_PHP_HEADER))
                                 else:
-                                        connid[0].send("%s:ID <%s>\n" %(XIVO_CLI_PHP_HEADER, configs[n].astid))
+                                        astid = configs[n].astid
+                                        connid[0].send("%s:ID <%s>\n" %(XIVO_CLI_PHP_HEADER, astid))
                                         try:
-                                                if not AMIclasssock[n]:
-                                                        log_debug("AMI was not connected - attempting to connect again")
-                                                        AMIclasssock[n] = connect_to_AMI((configs[n].remoteaddr,
-                                                                                          configs[n].ami_port),
-                                                                                         configs[n].ami_login,
-                                                                                         configs[n].ami_pass)
-                                                if AMIclasssock[n]:
+                                                if astid in AMI_array_user_commands and AMI_array_user_commands[astid]:
                                                         try:
-                                                                s = AMIclasssock[n].execclicommand(usefulmsg.strip())
+                                                                s = AMI_array_user_commands[astid].execclicommand(usefulmsg.strip())
                                                         except Exception, exc:
                                                                 log_debug("--- exception --- (%s) error : php command <%s> : (client %s) : %s"
-                                                                          %(configs[n].astid, str(usefulmsg.strip()), requester, str(exc)))
+                                                                          %(astid, str(usefulmsg.strip()), requester, str(exc)))
                                                         try:
                                                                 for x in s: connid[0].send(x)
                                                                 connid[0].send("%s:OK\n" %(XIVO_CLI_PHP_HEADER))
@@ -1368,7 +1147,7 @@ def manage_tcp_connection(connid, allow_events):
                                                                 log_debug("TCP (PHP) socket closed towards %s" %requester)
                                                         except Exception, exc:
                                                                 log_debug("--- exception --- (%s) error : php command <%s> : (client %s) : %s"
-                                                                          %(configs[n].astid, str(usefulmsg.strip()), requester, str(exc)))
+                                                                          %(astid, str(usefulmsg.strip()), requester, str(exc)))
                                         except Exception, exc:
                                                 connid[0].send("%s:KO <Exception : %s>\n" %(XIVO_CLI_PHP_HEADER, str(exc)))
                         else:
@@ -1474,10 +1253,15 @@ def getvalue(lineami, field):
 # \param idata the data read from the AMI we want to parse
 # \return none
 # \sa handle_ami_event_dial, handle_ami_event_link, handle_ami_event_hangup
-def handle_ami_event(astnum, idata):
+def handle_ami_event(astid, idata):
         global plist, save_for_next_packet_events
-        listkeys = plist[astnum].normal.keys()
+        if astid in asteriskr:
+                astnum = asteriskr[astid]
+        else:
+                log_debug("%s : no such asterisk Id" % astid)
+                return
 
+        listkeys = plist[astnum].normal.keys()
         full_idata = save_for_next_packet_events[astnum] + idata
         evlist = full_idata.split("\r\n\r\n")
         save_for_next_packet_events[astnum] = evlist.pop()
@@ -1740,10 +1524,15 @@ def handle_ami_event(astnum, idata):
 # \param astnum the asterisk numerical identifier
 # \param idata the data read from the AMI we want to parse
 # \return
-def handle_ami_status(astnum, idata):
+def handle_ami_status(astid, idata):
         global plist, save_for_next_packet_status
-        listkeys = plist[astnum].normal.keys()
+        if astid in asteriskr:
+                astnum = asteriskr[astid]
+        else:
+                log_debug("%s : no such asterisk Id" % astid)
+                return
 
+        listkeys = plist[astnum].normal.keys()
         full_idata = save_for_next_packet_status[astnum] + idata
         evlist = full_idata.split("\r\n\r\n")
         save_for_next_packet_status[astnum] = evlist.pop()
@@ -1792,48 +1581,63 @@ def handle_ami_status(astnum, idata):
 ## \brief Connects to the AMI if not yet.
 # \param astnum Asterisk id to (re)connect
 # \return none
-def update_amisocks(astnum):
-        if AMIcomms[astnum] == -1:
-                log_debug(plist[astnum].astid + " : AMI (events = off) : attempting to connect")
-                als0 = xivo_ami.ami_socket_login(configs[astnum].remoteaddr,
-                                                 configs[astnum].ami_port,
-                                                 configs[astnum].ami_login,
-                                                 configs[astnum].ami_pass, False)
-                AMIcomms[astnum] = als0
-                if AMIcomms[astnum] != -1:
-                        ins.append(als0)
-                        log_debug(configs[astnum].astid + " : AMI (events = off) : connected")
-                        """Clears the channels before requesting a new status"""
-                        for x in plist[astnum].normal.itervalues():
-                                x.clear_channels()
-                        ret = xivo_ami.ami_socket_status(AMIcomms[astnum])
-                        if not ret:
-                                log_debug(configs[astnum].astid + " : could not send status command")
-                else:
-                        log_debug(configs[astnum].astid + " : AMI (events = off) : could NOT connect")
+def update_amisocks(astnum, astid):
+        try:
+                if astid not in AMI_array_events_on or AMI_array_events_on[astid] is False:
+                        log_debug("%s : AMI (events = off) : attempting to connect" % astid)
+                        als0 = connect_to_AMI((configs[astnum].remoteaddr,
+                                               configs[astnum].ami_port),
+                                              configs[astnum].ami_login,
+                                              configs[astnum].ami_pass,
+                                              False)
+                        if als0:
+                                AMI_array_events_on[astid] = als0.f
+                                ins.append(AMI_array_events_on[astid])
+                                log_debug("%s : AMI (events = off) : connected" % astid)
+                                """Clears the channels before requesting a new status"""
+                                for x in plist[astnum].normal.itervalues():
+                                        x.clear_channels()
+                                ret = als0.sendstatus()
+                                if not ret:
+                                        log_debug("%s : could not send status command" % astid)
+                        else:
+                                log_debug("%s : AMI (events = off) : could NOT connect" % astid)
+        except Exception, exc:
+                log_debug("--- exception --- %s (update_amisocks events = off) : %s" % (astid, str(exc)))
+        
+        try:
+                if astid not in AMI_array_events_off or AMI_array_events_off[astid] is False:
+                        log_debug("%s : AMI (events = on)  : attempting to connect" % astid)
+                        als1 = connect_to_AMI((configs[astnum].remoteaddr,
+                                               configs[astnum].ami_port),
+                                              configs[astnum].ami_login,
+                                              configs[astnum].ami_pass,
+                                              True)
+                        if als1:
+                                AMI_array_events_off[astid] = als1.f
+                                ins.append(als1.f)
+                                log_debug("%s : AMI (events = on)  : connected" % astid)
+                        else:
+                                log_debug("%s : AMI (events = on)  : could NOT connect" % astid)
+        except Exception, exc:
+                log_debug("--- exception --- %s (update_amisocks events = on) : %s" % (astid, str(exc)))
 
-        if AMIsocks[astnum] == -1:
-                log_debug(plist[astnum].astid + " : AMI (events = on)  : attempting to connect")
-                als1 = xivo_ami.ami_socket_login(configs[astnum].remoteaddr,
-                                                 configs[astnum].ami_port,
-                                                 configs[astnum].ami_login,
-                                                 configs[astnum].ami_pass, True)
-                AMIsocks[astnum] = als1
-                if AMIsocks[astnum] != -1:
-                        ins.append(als1)
-                        log_debug(configs[astnum].astid + " : AMI (events = on)  : connected")
-                        """Clears the channels before requesting a new status"""
-                        for x in plist[astnum].normal.itervalues():
-                                x.clear_channels()
-                        ret = xivo_ami.ami_socket_status(AMIcomms[astnum])
-                        #xivo_ami.ami_socket_command(AMIcomms[astnum], "show channeltypes")
-                        #xivo_ami.ami_socket_command(AMIcomms[astnum], "show uptime")
-                        #xivo_ami.ami_socket_command(AMIcomms[astnum], "show version")
-                        #xivo_ami.ami_socket_command(AMIcomms[astnum], "meetme")
-                        if not ret:
-                                log_debug(configs[astnum].astid + " : could not send status command")
-                else:
-                        log_debug(configs[astnum].astid + " : AMI (events = on)  : could NOT connect")
+        try:
+                if astid not in AMI_array_user_commands or AMI_array_user_commands[astid] is False:
+                        log_debug("%s : AMI (commands)  : attempting to connect" % astid)
+                        als1 = connect_to_AMI((configs[astnum].remoteaddr,
+                                               configs[astnum].ami_port),
+                                              configs[astnum].ami_login,
+                                              configs[astnum].ami_pass,
+                                              False)
+                        if als1:
+                                AMI_array_user_commands[astid] = als1
+                                log_debug("%s : AMI (commands)  : connected" % astid)
+                        else:
+                                log_debug("%s : AMI (commands)  : could NOT connect" % astid)
+        except Exception, exc:
+                log_debug("--- exception --- %s (update_amisocks events = on) : %s" % (astid, str(exc)))
+
 
 
 ## \brief Updates the list of sip numbers according to the SSO then sends old and new peers to the UIs.
@@ -1927,8 +1731,8 @@ def update_sipnumlist(astnum):
 # \param loginname loginname
 # \param password password
 # \return the socket
-def connect_to_AMI(address, loginname, password):
-        lAMIsock = AMIClass(address, loginname, password)
+def connect_to_AMI(address, loginname, password, events_on):
+        lAMIsock = xivo_ami.AMIClass(address, loginname, password, events_on)
         try:
                 lAMIsock.connect()
                 lAMIsock.login()
@@ -2491,7 +2295,7 @@ def check_user_connection(userinfo, whoami):
 
 def connect_user(userinfo, sessionid, iip, iport,
                  whoami, whatsmyos, tcpmode, state,
-                 socket):
+                 lastconnwins, socket):
         global conngui_xc, conngui_sb
         try:
                 userinfo['sessionid'] = sessionid
@@ -2502,6 +2306,10 @@ def connect_user(userinfo, sessionid, iip, iport,
                 userinfo['cticlientos'] = whatsmyos
                 userinfo['tcpmode'] = tcpmode
                 userinfo['socket'] = socket
+                # lastconnwins was introduced in the aim of forcing a new connection to take on for
+                # a given user, however it might breed problems if the previously logged-in process
+                # tries to reconnect ... unless we send something asking to Kill the process
+                userinfo['lastconnwins'] = lastconnwins
 
                 # we first check if 'state' has already been set for this customer, in which case
                 # the CTI clients will be sent back this previous state
@@ -2538,6 +2346,7 @@ def disconnect_user(userinfo):
                         del userinfo['cticlienttype']
                         del userinfo['cticlientos']
                         del userinfo['tcpmode']
+                        del userinfo['lastconnwins']
                         del userinfo['socket']
         except Exception, exc:
                 log_debug("--- exception --- disconnect_user %s : %s" %(str(userinfo), str(exc)))
@@ -2640,17 +2449,11 @@ class LoginHandler(SocketServer.StreamRequestHandler):
                 # asks for PORT
                 self.wfile.write('Send PORT command\r\n')
                 list1 = self.rfile.readline().strip().split(' ')
-                if list1[0] == 'TCPMODE':
-                        #print 'TCP MODE !'
-                        tcpmode = True
-                        port = '-1'
-                elif len(list1) != 2 or list1[0] != 'PORT':
+                if len(list1) != 2 or list1[0] != 'PORT':
                         replystr = "ERROR PORT"
                         debugstr += " / PORT KO"
                         return [replystr, debugstr], [user, port, state, astnum]
-                else:
-                        port = list1[1]
-                        tcpmode = False
+                port = list1[1]
                 
                 # asks for STATE
                 self.wfile.write('Send STATE command\r\n')
@@ -2674,8 +2477,8 @@ class LoginHandler(SocketServer.StreamRequestHandler):
                                 sessionid = '%u' % random.randint(0,999999999)
                                 connect_user(userinfo, sessionid,
                                              self.client_address[0], port,
-                                             whoami, whatsmyos, tcpmode, state,
-                                             self.request.makefile('w'))
+                                             whoami, whatsmyos, False, state,
+                                             False, self.request.makefile('w'))
 
                                 replystr = "OK SESSIONID %s " \
                                            "context:%s;phonenum:%s;capas:%s;" \
@@ -2832,7 +2635,7 @@ def parse_command_and_build_reply(me, myargs):
         repstr = ""
         astnum = me[0]
         try:
-                capalist = (me[5] & capalist_server)
+                capalist = (me[4] & capalist_server)
                 if myargs[0] == 'history':
                         if (capalist & CAPA_HISTORY):
                                 repstr = build_history_string(myargs[1], myargs[2], myargs[3])
@@ -2850,10 +2653,10 @@ def parse_command_and_build_reply(me, myargs):
                                 repstr = build_statuses()
                 elif myargs[0] == 'featuresget':
                         if (capalist & CAPA_FEATURES):
-                                repstr = build_features_get(myargs[1:], me[4])
+                                repstr = build_features_get(myargs[1:])
                 elif myargs[0] == 'featuresput':
                         if (capalist & CAPA_FEATURES):
-                                repstr = build_features_put(myargs[1:], me[4])
+                                repstr = build_features_put(myargs[1:])
                 elif myargs[0] == 'message':
                         if (capalist & CAPA_MESSAGE):
                                 send_msg_to_cti_clients("message=%s/%s::<%s>\n" %(me[1], me[2], myargs[1]))
@@ -2961,7 +2764,7 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
                                                 userlist_lock.release()
                                         
                                         response = parse_command_and_build_reply([astnum, astname_xivoc, user,
-                                                                                  userinfo.get('context'), self, capalist_user],
+                                                                                  userinfo.get('context'), capalist_user],
                                                                                  list[4:])
                                 except Exception, exc:
                                         log_debug("--- exception --- (command) %s" %str(exc))
@@ -3297,9 +3100,9 @@ while True: # loops over the reloads
 
         plist = []
         SIPsocks = []
-        AMIsocks = []
-        AMIcomms = []
-        AMIclasssock = []
+        AMI_array_events_off = {}
+        AMI_array_events_on = {}
+        AMI_array_user_commands = {}
         asteriskr = {}
 
         items_asterisks = xrange(len(configs))
@@ -3312,18 +3115,11 @@ while True: # loops over the reloads
                 plist.append(PhoneList(configs[n].astid))
                 userlist[configs[n].astid] = {}
                 asteriskr[configs[n].astid] = n
-                AMIcomms.append(-1)
-                AMIsocks.append(-1)
 
                 SIPsock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                 SIPsock.bind(("", configs[n].portsipclt))
                 SIPsocks.append(SIPsock)
                 ins.append(SIPsock)
-
-                AMIclasssock.append(connect_to_AMI((configs[n].remoteaddr,
-                                                    configs[n].ami_port),
-                                                   configs[n].ami_login,
-                                                   configs[n].ami_pass))
                 advertise = advertise + ":" + configs[n].astid
 
         xdal = None
@@ -3362,7 +3158,7 @@ while True: # loops over the reloads
         for n in items_asterisks:
                 try:
                         update_sipnumlist(n)
-                        if with_ami: update_amisocks(n)
+                        if with_ami: update_amisocks(n, configs[n].astid)
                         do_sip_register(configs[n], SIPsocks[n])
                         lastrequest_time.append(time.time())
                 except Exception, exc:
@@ -3413,46 +3209,47 @@ while True: # loops over the reloads
                                 is_an_options_packet = parseSIP(n, data, SIPsocks[n], addrsip)
                                 # if the packet is an OPTIONS one (sent for instance when * is restarted)
                                 if is_an_options_packet:
-                                        log_debug(configs[n].astid + " : do_sip_register (parse SIP) " + time.strftime("%H:%M:%S", time.localtime()))
+                                        log_debug("%s : do_sip_register (parse SIP) %s" %(configs[n].astid,
+                                                                                          time.strftime("%H:%M:%S", time.localtime())))
                                         try:
                                                 update_sipnumlist(n)
-                                                if with_ami: update_amisocks(n)
+                                                if with_ami: update_amisocks(n, configs[n].astid)
                                                 do_sip_register(configs[n], SIPsocks[n])
                                                 lastrequest_time[n] = time.time()
                                         except Exception, exc:
-                                                log_debug(configs[n].astid + " : failed while updating lists and sockets : %s" %(str(exc)))
+                                                log_debug("%s : failed while updating lists and sockets : %s" %(configs[n].astid, str(exc)))
                         # these AMI connections are used in order to manage AMI commands with incoming events
-                        elif filter(lambda j: j in AMIsocks, i):
-                                res = filter(lambda j: j in AMIsocks, i)[0]
-                                for n in items_asterisks:
-                                        if AMIsocks[n] is res: break
+                        elif filter(lambda j: j in AMI_array_events_off.itervalues(), i):
+                                res = filter(lambda j: j in AMI_array_events_off.itervalues(), i)[0]
+                                for astid, val in AMI_array_events_off.iteritems():
+                                        if val is res: break
                                 try:
-                                        a = AMIsocks[n].recv(BUFSIZE_ANY)
+                                        a = AMI_array_events_off[astid].readline() # (BUFSIZE_ANY)
                                         if len(a) == 0: # end of connection from server side : closing socket
-                                                log_debug(configs[n].astid + " : AMI (events = on)  : CLOSING")
-                                                AMIsocks[n].close()
-                                                ins.remove(AMIsocks[n])
-                                                AMIsocks[n] = -1
+                                                log_debug("%s : AMI (events = on)  : CLOSING" % astid)
+                                                AMI_array_events_off[astid].close()
+                                                ins.remove(AMI_array_events_off[astid])
+                                                del AMI_array_events_off[astid]
                                         else:
-                                                handle_ami_event(n, a)
+                                                handle_ami_event(astid, a)
                                 except Exception, exc:
-                                        pass
+                                        log_debug("--- exception --- AMI <%s> (events = on) : %s" % (astid, str(exc)))
                         # these AMI connections are used in order to manage AMI commands without events
-                        elif filter(lambda j: j in AMIcomms, i):
-                                res = filter(lambda j: j in AMIcomms, i)[0]
-                                for n in items_asterisks:
-                                        if AMIcomms[n] is res: break
+                        elif filter(lambda j: j in AMI_array_events_on.itervalues(), i):
+                                res = filter(lambda j: j in AMI_array_events_on.itervalues(), i)[0]
+                                for astid, val in AMI_array_events_on.iteritems():
+                                        if val is res: break
                                 try:
-                                        a = AMIcomms[n].recv(BUFSIZE_ANY)
+                                        a = AMI_array_events_on[astid].readline() # (BUFSIZE_ANY)
                                         if len(a) == 0: # end of connection from server side : closing socket
-                                                log_debug(configs[n].astid + " : AMI (events = off) : CLOSING")
-                                                AMIcomms[n].close()
-                                                ins.remove(AMIcomms[n])
-                                                AMIcomms[n] = -1
+                                                log_debug("%s : AMI (events = off) : CLOSING" % astid)
+                                                AMI_array_events_on[astid].close()
+                                                ins.remove(AMI_array_events_on[astid])
+                                                del AMI_array_events_on[astid]
                                         else:
-                                                handle_ami_status(n, a)
+                                                handle_ami_status(astid, a)
                                 except Exception, exc:
-                                        pass
+                                        log_debug("--- exception --- AMI <%s> (events = off) : %s" % (astid, str(exc)))
                         # the new UI (SB) connections are catched here
                         elif UIsock in i:
                                 [conn, UIsockparams] = UIsock.accept()
@@ -3488,15 +3285,15 @@ while True: # loops over the reloads
                                 [data, addrsip] = xdal.recvfrom(BUFSIZE_UDP)
                                 log_debug("a xivo_daemon is around : " + str(addrsip))
                         else:
-                                log_debug("unknown socket " + str(i))
-                
+                                log_debug("unknown socket <%s>" % str(i))
+
                         for n in items_asterisks:
                                 if (time.time() - lastrequest_time[n]) > xivosb_register_frequency:
                                         lastrequest_time[n] = time.time()
                                         log_debug(configs[n].astid + " : do_sip_register (computed timeout) " + time.strftime("%H:%M:%S", time.localtime()))
                                         try:
                                                 update_sipnumlist(n)
-                                                if with_ami: update_amisocks(n)
+                                                if with_ami: update_amisocks(n, configs[n].astid)
                                                 do_sip_register(configs[n], SIPsocks[n])
                                         except Exception, exc:
                                                 log_debug(configs[n].astid + " : failed while updating lists and sockets : %s" %(str(exc)))
@@ -3505,6 +3302,6 @@ while True: # loops over the reloads
                         for n in items_asterisks:
                                 lastrequest_time[n] = time.time()
                                 update_sipnumlist(n)
-                                if with_ami: update_amisocks(n)
+                                if with_ami: update_amisocks(n, configs[n].astid)
                                 do_sip_register(configs[n], SIPsocks[n])
 

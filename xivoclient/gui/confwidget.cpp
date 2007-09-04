@@ -60,17 +60,28 @@ ConfWidget::ConfWidget(BaseEngine * engine,
 	gridlayout->addWidget(lblhost, line, 0);
 	gridlayout->addWidget(m_serverhost, line++, 1);
 
-        QLabel * lblsbport = new QLabel(tr("Switchboard Port"), this);
+	m_tcpmode = new QCheckBox(tr("TCP Mode (for NAT traversal)"), this);
+	m_tcpmode->setCheckState(m_engine->tcpmode() ? Qt::Checked : Qt::Unchecked);
+	gridlayout->addWidget(m_tcpmode, line++, 0, 1, 0);
+        
+	QLabel * lbllport = new QLabel(tr("UDP Login Port"), this);
+	m_loginport = new QLineEdit(QString::number(m_engine->loginPort()), this);
+	m_loginport->setInputMask("99999");
+	gridlayout->addWidget(lbllport, line, 0);
+	gridlayout->addWidget(m_loginport, line++, 1);
+
+        QLabel * lblsbport = new QLabel(tr("TCP Login Port"), this);
         m_sbport = new QLineEdit( QString::number(m_engine->sbPort()), this);
         m_sbport->setInputMask("99999");
         gridlayout->addWidget(lblsbport, line, 0);
         gridlayout->addWidget(m_sbport, line++, 1);
 
-	QLabel * lbllport = new QLabel(tr("Login Port"), this);
-	m_loginport = new QLineEdit(QString::number(m_engine->loginPort()), this);
-	m_loginport->setInputMask("99999");
-	gridlayout->addWidget(lbllport, line, 0);
-	gridlayout->addWidget(m_loginport, line++, 1);
+        m_loginport->setDisabled(m_tcpmode->checkState() == Qt::Checked);
+        m_sbport->setEnabled(m_tcpmode->checkState() == Qt::Checked);
+	connect( m_tcpmode,   SIGNAL(toggled(bool)),
+	         m_loginport, SLOT(setDisabled(bool)) );
+	connect( m_tcpmode,   SIGNAL(toggled(bool)),
+	         m_sbport,    SLOT(setEnabled(bool)) );
 
         //
         // Box for Enabled Functions Definition
@@ -124,10 +135,10 @@ ConfWidget::ConfWidget(BaseEngine * engine,
 	gridlayout->addWidget(lblpasswd, line, 0);
 	gridlayout->addWidget(m_passwd, line++, 1);
 
-	m_tcpmode = new QCheckBox(tr("TCP Mode (for NAT traversal)"), this);
-	m_tcpmode->setCheckState(m_engine->tcpmode()?Qt::Checked:Qt::Unchecked);
-	gridlayout->addWidget(m_tcpmode, line++, 0, 1, 0);
-        
+// 	m_lastconnwins = new QCheckBox(tr("The last connected one takes on the login"), this);
+// 	m_lastconnwins->setCheckState(m_engine->lastconnwins()?Qt::Checked:Qt::Unchecked);
+// 	gridlayout->addWidget(m_lastconnwins, line++, 0, 1, 0);
+
 	m_autoconnect = new QCheckBox(tr("Autoconnect at startup"), this);
 	m_autoconnect->setCheckState(m_engine->autoconnect()?Qt::Checked:Qt::Unchecked);
 	gridlayout->addWidget(m_autoconnect, line++, 0, 1, 0);
@@ -200,6 +211,7 @@ void ConfWidget::saveAndClose()
 
 	m_engine->setHistorySize(m_history_sbox->value());
 	m_engine->setTcpmode(m_tcpmode->checkState() == Qt::Checked);
+// 	m_engine->setLastConnWins(m_lastconnwins->checkState() == Qt::Checked);
 	m_mainwindow->setTablimit(m_tablimit_sbox->value());
 
 	m_engine->saveSettings();

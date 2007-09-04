@@ -267,7 +267,7 @@ void CallStackWidget::monitorPeer(const QString & monit_peer, const QString & na
 	monitoredPeerChanged(m_monitoredPeer);
 	if(name.size() > 0)
 		changeTitle(tr("Monitoring : ") + name);
-	else
+        else
 		changeTitle("");
 	updateDisplay();
 	if(monit_peer.size() > 0)

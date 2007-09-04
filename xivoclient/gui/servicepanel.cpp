@@ -133,29 +133,47 @@ void ServicePanel::Reset()
 
 void ServicePanel::toggleUncondIfAllowed(const QString & text)
 {
-        bool allowed = (text.size() > 0);
+        bool allowed     = (text.size() > 0);
+        bool was_checked = (m_uncondforward->checkState() == Qt::Checked);
         m_uncondforward->setEnabled(allowed);
-        if(allowed == false) m_uncondforward->setChecked(false);
-        uncondForwardChanged((m_uncondforward->checkState() == Qt::Checked),
-                             m_uncondforwarddest->text());
+        if(allowed == false) {
+                m_uncondforward->setChecked(false);
+                if(was_checked)
+                        uncondForwardChanged(false,
+                                             m_uncondforwarddest->text());
+        } else if(was_checked)
+                uncondForwardChanged(true,
+                                     m_uncondforwarddest->text());
 }
 
 void ServicePanel::toggleOnBusyIfAllowed(const QString & text)
 {
-        bool allowed = (text.size() > 0);
+        bool allowed     = (text.size() > 0);
+        bool was_checked = (m_forwardonbusy->checkState() == Qt::Checked);
         m_forwardonbusy->setEnabled(allowed);
-        if(allowed == false) m_forwardonbusy->setChecked(false);
-        forwardOnBusyChanged((m_forwardonbusy->checkState() == Qt::Checked),
-                             m_forwardonbusydest->text());
+        if(allowed == false) {
+                m_forwardonbusy->setChecked(false);
+                if(was_checked)
+                        forwardOnBusyChanged(false,
+                                             m_forwardonbusydest->text());
+        } else if(was_checked)
+                forwardOnBusyChanged(true,
+                                     m_forwardonbusydest->text());
 }
 
 void ServicePanel::toggleOnUnavailIfAllowed(const QString & text)
 {
-        bool allowed = (text.size() > 0);
+        bool allowed     = (text.size() > 0);
+        bool was_checked = (m_forwardonunavailable->checkState() == Qt::Checked);
         m_forwardonunavailable->setEnabled(allowed);
-        if(allowed == false) m_forwardonunavailable->setChecked(false);
-        forwardOnUnavailableChanged((m_forwardonunavailable->checkState() == Qt::Checked),
-                                    m_forwardonunavailabledest->text());
+        if(allowed == false) {
+                m_forwardonunavailable->setChecked(false);
+                if(was_checked)
+                        forwardOnUnavailableChanged(false,
+                                                    m_forwardonunavailabledest->text());
+        } else if(was_checked)
+                forwardOnUnavailableChanged(true,
+                                            m_forwardonunavailabledest->text());
 }
 
 void ServicePanel::uncondForwardToggled(bool b)

@@ -39,6 +39,7 @@ DisplayMessagesPanel::DisplayMessagesPanel(QWidget * parent)
 	QLabel * lbl = new QLabel( tr("Messages :"), this );
 	m_table = new QTableWidget( this );
 	m_table->setStyleSheet("* {selection-background-color : blue}"); // #fff0e0 too light
+        m_table->setAlternatingRowColors(true);
 	m_table->setHorizontalScrollMode( QAbstractItemView::ScrollPerPixel );
 	m_table->setColumnCount( 2 );
 	QStringList labels;

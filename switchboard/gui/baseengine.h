@@ -110,8 +110,10 @@ public:
         const QString & fullName() const;	//!< returns full name of the logged-in user
 
 	uint keepaliveinterval() const;		//!< keep alive interval
+	bool lastconnwins() const;		//!< last connected one wins
 	bool tcpmode() const;			//!< get tcp mode flag
 	void setTcpmode(bool b);		//!< set tcp mode flag
+	void setLastConnWins(bool b);		//!< last connected user wins
 	const QStringList & getCapabilities() const;	//!< returns capabilities
         const QString & getRevisionString() const;	//!< returns the Revision string of the engine
         const QString & getDateString() const;		//!< returns the Date string of the engine
@@ -256,6 +258,7 @@ private:
 	bool m_enabled_cinfo;      	//!< customer info is enabled
 	bool m_checked_presence;      	//!< presence is checked
 	bool m_checked_cinfo;      	//!< customer info is checked
+	bool m_checked_lastconnwins;   	//!< the last connected account "wins"
 	bool m_tcpmode;			//!< use a unique outgoing TCP connection for everything
 
 	// Replies given by the server

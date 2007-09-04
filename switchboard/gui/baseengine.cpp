@@ -149,6 +149,7 @@ void BaseEngine::loadSettings()
 
 	m_historysize = settings.value("engine/historysize", 8).toUInt();
 	m_tcpmode = settings.value("engine/tcpmode", false).toBool();
+        //	m_checked_lastconnwins = settings.value("engine/lastconnwins", false).toBool();
 
 	m_availstate = settings.value("engine/availstate", "available").toString();
 }
@@ -179,6 +180,7 @@ void BaseEngine::saveSettings()
 
 	settings.setValue("engine/historysize", m_historysize);
 	settings.setValue("engine/tcpmode", m_tcpmode);
+        //	settings.setValue("engine/lastconnwins", m_checked_lastconnwins);
 
 	settings.setValue("engine/availstate", m_availstate);
 }
@@ -323,6 +325,16 @@ bool BaseEngine::tcpmode() const
 void BaseEngine::setTcpmode(bool b)
 {
         m_tcpmode = b;
+}
+
+bool BaseEngine::lastconnwins() const
+{
+        return m_checked_lastconnwins;
+}
+
+void BaseEngine::setLastConnWins(bool b)
+{
+        m_checked_lastconnwins = b;
 }
 
 const QStringList & BaseEngine::getCapabilities() const
@@ -732,7 +744,7 @@ bool BaseEngine::parseCommand(const QStringList & listitems)
                         if(features_list.size() > 1)
                                 for(int i=0; i<features_list.size()-1; i+=2)
                                         initFeatureFields(features_list[i], features_list[i+1]);
-                        emitTextMessage(tr("Received Services data."));
+                        emitTextMessage(tr("Received Services Data for ") + m_monitored_asterisk + "/" + m_monitored_userid);
                 } else
                         emitTextMessage(tr("Could not retrieve the Services data."));
         } else if(listitems[0].toLower() == QString("featuresput")) {
