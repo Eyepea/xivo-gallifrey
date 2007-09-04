@@ -67,13 +67,14 @@ if len(sys.argv) < 1:
 else:
 	shost = sys.argv[1]
 	sport = int(xivocapas.get('general', 'port_fiche_agi'))
-	proto = agi.get_variable('PROTO').lower()
-	exten = agi.get_variable('NAME')
+	proto   = agi.get_variable('PROTO').lower()
+	exten   = agi.get_variable('NAME')
 	context = agi.get_variable('MACRO_CONTEXT')
-	calleridnum = agi.env['agi_callerid']
-	msgext = agi.get_variable('CALLTYPE')
+	calleridnum  = agi.env['agi_callerid']
 	calleridname = agi.env['agi_calleridname']
+	msgext = agi.get_variable('CALLTYPE')
 	user = proto + exten
+
 
 # send the PUSH command to the server
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -90,7 +91,8 @@ if len(list) < 6 or list[0] == 'ERROR':
 else:
         # USER xxx STATE xxx CIDNAME xxx
         clientstate = list[3]
-        agi.set_callerid(list[5])
+        if calleridname != "":
+                agi.set_callerid(list[5])
 
 if clientstate == "available":
 	agi.set_variable('STATUS', 0)
