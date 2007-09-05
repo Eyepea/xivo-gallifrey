@@ -56,33 +56,55 @@ LogWidget::LogWidget(BaseEngine * engine, QWidget * parent)
 // 	QHBoxLayout * vbox_missed = new QHBoxLayout( tabwidget );
 // 	tabwidget->addTab(vbox_missed, tr("&Outgoing"));
 
-	QGroupBox * groupBox = new QGroupBox( tr("Call History"), this );
+	QGroupBox * groupBox = new QGroupBox( this );
 	groupBox->setAlignment( Qt::AlignHCenter );
 	QHBoxLayout * vbox = new QHBoxLayout( groupBox );
 	vbox->setMargin(0);
 	vbox->setSpacing(0);
 
-	m_radioNone = new QRadioButton( tr("&None"), groupBox );
-	m_radioNone->setChecked( true );
+        QString radioQSS = "QRadioButton {spacing: 1px}\n"
+                "QRadioButton::indicator:unchecked         {image: url(:/xivoclient/gui/images/checkbox_unchecked.png)}\n"
+                "QRadioButton::indicator:unchecked:hover   {image: url(:/xivoclient/gui/images/checkbox_unchecked_hover.png)}\n"
+                "QRadioButton::indicator:unchecked:pressed {image: url(:/xivoclient/gui/images/checkbox_unchecked_pressed.png)}\n"
+                "QRadioButton::indicator:checked         {image: url(:/xivoclient/gui/images/checkbox_checked.png)}\n"
+                "QRadioButton::indicator:checked:hover   {image: url(:/xivoclient/gui/images/checkbox_checked_hover.png)}\n"
+                "QRadioButton::indicator:checked:pressed {image: url(:/xivoclient/gui/images/checkbox_checked_pressed.png)}\n";
+
+        vbox->addStretch( 1 );
+	m_radioNone = new QRadioButton( " ", groupBox );
+        m_radioNone->setIcon(QIcon(":/xivoclient/gui/images/cancel.png"));
+        m_radioNone->setStyleSheet( radioQSS );
+	m_radioNone->setToolTip( tr("No calls") );
 	connect( m_radioNone, SIGNAL(toggled(bool)),
 	         this, SLOT(modeChanged(bool)) );
 	vbox->addWidget( m_radioNone );
 
-	m_radioOut = new QRadioButton( tr("&Outgoing"), groupBox );
-	//m_radioOut->setChecked( true );
+	m_radioOut = new QRadioButton( " ", groupBox );
+        m_radioOut->setIcon(QIcon(":/xivoclient/gui/images/green_up.png"));
+        m_radioOut->setStyleSheet( radioQSS );
+	m_radioOut->setToolTip( tr("Outgoing calls") );
 	connect( m_radioOut, SIGNAL(toggled(bool)),
 	         this, SLOT(modeChanged(bool)) );
 	vbox->addWidget( m_radioOut );
 
-	m_radioIn = new QRadioButton( tr("&Incoming"), groupBox );
+	m_radioIn = new QRadioButton( " ", groupBox );
+        m_radioIn->setIcon(QIcon(":/xivoclient/gui/images/green_down.png"));
+        m_radioIn->setStyleSheet( radioQSS );
+	m_radioIn->setToolTip( tr("Incoming calls") );
 	connect( m_radioIn, SIGNAL(toggled(bool)),
 	         this, SLOT(modeChanged(bool)) );
 	vbox->addWidget( m_radioIn );
 
-	m_radioMissed = new QRadioButton( tr("&Missed"), groupBox );
+	m_radioMissed = new QRadioButton( " ", groupBox );
+        m_radioMissed->setIcon(QIcon(":/xivoclient/gui/images/red_down.png"));
+        m_radioMissed->setStyleSheet( radioQSS );
+	m_radioMissed->setToolTip( tr("Missed calls") );
 	connect( m_radioMissed, SIGNAL(toggled(bool)),
 	         this, SLOT(modeChanged(bool)) );
 	vbox->addWidget( m_radioMissed );
+        vbox->addStretch( 1 );
+
+	m_radioNone->setChecked( true );
 
 	layout->addWidget( groupBox );
 	QScrollArea * scrollArea = new QScrollArea( this );

@@ -21,5 +21,16 @@
 	<file>../../xivoclient/gui/connected.png</file>
 	<file>../../xivoclient/gui/disconnected.png</file>
 	<file>../../xivoclient/gui/xivo-login.png</file>
+	<file>../../xivoclient/gui/images/red_down.png</file>
+	<file>../../xivoclient/gui/images/red_up.png</file>
+	<file>../../xivoclient/gui/images/green_down.png</file>
+	<file>../../xivoclient/gui/images/green_up.png</file>
+	<file>../../xivoclient/gui/images/cancel.png</file>
+	<file>../../xivoclient/gui/images/checkbox_checked.png</file>
+	<file>../../xivoclient/gui/images/checkbox_checked_hover.png</file>
+	<file>../../xivoclient/gui/images/checkbox_checked_pressed.png</file>
+	<file>../../xivoclient/gui/images/checkbox_unchecked.png</file>
+	<file>../../xivoclient/gui/images/checkbox_unchecked_hover.png</file>
+	<file>../../xivoclient/gui/images/checkbox_unchecked_pressed.png</file>
 </qresource>
 </RCC>

@@ -29,17 +29,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  */
 LogEltWidget::LogEltWidget( const QString & peer, Direction d,
                             const QDateTime & dt, int duration,
-							QWidget * parent )
-: QWidget(parent), m_dateTime(dt), m_peer(peer), m_direction(d)
+                            QWidget * parent )
+        : QWidget(parent), m_dateTime(dt), m_peer(peer), m_direction(d)
 {
 //	qDebug() << "  LogEltWidget::LogEltWidget()" << peer << d << dt << duration << parent;
 	QGridLayout * glayout = new QGridLayout( this );
 	//	QHBoxLayout * layout1 = new QHBoxLayout( this );
 	//	layout1->setMargin(0);
 
-	QLabel * lblpeer = new QLabel( peer, this );
+	QLabel * lblpeer = new QLabel( "    " + peer + "    ", this );
 	lblpeer->setFont(QFont("helvetica", 10, QFont::Bold));
 	lblpeer->setMargin(0);
+        lblpeer->setStyleSheet("* {color : black ; background : #b0e0ff ; border-radius : 5px ; font-size : 15px}");
 	glayout->addWidget(lblpeer, 0, 0);
 
 	QLabel * lbldt = new QLabel( dt.toString(Qt::SystemLocaleDate) + "   ", this );
@@ -53,7 +54,6 @@ LogEltWidget::LogEltWidget( const QString & peer, Direction d,
 	lblduration->setText((min?(QString::number(min) + "min "):"") + QString::number(sec) + "s");
 	lblduration->setFont(QFont("helvetica", 10, QFont::Light));
 	lblduration->setMargin(0);
-	lblduration->setFrameStyle(QFrame::StyledPanel);
 	glayout->addWidget(lblduration, 1, 1);
 
 	QLabel * lbldummy = new QLabel( "", this );

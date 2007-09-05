@@ -326,29 +326,24 @@ Merci de mettre à jour votre serveur.</translation>
 <context>
     <name>LogWidget</name>
     <message>
-        <location filename="../../switchboard/gui/logwidget.cpp" line="65"/>
-        <source>&amp;None</source>
-        <translation>A&amp;ucun</translation>
-    </message>
-    <message>
-        <location filename="../../switchboard/gui/logwidget.cpp" line="71"/>
-        <source>&amp;Outgoing</source>
-        <translation>&amp;Sortants</translation>
-    </message>
-    <message>
         <location filename="../../switchboard/gui/logwidget.cpp" line="77"/>
-        <source>&amp;Incoming</source>
-        <translation>&amp;Entrants</translation>
+        <source>No calls</source>
+        <translation>Pas d&apos;appels</translation>
     </message>
     <message>
-        <location filename="../../switchboard/gui/logwidget.cpp" line="82"/>
-        <source>&amp;Missed</source>
-        <translation>&amp;Manqués</translation>
+        <location filename="../../switchboard/gui/logwidget.cpp" line="85"/>
+        <source>Outgoing calls</source>
+        <translation>Appels sortants</translation>
     </message>
     <message>
-        <location filename="../../switchboard/gui/logwidget.cpp" line="59"/>
-        <source>Call History</source>
-        <translation>Historique des Appels</translation>
+        <location filename="../../switchboard/gui/logwidget.cpp" line="93"/>
+        <source>Incoming calls</source>
+        <translation>Appels entrants</translation>
+    </message>
+    <message>
+        <location filename="../../switchboard/gui/logwidget.cpp" line="101"/>
+        <source>Missed calls</source>
+        <translation>Appels manqués</translation>
     </message>
 </context>
 <context>
