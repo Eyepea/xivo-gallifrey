@@ -136,6 +136,10 @@ void MainWidget::buildSplitters()
         // Left Splitter Definitions
         m_areaCalls = new QScrollArea(m_leftSplitter);
 	m_areaCalls->setWidgetResizable(true);
+        m_areaCalls->setStyleSheet("QScrollBar:vertical   {width: 10px; border: 0px solid black}\n"
+                                   "QScrollBar:horizontal {height: 10px; border: 0px solid black}\n"
+                                   "QScrollBar::handle:vertical   {background: qlineargradient(x1: 0.45, x2: 0.55, stop: 0 #3bc0ff, stop: 1.0 #05aefd)}\n"
+                                   "QScrollBar::handle:horizontal {background: qlineargradient(y1: 0.45, y2: 0.55, stop: 0 #3bc0ff, stop: 1.0 #05aefd)}\n");
         m_leftpanel = new LeftPanel(m_areaCalls, m_leftSplitter);
 	m_calls = new CallStackWidget(m_areaCalls);
  	m_areaCalls->setWidget(m_calls);
@@ -153,6 +157,10 @@ void MainWidget::buildSplitters()
 
 	// Middle Splitter Definitions
         m_areaPeers = new QScrollArea(m_middleSplitter);
+        m_areaPeers->setStyleSheet("QScrollBar:vertical   {width: 10px; border: 0px solid black}\n"
+                                   "QScrollBar:horizontal {height: 10px; border: 0px solid black}\n"
+                                   "QScrollBar::handle:vertical   {background: qlineargradient(x1: 0.45, x2: 0.55, stop: 0 #3bc0ff, stop: 1.0 #05aefd)}\n"
+                                   "QScrollBar::handle:horizontal {background: qlineargradient(y1: 0.45, y2: 0.55, stop: 0 #3bc0ff, stop: 1.0 #05aefd)}\n");
         m_areaPeers->setWidgetResizable(true);
  	m_widget = new SwitchBoardWindow(m_areaPeers);
  	m_widget->setEngine(m_engine);
@@ -384,7 +392,7 @@ void MainWidget::createMenus()
 	         m_avail, SLOT(setEnabled(bool)) );
 
 	QMenu * helpmenu = menuBar()->addMenu(tr("&Help"));
-        setStyleSheet("QMessageBox {background : #fff0e0} ; QMenu {border: 3px solid #ffa030 ; border-radius: 4px} ; QMenu::item {background-color: transparent}");
+        setStyleSheet("QMessageBox {background : #fff0e0} ; QMenu {border: 3px solid #ffa030 ; border-radius: 4px} ; QMenu::item {background-color: transparent}\n");
 	helpmenu->addAction(tr("&About XIVO Switchboard"), this, SLOT(about()));
 	helpmenu->addAction(tr("About &Qt"), qApp, SLOT(aboutQt()));
 }

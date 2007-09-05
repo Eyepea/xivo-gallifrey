@@ -99,9 +99,14 @@ LogWidget::LogWidget(BaseEngine * engine, QWidget * parent)
 
 	layout->addWidget( groupBox );
 	QScrollArea * scrollArea = new QScrollArea( this );
+
         //        this->setStyleSheet("* {background : #f9a22c}");
         this->setStyleSheet("* {background : #ffe0b0}");
-        scrollArea->setStyleSheet("* {background : #fff0e0}");
+        scrollArea->setStyleSheet("* {background : #fff0e0}\n"
+                                  "QScrollBar:vertical   {width: 10px; border: 0px solid black}\n"
+                                  "QScrollBar:horizontal {height: 10px; border: 0px solid black}\n"
+                                  "QScrollBar::handle:vertical   {background: qlineargradient(x1: 0.45, x2: 0.55, stop: 0 #3bc0ff, stop: 1.0 #05aefd)}\n"
+                                  "QScrollBar::handle:horizontal {background: qlineargradient(y1: 0.45, y2: 0.55, stop: 0 #3bc0ff, stop: 1.0 #05aefd)}\n");
 	scrollArea->setWidgetResizable( true );
 
 	QWidget * widget = new QWidget( this );

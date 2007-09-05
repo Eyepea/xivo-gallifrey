@@ -38,7 +38,11 @@ DisplayMessagesPanel::DisplayMessagesPanel(QWidget * parent)
 	vlayout->setMargin(0);
 	QLabel * lbl = new QLabel( tr("Messages :"), this );
 	m_table = new QTableWidget( this );
-	m_table->setStyleSheet("* {selection-background-color : #05aefd}");
+	m_table->setStyleSheet("* {selection-background-color : #05aefd}\n"
+                               "QScrollBar:vertical   {width: 10px; border: 0px solid black}\n"
+                               "QScrollBar:horizontal {height: 10px; border: 0px solid black}\n"
+                               "QScrollBar::handle:vertical   {background: qlineargradient(x1: 0.45, x2: 0.55, stop: 0 #3bc0ff, stop: 1.0 #05aefd)}\n"
+                               "QScrollBar::handle:horizontal {background: qlineargradient(y1: 0.45, y2: 0.55, stop: 0 #3bc0ff, stop: 1.0 #05aefd)}\n");
         m_table->setAlternatingRowColors(true);
 	m_table->setHorizontalScrollMode( QAbstractItemView::ScrollPerPixel );
 	m_table->setColumnCount( 2 );

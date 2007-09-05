@@ -397,7 +397,7 @@ void MainWidget::engineStarted()
 
 			} else if ((dc == QString("customerinfo")) && (m_engine->checkedCInfo())) {
 				m_cinfo_tabwidget = new QTabWidget();
-				m_cinfo_tabwidget->setStyleSheet("* {background : white}");
+				m_cinfo_tabwidget->setStyleSheet("* {background : white ; border: 2px solid #05aefd ; border-radius: 10px}");
 				m_main_tabwidget->addTab(m_cinfo_tabwidget, "    " + tr("&Sheets") + "    ");
 
 			} else if (dc == QString("peers")) {
