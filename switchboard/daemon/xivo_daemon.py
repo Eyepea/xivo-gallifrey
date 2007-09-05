@@ -256,6 +256,10 @@ def log_debug(string):
         return varlog(string)
 
 
+"""
+Functions related to user-driven requests : history, directory, ...
+These functions should not deal with CTI clients directly, however.
+"""
 
 ## \brief Function that fetches the call history from a database
 # \param astn the asterisk to connect to
@@ -324,72 +328,6 @@ def build_history_string(requester_id, nlines, kind):
         else:
                 reply = "message=%s::history KO : no such asterisk id\n" %DAEMON
         return ''.join(reply)
-
-
-## \brief Extracts the main SIP properties from a received packet
-# such as CSeq, message type (REGISTER, OPTION, SUBSCRIBE, ...),
-# callid, address, number of lines, reurn code (200, 404, 484, ...).
-# \param data the SIP buffer to parse
-# \return an array containing these above informations
-def read_sip_properties(data):
-        cseq = 1
-        msg = "xxx"
-        cid = "no_callid@xivopy"
-        account = ""
-        lines = ""
-        ret = -99
-        bbranch = ""
-        btag = "no_tag"
-        authenticate = ""
-
-        try:
-                lines = data.split("\r\n")
-                if lines[0].find("SIP/2.0") == 0: ret = int(lines[0].split(None)[1])
-
-                for x in lines:
-                        if x.find("CSeq") == 0:
-                                cseq = int(x.split(None)[1])
-                                msg = x.split(None)[2]
-                        elif x.find("From: ") == 0 or x.find("f: ") == 0:
-                                account = x.split("<sip:")[1].split("@")[0]
-                        elif x.find("Call-ID:") == 0 or x.find("i: ") == 0:
-                                cid = x.split(None)[1]
-                        elif x.find("WWW-Authenticate:") == 0:
-                                authenticate = x
-                        elif x.find("branch=") >= 0:  bbranch = x.split("branch=")[1].split(";")[0]
-                        elif x.find("tag=") >= 0:     btag = x.split("tag=")[1].split(";")[0]
-
-        except Exception, exc:
-                log_debug("--- exception --- read_sip_properties : " + str(exc))
-
-        return [cseq, msg, cid, account, len(lines), ret, bbranch, btag, authenticate]
-
-
-## \brief Converts the SIP message to a useful presence information.
-# Eventually, it will be done with XML functions.
-# \param data the SIP message
-# \return the extracted status
-def tellpresence(data):
-        num, stat = [None, None]
-        lines = data.split("\n")
-        state_not_active = ""
-
-        for x in lines:
-                if x.find("Subscription-State:") == 0:
-                        if x.find("Subscription-State: active") < 0 and \
-                               x.find("Subscription-State: terminated") < 0:
-                                state_not_active = x
-                if x.find("<note>") == 0:
-                        if x.find("Ready") >= 0:          stat = "Ready"
-                        elif x.find("On the phone") >= 0: stat = "On the phone"
-                        elif x.find("Ringing") >= 0:      stat = "Ringing"
-                        elif x.find("Not online") >= 0:   stat = "Not online"
-                        elif x.find("Unavailable") >= 0:  stat = "Unavailable"
-                        else:                             stat = "XivoUnknown"
-                if x.find("<tuple id") == 0: num = x.split("\"")[1]
-        if state_not_active != "":
-                log_debug("%s (%s) %s" %(num, stat, state_not_active))
-        return [num, stat]
 
 
 ## \brief Builds the full list of customers in order to send them to the requesting client.
@@ -552,22 +490,26 @@ def build_features_get(reqlist):
 ## \brief Builds the features reply.
 def build_features_put(reqlist):
         dbfamily = "%s/users/%s" %(reqlist[1], reqlist[2])
-        response = "featuresput="
-        
-        len_reqlist = len(reqlist)
-        if len_reqlist >= 4:
-                key = reqlist[3]
-                if len_reqlist >= 5:
-                        value = reqlist[4]
+        try:
+                len_reqlist = len(reqlist)
+                if len_reqlist >= 4:
+                        key = reqlist[3]
+                        if len_reqlist >= 5:
+                                value = reqlist[4]
+                        else:
+                                value = ""
+                        fullcomm = 'database put %s %s "%s"' %(dbfamily, key, value)
+                        reply = AMI_array_user_commands[reqlist[0]].execclicommand(fullcomm)
+                        repstr = "KO"
+                        for r in reply:
+                                if r.rstrip() == "Updated database successfully":
+                                        repstr = "OK"
+                        response = 'featuresput=%s;%s;%s;' %(repstr, key, value)
                 else:
-                        value = ""
-                fullcomm = 'database put %s %s "%s"' %(dbfamily, key, value)
-                reply = AMI_array_user_commands[reqlist[0]].execclicommand(fullcomm)
-                repstr = "KO"
-                for r in reply:
-                        if r.rstrip() == "Updated database successfully":
-                                repstr = "OK"
-                response = 'featuresput=%s;%s;"%s"' %(repstr, key, value)
+                        response = "featuresput=KO"
+        except Exception, exc:
+                log_debug("--- exception --- featuresput id=%s : %s" %(str(reqlist), str(exc)))
+                response = "featuresput=KO"
         return response
 
 
@@ -615,40 +557,74 @@ def build_statuses():
         return ''.join(fullstat)
 
 
-def send_msg_to_cti_clients(strupdate):
-        # sends to TCP ports
-        for tcpclient in tcpopens_sb:
-                try:
-                        tcpclient[0].send(strupdate + "\n")
-                except Exception, exc:
-                        log_debug("--- exception --- send %s has failed on %s : %s"
-                                  %(strupdate.split('=')[0],
-                                    str(tcpclient[0]),
-                                    str(exc)))
-        for ka_object in requestersocket_by_login.itervalues():
-                userlist_lock.acquire()
-                try:
-                        mysock = ka_object.request[1]
-                        mysock.sendto(strupdate,
-                                      ka_object.client_address)
-                finally:
-                        userlist_lock.release()
+"""
+Functions related to SIP presence management
+"""
+
+## \brief Extracts the main SIP properties from a received packet
+# such as CSeq, message type (REGISTER, OPTION, SUBSCRIBE, ...),
+# callid, address, number of lines, reurn code (200, 404, 484, ...).
+# \param data the SIP buffer to parse
+# \return an array containing these above informations
+def read_sip_properties(data):
+        cseq = 1
+        msg = "xxx"
+        cid = "no_callid@xivopy"
+        account = ""
+        lines = ""
+        ret = -99
+        bbranch = ""
+        btag = "no_tag"
+        authenticate = ""
+
+        try:
+                lines = data.split("\r\n")
+                if lines[0].find("SIP/2.0") == 0: ret = int(lines[0].split(None)[1])
+
+                for x in lines:
+                        if x.find("CSeq") == 0:
+                                cseq = int(x.split(None)[1])
+                                msg = x.split(None)[2]
+                        elif x.find("From: ") == 0 or x.find("f: ") == 0:
+                                account = x.split("<sip:")[1].split("@")[0]
+                        elif x.find("Call-ID:") == 0 or x.find("i: ") == 0:
+                                cid = x.split(None)[1]
+                        elif x.find("WWW-Authenticate:") == 0:
+                                authenticate = x
+                        elif x.find("branch=") >= 0:  bbranch = x.split("branch=")[1].split(";")[0]
+                        elif x.find("tag=") >= 0:     btag = x.split("tag=")[1].split(";")[0]
+
+        except Exception, exc:
+                log_debug("--- exception --- read_sip_properties : " + str(exc))
+
+        return [cseq, msg, cid, account, len(lines), ret, bbranch, btag, authenticate]
 
 
-## \brief Sends a status update to all the connected xivo-switchboard(-like) clients.
-# \param astnum the asterisk numerical identifier
-# \param phonenum the phone identifier
-# \param fromwhom a string that tells who has requested such an update
-# \return none
-def update_GUI_clients(astnum, phonenum, fromwhom):
-        global plist
-        phoneinfo = fromwhom + ":" + plist[astnum].astid + ":" + build_basestatus(plist[astnum].normal[phonenum])
-        fstatlist = build_fullstatlist(plist[astnum].normal[phonenum])
-        strupdate = "update=" + phoneinfo + ":" + fstatlist
+## \brief Converts the SIP message to a useful presence information.
+# Eventually, it will be done with XML functions.
+# \param data the SIP message
+# \return the extracted status
+def tellpresence(data):
+        num, stat = [None, None]
+        lines = data.split("\n")
+        state_not_active = ""
 
-        send_msg_to_cti_clients(strupdate)
-
-        verboselog(strupdate, False, True)
+        for x in lines:
+                if x.find("Subscription-State:") == 0:
+                        if x.find("Subscription-State: active") < 0 and \
+                               x.find("Subscription-State: terminated") < 0:
+                                state_not_active = x
+                if x.find("<note>") == 0:
+                        if x.find("Ready") >= 0:          stat = "Ready"
+                        elif x.find("On the phone") >= 0: stat = "On the phone"
+                        elif x.find("Ringing") >= 0:      stat = "Ringing"
+                        elif x.find("Not online") >= 0:   stat = "Not online"
+                        elif x.find("Unavailable") >= 0:  stat = "Unavailable"
+                        else:                             stat = "XivoUnknown"
+                if x.find("<tuple id") == 0: num = x.split("\"")[1]
+        if state_not_active != "":
+                log_debug("%s (%s) %s" %(num, stat, state_not_active))
+        return [num, stat]
 
 
 ## \brief Handles the SIP messages according to their meaning (reply to a formerly sent message).
@@ -794,6 +770,51 @@ def do_sip_register(config_ast, l_sipsock):
                                                 (xivosb_register_frequency + 2), "")
                 l_sipsock.sendto(command, (config_ast.remoteaddr, config_ast.portsipsrv))
                 # command = xivo_sip.sip_options(config_ast, config_ast.mysipname, cid, sipnum)
+
+
+"""
+Communication with CTI clients
+"""
+
+
+def send_msg_to_cti_clients(strupdate):
+        # sends to TCP ports
+        for tcpclient in tcpopens_sb:
+                try:
+                        tcpclient[0].send(strupdate + "\n")
+                except Exception, exc:
+                        log_debug("--- exception --- send %s has failed on %s : %s"
+                                  %(strupdate.split('=')[0],
+                                    str(tcpclient[0]),
+                                    str(exc)))
+        for ka_object in requestersocket_by_login.itervalues():
+                userlist_lock.acquire()
+                try:
+                        mysock = ka_object.request[1]
+                        mysock.sendto(strupdate,
+                                      ka_object.client_address)
+                finally:
+                        userlist_lock.release()
+
+
+## \brief Sends a status update to all the connected xivo-switchboard(-like) clients.
+# \param astnum the asterisk numerical identifier
+# \param phonenum the phone identifier
+# \param fromwhom a string that tells who has requested such an update
+# \return none
+def update_GUI_clients(astnum, phonenum, fromwhom):
+        global plist
+        phoneinfo = fromwhom + ":" + plist[astnum].astid + ":" + build_basestatus(plist[astnum].normal[phonenum])
+        fstatlist = build_fullstatlist(plist[astnum].normal[phonenum])
+        strupdate = "update=" + phoneinfo + ":" + fstatlist
+
+        send_msg_to_cti_clients(strupdate)
+
+        verboselog(strupdate, False, True)
+
+"""
+"""
+
 
 
 ## \brief Splits a channel name, allowing for instance local-extensions-3fb2,1 to be correctly split.
@@ -1164,6 +1185,11 @@ def is_normal_channel(chan):
         else: return False
 
 
+"""
+Management of events that are spied on the AMI
+"""
+
+
 ## \brief Updates some channels according to the Dial events occuring in the AMI.
 # \param listkeys the list of allowed phones
 # \param astnum the Asterisk numerical identifier
@@ -1235,19 +1261,6 @@ def handle_ami_event_hangup(listkeys, astnum, chan, cause):
         plist[astnum].normal_channel_hangup(chan, "ami-eh0")
 
 
-## \brief Returns a given field from an AMI line.
-# \param lineami the line extracted from AMI
-# \param field the field whose value one is interested in
-# \return the value of the field
-def getvalue(lineami, field):
-        ret = "<NOFIELD>"
-        s1 = lineami.split(";" + field + ": ")
-        if len(s1) == 2:
-                s2 = s1[1].split(";")[0]
-                ret = s2
-        return ret
-
-
 ## \brief Handling of AMI events occuring in Events=on mode.
 # \param astnum the asterisk numerical identifier
 # \param idata the data read from the AMI we want to parse
@@ -1265,105 +1278,111 @@ def handle_ami_event(astid, idata):
         full_idata = save_for_next_packet_events[astnum] + idata
         evlist = full_idata.split("\r\n\r\n")
         save_for_next_packet_events[astnum] = evlist.pop()
-
-        for z in evlist:
-                # we assume no ";" character is present in AMI events fields
-                x = z.replace("\r\n", ";")
-                verboselog("/%s/ %s" %(plist[astnum].astid, x), True, False)
-                if x.find("Dial;") == 7:
-                        src     = getvalue(x, "Source")
-                        dst     = getvalue(x, "Destination")
-                        clid    = getvalue(x, "CallerID")
-                        clidn   = getvalue(x, "CallerIDName")
-                        context = getvalue(x, "Context")
+        
+        for evt in evlist:
+                this_event = {}
+                for myline in evt.split('\r\n'):
+                        myfieldvalue = myline.split(': ', 1)
+                        if len(myfieldvalue) == 2:
+                                this_event[myfieldvalue[0]] = myfieldvalue[1]
+                evfunction = this_event.get('Event')
+                verboselog("/%s/ %s" %(plist[astnum].astid, str(this_event)), True, False)
+                if evfunction == 'Dial':
+                        src     = this_event.get("Source")
+                        dst     = this_event.get("Destination")
+                        clid    = this_event.get("CallerID")
+                        clidn   = this_event.get("CallerIDName")
+                        context = this_event.get("Context")
                         try:
                                 handle_ami_event_dial(listkeys, astnum, src, dst, clid, clidn)
                                 #print "dial", context, x
                         except Exception, exc:
                                 log_debug("--- exception --- handle_ami_event_dial : " + str(exc))
-                elif x.find("Link;") == 7:
-                        src     = getvalue(x, "Channel1")
-                        dst     = getvalue(x, "Channel2")
-                        clid1   = getvalue(x, "CallerID1")
-                        clid2   = getvalue(x, "CallerID2")
-                        context = getvalue(x, "Context")
+                elif evfunction == 'Link':
+                        src     = this_event.get("Channel1")
+                        dst     = this_event.get("Channel2")
+                        clid1   = this_event.get("CallerID1")
+                        clid2   = this_event.get("CallerID2")
+                        context = this_event.get("Context")
                         try:
                                 handle_ami_event_link(listkeys, astnum, src, dst, clid1, clid2)
                                 #print "link", context, x
                         except Exception, exc:
                                 log_debug("--- exception --- handle_ami_event_link : " + str(exc))
-                elif x.find("Unlink;") == 7:
+                elif evfunction == 'Unlink':
                         # there might be something to parse here
-                        src   = getvalue(x, "Channel1")
-                        dst   = getvalue(x, "Channel2")
-                        clid1 = getvalue(x, "CallerID1")
-                        clid2 = getvalue(x, "CallerID2")
+                        src   = this_event.get("Channel1")
+                        dst   = this_event.get("Channel2")
+                        clid1 = this_event.get("CallerID1")
+                        clid2 = this_event.get("CallerID2")
                         try:
                                 handle_ami_event_unlink(listkeys, astnum, src, dst, clid1, clid2)
-                                #print "unlink", context, x
+                                #print "unlink", context, this_event
                         except Exception, exc:
                                 log_debug("--- exception --- handle_ami_event_unlink : " + str(exc))
-                elif x.find("Hangup;") == 7:
-                        chan  = getvalue(x, "Channel")
-                        cause = getvalue(x, "Cause-txt")
+                elif evfunction == 'Hangup':
+                        chan  = this_event.get("Channel")
+                        cause = this_event.get("Cause-txt")
                         try:
-                                #print x
+                                #print this_event
                                 handle_ami_event_hangup(listkeys, astnum, chan, cause)
                         except Exception, exc:
                                 log_debug("--- exception --- handle_ami_event_hangup: " + str(exc))
-                elif x.find("Reload;") == 7:
+                elif evfunction == 'Reload':
                         # warning : "reload" as well as "reload manager" can appear here
                         log_debug("AMI:Reload: " + plist[astnum].astid)
                         do_sip_register(configs[astnum], SIPsocks[astnum])
-                elif x.find("Shutdown;") == 7:
+                elif evfunction == 'Shutdown':
                         log_debug("AMI:Shutdown: " + plist[astnum].astid)
-                elif x.find("Join;") == 7:
-                        clid  = getvalue(x, "CallerID")
-                        qname = getvalue(x, "Queue")
+                elif evfunction == 'Join':
+                        clid  = this_event.get("CallerID")
+                        qname = this_event.get("Queue")
                         if len(clid) > 0:
                                 for k in tcpopens_sb:
                                         k[0].send("message=%s::<%s> is calling the Queue <%s>\n" %(DAEMON, clid, qname))
-                elif x.find("PeerStatus;") == 7:
+                elif evfunction == 'PeerStatus':
                         # <-> register's ? notify's ?
                         pass
-                elif x.find("Agentlogin;") == 7:
-                        log_debug("//AMI:Agentlogin// %s : %s" %(plist[astnum].astid, x))
-                elif x.find("Agentlogoff;") == 7:
-                        log_debug("//AMI:Agentlogoff// %s : %s" %(plist[astnum].astid, x))
-                elif x.find("Agentcallbacklogin;") == 7:
-                        log_debug("//AMI:Agentcallbacklogin// %s : %s" %(plist[astnum].astid, x))
-                elif x.find("Agentcallbacklogoff;") == 7:
-                        log_debug("//AMI:Agentcallbacklogoff// %s : %s" %(plist[astnum].astid, x))
-                elif x.find("AgentCalled;") == 7:
-                        log_debug("//AMI:AgentCalled// %s : %s" %(plist[astnum].astid, x))
-                elif x.find("ParkedCallsComplete;") == 7:
-                        log_debug("//AMI:ParkedCallsComplete// %s : %s" %(plist[astnum].astid, x))
-                elif x.find("ParkedCalled;") == 7:
-                        log_debug("//AMI:ParkedCalled// %s : %s" %(plist[astnum].astid, x))
-                elif x.find("Cdr;") == 7:
-                        log_debug("//AMI:Cdr// %s : %s" %(plist[astnum].astid, x))
-                elif x.find("Alarm;") == 7:
-                        log_debug("//AMI:Alarm// %s : %s" %(plist[astnum].astid, x))
-                elif x.find("AlarmClear;") == 7:
-                        log_debug("//AMI:AlarmClear// %s : %s" %(plist[astnum].astid, x))
-                elif x.find("FaxReceived;") == 7:
-                        log_debug("//AMI:FaxReceived// %s : %s" %(plist[astnum].astid, x))
-                elif x.find("MeetmeJoin;") == 7:
-                        channel = getvalue(x, "Channel")
-                        meetme = getvalue(x, "Meetme")
-                        usernum = getvalue(x, "Usernum")
+                elif evfunction == 'Agentlogin':
+                        log_debug("//AMI:Agentlogin// %s : %s" %(plist[astnum].astid, str(this_event)))
+                elif evfunction == 'Agentlogoff':
+                        log_debug("//AMI:Agentlogoff// %s : %s" %(plist[astnum].astid, str(this_event)))
+                elif evfunction == 'Agentcallbacklogin':
+                        log_debug("//AMI:Agentcallbacklogin// %s : %s" %(plist[astnum].astid, str(this_event)))
+                elif evfunction == 'Agentcallbacklogoff':
+                        log_debug("//AMI:Agentcallbacklogoff// %s : %s" %(plist[astnum].astid, str(this_event)))
+                elif evfunction == 'AgentCalled':
+                        log_debug("//AMI:AgentCalled// %s : %s" %(plist[astnum].astid, str(this_event)))
+                elif evfunction == 'ParkedCallsComplete':
+                        log_debug("//AMI:ParkedCallsComplete// %s : %s" %(plist[astnum].astid, str(this_event)))
+                elif evfunction == 'ParkedCalled':
+                        log_debug("//AMI:ParkedCalled// %s : %s" %(plist[astnum].astid, str(this_event)))
+                elif evfunction == 'Cdr':
+                        log_debug("//AMI:Cdr// %s : %s" %(plist[astnum].astid, str(this_event)))
+                elif evfunction == 'Alarm':
+                        log_debug("//AMI:Alarm// %s : %s" %(plist[astnum].astid, str(this_event)))
+                elif evfunction == 'AlarmClear':
+                        log_debug("//AMI:AlarmClear// %s : %s" %(plist[astnum].astid, str(this_event)))
+                elif evfunction == 'FaxReceived':
+                        log_debug("//AMI:FaxReceived// %s : %s" %(plist[astnum].astid, str(this_event)))
+                elif evfunction == 'Registry':
+                        log_debug("//AMI:Registry// %s : %s" %(plist[astnum].astid, str(this_event)))
+                elif evfunction == 'MeetmeJoin':
+                        channel = this_event.get("Channel")
+                        meetme = this_event.get("Meetme")
+                        usernum = this_event.get("Usernum")
                         log_debug("AMI:MeetmeJoin %s : %s %s %s"
                                   %(plist[astnum].astid, channel, meetme, usernum))
-                elif x.find("MeetmeLeave;") == 7:
-                        channel = getvalue(x, "Channel")
-                        meetme = getvalue(x, "Meetme")
-                        usernum = getvalue(x, "Usernum")
+                elif evfunction == 'MeetmeLeave':
+                        channel = this_event.get("Channel")
+                        meetme = this_event.get("Meetme")
+                        usernum = this_event.get("Usernum")
                         log_debug("AMI:MeetmeLeave %s : %s %s %s"
                                   %(plist[astnum].astid, channel, meetme, usernum))
-                elif x.find("ExtensionStatus;") == 7:
-                        exten   = getvalue(x, "Exten")
-                        context = getvalue(x, "Context")
-                        status  = getvalue(x, "Status")
+                elif evfunction == 'ExtensionStatus':
+                        exten   = this_event.get("Exten")
+                        context = this_event.get("Context")
+                        status  = this_event.get("Status")
                         log_debug("AMI:ExtensionStatus: %s : %s %s %s"
                                   %(plist[astnum].astid, exten, context, status))
                         # QueueMemberStatus ExtensionStatus
@@ -1374,10 +1393,11 @@ def handle_ami_event(astid, idata):
                         #                                 4  AST_EXTENSION_UNAVAILABLE ?
                         #                 5                  AST_DEVICE_UNAVAILABLE
                         #                 6 AST_EXTENSION_RINGING = 8  appele
-                elif x.find("OriginateSuccess;") == 7: pass
-                elif x.find("OriginateFailure;") == 7:
+                elif evfunction == 'OriginateSuccess':
+                        pass
+                elif evfunction == 'OriginateFailure':
                         log_debug("AMI:OriginateFailure: " + plist[astnum].astid + \
-                                  " - reason=" + getvalue(x, "Reason"))
+                                  " - reason=" + this_event.get("Reason"))
                         #define AST_CONTROL_HANGUP              1
                         #define AST_CONTROL_RING                2
                         #define AST_CONTROL_RINGING             3
@@ -1388,10 +1408,10 @@ def handle_ami_event(astid, idata):
                         #define AST_CONTROL_CONGESTION          8
                         #define AST_CONTROL_FLASH               9
                         #define AST_CONTROL_WINK                10
-                elif x.find("Rename;") == 7:
+                elif evfunction == 'Rename':
                         # appears when there is a transfer
-                        channel_old = getvalue(x, "Oldname")
-                        channel_new = getvalue(x, "Newname")
+                        channel_old = this_event.get("Oldname")
+                        channel_new = this_event.get("Newname")
                         if channel_old.find("<MASQ>") < 0 and channel_new.find("<MASQ>") < 0 and \
                                is_normal_channel(channel_old) and is_normal_channel(channel_new):
                                 log_debug("AMI:Rename:N: %s : old=%s new=%s"
@@ -1439,29 +1459,29 @@ def handle_ami_event(astid, idata):
                         else:
                                 log_debug("AMI:Rename:A: %s : old=%s new=%s"
                                           %(plist[astnum].astid, channel_old, channel_new))
-                elif x.find("Newstate;") == 7:
-                        chan    = getvalue(x, "Channel")
-                        clid    = getvalue(x, "CallerID")
-                        clidn   = getvalue(x, "CallerIDName")
-                        state   = getvalue(x, "State")
+                elif evfunction == 'Newstate':
+                        chan    = this_event.get("Channel")
+                        clid    = this_event.get("CallerID")
+                        clidn   = this_event.get("CallerIDName")
+                        state   = this_event.get("State")
                         # state = Ringing, Up, Down
                         plist[astnum].normal_channel_fills(chan, clid,
                                                            state, 0, DUMMY_DIR,
                                                            DUMMY_RCHAN, DUMMY_EXTEN, "ami-ns0")
-                elif x.find("Newcallerid;") == 7:
+                elif evfunction == 'Newcallerid':
                         # for tricky queues' management
-                        chan    = getvalue(x, "Channel")
-                        clid    = getvalue(x, "CallerID")
-                        clidn   = getvalue(x, "CallerIDName")
+                        chan    = this_event.get("Channel")
+                        clid    = this_event.get("CallerID")
+                        clidn   = this_event.get("CallerIDName")
                         log_debug("AMI:Newcallerid: " + plist[astnum].astid + \
                                   " channel=" + chan + " callerid=" + clid + " calleridname=" + clidn)
                         # plist[astnum].normal_channel_fills(chan, clid,
                         # DUMMY_STATE, 0, DUMMY_DIR,
                         # DUMMY_RCHAN, DUMMY_EXTEN, "ami-ni0")
-                elif x.find("Newchannel;") == 7:
-                        chan    = getvalue(x, "Channel")
-                        clid    = getvalue(x, "CallerID")
-                        state   = getvalue(x, "State")
+                elif evfunction == 'Newchannel':
+                        chan    = this_event.get("Channel")
+                        clid    = this_event.get("CallerID")
+                        state   = this_event.get("State")
                         # states = Ring, Down
                         if state == "Ring":
                                 plist[astnum].normal_channel_fills(chan, clid,
@@ -1476,10 +1496,10 @@ def handle_ami_event(astid, idata):
                         #       k[0].send("message=<" + clid + "> is entering the Asterisk <" + plist[astnum].astid + "> through " + chan + "\n")
                         # else:
                         # pass
-                elif x.find("Newexten;") == 7: # in order to handle outgoing calls ?
-                        chan    = getvalue(x, "Channel")
-                        exten   = getvalue(x, "Extension")
-                        context = getvalue(x, "Context")
+                elif evfunction == 'Newexten': # in order to handle outgoing calls ?
+                        chan    = this_event.get("Channel")
+                        exten   = this_event.get("Extension")
+                        context = this_event.get("Context")
                         if exten != "s" and exten != "h" and exten != "t" and exten != "enum":
                                 #print "--- exten :", chan, exten
                                 plist[astnum].normal_channel_fills(chan, DUMMY_MYNUM,
@@ -1487,10 +1507,10 @@ def handle_ami_event(astid, idata):
                                                                    DUMMY_RCHAN, exten, "ami-ne0")
                         else:
                                 pass
-                        if x.find("Application: Set;AppData: DB") > 0:
+                        if this_event.get('Application') == 'Set' and this_event.get('AppData').find('DB') == 0:
                                 try:
                                         # appdata = DB(local-extensions/users/103/DND)=0
-                                        appdata = getvalue(x, "AppData")
+                                        appdata = this_event.get("AppData")
                                         [ctx, grp, userid, feature] = appdata.split("(")[1].split(")=")[0].split("/", 3)
                                         value = appdata.split(")=")[1]
                                         strupdate = "featuresupdate=%s;%s;%s;%s;%s" %(configs[astnum].astid, ctx, userid, feature, value)
@@ -1498,25 +1518,24 @@ def handle_ami_event(astid, idata):
 
                                 except Exception, exc:
                                         log_debug("--- exception --- (newexten, appdata) %s" %str(exc))
-                elif x.find("MessageWaiting;") == 7:
-                        mwi_string = getvalue(x,"Mailbox") + " waiting=" + getvalue(x,"Waiting") \
-                                     + "; new=" + getvalue(x, "New") + "; old=" + getvalue(x, "Old")
+                elif evfunction == 'MessageWaiting':
+                        mwi_string = "%s waiting=%s; new=%s; old=%s" \
+                                     % (this_event.get('Mailbox'), str(this_event.get('Waiting')), str(this_event.get("New")), str(this_event.get("Old")))
                         log_debug("AMI:MessageWaiting: " + plist[astnum].astid + " : " + mwi_string)
-                elif x.find("QueueParams;") == 7:
-                        log_debug("//AMI:QueueParams// %s : %s" %(plist[astnum].astid, x))
-                elif x.find("QueueMember;") == 7:
-                        log_debug("//AMI:QueueMember// %s : %s" %(plist[astnum].astid, x))
-                elif x.find("QueueMemberStatus;") == 7:
-                        queuenameq = getvalue(x, "Queue")
-                        location   = getvalue(x, "Location")
-                        status     = getvalue(x, "Status")
+                elif evfunction == 'QueueParams':
+                        log_debug("//AMI:QueueParams// %s : %s" %(plist[astnum].astid, str(this_event)))
+                elif evfunction == 'QueueMember':
+                        log_debug("//AMI:QueueMember// %s : %s" %(plist[astnum].astid, str(this_event)))
+                elif evfunction == 'QueueMemberStatus':
+                        queuenameq = this_event.get("Queue")
+                        location   = this_event.get("Location")
+                        status     = this_event.get("Status")
                         log_debug("AMI:QueueMemberStatus: " + plist[astnum].astid + " " + queuenameq + " " + location + " " + status)
-                elif x.find("Leave;") == 7:
-                        queuenameq = getvalue(x, "Queue")
+                elif evfunction == 'Leave':
+                        queuenameq = this_event.get("Queue")
                         log_debug("AMI:Leave: " + plist[astnum].astid + " " + queuenameq)
-                else:
-                        if len(x) > 0:
-                                log_debug("AMI:XXX: " + plist[astnum].astid + " <" + x + ">")
+                elif len(this_event) > 0:
+                        log_debug("AMI:XXX: <%s> : %s" % (plist[astnum].astid, str(this_event)))
 
 
 ## \brief Handling of AMI events for the initial Status Command.
@@ -1537,21 +1556,35 @@ def handle_ami_status(astid, idata):
         evlist = full_idata.split("\r\n\r\n")
         save_for_next_packet_status[astnum] = evlist.pop()
 
-        for z in evlist:
-                # we assume no ";" character is present in AMI events fields
-                x = z.replace("\r\n", ";")
-                #if len(x) > 0:
-                #print "statuses --FULL--", x
-                if x.find("Status;") == 7:
-                        if x.find(";State: Up;") >= 0:
-                                if x.find(";Seconds: ") >= 0:
-                                        chan    = getvalue(x, "Channel")
-                                        clid    = getvalue(x, "CallerID")
-                                        exten   = getvalue(x, "Extension")
-                                        seconds = getvalue(x, "Seconds")
-                                        if x.find(";Link: ") >= 0:
-                                                link = getvalue(x, "Link")
-                                                #print "statuses up --------", chan, clid, exten, seconds, link
+        for evt in evlist:
+                this_event = {}
+                for myline in evt.split('\r\n'):
+                        myfieldvalue = myline.split(': ', 1)
+                        if len(myfieldvalue) == 2:
+                                this_event[myfieldvalue[0]] = myfieldvalue[1]
+                evfunction = this_event.get('Event')
+                if evfunction == 'Status':
+                        print this_event
+                        state = this_event.get('State')
+                        if state == 'Up':
+                                chan    = this_event.get('Channel')
+                                clid    = this_event.get('CallerID')
+                                link    = this_event.get('Link')
+                                exten   = this_event.get('Extension')
+                                seconds = this_event.get('Seconds')
+                                if link is not None:
+                                        if seconds is None:
+                                                # this is where the right callerid is set, esp in outgoing calls
+                                                plist[astnum].normal_channel_fills(link, DUMMY_MYNUM,
+                                                                                   "On the phone", 0, DIR_TO_STRING,
+                                                                                   chan, clid,
+                                                                                   "ami-st1")
+                                                plist[astnum].normal_channel_fills(chan, DUMMY_MYNUM,
+                                                                                   "On the phone", 0, DIR_FROM_STRING,
+                                                                                   link, '',
+                                                                                   "ami-st2")
+                                        else:
+                                                # this is where the right time of ongoing calls is set
                                                 plist[astnum].normal_channel_fills(link, DUMMY_MYNUM,
                                                                                    "On the phone", int(seconds), DIR_FROM_STRING,
                                                                                    chan, clid,
@@ -1560,22 +1593,27 @@ def handle_ami_status(astid, idata):
                                                                                    "On the phone", int(seconds), DIR_TO_STRING,
                                                                                    link, exten,
                                                                                    "ami-st2")
-                                        else:
-                                                log_debug("AMI::Status UP: " + chan + " " + clid + " " + exten + " " + seconds)
                                 else:
-                                        pass
-                        elif x.find(";State: Ring;") >= 0:
-                                log_debug("AMI::Status TO: " + getvalue(x, "Channel") + \
-                                          " " + getvalue(x, "Extension") + " " + getvalue(x, "Seconds"))
-                        elif x.find(";State: Ringing;") >= 0:
-                                log_debug("AMI::Status FROM: " + getvalue(x, "Channel"))
+                                        # we are here when there is a MeetMe conference for instance
+                                        log_debug("AMI::Status UP: " + chan + " " + clid + " " + exten + " " + seconds)
+
+                        elif state == 'Ring':
+                                log_debug("AMI::Status TO: " + this_event.get("Channel") + \
+                                          " " + this_event.get("Extension") + " " + this_event.get("Seconds"))
+                        elif state == 'Ringing':
+                                log_debug("AMI::Status FROM: " + this_event.get("Channel"))
+                        elif state == 'Rsrvd':
+                                log_debug("AMI::Status (Rsrvd): " + this_event.get("Channel"))
                         else:
-                                log_debug("AMI::Status : " + x)
-                elif x.find("Response: Follows;Privilege: Command;") == 0:
-                        for y in x.split("Response: Follows;Privilege: Command;")[1].split("\n"):
-                                log_debug("AMI:Response: " + plist[astnum].astid + " : " + y)
+                                log_debug("AMI::Status : %s" % str(this_event))
+                elif this_event.get('Response') == 'Follows' and this_event.get('Privilege') == 'Command':
+                        log_debug("AMI:Response: " + plist[astnum].astid + " : " + str(this_event))
                 else:
-                        log_debug("AMI:_status_: " + plist[astnum].astid + " : " + x)
+                        log_debug("AMI:_status_: " + plist[astnum].astid + " : " + str(this_event))
+
+
+"""
+"""
 
 
 ## \brief Connects to the AMI if not yet.
@@ -1982,10 +2020,12 @@ class LineProp:
                 newmynum = mynum
                 if ichan in self.chann:
                         thischannel = self.chann[ichan]
+                        oldpeernum = thischannel.getChannelNum()
+
                         if status  == "": newstatus = thischannel.getStatus()
                         if idir    == "": newdir = thischannel.getDirection()
                         if peerch  == "": newpeerch = thischannel.getChannelPeer()
-                        if peernum == "": newpeernum = thischannel.getChannelNum()
+                        if oldpeernum != "": newpeernum = oldpeernum
                         if mynum   == "": newmynum = thischannel.getChannelMyNum()
 
                         # mynum != thischannel.getChannelMyNum()
