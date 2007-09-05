@@ -78,7 +78,12 @@ QLabel * LeftPanel::titleLabel()
  * The geometry is restored from settings.
  */
 MainWidget::MainWidget(BaseEngine * engine, QWidget * parent)
-	: QMainWindow(parent, Qt::FramelessWindowHint), m_engine(engine)
+#ifdef Q_WS_X11
+        : QMainWindow(parent, Qt::FramelessWindowHint),
+#else
+          : QMainWindow(parent),
+#endif
+            m_engine(engine)
 {
 	QSettings settings;
 	QPixmap redsquare(":xivoclient/gui/disconnected.png");
@@ -135,8 +140,15 @@ void MainWidget::buildSplitters()
 	m_calls = new CallStackWidget(m_areaCalls);
  	m_areaCalls->setWidget(m_calls);
 	m_svc_tabwidget = new QTabWidget(m_leftSplitter);
+        QString tabwidgetQSS = "QTabWidget::pane {border-top: 2px solid white; top: 0.2em}\n"
+                "QTabWidget::tab-bar {alignment: center}\n"
+                "QTabBar::tab {background: qlineargradient(y1: 0.45, y2: 0.55, stop: 0 #fbb638, stop: 1.0 #f38402);"
+                "color: white; font: bold ; margin: 1px; padding: 3px;"
+                "border: 2px solid white; border-top-left-radius: 10px; border-top-right-radius: 10px}\n"
+                "QTabBar::tab:selected {background: qlineargradient(y1: 0.45, y2: 0.55, stop: 0 #3bc0ff, stop: 1.0 #05aefd)}";
+        m_svc_tabwidget->setStyleSheet(tabwidgetQSS);
 	m_messages_widget = new DisplayMessagesPanel(m_svc_tabwidget);
-	m_svc_tabwidget->addTab(m_messages_widget, tr("Messages"));
+	m_svc_tabwidget->addTab(m_messages_widget, "     " + tr("Messages") + "    ");
 	m_leftSplitter->restoreState(settings.value("display/leftSplitterSizes").toByteArray());
 
 	// Middle Splitter Definitions
@@ -153,7 +165,7 @@ void MainWidget::buildSplitters()
         m_searchpanel = new SearchPanel(m_rightSplitter);
         m_searchpanel->setEngine(m_engine);
 	m_cinfo_tabwidget = new QTabWidget(m_rightSplitter);
-        m_cinfo_tabwidget->setStyleSheet("* {background : white}");
+        m_cinfo_tabwidget->setStyleSheet("* {background : white}\n" + tabwidgetQSS);
         m_dialpanel = new DialPanel(m_rightSplitter);
 	m_rightSplitter->restoreState(settings.value("display/rightSplitterSizes").toByteArray());
 
@@ -434,7 +446,7 @@ void MainWidget::engineStarted()
 		if (allowed_capas.contains(dc)) {
 			if (dc == QString("history")) {
                                 m_logwidget = new LogWidget(m_engine, m_svc_tabwidget);
-                                m_svc_tabwidget->insertTab(0, m_logwidget, tr("History"));
+                                m_svc_tabwidget->insertTab(0, m_logwidget, "    " + tr("History") + "    ");
 
                                 connect( m_engine, SIGNAL(updateLogEntry(const QDateTime &, int, const QString &, int)),
                                          m_logwidget, SLOT(addLogEntry(const QDateTime &, int, const QString &, int)) );
@@ -447,7 +459,7 @@ void MainWidget::engineStarted()
                         } else if (dc == QString("features")) {
 
                                 m_featureswidget = new ServicePanel(m_svc_tabwidget);
-                                m_svc_tabwidget->insertTab(0, m_featureswidget, tr("Services"));
+                                m_svc_tabwidget->insertTab(0, m_featureswidget, "    " + tr("Services") + "    ");
 
                                 connect( m_featureswidget, SIGNAL(askFeatures(const QString &)),
                                          m_engine, SLOT(askFeatures(const QString &)) );
@@ -591,7 +603,7 @@ void MainWidget::showNewProfile(Popup * popup)
 	  }*/
 	if (m_cinfo_tabwidget)
 	{
-		int index = m_cinfo_tabwidget->addTab(popup, currentTimeStr);
+		int index = m_cinfo_tabwidget->addTab(popup, "    " + currentTimeStr + "    ");
 		qDebug() << "added tab" << index;
 		m_cinfo_tabwidget->setCurrentIndex(index);
 		if (index >= m_tablimit)

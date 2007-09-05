@@ -47,15 +47,6 @@ LogWidget::LogWidget(BaseEngine * engine, QWidget * parent)
 	layout->setMargin(0);
 	layout->setSpacing(0);
 
-// 	QTabWidget * tabwidget = new QTabWidget(this);
-
-// 	QHBoxLayout * vbox_out = new QHBoxLayout( tabwidget );
-// 	tabwidget->addTab(vbox_out, tr("&Outgoing"));
-// 	QHBoxLayout * vbox_in = new QHBoxLayout( tabwidget );
-// 	tabwidget->addTab(vbox_in, tr("&Outgoing"));
-// 	QHBoxLayout * vbox_missed = new QHBoxLayout( tabwidget );
-// 	tabwidget->addTab(vbox_missed, tr("&Outgoing"));
-
 	QGroupBox * groupBox = new QGroupBox( this );
 	groupBox->setAlignment( Qt::AlignHCenter );
 	QHBoxLayout * vbox = new QHBoxLayout( groupBox );

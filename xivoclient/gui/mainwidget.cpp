@@ -53,9 +53,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  * vertical box layout and connect signals with slots.
  */
 MainWidget::MainWidget(BaseEngine * engine, QWidget * parent)
-          : QMainWindow(parent, Qt::FramelessWindowHint), m_engine(engine),
-	  m_systrayIcon(0),
-	  m_icon(":/xivoicon.png"), m_icongrey(":/xivoicon-grey.png")
+#ifdef Q_WS_X11
+        : QMainWindow(parent, Qt::FramelessWindowHint),
+#else
+          : QMainWindow(parent),
+#endif
+            m_engine(engine), m_systrayIcon(0),
+            m_icon(":/xivoicon.png"), m_icongrey(":/xivoicon-grey.png")
 {
 	QSettings settings;
 	QPixmap redsquare(":/disconnected.png");
@@ -371,7 +375,7 @@ void MainWidget::engineStarted()
         m_main_tabwidget->setStyleSheet("QTabWidget::pane {border-top: 2px solid white; top: 0.2em}\n"
                                         "QTabWidget::tab-bar {alignment: center}\n"
                                         "QTabBar::tab {background: qlineargradient(y1: 0.45, y2: 0.55, stop: 0 #fbb638, stop: 1.0 #f38402);"
-                                        "color: white; font: bold ; margin: 1px; min-width: 11ex; padding: 3px;"
+                                        "color: white; font: bold ; margin: 1px; padding: 3px;"
                                         "border: 2px solid white; border-top-left-radius: 10px; border-top-right-radius: 10px}\n"
                                         "QTabBar::tab:selected {background: qlineargradient(y1: 0.45, y2: 0.55, stop: 0 #3bc0ff, stop: 1.0 #05aefd)}");
         m_mainlayout->addWidget(m_main_tabwidget, 1);
@@ -383,7 +387,7 @@ void MainWidget::engineStarted()
 				m_messagetosend = new QLineEdit();
 				connect( m_messagetosend, SIGNAL(returnPressed()),
 					 this, SLOT(affTextChanged()) );
-				m_main_tabwidget->addTab(m_messagetosend, tr("&Messages"));
+				m_main_tabwidget->addTab(m_messagetosend, "    " + tr("&Messages") + "    ");
 
 			} else if (dc == QString("dial")) {
 				m_dial = new DialPanel();
@@ -394,11 +398,11 @@ void MainWidget::engineStarted()
 			} else if ((dc == QString("customerinfo")) && (m_engine->checkedCInfo())) {
 				m_cinfo_tabwidget = new QTabWidget();
 				m_cinfo_tabwidget->setStyleSheet("* {background : white}");
-				m_main_tabwidget->addTab(m_cinfo_tabwidget, tr("&Sheets"));
+				m_main_tabwidget->addTab(m_cinfo_tabwidget, "    " + tr("&Sheets") + "    ");
 
 			} else if (dc == QString("peers")) {
 				m_peerswidget = new SearchPanel(this);
-				m_main_tabwidget->addTab(m_peerswidget, tr("&Contacts"));
+				m_main_tabwidget->addTab(m_peerswidget, "    " + tr("&Contacts") + "    ");
 
 				connect( m_engine, SIGNAL(updatePeer(const QString &, const QString &,
 								     const QString &, const QString &,
@@ -417,7 +421,7 @@ void MainWidget::engineStarted()
 
 			} else if (dc == QString("features")) {
 				m_featureswidget = new ServicePanel(this);
-				m_main_tabwidget->addTab(m_featureswidget, tr("S&ervices"));
+				m_main_tabwidget->addTab(m_featureswidget, "    " + tr("S&ervices") + "    ");
 
                                 connect( m_engine, SIGNAL(disconnectFeatures()),
                                          m_featureswidget, SLOT(DisConnect()) );
@@ -494,7 +498,7 @@ void MainWidget::engineStarted()
 				//m_directory, SLOT(stop()) );
 				
 				//			m_mainlayout->addWidget(m_directory, 0);
-				m_main_tabwidget->addTab(m_directory, tr("&Directory"));
+				m_main_tabwidget->addTab(m_directory, "    " + tr("&Directory") + "    ");
 				
 			} else if (dc == QString("history")) {
 				m_history = new LogWidget(m_engine, this);
@@ -510,7 +514,7 @@ void MainWidget::engineStarted()
 				connect( m_engine, SIGNAL(updateLogEntry(const QDateTime &, int, const QString &, int)),
 					 m_history, SLOT(addLogEntry(const QDateTime &, int, const QString &, int)) );
 				//			m_mainlayout->addWidget(m_history, 0);
-				m_main_tabwidget->addTab(m_history, tr("&History"));
+				m_main_tabwidget->addTab(m_history, "    " + tr("&History") + "    ");
 			}
 		}
 	}
@@ -653,7 +657,7 @@ void MainWidget::showNewProfile(Popup * popup)
 	}
 	if (m_cinfo_tabwidget)
 	{
-		int index = m_cinfo_tabwidget->addTab(popup, currentTimeStr);
+		int index = m_cinfo_tabwidget->addTab(popup, "    " + currentTimeStr + "    ");
 		qDebug() << "added tab" << index;
 		m_cinfo_tabwidget->setCurrentIndex(index);
 		if (m_cinfo_index > -1)
