@@ -368,6 +368,12 @@ void MainWidget::engineStarted()
         }
 
 	m_main_tabwidget = new QTabWidget();
+        m_main_tabwidget->setStyleSheet("QTabWidget::pane {border-top: 2px solid white; top: 0.2em}\n"
+                                        "QTabWidget::tab-bar {alignment: center}\n"
+                                        "QTabBar::tab {background: qlineargradient(y1: 0.45, y2: 0.55, stop: 0 #fbb638, stop: 1.0 #f38402);"
+                                        "color: white; font: bold ; margin: 1px; min-width: 11ex; padding: 3px;"
+                                        "border: 2px solid white; border-top-left-radius: 10px; border-top-right-radius: 10px}\n"
+                                        "QTabBar::tab:selected {background: qlineargradient(y1: 0.45, y2: 0.55, stop: 0 #3bc0ff, stop: 1.0 #05aefd)}");
         m_mainlayout->addWidget(m_main_tabwidget, 1);
 
 	for(int j = 0; j < display_capas.size(); j++) {
