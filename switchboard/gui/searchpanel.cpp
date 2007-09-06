@@ -44,11 +44,7 @@ SearchPanel::SearchPanel(QWidget * parent)
 	scrollarea->setWidgetResizable(true);
 	QWidget * widget = new QWidget(scrollarea);
 	scrollarea->setWidget(widget);
-        scrollarea->setStyleSheet("* {background : #fff0e0}\n"
-                                  "QScrollBar:vertical   {width: 10px; border: 0px solid black}\n"
-                                  "QScrollBar:horizontal {height: 10px; border: 0px solid black}\n"
-                                  "QScrollBar::handle:vertical   {background: qlineargradient(x1: 0.45, x2: 0.55, stop: 0 #3bc0ff, stop: 1.0 #05aefd)}\n"
-                                  "QScrollBar::handle:horizontal {background: qlineargradient(y1: 0.45, y2: 0.55, stop: 0 #3bc0ff, stop: 1.0 #05aefd)}\n");
+        scrollarea->setStyleSheet("* {background : #fff0e0}\n");
 	QVBoxLayout * scrollarealayout = new QVBoxLayout(widget);
 	m_peerlayout = new QVBoxLayout();
 	scrollarealayout->addLayout( m_peerlayout );

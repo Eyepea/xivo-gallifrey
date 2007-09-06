@@ -27,9 +27,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QLabel>
 #include <QLineEdit>
 #include <QMouseEvent>
-#include <QPushButton>
 #include <QRegExp>
 #include <QScrollArea>
+#include <QToolButton>
 #include "dialpanel.h"
 #include "xivoconsts.h"
 
@@ -56,18 +56,22 @@ DialPanel::DialPanel(QWidget * parent)
 	         this, SLOT(inputValidated()) );
 	connect( m_input, SIGNAL(editTextChanged(const QString &)),
 	         this, SIGNAL(textEdited(const QString &)) );
-        //	QPushButton * dialButton = new QPushButton(QIcon(":sipphone.png"), tr("Dial"), this);
-        QPushButton * dialButton = new QPushButton(QIcon(":switchboard/gui/sipphone.png"), "", this);
-        dialButton->setStyleSheet("QPushButton {border: 2px solid #f0b070; border-radius: 6px}");
+        QPixmap pm = QPixmap(":switchboard/gui/sipphone.png");
+        QToolButton * dialButton = new QToolButton(this);
+        dialButton->setIcon(pm);
+        dialButton->setIconSize(pm.size());
+        dialButton->setStyleSheet("QToolButton {border: 0px}");
 
 	connect( dialButton, SIGNAL(clicked()),
 	         this, SLOT(inputValidated()) );
 
         setAcceptDrops(true);
 
+        vlayout->addStretch(1);
 	vlayout->addWidget( m_lbl, 0, Qt::AlignCenter );
 	vlayout->addWidget( m_input, 0, Qt::AlignCenter );
 	vlayout->addWidget( dialButton, 0, Qt::AlignCenter );
+        vlayout->addStretch(1);
 }
 
 // void DialPanel::textEdited(const QString & text)

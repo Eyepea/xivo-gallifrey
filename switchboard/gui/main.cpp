@@ -53,6 +53,12 @@ int main(int argc, char * * argv)
 		qssFile.close();
 	}
 
+        app.setStyleSheet("DisplayMessagesPanel {selection-background-color : #05aefd}\n"
+                          "QScrollBar:vertical   {width: 10px; border: 0px solid black}\n"
+                          "QScrollBar:horizontal {height: 10px; border: 0px solid black}\n"
+                          "QScrollBar::handle:vertical   {background: qlineargradient(x1: 0.45, x2: 0.55, stop: 0 #3bc0ff, stop: 1.0 #05aefd)}\n"
+                          "QScrollBar::handle:horizontal {background: qlineargradient(y1: 0.45, y2: 0.55, stop: 0 #3bc0ff, stop: 1.0 #05aefd)}\n");
+
 	QTranslator qtTranslator;
 	qtTranslator.load(QString(":/switchboard_") + locale);
 	app.installTranslator(&qtTranslator);

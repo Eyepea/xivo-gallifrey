@@ -1324,7 +1324,6 @@ def handle_ami_event(astid, idata):
                         chan  = this_event.get("Channel")
                         cause = this_event.get("Cause-txt")
                         try:
-                                #print this_event
                                 handle_ami_event_hangup(listkeys, astnum, chan, cause)
                         except Exception, exc:
                                 log_debug("--- exception --- handle_ami_event_hangup: " + str(exc))
@@ -1369,13 +1368,13 @@ def handle_ami_event(astid, idata):
                         log_debug("//AMI:Registry// %s : %s" %(plist[astnum].astid, str(this_event)))
                 elif evfunction == 'MeetmeJoin':
                         channel = this_event.get("Channel")
-                        meetme = this_event.get("Meetme")
+                        meetme  = this_event.get("Meetme")
                         usernum = this_event.get("Usernum")
                         log_debug("AMI:MeetmeJoin %s : %s %s %s"
                                   %(plist[astnum].astid, channel, meetme, usernum))
                 elif evfunction == 'MeetmeLeave':
                         channel = this_event.get("Channel")
-                        meetme = this_event.get("Meetme")
+                        meetme  = this_event.get("Meetme")
                         usernum = this_event.get("Usernum")
                         log_debug("AMI:MeetmeLeave %s : %s %s %s"
                                   %(plist[astnum].astid, channel, meetme, usernum))
@@ -1564,7 +1563,6 @@ def handle_ami_status(astid, idata):
                                 this_event[myfieldvalue[0]] = myfieldvalue[1]
                 evfunction = this_event.get('Event')
                 if evfunction == 'Status':
-                        print this_event
                         state = this_event.get('State')
                         if state == 'Up':
                                 chan    = this_event.get('Channel')
@@ -1594,23 +1592,35 @@ def handle_ami_status(astid, idata):
                                                                                    link, exten,
                                                                                    "ami-st2")
                                 else:
-                                        # we are here when there is a MeetMe conference for instance
-                                        log_debug("AMI::Status UP: " + chan + " " + clid + " " + exten + " " + seconds)
+                                        # we fall here when there is a MeetMe conference
+                                        log_debug("AMI %s Status / linked with noone (Meetme conf, voicemail ...) : chan=<%s>, clid=<%s>, exten=<%s>, seconds=<%s>"
+                                                  % (astid, chan, clid, exten, seconds))
+                                        plist[astnum].normal_channel_fills(chan, DUMMY_MYNUM,
+                                                                           "On the phone", int(seconds), DIR_TO_STRING,
+                                                                           DUMMY_RCHAN, exten,
+                                                                           "ami-st2")
 
                         elif state == 'Ring':
-                                log_debug("AMI::Status TO: " + this_event.get("Channel") + \
-                                          " " + this_event.get("Extension") + " " + this_event.get("Seconds"))
+                                log_debug("AMI %s Status / Ring (To): %s %s %s"
+                                          % (astid, this_event.get('Channel'),
+                                             this_event.get('Extension'), this_event.get('Seconds')))
                         elif state == 'Ringing':
-                                log_debug("AMI::Status FROM: " + this_event.get("Channel"))
+                                log_debug("AMI %s Status / Ringing (From): %s"
+                                          % (astid, this_event.get("Channel")))
                         elif state == 'Rsrvd':
-                                log_debug("AMI::Status (Rsrvd): " + this_event.get("Channel"))
+                                log_debug("AMI %s Status / Rsrvd: %s"
+                                          % (astid, this_event.get("Channel")))
                         else:
-                                log_debug("AMI::Status : %s" % str(this_event))
+                                log_debug("AMI %s Status / (undefined status event) : %s"
+                                          % (astid, str(this_event)))
+                elif evfunction == 'StatusComplete':
+                        log_debug("AMI %s StatusComplete" % astid)
                 elif this_event.get('Response') == 'Follows' and this_event.get('Privilege') == 'Command':
-                        log_debug("AMI:Response: " + plist[astnum].astid + " : " + str(this_event))
+                        log_debug("AMI %s Response=Follows : %s" % (astid, str(this_event)))
+                elif this_event.get('Response') == 'Success':
+                        log_debug("AMI %s Response=Success : %s" % (astid, str(this_event)))
                 else:
-                        log_debug("AMI:_status_: " + plist[astnum].astid + " : " + str(this_event))
-
+                        log_debug("AMI %s Other : %s" % (astid, str(this_event)))
 
 """
 """
