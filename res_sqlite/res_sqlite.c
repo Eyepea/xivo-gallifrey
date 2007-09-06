@@ -792,7 +792,7 @@ static char *sql_get_config_table =
 "SELECT *"
 "	FROM '%q'"
 "	WHERE filename = '%q' AND commented = 0"
-"	ORDER BY category;";
+"	ORDER BY cat_metric ASC, var_metric ASC;";
 
 static int
 set_var(char **var, char *name, char *value)

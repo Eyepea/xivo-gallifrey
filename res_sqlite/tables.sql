@@ -21,8 +21,6 @@ CREATE TABLE ast_config
 CREATE INDEX ast_config__idx__cat_metric         ON ast_config(cat_metric);
 CREATE INDEX ast_config__idx__var_metric         ON ast_config(var_metric);
 CREATE INDEX ast_config__idx__filename_commented ON ast_config(filename, commented);
-CREATE INDEX ast_config__idx__category           ON ast_config(category);
-CREATE INDEX ast_config__idx__var_name           ON ast_config(var_name);
 
 /*
  * CDR table (this table is automatically created if non existent).
