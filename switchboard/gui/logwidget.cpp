@@ -53,18 +53,9 @@ LogWidget::LogWidget(BaseEngine * engine, QWidget * parent)
 	vbox->setMargin(0);
 	vbox->setSpacing(0);
 
-        QString radioQSS = "QRadioButton {spacing: 1px}\n"
-                "QRadioButton::indicator:unchecked         {image: url(:/xivoclient/gui/images/checkbox_unchecked.png)}\n"
-                "QRadioButton::indicator:unchecked:hover   {image: url(:/xivoclient/gui/images/checkbox_unchecked_hover.png)}\n"
-                "QRadioButton::indicator:unchecked:pressed {image: url(:/xivoclient/gui/images/checkbox_unchecked_pressed.png)}\n"
-                "QRadioButton::indicator:checked         {image: url(:/xivoclient/gui/images/checkbox_checked.png)}\n"
-                "QRadioButton::indicator:checked:hover   {image: url(:/xivoclient/gui/images/checkbox_checked_hover.png)}\n"
-                "QRadioButton::indicator:checked:pressed {image: url(:/xivoclient/gui/images/checkbox_checked_pressed.png)}\n";
-
         vbox->addStretch( 1 );
 	m_radioNone = new QRadioButton( " ", groupBox );
         m_radioNone->setIcon(QIcon(":/xivoclient/gui/images/cancel.png"));
-        m_radioNone->setStyleSheet( radioQSS );
 	m_radioNone->setToolTip( tr("No calls") );
 	connect( m_radioNone, SIGNAL(toggled(bool)),
 	         this, SLOT(modeChanged(bool)) );
@@ -72,7 +63,6 @@ LogWidget::LogWidget(BaseEngine * engine, QWidget * parent)
 
 	m_radioOut = new QRadioButton( " ", groupBox );
         m_radioOut->setIcon(QIcon(":/xivoclient/gui/images/green_up.png"));
-        m_radioOut->setStyleSheet( radioQSS );
 	m_radioOut->setToolTip( tr("Outgoing calls") );
 	connect( m_radioOut, SIGNAL(toggled(bool)),
 	         this, SLOT(modeChanged(bool)) );
@@ -80,7 +70,6 @@ LogWidget::LogWidget(BaseEngine * engine, QWidget * parent)
 
 	m_radioIn = new QRadioButton( " ", groupBox );
         m_radioIn->setIcon(QIcon(":/xivoclient/gui/images/green_down.png"));
-        m_radioIn->setStyleSheet( radioQSS );
 	m_radioIn->setToolTip( tr("Incoming calls") );
 	connect( m_radioIn, SIGNAL(toggled(bool)),
 	         this, SLOT(modeChanged(bool)) );
@@ -88,7 +77,6 @@ LogWidget::LogWidget(BaseEngine * engine, QWidget * parent)
 
 	m_radioMissed = new QRadioButton( " ", groupBox );
         m_radioMissed->setIcon(QIcon(":/xivoclient/gui/images/red_down.png"));
-        m_radioMissed->setStyleSheet( radioQSS );
 	m_radioMissed->setToolTip( tr("Missed calls") );
 	connect( m_radioMissed, SIGNAL(toggled(bool)),
 	         this, SLOT(modeChanged(bool)) );
@@ -99,14 +87,11 @@ LogWidget::LogWidget(BaseEngine * engine, QWidget * parent)
 
 	layout->addWidget( groupBox );
 	QScrollArea * scrollArea = new QScrollArea( this );
-
-        //        this->setStyleSheet("* {background : #f9a22c}");
-        this->setStyleSheet("* {background : #ffe0b0}");
-        scrollArea->setStyleSheet("* {background : #fff0e0}\n");
 	scrollArea->setWidgetResizable( true );
 
 	QWidget * widget = new QWidget( this );
 	scrollArea->setWidget( widget );
+        widget->setObjectName("scroller"); // in order for the style settings to be set accordingly
 
 	m_layout = new QVBoxLayout( widget );
 	m_layout->setMargin(0);

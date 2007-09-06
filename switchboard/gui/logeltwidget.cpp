@@ -38,9 +38,9 @@ LogEltWidget::LogEltWidget( const QString & peer, Direction d,
 	//	layout1->setMargin(0);
 
 	QLabel * lblpeer = new QLabel( "    " + peer + "    ", this );
+	lblpeer->setObjectName("logpeername");
 	lblpeer->setFont(QFont("helvetica", 10, QFont::Bold));
 	lblpeer->setMargin(0);
-        lblpeer->setStyleSheet("* {color : black ; background : #b0e0ff ; border-radius : 5px ; font-size : 15px}");
 	glayout->addWidget(lblpeer, 0, 0);
 
 	QLabel * lbldt = new QLabel( dt.toString(Qt::SystemLocaleDate) + "   ", this );

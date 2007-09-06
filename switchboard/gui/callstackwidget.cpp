@@ -92,6 +92,7 @@ CallStackWidget::CallStackWidget(QWidget * parent)
 	m_layout = new QVBoxLayout(this);
 	//m_layout->setMargin();
 	//m_layout->setSpacing(0);
+        setObjectName("scroller");
 	setAcceptDrops(true);
 	m_layout->addStretch(1);
 }

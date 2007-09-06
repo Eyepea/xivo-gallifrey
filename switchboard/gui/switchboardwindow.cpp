@@ -41,6 +41,7 @@ SwitchBoardWindow::SwitchBoardWindow(QWidget * parent)
 {
 	m_layout = new PeersLayout(this);
 	QSettings settings;
+        setObjectName("scroller"); // in order for the style settings to be set accordingly
 	m_width = settings.value("display/width", 5).toInt();
 	setAcceptDrops(true);
 }

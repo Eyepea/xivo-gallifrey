@@ -59,7 +59,7 @@ LeftPanel::LeftPanel(QWidget * bottomWidget, QWidget * parent)
 	QVBoxLayout * layout = new QVBoxLayout(this);
 	layout->setMargin(0);
 	m_titleLabel = new QLabel("                     ", this);
-        m_titleLabel->setStyleSheet("* {border: 2px solid #ffe0b0; font-size: 15px}");
+        m_titleLabel->setObjectName("monitored");
 	layout->addWidget(m_titleLabel, 0, Qt::AlignCenter);
 	layout->addWidget(bottomWidget, 1);
 }
@@ -90,7 +90,6 @@ MainWidget::MainWidget(BaseEngine * engine, QWidget * parent)
 	statusBar();	// This creates the status bar.
 	m_status = new QLabel();
 	m_status->setPixmap(redsquare);
-	statusBar()->setStyleSheet("* {background : #ffe0b0}");
 	statusBar()->addPermanentWidget(m_status);
 	statusBar()->clearMessage();
 	setWindowIcon(QIcon(":xivoclient/gui/xivoicon.png"));
@@ -109,7 +108,6 @@ MainWidget::MainWidget(BaseEngine * engine, QWidget * parent)
 	restoreGeometry(settings.value("display/mainwingeometry").toByteArray());
 	
 	m_wid = new QWidget();
-        m_wid->setStyleSheet("* {background : white}");
 	m_mainlayout = new QVBoxLayout(m_wid);
         m_xivobg = new QLabel();
         m_xivobg->setPixmap(QPixmap(":xivoclient/gui/xivo-login.png"));
@@ -140,13 +138,6 @@ void MainWidget::buildSplitters()
 	m_calls = new CallStackWidget(m_areaCalls);
  	m_areaCalls->setWidget(m_calls);
 	m_svc_tabwidget = new QTabWidget(m_leftSplitter);
-        QString tabwidgetQSS = "QTabWidget::pane {border-top: 2px solid white; top: 0.2em}\n"
-                "QTabWidget::tab-bar {alignment: center}\n"
-                "QTabBar::tab {background: qlineargradient(y1: 0.45, y2: 0.55, stop: 0 #fbb638, stop: 1.0 #f38402);"
-                "color: white; font: bold ; margin: 1px; padding: 3px;"
-                "border: 2px solid white; border-top-left-radius: 10px; border-top-right-radius: 10px}\n"
-                "QTabBar::tab:selected {background: qlineargradient(y1: 0.45, y2: 0.55, stop: 0 #3bc0ff, stop: 1.0 #05aefd)}";
-        m_svc_tabwidget->setStyleSheet(tabwidgetQSS);
 	m_messages_widget = new DisplayMessagesPanel(m_svc_tabwidget);
 	m_svc_tabwidget->addTab(m_messages_widget, "     " + tr("Messages") + "    ");
 	m_leftSplitter->restoreState(settings.value("display/leftSplitterSizes").toByteArray());
@@ -165,7 +156,7 @@ void MainWidget::buildSplitters()
         m_searchpanel = new SearchPanel(m_rightSplitter);
         m_searchpanel->setEngine(m_engine);
 	m_cinfo_tabwidget = new QTabWidget(m_rightSplitter);
-        m_cinfo_tabwidget->setStyleSheet("* {background : white}\n" + tabwidgetQSS);
+        m_cinfo_tabwidget->setObjectName("cinfo");
         m_dialpanel = new DialPanel(m_rightSplitter);
 	m_rightSplitter->restoreState(settings.value("display/rightSplitterSizes").toByteArray());
 
@@ -366,9 +357,7 @@ void MainWidget::checksAvailState()
 
 void MainWidget::createMenus()
 {
-        menuBar()->setStyleSheet("* {background : #ffe0b0}\n"
-                                 "QMenuBar::item {background: transparent}");
-	QMenu * filemenu = menuBar()->addMenu(tr("&File"));
+	QMenu * filemenu = menuBar()->addMenu("&XIVO Switchboard");
 	filemenu->addAction( m_cfgact );
 
 	filemenu->addSeparator();
@@ -384,7 +373,6 @@ void MainWidget::createMenus()
 	         m_avail, SLOT(setEnabled(bool)) );
 
 	QMenu * helpmenu = menuBar()->addMenu(tr("&Help"));
-        setStyleSheet("QMessageBox {background : #fff0e0}\n");
 	helpmenu->addAction(tr("&About XIVO Switchboard"), this, SLOT(about()));
 	helpmenu->addAction(tr("About &Qt"), qApp, SLOT(aboutQt()));
 }
@@ -420,10 +408,6 @@ void MainWidget::setTablimit(int tablimit)
 void MainWidget::showConfDialog()
 {
         m_conf = new ConfWidget(m_engine, this);
-        m_conf->setStyleSheet("QLineEdit {background : white}\n"
-                              "QSpinBox {background : white}\n"
-                              "QComboBox {background : white}\n"
-                              "* {background : #ffe0b0}");
 	m_conf->exec();
 }
 
@@ -572,7 +556,6 @@ void MainWidget::engineStopped()
         m_cinfo_tabwidget->clear();
         removeSplitters();
  	m_wid = new QWidget();
-        m_wid->setStyleSheet("* {background : white}");
  	m_mainlayout = new QVBoxLayout(m_wid);
         m_xivobg = new QLabel();
         m_xivobg->setPixmap(QPixmap(":xivoclient/gui/xivo-login.png"));

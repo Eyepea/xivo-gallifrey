@@ -1,5 +1,6 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
+	<file>../../switchboard/gui/xivo.qss</file>
 	<file>xivoclient_fr.qm</file>
 	<file>xivoicon.png</file>
 	<file>xivoicon-red.png</file>

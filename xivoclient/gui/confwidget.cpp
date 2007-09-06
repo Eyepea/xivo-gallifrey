@@ -173,7 +173,6 @@ ConfWidget::ConfWidget(BaseEngine * engine,
 	gridlayout->addWidget(m_history_sbox, line++, 1);
 
 	m_btnbox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
-        m_btnbox->setStyleSheet("* {background : #fff0e0}");
 	connect(m_btnbox, SIGNAL(accepted()),
                 this, SLOT(saveAndClose()));
 	connect(m_btnbox, SIGNAL(rejected()),

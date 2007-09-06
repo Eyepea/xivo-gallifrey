@@ -41,10 +41,8 @@ IdentityDisplay::IdentityDisplay(QWidget * parent)
         : QWidget(parent)
 {
 	QGridLayout * glayout = new QGridLayout(this);
-        this->setStyleSheet("* {background : #fff0e0}");
 	// glayout->setMargin(0);
 	m_user = new XivoLabel( "", this );
-        m_user->setStyleSheet("* {border: 3px solid #ffe0b0; border-radius: 5px; font-size: 20px}");
         m_user->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
         m_user->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
 

@@ -57,8 +57,6 @@ ServicePanel::ServicePanel(QWidget * parent)
         vlayout->addStretch();
         vlayout->setSpacing(0);
 
-        this->setStyleSheet("* {background : white}");
-
         Reset();
 	connect(m_uncondforwarddest, SIGNAL(textEdited(const QString &)),
 		this, SLOT(toggleUncondIfAllowed(const QString &)));

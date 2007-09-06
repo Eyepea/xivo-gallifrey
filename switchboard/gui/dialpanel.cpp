@@ -47,8 +47,6 @@ DialPanel::DialPanel(QWidget * parent)
 	m_lbl->setBuddy(m_input);
 	m_input->setStatusTip( tr("Input here the phone number to dial") );
 	m_input->setEditable( true );
-        m_input->setStyleSheet("QComboBox {border: 2px solid #f0b070; border-radius: 5px; padding: 1px 18px 1px 4px;}\n"
-                               "QComboBox::drop-down {background: qlineargradient(y1: 0.45, y2: 0.55, stop: 0 #3bc0ff, stop: 1.0 #05aefd)}\n");
 	m_input->setMinimumContentsLength( 15 );
 	//m_input->setSizeAdjustPolicy( QComboBox::AdjustToContents );
 	m_input->setInsertPolicy( QComboBox::NoInsert );
@@ -60,7 +58,6 @@ DialPanel::DialPanel(QWidget * parent)
         QToolButton * dialButton = new QToolButton(this);
         dialButton->setIcon(pm);
         dialButton->setIconSize(pm.size());
-        dialButton->setStyleSheet("QToolButton {border: 0px}");
 
 	connect( dialButton, SIGNAL(clicked()),
 	         this, SLOT(inputValidated()) );

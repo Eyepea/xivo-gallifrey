@@ -43,8 +43,8 @@ SearchPanel::SearchPanel(QWidget * parent)
 	QScrollArea * scrollarea = new QScrollArea(this);
 	scrollarea->setWidgetResizable(true);
 	QWidget * widget = new QWidget(scrollarea);
+        widget->setObjectName("scroller");
 	scrollarea->setWidget(widget);
-        scrollarea->setStyleSheet("* {background : #fff0e0}\n");
 	QVBoxLayout * scrollarealayout = new QVBoxLayout(widget);
 	m_peerlayout = new QVBoxLayout();
 	scrollarealayout->addLayout( m_peerlayout );

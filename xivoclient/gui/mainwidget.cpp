@@ -66,7 +66,6 @@ MainWidget::MainWidget(BaseEngine * engine, QWidget * parent)
 	statusBar();	// This creates the status bar.
 	m_status = new QLabel();
 	m_status->setPixmap(redsquare);
-	statusBar()->setStyleSheet("* {background : #ffe0b0}");
 	statusBar()->addPermanentWidget(m_status);
 	statusBar()->clearMessage();
 	setWindowIcon(QIcon(":/xivoicon.png"));
@@ -92,11 +91,11 @@ MainWidget::MainWidget(BaseEngine * engine, QWidget * parent)
 	restoreGeometry(settings.value("display/mainwingeometry").toByteArray());
 	
 	m_wid = new QWidget();
-        m_wid->setStyleSheet("* {background : white}");
 	m_mainlayout = new QVBoxLayout(m_wid);
         m_xivobg = new QLabel();
         m_xivobg->setPixmap(QPixmap(":/xivo-login.png"));
-        m_mainlayout->addWidget(m_xivobg, 0, Qt::AlignHCenter | Qt::AlignVCenter);
+        m_xivobg->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+        m_mainlayout->addWidget(m_xivobg, 1, Qt::AlignHCenter | Qt::AlignVCenter);
 	setCentralWidget(m_wid);
 	m_tablimit = settings.value("display/tablimit", 5).toInt();
 
@@ -203,8 +202,7 @@ void MainWidget::checksAvailState()
 
 void MainWidget::createMenus()
 {
-        menuBar()->setStyleSheet("* {background : #ffe0b0}");
-	QMenu * filemenu = menuBar()->addMenu(tr("&File"));
+	QMenu * filemenu = menuBar()->addMenu("&XIVO Client");
 	filemenu->addAction( m_cfgact );
 	filemenu->addAction( m_systrayact );
 	filemenu->addSeparator();
@@ -220,7 +218,6 @@ void MainWidget::createMenus()
 	         m_avail, SLOT(setEnabled(bool)) );
 
 	QMenu * helpmenu = menuBar()->addMenu(tr("&Help"));
-        setStyleSheet("QMessageBox {background : #fff0e0}");
 	helpmenu->addAction(tr("&About XIVO Client"), this, SLOT(about()));
 	helpmenu->addAction(tr("About &Qt"), qApp, SLOT(aboutQt()));
 }
@@ -258,7 +255,6 @@ void MainWidget::createSystrayIcon()
 {
 	m_systrayIcon = new QSystemTrayIcon(m_icongrey, this);
 	QMenu * menu = new QMenu(QString("SystrayMenu"), this);
-        menu->setStyleSheet("* {background : #ffe0b0}");
         menu->addAction(m_cfgact);
         menu->addSeparator();
 	menu->addMenu(m_avail);
@@ -289,10 +285,6 @@ void MainWidget::createSystrayIcon()
 void MainWidget::showConfDialog()
 {
         m_conf = new ConfWidget(m_engine, this);
-        m_conf->setStyleSheet("QLineEdit {background : white}\n"
-                              "QSpinBox {background : white}\n"
-                              "QComboBox {background : white}\n"
-                              "* {background : #ffe0b0}");
 	m_conf->exec();
 }
 
@@ -372,17 +364,12 @@ void MainWidget::engineStarted()
         }
 
 	m_main_tabwidget = new QTabWidget();
-        m_main_tabwidget->setStyleSheet("QTabWidget::pane {border-top: 2px solid white; top: 0.2em}\n"
-                                        "QTabWidget::tab-bar {alignment: center}\n"
-                                        "QTabBar::tab {background: qlineargradient(y1: 0.45, y2: 0.55, stop: 0 #fbb638, stop: 1.0 #f38402);"
-                                        "color: white; font: bold ; margin: 1px; padding: 3px;"
-                                        "border: 2px solid white; border-top-left-radius: 10px; border-top-right-radius: 10px}\n"
-                                        "QTabBar::tab:selected {background: qlineargradient(y1: 0.45, y2: 0.55, stop: 0 #3bc0ff, stop: 1.0 #05aefd)}");
         m_mainlayout->addWidget(m_main_tabwidget, 1);
 
 	for(int j = 0; j < display_capas.size(); j++) {
 		QString dc = display_capas[j];
 		if (m_forcetabs || allowed_capas.contains(dc)) {
+                        qDebug() << "adding" << dc;
 			if (dc == QString("instantmessaging")) {
 				m_messagetosend = new QLineEdit();
 				connect( m_messagetosend, SIGNAL(returnPressed()),
@@ -397,7 +384,7 @@ void MainWidget::engineStarted()
 
 			} else if ((dc == QString("customerinfo")) && (m_engine->checkedCInfo())) {
 				m_cinfo_tabwidget = new QTabWidget();
-				m_cinfo_tabwidget->setStyleSheet("* {background : white ; border: 2px solid #05aefd ; border-radius: 10px}");
+				m_cinfo_tabwidget->setObjectName("cinfo");
 				m_main_tabwidget->addTab(m_cinfo_tabwidget, "    " + tr("&Sheets") + "    ");
 
 			} else if (dc == QString("peers")) {
