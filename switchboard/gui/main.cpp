@@ -53,7 +53,9 @@ int main(int argc, char * * argv)
 		qssFile.close();
 	}
 
-        app.setStyleSheet("DisplayMessagesPanel {selection-background-color : #05aefd}\n"
+        app.setStyleSheet("QTableWidget {selection-background-color : #05aefd}\n"
+                          "QMenu {border: 3px solid #ffa030 ; border-radius: 4px}\n"
+                          "QMenu::item {background-color: transparent}\n"
                           "QScrollBar:vertical   {width: 10px; border: 0px solid black}\n"
                           "QScrollBar:horizontal {height: 10px; border: 0px solid black}\n"
                           "QScrollBar::handle:vertical   {background: qlineargradient(x1: 0.45, x2: 0.55, stop: 0 #3bc0ff, stop: 1.0 #05aefd)}\n"

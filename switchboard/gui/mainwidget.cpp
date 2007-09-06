@@ -384,7 +384,7 @@ void MainWidget::createMenus()
 	         m_avail, SLOT(setEnabled(bool)) );
 
 	QMenu * helpmenu = menuBar()->addMenu(tr("&Help"));
-        setStyleSheet("QMessageBox {background : #fff0e0} ; QMenu {border: 3px solid #ffa030 ; border-radius: 4px} ; QMenu::item {background-color: transparent}\n");
+        setStyleSheet("QMessageBox {background : #fff0e0}\n");
 	helpmenu->addAction(tr("&About XIVO Switchboard"), this, SLOT(about()));
 	helpmenu->addAction(tr("About &Qt"), qApp, SLOT(aboutQt()));
 }
@@ -634,15 +634,27 @@ void MainWidget::about()
 	QString applicationVersion("0.1");
 	QString revision = m_engine->getRevisionString();
 	QString revdate  = m_engine->getDateString();
+
+        QString fetchlastone = "<a href=http://www.xivo.fr/download/xivo_cti_client/"
+#if defined(Q_WS_X11)
+                "linux"
+#elif defined(Q_WS_WIN)
+                "win32"
+#elif defined(Q_WS_MAC)
+                "macos"
+#endif
+                ">" + tr("last one") + "</a>";
+        
 	QMessageBox::about(this,
 			   tr("About XIVO SwitchBoard"),
 			   "<h3>XIVO Switchboard</h3>" +
 			   tr("<p>This application displays the status of the"
 			      " ongoing phone calls.</p>") +
 			   "<p><b>" + tr("Version : ") + QString("</b>%1 (").arg(applicationVersion) +
-			   "<b>svn : " + QString("</b>%1 @ %2 %3)</p>").arg(revision.split(" ")[1],
-									    revdate.split(" ")[1],
-									    revdate.split(" ")[2]) +
+			   "<b>svn : " + QString("</b>%1 @ %2 %3 - %4)</p>").arg(revision.split(" ")[1],
+                                                                                 revdate.split(" ")[1],
+                                                                                 revdate.split(" ")[2],
+                                                                                 fetchlastone) +
 			   "<hr><p>(C) 2007 <a href=http://www.proformatique.com><b>Proformatique</b></a></p>"
 			   "<p>67 rue Voltaire 92800 Puteaux FRANCE</p>"
 			   "<p><b>E-mail : </b>technique@proformatique.com</p>"
@@ -651,4 +663,3 @@ void MainWidget::about()
 			   "<hr><p><b>" + tr("License : ") + "</b>" +
 			   "<a href=http://www.gnu.org/licenses/gpl-2.0.txt>GNU General Public Licence v.2</a></p>");
 }
-
