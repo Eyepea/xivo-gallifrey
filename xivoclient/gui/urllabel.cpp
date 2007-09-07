@@ -16,7 +16,9 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 */
+
 #include <QLabel>
+
 #include "urllabel.h"
 
 /*! \brief Constructor
@@ -25,23 +27,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  * allow link to be clickable and put some html magic
  * into the label text. */
 UrlLabel::UrlLabel(const QString & url, QWidget * parent)
-: QLabel(parent)
+        : QLabel(parent)
 {
 	QString displaytext, text;
 	//setForegroundRole( QPalette::Link );
 	setOpenExternalLinks(true);	// new in Qt 4.2
 	setTextInteractionFlags( Qt::LinksAccessibleByMouse
-                            | Qt::LinksAccessibleByKeyboard );
+                                 | Qt::LinksAccessibleByKeyboard );
 	//                        | Qt::TextSelectableByMouse
 	//                        | Qt::TextSelectableByKeyboard );
-	if(url.startsWith("mailto:"))
-	{
+	if(url.startsWith("mailto:")) {
 		displaytext = url.mid(7);
-	}
-	else
-	{
+	} else {
 		displaytext = url;
 	}
+        //qDebug() << "UrlLabel::UrlLabel()" << url << displaytext;
 	text = "<a href=\"";
 	text.append(url);
 	text.append("\">");

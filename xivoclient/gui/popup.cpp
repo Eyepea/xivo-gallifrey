@@ -16,12 +16,15 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 */
-#include <QPixmap>
-#include <QLabel>
-#include <QUrl>
-#include <QIcon>
-#include <QPushButton>
+
 #include <QDebug>
+#include <QDesktopServices>
+#include <QIcon>
+#include <QLabel>
+#include <QPixmap>
+#include <QPushButton>
+#include <QUrl>
+#include <QVariant>
 
 #include "popup.h"
 #include "xmlhandler.h"
@@ -67,16 +70,19 @@ Popup::Popup(QIODevice *inputstream, const QString & sessionid, QWidget *parent)
 		QPushButton * btn2 = new QPushButton(tr("Di&smiss"), this);
 		btn2->setEnabled(false);
 		hlayout->addWidget(btn2);
-		QPushButton * btn3 = new QPushButton(tr("&Dial"), this);
-                connect( btn3, SIGNAL(clicked()), this, SLOT(dialThisNumber()) );
+		QPushButton * btn3 = new QPushButton(tr("&Close"), this);
+		connect( btn3, SIGNAL(clicked()), this, SLOT(close()) );
 		hlayout->addWidget(btn3);
-		QPushButton * btn4 = new QPushButton(tr("&Close"), this);
-		connect( btn4, SIGNAL(clicked()), this, SLOT(close()) );
-		hlayout->addWidget(btn4);
 
 		m_vlayout->addLayout(hlayout);
 	}
 	setWindowIcon(QIcon(":/xivoicon.png"));
+        QDesktopServices::setUrlHandler(QString("mailto"), this, "dispurl");
+}
+
+void Popup::dispurl(const QUrl &url)
+{
+        qDebug() << "Popup::dispurl()" << url;
 }
 
 void Popup::addInfoText(const QString & name, const QString & value)
@@ -93,10 +99,17 @@ void Popup::addInfoText(const QString & name, const QString & value)
 
 void Popup::addInfoPhone(const QString & name, const QString & value)
 {
-	// at the moment we are not doing anything special...
         qDebug() << "Popup::addInfoPhone()" << value;
-        m_callernum = value;
-	addInfoText(name, value);
+	QLabel * lblname = new QLabel(name, this);
+	QPushButton * lblvalue = new QPushButton(value, this);
+        lblvalue->setObjectName("phonenumber");
+        lblvalue->setProperty("number", value);
+        connect( lblvalue, SIGNAL(clicked()),
+                 this, SLOT(dialThisNumber()) );
+	QHBoxLayout * hlayout = new QHBoxLayout();
+	hlayout->addWidget(lblname);
+	hlayout->addWidget(lblvalue);
+	m_vlayout->addLayout(hlayout);
 }
 
 void Popup::addInfoLink(const QString & name, const QString & value)
@@ -150,8 +163,9 @@ void Popup::streamNewData()
 
 void Popup::dialThisNumber()
 {
-	qDebug() << "Popup::dialThisNumber()" << m_callernum;
-        emitDial(m_callernum);
+        QString numbertodial = this->sender()->property("number").toString();
+        qDebug() << "Popup::dialThisNumber()" << numbertodial;
+        emitDial(numbertodial);
 }
 
 void Popup::streamAboutToClose()

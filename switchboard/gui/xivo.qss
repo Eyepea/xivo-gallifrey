@@ -15,12 +15,18 @@
  */
 QMainWindow {background: white}
 
-QTableWidget {selection-background-color: #05aefd; border: 2px solid #3bc0ff; border-radius: 10px}
+QTableWidget {selection-background-color: #05aefd;
+                border: 2px solid #3bc0ff;
+                border-radius: 10px;
+                alternate-background-color: #fbb638
+                }
 ConfWidget  {background: #fbb638}
 QLabel#service {font: bold; padding: 3px 20px 3px 0px}
 QCheckBox#service {font: bold; padding: 3px 2px 3px 2px}
 QGroupBox {border: 0px; margin-top: 1ex}
 QGroupBox::title {subcontrol-origin: margin}
+QToolTip {color: white; font: bold; background: #05aefd; border: 4px solid #fbb638}
+QHeaderView {color: white; background: #05aefd}
 
 /*
  * Definitions for the main Menu items
@@ -38,6 +44,7 @@ QStatusBar {color: white; font: bold ; background: qlineargradient(y1: 0.45, y2:
 LogWidget  {background: #f38402}
 QToolButton {border: 0px}
 QPushButton {padding: 3px 20px; border: 2px solid #f38402 ; border-radius: 4px ; color: white; font: bold ; background: #fbb638}
+QPushButton#phonenumber {padding: 3px 20px; border: 2px solid #05aefd ; border-radius: 4px ; color: white; font: bold ; background: #3bc0ff}
 QLineEdit {background: white; border: 2px solid #f0b070; border-radius: 5px; }
 QSpinBox  {background: white}
 QComboBox {background: white; border: 2px solid #f0b070; border-radius: 5px; padding: 1px 18px 1px 4px;}

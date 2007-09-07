@@ -35,9 +35,10 @@ ExtendedTableWidget::ExtendedTableWidget(QWidget * parent)
 /*! \brief Constructor
  */
 ExtendedTableWidget::ExtendedTableWidget(int rows, int columns, QWidget * parent)
-: QTableWidget(rows, columns, parent)
+        : QTableWidget(rows, columns, parent)
 {
 	setAcceptDrops(true);
+        setAlternatingRowColors(true);
 }
 
 /*! \brief display the context Menu
@@ -68,7 +69,7 @@ void ExtendedTableWidget::contextMenuEvent(QContextMenuEvent * event)
 	}
 }
 
-/*! \brief dial the number (when context menu item is toggled
+/*! \brief dial the number (when context menu item is toggled)
  */
 void ExtendedTableWidget::dialNumber()
 {
