@@ -83,30 +83,23 @@ ConfWidget::ConfWidget(BaseEngine * engine,
 	connect( m_tcpmode,   SIGNAL(toggled(bool)),
 	         m_sbport,    SLOT(setEnabled(bool)) );
 
-        //
         // Box for Enabled Functions Definition
-	QGroupBox * groupBox = new QGroupBox( tr("Functions"), this );
+	QGroupBox * groupBox = new QGroupBox( tr("Functions") );
 	groupBox->setAlignment( Qt::AlignHCenter );
 	QVBoxLayout * vbox = new QVBoxLayout( groupBox );
-	vbox->setMargin(0);
-	vbox->setSpacing(0);
 
-	m_presence = new QCheckBox(tr("Presence reporting"), groupBox);
+	m_presence = new QCheckBox(tr("Presence reporting"));
 	m_presence->setCheckState(m_engine->checkedPresence() ? Qt::Checked : Qt::Unchecked);
-	vbox->addWidget( m_presence );
-	m_cinfo = new QCheckBox(tr("Customer Info"), groupBox);
+	m_cinfo = new QCheckBox(tr("Customer Info"));
 	m_cinfo->setCheckState(m_engine->checkedCInfo() ? Qt::Checked : Qt::Unchecked);
+	vbox->addWidget( m_presence );
 	vbox->addWidget( m_cinfo );
-
 	gridlayout->addWidget(groupBox, line++, 0, 1, 0);
-        //
 
         // Box for Connexion Definition
         //	QGroupBox * groupBox_conn = new QGroupBox( tr("Identification"), this );
         //	groupBox_conn->setAlignment( Qt::AlignHCenter );
         //	QVBoxLayout * vbox_conn = new QVBoxLayout( groupBox_conn );
-        //	vbox_conn->setMargin(0);
-        //	vbox_conn->setSpacing(0);
 
 	QLabel * lblasterisk = new QLabel(tr("Asterisk Id Name"), this);
 	m_asterisk = new QLineEdit(m_engine->serverast(), this);
@@ -180,6 +173,7 @@ ConfWidget::ConfWidget(BaseEngine * engine,
 	m_btnbox->button(QDialogButtonBox::Ok)->setDefault(true);
 
 	vlayout->addLayout(gridlayout);
+        vlayout->addStretch(1);
 	vlayout->addWidget(m_btnbox);
 }
 

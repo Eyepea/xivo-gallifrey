@@ -10,13 +10,17 @@
  * blue's   : light = #3bc0ff   / strong = #05aefd
  */
 
+/*
+ * Main Window
+ */
+QMainWindow {background: white}
+
 QTableWidget {selection-background-color: #05aefd; border: 2px solid #3bc0ff; border-radius: 10px}
 ConfWidget  {background: #fbb638}
-ServicePanel {background: white}
 QLabel#service {font: bold; padding: 3px 20px 3px 0px}
 QCheckBox#service {font: bold; padding: 3px 2px 3px 2px}
-QMainWindow {background: white}
-QGroupBox {border: 0px}
+QGroupBox {border: 0px; margin-top: 1ex}
+QGroupBox::title {subcontrol-origin: margin}
 
 /*
  * Definitions for the main Menu items
@@ -60,7 +64,7 @@ QTabBar::tab {background: qlineargradient(y1: 0.45, y2: 0.55, stop: 0 #fbb638, s
                 border: 2px solid white; border-top-left-radius: 10px; border-top-right-radius: 10px}
 QTabBar::tab:selected, QTabBar::tab:hover {background: qlineargradient(y1: 0.45, y2: 0.55, stop: 0 #3bc0ff, stop: 1.0 #05aefd)}
 
-QTabWidget#cinfo > * {background: white ; border: 2px solid #05aefd ; border-radius: 10px}
+QTabWidget#cinfo > * {background: white; border: 2px solid #05aefd ; border-radius: 10px}
 
 /*
  * Radio Buttons in History

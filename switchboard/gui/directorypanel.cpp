@@ -38,7 +38,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  *  Build layout and child widgets, connect signals/slots.
  */
 DirectoryPanel::DirectoryPanel(QWidget * parent)
-: QWidget(parent)
+        : QWidget(parent)
 {
 	QVBoxLayout * vlayout = new QVBoxLayout(this);
 	vlayout->setMargin(0);

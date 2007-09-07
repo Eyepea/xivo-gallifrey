@@ -390,7 +390,7 @@ void MainWidget::engineStarted()
 				m_main_tabwidget->addTab(m_cinfo_tabwidget, extraspace + tr("&Sheets") + extraspace);
 
 			} else if (dc == QString("peers")) {
-				m_peerswidget = new SearchPanel(this);
+				m_peerswidget = new SearchPanel();
 				m_main_tabwidget->addTab(m_peerswidget, extraspace + tr("&Contacts") + extraspace);
 
 				connect( m_engine, SIGNAL(updatePeer(const QString &, const QString &,
@@ -409,7 +409,7 @@ void MainWidget::engineStarted()
 				m_peerswidget->setEngine(m_engine);
 
 			} else if (dc == QString("features")) {
-				m_featureswidget = new ServicePanel(this);
+				m_featureswidget = new ServicePanel();
 				m_main_tabwidget->addTab(m_featureswidget, extraspace + tr("S&ervices") + extraspace);
 
                                 connect( m_engine, SIGNAL(disconnectFeatures()),
@@ -468,7 +468,7 @@ void MainWidget::engineStarted()
 				//
 				m_engine->askFeatures("peer/to/define");
 			} else if (dc == QString("directory")) {
-				m_directory = new DirectoryPanel(this);
+				m_directory = new DirectoryPanel();
 
 				connect( m_directory, SIGNAL(searchDirectory(const QString &)),
 					 m_engine, SLOT(searchDirectory(const QString &)) );
