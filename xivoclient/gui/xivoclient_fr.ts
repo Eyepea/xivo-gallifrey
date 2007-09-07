@@ -295,7 +295,7 @@ Merci de mettre à jour votre serveur.</translation>
     <message>
         <location filename="../../switchboard/gui/directorypanel.cpp" line="53"/>
         <source>Search</source>
-        <translation>Recherche</translation>
+        <translation>Rechercher</translation>
     </message>
 </context>
 <context>

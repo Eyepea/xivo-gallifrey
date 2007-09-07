@@ -47,6 +47,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include "searchpanel.h"
 #include "servicepanel.h"
 
+const QString extraspace("    ");
+
 /*! \brief Constructor
  *
  * This Constructor creates the 3 buttons in a
@@ -374,7 +376,7 @@ void MainWidget::engineStarted()
 				m_messagetosend = new QLineEdit();
 				connect( m_messagetosend, SIGNAL(returnPressed()),
 					 this, SLOT(affTextChanged()) );
-				m_main_tabwidget->addTab(m_messagetosend, "    " + tr("&Messages") + "    ");
+				m_main_tabwidget->addTab(m_messagetosend, extraspace + tr("&Messages") + extraspace);
 
 			} else if (dc == QString("dial")) {
 				m_dial = new DialPanel();
@@ -385,11 +387,11 @@ void MainWidget::engineStarted()
 			} else if ((dc == QString("customerinfo")) && (m_engine->checkedCInfo())) {
 				m_cinfo_tabwidget = new QTabWidget();
 				m_cinfo_tabwidget->setObjectName("cinfo");
-				m_main_tabwidget->addTab(m_cinfo_tabwidget, "    " + tr("&Sheets") + "    ");
+				m_main_tabwidget->addTab(m_cinfo_tabwidget, extraspace + tr("&Sheets") + extraspace);
 
 			} else if (dc == QString("peers")) {
 				m_peerswidget = new SearchPanel(this);
-				m_main_tabwidget->addTab(m_peerswidget, "    " + tr("&Contacts") + "    ");
+				m_main_tabwidget->addTab(m_peerswidget, extraspace + tr("&Contacts") + extraspace);
 
 				connect( m_engine, SIGNAL(updatePeer(const QString &, const QString &,
 								     const QString &, const QString &,
@@ -408,7 +410,7 @@ void MainWidget::engineStarted()
 
 			} else if (dc == QString("features")) {
 				m_featureswidget = new ServicePanel(this);
-				m_main_tabwidget->addTab(m_featureswidget, "    " + tr("S&ervices") + "    ");
+				m_main_tabwidget->addTab(m_featureswidget, extraspace + tr("S&ervices") + extraspace);
 
                                 connect( m_engine, SIGNAL(disconnectFeatures()),
                                          m_featureswidget, SLOT(DisConnect()) );
@@ -485,7 +487,7 @@ void MainWidget::engineStarted()
 				//m_directory, SLOT(stop()) );
 				
 				//			m_mainlayout->addWidget(m_directory, 0);
-				m_main_tabwidget->addTab(m_directory, "    " + tr("&Directory") + "    ");
+				m_main_tabwidget->addTab(m_directory, extraspace + tr("&Directory") + extraspace);
 				
 			} else if (dc == QString("history")) {
 				m_history = new LogWidget(m_engine, this);
@@ -501,7 +503,7 @@ void MainWidget::engineStarted()
 				connect( m_engine, SIGNAL(updateLogEntry(const QDateTime &, int, const QString &, int)),
 					 m_history, SLOT(addLogEntry(const QDateTime &, int, const QString &, int)) );
 				//			m_mainlayout->addWidget(m_history, 0);
-				m_main_tabwidget->addTab(m_history, "    " + tr("&History") + "    ");
+				m_main_tabwidget->addTab(m_history, extraspace + tr("&History") + extraspace);
 			}
 		}
 	}
@@ -644,7 +646,7 @@ void MainWidget::showNewProfile(Popup * popup)
 	}
 	if (m_cinfo_tabwidget)
 	{
-		int index = m_cinfo_tabwidget->addTab(popup, "    " + currentTimeStr + "    ");
+		int index = m_cinfo_tabwidget->addTab(popup, extraspace + currentTimeStr + extraspace);
 		qDebug() << "added tab" << index;
 		m_cinfo_tabwidget->setCurrentIndex(index);
 		if (m_cinfo_index > -1)

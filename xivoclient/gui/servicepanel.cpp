@@ -20,41 +20,51 @@ ServicePanel::ServicePanel(QWidget * parent)
 	gridlayout->setSpacing(0);
 
 	m_voicemail = new QCheckBox(tr("Voice &Mail"), this);
+        m_voicemail->setObjectName("service");
 	gridlayout->addWidget(m_voicemail, line++, 0, 1, 0);
 	m_callrecording = new QCheckBox(tr("Call &Recording"), this);
+        m_callrecording->setObjectName("service");
 	gridlayout->addWidget(m_callrecording, line++, 0, 1, 0);
 	m_callfiltering = new QCheckBox(tr("Call &Filtering"), this);
+        m_callfiltering->setObjectName("service");
 	gridlayout->addWidget(m_callfiltering, line++, 0, 1, 0);
 	m_dnd = new QCheckBox(tr("Do Not &Disturb"), this);
+        m_dnd->setObjectName("service");
 	gridlayout->addWidget(m_dnd, line++, 0, 1, 0);
 
 	m_uncondforward = new QCheckBox(tr("&Unconditional Forward"), this);
+        m_uncondforward->setObjectName("service");
 	gridlayout->addWidget(m_uncondforward, line++, 0, 1, 0);
 	QLabel * lbluncond = new QLabel(tr("Destination"), this);
 	gridlayout->addWidget(lbluncond, line, 0);
 	m_uncondforwarddest = new QLineEdit(this);
 	m_uncondforward->setEnabled(false);
 	gridlayout->addWidget(m_uncondforwarddest, line++, 1);
+        lbluncond->setObjectName("service");
 
 	m_forwardonbusy = new QCheckBox(tr("Forward on &Busy"), this);
+        m_forwardonbusy->setObjectName("service");
 	gridlayout->addWidget(m_forwardonbusy, line++, 0, 1, 0);
 	QLabel * lblonbusy = new QLabel(tr("Destination"), this);
 	gridlayout->addWidget(lblonbusy, line, 0);
 	m_forwardonbusydest = new QLineEdit(this);
 	m_forwardonbusy->setEnabled(false);
 	gridlayout->addWidget(m_forwardonbusydest, line++, 1);
+        lblonbusy->setObjectName("service");
 
 	m_forwardonunavailable = new QCheckBox(tr("Forward on &No Reply"), this);
+        m_forwardonunavailable->setObjectName("service");
 	gridlayout->addWidget(m_forwardonunavailable, line++, 0, 1, 0);
 	QLabel * lblonunavailable = new QLabel(tr("Destination"), this);
 	gridlayout->addWidget(lblonunavailable, line, 0);
 	m_forwardonunavailabledest = new QLineEdit(this);
 	m_forwardonunavailable->setEnabled(false);
 	gridlayout->addWidget(m_forwardonunavailabledest, line++, 1);
+        lblonunavailable->setObjectName("service");
 
         QVBoxLayout * vlayout = new QVBoxLayout(this);
         vlayout->addLayout(gridlayout);
-        vlayout->addStretch();
+        vlayout->addStretch(1);
         vlayout->setSpacing(0);
 
         Reset();
