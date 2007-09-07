@@ -929,7 +929,28 @@ add_cfg_entry(void *arg, int argc, char **argv, char **columnNames)
       return 1;
     }
 
-  args = (struct cfg_entry_args *)arg;
+  args = arg;
+
+  if (strcmp(argv[RES_SQLITE_CONFIG_VAR_NAME], "#include") == 0)
+    {
+      struct ast_config *cfg;
+      char *val;
+
+      val = argv[RES_SQLITE_CONFIG_VAR_VAL];
+      cfg = ast_config_internal_load(val, args->cfg);
+
+      if (cfg == NULL)
+        {
+          ast_log(LOG_WARNING, "Unable to include %s\n", val);
+          return 1;
+        }
+
+      else
+        {
+          args->cfg = cfg;
+          return 0;
+        }
+    }
 
   if (args->cat_name == NULL
       || (strcmp(args->cat_name, argv[RES_SQLITE_CONFIG_CATEGORY]) != 0))
@@ -1072,7 +1093,7 @@ add_rt_cfg_entry(void *arg, int argc, char **argv, char **columnNames)
   struct ast_variable *var;
   int i;
 
-  args = (struct rt_cfg_entry_args *)arg;
+  args = arg;
 
   for (i = 0; i < argc; i++)
     {
@@ -1210,7 +1231,7 @@ add_rt_multi_cfg_entry(void *arg, int argc, char **argv, char **columnNames)
   char *cat_name;
   size_t i;
 
-  args = (struct rt_multi_cfg_entry_args *)arg;
+  args = arg;
   cat_name = NULL;
 
   /*
