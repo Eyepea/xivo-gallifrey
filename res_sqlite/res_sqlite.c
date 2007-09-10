@@ -312,7 +312,7 @@ static int cdr_handler(struct ast_cdr *cdr);
  *
  * This function is passed to the SQLite engine as a callback function to
  * parse a row and store it in a struct ast_config object. It relies on
- * resulting rows  being sorted by category.
+ * resulting rows being sorted by category.
  *
  * @param arg         a pointer to a struct cfg_entry_args object
  * @param argc        number of columns
@@ -784,7 +784,6 @@ static char *sql_add_cdr_entry =
 
 /**
  * SQL query format to fetch the static configuration of a file.
- * Rows must be sorted by category.
  *
  * @see add_cfg_entry()
  */
