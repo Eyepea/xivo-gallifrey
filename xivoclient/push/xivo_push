@@ -75,7 +75,6 @@ else:
 	msgext = agi.get_variable('CALLTYPE')
 	user = proto + exten
 
-
 # send the PUSH command to the server
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((shost, sport))
@@ -91,8 +90,10 @@ if len(list) < 6 or list[0] == 'ERROR':
 else:
         # USER xxx STATE xxx CIDNAME xxx
         clientstate = list[3]
-        if calleridname != "":
+        if calleridname == "":
                 agi.set_callerid(list[5])
+        else:
+                agi.set_callerid("\"%s <%s>\"" %(calleridname, calleridnum))
 
 if clientstate == "available":
 	agi.set_variable('STATUS', 0)
