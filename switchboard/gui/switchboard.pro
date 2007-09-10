@@ -6,7 +6,7 @@
 # $Date$
 #
 
-VERSION = $$system(svn info -r HEAD | tail -3 | head -1 | sed "s/.*:.//")
+VERSION = $$system(touch mainwidget.cpp && svn info -r HEAD | tail -3 | head -1 | sed "s/.*:.//")
 VERSTR = '\\"$${VERSION}\\"'  # place quotes around the version string
 DEFINES += SVNVER=\"$${VERSTR}\" # create a VER macro containing the version string
 
