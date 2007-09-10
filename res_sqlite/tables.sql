@@ -5,116 +5,115 @@
 /*
  * RealTime static table.
  */
-CREATE TABLE ast_config
-(
- id         INTEGER      NOT NULL,
- cat_metric INT(11)      NOT NULL DEFAULT 0,
- var_metric INT(11)      NOT NULL DEFAULT 0,
- commented  TINYINT(1)   NOT NULL DEFAULT 0,
- filename   VARCHAR(128) NOT NULL DEFAULT '',
- category   VARCHAR(128) NOT NULL DEFAULT 'default',
- var_name   VARCHAR(128) NOT NULL DEFAULT '',
- var_val    TEXT         NOT NULL DEFAULT '',
- PRIMARY KEY (id)
+CREATE TABLE ast_config (
+ id integer unsigned,
+ commented tinyint(1) DEFAULT 0,
+ filename varchar(128) NOT NULL,
+ category varchar(128) NOT NULL,
+ var_name varchar(128) NOT NULL,
+ var_val varchar(128),
+ PRIMARY KEY(id)
 );
 
-CREATE INDEX ast_config__idx__cat_metric         ON ast_config(cat_metric);
-CREATE INDEX ast_config__idx__var_metric         ON ast_config(var_metric);
 CREATE INDEX ast_config__idx__filename_commented ON ast_config(filename, commented);
+CREATE INDEX ast_config__idx__category ON ast_config(category);
+CREATE INDEX ast_config__idx__var_name ON ast_config(var_name);
 
 /*
  * CDR table (this table is automatically created if non existent).
+ * 
+ * CREATE TABLE cdr (
+ *  id integer unsigned auto_increment,
+ *  calldate char(19) DEFAULT '0000-00-00 00:00:00',
+ *  clid varchar(80) NOT NULL DEFAULT '',
+ *  src varchar(80) NOT NULL DEFAULT '',
+ *  dst varchar(80) NOT NULL DEFAULT '',
+ *  dcontext varchar(80) NOT NULL DEFAULT '',
+ *  channel varchar(80) NOT NULL DEFAULT '',
+ *  dstchannel varchar(80) NOT NULL DEFAULT '',
+ *  lastapp varchar(80) NOT NULL DEFAULT '',
+ *  lastdata varchar(80) NOT NULL DEFAULT '',
+ *  answer char(19) DEFAULT '0000-00-00 00:00:00',
+ *  end char(19) DEFAULT '0000-00-00 00:00:00',
+ *  duration integer unsigned NOT NULL DEFAULT 0,
+ *  billsec integer unsigned NOT NULL DEFAULT 0,
+ *  disposition varchar(9) NOT NULL DEFAULT '',
+ *  amaflags tinyint unsigned NOT NULL DEFAULT 0,
+ *  accountcode varchar(20) NOT NULL DEFAULT '',
+ *  uniqueid varchar(32) NOT NULL DEFAULT '',
+ *  userfield varchar(255) NOT NULL DEFAULT '',
+ *  PRIMARY KEY(id)
+ * );
+ *
+ * CREATE INDEX cdr__idx__disposition ON cdr(disposition);
+ * CREATE INDEX cdr__idx__src ON cdr(src);
+ * CREATE INDEX cdr__idx__dst ON cdr(dst);
+ * CREATE INDEX cdr__idx__calldate ON cdr(calldate);
  */
-CREATE TABLE ast_cdr
-(
- id          INTEGER,
- calldate    DATETIME     NOT NULL DEFAULT '0000-00-00 00:00:00',
- clid        VARCHAR(80)  NOT NULL DEFAULT '',
- src         VARCHAR(80)  NOT NULL DEFAULT '',
- dst         VARCHAR(80)  NOT NULL DEFAULT '',
- dcontext    VARCHAR(80)  NOT NULL DEFAULT '',
- channel     VARCHAR(80)  NOT NULL DEFAULT '',
- dstchannel  VARCHAR(80)  NOT NULL DEFAULT '',
- lastapp     VARCHAR(80)  NOT NULL DEFAULT '',
- lastdata    VARCHAR(80)  NOT NULL DEFAULT '',
- answer      DATETIME     NOT NULL DEFAULT '0000-00-00 00:00:00',
- end         DATETIME     NOT NULL DEFAULT '0000-00-00 00:00:00',
- duration    INT(11)      NOT NULL DEFAULT 0,
- billsec     INT(11)      NOT NULL DEFAULT 0,
- disposition VARCHAR(45)  NOT NULL DEFAULT '',
- amaflags    INT(11)      NOT NULL DEFAULT 0,
- accountcode VARCHAR(20)  NOT NULL DEFAULT '',
- uniqueid    VARCHAR(32)  NOT NULL DEFAULT '',
- userfield   VARCHAR(255) NOT NULL DEFAULT '',
- PRIMARY KEY (id)
-);
 
 /*
  * SIP RealTime table.
  */
-CREATE TABLE ast_sip
-(
- id              INTEGER,
- commented       TINYINT(1)   NOT NULL DEFAULT 0,
- name            VARCHAR(80)  NOT NULL DEFAULT '',
- host            VARCHAR(31)  NOT NULL DEFAULT '',
- nat             VARCHAR(5)   NOT NULL DEFAULT 'no',
- type            VARCHAR(6)   NOT NULL DEFAULT 'friend',
- accountcode     VARCHAR(20)           DEFAULT NULL,
- amaflags        VARCHAR(13)           DEFAULT NULL,
- callgroup       VARCHAR(10)           DEFAULT NULL,
- callerid        VARCHAR(80)           DEFAULT NULL,
- cancallforward  CHAR(3)               DEFAULT 'yes',
- canreinvite     CHAR(3)               DEFAULT 'yes',
- context         VARCHAR(80)           DEFAULT NULL,
- defaultip       VARCHAR(15)           DEFAULT NULL,
- dtmfmode        VARCHAR(7)            DEFAULT NULL,
- fromuser        VARCHAR(80)           DEFAULT NULL,
- fromdomain      VARCHAR(80)           DEFAULT NULL,
- insecure        VARCHAR(4)            DEFAULT NULL,
- language        CHAR(2)               DEFAULT NULL,
- mailbox         VARCHAR(50)           DEFAULT NULL,
- md5secret       VARCHAR(80)           DEFAULT NULL,
- deny            VARCHAR(95)           DEFAULT NULL,
- permit          VARCHAR(95)           DEFAULT NULL,
- mask            VARCHAR(95)           DEFAULT NULL,
- musiconhold     VARCHAR(100)          DEFAULT NULL,
- pickupgroup     VARCHAR(10)           DEFAULT NULL,
- qualify         CHAR(3)               DEFAULT NULL,
- regexten        VARCHAR(80)           DEFAULT NULL,
- restrictcid     CHAR(3)               DEFAULT NULL,
- rtptimeout      CHAR(3)               DEFAULT NULL,
- rtpholdtimeout  CHAR(3)               DEFAULT NULL,
- secret          VARCHAR(80)           DEFAULT NULL,
- setvar          VARCHAR(100)          DEFAULT NULL,
- disallow        VARCHAR(100)          DEFAULT 'all',
- allow           VARCHAR(100)          DEFAULT 'g729;ilbc;gsm;ulaw;alaw',
- fullcontact     VARCHAR(80)  NOT NULL DEFAULT '',
- ipaddr          VARCHAR(15)  NOT NULL DEFAULT '',
- port            INT(11)      NOT NULL DEFAULT 0,
- regserver       VARCHAR(100)          DEFAULT NULL,
- regseconds      INT(11)      NOT NULL DEFAULT 0,
- username        VARCHAR(80)  NOT NULL DEFAULT '',
- PRIMARY KEY (id)
- UNIQUE (name)
+CREATE TABLE ast_sip (
+ id integer unsigned,
+ name varchar(80) NOT NULL,
+ commented tinyint(1) NOT NULL DEFAULT 0,
+ accountcode varchar(20),
+ amaflags varchar(13),
+ callgroup varchar(10),
+ callerid varchar(80),
+ canreinvite char(3),
+ context varchar(80),
+ defaultip varchar(15),
+ dtmfmode varchar(7),
+ fromuser varchar(80),
+ fromdomain varchar(80),
+ fullcontact varchar(80),
+ host varchar(31) NOT NULL,
+ insecure varchar(11),
+ language char(2),
+ mailbox varchar(50),
+ md5secret varchar(80),
+ nat varchar(5) NOT NULL DEFAULT 'no',
+ deny varchar(95),
+ permit varchar(95),
+ mask varchar(95),
+ pickupgroup varchar(10),
+ port varchar(5) NOT NULL,
+ qualify char(3),
+ restrictcid char(1),
+ rtptimeout char(3),
+ rtpholdtimeout char(3),
+ secret varchar(80),
+ type varchar(6) NOT NULL DEFAULT 'friend',
+ username varchar(80) NOT NULL,
+ disallow varchar(100),
+ allow varchar(100),
+ musiconhold varchar(100),
+ regseconds integer unsigned NOT NULL DEFAULT 0,
+ ipaddr varchar(15) NOT NULL,
+ regexten varchar(80) NOT NULL,
+ cancallforward char(3),
+ setvar varchar(100) NOT NULL,
+ PRIMARY KEY(id)
 );
 
 CREATE INDEX ast_sip__idx__commented ON ast_sip(commented);
+CREATE UNIQUE INDEX ast_sip__uidx__name ON ast_sip(name);
 
 /*
  * Dialplan RealTime table.
  */
-CREATE TABLE ast_exten
-(
- id        INTEGER,
- commented TINYINT(1)   NOT NULL DEFAULT 0,
- context   VARCHAR(80)  NOT NULL DEFAULT '',
- exten     VARCHAR(40)  NOT NULL DEFAULT '',
- priority  INT(11)      NOT NULL DEFAULT 0,
- app       VARCHAR(128) NOT NULL DEFAULT '',
- appdata   VARCHAR(128) NOT NULL DEFAULT '',
- PRIMARY KEY (id)
+CREATE TABLE ast_exten (
+ id integer unsigned,
+ commented tinyint(1) NOT NULL DEFAULT 0,
+ context varchar(20) NOT NULL DEFAULT '',
+ exten varchar(20) NOT NULL DEFAULT '',
+ priority tinyint unsigned NOT NULL DEFAULT 0,
+ app varchar(20) NOT NULL DEFAULT '',
+ appdata varchar(128) NOT NULL DEFAULT '',
+ PRIMARY KEY(id)
 );
 
-CREATE INDEX ast_exten__idx__commented              ON ast_exten(commented);
+CREATE INDEX ast_exten__idx__commented ON ast_exten(commented);
 CREATE INDEX ast_exten__idx__context_exten_priority ON ast_exten(context, exten, priority);
