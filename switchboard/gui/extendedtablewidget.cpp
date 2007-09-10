@@ -77,7 +77,7 @@ void ExtendedTableWidget::contextMenuEvent(QContextMenuEvent * event)
                 m_mailAddr = item->text();
                 qDebug() << "email addr detection :" << m_mailAddr;
  		QMenu emailContextMenu(this);
-                emailContextMenu.addAction( tr("&Email"), this, SLOT(sendMail()) );
+                emailContextMenu.addAction( tr("Send an &Email"), this, SLOT(sendMail()) );
                 emailContextMenu.exec( event->globalPos() );
  	}
 }

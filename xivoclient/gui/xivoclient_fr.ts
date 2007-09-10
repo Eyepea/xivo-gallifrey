@@ -312,8 +312,9 @@ Merci de mettre à jour votre serveur.</translation>
     </message>
     <message>
         <location filename="../../switchboard/gui/extendedtablewidget.cpp" line="80"/>
-        <source>&amp;Email</source>
-        <translation>&amp;Courrier électronique</translation>
+        <source>Send an &amp;Email</source>
+        <translation>&amp;Envoyer un Courrier
+Electronique</translation>
     </message>
 </context>
 <context>
@@ -413,11 +414,6 @@ Merci de mettre à jour votre serveur.</translation>
         <location filename="mainwidget.cpp" line="176"/>
         <source>&amp;Do not disturb</source>
         <translation>&amp;Ne Pas Déranger</translation>
-    </message>
-    <message>
-        <location filename="mainwidget.cpp" line="207"/>
-        <source>&amp;File</source>
-        <translation type="obsolete">&amp;Fichier</translation>
     </message>
     <message>
         <location filename="mainwidget.cpp" line="213"/>
@@ -659,11 +655,6 @@ Merci de mettre à jour votre serveur.</translation>
         <location filename="popup.cpp" line="70"/>
         <source>Di&amp;smiss</source>
         <translation>Ref&amp;user</translation>
-    </message>
-    <message>
-        <location filename="popup.cpp" line="70"/>
-        <source>&amp;Dial</source>
-        <translation type="obsolete">&amp;Composer</translation>
     </message>
 </context>
 <context>
