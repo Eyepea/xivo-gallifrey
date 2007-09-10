@@ -19,26 +19,29 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #ifndef __MAINWIDGET_H__
 #define __MAINWIDGET_H__
 
-#include <QWidget>
 #include <QLabel>
 #include <QVBoxLayout>
 #include <QPushButton>
 #include <QSystemTrayIcon>
 #include <QMainWindow>
 #include <QLineEdit>
+
 #include "baseengine.h"
 #include "dialpanel.h"
 #include "logwidget.h"
 #include "directorypanel.h"
-#include "searchpanel.h"
+
+class QActionGroup;
+class QSystemTrayIcon;
+class QTabWidget;
+class QWidget;
+class QUrl;
 
 class ConfWidget;
 class IdentityDisplay;
 class LogWidget;
-class QActionGroup;
-class QSystemTrayIcon;
-class QTabWidget;
-class QUrl;
+class SearchPanel;
+class ServicePanel;
 
 /*! \brief Main window class
  *
@@ -102,7 +105,7 @@ private:
         ConfWidget * m_conf;
         IdentityDisplay * m_infowidget;
 	SearchPanel * m_peerswidget;
-	QWidget * m_featureswidget;
+	ServicePanel * m_featureswidget;
 	bool m_forcetabs;    //!< Flag to allow the display of "unallowed" tabs, useful to test server-side capabilities
 	bool m_presence;
 

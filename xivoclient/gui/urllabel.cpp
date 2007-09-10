@@ -36,11 +36,12 @@ UrlLabel::UrlLabel(const QString & url, QWidget * parent)
                                  | Qt::LinksAccessibleByKeyboard );
 	//                        | Qt::TextSelectableByMouse
 	//                        | Qt::TextSelectableByKeyboard );
-	if(url.startsWith("mailto:")) {
+	if(url.startsWith("mailto:"))
 		displaytext = url.mid(7);
-	} else {
+        else if(url.startsWith("dial:"))
+                displaytext = url.mid(5);
+        else
 		displaytext = url;
-	}
         //qDebug() << "UrlLabel::UrlLabel()" << url << displaytext;
 	text = "<a href=\"";
 	text.append(url);

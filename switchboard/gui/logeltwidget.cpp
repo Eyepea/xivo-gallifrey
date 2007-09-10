@@ -37,7 +37,7 @@ LogEltWidget::LogEltWidget( const QString & peer, Direction d,
 	//	QHBoxLayout * layout1 = new QHBoxLayout( this );
 	//	layout1->setMargin(0);
 
-	QLabel * lblpeer = new QLabel( "    " + peer + "    ", this );
+	QLabel * lblpeer = new QLabel( peer, this );
 	lblpeer->setObjectName("logpeername");
 	lblpeer->setFont(QFont("helvetica", 10, QFont::Bold));
 	lblpeer->setMargin(0);

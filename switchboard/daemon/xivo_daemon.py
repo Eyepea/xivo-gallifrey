@@ -312,15 +312,15 @@ def build_history_string(requester_id, nlines, kind):
                         hist = update_history_call(idast_src, techno, phoneid, phonenum, nlines, kind)
                         for x in hist:
                                 try:
-                                        reply.append(x[0].isoformat() + HISTSEPAR + x[1] \
+                                        reply.append(x[0].isoformat() + HISTSEPAR + x[1].replace('"', '') \
                                                      + HISTSEPAR + str(x[10]) + HISTSEPAR + x[11])
                                 except:
-                                        reply.append(x[0] + HISTSEPAR + x[1] \
+                                        reply.append(x[0] + HISTSEPAR + x[1].replace('"', '') \
                                                      + HISTSEPAR + str(x[10]) + HISTSEPAR + x[11])
                                 if kind == '0':
-                                        reply.append(HISTSEPAR + x[3] + HISTSEPAR + 'OUT')
+                                        reply.append(HISTSEPAR + x[3].replace('"', '') + HISTSEPAR + 'OUT')
                                 else:   # display callerid for incoming calls
-                                        reply.append(HISTSEPAR + x[1] + HISTSEPAR + 'IN')
+                                        reply.append(HISTSEPAR + x[1].replace('"', '') + HISTSEPAR + 'IN')
                                 reply.append(";")
                 except Exception, exc:
                         log_debug("--- exception --- (%s) error : history : (client %s) : %s"

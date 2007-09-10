@@ -44,6 +44,8 @@ public:
 	void addInfoPicture(const QString & name, const QString & value);
 	//! Add a Phone number
 	void addInfoPhone(const QString & name, const QString & value);
+	//! Add a Phone number
+	void addInfoPhoneURL(const QString & name, const QString & value);
 	//! getter for the message
 	void setMessage(const QString & msg);
 	//! access to the message

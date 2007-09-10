@@ -72,6 +72,7 @@ bool XmlHandler::endElement( const QString & /*namespaceURI*/,
 {
 	//qDebug() << "XmlHandler::endElement()" << localName;
 	m_isParsingInfo = false;
+        QRegExp re_number("\\+?[0-9\\s\\.]+");
 	if( localName == QString("info") )
 	{
 		qDebug() << "XmlHandler::endElement()" << m_infoType << m_infoName << m_infoValue;
@@ -92,8 +93,12 @@ bool XmlHandler::endElement( const QString & /*namespaceURI*/,
 		}
 		else if( m_infoType == "phone" )
 		{
-			if(m_popup)
-				m_popup->addInfoPhone( m_infoName, m_infoValue );
+			if(m_popup) {
+                                if(re_number.exactMatch(m_infoValue))
+                                        m_popup->addInfoPhoneURL( m_infoName, m_infoValue );
+                                else
+                                        m_popup->addInfoText( m_infoName, m_infoValue );
+                        }
 		}
 	}
 	else if( localName == "message" )

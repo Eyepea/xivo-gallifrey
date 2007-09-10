@@ -77,12 +77,14 @@ Popup::Popup(QIODevice *inputstream, const QString & sessionid, QWidget *parent)
 		m_vlayout->addLayout(hlayout);
 	}
 	setWindowIcon(QIcon(":/xivoicon.png"));
-        // QDesktopServices::setUrlHandler(QString("mailto"), this, "dispurl");
+        QDesktopServices::setUrlHandler(QString("dial"), this, "dispurl");
 }
 
 void Popup::dispurl(const QUrl &url)
 {
-        qDebug() << "Popup::dispurl()" << url;
+        // qDebug() << "Popup::dispurl()" << url;
+        QString numbertodial = url.toString().mid(5);
+        emitDial(numbertodial);
 }
 
 void Popup::addInfoText(const QString & name, const QString & value)
@@ -101,11 +103,22 @@ void Popup::addInfoPhone(const QString & name, const QString & value)
 {
         qDebug() << "Popup::addInfoPhone()" << value;
 	QLabel * lblname = new QLabel(name, this);
-	QPushButton * lblvalue = new QPushButton(value, this);
+        QPushButton * lblvalue = new QPushButton(value, this);
         lblvalue->setObjectName("phonenumber");
         lblvalue->setProperty("number", value);
         connect( lblvalue, SIGNAL(clicked()),
                  this, SLOT(dialThisNumber()) );
+        QHBoxLayout * hlayout = new QHBoxLayout();
+        hlayout->addWidget(lblname);
+        hlayout->addWidget(lblvalue);
+        m_vlayout->addLayout(hlayout);
+}
+
+void Popup::addInfoPhoneURL(const QString & name, const QString & value)
+{
+        qDebug() << "Popup::addInfoPhoneURL()" << value;
+	QLabel * lblname = new QLabel(name, this);
+	UrlLabel * lblvalue = new UrlLabel("dial:" + value, this);
 	QHBoxLayout * hlayout = new QHBoxLayout();
 	hlayout->addWidget(lblname);
 	hlayout->addWidget(lblvalue);
