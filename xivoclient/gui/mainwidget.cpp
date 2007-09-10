@@ -47,21 +47,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include "searchpanel.h"
 #include "servicepanel.h"
 
-const QString extraspace("    ");
+const QString extraspace("  ");
 
 /*! \brief Constructor
  *
  * This Constructor creates the 3 buttons in a
  * vertical box layout and connect signals with slots.
  */
+//        : QMainWindow(parent, Qt::FramelessWindowHint),
 MainWidget::MainWidget(BaseEngine * engine, QWidget * parent)
-#ifdef Q_WS_X11
-        : QMainWindow(parent, Qt::FramelessWindowHint),
-#else
-          : QMainWindow(parent),
-#endif
-            m_engine(engine), m_systrayIcon(0),
-            m_icon(":/xivoicon.png"), m_icongrey(":/xivoicon-grey.png")
+        : QMainWindow(parent),
+          m_engine(engine), m_systrayIcon(0),
+          m_icon(":/xivoicon.png"), m_icongrey(":/xivoicon-grey.png")
 {
 	QSettings settings;
 	QPixmap redsquare(":/disconnected.png");
@@ -716,6 +713,12 @@ void MainWidget::changeEvent(QEvent *event)
 }
 #endif
 
+void MainWidget::dispurl(const QUrl &url)
+{
+        qDebug() << "MainWidget::dispurl()" << url;
+}
+
+
 /*! \brief Displays the about box
  *
  * use QMessageBox::about() to display
@@ -754,7 +757,7 @@ void MainWidget::about()
                                                                                  fetchlastone) +
 			   "<hr><p>(C) 2007 <a href=http://www.proformatique.com><b>Proformatique</b></a></p>"
 			   "<p>67 rue Voltaire 92800 Puteaux FRANCE</p>"
-			   "<p><b>E-mail : </b>technique@proformatique.com</p>"
+			   "<p><b>E-mail : </b><a href=mailto:technique@proformatique.com>technique@proformatique.com</p>"
 			   "<p>(+33 / 0) 1.41.38.99.60</p>" +
 			   "<p><b>" + tr("Authors : ") + "</b>Thomas Bernard, Corentin Le Gall</p>" +
 			   "<hr><p><b>" + tr("License : ") + "</b>" +

@@ -38,6 +38,7 @@ class LogWidget;
 class QActionGroup;
 class QSystemTrayIcon;
 class QTabWidget;
+class QUrl;
 
 /*! \brief Main window class
  *
@@ -57,6 +58,8 @@ public:
 	int tablimit() const;	//!< getter for m_tablimit
 	void setTablimit(int);	//!< setter for m_tablimit
 	void setForceTabs(bool);//!< setter for m_forcetabs
+public slots:
+        void dispurl(const QUrl &url);
 private slots:
 	void showConfDialog();
 	void engineStopped();

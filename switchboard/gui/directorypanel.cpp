@@ -116,11 +116,12 @@ void DirectoryPanel::setSearchResponse(const QString & resp)
                         m_table->setHorizontalHeaderLabels( labelList );
                         for(y = 0; y < nrows; y++) {
                                 for(x = 0; x < ncolumns; x++) {
-                                        QTableWidgetItem * item = new QTableWidgetItem(items[1+(1+y)*ncolumns+x]);
+                                        QString it = items[1+(1+y)*ncolumns+x];
+                                        QTableWidgetItem * item = new QTableWidgetItem(it);
                                         item->setFlags( Qt::ItemIsSelectable | Qt::ItemIsEnabled );
                                         //item->setToolTip();
                                         //item->setStatusTip();
-                                        //qDebug() << x << y << item->flags();
+                                        // qDebug() << x << y << item->flags();
                                         m_table->setItem( y, x, item );
                                         //qDebug() << m_table->cellWidget( y, x );
                                 }

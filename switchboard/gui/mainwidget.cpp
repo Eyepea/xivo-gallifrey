@@ -51,6 +51,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include "servicepanel.h"
 #include "switchboardwindow.h"
 
+const QString extraspace("  ");
+
 /*! \brief Widget containing the CallStackWidget and a Title QLabel
  */
 LeftPanel::LeftPanel(QWidget * bottomWidget, QWidget * parent)
@@ -77,13 +79,10 @@ QLabel * LeftPanel::titleLabel()
  * displaying calls and a right panel for peers.
  * The geometry is restored from settings.
  */
+//        : QMainWindow(parent, Qt::FramelessWindowHint),
 MainWidget::MainWidget(BaseEngine * engine, QWidget * parent)
-#ifdef Q_WS_X11
-        : QMainWindow(parent, Qt::FramelessWindowHint),
-#else
-          : QMainWindow(parent),
-#endif
-            m_engine(engine)
+        : QMainWindow(parent),
+          m_engine(engine)
 {
 	QSettings settings;
 	QPixmap redsquare(":xivoclient/gui/disconnected.png");
@@ -139,7 +138,7 @@ void MainWidget::buildSplitters()
  	m_areaCalls->setWidget(m_calls);
 	m_svc_tabwidget = new QTabWidget(m_leftSplitter);
 	m_messages_widget = new DisplayMessagesPanel(m_svc_tabwidget);
-	m_svc_tabwidget->addTab(m_messages_widget, "     " + tr("Messages") + "    ");
+	m_svc_tabwidget->addTab(m_messages_widget, extraspace + tr("Messages") + extraspace);
 	m_leftSplitter->restoreState(settings.value("display/leftSplitterSizes").toByteArray());
 
 	// Middle Splitter Definitions
@@ -430,7 +429,7 @@ void MainWidget::engineStarted()
 		if (allowed_capas.contains(dc)) {
 			if (dc == QString("history")) {
                                 m_logwidget = new LogWidget(m_engine, m_svc_tabwidget);
-                                m_svc_tabwidget->insertTab(0, m_logwidget, "    " + tr("History") + "    ");
+                                m_svc_tabwidget->insertTab(0, m_logwidget, extraspace + tr("History") + extraspace);
 
                                 connect( m_engine, SIGNAL(updateLogEntry(const QDateTime &, int, const QString &, int)),
                                          m_logwidget, SLOT(addLogEntry(const QDateTime &, int, const QString &, int)) );
@@ -443,7 +442,7 @@ void MainWidget::engineStarted()
                         } else if (dc == QString("features")) {
 
                                 m_featureswidget = new ServicePanel(m_svc_tabwidget);
-                                m_svc_tabwidget->insertTab(0, m_featureswidget, "    " + tr("Services") + "    ");
+                                m_svc_tabwidget->insertTab(0, m_featureswidget, extraspace + tr("Services") + extraspace);
 
                                 connect( m_featureswidget, SIGNAL(askFeatures(const QString &)),
                                          m_engine, SLOT(askFeatures(const QString &)) );
@@ -586,7 +585,7 @@ void MainWidget::showNewProfile(Popup * popup)
 	  }*/
 	if (m_cinfo_tabwidget)
 	{
-		int index = m_cinfo_tabwidget->addTab(popup, "    " + currentTimeStr + "    ");
+		int index = m_cinfo_tabwidget->addTab(popup, extraspace + currentTimeStr + extraspace);
 		qDebug() << "added tab" << index;
 		m_cinfo_tabwidget->setCurrentIndex(index);
 		if (index >= m_tablimit)
@@ -640,7 +639,7 @@ void MainWidget::about()
                                                                                  fetchlastone) +
 			   "<hr><p>(C) 2007 <a href=http://www.proformatique.com><b>Proformatique</b></a></p>"
 			   "<p>67 rue Voltaire 92800 Puteaux FRANCE</p>"
-			   "<p><b>E-mail : </b>technique@proformatique.com</p>"
+			   "<p><b>E-mail : </b><a href=mailto:technique@proformatique.com>technique@proformatique.com</p>"
 			   "<p>(+33 / 0) 1.41.38.99.60</p>" +
 			   "<p><b>" + tr("Authors : ") + "</b>Thomas Bernard, Corentin Le Gall</p>" +
 			   "<hr><p><b>" + tr("License : ") + "</b>" +

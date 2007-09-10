@@ -77,7 +77,7 @@ Popup::Popup(QIODevice *inputstream, const QString & sessionid, QWidget *parent)
 		m_vlayout->addLayout(hlayout);
 	}
 	setWindowIcon(QIcon(":/xivoicon.png"));
-        QDesktopServices::setUrlHandler(QString("mailto"), this, "dispurl");
+        // QDesktopServices::setUrlHandler(QString("mailto"), this, "dispurl");
 }
 
 void Popup::dispurl(const QUrl &url)

@@ -46,12 +46,12 @@ int main(int argc, char * * argv)
 	QCoreApplication::setApplicationName("XivoSwitchBoard");
 	QApplication app(argc, argv);
 
-	QFile qssFile(":/xivo.qss");
-	if(qssFile.open(QIODevice::ReadOnly | QIODevice::Text))
-	{
-		app.setStyleSheet( QString(qssFile.readAll()) );
-		qssFile.close();
-	}
+        // 	QFile qssFile(":/xivo.qss");
+        // 	if(qssFile.open(QIODevice::ReadOnly | QIODevice::Text))
+        // 	{
+        // 		app.setStyleSheet( QString(qssFile.readAll()) );
+        // 		qssFile.close();
+        // 	}
 
 	QTranslator qtTranslator;
 	qtTranslator.load(QString(":/switchboard_") + locale);

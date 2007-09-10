@@ -34,10 +34,12 @@ QHeaderView {color: white; background: #05aefd}
 QMenuBar   {spacing: 15px; color: white; font: bold ; background: qlineargradient(y1: 0.45, y2: 0.55, stop: 0 #fbb638, stop: 1.0 #f38402)}
 QMenuBar::item {padding: 3px 20px; background: transparent; border: 2px solid white ; border-bottom: 0px; border-top-left-radius: 10px; border-top-right-radius: 10px}
 QMenuBar::item:disabled {color: #fbb648}
+QMenuBar::item:disabled:selected {background: transparent}
 QMenuBar::item:selected {background: qlineargradient(y1: 0.45, y2: 0.55, stop: 0 #3bc0ff, stop: 1.0 #05aefd)}
 QMenu {color: white; font: bold; background: #fbb638; border: 3px solid #f38402 ; border-radius: 4px}
 QMenu::item:disabled {color: #fbb648}
 QMenu::item:selected {background: #3bc0ff}
+QMenu::item:selected:disabled {background: #f38402}
 QMenu::item:checked {background: #3bc0ff}
 
 QStatusBar {color: white; font: bold ; background: qlineargradient(y1: 0.45, y2: 0.55, stop: 0 #fbb638, stop: 1.0 #f38402)}

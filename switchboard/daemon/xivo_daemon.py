@@ -1441,19 +1441,22 @@ def handle_ami_event(astid, idata):
                                                                            DUMMY_STATE, 0, DUMMY_DIR,
                                                                            channel_p1, n1, "ami-er1")
                                 except Exception, exc:
-                                        log_debug("--- exception --- %s : renaming (ami-er1) failed : %s" %(configs[astnum].astid,str(exc)))
+                                        log_debug("--- exception --- %s : renaming (ami-er1) failed : %s" %(configs[astnum].astid, str(exc)))
 
                                 try:
-                                        plist[astnum].normal_channel_fills(channel_p1, DUMMY_CLID,
-                                                                           DUMMY_STATE, 0, DUMMY_DIR,
-                                                                           channel_new, n2, "ami-er2")
+                                        if channel_p1 != "":
+                                                plist[astnum].normal_channel_fills(channel_p1, DUMMY_CLID,
+                                                                                   DUMMY_STATE, 0, DUMMY_DIR,
+                                                                                   channel_new, n2, "ami-er2")
+                                        else:
+                                                log_debug("channel_p1 is empty - was it a group call that has been intercepted ?")
                                 except Exception, exc:
-                                        log_debug("--- exception --- %s : renaming (ami-er2) failed : %s" %(configs[astnum].astid,str(exc)))
+                                        log_debug("--- exception --- %s : renaming (ami-er2) failed : %s" %(configs[astnum].astid, str(exc)))
 
                                 try:
                                         plist[astnum].normal_channel_hangup(channel_old, "ami-er3")
                                 except Exception, exc:
-                                        log_debug("--- exception --- %s : renaming (ami-er3 = hangup) failed : %s" %(configs[astnum].astid,str(exc)))
+                                        log_debug("--- exception --- %s : renaming (ami-er3 = hangup) failed : %s" %(configs[astnum].astid, str(exc)))
 
                         else:
                                 log_debug("AMI:Rename:A: %s : old=%s new=%s"
@@ -1595,23 +1598,28 @@ def handle_ami_status(astid, idata):
                                         # we fall here when there is a MeetMe conference
                                         log_debug("AMI %s Status / linked with noone (Meetme conf, voicemail ...) : chan=<%s>, clid=<%s>, exten=<%s>, seconds=<%s>"
                                                   % (astid, chan, clid, exten, seconds))
+                                        # reply = AMI_array_user_commands[astid].execclicommand("show channel %s" % chan)
+                                        # for z in reply:
+                                        # if z.find('Application') >= 0 or z.find('Data') >= 0:
+                                        # print chan, z.split(':')
                                         plist[astnum].normal_channel_fills(chan, DUMMY_MYNUM,
                                                                            "On the phone", int(seconds), DIR_TO_STRING,
                                                                            DUMMY_RCHAN, exten,
                                                                            "ami-st2")
 
-                        elif state == 'Ring':
+                        elif state == 'Ring': # AST_STATE_RING
                                 log_debug("AMI %s Status / Ring (To): %s %s %s"
                                           % (astid, this_event.get('Channel'),
                                              this_event.get('Extension'), this_event.get('Seconds')))
-                        elif state == 'Ringing':
+                        elif state == 'Ringing': # AST_STATE_RINGING
                                 log_debug("AMI %s Status / Ringing (From): %s"
                                           % (astid, this_event.get("Channel")))
-                        elif state == 'Rsrvd':
+                        elif state == 'Rsrvd': # AST_STATE_RESERVED
+                                # occurs in in meetme : AMI obelisk Status / Rsrvd: Zap/pseudo-1397436026
                                 log_debug("AMI %s Status / Rsrvd: %s"
                                           % (astid, this_event.get("Channel")))
-                        else:
-                                log_debug("AMI %s Status / (undefined status event) : %s"
+                        else: # Down, OffHook, Dialing, Up, Busy
+                                log_debug("AMI %s Status / (other status event) : %s"
                                           % (astid, str(this_event)))
                 elif evfunction == 'StatusComplete':
                         log_debug("AMI %s StatusComplete" % astid)

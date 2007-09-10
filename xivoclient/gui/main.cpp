@@ -59,13 +59,13 @@ int main(int argc, char * * argv)
 	QCoreApplication::setApplicationName("XivoClient");
 	QApplication app(argc, argv);
 
-	QFile qssFile(":/switchboard/gui/xivo.qss");
-	if(qssFile.open(QIODevice::ReadOnly | QIODevice::Text))
-	{
-		app.setStyleSheet( QString(qssFile.readAll()) );
-		qssFile.close();
-	}
-
+        //  	QFile qssFile(":/switchboard/gui/xivo.qss");
+        //         if(qssFile.open(QIODevice::ReadOnly | QIODevice::Text))
+        //          	{
+        //          		app.setStyleSheet( QString(qssFile.readAll()) );
+        //          		qssFile.close();
+        //          	}
+        
 	QTranslator qtTranslator;
 	qtTranslator.load(QString(":/xivoclient_") + locale);
 	app.installTranslator(&qtTranslator);

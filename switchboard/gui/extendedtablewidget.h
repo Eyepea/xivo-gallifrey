@@ -47,9 +47,11 @@ public slots:
 	void updateMyCalls(const QStringList &, const QStringList &, const QStringList &);
 private slots:
 	void dialNumber();
+        void sendMail();
 	void transferChan(const QString &);
 private:
 	QString m_numberToDial;		//!< used to store number to dial or to transfer to
+	QString m_mailAddr;		//!< used to store email address
 	QList<PeerChannel *> m_mychannels;	//!< "my channels" list for transfer menu
 };
 

@@ -17,9 +17,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 */
 
 /* $Id$ */
+
 #include <QContextMenuEvent>
-#include <QMenu>
 #include <QDebug>
+#include <QDesktopServices>
+#include <QMenu>
+#include <QUrl>
+
 #include "extendedtablewidget.h"
 #include "xivoconsts.h"
 
@@ -48,8 +52,8 @@ void ExtendedTableWidget::contextMenuEvent(QContextMenuEvent * event)
 	qDebug() << "ExtendedTableWidget::contextMenuEvent()";
 	qDebug() << event->pos();
 	QTableWidgetItem * item = itemAt( event->pos() );
-	QRegExp re("\\+?[0-9\\s\\.]+");
-	if(item && re.exactMatch( item->text() )) {
+	QRegExp re_number("\\+?[0-9\\s\\.]+");
+	if(item && re_number.exactMatch( item->text() )) {
 		m_numberToDial = item->text();
 		qDebug() << "preparing to dial :" << m_numberToDial;
 		QMenu contextMenu(this);
@@ -67,6 +71,15 @@ void ExtendedTableWidget::contextMenuEvent(QContextMenuEvent * event)
 		}
 		contextMenu.exec( event->globalPos() );
 	}
+
+	QRegExp re_mailaddr("@");
+ 	if(item && (re_mailaddr.indexIn(item->text()) > 0)) {
+                m_mailAddr = item->text();
+                qDebug() << "email addr detection :" << m_mailAddr;
+ 		QMenu emailContextMenu(this);
+                emailContextMenu.addAction( tr("&Email"), this, SLOT(sendMail()) );
+                emailContextMenu.exec( event->globalPos() );
+ 	}
 }
 
 /*! \brief dial the number (when context menu item is toggled)
@@ -77,6 +90,16 @@ void ExtendedTableWidget::dialNumber()
 	{
 		emitDial( m_numberToDial );
 	}
+}
+
+/*! \brief dial the number (when context menu item is toggled)
+ */
+void ExtendedTableWidget::sendMail()
+{
+        if(m_mailAddr.length() > 0) {
+                qDebug() << "ExtendedTableWidget::sendMail()" << m_mailAddr;
+                QDesktopServices::openUrl(QUrl("mailto:" + m_mailAddr));
+        }
 }
 
 /*! \brief update call list for transfer
