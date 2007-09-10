@@ -614,9 +614,6 @@ void MainWidget::showNewProfile(Popup * popup)
 void MainWidget::about()
 {
 	QString applicationVersion("0.1");
-	QString revision = m_engine->getRevisionString();
-	QString revdate  = m_engine->getDateString();
-
         QString fetchlastone = "<a href=http://www.xivo.fr/download/xivo_cti_client/"
 #if defined(Q_WS_X11)
                 "linux"
@@ -633,10 +630,8 @@ void MainWidget::about()
 			   tr("<p>This application displays the status of the"
 			      " ongoing phone calls.</p>") +
 			   "<p><b>" + tr("Version : ") + QString("</b>%1 (").arg(applicationVersion) +
-			   "<b>svn : " + QString("</b>%1 @ %2 %3 - %4)</p>").arg(revision.split(" ")[1],
-                                                                                 revdate.split(" ")[1],
-                                                                                 revdate.split(" ")[2],
-                                                                                 fetchlastone) +
+			   "<b>svn : " + QString("</b>%1 - %2)</p>").arg(SVNVER,
+                                                                         fetchlastone) +
 			   "<hr><p>(C) 2007 <a href=http://www.proformatique.com><b>Proformatique</b></a></p>"
 			   "<p>67 rue Voltaire 92800 Puteaux FRANCE</p>"
 			   "<p><b>E-mail : </b><a href=mailto:technique@proformatique.com>technique@proformatique.com</p>"

@@ -3,6 +3,11 @@
 ######################################################################
 
 SBDIR = ../../switchboard/gui
+XCDIR = ../../xivoclient/gui
+VERSION = $$system(LANG=C svn info -r HEAD $${XCDIR} $${SBDIR} | grep 'Last\ Changed\ Rev' | cut -b 19- | sort -n | tail -1)
+VERSTR = '\\"$${VERSION}\\"'  # place quotes around the version string
+DEFINES += SVNVER=\"$${VERSTR}\" # create a VER macro containing the version string
+
 TEMPLATE = app
 TARGET = 
 DEPENDPATH += .
