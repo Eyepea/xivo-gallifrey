@@ -22,14 +22,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
    $Date$
 */
 
+#include <QContextMenuEvent>
+#include <QDebug>
+#include <QDesktopServices>
 #include <QHBoxLayout>
-#include <QVBoxLayout>
-#include <QPushButton>
 #include <QLineEdit>
 #include <QLabel>
-#include <QContextMenuEvent>
 #include <QMenu>
-#include <QDebug>
+#include <QPushButton>
+#include <QUrl>
+#include <QVBoxLayout>
+
 #include "directorypanel.h"
 #include "extendedtablewidget.h"
 
@@ -88,9 +91,19 @@ void DirectoryPanel::itemDoubleClicked(QTableWidgetItem * item)
 {
 	qDebug() << item << item->text();
 	// check if the string is a number
-	QRegExp re("[0-9]+");
-	qDebug() << re.exactMatch(item->text());
-	// TODO : DIAL
+	QRegExp re_number("\\+?[0-9\\s\\.]+");
+	if(re_number.exactMatch(item->text())) {
+                qDebug() << "dialing" << item->text();
+                emitDial(item->text());
+        }
+
+ 	if(item && item->text().contains("@")) {
+                QString mailAddr = item->text();
+                if(mailAddr.length() > 0) {
+                        qDebug() << "DirectoryPanel::itemDoubleClicked() : mail" << mailAddr;
+                        QDesktopServices::openUrl(QUrl("mailto:" + mailAddr));
+                }
+ 	}
 }
 
 /*! \brief receive and process search response
@@ -119,7 +132,12 @@ void DirectoryPanel::setSearchResponse(const QString & resp)
                                         QString it = items[1+(1+y)*ncolumns+x];
                                         QTableWidgetItem * item = new QTableWidgetItem(it);
                                         item->setFlags( Qt::ItemIsSelectable | Qt::ItemIsEnabled );
-                                        //item->setToolTip();
+
+                                        QRegExp re_number("\\+?[0-9\\s\\.]+");
+                                        if(it.contains("@"))
+                                                item->setToolTip(tr("Double-click to send an E-mail to") + "\n" + it);
+                                        else if(re_number.exactMatch(it))
+                                                item->setToolTip(tr("Double-click to call") + "\n" + it);
                                         //item->setStatusTip();
                                         // qDebug() << x << y << item->flags();
                                         m_table->setItem( y, x, item );

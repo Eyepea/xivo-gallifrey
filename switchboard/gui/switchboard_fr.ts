@@ -319,14 +319,24 @@ Merci de mettre à jour votre serveur.</translation>
 <context>
     <name>DirectoryPanel</name>
     <message>
-        <location filename="directorypanel.cpp" line="45"/>
+        <location filename="directorypanel.cpp" line="48"/>
         <source>Di&amp;rectory</source>
         <translation>&amp;Répertoire</translation>
     </message>
     <message>
-        <location filename="directorypanel.cpp" line="53"/>
+        <location filename="directorypanel.cpp" line="56"/>
         <source>Search</source>
         <translation>Rechercher</translation>
+    </message>
+    <message>
+        <location filename="directorypanel.cpp" line="138"/>
+        <source>Double-click to send an E-mail to</source>
+        <translation>Double-cliquer pour envoyer un E-mail à</translation>
+    </message>
+    <message>
+        <location filename="directorypanel.cpp" line="140"/>
+        <source>Double-click to call</source>
+        <translation>Double-cliquer pour appeler</translation>
     </message>
 </context>
 <context>
@@ -360,10 +370,9 @@ Merci de mettre à jour votre serveur.</translation>
         <translation>&amp;Transférer</translation>
     </message>
     <message>
-        <location filename="extendedtablewidget.cpp" line="80"/>
-        <source>Send an &amp;Email</source>
-        <translation>&amp;Envoyer un Courrier
-Electronique</translation>
+        <location filename="extendedtablewidget.cpp" line="79"/>
+        <source>Send an E-mail</source>
+        <translation>Envoyer un E-mail</translation>
     </message>
 </context>
 <context>

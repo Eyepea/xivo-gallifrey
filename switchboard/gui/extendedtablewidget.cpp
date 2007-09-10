@@ -72,12 +72,11 @@ void ExtendedTableWidget::contextMenuEvent(QContextMenuEvent * event)
 		contextMenu.exec( event->globalPos() );
 	}
 
-	QRegExp re_mailaddr("@");
- 	if(item && (re_mailaddr.indexIn(item->text()) > 0)) {
+ 	if(item && item->text().contains("@")) {
                 m_mailAddr = item->text();
                 qDebug() << "email addr detection :" << m_mailAddr;
  		QMenu emailContextMenu(this);
-                emailContextMenu.addAction( tr("Send an &Email"), this, SLOT(sendMail()) );
+                emailContextMenu.addAction( tr("Send an E-mail"), this, SLOT(sendMail()) );
                 emailContextMenu.exec( event->globalPos() );
  	}
 }
@@ -105,8 +104,8 @@ void ExtendedTableWidget::sendMail()
 /*! \brief update call list for transfer
  */
 void ExtendedTableWidget::updateMyCalls(const QStringList & chanIds,
-                               const QStringList & chanStates,
-							   const QStringList & chanOthers)
+                                        const QStringList & chanStates,
+                                        const QStringList & chanOthers)
 {
 	while(!m_mychannels.isEmpty())
 		delete m_mychannels.takeFirst();
