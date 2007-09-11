@@ -1,4 +1,4 @@
-/* XIVO switchboard
+/* XIVO CTI clients
 Copyright (C) 2007  Proformatique
 
 This program is free software; you can redistribute it and/or
@@ -16,12 +16,17 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 */
 
-/* $Id$ */
-#include <QVBoxLayout>
+/* $Revision$
+ * $Date$
+ */
+
+#include <QDebug>
+#include <QHeaderView>
 #include <QLabel>
 #include <QTableWidget>
 #include <QTime>
-#include <QDebug>
+#include <QVBoxLayout>
+
 #include "searchpanel.h"
 #include "peerwidget.h"
 #include "displaymessages.h"
@@ -39,6 +44,7 @@ DisplayMessagesPanel::DisplayMessagesPanel(QWidget * parent)
 	QLabel * lbl = new QLabel( tr("Messages :"), this );
 	m_table = new QTableWidget( this );
         m_table->setAlternatingRowColors(true);
+        m_table->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
 	m_table->setHorizontalScrollMode( QAbstractItemView::ScrollPerPixel );
 	m_table->setColumnCount( 2 );
 	QStringList labels;

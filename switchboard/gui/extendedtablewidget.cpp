@@ -1,4 +1,4 @@
-/* XIVO switchboard
+/* XIVO CTI clients
 Copyright (C) 2007  Proformatique
 
 This program is free software; you can redistribute it and/or
@@ -16,11 +16,14 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 */
 
-/* $Id$ */
+/* $Revision$
+ * $Date$
+ */
 
 #include <QContextMenuEvent>
 #include <QDebug>
 #include <QDesktopServices>
+#include <QHeaderView>
 #include <QMenu>
 #include <QUrl>
 
@@ -34,6 +37,7 @@ ExtendedTableWidget::ExtendedTableWidget(QWidget * parent)
 {
 	setAcceptDrops(true);
         setAlternatingRowColors(true);
+        this->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
 }
 
 /*! \brief Constructor

@@ -86,7 +86,7 @@ void Peer::updateStatus(const QString & imavail,
 	} else if(sipstatus == "Calling") {
 		m_peerwidget->setYellow(0);
 		display_sipstatus = PeerWidget::tr("Calling");
-	} else if(sipstatus == "On the phone") {
+	} else if((sipstatus == "On the phone") || (sipstatus == "Up")) {
 		m_peerwidget->setRed(0);
 		display_sipstatus = PeerWidget::tr("On the phone");
 	} else if(sipstatus == "Not online") {

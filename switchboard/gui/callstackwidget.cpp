@@ -18,13 +18,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 */
 
 /* $Revision$
-   $Date$
-*/
+ * $Date$
+ */
 
 #include <QVBoxLayout>
 #include <QDragEnterEvent>
 #include <QDebug>
 #include <QSettings>
+
 #include "callstackwidget.h"
 #include "callwidget.h"
 #include "xivoconsts.h"

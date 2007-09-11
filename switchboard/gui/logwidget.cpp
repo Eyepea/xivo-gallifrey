@@ -1,5 +1,4 @@
-/*
-XIVO switchboard : 
+/* XIVO CTI clients
 Copyright (C) 2007  Proformatique
 
 This program is free software; you can redistribute it and/or
@@ -17,10 +16,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 */
 
-/* $Id$
- * $Revision$
-   $Date$
-*/
+/* $Revision$
+ * $Date$
+ */
 
 #include <QDebug>
 #include <QHBoxLayout>
@@ -180,7 +178,7 @@ void LogWidget::setPeerToDisplay(const QString & peer)
  */
 void LogWidget::timerEvent(QTimerEvent * event)
 {
-        //qDebug() << "LogWidget::timerEvent() id=" << event->timerId();
+        qDebug() << "LogWidget::timerEvent() id=" << event->timerId();
 	if(m_peer.size() > 0)
 		askHistory(m_peer, mode());
 }

@@ -16,7 +16,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 */
 
-/* $Id$ */
+/* $Revision$
+ * $Date$
+ */
+
 #include <QHBoxLayout>
 #include <QGridLayout>
 #include <QApplication>
@@ -26,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QFont>
 #include <QTextFormat>
 #include <QMenu>
+
 #include "callstackwidget.h"
 #include "callwidget.h"
 #include "xivoconsts.h"
