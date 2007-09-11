@@ -76,15 +76,14 @@ type = t[0]
 typeid = t[1]
 
 if type == 'custom':
-	if len(t.custom) < 3 or t.custom[0] == '(' or t.custom[-1] != ')':
+	custom = re.search('^([a-zA-Z]{3,})\(([\x20-\x7E]*)\)$',t.custom)
+
+	if custom is None:
 		agi.verbose('Error wrong custom application')
 		sys.exit()
 
-	pos = t.custom.find('(')
-	args = t.custom[pos+1:-1].replace(',','|')
-
 	agi.answer()
-	agi.appexec(t.custom[:pos],args)
+	agi.appexec(custom.group(1),custom.group(2))
 
 if type == 'meetme':
 	query = "SELECT number FROM meetmefeatures WHERE id=%d" % t[1]
