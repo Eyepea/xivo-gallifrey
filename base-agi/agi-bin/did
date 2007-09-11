@@ -83,7 +83,7 @@ if type == 'custom':
 		sys.exit()
 
 	agi.answer()
-	agi.appexec(custom.group(1),custom.group(2))
+	agi.appexec(custom.group(1),custom.group(2).replace(',','|'))
 
 if type == 'meetme':
 	query = "SELECT number FROM meetmefeatures WHERE id=%d" % t[1]
