@@ -124,7 +124,12 @@ set_features_value('CSStatus', '', 'Screen', context, user)
 
 agi.set_variable('PROTO', '%s' % res[0])
 agi.set_variable('NBC', '%s' % res[1])
-agi.set_variable('NBS', '%s' % res[2])
+
+if res[2] == 0:
+        agi.set_variable('NBS', '')
+else:
+        agi.set_variable('NBS', '%s' % res[2])
+
 agi.set_variable('QUEUENAME', '%s' % res[3])
 agi.set_variable('NAME', '%s' % res[4])
 agi.set_variable('MOH', '%s' % res[5])
