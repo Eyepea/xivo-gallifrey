@@ -2633,7 +2633,7 @@ class IdentRequestHandler(SocketServer.StreamRequestHandler):
                                                                         callerid,
                                                                         msg,
                                                                         xivoconf)
-                                retline = 'USER %s STATE %s CIDNAME "%s <%s>"' %(user, state_userinfo, calleridname, callerid)
+                                retline = 'USER %s STATE %s CIDNAME %s' %(user, state_userinfo, calleridname)
 			except Exception, exc:
 				retline = 'ERROR PUSH %s' %(str(exc))
 		finally:

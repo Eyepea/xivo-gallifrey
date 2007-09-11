@@ -84,16 +84,18 @@ s.close()
 list = fs.readline().strip().split(' ', 5) # keeps the last items joined by their spaces
 fs.close()
 
-if len(list) < 6 or list[0] == 'ERROR':
+if len(list) < 5 or list[0] == 'ERROR':
 	print_verbose("Received an ERROR for user <%s> : %s" % (user, str(list)))
 	sys.exit(3)
 else:
         # USER xxx STATE xxx CIDNAME xxx
         clientstate = list[3]
-        if calleridname == "":
-                agi.set_callerid(list[5])
+        if len(list) > 5:
+                calleridtoset = "\"%s <%s>\"" %(list[5], calleridnum)
         else:
-                agi.set_callerid("\"%s <%s>\"" %(calleridname, calleridnum))
+                calleridtoset = "\"%s <%s>\"" %(calleridname, calleridnum)
+        print_verbose("The Caller Id will be set to <%s>" % calleridtoset)
+        agi.set_callerid(calleridtoset)
 
 if clientstate == "available":
 	agi.set_variable('STATUS', 0)

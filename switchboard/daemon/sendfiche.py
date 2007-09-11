@@ -184,7 +184,7 @@ def make_fields(items, formats, flds):
 def retrieve_callerid_data(callerid, ctxinfos, xdconfig):
         fields = {}
         fields["req_cid"] = callerid
-        fields['callidname'] = callerid
+        fields['callidname'] = ""
         fields_formatted = []
 
         # database-specific calls
