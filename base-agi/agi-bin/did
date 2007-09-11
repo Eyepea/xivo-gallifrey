@@ -47,7 +47,7 @@ conf_obj = ConfigParser.ConfigParser()
 conf_obj.readfp(open(CONFIG_FILE))
 FillDictFromConfigSection(options, conf_obj, "db")
 
-import string
+import string, re
 
 agi = AGI()
 
