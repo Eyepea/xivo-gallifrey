@@ -73,7 +73,6 @@ def get_provider(provider, agi_callerid):
 		agi.set_variable("CHAN", config.get(provider, 'chan'))
 	if config.has_option(provider, 'externnum'):
 		agi.set_variable("EXTERNNUM", config.get(provider, 'externnum'))
-		agi.verbose('TOTO ' + config.get(provider, 'externnum'))
 	if config.has_option(provider, 'setcallerid'):
 		agi.set_variable("SETCALLERID", config.get(provider, 'setcallerid'))
 	if config.has_option(provider, 'useenum'):
