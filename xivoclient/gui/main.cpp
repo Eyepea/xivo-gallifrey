@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QApplication>
 #include <QFile>
 #include <QLocale>
+#include <QSettings>
 #include <QSplashScreen>
 #include <QTranslator>
 
@@ -58,14 +59,17 @@ int main(int argc, char * * argv)
 	QCoreApplication::setOrganizationDomain("xivo.fr");
 	QCoreApplication::setApplicationName("XivoClient");
 	QApplication app(argc, argv);
+        QSettings settings;
 
-        //  	QFile qssFile(":/switchboard/gui/xivo.qss");
-        //         if(qssFile.open(QIODevice::ReadOnly | QIODevice::Text))
-        //          	{
-        //          		app.setStyleSheet( QString(qssFile.readAll()) );
-        //          		qssFile.close();
-        //          	}
-        
+        QString qsskind = settings.value("display/qss", "none").toString();
+        QFile qssFile(":/switchboard/gui/" + qsskind + ".qss");
+        QString qssStr;
+        if(qssFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+                qssStr = qssFile.readAll();
+                qssFile.close();
+        }
+        app.setStyleSheet(qssStr);
+
 	QTranslator qtTranslator;
 	qtTranslator.load(QString(":/xivoclient_") + locale);
 	app.installTranslator(&qtTranslator);

@@ -24,7 +24,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QApplication>
 #include <QFile>
 #include <QLocale>
+#include <QSettings>
 #include <QTranslator>
+
 #include "baseengine.h"
 #include "mainwidget.h"
 
@@ -45,13 +47,16 @@ int main(int argc, char * * argv)
 	QCoreApplication::setOrganizationDomain("xivo.fr");
 	QCoreApplication::setApplicationName("XivoSwitchBoard");
 	QApplication app(argc, argv);
+        QSettings settings;
 
-        // 	QFile qssFile(":/xivo.qss");
-        // 	if(qssFile.open(QIODevice::ReadOnly | QIODevice::Text))
-        // 	{
-        // 		app.setStyleSheet( QString(qssFile.readAll()) );
-        // 		qssFile.close();
-        // 	}
+        QString qsskind = settings.value("display/qss", "none").toString();
+        QFile qssFile(":/" + qsskind + ".qss");
+        QString qssStr;
+        if(qssFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+                qssStr = qssFile.readAll();
+                qssFile.close();
+        }
+        app.setStyleSheet(qssStr);
 
 	QTranslator qtTranslator;
 	qtTranslator.load(QString(":/switchboard_") + locale);
