@@ -6,11 +6,12 @@
 # $Date$
 #
 
-VERSION = $$system(touch mainwidget.cpp && svn info -r HEAD | tail -3 | head -1 | sed "s/.*:.//")
+SBDIR = ../../switchboard/gui
+
+VERSION = $$system(touch mainwidget.cpp $${SBDIR}/baseengine.cpp && svn info -r HEAD | tail -3 | head -1 | sed "s/.*:.//")
 VERSTR = '\\"$${VERSION}\\"'  # place quotes around the version string
 DEFINES += SVNVER=\"$${VERSTR}\" # create a VER macro containing the version string
 
-SBDIR = ../../switchboard/gui
 TEMPLATE = app
 TARGET = 
 DEPENDPATH += .

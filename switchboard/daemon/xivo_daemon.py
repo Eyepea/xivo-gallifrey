@@ -2575,7 +2575,7 @@ class LoginHandler(SocketServer.StreamRequestHandler):
                         if rstr.split()[0] == 'OK' and astnum >= 0:
                                 send_availstate_update(astnum, user, state)
                 except Exception, exc:
-                        log_debug("--- exception --- %s" %(str(exc)))
+                        log_debug("--- exception --- (login handler) : %s" %(str(exc)))
 
 
 ## \class IdentRequestHandler
