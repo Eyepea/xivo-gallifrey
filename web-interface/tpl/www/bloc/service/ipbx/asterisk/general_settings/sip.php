@@ -85,7 +85,7 @@
 
 <?=$form->text(array('desc' => $this->bbf('fm_useragent'),'name' => 'useragent','labelid' => 'useragent','size' => 15,'value' => $this->varra('info','useragent'),'default' => $element['useragent']['default']));?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_checkmwi'),'name' => 'checkmwi','labelid' => 'checkmwi','key' => false,'bbf' => array('mixkey','fm_checkmwi-opt'),'value' => xivo_cast_except($this->varra('info','checkmwi'),null,'uint'),'default' => $element['checkmwi']['default']),$element['checkmwi']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_checkmwi'),'name' => 'checkmwi','labelid' => 'checkmwi','key' => false,'bbf' => array('mixkey','fm_checkmwi-opt'),'value' => $this->varra('info','checkmwi'),'default' => $element['checkmwi']['default']),$element['checkmwi']['value']);?>
 
 <?=$form->text(array('desc' => $this->bbf('fm_regcontext'),'name' => 'regcontext','labelid' => 'regcontext','size' => 15,'value' => $this->varra('info','regcontext'),'default' => $element['regcontext']['default']));?>
 
@@ -115,7 +115,7 @@
 
 <?=$form->text(array('desc' => $this->bbf('fm_externhost'),'name' => 'externhost','labelid' => 'externhost','size' => 15,'value' => $this->varra('info','externhost'),'default' => $element['externhost']['default']));?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_externrefresh'),'name' => 'externrefresh','labelid' => 'externrefresh','bbf' => array('mixkey','fm_externrefresh-opt','paramarray'),'value' => xivo_cast_except($this->varra('info','externrefresh'),null,'uint'),'default' => $element['externrefresh']['default']),$element['externrefresh']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_externrefresh'),'name' => 'externrefresh','labelid' => 'externrefresh','bbf' => array('mixkey','fm_externrefresh-opt','paramarray'),'value' => $this->varra('info','externrefresh'),'default' => $element['externrefresh']['default']),$element['externrefresh']['value']);?>
 
 <?=$form->text(array('desc' => $this->bbf('fm_outboundproxy'),'name' => 'outboundproxy','labelid' => 'outboundproxy','size' => 15,'value' => $this->varra('info','outboundproxy'),'default' => $element['outboundproxy']['default']));?>
 
@@ -129,11 +129,11 @@
 
 <?=$form->checkbox(array('desc' => $this->bbf('fm_compactheaders'),'name' => 'compactheaders','labelid' => 'compactheaders','checked' => $this->varra('info','compactheaders'),'default' => $element['compactheaders']['default']));?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_rtptimeout'),'name' => 'rtptimeout','labelid' => 'rtptimeout','key' => false,'bbf' => array('mixkey','fm_rtptimeout-opt'),'value' => xivo_cast_except($this->varra('info','rtptimeout'),null,'uint'),'default' => $element['rtptimeout']['default']),$element['rtptimeout']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_rtptimeout'),'name' => 'rtptimeout','labelid' => 'rtptimeout','key' => false,'bbf' => array('mixkey','fm_rtptimeout-opt'),'value' => $this->varra('info','rtptimeout'),'default' => $element['rtptimeout']['default']),$element['rtptimeout']['value']);?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_rtpholdtimeout'),'name' => 'rtpholdtimeout','labelid' => 'rtpholdtimeout','key' => false,'bbf' => array('mixkey','fm_rtptimeout-opt'),'value' => xivo_cast_except($this->varra('info','rtpholdtimeout'),null,'uint'),'default' => $element['rtpholdtimeout']['default']),$element['rtpholdtimeout']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_rtpholdtimeout'),'name' => 'rtpholdtimeout','labelid' => 'rtpholdtimeout','key' => false,'bbf' => array('mixkey','fm_rtptimeout-opt'),'value' => $this->varra('info','rtpholdtimeout'),'default' => $element['rtpholdtimeout']['default']),$element['rtpholdtimeout']['value']);?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_rtpkeepalive'),'name' => 'rtpkeepalive','labelid' => 'rtpkeepalive','key' => false,'bbf' => array('mixkey','fm_rtpkeepalive-opt'),'value' => xivo_cast_except($this->varra('info','rtpkeepalive'),null,'uint'),'default' => $element['rtpkeepalive']['default']),$element['rtpkeepalive']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_rtpkeepalive'),'name' => 'rtpkeepalive','labelid' => 'rtpkeepalive','key' => false,'bbf' => array('mixkey','fm_rtpkeepalive-opt'),'value' => $this->varra('info','rtpkeepalive'),'default' => $element['rtpkeepalive']['default']),$element['rtpkeepalive']['value']);?>
 
 <?=$form->text(array('desc' => $this->bbf('fm_notifymimetype'),'name' => 'notifymimetype','labelid' => 'notifymimetype','size' => 15,'value' => $this->varra('info','notifymimetype'),'default' => $element['notifymimetype']['default']));?>
 
@@ -141,13 +141,13 @@
 
 <?=$form->checkbox(array('desc' => $this->bbf('fm_pedantic'),'name' => 'pedantic','labelid' => 'pedantic','checked' => $this->varra('info','pedantic'),'default' => $element['pedantic']['default']));?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_maxexpiry'),'name' => 'maxexpiry','labelid' => 'maxexpiry','bbf' => array('mixkey','fm_maxexpiry-opt','paramarray'),'value' => xivo_cast_except($this->varra('info','maxexpiry'),null,'uint'),'default' => $element['maxexpiry']['default']),$element['maxexpiry']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_maxexpiry'),'name' => 'maxexpiry','labelid' => 'maxexpiry','bbf' => array('mixkey','fm_maxexpiry-opt','paramarray'),'value' => $this->varra('info','maxexpiry'),'default' => $element['maxexpiry']['default']),$element['maxexpiry']['value']);?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_defaultexpiry'),'name' => 'defaultexpiry','labelid' => 'defaultexpiry','bbf' => array('mixkey','fm_defaultexpiry-opt','paramarray'),'value' => xivo_cast_except($this->varra('info','defaultexpiry'),null,'uint'),'default' => $element['defaultexpiry']['default']),$element['defaultexpiry']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_defaultexpiry'),'name' => 'defaultexpiry','labelid' => 'defaultexpiry','bbf' => array('mixkey','fm_defaultexpiry-opt','paramarray'),'value' => $this->varra('info','defaultexpiry'),'default' => $element['defaultexpiry']['default']),$element['defaultexpiry']['value']);?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_registertimeout'),'name' => 'registertimeout','labelid' => 'registertimeout','bbf' => array('mixkey','fm_registertimeout-opt','paramarray'),'value' => xivo_cast_except($this->varra('info','registertimeout'),null,'uint'),'default' => $element['registertimeout']['default']),$element['registertimeout']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_registertimeout'),'name' => 'registertimeout','labelid' => 'registertimeout','bbf' => array('mixkey','fm_registertimeout-opt','paramarray'),'value' => $this->varra('info','registertimeout'),'default' => $element['registertimeout']['default']),$element['registertimeout']['value']);?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_registerattempts'),'name' => 'registerattempts','labelid' => 'registerattempts','bbf' => array('mixkey','fm_registerattempts-opt','paramarray'),'value' => xivo_cast_except($this->varra('info','registerattempts'),null,'uint'),'default' => $element['registerattempts']['default']),$element['registerattempts']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_registerattempts'),'name' => 'registerattempts','labelid' => 'registerattempts','bbf' => array('mixkey','fm_registerattempts-opt','paramarray'),'value' => $this->varra('info','registerattempts'),'default' => $element['registerattempts']['default']),$element['registerattempts']['value']);?>
 
 <?=$form->checkbox(array('desc' => $this->bbf('fm_notifyringing'),'name' => 'notifyringing','labelid' => 'notifyringing','checked' => $this->varra('info','notifyringing'),'default' => $element['notifyringing']['default']));?>
 

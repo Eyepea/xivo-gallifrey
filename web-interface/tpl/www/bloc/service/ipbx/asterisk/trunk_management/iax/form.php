@@ -27,12 +27,6 @@
 	else:
 		$host_static = true;
 	endif;
-
-	if(isset($info['trunk']['call-limit']) === false || ($calllimit = xivo_uint($info['trunk']['call-limit'])) === 0):
-		$calllimit = '';
-	else:
-		$calllimit = xivo_uint($info['trunk']['call-limit']);
-	endif;
 ?>
 
 <div id="sb-part-first">
@@ -45,7 +39,7 @@
 
 <?=$form->text(array('desc' => $this->bbf('fm_trunk_callerid'),'name' => 'trunk[callerid]','labelid' => 'trunk-callerid','size' => 15,'value' => $info['trunk']['callerid']));?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_trunk_calllimit'),'name' => 'trunk[call-limit]','labelid' => 'trunk-calllimit','size' => 10,'value' => $calllimit));?>
+<?=$form->text(array('desc' => $this->bbf('fm_trunk_calllimit'),'name' => 'trunk[call-limit]','labelid' => 'trunk-calllimit','size' => 10,'value' => $info['trunk']['call-limit']));?>
 
 <?=$form->select(array('desc' => $this->bbf('fm_trunk_host'),'name' => 'trunk[host-dynamic]','labelid' => 'trunk-host-dynamic','bbf' => 'fm_trunk_host-','key' => false,'value' => ($host_static === true ? 'static' : $host)),$element['trunk']['host-dynamic']['value'],'onchange="xivo_chg_attrib(\'fm_host\',\'fd-trunk-host-static\',(this.value != \'static\' ? 0 : 1))"');?>
 

@@ -68,15 +68,15 @@
 
 <?=$form->checkbox(array('desc' => $this->bbf('fm_delayreject'),'name' => 'delayreject','labelid' => 'delayreject','checked' => $this->varra('info','delayreject'),'default' => $element['delayreject']['default']));?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_trunkfreq'),'name' => 'trunkfreq','labelid' => 'trunkfreq','key' => false,'bbf' => array('paramkey','fm_trunkfreq-opt'),'value' => xivo_cast_except($this->varra('info','trunkfreq'),null,'uint'),'default' => $element['trunkfreq']['default']),$element['trunkfreq']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_trunkfreq'),'name' => 'trunkfreq','labelid' => 'trunkfreq','key' => false,'bbf' => array('paramkey','fm_trunkfreq-opt'),'value' => $this->varra('info','trunkfreq'),'default' => $element['trunkfreq']['default']),$element['trunkfreq']['value']);?>
 
 <?=$form->checkbox(array('desc' => $this->bbf('fm_trunktimestamps'),'name' => 'trunktimestamps','labelid' => 'trunktimestamps','checked' => $this->varra('info','trunktimestamps'),'default' => $element['trunktimestamps']['default']));?>
 
 <?=$form->text(array('desc' => $this->bbf('fm_regcontext'),'name' => 'regcontext','labelid' => 'regcontext','size' => 15,'value' => $this->varra('info','regcontext'),'default' => $element['regcontext']['default']));?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_minregexpire'),'name' => 'minregexpire','labelid' => 'minregexpire','bbf' => array('mixkey','fm_minregexpire-opt','paramarray'),'value' => xivo_cast_except($this->varra('info','minregexpire'),null,'uint'),'default' => $element['minregexpire']['default']),$element['minregexpire']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_minregexpire'),'name' => 'minregexpire','labelid' => 'minregexpire','bbf' => array('mixkey','fm_minregexpire-opt','paramarray'),'value' => $this->varra('info','minregexpire'),'default' => $element['minregexpire']['default']),$element['minregexpire']['value']);?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_maxregexpire'),'name' => 'maxregexpire','labelid' => 'maxregexpire','bbf' => array('mixkey','fm_maxregexpire-opt','paramarray'),'value' => xivo_cast_except($this->varra('info','maxregexpire'),null,'uint'),'default' => $element['maxregexpire']['default']),$element['maxregexpire']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_maxregexpire'),'name' => 'maxregexpire','labelid' => 'maxregexpire','bbf' => array('mixkey','fm_maxregexpire-opt','paramarray'),'value' => $this->varra('info','maxregexpire'),'default' => $element['maxregexpire']['default']),$element['maxregexpire']['value']);?>
 
 <?=$form->select(array('desc' => $this->bbf('fm_bandwidth'),'name' => 'bandwidth','labelid' => 'bandwidth','key' => false,'bbf' => array('concatvalue','fm_bandwidth-opt-'),'value' => $this->varra('info','bandwidth'),'default' => $element['bandwidth']['default']),$element['bandwidth']['value']);?>
 
@@ -90,19 +90,19 @@
 
 <?=$form->checkbox(array('desc' => $this->bbf('fm_forcejitterbuffer'),'name' => 'forcejitterbuffer','labelid' => 'forcejitterbuffer','checked' => $this->varra('info','forcejitterbuffer'),'default' => $element['forcejitterbuffer']['default']));?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_dropcount'),'name' => 'dropcount','labelid' => 'dropcount','key' => false,'value' => xivo_cast_except($this->varra('info','dropcount'),null,'uint'),'default' => $element['dropcount']['default']),$element['dropcount']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_dropcount'),'name' => 'dropcount','labelid' => 'dropcount','key' => false,'value' => $this->varra('info','dropcount'),'default' => $element['dropcount']['default']),$element['dropcount']['value']);?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_maxjitterbuffer'),'name' => 'maxjitterbuffer','labelid' => 'maxjitterbuffer','key' => false,'bbf' => array('mixkey','fm_maxjitterbuffer-opt'),'value' => xivo_cast_except($this->varra('info','maxjitterbuffer'),null,'uint'),'default' => $element['maxjitterbuffer']['default']),$element['maxjitterbuffer']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_maxjitterbuffer'),'name' => 'maxjitterbuffer','labelid' => 'maxjitterbuffer','key' => false,'bbf' => array('mixkey','fm_maxjitterbuffer-opt'),'value' => $this->varra('info','maxjitterbuffer'),'default' => $element['maxjitterbuffer']['default']),$element['maxjitterbuffer']['value']);?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_maxjitterinterps'),'name' => 'maxjitterinterps','labelid' => 'maxjitterinterps','bbf' => array('mixkey','fm_maxjitterinterps-opt'),'key' => false,'value' => xivo_cast_except($this->varra('info','maxjitterinterps'),null,'uint'),'default' => $element['maxjitterinterps']['default']),$element['maxjitterinterps']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_maxjitterinterps'),'name' => 'maxjitterinterps','labelid' => 'maxjitterinterps','bbf' => array('mixkey','fm_maxjitterinterps-opt'),'key' => false,'value' => $this->varra('info','maxjitterinterps'),'default' => $element['maxjitterinterps']['default']),$element['maxjitterinterps']['value']);?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_resyncthreshold'),'name' => 'resyncthreshold','labelid' => 'resyncthreshold','key' => false,'bbf' => array('mixkey','fm_resyncthreshold-opt'),'value' => xivo_cast_except($this->varra('info','resyncthreshold'),null,'uint'),'default' => $element['resyncthreshold']['default']),$element['resyncthreshold']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_resyncthreshold'),'name' => 'resyncthreshold','labelid' => 'resyncthreshold','key' => false,'bbf' => array('mixkey','fm_resyncthreshold-opt'),'value' => $this->varra('info','resyncthreshold'),'default' => $element['resyncthreshold']['default']),$element['resyncthreshold']['value']);?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_minexcessbuffer'),'name' => 'minexcessbuffer','labelid' => 'minexcessbuffer','bbf' => array('mixkey','fm_minexcessbuffer-opt'),'key' => false,'value' => xivo_cast_except($this->varra('info','minexcessbuffer'),null,'uint'),'default' => $element['minexcessbuffer']['default']),$element['minexcessbuffer']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_minexcessbuffer'),'name' => 'minexcessbuffer','labelid' => 'minexcessbuffer','bbf' => array('mixkey','fm_minexcessbuffer-opt'),'key' => false,'value' => $this->varra('info','minexcessbuffer'),'default' => $element['minexcessbuffer']['default']),$element['minexcessbuffer']['value']);?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_maxexcessbuffer'),'name' => 'maxexcessbuffer','labelid' => 'maxexcessbuffer','bbf' => array('mixkey','fm_maxexcessbuffer-opt'),'key' => false,'value' => xivo_cast_except($this->varra('info','maxexcessbuffer'),null,'uint'),'default' => $element['maxexcessbuffer']['default']),$element['maxexcessbuffer']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_maxexcessbuffer'),'name' => 'maxexcessbuffer','labelid' => 'maxexcessbuffer','bbf' => array('mixkey','fm_maxexcessbuffer-opt'),'key' => false,'value' => $this->varra('info','maxexcessbuffer'),'default' => $element['maxexcessbuffer']['default']),$element['maxexcessbuffer']['value']);?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_jittershrinkrate'),'name' => 'jittershrinkrate','labelid' => 'jittershrinkrate','bbf' => array('mixkey','fm_jittershrinkrate-opt'),'key' => false,'value' => xivo_cast_except($this->varra('info','jittershrinkrate'),null,'uint'),'default' => $element['jittershrinkrate']['default']),$element['jittershrinkrate']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_jittershrinkrate'),'name' => 'jittershrinkrate','labelid' => 'jittershrinkrate','bbf' => array('mixkey','fm_jittershrinkrate-opt'),'key' => false,'value' => $this->varra('info','jittershrinkrate'),'default' => $element['jittershrinkrate']['default']),$element['jittershrinkrate']['value']);?>
 
 </div>
 
@@ -120,7 +120,7 @@
 
 <?=$form->select(array('desc' => $this->bbf('fm_encryption'),'name' => 'encryption','labelid' => 'encryption','key' => false,'bbf' => array('concatvalue','fm_encryption-opt-'),'value' => $this->varra('info','encryption'),'default' => $element['encryption']['default']),$element['encryption']['value']);?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_maxauthreq'),'name' => 'maxauthreq','labelid' => 'maxauthreq','bbf' => array('mixkey','fm_maxauthreq-opt'),'key' => false,'value' => xivo_cast_except($this->varra('info','maxauthreq'),null,'uint'),'default' => $element['maxauthreq']['default']),$element['maxauthreq']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_maxauthreq'),'name' => 'maxauthreq','labelid' => 'maxauthreq','bbf' => array('mixkey','fm_maxauthreq-opt'),'key' => false,'value' => $this->varra('info','maxauthreq'),'default' => $element['maxauthreq']['default']),$element['maxauthreq']['value']);?>
 
 <?=$form->select(array('desc' => $this->bbf('fm_codecpriority'),'name' => 'codecpriority','labelid' => 'codecpriority','key' => false,'bbf' => array('concatvalue','fm_codecpriority-opt-'),'value' => $this->varra('info','codecpriority'),'default' => $element['codecpriority']['default']),$element['codecpriority']['value']);?>
 
@@ -168,9 +168,9 @@
 
 <div id="sb-part-last" class="b-nodisplay">
 
-<?=$form->select(array('desc' => $this->bbf('fm_pingtime'),'name' => 'pingtime','labelid' => 'pingtime','bbf' => array('mixkey','fm_pingtime-opt'),'key' => false,'value' => xivo_cast_except($this->varra('info','pingtime'),null,'uint'),'default' => $element['pingtime']['default']),$element['pingtime']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_pingtime'),'name' => 'pingtime','labelid' => 'pingtime','bbf' => array('mixkey','fm_pingtime-opt'),'key' => false,'value' => $this->varra('info','pingtime'),'default' => $element['pingtime']['default']),$element['pingtime']['value']);?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_lagrqtime'),'name' => 'lagrqtime','labelid' => 'lagrqtime','bbf' => array('mixkey','fm_lagrqtime-opt'),'key' => false,'value' => xivo_cast_except($this->varra('info','lagrqtime'),null,'uint'),'default' => $element['lagrqtime']['default']),$element['lagrqtime']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_lagrqtime'),'name' => 'lagrqtime','labelid' => 'lagrqtime','bbf' => array('mixkey','fm_lagrqtime-opt'),'key' => false,'value' => $this->varra('info','lagrqtime'),'default' => $element['lagrqtime']['default']),$element['lagrqtime']['value']);?>
 
 <?=$form->checkbox(array('desc' => $this->bbf('fm_nochecksums'),'name' => 'nochecksums','labelid' => 'nochecksums','checked' => $this->varra('info','nochecksums'),'default' => $element['nochecksums']['default']));?>
 

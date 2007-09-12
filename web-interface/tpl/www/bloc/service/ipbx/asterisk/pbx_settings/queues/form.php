@@ -44,13 +44,13 @@ endif;
 
 <div id="sb-part-announce" class="b-nodisplay">
 
-<?=$form->select(array('desc' => $this->bbf('fm_queue_announce-frequency'),'name' => 'queue[announce-frequency]','labelid' => 'queue-announce-frequency','bbf' => array('mixkey','fm_queue_announce-frequency-opt','paramarray'),'default' => $element['queue']['announce-frequency']['default'],'value' => xivo_cast_except($info['queue']['announce-frequency'],null,'uint')),$element['queue']['announce-frequency']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_queue_announce-frequency'),'name' => 'queue[announce-frequency]','labelid' => 'queue-announce-frequency','bbf' => array('mixkey','fm_queue_announce-frequency-opt','paramarray'),'default' => $element['queue']['announce-frequency']['default'],'value' => $info['queue']['announce-frequency']),$element['queue']['announce-frequency']['value']);?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_queue_periodic-announce-frequency'),'name' => 'queue[periodic-announce-frequency]','labelid' => 'queue-periodic-announce-frequency','bbf' => array('mixkey','fm_queue_periodic-announce-frequency-opt','paramarray'),'default' => $element['queue']['periodic-announce-frequency']['default'],'value' => xivo_cast_except($info['queue']['periodic-announce-frequency'],null,'uint')),$element['queue']['periodic-announce-frequency']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_queue_periodic-announce-frequency'),'name' => 'queue[periodic-announce-frequency]','labelid' => 'queue-periodic-announce-frequency','bbf' => array('mixkey','fm_queue_periodic-announce-frequency-opt','paramarray'),'default' => $element['queue']['periodic-announce-frequency']['default'],'value' => $info['queue']['periodic-announce-frequency']),$element['queue']['periodic-announce-frequency']['value']);?>
 
 <?=$form->select(array('desc' => $this->bbf('fm_queue_announce-holdtime'),'name' => 'queue[announce-holdtime]','labelid' => 'queue-announce-holdtime','bbf' => 'fm_queue_announce-holdtime-opt-','key' => false,'default' => $element['queue']['announce-holdtime']['default'],'value' => $info['queue']['announce-holdtime']),$element['queue']['announce-holdtime']['value']);?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_queue_announce-round-seconds'),'name' => 'queue[announce-round-seconds]','labelid' => 'queue-announce-round-seconds','bbf' => array('mixkey','fm_queue_announce-round-seconds-opt'),'key' => false,'default' => $element['queue']['announce-round-seconds']['default'],'value' => xivo_cast_except($info['queue']['announce-round-seconds'],null,'uint')),$element['queue']['announce-round-seconds']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_queue_announce-round-seconds'),'name' => 'queue[announce-round-seconds]','labelid' => 'queue-announce-round-seconds','bbf' => array('mixkey','fm_queue_announce-round-seconds-opt'),'key' => false,'default' => $element['queue']['announce-round-seconds']['default'],'value' => $info['queue']['announce-round-seconds']),$element['queue']['announce-round-seconds']['value']);?>
 
 <?=$form->select(array('desc' => $this->bbf('fm_queue_queue-youarenext'),'name' => 'queue[queue-youarenext]','labelid' => 'queue-queue-youarenext','empty' => $this->bbf('fm_queue_queue-youarenext-opt-default'),'default' => $element['queue']['queue-youarenext']['default'],'value' => $info['queue']['queue-youarenext']),$announce_list);?>
 
@@ -166,7 +166,7 @@ endif;
 
 <div id="sb-part-application" class="b-nodisplay">
 
-<?=$form->select(array('desc' => $this->bbf('fm_qfeatures_timeout'),'name' => 'qfeatures[timeout]','labelid' => 'qfeatures-timeout','bbf' => array('mixkey','fm_qfeatures_timeout-opt'),'key' => false,'default' => $element['qfeatures']['timeout']['default'],'value' => xivo_cast_except($info['qfeatures']['timeout'],null,'uint')),$element['qfeatures']['timeout']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_qfeatures_timeout'),'name' => 'qfeatures[timeout]','labelid' => 'qfeatures-timeout','bbf' => array('mixkey','fm_qfeatures_timeout-opt'),'key' => false,'default' => $element['qfeatures']['timeout']['default'],'value' => $info['qfeatures']['timeout']),$element['qfeatures']['timeout']['value']);?>
 
 <?=$form->checkbox(array('desc' => $this->bbf('fm_qfeatures_data-quality'),'name' => 'qfeatures[data_quality]','labelid' => 'qfeatures-data-quality','default' => $element['qfeatures']['data_quality']['default'],'checked' => $info['qfeatures']['data_quality']));?>
 
@@ -196,13 +196,13 @@ endif;
 
 <?=$form->text(array('desc' => $this->bbf('fm_queue_servicelevel'),'name' => 'queue[servicelevel]','labelid' => 'queue-servicelevel','size' => 15,'default' => $element['queue']['servicelevel']['default'],'value' => $info['queue']['servicelevel']));?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_queue_timeout'),'name' => 'queue[timeout]','labelid' => 'queue-timeout','bbf' => array('mixkey','fm_queue_timeout-opt'),'key' => false,'default' => $element['queue']['timeout']['default'],'value' => xivo_cast_except($info['queue']['timeout'],null,'uint')),$element['queue']['timeout']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_queue_timeout'),'name' => 'queue[timeout]','labelid' => 'queue-timeout','bbf' => array('mixkey','fm_queue_timeout-opt'),'key' => false,'default' => $element['queue']['timeout']['default'],'value' => $info['queue']['timeout']),$element['queue']['timeout']['value']);?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_queue_retry'),'name' => 'queue[retry]','labelid' => 'queue-retry','bbf' => array('mixkey','fm_queue_retry-opt'),'key' => false,'default' => $element['queue']['retry']['default'],'value' => xivo_cast_except($info['queue']['retry'],null,'uint')),$element['queue']['retry']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_queue_retry'),'name' => 'queue[retry]','labelid' => 'queue-retry','bbf' => array('mixkey','fm_queue_retry-opt'),'key' => false,'default' => $element['queue']['retry']['default'],'value' => $info['queue']['retry']),$element['queue']['retry']['value']);?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_queue_weight'),'name' => 'queue[weight]','labelid' => 'queue-weight','key' => false,'default' => $element['queue']['weight']['default'],'value' => xivo_cast_except($info['queue']['weight'],null,'uint')),$element['queue']['weight']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_queue_weight'),'name' => 'queue[weight]','labelid' => 'queue-weight','key' => false,'default' => $element['queue']['weight']['default'],'value' => $info['queue']['weight']),$element['queue']['weight']['value']);?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_queue_wrapuptime'),'name' => 'queue[wrapuptime]','labelid' => 'queue-wrapuptime','default' => $element['queue']['wrapuptime']['default'],'value' => xivo_cast_except($info['queue']['wrapuptime'],null,'uint'),'bbf' => array('mixvalue','fm_queue_wrapuptime-opt')),$element['queue']['wrapuptime']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_queue_wrapuptime'),'name' => 'queue[wrapuptime]','labelid' => 'queue-wrapuptime','default' => $element['queue']['wrapuptime']['default'],'value' => $info['queue']['wrapuptime'],'bbf' => array('mixvalue','fm_queue_wrapuptime-opt')),$element['queue']['wrapuptime']['value']);?>
 
 <?=$form->text(array('desc' => $this->bbf('fm_queue_maxlen'),'name' => 'queue[maxlen]','labelid' => 'queue-maxlen','size' => 15,'default' => $element['queue']['maxlen']['default'],'value' => $info['queue']['maxlen']));?>
 
@@ -220,7 +220,7 @@ endif;
 
 <?=$form->checkbox(array('desc' => $this->bbf('fm_queue_reportholdtime'),'name' => 'queue[reportholdtime]','labelid' => 'queue-reportholdtime','default' => $element['queue']['reportholdtime']['default'],'checked' => $info['queue']['reportholdtime']));?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_queue_memberdelay'),'name' => 'queue[memberdelay]','labelid' => 'queue-memberdelay','bbf' => array('mixkey','fm_queue_memberdelay-opt'),'key' => false,'default' => $element['queue']['memberdelay']['default'],'value' => xivo_cast_except($info['queue']['memberdelay'],null,'uint')),$element['queue']['memberdelay']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_queue_memberdelay'),'name' => 'queue[memberdelay]','labelid' => 'queue-memberdelay','bbf' => array('mixkey','fm_queue_memberdelay-opt'),'key' => false,'default' => $element['queue']['memberdelay']['default'],'value' => $info['queue']['memberdelay']),$element['queue']['memberdelay']['value']);?>
 
 <?=$form->checkbox(array('desc' => $this->bbf('fm_queue_timeoutrestart'),'name' => 'queue[timeoutrestart]','labelid' => 'queue-timeoutrestart','default' => $element['queue']['timeoutrestart']['default'],'checked' => $info['queue']['timeoutrestart']));?>
 
