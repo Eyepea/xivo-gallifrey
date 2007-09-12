@@ -7,6 +7,7 @@
 /*
  * colors
  * orange's : light = #fbb638   / strong = #f38402
+ *            almost light = #fbb648
  * blue's   : light = #3bc0ff   / strong = #05aefd
  */
 
@@ -47,9 +48,9 @@ LogWidget  {background: #f38402}
 QToolButton {border: 0px}
 QPushButton {padding: 3px 20px; border: 2px solid #f38402 ; border-radius: 4px ; color: white; font: bold ; background: #fbb638}
 QPushButton#phonenumber {padding: 3px 20px; border: 2px solid #05aefd ; border-radius: 4px ; color: white; font: bold ; background: #3bc0ff}
-QLineEdit {background: white; border: 2px solid #f0b070; border-radius: 5px; }
+QLineEdit {background: white; border: 2px solid #fbb638; border-radius: 5px; }
 QSpinBox  {background: white}
-QComboBox {background: white; border: 2px solid #f0b070; border-radius: 5px; padding: 1px 18px 1px 4px;}
+QComboBox {background: white; border: 2px solid #fbb638; border-radius: 5px; padding: 1px 18px 1px 4px;}
 QComboBox::drop-down {background: qlineargradient(y1: 0.45, y2: 0.55, stop: 0 #3bc0ff, stop: 1.0 #05aefd)}
 
 /*
@@ -93,8 +94,8 @@ QCheckBox::indicator:unchecked:pressed {image: url(:/xivoclient/gui/images/check
 QCheckBox::indicator:checked         {image: url(:/xivoclient/gui/images/checkbox_checked.png)}
 QCheckBox::indicator:checked:hover   {image: url(:/xivoclient/gui/images/checkbox_checked_hover.png)}
 QCheckBox::indicator:checked:pressed {image: url(:/xivoclient/gui/images/checkbox_checked_pressed.png)}
-QCheckBox::indicator:disabled:checked   {image: url(:/xivoclient/gui/images/checkbox_checked.png) ;   background: #707070}
-QCheckBox::indicator:disabled:unchecked {image: url(:/xivoclient/gui/images/checkbox_unchecked.png) ; background: #707070}
+QCheckBox::indicator:disabled:checked   {image: url(:/xivoclient/gui/images/checkbox_checked.png) ;   background: grey44}
+QCheckBox::indicator:disabled:unchecked {image: url(:/xivoclient/gui/images/checkbox_unchecked.png) ; background: grey44}
 
 /*
  * Splitters for the switchboard.
@@ -117,10 +118,9 @@ QWidget#scroller {background: white ; border: 2px solid red ; border-radius: 10p
  * Label for "Monitored peer"
  */
 QLabel#monitored {border: 2px solid #f38402; font-size: 15px}
-
-QLabel#logpeername {color: black ; background: #b0e0ff ; border-radius: 5px ; font-size: 15px}
+QLabel#logpeername {color: black; background: lightskyblue1; border-radius: 5px; font-size: 15px}
 
 /*
  * Label for the Logged on User
  */
-XivoLabel {color: white ; background: #fbb638 ; border: 3px solid #f38402; border-radius: 5px; font-size: 20px}
+SizeableLabel {color: white ; background: #fbb638 ; border: 3px solid #f38402; border-radius: 5px; font-size: 20px}

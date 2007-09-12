@@ -138,11 +138,10 @@ void SearchPanel::updatePeer(const QString & ext,
 void SearchPanel::removePeer(const QString & ext)
 {
 	int i;
-	//qDebug() << "SearchPanel::removePeer()" << ext;
-	for(i = 0; i < m_peerlist.size(); i++)
-	{
-		if(m_peerlist[i].ext() == ext)
-		{
+        //qDebug() << "SearchPanel::removePeer()" << ext;
+	for(i = 0; i < m_peerlist.size(); i++) {
+                //qDebug() << m_peerlist[i].ext();
+		if(m_peerlist[i].ext() == ext) {
 			PeerWidget * peerwidget = m_peerlist[i].getWidget();
 			m_peerlayout->removeWidget( peerwidget );
 			m_peerlist.removeAt(i);

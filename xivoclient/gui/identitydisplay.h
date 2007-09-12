@@ -1,4 +1,4 @@
-/* XIVO switchboard
+/* XIVO CTI clients
 Copyright (C) 2007  Proformatique
 
 This program is free software; you can redistribute it and/or
@@ -16,9 +16,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 */
 
-/* $Id$ */
+/* $Revision$
+ * $Date$
+*/
+
 #ifndef __IDENTITYDISPLAY_H__
 #define __IDENTITYDISPLAY_H__
+
 #include <QObject>
 #include <QWidget>
 #include <QList>
@@ -39,17 +43,14 @@ private:
 };
 
 
-
-
-class XivoLabel : public QLabel
+class SizeableLabel : public QLabel
 {
-    Q_OBJECT
-
+        Q_OBJECT
 public:
-    XivoLabel(const QString &text, QWidget *parent = 0);
-
-    QSize sizeHint() const;
+        SizeableLabel(const QString &text, const QSize &size, QWidget *parent = 0);
+        QSize sizeHint() const;
+private:
+        QSize m_size;
 };
-
 
 #endif

@@ -1,4 +1,4 @@
-/* XIVO switchboard
+/* XIVO CTI clients
 Copyright (C) 2007  Proformatique
 
 This program is free software; you can redistribute it and/or
@@ -16,7 +16,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 */
 
-/* $Id$ */
+/* $Revision$
+ * $Date$
+*/
+
 #ifndef __LOGELTWIDGET_H__
 #define __LOGELTWIDGET_H__
 
@@ -35,15 +38,12 @@ public:
 	typedef enum { OutCall = 1, InCall = 2 } Direction;
 	LogEltWidget( const QString & peer,
 	              Direction d,
-				  const QDateTime & dt,
-				  int duration,
-				  QWidget * parent = 0 );
-	//! get m_dateTime
-	const QDateTime & dateTime() const { return m_dateTime; };
-	//! get m_peer
-	const QString & peer() const { return m_peer; };
-	//! get m_direction
-	Direction direction() const { return m_direction; };
+                      const QDateTime & dt,
+                      int duration,
+                      QWidget * parent = 0 );
+	const QDateTime & dateTime() const { return m_dateTime; };	//! get m_dateTime
+	const QString & peer() const { return m_peer; };		//! get m_peer
+	Direction direction() const { return m_direction; };		//! get m_direction
 protected:
 	void contextMenuEvent(QContextMenuEvent *);
 private slots:
@@ -58,4 +58,3 @@ private:
 };
 
 #endif
-

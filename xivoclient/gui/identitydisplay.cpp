@@ -1,5 +1,4 @@
-/*
-XIVO switchboard : 
+/* XIVO CTI clients
 Copyright (C) 2007  Proformatique
 
 This program is free software; you can redistribute it and/or
@@ -17,8 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 */
 
-/* $Id$
-   $Date$
+/* $Revision$
+ * $Date$
 */
 
 #include <QComboBox>
@@ -42,7 +41,7 @@ IdentityDisplay::IdentityDisplay(QWidget * parent)
 {
 	QGridLayout * glayout = new QGridLayout(this);
 	// glayout->setMargin(0);
-	m_user = new XivoLabel( "", this );
+	m_user = new SizeableLabel( "", QSize(3000, 40), this );
         m_user->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
         m_user->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
 
@@ -58,23 +57,21 @@ IdentityDisplay::IdentityDisplay(QWidget * parent)
  */
 void IdentityDisplay::setUser(const QString & user)
 {
-        //        m_user->setText(user);
         m_user->setText(user);
-        qDebug() << "IdentityDisplay::IdentityDisplay() : label" << m_user->geometry() << m_user->sizeHint();
+        // qDebug() << "IdentityDisplay::IdentityDisplay() : label" << m_user->geometry() << m_user->sizeHint();
 }
 
 
-XivoLabel::XivoLabel(const QString &text, QWidget *parent)
+SizeableLabel::SizeableLabel(const QString &text, const QSize &size, QWidget *parent)
         : QLabel(parent)
 {
         setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
         setText(text);
+        m_size = size;
 }
 
-QSize XivoLabel::sizeHint() const
+QSize SizeableLabel::sizeHint() const
 {
-        QSize size = QLabel::sizeHint();
-        size.rheight() = 40;
-        size.rwidth() = 3000;
-        return size;
+        //        QSize size = QLabel::sizeHint();
+        return m_size;
 }

@@ -62,7 +62,7 @@ DisplayMessagesPanel::DisplayMessagesPanel(QWidget * parent)
  */
 void DisplayMessagesPanel::addMessage(const QString & str)
 {
-	qDebug() << "DisplayMessagesPanel::addMessage()" << str;
+	//qDebug() << "DisplayMessagesPanel::addMessage()" << str;
 	QTime time = QTime::currentTime();
 	m_table->insertRow( 0 );
 	QTableWidgetItem * item1 = new QTableWidgetItem( time.toString( Qt::ISODate ) );

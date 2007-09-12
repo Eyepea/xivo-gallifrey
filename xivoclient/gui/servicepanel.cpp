@@ -32,7 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 ServicePanel::ServicePanel(QWidget * parent)
         : QWidget(parent)
 {
-        qDebug() << "ServicePanel::ServicePanel()";
+        //qDebug() << "ServicePanel::ServicePanel()";
 	int line = 0;
 	QGridLayout * gridlayout = new QGridLayout();
         //	layout->setContentsMargins(30, 0, 30, 0);
@@ -101,7 +101,7 @@ ServicePanel::ServicePanel(QWidget * parent)
 
 void ServicePanel::Connect()
 {
-        qDebug() << "ServicePanel::Connect()";
+        //qDebug() << "ServicePanel::Connect()";
 	connect(m_voicemail, SIGNAL(clicked(bool)),
 	        this, SIGNAL(voiceMailToggled(bool)));
 	connect(m_callrecording, SIGNAL(clicked(bool)),
@@ -120,7 +120,7 @@ void ServicePanel::Connect()
 
 void ServicePanel::DisConnect()
 {
-        qDebug() << "ServicePanel::DisConnect()";
+        //qDebug() << "ServicePanel::DisConnect()";
 	disconnect(m_voicemail, SIGNAL(clicked(bool)),
                    this, SIGNAL(voiceMailToggled(bool)));
 	disconnect(m_callrecording, SIGNAL(clicked(bool)),
@@ -146,7 +146,7 @@ void ServicePanel::DisConnect()
 
 void ServicePanel::Reset()
 {
-        qDebug() << "ServicePanel::Reset()";
+        //qDebug() << "ServicePanel::Reset()";
 	m_voicemail->setChecked(false);
 	m_callrecording->setChecked(false);
 	m_callfiltering->setChecked(false);
@@ -300,7 +300,7 @@ void ServicePanel::setForwardOnUnavailable(const QString & dest)
  */
 void ServicePanel::setPeerToDisplay(const QString & peer)
 {
-        qDebug() << "ServicePanel::setPeerToDisplay()";
+        qDebug() << "ServicePanel::setPeerToDisplay()" << peer;
 	m_peer = peer;
 	if(m_peer.size() > 0) {
 		askFeatures(m_peer);
