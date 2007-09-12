@@ -268,17 +268,17 @@ These functions should not deal with CTI clients directly, however.
 # \param phonenum the phone number
 # \param nlines the number of lines to fetch for the given phone
 # \param kind kind of list (ingoing, outgoing, missed calls)
-def update_history_call(astn, techno, phoneid, phonenum, nlines, kind):
+def update_history_call(astnum, techno, phoneid, phonenum, nlines, kind):
         results = []
-        if configs[astn].cdr_db_uri == "":
-                log_debug("%s : no CDR uri defined for this asterisk - see cdr_db_uri parameter" %configs[astn].astid)
+        if configs[astnum].cdr_db_uri == "":
+                log_debug("%s : no CDR uri defined for this asterisk - see cdr_db_uri parameter" %configs[astnum].astid)
         else:
                 try:
-                        conn = anysql.connect_by_uri(configs[astn].cdr_db_uri)
+                        conn = anysql.connect_by_uri(configs[astnum].cdr_db_uri)
                         # charset = 'utf8' : add ?charset=utf8 to the URI
 
                         cursor = conn.cursor()
-                        table = "cdr" # configs[astn].cdr_db_tablename
+                        table = "cdr" # configs[astnum].cdr_db_tablename
                         sql = ["SELECT calldate, clid, src, dst, dcontext, channel, dstchannel, " \
                                "lastapp, lastdata, duration, billsec, disposition, amaflags, " \
                                "accountcode, uniqueid, userfield FROM %s " % (table)]
@@ -299,7 +299,7 @@ def update_history_call(astn, techno, phoneid, phonenum, nlines, kind):
                         conn.close()
                 except Exception, exc:
                         log_debug("--- exception --- %s : Connection to DataBase %s failed in History request : %s"
-                                  %(configs[astn].astid, configs[astn].cdr_db_uri, str(exc)))
+                                  %(configs[astnum].astid, configs[astnum].cdr_db_uri, str(exc)))
         return results
 
 
@@ -406,47 +406,6 @@ def build_customers(ctx, searchpatterns):
         return fullstat
 
 
-## \brief Builds the base status (no channel information) for one phone identifier
-# \param phoneid the "pointer" to the Asterisk phone statuses
-# \return the string containing the base status of the phone
-def build_basestatus(phoneid):
-        basestatus = (phoneid.tech,
-                      phoneid.phoneid,
-                      phoneid.phonenum,
-                      phoneid.context,
-                      phoneid.imstat,
-                      phoneid.sipstatus,
-                      phoneid.voicemail,
-                      phoneid.queueavail)
-        return ":".join(basestatus)
-
-
-## \brief Builds the base status (no channel information) for one phone identifier
-# \param phoneid the "pointer" to the Asterisk phone statuses
-# \return the string containing the base status of the phone
-def build_cidstatus(phoneid):
-        cidstatus = (phoneid.calleridfull,
-                     phoneid.calleridfirst,
-                     phoneid.calleridlast)
-        return ":".join(cidstatus)
-
-
-## \brief Builds the channel-by-channel part for the hints/update replies.
-# \param phoneid the "pointer" to the Asterisk phone statuses
-# \return the string containing the statuses for each channel of the given phone
-def build_fullstatlist(phoneid):
-        nchans = len(phoneid.chann)
-        fstat = [str(nchans)]
-        for chan,phone_chan in phoneid.chann.iteritems():
-                fstat.extend((":", chan, ":",
-                              phone_chan.getStatus(), ":",
-                              str(phone_chan.getDeltaTime()), ":",
-                              phone_chan.getDirection(), ":",
-                              phone_chan.getChannelPeer(), ":",
-                              phone_chan.getChannelNum()))
-        return ''.join(fstat)
-
-
 ## \brief Builds the features reply.
 def build_features_get(reqlist):
         dbfamily = "%s/users/%s" %(reqlist[1], reqlist[2])
@@ -518,7 +477,6 @@ def build_features_put(reqlist):
 # \return a string containing the full callerIDs list
 # \sa manage_tcp_connection
 def build_callerids():
-        global plist
         fullstat = ["callerids="]
         for n in items_asterisks:
                 plist_n = plist[n]
@@ -543,7 +501,6 @@ def build_callerids():
 ## \brief Builds the full list of phone statuses in order to send them to the requesting client.
 # \return a string containing the full list of statuses
 def build_statuses():
-        global plist
         fullstat = ["hints="]
         for n in items_asterisks:
                 plist_n = plist[n]
@@ -551,8 +508,8 @@ def build_statuses():
                 plist_normal_keys.sort()
                 for phonenum in plist_normal_keys:
                         plist_n.normal[phonenum].update_time()
-                        phoneinfo = "hnt:" + plist_n.astid + ":" + build_basestatus(plist_n.normal[phonenum])
-                        fullstat.extend((phoneinfo, ":", build_fullstatlist(plist_n.normal[phonenum]), ";"))
+                        phoneinfo = "hnt:" + plist_n.astid + ":" + plist_n.normal[phonenum].build_basestatus()
+                        fullstat.extend((phoneinfo, ":", plist_n.normal[phonenum].build_fullstatlist(), ";"))
         fullstat.append("\n")
         return ''.join(fullstat)
 
@@ -803,9 +760,8 @@ def send_msg_to_cti_clients(strupdate):
 # \param fromwhom a string that tells who has requested such an update
 # \return none
 def update_GUI_clients(astnum, phonenum, fromwhom):
-        global plist
-        phoneinfo = fromwhom + ":" + plist[astnum].astid + ":" + build_basestatus(plist[astnum].normal[phonenum])
-        fstatlist = build_fullstatlist(plist[astnum].normal[phonenum])
+        phoneinfo = fromwhom + ":" + plist[astnum].astid + ":" + plist[astnum].normal[phonenum].build_basestatus()
+        fstatlist = plist[astnum].normal[phonenum].build_fullstatlist()
         strupdate = "update=" + phoneinfo + ":" + fstatlist
 
         send_msg_to_cti_clients(strupdate)
@@ -1589,11 +1545,11 @@ def handle_ami_status(astid, idata):
                                                 plist[astnum].normal_channel_fills(link, DUMMY_MYNUM,
                                                                                    "On the phone", int(seconds), DIR_FROM_STRING,
                                                                                    chan, clid,
-                                                                                   "ami-st1")
+                                                                                   "ami-st3")
                                                 plist[astnum].normal_channel_fills(chan, DUMMY_MYNUM,
                                                                                    "On the phone", int(seconds), DIR_TO_STRING,
                                                                                    link, exten,
-                                                                                   "ami-st2")
+                                                                                   "ami-st4")
                                 else:
                                         # we fall here when there is a MeetMe conference
                                         log_debug("AMI %s Status / linked with noone (Meetme conf, voicemail ...) : chan=<%s>, clid=<%s>, exten=<%s>, seconds=<%s>"
@@ -1605,15 +1561,24 @@ def handle_ami_status(astid, idata):
                                         plist[astnum].normal_channel_fills(chan, DUMMY_MYNUM,
                                                                            "On the phone", int(seconds), DIR_TO_STRING,
                                                                            DUMMY_RCHAN, exten,
-                                                                           "ami-st2")
+                                                                           "ami-st5")
 
                         elif state == 'Ring': # AST_STATE_RING
-                                log_debug("AMI %s Status / Ring (To): %s %s %s"
-                                          % (astid, this_event.get('Channel'),
-                                             this_event.get('Extension'), this_event.get('Seconds')))
+                                chan    = this_event.get('Channel')
+                                seconds = this_event.get('Seconds')
+                                exten   = this_event.get('Extension')
+                                log_debug("AMI %s Status / Ring (To): %s %s %s" % (astid, chan, exten, seconds))
+                                plist[astnum].normal_channel_fills(chan, DUMMY_MYNUM,
+                                                                   "Calling", int(seconds), DIR_TO_STRING,
+                                                                   DUMMY_RCHAN, "<unknown>",
+                                                                   "ami-st6")
                         elif state == 'Ringing': # AST_STATE_RINGING
-                                log_debug("AMI %s Status / Ringing (From): %s"
-                                          % (astid, this_event.get("Channel")))
+                                chan    = this_event.get('Channel')
+                                log_debug("AMI %s Status / Ringing (From): %s" % (astid, chan))
+                                plist[astnum].normal_channel_fills(chan, DUMMY_MYNUM,
+                                                                   "Ringing", 0, DIR_FROM_STRING,
+                                                                   DUMMY_RCHAN, "<unknown>",
+                                                                   "ami-st7")
                         elif state == 'Rsrvd': # AST_STATE_RESERVED
                                 # occurs in in meetme : AMI obelisk Status / Rsrvd: Zap/pseudo-1397436026
                                 log_debug("AMI %s Status / Rsrvd: %s"
@@ -1728,11 +1693,13 @@ def update_sipnumlist(astnum):
         sipnumlistnew = sipnuml.keys()
         sipnumlistnew.sort()
 
-        lstdel = ""
-        lstadd = ""
+        lstdel = []
+        lstadd = []
         for snl in sipnumlistold:
                 if snl not in sipnumlistnew:
-                        lstdel += "del:" + configs[astnum].astid + ":" + build_basestatus(plist[astnum].normal[snl]) + ";"
+                        lstdel.append(":".join(["del",
+                                                configs[astnum].astid,
+                                                plist[astnum].normal[snl].build_basestatus()]))
                         del plist[astnum].normal[snl] # or = "Absent"/0 ?
                 else:
                         plist[astnum].normal[snl].updateIfNeeded(sipnuml[snl])
@@ -1768,16 +1735,18 @@ def update_sipnumlist(astnum):
                         if snl in plist[astnum].normal:
                                 plist[astnum].normal[snl].set_callerid(sipnuml[snl])
 
-                        lstadd += "add:" + configs[astnum].astid + ":" + build_basestatus(plist[astnum].normal[snl]) + ":0:" \
-                                  + build_cidstatus(plist[astnum].normal[snl]) + ";"
-        if lstdel != "":
-                strupdate = "peerremove=" + lstdel
+                        lstadd.append(":".join(["add",
+                                                configs[astnum].astid,
+                                                plist[astnum].normal[snl].build_basestatus(),
+                                                "0",
+                                                plist[astnum].normal[snl].build_cidstatus()]))
+        if len(lstdel) > 0:
+                strupdate = "peerremove=" + ";".join(lstdel)
                 send_msg_to_cti_clients(strupdate)
                 verboselog(strupdate, False, True)
 
-
-        if lstadd != "":
-                strupdate = "peeradd=" + lstadd
+        if len(lstadd) > 0:
+                strupdate = "peeradd=" + ";".join(lstadd)
                 send_msg_to_cti_clients(strupdate)
                 verboselog(strupdate, False, True)
 
@@ -1834,8 +1803,8 @@ class PhoneList:
 
         def update_GUI_clients(self, phonenum, fromwhom):
                 global tcpopens_sb
-                phoneinfo = fromwhom + ":" + self.astid + ":" + build_basestatus(self.normal[phonenum])
-                fstatlist = build_fullstatlist(self.normal[phonenum])
+                phoneinfo = fromwhom + ":" + self.astid + ":" + self.normal[phonenum].build_basestatus()
+                fstatlist = self.normal[phonenum].build_fullstatlist()
                 if self.normal[phonenum].towatch: fstr = "update="
                 else:                             fstr = "______="
                 strupdate = fstr + phoneinfo + ":" + fstatlist
@@ -1995,6 +1964,37 @@ class LineProp:
                 self.imstat = istatus
         def set_lasttime(self, ilasttime):
                 self.lasttime = ilasttime
+
+        def build_basestatus(self):
+                basestatus = (self.tech.lower(),
+                              self.phoneid,
+                              self.phonenum,
+                              self.context,
+                              self.imstat,
+                              self.sipstatus,
+                              self.voicemail,
+                              self.queueavail)
+                return ":".join(basestatus)
+        def build_cidstatus(self):
+                cidstatus = (self.calleridfull,
+                             self.calleridfirst,
+                             self.calleridlast)
+                return ":".join(cidstatus)
+        ## \brief Builds the channel-by-channel part for the hints/update replies.
+        # \param phoneid the "pointer" to the Asterisk phone statuses
+        # \return the string containing the statuses for each channel of the given phone
+        def build_fullstatlist(self):
+                nchans = len(self.chann)
+                fstat = [str(nchans)]
+                for chan, phone_chan in self.chann.iteritems():
+                        fstat.extend((":", chan, ":",
+                                      phone_chan.getStatus(), ":",
+                                      str(phone_chan.getDeltaTime()), ":",
+                                      phone_chan.getDirection(), ":",
+                                      phone_chan.getChannelPeer(), ":",
+                                      phone_chan.getChannelNum()))
+                return ''.join(fstat)
+
         def set_callerid(self, icallerid):
                 self.calleridfull  = icallerid[0]
                 self.calleridfirst = icallerid[1]
@@ -2298,6 +2298,7 @@ class AsteriskRemote:
                                 except Exception, exc:
                                         log_debug("--- exception --- %s : a problem occured when building phone list : %s" %(self.astid, str(exc)))
                                         return numlist
+                        log_debug("%s : found %d ids in phone list, among which %d ids are registered as users" %(self.astid, len(phone_list), len(numlist)))
                 finally:
                         f.close()
                 return numlist
@@ -2499,9 +2500,14 @@ class LoginHandler(SocketServer.StreamRequestHandler):
                         goodpass = (userinfo != None) and (userinfo.get('passwd') == passwd)
                 finally:
                         userlist_lock.release()
+
+                if userinfo is None:
+                        replystr = "ERROR user_not_found"
+                        debugstr += " / USER <%s> on asterisk <%s>" %(user, astname_xivoc)
+                        return [replystr, debugstr], [user, port, state, astnum]
                 if not goodpass:
                         replystr = "ERROR login_passwd"
-                        debugstr += " / PASS KO (%s given) for %s on asterisk #%d" %(passwd, user,astnum)
+                        debugstr += " / PASS KO (%s given) for %s on asterisk <%s>" %(passwd, user, astname_xivoc)
                         return [replystr, debugstr], [user, port, state, astnum]
                 
                 # asks for PORT
