@@ -34,9 +34,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include "logeltwidget.h"
 #include "popup.h"
 
-const QString __version__("$Revision$");
-const QString __date__("$Date$");
-const int REQUIRED_SERVER_VERSION = 1441;
+const int REQUIRED_SERVER_VERSION = 1508;
 
 /*! \brief Constructor.
  *
@@ -458,20 +456,6 @@ void BaseEngine::processHistory(const QStringList & histlist)
 	}
 }
 
-/*! \brief to make other classes know the engine's version
- */
-const QString & BaseEngine::getRevisionString() const
-{
-        return __version__;
-}
-
-/*! \brief  make other classes know the engine's date
- */
-const QString & BaseEngine::getDateString() const
-{
-        return __date__;
-}
-
 /*! \brief called when the socket is first connected
  */
 void BaseEngine::socketConnected()
@@ -488,7 +472,7 @@ void BaseEngine::socketConnected()
                 m_pendingcommand += "state=unknown;";
         m_pendingcommand += "state=" + m_availstate + ";";
         m_pendingcommand += "ident=" + m_clientid   + ";";
-        m_pendingcommand += "passwd=" + m_passwd + ";version=" + __version__.split(" ")[1];
+        m_pendingcommand += "passwd=" + m_passwd + ";version=" + SVNVER;
         // login <asterisk> <techno> <id>
 	sendTCPCommand();
 }
@@ -1466,7 +1450,7 @@ void BaseEngine::identifyToTheServer()
 	qDebug() << "BaseEngine::identifyToTheServer()" << m_serveraddress;
         setMyClientId();
 	outline.append("LOGIN " + m_asterisk + "/" + m_protocol.toLower() + m_userid + \
-                       " " + m_clientid + " " + __version__.split(" ")[1]);
+                       " " + m_clientid + " " + SVNVER);
 	qDebug() << "BaseEngine::identifyToTheServer()" << outline;
 	outline.append("\r\n");
 	m_loginsocket->write(outline.toAscii());

@@ -191,7 +191,7 @@ socket.setdefaulttimeout(2)
 DAEMON = "daemon-announce"
 HISTSEPAR = ";"
 XIVO_CLI_PHP_HEADER = "XIVO-CLI-PHP"
-REQUIRED_CLIENT_VERSION = 1441
+REQUIRED_CLIENT_VERSION = 1508
 
 # capabilities
 CAPA_CUSTINFO    = 1 <<  0
