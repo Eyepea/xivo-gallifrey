@@ -53,7 +53,8 @@ $array['element']['ringgroup']['default'] = 0;
 $array['element']['ringgroup']['set'] = true;
 
 $array['element']['context'] = array();
-$array['element']['context']['default'] = '';
+$array['element']['context']['default'] = 'default';
+$array['element']['context']['setdef'] = true;
 
 $array['element']['musiconhold'] = array();
 $array['element']['musiconhold']['default'] = '';
@@ -75,8 +76,8 @@ $array['element']['outcallerid-custom']['unset'] = true;
 $array['filter'] = array();
 $array['filter']['protocol'] = array('set' => true);
 $array['filter']['protocolid'] = array('cast' => 'uint');
-$array['filter']['firstname'] = array('chk' => 2,'maxlen' => 128);
-$array['filter']['lastname'] = array('chk' => 2,'maxlen' => 128);
+$array['filter']['firstname'] = array('set' => false,'chk' => 2,'cast' => 'cprint','maxlen' => 128);
+$array['filter']['lastname'] = array('set' => false,'chk' => 2,'cast' => 'cprint','maxlen' => 128);
 $array['filter']['name'] = array('minlen' => 1,'maxlen' => 40);
 $array['filter']['number'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9\*#]+$/','maxlen' => 40);
 $array['filter']['context'] = array('set' => false,'chk' => 2,'nokey' => array('general','globals','hints','features','authentification','zonemessages'),'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 39);

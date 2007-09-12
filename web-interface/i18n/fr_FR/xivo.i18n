@@ -2,16 +2,6 @@
 
 ; load conf/user
 
-; load conf/date
+; load util/date
 
-; html_title
-XIVO
-
-; page_next
-Page suivante
-
-; page_previous
-Page précédente
-
-; page_number
-Page %s
+; load tpl/tpl

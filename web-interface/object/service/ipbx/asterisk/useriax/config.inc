@@ -65,7 +65,8 @@ $array['element']['callgroup'] = array();
 $array['element']['callgroup']['default'] = '';
 
 $array['element']['context'] = array();
-$array['element']['context']['default'] = '';
+$array['element']['context']['default'] = 'default';
+$array['element']['context']['setdef'] = true;
 
 $array['element']['username'] = array();
 $array['element']['username']['default'] = '';

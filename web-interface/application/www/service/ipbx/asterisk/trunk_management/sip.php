@@ -38,12 +38,11 @@ $_HTML->assign('element',$element);
 
 $menu = &$_HTML->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_infos('meta'));
-$menu->set_left('left/service/ipbx/asterisk');
-$menu->set_toolbar('toolbar/service/ipbx/asterisk/trunk_management/sip');
+$menu->set_left('left/service/ipbx/'.$ipbx->get_name());
+$menu->set_toolbar('toolbar/service/ipbx/'.$ipbx->get_name().'/trunk_management/sip');
 
-$_HTML->assign('bloc','trunk_management/sip/'.$act);
-$_HTML->assign('service_name',$service_name);
-$_HTML->set_struct('service/ipbx/index');
+$_HTML->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/trunk_management/sip/'.$act);
+$_HTML->set_struct('service/ipbx/'.$ipbx->get_name());
 $_HTML->display('index');
 
 ?>

@@ -46,12 +46,11 @@ $_HTML->assign('contexts',$contexts);
 
 $menu = &$_HTML->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_infos('meta'));
-$menu->set_left('left/service/ipbx/asterisk');
-$menu->set_toolbar('toolbar/service/ipbx/asterisk/pbx_settings/users');
+$menu->set_left('left/service/ipbx/'.$ipbx->get_name());
+$menu->set_toolbar('toolbar/service/ipbx/'.$ipbx->get_name().'/pbx_settings/users');
 
-$_HTML->assign('bloc','pbx_settings/users/'.$act);
-$_HTML->assign('service_name',$service_name);
-$_HTML->set_struct('service/ipbx/index');
+$_HTML->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/pbx_settings/users/'.$act);
+$_HTML->set_struct('service/ipbx/'.$ipbx->get_name());
 $_HTML->display('index');
 
 ?>

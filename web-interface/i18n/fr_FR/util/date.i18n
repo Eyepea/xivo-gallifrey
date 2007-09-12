@@ -1,0 +1,230 @@
+; date_format_yymmdd
+%d/%m/%Y
+
+; date_format_yymmddhhiiss
+%d/%m/%Y %H:%M:%S
+
+; date_format_hhiiss
+%H:%M:%S
+
+; date_day_monday
+lundi
+
+; date_day_mon
+lundi
+
+; date_Day_monday
+Lundi
+
+; date_Day_mon
+Lundi
+
+; date_day_tuesday
+mardi
+
+; date_day_tue
+mardi
+
+; date_Day_tuesday
+Mardi
+
+; date_Day_tue
+Mardi
+
+; date_day_wesnesday
+mercredi
+
+; date_day_wed
+mercredi
+
+; date_Day_wesnesday
+Mercredi
+
+; date_Day_wed
+Mercredi
+
+; date_day_thursday
+jeudi
+
+; date_day_thu
+jeudi
+
+; date_Day_thursday
+Jeudi
+
+; date_Day_thu
+Jeudi
+
+; date_day_friday
+vendredi
+
+; date_day_fri
+vendredi
+
+; date_Day_friday
+Vendredi
+
+; date_Day_fri
+Vendredi
+
+; date_day_saturday
+samedi
+
+; date_day_sat
+samedi
+
+; date_Day_saturday
+Samedi
+
+; date_Day_sat
+Samedi
+
+; date_day_sunday
+dimanche
+
+; date_day_sun
+dimanche
+
+; date_Day_sunday
+Dimanche
+
+; date_Day_sun
+Dimanche
+
+; date_month_january
+janvier
+
+; date_month_jan
+janvier
+
+; date_Month_january
+Janvier
+
+; date_Month_jan
+Janvier
+
+; date_month_february
+février
+
+; date_month_feb
+février
+
+; date_Month_february
+Février
+
+; date_Month_feb
+Février
+
+; date_month_march
+mars
+
+; date_month_mar
+mars
+
+; date_Month_march
+Mars
+
+; date_Month_mar
+Mars
+
+; date_month_april
+avril
+
+; date_month_apr
+avril
+
+; date_Month_april
+Avril
+
+; date_Month_apr
+Avril
+
+; date_month_may
+mai
+
+; date_Month_may
+Mai
+
+; date_month_june
+juin
+
+; date_month_jun
+juin
+
+; date_Month_june
+Juin
+
+; date_Month_jun
+juin
+
+; date_month_july
+juillet
+
+; date_month_jul
+juillet
+
+; date_Month_july
+Juillet
+
+; date_Month_jul
+Juillet
+
+; date_month_august
+août
+
+; date_month_aug
+août
+
+; date_Month_august
+Août
+
+; date_Month_aug
+Août
+
+; date_month_september
+septembre
+
+; date_month_sep
+septembre
+
+; date_Month_september
+Septembre
+
+; date_Month_sep
+Septembre
+
+; date_month_october
+octobre
+
+; date_month_oct
+octobre
+
+; date_Month_october
+Octobre
+
+; date_Month_oct
+Octobre
+
+; date_month_november
+novembre
+
+; date_month_nov
+novembre
+
+; date_Month_november
+Novembre
+
+; date_Month_nov
+Novembre
+
+; date_month_december
+décembre
+
+; date_month_dec
+décembre
+
+; date_Month_december
+Décembre
+
+; date_Month_dec
+Décembre

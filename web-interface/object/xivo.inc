@@ -550,7 +550,12 @@ class xivo
 		$r = false;
 
 	       	$class = (string) $class;
-		$dir = (string) $dir;
+
+		if(is_array($dir) === true)
+			$dir = implode(XIVO_SEP_DIR,$dir);
+		else
+			$dir = (string) $dir;
+
 		$file = (string) $file;
 		$lib = (bool) $lib;
 

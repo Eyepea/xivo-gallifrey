@@ -609,20 +609,10 @@ do
 			}
 		}
 
-		if(preg_match_all('/0[-: ]{1}|([A-F0-9]{2})[-: ]?/i',$_QR['autoprov']['macaddr'],$match) >= 6)
-		{
+		if(($macaddr = xivo_filter::chk_macaddr($_QR['autoprov']['macaddr'])) !== false)
+			$_QR['autoprov']['macaddr'] = $macaddr;
+		else
 			$_QR['autoprov']['macaddr'] = '';
-
-			for($i = 0;$i < 6;$i++)
-			{
-				if($match[1][$i] === '')
-					$match[1][$i] = '00';
-
-				$_QR['autoprov']['macaddr'] .= ':'.strtoupper($match[1][$i]);
-			}
-
-			$_QR['autoprov']['macaddr'] = substr($_QR['autoprov']['macaddr'],1);
-		}
 
 		$_QR['autoprov']['proto'] = $result['ufeatures']['protocol'];
 		$_QR['autoprov']['iduserfeatures'] = $info['ufeatures']['id'];
@@ -695,14 +685,6 @@ do
 		break;
 	}
 
-	$rs_dfeatures = null;
-
-	$dfeatures = &$ipbx->get_module('didfeatures');
-	$dfeatures_where = array();
-	$dfeatures_where['type'] = 'user';
-	$dfeatures_where['typeid'] = $info['ufeatures']['id'];
-	$dfeatures_where['commented'] = 0;
-
 	switch($status['extenumbers'])
 	{
 		case 'add':
@@ -712,10 +694,7 @@ do
 			$rs_extenumbers = $extenumbers->edit($info['extenumbers']['id'],$result['extenumbers']);
 			break;
 		case 'delete':
-			if(($rs_extenumbers = $extenumbers->delete($info['extenumbers']['id'])) !== false
-			&& ($info['dfeatures'] = $dfeatures->get_list_where($dfeatures_where,false)) !== false
-			&& ($rs_dfeatures = $dfeatures->edit_where($dfeatures_where,array('commented' => 1))) === false)
-				$rs_extenumbers = false;
+			$rs_extenumbers = $extenumbers->delete($info['extenumbers']['id']);
 			break;
 		default:
 			$rs_extenumbers = null;
@@ -732,9 +711,6 @@ do
 		}
 
 		$ufeatures->edit_origin();
-
-		if($rs_dfeatures === false)
-			$extenumbers->add_origin();
 
 		if($rs_localexten === null)
 			break;
@@ -813,9 +789,6 @@ do
 				break 2;
 			case 'delete':
 				$extenumbers->add_origin();
-
-				if($rs_dfeatures === true)
-					$dfeatures->edit_list($info['dfeatures'],array('commented' => 0));
 				break 2;
 			default:
 				break 2;
@@ -922,6 +895,22 @@ do
 			$autoprov->notification($result['autoprov'],$_QR['autoprov']['modact']);
 		else
 			$autoprov->authoritative($result['autoprov'],$_QR['autoprov']['modact']);
+	}
+
+	if($status['extenumbers'] === 'delete')
+	{
+		$incall = &$ipbx->get_module('incall');
+
+		$incall->unlinked_where(array('type' => 'user',
+					      'typeval' => $info['ufeatures']['id']));
+
+		$schedule = &$ipbx->get_module('schedule');
+
+		$schedule->unlinked_where(array('typetrue' => 'user',
+						'typevaltrue' => $info['ufeatures']['id']));
+	
+		$schedule->unlinked_where(array('typefalse' => 'user',
+		  				'typevalfalse' => $info['ufeatures']['id']));
 	}
 
 	xivo_go($_HTML->url('service/ipbx/pbx_settings/users'),$param);

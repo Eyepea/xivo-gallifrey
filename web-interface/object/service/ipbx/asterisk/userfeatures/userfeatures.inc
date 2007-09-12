@@ -23,6 +23,24 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		$this->_load_config();
 	}
 
+	function _prepare($data)
+	{
+		if($data['context'] === '')
+			$data['context'] = 'default';
+
+		$data['identity'] = trim(trim($data['firstname']).' '.trim($data['lastname']));
+
+		if($data['identity'] === '')
+			$data['identity'] = '-';
+
+		if(xivo_empty($data['number']) === true)
+			$data['identity'] .= ' ('.$data['context'].')';
+		else
+			$data['identity'] .= ' ('.$data['number'].'@'.$data['context'].')';
+
+		return($data);
+	}
+
 	function get($id,$orig=true)
 	{
 		$orig = (bool) $orig;
@@ -213,11 +231,6 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 
 			if(xivo_empty($info['number']) === true)
 				continue;
-
-			if($info['context'] !== '')
-				$info['number-context'] = $info['number'].'@'.$info['context'];
-			else
-				$info['number-context'] = $info['number'];
 
 			$r[] = $info;
 		}

@@ -135,11 +135,10 @@ $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 
 $menu = &$_HTML->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_infos('meta'));
-$menu->set_left('left/service/ipbx/asterisk');
+$menu->set_left('left/service/ipbx/'.$ipbx->get_name());
 
-$_HTML->assign('bloc','general_settings/voicemail');
-$_HTML->assign('service_name',$service_name);
-$_HTML->set_struct('service/ipbx/index');
+$_HTML->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/general_settings/voicemail');
+$_HTML->set_struct('service/ipbx/'.$ipbx->get_name());
 $_HTML->display('index');
 
 ?>

@@ -1,5 +1,5 @@
-<div id="s-asterisk">
-	<div class="b-rubric">
-	<?=$this->file_include('bloc/service/ipbx/asterisk/'.$this->vars('bloc'));?>
+<div id="r-ipbx">
+	<div id="s-asterisk" class="b-rubric">
+		<?=$this->mk_bloc('main');?>
 	</div>
 </div>

@@ -39,22 +39,19 @@ class xivo_session
 	{
 		$_QR = &xivo_gat::get('_QR');
 
-		if(isset($_COOKIE[XIVO_SESS_NAME]) === true)
-		{
-			if(strlen($_COOKIE[XIVO_SESS_NAME]) > 32)
-				$_COOKIE[XIVO_SESS_NAME] = substr($_COOKIE[XIVO_SESS_NAME],0,32);
-			session_id($_COOKIE[XIVO_SESS_NAME]);
-		}
-		else if(isset($_QR[XIVO_SESS_NAME]) === true && $_QR[XIVO_SESS_NAME] !== '-')
-		{
-			if(strlen($_QR[XIVO_SESS_NAME]) > 32)
-				$_QR[XIVO_SESS_NAME] = substr($_QR[XIVO_SESS_NAME],0,32);
-			session_id($_QR[XIVO_SESS_NAME]);
-		}
+		if(xivo_haslen($_COOKIE,XIVO_SESS_NAME) === true)
+			$id = substr($_COOKIE[XIVO_SESS_NAME],0,32);
+		else if(xivo_haslen($_QR,XIVO_SESS_NAME) === true && $_QR[XIVO_SESS_NAME] !== '-')
+			$id = substr($_QR[XIVO_SESS_NAME],0,32);
+		else
+			$id = '';
+
+		if($id !== '' && ctype_alnum($id) === false)
+			$id = '';
 
 		session_start();
 
-		$_QR[XIVO_SESS_NAME] = session_id();
+		$_QR[XIVO_SESS_NAME] = session_id($id);
 
 		define('XIVO_SESS_ID',$_QR[XIVO_SESS_NAME]);
 		define('XIVO_SESS_STR',XIVO_SESS_NAME.'='.XIVO_SESS_ID);

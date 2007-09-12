@@ -2,8 +2,9 @@
 
 class xivo_service_abstract
 {
-	var $_conf	= array();
-	var $_module	= array();
+	var $_conf		= array();
+	var $_module		= array();
+	var $_application	= array();
 
 	function get_name()
 	{
@@ -28,28 +29,45 @@ class xivo_service_abstract
 		return($r);
 	}
 
-	function _load_class($module)
+	function _load_module_class($module)
 	{
-		$r = false;
-
 		$module = (string) $module;
 
 		$file = $module.'.inc';
 
-		$dir = XIVO_PATH_OBJECT.XIVO_SEP_DIR.'service'.
-		       XIVO_SEP_DIR.$this->_type.
-		       XIVO_SEP_DIR.$this->_name.
-		       XIVO_SEP_DIR.$module;
+		$dir = XIVO_PATH_OBJECT.XIVO_SEP_DIR.
+		       'service'.XIVO_SEP_DIR.
+		       $this->_type.XIVO_SEP_DIR.
+		       $this->_name.XIVO_SEP_DIR.
+		       $module;
 
 		$class = 'xivo_service_'.$this->_name.'_'.$module;
 
-		if(xivo_file::load_file($file,$dir,true) === false)
-			return($r);
+		if(xivo_file::load_file($file,$dir,true) !== false && class_exists($class) === true)
+			return($class);
 
-		if(class_exists($class) === true)
-			$r = $class;
+		return(false);
+	}
 
-		return($r);
+	function _load_application_class($application)
+	{
+		$application = (string) $application;
+
+		$file = $application.'.inc';
+
+		$dir = XIVO_PATH_OBJECT.XIVO_SEP_DIR.
+		       'application'.XIVO_SEP_DIR.
+		       'service'.XIVO_SEP_DIR.
+		       $this->_type.XIVO_SEP_DIR.
+		       $this->_name.XIVO_SEP_DIR.
+		       $application;
+
+		$class = 'xivo_application_service_'.$this->_name.'_'.$application;
+
+		if(xivo_file::load_file($file,$dir,true) !== false && class_exists($class) === true)
+			return($class);
+
+		return(false);
 	}
 
 	function _load_config()
@@ -57,9 +75,10 @@ class xivo_service_abstract
 		if(empty($this->_conf) === false)
 			return(null);
 	
-		$dir = XIVO_PATH_OBJECT.XIVO_SEP_DIR.'service'.
-		       XIVO_SEP_DIR.$this->_type.
-		       XIVO_SEP_DIR.$this->_name;
+		$dir = XIVO_PATH_OBJECT.XIVO_SEP_DIR.
+		       'service'.XIVO_SEP_DIR.
+		       $this->_type.XIVO_SEP_DIR.
+		       $this->_name;
 	
 		if(($this->_conf = xivo_gat::load_get('config',$dir,$this->_name)) === false)
 			trigger_error('Failed to load '.$this->_name.' configuration',E_USER_ERROR);
@@ -83,6 +102,24 @@ class xivo_service_abstract
 		return(($ref = &$r));
 	}
 
+	function &call_application($name,$func,$args=null)
+	{
+		$name = (string) $name;
+		$func = (string) $func;
+
+		if($this->_load_application($name) === false)
+			$r = false;
+		else if($args === null)
+			$r = call_user_func(array(&$this->_application[$name],$func));
+		else
+		{
+			$args = (array) $args;
+			$r = call_user_func_array(array(&$this->_application[$name],$func),$args);
+		}
+
+		return(($ref = &$r));
+	}
+
 	function &get_module($name)
 	{
 		$r = false;
@@ -91,6 +128,18 @@ class xivo_service_abstract
 
 		if($this->_load_module($name) === true)
 			$r = &$this->_module[$name];
+
+		return(($ref = &$r));
+	}
+
+	function &get_application($name)
+	{
+		$r = false;
+
+		$name = (string) $name;
+
+		if($this->_load_application($name) === true)
+			$r = &$this->_application[$name];
 
 		return(($ref = &$r));
 	}
@@ -134,12 +183,13 @@ class xivo_service_abstract
 
 	function _load_module($name)
 	{
-		$r = false;
-
 		$name = (string) $name;
 
 		if($this->_chk_exists_cfg('module',$name) === false)
+		{
 			trigger_error('Invalid module in '.$name.' '.$this->_name,E_USER_ERROR);
+			return(false);
+		}
 
 		$ref = &$this->_conf['module'][$name];
 
@@ -149,23 +199,40 @@ class xivo_service_abstract
 		if($this->chk_module_enable($name) === false)
 			return(false);
 
-		if(($class = $this->_load_class($name)) !== false)
-		{
-			if(isset($ref['datastorage']) === true && (bool) $ref['datastorage'] === true)
-			{
-				if(is_string($ref['datastorage']) === true && $this->chk_module_enable($ref['datastorage']) === true)
-					$this->_module[$name] = new $class($this,$this->_load_dso($ref['datastorage']));
-				else
-					$this->_module[$name] = new $class($this,$this->_load_dso($name));
-			}
-			else
-				$this->_module[$name] = new $class($this);
-		}
-		else
+		if(($class = $this->_load_module_class($name)) === false)
 		{
 			trigger_error('Module '.$name.' does not exist in '.$this->_name,E_USER_ERROR);
-			return($r);
+			return(false);
 		}
+
+		if(isset($ref['datastorage']) === false || (bool) $ref['datastorage'] === false)
+		{
+			$this->_module[$name] = new $class($this);
+			return(true);
+		}
+
+		if(is_string($ref['datastorage']) === true && $this->chk_module_enable($ref['datastorage']) === true)
+			$this->_module[$name] = new $class($this,$this->_load_dso($ref['datastorage']));
+		else
+			$this->_module[$name] = new $class($this,$this->_load_dso($name));
+
+		return(true);
+	}
+
+	function _load_application($name)
+	{
+		$name = (string) $name;
+
+		if(isset($this->_application[$name]) === true)
+			return(true);
+		
+		if(($class = $this->_load_application_class($name)) === false)
+		{
+			trigger_error('Application '.$name.' does not exist in '.$this->_name,E_USER_ERROR);
+			return(false);
+		}
+
+		$this->_application[$name] = new $class($this);
 
 		return(true);
 	}
@@ -215,8 +282,8 @@ class xivo_service_abstract
 
 				if(xivo::load_class($class,$dir,$type,false) === false)
 					trigger_error('Failed to load datastorage '.$type.' for '.$name,E_USER_ERROR);
-
-				$r = new $class($dso,$datastorage);
+				else
+					$r = new $class($dso,$datastorage);
 				break;
 			default:
 				$class = 'xivo_service_'.$this->_name.'_'.$name.'_'.$type;
@@ -226,7 +293,10 @@ class xivo_service_abstract
 				       XIVO_SEP_DIR.$name.XIVO_SEP_DIR.'datastorage';
 
 				if(xivo::load_class($class,$dir,$type,false) === false)
+				{
 					trigger_error('Failed to load datastorage '.$type.' for '.$name,E_USER_ERROR);
+					return($r);
+				}
 
 				if(xivo_datastorage::is_valid($type) === true)
 					$r = new $class(xivo_datastorage::factory($type,$datastorage),$datastorage);

@@ -11,13 +11,11 @@ $ugroup = &$ipbx->get_module('usergroup');
 $voicemail = &$ipbx->get_module('uservoicemail');
 $extenumbers = &$ipbx->get_module('extenumbers');
 $localexten = $hintsexten = &$ipbx->get_module('extensions');
-$dfeatures = &$ipbx->get_module('didfeatures');
 $autoprov = &$ipbx->get_module('autoprov');
+$incall = &$ipbx->get_module('incall');
+$schedule = &$ipbx->get_module('schedule');
 
-$info = $extenum_where = $dfeatures_where = $quser_where = array();
-
-$dfeatures_where['type'] = 'user';
-$dfeatures_where['commented'] = 0;
+$info = $extenum_where = $incall_where = $quser_where = array();
 
 $quser_where['usertype'] = 'user';
 
@@ -63,24 +61,15 @@ for($i = 0;$i < $arr['cnt'];$i++)
 		$extenum_where['exten'] = $info['ufeatures']['number'];
 		$extenum_where['context'] = $localextencontext;
 
-		$info['dfeatures'] = false;
-
-		$dfeatures_where['typeid'] = $info['ufeatures']['id'];
-
 		if(($info['extenumbers'] = $extenumbers->get_where($extenum_where)) !== false)
 		{
-			if($extenumbers->delete($info['extenumbers']['id']) === false
-			|| (($info['dfeatures'] = $dfeatures->get_list_where($dfeatures_where,false)) !== false
-			   && $dfeatures->edit_where($dfeatures_where,array('commented' => 1)) === false) === true)
+			if($extenumbers->delete($info['extenumbers']['id']) === false)
 			{
 				$protocol->add_origin();
 				$ufeatures->add_origin();
 		
 				if($info['localexten'] !== false)
 					$localexten->add_origin();
-
-				if($info['dfeatures'] !== false)
-					$extenumbers->add_origin();
 				continue;
 			}
 		}
@@ -98,9 +87,6 @@ for($i = 0;$i < $arr['cnt'];$i++)
 
 			if($info['extenumbers'] !== false)
 				$extenumbers->add_origin();
-
-			if($info['dfeatures'] !== false)
-				$dfeatures->edit_list($info['dfeatures'],array('commented' => 0));
 			continue;
 		}
 
@@ -118,15 +104,24 @@ for($i = 0;$i < $arr['cnt'];$i++)
 			if($info['extenumbers'] !== false)
 				$extenumbers->add_origin();
 
-			if($info['dfeatures'] !== false)
-				$dfeatures->edit_list($info['dfeatures'],array('commented' => 0));
-
 			if($info['hints'] !== false)
 				$hintsexten->add_origin();
 			continue;
 		}
 
 		$ugroup->delete_where(array('userid' => $info['ufeatures']['id']));
+
+		if($info['extenumbers'] !== false)
+		{
+			$incall->unlinked_where(array('type' => 'user',
+						      'typeval' => $info['ufeatures']['id']));
+
+			$schedule->unlinked_where(array('typetrue' => 'user',
+							'typevaltrue' => $info['ufeatures']['id']));
+
+			$schedule->unlinked_where(array('typefalse' => 'user',
+							'typevalfalse' => $info['ufeatures']['id']));
+		}
 
 		$voicemail->delete_where(array('mailbox' => $info['ufeatures']['number'],
 					       'context' => $info['ufeatures']['context']));

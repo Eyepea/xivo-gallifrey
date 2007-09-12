@@ -1,14 +1,5 @@
-; toolbar_fm_search
-Chercher
-
-; toolbar_fm_context
--- Contexte --
-
 ; toolbar_fm_context-opt-main
 Principal
 
 ; toolbar_adv_menu_delete_confirm
-Etes-vous certain de vouloir supprimer ce ou ces utilisateurs ?
-
-; toolbar_opt_advanced
-Mode avancé
+Etes-vous certain de vouloir supprimer cet ou ces utilisateurs ?

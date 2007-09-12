@@ -57,17 +57,16 @@ if($act === 'exportcsv')
 
 $menu = &$_HTML->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_infos('meta'));
-$menu->set_left('left/service/ipbx/asterisk');
-$menu->set_toolbar('toolbar/service/ipbx/asterisk/call_management/cdr');
+$menu->set_left('left/service/ipbx/'.$ipbx->get_name());
+$menu->set_toolbar('toolbar/service/ipbx/'.$ipbx->get_name().'/call_management/cdr');
 
 $dhtml = &$_HTML->get_module('dhtml');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 $dhtml->set_js('js/xivo_calendar.js');
 $dhtml->add_js('/struct/js/date.js.php');
 
-$_HTML->assign('bloc','call_management/cdr/'.$act);
-$_HTML->assign('service_name',$service_name);
-$_HTML->set_struct('service/ipbx/index');
+$_HTML->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/call_management/cdr/'.$act);
+$_HTML->set_struct('service/ipbx/'.$ipbx->get_name());
 $_HTML->display('index');
 
 ?>

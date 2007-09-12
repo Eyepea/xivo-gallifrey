@@ -1,0 +1,194 @@
+; title_content_name
+Horaires > Ajouter
+
+; fm_schedule_name
+Nom :
+
+; fm_schedule_publicholiday
+Férié :
+
+; fm_schedule_timebeg
+Heure (début) :
+
+; fm_schedule_timeend
+Heure (fin) :
+
+; fm_schedule_daynamebeg
+Jour (début) :
+
+; fm_schedule_daynameend
+Jour (fin) :
+
+; fm_schedule_daynumbeg
+Jour du mois (début) :
+
+; fm_schedule_daynumend
+Jour du mois (fin) :
+
+; fm_schedule_monthbeg
+Mois (début) :
+
+; fm_schedule_monthend
+Mois (fin) :
+
+; fld-inschedule
+Dans la plage horaire
+
+; fm_schedule_typetrue
+Destination :
+
+; fm_schedule_typetrue-opt-endcall
+Fin d'appel
+
+; fm_schedule_typetrue-opt-user
+Utilisateur
+
+; fm_schedule_typetrue-opt-group
+Groupe
+
+; fm_schedule_typetrue-opt-queue
+File d'attente
+
+; fm_schedule_typetrue-opt-meetme
+Chambre de conférence
+
+; fm_schedule_typetrue-opt-schedule
+Horaire
+
+; fm_schedule_typetrue-opt-application
+Application
+
+; fm_schedule_typetrue-opt-custom
+Personnalisée
+
+; fm_schedule_endcall-typevaltrue
+Action :
+
+; fm_schedule_user-typevaltrue
+Renvoyer vers :
+
+; fm_schedule_group-typevaltrue
+Renvoyer vers :
+
+; fm_schedule_queue-typevaltrue
+Renvoyer vers :
+
+; fm_schedule_meetme-typevaltrue
+Renvoyer vers :
+
+; fm_schedule_schedule-typevaltrue
+Renvoyer vers :
+
+; fm_schedule_application-typevaltrue
+Renvoyer vers :
+
+; fm_schedule_custom-typevaltrue
+Commande :
+
+; fm_schedule_endcall-typevaltrue-opt-hangup
+Raccrocher
+
+; fm_schedule_endcall-typevaltrue-opt-congestion
+Congestion
+
+; fm_schedule_endcall-typevaltrue-opt-busy
+Occupé
+
+; fm_schedule_application-typevaltrue-opt-faxtomail
+FaxToMail
+
+; fm_schedule_application-typevaltrue-opt-disa
+DISA
+
+; fm_schedule_application-typevaltrue-opt-directory
+Directory
+
+; fld-outschedule
+Hors de la plage horaire
+
+; fm_schedule_typefalse
+Destination :
+
+; fm_schedule_typefalse-opt-endcall
+Fin d'appel
+
+; fm_schedule_typefalse-opt-user
+Utilisateur
+
+; fm_schedule_typefalse-opt-group
+Groupe
+
+; fm_schedule_typefalse-opt-queue
+File d'attente
+
+; fm_schedule_typefalse-opt-meetme
+Chambre de conférence
+
+; fm_schedule_typefalse-opt-schedule
+Horaire
+
+; fm_schedule_typefalse-opt-application
+Application
+
+; fm_schedule_typefalse-opt-custom
+Personnalisée
+
+; fm_schedule_endcall-typevalfalse
+Action :
+
+; fm_schedule_user-typevalfalse
+Renvoyer vers :
+
+; fm_schedule_group-typevalfalse
+Renvoyer vers :
+
+; fm_schedule_queue-typevalfalse
+Renvoyer vers :
+
+; fm_schedule_meetme-typevalfalse
+Renvoyer vers :
+
+; fm_schedule_schedule-typevalfalse
+Renvoyer vers :
+
+; fm_schedule_application-typevalfalse
+Renvoyer vers :
+
+; fm_schedule_custom-typevalfalse
+Commande :
+
+; fm_schedule_endcall-typevalfalse-opt-hangup
+Raccrocher
+
+; fm_schedule_endcall-typevalfalse-opt-congestion
+Congestion
+
+; fm_schedule_endcall-typevalfalse-opt-busy
+Occupé
+
+; fm_schedule_application-typevalfalse-opt-faxtomail
+FaxToMail
+
+; fm_schedule_application-typevalfalse-opt-disa
+DISA
+
+; fm_schedule_application-typevalfalse-opt-directory
+Directory
+
+; create_user
+Créer un utilisateur
+
+; create_group
+Créer un groupe
+
+; create_queue
+Créer une file d'attente
+
+; create_meetme
+Créer une chambre de conférence
+
+; no_schedule
+Aucun horaire trouvé
+
+; fm_bt-save
+Sauvegarder

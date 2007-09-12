@@ -1,0 +1,95 @@
+; title_content_name
+Appels entrants > Ajouter
+
+; fm_extenumbers_exten
+SDA :
+
+; fm_incall_type
+Destination :
+
+; fm_incall_type-opt-endcall
+Fin d'appel
+
+; fm_incall_type-opt-user
+Utilisateur
+
+; fm_incall_type-opt-group
+Groupe
+
+; fm_incall_type-opt-queue
+File d'attente
+
+; fm_incall_type-opt-meetme
+Chambre de conférence
+
+; fm_incall_type-opt-schedule
+Horaire
+
+; fm_incall_type-opt-application
+Application
+
+; fm_incall_type-opt-custom
+Personnalisée
+
+; fm_incall_endcall-typeval
+Action :
+
+; fm_incall_user-typeval
+Renvoyer vers :
+
+; fm_incall_group-typeval
+Renvoyer vers :
+
+; fm_incall_queue-typeval
+Renvoyer vers :
+
+; fm_incall_meetme-typeval
+Renvoyer vers :
+
+; fm_incall_schedule-typeval
+Renvoyer vers :
+
+; fm_incall_application-typeval
+Renvoyer vers :
+
+; fm_incall_custom-typeval
+Commande :
+
+; fm_incall_endcall-typeval-opt-hangup
+Raccrocher
+
+; fm_incall_endcall-typeval-opt-congestion
+Congestion
+
+; fm_incall_endcall-typeval-opt-busy
+Occupé
+
+; fm_incall_application-typeval-opt-faxtomail
+FaxToMail
+
+; fm_incall_application-typeval-opt-disa
+DISA
+
+; fm_incall_application-typeval-opt-directory
+Directory
+
+; fm_incall_type
+Destination :
+
+; create_user
+Créer un utilisateur
+
+; create_group
+Créer un groupe
+
+; create_queue
+Créer une file d'attente
+
+; create_meetme
+Créer une chambre de conférence
+
+; create_schedule
+Créer un horaire
+
+; fm_bt-save
+Sauvegarder

@@ -3,7 +3,8 @@
 class xivo_filter
 {
 	var $_content		= array();
-	var $_err		= array('msg' => array(),'nb' => 0);
+	var $_error		= array();
+	var $_errnb		= 0;
 	var $_result		= array();
 
 	function xivo_filter($content)
@@ -19,7 +20,8 @@ class xivo_filter
 		$a = (array) $this->_content;
 		$set = (bool) $set;
 
-		$this->_reset_err();
+		$this->_reset_result();
+		$this->_reset_error();
 
 		if(($arr = xivo_get_aks($a)) === false)
 			return(false);
@@ -30,12 +32,18 @@ class xivo_filter
 			$this->_chk_key_value($key,$a,$v,$set);
 		}
 
-		return(($this->_err['nb'] > 0 ? false : true));
+		return(($this->_errnb > 0 ? false : true));
 	}
 
-	function _reset_err()
+	function _reset_result()
 	{
-		$this->_err = array('msg' => array(),'nb' => 0);
+		$this->_result = array();
+	}
+
+	function _reset_error()
+	{
+		$this->_error = array();
+		$this->_errnb = 0;
 	}
 
 	function get_result()
@@ -43,24 +51,24 @@ class xivo_filter
 		return($this->_result);
 	}
 
-	function get_err()
+	function get_error()
 	{
-		return($this->_err['msg']);	
+		return($this->_error);	
 	}
 
-	function get_nb_err()
+	function get_errnb()
 	{
-		return($this->_err['nb']);
+		return($this->_errnb);
 	}
 
-	function _mk_err($key,$msg)
+	function _set_error($key,$msg)
 	{
 		$this->_result[$key] = '';
-		$this->_err['msg'][$key] = $msg;
-		$this->_err['nb']++;
+		$this->_error[$key] = $msg;
+		$this->_errnb++;
 	}
 
-	function _mk_result($key,$val='')
+	function _set_result($key,$val='')
 	{
 		$this->_result[$key] = $val;
 	}
@@ -122,7 +130,7 @@ class xivo_filter
 		$len = strlen($email);
 
 		if($len < 6 || $len > 255
-		|| preg_match('/^[a-z0-9_-]+(\.[a-z0-9_-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*\.[a-z]{2,4}$/',$email) !== 1)
+		|| preg_match('/^[a-z0-9_-]+(?:\.[a-z0-9_-]+)*@[a-z0-9-]+(?:\.[a-z0-9-]+)*\.[a-z]{2,4}$/',$email) !== 1)
 			return(false);
 
 		if($strict === false || function_exists('getmxrr') === false)
@@ -142,6 +150,16 @@ class xivo_filter
 		return(xivo_filter::chk_email($email,true));
 	}
 
+	function chk_macaddr($macaddr)
+	{
+		$macaddr = strval($macaddr);
+
+		if(preg_match_all('/([A-F0-9]{2})[-: ]?/i',$macaddr,$match) !== 6)
+			return(false);
+
+		return(strtoupper(implode(':',$match[1])));
+	}
+
 	function chk_ipv4($ip)
 	{
 		$ip = strval($ip);
@@ -157,10 +175,8 @@ class xivo_filter
 		$ip = strval($ip);
 
 		if(xivo_filter::chk_ipv4($ip) === true
-		&& preg_match('#^([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.'.
-				'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.'.
-				'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.'.
-				'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$#i',$ip) === 1)
+		&& preg_match('#^(?:(?:\d|[1-9]\d|1\d{2}|2[0-4]\d|25[0-5])\.){3}'.
+				'(?:\d|[1-9]\d|1\d{2}|2[0-4]\d|25[0-5])$#i',$ip) === 1)
 			return(true);
 
 		return(false);
@@ -170,7 +186,7 @@ class xivo_filter
 	{
 		$host = strval($host);
 
-		if(preg_match('#^[a-z0-9-]+(\.[a-z0-9-]+)*\.[a-z]{2,4}$#i',$host) === 1)
+		if(preg_match('#^[a-z0-9-]+(?:\.[a-z0-9-]+)*\.[a-z]{2,4}$#i',$host) === 1)
 			return(true);
 
 		return(false);
@@ -386,14 +402,14 @@ class xivo_filter
 
 		if(isset($arr['value']) === true)
 		{
-			if($chk === 2 && xivo_haslen($value) === false)
+			if($chk === 2 && empty($value) === true)
 				return('');
 
 			$arrvalue = $this->chk_array_value($arr['value'],$value);
 
 			if($arrvalue === false && $strict === true)
 			{
-				$this->_mk_err($key,'invalid value');
+				$this->_set_error($key,'invalid value');
 				return(false);
 			}
 
@@ -403,14 +419,14 @@ class xivo_filter
 
 		if(isset($arr['novalue']) === true)
 		{
-			if($chk === 2 && xivo_haslen($value) === false)
+			if($chk === 2 && empty($value) === true)
 				return('');
 
 			$noarrvalue = $this->chk_noarray_value($arr['novalue'],$value);
 
 			if($noarrvalue === false)
 			{
-				$this->_mk_err($key,'invalid value');
+				$this->_set_error($key,'invalid value');
 				return(false);
 			}
 		}
@@ -424,7 +440,7 @@ class xivo_filter
 
 			if($arrkey === false && $strict === true)
 			{
-				$this->_mk_err($key,'invalid value');
+				$this->_set_error($key,'invalid value');
 				return(false);
 			}
 
@@ -441,14 +457,14 @@ class xivo_filter
 
 			if($noarrkey === true)
 			{
-				$this->_mk_err($key,'invalid value');
+				$this->_set_error($key,'invalid value');
 				return(false);
 			}
 		}
 
 		if(is_scalar($value) === false)
 		{
-			$this->_mk_err($key,'invalid value');
+			$this->_set_error($key,'invalid value');
 			return(false);
 		}
 
@@ -464,19 +480,19 @@ class xivo_filter
 
 		if($chk === 0 && $len > 0)
 		{
-			$this->_mk_err($key,'no empty');
+			$this->_set_error($key,'no empty');
 			return(false);
 		}
 	
 		if($chk === 1 && $len === 0)
 		{
-			$this->_mk_err($key,'empty');
+			$this->_set_error($key,'empty');
 			return(false);
 		}
 	
 		if($chk === 2 && $len === 0)
 		{
-			$this->_mk_result($key);
+			$this->_set_result($key);
 			return('');
 		}
 	
@@ -484,39 +500,39 @@ class xivo_filter
 		{
 			if($this->chk_cast($arr['cast'],$value) === false)
 			{
-				$this->_mk_err($key,'cast');
+				$this->_set_error($key,'cast');
 				return(false);
 			}
 		}
 	
 		if(isset($arr['minlen']) === true && $this->chk_minlen($arr['minlen'],$value) === false)
 		{
-			$this->_mk_err($key,'minimum length');
+			$this->_set_error($key,'minimum length');
 			return(false);
 		}
 	
 		if(isset($arr['maxlen']) === true && $this->chk_maxlen($arr['maxlen'],$value) === false)
 		{
-			$this->_mk_err($key,'maximum length');
+			$this->_set_error($key,'maximum length');
 			return(false);
 		}
 
 		if(xivo_issa('between',$arr) === true && isset($arr['between'][0],$arr['between'][1]) === true
 		&& $this->chk_between($arr['between'][0],$arr['between'][1],$value) === false)
 		{
-			$this->_mk_err($key,'between false');
+			$this->_set_error($key,'between false');
 			return(false);
 		}
 	
 		if(isset($arr['func']) === true && $this->chk_func($arr['func'],$value) === false)
 		{
-			$this->_mk_err($key,'func false');
+			$this->_set_error($key,'func false');
 			return(false);
 		}
 
 		if(isset($arr['regexp']) === true && preg_match((string) $arr['regexp'],$value) !== 1)
 		{
-			$this->_mk_err($key,'preg false');
+			$this->_set_error($key,'preg false');
 			return(false);
 		}
 	
@@ -527,7 +543,7 @@ class xivo_filter
 	{
 		if(isset($value[$key]) === false)
 		{
-			$this->_mk_err($key,'undefined');
+			$this->_set_error($key,'undefined');
 			return(false);
 		}
 
@@ -552,7 +568,7 @@ class xivo_filter
 	
 		if(isset($a[$key]) === false)
 		{
-			$this->_mk_result($key);
+			$this->_set_result($key);
 			return(true);
 		}
 	
@@ -572,7 +588,7 @@ class xivo_filter
 		}
 		else if(isset($v[$key]) === false || count($arr) === 1)
 		{
-			$this->_mk_result($key);
+			$this->_set_result($key);
 			return(true);
 		}
 	
@@ -582,7 +598,7 @@ class xivo_filter
 		{
 			if($v[$arr['egal']] !== $val)
 			{
-				$this->_mk_err($key,'no egal');
+				$this->_set_error($key,'no egal');
 				return(false);
 			}
 		}
@@ -592,7 +608,7 @@ class xivo_filter
 				return(false);
 		}
 	
-		$this->_mk_result($key,$val);
+		$this->_set_result($key,$val);
 	
 		return(true);
 	}

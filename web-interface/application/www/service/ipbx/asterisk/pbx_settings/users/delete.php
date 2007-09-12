@@ -49,28 +49,15 @@ do
 	$extenum_where['exten'] = $info['ufeatures']['number'];
 	$extenum_where['context'] = $localextencontext;
 
-	$info['dfeatures'] = false;
-
 	if(($info['extenumbers'] = $extenumbers->get_where($extenum_where)) !== false)
 	{
-		$dfeatures = &$ipbx->get_module('didfeatures');
-		$dfeatures_where = array();
-		$dfeatures_where['type'] = 'user';
-		$dfeatures_where['typeid'] = $info['ufeatures']['id'];
-		$dfeatures_where['commented'] = 0;
-
-		if($extenumbers->delete($info['extenumbers']['id']) === false
-		|| (($info['dfeatures'] = $dfeatures->get_list_where($dfeatures_where,false)) !== false
-		   && $dfeatures->edit_where($dfeatures_where,array('commented' => 1)) === false) === true)
+		if($extenumbers->delete($info['extenumbers']['id']) === false)
 		{
 			$protocol->add_origin();
 			$ufeatures->add_origin();
 		
 			if($info['localexten'] !== false)
 				$localexten->add_origin();
-
-			if($info['dfeatures'] !== false)
-				$extenumbers->add_origin();
 			break;
 		}
 	}
@@ -88,9 +75,6 @@ do
 
 		if($info['extenumbers'] !== false)
 			$extenumbers->add_origin();
-
-		if($info['dfeatures'] !== false)
-			$dfeatures->edit_list($info['dfeatures'],array('commented' => 0));
 		break;
 	}
 
@@ -110,15 +94,28 @@ do
 		if($info['extenumbers'] !== false)
 			$extenumbers->add_origin();
 
-		if($info['dfeatures'] !== false)
-			$dfeatures->edit_list($info['dfeatures'],array('commented' => 0));
-
 		if($info['hints'] !== false)
 			$hintsexten->add_origin();
 		break;
 	}
 
 	$ugroup->delete_where(array('userid' => $info['ufeatures']['id']));
+
+	if($info['extenumbers'] !== false)
+	{
+		$incall = &$ipbx->get_module('incall');
+
+		$incall->unlinked_where(array('type' => 'user',
+					      'typeval' => $info['ufeatures']['id']));
+
+		$schedule = &$ipbx->get_module('schedule');
+
+		$schedule->unlinked_where(array('typetrue' => 'user',
+					        'typevaltrue' => $info['ufeatures']['id']));
+
+		$schedule->unlinked_where(array('typefalse' => 'user',
+					        'typevalfalse' => $info['ufeatures']['id']));
+	}
 
 	$voicemail->delete_where(array('mailbox' => $info['ufeatures']['number'],
 				       'context' => $info['ufeatures']['context']));

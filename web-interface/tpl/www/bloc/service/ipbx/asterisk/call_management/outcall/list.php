@@ -47,8 +47,6 @@
 				$icon = 'enable';
 			endif;
 
-			$mode = $context = '-';
-
 			$mod = $j % 2 === 0 ? 1 : 2;
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=$mod?>on2">

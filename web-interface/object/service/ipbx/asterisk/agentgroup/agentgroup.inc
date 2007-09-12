@@ -138,25 +138,6 @@ class xivo_service_asterisk_agentgroup extends xivo_service_asterisk_abstract
 		return(parent::edit_where($id,array('deleted' => true),$disable,true));
 	}
 
-	function edit_list($arr,$values)
-	{
-		$r = false;
-
-		if(is_array($arr) === false
-		|| ($values = $this->chk_values($values,true,false,false)) === false)
-			return($r);
-
-		$list = array_values($arr);
-
-		if(($nb = count($list)) === 0)
-			return($r);
-
-		for($i = 0;$i < $nb;$i++)
-			$this->edit($list[$i],$values);
-
-		return(true);
-	}
-
 	function get_list($disable=null,$delete=false,$order=null,$limit=null)
 	{
 		return(parent::get_list($disable,$delete,$order,$limit));

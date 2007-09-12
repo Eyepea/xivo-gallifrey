@@ -22,11 +22,11 @@ Protocole IAX
 ; ply_service-ipbx-general_settings-voicemail
 Messageries vocales
 
-; ply_service-ipbx-general_settings-queues
-Files d'attente
-
 ; ply_service-ipbx-general_settings-agents
 Agents
+
+; ply_service-ipbx-general_settings-queues
+Files d'attente
 
 ; ply_service-ipbx-general_settings-sounds
 Fichiers sons
@@ -43,35 +43,38 @@ Appels sortants
 ; ply_service-ipbx-pbx_settings
 Paramètres PBX
 
+; ply_service-ipbx-pbx_settings-agents
+Agents
+
 ; ply_service-ipbx-pbx_settings-users
 Utilisateurs
 
 ; ply_service-ipbx-pbx_settings-groups
 Groupes
 
-; ply_service-ipbx-pbx_settings-meetme
-Chambres de conférence
-
 ; ply_service-ipbx-pbx_settings-queues
 Files d'attente
 
-; ply_service-ipbx-pbx_settings-agents
-Agents
+; ply_service-ipbx-pbx_settings-meetme
+Chambres de conférence
 
 ; ply_service-ipbx-call_management
 Gestion des appels
 
-; ply_service-ipbx-call_management-did
+; ply_service-ipbx-call_management-incall
 Appels entrants
+
+; ply_service-ipbx-call_management-outcall
+Appels sortants
+
+; ply_service-ipbx-call_management-schedule
+Horaires
 
 ; ply_service-ipbx-call_management-ivr
 Menus vocaux
 
 ; ply_service-ipbx-call_management-cdr
 Journaux d'appels
-
-; ply_service-ipbx-call_management-outcall
-Appels sortants
 
 ; ply_service-ipbx-trunk_management
 Gestion des interconnexions

@@ -1,5 +1,7 @@
 <?php
 
+define('XIVO_TPL_FILE_EXT','php');
+
 class xivo_tpl
 {
 	var $_file	= array();
@@ -291,18 +293,16 @@ class xivo_tpl
 		if($name === '')
 			return(false);
 
-		if(isset($this->_file[$name]) === true)
+		if(isset($this->_file[$name]) === false)
 		{
-			if(is_array($this->_file[$name]) === true)
-				$this->_file[$name][] = $value;
-			else
-			{
-				$pfile = $this->_file[$name];
-				$this->_file[$name] = array($pfile,$value);
-			}
-		}
-		else
 			$this->_file[$name] = $value;
+			return(true);
+		}
+
+		if(is_array($this->_file[$name]) === true)
+			$this->_file[$name][] = $value;
+		else
+			$this->_file[$name] = array($this->_file[$name],$value);
 	
 		return(true);
 	}
@@ -331,7 +331,7 @@ class xivo_tpl
 		$ext = (string) $ext;
 
 		if($ext === '')
-			$ext = 'php';
+			$ext = XIVO_TPL_FILE_EXT;
 
 		$prepend = $this->get_option('script_path').XIVO_SEP_DIR.'prepend.'.$ext;
 
@@ -348,7 +348,7 @@ class xivo_tpl
 		$ext = (string) $ext;
 
 		if($ext === '')
-			$ext = 'php';
+			$ext = XIVO_TPL_FILE_EXT;
 
 		$append = $this->get_option('script_path').XIVO_SEP_DIR.'append.'.$ext;
 
@@ -358,17 +358,53 @@ class xivo_tpl
 		return($r);
 	}
 
+	function set_bloc($name,$file,$ext='')
+	{
+		$name = (string) $name;
+		$ext = (string) $ext;
+
+		if($ext === '')
+			$ext = XIVO_TPL_FILE_EXT;
+
+		$file = 'bloc'.XIVO_SEP_DIR.ltrim((string) $file,XIVO_SEP_DIR).'.'.$ext;
+
+		if($name === '' || xivo_file::is_f_r($this->get_option('tpl_path').XIVO_SEP_DIR.$file) === false)
+			return(false);
+
+		$this->set_file('bloc_'.$name,$file);
+
+		if($this->get_option('overload_i18n') !== false)
+			$this->load_i18n_file($this->get_file('bloc_'.$name));
+
+		return(true);
+	}
+
+	function mk_bloc($name)
+	{
+		$name = (string) $name;
+
+		if(($file = $this->get_file('bloc_'.$name)) !== null)
+			$this->file_include($file,null,null);
+	}
+
 	function set_struct($file,$ext='')
 	{
 		$ext = (string) $ext;
 
 		if($ext === '')
-			$ext = 'php';
+			$ext = XIVO_TPL_FILE_EXT;
 
 		$file = 'struct'.XIVO_SEP_DIR.ltrim((string) $file,XIVO_SEP_DIR).'.'.$ext;
 
-		if(xivo_file::is_i($this->get_option('tpl_path').XIVO_SEP_DIR.$file) === true)
-			$this->set_file('structure',$file);
+		if(xivo_file::is_i($this->get_option('tpl_path').XIVO_SEP_DIR.$file) === false)
+			return(false);
+
+		$this->set_file('structure',$file);
+
+		if($this->get_option('overload_i18n') !== false)
+			$this->load_i18n_file($this->get_file('structure'));
+
+		return(true);
 	}
 
 	function mk_struct()
@@ -391,7 +427,7 @@ class xivo_tpl
 			return(false);
 
 		if($ext === '')
-			$ext = 'php';
+			$ext = XIVO_TPL_FILE_EXT;
 
 		if($page{0} === XIVO_SEP_DIR)
 			$page .= '.'.$ext;
@@ -446,15 +482,14 @@ class xivo_tpl
 	{
 		$file = ltrim((string) $file,XIVO_SEP_DIR);
 
-		if($ext !== null)
-		{
-			if($ext === '')
-				$ext = 'php';
-			else
-				$ext = (string) $ext;
-		}
+		if($ext === null)
+			$ext = '';
+		else if($ext === '')
+			$ext = '.'.XIVO_TPL_FILE_EXT;
+		else
+			$ext = '.'.(string) $ext;
 
-		$path = $this->get_option('tpl_path').XIVO_SEP_DIR.$file.($ext === null ? '' : '.'.$ext);
+		$path = $this->get_option('tpl_path').XIVO_SEP_DIR.$file.$ext;
 
 		if(xivo_file::is_i($path) === false)
 			return(false);
@@ -514,7 +549,7 @@ class xivo_tpl
 			$nb = xivo_uint($nb,20);
 
 		if($ext === '')
-			$ext = 'php';
+			$ext = XIVO_TPL_FILE_EXT;
 
 		$search = array('@/+@','@^/@','@/$@','@\.\.@');
 		$replace = array(XIVO_SEP_DIR,'','','');

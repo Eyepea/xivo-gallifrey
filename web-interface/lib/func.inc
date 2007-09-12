@@ -214,8 +214,7 @@ function xivo_cast_specials($str,$type='')
 			$reg .= 'a-zA-Z';
 			break;
 		case 'alphanum':
-			$reg .= 'a-zA-Z0-9';
-			break;
+			return(ctype_print($str));
 	}
 
 	if(preg_match('/^['.$reg.']+$/',$str) === 1)

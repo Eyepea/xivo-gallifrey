@@ -9,6 +9,7 @@ class xivo_service_asterisk_autoprov extends xivo_service_asterisk_abstract
 	var $_filter	= null;
 	var $_autoprov	= null;
 	var $_sockprov	= null;
+	var $_list	= null;
 
 	function xivo_service_asterisk_autoprov(&$sre,&$dso)
 	{
@@ -82,10 +83,13 @@ class xivo_service_asterisk_autoprov extends xivo_service_asterisk_abstract
 	{
 		$r = false;
 
+		if($this->_list !== null)
+			return($this->_list);
+
 		if($this->_load_sockprov('list') === false
 		|| $this->_sockprov['list']->is_open() === false
 		|| ($write = $this->_mk_sockprov_http('list')) === false)
-			return($r);
+			return(($this->_list = $r));
 	
 		if(($write = $this->_mk_sockprov_http('list')) === false
 		|| $this->_sockprov['list']->write($write) === false
@@ -93,15 +97,15 @@ class xivo_service_asterisk_autoprov extends xivo_service_asterisk_abstract
 		|| ($recv = $this->_parse_sockprov_recv($read)) === false)
 		{
 			$this->_sockprov['list']->close();
-			return($r);
+			return(($this->_list = $r));
 		}
 
 		if(isset($recv['status']) === false
 		|| ($nb = count($recv['data'])) === 0
-		|| preg_match('/^HTTP\/1\.(0|1) 200 /i',$recv['status']) !== 1)
+		|| preg_match('/^HTTP\/1\.[0-1] 200 /i',$recv['status']) !== 1)
 		{
 			$this->_sockprov['list']->close();
-			return($r);
+			return(($this->_list = $r));
 		}
 
 		$r = array();
@@ -129,7 +133,11 @@ class xivo_service_asterisk_autoprov extends xivo_service_asterisk_abstract
 
 		if(empty($r) === true)
 			$r = false;
+		else
+			ksort($r);
 			
+		$this->_list = $r;
+
 		return($r);
 	}
 
@@ -140,8 +148,8 @@ class xivo_service_asterisk_autoprov extends xivo_service_asterisk_abstract
 		if(xivo_ak($type,$this->_autoprov) === false)
 			return(false);
 
-		$r  = strtoupper($this->_autoprov[$type]['method']);
-		$r .= ' '.$this->_autoprov[$type]['url'].' HTTP/1.1'."\r\n";
+		$r  = strtoupper($this->_autoprov[$type]['method']).' ';
+		$r .= $this->_autoprov[$type]['url'].' HTTP/1.1'."\r\n";
 		$r .= 'Host: '.$this->_autoprov[$type]['address']."\r\n";
 
 		if(($len = strlen($data)) !== 0)

@@ -224,28 +224,34 @@ class xivo_user_abstract
 	function _load_dso()
 	{
 		if(xivo_gct::is_valid('XIVO_USER_DSO') === true)
-			$this->_dso = &xivo_gct::get('XIVO_USER_DSO');
-		else
 		{
-			$ini = xivo_user::load_get_init();
-			$datastorage = null;
-
-			if(isset($ini['datastorage']) === true)
-				$datastorage = &$ini['datastorage'];
-
-			$dso = &xivo_gct::get('XIVO_DSO');
-			$type = $dso->get_type();
-			$name = 'xivo_user_'.$type;
-			$dir = XIVO_PATH_OBJECT.XIVO_SEP_DIR.'user'.XIVO_SEP_DIR.'datastorage';
-
-			if(xivo::load_class($name,$dir,$type,false) === false)
-				trigger_error('Failed to load user Datastorage',E_USER_ERROR);
-
-			if(isset($ini['datastorage']) === true)
-				$datastorage = &$ini['datastorage'];
-
-			$this->_dso = &xivo_gct::set_get(new $name($dso,$datastorage),'XIVO_USER_DSO');
+			$this->_dso = &xivo_gct::get('XIVO_USER_DSO');
+			return(true);
 		}
+
+		$ini = xivo_user::load_get_init();
+		$datastorage = null;
+
+		if(isset($ini['datastorage']) === true)
+			$datastorage = &$ini['datastorage'];
+
+		$dso = &xivo_gct::get('XIVO_DSO');
+		$type = $dso->get_type();
+		$name = 'xivo_user_'.$type;
+		$dir = XIVO_PATH_OBJECT.XIVO_SEP_DIR.'user'.XIVO_SEP_DIR.'datastorage';
+
+		if(xivo::load_class($name,$dir,$type,false) === false)
+		{
+			trigger_error('Failed to load user Datastorage',E_USER_ERROR);
+			return(false);
+		}
+
+		if(isset($ini['datastorage']) === true)
+			$datastorage = &$ini['datastorage'];
+
+		$this->_dso = &xivo_gct::set_get(new $name($dso,$datastorage),'XIVO_USER_DSO');
+
+		return(true);
 	}
 
 	function _load_filter($name,$user)

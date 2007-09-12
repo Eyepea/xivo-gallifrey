@@ -687,38 +687,29 @@ class xivo_service_asterisk extends xivo_service_abstract
 		return($r);
 	}
 
-	function get_did_list($disable=null)
+	function get_incall_list($disable=null)
 	{
-		$extensions = &$this->get_module('extensions');
-		$dfeatures = &$this->get_module('didfeatures');
+		$incall = &$this->get_module('incall');
 		$extenumbers = &$this->get_module('extenumbers');
 
-		$where = array();
-		$where['context'] = 'did-extensions';
-		$where['app'] = 'Macro';
-		$where['appdata'] = 'superdid';
-
-		if(($rs = $extensions->get_all_where($where,$disable)) === false || ($nb = count($rs)) === 0)
+		if(($rs = $incall->get_all()) === false || ($nb = count($rs)) === 0)
 			return(false);
 
 		$r = $info = array();
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			$info['didexten'] = $rs[$i];
-			$info['tyfeatures'] = false;
+			$info['incall'] = $rs[$i];
+			$info['type'] = false;
 
-			if(($info['dfeatures'] = $dfeatures->get_where(array('extenid' => $info['didexten']['id']))) === false
-			|| ($info['extenumbers'] = $extenumbers->get_where(array(
-									'exten' => $info['didexten']['exten'],
-									'context' => $info['didexten']['context']))) === false
-			|| ($info['dfeatures']['commented'] === false
-			   && ($info['tyfeatures'] = $dfeatures->is_valid($info['dfeatures']['type'],
-		   							  $info['dfeatures']['typeid'])) === false) === true)
+			if(($info['extenumbers'] = $extenumbers->get($info['incall']['extenumid'])) === false
+			|| ($info['incall']['linked'] === true
+			   && ($info['type'] = $incall->is_valid($info['incall']['type'],
+								 $info['incall']['typeval'])) === false) === true)
 				continue;
 
-			if($info['tyfeatures'] === true)
-				$info['tyfeatures'] = false;
+			if($info['type'] === true)
+				$info['type'] = false;
 
 			$r[] = $info;
 		}
@@ -789,6 +780,44 @@ class xivo_service_asterisk extends xivo_service_abstract
 			if($trunkmodule === false
 			|| ($info['trunk'] = $trunkmodule->get($info['tfeatures']['trunkid'],$disable)) === false)
 				continue;
+
+			$r[] = $info;
+		}
+
+		if(isset($r[0]) === false)
+			$r = false;
+
+		return($r);
+	}
+
+	function get_schedule_list($disable=null)
+	{
+		$schedule = &$this->get_module('schedule');
+
+		if(($rs = $schedule->get_all($disable)) === false || ($nb = count($rs)) === 0)
+			return(false);
+
+		$r = $info = array();
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			$info['schedule'] = $rs[$i];
+			$info['typetrue'] = $info['typefalse'] = false;
+
+			if($info['schedule']['linked'] === true
+			&& (($info['typetrue'] = $schedule->is_valid($info['schedule']['typetrue'],
+								     $info['schedule']['typevaltrue'],
+								     $info['schedule']['id'])) === false
+			|| ($info['typefalse'] = $schedule->is_valid($info['schedule']['typefalse'],
+								     $info['schedule']['typevalfalse'],
+								     $info['schedule']['id'])) === false) === true)
+				continue;
+
+			if($info['typetrue'] === true)
+				$info['typetrue'] = false;
+
+			if($info['typefalse'] === true)
+				$info['typefalse'] = false;
 
 			$r[] = $info;
 		}
@@ -1066,6 +1095,19 @@ class xivo_service_asterisk extends xivo_service_abstract
 			$str = '_'.$str;
 
 		return($str);
+	}
+
+	function mk_callerid($number,$callerid='')
+	{
+		$r = '';
+
+		if(preg_match('/^[0-9\*#]+$/',$number) !== 1)
+			return($r);
+
+		$r = preg_replace('/<'.preg_quote($number).'>$/','',$callerid);
+		$r = trim(str_replace(array('<','>','"'),'',$r)).' <'.$number.'>';
+
+		return(trim($r));
 	}
 }
 

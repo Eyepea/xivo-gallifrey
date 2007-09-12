@@ -1,6 +1,9 @@
 ; service_type
 IPBX
 
+; toolbar_opt_advanced
+Mode avancé
+
 ; toolbar_adv_menu_enable
 Activer
 
@@ -22,8 +25,23 @@ Ajouter un répertoire
 ; toolbar_adv_menu_add_file
 Ajouter un fichier
 
+; toolbar_adv_menu_add_group
+Ajouter un groupe
+
+; toolbar_adv_menu_add_agent
+Ajouter un agent
+
+; toolbar_fm_search
+Chercher
+
 ; toolbar_fm_directory
 -- Répertoire --
 
 ; toolbar_fm_category
 -- Catégorie --
+
+; toolbar_fm_context
+-- Contexte --
+
+; toolbar_fm_group
+-- Groupe --

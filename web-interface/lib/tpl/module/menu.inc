@@ -50,7 +50,7 @@ class xivo_tpl_menu extends xivo_tpl_module
 		$ext = (string) $ext;
 
 		if($ext === '')
-			$ext = 'php';
+			$ext = XIVO_TPL_FILE_EXT;
 
 		$file = 'bloc'.XIVO_SEP_DIR.'menu'.XIVO_SEP_DIR.ltrim((string) $file,XIVO_SEP_DIR).'.'.$ext;
 

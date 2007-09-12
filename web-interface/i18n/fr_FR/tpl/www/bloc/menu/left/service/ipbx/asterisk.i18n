@@ -13,11 +13,11 @@ Protocole IAX
 ; mn_left_generalsettings-voicemail
 Messageries vocales
 
-; mn_left_generalsettings-queues
-Files d'attente
-
 ; mn_left_generalsettings-agents
 Agents
+
+; mn_left_generalsettings-queues
+Files d'attente
 
 ; mn_left_generalsettings-sounds
 Fichiers sons
@@ -34,35 +34,38 @@ Appels sortants
 ; mn_left_ti_pbxsettings
 Paramètres PBX
 
+; mn_left_pbxsettings-agents
+Agents
+
 ; mn_left_pbxsettings-users
 Utilisateurs
 
 ; mn_left_pbxsettings-groups
 Groupes
 
-; mn_left_pbxsettings-meetme
-Chambres de conférence
-
 ; mn_left_pbxsettings-queues
 Files d'attente
 
-; mn_left_pbxsettings-agents
-Agents
+; mn_left_pbxsettings-meetme
+Chambres de conférence
 
 ; mn_left_ti_callmanagement
 Gestion des appels
 
-; mn_left_callmanagement-did
+; mn_left_callmanagement-incall
 Appels entrants
+
+; mn_left_callmamagement-outcall
+Appels sortants
+
+; mn_left_callmamagement-schedule
+Horaires
 
 ; mn_left_callmanagement-ivr
 Menus vocaux 
 
 ; mn_left_callmamagement-cdr
 Journaux d'appels
-
-; mn_left_callmamagement-outcall
-Appels sortants
 
 ; mn_left_ti_trunkmanagement
 Gestion des interconnexions

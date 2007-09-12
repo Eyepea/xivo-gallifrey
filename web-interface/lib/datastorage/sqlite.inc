@@ -29,8 +29,6 @@ class xivo_datastorage_sqlite extends xivo_datastorage_abstract_sql
 		if(isset($param['persist']) === true)
 			$this->_param['persist'] = (bool) $param['persist'];
 
-		$this->_quote = (bool) get_magic_quotes_runtime();
-
 		if($open === true)
 			$this->open();
 	}
@@ -128,12 +126,7 @@ class xivo_datastorage_sqlite extends xivo_datastorage_abstract_sql
 
 	function escape_string($str)
 	{
-		$str = (string) $str;
-
-		if($this->_quote === true)
-			return($str);
-		else
-			return(sqlite_escape_string($str));
+		return(sqlite_escape_string((string) $str));
 	}
 
 	function close()

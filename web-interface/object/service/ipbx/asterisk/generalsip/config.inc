@@ -182,8 +182,8 @@ $array['element']['rtpkeepalive']['value'] = array(0,5,10,15,20,25,30,35,40,45,5
 $array['element']['rtpkeepalive']['default'] = 0;
 
 $array['element']['notifymimetype'] = array();
-$array['element']['notifymimetype']['value'] = array('text/plain','application/simple-message-summary');
 $array['element']['notifymimetype']['default'] = 'application/simple-message-summary';
+$array['element']['notifymimetype']['setdef'] = true;
 
 $array['element']['srvlookup'] = array();
 $array['element']['srvlookup']['value'] = array('no','yes');
@@ -342,7 +342,7 @@ $array['filter']['allowexternaldomains'] = array('bool' => true);
 $array['filter']['usereqphone'] = array('bool' => true);
 $array['filter']['realm'] = array('regexp' => '/[^"]/','maxlen' => 64);
 $array['filter']['alwaysauthreject'] = array('bool' => true);
-$array['filter']['useragent'] = array('cast' => 'alphanumspecials','maxlen' => 80);
+$array['filter']['useragent'] = array('cast' => 'print','maxlen' => 80);
 $array['filter']['checkmwi'] = array('key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
 $array['filter']['regcontext'] = array('set' => false,'chk' => 2,'maxlen' => 39,
 					'regexp' => '/^(?!macro-)[a-z0-9_-]+$/',
@@ -387,7 +387,7 @@ $array['filter']['compactheaders'] = array('bool' => true);
 $array['filter']['rtptimeout'] = array('key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
 $array['filter']['rtpholdtimeout'] = array('key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
 $array['filter']['rtpkeepalive'] = array('key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
-$array['filter']['notifymimetype'] = array('key' => array('text/plain','application/simple-message-summary'));
+$array['filter']['notifymimetype'] = array('set' => false,'chk' => 2,'maxlen' => 80,'regexp' => '#^(?:text|application)/[a-zA-Z][a-zA-Z0-9][a-zA-Z0-9\+][a-zA-Z0-9\-\+\.]*$#');
 $array['filter']['srvlookup'] = array('bool' => true);
 $array['filter']['pedantic'] = array('bool' => true);
 $array['filter']['maxexpiry'] = array('key' => array(1,900,1800,2700,3600,4500,5400,6300,7200));

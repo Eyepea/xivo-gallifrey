@@ -23,6 +23,27 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 		$this->_load_config();
 	}
 
+	function _prepare($data)
+	{
+		if($data['context'] === '')
+			$data['context'] = 'default';
+
+		$data['identity'] = trim($data['name']);
+
+		if($data['identity'] === '')
+			$data['identity'] = '-';
+
+		if(xivo_empty($data['number']) === true)
+			$data['identity'] .= ' ('.$data['context'].')';
+		else
+			$data['identity'] .= ' ('.$data['number'].'@'.$data['context'].')';
+
+		$data['commented'] = (bool) $data['commented'];
+		$data['deleted'] = (bool) $data['deleted'];
+
+		return($data);
+	}
+
 	function get($id,$disable=null,$delete=false)
 	{
 		return(parent::get($id,$disable,$delete));
@@ -36,14 +57,6 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 	function get_where($arr,$disable=null,$delete=false)
 	{
 		return(parent::get_where($arr,$disable,$delete));
-	}
-
-	function _prepare($data)
-	{
-		$data['commented'] = (bool) $data['commented'];
-		$data['deleted'] = (bool) $data['deleted'];
-
-		return($data);
 	}
 
 	function add($arr)
@@ -144,9 +157,9 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 		return(parent::get_all_where($arr,$disable,$delete,$prepare,$order,$limit));
 	}
 
-	function get_all_number($disable=null,$delete=false)
+	function get_all_number()
 	{
-		if(($list = $this->get_all($disable,$delete)) === false)
+		if(($list = $this->get_all()) === false)
 			return(false);
 
 		$nb = count($list);
@@ -159,11 +172,6 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 
 			if(xivo_empty($info['number']) === true)
 				continue;
-
-			if($info['context'] !== '')
-				$info['number-context'] = $info['number'].'@'.$info['context'];
-			else
-				$info['number-context'] = $info['number'];
 
 			$r[] = $info;
 		}

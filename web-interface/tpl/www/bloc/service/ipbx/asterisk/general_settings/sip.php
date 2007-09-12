@@ -135,7 +135,7 @@
 
 <?=$form->select(array('desc' => $this->bbf('fm_rtpkeepalive'),'name' => 'rtpkeepalive','labelid' => 'rtpkeepalive','key' => false,'bbf' => array('mixkey','fm_rtpkeepalive-opt'),'value' => xivo_cast_except($this->varra('info','rtpkeepalive'),null,'uint'),'default' => $element['rtpkeepalive']['default']),$element['rtpkeepalive']['value']);?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_notifymimetype'),'name' => 'notifymimetype','labelid' => 'notifymimetype','key' => false,'value' => $this->varra('info','notifymimetype'),'default' => $element['notifymimetype']['default']),$element['notifymimetype']['value']);?>
+<?=$form->text(array('desc' => $this->bbf('fm_notifymimetype'),'name' => 'notifymimetype','labelid' => 'notifymimetype','size' => 15,'value' => $this->varra('info','notifymimetype'),'default' => $element['notifymimetype']['default']));?>
 
 <?=$form->checkbox(array('desc' => $this->bbf('fm_srvlookup'),'name' => 'srvlookup','labelid' => 'srvlookup','checked' => $this->varra('info','srvlookup'),'default' => $element['srvlookup']['default']));?>
 

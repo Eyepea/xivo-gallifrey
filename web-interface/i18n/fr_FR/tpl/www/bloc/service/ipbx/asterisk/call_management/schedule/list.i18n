@@ -1,0 +1,80 @@
+; col_name
+Nom
+
+; col_time
+Heure
+
+; col_dayname
+Jour
+
+; col_daynum
+Jour du mois
+
+; col_month
+Mois
+
+; col_destination
+Destination
+
+; col_publicholiday
+Férié
+
+; col_action
+Action
+
+; no_schedule
+Aucun horaire trouvé
+
+; schedule_time
+%sh%s
+
+; schedule_rangetime
+%s - %s
+
+; schedule_rangedayname
+%s - %s
+
+; schedule_rangedaynum
+%s - %s
+
+; schedule_rangemonth
+%s - %s
+
+; schedule_typetrue-endcall
+Fin d'appel
+
+; schedule_typetrue-user
+Utilisateur
+
+; schedule_typetrue-group
+Groupe
+
+; schedule_typetrue-queue
+File d'attente
+
+; schedule_typetrue-meetme
+Chambre de conférence
+
+; schedule_typetrue-schedule
+Horaire
+
+; schedule_typetrue-application
+Application
+
+; schedule_typetrue-custom
+Personnalisée
+
+; schedule_publicholiday-0
+Non
+
+; schedule_publicholiday-1
+Oui
+
+; opt_modify
+Modifier
+
+; opt_delete
+Supprimer
+
+; opt_delete_confirm
+Etes-vous certain de vouloir supprimer cet horaire ?

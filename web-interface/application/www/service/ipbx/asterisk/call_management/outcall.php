@@ -55,7 +55,7 @@ switch($act)
 			if($add === true)
 			{
 				if(($extensid = $extensions->new_exten('macro',
-						       array('appdata' => 'outfeatures'),
+						       array('appdata' => 'superoutcall'),
 						       $result['extenumbers']['exten'],
 						       $result['outcall']['context'])) === false
 				|| $extensions->set_exten('hangup',$extensid) === false)
@@ -75,7 +75,7 @@ switch($act)
 
 			if($extensions->add_exten($extensid) === false)
 			{
-				$extensions->delete($extenumid);
+				$extenumbers->delete($extenumid);
 				$outcall->delete($outcallid);
 				break;
 			}
@@ -110,7 +110,6 @@ switch($act)
 
 		$return = &$info;
 
-		$extensions = &$ipbx->get_module('extensions');
 		$trunks_list = $ipbx->get_trunks_list();
 
 		do
@@ -125,6 +124,7 @@ switch($act)
 			$return = &$result;
 
 			$_QR['outcall']['extenumid'] = $info['extenumbers']['id'];
+			$_QR['outcall']['commented'] = $info['outcall']['commented'];
 
 			if(($result['outcall'] = $outcall->chk_values($_QR['outcall'])) === false
 			|| $tfeatures->get_id($result['outcall']['trunkfeaturesid']) === false)
@@ -162,6 +162,8 @@ switch($act)
 			$exten_edit = array();
 			$exten_edit['exten'] = $result['extenumbers']['exten'];
 			$exten_edit['context'] = $result['outcall']['context'];
+
+			$extensions = &$ipbx->get_module('extensions');
 
 			if($extensions->edit_where($exten_where,$exten_edit) === false)
 			{
@@ -204,8 +206,8 @@ switch($act)
 				$outcall->add_origin();
 			else if($extensions->delete_where($exten_where) === false)
 			{
-				$extenumbers->add_origin();
 				$outcall->add_origin();
+				$extenumbers->add_origin();
 			}
 		}
 
@@ -242,8 +244,8 @@ switch($act)
 			if($extensions->delete_where($exten_where) === true)
 				continue;
 
-			$extenumbers->add_origin();
 			$outcall->add_origin();
+			$extenumbers->add_origin();
 		}
 
 		xivo_go($_HTML->url('service/ipbx/call_management/outcall'),$param);
@@ -295,15 +297,15 @@ switch($act)
 		$_HTML->assign('list',$list);
 }
 
+
 $menu = &$_HTML->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_infos('meta'));
-$menu->set_left('left/service/ipbx/asterisk');
-$menu->set_toolbar('toolbar/service/ipbx/asterisk/call_management/outcall');
+$menu->set_left('left/service/ipbx/'.$ipbx->get_name());
+$menu->set_toolbar('toolbar/service/ipbx/'.$ipbx->get_name().'/call_management/outcall');
 
 $_HTML->assign('act',$act);
-$_HTML->assign('bloc','call_management/outcall/'.$act);
-$_HTML->assign('service_name',$service_name);
-$_HTML->set_struct('service/ipbx/index');
+$_HTML->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/call_management/outcall/'.$act);
+$_HTML->set_struct('service/ipbx/'.$ipbx->get_name());
 $_HTML->display('index');
 
 ?>

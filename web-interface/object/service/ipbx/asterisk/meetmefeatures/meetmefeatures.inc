@@ -23,6 +23,24 @@ class xivo_service_asterisk_meetmefeatures extends xivo_service_asterisk_abstrac
 		$this->_load_config();
 	}
 
+	function _prepare($data)
+	{
+		if($data['context'] === '')
+			$data['context'] = 'default';
+
+		$data['identity'] = trim($data['name']);
+
+		if($data['identity'] === '')
+			$data['identity'] = '-';
+
+		if(xivo_empty($data['number']) === true)
+			$data['identity'] .= ' ('.$data['context'].')';
+		else
+			$data['identity'] .= ' ('.$data['number'].'@'.$data['context'].')';
+
+		return($data);
+	}
+
 	function add($arr,$id=0)
 	{
 		if(is_array($arr) === false)
@@ -72,6 +90,31 @@ class xivo_service_asterisk_meetmefeatures extends xivo_service_asterisk_abstrac
 		}
 
 		return($this->_dso->edit($id,$arr));
+	}
+
+	function get_all_number()
+	{
+		if(($list = $this->get_all()) === false)
+			return(false);
+
+		$nb = count($list);
+
+		$r = array();
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			$info = $list[$i];
+
+			if(xivo_empty($info['number']) === true)
+				continue;
+
+			$r[] = $info;
+		}
+
+		if(isset($r[0]) === false)
+			$r = false;
+
+		return($r);
 	}
 }
 

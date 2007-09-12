@@ -20,7 +20,6 @@ class xivo_datastorage_mysql extends xivo_datastorage_abstract_sql
 	var $_flag	= 0;
 	var $_type	= 'mysql';
 	var $_free	= true;
-	var $_quote	= false;
 	var $_escape	= false;
 	var $_date	= array('datetime'	=> '%Y-%m-%d %H:%i:%s',
 				'date'		=> '%Y-%m-%d',
@@ -69,7 +68,6 @@ class xivo_datastorage_mysql extends xivo_datastorage_abstract_sql
 		if(isset($param['ssl']) === true)
 			$this->_param['ssl'] = (bool) $param['ssl'];
 
-		$this->_quote = (bool) get_magic_quotes_runtime();
 		$this->_escape = (bool) function_exists('mysql_real_escape_string'); 
 
 		if($open === true && $this->open() !== false)
@@ -201,9 +199,7 @@ class xivo_datastorage_mysql extends xivo_datastorage_abstract_sql
 	{
 		$str = (string) $str;
 
-		if($this->_quote === true)
-			return($str);
-		else if($this->_escape === true && is_resource($this->_link) === true)
+		if($this->_escape === true && is_resource($this->_link) === true)
 			$str = mysql_real_escape_string($str,$this->_link);
 		else
 			$str = mysql_escape_string($str);

@@ -438,12 +438,20 @@ class xivo_service_asterisk_abstract
 		return($r);
 	}
 
-	function get_filter_err()
+	function get_filter_error()
 	{
 		if($this->_filter === null)
 			return(false);
 
-		return($this->_filter->get_err());
+		return($this->_filter->get_error());
+	}
+
+	function get_filter_errnb()
+	{
+		if($this->_filter === null)
+			return(false);
+
+		return($this->_filter->get_errnb());
 	}
 
 	function get_filter_result()

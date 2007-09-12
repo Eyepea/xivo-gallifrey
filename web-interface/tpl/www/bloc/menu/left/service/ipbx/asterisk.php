@@ -14,11 +14,11 @@
 		if($this->chk_policy('general_settings','voicemail') === true):
 			echo '<dd id="mn-general-settings--voicemail">',$url->href_html($this->bbf('mn_left_generalsettings-voicemail'),'service/ipbx/general_settings/voicemail'),'</dd>';
 		endif;
-		if($this->chk_policy('general_settings','queues') === true):
-			echo '<dd id="mn-general-settings--queues">',$url->href_html($this->bbf('mn_left_generalsettings-queues'),'service/ipbx/general_settings/queues'),'</dd>';
-		endif;
 		if($this->chk_policy('general_settings','agents') === true):
 			echo '<dd id="mn-general-settings--agents">',$url->href_html($this->bbf('mn_left_generalsettings-agents'),'service/ipbx/general_settings/agents'),'</dd>';
+		endif;
+		if($this->chk_policy('general_settings','queues') === true):
+			echo '<dd id="mn-general-settings--queues">',$url->href_html($this->bbf('mn_left_generalsettings-queues'),'service/ipbx/general_settings/queues'),'</dd>';
 		endif;
 		if($this->chk_policy('general_settings','sounds') === true):
 			echo '<dd id="mn-general-settings--sounds">',$url->href_html($this->bbf('mn_left_generalsettings-sounds'),'service/ipbx/general_settings/sounds','act=listdir'),'</dd>';
@@ -36,36 +36,39 @@
 
 	if($this->chk_policy('pbx_settings') === true):
 		echo '<dt>',$this->bbf('mn_left_ti_pbxsettings'),'</dt>';
+		if($this->chk_policy('pbx_settings','agents') === true):
+			echo '<dd id="mn-pbx-settings--agents">',$url->href_html($this->bbf('mn_left_pbxsettings-agents'),'service/ipbx/pbx_settings/agents','act=list'),'</dd>';
+		endif;
 		if($this->chk_policy('pbx_settings','users') === true):
 			echo '<dd id="mn-pbx-settings--users">',$url->href_html($this->bbf('mn_left_pbxsettings-users'),'service/ipbx/pbx_settings/users','act=list'),'</dd>';
 		endif;
 		if($this->chk_policy('pbx_settings','groups') === true):
 			echo '<dd id="mn-pbx-settings--groups">',$url->href_html($this->bbf('mn_left_pbxsettings-groups'),'service/ipbx/pbx_settings/groups','act=list'),'</dd>';
 		endif;
-		if($this->chk_policy('pbx_settings','meetme') === true):
-			echo '<dd id="mn-pbx-settings--meetme">',$url->href_html($this->bbf('mn_left_pbxsettings-meetme'),'service/ipbx/pbx_settings/meetme','act=list'),'</dd>';
-		endif;
 		if($this->chk_policy('pbx_settings','queues') === true):
 			echo '<dd id="mn-pbx-settings--queues">',$url->href_html($this->bbf('mn_left_pbxsettings-queues'),'service/ipbx/pbx_settings/queues','act=list'),'</dd>';
 		endif;
-		if($this->chk_policy('pbx_settings','agents') === true):
-			echo '<dd id="mn-pbx-settings--agents">',$url->href_html($this->bbf('mn_left_pbxsettings-agents'),'service/ipbx/pbx_settings/agents','act=list'),'</dd>';
+		if($this->chk_policy('pbx_settings','meetme') === true):
+			echo '<dd id="mn-pbx-settings--meetme">',$url->href_html($this->bbf('mn_left_pbxsettings-meetme'),'service/ipbx/pbx_settings/meetme','act=list'),'</dd>';
 		endif;
 	endif;
 	
 	if($this->chk_policy('call_management') === true):
 		echo '<dt>',$this->bbf('mn_left_ti_callmanagement'),'</dt>';
-		if($this->chk_policy('call_management','did') === true):
-			echo '<dd id="mn-call-management--did">',$url->href_html($this->bbf('mn_left_callmanagement-did'),'service/ipbx/call_management/did','act=list'),'</dd>';
+		if($this->chk_policy('call_management','incall') === true):
+			echo '<dd id="mn-call-management--incall">',$url->href_html($this->bbf('mn_left_callmanagement-incall'),'service/ipbx/call_management/incall','act=list'),'</dd>';
+		endif;
+		if($this->chk_policy('call_management','outcall') === true):
+			echo '<dd id="mn-call-management--outcall">',$url->href_html($this->bbf('mn_left_callmamagement-outcall'),'service/ipbx/call_management/outcall'),'</dd>';
+		endif;
+		if($this->chk_policy('call_management','schedule') === true):
+			echo '<dd id="mn-call-management--schedule">',$url->href_html($this->bbf('mn_left_callmamagement-schedule'),'service/ipbx/call_management/schedule'),'</dd>';
 		endif;
 		if($this->chk_policy('call_management','ivr') === true):
 			echo '<dd id="mn-call-management--ivr"><a href="#">',$this->bbf('mn_left_callmanagement-ivr'),'</a></dd>';
 		endif;
 		if($this->chk_policy('call_management','cdr') === true):
 			echo '<dd id="mn-call-management--cdr">',$url->href_html($this->bbf('mn_left_callmamagement-cdr'),'service/ipbx/call_management/cdr'),'</dd>';
-		endif;
-		if($this->chk_policy('call_management','outcall') === true):
-			echo '<dd id="mn-call-management--outcall">',$url->href_html($this->bbf('mn_left_callmamagement-outcall'),'service/ipbx/call_management/outcall'),'</dd>';
 		endif;
 	endif;
 

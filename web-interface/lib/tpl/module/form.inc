@@ -177,6 +177,8 @@ class xivo_tpl_form extends xivo_tpl_module
 
 		switch(gettype($value))
 		{
+			case 'object':
+				$value = (array) $value;
 			case 'array':
 				if(isset($v['name'],$value[$v['name']]) === false)
 					return($r);
@@ -194,13 +196,14 @@ class xivo_tpl_form extends xivo_tpl_module
 				if(isset($v['schars']) === false)
 					$r = xivo_htmlsc($r);
 				break;
-			case 'integer':
-			case 'double':
-					$r = $value;
-				break;
 			case 'boolean':
 					$r = (int) $value;
+			case 'integer':
+			case 'double':
+					$r = (string) $value;
 				break;
+			default:
+				$r = '';
 		}
 
 		return($r);
@@ -747,6 +750,22 @@ class xivo_tpl_form extends xivo_tpl_module
 		$this->_render .= vsprintf('<optgroup label="%s">',$render);
 	}
 
+	function _mk_slt_option_selected($key,$val)
+	{
+		$r = '';
+
+		if(is_scalar($key) === false)
+			return($r);
+
+		if(is_bool($key) === true)
+			$key = (int) $key;
+
+		if((string) $key === $val)
+			$r = ' selected="selected"';
+
+		return($r);
+	}
+
 	function _mk_slt_option_param_array($key,$ref)
 	{
 		if($this->_param['altkey'] !== false
@@ -761,7 +780,8 @@ class xivo_tpl_form extends xivo_tpl_module
 		&& is_scalar($ref[$this->_param['key']]) === true)
 		{
 			$val = &$ref[$this->_param['key']];
-			$selected = $this->_param['value'] === $key ? ' selected="selected"' : '';
+
+			$selected = $this->_mk_slt_option_selected($key,$this->_param['value']);
 
 			if($this->_param['optgroup'] === true)
 				$render = array(xivo_alttitle($val),xivo_alttitle($key),$selected,xivo_htmlsc($val));
@@ -770,7 +790,7 @@ class xivo_tpl_form extends xivo_tpl_module
 		}
 		else if($this->_param['key'] === true)
 		{
-			$selected = $this->_param['value'] === $key ? ' selected="selected"' : '';
+			$selected = $this->_mk_slt_option_selected($key,$this->_param['value']);
 
 			if($this->_param['optgroup'] === true)
 				$render = array(xivo_alttitle($key),xivo_alttitle($key),$selected,xivo_htmlsc($key));
@@ -779,7 +799,7 @@ class xivo_tpl_form extends xivo_tpl_module
 		}
 		else if($this->_param['key'] === false && is_scalar($ref) === true)
 		{
-			$selected = $this->_param['value'] === $ref ? ' selected="selected"' : '';
+			$selected = $this->_mk_slt_option_selected($ref,$this->_param['value']);
 
 			if($this->_param['optgroup'] === true)
 				$render = array(xivo_alttitle($ref),xivo_alttitle($ref),$selected,xivo_htmlsc($ref));
@@ -794,7 +814,7 @@ class xivo_tpl_form extends xivo_tpl_module
 	{
 		if($this->_param['key'] === true || is_scalar($ref) === false)
 		{
-			$selected = $this->_param['value'] === $key ? ' selected="selected"' : '';
+			$selected = $this->_mk_slt_option_selected($key,$this->_param['value']);
 
 			if($this->_param['optgroup'] === true)
 				$render = array(xivo_alttitle($key),xivo_alttitle($key),$selected,xivo_htmlsc($key));
@@ -803,7 +823,7 @@ class xivo_tpl_form extends xivo_tpl_module
 		}
 		else if($this->_param['key'] === false && is_scalar($ref) === true)
 		{
-			$selected = $this->_param['value'] === $ref ? ' selected="selected"' : '';
+			$selected = $this->_mk_slt_option_selected($ref,$this->_param['value']);
 
 			if($this->_param['optgroup'] === true)
 				$render = array(xivo_alttitle($ref),xivo_alttitle($ref),$selected,xivo_htmlsc($ref));
@@ -812,7 +832,7 @@ class xivo_tpl_form extends xivo_tpl_module
 		}
 		else
 		{
-			$selected = $this->_param['value'] === $key ? ' selected="selected"' : '';
+			$selected = $this->_mk_slt_option_selected($key,$this->_param['value']);
 
 			if($this->_param['optgroup'] === true)
 				$render = array(xivo_alttitle($ref),xivo_alttitle($key),$selected,xivo_htmlsc($ref));

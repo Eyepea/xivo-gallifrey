@@ -31,7 +31,7 @@ $array['element']['mailbox'] = array();
 $array['element']['mailbox']['default'] = '';
 
 $array['filter'] = array();
-$array['filter']['fullname'] = array('maxlen' => 150);
+$array['filter']['fullname'] = array('cast' => 'cprint','maxlen' => 150);
 $array['filter']['password'] = array('regexp' => '/^[0-9#\*]+$/','maxlen' => 5);
 $array['filter']['email'] = array('set' => false,'chk' => 2,'func' => 'xivo_filter::chk_email');
 $array['filter']['attach'] = array('bool' => true);

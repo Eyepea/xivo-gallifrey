@@ -105,6 +105,10 @@ $array['module']['extenfeatures'] = array();
 $array['module']['extenfeatures']['disabled'] = true;
 $array['module']['extenfeatures']['datastorage'] = true;
 
+$array['module']['schedule'] = array();
+$array['module']['schedule']['disabled'] = true;
+$array['module']['schedule']['datastorage'] = true;
+
 $array['module']['configfiles'] = array();
 $array['module']['configfiles']['disabled'] = true;
 
@@ -200,9 +204,9 @@ $array['module']['musiconhold'] = array();
 $array['module']['musiconhold']['datastorage'] = true;
 $array['module']['musiconhold']['disabled'] = true;
 
-$array['module']['didfeatures'] = array();
-$array['module']['didfeatures']['datastorage'] = true;
-$array['module']['didfeatures']['disabled'] = true;
+$array['module']['incall'] = array();
+$array['module']['incall']['datastorage'] = true;
+$array['module']['incall']['disabled'] = true;
 
 $array['module']['generalagent'] = array();
 $array['module']['generalagent']['datastorage'] = true;

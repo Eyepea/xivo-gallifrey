@@ -402,14 +402,6 @@ switch($act)
 				break;
 			}
 
-			$rs_dfeatures = null;
-
-			$dfeatures = &$ipbx->get_module('didfeatures');
-			$dfeatures_where = array();
-			$dfeatures_where['type'] = 'group';
-			$dfeatures_where['typeid'] = $info['gfeatures']['id'];
-			$dfeatures_where['commented'] = 0;
-
 			switch($status['extenumbers'])
 			{
 				case 'add':
@@ -419,10 +411,7 @@ switch($act)
 					$rs_extenumbers = $extenumbers->edit($info['extenumbers']['id'],$result['extenumbers']);
 					break;
 				case 'delete':
-					if(($rs_extenumbers = $extenumbers->delete($info['extenumbers']['id'])) !== false
-					&& ($info['dfeatures'] = $dfeatures->get_list_where($dfeatures_where,false)) !== false
-					&& ($rs_dfeatures = $dfeatures->edit_where($dfeatures_where,array('commented' => 1))) === false)
-						$rs_extenumbers = false;
+					$rs_extenumbers = $extenumbers->delete($info['extenumbers']['id']);
 					break;
 				default:
 					$rs_extenumbers = null;
@@ -432,9 +421,6 @@ switch($act)
 			{
 				$gfeatures->edit_origin();
 				$queue->edit_origin();
-
-				if($rs_dfeatures === false)
-					$extenumbers->add_origin();
 
 				if($rs_localexten === null)
 					break;
@@ -493,9 +479,6 @@ switch($act)
 						break 2;
 					case 'delete':
 						$extenumbers->add_origin();
-
-						if($rs_dfeatures === true)
-							$dfeatures->edit_list($info['dfeatures'],array('commented' => 0));
 						break 2;
 					default:
 						break 2;
@@ -581,13 +564,26 @@ switch($act)
 						break 2;
 					case 'delete':
 						$extenumbers->add_origin();
-
-						if($rs_dfeatures === true)
-							$dfeatures->edit_list($info['dfeatures'],array('commented' => 0));
 						break 2;
 					default:
 						break 2;
 				}
+			}
+
+			if($status['extenumbers'] === 'delete')
+			{
+				$incall = &$ipbx->get_module('incall');
+
+				$incall->unlinked_where(array('type' => 'group',
+							      'typeval' => $info['gfeatures']['id']));
+
+				$schedule = &$ipbx->get_module('schedule');
+
+				$schedule->unlinked_where(array('typetrue' => 'group',
+								'typevaltrue' => $info['gfeatures']['id']));
+	
+				$schedule->unlinked_where(array('typefalse' => 'group',
+				   				'typevalfalse' => $info['gfeatures']['id']));
 			}
 
 			xivo_go($_HTML->url('service/ipbx/pbx_settings/groups'),$param);
@@ -645,30 +641,30 @@ switch($act)
 			$extenum_where['exten'] = $info['gfeatures']['number'];
 			$extenum_where['context'] = $localextencontext;
 
-			$info['dfeatures'] = false;
-
 			if(($info['extenumbers'] = $extenumbers->get_where($extenum_where)) !== false)
 			{
-				$dfeatures = &$ipbx->get_module('didfeatures');
-				$dfeatures_where = array();
-				$dfeatures_where['type'] = 'group';
-				$dfeatures_where['typeid'] = $info['gfeatures']['id'];
-				$dfeatures_where['commented'] = 0;
-
-				if($extenumbers->delete($info['extenumbers']['id']) === false
-				|| (($info['dfeatures'] = $dfeatures->get_list_where($dfeatures_where,false)) !== false
-				   && $dfeatures->edit_where($dfeatures_where,array('commented' => 1)) === false) === true)
+				if($extenumbers->delete($info['extenumbers']['id']) === false)
 				{
 					$gfeatures->recover($info['gfeatures']['id']);
 					$queue->add_origin();
 
 					if($info['localexten'] !== false)
 						$extensions->add_origin();
-
-					if($info['dfeatures'] !== false)
-						$extenumbers->add_origin();
 					break;
 				}
+
+				$incall = &$ipbx->get_module('incall');
+
+				$incall->unlinked_where(array('type' => 'group',
+							      'typeval' => $info['gfeatures']['id']));
+
+				$schedule = &$ipbx->get_module('schedule');
+
+				$schedule->unlinked_where(array('typetrue' => 'group',
+								'typevaltrue' => $info['gfeatures']['id']));
+
+				$schedule->unlinked_where(array('typefalse' => 'group',
+								'typevalfalse' => $info['gfeatures']['id']));
 			}
 		}
 		while(false);
@@ -695,12 +691,11 @@ $_HTML->assign('act',$act);
 
 $menu = &$_HTML->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_infos('meta'));
-$menu->set_left('left/service/ipbx/asterisk');
-$menu->set_toolbar('toolbar/service/ipbx/asterisk/pbx_settings/groups');
+$menu->set_left('left/service/ipbx/'.$ipbx->get_name());
+$menu->set_toolbar('toolbar/service/ipbx/'.$ipbx->get_name().'/pbx_settings/groups');
 
-$_HTML->assign('bloc','pbx_settings/groups/'.$act);
-$_HTML->assign('service_name',$service_name);
-$_HTML->set_struct('service/ipbx/index');
+$_HTML->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/pbx_settings/groups/'.$act);
+$_HTML->set_struct('service/ipbx/'.$ipbx->get_name());
 $_HTML->display('index');
 
 ?>
