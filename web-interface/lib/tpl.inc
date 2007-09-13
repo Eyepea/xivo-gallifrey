@@ -585,7 +585,7 @@ class xivo_tpl
 		return($r);
 	}
 
-	function chk_policy($cat='',$func='',$section='')
+	function chk_acl($cat='',$func='',$section='')
 	{
 		$r = false;
 
@@ -621,7 +621,7 @@ class xivo_tpl
 				$section .= '/'.$func;
 		}
 
-		return(xivo_user::policy_chk($section));
+		return(xivo_user::acl_chk($section));
 	}
 }
 

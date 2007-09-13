@@ -23,7 +23,7 @@ class xivo_user_user extends xivo_user_abstract
 		if($factory === false)
 			$this->load_by_session();
 
-		$this->_load_policy();
+		$this->_load_acl();
 	}
 
 	function load_authent($type='')

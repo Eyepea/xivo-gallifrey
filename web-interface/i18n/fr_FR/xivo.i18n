@@ -1,4 +1,4 @@
-; load conf/policy
+; load conf/acl
 
 ; load conf/user
 

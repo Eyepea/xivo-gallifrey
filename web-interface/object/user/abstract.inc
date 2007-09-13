@@ -5,7 +5,7 @@ class xivo_user_abstract
 	var $_dso	= null;
 	var $_ini	= array();
 	var $_infos	= array();
-	var $_policy	= null;
+	var $_acl	= null;
 
 	function mk_active()
 	{
@@ -270,47 +270,47 @@ class xivo_user_abstract
 		return($filter[$user][$name]);
 	}
 
-	function _load_policy()
+	function _load_acl()
 	{
 		$dir = XIVO_PATH_OBJECT.XIVO_SEP_DIR.'user';
 
-		if(xivo::load_class('xivo_user_policy',$dir,'policy',false) === false)
-			trigger_error('Failed to load user policy',E_USER_ERROR);
+		if(xivo::load_class('xivo_user_acl',$dir,'acl',false) === false)
+			trigger_error('Failed to load user acl',E_USER_ERROR);
 
-		$this->_policy = new xivo_user_policy($this->_dso,$this->_param['factory']);
+		$this->_acl = new xivo_user_acl($this->_dso,$this->_param['factory']);
 	}
 
-	function call_policy($func,$args=null)
+	function call_acl($func,$args=null)
 	{
 		$func = (string) $func;
-		$ply_func = 'policy_'.$func;
+		$acl_func = 'acl_'.$func;
 
-		if(is_object($this->_policy) === false)
+		if(is_object($this->_acl) === false)
 		{
-			if(($this->_policy = $this->load_policy($this->_dso,$this->_param['factory'])) === false)
-				trigger_error('Failed to load user policy in '.__CLASS__,E_USER_ERROR);
+			if(($this->_acl = $this->load_acl($this->_dso,$this->_param['factory'])) === false)
+				trigger_error('Failed to load user acl in '.__CLASS__,E_USER_ERROR);
 		}
 
-		if(is_object($this->_policy) === false)
-			trigger_error('Invalid user policy object',E_USER_ERROR);
+		if(is_object($this->_acl) === false)
+			trigger_error('Invalid user acl object',E_USER_ERROR);
 
-		if(is_callable(array(&$this->_policy,$func)) === false)
-			trigger_error('Invalid user policy method',E_USER_ERROR);
+		if(is_callable(array(&$this->_acl,$func)) === false)
+			trigger_error('Invalid user acl method',E_USER_ERROR);
 
-		if(method_exists($this,$ply_func) === false)
-			$ply = &$this->_policy;
+		if(method_exists($this,$acl_func) === false)
+			$acl = &$this->_acl;
 		else
 		{
-			$ply = &$this;
-			$func = $ply_func;
+			$acl = &$this;
+			$func = $acl_func;
 		}
 
 		if($args === null)
-			$r = call_user_func(array($ply,$func));
+			$r = call_user_func(array($acl,$func));
 		else
 		{
 			$args = (array) $args;
-			$r = call_user_func_array(array($ply,$func),$args);
+			$r = call_user_func_array(array($acl,$func),$args);
 		}
 
 		return($r);

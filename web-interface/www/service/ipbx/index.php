@@ -2,7 +2,7 @@
 
 require_once('xivo.php');
 
-if($_HTML->chk_policy(true) === false)
+if($_HTML->chk_acl(true) === false)
 	xivo_go($_HTML->url('xivo'));
 
 $ipbx = &$_SRE->get('ipbx');

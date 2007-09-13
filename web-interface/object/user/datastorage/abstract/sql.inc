@@ -115,12 +115,12 @@ class xivo_user_abstract_sql
 		return($r);
 	}
 
-	function policy_edit($id,$arr)
+	function acl_edit($id,$arr)
 	{
 		if(($obj = $this->_get_obj($id)) === false)
 			return(false);
 
-		$obj['policy'] = $arr;
+		$obj['acl'] = $arr;
 
 		$r = $this->_save_obj($id,$obj);
 

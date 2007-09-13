@@ -49,7 +49,10 @@ class xivo_session
 		if($id !== '' && ctype_alnum($id) === false)
 			$id = '';
 
-		session_start();
+		if(defined('XIVO_SESS_ENABLE') === false || XIVO_SESS_ENABLE !== false)
+			session_start();
+		else
+			$_SESSION = array();
 
 		$_QR[XIVO_SESS_NAME] = session_id($id);
 

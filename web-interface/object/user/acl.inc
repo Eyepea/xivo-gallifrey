@@ -1,14 +1,14 @@
 <?php
 
-class xivo_user_policy
+class xivo_user_acl
 {
 	var $_conf	= array();
 	var $_dso	= null;
 	var $_param	= array('factory' => true);
 
-	function xivo_user_policy(&$dso,$factory=true)
+	function xivo_user_acl(&$dso,$factory=true)
 	{
-		if(($this->_conf = xivo_gat::load_get('policy',XIVO_PATH_CONF)) === false)
+		if(($this->_conf = xivo_gat::load_get('acl',XIVO_PATH_CONF)) === false)
 			trigger_error('Failed to load user Array',E_USER_ERROR);
 
 		if(is_object($dso) === false)
@@ -31,32 +31,32 @@ class xivo_user_policy
 
 		$hash = md5(serialize($this->_conf));
 
-		//unset($_SESSION['_PLY']);
+		//unset($_SESSION['_ACL']);
 		
-		if(xivo_issa('_PLY',$_SESSION) === false)
-			$_SESSION['_PLY'] = array();
+		if(xivo_issa('_ACL',$_SESSION) === false)
+			$_SESSION['_ACL'] = array();
 
-		if(isset($_SESSION['_PLY']['tree']) === false)
-			$_SESSION['_PLY']['tree'] = array();
+		if(isset($_SESSION['_ACL']['tree']) === false)
+			$_SESSION['_ACL']['tree'] = array();
 
 		if(xivo_issa('group',$this->_conf) === false)
-			trigger_error('Missing group array in policy',E_USER_ERROR);
+			trigger_error('Missing group array in acl',E_USER_ERROR);
 		else
-			$_SESSION['_PLY']['group'] = $this->_conf['group'];
+			$_SESSION['_ACL']['group'] = $this->_conf['group'];
 
 		if(($user = $this->get(xivo_user::get_infos('id'))) === null)
-			trigger_error('Missing or invalid user array in policy',E_USER_ERROR); 
+			trigger_error('Missing or invalid user array in acl',E_USER_ERROR); 
 		else
-			$_SESSION['_PLY']['user'] = $user;
+			$_SESSION['_ACL']['user'] = $user;
 
-		if(isset($_SESSION['_PLY']['hash']) === false || $hash !== $_SESSION['_PLY']['hash'])
+		if(isset($_SESSION['_ACL']['hash']) === false || $hash !== $_SESSION['_ACL']['hash'])
 		{
 			if(($tree = $this->_mk_tree($this->_conf['tree'],null)) === false)
-				trigger_error('Invalid tree array in policy',E_USER_ERROR);
+				trigger_error('Invalid tree array in acl',E_USER_ERROR);
 			else
 			{
-				$_SESSION['_PLY']['tree'] = $tree;
-				$_SESSION['_PLY']['hash'] = $hash;
+				$_SESSION['_ACL']['tree'] = $tree;
+				$_SESSION['_ACL']['hash'] = $hash;
 			}
 		}
 	}
@@ -116,7 +116,7 @@ class xivo_user_policy
 		$cat = (string) $cat;
 		$func = (string) $func;
 
-		$r = &$_SESSION['_PLY']['tree'];
+		$r = &$_SESSION['_ACL']['tree'];
 
 		if($section === '')
 			return($r);
@@ -146,8 +146,8 @@ class xivo_user_policy
 		if(($user = $this->_dso->get($id)) === false)
 			return($r);
 
-		if(isset($user['obj']['policy']) === true)
-			$r = &$user['obj']['policy'];
+		if(isset($user['obj']['acl']) === true)
+			$r = &$user['obj']['acl'];
 		else if(isset($this->_conf['group'][$user['meta']]) === true)
 			$r = $this->_conf['group'][$user['meta']];
 
@@ -164,7 +164,7 @@ class xivo_user_policy
 		if(isset($arr['tree']) === false)
 			$arr['tree'] = array();
 
-		$r = $this->_dso->policy_edit($arr['id'],$this->_chk_tree($arr['tree']));
+		$r = $this->_dso->acl_edit($arr['id'],$this->_chk_tree($arr['tree']));
 
 		return($r);
 	}
@@ -278,10 +278,10 @@ class xivo_user_policy
 		$section = trim(preg_replace('@/+@','/',$section),'/');
 		$user = (string) $user;
 		
-		if(isset($_SESSION['_PLY']) === false || xivo_user::is_valid() === false)
+		if(isset($_SESSION['_ACL']) === false || xivo_user::is_valid() === false)
 			return($r);
 
-		if(xivo_issa('tree',$_SESSION['_PLY']) === false || xivo_issa('group',$_SESSION['_PLY']) === false)
+		if(xivo_issa('tree',$_SESSION['_ACL']) === false || xivo_issa('group',$_SESSION['_ACL']) === false)
 			return($r);
 
 		if($user === '')
@@ -290,11 +290,11 @@ class xivo_user_policy
 		if(xivo_user::chk_meta($user) === false)
 			return($r);
 		
-		if(xivo_issa('tree',$_SESSION['_PLY']) === false || xivo_issa('group',$_SESSION['_PLY']) === false)
+		if(xivo_issa('tree',$_SESSION['_ACL']) === false || xivo_issa('group',$_SESSION['_ACL']) === false)
 			return($r);
 
-		$tree = &$_SESSION['_PLY']['tree'];
-		$group = &$_SESSION['_PLY']['group'];
+		$tree = &$_SESSION['_ACL']['tree'];
+		$group = &$_SESSION['_ACL']['group'];
 
 		if(($ugroup = xivo_ak($user,$group,true)) === false)
 			return($r);

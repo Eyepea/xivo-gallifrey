@@ -62,9 +62,9 @@ class xivo_tpl_module
 		return($this->_tpl->url($url));
 	}
 
-	function chk_policy($cat='',$func='',$section='')
+	function chk_acl($cat='',$func='',$section='')
 	{
-		return($this->_tpl->chk_policy($cat,$func,$section));
+		return($this->_tpl->chk_acl($cat,$func,$section));
 	}
 
 	function &_get_module($name)

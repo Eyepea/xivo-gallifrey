@@ -38,7 +38,7 @@
 		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'xivo/configuration',array('cat' => 'edit','id' => $v['id']),null,$this->bbf('opt_modify'));?>
 <?php
 		if(xivo_user::chk_authorize('admin',$v['meta']) === true):
-			echo '&nbsp;',$url->href_html($url->img_html('img/site/button/key.gif',$this->bbf('opt_policy'),'border="0"'),'xivo/configuration',array('cat' => 'policy','id' => $v['id']),null,$this->bbf('opt_policy'));
+			echo '&nbsp;',$url->href_html($url->img_html('img/site/button/key.gif',$this->bbf('opt_acl'),'border="0"'),'xivo/configuration',array('cat' => 'acl','id' => $v['id']),null,$this->bbf('opt_acl'));
 		endif;
 ?>
 		</td>

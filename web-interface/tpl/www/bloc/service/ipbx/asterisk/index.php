@@ -12,11 +12,11 @@
 			<dd><b><?=$this->bbf('info_service_version');?></b> <?=XIVO_SRE_IPBX_VERSION?></dd>
 			<dt><?=$this->bbf('quick_service');?></dt>
 <?php
-			if($this->chk_policy('pbx_settings','users') === true):
+			if($this->chk_acl('pbx_settings','users') === true):
 				echo '<dd>',$url->href_html($this->bbf('service_add_user'),'service/ipbx/pbx_settings/users','act=add'),'</dd>';
 			endif;
 
-			if($this->chk_policy('pbx_settings','groups') === true):
+			if($this->chk_acl('pbx_settings','groups') === true):
 				echo '<dd>',$url->href_html($this->bbf('service_add_group'),'service/ipbx/pbx_settings/groups','act=add'),'</dd>';
 			endif;
 ?>

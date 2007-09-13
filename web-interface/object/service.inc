@@ -16,7 +16,7 @@ class xivo_service
 
 		$this->_ini = $ini;
 
-		if(isset($_SESSION['_SRE']) === false)
+		if(xivo_issa('_SRE',$_SESSION) === false)
 			$_SESSION['_SRE'] = array();
 
 		for($i = 0;$i < $arr['cnt'];$i++)

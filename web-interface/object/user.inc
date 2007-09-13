@@ -178,20 +178,20 @@ class xivo_user
 		return($r);
 	}
 
-	function policy_chk($section)
+	function acl_chk($section)
 	{
 		$r = false;
 
-		if(isset($_SESSION['_PLY']) === false || xivo_user::is_valid() === false)
+		if(isset($_SESSION['_ACL']) === false || xivo_user::is_valid() === false)
 			return($r);
 			
-		if(xivo_issa('tree',$_SESSION['_PLY']) === false || isset($_SESSION['_PLY']['user']) === false)
+		if(xivo_issa('tree',$_SESSION['_ACL']) === false || isset($_SESSION['_ACL']['user']) === false)
 			return($r);
 
 		$section = trim(preg_replace('@/+@','/',(string) $section),'/');
 
-		$tree = $_SESSION['_PLY']['tree'];
-		$user = $_SESSION['_PLY']['user'];
+		$tree = $_SESSION['_ACL']['tree'];
+		$user = $_SESSION['_ACL']['user'];
 
 		if(is_bool($user) === true)
 			return($user);
