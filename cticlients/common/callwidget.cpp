@@ -46,10 +46,10 @@ CallWidget::CallWidget(const QString & channelme,
 		       const QString & exten,
                        QWidget * parent)
         : QWidget(parent), m_square(16,16),
-          m_call_yellow(":xivoclient/gui/phone-yellow.png"),
-          m_call_blue  (":xivoclient/gui/phone-blue.png"),
-          m_call_red   (":xivoclient/gui/phone-red.png"),
-          m_call_gray  (":xivoclient/gui/phone-grey.png")
+          m_call_yellow(":/images/phone-yellow.png"),
+          m_call_blue  (":/images/phone-blue.png"),
+          m_call_red   (":/images/phone-red.png"),
+          m_call_gray  (":/images/phone-grey.png")
 {
 	QGridLayout * gridlayout = new QGridLayout(this);
         
@@ -76,9 +76,9 @@ CallWidget::CallWidget(const QString & channelme,
 
 	m_lbl_direction = new QLabel(this);
         if(direction == ">")
-                m_lbl_direction->setPixmap(QPixmap(":rightarrow.png"));
+                m_lbl_direction->setPixmap(QPixmap(":/images/rightarrow.png"));
         else
-                m_lbl_direction->setPixmap(QPixmap(":leftarrow.png"));
+                m_lbl_direction->setPixmap(QPixmap(":/images/leftarrow.png"));
 	gridlayout->addWidget(m_lbl_direction, 0, 1);
 
 	// 	m_lbl_channelpeer = new QLabel(channelpeer, this);

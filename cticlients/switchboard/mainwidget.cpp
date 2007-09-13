@@ -85,13 +85,13 @@ MainWidget::MainWidget(BaseEngine * engine, QWidget * parent)
           m_engine(engine)
 {
 	QSettings settings;
-	QPixmap redsquare(":xivoclient/gui/disconnected.png");
+	QPixmap redsquare(":/images/disconnected.png");
 	statusBar();	// This creates the status bar.
 	m_status = new QLabel();
 	m_status->setPixmap(redsquare);
 	statusBar()->addPermanentWidget(m_status);
 	statusBar()->clearMessage();
-	setWindowIcon(QIcon(":xivoclient/gui/xivoicon.png"));
+	setWindowIcon(QIcon(":/images/xivoicon.png"));
 	setWindowTitle("XIVO Switchboard");
 
 	createActions();
@@ -109,7 +109,7 @@ MainWidget::MainWidget(BaseEngine * engine, QWidget * parent)
 	m_wid = new QWidget();
 	m_mainlayout = new QVBoxLayout(m_wid);
         m_xivobg = new QLabel();
-        m_xivobg->setPixmap(QPixmap(":xivoclient/gui/xivo-login.png"));
+        m_xivobg->setPixmap(QPixmap(":/images/xivo-login.png"));
         m_mainlayout->addWidget(m_xivobg, 0, Qt::AlignHCenter | Qt::AlignVCenter);
 	setCentralWidget(m_wid);
 	m_tablimit = settings.value("display/tablimit", 5).toInt();
@@ -513,7 +513,7 @@ void MainWidget::engineStarted()
 	m_connectact->setEnabled(false);
 	m_disconnectact->setEnabled(true);
 	// set status icon to green
-	QPixmap greensquare(":xivoclient/gui/connected.png");
+	QPixmap greensquare(":/images/connected.png");
 	m_status->setPixmap(greensquare);
 }
 
@@ -557,7 +557,7 @@ void MainWidget::engineStopped()
  	m_wid = new QWidget();
  	m_mainlayout = new QVBoxLayout(m_wid);
         m_xivobg = new QLabel();
-        m_xivobg->setPixmap(QPixmap(":xivoclient/gui/xivo-login.png"));
+        m_xivobg->setPixmap(QPixmap(":/images/xivo-login.png"));
         m_mainlayout->addWidget(m_xivobg, 0, Qt::AlignHCenter | Qt::AlignVCenter);
  	setCentralWidget(m_wid);
 
@@ -565,7 +565,7 @@ void MainWidget::engineStopped()
 	m_connectact->setEnabled(true);
 	m_disconnectact->setEnabled(false);
 	// set status icon to red
-	QPixmap redsquare(":xivoclient/gui/disconnected.png");
+	QPixmap redsquare(":/images/disconnected.png");
 	m_status->setPixmap(redsquare);
 }
 

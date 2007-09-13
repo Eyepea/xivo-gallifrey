@@ -906,9 +906,11 @@ def manage_login(cfg, requester_ip, requester_port, socket):
         [whoami, whatsmyos] = cfg.get('ident').split("@")
         password = cfg.get('passwd')
         version  = cfg.get('version')
+        if version == '':
+                version = '0'
 
-        if int(cfg.get('version')) < REQUIRED_CLIENT_VERSION:
-                repstr = "loginko=version_client:%s;%d" % (cfg.get('version'), REQUIRED_CLIENT_VERSION)
+        if int(version) < REQUIRED_CLIENT_VERSION:
+                repstr = "loginko=version_client:%s;%d" % (version, REQUIRED_CLIENT_VERSION)
                 return repstr
 
         capa_user = []

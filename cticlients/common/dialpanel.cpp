@@ -54,7 +54,7 @@ DialPanel::DialPanel(QWidget * parent)
 	         this, SLOT(inputValidated()) );
 	connect( m_input, SIGNAL(editTextChanged(const QString &)),
 	         this, SIGNAL(textEdited(const QString &)) );
-        QPixmap pm = QPixmap(":switchboard/gui/sipphone.png");
+        QPixmap pm = QPixmap(":/images/sipphone.png");
         QToolButton * dialButton = new QToolButton(this);
         dialButton->setIcon(pm);
         dialButton->setIconSize(pm.size());

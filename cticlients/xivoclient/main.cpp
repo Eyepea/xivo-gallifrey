@@ -62,7 +62,7 @@ int main(int argc, char * * argv)
         QSettings settings;
 
         QString qsskind = settings.value("display/qss", "none").toString();
-        QFile qssFile(":/switchboard/gui/" + qsskind + ".qss");
+        QFile qssFile(":/common/" + qsskind + ".qss");
         QString qssStr;
         if(qssFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
                 qssStr = qssFile.readAll();

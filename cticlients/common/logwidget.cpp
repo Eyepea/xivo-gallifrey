@@ -53,28 +53,28 @@ LogWidget::LogWidget(BaseEngine * engine, QWidget * parent)
 
         vbox->addStretch( 1 );
 	m_radioNone = new QRadioButton( " ", groupBox );
-        m_radioNone->setIcon(QIcon(":/xivoclient/gui/images/cancel.png"));
+        m_radioNone->setIcon(QIcon(":/images/cancel.png"));
 	m_radioNone->setToolTip( tr("No calls") );
 	connect( m_radioNone, SIGNAL(toggled(bool)),
 	         this, SLOT(modeChanged(bool)) );
 	vbox->addWidget( m_radioNone );
 
 	m_radioOut = new QRadioButton( " ", groupBox );
-        m_radioOut->setIcon(QIcon(":/xivoclient/gui/images/green_up.png"));
+        m_radioOut->setIcon(QIcon(":/images/green_up.png"));
 	m_radioOut->setToolTip( tr("Outgoing calls") );
 	connect( m_radioOut, SIGNAL(toggled(bool)),
 	         this, SLOT(modeChanged(bool)) );
 	vbox->addWidget( m_radioOut );
 
 	m_radioIn = new QRadioButton( " ", groupBox );
-        m_radioIn->setIcon(QIcon(":/xivoclient/gui/images/green_down.png"));
+        m_radioIn->setIcon(QIcon(":/images/green_down.png"));
 	m_radioIn->setToolTip( tr("Incoming calls") );
 	connect( m_radioIn, SIGNAL(toggled(bool)),
 	         this, SLOT(modeChanged(bool)) );
 	vbox->addWidget( m_radioIn );
 
 	m_radioMissed = new QRadioButton( " ", groupBox );
-        m_radioMissed->setIcon(QIcon(":/xivoclient/gui/images/red_down.png"));
+        m_radioMissed->setIcon(QIcon(":/images/red_down.png"));
 	m_radioMissed->setToolTip( tr("Missed calls") );
 	connect( m_radioMissed, SIGNAL(toggled(bool)),
 	         this, SLOT(modeChanged(bool)) );

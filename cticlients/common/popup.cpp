@@ -79,7 +79,7 @@ Popup::Popup(QIODevice *inputstream, const QString & sessionid, QWidget *parent)
 
 		m_vlayout->addLayout(hlayout);
 	}
-	setWindowIcon(QIcon(":/xivoicon.png"));
+	setWindowIcon(QIcon(":/images/xivoicon.png"));
         QDesktopServices::setUrlHandler(QString("dial"), this, "dispurl");
 }
 

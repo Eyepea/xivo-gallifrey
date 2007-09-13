@@ -58,16 +58,16 @@ const QString extraspace("  ");
 MainWidget::MainWidget(BaseEngine * engine, QWidget * parent)
         : QMainWindow(parent),
           m_engine(engine), m_systrayIcon(0),
-          m_icon(":/xivoicon.png"), m_icongrey(":/xivoicon-grey.png")
+          m_icon(":/images/xivoicon.png"), m_icongrey(":/images/xivoicon-grey.png")
 {
 	QSettings settings;
-	QPixmap redsquare(":/disconnected.png");
+	QPixmap redsquare(":/images/disconnected.png");
 	statusBar();	// This creates the status bar.
 	m_status = new QLabel();
 	m_status->setPixmap(redsquare);
 	statusBar()->addPermanentWidget(m_status);
 	statusBar()->clearMessage();
-	setWindowIcon(QIcon(":/xivoicon.png"));
+	setWindowIcon(QIcon(":/images/xivoicon.png"));
 	setWindowTitle("XIVO Client");
 	//setWindowFlags(Qt::Dialog);
 	//layout->setSizeConstraint(QLayout::SetFixedSize);	// remove minimize and maximize button
@@ -92,7 +92,7 @@ MainWidget::MainWidget(BaseEngine * engine, QWidget * parent)
 	m_wid = new QWidget();
 	m_mainlayout = new QVBoxLayout(m_wid);
         m_xivobg = new QLabel();
-        m_xivobg->setPixmap(QPixmap(":/xivo-login.png"));
+        m_xivobg->setPixmap(QPixmap(":/images/xivo-login.png"));
         m_xivobg->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
         m_mainlayout->addWidget(m_xivobg, 1, Qt::AlignHCenter | Qt::AlignVCenter);
 	setCentralWidget(m_wid);
@@ -517,7 +517,7 @@ void MainWidget::engineStarted()
 	m_connectact->setEnabled(false);
 	m_disconnectact->setEnabled(true);
 	// set status icon to green
-	QPixmap greensquare(":/connected.png");
+	QPixmap greensquare(":/images/connected.png");
 	m_status->setPixmap(greensquare);
 }
 
@@ -601,7 +601,7 @@ void MainWidget::engineStopped()
         delete m_main_tabwidget;
 
         m_xivobg = new QLabel();
-        m_xivobg->setPixmap(QPixmap(":/xivo-login.png"));
+        m_xivobg->setPixmap(QPixmap(":/images/xivo-login.png"));
         m_mainlayout->addWidget(m_xivobg, 0, Qt::AlignHCenter | Qt::AlignVCenter);
 
 	if (m_systrayIcon)
@@ -611,7 +611,7 @@ void MainWidget::engineStopped()
 	m_connectact->setEnabled(true);
 	m_disconnectact->setEnabled(false);
 	// set status icon to red
-	QPixmap redsquare(":/disconnected.png");
+	QPixmap redsquare(":/images/disconnected.png");
 	m_status->setPixmap(redsquare);
 }
 
