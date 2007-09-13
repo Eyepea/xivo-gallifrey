@@ -19,6 +19,7 @@ $array['service/ipbx/pbx_settings/queues'] = 'service/ipbx/index.php/pbx_setting
 $array['service/ipbx/pbx_settings/agents'] = 'service/ipbx/index.php/pbx_settings/agents/';
 $array['service/ipbx/call_management/incall'] = 'service/ipbx/index.php/call_management/incall/';
 $array['service/ipbx/call_management/outcall'] = 'service/ipbx/index.php/call_management/outcall/';
+$array['service/ipbx/call_management/rightcall'] = 'service/ipbx/index.php/call_management/rightcall/';
 $array['service/ipbx/call_management/schedule'] = 'service/ipbx/index.php/call_management/schedule/';
 $array['service/ipbx/call_management/cdr'] = 'service/ipbx/index.php/call_management/cdr/';
 $array['service/ipbx/trunk_management/sip'] = 'service/ipbx/index.php/trunk_management/sip/';

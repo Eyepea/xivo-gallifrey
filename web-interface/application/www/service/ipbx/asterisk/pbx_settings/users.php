@@ -1,7 +1,6 @@
 <?php
 
 $act = isset($_QR['act']) === true ? $_QR['act'] : '';
-$ract = isset($_QR['ract']) === true ? strval($_QR['ract']) : '';
 $page = isset($_QR['page']) === true ? xivo_uint($_QR['page'],1) : 1;
 $search = isset($_QR['search']) === true ? strval($_QR['search']) : '';
 $context = isset($_QR['context']) === true ? strval($_QR['context']) : '';
@@ -9,11 +8,10 @@ $context = isset($_QR['context']) === true ? strval($_QR['context']) : '';
 $param = array();
 $param['act'] = 'list';
 
-if($ract === 'search' && $search !== '')
-{
-	$param['act'] = 'search';
+if($search !== '')
 	$param['search'] = $search;
-}
+else if($context !== '')
+	$param['context'] = $context;
 
 $ufeatures = &$ipbx->get_module('userfeatures');
 
@@ -26,9 +24,7 @@ switch($act)
 	case 'edit':
 	case 'delete':
 	case 'deletes':
-	case 'search':
 	case 'list':
-	case 'context':
 		$action = $act;
 		break;
 	case 'enables':

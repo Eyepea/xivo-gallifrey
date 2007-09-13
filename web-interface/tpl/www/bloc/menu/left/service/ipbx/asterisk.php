@@ -61,6 +61,9 @@
 		if($this->chk_policy('call_management','outcall') === true):
 			echo '<dd id="mn-call-management--outcall">',$url->href_html($this->bbf('mn_left_callmamagement-outcall'),'service/ipbx/call_management/outcall'),'</dd>';
 		endif;
+		if($this->chk_policy('call_management','rightcall') === true):
+			echo '<dd id="mn-call-management--rightcall">',$url->href_html($this->bbf('mn_left_callmamagement-rightcall'),'service/ipbx/call_management/rightcall'),'</dd>';
+		endif;
 		if($this->chk_policy('call_management','schedule') === true):
 			echo '<dd id="mn-call-management--schedule">',$url->href_html($this->bbf('mn_left_callmamagement-schedule'),'service/ipbx/call_management/schedule'),'</dd>';
 		endif;

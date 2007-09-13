@@ -47,12 +47,6 @@
 
 			$ref = &$list[$i];
 
-			if(xivo_empty($ref['afeatures']['firstname']) === true && xivo_empty($ref['afeatures']['lastname']) === true):
-				$fullname = '-';
-			else:
-				$fullname = trim($ref['afeatures']['firstname'].' '.$ref['afeatures']['lastname']);
-			endif;
-
 			if($ref['agent']['passwd'] === '')
 				$ref['agent']['passwd'] = '-';
 
@@ -60,7 +54,7 @@
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=$mod?>on2">
 		<td class="td-left"><?=$form->checkbox(array('name' => 'agents[]','value' => $ref['afeatures']['id'],'label' => false,'id' => 'it-agents-'.$i,'checked' => false,'field' => false));?></td>
-		<td class="txt-left"><label for="it-agents-<?=$i?>" id="lb-agents-<?=$i?>"><?=$fullname?></label></td>
+		<td class="txt-left"><label for="it-agents-<?=$i?>" id="lb-agents-<?=$i?>"><?=$ref['afeatures']['fullname']?></label></td>
 		<td><?=$ref['agent']['number']?></td>
 		<td><?=$ref['agent']['passwd']?></td>
 		<td class="td-right" colspan="2">

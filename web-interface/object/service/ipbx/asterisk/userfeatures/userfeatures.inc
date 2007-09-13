@@ -28,15 +28,15 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		if($data['context'] === '')
 			$data['context'] = 'default';
 
-		$data['identity'] = trim(trim($data['firstname']).' '.trim($data['lastname']));
+		$data['fullname'] = trim(trim($data['firstname']).' '.trim($data['lastname']));
 
-		if($data['identity'] === '')
-			$data['identity'] = '-';
+		if($data['fullname'] === '')
+			$data['fullname'] = '-';
 
 		if(xivo_empty($data['number']) === true)
-			$data['identity'] .= ' ('.$data['context'].')';
+			$data['identity'] = $data['fullname'].' ('.$data['context'].')';
 		else
-			$data['identity'] .= ' ('.$data['number'].'@'.$data['context'].')';
+			$data['identity'] = $data['fullname'].' ('.$data['number'].'@'.$data['context'].')';
 
 		return($data);
 	}

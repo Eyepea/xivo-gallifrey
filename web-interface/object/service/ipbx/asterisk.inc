@@ -299,13 +299,8 @@ class xivo_service_asterisk extends xivo_service_abstract
 				continue;
 
 			$info['sort'] = array();
-			$info['sort']['name'] = trim($info['afeatures']['firstname'].' '.$info['afeatures']['lastname']);
-
-			if($info['sort']['name'] === '')
-				$info['sort']['name'] = '-';
-
-			$info['sort']['fullname-number'] = $info['sort']['name'].' ('.$info['afeatures']['number'].')';
 			$info['sort']['id'] = $info['afeatures']['id'];
+			$info['sort']['identity'] = $info['afeatures']['identity'];
 			$info['sort']['var_metric'] = $info['agent']['var_metric'];
 
 			$r[] = $info;
@@ -598,14 +593,10 @@ class xivo_service_asterisk extends xivo_service_abstract
 								 $info['protocol']['context']);
 			}
 
-			$name = trim(trim($info['ufeatures']['firstname']).' '.trim($info['ufeatures']['lastname']));
 			$channel = $this->get_channel_by_protocol($info['ufeatures']['protocol']);
 
-			if($name === '')
-				$name = '- ('.$channel.'/'.$info['protocol']['name'].')';
-
 			$r[$info['ufeatures']['id']] = array('interface' => $interface,
-							     'fullname' => $name,
+							     'identity' => $info['ufeatures']['identity'],
 							     'channel' => $channel);
 		}
 			
@@ -634,15 +625,8 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 			$interface = $this->mk_agent_interface($info['afeatures']['number']);
 
-			$name = trim(trim($info['afeatures']['firstname']).' '.trim($info['afeatures']['lastname']));
-
-			if($name === '')
-				$name = '-';
-
-			$name .= ' ('.$info['afeatures']['number'].')';
-
 			$r[$info['afeatures']['id']] = array('interface' => $interface,
-							     'fullname' => $name,
+							     'identity' => $info['afeatures']['identity'],
 							     'channel' => XIVO_SRE_IPBX_AST_CHAN_AGENT);
 		}
 			
@@ -671,13 +655,8 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 			$interface = $this->mk_agent_interface($info['agroup']['id'],true);
 
-			$name = trim($info['agroup']['name']);
-
-			if($name === '')
-				$name = '-';
-
 			$r[$info['agroup']['id']] = array('interface' => $interface,
-							  'fullname' => $name,
+							  'identity' => $info['agroup']['name'],
 							  'channel' => XIVO_SRE_IPBX_AST_CHAN_AGENT);
 		}
 			
@@ -692,7 +671,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 		$incall = &$this->get_module('incall');
 		$extenumbers = &$this->get_module('extenumbers');
 
-		if(($rs = $incall->get_all()) === false || ($nb = count($rs)) === 0)
+		if(($rs = $incall->get_all($disable)) === false || ($nb = count($rs)) === 0)
 			return(false);
 
 		$r = $info = array();
@@ -703,6 +682,41 @@ class xivo_service_asterisk extends xivo_service_abstract
 			$info['type'] = false;
 
 			if(($info['extenumbers'] = $extenumbers->get($info['incall']['extenumid'])) === false
+			|| ($info['incall']['linked'] === true
+			   && ($info['type'] = $incall->is_valid($info['incall']['type'],
+								 $info['incall']['typeval'])) === false) === true)
+				continue;
+
+			if($info['type'] === true)
+				$info['type'] = false;
+
+			$r[] = $info;
+		}
+
+		if(isset($r[0]) === false)
+			$r = false;
+
+		return($r);
+	}
+
+	function get_incall_search($exten,$disable=null)
+	{
+		$incall = &$this->get_module('incall');
+		$extenumbers = &$this->get_module('extenumbers');
+
+		if(($rs = $extenumbers->get_search($exten)) === false || ($nb = count($rs)) === 0)
+			return(false);
+
+		$r = $info = array();
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			$info['extenumbers'] = $rs[$i];
+			$info['type'] = false;
+
+			$incall_where = array('extenumid' => $info['extenumbers']['id']);
+
+			if(($info['incall'] = $incall->get_where($incall_where)) === false
 			|| ($info['incall']['linked'] === true
 			   && ($info['type'] = $incall->is_valid($info['incall']['type'],
 								 $info['incall']['typeval'])) === false) === true)

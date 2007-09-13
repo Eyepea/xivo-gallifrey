@@ -32,7 +32,7 @@ switch($act)
 		if(($agents = $ipbx->get_agents_list()) !== false)
 		{
 			xivo::load_class('xivo_sort');
-			$sort = new xivo_sort(array('browse' => 'sort','key' => 'fullname-number'));
+			$sort = new xivo_sort(array('browse' => 'sort','key' => 'identity'));
 			usort($agents,array(&$sort,'str_usort'));
 		}
 

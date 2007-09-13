@@ -26,7 +26,7 @@
 
 <div id="agentlist" class="fm-field fm-multilist"><p><label id="lb-agentlist" for="it-agentlist"><?=$this->bbf('fm_agents');?></label></p>
 	<div class="slt-outlist">
-		<?=$form->select(array('name' => 'agentlist','label' => false,'id' => 'it-agentlist','browse' => 'sort','key' => 'fullname-number','altkey' => 'id','multiple' => true,'size' => 5,'field' => false),$agent_unslt);?>
+		<?=$form->select(array('name' => 'agentlist','label' => false,'id' => 'it-agentlist','browse' => 'sort','key' => 'identity','altkey' => 'id','multiple' => true,'size' => 5,'field' => false),$agent_unslt);?>
 	</div>
 	<div class="inout-list">
 
@@ -36,7 +36,7 @@
 	</div>
 	<div class="slt-inlist">
 
-		<?=$form->select(array('name' => 'agent-select[]','label' => false,'id' => 'it-agent','browse' => 'sort','key' => 'fullname-number','altkey' => 'id','multiple' => true,'size' => 5,'field' => false),$agent_slt);?>
+		<?=$form->select(array('name' => 'agent-select[]','label' => false,'id' => 'it-agent','browse' => 'sort','key' => 'identity','altkey' => 'id','multiple' => true,'size' => 5,'field' => false),$agent_slt);?>
 
 		<div class="bt-updown">
 

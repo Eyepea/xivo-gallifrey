@@ -2,6 +2,7 @@
 
 $act = isset($_QR['act']) === true ? $_QR['act'] : '';
 $page = isset($_QR['page']) === true ? xivo_uint($_QR['page'],1) : 1;
+$search = isset($_QR['search']) === true ? strval($_QR['search']) : '';
 
 $incall = &$ipbx->get_module('incall');
 
@@ -9,6 +10,9 @@ $info = array();
 
 $param = array();
 $param['act'] = 'list';
+
+if($search !== '')
+	$param['search'] = $search;
 
 switch($act)
 {
@@ -414,7 +418,12 @@ switch($act)
 		$act = 'list';
 		$total = 0;
 
-		if(($list = $ipbx->get_incall_list()) !== false)
+		if($search !== '')
+			$list = $ipbx->get_incall_search($search);
+		else
+			$list = $ipbx->get_incall_list();
+
+		if($list !== false)
 		{
 			$total = count($list);
 			xivo::load_class('xivo_sort');
@@ -424,6 +433,7 @@ switch($act)
 
 		$_HTML->assign('pager',xivo_calc_page($page,20,$total));
 		$_HTML->assign('list',$list);
+		$_HTML->assign('search',$search);
 }
 
 $menu = &$_HTML->get_module('menu');

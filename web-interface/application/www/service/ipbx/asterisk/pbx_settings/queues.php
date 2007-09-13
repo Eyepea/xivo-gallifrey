@@ -12,21 +12,21 @@ $qmember = &$ipbx->get_module('queuemember');
 if(($user_list = $ipbx->get_user_queue_info()) !== false)
 {
 	xivo::load_class('xivo_sort');
-	$sort = new xivo_sort(array('key' => 'fullname'));
+	$sort = new xivo_sort(array('key' => 'identity'));
 	uasort($user_list,array(&$sort,'str_usort'));
 }
 
 if(($agent_list = $ipbx->get_agent_queue_info()) !== false)
 {
 	xivo::load_class('xivo_sort');
-	$sort = new xivo_sort(array('key' => 'fullname'));
+	$sort = new xivo_sort(array('key' => 'identity'));
 	uasort($agent_list,array(&$sort,'str_usort'));
 }
 
 if(($agroup_list = $ipbx->get_agent_group_queue_info()) !== false)
 {
 	xivo::load_class('xivo_sort');
-	$sort = new xivo_sort(array('key' => 'fullname'));
+	$sort = new xivo_sort(array('key' => 'identity'));
 	uasort($agroup_list,array(&$sort,'str_usort'));
 }
 

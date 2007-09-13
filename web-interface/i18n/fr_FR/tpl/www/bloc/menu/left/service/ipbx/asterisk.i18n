@@ -58,6 +58,9 @@ Appels entrants
 ; mn_left_callmamagement-outcall
 Appels sortants
 
+; mn_left_callmamagement-rightcall
+Droits d'appels
+
 ; mn_left_callmamagement-schedule
 Horaires
 

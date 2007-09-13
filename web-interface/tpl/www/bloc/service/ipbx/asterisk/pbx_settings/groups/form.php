@@ -22,7 +22,7 @@
 <div id="userlist" class="fm-field fm-multilist"><p><label id="lb-userlist" for="it-userlist"><?=$this->bbf('fm_user');?></label></p>
 	<div class="slt-outlist">
 
-	<?=$form->select(array('name' => 'userlist','label' => false,'id' => 'it-userlist','multiple' => true,'size' => 5,'field' => false,'key' => 'fullname'),$user_list);?>
+	<?=$form->select(array('name' => 'userlist','label' => false,'id' => 'it-userlist','multiple' => true,'size' => 5,'field' => false,'key' => 'identity'),$user_list);?>
 
 	</div>
 	<div class="inout-list">
@@ -34,7 +34,7 @@
 	</div>
 	<div class="slt-inlist">
 
-		<?=$form->select(array('name' => 'user[]','label' => false,'id' => 'it-user','multiple' => true,'size' => 5,'field' => false,'key' => 'fullname'),$user_slt);?>
+		<?=$form->select(array('name' => 'user[]','label' => false,'id' => 'it-user','multiple' => true,'size' => 5,'field' => false,'key' => 'identity'),$user_slt);?>
 
 	</div>
 </div>

@@ -158,7 +158,6 @@ if($result !== null)
 }
 
 $_HTML->assign('info',$result);
-$_HTML->assign('ract',$act);
 $_HTML->assign('groups',$groups);
 $_HTML->assign('gmember_slt',false);
 $_HTML->assign('gmember_unslt',$gmember_unslt);

@@ -6,7 +6,18 @@
 	$list = $this->vars('list');
 	$act = $this->vars('act');
 
-	$page = $url->pager($pager['pages'],$pager['page'],$pager['prev'],$pager['next'],'service/ipbx/call_management/incall',array('act' => $act));
+	$param = array();
+
+	if(($search = (string) $this->vars('search')) !== ''):
+		$param['search'] = $search;
+	endif;
+
+	$page = $url->pager($pager['pages'],
+			    $pager['page'],
+			    $pager['prev'],
+			    $pager['next'],
+			    'service/ipbx/call_management/incall',
+			    array('act' => $act,$param));
 ?>
 <div class="b-list">
 <?php
@@ -18,6 +29,7 @@
 <?=$form->hidden(array('name' => XIVO_SESS_NAME,'value' => XIVO_SESS_ID));?>
 <?=$form->hidden(array('name' => 'act','value' => $act));?>
 <?=$form->hidden(array('name' => 'page','value' => $pager['page']));?>
+<?=$form->hidden(array('name' => 'search','value' => ''));?>
 <table cellspacing="0" cellpadding="0" border="0">
 	<tr class="sb-top">
 		<th class="th-left xspan"><span class="span-left">&nbsp;</span></th>
@@ -76,7 +88,7 @@
 		<td><?=$number?></td>
 		<td class="td-right" colspan="3">
 		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/call_management/incall',array('act' => 'edit','id' => $ref['incall']['id']),null,$this->bbf('opt_modify'));?>
-		<?=$url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'service/ipbx/call_management/incall',array('act' => 'delete','id' => $ref['incall']['id'],'page' => $pager['page']),'onclick="return(confirm(\''.xivo_stript($this->bbf('opt_delete_confirm')).'\') ? true : false);"',$this->bbf('opt_delete'));?>
+		<?=$url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'service/ipbx/call_management/incall',array('act' => 'delete','id' => $ref['incall']['id'],'page' => $pager['page'],$param),'onclick="return(confirm(\''.xivo_stript($this->bbf('opt_delete_confirm')).'\') ? true : false);"',$this->bbf('opt_delete'));?>
 		</td>
 	</tr>
 <?php

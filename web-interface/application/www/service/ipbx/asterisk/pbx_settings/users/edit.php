@@ -957,7 +957,6 @@ $return['protocol']['allow'] = $allow;
 
 $_HTML->assign('id',$info['ufeatures']['id']);
 $_HTML->assign('info',$return);
-$_HTML->assign('ract',$act);
 $_HTML->assign('groups',$groups);
 $_HTML->assign('gmember_slt',$gmember_slt);
 $_HTML->assign('gmember_unslt',$gmember_unslt);

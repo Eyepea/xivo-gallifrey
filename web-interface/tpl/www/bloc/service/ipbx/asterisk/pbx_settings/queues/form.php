@@ -81,7 +81,7 @@ endif;
 		<div id="userlist" class="fm-field fm-multilist">
 			<div class="slt-outlist">
 
-		<?=$form->select(array('name' => 'userlist','label' => false,'id' => 'it-userlist','multiple' => true,'size' => 5,'field' => false,'key' => 'fullname'),$user_list);?>
+		<?=$form->select(array('name' => 'userlist','label' => false,'id' => 'it-userlist','multiple' => true,'size' => 5,'field' => false,'key' => 'identity'),$user_list);?>
 
 			</div>
 			<div class="inout-list">
@@ -93,7 +93,7 @@ endif;
 			</div>
 			<div class="slt-inlist">
 
-		<?=$form->select(array('name' => 'user[]','label' => false,'id' => 'it-user','multiple' => true,'size' => 5,'field' => false,'key' => 'fullname'),$user_slt);?>
+		<?=$form->select(array('name' => 'user[]','label' => false,'id' => 'it-user','multiple' => true,'size' => 5,'field' => false,'key' => 'identity'),$user_slt);?>
 
 			</div>
 		</div>
@@ -112,7 +112,7 @@ endif;
 		<div id="agrouplist" class="fm-field fm-multilist"><p><label id="lb-agrouplist" for="it-agrouplist"><?=$this->bbf('fm_agentgroup');?></label></p>
 			<div class="slt-outlist">
 
-		<?=$form->select(array('name' => 'agrouplist','label' => false,'id' => 'it-agrouplist','multiple' => true,'size' => 5,'field' => false,'key' => 'fullname'),$agroup_list);?>
+		<?=$form->select(array('name' => 'agrouplist','label' => false,'id' => 'it-agrouplist','multiple' => true,'size' => 5,'field' => false,'key' => 'identity'),$agroup_list);?>
 
 			</div>
 			<div class="inout-list">
@@ -124,7 +124,7 @@ endif;
 			</div>
 			<div class="slt-inlist">
 
-		<?=$form->select(array('name' => 'agroup[]','label' => false,'id' => 'it-agroup','multiple' => true,'size' => 5,'field' => false,'key' => 'fullname'),$agroup_slt);?>
+		<?=$form->select(array('name' => 'agroup[]','label' => false,'id' => 'it-agroup','multiple' => true,'size' => 5,'field' => false,'key' => 'identity'),$agroup_slt);?>
 
 			</div>
 		</div>
@@ -135,7 +135,7 @@ endif;
 		<div id="agentlist" class="fm-field fm-multilist"><p><label id="lb-agentlist" for="it-agentlist"><?=$this->bbf('fm_agent');?></label></p>
 			<div class="slt-outlist">
 
-		<?=$form->select(array('name' => 'agentlist','label' => false,'id' => 'it-agentlist','multiple' => true,'size' => 5,'field' => false,'key' => 'fullname'),$agent_list);?>
+		<?=$form->select(array('name' => 'agentlist','label' => false,'id' => 'it-agentlist','multiple' => true,'size' => 5,'field' => false,'key' => 'identity'),$agent_list);?>
 
 			</div>
 			<div class="inout-list">
@@ -147,7 +147,7 @@ endif;
 			</div>
 			<div class="slt-inlist">
 
-		<?=$form->select(array('name' => 'agent[]','label' => false,'id' => 'it-agent','multiple' => true,'size' => 5,'field' => false,'key' => 'fullname'),$agent_slt);?>
+		<?=$form->select(array('name' => 'agent[]','label' => false,'id' => 'it-agent','multiple' => true,'size' => 5,'field' => false,'key' => 'identity'),$agent_slt);?>
 
 			</div>
 		</div>

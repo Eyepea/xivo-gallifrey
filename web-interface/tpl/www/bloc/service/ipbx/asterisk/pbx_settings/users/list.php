@@ -5,20 +5,21 @@
 	$pager = $this->vars('pager');
 	$list = $this->vars('list');
 	$act = $this->vars('act');
-	$ract = $this->vars('ract');
 
-	$param = array('ract' => $ract);
-	$search = '';
+	$param = array();
 
-	if($ract === 'search' && ($search = $this->vars('search')) !== ''):
-		$act = 'search';
+	if(($search = (string) $this->vars('search')) !== ''):
 		$param['search'] = $search;
-	elseif($ract === 'context' && ($context = $this->vars('context')) !== ''):
-		$act = 'context';
+	elseif(($context = $this->vars('context')) !== ''):
 		$param['context'] = $context;
 	endif;
 
-	$page = $url->pager($pager['pages'],$pager['page'],$pager['prev'],$pager['next'],'service/ipbx/pbx_settings/users',array('act' => $act,$param));
+	$page = $url->pager($pager['pages'],
+			    $pager['page'],
+			    $pager['prev'],
+			    $pager['next'],
+			    'service/ipbx/pbx_settings/users',
+			    array('act' => $act,$param));
 ?>
 <div class="b-list">
 <?php
@@ -29,9 +30,9 @@
 <form action="#" name="fm-users-list" method="post" accept-charset="utf-8">
 <?=$form->hidden(array('name' => XIVO_SESS_NAME,'value' => XIVO_SESS_ID));?>
 <?=$form->hidden(array('name' => 'act','value' => $act));?>
-<?=$form->hidden(array('name' => 'ract','value' => $ract));?>
 <?=$form->hidden(array('name' => 'page','value' => $pager['page']));?>
-<?=($search !== '' ? $form->hidden(array('name' => 'search','value' => $search)) : '');?>
+<?=$form->hidden(array('name' => 'search','value' => ''));?>
+<?=$form->hidden(array('name' => 'context','value' => ''));?>
 <table cellspacing="0" cellpadding="0" border="0">
 	<tr class="sb-top">
 		<th class="th-left xspan"><span class="span-left">&nbsp;</span></th>
@@ -64,17 +65,11 @@
 				$icon = 'enable';
 			endif;
 
-			if(xivo_empty($ref['ufeatures']['firstname']) === true && xivo_empty($ref['ufeatures']['lastname']) === true):
-				$fullname = '-';
-			else:
-				$fullname = trim($ref['ufeatures']['firstname'].' '.$ref['ufeatures']['lastname']);
-			endif;
-
 			$mod = $j % 2 === 0 ? 1 : 2;
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=$mod?>on2">
 		<td class="td-left"><?=$form->checkbox(array('name' => 'users['.$ref['ufeatures']['protocol'].'][]','value' => $ref['protocol']['id'],'label' => false,'id' => 'it-users-'.$i,'checked' => false,'field' => false));?></td>
-		<td class="txt-left"><label for="it-users-<?=$i?>" id="lb-users-<?=$i?>"><?=$url->img_html('img/site/phone/'.$icon.'.gif',null,'class="icons-list"');?><?=$fullname?></label></td>
+		<td class="txt-left"><label for="it-users-<?=$i?>" id="lb-users-<?=$i?>"><?=$url->img_html('img/site/phone/'.$icon.'.gif',null,'class="icons-list"');?><?=$ref['ufeatures']['fullname']?></label></td>
 		<td><?=$this->bbf('user_protocol-'.$ref['ufeatures']['protocol']);?></td>
 		<td><?=$ref['protocol']['name']?></td>
 		<td><?=(xivo_empty($ref['ufeatures']['number']) === false ? $ref['ufeatures']['number'] : '-')?></td>

@@ -67,6 +67,9 @@ Appels entrants
 ; ply_service-ipbx-call_management-outcall
 Appels sortants
 
+; ply_service-ipbx-call_management-rightcall
+Droits d'appels
+
 ; ply_service-ipbx-call_management-schedule
 Horaires
 

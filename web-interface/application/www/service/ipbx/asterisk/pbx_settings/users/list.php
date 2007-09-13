@@ -2,7 +2,14 @@
 
 $total = 0;
 
-if(($users = $ipbx->get_users_list()) !== false)
+if($search !== '')
+	$users = $ipbx->get_users_search($search);
+else if($context !== '')
+	$users = $ipbx->get_users_context($context);
+else
+	$users = $ipbx->get_users_list();
+
+if($users !== false)
 {
 	$total = count($users);
 	xivo::load_class('xivo_sort');
@@ -12,6 +19,7 @@ if(($users = $ipbx->get_users_list()) !== false)
 
 $_HTML->assign('pager',xivo_calc_page($page,20,$total));
 $_HTML->assign('list',$users);
-$_HTML->assign('ract',$act);
+$_HTML->assign('search',$search);
+$_HTML->assign('context',$context);
 
 ?>

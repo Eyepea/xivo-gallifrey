@@ -96,6 +96,29 @@ class xivo_service_asterisk_extenumbers extends xivo_service_asterisk_abstract
 		return(false);
 	}
 
+	function get_search($exten,$context='')
+	{
+		if(($extenchk = $this->chk_exten($exten)) === false)
+			return(false);
+
+		$extenhash = sha1($extenchk);
+
+		if(($list = $this->_dso->get_search($exten,$extenhash,$context)) === false)
+			return(false);
+
+		$nb = count($list);
+
+		$r = array();
+
+		for($i = 0;$i < $nb;$i++)
+			$r[] = $this->_prepare($list[$i]);
+
+		if(isset($r[0]) === false)
+			$r = false;
+
+		return($r);
+	}
+
 	function chk_exten($str)
 	{
 		$str = strval($str);

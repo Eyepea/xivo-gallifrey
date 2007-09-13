@@ -35,6 +35,28 @@ class xivo_service_asterisk_extenumbers_abstract_sql extends xivo_service_asteri
 
 		return($r);
 	}
+
+	function get_search($exten,$extenhash,$context='')
+	{
+		$where = array();
+
+		if(($rs = $this->_dso->search_contain('exten',$exten)) !== false)
+			$where[] = $rs;
+
+		if(($rs = $this->_dso->search_exact('extenhash',$extenhash)) !== false)
+			$where[] = $rs;
+
+		if(xivo_haslen($context) !== false
+		&& ($rs = $this->_dso->search_exact('context',$context)) !== false)
+			$where[] = $rs;
+
+		if(($where = implode(' OR ',$where)) === '')
+			return(false);
+
+		$r = $this->_dso->select_all($this->_param['table'],null,$where);
+
+		return($r);
+	}
 }
 
 ?>

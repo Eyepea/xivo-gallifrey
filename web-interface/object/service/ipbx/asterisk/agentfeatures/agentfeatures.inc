@@ -25,6 +25,13 @@ class xivo_service_asterisk_agentfeatures extends xivo_service_asterisk_abstract
 
 	function _prepare($data)
 	{
+		$data['fullname'] = trim(trim($data['firstname']).' '.trim($data['lastname']));
+
+		if($data['fullname'] === '')
+			$data['fullname'] = '-';
+
+		$data['identity'] = $data['fullname'].' ('.$data['number'].')';
+
 		$data['commented'] = (bool) $data['commented'];
 		$data['silent'] = (bool) $data['silent'];
 
