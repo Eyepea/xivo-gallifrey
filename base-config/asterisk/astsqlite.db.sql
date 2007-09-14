@@ -394,7 +394,8 @@ INSERT INTO extensions VALUES(NULL,0,'features','_*9',3,'Set','FILE=${CALLERID(n
 INSERT INTO extensions VALUES(NULL,0,'features','_*9',4,'Record','${ROOT}/${FILE}:wav','recsnd');
 INSERT INTO extensions VALUES(NULL,0,'features','_*9',5,'Wait',1,'recsnd');
 INSERT INTO extensions VALUES(NULL,0,'features','_*9',6,'Playback','${ROOT}/${FILE}','recsnd');
-INSERT INTO extensions VALUES(NULL,0,'features','_*9',7,'Hangup','','recsnd');
+INSERT INTO extensions VALUES(NULL,0,'features','_*9',7,'System','chmod 660 ${ROOT}/${FILE}.wav','recsnd');
+INSERT INTO extensions VALUES(NULL,0,'features','_*9',8,'Hangup','','recsnd');
 INSERT INTO extensions VALUES(NULL,0,'features','_*10',1,'Answer','','phonestatus');
 INSERT INTO extensions VALUES(NULL,0,'features','_*10',2,'Playback','status-phone','phonestatus');
 INSERT INTO extensions VALUES(NULL,0,'features','_*10',3,'Playback','forward-inc','phonestatus');
