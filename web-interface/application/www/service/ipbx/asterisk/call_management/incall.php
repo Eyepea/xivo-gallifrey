@@ -94,7 +94,7 @@ switch($act)
 				break;
 			}
 
-			xivo_go($_HTML->url('service/ipbx/call_management/incall'),$param);
+			$_QRY->go($_HTML->url('service/ipbx/call_management/incall'),$param);
 		}
 		while(false);
 
@@ -168,7 +168,7 @@ switch($act)
 		|| ($info['incall']['linked'] === true
 		   && $incall->is_valid($info['incall']['type'],
 		   			   $info['incall']['typeval']) === false) === true)
-			xivo_go($_HTML->url('service/ipbx/call_management/incall'),$param);
+			$_QRY->go($_HTML->url('service/ipbx/call_management/incall'),$param);
 
 		if($info['incall']['linked'] === false)
 		{
@@ -254,7 +254,7 @@ switch($act)
 				break;
 			}
 
-			xivo_go($_HTML->url('service/ipbx/call_management/incall'),$param);
+			$_QRY->go($_HTML->url('service/ipbx/call_management/incall'),$param);
 		}
 		while(false);
 
@@ -344,13 +344,13 @@ switch($act)
 			}
 		}
 
-		xivo_go($_HTML->url('service/ipbx/call_management/incall'),$param);
+		$_QRY->go($_HTML->url('service/ipbx/call_management/incall'),$param);
 		break;
 	case 'deletes':
 		$param['page'] = $page;
 
 		if(($values = xivo_issa_val('incalls',$_QR)) === false)
-			xivo_go($_HTML->url('service/ipbx/call_management/incall'),$param);
+			$_QRY->go($_HTML->url('service/ipbx/call_management/incall'),$param);
 
 		$extenumbers = &$ipbx->get_module('extenumbers');
 		$extensions = &$ipbx->get_module('extensions');
@@ -381,7 +381,7 @@ switch($act)
 			$extenumbers->add_origin();
 		}
 
-		xivo_go($_HTML->url('service/ipbx/call_management/incall'),$param);
+		$_QRY->go($_HTML->url('service/ipbx/call_management/incall'),$param);
 		break;
 	case 'disables':
 	case 'enables':
@@ -390,7 +390,7 @@ switch($act)
 		$invdisable = $disable === true ? false : true;
 
 		if(($values = xivo_issa_val('incalls',$_QR)) === false)
-			xivo_go($_HTML->url('service/ipbx/call_management/incall'),$param);
+			$_QRY->go($_HTML->url('service/ipbx/call_management/incall'),$param);
 
 		$extenumbers = &$ipbx->get_module('extenumbers');
 		$extensions = &$ipbx->get_module('extensions');
@@ -412,7 +412,7 @@ switch($act)
 				$incall->disable($info['incall']['id'],$invdisable);
 		}
 
-		xivo_go($_HTML->url('service/ipbx/call_management/incall'),$param);
+		$_QRY->go($_HTML->url('service/ipbx/call_management/incall'),$param);
 		break;
 	default:
 		$act = 'list';

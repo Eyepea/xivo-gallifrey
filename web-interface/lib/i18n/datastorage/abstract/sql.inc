@@ -2,7 +2,7 @@
 
 class xivo_i18n_abstract_sql
 {
-	var $_param	= array('table'	=> 'i18n_cache');
+	var $_param	= array('table'	=> 'i18ncache');
 	var $_dso	= null;
 
 	function _init(&$dso,$param=array())

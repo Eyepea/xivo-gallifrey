@@ -7,7 +7,7 @@ if(isset($_QR['id']) === false
 || ($info['tfeatures'] = $tfeatures->get_where(array(
 					'trunkid' => $info['trunk']['id'],
 					'trunk' => 'custom'))) === false)
-	xivo_go($_HTML->url('service/ipbx/trunk_management/custom'),$param);
+	$_QRY->go($_HTML->url('service/ipbx/trunk_management/custom'),$param);
 
 if($trunkcustom->delete($info['trunk']['id']) !== false)
 {
@@ -15,6 +15,6 @@ if($trunkcustom->delete($info['trunk']['id']) !== false)
 		$trunkcustom->add_origin();
 }
 
-xivo_go($_HTML->url('service/ipbx/trunk_management/custom'),$param);
+$_QRY->go($_HTML->url('service/ipbx/trunk_management/custom'),$param);
 
 ?>

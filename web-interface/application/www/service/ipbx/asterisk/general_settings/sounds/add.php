@@ -34,7 +34,7 @@ do
 	if($sounds->add($filename,$file->info['tmp_name']) === true)
 	{
 		$param['dir'] = $info['dirname'];
-		xivo_go($_HTML->url('service/ipbx/general_settings/sounds'),$param);
+		$_QRY->go($_HTML->url('service/ipbx/general_settings/sounds'),$param);
 	}
 }
 while(false);

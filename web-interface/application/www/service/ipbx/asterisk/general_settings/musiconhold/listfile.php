@@ -7,7 +7,7 @@ if($cat === '')
 	$cat = false;
 
 if(($infos = $musiconhold->get_category($cat)) === false)
-	xivo_go($_HTML->url('service/ipbx/general_settings/musiconhold'),'act=list');
+	$_QRY->go($_HTML->url('service/ipbx/general_settings/musiconhold'),'act=list');
 
 if(($files = $infos['dir']['files']) !== false)
 {

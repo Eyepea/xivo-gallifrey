@@ -94,7 +94,7 @@ switch($act)
 				break;
 			}
 
-			xivo_go($_HTML->url('service/ipbx/call_management/schedule'),$param);
+			$_QRY->go($_HTML->url('service/ipbx/call_management/schedule'),$param);
 		}
 		while(false);
 
@@ -166,7 +166,7 @@ switch($act)
 		      || ($info['typefalse'] = $schedule->is_valid($info['schedule']['typefalse'],
 								   $info['schedule']['typevalfalse'],
 								   $info['schedule']['id'])) === false) === true) === true)
-			xivo_go($_HTML->url('service/ipbx/call_management/schedule'),$param);
+			$_QRY->go($_HTML->url('service/ipbx/call_management/schedule'),$param);
 
 		$edit = true;
 		$return = &$info;
@@ -255,7 +255,7 @@ switch($act)
 				break;
 			}
 
-			xivo_go($_HTML->url('service/ipbx/call_management/schedule'),$param);
+			$_QRY->go($_HTML->url('service/ipbx/call_management/schedule'),$param);
 		}
 		while(false);
 
@@ -341,13 +341,13 @@ switch($act)
 						      'typeval' => $id));
 		}
 
-		xivo_go($_HTML->url('service/ipbx/call_management/schedule'),$param);
+		$_QRY->go($_HTML->url('service/ipbx/call_management/schedule'),$param);
 		break;
 	case 'deletes':
 		$param['page'] = $page;
 
 		if(($values = xivo_issa_val('schedules',$_QR)) === false)
-			xivo_go($_HTML->url('service/ipbx/call_management/schedule'),$param);
+			$_QRY->go($_HTML->url('service/ipbx/call_management/schedule'),$param);
 
 		$incall = &$ibpx->get_module('incall');
 
@@ -370,7 +370,7 @@ switch($act)
 						      'typeval' => $id));
 		}
 
-		xivo_go($_HTML->url('service/ipbx/call_management/schedule'),$param);
+		$_QRY->go($_HTML->url('service/ipbx/call_management/schedule'),$param);
 		break;
 	case 'disables':
 	case 'enables':
@@ -378,14 +378,14 @@ switch($act)
 		$disable = $act === 'disables' ? true : false;
 
 		if(($values = xivo_issa_val('schedules',$_QR)) === false)
-			xivo_go($_HTML->url('service/ipbx/call_management/schedule'),$param);
+			$_QRY->go($_HTML->url('service/ipbx/call_management/schedule'),$param);
 
 		$nb = count($values);
 
 		for($i = 0;$i < $nb;$i++)
 			$schedule->disable($values[$i],$disable);
 
-		xivo_go($_HTML->url('service/ipbx/call_management/schedule'),$param);	
+		$_QRY->go($_HTML->url('service/ipbx/call_management/schedule'),$param);	
 		break;
 	default:
 		$total = 0;

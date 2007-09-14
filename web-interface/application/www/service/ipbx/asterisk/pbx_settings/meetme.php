@@ -115,7 +115,7 @@ switch($act)
 				break;
 			}
 
-			xivo_go($_HTML->url('service/ipbx/pbx_settings/meetme'),$param);
+			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/meetme'),$param);
 		}
 		while(false);
 
@@ -136,7 +136,7 @@ switch($act)
 		if(isset($_QR['id']) === false
 		|| ($info['meetme'] = $meetme->get($_QR['id'])) === false
 		|| ($info['mfeatures'] = $mfeatures->get_where(array('meetmeid' => $info['meetme']['id']))) === false)
-			xivo_go($_HTML->url('service/ipbx/pbx_settings/meetme'),$param);
+			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/meetme'),$param);
 
 		$musiconhold = &$ipbx->get_module('musiconhold');
 
@@ -354,7 +354,7 @@ switch($act)
 				   				'typevalfalse' => $info['mfeatures']['id']));
 			}
 
-			xivo_go($_HTML->url('service/ipbx/pbx_settings/meetme'),$param);
+			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/meetme'),$param);
 		}
 		while(false);
 
@@ -391,7 +391,7 @@ switch($act)
 		}
 		while(false);
 		
-		xivo_go($_HTML->url('service/ipbx/pbx_settings/meetme'),$param);
+		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/meetme'),$param);
 		break;
 	case 'delete':
 		$param['page'] = $page;
@@ -399,7 +399,7 @@ switch($act)
 		if(isset($_QR['id']) === false
 		|| ($info['meetme'] = $meetme->get($_QR['id'])) === false
 		|| ($info['mfeatures'] = $mfeatures->get_where(array('meetmeid' => $info['meetme']['id']))) === false)
-			xivo_go($_HTML->url('service/ipbx/pbx_settings/meetme'),$param);
+			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/meetme'),$param);
 
 		do
 		{
@@ -460,7 +460,7 @@ switch($act)
 		}
 		while(false);
 
-		xivo_go($_HTML->url('service/ipbx/pbx_settings/meetme'),$param);
+		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/meetme'),$param);
 		break;
 	case 'deletes':
 		$param['page'] = $page;
@@ -535,7 +535,7 @@ switch($act)
 			}
 		}
 		
-		xivo_go($_HTML->url('service/ipbx/pbx_settings/meetme'),$param);
+		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/meetme'),$param);
 		break;
 	default:
 		$act = 'list';

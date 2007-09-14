@@ -54,7 +54,9 @@ function xivo_bool($bool)
 
 function xivo_empty($val,$str=true)
 {
-	if(empty($val) === false || $val === '0' || $val === 0
+	if(empty($val) === false
+	|| $val === '0'
+	|| $val === 0
 	|| ($str !== true && $val !== $str) === true)
 		return(false);
 
@@ -118,8 +120,8 @@ function xivo_xdigit($str=0,$def=null,$t=false)
 
 function xivo_uint($str=0,$def=0,$t=false)
 {
-	$str = (int) $str;
-	$def = (int) $def;
+	$str = intval($str);
+	$def = intval($def);
 	$t = (bool) $t;
 
 	if($str < 0)
@@ -131,28 +133,28 @@ function xivo_uint($str=0,$def=0,$t=false)
 	return($str);
 }
 
-function xivo_cprint($str='',$def=null,$t=false)
+function xivo_sgraph($str='',$def=null,$t=false)
 {
 	$r = false;
 
 	$t = (bool) $t;
 
-	if(xivo_cast_print($str,'print') === true)
+	if(xivo_is_sgraph($str) === true)
 		return($str);
 	
 	if($def === null)
 		return($r);
 
 	if($t === true)
-		$r = xivo_cast_print($def,'print') === true ? $def : false;
+		$r = xivo_is_sgraph($def) === true ? $def : false;
 	else
 		$r = $def;
 
 	return($r);
 }
 
-function xivo_cast_print($str,$type='')
-{
+function xivo_is_sgraph($str,$type='')
+{	
 	if(is_scalar($str) === false)
 		return(false);
 
@@ -162,17 +164,20 @@ function xivo_cast_print($str,$type='')
 
 	switch($type)
 	{
-		case 'crlf':
-			$reg .= '\x09';
-			break;
 		case 'tab':
+			// All characters printable with TAB SPACE
 			$reg .= '\x0A\x0D';
 			break;
-		case 'print':
-			$reg .= '\x09\x0A\x0D';
+		case 'crlf':
+			// All characters printable with CR LF SPACE
+			$reg .= '\x09';
 			break;
-		case 'strict':
-			return(ctype_print($str));
+		case 'crlftab':
+			// All characters printable with CR LF TAB SPACE
+			break;
+		default:
+			// All characters printable with SPACE
+			$reg .= '\x09\x0A\x0D';
 	}
 
 	if(preg_match('/['.$reg.']/',$str) === 0)
@@ -181,29 +186,36 @@ function xivo_cast_print($str,$type='')
 	return(false);
 }
 
-function xivo_cast_print_crlf($str)
+function xivo_is_sgraph_crlf($str)
 {
-	return(xivo_cast_print($str,'crlf'));
+	return(xivo_is_sgraph($str,'crlf'));
 }
 
-function xivo_cast_print_tab($str)
+function xivo_is_sgraph_tab($str)
 {
-	return(xivo_cast_print($str,'tab'));
+	return(xivo_is_sgraph($str,'tab'));
 }
 
-function xivo_cast_print_strict($str)
+function xivo_is_sgraph_crlf_tab($str,$type='')
 {
-	return(xivo_cast_print($str,'strict'));
+	return(xivo_is_sgraph($str,'crlftab'));
 }
 
-function xivo_cast_specials($str,$type='')
+function xivo_is_spunct($str,$type='',$space=true)
 {
+	$space = (bool) $space;
+
 	if(is_scalar($str) === false)
 		return(false);
 
 	$type = strtolower((string) $type);
 
-	$reg = '\x20-\x2F\x3A-\x40\x5B-\x60\x7B-\x7E';
+	if($space === true)
+		$reg = '\x20-';
+	else
+		$reg = '\x21-';
+
+	$reg .= '\x2F\x3A-\x40\x5B-\x60\x7B-\x7E';
 
 	switch($type)
 	{
@@ -214,7 +226,14 @@ function xivo_cast_specials($str,$type='')
 			$reg .= 'a-zA-Z';
 			break;
 		case 'alphanum':
-			return(ctype_print($str));
+			if($space === true)
+				return(ctype_print($str));
+			else
+				$reg .= '0-9a-zA-Z';
+			break;
+		default:
+			if($space === false)
+				return(ctype_punct($str));
 	}
 
 	if(preg_match('/^['.$reg.']+$/',$str) === 1)
@@ -223,83 +242,39 @@ function xivo_cast_specials($str,$type='')
 	return(false);
 }
 
-function xivo_cast_numspecials($str)
+function xivo_is_numspunct($str)
 {
-	return(xivo_cast_specials($str,'num'));
+	return(xivo_is_spunct($str,'num'));
 }
 
-function xivo_cast_alphaspecials($str)
+function xivo_is_alspunct($str)
 {
-	return(xivo_cast_specials($str,'alpha'));
+	return(xivo_is_spunct($str,'alpha'));
 }
 
-function xivo_cast_alphanumspecials($str)
+function xivo_is_alnumspunct($str)
 {
-	return(xivo_cast_specials($str,'alphanum'));
+	return(xivo_is_spunct($str,'alphanum'));
 }
 
-function xivo_cast_except($val,$except,$type='')
+function xivo_is_punct($str)
 {
-	$type = (string) $type;
+	return(xivo_is_spunct($str,null,false));
+}
 
-	if(is_numeric($except) === true)
-		$texcept = 'numeric';
-	else if(is_scalar($except) === true)
-		$texcept = 'scalar';
-	else
-		$texcept = strtolower(gettype($except));
+function xivo_is_numpunct($str)
+{
+	return(xivo_is_spunct($str,'num',false));
+}
 
-	switch($texcept.'-'.strtolower(gettype($val)))
-	{
-		case 'object-object':
-		case 'array-array':
-		case 'resource-resource':
-		case 'null-null':
-		case 'scalar-integer':
-		case 'scalar-double':
-		case 'scalar-boolean':
-		case 'scalar-string':
-		case 'numeric-integer':
-		case 'numeric-double':
-		case 'numeric-string':
-			return($val);
-	}
+function xivo_is_alpunct($str)
+{
+	return(xivo_is_spunct($str,'alpha',false));
+}
 
-	$except = (array) $except;
-
-	if(in_array($val,$except,true) === true)
-		return($val);
-
-	switch($type)
-	{
-		case 'xbool':
-		case 'xboolean':
-			$val = xivo_bool($val);
-			break;
-		case 'uint':
-		case 'uinteger':
-			$val = xivo_uint($val);
-			break;
-		case 'str':
-		case 'string':
-			$val = strval($val);
-			break;
-		case 'real':
-		case 'float':
-		case 'double':
-			$type = 'double';
-		case 'bool':
-		case 'boolean':
-		case 'int':
-		case 'integer':
-		case 'array':
-		case 'object':
-		case 'null':
-			$val = settype($val,$type);
-			break;
-	}
-
-	return($val);
+function xivo_is_alnumpunct($str)
+{
+	return(xivo_is_spunct($str,'alphanum',false));
 }
 
 function xivo_trunc(&$str,$nb=0,$end='',$chr=null)
@@ -493,39 +468,6 @@ function xivo_svar_dump(&$a,$t=false)
 	return(($t ? nl2br($a) : $a));
 }
 
-function xivo_go($v='',$k='')
-{
-	$v = (string) $v;
-
-	$sep = XIVO_SEP_ARG_OUT;
-
-	if($k === true)
-	{
-		$query = &xivo_gct::get('xivo_query');
-		$qstring = &$query->qstring_raw();
-		$qry = &$query->qstring_raw_str();
-	}
-	else if(is_array($k) === true)
-		$qry = xivo_query::mk_query_str($k);
-	else if($k !== '' && $k !== false)
-		$qry = (string) $k;
-	else $qry = '';
-
-	if(defined('XIVO_SESS_STR') === true)
-	{
-		if($k === true && $_SERVER['argc'] > 0)
-			$q = xivo_ak(XIVO_SESS_NAME,$qstring,true) === XIVO_SESS_ID ? $qry : ($qry !== '' ? $qry.$sep : '').XIVO_SESS_STR;
-		else if($k === false)
-			$q = '';
-		else if($k !== '')
-			$q = ($qry !== '' ? $qry.$sep : '').XIVO_SESS_STR;
-		else $q = XIVO_SESS_STR;
-	}
-	else $q = $qry;
-
-	die(header('Location: '.$v.'?'.$q));
-}
-
 function xivo_chk_email($email,$strict=false)
 {
 	$nb = 0;
@@ -534,7 +476,7 @@ function xivo_chk_email($email,$strict=false)
 	$len = strlen($email);
 
 	if($len < 6 || $len > 255
-	|| preg_match('/^[a-z0-9_-]+(\.[a-z0-9_-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*\.[a-z]{2,4}$/',$email) !== 1)
+	|| preg_match('/^[a-z0-9_-]+(?:\.[a-z0-9_-]+)*@[a-z0-9-]+(?:\.[a-z0-9-]+)*\.[a-z]{2,4}$/',$email) !== 1)
 		return(false);
 
 	if($strict === false || function_exists('getmxrr') === false)

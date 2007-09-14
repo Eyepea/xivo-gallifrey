@@ -3,7 +3,7 @@
 $param['page'] = $page;
 
 if(($arr = xivo_issa_val('peers',$_QR)) === false)
-	xivo_go($_HTML->url('service/ipbx/trunk_management/custom'),$param);
+	$_QRY->go($_HTML->url('service/ipbx/trunk_management/custom'),$param);
 
 $nb = count($arr);
 
@@ -22,6 +22,6 @@ for($i = 0;$i < $nb;$i++)
 		$trunkcustom->add_origin();
 }
 
-xivo_go($_HTML->url('service/ipbx/trunk_management/custom'),$param);
+$_QRY->go($_HTML->url('service/ipbx/trunk_management/custom'),$param);
 
 ?>

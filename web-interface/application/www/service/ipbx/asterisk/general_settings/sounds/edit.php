@@ -3,12 +3,12 @@
 $info = array();
 
 if(($info['directory'] = $sounds->get_dir($dir)) === false)
-	xivo_go($_HTML->url('service/ipbx/general_settings/sounds'),'act=listdir');
+	$_QRY->go($_HTML->url('service/ipbx/general_settings/sounds'),'act=listdir');
 
 $dir = $info['dirname'] = $info['directory']['dirname'];
 
 if(isset($_QR['id']) === false || ($info['file'] = $sounds->get($_QR['id'],$info['dirname'])) === false)
-	xivo_go($_HTML->url('service/ipbx/general_settings/sounds'),$param);
+	$_QRY->go($_HTML->url('service/ipbx/general_settings/sounds'),$param);
 
 $info['filename'] = $info['file']['basename'];
 $id = $info['file']['filename'];
@@ -32,7 +32,7 @@ do
 	if($sounds->edit($filename,$newfilename) === true)
 	{
 		$param['dir'] = $info['dirname'];
-		xivo_go($_HTML->url('service/ipbx/general_settings/sounds'),$param);
+		$_QRY->go($_HTML->url('service/ipbx/general_settings/sounds'),$param);
 	}
 
 	$info['filename'] = $info['file']['basename'];

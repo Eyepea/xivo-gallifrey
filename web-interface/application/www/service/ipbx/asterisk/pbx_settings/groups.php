@@ -151,7 +151,7 @@ switch($act)
 					$qmember->add($result['gmember'][$i]);
 			}
 
-			xivo_go($_HTML->url('service/ipbx/pbx_settings/groups'),$param);
+			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/groups'),$param);
 		}
 		while(false);
 
@@ -172,7 +172,7 @@ switch($act)
 		if(isset($_QR['id']) === false
 		|| ($info['gfeatures'] = $gfeatures->get($_QR['id'])) === false
 		|| ($info['queue'] = $queue->get($info['gfeatures']['name'])) === false)
-			xivo_go($_HTML->url('service/ipbx/pbx_settings/groups'),$param);
+			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/groups'),$param);
 
 		$user_orig = $user_list;
 
@@ -586,7 +586,7 @@ switch($act)
 				   				'typevalfalse' => $info['gfeatures']['id']));
 			}
 
-			xivo_go($_HTML->url('service/ipbx/pbx_settings/groups'),$param);
+			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/groups'),$param);
 		}
 		while(false);
 
@@ -608,7 +608,7 @@ switch($act)
 		|| ($info['gfeatures'] = $gfeatures->get($_QR['id'])) === false
 		|| ($info['queue'] = $queue->get($info['gfeatures']['name'])) === false
 		|| $qmember->get_nb(array('queue_name' => $info['queue']['name'])) !== 0)
-			xivo_go($_HTML->url('service/ipbx/pbx_settings/groups'),$param);
+			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/groups'),$param);
 
 		do
 		{
@@ -669,7 +669,7 @@ switch($act)
 		}
 		while(false);
 
-		xivo_go($_HTML->url('service/ipbx/pbx_settings/groups'),$param);
+		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/groups'),$param);
 		break;
 	default:
 		$act = 'list';

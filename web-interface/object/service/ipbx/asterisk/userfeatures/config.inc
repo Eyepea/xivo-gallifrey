@@ -76,8 +76,8 @@ $array['element']['outcallerid-custom']['unset'] = true;
 $array['filter'] = array();
 $array['filter']['protocol'] = array('set' => true);
 $array['filter']['protocolid'] = array('cast' => 'uint');
-$array['filter']['firstname'] = array('set' => false,'chk' => 2,'cast' => 'cprint','maxlen' => 128);
-$array['filter']['lastname'] = array('set' => false,'chk' => 2,'cast' => 'cprint','maxlen' => 128);
+$array['filter']['firstname'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 128);
+$array['filter']['lastname'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 128);
 $array['filter']['name'] = array('minlen' => 1,'maxlen' => 40);
 $array['filter']['number'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9\*#]+$/','maxlen' => 40);
 $array['filter']['context'] = array('set' => false,'chk' => 2,'nokey' => array('general','globals','hints','features','authentification','zonemessages'),'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 39);
@@ -87,6 +87,6 @@ $array['filter']['popupwidget'] = array('bool' => true);
 $array['filter']['ringgroup'] = array('bool' => true);
 $array['filter']['musiconhold'] = array('set' => false,'chk' => 2,'maxlen' => 20);
 $array['filter']['outcallerid'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_-]+$/i','maxlen' => 80);
-$array['filter']['comment'] = array('chk' => 2,'maxlen' => 1000,'cast' => 'print','eol' => true);
+$array['filter']['description'] = array('chk' => 2,'maxlen' => 1000,'cast' => 'sgraph_crlf_tab','eol' => true);
 
 ?>

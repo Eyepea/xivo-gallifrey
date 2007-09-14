@@ -3,7 +3,7 @@
 require_once('xivo.php');
 
 if(xivo_user::chk_authorize('root') === false)
-	xivo_go($_HTML->url('xivo'));
+	$_QRY->go($_HTML->url('xivo'));
 
 $cat = isset($_QR['cat']) === true ? $_QR['cat'] : '';
 
@@ -13,7 +13,7 @@ switch($cat)
 {
 	case 'edit':
 		if(isset($_QR['id']) === false || ($info = $_USR->get($_QR['id'])) === false)
-			xivo_go($_HTML->url('xivo/configuration'),$param);
+			$_QRY->go($_HTML->url('xivo/configuration'),$param);
 
 		if(isset($_QR['fm_send']) === true)
 		{
@@ -22,7 +22,7 @@ switch($cat)
 				if($_USR->get_infos('id') === $_QR['id'])
 					$_USR->load_by_id($_QR['id']);
 
-				xivo_go($_HTML->url('xivo/configuration'),$param);
+				$_QRY->go($_HTML->url('xivo/configuration'),$param);
 			}
 			else
 				$_HTML->assign('info',$info);
@@ -33,19 +33,19 @@ switch($cat)
 	case 'acl':
 		if(isset($_QR['id']) === false || ($info = $_USR->get($_QR['id'])) === false
 		|| xivo_user::chk_authorize('admin',$info['meta']) === false)
-			xivo_go($_HTML->url('xivo/configuration'),$param);
+			$_QRY->go($_HTML->url('xivo/configuration'),$param);
 
 		if(isset($_QR['fm_send']) === true)
 		{
 			$_USR->call_acl('edit',array($_QR));
-			xivo_go($_HTML->url('xivo/configuration'),$param);
+			$_QRY->go($_HTML->url('xivo/configuration'),$param);
 		}
 		else if(($user_tree = $_USR->call_acl('get_user',array($info['id']))) !== false)
 		{
 			$_HTML->assign('info',$info);
 			$_HTML->assign('tree',$user_tree);
 		}
-		else xivo_go($_HTML->url('xivo/configuration'),$param);
+		else $_QRY->go($_HTML->url('xivo/configuration'),$param);
 		break;
 	default:
 	case 'list':

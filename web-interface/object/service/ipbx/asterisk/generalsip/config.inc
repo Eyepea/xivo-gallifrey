@@ -342,7 +342,7 @@ $array['filter']['allowexternaldomains'] = array('bool' => true);
 $array['filter']['usereqphone'] = array('bool' => true);
 $array['filter']['realm'] = array('regexp' => '/[^"]/','maxlen' => 64);
 $array['filter']['alwaysauthreject'] = array('bool' => true);
-$array['filter']['useragent'] = array('cast' => 'print','maxlen' => 80);
+$array['filter']['useragent'] = array('cast' => 'sgraph','maxlen' => 80);
 $array['filter']['checkmwi'] = array('key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
 $array['filter']['regcontext'] = array('set' => false,'chk' => 2,'maxlen' => 39,
 					'regexp' => '/^(?!macro-)[a-z0-9_-]+$/',

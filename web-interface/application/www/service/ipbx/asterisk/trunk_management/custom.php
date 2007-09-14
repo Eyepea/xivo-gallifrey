@@ -25,7 +25,7 @@ switch($act)
 		$action = 'enables';
 		break;
 	default:
-		xivo_go($_HTML->url('service/ipbx'));
+		$_QRY->go($_HTML->url('service/ipbx'));
 }
 
 include(dirname(__FILE__).'/custom/'.$action.'.php');

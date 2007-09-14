@@ -70,7 +70,7 @@ $array['filter']['transfer_user'] = array('bool' => true);
 $array['filter']['transfer_call'] = array('bool' => true);
 $array['filter']['write_caller'] = array('bool' => true);
 $array['filter']['write_calling'] = array('bool' => true);
-$array['filter']['url'] = array('set' => false,'chk' => 2,'maxlen' => 256);
+$array['filter']['url'] = array('set' => false,'chk' => 2,'maxlen' => 255);
 $array['filter']['announceoverride'] = array('set' => false,'chk' => 2,'maxlen' => 128);
 $array['filter']['timeout'] = array('key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
 

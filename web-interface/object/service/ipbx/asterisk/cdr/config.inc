@@ -140,11 +140,11 @@ $array['filter']['amaflags'] = array('set' => false,'chk' => 2,'key' => array(
 				XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_OMIT,
 				XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_BILLING,
 				XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_DOCUMENTATION));
-$array['filter']['src'] = array('set' => false,'chk' => 2,'cast' => 'cprint','maxlen' => 80);
+$array['filter']['src'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 80);
 $array['filter']['srcformat'] = array('key' => array('exact','begin','contain','end'));
-$array['filter']['dst'] = array('set' => false,'chk' => 2,'cast' => 'cprint','maxlen' => 80);
+$array['filter']['dst'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 80);
 $array['filter']['dstformat'] = array('key' => array('exact','begin','contain','end'));
-$array['filter']['clid'] = array('set' => false,'chk' => 2,'cast' => 'cprint','maxlen' => 80,'notag' => false);
+$array['filter']['clid'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 80,'notag' => false);
 $array['filter']['clidformat'] = array('key' => array('exact','begin','contain','end'));
 $array['filter']['accountcode'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_-]+$/i','maxlen' => 20);
 $array['filter']['accountcodeformat'] = array('key' => array('exact','begin','contain','end'));

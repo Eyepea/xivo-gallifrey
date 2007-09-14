@@ -112,7 +112,7 @@ do
 		break;
 	}
 
-	xivo_go($_HTML->url('service/ipbx/pbx_settings/users'),$param);
+	$_QRY->go($_HTML->url('service/ipbx/pbx_settings/users'),$param);
 }
 while(false);
 

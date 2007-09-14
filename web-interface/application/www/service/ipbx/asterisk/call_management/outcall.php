@@ -80,7 +80,7 @@ switch($act)
 				break;
 			}
 
-			xivo_go($_HTML->url('service/ipbx/call_management/outcall'),$param);
+			$_QRY->go($_HTML->url('service/ipbx/call_management/outcall'),$param);
 		}
 		while(false);
 
@@ -104,7 +104,7 @@ switch($act)
 		|| ($info['outcall'] = $outcall->get($_QR['id'])) === false
 		|| ($info['tfeatures'] = $tfeatures->get($info['outcall']['trunkfeaturesid'])) === false
 		|| ($info['extenumbers'] = $extenumbers->get($info['outcall']['extenumid'])) === false)
-			xivo_go($_HTML->url('service/ipbx/call_management/outcall'),$param);
+			$_QRY->go($_HTML->url('service/ipbx/call_management/outcall'),$param);
 
 		$edit = true;
 
@@ -172,7 +172,7 @@ switch($act)
 				break;
 			}
 
-			xivo_go($_HTML->url('service/ipbx/call_management/outcall'),$param);
+			$_QRY->go($_HTML->url('service/ipbx/call_management/outcall'),$param);
 		}
 		while(false);
 
@@ -211,13 +211,13 @@ switch($act)
 			}
 		}
 
-		xivo_go($_HTML->url('service/ipbx/call_management/outcall'),$param);
+		$_QRY->go($_HTML->url('service/ipbx/call_management/outcall'),$param);
 		break;
 	case 'deletes':
 		$param['page'] = $page;
 
 		if(($values = xivo_issa_val('outcalls',$_QR)) === false)
-			xivo_go($_HTML->url('service/ipbx/call_management/outcall'),$param);
+			$_QRY->go($_HTML->url('service/ipbx/call_management/outcall'),$param);
 
 		$extenumbers = &$ipbx->get_module('extenumbers');
 		$extensions = &$ipbx->get_module('extensions');
@@ -248,7 +248,7 @@ switch($act)
 			$extenumbers->add_origin();
 		}
 
-		xivo_go($_HTML->url('service/ipbx/call_management/outcall'),$param);
+		$_QRY->go($_HTML->url('service/ipbx/call_management/outcall'),$param);
 		break;
 	case 'disables':
 	case 'enables':
@@ -257,7 +257,7 @@ switch($act)
 		$invdisable = $disable === true ? false : true;
 
 		if(($values = xivo_issa_val('outcalls',$_QR)) === false)
-			xivo_go($_HTML->url('service/ipbx/call_management/outcall'),$param);
+			$_QRY->go($_HTML->url('service/ipbx/call_management/outcall'),$param);
 
 		$extenumbers = &$ipbx->get_module('extenumbers');
 		$extensions = &$ipbx->get_module('extensions');
@@ -279,7 +279,7 @@ switch($act)
 				$outcall->disable($info['outcall']['id'],$invdisable);
 		}
 
-		xivo_go($_HTML->url('service/ipbx/call_management/outcall'),$param);
+		$_QRY->go($_HTML->url('service/ipbx/call_management/outcall'),$param);
 		break;
 	default:
 		$act = 'list';

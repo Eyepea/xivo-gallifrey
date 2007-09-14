@@ -62,7 +62,7 @@ class xivo_service_asterisk_ami extends xivo_service_asterisk_abstract
 		$cmd = trim((string) $cmd);
 		$read = (bool) $read;
 
-		if(xivo_cast_print_strict($cmd) === false)
+		if(xivo_is_sgraph($cmd) === false)
 			return(false);
 
 		$this->_load_socket();

@@ -3,7 +3,7 @@
 $param['page'] = $page;
 
 if(($arr = xivo_issa_val('peers',$_QR)) === false)
-	xivo_go($_HTML->url('service/ipbx/trunk_management/iax'),$param);
+	$_QRY->go($_HTML->url('service/ipbx/trunk_management/iax'),$param);
 
 $generaliax = &$ipbx->get_module('generaliax');
 
@@ -32,6 +32,6 @@ for($i = 0;$i < $nb;$i++)
 	$trunkiax->disable($info['tfeatures']['trunkid'],$disable);
 }
 
-xivo_go($_HTML->url('service/ipbx/trunk_management/iax'),$param);
+$_QRY->go($_HTML->url('service/ipbx/trunk_management/iax'),$param);
 
 ?>

@@ -89,7 +89,7 @@ do
 		break;
 	}
 
-	xivo_go($_HTML->url('service/ipbx/trunk_management/iax'),$param);
+	$_QRY->go($_HTML->url('service/ipbx/trunk_management/iax'),$param);
 
 } while(false);
 

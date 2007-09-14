@@ -15,7 +15,7 @@ do
 	}
 
 	if($musiconhold->add_category($result) !== false)
-		xivo_go($_HTML->url('service/ipbx/general_settings/musiconhold'),$param);
+		$_QRY->go($_HTML->url('service/ipbx/general_settings/musiconhold'),$param);
 }
 while(false);
 

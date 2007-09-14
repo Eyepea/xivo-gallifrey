@@ -7,7 +7,7 @@ if($dir === '')
 	$dir = false;
 
 if(($dirs = $sounds->get_dir($dir)) === false)
-	xivo_go($_HTML->url('service/ipbx/general_settings/sounds'),'act=listdir');
+	$_QRY->go($_HTML->url('service/ipbx/general_settings/sounds'),'act=listdir');
 
 if(($dirs = $dirs['files']) !== false)
 {

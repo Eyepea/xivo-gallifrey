@@ -126,9 +126,9 @@ $array['filter']['daynumend'] = array('set' => false,'chk' => 2,'cast' => 'uint'
 $array['filter']['monthbeg'] = array('set' => false,'chk' => 2,'key' => array('jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'));
 $array['filter']['monthend'] = array('set' => false,'chk' => 2,'key' => array('jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'));
 $array['filter']['typetrue'] = array('key' => array('endcall','user','group','queue','meetme','schedule','application','custom'));
-$array['filter']['typevaltrue'] = array('maxlen' => 256,'cast' => 'print');
+$array['filter']['typevaltrue'] = array('maxlen' => 255,'cast' => 'sgraph');
 $array['filter']['typefalse'] = array('key' => array('endcall','user','group','queue','meetme','schedule','application','custom'));
-$array['filter']['typevalfalse'] = array('maxlen' => 256,'cast' => 'print');
+$array['filter']['typevalfalse'] = array('maxlen' => 255,'cast' => 'sgraph');
 $array['filter']['publicholiday'] = array('bool' => true);
 $array['filter']['linked'] = array('bool' => true);
 $array['filter']['commented'] = array('bool' => true);

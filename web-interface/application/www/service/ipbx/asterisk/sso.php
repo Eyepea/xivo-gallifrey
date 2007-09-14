@@ -1,27 +1,34 @@
 <?php
 
-$total = 0;
+if(($users = $ipbx->get_users_list()) === false)
+	die('XIVO-WEBI: no-data');
 
-if(($users = $ipbx->get_users_list()) !== false)
+$total = count($users);
+
+$msg = 'XIVO-WEBI: beg-data'."\n";
+
+for($i = 0;$i < $total;$i++)
 {
-	$total = count($users);
-	
-	for($i = 0;$i < $total;$i++)
-	{
-		$ref = &$users[$i];
+	$ref = &$users[$i];
 
-		echo	addcslashes($ref['ufeatures']['protocol'],'|'),'|',
-			addcslashes($ref['protocol']['name'],'|'),'|',
-			addcslashes($ref['protocol']['secret'],'|'),'|',
-			addcslashes($ref['ufeatures']['popupwidget'],'|'),'|',
-			addcslashes($ref['ufeatures']['number'],'|'),'|',
-			(int) (bool) $ref['protocol']['initialized'],'|',
-			(int) (bool) $ref['protocol']['commented'],'|',
-			addcslashes($ref['protocol']['callerid'],'|'),'|',
-			addcslashes($ref['ufeatures']['firstname'],'|'),'|',
-			addcslashes($ref['ufeatures']['lastname'],'|'),'|',
-			addcslashes($ref['ufeatures']['context'],'|'),"\n";
-	}
+	$msg .= '"'.str_replace('"','""',$ref['ufeatures']['protocol']).'"|'.
+		'"'.str_replace('"','""',$ref['protocol']['name']).'"|'.
+		'"'.str_replace('"','""',$ref['protocol']['secret']).'"|'.
+		'"'.str_replace('"','""',$ref['ufeatures']['popupwidget']).'"|'.
+		'"'.str_replace('"','""',$ref['ufeatures']['number']).'"|'.
+		'"'.str_replace('"','""',intval((bool) $ref['protocol']['initialized'])).'"|'.
+		'"'.str_replace('"','""',intval((bool) $ref['protocol']['commented'])).'"|'.
+		'"'.str_replace('"','""',$ref['protocol']['callerid']).'"|'.
+		'"'.str_replace('"','""',$ref['ufeatures']['firstname']).'"|'.
+		'"'.str_replace('"','""',$ref['ufeatures']['lastname']).'"|'.
+		'"'.str_replace('"','""',$ref['ufeatures']['context']).'"'."\n";
 }
+
+$msg .= 'XIVO-WEBI: end-data'."\n";
+
+if(isset($_QR['sum']) === true && $_QR['sum'] === md5($msg))
+	$msg = 'XIVO-WEBI: no-update';
+
+die($msg);
 
 ?>

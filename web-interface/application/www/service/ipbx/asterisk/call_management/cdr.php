@@ -49,7 +49,7 @@ $_HTML->assign('act',$act);
 if($act === 'exportcsv')
 {
 	if($result === false)
-		xivo_go($_HTML->url('service/ipbx/call_management/cdr'));
+		$_QRY->go($_HTML->url('service/ipbx/call_management/cdr'));
 
 	$_HTML->display('/bloc/service/ipbx/'.$ipbx->get_name().'/call_management/cdr/exportcsv');
 	die();

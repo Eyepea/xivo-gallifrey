@@ -3,7 +3,7 @@
 $param['page'] = $page;
 
 if(($arr = xivo_issa_val('peers',$_QR)) === false)
-	xivo_go($_HTML->url('service/ipbx/trunk_management/sip'),$param);
+	$_QRY->go($_HTML->url('service/ipbx/trunk_management/sip'),$param);
 
 $generalsip = &$ipbx->get_module('generalsip');
 
@@ -32,6 +32,6 @@ for($i = 0;$i < $nb;$i++)
 	$trunksip->disable($info['tfeatures']['trunkid'],$disable);
 }
 
-xivo_go($_HTML->url('service/ipbx/trunk_management/sip'),$param);
+$_QRY->go($_HTML->url('service/ipbx/trunk_management/sip'),$param);
 
 ?>

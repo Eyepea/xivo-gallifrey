@@ -3,7 +3,7 @@
 class xivo_session_abstract_sql
 {
 	var $_param		= array('table'	=> 'session');
-	var $_attrib		= array('user_id' => 0);
+	var $_attrib		= array('userid' => 0);
 	var $_dso		= null;
 	var $_time		= XIVO_SESS_TIME;
 	var $_insert		= false;
@@ -54,8 +54,8 @@ class xivo_session_abstract_sql
 
 		$this->_insert = true;
 
-		$rs = $this->_dso->query('SELECT user_id, data, expire FROM '.$this->_param['table'].
-					 ' WHERE sesskey = \''.$this->_dso->escape_string($key).'\''.
+		$rs = $this->_dso->query('SELECT userid, data, expire FROM '.$this->_param['table'].
+					 ' WHERE key = \''.$this->_dso->escape_string($key).'\''.
 					 ' AND expire >= '.gmmktime(),true);
 
 		if($rs !== false)
@@ -66,17 +66,17 @@ class xivo_session_abstract_sql
 				$rw = $this->_dso->fetch_assoc($rs);
 
 				$r = rawurldecode($rw['data']);
-				$this->_attrib['user_id'] = $rw['user_id'];
+				$this->_attrib['userid'] = $rw['userid'];
 
 				if(empty($r) === true)
-					$this->_dso->delete($this->_param['table'],'sesskey = \''.$this->_dso->escape_string($key).'\'');
+					$this->_dso->delete($this->_param['table'],'key = \''.$this->_dso->escape_string($key).'\'');
 			}
 
 			if($this->_dso->is_free() === true)
 				$this->_dso->free($rs);
 		}
 
-		$this->_crc = sha1($r.$this->_attrib['user_id']);
+		$this->_crc = sha1($r.$this->_attrib['userid']);
 
 		return($r);
 	}
@@ -92,7 +92,7 @@ class xivo_session_abstract_sql
 
 		$now = gmmktime();
 		$expire = $now + $this->_time;
-		$crc = sha1($val.$this->_attrib['user_id']);
+		$crc = sha1($val.$this->_attrib['userid']);
 
 		if($this->_insert === false && $this->_crc !== '' && $this->_crc === $crc)
 			return(true);
@@ -101,14 +101,14 @@ class xivo_session_abstract_sql
 
 		if($this->_insert === false)
 		{
-			$where = 'sesskey = \''.$this->_dso->escape_string($key).'\'';
+			$where = 'key = \''.$this->_dso->escape_string($key).'\'';
 
 			if(($r = $this->_dso->select_count($this->_param['table'],null,$where)) !== false)
 			{
 				if($r > 0)
 				{
 					$arr = array();
-					$arr['user_id'] = $this->_attrib['user_id'];
+					$arr['userid'] = $this->_attrib['userid'];
 					$arr['expire'] = $expire;
 					$arr['data'] = $val;
 
@@ -126,8 +126,8 @@ class xivo_session_abstract_sql
 			return(true);
 
 		$arr = array();
-		$arr['user_id'] = $this->_attrib['user_id'];
-		$arr['sesskey'] = $key;
+		$arr['userid'] = $this->_attrib['userid'];
+		$arr['key'] = $key;
 		$arr['start'] = $now;
 		$arr['expire'] = $expire;
 		$arr['data'] = $val;
@@ -139,7 +139,7 @@ class xivo_session_abstract_sql
 
 	function destroy($key)
 	{
-		$this->_dso->delete($this->_param['table'],'sesskey = \''.$this->_dso->escape_string($key).'\'');
+		$this->_dso->delete($this->_param['table'],'key = \''.$this->_dso->escape_string($key).'\'');
 		return(true);
 	}
 

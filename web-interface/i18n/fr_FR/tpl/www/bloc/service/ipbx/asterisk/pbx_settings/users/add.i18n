@@ -193,8 +193,8 @@ Message attaché :
 ; fm_voicemail_delete
 Supprimer message après notification :
 
-; fm_userfeatures_comment
-Commentaire :
+; fm_userfeatures_description
+Description :
 
 ; fm_protocol_callerid
 Nom d'appel :

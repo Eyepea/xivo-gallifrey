@@ -67,6 +67,36 @@ class xivo_query
 		return(($ref = &$r));
 	}
 
+	function go($location='',$query='')
+	{
+		$location = (string) $location;
+
+		if($query === true)
+		{
+			$q = $this->qstring_raw_str();
+
+			if($this->get_qr(XIVO_SESS_NAME) === XIVO_SESS_ID)
+				$query = false;
+		}
+		else if(is_array($query) === true)
+			$q = $this->mk_query_str($query);
+		else
+			$q = strval($query);
+
+		if($query !== false)
+		{
+			if(xivo_haslen($q) === true)
+				$q .= XIVO_SEP_ARG_OUT;
+
+			$q .= XIVO_SESS_STR;
+		}
+
+		if(xivo_haslen($q) === true)
+			$location .= '?'.$q;
+
+		die(header('Location: '.$location));
+	}
+
 	function get_qr($name)
 	{
 		if(isset($this->raw[$name]) === true)

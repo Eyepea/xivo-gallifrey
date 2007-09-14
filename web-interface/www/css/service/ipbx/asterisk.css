@@ -4,7 +4,7 @@
 #s-asterisk #index .sb-content dl {width: 50%;}
 #s-asterisk #index .sb-content dt {padding-top: 10px;font-weight: bold;}
 
-#s-asterisk .sb-content #comment, #s-asterisk .sb-content #emailbody, #s-asterisk .sb-context #pagerbody {text-align: center;width: 100%;}
+#s-asterisk .sb-content #description, #s-asterisk .sb-content #emailbody, #s-asterisk .sb-context #pagerbody {text-align: center;width: 100%;}
 
 #s-asterisk #sr-agentgroup .sb-list th, #s-asterisk #sr-agent .sb-list th {width: 50%;}
 #s-asterisk #sr-cdr .fm-multifield .fm-desc {width: 40%;}

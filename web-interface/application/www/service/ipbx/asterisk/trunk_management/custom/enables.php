@@ -3,7 +3,7 @@
 $param['page'] = $page;
 
 if(($arr = xivo_issa_val('peers',$_QR)) === false)
-	xivo_go($_HTML->url('service/ipbx/trunk_management/custom'),$param);
+	$_QRY->go($_HTML->url('service/ipbx/trunk_management/custom'),$param);
 
 $disable = $act === 'disables' ? true : false;
 
@@ -22,6 +22,6 @@ for($i = 0;$i < $nb;$i++)
 	$trunkcustom->disable($info['tfeatures']['trunkid'],$disable);
 }
 
-xivo_go($_HTML->url('service/ipbx/trunk_management/custom'),$param);
+$_QRY->go($_HTML->url('service/ipbx/trunk_management/custom'),$param);
 
 ?>

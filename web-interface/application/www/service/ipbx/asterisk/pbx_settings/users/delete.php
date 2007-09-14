@@ -16,7 +16,7 @@ if(isset($_QR['id']) === false
 || ($info['ufeatures'] = $ufeatures->get($_QR['id'])) === false
 || ($protocol = &$ipbx->get_protocol_module($info['ufeatures']['protocol'])) === false
 || ($info['protocol'] = $protocol->get($info['ufeatures']['protocolid'])) === false)
-	xivo_go($_HTML->url('service/ipbx/pbx_settings/users'),$param);
+	$_QRY->go($_HTML->url('service/ipbx/pbx_settings/users'),$param);
 
 do
 {
@@ -125,6 +125,6 @@ do
 }
 while(false);
 
-xivo_go($_HTML->url('service/ipbx/pbx_settings/users'),$param);
+$_QRY->go($_HTML->url('service/ipbx/pbx_settings/users'),$param);
 
 ?>

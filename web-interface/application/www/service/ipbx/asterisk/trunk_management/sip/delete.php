@@ -7,7 +7,7 @@ if(isset($_QR['id']) === false
 || ($info['tfeatures'] = $tfeatures->get_where(array(
 					'trunkid' => $info['trunk']['id'],
 					'trunk' => 'sip'))) === false)
-	xivo_go($_HTML->url('service/ipbx/trunk_management/sip'),$param);
+	$_QRY->go($_HTML->url('service/ipbx/trunk_management/sip'),$param);
 
 do
 {
@@ -28,6 +28,6 @@ do
 }
 while(false);
 
-xivo_go($_HTML->url('service/ipbx/trunk_management/sip'),$param);
+$_QRY->go($_HTML->url('service/ipbx/trunk_management/sip'),$param);
 
 ?>

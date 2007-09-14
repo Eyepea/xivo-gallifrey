@@ -32,7 +32,7 @@ do
 	if($musiconhold->add_file($filename,$file->info['tmp_name']) === true)
 	{
 		$param['cat'] = $info['category'];
-		xivo_go($_HTML->url('service/ipbx/general_settings/musiconhold'),$param);
+		$_QRY->go($_HTML->url('service/ipbx/general_settings/musiconhold'),$param);
 	}
 }
 while(false);

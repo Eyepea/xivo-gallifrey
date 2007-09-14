@@ -183,7 +183,7 @@ switch($act)
 				}
 			}
 
-			xivo_go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
+			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
 		}
 		while(false);
 
@@ -213,7 +213,7 @@ switch($act)
 
 		if(($info['agroup'] = $agroup->get($group)) === false
 		|| ($info['agent'] = $agent->get($info['agroup']['groupid'])) === false)
-			xivo_go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
+			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
 
 		$group = $info['agroup']['id'];
 
@@ -479,7 +479,7 @@ switch($act)
 				}
 			}
 
-			xivo_go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
+			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
 		}
 		while(false);
 
@@ -508,7 +508,7 @@ switch($act)
 		if(($info['agroup'] = $agroup->get($group)) === false
 		|| ($info['agent'] = $agent->get($info['agroup']['groupid'])) === false
 		|| $info['agroup']['deletable'] === false)
-			xivo_go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
+			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
 
 		do
 		{
@@ -556,11 +556,11 @@ switch($act)
 		}
 		while(false);
 
-		xivo_go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
+		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
 		break;
 	case 'addagent':
 		if($list_grps === false)
-			xivo_go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
+			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
 
 		$act = 'addagent';
 		$param['act'] = 'listagent';
@@ -699,7 +699,7 @@ switch($act)
 				}
 			}
 
-			xivo_go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
+			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
 		}
 		while(false);
 
@@ -722,12 +722,12 @@ switch($act)
 		break;
 	case 'editagent':
 		if($list_grps === false)
-			xivo_go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
+			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
 
 		$return = &$info;
 
 		if(($info['agroup'] = $agroup->get($group)) === false)
-			xivo_go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
+			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
 
 		$group = $param['group'] = $info['agroup']['id'];
 
@@ -739,7 +739,7 @@ switch($act)
 		if(isset($_QR['id']) === false
 		|| ($info['afeatures'] = $afeatures->get($_QR['id'])) === false
 		|| ($info['agent'] = $agent->get_agent($info['afeatures']['agentid'])) === false)
-			xivo_go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
+			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
 
 		$id = $info['afeatures']['id'];
 		$info['agent']['group'] = $info['afeatures']['numgroup'];
@@ -938,7 +938,7 @@ switch($act)
 
 			$param['group'] = $result['afeatures']['numgroup'];
 
-			xivo_go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
+			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
 		}
 		while(false);
 
@@ -962,7 +962,7 @@ switch($act)
 		break;
 	case 'deleteagent':
 		if(($info['agroup'] = $agroup->get($group)) === false)
-			xivo_go($_HTML->url('service/ipbx/pbx_settings/agents'),'act=list');
+			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),'act=list');
 
 		$param['act'] = 'listagent';
 		$param['page'] = $page;
@@ -994,11 +994,11 @@ switch($act)
 		}
 		while(false);
 
-		xivo_go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
+		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
 		break;
 	case 'listagent':
 		if(($info['agroup'] = $agroup->get($group)) === false)
-			xivo_go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
+			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
 
 		$total = 0;
 		$act = $param['act'] = 'listagent';

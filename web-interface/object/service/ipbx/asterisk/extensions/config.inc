@@ -39,7 +39,7 @@ $array['filter']['exten'] = array('minlen' => 1,'maxlen' => 40);
 $array['filter']['context'] = array('chk' => 2,'maxlen' => 39,'regexp' => '/^[a-z0-9_-]+$/');
 $array['filter']['priority'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,255));
 $array['filter']['app'] = array('minlen' => 1,'maxlen' => 128,'regexp' => '/^[a-z0-9#\*\.\/_@:-]+$/i');
-$array['filter']['appdata'] = array('set' => false,'chk' => 2,'minlen' => 0,'maxlen' => 128,'cast' => 'cprint','notag' => false);
+$array['filter']['appdata'] = array('set' => false,'chk' => 2,'minlen' => 0,'maxlen' => 128,'cast' => 'sgraph','notag' => false);
 $array['filter']['name'] = array('set' => false,'chk' => 2,'maxlen' => 128,'regexp' => '/^[a-z0-9_-]+$/');
 
 ?>

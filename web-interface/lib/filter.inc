@@ -220,43 +220,61 @@ class xivo_filter
 
 		switch($type)
 		{
-			case 'specials':
-				return(xivo_cast_specials($value));
-			case 'numspecials':
-				return(xivo_cast_numspecials($value));
-			case 'alphaspecials':
-				return(xivo_cast_alphaspecials($value));
-			case 'alphanumspecials':
-				return(xivo_cast_alphanumspecials($value));
-			case 'cprint':
-				$cast = xivo_cprint($value);
-
-				return(($cast === false ? false : true));
-			case 'print':
-				return(xivo_cast_print($value));
-			case 'print_crlf':
-				return(xivo_cast_print_crlf($value));
-			case 'print_tab':
-				return(xivo_cast_print_tab($value));
+			case 'spunct':
+				return(xivo_is_spunct($value));
+			case 'numspunct':
+				return(xivo_is_numspunct($value));
+			case 'alspunct':
+				return(xivo_is_alspunct($value));
+			case 'alnumspunct':
+				return(xivo_is_alnumspunct($value));
+			case 'punct':
+				return(ctype_punct($value));
+			case 'numpunct':
+				return(xivo_is_numpunct($value));
+			case 'alpunct':
+				return(xivo_is_alpunct($value));
+			case 'alnumpunct':
+				return(xivo_is_alnumpunct($value));
+			case 'sgraph':
+				return(xivo_is_sgraph($value));
+			case 'sgraph_tab':
+				return(xivo_is_sgraph_tab($value));
+			case 'sgraph_crlf':
+				return(xivo_is_sgraph_crlf($value));
+			case 'sgraph_crlf_tab':
+				return(xivo_is_sgraph_crlf_tab($value));
+			case 'space':
+				return(ctype_space($value));
+			case 'graph':
+				return(ctype_graph($value));
+			case 'alpha':
+				return(ctype_alpha($value));
+			case 'alnum':
+				return(ctype_alnum($value));
+			case 'punct':
+				return(ctype_punct($value));
+			case 'num':
 			case 'digit':
-				$cast = xivo_digit($value);
-
-				return(($cast === false ? false : true));
+				return(ctype_digit($value));
 			case 'xdigit':
-				$cast = xivo_xdigit($value);
-
-				return(($cast === false ? false : true));
+				return(ctype_xdigit($value));
 			case 'uint':
+			case 'uinteger':
+			case 'unsigned-integer':
 				$cast = xivo_uint($value);
 				break;
 			case 'int':
-				$cast = (int) $value;
+			case 'integer':
+				$cast = intval($value);
 				break;
+			case 'real':
 			case 'float':
-				$cast = (float) $value;
+			case 'double':
+				$cast = floatval($value);
 				break;
 			case 'string':
-				$cast = (string) $value;
+				$cast = strval($value);
 				break;
 			default:
 				return(null);

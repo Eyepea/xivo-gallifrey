@@ -86,7 +86,7 @@ do
 		break;
 	}
 
-	xivo_go($_HTML->url('service/ipbx/trunk_management/sip'),$param);
+	$_QRY->go($_HTML->url('service/ipbx/trunk_management/sip'),$param);
 
 } while(false);
 

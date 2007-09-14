@@ -34,7 +34,7 @@ $array['element']['commented']['set'] = true;
 
 $array['filter'] = array();
 $array['filter']['type'] = array('key' => array('endcall','user','group','queue','meetme','schedule','application','custom'));
-$array['filter']['typeval'] = array('maxlen' => 256,'cast' => 'print');
+$array['filter']['typeval'] = array('maxlen' => 255,'cast' => 'sgraph');
 $array['filter']['extenumid'] = array('cast' => 'uint');
 $array['filter']['linked'] = array('bool' => true);
 $array['filter']['commented'] = array('bool' => true);

@@ -212,8 +212,8 @@
 
 	<?=$form->checkbox(array('desc' => $this->bbf('fm_protocol_qualify'),'name' => 'protocol[qualify]','labelid' => 'iax-protocol-qualify','default' => $element['protocol']['iax']['qualify']['default'],'checked' => $info['protocol']['qualify']));?>
 
-<div id="comment" class="fm-field"><p><label id="lb-ufeatures-comment" for="it-ufeatures-comment"><?=$this->bbf('fm_userfeatures_comment');?></label></p>
-<?=$form->textarea(array('field' => false,'label' => false,'name' => 'ufeatures[comment]','id' => 'it-ufeatures-comment','cols' => 60,'rows' => 5),$info['ufeatures']['comment']);?>
+<div id="description" class="fm-field"><p><label id="lb-ufeatures-description" for="it-ufeatures-description"><?=$this->bbf('fm_userfeatures_description');?></label></p>
+<?=$form->textarea(array('field' => false,'label' => false,'name' => 'ufeatures[description]','id' => 'it-ufeatures-description','cols' => 60,'rows' => 5),$info['ufeatures']['description']);?>
 </div>
 
 </div>
