@@ -23,3 +23,4 @@ install: $(BINARY)
 
 clean:
 	rm -f $(BINARY) $(OBJECTS)
+
