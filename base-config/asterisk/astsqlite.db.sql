@@ -420,9 +420,6 @@ INSERT INTO extensions VALUES(NULL,0,'features','_*25',1,'Macro','features|DND|d
 INSERT INTO extensions VALUES(NULL,0,'features','_*26',1,'Macro','features|Record|record-call-on|record-call-off','incallrec');
 INSERT INTO extensions VALUES(NULL,0,'features','_*27',1,'Macro','features|Screen|screening-on|screening-off','incallfilter');
 INSERT INTO extensions VALUES(NULL,0,'features','_*8.',1,'Pickup','${EXTEN:2}','pickup');
-INSERT INTO extensions VALUES(NULL,0,'features','h',1,'GotoIf','${RECORDFILENAME}?2:3','hangup');
-INSERT INTO extensions VALUES(NULL,0,'features','h',2,'System','chmod 660 ${RECORDFILENAME}','hangup');
-INSERT INTO extensions VALUES(NULL,0,'features','h',3,'MacroExit','','hangup');
 
 
 DROP TABLE generalsip;
