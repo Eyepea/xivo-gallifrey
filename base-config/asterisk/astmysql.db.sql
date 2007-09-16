@@ -393,14 +393,15 @@ INSERT INTO `extensions` VALUES(NULL,0,'features','_*23.',5,'Set','DB(${CONTEXT}
 INSERT INTO `extensions` VALUES(NULL,0,'features','_*23.',6,'Set','DB(${CONTEXT}/users/${USER}/FWD/Busy/Status)=1','fwdbusy');
 INSERT INTO `extensions` VALUES(NULL,0,'features','_*23.',7,'Playback','forward-on','fwdbusy');
 INSERT INTO `extensions` VALUES(NULL,0,'features','_*23.',8,'Hangup','','fwdbusy');
-INSERT INTO `extensions` VALUES(NULL,0,'features','_*9',1,'Wait',1,'recsnd');
+INSERT INTO `extensions` VALUES(NULL,0,'features','_*9',1,'Playback','record-message-after-beep','recsnd');
 INSERT INTO `extensions` VALUES(NULL,0,'features','_*9',2,'Set','ROOT=/usr/share/asterisk/sounds/web-interface/recordings','recsnd');
-INSERT INTO `extensions` VALUES(NULL,0,'features','_*9',3,'Set','FILE=${CALLERID(num)}-${EPOCH}','recsnd');
-INSERT INTO `extensions` VALUES(NULL,0,'features','_*9',4,'Record','${ROOT}/${FILE}:wav','recsnd');
-INSERT INTO `extensions` VALUES(NULL,0,'features','_*9',5,'Wait',1,'recsnd');
-INSERT INTO `extensions` VALUES(NULL,0,'features','_*9',6,'Playback','${ROOT}/${FILE}','recsnd');
-INSERT INTO `extensions` VALUES(NULL,0,'features','_*9',7,'System','chmod 660 ${ROOT}/${FILE}.wav','recsnd');
-INSERT INTO `extensions` VALUES(NULL,0,'features','_*9',8,'Hangup','','recsnd');
+INSERT INTO `extensions` VALUES(NULL,0,'features','_*9',3,'Set','RECORDFILE=${ROOT}/${CALLERID(num)}-${EPOCH}','recsnd');
+INSERT INTO `extensions` VALUES(NULL,0,'features','_*9',4,'Set','EXTRECORDFILE=wav','recsnd');
+INSERT INTO `extensions` VALUES(NULL,0,'features','_*9',5,'Set','RECORDFILENAME=${RECORDFILE}.${EXTRECORDFILE}','recsnd');
+INSERT INTO `extensions` VALUES(NULL,0,'features','_*9',6,'Record','${RECORDFILE}:${EXTRECORDFILE}','recsnd');
+INSERT INTO `extensions` VALUES(NULL,0,'features','_*9',7,'Wait',1,'recsnd');
+INSERT INTO `extensions` VALUES(NULL,0,'features','_*9',8,'Playback','${RECORDFILE}','recsnd');
+INSERT INTO `extensions` VALUES(NULL,0,'features','_*9',9,'Hangup','','recsnd');
 INSERT INTO `extensions` VALUES(NULL,0,'features','_*10',1,'Answer','','phonestatus');
 INSERT INTO `extensions` VALUES(NULL,0,'features','_*10',2,'Playback','status-phone','phonestatus');
 INSERT INTO `extensions` VALUES(NULL,0,'features','_*10',3,'Playback','forward-inc','phonestatus');
@@ -424,6 +425,9 @@ INSERT INTO `extensions` VALUES(NULL,0,'features','_*25',1,'Macro','features|DND
 INSERT INTO `extensions` VALUES(NULL,0,'features','_*26',1,'Macro','features|Record|record-call-on|record-call-off','incallrec');
 INSERT INTO `extensions` VALUES(NULL,0,'features','_*27',1,'Macro','features|Screen|screening-on|screening-off','incallfilter');
 INSERT INTO `extensions` VALUES(NULL,0,'features','_*8.',1,'Pickup','${EXTEN:2}','pickup');
+INSERT INTO `extensions` VALUES(NULL,0,'features','h',1,'GotoIf','${RECORDFILENAME}?2:3','hangup');
+INSERT INTO `extensions` VALUES(NULL,0,'features','h',2,'System','chmod 660 ${RECORDFILENAME}','hangup');
+INSERT INTO `extensions` VALUES(NULL,0,'features','h',3,'MacroExit','','hangup');
 
 
 DROP TABLE IF EXISTS `generalsip`;
