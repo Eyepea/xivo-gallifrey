@@ -222,9 +222,7 @@ map_capas = {
         'fax'              : CAPA_FAX
         }
 
-fullstat_callerids = {}
-fullstat_statuses = {}
-
+fullstat_heavies = {}
 
 ## \brief Logs actions to a log file, prepending them with a timestamp.
 # \param string the string to log
@@ -478,83 +476,58 @@ def build_features_put(reqlist):
 
 
 
-## \brief Builds the full list of callerIDNames in order to send them to the requesting client.
+## \brief Builds the full list of callerIDNames/hints in order to send them to the requesting client.
 # This should be done after a command called "callerid".
-# \return a string containing the full callerIDs list
+# \return a string containing the full callerIDs/hints list
 # \sa manage_tcp_connection
-def build_callerids(theseargs):
+def build_callerids_hints(kind, theseargs):
         if len(theseargs) < 2:
-                reqid = ''.join(random.sample(__alphanums__, 10)) + "-" + hex(int(time.time()))[:1:-1]
-                log_debug('transaction ID for callerids is %s' % reqid)
-                fullstat_callerids[reqid] = []
-                for n in items_asterisks:
-                        plist_n = plist[n]
-                        plist_normal_keys = filter(lambda j: plist_n.normal[j].towatch, plist_n.normal.iterkeys())
-                        plist_normal_keys.sort()
-                        for phonenum in plist_normal_keys:
-                                phoneinfo = ("cid",
-                                             plist_n.astid,
-                                             plist_n.normal[phonenum].tech,
-                                             plist_n.normal[phonenum].phoneid,
-                                             plist_n.normal[phonenum].phonenum,
-                                             plist_n.normal[phonenum].context,
-                                             plist_n.normal[phonenum].calleridfull,
-                                             plist_n.normal[phonenum].calleridfirst,
-                                             plist_n.normal[phonenum].calleridlast + ";")
-                                #    + "groupinfos/technique"
-                                fullstat_callerids[reqid].append(":".join(phoneinfo))
+                reqid = kind + '-' + ''.join(random.sample(__alphanums__, 10)) + "-" + hex(int(time.time()))
+                log_debug('transaction ID for %s is %s' % (kind, reqid))
+                fullstat_heavies[reqid] = []
+                if kind == 'hints':
+                        for n in items_asterisks:
+                                plist_n = plist[n]
+                                plist_normal_keys = filter(lambda j: plist_n.normal[j].towatch, plist_n.normal.iterkeys())
+                                plist_normal_keys.sort()
+                                for phonenum in plist_normal_keys:
+                                        plist_n.normal[phonenum].update_time()
+                                        phoneinfo = "hnt:" + plist_n.astid + ":" + plist_n.normal[phonenum].build_basestatus()
+                                        fullstat_heavies[reqid].append(''.join([phoneinfo, ":", plist_n.normal[phonenum].build_fullstatlist(), ";"]))
+                elif kind == 'callerids':
+                        for n in items_asterisks:
+                                plist_n = plist[n]
+                                plist_normal_keys = filter(lambda j: plist_n.normal[j].towatch, plist_n.normal.iterkeys())
+                                plist_normal_keys.sort()
+                                for phonenum in plist_normal_keys:
+                                        phoneinfo = ("cid",
+                                                     plist_n.astid,
+                                                     plist_n.normal[phonenum].tech,
+                                                     plist_n.normal[phonenum].phoneid,
+                                                     plist_n.normal[phonenum].phonenum,
+                                                     plist_n.normal[phonenum].context,
+                                                     plist_n.normal[phonenum].calleridfull,
+                                                     plist_n.normal[phonenum].calleridfirst,
+                                                     plist_n.normal[phonenum].calleridlast + ";")
+                                        #    + "groupinfos/technique"
+                                        fullstat_heavies[reqid].append(":".join(phoneinfo))
         else:
                 reqid = theseargs[1]
 
-        if reqid in fullstat_callerids:
+        if reqid in fullstat_heavies:
                 fullstat = []
-                nstat = len(fullstat_callerids[reqid])/ITEMS_PER_PACKET
+                nstat = len(fullstat_heavies[reqid])/ITEMS_PER_PACKET
                 for j in xrange(ITEMS_PER_PACKET):
-                        if len(fullstat_callerids[reqid]) > 0:
-                                fullstat.append(fullstat_callerids[reqid].pop())
+                        if len(fullstat_heavies[reqid]) > 0:
+                                fullstat.append(fullstat_heavies[reqid].pop())
                 if nstat > 0:
-                        rtab = 'callerids=%s;%s' %(reqid, ''.join(fullstat))
+                        rtab = '%s=%s;%s' %(kind, reqid, ''.join(fullstat))
                 else:
-                        del fullstat_callerids[reqid]
-                        rtab = 'callerids=0;%s'  %(''.join(fullstat))
+                        del fullstat_heavies[reqid]
+                        rtab = '%s=0;%s'  %(kind, ''.join(fullstat))
                 return rtab
         else:
-                log_debug('reqid <%s> not defined for callerids reply' % reqid)
-                return ''
-
-
-## \brief Builds the full list of phone statuses in order to send them to the requesting client.
-# \return a string containing the full list of statuses
-def build_statuses(theseargs):
-        if len(theseargs) < 2:
-                reqid = ''.join(random.sample(__alphanums__, 10)) + "-" + hex(int(time.time()))[:1:-1]
-                log_debug('transaction ID for statuses is %s' % reqid)
-                fullstat_statuses[reqid] = []
-                for n in items_asterisks:
-                        plist_n = plist[n]
-                        plist_normal_keys = filter(lambda j: plist_n.normal[j].towatch, plist_n.normal.iterkeys())
-                        plist_normal_keys.sort()
-                        for phonenum in plist_normal_keys:
-                                plist_n.normal[phonenum].update_time()
-                                phoneinfo = "hnt:" + plist_n.astid + ":" + plist_n.normal[phonenum].build_basestatus()
-                                fullstat_statuses[reqid].append(''.join([phoneinfo, ":", plist_n.normal[phonenum].build_fullstatlist(), ";"]))
-        else:
-                reqid = theseargs[1]
-
-        if reqid in fullstat_statuses:
-                fullstat = []
-                nstat = len(fullstat_statuses[reqid])/ITEMS_PER_PACKET
-                for j in xrange(ITEMS_PER_PACKET):
-                        if len(fullstat_statuses[reqid]) > 0:
-                                fullstat.append(fullstat_statuses[reqid].pop())
-                if nstat > 0:
-                        rtab = 'hints=%s;%s' %(reqid, ''.join(fullstat))
-                else:
-                        del fullstat_statuses[reqid]
-                        rtab = 'hints=0;%s'  %(''.join(fullstat))
-                return rtab
-        else:
-                log_debug('reqid <%s> not defined for hints reply' % reqid)
+                log_debug('reqid <%s> not defined for %s reply' %(reqid, kind))
                 return ''
 
 
@@ -2792,13 +2765,13 @@ def parse_command_and_build_reply(me, myargs):
                                 repstr = build_customers(me[3], myargs[1:])
                 elif myargs[0] == 'callerids':
                         if (capalist & (CAPA_PEERS | CAPA_HISTORY)):
-                                repstr = build_callerids(myargs)
+                                repstr = build_callerids_hints('callerids', myargs)
+                elif myargs[0] == 'hints':
+                        if (capalist & (CAPA_PEERS | CAPA_HISTORY)):
+                                repstr = build_callerids_hints('hints', myargs)
                 elif myargs[0] == 'availstate':
                         if (capalist & CAPA_PRESENCE):
                                 repstr = update_availstate(astnum, me[1], me[2], myargs[1])
-                elif myargs[0] == 'hints':
-                        if (capalist & (CAPA_PEERS | CAPA_HISTORY)):
-                                repstr = build_statuses(myargs)
                 elif myargs[0] == 'featuresget':
                         if (capalist & CAPA_FEATURES):
                                 repstr = build_features_get(myargs[1:])
@@ -2923,7 +2896,7 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
 
                 # whatever has been received, we must reply something to the client who asked
                 try:
-                        log_debug("%s : replying <%s ...> (%d bytes) to %s" %(astname_xivoc, response[0:20], len(response), requester))
+                        log_debug("%s : replying <%s ...> (%d bytes) to %s" %(astname_xivoc, response[0:40], len(response), requester))
                         self.request[1].sendto(response + '\r\n', self.client_address)
                 except socket:
                         log_debug("--- exception (socket) --- %s : sending UDP reply" %(astname_xivoc))

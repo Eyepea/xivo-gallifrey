@@ -90,11 +90,16 @@ if len(list) < 5 or list[0] == 'ERROR':
 else:
         # USER xxx STATE xxx CIDNAME xxx
         clientstate = list[3]
+
+        if calleridnum == 'unknown':
+                # to set according to os.getenv('LANG') or os.getenv('LANGUAGE') later on ?
+                calleridnum == 'Inconnu'
+        if calleridname == 'unknown':
+                calleridname = ''
+
         if len(list) > 5:
                 calleridtoset = "\"%s <%s>\"" %(list[5], calleridnum)
         else:
-                if calleridname == 'unknown':
-                        calleridname = ''
                 calleridtoset = "\"%s <%s>\"" %(calleridname, calleridnum)
         print_verbose("The Caller Id will be set to <%s>" % calleridtoset)
         agi.set_callerid(calleridtoset)
