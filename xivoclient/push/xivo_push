@@ -93,6 +93,8 @@ else:
         if len(list) > 5:
                 calleridtoset = "\"%s <%s>\"" %(list[5], calleridnum)
         else:
+                if calleridname == 'unknown':
+                        calleridname = ''
                 calleridtoset = "\"%s <%s>\"" %(calleridname, calleridnum)
         print_verbose("The Caller Id will be set to <%s>" % calleridtoset)
         agi.set_callerid(calleridtoset)
