@@ -104,6 +104,7 @@
 #
 
 __version__ = "$Revision$ $Date$"
+__alphanums__ = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijkLmnopqrstuvwxyz0123456789'
 
 # debian.org modules
 import ConfigParser
@@ -191,7 +192,8 @@ socket.setdefaulttimeout(2)
 DAEMON = "daemon-announce"
 HISTSEPAR = ";"
 XIVO_CLI_PHP_HEADER = "XIVO-CLI-PHP"
-REQUIRED_CLIENT_VERSION = 1508
+REQUIRED_CLIENT_VERSION = 1538
+ITEMS_PER_PACKET = 400
 
 # capabilities
 CAPA_CUSTINFO    = 1 <<  0
@@ -219,6 +221,9 @@ map_capas = {
         'agents'           : CAPA_AGENTS,
         'fax'              : CAPA_FAX
         }
+
+fullstat_callerids = {}
+fullstat_statuses = {}
 
 
 ## \brief Logs actions to a log file, prepending them with a timestamp.
@@ -472,46 +477,86 @@ def build_features_put(reqlist):
         return response
 
 
+
 ## \brief Builds the full list of callerIDNames in order to send them to the requesting client.
 # This should be done after a command called "callerid".
 # \return a string containing the full callerIDs list
 # \sa manage_tcp_connection
-def build_callerids():
-        fullstat = ["callerids="]
-        for n in items_asterisks:
-                plist_n = plist[n]
-                plist_normal_keys = filter(lambda j: plist_n.normal[j].towatch, plist_n.normal.iterkeys())
-                plist_normal_keys.sort()
-                for phonenum in plist_normal_keys:
-                        phoneinfo = ("cid",
-                                     plist_n.astid,
-                                     plist_n.normal[phonenum].tech,
-                                     plist_n.normal[phonenum].phoneid,
-                                     plist_n.normal[phonenum].phonenum,
-                                     plist_n.normal[phonenum].context,
-                                     plist_n.normal[phonenum].calleridfull,
-                                     plist_n.normal[phonenum].calleridfirst,
-                                     plist_n.normal[phonenum].calleridlast + ";")
-                        #    + "groupinfos/technique"
-                        fullstat.append(":".join(phoneinfo))
-        fullstat.append("\n")
-        return ''.join(fullstat)
+def build_callerids(theseargs):
+        if len(theseargs) < 2:
+                reqid = ''.join(random.sample(__alphanums__, 10)) + "-" + hex(int(time.time()))[:1:-1]
+                log_debug('transaction ID for callerids is %s' % reqid)
+                fullstat_callerids[reqid] = []
+                for n in items_asterisks:
+                        plist_n = plist[n]
+                        plist_normal_keys = filter(lambda j: plist_n.normal[j].towatch, plist_n.normal.iterkeys())
+                        plist_normal_keys.sort()
+                        for phonenum in plist_normal_keys:
+                                phoneinfo = ("cid",
+                                             plist_n.astid,
+                                             plist_n.normal[phonenum].tech,
+                                             plist_n.normal[phonenum].phoneid,
+                                             plist_n.normal[phonenum].phonenum,
+                                             plist_n.normal[phonenum].context,
+                                             plist_n.normal[phonenum].calleridfull,
+                                             plist_n.normal[phonenum].calleridfirst,
+                                             plist_n.normal[phonenum].calleridlast + ";")
+                                #    + "groupinfos/technique"
+                                fullstat_callerids[reqid].append(":".join(phoneinfo))
+        else:
+                reqid = theseargs[1]
+
+        if reqid in fullstat_callerids:
+                fullstat = []
+                nstat = len(fullstat_callerids[reqid])/ITEMS_PER_PACKET
+                for j in xrange(ITEMS_PER_PACKET):
+                        if len(fullstat_callerids[reqid]) > 0:
+                                fullstat.append(fullstat_callerids[reqid].pop())
+                if nstat > 0:
+                        rtab = 'callerids=%s;%s' %(reqid, ''.join(fullstat))
+                else:
+                        del fullstat_callerids[reqid]
+                        rtab = 'callerids=0;%s'  %(''.join(fullstat))
+                return rtab
+        else:
+                log_debug('reqid <%s> not defined for callerids reply' % reqid)
+                return ''
 
 
 ## \brief Builds the full list of phone statuses in order to send them to the requesting client.
 # \return a string containing the full list of statuses
-def build_statuses():
-        fullstat = ["hints="]
-        for n in items_asterisks:
-                plist_n = plist[n]
-                plist_normal_keys = filter(lambda j: plist_n.normal[j].towatch, plist_n.normal.iterkeys())
-                plist_normal_keys.sort()
-                for phonenum in plist_normal_keys:
-                        plist_n.normal[phonenum].update_time()
-                        phoneinfo = "hnt:" + plist_n.astid + ":" + plist_n.normal[phonenum].build_basestatus()
-                        fullstat.extend((phoneinfo, ":", plist_n.normal[phonenum].build_fullstatlist(), ";"))
-        fullstat.append("\n")
-        return ''.join(fullstat)
+def build_statuses(theseargs):
+        if len(theseargs) < 2:
+                reqid = ''.join(random.sample(__alphanums__, 10)) + "-" + hex(int(time.time()))[:1:-1]
+                log_debug('transaction ID for statuses is %s' % reqid)
+                fullstat_statuses[reqid] = []
+                for n in items_asterisks:
+                        plist_n = plist[n]
+                        plist_normal_keys = filter(lambda j: plist_n.normal[j].towatch, plist_n.normal.iterkeys())
+                        plist_normal_keys.sort()
+                        for phonenum in plist_normal_keys:
+                                plist_n.normal[phonenum].update_time()
+                                phoneinfo = "hnt:" + plist_n.astid + ":" + plist_n.normal[phonenum].build_basestatus()
+                                fullstat_statuses[reqid].append(''.join([phoneinfo, ":", plist_n.normal[phonenum].build_fullstatlist(), ";"]))
+        else:
+                reqid = theseargs[1]
+
+        if reqid in fullstat_statuses:
+                fullstat = []
+                nstat = len(fullstat_statuses[reqid])/ITEMS_PER_PACKET
+                for j in xrange(ITEMS_PER_PACKET):
+                        if len(fullstat_statuses[reqid]) > 0:
+                                fullstat.append(fullstat_statuses[reqid].pop())
+                if nstat > 0:
+                        rtab = 'hints=%s;%s' %(reqid, ''.join(fullstat))
+                else:
+                        del fullstat_statuses[reqid]
+                        rtab = 'hints=0;%s'  %(''.join(fullstat))
+                return rtab
+        else:
+                log_debug('reqid <%s> not defined for hints reply' % reqid)
+                return ''
+
 
 
 """
@@ -628,7 +673,7 @@ def parseSIP(astnum, data, l_sipsock, l_addrsip):
                         pass
                 elif iret == 200:
                         # log_debug("%s : REGISTER %s OK" %(configs[astnum].astid, iaccount))
-                        rdc = ''.join(random.sample('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijkLmnopqrstuvwxyz0123456789',6)) + "-" + hex(int(time.time()))[:1:-1]
+                        rdc = ''.join(random.sample(__alphanums__,6)) + "-" + hex(int(time.time()))[:1:-1]
                         if nukeast: rdc = 'unique-callid-string'
                         for sipnum,normval in plist[astnum].normal.iteritems():
                                 if sipnum.find("SIP/") == 0:
@@ -686,8 +731,8 @@ def parseSIP(astnum, data, l_sipsock, l_addrsip):
                                 # log_debug("%s : SUBSCRIBE %s OK %s" %(configs[astnum].astid, iaccount, icid))
                                 pass
                         else:
-                                log_debug("%s : SUBSCRIBE %s Failed (code %d) %s"
-                                          %(configs[astnum].astid, iaccount, iret, icid))
+                                # log_debug("%s : SUBSCRIBE %s Failed (code %d) %s"
+                                #        %(configs[astnum].astid, iaccount, iret, icid))
                                 if normv.sipstatus != "Fail" + str(iret):
                                         normv.set_sipstatus("Fail" + str(iret))
                                         update_GUI_clients(astnum, sipphone, "sip-fai")
@@ -822,9 +867,9 @@ def originate_or_transfer(requester, l):
                                 log_debug("%s is attempting an ORIGINATE : %s" %(requester, str(l)))
                                 if ast_dst != "":
                                         ret = AMI_array_user_commands[ast_src].originate(proto_src,
-                                                                              userid_src,
-                                                                              exten_dst,
-                                                                              context_dst)
+                                                                                         userid_src,
+                                                                                         exten_dst,
+                                                                                         context_dst)
                                 else:
                                         ret = False
                                 if ret:
@@ -845,8 +890,8 @@ def originate_or_transfer(requester, l):
                                                 else:
                                                         tchan = channellist[phonesrcchan].getChannelPeer()
                                                         ret = AMI_array_user_commands[ast_src].transfer(tchan,
-                                                                                             exten_dst,
-                                                                                             "local-extensions")
+                                                                                                        exten_dst,
+                                                                                                        context_dst)
                                                         if ret:
                                                                 ret_message = "message=%s::transfer OK (%s) %s %s" %(DAEMON, ast_src, l[1], l[2])
                                                         else:
@@ -1081,8 +1126,11 @@ def manage_tcp_connection(connid, allow_events):
                                 log_debug("%s is attempting a %s : %s" %(requester, l[0], str(l)))
                                 try:
                                         if requester in userinfo_by_requester:
-                                                repstr = parse_command_and_build_reply(userinfo_by_requester[requester], l)
-                                                connid[0].send(repstr + "\n")
+                                                resp = parse_command_and_build_reply(userinfo_by_requester[requester], l)
+                                                try:
+                                                        connid[0].send(resp + "\n")
+                                                except Exception, exc:
+                                                        log_debug("--- exception --- (sending TCP) %s" % str(exc))
                                 except Exception, exc:
                                         log_debug("--- exception --- UI connection [%s] : a problem occured when sending to %s : %s"
                                                   %(l[0], requester, str(exc)))
@@ -1310,10 +1358,33 @@ def handle_ami_event(astid, idata):
                         log_debug("//AMI:Agentcallbacklogoff// %s : %s" %(plist[astnum].astid, str(this_event)))
                 elif evfunction == 'AgentCalled':
                         log_debug("//AMI:AgentCalled// %s : %s" %(plist[astnum].astid, str(this_event)))
+                        
+                elif evfunction == 'ParkedCall':
+                        # when the parking is requested
+                        channel = this_event.get("Channel")
+                        cfrom   = this_event.get("From")
+                        exten   = this_event.get("Exten")
+                        timeout = this_event.get("Timeout")
+                        log_debug("AMI:ParkedCall: %s : %s %s %s %s" %(plist[astnum].astid, channel, cfrom, exten, timeout))
+                elif evfunction == 'ParkedCallTimeOut':
+                        # when the timeout has occured
+                        channel = this_event.get("Channel")
+                        exten   = this_event.get("Exten")
+                        log_debug("AMI:ParkedCallTimeOut: %s : %s %s" %(plist[astnum].astid, channel, exten))
+                elif evfunction == 'UnParkedCall':
+                        # when somebody (From) took the call
+                        channel = this_event.get('Channel')
+                        cfrom   = this_event.get('From')
+                        exten   = this_event.get('Exten')
+                        log_debug("AMI:UnParkedCall: %s : %s %s %s" %(plist[astnum].astid, channel, cfrom, exten))
+                elif evfunction == 'ParkedCallGiveUp':
+                        # when the peer is tired
+                        channel = this_event.get("Channel")
+                        exten   = this_event.get("Exten")
+                        log_debug("AMI:ParkedCallGiveUp: %s : %s %s" %(plist[astnum].astid, channel, exten))
                 elif evfunction == 'ParkedCallsComplete':
                         log_debug("//AMI:ParkedCallsComplete// %s : %s" %(plist[astnum].astid, str(this_event)))
-                elif evfunction == 'ParkedCalled':
-                        log_debug("//AMI:ParkedCalled// %s : %s" %(plist[astnum].astid, str(this_event)))
+                        
                 elif evfunction == 'Cdr':
                         log_debug("//AMI:Cdr// %s : %s" %(plist[astnum].astid, str(this_event)))
                 elif evfunction == 'Alarm':
@@ -1477,7 +1548,7 @@ def handle_ami_event(astid, idata):
                                         send_msg_to_cti_clients(strupdate)
 
                                 except Exception, exc:
-                                        log_debug("--- exception --- (newexten, appdata) %s" %str(exc))
+                                        log_debug("--- exception --- (newexten, appdata) <%s> : %s" %(str(this_event), str(exc)))
                 elif evfunction == 'MessageWaiting':
                         mwi_string = "%s waiting=%s; new=%s; old=%s" \
                                      % (this_event.get('Mailbox'), str(this_event.get('Waiting')), str(this_event.get("New")), str(this_event.get("Old")))
@@ -1553,17 +1624,23 @@ def handle_ami_status(astid, idata):
                                                                                    link, exten,
                                                                                    "ami-st4")
                                 else:
-                                        # we fall here when there is a MeetMe conference
-                                        log_debug("AMI %s Status / linked with noone (Meetme conf, voicemail ...) : chan=<%s>, clid=<%s>, exten=<%s>, seconds=<%s>"
-                                                  % (astid, chan, clid, exten, seconds))
+                                        # we fall here when there is a MeetMe/Voicemail/Parked call ...
+                                        log_debug("AMI %s Status / linked with noone (Meetme conf, voicemail ...) : chan=<%s>, clid=<%s>, exten=<%s>, seconds=<%s> : %s"
+                                                  % (astid, chan, clid, exten, seconds, this_event))
                                         # reply = AMI_array_user_commands[astid].execclicommand("show channel %s" % chan)
                                         # for z in reply:
                                         # if z.find('Application') >= 0 or z.find('Data') >= 0:
                                         # print chan, z.split(':')
-                                        plist[astnum].normal_channel_fills(chan, DUMMY_MYNUM,
-                                                                           "On the phone", int(seconds), DIR_TO_STRING,
-                                                                           DUMMY_RCHAN, exten,
-                                                                           "ami-st5")
+                                        if seconds is None:
+                                                plist[astnum].normal_channel_fills(chan, DUMMY_MYNUM,
+                                                                                   "On the phone", 0, DIR_TO_STRING,
+                                                                                   DUMMY_RCHAN, DUMMY_EXTEN,
+                                                                                   "ami-st5")
+                                        else:
+                                                plist[astnum].normal_channel_fills(chan, DUMMY_MYNUM,
+                                                                                   "On the phone", int(seconds), DIR_TO_STRING,
+                                                                                   DUMMY_RCHAN, exten,
+                                                                                   "ami-st6")
 
                         elif state == 'Ring': # AST_STATE_RING
                                 chan    = this_event.get('Channel')
@@ -1573,14 +1650,14 @@ def handle_ami_status(astid, idata):
                                 plist[astnum].normal_channel_fills(chan, DUMMY_MYNUM,
                                                                    "Calling", int(seconds), DIR_TO_STRING,
                                                                    DUMMY_RCHAN, "<unknown>",
-                                                                   "ami-st6")
+                                                                   "ami-st7")
                         elif state == 'Ringing': # AST_STATE_RINGING
                                 chan    = this_event.get('Channel')
                                 log_debug("AMI %s Status / Ringing (From): %s" % (astid, chan))
                                 plist[astnum].normal_channel_fills(chan, DUMMY_MYNUM,
                                                                    "Ringing", 0, DIR_FROM_STRING,
                                                                    DUMMY_RCHAN, "<unknown>",
-                                                                   "ami-st7")
+                                                                   "ami-st8")
                         elif state == 'Rsrvd': # AST_STATE_RESERVED
                                 # occurs in in meetme : AMI obelisk Status / Rsrvd: Zap/pseudo-1397436026
                                 log_debug("AMI %s Status / Rsrvd: %s"
@@ -2232,16 +2309,21 @@ class AsteriskRemote:
                         log_debug("--- exception --- %s : unable to open URL %s : %s" %(self.astid, self.userlisturl, str(exc)))
                         return numlist
 
+                t1 = time.time()
+                sizeread = 0
                 try:
                         phone_list = []
                         # builds the phone_list from the SSO
                         for line in f:
+                                sizeread += len(line)
                                 # remove leading/tailing whitespaces
                                 line = line.strip()
                                 l = line.split('|')
                                 if len(l) == 11 and l[6] == "0":
                                         phone_list.append(l)
 
+                        t2 = time.time()
+                        log_debug("%s : URL %s has read %d bytes in %f seconds" %(self.astid, self.userlisturl, sizeread, (t2-t1)))
                         # retrieves the xivosb account informations
                         found_xivosb = False
                         for l in phone_list:
@@ -2710,13 +2792,13 @@ def parse_command_and_build_reply(me, myargs):
                                 repstr = build_customers(me[3], myargs[1:])
                 elif myargs[0] == 'callerids':
                         if (capalist & (CAPA_PEERS | CAPA_HISTORY)):
-                                repstr = build_callerids()
+                                repstr = build_callerids(myargs)
                 elif myargs[0] == 'availstate':
                         if (capalist & CAPA_PRESENCE):
                                 repstr = update_availstate(astnum, me[1], me[2], myargs[1])
                 elif myargs[0] == 'hints':
                         if (capalist & (CAPA_PEERS | CAPA_HISTORY)):
-                                repstr = build_statuses()
+                                repstr = build_statuses(myargs)
                 elif myargs[0] == 'featuresget':
                         if (capalist & CAPA_FEATURES):
                                 repstr = build_features_get(myargs[1:])
@@ -2758,7 +2840,7 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
                 requester = "%s:%d" %(self.client_address[0],self.client_address[1])
                 log_debug("KeepAliveHandler    (UDP) : client = %s" %requester)
                 astnum = -1
-                response = "ERROR unknown"
+                response = 'ERROR unknown'
 
                 try:
                         ip = self.client_address[0]
@@ -2840,8 +2922,13 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
                         response = 'ERROR %s' %(str(exc))
 
                 # whatever has been received, we must reply something to the client who asked
-                log_debug("replying <%s> to %s" %(response, requester))
-                self.request[1].sendto(response + '\r\n', self.client_address)
+                try:
+                        log_debug("%s : replying <%s ...> (%d bytes) to %s" %(astname_xivoc, response[0:20], len(response), requester))
+                        self.request[1].sendto(response + '\r\n', self.client_address)
+                except socket:
+                        log_debug("--- exception (socket) --- %s : sending UDP reply" %(astname_xivoc))
+                except Exception, exc:
+                        log_debug("--- exception --- %s : sending UDP reply : %s" %(astname_xivoc, str(exc)))
 
 
 ## \class MyTCPServer
