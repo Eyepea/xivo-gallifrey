@@ -6,7 +6,8 @@ class xivo_tpl_dhtml extends xivo_tpl_module
 {
 	var $_css	= array();
 	var $_js	= array();
-	var $_inc	= array('js' => array('head' => array(),'foot' => array()),'css' => array());
+	var $_inc	= array('js' => array('head' => array(),'foot' => array()),'css' => array('head' => array()));
+	var $_content	= array('js' => array('head' => array(),'foot' => array()),'css' => array('head' => array()));
 	var $_tpl	= null;
 
 	function xivo_tpl_dhtml(&$tpl)
@@ -16,7 +17,7 @@ class xivo_tpl_dhtml extends xivo_tpl_module
 
 	function add_css($css)
 	{
-		return($this->_add_file('css',$css));
+		return($this->_add_file('css',$css,'head'));
 	}
 
 	function add_js($js,$where='head')
@@ -44,20 +45,37 @@ class xivo_tpl_dhtml extends xivo_tpl_module
 				$file = XIVO_SEP_DIR.'bloc'.XIVO_SEP_DIR.$files[$i];
 
 			if(xivo_issa($type,$this->_inc) === false
-			|| xivo_file::is_f_r($this->get_option('tpl_path').$file) === false)
+			|| xivo_file::is_f_r($this->get_option('tpl_path').$file) === false
+			|| xivo_issa($where,$this->_inc[$type]) === false)
 				continue;
 
-			if($where !== '')
-			{
-				if(xivo_issa($where,$this->_inc[$type]) === false)
-					continue;
-
-				$this->_inc[$type][$where][] = $file;
-				continue;
-			}
-
-			$this->_inc[$type][] = $file;
+			$this->_inc[$type][$where][] = $file;
 		}
+
+		return(true);
+	}
+
+	function content_css($css)
+	{
+		return($this->_content('css',$css));
+	}
+
+	function content_js($js,$where='head')
+	{
+		return($this->_content('js',$js,$where));
+	}
+
+	function _content($type,$content,$where='head')
+	{
+		if(is_array($content) === true)
+			$content = implode("\n",$content);
+		
+		if(is_scalar($content) === false
+		|| xivo_issa($type,$this->_content) === false
+		|| xivo_issa($where,$this->_content[$type]) === false)
+			return(false);
+
+		$this->_content[$type][$where][] = $content;
 
 		return(true);
 	}
@@ -172,9 +190,10 @@ class xivo_tpl_dhtml extends xivo_tpl_module
 		if(is_array($str) === true)
 			$str = implode("\n",$str);
 
-		$str = (string) $str;
+		if(is_scalar($str) === false)
+			return(false);
 
-		echo '<script type="text/javascript">',"\n",'<!--',"\n",$str,"\n",'-->',"\n",'</script>',"\n";
+		echo '<script type="text/javascript">',"\n",'<!--',"\n",(string) $str,"\n",'-->',"\n",'</script>',"\n";
 	}
 
 	function write_css($str)
@@ -182,20 +201,30 @@ class xivo_tpl_dhtml extends xivo_tpl_module
 		if(is_array($str) === true)
 			$str = implode("\n",$str);
 
-		$str = (string) $str;
+		if(is_scalar($str) === false)
+			return(false);
 
-		echo '<style type="text/css">',"\n",'<!--',"\n",$str,"\n",'-->',"\n",'</style>',"\n";
+		echo '<style type="text/css">',"\n",'<!--',"\n",(string) $str,"\n",'-->',"\n",'</style>',"\n";
 	}
 
 	function load_css()
 	{
 		$r = '';
+		$where = 'head';
 
-		if(is_array($this->_inc['css']) === false || ($nb = count($this->_inc['css'])) === 0)
-			return(false);
+		if(xivo_issa($where,$this->_inc['css']) !== false
+		&& ($nb = count($this->_inc['css'][$where])) !== 0)
+		{
+			for($i = 0;$i < $nb;$i++)
+				$r .= $this->_load_file($this->_inc['css'][$where][$i])."\n"; 
+		}
 
-		for($i = 0;$i < $nb;$i++)
-			$r .= $this->_load_file($this->_inc['css'][$i]);
+		if(xivo_issa($where,$this->_content['css']) !== false
+		&& ($nb = count($this->_content['css'][$where])) !== 0)
+		{
+			for($i = 0;$i < $nb;$i++)
+				$r .= $this->_content['css'][$where][$i];
+		}
 
 		if($r !== '')
 			$this->write_css($r);

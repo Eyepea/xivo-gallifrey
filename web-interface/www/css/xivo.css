@@ -59,21 +59,21 @@ pre {text-align: left;}
 .fm-field {text-align: left;}
 .fm-field input {padding: 0px 2px;}
 .fm-field textarea, .fm-field select {padding-left: 2px;}
-.fm-field input, .fm-field select, .fm-field textarea {margin: 0px 2px;}
 .fm-field .it-mblur {border: 1px solid #7f99b1;}
 .fm-field .it-mfocus {border: 1px solid #ff9d03;}
 .fm-fieldsubmit {text-align: center;padding: 10px 4px 0px 0px;}
 .fm-field .itb-submit, .fm-field .itb-button, .itb-button, .itb-submit {background-position: left top; background-repeat: repeat-x;background-image: url(../img/site/button/bg-button.gif);color: #000;border: 1px solid #999;cursor: pointer;}
 .fm-field .itb-image {margin: 0px;padding: 0px;border: 0px solid #000;}
 
-.fm-field input, .fm-field input.it-enabled, .fm-field select, .fm-field select.it-enabled, .fm-field textarea, .fm-field textarea.it-enabled {border: 1px solid #7f99b1;background-color: #beddfb;color: #000;}
+.fm-field input, .fm-field select, .fm-field textarea, .fm-field .it-enabled {margin: 0px 2px;border: 1px solid #7f99b1;background-color: #beddfb;color: #000;}
 
-.fm-field input.it-disabled, .fm-field select.it-disabled, .fm-field textarea.it-disabled, .fm-field input.it-readonly, .fm-field select.it-readonly, .fm-field textarea.it-readonly {border: 1px solid #a5acb2;background-color: #ebebe4;color: #aca899;}
+.fm-field .it-disabled, .fm-field .it-readonly {border: 1px solid #a5acb2;background-color: #ebebe4;color: #aca899;}
+.fm-field .it-readonly {color: #000;}
 
-.fm-field input.it-readonly, .fm-field select.it-readonly, .fm-field textarea.it-readonly {color: #000;}
+.fm-field .it-checkbox {margin: 0px 2px;padding: 0px;border: 0px solid #fff;background-color: transparent;}
+.fm-field .it-radio {margin: 0px 2px;padding: 0px;border: 0px solid #fff;background-color: transparent;}
 
-.fm-field input.it-checkbox {margin: 0px 2px;padding: 0px;border: 0px solid #fff;background-color: transparent;}
-.fm-field input.it-radio {margin: 0px 2px;padding: 0px;border: 0px solid #fff;background-color: transparent;}
+.fm-error, .fm-field .fm-error {background-color: #ffcbcb;}
 
 .fm-field .fm-desc {display: block;float: left;text-align: right;width: 50%;}
 .fm-desc-inline {padding: 2px;width: auto;text-align: center;}

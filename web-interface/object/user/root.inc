@@ -30,7 +30,7 @@ class xivo_user_root extends xivo_user_abstract
 	{
 		$r = false;
 
-		if(xivo_user::chk_meta($umeta) === false || ($meta = xivo_user::type_to_meta($this->_infos['_type'])) === false)
+		if(xivo_user::chk_meta($umeta) === false || ($meta = xivo_user::type_to_meta($this->_info['_type'])) === false)
 			return($r);
 
 		if(($filter = xivo::load_array(XIVO_PATH_OBJECT.XIVO_SEP_DIR.'user'.XIVO_SEP_DIR.'filter'.XIVO_SEP_DIR.$meta.'.inc')) === false)

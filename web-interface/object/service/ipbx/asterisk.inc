@@ -578,7 +578,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 				continue;
 
 			if($info['protocol']['context'] === '')
-				$info['protocol']['context'] = 'local-extensions';
+				$info['protocol']['context'] = 'default';
 			
 			if($type === '')
 			{
@@ -658,6 +658,40 @@ class xivo_service_asterisk extends xivo_service_abstract
 			$r[$info['agroup']['id']] = array('interface' => $interface,
 							  'identity' => $info['agroup']['name'],
 							  'channel' => XIVO_SRE_IPBX_AST_CHAN_AGENT);
+		}
+			
+		if(empty($r) === true)
+			$r = false;
+
+		return($r);
+	}
+
+	function get_user_rightcall_info($protocols=array(),$disable=null)
+	{
+		$protocols = (array) $protocols;
+		
+		if(empty($protocols) === true)
+			$protocols = array_keys($this->_conf['protocol']);
+		else
+			$protocols = array_values($protocols);
+
+		$ufeatures = &$this->get_module('userfeatures');
+
+		if(($rs = $ufeatures->get_all($disable)) === false || ($nb = count($rs)) === 0)
+			return(false);
+
+		$r = $info = array();
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			$info['ufeatures'] = $rs[$i];
+
+			if(in_array($info['ufeatures']['protocol'],$protocols) === false
+			|| ($protocol = &$this->get_protocol_module($info['ufeatures']['protocol'])) === false
+			|| ($info['protocol'] = $protocol->get($info['ufeatures']['protocolid'],$disable)) === false)
+				continue;
+
+			$r[$info['ufeatures']['id']] = $info['ufeatures']['identity'];
 		}
 			
 		if(empty($r) === true)
@@ -1063,12 +1097,12 @@ class xivo_service_asterisk extends xivo_service_abstract
 		$name = strval($name);
 		$protocol = strval($protocol);
 		$number = strval($number);
-		$context = strval($context);
+		$context = strtolower(strval($context));
 		$channel = strval($channel);
 
 		if($number !== '')
 		{
-			$context = $context === '' ? 'local-extensions' : $context;
+			$context = $context === '' ? 'default' : $context;
 
 			if(($channel = $this->get_channel(XIVO_SRE_IPBX_AST_CHAN_LOCAL)) !== false)
 				$r = $channel.'/'.$number.'@'.$context;
@@ -1092,7 +1126,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 		return($r);
 	}
 
-	function clean_exten($str)
+	function clean_extension($str)
 	{
 		$str = preg_replace('/\[(\d)\]/','\\1',strval($str));
 
@@ -1109,6 +1143,116 @@ class xivo_service_asterisk extends xivo_service_abstract
 			$str = '_'.$str;
 
 		return($str);
+	}
+
+	function chk_extension($str)
+	{
+		$str = strval($str);
+
+		if(isset($str{0}) === false)
+			return(false);
+
+		if(preg_match('/[\[\-\]]/',$str) === 0)
+			return($this->_realexten_pattern($str));
+
+		$split = preg_split('/\[(\d+(?:\-\d+)?)\]/',$str,-1,PREG_SPLIT_DELIM_CAPTURE);
+
+		if(($nb = count($split)) === 0)
+			return($this->_realexten_pattern($str));
+
+		$r = '';
+
+		for($i = 0;$i < $nb;$i+=2)
+		{
+			if(preg_match('/[\[\-\]]/',$split[$i]) === 1)
+				return(false);
+			else
+				$r .= $this->_realexten_pattern($split[$i]);
+
+			if(isset($split[$i+1]) === false)
+				return($r);
+
+			$nsplit = $split[$i+1];
+
+			$arr = array();
+
+			if(isset($nsplit{1}) === false)
+			{
+				$r .= $nsplit{0};
+				continue;
+			}
+
+			if(preg_match('/^(\d*)(\d-\d)(\d*)$/',$nsplit,$match) === 1)
+			{
+				if($match[2]{0} >= $match[2]{2})
+					return(false);
+
+				$arr = array_flip(range($match[2]{0},$match[2]{2}));
+
+				if(($len = strlen($match[1])) !== 0)
+				{
+					for($j = 0;$j < $len;$j++)
+					{
+						$num = $match[1]{$j};
+
+						if(isset($arr[$num]) === true)
+							return(false);
+
+						$arr[$num] = 1;
+					}
+				}
+
+				if(($len = strlen($match[3])) !== 0)
+				{
+					for($j = 0;$j < $len;$j++)
+					{
+						$num = $match[3]{$j};
+
+						if(isset($arr[$num]) === true)
+							return(false);
+
+						$arr[$num] = 1;
+					}
+				}
+			}
+			else
+			{
+				$len = strlen($nsplit);
+
+				for($j = 0;$j < $len;$j++)
+				{
+					$num = $nsplit{$j};
+
+					if(isset($arr[$num]) === true)
+						return(false);
+
+					$arr[$num] = 1;
+				}
+			}
+	
+			ksort($arr);
+
+			$r .= '['.implode('',array_keys($arr)).']';
+		}
+
+		return($r);
+	}
+
+	function _realexten_pattern($str)
+	{
+		$str = preg_replace('/\[(\d)\]/','\\1',(string) $str);
+		$pat = array('_','X','Z','N');
+		$rep = array('','[0123456789]','[123456879]','[23456789]');
+
+		return(str_replace($pat,$rep,$str));
+	}
+
+	function _regexten_pattern($str)
+	{
+		$pat = array('_','*','X','Z','N','.','!');
+		$rep = array('','\*','[0-9]','[1-9]','[2-9]','[0-9#\*]+','[0-9#\*]*');
+
+		return(str_replace($pat,$rep,(string) $str));
 	}
 
 	function mk_callerid($number,$callerid='')

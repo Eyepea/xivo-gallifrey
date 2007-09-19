@@ -109,14 +109,12 @@ class xivo_service_asterisk_extenfeatures extends xivo_service_asterisk_extensio
 
 	function _mk_exten($name,$val,$disable=null)
 	{
-		$r = false;
-
 		$name = (string) $name;
 		$val = (string) $val;
 		$disable = $disable === null ? $disable : intval((bool) $disable);
 
 		if($this->_chk_exfeatures_exists($name) === false)
-			return($r);
+			return(false);
 
 		$arr = $this->_exfeatures['conf']['exten'][$name];
 
@@ -130,9 +128,7 @@ class xivo_service_asterisk_extenfeatures extends xivo_service_asterisk_extensio
 
 			if(($r[0] = $this->_chk_extensions_values($arr)) === false)
 				return(false);
-
-			$r[0] = $this->_mk_exten_appdata_vars($r[0]);
-
+	
 			return($r);
 		}
 
@@ -255,14 +251,14 @@ class xivo_service_asterisk_extenfeatures extends xivo_service_asterisk_extensio
 
 	function set_chk_value($key,$value)
 	{
-		$value = $this->_sre->clean_exten($value);
+		$value = $this->_sre->clean_extension($value);
 
 		return(parent::set_chk_value($key,$value));
 	}
 
 	function chk_value($key,$value)
 	{
-		$value = $this->_sre->clean_exten($value);
+		$value = $this->_sre->clean_extension($value);
 
 		return(parent::chk_value($key,$value));
 	}

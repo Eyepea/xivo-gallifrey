@@ -1,4 +1,88 @@
 var xivo_fm = document.forms;
+var xivo_fm_error = new Array();
+
+function xivo_fm_show_error()
+{
+	if(xivo_is_undef(xivo_fm_error) == true
+	|| xivo_is_array(xivo_fm_error) == false
+	|| xivo_is_undef(xivo_fm_error_class) == true)
+		return(false);
+
+	for(var key in xivo_fm_error)
+	{
+		var val = new Boolean(xivo_fm_error[key]);
+
+		if((obj = xivo_eid(key)) == false || val == false)
+			continue;
+
+		switch(obj.tagName.toLowerCase())
+		{
+			case 'input':
+				if(obj.type != 'text'
+				&& obj.type != 'file'
+				&& obj.type != 'password')
+					continue;
+			default:
+				obj.className = xivo_fm_error_class;
+		}
+	}
+
+	return(true);
+}
+
+function xivo_fm_set_onfocus(obj)
+{
+	var arr = new Array();
+	arr['input'] = 1;
+	arr['select'] = 1;
+	arr['textarea'] = 1;
+
+	if(xivo_is_undef(xivo_fm_onfocus_class) == true
+	|| xivo_is_undef(xivo_fm_error_class) == true
+	|| xivo_is_undef(obj.tagName) == true
+	|| xivo_is_undef(arr[obj.tagName.toLowerCase()]) == true)
+		return(false);
+
+	if((obj.tagName.toLowerCase() == 'input'
+	&& obj.type != 'text'
+	&& obj.type != 'file'
+	&& obj.type != 'password') == true
+	|| obj.className == xivo_fm_error_class
+	|| obj.readOnly == true
+	|| obj.disabled == true)
+		return(false);
+
+	obj.className = xivo_fm_onfocus_class;
+
+	return(true);
+}
+
+function xivo_fm_set_onblur(obj)
+{
+	var arr = new Array();
+	arr['input'] = 1;
+	arr['select'] = 1;
+	arr['textarea'] = 1;
+
+	if(xivo_is_undef(xivo_fm_onblur_class) == true
+	|| xivo_is_undef(xivo_fm_error_class) == true
+	|| xivo_is_undef(obj.tagName) == true
+	|| xivo_is_undef(arr[obj.tagName.toLowerCase()]) == true)
+		return(false);
+
+	if((obj.tagName.toLowerCase() == 'input'
+	&& obj.type != 'text'
+	&& obj.type != 'file'
+	&& obj.type != 'password') == true
+	|| obj.className == xivo_fm_error_class
+	|| obj.readOnly == true
+	|| obj.disabled == true)
+		return(false);
+
+	obj.className = xivo_fm_onblur_class;
+
+	return(true);
+}
 
 function xivo_fm_onfocus_onblur()
 {
@@ -7,8 +91,7 @@ function xivo_fm_onfocus_onblur()
 	arr[1] = 'select';
 	arr[2] = 'textarea';
 
-	if(xivo_is_undef(xivo_fm_onfocus_class) == true
-	|| xivo_is_undef(xivo_fm_onblur_class) == true)
+	if(xivo_is_undef(xivo_fm_error_class) == true)
 		return(false);
 
 	for(var i = 0;i < 3;i++)
@@ -19,17 +102,17 @@ function xivo_fm_onfocus_onblur()
 
 		for(var j = 0;j < len;j++)
 		{
-			if(arr[i] == 'input'
+			if((arr[i] == 'input'
 			&& tag[j].type != 'text'
 			&& tag[j].type != 'file'
-			&& tag[j].type != 'password')
+			&& tag[j].type != 'password') == true)
 				continue;
 
 			if(xivo_is_undef(tag[j].onfocus) == true || tag[j].onfocus === null)
-				tag[j].onfocus = function() { this.className = xivo_fm_onfocus_class; }
+				tag[j].onfocus = function() { xivo_fm_set_onfocus(this); }
 
 			if(xivo_is_undef(tag[j].onblur) == true || tag[j].onblur === null)
-				tag[j].onblur = function() { this.className = xivo_fm_onblur_class; }
+				tag[j].onblur = function() { xivo_fm_set_onblur(this); }
 		}
 	}
 

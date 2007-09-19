@@ -636,14 +636,17 @@ class xivo_file
 		return($r);		
 	}
 
-	function read_d($dir,$type='',$mode='',$match='')
+	function read_d($dir,$type='',$mode='',$match='',$dirwmode=false)
 	{
 		$dir = (string) $dir;
 		$type = (string) $type;
 		$mode = (string) $mode;
 		$match = (string) $match;
+		$dirwmode = (bool) $dirwmode;
 
-		if(($dir = xivo_file::is_d_r($dir)) === false || ($open = opendir($dir)) === false)
+		if(($dir = xivo_file::is_d_rx($dir)) === false
+		|| ($open = opendir($dir)) === false
+		|| ($dirwmode === true && xivo_file::is_w($dir) === false) === true)
 			return(false);
 
 		if($type !== 'file' && $type !== 'dir')
@@ -661,9 +664,6 @@ class xivo_file
 			$nmode .= 'x';
 
 		$mode = $nmode;
-
-		if(($mode !== '' || $type !== '') === true && xivo_file::is_x($dir) === false)
-			return(false);
 
 		$r = array();
 
@@ -741,7 +741,7 @@ class xivo_file
 
 	function rmdir($dir)
 	{
-		if(($dir = xivo_file::is_d_rw($dir)) === false
+		if(($dir = xivo_file::is_d_rwx($dir)) === false
 		|| xivo_file::is_d_rw(dirname($dir)) === false
 		|| ($list = xivo_file::read_d($dir)) === false)
 			return(false);

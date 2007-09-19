@@ -192,14 +192,53 @@ class xivo_service_asterisk_abstract
 		return(true);
 	}
 
+	function set_origin($arr)
+	{
+		if(isset($this->_origin) === false
+		|| is_array($arr) === false)
+			return(false);
+
+		$this->_origin = $arr;
+
+		return(true);
+	}
+
+	function get_origin()
+	{
+		if(isset($this->_origin) === false
+		|| is_array($this->_origin) === false)
+			return(false);
+
+		return($this->_origin);
+	}
+
+	function get_origin_list()
+	{
+		if(isset($this->_origin_list) === false
+		|| is_array($this->_origin_list) === false)
+			return(false);
+
+		return($this->_origin_list);
+	}
+
 	function add_origin()
 	{
 		return($this->_origin('add'));
 	}
 
+	function add_origin_list()
+	{
+		return($this->_origin_list('add'));
+	}
+
 	function edit_origin()
 	{
 		return($this->_origin('edit'));
+	}
+
+	function edit_origin_list()
+	{
+		return($this->_origin_list('edit'));
 	}
 
 	function _origin($type)
@@ -215,6 +254,28 @@ class xivo_service_asterisk_abstract
 			$r = $this->edit($this->_origin['id'],$this->_origin);
 
 		return($r);
+	}
+
+	function _origin_list($type)
+	{
+		if(($type !== 'add' && $type !== 'edit') === true
+		|| isset($this->_origin_list) === false
+		|| is_array($this->_origin_list) === false
+		|| ($nb = count($this->_origin_list)) === 0)
+			return(false);
+
+		if($type === 'add')
+		{
+			for($i = 0;$i < $nb;$i++)
+				$this->add($this->_origin_list[$i],$this->_origin_list[$i]['id']);
+		}
+		else
+		{
+			for($i = 0;$i < $nb;$i++)
+				$this->edit($this->_origin_list[$i]['id'],$this->_origin_list[$i]);
+		}
+
+		return(true);
 	}
 
 	function _prepare($data)
@@ -252,7 +313,7 @@ class xivo_service_asterisk_abstract
 		|| ($r = $this->_dso->get($where,$disable,$delete)) === false)
 			return(false);
 
-		if(isset($this->_option) === true)
+		if(isset($this->_origin) === true)
 			$this->_origin = $r;
 
 		$r = $this->_prepare($r);
@@ -303,15 +364,28 @@ class xivo_service_asterisk_abstract
 
 		$r = array();
 
+		if(isset($this->_origin_list) === true)
+			$this->_origin_list = array();
+		
 		if($prepare === true)
 		{
 			for($i = 0;$i < $nb;$i++)
+			{
 				$r[] = $this->_prepare($list[$i]);
+
+				if(isset($this->_origin_list) === true)
+					$this->_origin_list[] = $list[$i];
+			}
 		}
 		else
 		{
 			for($i = 0;$i < $nb;$i++)
+			{
 				$r[] = $list[$i];
+
+				if(isset($this->_origin_list) === true)
+					$this->_origin_list[] = $list[$i];
+			}
 		}
 
 		if(isset($r[0]) === false)
@@ -331,15 +405,28 @@ class xivo_service_asterisk_abstract
 
 		$r = array();
 
+		if(isset($this->_origin_list) === true)
+			$this->_origin_list = array();
+
 		if($prepare === true)
 		{
 			for($i = 0;$i < $nb;$i++)
+			{
 				$r[] = $this->_prepare($list[$i]);
+
+				if(isset($this->_origin_list) === true)
+					$this->_origin_list[] = $list[$i];
+			}
 		}
 		else
 		{
 			for($i = 0;$i < $nb;$i++)
+			{
 				$r[] = $list[$i];
+
+				if(isset($this->_origin_list) === true)
+					$this->_origin_list[] = $list[$i];
+			}
 		}
 
 		if(isset($r[0]) === false)

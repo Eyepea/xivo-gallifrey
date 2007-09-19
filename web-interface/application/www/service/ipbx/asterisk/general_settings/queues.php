@@ -19,7 +19,7 @@ $_HTML->assign('info',$info);
 $_HTML->assign('element',$element);
 
 $menu = &$_HTML->get_module('menu');
-$menu->set_top('top/user/'.$_USR->get_infos('meta'));
+$menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/service/ipbx/'.$ipbx->get_name());
 
 $_HTML->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/general_settings/queues');

@@ -80,7 +80,7 @@ class xivo_tpl_url extends xivo_tpl_module
 			if($i18n === true)
 			{
 				$usr = &$this->_get_module('user');
-				$r = $this->get_option('script_root').'/img/i18n/'.$usr->get_infos('language').'/'.$url;
+				$r = $this->get_option('script_root').'/img/i18n/'.$usr->get_info('language').'/'.$url;
 			}
 			else
 				$r = $this->get_option('script_root').'/'.$url;

@@ -66,14 +66,16 @@ $array['exten']['fwdbusy']['_line'][] = array('priority' => 8,'app' => 'Hangup')
 
 $array['exten']['recsnd'] = array();
 $array['exten']['recsnd']['app'] = 'Set';
-$array['exten']['recsnd']['appdata'] = 1;
+$array['exten']['recsnd']['appdata'] = '';
 $array['exten']['recsnd']['_line'][] = array('priority' => 1,'app' => 'Playback','appdata' => 'record-message-after-beep');
 $array['exten']['recsnd']['_line'][] = array('priority' => 2,'appdata' => 'ROOT=/usr/share/asterisk/sounds/web-interface/recordings');
-$array['exten']['recsnd']['_line'][] = array('priority' => 3,'appdata' => 'FILE=${CALLERID(num)}-${EPOCH}');
-$array['exten']['recsnd']['_line'][] = array('priority' => 4,'app' => 'Record','appdata' => '${ROOT}/${FILE}:wav');
-$array['exten']['recsnd']['_line'][] = array('priority' => 5,'app' => 'Wait');
-$array['exten']['recsnd']['_line'][] = array('priority' => 6,'app' => 'Playback','appdata' => '${ROOT}/${FILE}');
-$array['exten']['recsnd']['_line'][] = array('priority' => 7,'app' => 'Hangup','appdata' => '');
+$array['exten']['recsnd']['_line'][] = array('priority' => 3,'appdata' => 'RECORDFILE=${ROOT}/${CALLERID(num)}-${EPOCH}');
+$array['exten']['recsnd']['_line'][] = array('priority' => 4,'appdata' => 'EXTRECORDFILE=wav');
+$array['exten']['recsnd']['_line'][] = array('priority' => 5,'appdata' => 'RECORDFILENAME=${RECORDFILE}.${EXTRECORDFILE}');
+$array['exten']['recsnd']['_line'][] = array('priority' => 6,'app' => 'Record','appdata' => '${RECORDFILE}:${EXTRECORDFILE}');
+$array['exten']['recsnd']['_line'][] = array('priority' => 7,'app' => 'Wait','appdata' => 1);
+$array['exten']['recsnd']['_line'][] = array('priority' => 8,'app' => 'Playback','appdata' => '${RECORDFILE}');
+$array['exten']['recsnd']['_line'][] = array('priority' => 9,'app' => 'Hangup');
 
 $array['exten']['phonestatus'] = array();
 $array['exten']['phonestatus']['app'] = 'Playback';

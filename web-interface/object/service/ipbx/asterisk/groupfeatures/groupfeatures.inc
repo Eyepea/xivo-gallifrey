@@ -4,10 +4,11 @@ xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
 
 class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 {
-	var $_dso	= null;
-	var $_name	= 'groupfeatures';
-	var $_filter	= null;
-	var $_origin	= false;
+	var $_dso		= null;
+	var $_name		= 'groupfeatures';
+	var $_filter		= null;
+	var $_origin		= false;
+	var $_origin_list	= false;
 
 	function xivo_service_asterisk_groupfeatures(&$sre,&$dso)
 	{

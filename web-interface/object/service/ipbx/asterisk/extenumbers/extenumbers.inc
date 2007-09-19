@@ -39,20 +39,18 @@ class xivo_service_asterisk_extenumbers extends xivo_service_asterisk_abstract
 		if(($id = xivo_uint($id)) !== 0)
 			$arr['id'] = $id;
 
-		unset($arr['extenhash']);
-
 		if(xivo_haslen($arr,'exten') === false
-		|| ($exten = $this->chk_exten($arr['exten'])) === false)
+		|| ($exten = $this->_sre->chk_extension($arr['exten'])) === false)
 			return(false);
 
 		$arr['extenhash'] = sha1($exten);
 
-		$arr['exten'] = $this->_sre->clean_exten($arr['exten']);
+		$arr['exten'] = $this->_sre->clean_extension($arr['exten']);
 
 		return($this->_dso->add($arr));
 	}
 
-	function edit($id,$arr,$disable=null)
+	function edit($id,$arr)
 	{
 		if(($id = xivo_uint($id)) === 0 || is_array($arr) === false)
 			return(false);
@@ -61,14 +59,14 @@ class xivo_service_asterisk_extenumbers extends xivo_service_asterisk_abstract
 
 		if(xivo_haslen($arr,'exten') === true)
 		{
-			if(($exten = $this->chk_exten($arr['exten'])) === false)
+			if(($exten = $this->_sre->chk_extension($arr['exten'])) === false)
 				return(false);
 
 			$arr['extenhash'] = sha1($exten);
-			$arr['exten'] = $this->_sre->clean_exten($arr['exten']);
+			$arr['exten'] = $this->_sre->clean_extension($arr['exten']);
 		}
 
-		return($this->_dso->edit($id,$arr,$disable));
+		return($this->_dso->edit($id,$arr));
 	}
 
 	function exists($arr,$id=null)
@@ -79,7 +77,7 @@ class xivo_service_asterisk_extenumbers extends xivo_service_asterisk_abstract
 			return(null);
 
 		if(xivo_haslen($arr,'exten') === false
-		|| ($exten = $this->chk_exten($arr['exten'])) === false)
+		|| ($exten = $this->_sre->chk_extension($arr['exten'])) === false)
 			return(null);
 
 		$extenhash = sha1($exten);
@@ -90,7 +88,7 @@ class xivo_service_asterisk_extenumbers extends xivo_service_asterisk_abstract
 		$context = xivo_haslen($arr,'context') === true ? $arr['context'] : '';
 
 		if(($whereid = $this->_dso->exists_exten($where,$context)) !== false
-		&& ($id === null || ($id !== null && $whereid !== $id) === true) === true)
+		&& ($id === null || $whereid !== $id) === true)
 			return(true);
 
 		return(false);
@@ -98,7 +96,7 @@ class xivo_service_asterisk_extenumbers extends xivo_service_asterisk_abstract
 
 	function get_search($exten,$context='')
 	{
-		if(($extenchk = $this->chk_exten($exten)) === false)
+		if(($extenchk = $this->_sre->chk_extension($exten)) === false)
 			return(false);
 
 		$extenhash = sha1($extenchk);
@@ -117,116 +115,6 @@ class xivo_service_asterisk_extenumbers extends xivo_service_asterisk_abstract
 			$r = false;
 
 		return($r);
-	}
-
-	function chk_exten($str)
-	{
-		$str = strval($str);
-
-		if(isset($str{0}) === false)
-			return(false);
-
-		if(preg_match('/[\[\-\]]/',$str) === 0)
-			return($this->_realexten_pattern($str));
-
-		$split = preg_split('/\[(\d+(?:\-\d+)?)\]/',$str,-1,PREG_SPLIT_DELIM_CAPTURE);
-
-		if(($nb = count($split)) === 0)
-			return($this->_realexten_pattern($str));
-
-		$r = '';
-
-		for($i = 0;$i < $nb;$i+=2)
-		{
-			if(preg_match('/[\[\-\]]/',$split[$i]) === 1)
-				return(false);
-			else
-				$r .= $this->_realexten_pattern($split[$i]);
-
-			if(isset($split[$i+1]) === false)
-				return($r);
-
-			$nsplit = $split[$i+1];
-
-			$arr = array();
-
-			if(isset($nsplit{1}) === false)
-			{
-				$r .= $nsplit{0};
-				continue;
-			}
-
-			if(preg_match('/^(\d*)(\d-\d)(\d*)$/',$nsplit,$match) === 1)
-			{
-				if($match[2]{0} >= $match[2]{2})
-					return(false);
-
-				$arr = array_flip(range($match[2]{0},$match[2]{2}));
-
-				if(($len = strlen($match[1])) !== 0)
-				{
-					for($j = 0;$j < $len;$j++)
-					{
-						$num = $match[1]{$j};
-
-						if(isset($arr[$num]) === true)
-							return(false);
-
-						$arr[$num] = 1;
-					}
-				}
-
-				if(($len = strlen($match[3])) !== 0)
-				{
-					for($j = 0;$j < $len;$j++)
-					{
-						$num = $match[3]{$j};
-
-						if(isset($arr[$num]) === true)
-							return(false);
-
-						$arr[$num] = 1;
-					}
-				}
-			}
-			else
-			{
-				$len = strlen($nsplit);
-
-				for($j = 0;$j < $len;$j++)
-				{
-					$num = $nsplit{$j};
-
-					if(isset($arr[$num]) === true)
-						return(false);
-
-					$arr[$num] = 1;
-				}
-			}
-	
-			ksort($arr);
-
-			$r .= '['.implode('',array_keys($arr)).']';
-		}
-
-		return($r);
-	}
-
-	function _realexten_pattern($str)
-	{
-		$str = preg_replace('/\[(\d)\]/','\\1',(string) $str);
-		$pat = array('_','X','Z','N');
-		$rep = array('','[0123456789]','[123456879]','[23456789]');
-
-		return(str_replace($pat,$rep,$str));
-	}
-
-	function _regexten_pattern($str)
-	{
-		$pat = array('_','*','X','Z','N','.','!');
-		$rep = array('','\*','[0-9]','[1-9]','[2-9]','[0-9#\*]+','[0-9#\*]*');
-
-		return(str_replace($pat,$rep,(string) $str));
 	}
 }
 

@@ -4,10 +4,11 @@ xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
 
 class xivo_service_asterisk_queuemember extends xivo_service_asterisk_abstract
 {
-	var $_dso	= null;
-	var $_name	= 'queuemember';
-	var $_filter	= null;
-	var $_origin	= false;
+	var $_dso		= null;
+	var $_name		= 'queuemember';
+	var $_filter		= null;
+	var $_origin		= false;
+	var $_origin_list	= false;
 
 	function xivo_service_asterisk_queuemember(&$sre,&$dso)
 	{
@@ -50,6 +51,34 @@ class xivo_service_asterisk_queuemember extends xivo_service_asterisk_abstract
 			$r = $this->edit(array($this->_origin['queue_name'],$this->_origin['interface']),$this->_origin);
 
 		return($r);
+	}
+
+	function _origin_list($type)
+	{
+		if(($type !== 'add' && $type !== 'edit') === true
+		|| is_array($this->_origin_list) === false
+		|| ($nb = count($this->_origin_list)) === 0)
+			return(false);
+
+		if($type === 'add')
+		{
+			for($i = 0;$i < $nb;$i++)
+				$this->add($this->_origin_list[$i]);
+		}
+		else
+		{
+			$id = array();
+
+			for($i = 0;$i < $nb;$i++)
+			{
+				$id[0] = $this->_origin_list[$i]['queue_name'];
+				$id[1] = $this->_origin_list[$i]['interface'];
+
+				$this->edit($id,$this->_origin_list[$i]);
+			}
+		}
+
+		return(true);
 	}
 
 	function get_all_by_category($arr=array(),$disable=null)

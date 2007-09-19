@@ -12,9 +12,9 @@ class xivo_tpl_user extends xivo_tpl_module
 		$this->_usr = xivo_gct::get('_USR');
 	}
 
-	function get_infos($name)
+	function get_info($name)
 	{
-		return($this->_usr->get_infos($name));
+		return($this->_usr->get_info($name));
 	}
 }
 

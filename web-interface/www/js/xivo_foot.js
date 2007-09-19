@@ -11,12 +11,12 @@ function tooltips_display()
 	xivo_eid('ancr-tooltips-bindaddr').focus();
 }
 
-
 window.onload = function()
 {
 	if(xivo_winload.length > 0)
 		eval(xivo_winload.join('\n'));
 
+	xivo_fm_show_error();
 	xivo_fm_onfocus_onblur();
 
 	if(xivo_eid('tooltips-bindaddr') == false && xivo_eid('lb-bindaddr') != false)

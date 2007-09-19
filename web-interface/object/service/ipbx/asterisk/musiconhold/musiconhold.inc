@@ -143,7 +143,7 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 			return($r);
 
 		if($exists === true)
-			$r = xivo_file::is_f_rw($this->_mohpath.XIVO_SEP_DIR.$dir.XIVO_SEP_DIR.$name);
+			$r = xivo_file::is_f($this->_mohpath.XIVO_SEP_DIR.$dir.XIVO_SEP_DIR.$name);
 		else
 			$r = true;
 
@@ -477,7 +477,7 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 		else
 			$dir = $this->_mohpath;
 
-		$r = xivo_file::read_d($dir,'file','rw',$match_file);
+		$r = xivo_file::read_d($dir,'file',null,$match_file,true);
 
 		if($r !== false && isset($r[0]) === false)
 			$r = false;
@@ -490,7 +490,7 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 		if(($match_dir = $this->_get_option_dir_name('match_dir')) === false)
 			return(false);
 
-		$r = xivo_file::read_d($this->_mohpath,'dir','rwx',$match_dir);
+		$r = xivo_file::read_d($this->_mohpath,'dir','rwx',$match_dir,true);
 
 		if($r !== false && isset($r[0]) === false)
 			$r = false;

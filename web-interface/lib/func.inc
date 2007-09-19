@@ -160,7 +160,7 @@ function xivo_is_sgraph($str,$type='')
 
 	$type = strtolower((string) $type);
 
-	$reg = '\x00-\x08\x0B\x0C\x0E-\x1F\7F';
+	$reg = '\x00-\x08\x0B\x0C\x0E-\x1F\x7F';
 
 	switch($type)
 	{

@@ -4,7 +4,7 @@ class xivo_user_abstract
 {
 	var $_dso	= null;
 	var $_ini	= array();
-	var $_infos	= array();
+	var $_info	= array();
 	var $_acl	= null;
 
 	function mk_active()
@@ -42,32 +42,32 @@ class xivo_user_abstract
 		return($this->_dso->get($id));
 	}
 
-	function get_infos($name)
+	function get_info($name)
 	{
 		$r = null;
 
 		$name = (string) $name;
 
-		if(isset($this->_infos[$name]) === true && $name{0} !== '_')
-			$r = $this->_infos[$name];
+		if(isset($this->_info[$name]) === true && $name{0} !== '_')
+			$r = $this->_info[$name];
 
 		return($r);
 	}
 
-	function set_infos($name,$value)
+	function set_info($name,$value)
 	{
 		$name = (string) $name;
 
 		if($name{0} !== '_')
-			$this->_infos[$name] = $value;
+			$this->_info[$name] = $value;
 	}
 
 	function load_by_session()
 	{
 		if(($r = $this->mk_active()) === true)
-			$this->_infos = (array) $_SESSION['_USR'];
+			$this->_info = (array) $_SESSION['_USR'];
 
-		$this->_set_infos($r,$this->_infos);
+		$this->_set_info($r,$this->_info);
 
 		return($r);
 	}
@@ -84,7 +84,7 @@ class xivo_user_abstract
 			else
 				$valid = false;
 
-			$this->_set_infos($valid,$data);
+			$this->_set_info($valid,$data);
 		}
 
 		return($r);
@@ -102,80 +102,80 @@ class xivo_user_abstract
 			{
 				if(($r = $this->_add_by_login_pass($login,$pass,$type)) !== false)
 				{
-					$this->_infos = array();
-					$this->_infos['id'] = $r;
+					$this->_info = array();
+					$this->_info['id'] = $r;
 					$r = true;
 				}
 			}
 			else
 			{
-				$this->_infos = &$data;
+				$this->_info = &$data;
 				$r = true;
 			}
 
-			//if($r === true && xivo_ak('valid',$this->_infos,true) === 'false')
+			//if($r === true && xivo_ak('valid',$this->_info,true) === 'false')
 			//	$r = false;
 
 			if($r === true)
 			{
-				$this->_infos['login'] = $login;
-				$this->_infos['passwd'] = $pass;
-				$this->_infos['type'] = $type;
-				$infos = $this->_infos;
+				$this->_info['login'] = $login;
+				$this->_info['passwd'] = $pass;
+				$this->_info['type'] = $type;
+				$infos = $this->_info;
 			}
 		}
 
-		$this->_set_infos($r,$infos);
+		$this->_set_info($r,$infos);
 
 		return($r);
 	}
 
-	function _set_infos($valid,$arr=array())
+	function _set_info($valid,$arr=array())
 	{
 		$valid = (bool) $valid;
 
 		if(is_array($arr) === true)
 		{
-			$this->_infos = &$arr;
+			$this->_info = &$arr;
 
 			if(isset($arr['type']) === false && isset($arr['meta']) === true)
 				$arr['type'] = xivo_user::meta_to_type($arr['meta']);
 
 			if(isset($arr['login'],$arr['passwd'],$arr['type']) === true)
 			{
-				$this->_infos['_login'] = (string) $arr['login'];
-				$this->_infos['_pass'] = (string) $arr['passwd'];
-				$this->_infos['_type'] = (int) $arr['type'];
-				$this->_infos['_time'] = gmmktime();
+				$this->_info['_login'] = (string) $arr['login'];
+				$this->_info['_pass'] = (string) $arr['passwd'];
+				$this->_info['_type'] = (int) $arr['type'];
+				$this->_info['_time'] = gmmktime();
 			}
 			else
-				$this->_infos['_valid'] = $valid = false;
+				$this->_info['_valid'] = $valid = false;
 		}
 
 		if($valid === true)
-			$this->_infos['_valid'] = true;
+			$this->_info['_valid'] = true;
 		else
-			$this->_infos['_valid'] = false;
+			$this->_info['_valid'] = false;
 
 		$this->set_i18n();
-		$_SESSION['_USR'] = (object) $this->_infos;
+		$_SESSION['_USR'] = (object) $this->_info;
 	}
 
 	function set_i18n()
 	{
 		$lang = $territo = false;
 
-		if(isset($this->_infos['language']) === true)
-			$lang = $this->_infos['language']; 
+		if(isset($this->_info['language']) === true)
+			$lang = $this->_info['language']; 
 
-		if(isset($this->_infos['territory']) === true)
-			$territo = $this->_infos['territory'];
+		if(isset($this->_info['territory']) === true)
+			$territo = $this->_info['territory'];
 
 		xivo_i18n::set_locale($lang,$territo);
 
-		$this->_infos['language'] = xivo_i18n::attrib_language();
-		$this->_infos['territory'] = xivo_i18n::attrib_territory();
-		$this->_infos['locale'] = xivo_i18n::attrib_locale();
+		$this->_info['language'] = xivo_i18n::attrib_language();
+		$this->_info['territory'] = xivo_i18n::attrib_territory();
+		$this->_info['locale'] = xivo_i18n::attrib_locale();
 	}
 
 	function _add_by_login_pass($login,$pass,$type,$valid=true)
@@ -258,7 +258,7 @@ class xivo_user_abstract
 	{
 		$r = false;
 
-		if(xivo_user::chk_meta($user) === false || ($meta = xivo_user::type_to_meta($this->_infos['_type'])) === false)
+		if(xivo_user::chk_meta($user) === false || ($meta = xivo_user::type_to_meta($this->_info['_type'])) === false)
 			return($r);
 
 		if(($filter = xivo::load_array(XIVO_PATH_OBJECT.XIVO_SEP_DIR.'user'.XIVO_SEP_DIR.'filter'.XIVO_SEP_DIR.$meta.'.inc')) === false)

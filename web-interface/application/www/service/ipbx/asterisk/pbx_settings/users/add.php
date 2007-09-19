@@ -1,13 +1,7 @@
 <?php
 
-$ufeatures = &$ipbx->get_module('userfeatures');
-$gfeatures = &$ipbx->get_module('groupfeatures');
-$extensions = &$ipbx->get_module('extensions');
-$extenumbers = &$ipbx->get_module('extenumbers');
+$appuser = &$ipbx->get_application('user');
 $musiconhold = &$ipbx->get_module('musiconhold');
-$ugroup = &$ipbx->get_module('usergroup');
-$qmember = &$ipbx->get_module('queuemember');
-$voicemail = &$ipbx->get_module('uservoicemail');
 $autoprov = &$ipbx->get_module('autoprov');
 
 $gmember_unslt = false;
@@ -57,15 +51,9 @@ if(($queues = $ipbx->get_queues_list()) !== false)
 if(($moh_list = $musiconhold->get_all_category(null,false)) !== false)
 	ksort($moh_list);
 
-$autoprov_list = $autoprov->get_autoprov_list();
-
 $allow = array();
 
 $result = null;
-
-$add = true;
-
-$appuser = &$ipbx->get_application('user');
 
 do
 {
@@ -102,7 +90,7 @@ do
 
 	unset($_QR['ufeatures']['outcallerid-type'],$_QR['ufeatures']['outcallerid-custom']);
 
-	if($appuser->set($_QR,$_QR['protocol']['protocol']) === false
+	if($appuser->set_add($_QR,$_QR['protocol']['protocol']) === false
 	|| $appuser->add() === false)
 	{
 		$result = $appuser->get_result();
@@ -116,12 +104,7 @@ do
 }
 while(false);
 
-$element = array();
-$element['protocol'] = $ipbx->get_protocol_element();
-$element['ufeatures'] = $ufeatures->get_element();
-$element['voicemail'] = $voicemail->get_element();
-$element['autoprov'] = $autoprov->get_element();
-$element['qmember'] = $qmember->get_element();
+$element = $appuser->get_element();
 
 if(xivo_issa('allow',$element['protocol']['sip']) === true
 && xivo_issa('value',$element['protocol']['sip']['allow']) === true
@@ -143,7 +126,7 @@ if(xivo_issa('allow',$element['protocol']['iax']) === true
 	$element['protocol']['iax']['allow']['value'] = array_diff($element['protocol']['iax']['allow']['value'],$allow);
 }
 
-if($result !== null)
+if(empty($result) === false)
 {
 	$result['protocol']['allow'] = $allow;
 
@@ -156,6 +139,8 @@ if($result !== null)
 	if(xivo_issa('autoprov',$result) === false || empty($result['autoprov']) === true)
 		$result['autoprov'] = null;
 }
+else
+	$result = null;
 
 $_HTML->assign('info',$result);
 $_HTML->assign('groups',$groups);
@@ -167,7 +152,7 @@ $_HTML->assign('qmember_unslt',$qmember_unslt);
 $_HTML->assign('protocol',$ipbx->get_protocol());
 $_HTML->assign('element',$element);
 $_HTML->assign('moh_list',$moh_list);
-$_HTML->assign('autoprov_list',$autoprov_list);
+$_HTML->assign('autoprov_list',$autoprov->get_autoprov_list());
 
 $dhtml = &$_HTML->get_module('dhtml');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users.js');

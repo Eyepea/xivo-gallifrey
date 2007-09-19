@@ -71,7 +71,7 @@ class xivo_service_asterisk_configfiles extends xivo_service_asterisk_abstract
 
 	function get_list()
 	{
-		$r = xivo_file::read_d($this->_cfgpath,'file','rw','/^[a-zA-Z0-9_-]+\.conf$/');
+		$r = xivo_file::read_d($this->_cfgpath,'file','rw','/^[a-zA-Z0-9_-]+\.conf$/',true);
 
 		if($r !== false && isset($r[0]) === false)
 			$r = false;

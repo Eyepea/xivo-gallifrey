@@ -27,7 +27,7 @@ $_HTML->assign('element',$element);
 $_HTML->assign('info',$info);
 
 $menu = &$_HTML->get_module('menu');
-$menu->set_top('top/user/'.$_USR->get_infos('meta'));
+$menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/service/ipbx/'.$ipbx->get_name());
 
 $_HTML->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/system_management/configfiles/'.$act);

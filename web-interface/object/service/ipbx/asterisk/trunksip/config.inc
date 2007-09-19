@@ -76,10 +76,12 @@ $array['element']['allow']['default'] = '';
 $array['element']['allow']['null'] = true;
 
 $array['element']['port'] = array();
-$array['element']['port']['default'] = 5060;
+$array['element']['port']['default'] = '';
+$array['element']['port']['null'] = true;
 
 $array['element']['ipaddr'] = array();
 $array['element']['ipaddr']['default'] = '';
+$array['element']['ipaddr']['null'] = true;
 
 $array['element']['regexten'] = array();
 $array['element']['regexten']['default'] = 0;

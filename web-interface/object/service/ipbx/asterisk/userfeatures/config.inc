@@ -73,6 +73,9 @@ $array['element']['outcallerid-custom'] = array();
 $array['element']['outcallerid-custom']['default'] = '';
 $array['element']['outcallerid-custom']['unset'] = true;
 
+$array['element']['description'] = array();
+$array['element']['description']['default'] = '';
+
 $array['filter'] = array();
 $array['filter']['protocol'] = array('set' => true);
 $array['filter']['protocolid'] = array('cast' => 'uint');

@@ -78,11 +78,12 @@ $array['element']['host-dynamic']['value'] = array('dynamic','static');
 $array['element']['host-dynamic']['unset'] = true;
 
 $array['element']['port'] = array();
-$array['element']['port']['default'] = 5060;
-$array['element']['port']['setdef'] = true;
+$array['element']['port']['default'] = '';
+$array['element']['port']['null'] = true;
 
 $array['element']['ipaddr'] = array();
 $array['element']['ipaddr']['default'] = '';
+$array['element']['ipaddr']['null'] = true;
 
 $array['element']['regexten'] = array();
 $array['element']['regexten']['default'] = 0;

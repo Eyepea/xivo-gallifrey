@@ -11,13 +11,14 @@
 
 	$nb = count($error);
 
-	$extenfeatures_css = array();
+	$extenfeatures_js = array();
 
 	for($i = 0;$i < $nb;$i++):
-		$extenfeatures_css[] = '#it-'.$error[$i].' {background-color: #ffcbcb};';
+		$extenfeatures_js[] = 'xivo_fm_error[\'it-'.$error[$i].'\'] = true;';
 	endfor;
 
-	$dhtml->write_css($extenfeatures_css);
+	if($nb > 0)
+		$dhtml->write_js($extenfeatures_js);
 ?>
 <div class="b-infos b-form">
 	<h3 class="sb-top xspan"><span class="span-left">&nbsp;</span><span class="span-center"><?=$this->bbf('title_content_name');?></span><span class="span-right">&nbsp;</span></h3>

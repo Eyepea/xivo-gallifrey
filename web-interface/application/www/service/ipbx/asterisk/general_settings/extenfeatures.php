@@ -21,6 +21,9 @@ if(isset($_QR['fm_send']) === true && ($arr = xivo_get_aks($element)) !== false)
 	{
 		$key = &$arr['keys'][$i];
 
+		if($extenfeatures->unset_element_value($key) === true)
+			continue;
+
 		if(isset($_QR[$key]) === false)
 		{
 			$result[$key] = '';
@@ -95,12 +98,12 @@ if(isset($_QR['fm_send']) === true && ($arr = xivo_get_aks($element)) !== false)
 }
 else $info = $extenfeatures->get_name_exten_for_display();
 
-$_HTML->assign('info',$return);
 $_HTML->assign('error',$error);
+$_HTML->assign('info',$return);
 $_HTML->assign('element',$element);
 
 $menu = &$_HTML->get_module('menu');
-$menu->set_top('top/user/'.$_USR->get_infos('meta'));
+$menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/service/ipbx/'.$ipbx->get_name());
 
 $_HTML->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/general_settings/extenfeatures');

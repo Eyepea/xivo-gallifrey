@@ -93,6 +93,9 @@ $array['section']['agent']['disabled'] = true;
 $array['section']['outcall'] = array();
 $array['section']['outcall']['disabled'] = true;
 
+$array['section']['rightcall'] = array();
+$array['section']['rightcall']['disabled'] = true;
+
 $array['module'] = array();
 
 $array['module']['extensions'] = array();
@@ -235,6 +238,18 @@ $array['module']['generaloutcall']['section'] = 'outcall';
 $array['module']['outcall'] = array();
 $array['module']['outcall']['datastorage'] = true;
 $array['module']['outcall']['section'] = 'outcall';
+
+$array['module']['rightcall'] = array();
+$array['module']['rightcall']['datastorage'] = true;
+$array['module']['rightcall']['section'] = 'rightcall';
+
+$array['module']['rightcallexten'] = array();
+$array['module']['rightcallexten']['datastorage'] = true;
+$array['module']['rightcallexten']['section'] = 'rightcall';
+
+$array['module']['rightcallmember'] = array();
+$array['module']['rightcallmember']['datastorage'] = true;
+$array['module']['rightcallmember']['section'] = 'rightcall';
 
 $array['protocol'] = array();
 $array['protocol']['sip'] = array('name' => XIVO_SRE_IPBX_AST_PROTO_SIP,'module' => 'usersip'); 

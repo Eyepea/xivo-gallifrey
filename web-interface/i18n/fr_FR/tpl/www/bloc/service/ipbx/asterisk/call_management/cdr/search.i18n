@@ -110,7 +110,7 @@ Contient
 Fini par
 
 ; fm_accountcode
-Numéro d'accompte :
+Numéro d'acompte :
 
 ; fm_accountcodeformat-opt-exact
 Exact
@@ -227,7 +227,7 @@ Documentation
 Nom d'appel :
 
 ; entry_accountcode
-Numéro d'accompte :
+Numéro d'acompte :
 
 ; entry_userfield
 Champs utilisateur :

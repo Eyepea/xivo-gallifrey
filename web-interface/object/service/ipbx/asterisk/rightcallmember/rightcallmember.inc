@@ -1,0 +1,94 @@
+<?php
+
+xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
+
+class xivo_service_asterisk_rightcallmember extends xivo_service_asterisk_abstract
+{
+	var $_dso		= null;
+	var $_name		= 'rightcallmember';
+	var $_filter		= null;
+	var $_origin		= false;
+	var $_origin_list	= false;
+
+	function xivo_service_asterisk_rightcallmember(&$sre,&$dso)
+	{
+		if(is_object($sre) === false)
+			trigger_error('Invalid service in '.__CLASS__,E_USER_ERROR);
+
+		if(is_object($dso) === false)
+			trigger_error('Invalid datastorage in '.__CLASS__,E_USER_ERROR);
+
+		$this->_sre = &$sre;
+		$this->_dso = &$dso;
+
+		$this->_load_config();
+	}
+
+	function add($arr,$id=0)
+	{
+		if(is_array($arr) === false)
+			return(false);
+
+		if(($id = xivo_uint($id)) !== 0)
+			$arr['id'] = $id;
+
+		if($this->exists($arr['rightcallid'],$arr['type'],$arr['typeval']) !== false)
+			return(false);
+
+		return($this->_dso->add($arr));
+	}
+
+	function is_valid($type,$typeval,$disable=null)
+	{
+		$type = strval($type);
+		$module = false;
+
+		switch($type)
+		{
+			case 'outcall':
+				$typeval = (int) $typeval;
+
+				if($this->get_id($typeval,$disable) === false)
+					return(false);
+
+				return(true);
+			case 'user':
+			case 'group':
+			case 'queue':
+				$typeval = (int) $typeval;
+
+				$module = $this->_sre->get_module($type.'features');
+				break;
+			default:
+				return(false);
+		}
+
+		if($module === false || ($info = $module->get($typeval,$disable)) === false)
+			return(false);
+
+		return($info);
+	}
+
+	function exists($rightcallid,$type,$typeval)
+	{
+		if(($rightcallid = xivo_uint($rightcallid)) === 0
+		|| ($type !== 'user'
+		   && $type !== 'group'
+		   && $type !== 'queue'
+		   && $type !== 'outcall') === true
+		|| xivo_haslen($typeval) === false)
+			return(null);
+
+		$where = array();
+		$where['rightcallid'] = $rightcallid;
+		$where['type'] = $type;
+		$where['typeval'] = $typeval;
+
+		if($this->_dso->exists_member($where) !== false)
+			return(true);
+
+		return(false);
+	}
+}
+
+?>

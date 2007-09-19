@@ -1,11 +1,11 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html lang="<?=xivo_user::get_infos('language');?>">
+<html lang="<?=xivo_user::get_info('language');?>">
 	<head>
 		<title><?=$this->bbf('html_title');?></title>
 
 		<script type="text/javascript">
 			document.title = '<?=$this->bbf('html_title');?>';
-			var xivo_i18n_lang = '<?=xivo_user::get_infos('language');?>';
+			var xivo_i18n_lang = '<?=xivo_user::get_info('language');?>';
 			var xivo_sess_name = '<?=XIVO_SESS_NAME?>';
 			var xivo_sess_id = '<?=XIVO_SESS_ID?>';
 			var xivo_sess_str = '<?=XIVO_SESS_STR?>';
@@ -13,6 +13,7 @@
 			var xivo_tooltips = '&nbsp;';
 			var xivo_fm_onfocus_class = 'it-mfocus';
 			var xivo_fm_onblur_class = 'it-mblur';
+			var xivo_fm_error_class = 'fm-error';
 		</script>
 		<!-- Date: <?=gmstrftime('%Y-%m-%d %H:%M:%S %Z');?> -->
 

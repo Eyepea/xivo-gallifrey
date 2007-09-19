@@ -58,7 +58,7 @@ class xivo_user
 		return(($ref = &$ini));
 	}
 
-	function get_infos($name)
+	function get_info($name)
 	{
 		$r = null;
 

@@ -38,7 +38,7 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 	function _prepare($data)
 	{
 		$data['commented'] = (bool) $data['commented'];
-		$data['exten'] = $this->_sre->clean_exten($data['exten']);
+		$data['exten'] = $this->_sre->clean_extension($data['exten']);
 
 		return($data);
 	}
@@ -54,7 +54,7 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 			$r['id'] = $id;
 
 		$r['context'] = $arr['context'];
-		$r['exten'] = $this->_sre->clean_exten($arr['exten']);
+		$r['exten'] = $this->_sre->clean_extension($arr['exten']);
 		$r['app'] = $arr['app'];
 
 		if(isset($arr['priority']) === false)
@@ -85,7 +85,7 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 			$r['context'] = (string) $arr['context'];
 
 		if(isset($arr['exten']) === true)
-			$r['exten'] = $this->_sre->clean_exten($arr['exten']);
+			$r['exten'] = $this->_sre->clean_extension($arr['exten']);
 
 		if(isset($arr['priority']) === true)
 			$r['priority'] = xivo_uint($arr['priority'],1);
@@ -113,10 +113,10 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 			return(false);
 
 		if(isset($id['exten']) === true)
-			$id['exten'] = $this->_sre->clean_exten($id['exten']);
+			$id['exten'] = $this->_sre->clean_extension($id['exten']);
 
 		if(isset($arr['exten']) === true)
-			$arr['exten'] = $this->_sre->clean_exten($arr['exten']);
+			$arr['exten'] = $this->_sre->clean_extension($arr['exten']);
 
 		return(parent::edit_where($id,$arr,$disable));
 	}
@@ -127,7 +127,7 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 			return(false);
 
 		if(isset($id['exten']) === true)
-			$id['exten'] = $this->_sre->clean_exten($id['exten']);
+			$id['exten'] = $this->_sre->clean_extension($id['exten']);
 
 		return(parent::delete_where($id,$disable));
 	}
@@ -138,7 +138,7 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 			return(false);
 
 		if(isset($id['exten']) === true)
-			$id['exten'] = $this->_sre->clean_exten($id['exten']);
+			$id['exten'] = $this->_sre->clean_extension($id['exten']);
 
 		return(parent::enable_where($id,$value));
 	}
@@ -149,7 +149,7 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 			return(false);
 
 		if(isset($id['exten']) === true)
-			$id['exten'] = $this->_sre->clean_exten($id['exten']);
+			$id['exten'] = $this->_sre->clean_extension($id['exten']);
 
 		return(parent::disable_where($id,$value));
 	}
@@ -195,7 +195,7 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 		if(($r['app'] = $this->_chk_app($app)) === false)
 			return(false);
 
-		$r['exten'] = $this->_sre->clean_exten($exten);
+		$r['exten'] = $this->_sre->clean_extension($exten);
 		$r['context'] = $context;
 		
 		return($this->chk_values($r,true,false,false));
@@ -205,7 +205,7 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 	{
 		$arr = (array) $arr;
 
-		$exten = $this->_sre->clean_exten($exten);
+		$exten = $this->_sre->clean_extension($exten);
 		$app = strval($app);
 
 		$where = array();
@@ -296,7 +296,7 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 		if(($r['app'] = $this->_sre->mk_interface($name,$protocol)) === false)
 			return(false);
 
-		$r['exten'] = $this->_sre->clean_exten($exten);
+		$r['exten'] = $this->_sre->clean_extension($exten);
 		
 		return($this->chk_values($r,true,false,false));
 	}
@@ -308,7 +308,7 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 		if(($where['app'] = $this->_sre->mk_interface($name,$protocol)) === false)
 			return(false);
 
-		$where['exten'] = $this->_sre->clean_exten($exten);
+		$where['exten'] = $this->_sre->clean_extension($exten);
 		$where['context'] = 'hints';
 
 		return($this->get_where($where));

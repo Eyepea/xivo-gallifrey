@@ -2,13 +2,6 @@
 
 require_once('xivo.php');
 
-for($i = 0;$i < 256;$i++)
-{
-	xivo_var_dump(ctype_graph(chr($i)),chr($i));
-}
-
-die();
-
 if(xivo_user::is_valid() === true)
 	$_QRY->go($_HTML->url('xivo'));
 

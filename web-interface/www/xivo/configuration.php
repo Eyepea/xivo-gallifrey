@@ -19,7 +19,7 @@ switch($cat)
 		{
 			if($_USR->edit($info['meta'],$_QR) === true)
 			{
-				if($_USR->get_infos('id') === $_QR['id'])
+				if($_USR->get_info('id') === $_QR['id'])
 					$_USR->load_by_id($_QR['id']);
 
 				$_QRY->go($_HTML->url('xivo/configuration'),$param);
@@ -57,7 +57,7 @@ switch($cat)
 }
 
 $menu = &$_HTML->get_module('menu');
-$menu->set_top('top/user/'.$_USR->get_infos('meta'));
+$menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/xivo/configuration');
 
 $_HTML->assign('cat',$cat);

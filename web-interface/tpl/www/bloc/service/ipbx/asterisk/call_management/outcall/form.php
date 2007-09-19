@@ -1,6 +1,5 @@
 <?php
 	$form = &$this->get_module('form');
-	$url = &$this->get_module('url');
 
 	$info = $this->vars('info');
 	$element = $this->vars('element');
@@ -18,11 +17,11 @@
 
 <?=$form->select(array('desc' => $this->bbf('fm_outcall_stripnum'),'name' => 'outcall[stripnum]','labelid' => 'outcall-stripnum','key' => false,'default' => $element['outcall']['stripnum']['default'],'value' => $info['outcall']['stripnum']),$element['outcall']['stripnum']['value']);?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_outcall_mode'),'name' => 'outcall[mode]','labelid' => 'outcall-mode','key' => false,'bbf' => array('concatkey','fm_outcall_mode-opt-'),'default' => $element['outcall']['mode']['default'],'value' => $info['outcall']['mode']),$element['outcall']['mode']['value'],'onchange="xivo_chgmode(this); (this.value == \'wizard\' ? xivo_wizard_exten(\'it-outcall-prefix\',\'it-outcall-numlen\',\'it-extenumbers-exten\') : false);" onfocus="this.className = xivo_fm_onfocus_class;" onblur="this.className = xivo_fm_onblur_class;"');?>
+<?=$form->select(array('desc' => $this->bbf('fm_outcall_mode'),'name' => 'outcall[mode]','labelid' => 'outcall-mode','key' => false,'bbf' => array('concatkey','fm_outcall_mode-opt-'),'default' => $element['outcall']['mode']['default'],'value' => $info['outcall']['mode']),$element['outcall']['mode']['value'],'onchange="xivo_chgmode(this); (this.value == \'wizard\' ? xivo_wizard_exten(\'it-outcall-prefix\',\'it-outcall-numlen\',\'it-extenumbers-exten\') : false);" onfocus="xivo_fm_set_onfocus(this);" onblur="xivo_fm_set_onblur(this);"');?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_outcall_prefix'),'name' => 'outcall[prefix]','labelid' => 'outcall-prefix','size' => 15,'default' => $element['outcall']['prefix']['default'],'value' => $info['outcall']['prefix']),'onchange="xivo_wizard_exten(this.id,\'it-outcall-numlen\',\'it-extenumbers-exten\');" onfocus="xivo_wizard_exten(this.id,\'it-outcall-numlen\',\'it-extenumbers-exten\'); this.className = xivo_fm_onfocus_class;" onblur="xivo_wizard_exten(this.id,\'it-outcall-numlen\',\'it-extenumbers-exten\'); this.className = xivo_fm_onblur_class;"');?>
+<?=$form->text(array('desc' => $this->bbf('fm_outcall_prefix'),'name' => 'outcall[prefix]','labelid' => 'outcall-prefix','size' => 15,'default' => $element['outcall']['prefix']['default'],'value' => $info['outcall']['prefix']),'onchange="xivo_wizard_exten(this.id,\'it-outcall-numlen\',\'it-extenumbers-exten\');" onfocus="xivo_wizard_exten(this.id,\'it-outcall-numlen\',\'it-extenumbers-exten\'); xivo_fm_set_onfocus(this);" onblur="xivo_wizard_exten(this.id,\'it-outcall-numlen\',\'it-extenumbers-exten\'); xivo_fm_set_onblur(this);"');?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_outcall_numlen'),'name' => 'outcall[numlen]','labelid' => 'outcall-numlen','key' => false,'empty' => true,'default' => $element['outcall']['numlen']['default'],'value' => $info['outcall']['numlen']),$element['outcall']['numlen']['value'],'onchange="xivo_wizard_exten(\'it-outcall-prefix\',this.id,\'it-extenumbers-exten\');" onfocus="xivo_wizard_exten(\'it-outcall-prefix\',this.id,\'it-extenumbers-exten\'); this.className = xivo_fm_onfocus_class;" onblur="xivo_wizard_exten(\'it-outcall-prefix\',this.id,\'it-extenumbers-exten\'); this.className = xivo_fm_onblur_class;"');?>
+<?=$form->select(array('desc' => $this->bbf('fm_outcall_numlen'),'name' => 'outcall[numlen]','labelid' => 'outcall-numlen','key' => false,'empty' => true,'default' => $element['outcall']['numlen']['default'],'value' => $info['outcall']['numlen']),$element['outcall']['numlen']['value'],'onchange="xivo_wizard_exten(\'it-outcall-prefix\',this.id,\'it-extenumbers-exten\');" onfocus="xivo_wizard_exten(\'it-outcall-prefix\',this.id,\'it-extenumbers-exten\'); xivo_fm_set_onfocus(this);" onblur="xivo_wizard_exten(\'it-outcall-prefix\',this.id,\'it-extenumbers-exten\'); xivo_fm_set_onblur(this);"');?>
 
 <?=$form->text(array('desc' => $this->bbf('fm_extenumbers_exten'),'name' => 'extenumbers[exten]','labelid' => 'extenumbers-exten','size' => 15,'default' => $element['extenumbers']['exten']['default'],'value' => $info['extenumbers']['exten']));?>
 
