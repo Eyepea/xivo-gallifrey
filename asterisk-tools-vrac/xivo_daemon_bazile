@@ -68,24 +68,26 @@ def handle_event(event, mng):
 
 def handle_newchannel(event, mng):
 	if event.headers['State'] == 'Ring':
-		infos = [event.headers['CallerID'], event.headers['Channel'], 0]
+		infos = [event.headers['CallerID'], event.headers['Channel'], '', 0]
 		lines[event.headers['Uniqueid']] = infos
 		idqueue.put(event.headers['Uniqueid'])
 
 def handle_link(event, mng):
-	infos = [event.headers['CallerID1'], event.headers['Channel1'], 1]
+	(tech, chan) = event.headers['Channel2'].split('/')
+	c = chan.split('-')
+	infos = [event.headers['CallerID1'], event.headers['Channel1'], c[0], 1]
 	lines[event.headers['Uniqueid1']] = infos
 	idqueue.put(event.headers['Uniqueid1'])
 
 def handle_unlink(event, mng):
-	infos = [event.headers['CallerID1'], event.headers['Channel1'], 2]
+	infos = [event.headers['CallerID1'], event.headers['Channel1'], '', 2]
 	lines[event.headers['Uniqueid1']] = infos
 	idqueue.put(event.headers['Uniqueid1'])
 
 def handle_hangup(event, mng):
 	try:
 		if event.headers['Channel'] == lines[event.headers['Uniqueid']][1]:
-			infos = [lines[event.headers['Uniqueid']][0], event.headers['Channel'], 3]
+			infos = [lines[event.headers['Uniqueid']][0], event.headers['Channel'], lines[event.headers['Uniqueid']][2], 3]
 			lines[event.headers['Uniqueid']] = infos
 			idqueue.put(event.headers['Uniqueid'])
 	except LookupError:
@@ -97,7 +99,8 @@ def url_call(id):
 	response = ''
 	callerid = lines[id][0]
 	channel = lines[id][1]
-	status = lines[id][2]
+	operator = lines[id][2]
+	status = lines[id][3]
 	if not 'Zap' in channel:
 		return -1
 	if len(callerid) < 10:
@@ -107,10 +110,10 @@ def url_call(id):
 		log_stderr_and_syslog("Appel arrive")
 		return -1
 	if status == 1:
-		url = "%s?N=%s&I=%s&W=2&C=%s" % (website, callerid, key, channel)
+		url = "%s?N=%s&I=%s&W=2&C=%s&E=%s" % (website, callerid, key, channel, operator)
 		log_stderr_and_syslog("Appel decroche")
 	if status == 3:
-		url = "%s?N=%s&I=%s&W=3&C=%s" % (website, callerid, key, channel)
+		url = "%s?N=%s&I=%s&W=3&C=%s&E=%s" % (website, callerid, key, channel, operator)
 		log_stderr_and_syslog("Appel hangup")
 
 	if url:
