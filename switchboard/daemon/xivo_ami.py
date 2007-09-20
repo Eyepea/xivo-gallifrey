@@ -195,9 +195,9 @@ class AMIClass:
         def transfer(self, channel, extension, context):
                 try:
                         ret = self.sendcommand('Redirect', [('Channel', channel),
-                                                      ('Exten', extension),
-                                                      ('Context', context),
-                                                      ('Priority', '1')])
+                                                            ('Exten', extension),
+                                                            ('Context', context),
+                                                            ('Priority', '1')])
                         reply = self.readresponse('')
                         return ret
                 except self.AMIError, exc:

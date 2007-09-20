@@ -830,6 +830,8 @@ def originate_or_transfer(requester, l):
         else:
                 [dummyp, ast_dst, context_dst, proto_dst, userid_dst, exten_dst] = src_split
                 exten_dst = l[2]
+        if exten_dst == 'special:parkthecall':
+                exten_dst = '700'
         idast_src = -1
         idast_dst = -1
         if ast_src in asteriskr: idast_src = asteriskr[ast_src]
@@ -1339,22 +1341,30 @@ def handle_ami_event(astid, idata):
                         exten   = this_event.get("Exten")
                         timeout = this_event.get("Timeout")
                         log_debug("AMI:ParkedCall: %s : %s %s %s %s" %(plist[astnum].astid, channel, cfrom, exten, timeout))
-                elif evfunction == 'ParkedCallTimeOut':
-                        # when the timeout has occured
-                        channel = this_event.get("Channel")
-                        exten   = this_event.get("Exten")
-                        log_debug("AMI:ParkedCallTimeOut: %s : %s %s" %(plist[astnum].astid, channel, exten))
+                        strupdate = "parkedcall=%s;%s;%s;%s;%s" %(configs[astnum].astid, channel, cfrom, exten, timeout)
+                        send_msg_to_cti_clients(strupdate)
                 elif evfunction == 'UnParkedCall':
                         # when somebody (From) took the call
                         channel = this_event.get('Channel')
                         cfrom   = this_event.get('From')
                         exten   = this_event.get('Exten')
                         log_debug("AMI:UnParkedCall: %s : %s %s %s" %(plist[astnum].astid, channel, cfrom, exten))
+                        strupdate = "unparkedcall=%s;%s;%s;%s;unpark" %(configs[astnum].astid, channel, cfrom, exten)
+                        send_msg_to_cti_clients(strupdate)
+                elif evfunction == 'ParkedCallTimeOut':
+                        # when the timeout has occured
+                        channel = this_event.get("Channel")
+                        exten   = this_event.get("Exten")
+                        log_debug("AMI:ParkedCallTimeOut: %s : %s %s" %(plist[astnum].astid, channel, exten))
+                        strupdate = "parkedcalltimeout=%s;%s;;%s;timeout" %(configs[astnum].astid, channel, exten)
+                        send_msg_to_cti_clients(strupdate)
                 elif evfunction == 'ParkedCallGiveUp':
                         # when the peer is tired
                         channel = this_event.get("Channel")
                         exten   = this_event.get("Exten")
                         log_debug("AMI:ParkedCallGiveUp: %s : %s %s" %(plist[astnum].astid, channel, exten))
+                        strupdate = "parkedcallgiveup=%s;%s;;%s;giveup" %(configs[astnum].astid, channel, exten)
+                        send_msg_to_cti_clients(strupdate)
                 elif evfunction == 'ParkedCallsComplete':
                         log_debug("//AMI:ParkedCallsComplete// %s : %s" %(plist[astnum].astid, str(this_event)))
                         
