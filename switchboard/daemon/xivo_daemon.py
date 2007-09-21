@@ -1033,8 +1033,8 @@ def manage_tcp_connection(connid, allow_events):
                 if usefulmsg == "show_infos":
                         try:
                                 time_uptime = int(time.time() - time_start)
-                                reply = "infos=version=%s;uptime=%d s;logged_sb=%d/%d;logged_xc=%d/%d" \
-                                        %(__version__.split()[1], time_uptime,
+                                reply = "infos=this_server_version=%s;clients_required_version=%d;uptime=%d s;logged_sb=%d/%d;logged_xc=%d/%d" \
+                                        %(__version__.split()[1], REQUIRED_CLIENT_VERSION, time_uptime,
                                           conngui_sb, maxgui_sb, conngui_xc, maxgui_xc)
                                 for tcpo in tcpopens_sb:
                                         reply += ":%s:%d" %(tcpo[1],tcpo[2])
