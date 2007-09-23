@@ -422,6 +422,62 @@ function xivo_group_array($ref,&$arr)
 	return($r);
 }
 
+function xivo_array_intersect_key($arr,$data,$key=null,$empty=false)
+{
+	$list = false;
+	$empty = (bool) $empty;
+
+	if(is_array($data) === false || ($list = xivo_get_aks($arr,$empty)) === false)
+		return($list);
+
+	$r = array();
+
+	for($i = 0;$i < $list['cnt'];$i++)
+	{
+		$k = &$list['keys'][$i];
+
+		if($key === null)
+		{
+			if(isset($data[$k]) === true)
+				$r[$k] = $data[$k];
+			continue;
+		}
+
+		$v = &$arr[$k];
+
+		if(is_array($v) === false
+		|| isset($v[$key]) === false
+		|| is_scalar($v[$key]) === false
+		|| isset($data[$v[$key]]) === false)
+			continue;
+
+		$r[$v[$key]] = $data[$v[$key]];
+	}
+
+	if($empty === false && empty($r) === true)
+		$r = false;
+
+	return($r);
+}
+
+function xivo_array_diff_key($arr1,$arr2)
+{
+	$r = array();
+
+	if(is_array($arr1) === false || is_array($arr2) === false)
+		return(false);
+
+	$diff = array_values(array_diff(array_keys($arr1),array_keys($arr2)));
+
+	if(($nb = count($diff)) === 0)
+		return($r);
+
+	for($i = 0;$i < $nb;$i++)
+		$r[$diff[$i]] = $arr1[$diff[$i]];
+	
+	return($r);
+}
+
 function xivo_unserialize(&$str)
 {
 	$r = array();
@@ -436,7 +492,7 @@ function xivo_print_r($a,$n='')
 {
 	$n = (string) $n;
 
-	if(empty($n) === false || $n === '0')
+	if(xivo_empty($n) === false)
 		print '<b>'.$n.'</b> : ';
 	print '<pre>'; print_r($a); print '</pre>';
 }
@@ -445,7 +501,7 @@ function xivo_var_dump($a,$n='')
 {
 	$n = (string) $n;
 
-	if(empty($n) === false || $n === '0')
+	if(xivo_empty($n) === false)
 		print '<b>'.$n.'</b> : ';
 	print '<pre>'; var_dump($a); print '</pre>';
 }

@@ -278,9 +278,49 @@ function xivo_fm_order_selected(from,order)
 	}
 }
 
+function xivo_fm_select_add_entry(id,text,value)
+{
+	if ((obj = xivo_eid(id)) == false
+	|| (obj.type != 'select-multiple'
+	   && obj.type != 'select-one') == true)
+		return(false);
+
+	if(xivo_is_undef(text) == true)
+		text = '';
+
+	if(xivo_is_undef(value) == true)
+		value = null;
+
+	var len = obj.options.length;
+
+	obj.options[len] = new Option(text,value);
+
+	return(true);
+}
+
+function xivo_fm_select_delete_entry(id)
+{
+	if ((obj = xivo_eid(id)) == false
+	|| (obj.type != 'select-multiple'
+	   && obj.type != 'select-one') == true)
+		return(false);
+	
+	var len = obj.options.length - 1;
+
+	for(i = len; i >= 0; i--)
+	{
+		if(obj.options[i].selected == true)
+			obj.options[i] = null;
+	}
+
+	return(true);
+}
+
 function xivo_fm_unshift_pop_opt_select(from,text,value,chk,num)
 {
-	if((from = xivo_eid(from)) == false || (from.type != 'select-one' && from.type != 'select-multiple') == true)
+	if((from = xivo_eid(from)) == false
+	|| (from.type != 'select-one'
+	   && from.type != 'select-multiple') == true)
 		return(false);
 
 	if(xivo_is_undef(text) == true)

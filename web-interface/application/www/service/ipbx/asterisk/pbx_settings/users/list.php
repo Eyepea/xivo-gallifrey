@@ -13,7 +13,7 @@ if($users !== false)
 {
 	$total = count($users);
 	xivo::load_class('xivo_sort');
-	$sort = new xivo_sort(array('browse' => 'sort','key' => 'name'));
+	$sort = new xivo_sort(array('browse' => 'ufeatures','key' => 'fullname'));
 	usort($users,array(&$sort,'str_usort'));
 }
 

@@ -9,7 +9,7 @@
 
 <?=$form->text(array('desc' => $this->bbf('fm_outcall_name'),'name' => 'outcall[name]','labelid' => 'outcall-name','size' => 15,'default' => $element['outcall']['name']['default'],'value' => $info['outcall']['name']));?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_outcall_trunk'),'name' => 'outcall[trunkfeaturesid]','labelid' => 'outcall-trunk','browse' => 'trunk','key' => 'name','altkey' => 'trunkfeaturesid','optgroup' => array('key' => true,'bbf' => array('concat','fm_outcall-trunk-opt-')),'value' => $info['outcall']['trunkfeaturesid'],'default' => $element['outcall']['trunkfeaturesid']['default']),$trunks_list);?>
+<?=$form->select(array('desc' => $this->bbf('fm_outcall_trunk'),'name' => 'outcall[trunkfeaturesid]','labelid' => 'outcall-trunk','browse' => 'trunk','key' => 'name','altkey' => 'trunkfeaturesid','invalid' => true,'optgroup' => array('key' => true,'bbf' => array('concat','fm_outcall-trunk-opt-')),'value' => $info['outcall']['trunkfeaturesid'],'default' => $element['outcall']['trunkfeaturesid']['default']),$trunks_list);?>
 
 <?=$form->text(array('desc' => $this->bbf('fm_outcall_context'),'name' => 'outcall[context]','labelid' => 'outcall-context','size' => 15,'default' => $element['outcall']['context']['default'],'value' => $info['outcall']['context']));?>
 

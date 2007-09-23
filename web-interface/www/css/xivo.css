@@ -87,12 +87,21 @@ pre {text-align: left;}
 .fm-multilist {text-align: center;width: 100%;}
 .fm-multilist div {float: left;width: 45%;}
 .fm-multilist .inout-list {width: 10%;}
-.fm-multilist .bt-inlist, .fm-multilist .bt-outlist, .fm-multilist .bt-uplist, .fm-multilist .bt-downlist {margin: 10px 0px 10px 2px;}
+.fm-multilist .bt-inlist, .fm-multilist .bt-outlist, .fm-multilist .bt-uplist, .fm-multilist .bt-downlist, .fm-multilist .bt-addlist, .fm-multilist .bt-deletelist {margin: 20px 0px 10px 2px;}
 .fm-multilist .slt-inlist {text-align: left;}
+.fm-multilist .slt-list {width: 280px;margin: 0px auto;float: none;text-align: left;}
 .fm-multilist .slt-outlist {text-align: right;}
-.fm-multilist .slt-inlist select, .fm-multilist .slt-outlist select {min-width: 120px;width: auto;}
-.fm-multilist .slt-inlist select {float: left;}
-.fm-multilist .bt-updown {width: 20px;}
+.fm-multilist .slt-inlist select, .fm-multilist .slt-list select {float: left;}
+.fm-multilist .slt-outlist select {text-align: right;}
+.fm-multilist .slt-inlist select, .fm-multilist .slt-outlist select, .fm-multilist .slt-list select {width: 250px;height: 100px;padding: 0px;}
+.fm-multilist .slt-inlist select option, .fm-multilist .slt-outlist select option, .fm-multilist .slt-list select option {border: 0px dashed #999;border-bottom-width: 1px;padding: 2px;}
+.fm-multilist .slt-inlist select option:hover, .fm-multilist .slt-outlist select option:hover {background-color: #fee6c1;}
+.fm-multilist .slt-list select option:hover {background-color: #fee6c1;}
+.fm-multilist .slt-inlist .it-disabled option:hover, .fm-multilist .slt-inlist .it-readonly option:hover {background-color: inherit;}
+.fm-multilist .slt-list .it-disabled option:hover {background-color: inherit;}
+.fm-multilist .slt-outlist .it-disabled option:hover, .fm-multilist .slt-outlist .it-readonly option:hover {background-color: inherit;}
+.fm-multilist .bt-updown, .fm-multilist .bt-adddelete {width: 20px;}
+
 
 .txt-left {text-align: left;}
 .txt-center {text-align: center;}

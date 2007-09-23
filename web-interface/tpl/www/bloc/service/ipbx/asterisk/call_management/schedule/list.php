@@ -6,7 +6,12 @@
 	$list = $this->vars('list');
 	$act = $this->vars('act');
 
-	$page = $url->pager($pager['pages'],$pager['page'],$pager['prev'],$pager['next'],'service/ipbx/call_management/schedule',array('act' => $act));
+	$page = $url->pager($pager['pages'],
+			    $pager['page'],
+			    $pager['prev'],
+			    $pager['next'],
+			    'service/ipbx/call_management/schedule',
+			    array('act' => $act));
 ?>
 <div class="b-list">
 <?php

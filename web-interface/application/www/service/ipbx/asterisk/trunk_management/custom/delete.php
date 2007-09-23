@@ -9,11 +9,21 @@ if(isset($_QR['id']) === false
 					'trunk' => 'custom'))) === false)
 	$_QRY->go($_HTML->url('service/ipbx/trunk_management/custom'),$param);
 
-if($trunkcustom->delete($info['trunk']['id']) !== false)
+do
 {
+	if($trunkcustom->delete($info['trunk']['id']) === false)
+		break;
+
 	if($tfeatures->delete($info['tfeatures']['id']) === false)
+	{
 		$trunkcustom->add_origin();
+		break;
+	}
+
+	$outcall = &$ipbx->get_module('outcall');
+	$outcall->unlinked_where(array('trunkfeaturesid' => $info['tfeatures']['id']));
 }
+while(false);
 
 $_QRY->go($_HTML->url('service/ipbx/trunk_management/custom'),$param);
 

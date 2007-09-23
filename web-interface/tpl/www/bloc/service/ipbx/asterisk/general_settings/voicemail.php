@@ -198,7 +198,7 @@
 			<td class="td-left txt-left"><?=$form->text(array('field' => false,'name' => 'zonemessages[name][]','id' => false,'label' => false,'value' => $val['name'],'default' => $element['zonemessages']['name']['default']));?></td>
 			<td><?=$form->select(array('field' => false,'name' => 'zonemessages[timezone][]','key' => true,'id' => false,'label' => false,'value' => $val['timezone'],'default' => $element['zonemessages']['timezone']['default']),$this->vars('timezone_list'));?></td>
 			<td><?=$form->text(array('field' => false,'name' => 'zonemessages[msg_format][]','id' => false,'label' => false,'size' => 25,'value' => $val['msg_format'],'default' => $element['zonemessages']['msg_format']['default']));?></td>
-			<td class="td-right txt-right"><?=$url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'#',null,'onclick="xivo_table_list(\'timezone\',this,1);"',$this->bbf('opt_delete'));?></td>
+			<td class="td-right txt-right"><?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',$this->bbf('opt_delete'),'border="0"'),'#',null,'onclick="xivo_table_list(\'timezone\',this,1);"',$this->bbf('opt_delete'));?></td>
 		</tr>
 <?php
 		endfor;
@@ -217,7 +217,7 @@
 			<td class="td-left txt-left"><?=$form->text(array('field' => false,'name' => 'zonemessages[name][]','id' => false,'label' => false,'default' => $element['zonemessages']['name']['default']),'disabled="disabled"');?></td>
 			<td><?=$form->select(array('field' => false,'name' => 'zonemessages[timezone][]','key' => true,'id' => false,'label' => false,'default' => $element['zonemessages']['timezone']['default']),$this->vars('timezone_list'),'disabled="disabled"');?></td>
 			<td><?=$form->text(array('field' => false,'name' => 'zonemessages[msg_format][]','id' => false,'label' => false,'size' => 25,'default' => $element['zonemessages']['msg_format']['default']),'disabled="disabled"');?></td>
-			<td class="td-right txt-right"><?=$url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'#',null,'onclick="xivo_table_list(\'timezone\',this,1);"',$this->bbf('opt_delete'));?></td>
+			<td class="td-right txt-right"><?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',$this->bbf('opt_delete'),'border="0"'),'#',null,'onclick="xivo_table_list(\'timezone\',this,1);"',$this->bbf('opt_delete'));?></td>
 		</tr>
 		</tbody>
 	</table>

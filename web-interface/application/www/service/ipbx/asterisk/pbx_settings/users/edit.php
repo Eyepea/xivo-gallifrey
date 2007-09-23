@@ -83,7 +83,7 @@ if(($moh_list = $musiconhold->get_all_category(null,false)) !== false)
 
 $allow = $info['protocol']['allow'];
 
-$result = array();
+$result = null;
 
 do
 {
@@ -155,16 +155,19 @@ if(xivo_issa('allow',$element['protocol']['iax']) === true
 	$element['protocol']['iax']['allow']['value'] = array_diff($element['protocol']['iax']['allow']['value'],$allow);
 }
 
-if(isset($return['usergroup']) === false || empty($return['usergroup']) === true)
-	$return['usergroup'] = null;
+if(empty($return) === false)
+{
+	$return['protocol']['allow'] = $allow;
 
-if(isset($return['voicemail']) === false || empty($return['voicemail']) === true)
-	$return['voicemail'] = null;
+	if(xivo_issa('usergroup',$return) === false || empty($return['usergroup']) === true)
+		$return['usergroup'] = null;
 
-if(isset($return['autoprov']) === false || empty($return['autoprov']) === true)
-	$return['autoprov'] = null;
+	if(xivo_issa('voicemail',$return) === false || empty($return['voicemail']) === true)
+		$return['voicemail'] = null;
 
-$return['protocol']['allow'] = $allow;
+	if(xivo_issa('autoprov',$return) === false || empty($return['autoprov']) === true)
+		$return['autoprov'] = null;
+}
 
 $_HTML->assign('id',$info['ufeatures']['id']);
 $_HTML->assign('info',$return);

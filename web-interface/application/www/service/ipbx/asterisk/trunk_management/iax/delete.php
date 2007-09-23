@@ -23,8 +23,16 @@ do
 	if($info['tfeatures']['registerid'] !== 0)
 	{
 		$generaliax = &$ipbx->get_module('generaliax');
-		$generaliax->delete($info['tfeatures']['registerid']);
+		if($generaliax->delete($info['tfeatures']['registerid']) === false)
+		{
+			$trunkiax->add_origin();
+			$tfeatures->add_origin();
+			break;
+		}
 	}
+
+	$outcall = &$ipbx->get_module('outcall');
+	$outcall->unlinked_where(array('trunkfeaturesid' => $info['tfeatures']['id']));
 }
 while(false);
 

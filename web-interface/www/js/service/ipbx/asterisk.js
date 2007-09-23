@@ -72,3 +72,30 @@ function xivo_exten_pattern(id,option)
 
 	return(false);
 }
+
+function xivo_chk_exten_pattern(id,value)
+{
+	if(xivo_is_undef(value) == true || xivo_is_string(value) == false)
+		return(false);
+
+	var len = value.length;
+
+	if(len == 0 || len > 40)
+		return(false);
+
+	if(value.charAt(0) == '_')
+		value = xivo_substr(value,1);
+	
+	if(value.match(/^[0-9NXZ\*#\-\[\]]+[\.\!]?$/) == null)
+		return(false);
+
+	return(value);
+}
+
+function xivo_fm_select_add_exten(id,value)
+{
+	if((pattern = xivo_chk_exten_pattern(id,value)) == false)
+		return(false);
+
+	return(xivo_fm_select_add_entry(id,pattern,pattern));
+}

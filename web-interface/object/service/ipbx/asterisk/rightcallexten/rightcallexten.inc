@@ -43,7 +43,7 @@ class xivo_service_asterisk_rightcallexten extends xivo_service_asterisk_abstrac
 		unset($arr['extenhash']);
 
 		if(xivo_haslen($arr,'exten') === false
-		|| ($exten = $this->chk_extension($arr['exten'])) === false)
+		|| ($exten = $this->_sre->chk_extension($arr['exten'])) === false)
 			return(false);
 
 		$arr['extenhash'] = sha1($exten);
@@ -65,7 +65,7 @@ class xivo_service_asterisk_rightcallexten extends xivo_service_asterisk_abstrac
 
 		if(xivo_haslen($arr,'exten') === true)
 		{
-			if(($exten = $this->chk_extension($arr['exten'])) === false)
+			if(($exten = $this->_sre->chk_extension($arr['exten'])) === false)
 				return(false);
 
 			$arr['extenhash'] = sha1($exten);

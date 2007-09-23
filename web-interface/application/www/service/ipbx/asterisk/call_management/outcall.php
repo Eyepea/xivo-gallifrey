@@ -31,6 +31,7 @@ switch($act)
 			$result = array();
 
 			$_QR['outcall']['extenumid'] = 0;
+			$_QR['outcall']['linked'] = true;
 
 			if(($result['outcall'] = $outcall->chk_values($_QR['outcall'])) === false
 			|| $tfeatures->get_id($result['outcall']['trunkfeaturesid']) === false)
@@ -99,11 +100,13 @@ switch($act)
 		$tfeatures = &$ipbx->get_module('trunkfeatures');
 
 		$info['extenumbers'] = null;
+		$info['tfeatures'] = false;
 
 		if(isset($_QR['id']) === false
 		|| ($info['outcall'] = $outcall->get($_QR['id'])) === false
-		|| ($info['tfeatures'] = $tfeatures->get($info['outcall']['trunkfeaturesid'])) === false
-		|| ($info['extenumbers'] = $extenumbers->get($info['outcall']['extenumid'])) === false)
+		|| ($info['extenumbers'] = $extenumbers->get($info['outcall']['extenumid'])) === false
+		|| ($info['outcall']['linked'] === true
+		&& ($info['tfeatures'] = $tfeatures->get($info['outcall']['trunkfeaturesid'])) === false) === true)
 			$_QRY->go($_HTML->url('service/ipbx/call_management/outcall'),$param);
 
 		$edit = true;
@@ -124,6 +127,7 @@ switch($act)
 			$return = &$result;
 
 			$_QR['outcall']['extenumid'] = $info['extenumbers']['id'];
+			$_QR['outcall']['linked'] = true;
 			$_QR['outcall']['commented'] = $info['outcall']['commented'];
 
 			if(($result['outcall'] = $outcall->chk_values($_QR['outcall'])) === false

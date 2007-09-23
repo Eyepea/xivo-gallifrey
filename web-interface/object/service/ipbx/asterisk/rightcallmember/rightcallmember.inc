@@ -48,13 +48,10 @@ class xivo_service_asterisk_rightcallmember extends xivo_service_asterisk_abstra
 			case 'outcall':
 				$typeval = (int) $typeval;
 
-				if($this->get_id($typeval,$disable) === false)
-					return(false);
-
-				return(true);
+				$module = $this->_sre->get_module('outcall');
+				break;
 			case 'user':
 			case 'group':
-			case 'queue':
 				$typeval = (int) $typeval;
 
 				$module = $this->_sre->get_module($type.'features');
@@ -74,7 +71,6 @@ class xivo_service_asterisk_rightcallmember extends xivo_service_asterisk_abstra
 		if(($rightcallid = xivo_uint($rightcallid)) === 0
 		|| ($type !== 'user'
 		   && $type !== 'group'
-		   && $type !== 'queue'
 		   && $type !== 'outcall') === true
 		|| xivo_haslen($typeval) === false)
 			return(null);

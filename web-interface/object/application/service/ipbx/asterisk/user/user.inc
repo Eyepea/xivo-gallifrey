@@ -773,9 +773,7 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 		|| ($arr = xivo_get_aks($this->_return)) === false)
 			return(false);
 
-		$nb = count($arr);
-
-		for($i = 0;$i < $nb;$i++)
+		for($i = 0;$i < $arr['cnt'];$i++)
 		{
 			$key = &$arr['keys'][$i];
 			$val = &$this->_return[$key];
@@ -801,10 +799,10 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 				case 'queuemember':
 					$qmember = &$this->_ipbx->get_module('queuemember');
 
-					if(is_array($val) === false || ($cnt = count($val)) === 0)
+					if(is_array($val) === false || ($nb = count($val)) === 0)
 						continue;
 
-					for($j = 0;$j < $cnt;$j++)
+					for($j = 0;$j < $nb;$j++)
 					{
 						if($val[$j] !== false)
 							$qmember->delete($val[$j]);
@@ -1126,9 +1124,7 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 		|| ($arr = xivo_get_aks($this->_return)) === false)
 			return(false);
 
-		$nb = count($arr);
-
-		for($i = 0;$i < $nb;$i++)
+		for($i = 0;$i < $arr['cnt'];$i++)
 		{
 			$key = &$arr['keys'][$i];
 			$val = &$this->_return[$key];
@@ -1192,8 +1188,8 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 
 					$qmember = &$this->_ipbx->get_module('queuemember');
 
-					for($i = 0;$i < $nb;$i++)
-						$qmember->add($this->_origin[$key][$i]);
+					for($j = 0;$j < $nb;$j++)
+						$qmember->add($this->_origin[$key][$j]);
 					break;
 				case 'autoprov':
 					break;

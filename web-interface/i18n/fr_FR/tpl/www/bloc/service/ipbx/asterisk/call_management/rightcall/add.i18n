@@ -1,0 +1,68 @@
+; title_content_name
+Droits d'appels > Ajouter
+
+; smenu_general
+Général
+
+; smenu_users
+Utilisateurs
+
+; smenu_groups
+Groupes
+
+; smenu_outcall
+Appels sortants
+
+; fm_rightcall_name
+Nom :
+
+; fm_rightcall_passwd
+Mot de passe :
+
+; fm_rightcall_permit
+Permettre :
+
+; fm_rightcallexten_exten
+Extensions :
+
+; rightcallexten_add-extension
+Ajouter une extension :
+
+; bt-addexten
+Ajouter une extension
+
+; bt-deleteexten
+Supprimer une extension
+
+; fm_rightcall_description
+Description :
+
+; bt-inuser
+Ajouter ->
+
+; bt-outuser
+<- Enlever
+
+; create_user
+Créer un utilisateur
+
+; bt-ingroup
+Ajouter ->
+
+; bt-outgroup
+<- Enlever
+
+; create_group
+Créer un groupe
+
+; bt-inoutcall
+Ajouter ->
+
+; bt-outoutcall
+<- Enlever
+
+; create_outcall
+Créer un appel sortant
+
+; fm_bt-save
+Sauvegarder

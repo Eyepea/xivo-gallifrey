@@ -60,8 +60,14 @@
 	echo $form->select(array('desc' => $this->bbf('fm_schedule_endcall-typevaltrue'),'name' => 'schedule[typevaltrue]','labelid' => 'schedule-endcall-typevaltrue','bbf' => 'fm_schedule_endcall-typevaltrue-opt-','key' => false,'default' => $element['schedule']['typevaltrue']['default'],'value' => $info['schedule']['endcall']['true']),$element['schedule']['endcall']['value']);
 
 	if(empty($list['users']) === false):
+
+		if($info['schedule']['linked'] === false && $info['schedule']['typetrue'] === 'user'):
+			$invalid = true;
+		else:
+			$invalid = false;
+		endif;
 	
-	echo $form->select(array('desc' => $this->bbf('fm_schedule_user-typevaltrue'),'name' => 'schedule[typevaltrue]','labelid' => 'schedule-user-typevaltrue','key' => 'identity','altkey' => 'id','default' => $element['schedule']['typevaltrue']['default'],'value' => $info['schedule']['user']['true']),$list['users']);
+	echo $form->select(array('desc' => $this->bbf('fm_schedule_user-typevaltrue'),'name' => 'schedule[typevaltrue]','labelid' => 'schedule-user-typevaltrue','key' => 'identity','altkey' => 'id','invalid' => $invalid,'default' => $element['schedule']['typevaltrue']['default'],'value' => $info['schedule']['user']['true']),$list['users']);
 
 	else:
 		echo '<div id="fd-schedule-user-typevaltrue" class="txt-center">',$url->href_html($this->bbf('create_user'),'service/ipbx/pbx_settings/users','act=add'),'</div>';
@@ -69,7 +75,13 @@
 
 	if(empty($list['groups']) === false):
 
-	echo $form->select(array('desc' => $this->bbf('fm_schedule_group-typevaltrue'),'name' => 'schedule[typevaltrue]','labelid' => 'schedule-group-typevaltrue','key' => 'identity','altkey' => 'id','default' => $element['schedule']['typevaltrue']['default'],'value' => $info['schedule']['group']['true']),$list['groups']);
+		if($info['schedule']['linked'] === false && $info['schedule']['typetrue'] === 'group'):
+			$invalid = true;
+		else:
+			$invalid = false;
+		endif;
+
+	echo $form->select(array('desc' => $this->bbf('fm_schedule_group-typevaltrue'),'name' => 'schedule[typevaltrue]','labelid' => 'schedule-group-typevaltrue','key' => 'identity','altkey' => 'id','invalid' => $invalid,'default' => $element['schedule']['typevaltrue']['default'],'value' => $info['schedule']['group']['true']),$list['groups']);
 
 	else:
 		echo '<div id="fd-schedule-group-typevaltrue" class="txt-center">',$url->href_html($this->bbf('create_group'),'service/ipbx/pbx_settings/groups','act=add'),'</div>';
@@ -77,7 +89,13 @@
 
 	if(empty($list['queues']) === false):
 
-	echo $form->select(array('desc' => $this->bbf('fm_schedule_queue-typevaltrue'),'name' => 'schedule[typevaltrue]','labelid' => 'schedule-queue-typevaltrue','key' => 'identity','altkey' => 'id','default' => $element['schedule']['typevaltrue']['default'],'value' => $info['schedule']['queue']['true']),$list['queues']);
+		if($info['schedule']['linked'] === false && $info['schedule']['typetrue'] === 'queue'):
+			$invalid = true;
+		else:
+			$invalid = false;
+		endif;
+
+	echo $form->select(array('desc' => $this->bbf('fm_schedule_queue-typevaltrue'),'name' => 'schedule[typevaltrue]','labelid' => 'schedule-queue-typevaltrue','key' => 'identity','altkey' => 'id','invalid' => $invalid,'default' => $element['schedule']['typevaltrue']['default'],'value' => $info['schedule']['queue']['true']),$list['queues']);
 
 	else:
 		echo '<div id="fd-schedule-queue-typevaltrue" class="txt-center">',$url->href_html($this->bbf('create_queue'),'service/ipbx/pbx_settings/queues','act=add'),'</div>';
@@ -85,7 +103,13 @@
 
 	if(empty($list['meetme']) === false):
 
-	echo $form->select(array('desc' => $this->bbf('fm_schedule_meetme-typevaltrue'),'name' => 'schedule[typevaltrue]','labelid' => 'schedule-meetme-typevaltrue','key' => 'identity','altkey' => 'id','default' => $element['schedule']['typevaltrue']['default'],'value' => $info['schedule']['meetme']['true']),$list['meetme']);
+		if($info['schedule']['linked'] === false && $info['schedule']['typetrue'] === 'meetme'):
+			$invalid = true;
+		else:
+			$invalid = false;
+		endif;
+
+	echo $form->select(array('desc' => $this->bbf('fm_schedule_meetme-typevaltrue'),'name' => 'schedule[typevaltrue]','labelid' => 'schedule-meetme-typevaltrue','key' => 'identity','altkey' => 'id','invalid' => $invalid,'default' => $element['schedule']['typevaltrue']['default'],'value' => $info['schedule']['meetme']['true']),$list['meetme']);
 
 	else:
 		echo '<div id="fd-schedule-meetme-typevaltrue" class="txt-center">',$url->href_html($this->bbf('create_meetme'),'service/ipbx/pbx_settings/meetme','act=add'),'</div>';
@@ -93,7 +117,13 @@
 
 	if(empty($list['schedule']) === false):
 
-	echo $form->select(array('desc' => $this->bbf('fm_schedule_schedule-typevaltrue'),'name' => 'schedule[typevaltrue]','labelid' => 'schedule-schedule-typevaltrue','key' => 'name','altkey' => 'id','default' => $element['schedule']['typevaltrue']['default'],'value' => $info['schedule']['schedule']['true']),$list['schedule']);
+		if($info['schedule']['linked'] === false && $info['schedule']['typetrue'] === 'schedule'):
+			$invalid = true;
+		else:
+			$invalid = false;
+		endif;
+
+	echo $form->select(array('desc' => $this->bbf('fm_schedule_schedule-typevaltrue'),'name' => 'schedule[typevaltrue]','labelid' => 'schedule-schedule-typevaltrue','key' => 'name','altkey' => 'id','invalid' => $invalid,'default' => $element['schedule']['typevaltrue']['default'],'value' => $info['schedule']['schedule']['true']),$list['schedule']);
 
 	else:
 		echo '<div id="fd-schedule-schedule-typevaltrue" class="txt-center">',$this->bbf('no_schedule'),'</div>';
@@ -116,7 +146,13 @@
 <?php
 	if(empty($list['users']) === false):
 
-	echo $form->select(array('desc' => $this->bbf('fm_schedule_user-typevalfalse'),'name' => 'schedule[typevalfalse]','labelid' => 'schedule-user-typevalfalse','key' => 'identity','altkey' => 'id','default' => $element['schedule']['typevalfalse']['default'],'value' => $info['schedule']['user']['false']),$list['users']);
+		if($info['schedule']['linked'] === false && $info['schedule']['typefalse'] === 'user'):
+			$invalid = true;
+		else:
+			$invalid = false;
+		endif;
+
+	echo $form->select(array('desc' => $this->bbf('fm_schedule_user-typevalfalse'),'name' => 'schedule[typevalfalse]','labelid' => 'schedule-user-typevalfalse','key' => 'identity','altkey' => 'id','invalid' => $invalid,'default' => $element['schedule']['typevalfalse']['default'],'value' => $info['schedule']['user']['false']),$list['users']);
 
 	else:
 		echo '<div id="fd-schedule-user-typevalfalse" class="txt-center">',$url->href_html($this->bbf('create_user'),'service/ipbx/pbx_settings/users','act=add'),'</div>';
@@ -124,7 +160,13 @@
 
 	if(empty($list['groups']) === false):
 
-	echo $form->select(array('desc' => $this->bbf('fm_schedule_group-typevalfalse'),'name' => 'schedule[typevalfalse]','labelid' => 'schedule-group-typevalfalse','key' => 'identity','altkey' => 'id','default' => $element['schedule']['typevalfalse']['default'],'value' => $info['schedule']['group']['false']),$list['groups']);
+		if($info['schedule']['linked'] === false && $info['schedule']['typefalse'] === 'group'):
+			$invalid = true;
+		else:
+			$invalid = false;
+		endif;
+
+	echo $form->select(array('desc' => $this->bbf('fm_schedule_group-typevalfalse'),'name' => 'schedule[typevalfalse]','labelid' => 'schedule-group-typevalfalse','key' => 'identity','altkey' => 'id','invalid' => $invalid,'default' => $element['schedule']['typevalfalse']['default'],'value' => $info['schedule']['group']['false']),$list['groups']);
 
 	else:
 		echo '<div id="fd-schedule-group-typevalfalse" class="txt-center">',$url->href_html($this->bbf('create_group'),'service/ipbx/pbx_settings/groups','act=add'),'</div>';
@@ -132,7 +174,13 @@
 
 	if(empty($list['queues']) === false):
 
-	echo $form->select(array('desc' => $this->bbf('fm_schedule_queue-typevalfalse'),'name' => 'schedule[typevalfalse]','labelid' => 'schedule-queue-typevalfalse','key' => 'identity','altkey' => 'id','default' => $element['schedule']['typevalfalse']['default'],'value' => $info['schedule']['queue']['false']),$list['queues']);
+		if($info['schedule']['linked'] === false && $info['schedule']['typefalse'] === 'queue'):
+			$invalid = true;
+		else:
+			$invalid = false;
+		endif;
+
+	echo $form->select(array('desc' => $this->bbf('fm_schedule_queue-typevalfalse'),'name' => 'schedule[typevalfalse]','labelid' => 'schedule-queue-typevalfalse','key' => 'identity','altkey' => 'id','invalid' => $invalid,'default' => $element['schedule']['typevalfalse']['default'],'value' => $info['schedule']['queue']['false']),$list['queues']);
 
 	else:
 		echo '<div id="fd-schedule-queue-typevalfalse" class="txt-center">',$url->href_html($this->bbf('create_queue'),'service/ipbx/pbx_settings/queues','act=add'),'</div>';
@@ -140,7 +188,13 @@
 
 	if(empty($list['meetme']) === false):
 
-	echo $form->select(array('desc' => $this->bbf('fm_schedule_meetme-typevalfalse'),'name' => 'schedule[typevalfalse]','labelid' => 'schedule-meetme-typevalfalse','key' => 'identity','altkey' => 'id','default' => $element['schedule']['typevalfalse']['default'],'value' => $info['schedule']['meetme']['false']),$list['meetme']);
+		if($info['schedule']['linked'] === false && $info['schedule']['typefalse'] === 'meetme'):
+			$invalid = true;
+		else:
+			$invalid = false;
+		endif;
+
+	echo $form->select(array('desc' => $this->bbf('fm_schedule_meetme-typevalfalse'),'name' => 'schedule[typevalfalse]','labelid' => 'schedule-meetme-typevalfalse','key' => 'identity','altkey' => 'id','invalid' => $invalid,'default' => $element['schedule']['typevalfalse']['default'],'value' => $info['schedule']['meetme']['false']),$list['meetme']);
 
 	else:
 		echo '<div id="fd-schedule-meetme-typevalfalse" class="txt-center">',$url->href_html($this->bbf('create_meetme'),'service/ipbx/pbx_settings/meetme','act=add'),'</div>';
@@ -148,7 +202,13 @@
 
 	if(empty($list['schedule']) === false):
 
-	echo $form->select(array('desc' => $this->bbf('fm_schedule_schedule-typevalfalse'),'name' => 'schedule[typevalfalse]','labelid' => 'schedule-schedule-typevalfalse','key' => 'name','altkey' => 'id','default' => $element['schedule']['typevalfalse']['default'],'value' => $info['schedule']['schedule']['false']),$list['schedule']);
+		if($info['schedule']['linked'] === false && $info['schedule']['typefalse'] === 'schedule'):
+			$invalid = true;
+		else:
+			$invalid = false;
+		endif;
+
+	echo $form->select(array('desc' => $this->bbf('fm_schedule_schedule-typevalfalse'),'name' => 'schedule[typevalfalse]','labelid' => 'schedule-schedule-typevalfalse','key' => 'name','altkey' => 'id','invalid' => $invalid,'default' => $element['schedule']['typevalfalse']['default'],'value' => $info['schedule']['schedule']['false']),$list['schedule']);
 
 	else:
 		echo '<div id="fd-schedule-schedule-typevalfalse" class="txt-center">',$this->bbf('no_schedule'),'</div>';

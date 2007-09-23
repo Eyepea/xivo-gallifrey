@@ -23,8 +23,16 @@ do
 	if($info['tfeatures']['registerid'] !== 0)
 	{
 		$generalsip = &$ipbx->get_module('generalsip');
-		$generalsip->delete($info['tfeatures']['registerid']);
+		if($generalsip->delete($info['tfeatures']['registerid']) === false)
+		{
+			$trunksip->add_origin();
+			$tfeatures->add_origin();
+			break;
+		}
 	}
+
+	$outcall = &$ipbx->get_module('outcall');
+	$outcall->unlinked_where(array('trunkfeaturesid' => $info['tfeatures']['id']));
 }
 while(false);
 

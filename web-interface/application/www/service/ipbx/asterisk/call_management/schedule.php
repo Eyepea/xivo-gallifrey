@@ -239,6 +239,7 @@ switch($act)
 				$result['schedule']['schedule'] = null;
 				$result['schedule']['application'] = null;
 				$result['schedule']['custom'] = null;
+				$result['schedule']['linked'] = $info['schedule']['linked'];
 
 				if(empty($result['schedule']['typetrue']) === false)
 				{
@@ -335,7 +336,7 @@ switch($act)
 			$schedule->unlinked_where(array('typefalse' => 'schedule',
 			   				'typevalfalse' => $id));
 
-			$incall = &$ibpx->get_module('incall');
+			$incall = &$ipbx->get_module('incall');
 
 			$incall->unlinked_where(array('type' => 'schedule',
 						      'typeval' => $id));
@@ -349,7 +350,7 @@ switch($act)
 		if(($values = xivo_issa_val('schedules',$_QR)) === false)
 			$_QRY->go($_HTML->url('service/ipbx/call_management/schedule'),$param);
 
-		$incall = &$ibpx->get_module('incall');
+		$incall = &$ipbx->get_module('incall');
 
 		$nb = count($values);
 

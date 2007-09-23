@@ -5,6 +5,9 @@ $param['page'] = $page;
 if(($arr = xivo_issa_val('peers',$_QR)) === false)
 	$_QRY->go($_HTML->url('service/ipbx/trunk_management/iax'),$param);
 
+$generaliax = &$ipbx->get_module('generaliax');
+$outcall = &$ipbx->get_module('outcall');
+
 $nb = count($arr);
 
 $tfeatures_where = array();
@@ -24,11 +27,15 @@ for($i = 0;$i < $nb;$i++)
 		continue;
 	}
 
-	if($info['tfeatures']['registerid'] !== 0)
+	if($info['tfeatures']['registerid'] !== 0
+	&& $generaliax->delete($info['tfeatures']['registerid']) === false)
 	{
-		$generaliax = &$ipbx->get_module('generaliax');
-		$generaliax->delete($info['tfeatures']['registerid']);
+		$trunkiax->add_origin();
+		$tfeatures->add_origin();
+		continue;
 	}
+
+	$outcall->unlinked_where(array('trunkfeaturesid' => $info['tfeatures']['id']));
 }
 
 $_QRY->go($_HTML->url('service/ipbx/trunk_management/iax'),$param);

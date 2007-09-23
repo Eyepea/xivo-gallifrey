@@ -34,6 +34,9 @@ class xivo_application_abstract
 	{
 		$name = (string) $name;
 
+		if(empty($this->_result) === true)
+			return(null);
+
 		if($name === '')
 			return($this->_result);
 

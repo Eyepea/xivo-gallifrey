@@ -566,8 +566,11 @@ function xivo_substr(str,beg,end)
 
 	var len = str.length;
 
-	if(len == 0)
+	if(len == 0 || isNaN(beg) == true)
 		return(r);
+
+	if(isNaN(end) == true)
+		end = len;
 
 	beg = Number(beg);
 	end = Number(end);

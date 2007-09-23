@@ -1,0 +1,29 @@
+; col_name
+Nom
+
+; col_passwd
+Mot de passe
+
+; col_permit
+Permettre
+
+; col_action
+Action
+
+; no_rigthcall
+Aucun droit d'appel trouvé
+
+; rightcall_permit-0
+Non
+
+; rightcall_permit-1
+Oui
+
+; opt_modify
+Modifier
+
+; opt_delete
+Supprimer
+
+; opt_delete_confirm
+Etes-vous certain de vouloir supprimer ce droit d'appel ?

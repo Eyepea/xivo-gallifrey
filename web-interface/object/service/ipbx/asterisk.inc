@@ -93,30 +93,31 @@ class xivo_service_asterisk extends xivo_service_abstract
 		define($define_version,$version);
 	}
 
-	function get_users_search($name,$protocols=array(),$disable=null)
+	function get_users_search($name,$protocols=array(),$disable=null,$assoc=false)
 	{
-		return($this->_get_users('search',$protocols,$disable,$name));
+		return($this->_get_users('search',$protocols,$disable,$name,$assoc));
 	}
 
-	function get_users_list($protocols=array(),$disable=null)
+	function get_users_list($protocols=array(),$disable=null,$assoc=false)
 	{
-		return($this->_get_users('list',$protocols,$disable));
+		return($this->_get_users('list',$protocols,$disable,null,$assoc));
 	}
 
-	function get_users_context($name,$protocols=array(),$disable=null)
+	function get_users_context($name,$protocols=array(),$disable=null,$assoc=false)
 	{
 		$name = strval($name);
 
 		if($name === '#main')
 			$name = '';
 
-		return($this->_get_users('context',$protocols,$disable,$name));
+		return($this->_get_users('context',$protocols,$disable,$name,$assoc));
 	}
 
-	function _get_users($action,$protocols=array(),$disable=null,$opts=array())
+	function _get_users($action,$protocols=array(),$disable=null,$opts=array(),$assoc=false)
 	{
 		$action = (string) $action;
 		$protocols = (array) $protocols;
+		$assoc = (bool) $assoc;
 		
 		if(empty($protocols) === true)
 			$protocols = array_keys($this->_conf['protocol']);
@@ -152,17 +153,13 @@ class xivo_service_asterisk extends xivo_service_abstract
 			|| ($info['protocol'] = $protocol->get($info['ufeatures']['protocolid'],$disable)) === false)
 				continue;
 
-			$info['sort'] = array();
-			$info['sort']['name'] = trim($info['ufeatures']['firstname'].' '.$info['ufeatures']['lastname']);
-
-			if($info['sort']['name'] === '')
-				$info['sort']['name'] = '-';
-
-			$r[] = $info;
+			$r[$info['ufeatures']['id']] = $info;
 		}
-			
-		if(isset($r[0]) === false)
+		
+		if(empty($r) === true)
 			$r = false;
+		else if($assoc === false)
+			$r = array_values($r);
 
 		return($r);
 	}
@@ -216,8 +213,10 @@ class xivo_service_asterisk extends xivo_service_abstract
 		return($r);
 	}
 
-	function get_groups_list($disable=null)
+	function get_groups_list($disable=null,$assoc=false)
 	{
+		$assoc = (bool) $assoc;
+
 		$gfeatures = &$this->get_module('groupfeatures');
 		$queue = &$this->get_module('queue');
 		$qmember = &$this->get_module('queuemember');
@@ -235,17 +234,21 @@ class xivo_service_asterisk extends xivo_service_abstract
 			|| ($info['nb_qmember'] = $qmember->get_nb(array('queue_name' => $info['queue']['name']),$disable)) === false)
 				continue;
 
-			$r[] = $info;
+			$r[$info['gfeatures']['id']] = $info;
 		}
 
-		if(isset($r[0]) === false)
+		if(empty($r) === true)
 			$r = false;
+		else if($assoc === false)
+			$r = array_values($r);
 
 		return($r);
 	}
 
-	function get_queues_list($disable=null)
+	function get_queues_list($disable=null,$assoc=false)
 	{
+		$assoc = (bool) $assoc;
+
 		$qfeatures = &$this->get_module('queuefeatures');
 		$queue = &$this->get_module('queue');
 		$qmember = &$this->get_module('queuemember');
@@ -263,11 +266,13 @@ class xivo_service_asterisk extends xivo_service_abstract
 			|| ($info['nb_qmember'] = $qmember->get_nb(array('queue_name' => $info['queue']['name']),$disable)) === false)
 				continue;
 
-			$r[] = $info;
+			$r[$info['qfeatures']['id']] = $info;
 		}
 
-		if(isset($r[0]) === false)
+		if(empty($r) === true)
 			$r = false;
+		else if($assoc === false)
+			$r = array_values($r);
 
 		return($r);
 	}
@@ -666,40 +671,6 @@ class xivo_service_asterisk extends xivo_service_abstract
 		return($r);
 	}
 
-	function get_user_rightcall_info($protocols=array(),$disable=null)
-	{
-		$protocols = (array) $protocols;
-		
-		if(empty($protocols) === true)
-			$protocols = array_keys($this->_conf['protocol']);
-		else
-			$protocols = array_values($protocols);
-
-		$ufeatures = &$this->get_module('userfeatures');
-
-		if(($rs = $ufeatures->get_all($disable)) === false || ($nb = count($rs)) === 0)
-			return(false);
-
-		$r = $info = array();
-
-		for($i = 0;$i < $nb;$i++)
-		{
-			$info['ufeatures'] = $rs[$i];
-
-			if(in_array($info['ufeatures']['protocol'],$protocols) === false
-			|| ($protocol = &$this->get_protocol_module($info['ufeatures']['protocol'])) === false
-			|| ($info['protocol'] = $protocol->get($info['ufeatures']['protocolid'],$disable)) === false)
-				continue;
-
-			$r[$info['ufeatures']['id']] = $info['ufeatures']['identity'];
-		}
-			
-		if(empty($r) === true)
-			$r = false;
-
-		return($r);
-	}
-
 	function get_incall_list($disable=null)
 	{
 		$incall = &$this->get_module('incall');
@@ -801,8 +772,10 @@ class xivo_service_asterisk extends xivo_service_abstract
 		return($r);
 	}
 
-	function get_outcall_list($disable=null)
+	function get_outcall_list($disable=null,$assoc=false)
 	{
+		$assoc = (bool) $assoc;
+
 		$outcall = &$this->get_module('outcall');
 		$extenumbers = &$this->get_module('extenumbers');
 		$tfeatures = &$this->get_module('trunkfeatures');
@@ -815,9 +788,18 @@ class xivo_service_asterisk extends xivo_service_abstract
 		for($i = 0;$i < $nb;$i++)
 		{
 			$info['outcall'] = $rs[$i];
+			$info['tfeatures'] = $info['trunk'] = false;
 
-			if(($info['tfeatures'] = $tfeatures->get($info['outcall']['trunkfeaturesid'])) === false
-			|| ($info['extenumbers'] = $extenumbers->get($info['outcall']['extenumid'])) === false)
+			if(($info['extenumbers'] = $extenumbers->get($info['outcall']['extenumid'])) === false)
+				continue;
+
+			if($info['outcall']['linked'] === false)
+			{
+				$r[$info['outcall']['id']] = $info;
+				continue;
+			}
+
+			if(($info['tfeatures'] = $tfeatures->get($info['outcall']['trunkfeaturesid'])) === false)
 				continue;
 
 			if(isset($trunks[$info['tfeatures']['trunk']]) === false)
@@ -826,14 +808,16 @@ class xivo_service_asterisk extends xivo_service_abstract
 			$trunkmodule = &$trunks[$info['tfeatures']['trunk']];
 
 			if($trunkmodule === false
-			|| ($info['trunk'] = $trunkmodule->get($info['tfeatures']['trunkid'],$disable)) === false)
+			   || ($info['trunk'] = $trunkmodule->get($info['tfeatures']['trunkid'],$disable)) === false)
 				continue;
 
-			$r[] = $info;
+			$r[$info['outcall']['id']] = $info;
 		}
 
-		if(isset($r[0]) === false)
+		if(empty($r) === true)
 			$r = false;
+		else if($assoc === false)
+			$r = array_values($r);
 
 		return($r);
 	}
@@ -872,6 +856,35 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 		if(isset($r[0]) === false)
 			$r = false;
+
+		return($r);
+	}
+
+	function get_rightcall_list($disable=null)
+	{
+		$rightcall = &$this->get_module('rightcall');
+		$rightcallmember = &$this->get_module('rightcallmember');
+		$rightcallexten = &$this->get_module('rightcallexten');
+
+		if(($rs = $rightcall->get_all($disable)) === false || ($nb = count($rs)) === 0)
+			return(false);
+
+		$r = $info = array();
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			$info['rightcall'] = $rs[$i];
+
+			$where = array('rightcallid' => $info['rightcall']['id']);
+
+			$info['rightcallmember'] = $rightcallmember->get_where($where);
+			$info['rightcallexten'] = $rightcallexten->get_where($where);
+
+			$r[] = $info;
+		}
+
+		if(isset($r[0]) === false)
+			return(false);
 
 		return($r);
 	}

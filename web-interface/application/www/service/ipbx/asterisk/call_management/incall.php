@@ -170,13 +170,6 @@ switch($act)
 		   			   $info['incall']['typeval']) === false) === true)
 			$_QRY->go($_HTML->url('service/ipbx/call_management/incall'),$param);
 
-		if($info['incall']['linked'] === false)
-		{
-			$info['incall']['type'] = '';
-			$info['incall']['typeval'] = '';
-			$info['incall']['number'] = '';
-		}
-
 		$edit = true;
 
 		$return = &$info;
@@ -226,6 +219,7 @@ switch($act)
 				$result['incall']['schedule'] = null;
 				$result['incall']['application'] = null;
 				$result['incall']['custom'] = null;
+				$result['incall']['linked'] = $info['incall']['linked'];
 
 				if(empty($result['incall']['type']) === false)
 					$result['incall'][$result['incall']['type']] = $result['incall']['typeval'];

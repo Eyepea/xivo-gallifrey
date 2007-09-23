@@ -5,6 +5,7 @@ class xivo_tpl_form extends xivo_tpl_module
 	var $_param	= array();
 	var $_render	= '';
 	var $_tpl	= null;
+	var $_selected	= false;
 
 	function xivo_tpl_form(&$tpl)
 	{
@@ -38,6 +39,7 @@ class xivo_tpl_form extends xivo_tpl_module
 		$this->_param['bbf'] = false;
 		$this->_param['bbf_paramarray'] = false;
 		$this->_param['browse'] = false;
+		$this->_param['invalid'] = false;
 
 		if(isset($v['name']) === true)
 			$this->_param['name'] = xivo_htmlsc($v['name']);
@@ -169,6 +171,9 @@ class xivo_tpl_form extends xivo_tpl_module
 			if(isset($v['browse'][0]) === true)
 				$this->_param['browse'] = $v['browse'];
 		}
+
+		if(isset($v['invalid']) === true)
+			$this->_param['invalid'] = (bool) $v['invalid'];
 	}
 
 	function _mk_param_value($value,&$v)
@@ -564,15 +569,14 @@ class xivo_tpl_form extends xivo_tpl_module
 	function select($v,$a=array(),$o='',$more=array())
 	{
 		$this->_render = '';
-
-		$r = &$this->_render;
+		$this->_selected = false;
 
 		$v = (array) $v;
 		$o = (string) $o;
 
 		$this->_set_param($v);
 
-		$r .= '<select name="'.$this->_param['name'].'"';
+		$r = '<select name="'.$this->_param['name'].'"';
 
 		if($this->_param['id'] !== false)
 			$r .= ' id="'.$this->_param['id'].'"';
@@ -587,16 +591,6 @@ class xivo_tpl_form extends xivo_tpl_module
 
 		$r .= (isset($o{0}) === true ? ' '.$o : '').'>'."\n";
 
-		if($this->_param['empty'] !== false)
-		{
-			if($this->_param['empty'] === true)
-				$empty = '&nbsp;';
-			else
-				$empty = $this->_param['empty'];
-
-			$r .= '<option label="" value=""'.($this->_param['value'] === '' ? ' selected="selected"' : '').'>'.$empty.'</option>'."\n";
-		}
-
 		if($this->_param['null'] === true || ($more !== '' && $more !== false) === true)
 		{
 			$more = (array) $more;
@@ -609,13 +603,32 @@ class xivo_tpl_form extends xivo_tpl_module
 			$this->_mk_slt_option($a);
 		}
 
-		$r .= '</select>';
+		if($this->_param['empty'] !== false
+		|| ($this->_param['invalid'] === true
+		   && $this->_selected === false) === true)
+			$r .= $this->_mk_slt_option_empty();
+
+		$this->_render = $r.$this->_render.'</select>';
 
 		$this->_mk_desc();
 		$this->_mk_label();
 		$this->_mk_field();
 
 		return($this->_render);
+	}
+
+	function _mk_slt_option_empty()
+	{
+		if(is_bool($this->_param['empty']) === true)
+			$empty = '&nbsp;';
+		else
+			$empty = $this->_param['empty'];
+
+		$selected = $this->_param['value'] === '' ? ' selected="selected"' : '';
+
+		$r = '<option label="" value=""'.$selected.'>'.$empty.'</option>'."\n";
+
+		return($r);
 	}
 
 	function _mk_slt_option_render($render,$param=null)
@@ -754,14 +767,19 @@ class xivo_tpl_form extends xivo_tpl_module
 	{
 		$r = '';
 
-		if(is_scalar($key) === false)
+		if(($this->_selected === true
+		   && $this->_param['multiple'] === false) === true
+		|| is_scalar($key) === false)
 			return($r);
 
 		if(is_bool($key) === true)
 			$key = (int) $key;
 
 		if((string) $key === $val)
+		{
+			$this->_selected = true;
 			$r = ' selected="selected"';
+		}
 
 		return($r);
 	}

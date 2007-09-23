@@ -353,7 +353,7 @@ class xivo_service_asterisk_abstract
 		return($r);
 	}
 
-	function get_all($disable=null,$delete=null,$prepare=true,$order=null,$limit=null)
+	function get_all($disable=null,$delete=null,$prepare=true,$order=null,$limit=null,$assoc=false)
 	{
 		$prepare = (bool) $prepare;
 

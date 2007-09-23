@@ -16,39 +16,69 @@
 
 	if(empty($list['users']) === false):
 	
-	echo $form->select(array('desc' => $this->bbf('fm_incall_user-typeval'),'name' => 'incall[typeval]','labelid' => 'incall-user-typeval','key' => 'identity','altkey' => 'id','default' => $element['incall']['typeval']['default'],'value' => $info['incall']['user']),$list['users']);
+		if($info['incall']['linked'] === false && $info['incall']['type'] === 'user'):
+			$invalid = true;
+		else:
+			$invalid = false;
+		endif;
+
+	echo $form->select(array('desc' => $this->bbf('fm_incall_user-typeval'),'name' => 'incall[typeval]','labelid' => 'incall-user-typeval','key' => 'identity','altkey' => 'id','invalid' => $invalid,'default' => $element['incall']['typeval']['default'],'value' => $info['incall']['user']),$list['users']);
 
 	else:
 		echo '<div id="fd-incall-user-typeval" class="txt-center">',$url->href_html($this->bbf('create_user'),'service/ipbx/pbx_settings/users','act=add'),'</div>';
 	endif;
 
 	if(empty($list['groups']) === false):
+	
+		if($info['incall']['linked'] === false && $info['incall']['type'] === 'group'):
+			$invalid = true;
+		else:
+			$invalid = false;
+		endif;
 
-	echo $form->select(array('desc' => $this->bbf('fm_incall_group-typeval'),'name' => 'incall[typeval]','labelid' => 'incall-group-typeval','key' => 'identity','altkey' => 'id','default' => $element['incall']['typeval']['default'],'value' => $info['incall']['group']),$list['groups']);
+	echo $form->select(array('desc' => $this->bbf('fm_incall_group-typeval'),'name' => 'incall[typeval]','labelid' => 'incall-group-typeval','key' => 'identity','altkey' => 'id','invalid' => $invalid,'default' => $element['incall']['typeval']['default'],'value' => $info['incall']['group']),$list['groups']);
 
 	else:
 		echo '<div id="fd-incall-group-typeval" class="txt-center">',$url->href_html($this->bbf('create_group'),'service/ipbx/pbx_settings/groups','act=add'),'</div>';
 	endif;
 
 	if(empty($list['queues']) === false):
+	
+		if($info['incall']['linked'] === false && $info['incall']['type'] === 'queue'):
+			$invalid = true;
+		else:
+			$invalid = false;
+		endif;
 
-	echo $form->select(array('desc' => $this->bbf('fm_incall_queue-typeval'),'name' => 'incall[typeval]','labelid' => 'incall-queue-typeval','key' => 'identity','altkey' => 'id','default' => $element['incall']['typeval']['default'],'value' => $info['incall']['queue']),$list['queues']);
+	echo $form->select(array('desc' => $this->bbf('fm_incall_queue-typeval'),'name' => 'incall[typeval]','labelid' => 'incall-queue-typeval','key' => 'identity','altkey' => 'id','invalid' => $invalid,'default' => $element['incall']['typeval']['default'],'value' => $info['incall']['queue']),$list['queues']);
 
 	else:
 		echo '<div id="fd-incall-queue-typeval" class="txt-center">',$url->href_html($this->bbf('create_queue'),'service/ipbx/pbx_settings/queues','act=add'),'</div>';
 	endif;
 
 	if(empty($list['meetme']) === false):
+	
+		if($info['incall']['linked'] === false && $info['incall']['type'] === 'meetme'):
+			$invalid = true;
+		else:
+			$invalid = false;
+		endif;
 
-	echo $form->select(array('desc' => $this->bbf('fm_incall_meetme-typeval'),'name' => 'incall[typeval]','labelid' => 'incall-meetme-typeval','key' => 'identity','altkey' => 'id','default' => $element['incall']['typeval']['default'],'value' => $info['incall']['meetme']),$list['meetme']);
+	echo $form->select(array('desc' => $this->bbf('fm_incall_meetme-typeval'),'name' => 'incall[typeval]','labelid' => 'incall-meetme-typeval','key' => 'identity','altkey' => 'id','invalid' => $invalid,'default' => $element['incall']['typeval']['default'],'value' => $info['incall']['meetme']),$list['meetme']);
 
 	else:
 		echo '<div id="fd-incall-meetme-typeval" class="txt-center">',$url->href_html($this->bbf('create_meetme'),'service/ipbx/pbx_settings/meetme','act=add'),'</div>';
 	endif;
 
 	if(empty($list['schedule']) === false):
+	
+		if($info['incall']['linked'] === false && $info['incall']['type'] === 'schedule'):
+			$invalid = true;
+		else:
+			$invalid = false;
+		endif;
 
-	echo $form->select(array('desc' => $this->bbf('fm_incall_schedule-typeval'),'name' => 'incall[typeval]','labelid' => 'incall-schedule-typeval','key' => 'name','altkey' => 'id','default' => $element['incall']['typeval']['default'],'value' => $info['incall']['schedule']),$list['schedule']);
+	echo $form->select(array('desc' => $this->bbf('fm_incall_schedule-typeval'),'name' => 'incall[typeval]','labelid' => 'incall-schedule-typeval','key' => 'name','altkey' => 'id','invalid' => $invalid,'default' => $element['incall']['typeval']['default'],'value' => $info['incall']['schedule']),$list['schedule']);
 
 	else:
 		echo '<div id="fd-incall-schedule-typeval" class="txt-center">',$url->href_html($this->bbf('create_schedule'),'service/ipbx/call_management/schedule','act=add'),'</div>';

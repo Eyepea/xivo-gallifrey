@@ -6,7 +6,12 @@
 	$list = $this->vars('list');
 	$act = $this->vars('act');
 
-	$page = $url->pager($pager['pages'],$pager['page'],$pager['prev'],$pager['next'],'service/ipbx/call_management/outcall',array('act' => $act));
+	$page = $url->pager($pager['pages'],
+			    $pager['page'],
+			    $pager['prev'],
+			    $pager['next'],
+			    'service/ipbx/call_management/outcall',
+			    array('act' => $act));
 ?>
 <div class="b-list">
 <?php
@@ -41,10 +46,15 @@
 
 			$ref = &$list[$i];
 
-			if($ref['outcall']['commented'] === true):
+			if($ref['outcall']['linked'] === false):
+				$icon = 'unavailable';
+				$trunk = '-';
+			elseif($ref['outcall']['commented'] === true):
 				$icon = 'disable';
+				$trunk = $this->bbf('outcall_trunk-'.$ref['tfeatures']['trunk'],$ref['trunk']['name']);
 			else:
 				$icon = 'enable';
+				$trunk = $this->bbf('outcall_trunk-'.$ref['tfeatures']['trunk'],$ref['trunk']['name']);
 			endif;
 
 			$mod = $j % 2 === 0 ? 1 : 2;
@@ -52,7 +62,7 @@
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=$mod?>on2">
 		<td class="td-left"><?=$form->checkbox(array('name' => 'outcalls[]','value' => $ref['outcall']['id'],'label' => false,'id' => 'it-outcalls-'.$i,'checked' => false,'field' => false));?></td>
 		<td class="txt-left"><label for="it-outcalls-<?=$i?>" id="lb-outcalls-<?=$i?>"><?=$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"');?><?=$ref['outcall']['name']?></label></td>
-		<td><?=$this->bbf('outcall_trunk-'.$ref['tfeatures']['trunk'],$ref['trunk']['name']);?></td>
+		<td><?=$trunk?></td>
 		<td><?=$ref['extenumbers']['exten']?></td>
 		<td><?=$ref['outcall']['context']?></td>
 		<td class="td-right" colspan="3">
