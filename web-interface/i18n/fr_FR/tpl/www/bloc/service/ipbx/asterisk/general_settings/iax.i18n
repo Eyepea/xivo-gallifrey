@@ -221,7 +221,7 @@ Oui
 AES 128
 
 ; fm_maxauthreq
-Maximum AUTHREQs authorisé :
+Maximum AUTHREQs autorisées :
 
 ; fm_maxauthreq-opt0
 Désactivé
@@ -257,16 +257,16 @@ Codecs activés :
 Langages :
 
 ; bt-upcodec
-Monter
+Monter un ou plusieurs codecs
 
 ; bt-downcodec
-Descendre
+Descendre un ou plusieurs codecs
 
 ; bt-incodec
-Ajouter ->
+Ajouter un ou plusieurs codecs ->
 
 ; bt-outcodec
-<- Enlever
+<- Enlever un ou plusieurs codecs
 
 ; fm_rtcachefriends
 Mise en cache des comptes :

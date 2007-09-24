@@ -116,12 +116,12 @@ if(isset($return['voicemail']) === false || empty($return['voicemail']) === true
 
 if(xivo_issa('format',$element['voicemail']) === true
 && xivo_issa('value',$element['voicemail']['format']) === true
-&& xivo_ak('format',$info['voicemail']) === true
-&& empty($info['voicemail']['format']) === false)
+&& xivo_ak('format',$return['voicemail']) === true
+&& empty($return['voicemail']['format']) === false)
 {
-	$info['voicemail']['format'] = explode(',',$info['voicemail']['format']);
+	$return['voicemail']['format'] = explode(',',$return['voicemail']['format']);
 	$element['voicemail']['format']['value'] = array_diff($element['voicemail']['format']['value'],
-							      $info['voicemail']['format']);
+							      $return['voicemail']['format']);
 }
 
 $_HTML->assign('element',$element);

@@ -11,8 +11,9 @@ switch($act)
 	case 'add':
 		$apprightcall = &$ipbx->get_application('rightcall');
 
-		$rcalluser = array();
 		$result = null;
+
+		$rcalluser = $rcallgroup = $rcalloutcall = array();
 		$rcalluser['slt'] = $rcallgroup['slt'] = $rcalloutcall['slt'] = null;
 
 		xivo::load_class('xivo_sort');
@@ -101,10 +102,11 @@ switch($act)
 		if(isset($_QR['id']) === false || ($info = $apprightcall->get($_QR['id'])) === false)
 			$_QRY->go($_HTML->url('service/ipbx/call_management/rightcall'),$param);
 
-		$rcalluser = array();
 		$result = null;
-		$rcalluser['slt'] = $rcallgroup['slt'] = $rcalloutcall['slt'] = null;
 		$return = &$info;
+
+		$rcalluser = $rcallgroup = $rcalloutcall = array();
+		$rcalluser['slt'] = $rcallgroup['slt'] = $rcalloutcall['slt'] = null;
 
 		xivo::load_class('xivo_sort');
 		$usersort = new xivo_sort(array('browse' => 'ufeatures','key' => 'identity'));
@@ -195,11 +197,53 @@ switch($act)
 		$_HTML->assign('info',$return);
 		break;
 	case 'delete':
+		$param['page'] = $page;
+
+		$apprightcall = &$ipbx->get_application('rightcall');
+
+		if(isset($_QR['id']) === false || $apprightcall->get($_QR['id']) === false)
+			$_QRY->go($_HTML->url('service/ipbx/call_management/rightcall'),$param);
+
+		$apprightcall->delete();
+
+		$_QRY->go($_HTML->url('service/ipbx/call_management/rightcall'),$param);
 		break;
 	case 'deletes':
+		$param['page'] = $page;
+
+		if(($values = xivo_issa_val('rightcalls',$_QR)) === false)
+			$_QRY->go($_HTML->url('service/ipbx/call_management/rightcall'),$param);
+
+		$apprightcall = &$ipbx->get_application('rightcall');
+
+		$nb = count($values);
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			if($apprightcall->get($values[$i]) === false)
+				continue;
+
+			$apprightcall->delete();
+		}
+
+		$_QRY->go($_HTML->url('service/ipbx/call_management/rightcall'),$param);
 		break;
 	case 'disables':
 	case 'enables':
+		$param['page'] = $page;
+		$disable = $act === 'disables' ? true : false;
+
+		if(($values = xivo_issa_val('rightcalls',$_QR)) === false)
+			$_QRY->go($_HTML->url('service/ipbx/call_management/rightcall'),$param);
+
+		$rightcall = &$ipbx->get_module('rightcall');
+
+		$nb = count($values);
+
+		for($i = 0;$i < $nb;$i++)
+			$rightcall->disable($values[$i],$disable);
+
+		$_QRY->go($_HTML->url('service/ipbx/call_management/rightcall'),$param);
 		break;
 	default:
 		$total = 0;

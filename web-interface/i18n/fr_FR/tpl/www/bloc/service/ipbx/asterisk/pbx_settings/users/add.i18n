@@ -104,10 +104,10 @@ Sonnerie :
 Groupes
 
 ; bt-ingroup
-Ajouter ->
+Ajouter un ou plusieurs groupes ->
 
 ; bt-outgroup
-<- Enlever
+<- Enlever un ou plusieurs groupes
 
 ; create_group
 Créer un groupe
@@ -149,10 +149,10 @@ Aucune file d'attente
 Créer une file d'attente
 
 ; bt-inqueue
-Ajouter ->
+Ajouter une ou plusieurs files d'attente ->
 
 ; bt-outqueue
-<- Enlever
+<- Enlever une ou plusieurs files d'attente
 
 ; fm_codec-custom
 Personnaliser :
@@ -164,16 +164,16 @@ Désactiver :
 Activer :
 
 ; bt-upcodec
-Monter
+Monter un ou plusieurs codecs
 
 ; bt-downcodec
-Descendre
+Descendre un ou plusieurs codecs
 
 ; bt-incodec
-Ajouter ->
+Ajouter un ou plusieurs codecs ->
 
 ; bt-outcodec
-<- Enlever
+<- Enlever un ou plusieurs codecs
 
 ; fm_voicemail-active
 Activer :

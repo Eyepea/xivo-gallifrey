@@ -460,6 +460,44 @@ function xivo_array_intersect_key($arr,$data,$key=null,$empty=false)
 	return($r);
 }
 
+function xivo_array_copy_intersect_key($arr,$data,$key=null,$empty=false)
+{
+	$list = false;
+	$empty = (bool) $empty;
+
+	if(is_array($data) === false || ($list = xivo_get_aks($arr,$empty)) === false)
+		return($list);
+
+	$r = array();
+
+	for($i = 0;$i < $list['cnt'];$i++)
+	{
+		$k = &$list['keys'][$i];
+
+		if($key === null)
+		{
+			if(isset($data[$k]) === true)
+				$r[$k] = $v;
+			continue;
+		}
+
+		$v = &$arr[$k];
+
+		if(is_array($v) === false
+		|| isset($v[$key]) === false
+		|| is_scalar($v[$key]) === false
+		|| isset($data[$v[$key]]) === false)
+			continue;
+
+		$r[$v[$key]] = $v;
+	}
+
+	if($empty === false && empty($r) === true)
+		$r = false;
+
+	return($r);
+}
+
 function xivo_array_diff_key($arr1,$arr2)
 {
 	$r = array();

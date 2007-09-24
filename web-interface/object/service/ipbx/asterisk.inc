@@ -345,20 +345,21 @@ class xivo_service_asterisk extends xivo_service_abstract
 		return($r);
 	}
 
-	function get_queue_user($id=0,$disable=null)
+	function get_queue_user($id=0,$disable=null,$assoc=false)
 	{
-		return($this->_get_queue_member('user',$id,$disable));
+		return($this->_get_queue_member('user',$id,$disable,$assoc));
 	}
 
-	function get_queue_agent($id=0,$disable=null)
+	function get_queue_agent($id=0,$disable=null,$assoc=false)
 	{
-		return($this->_get_queue_member('agent',$id,$disable));
+		return($this->_get_queue_member('agent',$id,$disable,$assoc));
 	}
 
-	function _get_queue_member($usertype='',$userid=0,$disable=null)
+	function _get_queue_member($usertype='',$userid=0,$disable=null,$assoc=false)
 	{
 		$usertype = (string) $usertype;
 		$userid = xivo_uint($userid);
+		$assoc = (bool) $assoc;
 	
 		$qfeatures = &$this->get_module('queuefeatures');
 		$queue = &$this->get_module('queue');
@@ -392,25 +393,28 @@ class xivo_service_asterisk extends xivo_service_abstract
 					else
 						$info['member'] = false;
 
-					$r[] = $info;
+					$r[$info['qfeatures']['id']] = $info;
 					continue;
 				}
 			}
 
 			$info['member'] = $qmember->get_all_where($where);
 
-			$r[] = $info;
+			$r[$info['qfeatures']['id']] = $info;
 		}
 
-		if(isset($r[0]) === false)
+		if(empty($r) === true)
 			$r = false;
+		else if($assoc === false)
+			$r = array_values($r);
 
 		return($r);
 	}
 
-	function get_group_user($userid=0,$disable=null)
+	function get_group_user($userid=0,$disable=null,$assoc=false)
 	{
 		$userid = xivo_uint($userid);
+		$assoc = (bool) $assoc;
 	
 		$gfeatures = &$this->get_module('groupfeatures');
 		$queue = &$this->get_module('queue');
@@ -440,17 +444,19 @@ class xivo_service_asterisk extends xivo_service_abstract
 				else
 					$info['member'] = false;
 
-				$r[] = $info;
+				$r[$info['gfeatures']['id']] = $info;
 				continue;
 			}
 
 			$info['member'] = $qmember->get_all_where($where);
 
-			$r[] = $info;
+			$r[$info['gfeatures']['id']] = $info;
 		}
 
-		if(isset($r[0]) === false)
+		if(empty($r) === true)
 			$r = false;
+		else if($assoc === false)
+			$r = array_values($r);
 
 		return($r);
 	}

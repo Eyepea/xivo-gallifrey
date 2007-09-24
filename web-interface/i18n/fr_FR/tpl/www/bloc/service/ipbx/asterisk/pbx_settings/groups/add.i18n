@@ -20,10 +20,10 @@ Temps de sonnerie :
 Utilisateurs :
 
 ; bt-inuser
-Ajouter ->
+Ajouter un ou plusieurs utilisateurs ->
 
 ; bt-outuser
-<- Enlever
+<- Enlever un ou plusieurs utilisateurs
 
 ; fm_bt-save
 Sauvegarder

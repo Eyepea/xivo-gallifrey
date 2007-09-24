@@ -126,8 +126,23 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 		$where['userid'] = $this->_info['ufeatures']['id'];
 
 		if(($qmember = &$this->_ipbx->get_module('queuemember')) === false
-		|| ($this->_info[$membertype] = $qmember->get_all_where($where)) === false)
+		|| ($module = &$this->_ipbx->get_module($type.'features')) === false
+		|| ($this->_info[$membertype] = $qmember->get_all_where($where)) === false
+		|| ($nb = count($this->_info[$membertype])) === 0)
 			return(false);
+
+		$ref = &$this->_info[$membertype];
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			if(($id = $module->get_id(array('name' => $ref[$i]['queue_name']))) === false)
+				continue;
+
+			if($type === 'queue')
+				$ref[$i]['qfeaturesid'] = $id;
+			else
+				$ref[$i]['gfeaturesid'] = $id;
+		}
 
 		$this->_origin[$membertype] = $qmember->get_origin_list();
 
@@ -477,9 +492,16 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 			if(($rs = $qmember->chk_values($values)) === false)
 				continue;
 
+			if($type === 'queue')
+				$rs['qfeaturesid'] = $typeid;
+			else
+			{
+				$rs['gfeaturesid'] = $typeid;
+				$callgroup[] = $typeid;		
+			}
+
 			$tmp[$qname] = 1;
 			$type_list[] = $rs;
-			$callgroup[] = $typeid;		
 		}
 
 		if(isset($type_list[0]) === false)
@@ -722,6 +744,8 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 		for($i = 0;$i < $nb;$i++)
 		{
 			$rs[$i]['userid'] = $ufeaturesid;
+
+			unset($rs[$i]['gfeaturesid'],$rs[$i]['qfeaturesid']);
 
 			if(($this->_return[$key][] = $qmember->add($rs[$i])) === false)
 				return(false);
@@ -1065,6 +1089,8 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 		for($i = 0;$i < $nb;$i++)
 		{
 			$rs[$i]['userid'] = $this->_info['ufeatures']['id'];
+
+			unset($rs[$i]['gfeaturesid'],$rs[$i]['qfeaturesid']);
 
 			if(($this->_return[$key][] = $qmember->add($rs[$i])) === false)
 				return(false);

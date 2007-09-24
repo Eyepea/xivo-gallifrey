@@ -686,6 +686,37 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_abstr
 		return(true);
 	}
 
+	function delete()
+	{
+		$this->_return = array();
+
+		if($this->delete_rightcall() === false
+		|| $this->delete_rightcalluser() === false
+		|| $this->delete_rightcallgroup() === false
+		|| $this->delete_rightcalloutcall() === false
+		|| $this->delete_rightcallexten() === false)
+		{
+			$this->_reverse_delete();
+			return(false);
+		}
+
+		return(true);
+	}
+
+	function delete_rightcall()
+	{
+		if(xivo_issa('rightcall',$this->_info) === false
+		|| ($rightcall = &$this->_ipbx->get_module('rightcall')) === false)
+			return(false);
+
+		$r = $rightcall->delete($this->_info['rightcall']['id']);
+
+		if(isset($this->_return['rightcall']) === false)
+			$this->_return['rightcall'] = $r;
+
+		return($r);
+	}
+
 	function delete_rightcalluser()
 	{
 		return($this->_delete_rightcall_member_type('user'));
@@ -714,7 +745,14 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_abstr
 		$rmember_where['type'] = $type;
 		$rmember_where['rightcallid'] = $this->_info['rightcall']['id'];
 
-		return($rmember->delete_where($rmember_where));
+		$key = 'rightcall'.$type;
+
+		$r = $rmember->delete_where($rmember_where);
+
+		if(isset($this->_return[$key]) === false)
+			$this->_return[$key] = $r;
+
+		return($r);
 	}
 
 	function delete_rightcallexten()
@@ -725,7 +763,64 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_abstr
 
 		$rightcallexten_where = array('rightcallid' => $this->_info['rightcall']['id']);
 
-		return($rightcallexten->delete_where($rightcallexten_where));
+		$r = $rightcallexten->delete_where($rightcallexten_where);
+
+		if(isset($this->_return['rightcallexten']) === false)
+			$this->_return['rightcallexten'] = $r;
+
+		return($r);
+	}
+
+	function _reverse_delete()
+	{
+		if(($arr = xivo_get_aks($this->_return)) === false)
+			return(false);
+
+		for($i = 0;$i < $arr['cnt'];$i++)
+		{
+			$key = &$arr['keys'][$i];
+			$val = &$this->_return[$key];
+
+			if($val === false)
+				continue;
+
+			switch($key)
+			{
+				case 'rightcall':
+					$rightcall = &$this->_ipbx->get_module('rightcall');
+					$rightcall->add_origin();
+					break;
+				case 'rightcalluser':
+				case 'rightcallgroup':
+				case 'rightcalloutcall':
+					if($this->_origin[$key] === false
+					|| ($nb = count($this->_origin[$key])) === 0)
+						continue;
+
+					$rmember = &$this->_ipbx->get_module('rightcallmember');
+
+					for($j = 0;$j < $nb;$j++)
+					{
+						$ref = &$this->_origin[$key][$j];
+						$rmember->add($ref,$ref['id']);
+					}
+					break;
+				case 'rightcallexten':
+					if($this->_origin['rightcallexten'] === false
+					|| ($nb = count($this->_origin['rightcallexten'])) === 0)
+						continue;
+
+					$rightcallexten = &$this->_ipbx->get_module('rightcallexten');
+
+					for($j = 0;$j < $nb;$j++)
+					{
+						$ref = &$this->_origin['rightcallexten'][$j];
+						$rightcallexten->add($ref,$ref['id']);
+					}
+					break;
+			}
+		}
+		return(true);
 	}
 }
 

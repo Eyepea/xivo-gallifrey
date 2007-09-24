@@ -185,10 +185,10 @@ Mise en relation avec un opérateur :
 Formats d'enregistrement :
 
 ; bt-informat
-Ajouter ->
+Ajouter un ou plusieurs formats ->
 
 ; bt-outformat
-<- Enlever
+<- Enlever un ou plusieurs formats
 
 ; fm_voicemail-maxlogins
 Nombre maximum de tentatives pour s'authentifier :

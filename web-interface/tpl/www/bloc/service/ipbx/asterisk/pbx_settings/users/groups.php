@@ -6,12 +6,10 @@
 	$element = $this->vars('element');
 
 	$groups = $this->vars('groups');
-	$gmember_slt = $this->vars('gmember_slt');
-	$gmember_unslt = $this->vars('gmember_unslt');
+	$gmember = $this->vars('gmember');
 
 	$queues = $this->vars('queues');
-	$qmember_slt = $this->vars('qmember_slt');
-	$qmember_unslt = $this->vars('qmember_unslt');
+	$qmember = $this->vars('qmember');
 
 	$ringgroup = xivo_bool($info['ufeatures']['ringgroup']);
 ?>
@@ -19,12 +17,12 @@
 <fieldset id="fld-group">
 	<legend><?=$this->bbf('fld-callgroup');?></legend>
 <?php
-	if($groups !== false && ($nb = count($groups)) !== 0):
+	if(($arr_groups = xivo_get_aks($groups)) !== false):
 ?>
 	<div id="grouplist" class="fm-field fm-multilist">
 		<div class="slt-outlist">
 
-		<?=$form->select(array('name' => 'grouplist','label' => false,'id' => 'it-grouplist','multiple' => true,'size' => 5,'field' => false,'key' => false),$gmember_unslt);?>
+		<?=$form->select(array('name' => 'grouplist','label' => false,'id' => 'it-grouplist','multiple' => true,'size' => 5,'field' => false,'browse' => 'gfeatures','key' => 'name','altkey' => 'name'),$gmember['list']);?>
 
 		</div>
 		<div class="inout-list">
@@ -36,18 +34,18 @@
 		</div>
 		<div class="slt-inlist">
 
-		<?=$form->select(array('name' => 'group-select[]','label' => false,'id' => 'it-group','multiple' => true,'size' => 5,'field' => false,'key' => 'queue_name','altkey' => 'queue_name'),$gmember_slt);?>
+		<?=$form->select(array('name' => 'group-select[]','label' => false,'id' => 'it-group','multiple' => true,'size' => 5,'field' => false,'browse' => 'gfeatures','key' => 'name','altkey' => 'name'),$gmember['slt']);?>
 
 		</div>
 	</div>
 
 	<div class="clearboth">
 
-		<?=$form->checkbox(array('desc' => $this->bbf('fm_userfeatures_ringgroup'),'name' => 'ufeatures[ringgroup]','labelid' => 'ufeatures-ringgroup','default' => $element['ufeatures']['ringgroup']['default'],'checked' => $ringgroup),(empty($gmember_slt) === true ? 'disabled="disabled" ' : '').'onclick="xivo_eid(\'ringgroup\').style.display = this.checked == true ? \'block\' : \'none\';"');?>
+		<?=$form->checkbox(array('desc' => $this->bbf('fm_userfeatures_ringgroup'),'name' => 'ufeatures[ringgroup]','labelid' => 'ufeatures-ringgroup','default' => $element['ufeatures']['ringgroup']['default'],'checked' => $ringgroup),(empty($gmember['slt']) === true ? 'disabled="disabled" ' : '').'onclick="xivo_eid(\'ringgroup\').style.display = this.checked == true ? \'block\' : \'none\';"');?>
 
 		<div id="ringgroup"<?=($ringgroup !== true ? ' class="b-nodisplay"' : '')?>>
 
-		<?=$form->select(array('desc' => $this->bbf('fm_usergroup'),'name' => 'usergroup','id' => 'it-usergroup','key' => 'queue_name','value' => $info['usergroup']['groupid']),$gmember_slt);?>
+		<?=$form->select(array('desc' => $this->bbf('fm_usergroup'),'name' => 'usergroup','id' => 'it-usergroup','browse' => 'gfeatures','key' => 'name','altkey' => 'name','value' => $info['usergroup']['groupid']),$gmember['slt']);?>
 		</div>
 
 	</div>
@@ -60,14 +58,16 @@
 				<th class="th-right"><?=$this->bbf('col_group-calllimit');?></th>
 			</tr>
 <?php
-		for($i = 0;$i < $nb;$i++):
-			$ref = &$groups[$i];
-			$name = &$ref['queue']['name'];
+		for($i = 0;$i < $arr_groups['cnt'];$i++):
+			$key = &$arr_groups['keys'][$i];
+			$ref = &$groups[$key];
+			$name = &$ref['gfeatures']['name'];
 			$class = ' b-nodisplay';
 			$penalty = $calllimit = '';
 
-			if(isset($ref['member']) === true && $ref['member'] !== false):
+			if(xivo_issa($ref['gfeatures']['id'],$gmember['info']) === true):
 				$class = '';
+				$ref['member'] = $gmember['info'][$ref['gfeatures']['id']];
 				$calllimit = (int) $ref['member']['call-limit'];
 			else:
 				$ref['member'] = null;
@@ -81,7 +81,7 @@
 <?php
 		endfor;
 ?>
-			<tr id="no-group"<?=($gmember_slt !== false ? ' class="b-nodisplay"' : '')?>>
+			<tr id="no-group"<?=(empty($gmember['slt']) === false ? ' class="b-nodisplay"' : '')?>>
 				<td colspan="3" class="td-single"><?=$this->bbf('no_group');?></td>
 			</tr>
 		</table>
@@ -95,12 +95,12 @@
 <fieldset id="fld-queue">
 	<legend><?=$this->bbf('fld-queuegroup');?></legend>
 <?php
-	if($queues !== false && ($nb = count($queues)) !== 0):
+	if(($arr_queues = xivo_get_aks($queues)) !== false):
 ?>
 	<div id="queuelist" class="fm-field fm-multilist">
 		<div class="slt-outlist">
 
-		<?=$form->select(array('name' => 'queuelist','label' => false,'id' => 'it-queuelist','multiple' => true,'size' => 5,'field' => false,'key' => false),$qmember_unslt);?>
+		<?=$form->select(array('name' => 'queuelist','label' => false,'id' => 'it-queuelist','multiple' => true,'size' => 5,'field' => false,'browse' => 'qfeatures','key' => 'name','altkey' => 'name'),$qmember['list']);?>
 
 		</div>
 		<div class="inout-list">
@@ -112,7 +112,7 @@
 		</div>
 		<div class="slt-inlist">
 
-		<?=$form->select(array('name' => 'queue-select[]','label' => false,'id' => 'it-queue','multiple' => true,'size' => 5,'field' => false,'key' => 'queue_name','altkey' => 'queue_name'),$qmember_slt);?>
+		<?=$form->select(array('name' => 'queue-select[]','label' => false,'id' => 'it-queue','multiple' => true,'size' => 5,'field' => false,'browse' => 'qfeatures','key' => 'name','altkey' => 'name'),$qmember['slt']);?>
 
 		</div>
 	</div>
@@ -126,14 +126,16 @@
 				<th class="th-right"><?=$this->bbf('col_queue-calllimit');?></th>
 			</tr>
 <?php
-		for($i = 0;$i < $nb;$i++):
-			$ref = &$queues[$i];
-			$name = &$ref['queue']['name'];
+		for($i = 0;$i < $arr_queues['cnt'];$i++):
+			$key = &$arr_queues['keys'][$i];
+			$ref = &$queues[$key];
+			$name = &$ref['qfeatures']['name'];
 			$class = ' b-nodisplay';
 			$penalty = $calllimit = '';
 
-			if(isset($ref['member']) === true && $ref['member'] !== false):
+			if(xivo_issa($ref['qfeatures']['id'],$qmember['info']) === true):
 				$class = '';
+				$ref['member'] = $qmember['info'][$ref['qfeatures']['id']];
 				$calllimit = (int) $ref['member']['call-limit'];
 				$penalty = (int) $ref['member']['penalty'];
 			else:
@@ -149,7 +151,7 @@
 <?php
 		endfor;
 ?>
-			<tr id="no-queue"<?=($qmember_slt !== false ? ' class="b-nodisplay"' : '')?>>
+			<tr id="no-queue"<?=(empty($qmember['slt']) === false ? ' class="b-nodisplay"' : '')?>>
 				<td colspan="4" class="td-single"><?=$this->bbf('no_queue');?></td>
 			</tr>
 		</table>

@@ -10,80 +10,34 @@ $return = &$info;
 $musiconhold = &$ipbx->get_module('musiconhold');
 $autoprov = &$ipbx->get_module('autoprov');
 
-$gmember_slt = $gmember_unslt = false;
-
-if(($groups = $ipbx->get_group_user($info['ufeatures']['id'])) !== false)
-{
-	xivo::load_class('xivo_sort');
-	$sort = new xivo_sort(array('browse' => 'queue','key' => 'name'));
-	usort($groups,array(&$sort,'str_usort'));
-
-	$gmember_slt = $gmember_unslt = array();
-
-	$nb = count($groups);
-
-	for($i = 0;$i < $nb;$i++)
-	{
-		$name = &$groups[$i]['queue']['name'];
-
-		if($groups[$i]['member'] !== false)
-			$gmember_slt[$name] = $groups[$i]['member'];
-		else
-			$gmember_unslt[$name] = $name;
-	}
-
-	if(empty($gmember_slt) === true)
-		$gmember_slt = false;
-
-	if(empty($gmember_unslt) === true)
-	{
-		$gmember_unslt = false;
-
-		if($gmember_slt === false)
-			$groups = false;
-	}
-}
-
-$qmember_slt = $qmember_unslt = false;
-
-if(($queues = $ipbx->get_queue_user($info['ufeatures']['id'])) !== false)
-{
-	xivo::load_class('xivo_sort');
-	$sort = new xivo_sort(array('browse' => 'queue','key' => 'name'));
-	usort($queues,array(&$sort,'str_usort'));
-
-	$qmember_slt = $qmember_unslt = array();
-
-	$nb = count($queues);
-
-	for($i = 0;$i < $nb;$i++)
-	{
-		$name = &$queues[$i]['queue']['name'];
-
-		if($queues[$i]['member'] !== false)
-			$qmember_slt[$name] = $queues[$i]['member'];
-		else
-			$qmember_unslt[$name] = $name;
-	}
-
-	if(empty($qmember_slt) === true)
-		$qmember_slt = false;
-
-	if(empty($qmember_unslt) === true)
-	{
-		$qmember_unslt = false;
-
-		if($qmember_slt === false)
-			$queues = false;
-	}
-}
-
 if(($moh_list = $musiconhold->get_all_category(null,false)) !== false)
 	ksort($moh_list);
 
+$result = null;
+
 $allow = $info['protocol']['allow'];
 
-$result = null;
+$gmember = $qmember = array();
+$gmember['list'] = $qmember['list'] = false;
+$gmember['info'] = $qmember['info'] = false;
+$gmember['slt'] = $qmember['slt'] = array();
+
+xivo::load_class('xivo_sort');
+$groupsort = new xivo_sort(array('browse' => 'gfeatures','key' => 'name'));
+
+if(($groups = $ipbx->get_groups_list(null,true)) !== false)
+{
+	uasort($groups,array(&$groupsort,'str_usort'));
+	$gmember['list'] = $groups;
+}
+
+$queuesort = new xivo_sort(array('browse' => 'qfeatures','key' => 'name'));
+
+if(($queues = $ipbx->get_queues_list(null,true)) !== false)
+{
+	uasort($queues,array(&$queuesort,'str_usort'));
+	$qmember['list'] = $queues;
+}
 
 do
 {
@@ -133,6 +87,30 @@ do
 }
 while(false);
 
+if($gmember['list'] !== false && xivo_ak('groupmember',$return) === true)
+{
+	$gmember['slt'] = xivo_array_intersect_key($return['groupmember'],$gmember['list'],'gfeaturesid');
+
+	if($gmember['slt'] !== false)
+	{
+		$gmember['info'] = xivo_array_copy_intersect_key($return['groupmember'],$gmember['slt'],'gfeaturesid');
+		$gmember['list'] = xivo_array_diff_key($gmember['list'],$gmember['slt']);
+		uasort($gmember['slt'],array(&$groupsort,'str_usort'));
+	}
+}
+
+if($qmember['list'] !== false && xivo_ak('queuemember',$return) === true)
+{
+	$qmember['slt'] = xivo_array_intersect_key($return['queuemember'],$qmember['list'],'qfeaturesid');
+
+	if($qmember['slt'] !== false)
+	{
+		$qmember['info'] = xivo_array_copy_intersect_key($return['queuemember'],$qmember['slt'],'qfeaturesid');
+		$qmember['list'] = xivo_array_diff_key($qmember['list'],$qmember['slt']);
+		uasort($qmember['slt'],array(&$queuesort,'str_usort'));
+	}
+}
+
 $element = $appuser->get_element();
 
 if(xivo_issa('allow',$element['protocol']['sip']) === true
@@ -172,11 +150,9 @@ if(empty($return) === false)
 $_HTML->assign('id',$info['ufeatures']['id']);
 $_HTML->assign('info',$return);
 $_HTML->assign('groups',$groups);
-$_HTML->assign('gmember_slt',$gmember_slt);
-$_HTML->assign('gmember_unslt',$gmember_unslt);
+$_HTML->assign('gmember',$gmember);
 $_HTML->assign('queues',$queues);
-$_HTML->assign('qmember_slt',$qmember_slt);
-$_HTML->assign('qmember_unslt',$qmember_unslt);
+$_HTML->assign('qmember',$qmember);
 $_HTML->assign('protocol',$ipbx->get_protocol());
 $_HTML->assign('element',$element);
 $_HTML->assign('moh_list',$moh_list);

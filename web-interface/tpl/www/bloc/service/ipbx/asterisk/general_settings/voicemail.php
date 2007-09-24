@@ -60,7 +60,7 @@
 </div>
 	
 	<div class="sb-content">
-<form action="#" method="post" accept-charset="utf-8" onsubmit="xivo_fm_select('it-format');">
+<form action="#" method="post" accept-charset="utf-8" onsubmit="xivo_fm_select('it-voicemail-format');">
 
 <?=$form->hidden(array('name' => XIVO_SESS_NAME,'value' => XIVO_SESS_ID));?>
 <?=$form->hidden(array('name' => 'fm_send','value' => 1));?>
@@ -83,7 +83,7 @@
 
 <div id="formatlist" class="fm-field fm-multilist"><p><label id="lb-formatlist" for="it-formatlist"><?=$this->bbf('fm_voicemail-format');?></label></p>
 	<div class="slt-outlist">
-		<?=$form->select(array('name' => 'voicemail[formatlist]','label' => false,'id' => 'it-voicemail-formatlist','multiple' => true,'size' => 5,'field' => false,'key' => false),$element['voicemail']['format']['value']);?>
+		<?=$form->select(array('name' => 'voicemail[formatlist]','label' => false,'id' => 'it-voicemail-formatlist','multiple' => true,'size' => 5,'field' => false,'key' => false,'bbf' => 'ast_format_name_info-'),$element['voicemail']['format']['value']);?>
 	</div>
 	<div class="inout-list">
 
@@ -93,7 +93,7 @@
 	</div>
 	<div class="slt-inlist">
 
-		<?=$form->select(array('name' => 'voicemail[format][]','label' => false,'id' => 'it-voicemail-format','multiple' => true,'size' => 5,'field' => false,'key' => false),$format);?>
+		<?=$form->select(array('name' => 'voicemail[format][]','label' => false,'id' => 'it-voicemail-format','multiple' => true,'size' => 5,'field' => false,'key' => false,'bbf' => 'ast_format_name_info-'),$format);?>
 
 	</div>
 </div>
@@ -141,7 +141,7 @@
 
 <?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail-attach'),'name' => 'voicemail[attach]','labelid' => 'voicemail-attach','checked' => $this->varra('voicemail','attach'),'default' => $element['voicemail']['attach']['default']));?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_voicemail-attachformat'),'name' => 'voicemail[attachformat]','labelid' => 'voicemail-attachformat','key' => false),$format.($attachformat === false ? 'class="it-disabled" disabled="disabled"' : ''));?>
+<?=$form->select(array('desc' => $this->bbf('fm_voicemail-attachformat'),'name' => 'voicemail[attachformat]','labelid' => 'voicemail-attachformat','key' => false,'bbf' => 'ast_format_name_info-'),$format,($attachformat === false ? 'class="it-disabled" disabled="disabled"' : ''));?>
 
 <?=$form->text(array('desc' => $this->bbf('fm_voicemail-mailcmd'),'name' => 'voicemail[mailcmd]','labelid' => 'voicemail-mailcmd','size' => 15,'value' => $this->varra('voicemail','mailcmd'),'default' => $element['voicemail']['mailcmd']['default']),'class="it-readonly" readonly="readonly"');?>
 

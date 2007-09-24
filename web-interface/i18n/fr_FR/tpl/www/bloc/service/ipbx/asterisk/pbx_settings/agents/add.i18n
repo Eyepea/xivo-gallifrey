@@ -14,22 +14,22 @@ Nom :
 Agents :
 
 ; bt-inagent
-Ajouter ->
+Ajouter un ou plusieurs agents ->
 
 ; bt-outagent
-<- Enlever
+<- Enlever un ou plusieurs agents
 
 ; bt-upagent
-Monter
+Monter un ou plusieurs agents
 
 ; bt-downagent
-Descendre
+Descendre un ou plusieurs agents
 
 ; bt-inqueue
-Ajouter ->
+Ajouter une ou plusieurs files d'attente ->
 
 ; bt-outqueue
-<- Enlever
+<- Enlever une ou plusieurs files d'attente
 
 ; col_queue-name
 Nom

@@ -20,7 +20,7 @@ Nom :
 Mot de passe :
 
 ; fm_rightcall_permit
-Permettre :
+Autoriser :
 
 ; fm_rightcallexten_exten
 Extensions :
@@ -32,34 +32,34 @@ Ajouter une extension :
 Ajouter une extension
 
 ; bt-deleteexten
-Supprimer une extension
+Supprimer une ou plusieurs extensions
 
 ; fm_rightcall_description
 Description :
 
 ; bt-inuser
-Ajouter ->
+Ajouter un ou plusieurs utilisateurs ->
 
 ; bt-outuser
-<- Enlever
+<- Enlever un ou plusieurs utilisateurs
 
 ; create_user
 Créer un utilisateur
 
 ; bt-ingroup
-Ajouter ->
+Ajouter un ou plusieurs groupes ->
 
 ; bt-outgroup
-<- Enlever
+<- Enlever un ou plusieurs groupes
 
 ; create_group
 Créer un groupe
 
 ; bt-inoutcall
-Ajouter ->
+Ajouter un ou plusieurs appels sortants ->
 
 ; bt-outoutcall
-<- Enlever
+<- Enlever un ou plusieurs appels sortants
 
 ; create_outcall
 Créer un appel sortant

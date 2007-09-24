@@ -94,8 +94,8 @@
 		</label>
 	</p>
 	<div class="slt-outlist">
-		<?=$form->select(array('name' => 'codeclist','label' => false,'id' => 'it-sip-codeclist','altkey' => 'id','multiple' => true,'size' => 5,'field' => false,'key' => false),$element['protocol']['sip']['allow']['value']);?>
-		<?=$form->select(array('name' => 'codeclist','label' => false,'id' => 'it-iax-codeclist','altkey' => 'id','multiple' => true,'size' => 5,'field' => false,'key' => false),$element['protocol']['iax']['allow']['value']);?>
+		<?=$form->select(array('name' => 'codeclist','label' => false,'id' => 'it-sip-codeclist','altkey' => 'id','multiple' => true,'size' => 5,'field' => false,'key' => false,'bbf' => 'ast_codec_name_type-'),$element['protocol']['sip']['allow']['value']);?>
+		<?=$form->select(array('name' => 'codeclist','label' => false,'id' => 'it-iax-codeclist','altkey' => 'id','multiple' => true,'size' => 5,'field' => false,'key' => false,'bbf' => 'ast_codec_name_type-'),$element['protocol']['iax']['allow']['value']);?>
 	</div>
 	<div class="inout-list">
 		<a href="#" onclick="xivo_fm_move_selected('it-'+xivo_protocol+'-codeclist','it-'+xivo_protocol+'-codec'); return(false);" title="<?=$this->bbf('bt-incodec');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt-incodec'),'class="bt-inlist" id="bt-incodec" border="0"');?></a><br />
@@ -104,9 +104,9 @@
 	</div>
 	<div class="slt-inlist">
 
-		<?=$form->select(array('name' => 'protocol[allow][]','label' => false,'id' => 'it-sip-codec','multiple' => true,'size' => 5,'field' => false,'key' => false),$allow);?>
+		<?=$form->select(array('name' => 'protocol[allow][]','label' => false,'id' => 'it-sip-codec','multiple' => true,'size' => 5,'field' => false,'key' => false,'bbf' => 'ast_codec_name_type-'),$allow);?>
 
-		<?=$form->select(array('name' => 'protocol[allow][]','label' => false,'id' => 'it-iax-codec','multiple' => true,'size' => 5,'field' => false,'key' => false),$allow);?>
+		<?=$form->select(array('name' => 'protocol[allow][]','label' => false,'id' => 'it-iax-codec','multiple' => true,'size' => 5,'field' => false,'key' => false,'bbf' => 'ast_codec_name_type-'),$allow);?>
 
 		<div class="bt-updown">
 
