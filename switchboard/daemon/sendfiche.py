@@ -127,20 +127,22 @@ def get_sql_infos(cid, ctxinfos):
                 log_debug('Connection to SQL <%s> failed : %s' % (ctxinfos.uri, str(exc)))
                 return reply_by_field
 
-        try:
-                xx = {}
-                n = 0
-                for t in ctxinfos.sheet_matching_fields:
-                        xx[t] = results[0][n]
-                        n += 1
-                for [dispname, dbnames_list, dummy] in ctxinfos.sheet_valid_fields:
-                        field_value = ""
-                        for dbname in dbnames_list:
-                                if dbname in xx and field_value is "":
-                                        field_value = xx[dbname]
-                                reply_by_field[dispname] = field_value
-        except Exception, exc:
-                log_debug('--- exception --- in anysql : %s' %(str(exc)))
+        if results is not None:
+                try:
+                        xx = {}
+                        n = 0
+                        for t in ctxinfos.sheet_matching_fields:
+                                xx[t] = results[0][n]
+                                n += 1
+                        for [dispname, dbnames_list, dummy] in ctxinfos.sheet_valid_fields:
+                                print 'B', dispname
+                                field_value = ""
+                                for dbname in dbnames_list:
+                                        if dbname in xx and field_value is "":
+                                                field_value = xx[dbname]
+                                        reply_by_field[dispname] = field_value
+                except Exception, exc:
+                        log_debug('--- exception --- in anysql : %s' %(str(exc)))
 
 	return reply_by_field
 

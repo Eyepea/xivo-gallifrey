@@ -108,6 +108,7 @@ __alphanums__ = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijkLmnopqrstuvwxyz0123456789'
 
 # debian.org modules
 import ConfigParser
+import commands
 import encodings.utf_8
 import getopt
 import md5
@@ -221,6 +222,8 @@ map_capas = {
         'agents'           : CAPA_AGENTS,
         'fax'              : CAPA_FAX
         }
+
+PATH_SPOOL_ASTERISK_FAX = '/var/spool/asterisk/fax'
 
 fullstat_heavies = {}
 
@@ -492,8 +495,11 @@ def build_callerids_hints(kind, theseargs):
                                 plist_normal_keys.sort()
                                 for phonenum in plist_normal_keys:
                                         plist_n.normal[phonenum].update_time()
-                                        phoneinfo = "hnt:" + plist_n.astid + ":" + plist_n.normal[phonenum].build_basestatus()
-                                        fullstat_heavies[reqid].append(''.join([phoneinfo, ":", plist_n.normal[phonenum].build_fullstatlist(), ";"]))
+                                        phoneinfo = ("hnt",
+                                                     plist_n.astid,
+                                                     plist_n.normal[phonenum].build_basestatus(),
+                                                     plist_n.normal[phonenum].build_fullstatlist() + ";")
+                                        fullstat_heavies[reqid].append(':'.join(phoneinfo))
                 elif kind == 'callerids':
                         for n in items_asterisks:
                                 plist_n = plist[n]
@@ -1095,7 +1101,7 @@ def manage_tcp_connection(connid, allow_events):
                 elif usefulmsg != "":
                         l = usefulmsg.split()
                         if l[0] == 'history' or l[0] == 'directory-search' or \
-                               l[0] == 'featuresget' or l[0] == 'featuresput' or \
+                               l[0] == 'featuresget' or l[0] == 'featuresput' or l[0] == 'faxsend' or \
                                l[0] == 'hints' or l[0] == 'callerids' or l[0] == 'message' or l[0] == 'availstate' or \
                                l[0] == 'originate' or l[0] == 'transfer' or l[0] == 'hangup':
                                 log_debug("%s is attempting a %s : %s" %(requester, l[0], str(l)))
@@ -1929,6 +1935,7 @@ class ChannelStatus:
         ##  \brief Class initialization.
         def __init__(self, istatus, dtime, idir, ipeerch, ipeernum, itime, imynum):
                 self.status = istatus
+                self.special = "" # voicemail, meetme, ...
                 self.deltatime = dtime
                 self.time = itime
                 self.direction = idir
@@ -2409,7 +2416,14 @@ def deluser(astname, user):
 def check_user_connection(userinfo, whoami):
         if userinfo.has_key('sessiontimestamp'):
                 if time.time() - userinfo.get('sessiontimestamp') < xivoclient_session_timeout:
-                        return "already_connected"
+                        if 'lastconnwins' in userinfo:
+                                if userinfo['lastconnwins'] is True:
+                                        # one should then disconnect the first peer
+                                        pass
+                                else:
+                                        return "already_connected"
+                        else:
+                                return "already_connected"
         if whoami == 'XC':
                 if conngui_xc >= maxgui_xc:
                         return "xcusers:%d" % maxgui_xc
@@ -2435,7 +2449,7 @@ def connect_user(userinfo, sessionid, iip, iport,
                 # lastconnwins was introduced in the aim of forcing a new connection to take on for
                 # a given user, however it might breed problems if the previously logged-in process
                 # tries to reconnect ... unless we send something asking to Kill the process
-                userinfo['lastconnwins'] = lastconnwins
+                userinfo['lastconnwins'] = False # lastconnwins
 
                 # we first check if 'state' has already been set for this customer, in which case
                 # the CTI clients will be sent back this previous state
@@ -2472,7 +2486,6 @@ def disconnect_user(userinfo):
                         del userinfo['cticlienttype']
                         del userinfo['cticlientos']
                         del userinfo['tcpmode']
-                        del userinfo['lastconnwins']
                         del userinfo['socket']
         except Exception, exc:
                 log_debug("--- exception --- disconnect_user %s : %s" %(str(userinfo), str(exc)))
@@ -2488,15 +2501,58 @@ def finduser(astname, user):
                 u = None
         return u
 
+class FaxRequestHandler(SocketServer.StreamRequestHandler):
+        def handle(self):
+                threading.currentThread().setName('fax-%s:%d' %(self.client_address[0], self.client_address[1]))
+                try:
+                        filename = 'astfaxsend-' + ''.join(random.sample(__alphanums__, 10)) + "-" + hex(int(time.time()))
+                        file_definition = self.rfile.readline().strip()
+                        log_debug('fax : received <%s>' % file_definition)
+                        a = self.rfile.read()
+                        z = open('/tmp/%s' %filename, 'w')
+                        z.write(a)
+                        z.close()
+                        log_debug('fax : received %d bytes stored into /tmp/%s' %(len(a), filename))
+                        params = file_definition.split()
+                        for p in params:
+                                [var, val] = p.split('=')
+                                if var == 'number':
+                                        number = val
+                                elif var == 'context':
+                                        context = val
+                                elif var == 'astid':
+                                        astid = val
+                                elif var == 'hide':
+                                        hide = val
+                        callerid = 'mycallerid' # to be set according to conf file
 
-##def askforparam(reqstring, rfile, wfile, debugstr):
-##      wfile.write('Send %s for authentication\r\n' %reqstring)
-##      list1 = rfile.readline().strip().split(' ')
-##      if len(list1) != 2 or list1[0] != reqstring:
-##              replystr = "ERROR : wrong format for %s reply" %reqstring
-##              debugstr += " / %s error" %reqstring
-##              return [replystr, debugstr], [user, port, state, astnum]
-##      return list1[1]
+                        comm = commands.getoutput('file -b /tmp/%s' % filename)
+                        brieffile = ' '.join(comm.split()[0:2])
+                        if brieffile == 'PDF document,':
+                                log_debug('fax : the file received is a PDF one : converting to PPM then TIFF')
+                                # xpdf-reader
+                                ret = os.system('pdftoppm /tmp/%s /tmp/%s' %(filename, filename))
+                                # libtiff-tools
+                                ret = os.system('ppm2tiff /tmp/%s-000001.ppm /tmp/%s.tif' %(filename, filename))
+                        elif brieffile == 'Netpbm PPM':
+                                log_debug('fax : the file received is a PPM one : converting to TIFF')
+                                ret = os.system('ppm2tiff /tmp/%s /tmp/%s.tif' %(filename, filename))
+                        elif brieffile == 'TIFF image':
+                                log_debug('fax : the file received is a TIFF one : no conversion needed')
+                                ret = os.system('mv /tmp/%s /tmp/%s.tif' %(filename, filename))
+                        
+                        if os.path.exists(PATH_SPOOL_ASTERISK_FAX):
+                                try:
+                                        filenamedest = '%s/%s.tif' %(PATH_SPOOL_ASTERISK_FAX, filename)
+                                        ret = os.system('mv /tmp/%s.tif %s' %(filename, filenamedest))
+                                        ret = AMI_array_user_commands[astid].txfax(filenamedest, callerid, number, context)
+                                except Exception, exc:
+                                        log_debug('--- exception --- (fax handler A) : %s' %(str(exc)))
+                        else:
+                                log_debug('directory %s does not exist - could not send fax' %(PATH_SPOOL_ASTERISK_FAX))
+                        os.system('rm /tmp/%s*' % filename)
+                except Exception, exc:
+                        log_debug("--- exception --- (fax handler B) : %s" %(str(exc)))
 
 
 ## \class LoginHandler
@@ -2508,16 +2564,22 @@ class LoginHandler(SocketServer.StreamRequestHandler):
                 [astnum, user, port, state] = [-1, "", "", ""]
                 replystr = "ERROR"
                 debugstr = "LoginRequestHandler (TCP) : client = %s:%d" %(self.client_address[0], self.client_address[1])
-                list1 = self.rfile.readline().strip().split(' ') # list1 should be "[LOGIN <asteriskname>/sip<nnn>]"
-                nlist1 = len(list1)
-                if nlist1 < 2 or nlist1 > 4 or list1[0] != 'LOGIN':
-                        replystr = "ERROR number_of_arguments"
-                        debugstr += " / LOGIN error args"
+                loginargs = self.rfile.readline().strip().split(' ') # loginargs should be "[LOGIN <asteriskname>/sip<nnn> <XC@X11> <version>]"
+                nloginargs = len(loginargs)
+                if nloginargs != 4 or loginargs[0] != 'LOGIN':
+                        replystr = "ERROR version_client:%d;%d" % (clientversion, REQUIRED_CLIENT_VERSION)
+                        debugstr += " / Client version Error %d < %d" %(clientversion, REQUIRED_CLIENT_VERSION)
+                        return [replystr, debugstr], [user, port, state, astnum]
+                clientversion = int(loginargs[3])
+                if clientversion < REQUIRED_CLIENT_VERSION:
+                        replystr = "ERROR version_client:%d;%d" % (clientversion, REQUIRED_CLIENT_VERSION)
+                        debugstr += " / Client version Error %d < %d" %(clientversion, REQUIRED_CLIENT_VERSION)
                         return [replystr, debugstr], [user, port, state, astnum]
 
-                if list1[1].find("/") >= 0:
-                        astname_xivoc = list1[1].split("/")[0]
-                        user = list1[1].split("/")[1]
+
+                if loginargs[1].find("/") >= 0:
+                        astname_xivoc = loginargs[1].split("/")[0]
+                        user = loginargs[1].split("/")[1]
                 else:
                         replystr = "ERROR id_format"
                         debugstr += " / LOGIN error ID"
@@ -2525,11 +2587,10 @@ class LoginHandler(SocketServer.StreamRequestHandler):
                 
                 whoami = ""
                 whatsmyos = ""
-                if nlist1 >= 3:
-                        nwhoami = list1[2].split("@")
-                        whoami  = nwhoami[0]
-                        if len(nwhoami) == 2:
-                                whatsmyos = nwhoami[1]
+                nwhoami = loginargs[2].split("@")
+                whoami  = nwhoami[0]
+                if len(nwhoami) == 2:
+                        whatsmyos = nwhoami[1]
                 if whoami not in ["XC", "SB"]:
                         log_debug("WARNING : %s/%s attempts to log in from %s:%d but has given no meaningful XC/SB hint (%s)"
                                   %(astname_xivoc, user, self.client_address[0], self.client_address[1], whoami))
@@ -2537,12 +2598,6 @@ class LoginHandler(SocketServer.StreamRequestHandler):
                         log_debug("WARNING : %s/%s attempts to log in from %s:%d but has given no meaningful OS hint (%s)"
                                   %(astname_xivoc, user, self.client_address[0], self.client_address[1], whatsmyos))
 
-                if nlist1 >= 4:
-                        clientversion = int(list1[3])
-                        if clientversion < REQUIRED_CLIENT_VERSION:
-                                replystr = "ERROR version_client:%d;%d" % (clientversion, REQUIRED_CLIENT_VERSION)
-                                debugstr += " / Client version Error %d < %d" %(clientversion, REQUIRED_CLIENT_VERSION)
-                                return [replystr, debugstr], [user, port, state, astnum]
 
                 # asks for PASS
                 self.wfile.write('Send PASS for authentication\r\n')
@@ -2785,6 +2840,9 @@ def parse_command_and_build_reply(me, myargs):
                 elif myargs[0] == 'featuresget':
                         if (capalist & CAPA_FEATURES):
                                 repstr = build_features_get(myargs[1:])
+                elif myargs[0] == 'faxsend':
+                        if (capalist & CAPA_FAX):
+                                repstr = "faxsend=%d" % port_fax
                 elif myargs[0] == 'featuresput':
                         if (capalist & CAPA_FEATURES):
                                 repstr = build_features_put(myargs[1:])
@@ -2862,7 +2920,7 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
                                         raise NameError, "session_expired"
                         finally:
                                 userlist_lock.release()
-                        
+
                         if list[0] == 'ALIVE' and len(list) == 6 and list[4] == 'STATE':
                                 # ALIVE user SESSIONID sessionid STATE state
                                 state = list[5]
@@ -2872,6 +2930,7 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
                                         userinfo['state'] = "undefinedstate"
                                 send_availstate_update(astnum, user, state)
                                 response = 'OK'
+
                         elif list[0] == 'STOP' and len(list) == 4:
                                 # STOP user SESSIONID sessionid
                                 userlist_lock.acquire()
@@ -2978,6 +3037,7 @@ while True: # loops over the reloads
         port_request = 5002
         port_ui_srv = 5003
         port_phpui_srv = 5004
+        port_fax = 5020
         port_switchboard_base_sip = 5005
         xivoclient_session_timeout = 60
         xivosb_register_frequency = 60
@@ -3009,6 +3069,8 @@ while True: # loops over the reloads
                 port_keepalive = int(xivoconf_general["port_fiche_keepalive"])
         if "port_fiche_agi" in xivoconf_general:
                 port_request = int(xivoconf_general["port_fiche_agi"])
+        if "port_fax" in xivoconf_general:
+                port_fax = int(xivoconf_general["port_fax"])
         if "port_switchboard" in xivoconf_general:
                 port_ui_srv = int(xivoconf_general["port_switchboard"])
         if "port_php" in xivoconf_general:
@@ -3207,6 +3269,7 @@ while True: # loops over the reloads
         # overhead is not worth it.
         # keepaliveserver = SocketServer.ThreadingUDPServer(('', port_keepalive), KeepAliveHandler)
         keepaliveserver = SocketServer.UDPServer(('', port_keepalive), KeepAliveHandler)
+        faxserver = MyTCPServer(('', port_fax), FaxRequestHandler)
 
         # We have three sockets to listen to so we cannot use the
         # very easy to use SocketServer.serve_forever()
@@ -3214,7 +3277,7 @@ while True: # loops over the reloads
         # won't block the execution. In case of the TCP servers, they will
         # spawn a new thread, in case of the UDP server, the request handling
         # process should be fast. If it isnt, use a threading UDP server ;)
-        ins = [loginserver.socket, requestserver.socket, keepaliveserver.socket]
+        ins = [loginserver.socket, requestserver.socket, keepaliveserver.socket, faxserver.socket]
 
         if debug_mode:
                 # opens the evtfile for output in append mode
@@ -3336,6 +3399,8 @@ while True: # loops over the reloads
                                 requestserver.handle_request()
                         elif keepaliveserver.socket in i:
                                 keepaliveserver.handle_request()
+                        elif faxserver.socket in i:
+                                faxserver.handle_request()
                         # SIP incoming packets are catched here
                         elif filter(lambda j: j in SIPsocks, i):
                                 res = filter(lambda j: j in SIPsocks, i)[0]
