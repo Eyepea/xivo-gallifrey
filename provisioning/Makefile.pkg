@@ -8,7 +8,7 @@ include ../autobuild.mk
 include ../autobuild-classic.mk
 
 DEB_PKG="pf-xivo-provisioning"
-DEB_TB_DEPS="python2.4-dev upx-ucl"
+DEB_TB_DEPS="python python2.4-dev upx-ucl"
 DEB_TAR_EXTRA_OPTIONS="--exclude=*.py"
 
 DESTDIR?=.
