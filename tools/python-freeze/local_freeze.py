@@ -51,10 +51,15 @@ for extramod in scripts_to_build[:nscripts-1]:
 		excludables.append(extramod)
 command_cp = command_cp + " " + TMP_DIR
 
-os.mkdir(TMP_DIR)
+try:
+        os.rmdir(TMP_DIR)
+        os.mkdir(TMP_DIR)
+except:
+        print >> sys.stderr, "Could not mkdir '%s'\n" % TMP_DIR
+	sys.exit(2)
+
 os.system(command_cp)
 os.chdir(TMP_DIR)
-
 
 command_freeze = freeze_script + " " + script_name
 for extramod in scripts_to_build[:nscripts-1]:
