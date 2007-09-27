@@ -1,0 +1,39 @@
+Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/res/res_features.c
+===================================================================
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/res/res_features.c	2007-09-27 17:20:55.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/res/res_features.c	2007-09-27 17:23:46.000000000 +0200
+@@ -280,6 +280,7 @@
+ 	struct parkeduser *pu, *cur;
+ 	int i,x,parking_range;
+ 	char exten[AST_MAX_EXTENSION];
++        char peername[AST_CHANNEL_NAME];
+ 	struct ast_context *con;
+ 
+ 	pu = malloc(sizeof(struct parkeduser));
+@@ -327,8 +328,15 @@
+ 		pu->parkingtime = parkingtime;
+ 	if (extout)
+ 		*extout = x;
+-	if (peer) 
+-		ast_copy_string(pu->peername, peer->name, sizeof(pu->peername));
++        if (peer) {
++                /* If (chan == peer) (which occurs in the case of an Originate action), we fill the peername in order
++                   for the right peer to be called back after the parking's timeout */
++                if (chan == peer)
++                        ast_copy_string(peername, pbx_builtin_getvar_helper(chan, "BRIDGEPEER"), sizeof(peername));
++                else
++                        ast_copy_string(peername, peer->name, sizeof(peername));
++                ast_copy_string(pu->peername, peername, sizeof(pu->peername));
++        }
+ 
+ 	/* Remember what had been dialed, so that if the parking
+ 	   expires, we try to come back to the same place */
+@@ -362,7 +370,7 @@
+ 		"Timeout: %ld\r\n"
+ 		"CallerID: %s\r\n"
+ 		"CallerIDName: %s\r\n"
+-		,pu->parkingnum, pu->chan->name, peer ? peer->name : ""
++		,pu->parkingnum, pu->chan->name, peer ? peername : ""
+ 		,(long)pu->start.tv_sec + (long)(pu->parkingtime/1000) - (long)time(NULL)
+ 		,(pu->chan->cid.cid_num ? pu->chan->cid.cid_num : "<unknown>")
+ 		,(pu->chan->cid.cid_name ? pu->chan->cid.cid_name : "<unknown>")

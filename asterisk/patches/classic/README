@@ -35,6 +35,12 @@ pf_voicemail_date_language.patch
         The date language is appropriately set in the main body of voicemail-issued
         e-mails.
 
+pf_parking_callback_after_timeout.patch
+
+	Bug:
+	When parked by an Originate, the right peer is set to be called back once
+	the timeout is done.
+
 ###################################
 #
 # Debian-provided patches

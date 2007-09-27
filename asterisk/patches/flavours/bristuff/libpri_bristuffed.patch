@@ -9,8 +9,8 @@
 @DPATCH@
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/Makefile
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/channels/Makefile	2007-08-20 18:00:27.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/Makefile	2007-08-20 18:00:31.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/channels/Makefile	2007-09-27 18:25:52.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/Makefile	2007-09-27 18:26:01.000000000 +0200
 @@ -102,10 +102,15 @@
    CHANNEL_LIBS+=chan_alsa.so
  endif

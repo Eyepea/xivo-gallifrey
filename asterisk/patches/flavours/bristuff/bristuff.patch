@@ -9,8 +9,8 @@
 @DPATCH@
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/agi/Makefile
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/agi/Makefile	2007-08-20 17:54:11.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/agi/Makefile	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/agi/Makefile	2007-09-27 18:39:58.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/agi/Makefile	2007-09-27 18:40:01.000000000 +0200
 @@ -11,7 +11,7 @@
  # the GNU General Public License
  #
@@ -32,7 +32,7 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/agi/Makefile
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/agi/xagi-test.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/agi/xagi-test.c	2007-08-20 18:00:27.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/agi/xagi-test.c	2007-09-27 18:40:01.000000000 +0200
 @@ -0,0 +1,175 @@
 +/*
 + * Asterisk -- A telephony toolkit for Linux.
@@ -212,7 +212,7 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/agi/xagi-test.c
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_callingpres.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_callingpres.c	2007-08-20 18:00:27.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_callingpres.c	2007-09-27 18:40:01.000000000 +0200
 @@ -0,0 +1,70 @@
 +/*
 + * An application to change the CallingPresentation for an Asterisk channel.
@@ -287,7 +287,7 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_callingpres.c
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_capiCD.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_capiCD.c	2007-08-20 18:00:27.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_capiCD.c	2007-09-27 18:40:01.000000000 +0200
 @@ -0,0 +1,172 @@
 +/*
 + * (CAPI*)
@@ -464,7 +464,7 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_capiCD.c
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_capiECT.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_capiECT.c	2007-08-20 18:00:27.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_capiECT.c	2007-09-27 18:40:01.000000000 +0200
 @@ -0,0 +1,210 @@
 +/*
 + * (CAPI*)
@@ -679,7 +679,7 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_capiECT.c
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_capiNoES.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_capiNoES.c	2007-08-20 18:00:27.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_capiNoES.c	2007-09-27 18:40:01.000000000 +0200
 @@ -0,0 +1,96 @@
 +/*
 + * (CAPI*)
@@ -779,8 +779,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_capiNoES.c
 +}
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_chanisavail.c
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/apps/app_chanisavail.c	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_chanisavail.c	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/apps/app_chanisavail.c	2007-09-27 18:39:58.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_chanisavail.c	2007-09-27 18:40:01.000000000 +0200
 @@ -118,7 +118,7 @@
  				snprintf(trychan, sizeof(trychan), "%s/%s",cur,number);
  				status = inuse = ast_device_state(trychan);
@@ -792,8 +792,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_chanisavail.c
  					snprintf(tmp, sizeof(tmp), "%s/%s", tech, number);
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_chanspy.c
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/apps/app_chanspy.c	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_chanspy.c	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/apps/app_chanspy.c	2007-09-27 18:39:58.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_chanspy.c	2007-09-27 18:40:01.000000000 +0200
 @@ -55,6 +55,7 @@
  
  static const char *synopsis = "Listen to the audio of an active channel";
@@ -924,7 +924,7 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_chanspy.c
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_devstate.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_devstate.c	2007-08-20 18:00:27.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_devstate.c	2007-09-27 18:40:01.000000000 +0200
 @@ -0,0 +1,225 @@
 +/*
 + * Devstate application
@@ -1153,8 +1153,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_devstate.c
 +}
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_dial.c
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/apps/app_dial.c	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_dial.c	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/apps/app_dial.c	2007-09-27 18:39:58.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_dial.c	2007-09-27 18:40:01.000000000 +0200
 @@ -11,6 +11,10 @@
   * the project provides a web site, mailing lists and IRC
   * channels for your use.
@@ -1476,8 +1476,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_dial.c
  				chan->hangupcause = peer->hangupcause;
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_directed_pickup.c
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/apps/app_directed_pickup.c	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_directed_pickup.c	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/apps/app_directed_pickup.c	2007-09-27 18:39:58.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_directed_pickup.c	2007-09-27 18:40:01.000000000 +0200
 @@ -41,7 +41,7 @@
  #include "asterisk/app.h"
  
@@ -1489,8 +1489,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_directed_pickup.c
  "  Pickup(extension[@context]): This application can pickup any ringing channel\n"
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_meetme.c
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/apps/app_meetme.c	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_meetme.c	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/apps/app_meetme.c	2007-09-27 18:39:58.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_meetme.c	2007-09-27 18:40:01.000000000 +0200
 @@ -460,7 +460,7 @@
  			ast_copy_string(cnf->pin, pin, sizeof(cnf->pin));
  			ast_copy_string(cnf->pinadmin, pinadmin, sizeof(cnf->pinadmin));
@@ -1546,8 +1546,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_meetme.c
  					fr.frametype = AST_FRAME_VOICE;
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_milliwatt.c
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/apps/app_milliwatt.c	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_milliwatt.c	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/apps/app_milliwatt.c	2007-09-27 18:39:58.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_milliwatt.c	2007-09-27 18:40:01.000000000 +0200
 @@ -74,20 +74,28 @@
  {
  	struct ast_frame wf;
@@ -1585,8 +1585,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_milliwatt.c
  	wf.delivery.tv_usec = 0;
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_page.c
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/apps/app_page.c	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_page.c	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/apps/app_page.c	2007-09-27 18:39:58.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_page.c	2007-09-27 18:40:01.000000000 +0200
 @@ -85,7 +85,7 @@
  {
  	struct calloutdata *cd = data;
@@ -1598,8 +1598,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_page.c
  }
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_parkandannounce.c
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/apps/app_parkandannounce.c	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_parkandannounce.c	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/apps/app_parkandannounce.c	2007-09-27 18:39:58.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_parkandannounce.c	2007-09-27 18:40:01.000000000 +0200
 @@ -183,7 +183,7 @@
  
  	memset(&oh, 0, sizeof(oh));
@@ -1612,7 +1612,7 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_parkandannounce.c
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_pickup.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_pickup.c	2007-08-20 18:00:27.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_pickup.c	2007-09-27 18:40:01.000000000 +0200
 @@ -0,0 +1,319 @@
 +/*
 + * Asterisk -- A telephony toolkit for Linux.
@@ -1935,8 +1935,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_pickup.c
 +}
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_queue.c
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/apps/app_queue.c	2007-08-20 17:57:45.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_queue.c	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/apps/app_queue.c	2007-09-27 18:39:58.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_queue.c	2007-09-27 18:40:01.000000000 +0200
 @@ -554,7 +554,7 @@
  	return NULL;
  }
@@ -1984,8 +1984,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_queue.c
  				ast_monitor_setjoinfiles(which, 1);
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_readfile.c
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/apps/app_readfile.c	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_readfile.c	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/apps/app_readfile.c	2007-09-27 18:39:58.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_readfile.c	2007-09-27 18:40:01.000000000 +0200
 @@ -40,7 +40,7 @@
  #include "asterisk/app.h"
  #include "asterisk/module.h"
@@ -1998,7 +1998,7 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_readfile.c
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_segfault.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_segfault.c	2007-08-20 18:00:27.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_segfault.c	2007-09-27 18:40:01.000000000 +0200
 @@ -0,0 +1,75 @@
 +/*
 + * Segfault application
@@ -2077,8 +2077,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_segfault.c
 +}
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_sendtext.c
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/apps/app_sendtext.c	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_sendtext.c	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/apps/app_sendtext.c	2007-09-27 18:39:58.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_sendtext.c	2007-09-27 18:40:01.000000000 +0200
 @@ -112,7 +112,7 @@
  	}
  	status = "FAILURE";
@@ -2090,8 +2090,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_sendtext.c
  	pbx_builtin_setvar_helper(chan, "SENDTEXTSTATUS", status);
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_zapras.c
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/apps/app_zapras.c	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_zapras.c	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/apps/app_zapras.c	2007-09-27 18:39:58.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_zapras.c	2007-09-27 18:40:01.000000000 +0200
 @@ -188,7 +188,7 @@
  				}
  			}
@@ -2103,8 +2103,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_zapras.c
  			/* Restore saved values */
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/Makefile
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/apps/Makefile	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/Makefile	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/apps/Makefile	2007-09-27 18:39:58.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/Makefile	2007-09-27 18:40:01.000000000 +0200
 @@ -28,8 +28,15 @@
       app_test.so app_forkcdr.so app_math.so app_realtime.so \
       app_dumpchan.so app_waitforsilence.so app_while.so app_setrdnis.so \
@@ -2124,8 +2124,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/Makefile
  # Obsolete things...
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/asterisk.c
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/asterisk.c	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/asterisk.c	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/asterisk.c	2007-09-27 18:39:58.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/asterisk.c	2007-09-27 18:40:01.000000000 +0200
 @@ -170,7 +170,7 @@
  int option_maxcalls = 0;			/*!< */
  double option_maxload = 0.0;			/*!< Max load avg on system */
@@ -2162,8 +2162,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/asterisk.c
  	}
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/build_tools/make_defaults_h
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/build_tools/make_defaults_h	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/build_tools/make_defaults_h	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/build_tools/make_defaults_h	2007-09-27 18:39:58.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/build_tools/make_defaults_h	2007-09-27 18:40:01.000000000 +0200
 @@ -17,6 +17,7 @@
  #define AST_KEY_DIR    "${INSTALL_PATH}${ASTVARLIBDIR}/keys"
  #define AST_DB         "${INSTALL_PATH}${ASTVARLIBDIR}/astdb"
@@ -2174,8 +2174,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/build_tools/make_defaults_h
  
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channel.c
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/channel.c	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/channel.c	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/channel.c	2007-09-27 18:39:58.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/channel.c	2007-09-27 18:40:01.000000000 +0200
 @@ -94,8 +94,8 @@
   */
  static int shutting_down = 0;
@@ -2513,8 +2513,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channel.c
 +}
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_agent.c
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/channels/chan_agent.c	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_agent.c	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/channels/chan_agent.c	2007-09-27 18:39:58.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_agent.c	2007-09-27 18:40:01.000000000 +0200
 @@ -248,7 +248,7 @@
  static struct ast_frame *agent_read(struct ast_channel *ast);
  static int agent_write(struct ast_channel *ast, struct ast_frame *f);
@@ -2560,8 +2560,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_agent.c
  					}
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_alsa.c
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/channels/chan_alsa.c	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_alsa.c	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/channels/chan_alsa.c	2007-09-27 18:39:58.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_alsa.c	2007-09-27 18:40:01.000000000 +0200
 @@ -172,7 +172,7 @@
  /* ZZ */
  static struct ast_channel *alsa_request(const char *type, int format, void *data, int *cause);
@@ -2583,7 +2583,7 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_alsa.c
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_capi.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_capi.c	2007-08-20 18:00:27.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_capi.c	2007-09-27 18:40:01.000000000 +0200
 @@ -0,0 +1,2888 @@
 +/*
 + * (CAPI*)
@@ -5475,8 +5475,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_capi.c
 +}
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_features.c
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/channels/chan_features.c	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_features.c	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/channels/chan_features.c	2007-09-27 18:39:58.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_features.c	2007-09-27 18:40:01.000000000 +0200
 @@ -427,7 +427,7 @@
  	}
  	ast_mutex_unlock(&featurelock);
@@ -5488,8 +5488,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_features.c
  			return NULL;
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_iax2.c
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/channels/chan_iax2.c	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_iax2.c	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/channels/chan_iax2.c	2007-09-27 18:39:58.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_iax2.c	2007-09-27 18:40:01.000000000 +0200
 @@ -11,6 +11,9 @@
   * the project provides a web site, mailing lists and IRC
   * channels for your use.
@@ -5529,8 +5529,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_iax2.c
   		iax_ie_append_byte(&ied, IAX_IE_CAUSECODE, (unsigned char)c->hangupcause);
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_oss.c
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/channels/chan_oss.c	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_oss.c	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/channels/chan_oss.c	2007-09-27 18:39:58.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_oss.c	2007-09-27 18:40:01.000000000 +0200
 @@ -318,7 +318,7 @@
  static struct ast_channel *oss_request(const char *type, int format, void *data
  , int *cause);
@@ -5551,8 +5551,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_oss.c
  	ast_verbose( " << Console Received text %s >> \n", text);
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_oss_old.c
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/channels/chan_oss_old.c	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_oss_old.c	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/channels/chan_oss_old.c	2007-09-27 18:39:58.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_oss_old.c	2007-09-27 18:40:01.000000000 +0200
 @@ -136,7 +136,7 @@
  
  static struct ast_channel *oss_request(const char *type, int format, void *data, int *cause);
@@ -5573,8 +5573,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_oss_old.c
  	return 0;
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_phone.c
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/channels/chan_phone.c	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_phone.c	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/channels/chan_phone.c	2007-09-27 18:39:58.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_phone.c	2007-09-27 18:40:01.000000000 +0200
 @@ -156,7 +156,7 @@
  static struct ast_frame *phone_read(struct ast_channel *ast);
  static int phone_write(struct ast_channel *ast, struct ast_frame *frame);
@@ -5595,8 +5595,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_phone.c
      return phone_write_buf(ast->tech_pvt, text, length, length, 0) == 
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_sip.c
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/channels/chan_sip.c	2007-08-20 17:57:40.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_sip.c	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/channels/chan_sip.c	2007-09-27 18:39:58.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_sip.c	2007-09-27 18:40:01.000000000 +0200
 @@ -604,6 +604,7 @@
  	unsigned int flags;			/*!< SIP_ flags */	
  	int timer_t1;				/*!< SIP timer T1, ms rtt */
@@ -6608,8 +6608,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_sip.c
  
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_zap.c
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/channels/chan_zap.c	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_zap.c	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/channels/chan_zap.c	2007-09-27 18:39:58.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_zap.c	2007-09-27 18:40:01.000000000 +0200
 @@ -11,6 +11,10 @@
   * the project provides a web site, mailing lists and IRC
   * channels for your use.
@@ -10248,8 +10248,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_zap.c
  		ast_log(LOG_WARNING, "Huh?  I don't exist?\n");
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/Makefile
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/channels/Makefile	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/Makefile	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/channels/Makefile	2007-09-27 18:39:58.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/Makefile	2007-09-27 18:40:01.000000000 +0200
 @@ -107,6 +107,11 @@
    ZAPPRI=-lpri
  endif
@@ -10319,8 +10319,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/Makefile
  
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/codecs/codec_ilbc.c
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/codecs/codec_ilbc.c	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/codecs/codec_ilbc.c	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/codecs/codec_ilbc.c	2007-09-27 18:39:58.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/codecs/codec_ilbc.c	2007-09-27 18:40:01.000000000 +0200
 @@ -49,7 +49,7 @@
  #include "slin_ilbc_ex.h"
  #include "ilbc_slin_ex.h"
@@ -10333,7 +10333,7 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/codecs/codec_ilbc.c
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/configs/capi.conf.sample
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/configs/capi.conf.sample	2007-08-20 18:00:27.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/configs/capi.conf.sample	2007-09-27 18:40:01.000000000 +0200
 @@ -0,0 +1,44 @@
 +;
 +; CAPI config
@@ -10382,7 +10382,7 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/configs/capi.conf.sample
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/configs/esel.conf.sample
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/configs/esel.conf.sample	2007-08-20 18:00:27.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/configs/esel.conf.sample	2007-09-27 18:40:01.000000000 +0200
 @@ -0,0 +1,12 @@
 +;
 +; Configuration file for res_esel
@@ -10398,8 +10398,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/configs/esel.conf.sample
 +;export => snom@phones,100
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/configs/modules.conf.sample
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/configs/modules.conf.sample	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/configs/modules.conf.sample	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/configs/modules.conf.sample	2007-09-27 18:39:58.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/configs/modules.conf.sample	2007-09-27 18:40:01.000000000 +0200
 @@ -46,8 +46,12 @@
  ;
  noload => chan_alsa.so
@@ -10415,8 +10415,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/configs/modules.conf.sample
 +chan_capi.so=yes
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/configs/sip.conf.sample
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/configs/sip.conf.sample	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/configs/sip.conf.sample	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/configs/sip.conf.sample	2007-09-27 18:39:58.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/configs/sip.conf.sample	2007-09-27 18:40:01.000000000 +0200
 @@ -329,7 +329,16 @@
  ;call-limit=5				; permit only 5 simultaneous outgoing calls to this peer
  ;outboundproxy=proxy.provider.domain	; send outbound signaling to this proxy, not directly to the peer
@@ -10438,7 +10438,7 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/configs/sip.conf.sample
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/configs/watchdog.conf.sample
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/configs/watchdog.conf.sample	2007-08-20 18:00:27.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/configs/watchdog.conf.sample	2007-09-27 18:40:01.000000000 +0200
 @@ -0,0 +1,22 @@
 +;
 +; Configuration file for res_watchdog
@@ -10464,8 +10464,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/configs/watchdog.conf.sample
 +
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/configs/zapata.conf.sample
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/configs/zapata.conf.sample	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/configs/zapata.conf.sample	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/configs/zapata.conf.sample	2007-09-27 18:39:58.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/configs/zapata.conf.sample	2007-09-27 18:40:01.000000000 +0200
 @@ -123,9 +123,20 @@
  ; 
  ; outofband:      Signal Busy/Congestion out of band with RELEASE/DISCONNECT
@@ -10489,8 +10489,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/configs/zapata.conf.sample
  ; priexclusive = yes
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/db.c
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/db.c	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/db.c	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/db.c	2007-09-27 18:39:58.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/db.c	2007-09-27 18:40:01.000000000 +0200
 @@ -516,11 +516,18 @@
  struct ast_cli_entry cli_database_deltree =
  { { "database", "deltree", NULL }, database_deltree, "Removes database keytree/values", database_deltree_usage };
@@ -10586,8 +10586,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/db.c
  }
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/devicestate.c
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/devicestate.c	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/devicestate.c	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/devicestate.c	2007-09-27 18:39:58.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/devicestate.c	2007-09-27 18:40:01.000000000 +0200
 @@ -62,6 +62,8 @@
  
  struct state_change {
@@ -10681,8 +10681,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/devicestate.c
  		} else {
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/doc/README.asterisk.conf
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/doc/README.asterisk.conf	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/doc/README.asterisk.conf	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/doc/README.asterisk.conf	2007-09-27 18:39:58.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/doc/README.asterisk.conf	2007-09-27 18:40:01.000000000 +0200
 @@ -62,6 +62,7 @@
  maxcalls = 255					; The maximum number of concurrent calls you want to allow 
  execincludes = yes | no 			; Allow #exec entries in configuration files
@@ -10693,8 +10693,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/doc/README.asterisk.conf
  ; Changing the following lines may compromise your security
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/HARDWARE
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/HARDWARE	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/HARDWARE	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/HARDWARE	2007-09-27 18:39:58.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/HARDWARE	2007-09-27 18:40:01.000000000 +0200
 @@ -37,6 +37,19 @@
     * Wildcard TE410P - Quad T1/E1 switchable interface.  Supports PRI and 
       RBS signalling, as well as PPP, FR, and HDLC data modes.
@@ -10717,8 +10717,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/HARDWARE
  
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/include/asterisk/agi.h
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/include/asterisk/agi.h	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/include/asterisk/agi.h	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/include/asterisk/agi.h	2007-09-27 18:39:58.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/include/asterisk/agi.h	2007-09-27 18:40:01.000000000 +0200
 @@ -29,7 +29,8 @@
  
  typedef struct agi_state {
@@ -10732,7 +10732,7 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/include/asterisk/agi.h
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/include/asterisk/chan_capi_app.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/include/asterisk/chan_capi_app.h	2007-08-20 18:00:27.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/include/asterisk/chan_capi_app.h	2007-09-27 18:40:01.000000000 +0200
 @@ -0,0 +1,30 @@
 +/*
 + * (CAPI*)
@@ -10767,7 +10767,7 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/include/asterisk/chan_capi_app.h
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/include/asterisk/chan_capi.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/include/asterisk/chan_capi.h	2007-08-20 18:00:27.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/include/asterisk/chan_capi.h	2007-09-27 18:40:01.000000000 +0200
 @@ -0,0 +1,276 @@
 +/*
 + * (CAPI*)
@@ -11047,8 +11047,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/include/asterisk/chan_capi.h
 +#endif
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/include/asterisk/channel.h
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/include/asterisk/channel.h	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/include/asterisk/channel.h	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/include/asterisk/channel.h	2007-09-27 18:39:58.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/include/asterisk/channel.h	2007-09-27 18:40:01.000000000 +0200
 @@ -86,6 +86,9 @@
  #ifndef _ASTERISK_CHANNEL_H
  #define _ASTERISK_CHANNEL_H
@@ -11171,8 +11171,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/include/asterisk/channel.h
  /*! 
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/include/asterisk/devicestate.h
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/include/asterisk/devicestate.h	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/include/asterisk/devicestate.h	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/include/asterisk/devicestate.h	2007-09-27 18:39:58.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/include/asterisk/devicestate.h	2007-09-27 18:40:01.000000000 +0200
 @@ -42,7 +42,7 @@
  /*! Device is ringing */
  #define AST_DEVICE_RINGING	6
@@ -11193,8 +11193,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/include/asterisk/devicestate.h
   * \param callback Callback
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/include/asterisk/features.h
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/include/asterisk/features.h	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/include/asterisk/features.h	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/include/asterisk/features.h	2007-09-27 18:39:58.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/include/asterisk/features.h	2007-09-27 18:40:01.000000000 +0200
 @@ -45,6 +45,8 @@
  };
  
@@ -11239,8 +11239,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/include/asterisk/features.h
  #endif /* _AST_FEATURES_H */
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/include/asterisk/manager.h
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/include/asterisk/manager.h	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/include/asterisk/manager.h	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/include/asterisk/manager.h	2007-09-27 18:39:58.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/include/asterisk/manager.h	2007-09-27 18:40:01.000000000 +0200
 @@ -54,6 +54,7 @@
  #define EVENT_FLAG_COMMAND		(1 << 4) /* Ability to read/set commands */
  #define EVENT_FLAG_AGENT		(1 << 5) /* Ability to read/set agent info */
@@ -11251,8 +11251,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/include/asterisk/manager.h
  #define AST_MAX_MANHEADERS 80
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/include/asterisk/monitor.h
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/include/asterisk/monitor.h	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/include/asterisk/monitor.h	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/include/asterisk/monitor.h	2007-09-27 18:39:58.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/include/asterisk/monitor.h	2007-09-27 18:40:01.000000000 +0200
 @@ -35,6 +35,8 @@
  	char write_filename[FILENAME_MAX];
  	char filename_base[FILENAME_MAX];
@@ -11273,8 +11273,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/include/asterisk/monitor.h
  int ast_monitor_stop(struct ast_channel *chan, int need_lock);
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/include/asterisk/pbx.h
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/include/asterisk/pbx.h	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/include/asterisk/pbx.h	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/include/asterisk/pbx.h	2007-09-27 18:39:58.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/include/asterisk/pbx.h	2007-09-27 18:40:01.000000000 +0200
 @@ -57,7 +57,7 @@
  	AST_EXTENSION_BUSY = 1 << 1,
  	/*! All devices UNAVAILABLE/UNREGISTERED */
@@ -11328,7 +11328,7 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/include/asterisk/pbx.h
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/include/asterisk/xlaw.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/include/asterisk/xlaw.h	2007-08-20 18:00:27.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/include/asterisk/xlaw.h	2007-09-27 18:40:01.000000000 +0200
 @@ -0,0 +1,1665 @@
 +#ifndef _ASTERISK_XLAW_H
 +#define _ASTERISK_XLAW_H
@@ -12997,8 +12997,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/include/asterisk/xlaw.h
 +
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/include/asterisk.h
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/include/asterisk.h	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/include/asterisk.h	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/include/asterisk.h	2007-09-27 18:39:59.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/include/asterisk.h	2007-09-27 18:40:01.000000000 +0200
 @@ -39,6 +39,7 @@
  extern char ast_config_AST_PID[AST_CONFIG_MAX_PATH];
  extern char ast_config_AST_SOCKET[AST_CONFIG_MAX_PATH];
@@ -13009,8 +13009,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/include/asterisk.h
  extern char ast_config_AST_CTL_GROUP[AST_CONFIG_MAX_PATH];
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/LICENSE
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/LICENSE	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/LICENSE	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/LICENSE	2007-09-27 18:39:59.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/LICENSE	2007-09-27 18:40:01.000000000 +0200
 @@ -1,7 +1,7 @@
 -Asterisk is distributed under the GNU General Public License version 2
 -and is also available under alternative licenses negotiated directly
@@ -13025,8 +13025,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/LICENSE
  
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/Makefile
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/Makefile	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/Makefile	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/Makefile	2007-09-27 18:39:59.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/Makefile	2007-09-27 18:40:01.000000000 +0200
 @@ -780,6 +780,9 @@
  		echo ";astctlowner = root" ; \
  		echo ";astctlgroup = apache" ; \
@@ -13039,8 +13039,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/Makefile
  		echo "Skipping asterisk.conf creation"; \
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/manager.c
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/manager.c	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/manager.c	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/manager.c	2007-09-27 18:39:59.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/manager.c	2007-09-27 18:40:01.000000000 +0200
 @@ -11,6 +11,9 @@
   * the project provides a web site, mailing lists and IRC
   * channels for your use.
@@ -13379,8 +13379,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/manager.c
  		ast_manager_register2("Getvar", EVENT_FLAG_CALL, action_getvar, "Gets a Channel Variable", mandescr_getvar );
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/pbx/pbx_spool.c
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/pbx/pbx_spool.c	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/pbx/pbx_spool.c	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/pbx/pbx_spool.c	2007-09-27 18:39:59.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/pbx/pbx_spool.c	2007-09-27 18:40:01.000000000 +0200
 @@ -77,6 +77,10 @@
  	char app[256];
  	char data[256];
@@ -13454,8 +13454,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/pbx/pbx_spool.c
  	return NULL;
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/pbx.c
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/pbx.c	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/pbx.c	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/pbx.c	2007-09-27 18:39:59.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/pbx.c	2007-09-27 18:40:01.000000000 +0200
 @@ -374,7 +374,8 @@
  	
  	{ "Hangup", pbx_builtin_hangup,
@@ -13635,8 +13635,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/pbx.c
  	
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/README
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/README	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/README	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/README	2007-09-27 18:39:59.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/README	2007-09-27 18:40:01.000000000 +0200
 @@ -4,6 +4,8 @@
  
  Copyright (C) 2001-2005 Digium, Inc.
@@ -13649,7 +13649,7 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/README
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/README.chan_capi
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/README.chan_capi	2007-08-20 18:00:27.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/README.chan_capi	2007-09-27 18:40:01.000000000 +0200
 @@ -0,0 +1,146 @@
 +(CAPI*) chan_capi a Common ISDN API 2.0 implementation for Asterisk
 +(C) 2002, 2003, 2004, 2005 Junghanns.NET GmbH 
@@ -13799,8 +13799,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/README.chan_capi
 +
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/res/Makefile
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/res/Makefile	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/res/Makefile	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/res/Makefile	2007-09-27 18:39:59.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/res/Makefile	2007-09-27 18:40:01.000000000 +0200
 @@ -11,7 +11,7 @@
  # the GNU General Public License
  #
@@ -13812,8 +13812,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/res/Makefile
    ifneq (${OSARCH},FreeBSD)
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/res/res_agi.c
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/res/res_agi.c	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/res/res_agi.c	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/res/res_agi.c	2007-09-27 18:39:59.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/res/res_agi.c	2007-09-27 18:40:01.000000000 +0200
 @@ -11,6 +11,9 @@
   * the project provides a web site, mailing lists and IRC
   * channels for your use.
@@ -14203,7 +14203,7 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/res/res_agi.c
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/res/res_esel.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/res/res_esel.c	2007-08-20 18:00:27.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/res/res_esel.c	2007-09-27 18:40:01.000000000 +0200
 @@ -0,0 +1,399 @@
 +/*
 + * Asterisk -- A telephony toolkit for Linux.
@@ -14606,8 +14606,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/res/res_esel.c
 +}
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/res/res_features.c
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/res/res_features.c	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/res/res_features.c	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/res/res_features.c	2007-09-27 18:39:59.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/res/res_features.c	2007-09-27 18:40:01.000000000 +0200
 @@ -11,6 +11,10 @@
   * the project provides a web site, mailing lists and IRC
   * channels for your use.
@@ -14721,12 +14721,12 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/res/res_features.c
  char *ast_pickup_ext(void)
  {
  	return pickup_ext;
-@@ -362,10 +427,11 @@
+@@ -370,10 +435,11 @@
  		"Timeout: %ld\r\n"
  		"CallerID: %s\r\n"
  		"CallerIDName: %s\r\n"
-+		"Unqiueid: %s\r\n\r\n"
- 		,pu->parkingnum, pu->chan->name, peer ? peer->name : ""
++		"Uniqueid: %s\r\n\r\n"
+ 		,pu->parkingnum, pu->chan->name, peer ? peername : ""
  		,(long)pu->start.tv_sec + (long)(pu->parkingtime/1000) - (long)time(NULL)
  		,(pu->chan->cid.cid_num ? pu->chan->cid.cid_num : "<unknown>")
 -		,(pu->chan->cid.cid_name ? pu->chan->cid.cid_name : "<unknown>")
@@ -14734,7 +14734,7 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/res/res_features.c
  		);
  
  	if (peer) {
-@@ -418,7 +484,8 @@
+@@ -426,7 +492,8 @@
  		ast_copy_string(chan->context, rchan->context, sizeof(chan->context));
  		ast_copy_string(chan->exten, rchan->exten, sizeof(chan->exten));
  		chan->priority = rchan->priority;
@@ -14744,7 +14744,7 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/res/res_features.c
  		/* Make the masq execute */
  		f = ast_read(chan);
  		if (f)
-@@ -910,7 +977,7 @@
+@@ -918,7 +985,7 @@
  }
  
  /* find a feature by name */
@@ -14753,7 +14753,7 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/res/res_features.c
  {
  	struct ast_call_feature *tmp;
  
-@@ -920,10 +987,21 @@
+@@ -928,10 +995,21 @@
  			break;
  	}
  	AST_LIST_UNLOCK(&feature_list);
@@ -14776,7 +14776,7 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/res/res_features.c
  /* exec an app by feature */
  static int feature_exec_app(struct ast_channel *chan, struct ast_channel *peer, struct ast_bridge_config *config, char *code, int sense)
  {
-@@ -1022,7 +1100,7 @@
+@@ -1030,7 +1108,7 @@
  			return res;
  		
  		while ((tok = strsep(&tmp, "#")) != NULL) {
@@ -14785,7 +14785,7 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/res/res_features.c
  			
  			if (feature) {
  				/* Feature is up for consideration */
-@@ -1075,7 +1153,7 @@
+@@ -1083,7 +1161,7 @@
  
  			/* while we have a feature */
  			while (NULL != (tok = strsep(&tmp, "#"))) {
@@ -14794,7 +14794,7 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/res/res_features.c
  					if (ast_test_flag(feature, AST_FEATURE_FLAG_NEEDSDTMF)) {
  						if (ast_test_flag(feature, AST_FEATURE_FLAG_CALLER))
  							ast_set_flag(config, AST_BRIDGE_DTMF_CHANNEL_0);
-@@ -1100,7 +1178,7 @@
+@@ -1108,7 +1186,7 @@
  	struct ast_frame *f = NULL;
  	int res = 0, ready = 0;
  	
@@ -14803,7 +14803,7 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/res/res_features.c
  		ast_set_callerid(chan, cid_num, cid_name, cid_num);
  		ast_channel_inherit_variables(caller, chan);	
  		if (!ast_call(chan, data, timeout)) {
-@@ -1555,9 +1633,10 @@
+@@ -1563,9 +1641,10 @@
  					"Channel: %s\r\n"
  					"CallerID: %s\r\n"
  					"CallerIDName: %s\r\n"
@@ -14815,7 +14815,7 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/res/res_features.c
  					);
  
  				if (option_verbose > 1) 
-@@ -1600,9 +1679,10 @@
+@@ -1608,9 +1687,10 @@
  								"Channel: %s\r\n"
  								"CallerID: %s\r\n"
  								"CallerIDName: %s\r\n"
@@ -14827,7 +14827,7 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/res/res_features.c
  								);
  
  							/* There's a problem, hang them up*/
-@@ -1689,6 +1769,282 @@
+@@ -1697,6 +1777,282 @@
  	return res;
  }
  
@@ -15110,7 +15110,7 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/res/res_features.c
  static int park_exec(struct ast_channel *chan, void *data)
  {
  	int res=0;
-@@ -1737,9 +2093,10 @@
+@@ -1745,9 +2101,10 @@
  			"From: %s\r\n"
  			"CallerID: %s\r\n"
  			"CallerIDName: %s\r\n"
@@ -15122,7 +15122,7 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/res/res_features.c
  			);
  
  		free(pu);
-@@ -1903,12 +2260,13 @@
+@@ -1911,12 +2268,13 @@
  			"Timeout: %ld\r\n"
  			"CallerID: %s\r\n"
  			"CallerIDName: %s\r\n"
@@ -15137,7 +15137,7 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/res/res_features.c
  			,idText);
  
              cur = cur->next;
-@@ -1924,6 +2282,416 @@
+@@ -1932,6 +2290,416 @@
          return RESULT_SUCCESS;
  }
  
@@ -15554,7 +15554,7 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/res/res_features.c
  
  int ast_pickup_call(struct ast_channel *chan)
  {
-@@ -2079,7 +2847,7 @@
+@@ -2087,7 +2855,7 @@
  			}
  
  			{
@@ -15563,7 +15563,7 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/res/res_features.c
  				int mallocd=0;
  				
  				if (!feature) {
-@@ -2142,6 +2910,7 @@
+@@ -2150,6 +2918,7 @@
  }
  
  int reload(void) {
@@ -15571,7 +15571,7 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/res/res_features.c
  	return load_config();
  }
  
-@@ -2155,14 +2924,22 @@
+@@ -2163,14 +2932,22 @@
  	if ((res = load_config()))
  		return res;
  	ast_cli_register(&showparked);
@@ -15594,7 +15594,7 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/res/res_features.c
  	return res;
  }
  
-@@ -2173,7 +2950,11 @@
+@@ -2181,7 +2958,11 @@
  
  	ast_manager_unregister("ParkedCalls");
  	ast_cli_unregister(&showfeatures);
@@ -15608,8 +15608,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/res/res_features.c
  }
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/res/res_monitor.c
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/res/res_monitor.c	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/res/res_monitor.c	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/res/res_monitor.c	2007-09-27 18:39:59.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/res/res_monitor.c	2007-09-27 18:40:01.000000000 +0200
 @@ -90,7 +90,7 @@
  
  /* Start monitoring a channel */
@@ -15749,7 +15749,7 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/res/res_monitor.c
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/res/res_watchdog.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/res/res_watchdog.c	2007-08-20 18:00:27.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/res/res_watchdog.c	2007-09-27 18:40:01.000000000 +0200
 @@ -0,0 +1,149 @@
 +/*
 + * Asterisk -- A telephony toolkit for Linux.
@@ -15902,8 +15902,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/res/res_watchdog.c
 +}
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/rtp.c
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/rtp.c	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/rtp.c	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/rtp.c	2007-09-27 18:39:59.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/rtp.c	2007-09-27 18:40:01.000000000 +0200
 @@ -448,6 +448,11 @@
  	struct rtpPayloadType rtpPT;
  	
@@ -15918,8 +15918,8 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/rtp.c
  	res = recvfrom(rtp->s, rtp->rawdata + AST_FRIENDLY_OFFSET, sizeof(rtp->rawdata) - AST_FRIENDLY_OFFSET,
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/.version
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/.version	2007-08-20 17:54:12.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/.version	2007-08-20 18:00:27.000000000 +0200
+--- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/.version	2007-09-27 18:39:59.000000000 +0200
++++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/.version	2007-09-27 18:40:01.000000000 +0200
 @@ -1 +1 @@
 -1.2.24
 +1.2.24-BRIstuffed-0.3.0-PRE-1y-g
