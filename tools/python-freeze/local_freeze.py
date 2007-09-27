@@ -1,4 +1,6 @@
 #! /usr/bin/env python
+# $Revision$
+# $Date$
 
 # TODO: handle multi-modules python programs
 
@@ -52,7 +54,11 @@ for extramod in scripts_to_build[:nscripts-1]:
 command_cp = command_cp + " " + TMP_DIR
 
 try:
-        os.rmdir(TMP_DIR)
+        os.system('rm -rf %s' % TMP_DIR)
+except:
+        print >> sys.stderr, "Could not remove recursively '%s'. Proceeding anyway.\n" % TMP_DIR
+
+try:
         os.mkdir(TMP_DIR)
 except:
         print >> sys.stderr, "Could not mkdir '%s'\n" % TMP_DIR
@@ -89,4 +95,4 @@ os.system("rm *.c *.o Makefile")
 os.chdir("..")
 
 os.system("cp " + TMP_DIR + "/" + executable_name + " " + executable_path)
-os.system("rm -rf " + TMP_DIR)
+os.system("rm -rf %s" % TMP_DIR)
