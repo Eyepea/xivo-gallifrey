@@ -125,7 +125,7 @@ def linesubst(line, variables):
 				else:
 					syslogf(SYSLOG_DEBUG,
 					    ("Substitution of {{%s}} by \"%s\""%\
-					    	(curvar, variables[curvar])))
+						(curvar, variables[curvar])))
 					out += variables[curvar]
 				curvar = ''
 				st = NORM
@@ -157,8 +157,8 @@ def get_netdev_list():
 	pnd.readline()
 	pnd.readline()
 	return tuple([line.split(':',1)[0].strip()
-	              for line in pnd.readlines()
-	              if ':' in line])
+		      for line in pnd.readlines()
+		      if ':' in line])
 
 def get_ethdev_list():
 	"""Get and filter the list of network interfaces, returning only those
@@ -167,8 +167,8 @@ def get_ethdev_list():
 	"""
 	global authorized_prefix
 	return [dev for dev in get_netdev_list()
-	        if True in [(dev.find(x) == 0)
-		            for x in authorized_prefix]]
+		if True in [(dev.find(x) == 0)
+			    for x in authorized_prefix]]
 
 def normalize_mac_address(macaddr):
 	"""input: mac address, with bytes in hexa, ':' separated
