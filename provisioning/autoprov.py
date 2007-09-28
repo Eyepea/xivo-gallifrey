@@ -131,7 +131,10 @@ class SQLBackEnd:
 		return a
 
 	def sql_select_one(self, request, parameters_tuple, mapping):
-		"Does a SELECT SQL query and returns only one row."
+		"""Does a SELECT SQL query and returns only one row.
+		If the query returns no result, this method returns None
+		
+		"""
 		return self.generic_sql_request(self.method_select_one, request, parameters_tuple, mapping)
 	def method_select_one(self, conn, request, parameters_tuple, mapping):
 		"""Internally called in a safe context to execute SELECT
@@ -156,9 +159,9 @@ class SQLBackEnd:
 		"""
 		cursor = conn.cursor()
 		cursor.execute(request, parameters_tuple)
-		return map(lambda row: dict([(k,lst_get(row,idx))
-		                             for k,idx in mapping.iteritems()]),
-                           cursor.fetchall())
+		return [dict([(k,lst_get(row,idx))
+			     for k,idx in mapping.iteritems()])
+			for row in cursor.fetchall()]
 
 	def sql_modify(self, request, parameters_tuple):
 		"Does a SQL query that is going to modify the database."
@@ -175,20 +178,6 @@ class SQLBackEnd:
 
 	# === ENTRY POINTS ===
 
-	def type_by_macaddr(self, macaddr):
-		"""Lookup vendor and model of the phone in the database,
-		by mac address.
-		
-		Returns a dictionary with the following keys:
-		        'macaddr', 'vendor', 'model'
-		or None
-
-		"""
-		mapping = dict(map(lambda x: (x,x), ("macaddr", "vendor", "model")))
-		nummap, sexpr = nummap_and_selectexpr_from_symbmap(mapping)
-		query = "SELECT %s FROM %s WHERE macaddr=%s" % (sexpr, TABLE, '%s')
-		return self.sql_select_one(query, (macaddr,), nummap)
-
 	def phone_by_macaddr(self, macaddr):
 		"""Lookup a phone description by Mac Address in the database.
 		
@@ -197,9 +186,9 @@ class SQLBackEnd:
 		or None
 		
 		"""
-		mapping = dict(map(lambda x: (x,x),
-		                   ('macaddr', 'vendor', 'model', 'proto',
-			            'iduserfeatures', 'isinalan')))
+		mapping = dict([(x,x) for x in
+				('macaddr', 'vendor', 'model', 'proto',
+				 'iduserfeatures', 'isinalan')])
 		nummap, sexpr = nummap_and_selectexpr_from_symbmap(mapping)
 		query = "SELECT %s FROM %s WHERE macaddr=%s" % (sexpr, TABLE, '%s')
 		return self.sql_select_one(query, (macaddr,), nummap)
@@ -290,8 +279,8 @@ class SQLBackEnd:
 			 "(macaddr, vendor, model, proto, iduserfeatures, isinalan)"
 			 " VALUES (%s, %s, %s, %s, %s, %s)")
 			% (TABLE, '%s', '%s', '%s', '%s', '%s', '%s'),
-			map(lambda x: phone[x], ('macaddr', 'vendor', 'model',
-			                         'proto', 'iduserfeatures', 'isinalan')))
+			[ phone[x] for x in ('macaddr', 'vendor', 'model',
+					     'proto', 'iduserfeatures', 'isinalan')])
 
 	def phone_by_iduserfeatures(self, iduserfeatures):
 		"""Lookup phone information by user information (iduserfeatures)
@@ -302,9 +291,8 @@ class SQLBackEnd:
 		'macaddr', 'vendor', 'model', 'proto', 'iduserfeatures', 'isinalan'
 		
 		"""
-		mapping = dict(map(lambda x: (x,x),
-		                   ("macaddr", "vendor", "model", "proto",
-				    "iduserfeatures", "isinalan")))
+		mapping = dict([(x,x) for x in ("macaddr", "vendor", "model", "proto",
+						"iduserfeatures", "isinalan")])
 		nummap, sexpr = nummap_and_selectexpr_from_symbmap(mapping)
 		query = ("SELECT %s FROM %s " +
 		         "WHERE iduserfeatures=%s AND proto=%s") \
@@ -383,18 +371,7 @@ def __mode_dependant_provlogic_locked(mode, ctx, phone, config):
 	for the current provisioning in progress.
 	
 	"""
-	if mode == 'informative':
-		syslogf(SYSLOG_DEBUG, "__mode_dependant_provlogic_locked() in informative mode for phone %s and user %s" % (phone['macaddr'], config['iduserfeatures']))
-		existing_phone = ctx.dbinfos.phone_by_iduserfeatures(config['iduserfeatures'])
-		if existing_phone:
-			syslogf(SYSLOG_WARNING, "__mode_dependant_provlogic_locked(): User %s already has a locally provisioned phone, not trying to provision a remote one" % config['iduserfeatures'])
-			raise ConflictError, "User %s already has a locally provisioned phone, not trying to provision a remote one" % config['iduserfeatures']
-		ctx.dbinfos.delete_guest_by_mac(phone['macaddr'])
-		existing_phone = ctx.dbinfos.phone_by_macaddr(phone['macaddr'])
-		if existing_phone:
-			syslogf(SYSLOG_WARNING, "__mode_dependant_provlogic_locked(): Phone %s already locally provisioned, not trying to provision it for remote operations" % phone['macaddr'])
-			raise ConflictError, "Phone %s already locally provisioned, not trying to provision it for remote operations" % phone['macaddr']
-	elif mode == 'authoritative':
+	if mode == 'authoritative':
 		syslogf(SYSLOG_DEBUG, "__mode_dependant_provlogic_locked() in authoritative mode for phone %s and user %s" % (phone['macaddr'], config['iduserfeatures']))
 		existing_phone = ctx.dbinfos.phone_by_iduserfeatures(config['iduserfeatures'])
 		if existing_phone and existing_phone['macaddr'] != phone['macaddr']:
@@ -410,7 +387,7 @@ def __save_phone(mode, ctx, phone, config):
 	   and "iduserfeatures" in config:
 		syslogf(SYSLOG_DEBUG, "__provisioning(): iduserfeatures='%s' from config to phone" % (config["iduserfeatures"],))
 		phone["iduserfeatures"] = config["iduserfeatures"]
-	if mode != "informative" and "iduserfeatures" in phone:
+	if "iduserfeatures" in phone:
 		syslogf("__provisioning(): SAVING phone %s informations to backend" % (str(phone),))
 		ctx.dbinfos.save_phone(phone)
 
@@ -426,9 +403,9 @@ def __provisioning(mode, ctx, phone):
 
 	syslogf(SYSLOG_NOTICE, "__provisioning(): handling phone %s" % str(phone))
 
-	if (not phone["vendor"]) or (not phone["model"]):
+	if (not phone["vendor"]) or (not phone["model"]) or (not phone["isinalan"]):
 		syslogf(SYSLOG_ERR, "__provisioning(): Missing model or vendor in phone %s" % str(phone))
-		raise BadRequest, "Missing model or vendor in phone %s" % str(phone)
+		raise BadRequest, "Missing model or vendor or isinalan in phone %s" % str(phone)
 
 	if "provcode" in phone and phone["provcode"] != "0" and \
 	   not provsup.well_formed_provcode(phone["provcode"]):
@@ -460,7 +437,6 @@ def __provisioning(mode, ctx, phone):
 
 	    if "iduserfeatures" in phone and phone["iduserfeatures"] == "0":
 		    syslogf("__provisioning(): reinitializing provisioning to GUEST for phone %s" % (str(phone),))
-                    phone["isinalan"] = 0
 		    prov_inst.generate_reinitprov()
 		    __save_phone(mode, ctx, phone, None)
 		    prov_inst.action_reinit()
@@ -591,7 +567,7 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 		self.end_headers()
 	def send_response_lines(self, req_lines):
 		self.send_response_headers_200()
-		self.wfile.writelines(map(lambda x: x+"\r\n", req_lines))
+		self.wfile.writelines([x+"\r\n" for x in req_lines])
 	def answer_404(self, err_str = None):
 		syslogf(SYSLOG_NOTICE, "answer_404(): sending not found message to %s" % str(self.client_address))
 		self.send_error(404, err_str)
@@ -678,7 +654,7 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 		self.save_macaddr_ipv4(phone)
 		return phone
 	def posted_phone_infos(self):
-		"Used in 'authoritative' and 'informative' modes"
+		"Used in 'authoritative' mode"
 		return self.posted_infos("proto", "vendor", "model", "actions", "isinalan")
 	def posted_light_infos(self):
 		"Used in 'notification' mode"
@@ -712,31 +688,17 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 			syslogf(SYSLOG_ERR, "handle_prov(): No mode posted")
 			raise BadRequest, "No mode posted"
 
-		if self.posted["mode"] == "authoritative" or \
-		   self.posted["mode"] == "informative":
+		if self.posted["mode"] == "authoritative":
 			syslogf("handle_prov(): creating phone internal representation using full posted infos.")
 			phone = self.posted_phone_infos()
-			phonetype = self.my_infos.type_by_macaddr(phone["macaddr"])
-			phonedesc = self.my_infos.phone_by_macaddr(phone["macaddr"])
-                        isinalan = provsup.elem_or_none(phonedesc, "isinalan")
-                        if 'isinalan' not in phone:
-                                if isinalan is None:
-                                        phone["isinalan"] = 0
-                                else:
-                                        phone["isinalan"] = isinalan
 			lock_and_provision(self.posted['mode'], self.my_ctx, phone)
 		elif self.posted["mode"] == "notification":
 			syslogf("handle_prov(): creating phone internal representation using light posted infos.")
 			phone = self.posted_light_infos()
-			phonetype = self.my_infos.type_by_macaddr(phone["macaddr"])
 			phonedesc = self.my_infos.phone_by_macaddr(phone["macaddr"])
-                        isinalan = provsup.elem_or_none(phonedesc, "isinalan")
-                        if isinalan is None:
-                                phone["isinalan"] = 0
-                        else:
-                                phone["isinalan"] = isinalan
-			phone["vendor"] = provsup.elem_or_none(phonetype, "vendor")
-			phone["model"] = provsup.elem_or_none(phonetype, "model")
+			phone["isinalan"] = provsup.elem_or_none(phonedesc, "isinalan")
+			phone["vendor"] = provsup.elem_or_none(phonedesc, "vendor")
+			phone["model"] = provsup.elem_or_none(phonedesc, "model")
 			lock_and_provision(self.posted['mode'], self.my_ctx, phone)
 		elif self.posted["mode"] == "userdeleted":
 			syslogf("handle_prov(): user deletion")
@@ -766,7 +728,10 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 			phonelabel = phoneclass.label
 			phones = phoneclass.get_phones()
 			self.wfile.write(phonekey + '="' + phonelabel.replace('"','\\"') + '"\r\n')
-			self.wfile.writelines(map(lambda x: phonekey + '.' + x[0] + '="' + x[1].replace('"','\\"') + '"\r\n', phones))
+			self.wfile.writelines([
+				(phonekey + '.' + x[0] + '="' +
+					x[1].replace('"','\\"') + '"\r\n')
+				for x in phones])
 
 	# === ENTRY POINTS (called FROM BaseHTTPRequestHandler) ===
 

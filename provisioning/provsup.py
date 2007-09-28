@@ -35,9 +35,9 @@ ProvGeneralConf = {
 	'wget_cmd':			"/usr/bin/wget",
 	'wget_to_s':			30,
 	'telnet_to_s':			30,
-	'templates_dir':	       	"/usr/share/pf-xivo-provisioning/files/",
-	'asterisk_ipv4':                "192.168.0.254",
-	'ntp_server_ipv4':              "192.168.0.254"
+	'templates_dir':		"/usr/share/pf-xivo-provisioning/files/",
+	'asterisk_ipv4':		"192.168.0.254",
+	'ntp_server_ipv4':		"192.168.0.254"
 }
 pgc = ProvGeneralConf
 authorized_prefix = ["eth"]
@@ -148,7 +148,7 @@ def txtsubst(lines, variables, target_file = None):
 	"""
 	if target_file:
 		syslogf("In process of generating file \"%s\"" % (target_file,))
-	return map(lambda line: linesubst(line, variables), lines)
+	return [linesubst(line, variables) for line in lines]
 
 def get_netdev_list():
 	"Get a view of network interfaces as seen by Linux"
@@ -166,9 +166,9 @@ def get_ethdev_list():
 	
 	"""
 	global authorized_prefix
-	return filter(lambda dev: True in map(lambda x: dev.find(x) == 0,
-                                              authorized_prefix),
-	              get_netdev_list())
+	return [dev for dev in get_netdev_list()
+	        if True in [(dev.find(x) == 0)
+		            for x in authorized_prefix]]
 
 def normalize_mac_address(macaddr):
 	"""input: mac address, with bytes in hexa, ':' separated
@@ -178,7 +178,7 @@ def normalize_mac_address(macaddr):
 	macaddr_split = macaddr.upper().split(':', 6)
 	if len(macaddr_split) != 6:
 		raise ValueError, "Bad format for mac address " + macaddr
-	return ':'.join(map(lambda s: '%02X' % int(s, 16), macaddr_split))
+	return ':'.join([('%02X' % int(s, 16)) for s in macaddr_split])
 
 def ipv4_from_macaddr(macaddr, logexceptfunc = None):
 	"""Given a mac address, get an IPv4 address for an host living on the
@@ -190,11 +190,13 @@ def ipv4_from_macaddr(macaddr, logexceptfunc = None):
 	# -r : will only display the IP address on stdout, or nothing
 	# -c 1 : ping once
 	# -w <xxx> : wait for the answer during <xxx> microsec after the ping
-	# -i <netiface> : the network interface to use is <netiface>
+	# -I <netiface> : the network interface to use is <netiface>
+	#    -I is an undocumented option like -i but it works
+	#    with alias interfaces too
 	for iface in get_ethdev_list():
 		try:
 		    ipfd = os.popen(pgc['arping_cmd'] +
-			    (" -r -c 1 -w %s -i %s " % (pgc['arping_sleep_us'], iface)) +
+			    (" -r -c 1 -w %s -I %s " % (pgc['arping_sleep_us'], iface)) +
 			    macaddr)
 		except:
 		    if logexceptfunc:
