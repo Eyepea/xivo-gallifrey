@@ -147,7 +147,7 @@ class SQLBackEnd:
 		if not r:
 			return None
 		return dict([(k,lst_get(r,idx))
-		             for k,idx in mapping.iteritems()])
+			     for k,idx in mapping.iteritems()])
 
 	def sql_select_all(self, request, parameters_tuple, mapping):
 		"Does a SELECT SQL query and returns all rows."
@@ -182,7 +182,7 @@ class SQLBackEnd:
 		"""Lookup a phone description by Mac Address in the database.
 		
 		Returns a dictionary with the following keys:
-		        'macaddr', 'vendor', 'model', 'proto', 'iduserfeatures', 'isinalan'
+			'macaddr', 'vendor', 'model', 'proto', 'iduserfeatures', 'isinalan'
 		or None
 		
 		"""
@@ -197,22 +197,22 @@ class SQLBackEnd:
 		"""Query the database to return a phone configuration.
 		
 		something_column - name of the column of the table 'userfeatures'
-		                   used to select the right phone
+				   used to select the right phone
 		something_content - content to be match against the content of
-		                    the column identified by something_column
+				    the column identified by something_column
 		
 		Returns a dictionary with the following keys:
-		        'firstname', 'lastname', 'name': user civil status
-		                note that the name is constructed from the
-		                first and last name
-		        'iduserfeatures': user id in the userfeatures table
-		        'provcode': provisioning code
-		        'ident': protocol specific identification
-		        'passwd': protocol specific password
-		        'dtmfmode': DTMF mode
-		        'simultcalls': number of simultaneous calls (multiline)
-		        'number': extension number
-		        'proto': protocol
+			'firstname', 'lastname', 'name': user civil status
+				note that the name is constructed from the
+				first and last name
+			'iduserfeatures': user id in the userfeatures table
+			'provcode': provisioning code
+			'ident': protocol specific identification
+			'passwd': protocol specific password
+			'dtmfmode': DTMF mode
+			'simultcalls': number of simultaneous calls (multiline)
+			'number': extension number
+			'proto': protocol
 		
 		Right now proto must evaluate to 'sip'
 		
@@ -295,7 +295,7 @@ class SQLBackEnd:
 						"iduserfeatures", "isinalan")])
 		nummap, sexpr = nummap_and_selectexpr_from_symbmap(mapping)
 		query = ("SELECT %s FROM %s " +
-		         "WHERE iduserfeatures=%s AND proto=%s") \
+			 "WHERE iduserfeatures=%s AND proto=%s") \
 			% ( sexpr, TABLE, '%s', '%s' )
 		return self.sql_select_one(
 			query, (iduserfeatures, TECH), nummap)
@@ -307,7 +307,7 @@ class SQLBackEnd:
 		"""
 		self.sql_modify(
 			("DELETE FROM %s WHERE iduserfeatures=%s")
-		        % ( TABLE, '%s'),
+			% ( TABLE, '%s'),
 			(iduserfeatures,))
 
 	def find_orphan_phones(self):
@@ -342,7 +342,7 @@ class SQLBackEnd:
 		"""
 		self.sql_modify(
 			("DELETE FROM %s WHERE macaddr = %s " +
-			                      "AND iduserfeatures = %s")
+					      "AND iduserfeatures = %s")
 			% (TABLE, '%s', '%s'),
 			(macaddr, 0))
 
@@ -591,7 +591,7 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 		nameN=valueN
 		
 		A dictionary {'name1':'value1,
-		              'name2':'value2',
+			      'name2':'value2',
 			      ...
 			      'nameN':'valueN' } is then stored in self.posted
 		"""
@@ -715,7 +715,7 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 				errcode = rcode
 				break
 		except_tb.log_full_exception(self.full_xcept_sender(errcode),
-		                             provsup.SYSLOG_EXCEPT(SYSLOG_ERR))
+					     provsup.SYSLOG_EXCEPT(SYSLOG_ERR))
 		return
 	    syslogf(SYSLOG_NOTICE, "handle_prov(): provisioning OK for phone %s" % (str(phone),))
 	    self.send_response_lines(('Ok',))
@@ -756,7 +756,7 @@ def log_stderr_and_syslog(x):
 
 def main(log_level, foreground):
 	"""log_level - one of SYSLOG_EMERG to SYSLOG_DEBUG
-	            nothing will be logged below this limit
+		    nothing will be logged below this limit
 		    (this is automatically upgraded to SYSLOG_INFO
 		     during startup)
 	foreground - don't daemonize if true
