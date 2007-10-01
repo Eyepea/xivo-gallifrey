@@ -43,15 +43,21 @@ class xivo_service_asterisk_queue extends xivo_service_asterisk_abstract
 		return($data);
 	}
 
-	function _origin($type)
+	function _origin($type,$val=null)
 	{
-		if(($type !== 'add' && $type !== 'edit') === true || is_array($this->_origin) === false)
+		if($val !== null)
+			$orig = $val;
+		else
+			$orig = $this->_origin;
+
+		if(($type !== 'add' && $type !== 'edit') === true
+		|| is_array($orig) === false)
 			return(false);
 
 		if($type === 'add')
-			return($this->add($this->_origin));
+			return($this->add($orig));
 		else
-			return($this->edit($this->_origin['name'],$this->_origin));
+			return($this->edit($orig['name'],$orig));
 	}
 
 	function add($arr)

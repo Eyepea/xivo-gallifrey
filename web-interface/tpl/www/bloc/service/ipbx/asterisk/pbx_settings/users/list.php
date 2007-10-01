@@ -68,7 +68,7 @@
 			$mod = $j % 2 === 0 ? 1 : 2;
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=$mod?>on2">
-		<td class="td-left"><?=$form->checkbox(array('name' => 'users['.$ref['ufeatures']['protocol'].'][]','value' => $ref['protocol']['id'],'label' => false,'id' => 'it-users-'.$i,'checked' => false,'field' => false));?></td>
+		<td class="td-left"><?=$form->checkbox(array('name' => 'users[]','value' => $ref['ufeatures']['id'],'label' => false,'id' => 'it-users-'.$i,'checked' => false,'field' => false));?></td>
 		<td class="txt-left"><label for="it-users-<?=$i?>" id="lb-users-<?=$i?>"><?=$url->img_html('img/site/phone/'.$icon.'.gif',null,'class="icons-list"');?><?=$ref['ufeatures']['fullname']?></label></td>
 		<td><?=$this->bbf('user_protocol-'.$ref['ufeatures']['protocol']);?></td>
 		<td><?=$ref['protocol']['name']?></td>

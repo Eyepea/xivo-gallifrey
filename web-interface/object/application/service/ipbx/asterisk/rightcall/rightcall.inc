@@ -6,6 +6,7 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_abstr
 {
 	var $_ipbx	= null;
 	var $_origin	= array();
+	var $_status	= '';
 
 	function xivo_application_service_asterisk_rightcall(&$ipbx)
 	{
@@ -291,6 +292,7 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_abstr
 
 	function add()
 	{
+		$this->_status = 'add';
 		$this->_return = array();
 		$rightcallid = null;
 
@@ -304,8 +306,12 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_abstr
 			if($rightcallid !== null)
 				$this->_reverse_add();
 
+			$this->_status = '';
+
 			return(false);
 		}
+
+		$this->_status = '';
 
 		return(true);
 	}
@@ -400,6 +406,7 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_abstr
 	function _reverse_add()
 	{
 		if($this->get_errnb() > 0
+		|| $this->_status !== 'add'
 		|| ($arr = xivo_get_aks($this->_return)) === false)
 			return(false);
 
@@ -450,6 +457,7 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_abstr
 
 	function edit()
 	{
+		$this->_status = 'edit';
 		$this->_return = array();
 
 		if($this->get_errnb() > 0
@@ -460,8 +468,12 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_abstr
 		|| $this->edit_rightcallexten() === false)
 		{
 			$this->_reverse_edit();
+
+			$this->_status = '';
 			return(false);
 		}
+
+		$this->_status = '';
 
 		return(true);
 	}
@@ -630,6 +642,7 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_abstr
 	function _reverse_edit()
 	{
 		if($this->get_errnb() > 0
+		|| $this->_status !== 'edit'
 		|| ($arr = xivo_get_aks($this->_return)) === false)
 			return(false);
 
@@ -645,8 +658,7 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_abstr
 			{
 				case 'rightcall':
 					$rightcall = &$this->_ipbx->get_module('rightcall');
-					$rightcall->set_origin($this->_origin['rightcall']);
-					$rightcall->edit_origin();
+					$rightcall->edit_origin($this->_origin['rightcall']);
 					break;
 				case 'rightcalluser':
 				case 'rightcallgroup':
@@ -661,10 +673,7 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_abstr
 					$rmember = &$this->_ipbx->get_module('rightcallmember');
 
 					for($j = 0;$j < $nb;$j++)
-					{
-						$ref = &$this->_origin[$key][$j];
-						$rmember->add($ref,$ref['id']);
-					}
+						$rmember->add_origin($this->_origin[$key][$j]);
 					break;
 				case 'rightcallexten':
 					$this->delete_rightcallexten();
@@ -676,10 +685,7 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_abstr
 					$rightcallexten = &$this->_ipbx->get_module('rightcallexten');
 
 					for($j = 0;$j < $nb;$j++)
-					{
-						$ref = &$this->_origin['rightcallexten'][$j];
-						$rightcallexten->add($ref,$ref['id']);
-					}
+						$rightcallexten->add_origin($this->_origin['rightcallexten'][$j]);
 					break;
 			}
 		}
@@ -688,6 +694,7 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_abstr
 
 	function delete()
 	{
+		$this->_status = 'delete';
 		$this->_return = array();
 
 		if($this->delete_rightcall() === false
@@ -697,8 +704,11 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_abstr
 		|| $this->delete_rightcallexten() === false)
 		{
 			$this->_reverse_delete();
+			$this->_status = '';
 			return(false);
 		}
+
+		$this->_status = '';
 
 		return(true);
 	}
@@ -711,7 +721,7 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_abstr
 
 		$r = $rightcall->delete($this->_info['rightcall']['id']);
 
-		if(isset($this->_return['rightcall']) === false)
+		if($this->_status === 'delete')
 			$this->_return['rightcall'] = $r;
 
 		return($r);
@@ -736,8 +746,15 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_abstr
 	{
 		if(($type !== 'user'
 		   && $type !== 'group'
-		   && $type !== 'outcall') === true
-		|| xivo_issa('rightcall',$this->_info) === false
+		   && $type !== 'outcall') === true)
+		   return(false);
+
+		$key = 'rightcall'.$type;
+
+		if(xivo_issa($key,$this->_info) === false)
+			return(null);
+
+		if(xivo_issa('rightcall',$this->_info) === false
 		|| ($rmember = &$this->_ipbx->get_module('rightcallmember')) === false)
 			return(false);
 
@@ -745,11 +762,9 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_abstr
 		$rmember_where['type'] = $type;
 		$rmember_where['rightcallid'] = $this->_info['rightcall']['id'];
 
-		$key = 'rightcall'.$type;
-
 		$r = $rmember->delete_where($rmember_where);
 
-		if(isset($this->_return[$key]) === false)
+		if($this->_status === 'delete')
 			$this->_return[$key] = $r;
 
 		return($r);
@@ -757,6 +772,9 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_abstr
 
 	function delete_rightcallexten()
 	{
+		if(xivo_issa('rightcallexten',$this->_info) === false)
+			return(null);
+
 		if(xivo_issa('rightcall',$this->_info) === false
 		|| ($rightcallexten = &$this->_ipbx->get_module('rightcallexten')) === false)
 			return(false);
@@ -765,7 +783,7 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_abstr
 
 		$r = $rightcallexten->delete_where($rightcallexten_where);
 
-		if(isset($this->_return['rightcallexten']) === false)
+		if($this->_status === 'delete')
 			$this->_return['rightcallexten'] = $r;
 
 		return($r);
@@ -773,22 +791,19 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_abstr
 
 	function _reverse_delete()
 	{
-		if(($arr = xivo_get_aks($this->_return)) === false)
+		if($this->_status !== 'delete'
+		|| ($arr = xivo_get_aks($this->_return)) === false)
 			return(false);
 
 		for($i = 0;$i < $arr['cnt'];$i++)
 		{
 			$key = &$arr['keys'][$i];
-			$val = &$this->_return[$key];
-
-			if($val === false)
-				continue;
 
 			switch($key)
 			{
 				case 'rightcall':
 					$rightcall = &$this->_ipbx->get_module('rightcall');
-					$rightcall->add_origin();
+					$rightcall->add_origin($this->_origin['rightcall']);
 					break;
 				case 'rightcalluser':
 				case 'rightcallgroup':
@@ -800,10 +815,7 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_abstr
 					$rmember = &$this->_ipbx->get_module('rightcallmember');
 
 					for($j = 0;$j < $nb;$j++)
-					{
-						$ref = &$this->_origin[$key][$j];
-						$rmember->add($ref,$ref['id']);
-					}
+						$rmember->add_origin($this->_origin[$key][$j]);
 					break;
 				case 'rightcallexten':
 					if($this->_origin['rightcallexten'] === false
@@ -813,10 +825,7 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_abstr
 					$rightcallexten = &$this->_ipbx->get_module('rightcallexten');
 
 					for($j = 0;$j < $nb;$j++)
-					{
-						$ref = &$this->_origin['rightcallexten'][$j];
-						$rightcallexten->add($ref,$ref['id']);
-					}
+						$rightcallexten->add_origin($this->_origin['rightcallexten'][$j]);
 					break;
 			}
 		}

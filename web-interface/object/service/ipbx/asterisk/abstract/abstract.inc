@@ -221,58 +221,71 @@ class xivo_service_asterisk_abstract
 		return($this->_origin_list);
 	}
 
-	function add_origin()
+	function add_origin($val=null)
 	{
-		return($this->_origin('add'));
+		return($this->_origin('add',$val));
 	}
 
-	function add_origin_list()
+	function add_origin_list($val=null)
 	{
-		return($this->_origin_list('add'));
+		return($this->_origin_list('add',$val));
 	}
 
-	function edit_origin()
+	function edit_origin($val=null)
 	{
-		return($this->_origin('edit'));
+		return($this->_origin('edit',$val));
 	}
 
-	function edit_origin_list()
+	function edit_origin_list($val=null)
 	{
-		return($this->_origin_list('edit'));
+		return($this->_origin_list('edit',$val));
 	}
 
-	function _origin($type)
+	function _origin($type,$val=null)
 	{
 		if(($type !== 'add' && $type !== 'edit') === true
-		|| isset($this->_origin) === false
-		|| is_array($this->_origin) === false)
+		|| isset($this->_origin) === false)
+			return(false);
+
+		if($val !== null)
+			$orig = $val;
+		else
+			$orig = $this->_origin;
+
+		if(is_array($orig) === false)
 			return(false);
 
 		if($type === 'add')
-			$r = $this->add($this->_origin,$this->_origin['id']);
+			$r = $this->add($orig,$orig['id']);
 		else
-			$r = $this->edit($this->_origin['id'],$this->_origin);
+			$r = $this->edit($orig['id'],$orig);
 
 		return($r);
 	}
 
-	function _origin_list($type)
+	function _origin_list($type,$val=null)
 	{
 		if(($type !== 'add' && $type !== 'edit') === true
-		|| isset($this->_origin_list) === false
-		|| is_array($this->_origin_list) === false
-		|| ($nb = count($this->_origin_list)) === 0)
+		|| isset($this->_origin_list) === false)
+			return(false);
+
+		if($val !== null)
+			$orig = $val;
+		else
+			$orig = $this->_origin_list;
+
+		if(is_array($orig) === false || ($nb = count($orig)) === 0)
 			return(false);
 
 		if($type === 'add')
 		{
 			for($i = 0;$i < $nb;$i++)
-				$this->add($this->_origin_list[$i],$this->_origin_list[$i]['id']);
+				$this->add($orig[$i],$orig[$i]['id']);
 		}
 		else
 		{
 			for($i = 0;$i < $nb;$i++)
-				$this->edit($this->_origin_list[$i]['id'],$this->_origin_list[$i]);
+				$this->edit($orig[$i]['id'],$orig[$i]);
 		}
 
 		return(true);

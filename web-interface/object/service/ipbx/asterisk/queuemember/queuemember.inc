@@ -40,42 +40,46 @@ class xivo_service_asterisk_queuemember extends xivo_service_asterisk_abstract
 		return($r);
 	}
 
-	function _origin($type)
+	function _origin($type,$val=null)
 	{
-		if(($type !== 'add' && $type !== 'edit') === true || is_array($this->_origin) === false)
+		if($val !== null)
+			$orig = $val;
+		else
+			$orig = $this->_origin;
+
+		if(($type !== 'add' && $type !== 'edit') === true
+		|| is_array($orig) === false)
 			return(false);
 
 		if($type === 'add')
-			$r = $this->add($this->_origin);
+			$r = $this->add($orig);
 		else
-			$r = $this->edit(array($this->_origin['queue_name'],$this->_origin['interface']),$this->_origin);
+			$r = $this->edit(array($orig['queue_name'],$orig['interface']),$orig);
 
 		return($r);
 	}
 
-	function _origin_list($type)
+	function _origin_list($type,$val=null)
 	{
+		if($val !== null)
+			$orig = $val;
+		else
+			$orig = $this->_origin_list;
+
 		if(($type !== 'add' && $type !== 'edit') === true
-		|| is_array($this->_origin_list) === false
-		|| ($nb = count($this->_origin_list)) === 0)
+		|| is_array($orig) === false
+		|| ($nb = count($orig)) === 0)
 			return(false);
 
 		if($type === 'add')
 		{
 			for($i = 0;$i < $nb;$i++)
-				$this->add($this->_origin_list[$i]);
+				$this->add($orig[$i]);
 		}
 		else
 		{
-			$id = array();
-
 			for($i = 0;$i < $nb;$i++)
-			{
-				$id[0] = $this->_origin_list[$i]['queue_name'];
-				$id[1] = $this->_origin_list[$i]['interface'];
-
-				$this->edit($id,$this->_origin_list[$i]);
-			}
+				$this->edit(array($orig[$i]['queue_name'],$orig[$i]['interface']),$orig[$i]);
 		}
 
 		return(true);

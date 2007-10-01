@@ -7,6 +7,7 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 	var $_ipbx	= null;
 	var $_protocol	= false;
 	var $_origin	= array();
+	var $_status	= '';
 
 	function xivo_application_service_asterisk_user(&$ipbx)
 	{
@@ -312,7 +313,7 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 			$this->set_voicemail($arr['voicemail'],$context,$number);
 
 		if(xivo_issa('autoprov',$arr) === true)
-			$this->set_autoprov($arr['autoprov'],$protocol);
+			$this->set_autoprov($action,$arr['autoprov'],$protocol);
 
 		if($this->get_errnb() > 0)
 			$this->_protocol = $r = false;
@@ -548,9 +549,10 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 		return(true);
 	}
 
-	function set_autoprov($arr,$protocol)
+	function set_autoprov($action,$arr,$protocol)
 	{
-		if(is_array($arr) === false
+		if(($action !== 'add' && $action !== 'edit') === true
+		|| is_array($arr) === false
 		|| ($autoprov = &$this->_ipbx->get_module('autoprov')) === false
 		|| ($list = $autoprov->get_autoprov_list()) === false)
 			return(false);
@@ -559,7 +561,17 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 		|| xivo_haslen($arr,'macaddr') === false)
 			return(null);
 
-		if(($pos = strpos($arr['vendormodel'],'.')) === false)
+		if($action === 'edit' && xivo_issa('autoprov',$this->_info) === true)
+		{
+			if(xivo_haslen($arr,'modact') === false)
+				return(null);
+
+			$modact = $arr['modact'];
+			$arr = $this->_info['autoprov'];
+			$arr['modact'] = $modact;
+			$arr['proto'] = $protocol;
+		}
+		else if(($pos = strpos($arr['vendormodel'],'.')) === false)
 			$arr['vendormodel'] = $arr['modact'] = '';
 		else
 		{
@@ -582,8 +594,6 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 			$arr['modact'] = 'prov';
 			$arr['proto'] = $protocol;
 		}
-
-		$autoprov = &$this->_ipbx->get_module('autoprov');
 
 		if(($rs = $autoprov->chk_values($arr)) === false)
 		{
@@ -629,6 +639,7 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 
 	function add()
 	{
+		$this->_status = 'add';
 		$this->_return = array();
 		$ufeaturesid = null;
 
@@ -647,8 +658,11 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 			if($ufeaturesid !== null)
 				$this->_reverse_add();
 
+			$this->_status = '';
 			return(false);
 		}
+
+		$this->_status = '';
 
 		return(true);
 	}
@@ -794,6 +808,7 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 	{
 		if($this->get_errnb() > 0
 		|| $this->_protocol === false
+		|| $this->_status !== 'add'
 		|| ($arr = xivo_get_aks($this->_return)) === false)
 			return(false);
 
@@ -834,7 +849,6 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 					break;
 				case 'autoprov':
 					$autoprov = &$this->_ipbx->get_module('autoprov');
-
 					$autoprov->userdeleted($val);
 				default:
 					if(($module = &$this->_ipbx->get_module($key)) === false)
@@ -848,6 +862,7 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 
 	function edit()
 	{
+		$this->_status = 'edit';
 		$this->_return = array();
 
 		if(is_array($this->_info) === false
@@ -855,15 +870,19 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 		|| $this->get_errnb() > 0
 		|| $this->_protocol === false
 		|| ($protocolret = $this->edit_protocol()) === false)
+		{
+			$this->_status = '';
 			return(false);
+		}
 
 		if($this->edit_userfeatures($protocolret) === false)
 		{
 			$this->edit_origin_protocol($protocolret);
+			$this->_status = '';
 			return(false);
 		}
 
-		$delete_links = false;
+		$unlinks = false;
 
 		if($this->_info['ufeatures']['number'] !== '')
 		{
@@ -871,7 +890,7 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 			|| $this->get_result('hints') === null
 			|| $this->get_result('extenumbers') === null)
 			{
-				$delete_links = true;
+				$unlinks = true;
 				$this->delete_macro('localexten');
 				$this->delete_hints();
 				$this->delete_extenumbers();
@@ -881,6 +900,7 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 			|| $this->edit_extenumbers() === false)
 			{
 				$this->_reverse_edit($protocolret);
+				$this->_status = '';
 				return(false);
 			}
 		}
@@ -889,6 +909,7 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 		|| $this->add_extenumbers() === false)
 		{
 			$this->_reverse_edit($protocolret);
+			$this->_status = '';
 			return(false);
 		}
 
@@ -897,13 +918,16 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 		|| $this->edit_voicemail() === false)
 		{
 			$this->_reverse_edit($protocolret);
+			$this->_status = '';
 			return(false);
 		}
 
 		$this->edit_phone();
 
-		if($delete_links === true)
-			$this->delete_links();
+		if($unlinks === true)
+			$this->unlinks();
+
+		$this->_status = '';
 
 		return(true);
 	}
@@ -928,8 +952,7 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 		if(($return = $this->add_protocol()) === false)
 			return(false);
 
-		if(($proto = &$this->_ipbx->get_protocol_module($this->_info['ufeatures']['protocol'])) === false
-		|| $proto->delete($this->_info['protocol']['id']) === false)
+		if($this->delete_protocol() === false)
 		{
 			$protocol->delete($return);
 			return(false);
@@ -948,19 +971,14 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 			return(false);
 
 		if($this->_info['ufeatures']['protocol'] === $this->_protocol)
-		{
-			$protocol->set_origin($this->_origin['protocol']);
-			return($protocol->edit_origin());
-		}
+			return($protocol->edit_origin($this->_origin['protocol']));
 
 		if(($protocolid = xivo_uint($protocolid)) === 0
 		|| ($proto = &$this->_ipbx->get_protocol($this->_protocol)) === false
 		|| $proto->delete($protocolid) === false)
 			return(false);
 
-		$proto->set_origin($this->_origin['protocol']);
-
-		return($proto->add_origin());
+		return($proto->add_origin($this->_origin['protocol']));
 	}
 
 	function edit_userfeatures($protocolid)
@@ -1134,8 +1152,7 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 
 		$rs['iduserfeatures'] = $this->_info['ufeatures']['id'];
 
-		if(xivo_issa('autoprov',$this->_info) !== false
-		&& (bool) $this->_info['autoprov']['isinalan'] === true)
+		if(xivo_issa('autoprov',$this->_info) !== false)
 			$this->_return['autoprov'] = $autoprov->notification($rs,$rs['modact']);
 		else
 			$this->_return['autoprov'] = $autoprov->authoritative($rs,$rs['modact']);
@@ -1147,6 +1164,7 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 	{
 		if($this->get_errnb() > 0
 		|| $this->_protocol === false
+		|| $this->_status !== 'edit'
 		|| ($arr = xivo_get_aks($this->_return)) === false)
 			return(false);
 
@@ -1165,8 +1183,7 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 					break;
 				case 'userfeatures':
 					$ufeatures = &$this->_ipbx->get_module('userfeatures');
-					$ufeatures->set_origin($this->_origin['ufeatures']);
-					$ufeatures->edit_origin();
+					$ufeatures->edit_origin($this->_origin['ufeatures']);
 					break;
 				case 'uservoicemail':
 					$voicemail = &$this->_ipbx->get_module('uservoicemail');
@@ -1174,10 +1191,7 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 					if($this->_origin['voicemail'] === false)
 						$voicemail->delete($val);
 					else
-					{
-						$voicemail->set_origin($this->_origin['voicemail']);
-						$voicemail->edit_origin();
-					}
+						$voicemail->edit_origin($this->_origin['voicemail']);
 					break;
 				case 'localexten':
 					$extensions = &$this->_ipbx->get_module('extensions');
@@ -1185,10 +1199,7 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 					if($this->_origin['localexten'] === false)
 						$extensions->delete_exten($val);
 					else
-					{
-						$extensions->set_origin($this->_origin['localexten']);
-						$extensions->edit_origin();
-					}
+						$extensions->edit_origin($this->_origin['localexten']);
 					break;
 				case 'hints':
 					$extensions = &$this->_ipbx->get_module('extensions');
@@ -1196,10 +1207,7 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 					if($this->_origin['hints'] === false)
 						$extensions->delete_hints($val);
 					else
-					{
-						$extensions->set_origin($this->_origin['hints']);
-						$extensions->edit_origin();
-					}
+						$extensions->edit_origin($this->_origin['hints']);
 					break;
 				case 'groupmember':
 				case 'queuemember':
@@ -1215,7 +1223,7 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 					$qmember = &$this->_ipbx->get_module('queuemember');
 
 					for($j = 0;$j < $nb;$j++)
-						$qmember->add($this->_origin[$key][$j]);
+						$qmember->add_origin($this->_origin[$key][$j]);
 					break;
 				case 'autoprov':
 					break;
@@ -1226,40 +1234,107 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 					if($this->_origin[$key] === false)
 						$module->delete($val);
 					else
-					{
-						$module->set_origin($this->_origin[$key]);
-						$module->edit_origin();
-					}
+						$module->edit_origin($this->_origin[$key]);
 			}
 		}
 		return(true);
 	}
 
-	function delete_macro($name)
+	function delete()
 	{
-		if(xivo_issa($name,$this->_info) === false
-		|| ($extensions = &$this->_ipbx->get_module('extensions')) === false)
+		$this->_status = 'delete';
+		$this->_return = array();
+
+		if($this->delete_protocol() === false
+		|| $this->delete_userfeatures() === false
+		|| $this->delete_macro('localexten') === false
+		|| $this->delete_hints() === false
+		|| $this->delete_extenumbers() === false
+		|| $this->delete_groupmember() === false
+		|| $this->delete_queuemember() === false
+		|| $this->delete_voicemail() === false
+		|| $this->delete_phone() === false)
+		{
+			$this->_reverse_delete();
+			$this->_status = '';
+
+			return(false);
+		}
+
+		if(isset($this->_return['localexten']) === true
+		|| isset($this->_return['hints']) === true
+		|| isset($this->_return['extensions']) === true)
+			$this->unlinks();
+
+		$this->_status = '';
+
+		return(true);
+	}
+
+	function delete_protocol()
+	{
+		if(xivo_issa('protocol',$this->_info) === false
+		|| xivo_issa('ufeatures',$this->_info) === false
+		|| ($protocol = &$this->_ipbx->get_protocol_module($this->_info['ufeatures']['protocol'])) === false)
 			return(false);
 
-		return($extensions->delete($this->_info[$name]['id']));
+		$r = $protocol->delete($this->_info['protocol']['id']);
+
+		if($this->_status === 'delete')
+			$this->_return['protocol'] = $r;
+
+		return($r);
+	}
+
+	function delete_userfeatures()
+	{
+		if(xivo_issa('ufeatures',$this->_info) === false
+		|| ($ufeatures = &$this->_ipbx->get_module('userfeatures')) === false)
+			return(false);
+
+		$r = $ufeatures->delete($this->_info['ufeatures']['id']);
+
+		if($this->_status === 'delete')
+			$this->_return['userfeatures'] = $r;
+
+		return($r);
+	}
+
+	function delete_macro($name)
+	{
+		if(xivo_issa($name,$this->_info) === false)
+			return(null);
+
+		if(($extensions = &$this->_ipbx->get_module('extensions')) === false)
+			return(false);
+
+		$r = $extensions->delete($this->_info[$name]['id']);
+
+		if($this->_status === 'delete')
+			$this->_return[$name] = $r;
+
+		return($r);
 	}
 
 	function delete_hints()
 	{
-		if(xivo_issa('hints',$this->_info) === false
-		|| ($extensions = &$this->_ipbx->get_module('extensions')) === false)
-			return(false);
-
-		return($extensions->delete($this->_info['hints']['id']));
+		return($this->delete_macro('hints'));
 	}
 
 	function delete_extenumbers()
 	{
-		if(xivo_issa('extenumbers',$this->_info) === false
-		|| ($extenumbers = &$this->_ipbx->get_module('extenumbers')) === false)
+		if(xivo_issa('extenumbers',$this->_info) === false)
+			return(null);
+
+		if(($extenumbers = &$this->_ipbx->get_module('extenumbers')) === false)
 			return(false);
 
-		return($extenumbers->delete($this->_info['extenumbers']['id']));
+		$r = $extenumbers->delete($this->_info['extenumbers']['id']);
+
+		if($this->_status === 'delete')
+			$this->_return['extenumbers'] = $r;
+
+		return($r);
 	}
 
 	function delete_groupmember()
@@ -1274,8 +1349,15 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 
 	function _delete_member_type($type)
 	{
-		if(($type !== 'group' && $type !== 'queue') === true
-		|| xivo_issa('ufeatures',$this->_info) === false
+		if(($type !== 'group' && $type !== 'queue') === true)
+			return(false);
+
+		$key = $type.'member';
+
+		if(xivo_issa($key,$this->_info) === false)
+			return(null);
+
+		if(xivo_issa('ufeatures',$this->_info) === false
 		|| ($qmember = &$this->_ipbx->get_module('queuemember')) === false)
 			return(false);
 
@@ -1284,10 +1366,107 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 		$qmember_where['category'] = $type;
 		$qmember_where['userid'] = $this->_info['ufeatures']['id'];
 
-		return($qmember->delete_where($qmember_where));
+		$r = $qmember->delete_where($qmember_where);
+
+		if($this->_status === 'delete')
+			$this->_return[$key] = $r;
+
+		return($r);
 	}
 
-	function delete_links()
+	function delete_voicemail()
+	{
+		if(xivo_issa('voicemail',$this->_info) === false)
+			return(null);
+
+		if(($voicemail = &$this->_ipbx->get_module('uservoicemail')) === false)
+			return(false);
+
+		$r = $voicemail->delete($this->_info['voicemail']['id']);
+
+		if($this->_status === 'delete')
+			$this->_return['voicemail'] = $r;
+
+		return($r);
+	}
+
+	function delete_phone()
+	{
+		if(xivo_issa('autoprov',$this->_info) === false)
+			return(null);
+
+		if(($autoprov = &$this->_ipbx->get_module('autoprov')) === false)
+			return(false);
+
+		$r = $autoprov->userdeleted($this->_info['autoprov']['iduserfeatures']);
+
+		if($this->_status === 'delete')
+			$this->_return['autoprov'] = $r;
+
+		return($r);
+	}
+
+	function _reverse_delete()
+	{
+		if($this->get_errnb() > 0
+		|| $this->_status !== 'delete'
+		|| ($arr = xivo_get_aks($this->_return)) === false)
+			return(false);
+
+		for($i = 0;$i < $arr['cnt'];$i++)
+		{
+			$key = &$arr['keys'][$i];
+
+			switch($key)
+			{
+				case 'protocol':
+					$protocol = &$this->_ipbx->get_protocol_module($this->_info['ufeatures']['protocol']);
+					$protocol->add_origin($this->_origin['protocol']);
+					break;
+				case 'userfeatures':
+					$ufeatures = &$this->_ipbx->get_module('userfeatures');
+					
+					if($this->_origin['ufeatures'] !== false)
+						$ufeatures->add_origin($this->_origin['ufeatures']);
+					break;
+				case 'uservoicemail':
+					$voicemail = &$this->_ipbx->get_module('uservoicemail');
+
+					if($this->_origin['voicemail'] !== false)
+						$voicemail->add_origin($this->_origin['voicemail']);
+					break;
+				case 'localexten':
+				case 'hints':
+					$extensions = &$this->_ipbx->get_module('extensions');
+
+					if($this->_origin[$key] !== false)
+						$extensions->add_origin($this->_origin[$key]);
+					break;
+				case 'groupmember':
+				case 'queuemember':
+					if($this->_origin[$key] === false
+					|| ($nb = count($this->_origin[$key])) === 0)
+						continue;
+
+					$qmember = &$this->_ipbx->get_module('queuemember');
+
+					for($j = 0;$j < $nb;$j++)
+						$qmember->add_origin($this->_origin[$key][$j]);
+					break;
+				case 'autoprov':
+					break;
+				default:
+					if(($module = &$this->_ipbx->get_module($key)) === false)
+						continue;
+
+					if($this->_origin[$key] !== false)
+						$module->add_origin($this->_origin[$key]);
+			}
+		}
+		return(true);
+	}
+
+	function unlinks()
 	{
 		if(xivo_issa('ufeatures',$this->_info) === false)
 			return(false);

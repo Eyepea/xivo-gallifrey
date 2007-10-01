@@ -52,15 +52,21 @@ class xivo_service_asterisk_meetme extends xivo_service_asterisk_staticconf
 		return($data);
 	}
 
-	function _origin($type)
+	function _origin($type,$val=null)
 	{
-		if(($type !== 'add' && $type !== 'edit') === true || is_array($this->_origin) === false)
+		if($val !== null)
+			$orig = $val;
+		else
+			$orig = $this->_origin;
+
+		if(($type !== 'add' && $type !== 'edit') === true
+		|| is_array($orig) === false)
 			return(false);
 
 		if($type === 'add')
-			$r = parent::add($this->_origin,$this->_origin['id']);
+			$r = parent::add($orig,$orig['id']);
 		else
-			$r = parent::edit($this->_origin['id'],$this->_origin);
+			$r = parent::edit($orig['id'],$orig);
 
 		return($r);
 	}
