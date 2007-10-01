@@ -127,7 +127,7 @@ def get_sql_infos(cid, ctxinfos):
                 log_debug('Connection to SQL <%s> failed : %s' % (ctxinfos.uri, str(exc)))
                 return reply_by_field
 
-        if results is not None:
+        if results[0] is not None:
                 try:
                         xx = {}
                         n = 0
@@ -135,7 +135,6 @@ def get_sql_infos(cid, ctxinfos):
                                 xx[t] = results[0][n]
                                 n += 1
                         for [dispname, dbnames_list, dummy] in ctxinfos.sheet_valid_fields:
-                                print 'B', dispname
                                 field_value = ""
                                 for dbname in dbnames_list:
                                         if dbname in xx and field_value is "":
