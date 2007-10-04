@@ -101,8 +101,8 @@ class xivo
 
 	function _set_error()
 	{
-		xivo::load_class('xivo_trac_err');
-		$_ERR = &xivo_gct::set_get(new xivo_trac_err($this->_conf['xivo']['sys']['error']));
+		xivo::load_class('xivo_tracerror');
+		$_ERR = &xivo_gct::set_get(new xivo_tracerror($this->_conf['xivo']['sys']['error']));
 		set_error_handler(array(&$_ERR,'report_e_err'));
 	}
 

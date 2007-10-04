@@ -17,10 +17,10 @@ $result = null;
 
 $allow = $info['protocol']['allow'];
 
-$gmember = $qmember = array();
+$gmember = $qmember = $rightcall = array();
 $gmember['list'] = $qmember['list'] = false;
 $gmember['info'] = $qmember['info'] = false;
-$gmember['slt'] = $qmember['slt'] = array();
+$gmember['slt'] = $qmember['slt'] = $rightcall['slt'] = array();
 
 xivo::load_class('xivo_sort');
 $groupsort = new xivo_sort(array('browse' => 'gfeatures','key' => 'name'));
@@ -38,6 +38,11 @@ if(($queues = $ipbx->get_queues_list(null,true)) !== false)
 	uasort($queues,array(&$queuesort,'str_usort'));
 	$qmember['list'] = $queues;
 }
+
+$rightcallsort = new xivo_sort(array('browse' => 'rightcall','key' => 'name'));
+
+if(($rightcall['list'] = $ipbx->get_rightcall_list(null,true)) !== false)
+	uasort($rightcall['list'],array(&$rightcallsort,'str_usort'));
 
 do
 {
@@ -111,6 +116,17 @@ if($qmember['list'] !== false && xivo_ak('queuemember',$return) === true)
 	}
 }
 
+if($rightcall['list'] !== false && xivo_ak('rightcall',$return) === true)
+{
+	$rightcall['slt'] = xivo_array_intersect_key($return['rightcall'],$rightcall['list'],'rightcallid');
+
+	if($rightcall['slt'] !== false)
+	{
+		$rightcall['list'] = xivo_array_diff_key($rightcall['list'],$rightcall['slt']);
+		uasort($rightcall['slt'],array(&$rightcallsort,'str_usort'));
+	}
+}
+
 $element = $appuser->get_element();
 
 if(xivo_issa('allow',$element['protocol']['sip']) === true
@@ -153,6 +169,7 @@ $_HTML->assign('groups',$groups);
 $_HTML->assign('gmember',$gmember);
 $_HTML->assign('queues',$queues);
 $_HTML->assign('qmember',$qmember);
+$_HTML->assign('rightcall',$rightcall);
 $_HTML->assign('protocol',$ipbx->get_protocol());
 $_HTML->assign('element',$element);
 $_HTML->assign('moh_list',$moh_list);

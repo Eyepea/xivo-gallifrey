@@ -196,6 +196,18 @@ Supprimer message après notification :
 ; fm_userfeatures_description
 Description :
 
+; fm_rightcall
+Droits d'appels :
+
+; bt-inrightcall
+Ajouter un ou plusieurs droits d'appels ->
+
+; bt-outrightcall
+<- Enlever un ou plusieurs droits d'appels
+
+; create_rightcall
+Créer un droit d'appel
+
 ; fm_protocol_callerid
 Nom d'appel :
 

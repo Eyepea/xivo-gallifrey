@@ -4,11 +4,12 @@ xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
 
 class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 {
-	var $_dso	= null;
-	var $_name	= 'extensions';
-	var $_filter	= null;
-	var $_origin	= false;
-	var $_exten	= null;
+	var $_dso		= null;
+	var $_name		= 'extensions';
+	var $_filter		= null;
+	var $_origin		= false;
+	var $_origin_list	= false;
+	var $_exten		= null;
 
 	function xivo_service_asterisk_extensions(&$sre,&$dso)
 	{
@@ -41,6 +42,17 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 		$data['exten'] = $this->_sre->clean_extension($data['exten']);
 
 		return($data);
+	}
+
+	function get_element_where($where)
+	{
+		if(is_array($where) === false)
+			return(false);
+
+		if(isset($where['exten']) === true)
+			$where['exten'] = $this->_sre->clean_extension($where['exten']);
+
+		return(parent::get_element_where($where));
 	}
 
 	function add($arr,$id=0)
@@ -109,49 +121,13 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 
 	function edit_where($id,$arr,$disable=null)
 	{
-		if(is_array($id) === false || is_array($arr) === false)
+		if(is_array($arr) === false)
 			return(false);
-
-		if(isset($id['exten']) === true)
-			$id['exten'] = $this->_sre->clean_extension($id['exten']);
 
 		if(isset($arr['exten']) === true)
 			$arr['exten'] = $this->_sre->clean_extension($arr['exten']);
 
 		return(parent::edit_where($id,$arr,$disable));
-	}
-
-	function delete_where($id,$disable=null)
-	{
-		if(is_array($id) === false)
-			return(false);
-
-		if(isset($id['exten']) === true)
-			$id['exten'] = $this->_sre->clean_extension($id['exten']);
-
-		return(parent::delete_where($id,$disable));
-	}
-
-	function enable_where($id,$value=false)
-	{
-		if(is_array($id) === false)
-			return(false);
-
-		if(isset($id['exten']) === true)
-			$id['exten'] = $this->_sre->clean_extension($id['exten']);
-
-		return(parent::enable_where($id,$value));
-	}
-
-	function disable_where($id,$value=true)
-	{
-		if(is_array($id) === false)
-			return(false);
-
-		if(isset($id['exten']) === true)
-			$id['exten'] = $this->_sre->clean_extension($id['exten']);
-
-		return(parent::disable_where($id,$value));
 	}
 
 	function new_exten($app,$arr=null,$exten='',$context='')
@@ -259,7 +235,7 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 				$this->delete($r[$j]);
 		}
 
-		return($ret);
+		return($id);
 	}
 
 	function delete_exten($id)

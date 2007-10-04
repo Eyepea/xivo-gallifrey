@@ -7,8 +7,7 @@
 
 	$moh_list = $this->vars('moh_list');
 	$autoprov_list = $this->vars('autoprov_list');
-
-	$act = $this->vars('act');
+	$rightcall = $this->vars('rightcall');
 
 	$ringgroup = xivo_bool($info['ufeatures']['ringgroup']);
 
@@ -141,7 +140,7 @@
 <div id="sb-part-autoprov" class="b-nodisplay">
 
 <?php
-	if($act === 'edit'):
+	if($this->vars('act') === 'edit'):
 
 	echo $form->select(array('desc' => $this->bbf('fm_autoprov_modact'),'name' => 'autoprov[modact]','labelid' => 'autoprov-modact','bbf' => 'fm_autoprov_modact-','key' => false,'empty' => true),$element['autoprov']['modact']['value'],'onchange="xivo_chg_attrib(\'fm_autoprov-\'+xivo_protocol,\'it-autoprov-modact\',(this.value != \'\' ? 0 : 1));"');
 
@@ -211,6 +210,36 @@
 	<?=$form->checkbox(array('desc' => $this->bbf('fm_protocol_qualify'),'name' => 'protocol[qualify]','labelid' => 'sip-protocol-qualify','default' => $element['protocol']['sip']['qualify']['default'],'checked' => $info['protocol']['qualify']));?>
 
 	<?=$form->checkbox(array('desc' => $this->bbf('fm_protocol_qualify'),'name' => 'protocol[qualify]','labelid' => 'iax-protocol-qualify','default' => $element['protocol']['iax']['qualify']['default'],'checked' => $info['protocol']['qualify']));?>
+
+<?php
+	if($rightcall['list'] !== false):
+?>
+		<div id="rightcalllist" class="fm-field fm-multilist">
+			<p><label id="lb-rightcalllist" for="it-rightcalllist"><?=$this->bbf('fm_rightcall');?></label></p>
+			<div class="slt-outlist">
+
+		<?=$form->select(array('name' => 'rightcalllist','label' => false,'id' => 'it-rightcalllist','browse' => 'rightcall','key' => 'name','altkey' => 'id','multiple' => true,'size' => 5,'field' => false),$rightcall['list']);?>
+
+			</div>
+			<div class="inout-list">
+
+		<a href="#" onclick="xivo_fm_move_selected('it-rightcalllist','it-rightcall'); return(false);" title="<?=$this->bbf('bt-inrightcall');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt-inrightcall'),'class="bt-inlist" id="bt-inrightcall" border="0"');?></a><br />
+
+		<a href="#" onclick="xivo_fm_move_selected('it-rightcall','it-rightcalllist'); return(false);" title="<?=$this->bbf('bt-outrightcall');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt-outrightcall'),'class="bt-outlist" id="bt-outrightcall" border="0"');?></a>
+
+			</div>
+			<div class="slt-inlist">
+
+		<?=$form->select(array('name' => 'rightcall[]','label' => false,'id' => 'it-rightcall','browse' => 'rightcall','key' => 'name','altkey' => 'id','multiple' => true,'size' => 5,'field' => false),$rightcall['slt']);?>
+
+			</div>
+		</div>
+		<div class="clearboth"></div>
+<?php
+	else:
+		echo '<div class="txt-center">',$url->href_html($this->bbf('create_rightcall'),'service/ipbx/call_management/rightcall','act=add'),'</div>';
+	endif;
+?>
 
 <div id="description" class="fm-field"><p><label id="lb-ufeatures-description" for="it-ufeatures-description"><?=$this->bbf('fm_userfeatures_description');?></label></p>
 <?=$form->textarea(array('field' => false,'label' => false,'name' => 'ufeatures[description]','id' => 'it-ufeatures-description','cols' => 60,'rows' => 5,'default' => $element['ufeatures']['description']['default']),$info['ufeatures']['description']);?>

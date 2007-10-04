@@ -39,25 +39,24 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 		else
 			$data['identity'] .= ' ('.$data['number'].'@'.$data['context'].')';
 
-		$data['commented'] = (bool) $data['commented'];
 		$data['deleted'] = (bool) $data['deleted'];
 
 		return($data);
 	}
 
-	function get($id,$disable=null,$delete=false)
+	function get($id,$delete=false)
 	{
-		return(parent::get($id,$disable,$delete));
+		return(parent::get($id,null,$delete));
 	}
 
-	function get_id($arr,$disable=null,$delete=false)
+	function get_id($arr,$delete=false)
 	{
-		return(parent::get_id($arr,$disable,$delete));
+		return(parent::get_id($arr,null,$delete));
 	}
 
-	function get_where($arr,$disable=null,$delete=false)
+	function get_where($arr,$delete=false)
 	{
-		return(parent::get_where($arr,$disable,$delete));
+		return(parent::get_where($arr,null,$delete));
 	}
 
 	function add($arr)
@@ -78,7 +77,6 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 		}
 
 		$arr['id'] = $last;
-		$arr['commented'] = false;
 		$arr['deleted'] = false;
 
 		if(isset($arr['name']) === true)
@@ -97,7 +95,7 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 		return($r);
 	}
 
-	function edit($id,$arr,$disable=null,$delete=false)
+	function edit($id,$arr,$delete=false)
 	{
 		if(($id = xivo_uint($id)) === 0 || is_array($arr) === false)
 			return(false);
@@ -110,52 +108,52 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 				return(false);
 		}
 
-		return($this->_dso->edit($id,$arr,$disable,$delete));
+		return($this->_dso->edit($id,$arr,null,$delete));
 	}
 
-	function edit_where($id,$arr,$disable=null,$delete=false)
+	function edit_where($id,$arr,$delete=false)
 	{
-		return(parent::edit_where($id,$arr,$disable,$delete));
+		return(parent::edit_where($id,$arr,null,$delete));
 	}
 
-	function delete($id,$disable=null)
+	function delete($id)
 	{
-		return($this->edit($id,array('deleted' => true),$disable));
+		return($this->edit($id,array('deleted' => true)));
 	}
 
-	function delete_where($id,$disable=null)
+	function delete_where($id)
 	{
-		return(parent::edit_where($id,array('deleted' => true),$disable));
+		return(parent::edit_where($id,array('deleted' => true),null));
 	}
 
-	function recover($id,$disable=null)
+	function recover($id)
 	{
-		return($this->edit($id,array('deleted' => false),$disable,true));
+		return($this->edit($id,array('deleted' => false),true));
 	}
 
-	function recover_where($id,$disable=null)
+	function recover_where($id)
 	{
-		return(parent::edit_where($id,array('deleted' => true),$disable,true));
+		return(parent::edit_where($id,array('deleted' => true),null,true));
 	}
 
-	function get_list($disable=null,$delete=false,$order=null,$limit=null)
+	function get_list($delete=false,$order=null,$limit=null)
 	{
-		return(parent::get_list($disable,$delete,$order,$limit));
+		return(parent::get_list(null,$delete,$order,$limit));
 	}
 
-	function get_list_where($arr,$disable=null,$delete=false,$order=null,$limit=null)
+	function get_list_where($arr,$delete=false,$order=null,$limit=null)
 	{
-		return(parent::get_list_where($arr,$disable,$delete,$order,$limit));
+		return(parent::get_list_where($arr,null,$delete,$order,$limit));
 	}
 
-	function get_all($disable=null,$delete=false,$prepare=true,$order=null,$limit=null)
+	function get_all($delete=false,$prepare=true,$order=null,$limit=null)
 	{
-		return(parent::get_all($disable,$delete,$prepare,$order,$limit));
+		return(parent::get_all(null,$delete,$prepare,$order,$limit));
 	}
 
-	function get_all_where($arr,$disable=null,$delete=false,$prepare=true,$order=null,$limit=null)
+	function get_all_where($arr,$delete=false,$prepare=true,$order=null,$limit=null)
 	{
-		return(parent::get_all_where($arr,$disable,$delete,$prepare,$order,$limit));
+		return(parent::get_all_where($arr,null,$delete,$prepare,$order,$limit));
 	}
 
 	function get_all_number()

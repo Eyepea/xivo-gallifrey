@@ -1,6 +1,6 @@
 <?php
 
-class xivo_trac_err
+class xivo_tracerror
 {
 	var $_param = array(
 				'level'		=> 0,
@@ -14,12 +14,12 @@ class xivo_trac_err
 	var $_sapi		= XIVO_SAPI_MODE;
 	var $_conf		= array();
 
-	function xivo_trac_err($param=array())
+	function xivo_tracerror($param=array())
 	{
 		$param = (array) $param;
 
-		if(($this->_conf = xivo_gat::load_get('trac_err',XIVO_PATH_LIBCONF)) === false)
-			die('Failed to load trac_err Array');
+		if(($this->_conf = xivo_gat::load_get('tracerror',XIVO_PATH_LIBCONF)) === false)
+			die('Failed to load tracerror Array');
 
 		if(isset($param['level']) === true && ($param['level'] = $this->_chk_level($param['level'])) !== false)
 			$this->_param['level'] = $param['level'];
@@ -252,7 +252,7 @@ class xivo_trac_err
 
 		if(($report_type & XIVO_TE_RTYPE_LOG) !== 0 && $this->_param['file'] !== false
 		&& ($file = xivo_file::is_f_rw($this->_param['file'])) !== false)
-			error_log($tolabel.' '.$tocontext.' - Message: '.xivo_notag($tomsg_log)."\n",3,$file);
+			error_log(strftime('%Y-%m-%d %H:%M:%S %z').' - '.$tolabel.' '.$tocontext.' - Message: '.xivo_notag($tomsg_log)."\n",3,$file);
 
 		$delayed = false;
 

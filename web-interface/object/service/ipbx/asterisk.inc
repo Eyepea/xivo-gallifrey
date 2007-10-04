@@ -221,7 +221,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 		$queue = &$this->get_module('queue');
 		$qmember = &$this->get_module('queuemember');
 
-		if(($rs = $gfeatures->get_all($disable)) === false || ($nb = count($rs)) === 0)
+		if(($rs = $gfeatures->get_all()) === false || ($nb = count($rs)) === 0)
 			return(false);
 
 		$r = $info = array();
@@ -401,56 +401,6 @@ class xivo_service_asterisk extends xivo_service_abstract
 			$info['member'] = $qmember->get_all_where($where);
 
 			$r[$info['qfeatures']['id']] = $info;
-		}
-
-		if(empty($r) === true)
-			$r = false;
-		else if($assoc === false)
-			$r = array_values($r);
-
-		return($r);
-	}
-
-	function get_group_user($userid=0,$disable=null,$assoc=false)
-	{
-		$userid = xivo_uint($userid);
-		$assoc = (bool) $assoc;
-	
-		$gfeatures = &$this->get_module('groupfeatures');
-		$queue = &$this->get_module('queue');
-		$qmember = &$this->get_module('queuemember');
-
-		if(($rs = $gfeatures->get_all($disable)) === false || ($nb = count($rs)) === 0)
-			return(false);
-
-		$r = $info = array();
-		$where = array('usertype' => 'user','category' => 'group');
-
-		for($i = 0;$i < $nb;$i++)
-		{
-			$info['gfeatures'] = $rs[$i];
-
-			if(($info['queue'] = $queue->get($info['gfeatures']['name'],$disable)) === false)
-				continue;
-
-			$where['queue_name'] = $info['gfeatures']['name'];
-
-			if($userid !== 0)
-			{
-				$where['userid'] = $userid;
-
-				if(($member = $qmember->get_all_where($where)) !== false)
-					$info['member'] = $member[0];
-				else
-					$info['member'] = false;
-
-				$r[$info['gfeatures']['id']] = $info;
-				continue;
-			}
-
-			$info['member'] = $qmember->get_all_where($where);
-
-			$r[$info['gfeatures']['id']] = $info;
 		}
 
 		if(empty($r) === true)
@@ -866,8 +816,10 @@ class xivo_service_asterisk extends xivo_service_abstract
 		return($r);
 	}
 
-	function get_rightcall_list($disable=null)
+	function get_rightcall_list($disable=null,$assoc=false)
 	{
+		$assoc = (bool) $assoc;
+
 		$rightcall = &$this->get_module('rightcall');
 		$rightcallmember = &$this->get_module('rightcallmember');
 		$rightcallexten = &$this->get_module('rightcallexten');
@@ -886,11 +838,13 @@ class xivo_service_asterisk extends xivo_service_abstract
 			$info['rightcallmember'] = $rightcallmember->get_where($where);
 			$info['rightcallexten'] = $rightcallexten->get_where($where);
 
-			$r[] = $info;
+			$r[$info['rightcall']['id']] = $info;
 		}
 
-		if(isset($r[0]) === false)
-			return(false);
+		if(empty($r) === true)
+			$r = false;
+		else if($assoc === false)
+			$r = array_values($r);
 
 		return($r);
 	}
@@ -996,8 +950,6 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 	function get_protocol_element($protocols=array(),$module=false)
 	{
-		$r = false;
-
 		$protocols = (array) $protocols;
 		$module = (bool) $module;
 
@@ -1005,7 +957,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 			$protocols = $this->_conf['protocol'];			
 
 		if(($arr = xivo_get_aks($protocols)) === false)
-			return($r);
+			return(false);
 
 		$r = array();
 

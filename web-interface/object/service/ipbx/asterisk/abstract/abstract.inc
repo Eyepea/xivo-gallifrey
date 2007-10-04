@@ -51,15 +51,13 @@ class xivo_service_asterisk_abstract
 
 	function get_element_where($where)
 	{
-		$r = false;
-
 		if(is_array($where) === false || xivo_issa('element',$this->_conf) === false)
-			return($r);
+			return(false);
 
 		$arr_keys = array_keys($this->_conf['element']);
 
 		if(($nb = count($arr_keys)) === 0)
-			return($r);
+			return(false);
 
 		$r = array();
 

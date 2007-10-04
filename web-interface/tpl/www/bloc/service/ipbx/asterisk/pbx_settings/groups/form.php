@@ -4,9 +4,11 @@
 
 	$element = $this->vars('element');
 	$info = $this->vars('info');
-	$user_slt = $this->vars('user_slt');
-	$user_list = $this->vars('user_list');
+	$user = $this->vars('user');
+	$rightcall = $this->vars('rightcall');
 ?>
+
+<div id="sb-part-first" class="b-nodisplay">
 
 <?=$form->text(array('desc' => $this->bbf('fm_gfeatures_name'),'name' => 'gfeatures[name]','labelid' => 'gfeatures-name','size' => 25,'default' => $element['gfeatures']['name']['default'],'value' => $info['gfeatures']['name']));?>
 
@@ -14,15 +16,19 @@
 
 <?=$form->text(array('desc' => $this->bbf('fm_gfeatures_context'),'name' => 'gfeatures[context]','labelid' => 'gfeatures-context','size' => 25,'default' => $element['gfeatures']['context']['default'],'value' => $info['gfeatures']['context']));?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_queue_timeout'),'name' => 'queue[timeout]','labelid' => 'queue-timeout','bbf' => array('paramkey','fm_queue_timeout-opt'),'key' => false,'default' => $element['queue']['timeout']['default'],'value' => (isset($info['queue']['timeout']) === true ? (int) $info['queue']['timeout'] : null)),$element['queue']['timeout']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_queue_timeout'),'name' => 'queue[timeout]','labelid' => 'queue-timeout','bbf' => array('mixkey','fm_queue_timeout-opt'),'key' => false,'default' => $element['queue']['timeout']['default'],'value' => (isset($info['queue']['timeout']) === true ? (int) $info['queue']['timeout'] : null)),$element['queue']['timeout']['value']);?>
+
+</div>
+
+<div id="sb-part-user" class="b-nodisplay">
 
 <?php
-	if($user_list !== false):
+	if($user['list'] !== false):
 ?>
-<div id="userlist" class="fm-field fm-multilist"><p><label id="lb-userlist" for="it-userlist"><?=$this->bbf('fm_user');?></label></p>
+<div id="userlist" class="fm-field fm-multilist">
 	<div class="slt-outlist">
 
-	<?=$form->select(array('name' => 'userlist','label' => false,'id' => 'it-userlist','multiple' => true,'size' => 5,'field' => false,'key' => 'identity'),$user_list);?>
+	<?=$form->select(array('name' => 'userlist','label' => false,'id' => 'it-userlist','multiple' => true,'size' => 5,'field' => false,'browse' => 'ufeatures','key' => 'identity','altkey' => 'id'),$user['list']);?>
 
 	</div>
 	<div class="inout-list">
@@ -34,7 +40,7 @@
 	</div>
 	<div class="slt-inlist">
 
-		<?=$form->select(array('name' => 'user[]','label' => false,'id' => 'it-user','multiple' => true,'size' => 5,'field' => false,'key' => 'identity'),$user_slt);?>
+		<?=$form->select(array('name' => 'user[]','label' => false,'id' => 'it-user','multiple' => true,'size' => 5,'field' => false,'browse' => 'ufeatures','key' => 'identity','altkey' => 'id'),$user['slt']);?>
 
 	</div>
 </div>
@@ -44,3 +50,36 @@
 		echo '<div class="txt-center">',$url->href_html($this->bbf('create_user'),'service/ipbx/pbx_settings/users','act=add'),'</div>';
 	endif;
 ?>
+</div>
+
+<div id="sb-part-last" class="b-nodisplay">
+
+<?php
+	if($rightcall['list'] !== false):
+?>
+		<div id="rightcalllist" class="fm-field fm-multilist">
+			<div class="slt-outlist">
+
+		<?=$form->select(array('name' => 'rightcalllist','label' => false,'id' => 'it-rightcalllist','browse' => 'rightcall','key' => 'name','altkey' => 'id','multiple' => true,'size' => 5,'field' => false),$rightcall['list']);?>
+
+			</div>
+			<div class="inout-list">
+
+		<a href="#" onclick="xivo_fm_move_selected('it-rightcalllist','it-rightcall'); return(false);" title="<?=$this->bbf('bt-inrightcall');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt-inrightcall'),'class="bt-inlist" id="bt-inrightcall" border="0"');?></a><br />
+
+		<a href="#" onclick="xivo_fm_move_selected('it-rightcall','it-rightcalllist'); return(false);" title="<?=$this->bbf('bt-outrightcall');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt-outrightcall'),'class="bt-outlist" id="bt-outrightcall" border="0"');?></a>
+
+			</div>
+			<div class="slt-inlist">
+
+		<?=$form->select(array('name' => 'rightcall[]','label' => false,'id' => 'it-rightcall','browse' => 'rightcall','key' => 'name','altkey' => 'id','multiple' => true,'size' => 5,'field' => false),$rightcall['slt']);?>
+
+			</div>
+		</div>
+		<div class="clearboth"></div>
+<?php
+	else:
+		echo '<div class="txt-center">',$url->href_html($this->bbf('create_rightcall'),'service/ipbx/call_management/rightcall','act=add'),'</div>';
+	endif;
+?>
+</div>

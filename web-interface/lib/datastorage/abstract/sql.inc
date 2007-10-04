@@ -188,7 +188,10 @@ class xivo_datastorage_abstract_sql
 
 		$q = sprintf('DELETE FROM %s WHERE %s%s',$t,($w !== '' ? $w : 1),$o);
 
-		return(($this->query($q) !== false ? true : false));
+		if(($r = $this->query($q)) !== false)
+			$r = (bool) $this->affected_rows();
+
+		return($r);
 	}
 
 	function where($data,$escape=true)

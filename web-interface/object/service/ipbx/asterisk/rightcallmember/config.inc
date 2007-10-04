@@ -14,6 +14,7 @@ $array['element']['typeval'] = array();
 $array['element']['typeval']['default'] = '';
 
 $array['filter'] = array();
+$array['filter']['rightcallid'] = array('cast' => 'uint');
 $array['filter']['type'] = array('key' => array('user','group','outcall'));
 $array['filter']['typeval'] = array('maxlen' => 128,'rexgep' => '/^[a-z0-9_-]+$/');
 

@@ -1,21 +1,12 @@
 <?php
 
-require_once(XIVO_PATH_OBJECT.XIVO_SEP_DIR.'application'.XIVO_SEP_DIR.'abstract.inc');
+xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk.inc'),true);
 
-class xivo_application_service_asterisk_user extends xivo_application_abstract
+class xivo_application_service_asterisk_user extends xivo_application_asterisk_abstract
 {
-	var $_ipbx	= null;
 	var $_protocol	= false;
 	var $_origin	= array();
 	var $_status	= '';
-
-	function xivo_application_service_asterisk_user(&$ipbx)
-	{
-		if(is_object($ipbx) === false || get_class($ipbx) !== 'xivo_service_asterisk')
-			trigger_error('Invalid service in '.__CLASS__,E_USER_ERROR);
-
-		$this->_ipbx = &$ipbx;
-	}
 
 	function _reset()
 	{
@@ -42,6 +33,7 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 		$this->_get_extenumbers();
 		$this->_get_groupmember();
 		$this->_get_queuemember();
+		$this->_get_rightcall();
 		$this->_get_usergroup();
 		$this->_get_voicemail();
 		$this->_get_autoprov();
@@ -126,9 +118,9 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 		$where['usertype'] = 'user';
 		$where['userid'] = $this->_info['ufeatures']['id'];
 
-		if(($qmember = &$this->_ipbx->get_module('queuemember')) === false
+		if(($queuemember = &$this->_ipbx->get_module('queuemember')) === false
 		|| ($module = &$this->_ipbx->get_module($type.'features')) === false
-		|| ($this->_info[$membertype] = $qmember->get_all_where($where)) === false
+		|| ($this->_info[$membertype] = $queuemember->get_all_where($where)) === false
 		|| ($nb = count($this->_info[$membertype])) === 0)
 			return(false);
 
@@ -145,9 +137,28 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 				$ref[$i]['gfeaturesid'] = $id;
 		}
 
-		$this->_origin[$membertype] = $qmember->get_origin_list();
+		$this->_origin[$membertype] = $queuemember->get_origin_list();
 
 		return($this->_info[$membertype]);
+	}
+
+	function _get_rightcall()
+	{
+		$this->_info['rightcall'] = false;
+		$this->_origin['rightcall'] = false;
+
+		$where = array();
+		$where['type'] = 'user';
+		$where['typeval'] = $this->_info['ufeatures']['id'];
+
+		if(($rightcallmember = &$this->_ipbx->get_module('rightcallmember')) === false
+		|| ($this->_info['rightcall'] = $rightcallmember->get_all_where($where)) === false
+		|| isset($this->_info['rightcall'][0]) === false)
+			return(false);
+
+		$this->_origin['rightcall'] = $rightcallmember->get_origin_list();
+
+		return($this->_info['rightcall']);
 	}
 
 	function _get_usergroup()
@@ -210,8 +221,8 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 		else
 			$r['ufeatures'] = false;
 
-		if(($qmember = &$this->_ipbx->get_module('queuemember')) !== false)
-			$r['qmember'] = $qmember->get_element();
+		if(($queuemember = &$this->_ipbx->get_module('queuemember')) !== false)
+			$r['qmember'] = $queuemember->get_element();
 		else
 			$r['qmember'] = false;
 
@@ -309,6 +320,9 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 		if(xivo_issa('queue',$arr) === true && xivo_issa('queue-select',$arr) === true)
 			$this->set_queuemember($arr['queue'],$arr['queue-select'],$name,$context,$number,$protocol);
 
+		if(xivo_issa('rightcall',$arr) === true)
+			$this->set_rightcall($arr['rightcall']);
+
 		if(xivo_issa('voicemail',$arr) === true)
 			$this->set_voicemail($arr['voicemail'],$context,$number);
 
@@ -329,7 +343,7 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 		|| ($proto = &$this->_ipbx->get_protocol_module($protocol)) === false)
 		{
 			$this->_set_result('protocol',null);
-			$this->_set_error('protocol','invalid');
+			$this->_set_error('protocol','invalid module');
 			return(false);
 		}
 
@@ -355,7 +369,7 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 		|| ($ufeatures = &$this->_ipbx->get_module('userfeatures')) === false)
 		{
 			$this->_set_result('ufeatures',null);
-			$this->_set_error('ufeatures','invalid');
+			$this->_set_error('ufeatures','invalid module');
 			return(false);
 		}
 
@@ -372,21 +386,6 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 		return(true);
 	}
 
-	function set_macro($action,$name,$exten,$arr,$context)
-	{
-		if(($action !== 'add' && $action !== 'edit') === true
-		|| is_string($name) === false
-		|| ($extensions = &$this->_ipbx->get_module('extensions')) === false)
-			return(false);
-
-		if($action === 'edit' && xivo_issa($name,$this->_info) !== false)
-			$rs = $extensions->chk_exten('macro',$arr,$exten,$context);
-		else
-			$rs = $extensions->new_exten('macro',$arr,$exten,$context);
-
-		return($rs);
-	}
-
 	function set_hints($action,$name,$protocol,$number)
 	{
 		if(($action !== 'add' && $action !== 'edit') === true
@@ -399,41 +398,6 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 			$rs = $extensions->new_hints($name,$protocol,$number);
 
 		return($rs);
-	}
-
-	function set_extenumbers($action,$number,$context)
-	{
-		if(($action !== 'add' && $action !== 'edit') === true
-		|| ($extenumbers = &$this->_ipbx->get_module('extenumbers')) === false)
-			return(false);
-
-		if($action === 'edit' && xivo_issa('extenumbers',$this->_info) === true)
-			$id = $this->_info['extenumbers']['id'];
-		else
-			$id = null;
-
-		$extenum = array();
-		$extenum['exten'] = $number;
-		$extenum['context'] = $context;
-
-		$exists = false;
-
-		if(($rs = $extenumbers->chk_values($extenum)) === false
-		|| ($exists = $extenumbers->exists($rs,$id)) !== false)
-		{
-			$this->_set_result('extenumbers',$extenumbers->get_filter_result());
-
-			if($exists === false)
-				$this->_set_error('extenumbers',$extenumbers->get_filter_error());
-			else
-				$this->_set_error('extenumbers','exists');
-
-			return(false);
-		}
-
-		$rs = $this->_set_result('extenumbers',$rs);
-
-		return(true);
 	}
 
 	function set_groupmember($group,$select,$name,$context='',$number='',$protocol='')
@@ -456,12 +420,12 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 		|| is_array($list) === false
 		|| is_array($select) === false
 		|| ($module = &$this->_ipbx->get_module($type.'features')) === false
-		|| ($qmember = &$this->_ipbx->get_module('queuemember')) === false)
+		|| ($queuemember = &$this->_ipbx->get_module('queuemember')) === false)
 			return(false);
 
 		$slt = array_values($select);
 
-		if(($nb = count($slt)) === false)
+		if(($nb = count($slt)) === 0)
 			return(null);
 
 		$info = array();
@@ -471,7 +435,13 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 
 		$key = $type.'member';
 
-		$tmp = $type_list = $callgroup = array();
+		$tmp = $reslist = array();
+
+		if($type === 'group')
+		{
+			$callgroup = array();
+			$info['penalty'] = 0;
+		}
 
 		for($i = 0;$i < $nb;$i++)
 		{
@@ -490,7 +460,7 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 
 			$values = array_merge($list[$qname],$info);
 
-			if(($rs = $qmember->chk_values($values)) === false)
+			if(($rs = $queuemember->chk_values($values)) === false)
 				continue;
 
 			if($type === 'queue')
@@ -502,10 +472,10 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 			}
 
 			$tmp[$qname] = 1;
-			$type_list[] = $rs;
+			$reslist[] = $rs;
 		}
 
-		if(isset($type_list[0]) === false)
+		if(isset($reslist[0]) === false)
 		{
 			$this->_set_result($key,false);
 
@@ -514,10 +484,58 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 			return(false);
 		}
 
-		$this->_set_result($key,$type_list);
+		$this->_set_result($key,$reslist);
 
 		if($type === 'group')
 			$this->_set_result('callgroup',$callgroup);
+
+		return(true);
+	}
+
+	function set_rightcall($list)
+	{
+		if(is_array($list) === false
+		|| ($rightcallmember = &$this->_ipbx->get_module('rightcallmember')) === false
+		|| ($rightcall = &$this->_ipbx->get_module('rightcall')) === false)
+			return(false);
+
+		$list = array_values($list);
+
+		if(($nb = count($list)) === 0)
+			return(null);
+
+		$info = array();
+		$info['rightcallid'] = 0;
+		$info['type'] = 'user';
+		$info['typeval'] = 0;
+		
+		$tmp = $reslist = array();
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			if(($rightcallid = $rightcall->get_id($list[$i])) === false)
+			{
+				$this->_set_error('rightcall','wrong rightcall');
+				continue;
+			}
+
+			$info['rightcallid'] = $rightcallid;
+
+			if(($rs = $rightcallmember->chk_values($info)) === false
+			|| isset($tmp[$rightcallid]) === true)
+				continue;
+
+			$tmp[$rightcallid] = 1;
+			$reslist[] = $rs;
+		}
+
+		if(isset($reslist[0]) === false)
+		{
+			$this->_set_result('rightcall',false);
+			return(false);
+		}
+
+		$this->_set_result('rightcall',$reslist);
 
 		return(true);
 	}
@@ -609,34 +627,6 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 		return(true);
 	}
 
-	function mk_interface($name,$chantype,$context='',$number='',$protocol='')
-	{
-		$chantype = strval($chantype);
-		$number = strval($number);
-
-		$r = array();
-
-		switch($chantype)
-		{
-			case XIVO_SRE_IPBX_AST_CHAN_LOCAL:
-				$r['interface'] = $this->_ipbx->mk_interface($name,null,$number,$context);
-
-				if($number === '' || $r['interface'] === false)
-					return(false);
-
-				$r['channel'] = XIVO_SRE_IPBX_AST_CHAN_LOCAL;
-				break;
-			default:
-				$r['interface'] = $this->_ipbx->mk_interface($name,$protocol);
-				$r['channel'] = $this->_ipbx->get_channel_by_protocol($protocol);
-
-				if($r['interface'] === false || $r['channel'] === false)
-					return(false);
-		}
-
-		return($r);
-	}
-
 	function add()
 	{
 		$this->_status = 'add';
@@ -652,6 +642,7 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 		|| $this->add_extenumbers() === false
 		|| $this->add_groupmember($ufeaturesid) === false
 		|| $this->add_queuemember($ufeaturesid) === false
+		|| $this->add_rightcall($ufeaturesid) === false
 		|| $this->add_voicemail() === false
 		|| $this->add_phone($ufeaturesid) === false)
 		{
@@ -695,17 +686,6 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 		return($this->_return['userfeatures']);
 	}
 
-	function add_macro($name)
-	{
-		if(($rs = $this->get_result($name)) === null || $rs === false)
-			return($rs);
-
-		$extensions = &$this->_ipbx->get_module('extensions');
-		$this->_return[$name] = $extensions->add_exten($rs);
-
-		return($this->_return[$name]);
-	}
-
 	function add_hints()
 	{
 		if(($rs = $this->get_result('hints')) === null || $rs === false)
@@ -715,17 +695,6 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 		$this->_return['hints'] = $extensions->add_hints($rs);
 
 		return($this->_return['hints']);
-	}
-
-	function add_extenumbers()
-	{
-		if(($rs = $this->get_result('extenumbers')) === null || $rs === false)
-			return($rs);
-
-		$extenumbers = &$this->_ipbx->get_module('extenumbers');
-		$this->_return['extenumbers'] = $extenumbers->add($rs);
-
-		return($this->_return['extenumbers']);
 	}
 
 	function add_groupmember($ufeaturesid)
@@ -749,9 +718,9 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 		if(($rs = $this->get_result($key)) === null || $rs === false)
 			return($rs);
 		
-		$qmember = &$this->_ipbx->get_module('queuemember');
+		$queuemember = &$this->_ipbx->get_module('queuemember');
 
-		$this->_return[$key] = array();
+		$id = $this->_return[$key] = array();
 
 		$nb = count($rs);
 
@@ -761,12 +730,45 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 
 			unset($rs[$i]['gfeaturesid'],$rs[$i]['qfeaturesid']);
 
-			if(($this->_return[$key][] = $qmember->add($rs[$i])) === false)
+			$id['queue_name'] = $rs[$i]['queue_name'];
+			$id['interface'] = $rs[$i]['interface'];
+
+			if($queuemember->add($rs[$i]) === false)
 				return(false);
+
+			$this->_return[$key][] = $id;
 		}
 
 		if(isset($this->_return[$key][0]) === false)
 			$this->_return[$key] = false;
+
+		return(true);
+	}
+
+	function add_rightcall($ufeaturesid)
+	{
+		if(($ufeaturesid = xivo_uint($ufeaturesid)) === 0)
+			return(false);
+
+		if(($rs = $this->get_result('rightcall')) === null || $rs === false)
+			return($rs);
+
+		$rightcallmember = &$this->_ipbx->get_module('rightcallmember');
+
+		$this->_return['rightcall'] = array();
+
+		$nb = count($rs);
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			$rs[$i]['typeval'] = $ufeaturesid;
+
+			if(($this->_return['rightcall'][] = $rightcallmember->add($rs[$i])) === false)
+				return(false);
+		}
+
+		if(isset($this->_return['rightcall'][0]) === false)
+			$this->_return['rightcall'] = false;
 
 		return(true);
 	}
@@ -836,7 +838,7 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 					break;
 				case 'groupmember':
 				case 'queuemember':
-					$qmember = &$this->_ipbx->get_module('queuemember');
+					$queuemember = &$this->_ipbx->get_module('queuemember');
 
 					if(is_array($val) === false || ($nb = count($val)) === 0)
 						continue;
@@ -844,7 +846,19 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 					for($j = 0;$j < $nb;$j++)
 					{
 						if($val[$j] !== false)
-							$qmember->delete($val[$j]);
+							$queuemember->delete($val[$j]);
+					}
+					break;
+				case 'rightcall':
+					$rightcallmember = &$this->_ipbx->get_module('rightcallmember');
+
+					if(is_array($val) === false || ($nb = count($val)) === 0)
+						continue;
+
+					for($j = 0;$j < $nb;$j++)
+					{
+						if($val[$j] !== false)
+							$rightcallmember->delete($val[$j]);
 					}
 					break;
 				case 'autoprov':
@@ -915,6 +929,7 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 
 		if($this->edit_groupmember() === false
 		|| $this->edit_queuemember() === false
+		|| $this->edit_rightcall() === false
 		|| $this->edit_voicemail() === false)
 		{
 			$this->_reverse_edit($protocolret);
@@ -1010,21 +1025,6 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 		return($this->_return['userfeatures']);
 	}
 
-	function edit_macro($name)
-	{
-		$rs = false;
-
-		if(xivo_issa($name,$this->_info) === false
-		|| ($rs = $this->get_result($name)) === null
-		|| $rs === false)
-			return($rs);
-
-		$extensions = &$this->_ipbx->get_module('extensions');
-		$this->_return[$name] = $extensions->edit($this->_info[$name]['id'],$rs);
-
-		return($this->_return[$name]);
-	}
-
 	function edit_hints()
 	{
 		$rs = false;
@@ -1038,21 +1038,6 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 		$this->_return['hints'] = $extensions->edit($this->_info['hints']['id'],$rs);
 
 		return($this->_return['hints']);
-	}
-
-	function edit_extenumbers()
-	{
-		$rs = false;
-
-		if(xivo_issa('extenumbers',$this->_info) === false
-		|| ($rs = $this->get_result('extenumbers')) === null
-		|| $rs === false)
-			return($rs);
-
-		$extenumbers = &$this->_ipbx->get_module('extenumbers');
-		$this->_return['extenumbers'] = $extenumbers->edit($this->_info['extenumbers']['id'],$rs);
-
-		return($this->_return['extenumbers']);
 	}
 
 	function edit_groupmember()
@@ -1098,9 +1083,9 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 		if(($rs = $this->get_result($key)) === null || $rs === false)
 			return($rs);
 	
-		$qmember = &$this->_ipbx->get_module('queuemember');
+		$queuemember = &$this->_ipbx->get_module('queuemember');
 
-		$this->_return[$key] = array();
+		$id = $this->_return[$key] = array();
 
 		$nb = count($rs);
 
@@ -1110,12 +1095,53 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 
 			unset($rs[$i]['gfeaturesid'],$rs[$i]['qfeaturesid']);
 
-			if(($this->_return[$key][] = $qmember->add($rs[$i])) === false)
+			$id['queue_name'] = $rs[$i]['queue_name'];
+			$id['interface'] = $rs[$i]['interface'];
+
+			if($queuemember->add($rs[$i]) === false)
 				return(false);
+
+			$this->_return[$key][] = $id;
 		}
 
 		if(isset($this->_return[$key][0]) === false)
 			$this->_return[$key] = false;
+
+		return(true);
+	}
+
+	function edit_rightcall()
+	{
+		if(xivo_issa('ufeatures',$this->_info) === false)
+			return(false);
+
+		if(xivo_issa('rightcall',$this->_info) === false)
+			return($this->add_rightcall($this->_info['ufeatures']['id']));
+
+		$this->_return['rightcall'] = $this->delete_rightcall();
+
+		if(($rs = $this->get_result('rightcall')) === null)
+			return($this->_return['rightcall']);
+
+		if($rs === false)
+			return($rs);
+
+		$rightcallmember = &$this->_ipbx->get_module('rightcallmember');
+
+		$this->_return['rightcall'] = array();
+
+		$nb = count($rs);
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			$rs[$i]['typeval'] = $this->_info['ufeatures']['id'];
+
+			if(($this->_return['rightcall'][] = $rightcallmember->add($rs[$i])) === false)
+				return(false);
+		}
+
+		if(isset($this->_return['rightcall'][0]) === false)
+			$this->_return['rightcall'] = false;
 
 		return(true);
 	}
@@ -1216,14 +1242,14 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 					else
 						$this->delete_queuemember();
 
-					if($this->_origin[$key] === false
-					|| ($nb = count($this->_origin[$key])) === 0)
-						continue;
+					$queuemember = &$this->_ipbx->get_module('queuemember');
+					$queuemember->add_origin_list($this->_origin[$key]);
+					break;
+				case 'rightcall':
+					$this->delete_rightcall();
 
-					$qmember = &$this->_ipbx->get_module('queuemember');
-
-					for($j = 0;$j < $nb;$j++)
-						$qmember->add_origin($this->_origin[$key][$j]);
+					$rightcallmember = &$this->_ipbx->get_module('rightcallmember');
+					$rightcallmember->add_origin_list($this->_origin['rightcall']);
 					break;
 				case 'autoprov':
 					break;
@@ -1252,6 +1278,7 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 		|| $this->delete_extenumbers() === false
 		|| $this->delete_groupmember() === false
 		|| $this->delete_queuemember() === false
+		|| $this->delete_rightcall() === false
 		|| $this->delete_voicemail() === false
 		|| $this->delete_phone() === false)
 		{
@@ -1300,41 +1327,9 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 		return($r);
 	}
 
-	function delete_macro($name)
-	{
-		if(xivo_issa($name,$this->_info) === false)
-			return(null);
-
-		if(($extensions = &$this->_ipbx->get_module('extensions')) === false)
-			return(false);
-
-		$r = $extensions->delete($this->_info[$name]['id']);
-
-		if($this->_status === 'delete')
-			$this->_return[$name] = $r;
-
-		return($r);
-	}
-
 	function delete_hints()
 	{
 		return($this->delete_macro('hints'));
-	}
-
-	function delete_extenumbers()
-	{
-		if(xivo_issa('extenumbers',$this->_info) === false)
-			return(null);
-
-		if(($extenumbers = &$this->_ipbx->get_module('extenumbers')) === false)
-			return(false);
-
-		$r = $extenumbers->delete($this->_info['extenumbers']['id']);
-
-		if($this->_status === 'delete')
-			$this->_return['extenumbers'] = $r;
-
-		return($r);
 	}
 
 	function delete_groupmember()
@@ -1358,18 +1353,39 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 			return(null);
 
 		if(xivo_issa('ufeatures',$this->_info) === false
-		|| ($qmember = &$this->_ipbx->get_module('queuemember')) === false)
+		|| ($queuemember = &$this->_ipbx->get_module('queuemember')) === false)
 			return(false);
 
-		$qmember_where = array();
-		$qmember_where['type'] = 'user';
-		$qmember_where['category'] = $type;
-		$qmember_where['userid'] = $this->_info['ufeatures']['id'];
+		$queuemember_where = array();
+		$queuemember_where['usertype'] = 'user';
+		$queuemember_where['category'] = $type;
+		$queuemember_where['userid'] = $this->_info['ufeatures']['id'];
 
-		$r = $qmember->delete_where($qmember_where);
+		$r = $queuemember->delete_where($queuemember_where);
 
 		if($this->_status === 'delete')
 			$this->_return[$key] = $r;
+
+		return($r);
+	}
+
+	function delete_rightcall()
+	{
+		if(xivo_issa('rightcall',$this->_info) === false)
+			return(null);
+
+		if(xivo_issa('ufeatures',$this->_info) === false
+		|| ($rightcallmember = &$this->_ipbx->get_module('rightcallmember')) === false)
+			return(false);
+
+		$rightcallmember_where = array();
+		$rightcallmember_where['type'] = 'user';
+		$rightcallmember_where['typeval'] = $this->_info['ufeatures']['id'];
+
+		$r = $rightcallmember->delete_where($rightcallmember_where);
+
+		if($this->_status === 'delete')
+			$this->_return['rightcall'] = $r;
 
 		return($r);
 	}
@@ -1417,6 +1433,9 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 		{
 			$key = &$arr['keys'][$i];
 
+			if($this->_return[$key] === false)
+				continue;
+
 			switch($key)
 			{
 				case 'protocol':
@@ -1444,14 +1463,12 @@ class xivo_application_service_asterisk_user extends xivo_application_abstract
 					break;
 				case 'groupmember':
 				case 'queuemember':
-					if($this->_origin[$key] === false
-					|| ($nb = count($this->_origin[$key])) === 0)
-						continue;
-
-					$qmember = &$this->_ipbx->get_module('queuemember');
-
-					for($j = 0;$j < $nb;$j++)
-						$qmember->add_origin($this->_origin[$key][$j]);
+					$queuemember = &$this->_ipbx->get_module('queuemember');
+					$queuemember->add_origin_list($this->_origin[$key]);
+					break;
+				case 'rightcall':
+					$rightcallmember = &$this->_ipbx->get_module('rightcallmember');
+					$rightcallmember->add_origin_list($this->_origin['rightcall']);
 					break;
 				case 'autoprov':
 					break;

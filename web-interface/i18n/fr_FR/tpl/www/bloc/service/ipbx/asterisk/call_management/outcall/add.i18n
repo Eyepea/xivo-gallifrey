@@ -1,6 +1,12 @@
 ; title_content_name
 Appels sortants > Ajouter
 
+; smenu_general
+Général
+
+; smenu_rightcalls
+Droits d'appels
+
 ; fm_outcall_name
 Nom :
 
@@ -87,6 +93,15 @@ Illimité
 
 ; fm_outcall_hangupringtime-opt
 %s min. %s sec.
+
+; bt-inrightcall
+Ajouter un ou plusieurs droits d'appels ->
+
+; bt-outrightcall
+<- Enlever un ou plusieurs droits d'appels
+
+; create_rightcall
+Créer un droit d'appel
 
 ; fm_bt-save
 Sauvegarder

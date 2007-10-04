@@ -1,6 +1,15 @@
 ; title_content_name
 Groupes > Ajouter
 
+; smenu_general
+Général
+
+; smenu_users
+Utilisateurs
+
+; smenu_rightcalls
+Droits d'appels
+
 ; fm_gfeatures_name
 Nom :
 
@@ -13,17 +22,29 @@ Contexte :
 ; fm_queue_timeout
 Temps de sonnerie :
 
+; fm_queue_timeout-opt0
+Désactivé
+
 ; fm_queue_timeout-opt
 %s secondes
-
-; fm_user
-Utilisateurs :
 
 ; bt-inuser
 Ajouter un ou plusieurs utilisateurs ->
 
 ; bt-outuser
 <- Enlever un ou plusieurs utilisateurs
+
+; create_user
+Créer un utilisateur
+
+; bt-inrightcall
+Ajouter un ou plusieurs droits d'appels ->
+
+; bt-outrightcall
+<- Enlever un ou plusieurs droits d'appels
+
+; create_rightcall
+Créer un droit d'appel
 
 ; fm_bt-save
 Sauvegarder
