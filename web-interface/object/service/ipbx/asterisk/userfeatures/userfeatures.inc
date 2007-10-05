@@ -216,8 +216,10 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		return($r);
 	}
 
-	function get_all_number()
+	function get_all_number($id=0)
 	{
+		$id = xivo_uint($id);
+
 		if(($list = $this->get_all()) === false)
 			return(false);
 
@@ -229,7 +231,7 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		{
 			$info = $list[$i];
 
-			if(xivo_empty($info['number']) === true)
+			if($id === (int) $info['id'] || xivo_empty($info['number']) === true)
 				continue;
 
 			$r[] = $info;

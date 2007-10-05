@@ -10,8 +10,6 @@
 
 	$queues = $this->vars('queues');
 	$qmember = $this->vars('qmember');
-
-	$ringgroup = xivo_bool($info['ufeatures']['ringgroup']);
 ?>
 
 <fieldset id="fld-group">
@@ -38,17 +36,7 @@
 
 		</div>
 	</div>
-
-	<div class="clearboth">
-
-		<?=$form->checkbox(array('desc' => $this->bbf('fm_userfeatures_ringgroup'),'name' => 'ufeatures[ringgroup]','labelid' => 'ufeatures-ringgroup','default' => $element['ufeatures']['ringgroup']['default'],'checked' => $ringgroup),(empty($gmember['slt']) === true ? 'disabled="disabled" ' : '').'onclick="xivo_eid(\'ringgroup\').style.display = this.checked == true ? \'block\' : \'none\';"');?>
-
-		<div id="ringgroup"<?=($ringgroup !== true ? ' class="b-nodisplay"' : '')?>>
-
-		<?=$form->select(array('desc' => $this->bbf('fm_usergroup'),'name' => 'usergroup','id' => 'it-usergroup','browse' => 'gfeatures','key' => 'name','altkey' => 'name','value' => $info['usergroup']['groupid']),$gmember['slt']);?>
-		</div>
-
-	</div>
+	<div class="clearboth"></div>
 
 	<div class="sb-list">
 		<table cellspacing="0" cellpadding="0" border="0">

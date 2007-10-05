@@ -63,54 +63,28 @@ class xivo_service_asterisk_incall extends xivo_service_asterisk_abstract
 		return($this->edit_where($id,array('linked' => false),$disable));
 	}
 
-	function is_valid($type,$typeval,$id=null,$disable=null)
+	function is_valid($type,$typeval,$disable=null)
 	{
-		$type = strval($type);
-		$id = $id !== null ? xivo_uint($id) : null;
-		$module = $number = false;
-
 		switch($type)
 		{
 			case 'endcall':
 			case 'application':
-				if(is_scalar($typeval) === false
-				|| ($endcall = $this->get_element_value($type)) === false
-				|| in_array($typeval,$endcall,true) === false)
-					return(false);
-
-				return(true);
+				return($this->_chk_dest_value($type,$typeval));
 			case 'custom':
-				if(preg_match('/^[a-zA-Z]{3,}\((.*)\)$/',$typeval,$match) === 1
-				&& ($match[1] === ''
-				   || (ctype_print($match[1]) === true
-				      && trim($match[1]) === $match[1]) === true))
-					return(true);
-
-				return(false);
+				return($this->chk_dest_custom($typeval));
 			case 'schedule':
-				$typeval = (int) $typeval;
-
-				$module = $this->_sre->get_module('schedule');
-				break;
+				return($this->chk_dest_schedule($typeval,null,$disable));
 			case 'user':
+				return($this->chk_dest_user($typeval,null,$disable));
 			case 'group':
+				return($this->chk_dest_group($typeval,null,$disable));
 			case 'queue':
+				return($this->chk_dest_queue($typeval,null,$disable));
 			case 'meetme':
-				$number = true;
-				$typeval = (int) $typeval;
-
-				$module = $this->_sre->get_module($type.'features');
-				break;
-			default:
-				return(false);
+				return($this->chk_dest_meetme($typeval,null,$disable));
 		}
 
-		if($module === false
-		|| ($info = $module->get($typeval,$disable)) === false
-		|| ($number === true && xivo_empty($info['number']) === true) === true)
-			return(false);
-
-		return($info);
+		return(false);
 	}
 }
 

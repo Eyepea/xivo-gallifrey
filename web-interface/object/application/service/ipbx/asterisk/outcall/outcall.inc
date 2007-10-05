@@ -452,15 +452,42 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 			return($this->_return['rightcall']);
 
 		if($rs === false)
-			return($rs);
+			return(false);
 
 		$rightcallmember = &$this->_ipbx->get_module('rightcallmember');
 
 		$this->_return['rightcall'] = array();
 
+		$i = 0;
 		$nb = count($rs);
 
-		for($i = 0;$i < $nb;$i++)
+		if(($cnt = count($this->_info['rightcall'])) !== 0)
+		{
+			for($i;$i < $cnt;$i++)
+			{
+				if(isset($rs[$i]) === false)
+				{
+					$i = $nb;
+					break;
+				}
+
+				$id = $this->_info['rightcall'][$i]['id'];
+				$rs[$i]['typeval'] = $this->_info['outcall']['id'];
+
+				if(($this->_return['rightcall'][] = $rightcallmember->add($rs[$i],$id)) === false)
+					return(false);
+			}
+		}
+
+		if($i >= $nb)
+		{
+			if(isset($this->_return['rightcall'][0]) === false)
+				$this->_return['rightcall'] = false;
+
+			return(true);
+		}
+
+		for($i;$i < $nb;$i++)
 		{
 			$rs[$i]['typeval'] = $this->_info['outcall']['id'];
 

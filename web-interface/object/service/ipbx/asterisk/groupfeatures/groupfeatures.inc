@@ -156,8 +156,10 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 		return(parent::get_all_where($arr,null,$delete,$prepare,$order,$limit));
 	}
 
-	function get_all_number()
+	function get_all_number($id=0)
 	{
+		$id = xivo_uint($id);
+
 		if(($list = $this->get_all()) === false)
 			return(false);
 
@@ -169,7 +171,7 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 		{
 			$info = $list[$i];
 
-			if(xivo_empty($info['number']) === true)
+			if($id === (int) $info['id'] || xivo_empty($info['number']) === true)
 				continue;
 
 			$r[] = $info;

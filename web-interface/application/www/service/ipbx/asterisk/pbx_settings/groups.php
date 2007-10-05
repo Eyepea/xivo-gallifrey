@@ -75,13 +75,20 @@ switch($act)
 			}
 		}
 
-		$dhtml = &$_HTML->get_module('dhtml');
-		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
+		if(empty($result) === false
+		&& (xivo_issa('dialstatus',$result) === false || empty($result['dialstatus']) === true) === true)
+			$result['dialstatus'] = null;
 
+		$_HTML->assign('info',$result);
+		$_HTML->assign('dialstatus',$result['dialstatus']);
+		$_HTML->assign('element',$appgroup->get_element());
 		$_HTML->assign('user',$user);
 		$_HTML->assign('rightcall',$rightcall);
-		$_HTML->assign('element',$appgroup->get_element());
-		$_HTML->assign('info',$result);
+		$_HTML->assign('list',$appgroup->get_element_dialstatus_list());
+
+		$dhtml = &$_HTML->get_module('dhtml');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialstatus.js');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 		break;
 	case 'edit':
 		$appgroup = &$ipbx->get_application('group');
@@ -148,14 +155,21 @@ switch($act)
 			}
 		}
 
-		$dhtml = &$_HTML->get_module('dhtml');
-		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
+		if(empty($return) === false
+		&& (xivo_issa('dialstatus',$return) === false || empty($return['dialstatus']) === true) === true)
+			$return['dialstatus'] = null;
 
 		$_HTML->assign('id',$info['gfeatures']['id']);
+		$_HTML->assign('info',$return);
+		$_HTML->assign('dialstatus',$return['dialstatus']);
 		$_HTML->assign('user',$user);
 		$_HTML->assign('rightcall',$rightcall);
-		$_HTML->assign('info',$return);
 		$_HTML->assign('element',$appgroup->get_element());
+		$_HTML->assign('list',$appgroup->get_element_dialstatus_list());
+
+		$dhtml = &$_HTML->get_module('dhtml');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialstatus.js');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 		break;
 	case 'delete':
 		$param['page'] = $page;

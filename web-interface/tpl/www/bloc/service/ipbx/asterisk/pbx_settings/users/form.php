@@ -9,8 +9,6 @@
 	$autoprov_list = $this->vars('autoprov_list');
 	$rightcall = $this->vars('rightcall');
 
-	$ringgroup = xivo_bool($info['ufeatures']['ringgroup']);
-
 	$vm_active = $info['voicemail']['commented'];
 
 	if($vm_active !== null):
@@ -167,6 +165,30 @@
 <?php
 	endif;
 ?>
+</div>
+
+<div id="sb-part-dialstatus" class="b-nodisplay">
+
+	<fieldset id="fld-dialstatus-noanswer">
+		<legend><?=$this->bbf('fld-dialstatus-noanswer');?></legend>
+		<?=$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/dialstatus',array('status' => 'noanswer'));?>
+	</fieldset>
+
+	<fieldset id="fld-dialstatus-congestion">
+		<legend><?=$this->bbf('fld-dialstatus-congestion');?></legend>
+		<?=$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/dialstatus',array('status' => 'congestion'));?>
+	</fieldset>
+
+	<fieldset id="fld-dialstatus-busy">
+		<legend><?=$this->bbf('fld-dialstatus-busy');?></legend>
+		<?=$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/dialstatus',array('status' => 'busy'));?>
+	</fieldset>
+
+	<fieldset id="fld-dialstatus-chanunavail">
+		<legend><?=$this->bbf('fld-dialstatus-chanunavail');?></legend>
+		<?=$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/dialstatus',array('status' => 'chanunavail'));?>
+	</fieldset>
+
 </div>
 
 <div id="sb-part-last" class="b-nodisplay">

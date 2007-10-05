@@ -34,146 +34,77 @@ Mois (fin) :
 ; fld-inschedule
 Dans la plage horaire
 
-; fm_schedule_typetrue
+; fm_schedule_type
 Destination :
 
-; fm_schedule_typetrue-opt-endcall
+; fm_schedule_type-opt-endcall
 Fin d'appel
 
-; fm_schedule_typetrue-opt-user
+; fm_schedule_type-opt-user
 Utilisateur
 
-; fm_schedule_typetrue-opt-group
+; fm_schedule_type-opt-group
 Groupe
 
-; fm_schedule_typetrue-opt-queue
+; fm_schedule_type-opt-queue
 File d'attente
 
-; fm_schedule_typetrue-opt-meetme
+; fm_schedule_type-opt-meetme
 Chambre de conférence
 
-; fm_schedule_typetrue-opt-schedule
+; fm_schedule_type-opt-schedule
 Horaire
 
-; fm_schedule_typetrue-opt-application
+; fm_schedule_type-opt-application
 Application
 
-; fm_schedule_typetrue-opt-custom
+; fm_schedule_type-opt-custom
 Personnalisée
 
-; fm_schedule_endcall-typevaltrue
+; fm_schedule_endcall-typeval
 Action :
 
-; fm_schedule_user-typevaltrue
+; fm_schedule_user-typeval
 Renvoyer vers :
 
-; fm_schedule_group-typevaltrue
+; fm_schedule_group-typeval
 Renvoyer vers :
 
-; fm_schedule_queue-typevaltrue
+; fm_schedule_queue-typeval
 Renvoyer vers :
 
-; fm_schedule_meetme-typevaltrue
+; fm_schedule_meetme-typeval
 Renvoyer vers :
 
-; fm_schedule_schedule-typevaltrue
+; fm_schedule_schedule-typeval
 Renvoyer vers :
 
-; fm_schedule_application-typevaltrue
+; fm_schedule_application-typeval
 Renvoyer vers :
 
-; fm_schedule_custom-typevaltrue
+; fm_schedule_custom-typeval
 Commande :
 
-; fm_schedule_endcall-typevaltrue-opt-hangup
+; fm_schedule_endcall-typeval-opt-hangup
 Raccrocher
 
-; fm_schedule_endcall-typevaltrue-opt-congestion
+; fm_schedule_endcall-typeval-opt-congestion
 Congestion
 
-; fm_schedule_endcall-typevaltrue-opt-busy
+; fm_schedule_endcall-typeval-opt-busy
 Occupé
 
-; fm_schedule_application-typevaltrue-opt-faxtomail
+; fm_schedule_application-typeval-opt-faxtomail
 FaxToMail
 
-; fm_schedule_application-typevaltrue-opt-disa
+; fm_schedule_application-typeval-opt-disa
 DISA
 
-; fm_schedule_application-typevaltrue-opt-directory
+; fm_schedule_application-typeval-opt-directory
 Directory
 
 ; fld-outschedule
 Hors de la plage horaire
-
-; fm_schedule_typefalse
-Destination :
-
-; fm_schedule_typefalse-opt-endcall
-Fin d'appel
-
-; fm_schedule_typefalse-opt-user
-Utilisateur
-
-; fm_schedule_typefalse-opt-group
-Groupe
-
-; fm_schedule_typefalse-opt-queue
-File d'attente
-
-; fm_schedule_typefalse-opt-meetme
-Chambre de conférence
-
-; fm_schedule_typefalse-opt-schedule
-Horaire
-
-; fm_schedule_typefalse-opt-application
-Application
-
-; fm_schedule_typefalse-opt-custom
-Personnalisée
-
-; fm_schedule_endcall-typevalfalse
-Action :
-
-; fm_schedule_user-typevalfalse
-Renvoyer vers :
-
-; fm_schedule_group-typevalfalse
-Renvoyer vers :
-
-; fm_schedule_queue-typevalfalse
-Renvoyer vers :
-
-; fm_schedule_meetme-typevalfalse
-Renvoyer vers :
-
-; fm_schedule_schedule-typevalfalse
-Renvoyer vers :
-
-; fm_schedule_application-typevalfalse
-Renvoyer vers :
-
-; fm_schedule_custom-typevalfalse
-Commande :
-
-; fm_schedule_endcall-typevalfalse-opt-hangup
-Raccrocher
-
-; fm_schedule_endcall-typevalfalse-opt-congestion
-Congestion
-
-; fm_schedule_endcall-typevalfalse-opt-busy
-Occupé
-
-; fm_schedule_application-typevalfalse-opt-faxtomail
-FaxToMail
-
-; fm_schedule_application-typevalfalse-opt-disa
-DISA
-
-; fm_schedule_application-typevalfalse-opt-directory
-Directory
 
 ; create_user
 Créer un utilisateur

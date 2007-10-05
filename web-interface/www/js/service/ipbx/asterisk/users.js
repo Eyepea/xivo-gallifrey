@@ -203,24 +203,6 @@ xivo_fm_host['it-iax-protocol-host-static']['property'] = new Array('disabled|tr
 
 xivo_attrib_register('fm_host',xivo_fm_host);
 
-xivo_fm_grp = new Array();
-xivo_fm_grp['in-group'] = new Array();
-xivo_fm_grp['in-group']['link'] = new Array();
-xivo_fm_grp['in-group']['link'][0] = new Array('it-ufeatures-ringgroup',0,1);
-
-xivo_fm_grp['out-group'] = new Array();
-xivo_fm_grp['out-group']['link'] = new Array();
-xivo_fm_grp['out-group']['link'][0] = new Array('it-ufeatures-ringgroup',1,1);
-xivo_fm_grp['out-group']['link'][1] = new Array('ringgroup',1,1);
-
-xivo_fm_grp['it-ufeatures-ringgroup'] = new Array();
-xivo_fm_grp['it-ufeatures-ringgroup']['property'] = new Array('disabled|false:boolean','disabled|true:boolean');
-
-xivo_fm_grp['ringgroup'] = new Array();
-xivo_fm_grp['ringgroup']['style'] = new Array('display:block','display:none');
-
-xivo_attrib_register('fm_grp',xivo_fm_grp);
-
 xivo_fm_codec = new Array();
 xivo_fm_codec['it-sip-protocol-disallow'] = new Array();
 xivo_fm_codec['it-sip-protocol-disallow']['property'] = new Array('disabled|false:boolean;className|it-enabled','disabled|true:boolean;className|it-disabled');
@@ -378,7 +360,6 @@ function xivo_chgprotocol(protocol)
 function xivo_ingroup()
 {
 	xivo_fm_move_selected('it-grouplist','it-group');
-	xivo_fm_copy_select('it-group','it-usergroup');
 
 	var len = 0;
 
@@ -398,26 +379,12 @@ function xivo_ingroup()
 	if(xivo_eid('it-group').length > 0)
 		xivo_eid('no-group').style.display = 'none';
 
-	if(xivo_is_undef('it-usergroup') == true)
-		return(false);
-
-	if(xivo_eid('it-usergroup').length == 0)
-		xivo_chg_attrib('fm_grp','out-group',0,1);
-	else
-	{
-		xivo_chg_attrib('fm_grp','in-group',0,1);
-
-		if(xivo_is_undef('it-ufeatures-ringgroup') == false && xivo_eid('it-ufeatures-ringgroup').checked == true)
-			xivo_chg_attrib('fm_grp','ringgroup',0);
-	}
-
 	return(true);
 }
 
 function xivo_outgroup()
 {
 	xivo_fm_move_selected('it-group','it-grouplist');
-	xivo_fm_copy_select('it-group','it-usergroup');
 	
 	var len = 0;
 
@@ -436,14 +403,6 @@ function xivo_outgroup()
 
 	if(xivo_eid('it-group').length == 0)
 		xivo_eid('no-group').style.display = 'table-row';
-
-	if(xivo_is_undef('it-usergroup') == true)
-		return(false);
-	
-	if(xivo_eid('it-usergroup').length == 0)
-		xivo_chg_attrib('fm_grp','out-group',0,1);
-	else
-		xivo_chg_attrib('fm_grp','in-group',0,1);
 
 	return(true);
 }

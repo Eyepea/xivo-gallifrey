@@ -52,7 +52,7 @@
 ?>
 </div>
 
-<div id="sb-part-last" class="b-nodisplay">
+<div id="sb-part-rightcall" class="b-nodisplay">
 
 <?php
 	if($rightcall['list'] !== false):
@@ -82,4 +82,28 @@
 		echo '<div class="txt-center">',$url->href_html($this->bbf('create_rightcall'),'service/ipbx/call_management/rightcall','act=add'),'</div>';
 	endif;
 ?>
+</div>
+
+<div id="sb-part-last" class="b-nodisplay">
+
+	<fieldset id="fld-dialstatus-noanswer">
+		<legend><?=$this->bbf('fld-dialstatus-noanswer');?></legend>
+		<?=$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/groups/dialstatus',array('status' => 'noanswer'));?>
+	</fieldset>
+
+	<fieldset id="fld-dialstatus-congestion">
+		<legend><?=$this->bbf('fld-dialstatus-congestion');?></legend>
+		<?=$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/groups/dialstatus',array('status' => 'congestion'));?>
+	</fieldset>
+
+	<fieldset id="fld-dialstatus-busy">
+		<legend><?=$this->bbf('fld-dialstatus-busy');?></legend>
+		<?=$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/groups/dialstatus',array('status' => 'busy'));?>
+	</fieldset>
+
+	<fieldset id="fld-dialstatus-chanunavail">
+		<legend><?=$this->bbf('fld-dialstatus-chanunavail');?></legend>
+		<?=$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/groups/dialstatus',array('status' => 'chanunavail'));?>
+	</fieldset>
+
 </div>

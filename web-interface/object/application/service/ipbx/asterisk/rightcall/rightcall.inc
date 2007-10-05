@@ -525,8 +525,7 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 		$i = 0;
 		$nb = count($rs);
 
-		if(xivo_issa($key,$this->_info) !== false
-		&& ($cnt = count($this->_info[$key])) !== 0)
+		if(($cnt = count($this->_info[$key])) !== 0)
 		{
 			for($i;$i < $cnt;$i++)
 			{
@@ -588,8 +587,7 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 		$i = 0;
 		$nb = count($rs);
 
-		if(xivo_issa('rightcallexten',$this->_info) !== false
-		&& ($cnt = count($this->_info['rightcallexten'])) !== 0)
+		if(($cnt = count($this->_info['rightcallexten'])) !== 0)
 		{
 			for($i;$i < $cnt;$i++)
 			{

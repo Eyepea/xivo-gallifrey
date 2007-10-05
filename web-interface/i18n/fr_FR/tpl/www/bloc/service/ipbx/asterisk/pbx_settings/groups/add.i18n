@@ -10,6 +10,9 @@ Utilisateurs
 ; smenu_rightcalls
 Droits d'appels
 
+; smenu_dialstatus
+Non réponse
+
 ; fm_gfeatures_name
 Nom :
 
@@ -34,9 +37,6 @@ Ajouter un ou plusieurs utilisateurs ->
 ; bt-outuser
 <- Enlever un ou plusieurs utilisateurs
 
-; create_user
-Créer un utilisateur
-
 ; bt-inrightcall
 Ajouter un ou plusieurs droits d'appels ->
 
@@ -45,6 +45,114 @@ Ajouter un ou plusieurs droits d'appels ->
 
 ; create_rightcall
 Créer un droit d'appel
+
+; fld-dialstatus-noanswer
+Aucune réponse
+
+; fld-dialstatus-congestion
+Saturé
+
+; fld-dialstatus-busy
+Occupé
+
+; fld-dialstatus-chanunavail
+Echoué
+
+; fm_dialstatus_type
+Destination :
+
+; fm_dialstatus_type-opt-endcall
+Fin d'appel
+
+; fm_dialstatus_type-opt-user
+Utilisateur
+
+; fm_dialstatus_type-opt-group
+Groupe
+
+; fm_dialstatus_type-opt-queue
+File d'attente
+
+; fm_dialstatus_type-opt-meetme
+Chambre de conférence
+
+; fm_dialstatus_type-opt-schedule
+Horaire
+
+; fm_dialstatus_type-opt-application
+Application
+
+; fm_dialstatus_type-opt-sound
+Fichier son
+
+; fm_dialstatus_type-opt-custom
+Personnalisée
+
+; fm_dialstatus_endcall-typeval
+Action :
+
+; fm_dialstatus_user-typeval
+Renvoyer vers :
+
+; fm_dialstatus_group-typeval
+Renvoyer vers :
+
+; fm_dialstatus_queue-typeval
+Renvoyer vers :
+
+; fm_dialstatus_meetme-typeval
+Renvoyer vers :
+
+; fm_dialstatus_schedule-typeval
+Renvoyer vers :
+
+; fm_dialstatus_application-typeval
+Renvoyer vers :
+
+; fm_dialstatus_sound-typeval
+Jouer :
+
+; fm_dialstatus_custom-typeval
+Commande :
+
+; fm_dialstatus_endcall-typeval-opt-none
+Aucune
+
+; fm_dialstatus_endcall-typeval-opt-hangup
+Raccrocher
+
+; fm_dialstatus_endcall-typeval-opt-congestion
+Congestion
+
+; fm_dialstatus_endcall-typeval-opt-busy
+Occupé
+
+; fm_dialstatus_application-typeval-opt-faxtomail
+FaxToMail
+
+; fm_dialstatus_application-typeval-opt-disa
+DISA
+
+; fm_dialstatus_application-typeval-opt-directory
+Directory
+
+; create_user
+Créer un utilisateur
+
+; create_group
+Créer un groupe
+
+; create_queue
+Créer une file d'attente
+
+; create_meetme
+Créer une chambre de conférence
+
+; create_schedule
+Créer un horaire
+
+; add_dialstatus-sound
+Ajouter un fichier son
 
 ; fm_bt-save
 Sauvegarder

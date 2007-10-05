@@ -251,6 +251,9 @@ $array['module']['rightcallmember'] = array();
 $array['module']['rightcallmember']['datastorage'] = true;
 $array['module']['rightcallmember']['section'] = 'rightcall';
 
+$array['module']['dialstatus'] = array();
+$array['module']['dialstatus']['datastorage'] = true;
+
 $array['protocol'] = array();
 $array['protocol']['sip'] = array('name' => XIVO_SRE_IPBX_AST_PROTO_SIP,'module' => 'usersip'); 
 $array['protocol']['iax'] = array('name' => XIVO_SRE_IPBX_AST_PROTO_IAX,'module' => 'useriax'); 

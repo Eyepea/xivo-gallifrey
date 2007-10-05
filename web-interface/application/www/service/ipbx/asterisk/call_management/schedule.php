@@ -98,11 +98,12 @@ switch($act)
 		}
 		while(false);
 
+		$list = array();
+
 		$ufeatures = &$ipbx->get_module('userfeatures');
 
 		if(($list['users'] = $ufeatures->get_all_number()) !== false)
 		{
-			$total = count($list['users']);
 			xivo::load_class('xivo_sort');
 			$sort = new xivo_sort(array('key' => 'identity'));
 			usort($list['users'],array(&$sort,'str_usort'));
@@ -112,7 +113,6 @@ switch($act)
 
 		if(($list['groups'] = $gfeatures->get_all_number()) !== false)
 		{
-			$total = count($list['groups']);
 			xivo::load_class('xivo_sort');
 			$sort = new xivo_sort(array('key' => 'identity'));
 			usort($list['groups'],array(&$sort,'str_usort'));
@@ -122,7 +122,6 @@ switch($act)
 
 		if(($list['queues'] = $qfeatures->get_all_number()) !== false)
 		{
-			$total = count($list['queues']);
 			xivo::load_class('xivo_sort');
 			$sort = new xivo_sort(array('key' => 'identity'));
 			usort($list['queues'],array(&$sort,'str_usort'));
@@ -132,7 +131,6 @@ switch($act)
 
 		if(($list['meetme'] = $mfeatures->get_all_number()) !== false)
 		{
-			$total = count($list['meetme']);
 			xivo::load_class('xivo_sort');
 			$sort = new xivo_sort(array('key' => 'identity'));
 			usort($list['meetme'],array(&$sort,'str_usort'));
@@ -140,7 +138,6 @@ switch($act)
 
 		if(($list['schedule'] = $schedule->get_all()) !== false)
 		{
-			$total = count($list['schedule']);
 			xivo::load_class('xivo_sort');
 			$sort = new xivo_sort(array('key' => 'name'));
 			usort($list['schedule'],array(&$sort,'str_usort'));
@@ -260,12 +257,12 @@ switch($act)
 		}
 		while(false);
 
+		$list = array();
 
 		$ufeatures = &$ipbx->get_module('userfeatures');
 
 		if(($list['users'] = $ufeatures->get_all_number()) !== false)
 		{
-			$total = count($list['users']);
 			xivo::load_class('xivo_sort');
 			$sort = new xivo_sort(array('key' => 'identity'));
 			usort($list['users'],array(&$sort,'str_usort'));
@@ -275,7 +272,6 @@ switch($act)
 
 		if(($list['groups'] = $gfeatures->get_all_number()) !== false)
 		{
-			$total = count($list['groups']);
 			xivo::load_class('xivo_sort');
 			$sort = new xivo_sort(array('key' => 'identity'));
 			usort($list['groups'],array(&$sort,'str_usort'));
@@ -285,7 +281,6 @@ switch($act)
 
 		if(($list['queues'] = $qfeatures->get_all_number()) !== false)
 		{
-			$total = count($list['queues']);
 			xivo::load_class('xivo_sort');
 			$sort = new xivo_sort(array('key' => 'identity'));
 			usort($list['queues'],array(&$sort,'str_usort'));
@@ -295,7 +290,6 @@ switch($act)
 
 		if(($list['meetme'] = $mfeatures->get_all_number()) !== false)
 		{
-			$total = count($list['meetme']);
 			xivo::load_class('xivo_sort');
 			$sort = new xivo_sort(array('key' => 'identity'));
 			usort($list['meetme'],array(&$sort,'str_usort'));
@@ -303,7 +297,6 @@ switch($act)
 
 		if(($list['schedule'] = $schedule->get_all($info['schedule']['id'])) !== false)
 		{
-			$total = count($list['schedule']);
 			xivo::load_class('xivo_sort');
 			$sort = new xivo_sort(array('key' => 'name'));
 			usort($list['schedule'],array(&$sort,'str_usort'));

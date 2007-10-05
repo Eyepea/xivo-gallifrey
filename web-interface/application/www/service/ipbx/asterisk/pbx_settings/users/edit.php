@@ -153,8 +153,8 @@ if(empty($return) === false)
 {
 	$return['protocol']['allow'] = $allow;
 
-	if(xivo_issa('usergroup',$return) === false || empty($return['usergroup']) === true)
-		$return['usergroup'] = null;
+	if(xivo_issa('dialstatus',$return) === false || empty($return['dialstatus']) === true)
+		$return['dialstatus'] = null;
 
 	if(xivo_issa('voicemail',$return) === false || empty($return['voicemail']) === true)
 		$return['voicemail'] = null;
@@ -165,6 +165,7 @@ if(empty($return) === false)
 
 $_HTML->assign('id',$info['ufeatures']['id']);
 $_HTML->assign('info',$return);
+$_HTML->assign('dialstatus',$return['dialstatus']);
 $_HTML->assign('groups',$groups);
 $_HTML->assign('gmember',$gmember);
 $_HTML->assign('queues',$queues);
@@ -172,11 +173,13 @@ $_HTML->assign('qmember',$qmember);
 $_HTML->assign('rightcall',$rightcall);
 $_HTML->assign('protocol',$ipbx->get_protocol());
 $_HTML->assign('element',$element);
+$_HTML->assign('list',$appuser->get_element_dialstatus_list());
 $_HTML->assign('moh_list',$moh_list);
 $_HTML->assign('autoprov_list',$autoprov->get_autoprov_list());
 
 $dhtml = &$_HTML->get_module('dhtml');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users.js');
+$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialstatus.js');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 
 ?>
