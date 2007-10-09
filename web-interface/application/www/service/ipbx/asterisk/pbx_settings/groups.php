@@ -84,7 +84,7 @@ switch($act)
 		$_HTML->assign('element',$appgroup->get_element());
 		$_HTML->assign('user',$user);
 		$_HTML->assign('rightcall',$rightcall);
-		$_HTML->assign('list',$appgroup->get_element_dialstatus_list());
+		$_HTML->assign('list',$appgroup->get_dialstatus_destination_list());
 
 		$dhtml = &$_HTML->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialstatus.js');
@@ -165,7 +165,7 @@ switch($act)
 		$_HTML->assign('user',$user);
 		$_HTML->assign('rightcall',$rightcall);
 		$_HTML->assign('element',$appgroup->get_element());
-		$_HTML->assign('list',$appgroup->get_element_dialstatus_list());
+		$_HTML->assign('list',$appgroup->get_dialstatus_destination_list());
 
 		$dhtml = &$_HTML->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialstatus.js');

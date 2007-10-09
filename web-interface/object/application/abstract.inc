@@ -8,6 +8,52 @@ class xivo_application_abstract
 	var $_return	= array();
 	var $_info	= array();
 
+	function _load_abstract_class($abstract)
+	{
+		$abstract = (string) $abstract;
+
+		$file = $abstract.'.inc';
+
+		$dir = array(XIVO_PATH_OBJECT,'application','service',$this->_service_type,$this->_service_name,'abstract');
+
+		$class = 'xivo_application_service_'.$this->_service_name.'_'.$abstract.'_abstract';
+
+		if(xivo_file::load_file($file,$dir,true) !== false && class_exists($class) === true)
+			return($class);
+
+		return(false);
+	}
+
+	function _load_abstract($name)
+	{
+		$name = (string) $name;
+
+		if(isset($this->_abstract[$name]) === true)
+			return(true);
+		
+		if(($class = $this->_load_abstract_class($name)) === false)
+		{
+			trigger_error('Abstract Application '.$name.' does not exist in '.$this->_service_name,E_USER_ERROR);
+			return(false);
+		}
+
+		$this->_abstract[$name] = new $class($this->_service);
+
+		return(true);
+	}
+
+	function &get_abstract($name)
+	{
+		$r = false;
+
+		$name = (string) $name;
+
+		if($this->_load_abstract($name) === true)
+			$r = &$this->_abstract[$name];
+
+		return(($ref = &$r));
+	}
+
 	function _reset()
 	{
 		$this->_errnb = 0;

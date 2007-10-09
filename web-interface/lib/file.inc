@@ -40,11 +40,9 @@ class xivo_file
 
 	function _load_fileinfo()
 	{
-		$r = false;
-
 		if((XIVO_EXT_INI_LD & XIVO_EXT__FILEINFO) === 0
 		|| xivo::load_class('xivo_file_fileinfo','file','fileinfo') === false)
-			return($r);
+			return(false);
 
 		return(new xivo_file_fileinfo());
 	}
@@ -130,20 +128,18 @@ class xivo_file
 
 	function get_upload($name,$chk_param=array())
 	{
-		$r = false;
-
 		$name = (string) $name;
 		$chk_param = (array) $chk_param;
 
 		if($this->chk_upload_err($name) === false
 		|| isset($_FILES[$name]['tmp_name'],$_FILES[$name]['name'],
 			$_FILES[$name]['type'],$_FILES[$name]['size']) === false)
-			return($r);
+			return(false);
 
 		if(is_uploaded_file($_FILES[$name]['tmp_name']) === false)
 		{
 			$this->rm($_FILES[$name]['tmp_name']);
-			return($r);
+			return(false);
 		}
 
 		$this->info['upload'] = $_FILES[$name];
@@ -156,6 +152,8 @@ class xivo_file
 		if(($this->info['mime'] = $this->get_mime($this->info['tmp_name'])) === false)
 			$this->info['mime'] = $this->info['upload']['mime'];
 
+		$r = false;
+
 		if(empty($chk_param) === false && ($r = $this->_chk_upload($chk_param)) === false)
 			$this->rm($this->info['tmp_name']);
 		else
@@ -166,17 +164,15 @@ class xivo_file
 
 	function _chk_upload($param)
 	{
-		$r = false;
-
 		if(is_array($param) === false)
-			return($r);
+			return(false);
 
 		if(isset($param['size']) === true)
 		{
 			$param['size'] = xivo_uint($param['size']);
 
 			if($this->info['size'] > $param['size'])
-				return($r);
+				return(false);
 		}
 
 		if(isset($param['mime']) === true)
@@ -185,7 +181,7 @@ class xivo_file
 
 			if(isset($param['mime'][0]) === false
 			|| in_array($this->info['mime'],$param['mime']) === false)
-				return($r);
+				return(false);
 		}
 
 		if(isset($param['name']) === true)
@@ -193,7 +189,7 @@ class xivo_file
 			$param['name'] = (string) $param['name'];
 
 			if(preg_match($param['name'],$this->info['name']) !== 1)
-				return($r);
+				return(false);
 		}
 
 		if(isset($param['extension']) === true)
@@ -201,22 +197,22 @@ class xivo_file
 			$param['extension'] = (array) $param['extension'];
 
 			if(($pos = strrpos($this->info['name'],'.')) === false)
-				return($r);
+				return(false);
 
 			$ext = strtolower(substr($this->info['name'],$pos + 1));
 			
 			if(isset($param['extension'][0]) === true)
 			{
 				if(in_array($ext,$param['extension']) === false)
-					return($r);
+					return(false);
 			}
 
 			if(isset($param['extension'][$ext]) === false)
-				return($r);
+				return(false);
 
 			if(is_array($param['extension'][$ext]) === true
 			&& in_array($this->info['mime'],$param['extension'][$ext]) === false)
-				return($r);
+				return(false);
 		}
 
 		return(true);
@@ -224,12 +220,10 @@ class xivo_file
 
 	function chk_upload_err($name)
 	{
-		$r = false;
-
 		$name = (string) $name;
 
 		if(xivo_issa($name,$_FILES) === false || isset($_FILES[$name]['error']) === false)
-			return($r);
+			return(false);
 
 		if(($upload = xivo_get_memory('upload_max_filesize')) === false)
 			trigger_error('Invalid upload_max_filesize php.ini directive',E_USER_ERROR);
@@ -246,6 +240,8 @@ class xivo_file
 		if($mlimit < $post)
 			trigger_error('memory_limit php.ini directive shoud be less than post_max_size php.ini directive',E_USER_ERROR);
 
+		$r = false;
+	
 		switch($_FILES[$name]['error'])
 		{
 			case UPLOAD_ERR_OK:
@@ -278,16 +274,23 @@ class xivo_file
 
 	function load_file($file,$dir='',$once=false,$verif=true)
 	{
-		$r = false;
-
 		$file = (string) $file;
-		$dir = (string) $dir;
 		$once = (bool) $once;
 		$verif = (bool) $verif;
 		$path = '';
 		
 		if(preg_match('/^[a-z0-9\-_.]+$/i',$file) !== 1)
-			return($r);
+			return(false);
+
+		if(is_array($dir) === true)
+		{
+			if(isset($dir[0]) === false)
+				return(false);
+
+			$dir = implode($dir,XIVO_SEP_DIR);
+		}
+
+		$dir = (string) $dir;
 
 		if($dir === '')
 		{
@@ -297,10 +300,10 @@ class xivo_file
 		else if(($dir = xivo_file::is_d_r($dir)) !== false)
 			$path = $dir.XIVO_SEP_DIR.$file;
 		else
-			return($r);
+			return(false);
 
 		if(xivo_file::is_i($path,$verif) === false)
-			return($r);
+			return(false);
 
 		if($once === true)
 			return((bool) require_once($path));
@@ -310,14 +313,12 @@ class xivo_file
 
 	function is_i($file,$verif=true)
 	{
-		$r = false;
-
 		$verif = (bool) $verif;
 
 		if($verif === true && ($file = xivo_file::is_f_r($file)) === false)
-			return($r);
+			return(false);
 
-		if($r = is_resource(($f = fopen($file,'r',true))) === true)
+		if(($r = is_resource(($f = fopen($file,'r',true)))) === true)
 			fclose($f);
 
 		return($r);
@@ -325,22 +326,18 @@ class xivo_file
 
 	function required($arr,$once=false,$includable=false)
 	{
-		$r = false;
-
 		$arr = (array) $arr;
 		$once = (bool) $once;
 		$includable = (bool) $includable;
 
-		$value = array_values($arr);
-
-		if(isset($value[0]) === false)
-			return($r);
+		if(isset($arr[0]) === false)
+			return(false);
 
 		$path = implode($arr,XIVO_SEP_DIR);
 
 		if(($includable === true && xivo_file::is_i($path) === false) === true
 		|| ($path = xivo_file::is_f_r($path)) === false)
-			return($r);
+			return(false);
 
 		if($once === true)
 			return((bool) require_once($path));
@@ -593,8 +590,6 @@ class xivo_file
 
 	function put_contents($filename,$data,$flags=0)
 	{
-		$r = false;
-
 		$filename = (string) $filename;
 		$flags = xivo_uint($flags);
 
@@ -602,30 +597,31 @@ class xivo_file
 			$data = implode('',(array) $data);
 
 		if(is_scalar($data) === false)
-			return($r);
+			return(false);
 
 		$dir = dirname($filename);
 		
 		if(xivo_file::is_d_rwx($dir) === false)
-			return($r);
+			return(false);
 
 		if(($flags & FILE_APPEND) !== 0)
 			$mode = 'a';
 		else if(($filename = xivo_file::is_f_rw($filename)) !== false)
 			$mode = 'wb';
 		else
-			return($r);
+			return(false);
 
 		$use_inc_path = ($flags & FILE_USE_INCLUDE_PATH) !== 0 ? true : false;
 
 		if(($fp = fopen($filename,$mode,$use_inc_path)) === false)
-			return($r);
+			return(false);
 
 		if(($flags & LOCK_EX) !== 0 && flock($fp,LOCK_EX) === false)
-			return($r);
+			return(false);
 
 		$use_lock = ($flags & LOCK_EX) !== 0 ? true : false;
 
+		$r = false;
 		$bytes = 0;
 
 		if(($bytes = fwrite($fp,$data)) !== false)

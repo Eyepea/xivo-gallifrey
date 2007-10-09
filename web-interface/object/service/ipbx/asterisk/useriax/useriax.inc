@@ -25,10 +25,8 @@ class xivo_service_asterisk_useriax extends xivo_service_asterisk_abstract
 
 	function _prepare($data)
 	{
-		$initialized = $this->_conf['initialized'].':'.$data['name'].'@';
-
-		$data['initialized'] = false;
-		$data['commented'] = $data['commented'] !== '0' ? true : false;
+		$data['initialized'] = true;
+		$data['commented'] = (bool) $data['commented'];
 		$data['callgroup'] = empty($data['callgroup']) === false ? explode(',',$data['callgroup']) : '';
 
 		return($data);

@@ -71,9 +71,9 @@
 		<td class="td-left"><?=$form->checkbox(array('name' => 'users[]','value' => $ref['ufeatures']['id'],'label' => false,'id' => 'it-users-'.$i,'checked' => false,'field' => false));?></td>
 		<td class="txt-left"><label for="it-users-<?=$i?>" id="lb-users-<?=$i?>"><?=$url->img_html('img/site/phone/'.$icon.'.gif',null,'class="icons-list"');?><?=$ref['ufeatures']['fullname']?></label></td>
 		<td><?=$this->bbf('user_protocol-'.$ref['ufeatures']['protocol']);?></td>
-		<td><?=$ref['protocol']['name']?></td>
+		<td><?=(xivo_empty($ref['protocol']['name']) === false ? $ref['protocol']['name'] : '-')?></td>
 		<td><?=(xivo_empty($ref['ufeatures']['number']) === false ? $ref['ufeatures']['number'] : '-')?></td>
-		<td><?=$ref['ufeatures']['provisioningid']?></td>
+		<td><?=(xivo_empty($ref['ufeatures']['provisioningid']) === false ? $ref['ufeatures']['provisioningid'] : '-')?></td>
 		<td class="td-right" colspan="3">
 		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/pbx_settings/users',array('act' => 'edit','id' => $ref['ufeatures']['id']),null,$this->bbf('opt_modify'));?>
 		<?=$url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'service/ipbx/pbx_settings/users',array('act' => 'delete','id' => $ref['ufeatures']['id'],'page' => $pager['page'],$param),'onclick="return(confirm(\''.xivo_stript($this->bbf('opt_delete_confirm')).'\') ? true : false);"',$this->bbf('opt_delete'));?>

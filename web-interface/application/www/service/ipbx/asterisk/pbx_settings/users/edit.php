@@ -15,7 +15,10 @@ if(($moh_list = $musiconhold->get_all_category(null,false)) !== false)
 
 $result = null;
 
-$allow = $info['protocol']['allow'];
+if(isset($info['protocol']['allow']) === true)
+	$allow = $info['protocol']['allow'];
+else
+	$allow = array();
 
 $gmember = $qmember = $rightcall = array();
 $gmember['list'] = $qmember['list'] = false;
@@ -83,7 +86,8 @@ do
 	{
 		$result = $appuser->get_result();
 
-		if(xivo_issa('protocol',$result) === true)
+		if(xivo_issa('protocol',$result) === true
+		&& isset($result['protocol']['allow']) === true)
 			$allow = $result['protocol']['allow'];
 		break;
 	}
@@ -173,13 +177,16 @@ $_HTML->assign('qmember',$qmember);
 $_HTML->assign('rightcall',$rightcall);
 $_HTML->assign('protocol',$ipbx->get_protocol());
 $_HTML->assign('element',$element);
-$_HTML->assign('list',$appuser->get_element_dialstatus_list());
+$_HTML->assign('list',$appuser->get_dialstatus_destination_list());
 $_HTML->assign('moh_list',$moh_list);
 $_HTML->assign('autoprov_list',$autoprov->get_autoprov_list());
 
 $dhtml = &$_HTML->get_module('dhtml');
-$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users.js');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialstatus.js');
+$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users/sip.js');
+$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users/iax.js');
+$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users/custom.js');
+$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users.js');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 
 ?>

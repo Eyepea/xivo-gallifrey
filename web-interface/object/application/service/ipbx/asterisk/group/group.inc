@@ -4,16 +4,35 @@ xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 
 class xivo_application_service_asterisk_group extends xivo_application_asterisk_abstract
 {
-	var $_origin	= array();
-	var $_status	= '';
+	var $_origin		= array();
+	var $_status		= '';
+	var $_extenumbers	= null;
+	var $_rightcall		= null;
+	var $_dialstatus	= null;
+
+	function xivo_application_service_asterisk_group(&$service)
+	{
+		$this->xivo_application_asterisk_abstract(&$service);
+
+		if(($this->_extenumbers = &$this->get_abstract('extenumbers')) === false)
+			return(false);
+
+		if(($this->_rightcall = &$this->get_abstract('rightcall')) === false)
+			return(false);
+
+		if(($this->_dialstatus = &$this->get_abstract('dialstatus')) === false)
+			return(false);
+
+		return(true);
+	}
 
 	function get($id,$disable=null)
 	{
 		$this->_info = $this->_origin = array();
 
-		if(($gfeatures = &$this->_ipbx->get_module('groupfeatures')) === false
+		if(($gfeatures = &$this->_service->get_module('groupfeatures')) === false
 		|| ($this->_info['gfeatures'] = $gfeatures->get($id)) === false
-		|| ($queue = &$this->_ipbx->get_module('queue')) === false
+		|| ($queue = &$this->_service->get_module('queue')) === false
 		|| ($this->_info['queue'] = $queue->get($this->_info['gfeatures']['name'])) === false)
 			return(false);
 
@@ -34,7 +53,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		$this->_info['localexten'] = false;
 		$this->_origin['localexten'] = false;
 
-		if(($extensions = &$this->_ipbx->get_module('extensions')) === false)
+		if(($extensions = &$this->_service->get_module('extensions')) === false)
 			return(false);
 
 		$this->_info['localexten'] = $extensions->get_exten('macro',
@@ -48,20 +67,10 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 
 	function _get_extenumbers()
 	{
-		$this->_info['extenumbers'] = false;
-		$this->_origin['extenumbers'] = false;
+		$number = $this->_info['gfeatures']['number'];
+		$context = $this->_info['gfeatures']['context'];
 
-		if(($extenumbers = &$this->_ipbx->get_module('extenumbers')) === false)
-			return(false);
-
-		$extenumbers_where = array();
-		$extenumbers_where['exten'] = $this->_info['gfeatures']['number'];
-		$extenumbers_where['context'] = $this->_info['gfeatures']['context'];
-
-		$this->_info['extenumbers'] = $extenumbers->get_where($extenumbers_where);
-		$this->_origin['extenumbers'] = $extenumbers->get_origin();
-
-		return($this->_info['extenumbers']);
+		return(parent::_get_extenumbers($number,$context));
 	}
 
 	function _get_user()
@@ -74,7 +83,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		$where['category'] = 'group';
 		$where['queue_name'] = $this->_info['gfeatures']['name'];
 
-		if(($queuemember = &$this->_ipbx->get_module('queuemember')) === false
+		if(($queuemember = &$this->_service->get_module('queuemember')) === false
 		|| ($this->_info['user'] = $queuemember->get_all_where($where)) === false
 		|| isset($this->_info['user'][0]) === false)
 			return(false);
@@ -86,48 +95,14 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 
 	function _get_rightcall()
 	{
-		$this->_info['rightcall'] = false;
-		$this->_origin['rightcall'] = false;
-
-		$where = array();
-		$where['type'] = 'group';
-		$where['typeval'] = $this->_info['gfeatures']['id'];
-
-		if(($rightcallmember = &$this->_ipbx->get_module('rightcallmember')) === false
-		|| ($this->_info['rightcall'] = $rightcallmember->get_all_where($where)) === false
-		|| isset($this->_info['rightcall'][0]) === false)
-			return(false);
-
-		$this->_origin['rightcall'] = $rightcallmember->get_origin_list();
+		$this->_info['rightcall'] = $this->_rightcall->get('group',$this->_info['gfeatures']['id']);
 
 		return($this->_info['rightcall']);
 	}
 
 	function _get_dialstatus()
 	{
-		$this->_info['dialstatus'] = false;
-		$this->_origin['dialstatus'] = false;
-
-		$where = array();
-		$where['category'] = 'group';
-		$where['categoryval'] = $this->_info['gfeatures']['id'];
-
-		if(($dialstatus = &$this->_ipbx->get_module('dialstatus')) === false
-		|| ($info = $dialstatus->get_all_where($where)) === false
-		|| ($nb = count($info)) === 0)
-			return(false);
-
-		$this->_info['dialstatus'] = array();
-
-		for($i = 0;$i < $nb;$i++)
-		{
-			if(isset($this->_info['dialstatus'][$info[$i]['status']]) === true)
-				continue;
-
-			$this->_info['dialstatus'][$info[$i]['status']] = $info[$i];
-		}
-
-		$this->_origin['dialstatus'] = $dialstatus->get_origin_list();
+		$this->_info['dialstatus'] = $this->_dialstatus->get('group',$this->_info['gfeatures']['id']);
 
 		return($this->_info['dialstatus']);
 	}
@@ -136,17 +111,17 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 	{
 		$r = array();
 
-		if(($gfeatures = &$this->_ipbx->get_module('groupfeatures')) !== false)
+		if(($gfeatures = &$this->_service->get_module('groupfeatures')) !== false)
 			$r['gfeatures'] = $gfeatures->get_element();
 		else
 			$r['gfeatures'] = false;
 
-		if(($queue = &$this->_ipbx->get_module('queue')) !== false)
+		if(($queue = &$this->_service->get_module('queue')) !== false)
 			$r['queue'] = $queue->get_element();
 		else
 			$r['queue'] = false;
 
-		if(($dialstatus = &$this->_ipbx->get_module('dialstatus')) !== false)
+		if(($dialstatus = &$this->_service->get_module('dialstatus')) !== false)
 			$r['dialstatus'] = $dialstatus->get_element();
 		else
 			$r['dialstatus'] = false;
@@ -154,55 +129,14 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		return($r);
 	}
 
-	function get_element_dialstatus_list()
+	function get_dialstatus_destination_list()
 	{
-		$r = array();
-
-		xivo::load_class('xivo_sort');
-		$sortidentity = new xivo_sort(array('key' => 'identity'));
-		$sortname = new xivo_sort(array('key' => 'name'));
-
 		if(xivo_issa('gfeatures',$this->_info) === false)
 			$id = 0;
 		else
 			$id = $this->_info['gfeatures']['id'];
 
-		if(($ufeatures = &$this->_ipbx->get_module('userfeatures')) === false
-		|| ($r['users'] = $ufeatures->get_all_number()) === false)
-			$r['users'] = false;
-		else
-			usort($r['users'],array(&$sortidentity,'str_usort'));
-
-		if(($gfeatures = &$this->_ipbx->get_module('groupfeatures')) === false
-		|| ($r['groups'] = $gfeatures->get_all_number($id)) === false)
-			$r['groups'] = false;
-		else
-			usort($r['groups'],array(&$sortidentity,'str_usort'));
-
-		if(($qfeatures = &$this->_ipbx->get_module('queuefeatures')) === false
-		|| ($r['queues'] = $qfeatures->get_all_number()) === false)
-			$r['queues'] = false;
-		else
-			usort($r['queues'],array(&$sortidentity,'str_usort'));
-
-		if(($mfeatures = &$this->_ipbx->get_module('meetmefeatures')) === false
-		|| ($r['meetme'] = $mfeatures->get_all_number()) === false)
-			$r['meetme'] = false;
-		else
-			usort($r['meetme'],array(&$sortidentity,'str_usort'));
-
-		if(($schedule = &$this->_ipbx->get_module('schedule')) === false
-		|| ($r['schedule'] = $schedule->get_all()) === false)
-			$r['schedule'] = false;
-		else
-			usort($r['schedule'],array(&$sortname,'str_usort'));
-
-		if(($sounds = &$this->_ipbx->get_module('sounds')) === false)
-			$r['sounds'] = false;
-		else
-			$r['sounds'] = $sounds->get_list('dialstatus',true);
-
-		return($r);
+		return($this->_dialstatus->get_destination_list('group',$id));
 	}
 
 	function set_add($arr)
@@ -269,7 +203,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 	function set_groupfeatures($arr)
 	{
 		if(is_array($arr) === false
-		|| ($gfeatures = &$this->_ipbx->get_module('groupfeatures')) === false)
+		|| ($gfeatures = &$this->_service->get_module('groupfeatures')) === false)
 		{
 			$this->_set_result('gfeatures',null);
 			$this->_set_error('gfeatures','invalid module');
@@ -292,7 +226,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 	function set_queue($arr)
 	{
 		if(is_array($arr) === false
-		|| ($queue = &$this->_ipbx->get_module('queue')) === false)
+		|| ($queue = &$this->_service->get_module('queue')) === false)
 		{
 			$this->_set_result('queue',null);
 			$this->_set_error('queue','invalid module');
@@ -319,8 +253,8 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		if(($action !== 'add' && $action !== 'edit') === true
 		|| is_array($list) === false
 		|| is_scalar($name) === false
-		|| ($ufeatures = &$this->_ipbx->get_module('userfeatures')) === false
-		|| ($queuemember = &$this->_ipbx->get_module('queuemember')) === false)
+		|| ($ufeatures = &$this->_service->get_module('userfeatures')) === false
+		|| ($queuemember = &$this->_service->get_module('queuemember')) === false)
 			return(false);
 
 		$list = array_values($list);
@@ -355,13 +289,13 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 				continue;
 			}
 
-			$info['penalty'] = 0;
+			$info['penalty'] = $info['call-limit'] = 0;
 			$info['userid'] = $where['userid'] = $uinfo['id'];
 
 			if($action === 'edit'
 			&& $queuemember->get_where($where) !== false
 			&& ($orig = $queuemember->get_origin()) !== false)
-				$info = array_merge($orig,$info);
+				$info = array_merge($info,$orig);
 			else
 			{
 				$interface = $this->mk_interface($uinfo['name'],
@@ -398,96 +332,22 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 
 	function set_rightcall($list)
 	{
-		if(is_array($list) === false
-		|| ($rightcallmember = &$this->_ipbx->get_module('rightcallmember')) === false
-		|| ($rightcall = &$this->_ipbx->get_module('rightcall')) === false)
-			return(false);
+		if(($r = $this->_rightcall->set($list,'group')) === false)
+			$this->_set_error('rightcall',$this->_rightcall->get_error());
 
-		$list = array_values($list);
+		$this->_set_result('rightcall',$this->_rightcall->get_result());
 
-		if(($nb = count($list)) === 0)
-			return(null);
-
-		$info = array();
-		$info['rightcallid'] = 0;
-		$info['type'] = 'group';
-		$info['typeval'] = 0;
-		
-		$tmp = $reslist = array();
-
-		for($i = 0;$i < $nb;$i++)
-		{
-			if(($rightcallid = $rightcall->get_id($list[$i])) === false)
-			{
-				$this->_set_error('rightcall','wrong rightcall');
-				continue;
-			}
-
-			$info['rightcallid'] = $rightcallid;
-
-			if(($rs = $rightcallmember->chk_values($info)) === false
-			|| isset($tmp[$rightcallid]) === true)
-				continue;
-
-			$tmp[$rightcallid] = 1;
-			$reslist[] = $rs;
-		}
-
-		if(isset($reslist[0]) === false)
-		{
-			$this->_set_result('rightcall',false);
-			return(false);
-		}
-
-		$this->_set_result('rightcall',$reslist);
-
-		return(true);
+		return($r);
 	}
 
 	function set_dialstatus($list)
 	{
-		if(is_array($list) === false
-		|| ($dialstatus = &$this->_ipbx->get_module('dialstatus')) === false
-		|| ($arr = xivo_get_aks($list,true)) === false)
-			return(false);
+		if(($r = $this->_dialstatus->set($list,'group')) === false)
+			$this->_set_error('dialstatus',$this->_dialstatus->get_error());
 
-		if($arr['cnt'] === 0)
-			return(null);
+		$this->_set_result('dialstatus',$this->_dialstatus->get_result());
 
-		$info = array();
-		$info['category'] = 'group';
-		$info['categoryval'] = 0;
-		$info['linked'] = true;
-
-		$reslist = array();
-
-		for($i = 0;$i < $arr['cnt'];$i++)
-		{
-			$key = &$arr['keys'][$i];
-			$val = &$list[$key];
-
-			if(is_array($val) === false)
-				continue;
-
-			$info['status'] = $key;
-			$info = array_merge($info,$val);
-
-			if(($rs = $dialstatus->chk_values($info)) === false
-			|| isset($tmp[$rs['status']]) === true)
-				continue;
-
-			$reslist[$rs['status']] = $rs;
-		}
-
-		if(empty($reslist) === true)
-		{
-			$this->_set_result('dialstatus',false);
-			return(false);
-		}
-
-		$this->_set_result('dialstatus',$reslist);
-
-		return(true);
+		return($r);
 	}
 
 	function add()
@@ -523,7 +383,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		|| $rs === false)
 			return($rs);
 
-		$gfeatures = &$this->_ipbx->get_module('groupfeatures');
+		$gfeatures = &$this->_service->get_module('groupfeatures');
 
 		$this->_return['groupfeatures'] = $gfeatures->add($rs);
 
@@ -536,7 +396,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		|| $rs === false)
 			return($rs);
 
-		$queue = &$this->_ipbx->get_module('queue');
+		$queue = &$this->_service->get_module('queue');
 
 		if($queue->add($rs) === false)
 			return(false);
@@ -551,7 +411,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		if(($rs = $this->get_result('user')) === null || $rs === false)
 			return($rs);
 
-		$queuemember = &$this->_ipbx->get_module('queuemember');
+		$queuemember = &$this->_service->get_module('queuemember');
 
 		$id = $this->_return['user'] = array();
 
@@ -576,65 +436,20 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 
 	function add_rightcall($gfeaturesid)
 	{
-		if(($gfeaturesid = xivo_uint($gfeaturesid)) === 0)
-			return(false);
+		$r = $this->_rightcall->add($gfeaturesid);
 
-		if(($rs = $this->get_result('rightcall')) === null || $rs === false)
-			return($rs);
+		$this->_return['rightcall'] = $this->_rightcall->get_return();
 
-		$rightcallmember = &$this->_ipbx->get_module('rightcallmember');
-
-		$this->_return['rightcall'] = array();
-
-		$nb = count($rs);
-
-		for($i = 0;$i < $nb;$i++)
-		{
-			$rs[$i]['typeval'] = $gfeaturesid;
-
-			if(($this->_return['rightcall'][] = $rightcallmember->add($rs[$i])) === false)
-				return(false);
-		}
-
-		if(isset($this->_return['rightcall'][0]) === false)
-			$this->_return['rightcall'] = false;
-
-		return(true);
+		return($r);
 	}
 
 	function add_dialstatus($gfeaturesid)
 	{
-		if(($gfeaturesid = xivo_uint($gfeaturesid)) === 0)
-			return(false);
+		$r = $this->_dialstatus->add($gfeaturesid);
 
-		if(($rs = $this->get_result('dialstatus')) === null || $rs === false)
-			return($rs);
+		$this->_return['dialstatus'] = $this->_dialstatus->get_return();
 
-		if(($arr = xivo_get_aks($rs)) === false)
-			return(false);
-
-		$dialstatus = &$this->_ipbx->get_module('dialstatus');
-
-		$this->_return['dialstatus'] = array();
-
-		for($i = 0;$i < $arr['cnt'];$i++)
-		{
-			$key = &$arr['keys'][$i];
-			$ref = &$rs[$key];
-			$ref['categoryval'] = $gfeaturesid;
-
-			if($dialstatus->is_valid($ref['category'],
-						 $ref['categoryval'],
-						 $ref['type'],
-						 $ref['typeval']) === false
-			|| ($this->_return['dialstatus'][$ref['status']] = $dialstatus->add($ref)) === false)
-				return(false);
-		}
-
-		if(empty($this->_return['dialstatus']) === true)
-			$this->_return['dialstatus'] = false;
-
-		return(true);
+		return($r);
 	}
 
 	function _reverse_add()
@@ -655,11 +470,11 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 			switch($key)
 			{
 				case 'localexten':
-					$extensions = &$this->_ipbx->get_module('extensions');
+					$extensions = &$this->_service->get_module('extensions');
 					$extensions->delete_exten($val);
 					break;
 				case 'user':
-					$queuemember = &$this->_ipbx->get_module('queuemember');
+					$queuemember = &$this->_service->get_module('queuemember');
 
 					if(is_array($val) === false || ($nb = count($val)) === 0)
 						continue;
@@ -671,31 +486,13 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 					}
 					break;
 				case 'rightcall':
-					$rightcallmember = &$this->_ipbx->get_module('rightcallmember');
-
-					if(is_array($val) === false || ($nb = count($val)) === 0)
-						continue;
-
-					for($j = 0;$j < $nb;$j++)
-					{
-						if($val[$j] !== false)
-							$rightcallmember->delete($val[$j]);
-					}
+					$this->_rightcall->reverse_add();
 					break;
 				case 'dialstatus':
-					$dialstatus = &$this->_ipbx->get_module('dialstatus');
-
-					if(is_array($val) === false || ($nb = count($val)) === 0)
-						continue;
-
-					for($j = 0;$j < $nb;$j++)
-					{
-						if($val[$j] !== false)
-							$dialstatus->delete($val[$j]);
-					}
+					$this->_dialstatus->reverse_add();
 					break;
 				default:
-					if(($module = &$this->_ipbx->get_module($key)) === false)
+					if(($module = &$this->_service->get_module($key)) === false)
 						continue;
 
 					$module->delete($val);
@@ -778,7 +575,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		|| $rs === false)
 			return($rs);
 
-		$gfeatures = &$this->_ipbx->get_module('groupfeatures');
+		$gfeatures = &$this->_service->get_module('groupfeatures');
 		$this->_return['groupfeatures'] = $gfeatures->edit($this->_info['gfeatures']['id'],$rs);
 
 		return($this->_return['groupfeatures']);
@@ -793,7 +590,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		|| $rs === false)
 			return($rs);
 
-		$queue = &$this->_ipbx->get_module('queue');
+		$queue = &$this->_service->get_module('queue');
 
 		if($queue->edit($this->_info['queue']['name'],$rs) === false)
 			return(false);
@@ -819,7 +616,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		if($rs === false)
 			return(false);
 
-		$queuemember = &$this->_ipbx->get_module('queuemember');
+		$queuemember = &$this->_service->get_module('queuemember');
 
 		$id = $this->_return['user'] = array();
 
@@ -847,62 +644,11 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		if(xivo_issa('gfeatures',$this->_info) === false)
 			return(false);
 
-		if(xivo_issa('rightcall',$this->_info) === false)
-			return($this->add_rightcall($this->_info['gfeatures']['id']));
+		$r = $this->_rightcall->edit($this->_status,'group',$this->_info['gfeatures']['id']);
 
-		$this->_return['rightcall'] = $this->delete_rightcall();
+		$this->_return['rightcall'] = $this->_rightcall->get_return();
 
-		if(($rs = $this->get_result('rightcall')) === null)
-			return($this->_return['rightcall']);
-
-		if($rs === false)
-			return(false);
-
-		$rightcallmember = &$this->_ipbx->get_module('rightcallmember');
-
-		$this->_return['rightcall'] = array();
-
-		$i = 0;
-		$nb = count($rs);
-
-		if(($cnt = count($this->_info['rightcall'])) !== 0)
-		{
-			for($i;$i < $cnt;$i++)
-			{
-				if(isset($rs[$i]) === false)
-				{
-					$i = $nb;
-					break;
-				}
-
-				$id = $this->_info['rightcall'][$i]['id'];
-				$rs[$i]['typeval'] = $this->_info['gfeatures']['id'];
-
-				if(($this->_return['rightcall'][] = $rightcallmember->add($rs[$i],$id)) === false)
-					return(false);
-			}
-		}
-
-		if($i >= $nb)
-		{
-			if(isset($this->_return['rightcall'][0]) === false)
-				$this->_return['rightcall'] = false;
-
-			return(true);
-		}
-
-		for($i;$i < $nb;$i++)
-		{
-			$rs[$i]['typeval'] = $this->_info['gfeatures']['id'];
-
-			if(($this->_return['rightcall'][] = $rightcallmember->add($rs[$i])) === false)
-				return(false);
-		}
-
-		if(isset($this->_return['rightcall'][0]) === false)
-			$this->_return['rightcall'] = false;
-
-		return(true);
+		return($r);
 	}
 
 	function edit_dialstatus()
@@ -910,77 +656,11 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		if(xivo_issa('gfeatures',$this->_info) === false)
 			return(false);
 
-		if(xivo_issa('dialstatus',$this->_info) === false)
-			return($this->add_dialstatus($this->_info['gfeatures']['id']));
+		$r = $this->_dialstatus->edit($this->_status,'group',$this->_info['gfeatures']['id']);
 
-		$this->_return['dialstatus'] = $this->delete_dialstatus();
+		$this->_return['dialstatus'] = $this->_dialstatus->get_return();
 
-		if(($rs = $this->get_result('dialstatus')) === null)
-			return($this->_return['dialstatus']);
-
-		if(($arr = xivo_get_aks($rs)) === false)
-			return(false);
-
-		$dialstatus = &$this->_ipbx->get_module('dialstatus');
-
-		$this->_return['dialstatus'] = array();
-
-		$i = 0;
-
-		if(($list = xivo_get_aks($this->_info['dialstatus'])) !== false)
-		{
-			for($i;$i < $list['cnt'];$i++)
-			{
-				$key = &$list['keys'][$i];
-
-				if(isset($rs[$key]) === false)
-				{
-					$i = $arr['cnt'];
-					break;
-				}
-
-				$ref = &$rs[$key];
-
-				$id = $this->_info['dialstatus'][$key]['id'];
-				$ref['categoryval'] = $this->_info['gfeatures']['id'];
-
-				if($dialstatus->is_valid($ref['category'],
-							 $ref['categoryval'],
-							 $ref['type'],
-							 $ref['typeval']) === false
-				|| ($this->_return['dialstatus'][$ref['status']] = $dialstatus->add($ref,$id)) === false)
-					return(false);
-			}
-
-		}
-
-		if($i >= $arr['cnt'])
-		{
-			if(empty($this->_return['dialstatus']) === true)
-				$this->_return['dialstatus'] = false;
-
-			return(true);
-		}
-
-		for($i;$i < $arr['cnt'];$i++)
-		{
-			$key = &$arr['keys'][$i];
-			$ref = &$rs[$key];
-
-			$ref['categoryval'] = $this->_info['gfeatures']['id'];
-
-			if($dialstatus->is_valid($ref['category'],
-						 $ref['categoryval'],
-						 $ref['type'],
-						 $ref['typeval']) === false
-			|| ($this->_return['dialstatus'][$ref['status']] = $dialstatus->add($ref)) === false)
-				return(false);
-		}
-
-		if(empty($this->_return['dialstatus']) === true)
-			$this->_return['dialstatus'] = false;
-
-		return(true);
+		return($r);
 	}
 
 	function _reverse_edit()
@@ -1001,11 +681,11 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 			switch($key)
 			{
 				case 'groupfeatures':
-					$gfeatures = &$this->_ipbx->get_module('groupfeatures');
+					$gfeatures = &$this->_service->get_module('groupfeatures');
 					$gfeatures->edit_origin($this->_origin['gfeatures']);
 					break;
 				case 'localexten':
-					$extensions = &$this->_ipbx->get_module('extensions');
+					$extensions = &$this->_service->get_module('extensions');
 
 					if($this->_origin['localexten'] === false)
 						$extensions->delete_exten($val);
@@ -1013,25 +693,28 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 						$extensions->edit_origin($this->_origin['localexten']);
 					break;
 				case 'user':
-					$this->delete_user();
+					if(xivo_issa('gfeatures',$this->_info) === false)
+						break;
 
-					$queuemember = &$this->_ipbx->get_module('queuemember');
+					$this->delete_user($this->_info['gfeatures']['name']);
+
+					$queuemember = &$this->_service->get_module('queuemember');
 					$queuemember->add_origin_list($this->_origin['user']);
 					break;
 				case 'rightcall':
-					$this->delete_rightcall();
+					if(xivo_issa('gfeatures',$this->_info) === false)
+						break;
 
-					$rightcallmember = &$this->_ipbx->get_module('rightcallmember');
-					$rightcallmember->add_origin_list($this->_origin['rightcall']);
+					$this->_rightcall->reverse_edit($this->_status,'group',$this->_info['gfeatures']['id']);
 					break;
 				case 'dialstatus':
-					$this->delete_dialstatus();
+					if(xivo_issa('gfeatures',$this->_info) === false)
+						break;
 
-					$dialstatus = &$this->_ipbx->get_module('dialstatus');
-					$dialstatus->add_origin_list($this->_origin['dialstatus']);
+					$this->_dialstatus->reverse_edit($this->_status,'group',$this->_info['gfeatures']['id']);
 					break;
 				default:
-					if(($module = &$this->_ipbx->get_module($key)) === false)
+					if(($module = &$this->_service->get_module($key)) === false)
 						continue;
 
 					if($this->_origin[$key] === false)
@@ -1074,7 +757,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 	function delete_groupfeatures()
 	{
 		if(xivo_issa('gfeatures',$this->_info) === false
-		|| ($gfeatures = &$this->_ipbx->get_module('groupfeatures')) === false)
+		|| ($gfeatures = &$this->_service->get_module('groupfeatures')) === false)
 			return(false);
 
 		$r = $gfeatures->delete($this->_info['gfeatures']['id']);
@@ -1088,7 +771,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 	function delete_queue()
 	{
 		if(xivo_issa('queue',$this->_info) === false
-		|| ($queue = &$this->_ipbx->get_module('queue')) === false)
+		|| ($queue = &$this->_service->get_module('queue')) === false)
 			return(false);
 
 		$r = $queue->delete($this->_info['queue']['name']);
@@ -1106,7 +789,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 
 		if(xivo_issa('gfeatures',$this->_info) === false
 		|| is_scalar($name) === false
-		|| ($queuemember = &$this->_ipbx->get_module('queuemember')) === false)
+		|| ($queuemember = &$this->_service->get_module('queuemember')) === false)
 			return(false);
 
 		$queuemember_where = array();
@@ -1124,18 +807,12 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 
 	function delete_rightcall()
 	{
-		if(xivo_issa('rightcall',$this->_info) === false)
-			return(null);
+		if(xivo_issa('gfeatures',$this->_info) === false)
+			$id = 0;
+		else
+			$id = $this->_info['gfeatures']['id'];
 
-		if(xivo_issa('gfeatures',$this->_info) === false
-		|| ($rightcallmember = &$this->_ipbx->get_module('rightcallmember')) === false)
-			return(false);
-
-		$rightcallmember_where = array();
-		$rightcallmember_where['type'] = 'group';
-		$rightcallmember_where['typeval'] = $this->_info['gfeatures']['id'];
-
-		$r = $rightcallmember->delete_where($rightcallmember_where);
+		$r = $this->_rightcall->delete($this->_status,'group',$id);
 
 		if($this->_status === 'delete')
 			$this->_return['rightcall'] = $r;
@@ -1145,18 +822,12 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 
 	function delete_dialstatus()
 	{
-		if(xivo_issa('dialstatus',$this->_info) === false)
-			return(null);
+		if(xivo_issa('gfeatures',$this->_info) === false)
+			$id = 0;
+		else
+			$id = $this->_info['gfeatures']['id'];
 
-		if(xivo_issa('gfeatures',$this->_info) === false
-		|| ($dialstatus = &$this->_ipbx->get_module('dialstatus')) === false)
-			return(false);
-
-		$dialstatus_where = array();
-		$dialstatus_where['category'] = 'group';
-		$dialstatus_where['categoryval'] = $this->_info['gfeatures']['id'];
-
-		$r = $dialstatus->delete_where($dialstatus_where);
+		$r = $this->_dialstatus->delete($this->_status,'group',$id);
 
 		if($this->_status === 'delete')
 			$this->_return['dialstatus'] = $r;
@@ -1181,29 +852,27 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 			switch($key)
 			{
 				case 'groupfeatures':
-					$gfeatures = &$this->_ipbx->get_module('groupfeatures');
+					$gfeatures = &$this->_service->get_module('groupfeatures');
 					$gfeatures->recover($this->_info['gfeatures']['id']);
 					break;
 				case 'localexten':
-					$extensions = &$this->_ipbx->get_module('extensions');
+					$extensions = &$this->_service->get_module('extensions');
 
 					if($this->_origin['localexten'] !== false)
 						$extensions->add_origin($this->_origin['localexten']);
 					break;
 				case 'user':
-					$queuemember = &$this->_ipbx->get_module('queuemember');
+					$queuemember = &$this->_service->get_module('queuemember');
 					$queuemember->add_origin_list($this->_origin['user']);
 					break;
 				case 'rightcall':
-					$rightcallmember = &$this->_ipbx->get_module('rightcallmember');
-					$rightcallmember->add_origin_list($this->_origin['rightcall']);
+					$this->_rightcall->add_origin_list();
 					break;
 				case 'dialstatus':
-					$dialstatus = &$this->_ipbx->get_module('dialstatus');
-					$dialstatus->add_origin_list($this->_origin['dialstatus']);
+					$this->_dialstatus->add_origin_list();
 					break;
 				default:
-					if(($module = &$this->_ipbx->get_module($key)) === false)
+					if(($module = &$this->_service->get_module($key)) === false)
 						continue;
 
 					if($this->_origin[$key] !== false)
@@ -1218,7 +887,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		if(xivo_issa('gfeatures',$this->_info) === false)
 			return(false);
 
-		if(($incall = &$this->_ipbx->get_module('incall')) !== false)
+		if(($incall = &$this->_service->get_module('incall')) !== false)
 		{
 			$incall_where = array();
 			$incall_where['type'] = 'group';
@@ -1227,7 +896,9 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 			$incall->unlinked_where($incall_where);
 		}
 
-		if(($schedule = &$this->_ipbx->get_module('schedule')) === false)
+		$this->_dialstatus->unlinked('group',$this->_info['gfeatures']['id']);
+
+		if(($schedule = &$this->_service->get_module('schedule')) === false)
 			return(true);
 		
 		$schedule_where = array();

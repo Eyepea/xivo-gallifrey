@@ -35,11 +35,7 @@ class xivo_service_abstract
 
 		$file = $module.'.inc';
 
-		$dir = XIVO_PATH_OBJECT.XIVO_SEP_DIR.
-		       'service'.XIVO_SEP_DIR.
-		       $this->_type.XIVO_SEP_DIR.
-		       $this->_name.XIVO_SEP_DIR.
-		       $module;
+		$dir = array(XIVO_PATH_OBJECT,'service',$this->_type,$this->_name,$module);
 
 		$class = 'xivo_service_'.$this->_name.'_'.$module;
 
@@ -55,12 +51,7 @@ class xivo_service_abstract
 
 		$file = $application.'.inc';
 
-		$dir = XIVO_PATH_OBJECT.XIVO_SEP_DIR.
-		       'application'.XIVO_SEP_DIR.
-		       'service'.XIVO_SEP_DIR.
-		       $this->_type.XIVO_SEP_DIR.
-		       $this->_name.XIVO_SEP_DIR.
-		       $application;
+		$dir = array(XIVO_PATH_OBJECT,'application','service',$this->_type,$this->_name,$application);
 
 		$class = 'xivo_application_service_'.$this->_name.'_'.$application;
 

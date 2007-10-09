@@ -28,7 +28,7 @@ class xivo_service_asterisk_usersip extends xivo_service_asterisk_abstract
 		$initialized = $this->_conf['initialized'].':'.$data['name'].'@';
 
 		$data['initialized'] = strncmp($initialized,$data['fullcontact'],strlen($initialized)) === 0 ? true : false;
-		$data['commented'] = $data['commented'] !== '0' ? true : false;
+		$data['commented'] = (bool) $data['commented'];
 		$data['callgroup'] = empty($data['callgroup']) === false ? explode(',',$data['callgroup']) : '';
 		$data['pickupgroup'] = empty($data['pickupgroup']) === false ? explode(',',$data['pickupgroup']) : '';
 

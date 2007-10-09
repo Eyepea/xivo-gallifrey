@@ -286,12 +286,10 @@ class xivo_service_asterisk_schedule extends xivo_service_asterisk_abstract
 
 	function get_all($id=0,$disable=null,$prepare=true,$order=null,$limit=null)
 	{
-		$id = xivo_uint($id);
-
 		if(($list = parent::get_all($disable,null,$prepare,$order,$limit)) === false)
 			return(false);
 
-		if($id === 0)
+		if(($id = xivo_uint($id)) === 0)
 			return($list);
 
 		$nb = count($list);

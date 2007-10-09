@@ -41,7 +41,7 @@ function xivo_build_dialstatus_array(stat)
 
 		key = 'it-dialstatus-'+stat+'-'+property+'-typeval';
 		xivo_elt_dialstatus[stat][key] = new Array();
-		xivo_elt_dialstatus[stat][key]['property'] = 'disabled|true:boolean';
+		xivo_elt_dialstatus[stat][key]['property'] = 'disabled|true:boolean;className|it-disabled';
 		xivo_elt_dialstatus[stat]['links']['link'][i++] = new Array(key,0,1);
 	}
 
@@ -52,7 +52,7 @@ function xivo_build_dialstatus_array(stat)
 
 		xivo_fm_dialstatus[stat][property] = xivo_clone(xivo_elt_dialstatus[stat]);
 		xivo_fm_dialstatus[stat][property][keyfd]['style'] = 'display:block';
-		xivo_fm_dialstatus[stat][property][keyit]['property'] = 'disabled|false:boolean';
+		xivo_fm_dialstatus[stat][property][keyit]['property'] = 'disabled|false:boolean;className|it-enabled';
 
 		xivo_attrib_register('fm_dialstatus-'+stat+'-'+property,xivo_fm_dialstatus[stat][property]);
 	}
@@ -67,13 +67,10 @@ function xivo_chgdialstatus(stat,type)
 {
 	if(xivo_is_undef(xivo_fm_dialstatus[stat]) == true
 	|| xivo_is_array(xivo_fm_dialstatus[stat]) == false
-	|| xivo_is_undef(type.value) == true)
-		alert('toto');
-
-	if(xivo_is_undef(xivo_fm_dialstatus[stat][type.value]) == true)
-		alert('tutu');
-
-	if(xivo_is_array(xivo_fm_dialstatus[stat][type.value]) == false)
+	|| xivo_is_undef(type.value) == true
+	|| xivo_is_undef(xivo_fm_dialstatus[stat][type.value]) == true
+	|| xivo_is_array(xivo_fm_dialstatus[stat][type.value]) == false
+	|| (xivo_is_undef(type.disabled) == false && type.disabled == true) === true)
 		return(false);
 
 	xivo_chg_attrib('fm_dialstatus-'+stat+'-'+type.value,'links',0,1);

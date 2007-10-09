@@ -47,10 +47,10 @@
 <div class="sb-smenu">
 	<ul>
 		<li id="smenu-tab-1" class="moo" onclick="xivo_smenu_click(this,'moc','sb-part-first');" onmouseout="xivo_smenu_out(this,'moo');" onmouseover="xivo_smenu_over(this,'mov');">
-			<div><span class="span-center"><a href="#" onclick="xivo_smenu_click(this,'moc','sb-part-first'); return(false);"><?=$this->bbf('smenu_emergency');?></a></span></div><span class="span-right">&nbsp;</span>
+			<div class="tab"><span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_emergency');?></a></span></div><span class="span-right">&nbsp;</span>
 		</li>
 		<li id="smenu-tab-2" class="moo-last" onclick="xivo_smenu_click(this,'moc','sb-part-last',1);" onmouseout="xivo_smenu_out(this,'moo',1);" onmouseover="xivo_smenu_over(this,'mov',1);">
-			<div><span class="span-center"><a href="#" onclick="xivo_smenu_click(this,'moc','sb-part-last'); return(false);"><?=$this->bbf('smenu_special');?></a></span></div><span class="span-right">&nbsp;</span>
+			<div class="tab"><span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_special');?></a></span></div><span class="span-right">&nbsp;</span>
 		</li>
 	</ul>
 </div>
@@ -80,7 +80,7 @@ else:
 		<tr class="sb-top">
 			<th class="th-left"><?=$this->bbf('col_emergency-trunk');?></th>
 			<th class="th-center"><?=$this->bbf('col_emergency-exten');?></th>
-			<th class="th-right"><?=$url->href_html($url->img_html('img/site/button/add.gif',$this->bbf('col_emergency-add'),'border="0"'),'#',null,'onclick="xivo_table_list(\'emergency\',this);"',$this->bbf('col_emergency-add'));?></th>
+			<th class="th-right"><?=$url->href_html($url->img_html('img/site/button/mini/orange/bo-add.gif',$this->bbf('col_emergency-add'),'border="0"'),'#',null,'onclick="xivo_table_list(\'emergency\',this); return(false);"',$this->bbf('col_emergency-add'));?></th>
 		</tr>
 		</thead>
 		<tbody id="emergency">
@@ -110,7 +110,7 @@ else:
 ?>
 			</td>
 			<td><?=$form->text(array('field' => false,'name' => 'emergency[exten][]','id' => false,'label' => false,'size' => 15,'value' => $ref['extenumbers']['exten'],'default' => $element['extenumbers']['exten']['default']));?></td>
-			<td class="td-right txt-right"><?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',$this->bbf('opt_emergency-delete'),'border="0"'),'#',null,'onclick="xivo_table_list(\'emergency\',this,1);"',$this->bbf('opt_emergency-delete'));?></td>
+			<td class="td-right txt-right"><?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',$this->bbf('opt_emergency-delete'),'border="0"'),'#',null,'onclick="xivo_table_list(\'emergency\',this,1); return(false);"',$this->bbf('opt_emergency-delete'));?></td>
 		</tr>
 
 <?php
@@ -129,7 +129,7 @@ else:
 		<tr class="fm-field">
 			<td class="td-left txt-left"><?=$form->select(array('field' => false,'name' => 'emergency[trunkfeaturesid][]','id' => false,'label' => false,'browse' => 'trunk','key' => 'name','altkey' => 'trunkfeaturesid','optgroup' => array('key' => true,'bbf' => array('concat','fm_emergency-trunk-opt-')),'default' => $element['generaloutcall']['trunkfeaturesid']['default']),$trunks_list,'disabled="disabled"');?></td>
 			<td><?=$form->text(array('field' => false,'name' => 'emergency[exten][]','id' => false,'label' => false,'size' => 15,'default' => $element['extenumbers']['exten']['default']),'disabled="disabled"');?></td>
-			<td class="td-right txt-right"><?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',$this->bbf('opt_delete'),'border="0"'),'#',null,'onclick="xivo_table_list(\'emergency\',this,1);"',$this->bbf('opt_delete'));?></td>
+			<td class="td-right txt-right"><?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',$this->bbf('opt_delete'),'border="0"'),'#',null,'onclick="xivo_table_list(\'emergency\',this,1); return(false);"',$this->bbf('opt_delete'));?></td>
 		</tr>
 		</tbody>
 	</table>
@@ -145,7 +145,7 @@ else:
 		<tr class="sb-top">
 			<th class="th-left"><?=$this->bbf('col_special-trunk');?></th>
 			<th class="th-center"><?=$this->bbf('col_special-exten');?></th>
-			<th class="th-right"><?=$url->href_html($url->img_html('img/site/button/add.gif',$this->bbf('col_special-add'),'border="0"'),'#',null,'onclick="xivo_table_list(\'special\',this);"',$this->bbf('col_special-add'));?></th>
+			<th class="th-right"><?=$url->href_html($url->img_html('img/site/button/mini/orange/bo-add.gif',$this->bbf('col_special-add'),'border="0"'),'#',null,'onclick="xivo_table_list(\'special\',this); return(false);"',$this->bbf('col_special-add'));?></th>
 		</tr>
 		</thead>
 		<tbody id="special">
@@ -175,7 +175,7 @@ else:
 ?>
 			</td>
 			<td><?=$form->text(array('field' => false,'name' => 'special[exten][]','id' => false,'label' => false,'size' => 15,'value' => $ref['extenumbers']['exten'],'default' => $element['extenumbers']['exten']['default']));?></td>
-			<td class="td-right txt-right"><?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',$this->bbf('opt_emergency-delete'),'border="0"'),'#',null,'onclick="xivo_table_list(\'special\',this,1);"',$this->bbf('opt_emergency-delete'));?></td>
+			<td class="td-right txt-right"><?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',$this->bbf('opt_emergency-delete'),'border="0"'),'#',null,'onclick="xivo_table_list(\'special\',this,1); return(false);"',$this->bbf('opt_emergency-delete'));?></td>
 		</tr>
 
 <?php
@@ -194,7 +194,7 @@ else:
 		<tr class="fm-field">
 			<td class="td-left txt-left"><?=$form->select(array('field' => false,'name' => 'special[trunkfeaturesid][]','id' => false,'label' => false,'browse' => 'trunk','key' => 'name','altkey' => 'trunkfeaturesid','optgroup' => array('key' => true,'bbf' => array('concat','fm_special-trunk-opt-')),'default' => $element['generaloutcall']['trunkfeaturesid']['default']),$trunks_list,'disabled="disabled"');?></td>
 			<td><?=$form->text(array('field' => false,'name' => 'special[exten][]','id' => false,'label' => false,'size' => 15,'default' => $element['extenumbers']['exten']['default']),'disabled="disabled"');?></td>
-			<td class="td-right txt-right"><?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',$this->bbf('opt_special-delete'),'border="0"'),'#',null,'onclick="xivo_table_list(\'special\',this,1);"',$this->bbf('opt_special-delete'));?></td>
+			<td class="td-right txt-right"><?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',$this->bbf('opt_special-delete'),'border="0"'),'#',null,'onclick="xivo_table_list(\'special\',this,1); return(false);"',$this->bbf('opt_special-delete'));?></td>
 		</tr>
 		</tbody>
 	</table>

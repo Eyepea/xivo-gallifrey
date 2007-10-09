@@ -538,7 +538,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 			|| ($info['protocol'] = $protocol->get($info['ufeatures']['protocolid'],$disable)) === false)
 				continue;
 
-			if($info['protocol']['context'] === '')
+			if(isset($info['protocol']['context']) === false || $info['protocol']['context'] === '')
 				$info['protocol']['context'] = 'default';
 			
 			if($type === '')
@@ -1070,6 +1070,9 @@ class xivo_service_asterisk extends xivo_service_abstract
 		$number = strval($number);
 		$context = strtolower(strval($context));
 		$channel = strval($channel);
+
+		if($protocol === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
+			return($name);
 
 		if($number !== '')
 		{

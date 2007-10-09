@@ -624,7 +624,7 @@ function xivo_leadzero(n)
 
 function xivo_smenu_click(obj,cname,part,last)
 {
-	if(xivo_is_undef(obj.id) == true || obj.id == '' || xivo_smenu['click']['id'] == obj.id)
+	if(xivo_is_undef(obj.id) == true || obj.id == '')
 		return(false);
 
 	last = Boolean(last) != false ? true : false;
@@ -697,6 +697,9 @@ function xivo_smenu_fmsubmit(obj)
 
 function xivo_smenu_out(obj,cname,last)
 {
+	if((ul = xivo_etag('ul',obj,0)) !== false)
+		ul.style.display = 'none';
+
 	if(xivo_is_undef(obj.id) == true || obj.id == '' || xivo_smenu['click']['id'] == obj.id)
 		return(false);
 
@@ -733,6 +736,9 @@ function xivo_smenu_out(obj,cname,last)
 
 function xivo_smenu_over(obj,cname,last)
 {
+	if((ul = xivo_etag('ul',obj,0)) !== false)
+		ul.style.display = 'block';
+
 	if(xivo_is_undef(obj.id) == true || obj.id == '' || xivo_smenu['click']['id'] == obj.id)
 		return(false);
 

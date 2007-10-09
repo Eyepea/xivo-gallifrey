@@ -22,6 +22,9 @@ SIP
 ; user_protocol-iax
 IAX
 
+; user_protocol-custom
+Personnalisé
+
 ; no_user
 Aucun utilisateur trouvé
 

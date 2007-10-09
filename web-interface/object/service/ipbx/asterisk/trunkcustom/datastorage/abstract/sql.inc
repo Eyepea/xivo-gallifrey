@@ -4,7 +4,7 @@ xivo_service_asterisk::required(array('abstract','datastorage','abstract','sql.i
 
 class xivo_service_asterisk_trunkcustom_abstract_sql extends xivo_service_asterisk_abstract_sql
 {
-	var $_param	= array('table' => 'trunkcustom');
+	var $_param	= array('table' => 'usercustom');
 	var $_dso	= null;
 
 	function _init(&$dso,$param=array())
@@ -18,6 +18,100 @@ class xivo_service_asterisk_trunkcustom_abstract_sql extends xivo_service_asteri
 
 		if(isset($param['table']) === true)
 			$this->_param['table'] = (string) $param['table'];
+	}
+
+	function get($arr,$disable=null)
+	{
+		if(is_array($arr) === false)
+		{
+			if(($arr = xivo_uint($arr)) !== 0)
+				$arr = array('id' => $arr);
+			else
+				return(false);
+		}
+
+		$arr['category'] = 'trunk';
+
+		return(parent::get($arr,$disable));
+	}
+
+	function get_id($arr,$disable=null)
+	{
+		if(is_array($arr) === false)
+		{
+			if(($arr = xivo_uint($arr)) !== 0)
+				$arr = array('id' => $arr);
+			else
+				return(false);
+		}
+
+		$arr['category'] = 'trunk';
+
+		return(parent::get($arr,$disable,null,true));
+	}
+
+	function edit($id,$arr,$disable=null)
+	{
+		if(is_array($id) === false)
+		{
+			if(($id = xivo_uint($id)) !== 0)
+				$id = array('id' => $id);
+			else
+				return(false);
+		}
+
+		$id['category'] = 'trunk';
+
+		return(parent::edit($id,$arr,$disable));
+	}
+
+	function delete($arr,$disable=null)
+	{
+		if(is_array($arr) === false)
+		{
+			if(($arr = xivo_uint($arr)) !== 0)
+				$arr = array('id' => $arr);
+			else
+				return(false);
+		}
+
+		$arr['category'] = 'trunk';
+
+		return(parent::delete($arr,$disable));
+	}
+
+	function get_list($disable=null,$order=null,$limit=null)
+	{
+		$arr = array('category' => 'trunk');
+
+		return(parent::get_list_where($arr,$disable,null,$order,$limit));
+	}
+
+	function get_list_where($arr,$disable=null,$order=null,$limit=null)
+	{
+		if(is_array($arr) === false || empty($arr) === true)
+			return(false);
+
+		$arr['category'] = 'trunk';
+
+		return(parent::get_list_where($arr,$disable,null,$order,$limit));
+	}
+
+	function get_all($disable=null,$order=null,$limit=null)
+	{
+		$arr = array('category' => 'trunk');
+
+		return(parent::get_list_where($arr,$disable,null,$order,$limit,true));
+	}
+
+	function get_all_where($arr,$disable=null,$order=null,$limit=null)
+	{
+		if(is_array($arr) === false || empty($arr) === true)
+			return(false);
+
+		$arr['category'] = 'trunk';
+
+		return(parent::get_list_where($arr,$disable,null,$order,$limit,true));
 	}
 }
 

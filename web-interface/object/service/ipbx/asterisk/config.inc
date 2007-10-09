@@ -16,6 +16,7 @@ define('XIVO_SRE_IPBX_AST_CHAN_UNKNOWN','**Unknown**');
 
 define('XIVO_SRE_IPBX_AST_PROTO_SIP','sip');
 define('XIVO_SRE_IPBX_AST_PROTO_IAX','iax');
+define('XIVO_SRE_IPBX_AST_PROTO_CUSTOM','custom');
 
 define('XIVO_SRE_IPBX_AST_CODEC_AUDIO_G723','g723');
 define('XIVO_SRE_IPBX_AST_CODEC_AUDIO_GSM','gsm');
@@ -74,6 +75,9 @@ $array['section']['sip']['disabled'] = true;
 
 $array['section']['iax'] = array();
 $array['section']['iax']['disabled'] = true;
+
+$array['section']['custom'] = array();
+$array['section']['custom']['disabled'] = true;
 
 $array['section']['group'] = array();
 $array['section']['group']['disabled'] = true;
@@ -152,16 +156,16 @@ $array['module']['autoprov'] = array();
 $array['module']['autoprov']['datastorage'] = true;
 $array['module']['autoprov']['disabled'] = true;
 
+$array['module']['usercustom'] = array();
+$array['module']['usercustom']['datastorage'] = true;
+$array['module']['usercustom']['section'] = 'custom';
+
 $array['module']['trunkcustom'] = array();
 $array['module']['trunkcustom']['datastorage'] = true;
-$array['module']['trunkcustom']['disabled'] = true;
+$array['module']['trunkcustom']['section'] = 'custom';
 
 $array['module']['trunkfeatures'] = array();
 $array['module']['trunkfeatures']['datastorage'] = true;
-
-$array['module']['usergroup'] = array();
-$array['module']['usergroup']['datastorage'] = true;
-$array['module']['usergroup']['section'] = 'group';
 
 $array['module']['groupfeatures'] = array();
 $array['module']['groupfeatures']['datastorage'] = true;
@@ -257,6 +261,7 @@ $array['module']['dialstatus']['datastorage'] = true;
 $array['protocol'] = array();
 $array['protocol']['sip'] = array('name' => XIVO_SRE_IPBX_AST_PROTO_SIP,'module' => 'usersip'); 
 $array['protocol']['iax'] = array('name' => XIVO_SRE_IPBX_AST_PROTO_IAX,'module' => 'useriax'); 
+$array['protocol']['custom'] = array('name' => XIVO_SRE_IPBX_AST_PROTO_CUSTOM,'module' => 'usercustom'); 
 
 $array['channel'] = array();
 $array['channel']['sip'] = XIVO_SRE_IPBX_AST_CHAN_SIP;

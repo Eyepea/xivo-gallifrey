@@ -1,3 +1,5 @@
+var xivo_elt_protocol = new Array();
+
 function xivo_inqueue()
 {
 	xivo_fm_move_selected('it-queuelist','it-queue');

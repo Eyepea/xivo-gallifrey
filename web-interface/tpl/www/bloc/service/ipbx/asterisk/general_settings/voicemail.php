@@ -36,25 +36,25 @@
 <div class="sb-smenu">
 	<ul>
 		<li id="smenu-tab-1" class="moo" onclick="xivo_smenu_click(this,'moc','sb-part-first');" onmouseout="xivo_smenu_out(this,'moo');" onmouseover="xivo_smenu_over(this,'mov');">
-			<div><span class="span-center"><a href="#" onclick="xivo_smenu_click(this,'moc','sb-part-first'); return(false);"><?=$this->bbf('smenu_general');?></a></span></div><span class="span-right">&nbsp;</span>
+			<div class="tab"><span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_general');?></a></span></div><span class="span-right">&nbsp;</span>
 		</li>
 		<li id="smenu-tab-2" class="moo" onclick="xivo_smenu_click(this,'moc','sb-part-voicemenu');" onmouseout="xivo_smenu_out(this,'moo');" onmouseover="xivo_smenu_over(this,'mov');">
-			<div><span class="span-center"><a href="#" onclick="xivo_smenu_click(this,'moc','sb-part-voicemenu'); return(false);"><?=$this->bbf('smenu_voicemenu');?></a></span></div><span class="span-right">&nbsp;</span>
+			<div class="tab"><span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_voicemenu');?></a></span></div><span class="span-right">&nbsp;</span>
 		</li>
 		<li id="smenu-tab-3" class="moo" onclick="xivo_smenu_click(this,'moc','sb-part-email');" onmouseout="xivo_smenu_out(this,'moo');" onmouseover="xivo_smenu_over(this,'mov');">
-			<div><span class="span-center"><a href="#" onclick="xivo_smenu_click(this,'moc','sb-part-email'); return(false);"><?=$this->bbf('smenu_email');?></a></span></div><span class="span-right">&nbsp;</span>
+			<div class="tab"><span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_email');?></a></span></div><span class="span-right">&nbsp;</span>
 		</li>
 		<li id="smenu-tab-4" class="moo" onclick="xivo_smenu_click(this,'moc','sb-part-pager');" onmouseout="xivo_smenu_out(this,'moo');" onmouseover="xivo_smenu_over(this,'mov');">
-			<div><span class="span-center"><a href="#" onclick="xivo_smenu_click(this,'moc','sb-part-pager'); return(false);"><?=$this->bbf('smenu_pager');?></a></span></div><span class="span-right">&nbsp;</span>
+			<div class="tab"><span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_pager');?></a></span></div><span class="span-right">&nbsp;</span>
 		</li>
 		<li id="smenu-tab-5" class="moo" onclick="xivo_smenu_click(this,'moc','sb-part-timezone');" onmouseout="xivo_smenu_out(this,'moo');" onmouseover="xivo_smenu_over(this,'mov');">
-			<div><span class="span-center"><a href="#" onclick="xivo_smenu_click(this,'moc','sb-part-timezone'); return(false);"><?=$this->bbf('smenu_timezones');?></a></span></div><span class="span-right">&nbsp;</span>
+			<div class="tab"><span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_timezones');?></a></span></div><span class="span-right">&nbsp;</span>
 		</li>
 		<li id="smenu-tab-6" class="moo" onclick="xivo_smenu_click(this,'moc','sb-part-adsi');" onmouseout="xivo_smenu_out(this,'moo');" onmouseover="xivo_smenu_over(this,'mov');">
-			<div><span class="span-center"><a href="#" onclick="xivo_smenu_click(this,'moc','sb-part-adsi'); return(false);"><?=$this->bbf('smenu_adsi');?></a></span></div><span class="span-right">&nbsp;</span>
+			<div class="tab"><span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_adsi');?></a></span></div><span class="span-right">&nbsp;</span>
 		</li>
 		<li id="smenu-tab-7" class="moo-last" onclick="xivo_smenu_click(this,'moc','sb-part-last',1);" onmouseout="xivo_smenu_out(this,'moo',1);" onmouseover="xivo_smenu_over(this,'mov',1);">
-			<div><span class="span-center"><a href="#" onclick="xivo_smenu_click(this,'moc','sb-part-last'); return(false);"><?=$this->bbf('smenu_advanced');?></a></span></div><span class="span-right">&nbsp;</span>
+			<div class="tab"><span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_advanced');?></a></span></div><span class="span-right">&nbsp;</span>
 		</li>
 	</ul>
 </div>
@@ -184,7 +184,7 @@
 			<th class="th-left"><?=$this->bbf('col_timezone-name');?></th>
 			<th class="th-center"><?=$this->bbf('col_timezone-timezone');?></th>
 			<th class="th-center"><?=$this->bbf('col_timezone-options');?></th>
-			<th class="th-right"><?=$url->href_html($url->img_html('img/site/button/add.gif',$this->bbf('col_timezone-add'),'border="0"'),'#',null,'onclick="xivo_table_list(\'timezone\',this);"',$this->bbf('col_timezone-add'));?></th>
+			<th class="th-right"><?=$url->href_html($url->img_html('img/site/button/mini/orange/bo-add.gif',$this->bbf('col_timezone-add'),'border="0"'),'#',null,'onclick="xivo_table_list(\'timezone\',this); return(false);"',$this->bbf('col_timezone-add'));?></th>
 		</tr>
 		</thead>
 		<tbody id="timezone">
@@ -198,7 +198,7 @@
 			<td class="td-left txt-left"><?=$form->text(array('field' => false,'name' => 'zonemessages[name][]','id' => false,'label' => false,'value' => $val['name'],'default' => $element['zonemessages']['name']['default']));?></td>
 			<td><?=$form->select(array('field' => false,'name' => 'zonemessages[timezone][]','key' => true,'id' => false,'label' => false,'value' => $val['timezone'],'default' => $element['zonemessages']['timezone']['default']),$this->vars('timezone_list'));?></td>
 			<td><?=$form->text(array('field' => false,'name' => 'zonemessages[msg_format][]','id' => false,'label' => false,'size' => 25,'value' => $val['msg_format'],'default' => $element['zonemessages']['msg_format']['default']));?></td>
-			<td class="td-right txt-right"><?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',$this->bbf('opt_delete'),'border="0"'),'#',null,'onclick="xivo_table_list(\'timezone\',this,1);"',$this->bbf('opt_delete'));?></td>
+			<td class="td-right txt-right"><?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',$this->bbf('opt_delete'),'border="0"'),'#',null,'onclick="xivo_table_list(\'timezone\',this,1); return(false);"',$this->bbf('opt_delete'));?></td>
 		</tr>
 <?php
 		endfor;
@@ -217,7 +217,7 @@
 			<td class="td-left txt-left"><?=$form->text(array('field' => false,'name' => 'zonemessages[name][]','id' => false,'label' => false,'default' => $element['zonemessages']['name']['default']),'disabled="disabled"');?></td>
 			<td><?=$form->select(array('field' => false,'name' => 'zonemessages[timezone][]','key' => true,'id' => false,'label' => false,'default' => $element['zonemessages']['timezone']['default']),$this->vars('timezone_list'),'disabled="disabled"');?></td>
 			<td><?=$form->text(array('field' => false,'name' => 'zonemessages[msg_format][]','id' => false,'label' => false,'size' => 25,'default' => $element['zonemessages']['msg_format']['default']),'disabled="disabled"');?></td>
-			<td class="td-right txt-right"><?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',$this->bbf('opt_delete'),'border="0"'),'#',null,'onclick="xivo_table_list(\'timezone\',this,1);"',$this->bbf('opt_delete'));?></td>
+			<td class="td-right txt-right"><?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',$this->bbf('opt_delete'),'border="0"'),'#',null,'onclick="xivo_table_list(\'timezone\',this,1); return(false);"',$this->bbf('opt_delete'));?></td>
 		</tr>
 		</tbody>
 	</table>

@@ -4,23 +4,29 @@ Utilisateurs > Ajouter
 ; smenu_general
 Général
 
-; smenu_groups
-Groupes
-
-; smenu_codecs
-Codecs
-
 ; smenu_voicemail
 Messagerie vocale
-
-; smenu_autoprov
-Approvisionnement
 
 ; smenu_dialstatus
 Non réponse
 
+; smenu_services
+Services
+
+; smenu_groups
+Groupes
+
+; smenu_autoprov
+Approvisionnement
+
 ; smenu_advanced
 Avancé
+
+; smenu_codecs
+Codecs
+
+; smenu_rightcalls
+Droits d'appels
 
 ; fm_userfeatures_firstname 
 Prénom :
@@ -30,6 +36,9 @@ Nom :
 
 ; fm_protocol_name
 Identifiant :
+
+; fm_protocol_interface
+Interface :
 
 ; fm_protocol_secret
 Mot de passe :
@@ -45,6 +54,9 @@ SIP
 
 ; fm_protocol_protocol-opt-iax
 IAX
+
+; fm_protocol_protocol-opt-custom
+Personnalisé
 
 ; fm_protocol_nat
 NAT :
@@ -82,9 +94,6 @@ DTMF :
 ; fm_ufeatures_number
 Numéro de téléphone :
 
-; fm_userfeatures_popupwidget
-Remontée de fiche :
-
 ; fm_userfeatures_ringseconds
 Temps de sonnerie :
 
@@ -100,8 +109,38 @@ Appels simultanés :
 ; fm_userfeatures_musiconhold
 Musique d'attente :
 
-; fm_userfeatures_ringgroup
-Sonnerie :
+; fm_userfeatures_enableclient
+Activer XIVO Client :
+
+; fm_userfeatures_enablevoicemail
+Activer le répondeur :
+
+; fm_userfeatures_callrecord
+Enregistrement d'appel :
+
+; fm_userfeatures_callfilter
+Filtrage d'appel :
+
+; fm_userfeatures_enablednd
+Ne pas déranger :
+
+; fm_userfeatures_enableunc
+Renvoi inconditionnel :
+
+; fm_userfeatures_destunc
+Destination :
+
+; fm_userfeatures_enablerna
+Renvoi sur non réponse :
+
+; fm_userfeatures_destrna
+Destination :
+
+; fm_userfeatures_enablebusy
+Renvoi sur occupation :
+
+; fm_userfeatures_destbusy
+Destination :
 
 ; fld-callgroup
 Groupes
@@ -111,9 +150,6 @@ Ajouter un ou plusieurs groupes ->
 
 ; bt-outgroup
 <- Enlever un ou plusieurs groupes
-
-; fm_usergroup
-Groupe de sonnerie :
 
 ; col_group-name
 Nom
@@ -192,9 +228,6 @@ Supprimer message après notification :
 
 ; fm_userfeatures_description
 Description :
-
-; fm_rightcall
-Droits d'appels :
 
 ; bt-inrightcall
 Ajouter un ou plusieurs droits d'appels ->

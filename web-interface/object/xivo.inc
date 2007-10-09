@@ -547,8 +547,6 @@ class xivo
 
 	function load_class($class,$dir='',$file='',$lib=true)
 	{
-		$r = false;
-
 	       	$class = (string) $class;
 
 		if(is_array($dir) === true)
@@ -599,7 +597,7 @@ class xivo
 			$file = $class.'.inc';
 
 		if(xivo_file::load_file($file,$dir,true) === false)
-			return($r);
+			return(false);
 
 		return(class_exists($class));
         }

@@ -4,16 +4,31 @@ xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 
 class xivo_application_service_asterisk_outcall extends xivo_application_asterisk_abstract
 {
-	var $_origin	= array();
-	var $_status	= '';
+	var $_origin		= array();
+	var $_status		= '';
+	var $_extenumbers	= null;
+	var $_rightcall		= null;
+
+	function xivo_application_service_asterisk_outcall(&$service)
+	{
+		$this->xivo_application_asterisk_abstract(&$service);
+
+		if(($this->_extenumbers = &$this->get_abstract('extenumbers')) === false)
+			return(false);
+
+		if(($this->_rightcall = &$this->get_abstract('rightcall')) === false)
+			return(false);
+
+		return(true);
+	}
 
 	function get($id,$disable=null)
 	{
 		$this->_info = $this->_origin = array();
 
-		if(($outcall = &$this->_ipbx->get_module('outcall')) === false
+		if(($outcall = &$this->_service->get_module('outcall')) === false
 		|| ($this->_info['outcall'] = $outcall->get($id)) === false
-		|| ($extenumbers = &$this->_ipbx->get_module('extenumbers')) === false
+		|| ($extenumbers = &$this->_service->get_module('extenumbers')) === false
 		|| ($this->_info['extenumbers'] = $extenumbers->get($this->_info['outcall']['extenumid'])) === false
 		|| $this->_get_trunkfeatures() === false
 		|| $this->_get_exten() === false)
@@ -35,7 +50,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		if($this->_info['outcall']['linked'] === false)
 			return(null);
 
-		if(($tfeatures = &$this->_ipbx->get_module('trunkfeatures')) === false
+		if(($tfeatures = &$this->_service->get_module('trunkfeatures')) === false
 		|| ($this->_info['tfeatures'] = $tfeatures->get($this->_info['outcall']['trunkfeaturesid'])) === false)
 			return(false);
 
@@ -53,7 +68,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		$exten_where['exten'] = $this->_info['extenumbers']['exten'];
 		$exten_where['context'] = $this->_info['outcall']['context'];
 
-		if(($extensions = &$this->_ipbx->get_module('extensions')) === false
+		if(($extensions = &$this->_service->get_module('extensions')) === false
 		|| ($this->_info['exten'] = $extensions->get_all_where($exten_where)) === false)
 			return(false);
 
@@ -64,19 +79,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 
 	function _get_rightcall()
 	{
-		$this->_info['rightcall'] = false;
-		$this->_origin['rightcall'] = false;
-
-		$where = array();
-		$where['type'] = 'outcall';
-		$where['typeval'] = $this->_info['outcall']['id'];
-
-		if(($rightcallmember = &$this->_ipbx->get_module('rightcallmember')) === false
-		|| ($this->_info['rightcall'] = $rightcallmember->get_all_where($where)) === false
-		|| isset($this->_info['rightcall'][0]) === false)
-			return(false);
-
-		$this->_origin['rightcall'] = $rightcallmember->get_origin_list();
+		$this->_info['rightcall'] = $this->_rightcall->get('outcall',$this->_info['outcall']['id']);
 
 		return($this->_info['rightcall']);
 	}
@@ -85,12 +88,12 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 	{
 		$r = array();
 
-		if(($outcall = &$this->_ipbx->get_module('outcall')) !== false)
+		if(($outcall = &$this->_service->get_module('outcall')) !== false)
 			$r['outcall'] = $outcall->get_element();
 		else
 			$r['outcall'] = false;
 
-		if(($extenumbers = &$this->_ipbx->get_module('extenumbers')) !== false)
+		if(($extenumbers = &$this->_service->get_module('extenumbers')) !== false)
 			$r['extenumbers'] = $extenumbers->get_element();
 		else
 			$r['extenumbers'] = false;
@@ -151,8 +154,8 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 	function set_outcall($arr)
 	{
 		if(is_array($arr) === false
-		|| ($outcall = &$this->_ipbx->get_module('outcall')) === false
-		|| ($tfeatures = &$this->_ipbx->get_module('trunkfeatures')) === false)
+		|| ($outcall = &$this->_service->get_module('outcall')) === false
+		|| ($tfeatures = &$this->_service->get_module('trunkfeatures')) === false)
 		{
 			$this->_set_result('outcall',null);
 			$this->_set_error('outcall','invalid module');
@@ -177,9 +180,19 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		return(true);
 	}
 
+	function set_extenumbers($action,$number,$context)
+	{
+		if($action === 'edit' && xivo_issa('extenumbers',$this->_info) === true)
+			$id = $this->_info['extenumbers']['id'];
+		else
+			$id = 0;
+
+		return(parent::set_extenumbers($action,$number,$context,$id));
+	}
+
 	function set_exten($exten,$context)
 	{
-		if(($extensions = &$this->_ipbx->get_module('extensions')) === false)
+		if(($extensions = &$this->_service->get_module('extensions')) === false)
 		{
 			$this->_set_result('exten',null);
 			$this->_set_error('exten','invalid module');
@@ -203,50 +216,12 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 
 	function set_rightcall($list)
 	{
-		if(is_array($list) === false
-		|| ($rightcallmember = &$this->_ipbx->get_module('rightcallmember')) === false
-		|| ($rightcall = &$this->_ipbx->get_module('rightcall')) === false)
-			return(false);
+		if(($r = $this->_rightcall->set($list,'outcall')) === false)
+			$this->_set_error('rightcall',$this->_rightcall->get_error());
 
-		$list = array_values($list);
+		$this->_set_result('rightcall',$this->_rightcall->get_result());
 
-		if(($nb = count($list)) === 0)
-			return(null);
-
-		$info = array();
-		$info['rightcallid'] = 0;
-		$info['type'] = 'outcall';
-		$info['typeval'] = 0;
-		
-		$tmp = $reslist = array();
-
-		for($i = 0;$i < $nb;$i++)
-		{
-			if(($rightcallid = $rightcall->get_id($list[$i])) === false)
-			{
-				$this->_set_error('rightcall','wrong rightcall');
-				continue;
-			}
-
-			$info['rightcallid'] = $rightcallid;
-
-			if(($rs = $rightcallmember->chk_values($info)) === false
-			|| isset($tmp[$rightcallid]) === true)
-				continue;
-
-			$tmp[$rightcallid] = 1;
-			$reslist[] = $rs;
-		}
-
-		if(isset($reslist[0]) === false)
-		{
-			$this->_set_result('rightcall',false);
-			return(false);
-		}
-
-		$this->_set_result('rightcall',$reslist);
-
-		return(true);
+		return($r);
 	}
 
 	function add()
@@ -283,7 +258,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		|| $rs === false)
 			return($rs);
 
-		$outcall = &$this->_ipbx->get_module('outcall');
+		$outcall = &$this->_service->get_module('outcall');
 
 		$rs['extenumid'] = $extenumid;
 
@@ -298,7 +273,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		|| $rs === false)
 			return($rs);
 
-		$extensions = &$this->_ipbx->get_module('extensions');
+		$extensions = &$this->_service->get_module('extensions');
 
 		$this->_return['exten'] = $extensions->add_exten($rs);
 
@@ -307,30 +282,11 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 
 	function add_rightcall($outcallid)
 	{
-		if(($outcallid = xivo_uint($outcallid)) === 0)
-			return(false);
+		$r = $this->_rightcall->add($outcallid);
 
-		if(($rs = $this->get_result('rightcall')) === null || $rs === false)
-			return($rs);
+		$this->_return['rightcall'] = $this->_rightcall->get_return();
 
-		$rightcallmember = &$this->_ipbx->get_module('rightcallmember');
-
-		$this->_return['rightcall'] = array();
-
-		$nb = count($rs);
-
-		for($i = 0;$i < $nb;$i++)
-		{
-			$rs[$i]['typeval'] = $outcallid;
-
-			if(($this->_return['rightcall'][] = $rightcallmember->add($rs[$i])) === false)
-				return(false);
-		}
-
-		if(isset($this->_return['rightcall'][0]) === false)
-			$this->_return['rightcall'] = false;
-
-		return(true);
+		return($r);
 	}
 
 	function _reverse_add()
@@ -351,23 +307,14 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 			switch($key)
 			{
 				case 'exten':
-					$extensions = &$this->_ipbx->get_module('extensions');
+					$extensions = &$this->_service->get_module('extensions');
 					$extensions->delete_exten($val);
 					break;
 				case 'rightcall':
-					$rightcallmember = &$this->_ipbx->get_module('rightcallmember');
-
-					if(is_array($val) === false || ($nb = count($val)) === 0)
-						continue;
-
-					for($j = 0;$j < $nb;$j++)
-					{
-						if($val[$j] !== false)
-							$rightcallmember->delete($val[$j]);
-					}
+					$this->_rightcall->reverse_add();
 					break;
 				default:
-					if(($module = &$this->_ipbx->get_module($key)) === false)
+					if(($module = &$this->_service->get_module($key)) === false)
 						continue;
 
 					$module->delete($val);
@@ -410,10 +357,18 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		$rs['extenumid'] = $this->_info['extenumbers']['id'];
 		$rs['commented'] = $this->_info['outcall']['commented'];
 
-		$outcall = &$this->_ipbx->get_module('outcall');
+		$outcall = &$this->_service->get_module('outcall');
 		$this->_return['outcall'] = $outcall->edit($this->_info['outcall']['id'],$rs);
 
 		return($this->_return['outcall']);
+	}
+
+	function edit_extenumbers()
+	{
+		if(xivo_issa('extenumbers',$this->_info) === false)
+			return(false);
+
+		return(parent::edit_extenumbers($this->_info['extenumbers']['id']));
 	}
 
 	function edit_exten()
@@ -427,7 +382,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		|| $rs === false)
 			return($rs);
 
-		$extensions = &$this->_ipbx->get_module('extensions');
+		$extensions = &$this->_service->get_module('extensions');
 		
 		$exten_where = array();
 		$exten_where['exten'] = $this->_info['extenumbers']['exten'];
@@ -443,62 +398,11 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		if(xivo_issa('outcall',$this->_info) === false)
 			return(false);
 
-		if(xivo_issa('rightcall',$this->_info) === false)
-			return($this->add_rightcall($this->_info['outcall']['id']));
+		$r = $this->_rightcall->edit($this->_status,'outcall',$this->_info['outcall']['id']);
 
-		$this->_return['rightcall'] = $this->delete_rightcall();
+		$this->_return['rightcall'] = $this->_rightcall->get_return();
 
-		if(($rs = $this->get_result('rightcall')) === null)
-			return($this->_return['rightcall']);
-
-		if($rs === false)
-			return(false);
-
-		$rightcallmember = &$this->_ipbx->get_module('rightcallmember');
-
-		$this->_return['rightcall'] = array();
-
-		$i = 0;
-		$nb = count($rs);
-
-		if(($cnt = count($this->_info['rightcall'])) !== 0)
-		{
-			for($i;$i < $cnt;$i++)
-			{
-				if(isset($rs[$i]) === false)
-				{
-					$i = $nb;
-					break;
-				}
-
-				$id = $this->_info['rightcall'][$i]['id'];
-				$rs[$i]['typeval'] = $this->_info['outcall']['id'];
-
-				if(($this->_return['rightcall'][] = $rightcallmember->add($rs[$i],$id)) === false)
-					return(false);
-			}
-		}
-
-		if($i >= $nb)
-		{
-			if(isset($this->_return['rightcall'][0]) === false)
-				$this->_return['rightcall'] = false;
-
-			return(true);
-		}
-
-		for($i;$i < $nb;$i++)
-		{
-			$rs[$i]['typeval'] = $this->_info['outcall']['id'];
-
-			if(($this->_return['rightcall'][] = $rightcallmember->add($rs[$i])) === false)
-				return(false);
-		}
-
-		if(isset($this->_return['rightcall'][0]) === false)
-			$this->_return['rightcall'] = false;
-
-		return(true);
+		return($r);
 	}
 
 	function _reverse_edit()
@@ -519,17 +423,17 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 			switch($key)
 			{
 				case 'exten':
-					$extensions = &$this->_ipbx->get_module('extensions');
+					$extensions = &$this->_service->get_module('extensions');
 					$extensions->edit_origin_list($this->_origin['exten']);
 					break;
 				case 'rightcall':
-					$this->delete_rightcall();
+					if(xivo_issa('outcall',$this->_info) === false)
+						break;
 
-					$rightcallmember = &$this->_ipbx->get_module('rightcallmember');
-					$rightcallmember->add_origin_list($this->_origin['rightcall']);
+					$this->_rightcall->reverse_edit($this->_status,'outcall',$this->_info['outcall']['id']);
 					break;
 				default:
-					if(($module = &$this->_ipbx->get_module($key)) === false)
+					if(($module = &$this->_service->get_module($key)) === false)
 						continue;
 
 					if($this->_origin[$key] === false)
@@ -564,7 +468,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 	function delete_outcall()
 	{
 		if(xivo_issa('outcall',$this->_info) === false
-		|| ($outcall = &$this->_ipbx->get_module('outcall')) === false)
+		|| ($outcall = &$this->_service->get_module('outcall')) === false)
 			return(false);
 
 		$r = $outcall->delete($this->_info['outcall']['id']);
@@ -575,12 +479,20 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		return($r);
 	}
 
+	function delete_extenumbers()
+	{
+		if(xivo_issa('extenumbers',$this->_info) === false)
+			return(false);
+
+		return(parent::delete_extenumbers($this->_info['extenumbers']['id']));
+	}
+
 	function delete_exten()
 	{
 		if(xivo_issa('exten',$this->_info) === false
 		|| xivo_issa('outcall',$this->_info) === false
 		|| xivo_issa('extenumbers',$this->_info) === false
-		|| ($extensions = &$this->_ipbx->get_module('extensions')) === false)
+		|| ($extensions = &$this->_service->get_module('extensions')) === false)
 			return(false);
 
 		$exten_where = array();
@@ -597,18 +509,12 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 
 	function delete_rightcall()
 	{
-		if(xivo_issa('rightcall',$this->_info) === false)
-			return(null);
+		if(xivo_issa('outcall',$this->_info) === false)
+			$id = 0;
+		else
+			$id = $this->_info['outcall']['id'];
 
-		if(xivo_issa('outcall',$this->_info) === false
-		|| ($rightcallmember = &$this->_ipbx->get_module('rightcallmember')) === false)
-			return(false);
-
-		$rightcallmember_where = array();
-		$rightcallmember_where['type'] = 'outcall';
-		$rightcallmember_where['typeval'] = $this->_info['outcall']['id'];
-
-		$r = $rightcallmember->delete_where($rightcallmember_where);
+		$r = $this->_rightcall->delete($this->_status,'outcall',$id);
 
 		if($this->_status === 'delete')
 			$this->_return['rightcall'] = $r;
@@ -632,15 +538,14 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 			switch($key)
 			{
 				case 'exten':
-					$extensions = &$this->_ipbx->get_module('extensions');
+					$extensions = &$this->_service->get_module('extensions');
 					$extensions->add_origin_list($this->_origin['exten']);
 					break;
 				case 'rightcall':
-					$rightcallmember = &$this->_ipbx->get_module('rightcallmember');
-					$rightcallmember->add_origin_list($this->_origin['rightcall']);
+					$this->_rightcall->add_origin_list();
 					break;
 				default:
-					if(($module = &$this->_ipbx->get_module($key)) === false)
+					if(($module = &$this->_service->get_module($key)) === false)
 						continue;
 
 					if($this->_origin[$key] !== false)
@@ -701,7 +606,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		$disable = (bool) $disable;
 
 		if(xivo_issa('outcall',$this->_info) === false
-		|| ($outcall = &$this->_ipbx->get_module('outcall')) === false)
+		|| ($outcall = &$this->_service->get_module('outcall')) === false)
 			return(false);
 
 		if($disable === false)
@@ -732,7 +637,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		if(xivo_issa('exten',$this->_info) === false
 		|| xivo_issa('outcall',$this->_info) === false
 		|| xivo_issa('extenumbers',$this->_info) === false
-		|| ($extensions = &$this->_ipbx->get_module('extensions')) === false)
+		|| ($extensions = &$this->_service->get_module('extensions')) === false)
 			return(false);
 
 		$exten_where = array();

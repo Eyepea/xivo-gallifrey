@@ -34,19 +34,19 @@
 <div class="sb-smenu">
 	<ul>
 		<li id="smenu-tab-1" class="moo" onclick="xivo_smenu_click(this,'moc','sb-part-first');" onmouseout="xivo_smenu_out(this,'moo');" onmouseover="xivo_smenu_over(this,'mov');">
-			<div><span class="span-center"><a href="#" onclick="xivo_smenu_click(this,'moc','sb-part-first'); return(false);"><?=$this->bbf('smenu_general');?></a></span></div><span class="span-right">&nbsp;</span>
+			<div class="tab"><span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_general');?></a></span></div><span class="span-right">&nbsp;</span>
 		</li>
 		<li id="smenu-tab-2" class="moo" onclick="xivo_smenu_click(this,'moc','sb-part-network');" onmouseout="xivo_smenu_out(this,'moo');" onmouseover="xivo_smenu_over(this,'mov');">
-			<div><span class="span-center"><a href="#" onclick="xivo_smenu_click(this,'moc','sb-part-network'); return(false);"><?=$this->bbf('smenu_network');?></a></span></div><span class="span-right">&nbsp;</span>
+			<div class="tab"><span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_network');?></a></span></div><span class="span-right">&nbsp;</span>
 		</li>
 		<li id="smenu-tab-3" class="moo" onclick="xivo_smenu_click(this,'moc','sb-part-signalling');" onmouseout="xivo_smenu_out(this,'moo');" onmouseover="xivo_smenu_over(this,'mov');">
-			<div><span class="span-center"><a href="#" onclick="xivo_smenu_click(this,'moc','sb-part-signalling'); return(false);"><?=$this->bbf('smenu_signalling');?></a></span></div><span class="span-right">&nbsp;</span>
+			<div class="tab"><span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_signalling');?></a></span></div><span class="span-right">&nbsp;</span>
 		</li>
 		<li id="smenu-tab-4" class="moo" onclick="xivo_smenu_click(this,'moc','sb-part-default');" onmouseout="xivo_smenu_out(this,'moo');" onmouseover="xivo_smenu_over(this,'mov');">
-			<div><span class="span-center"><a href="#" onclick="xivo_smenu_click(this,'moc','sb-part-default'); return(false);"><?=$this->bbf('smenu_default');?></a></span></div><span class="span-right">&nbsp;</span>
+			<div class="tab"><span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_default');?></a></span></div><span class="span-right">&nbsp;</span>
 		</li>
 		<li id="smenu-tab-5" class="moo-last" onclick="xivo_smenu_click(this,'moc','sb-part-last',1);" onmouseout="xivo_smenu_out(this,'moo',1);" onmouseover="xivo_smenu_over(this,'mov',1);">
-			<div><span class="span-center"><a href="#" onclick="xivo_smenu_click(this,'moc','sb-part-last'); return(false);"><?=$this->bbf('smenu_realtime');?></a></span></div><span class="span-right">&nbsp;</span>
+			<div class="tab"><span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_realtime');?></a></span></div><span class="span-right">&nbsp;</span>
 		</li>
 	</ul>
 </div>
