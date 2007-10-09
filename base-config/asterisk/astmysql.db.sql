@@ -73,9 +73,9 @@ DROP TABLE IF EXISTS `groupfeatures`;
 CREATE TABLE `groupfeatures` (
  `id` tinyint(2) unsigned auto_increment,
  `name` varchar(128) NOT NULL,
- `number` varchar(40) DEFAULT '',
- `context` varchar(39),
- `deleted` tinyint(1) DEFAULT 0,
+ `number` varchar(40) NOT NULL DEFAULT '',
+ `context` varchar(39) NOT NULL,
+ `deleted` tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -86,9 +86,9 @@ CREATE INDEX `groupfeatures__idx__deleted` ON `groupfeatures`(`deleted`);
 DROP TABLE IF EXISTS `meetme`;
 CREATE TABLE `meetme` (
  `id` int(10) unsigned auto_increment,
- `cat_metric` int(10) unsigned DEFAULT 0,
- `var_metric` int(10) unsigned DEFAULT 0,
- `commented` tinyint(1) DEFAULT 0,
+ `cat_metric` int(10) unsigned NOT NULL DEFAULT 0,
+ `var_metric` int(10) unsigned NOT NULL DEFAULT 0,
+ `commented` tinyint(1) NOT NULL DEFAULT 0,
  `filename` varchar(128) NOT NULL,
  `category` varchar(128) NOT NULL,
  `var_name` varchar(128) NOT NULL,
@@ -111,10 +111,10 @@ CREATE TABLE `meetmefeatures` (
  `mode` varchar(6) NOT NULL DEFAULT 'all',
  `musiconhold` varchar(128) NOT NULL DEFAULT '',
  `context` varchar(39),
- `exit` tinyint(1) DEFAULT 0,
- `quiet` tinyint(1) DEFAULT 0,
- `record` tinyint(1) DEFAULT 0,
- `video` tinyint(1) DEFAULT 0,
+ `exit` tinyint(1) NOT NULL DEFAULT 0,
+ `quiet` tinyint(1) NOT NULL DEFAULT 0,
+ `record` tinyint(1) NOT NULL DEFAULT 0,
+ `video` tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -129,8 +129,8 @@ CREATE TABLE `phone` (
  `vendor` varchar(16) NOT NULL,
  `model` varchar(16) NOT NULL,
  `proto` varchar(50) NOT NULL,
- `iduserfeatures` int(10) unsigned,
- `isinalan` tinyint(1) DEFAULT 0,
+ `iduserfeatures` int(10) unsigned NOT NULL,
+ `isinalan` tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(`macaddr`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -144,7 +144,7 @@ CREATE TABLE `queue` (
  `announce` varchar(128),
  `context` varchar(39),
  `timeout` tinyint(2) unsigned,
- `monitor-join` tinyint(1) DEFAULT 0,
+ `monitor-join` tinyint(1) NOT NULL DEFAULT 0,
  `monitor-format` varchar(128),
  `queue-youarenext` varchar(128),
  `queue-thereare` varchar(128),
@@ -167,13 +167,13 @@ CREATE TABLE `queue` (
  `strategy` varchar(11),
  `joinempty` varchar(6),
  `leavewhenempty` varchar(6),
- `eventmemberstatus` tinyint(1) DEFAULT 0,
- `eventwhencalled` tinyint(1) DEFAULT 0,
- `reportholdtime` tinyint(1) DEFAULT 0,
+ `eventmemberstatus` tinyint(1) NOT NULL DEFAULT 0,
+ `eventwhencalled` tinyint(1) NOT NULL DEFAULT 0,
+ `reportholdtime` tinyint(1) NOT NULL DEFAULT 0,
  `memberdelay` int(10) unsigned,
  `weight` int(10) unsigned,
- `timeoutrestart` tinyint(1) DEFAULT 0,
- `commented` tinyint(1) DEFAULT 0,
+ `timeoutrestart` tinyint(1) NOT NULL DEFAULT 0,
+ `commented` tinyint(1) NOT NULL DEFAULT 0,
  `category` enum('group','queue') NOT NULL,
  PRIMARY KEY(`name`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -188,18 +188,18 @@ CREATE TABLE `queuefeatures` (
  `name` varchar(128) NOT NULL,
  `number` varchar(40) DEFAULT '',
  `context` varchar(39),
- `data_quality` tinyint(1) DEFAULT 0,
- `hitting_callee` tinyint(1) DEFAULT 0,
- `hitting_caller` tinyint(1) DEFAULT 0,
- `retries` tinyint(1) DEFAULT 0,
- `ring` tinyint(1) DEFAULT 0,
- `transfer_user` tinyint(1) DEFAULT 0,
- `transfer_call` tinyint(1) DEFAULT 0,
- `write_caller` tinyint(1) DEFAULT 0,
- `write_calling` tinyint(1) DEFAULT 0,
- `url` varchar(255) DEFAULT '',
- `announceoverride` varchar(128) DEFAULT '',
- `timeout` tinyint(2) unsigned,
+ `data_quality` tinyint(1) NOT NULL DEFAULT 0,
+ `hitting_callee` tinyint(1) NOT NULL DEFAULT 0,
+ `hitting_caller` tinyint(1) NOT NULL DEFAULT 0,
+ `retries` tinyint(1) NOT NULL DEFAULT 0,
+ `ring` tinyint(1) NOT NULL DEFAULT 0,
+ `transfer_user` tinyint(1) NOT NULL DEFAULT 0,
+ `transfer_call` tinyint(1) NOT NULL DEFAULT 0,
+ `write_caller` tinyint(1) NOT NULL DEFAULT 0,
+ `write_calling` tinyint(1) NOT NULL DEFAULT 0,
+ `url` varchar(255) NOT NULL DEFAULT '',
+ `announceoverride` varchar(128) NOT NULL DEFAULT '',
+ `timeout` tinyint(2) unsigned NOT NULL DEFAULT 30,
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -212,7 +212,7 @@ CREATE TABLE `queuemember` (
  `interface` varchar(255) NOT NULL,
  `penalty` tinyint(2) unsigned NOT NULL DEFAULT 0,
  `call-limit` tinyint(2) unsigned NOT NULL DEFAULT 0,
- `commented` tinyint(1) DEFAULT 0,
+ `commented` tinyint(1) NOT NULL DEFAULT 0,
  `usertype` enum('agent','user') NOT NULL,
  `userid` int(10) unsigned NOT NULL,
  `channel` varchar(25) NOT NULL,
@@ -233,38 +233,14 @@ CREATE TABLE `trunkfeatures` (
  `id` int(10) unsigned auto_increment,
  `trunk` varchar(50) NOT NULL,
  `trunkid` int(10) unsigned NOT NULL,
- `registerid` int(10) unsigned DEFAULT 0,
- `registercommented` tinyint(1) DEFAULT 0,
+ `registerid` int(10) unsigned NOT NULL DEFAULT 0,
+ `registercommented` tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE INDEX `trunkfeatures__idx__registerid` ON `trunkfeatures`(`registerid`);
 CREATE INDEX `trunkfeatures__idx__registercommented` ON `trunkfeatures`(`registercommented`);
 CREATE UNIQUE INDEX `trunkfeatures__uidx__trunk_trunkid` ON `trunkfeatures`(`trunk`,`trunkid`);
-
-
-DROP TABLE IF EXISTS `trunkcustom`;
-CREATE TABLE `trunkcustom` (
- `id` int(10) unsigned auto_increment,
- `name` varchar(40) NOT NULL,
- `interface` varchar(255) NOT NULL,
- `commented` tinyint(1) DEFAULT 0,
- PRIMARY KEY(`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
-CREATE UNIQUE INDEX `trunkcustom__uidx__name` ON `trunkcustom`(`name`);
-CREATE UNIQUE INDEX `trunkcustom__uidx__interface` ON `trunkcustom`(`interface`);
-
-
-DROP TABLE IF EXISTS `usergroup`;
-CREATE TABLE `usergroup` (
- `id` int(10) unsigned auto_increment,
- `userid` int(10) unsigned NOT NULL,
- `groupid` tinyint(2) unsigned NOT NULL,
- PRIMARY KEY(`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
-CREATE UNIQUE INDEX `usergroup__uidx__userid_groupid` ON `usergroup`(`userid`,`groupid`);
 
 
 DROP TABLE IF EXISTS `useriax`;
@@ -300,7 +276,7 @@ CREATE TABLE `useriax` (
  `port` smallint unsigned,
  `regseconds` int(10) unsigned DEFAULT 0,
  `call-limit` tinyint(2) unsigned NOT NULL DEFAULT 0,
- `category` varchar(50) NOT NULL,
+ `category` enum('user','trunk') NOT NULL,
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -354,14 +330,23 @@ CREATE TABLE `userfeatures` (
  `name` varchar(40) NOT NULL,
  `number` varchar(40) NOT NULL,
  `context` varchar(39),
- `provisioningid` mediumint(8) unsigned NOT NULL,
- `ringseconds` tinyint(2) unsigned DEFAULT 15,
- `ringgroup` tinyint(1) DEFAULT 0,
- `simultcalls` tinyint(2) unsigned DEFAULT 1,
- `popupwidget` tinyint(1) DEFAULT 0,
+ `provisioningid` mediumint(8) unsigned,
+ `ringseconds` tinyint(2) unsigned NOT NULL DEFAULT 30,
+ `simultcalls` tinyint(2) unsigned NOT NULL DEFAULT 5,
+ `enableclient` tinyint(1) NOT NULL DEFAULT 0,
+ `enablevoicemail` tinyint(1) NOT NULL DEFAULT 0,
+ `callrecord` tinyint(1) NOT NULL DEFAULT 0,
+ `callfilter` tinyint(1) NOT NULL DEFAULT 0,
+ `enablednd` tinyint(1) NOT NULL DEFAULT 0,
+ `enableunc` tinyint(1) NOT NULL DEFAULT 0,
+ `destunc` varchar(128) NOT NULL DEFAULT '',
+ `enablerna` tinyint(1) NOT NULL DEFAULT 0,
+ `destrna` varchar(128) NOT NULL DEFAULT '',
+ `enablebusy` tinyint(1) NOT NULL DEFAULT 0,
+ `destbusy` varchar(128) NOT NULL DEFAULT '',
  `musiconhold` varchar(128) NOT NULL DEFAULT '',
  `outcallerid` varchar(80) NOT NULL DEFAULT '',
- `description` text DEFAULT '',
+ `description` text NOT NULL DEFAULT '',
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -370,12 +355,12 @@ CREATE INDEX `userfeatures__idx__lastname` ON `userfeatures`(`lastname`);
 CREATE INDEX `userfeatures__idx__number` ON `userfeatures`(`number`);
 CREATE INDEX `userfeatures__idx__context` ON `userfeatures`(`context`);
 CREATE INDEX `userfeatures__idx__musiconhold` ON `userfeatures`(`musiconhold`);
+CREATE INDEX `userfeatures__idx__provisioningid` ON `userfeatures`(`provisioningid`);
 CREATE UNIQUE INDEX `userfeatures__uidx__protocol_name` ON `userfeatures`(`protocol`,`name`);
 CREATE UNIQUE INDEX `userfeatures__uidx__protocol_protocolid` ON `userfeatures`(`protocol`,`protocolid`);
-CREATE UNIQUE INDEX `userfeatures__uidx__provisioningid` ON `userfeatures`(`provisioningid`);
 
-INSERT INTO `userfeatures` VALUES(1,'sip',1,'Guest','','guest','','initconfig',148378,30,0,5,0,'','');
-INSERT INTO `userfeatures` VALUES(2,'sip',2,'XivoSB','','xivosb','','local-extensions',194867,30,0,5,0,'','');
+INSERT INTO `userfeatures` VALUES(1,'sip',1,'Guest','','guest','','initconfig',148378,30,5,0,0,0,0,0,0,'',0,'',0,'','','','');
+INSERT INTO `userfeatures` VALUES(2,'sip',2,'XivoSB','','xivosb','','local-extensions',194867,30,5,0,0,0,0,0,0,'',0,'',0,'','','','');
 
 
 DROP TABLE IF EXISTS `extensions`;
@@ -387,7 +372,7 @@ CREATE TABLE `extensions` (
  `priority` tinyint(3) unsigned NOT NULL DEFAULT 0,
  `app` varchar(128) NOT NULL DEFAULT '',
  `appdata` varchar(128) NOT NULL DEFAULT '',
- `name` varchar(128) DEFAULT '',
+ `name` varchar(128) NOT NULL DEFAULT '',
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -462,9 +447,9 @@ INSERT INTO `extensions` VALUES(NULL,0,'features','_*8.',1,'Pickup','${EXTEN:2}'
 DROP TABLE IF EXISTS `generalsip`;
 CREATE TABLE `generalsip` (
  `id` int(10) unsigned auto_increment,
- `cat_metric` int(10) unsigned DEFAULT 0,
- `var_metric` int(10) unsigned DEFAULT 0,
- `commented` tinyint(1) DEFAULT 0,
+ `cat_metric` int(10) unsigned NOT NULL DEFAULT 0,
+ `var_metric` int(10) unsigned NOT NULL DEFAULT 0,
+ `commented` tinyint(1) NOT NULL DEFAULT 0,
  `filename` varchar(128) NOT NULL,
  `category` varchar(128) NOT NULL,
  `var_name` varchar(128) NOT NULL,
@@ -543,9 +528,9 @@ INSERT INTO `generalsip` VALUES(NULL,0,0,0,'sip.conf','general','rtautoclear','y
 DROP TABLE IF EXISTS `generaliax`;
 CREATE TABLE `generaliax` (
  `id` int(10) unsigned auto_increment,
- `cat_metric` int(10) unsigned DEFAULT 0,
- `var_metric` int(10) unsigned DEFAULT 0,
- `commented` tinyint(1) DEFAULT 0,
+ `cat_metric` int(10) unsigned NOT NULL DEFAULT 0,
+ `var_metric` int(10) unsigned NOT NULL DEFAULT 0,
+ `commented` tinyint(1) NOT NULL DEFAULT 0,
  `filename` varchar(128) NOT NULL,
  `category` varchar(128) NOT NULL,
  `var_name` varchar(128) NOT NULL,
@@ -602,9 +587,9 @@ INSERT INTO `generaliax` VALUES(NULL,0,0,0,'iax.conf','general','autokill','yes'
 DROP TABLE IF EXISTS `generalvoicemail`;
 CREATE TABLE `generalvoicemail` (
  `id` int(10) unsigned auto_increment,
- `cat_metric` int(10) unsigned DEFAULT 0,
- `var_metric` int(10) unsigned DEFAULT 0,
- `commented` tinyint(1) DEFAULT 0,
+ `cat_metric` int(10) unsigned NOT NULL DEFAULT 0,
+ `var_metric` int(10) unsigned NOT NULL DEFAULT 0,
+ `commented` tinyint(1) NOT NULL DEFAULT 0,
  `filename` varchar(128) NOT NULL,
  `category` varchar(128) NOT NULL,
  `var_name` varchar(128) NOT NULL,
@@ -643,7 +628,7 @@ CREATE TABLE `generaloutcall` (
  `extenumid` int(10) unsigned NOT NULL DEFAULT 0,
  `trunkfeaturesid` int(10) unsigned NOT NULL DEFAULT 0,
  `type` varchar(80) NOT NULL,
- `commented` tinyint(1) DEFAULT 0,
+ `commented` tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -721,9 +706,9 @@ CREATE UNIQUE INDEX `schedule__uidx__name` ON `schedule`(`name`);
 DROP TABLE IF EXISTS `generalqueue`;
 CREATE TABLE `generalqueue` (
  `id` int(10) unsigned auto_increment,
- `cat_metric` int(10) unsigned DEFAULT 0,
- `var_metric` int(10) unsigned DEFAULT 0,
- `commented` tinyint(1) DEFAULT 0,
+ `cat_metric` int(10) unsigned NOT NULL DEFAULT 0,
+ `var_metric` int(10) unsigned NOT NULL DEFAULT 0,
+ `commented` tinyint(1) NOT NULL DEFAULT 0,
  `filename` varchar(128) NOT NULL,
  `category` varchar(128) NOT NULL,
  `var_name` varchar(128) NOT NULL,
@@ -782,7 +767,7 @@ CREATE TABLE `usersip` (
  `cancallforward` char(3),
  `setvar` varchar(100) NOT NULL,
  `call-limit` tinyint(2) unsigned NOT NULL DEFAULT 0,
- `category` varchar(50) NOT NULL,
+ `category` enum('user','trunk') NOT NULL,
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -797,9 +782,9 @@ INSERT INTO `usersip` VALUES(2,'xivosb',0,'','documentation','','XivoSB','no','l
 DROP TABLE IF EXISTS `musiconhold`;
 CREATE TABLE `musiconhold` (
  `id` int(10) unsigned auto_increment,
- `cat_metric` int(10) unsigned DEFAULT 0,
- `var_metric` int(10) unsigned DEFAULT 0,
- `commented` tinyint(1) DEFAULT 0,
+ `cat_metric` int(10) unsigned NOT NULL DEFAULT 0,
+ `var_metric` int(10) unsigned NOT NULL DEFAULT 0,
+ `commented` tinyint(1) NOT NULL DEFAULT 0,
  `filename` varchar(128) NOT NULL,
  `category` varchar(128) NOT NULL,
  `var_name` varchar(128) NOT NULL,
@@ -819,9 +804,9 @@ INSERT INTO `musiconhold` VALUES(4,0,0,0,'musiconhold.conf','default','directory
 DROP TABLE IF EXISTS `agent`;
 CREATE TABLE `agent` (
  `id` int(10) unsigned auto_increment,
- `cat_metric` int(10) unsigned DEFAULT 0,
- `var_metric` int(10) unsigned DEFAULT 0,
- `commented` tinyint(1) DEFAULT 0,
+ `cat_metric` int(10) unsigned NOT NULL DEFAULT 0,
+ `var_metric` int(10) unsigned NOT NULL DEFAULT 0,
+ `commented` tinyint(1) NOT NULL DEFAULT 0,
  `filename` varchar(128) NOT NULL,
  `category` varchar(128) NOT NULL,
  `var_name` varchar(128) NOT NULL,
@@ -850,8 +835,8 @@ CREATE TABLE `agentfeatures` (
  `lastname` varchar(128) NOT NULL DEFAULT '',
  `number` varchar(40) NOT NULL,
  `passwd` varchar(128) NOT NULL,
- `commented` tinyint(1) DEFAULT 0,
- `silent` tinyint(1) DEFAULT 0,
+ `commented` tinyint(1) NOT NULL DEFAULT 0,
+ `silent` tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -865,9 +850,9 @@ CREATE TABLE `agentgroup` (
  `id` tinyint(2) unsigned auto_increment,
  `groupid` int(10) unsigned NOT NULL,
  `name` varchar(128) NOT NULL DEFAULT '',
- `groups` varchar(255) DEFAULT '',
- `commented` tinyint(1) DEFAULT 0,
- `deleted` tinyint(1) DEFAULT 0,
+ `groups` varchar(255) NOT NULL DEFAULT '',
+ `commented` tinyint(1) NOT NULL DEFAULT 0,
+ `deleted` tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -885,7 +870,7 @@ CREATE TABLE `rightcall` (
  `name` varchar(128) NOT NULL DEFAULT '',
  `passwd` varchar(40) NOT NULL DEFAULT '',
  `permit` tinyint(1) NOT NULL DEFAULT 0,
- `description` text DEFAULT '',
+ `description` text NOT NULL DEFAULT '',
  `commented` tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -936,3 +921,19 @@ CREATE INDEX `dialstatus__idx__linked` ON `dialstatus`(`linked`);
 CREATE INDEX `dialstatus__idx__type` ON `dialstatus`(`type`);
 CREATE INDEX `dialstatus__idx__typeval` ON `dialstatus`(`typeval`);
 CREATE UNIQUE INDEX `dialstatus__uidx__status_category_categoryval` ON `dialstatus`(`status`,`category`,`categoryval`);
+
+
+DROP TABLE IF EXISTS `usercustom`;
+CREATE TABLE `usercustom` (
+ `id` int(10) unsigned auto_increment,
+ `name` varchar(40),
+ `interface` varchar(255) NOT NULL,
+ `commented` tinyint(1) NOT NULL DEFAULT 0,
+ `category` enum('user','trunk') NOT NULL,
+ PRIMARY KEY(`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE INDEX `usercustom__idx__name` ON `usercustom`(`name`);
+CREATE INDEX `usercustom__idx__category` ON `usercustom`(`category`);
+CREATE INDEX `usercustom__idx__commented` ON `usercustom`(`commented`);
+CREATE UNIQUE INDEX `usercustom__uidx__interface_category` ON `usercustom`(`interface`,`category`);
