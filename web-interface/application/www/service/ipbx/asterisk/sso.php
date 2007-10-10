@@ -1,6 +1,6 @@
 <?php
 
-if(($users = $ipbx->get_users_list()) === false)
+if(($users = $ipbx->get_users_list(array('sip','iax'))) === false)
 	die('XIVO-WEBI: no-data');
 
 $total = count($users);

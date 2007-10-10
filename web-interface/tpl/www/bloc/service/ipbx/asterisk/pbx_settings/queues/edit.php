@@ -7,7 +7,7 @@
 	<?=$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/queues/submenu');?>
 
 	<div class="sb-content">
-<form action="#" method="post" accept-charset="utf-8" onsubmit="xivo_fm_select('it-user'); xivo_fm_select('it-agroup'); xivo_fm_select('it-agent');">
+<form action="#" method="post" accept-charset="utf-8" onsubmit="xivo_fm_select('it-user'); xivo_fm_select('it-agentgroup'); xivo_fm_select('it-agent');">
 <?=$form->hidden(array('name' => XIVO_SESS_NAME,'value' => XIVO_SESS_ID));?>
 <?=$form->hidden(array('name' => 'act','value' => 'edit'));?>
 <?=$form->hidden(array('name' => 'fm_send','value' => 1));?>

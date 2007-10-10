@@ -46,7 +46,8 @@ class xivo_service_asterisk_agent extends xivo_service_asterisk_staticconf
 
 	function get($id,$disable=null)
 	{
-		if(($r = parent::get($id,$disable)) === false)
+		if(($id = xivo_uint($id)) === 0
+		|| ($r = $this->_dso->get($id,$disable)) === false)
 			return(false);
 
 		$this->_origin = $r;

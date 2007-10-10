@@ -3,16 +3,10 @@
 $act = isset($_QR['act']) === true ? $_QR['act'] : '';
 $page = isset($_QR['page']) === true ? xivo_uint($_QR['page'],1) : 1;
 
-$queue = &$ipbx->get_module('queue');
-$gfeatures = &$ipbx->get_module('groupfeatures');
-$extensions = &$ipbx->get_module('extensions');
-$extenumbers = &$ipbx->get_module('extenumbers');
-$qmember = &$ipbx->get_module('queuemember');
-
 $param = array();
 $param['act'] = 'list';
 
-$info = $result = $user_slt = array();
+$info = $result = array();
 
 switch($act)
 {

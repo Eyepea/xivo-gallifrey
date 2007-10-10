@@ -56,6 +56,17 @@ class xivo_application_asterisk_abstract extends xivo_application_abstract
 		return($r);
 	}
 
+	function mk_agent_interface($number,$group=false)
+	{
+		$r = array();
+		$r['channel'] = XIVO_SRE_IPBX_AST_CHAN_AGENT;
+
+		if(($r['interface'] = $this->_service->mk_agent_interface($number,$group)) === false)
+			return(false);
+
+		return($r);
+	}
+
 	function _get_extenumbers($number,$context)
 	{
 		$this->_info['extenumbers'] = $this->_extenumbers->get($number,$context);

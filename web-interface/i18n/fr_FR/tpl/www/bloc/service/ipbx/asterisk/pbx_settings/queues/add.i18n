@@ -31,16 +31,16 @@ Ajouter un ou plusieurs utilisateurs ->
 ; bt-outuser
 <- Enlever un ou plusieurs utilisateurs
 
-; create_agent-agroup
+; create_agent-group
 Créer un groupe d'agent
 
 ; fm_agentgroup
 Groupes :
 
-; bt-inagroup
+; bt-inagentgroup
 Ajouter un ou plusieurs groupes d'agents ->
 
-; bt-outagroup
+; bt-outagentgroup
 <- Enlever un ou plusieurs groupes d'agents
 
 ; create_agent

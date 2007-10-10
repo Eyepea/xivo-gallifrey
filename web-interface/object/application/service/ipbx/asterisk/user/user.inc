@@ -276,7 +276,11 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$arr['ufeatures']['protocol'] = $protocol;
 		$arr['ufeatures']['protocolid'] = 0;
 
-		$name = $this->get_result_var('protocol','name');
+		if($protocol === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
+			$name = $this->get_result_var('protocol','interface');
+		else
+			$name = $this->get_result_var('protocol','name');
+
 		$context = $this->get_result_var('protocol','context');
 
 		$arr['ufeatures']['name'] = $name;
@@ -287,14 +291,9 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$number = (string) $this->get_result_var('ufeatures','number');
 		$protocol = (string) $this->get_result_var('ufeatures','protocol');
 
-		if($protocol === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
-			$intername = $this->get_result_var('protocol','interface');
-		else
-			$intername = $name;
-
 		if(xivo_issa('group',$arr) === true
 		&& xivo_issa('group-select',$arr) === true
-		&& $this->set_groupmember($arr['group'],$arr['group-select'],$intername,$context,$number,$protocol) === true)
+		&& $this->set_groupmember($arr['group'],$arr['group-select'],$name,$context,$number,$protocol) === true)
 		{
 			$callgroup = $this->get_result('callgroup');
 
@@ -308,7 +307,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		}
 
 		if(xivo_issa('queue',$arr) === true && xivo_issa('queue-select',$arr) === true)
-			$this->set_queuemember($arr['queue'],$arr['queue-select'],$intername,$context,$number,$protocol);
+			$this->set_queuemember($arr['queue'],$arr['queue-select'],$name,$context,$number,$protocol);
 
 		if(xivo_issa('dialstatus',$arr) === true)
 			$this->set_dialstatus($arr['dialstatus']);

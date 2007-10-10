@@ -34,7 +34,7 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 			$data['fullname'] = '-';
 
 		if($data['protocol'] === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
-			$data['identity'] = $data['fullname'];
+			$data['identity'] = $data['fullname'].' ('.$data['name'].')';
 		else if(xivo_empty($data['number']) === true)
 			$data['identity'] = $data['fullname'].' ('.$data['context'].')';
 		else
@@ -173,27 +173,22 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		else
 			$where['protocol'] = $arr['protocol'];
 
-		if($where['protocol'] !== XIVO_SRE_IPBX_AST_PROTO_CUSTOM
-		&& ($whereid = $this->get_id($where)) !== false
-		&& $whereid !== $id)
+		if(($whereid = $this->get_id($where)) !== false && $whereid !== $id)
 			return(false);
 
-		if($where['protocol'] !== XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
-		{
-			if(isset($arr['destunc']) === false)
-				$arr['destunc'] = $info['destunc'];
+		if(isset($arr['destunc']) === false)
+			$arr['destunc'] = $info['destunc'];
 
-			if(isset($arr['destrna']) === false)
-				$arr['destrna'] = $info['destrna'];
+		if(isset($arr['destrna']) === false)
+			$arr['destrna'] = $info['destrna'];
 
-			if(isset($arr['destbusy']) === false)
-				$arr['destbusy'] = $info['destbusy'];
+		if(isset($arr['destbusy']) === false)
+			$arr['destbusy'] = $info['destbusy'];
 
-			if($arr['destunc'] === $where['name']
-			|| $arr['destrna'] === $where['name']
-			|| $arr['destbusy'] === $where['name'])
-				return(false);
-		}
+		if($arr['destunc'] === $where['name']
+		|| $arr['destrna'] === $where['name']
+		|| $arr['destbusy'] === $where['name'])
+			return(false);
 
 		if(isset($arr['protocol']) === true)
 		{

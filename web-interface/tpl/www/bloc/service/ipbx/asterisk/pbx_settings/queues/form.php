@@ -1,15 +1,12 @@
 <?php
 	$form = &$this->get_module('form');
 	$url = &$this->get_module('url');
+
 	$element = $this->vars('element');
 	$info = $this->vars('info');
-
-	$user_slt = $this->vars('user_slt');
-	$user_list = $this->vars('user_list');
-	$agent_slt = $this->vars('agent_slt');
-	$agent_list = $this->vars('agent_list');
-	$agroup_slt = $this->vars('agroup_slt');
-	$agroup_list = $this->vars('agroup_list');
+	$user = $this->vars('user');
+	$agentgroup = $this->vars('agentgroup');
+	$agent = $this->vars('agent');
 	$moh_list = $this->vars('moh_list');
 	$announce_list = $this->vars('announce_list');
 ?>
@@ -76,28 +73,28 @@ endif;
 	<fieldset id="fld-user">
 		<legend><?=$this->bbf('fld-users');?></legend>
 <?php
-	if($user_list !== false):
+	if($user['list'] !== false):
 ?>
-		<div id="userlist" class="fm-field fm-multilist">
-			<div class="slt-outlist">
+<div id="userlist" class="fm-field fm-multilist">
+	<div class="slt-outlist">
 
-		<?=$form->select(array('name' => 'userlist','label' => false,'id' => 'it-userlist','multiple' => true,'size' => 5,'field' => false,'key' => 'identity'),$user_list);?>
+	<?=$form->select(array('name' => 'userlist','label' => false,'id' => 'it-userlist','multiple' => true,'size' => 5,'field' => false,'browse' => 'ufeatures','key' => 'identity','altkey' => 'id'),$user['list']);?>
 
-			</div>
-			<div class="inout-list">
+	</div>
+	<div class="inout-list">
 
 		<a href="#" onclick="xivo_fm_move_selected('it-userlist','it-user'); return(false);" title="<?=$this->bbf('bt-inuser');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt-inuser'),'class="bt-inlist" id="bt-inuser" border="0"');?></a><br />
 
 		<a href="#" onclick="xivo_fm_move_selected('it-user','it-userlist'); return(false);" title="<?=$this->bbf('bt-outuser');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt-outuser'),'class="bt-outlist" id="bt-outuser" border="0"');?></a>
 
-			</div>
-			<div class="slt-inlist">
+	</div>
+	<div class="slt-inlist">
 
-		<?=$form->select(array('name' => 'user[]','label' => false,'id' => 'it-user','multiple' => true,'size' => 5,'field' => false,'key' => 'identity'),$user_slt);?>
+		<?=$form->select(array('name' => 'user[]','label' => false,'id' => 'it-user','multiple' => true,'size' => 5,'field' => false,'browse' => 'ufeatures','key' => 'identity','altkey' => 'id'),$user['slt']);?>
 
-			</div>
-		</div>
-		<div class="clearboth"></div>
+	</div>
+</div>
+<div class="clearboth"></div>
 <?php
 	else:
 		echo '<div class="txt-center">',$url->href_html($this->bbf('create_user'),'service/ipbx/pbx_settings/users','act=add'),'</div>';
@@ -106,48 +103,51 @@ endif;
 	</fieldset>
 	<fieldset id="fld-agent">
 		<legend><?=$this->bbf('fld-agents');?></legend>
+
 <?php
-	if($agroup_list !== false):
+	if($agentgroup['list'] !== false):
 ?>
-		<div id="agrouplist" class="fm-field fm-multilist"><p><label id="lb-agrouplist" for="it-agrouplist"><?=$this->bbf('fm_agentgroup');?></label></p>
+		<div id="agentgrouplist" class="fm-field fm-multilist">
+			<p><label id="lb-agentgrouplist" for="it-agentgrouplist"><?=$this->bbf('fm_agentgroup');?></label></p>
 			<div class="slt-outlist">
 
-		<?=$form->select(array('name' => 'agrouplist','label' => false,'id' => 'it-agrouplist','multiple' => true,'size' => 5,'field' => false,'key' => 'identity'),$agroup_list);?>
+		<?=$form->select(array('name' => 'agentgrouplist','label' => false,'id' => 'it-agentgrouplist','multiple' => true,'size' => 5,'field' => false,'browse' => 'agroup','key' => 'name','altkey' => 'id'),$agentgroup['list']);?>
 
 			</div>
 			<div class="inout-list">
 
-		<a href="#" onclick="xivo_fm_move_selected('it-agrouplist','it-agroup'); return(false);" title="<?=$this->bbf('bt-inagroup');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt-inagroup'),'class="bt-inlist" id="bt-inagroup" border="0"');?></a><br />
+			<a href="#" onclick="xivo_fm_move_selected('it-agentgrouplist','it-agentgroup'); return(false);" title="<?=$this->bbf('bt-inagentgroup');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt-inagentgroup'),'class="bt-inlist" id="bt-inagentgroup" border="0"');?></a><br />
 
-		<a href="#" onclick="xivo_fm_move_selected('it-agroup','it-agrouplist'); return(false);" title="<?=$this->bbf('bt-outagroup');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt-outagroup'),'class="bt-outlist" id="bt-outagroup" border="0"');?></a>
+			<a href="#" onclick="xivo_fm_move_selected('it-agentgroup','it-agentgrouplist'); return(false);" title="<?=$this->bbf('bt-outagentgroup');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt-outagentgroup'),'class="bt-outlist" id="bt-outagentgroup" border="0"');?></a>
 
 			</div>
 			<div class="slt-inlist">
 
-		<?=$form->select(array('name' => 'agroup[]','label' => false,'id' => 'it-agroup','multiple' => true,'size' => 5,'field' => false,'key' => 'identity'),$agroup_slt);?>
+			<?=$form->select(array('name' => 'agentgroup[]','label' => false,'id' => 'it-agentgroup','multiple' => true,'size' => 5,'field' => false,'browse' => 'agroup','key' => 'name','altkey' => 'id'),$agentgroup['slt']);?>
 
 			</div>
 		</div>
 		<div class="clearboth"></div>
 <?php
-		if($agent_list !== false):
+		if($agent['list'] !== false):
 ?>
-		<div id="agentlist" class="fm-field fm-multilist"><p><label id="lb-agentlist" for="it-agentlist"><?=$this->bbf('fm_agent');?></label></p>
+		<div id="agentlist" class="fm-field fm-multilist">
+			<p><label id="lb-agentlist" for="it-agentlist"><?=$this->bbf('fm_agent');?></label></p>
 			<div class="slt-outlist">
 
-		<?=$form->select(array('name' => 'agentlist','label' => false,'id' => 'it-agentlist','multiple' => true,'size' => 5,'field' => false,'key' => 'identity'),$agent_list);?>
+		<?=$form->select(array('name' => 'agentlist','label' => false,'id' => 'it-agentlist','multiple' => true,'size' => 5,'field' => false,'browse' => 'afeatures','key' => 'identity','altkey' => 'id'),$agent['list']);?>
 
 			</div>
 			<div class="inout-list">
 
-		<a href="#" onclick="xivo_fm_move_selected('it-agentlist','it-agent'); return(false);" title="<?=$this->bbf('bt-inagent');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt-inagent'),'class="bt-inlist" id="bt-inagent" border="0"');?></a><br />
+			<a href="#" onclick="xivo_fm_move_selected('it-agentlist','it-agent'); return(false);" title="<?=$this->bbf('bt-inagent');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt-inagent'),'class="bt-inlist" id="bt-inagent" border="0"');?></a><br />
 
-		<a href="#" onclick="xivo_fm_move_selected('it-agent','it-agentlist'); return(false);" title="<?=$this->bbf('bt-outagent');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt-outagent'),'class="bt-outlist" id="bt-outagent" border="0"');?></a>
+			<a href="#" onclick="xivo_fm_move_selected('it-agent','it-agentlist'); return(false);" title="<?=$this->bbf('bt-outagent');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt-outagent'),'class="bt-outlist" id="bt-outagent" border="0"');?></a>
 
 			</div>
 			<div class="slt-inlist">
 
-		<?=$form->select(array('name' => 'agent[]','label' => false,'id' => 'it-agent','multiple' => true,'size' => 5,'field' => false,'key' => 'identity'),$agent_slt);?>
+			<?=$form->select(array('name' => 'agent[]','label' => false,'id' => 'it-agent','multiple' => true,'size' => 5,'field' => false,'browse' => 'afeatures','key' => 'identity','altkey' => 'id'),$agent['slt']);?>
 
 			</div>
 		</div>

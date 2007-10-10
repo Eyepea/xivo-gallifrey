@@ -9,7 +9,8 @@ $array['element']['name'] = array();
 $array['element']['name']['default'] = '';
 
 $array['element']['context'] = array();
-$array['element']['context']['default'] = '';
+$array['element']['context']['default'] = 'default';
+$array['element']['context']['setdef'] = true;
 
 $array['element']['data_quality'] = array();
 $array['element']['data_quality']['value'] = array(0,1);

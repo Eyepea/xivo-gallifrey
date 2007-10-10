@@ -277,9 +277,10 @@ class xivo_service_asterisk extends xivo_service_abstract
 		return($r);
 	}
 
-	function get_agents_list($group=0,$disable=null)
+	function get_agents_list($group=0,$disable=null,$assoc=false)
 	{
 		$group = xivo_uint($group);
+		$assoc = (bool) $assoc;
 
 		$afeatures = &$this->get_module('agentfeatures');
 		$agroup = &$this->get_module('agentgroup');
@@ -308,17 +309,21 @@ class xivo_service_asterisk extends xivo_service_abstract
 			$info['sort']['identity'] = $info['afeatures']['identity'];
 			$info['sort']['var_metric'] = $info['agent']['var_metric'];
 
-			$r[] = $info;
+			$r[$info['afeatures']['id']] = $info;
 		}
 
-		if(isset($r[0]) === false)
+		if(empty($r) === true)
 			$r = false;
+		else if($assoc === false)
+			$r = array_values($r);
 
 		return($r);
 	}
 
-	function get_agent_groups_list($disable=null)
+	function get_agent_groups_list($disable=null,$assoc=false)
 	{
+		$assoc = (bool) $assoc;
+
 		$agroup = &$this->get_module('agentgroup');
 		$agent = &$this->get_module('agent');
 		$afeatures = &$this->get_module('agentfeatures');
@@ -336,11 +341,13 @@ class xivo_service_asterisk extends xivo_service_abstract
 			|| ($info['nb_agent'] = $afeatures->get_nb(array('numgroup' => $info['agroup']['id']),$disable)) === false)
 				continue;
 
-			$r[] = $info;
+			$r[$info['agroup']['id']] = $info;
 		}
 
-		if(isset($r[0]) === false)
+		if(empty($r) === true)
 			$r = false;
+		else if($assoc === false)
+			$r = array_values($r);
 
 		return($r);
 	}
@@ -502,126 +509,6 @@ class xivo_service_asterisk extends xivo_service_abstract
 		}
 
 		if(isset($r[0]) === false)
-			$r = false;
-
-		return($r);
-	}
-
-	function get_user_queue_info($protocols=array(),$type='',$disable=null)
-	{
-		$protocols = (array) $protocols;
-		
-		if(empty($protocols) === true)
-			$protocols = array_keys($this->_conf['protocol']);
-		else
-			$protocols = array_values($protocols);
-
-		$type = (string) $type;
-
-		if($type !== XIVO_SRE_IPBX_AST_CHAN_LOCAL
-		|| $this->get_channel($type) !== XIVO_SRE_IPBX_AST_CHAN_LOCAL)
-			$type = '';
-
-		$ufeatures = &$this->get_module('userfeatures');
-
-		if(($rs = $ufeatures->get_all($disable)) === false || ($nb = count($rs)) === 0)
-			return(false);
-
-		$r = $info = array();
-
-		for($i = 0;$i < $nb;$i++)
-		{
-			$info['ufeatures'] = $rs[$i];
-
-			if(in_array($info['ufeatures']['protocol'],$protocols) === false
-			|| ($protocol = &$this->get_protocol_module($info['ufeatures']['protocol'])) === false
-			|| ($info['protocol'] = $protocol->get($info['ufeatures']['protocolid'],$disable)) === false)
-				continue;
-
-			if(isset($info['protocol']['context']) === false || $info['protocol']['context'] === '')
-				$info['protocol']['context'] = 'default';
-			
-			if($type === '')
-			{
-				$interface = $this->mk_interface($info['protocol']['name'],
-								 $info['ufeatures']['protocol']);
-			}
-			else
-			{
-				$interface = $this->mk_interface($info['protocol']['name'],
-								 $info['ufeatures']['protocol'],
-								 $info['ufeatures']['number'],
-								 $info['protocol']['context']);
-			}
-
-			$channel = $this->get_channel_by_protocol($info['ufeatures']['protocol']);
-
-			$r[$info['ufeatures']['id']] = array('interface' => $interface,
-							     'identity' => $info['ufeatures']['identity'],
-							     'channel' => $channel);
-		}
-			
-		if(empty($r) === true)
-			$r = false;
-
-		return($r);
-	}
-
-	function get_agent_queue_info($disable=null)
-	{
-		$afeatures = &$this->get_module('agentfeatures');
-		$agent = &$this->get_module('agent');
-
-		if(($rs = $afeatures->get_all($disable)) === false || ($nb = count($rs)) === 0)
-			return(false);
-
-		$r = $info = array();
-
-		for($i = 0;$i < $nb;$i++)
-		{
-			$info['afeatures'] = $rs[$i];
-
-			if(($info['agent'] = $agent->get_agent($info['afeatures']['agentid'],$disable)) === false)
-				continue;
-
-			$interface = $this->mk_agent_interface($info['afeatures']['number']);
-
-			$r[$info['afeatures']['id']] = array('interface' => $interface,
-							     'identity' => $info['afeatures']['identity'],
-							     'channel' => XIVO_SRE_IPBX_AST_CHAN_AGENT);
-		}
-			
-		if(empty($r) === true)
-			$r = false;
-
-		return($r);
-	}
-
-	function get_agent_group_queue_info($disable=null)
-	{
-		$agroup = &$this->get_module('agentgroup');
-		$agent = &$this->get_module('agent');
-
-		if(($rs = $agroup->get_all($disable)) === false || ($nb = count($rs)) === 0)
-			return(false);
-
-		$r = $info = array();
-
-		for($i = 0;$i < $nb;$i++)
-		{
-			$info['agroup'] = $rs[$i];
-
-			if(($info['agent'] = $agent->get($info['agroup']['groupid'],$disable)) === false)
-				continue;
-
-			$interface = $this->mk_agent_interface($info['agroup']['id'],true);
-
-			$r[$info['agroup']['id']] = array('interface' => $interface,
-							  'identity' => $info['agroup']['name'],
-							  'channel' => XIVO_SRE_IPBX_AST_CHAN_AGENT);
-		}
-			
-		if(empty($r) === true)
 			$r = false;
 
 		return($r);

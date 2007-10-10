@@ -10,7 +10,8 @@ $array['element']['name'] = array();
 $array['element']['name']['default'] = '';
 
 $array['element']['context'] = array();
-$array['element']['context']['default'] = '';
+$array['element']['context']['default'] = 'default';
+$array['element']['context']['setdef'] = true;
 
 $array['filter'] = array();
 $array['filter']['number'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9\*#]+$/','maxlen' => 40);

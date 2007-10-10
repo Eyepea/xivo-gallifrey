@@ -5,7 +5,7 @@
 	$pager = $this->vars('pager');
 	$act = $this->vars('act');
 
-	$page = $url->pager($pager['pages'],$pager['page'],$pager['prev'],$pager['next'],'service/ipbx/pbx_settings/groups',array('act' => $act));
+	$page = $url->pager($pager['pages'],$pager['page'],$pager['prev'],$pager['next'],'service/ipbx/pbx_settings/queues',array('act' => $act));
 ?>
 <div class="b-list">
 <?php
@@ -13,7 +13,7 @@
 		echo '<div class="b-page">',$page,'</div>';
 	endif;
 ?>
-<form action="#" name="fm-group-list" method="post" accept-charset="utf-8">
+<form action="#" name="fm-queue-list" method="post" accept-charset="utf-8">
 <?=$form->hidden(array('name' => XIVO_SESS_NAME,'value' => XIVO_SESS_ID));?>
 <?=$form->hidden(array('name' => 'act','value' => $act));?>
 <?=$form->hidden(array('name' => 'page','value' => $pager['page']));?>
@@ -40,10 +40,17 @@
 
 			$ref = &$list[$i];
 
+			if($ref['queue']['commented'] === true):
+				$icon = 'disable';
+			else:
+				$icon = 'enable';
+			endif;
+
 			$mod = $j % 2 === 0 ? 1 : 2;
 ?>
 	<tr class="sb-content l-infos-<?=$mod?>on2">
-		<td class="td-left txt-left" colspan="2"><?=$ref['qfeatures']['name']?></td>
+		<td class="td-left"><?=$form->checkbox(array('name' => 'queues[]','value' => $ref['qfeatures']['id'],'label' => false,'id' => 'it-queues-'.$i,'checked' => false,'field' => false));?></td>
+		<td class="txt-left"><label for="it-queues-<?=$i?>" id="lb-queues-<?=$i?>"><?=$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"');?><?=$ref['qfeatures']['name']?></label></td>
 		<td><?=(xivo_empty($ref['qfeatures']['number']) === false ? $ref['qfeatures']['number'] : '-')?></td>
 		<td><?=$ref['nb_qmember']?></td>
 		<td class="td-right" colspan="3">
