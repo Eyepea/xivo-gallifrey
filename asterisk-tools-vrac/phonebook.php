@@ -3,11 +3,11 @@
 header('Content-Type: text/xml; charset=utf-8');
 
 $site = array();
-$site[] = 'https://localhost/service/ipbx/sso.php';
+$site[] = 'http://localhost/service/ipbx/sso.php';
 
-define('PHONEBOOK_URL','http://192.168.0.254/phonebook/phonebook.php');
+define('PHONEBOOK_URL','http://192.168.0.254/phonebook/search.php');
 
-define('XLDAP_ENABLE',true);
+define('XLDAP_ENABLE',false);
 define('XLDAP_HOST','');
 define('XLDAP_USER','');
 define('XLDAP_PASS','');
