@@ -1,0 +1,429 @@
+<?php
+
+xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk.inc'),true);
+
+class xivo_application_service_asterisk_extenfeatures extends xivo_application_asterisk_abstract
+{
+	var $_origin		= array();
+	var $_status		= '';
+	var $_extenumbers	= null;
+	var $_conf		= array();
+	var $_filter		= false;
+	var $_context		= 'features';
+
+	function xivo_application_service_asterisk_extenfeatures(&$service)
+	{
+		$this->xivo_application_asterisk_abstract(&$service);
+
+		if(($this->_extenumbers = &$this->get_abstract('extenumbers')) === false)
+			return(false);
+
+		$this->_load_config(dirname(__FILE__));
+
+		return(true);
+	}
+
+	function get($name)
+	{
+		$this->_info = $this->_origin = array();
+
+		$this->_get_extenfeatures($name);
+		$this->_get_extenumbers();
+
+		return($this->_info);
+	}
+
+	function get_all_by_context($disable=null)
+	{
+		$arr = array();
+		$arr['context'] = $this->_context;
+
+		if(($extensions = &$this->_service->get_module('extensions')) === false)
+			return(false);
+
+		return($extensions->get_all_name_by_context($arr,$disable,true));
+	}
+
+	function _get_extenfeatures($name,$disable=null)
+	{
+		$this->_info['extenfeatures'] = false;
+		$this->_origin['extenfeatures'] = false;
+
+		if(($extensions = &$this->_service->get_module('extensions')) === false)
+			return(false);
+
+		$arr = array();
+		$arr['name'] = $name;
+		$arr['context'] = $this->_context;
+
+		$this->_info['extenfeatures'] = $extensions->get_all_by_name_context($arr,$disable);
+		$this->_origin['extenfeatures'] = $extensions->get_origin_list();
+
+		return($this->_info['extenfeatures']);
+	}
+
+	function _get_extenumbers()
+	{
+		$this->_info['extenumbers'] = false;
+		$this->_origin['extenumbers'] = false;
+
+		if(isset($this->_info['extenfeatures']['name']) === false)
+			return(false);
+
+		return(parent::_get_extenumbers('extenfeatures',$this->_info['extenfeatures']['name']));
+	}
+
+	function get_config_exten()
+	{
+		if(isset($this->_conf) === false
+		|| xivo_issa('exten',$this->_conf) === false)
+			return(false);
+
+		return($this->_conf['exten']);
+	}
+
+	function get_elements()
+	{
+		return($this->get_element());
+	}
+
+	function _chk_extenfeatures_exists($name,$cmd='')
+	{
+		$name = (string) $name;
+		$cmd = (string) $cmd;
+
+		if(xivo_issa('exten',$this->_conf) === false
+		|| xivo_issa($name,$this->_conf['exten']) === false)
+			return(false);
+
+		if($cmd !== '' && isset($this->_conf['exten'][$name][$cmd]) === false)
+			return(false);
+
+		return(true);
+	}
+
+	function _mk_extenfeatures_appdata_vars($appdata,$exten)
+	{
+		if(is_scalar($appdata) === false
+		|| is_scalar($exten) === false
+		|| preg_match('/^[_]?([0-9\*#]+)/',$exten,$extmatch) !== 1)
+			return($appdata);
+
+		$vars = array('$<EXTNUM>' => '','$<EXTNUMLEN>' => 0);
+
+		$extnum = $extmatch[1];
+		$vars['$<EXTNUM>'] = $extnum;
+		$vars['$<EXTNUMLEN>'] = strlen($extnum);
+
+		return(strtr($appdata,$vars));
+	}
+
+	function _mk_extenfeatures_dialplan($name,$val,$disable=null)
+	{
+		$name = (string) $name;
+		$val = (string) $val;
+		$disable = $disable === null ? $disable : intval((bool) $disable);
+
+		if($this->_chk_extenfeatures_exists($name) === false
+		|| ($extensions = &$this->_service->get_module('extensions')) === false)
+			return(false);
+
+		$arr = $this->_conf['exten'][$name];
+		$arr['name'] = $name;
+		$arr['commented'] = $disable;
+
+		if(isset($arr['_line']) === false)
+		{
+			if(isset($arr['app']) === false)
+				return(false);
+
+			if(isset($arr['appdata']) === true)
+				$arr['appdata'] = $this->_mk_extenfeatures_appdata_vars($arr['appdata'],$val);
+
+			$r = $extensions->new_exten($arr['app'],$arr,$val,$this->_context);
+	
+			return($r);
+		}
+
+		unset($arr['_line']);
+
+		$ref = &$this->_conf['exten'];
+
+		if(is_array($ref[$name]) === false || ($nb = count($ref[$name]['_line'])) === 0)
+			return(false);
+
+		$lines = array_values($ref[$name]['_line']);
+		$line = array_merge($arr,$lines[0]);
+
+		if(isset($line['app']) === false)
+			return(false);
+
+		if(isset($line['appdata']) === true)
+			$line['appdata'] = $this->_mk_extenfeatures_appdata_vars($line['appdata'],$val);
+
+		$id = $extensions->new_exten($line['app'],$line,$val,$this->_context);
+
+		if($id === false)
+			return(false);
+
+		for($i = 1;$i < $nb;$i++)
+		{
+			$line = array_merge($arr,$lines[$i]);
+
+			if(isset($line['app']) === false)
+				return(false);
+
+			if(isset($line['appdata']) === true)
+				$line['appdata'] = $this->_mk_extenfeatures_appdata_vars($line['appdata'],$val);
+
+			if($extensions->set_exten($line['app'],$id,$line,$val,$this->_context) === false)
+				return(false);
+		}
+
+		return($id);
+	}
+
+	function set($arr)
+	{
+		$this->_reset();
+
+		if(is_array($arr) === false || isset($arr['name']) === false)
+			return(false);
+
+		$this->get($arr['name']);
+
+		$this->set_extenfeatures($arr);
+
+		$number = (string) $this->get_result_var('extenfeatures','exten');
+		$context = '';
+
+		$this->set_extenumbers('save','extenfeatures',$number,$context);
+
+		if($this->get_errnb() > 0)
+			$r = false;
+		else
+			$r = true;
+
+		return($r);
+	}
+
+	function set_extenfeatures($arr)
+	{
+		if(is_array($arr) === false
+		|| isset($arr['name'],$arr['exten']) === false
+		|| ($extensions = &$this->_service->get_module('extensions')) === false
+		|| $this->_chk_extenfeatures_exists(strval($arr['name'])) === false)
+			return(false);
+
+		$rs = array();
+		$rs['name'] = $arr['name'];
+		$rs['commented'] = null;
+
+		if(isset($arr['commented']) === true)
+			$rs['commented'] = (bool) $arr['commented'];
+
+		if(($exten = $this->extenfeatures_chk_value($arr['name'],$arr['exten'])) === false)
+		{
+			if(($exten = $this->get_filter_result()) !== false)
+				$rs['exten'] = $exten[$arr['name']];
+
+			$this->_set_result('extenfeatures',$rs);
+			$this->_set_error('extenfeatures',$this->get_filter_error());
+
+			return(false);
+		}
+
+		$rs['exten'] = $exten;
+		$this->_set_result('extenfeatures',$rs);
+
+		return(true);
+	}
+
+	function save()
+	{
+		$this->_status = 'save';
+		$this->_return = array();
+
+		if(is_array($this->_info) === false
+		|| empty($this->_info) === true
+		|| $this->get_errnb() > 0
+		|| ($name = $this->save_extenfeatures()) === false
+		|| $this->save_extenumbers($name) === false)
+		{
+			$this->_reverse_save();
+			$this->_status = '';
+			return(false);
+		}
+
+		$this->_status = '';
+
+		return(true);
+	}
+
+	function save_extenfeatures()
+	{
+		if(isset($this->_info['extenfeatures']) === false)
+			return(false);
+
+		if($this->_info['extenfeatures'] === false)
+			return($this->_add_extenfeatures());
+
+		$this->_return['extenfeatures'] = $this->delete_extenfeatures();
+
+		if(($rs = $this->get_result('extenfeatures')) === null
+		|| $rs === false
+		|| ($extensions = &$this->_service->get_module('extensions')) === false
+		|| ($id = $this->_mk_extenfeatures_dialplan($rs['name'],$rs['exten'],$rs['commented'])) === false
+		|| ($list = $extensions->get_loaded_exten($id)) === false)
+			return(false);
+
+		$this->_return = array();
+
+		$i = 0;
+		$nb = count($list);
+
+		if($this->_origin['extenfeatures'] !== false
+		&& ($cnt = count($this->_origin['extenfeatures'])) !== 0)
+		{
+			for($i;$i < $cnt;$i++)
+			{
+				if(isset($list[$i]) === false)
+				{
+					$i = $nb;
+					break;
+				}
+
+				$eid = $this->_origin['extenfeatures'][$i]['id'];
+
+				if(($this->_return[] = $extensions->add($list[$i],$eid)) === false)
+					return(false);
+			}
+		}
+
+		if($i >= $nb)
+		{
+			if(isset($this->_return[0]) === false)
+			{
+				$this->_return = false;
+				return(false);
+			}
+
+			return($rs['name']);
+		}
+
+		for($i;$i < $nb;$i++)
+		{
+			if(($this->_return[] = $extensions->add($rs[$i])) === false)
+				return(false);
+		}
+
+		if(isset($this->_return[0]) === false)
+		{
+			$this->_return = false;
+			return(false);
+		}
+
+		return($rs['name']);
+	}
+
+	function save_extenumbers($name)
+	{
+		if(($r = parent::save_extenumbers($name)) === null)
+			$r = false;
+
+		return($r);
+	}
+
+	function _add_extenfeatures()
+	{
+		if(($rs = $this->get_result('extenfeatures')) === null
+		|| $rs === false
+		|| ($extensions = &$this->_service->get_module('extensions')) === false
+		|| ($id = $this->_mk_extenfeatures_dialplan($rs['name'],$rs['exten'],$rs['commented'])) === false)
+			return(false);
+
+		if($extensions->add_exten($id) === false)
+			$this->_return['extenfeatures'] = false;
+		else
+			$this->_return['extenfeatures'] = $rs['name'];
+
+		return($this->_return['extenfeatures']);
+	}
+
+	function _reverse_save()
+	{
+		if($this->get_errnb() > 0
+		|| $this->_status !== 'save'
+		|| ($arr = xivo_get_aks($this->_return)) === false)
+			return(false);
+
+		for($i = 0;$i < $arr['cnt'];$i++)
+		{
+			$key = &$arr['keys'][$i];
+			$val = &$this->_return[$key];
+
+			if($val === false)
+				continue;
+
+			switch($key)
+			{
+				case 'extenfeatures':
+					$this->delete_extenfeatures($val);
+
+					if(isset($this->_origin['extenfeatures']) === false
+					|| ($extensions = &$this->_service->get_module('extensions')) === false)
+						continue;
+
+					$extensions->add_origin_list($this->_origin['extenfeatures']);
+					break;
+				case 'extenumbers':
+					if(isset($this->_origin['extenumbers']) === false
+					|| ($extenumbers = &$this->_service->get_module('extenumbers')) === false)
+						continue;
+
+					if($this->_origin['extenumbers'] === false)
+						$extenumbers->delete($val);
+					else
+						$extenumbers->edit_origin($this->_origin['extenumbers']);
+					break;
+			}
+		}
+	}
+
+	function extenfeatures_chk_value($key,$value)
+	{
+		$value = $this->_service->clean_extension($value);
+
+		return(parent::chk_value($key,$value));
+	}
+
+	function extenfeatures_set_chk_value($key,$value)
+	{
+		$value = $this->_service->clean_extension($value);
+
+		return(parent::set_chk_value($key,$value));
+	}
+
+	function delete_extenfeatures($name='')
+	{
+		if(($extensions = &$this->_service->get_module('extensions')) === false)
+			return(false);
+
+		if(xivo_issa('extenfeatures',$this->_info) === true)
+			$name = $this->_info['extenfeatures']['name'];
+		else if(is_scalar($name) === false)
+			return(false);
+
+		$extenfeatures_where = array();
+		$extenfeatures_where['name'] = $name;
+
+		$r = $extensions->delete_where($extenfeatures_where);
+
+		if($this->_status === 'delete')
+			$this->_return['extenfeatures'] = $r;
+
+		return($r);
+	}
+}
+
+?>

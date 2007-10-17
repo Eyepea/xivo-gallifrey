@@ -49,11 +49,11 @@ Créer un droit d'appel
 ; fld-dialstatus-noanswer
 Aucune réponse
 
-; fld-dialstatus-congestion
-Saturé
-
 ; fld-dialstatus-busy
 Occupé
+
+; fld-dialstatus-congestion
+Saturé
 
 ; fld-dialstatus-chanunavail
 Echoué
@@ -121,11 +121,11 @@ Aucune
 ; fm_dialstatus_endcall-typeval-opt-hangup
 Raccrocher
 
-; fm_dialstatus_endcall-typeval-opt-congestion
-Congestion
-
 ; fm_dialstatus_endcall-typeval-opt-busy
 Occupé
+
+; fm_dialstatus_endcall-typeval-opt-congestion
+Saturé
 
 ; fm_dialstatus_application-typeval-opt-faxtomail
 FaxToMail

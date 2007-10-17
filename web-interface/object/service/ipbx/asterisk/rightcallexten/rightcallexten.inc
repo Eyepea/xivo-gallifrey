@@ -6,7 +6,7 @@ class xivo_service_asterisk_rightcallexten extends xivo_service_asterisk_abstrac
 {
 	var $_dso		= null;
 	var $_name		= 'rightcallexten';
-	var $_filter		= null;
+	var $_filter		= false;
 	var $_origin		= false;
 	var $_origin_list	= false;
 

@@ -77,21 +77,21 @@ if(isset($_QR['fm_send']) === true && xivo_issa('voicemail',$_QR) === true)
 		}
 	}
 
+	if(is_array($result['voicemail']['format']) === true)
+	{
+		if(isset($_QR['voicemail']['attachformat']) === true
+		&& ($format = (int) array_search($_QR['voicemail']['attachformat'],
+						 $result['voicemail']['format'],true)) !== 0)
+		{
+			unset($result['voicemail']['format'][$format]);
+			array_unshift($result['voicemail']['format'],$_QR['voicemail']['attachformat']);
+		}
+
+		$result['voicemail']['format'] = implode(',',$result['voicemail']['format']);
+	}
+
 	if($edit === true)
 	{
-		if(is_array($result['voicemail']['format']) === true)
-		{
-			if(isset($_QR['voicemail']['attachformat']) === true
-			&& ($format = (int) array_search($_QR['voicemail']['attachformat'],
-							 $result['voicemail']['format'],true)) !== 0)
-			{
-				unset($result['voicemail']['format'][$format]);
-				array_unshift($result['voicemail']['format'],$_QR['voicemail']['attachformat']);
-			}
-
-			$result['voicemail']['format'] = implode(',',$result['voicemail']['format']);
-		}
-		
 		if($generalvoicemail->replace_val_list($result['voicemail']) === true)
 			$_HTML->assign('fm_save',true);
 

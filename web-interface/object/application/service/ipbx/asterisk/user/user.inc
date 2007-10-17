@@ -10,6 +10,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 	var $_extenumbers	= null;
 	var $_rightcall		= null;
 	var $_dialstatus	= null;
+	var $_musiconhold	= false;
 
 	function xivo_application_service_asterisk_user(&$service)
 	{
@@ -56,6 +57,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$this->_get_dialstatus();
 		$this->_get_voicemail();
 		$this->_get_autoprov();
+		$this->get_musiconhold();
 
 		return($this->_info);
 	}
@@ -98,13 +100,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 	function _get_extenumbers()
 	{
-		if(isset($this->_info['protocol']['context']) === false)
-			return(false);
-
-		$number = $this->_info['ufeatures']['number'];
-		$context = $this->_info['protocol']['context'];
-
-		return(parent::_get_extenumbers($number,$context));
+		return(parent::_get_extenumbers('user',$this->_info['ufeatures']['id']));
 	}
 
 	function _get_groupmember()
@@ -203,7 +199,21 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		return($this->_info['autoprov']);
 	}
 
-	function get_element()
+	function get_musiconhold()
+	{
+		if($this->_musiconhold !== false)
+			return($this->_musiconhold);
+
+		if(($musiconhold = &$this->_service->get_module('musiconhold')) === false)
+			return(false);
+
+		if(($this->_musiconhold = $musiconhold->get_all_category(null,false)) !== false)
+			ksort($this->_musiconhold);
+
+		return($this->_musiconhold);
+	}
+
+	function get_elements()
 	{
 		$r = array();
 
@@ -343,7 +353,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 			$this->_set_result('hints',$hints);
 
-			$this->set_extenumbers($action,$number,$context);
+			$this->set_extenumbers($action,'user',$number,$context);
 		}
 
 		if(xivo_issa('rightcall',$arr) === true)
@@ -398,6 +408,9 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$this->_set_error('ufeatures','invalid module');
 			return(false);
 		}
+
+		if(isset($arr['musiconhold'],$this->_musiconhold[$arr['musiconhold']]) === false)
+			$arr['musiconhold'] = '';
 
 		if(($rs = $ufeatures->chk_values($arr)) === false)
 		{
@@ -637,7 +650,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		|| ($ufeaturesid = $this->add_userfeatures($protocolid)) === false
 		|| $this->add_macro('localexten') === false
 		|| $this->add_hints() === false
-		|| $this->add_extenumbers() === false
+		|| $this->add_extenumbers($ufeaturesid) === false
 		|| $this->add_groupmember($ufeaturesid) === false
 		|| $this->add_queuemember($ufeaturesid) === false
 		|| $this->add_rightcall($ufeaturesid) === false
@@ -847,6 +860,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				case 'autoprov':
 					$autoprov = &$this->_service->get_module('autoprov');
 					$autoprov->userdeleted($val);
+					break;
 				default:
 					if(($module = &$this->_service->get_module($key)) === false)
 						continue;
@@ -903,7 +917,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		}
 		else if($this->add_macro('localexten') === false
 		|| $this->add_hints() === false
-		|| $this->add_extenumbers() === false)
+		|| $this->add_extenumbers($this->_info['ufeatures']['id']) === false)
 		{
 			$this->_reverse_edit($protocolret);
 			$this->_status = '';

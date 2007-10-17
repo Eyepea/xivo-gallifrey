@@ -407,3 +407,30 @@ function xivo_fm_mk_acl(tree)
                         ref[i].checked = rs;
         }
 }
+
+function xivo_fm_readonly(list,enable)
+{
+	if(xivo_is_array(list) == false)
+		list = new Array(list);
+
+	enable = new Boolean(enable);
+
+	nb = list.length;
+
+	for(var i = 0;i < nb;i++)
+	{
+		if((element = xivo_eid(list[i])) == false)
+			continue;
+
+		if(enable == true)
+		{
+			element.readOnly = false;
+			element.className = xivo_fm_enabled_class;
+		}
+		else
+		{
+			element.readOnly = true;
+			element.className = xivo_fm_readonly_class;
+		}
+	}
+}

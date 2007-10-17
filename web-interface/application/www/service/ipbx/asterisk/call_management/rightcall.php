@@ -93,7 +93,7 @@ switch($act)
 		$_HTML->assign('rcallgroup',$rcallgroup);
 		$_HTML->assign('rcalloutcall',$rcalloutcall);
 		$_HTML->assign('rcallexten',$rcallexten);
-		$_HTML->assign('element',$apprightcall->get_element());
+		$_HTML->assign('element',$apprightcall->get_elements());
 		$_HTML->assign('info',$result);
 		break;
 	case 'edit':
@@ -193,7 +193,7 @@ switch($act)
 		$_HTML->assign('rcallgroup',$rcallgroup);
 		$_HTML->assign('rcalloutcall',$rcalloutcall);
 		$_HTML->assign('rcallexten',$rcallexten);
-		$_HTML->assign('element',$apprightcall->get_element());
+		$_HTML->assign('element',$apprightcall->get_elements());
 		$_HTML->assign('info',$return);
 		break;
 	case 'delete':

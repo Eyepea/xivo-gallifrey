@@ -1,106 +1,184 @@
 <?php
 
-$extenfeatures = &$ipbx->get_module('extenfeatures');
-$extenumbers = &$ipbx->get_module('extenumbers');
+$appextenfeatures = &$ipbx->get_application('extenfeatures');
 
-$element = $extenfeatures->get_element();
+$appfeatures = &$ipbx->get_application('features');
+$appgeneralfeatures = &$appfeatures->get_module('general');
+$appfeaturemap = &$appfeatures->get_module('featuremap');
 
-$info = $extenfeatures->get_name_exten();
-$return = &$info;
+$info = array();
+$info['extenfeatures'] = $appextenfeatures->get_all_by_context();
+$info['generalfeatures'] = $appgeneralfeatures->get_all_by_category();
+$info['featuremap'] = $appfeaturemap->get_all_by_category();
 
-$result = $error = array();
+$element = array();
+$element['extenfeatures'] = $appextenfeatures->get_elements();
+$element['generalfeatures'] = $appgeneralfeatures->get_elements();
+$element['featuremap'] = $appfeaturemap->get_elements();
 
-$exten_numbers = array();
-$exten_numbers['context'] = '';
+$error = array();
+$error['extenfeatures'] = array();
+$error['generalfeatures'] = array();
+$error['featuremap'] = array();
 
-if(isset($_QR['fm_send']) === true && ($arr = xivo_get_aks($element)) !== false)
+$fm_save = null;
+
+if(isset($_QR['fm_send']) === true)
 {
-	$return = &$result;
-
-	for($i = 0;$i < $arr['cnt'];$i++)
+	if(xivo_issa('extenfeatures',$_QR) === true)
 	{
-		$key = &$arr['keys'][$i];
+		if($info['extenfeatures'] === false)
+			$info['extenfeatures'] = array();
 
-		if($extenfeatures->unset_element_value($key) === true)
-			continue;
+		$extens = $appextenfeatures->get_config_exten();
 
-		if(isset($_QR[$key]) === false)
+		if(($arr = xivo_get_aks($extens)) !== false)
 		{
-			$result[$key] = '';
-			$error[] = $key;
-			continue;
-		}
-	
-		$exten_numbers['exten'] = $_QR[$key];
-		$exten_numbers['context'] = '';
+			$rs = array();
 
-		if(($extenumbers_rs = $extenumbers->chk_values($exten_numbers)) === false
-		|| ($extenfeatures_rs = $extenfeatures->chk_value($key,$extenumbers_rs['exten'])) === false)
-		{
-			$result[$key] = '';
-			$error[] = $key;
-			continue;
-		}
-
-		$extenumbersid = false;
-
-		if(isset($info[$key]) === false)
-		{
-			if($extenumbers->exists($extenumbers_rs) !== false)
+			for($i = 0;$i < $arr['cnt'];$i++)
 			{
-				$result[$key] = '';
-				$error[] = $key;
-				continue;
+				$key = &$arr['keys'][$i];
+
+				if(xivo_issa($key,$_QR['extenfeatures']) === false)
+					continue;
+
+				if(isset($_QR['extenfeatures'][$key]['exten']) === true)
+					$exten = $_QR['extenfeatures'][$key]['exten'];
+				else
+					$exten = '';
+
+				if(isset($_QR['extenfeatures'][$key]['enable']) === false)
+					$rs['commented'] = true;
+				else
+					$rs['commented'] = false;
+
+				$rs['name'] = $key;
+				$rs['exten'] = $exten;
+
+				if(isset($info['extenfeatures'][$key]) === false)
+					$info['extenfeatures'][$key] = $rs;
+				else
+				{
+					$info['extenfeatures'][$key]['exten'] = $rs['exten'];
+					$info['extenfeatures'][$key]['commented'] = $rs['commented'];
+				}
+
+				if($appextenfeatures->set($rs) === false
+				|| $appextenfeatures->save() === false)
+				{
+					$info['extenfeatures'][$key]['exten'] = '';
+					$error['extenfeatures'][] = $key;
+				}
 			}
+
+			if(isset($error['extenfeatures'][0]) === false)
+				$fm_save = true;
 		}
-		else
-		{	
-			$exten_where = $exten_numbers;
-			$exten_where['exten'] = $info[$key];
-
-			if(($extenumbersid = $extenumbers->get_id($exten_where)) === false)
-				$extenumbersid = null;
-
-			if($extenumbers->exists($extenumbers_rs,$extenumbersid) !== false)
-			{
-				$result[$key] = '';
-				$error[] = $key;
-				continue;
-			}
-		}
-
-		if($extenumbersid === false || $extenumbersid === null)
-		{
-			if($extenumbers->add($extenumbers_rs) === false)
-			{
-				$result[$key] = '';
-				$error[] = $key;
-				continue;
-			}
-		}
-		else if($extenumbers->edit($extenumbersid,$extenumbers_rs) === false)
-		{
-			$result[$key] = '';
-			$error[] = $key;
-			continue;
-		}
-
-		$extenfeatures->replace_exten_by_name($key,$extenfeatures_rs);
-
-		$result[$key] = $extenfeatures_rs;
-
-		if(isset($result[$key]{0}) === true && $result[$key]{0} === '_')
-			$result[$key] = substr($result[$key],1);
 	}
 
-	if(isset($error[0]) === false)
-		$_HTML->assign('fm_save',true);
-}
-else $info = $extenfeatures->get_name_exten_for_display();
+	if(xivo_issa('generalfeatures',$_QR) === true)
+	{
+		if($info['generalfeatures'] === false)
+			$info['generalfeatures'] = array();
 
+		if(($arr = xivo_get_aks($element['generalfeatures'])) !== false)
+		{
+			$rs = array();
+
+			for($i = 0;$i < $arr['cnt'];$i++)
+			{
+				$key = &$arr['keys'][$i];
+
+				if(isset($_QR['generalfeatures'][$key]) === true)
+					$val = $_QR['generalfeatures'][$key];
+				else
+					$val = '';
+
+				$rs['var_name'] = $key;
+				$rs['var_val'] = $val;
+				$rs['commented'] = false;
+
+				if(isset($info['generalfeatures'][$key]) === false)
+					$info['generalfeatures'][$key] = $rs;
+				else
+				{
+					$info['generalfeatures'][$key]['var_val'] = $rs['var_val'];
+					$info['generalfeatures'][$key]['commented'] = $rs['commented'];
+				}
+
+				if($appgeneralfeatures->set($rs) === false
+				|| $appgeneralfeatures->save() === false)
+				{
+					$info['generalfeatures'][$key]['var_val'] = '';
+					$error['generalfeatures'][] = $key;
+				}
+			}
+
+			if(isset($error['generalfeatures'][0]) === true)
+				$fm_save = false;
+			else if($fm_save !== false)
+				$fm_save = true;
+		}
+	}
+
+	if(xivo_issa('featuremap',$_QR) === true)
+	{
+		if($info['featuremap'] === false)
+			$info['featuremap'] = array();
+
+		if(($arr = xivo_get_aks($element['featuremap'])) !== false)
+		{
+			$rs = array();
+
+			for($i = 0;$i < $arr['cnt'];$i++)
+			{
+				$key = &$arr['keys'][$i];
+
+				if(isset($_QR['featuremap'][$key]) === true)
+					$val = $_QR['featuremap'][$key];
+				else
+					$val = '';
+
+				$rs['var_name'] = $key;
+				$rs['var_val'] = $val;
+				$rs['commented'] = false;
+
+				if(isset($info['featuremap'][$key]) === false)
+					$info['featuremap'][$key] = $rs;
+				else
+				{
+					$info['featuremap'][$key]['var_val'] = $rs['var_val'];
+					$info['featuremap'][$key]['commented'] = $rs['commented'];
+				}
+
+				if($appfeaturemap->set($rs) === false
+				|| $appfeaturemap->save() === false)
+				{
+					$info['featuremap'][$key]['var_val'] = '';
+					$error['featuremap'][] = $key;
+				}
+			}
+
+			if(isset($error['featuremap'][0]) === true)
+				$fm_save = false;
+			else if($fm_save !== false)
+				$fm_save = true;
+		}
+	}
+}
+
+$_HTML->assign('fm_save',$fm_save);
 $_HTML->assign('error',$error);
-$_HTML->assign('info',$return);
+$_HTML->assign('extenfeatures',$info['extenfeatures']);
+$_HTML->assign('generalfeatures',$info['generalfeatures']);
+$_HTML->assign('featuremap',$info['featuremap']);
+$_HTML->assign('sound_list',$appgeneralfeatures->get_sound());
 $_HTML->assign('element',$element);
+
+$dhtml = &$_HTML->get_module('dhtml');
+$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/extenfeatures.js');
+$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 
 $menu = &$_HTML->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

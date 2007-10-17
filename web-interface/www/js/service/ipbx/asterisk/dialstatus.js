@@ -1,13 +1,13 @@
 var xivo_elt_dialstatus = new Array();
 xivo_elt_dialstatus['noanswer'] = new Array();
-xivo_elt_dialstatus['congestion'] = new Array();
 xivo_elt_dialstatus['busy'] = new Array();
+xivo_elt_dialstatus['congestion'] = new Array();
 xivo_elt_dialstatus['chanunavail'] = new Array();
 
 var xivo_fm_dialstatus = new Array();
 xivo_fm_dialstatus['noanswer'] = new Array();
-xivo_fm_dialstatus['congestion'] = new Array();
 xivo_fm_dialstatus['busy'] = new Array();
+xivo_fm_dialstatus['congestion'] = new Array();
 xivo_fm_dialstatus['chanunavail'] = new Array();
 
 var xivo_dialstatus_type = new Array();
@@ -59,8 +59,8 @@ function xivo_build_dialstatus_array(stat)
 }
 
 xivo_build_dialstatus_array('noanswer');
-xivo_build_dialstatus_array('congestion');
 xivo_build_dialstatus_array('busy');
+xivo_build_dialstatus_array('congestion');
 xivo_build_dialstatus_array('chanunavail');
 
 function xivo_chgdialstatus(stat,type)

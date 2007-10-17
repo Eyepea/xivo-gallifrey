@@ -5,7 +5,7 @@ xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
 class xivo_service_asterisk_configfiles extends xivo_service_asterisk_abstract
 {
 	var $_name	= 'configfiles';
-	var $_filter	= null;
+	var $_filter	= false;
 	var $_cfgpath	= '';
 
 	function xivo_service_asterisk_configfiles(&$sre)

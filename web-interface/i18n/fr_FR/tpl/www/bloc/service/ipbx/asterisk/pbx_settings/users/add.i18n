@@ -113,7 +113,7 @@ Musique d'attente :
 Activer XIVO Client :
 
 ; fm_userfeatures_enablevoicemail
-Activer le répondeur :
+Activer la messagerie vocale :
 
 ; fm_userfeatures_callrecord
 Enregistrement d'appel :
@@ -123,12 +123,6 @@ Filtrage d'appel :
 
 ; fm_userfeatures_enablednd
 Ne pas déranger :
-
-; fm_userfeatures_enableunc
-Renvoi inconditionnel :
-
-; fm_userfeatures_destunc
-Destination :
 
 ; fm_userfeatures_enablerna
 Renvoi sur non réponse :
@@ -140,6 +134,12 @@ Destination :
 Renvoi sur occupation :
 
 ; fm_userfeatures_destbusy
+Destination :
+
+; fm_userfeatures_enableunc
+Renvoi inconditionnel :
+
+; fm_userfeatures_destunc
 Destination :
 
 ; fld-callgroup
@@ -277,11 +277,11 @@ Adresse MAC :
 ; fld-dialstatus-noanswer
 Aucune réponse
 
-; fld-dialstatus-congestion
-Saturé
-
 ; fld-dialstatus-busy
 Occupé
+
+; fld-dialstatus-congestion
+Saturé
 
 ; fld-dialstatus-chanunavail
 Echoué
@@ -349,11 +349,11 @@ Aucune
 ; fm_dialstatus_endcall-typeval-opt-hangup
 Raccrocher
 
-; fm_dialstatus_endcall-typeval-opt-congestion
-Congestion
-
 ; fm_dialstatus_endcall-typeval-opt-busy
 Occupé
+
+; fm_dialstatus_endcall-typeval-opt-congestion
+Saturé
 
 ; fm_dialstatus_application-typeval-opt-faxtomail
 FaxToMail

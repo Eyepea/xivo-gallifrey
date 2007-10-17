@@ -241,8 +241,6 @@ class xivo_tpl
 
 	function varra($name,$keys)
 	{
-		$r = null;
-
 		$name = (string) $name;
 
 		if(is_scalar($keys) === true)
@@ -250,7 +248,7 @@ class xivo_tpl
 			$keys = (string) $keys;
 
 			if(xivo_issa($name,$this->_var) === false || isset($this->_var[$name][$keys]) === false)
-				return($r);
+				return(null);
 
 			return($this->_var[$name][$keys]);
 		}
@@ -258,14 +256,14 @@ class xivo_tpl
 		$keys = array_values((array) $keys);
 
 		if(xivo_issa($name,$this->_var) === false || ($nb = count($keys)) === 0)
-			return($r);
+			return(null);
 
 		$ref = &$this->_var[$name];
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			if(isset($ref[$keys[$i]]) === false)
-				return($r);
+			if(xivo_ak($keys[$i],$ref) === false)
+				return(null);
 
 			$ref = &$ref[$keys[$i]];
 		}

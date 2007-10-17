@@ -1,6 +1,8 @@
 <?php
 
-class xivo_service_asterisk_abstract
+require_once(XIVO_PATH_OBJECT.XIVO_SEP_DIR.'abstract'.XIVO_SEP_DIR.'libconfig.inc');
+
+class xivo_service_asterisk_abstract extends xivo_libconfig_abstract
 {
 	var $_conf	= array();
 	var $_sre	= null;
@@ -8,161 +10,6 @@ class xivo_service_asterisk_abstract
 	function get_name()
 	{
 		return($this->_name);
-	}
-
-	function _chk_exists_cfg($type,$name)
-	{
-		$r = false;
-
-		$type = (string) $type;
-		$name = (string) $name;
-
-		if(xivo_issa($type,$this->_conf) === true && xivo_ak($name,$this->_conf[$type]) === true)
-			$r = true;
-
-		return($r);
-	}
-
-	function get_option()
-	{
-		if(xivo_issa('option',$this->_conf) === false)
-			return(false);
-
-		return($this->_conf['option']);
-	}
-
-	function get_option_value($key)
-	{
-		$key = (string) $key;
-
-		if(xivo_issa('option',$this->_conf) === false || isset($this->_conf['option'][$key]) === false)
-			return(false);
-
-		return($this->_conf['option'][$key]);
-	}
-
-	function get_element()
-	{
-		if(xivo_issa('element',$this->_conf) === false)
-			return(false);
-
-		return($this->_conf['element']);
-	}
-
-	function get_element_where($where)
-	{
-		if(is_array($where) === false || xivo_issa('element',$this->_conf) === false)
-			return(false);
-
-		$arr_keys = array_keys($this->_conf['element']);
-
-		if(($nb = count($arr_keys)) === 0)
-			return(false);
-
-		$r = array();
-
-		for($i = 0;$i < $nb;$i++)
-		{
-			$key = &$arr_keys[$i];
-
-			if(array_key_exists($key,$where) === true && $this->unset_element_value($key) === false)
-				$r[$key] = $where[$key];
-		}
-
-		if(empty($r) === true)
-			$r = false;
-
-		return($r);
-	}
-
-	function get_element_value($key)
-	{
-		$key = (string) $key;
-
-		if(xivo_issa('element',$this->_conf) === false || xivo_issa($key,$this->_conf['element']) === false
-		|| isset($this->_conf['element'][$key]['value']) === false)
-			return(false);
-
-		return($this->_conf['element'][$key]['value']);
-	}
-
-	function _set_element_default($key,$value)
-	{
-		$key = (string) $key;
-		$value = (string) $value;
-
-		if(xivo_issa('element',$this->_conf) === false || xivo_issa($key,$this->_conf['element']) === false)
-			return(false);
-
-		$this->_conf['element'][$key]['default'] = $value;
-
-		return(true);
-	}
-
-	function get_element_default($key)
-	{
-		$key = (string) $key;
-
-		if(xivo_issa('element',$this->_conf) === false || xivo_issa($key,$this->_conf['element']) === false
-		|| isset($this->_conf['element'][$key]['default']) === false)
-			return(false);
-
-		return($this->_conf['element'][$key]['default']);
-	}
-
-	function isset_element_default($key)
-	{
-		$key = (string) $key;
-
-		if(xivo_issa('element',$this->_conf) === false || xivo_issa($key,$this->_conf['element']) === false
-		|| xivo_ak('setdef',$this->_conf['element'][$key],true) === false)
-			return(false);
-
-		return(true);
-	}
-
-	function unset_element_default($key)
-	{
-		$key = (string) $key;
-
-		if(xivo_issa('element',$this->_conf) === true && xivo_issa($key,$this->_conf['element']) === true
-		&& isset($this->_conf['element'][$key]['setdef']) === true && $this->_conf['element'][$key]['setdef'] === false)
-			return(true);
-
-		return(false);
-	}
-
-	function isset_element_value($key)
-	{
-		$key = (string) $key;
-
-		if(xivo_issa('element',$this->_conf) === false || xivo_issa($key,$this->_conf['element']) === false
-		|| xivo_ak('set',$this->_conf['element'][$key],true) === false)
-			return(false);
-
-		return(true);
-	}
-
-	function unset_element_value($key)
-	{
-		$key = (string) $key;
-
-		if(xivo_issa('element',$this->_conf) === false || xivo_issa($key,$this->_conf['element']) === false
-		|| isset($this->_conf['element'][$key]['unset']) === false)
-			return(false);
-
-		return($this->_conf['element'][$key]['unset']);
-	}
-
-	function isnull_element_value($key)
-	{
-		$key = (string) $key;
-
-		if(xivo_issa('element',$this->_conf) === false || xivo_issa($key,$this->_conf['element']) === false
-		|| isset($this->_conf['element'][$key]['null']) === false)
-			return(false);
-
-		return($this->_conf['element'][$key]['null']);
 	}
 
 	function _load_config()
@@ -180,20 +27,14 @@ class xivo_service_asterisk_abstract
 			$this->_conf = array();
 	}
 
-	function _load_filter()
-	{
-		if(xivo::load_class('xivo_filter') === false || xivo_issa('filter',$this->_conf) === false)
-			return(false);
-
-		$this->_filter = new xivo_filter($this->_conf['filter']);
-
-		return(true);
-	}
-
 	function set_origin($arr)
 	{
-		if(isset($this->_origin) === false
-		|| is_array($arr) === false)
+		if(isset($this->_origin) === true)
+			$this->_origin = false;
+		else
+			return(false);
+
+		if(is_array($arr) === false)
 			return(false);
 
 		$this->_origin = $arr;
@@ -296,6 +137,9 @@ class xivo_service_asterisk_abstract
 
 	function get($id,$disable=null,$delete=null)
 	{
+		if(isset($this->_origin) === true)
+			$this->_origin = false;
+
 		if(($id = xivo_uint($id)) === 0
 		|| ($r = $this->_dso->get($id,$disable,$delete)) === false)
 			return(false);
@@ -319,6 +163,9 @@ class xivo_service_asterisk_abstract
 
 	function get_where($arr,$disable=null,$delete=null)
 	{
+		if(isset($this->_origin) === true)
+			$this->_origin = false;
+
 		if(is_array($arr) === false
 		|| ($where = $this->get_element_where($arr)) === false
 		|| ($r = $this->_dso->get($where,$disable,$delete)) === false)
@@ -368,15 +215,15 @@ class xivo_service_asterisk_abstract
 	{
 		$prepare = (bool) $prepare;
 
+		if(isset($this->_origin_list) === true)
+			$this->_origin_list = array();
+
 		if(($list = $this->_dso->get_all($disable,$delete,$order,$limit)) === false)
 			return(false);
 
 		$nb = count($list);
 
 		$r = array();
-
-		if(isset($this->_origin_list) === true)
-			$this->_origin_list = array();
 		
 		if($prepare === true)
 		{
@@ -407,6 +254,9 @@ class xivo_service_asterisk_abstract
 
 	function get_all_where($arr,$disable=null,$delete=null,$prepare=true,$order=null,$limit=null)
 	{
+		if(isset($this->_origin_list) === true)
+			$this->_origin_list = array();
+
 		if(is_array($arr) === false
 		|| ($where = $this->get_element_where($arr)) === false
 		|| ($list = $this->_dso->get_all_where($where,$disable,$delete,$order,$limit)) === false)
@@ -415,9 +265,6 @@ class xivo_service_asterisk_abstract
 		$nb = count($list);
 
 		$r = array();
-
-		if(isset($this->_origin_list) === true)
-			$this->_origin_list = array();
 
 		if($prepare === true)
 		{
@@ -534,131 +381,6 @@ class xivo_service_asterisk_abstract
 		$r = $this->_dso->edit($where,array('commented' => $value));
 
 		return($r);
-	}
-
-	function get_filter_error()
-	{
-		if($this->_filter === null)
-			return(false);
-
-		return($this->_filter->get_error());
-	}
-
-	function get_filter_errnb()
-	{
-		if($this->_filter === null)
-			return(false);
-
-		return($this->_filter->get_errnb());
-	}
-
-	function get_filter_result()
-	{
-		if($this->_filter === null)
-			return(false);
-
-		return($this->_filter->get_result());
-	}
-
-	function chk_values($arr,$set=true,$setval=true,$empty=true)
-	{
-		$set = (bool) $set;
-		$setval = (bool) $setval;
-		$empty = (bool) $empty;
-
-		if($this->_filter === null && $this->_load_filter() === false)
-			return(false);
-
-		if($this->_filter->chk($arr,$setval) === false)
-			return(false);
-
-		$rs = $this->_filter->get_result();
-
-		if($set === false || ($arr = xivo_get_aks($rs)) === false)
-			return($rs);
-
-		$r = array();
-
-		for($i = 0;$i < $arr['cnt'];$i++)
-		{
-			$key = &$arr['keys'][$i];
-			$val = &$rs[$key];
-
-			if(($sval = $this->_set_value($key,$val)) !== false)
-				$val = $sval;
-
-			if($val === '' && $this->isnull_element_value($key) === true)
-				$val = null;
-			else if($val === null && $this->isnull_element_value($key) === false)
-				$val = '';
-
-			if($val === '' && $this->isset_element_default($key) === true
-			&& ($dval = $this->get_element_default($key)) !== false)
-				$val = $dval;
-
-			if($this->unset_element_value($key) === true)
-				continue;
-
-			$r[$key] = $val;
-		}
-
-		if($empty === false && empty($r) === true)
-			return(false);
-			
-		return($r);
-	}
-
-	function chk_value($key,$value)
-	{
-		if($this->_filter === null && $this->_load_filter() === false)
-			return(false);
-
-		if($this->_chk_exists_cfg('filter',$key) === false)
-			return(null);
-
-		return($this->_filter->chk_value($key,$value));
-	}
-
-	function _set_value($key,$val)
-	{
-		if($this->isset_element_value($key) === false)
-			return($val);
-
-		if(($value = $this->get_element_value($key)) === false)
-			return(false);
-
-		if(is_scalar($value) === true)
-			return($value);
-
-		if(xivo_ak($val,$value) === true)
-			return($value[$val]);
-
-		return(false);
-	}
-
-	function set_chk_value($key,$value)
-	{
-		$r = '';
-		
-		if(($val = $this->chk_value($key,$value)) !== false)
-		{
-			if(($sval = $this->_set_value($key,$val)) !== false)
-				$r = $sval;
-			else
-				$r = $val;
-		}
-
-		if($r === '' && $this->isnull_element_value($key) === true)
-			$r = null;
-		else if($r === null && $this->isnull_element_value($key) === false)
-			$r = '';
-
-		if($r !== ''
-		|| ($dval = $this->get_element_default($key)) === false
-		|| $this->unset_element_default($key) === true)
-			return($r);
-
-		return($dval);
 	}
 
 	function chk_dest_endcall($val)

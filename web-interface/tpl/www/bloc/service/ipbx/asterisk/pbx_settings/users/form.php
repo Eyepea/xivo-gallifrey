@@ -164,10 +164,6 @@
 
 	<?=$form->checkbox(array('desc' => $this->bbf('fm_userfeatures_enablednd'),'name' => 'ufeatures[enablednd]','labelid' => 'ufeatures-enablednd','default' => $element['ufeatures']['enablednd']['default'],'checked' => $info['ufeatures']['enablednd']));?>
 
-	<?=$form->checkbox(array('desc' => $this->bbf('fm_userfeatures_enableunc'),'name' => 'ufeatures[enableunc]','labelid' => 'ufeatures-enableunc','default' => $element['ufeatures']['enableunc']['default'],'checked' => $info['ufeatures']['enableunc']),'onchange="xivo_chg_attrib(\'fm_enableunc\',\'it-ufeatures-destunc\',(this.checked == false ? 0 : 1))"');?>
-
-	<?=$form->text(array('desc' => $this->bbf('fm_userfeatures_destunc'),'name' => 'ufeatures[destunc]','labelid' => 'ufeatures-destunc','value' => $info['ufeatures']['destunc'],'size' => 15));?>
-
 	<?=$form->checkbox(array('desc' => $this->bbf('fm_userfeatures_enablerna'),'name' => 'ufeatures[enablerna]','labelid' => 'ufeatures-enablerna','default' => $element['ufeatures']['enablerna']['default'],'checked' => $info['ufeatures']['enablerna']),'onchange="xivo_chg_attrib(\'fm_enablerna\',\'it-ufeatures-destrna\',(this.checked == false ? 0 : 1))"');?>
 
 	<?=$form->text(array('desc' => $this->bbf('fm_userfeatures_destrna'),'name' => 'ufeatures[destrna]','labelid' => 'ufeatures-destrna','value' => $info['ufeatures']['destrna'],'size' => 15));?>
@@ -175,6 +171,10 @@
 	<?=$form->checkbox(array('desc' => $this->bbf('fm_userfeatures_enablebusy'),'name' => 'ufeatures[enablebusy]','labelid' => 'ufeatures-enablebusy','default' => $element['ufeatures']['enablebusy']['default'],'checked' => $info['ufeatures']['enablebusy']),'onchange="xivo_chg_attrib(\'fm_enablebusy\',\'it-ufeatures-destbusy\',(this.checked == false ? 0 : 1))"');?>
 
 	<?=$form->text(array('desc' => $this->bbf('fm_userfeatures_destbusy'),'name' => 'ufeatures[destbusy]','labelid' => 'ufeatures-destbusy','value' => $info['ufeatures']['destbusy'],'size' => 15));?>
+
+	<?=$form->checkbox(array('desc' => $this->bbf('fm_userfeatures_enableunc'),'name' => 'ufeatures[enableunc]','labelid' => 'ufeatures-enableunc','default' => $element['ufeatures']['enableunc']['default'],'checked' => $info['ufeatures']['enableunc']),'onchange="xivo_chg_attrib(\'fm_enableunc\',\'it-ufeatures-destunc\',(this.checked == false ? 0 : 1))"');?>
+
+	<?=$form->text(array('desc' => $this->bbf('fm_userfeatures_destunc'),'name' => 'ufeatures[destunc]','labelid' => 'ufeatures-destunc','value' => $info['ufeatures']['destunc'],'size' => 15));?>
 
 </div>
 
@@ -217,14 +217,14 @@
 		<?=$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/dialstatus',array('status' => 'noanswer'));?>
 	</fieldset>
 
-	<fieldset id="fld-dialstatus-congestion">
-		<legend><?=$this->bbf('fld-dialstatus-congestion');?></legend>
-		<?=$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/dialstatus',array('status' => 'congestion'));?>
-	</fieldset>
-
 	<fieldset id="fld-dialstatus-busy">
 		<legend><?=$this->bbf('fld-dialstatus-busy');?></legend>
 		<?=$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/dialstatus',array('status' => 'busy'));?>
+	</fieldset>
+
+	<fieldset id="fld-dialstatus-congestion">
+		<legend><?=$this->bbf('fld-dialstatus-congestion');?></legend>
+		<?=$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/dialstatus',array('status' => 'congestion'));?>
 	</fieldset>
 
 	<fieldset id="fld-dialstatus-chanunavail">

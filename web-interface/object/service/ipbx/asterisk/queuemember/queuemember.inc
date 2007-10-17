@@ -6,7 +6,7 @@ class xivo_service_asterisk_queuemember extends xivo_service_asterisk_abstract
 {
 	var $_dso		= null;
 	var $_name		= 'queuemember';
-	var $_filter		= null;
+	var $_filter		= false;
 	var $_origin		= false;
 	var $_origin_list	= false;
 
@@ -26,6 +26,8 @@ class xivo_service_asterisk_queuemember extends xivo_service_asterisk_abstract
 
 	function get($id,$disable=null)
 	{
+		$this->_origin = false;
+
 		if(is_array($id) === false
 		|| isset($id['queue_name'],$id['interface']) === false
 		|| is_scalar($id['queue_name']) === false

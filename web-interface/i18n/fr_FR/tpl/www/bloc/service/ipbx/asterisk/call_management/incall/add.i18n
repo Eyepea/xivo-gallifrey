@@ -58,11 +58,11 @@ Commande :
 ; fm_incall_endcall-typeval-opt-hangup
 Raccrocher
 
-; fm_incall_endcall-typeval-opt-congestion
-Congestion
-
 ; fm_incall_endcall-typeval-opt-busy
 Occupé
+
+; fm_incall_endcall-typeval-opt-congestion
+Saturé
 
 ; fm_incall_application-typeval-opt-faxtomail
 FaxToMail

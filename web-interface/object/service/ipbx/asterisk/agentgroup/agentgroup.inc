@@ -6,7 +6,7 @@ class xivo_service_asterisk_agentgroup extends xivo_service_asterisk_abstract
 {
 	var $_dso	= null;
 	var $_name	= 'agentgroup';
-	var $_filter	= null;
+	var $_filter	= false;
 	var $_origin	= false;
 
 	function xivo_service_asterisk_agentgroup(&$sre,&$dso)

@@ -111,13 +111,13 @@ class xivo_service_abstract
 		return(($ref = &$r));
 	}
 
-	function &get_module($name)
+	function &get_module($name,$param=null)
 	{
 		$r = false;
 
 		$name = (string) $name;
 
-		if($this->_load_module($name) === true)
+		if($this->_load_module($name,$param) === true)
 			$r = &$this->_module[$name];
 
 		return(($ref = &$r));
@@ -137,42 +137,10 @@ class xivo_service_abstract
 
 	function chk_module_enable($name)
 	{
-		if($this->_chk_exists_cfg('module',$name) === false)
-			return(false);
-
-		$module = &$this->_conf['module'][$name];
-
-		if(isset($module['section'],$this->_conf['section'][$module['section']]) === true)
-		{
-			$ref = &$this->_conf['section'][$module['section']];
-			$section = $module['section'];
-
-			if(isset($ref['disabled']) === false || $ref['disabled'] === false)
-				return(true);
-
-			if(xivo_issa('section',$this->_ini['general']) === false
-			|| isset($this->_ini['general']['section'][$section]) === false)
-				return(true);
-
-			if((bool) $this->_ini['general']['section'][$section] === false)
-				return(false);
-		}
-		else
-		{
-			if(isset($module['disabled']) === false || $module['disabled'] === false)
-				return(true);
-
-			if(xivo_issa($name,$this->_ini) === false || isset($this->_ini[$name]['disable']) === false)
-				return(true);
-
-			if((bool) $this->_ini[$name]['disable'] === false)
-				return(false);
-		}
-
-		return(true);
+		return($this->_chk_exists_cfg('module',$name));
 	}
 
-	function _load_module($name)
+	function _load_module($name,$param=null)
 	{
 		$name = (string) $name;
 
@@ -198,14 +166,14 @@ class xivo_service_abstract
 
 		if(isset($ref['datastorage']) === false || (bool) $ref['datastorage'] === false)
 		{
-			$this->_module[$name] = new $class($this);
+			$this->_module[$name] = new $class($this,$param);
 			return(true);
 		}
 
 		if(is_string($ref['datastorage']) === true && $this->chk_module_enable($ref['datastorage']) === true)
-			$this->_module[$name] = new $class($this,$this->_load_dso($ref['datastorage']));
+			$this->_module[$name] = new $class($this,$this->_load_dso($ref['datastorage']),$param);
 		else
-			$this->_module[$name] = new $class($this,$this->_load_dso($name));
+			$this->_module[$name] = new $class($this,$this->_load_dso($name),$param);
 
 		return(true);
 	}

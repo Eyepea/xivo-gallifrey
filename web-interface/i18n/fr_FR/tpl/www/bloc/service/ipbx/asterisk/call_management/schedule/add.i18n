@@ -88,11 +88,11 @@ Commande :
 ; fm_schedule_endcall-typeval-opt-hangup
 Raccrocher
 
-; fm_schedule_endcall-typeval-opt-congestion
-Congestion
-
 ; fm_schedule_endcall-typeval-opt-busy
 Occupé
+
+; fm_schedule_endcall-typeval-opt-congestion
+Saturé
 
 ; fm_schedule_application-typeval-opt-faxtomail
 FaxToMail

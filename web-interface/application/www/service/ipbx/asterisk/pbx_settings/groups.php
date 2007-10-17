@@ -75,7 +75,7 @@ switch($act)
 
 		$_HTML->assign('info',$result);
 		$_HTML->assign('dialstatus',$result['dialstatus']);
-		$_HTML->assign('element',$appgroup->get_element());
+		$_HTML->assign('element',$appgroup->get_elements());
 		$_HTML->assign('user',$user);
 		$_HTML->assign('rightcall',$rightcall);
 		$_HTML->assign('list',$appgroup->get_dialstatus_destination_list());
@@ -158,7 +158,7 @@ switch($act)
 		$_HTML->assign('dialstatus',$return['dialstatus']);
 		$_HTML->assign('user',$user);
 		$_HTML->assign('rightcall',$rightcall);
-		$_HTML->assign('element',$appgroup->get_element());
+		$_HTML->assign('element',$appgroup->get_elements());
 		$_HTML->assign('list',$appgroup->get_dialstatus_destination_list());
 
 		$dhtml = &$_HTML->get_module('dhtml');

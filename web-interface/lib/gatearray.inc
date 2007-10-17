@@ -68,7 +68,7 @@ class xivo_gatearray
 		return($r);
 	}
 
-	function get_file($path,$once=true)
+	function get_file($path,$once=false)
 	{
 		$r = false;
 
@@ -78,10 +78,10 @@ class xivo_gatearray
 		if(xivo_file::is_i($path) === false)
 			return(false);
 
-		if($once === true)
-			require_once($path);
-		else
+		if($once === false)
 			require($path);
+		else
+			require_once($path);
 
 		if(isset($array) === true && is_array($array) === true)
 			$r = &$array;
@@ -156,7 +156,7 @@ class xivo_gat
 		return(($ref = &$aga->get($name)));
 	}
 
-	function get_file($path,$once=true)
+	function get_file($path,$once=false)
 	{
 		return(xivo_gatearray::get_file($path,$once));
 	}

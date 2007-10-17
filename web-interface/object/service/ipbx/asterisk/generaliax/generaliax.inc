@@ -8,7 +8,7 @@ class xivo_service_asterisk_generaliax extends xivo_service_asterisk_staticconf
 	var $_name		= 'generaliax';
 	var $_filename		= 'iax.conf';
 	var $_category		= 'general';
-	var $_filter		= null;
+	var $_filter		= false;
 	var $_generaliax	= array();
 
 	function xivo_service_asterisk_generaliax(&$sre,&$dso)

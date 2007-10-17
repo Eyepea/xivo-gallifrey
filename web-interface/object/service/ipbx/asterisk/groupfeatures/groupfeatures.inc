@@ -6,7 +6,7 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 {
 	var $_dso		= null;
 	var $_name		= 'groupfeatures';
-	var $_filter		= null;
+	var $_filter		= false;
 	var $_origin		= false;
 	var $_origin_list	= false;
 

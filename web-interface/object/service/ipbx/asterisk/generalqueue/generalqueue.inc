@@ -8,7 +8,7 @@ class xivo_service_asterisk_generalqueue extends xivo_service_asterisk_staticcon
 	var $_name		= 'generalqueue';
 	var $_filename		= 'queues.conf';
 	var $_category		= 'general';
-	var $_filter		= null;
+	var $_filter		= false;
 	var $_generalqueue	= array();
 
 	function xivo_service_asterisk_generalqueue(&$sre,&$dso)

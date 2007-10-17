@@ -9,7 +9,7 @@ class xivo_service_asterisk_meetme extends xivo_service_asterisk_staticconf
 	var $_filename	= 'meetme.conf';
 	var $_category	= 'rooms';
 	var $_var_name	= 'conf';
-	var $_filter	= null;
+	var $_filter	= false;
 	var $_origin	= false;
 
 	function xivo_service_asterisk_meetme(&$sre,&$dso)
@@ -30,6 +30,8 @@ class xivo_service_asterisk_meetme extends xivo_service_asterisk_staticconf
 
 	function get($id,$disable=null)
 	{
+		$this->_origin = false;
+
 		if(($r = parent::get($id,$disable)) === false)
 			return(false);
 

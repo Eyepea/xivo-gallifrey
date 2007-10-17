@@ -6,7 +6,7 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 {
 	var $_dso	= null;
 	var $_name	= 'userfeatures';
-	var $_filter	= null;
+	var $_filter	= false;
 	var $_origin	= false;
 
 	function xivo_service_asterisk_userfeatures(&$sre,&$dso)
@@ -45,16 +45,17 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		$data['callrecord'] = (bool) $data['callrecord'];
 		$data['callfilter'] = (bool) $data['callfilter'];
 		$data['enablednd'] = (bool) $data['enablednd'];
-		$data['enableunc'] = (bool) $data['enableunc'];
 		$data['enablerna'] = (bool) $data['enablerna'];
 		$data['enablebusy'] = (bool) $data['enablebusy'];
+		$data['enableunc'] = (bool) $data['enableunc'];
 
 		return($data);
 	}
 
 	function get($id,$orig=true)
 	{
-		$orig = (bool) $orig;
+		if(($orig = (bool) $orig) === true)
+			$this->_origin = false;
 
 		if(($id = xivo_uint($id)) === 0
 		|| ($r = $this->_dso->get($id)) === false
@@ -71,7 +72,8 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 
 	function get_where($arr,$orig=true)
 	{
-		$orig = (bool) $orig;
+		if(($orig = (bool) $orig) === true)
+			$this->_origin = false;
 
 		if(is_array($arr) === false
 		|| ($where = $this->get_element_where($arr)) === false
@@ -118,12 +120,12 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 			if($this->get_id($where) !== false)
 				return(false);
 	
-			if((isset($arr['destunc']) === true
-			   && $arr['name'] === $arr['destunc']) === true
-			|| (isset($arr['destrna']) === true
+			if((isset($arr['destrna']) === true
 			   && $arr['name'] === $arr['destrna']) === true
 			|| (isset($arr['destbusy']) === true
-			   && $arr['name'] === $arr['destbusy']) === true)
+			   && $arr['name'] === $arr['destbusy']) === true
+			|| (isset($arr['destunc']) === true
+			   && $arr['name'] === $arr['destunc']) === true)
 				return(false);
 		}
 
@@ -176,18 +178,18 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		if(($whereid = $this->get_id($where)) !== false && $whereid !== $id)
 			return(false);
 
-		if(isset($arr['destunc']) === false)
-			$arr['destunc'] = $info['destunc'];
-
 		if(isset($arr['destrna']) === false)
 			$arr['destrna'] = $info['destrna'];
 
 		if(isset($arr['destbusy']) === false)
 			$arr['destbusy'] = $info['destbusy'];
 
-		if($arr['destunc'] === $where['name']
-		|| $arr['destrna'] === $where['name']
-		|| $arr['destbusy'] === $where['name'])
+		if(isset($arr['destunc']) === false)
+			$arr['destunc'] = $info['destunc'];
+
+		if($arr['destrna'] === $where['name']
+		|| $arr['destbusy'] === $where['name']
+		|| $arr['destunc'] === $where['name'])
 			return(false);
 
 		if(isset($arr['protocol']) === true)

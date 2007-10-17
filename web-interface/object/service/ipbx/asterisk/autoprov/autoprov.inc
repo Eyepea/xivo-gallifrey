@@ -6,7 +6,7 @@ class xivo_service_asterisk_autoprov extends xivo_service_asterisk_abstract
 {
 	var $_dso	= null;
 	var $_name	= 'autoprov';
-	var $_filter	= null;
+	var $_filter	= false;
 	var $_autoprov	= null;
 	var $_sockprov	= null;
 	var $_list	= null;
@@ -28,6 +28,8 @@ class xivo_service_asterisk_autoprov extends xivo_service_asterisk_abstract
 
 	function get($macaddr)
 	{
+		$this->_origin = false;
+
 		if(($r = $this->_dso->get($macaddr)) === false)
 			return(false);
 

@@ -6,7 +6,7 @@ class xivo_service_asterisk_cdr extends xivo_service_asterisk_abstract
 {
 	var $_dso	= null;
 	var $_name	= 'cdr';
-	var $_filter	= null;
+	var $_filter	= false;
 
 	function xivo_service_asterisk_cdr(&$sre,&$dso)
 	{

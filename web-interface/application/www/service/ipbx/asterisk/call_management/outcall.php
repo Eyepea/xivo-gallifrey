@@ -59,7 +59,7 @@ switch($act)
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/outcall.js');
 
 		$_HTML->assign('rightcall',$rightcall);
-		$_HTML->assign('element',$appoutcall->get_element());
+		$_HTML->assign('element',$appoutcall->get_elements());
 		$_HTML->assign('info',$result);
 		$_HTML->assign('trunks_list',$ipbx->get_trunks_list());
 		break;
@@ -115,7 +115,7 @@ switch($act)
 
 		$_HTML->assign('id',$info['outcall']['id']);
 		$_HTML->assign('rightcall',$rightcall);
-		$_HTML->assign('element',$appoutcall->get_element());
+		$_HTML->assign('element',$appoutcall->get_elements());
 		$_HTML->assign('info',$return);
 		$_HTML->assign('trunks_list',$ipbx->get_trunks_list());
 		break;

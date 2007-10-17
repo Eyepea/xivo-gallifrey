@@ -68,14 +68,6 @@ $array['element']['enablednd']['value'] = array(0,1);
 $array['element']['enablednd']['default'] = 0;
 $array['element']['enablednd']['set'] = true;
 
-$array['element']['enableunc'] = array();
-$array['element']['enableunc']['value'] = array(0,1);
-$array['element']['enableunc']['default'] = 0;
-$array['element']['enableunc']['set'] = true;
-
-$array['element']['destunc'] = array();
-$array['element']['destunc']['default'] = '';
-
 $array['element']['enablerna'] = array();
 $array['element']['enablerna']['value'] = array(0,1);
 $array['element']['enablerna']['default'] = 0;
@@ -91,6 +83,14 @@ $array['element']['enablebusy']['set'] = true;
 
 $array['element']['destbusy'] = array();
 $array['element']['destbusy']['default'] = '';
+
+$array['element']['enableunc'] = array();
+$array['element']['enableunc']['value'] = array(0,1);
+$array['element']['enableunc']['default'] = 0;
+$array['element']['enableunc']['set'] = true;
+
+$array['element']['destunc'] = array();
+$array['element']['destunc']['default'] = '';
 
 $array['element']['context'] = array();
 $array['element']['context']['default'] = 'default';
@@ -131,12 +131,12 @@ $array['filter']['enablevoicemail'] = array('bool' => true);
 $array['filter']['callrecord'] = array('bool' => true);
 $array['filter']['callfilter'] = array('bool' => true);
 $array['filter']['enablednd'] = array('bool' => true);
-$array['filter']['enableunc'] = array('bool' => true);
-$array['filter']['destunc'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9\*#_-]+$/i','maxlen' => 128);
 $array['filter']['enablerna'] = array('bool' => true);
 $array['filter']['destrna'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9\*#_-]+$/i','maxlen' => 128);
 $array['filter']['enablebusy'] = array('bool' => true);
 $array['filter']['destbusy'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9\*#_-]+$/i','maxlen' => 128);
+$array['filter']['enableunc'] = array('bool' => true);
+$array['filter']['destunc'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9\*#_-]+$/i','maxlen' => 128);
 $array['filter']['musiconhold'] = array('set' => false,'chk' => 2,'maxlen' => 20);
 $array['filter']['outcallerid'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_-]+$/i','maxlen' => 80);
 $array['filter']['description'] = array('chk' => 2,'maxlen' => 1000,'cast' => 'sgraph_crlf_tab','eol' => true);

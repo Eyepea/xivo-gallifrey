@@ -8,7 +8,7 @@ class xivo_service_asterisk_generalagent extends xivo_service_asterisk_staticcon
 	var $_name		= 'generalagent';
 	var $_filename		= 'agents.conf';
 	var $_category		= 'general';
-	var $_filter		= null;
+	var $_filter		= false;
 	var $_generalagent	= array();
 
 	function xivo_service_asterisk_generalagent(&$sre,&$dso)

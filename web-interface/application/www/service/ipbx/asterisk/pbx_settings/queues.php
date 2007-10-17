@@ -86,7 +86,7 @@ switch($act)
 		}
 
 		$_HTML->assign('info',$result);
-		$_HTML->assign('element',$appqueue->get_element());
+		$_HTML->assign('element',$appqueue->get_elements());
 		$_HTML->assign('user',$user);
 		$_HTML->assign('agentgroup',$agentgroup);
 		$_HTML->assign('agent',$agent);
@@ -182,7 +182,7 @@ switch($act)
 		$_HTML->assign('user',$user);
 		$_HTML->assign('agentgroup',$agentgroup);
 		$_HTML->assign('agent',$agent);
-		$_HTML->assign('element',$appqueue->get_element());
+		$_HTML->assign('element',$appqueue->get_elements());
 		$_HTML->assign('moh_list',$appqueue->get_musiconhold());
 		$_HTML->assign('announce_list',$appqueue->get_announce());
 

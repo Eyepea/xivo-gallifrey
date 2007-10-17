@@ -29,7 +29,7 @@ $array['tree']['service']['ipbx']['call_management']['incall'] = true;
 $array['tree']['service']['ipbx']['call_management']['outcall'] = true;
 $array['tree']['service']['ipbx']['call_management']['rightcall'] = true;
 $array['tree']['service']['ipbx']['call_management']['schedule'] = true;
-$array['tree']['service']['ipbx']['call_management']['ivr'] = true;
+#$array['tree']['service']['ipbx']['call_management']['ivr'] = true;
 $array['tree']['service']['ipbx']['call_management']['cdr'] = true;
 
 $array['tree']['service']['ipbx']['trunk_management'] = array();
@@ -39,9 +39,9 @@ $array['tree']['service']['ipbx']['trunk_management']['custom'] = true;
 
 $array['tree']['service']['ipbx']['system_management'] = array();
 $array['tree']['service']['ipbx']['system_management']['configfiles'] = true;
-$array['tree']['service']['ipbx']['system_management']['isdncard'] = true;
-$array['tree']['service']['ipbx']['system_management']['modules'] = true;
-$array['tree']['service']['ipbx']['system_management']['manager'] = true;
+#$array['tree']['service']['ipbx']['system_management']['isdncard'] = true;
+#$array['tree']['service']['ipbx']['system_management']['modules'] = true;
+#$array['tree']['service']['ipbx']['system_management']['manager'] = true;
 
 $array['tree']['service']['ipbx']['control_system'] = array();
 $array['tree']['service']['ipbx']['control_system']['reload'] = true;

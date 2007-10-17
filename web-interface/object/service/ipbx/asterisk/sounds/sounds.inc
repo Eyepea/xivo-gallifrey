@@ -5,7 +5,7 @@ xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
 class xivo_service_asterisk_sounds extends xivo_service_asterisk_abstract
 {
 	var $_name	= 'sounds';
-	var $_filter	= null;
+	var $_filter	= false;
 	var $_sndpath	= '';
 
 	function xivo_service_asterisk_sounds(&$sre)

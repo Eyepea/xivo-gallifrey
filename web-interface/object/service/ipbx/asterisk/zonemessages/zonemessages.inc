@@ -10,7 +10,7 @@ class xivo_service_asterisk_zonemessages extends xivo_service_asterisk_staticcon
 	var $_category		= 'zonemessages';
 	var $_cat_metric	= 1;
 	var $_var_metric	= 0;
-	var $_filter		= null;
+	var $_filter		= false;
 	var $_origin		= false;
 	var $_zonemessages	= array();
 
@@ -35,6 +35,8 @@ class xivo_service_asterisk_zonemessages extends xivo_service_asterisk_staticcon
 
 	function get($id,$disable=null)
 	{
+		$this->_origin = false;
+
 		if(($r = parent::get($id,$disable)) === false)
 			return(false);
 
@@ -47,6 +49,8 @@ class xivo_service_asterisk_zonemessages extends xivo_service_asterisk_staticcon
 
 	function get_where($arr,$disable=null)
 	{
+		$this->_origin = false;
+
 		$arr = (array) $arr;
 		$arr['category'] = $this->_category;
 		$arr['cat_metric'] = $this->_cat_metric;
@@ -238,8 +242,8 @@ class xivo_service_asterisk_zonemessages extends xivo_service_asterisk_staticcon
 
 			$msg = substr($str,$offset1,$offset2-$offset1);
 
-			$regex = '[\/'.XIVO_SRE_IPBX_AST_REGEX_AUDIO_FILE_PATTERN.']'.
-				  XIVO_SRE_IPBX_AST_REGEX_AUDIO_FILE_LENGTH;
+			$regex = '[\/'.XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_PATTERN.']'.
+				  XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_LENGTH;
 
 			if(preg_match('/^'.$regex.'$/',$msg) === 0)
 				return(false);

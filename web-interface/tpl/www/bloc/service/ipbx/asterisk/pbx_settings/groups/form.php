@@ -91,14 +91,14 @@
 		<?=$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/groups/dialstatus',array('status' => 'noanswer'));?>
 	</fieldset>
 
-	<fieldset id="fld-dialstatus-congestion">
-		<legend><?=$this->bbf('fld-dialstatus-congestion');?></legend>
-		<?=$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/groups/dialstatus',array('status' => 'congestion'));?>
-	</fieldset>
-
 	<fieldset id="fld-dialstatus-busy">
 		<legend><?=$this->bbf('fld-dialstatus-busy');?></legend>
 		<?=$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/groups/dialstatus',array('status' => 'busy'));?>
+	</fieldset>
+
+	<fieldset id="fld-dialstatus-congestion">
+		<legend><?=$this->bbf('fld-dialstatus-congestion');?></legend>
+		<?=$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/groups/dialstatus',array('status' => 'congestion'));?>
 	</fieldset>
 
 	<fieldset id="fld-dialstatus-chanunavail">

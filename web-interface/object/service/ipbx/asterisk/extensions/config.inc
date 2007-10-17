@@ -34,6 +34,11 @@ $array['element']['appdata']['default'] = '';
 $array['element']['name'] = array();
 $array['element']['name']['default'] = '';
 
+$array['element']['commented'] = array();
+$array['element']['commented']['value'] = array(0,1);
+$array['element']['commented']['default'] = 0;
+$array['element']['commented']['set'] = true;
+
 $array['filter'] = array();
 $array['filter']['exten'] = array('minlen' => 1,'maxlen' => 40,'cast' => 'graph');
 $array['filter']['context'] = array('chk' => 2,'maxlen' => 39,'regexp' => '/^[a-z0-9_-]+$/');
@@ -41,5 +46,6 @@ $array['filter']['priority'] = array('set' => false,'chk' => 2,'cast' => 'uint',
 $array['filter']['app'] = array('minlen' => 1,'maxlen' => 128,'regexp' => '/^[a-z0-9#\*\.\/_@:-]+$/i');
 $array['filter']['appdata'] = array('set' => false,'chk' => 2,'minlen' => 0,'maxlen' => 128,'cast' => 'sgraph','notag' => false);
 $array['filter']['name'] = array('set' => false,'chk' => 2,'maxlen' => 128,'regexp' => '/^[a-z0-9_-]+$/');
+$array['filter']['commented'] = array('bool' => true);
 
 ?>

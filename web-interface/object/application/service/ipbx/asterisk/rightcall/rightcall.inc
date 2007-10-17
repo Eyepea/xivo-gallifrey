@@ -82,7 +82,7 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 		return($this->_info['rightcallexten']);
 	}
 
-	function get_element()
+	function get_elements()
 	{
 		$r = array();
 

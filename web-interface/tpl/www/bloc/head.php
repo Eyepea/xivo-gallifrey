@@ -14,6 +14,9 @@
 			var xivo_fm_onfocus_class = 'it-mfocus';
 			var xivo_fm_onblur_class = 'it-mblur';
 			var xivo_fm_error_class = 'fm-error';
+			var xivo_fm_enabled_class = 'it-enabled';
+			var xivo_fm_disabled_class = 'it-disabled';
+			var xivo_fm_readonly_class = 'it-readonly';
 		</script>
 		<!-- Date: <?=gmstrftime('%Y-%m-%d %H:%M:%S %Z');?> -->
 

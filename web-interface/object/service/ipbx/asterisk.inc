@@ -4,9 +4,10 @@ require_once(XIVO_PATH_OBJECT.XIVO_SEP_DIR.'service'.XIVO_SEP_DIR.'abstract.inc'
 
 class xivo_service_asterisk extends xivo_service_abstract
 {
-	var $_ini	= array();
-	var $_type	= 'ipbx';
-	var $_name	= 'asterisk';
+	var $_ini		= array();
+	var $_type		= 'ipbx';
+	var $_name		= 'asterisk';
+	var $_realstatic	= array();
 
 	function xivo_service_asterisk($ini)
 	{
@@ -27,6 +28,76 @@ class xivo_service_asterisk extends xivo_service_abstract
 		array_unshift($arr,dirname(__FILE__).XIVO_SEP_DIR.$this->_name);
 
 		return(xivo_file::required($arr,$once,$includable));
+	}
+
+	function _load_realstatic_class($realstatic)
+	{
+		$realstatic = (string) $realstatic;
+
+		$file = 'realstatic.inc';
+		$dir = array(XIVO_PATH_OBJECT,'service',$this->_type,$this->_name,'realstatic');
+
+		$class = 'xivo_service_'.$this->_name.'_realstatic';
+
+		if(xivo_file::load_file($file,$dir,true) !== false && class_exists($class) === true)
+			return($class);
+
+		return(false);
+	}
+
+	function chk_realstatic_enable($name)
+	{
+		return($this->_chk_exists_cfg('realstatic',$name));
+	}
+
+	function _load_realstatic($name,$param=null)
+	{
+		$name = (string) $name;
+
+		if($this->_chk_exists_cfg('realstatic',$name) === false)
+		{
+			trigger_error('Invalid realtime static in '.$name.' '.$this->_name,E_USER_ERROR);
+			return(false);
+		}
+
+		$ref = &$this->_conf['realstatic'][$name];
+
+		if(isset($this->_realstatic[$name]) === true)
+			return(true);
+		
+		if($this->chk_realstatic_enable($name) === false)
+			return(false);
+
+		if(($class = $this->_load_realstatic_class($name)) === false)
+		{
+			trigger_error('Realtime Static '.$name.' does not exist in '.$this->_name,E_USER_ERROR);
+			return(false);
+		}
+
+		if(isset($ref['datastorage']) === false || (bool) $ref['datastorage'] === false)
+		{
+			$this->_realstatic[$name] = new $class($this,$param);
+			return(true);
+		}
+
+		if(is_string($ref['datastorage']) === true && $this->chk_realstatic_enable($ref['datastorage']) === true)
+			$this->_realstatic[$name] = new $class($this,$this->_load_dso($ref['datastorage']),$param);
+		else
+			$this->_realstatic[$name] = new $class($this,$this->_load_dso($name),$param);
+
+		return(true);
+	}
+
+	function &get_realstatic($name,$param=null)
+	{
+		$r = false;
+
+		$name = (string) $name;
+
+		if($this->_load_realstatic($name,$param) === true)
+			$r = &$this->_realstatic[$name];
+
+		return(($ref = &$r));
 	}
 
 	function _get_service_information()
@@ -628,13 +699,21 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 		$r = $info = $trunks = array();
 
+		$extenumbers_where = array();
+		$extenumbers_where['type'] = 'outcall';
+
 		for($i = 0;$i < $nb;$i++)
 		{
 			$info['outcall'] = $rs[$i];
 			$info['tfeatures'] = $info['trunk'] = false;
 
-			if(($info['extenumbers'] = $extenumbers->get($info['outcall']['extenumid'])) === false)
+			$extenumbers_where['typeval'] = $info['outcall']['id'];
+
+			if(($info['extenumbers'] = $extenumbers->get_where($extenumbers_where)) === false)
+			{
+				print 'toto';
 				continue;
+			}
 
 			if($info['outcall']['linked'] === false)
 			{
@@ -985,6 +1064,14 @@ class xivo_service_asterisk extends xivo_service_abstract
 		$r = $channel.'/'.$name;
 
 		return($r);
+	}
+
+	function display_extension($str)
+	{
+		if(isset($str{0}) === true && $str{0} === '_')
+			$str = substr($str,1);
+
+		return($str);
 	}
 
 	function clean_extension($str)

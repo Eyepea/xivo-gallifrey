@@ -300,12 +300,13 @@ $array['element']['ignoreregexpire']['default'] = 'no';
 $array['element']['ignoreregexpire']['set'] = true;
 
 $array['element']['rtautoclear'] = array();
-$array['element']['rtautoclear']['value'] = array('no' => 'no','yes' => 'yes',1 => 1,10 => 10,20 => 20,30 => 30,40 => 40,50 => 50,60 => 1,
-						    70 => array(1,10),80 => array(1,20),90 => array(1,30),
-						    100 => array(1,40),110 => array(1,50),120 => 2,130 => array(2,10),
-						    140 => array(2,20),150 => array(2,30),160 => array(2,40),
-						    170 => array(2,50),180 => 3,190 => array(3,10),200 => array(3,20),
-						    210 => array(3,30),220 => array(3,40),230 => array(3,50),240 => 4);
+$array['element']['rtautoclear']['value'] = array('no' => 'no','yes' => 'yes',1 => 1,10 => 10,20 => 20,
+						  30 => 30,40 => 40,50 => 50,60 => 1,
+						  70 => array(1,10),80 => array(1,20),90 => array(1,30),
+						  100 => array(1,40),110 => array(1,50),120 => 2,130 => array(2,10),
+						  140 => array(2,20),150 => array(2,30),160 => array(2,40),
+						  170 => array(2,50),180 => 3,190 => array(3,10),200 => array(3,20),
+						  210 => array(3,30),220 => array(3,40),230 => array(3,50),240 => 4);
 $array['element']['rtautoclear']['default'] = 'yes'; 
 
 $array['element']['register'] = array();

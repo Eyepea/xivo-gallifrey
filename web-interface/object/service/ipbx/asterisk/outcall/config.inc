@@ -32,10 +32,6 @@ $array['element']['numlen']['value'] = array('*',1,2,3,4,5,6,7,8,9,10,11,12,13,1
 					     21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39);
 $array['element']['numlen']['default'] = '';
 
-$array['element']['extenumid'] = array();
-$array['element']['extenumid']['default'] = 0;
-$array['element']['extenumid']['setdef'] = true;
-
 $array['element']['callerid'] = array();
 $array['element']['callerid']['default'] = '';
 
@@ -86,7 +82,6 @@ $array['filter']['numlen'] = array('set' => false,'chk' => 2,'key' => array('*',
 									    10,11,12,13,14,15,16,17,18,19,20,
 					     				    21,22,23,24,25,26,27,28,29,30,
 									    31,32,33,34,35,36,37,38,39));
-$array['filter']['extenumid'] = array('cast' => 'uint');
 $array['filter']['setcallerid'] = array('bool' => true);
 $array['filter']['callerid'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_-]+$/i','maxlen' => 80);
 $array['filter']['weight'] = array('set' => false,'chk' => 2,'between' => array(1,10));

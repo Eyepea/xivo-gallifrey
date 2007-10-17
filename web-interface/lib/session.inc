@@ -44,17 +44,18 @@ class xivo_session
 		else if(xivo_haslen($_QR,XIVO_SESS_NAME) === true && $_QR[XIVO_SESS_NAME] !== '-')
 			$id = substr($_QR[XIVO_SESS_NAME],0,32);
 		else
-			$id = '';
+			$id = false;
 
-		if($id !== '' && ctype_alnum($id) === false)
-			$id = '';
+		if($id === false || ctype_alnum($id) === false)
+			$id = substr(sha1(uniqid(rand(), true)),0,32);
 
 		if(defined('XIVO_SESS_ENABLE') === false || XIVO_SESS_ENABLE !== false)
 			session_start();
 		else
 			$_SESSION = array();
 
-		$_QR[XIVO_SESS_NAME] = session_id($id);
+		if(($_QR[XIVO_SESS_NAME] = session_id($id)) === '')
+			$_QR[XIVO_SESS_NAME] = $id;
 
 		define('XIVO_SESS_ID',$_QR[XIVO_SESS_NAME]);
 		define('XIVO_SESS_STR',XIVO_SESS_NAME.'='.XIVO_SESS_ID);

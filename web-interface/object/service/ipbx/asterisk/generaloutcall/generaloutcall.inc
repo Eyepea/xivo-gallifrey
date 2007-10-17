@@ -6,7 +6,7 @@ class xivo_service_asterisk_generaloutcall extends xivo_service_asterisk_abstrac
 {
 	var $_dso	= null;
 	var $_name	= 'generaloutcall';
-	var $_filter	= null;
+	var $_filter	= false;
 	var $_origin	= false;
 
 	function xivo_service_asterisk_generaloutcall(&$sre,&$dso)

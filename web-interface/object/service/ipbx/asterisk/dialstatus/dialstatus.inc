@@ -6,7 +6,7 @@ class xivo_service_asterisk_dialstatus extends xivo_service_asterisk_abstract
 {
 	var $_dso		= null;
 	var $_name		= 'dialstatus';
-	var $_filter		= null;
+	var $_filter		= false;
 	var $_origin		= false;
 	var $_origin_list	= false;
 

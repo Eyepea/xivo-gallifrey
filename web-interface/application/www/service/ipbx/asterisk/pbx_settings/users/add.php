@@ -1,11 +1,7 @@
 <?php
 
 $appuser = &$ipbx->get_application('user');
-$musiconhold = &$ipbx->get_module('musiconhold');
 $autoprov = &$ipbx->get_module('autoprov');
-
-if(($moh_list = $musiconhold->get_all_category(null,false)) !== false)
-	ksort($moh_list);
 
 $result = null;
 
@@ -58,10 +54,6 @@ do
 		$_QR['protocol']['host'] = $_QR['protocol']['host-static'];
 
 	unset($_QR['protocol']['host-dynamic'],$_QR['protocol']['host-static']);
-
-	if($moh_list === false || isset($_QR['ufeatures']['musiconhold'],
-					$moh_list[$_QR['ufeatures']['musiconhold']]) === false)
-		$_QR['ufeatures']['musiconhold'] = '';
 
 	if(isset($_QR['ufeatures']['outcallerid-type']) === true)
 		$_QR['ufeatures']['outcallerid'] = $_QR['ufeatures']['outcallerid-type'];
@@ -122,7 +114,7 @@ if($rightcall['list'] !== false && xivo_ak('rightcall',$result) === true)
 	}
 }
 
-$element = $appuser->get_element();
+$element = $appuser->get_elements();
 
 if(xivo_issa('allow',$element['protocol']['sip']) === true
 && xivo_issa('value',$element['protocol']['sip']['allow']) === true
@@ -168,7 +160,7 @@ $_HTML->assign('rightcall',$rightcall);
 $_HTML->assign('protocol',$ipbx->get_protocol());
 $_HTML->assign('element',$element);
 $_HTML->assign('list',$appuser->get_dialstatus_destination_list());
-$_HTML->assign('moh_list',$moh_list);
+$_HTML->assign('moh_list',$appuser->get_musiconhold());
 $_HTML->assign('autoprov_list',$autoprov->get_autoprov_list());
 
 $dhtml = &$_HTML->get_module('dhtml');

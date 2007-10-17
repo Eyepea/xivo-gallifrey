@@ -63,10 +63,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 	function _get_extenumbers()
 	{
-		$number = $this->_info['qfeatures']['number'];
-		$context = $this->_info['qfeatures']['context'];
-
-		return(parent::_get_extenumbers($number,$context));
+		return(parent::_get_extenumbers('queue',$this->_info['qfeatures']['id']));
 	}
 
 	function _get_user()
@@ -117,7 +114,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		return($this->_info[$type]);
 	}
 
-	function get_element()
+	function get_elements()
 	{
 		$r = array();
 
@@ -202,7 +199,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 			$this->_set_result('localexten',$localexten);
 
-			$this->set_extenumbers($action,$number,$context);
+			$this->set_extenumbers($action,'queue',$number,$context);
 		}
 
 		if(xivo_issa('user',$arr) === true)
@@ -254,6 +251,9 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 			$this->_set_error('queue','invalid module');
 			return(false);
 		}
+
+		if(isset($arr['musiconhold'],$this->_musiconhold[$arr['musiconhold']]) === false)
+			$arr['musiconhold'] = '';
 
 		if(($arr = $this->_set_announce($arr)) === false)
 		{
@@ -353,20 +353,20 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		|| ($queuemember = &$this->_service->get_module('queuemember')) === false)
 			return(false);
 
-		$info = array();
-		$info['userid'] = 0;
+		$where = array();
+		$where['userid'] = 0;
 
 		if($type === 'agentgroup')
 		{
 			$modulename = 'agentgroup';
-			$info['usertype'] = 'agent';
-			$info['category'] = 'group';
+			$where['usertype'] = 'agent';
+			$where['category'] = 'group';
 		}
 		else
 		{
 			$modulename = $type.'features';
-			$info['usertype'] = $type;
-			$info['category'] = 'queue';
+			$where['usertype'] = $type;
+			$where['category'] = 'queue';
 		}
 
 		if(($module = &$this->_service->get_module($modulename)) === false)
@@ -376,10 +376,6 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 		if(($nb = count($list)) === 0)
 			return(null);
-
-		$where = $info;
-
-		$info['queue_name'] = $name;
 
 		if($action === 'edit')
 		{
@@ -399,8 +395,10 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 				continue;
 			}
 
+			$where['userid'] = $uinfo['id'];
+
+			$info = $where;
 			$info['penalty'] = $info['call-limit'] = 0;
-			$info['userid'] = $where['userid'] = $uinfo['id'];
 
 			if($action === 'edit'
 			&& $queuemember->get_where($where) !== false
@@ -421,10 +419,12 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 				if($interface === false)
 					continue;
-
+					
 				$info['interface'] = $interface['interface'];
 				$info['channel'] = $interface['channel'];
 			}
+
+			$info['queue_name'] = $name;
 
 			if(($rs = $queuemember->chk_values($info)) === false
 			|| isset($tmp[$uinfo['id']]) === true)
@@ -455,7 +455,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		|| ($qfeaturesid = $this->add_queuefeatures()) === false
 		|| $this->add_queue() === false
 		|| $this->add_macro('localexten') === false
-		|| $this->add_extenumbers() === false
+		|| $this->add_extenumbers($qfeaturesid) === false
 		|| $this->add_user() === false
 		|| $this->add_agentgroup() === false
 		|| $this->add_agent() === false)
@@ -634,7 +634,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 			}
 		}
 		else if($this->add_macro('localexten') === false
-		|| $this->add_extenumbers() === false)
+		|| $this->add_extenumbers($this->_info['qfeatures']['id']) === false)
 		{
 			$this->_reverse_edit();
 			$this->_status = '';

@@ -225,7 +225,6 @@ class xivo_application_service_asterisk_dialstatus_abstract extends xivo_applica
 				|| ($this->_return[$ref['status']] = $dialstatus->add($ref,$did)) === false)
 					return(false);
 			}
-
 		}
 
 		if($i >= $arr['cnt'])

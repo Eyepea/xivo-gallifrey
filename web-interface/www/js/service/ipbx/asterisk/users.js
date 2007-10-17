@@ -67,10 +67,6 @@ xivo_list_elt_users['ufeatures-callfilter'] = new Array();
 xivo_list_elt_users['ufeatures-callfilter']['it'] = false;
 xivo_list_elt_users['ufeatures-enablednd'] = new Array();
 xivo_list_elt_users['ufeatures-enablednd']['it'] = false;
-xivo_list_elt_users['ufeatures-enableunc'] = new Array();
-xivo_list_elt_users['ufeatures-enableunc']['it'] = false;
-xivo_list_elt_users['ufeatures-destunc'] = new Array();
-xivo_list_elt_users['ufeatures-destunc']['it'] = false;
 xivo_list_elt_users['ufeatures-enablerna'] = new Array();
 xivo_list_elt_users['ufeatures-enablerna']['it'] = false;
 xivo_list_elt_users['ufeatures-destrna'] = new Array();
@@ -79,6 +75,10 @@ xivo_list_elt_users['ufeatures-enablebusy'] = new Array();
 xivo_list_elt_users['ufeatures-enablebusy']['it'] = false;
 xivo_list_elt_users['ufeatures-destbusy'] = new Array();
 xivo_list_elt_users['ufeatures-destbusy']['it'] = false;
+xivo_list_elt_users['ufeatures-enableunc'] = new Array();
+xivo_list_elt_users['ufeatures-enableunc']['it'] = false;
+xivo_list_elt_users['ufeatures-destunc'] = new Array();
+xivo_list_elt_users['ufeatures-destunc']['it'] = false;
 xivo_list_elt_users['ufeatures-outcallerid-type'] = new Array();
 xivo_list_elt_users['ufeatures-outcallerid-type']['it'] = false;
 xivo_list_elt_users['ufeatures-outcallerid-custom'] = new Array();
@@ -312,13 +312,6 @@ xivo_build_protocol_array('sip');
 xivo_build_protocol_array('iax');
 xivo_build_protocol_array('custom');
 
-var xivo_fm_enableunc = new Array();
-
-xivo_fm_enableunc['it-ufeatures-destunc'] = new Array();
-xivo_fm_enableunc['it-ufeatures-destunc']['property'] = new Array('readOnly|true:boolean;className|it-readonly','readOnly|false:boolean;className|it-enabled');
-
-xivo_attrib_register('fm_enableunc',xivo_fm_enableunc);
-
 var xivo_fm_enablerna = new Array();
 
 xivo_fm_enablerna['it-ufeatures-destrna'] = new Array();
@@ -332,6 +325,13 @@ xivo_fm_enablebusy['it-ufeatures-destbusy'] = new Array();
 xivo_fm_enablebusy['it-ufeatures-destbusy']['property'] = new Array('readOnly|true:boolean;className|it-readonly','readOnly|false:boolean;className|it-enabled');
 
 xivo_attrib_register('fm_enablebusy',xivo_fm_enablebusy);
+
+var xivo_fm_enableunc = new Array();
+
+xivo_fm_enableunc['it-ufeatures-destunc'] = new Array();
+xivo_fm_enableunc['it-ufeatures-destunc']['property'] = new Array('readOnly|true:boolean;className|it-readonly','readOnly|false:boolean;className|it-enabled');
+
+xivo_attrib_register('fm_enableunc',xivo_fm_enableunc);
 
 var xivo_fm_outcallerid = new Array();
 
@@ -515,9 +515,18 @@ function xivo_chg_protocol(protocol)
 	if(xivo_eid('it-codec-active') != false)
 		xivo_chg_attrib('fm_codec','it-'+xivo_protocol+'-protocol-disallow',(xivo_eid('it-codec-active').checked == true ? 0 : 1));
 
+	if((enablerna = xivo_eid('it-ufeatures-enablerna')) != false)
+		xivo_chg_attrib('fm_enablerna','it-ufeatures-destrna',(enablerna.checked == false ? 0 : 1));
+
+	if((enablebusy = xivo_eid('it-ufeatures-enablebusy')) != false)
+		xivo_chg_attrib('fm_enablebusy','it-ufeatures-destbusy',(enablebusy.checked == false ? 0 : 1));
+
+	if((enableunc = xivo_eid('it-ufeatures-enableunc')) != false)
+		xivo_chg_attrib('fm_enableunc','it-ufeatures-destunc',(enableunc.checked == false ? 0 : 1));
+
 	xivo_chgdialstatus('noanswer',xivo_eid('it-dialstatus-noanswer-type'));
-	xivo_chgdialstatus('congestion',xivo_eid('it-dialstatus-congestion-type'));
 	xivo_chgdialstatus('busy',xivo_eid('it-dialstatus-busy-type'));
+	xivo_chgdialstatus('congestion',xivo_eid('it-dialstatus-congestion-type'));
 	xivo_chgdialstatus('chanunavail',xivo_eid('it-dialstatus-chanunavail-type'));
 }
 
@@ -582,14 +591,14 @@ function xivo_user_onload()
 	if((outcallerid_type = xivo_eid('it-ufeatures-outcallerid-type')) != false)
 		xivo_chg_attrib('fm_outcallerid','fd-ufeatures-outcallerid-custom',(outcallerid_type.value != 'custom' ? 0 : 1));
 
-	if((enableunc = xivo_eid('it-ufeatures-enableunc')) != false)
-		xivo_chg_attrib('fm_enableunc','it-ufeatures-destunc',(enableunc.checked == false ? 0 : 1));
-
 	if((enablerna = xivo_eid('it-ufeatures-enablerna')) != false)
 		xivo_chg_attrib('fm_enablerna','it-ufeatures-destrna',(enablerna.checked == false ? 0 : 1));
 
 	if((enablebusy = xivo_eid('it-ufeatures-enablebusy')) != false)
 		xivo_chg_attrib('fm_enablebusy','it-ufeatures-destbusy',(enablebusy.checked == false ? 0 : 1));
+
+	if((enableunc = xivo_eid('it-ufeatures-enableunc')) != false)
+		xivo_chg_attrib('fm_enableunc','it-ufeatures-destunc',(enableunc.checked == false ? 0 : 1));
 }
 
 xivo_winload.push('xivo_user_onload();');

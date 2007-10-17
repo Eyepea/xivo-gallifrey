@@ -6,7 +6,7 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 {
 	var $_dso		= null;
 	var $_name		= 'extensions';
-	var $_filter		= null;
+	var $_filter		= false;
 	var $_origin		= false;
 	var $_origin_list	= false;
 	var $_exten		= null;
@@ -81,7 +81,9 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 			$r['name'] = (string) $arr['name'];
 
 		if(isset($arr['commented']) === false)
-			$r['commented'] = false;
+			$arr['commented'] = false;
+
+		$r['commented'] = intval((bool) $arr['commented']);
 
 		return($this->_dso->add($r));
 	}
@@ -151,6 +153,9 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 		if(($r = $this->chk_exten($app,$arr,$exten,$context)) === false)
 			return(false);
 
+		if(isset($r['priority']) === false)
+			$r['priority'] = count($this->_exten[$id]);
+
 		$this->_exten[$id][] = $r;
 
 		return($id);
@@ -173,8 +178,24 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 
 		$r['exten'] = $this->_sre->clean_extension($exten);
 		$r['context'] = $context;
+
+		if(isset($arr['commented']) === true)
+			$r['commented'] = $arr['commented'];
+		
+		if(isset($arr['priority']) === true)
+			$r['priority'] = xivo_uint($arr['priority']);
 		
 		return($this->chk_values($r,true,false,false));
+	}
+
+	function get_loaded_exten($id)
+	{
+		if(is_array($this->_exten) === false
+		|| ($id = xivo_uint($id)) === 0
+		|| isset($this->_exten[$id],$this->_exten[$id][0]) === false)
+			return(false);
+
+		return($this->_exten[$id]);
 	}
 
 	function get_exten($app='',$exten='',$context='',$arr=null)
@@ -341,8 +362,6 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 
 	function get_name_exten($arr=array(),$disable=null)
 	{
-		$r = false;
-
 		$arr = (array) $arr;
 
 		if(($list = $this->get_all_where($arr,$disable)) === false)
@@ -357,6 +376,76 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 
 		if(empty($r) === true)
 			$r = false;
+
+		return($r);
+	}
+
+	function get_all_name_by_context($arr=array(),$disable=null,$display=false)
+	{
+		$arr = (array) $arr;
+		$display = (bool) $display;
+
+		if(isset($arr['context']) === false
+		|| ($list = $this->get_all_where($arr,$disable)) === false)
+			return(false);
+
+		$r = array();
+
+		$nb = count($list);
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			$ref = &$list[$i];
+
+			if(isset($r[$ref['name']]) === false)
+			{
+				$r[$ref['name']] = array();
+				$r[$ref['name']]['name'] = $ref['name'];
+
+				if($display === true)
+					$r[$ref['name']]['exten'] = $this->_sre->display_extension($ref['exten']);
+				else
+					$r[$ref['name']]['exten'] = $ref['exten'];
+
+				$r[$ref['name']]['context'] = $ref['context'];
+				$r[$ref['name']]['commented'] = $ref['commented'];
+				$r[$ref['name']]['line'] = array();
+			}
+		
+			$r[$ref['name']]['line'][$ref['priority']] = $ref;
+		}
+
+		if(empty($r) === true)
+			$r = false;
+
+		return($r);
+	}
+
+	function get_all_by_name_context($arr=array(),$disable=null,$display=false)
+	{
+		$arr = (array) $arr;
+		$display = (bool) $display;
+
+		if(isset($arr['name'],$arr['context']) === false
+		|| ($list = $this->get_all_where($arr,$disable)) === false)
+			return(false);
+
+		$r = array();
+		$r['name'] = $list[0]['name'];
+
+		if($display === true)
+			$r['exten'] = $this->_sre->display_extension($list[0]['exten']);
+		else
+			$r['exten'] = $list[0]['exten'];
+
+		$r['context'] = $list[0]['context'];
+		$r['commented'] = $list[0]['commented'];
+		$r['line'] = array();
+
+		$nb = count($list);
+
+		for($i = 0;$i < $nb;$i++)
+			$r['line'][$list[$i]['priority']] = $list[$i];
 
 		return($r);
 	}

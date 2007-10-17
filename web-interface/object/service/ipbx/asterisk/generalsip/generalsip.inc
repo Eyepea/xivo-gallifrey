@@ -8,7 +8,7 @@ class xivo_service_asterisk_generalsip extends xivo_service_asterisk_staticconf
 	var $_name		= 'generalsip';
 	var $_filename		= 'sip.conf';
 	var $_category		= 'general';
-	var $_filter		= null;
+	var $_filter		= false;
 	var $_generalsip	= array();
 
 	function xivo_service_asterisk_generalsip(&$sre,&$dso)

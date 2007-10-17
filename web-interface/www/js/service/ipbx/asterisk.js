@@ -75,6 +75,22 @@ function xivo_exten_pattern(id,option)
 	return(false);
 }
 
+function xivo_get_exten_buffer(letter,value)
+{
+	if(letter != 'N' && letter != 'X' && letter != 'Z')
+		return(false);
+
+	if(xivo_substr(value,-1) == '.')
+		return('*');
+
+	regstr = new RegExp('['+letter+']*$','i');
+
+	if((buffer = value.match(regstr)) == null)
+		return(false);
+
+	return(buffer[0].length);
+}
+
 function xivo_chk_exten_pattern(id,value)
 {
 	if(xivo_is_undef(value) == true || xivo_is_string(value) == false)

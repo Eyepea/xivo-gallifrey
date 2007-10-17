@@ -1,28 +1,46 @@
-function xivo_exten_pattern(id,option)
+var xivo_list_elt_extenfeatures = new Array();
+xivo_list_elt_extenfeatures['it-extenfeatures-enable-voicemsg'] = new Array('it-extenfeatures-voicemsg');
+xivo_list_elt_extenfeatures['it-extenfeatures-enable-fwdundoall'] = new Array('it-extenfeatures-fwdundoall');
+xivo_list_elt_extenfeatures['it-extenfeatures-enable-fwdundorna'] = new Array('it-extenfeatures-fwdundorna');
+xivo_list_elt_extenfeatures['it-extenfeatures-enable-fwdundobusy'] = new Array('it-extenfeatures-fwdundobusy');
+xivo_list_elt_extenfeatures['it-extenfeatures-enable-fwdundounc'] = new Array('it-extenfeatures-fwdundounc');
+xivo_list_elt_extenfeatures['it-extenfeatures-enable-fwdrna'] = new Array('it-extenfeatures-fwdrna','it-extenfeatures-list-fwdrna');
+xivo_list_elt_extenfeatures['it-extenfeatures-enable-fwdbusy'] = new Array('it-extenfeatures-fwdbusy','it-extenfeatures-list-fwdbusy');
+xivo_list_elt_extenfeatures['it-extenfeatures-enable-fwdunc'] = new Array('it-extenfeatures-fwdunc','it-extenfeatures-list-fwdunc');
+xivo_list_elt_extenfeatures['it-extenfeatures-enable-recsnd'] = new Array('it-extenfeatures-recsnd');
+xivo_list_elt_extenfeatures['it-extenfeatures-enable-phonestatus'] = new Array('it-extenfeatures-phonestatus');
+xivo_list_elt_extenfeatures['it-extenfeatures-enable-enablevm'] = new Array('it-extenfeatures-enablevm');
+xivo_list_elt_extenfeatures['it-extenfeatures-enable-enablednd'] = new Array('it-extenfeatures-enablednd');
+xivo_list_elt_extenfeatures['it-extenfeatures-enable-incallrec'] = new Array('it-extenfeatures-incallrec');
+xivo_list_elt_extenfeatures['it-extenfeatures-enable-incallfilter'] = new Array('it-extenfeatures-incallfilter');
+xivo_list_elt_extenfeatures['it-extenfeatures-enable-pickup'] = new Array('it-extenfeatures-pickup','it-extenfeatures-list-pickup');
+
+function xivo_extenfeatures_onload()
 {
-	if((id = xivo_eid(id)) == false || xivo_is_undef(id.value) == true)
-		return(false);
-
-	var value = id.value;
-
-	if(value.charAt(0) == '_')
-		value = xivo_substr(value,1);
-
-	value = value.replace(/[X\.]/gi,'');
-
-	if(option == '*')
+	for(property in xivo_list_elt_extenfeatures)
 	{
-		id.value = value + '.';
-		return(true);
+		if(xivo_eid(property) == false)
+			continue;
+
+		xivo_fm_readonly(xivo_list_elt_extenfeatures[property],xivo_eid(property).checked);
+		xivo_eid(property).onchange = function () { xivo_fm_readonly(xivo_list_elt_extenfeatures[this.id],this.checked); }
 	}
 
-	option = Number(option);
+	if((elt = xivo_eid('it-extenfeatures-fwdrna')) != false
+	&& (eltlist = xivo_eid('it-extenfeatures-list-fwdrna')) != false)
+		eltlist.value = xivo_get_exten_buffer('X',elt.value);
 
-	if(option > 0 && option < 40)
-	{
-		id.value = value + xivo_str_repeat('X',option);
-		return(true);
-	}
+	if((elt = xivo_eid('it-extenfeatures-fwdbusy')) != false
+	&& (eltlist = xivo_eid('it-extenfeatures-list-fwdbusy')) != false)
+		eltlist.value = xivo_get_exten_buffer('X',elt.value);
 
-	return(false);
+	if((elt = xivo_eid('it-extenfeatures-fwdunc')) != false
+	&& (eltlist = xivo_eid('it-extenfeatures-list-fwdunc')) != false)
+		eltlist.value = xivo_get_exten_buffer('X',elt.value);
+
+	if((elt = xivo_eid('it-extenfeatures-pickup')) != false
+	&& (eltlist = xivo_eid('it-extenfeatures-list-pickup')) != false)
+		eltlist.value = xivo_get_exten_buffer('X',elt.value);
 }
+
+xivo_winload.push('xivo_extenfeatures_onload();');

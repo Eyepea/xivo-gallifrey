@@ -7,8 +7,6 @@ class xivo_user
 
 	function xivo_user()
 	{
-		$r = false;
-
 		$this->_conf = &xivo_gat::get('user');
 
 		$ini = &xivo_user::load_get_init();
@@ -150,18 +148,16 @@ class xivo_user
 
 	function chk_authorize($users,$meta='',$real=false)
 	{
-		$r = false;
-
 		$users = (array) $users;
 
 		if(xivo_user::is_valid() === false)
-			return($r);
+			return(false);
 
 		if($meta === '')
 			$meta = $_SESSION['_USR']->meta;
 
 		if(xivo_user::chk_meta($meta) === false || ($arr = xivo_get_aks($users)) === false)
-			return($r);
+			return(false);
 
 		for($i = 0;$i < $arr['cnt'];$i++)
 		{
@@ -175,28 +171,27 @@ class xivo_user
 				return(true);
 		}
 
-		return($r);
+		return(false);
 	}
 
 	function acl_chk($section)
 	{
-		$r = false;
-
-		if(isset($_SESSION['_ACL']) === false || xivo_user::is_valid() === false)
-			return($r);
+		if(isset($_SESSION['_ACL']) === false
+		|| xivo_user::is_valid() === false
+		|| xivo_issa('tree',$_SESSION['_ACL']) === false
+		|| isset($_SESSION['_ACL']['user']) === false)
+			return(false);
 			
-		if(xivo_issa('tree',$_SESSION['_ACL']) === false || isset($_SESSION['_ACL']['user']) === false)
-			return($r);
-
 		$section = trim(preg_replace('@/+@','/',(string) $section),'/');
 
 		$tree = $_SESSION['_ACL']['tree'];
 		$user = $_SESSION['_ACL']['user'];
 
-		if(is_bool($user) === true)
-			return($user);
-
-		if(is_array($user) === false)
+		if($user === true)
+			$r = true;
+		else if(is_array($user) === true)
+			$r = false;
+		else
 			return(false);
 
 		$arr = explode('/',$section);
@@ -207,17 +202,17 @@ class xivo_user
 			$k = &$arr[$i];
 			$grp = $user;
 
-			if(xivo_issa($k,$tree) === false || ($user = xivo_ak($k,$user,true)) === false)
-				return($r);
+			if(xivo_issa($k,$tree) === false)
+				return(false);
 
-			if($user === true)
-				return(true);
+			if($r === false && is_bool(($user = xivo_ak($k,$user,true))) === true)
+				return($user);
 
 			if(isset($tree[$k]['child']) === true)
 				$tree = &$tree[$k]['child'];
 		}
 
-		if(xivo_ak($k,$grp,true) !== false)
+		if($r === false && xivo_ak($k,$grp,true) !== false)
 			$r = true;
 
 		return($r);
@@ -246,10 +241,8 @@ class xivo_user
 
 	function load_class($meta)
 	{
-		$r = false;
-
 		if(($meta = xivo_user::chk_meta($meta)) === false)
-			return($r);
+			return(false);
 
 		$class = 'xivo_user_'.$meta;
 		$dir = XIVO_PATH_OBJECT.XIVO_SEP_DIR.'user';
@@ -262,10 +255,8 @@ class xivo_user
 
 	function set($name,&$obj)
 	{
-		$r = false;
-
 		if($name === '' || is_object($obj) === false)
-			return($r);
+			return(false);
 
 		return(xivo_gct::set($obj,XIVO_USER_CLASS_PRE.$name));
 	}

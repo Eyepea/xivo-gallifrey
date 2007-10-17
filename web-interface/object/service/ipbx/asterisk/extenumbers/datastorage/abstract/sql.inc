@@ -36,6 +36,21 @@ class xivo_service_asterisk_extenumbers_abstract_sql extends xivo_service_asteri
 		return($r);
 	}
 
+	function exists_type($arr,$context='')
+	{
+		$context = (string) $context;
+
+		if(($where = $this->_dso->where($arr)) === false)
+			return(null);
+
+		if($context !== '')
+			$where .= ' AND (context = \''.$this->_dso->escape_string($context).'\' OR context = \'\')';
+
+		$r = $this->_dso->select_one($this->_param['table'],'type,typeval',$where);
+
+		return($r);
+	}
+
 	function get_search($exten,$extenhash,$context='')
 	{
 		$where = array();

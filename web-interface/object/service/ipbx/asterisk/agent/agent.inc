@@ -9,7 +9,7 @@ class xivo_service_asterisk_agent extends xivo_service_asterisk_staticconf
 	var $_filename		= 'agents.conf';
 	var $_category		= 'agents';
 	var $_cat_metric	= 1;
-	var $_filter		= null;
+	var $_filter		= false;
 	var $_callpath		= '';
 	var $_origin		= false;
 	var $_agent		= array();
@@ -46,6 +46,8 @@ class xivo_service_asterisk_agent extends xivo_service_asterisk_staticconf
 
 	function get($id,$disable=null)
 	{
+		$this->_origin = false;
+
 		if(($id = xivo_uint($id)) === 0
 		|| ($r = $this->_dso->get($id,$disable)) === false)
 			return(false);
@@ -145,6 +147,8 @@ class xivo_service_asterisk_agent extends xivo_service_asterisk_staticconf
 
 	function _get_agent($id,$disable=null)
 	{
+		$this->_origin = false;
+
 		if(($id = xivo_uint($id)) === 0)
 			return(false);
 

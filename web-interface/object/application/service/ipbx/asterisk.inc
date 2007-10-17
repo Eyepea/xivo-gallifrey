@@ -67,17 +67,17 @@ class xivo_application_asterisk_abstract extends xivo_application_abstract
 		return($r);
 	}
 
-	function _get_extenumbers($number,$context)
+	function _get_extenumbers($type,$typeval)
 	{
-		$this->_info['extenumbers'] = $this->_extenumbers->get($number,$context);
+		$this->_info['extenumbers'] = $this->_extenumbers->get($type,$typeval);
 		$this->_origin['extenumbers'] = $this->_extenumbers->get_origin();
 
 		return($this->_info['extenumbers']);
 	}
 
-	function set_extenumbers($action,$number,$context,$id=0)
+	function set_extenumbers($action,$type,$number,$context,$typeval='')
 	{
-		if(($r = $this->_extenumbers->set($action,$number,$context,$id)) === false)
+		if(($r = $this->_extenumbers->set($action,$type,$number,$context,$typeval)) === false)
 			$this->_set_error('extenumbers',$this->_extenumbers->get_error());
 
 		$this->_set_result('extenumbers',$this->_extenumbers->get_result());
@@ -100,9 +100,9 @@ class xivo_application_asterisk_abstract extends xivo_application_abstract
 		return($rs);
 	}
 
-	function add_extenumbers()
+	function add_extenumbers($typeval='')
 	{
-		if(($rs = $this->_extenumbers->add()) === null || $rs === false)
+		if(($rs = $this->_extenumbers->add($typeval)) === null || $rs === false)
 			return($rs);
 
 		$this->_return['extenumbers'] = $this->_extenumbers->get_return();
@@ -145,6 +145,16 @@ class xivo_application_asterisk_abstract extends xivo_application_abstract
 		$this->_return[$name] = $extensions->edit($this->_info[$name]['id'],$rs);
 
 		return($this->_return[$name]);
+	}
+
+	function save_extenumbers($typeval=null)
+	{
+		if(($rs = $this->_extenumbers->save($this->_status,$typeval)) === null || $rs === false)
+			return($rs);
+
+		$this->_return['extenumbers'] = $this->_extenumbers->get_return();
+
+		return($this->_return['extenumbers']);
 	}
 
 	function delete_extenumbers($id=0)

@@ -93,7 +93,7 @@ $array['element']['typevalfalse'] = array();
 $array['element']['typevalfalse']['default'] = '';
 
 $array['element']['endcall'] = array();
-$array['element']['endcall']['value'] = array('hangup','congestion','busy');
+$array['element']['endcall']['value'] = array('hangup','busy','congestion');
 $array['element']['endcall']['unset'] = true;
 
 $array['element']['application'] = array();

@@ -59,13 +59,13 @@
 			echo '<dd id="mn-call-management--incall">',$url->href_html($this->bbf('mn_left_callmanagement-incall'),'service/ipbx/call_management/incall','act=list'),'</dd>';
 		endif;
 		if($this->chk_acl('call_management','outcall') === true):
-			echo '<dd id="mn-call-management--outcall">',$url->href_html($this->bbf('mn_left_callmamagement-outcall'),'service/ipbx/call_management/outcall'),'</dd>';
+			echo '<dd id="mn-call-management--outcall">',$url->href_html($this->bbf('mn_left_callmamagement-outcall'),'service/ipbx/call_management/outcall','act=list'),'</dd>';
 		endif;
 		if($this->chk_acl('call_management','rightcall') === true):
-			echo '<dd id="mn-call-management--rightcall">',$url->href_html($this->bbf('mn_left_callmamagement-rightcall'),'service/ipbx/call_management/rightcall'),'</dd>';
+			echo '<dd id="mn-call-management--rightcall">',$url->href_html($this->bbf('mn_left_callmamagement-rightcall'),'service/ipbx/call_management/rightcall','act=list'),'</dd>';
 		endif;
 		if($this->chk_acl('call_management','schedule') === true):
-			echo '<dd id="mn-call-management--schedule">',$url->href_html($this->bbf('mn_left_callmamagement-schedule'),'service/ipbx/call_management/schedule'),'</dd>';
+			echo '<dd id="mn-call-management--schedule">',$url->href_html($this->bbf('mn_left_callmamagement-schedule'),'service/ipbx/call_management/schedule','act=list'),'</dd>';
 		endif;
 		if($this->chk_acl('call_management','ivr') === true):
 			echo '<dd id="mn-call-management--ivr"><a href="#">',$this->bbf('mn_left_callmanagement-ivr'),'</a></dd>';

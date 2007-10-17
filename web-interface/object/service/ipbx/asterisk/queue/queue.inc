@@ -6,7 +6,7 @@ class xivo_service_asterisk_queue extends xivo_service_asterisk_abstract
 {
 	var $_dso	= null;
 	var $_name	= 'queue';
-	var $_filter	= null;
+	var $_filter	= false;
 	var $_origin	= false;
 
 	function xivo_service_asterisk_queue(&$sre,&$dso)
@@ -25,6 +25,8 @@ class xivo_service_asterisk_queue extends xivo_service_asterisk_abstract
 
 	function get($id,$disable=null)
 	{
+		$this->_origin = false;
+
 		if(is_scalar($id) === false
 		|| ($r = $this->_dso->get($id,$disable)) === false)
 			return(false);

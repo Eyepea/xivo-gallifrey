@@ -1,6 +1,8 @@
 <?php
 
-class xivo_application_abstract
+require_once(XIVO_PATH_OBJECT.XIVO_SEP_DIR.'abstract'.XIVO_SEP_DIR.'libconfig.inc');
+
+class xivo_application_abstract extends xivo_libconfig_abstract
 {
 	var $_errnb	= 0;
 	var $_error	= array();
