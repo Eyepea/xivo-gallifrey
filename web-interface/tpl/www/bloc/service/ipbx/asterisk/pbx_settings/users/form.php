@@ -158,6 +158,10 @@
 
 	<?=$form->checkbox(array('desc' => $this->bbf('fm_userfeatures_enablevoicemail'),'name' => 'ufeatures[enablevoicemail]','labelid' => 'ufeatures-enablevoicemail','default' => $element['ufeatures']['enablevoicemail']['default'],'checked' => $info['ufeatures']['enablevoicemail']));?>
 
+	<?=$form->checkbox(array('desc' => $this->bbf('fm_userfeatures_enablexfer'),'name' => 'ufeatures[enablexfer]','labelid' => 'ufeatures-enablexfer','default' => $element['ufeatures']['enablexfer']['default'],'checked' => $info['ufeatures']['enablexfer']));?>
+
+	<?=$form->checkbox(array('desc' => $this->bbf('fm_userfeatures_enableautomon'),'name' => 'ufeatures[enableautomon]','labelid' => 'ufeatures-enableautomon','default' => $element['ufeatures']['enableautomon']['default'],'checked' => $info['ufeatures']['enableautomon']));?>
+
 	<?=$form->checkbox(array('desc' => $this->bbf('fm_userfeatures_callrecord'),'name' => 'ufeatures[callrecord]','labelid' => 'ufeatures-callrecord','default' => $element['ufeatures']['callrecord']['default'],'checked' => $info['ufeatures']['callrecord']));?>
 
 	<?=$form->checkbox(array('desc' => $this->bbf('fm_userfeatures_callfilter'),'name' => 'ufeatures[callfilter]','labelid' => 'ufeatures-callfilter','default' => $element['ufeatures']['callfilter']['default'],'checked' => $info['ufeatures']['callfilter']));?>

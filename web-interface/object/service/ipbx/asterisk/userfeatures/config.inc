@@ -53,6 +53,16 @@ $array['element']['enablevoicemail']['value'] = array(0,1);
 $array['element']['enablevoicemail']['default'] = 0;
 $array['element']['enablevoicemail']['set'] = true;
 
+$array['element']['enablexfer'] = array();
+$array['element']['enablexfer']['value'] = array(0,1);
+$array['element']['enablexfer']['default'] = 0;
+$array['element']['enablexfer']['set'] = true;
+
+$array['element']['enableautomon'] = array();
+$array['element']['enableautomon']['value'] = array(0,1);
+$array['element']['enableautomon']['default'] = 0;
+$array['element']['enableautomon']['set'] = true;
+
 $array['element']['callrecord'] = array();
 $array['element']['callrecord']['value'] = array(0,1);
 $array['element']['callrecord']['default'] = 0;
@@ -128,6 +138,8 @@ $array['filter']['ringseconds'] = array('set' => false,'chk' => 2,'key' => array
 $array['filter']['simultcalls'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,20));
 $array['filter']['enableclient'] = array('bool' => true);
 $array['filter']['enablevoicemail'] = array('bool' => true);
+$array['filter']['enablexfer'] = array('bool' => true);
+$array['filter']['enableautomon'] = array('bool' => true);
 $array['filter']['callrecord'] = array('bool' => true);
 $array['filter']['callfilter'] = array('bool' => true);
 $array['filter']['enablednd'] = array('bool' => true);

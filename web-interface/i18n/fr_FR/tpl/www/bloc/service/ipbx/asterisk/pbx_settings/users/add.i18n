@@ -115,6 +115,12 @@ Activer XIVO Client :
 ; fm_userfeatures_enablevoicemail
 Activer la messagerie vocale :
 
+; fm_userfeatures_enablexfer
+Activer les transferts :
+
+; fm_userfeatures_enableautomon
+Activer l'enregistrement à la volée :
+
 ; fm_userfeatures_callrecord
 Enregistrement d'appel :
 
