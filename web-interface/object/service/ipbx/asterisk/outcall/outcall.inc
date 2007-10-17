@@ -27,6 +27,7 @@ class xivo_service_asterisk_outcall extends xivo_service_asterisk_abstract
 	{
 		$data['setcallerid'] = (bool) $data['setcallerid'];
 		$data['useenum'] = (bool) $data['useenum'];
+		$data['internal'] = (bool) $data['internal'];
 		$data['linked'] = (bool) $data['linked'];
 		$data['commented'] = (bool) $data['commented'];
 

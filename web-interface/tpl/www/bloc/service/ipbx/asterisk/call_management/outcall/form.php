@@ -40,6 +40,8 @@
 
 <?=$form->checkbox(array('desc' => $this->bbf('fm_outcall_useenum'),'name' => 'outcall[useenum]','labelid' => 'useenum','checked' => $info['outcall']['useenum'],'default' => $element['outcall']['useenum']['default']));?>
 
+<?=$form->checkbox(array('desc' => $this->bbf('fm_outcall_internal'),'name' => 'outcall[internal]','labelid' => 'internal','checked' => $info['outcall']['internal'],'default' => $element['outcall']['internal']['default']));?>
+
 <?=$form->select(array('desc' => $this->bbf('fm_outcall_hangupringtime'),'name' => 'outcall[hangupringtime]','labelid' => 'outcall-hangupringtime','bbf' => array('mixkey','fm_outcall_hangupringtime-opt','paramarray'),'default' => $element['outcall']['hangupringtime']['default'],'value' => $info['outcall']['hangupringtime']),$element['outcall']['hangupringtime']['value']);?>
 
 </div>

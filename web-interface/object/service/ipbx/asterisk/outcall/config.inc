@@ -50,6 +50,11 @@ $array['element']['useenum']['value'] = array(0,1);
 $array['element']['useenum']['default'] = 0;
 $array['element']['useenum']['set'] = true;
 
+$array['element']['internal'] = array();
+$array['element']['internal']['value'] = array(0,1);
+$array['element']['internal']['default'] = 0;
+$array['element']['internal']['set'] = true;
+
 $array['element']['hangupringtime'] = array();
 $array['element']['hangupringtime']['value'] = array(0 => 0,15 => 15,30 => 30,45 => 45,60 => 1,
 						     75 => array(1,15),90 => array(1,30),105 => array(1,45),
@@ -86,6 +91,7 @@ $array['filter']['setcallerid'] = array('bool' => true);
 $array['filter']['callerid'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_-]+$/i','maxlen' => 80);
 $array['filter']['weight'] = array('set' => false,'chk' => 2,'between' => array(1,10));
 $array['filter']['useenum'] = array('bool' => true);
+$array['filter']['internal'] = array('bool' => true);
 $array['filter']['hangupringtime'] = array('set' => false,'chk' => 2,'key' => array(0,15,30,45,60,75,90,105,120,135,
 										    150,165,180,210,225,240,255,270,
 										    285,300));
