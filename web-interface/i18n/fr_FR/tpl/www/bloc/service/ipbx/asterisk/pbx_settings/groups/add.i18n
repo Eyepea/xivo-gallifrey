@@ -22,8 +22,14 @@ Numéro :
 ; fm_gfeatures_context
 Contexte :
 
+; fm_queue_strategy
+Stratégie :
+
 ; fm_queue_timeout
 Temps de sonnerie :
+
+; fm_queue_musiconhold
+Musique d'attente :
 
 ; fm_queue_timeout-opt0
 Désactivé

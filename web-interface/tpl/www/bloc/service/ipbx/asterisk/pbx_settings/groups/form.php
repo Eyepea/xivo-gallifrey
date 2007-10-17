@@ -6,6 +6,7 @@
 	$info = $this->vars('info');
 	$user = $this->vars('user');
 	$rightcall = $this->vars('rightcall');
+	$moh_list = $this->vars('moh_list');
 ?>
 
 <div id="sb-part-first" class="b-nodisplay">
@@ -14,9 +15,21 @@
 
 <?=$form->text(array('desc' => $this->bbf('fm_gfeatures_number'),'name' => 'gfeatures[number]','labelid' => 'gfeatures-number','size' => 25,'default' => $element['gfeatures']['number']['default'],'value' => $info['gfeatures']['number']));?>
 
+<?=$form->select(array('desc' => $this->bbf('fm_queue_strategy'),'name' => 'queue[strategy]','labelid' => 'queue-strategy','key' => false,'default' => $element['queue']['strategy']['default'],'value' => $info['queue']['strategy']),$element['queue']['strategy']['value']);?>
+
 <?=$form->text(array('desc' => $this->bbf('fm_gfeatures_context'),'name' => 'gfeatures[context]','labelid' => 'gfeatures-context','size' => 25,'default' => $element['gfeatures']['context']['default'],'value' => $info['gfeatures']['context']));?>
 
 <?=$form->select(array('desc' => $this->bbf('fm_queue_timeout'),'name' => 'queue[timeout]','labelid' => 'queue-timeout','bbf' => array('mixkey','fm_queue_timeout-opt'),'key' => false,'default' => $element['queue']['timeout']['default'],'value' => (isset($info['queue']['timeout']) === true ? (int) $info['queue']['timeout'] : null)),$element['queue']['timeout']['value']);?>
+
+<?php
+
+if($moh_list !== false):
+
+	echo $form->select(array('desc' => $this->bbf('fm_queue_musiconhold'),'name' => 'queue[musiconhold]','labelid' => 'queue-musiconhold','key' => 'category','empty' => true,'default' => $element['queue']['musiconhold']['default'],'value' => $info['queue']['musiconhold']),$moh_list);
+	
+endif;
+
+?>
 
 </div>
 

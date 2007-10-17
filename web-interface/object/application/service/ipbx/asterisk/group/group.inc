@@ -9,6 +9,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 	var $_extenumbers	= null;
 	var $_rightcall		= null;
 	var $_dialstatus	= null;
+	var $_musiconhold	= false;
 
 	function xivo_application_service_asterisk_group(&$service)
 	{
@@ -44,6 +45,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		$this->_get_user();
 		$this->_get_rightcall();
 		$this->_get_dialstatus();
+		$this->get_musiconhold();
 
 		return($this->_info);
 	}
@@ -134,6 +136,20 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 			$id = $this->_info['gfeatures']['id'];
 
 		return($this->_dialstatus->get_destination_list('group',$id));
+	}
+
+	function get_musiconhold()
+	{
+		if($this->_musiconhold !== false)
+			return($this->_musiconhold);
+
+		if(($musiconhold = &$this->_service->get_module('musiconhold')) === false)
+			return(false);
+
+		if(($this->_musiconhold = $musiconhold->get_all_category(null,false)) !== false)
+			ksort($this->_musiconhold);
+
+		return($this->_musiconhold);
 	}
 
 	function set_add($arr)
@@ -229,6 +245,9 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 			$this->_set_error('queue','invalid module');
 			return(false);
 		}
+
+		if(isset($arr['musiconhold'],$this->_musiconhold[$arr['musiconhold']]) === false)
+			$arr['musiconhold'] = '';
 
 		$arr['category'] = 'group';
 
