@@ -5,8 +5,8 @@
 # $Date$
 
 # path temporarily gruiked
-include ../../../trunk/autobuild.mk
-include ../../../trunk/autobuild-classic.mk
+include ../../trunk/autobuild.mk
+include ../../trunk/autobuild-classic.mk
 
 DEB_PKG = "pf-xivo-web-interface"
 DEB_TB_DEPS = "php4-eaccelerator php-eaccelerator-common php4-cli"
