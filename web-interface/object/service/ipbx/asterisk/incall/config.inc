@@ -19,9 +19,6 @@ $array['element']['application'] = array();
 $array['element']['application']['value'] = array('faxtomail','disa','directory');
 $array['element']['application']['unset'] = true;
 
-$array['element']['extenumid'] = array();
-$array['element']['extenumid']['default'] = '';
-
 $array['element']['linked'] = array();
 $array['element']['linked']['value'] = array(0,1);
 $array['element']['linked']['default'] = 0;
@@ -35,7 +32,6 @@ $array['element']['commented']['set'] = true;
 $array['filter'] = array();
 $array['filter']['type'] = array('key' => array('endcall','user','group','queue','meetme','schedule','application','custom'));
 $array['filter']['typeval'] = array('maxlen' => 255,'cast' => 'sgraph');
-$array['filter']['extenumid'] = array('cast' => 'uint');
 $array['filter']['linked'] = array('bool' => true);
 $array['filter']['commented'] = array('bool' => true);
 

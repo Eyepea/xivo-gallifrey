@@ -3,8 +3,6 @@
 $act = isset($_QR['act']) === true ? $_QR['act'] : '';
 $page = isset($_QR['page']) === true ? xivo_uint($_QR['page'],1) : 1;
 
-$outcall = &$ipbx->get_module('outcall');
-
 $info = array();
 
 $param = array();
@@ -19,7 +17,6 @@ switch($act)
 		$rightcall['slt'] = $rightcall = array();
 
 		xivo::load_class('xivo_sort');
-
 		$rightcallsort = new xivo_sort(array('browse' => 'rightcall','key' => 'name'));
 
 		if(($rightcall['list'] = $ipbx->get_rightcall_list(null,true)) !== false)
@@ -74,7 +71,6 @@ switch($act)
 		$rightcall['slt'] = $rightcall = array();
 
 		xivo::load_class('xivo_sort');
-
 		$rightcallsort = new xivo_sort(array('browse' => 'rightcall','key' => 'name'));
 
 		if(($rightcall['list'] = $ipbx->get_rightcall_list(null,true)) !== false)
@@ -86,6 +82,8 @@ switch($act)
 			|| xivo_issa('outcall',$_QR) === false
 			|| xivo_issa('extenumbers',$_QR) === false)
 				break;
+
+			$return = &$result;
 
 			if($appoutcall->set_edit($_QR) === false
 			|| $appoutcall->edit() === false)

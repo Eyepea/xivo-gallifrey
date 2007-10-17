@@ -595,12 +595,17 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 		$r = $info = array();
 
+		$extenumbers_where = array();
+		$extenumbers_where['type'] = 'incall';
+
 		for($i = 0;$i < $nb;$i++)
 		{
 			$info['incall'] = $rs[$i];
 			$info['type'] = false;
 
-			if(($info['extenumbers'] = $extenumbers->get($info['incall']['extenumid'])) === false
+			$extenumbers_where['typeval'] = $info['incall']['id'];
+
+			if(($info['extenumbers'] = $extenumbers->get_where($extenumbers_where)) === false
 			|| ($info['incall']['linked'] === true
 			   && ($info['type'] = $incall->is_valid($info['incall']['type'],
 								 $info['incall']['typeval'])) === false) === true)
@@ -623,7 +628,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 		$incall = &$this->get_module('incall');
 		$extenumbers = &$this->get_module('extenumbers');
 
-		if(($rs = $extenumbers->get_search($exten)) === false || ($nb = count($rs)) === 0)
+		if(($rs = $extenumbers->get_search($exten,null,'incall')) === false || ($nb = count($rs)) === 0)
 			return(false);
 
 		$r = $info = array();
@@ -633,9 +638,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 			$info['extenumbers'] = $rs[$i];
 			$info['type'] = false;
 
-			$incall_where = array('extenumid' => $info['extenumbers']['id']);
-
-			if(($info['incall'] = $incall->get_where($incall_where)) === false
+			if(($info['incall'] = $incall->get($info['extenumbers']['typeval'])) === false
 			|| ($info['incall']['linked'] === true
 			   && ($info['type'] = $incall->is_valid($info['incall']['type'],
 								 $info['incall']['typeval'])) === false) === true)

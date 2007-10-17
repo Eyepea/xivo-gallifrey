@@ -4,8 +4,6 @@ $act = isset($_QR['act']) === true ? $_QR['act'] : '';
 $page = isset($_QR['page']) === true ? xivo_uint($_QR['page'],1) : 1;
 $search = isset($_QR['search']) === true ? strval($_QR['search']) : '';
 
-$incall = &$ipbx->get_module('incall');
-
 $info = array();
 
 $param = array();
@@ -17,11 +15,9 @@ if($search !== '')
 switch($act)
 {
 	case 'add':
-		$add = true;
-		$result = null;
+		$appincall = &$ipbx->get_application('incall');
 
-		$extenumbers = &$ipbx->get_module('extenumbers');
-		$extensions = &$ipbx->get_module('extensions');
+		$result = null;
 
 		do
 		{
@@ -30,67 +26,10 @@ switch($act)
 			|| xivo_issa('extenumbers',$_QR) === false)
 				break;
 
-			$result = array();
-
-			$_QR['incall']['extenumid'] = 0;
-			$_QR['incall']['linked'] = true;
-
-			if(($result['incall'] = $incall->chk_values($_QR['incall'])) === false)
+			if($appincall->set_add($_QR) === false
+			|| $appincall->add() === false)
 			{
-				$add = false;
-				$result['incall'] = $incall->get_filter_result();
-			}
-
-			$_QR['extenumbers']['context'] = 'incall-extensions';
-
-			if(($result['extenumbers'] = $extenumbers->chk_values($_QR['extenumbers'])) === false
-			|| $extenumbers->exists($result['extenumbers']) !== false)
-			{
-				$add = false;
-						
-				if($result['extenumbers'] === false)
-					$result['extenumbers'] = $extenumbers->get_filter_result();
-				else
-					$result['extenumbers']['exten'] = '';
-			}
-
-			if($add === true)
-			{
-				if(($extensid = $extensions->new_exten('macro',
-						       array('appdata' => 'superincall'),
-						       $result['extenumbers']['exten'],
-						       $result['extenumbers']['context'])) === false)
-					$add = false;
-			}
-
-			if($add === false || ($extenumid = $extenumbers->add($result['extenumbers'])) === false)
-			{
-				$result['incall']['endcall'] = null;
-				$result['incall']['user'] = null;
-				$result['incall']['group'] = null;
-				$result['incall']['queue'] = null;
-				$result['incall']['meetme'] = null;
-				$result['incall']['schedule'] = null;
-				$result['incall']['application'] = null;
-				$result['incall']['custom'] = null;
-
-				if(empty($result['incall']['type']) === false)
-					$result['incall'][$result['incall']['type']] = $result['incall']['typeval'];
-				break;
-			}
-
-			$result['incall']['extenumid'] = $extenumid;
-
-			if(($incallid = $incall->add($result['incall'])) === false)
-			{
-				$extenumbers->delete($extenumid);
-				break;
-			}
-
-			if($extensions->add_exten($extensid) === false)
-			{
-				$extenumbers->delete($extenumid);
-				$incall->delete($incallid);
+				$result = $appincall->get_result();
 				break;
 			}
 
@@ -98,77 +37,36 @@ switch($act)
 		}
 		while(false);
 
-		$element = array();
-		$element['incall'] = $incall->get_element();
-		$element['extenumbers'] = $extenumbers->get_element();
-
-		$list = array();
-
-		$ufeatures = &$ipbx->get_module('userfeatures');
-
-		if(($list['users'] = $ufeatures->get_all_number()) !== false)
+		if(isset($result['incall']) === true)
 		{
-			xivo::load_class('xivo_sort');
-			$sort = new xivo_sort(array('key' => 'identity'));
-			usort($list['users'],array(&$sort,'str_usort'));
+			$result['incall']['endcall'] = '';
+			$result['incall']['user'] = '';
+			$result['incall']['group'] = '';
+			$result['incall']['queue'] = '';
+			$result['incall']['meetme'] = '';
+			$result['incall']['schedule'] = '';
+			$result['incall']['application'] = '';
+			$result['incall']['custom'] = '';
+
+			if(isset($result['incall'][$result['incall']['type']]) === true)
+				$result['incall'][$result['incall']['type']] = $result['incall']['typeval'];
 		}
-
-		$gfeatures = &$ipbx->get_module('groupfeatures');
-
-		if(($list['groups'] = $gfeatures->get_all_number()) !== false)
-		{
-			xivo::load_class('xivo_sort');
-			$sort = new xivo_sort(array('key' => 'identity'));
-			usort($list['groups'],array(&$sort,'str_usort'));
-		}
-
-		$qfeatures = &$ipbx->get_module('queuefeatures');
-
-		if(($list['queues'] = $qfeatures->get_all_number()) !== false)
-		{
-			xivo::load_class('xivo_sort');
-			$sort = new xivo_sort(array('key' => 'identity'));
-			usort($list['queues'],array(&$sort,'str_usort'));
-		}
-
-		$mfeatures = &$ipbx->get_module('meetmefeatures');
-
-		if(($list['meetme'] = $mfeatures->get_all_number()) !== false)
-		{
-			xivo::load_class('xivo_sort');
-			$sort = new xivo_sort(array('key' => 'identity'));
-			usort($list['meetme'],array(&$sort,'str_usort'));
-		}
-
-		$schedule = &$ipbx->get_module('schedule');
-
-		if(($list['schedule'] = $schedule->get_all()) !== false)
-		{
-			xivo::load_class('xivo_sort');
-			$sort = new xivo_sort(array('key' => 'name'));
-			usort($list['schedule'],array(&$sort,'str_usort'));
-		}
-
-		$_HTML->assign('list',$list);
-		$_HTML->assign('info',$result);
-		$_HTML->assign('element',$element);
 
 		$dhtml = &$_HTML->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/incall.js');
+
+		$_HTML->assign('incall',$result['incall']);
+		$_HTML->assign('extenumbers',$result['extenumbers']);
+		$_HTML->assign('list',$appincall->get_destination_list());
+		$_HTML->assign('element',$appincall->get_elements());
 		break;
 	case 'edit':
-		$extenumbers = &$ipbx->get_module('extenumbers');
+		$appincall = &$ipbx->get_application('incall');
 
-		if(isset($_QR['id']) === false
-		|| ($info['incall'] = $incall->get($_QR['id'])) === false
-		|| ($info['extenumbers'] = $extenumbers->get($info['incall']['extenumid'])) === false
-		|| ($info['incall']['linked'] === true
-		   && $incall->is_valid($info['incall']['type'],
-		   			   $info['incall']['typeval']) === false) === true)
+		if(isset($_QR['id']) === false || ($info = $appincall->get($_QR['id'])) === false)
 			$_QRY->go($_HTML->url('service/ipbx/call_management/incall'),$param);
 
-		$edit = true;
-
+		$result = null;
 		$return = &$info;
 
 		do
@@ -178,70 +76,12 @@ switch($act)
 			|| xivo_issa('extenumbers',$_QR) === false)
 				break;
 
-			$result = array();
-
 			$return = &$result;
 
-			$_QR['incall']['extenumid'] = $info['extenumbers']['id'];
-			$_QR['incall']['linked'] = true;
-			$_QR['incall']['commented'] = $info['incall']['commented'];
-
-			if(($result['incall'] = $incall->chk_values($_QR['incall'])) === false
-			|| $incall->is_valid($result['incall']['type'],$result['incall']['typeval']) === false)
+			if($appincall->set_edit($_QR) === false
+			|| $appincall->edit() === false)
 			{
-				$edit = false;
-				$result['incall'] = $incall->get_filter_result();
-			}
-
-			$_QR['extenumbers']['context'] = $info['extenumbers']['context'];
-
-			if(($result['extenumbers'] = $extenumbers->chk_values($_QR['extenumbers'])) === false
-			|| $extenumbers->exists($result['extenumbers'],$info['extenumbers']['id']) !== false)
-			{
-				$edit = false;
-
-				if($result['extenumbers'] === false)
-					$result['extenumbers'] = $extenumbers->get_filter_result();
-				else
-					$result['extenumbers']['exten'] = '';
-			}
-
-			if($edit === false || $extenumbers->edit($info['extenumbers']['id'],$result['extenumbers']) === false)
-			{
-				$result['incall']['endcall'] = null;
-				$result['incall']['user'] = null;
-				$result['incall']['group'] = null;
-				$result['incall']['queue'] = null;
-				$result['incall']['meetme'] = null;
-				$result['incall']['schedule'] = null;
-				$result['incall']['application'] = null;
-				$result['incall']['custom'] = null;
-				$result['incall']['linked'] = $info['incall']['linked'];
-
-				if(empty($result['incall']['type']) === false)
-					$result['incall'][$result['incall']['type']] = $result['incall']['typeval'];
-				break;
-			}
-
-			if($incall->edit($info['incall']['id'],$result['incall']) === false)
-			{
-				$extenumbers->edit_origin();
-				break;
-			}
-
-			$exten_where = array();
-			$exten_where['exten'] = $info['extenumbers']['exten'];
-			$exten_where['context'] = $info['extenumbers']['context'];
-
-			$exten_edit = array();
-			$exten_edit['exten'] = $result['extenumbers']['exten'];
-
-			$extensions = &$ipbx->get_module('extensions');
-
-			if($extensions->edit_where($exten_where,$exten_edit) === false)
-			{
-				$extenumbers->edit_origin();
-				$incall->edit_origin();
+				$result = $appincall->get_result();
 				break;
 			}
 
@@ -249,88 +89,40 @@ switch($act)
 		}
 		while(false);
 
-		$element = array();
-		$element['incall'] = $incall->get_element();
-		$element['extenumbers'] = $extenumbers->get_element();
-
-		$list = array();
-
-		$ufeatures = &$ipbx->get_module('userfeatures');
-
-		if(($list['users'] = $ufeatures->get_all_number()) !== false)
+		if(isset($return['incall']) === true)
 		{
-			xivo::load_class('xivo_sort');
-			$sort = new xivo_sort(array('key' => 'identity'));
-			usort($list['users'],array(&$sort,'str_usort'));
+			$return['incall']['endcall'] = '';
+			$return['incall']['user'] = '';
+			$return['incall']['group'] = '';
+			$return['incall']['queue'] = '';
+			$return['incall']['meetme'] = '';
+			$return['incall']['schedule'] = '';
+			$return['incall']['application'] = '';
+			$return['incall']['custom'] = '';
+			$return['incall']['linked'] = $info['incall']['linked'];
+
+			if(isset($return['incall'][$return['incall']['type']]) === true)
+				$return['incall'][$return['incall']['type']] = $return['incall']['typeval'];
 		}
-
-		$gfeatures = &$ipbx->get_module('groupfeatures');
-
-		if(($list['groups'] = $gfeatures->get_all_number()) !== false)
-		{
-			xivo::load_class('xivo_sort');
-			$sort = new xivo_sort(array('key' => 'identity'));
-			usort($list['groups'],array(&$sort,'str_usort'));
-		}
-
-		$qfeatures = &$ipbx->get_module('queuefeatures');
-
-		if(($list['queues'] = $qfeatures->get_all_number()) !== false)
-		{
-			xivo::load_class('xivo_sort');
-			$sort = new xivo_sort(array('key' => 'identity'));
-			usort($list['queues'],array(&$sort,'str_usort'));
-		}
-
-		$mfeatures = &$ipbx->get_module('meetmefeatures');
-
-		if(($list['meetme'] = $mfeatures->get_all_number()) !== false)
-		{
-			xivo::load_class('xivo_sort');
-			$sort = new xivo_sort(array('key' => 'identity'));
-			usort($list['meetme'],array(&$sort,'str_usort'));
-		}
-
-		$schedule = &$ipbx->get_module('schedule');
-
-		if(($list['schedule'] = $schedule->get_all()) !== false)
-		{
-			xivo::load_class('xivo_sort');
-			$sort = new xivo_sort(array('key' => 'name'));
-			usort($list['schedule'],array(&$sort,'str_usort'));
-		}
-		
-		$_HTML->assign('id',$info['incall']['id']);
-		$_HTML->assign('list',$list);
-		$_HTML->assign('info',$return);
-		$_HTML->assign('element',$element);
 
 		$dhtml = &$_HTML->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/incall.js');
+
+		$_HTML->assign('id',$info['incall']['id']);
+		$_HTML->assign('incall',$return['incall']);
+		$_HTML->assign('extenumbers',$return['extenumbers']);
+		$_HTML->assign('list',$appincall->get_destination_list());
+		$_HTML->assign('element',$appincall->get_elements());
 		break;
 	case 'delete':
 		$param['page'] = $page;
 
-		$extenumbers = &$ipbx->get_module('extenumbers');
-		$extensions = &$ipbx->get_module('extensions');
+		$appincall = &$ipbx->get_application('incall');
 
-		if(isset($_QR['id']) === true
-		&& ($info['incall'] = $incall->get($_QR['id'])) !== false
-		&& ($info['extenumbers'] = $extenumbers->get($info['incall']['extenumid'])) !== false
-		&& $incall->delete($info['incall']['id']) !== false)
-		{
-			$exten_where = array();
-			$exten_where['exten'] = $info['extenumbers']['exten'];
-			$exten_where['context'] = $info['extenumbers']['context'];
+		if(isset($_QR['id']) === false || $appincall->get($_QR['id']) === false)
+			$_QRY->go($_HTML->url('service/ipbx/call_management/incall'),$param);
 
-			if($extenumbers->delete($info['extenumbers']['id']) === false)
-				$incall->add_origin();
-			else if($extensions->delete_where($exten_where) === false)
-			{
-				$incall->add_origin();
-				$extenumbers->add_origin();
-			}
-		}
+		$appincall->delete();
 
 		$_QRY->go($_HTML->url('service/ipbx/call_management/incall'),$param);
 		break;
@@ -340,33 +132,16 @@ switch($act)
 		if(($values = xivo_issa_val('incalls',$_QR)) === false)
 			$_QRY->go($_HTML->url('service/ipbx/call_management/incall'),$param);
 
-		$extenumbers = &$ipbx->get_module('extenumbers');
-		$extensions = &$ipbx->get_module('extensions');
+		$appincall = &$ipbx->get_application('incall');
 
 		$nb = count($values);
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			if(($info['incall'] = $incall->get($values[$i])) === false
-			|| ($info['extenumbers'] = $extenumbers->get($info['incall']['extenumid'])) === false
-			|| $incall->delete($info['incall']['id']) === false)
+			if($appincall->get($values[$i]) === false)
 				continue;
 
-			if($extenumbers->delete($info['extenumbers']['id']) === false)
-			{
-				$incall->add_origin();
-				continue;
-			}
-
-			$exten_where = array();
-			$exten_where['exten'] = $info['extenumbers']['exten'];
-			$exten_where['context'] = $info['extenumbers']['context'];
-
-			if($extensions->delete_where($exten_where) === true)
-				continue;
-
-			$incall->add_origin();
-			$extenumbers->add_origin();
+			$appincall->delete();
 		}
 
 		$_QRY->go($_HTML->url('service/ipbx/call_management/incall'),$param);
@@ -374,30 +149,23 @@ switch($act)
 	case 'disables':
 	case 'enables':
 		$param['page'] = $page;
-		$disable = $act === 'disables' ? true : false;
-		$invdisable = $disable === true ? false : true;
 
 		if(($values = xivo_issa_val('incalls',$_QR)) === false)
 			$_QRY->go($_HTML->url('service/ipbx/call_management/incall'),$param);
 
-		$extenumbers = &$ipbx->get_module('extenumbers');
-		$extensions = &$ipbx->get_module('extensions');
+		$appincall = &$ipbx->get_application('incall');
 
 		$nb = count($values);
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			if(($info['incall'] = $incall->get($values[$i])) === false
-			|| ($info['extenumbers'] = $extenumbers->get($info['incall']['extenumid'])) === false
-			|| $incall->disable($info['incall']['id'],$disable) === false)
+			if($appincall->get($values[$i]) === false)
 				continue;
 
-			$exten_where = array();
-			$exten_where['exten'] = $info['extenumbers']['exten'];
-			$exten_where['context'] = $info['extenumbers']['context'];
-
-			if($extensions->disable_where($exten_where,$disable) === false)
-				$incall->disable($info['incall']['id'],$invdisable);
+			if($act === 'disables')
+				$appincall->disable();
+			else
+				$appincall->enable();
 		}
 
 		$_QRY->go($_HTML->url('service/ipbx/call_management/incall'),$param);

@@ -158,6 +158,8 @@ if(empty($return) === false)
 	if(xivo_issa('autoprov',$return) === false || empty($return['autoprov']) === true)
 		$return['autoprov'] = null;
 }
+else
+	$return = null;
 
 $_HTML->assign('id',$info['ufeatures']['id']);
 $_HTML->assign('info',$return);

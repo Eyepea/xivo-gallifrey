@@ -135,7 +135,10 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		else
 			$id = $this->_info['gfeatures']['id'];
 
-		return($this->_dialstatus->get_destination_list('group',$id));
+		$r = $this->get_destination_list('group',$id);
+		$r['sounds'] = $this->_dialstatus->get_sound();
+
+		return($r);
 	}
 
 	function get_musiconhold()

@@ -149,6 +149,8 @@ if(empty($result) === false)
 	if(xivo_issa('autoprov',$result) === false || empty($result['autoprov']) === true)
 		$result['autoprov'] = null;
 }
+else
+	$result = null;
 
 $_HTML->assign('info',$result);
 $_HTML->assign('dialstatus',$result['dialstatus']);

@@ -448,12 +448,12 @@ class xivo_service_asterisk_abstract extends xivo_libconfig_abstract
 	{
 		$val = intval($val);
 
-		if(($type !== 'group' && $type !== 'queue') === true
-		|| $this->_chk_dest($type.'features',$val,$id,null,$number) === false)
+		if($type !== 'group' && $type !== 'queue')
 			return(false);
 
-		if($disable === null)
-			return(true);
+		if(($info = $this->_chk_dest($type.'features',$val,$id,null,$number)) === false
+		|| $disable === null)
+			return($info);
 
 		$module = $this->_sre->get_module($type.'features');
 

@@ -254,7 +254,10 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		else
 			$id = $this->_info['ufeatures']['id'];
 
-		return($this->_dialstatus->get_destination_list('user',$id));
+		$r = $this->get_destination_list('user',$id);
+		$r['sounds'] = $this->_dialstatus->get_sound();
+
+		return($r);
 	}
 
 	function set_add($arr,$protocol)

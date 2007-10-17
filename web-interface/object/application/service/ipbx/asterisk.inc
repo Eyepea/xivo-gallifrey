@@ -183,6 +183,54 @@ class xivo_application_asterisk_abstract extends xivo_application_abstract
 
 		return($r);
 	}
+
+	function get_destination_list($type='',$id=0)
+	{
+		$r = array();
+
+		xivo::load_class('xivo_sort');
+		$sortidentity = new xivo_sort(array('key' => 'identity'));
+		$sortname = new xivo_sort(array('key' => 'name'));
+
+		$userid = $groupid = 0;
+
+		if($type === 'user')
+			$userid = xivo_uint($id);
+		else if($type === 'group')
+			$groupid = xivo_uint($id);
+
+		if(($ufeatures = &$this->_service->get_module('userfeatures')) === false
+		|| ($r['users'] = $ufeatures->get_all_number($userid)) === false)
+			$r['users'] = false;
+		else
+			usort($r['users'],array(&$sortidentity,'str_usort'));
+
+		if(($gfeatures = &$this->_service->get_module('groupfeatures')) === false
+		|| ($r['groups'] = $gfeatures->get_all_number($groupid)) === false)
+			$r['groups'] = false;
+		else
+			usort($r['groups'],array(&$sortidentity,'str_usort'));
+
+		if(($qfeatures = &$this->_service->get_module('queuefeatures')) === false
+		|| ($r['queues'] = $qfeatures->get_all_number()) === false)
+			$r['queues'] = false;
+		else
+			usort($r['queues'],array(&$sortidentity,'str_usort'));
+
+		if(($mfeatures = &$this->_service->get_module('meetmefeatures')) === false
+		|| ($r['meetme'] = $mfeatures->get_all_number()) === false)
+			$r['meetme'] = false;
+		else
+			usort($r['meetme'],array(&$sortidentity,'str_usort'));
+
+		if(($schedule = &$this->_service->get_module('schedule')) === false
+		|| ($r['schedule'] = $schedule->get_all()) === false)
+			$r['schedule'] = false;
+		else
+			usort($r['schedule'],array(&$sortname,'str_usort'));
+
+		return($r);
+	}
 }
 
 ?>

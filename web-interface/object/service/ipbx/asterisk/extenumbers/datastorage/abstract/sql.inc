@@ -51,7 +51,7 @@ class xivo_service_asterisk_extenumbers_abstract_sql extends xivo_service_asteri
 		return($r);
 	}
 
-	function get_search($exten,$extenhash,$context='')
+	function get_search($exten,$extenhash,$context='',$type='',$typeval='')
 	{
 		$where = array();
 
@@ -61,12 +61,25 @@ class xivo_service_asterisk_extenumbers_abstract_sql extends xivo_service_asteri
 		if(($rs = $this->_dso->search_exact('extenhash',$extenhash)) !== false)
 			$where[] = $rs;
 
-		if(xivo_haslen($context) !== false
-		&& ($rs = $this->_dso->search_exact('context',$context)) !== false)
-			$where[] = $rs;
-
 		if(($where = implode(' OR ',$where)) === '')
 			return(false);
+
+		$whereand = array();
+
+		if(xivo_haslen($context) !== false
+		&& ($rs = $this->_dso->search_exact('context',$context)) !== false)
+			$whereand[] = $rs;
+
+		if(xivo_haslen($type) !== false
+		&& ($rs = $this->_dso->search_exact('type',$type)) !== false)
+			$whereand[] = $rs;
+
+		if(xivo_haslen($typeval) !== false
+		&& ($rs = $this->_dso->search_exact('typeval',$typeval)) !== false)
+			$whereand[] = $rs;
+
+		if(isset($whereand[0]) === true && ($whereand = implode(' AND ',$whereand)) !== '')
+			$where = '('.$where.') AND '.$whereand;
 
 		$r = $this->_dso->select_all($this->_param['table'],null,$where);
 
