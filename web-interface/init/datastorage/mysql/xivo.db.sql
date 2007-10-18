@@ -1,4 +1,4 @@
-GRANT ALL PRIVILEGES ON xivo.* TO xivo@localhost IDENTIFIED BY PASSWORD '7560ba9c16089426';
+GRANT ALL PRIVILEGES ON xivo.* TO xivo@localhost IDENTIFIED BY PASSWORD '*DBA86DFECE903EB25FE460A66BDCDA790A1CA4A4';
 CREATE DATABASE IF NOT EXISTS `xivo` DEFAULT CHARACTER SET utf8;
 USE `xivo`;
 
@@ -20,9 +20,9 @@ CREATE INDEX `i18ncache__idx__dupdate` ON `i18ncache`(`dupdate`);
 DROP TABLE IF EXISTS `session`;
 CREATE TABLE `session` (
  `key` varchar(32) NOT NULL DEFAULT '',
- `start` int(10) unsigned DEFAULT 0,
+ `start` int(10) unsigned NOT NULL DEFAULT 0,
  `expire` int(10) unsigned NOT NULL DEFAULT 0,
- `userid` int(10) unsigned DEFAULT 0,
+ `userid` int(10) unsigned NOT NULL DEFAULT 0,
  `data` longblob NOT NULL,
  PRIMARY KEY(`key`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -36,8 +36,8 @@ CREATE TABLE `user` (
  `id` int(10) unsigned auto_increment,
  `login` varchar(64) NOT NULL DEFAULT '',
  `passwd` varchar(64) NOT NULL DEFAULT '',
- `meta` enum('user','admin','root') DEFAULT 'user',
- `valid` tinyint(1) DEFAULT 1,
+ `meta` enum('user','admin','root') NOT NULL DEFAULT 'user',
+ `valid` tinyint(1) NOT NULL DEFAULT 1,
  `time` int(10) unsigned NOT NULL DEFAULT 0,
  `dcreate` int(10) unsigned NOT NULL DEFAULT 0,
  `dupdate` int(10) unsigned NOT NULL DEFAULT 0,
@@ -52,5 +52,5 @@ CREATE INDEX `user__idx__valid` ON `user`(`valid`);
 CREATE INDEX `user__idx__time` ON `user`(`time`);
 CREATE UNIQUE INDEX `user__uidx__login_meta` ON `user`(`login`,`meta`);
 
-INSERT INTO `user` VALUES(1,'root','proformatique','root',1,0,UNIX_TIMESTAMP(UTC_TIMESTAMP()),0,'');
-INSERT INTO `user` VALUES(2,'admin','proformatique','admin',1,0,UNIX_TIMESTAMP(UTC_TIMESTAMP()),0,'');
+INSERT INTO `user` VALUES (1,'root','proformatique','root',1,0,UNIX_TIMESTAMP(UTC_TIMESTAMP()),0,'');
+INSERT INTO `user` VALUES (2,'admin','proformatique','admin',1,0,UNIX_TIMESTAMP(UTC_TIMESTAMP()),0,'');
