@@ -102,3 +102,6 @@ Système de contrôle
 
 ; mn_left_controlsystem-ipbxreload
 Recharger %s
+
+; mn_left_controlsystem-ipbxrestart
+Redémarrer %s

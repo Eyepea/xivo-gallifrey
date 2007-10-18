@@ -111,3 +111,6 @@ Système de contrôle
 
 ; acl_service-ipbx-control_system-reload
 Recharger IPBX
+
+; acl_service-ipbx-control_system-reload
+Redémarrer IPBX

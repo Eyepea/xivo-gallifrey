@@ -30,6 +30,7 @@ $array['service/ipbx/system_management/isdncard'] = 'service/ipbx/index.php/syst
 $array['service/ipbx/system_management/modules'] = 'service/ipbx/index.php/system_management/modules/';
 $array['service/ipbx/system_management/manager'] = 'service/ipbx/index.php/system_management/manager/';
 $array['service/ipbx/control_system/reload'] = 'service/ipbx/index.php/control_system/reload/';
+$array['service/ipbx/control_system/restart'] = 'service/ipbx/index.php/control_system/restart/';
 $array['xivo'] = 'xivo/index.php';
 $array['xivo/configuration'] = 'xivo/configuration.php';
 $array['xivo/preferences'] = 'xivo/preferences.php';

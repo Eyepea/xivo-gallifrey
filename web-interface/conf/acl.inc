@@ -45,6 +45,7 @@ $array['tree']['service']['ipbx']['system_management']['configfiles'] = true;
 
 $array['tree']['service']['ipbx']['control_system'] = array();
 $array['tree']['service']['ipbx']['control_system']['reload'] = true;
+$array['tree']['service']['ipbx']['control_system']['restart'] = true;
 
 
 $array['group'] = array();

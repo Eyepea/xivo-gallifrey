@@ -109,6 +109,9 @@
 		if($this->chk_acl('control_system','reload') === true):
 			echo '<dd id="mn-control-system--reload">',$url->href_html($this->bbf('mn_left_controlsystem-ipbxreload',XIVO_SRE_IPBX_LABEL),'service/ipbx/control_system/reload'),'</dd>';
 		endif;
+		if($this->chk_acl('control_system','restart') === true):
+			echo '<dd id="mn-control-system--restart">',$url->href_html($this->bbf('mn_left_controlsystem-ipbxrestart',XIVO_SRE_IPBX_LABEL),'service/ipbx/control_system/restart'),'</dd>';
+		endif;
 	endif;
 
 
