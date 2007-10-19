@@ -102,7 +102,7 @@ if($list['sounds'] !== false):
 
 else:
 
-	echo '<div class="txt-center">',$url->href_html($this->bbf('add_dialstatus-sound'),'service/ipbx/general_settings/sounds',array('act' => 'list','dir' => 'dialstatus')),'</div>';
+	echo '<div id="fd-dialstatus-'.$status.'-sound-typeval" class="txt-center">',$url->href_html($this->bbf('add_dialstatus-sound'),'service/ipbx/general_settings/sounds',array('act' => 'list','dir' => 'dialstatus')),'</div>';
 
 endif;
 
