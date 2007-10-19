@@ -926,7 +926,7 @@ CREATE TABLE `useriax` (
  `qualify` char(3),
  `disallow` varchar(100),
  `allow` varchar(100),
- `ipaddr` varchar(15) NOT NULL,
+ `ipaddr` varchar(15),
  `port` smallint unsigned,
  `regseconds` int(10) unsigned DEFAULT 0,
  `call-limit` tinyint(2) unsigned NOT NULL DEFAULT 0,
@@ -977,7 +977,7 @@ CREATE TABLE `usersip` (
  `allow` varchar(100),
  `musiconhold` varchar(100),
  `regseconds` int(10) unsigned NOT NULL DEFAULT 0,
- `ipaddr` varchar(15) NOT NULL,
+ `ipaddr` varchar(15),
  `regexten` varchar(80) NOT NULL,
  `cancallforward` char(3),
  `setvar` varchar(100) NOT NULL,
@@ -990,8 +990,8 @@ CREATE INDEX `usersip__idx__commented` ON `usersip`(`commented`);
 CREATE INDEX `usersip__idx__category` ON `usersip`(`category`);
 CREATE UNIQUE INDEX `usersip__uidx__name` ON `usersip`(`name`);
 
-INSERT INTO `usersip` VALUES (1,'guest',0,'','documentation','','Guest','no','initconfig',NULL,'rfc2833',NULL,NULL,'','dynamic',NULL,NULL,'',NULL,'no',NULL,NULL,NULL,'',5060,'no',NULL,NULL,NULL,'guest','friend','guest',NULL,NULL,NULL,0,'','',NULL,'',0,'user');
-INSERT INTO `usersip` VALUES (2,'xivosb',0,'','documentation','','XivoSB','no','defaut',NULL,'rfc2833',NULL,NULL,'','dynamic',NULL,NULL,'',NULL,'no',NULL,NULL,NULL,'',5060,'no',NULL,NULL,NULL,'','friend','xivosb',NULL,NULL,NULL,0,'','',NULL,'',0,'user');
+INSERT INTO `usersip` VALUES (1,'guest',0,'','documentation','','Guest','no','initconfig',NULL,'rfc2833',NULL,NULL,'','dynamic',NULL,NULL,'',NULL,'no',NULL,NULL,NULL,'',5060,'no',NULL,NULL,NULL,'guest','friend','guest',NULL,NULL,NULL,0,NULL,'',NULL,'',0,'user');
+INSERT INTO `usersip` VALUES (2,'xivosb',0,'','documentation','','XivoSB','no','defaut',NULL,'rfc2833',NULL,NULL,'','dynamic',NULL,NULL,'',NULL,'no',NULL,NULL,NULL,'',5060,'no',NULL,NULL,NULL,'','friend','xivosb',NULL,NULL,NULL,0,NULL,'',NULL,'',0,'user');
 
 
 DROP TABLE IF EXISTS `uservoicemail`;
