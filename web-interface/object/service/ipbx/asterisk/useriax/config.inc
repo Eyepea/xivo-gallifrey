@@ -31,7 +31,7 @@ $array['element']['qualify']['set'] = true;
 $array['element']['disallow'] = array();
 $array['element']['disallow']['value'] = array('all');
 $array['element']['disallow']['default'] = 'all';
-$array['element']['disallow']['setdef'] = true;
+$array['element']['disallow']['null'] = true;
 
 $array['element']['allow'] = array();
 $array['element']['allow']['value'] = array(

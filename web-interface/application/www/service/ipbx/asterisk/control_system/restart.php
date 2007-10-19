@@ -9,7 +9,7 @@ $ami = &$ipbx->get_module('ami');
 $ami->cmd('restart now');
 
 if(isset($_SERVER['HTTP_REFERER']) === true)
-	$_QRY->go($_SERVER['HTTP_REFERER']);
+	$_QRY->go($_SERVER['HTTP_REFERER'],false);
 else
 	$_QRY->go($_HTML->url('service/ipbx'));
 
