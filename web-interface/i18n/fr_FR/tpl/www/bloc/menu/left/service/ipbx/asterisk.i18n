@@ -13,12 +13,6 @@ Protocole IAX
 ; mn_left_generalsettings-voicemail
 Messageries vocales
 
-; mn_left_generalsettings-agents
-Agents
-
-; mn_left_generalsettings-queues
-Files d'attente
-
 ; mn_left_generalsettings-sounds
 Fichiers sons
 
@@ -30,6 +24,9 @@ Extensions
 
 ; mn_left_generalsettings-outcall
 Appels sortants
+
+; mn_left_generalsettings-advanced
+Avancés
 
 ; mn_left_ti_pbxsettings
 Paramètres PBX

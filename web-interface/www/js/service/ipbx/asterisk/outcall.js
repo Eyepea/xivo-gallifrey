@@ -80,6 +80,29 @@ function xivo_wizard_exten(prefix,numlen,result)
 	return(false);
 }
 
+function xivo_exten_wizard(prefix,numlen,result)
+{
+	if((objpre = xivo_eid(prefix)) == false
+	|| (objnum = xivo_eid(numlen)) == false
+	|| (objres = xivo_eid(result)) == false
+	|| xivo_is_undef(objpre.value) == true
+	|| xivo_is_undef(objnum.value) == true
+	|| xivo_is_undef(objres.value) == true)
+		return(false);
+
+	objres.value = xivo_substr(objres.value,0,40);
+
+	if((match = objres.value.match(/^[0-9\*]*/)) == null)
+		objpre.value = '';
+	else
+		objpre.value = match[0];
+
+	if((objnum.value = xivo_get_exten_buffer('X',objres.value)) == false)
+		objnum.value = '';
+
+	return(true);
+}
+
 function xivo_outcall_onload()
 {
 	if(xivo_eid('it-outcall-mode') != false)

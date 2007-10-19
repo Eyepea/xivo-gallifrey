@@ -1,14 +1,10 @@
 <?php
 
-class xivo_application_service_asterisk_features
+class xivo_application_service_asterisk_realstatic
 {
 	var $_service	= null;
-	var $_module	= array(
-				'general'		=> false,
-				'featuremap'		=> false,
-				'applicationmap'	=> false);
-
-	function xivo_application_service_asterisk_features(&$service)
+	
+	function xivo_application_service_asterisk_realstatic(&$service)
 	{
 		if(is_object($service) === false || get_class($service) !== 'xivo_service_asterisk')
 			trigger_error('Invalid service in '.__CLASS__,E_USER_ERROR);
@@ -24,8 +20,18 @@ class xivo_application_service_asterisk_features
 			return(false);
 
 		$file = $name.'.inc';
-		$dir = dirname(__FILE__).XIVO_SEP_DIR.$name;
-		$class = __CLASS__.'_'.$name;
+
+		$dir = array();
+		$dir[] = XIVO_PATH_OBJECT;
+		$dir[] = 'application';
+		$dir[] = 'service';
+		$dir[] = 'ipbx';
+		$dir[] = 'asterisk';
+		$dir[] = 'realstatic';
+		$dir[] = $this->_name;
+		$dir[] = $name;
+
+		$class = 'xivo_application_service_asterisk_realstatic_'.$this->_name.'_'.$name;
 
 		if(xivo_file::load_file($file,$dir,true) !== false && class_exists($class) === true)
 			return($class);
@@ -45,7 +51,7 @@ class xivo_application_service_asterisk_features
 		
 		if(($class = $this->_load_module_class($name)) === false)
 		{
-			trigger_error('Application\'s module '.$name.' does not exist',E_USER_ERROR);
+			trigger_error('RealStatic Application\'s module '.$name.' does not exist',E_USER_ERROR);
 			return(false);
 		}
 

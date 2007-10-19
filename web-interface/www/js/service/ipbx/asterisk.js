@@ -77,13 +77,24 @@ function xivo_exten_pattern(id,option)
 
 function xivo_get_exten_buffer(letter,value)
 {
-	if(letter != 'N' && letter != 'X' && letter != 'Z')
-		return(false);
-
 	if(xivo_substr(value,-1) == '.')
 		return('*');
 
-	regstr = new RegExp('['+letter+']*$','i');
+	var chr = '';
+
+	if(letter.indexOf('N') > -1)
+		chr += 'N';
+
+	if(letter.indexOf('X') > -1)
+		chr += 'X';
+
+	if(letter.indexOf('Z') > -1)
+		chr += 'Z';
+
+	if(chr == '')
+		return(false);
+
+	regstr = new RegExp('['+chr+']*$','i');
 
 	if((buffer = value.match(regstr)) == null)
 		return(false);

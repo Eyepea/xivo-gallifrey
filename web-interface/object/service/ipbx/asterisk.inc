@@ -8,6 +8,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 	var $_type		= 'ipbx';
 	var $_name		= 'asterisk';
 	var $_realstatic	= array();
+	var $_apprealstatic	= array();
 
 	function xivo_service_asterisk($ini)
 	{
@@ -98,6 +99,70 @@ class xivo_service_asterisk extends xivo_service_abstract
 			$r = &$this->_realstatic[$name];
 
 		return(($ref = &$r));
+	}
+
+	function _load_apprealstatic_class($application)
+	{
+		$application = (string) $application;
+
+		$file = $application.'.inc';
+
+		$dir = array(XIVO_PATH_OBJECT,'application','service',$this->_type,$this->_name,'realstatic',$application);
+
+		$class = 'xivo_application_service_'.$this->_name.'_realstatic_'.$application;
+
+		if(xivo_file::load_file($file,$dir,true) !== false && class_exists($class) === true)
+			return($class);
+
+		return(false);
+	}
+
+	function &call_apprealstatic($name,$func,$args=null)
+	{
+		$name = (string) $name;
+		$func = (string) $func;
+
+		if($this->_load_apprealstatic($name) === false)
+			$r = false;
+		else if($args === null)
+			$r = call_user_func(array(&$this->_apprealstatic[$name],$func));
+		else
+		{
+			$args = (array) $args;
+			$r = call_user_func_array(array(&$this->_apprealstatic[$name],$func),$args);
+		}
+
+		return(($ref = &$r));
+	}
+
+	function &get_apprealstatic($name)
+	{
+		$r = false;
+
+		$name = (string) $name;
+
+		if($this->_load_apprealstatic($name) === true)
+			$r = &$this->_apprealstatic[$name];
+
+		return(($ref = &$r));
+	}
+
+	function _load_apprealstatic($name)
+	{
+		$name = (string) $name;
+
+		if(isset($this->_apprealstatic[$name]) === true)
+			return(true);
+		
+		if(($class = $this->_load_apprealstatic_class($name)) === false)
+		{
+			trigger_error('RealStatic Application '.$name.' does not exist in '.$this->_name,E_USER_ERROR);
+			return(false);
+		}
+
+		$this->_apprealstatic[$name] = new $class($this);
+
+		return(true);
 	}
 
 	function _get_service_information()

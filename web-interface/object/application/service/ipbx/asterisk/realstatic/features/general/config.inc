@@ -56,11 +56,11 @@ $array['element']['courtesytone']['default'] = '';
 $array['element']['courtesytone']['null'] = true;
 
 $array['element']['xfersound'] = array();
-$array['element']['xfersound']['default'] = 'beep';
+$array['element']['xfersound']['default'] = '';
 $array['element']['xfersound']['null'] = true;
 
 $array['element']['xferfailsound'] = array();
-$array['element']['xferfailsound']['default'] = 'pbx-invalid';
+$array['element']['xferfailsound']['default'] = '';
 $array['element']['xferfailsound']['null'] = true;
 
 $array['element']['pickupexten'] = array();

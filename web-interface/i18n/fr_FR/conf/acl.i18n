@@ -22,12 +22,6 @@ Protocole IAX
 ; acl_service-ipbx-general_settings-voicemail
 Messageries vocales
 
-; acl_service-ipbx-general_settings-agents
-Agents
-
-; acl_service-ipbx-general_settings-queues
-Files d'attente
-
 ; acl_service-ipbx-general_settings-sounds
 Fichiers sons
 
@@ -39,6 +33,9 @@ Extensions
 
 ; acl_service-ipbx-general_settings-outcall
 Appels sortants
+
+; acl_service-ipbx-general_settings-advanced
+Avancés
 
 ; acl_service-ipbx-pbx_settings
 Paramètres PBX
@@ -112,5 +109,5 @@ Système de contrôle
 ; acl_service-ipbx-control_system-reload
 Recharger IPBX
 
-; acl_service-ipbx-control_system-reload
+; acl_service-ipbx-control_system-restart
 Redémarrer IPBX

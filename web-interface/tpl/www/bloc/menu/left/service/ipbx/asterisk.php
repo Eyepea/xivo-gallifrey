@@ -14,12 +14,6 @@
 		if($this->chk_acl('general_settings','voicemail') === true):
 			echo '<dd id="mn-general-settings--voicemail">',$url->href_html($this->bbf('mn_left_generalsettings-voicemail'),'service/ipbx/general_settings/voicemail'),'</dd>';
 		endif;
-		if($this->chk_acl('general_settings','agents') === true):
-			echo '<dd id="mn-general-settings--agents">',$url->href_html($this->bbf('mn_left_generalsettings-agents'),'service/ipbx/general_settings/agents'),'</dd>';
-		endif;
-		if($this->chk_acl('general_settings','queues') === true):
-			echo '<dd id="mn-general-settings--queues">',$url->href_html($this->bbf('mn_left_generalsettings-queues'),'service/ipbx/general_settings/queues'),'</dd>';
-		endif;
 		if($this->chk_acl('general_settings','sounds') === true):
 			echo '<dd id="mn-general-settings--sounds">',$url->href_html($this->bbf('mn_left_generalsettings-sounds'),'service/ipbx/general_settings/sounds','act=listdir'),'</dd>';
 		endif;
@@ -31,6 +25,9 @@
 		endif;
 		if($this->chk_acl('general_settings','outcall') === true):
 			echo '<dd id="mn-general-settings--outcall">',$url->href_html($this->bbf('mn_left_generalsettings-outcall'),'service/ipbx/general_settings/outcall'),'</dd>';
+		endif;
+		if($this->chk_acl('general_settings','advanced') === true):
+			echo '<dd id="mn-general-settings--advanced">',$url->href_html($this->bbf('mn_left_generalsettings-advanced'),'service/ipbx/general_settings/advanced'),'</dd>';
 		endif;
 	endif;
 

@@ -2,7 +2,7 @@
 
 xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk.inc'),true);
 
-class xivo_application_service_asterisk_features_general extends xivo_application_asterisk_abstract
+class xivo_application_service_asterisk_realstatic_features_general extends xivo_application_asterisk_abstract
 {
 	var $_origin		= array();
 	var $_status		= '';
@@ -12,9 +12,10 @@ class xivo_application_service_asterisk_features_general extends xivo_applicatio
 	var $_conf		= array();
 	var $_filter		= false;
 	var $_category		= 'general';
+	var $_cat_metric	= 0;
 	var $_filename		= 'features.conf';
 
-	function xivo_application_service_asterisk_features_general(&$service)
+	function xivo_application_service_asterisk_realstatic_features_general(&$service)
 	{
 		$this->xivo_application_asterisk_abstract(&$service);
 
@@ -256,6 +257,7 @@ class xivo_application_service_asterisk_features_general extends xivo_applicatio
 			return(false);
 
 		$rs['category'] = $this->_category;
+		$rs['cat_metric'] = $this->_cat_metric;
 
 		if($this->_features->add($rs) === false)
 			$this->_return['generalfeatures'] = false;

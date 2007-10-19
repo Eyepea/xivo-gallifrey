@@ -70,8 +70,17 @@ $array = array();
 
 $array['realstatic'] = array();
 
+$array['realstatic']['agents'] = array();
+$array['realstatic']['agents']['datastorage'] = true;
+
 $array['realstatic']['features'] = array();
 $array['realstatic']['features']['datastorage'] = true;
+
+$array['realstatic']['generalqueue'] = array();
+$array['realstatic']['generalqueue']['datastorage'] = true;
+
+$array['realstatic']['meetme'] = array();
+$array['realstatic']['meetme']['datastorage'] = true;
 
 $array['module'] = array();
 
@@ -129,9 +138,6 @@ $array['module']['trunkfeatures']['datastorage'] = true;
 $array['module']['groupfeatures'] = array();
 $array['module']['groupfeatures']['datastorage'] = true;
 
-$array['module']['meetme'] = array();
-$array['module']['meetme']['datastorage'] = true;
-
 $array['module']['meetmefeatures'] = array();
 $array['module']['meetmefeatures']['datastorage'] = true;
 
@@ -161,9 +167,6 @@ $array['module']['musiconhold']['datastorage'] = true;
 
 $array['module']['incall'] = array();
 $array['module']['incall']['datastorage'] = true;
-
-$array['module']['generalagent'] = array();
-$array['module']['generalagent']['datastorage'] = true;
 
 $array['module']['agent'] = array();
 $array['module']['agent']['datastorage'] = true;

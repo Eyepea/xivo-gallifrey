@@ -4,7 +4,7 @@ xivo_service_asterisk::required(array('realstatic','datastorage','abstract','dat
 
 class xivo_service_asterisk_realstatic_abstract_sql extends xivo_service_asterisk_realstatic_abstract_datastorage
 {
-	function _init(&$dso,$param=array())
+	function xivo_service_asterisk_realstatic_abstract_sql(&$dso,$param=array())
 	{
 		parent::_init(&$dso);
 

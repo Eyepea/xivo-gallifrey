@@ -257,6 +257,9 @@ class xivo_libconfig_abstract
 			$key = &$arr['keys'][$i];
 			$val = &$rs[$key];
 
+			if($this->unset_element_value($key) === true)
+				continue;
+
 			if(($sval = $this->_set_value($key,$val)) !== false)
 				$val = $sval;
 
@@ -268,9 +271,6 @@ class xivo_libconfig_abstract
 			if($val === '' && $this->isset_element_default($key) === true
 			&& ($dval = $this->get_element_default($key)) !== false)
 				$val = $dval;
-
-			if($this->unset_element_value($key) === true)
-				continue;
 
 			$r[$key] = $val;
 		}

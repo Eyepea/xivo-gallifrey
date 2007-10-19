@@ -2,7 +2,7 @@
 
 $appextenfeatures = &$ipbx->get_application('extenfeatures');
 
-$appfeatures = &$ipbx->get_application('features');
+$appfeatures = &$ipbx->get_apprealstatic('features');
 $appgeneralfeatures = &$appfeatures->get_module('general');
 $appfeaturemap = &$appfeatures->get_module('featuremap');
 

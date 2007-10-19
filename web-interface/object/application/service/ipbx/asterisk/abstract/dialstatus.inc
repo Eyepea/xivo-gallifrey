@@ -1,6 +1,6 @@
 <?php
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','abstract','abstract.inc'),true);
+xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','abstract.inc'),true);
 
 class xivo_application_service_asterisk_dialstatus_abstract extends xivo_application_service_asterisk_abstract
 {

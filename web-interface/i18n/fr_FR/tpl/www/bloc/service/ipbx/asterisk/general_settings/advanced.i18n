@@ -1,0 +1,26 @@
+; title_content_name
+Paramètres globaux avancés
+
+; smenu_agents
+Agents
+
+; smenu_queues
+Files d'attente
+
+; smenu_meetme
+Chambres de conférence
+
+; fm_generalagents_persistentagents
+Agents persistants :
+
+; fm_generalqueue_persistentmembers
+Membres persistants :
+
+; fm_generalmeetme_audiobuffer
+Taille du tampon audio :
+
+; fm_bt-save
+Sauvegarder
+
+; fm_success-save
+Paramètres globaux avancés sauvegardées avec succès

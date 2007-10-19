@@ -564,6 +564,9 @@ function xivo_substr(str,beg,end)
 {
 	var r = '';
 
+	if(xivo_is_undef(str) == true)
+		return(r);
+
 	var len = str.length;
 
 	if(len == 0 || isNaN(beg) == true)
