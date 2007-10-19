@@ -104,9 +104,9 @@
 #
 
 __version__ = "$Revision$ $Date$"
-__alphanums__ = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijkLmnopqrstuvwxyz0123456789'
 
 # debian.org modules
+import string
 import ConfigParser
 import commands
 import encodings.utf_8
@@ -125,6 +125,8 @@ import threading
 import time
 import urllib
 import _sre
+
+__alphanums__ = string.uppercase + string.lowercase + string.digits
 
 # fiche
 import sendfiche
