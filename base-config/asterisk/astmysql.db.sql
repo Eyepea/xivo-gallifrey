@@ -260,6 +260,23 @@ CREATE INDEX `features__idx__filename` ON `features`(`filename`);
 CREATE INDEX `features__idx__category` ON `features`(`category`);
 CREATE INDEX `features__idx__var_name` ON `features`(`var_name`);
 
+INSERT INTO `features` VALUES (NULL,0,0,0,'features.conf','general','parkext','700');
+INSERT INTO `features` VALUES (NULL,0,0,0,'features.conf','general','context','parkedcalls');
+INSERT INTO `features` VALUES (NULL,0,0,0,'features.conf','general','parkingtime','45');
+INSERT INTO `features` VALUES (NULL,0,0,0,'features.conf','general','parkpos','701-750');
+INSERT INTO `features` VALUES (NULL,0,0,0,'features.conf','general','parkfindnext','no');
+INSERT INTO `features` VALUES (NULL,0,0,0,'features.conf','general','adsipark','no');
+INSERT INTO `features` VALUES (NULL,0,0,0,'features.conf','general','transferdigittimeout','3');
+INSERT INTO `features` VALUES (NULL,0,0,0,'features.conf','general','featuredigittimeout','500');
+INSERT INTO `features` VALUES (NULL,0,0,1,'features.conf','general','courtesytone',NULL);
+INSERT INTO `features` VALUES (NULL,0,0,0,'features.conf','general','xfersound','beep');
+INSERT INTO `features` VALUES (NULL,0,0,0,'features.conf','general','xferfailsound','pbx-invalid');
+INSERT INTO `features` VALUES (NULL,0,0,0,'features.conf','general','pickupexten','*8');
+INSERT INTO `features` VALUES (NULL,1,0,0,'features.conf','featuremap','blindxfer','*1');
+INSERT INTO `features` VALUES (NULL,1,0,0,'features.conf','featuremap','atxfer','*2');
+INSERT INTO `features` VALUES (NULL,1,0,0,'features.conf','featuremap','automon','*3');
+INSERT INTO `features` VALUES (NULL,1,0,0,'features.conf','featuremap','disconnect','*0');
+
 
 DROP TABLE IF EXISTS `generaliax`;
 CREATE TABLE `generaliax` (
