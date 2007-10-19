@@ -22,6 +22,14 @@ class xivo_service_asterisk_trunkfeatures extends xivo_service_asterisk_abstract
 
 		$this->_load_config();
 	}
+
+	function _prepare($data)
+	{
+		$data['registerid'] = (int) $data['registerid'];
+		$data['registercommented'] = (bool) $data['registercommented'];
+
+		return($data);
+	}
 }
 
 ?>
