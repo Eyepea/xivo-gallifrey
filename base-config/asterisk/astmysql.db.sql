@@ -325,7 +325,7 @@ INSERT INTO `generaliax` VALUES (NULL,0,0,0,'iax.conf','general','language','fr'
 INSERT INTO `generaliax` VALUES (NULL,0,0,0,'iax.conf','general','encryption','no');
 INSERT INTO `generaliax` VALUES (NULL,0,0,0,'iax.conf','general','maxauthreq','0');
 INSERT INTO `generaliax` VALUES (NULL,0,0,0,'iax.conf','general','codecpriority','host');
-INSERT INTO `generaliax` VALUES (NULL,0,0,0,'iax.conf','general','disallow','all');
+INSERT INTO `generaliax` VALUES (NULL,0,0,1,'iax.conf','general','disallow',NULL);
 INSERT INTO `generaliax` VALUES (NULL,0,0,1,'iax.conf','general','allow',NULL);
 INSERT INTO `generaliax` VALUES (NULL,0,0,0,'iax.conf','general','rtcachefriends','yes');
 INSERT INTO `generaliax` VALUES (NULL,0,0,0,'iax.conf','general','rtupdate','yes');
@@ -421,7 +421,7 @@ INSERT INTO `generalsip` VALUES (NULL,0,0,1,'sip.conf','general','externhost',NU
 INSERT INTO `generalsip` VALUES (NULL,0,0,0,'sip.conf','general','externrefresh',10);
 INSERT INTO `generalsip` VALUES (NULL,0,0,1,'sip.conf','general','outboundproxy',NULL);
 INSERT INTO `generalsip` VALUES (NULL,0,0,1,'sip.conf','general','outboundproxyport',NULL);
-INSERT INTO `generalsip` VALUES (NULL,0,0,0,'sip.conf','general','disallow','all');
+INSERT INTO `generalsip` VALUES (NULL,0,0,1,'sip.conf','general','disallow',NULL);
 INSERT INTO `generalsip` VALUES (NULL,0,0,1,'sip.conf','general','allow',NULL);
 INSERT INTO `generalsip` VALUES (NULL,0,0,0,'sip.conf','general','relaxdtmf','no');
 INSERT INTO `generalsip` VALUES (NULL,0,0,0,'sip.conf','general','compactheaders','no');
