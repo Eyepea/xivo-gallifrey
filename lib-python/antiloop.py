@@ -221,7 +221,7 @@ def partial_order_from_reversed_ord_pot(rev_graph, v_pot):
 	conso_reach, as well as not yet traversed neighbours. The decision
 	to keep or remove a given edge is taken by just checking if it would
 	introduce a loop in the graph, and this is done as follow:
-	  - if nothing reaches the source vertex or the destination vertes
+	  - if nothing reaches the source vertex or the destination vertex
 	    reaches nothing, adding the considered edge can't introduce a loop ;
 	      O(log(E))
 	  - if the source is already known to be reachable from the destination
@@ -245,7 +245,7 @@ def partial_order_from_reversed_ord_pot(rev_graph, v_pot):
 	      little slower because of internal Python data structures that
 	      could be potentially improved for this algorithm)
 	  - The previous update is done by consolidate_conso_reach() which
-	    returns True if something has change for the destination vertex,
+	    returns True if something has changed for the destination vertex,
 	    so in this case a second lookup is done to check for presence of
 	    the source vertex in the up-to-date reachability set of the
 	    destination vertex. Found implies drop the considered edge - not
