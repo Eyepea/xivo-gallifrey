@@ -112,5 +112,8 @@ Pénalité
 ; no_queue
 Aucune file d'attente
 
+; create_queue
+Créer une file d'attente
+
 ; fm_bt-save
 Sauvegarder
