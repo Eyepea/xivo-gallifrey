@@ -148,10 +148,10 @@ $array['filter']['allow'] = array('set' => false,'chk' => 2,'value' => array(
 						XIVO_SRE_IPBX_AST_CODEC_VIDEO_H261,
 						XIVO_SRE_IPBX_AST_CODEC_VIDEO_H263,
 						XIVO_SRE_IPBX_AST_CODEC_VIDEO_H263P));
-$array['filter']['port'] = array('set' => false,'chk' => 2);
-$array['filter']['ipaddr'] = array('set' => false,'chk' => 2);
-$array['filter']['regexten'] = array('set' => false,'chk' => 2);
-$array['filter']['setvar'] = array('set' => false,'chk' => 2);
+$array['filter']['port'] = array('set' => false,'chk' => 0);
+$array['filter']['ipaddr'] = array('set' => false,'chk' => 0);
+$array['filter']['regexten'] = array('set' => false,'chk' => 0);
+$array['filter']['setvar'] = array('set' => false,'chk' => 0);
 $array['filter']['username'] = array('set' => false,'chk' => 2,'maxlen' => 80);
 $array['filter']['mailbox'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9#\*]{1,40}(@[a-z0-9@_\-]{1,39})?$/','maxlen' => 80);
 

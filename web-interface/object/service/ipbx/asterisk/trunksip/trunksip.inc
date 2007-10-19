@@ -27,6 +27,9 @@ class xivo_service_asterisk_trunksip extends xivo_service_asterisk_abstract
 	{
 		$data['commented'] = (bool) $data['commented'];
 
+		if(empty($data['call-limit']) === true)
+			$data['call-limit'] = '';
+
 		return($data);
 	}
 

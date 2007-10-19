@@ -115,7 +115,7 @@ $array['filter']['allow'] = array('set' => false,'chk' => 2,'value' => array(
 						XIVO_SRE_IPBX_AST_CODEC_VIDEO_H261,
 						XIVO_SRE_IPBX_AST_CODEC_VIDEO_H263,
 						XIVO_SRE_IPBX_AST_CODEC_VIDEO_H263P));
-$array['filter']['port'] = array('set' => false,'cast' => 'uint','between' => array(1,65535));
-$array['filter']['ipaddr'] = array('set' => false,'chk' => 2);
+$array['filter']['port'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,65535));
+$array['filter']['ipaddr'] = array('set' => false,'chk' => 0);
 
 ?>

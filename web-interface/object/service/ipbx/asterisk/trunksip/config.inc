@@ -139,10 +139,10 @@ $array['filter']['allow'] = array('set' => false,'chk' => 2,'value' => array(
 						XIVO_SRE_IPBX_AST_CODEC_VIDEO_H261,
 						XIVO_SRE_IPBX_AST_CODEC_VIDEO_H263,
 						XIVO_SRE_IPBX_AST_CODEC_VIDEO_H263P));
-$array['filter']['port'] = array('set' => false,'cast' => 'uint','between' => array(1,65535));
-$array['filter']['ipaddr'] = array('set' => false,'chk' => 2);
-$array['filter']['regexten'] = array('set' => false,'chk' => 2);
-$array['filter']['setvar'] = array('set' => false,'chk' => 2);
+$array['filter']['port'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,65535));
+$array['filter']['ipaddr'] = array('set' => false,'chk' => 0);
+$array['filter']['regexten'] = array('set' => false,'chk' => 0);
+$array['filter']['setvar'] = array('set' => false,'chk' => 0);
 $array['filter']['fromuser'] = array('set' => false,'chk' => 2,'maxlen' => 80);
 $array['filter']['fromdomain'] = array('set' => false,'chk' => 2,'func' => 'xivo_filter::chk_host_ipv4_strict');
 
