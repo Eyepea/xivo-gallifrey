@@ -267,8 +267,8 @@ INSERT INTO features VALUES (NULL,0,0,0,'features.conf','general','adsipark','no
 INSERT INTO features VALUES (NULL,0,0,0,'features.conf','general','transferdigittimeout','3');
 INSERT INTO features VALUES (NULL,0,0,0,'features.conf','general','featuredigittimeout','500');
 INSERT INTO features VALUES (NULL,0,0,1,'features.conf','general','courtesytone',NULL);
-INSERT INTO features VALUES (NULL,0,0,0,'features.conf','general','xfersound','beep');
-INSERT INTO features VALUES (NULL,0,0,0,'features.conf','general','xferfailsound','pbx-invalid');
+INSERT INTO features VALUES (NULL,0,0,1,'features.conf','general','xfersound',NULL);
+INSERT INTO features VALUES (NULL,0,0,1,'features.conf','general','xferfailsound',NULL);
 INSERT INTO features VALUES (NULL,0,0,0,'features.conf','general','pickupexten','*8');
 INSERT INTO features VALUES (NULL,1,0,0,'features.conf','featuremap','blindxfer','*1');
 INSERT INTO features VALUES (NULL,1,0,0,'features.conf','featuremap','atxfer','*2');
