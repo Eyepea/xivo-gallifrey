@@ -1,3 +1,10 @@
+## /bin/sh -e simulate dpatch for prepend_chlog.py
+## Feature
+## func_odbc_12.dpatch by Tzafrir Cohen <tzafrir.cohen@xorcom.com>
+## DP: The backport of func_odbc from
+## DP: http://svncommunity.digium.com/svn/func_odbc/1.2/ , revision 9
+## DP: Code will be merged into trunk in 1.4.
+
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/configs/func_odbc.conf.sample
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000

@@ -1,3 +1,8 @@
+## /bin/sh -e simulate dpatch for prepend_chlog.py
+## Build
+## codecs_Makefile.dpatch by Mark Purcell <msp@debian.org>
+## DP: Use installed libgsm if availble
+
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/codecs/codec_gsm.c
 ===================================================================
 --- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/codecs/codec_gsm.c	2005-11-29 19:24:39.000000000 +0100

@@ -1,3 +1,8 @@
+## /bin/sh -e simulate dpatch for prepend_chlog.py
+## Build
+## Makefile_hostcc.dpatch by Kilian Krause <kilian@debian.org>
+## DP: Remove gcc hardcoding (Closes: #316802)
+
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/Makefile
 ===================================================================
 --- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/Makefile	2007-08-08 14:43:02.000000000 +0200

@@ -1,3 +1,7 @@
+## /bin/sh -e simulate dpatch for prepend_chlog.py
+## Feature
+## DP: CDR in SQLite3
+
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/cdr/Makefile
 ===================================================================
 --- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/cdr/Makefile	2007-08-08 14:42:39.000000000 +0200

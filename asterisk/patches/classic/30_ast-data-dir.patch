@@ -1,3 +1,12 @@
+## /bin/sh -e simulate dpatch for prepend_chlog.py
+## Config
+## ast_data_dir.dpatch by Mark Purcell <msp@debian.org>
+## DP: Patch to make Asterisk conform with the Linux File System Hierarchy Standard (FHS)
+## DP: Places read-only architecture-independent data under /usr/share/asterisk (autoconf --datadir)
+## DP: not /var/lib/asterisk
+## (in short make ASTVARLIBDIR become ASTDATADIR)
+## -- was applied upstream for 1.2. Full transition in 1.4.
+
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_dial.c
 ===================================================================
 --- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/apps/app_dial.c	2007-07-03 14:34:14.000000000 +0200

@@ -1,3 +1,9 @@
+## /bin/sh -e simulate dpatch for prepend_chlog.py
+## Build
+## nomarch.dpatch by Kilian Krause <kilian@debian.org>
+## DP: Don't optimize for i686 anywhere
+## -- upstream will move to configure with 1.4
+
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/Makefile
 ===================================================================
 --- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/Makefile	2007-08-08 14:42:43.000000000 +0200

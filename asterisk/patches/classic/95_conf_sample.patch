@@ -1,3 +1,8 @@
+## /bin/sh -e simulate dpatch for prepend_chlog.py
+## Config
+## conf_sample.dpatch by Jose Carlos Garcia Sogo <jsogo@debian.org>
+## DP: Neither load chan_oss nor chan_h323 by default in sample conf
+
 diff -urNad asterisk-1.2.7.1.dfsg~/configs/modules.conf.sample asterisk-1.2.7.1.dfsg/configs/modules.conf.sample
 --- asterisk-1.2.7.1.dfsg~/configs/modules.conf.sample	2005-11-29 18:24:39.000000000 +0000
 +++ asterisk-1.2.7.1.dfsg/configs/modules.conf.sample	2006-04-21 17:28:48.000000000 +0100

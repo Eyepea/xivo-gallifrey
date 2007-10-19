@@ -1,3 +1,9 @@
+## /bin/sh -e simulate dpatch for prepend_chlog.py
+## Build
+## chanzap_disable_r2.dpatch by Tzafrir Cohen <tzafrir.cohen@xorcom.com>
+## DP: disable the nunfunctional support for R2 in chan_zap
+## -- applied upstream for trunk (1.4.x)
+
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/Makefile
 ===================================================================
 --- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/channels/Makefile	2007-08-08 14:42:42.000000000 +0200

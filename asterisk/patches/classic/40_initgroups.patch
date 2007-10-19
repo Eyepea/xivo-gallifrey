@@ -1,3 +1,8 @@
+## /bin/sh -e simulate dpatch for prepend_chlog.py
+## 40_initgroups.dpatch by Kilian Krause <kk@verfaction.de>
+## DP: does initialize groups of asterisk user if no -G is given.
+## -- applied upstream for 1.2
+
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/asterisk.c
 ===================================================================
 --- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/asterisk.c	2007-08-08 14:30:23.000000000 +0200

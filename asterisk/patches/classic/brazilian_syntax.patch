@@ -1,3 +1,9 @@
+## /bin/sh -e simulate dpatch for prepend_chlog.py
+## Feature
+## brazilian_syntax.dpatch by Celso Fassoni <celso.fassoni@gmail.com>
+## DP: Brazilian portuguese syntax for VoiceMail() and Say* apps
+## DP: at Wed Apr 26 17:25:54 BRT 2006
+
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_sayunixtime.c
 ===================================================================
 --- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/apps/app_sayunixtime.c	2007-08-08 14:42:48.000000000 +0200

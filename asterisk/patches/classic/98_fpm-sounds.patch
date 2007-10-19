@@ -1,3 +1,6 @@
+## /bin/sh -e simulate dpatch for prepend_chlog.py
+## conf_sample.dpatch by Jose Carlos Garcia Sogo <jsogo@debian.org>
+
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/Makefile
 ===================================================================
 --- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/Makefile	2007-08-08 14:30:23.000000000 +0200

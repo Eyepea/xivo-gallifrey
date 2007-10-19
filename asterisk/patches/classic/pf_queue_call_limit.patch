@@ -1,3 +1,20 @@
+2007-00-00   Richard Braun <rbraun@proformatique.com>
+
+	pf_queue_call_limit.patch
+	$Revision$
+	$Date$
+	Feature
+
+	This patch adds a call-limit option per queue member so that one can
+	still pass outgoing calls when this limit is reached (which is not
+	possible if the limit is set directly on the SIP/Whatever account)
+
+	Patch status: known as BROKEN on 2007-10-19
+	Something is not handled properly when the queue member transfers a
+	call to somebody else. The resulting behavior is unknown.
+	
+	Note: Digium doesn't really care about that feature.
+
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_queue.c
 ===================================================================
 --- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/apps/app_queue.c	2007-08-20 17:55:00.000000000 +0200

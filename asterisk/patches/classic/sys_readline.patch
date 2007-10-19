@@ -1,3 +1,7 @@
+## /bin/sh -e simulate dpatch for prepend_chlog.py
+## sys_readline.dpatch by Tzafrir Cohen <tzafrir.cohen@xorcom.com>
+## DP: Use the system copy of editline
+
 diff -urNad asterisk-1.2.9.1.dfsg/asterisk.c /tmp/dpep.eom8T2/asterisk-1.2.9.1.dfsg/asterisk.c
 --- asterisk-1.2.9.1.dfsg/asterisk.c	2006-08-11 10:31:42.000000000 +0300
 +++ /tmp/dpep.eom8T2/asterisk-1.2.9.1.dfsg/asterisk.c	2006-08-11 10:28:15.000000000 +0300

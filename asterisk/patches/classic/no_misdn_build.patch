@@ -1,3 +1,9 @@
+## /bin/sh -e simulate dpatch for prepend_chlog.py
+## Build
+## no_misdn_build.dpatch by Marc Dequ-bènes (Duck) <mdequenes@proformatique.com>-A
+## DP: Disable the build of the chan_misdn that is shipped with the official
+## DP: Asterisk tarball from Digium
+
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/Makefile
 ===================================================================
 --- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/channels/Makefile	2007-08-08 14:43:04.000000000 +0200

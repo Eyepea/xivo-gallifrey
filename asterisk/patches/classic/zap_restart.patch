@@ -1,3 +1,10 @@
+## /bin/sh -e simulate dpatch for prepend_chlog.py
+## Feature
+## zap_restart.dpatch by Tzafrir Cohen <tzafrir.cohen@xorcom.com>
+## DP: Adds a CLI command "zap restart" that destroys all zaptel channels and
+## DP: re-loads zaptel configuration from scratch.
+## DP: Thus we have a "reload" for zaptel
+
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_zap.c
 ===================================================================
 --- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/channels/chan_zap.c	2007-08-08 14:42:40.000000000 +0200

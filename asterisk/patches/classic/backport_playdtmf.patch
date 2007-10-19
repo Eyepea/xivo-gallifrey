@@ -1,3 +1,10 @@
+## /bin/sh -e simulate dpatch for prepend_chlog.py
+## Feature
+## ukcid.dpatch by Tzafrir Cohen <tzafrir.cohen@xorcom.com>
+## DP: A backport of playdtmf. See http://bugs.digium.com/view.php?id=6682
+## DP: patch: svn diff -r 10646:13356 http://svn.digium.com/svn/asterisk/team/oej/test-this-branch/apps/app_senddtmf.c
+## DP: From: http://www.lusyn.com/asterisk/patches.html
+
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_senddtmf.c
 ===================================================================
 --- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/apps/app_senddtmf.c	2007-08-08 14:42:40.000000000 +0200

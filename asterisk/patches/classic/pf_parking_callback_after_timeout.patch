@@ -1,7 +1,37 @@
-Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/res/res_features.c
+2007-10-20  Guillaume Knispel <gknispel@proformatique.com>
+
+	pf_parking_callback_after_timeout.patch
+	$Revision$
+	$Date$
+	Bugfix / Behavioral change
+	
+	When parked by an AMI Redirect, the right peer is set to be called back
+	once the timeout is done.
+	Without this patch it seems that the parked side tries to call itself
+	back when the timeout expires, which is kind of a really strange
+	behavior :) This is because, as the Redirect message is completely
+	asynchronous to an existing bridge between two chans, one of which
+	being the target of the call transfer, the implementation has no other
+	choice than doing a masquerade which will both send the target to a new
+	context / exten / priority and make it appears having hung up to the
+	other side of the bridge. The "put in parking" code then wrongly
+	understand that the target chan is going to the parking all by itself
+	and should be resent to its previous extension when the timeout
+	expires.
+	We are using the fact that BRIDGEPEER is only updated if a new bridging
+	occurs involving the target chan, and is never deleted. So in
+	ast_park_call() if BRIDGEPEER is present it means we just have been
+	parked by a third party while being bridge with somebody, so it seems
+	more reasonnable to behave as if our previous peer just parked us,
+	instead of the "we parked ourself" default.
+	Default is still taken anyway if the BRIDGEPEER variable is absent.
+
+	Patch status: UNTESTED on 2007-10-20
+
+Index: asterisk-1.2.24/res/res_features.c
 ===================================================================
---- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/res/res_features.c	2007-09-27 17:20:55.000000000 +0200
-+++ asterisk-1.2.24.dfsg+pf.0.1~svn1329/res/res_features.c	2007-09-27 17:23:46.000000000 +0200
+--- asterisk-1.2.24.orig/res/res_features.c	2007-06-22 18:02:40.000000000 +0200
++++ asterisk-1.2.24/res/res_features.c	2007-10-20 00:34:11.000000000 +0200
 @@ -280,6 +280,7 @@
  	struct parkeduser *pu, *cur;
  	int i,x,parking_range;
@@ -10,17 +40,18 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/res/res_features.c
  	struct ast_context *con;
  
  	pu = malloc(sizeof(struct parkeduser));
-@@ -327,8 +328,15 @@
+@@ -327,8 +328,16 @@
  		pu->parkingtime = parkingtime;
  	if (extout)
  		*extout = x;
 -	if (peer) 
 -		ast_copy_string(pu->peername, peer->name, sizeof(pu->peername));
 +        if (peer) {
++                const char *bridgepeer = pbx_builtin_getvar_helper(chan, "BRIDGEPEER");
 +                /* If (chan == peer) (which occurs in the case of an Originate action), we fill the peername in order
 +                   for the right peer to be called back after the parking's timeout */
-+                if (chan == peer)
-+                        ast_copy_string(peername, pbx_builtin_getvar_helper(chan, "BRIDGEPEER"), sizeof(peername));
++                if ((chan == peer) && bridgepeer)
++                        ast_copy_string(peername, bridgepeer, sizeof(peername));
 +                else
 +                        ast_copy_string(peername, peer->name, sizeof(peername));
 +                ast_copy_string(pu->peername, peername, sizeof(pu->peername));
@@ -28,7 +59,7 @@ Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/res/res_features.c
  
  	/* Remember what had been dialed, so that if the parking
  	   expires, we try to come back to the same place */
-@@ -362,7 +370,7 @@
+@@ -362,7 +371,7 @@
  		"Timeout: %ld\r\n"
  		"CallerID: %s\r\n"
  		"CallerIDName: %s\r\n"

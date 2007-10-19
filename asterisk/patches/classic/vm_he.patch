@@ -1,3 +1,8 @@
+## /bin/sh -e simulate dpatch for prepend_chlog.py
+## Feature
+## vm_he.dpatch by Tzafrir Cohen <tzafrir.cohen@xorcom.com>
+## DP: Add Hebrew support to the voicemail app.
+
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/apps/app_voicemail.c
 ===================================================================
 --- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/apps/app_voicemail.c	2007-08-08 14:42:53.000000000 +0200

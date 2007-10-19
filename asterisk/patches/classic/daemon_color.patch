@@ -1,3 +1,10 @@
+## /bin/sh -e simulate dpatch for prepend_chlog.py
+## Feature
+## daemon_color.dpatch by Tzafrir Cohen <tzafrir.cohen@xorcom.com>
+## DP: Enable color support even in a daemonized Asterisk. This is
+## DP: done by assuming the default value 'xterm' for TERM.
+## DP: See upstream bug http://bugs.digium.com/view.php?id=9048
+
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/term.c
 ===================================================================
 --- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/term.c	2007-08-08 14:42:37.000000000 +0200

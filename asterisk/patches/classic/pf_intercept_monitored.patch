@@ -1,3 +1,22 @@
+2007-08-20  Corentin Le Gall <clegall@proformatique.com>
+
+	pf_intercept_monitored.patch
+	$Revision$
+	$Date$
+	Feature	+ 3rd party bug workaround
+
+	A SIP agent can register to Asterisk to monitor other existing lines
+	connected to the system. When a Thomson ST2030 IP phone does that, it
+	can display incoming calls with blinking push buttons, but it was not
+	possible to intercept the call on the monitoring phone by just pressing
+	such a blinking push button. This patch makes it possible.
+
+	This patch comes from http://bugs.digium.com/view.php?id=5014 and
+	http://rmdir.de/~michael/pickup-mgernoth-2006-10-03.patch , but has
+	been modified because ST2030 send false SUBSCRIBE message after
+
+	Patch status: known as OK on 2007-10-19 with ST2030 phones 
+
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/channels/chan_sip.c
 ===================================================================
 --- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/channels/chan_sip.c	2007-08-20 17:56:17.000000000 +0200

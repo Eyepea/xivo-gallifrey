@@ -1,3 +1,10 @@
+## /bin/sh -e simulate dpatch for prepend_chlog.py
+## Feature
+## option_detach.dpatch by Tzafrir Cohen <tzafrir.cohen@xorcom.com>
+## DP: when running asterisk -F: detach, even if -v or -d was given
+## -- applied upstream as -F option to *force* forking
+## -- in trunk (will be 1.4.x)
+
 Index: asterisk-1.2.24.dfsg+pf.0.1~svn1329/asterisk.c
 ===================================================================
 --- asterisk-1.2.24.dfsg+pf.0.1~svn1329.orig/asterisk.c	2007-06-28 01:22:13.000000000 +0200
