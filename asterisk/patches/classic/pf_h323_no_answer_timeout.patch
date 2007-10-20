@@ -1,0 +1,23 @@
+2007-09-05  Guillaume Knispel <gknispel@proformatique.com>
+
+	pf_h323_no_answer_timeout.patch
+	$Revision$
+	$Date$
+	Behavioral change.
+
+	This patch makes Asterisk disable the timeout OpenH323 automatically
+	uses by default when an outgoing call is placed to abort it if nobody
+	answer after 1 minute.
+
+Index: asterisk-classic/channels/h323/ast_h323.cpp
+===================================================================
+--- asterisk-classic.orig/channels/h323/ast_h323.cpp	2007-10-21 01:35:50.000000000 +0200
++++ asterisk-classic/channels/h323/ast_h323.cpp	2007-10-21 01:35:51.000000000 +0200
+@@ -295,6 +295,7 @@
+ {
+ 	// Capabilities will be negotiated on per-connection basis
+ 	capabilities.RemoveAll();
++	signallingChannelCallTimeout = PMaxTimeInterval;
+ }
+ 
+ /** The fullAddress parameter is used directly in the MakeCall method so
