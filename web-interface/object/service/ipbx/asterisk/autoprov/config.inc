@@ -7,14 +7,14 @@ $array['autoprov'] = array();
 $array['autoprov']['prov']['url'] = '/prov';
 $array['autoprov']['prov']['method'] = 'POST';
 $array['autoprov']['prov']['protocol'] = 'tcp';
-$array['autoprov']['prov']['sndtimeo'] = array('sec' => 60,'usec' => 0);
-$array['autoprov']['prov']['rcvtimeo'] = array('sec' => 60,'usec' => 0);
+$array['autoprov']['prov']['sndtimeo'] = array('sec' => 10,'usec' => 0);
+$array['autoprov']['prov']['rcvtimeo'] = array('sec' => 10,'usec' => 0);
 
 $array['autoprov']['list']['url'] = '/list';
 $array['autoprov']['list']['method'] = 'GET';
 $array['autoprov']['list']['protocol'] = 'tcp';
-$array['autoprov']['list']['sndtimeo'] = array('sec' => 60,'usec' => 0);
-$array['autoprov']['list']['rcvtimeo'] = array('sec' => 60,'usec' => 0);
+$array['autoprov']['list']['sndtimeo'] = array('sec' => 10,'usec' => 0);
+$array['autoprov']['list']['rcvtimeo'] = array('sec' => 10,'usec' => 0);
 
 $array['element'] = array();
 

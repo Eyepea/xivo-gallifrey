@@ -4,6 +4,18 @@ xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 
 class xivo_application_service_asterisk_extenumbers_abstract extends xivo_application_service_asterisk_abstract
 {
+	var $_extenumbers	= null;
+
+	function xivo_application_service_asterisk_extenumbers_abstract(&$service)
+	{
+		$this->xivo_application_service_asterisk_abstract(&$service);
+		
+		if(($this->_extenumbers = &$this->_service->get_module('extenumbers')) === false)
+			return(false);
+
+		return(true);
+	}
+
 	function get($type,$typeval)
 	{
 		$this->_info = false;
@@ -12,23 +24,26 @@ class xivo_application_service_asterisk_extenumbers_abstract extends xivo_applic
 		if(is_scalar($type) === false || is_scalar($typeval) === false)
 			return(false);
 
-		if(($extenumbers = &$this->_service->get_module('extenumbers')) === false)
-			return(false);
-
 		$extenumbers_where = array();
 		$extenumbers_where['type'] = $type;
 		$extenumbers_where['typeval'] = $typeval;
 
-		$this->_info = $extenumbers->get_where($extenumbers_where);
-		$this->_origin = $extenumbers->get_origin();
+		$this->_info = $this->_extenumbers->get_where($extenumbers_where);
+		$this->_origin = $this->_extenumbers->get_origin();
 
 		return($this->_info);
 	}
 
+	function get_element()
+	{
+		return($this->_extenumbers->get_element());
+	}
+
 	function set($action,$type,$number,$context,$typeval='')
 	{
-		if(($action !== 'add' && $action !== 'edit' && $action !== 'save') === true
-		|| ($extenumbers = &$this->_service->get_module('extenumbers')) === false)
+		$this->_reset();
+
+		if($action !== 'add' && $action !== 'edit' && $action !== 'save')
 			return(false);
 
 		$extenum = array();
@@ -47,13 +62,13 @@ class xivo_application_service_asterisk_extenumbers_abstract extends xivo_applic
 
 		$exists = false;
 
-		if(($rs = $extenumbers->chk_values($extenum)) === false
-		|| ($exists = $extenumbers->exists_type($rs)) !== false)
+		if(($rs = $this->_extenumbers->chk_values($extenum)) === false
+		|| ($exists = $this->_extenumbers->exists_type($rs)) !== false)
 		{
-			$this->_set_result($extenumbers->get_filter_result());
+			$this->_set_result($this->_extenumbers->get_filter_result());
 
 			if($exists === false)
-				$this->_set_error($extenumbers->get_filter_error());
+				$this->_set_error($this->_extenumbers->get_filter_error());
 			else
 				$this->_set_error('exists');
 
@@ -73,8 +88,7 @@ class xivo_application_service_asterisk_extenumbers_abstract extends xivo_applic
 		if(xivo_haslen($typeval) === true)
 			$rs['typeval'] = $typeval;
 
-		$extenumbers = &$this->_service->get_module('extenumbers');
-		$this->_return = $extenumbers->add($rs);
+		$this->_return = $this->_extenumbers->add($rs);
 
 		return($this->_return);
 	}
@@ -89,8 +103,7 @@ class xivo_application_service_asterisk_extenumbers_abstract extends xivo_applic
 		if(($rs = $this->get_result()) === null || $rs === false)
 			return($rs);
 
-		$extenumbers = &$this->_service->get_module('extenumbers');
-		$this->_return = $extenumbers->edit($id,$rs);
+		$this->_return = $this->_extenumbers->edit($id,$rs);
 
 		return($this->_return);
 	}
@@ -113,15 +126,34 @@ class xivo_application_service_asterisk_extenumbers_abstract extends xivo_applic
 		else if(($id = xivo_uint($id)) === 0)
 			return(null);
 
-		if(($extenumbers = &$this->_service->get_module('extenumbers')) === false)
-			return(false);
-
-		$r = $extenumbers->delete($id);
+		$r = $this->_extenumbers->delete($id);
 
 		if($status === 'delete')
 			$this->_return = $r;
 
 		return($r);
+	}
+
+	function add_origin($origin=null)
+	{
+		if(empty($this->_origin) === false
+		&& $origin === null)
+			$origin = $this->_origin;
+		else if(is_array($origin) === false)
+			return(false);
+			
+		return($this->add_origin($origin));
+	}
+
+	function edit_origin($origin=null)
+	{
+		if(empty($this->_origin) === false
+		&& $origin === null)
+			$origin = $this->_origin;
+		else if(is_array($origin) === false)
+			return(false);
+			
+		return($this->edit_origin($origin));
 	}
 }
 

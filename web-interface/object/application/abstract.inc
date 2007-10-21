@@ -64,6 +64,22 @@ class xivo_application_abstract extends xivo_libconfig_abstract
 		$this->_return = array();
 	}
 
+	function get_info()
+	{
+		return($this->_info);
+	}
+
+	function get_info_var($var)
+	{
+		$var = (string) $var;
+
+		if(is_array($this->_info) === false
+		|| isset($this->_info[$var]) === false)
+			return(null);
+
+		return($this->_info[$var]);
+	}
+
 	function _set_result($name,$value)
 	{
 		$name = (string) $name;
@@ -104,6 +120,22 @@ class xivo_application_abstract extends xivo_libconfig_abstract
 			return(null);
 
 		return($this->_result[$name][$var]);
+	}
+
+	function get_return()
+	{
+		return($this->_return);
+	}
+
+	function get_return_var($var)
+	{
+		$var = (string) $var;
+
+		if(is_array($this->_return) === false
+		|| isset($this->_return[$var]) === false)
+			return(null);
+
+		return($this->_return[$var]);
 	}
 
 	function _set_error($name,$value=false)

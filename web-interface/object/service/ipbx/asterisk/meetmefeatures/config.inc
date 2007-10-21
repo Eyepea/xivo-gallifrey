@@ -21,7 +21,8 @@ $array['element']['musiconhold'] = array();
 $array['element']['musiconhold']['default'] = '';
 
 $array['element']['context'] = array();
-$array['element']['context']['default'] = '';
+$array['element']['context']['default'] = 'default';
+$array['element']['context']['setdef'] = true;
 
 $array['element']['exit'] = array();
 $array['element']['exit']['value'] = array(0,1);
@@ -44,12 +45,12 @@ $array['element']['video']['default'] = 0;
 $array['element']['video']['set'] = true;
 
 $array['filter'] = array();
-$array['filter']['name'] = array('minlen' => 1,'maxlen' => 128);
+$array['filter']['name'] = array('regexp' => '/^[a-z0-9_\.-]+$/','minlen' => 1,'maxlen' => 128);
 $array['filter']['meetmeid'] = array('cast' => 'uint');
 $array['filter']['number'] = array('regexp' => '/^[0-9\*#]+$/','minlen' => 1,'maxlen' => 40);
 $array['filter']['mode'] = array('key' => array('all','talk','listen'));
 $array['filter']['exit'] = array('bool' => true);
-$array['filter']['musiconhold'] = array('set' => false,'chk' => 2,'maxlen' => 128);
+$array['filter']['musiconhold'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 20);
 $array['filter']['quiet'] = array('bool' => true);
 $array['filter']['record'] = array('bool' => true);
 $array['filter']['video'] = array('bool' => true);

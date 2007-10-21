@@ -1,0 +1,135 @@
+<?php
+
+xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','realstatic','abstract.inc'),true);
+
+class xivo_application_service_asterisk_realstatic_meetme_room extends xivo_application_service_asterisk_realstatic_abstract
+{
+	var $_name		= 'meetmeroom';
+	var $_modulename	= 'meetme';
+	var $_category		= 'rooms';
+	var $_cat_metric	= 1;
+	var $_var_name		= 'conf';
+	var $_filename		= 'meetme.conf';
+
+	function xivo_application_service_asterisk_realstatic_meetme_room(&$service)
+	{
+		return($this->_init(&$service));
+	}
+
+	function _load_config()
+	{
+		return(parent::_load_config(dirname(__FILE__)));
+	}
+
+	function get_all($disable=null,$prepare=true)
+	{
+		return(parent::get_all($disable,$prepare));
+	}
+
+	function get_meetmeroom($id,$disable=null)
+	{
+		$this->_info = $this->_origin = false;
+
+		$this->_info[$this->_name] = $info = $this->_realstatic->get($id);
+		$this->_origin[$this->_name] = $this->_realstatic->get_origin();
+
+		return($this->_info[$this->_name]);
+	}
+
+	function set_meetmeroom($arr)
+	{
+		$this->_reset();
+
+		if(is_array($arr) === false)
+		{
+			$this->_set_result($this->_name,null);
+			$this->_set_error($this->_name,'invalid data');
+
+			return(false);
+		}
+
+		if(($rs = $this->chk_values($arr)) === false)
+		{
+			$this->_set_result($this->_name,$this->get_filter_result());
+			$this->_set_error($this->_name,$this->get_filter_error());
+
+			return(false);
+		}
+
+		$this->_set_result($this->_name,$rs);
+
+		return(true);
+	}
+
+	function add_meetmeroom()
+	{
+		if(($rs = $this->get_result($this->_name)) === null || $rs === false)
+			return($rs);
+
+		$arr = array();
+		$arr['category'] = $this->_category;
+		$arr['cat_metric'] = $this->_cat_metric;
+		$arr['var_name'] = $this->_var_name;
+
+		$arr['var_val'] = $rs['number'].',';
+
+		if(xivo_haslen($rs,'pin') === true)
+			$arr['var_val'] .= $rs['pin'];
+
+		if(xivo_haslen($rs,'admin-pin') === true)
+			$arr['var_val'] .= ','.$rs['admin-pin'];
+
+		$arr['var_val'] = rtrim($arr['var_val'],',');
+
+		$this->_return[$this->_name] = $this->_realstatic->add($arr);
+
+		return($this->_return[$this->_name]);
+	}
+
+	function edit_meetmeroom($id=0)
+	{
+		if(xivo_issa($this->_name,$this->_info) === true)
+			$id = $this->_info[$this->_name]['id'];
+		else if(($id = xivo_uint($id)) === 0)
+			return(false);
+
+		if(($rs = $this->get_result($this->_name)) === null || $rs === false)
+			return($rs);
+
+		$arr = array();
+		$arr['category'] = $this->_category;
+		$arr['cat_metric'] = $this->_cat_metric;
+		$arr['var_name'] = $this->_var_name;
+
+		$arr['var_val'] = $rs['number'].',';
+
+		if(xivo_haslen($rs,'pin') === true)
+			$arr['var_val'] .= $rs['pin'];
+
+		if(xivo_haslen($rs,'admin-pin') === true)
+			$arr['var_val'] .= ','.$rs['admin-pin'];
+
+		$arr['var_val'] = rtrim($arr['var_val'],',');
+
+		$this->_return[$this->_name] = $this->_realstatic->edit($id,$arr);
+
+		return($this->_return[$this->_name]);
+	}
+
+	function delete_meetmeroom($status,$id=0)
+	{
+		if(xivo_issa($this->_name,$this->_info) === true)
+			$id = $this->_info[$this->_name]['id'];
+		else if(($id = xivo_uint($id)) === 0)
+			return(null);
+
+		$r = $this->_realstatic->delete($id);
+
+		if($status === 'delete')
+			$this->_return[$this->_name] = $r;
+
+		return($r);
+	}
+}
+
+?>

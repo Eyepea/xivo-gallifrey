@@ -149,7 +149,7 @@ $array['filter']['enablebusy'] = array('bool' => true);
 $array['filter']['destbusy'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9\*#_-]+$/i','maxlen' => 128);
 $array['filter']['enableunc'] = array('bool' => true);
 $array['filter']['destunc'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9\*#_-]+$/i','maxlen' => 128);
-$array['filter']['musiconhold'] = array('set' => false,'chk' => 2,'maxlen' => 20);
+$array['filter']['musiconhold'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 20);
 $array['filter']['outcallerid'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_-]+$/i','maxlen' => 80);
 $array['filter']['description'] = array('chk' => 2,'maxlen' => 1000,'cast' => 'sgraph_crlf_tab','eol' => true);
 

@@ -17,6 +17,18 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 		$param = array();
 		$param['filename'] = $this->_filename;
 
+		if(isset($this->_cat_metric) === true)
+			$param['cat_metric'] = $this->_cat_metric;
+
+		if(isset($this->_var_metric) === true)
+			$param['var_metric'] = $this->_var_metric;
+
+		if(isset($this->_category) === true)
+			$param['category'] = $this->_category;
+
+		if(isset($this->_var_name) === true)
+			$param['var_name'] = $this->_var_name;
+
 		$this->_realstatic = &$this->_service->get_realstatic($this->_modulename,$param);
 
 		if($this->_realstatic === false)
@@ -36,16 +48,33 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 		return($this->_info);
 	}
 
+	function get_all($disable=null)
+	{
+		return($this->_realstatic->get_all($disable));
+	}
+
+	function get_all_where($arr,$disable=null)
+	{
+		return($this->_realstatic->get_all_where($arr,$disable));
+	}
+
 	function get_all_by_category($disable=null)
 	{
 		$this->_info = $this->_origin = array();
 
-		$arr = array();
-		$arr['category'] = $this->_category;
-
-		$r = $this->_realstatic->get_all_by_category($arr,$disable);
+		$r = $this->_realstatic->get_all_by_category(null,$disable);
 
 		return($r);
+	}
+
+	function enable($id)
+	{
+		return($this->_realstatic->enable($id));
+	}
+
+	function disable($id)
+	{
+		return($this->_realstatic->disable($id));
 	}
 
 	function get_elements()
@@ -256,6 +285,28 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 		}
 
 		return(true);
+	}
+
+	function add_origin($origin=null)
+	{
+		if(empty($this->_origin[$this->_name]) === false
+		&& $origin === null)
+			$origin = $this->_origin[$this->_name];
+		else if(is_array($origin) === false)
+			return(false);
+			
+		return($this->_realstatic->add_origin($origin));
+	}
+
+	function edit_origin($origin=null)
+	{
+		if(empty($this->_origin[$this->_name]) === false
+		&& $origin === null)
+			$origin = $this->_origin[$this->_name];
+		else if(is_array($origin) === false)
+			return(false);
+			
+		return($this->_realstatic->edit_origin($origin));
 	}
 }
 

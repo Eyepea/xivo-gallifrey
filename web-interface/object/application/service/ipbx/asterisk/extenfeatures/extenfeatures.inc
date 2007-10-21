@@ -6,6 +6,7 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 {
 	var $_origin		= array();
 	var $_status		= '';
+	var $_extensions	= null;
 	var $_extenumbers	= null;
 	var $_conf		= array();
 	var $_filter		= false;
@@ -15,7 +16,8 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 	{
 		$this->xivo_application_asterisk_abstract(&$service);
 
-		if(($this->_extenumbers = &$this->get_abstract('extenumbers')) === false)
+		if(($this->_extensions = &$this->_service->get_module('extensions')) === false
+		|| ($this->_extenumbers = &$this->get_abstract('extenumbers')) === false)
 			return(false);
 
 		$this->_load_config(dirname(__FILE__));
@@ -38,10 +40,7 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 		$arr = array();
 		$arr['context'] = $this->_context;
 
-		if(($extensions = &$this->_service->get_module('extensions')) === false)
-			return(false);
-
-		return($extensions->get_all_name_by_context($arr,$disable,true));
+		return($this->_extensions->get_all_name_by_context($arr,$disable,true));
 	}
 
 	function _get_extenfeatures($name,$disable=null)
@@ -49,15 +48,12 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 		$this->_info['extenfeatures'] = false;
 		$this->_origin['extenfeatures'] = false;
 
-		if(($extensions = &$this->_service->get_module('extensions')) === false)
-			return(false);
-
 		$arr = array();
 		$arr['name'] = $name;
 		$arr['context'] = $this->_context;
 
-		$this->_info['extenfeatures'] = $extensions->get_all_by_name_context($arr,$disable);
-		$this->_origin['extenfeatures'] = $extensions->get_origin_list();
+		$this->_info['extenfeatures'] = $this->_extensions->get_all_by_name_context($arr,$disable);
+		$this->_origin['extenfeatures'] = $this->_extensions->get_origin_list();
 
 		return($this->_info['extenfeatures']);
 	}
@@ -124,8 +120,7 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 		$val = (string) $val;
 		$disable = $disable === null ? $disable : intval((bool) $disable);
 
-		if($this->_chk_extenfeatures_exists($name) === false
-		|| ($extensions = &$this->_service->get_module('extensions')) === false)
+		if($this->_chk_extenfeatures_exists($name) === false)
 			return(false);
 
 		$arr = $this->_conf['exten'][$name];
@@ -140,7 +135,7 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 			if(isset($arr['appdata']) === true)
 				$arr['appdata'] = $this->_mk_extenfeatures_appdata_vars($arr['appdata'],$val);
 
-			$r = $extensions->new_exten($arr['app'],$arr,$val,$this->_context);
+			$r = $this->_extensions->new_exten($arr['app'],$arr,$val,$this->_context);
 	
 			return($r);
 		}
@@ -161,7 +156,7 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 		if(isset($line['appdata']) === true)
 			$line['appdata'] = $this->_mk_extenfeatures_appdata_vars($line['appdata'],$val);
 
-		$id = $extensions->new_exten($line['app'],$line,$val,$this->_context);
+		$id = $this->_extensions->new_exten($line['app'],$line,$val,$this->_context);
 
 		if($id === false)
 			return(false);
@@ -176,7 +171,7 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 			if(isset($line['appdata']) === true)
 				$line['appdata'] = $this->_mk_extenfeatures_appdata_vars($line['appdata'],$val);
 
-			if($extensions->set_exten($line['app'],$id,$line,$val,$this->_context) === false)
+			if($this->_extensions->set_exten($line['app'],$id,$line,$val,$this->_context) === false)
 				return(false);
 		}
 
@@ -211,7 +206,6 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 	{
 		if(is_array($arr) === false
 		|| isset($arr['name'],$arr['exten']) === false
-		|| ($extensions = &$this->_service->get_module('extensions')) === false
 		|| $this->_chk_extenfeatures_exists(strval($arr['name'])) === false)
 			return(false);
 
@@ -272,9 +266,8 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 
 		if(($rs = $this->get_result('extenfeatures')) === null
 		|| $rs === false
-		|| ($extensions = &$this->_service->get_module('extensions')) === false
 		|| ($id = $this->_mk_extenfeatures_dialplan($rs['name'],$rs['exten'],$rs['commented'])) === false
-		|| ($list = $extensions->get_loaded_exten($id)) === false)
+		|| ($list = $this->_extensions->get_loaded_exten($id)) === false)
 			return(false);
 
 		$this->_return = array();
@@ -295,7 +288,7 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 
 				$eid = $this->_origin['extenfeatures'][$i]['id'];
 
-				if(($this->_return[] = $extensions->add($list[$i],$eid)) === false)
+				if(($this->_return[] = $this->_extensions->add($list[$i],$eid)) === false)
 					return(false);
 			}
 		}
@@ -313,7 +306,7 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 
 		for($i;$i < $nb;$i++)
 		{
-			if(($this->_return[] = $extensions->add($rs[$i])) === false)
+			if(($this->_return[] = $this->_extensions->add($rs[$i])) === false)
 				return(false);
 		}
 
@@ -338,11 +331,10 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 	{
 		if(($rs = $this->get_result('extenfeatures')) === null
 		|| $rs === false
-		|| ($extensions = &$this->_service->get_module('extensions')) === false
 		|| ($id = $this->_mk_extenfeatures_dialplan($rs['name'],$rs['exten'],$rs['commented'])) === false)
 			return(false);
 
-		if($extensions->add_exten($id) === false)
+		if($this->_extensions->add_exten($id) === false)
 			$this->_return['extenfeatures'] = false;
 		else
 			$this->_return['extenfeatures'] = $rs['name'];
@@ -370,21 +362,19 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 				case 'extenfeatures':
 					$this->delete_extenfeatures($val);
 
-					if(isset($this->_origin['extenfeatures']) === false
-					|| ($extensions = &$this->_service->get_module('extensions')) === false)
+					if(isset($this->_origin['extenfeatures']) === false)
 						continue;
 
-					$extensions->add_origin_list($this->_origin['extenfeatures']);
+					$this->_extensions->add_origin_list($this->_origin['extenfeatures']);
 					break;
 				case 'extenumbers':
-					if(isset($this->_origin['extenumbers']) === false
-					|| ($extenumbers = &$this->_service->get_module('extenumbers')) === false)
+					if(isset($this->_origin['extenumbers']) === false)
 						continue;
 
 					if($this->_origin['extenumbers'] === false)
-						$extenumbers->delete($val);
+						$this->_extenumbers->delete($this->_status,$val);
 					else
-						$extenumbers->edit_origin($this->_origin['extenumbers']);
+						$this->_extenumbers->edit_origin($this->_origin['extenumbers']);
 					break;
 			}
 		}
@@ -406,9 +396,6 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 
 	function delete_extenfeatures($name='')
 	{
-		if(($extensions = &$this->_service->get_module('extensions')) === false)
-			return(false);
-
 		if(xivo_issa('extenfeatures',$this->_info) === true)
 			$name = $this->_info['extenfeatures']['name'];
 		else if(is_scalar($name) === false)
@@ -417,7 +404,7 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 		$extenfeatures_where = array();
 		$extenfeatures_where['name'] = $name;
 
-		$r = $extensions->delete_where($extenfeatures_where);
+		$r = $this->_extensions->delete_where($extenfeatures_where);
 
 		if($this->_status === 'delete')
 			$this->_return['extenfeatures'] = $r;

@@ -4,13 +4,18 @@ xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
 
 class xivo_service_asterisk_realstatic extends xivo_service_asterisk_abstract
 {
-	var $_dso	= null;
-	var $_name	= 'realstatic';
-	var $_filter	= false;
-	var $_origin	= false;
-	var $_filename	= '';
+	var $_dso		= null;
+	var $_name		= 'realstatic';
+	var $_filter		= false;
+	var $_origin		= false;
+	var $_origin_list	= false;
+	var $_filename		= false;
+	var $_cat_metric	= null;
+	var $_var_metric	= null;
+	var $_category		= null;
+	var $_var_name		= null;
 
-	function xivo_service_asterisk_realstatic(&$sre,&$dso,$param)
+	function xivo_service_asterisk_realstatic(&$sre,&$dso,$param=array())
 	{
 		if(is_object($sre) === false)
 			trigger_error('Invalid service in '.__CLASS__,E_USER_ERROR);
@@ -21,17 +26,38 @@ class xivo_service_asterisk_realstatic extends xivo_service_asterisk_abstract
 		if(is_array($param) === false)
 			trigger_error('Invalid parameter in '.__CLASS__,E_USER_ERROR);
 
-		if(isset($param['filename']) === false
-		|| preg_match('/^[a-zA-Z0-9_-]+\.conf$/',$param['filename']) === 0)
-			trigger_error('Invalid filename parameter in '.__CLASS__,E_USER_ERROR);
-
 		$this->_sre = &$sre;
 		$this->_dso = &$dso;
-		$this->_filename = $param['filename'];
-
-		$this->_dso->set_param('filename',$this->_filename);
 
 		$this->_load_config();
+
+		if(isset($param['filename']) === true)
+			$this->_filename = $param['filename'];
+
+		if(isset($param['cat_metric']) === true)
+			$this->_cat_metric = (int) $param['cat_metric'];
+
+		if(isset($param['var_metric']) === true)
+			$this->_var_metric = (int) $param['var_metric'];
+
+		if(isset($param['category']) === true)
+			$this->_category = strval($param['category']);
+
+		if(isset($param['var_name']) === true)
+			$this->_var_name = strval($param['var_name']);
+
+		if($this->chk_value('filename',$this->_filename) === false)
+			trigger_error('Invalid filename parameter in '.__CLASS__,E_USER_ERROR);
+
+		if(isset($this->_category) === true
+		&& ($this->_category = $this->chk_value('category',$this->_category)) === false)
+			trigger_error('Invalid category parameter in '.__CLASS__,E_USER_ERROR);
+
+		if(isset($this->_var_name) === true
+		&& ($this->_var_name = $this->chk_value('var_name',$this->_var_name)) === false)
+			trigger_error('Invalid var_name parameter in '.__CLASS__,E_USER_ERROR);
+
+		$this->_dso->set_param('filename',$this->_filename);
 	}
 
 	function _prepare($data)
@@ -39,6 +65,16 @@ class xivo_service_asterisk_realstatic extends xivo_service_asterisk_abstract
 		$data['commented'] = (bool) $data['commented'];
 
 		return($data);
+	}
+
+	function get_all($disable=null,$prepare=true,$order=null,$limit=null)
+	{
+		return($this->_prepare_get_all_where(null,$disable,$prepare,$order,$limit));
+	}
+
+	function get_all_where($arr,$disable=null,$prepare=true,$order=null,$limit=null)
+	{
+		return($this->_prepare_get_all_where($arr,$disable,$prepare,$order,$limit));
 	}
 
 	function get_category($category,$disable=null)
@@ -73,15 +109,28 @@ class xivo_service_asterisk_realstatic extends xivo_service_asterisk_abstract
 			$r['id'] = $id;
 
 		$r['filename'] = $this->_filename;
-		$r['category'] = $arr['category'];
-		$r['var_name'] = $arr['var_name'];
-		$r['var_val'] = $arr['var_val'];
+
+		if(isset($this->_cat_metric) === true)
+			$arr['cat_metric'] = $this->_cat_metric;
+
+		if(isset($this->_var_metric) === true)
+			$arr['var_metric'] = $this->_var_metric;
+
+		if(isset($this->_category) === true)
+			$arr['category'] = $this->_category;
+
+		if(isset($this->_var_name) === true)
+			$arr['var_name'] = $this->_var_name;
 
 		if(isset($arr['cat_metric']) === true)
 			$r['cat_metric'] = (int) $arr['cat_metric'];
 
 		if(isset($arr['var_metric']) === true)
 			$r['var_metric'] = (int) $arr['var_metric'];
+
+		$r['category'] = $arr['category'];
+		$r['var_name'] = $arr['var_name'];
+		$r['var_val'] = $arr['var_val'];
 
 		if($arr['var_val'] === null)
 			$r['commented'] = true;
@@ -156,6 +205,24 @@ class xivo_service_asterisk_realstatic extends xivo_service_asterisk_abstract
 
 		$r['filename'] = $this->_filename;
 
+		if(isset($this->_cat_metric) === true)
+			$arr['cat_metric'] = $this->_cat_metric;
+
+		if(isset($this->_var_metric) === true)
+			$arr['var_metric'] = $this->_var_metric;
+
+		if(isset($this->_category) === true)
+			$arr['category'] = $this->_category;
+
+		if(isset($this->_var_name) === true)
+			$arr['var_name'] = $this->_var_name;
+
+		if(isset($arr['cat_metric']) === true)
+			$r['cat_metric'] = (int) $arr['cat_metric'];
+
+		if(isset($arr['var_metric']) === true)
+			$r['var_metric'] = (int) $arr['var_metric'];
+
 		if(isset($arr['category']) === true)
 			$r['category'] = $arr['category'];
 
@@ -164,12 +231,6 @@ class xivo_service_asterisk_realstatic extends xivo_service_asterisk_abstract
 
 		if(array_key_exists('var_val',$arr) === true)
 			$r['var_val'] = $arr['var_val'];
-
-		if(isset($arr['cat_metric']) === true)
-			$r['cat_metric'] = (int) $arr['cat_metric'];
-
-		if(isset($arr['var_metric']) === true)
-			$r['var_metric'] = (int) $arr['var_metric'];
 
 		if(array_key_exists('var_val',$arr) === true && $arr['var_val'] === null)
 			$r['commented'] = true;
@@ -376,7 +437,7 @@ class xivo_service_asterisk_realstatic extends xivo_service_asterisk_abstract
 		return($r);
 	}
 
-	function _prepare_get_all_where($arr=array(),$disable=null)
+	function _prepare_get_all_where($arr=array(),$disable=null,$prepare=true,$order=null,$limit=null)
 	{
 		$arr = (array) $arr;
 
@@ -384,12 +445,19 @@ class xivo_service_asterisk_realstatic extends xivo_service_asterisk_abstract
 
 		$arr['filename'] = $this->_filename;
 
-		if(($where = $this->get_element_where($arr)) === false
-		|| ($r = $this->_dso->get_all_where($where,$disable)) === false
-		|| isset($r[0]) === false)
-			$r = false;
+		if(isset($this->_cat_metric) === true)
+			$arr['cat_metric'] = $this->_cat_metric;
 
-		return($r);
+		if(isset($this->_var_metric) === true)
+			$arr['var_metric'] = $this->_var_metric;
+
+		if(isset($this->_category) === true)
+			$arr['category'] = $this->_category;
+
+		if(isset($this->_var_name) === true)
+			$arr['var_name'] = $this->_var_name;
+
+		return(parent::get_all_where($arr,$disable,null,$prepare,$order,$limit));
 	}
 
 	function get_all_name($arr=array(),$disable=null)

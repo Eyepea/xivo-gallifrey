@@ -31,7 +31,7 @@
 		$element['generalmeetme'][$error['generalmeetme'][$i]]['default'] = '';
 	endfor;
 
-	if($error_nb > 0)
+	if(isset($error_js[0]) === true)
 		$dhtml->write_js($error_js);
 ?>
 <div class="b-infos b-form">

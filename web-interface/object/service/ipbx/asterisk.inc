@@ -31,14 +31,24 @@ class xivo_service_asterisk extends xivo_service_abstract
 		return(xivo_file::required($arr,$once,$includable));
 	}
 
-	function _load_realstatic_class($realstatic)
+	function _load_realstatic_class($name)
 	{
-		$realstatic = (string) $realstatic;
+		$name = (string) $name;
+
+		$file = $name.'.inc';
+
+		$dir = array(XIVO_PATH_OBJECT,'service',$this->_type,$this->_name);
+		$class = 'xivo_service_'.$this->_name.'_realstatic';
+
+		$dirapi = $dir;
+		$dirapi[] = $name;
+		$classapi = $class.'_'.$name;
+		
+		if(xivo_file::load_file($file,$dirapi,true) !== false && class_exists($classapi) === true)
+			return($classapi);
 
 		$file = 'realstatic.inc';
-		$dir = array(XIVO_PATH_OBJECT,'service',$this->_type,$this->_name,'realstatic');
-
-		$class = 'xivo_service_'.$this->_name.'_realstatic';
+		$dir[] = 'realstatic';
 
 		if(xivo_file::load_file($file,$dir,true) !== false && class_exists($class) === true)
 			return($class);
@@ -626,19 +636,26 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 	function get_meetme_list($disable=null)
 	{
-		$meetme = &$this->get_module('meetme');
+		$appmeetme = &$this->get_apprealstatic('meetme');
+		$appmeetmeroom = &$appmeetme->get_module('room');
+
 		$mfeatures = &$this->get_module('meetmefeatures');
 
-		if(($rs = $meetme->get_all($disable)) === false || ($nb = count($rs)) === 0)
+		if(($rs = $appmeetmeroom->get_all($disable)) === false
+		|| ($nb = count($rs)) === 0)
 			return(false);
 
 		$r = $info = array();
 
+		$meetmefeatures_where = array();
+
 		for($i = 0;$i < $nb;$i++)
 		{
-			$info['meetme'] = $rs[$i];
+			$info['meetmeroom'] = $rs[$i];
 
-			if(($info['mfeatures'] = $mfeatures->get_where(array('meetmeid' => $info['meetme']['id']))) === false)
+			$meetmefeatures_where['meetmeid'] = $info['meetmeroom']['id'];
+
+			if(($info['mfeatures'] = $mfeatures->get_where($meetmefeatures_where)) === false)
 				continue;
 
 			$r[] = $info;

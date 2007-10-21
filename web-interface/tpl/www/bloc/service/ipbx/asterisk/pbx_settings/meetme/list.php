@@ -41,30 +41,30 @@
 
 			$ref = &$list[$i];
 
-			if($ref['meetme']['commented'] === true):
+			if($ref['meetmeroom']['commented'] === true):
 				$icon = 'disable';
 			else:
 				$icon = 'enable';
 			endif;
 
-			if($ref['meetme']['pin'] === '')
-				$ref['meetme']['pin'] = '-';
+			if($ref['meetmeroom']['pin'] === '')
+				$ref['meetmeroom']['pin'] = '-';
 
-			if($ref['meetme']['admin-pin'] === '')
-				$ref['meetme']['admin-pin'] = '-';
+			if($ref['meetmeroom']['admin-pin'] === '')
+				$ref['meetmeroom']['admin-pin'] = '-';
 
 			$mod = $j % 2 === 0 ? 1 : 2;
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=$mod?>on2">
-		<td class="td-left"><?=$form->checkbox(array('name' => 'meetme[]','value' => $ref['meetme']['id'],'label' => false,'id' => 'it-meetme-'.$i,'checked' => false,'field' => false));?></td>
+		<td class="td-left"><?=$form->checkbox(array('name' => 'meetme[]','value' => $ref['meetmeroom']['id'],'label' => false,'id' => 'it-meetme-'.$i,'checked' => false,'field' => false));?></td>
 		<td class="txt-left"><label for="it-meetme-<?=$i?>" id="lb-meetme-<?=$i?>"><?=$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"');?><?=$ref['mfeatures']['name']?></label></td>
-		<td><?=$ref['meetme']['number']?></td>
-		<td><?=$ref['meetme']['pin']?></td>
-		<td><?=$ref['meetme']['admin-pin']?></td>
+		<td><?=$ref['meetmeroom']['number']?></td>
+		<td><?=$ref['meetmeroom']['pin']?></td>
+		<td><?=$ref['meetmeroom']['admin-pin']?></td>
 		<td class="td-right" colspan="3">
-		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/pbx_settings/meetme',array('act' => 'edit','id' => $ref['meetme']['id']),null,$this->bbf('opt_modify'));?>
+		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/pbx_settings/meetme',array('act' => 'edit','id' => $ref['meetmeroom']['id']),null,$this->bbf('opt_modify'));?>
 
-		<?=$url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'service/ipbx/pbx_settings/meetme',array('act' => 'delete','id' => $ref['meetme']['id'],'page' => $pager['page']),'onclick="return(confirm(\''.xivo_stript($this->bbf('opt_delete_confirm')).'\') ? true : false);"',$this->bbf('opt_delete'));?>
+		<?=$url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'service/ipbx/pbx_settings/meetme',array('act' => 'delete','id' => $ref['meetmeroom']['id'],'page' => $pager['page']),'onclick="return(confirm(\''.xivo_stript($this->bbf('opt_delete_confirm')).'\') ? true : false);"',$this->bbf('opt_delete'));?>
 		</td>
 	</tr>
 <?php

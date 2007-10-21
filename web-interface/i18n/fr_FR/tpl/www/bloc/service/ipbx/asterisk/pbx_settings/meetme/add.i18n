@@ -4,13 +4,13 @@ Chambres de conférence > Ajouter
 ; fm_meetmefeatures_name
 Nom :
 
-; fm_meetme_number
+; fm_meetmeroom_number
 Numéro :
 
-; fm_meetme_pin
+; fm_meetmeroom_pin
 PIN :
 
-; fm_meetme_admin-pin
+; fm_meetmeroom_admin-pin
 PIN Administrateur :
 
 ; fm_meetmefeatures_mode

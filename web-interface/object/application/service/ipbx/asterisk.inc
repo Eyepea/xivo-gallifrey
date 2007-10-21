@@ -17,6 +17,22 @@ class xivo_application_asterisk_abstract extends xivo_application_abstract
 		$this->_service = &$service;
 	}
 
+	function get_origin()
+	{
+		return($this->_origin);
+	}
+
+	function get_origin_var($var)
+	{
+		$var = (string) $var;
+
+		if(is_array($this->_origin) === false
+		|| isset($this->_origin[$var]) === false)
+			return(null);
+
+		return($this->_origin[$var]);
+	}
+
 	function mk_interface($name,$chantype,$context='',$number='',$protocol='')
 	{
 		$chantype = strval($chantype);
@@ -67,6 +83,23 @@ class xivo_application_asterisk_abstract extends xivo_application_abstract
 		return($r);
 	}
 
+	function get_musiconhold()
+	{
+		if(isset($this->_musiconhold) === false)
+			return(false);
+
+		if($this->_musiconhold !== false)
+			return($this->_musiconhold);
+
+		if(($musiconhold = &$this->_service->get_module('musiconhold')) === false)
+			return(false);
+
+		if(($this->_musiconhold = $musiconhold->get_all_category(null,false)) !== false)
+			ksort($this->_musiconhold);
+
+		return($this->_musiconhold);
+	}
+
 	function _get_extenumbers($type,$typeval)
 	{
 		$this->_info['extenumbers'] = $this->_extenumbers->get($type,$typeval);
@@ -88,14 +121,13 @@ class xivo_application_asterisk_abstract extends xivo_application_abstract
 	function set_macro($action,$name,$exten,$arr,$context)
 	{
 		if(($action !== 'add' && $action !== 'edit') === true
-		|| is_scalar($name) === false
-		|| ($extensions = &$this->_service->get_module('extensions')) === false)
+		|| is_scalar($name) === false)
 			return(false);
 
 		if($action === 'edit' && xivo_issa($name,$this->_info) !== false)
-			$rs = $extensions->chk_exten('macro',$arr,$exten,$context);
+			$rs = $this->_extensions->chk_exten('macro',$arr,$exten,$context);
 		else
-			$rs = $extensions->new_exten('macro',$arr,$exten,$context);
+			$rs = $this->_extensions->new_exten('macro',$arr,$exten,$context);
 
 		return($rs);
 	}
@@ -115,9 +147,7 @@ class xivo_application_asterisk_abstract extends xivo_application_abstract
 		if(($rs = $this->get_result($name)) === null || $rs === false)
 			return($rs);
 
-		$extensions = &$this->_service->get_module('extensions');
-
-		$this->_return[$name] = $extensions->add_exten($rs);
+		$this->_return[$name] = $this->_extensions->add_exten($rs);
 
 		return($this->_return[$name]);
 	}
@@ -141,8 +171,7 @@ class xivo_application_asterisk_abstract extends xivo_application_abstract
 		|| $rs === false)
 			return($rs);
 
-		$extensions = &$this->_service->get_module('extensions');
-		$this->_return[$name] = $extensions->edit($this->_info[$name]['id'],$rs);
+		$this->_return[$name] = $this->_extensions->edit($this->_info[$name]['id'],$rs);
 
 		return($this->_return[$name]);
 	}
@@ -163,9 +192,10 @@ class xivo_application_asterisk_abstract extends xivo_application_abstract
 		|| $rs === false)
 			return($rs);
 
-		$this->_return['extenumbers'] = $this->_extenumbers->get_return();
+		if($this->_status === 'delete')
+			$this->_return['extenumbers'] = $rs;
 
-		return($this->_return['extenumbers']);
+		return($rs);
 	}
 
 	function delete_macro($name)
@@ -173,10 +203,7 @@ class xivo_application_asterisk_abstract extends xivo_application_abstract
 		if(xivo_issa($name,$this->_info) === false)
 			return(null);
 
-		if(($extensions = &$this->_service->get_module('extensions')) === false)
-			return(false);
-
-		$r = $extensions->delete($this->_info[$name]['id']);
+		$r = $this->_extensions->delete($this->_info[$name]['id']);
 
 		if($this->_status === 'delete')
 			$this->_return[$name] = $r;

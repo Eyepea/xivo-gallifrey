@@ -31,14 +31,47 @@ class xivo_application_service_asterisk_abstract
 		return($this->_info);
 	}
 
+	function get_info_var($var)
+	{
+		$var = (string) $var;
+
+		if(is_array($this->_info) === false
+		|| isset($this->_info[$var]) === false)
+			return(null);
+
+		return($this->_info[$var]);
+	}
+
 	function get_origin()
 	{
 		return($this->_origin);
 	}
 
+	function get_origin_var($var)
+	{
+		$var = (string) $var;
+
+		if(is_array($this->_origin) === false
+		|| isset($this->_origin[$var]) === false)
+			return(null);
+
+		return($this->_origin[$var]);
+	}
+
 	function get_return()
 	{
 		return($this->_return);
+	}
+
+	function get_return_var($var)
+	{
+		$var = (string) $var;
+
+		if(is_array($this->_return) === false
+		|| isset($this->_return[$var]) === false)
+			return(null);
+
+		return($this->_return[$var]);
 	}
 
 	function _set_result($value)

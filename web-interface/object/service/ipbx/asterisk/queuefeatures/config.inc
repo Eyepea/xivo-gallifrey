@@ -60,7 +60,7 @@ $array['element']['timeout']['default'] = 30;
 
 $array['filter'] = array();
 $array['filter']['number'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9\*#]+$/','maxlen' => 40);
-$array['filter']['name'] = array('regexp' => '/^[a-z0-9_\.-]+$/i','minlen' => 1,'maxlen' => 128);
+$array['filter']['name'] = array('regexp' => '/^[a-z0-9_\.-]+$/','minlen' => 1,'maxlen' => 128);
 $array['filter']['context'] = array('set' => false,'chk' => 2,'nokey' => array('general','globals','initconfig','hints','features'),'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 39);
 $array['filter']['data_quality'] = array('bool' => true);
 $array['filter']['hitting_callee'] = array('bool' => true);
@@ -71,8 +71,8 @@ $array['filter']['transfer_user'] = array('bool' => true);
 $array['filter']['transfer_call'] = array('bool' => true);
 $array['filter']['write_caller'] = array('bool' => true);
 $array['filter']['write_calling'] = array('bool' => true);
-$array['filter']['url'] = array('set' => false,'chk' => 2,'maxlen' => 255);
-$array['filter']['announceoverride'] = array('set' => false,'chk' => 2,'maxlen' => 128);
+$array['filter']['url'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 255);
+$array['filter']['announceoverride'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 128);
 $array['filter']['timeout'] = array('key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
 
 ?>

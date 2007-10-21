@@ -4,6 +4,20 @@ xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 
 class xivo_application_service_asterisk_rightcall_abstract extends xivo_application_service_asterisk_abstract
 {
+	var $_rightcall		= null;
+	var $_rightcallmember	= null;
+
+	function xivo_application_service_asterisk_rightcall_abstract(&$service)
+	{
+		$this->xivo_application_service_asterisk_abstract(&$service);
+		
+		if(($this->_rightcall = &$this->_service->get_module('rightcall')) === false
+		|| ($this->_rightcallmember = &$this->_service->get_module('rightcallmember')) === false)
+			return(false);
+
+		return(true);
+	}
+
 	function get($type,$id)
 	{
 		$this->_info = false;
@@ -16,12 +30,11 @@ class xivo_application_service_asterisk_rightcall_abstract extends xivo_applicat
 		$where['type'] = $type;
 		$where['typeval'] = $id;
 
-		if(($rightcallmember = &$this->_service->get_module('rightcallmember')) === false
-		|| ($this->_info = $rightcallmember->get_all_where($where)) === false
+		if(($this->_info = $this->_rightcallmember->get_all_where($where)) === false
 		|| isset($this->_info[0]) === false)
 			return(false);
 
-		$this->_origin = $rightcallmember->get_origin_list();
+		$this->_origin = $this->_rightcallmember->get_origin_list();
 
 		return($this->_info);
 	}
@@ -30,10 +43,7 @@ class xivo_application_service_asterisk_rightcall_abstract extends xivo_applicat
 	{
 		$this->_reset();
 
-		if(is_array($list) === false
-		|| is_string($type) === false
-		|| ($rightcallmember = &$this->_service->get_module('rightcallmember')) === false
-		|| ($rightcall = &$this->_service->get_module('rightcall')) === false)
+		if(is_array($list) === false || is_string($type) === false)
 			return(false);
 
 		$list = array_values($list);
@@ -50,7 +60,7 @@ class xivo_application_service_asterisk_rightcall_abstract extends xivo_applicat
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			if(($rightcallid = $rightcall->get_id($list[$i])) === false)
+			if(($rightcallid = $this->_rightcall->get_id($list[$i])) === false)
 			{
 				$this->_set_error('wrong rightcall');
 				continue;
@@ -58,7 +68,7 @@ class xivo_application_service_asterisk_rightcall_abstract extends xivo_applicat
 
 			$info['rightcallid'] = $rightcallid;
 
-			if(($rs = $rightcallmember->chk_values($info)) === false
+			if(($rs = $this->_rightcallmember->chk_values($info)) === false
 			|| isset($tmp[$rightcallid]) === true)
 				continue;
 
@@ -85,8 +95,6 @@ class xivo_application_service_asterisk_rightcall_abstract extends xivo_applicat
 		if(($rs = $this->get_result()) === null || $rs === false)
 			return($rs);
 
-		$rightcallmember = &$this->_service->get_module('rightcallmember');
-
 		$this->_return = array();
 
 		$nb = count($rs);
@@ -95,7 +103,7 @@ class xivo_application_service_asterisk_rightcall_abstract extends xivo_applicat
 		{
 			$rs[$i]['typeval'] = $id;
 
-			if(($this->_return[] = $rightcallmember->add($rs[$i])) === false)
+			if(($this->_return[] = $this->_rightcallmember->add($rs[$i])) === false)
 				return(false);
 		}
 
@@ -107,10 +115,7 @@ class xivo_application_service_asterisk_rightcall_abstract extends xivo_applicat
 
 	function add_origin_list()
 	{
-		if(($rightcallmember = &$this->_service->get_module('rightcallmember')) === false)
-			return(false);
-
-		return($rightcallmember->add_origin_list($this->_origin));
+		return($this->_rightcallmember->add_origin_list($this->_origin));
 	}
 
 	function edit($status,$type,$id)
@@ -128,8 +133,6 @@ class xivo_application_service_asterisk_rightcall_abstract extends xivo_applicat
 
 		if($rs === false)
 			return(false);
-
-		$rightcallmember = &$this->_service->get_module('rightcallmember');
 
 		$this->_return = array();
 
@@ -149,7 +152,7 @@ class xivo_application_service_asterisk_rightcall_abstract extends xivo_applicat
 				$rid = $this->_info[$i]['id'];
 				$rs[$i]['typeval'] = $id;
 
-				if(($this->_return[] = $rightcallmember->add($rs[$i],$rid)) === false)
+				if(($this->_return[] = $this->_rightcallmember->add($rs[$i],$rid)) === false)
 					return(false);
 			}
 		}
@@ -166,7 +169,7 @@ class xivo_application_service_asterisk_rightcall_abstract extends xivo_applicat
 		{
 			$rs[$i]['typeval'] = $id;
 
-			if(($this->_return[] = $rightcallmember->add($rs[$i])) === false)
+			if(($this->_return[] = $this->_rightcallmember->add($rs[$i])) === false)
 				return(false);
 		}
 
@@ -182,15 +185,14 @@ class xivo_application_service_asterisk_rightcall_abstract extends xivo_applicat
 			return(null);
 
 		if(is_string($type) === false
-		|| ($id = xivo_uint($id)) === 0
-		|| ($rightcallmember = &$this->_service->get_module('rightcallmember')) === false)
+		|| ($id = xivo_uint($id)) === 0)
 			return(false);
 
 		$rightcallmember_where = array();
 		$rightcallmember_where['type'] = $type;
 		$rightcallmember_where['typeval'] = $id;
 
-		$r = $rightcallmember->delete_where($rightcallmember_where);
+		$r = $this->_rightcallmember->delete_where($rightcallmember_where);
 
 		if($status === 'delete')
 			$this->_return = $r;
@@ -200,15 +202,13 @@ class xivo_application_service_asterisk_rightcall_abstract extends xivo_applicat
 
 	function reverse_add()
 	{
-		$rightcallmember = &$this->_service->get_module('rightcallmember');
-
 		if(is_array($this->_return) === false || ($nb = count($this->_return)) === 0)
 			return(null);
 
 		for($i = 0;$i < $nb;$i++)
 		{
 			if($this->_return[$i] !== false)
-				$rightcallmember->delete($this->_return[$i]);
+				$this->_rightcallmember->delete($this->_return[$i]);
 		}
 
 		return(true);

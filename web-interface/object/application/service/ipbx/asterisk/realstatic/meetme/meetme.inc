@@ -7,7 +7,7 @@ class xivo_application_service_asterisk_realstatic_meetme extends xivo_applicati
 	var $_name	= 'meetme';
 	var $_module	= array(
 				'general'		=> false,
-				'rooms'			=> false);
+				'room'			=> false);
 }
 
 ?>
