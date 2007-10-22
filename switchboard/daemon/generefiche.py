@@ -40,9 +40,9 @@ class Fiche:
                     s.append('<info name="%s" type="%s"><![CDATA[%s]]></info>' %(name, type, value))
             s.append('</user>')
             s.append('</profile>')
-            retstring = ''.join(s)
+            retstring = ''.join(s) + '\n'
             return retstring
-    def sendtouser(self, address):
+    def sendtouser(self, address, sheetui):
             """send the profile to a user using TCP"""
             try:
                     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -51,7 +51,10 @@ class Fiche:
                     s.connect(address)
                     fs = s.makefile('w')
                     s.close()
-                    fs.write(self.getxml())
+                    if sheetui is None:
+                            fs.write(self.getxml())
+                    else:
+                            fs.write(sheetui)
                     fs.flush()
                     fs.close()
                     return True

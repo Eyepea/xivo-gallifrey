@@ -16,7 +16,7 @@ class AMIClass:
                 def __init__(self, msg):
                     self.msg = msg
                 def __str__(self):
-                    return msg
+                    return self.msg
 
         # \brief Class initialization.
         def __init__(self, address, loginname, password, events):
@@ -191,6 +191,21 @@ class AMIClass:
                 except Exception, exc:
                         return False
 
+        # \brief Retrieves the value of Variable in a Channel
+        def getvar(self, channel, varname):
+                try:
+                        ret = self.sendcommand('GetVar', [('Channel', channel),
+                                                          ('Variable', varname)])
+                        if ret:
+                                reply = self.readresponsechunk()
+                                return reply.get('Value')
+                        else:
+                                return False
+                except self.AMIError, exc:
+                        return False
+                except Exception, exc:
+                        return False
+
         # \brief Transfers a channel towards a new extension.
         def transfer(self, channel, extension, context):
                 try:
@@ -205,17 +220,25 @@ class AMIClass:
                 except Exception, exc:
                         return False
 
-        def txfax(self, filename, callerid, number, context):
+        def txfax(self, filename, callerid, number, context, debug):
                 # originate a call btw src and dst
                 # src will ring first, and dst will ring when src responds
                 try:
+                        if debug:
+                                data = '%s|%s|debug' %(filename, number)
+                        else:
+                                data = '%s|%s' %(filename, number)
                         ret = self.sendcommand('Originate', [('Channel', "Local/%s@%s" %(number, context)),
                                                              ('Application', 'txfax'),
                                                              ('CallerID', callerid),
-                                                             ('Data', '%s|%s' %(filename, number))])
+                                                             ('Data', data)])
                         reply = self.readresponse('')
                         return ret
                 except self.AMIError, exc:
+                        return False
+                except socket.timeout, exc:
+                        return False
+                except socket, exc:
                         return False
                 except Exception, exc:
                         return False

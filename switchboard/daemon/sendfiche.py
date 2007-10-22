@@ -10,6 +10,7 @@ import ldap
 import sys
 import syslog
 import threading
+import urllib
 import encodings.utf_8
 
 import generefiche
@@ -145,6 +146,41 @@ def get_sql_infos(cid, ctxinfos):
 
 	return reply_by_field
 
+## \brief Returns informations fetched from a CSV file
+# \param cid callerid requested
+# \param ctxinfos context informations
+def get_csv_infos(cid, ctxinfos):
+        str_cidm = []
+        reply_by_field = {}
+        results = []
+
+	try:
+                csv = xivo_ldap.xivo_csv(ctxinfos.uri)
+                if csv.open():
+                        for cidm in ctxinfos.sheet_callidmatch:
+                                if cidm in csv.keys:
+                                        str_cidm.append(csv.index(cidm))
+                        for items in csv.items:
+                                for idx in str_cidm:
+                                        if items[idx] == '"%s"' % cid:
+                                                results.append(items)
+	except Exception, exc:
+                log_debug('Connection to URL <%s> failed : %s' % (ctxinfos.uri, str(exc)))
+                return reply_by_field
+
+        if len(results) > 0:
+                try:
+                        for [dispname, dbnames_list, dummy] in ctxinfos.sheet_valid_fields:
+                                field_value = ''
+                                for dbname in dbnames_list:
+                                        if dbname in csv.keys and field_value is '':
+                                                field_value = results[0][csv.index(dbname)]
+                                        reply_by_field[dispname] = field_value[1:-1]
+                except Exception, exc:
+                        log_debug('--- exception --- in anysql : %s' %(str(exc)))
+
+	return reply_by_field
+
 
 ## \brief Builds the contents of the Sheet according to titles and default values
 # \param items
@@ -164,8 +200,8 @@ def make_fields(items, formats, flds):
                                 argum        = rhs[1]
                                 defaultvalue = rhs[2]
 
-                                prestr = ""
-                                poststr = ""
+                                prestr = ''
+                                poststr = ''
                                 if kindoffield in formats.keys():
                                         fmat = formats[kindoffield].split("|")
                                         if len(fmat) == 2:
@@ -184,17 +220,25 @@ def make_fields(items, formats, flds):
 
 def retrieve_callerid_data(callerid, ctxinfos, xdconfig):
         fields = {}
-        fields["req_cid"] = callerid
-        fields['callidname'] = ""
+        fields['req_cid'] = callerid
+        fields['callidname'] = ''
         fields_formatted = []
 
         # database-specific calls
         if ctxinfos.uri != "":
                 databasekind = ctxinfos.uri.split(':')[0]
                 log_debug('callerid=<%s> databasekind=<%s>' % (callerid, databasekind))
-                if databasekind == "ldap":
+                if databasekind == 'ldap':
                         try:
                                 nfields = get_ldap_infos(callerid, ctxinfos)
+                                for n, v in nfields.iteritems():
+                                        fields[n] = v
+                                log_debug('fields = %s' % str(fields))
+                        except Exception, exc:
+                                log_debug('--- exception --- (in %s) %s' % (databasekind, str(exc)))
+                elif databasekind == 'file':
+                        try:
+                                nfields = get_csv_infos(callerid, ctxinfos)
                                 for n, v in nfields.iteritems():
                                         fields[n] = v
                                 log_debug('fields = %s' % str(fields))
@@ -236,12 +280,12 @@ def retrieve_callerid_data(callerid, ctxinfos, xdconfig):
         except Exception, exc:
                 log_debug('--- exception --- when calling make_fields : %s' % str(exc))
 
-        return [fields['callidname'], fields_formatted]
+        return [fields, fields_formatted]
 
 
 
 class FicheSender:
-        def __call__(self, sessionid, address, state, callerid, msg, tcpmode, socket, todisplay):
+        def __call__(self, sessionid, address, state, callerid, msg, tcpmode, socket, todisplay, sheetui):
                 # print 'FicheSend.__class__(%s, %s, %s)' % (sessionid, address, state)
 
                 # sessionid, address, state, msg, tcpmode, socket
@@ -257,10 +301,14 @@ class FicheSender:
                                 # fs.flush()
                                 # fs.close()
                                 fxml = fiche.getxml()
+                                if sheetui is None:
+                                        fxml = fiche.getxml()
+                                else:
+                                        fxml = sheetui
                                 socket.write(fxml)
                                 socket.flush()
                         else:
-                                fiche.sendtouser(address)
+                                fiche.sendtouser(address, sheetui)
                         log_debug('the customer info has been sent')
                 else:
                         log_debug('the customer info has not been sent because inavailable state %s' % state)
@@ -282,10 +330,64 @@ def sendficheasync(userinfo, ctxinfos, callerid, msg, xdconfig):
                 else:
                         params['socket'] = None
 
-        [calleridname, params['todisplay']] = retrieve_callerid_data(callerid, ctxinfos, xdconfig)
+        [fields, params['todisplay']] = retrieve_callerid_data(callerid, ctxinfos, xdconfig)
+        callidname = fields['callidname']
+        params['sheetui'] = None
 
         if userinfo is not None:
                 t = threading.Thread(None, sender, None, (), params)
                 t.start()
 
-        return calleridname
+        return callidname
+
+
+def senduiasync(userinfo, ctxinfos, callerid, xdconfig):
+        if len(ctxinfos.sheetui) == 0:
+                log_debug('senduiasync : sheetui not defined for this context')
+                return ''
+                
+        f = urllib.urlopen(ctxinfos.sheetui)
+        full = []
+        listvars = []
+        for line in f:
+                ls = line.strip()
+                full.append(ls)
+                if ls.find('XIVOFIELD-') >= 0:
+                        listvars.append(ls.split('<string>XIVOFIELD-')[1].split('</string>')[0])
+        f.close()
+        base_sheetui = ''.join(full) + '\n'
+        msg = 'UI'
+        
+        params = {}
+        if userinfo is not None:
+                sender = FicheSender()
+                log_debug('senduiasync : %s callerid=<%s> msg=<%s>' % (userinfo, callerid, msg))
+                params = {'sessionid': userinfo.get('sessionid'),
+                          'address':   (userinfo.get('ip'), int(userinfo.get('port'))),
+                          'state':     userinfo.get('state'),
+                          'callerid':  callerid,
+                          'msg':       msg,
+                          'tcpmode':   userinfo.get('tcpmode')}
+                if userinfo['tcpmode']:
+                        params['socket'] = userinfo.get('socket')
+                else:
+                        params['socket'] = None
+
+        [fields, params['todisplay']] = retrieve_callerid_data(callerid, ctxinfos, xdconfig)
+        callidname = fields['callidname']
+        for lv in listvars:
+                if lv in ctxinfos.sheet_callidmatch:
+                        value = callerid
+                else:
+                        value = ''
+                if lv in fields:
+                        value = fields[lv]
+                nn = base_sheetui.replace('XIVOFIELD-%s' % lv, value)
+                base_sheetui = nn
+        params['sheetui'] = base_sheetui
+
+        if userinfo is not None:
+                t = threading.Thread(None, sender, None, (), params)
+                t.start()
+
+        return callidname
