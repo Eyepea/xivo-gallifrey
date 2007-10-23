@@ -895,6 +895,7 @@ CREATE TABLE userfeatures (
  ringseconds tinyint unsigned NOT NULL DEFAULT 30,
  simultcalls tinyint unsigned NOT NULL DEFAULT 5,
  enableclient tinyint(1) NOT NULL DEFAULT 0,
+ enablehint tinyint(1) NOT NULL DEFAULT 0,
  enablevoicemail tinyint(1) NOT NULL DEFAULT 0,
  enablexfer tinyint(1) NOT NULL DEFAULT 0,
  enableautomon tinyint(1) NOT NULL DEFAULT 0,
@@ -922,8 +923,8 @@ CREATE INDEX userfeatures__idx__provisioningid ON userfeatures(provisioningid);
 CREATE UNIQUE INDEX userfeatures__uidx__protocol_name ON userfeatures(protocol,name);
 CREATE UNIQUE INDEX userfeatures__uidx__protocol_protocolid ON userfeatures(protocol,protocolid);
 
-INSERT INTO userfeatures VALUES (1,'sip',1,'Guest','','guest','','initconfig',148378,30,5,0,0,0,0,0,0,0,0,'',0,'',0,'','','','');
-INSERT INTO userfeatures VALUES (2,'sip',2,'XivoSB','','xivosb','','default',194867,30,5,0,0,0,0,0,0,0,0,'',0,'',0,'','','','');
+INSERT INTO userfeatures VALUES (1,'sip',1,'Guest','','guest','','initconfig',148378,30,5,0,0,0,0,0,0,0,0,0,'',0,'',0,'','','','');
+INSERT INTO userfeatures VALUES (2,'sip',2,'XivoSB','','xivosb','','default',194867,30,5,0,0,0,0,0,0,0,0,0,'',0,'',0,'','','','');
 
 
 DROP TABLE useriax;

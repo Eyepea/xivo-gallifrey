@@ -10,12 +10,11 @@ $array['tree']['service']['ipbx']['general_settings'] = array();
 $array['tree']['service']['ipbx']['general_settings']['sip'] = true;
 $array['tree']['service']['ipbx']['general_settings']['iax'] = true;
 $array['tree']['service']['ipbx']['general_settings']['voicemail'] = true;
-$array['tree']['service']['ipbx']['general_settings']['agents'] = true;
-$array['tree']['service']['ipbx']['general_settings']['queues'] = true;
 $array['tree']['service']['ipbx']['general_settings']['sounds'] = true;
 $array['tree']['service']['ipbx']['general_settings']['musiconhold'] = true;
 $array['tree']['service']['ipbx']['general_settings']['extenfeatures'] = true;
 $array['tree']['service']['ipbx']['general_settings']['outcall'] = true;
+$array['tree']['service']['ipbx']['general_settings']['advanced'] = true;
 
 $array['tree']['service']['ipbx']['pbx_settings'] = array();
 $array['tree']['service']['ipbx']['pbx_settings']['agents'] = true;

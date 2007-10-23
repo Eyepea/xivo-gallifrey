@@ -1,6 +1,6 @@
-GRANT ALL PRIVILEGES ON `asterisk`.* TO `asterisk`@localhost IDENTIFIED BY PASSWORD '*DBA86DFECE903EB25FE460A66BDCDA790A1CA4A4';
-CREATE DATABASE IF NOT EXISTS `asterisk` DEFAULT CHARACTER SET utf8;
-USE `asterisk`;
+--GRANT ALL PRIVILEGES ON `asterisk`.* TO `asterisk`@localhost IDENTIFIED BY PASSWORD '*DBA86DFECE903EB25FE460A66BDCDA790A1CA4A4';
+--CREATE DATABASE IF NOT EXISTS `asterisk` DEFAULT CHARACTER SET utf8;
+--USE `asterisk`;
 
 DROP TABLE IF EXISTS `agent`;
 CREATE TABLE `agent` (
@@ -898,6 +898,7 @@ CREATE TABLE `userfeatures` (
  `ringseconds` tinyint(2) unsigned NOT NULL DEFAULT 30,
  `simultcalls` tinyint(2) unsigned NOT NULL DEFAULT 5,
  `enableclient` tinyint(1) NOT NULL DEFAULT 0,
+ `enablehint` tinyint(1) NOT NULL DEFAULT 0,
  `enablevoicemail` tinyint(1) NOT NULL DEFAULT 0,
  `enablexfer` tinyint(1) NOT NULL DEFAULT 0,
  `enableautomon` tinyint(1) NOT NULL DEFAULT 0,
@@ -925,8 +926,8 @@ CREATE INDEX `userfeatures__idx__provisioningid` ON `userfeatures`(`provisioning
 CREATE UNIQUE INDEX `userfeatures__uidx__protocol_name` ON `userfeatures`(`protocol`,`name`);
 CREATE UNIQUE INDEX `userfeatures__uidx__protocol_protocolid` ON `userfeatures`(`protocol`,`protocolid`);
 
-INSERT INTO `userfeatures` VALUES (1,'sip',1,'Guest','','guest','','initconfig',148378,30,5,0,0,0,0,0,0,0,0,'',0,'',0,'','','','');
-INSERT INTO `userfeatures` VALUES (2,'sip',2,'XivoSB','','xivosb','','default',194867,30,5,0,0,0,0,0,0,0,0,'',0,'',0,'','','','');
+INSERT INTO `userfeatures` VALUES (1,'sip',1,'Guest','','guest','','initconfig',148378,30,5,0,0,0,0,0,0,0,0,0,'',0,'',0,'','','','');
+INSERT INTO `userfeatures` VALUES (2,'sip',2,'XivoSB','','xivosb','','default',194867,30,5,0,0,0,0,0,0,0,0,0,'',0,'',0,'','','','');
 
 
 DROP TABLE IF EXISTS `useriax`;
