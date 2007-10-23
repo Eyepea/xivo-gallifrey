@@ -17,12 +17,12 @@ FREEZEPATH?=../tools/python-freeze/
 default:
 
 prepare-tarball::
-	@echo "from Phones import *" | PYTHONPATH=../lib-python/ /usr/bin/python2.4
-	@echo "import provsup" | PYTHONPATH=../lib-python/ /usr/bin/python2.4
+	@echo "from Phones import *" | PYTHONPATH=../lib-python/xivo/ /usr/bin/python2.4
+	@echo "import provsup" | PYTHONPATH=../lib-python/xivo/ /usr/bin/python2.4
 	@${FREEZEPATH}/local_freeze.py ${FREEZEPATH}/freeze.py provsup.py,autoprov.py
 	@cp initconfig.py initconfig
 
 clean-tarball::
-	@find . ${FREEZEPATH} ../lib-python/ -name "*.pyc" -exec rm -f {} \;
+	@find . ${FREEZEPATH} ../lib-python/xivo/ -name "*.pyc" -exec rm -f {} \;
 	@rm -f autoprov initconfig
 
