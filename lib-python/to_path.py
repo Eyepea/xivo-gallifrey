@@ -34,3 +34,4 @@ add_path = os.path.join(os.getcwd(), pkg.__path__[0])
 known_paths = set((os.path.normcase(p) for p in sys.path))
 if os.path.normcase(add_path) not in known_paths and os.path.exists(add_path):
 	sys.path.append(add_path)
+__all__ = ()
