@@ -17,18 +17,6 @@ import generefiche
 
 # XIVO lib-python modules initialization
 import xivo.to_path
-xivoconffile            = "/etc/asterisk/xivo_daemon.conf"
-GETOPT_SHORTOPTS        = 'dc:'
-GETOPT_LONGOPTS         = ["debug", "config="]
-debug_mode = False
-def config_path():
-        global xivoconffile, debug_mode
-        for opt, arg in getopt.getopt(sys.argv[1:], "dc:", ["daemon", "config="])[0]:
-                if opt == "-c":
-                        xivoconffile = arg
-		elif opt == "-d":
-			debug_mode = True
-config_path()
 
 # XIVO lib-python modules imports
 import anysql
@@ -62,7 +50,6 @@ def varlog(string):
         return 0
 
 def log_debug(string):
-#        if debug_mode:
         print "#debug# (sendfiche) " + string
         return varlog(string)
 

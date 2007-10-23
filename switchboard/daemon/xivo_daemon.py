@@ -139,7 +139,11 @@ GETOPT_LONGOPTS         = ["debug", "config="]
 debug_mode = False
 def config_path():
         global xivoconffile, debug_mode
-        for opt, arg in getopt.getopt(sys.argv[1:], "dc:", ["daemon", "config="])[0]:
+        for opt, arg in getopt.getopt(
+				sys.argv[1:],
+				GETOPT_SHORTOPTS,
+				GETOPT_LONGOPTS
+			)[0]:
                 if opt == "-c":
                         xivoconffile = arg
 		elif opt == "-d":
