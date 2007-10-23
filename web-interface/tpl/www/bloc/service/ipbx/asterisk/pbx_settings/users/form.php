@@ -156,6 +156,8 @@
 
 	<?=$form->checkbox(array('desc' => $this->bbf('fm_userfeatures_enableclient'),'name' => 'ufeatures[enableclient]','labelid' => 'ufeatures-enableclient','default' => $element['ufeatures']['enableclient']['default'],'checked' => $info['ufeatures']['enableclient']));?>
 
+	<?=$form->checkbox(array('desc' => $this->bbf('fm_userfeatures_enablehint'),'name' => 'ufeatures[enablehint]','labelid' => 'ufeatures-enablehint','default' => $element['ufeatures']['enablehint']['default'],'checked' => $info['ufeatures']['enablehint']));?>
+
 	<?=$form->checkbox(array('desc' => $this->bbf('fm_userfeatures_enablevoicemail'),'name' => 'ufeatures[enablevoicemail]','labelid' => 'ufeatures-enablevoicemail','default' => $element['ufeatures']['enablevoicemail']['default'],'checked' => $info['ufeatures']['enablevoicemail']));?>
 
 	<?=$form->checkbox(array('desc' => $this->bbf('fm_userfeatures_enablexfer'),'name' => 'ufeatures[enablexfer]','labelid' => 'ufeatures-enablexfer','default' => $element['ufeatures']['enablexfer']['default'],'checked' => $info['ufeatures']['enablexfer']));?>

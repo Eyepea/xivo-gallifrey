@@ -14,14 +14,15 @@ for($i = 0;$i < $total;$i++)
 	$msg .= '"'.str_replace('"','""',$ref['ufeatures']['protocol']).'"|'.
 		'"'.str_replace('"','""',$ref['protocol']['name']).'"|'.
 		'"'.str_replace('"','""',$ref['protocol']['secret']).'"|'.
-		'"'.str_replace('"','""',$ref['ufeatures']['enableclient']).'"|'.
+		'"'.str_replace('"','""',intval((bool) $ref['ufeatures']['enableclient'])).'"|'.
 		'"'.str_replace('"','""',$ref['ufeatures']['number']).'"|'.
 		'"'.str_replace('"','""',intval((bool) $ref['protocol']['initialized'])).'"|'.
 		'"'.str_replace('"','""',intval((bool) $ref['protocol']['commented'])).'"|'.
 		'"'.str_replace('"','""',$ref['protocol']['callerid']).'"|'.
 		'"'.str_replace('"','""',$ref['ufeatures']['firstname']).'"|'.
 		'"'.str_replace('"','""',$ref['ufeatures']['lastname']).'"|'.
-		'"'.str_replace('"','""',$ref['ufeatures']['context']).'"'."\n";
+		'"'.str_replace('"','""',$ref['ufeatures']['context']).'"|'.
+		'"'.str_replace('"','""',intval((bool) $ref['ufeatures']['enablehint'])).'"'."\n";
 }
 
 $msg .= 'XIVO-WEBI: end-data'."\n";

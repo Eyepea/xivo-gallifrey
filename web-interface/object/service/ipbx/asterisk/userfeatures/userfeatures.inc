@@ -41,6 +41,7 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 			$data['identity'] = $data['fullname'].' ('.$data['number'].'@'.$data['context'].')';
 
 		$data['enableclient'] = (bool) $data['enableclient'];
+		$data['enablehint'] = (bool) $data['enablehint'];
 		$data['enablevoicemail'] = (bool) $data['enablevoicemail'];
 		$data['enablexfer'] = (bool) $data['enablexfer'];
 		$data['enableautomon'] = (bool) $data['enableautomon'];

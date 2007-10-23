@@ -332,10 +332,10 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			return($r);
 		}
 
-		$this->_set_result_var('protocol','mailbox',$number);
-
-		if($this->_errnb === 0 && $number !== '')
+		if($this->_errnb === 0 && xivo_haslen($number) === true)
 		{
+			$this->_set_result_var('protocol','mailbox',$number.'@'.$context);
+
 			$appdata = array('appdata' => 'superuser');
 
 			if(($localexten = $this->set_macro($action,'localexten',$number,$appdata,$context)) === false)
@@ -348,7 +348,14 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 			$this->_set_result_var('protocol','callerid',$callerid);
 
-			if(($hints = $this->set_hints($action,$name,$protocol,$number)) === false)
+			$enablehint = (bool) $this->get_result_var('ufeatures','enablehint');
+
+			if($enablehint === true)
+				$enablehint = false;
+			else
+				$enablehint = true;
+
+			if(($hints = $this->set_hints($action,$name,$protocol,$number,$enablehint)) === false)
 				$this->_set_error('hints');
 
 			$this->_set_result('hints',$hints);
@@ -424,15 +431,15 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		return(true);
 	}
 
-	function set_hints($action,$name,$protocol,$number)
+	function set_hints($action,$name,$protocol,$number,$disable=null)
 	{
 		if($action !== 'add' && $action !== 'edit')
 			return(false);
 
 		if($action === 'edit' && xivo_issa('hints',$this->_info) !== false)
-			$rs = $this->_extensions->chk_hints($name,$protocol,$number);
+			$rs = $this->_extensions->chk_hints($name,$protocol,$number,$disable);
 		else
-			$rs = $this->_extensions->new_hints($name,$protocol,$number);
+			$rs = $this->_extensions->new_hints($name,$protocol,$number,$disable);
 
 		return($rs);
 	}

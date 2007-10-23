@@ -271,11 +271,11 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 		return($this->delete_where($where));
 	}
 
-	function new_hints($name,$protocol,$exten)
+	function new_hints($name,$protocol,$exten,$disable=null)
 	{
 		$id = count($this->_exten) + 1;
 
-		if(($r = $this->chk_hints($name,$protocol,$exten)) === false)
+		if(($r = $this->chk_hints($name,$protocol,$exten,$disable)) === false)
 			return(false);
 
 		$this->_exten[$id][0] = $r;
@@ -283,7 +283,7 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 		return($id);
 	}
 
-	function chk_hints($name,$protocol,$exten)
+	function chk_hints($name,$protocol,$exten,$disable=null)
 	{
 		$r = array();
 		$r['context'] = 'hints';
@@ -292,7 +292,10 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 			return(false);
 
 		$r['exten'] = $this->_sre->clean_extension($exten);
-		
+
+		if($disable !== null)
+			$r['commented'] = (bool) $disable;
+
 		return($this->chk_values($r,true,false,false));
 	}
 

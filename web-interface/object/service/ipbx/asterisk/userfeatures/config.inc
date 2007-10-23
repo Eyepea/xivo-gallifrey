@@ -45,12 +45,17 @@ $array['element']['simultcalls']['setdef'] = true;
 
 $array['element']['enableclient'] = array();
 $array['element']['enableclient']['value'] = array(0,1);
-$array['element']['enableclient']['default'] = 0;
+$array['element']['enableclient']['default'] = 1;
 $array['element']['enableclient']['set'] = true;
+
+$array['element']['enablehint'] = array();
+$array['element']['enablehint']['value'] = array(0,1);
+$array['element']['enablehint']['default'] = 1;
+$array['element']['enablehint']['set'] = true;
 
 $array['element']['enablevoicemail'] = array();
 $array['element']['enablevoicemail']['value'] = array(0,1);
-$array['element']['enablevoicemail']['default'] = 0;
+$array['element']['enablevoicemail']['default'] = 1;
 $array['element']['enablevoicemail']['set'] = true;
 
 $array['element']['enablexfer'] = array();
@@ -137,6 +142,7 @@ $array['filter']['context'] = array('set' => false,'chk' => 2,'nokey' => array('
 $array['filter']['ringseconds'] = array('set' => false,'chk' => 2,'key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
 $array['filter']['simultcalls'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,20));
 $array['filter']['enableclient'] = array('bool' => true);
+$array['filter']['enablehint'] = array('bool' => true);
 $array['filter']['enablevoicemail'] = array('bool' => true);
 $array['filter']['enablexfer'] = array('bool' => true);
 $array['filter']['enableautomon'] = array('bool' => true);
