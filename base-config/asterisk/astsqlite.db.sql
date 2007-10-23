@@ -198,6 +198,24 @@ INSERT INTO extensions VALUES (NULL,0,'features','_*23.',6,'Set','DB(${CONTEXT}/
 INSERT INTO extensions VALUES (NULL,0,'features','_*23.',7,'Playback','forward-on','fwdbusy');
 INSERT INTO extensions VALUES (NULL,0,'features','_*23.',8,'Hangup','','fwdbusy');
 INSERT INTO extensions VALUES (NULL,0,'features','_*8.',1,'Pickup','${EXTEN:2}','pickup');
+INSERT INTO extensions VALUES (NULL,0,'features','_*31.',1,'AgentCallBackLogin','${EXTEN:3}||${CALLERID(num)}@${CONTEXT}','agentstaticlogin');
+INSERT INTO extensions VALUES (NULL,0,'features','_*31.',2,'Hangup','','agentstaticlogin');
+INSERT INTO extensions VALUES (NULL,0,'features','_*32.',1,'Set','_AGENTCODE=${EXTEN:3}','agentstaticlogoff');
+INSERT INTO extensions VALUES (NULL,0,'features','_*32.',2,'Set','LANGUAGE()=fr','agentstaticlogoff');
+INSERT INTO extensions VALUES (NULL,0,'features','_*32.',3,'System','/usr/sbin/asterisk -rx \"agent logoff Agent/${EXTEN:3}\"','agentstaticlogoff');
+INSERT INTO extensions VALUES (NULL,0,'features','_*32.',4,'Playback','agent-loggedoff','agentstaticlogoff');
+INSERT INTO extensions VALUES (NULL,0,'features','_*32.',5,'Hangup','','agentstaticlogoff');
+INSERT INTO extensions VALUES (NULL,0,'features','*33',1,'AgentLogin','','agentdynamiclogin');
+INSERT INTO extensions VALUES (NULL,0,'features','*34',1,'ChanSpy','','calllistening');
+INSERT INTO extensions VALUES (NULL,0,'features','*34',2,'Hangup','','calllistening');
+INSERT INTO extensions VALUES (NULL,0,'features','*35',1,'Answer','','vmdelete');
+INSERT INTO extensions VALUES (NULL,0,'features','*35',2,'VMauthenticate','${CALLERID(num)}@${CONTEXT}','vmdelete');
+INSERT INTO extensions VALUES (NULL,0,'features','*35',3,'Set','VMPATH=/var/spool/asterisk/voicemail/${CONTEXT}/${CALLERID(num)}','vmdelete');
+INSERT INTO extensions VALUES (NULL,0,'features','*35',4,'System','/bin/rm -f ${VMPATH}/INBOX/*','vmdelete');
+INSERT INTO extensions VALUES (NULL,0,'features','*35',5,'System','/bin/rm -f ${VMPATH}/Old/*','vmdelete');
+INSERT INTO extensions VALUES (NULL,0,'features','*35',6,'Playback','vm-deleted','vmdelete');
+INSERT INTO extensions VALUES (NULL,0,'features','*35',7,'Hangup','','vmdelete');
+INSERT INTO extensions VALUES (NULL,0,'features','*36',1,'Directory','${CONTEXT}','directoryaccess');
 
 
 DROP TABLE extenumbers;
@@ -238,7 +256,12 @@ INSERT INTO extenumbers VALUES (NULL,'_*21.','52c97d56ebcca524ccf882590e94c52f6d
 INSERT INTO extenumbers VALUES (NULL,'_*22.','00638af9e028d4cd454c00f43caf5626baa7d84c','','extenfeatures','fwdrna');
 INSERT INTO extenumbers VALUES (NULL,'_*23.','a1968a70f1d265b8aa263e73c79259961c4f7bbb','','extenfeatures','fwdbusy');
 INSERT INTO extenumbers VALUES (NULL,'_*8.','b349d094036a97a7e0631ba60de759a9597c1c3a','','extenfeatures','pickup');
-
+INSERT INTO extenumbers VALUES (NULL,'_*31.','678fe23ee0d6aa64460584bebbed210e270d662f','','extenfeatures','agentstaticlogin');
+INSERT INTO extenumbers VALUES (NULL,'_*32.','3ae0f1ff0ef4907faa2dad5da7bb891c9dbf45ad','','extenfeatures','agentstaticlogoff');
+INSERT INTO extenumbers VALUES (NULL,'*33','197040c848ebe83ae2e7f0b26a8667291d6b2746','','extenfeatures','agentdynamiclogin');
+INSERT INTO extenumbers VALUES (NULL,'*34','668a8d2d8fe980b663e2cdcecb977860e1b272f3','','extenfeatures','calllistening');
+INSERT INTO extenumbers VALUES (NULL,'*35','c4230e424c7189becec7ee35e9509829c5aea039','','extenfeatures','vmdelete');
+INSERT INTO extenumbers VALUES (NULL,'*36','f9b69fe3c361ddfc2ae49e048460ea197ea850c8','','extenfeatures','directoryaccess');
 
 DROP TABLE features;
 CREATE TABLE features (
@@ -565,6 +588,8 @@ CREATE INDEX meetme__idx__filename ON meetme(filename);
 CREATE INDEX meetme__idx__category ON meetme(category);
 CREATE INDEX meetme__idx__var_name ON meetme(var_name);
 
+INSERT INTO meetme VALUES (1,0,0,0,'meetme.conf','general','audiobuffer','32');
+
 
 DROP TABLE meetmefeatures;
 CREATE TABLE meetmefeatures (
@@ -574,11 +599,17 @@ CREATE TABLE meetmefeatures (
  meetmeid integer unsigned NOT NULL,
  mode varchar(6) NOT NULL DEFAULT 'all',
  musiconhold varchar(128) NOT NULL DEFAULT '',
- context varchar(39),
- exit tinyint(1) NOT NULL DEFAULT 0,
+ context varchar(39) NOT NULL,
+ poundexit tinyint(1) NOT NULL DEFAULT 0,
  quiet tinyint(1) NOT NULL DEFAULT 0,
  record tinyint(1) NOT NULL DEFAULT 0,
- video tinyint(1) NOT NULL DEFAULT 0,
+ adminmode tinyint(1) NOT NULL DEFAULT 0,
+ announceusercount tinyint(1) NOT NULL DEFAULT 0,
+ announcejoinleave tinyint(1) NOT NULL DEFAULT 0,
+ alwayspromptpin tinyint(1) NOT NULL DEFAULT 0,
+ starmenu tinyint(1) NOT NULL DEFAULT 0,
+ enableexitcontext tinyint(1) NOT NULL DEFAULT 0,
+ exitcontext varchar(39) NOT NULL,
  PRIMARY KEY(id)
 );
 
@@ -892,7 +923,7 @@ CREATE UNIQUE INDEX userfeatures__uidx__protocol_name ON userfeatures(protocol,n
 CREATE UNIQUE INDEX userfeatures__uidx__protocol_protocolid ON userfeatures(protocol,protocolid);
 
 INSERT INTO userfeatures VALUES (1,'sip',1,'Guest','','guest','','initconfig',148378,30,5,0,0,0,0,0,0,0,0,'',0,'',0,'','','','');
-INSERT INTO userfeatures VALUES (2,'sip',2,'XivoSB','','xivosb','','defaut',194867,30,5,0,0,0,0,0,0,0,0,'',0,'',0,'','','','');
+INSERT INTO userfeatures VALUES (2,'sip',2,'XivoSB','','xivosb','','default',194867,30,5,0,0,0,0,0,0,0,0,'',0,'',0,'','','','');
 
 
 DROP TABLE useriax;
@@ -989,7 +1020,7 @@ CREATE INDEX usersip__idx__category ON usersip(category);
 CREATE UNIQUE INDEX usersip__uidx__name ON usersip(name);
 
 INSERT INTO usersip VALUES (1,'guest',0,'','documentation','','Guest','no','initconfig',NULL,'rfc2833',NULL,NULL,'','dynamic',NULL,NULL,'',NULL,'no',NULL,NULL,NULL,'',5060,'no',NULL,NULL,NULL,'guest','friend','guest',NULL,NULL,NULL,0,NULL,'',NULL,'',0,'user');
-INSERT INTO usersip VALUES (2,'xivosb',0,'','documentation','','XivoSB','no','defaut',NULL,'rfc2833',NULL,NULL,'','dynamic',NULL,NULL,'',NULL,'no',NULL,NULL,NULL,'',5060,'no',NULL,NULL,NULL,'','friend','xivosb',NULL,NULL,NULL,0,NULL,'',NULL,'',0,'user');
+INSERT INTO usersip VALUES (2,'xivosb',0,'','documentation','','XivoSB','no','default',NULL,'rfc2833',NULL,NULL,'','dynamic',NULL,NULL,'',NULL,'no',NULL,NULL,NULL,'',5060,'no',NULL,NULL,NULL,'','friend','xivosb',NULL,NULL,NULL,0,NULL,'',NULL,'',0,'user');
 
 
 DROP TABLE uservoicemail;
