@@ -32,12 +32,10 @@ __license__ = """
 # remove every prints and include the correct modules (Xilun - 2007-06-15)
 
 CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
-CONFIG_LIB_PATH = 'py_lib_path'
+
+import xivo.to_path
 
 import sys
-from xivo import ConfigPath
-from xivo.ConfigPath import *
-ConfiguredPathHelper(CONFIG_FILE, CONFIG_LIB_PATH)
 import anysql
 from BackSQL import backsqlite
 from BackSQL import backmysql

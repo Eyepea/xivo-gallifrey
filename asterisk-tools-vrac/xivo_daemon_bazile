@@ -28,14 +28,11 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
-CONFIG_LIB_PATH = 'py_lib_path'
 PIDFILE = '/var/run/xivo_daemon_bazile.pid'
 
+import xivo.to_path
+
 import sys
-from xivo import ConfigPath
-from xivo.ConfigPath import *
-ConfiguredPathHelper(CONFIG_FILE, CONFIG_LIB_PATH)
 import anysql
 from BackSQL import backsqlite
 from BackSQL import backmysql

@@ -132,20 +132,19 @@ __alphanums__ = string.uppercase + string.lowercase + string.digits
 import sendfiche
 
 # XIVO lib-python modules initialization
-from xivo import ConfigPath
-from xivo.ConfigPath import *
+import xivo.to_path
 xivoconffile            = "/etc/asterisk/xivo_daemon.conf"
 GETOPT_SHORTOPTS        = 'dc:'
-GETOPT_LONGOPTS         = ["daemon", "config="]
-CONFIG_LIB_PATH         = 'py_lib_path'
+GETOPT_LONGOPTS         = ["debug", "config="]
+debug_mode = False
 def config_path():
-        global xivoconffile
+        global xivoconffile, debug_mode
         for opt, arg in getopt.getopt(sys.argv[1:], "dc:", ["daemon", "config="])[0]:
                 if opt == "-c":
                         xivoconffile = arg
-        ConfiguredPathHelper(xivoconffile, CONFIG_LIB_PATH)
+		elif opt == "-d":
+			debug_mode = True
 config_path()
-debug_mode = (sys.argv.count('-d') > 0)
 
 # XIVO lib-python modules imports
 import daemonize

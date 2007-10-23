@@ -29,12 +29,10 @@ __license__ = """
 """
 
 CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
-CONFIG_LIB_PATH = 'py_lib_path'
+
+import xivo.to_path
 
 import sys
-from xivo import ConfigPath
-from xivo.ConfigPath import *
-ConfiguredPathHelper(CONFIG_FILE, CONFIG_LIB_PATH)
 import anysql
 from BackSQL import backsqlite
 from BackSQL import backmysql
@@ -50,8 +48,8 @@ import operator, string
 
 try:
         conn = anysql.connect_by_uri(options['db_uri'])
-except:
-        print "Unable to connect to %s" %options['db_uri']
+except: # XXX
+        print "Error: Unable to connect to %s" %options['db_uri']
         raise
 
 cursor = conn.cursor()
@@ -71,11 +69,11 @@ try:
         config = ConfigParser.ConfigParser()
         config.readfp(open(outcall))
 except IOError:
-        print "Configuration file not found : %s" % outcall
+        print "Error: Configuration file not found : %s" % outcall
         raise
 
 if not config.has_section('template'):
-	print "Erreur template section doesn't exist"
+	print "Error: Template section doesn't exist"
 	sys.exit()
 
 for context in r:

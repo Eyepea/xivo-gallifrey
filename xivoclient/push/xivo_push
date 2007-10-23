@@ -25,16 +25,13 @@
 # \brief XIVO CTI pushing AGI
 #
 
-CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
-CONFIG_LIB_PATH = 'py_lib_path'
 CONFIG_XIVO_DAEMON = '/etc/asterisk/xivo_daemon.conf'
 
 # XIVO modules
+import xivo.to_path
+
 import sys
 import socket
-from xivo import ConfigPath
-from xivo.ConfigPath import *
-ConfiguredPathHelper(CONFIG_FILE, CONFIG_LIB_PATH)
 import ConfigParser
 from ConfigDict import *
 from agi import *
