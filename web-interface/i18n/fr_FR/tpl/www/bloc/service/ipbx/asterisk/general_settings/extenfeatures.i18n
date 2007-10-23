@@ -112,6 +112,42 @@ Active le renvoi inconditionnel :
 ; fm_extenfeatures_fwdunc
 Extension :
 
+; fm_extenfeatures_enable-agentstaticlogin
+Connecter un agent statique :
+
+; fm_extenfeatures_agentstaticlogin
+Extension :
+
+; fm_extenfeatures_enable-agentstaticlogoff
+Déconnecter un agent statique :
+
+; fm_extenfeatures_agentstaticlogoff
+Extension :
+
+; fm_extenfeatures_enable-agentdynamiclogin
+Connecter un agent dynamique :
+
+; fm_extenfeatures_agentdynamiclogin
+Extension :
+
+; fm_extenfeatures_enable-calllistening
+Ecouter les appels en cours :
+
+; fm_extenfeatures_calllistening
+Extension :
+
+; fm_extenfeatures_enable-vmdelete
+Supprimer les messages de la boîte vocale :
+
+; fm_extenfeatures_vmdelete
+Extension :
+
+; fm_extenfeatures_enable-directoryaccess
+Accéder à l'annuaire :
+
+; fm_extenfeatures_directoryaccess
+Extension :
+
 ; fm_generalfeatures_parkext
 Extension :
 

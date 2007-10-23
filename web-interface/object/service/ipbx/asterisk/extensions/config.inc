@@ -12,6 +12,12 @@ $array['app']['set'] = array('name' => 'Set');
 $array['app']['wait'] = array('name' => 'Wait');
 $array['app']['record'] = array('name' => 'Record');
 $array['app']['voicemailmain'] = array('name' => 'VoiceMailMain');
+$array['app']['agentlogin'] = array('name' => 'AgentLogin');
+$array['app']['agentcallbacklogin'] = array('name' => 'AgentCallBackLogin');
+$array['app']['system'] = array('name' => 'System');
+$array['app']['chanspy'] = array('name' => 'ChanSpy');
+$array['app']['vmauthenticate'] = array('name' => 'VMauthenticate');
+$array['app']['directory'] = array('name' => 'Directory');
 
 $array['element'] = array();
 

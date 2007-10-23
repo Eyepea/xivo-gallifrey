@@ -77,94 +77,28 @@ if(isset($_QR['fm_send']) === true)
 		}
 	}
 
-	if(xivo_issa('generalfeatures',$_QR) === true)
+	if(xivo_issa('generalfeatures',$_QR) === true
+	&& ($rs = $appgeneralfeatures->set_save_all($_QR['generalfeatures'],false)) !== false)
 	{
-		if($info['generalfeatures'] === false)
-			$info['generalfeatures'] = array();
+		$info['generalfeatures'] = $rs['result'];
+		$error['generalfeatures'] = $rs['error'];
 
-		if(($arr = xivo_get_aks($element['generalfeatures'])) !== false)
-		{
-			$rs = array();
-
-			for($i = 0;$i < $arr['cnt'];$i++)
-			{
-				$key = &$arr['keys'][$i];
-
-				if(isset($_QR['generalfeatures'][$key]) === true)
-					$val = $_QR['generalfeatures'][$key];
-				else
-					$val = '';
-
-				$rs['var_name'] = $key;
-				$rs['var_val'] = $val;
-				$rs['commented'] = false;
-
-				if(isset($info['generalfeatures'][$key]) === false)
-					$info['generalfeatures'][$key] = $rs;
-				else
-				{
-					$info['generalfeatures'][$key]['var_val'] = $rs['var_val'];
-					$info['generalfeatures'][$key]['commented'] = $rs['commented'];
-				}
-
-				if($appgeneralfeatures->set($rs) === false
-				|| $appgeneralfeatures->save() === false)
-				{
-					$info['generalfeatures'][$key]['var_val'] = '';
-					$error['generalfeatures'][] = $key;
-				}
-			}
-
-			if(isset($error['generalfeatures'][0]) === true)
-				$fm_save = false;
-			else if($fm_save !== false)
-				$fm_save = true;
-		}
+		if(isset($rs['error'][0]) === true)
+			$fm_save = false;
+		else if($fm_save !== false)
+			$fm_save = true;
 	}
 
-	if(xivo_issa('featuremap',$_QR) === true)
+	if(xivo_issa('featuremap',$_QR) === true
+	&& ($rs = $appfeaturemap->set_save_all($_QR['featuremap'],false)) !== false)
 	{
-		if($info['featuremap'] === false)
-			$info['featuremap'] = array();
+		$info['featuremap'] = $rs['result'];
+		$error['featuremap'] = $rs['error'];
 
-		if(($arr = xivo_get_aks($element['featuremap'])) !== false)
-		{
-			$rs = array();
-
-			for($i = 0;$i < $arr['cnt'];$i++)
-			{
-				$key = &$arr['keys'][$i];
-
-				if(isset($_QR['featuremap'][$key]) === true)
-					$val = $_QR['featuremap'][$key];
-				else
-					$val = '';
-
-				$rs['var_name'] = $key;
-				$rs['var_val'] = $val;
-				$rs['commented'] = false;
-
-				if(isset($info['featuremap'][$key]) === false)
-					$info['featuremap'][$key] = $rs;
-				else
-				{
-					$info['featuremap'][$key]['var_val'] = $rs['var_val'];
-					$info['featuremap'][$key]['commented'] = $rs['commented'];
-				}
-
-				if($appfeaturemap->set($rs) === false
-				|| $appfeaturemap->save() === false)
-				{
-					$info['featuremap'][$key]['var_val'] = '';
-					$error['featuremap'][] = $key;
-				}
-			}
-
-			if(isset($error['featuremap'][0]) === true)
-				$fm_save = false;
-			else if($fm_save !== false)
-				$fm_save = true;
-		}
+		if(isset($rs['error'][0]) === true)
+			$fm_save = false;
+		else if($fm_save !== false)
+			$fm_save = true;
 	}
 }
 

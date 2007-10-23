@@ -263,10 +263,10 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 		|| $this->_return[$this->_name] === false)
 			return(false);
 
-		$this->_realstatic($this->_return[$this->_name]);
+		return($this->_reverse_realstatic($this->_return[$this->_name]));
 	}
 
-	function _reverse_realstatic()
+	function _reverse_realstatic($val)
 	{
 		if(is_scalar($val) === false
 		|| $val === false

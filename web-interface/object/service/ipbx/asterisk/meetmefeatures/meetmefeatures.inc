@@ -38,6 +38,16 @@ class xivo_service_asterisk_meetmefeatures extends xivo_service_asterisk_abstrac
 		else
 			$data['identity'] .= ' ('.$data['number'].'@'.$data['context'].')';
 
+		$data['poundexit'] = (bool) $data['poundexit'];
+		$data['quiet'] = (bool) $data['quiet'];
+		$data['record'] = (bool) $data['record'];
+		$data['adminmode'] = (bool) $data['adminmode'];
+		$data['announceusercount'] = (bool) $data['announceusercount'];
+		$data['announcejoinleave'] = (bool) $data['announcejoinleave'];
+		$data['alwayspromptpin'] = (bool) $data['alwayspromptpin'];
+		$data['starmenu'] = (bool) $data['starmenu'];
+		$data['enableexitcontext'] = (bool) $data['enableexitcontext'];
+
 		return($data);
 	}
 

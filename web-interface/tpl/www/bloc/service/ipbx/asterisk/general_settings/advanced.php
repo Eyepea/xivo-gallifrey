@@ -10,25 +10,10 @@
 	endif;
 
 	$error_js = array();
-	$error_nb = count($error['generalagents']);
-
-	for($i = 0;$i < $error_nb;$i++):
-		$error_js[] = 'xivo_fm_error[\'it-generalagents-'.$error['generalagents'][$i].'\'] = true;';
-		$element['generalagents'][$error['generalagents'][$i]]['default'] = '';
-	endfor;
-
-	$error_nb = count($error['generalqueue']);
-
-	for($i = 0;$i < $error_nb;$i++):
-		$error_js[] = 'xivo_fm_error[\'it-generalqueue-'.$error['generalqueue'][$i].'\'] = true;';
-		$element['generalqueue'][$error['generalqueue'][$i]]['default'] = '';
-	endfor;
-
 	$error_nb = count($error['generalmeetme']);
 
 	for($i = 0;$i < $error_nb;$i++):
 		$error_js[] = 'xivo_fm_error[\'it-generalmeetme-'.$error['generalmeetme'][$i].'\'] = true;';
-		$element['generalmeetme'][$error['generalmeetme'][$i]]['default'] = '';
 	endfor;
 
 	if(isset($error_js[0]) === true)

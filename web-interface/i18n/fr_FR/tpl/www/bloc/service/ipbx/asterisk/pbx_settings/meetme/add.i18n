@@ -1,6 +1,12 @@
 ; title_content_name
 Chambres de conférence > Ajouter
 
+; smenu_general
+Général
+
+; smenu_advanced
+Avancé
+
 ; fm_meetmefeatures_name
 Nom :
 
@@ -25,11 +31,11 @@ Ecouter
 ; fm_meetmefeatures_mode-all
 Tous
 
-; fm_meetmefeatures_exit
-Sortir avec # :
-
 ; fm_meetmefeatures_musiconhold
 Musique d'attente :
+
+; fm_meetmefeatures_poundexit
+Activer la possibilité de sortir avec # :
 
 ; fm_meetmefeatures_quiet
 Aucune notification d'entrée :
@@ -37,8 +43,26 @@ Aucune notification d'entrée :
 ; fm_meetmefeatures_record
 Enregistrement :
 
-; fm_meetmefeatures_video
-Vidéo :
+; fm_meetmefeatures_adminmode
+Mode administrateur :
+
+; fm_meetmefeatures_announceusercount 
+Annoncer le nombre de participants :
+
+; fm_meetmefeatures_announcejoinleave
+Annoncer les entrées et sorties :
+
+; fm_meetmefeatures_alwayspromptpin
+Contrôle du code PIN :
+
+; fm_meetmefeatures_starmenu
+Activer l'accès au menu avec * :
+
+; fm_meetmefeatures_enableexitcontext
+Activer le contexte de sortie :
+
+; fm_meetmefeatures_exitcontext
+Contexte de sortie :
 
 ; fm_bt-save
 Sauvegarder

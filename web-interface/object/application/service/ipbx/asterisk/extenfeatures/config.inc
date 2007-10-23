@@ -4,11 +4,13 @@ $array = array();
 
 $array['exten'] = array();
 $array['exten']['voicemsg'] = array();
+$array['exten']['voicemsg']['_line'] = array();
 $array['exten']['voicemsg']['_line'][] = array('priority' => 1,'app' => 'VoiceMailMain','appdata' => '${CALLERID(num)}@${CONTEXT}|s');
 $array['exten']['voicemsg']['_line'][] = array('priority' => 2,'app' => 'Hangup','appdata' => '');
 
 $array['exten']['fwdundoall'] = array();
 $array['exten']['fwdundoall']['app'] = 'Macro';
+$array['exten']['fwdundoall']['_line'] = array();
 $array['exten']['fwdundoall']['_line'][] = array('priority' => 1,'appdata' => 'features|FWD/Unc/Status|||1');
 $array['exten']['fwdundoall']['_line'][] = array('priority' => 2,'appdata' => 'features|FWD/RNA/Status|||1');
 $array['exten']['fwdundoall']['_line'][] = array('priority' => 3,'appdata' => 'features|FWD/Busy/Status|all-forward-off|all-forward-off|1');
@@ -31,6 +33,7 @@ $array['exten']['fwdundounc']['appdata'] = 'features|FWD/Unc/Status|forward-on|f
 $array['exten']['fwdrna'] = array();
 $array['exten']['fwdrna']['app'] = 'Set';
 $array['exten']['fwdrna']['appdata'] = '';
+$array['exten']['fwdrna']['_line'] = array();
 $array['exten']['fwdrna']['_line'][] = array('priority' => 1,'app' => 'Answer');
 $array['exten']['fwdrna']['_line'][] = array('priority' => 2,'app' => 'Wait','appdata' => '0.5');
 $array['exten']['fwdrna']['_line'][] = array('priority' => 3,'appdata' => 'USER=${CALLERID(num)}');
@@ -43,6 +46,7 @@ $array['exten']['fwdrna']['_line'][] = array('priority' => 8,'app' => 'Hangup');
 $array['exten']['fwdbusy'] = array();
 $array['exten']['fwdbusy']['app'] = 'Set';
 $array['exten']['fwdbusy']['appdata'] = '';
+$array['exten']['fwdbusy']['_line'] = array();
 $array['exten']['fwdbusy']['_line'][] = array('priority' => 1,'app' => 'Answer');
 $array['exten']['fwdbusy']['_line'][] = array('priority' => 2,'app' => 'Wait','appdata' => '0.5');
 $array['exten']['fwdbusy']['_line'][] = array('priority' => 3,'appdata' => 'USER=${CALLERID(num)}');
@@ -55,6 +59,7 @@ $array['exten']['fwdbusy']['_line'][] = array('priority' => 8,'app' => 'Hangup')
 $array['exten']['fwdunc'] = array();
 $array['exten']['fwdunc']['app'] = 'Set';
 $array['exten']['fwdunc']['appdata'] = '';
+$array['exten']['fwdunc']['_line'] = array();
 $array['exten']['fwdunc']['_line'][] = array('priority' => 1,'app' => 'Answer');
 $array['exten']['fwdunc']['_line'][] = array('priority' => 2,'app' => 'Wait','appdata' => '0.5');
 $array['exten']['fwdunc']['_line'][] = array('priority' => 3,'appdata' => 'USER=${CALLERID(num)}');
@@ -67,6 +72,7 @@ $array['exten']['fwdunc']['_line'][] = array('priority' => 8,'app' => 'Hangup');
 $array['exten']['recsnd'] = array();
 $array['exten']['recsnd']['app'] = 'Set';
 $array['exten']['recsnd']['appdata'] = '';
+$array['exten']['recsnd']['_line'] = array();
 $array['exten']['recsnd']['_line'][] = array('priority' => 1,'app' => 'Playback','appdata' => 'record-message-after-beep');
 $array['exten']['recsnd']['_line'][] = array('priority' => 2,'appdata' => 'ROOT=/usr/share/asterisk/sounds/web-interface/recordings');
 $array['exten']['recsnd']['_line'][] = array('priority' => 3,'appdata' => 'RECORDFILE=${ROOT}/${CALLERID(num)}-${EPOCH}');
@@ -80,6 +86,7 @@ $array['exten']['recsnd']['_line'][] = array('priority' => 9,'app' => 'Hangup');
 $array['exten']['phonestatus'] = array();
 $array['exten']['phonestatus']['app'] = 'Playback';
 $array['exten']['phonestatus']['appdata'] = '';
+$array['exten']['phonestatus']['_line'] = array();
 $array['exten']['phonestatus']['_line'][] = array('priority' => 1,'app' => 'Answer');
 $array['exten']['phonestatus']['_line'][] = array('priority' => 2,'appdata' => 'status-phone');
 $array['exten']['phonestatus']['_line'][] = array('priority' => 3,'appdata' => 'forward-inc');
@@ -129,6 +136,48 @@ $array['exten']['pickup']['priority'] = 1;
 $array['exten']['pickup']['app'] = 'Pickup';
 $array['exten']['pickup']['appdata'] = '${EXTEN:$<EXTNUMLEN>}';
 
+$array['exten']['agentstaticlogin'] = array();
+$array['exten']['agentstaticlogin']['_line'] = array();
+$array['exten']['agentstaticlogin']['_line'][] = array('priority' => 1,'app' => 'AgentCallBackLogin','appdata' => '${EXTEN:$<EXTNUMLEN>}||${CALLERID(num)}@${CONTEXT}');
+$array['exten']['agentstaticlogin']['_line'][] = array('priority' => 2,'app' => 'Hangup','appdata' => '');
+
+$array['exten']['agentstaticlogoff'] = array();
+$array['exten']['agentstaticlogoff']['app'] = 'Set';
+$array['exten']['agentstaticlogoff']['_line'] = array();
+$array['exten']['agentstaticlogoff']['_line'][] = array('priority' => 1,'appdata' => '_AGENTCODE=${EXTEN:$<EXTNUMLEN>}');
+$array['exten']['agentstaticlogoff']['_line'][] = array('priority' => 2,'appdata' => 'LANGUAGE()=fr');
+$array['exten']['agentstaticlogoff']['_line'][] = array('priority' => 3,'app' => 'System','appdata' => '/usr/sbin/asterisk -rx "agent logoff Agent/${EXTEN:$<EXTNUMLEN>}"');
+$array['exten']['agentstaticlogoff']['_line'][] = array('priority' => 4,'app' => 'Playback','appdata' => 'agent-loggedoff');
+$array['exten']['agentstaticlogoff']['_line'][] = array('priority' => 5,'app' => 'Hangup','appdata' => '');
+
+$array['exten']['agentdynamiclogin'] = array();
+$array['exten']['agentdynamiclogin']['priority'] = 1;
+$array['exten']['agentdynamiclogin']['app'] = 'AgentLogin';
+$array['exten']['agentdynamiclogin']['appdata'] = '';
+
+$array['exten']['calllistening'] = array();
+$array['exten']['calllistening']['appdata'] = '';
+$array['exten']['calllistening']['_line'] = array();
+$array['exten']['calllistening']['_line'][] = array('priority' => 1,'app' => 'ChanSpy');
+$array['exten']['calllistening']['_line'][] = array('priority' => 2,'app' => 'Hangup');
+
+$array['exten']['vmdelete'] = array();
+$array['exten']['vmdelete']['app'] = 'System';
+$array['exten']['vmdelete']['appdata'] = '';
+$array['exten']['vmdelete']['_line'] = array();
+$array['exten']['vmdelete']['_line'][] = array('priority' => 1,'app' => 'Answer');
+$array['exten']['vmdelete']['_line'][] = array('priority' => 2,'app' => 'VMauthenticate','appdata' => '${CALLERID(num)}@${CONTEXT}');
+$array['exten']['vmdelete']['_line'][] = array('priority' => 3,'app' => 'Set','appdata' => 'VMPATH=/var/spool/asterisk/voicemail/${CONTEXT}/${CALLERID(num)}');
+$array['exten']['vmdelete']['_line'][] = array('priority' => 4,'appdata' => '/bin/rm -f ${VMPATH}/INBOX/*');
+$array['exten']['vmdelete']['_line'][] = array('priority' => 5,'appdata' => '/bin/rm -f ${VMPATH}/Old/*');
+$array['exten']['vmdelete']['_line'][] = array('priority' => 6,'app' => 'Playback','appdata' => 'vm-deleted');
+$array['exten']['vmdelete']['_line'][] = array('priority' => 7,'app' => 'Hangup');
+
+$array['exten']['directoryaccess'] = array();
+$array['exten']['directoryaccess']['priority'] = 1;
+$array['exten']['directoryaccess']['app'] = 'Directory';
+$array['exten']['directoryaccess']['appdata'] = '${CONTEXT}';
+
 $array['element'] = array();
 $array['element']['voicemsg'] = array();
 $array['element']['voicemsg']['default'] = '*98';
@@ -175,6 +224,24 @@ $array['element']['incallfilter']['default'] = '*27';
 $array['element']['pickup'] = array();
 $array['element']['pickup']['default'] = '*8.';
 
+$array['element']['agentstaticlogin'] = array();
+$array['element']['agentstaticlogin']['default'] = '*31.';
+
+$array['element']['agentstaticlogoff'] = array();
+$array['element']['agentstaticlogoff']['default'] = '*32.';
+
+$array['element']['agentdynamiclogin'] = array();
+$array['element']['agentdynamiclogin']['default'] = '*33';
+
+$array['element']['calllistening'] = array();
+$array['element']['calllistening']['default'] = '*34';
+
+$array['element']['vmdelete'] = array();
+$array['element']['vmdelete']['default'] = '*35';
+
+$array['element']['directoryaccess'] = array();
+$array['element']['directoryaccess']['default'] = '*36';
+
 $array['filter'] = array();
 $array['filter']['voicemsg'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
 $array['filter']['fwdundoall'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
@@ -191,5 +258,11 @@ $array['filter']['enablednd'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '
 $array['filter']['incallrec'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
 $array['filter']['incallfilter'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
 $array['filter']['pickup'] = array('minlen' => 1,'maxlen' => 40);
+$array['filter']['agentstaticlogin'] = array('minlen' => 1,'maxlen' => 40);
+$array['filter']['agentstaticlogoff'] = array('minlen' => 1,'maxlen' => 40);
+$array['filter']['agentdynamiclogin'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
+$array['filter']['calllistening'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
+$array['filter']['vmdelete'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
+$array['filter']['directoryaccess'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
 
 ?>

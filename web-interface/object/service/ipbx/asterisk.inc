@@ -795,10 +795,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 			$extenumbers_where['typeval'] = $info['outcall']['id'];
 
 			if(($info['extenumbers'] = $extenumbers->get_where($extenumbers_where)) === false)
-			{
-				print 'toto';
 				continue;
-			}
 
 			if($info['outcall']['linked'] === false)
 			{

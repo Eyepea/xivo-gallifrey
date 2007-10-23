@@ -110,21 +110,17 @@ class xivo_tpl
 
 	function set_module($value,$name='')
 	{
-		$r = false;
-
 		$name = (string) $name;
 
 		if(is_object($value) === false)
-			return($r);
-
-		$r = true;
+			return(false);
 
 		if($name === '')
 			$name = get_class($value);
 
 		$this->_module[$name] = &$value;
 
-		return($r);
+		return(true);
 	}
 
 	function &get_module($name)
@@ -147,13 +143,11 @@ class xivo_tpl
 
 	function call_module($name,$func,$args=null)
 	{
-		$r = false;
-
 		$func = (string) $func;
 		$name = (string) $name;
 
 		if($name === '' || $this->_load_module($name) === false)
-			return($r);
+			return(false);
 
 		if($args === null)
 			$r = call_user_func(array(&$this->_module[$name],$func));
@@ -175,8 +169,6 @@ class xivo_tpl
 
 	function _load_class($module)
 	{
-		$r = false;
-
 		$module = (string) $module;
 
 		$file = $module.'.inc';
@@ -185,32 +177,32 @@ class xivo_tpl
 		$class = 'xivo_tpl_'.$module;
 
 		if(xivo_file::load_file($file,$dir,true) === false)
-			return($r);
+			return(false);
 
 		if(class_exists($class) === true)
 			$r = $class;
+		else
+			$r = false;
 
 		return($r);
 	}
 
 	function _load_module($name)
 	{
-		$r = true;
-
 		$name = (string) $name;
 
-		if($this->valid_module($name) === false)
+		if($this->valid_module($name) === true)
+			return(true);
+
+		if(($class = $this->_load_class($name)) === false)
 		{
-			if(($class = $this->_load_class($name)) !== false)
-				$this->set_module(new $class($this),$name);
-			else
-			{
-				trigger_error('Module does not exist in tpl',E_USER_ERROR);
-				$r = false;
-			}
+			trigger_error('Module does not exist in tpl',E_USER_ERROR);
+			return(false);
 		}
 
-		return($r);
+		$this->set_module(new $class($this),$name);
+
+		return(true);
 	}
 
 	function assign($name,$value)
@@ -307,12 +299,10 @@ class xivo_tpl
 
 	function get_file($name)
 	{
-		$r = null;
-
 		$name = (string) $name;
 	
 		if(isset($this->_file[$name]) === false)
-			return($r);
+			return(null);
 
 		if(is_array($this->_file[$name]) === true)
 			$r = end($this->_file[$name]);

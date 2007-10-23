@@ -36,6 +36,9 @@ switch($act)
 		$_HTML->assign('info',$result);
 		$_HTML->assign('moh_list',$appmeetme->get_musiconhold());
 		$_HTML->assign('element',$appmeetme->get_elements());
+
+		$dhtml = &$_HTML->get_module('dhtml');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 		break;
 	case 'edit':
 		$appmeetme = &$ipbx->get_application('meetme');
@@ -70,6 +73,9 @@ switch($act)
 		$_HTML->assign('info',$return);
 		$_HTML->assign('moh_list',$appmeetme->get_musiconhold());
 		$_HTML->assign('element',$appmeetme->get_elements());
+
+		$dhtml = &$_HTML->get_module('dhtml');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 		break;
 	case 'delete':
 		$param['page'] = $page;

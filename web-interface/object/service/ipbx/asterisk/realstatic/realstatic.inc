@@ -410,8 +410,8 @@ class xivo_service_asterisk_realstatic extends xivo_service_asterisk_abstract
 			$r[$info['category']][$info['var_name']] = $info;
 		}
 
-		if(isset($arr['category'],$r[$arr['category']]) === true)
-			$r = $r[$arr['category']];
+		if(isset($this->_category,$r[$this->_category]) === true)
+			$r = $r[$this->_category];
 
 		if(empty($r) === true)
 			$r = false;

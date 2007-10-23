@@ -18,7 +18,7 @@
 
 <div id="sb-part-first">
 
-<?=$form->text(array('desc' => $this->bbf('fm_agentgroup_name'),'name' => 'agroup[name]','labelid' => 'agroup-name','size' => 25,'default' => $element['agroup']['name']['default'],'value' => $info['agroup']['name']));?>
+<?=$form->text(array('desc' => $this->bbf('fm_agentgroup_name'),'name' => 'agroup[name]','labelid' => 'agroup-name','size' => 15,'default' => $element['agroup']['name']['default'],'value' => $info['agroup']['name']));?>
 
 <?php
 	if($agents !== false):

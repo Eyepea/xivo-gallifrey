@@ -8,11 +8,15 @@ class xivo_service_asterisk_realstatic_meetme extends xivo_service_asterisk_real
 
 	function _prepare($data)
 	{
-		$val = explode(',',$data['var_val']);
+		if($data['category'] === 'rooms'
+		&& $data['var_name'] === 'conf')
+		{
+			$val = explode(',',$data['var_val']);
 
-		$data['number'] = xivo_haslen($val,0) === true ? $val[0] : '';
-		$data['pin'] = xivo_haslen($val,1) === true ? $val[1] : '';
-		$data['admin-pin'] = xivo_haslen($val,2) === true ? $val[2] : '';
+			$data['number'] = xivo_haslen($val,0) === true ? $val[0] : '';
+			$data['pin'] = xivo_haslen($val,1) === true ? $val[1] : '';
+			$data['admin-pin'] = xivo_haslen($val,2) === true ? $val[2] : '';
+		}
 
 		$data = parent::_prepare($data);
 

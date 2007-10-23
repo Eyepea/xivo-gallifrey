@@ -14,6 +14,9 @@ xivo_list_elt_extenfeatures['it-extenfeatures-enable-enablednd'] = new Array('it
 xivo_list_elt_extenfeatures['it-extenfeatures-enable-incallrec'] = new Array('it-extenfeatures-incallrec');
 xivo_list_elt_extenfeatures['it-extenfeatures-enable-incallfilter'] = new Array('it-extenfeatures-incallfilter');
 xivo_list_elt_extenfeatures['it-extenfeatures-enable-pickup'] = new Array('it-extenfeatures-pickup','it-extenfeatures-list-pickup');
+xivo_list_elt_extenfeatures['it-extenfeatures-enable-agentstaticlogin'] = new Array('it-extenfeatures-agentstaticlogin','it-extenfeatures-list-agentstaticlogin');
+xivo_list_elt_extenfeatures['it-extenfeatures-enable-agentstaticlogoff'] = new Array('it-extenfeatures-agentstaticlogoff','it-extenfeatures-list-agentstaticlogoff');
+xivo_list_elt_extenfeatures['it-extenfeatures-enable-agentdynamiclogin'] = new Array('it-extenfeatures-agentdynamiclogin');
 
 function xivo_extenfeatures_onload()
 {
@@ -40,6 +43,14 @@ function xivo_extenfeatures_onload()
 
 	if((elt = xivo_eid('it-extenfeatures-pickup')) != false
 	&& (eltlist = xivo_eid('it-extenfeatures-list-pickup')) != false)
+		eltlist.value = xivo_get_exten_buffer('X',elt.value);
+
+	if((elt = xivo_eid('it-extenfeatures-agentstaticlogin')) != false
+	&& (eltlist = xivo_eid('it-extenfeatures-list-agentstaticlogin')) != false)
+		eltlist.value = xivo_get_exten_buffer('X',elt.value);
+
+	if((elt = xivo_eid('it-extenfeatures-agentstaticlogoff')) != false
+	&& (eltlist = xivo_eid('it-extenfeatures-list-agentstaticlogoff')) != false)
 		eltlist.value = xivo_get_exten_buffer('X',elt.value);
 }
 

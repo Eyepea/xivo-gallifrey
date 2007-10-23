@@ -274,7 +274,14 @@ class xivo_tpl_form extends xivo_tpl_module
 			$r .= ' checked="checked"';
 
 		if($this->_param['value'] !== false)
-			$r .= ' value="'.$this->_param['value'].'"';
+		{
+			if($this->_param['invalid'] === true)
+				$value = '';
+			else
+				$value = $this->_param['value'];
+
+			$r .= ' value="'.$value.'"';
+		}
 
 		if(isset($o{0}) === true)
 			$r .= ($o{0} === ' ' ? '' : ' ').$o;
