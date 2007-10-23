@@ -197,6 +197,7 @@ HISTSEPAR = ";"
 XIVO_CLI_PHP_HEADER = "XIVO-CLI-PHP"
 REQUIRED_CLIENT_VERSION = 1569
 ITEMS_PER_PACKET = 500
+LENGTH_SSO = 11
 
 # capabilities
 CAPA_CUSTINFO    = 1 <<  0
@@ -2319,10 +2320,16 @@ class Context:
                 return reply_by_field
 
 
-def stripquotes(arrlist):
-        unquoted = []
-        for a in arrlist:
-                unquoted.append(a.strip('"'))
+def stripquotes(arrstring):
+        a = arrstring.split('"|"')
+        if len(a) >= LENGTH_SSO:
+                unquoted = []
+                unquoted.append(a[0][1:].replace('""', '"'))
+                for t in a[1:-1]:
+                        unquoted.append(t.replace('""', '"'))
+                unquoted.append(a[-1][:-1].replace('""', '"'))
+        else:
+                unquoted = arrstring.split('|')
         return unquoted
 
 
@@ -2457,8 +2464,8 @@ class AsteriskRemote:
                                 sizeread += len(line)
                                 # remove leading/tailing whitespaces
                                 line = line.strip()
-                                l = line.split('|')
-                                if len(l) == 11 and l[6] == "0":
+                                l = stripquotes(line)
+                                if len(l) >= LENGTH_SSO and l[6] == "0":
                                         phone_list.append(l)
 
                         t2 = time.time()
@@ -2468,7 +2475,7 @@ class AsteriskRemote:
                         for l in phone_list:
                                 [sso_tech, sso_phoneid, sso_passwd, sso_cinfo_allowed,
                                  sso_phonenum, sso_l5, sso_l6,
-                                 fullname, firstname, lastname, sso_context] = stripquotes(l)
+                                 fullname, firstname, lastname, sso_context] = l
                                 for sipacc in self.xivosb_phoneids:
                                         if sipacc == sso_phoneid:
                                                 found_xivosb = True
@@ -2500,7 +2507,7 @@ class AsteriskRemote:
                                         #         firstname | lastname | context
                                         [sso_tech, sso_phoneid, sso_passwd, sso_cinfo_allowed,
                                          sso_phonenum, sso_l5, sso_l6,
-                                         fullname, firstname, lastname, sso_context] = stripquotes(l)
+                                         fullname, firstname, lastname, sso_context] = l
                                         
                                         if sso_context in self.xivosb_contexts:
                                                 sipaccount = self.xivosb_contexts[sso_context]
