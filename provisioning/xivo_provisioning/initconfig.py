@@ -26,7 +26,6 @@ __license__ = """
 """
 
 CONFIG_FILE		= '/etc/xivo/provisioning.conf' # can be overridden by cmd line param
-CONFIG_LIB_PATH		= 'py_lib_path'
 GETOPT_SHORTOPTS	= 'c:h'
 
 import sys
@@ -41,10 +40,7 @@ def help_screen():
 """ % (sys.argv[0], repr(CONFIG_FILE))
 	sys.exit(1)
 
-# === BEGIN of early configuration handling, so that the sys.path can be altered
 from getopt import getopt, GetoptError
-from xivo import ConfigPath
-from xivo.ConfigPath import *
 def config_path():
 	global CONFIG_FILE
 	try:
@@ -59,10 +55,10 @@ def config_path():
 	for k,v in opts:
 		if k == '-c':
 			CONFIG_FILE = v
-	ConfiguredPathHelper(CONFIG_FILE, CONFIG_LIB_PATH)
 config_path()
-# === END of early configuration handling
 
+import xivo.to_path
+import xivo_provisioning.to_path
 
 # Loading Xivo modules is possible from this point
 

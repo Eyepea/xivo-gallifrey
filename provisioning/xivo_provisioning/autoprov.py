@@ -8,7 +8,6 @@ Copyright (C) 2007, Proformatique
 __version__ = "$Revision$ $Date$"
 
 CONFIG_FILE		= '/etc/xivo/provisioning.conf' # can be overridden by cmd line param
-CONFIG_LIB_PATH		= 'py_lib_path'
 GETOPT_SHORTOPTS	= 'b:l:dfc:p:h'
 PIDFILE			= "/var/run/autoprov.pid"
 TABLE			= "phone"
@@ -36,29 +35,14 @@ def help_screen():
 """ % (sys.argv[0], repr(CONFIG_FILE), repr(PIDFILE))
 	sys.exit(1)
 
-# === BEGIN of early configuration handling, so that the sys.path can be altered
-from getopt import getopt, GetoptError
-from xivo import ConfigPath
-from xivo.ConfigPath import *
-def config_path():
-	global CONFIG_FILE
-	try:
-		opts,args = getopt(sys.argv[1:], GETOPT_SHORTOPTS)
-	except GetoptError, x:
-		print >> sys.stderr, x
-		help_screen()
-	for k,v in opts: # DO NOT MERGE THE TWO LOOPS
-		if k == '-h':
-			help_screen()
-	for k,v in opts:
-		if k == '-c':
-			CONFIG_FILE = v
-	ConfiguredPathHelper(CONFIG_FILE, CONFIG_LIB_PATH)
-config_path()
-# === END of early configuration handling
+# Magical Path modification:
 
+import xivo.to_path
+import xivo_provisioning.to_path
 
 # Loading Xivo modules is possible from this point
+
+from getopt import getopt, GetoptError
 
 import timeoutsocket
 from timeoutsocket import Timeout
@@ -822,7 +806,14 @@ log_level = SYSLOG_NOTICE
 
 dburi_override = None
 log_level_override = None
-opts,args = getopt(sys.argv[1:], GETOPT_SHORTOPTS)
+try:
+	opts,args = getopt(sys.argv[1:], GETOPT_SHORTOPTS)
+except GetoptError, x:
+	print >> sys.stderr, x
+	help_screen()
+for k,v in opts: # DO NOT MERGE THE TWO LOOPS
+	if k == '-h':
+		help_screen()
 for k,v in opts:
 	if '-l' == k:
 		log_level_override = v
@@ -834,6 +825,8 @@ for k,v in opts:
 		dburi_override = v
 	elif '-p' == k:
 		PIDFILE = v
+	elif '-c' == k:
+		CONFIG_FILE = v
 
 provsup.LoadConfig(CONFIG_FILE)
 

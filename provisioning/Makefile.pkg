@@ -12,17 +12,19 @@ DEB_TB_DEPS="python python2.4-dev upx-ucl"
 DEB_TAR_EXTRA_OPTIONS="--exclude=*.py"
 
 DESTDIR?=.
-FREEZEPATH?=../tools/python-freeze/
+FREEZEPATH?=$(realpath ../tools/python-freeze/)
 
 default:
 
 prepare-tarball::
-	@echo "from Phones import *" | PYTHONPATH=../lib-python/xivo/ /usr/bin/python2.4
-	@echo "import provsup" | PYTHONPATH=../lib-python/xivo/ /usr/bin/python2.4
-	@${FREEZEPATH}/local_freeze.py ${FREEZEPATH}/freeze.py provsup.py,autoprov.py
-	@cp initconfig.py initconfig
+	@echo "from xivo_provisioning import to_path" | PYTHONPATH=../lib-python/xivo/ /usr/bin/python2.4
+	@cd xivo_provisioning && \
+	echo "from Phones import *" | PYTHONPATH=../../lib-python/xivo/ /usr/bin/python2.4 && \
+	echo "import provsup" | PYTHONPATH=../../lib-python/xivo/ /usr/bin/python2.4 && \
+	${FREEZEPATH}/local_freeze.py ${FREEZEPATH}/freeze.py provsup.py,autoprov.py && \
+	cp initconfig.py initconfig
 
 clean-tarball::
 	@find . ${FREEZEPATH} ../lib-python/xivo/ -name "*.pyc" -exec rm -f {} \;
-	@rm -f autoprov initconfig
+	@rm -f xivo_provisioning/autoprov xivo_provisioning/initconfig
 
