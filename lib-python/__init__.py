@@ -1,1 +1,1 @@
-__all__ = ["ConfigPath"]
+__all__ = ("ConfigPath",)
