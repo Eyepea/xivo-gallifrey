@@ -6,7 +6,7 @@ $dirs = false;
 if($dir === '')
 	$dir = false;
 
-if(($dirs = $sounds->get_dir($dir)) === false)
+if(($dirs = $sounds->get_dir($dir,true,true)) === false)
 	$_QRY->go($_HTML->url('service/ipbx/general_settings/sounds'),'act=listdir');
 
 if(($dirs = $dirs['files']) !== false)

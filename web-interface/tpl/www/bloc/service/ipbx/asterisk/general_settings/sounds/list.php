@@ -15,10 +15,16 @@
 		echo '<div class="b-page">',$page,'</div>';
 	endif;
 ?>
+<form action="#" name="fm-files-list" method="post" accept-charset="utf-8">
+<?=$form->hidden(array('name' => XIVO_SESS_NAME,'value' => XIVO_SESS_ID));?>
+<?=$form->hidden(array('name' => 'act','value' => $act));?>
+<?=$form->hidden(array('name' => 'dir','value' => $dir));?>
+<?=$form->hidden(array('name' => 'page','value' => $pager['page']));?>
 <table cellspacing="0" cellpadding="0" border="0">
 	<tr class="sb-top">
 		<th class="th-left xspan"><span class="span-left">&nbsp;</span></th>
 		<th class="th-center"><?=$this->bbf('col_file');?></th>
+		<th class="th-center"><?=$this->bbf('col_date');?></th>
 		<th class="th-center" id="col-action"><?=$this->bbf('col_action');?></th>
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
 	</tr>
@@ -27,7 +33,7 @@
 	if($list === false || ($nb = count($list)) === 0):
 ?>
 	<tr class="sb-content">
-		<td colspan="4" class="td-single"><?=$this->bbf('no_file');?></td>
+		<td colspan="5" class="td-single"><?=$this->bbf('no_file');?></td>
 	</tr>
 <?php
 	else:
@@ -38,10 +44,12 @@
 			$mod = $j % 2 === 0 ? 1 : 2;
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=$mod?>on2">
-		<td class="td-left txt-left curpointer" colspan="2" onclick="location.href = this.firstChild;"><?=$url->href_html($ref,'service/ipbx/general_settings/sounds',array('act' => 'download','dir' => $dir,'id' => $ref,'page' => $pager['page']));?></td>
+		<td class="td-left"><?=$form->checkbox(array('name' => 'files[]','value' => $ref['name'],'label' => false,'id' => 'it-files-'.$i,'checked' => false,'field' => false));?></td>
+		<td class="txt-left curpointer" onclick="location.href = this.firstChild;"><?=$url->href_html($ref['name'],'service/ipbx/general_settings/sounds',array('act' => 'download','dir' => $dir,'id' => $ref['name'],'page' => $pager['page']));?></td>
+		<td><?=strftime($this->bbf('date_format_yymmddhhii'),$ref['mtime']);?></td>
 		<td class="td-right" colspan="2">
-		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/general_settings/sounds',array('act' => 'edit','dir' => $dir,'id' => $ref),null,$this->bbf('opt_modify'));?>
-		<?=$url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'service/ipbx/general_settings/sounds',array('act' => 'delete','dir' => $dir,'id' => $ref,'page' => $pager['page']),'onclick="return(confirm(\''.xivo_stript($this->bbf('opt_delete_confirm')).'\') ? true : false);"',$this->bbf('opt_delete'));?>
+		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/general_settings/sounds',array('act' => 'edit','dir' => $dir,'id' => $ref['name']),null,$this->bbf('opt_modify'));?>
+		<?=$url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'service/ipbx/general_settings/sounds',array('act' => 'delete','dir' => $dir,'id' => $ref['name'],'page' => $pager['page']),'onclick="return(confirm(\''.xivo_stript($this->bbf('opt_delete_confirm')).'\') ? true : false);"',$this->bbf('opt_delete'));?>
 		</td>
 	</tr>
 <?php
@@ -50,10 +58,11 @@
 ?>
 	<tr class="sb-foot">
 		<td class="td-left xspan b-nosize"><span class="span-left b-nosize">&nbsp;</span></td>
-		<td class="td-center" colspan="2"><span class="b-nosize">&nbsp;</span></td>
+		<td class="td-center" colspan="3"><span class="b-nosize">&nbsp;</span></td>
 		<td class="td-right xspan b-nosize"><span class="span-right b-nosize">&nbsp;</span></td>
 	</tr>
 </table>
+</form>
 <?php
 	if($page !== ''):
 		echo '<div class="b-page">',$page,'</div>';

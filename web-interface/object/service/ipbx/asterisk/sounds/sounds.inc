@@ -165,7 +165,11 @@ class xivo_service_asterisk_sounds extends xivo_service_asterisk_abstract
 		$file = $this->_sndpath.XIVO_SEP_DIR.$name;
 		$newfile = $this->_sndpath.XIVO_SEP_DIR.$newname;
 
-		if(xivo_file::is_f($file) === false || xivo_file::is_f($newfile) !== false
+		if($file === $newfile)
+			return(true);
+
+		if(xivo_file::is_f($file) === false
+		|| xivo_file::is_f($newfile) !== false
 		|| xivo_file::is_d_rwx($this->_sndpath) === false
 		|| rename($file,$newfile) === false)
 			return(false);
@@ -187,7 +191,7 @@ class xivo_service_asterisk_sounds extends xivo_service_asterisk_abstract
 		return(xivo_file::rm($file));
 	}
 
-	function get_dir($name)
+	function get_dir($name,$getpath=false,$getfull=false)
 	{
 		$r = false;
 
@@ -205,7 +209,7 @@ class xivo_service_asterisk_sounds extends xivo_service_asterisk_abstract
 		$r['path'] = $path;
 		$r['nb_files'] = 0;
 
-		if(($r['files'] = $this->get_list($name)) === false)
+		if(($r['files'] = $this->get_list($name,$getpath,$getfull)) === false)
 			return($r);	
 
 		$r['nb_files'] = count($r['files']);
@@ -284,10 +288,11 @@ class xivo_service_asterisk_sounds extends xivo_service_asterisk_abstract
 		return($r);
 	}
 
-	function get_list($dir='',$path=false)
+	function get_list($dir='',$getpath=false,$getfull=false)
 	{
 		$dir = (string) $dir;
-		$path = (bool) $path;
+		$getpath = (bool) $getpath;
+		$getfull = (bool) $getfull;
 
 		if(($match_file = $this->_get_option_file_name()) === false)
 			return(false);
@@ -307,7 +312,7 @@ class xivo_service_asterisk_sounds extends xivo_service_asterisk_abstract
 		if($r !== false && isset($r[0]) === false)
 			$r = false;
 
-		if($r === false || $path === false)
+		if($r === false || $getpath === false)
 			return($r);
 
 		$arr = array();
@@ -318,10 +323,15 @@ class xivo_service_asterisk_sounds extends xivo_service_asterisk_abstract
 		{
 			$file = $dir.XIVO_SEP_DIR.$r[$i];
 
+			if($getfull === true)
+				$info = xivo_file::get_info($file);
+			else
+				$info = $r[$i];
+
 			if(($pos = strrpos($file,'.')) !== false)
 				$file = substr($file,0,$pos);
 
-			$arr[$file] = $r[$i];
+			$arr[$file] = $info;
 		}
 
 		return($arr);

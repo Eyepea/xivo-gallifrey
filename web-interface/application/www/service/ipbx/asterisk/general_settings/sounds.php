@@ -35,6 +35,7 @@ switch($act)
 		}
 	case 'edit':
 	case 'delete':
+	case 'deletes':
 	case 'list':
 	case 'download':
 		$action = $act;

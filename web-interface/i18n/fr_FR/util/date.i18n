@@ -1,11 +1,14 @@
 ; date_format_yymmdd
 %d/%m/%Y
 
-; date_format_yymmddhhiiss
-%d/%m/%Y %H:%M:%S
-
 ; date_format_hhiiss
 %H:%M:%S
+
+; date_format_yymmddhhii
+%d/%m/%Y %H:%M
+
+; date_format_yymmddhhiiss
+%d/%m/%Y %H:%M:%S
 
 ; date_day_monday
 lundi

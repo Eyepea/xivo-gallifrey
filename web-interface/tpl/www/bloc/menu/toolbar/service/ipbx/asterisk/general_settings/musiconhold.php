@@ -7,10 +7,11 @@
 
 	$param = array('act' => 'addfile');
 
-	if($act !== 'list' && $act !== 'add')
+	if($act !== 'list' && $act !== 'add'):
 		$param['cat'] = $cat;
-	else
+	else:
 		$cat = '';
+	endif;
 ?>
 
 <form action="#" method="post" id="fm-musiconhold-toolbar" accept-charset="utf-8">
@@ -20,7 +21,7 @@
 </form>
 <a href="#" onmouseover="xivo_eid('advanced-menu').style.display = 'block';" onmouseout="xivo_eid('advanced-menu').style.display = 'none';"><?=$url->img_html('img/menu/top/toolbar/bt-add.gif',$this->bbf('toolbar_opt_add'),'border="0"');?></a>
 <div class="sb-advanced-menu">
-	<ul id="advanced-menu" onmouseover="xivo_eid('advanced-menu').style.display = 'block';" onmouseout="xivo_eid('advanced-menu').style.display = 'none';">	
+	<ul id="advanced-menu" onmouseover="this.style.display = 'block';" onmouseout="this.style.display = 'none';">	
 		<li><?=$url->href_html($this->bbf('toolbar_adv_menu_add_category'),'service/ipbx/general_settings/musiconhold','act=add');?></li>
 		<li><?=$url->href_html($this->bbf('toolbar_adv_menu_add_file'),'service/ipbx/general_settings/musiconhold',$param);?></li>
 	</ul>

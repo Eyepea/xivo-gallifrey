@@ -280,7 +280,11 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 		$file = $this->_mohpath.XIVO_SEP_DIR.$name;
 		$newfile = $this->_mohpath.XIVO_SEP_DIR.$newname;
 
-		if(xivo_file::is_f($file) === false || xivo_file::is_f($newfile) !== false
+		if($file === $newfile)
+			return(true);
+
+		if(xivo_file::is_f($file) === false
+		|| xivo_file::is_f($newfile) !== false
 		|| xivo_file::is_d_rwx($this->_mohpath) === false
 		|| rename($file,$newfile) === false)
 			return(false);

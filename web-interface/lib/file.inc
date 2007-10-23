@@ -51,20 +51,25 @@ class xivo_file
 	{
 		$file = (string) $file;
 
-		if(($file = $this->is_f($file)) === false)
+		if(($file = xivo_file::is_f($file)) === false)
 			return(false);
 
-		$this->info['path'] = $file;
 		$pinfo = pathinfo($file);
-		$this->info['dir'] = $pinfo['dirname'];
-		$this->info['name'] = $pinfo['basename'];
-		$this->info['ext'] = $pinfo['extension'];
-		$this->info['mime'] = $this->get_mime();
-		$this->info['charset'] = $this->get_charset();
-		$this->info['mtime'] = filemtime($this->info['path']);
-		$this->info['size'] = filesize($this->info['path']);
+		
+		$info = array();
+		$info['path'] = $file;
+		$info['dir'] = $pinfo['dirname'];
+		$info['name'] = $pinfo['basename'];
+		$info['ext'] = $pinfo['extension'];
+		$info['mime'] = xivo_file::get_mime($info['path']);
+		$info['charset'] = xivo_file::get_charset($info['path']);
+		$info['mtime'] = filemtime($info['path']);
+		$info['size'] = filesize($info['path']);
 
-		return(true);
+		if(isset($this) === true && get_class($this) === __CLASS__)
+			$this->info = $info;
+
+		return($info);
 	}
 
 	function download($file)
@@ -94,9 +99,15 @@ class xivo_file
 
 	function get_mime($file='')
 	{
-		$file = $file === '' && $this->info['path'] !== '' ? $this->info['path'] : $file;
+		if(isset($this) === true && get_class($this) === __CLASS__)
+			$static = false;
+		else
+			$static = true;
 
-		if(is_object($this->_finfo) === true)
+		if($file === '' && $static === false && $this->info['path'] !== '')
+			$file = $this->info['path'];
+
+		if($static === false && is_object($this->_finfo) === true)
 			$r = $this->_finfo->get_mime($file);
 		else if(($file = xivo_file::is_f($file)) !== false && (XIVO_EXT_INI_LD & XIVO_EXT__MIME_MAGIC) !== 0)
 			$r = mime_content_type($file);
@@ -108,10 +119,13 @@ class xivo_file
 
 	function get_charset($file='')
 	{
-		$file = $file === '' && $this->info['path'] !== '' ? $this->info['path'] : $file;
-
-		if(is_object($this->_finfo) === false)
+		if(isset($this) === false
+		|| get_class($this) !== __CLASS__
+		|| is_object($this->_finfo) === false)
 			return(false);
+
+		if($file === '' && $this->info['path'] !== '')
+			$file = $this->info['path'];
 
 		return($this->_finfo->get_charset($file));
 	}

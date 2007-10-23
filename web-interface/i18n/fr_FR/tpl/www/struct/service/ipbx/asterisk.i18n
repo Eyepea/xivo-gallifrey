@@ -94,6 +94,9 @@ Supprimer
 ; toolbar_opt_add
 Ajouter
 
+; toolbar_opt_delete
+Supprimer
+
 ; toolbar_adv_menu_add_category
 Ajouter une catégorie
 
