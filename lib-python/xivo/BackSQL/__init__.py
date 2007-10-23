@@ -5,7 +5,7 @@ __version__ = "$Revision$ $Date$"
 # WARNING: non order preserving
 def uniqlist(lst):
 	if not lst: return []
-	return (dict(map(lambda a: (a,1), lst))).keys()
+	return list(set(lst))
 
 def get_this_internal_package_path():
 	return os.path.dirname(os.path.abspath(__file__))
