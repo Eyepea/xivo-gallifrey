@@ -443,49 +443,75 @@ def build_customers(ctx, searchpatterns):
 
 ## \brief Builds the features reply.
 def build_features_get(reqlist):
-        dbfamily = "%s/users/%s" %(reqlist[1], reqlist[2])
-        repstr = "featuresget="
+        dbfamily = '%s/users/%s' %(reqlist[1], reqlist[2])
+        if reqlist[0] not in AMI_array_user_commands:
+                if reqlist[0] in asteriskr:
+                        astnum = asteriskr[reqlist[0]]
+                        update_amisocks(astnum, reqlist[0])
+                        if reqlist[0] not in AMI_array_user_commands:
+                                return 'featuresget=KO'
+                else:
+                        return 'featuresget=KO'
+
+        repstr = ''
 
         for key in ["VM", "Record", "Screen", "DND"]:
                 try:
+                        keyvalue = []
                         fullcomm = "database get %s %s" %(dbfamily, key)
                         reply = AMI_array_user_commands[reqlist[0]].execclicommand(fullcomm)
                         for r in reply:
                                 rep = r.rstrip()
                                 if rep.find("Value: ") == 0 and len(rep.split(' ')) == 2:
-                                        repstr += "%s;%s;" %(key, rep.split(' ')[1])
+                                        keyvalue.append(rep.split(' ')[1])
+                        if len(keyvalue) == 1:
+                                repstr += "%s;%s;" %(key, keyvalue[0])
                 except Exception, exc:
                         log_debug(SYSLOG_ERR, '--- exception --- featuresget(bool) id=%s key=%s : %s'
                                   %(str(reqlist), key, str(exc)))
+                        return 'featuresget=KO'
 
         for key in ["FWD/Unc", "FWD/Busy", "FWD/RNA"]:
-                keystatus = ""
-                keynumber = ""
                 try:
+                        keystatus = []
+                        keynumber = []
                         fullcomm = "database get %s %s/Status" %(dbfamily, key)
                         reply = AMI_array_user_commands[reqlist[0]].execclicommand(fullcomm)
                         for r in reply:
                                 rep = r.rstrip()
                                 if rep.find("Value: ") == 0 and len(rep.split(' ')) == 2:
-                                        keystatus = rep.split(' ')[1]
+                                        keystatus.append(rep.split(' ')[1])
 
                         fullcomm = "database get %s %s/Number" %(dbfamily, key)
                         reply = AMI_array_user_commands[reqlist[0]].execclicommand(fullcomm)
                         for r in reply:
                                 rep = r.rstrip()
                                 if rep.find("Value: ") == 0 and len(rep.split(' ')) == 2:
-                                        keynumber = rep.split(' ')[1]
+                                        keynumber.append(rep.split(' ')[1])
+                        if len(keystatus) == 1 and len(keynumber) == 1:
+                                repstr += "%s;%s:%s;" %(key, keystatus[0], keynumber[0])
                 except Exception, exc:
                         log_debug(SYSLOG_ERR, '--- exception --- featuresget(str) id=%s key=%s : %s'
                                   %(str(reqlist), key, str(exc)))
+                        return 'featuresget=KO'
 
-                repstr += "%s;%s:%s;" %(key, keystatus, keynumber)
-        return repstr
+        if len(repstr) == 0:
+                repstr = 'KO'
+        return 'featuresget=%s' % repstr
 
 
 ## \brief Builds the features reply.
 def build_features_put(reqlist):
         dbfamily = "%s/users/%s" %(reqlist[1], reqlist[2])
+        if reqlist[0] not in AMI_array_user_commands:
+                if reqlist[0] in asteriskr:
+                        astnum = asteriskr[reqlist[0]]
+                        update_amisocks(astnum, reqlist[0])
+                        if reqlist[0] not in AMI_array_user_commands:
+                                return 'featuresput=KO'
+                else:
+                        return 'featuresput=KO'
+
         try:
                 len_reqlist = len(reqlist)
                 if len_reqlist >= 4:
@@ -495,20 +521,19 @@ def build_features_put(reqlist):
                         else:
                                 value = ""
                         fullcomm = 'database put %s %s "%s"' %(dbfamily, key, value)
+                        repstr = 'KO'
                         reply = AMI_array_user_commands[reqlist[0]].execclicommand(fullcomm)
-                        repstr = "KO"
                         for r in reply:
-                                if r.rstrip() == "Updated database successfully":
-                                        repstr = "OK"
+                                if r.rstrip() == 'Updated database successfully':
+                                        repstr = 'OK'
                         response = 'featuresput=%s;%s;%s;' %(repstr, key, value)
                 else:
-                        response = "featuresput=KO"
+                        response = 'featuresput=KO'
         except Exception, exc:
                 log_debug(SYSLOG_ERR, '--- exception --- featuresput id=%s : %s'
                           %(str(reqlist), str(exc)))
-                response = "featuresput=KO"
+                response = 'featuresput=KO'
         return response
-
 
 
 ## \brief Builds the full list of callerIDNames/hints in order to send them to the requesting client.

@@ -135,7 +135,8 @@ class AMIClass:
                 self.sendcommand('Command',
                                  [('Command', command)])
                 resp = []
-                for i in (1, 2): str = self.f.readline()
+                for i in (1, 2):
+                        str = self.f.readline()
                 while True:
                         str = self.f.readline()
                         #print self.i, len(str), str,
