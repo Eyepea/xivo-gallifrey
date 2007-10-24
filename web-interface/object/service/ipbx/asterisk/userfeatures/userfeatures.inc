@@ -239,9 +239,6 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		{
 			$info = $list[$i];
 
-			if($info['context'] === '' || $info['context'] === 'local-extensions')
-				$info['context'] = '#main';
-
 			$r[$info['context']] = $info['context'];
 		}
 

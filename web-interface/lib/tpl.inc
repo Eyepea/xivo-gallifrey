@@ -526,8 +526,6 @@ class xivo_tpl
 
 	function get_application($section,$nb=0,$path='',$ext='')
 	{
-		$r = false;
-
 		$section = (string) $section;
 		$nb = (int) $nb;
 		$path = (string) $path;
@@ -545,7 +543,7 @@ class xivo_tpl
 		$section = preg_replace($search,$replace,$section);
 
 		if($section === '')
-			return($r);
+			return(false);
 
 		if($path === '' && isset($_SERVER['PATH_INFO']) === true)
 			$path = $_SERVER['PATH_INFO'];
@@ -557,7 +555,7 @@ class xivo_tpl
 			if($nb !== 0)
 			{
 				if(($path = explode(XIVO_SEP_DIR,$path)) === false)
-					return($r);
+					return(false);
 
 				$path = implode(XIVO_SEP_DIR,array_slice($path,0,$nb));
 			}
@@ -575,8 +573,6 @@ class xivo_tpl
 
 	function chk_acl($cat='',$func='',$section='')
 	{
-		$r = false;
-
 		$section = (string) $section;
 		$cat = $cat === true ? true : (string) $cat;
 		$func = (string) $func;
@@ -590,7 +586,7 @@ class xivo_tpl
 			else if(strncmp($script_root,$_SERVER['SCRIPT_NAME'],$len) === 0)
 				$section = substr($_SERVER['SCRIPT_NAME'],$len);
 			else
-				return($r);
+				return(false);
 
 			if(($pos = strrpos($section,'/')) !== false)
 				$section = substr($section,0,$pos);

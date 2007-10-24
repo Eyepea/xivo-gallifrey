@@ -48,9 +48,14 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 		return($this->_info);
 	}
 
-	function get_all($disable=null)
+	function get_nb($arr=null,$disable=null)
 	{
-		return($this->_realstatic->get_all($disable));
+		return($this->_realstatic->get_nb($arr,$disable));
+	}
+
+	function get_all($disable=null,$prepare=true)
+	{
+		return($this->_realstatic->get_all($disable,$prepare));
 	}
 
 	function get_all_where($arr,$disable=null)

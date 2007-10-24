@@ -62,9 +62,9 @@
 			endif;
 ?>
 			<tr id="group-<?=$name?>" class="fm-field<?=$class?>">
-				<td class="td-left txt-left"><?=$name?></td>
+				<td class="td-left"><?=$name?></td>
 				<td><?=$form->select(array('field' => false,'name' => 'group['.$name.'][chantype]','id' => false,'label' => false,'key' => false,'default' => $element['qmember']['chantype']['default'],'value' => $ref['member']['channel']),$element['qmember']['chantype']['value']);?></td>
-				<td class="td-right txt-right"><?=$form->select(array('field' => false,'name' => 'group['.$name.'][call-limit]','id' => false,'label' => false,'default' => $element['qmember']['call-limit']['default'],'value' => $calllimit),$element['qmember']['call-limit']['value']);?></td>
+				<td class="td-right"><?=$form->select(array('field' => false,'name' => 'group['.$name.'][call-limit]','id' => false,'label' => false,'default' => $element['qmember']['call-limit']['default'],'value' => $calllimit),$element['qmember']['call-limit']['value']);?></td>
 			</tr>
 <?php
 		endfor;
@@ -131,10 +131,10 @@
 			endif;
 ?>
 			<tr id="queue-<?=$name?>" class="fm-field<?=$class?>">
-				<td class="td-left txt-left"><?=$name?></td>
+				<td class="td-left"><?=$name?></td>
 				<td><?=$form->select(array('field' => false,'name' => 'queue['.$name.'][chantype]','id' => false,'label' => false,'key' => false,'default' => $element['qmember']['chantype']['default'],'value' => $ref['member']['channel']),$element['qmember']['chantype']['value']);?></td>
 				<td><?=$form->select(array('field' => false,'name' => 'queue['.$name.'][penalty]','id' => false,'label' => false,'default' => $element['qmember']['penalty']['default'],'value' => $penalty),$element['qmember']['penalty']['value']);?></td>
-				<td class="td-right txt-right"><?=$form->select(array('field' => false,'name' => 'queue['.$name.'][call-limit]','id' => false,'label' => false,'default' => $element['qmember']['call-limit']['default'],'value' => $calllimit),$element['qmember']['call-limit']['value']);?></td>
+				<td class="td-right"><?=$form->select(array('field' => false,'name' => 'queue['.$name.'][call-limit]','id' => false,'label' => false,'default' => $element['qmember']['call-limit']['default'],'value' => $calllimit),$element['qmember']['call-limit']['value']);?></td>
 			</tr>
 <?php
 		endfor;

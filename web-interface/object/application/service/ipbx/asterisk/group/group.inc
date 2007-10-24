@@ -53,6 +53,16 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		return($this->_info);
 	}
 
+	function get_nb($arr=null,$disable=null)
+	{
+		if(is_array($arr) === false)
+			$arr = array();
+
+		$arr['category'] = 'group';
+
+		return($this->_queue->get_nb($arr,$disable));
+	}
+
 	function _get_localexten()
 	{
 		$this->_info['localexten'] = false;

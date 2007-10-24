@@ -219,7 +219,7 @@
 				$ref['channel'] = $this->bbf('entry_channel-unknown');
 ?>
 	<tr class="sb-content l-infos-<?=$mod?>on2 curpointer" onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over curpointer';" onmouseout="this.className = this.tmp;" onclick="this.entryline = xivo_eid('cdr-infos-<?=$i?>').style.display; xivo_eid('cdr-infos-<?=$i?>').style.display = this.entryline == '' || this.entryline == 'none' ?  'table-row' : 'none';">
-		<td class="td-left txt-left"><a href="#" onclick="return(false);"><?=strftime($this->bbf('date_format_yymmddhhiiss'),$ref['callunixtime']);?></a></td>
+		<td class="td-left"><a href="#" onclick="return(false);"><?=strftime($this->bbf('date_format_yymmddhhiiss'),$ref['callunixtime']);?></a></td>
 		<td><?=$src?></td>
 		<td><?=$dst?></td>
 		<td class="td-right"><?=$this->bbf($bbf_duration,$duration);?></td>

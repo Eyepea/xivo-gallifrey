@@ -50,6 +50,17 @@ class xivo_service_asterisk_trunkiax_abstract_sql extends xivo_service_asterisk_
 		return(parent::get($arr,$disable,null,true));
 	}
 
+	function get_nb($arr=null,$disable=null)
+	{
+		if($arr === null)
+			$arr = array();
+			
+		if(is_array($arr) === true)
+			$arr['category'] = 'trunk';
+
+		return(parent::get_nb($arr,$disable,null));
+	}
+
 	function edit($id,$arr,$disable=null)
 	{
 		if(is_array($id) === false)

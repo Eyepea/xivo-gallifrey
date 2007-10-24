@@ -15,15 +15,9 @@ $_HTML->load_i18n_file('struct/service/ipbx/'.$ipbx->get_name());
 
 $application = $_HTML->get_application('service/ipbx/'.$ipbx->get_name(),2);
 
-if($application !== false)
-	die(include($application));
+if($application === false)
+	$_QRY->go($_HTML->url('xivo'));
 
-$menu = &$_HTML->get_module('menu');
-$menu->set_top('top/user/'.$_USR->get_info('meta'));
-$menu->set_left('left/service/ipbx/'.$ipbx->get_name());
-
-$_HTML->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/index');
-$_HTML->set_struct('service/ipbx/'.$ipbx->get_name());
-$_HTML->display('index');
+die(include($application));
 
 ?>

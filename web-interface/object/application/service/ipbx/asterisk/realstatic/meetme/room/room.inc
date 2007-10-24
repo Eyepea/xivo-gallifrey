@@ -21,11 +21,6 @@ class xivo_application_service_asterisk_realstatic_meetme_room extends xivo_appl
 		return(parent::_load_config(dirname(__FILE__)));
 	}
 
-	function get_all($disable=null,$prepare=true)
-	{
-		return(parent::get_all($disable,$prepare));
-	}
-
 	function get_meetmeroom($id,$disable=null)
 	{
 		$this->_info = $this->_origin = false;

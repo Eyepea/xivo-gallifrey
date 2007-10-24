@@ -1,14 +1,29 @@
 ; title_content_name
-IPBX
+Statistiques
 
-; quick_service
-Action rapide :
+; stats_col_type
+Type
 
-; service_add_user
-Ajouter un utilisateur
+; stats_col_enable
+Actif
 
-; service_add_group
-Ajouter un groupe
+; stats_col_disable
+Inactif
+
+; stats_col_total
+Total
+
+; stats_users
+Utilisateurs
+
+; stats_groups
+Groupes
+
+; stats_queues
+Files d'attente
+
+; stats_meetme
+Chambres de conférence
 
 ; info_service_label
 Logiciel :

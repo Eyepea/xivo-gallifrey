@@ -253,9 +253,6 @@ class xivo_service_asterisk extends xivo_service_abstract
 	{
 		$name = strval($name);
 
-		if($name === '#main')
-			$name = '';
-
 		return($this->_get_users('context',$protocols,$disable,$name,$assoc));
 	}
 

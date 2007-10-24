@@ -37,30 +37,36 @@ class xivo_session
 
 	function _mk_cookie()
 	{
+		if(defined('XIVO_SESS_ID') === true)
+			return(XIVO_SESS_ID);
+
 		$_QR = &xivo_gat::get('_QR');
 
 		if(xivo_haslen($_COOKIE,XIVO_SESS_NAME) === true)
 			$id = substr($_COOKIE[XIVO_SESS_NAME],0,32);
-		else if(xivo_haslen($_QR,XIVO_SESS_NAME) === true && $_QR[XIVO_SESS_NAME] !== '-')
+		else if(xivo_haslen($_QR,XIVO_SESS_NAME) === true)
 			$id = substr($_QR[XIVO_SESS_NAME],0,32);
 		else
 			$id = false;
 
-		if($id !== false && ctype_alnum($id) === false)
-			$id = false;
-
-		if(defined('XIVO_SESS_ENABLE') === false || XIVO_SESS_ENABLE !== false)
+		if(defined('XIVO_SESS_ENABLE') === true && (bool) XIVO_SESS_ENABLE === false)
 		{
-			session_start();
-
-			if($id !== false)
-				$id = session_id($id);
+			$_SESSION = array();
+			$_QR[XIVO_SESS_NAME] = md5(uniqid(rand(),true));
 		}
 		else
-			$_SESSION = array();
+		{
+			if($id !== false)
+				session_id($id);
 
-		if(($_QR[XIVO_SESS_NAME] = session_id($id)) === '')
-			$_QR[XIVO_SESS_NAME] = md5(uniqid(rand(), true));
+			session_start();
+
+			if(($_QR[XIVO_SESS_NAME] = session_id()) === '')
+			{
+				session_regenerate_id();
+				$_QR[XIVO_SESS_NAME] = session_id();
+			}
+		}
 
 		define('XIVO_SESS_ID',$_QR[XIVO_SESS_NAME]);
 		define('XIVO_SESS_STR',XIVO_SESS_NAME.'='.XIVO_SESS_ID);

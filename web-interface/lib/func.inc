@@ -135,15 +135,13 @@ function xivo_uint($str=0,$def=0,$t=false)
 
 function xivo_sgraph($str='',$def=null,$t=false)
 {
-	$r = false;
-
 	$t = (bool) $t;
 
 	if(xivo_is_sgraph($str) === true)
 		return($str);
 	
 	if($def === null)
-		return($r);
+		return(false);
 
 	if($t === true)
 		$r = xivo_is_sgraph($def) === true ? $def : false;
