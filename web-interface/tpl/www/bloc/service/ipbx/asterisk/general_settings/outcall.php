@@ -96,7 +96,7 @@ else:
 			endif;
 ?>
 		<tr class="fm-field<?=$errdisplay?>">
-			<td class="td-left">
+			<td class="td-left txt-center">
 <?php
 			if(isset($ref['generaloutcall']['id']) === true):
 				$id = $ref['generaloutcall']['id'];
@@ -127,7 +127,7 @@ else:
 	<table class="b-nodisplay" cellspacing="0" cellpadding="0" border="0">
 		<tbody id="ex-emergency">
 		<tr class="fm-field">
-			<td class="td-left txt-left"><?=$form->select(array('field' => false,'name' => 'emergency[trunkfeaturesid][]','id' => false,'label' => false,'browse' => 'trunk','key' => 'name','altkey' => 'trunkfeaturesid','optgroup' => array('key' => true,'bbf' => array('concat','fm_emergency-trunk-opt-')),'default' => $element['generaloutcall']['trunkfeaturesid']['default']),$trunks_list,'disabled="disabled"');?></td>
+			<td class="td-left txt-center"><?=$form->select(array('field' => false,'name' => 'emergency[trunkfeaturesid][]','id' => false,'label' => false,'browse' => 'trunk','key' => 'name','altkey' => 'trunkfeaturesid','optgroup' => array('key' => true,'bbf' => array('concat','fm_emergency-trunk-opt-')),'default' => $element['generaloutcall']['trunkfeaturesid']['default']),$trunks_list,'disabled="disabled"');?></td>
 			<td><?=$form->text(array('field' => false,'name' => 'emergency[exten][]','id' => false,'label' => false,'size' => 15,'default' => $element['extenumbers']['exten']['default']),'disabled="disabled"');?></td>
 			<td class="td-right"><?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',$this->bbf('opt_delete'),'border="0"'),'#',null,'onclick="xivo_table_list(\'emergency\',this,1); return(false);"',$this->bbf('opt_delete'));?></td>
 		</tr>
@@ -161,7 +161,7 @@ else:
 			endif;
 ?>
 		<tr class="fm-field<?=$errdisplay?>">
-			<td class="td-left txt-left">
+			<td class="td-left txt-center">
 <?php
 			if(isset($ref['generaloutcall']['id']) === true):
 				$id = $ref['generaloutcall']['id'];
@@ -192,7 +192,7 @@ else:
 	<table class="b-nodisplay" cellspacing="0" cellpadding="0" border="0">
 		<tbody id="ex-special">
 		<tr class="fm-field">
-			<td class="td-left txt-left"><?=$form->select(array('field' => false,'name' => 'special[trunkfeaturesid][]','id' => false,'label' => false,'browse' => 'trunk','key' => 'name','altkey' => 'trunkfeaturesid','optgroup' => array('key' => true,'bbf' => array('concat','fm_special-trunk-opt-')),'default' => $element['generaloutcall']['trunkfeaturesid']['default']),$trunks_list,'disabled="disabled"');?></td>
+			<td class="td-left txt-center"><?=$form->select(array('field' => false,'name' => 'special[trunkfeaturesid][]','id' => false,'label' => false,'browse' => 'trunk','key' => 'name','altkey' => 'trunkfeaturesid','optgroup' => array('key' => true,'bbf' => array('concat','fm_special-trunk-opt-')),'default' => $element['generaloutcall']['trunkfeaturesid']['default']),$trunks_list,'disabled="disabled"');?></td>
 			<td><?=$form->text(array('field' => false,'name' => 'special[exten][]','id' => false,'label' => false,'size' => 15,'default' => $element['extenumbers']['exten']['default']),'disabled="disabled"');?></td>
 			<td class="td-right"><?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',$this->bbf('opt_special-delete'),'border="0"'),'#',null,'onclick="xivo_table_list(\'special\',this,1); return(false);"',$this->bbf('opt_special-delete'));?></td>
 		</tr>

@@ -105,6 +105,8 @@ function xivo_exten_wizard(prefix,numlen,result)
 
 function xivo_outcall_onload()
 {
+	xivo_exten_wizard('it-outcall-prefix','it-outcall-numlen','it-extenumbers-exten');
+
 	if(xivo_eid('it-outcall-mode') != false)
 		xivo_chgmode(xivo_eid('it-outcall-mode'));
 }

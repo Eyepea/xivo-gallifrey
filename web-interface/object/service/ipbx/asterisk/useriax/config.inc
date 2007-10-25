@@ -2,7 +2,7 @@
 
 $array = array();
 
-$array['initialized'] = 'IAX/Registry';
+$array['registered'] = 'IAX/Registry';
 
 $array['element'] = array();
 
