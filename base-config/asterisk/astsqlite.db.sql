@@ -648,9 +648,6 @@ CREATE TABLE outcall (
  context varchar(39) NOT NULL,
  externprefix varchar(20) NOT NULL DEFAULT '',
  stripnum tinyint unsigned NOT NULL DEFAULT 0,
- mode varchar(9) NOT NULL,
- prefix varchar(20) NOT NULL DEFAULT '',
- numlen char(2) NOT NULL,
  setcallerid tinyint(1) NOT NULL DEFAULT 0,
  callerid varchar(80) NOT NULL DEFAULT '',
  weight tinyint unsigned NOT NULL DEFAULT 1,
@@ -664,8 +661,6 @@ CREATE TABLE outcall (
 
 CREATE INDEX outcall__idx__trunkfeaturesid ON outcall(trunkfeaturesid);
 CREATE INDEX outcall__idx__context ON outcall(context);
-CREATE INDEX outcall__idx__mode ON outcall(mode);
-CREATE INDEX outcall__idx__numlen ON outcall(numlen);
 CREATE INDEX outcall__idx__weight ON outcall(weight);
 CREATE INDEX outcall__idx__linked ON outcall(linked);
 CREATE INDEX outcall__idx__commented ON outcall(commented);
@@ -783,8 +778,8 @@ CREATE TABLE rightcall (
  name varchar(128) NOT NULL DEFAULT '',
  passwd varchar(40) NOT NULL DEFAULT '',
  permit tinyint(1) NOT NULL DEFAULT 0,
- description text NOT NULL,
  commented tinyint(1) NOT NULL DEFAULT 0,
+ description text NOT NULL,
  PRIMARY KEY(id)
 );
 
