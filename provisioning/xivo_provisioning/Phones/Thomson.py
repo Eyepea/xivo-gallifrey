@@ -1,6 +1,6 @@
-"""Support for Thomson phones for Xivo Autoprovisioning
+"""Support for Thomson phones for XIVO Autoprovisioning
 
-Thomson 2030S is supported.
+Thomson 2022S and 2030S are supported.
 
 Copyright (C) 2007, Proformatique
 
