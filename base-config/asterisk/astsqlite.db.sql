@@ -888,7 +888,7 @@ CREATE TABLE userfeatures (
  protocolid integer unsigned NOT NULL,
  firstname varchar(128) NOT NULL DEFAULT '',
  lastname varchar(128) NOT NULL DEFAULT '',
- name varchar(40) NOT NULL,
+ name varchar(128) NOT NULL,
  number varchar(40) NOT NULL,
  context varchar(39),
  provisioningid mediumint unsigned,
@@ -910,6 +910,8 @@ CREATE TABLE userfeatures (
  destbusy varchar(128) NOT NULL DEFAULT '',
  musiconhold varchar(128) NOT NULL DEFAULT '',
  outcallerid varchar(80) NOT NULL DEFAULT '',
+ internal tinyint(1) NOT NULL DEFAULT 0,
+ commented tinyint(1) NOT NULL DEFAULT 0,
  description text NOT NULL,
  PRIMARY KEY(id)
 );
@@ -923,8 +925,8 @@ CREATE INDEX userfeatures__idx__provisioningid ON userfeatures(provisioningid);
 CREATE UNIQUE INDEX userfeatures__uidx__protocol_name ON userfeatures(protocol,name);
 CREATE UNIQUE INDEX userfeatures__uidx__protocol_protocolid ON userfeatures(protocol,protocolid);
 
-INSERT INTO userfeatures VALUES (1,'sip',1,'Guest','','guest','','initconfig',148378,30,5,0,0,0,0,0,0,0,0,0,'',0,'',0,'','','','');
-INSERT INTO userfeatures VALUES (2,'sip',2,'XivoSB','','xivosb','','default',194867,30,5,0,0,0,0,0,0,0,0,0,'',0,'',0,'','','','');
+INSERT INTO userfeatures VALUES (1,'sip',1,'Guest','','guest','','initconfig',148378,30,5,0,0,0,0,0,0,0,0,0,'',0,'',0,'','','',1,0,'');
+INSERT INTO userfeatures VALUES (2,'sip',2,'XivoSB','','xivosb','','default',194867,30,5,0,0,0,0,0,0,0,0,0,'',0,'',0,'','','',1,0,'');
 
 
 DROP TABLE useriax;
