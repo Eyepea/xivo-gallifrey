@@ -16,6 +16,7 @@
 	else:
 		$contextjs = ' xivo_fm[\'fm-users-list\'][\'context\'].value = \''.xivo_stript($context).'\';';
 	endif;
+
 ?>
 <form action="#" method="post" accept-charset="utf-8">
 <?=$form->hidden(array('name' => XIVO_SESS_NAME,'value' => XIVO_SESS_ID));?>

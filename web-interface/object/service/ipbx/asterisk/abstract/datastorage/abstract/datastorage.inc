@@ -17,6 +17,8 @@ class xivo_service_asterisk_abstract_datastorage
 		$name = (string) $name;
 
 		$this->_param[$name] = $value;	
+
+		return(true);
 	}
 
 	function get_param($name)

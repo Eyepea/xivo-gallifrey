@@ -146,8 +146,8 @@ switch($act)
 
 		$_QRY->go($_HTML->url('service/ipbx/call_management/incall'),$param);
 		break;
-	case 'disables':
 	case 'enables':
+	case 'disables':
 		$param['page'] = $page;
 
 		if(($values = xivo_issa_val('incalls',$_QR)) === false)

@@ -25,12 +25,15 @@
 <div class="sb-smenu">
 	<ul>
 		<li id="smenu-tab-1" class="moo" onclick="xivo_smenu_click(this,'moc','sb-part-first');" onmouseout="xivo_smenu_out(this,'moo');" onmouseover="xivo_smenu_over(this,'mov');">
+			<div class="tab"><span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_userinternal');?></a></span></div><span class="span-right">&nbsp;</span>
+		</li>
+		<li id="smenu-tab-2" class="moo" onclick="xivo_smenu_click(this,'moc','sb-part-agent');" onmouseout="xivo_smenu_out(this,'moo');" onmouseover="xivo_smenu_over(this,'mov');">
 			<div class="tab"><span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_agents');?></a></span></div><span class="span-right">&nbsp;</span>
 		</li>
-		<li id="smenu-tab-2" class="moo" onclick="xivo_smenu_click(this,'moc','sb-part-queue');" onmouseout="xivo_smenu_out(this,'moo');" onmouseover="xivo_smenu_over(this,'mov');">
+		<li id="smenu-tab-3" class="moo" onclick="xivo_smenu_click(this,'moc','sb-part-queue');" onmouseout="xivo_smenu_out(this,'moo');" onmouseover="xivo_smenu_over(this,'mov');">
 			<div class="tab"><span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_queues');?></a></span></div><span class="span-right">&nbsp;</span>
 		</li>
-		<li id="smenu-tab-3" class="moo-last" onclick="xivo_smenu_click(this,'moc','sb-part-last',1);" onmouseout="xivo_smenu_out(this,'moo',1);" onmouseover="xivo_smenu_over(this,'mov',1);">
+		<li id="smenu-tab-4" class="moo-last" onclick="xivo_smenu_click(this,'moc','sb-part-last',1);" onmouseout="xivo_smenu_out(this,'moo',1);" onmouseover="xivo_smenu_over(this,'mov',1);">
 			<div class="tab"><span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_meetme');?></a></span></div><span class="span-right">&nbsp;</span>
 		</li>
 	</ul>
@@ -43,6 +46,14 @@
 <?=$form->hidden(array('name' => 'fm_send','value' => 1));?>
 
 <div id="sb-part-first">
+
+<?=$form->checkbox(array('desc' => $this->bbf('fm_userinternal_guest'),'name' => 'userinternal[guest]','labelid' => 'userinternal-guest','checked' => ((bool) $this->varra('userinternal',array('guest','ufeatures','commented')) === true ? false : true)));?>
+
+<?=$form->checkbox(array('desc' => $this->bbf('fm_userinternal_xivosb'),'name' => 'userinternal[xivosb]','labelid' => 'userinternal-xivosb','checked' => ((bool) $this->varra('userinternal',array('xivosb','ufeatures','commented')) === true ? false : true)));?>
+
+</div>
+
+<div id="sb-part-agent" class="b-nodisplay">
 
 <?=$form->checkbox(array('desc' => $this->bbf('fm_generalagents_persistentagents'),'name' => 'generalagents[persistentagents]','labelid' => 'generalagents-persistentagents','default' => $element['generalagents']['persistentagents']['default'],'checked' => $this->varra('generalagents',array('persistentagents','var_val'))));?>
 

@@ -1,7 +1,7 @@
 #b-tmenu #toolbar .fm-field {margin-left: 105px; width: 600px;float: left;text-align: center;}
 
-#s-asterisk #index #ipbx-stats {float: left;width: 50%;padding: 10px 0px;}
-#s-asterisk #index #ipbx-stats table {margin: 15px auto 0px;width: 95%;}
+#s-asterisk #index #ipbx-stats {float: left;width: 50%;padding-bottom: 10px;}
+#s-asterisk #index #ipbx-stats table {margin: 10px auto 0px;width: 95%;}
 #s-asterisk #index #ipbx-stats th {padding-left: 5px;padding-right: 5px;}
 #s-asterisk #index #ipbx-stats a {text-decoration: underline;color: #0063bf;}
 #s-asterisk #index #ipbx-stats a:hover {text-decoration: none;}

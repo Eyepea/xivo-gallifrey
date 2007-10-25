@@ -26,7 +26,7 @@ $array['filter'] = array();
 $array['filter']['name'] = array('maxlen' => 128,'regexp' => '/^[a-z0-9_-]+$/');
 $array['filter']['passwd'] = array('set' => false,'chk' => 2,'maxlen' => 40,'regexp' => '/^[0-9#\*]+$/');
 $array['filter']['permit'] = array('bool' => true);
-$array['filter']['description'] = array('chk' => 2,'maxlen' => 1000,'cast' => 'sgraph_crlf_tab','eol' => true);
+$array['filter']['description'] = array('set' => false,'chk' => 2,'maxlen' => 1000,'cast' => 'sgraph_crlf_tab','eol' => true);
 $array['filter']['commented'] = array('bool' => true);
 
 ?>

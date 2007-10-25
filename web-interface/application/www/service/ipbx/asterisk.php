@@ -1,10 +1,11 @@
 <?php
 
-$userstat = $groupstat = $queuestat = array();
-$userstat['enable'] = $userstat['disable'] = $userstat['total'] = 0;
+$userstat = $groupstat = $queuestat = $meetmestat = array();
+$userstat['enable'] = $userstat['disable'] = $userstat['initialized'] = $userstat['total'] = 0;
 $groupstat['enable'] = $groupstat['disable'] = $groupstat['total'] = 0;
 $queuestat['enable'] = $queuestat['disable'] = $queuestat['total'] = 0;
 $meetmestat['enable'] = $meetmestat['disable'] = $meetmestat['total'] = 0;
+
 
 $appuser = &$ipbx->get_application('user');
 
@@ -13,6 +14,9 @@ if(($enableuser = $appuser->get_nb(null,false)) !== false)
 
 if(($disableuser = $appuser->get_nb(null,true)) !== false)
 	$userstat['disable'] = $disableuser;
+
+if(($initializeduser = $appuser->get_nb(null,null,true)) !== false)
+	$userstat['initialized'] = $initializeduser;
 
 $userstat['total'] = $userstat['enable'] + $userstat['disable'];
 

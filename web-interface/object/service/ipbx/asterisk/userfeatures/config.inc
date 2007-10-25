@@ -18,7 +18,10 @@ $array['element']['name'] = array();
 $array['element']['name']['default'] = '';
 
 $array['element']['protocol'] = array();
-$array['element']['protocol']['default'] = '';
+$array['element']['protocol']['value'] = array(XIVO_SRE_IPBX_AST_PROTO_SIP,
+					       XIVO_SRE_IPBX_AST_PROTO_IAX,
+					       XIVO_SRE_IPBX_AST_PROTO_CUSTOM);
+$array['element']['protocol']['default'] = XIVO_SRE_IPBX_AST_PROTO_SIP;
 
 $array['element']['protocolid'] = array();
 $array['element']['protocolid']['default'] = 0;
@@ -128,17 +131,24 @@ $array['element']['outcallerid-custom'] = array();
 $array['element']['outcallerid-custom']['default'] = '';
 $array['element']['outcallerid-custom']['unset'] = true;
 
+$array['element']['internal'] = array();
+$array['element']['internal']['value'] = array(0,1);
+$array['element']['internal']['default'] = 0;
+$array['element']['internal']['setdef'] = true;
+
 $array['element']['description'] = array();
 $array['element']['description']['default'] = '';
 
 $array['filter'] = array();
-$array['filter']['protocol'] = array('set' => true);
+$array['filter']['protocol'] = array('key' => array(XIVO_SRE_IPBX_AST_PROTO_SIP,
+						    XIVO_SRE_IPBX_AST_PROTO_IAX,
+						    XIVO_SRE_IPBX_AST_PROTO_CUSTOM));
 $array['filter']['protocolid'] = array('cast' => 'uint');
 $array['filter']['firstname'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 128);
 $array['filter']['lastname'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 128);
-$array['filter']['name'] = array('set' => false,'chk' => 2,'minlen' => 1,'maxlen' => 40);
+$array['filter']['name'] = array('regexp' => '/^[a-z0-9#\*\.\/_@:-]+$/i','minlen' => 1,'maxlen' => 128);
 $array['filter']['number'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9\*#]+$/','maxlen' => 40);
-$array['filter']['context'] = array('set' => false,'chk' => 2,'nokey' => array('general','globals','hints','features','authentification','zonemessages'),'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 39);
+$array['filter']['context'] = array('set' => false,'chk' => 2,'nokey' => array('general','global','globals','hints','features','authentification','zonemessages'),'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 39);
 $array['filter']['ringseconds'] = array('set' => false,'chk' => 2,'key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
 $array['filter']['simultcalls'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,20));
 $array['filter']['enableclient'] = array('bool' => true);
@@ -157,6 +167,7 @@ $array['filter']['enableunc'] = array('bool' => true);
 $array['filter']['destunc'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9\*#_-]+$/i','maxlen' => 128);
 $array['filter']['musiconhold'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 20);
 $array['filter']['outcallerid'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_-]+$/i','maxlen' => 80);
-$array['filter']['description'] = array('chk' => 2,'maxlen' => 1000,'cast' => 'sgraph_crlf_tab','eol' => true);
+$array['filter']['internal'] = array('set' => false,'chk' => 0);
+$array['filter']['description'] = array('set' => false,'chk' => 2,'maxlen' => 1000,'cast' => 'sgraph_crlf_tab','eol' => true);
 
 ?>

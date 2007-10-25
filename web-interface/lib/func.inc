@@ -514,6 +514,34 @@ function xivo_array_diff_key($arr1,$arr2)
 	return($r);
 }
 
+function xivo_array_reduce_level($arr,$t=false)
+{
+	$t = (bool) $t;
+
+	$r = array();
+
+	if(is_array($arr) === false)
+		return(false);
+
+	$arr = array_values($arr);
+
+	if(($nb = count($arr)) === 0)
+		return($r);
+
+	if($t === false)
+	{
+		for($i = 0;$i < $nb;$i++)
+			$r = array_merge(array_keys($arr[$i]),$r);
+	}
+	else
+	{
+		for($i = 0;$i < $nb;$i++)
+			$r = array_merge(array_keys(array_flip($arr[$i])),$r);
+	}
+
+	return($r);
+}
+
 function xivo_unserialize(&$str)
 {
 	$r = array();
@@ -719,8 +747,8 @@ function xivo_malert($subject='',$msg='',$to='')
 	else
 		$h .= 'To: '.$mail.' <'.$mail.'>'."\n";
 
-	$h .= 'From: Xivo <xivo@xivo>'."\n";
-	$h .= 'X-Mailer: Xivo'."\n"; 
+	$h .= 'From: XIVO <xivo@xivo>'."\n";
+	$h .= 'X-Mailer: XIVO'."\n"; 
 	$h .= 'X-Priority: 1 (Highest)'."\n";
 
 	mb_send_mail($mail,$subject,$msg,$h);

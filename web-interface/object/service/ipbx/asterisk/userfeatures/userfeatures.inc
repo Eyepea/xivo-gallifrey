@@ -51,17 +51,19 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		$data['enablerna'] = (bool) $data['enablerna'];
 		$data['enablebusy'] = (bool) $data['enablebusy'];
 		$data['enableunc'] = (bool) $data['enableunc'];
+		$data['internal'] = (bool) $data['internal'];
+		$data['commented'] = (bool) $data['commented'];
 
 		return($data);
 	}
 
-	function get($id,$orig=true)
+	function get($id,$orig=true,$disable=null)
 	{
 		if(($orig = (bool) $orig) === true)
 			$this->_origin = false;
 
 		if(($id = xivo_uint($id)) === 0
-		|| ($r = $this->_dso->get($id)) === false
+		|| ($r = $this->_dso->get($id,$disable)) === false
 		|| ($r['protocol'] = $this->_sre->get_protocol_by_protocol_name($r['protocol'])) === false)
 			return(false);
 
@@ -73,7 +75,7 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		return($r);
 	}
 
-	function get_where($arr,$orig=true)
+	function get_where($arr,$orig=true,$disable=null)
 	{
 		if(($orig = (bool) $orig) === true)
 			$this->_origin = false;
@@ -91,13 +93,13 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		return($r);
 	}
 
-	function get_by_protocol($id,$protocol)
+	function get_by_protocol($id,$protocol,$orig=true,$disable=null)
 	{
 		$r = false;
 
 		if(($id = xivo_uint($id)) === 0
 		|| ($protocol = $this->_sre->get_protocol_name($protocol)) === false
-		|| ($r = $this->get_where(array('protocolid' => $id,'protocol' => $protocol))) === false)
+		|| ($r = $this->get_where(array('protocolid' => $id,'protocol' => $protocol),$orig,$disable)) === false)
 			return($r);
 
 		return($r);
@@ -156,7 +158,7 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		return($r);
 	}
 
-	function edit($id,$arr,$provisioning=false)
+	function edit($id,$arr,$provisioning=false,$disable=null)
 	{
 		$provisioning = (bool) $provisioning;
 
@@ -205,12 +207,12 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 				return(false);
 		}
 
-		return($this->_dso->edit($id,$arr));
+		return($this->_dso->edit($id,$arr,$disable));
 	}
 
-	function get_search($value)
+	function get_search($value,$disable=null)
 	{
-		if(($list = $this->_dso->get_search($value)) === false)
+		if(($list = $this->_dso->get_search($value,$disable)) === false)
 			return(false);
 
 		$nb = count($list);
@@ -226,33 +228,11 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		return($r);
 	}
 
-	function get_all_context()
-	{
-		if(($list = $this->get_all()) === false)
-			return(false);
-
-		$nb = count($list);
-
-		$r = array();
-
-		for($i = 0;$i < $nb;$i++)
-		{
-			$info = $list[$i];
-
-			$r[$info['context']] = $info['context'];
-		}
-
-		if(empty($r) === true)
-			$r = false;
-
-		return($r);
-	}
-
-	function get_all_number($id=0)
+	function get_all_number($id=0,$disable=null)
 	{
 		$id = xivo_uint($id);
 
-		if(($list = $this->get_all()) === false)
+		if(($list = $this->get_all($disable)) === false)
 			return(false);
 
 		$nb = count($list);
@@ -270,6 +250,28 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		}
 
 		if(isset($r[0]) === false)
+			$r = false;
+
+		return($r);
+	}
+
+	function get_all_context($disable=null)
+	{
+		if(($list = $this->get_all($disable)) === false)
+			return(false);
+
+		$nb = count($list);
+
+		$r = array();
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			$info = $list[$i];
+
+			$r[$info['context']] = $info['context'];
+		}
+
+		if(empty($r) === true)
 			$r = false;
 
 		return($r);

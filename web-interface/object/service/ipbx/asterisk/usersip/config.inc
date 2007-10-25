@@ -2,7 +2,7 @@
 
 $array = array();
 
-$array['initialized'] = 'sip';
+$array['registered'] = 'SIP/Registry';
 
 $array['element'] = array();
 
@@ -112,6 +112,7 @@ $array['element']['call-limit'] = array();
 $array['element']['call-limit']['default'] = 0;
 $array['element']['call-limit']['setdef'] = true;
 
+
 $array['filter'] = array();
 $array['filter']['callerid'] = array('chk' => 2,'maxlen' => 80,'notag' => false);
 $array['filter']['name'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[a-z0-9_-]+$/i');
@@ -126,8 +127,7 @@ $array['filter']['amaflags'] = array('set' => false,'chk' => 2,'key' => array(
 						XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_META_DOCUMENTATION));
 $array['filter']['accountcode'] = array('set' => false,'chk' => 2,'maxlen' => 20);
 $array['filter']['callgroup'] = array('set' => false,'chk' => 2,'regexp' => '/^([0-9]+[,]?)*$/','maxlen' => 180);
-$array['filter']['context'] = array('set' => false,'chk' => 2,'nokey' => array('general','globals','hints','features','authentication','zonemessages'),'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 39);
-$array['filter']['call-limit'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,30));
+$array['filter']['context'] = array('set' => false,'chk' => 2,'nokey' => array('general','global','globals','hints','features','authentication','zonemessages'),'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 39);
 $array['filter']['nat'] = array('bool' => true);
 $array['filter']['qualify'] = array('bool' => true);
 $array['filter']['disallow'] = array('set' => false,'chk' => 2,'key' => array('all'));
@@ -154,5 +154,6 @@ $array['filter']['regexten'] = array('set' => false,'chk' => 0);
 $array['filter']['setvar'] = array('set' => false,'chk' => 0);
 $array['filter']['username'] = array('set' => false,'chk' => 2,'maxlen' => 80);
 $array['filter']['mailbox'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9#\*]{1,40}(@[a-z0-9@_\-]{1,39})?$/','maxlen' => 80);
+$array['filter']['call-limit'] = array('set' => false,'chk' => 0);
 
 ?>

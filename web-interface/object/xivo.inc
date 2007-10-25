@@ -20,7 +20,7 @@ class xivo
 	function xivo()
 	{
 		if(($this->_conf['xivo'] = xivo_gat::load_get('xivo',XIVO_PATH_OBJECTCONF)) === false)
-			die('ERR: Failed to load Xivo Array');
+			die('ERR: Failed to load XIVO Array');
 
 		$this->_conf['xivo']['ini']['extension_loaded'] = 0;
 
@@ -88,12 +88,12 @@ class xivo
 		if(xivo_issa('datastorage',$xivo_ini) === true)
 			$this->_cfg_ini_datastorage($xivo_ini['datastorage']);
 		else
-			die('ERR: Missing datastorage configuration in Xivo ini file');
+			die('ERR: Missing datastorage configuration in XIVO ini file');
 
 		if(xivo_issa('service',$xivo_ini) === true)
 			$this->_cfg_ini_service($xivo_ini['service']);
 		else
-			die('ERR: Missing service configuration in Xivo ini file');
+			die('ERR: Missing service configuration in XIVO ini file');
 
 		if(xivo_issa('template',$xivo_ini) === true)
 			$this->_cfg_ini_template($xivo_ini['template']);
@@ -360,15 +360,15 @@ class xivo
 			$this->_conf['xivo']['sys']['datastorage'] = array();
 
 		if(is_array($a) === false)
-			die('ERR: Invalid datastorage configuration in Xivo ini file');
+			die('ERR: Invalid datastorage configuration in XIVO ini file');
 
 		if(isset($a['type']) === false)
-			die('ERR: Missing datastorage "type" configuration in Xivo ini file');
+			die('ERR: Missing datastorage "type" configuration in XIVO ini file');
 
 		xivo::load_class('xivo_datastorage');
 
 		if(xivo_datastorage::is_valid($a['type']) === false)
-			die('ERR: Invalid datastorage "type" configuration in Xivo ini file');
+			die('ERR: Invalid datastorage "type" configuration in XIVO ini file');
 
 		if(xivo_datastorage::chk_extension_exists($a['type']) === true
 		&& $this->chk_extension_loaded(xivo_datastorage::get_extension_name($a['type'])) === false)
@@ -386,7 +386,7 @@ class xivo
 	function _cfg_ini_service($a)
 	{
 		if(is_array($a) === false)
-			die('ERR: Invalid service configuration in Xivo ini file');
+			die('ERR: Invalid service configuration in XIVO ini file');
 
 		$this->_conf['xivo']['sys']['service'] = $a;
 	}
@@ -419,7 +419,7 @@ class xivo
 	function _cfg_ini_template($a)
 	{
 		if(($arr = xivo_get_aks($a)) === false)
-			die('ERR: Invalid template configuration in Xivo ini file');
+			die('ERR: Invalid template configuration in XIVO ini file');
 
 		for($i = 0;$i < $arr['cnt'];$i++)
 		{
@@ -427,22 +427,22 @@ class xivo
 			$v = &$a[$k];
 
 			if(is_array($v) === false)
-				die('ERR: Missing information in '.$k.' for template configuration in Xivo ini file');
+				die('ERR: Missing information in '.$k.' for template configuration in XIVO ini file');
 
 			if(isset($v['script_path']) === true && ($script_path = xivo_file::is_d_r($v['script_path'])) !== false)
 				$this->_conf['tpl'][$k]['script_path'] = $script_path;
 			else
-				die('ERR: Missing or invalid script_path in '.$k.' for template configuration in Xivo ini file');
+				die('ERR: Missing or invalid script_path in '.$k.' for template configuration in XIVO ini file');
 
 			if(isset($v['application_path']) === true && ($application_path = xivo_file::is_d_r($v['application_path'])) !== false)
 				$this->_conf['tpl'][$k]['application_path'] = $application_path;
 			else
-				die('ERR: Missing or invalid application_path in '.$k.' for template configuration in Xivo ini file');
+				die('ERR: Missing or invalid application_path in '.$k.' for template configuration in XIVO ini file');
 
 			if(isset($v['tpl_path']) === true && ($tpl_path = xivo_file::is_d_r($v['tpl_path'])) !== false)
 				$this->_conf['tpl'][$k]['tpl_path'] = $tpl_path;
 			else
-				die('ERR: Missing or invalid tpl_path in '.$k.' for template configuration in Xivo ini file');
+				die('ERR: Missing or invalid tpl_path in '.$k.' for template configuration in XIVO ini file');
 
 			if(isset($v['script_root']) === true)
 				$this->_conf['tpl'][$k]['script_root'] = rtrim((string) $v['script_root'],XIVO_SEP_DIR);

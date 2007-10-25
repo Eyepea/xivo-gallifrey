@@ -4,7 +4,7 @@ xivo_service_asterisk::required(array('abstract','datastorage','abstract','sql.i
 
 class xivo_service_asterisk_usersip_abstract_sql extends xivo_service_asterisk_abstract_sql
 {
-	var $_param	= array('table' => 'usersip');
+	var $_param	= array('table'	=> 'usersip');
 	var $_dso	= null;
 
 	function _init(&$dso,$param=array())
@@ -50,15 +50,32 @@ class xivo_service_asterisk_usersip_abstract_sql extends xivo_service_asterisk_a
 		return(parent::get($arr,$disable,null,true));
 	}
 
-	function get_nb($arr=null,$disable=null)
+	function get_nb($arr=null,$disable=null,$initialized=null)
 	{
-		if($arr === null)
+		if(is_array($arr) === false)
 			$arr = array();
-			
-		if(is_array($arr) === true)
-			$arr['category'] = 'user';
 
-		return(parent::get_nb($arr,$disable,null));
+		$where = '';
+
+		$arr['category'] = 'user';
+
+		if($disable !== null)
+			$arr['commented'] = intval((bool) $disable);
+
+		if(($where = $this->_dso->where($arr)) === false)
+			return(false);
+
+		if($initialized !== null)
+		{
+			if((bool) $initialized === false)
+				$where .= ' AND (fullcontact IS NULL OR fullcontact = \'\')';
+			else
+				$where .= ' AND fullcontact IS NOT NULL AND fullcontact != \'\'';
+		}
+
+		$r = $this->_dso->select_count($this->_param['table'],null,$where);
+
+		return($r);
 	}
 
 	function edit($id,$arr,$disable=null)
@@ -93,7 +110,8 @@ class xivo_service_asterisk_usersip_abstract_sql extends xivo_service_asterisk_a
 
 	function get_list($disable=null,$order=null,$limit=null)
 	{
-		$arr = array('category' => 'user');
+		$arr = array();
+		$arr['category'] = 'user';
 
 		return(parent::get_list_where($arr,$disable,null,$order,$limit));
 	}
@@ -110,7 +128,8 @@ class xivo_service_asterisk_usersip_abstract_sql extends xivo_service_asterisk_a
 
 	function get_all($disable=null,$order=null,$limit=null)
 	{
-		$arr = array('category' => 'user');
+		$arr = array();
+		$arr['category'] = 'user';
 
 		return(parent::get_list_where($arr,$disable,null,$order,$limit,true));
 	}

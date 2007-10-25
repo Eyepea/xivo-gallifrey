@@ -67,6 +67,28 @@ class xivo_service_asterisk_realstatic extends xivo_service_asterisk_abstract
 		return($data);
 	}
 
+	function get_nb($arr=array(),$disable=null)
+	{
+		if(is_array($arr) === false)
+			$arr = array();
+
+		$arr['filename'] = $this->_filename;
+
+		if(isset($this->_cat_metric) === true)
+			$arr['cat_metric'] = $this->_cat_metric;
+
+		if(isset($this->_var_metric) === true)
+			$arr['var_metric'] = $this->_var_metric;
+
+		if(isset($this->_category) === true)
+			$arr['category'] = $this->_category;
+
+		if(isset($this->_var_name) === true)
+			$arr['var_name'] = $this->_var_name;
+
+		return(parent::get_nb($arr,$disable));
+	}
+
 	function get_all($disable=null,$prepare=true,$order=null,$limit=null)
 	{
 		return($this->_prepare_get_all_where(null,$disable,$prepare,$order,$limit));

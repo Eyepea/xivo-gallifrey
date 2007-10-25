@@ -9,6 +9,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 	var $_name		= 'asterisk';
 	var $_realstatic	= array();
 	var $_apprealstatic	= array();
+	var $_discuss		= null;
 
 	function xivo_service_asterisk($ini)
 	{
@@ -29,6 +30,19 @@ class xivo_service_asterisk extends xivo_service_abstract
 		array_unshift($arr,dirname(__FILE__).XIVO_SEP_DIR.$this->_name);
 
 		return(xivo_file::required($arr,$once,$includable));
+	}
+
+	function discuss($cmd,$recv=false)
+	{
+		if($this->_discuss === false
+		|| (is_object($this->_discuss) === false
+		   && ($this->_discuss = &$this->get_module('ami')) === false) === true)
+		{
+			$this->_discuss = false;
+			return(false);
+		}
+
+		return($this->_discuss->cmd($cmd,$recv));
 	}
 
 	function _load_realstatic_class($name)
@@ -199,8 +213,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 			$label = (string) $sess_sre['infos']['label'];
 			$version = (string) $sess_sre['infos']['version'];
 		}
-		else if(($ami = &$this->get_module('ami')) !== false
-		&& ($infos = $ami->cmd('show version',true)) !== false
+		else if(($infos = $this->discuss('show version',true)) !== false
 		&& is_array($infos) === true && isset($infos[0]) === true)
 		{
 			$infos = explode(' ',$infos[0],3);
@@ -239,24 +252,24 @@ class xivo_service_asterisk extends xivo_service_abstract
 		define($define_version,$version);
 	}
 
-	function get_users_search($name,$protocols=array(),$disable=null,$assoc=false)
+	function get_users_search($name,$protocols=array(),$disable=null,$assoc=false,$initialized=null,$internal=false)
 	{
-		return($this->_get_users('search',$protocols,$disable,$name,$assoc));
+		return($this->_get_users('search',$protocols,$disable,$name,$assoc,$initialized,$internal));
 	}
 
-	function get_users_list($protocols=array(),$disable=null,$assoc=false)
+	function get_users_list($protocols=array(),$disable=null,$assoc=false,$initialized=null,$internal=false)
 	{
-		return($this->_get_users('list',$protocols,$disable,null,$assoc));
+		return($this->_get_users('list',$protocols,$disable,null,$assoc,$initialized,$internal));
 	}
 
-	function get_users_context($name,$protocols=array(),$disable=null,$assoc=false)
+	function get_users_context($name,$protocols=array(),$disable=null,$assoc=false,$initialized=null,$internal=false)
 	{
 		$name = strval($name);
 
-		return($this->_get_users('context',$protocols,$disable,$name,$assoc));
+		return($this->_get_users('context',$protocols,$disable,$name,$assoc,$initialized,$internal));
 	}
 
-	function _get_users($action,$protocols=array(),$disable=null,$opts=array(),$assoc=false)
+	function _get_users($action,$protocols=array(),$disable=null,$opts=array(),$assoc=false,$initialized=null,$internal=false)
 	{
 		$action = (string) $action;
 		$protocols = (array) $protocols;
@@ -268,18 +281,19 @@ class xivo_service_asterisk extends xivo_service_abstract
 			$protocols = array_values($protocols);
 
 		$ufeatures = &$this->get_module('userfeatures');
+		$ufeatures->set_dso_param('internal',$internal);
 
 		switch($action)
 		{
 			case 'search':
-				$rs = $ufeatures->get_search($opts);
+				$rs = $ufeatures->get_search($opts,$disable);
 				break;
 			case 'context':
-				$rs = $ufeatures->get_all_where(array('context' => $opts));
+				$rs = $ufeatures->get_all_where(array('context' => $opts),$disable);
 				break;
 			case 'list':
 			default:
-				$rs = $ufeatures->get_all();
+				$rs = $ufeatures->get_all($disable);
 		}
 
 		if($rs === false || ($nb = count($rs)) === 0)
@@ -293,7 +307,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 			if(in_array($info['ufeatures']['protocol'],$protocols) === false
 			|| ($protocol = &$this->get_protocol_module($info['ufeatures']['protocol'])) === false
-			|| ($info['protocol'] = $protocol->get($info['ufeatures']['protocolid'],$disable)) === false)
+			|| ($info['protocol'] = $protocol->get($info['ufeatures']['protocolid'],$disable,$initialized)) === false)
 				continue;
 
 			$r[$info['ufeatures']['id']] = $info;

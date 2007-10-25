@@ -159,7 +159,6 @@ $_HTML->assign('gmember',$gmember);
 $_HTML->assign('queues',$queues);
 $_HTML->assign('qmember',$qmember);
 $_HTML->assign('rightcall',$rightcall);
-$_HTML->assign('protocol',$ipbx->get_protocol());
 $_HTML->assign('element',$element);
 $_HTML->assign('list',$appuser->get_dialstatus_destination_list());
 $_HTML->assign('moh_list',$appuser->get_musiconhold());

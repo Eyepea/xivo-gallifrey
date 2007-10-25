@@ -57,8 +57,6 @@ class xivo_service_asterisk_ami extends xivo_service_asterisk_abstract
 
 	function cmd($cmd,$read=false)
 	{
-		$r = false;
-
 		$cmd = trim((string) $cmd);
 		$read = (bool) $read;
 
@@ -107,6 +105,9 @@ class xivo_service_asterisk_ami extends xivo_service_asterisk_abstract
 
 			$r[] = $recv[$i];
 		}
+
+		if(end($r) === '')
+			array_pop($r);
 
 		return($r);
 	}

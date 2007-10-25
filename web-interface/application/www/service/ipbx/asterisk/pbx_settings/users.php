@@ -60,21 +60,22 @@ switch($act)
 	case 'disables':
 		$param['page'] = $page;
 
-		if(($values = xivo_issa_val('users',$_QR)) === false
-		|| ($ufeatures = &$ipbx->get_module('userfeatures')) === false)
+		if(($values = xivo_issa_val('users',$_QR)) === false)
 			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/users'),$param);
 
-		$disable = $act === 'disables' ? true : false;
+		$appuser = &$ipbx->get_application('user');
 
 		$nb = count($values);
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			if(($info = $ufeatures->get($values[$i])) === false
-			|| ($protocol = &$ipbx->get_protocol_module($info['protocol'])) === false)
+			if($appuser->get($values[$i],null,false) === false)
 				continue;
 
-			$protocol->disable($info['protocolid'],$disable);
+			if($act === 'disables')
+				$appuser->disable();
+			else
+				$appuser->enable();
 		}
 
 		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/users'),$param);

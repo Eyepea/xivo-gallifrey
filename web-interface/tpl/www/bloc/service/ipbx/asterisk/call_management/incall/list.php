@@ -36,7 +36,6 @@
 		<th class="th-center"><?=$this->bbf('col_did');?></th>
 		<th class="th-center"><?=$this->bbf('col_destination');?></th>
 		<th class="th-center"><?=$this->bbf('col_identity');?></th>
-		<th class="th-center"><?=$this->bbf('col_number');?></th>
 		<th class="th-center" id="col-action" colspan="2"><?=$this->bbf('col_action');?></th>
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
 	</tr>
@@ -45,7 +44,7 @@
 	if($list === false || ($nb = count($list)) === 0):
 ?>
 	<tr class="sb-content">
-		<td colspan="8" class="td-single"><?=$this->bbf('no_incall');?></td>
+		<td colspan="7" class="td-single"><?=$this->bbf('no_incall');?></td>
 	</tr>
 <?php
 	else:
@@ -64,17 +63,13 @@
 				$icon = 'enable';
 			endif;
 
-			$identity = $number = '-';
+			$identity = '-';
 
 			if($ref['type'] !== false && $ref['incall']['linked'] === true):
 				if($ref['incall']['type'] === 'schedule'):
 					$identity = $ref['type']['name'];
 				elseif(isset($ref['type']['identity']) === true):
 					$identity = $ref['type']['identity'];
-				endif;
-
-				if(isset($ref['type']['number']) === true):
-					$number = $ref['type']['number'];
 				endif;
 			endif;
 
@@ -85,7 +80,6 @@
 		<td class="txt-left"><label for="it-incalls-<?=$i?>" id="lb-incalls-<?=$i?>"><?=$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"');?><?=$ref['extenumbers']['exten']?></label></td>
 		<td><?=$type?></td>
 		<td><?=$identity?></td>
-		<td><?=$number?></td>
 		<td class="td-right" colspan="3">
 		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/call_management/incall',array('act' => 'edit','id' => $ref['incall']['id']),null,$this->bbf('opt_modify'));?>
 		<?=$url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'service/ipbx/call_management/incall',array('act' => 'delete','id' => $ref['incall']['id'],'page' => $pager['page'],$param),'onclick="return(confirm(\''.xivo_stript($this->bbf('opt_delete_confirm')).'\') ? true : false);"',$this->bbf('opt_delete'));?>
@@ -97,7 +91,7 @@
 ?>
 	<tr class="sb-foot">
 		<td class="td-left xspan b-nosize"><span class="span-left b-nosize">&nbsp;</span></td>
-		<td class="td-center" colspan="6"><span class="b-nosize">&nbsp;</span></td>
+		<td class="td-center" colspan="5"><span class="b-nosize">&nbsp;</span></td>
 		<td class="td-right xspan b-nosize"><span class="span-right b-nosize">&nbsp;</span></td>
 	</tr>
 </table>

@@ -1,6 +1,9 @@
 ; title_content_name
 Paramètres globaux avancés
 
+; smenu_userinternal
+Utilisateurs internes
+
 ; smenu_agents
 Agents
 
@@ -9,6 +12,12 @@ Files d'attente
 
 ; smenu_meetme
 Chambres de conférence
+
+; fm_userinternal_guest
+Invité :
+
+; fm_userinternal_xivosb
+XIVO SwitchBoard :
 
 ; fm_generalagents_persistentagents
 Agents persistants :

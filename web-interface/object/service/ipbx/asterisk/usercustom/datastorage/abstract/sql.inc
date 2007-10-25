@@ -4,7 +4,7 @@ xivo_service_asterisk::required(array('abstract','datastorage','abstract','sql.i
 
 class xivo_service_asterisk_usercustom_abstract_sql extends xivo_service_asterisk_abstract_sql
 {
-	var $_param	= array('table' => 'usercustom');
+	var $_param	= array('table'	=> 'usercustom');
 	var $_dso	= null;
 
 	function _init(&$dso,$param=array())
@@ -52,13 +52,12 @@ class xivo_service_asterisk_usercustom_abstract_sql extends xivo_service_asteris
 
 	function get_nb($arr=null,$disable=null)
 	{
-		if($arr === null)
+		if(is_array($arr) === false)
 			$arr = array();
-			
-		if(is_array($arr) === true)
-			$arr['category'] = 'user';
 
-		return(parent::get_nb($arr,$disable,null));
+		$arr['category'] = 'user';
+
+		return(parent::get_nb($arr,$disable));
 	}
 
 	function edit($id,$arr,$disable=null)
@@ -93,7 +92,8 @@ class xivo_service_asterisk_usercustom_abstract_sql extends xivo_service_asteris
 
 	function get_list($disable=null,$order=null,$limit=null)
 	{
-		$arr = array('category' => 'user');
+		$arr = array();
+		$arr['category'] = 'user';
 
 		return(parent::get_list_where($arr,$disable,null,$order,$limit));
 	}
@@ -110,7 +110,8 @@ class xivo_service_asterisk_usercustom_abstract_sql extends xivo_service_asteris
 
 	function get_all($disable=null,$order=null,$limit=null)
 	{
-		$arr = array('category' => 'user');
+		$arr = array();
+		$arr['category'] = 'user';
 
 		return(parent::get_list_where($arr,$disable,null,$order,$limit,true));
 	}

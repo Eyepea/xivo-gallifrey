@@ -291,13 +291,13 @@ $array['filter']['usedirectory'] = array('bool' => true);
 $array['filter']['nextaftercmd'] = array('bool' => true);
 $array['filter']['dialout'] = array('set' => false,'chk' => 2,'maxlen' => 39,
 					'regexp' => '/^(?!macro-)[a-z0-9_-]+$/',
-					'nokey' => array('general','globals','hints','features'));
+					'nokey' => array('general','global','globals','hints','features'));
 $array['filter']['callback'] = array('set' => false,'chk' => 2,'maxlen' => 39,
 					'regexp' => '/^(?!macro-)[a-z0-9_-]+$/',
-					'nokey' => array('general','globals','hints','features'));
+					'nokey' => array('general','global','globals','hints','features'));
 $array['filter']['exitcontext'] = array('set' => false,'chk' => 2,'maxlen' => 39,
 					'regexp' => '/^(?!macro-)[a-z0-9_-]+$/',
-					'nokey' => array('general','globals','hints','features'));
+					'nokey' => array('general','global','globals','hints','features'));
 $array['filter']['attach'] = array('bool' => true);
 $array['filter']['mailcmd'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 160);
 $array['filter']['serveremail'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9@\-_\.]+$/i','maxlen' => 80);

@@ -113,7 +113,7 @@ Musique d'attente :
 Activer XIVO Client :
 
 ; fm_userfeatures_enablehint
-Activer la supervision sur le XIVO Switchboard :
+Activer la supervision sur le XIVO SwitchBoard :
 
 ; fm_userfeatures_enablevoicemail
 Activer la messagerie vocale :

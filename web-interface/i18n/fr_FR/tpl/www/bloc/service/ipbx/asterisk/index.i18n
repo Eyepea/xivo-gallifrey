@@ -1,29 +1,38 @@
 ; title_content_name
-Statistiques
+IPBX
 
 ; stats_col_type
 Type
 
+; stats_col_status
+Statut
+
 ; stats_col_enable
-Actif
+Activé
 
 ; stats_col_disable
-Inactif
+Désactivé
+
+; stats_col_user
+Utilisateur
 
 ; stats_col_total
 Total
 
-; stats_users
-Utilisateurs
+; stats_type-user
+Utilisateur
 
-; stats_groups
-Groupes
+; stats_type-group
+Groupe
 
-; stats_queues
-Files d'attente
+; stats_type-queue
+File d'attente
 
-; stats_meetme
-Chambres de conférence
+; stats_type-meetme
+Chambre de conférence
+
+; stats_status-initialized
+Initialisé
 
 ; info_service_label
 Logiciel :

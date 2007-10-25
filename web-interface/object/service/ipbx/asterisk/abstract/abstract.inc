@@ -486,6 +486,22 @@ class xivo_service_asterisk_abstract extends xivo_libconfig_abstract
 
 		return($info);
 	}
+
+	function set_dso_param($name,$value)
+	{
+		if(is_object($this->_dso) === false)
+			return(false);
+
+		return($this->_dso->set_param($name,$value));
+	}
+
+	function get_dso_param($name,$value)
+	{
+		if(is_object($this->_dso) === false)
+			return(false);
+
+		return($this->_dso->get_param($name,$value));
+	}
 }
 
 ?>

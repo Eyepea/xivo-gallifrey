@@ -4,10 +4,11 @@ xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 
 class xivo_application_service_asterisk_user extends xivo_application_asterisk_abstract
 {
-	var $_protocol		= false;
+	var $_protocolname	= false;
 	var $_origin		= array();
 	var $_status		= '';
 	var $_userfeatures	= null;
+	var $_protocol		= null;
 	var $_extensions	= null;
 	var $_extenumbers	= null;
 	var $_rightcall		= null;
@@ -37,22 +38,35 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 	function _reset()
 	{
-		$this->_protocol = false;
+		$this->_protocolname = false;
 
 		return(parent::_reset());
 	}
 
-	function get($id,$disable=null)
+	function get($id,$disable=null,$full=true,$internal=false,$where=false)
 	{
+		$full = (bool) $full;
+		$where = (bool) $where;
+
 		$this->_info = $this->_origin = array();
 
-		if(($this->_info['ufeatures'] = $this->_userfeatures->get($id)) === false
-		|| ($protocol = &$this->_service->get_protocol_module($this->_info['ufeatures']['protocol'])) === false
-		|| ($this->_info['protocol'] = $protocol->get($this->_info['ufeatures']['protocolid'],$disable)) === false)
+		$this->_userfeatures->set_dso_param('internal',$internal);
+
+		if($where === false)
+			$this->_info['ufeatures'] = $this->_userfeatures->get($id);
+		else
+			$this->_info['ufeatures'] = $this->_userfeatures->get_where($id);
+
+		if($this->_info['ufeatures'] === false
+		|| ($this->_protocol = &$this->_service->get_protocol_module($this->_info['ufeatures']['protocol'])) === false
+		|| ($this->_info['protocol'] = $this->_protocol->get($this->_info['ufeatures']['protocolid'],$disable)) === false)
 			return(false);
 
-		$this->_origin['protocol'] = $protocol->get_origin();
+		$this->_origin['protocol'] = $this->_protocol->get_origin();
 		$this->_origin['ufeatures'] = $this->_userfeatures->get_origin();
+
+		if($full === false)
+			return($this->_info);
 
 		$this->_get_localexten();
 		$this->_get_hints();
@@ -68,12 +82,19 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		return($this->_info);
 	}
 
-	function get_nb($arr=null,$disable=null)
+	function get_where($arr,$disable=null,$full=true,$internal=false)
+	{
+		return($this->get($arr,$disable,$full,$internal,true));
+	}
+
+	function get_nb($arr=null,$disable=null,$initialized=null)
 	{
 		if(($protocols = $this->_service->get_protocol()) === false)
 			return(false);
 	
 		$protocols = array_keys($protocols);
+
+		$this->_userfeatures->set_dso_param('internal',true);
 
 		$r = 0;
 
@@ -82,11 +103,19 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		for($i = 0;$i < $nb;$i++)
 		{
 			if(($protocol = &$this->_service->get_protocol_module($protocols[$i])) === false
-			|| ($cnt = $protocol->get_nb($arr,$disable)) === false)
+			|| ($cnt = $protocol->get_nb($arr,$disable,$initialized)) === false
+			|| ($unb = $this->_userfeatures->get_nb(array('protocol' => $protocols[$i]),$disable)) === false)
 				continue;
+
+			if($unb > $cnt)
+				$cnt = 0;
+			else
+				$cnt -= $unb;
 
 			$r += $cnt;			
 		}
+
+		$this->_userfeatures->set_dso_param('internal',false);
 
 		return($r);
 	}
@@ -280,20 +309,20 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		return($r);
 	}
 
-	function set_add($arr,$protocol)
+	function set_add($arr,$protocolname)
 	{
-		return($this->_set('add',$arr,$protocol));
+		return($this->_set('add',$arr,$protocolname));
 	}
 
-	function set_edit($arr,$protocol)
+	function set_edit($arr,$protocolname)
 	{
 		if(empty($this->_info) === true)
 			return(false);
 
-		return($this->_set('edit',$arr,$protocol));
+		return($this->_set('edit',$arr,$protocolname));
 	}
 
-	function _set($action,$arr,$protocol)
+	function _set($action,$arr,$protocolname)
 	{
 		$this->_reset();
 
@@ -302,14 +331,14 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		|| xivo_issa('ufeatures',$arr) === false)
 			return(false);
 
-		$this->_protocol = $protocol;
+		$this->_protocolname = $protocolname;
 
-		$this->set_protocol($arr['protocol'],$protocol);
+		$this->set_protocol($arr['protocol'],$protocolname);
 
-		$arr['ufeatures']['protocol'] = $protocol;
+		$arr['ufeatures']['protocol'] = $protocolname;
 		$arr['ufeatures']['protocolid'] = 0;
 
-		if($protocol === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
+		if($protocolname === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
 			$name = $this->get_result_var('protocol','interface');
 		else
 			$name = $this->get_result_var('protocol','name');
@@ -322,11 +351,11 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$this->set_userfeatures($arr['ufeatures']);
 
 		$number = (string) $this->get_result_var('ufeatures','number');
-		$protocol = (string) $this->get_result_var('ufeatures','protocol');
+		$protocolname = (string) $this->get_result_var('ufeatures','protocol');
 
 		if(xivo_issa('group',$arr) === true
 		&& xivo_issa('group-select',$arr) === true
-		&& $this->set_groupmember($arr['group'],$arr['group-select'],$name,$context,$number,$protocol) === true)
+		&& $this->set_groupmember($arr['group'],$arr['group-select'],$name,$context,$number,$protocolname) === true)
 		{
 			$callgroup = $this->get_result('callgroup');
 
@@ -335,20 +364,20 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			else
 				$callgroup = '';
 
-			if($this->_protocol !== XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
+			if($this->_protocolname !== XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
 				$this->_set_result_var('protocol','callgroup',$callgroup);
 		}
 
 		if(xivo_issa('queue',$arr) === true && xivo_issa('queue-select',$arr) === true)
-			$this->set_queuemember($arr['queue'],$arr['queue-select'],$name,$context,$number,$protocol);
+			$this->set_queuemember($arr['queue'],$arr['queue-select'],$name,$context,$number,$protocolname);
 
 		if(xivo_issa('dialstatus',$arr) === true)
 			$this->set_dialstatus($arr['dialstatus']);
 
-		if($this->_protocol === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
+		if($this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
 		{
 			if($this->get_errnb() > 0)
-				$this->_protocol = $r = false;
+				$this->_protocolname = $r = false;
 			else
 				$r = true;
 
@@ -378,7 +407,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			else
 				$enablehint = true;
 
-			if(($hints = $this->set_hints($action,$name,$protocol,$number,$enablehint)) === false)
+			if(($hints = $this->set_hints($action,$name,$protocolname,$number,$enablehint)) === false)
 				$this->_set_error('hints');
 
 			$this->_set_result('hints',$hints);
@@ -393,30 +422,30 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$this->set_voicemail($arr['voicemail'],$context,$number);
 
 		if(xivo_issa('autoprov',$arr) === true)
-			$this->set_autoprov($action,$arr['autoprov'],$protocol);
+			$this->set_autoprov($action,$arr['autoprov'],$protocolname);
 
 		if($this->get_errnb() > 0)
-			$this->_protocol = $r = false;
+			$this->_protocolname = $r = false;
 		else
 			$r = true;
 
 		return($r);
 	}
 
-	function set_protocol($arr,$protocol)
+	function set_protocol($arr,$protocolname)
 	{
 		if(is_array($arr) === false
-		|| ($proto = &$this->_service->get_protocol_module($protocol)) === false)
+		|| ($protocol = &$this->_service->get_protocol_module($protocolname)) === false)
 		{
 			$this->_set_result('protocol',null);
 			$this->_set_error('protocol','invalid module');
 			return(false);
 		}
 
-		if(($rs = $proto->chk_values($arr)) === false)
+		if(($rs = $protocol->chk_values($arr)) === false)
 		{
-			$this->_set_result('protocol',$proto->get_filter_result());
-			$this->_set_error('protocol',$proto->get_filter_error());
+			$this->_set_result('protocol',$protocol->get_filter_result());
+			$this->_set_error('protocol',$protocol->get_filter_error());
 
 			return(false);
 		}
@@ -454,34 +483,34 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		return(true);
 	}
 
-	function set_hints($action,$name,$protocol,$number,$disable=null)
+	function set_hints($action,$name,$protocolname,$number,$disable=null)
 	{
 		if($action !== 'add' && $action !== 'edit')
 			return(false);
 
 		if($action === 'edit' && xivo_issa('hints',$this->_info) !== false)
-			$rs = $this->_extensions->chk_hints($name,$protocol,$number,$disable);
+			$rs = $this->_extensions->chk_hints($name,$protocolname,$number,$disable);
 		else
-			$rs = $this->_extensions->new_hints($name,$protocol,$number,$disable);
+			$rs = $this->_extensions->new_hints($name,$protocolname,$number,$disable);
 
 		return($rs);
 	}
 
-	function set_groupmember($group,$select,$name,$context='',$number='',$protocol='')
+	function set_groupmember($group,$select,$name,$context='',$number='',$protocolname='')
 	{
-		$r = $this->_set_member_type('group',$group,$select,$name,$context,$number,$protocol);
+		$r = $this->_set_member_type('group',$group,$select,$name,$context,$number,$protocolname);
 
 		return($r);
 	}
 
-	function set_queuemember($queue,$select,$name,$context='',$number='',$protocol='')
+	function set_queuemember($queue,$select,$name,$context='',$number='',$protocolname='')
 	{
-		$r = $this->_set_member_type('queue',$queue,$select,$name,$context,$number,$protocol);
+		$r = $this->_set_member_type('queue',$queue,$select,$name,$context,$number,$protocolname);
 
 		return($r);
 	}
 
-	function _set_member_type($type,$list,$select,$name,$context='',$number='',$protocol='')
+	function _set_member_type($type,$list,$select,$name,$context='',$number='',$protocolname='')
 	{
 		if(($type !== 'group' && $type !== 'queue') === true
 		|| is_array($list) === false
@@ -517,7 +546,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			if(isset($tmp[$qname]) === true
 			|| isset($list[$qname]) === false
 			|| ($chantype = xivo_ak('chantype',$list[$qname],true)) === false
-			|| ($interface = $this->mk_interface($name,$chantype,$context,$number,$protocol)) === false
+			|| ($interface = $this->mk_interface($name,$chantype,$context,$number,$protocolname)) === false
 			|| ($typeid = $module->get_id(array('name' => $qname))) === false)
 				continue;
 
@@ -606,7 +635,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		return(true);
 	}
 
-	function set_autoprov($action,$arr,$protocol)
+	function set_autoprov($action,$arr,$protocolname)
 	{
 		if(($action !== 'add' && $action !== 'edit') === true
 		|| is_array($arr) === false
@@ -626,7 +655,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$modact = $arr['modact'];
 			$arr = $this->_info['autoprov'];
 			$arr['modact'] = $modact;
-			$arr['proto'] = $protocol;
+			$arr['proto'] = $protocolname;
 		}
 		else if(($pos = strpos($arr['vendormodel'],'.')) === false)
 			$arr['vendormodel'] = $arr['modact'] = '';
@@ -649,7 +678,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				$arr['macaddr'] = '';
 
 			$arr['modact'] = 'prov';
-			$arr['proto'] = $protocol;
+			$arr['proto'] = $protocolname;
 		}
 
 		if(($rs = $this->_autoprov->chk_values($arr)) === false)
@@ -673,7 +702,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$ufeaturesid = null;
 
 		if($this->get_errnb() > 0
-		|| $this->_protocol === false
+		|| $this->_protocolname === false
 		|| ($protocolid = $this->add_protocol()) === false
 		|| ($ufeaturesid = $this->add_userfeatures($protocolid)) === false
 		|| $this->add_macro('localexten') === false
@@ -701,7 +730,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 	function add_protocol()
 	{
 		if(($rs = $this->get_result('protocol')) === null
-		|| ($protocol = &$this->_service->get_protocol_module($this->_protocol)) === false)
+		|| ($protocol = &$this->_service->get_protocol_module($this->_protocolname)) === false)
 			return(false);
 
 		$this->_return['protocol'] = $protocol->add($rs);
@@ -830,7 +859,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 	function _reverse_add()
 	{
 		if($this->get_errnb() > 0
-		|| $this->_protocol === false
+		|| $this->_protocolname === false
 		|| $this->_status !== 'add'
 		|| ($arr = xivo_get_aks($this->_return)) === false)
 			return(false);
@@ -846,7 +875,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			switch($key)
 			{
 				case 'protocol':
-					$protocol = &$this->_service->get_protocol_module($this->_protocol);
+					$protocol = &$this->_service->get_protocol_module($this->_protocolname);
 					$protocol->delete($val);
 					break;
 				case 'localexten':
@@ -893,7 +922,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		if(is_array($this->_info) === false
 		|| empty($this->_info) === true
 		|| $this->get_errnb() > 0
-		|| $this->_protocol === false
+		|| $this->_protocolname === false
 		|| ($protocolret = $this->edit_protocol()) === false)
 		{
 			$this->_status = '';
@@ -963,10 +992,10 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 	{
 		if(xivo_issa('protocol',$this->_info) === false
 		|| xivo_issa('ufeatures',$this->_info) === false
-		|| ($protocol = &$this->_service->get_protocol_module($this->_protocol)) === false)
+		|| ($protocol = &$this->_service->get_protocol_module($this->_protocolname)) === false)
 			return(false);
 
-		if($this->_info['ufeatures']['protocol'] === $this->_protocol)
+		if($this->_info['ufeatures']['protocol'] === $this->_protocolname)
 		{
 			if(($rs = $this->get_result('protocol')) === null)
 				return(false);
@@ -997,11 +1026,11 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		|| ($protocol = &$this->_service->get_protocol_module($this->_info['ufeatures']['protocol'])) === false)
 			return(false);
 
-		if($this->_info['ufeatures']['protocol'] === $this->_protocol)
+		if($this->_info['ufeatures']['protocol'] === $this->_protocolname)
 			return($protocol->edit_origin($this->_origin['protocol']));
 
 		if(($protocolid = xivo_uint($protocolid)) === 0
-		|| ($proto = &$this->_service->get_protocol($this->_protocol)) === false
+		|| ($proto = &$this->_service->get_protocol($this->_protocolname)) === false
 		|| $proto->delete($protocolid) === false)
 			return(false);
 
@@ -1018,7 +1047,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		|| $rs === false)
 			return($rs);
 
-		if($this->_info['ufeatures']['protocol'] === $this->_protocol)
+		if($this->_info['ufeatures']['protocol'] === $this->_protocolname)
 		{
 			$rs['protocolid'] = $this->_info['protocol']['id'];
 			$provisioning = false;
@@ -1183,7 +1212,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 	function _reverse_edit($protocolid=0)
 	{
 		if($this->get_errnb() > 0
-		|| $this->_protocol === false
+		|| $this->_protocolname === false
 		|| $this->_status !== 'edit'
 		|| ($arr = xivo_get_aks($this->_return)) === false)
 			return(false);
@@ -1510,6 +1539,143 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		$schedule->unlinked_where($schedule_where);
 
+		return(true);
+	}
+
+	function enable()
+	{
+		$this->_status = 'enable';
+		$this->_return = array();
+
+		if(is_object($this->_protocol) === false)
+		{
+			$this->_status = '';
+			return(false);
+		}
+
+		if($this->enable_protocol() === false
+		|| $this->enable_userfeatures() === false)
+		{
+			$this->_reverse_enable_disable();
+			$this->_status = '';
+			return(false);
+		}
+
+		$this->_status = '';
+
+		return(true);
+	}
+
+	function disable()
+	{
+		$this->_status = 'disable';
+		$this->_return = array();
+
+		if(is_object($this->_protocol) === false)
+		{
+			$this->_status = '';
+			return(false);
+		}
+
+		if($this->disable_protocol() === false
+		|| $this->disable_userfeatures() === false)
+		{
+			$this->_reverse_enable_disable();
+			$this->_status = '';
+			return(false);
+		}
+
+		$this->_status = '';
+
+		return(true);
+	}
+
+	function enable_protocol()
+	{
+		return($this->_enable_disable_protocol(false));
+	}
+
+	function disable_protocol()
+	{
+		return($this->_enable_disable_protocol(true));
+	}
+
+	function _enable_disable_protocol($disable=false)
+	{
+		$disable = (bool) $disable;
+
+		if(xivo_issa('protocol',$this->_info) === false)
+			return(false);
+
+		if($disable === false)
+			$r = $this->_protocol->enable($this->_info['protocol']['id']);
+		else
+			$r = $this->_protocol->disable($this->_info['protocol']['id']);
+
+		if($this->_status === 'enable' || $this->_status === 'disable')
+			$this->_return['protocol'] = $r;
+
+		return($r);
+	}
+
+	function enable_userfeatures()
+	{
+		return($this->_enable_disable_userfeatures(false));
+	}
+
+	function disable_userfeatures()
+	{
+		return($this->_enable_disable_userfeatures(true));
+	}
+
+	function _enable_disable_userfeatures($disable=false)
+	{
+		$disable = (bool) $disable;
+
+		if(xivo_issa('ufeatures',$this->_info) === false)
+			return(false);
+
+		if($disable === false)
+			$r = $this->_userfeatures->enable($this->_info['ufeatures']['id']);
+		else
+			$r = $this->_userfeatures->disable($this->_info['ufeatures']['id']);
+
+		if($this->_status === 'enable' || $this->_status === 'disable')
+			$this->_return['userfeatures'] = $r;
+
+		return($r);
+	}
+
+	function _reverse_enable_disable()
+	{
+		if(($this->_status !== 'enable' && $this->_status !== 'disable') === true
+		|| ($arr = xivo_get_aks($this->_return)) === false)
+			return(false);
+
+		if($this->_status === 'enable')
+			$disable = true;
+		else
+			$disable = false;
+
+		$this->_status = '';
+
+		for($i = 0;$i < $arr['cnt'];$i++)
+		{
+			$key = &$arr['keys'][$i];
+
+			if($this->_return[$key] === false)
+				continue;
+
+			switch($key)
+			{
+				case 'protocol':
+					$this->_enable_disable_protocol($disable);
+					break;
+				case 'userfeatures':
+					$this->_enable_disable_userfeatures($disable);
+					break;
+			}
+		}
 		return(true);
 	}
 }

@@ -6,7 +6,7 @@ $array['element']['trunk'] = array();
 $array['element']['trunk']['value'] = array(
 					XIVO_SRE_IPBX_AST_PROTO_SIP,
 					XIVO_SRE_IPBX_AST_PROTO_IAX,
-					'custom');
+					XIVO_SRE_IPBX_AST_PROTO_CUSTOM);
 
 $array['element']['trunkid'] = array();
 $array['element']['trunkid']['default'] = 0;
@@ -23,7 +23,7 @@ $array['filter'] = array();
 $array['filter']['trunk'] = array('key' => array(
 						XIVO_SRE_IPBX_AST_PROTO_SIP,
 						XIVO_SRE_IPBX_AST_PROTO_IAX,
-						'custom'));
+						XIVO_SRE_IPBX_AST_PROTO_CUSTOM));
 $array['filter']['trunkid'] = array('cast' => 'uint');
 $array['filter']['registerid'] = array('set' => false,'chk' => 2,'cast' => 'uint');
 $array['filter']['registercommented'] = array('bool' => true);

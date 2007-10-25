@@ -21,9 +21,9 @@
 					<td class="td-left txt-left">
 <?php
 	if($this->chk_acl('pbx_settings','users') === true):
-		echo $url->href_html($this->bbf('stats_users'),'service/ipbx/pbx_settings/users','act=add');
+		echo $url->href_html($this->bbf('stats_type-user'),'service/ipbx/pbx_settings/users','act=add');
 	else:
-		echo $this->bbf('stats_users');
+		echo $this->bbf('stats_type-user');
 	endif;
 ?>
 					</td>
@@ -35,9 +35,9 @@
 					<td class="td-left txt-left">
 <?php
 	if($this->chk_acl('pbx_settings','groups') === true):
-		echo $url->href_html($this->bbf('stats_groups'),'service/ipbx/pbx_settings/groups','act=add');
+		echo $url->href_html($this->bbf('stats_type-group'),'service/ipbx/pbx_settings/groups','act=add');
 	else:
-		echo $this->bbf('stats_groups');
+		echo $this->bbf('stats_type-group');
 	endif;
 ?>
 					</td>
@@ -49,9 +49,9 @@
 					<td class="td-left txt-left">
 <?php
 	if($this->chk_acl('pbx_settings','queues') === true):
-		echo $url->href_html($this->bbf('stats_queues'),'service/ipbx/pbx_settings/queues','act=add');
+		echo $url->href_html($this->bbf('stats_type-queue'),'service/ipbx/pbx_settings/queues','act=add');
 	else:
-		echo $this->bbf('stats_queues');
+		echo $this->bbf('stats_type-queue');
 	endif;
 ?>
 					</td>
@@ -63,15 +63,28 @@
 					<td class="td-left txt-left">
 <?php
 	if($this->chk_acl('pbx_settings','meetme') === true):
-		echo $url->href_html($this->bbf('stats_meetme'),'service/ipbx/pbx_settings/meetme','act=add');
+		echo $url->href_html($this->bbf('stats_type-meetme'),'service/ipbx/pbx_settings/meetme','act=add');
 	else:
-		echo $this->bbf('stats_meetme');
+		echo $this->bbf('stats_type-meetme');
 	endif;
 ?>
 					</td>
 					<td class="td-center"><?=$meetmestat['enable']?></td>
 					<td class="td-center"><?=$meetmestat['disable']?></td>
 					<td class="td-right"><?=$meetmestat['total']?></td>
+				</tr>
+			</table>
+
+			<table border="0" cellpadding="0" cellspacing="0">
+				<tr class="sb-top">
+					<th class="th-left"><?=$this->bbf('stats_col_status');?></th>
+					<th class="th-center"><?=$this->bbf('stats_col_user');?></th>
+					<th class="th-right"><?=$this->bbf('stats_col_total');?></th>
+				</tr>
+				<tr class="l-infos-1on2">
+					<td class="td-left txt-left"><?=$this->bbf('stats_status-initialized')?></td>
+					<td class="td-center"><?=$userstat['initialized']?></td>
+					<td class="td-right"><?=$userstat['total']?></td>
 				</tr>
 			</table>
 		</div>
