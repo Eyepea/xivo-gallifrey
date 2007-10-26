@@ -7,7 +7,7 @@
 	$act = $this->vars('act');
 	$cat = $this->vars('cat');
 
-	$page = $url->pager($pager['pages'],$pager['page'],$pager['prev'],$pager['next'],'service/ipbx/general_settings/musiconhold',array('act' => $act,'cat' => $cat));
+	$page = $url->pager($pager['pages'],$pager['page'],$pager['prev'],$pager['next'],'service/ipbx/pbx_services/musiconhold',array('act' => $act,'cat' => $cat));
 ?>
 <div class="b-list">
 <?php
@@ -38,10 +38,10 @@
 			$mod = $j % 2 === 0 ? 1 : 2;
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=$mod?>on2">
-		<td class="td-left txt-left curpointer" colspan="2" onclick="location.href = this.firstChild;"><?=$url->href_html($ref,'service/ipbx/general_settings/musiconhold',array('act' => 'download','cat' => $cat,'id' => $ref,'page' => $pager['page']));?></td>
+		<td class="td-left txt-left curpointer" colspan="2" onclick="location.href = this.firstChild;"><?=$url->href_html($ref,'service/ipbx/pbx_services/musiconhold',array('act' => 'download','cat' => $cat,'id' => $ref,'page' => $pager['page']));?></td>
 		<td class="td-right" colspan="2">
-		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/general_settings/musiconhold',array('act' => 'editfile','cat' => $cat,'id' => $ref),null,$this->bbf('opt_modify'));?>
-		<?=$url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'service/ipbx/general_settings/musiconhold',array('act' => 'deletefile','cat' => $cat,'id' => $ref,'page' => $pager['page']),'onclick="return(confirm(\''.xivo_stript($this->bbf('opt_delete_confirm')).'\') ? true : false);"',$this->bbf('opt_delete'));?>
+		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/pbx_services/musiconhold',array('act' => 'editfile','cat' => $cat,'id' => $ref),null,$this->bbf('opt_modify'));?>
+		<?=$url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'service/ipbx/pbx_services/musiconhold',array('act' => 'deletefile','cat' => $cat,'id' => $ref,'page' => $pager['page']),'onclick="return(confirm(\''.xivo_stript($this->bbf('opt_delete_confirm')).'\') ? true : false);"',$this->bbf('opt_delete'));?>
 		</td>
 	</tr>
 <?php

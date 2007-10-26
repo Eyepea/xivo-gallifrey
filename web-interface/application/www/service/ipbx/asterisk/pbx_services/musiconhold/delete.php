@@ -4,7 +4,7 @@ $param['page'] = $page;
 
 if(isset($_QR['id']) === false
 || ($infos = $musiconhold->get_category($_QR['id'],null)) === false)
-	$_QRY->go($_HTML->url('service/ipbx/general_settings/musiconhold'),$param);
+	$_QRY->go($_HTML->url('service/ipbx/pbx_services/musiconhold'),$param);
 
 if($musiconhold->delete_category($infos['cat']['category']) !== false)
 {
@@ -18,6 +18,6 @@ if($musiconhold->delete_category($infos['cat']['category']) !== false)
 	$mfeatures->edit_where(array('musiconhold' => $infos['cat']['category']),array('musiconhold' => ''));
 }
 
-$_QRY->go($_HTML->url('service/ipbx/general_settings/musiconhold'),$param);
+$_QRY->go($_HTML->url('service/ipbx/pbx_services/musiconhold'),$param);
 
 ?>

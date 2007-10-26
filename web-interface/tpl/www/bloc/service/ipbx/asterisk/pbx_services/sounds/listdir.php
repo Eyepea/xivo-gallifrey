@@ -5,9 +5,8 @@
 	$pager = $this->vars('pager');
 	$list = $this->vars('list');
 	$act = $this->vars('act');
-	$dir = $this->vars('dir');
 
-	$page = $url->pager($pager['pages'],$pager['page'],$pager['prev'],$pager['next'],'service/ipbx/general_settings/sounds',array('act' => $act,'dir' => $dir));
+	$page = $url->pager($pager['pages'],$pager['page'],$pager['prev'],$pager['next'],'service/ipbx/pbx_services/sounds',array('act' => $act));
 ?>
 <div class="b-list">
 <?php
@@ -15,16 +14,15 @@
 		echo '<div class="b-page">',$page,'</div>';
 	endif;
 ?>
-<form action="#" name="fm-files-list" method="post" accept-charset="utf-8">
+<form action="#" name="fm-users-list" method="post" accept-charset="utf-8">
 <?=$form->hidden(array('name' => XIVO_SESS_NAME,'value' => XIVO_SESS_ID));?>
 <?=$form->hidden(array('name' => 'act','value' => $act));?>
-<?=$form->hidden(array('name' => 'dir','value' => $dir));?>
 <?=$form->hidden(array('name' => 'page','value' => $pager['page']));?>
 <table cellspacing="0" cellpadding="0" border="0">
 	<tr class="sb-top">
 		<th class="th-left xspan"><span class="span-left">&nbsp;</span></th>
-		<th class="th-center"><?=$this->bbf('col_file');?></th>
-		<th class="th-center"><?=$this->bbf('col_date');?></th>
+		<th class="th-center"><?=$this->bbf('col_directory');?></th>
+		<th class="th-center"><?=$this->bbf('col_number-files');?></th>
 		<th class="th-center" id="col-action"><?=$this->bbf('col_action');?></th>
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
 	</tr>
@@ -33,7 +31,7 @@
 	if($list === false || ($nb = count($list)) === 0):
 ?>
 	<tr class="sb-content">
-		<td colspan="5" class="td-single"><?=$this->bbf('no_file');?></td>
+		<td colspan="5" class="td-single"><?=$this->bbf('no_directory');?></td>
 	</tr>
 <?php
 	else:
@@ -44,12 +42,11 @@
 			$mod = $j % 2 === 0 ? 1 : 2;
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=$mod?>on2">
-		<td class="td-left"><?=$form->checkbox(array('name' => 'files[]','value' => $ref['name'],'label' => false,'id' => 'it-files-'.$i,'checked' => false,'field' => false));?></td>
-		<td class="txt-left curpointer" onclick="location.href = this.firstChild;"><?=$url->href_html($ref['name'],'service/ipbx/general_settings/sounds',array('act' => 'download','dir' => $dir,'id' => $ref['name'],'page' => $pager['page']));?></td>
-		<td><?=strftime($this->bbf('date_format_yymmddhhii'),$ref['mtime']);?></td>
+		<td class="td-left txt-left curpointer" colspan="2" onclick="location.href = this.firstChild;"><?=$url->href_html($ref['dirname'],'service/ipbx/pbx_services/sounds',array('act' => 'list','dir' => $ref['dirname']));?></td>
+		<td><?=$ref['nb_files']?></td>
 		<td class="td-right" colspan="2">
-		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/general_settings/sounds',array('act' => 'edit','dir' => $dir,'id' => $ref['name']),null,$this->bbf('opt_modify'));?>
-		<?=$url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'service/ipbx/general_settings/sounds',array('act' => 'delete','dir' => $dir,'id' => $ref['name'],'page' => $pager['page']),'onclick="return(confirm(\''.xivo_stript($this->bbf('opt_delete_confirm')).'\') ? true : false);"',$this->bbf('opt_delete'));?>
+		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/pbx_services/sounds',array('act' => 'editdir','id' => $ref['dirname']),'id="ah-dirs-'.$i.'"',$this->bbf('opt_modify'));?>
+		<?=$url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'service/ipbx/pbx_services/sounds',array('act' => 'deletedir','id' => $ref['dirname'],'page' => $pager['page']),'onclick="return(confirm(\''.xivo_stript($this->bbf('opt_delete_confirm')).'\') ? true : false);"',$this->bbf('opt_delete'));?>
 		</td>
 	</tr>
 <?php

@@ -5,10 +5,10 @@ $param['page'] = $page;
 $info = array();
 
 if(($info['directory'] = $sounds->get_dir($dir)) === false)
-	$_QRY->go($_HTML->url('service/ipbx/general_settings/sounds'),'act=listdir');
+	$_QRY->go($_HTML->url('service/ipbx/pbx_services/sounds'),'act=listdir');
 
 if(($values = xivo_issa_val('files',$_QR)) === false)
-	$_QRY->go($_HTML->url('service/ipbx/general_settings/sounds'),$param);
+	$_QRY->go($_HTML->url('service/ipbx/pbx_services/sounds'),$param);
 
 $nb = count($values);
 
@@ -22,6 +22,6 @@ for($i = 0;$i < $nb;$i++)
 	$sounds->delete($file);
 }
 
-$_QRY->go($_HTML->url('service/ipbx/general_settings/sounds'),$param);
+$_QRY->go($_HTML->url('service/ipbx/pbx_services/sounds'),$param);
 
 ?>

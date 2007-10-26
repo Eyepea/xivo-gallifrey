@@ -15,7 +15,7 @@ do
 	}
 
 	if($musiconhold->add_category($result) !== false)
-		$_QRY->go($_HTML->url('service/ipbx/general_settings/musiconhold'),$param);
+		$_QRY->go($_HTML->url('service/ipbx/pbx_services/musiconhold'),$param);
 }
 while(false);
 

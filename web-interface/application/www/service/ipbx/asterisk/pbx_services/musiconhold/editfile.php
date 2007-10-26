@@ -3,12 +3,12 @@
 $param['page'] = $page;
 
 if(($infos = $musiconhold->get_category($cat)) === false)
-	$_QRY->go($_HTML->url('service/ipbx/general_settings/musiconhold'),'act=list');
+	$_QRY->go($_HTML->url('service/ipbx/pbx_services/musiconhold'),'act=list');
 
 $cat = $info['category'] = $infos['cat']['category'];
 
 if(isset($_QR['id']) === false || ($info['file'] = $musiconhold->get_file($_QR['id'],$infos['cat']['category'])) === false)
-	$_QRY->go($_HTML->url('service/ipbx/general_settings/musiconhold'),$param);
+	$_QRY->go($_HTML->url('service/ipbx/pbx_services/musiconhold'),$param);
 
 $info['filename'] = $info['file']['basename'];
 $id = $info['file']['filename'];
@@ -30,7 +30,7 @@ do
 	$newfilename = $info['category'].XIVO_SEP_DIR.$info['filename'];
 
 	if($musiconhold->edit_file($filename,$newfilename) === true)
-		$_QRY->go($_HTML->url('service/ipbx/general_settings/musiconhold'),$param);
+		$_QRY->go($_HTML->url('service/ipbx/pbx_services/musiconhold'),$param);
 
 	$info['filename'] = $info['file']['basename'];
 }

@@ -118,7 +118,7 @@ $menu = &$_HTML->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/service/ipbx/'.$ipbx->get_name());
 
-$_HTML->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/general_settings/extenfeatures');
+$_HTML->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/pbx_services/extenfeatures');
 $_HTML->set_struct('service/ipbx/'.$ipbx->get_name());
 $_HTML->display('index');
 

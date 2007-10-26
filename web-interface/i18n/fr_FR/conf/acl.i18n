@@ -22,23 +22,11 @@ Protocole IAX
 ; acl_service-ipbx-general_settings-voicemail
 Messageries vocales
 
-; acl_service-ipbx-general_settings-sounds
-Fichiers sons
-
-; acl_service-ipbx-general_settings-musiconhold
-Musiques d'attente
-
-; acl_service-ipbx-general_settings-extenfeatures
-Extensions
-
-; acl_service-ipbx-general_settings-outcall
-Appels sortants
-
 ; acl_service-ipbx-general_settings-advanced
 Avancés
 
 ; acl_service-ipbx-pbx_settings
-Paramètres PBX
+Paramètres IPBX
 
 ; acl_service-ipbx-pbx_settings-agents
 Agents
@@ -87,6 +75,24 @@ Protocole IAX
 
 ; acl_service-ipbx-trunk_management-custom
 Personnalisée
+
+; acl_service-ipbx-pbx_services
+Services IPBX
+
+; acl_service-ipbx-pbx_services-sounds
+Fichiers sons
+
+; acl_service-ipbx-pbx_services-musiconhold
+Musiques d'attente
+
+; acl_service-ipbx-pbx_services-extenfeatures
+Extensions
+
+; acl_service-ipbx-pbx_services-outcall
+Appels sortants
+
+; acl_service-ipbx-pbx_services-phonebook
+Carnet d'adresses
 
 ; acl_service-ipbx-system_management
 Configuration IPBX

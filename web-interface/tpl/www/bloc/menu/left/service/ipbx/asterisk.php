@@ -14,18 +14,6 @@
 		if($this->chk_acl('general_settings','voicemail') === true):
 			echo '<dd id="mn-general-settings--voicemail">',$url->href_html($this->bbf('mn_left_generalsettings-voicemail'),'service/ipbx/general_settings/voicemail'),'</dd>';
 		endif;
-		if($this->chk_acl('general_settings','sounds') === true):
-			echo '<dd id="mn-general-settings--sounds">',$url->href_html($this->bbf('mn_left_generalsettings-sounds'),'service/ipbx/general_settings/sounds','act=listdir'),'</dd>';
-		endif;
-		if($this->chk_acl('general_settings','musiconhold') === true):
-			echo '<dd id="mn-general-settings--musiconhold">',$url->href_html($this->bbf('mn_left_generalsettings-musiconhold'),'service/ipbx/general_settings/musiconhold','act=list'),'</dd>';
-		endif;
-		if($this->chk_acl('general_settings','extenfeatures') === true):
-			echo '<dd id="mn-general-settings--extenfeatures">',$url->href_html($this->bbf('mn_left_generalsettings-extenfeatures'),'service/ipbx/general_settings/extenfeatures'),'</dd>';
-		endif;
-		if($this->chk_acl('general_settings','outcall') === true):
-			echo '<dd id="mn-general-settings--outcall">',$url->href_html($this->bbf('mn_left_generalsettings-outcall'),'service/ipbx/general_settings/outcall'),'</dd>';
-		endif;
 		if($this->chk_acl('general_settings','advanced') === true):
 			echo '<dd id="mn-general-settings--advanced">',$url->href_html($this->bbf('mn_left_generalsettings-advanced'),'service/ipbx/general_settings/advanced'),'</dd>';
 		endif;
@@ -82,6 +70,25 @@
 		endif;
 		if($this->chk_acl('trunk_management','custom') === true):
 			echo '<dd id="mn-trunk-management--custom">',$url->href_html($this->bbf('mn_left_trunkmanagement-custom'),'service/ipbx/trunk_management/custom','act=list'),'</dd>';
+		endif;
+	endif;
+
+	if($this->chk_acl('pbx_services') === true):
+		echo '<dt>',$this->bbf('mn_left_ti_pbxservices'),'</dt>';
+		if($this->chk_acl('pbx_services','sounds') === true):
+			echo '<dd id="mn-pbx-services--sounds">',$url->href_html($this->bbf('mn_left_pbx_services-sounds'),'service/ipbx/pbx_services/sounds','act=list'),'</dd>';
+		endif;
+		if($this->chk_acl('pbx_services','musiconhold') === true):
+			echo '<dd id="mn-pbx-services--musiconhold">',$url->href_html($this->bbf('mn_left_pbx_services-musiconhold'),'service/ipbx/pbx_services/musiconhold','act=list'),'</dd>';
+		endif;
+		if($this->chk_acl('pbx_services','extenfeatures') === true):
+			echo '<dd id="mn-pbx-services--extenfeatures">',$url->href_html($this->bbf('mn_left_pbx_services-extenfeatures'),'service/ipbx/pbx_services/extenfeatures','act=list'),'</dd>';
+		endif;
+		if($this->chk_acl('pbx_services','outcall') === true):
+			echo '<dd id="mn-pbx-services--outcall">',$url->href_html($this->bbf('mn_left_pbx_services-outcall'),'service/ipbx/pbx_services/outcall','act=list'),'</dd>';
+		endif;
+		if($this->chk_acl('pbx_services','phonebook') === true):
+			echo '<dd id="mn-pbx-services--phonebook">',$url->href_html($this->bbf('mn_left_pbx_services-phonebook'),'service/ipbx/pbx_services/phonebook','act=list'),'</dd>';
 		endif;
 	endif;
 

@@ -10,14 +10,22 @@
 		$invalid = false;
 	else
 		$invalid = true;
+
+	$trunks_list = $this->vars('trunks_list');
 ?>
 
 <div id="sb-part-first">
 
 <?=$form->text(array('desc' => $this->bbf('fm_outcall_name'),'name' => 'outcall[name]','labelid' => 'outcall-name','size' => 15,'default' => $element['outcall']['name']['default'],'value' => $info['outcall']['name']));?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_outcall_trunk'),'name' => 'outcall[trunkfeaturesid]','labelid' => 'outcall-trunk','browse' => 'trunk','key' => 'name','altkey' => 'trunkfeaturesid','invalid' => $invalid,'optgroup' => array('key' => true,'bbf' => array('concat','fm_outcall-trunk-opt-')),'value' => $info['outcall']['trunkfeaturesid'],'default' => $element['outcall']['trunkfeaturesid']['default']),$this->vars('trunks_list'));?>
+<?php
 
+if($trunks_list === false):
+	echo '<div class="txt-center">',$url->href_html($this->bbf('create_trunk'),'service/ipbx/trunk_management/sip','act=add'),'</div>';
+else:
+	echo $form->select(array('desc' => $this->bbf('fm_outcall_trunk'),'name' => 'outcall[trunkfeaturesid]','labelid' => 'outcall-trunk','browse' => 'trunk','key' => 'name','altkey' => 'trunkfeaturesid','invalid' => $invalid,'optgroup' => array('key' => true,'bbf' => array('concat','fm_outcall-trunk-opt-')),'value' => $info['outcall']['trunkfeaturesid'],'default' => $element['outcall']['trunkfeaturesid']['default']),$trunks_list);
+endif;
+?>
 <?=$form->text(array('desc' => $this->bbf('fm_outcall_context'),'name' => 'outcall[context]','labelid' => 'outcall-context','size' => 15,'default' => $element['outcall']['context']['default'],'value' => $info['outcall']['context']));?>
 
 <?=$form->text(array('desc' => $this->bbf('fm_outcall_externprefix'),'name' => 'outcall[externprefix]','labelid' => 'outcall-externprefix','size' => 15,'default' => $element['outcall']['externprefix']['default'],'value' => $info['outcall']['externprefix']));?>

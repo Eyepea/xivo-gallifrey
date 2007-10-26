@@ -13,23 +13,11 @@ Protocole IAX
 ; mn_left_generalsettings-voicemail
 Messageries vocales
 
-; mn_left_generalsettings-sounds
-Fichiers sons
-
-; mn_left_generalsettings-musiconhold
-Musiques d'attente
-
-; mn_left_generalsettings-extenfeatures
-Extensions
-
-; mn_left_generalsettings-outcall
-Appels sortants
-
 ; mn_left_generalsettings-advanced
 Avancés
 
 ; mn_left_ti_pbxsettings
-Paramètres PBX
+Paramètres IPBX
 
 ; mn_left_pbxsettings-agents
 Agents
@@ -78,6 +66,24 @@ Protocole IAX
 
 ; mn_left_trunkmanagement-custom
 Personnalisée
+
+; mn_left_ti_pbxservices
+Services IPBX
+
+; mn_left_pbx_services-sounds
+Fichiers sons
+
+; mn_left_pbx_services-musiconhold
+Musiques d'attente
+
+; mn_left_pbx_services-extenfeatures
+Extensions
+
+; mn_left_pbx_services-outcall
+Appels sortants
+
+; mn_left_pbx_services-phonebook
+Carnet d'adresses
 
 ; mn_left_ti_systemmanagement
 Configuration IPBX
