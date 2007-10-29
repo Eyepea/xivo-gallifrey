@@ -57,29 +57,38 @@ class LinksysProv(BaseProv):
 		except:
 			pass
 
-	def do_autoprov(self, provinfo):
+	def __generate(self, myprovinfo):
 		"""Entry point to generate the provisioned configuration for
 		this phone.
 		
 		"""
-		template_file = open(LINKSYS_COMMON_DIR + self.phone["model"] + ".cfg")
+		template_file = open(pgc['templates_dir'] + "linksys-" + self.phone["model"] + ".cfg")
 		template_lines = template_file.readlines()
 		template_file.close()
 		tmp_filename = open(LINKSYS_COMMON_DIR + self.phone["model"] + '-' + self.phone["macaddr"].replace(':','') + ".cfg.tmp")
 		cfg_filename = tmp_filename[:-4]
 		txt = provsup.txtsubst(template_lines, {
-                        "user_realname1": provinfo["name"],
-			"user_name1": provinfo["ident"],
-			"user_pname1": provinfo["number"],
-			"user_pass1": provinfo["passwd"],
-			"phone_name": provinfo["number"],
-			"user_idle_text1": provinfo["name"],
-			"user_sipusername_as_line1": "on"
+                        "user_realname1": myprovinfo["name"],
+			"user_name1": myprovinfo["ident"],
+			"user_pname1": myprovinfo["number"],
+			"user_pass1": myprovinfo["passwd"],
+			"phone_name": myprovinfo["number"],
+			"user_idle_text1": myprovinfo["name"],
+                        "asterisk_ipv4" : pgc['asterisk_ipv4'], 
+                        "ntp_server_ipv4" : pgc['ntp_server_ipv4']
 		}, cfg_filename)
 		tmp_file = open(tmp_filename, 'w')
 		tmp_file.writelines(txt)
 		tmp_file.close()
 		os.rename(tmp_filename, cfg_filename)
+
+	def do_autoprov(self, provinfo):
+		"""Entry point to generate the provisioned configuration for
+		this phone.
+		
+		"""
+		self.__generate(provinfo)
+
 
 	# Introspection entry points
 
