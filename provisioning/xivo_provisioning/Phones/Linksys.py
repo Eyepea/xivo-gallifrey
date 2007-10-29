@@ -46,16 +46,6 @@ class LinksysProv(BaseProv):
 		"Entry point to send the reboot command to the phone."
 		self.__action("reboot")
 
-	def do_reinitprov(self):
-		"""Entry point to generate the reinitialized (GUEST)
-		configuration for this phone.
-		
-		"""
-		cfg_filename = open(LINKSYS_COMMON_DIR + self.phone["model"] + '-' + self.phone["macaddr"].replace(':','') + ".cfg")
-		try:
-			os.unlink(cfg_filename)
-		except:
-			pass
 
 	def __generate(self, myprovinfo):
 		"""Entry point to generate the provisioned configuration for
@@ -65,18 +55,20 @@ class LinksysProv(BaseProv):
 		template_file = open(pgc['templates_dir'] + "linksys-" + self.phone["model"] + ".cfg")
 		template_lines = template_file.readlines()
 		template_file.close()
-		tmp_filename = open(LINKSYS_COMMON_DIR + self.phone["model"] + '-' + self.phone["macaddr"].replace(':','') + ".cfg.tmp")
+                __macaddr = self.phone["macaddr"].lower()
+		tmp_filename = LINKSYS_COMMON_DIR + self.phone["model"] + '-' + __macaddr + ".cfg.tmp"
 		cfg_filename = tmp_filename[:-4]
-		txt = provsup.txtsubst(template_lines, {
-                        "user_realname1": myprovinfo["name"],
-			"user_name1": myprovinfo["ident"],
-			"user_pname1": myprovinfo["number"],
-			"user_pass1": myprovinfo["passwd"],
-			"phone_name": myprovinfo["number"],
-			"user_idle_text1": myprovinfo["name"],
-                        "asterisk_ipv4" : pgc['asterisk_ipv4'], 
-                        "ntp_server_ipv4" : pgc['ntp_server_ipv4']
-		}, cfg_filename)
+		txt = provsup.txtsubst(template_lines,
+                                       { "user_realname1": myprovinfo["name"],
+                                         "user_name1": myprovinfo["ident"],
+                                         "user_pname1": myprovinfo["number"],
+                                         "user_pass1": myprovinfo["passwd"],
+                                         "phone_name": myprovinfo["number"],
+                                         "user_idle_text1": myprovinfo["name"],
+                                         "asterisk_ipv4" : pgc['asterisk_ipv4'], 
+                                         "ntp_server_ipv4" : pgc['ntp_server_ipv4']
+                                         },
+                                       cfg_filename)
 		tmp_file = open(tmp_filename, 'w')
 		tmp_file.writelines(txt)
 		tmp_file.close()
@@ -88,6 +80,17 @@ class LinksysProv(BaseProv):
 		
 		"""
 		self.__generate(provinfo)
+
+	def do_reinitprov(self):
+		"""Entry point to generate the reinitialized (GUEST)
+		configuration for this phone.
+		
+		"""
+		self.__generate({ "name":   "guest",
+                                  "ident":  "guest",
+                                  "number": "guest",
+                                  "passwd": "guest"
+                                  })
 
 
 	# Introspection entry points
