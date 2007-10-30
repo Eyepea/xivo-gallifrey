@@ -10,10 +10,6 @@ $array['tree']['service']['ipbx']['general_settings'] = array();
 $array['tree']['service']['ipbx']['general_settings']['sip'] = true;
 $array['tree']['service']['ipbx']['general_settings']['iax'] = true;
 $array['tree']['service']['ipbx']['general_settings']['voicemail'] = true;
-$array['tree']['service']['ipbx']['general_settings']['sounds'] = true;
-$array['tree']['service']['ipbx']['general_settings']['musiconhold'] = true;
-$array['tree']['service']['ipbx']['general_settings']['extenfeatures'] = true;
-$array['tree']['service']['ipbx']['general_settings']['outcall'] = true;
 $array['tree']['service']['ipbx']['general_settings']['advanced'] = true;
 
 $array['tree']['service']['ipbx']['pbx_settings'] = array();
@@ -35,6 +31,13 @@ $array['tree']['service']['ipbx']['trunk_management'] = array();
 $array['tree']['service']['ipbx']['trunk_management']['sip'] = true;
 $array['tree']['service']['ipbx']['trunk_management']['iax'] = true;
 $array['tree']['service']['ipbx']['trunk_management']['custom'] = true;
+
+$array['tree']['service']['ipbx']['pbx_services'] = array();
+$array['tree']['service']['ipbx']['pbx_services']['sounds'] = true;
+$array['tree']['service']['ipbx']['pbx_services']['musiconhold'] = true;
+$array['tree']['service']['ipbx']['pbx_services']['extenfeatures'] = true;
+$array['tree']['service']['ipbx']['pbx_services']['outcall'] = true;
+$array['tree']['service']['ipbx']['pbx_services']['phonebook'] = true;
 
 $array['tree']['service']['ipbx']['system_management'] = array();
 $array['tree']['service']['ipbx']['system_management']['configfiles'] = true;

@@ -263,6 +263,7 @@ INSERT INTO extenumbers VALUES (NULL,'*34','668a8d2d8fe980b663e2cdcecb977860e1b2
 INSERT INTO extenumbers VALUES (NULL,'*35','c4230e424c7189becec7ee35e9509829c5aea039','','extenfeatures','vmdelete');
 INSERT INTO extenumbers VALUES (NULL,'*36','f9b69fe3c361ddfc2ae49e048460ea197ea850c8','','extenfeatures','directoryaccess');
 
+
 DROP TABLE features;
 CREATE TABLE features (
  id integer unsigned,
@@ -363,7 +364,7 @@ CREATE TABLE generaloutcall (
  id integer unsigned,
  extenumid integer unsigned NOT NULL DEFAULT 0,
  trunkfeaturesid integer unsigned NOT NULL DEFAULT 0,
- type varchar(80) NOT NULL,
+ type varchar(9) NOT NULL,
  commented tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(id)
 );
@@ -679,6 +680,67 @@ CREATE TABLE phone (
 );
 
 CREATE INDEX phone__idx__proto_iduserfeatures ON phone(proto,iduserfeatures);
+
+
+DROP TABLE phonebook;
+CREATE TABLE phonebook (
+ id integer unsigned,
+ title varchar(3) NOT NULL,
+ firstname varchar(128) NOT NULL DEFAULT '',
+ lastname varchar(128) NOT NULL DEFAULT '',
+ displayname varchar(64) NOT NULL DEFAULT '',
+ society varchar(128) NOT NULL DEFAULT '',
+ email varchar(255) NOT NULL DEFAULT '',
+ url varchar(255) NOT NULL DEFAULT '',
+ image blob,
+ description text NOT NULL,
+ PRIMARY KEY(id)
+);
+
+CREATE INDEX phonebook__idx__title ON phonebook(title);
+CREATE INDEX phonebook__idx__firstname ON phonebook(firstname);
+CREATE INDEX phonebook__idx__lastname ON phonebook(lastname);
+CREATE INDEX phonebook__idx__displayname ON phonebook(displayname);
+CREATE INDEX phonebook__idx__society ON phonebook(society);
+CREATE INDEX phonebook__idx__email ON phonebook(email);
+
+
+DROP TABLE phonebookaddress;
+CREATE TABLE phonebookaddress (
+ id integer unsigned,
+ phonebookid integer unsigned NOT NULL,
+ address1 varchar(30) NOT NULL DEFAULT '',
+ address2 varchar(30) NOT NULL DEFAULT '',
+ city varchar(128) NOT NULL DEFAULT '',
+ state varchar(128) NOT NULL DEFAULT '',
+ zipcode varchar(16) NOT NULL DEFAULT '',
+ country varchar(3) NOT NULL DEFAULT '',
+ type varchar(6) NOT NULL,
+ PRIMARY KEY(id)
+);
+
+CREATE INDEX phonebookaddress__idx__address1 ON phonebookaddress(address1);
+CREATE INDEX phonebookaddress__idx__address2 ON phonebookaddress(address2);
+CREATE INDEX phonebookaddress__idx__city ON phonebookaddress(city);
+CREATE INDEX phonebookaddress__idx__state ON phonebookaddress(state);
+CREATE INDEX phonebookaddress__idx__zipcode ON phonebookaddress(zipcode);
+CREATE INDEX phonebookaddress__idx__country ON phonebookaddress(country);
+CREATE INDEX phonebookaddress__idx__type ON phonebookaddress(type);
+CREATE UNIQUE INDEX phonebookaddress__uidx__phonebookid_type ON phonebookaddress(phonebookid,type);
+
+
+DROP TABLE phonebooknumber;
+CREATE TABLE phonebooknumber (
+ id integer unsigned,
+ phonebookid integer unsigned NOT NULL,
+ number varchar(40) NOT NULL DEFAULT '',
+ type varchar(6) NOT NULL,
+ PRIMARY KEY(id)
+);
+
+CREATE INDEX phonebooknumber__idx__number ON phonebooknumber(number);
+CREATE INDEX phonebooknumber__idx__type ON phonebooknumber(type);
+CREATE UNIQUE INDEX phonebooknumber__uidx__phonebookid_type ON phonebooknumber(phonebookid,type);
 
 
 DROP TABLE queue;

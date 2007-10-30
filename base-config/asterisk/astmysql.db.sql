@@ -107,7 +107,7 @@ CREATE TABLE `dialstatus` (
  `status` enum('noanswer','congestion','busy','chanunavail') NOT NULL,
  `category` enum('user','group') NOT NULL,
  `categoryval` varchar(128) NOT NULL DEFAULT '',
- `type` varchar(64) NOT NULL DEFAULT '',
+ `type` enum('endcall','user','group','queue','meetme','schedule','application','sound','custom') NOT NULL,
  `typeval` varchar(255) NOT NULL DEFAULT '',
  `linked` tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(`id`)
@@ -366,7 +366,7 @@ CREATE TABLE `generaloutcall` (
  `id` int(10) unsigned auto_increment,
  `extenumid` int(10) unsigned NOT NULL DEFAULT 0,
  `trunkfeaturesid` int(10) unsigned NOT NULL DEFAULT 0,
- `type` varchar(80) NOT NULL,
+ `type` enum('emergency','special') NOT NULL,
  `commented` tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -561,7 +561,7 @@ CREATE INDEX `groupfeatures__idx__deleted` ON `groupfeatures`(`deleted`);
 DROP TABLE IF EXISTS `incall`;
 CREATE TABLE `incall` (
  `id` int(10) unsigned auto_increment,
- `type` varchar(64) NOT NULL DEFAULT '',
+ `type` enum('endcall','user','group','queue','meetme','schedule','application','custom') NOT NULL,
  `typeval` varchar(255) NOT NULL DEFAULT '',
  `linked` tinyint(1) NOT NULL DEFAULT 0,
  `commented` tinyint(1) NOT NULL DEFAULT 0,
@@ -684,6 +684,67 @@ CREATE TABLE `phone` (
 CREATE INDEX `phone__idx__proto_iduserfeatures` ON `phone`(`proto`,`iduserfeatures`);
 
 
+DROP TABLE IF EXISTS `phonebook`;
+CREATE TABLE `phonebook` (
+ `id` int(10) unsigned auto_increment,
+ `title` enum('mr','mrs','ms') NOT NULL,
+ `firstname` varchar(128) NOT NULL DEFAULT '',
+ `lastname` varchar(128) NOT NULL DEFAULT '',
+ `displayname` varchar(64) NOT NULL DEFAULT '',
+ `society` varchar(128) NOT NULL DEFAULT '',
+ `email` varchar(255) NOT NULL DEFAULT '',
+ `url` varchar(255) NOT NULL DEFAULT '',
+ `image` blob,
+ `description` text NOT NULL,
+ PRIMARY KEY(`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE INDEX `phonebook__idx__title` ON `phonebook`(`title`);
+CREATE INDEX `phonebook__idx__firstname` ON `phonebook`(`firstname`);
+CREATE INDEX `phonebook__idx__lastname` ON `phonebook`(`lastname`);
+CREATE INDEX `phonebook__idx__displayname` ON `phonebook`(`displayname`);
+CREATE INDEX `phonebook__idx__society` ON `phonebook`(`society`);
+CREATE INDEX `phonebook__idx__email` ON `phonebook`(`email`);
+
+
+DROP TABLE IF EXISTS `phonebookaddress`;
+CREATE TABLE `phonebookaddress` (
+ `id` int(10) unsigned auto_increment,
+ `phonebookid` int(10) unsigned NOT NULL,
+ `address1` varchar(30) NOT NULL DEFAULT '',
+ `address2` varchar(30) NOT NULL DEFAULT '',
+ `city` varchar(128) NOT NULL DEFAULT '',
+ `state` varchar(128) NOT NULL DEFAULT '',
+ `zipcode` varchar(16) NOT NULL DEFAULT '',
+ `country` varchar(3) NOT NULL DEFAULT '',
+ `type` enum('home','office','other') NOT NULL,
+ PRIMARY KEY(`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE INDEX `phonebookaddress__idx__address1` ON `phonebookaddress`(`address1`);
+CREATE INDEX `phonebookaddress__idx__address2` ON `phonebookaddress`(`address2`);
+CREATE INDEX `phonebookaddress__idx__city` ON `phonebookaddress`(`city`);
+CREATE INDEX `phonebookaddress__idx__state` ON `phonebookaddress`(`state`);
+CREATE INDEX `phonebookaddress__idx__zipcode` ON `phonebookaddress`(`zipcode`);
+CREATE INDEX `phonebookaddress__idx__country` ON `phonebookaddress`(`country`);
+CREATE INDEX `phonebookaddress__idx__type` ON `phonebookaddress`(`type`);
+CREATE UNIQUE INDEX `phonebookaddress__uidx__phonebookid_type` ON `phonebookaddress`(`phonebookid`,`type`);
+
+
+DROP TABLE IF EXISTS `phonebooknumber`;
+CREATE TABLE `phonebooknumber` (
+ `id` int(10) unsigned auto_increment,
+ `phonebookid` int(10) unsigned NOT NULL,
+ `number` varchar(40) NOT NULL DEFAULT '',
+ `type` enum('home','office','mobile','fax','other') NOT NULL,
+ PRIMARY KEY(`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE INDEX `phonebooknumber__idx__number` ON `phonebooknumber`(`number`);
+CREATE INDEX `phonebooknumber__idx__type` ON `phonebooknumber`(`type`);
+CREATE UNIQUE INDEX `phonebooknumber__uidx__phonebookid_type` ON `phonebooknumber`(`phonebookid`,`type`);
+
+
 DROP TABLE IF EXISTS `queue`;
 CREATE TABLE `queue` (
  `name` varchar(128) NOT NULL,
@@ -733,7 +794,7 @@ DROP TABLE IF EXISTS `queuefeatures`;
 CREATE TABLE `queuefeatures` (
  `id` int(10) unsigned auto_increment,
  `name` varchar(128) NOT NULL,
- `number` varchar(40) DEFAULT '',
+ `number` varchar(40) NOT NULL DEFAULT '',
  `context` varchar(39),
  `data_quality` tinyint(1) NOT NULL DEFAULT 0,
  `hitting_callee` tinyint(1) NOT NULL DEFAULT 0,
@@ -808,7 +869,7 @@ DROP TABLE IF EXISTS `rightcallmember`;
 CREATE TABLE `rightcallmember` (
  `id` int(10) unsigned auto_increment,
  `rightcallid` int(10) unsigned NOT NULL DEFAULT 0,
- `type` varchar(64) NOT NULL DEFAULT '',
+ `type` enum('user','group','outcall') NOT NULL,
  `typeval` varchar(128) NOT NULL DEFAULT 0,
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -828,9 +889,9 @@ CREATE TABLE `schedule` (
  `daynumend` varchar(2),
  `monthbeg` varchar(3) NOT NULL DEFAULT '*',
  `monthend` varchar(3),
- `typetrue` varchar(64) NOT NULL DEFAULT '',
+ `typetrue` enum('endcall','user','group','queue','meetme','schedule','application','custom') NOT NULL,
  `typevaltrue` varchar(255) NOT NULL DEFAULT '',
- `typefalse` varchar(64) NOT NULL DEFAULT '',
+ `typefalse` enum('endcall','user','group','queue','meetme','schedule','application','custom') NOT NULL,
  `typevalfalse` varchar(255) NOT NULL DEFAULT '',
  `publicholiday` tinyint(1) NOT NULL DEFAULT 0,
  `linked` tinyint(1) NOT NULL DEFAULT 0,
