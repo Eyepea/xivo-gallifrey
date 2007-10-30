@@ -51,9 +51,6 @@ class PolycomProv(BaseProv):
                 template_main_file = open(pgc['templates_dir'] + "polycom.cfg")
 		template_main_lines = template_main_file.readlines()
 		template_main_file.close()
-                template_sip_file = open(pgc['templates_dir'] + "polycom-sip.cfg")
-		template_sip_lines = template_sip_file.readlines()
-		template_sip_file.close()
                 template_phone_file = open(pgc['templates_dir'] + "polycom-phone.cfg")
 		template_phone_lines = template_phone_file.readlines()
 		template_phone_file.close()
@@ -61,15 +58,11 @@ class PolycomProv(BaseProv):
                 __macaddr = self.phone["macaddr"].replace(':','').lower()
 		tmp_main_filename = POLYCOM_COMMON_DIR + __macaddr + ".cfg.tmp"
 		cfg_main_filename = tmp_main_filename[:-4]
-		tmp_sip_filename = POLYCOM_COMMON_DIR + __macaddr + "-sip.cfg.tmp"
-		cfg_sip_filename = tmp_sip_filename[:-4]
 		tmp_phone_filename = POLYCOM_COMMON_DIR + __macaddr + "-phone.cfg.tmp"
 		cfg_phone_filename = tmp_phone_filename[:-4]
 
                 txt_main = provsup.txtsubst(template_main_lines,
-                                            { "phone.cfg": __macaddr + "-phone.cfg",
-                                              "sip.cfg":   __macaddr + "-sip.cfg"
-                                              },
+                                            { "phone.cfg": __macaddr + "-phone.cfg" },
                                             cfg_main_filename)
 		txt_phone = provsup.txtsubst(template_phone_lines,
                                             { "user_realname1": myprovinfo["name"],
@@ -78,24 +71,18 @@ class PolycomProv(BaseProv):
                                               "user_pass1":     myprovinfo["passwd"],
                                               "phone_name":     myprovinfo["number"],
                                               "user_idle_text1": myprovinfo["name"],
-                                              "asterisk_ipv4" : pgc['asterisk_ipv4'],
-                                              "user_sipusername_as_line1": "on"
+                                              "asterisk_ipv4" : pgc['asterisk_ipv4']
                                               },
                                             cfg_phone_filename)
-                txt_sip = template_sip_lines
 
 		tmp_main_file = open(tmp_main_filename, 'w')
 		tmp_main_file.writelines(txt_main)
 		tmp_main_file.close()
-		tmp_sip_file = open(tmp_sip_filename, 'w')
-		tmp_sip_file.writelines(txt_sip)
-		tmp_sip_file.close()
 		tmp_phone_file = open(tmp_phone_filename, 'w')
 		tmp_phone_file.writelines(txt_phone)
 		tmp_phone_file.close()
 
 		os.rename(tmp_main_filename, cfg_main_filename)
-		os.rename(tmp_sip_filename, cfg_sip_filename)
 		os.rename(tmp_phone_filename, cfg_phone_filename)
 
 
