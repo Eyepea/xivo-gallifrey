@@ -53,13 +53,10 @@ class LinksysProv(BaseProv):
 		
 		"""
                 __model = self.phone["model"]
+                __macaddr = self.phone["macaddr"].lower().replace(':','')
 		template_file = open(pgc['templates_dir'] + "linksys-" + __model + ".cfg")
 		template_lines = template_file.readlines()
 		template_file.close()
-                if __model == 'pap2t':
-                        __macaddr = self.phone["macaddr"].lower().replace(':','')
-                else:
-                        __macaddr = self.phone["macaddr"].lower()
 		tmp_filename = LINKSYS_COMMON_DIR + __model + '-' + __macaddr + ".cfg.tmp"
 		cfg_filename = tmp_filename[:-4]
 		txt = provsup.txtsubst(template_lines,
