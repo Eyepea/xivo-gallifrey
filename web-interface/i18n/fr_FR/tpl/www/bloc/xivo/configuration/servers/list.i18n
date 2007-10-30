@@ -1,0 +1,32 @@
+; col_name
+Nom
+
+; col_host
+Hôte
+
+; col_port
+Port
+
+; col_ssl
+SSL
+
+; col_action
+Action
+
+; ssl_1
+Oui
+
+; ssl_2
+Non
+
+; opt_modify
+Modifier
+
+; opt_delete
+Supprimer
+
+; no_server
+Aucun serveur trouvé
+
+; opt_delete_confirm
+Etes-vous certain de vouloir supprimer ce serveur ?

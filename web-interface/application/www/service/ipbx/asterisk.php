@@ -6,7 +6,6 @@ $groupstat['enable'] = $groupstat['disable'] = $groupstat['total'] = 0;
 $queuestat['enable'] = $queuestat['disable'] = $queuestat['total'] = 0;
 $meetmestat['enable'] = $meetmestat['disable'] = $meetmestat['total'] = 0;
 
-
 $appuser = &$ipbx->get_application('user');
 
 if(($enableuser = $appuser->get_nb(null,false)) !== false)

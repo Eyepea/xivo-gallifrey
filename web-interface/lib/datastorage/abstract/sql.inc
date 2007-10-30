@@ -508,6 +508,35 @@ class xivo_datastorage_abstract_sql
 		return($r);
 	}
 
+	function _in($col,&$list,$keys=false,$not=false)
+	{
+		$col = $this->quote_identifier($col);
+		$keys = (bool) $keys;
+		$not = (bool) $not;
+
+		if($col === '' || is_array($list) === false || empty($list) === true)
+			return(false);
+
+		$func = $not === true ? 'NOT IN' : 'IN';
+
+		if($keys === true)
+			$list = array_keys($list);
+
+		$r = $col.' '.$func.'(\''.implode('\',\'',array_map(array(&$this,'escape_string'),$list)).'\')';
+
+		return($r);
+	}
+
+	function in($col,$list,$keys=false)
+	{
+		return($this->_in($col,$list,$keys,false));
+	}
+
+	function notin($col,$list,$keys=false)
+	{
+		return($this->_in($col,$list,$keys,true));
+	}
+
 	function _search($col,$pattern,$format='',$not=false)
 	{
 		$col = $this->quote_identifier($col);

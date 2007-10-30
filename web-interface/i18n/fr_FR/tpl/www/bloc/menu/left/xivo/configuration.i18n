@@ -4,5 +4,8 @@ Configuration
 ; mn_left_ti_manage
 Gestion
 
-; mn_left_users
+; mn_left_manage-users
 Utilisateurs
+
+; mn_left_manage-servers
+Serveurs

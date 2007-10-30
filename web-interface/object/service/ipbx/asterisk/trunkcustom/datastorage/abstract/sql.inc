@@ -47,7 +47,7 @@ class xivo_service_asterisk_trunkcustom_abstract_sql extends xivo_service_asteri
 
 		$arr['category'] = 'trunk';
 
-		return(parent::get($arr,$disable,null,true));
+		return(parent::get($arr,$disable,true));
 	}
 
 	function get_nb($arr=null,$disable=null)
@@ -57,7 +57,7 @@ class xivo_service_asterisk_trunkcustom_abstract_sql extends xivo_service_asteri
 			
 		$arr['category'] = 'trunk';
 
-		return(parent::get_nb($arr,$disable,null));
+		return(parent::get_nb($arr,$disable));
 	}
 
 	function edit($id,$arr,$disable=null)
@@ -94,7 +94,7 @@ class xivo_service_asterisk_trunkcustom_abstract_sql extends xivo_service_asteri
 	{
 		$arr = array('category' => 'trunk');
 
-		return(parent::get_list_where($arr,$disable,null,$order,$limit));
+		return(parent::get_list_where($arr,$disable,$order,$limit));
 	}
 
 	function get_list_where($arr,$disable=null,$order=null,$limit=null)
@@ -104,14 +104,14 @@ class xivo_service_asterisk_trunkcustom_abstract_sql extends xivo_service_asteri
 
 		$arr['category'] = 'trunk';
 
-		return(parent::get_list_where($arr,$disable,null,$order,$limit));
+		return(parent::get_list_where($arr,$disable,$order,$limit));
 	}
 
 	function get_all($disable=null,$order=null,$limit=null)
 	{
 		$arr = array('category' => 'trunk');
 
-		return(parent::get_list_where($arr,$disable,null,$order,$limit,true));
+		return(parent::get_list_where($arr,$disable,$order,$limit,true));
 	}
 
 	function get_all_where($arr,$disable=null,$order=null,$limit=null)
@@ -121,7 +121,7 @@ class xivo_service_asterisk_trunkcustom_abstract_sql extends xivo_service_asteri
 
 		$arr['category'] = 'trunk';
 
-		return(parent::get_list_where($arr,$disable,null,$order,$limit,true));
+		return(parent::get_list_where($arr,$disable,$order,$limit,true));
 	}
 }
 

@@ -51,7 +51,7 @@
 				$icon = 'enable';
 			endif;
 
-			if(xivo_empty($ref['rightcall']['passwd']) === true):
+			if(xivo_haslen($ref['rightcall']['passwd']) === false):
 				$passwd = '-';
 			else:
 				$passwd = $ref['rightcall']['passwd'];

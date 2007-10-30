@@ -116,14 +116,14 @@ class xivo_service_asterisk_autoprov extends xivo_service_asterisk_abstract
 		{
 			$ref = &$recv['data'][$i];
 
-			if(preg_match('/^([0-9a-z\-_]+)="([0-9a-zA-Z\-_\.]+)"$/',$ref,$match) === 1
+			if(preg_match('/^([0-9a-z\-_]+)="([0-9a-zA-Z\-_\. ]+)"$/',$ref,$match) === 1
 			&& isset($r[$match[1]]) === false)
 			{
 				$r[$match[1]] = array();
 				$r[$match[1]]['name'] = $match[2];
 				$r[$match[1]]['model'] = array();
 			}
-			else if(preg_match('/^([0-9a-z\-_]+)\.([0-9a-z\-_]+)="([0-9a-zA-Z\-_\.]+)"$/',$ref,$match) === 1
+			else if(preg_match('/^([0-9a-z\-_]+)\.([0-9a-z\-_]+)="([0-9a-zA-Z\-_\. ]+)"$/',$ref,$match) === 1
 			&& isset($r[$match[1]]) === true)
 			{
 				$r[$match[1]]['model'][$match[2]] = array();
@@ -224,7 +224,7 @@ class xivo_service_asterisk_autoprov extends xivo_service_asterisk_abstract
 			$key = &$aks['keys'][$i];
 			$val = &$arr[$key];
 
-			if(xivo_empty($val) === true)
+			if(xivo_haslen($val) === false)
 				continue;
 
 			$data .= $key.'='.$val."\r\n";

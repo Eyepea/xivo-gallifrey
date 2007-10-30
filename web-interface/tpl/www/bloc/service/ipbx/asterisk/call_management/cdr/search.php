@@ -8,7 +8,7 @@
 	$result = $this->vars('result');
 	$info = $this->vars('info');
 
-	if(xivo_empty($info['amaflags']) === true):
+	if(xivo_haslen($info['amaflags']) === false):
 		$amaflags = null;
 	else:
 		$amaflags = xivo_uint($info['amaflags']);
@@ -175,13 +175,13 @@
 			$ref = &$result[$i];
 			$mod = $i % 2 === 0 ? 1 : 2;
 
-			if(xivo_empty($ref['src']) === true):
+			if(xivo_haslen($ref['src']) === false):
 				$src = '-';
 			else:
 				$src = xivo_htmlen(xivo_trunc($ref['src'],15,'...'));
 			endif;
 
-			if(xivo_empty($ref['dst']) === true):
+			if(xivo_haslen($ref['dst']) === false):
 				$dst = '-';
 			else:
 				$dst = xivo_htmlen(xivo_trunc($ref['dst'],15,'...'));
@@ -228,27 +228,27 @@
 		<td colspan="4" class="td-single">
 			<dl>
 			<?php
-				if(xivo_empty($ref['channel']) === false):
+				if(xivo_haslen($ref['channel']) === true):
 					echo '<dt>',$this->bbf('entry_channel'),'</dt>';
 					echo '<dd title="',xivo_htmlen($ref['channel']),'">',xivo_htmlen(xivo_trunc($ref['channel'],30,'...',false)),'<br /></dd>';
 				endif;
-				if(xivo_empty($ref['disposition']) === false):
+				if(xivo_haslen($ref['disposition']) === true):
 					echo '<dt>',$this->bbf('entry_disposition'),'</dt>';
 					echo '<dd>',$this->bbf('entry_disposition-'.$ref['disposition']),'<br /></dd>';
 				endif;
-				if(xivo_empty($ref['amaflagsmeta']) === false):
+				if(xivo_haslen($ref['amaflagsmeta']) === true):
 					echo '<dt>',$this->bbf('entry_amaflagsmeta'),'</dt>';
 					echo '<dd>',$this->bbf('entry_amaflagsmeta-'.$ref['amaflagsmeta']),'<br /></dd>';
 				endif;
-				if(xivo_empty($ref['clid']) === false):
+				if(xivo_haslen($ref['clid']) === true):
 					echo '<dt>',$this->bbf('entry_clid'),'</dt>';
 					echo '<dd title="',xivo_htmlen($ref['clid']),'">',xivo_htmlen(xivo_trunc($ref['clid'],30,'...',false)),'<br /></dd>';
 				endif;
-				if(xivo_empty($ref['accountcode']) === false):
+				if(xivo_haslen($ref['accountcode']) === true):
 					echo '<dt>',$this->bbf('entry_accountcode'),'</dt>';
 					echo '<dd title="',xivo_htmlen($ref['accountcode']),'">',xivo_htmlen(xivo_trunc($ref['accountcode'],20,'...',false)),'<br /></dd>';
 				endif;
-				if(xivo_empty($ref['userfield']) === false):
+				if(xivo_haslen($ref['userfield']) === true):
 					echo '<dt>',$this->bbf('entry_userfield'),'</dt>';
 					echo '<dd title="',xivo_htmlen($ref['userfield']),'">',xivo_htmlen(xivo_trunc($ref['userfield'],20,'...',false)),'<br /></dd>';
 				endif;
@@ -256,11 +256,11 @@
 			</dl>
 			<dl>
 			<?php
-				if(xivo_empty($ref['dcontext']) === false):
+				if(xivo_haslen($ref['dcontext']) === true):
 					echo '<dt>',$this->bbf('entry_dcontext'),'</dt>';
 					echo '<dd title="',xivo_htmlen($ref['dcontext']),'">',xivo_htmlen(xivo_trunc($ref['dcontext'],30,'...',false)),'<br /></dd>';
 				endif;
-				if(xivo_empty($ref['dstchannel']) === false):
+				if(xivo_haslen($ref['dstchannel']) === true):
 					echo '<dt>',$this->bbf('entry_dstchannel'),'</dt>';
 					echo '<dd title="',xivo_htmlen($ref['dstchannel']),'">',xivo_htmlen(xivo_trunc($ref['dstchannel'],20,'...',false)),'<br /></dd>';
 				endif;
@@ -268,15 +268,15 @@
 				echo '<dt>',$this->bbf('entry_billsec'),'</dt>';
 				echo '<dd>',$this->bbf($bbf_billsec,$billsec),'<br /></dd>';
 
-				if(xivo_empty($ref['lastapp']) === false):
+				if(xivo_haslen($ref['lastapp']) === true):
 					echo '<dt>',$this->bbf('entry_lastapp'),'</dt>';
 					echo '<dd title="',xivo_htmlen($ref['lastapp']),'">',xivo_htmlen(xivo_trunc($ref['lastapp'],20,'...',false)),'<br /></dd>';
 				endif;
-				if(xivo_empty($ref['lastdata']) === false):
+				if(xivo_haslen($ref['lastdata']) === true):
 					echo '<dt>',$this->bbf('entry_lastdata'),'</dt>';
 					echo '<dd title="',xivo_htmlen($ref['lastdata']),'">',xivo_htmlen(xivo_trunc($ref['lastdata'],25,'...',false)),'<br /></dd>';
 				endif;
-				if(xivo_empty($ref['uniqueid']) === false):
+				if(xivo_haslen($ref['uniqueid']) === true):
 					echo '<dt>',$this->bbf('entry_uniqueid'),'</dt>';
 					echo '<dd title="',xivo_htmlen($ref['uniqueid']),'">',xivo_htmlen(xivo_trunc($ref['uniqueid'],20,'...',false)),'<br /></dd>';
 				endif;

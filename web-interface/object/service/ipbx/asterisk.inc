@@ -325,7 +325,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 	{
 		$tfeatures = &$this->get_module('trunkfeatures');
 
-		if(($rs = $tfeatures->get_all(null,null,true,array('trunk' => SORT_ASC))) === false
+		if(($rs = $tfeatures->get_all(null,true,array('trunk' => SORT_ASC))) === false
 		|| ($nb = count($rs)) === 0)
 			return(false);
 

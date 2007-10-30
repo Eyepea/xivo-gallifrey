@@ -14,7 +14,7 @@ class xivo_service_asterisk_realstatic_abstract_sql extends xivo_service_asteris
 			$this->_param['table'] = (string) $param['table'];
 	}
 
-	function get($arr,$disable=null,$delete=null,$id=false)
+	function get($arr,$disable=null,$id=false)
 	{
 		$id = (bool) $id;
 
@@ -46,7 +46,7 @@ class xivo_service_asterisk_realstatic_abstract_sql extends xivo_service_asteris
 
 	function get_id($arr,$disable=null)
 	{
-		return($this->get($arr,$disable,null,true));
+		return($this->get($arr,$disable,true));
 	}
 
 	function get_nb($arr=null,$disable=null)
@@ -142,7 +142,7 @@ class xivo_service_asterisk_realstatic_abstract_sql extends xivo_service_asteris
 		return($r);
 	}
 
-	function get_list($disable=null,$delete=null,$order=null,$limit=null,$all=false)
+	function get_list($disable=null,$order=null,$limit=null,$all=false)
 	{
 		$all = (bool) $all;
 
@@ -177,7 +177,7 @@ class xivo_service_asterisk_realstatic_abstract_sql extends xivo_service_asteris
 		return($r);
 	}
 
-	function get_list_where($arr,$disable=null,$delete=null,$order=null,$limit=null,$all=false)
+	function get_list_where($arr,$disable=null,$order=null,$limit=null,$all=false)
 	{
 		$all = (bool) $all;
 
@@ -211,14 +211,14 @@ class xivo_service_asterisk_realstatic_abstract_sql extends xivo_service_asteris
 		return($r);
 	}
 
-	function get_all($disable=null,$delete=null,$order=null,$limit=null)
+	function get_all($disable=null,$order=null,$limit=null)
 	{
-		return($this->get_list($disable,null,$order,$limit,true));
+		return($this->get_list($disable,$order,$limit,true));
 	}
 
-	function get_all_where($arr,$disable=null,$delete=null,$order=null,$limit=null)
+	function get_all_where($arr,$disable=null,$order=null,$limit=null)
 	{
-		return($this->get_list_where($arr,null,$disable,$order,$limit,true));
+		return($this->get_list_where($arr,$disable,$order,$limit,true));
 	}
 }
 

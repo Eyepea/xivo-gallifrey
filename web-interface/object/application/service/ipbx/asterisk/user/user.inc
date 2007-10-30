@@ -446,7 +446,6 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		{
 			$this->_set_result('protocol',$protocol->get_filter_result());
 			$this->_set_error('protocol',$protocol->get_filter_error());
-
 			return(false);
 		}
 
@@ -463,7 +462,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		if(is_array($arr) === false)
 		{
 			$this->_set_result('ufeatures',null);
-			$this->_set_error('ufeatures','invalid module');
+			$this->_set_error('ufeatures','invalid data');
 			return(false);
 		}
 
@@ -474,7 +473,6 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		{
 			$this->_set_result('ufeatures',$this->_userfeatures->get_filter_result());
 			$this->_set_error('ufeatures',$this->_userfeatures->get_filter_error());
-
 			return(false);
 		}
 
@@ -661,6 +659,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$arr['vendormodel'] = $arr['modact'] = '';
 		else
 		{
+			$arr['iduserfeatures'] = 0;
 			$vendor = substr($arr['vendormodel'],0,$pos);
 			$model = substr($arr['vendormodel'],$pos+1);
 
@@ -677,7 +676,6 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			else
 				$arr['macaddr'] = '';
 
-			$arr['modact'] = 'prov';
 			$arr['proto'] = $protocolname;
 		}
 

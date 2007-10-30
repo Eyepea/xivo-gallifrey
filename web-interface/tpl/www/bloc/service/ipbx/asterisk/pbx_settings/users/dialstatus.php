@@ -2,7 +2,6 @@
 	$form = &$this->get_module('form');
 	$url = &$this->get_module('url');
 
-	$info = $this->vars('info');
 	$element = $this->vars('element');
 	$list = $this->vars('list');
 	$status = $this->vars('status');

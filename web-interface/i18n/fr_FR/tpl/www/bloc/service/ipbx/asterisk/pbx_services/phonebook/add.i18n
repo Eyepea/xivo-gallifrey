@@ -1,0 +1,83 @@
+; title_content_name
+Carnet d'adresses > Ajouter
+
+; smenu_general
+Général
+
+; smenu_office
+Bureau
+
+; smenu_home
+Domicile
+
+; smenu_other
+Autre
+
+; fm_phonebook_title
+Civilité :
+
+; fm_phonebook_title-opt-mr
+Monsieur
+
+; fm_phonebook_title-opt-mrs
+Madame
+
+; fm_phonebook_title-opt-ms
+Mademoiselle
+
+; fm_phonebook_firstname
+Prénom :
+
+; fm_phonebook_lastname
+Nom :
+
+; fm_phonebook_displayname
+Nom affiché :
+
+; fm_phonebook_society
+Société :
+
+; fm_phonebooknumber_mobile
+Téléphone Mobile :
+
+; fm_phonebook_email
+E-mail :
+
+; fm_phonebook_url
+Adresse URL :
+
+; fm_phonebook_description
+Description :
+
+; fm_phonebooknumber_office
+Téléphone :
+
+; fm_phonebooknumber_fax
+Fax :
+
+; fm_phonebookaddress_address1
+Adresse :
+
+; fm_phonebookaddress_address2
+Adresse (suite) :
+
+; fm_phonebookaddress_city
+Ville :
+
+; fm_phonebookaddress_state
+Région :
+
+; fm_phonebookaddress_zipcode
+Code postal :
+
+; fm_phonebookaddress_country
+Pays :
+
+; fm_phonebooknumber_home
+Téléphone :
+
+; fm_phonebooknumber_other
+Téléphone :
+
+; fm_bt-save
+Sauvegarder

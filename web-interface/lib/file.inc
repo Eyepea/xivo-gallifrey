@@ -221,12 +221,22 @@ class xivo_file
 					return(false);
 			}
 
-			if(isset($param['extension'][$ext]) === false)
-				return(false);
+			if(is_array($param['extension'][$ext]) === true)
+			{
+				$regexp = false;
 
-			if(is_array($param['extension'][$ext]) === true
-			&& in_array($this->info['mime'],$param['extension'][$ext]) === false)
-				return(false);
+				if(isset($param['extension'][$ext]['regexp']) === true)
+				{
+					$regexp = $param['extension'][$ext]['regexp'];
+					unset($param['extension'][$ext]['regexp']);
+				}
+
+				if(in_array($this->info['mime'],$param['extension'][$ext]) === false && $regexp === false)
+					return(false);
+
+				if($regexp !== false && preg_match($regexp,$this->info['mime']) === 0)
+					return(false);
+			}
 		}
 
 		return(true);

@@ -157,7 +157,7 @@
 
 <?=$form->text(array('desc' => $this->bbf('fm_voicemail-emailsubject'),'name' => 'voicemail[emailsubject]','labelid' => 'voicemail-emailsubject','size' => 15,'value' => $this->varra('voicemail','emailsubject'),'default' => $element['voicemail']['emailsubject']['default']));?>
 
-<div id="emailbody" class="fm-field"><p><label id="lb-emailbody" for="it-emailbody"><?=$this->bbf('fm_voicemail-emailbody');?></label></p>
+<div class="fm-field fm-description"><p><label id="lb-emailbody" for="it-emailbody"><?=$this->bbf('fm_voicemail-emailbody');?></label></p>
 <?=$form->textarea(array('field' => false,'name' => 'voicemail[emailbody]','label' => false,'id' => 'it-voicemail-emailbody','cols' => 60,'rows' => 10),$this->varra('voicemail','emailbody'));?>
 </div>
 
@@ -169,7 +169,7 @@
 
 <?=$form->text(array('desc' => $this->bbf('fm_voicemail-pagersubject'),'name' => 'voicemail[pagersubject]','labelid' => 'voicemail-pagersubject','size' => 15,'value' => $this->varra('voicemail','pagersubject'),'default' => $element['voicemail']['pagersubject']['default']));?>
 
-<div id="pagerbody" class="fm-field txt-center"><p><label id="lb-pagerbody" for="it-pagerbody"><?=$this->bbf('fm_voicemail-pagerbody');?></label></p>
+<div class="fm-field fm-description"><p><label id="lb-pagerbody" for="it-pagerbody"><?=$this->bbf('fm_voicemail-pagerbody');?></label></p>
 <?=$form->textarea(array('field' => false,'name' => 'voicemail[pagerbody]','label' => false,'id' => 'it-voicemail-pagerbody','cols' => 60,'rows' => 4),$this->varra('voicemail','pagerbody'));?>
 </div>
 

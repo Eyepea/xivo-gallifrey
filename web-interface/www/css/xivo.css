@@ -80,6 +80,8 @@ pre {text-align: left;}
 .fm-desc-inline label {padding: 0px 10px;}
 .fm-desc-inline .fm-desc {display: inline;float: none;width: auto;}
 .fm-field p {padding-bottom: 2px;}
+.fm-description {text-align: center;width: 100%;}
+
 
 .tooltips-over:hover {color: #ff9d03;}
 .tooltips-info {position: absolute;margin-top: 13px;display: none;padding: 5px;border: 1px solid #697e92;background-color: #e8eeff;}
@@ -230,7 +232,7 @@ pre {text-align: left;}
 #b-content .sb-list th {padding: 1px 0px;}
 #b-content fieldset {width: 715px;margin-bottom: 20px;}
 #b-content fieldset .sb-list table {width: 720px;}
-#b-content .sb-list th {text-align: center;background-position: left top; background-repeat: repeat-x;background-image: url(../img/site/button/bg-button.gif);border: 1px solid #999;border-right-width: 0px;font-size: 8pt;}
+#b-content .sb-list th {text-align: center;background-position: left top; background-repeat: repeat-x;background-image: url(../img/content/top/bg-1.gif);background-color: #fff;padding-top: 2px;border: 1px solid #999;border-right-width: 0px;font-size: 8pt;}
 #b-content .sb-list .th-left {border-right-width: 0px;}
 #b-content .sb-list .th-right, #b-content .sb-list .th-single {border-right-width: 1px;}
 #b-content .sb-list td {text-align: center;padding: 2px 0px;background-color: #eee;border: 0px solid #999;border-left-width: 1px;border-bottom-width: 1px;font-size: 8pt;}
@@ -285,16 +287,24 @@ pre {text-align: left;}
 #r-login .b-field .fm-desc {display: inline;float: none;text-align: left;width: auto;}
 #r-login .sb-top .span-center, #r-login .sb-foot .span-center {width: 400px;}
 
-#r-user #cat-acl table {border: 0px solid #9e9e9e;border-bottom-width: 1px;}
-#r-user #cat-acl table th {background-color: #a5c5e4;width: 735px;padding: 3px 0px;border: 1px solid #7f99b1;border-bottom-width: 0px;}
-#r-user #cat-acl table input {margin: 0px 2px;}
-#r-user #cat-acl .acl-category div {width: 736px;float: left;background-color: #fee6c1;border: 1px solid #9e9e9e;border-bottom-width: 0px;padding: 2px 0px;}
-#r-user #cat-acl .acl-category h4 {float: left;width: 710px;}
-#r-user #cat-acl .acl-category span {display: block;float: left;width: 20px;}
-#r-user #cat-acl .acl-category .fm-desc  {display: inline;float: none;text-align: left;width: auto;}
-#r-user #cat-acl .acl-category table {display: none;clear: both;width: 100%;border: 1px solid #9e9e9e;border-bottom-width: 0px;}
-#r-user #cat-acl .acl-category table td {width: 240px;padding: 2px;vertical-align: top;}
-#r-user #cat-acl .acl-category .acl-func {max-width: 238px;border: none;margin: 2px 0px;background-color: #fff;}
+#r-xivo #s-configuration #index #xivo-stats {float: left;width: 50%;padding-bottom: 10px;}
+#r-xivo #s-configuration #index #xivo-stats table {margin: 10px auto 0px;width: 95%;}
+#r-xivo #s-configuration #index #xivo-stats th {padding-left: 5px;padding-right: 5px;}
+#r-xivo #s-configuration #index #xivo-stats a {text-decoration: underline;color: #0063bf;}
+#r-xivo #s-configuration #index #xivo-stats a:hover {text-decoration: none;}
+#r-xivo #s-configuration #index #xivo-logo {float: left;width: 50%;padding: 10px 0px;text-align: center;}
+#r-xivo #s-configuration #index #xivo-logo ul {margin-top: 10px}
+
+#r-xivo #s-configuration #sr-acl table {border: 0px solid #999;border-bottom-width: 1px;}
+#r-xivo #s-configuration #sr-acl table th {background-image: url(../img/content/top/bg-1.gif);background-color: #fff;width: 735px;padding-bottom: 2px;border: 1px solid #999;border-bottom-width: 0px;}
+#r-xivo #s-configuration #sr-acl table input {margin: 0px 2px;}
+#r-xivo #s-configuration #sr-acl .acl-category div {width: 736px;float: left;background-color: #fee6c1;border: 1px solid #999;border-bottom-width: 0px;padding: 2px 0px;}
+#r-xivo #s-configuration #sr-acl .acl-category h4 {float: left;width: 710px;}
+#r-xivo #s-configuration #sr-acl .acl-category span {display: block;float: left;width: 20px;}
+#r-xivo #s-configuration #sr-acl .acl-category .fm-desc  {display: inline;float: none;text-align: left;width: auto;}
+#r-xivo #s-configuration #sr-acl .acl-category table {display: none;clear: both;width: 100%;border: 1px solid #999;border-bottom-width: 0px;background-color: #d7e9fb;}
+#r-xivo #s-configuration #sr-acl .acl-category table td {width: 240px;padding: 2px;vertical-align: top;}
+#r-xivo #s-configuration #sr-acl .acl-category .acl-func {max-width: 238px;border: none;margin: 2px 0px;background-color: #d7e9fb;}
 
 #r-contact .sb-content div {padding: 10px 0px;}
 #r-contact dl {padding-bottom: 10px;}

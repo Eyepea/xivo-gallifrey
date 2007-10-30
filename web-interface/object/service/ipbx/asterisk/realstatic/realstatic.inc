@@ -274,7 +274,7 @@ class xivo_service_asterisk_realstatic extends xivo_service_asterisk_abstract
 		else
 			unset($arr['commented']);
 
-		return(parent::edit_where($id,$arr,$disable,null));
+		return(parent::edit_where($id,$arr,$disable));
 	}
 
 	function edit_name($id,$name,$arr)
@@ -479,7 +479,7 @@ class xivo_service_asterisk_realstatic extends xivo_service_asterisk_abstract
 		if(isset($this->_var_name) === true)
 			$arr['var_name'] = $this->_var_name;
 
-		return(parent::get_all_where($arr,$disable,null,$prepare,$order,$limit));
+		return(parent::get_all_where($arr,$disable,$prepare,$order,$limit));
 	}
 
 	function get_all_name($arr=array(),$disable=null)

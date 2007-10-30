@@ -40,7 +40,7 @@ class xivo_service_asterisk_autoprov_abstract_sql extends xivo_service_asterisk_
 	
 	function get_list($disable=null,$order=null,$limit=null)
 	{
-		if(($list = parent::get_list($disable,null,$order,$limit)) === false
+		if(($list = parent::get_list($disable,$order,$limit)) === false
 		|| isset($list[0]) === false)
 			return(false);
 
@@ -59,7 +59,7 @@ class xivo_service_asterisk_autoprov_abstract_sql extends xivo_service_asterisk_
 
 	function get_list_where($arr,$disable=null,$order=null,$limit=null)
 	{
-		if(($list = parent::get_list_where($arr,$disable,null,$order,$limit)) === false
+		if(($list = parent::get_list_where($arr,$disable,$order,$limit)) === false
 		|| isset($list[0]) === false)
 			return(false);
 
@@ -78,12 +78,12 @@ class xivo_service_asterisk_autoprov_abstract_sql extends xivo_service_asterisk_
 
 	function get_all($disable=null,$order=null,$limit=null)
 	{
-		return(parent::get_list($disable,null,$order,$limit,true));
+		return(parent::get_list($disable,$order,$limit,true));
 	}
 
 	function get_all_where($arr,$disable=null,$order=null,$limit=null)
 	{
-		return(parent::get_list_where($arr,$disable,null,$order,$limit,true));
+		return(parent::get_list_where($arr,$disable,$order,$limit,true));
 	}
 }
 

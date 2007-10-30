@@ -1,5 +1,7 @@
 #b-tmenu #toolbar .fm-field {margin-left: 105px; width: 600px;float: left;text-align: center;}
 
+#s-asterisk .b-list .b-total, #s-asterisk .sb-list .b-total {float: left;}
+
 #s-asterisk #index #ipbx-stats {float: left;width: 50%;padding-bottom: 10px;}
 #s-asterisk #index #ipbx-stats table {margin: 10px auto 0px;width: 95%;}
 #s-asterisk #index #ipbx-stats th {padding-left: 5px;padding-right: 5px;}
@@ -8,13 +10,10 @@
 #s-asterisk #index #ipbx-logo {float: left;width: 50%;padding: 10px 0px;text-align: center;}
 #s-asterisk #index #ipbx-logo ul {margin-top: 10px}
 
-#s-asterisk .sb-content #description, #s-asterisk .sb-content #emailbody, #s-asterisk .sb-context #pagerbody {text-align: center;width: 100%;}
-
 #s-asterisk #sr-agentgroup .sb-list th, #s-asterisk #sr-agent .sb-list th {width: 50%;}
 #s-asterisk #sr-cdr .fm-multifield .fm-desc {width: 40%;}
 #s-asterisk #sr-cdr .fm-desc-inline .fm-multifield, #s-asterisk #sr-schedule .fm-desc-inline .fm-multifield {width: auto;display: inline;padding: 0px 10px;}
 #s-asterisk #sr-cdr .fm-desc-inline .fm-multifield label, #s-asterisk #sr-schedule .fm-desc-inline .fm-multifield label {padding: 0px;}
-#s-asterisk #sr-cdr .sb-list .b-total {float: left;}
 #s-asterisk #sr-cdr .sb-list table {margin-top: 0px;}
 #s-asterisk #sr-cdr .sb-list table .cdr-infos td {padding: 4px;}
 #s-asterisk #sr-cdr .sb-list table .cdr-infos dl {width: 50%; float: left;text-align: left;}

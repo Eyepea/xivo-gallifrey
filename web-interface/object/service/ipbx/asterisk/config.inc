@@ -84,65 +84,74 @@ $array['realstatic']['meetme']['datastorage'] = true;
 
 $array['module'] = array();
 
+$array['module']['agent'] = array();
+$array['module']['agent']['datastorage'] = true;
+
+$array['module']['agentfeatures'] = array();
+$array['module']['agentfeatures']['datastorage'] = true;
+
+$array['module']['agentgroup'] = array();
+$array['module']['agentgroup']['datastorage'] = true;
+
+$array['module']['ami'] = array();
+$array['module']['ami']['datastorage'] = false;
+
+$array['module']['autoprov'] = array();
+$array['module']['autoprov']['datastorage'] = true;
+
+$array['module']['configfiles'] = array();
+$array['module']['configfiles']['datastorage'] = false;
+
+$array['module']['cdr'] = array();
+$array['module']['cdr']['datastorage'] = true;
+
+$array['module']['dialstatus'] = array();
+$array['module']['dialstatus']['datastorage'] = true;
+
 $array['module']['extensions'] = array();
 $array['module']['extensions']['datastorage'] = true;
 
 $array['module']['extenumbers'] = array();
 $array['module']['extenumbers']['datastorage'] = true;
 
-$array['module']['schedule'] = array();
-$array['module']['schedule']['datastorage'] = true;
+$array['module']['generaliax'] = array();
+$array['module']['generaliax']['datastorage'] = true;
 
-$array['module']['configfiles'] = array();
-$array['module']['configfiles']['datastorage'] = false;
+$array['module']['generaloutcall'] = array();
+$array['module']['generaloutcall']['datastorage'] = true;
 
-$array['module']['sounds'] = array();
-$array['module']['sounds']['datastorage'] = false;
-
-$array['module']['ami'] = array();
-$array['module']['ami']['datastorage'] = false;
+$array['module']['generalqueue'] = array();
+$array['module']['generalqueue']['datastorage'] = true;
 
 $array['module']['generalsip'] = array();
 $array['module']['generalsip']['datastorage'] = true;
 
-$array['module']['usersip'] = array();
-$array['module']['usersip']['datastorage'] = true;
-
-$array['module']['trunksip'] = array();
-$array['module']['trunksip']['datastorage'] = true;
-
-$array['module']['generaliax'] = array();
-$array['module']['generaliax']['datastorage'] = true;
-
-$array['module']['useriax'] = array();
-$array['module']['useriax']['datastorage'] = true;
-
-$array['module']['trunkiax'] = array();
-$array['module']['trunkiax']['datastorage'] = true;
-
-$array['module']['userfeatures'] = array();
-$array['module']['userfeatures']['datastorage'] = true;
-
-$array['module']['autoprov'] = array();
-$array['module']['autoprov']['datastorage'] = true;
-
-$array['module']['usercustom'] = array();
-$array['module']['usercustom']['datastorage'] = true;
-
-$array['module']['trunkcustom'] = array();
-$array['module']['trunkcustom']['datastorage'] = true;
-
-$array['module']['trunkfeatures'] = array();
-$array['module']['trunkfeatures']['datastorage'] = true;
+$array['module']['generalvoicemail'] = array();
+$array['module']['generalvoicemail']['datastorage'] = true;
 
 $array['module']['groupfeatures'] = array();
 $array['module']['groupfeatures']['datastorage'] = true;
 
+$array['module']['incall'] = array();
+$array['module']['incall']['datastorage'] = true;
+
 $array['module']['meetmefeatures'] = array();
 $array['module']['meetmefeatures']['datastorage'] = true;
 
-$array['module']['generalqueue'] = array();
-$array['module']['generalqueue']['datastorage'] = true;
+$array['module']['musiconhold'] = array();
+$array['module']['musiconhold']['datastorage'] = true;
+
+$array['module']['outcall'] = array();
+$array['module']['outcall']['datastorage'] = true;
+
+$array['module']['phonebook'] = array();
+$array['module']['phonebook']['datastorage'] = true;
+
+$array['module']['phonebookaddress'] = array();
+$array['module']['phonebookaddress']['datastorage'] = true;
+
+$array['module']['phonebooknumber'] = array();
+$array['module']['phonebooknumber']['datastorage'] = true;
 
 $array['module']['queue'] = array();
 $array['module']['queue']['datastorage'] = true;
@@ -153,39 +162,6 @@ $array['module']['queuefeatures']['datastorage'] = true;
 $array['module']['queuemember'] = array();
 $array['module']['queuemember']['datastorage'] = true;
 
-$array['module']['generalvoicemail'] = array();
-$array['module']['generalvoicemail']['datastorage'] = true;
-
-$array['module']['zonemessages'] = array();
-$array['module']['zonemessages']['datastorage'] = true;
-
-$array['module']['uservoicemail'] = array();
-$array['module']['uservoicemail']['datastorage'] = true;
-
-$array['module']['musiconhold'] = array();
-$array['module']['musiconhold']['datastorage'] = true;
-
-$array['module']['incall'] = array();
-$array['module']['incall']['datastorage'] = true;
-
-$array['module']['agent'] = array();
-$array['module']['agent']['datastorage'] = true;
-
-$array['module']['agentfeatures'] = array();
-$array['module']['agentfeatures']['datastorage'] = true;
-
-$array['module']['agentgroup'] = array();
-$array['module']['agentgroup']['datastorage'] = true;
-
-$array['module']['cdr'] = array();
-$array['module']['cdr']['datastorage'] = true;
-
-$array['module']['generaloutcall'] = array();
-$array['module']['generaloutcall']['datastorage'] = true;
-
-$array['module']['outcall'] = array();
-$array['module']['outcall']['datastorage'] = true;
-
 $array['module']['rightcall'] = array();
 $array['module']['rightcall']['datastorage'] = true;
 
@@ -195,8 +171,41 @@ $array['module']['rightcallexten']['datastorage'] = true;
 $array['module']['rightcallmember'] = array();
 $array['module']['rightcallmember']['datastorage'] = true;
 
-$array['module']['dialstatus'] = array();
-$array['module']['dialstatus']['datastorage'] = true;
+$array['module']['schedule'] = array();
+$array['module']['schedule']['datastorage'] = true;
+
+$array['module']['sounds'] = array();
+$array['module']['sounds']['datastorage'] = false;
+
+$array['module']['trunkcustom'] = array();
+$array['module']['trunkcustom']['datastorage'] = true;
+
+$array['module']['trunkfeatures'] = array();
+$array['module']['trunkfeatures']['datastorage'] = true;
+
+$array['module']['trunkiax'] = array();
+$array['module']['trunkiax']['datastorage'] = true;
+
+$array['module']['trunksip'] = array();
+$array['module']['trunksip']['datastorage'] = true;
+
+$array['module']['usercustom'] = array();
+$array['module']['usercustom']['datastorage'] = true;
+
+$array['module']['userfeatures'] = array();
+$array['module']['userfeatures']['datastorage'] = true;
+
+$array['module']['useriax'] = array();
+$array['module']['useriax']['datastorage'] = true;
+
+$array['module']['usersip'] = array();
+$array['module']['usersip']['datastorage'] = true;
+
+$array['module']['uservoicemail'] = array();
+$array['module']['uservoicemail']['datastorage'] = true;
+
+$array['module']['zonemessages'] = array();
+$array['module']['zonemessages']['datastorage'] = true;
 
 $array['protocol'] = array();
 $array['protocol']['sip'] = array('name' => XIVO_SRE_IPBX_AST_PROTO_SIP,'module' => 'usersip'); 

@@ -493,10 +493,12 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 		|| xivo_issa('rightcall',$this->_info) === false)
 			return(false);
 
+		$id = $this->_info['rightcall']['id'];
+
 		$key = 'rightcall'.$type;
 
 		if(xivo_issa($key,$this->_info) === false)
-			return($this->_add_rightcall_member_type($type,$this->_info['rightcall']['id']));
+			return($this->_add_rightcall_member_type($type,$id));
 
 		$this->_return[$key] = $this->_delete_rightcall_member_type($type);
 
@@ -507,40 +509,18 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 
 		$this->_return[$key] = array();
 
-		$i = 0;
 		$nb = count($rs);
 
-		if(($cnt = count($this->_info[$key])) !== 0)
+		for($i = 0;$i < $nb;$i++)
 		{
-			for($i;$i < $cnt;$i++)
-			{
-				if(isset($rs[$i]) === false)
-				{
-					$i = $nb;
-					break;
-				}
+			if(isset($this->_info[$key][$i]) === true)
+				$rid = $this->_info[$key][$i]['id'];
+			else
+				$rid = 0;
 
-				$id = $this->_info[$key][$i]['id'];
-				$rs[$i]['rightcallid'] = $this->_info['rightcall']['id'];
+			$rs[$i]['rightcallid'] = $id;
 
-				if(($this->_return[$key][] = $this->_rightcallmember->add($rs[$i],$id)) === false)
-					return(false);
-			}
-		}
-
-		if($i >= $nb)
-		{
-			if(isset($this->_return[$key][0]) === false)
-				$this->_return[$key] = false;
-
-			return(true);
-		}
-
-		for($i;$i < $nb;$i++)
-		{
-			$rs[$i]['rightcallid'] = $this->_info['rightcall']['id'];
-
-			if(($this->_return[$key][] = $this->_rightcallmember->add($rs[$i])) === false)
+			if(($this->_return[$key][] = $this->_rightcallmember->add($rs[$i],$rid)) === false)
 				return(false);
 		}
 
@@ -555,8 +535,10 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 		if(xivo_issa('rightcall',$this->_info) === false)
 			return(false);
 
+		$id = $this->_info['rightcall']['id'];
+
 		if(xivo_issa('rightcallexten',$this->_info) === false)
-			return($this->add_rightcallexten($this->_info['rightcall']['id']));
+			return($this->add_rightcallexten($id));
 
 		$this->_return['rightcallexten'] = $this->delete_rightcallexten();
 
@@ -567,40 +549,18 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 	
 		$this->_return['rightcallexten'] = array();
 
-		$i = 0;
 		$nb = count($rs);
 
-		if(($cnt = count($this->_info['rightcallexten'])) !== 0)
+		for($i = 0;$i < $nb;$i++)
 		{
-			for($i;$i < $cnt;$i++)
-			{
-				if(isset($rs[$i]) === false)
-				{
-					$i = $nb;
-					break;
-				}
+			if(isset($this->_info['rightcallexten'][$i]) === true)
+				$rid = $this->_info['rightcallexten'][$i]['id'];
+			else
+				$rid = 0;
 
-				$id = $this->_info['rightcallexten'][$i]['id'];
-				$rs[$i]['rightcallid'] = $this->_info['rightcall']['id'];
+			$rs[$i]['rightcallid'] = $id;
 
-				if(($this->_return['rightcallexten'][] = $this->_rightcallexten->add($rs[$i],$id)) === false)
-					return(false);
-			}
-		}
-
-		if($i >= $nb)
-		{
-			if(isset($this->_return['rightcallexten'][0]) === false)
-				$this->_return['rightcallexten'] = false;
-
-			return(true);
-		}
-
-		for($i;$i < $nb;$i++)
-		{
-			$rs[$i]['rightcallid'] = $this->_info['rightcall']['id'];
-
-			if(($this->_return['rightcallexten'][] = $this->_rightcallexten->add($rs[$i])) === false)
+			if(($this->_return['rightcallexten'][] = $this->_rightcallexten->add($rs[$i],$rid)) === false)
 				return(false);
 		}
 

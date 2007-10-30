@@ -170,6 +170,55 @@ class xivo_filter
 		return(true);
 	}
 
+	function chk_ipv4_in_subnet($ip,$sub)
+	{
+		if(($pos = strrpos($sub,'/')) === false)
+			return(false);
+
+		$ipsub = substr($sub,0,$pos);
+		$mask = xivo_uint(substr($sub,$pos+1));
+
+		if(xivo_filter::chk_ipv4_strict($ip) === false
+		|| xivo_filter::chk_ipv4_subnet($ipsub,$mask) === false)
+			return(false);
+
+		$r = array();
+		$r['ip'] = $ip;
+		$r['ipsubnet'] = $ipsub;
+		$r['mask'] = $mask;
+		$r['subnet'] = $sub;
+		$r['netmask'] = ((1<<$mask)-1)<<(32-$mask);
+		$r['wildcard'] =~ $r['netmask'];
+		$r['network'] = ip2long($ipsub);
+		$r['broadcast'] = $r['network'] | $r['wildcard'];
+
+		$ip = ip2long($ip);
+
+		if($ip > $r['network'] && $ip < $r['broadcast'])
+			return($r);
+
+		return(false);
+	}
+
+	function chk_ipv4_subnet($ip,$mask=null)
+	{
+		if($mask === null)
+		{
+			if(($pos = strrpos($ip,'/')) === false)
+				return(false);
+
+			$mask = substr($ip,$pos+1);
+			$ip = substr($ip,0,$pos);
+		}
+
+		if(($mask = xivo_uint($mask)) === 0
+		|| $mask > 32
+		|| xivo_filter::chk_ipv4_strict($ip) === false)
+			return(false);
+
+		return(true);
+	}
+
 	function chk_ipv4_strict($ip)
 	{
 		$ip = strval($ip);

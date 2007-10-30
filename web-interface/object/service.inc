@@ -30,18 +30,16 @@ class xivo_service
 
 	function _load_service($name)
 	{
-		$r = false;
-
 		if($this->is_valid($name) === true)
 			return(null);
 
 		if(xivo_issa($name,$this->_conf) === false
 		|| ($init = $this->_load_init_file($name)) === false
 		|| xivo_issa('general',$init) === false)
-			return($r);
+			return(false);
 
 		if(isset($init['general']['name'],$this->_conf[$name][$init['general']['name']]) === false)
-			return($r);
+			return(false);
 
 		$sname = $init['general']['name'];
 		$cname = 'xivo_service_'.$sname;

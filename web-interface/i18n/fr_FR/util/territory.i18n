@@ -1,0 +1,434 @@
+; territory_AD
+Andorre
+
+; territory_AE
+Emirats arabes unis
+
+; territory_AL
+Albanie
+
+; territory_AM
+Arménie
+
+; territory_AO
+Angola
+
+; territory_AR
+Argentine
+
+; territory_AT
+Autriche
+
+; territory_AU
+Australie
+
+; territory_AZ
+Azerbaïdjan
+
+; territory_BA
+Bosnie-Herzégovine
+
+; territory_BD
+Bangladesh
+
+; territory_BE
+Belgique
+
+; territory_BF
+Burkina Faso
+
+; territory_BG
+Bulgarie
+
+; territory_BH
+Bahreïn
+
+; territory_BI
+Burundi
+
+; territory_BJ
+Bénin
+
+; territory_BO
+Bolivie
+
+; territory_BR
+Brésil
+
+; territory_BT
+Bhoutan
+
+; territory_BW
+Botswana
+
+; territory_BY
+Bélarus
+
+; territory_CA
+Canada
+
+; territory_CD
+République démocratique du Congo
+
+; territory_CF
+République Centre Afrique
+
+; territory_CG
+République du Congo
+
+; territory_CH
+Suisse
+
+; territory_CI
+Côte D'Ivoire
+
+; territory_CL
+Chili
+
+; territory_CM
+Cameroun
+
+; territory_CN
+République populaire de Chine
+
+; territory_CO
+Colombie
+
+; territory_CR
+Costa Rica
+
+; territory_CS
+Serbie-et-Monténégro
+
+; territory_CY
+Chypre
+
+; territory_CZ
+République Tchèque
+
+; territory_DE
+Allemagne
+
+; territory_DJ
+Djibouti
+
+; territory_DK
+Danemark
+
+; territory_DO
+République Dominicaine
+
+; territory_DZ
+Algérie
+
+; territory_EC
+Equateur
+
+; territory_EE
+Estonie
+
+; territory_EG
+Egypte
+
+; territory_ER
+Erythrée
+
+; territory_ES
+Espagne
+
+; territory_ET
+Ethiopie
+
+; territory_FI
+Finlande
+
+; territory_FO
+Iles Féroé
+
+; territory_FR
+France
+
+; territory_GA
+Gabon
+
+; territory_GB
+Grande-Bretagne
+
+; territory_GE
+Géorgie
+
+; territory_GH
+Ghana
+
+; territory_GL
+Groenland
+
+; territory_GM
+Gambie
+
+; territory_GN
+Guinée
+
+; territory_GQ
+Guinée équatoriale
+
+; territory_GR
+Grèce
+
+; territory_GT
+Guatemala
+
+; territory_GW
+Guinée-Bissau
+
+; territory_HK
+Hong Kong
+
+; territory_HN
+Honduras
+
+; territory_HR
+Croatie
+
+; territory_HU
+Hongrie
+
+; territory_ID
+Indonésie
+
+; territory_IE
+Irlande
+
+; territory_IL
+Israël
+
+; territory_IN
+Inde
+
+; territory_IQ
+Iraq
+
+; territory_IR
+Iran
+
+; territory_IS
+Islande
+
+; territory_IT
+Italie
+
+; territory_JO
+Jordanie
+
+; territory_JP
+Japon
+
+; territory_KE
+Kenya
+
+; territory_KG
+République Kirghize
+
+; territory_KH
+Cambodge
+
+; territory_KR
+République de Corée
+
+; territory_KW
+Koweït
+
+; territory_KZ
+Kazakhstan
+
+; territory_LA
+République démocratique populaire Lao
+
+; territory_LB
+Liban
+
+; territory_LK
+Sri Lanka
+
+; territory_LR
+Liberia
+
+; territory_LS
+Lesotho
+
+; territory_LT
+Lituanie
+
+; territory_LU
+Luxembourg
+
+; territory_LV
+Lettonie
+
+; territory_LY
+Jamahiriya arabe Libyenne
+
+; territory_MA
+Maroc
+
+; territory_ME
+Monténégro
+
+; territory_MG
+Madagascar
+
+; territory_MK
+Macédonie
+
+; territory_MN
+Mongolie
+
+; territory_MR
+Mauritanie
+
+; territory_MT
+Malte
+
+; territory_MW
+Malawi
+
+; territory_MX
+Mexique
+
+; territory_MY
+Malaisie
+
+; territory_NI
+Nicaragu
+
+; territory_NL
+Pays-Bas
+
+; territory_NO
+Norvège
+
+; territory_NP
+Népal
+
+; territory_NZ
+Nouvelle-Zélande
+
+; territory_OM
+Oman
+
+; territory_PA
+Panam
+
+; territory_PE
+Pérou
+
+; territory_PH
+Philippines
+
+; territory_PK
+Pakistan
+
+; territory_PL
+Pologne
+
+; territory_PR
+Porto Rico
+
+; territory_PT
+Portugal
+
+; territory_PY
+Paraguay
+
+; territory_QA
+Qatar
+
+; territory_RO
+Roumanie
+
+; territory_RS
+Serbie
+
+; territory_RU
+Fédération de Russie
+
+; territory_RW
+Rwanda
+
+; territory_SA
+Arabie saoudite
+
+; territory_SD
+Soudan
+
+; territory_SE
+Suède
+
+; territory_SG
+Singapour
+
+; territory_SI
+Slovénie
+
+; territory_SK
+Slovaquie
+
+; territory_SN
+Sénégal
+
+; territory_SO
+Somalie
+
+; territory_SV
+El Salvador
+
+; territory_SY
+République arabe Syrienne
+
+; territory_TD
+Tchad
+
+; territory_TH
+Thaïlande
+
+; territory_TJ
+Tadjikistan
+
+; territory_TN
+Tunisie
+
+; territory_TR
+Turquie
+
+; territory_TW
+Taïwan
+
+; territory_UA
+Ukraine
+
+; territory_UG
+Ouganda
+
+; territory_US
+Etats-Unis
+
+; territory_UY
+Uruguay
+
+; territory_UZ
+Ouzbékistan
+
+; territory_VE
+Venezuela
+
+; territory_VN
+Viêt Nam
+
+; territory_YE
+Yémen
+
+; territory_ZA
+Afrique du Sud
+
+; territory_ZW
+Zimbabwe

@@ -51,7 +51,7 @@
 	<tr class="sb-content l-infos-<?=$mod?>on2">
 		<td class="td-left"><?=$form->checkbox(array('name' => 'queues[]','value' => $ref['qfeatures']['id'],'label' => false,'id' => 'it-queues-'.$i,'checked' => false,'field' => false));?></td>
 		<td class="txt-left"><label for="it-queues-<?=$i?>" id="lb-queues-<?=$i?>"><?=$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"');?><?=$ref['qfeatures']['name']?></label></td>
-		<td><?=(xivo_empty($ref['qfeatures']['number']) === false ? $ref['qfeatures']['number'] : '-')?></td>
+		<td><?=(xivo_haslen($ref['qfeatures']['number']) === true ? $ref['qfeatures']['number'] : '-')?></td>
 		<td><?=$ref['nb_qmember']?></td>
 		<td class="td-right" colspan="3">
 		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/pbx_settings/queues',array('act' => 'edit','id' => $ref['qfeatures']['id']),null,$this->bbf('opt_modify'));?>

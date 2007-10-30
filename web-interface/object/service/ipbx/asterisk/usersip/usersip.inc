@@ -35,7 +35,14 @@ class xivo_service_asterisk_usersip extends xivo_service_asterisk_abstract
 
 	function get_nb($arr=null,$disable=null,$initialized=null)
 	{
-		return(parent::get_nb($arr,$disable,$initialized));
+		if($arr !== null && is_array($arr) === false)
+			return(false);
+
+		if(is_array($arr) === true
+		&& ($arr = $this->get_element_where($arr)) === false)
+			return(false);
+
+		return($this->_dso->get_nb($arr,$disable,$initialized));
 	}
 
 	function add($arr,$id=0)

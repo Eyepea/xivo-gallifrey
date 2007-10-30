@@ -58,7 +58,7 @@ class xivo_service_asterisk_userfeatures_abstract_sql extends xivo_service_aster
 		if(($arr['internal'] = $this->_set_param_internal()) === null)
 			unset($arr['internal']);
 
-		return(parent::get($arr,$disable,null,true));
+		return(parent::get($arr,$disable,true));
 	}
 
 	function get_nb($arr=null,$disable=null)
@@ -145,9 +145,9 @@ class xivo_service_asterisk_userfeatures_abstract_sql extends xivo_service_aster
 		$arr = array();
 
 		if(($arr['internal'] = $this->_set_param_internal()) === null)
-			$r = parent::get_list($disable,null,$order,$limit);
+			$r = parent::get_list($disable,$order,$limit);
 		else
-			$r = parent::get_list_where($arr,$disable,null,$order,$limit);
+			$r = parent::get_list_where($arr,$disable,$order,$limit);
 
 		return($r);
 	}
@@ -160,7 +160,7 @@ class xivo_service_asterisk_userfeatures_abstract_sql extends xivo_service_aster
 		if(($arr['internal'] = $this->_set_param_internal()) === null)
 			unset($arr['internal']);
 
-		return(parent::get_list_where($arr,$disable,null,$order,$limit));
+		return(parent::get_list_where($arr,$disable,$order,$limit));
 	}
 
 	function get_all($disable=null,$order=null,$limit=null)
@@ -168,9 +168,9 @@ class xivo_service_asterisk_userfeatures_abstract_sql extends xivo_service_aster
 		$arr = array();
 
 		if(($arr['internal'] = $this->_set_param_internal()) === null)
-			$r = parent::get_list($disable,null,$order,$limit,true);
+			$r = parent::get_list($disable,$order,$limit,true);
 		else
-			$r = parent::get_list_where($arr,$disable,null,$order,$limit,true);
+			$r = parent::get_list_where($arr,$disable,$order,$limit,true);
 
 		return($r);
 	}
@@ -183,7 +183,7 @@ class xivo_service_asterisk_userfeatures_abstract_sql extends xivo_service_aster
 		if(($arr['internal'] = $this->_set_param_internal()) === null)
 			unset($arr['internal']);
 
-		return(parent::get_list_where($arr,$disable,null,$order,$limit,true));
+		return(parent::get_list_where($arr,$disable,$order,$limit,true));
 	}
 }
 

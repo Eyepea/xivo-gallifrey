@@ -21,7 +21,7 @@ if(isset($_QR['fm_send']) === true)
 
 	if($edit === true)
 	{
-		if(xivo_empty($result['externip']) === true)
+		if(xivo_haslen($result['externip']) === false)
 			$result['localnet'] = null;
 
 		if(is_array($result['allow']) === true)

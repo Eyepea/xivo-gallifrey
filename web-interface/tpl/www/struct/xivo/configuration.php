@@ -1,5 +1,5 @@
-<div id="r-user">
-	<div class="b-rubric">
-	<?=$this->file_include('bloc/xivo/configuration/'.$this->vars('cat'));?>
+<div id="r-xivo">
+	<div id="s-configuration" class="b-rubric">
+		<?=$this->mk_bloc('main');?>
 	</div>
 </div>

@@ -42,6 +42,11 @@ class xivo_user_abstract
 		return($this->_dso->get($id));
 	}
 
+	function get_nb($disable=null)
+	{
+		return($this->_dso->get_nb($disable));
+	}
+
 	function get_info($name)
 	{
 		$r = null;
@@ -113,9 +118,6 @@ class xivo_user_abstract
 				$r = true;
 			}
 
-			//if($r === true && xivo_ak('valid',$this->_info,true) === 'false')
-			//	$r = false;
-
 			if($r === true)
 			{
 				$this->_info['login'] = $login;
@@ -180,12 +182,10 @@ class xivo_user_abstract
 
 	function _add_by_login_pass($login,$pass,$type,$valid=true)
 	{
-		$r = false;
-
 		$valid = (bool) $valid;
 
 		if(($meta = xivo_user::type_to_meta($type)) === false)
-			return($r);
+			return(false);
 
 		$arr = array();
 		$arr['login'] = $login;
@@ -256,16 +256,13 @@ class xivo_user_abstract
 
 	function _load_filter($name,$user)
 	{
-		$r = false;
-
-		if(xivo_user::chk_meta($user) === false || ($meta = xivo_user::type_to_meta($this->_info['_type'])) === false)
-			return($r);
-
-		if(($filter = xivo::load_array(XIVO_PATH_OBJECT.XIVO_SEP_DIR.'user'.XIVO_SEP_DIR.'filter'.XIVO_SEP_DIR.$meta.'.inc')) === false)
-			return($r);
-
-		if(xivo::load_class('xivo_filter') === false || xivo_issa($user,$filter) === false || xivo_issa($name,$filter[$user]) === false)
-			return($r);
+		if(xivo_user::chk_meta($user) === false
+		|| ($meta = xivo_user::type_to_meta($this->_info['_type'])) === false
+		|| ($filter = xivo::load_array(XIVO_PATH_OBJECT.XIVO_SEP_DIR.'user'.XIVO_SEP_DIR.'filter'.XIVO_SEP_DIR.$meta.'.inc')) === false
+		|| xivo::load_class('xivo_filter') === false
+		|| xivo_issa($user,$filter) === false
+		|| xivo_issa($name,$filter[$user]) === false)
+			return(false);
 
 		return($filter[$user][$name]);
 	}
@@ -318,12 +315,10 @@ class xivo_user_abstract
 
 	function load_authent()
 	{
-		$r = false;
-
 		$ini = xivo_user::load_get_init();
 
 		if(xivo_issa('authent',$ini) === false)
-			return($r);
+			return(false);
 
 		$authent = &$ini['authent'];
 
@@ -333,7 +328,7 @@ class xivo_user_abstract
 		$type = $authent['type'];
 
 		if($type !== 'internal')
-			return($r);
+			return(false);
 
 		$dso = &xivo_gct::get('XIVO_DSO');
 		$type = $dso->get_type();

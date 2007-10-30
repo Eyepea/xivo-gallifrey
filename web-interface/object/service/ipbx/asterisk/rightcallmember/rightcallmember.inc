@@ -69,9 +69,7 @@ class xivo_service_asterisk_rightcallmember extends xivo_service_asterisk_abstra
 	function exists($rightcallid,$type,$typeval)
 	{
 		if(($rightcallid = xivo_uint($rightcallid)) === 0
-		|| ($type !== 'user'
-		   && $type !== 'group'
-		   && $type !== 'outcall') === true
+		|| $this->chk_element_value('type',$type) === false
 		|| xivo_haslen($typeval) === false)
 			return(null);
 

@@ -35,7 +35,7 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 
 		if($data['protocol'] === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
 			$data['identity'] = $data['fullname'].' ('.$data['name'].')';
-		else if(xivo_empty($data['number']) === true)
+		else if(xivo_haslen($data['number']) === false)
 			$data['identity'] = $data['fullname'].' ('.$data['context'].')';
 		else
 			$data['identity'] = $data['fullname'].' ('.$data['number'].'@'.$data['context'].')';
@@ -162,13 +162,12 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 	{
 		$provisioning = (bool) $provisioning;
 
-		if(($id = xivo_uint($id)) === 0 || is_array($arr) === false)
+		if(($id = xivo_uint($id)) === 0
+		|| is_array($arr) === false
+		|| ($info = $this->get($id,false)) === false)
 			return(false);
 
 		$where = array();
-
-		if(($info = $this->get($id,false)) === false)
-			return(false);
 
 		if(isset($arr['name']) === false)
 			$where['name'] = $info['name'];
@@ -243,7 +242,7 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		{
 			$info = $list[$i];
 
-			if($id === (int) $info['id'] || xivo_empty($info['number']) === true)
+			if($id === (int) $info['id'] || xivo_haslen($info['number']) === false)
 				continue;
 
 			$r[] = $info;

@@ -611,7 +611,7 @@ function xivo_chk_email($email,$strict=false)
 	return(false);
 }
 
-function xivo_mk_list(&$a,$f='')
+function xivo_mk_list(&$a,$f=false)
 {
 	$r = false;
 	$a = (array) $a;
@@ -619,7 +619,7 @@ function xivo_mk_list(&$a,$f='')
 	if(empty($a) === true)
 		return($r);
 
-	if($f === 'key')
+	if($f === true)
 		$a = array_keys($a);
 
 	$r = '\''.implode('\',\'',array_map('addslashes', $a)).'\'';

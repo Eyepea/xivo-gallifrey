@@ -1,0 +1,32 @@
+; col_login
+Pseudo
+
+; col_password
+Mot de passe
+
+; col_type
+Type
+
+; col_dcreate
+Date de création
+
+; col_valid
+Activé
+
+; col_action
+Action
+
+; valid_1
+Oui
+
+; valid_0
+Non
+
+; opt_modify
+Modifier
+
+; opt_acl
+Règles
+
+; no_user
+Aucun utilisateur trouvé

@@ -33,7 +33,7 @@ class xivo_service_asterisk_queuefeatures extends xivo_service_asterisk_abstract
 		if($data['identity'] === '')
 			$data['identity'] = '-';
 
-		if(xivo_empty($data['number']) === true)
+		if(xivo_haslen($data['number']) === false)
 			$data['identity'] .= ' ('.$data['context'].')';
 		else
 			$data['identity'] .= ' ('.$data['number'].'@'.$data['context'].')';
@@ -54,7 +54,7 @@ class xivo_service_asterisk_queuefeatures extends xivo_service_asterisk_abstract
 		{
 			$info = $list[$i];
 
-			if(xivo_empty($info['number']) === true)
+			if(xivo_haslen($info['number']) === false)
 				continue;
 
 			$r[] = $info;

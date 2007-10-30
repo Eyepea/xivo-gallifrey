@@ -80,21 +80,16 @@ class xivo_user
 
 	function chk_active()
 	{
-		$r = false;
-
 		$cfg = xivo_gat::get('user');
 
-		if(xivo_user::is_valid() === true)
-		{
-			$r = null;
+		if(xivo_user::is_valid() === false)
+			return(false);
 
-			if($cfg['option']['time_cache'] > 0)
-			{
-				if(($cfg['option']['time_cache'] + $_SESSION['_USR']->_time) < gmmktime())
-					$r = true;
-			}
-			else $r = true;
-		}
+		if($cfg['option']['time_cache'] <= 0
+		|| ($cfg['option']['time_cache'] + $_SESSION['_USR']->_time) < gmmktime())
+			$r = true;
+		else
+			$r = null;
 
 		return($r);
 	}

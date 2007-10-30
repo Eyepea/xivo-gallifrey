@@ -86,6 +86,11 @@ class xivo_i18n
 		return(xivo_i18n::mediator('list','territory'));
 	}
 
+	function get_territory_translated_list()
+	{
+		return(xivo_i18n::mediator('translated_list','territory'));
+	}
+
 	function attrib_locale()
 	{
 		return(xivo_i18n::mediator('attrib','locale'));
@@ -144,6 +149,7 @@ class xivo_i18n
 	function mediator($func,$name,$value='')
 	{
 		static $mediator = null;
+		static $territory = null;
 
 		if($mediator === null)
 		{
@@ -257,6 +263,32 @@ class xivo_i18n
 						$r = $mediator->get_timezone_list();
 						break;
 				}
+			case 'translated_list':
+				switch($name)
+				{
+					case 'territory':
+						if($territory !== null)
+							return($territory);
+
+						$i18n = &xivo_gct::get('xivo_i18n');
+
+						if($i18n->load_file('util/territory') === false
+						|| ($list = $mediator->get_territory_list()) === false
+						|| ($arr = xivo_get_aks($list)) === false)
+							return(($territory = false));
+
+						$territory = array();
+
+						for($i = 0;$i < $arr['cnt'];$i++)
+						{
+							$key = &$arr['keys'][$i];
+							$territory[$key] = xivo_i18n::babelfish('territory_'.$key);
+						}
+
+						asort($territory);
+						$r = &$territory;
+						break;
+				}
 		}
 
 		return($r);
@@ -310,7 +342,7 @@ class xivo_i18n
 		return(xivo_i18n::bfish('get',$namespace,$name));
 	}
 
-	function babelfish($name,$value=array(),$namespace='')
+	function babelfish($name,$value=array(),$namespace='_empty_')
 	{
 		return(xivo_i18n::bfish('translate',$namespace,$value,$name));	
 	}
@@ -358,7 +390,7 @@ class xivo_i18n
 					return($r);
 
 				$value = (array) $value;
-				
+
 				if(xivo_issa($namespace,$babelfish) === false || isset($babelfish[$namespace][$name]) === false)
 				{
 					if(xivo_issa('_empty_',$babelfish) === false || isset($babelfish['_empty_'][$name]) === false)

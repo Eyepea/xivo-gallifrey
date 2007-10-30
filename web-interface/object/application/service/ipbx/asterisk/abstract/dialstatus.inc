@@ -167,54 +167,23 @@ class xivo_application_service_asterisk_dialstatus_abstract extends xivo_applica
 
 		$this->_return = array();
 
-		$i = 0;
+		$list = xivo_get_aks($this->_info);
 
-		if(($list = xivo_get_aks($this->_info)) !== false)
+		for($i = 0;$i < $arr['cnt'];$i++)
 		{
-			for($i;$i < $list['cnt'];$i++)
-			{
-				$key = &$list['keys'][$i];
+			if($list !== false && isset($list['keys'][$i]) === true)
+				$did = $this->_info[$list['keys'][$i]]['id'];
+			else
+				$did = 0;
 
-				if(isset($rs[$key]) === false)
-				{
-					$i = $arr['cnt'];
-					break;
-				}
-
-				$ref = &$rs[$key];
-
-				$did = $this->_info[$key]['id'];
-				$ref['categoryval'] = $id;
-
-				if($this->_dialstatus->is_valid($ref['category'],
-							 $ref['categoryval'],
-							 $ref['type'],
-							 $ref['typeval']) === false
-				|| ($this->_return[$ref['status']] = $this->_dialstatus->add($ref,$did)) === false)
-					return(false);
-			}
-		}
-
-		if($i >= $arr['cnt'])
-		{
-			if(empty($this->_return) === true)
-				$this->_return = false;
-
-			return(true);
-		}
-
-		for($i;$i < $arr['cnt'];$i++)
-		{
-			$key = &$arr['keys'][$i];
-			$ref = &$rs[$key];
-
+			$ref = &$rs[$arr['keys'][$i]];
 			$ref['categoryval'] = $id;
 
 			if($this->_dialstatus->is_valid($ref['category'],
-						 $ref['categoryval'],
-						 $ref['type'],
-						 $ref['typeval']) === false
-			|| ($this->_return[$ref['status']] = $this->_dialstatus->add($ref)) === false)
+							$ref['categoryval'],
+							$ref['type'],
+							$ref['typeval']) === false
+			|| ($this->_return[$ref['status']] = $this->_dialstatus->add($ref,$did)) === false)
 				return(false);
 		}
 

@@ -81,7 +81,8 @@ class xivo_libconfig_abstract
 		{
 			$key = &$arr_keys[$i];
 
-			if(array_key_exists($key,$where) === true && $this->unset_element_value($key) === false)
+			if(array_key_exists($key,$where) === true
+			&& $this->unset_element_value($key) === false)
 				$r[$key] = $where[$key];
 		}
 
@@ -102,6 +103,15 @@ class xivo_libconfig_abstract
 			return(false);
 
 		return($this->_conf['element'][$key]['value']);
+	}
+
+	function chk_element_value($key,$value)
+	{
+		if(($values = $this->get_element_value($key)) === false
+		|| in_array($value,$values,true) === false)
+			return(false);
+
+		return(true);
 	}
 
 	function _set_element_default($key,$value)

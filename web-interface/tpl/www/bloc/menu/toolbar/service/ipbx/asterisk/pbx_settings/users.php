@@ -5,7 +5,6 @@
 	$act = $this->vars('act');
 
 	if(($search = (string) $this->vars('search')) === ''):
-		$search = $this->bbf('toolbar_fm_search');
 		$searchjs = '';
 	else:
 		$searchjs = ' xivo_fm[\'fm-users-list\'][\'search\'].value = \''.xivo_stript($search).'\';';
@@ -21,7 +20,7 @@
 <form action="#" method="post" accept-charset="utf-8">
 <?=$form->hidden(array('name' => XIVO_SESS_NAME,'value' => XIVO_SESS_ID));?>
 <?=$form->hidden(array('name' => 'act','value' => 'list'));?>
-	<div class="fm-field"><?=$form->text(array('name' => 'search','id' => 'it-search','size' => 20,'field' => false,'value' => $search),'onfocus="this.value = this.value == \''.xivo_stript($this->bbf('toolbar_fm_search')).'\' ? \'\' : this.value; xivo_fm_set_onfocus(this);"');?><?=$form->image(array('name' => 'submit','id' => 'it-subsearch','src' => $url->img('img/menu/top/toolbar/bt-search.gif'),'field' => false,'alt' => $this->bbf('toolbar_fm_search')));?><?=$form->select(array('name' => 'context','id' => 'it-context','field' => false,'empty' => $this->bbf('toolbar_fm_context'),'value' => $context),$this->vars('contexts'),'style="margin-left: 20px;" onchange="this.form[\'search\'].value = \'\'; this.form.submit()"');?></div>
+	<div class="fm-field"><?=$form->text(array('name' => 'search','id' => 'it-search','size' => 20,'field' => false,'value' => $search,'default' => $this->bbf('toolbar_fm_search')),'onfocus="this.value = this.value == \''.xivo_stript($this->bbf('toolbar_fm_search')).'\' ? \'\' : this.value; xivo_fm_set_onfocus(this);"');?><?=$form->image(array('name' => 'submit','id' => 'it-subsearch','src' => $url->img('img/menu/top/toolbar/bt-search.gif'),'field' => false,'alt' => $this->bbf('toolbar_fm_search')));?><?=$form->select(array('name' => 'context','id' => 'it-context','field' => false,'empty' => $this->bbf('toolbar_fm_context'),'value' => $context),$this->vars('contexts'),'style="margin-left: 20px;" onchange="this.form[\'search\'].value = \'\'; this.form.submit()"');?></div>
 </form>
 	<?=$url->href_html($url->img_html('img/menu/top/toolbar/bt-add.gif',$this->bbf('toolbar_opt_add'),'border="0"'),'service/ipbx/pbx_settings/users','act=add',null,$this->bbf('toolbar_opt_add'));?>
 <?php

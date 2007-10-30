@@ -4,7 +4,6 @@ xivo_service_asterisk::required(array('abstract','datastorage','abstract','sql.i
 
 class xivo_service_asterisk_cdr_abstract_sql extends xivo_service_asterisk_abstract_sql
 {
-	var $_cnt	= 0;
 	var $_param	= array('table' => 'cdr');
 	var $_dso	= null;
 
@@ -19,14 +18,6 @@ class xivo_service_asterisk_cdr_abstract_sql extends xivo_service_asterisk_abstr
 
 		if(isset($param['table']) === true)
 			$this->_param['table'] = (string) $param['table'];
-	}
-
-	function get_cnt()
-	{
-		if(isset($this->_cnt) === false)
-			$this->_cnt = 0;
-
-		return(xivo_uint($this->_cnt));
 	}
 
 	function search($arr,$order=null,$limit=null)

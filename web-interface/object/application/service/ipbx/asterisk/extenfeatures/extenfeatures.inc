@@ -272,41 +272,17 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 
 		$this->_return = array();
 
-		$i = 0;
 		$nb = count($list);
 
-		if($this->_origin['extenfeatures'] !== false
-		&& ($cnt = count($this->_origin['extenfeatures'])) !== 0)
+		for($i = 0;$i < $nb;$i++)
 		{
-			for($i;$i < $cnt;$i++)
-			{
-				if(isset($list[$i]) === false)
-				{
-					$i = $nb;
-					break;
-				}
-
+			if($this->_origin['extenfeatures'] !== false
+			&& isset($this->_origin['extenfeatures'][$i]) === true)
 				$eid = $this->_origin['extenfeatures'][$i]['id'];
+			else
+				$eid = 0;
 
-				if(($this->_return[] = $this->_extensions->add($list[$i],$eid)) === false)
-					return(false);
-			}
-		}
-
-		if($i >= $nb)
-		{
-			if(isset($this->_return[0]) === false)
-			{
-				$this->_return = false;
-				return(false);
-			}
-
-			return($rs['name']);
-		}
-
-		for($i;$i < $nb;$i++)
-		{
-			if(($this->_return[] = $this->_extensions->add($rs[$i])) === false)
+			if(($this->_return[] = $this->_extensions->add($list[$i],$eid)) === false)
 				return(false);
 		}
 

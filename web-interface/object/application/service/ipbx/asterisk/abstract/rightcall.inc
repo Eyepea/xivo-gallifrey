@@ -136,40 +136,18 @@ class xivo_application_service_asterisk_rightcall_abstract extends xivo_applicat
 
 		$this->_return = array();
 
-		$i = 0;
 		$nb = count($rs);
 
-		if(($cnt = count($this->_info)) !== 0)
+		for($i = 0;$i < $nb;$i++)
 		{
-			for($i;$i < $cnt;$i++)
-			{
-				if(isset($rs[$i]) === false)
-				{
-					$i = $nb;
-					break;
-				}
-
+			if(isset($this->_info[$i]) === true)
 				$rid = $this->_info[$i]['id'];
-				$rs[$i]['typeval'] = $id;
+			else
+				$rid = 0;
 
-				if(($this->_return[] = $this->_rightcallmember->add($rs[$i],$rid)) === false)
-					return(false);
-			}
-		}
-
-		if($i >= $nb)
-		{
-			if(isset($this->_return[0]) === false)
-				$this->_return = false;
-
-			return(true);
-		}
-
-		for($i;$i < $nb;$i++)
-		{
 			$rs[$i]['typeval'] = $id;
 
-			if(($this->_return[] = $this->_rightcallmember->add($rs[$i])) === false)
+			if(($this->_return[] = $this->_rightcallmember->add($rs[$i],$rid)) === false)
 				return(false);
 		}
 

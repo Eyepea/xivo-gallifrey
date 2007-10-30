@@ -318,7 +318,7 @@ switch($act)
 
 		if(isset($_QR['id']) === true)
 		{
-			$id = (int) $_QR['id'];
+			$id = intval($_QR['id']);
 
 			if($schedule->delete($id) === false)
 				continue;
@@ -349,7 +349,7 @@ switch($act)
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			$id = (int) $values[$i];
+			$id = intval($values[$i]);
 
 			if($schedule->delete($id) === false)
 				continue;

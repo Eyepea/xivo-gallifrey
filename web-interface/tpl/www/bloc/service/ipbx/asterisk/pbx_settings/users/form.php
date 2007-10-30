@@ -193,7 +193,9 @@
 
 	endif;
 
-	if(is_array($info['autoprov']) === false || $vendormodel === ''):
+	if(is_array($info['autoprov']) === false
+	|| $vendormodel === ''
+	|| (int) xivo_ak('iduserfeatures',$info['autoprov'],true) === 0):
 ?>
 
 	<?=$form->select(array('desc' => $this->bbf('fm_autoprov_vendormodel'),'name' => 'autoprov[vendormodel]','labelid' => 'autoprov-vendormodel','optgroup' => array('key' => 'name'),'empty' => true,'key' => 'label','altkey' => 'path','value' => $vendormodel),$autoprov_list);?>
@@ -315,7 +317,7 @@
 
 	<?=$form->checkbox(array('desc' => $this->bbf('fm_protocol_qualify'),'name' => 'protocol[qualify]','labelid' => 'iax-protocol-qualify','default' => $element['protocol']['iax']['qualify']['default'],'checked' => $qualify));?>
 
-<div id="description" class="fm-field"><p><label id="lb-ufeatures-description" for="it-ufeatures-description"><?=$this->bbf('fm_userfeatures_description');?></label></p>
+<div class="fm-field fm-description"><p><label id="lb-ufeatures-description" for="it-ufeatures-description"><?=$this->bbf('fm_userfeatures_description');?></label></p>
 <?=$form->textarea(array('field' => false,'label' => false,'name' => 'ufeatures[description]','id' => 'it-ufeatures-description','cols' => 60,'rows' => 5,'default' => $element['ufeatures']['description']['default']),$info['ufeatures']['description']);?>
 </div>
 

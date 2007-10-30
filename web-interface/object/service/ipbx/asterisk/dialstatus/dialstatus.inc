@@ -58,24 +58,52 @@ class xivo_service_asterisk_dialstatus extends xivo_service_asterisk_abstract
 		return($this->_dso->add($arr));
 	}
 
-	function linked($id,$disable=null)
+	function edit($id,$arr)
 	{
-		return($this->edit($id,array('linked' => true),$disable));
+		if(($id = xivo_uint($id)) === 0
+		|| is_array($arr) === false
+		|| ($info = $this->get($id)) === false)
+			return(false);
+
+		if(isset($arr['status']) === false)
+			$status = $info['status'];
+		else
+			$status = $arr['status'];
+
+		if(isset($arr['category']) === false)
+			$category = $info['category'];
+		else
+			$category = $arr['category'];
+
+		if(isset($arr['categoryval']) === false)
+			$categoryval = $info['categoryval'];
+		else
+			$categoryval = $arr['categoryval'];
+
+		if($this->exists($status,$category,$categoryval,$id) !== false)
+			return(false);
+
+		return($this->_dso->edit($id,$arr));
 	}
 
-	function unlinked($id,$disable=null)
+	function linked($id)
 	{
-		return($this->edit($id,array('linked' => false),$disable));
+		return($this->edit($id,array('linked' => true)));
 	}
 
-	function linked_where($id,$disable=null)
+	function unlinked($id)
 	{
-		return($this->edit_where($id,array('linked' => true),$disable));
+		return($this->edit($id,array('linked' => false)));
 	}
 
-	function unlinked_where($id,$disable=null)
+	function linked_where($id)
 	{
-		return($this->edit_where($id,array('linked' => false),$disable));
+		return($this->edit_where($id,array('linked' => true)));
+	}
+
+	function unlinked_where($id)
+	{
+		return($this->edit_where($id,array('linked' => false)));
 	}
 
 	function is_valid($category,$categoryval,$type,$typeval,$disable=null)
@@ -112,12 +140,13 @@ class xivo_service_asterisk_dialstatus extends xivo_service_asterisk_abstract
 		return(false);
 	}
 
-	function exists($status,$category,$categoryval)
+	function exists($status,$category,$categoryval,$id=null)
 	{
+		$id = $id !== null ? xivo_uint($id) : null;
+
 		if(is_string($status) === false
 		|| xivo_haslen($status) === false
-		|| ($category !== 'user'
-		   && $category !== 'group') === true
+		|| $this->chk_element_value('category',$category) === false
 		|| xivo_haslen($categoryval) === false)
 			return(null);
 
@@ -126,7 +155,8 @@ class xivo_service_asterisk_dialstatus extends xivo_service_asterisk_abstract
 		$where['category'] = $category;
 		$where['categoryval'] = $categoryval;
 
-		if($this->_dso->exists_category($where) !== false)
+		if(($whereid = $this->_dso->exists_category($where)) !== false
+		&& ($id === null || $whereid !== $id) === true)
 			return(true);
 
 		return(false);
@@ -137,7 +167,7 @@ class xivo_service_asterisk_dialstatus extends xivo_service_asterisk_abstract
 		$category = strval($category);
 		$categoryval = strval($categoryval);
 
-		if(($list = parent::get_all(null,null,$prepare,$order,$limit)) === false)
+		if(($list = parent::get_all(null,$prepare,$order,$limit)) === false)
 			return(false);
 
 		if($id === 0)

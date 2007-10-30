@@ -34,7 +34,7 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 		if($data['identity'] === '')
 			$data['identity'] = '-';
 
-		if(xivo_empty($data['number']) === true)
+		if(xivo_haslen($data['number']) === false)
 			$data['identity'] .= ' ('.$data['context'].')';
 		else
 			$data['identity'] .= ' ('.$data['number'].'@'.$data['context'].')';
@@ -46,17 +46,17 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 
 	function get($id,$delete=false)
 	{
-		return(parent::get($id,null,$delete));
+		return(parent::get($id,$delete));
 	}
 
 	function get_id($arr,$delete=false)
 	{
-		return(parent::get_id($arr,null,$delete));
+		return(parent::get_id($arr,$delete));
 	}
 
 	function get_where($arr,$delete=false)
 	{
-		return(parent::get_where($arr,null,$delete));
+		return(parent::get_where($arr,$delete));
 	}
 
 	function add($arr)
@@ -108,12 +108,12 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 				return(false);
 		}
 
-		return($this->_dso->edit($id,$arr,null,$delete));
+		return($this->_dso->edit($id,$arr,$delete));
 	}
 
 	function edit_where($id,$arr,$delete=false)
 	{
-		return(parent::edit_where($id,$arr,null,$delete));
+		return(parent::edit_where($id,$arr,$delete));
 	}
 
 	function delete($id)
@@ -123,7 +123,7 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 
 	function delete_where($id)
 	{
-		return(parent::edit_where($id,array('deleted' => true),null));
+		return(parent::edit_where($id,array('deleted' => true)));
 	}
 
 	function recover($id)
@@ -133,27 +133,32 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 
 	function recover_where($id)
 	{
-		return(parent::edit_where($id,array('deleted' => true),null,true));
+		return(parent::edit_where($id,array('deleted' => true),true));
+	}
+
+	function get_nb($arr=null,$delete=false)
+	{
+		return(parent::get_nb($arr,$delete));
 	}
 
 	function get_list($delete=false,$order=null,$limit=null)
 	{
-		return(parent::get_list(null,$delete,$order,$limit));
+		return(parent::get_list($delete,$order,$limit));
 	}
 
 	function get_list_where($arr,$delete=false,$order=null,$limit=null)
 	{
-		return(parent::get_list_where($arr,null,$delete,$order,$limit));
+		return(parent::get_list_where($arr,$delete,$order,$limit));
 	}
 
 	function get_all($delete=false,$prepare=true,$order=null,$limit=null)
 	{
-		return(parent::get_all(null,$delete,$prepare,$order,$limit));
+		return(parent::get_all($delete,$prepare,$order,$limit));
 	}
 
 	function get_all_where($arr,$delete=false,$prepare=true,$order=null,$limit=null)
 	{
-		return(parent::get_all_where($arr,null,$delete,$prepare,$order,$limit));
+		return(parent::get_all_where($arr,$delete,$prepare,$order,$limit));
 	}
 
 	function get_all_number($id=0)
@@ -171,7 +176,7 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 		{
 			$info = $list[$i];
 
-			if($id === (int) $info['id'] || xivo_empty($info['number']) === true)
+			if($id === (int) $info['id'] || xivo_haslen($info['number']) === false)
 				continue;
 
 			$r[] = $info;

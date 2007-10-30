@@ -57,6 +57,21 @@ class xivo_user_abstract_sql
 		return($r);
 	}
 
+	function get_nb($disable=null)
+	{
+		$where = '';
+
+		if($disable !== null)
+			$arr['valid'] = intval((bool) $disable);
+
+		if(is_array($arr) === true && ($where = $this->_dso->where($arr)) === false)
+			return(false);
+
+		$r = $this->_dso->select_count($this->_param['table'],null,$where);
+
+		return($r);
+	}
+
 	function get_by_login_pass($login,$pass)
 	{
 		$where = 'login = \''.$this->_dso->escape_string($login).'\''.
@@ -77,24 +92,9 @@ class xivo_user_abstract_sql
 		$where = '';
 
 		if(empty($arr) === false)
-			$where = ' WHERE meta IN(\''.implode('\',\'',array_map(array(&$this->_dso,'escape_string'), $arr)).'\')';
+			$where = $this->_dso->in('meta',$arr);
 
-		$rs = $this->_dso->query('SELECT * FROM '.$this->_param['table'].$where);
-
-		if($rs === false)
-			return(false);
-
-		$r = array();
-
-		while($rw = $this->_dso->fetch_assoc($rs))
-		{
-			$rw['valid'] = (bool) $rw['valid'];
-			$rw['obj'] = xivo_unserialize($rw['obj']);
-			$r[] = $rw;
-		}
-
-		if($this->_dso->is_free() === true)
-			$this->_dso->free($rs);
+		$r = $this->_dso->select_all($this->_param['table'],null,$where);
 
 		if(isset($r[0]) === false)
 			$r = false;

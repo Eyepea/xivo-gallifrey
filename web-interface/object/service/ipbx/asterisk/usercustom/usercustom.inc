@@ -31,11 +31,6 @@ class xivo_service_asterisk_usercustom extends xivo_service_asterisk_abstract
 		return($data);
 	}
 
-	function get_nb($arr=null,$disable=null)
-	{
-		return($this->_dso->get_nb($arr,$disable));
-	}
-
 	function add($arr,$id=0)
 	{
 		if(is_array($arr) === false)

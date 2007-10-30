@@ -36,7 +36,7 @@
 </div>
 <div class="clearboth"></div>
 
-<div id="description" class="fm-field"><p><label id="lb-rightcall-description" for="it-rightcall-description"><?=$this->bbf('fm_rightcall_description');?></label></p>
+<div class="fm-field fm-description"><p><label id="lb-rightcall-description" for="it-rightcall-description"><?=$this->bbf('fm_rightcall_description');?></label></p>
 <?=$form->textarea(array('field' => false,'label' => false,'name' => 'rightcall[description]','id' => 'it-rightcall-description','cols' => 60,'rows' => 5,'default' => $element['rightcall']['description']['default']),$info['rightcall']['description']);?>
 </div>
 

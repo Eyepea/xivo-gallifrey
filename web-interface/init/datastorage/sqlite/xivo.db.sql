@@ -15,9 +15,30 @@ CREATE INDEX i18ncache__idx__language ON i18ncache(language);
 CREATE INDEX i18ncache__idx__dupdate ON i18ncache(dupdate);
 
 
+DROP TABLE server;
+CREATE TABLE server (
+ id integer unsigned,
+ name varchar(64) NOT NULL DEFAULT '',
+ host varchar(255) NOT NULL DEFAULT '',
+ port smallint unsigned NOT NULL,
+ ssl tinyint(1) NOT NULL DEFAULT 0,
+ disable tinyint(1) NOT NULL DEFAULT 0,
+ dcreate integer unsigned NOT NULL DEFAULT 0,
+ description text NOT NULL,
+ PRIMARY KEY(id)
+);
+
+CREATE INDEX server__idx__host ON server(host);
+CREATE INDEX server__idx__port ON server(port);
+CREATE INDEX server__idx__ssl ON server(ssl);
+CREATE INDEX server__idx__disable ON server(disable);
+CREATE UNIQUE INDEX server__uidx__name ON server(name);
+CREATE UNIQUE INDEX server__uidx__host_port ON server(host,port);
+
+
 DROP TABLE session;
 CREATE TABLE session (
- key varchar(32) NOT NULL DEFAULT '',
+ key char(32) NOT NULL DEFAULT '',
  start integer unsigned NOT NULL DEFAULT 0,
  expire integer unsigned NOT NULL DEFAULT 0,
  userid integer unsigned NOT NULL DEFAULT 0,
