@@ -52,11 +52,15 @@ class LinksysProv(BaseProv):
 		this phone.
 		
 		"""
-		template_file = open(pgc['templates_dir'] + "linksys-" + self.phone["model"] + ".cfg")
+                __model = self.phone["model"]
+		template_file = open(pgc['templates_dir'] + "linksys-" + __model + ".cfg")
 		template_lines = template_file.readlines()
 		template_file.close()
-                __macaddr = self.phone["macaddr"].lower()
-		tmp_filename = LINKSYS_COMMON_DIR + self.phone["model"] + '-' + __macaddr + ".cfg.tmp"
+                if __model == 'pap2t':
+                        __macaddr = self.phone["macaddr"].lower().replace(':','')
+                else:
+                        __macaddr = self.phone["macaddr"].lower()
+		tmp_filename = LINKSYS_COMMON_DIR + __model + '-' + __macaddr + ".cfg.tmp"
 		cfg_filename = tmp_filename[:-4]
 		txt = provsup.txtsubst(template_lines,
                                        { "user_realname1": myprovinfo["name"],
