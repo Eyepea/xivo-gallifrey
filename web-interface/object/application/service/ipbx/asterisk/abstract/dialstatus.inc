@@ -216,13 +216,13 @@ class xivo_application_service_asterisk_dialstatus_abstract extends xivo_applica
 
 	function reverse_add()
 	{
-		if(is_array($this->_return) === false || ($nb = count($this->_return)) === 0)
+		if(($arr = xivo_get_aks($this->_return)) === false)
 			continue;
 
-		for($i = 0;$i < $nb;$i++)
+		for($i = 0;$i < $arr['cnt'];$i++)
 		{
-			if($this->_return[$i] !== false)
-				$this->_dialstatus->delete($this->_return[$i]);
+			if($this->_return[$arr['keys'][$i]] !== false)
+				$this->_dialstatus->delete($this->_return[$arr['keys'][$i]]);
 		}
 
 		return(true);

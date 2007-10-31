@@ -419,13 +419,13 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 					if(isset($module) === false)
 						$module = &$this->_phonebooknumber;
 
-					if(is_array($val) === false || ($nb = count($val)) === 0)
+					if(($arrval = xivo_get_aks($val)) === false)
 						continue;
 
-					for($j = 0;$j < $nb;$j++)
+					for($j = 0;$j < $arrval['cnt'];$j++)
 					{
-						if($val[$j] !== false)
-							$module->delete($val[$j]);
+						if($val[$arrval['keys'][$j]] !== false)
+							$module->delete($val[$arrval['keys'][$j]]);
 					}
 					break;
 			}
