@@ -6,12 +6,15 @@ class xivo_service_asterisk_autoprov_abstract_sql extends xivo_service_asterisk_
 {
 	var $_param	= array('table' => 'phone');
 
-	function get($id)
+	function get($arr)
 	{
-		if(is_string($id) === false)
-			return(false);
-
-		$arr = array('macaddr' => $id);
+		if(is_array($arr) === false)
+		{
+			if(is_string($arr) !== false)
+				$arr = array('macaddr' => $arr);
+			else
+				return(false);
+		}
 
 		return(parent::get($arr));
 	}
