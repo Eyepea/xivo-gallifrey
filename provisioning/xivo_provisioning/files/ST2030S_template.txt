@@ -1,8 +1,8 @@
 [sip]
-DisplayName1={{DisplayName1}}
-TEL1Number={{TEL1Number}}
-regid1={{regid1}}
-regpwd1={{regpwd1}}
+DisplayName1={{user_display_name}}
+TEL1Number={{user_phone_ident}}
+regid1={{user_phone_ident}}
+regpwd1={{user_phone_passwd}}
 
 [sys]
 config_sn={{config_sn}}

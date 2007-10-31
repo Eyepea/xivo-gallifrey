@@ -25,11 +25,6 @@ import time # for TimeoutingTelnet
 THOMSON_COMMON_DIR = pgc['tftproot'] + "Thomson/"
 THOMSON_COMMON_INF = THOMSON_COMMON_DIR + "ST" # + "2030S_common"
 
-# THOMSON BUGBUG #3
-# THOMSON_SPEC_DIR must be *TFTPROOT* because the phone will only download its
-# mac specific configuration from this directory.
-THOMSON_SPEC_DIR = pgc['tftproot']
-
 THOMSON_USER = "admin"		# XXX
 THOMSON_PASSWD = "superpass"	# XXX
 THOMSON_SPEC_TXT_TEMPLATE = pgc['templates_dir'] + "ST" # + "2030S_template.txt"
@@ -133,13 +128,13 @@ class ThomsonProv(BaseProv):
 			multilines = str(myprovinfo["simultcalls"])
 
 		txt = provsup.txtsubst(txt_template_lines, {
-			"DisplayName1": myprovinfo["name"],
+			"user_display_name": myprovinfo["name"],
 # THOMSON BUGBUG #1
 # myprovinfo["number"] is volontarily not set in "TEL1Number" because Thomson
 # phones authentify with their telnumber.. :/
-			"TEL1Number": myprovinfo["ident"],
-			"regid1": myprovinfo["ident"],
-			"regpwd1": myprovinfo["passwd"],
+			"user_phone_ident":  myprovinfo["ident"],
+			"user_phone_number": myprovinfo["number"],
+			"user_phone_passwd": myprovinfo["passwd"],
 			"simultcalls": multilines,
 			# <WARNING: THIS FIELD MUST STAY IN LOWER CASE IN THE TEMPLATE AND MAC SPECIFIC FILE>
 			"config_sn": self.__generate_timestamp()

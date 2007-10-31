@@ -73,17 +73,14 @@ class SnomProv(BaseProv):
 		template_file.close()
 		tmp_filename = SNOM_SPEC_DIR + "snom" + self.phone["model"] + '-' + self.phone["macaddr"].replace(':','') + '.htm.tmp'
 		htm_filename = tmp_filename[:-4]
-		txt = provsup.txtsubst(template_lines, {
-			"user_realname1": provinfo["name"],
-			"user_name1": provinfo["ident"],
-			"user_pname1": provinfo["number"],
-			"user_pass1": provinfo["passwd"],
-			"http_user": SNOM_COMMON_HTTP_USER,
-			"http_pass": SNOM_COMMON_HTTP_PASS,
-			"phone_name": provinfo["number"],
-			"user_idle_text1": provinfo["name"],
-			"user_sipusername_as_line1": "on"
-		}, htm_filename)
+		txt = provsup.txtsubst(template_lines,
+                                       { "user_display_name": provinfo["name"],
+                                         "user_phone_ident":  provinfo["ident"],
+                                         "user_phone_number": provinfo["number"],
+                                         "user_phone_passwd": provinfo["passwd"],
+                                         "http_user": SNOM_COMMON_HTTP_USER,
+                                         "http_pass": SNOM_COMMON_HTTP_PASS },
+                                       htm_filename)
 		tmp_file = open(tmp_filename, 'w')
 		tmp_file.writelines(txt)
 		tmp_file.close()

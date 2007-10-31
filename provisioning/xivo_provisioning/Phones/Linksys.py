@@ -62,13 +62,11 @@ class LinksysProv(BaseProv):
 		tmp_filename = LINKSYS_COMMON_DIR + __model + '-' + __macaddr + ".cfg.tmp"
 		cfg_filename = tmp_filename[:-4]
 		txt = provsup.txtsubst(template_lines,
-                                       { "user_realname1": myprovinfo["name"],
-                                         "user_name1": myprovinfo["ident"],
-                                         "user_pname1": myprovinfo["number"],
-                                         "user_pass1": myprovinfo["passwd"],
-                                         "phone_name": myprovinfo["number"],
-                                         "user_idle_text1": myprovinfo["name"],
-                                         "asterisk_ipv4" : pgc['asterisk_ipv4'], 
+                                       { "user_display_name": myprovinfo["name"],
+                                         "user_phone_ident":  myprovinfo["ident"],
+                                         "user_phone_number": myprovinfo["number"],
+                                         "user_phone_passwd": myprovinfo["passwd"],
+                                         "asterisk_ipv4" : pgc['asterisk_ipv4'],
                                          "ntp_server_ipv4" : pgc['ntp_server_ipv4']
                                          },
                                        cfg_filename)

@@ -65,12 +65,10 @@ class PolycomProv(BaseProv):
                                             { "phone.cfg": __macaddr + "-phone.cfg" },
                                             cfg_main_filename)
 		txt_phone = provsup.txtsubst(template_phone_lines,
-                                            { "user_realname1": myprovinfo["name"],
-                                              "user_name1":     myprovinfo["ident"],
-                                              "user_pname1":    myprovinfo["number"],
-                                              "user_pass1":     myprovinfo["passwd"],
-                                              "phone_name":     myprovinfo["number"],
-                                              "user_idle_text1": myprovinfo["name"],
+                                            { "user_display_name": myprovinfo["name"],
+                                              "user_phone_ident":  myprovinfo["ident"],
+                                              "user_phone_number": myprovinfo["number"],
+                                              "user_phone_passwd": myprovinfo["passwd"],
                                               "asterisk_ipv4" : pgc['asterisk_ipv4']
                                               },
                                             cfg_phone_filename)
