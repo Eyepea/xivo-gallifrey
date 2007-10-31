@@ -86,4 +86,7 @@ def connect_by_uri(uri):
 	__apply_types(params, __typemap)
 	return PgSQL.connect(**params)
 
-anysql.register_uri_backend('postgres', connect_by_uri, PgSQL)
+def escape(s):
+	return '"' + s.replace('"', '""') + '"'
+
+anysql.register_uri_backend('postgres', connect_by_uri, PgSQL, None, escape)

@@ -47,4 +47,7 @@ def c14n_uri(uri):
 	puri[PATH] = os.path.abspath(puri[PATH])
 	return uri_help_unsplit(tuple(puri))
 
-anysql.register_uri_backend('sqlite', connect_by_uri, sqlite, c14n_uri)
+def escape(s):
+	return '"' + s.replace('"', '""') + '"'
+
+anysql.register_uri_backend('sqlite', connect_by_uri, sqlite, c14n_uri, escape)

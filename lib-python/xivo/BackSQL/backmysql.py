@@ -100,4 +100,7 @@ def connect_by_uri(uri):
 	__apply_types(params, __typemap)
 	return MySQLdb.connect(**params)
 
-anysql.register_uri_backend('mysql', connect_by_uri, MySQLdb)
+def escape(s):
+	return '`' + s.replace('`', '``') + '`'
+
+anysql.register_uri_backend('mysql', connect_by_uri, MySQLdb, None, escape)

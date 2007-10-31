@@ -33,6 +33,11 @@ any_paramstyle='format'
 any_threadsafety=1
 any_apilevel='2.0'
 
+METHOD_CONNECT = 0
+METHOD_MODULE = 1
+METHOD_C14N_URI = 2
+METHOD_ESCAPE = 3
+
 class cursor(object):
 	class row(list):
 		def __init__(self, col2idx_map, dbapi2_result):
@@ -44,8 +49,9 @@ class cursor(object):
 			else:
 				return list.__getitem__(self, self.__col2idx_map[k])
 
-	def __init__(self, dbapi2_cursor):
+	def __init__(self, dbapi2_cursor, methods):
 		self.__dbapi2_cursor = dbapi2_cursor
+		self.__methods = methods
 
 	def close(self):
 		self.__dbapi2_cursor.close()
@@ -56,15 +62,20 @@ class cursor(object):
 		WARNING: It is not recommended to SELECT *
 		"""
 
-		self.__col2idx_map = {}
-		col_list = []
+		if "${columns}" not in sql_query and columns:
+			raise TypeError("received columns but ${columns} not in query")
 
-		for idx,col in enumerate(columns):
-			self.__col2idx_map[col] = idx
-			col_list.append(col)
+		if columns:
+			self.__col2idx_map = {}
+			col_list = []
+
+			for idx,col in enumerate(columns):
+				self.__col2idx_map[col] = idx
+				col_list.append(col)
 
 		if "${columns}" in sql_query:
-			return sql_query.replace("${columns}", ",".join(col_list))
+			escape = self.__methods[METHOD_ESCAPE]
+			return sql_query.replace("${columns}", ",".join([escape(col) )
 		elif columns:
 			raise TypeError("received columns but ${columns} not in query")
 		else:
@@ -122,8 +133,9 @@ class cursor(object):
 	arraysize = property(__get_arraysize, __set_arraysize)
 
 class connection:
-	def __init__(self, dbapi2_conn):
+	def __init__(self, dbapi2_conn, methods):
 		self.__dbapi2_conn = dbapi2_conn
+		self.__methods = methods
 
 	def close(self):
 		self.__dbapi2_conn.close()
@@ -135,7 +147,7 @@ class connection:
 		self.__dbapi2_conn.rollback()
 
 	def cursor(self):
-		return cursor(self.__dbapi2_conn.cursor())
+		return cursor(self.__dbapi2_conn.cursor(), self.__methods)
 
 def __compare_api_level(als1, als2):
 	lst1 = map(int, als1.split('.'))
@@ -147,7 +159,7 @@ def __compare_api_level(als1, als2):
 	else:
 		return 0
 
-def register_uri_backend(uri_scheme, create_method, module, c14n_uri = None):
+def register_uri_backend(uri_scheme, create_method, module, c14n_uri, escape):
 	"""This method is intended to be used by backends only.
 	
 	It lets them register their services, identified by the URI scheme,
@@ -180,7 +192,7 @@ def register_uri_backend(uri_scheme, create_method, module, c14n_uri = None):
 		raise NotImplementedError, "This module does not support registration of DBAPI services of threadsafety %d (more generally under %d)" % (mod_threadsafety, any_threadsafety)
 	if not urisup.valid_scheme(uri_scheme):
 		raise urisup.InvalidSchemeError, "Can't register an invalid URI scheme \"%s\"" % uri_scheme
-	__uri_create_methods[uri_scheme] = (create_method, module, c14n_uri)
+	__uri_create_methods[uri_scheme] = (create_method, module, c14n_uri, escape)
 
 def _get_methods_by_uri(sqluri):
 	uri_scheme = urisup.uri_help_split(sqluri)[0]
@@ -200,8 +212,9 @@ def connect_by_uri(sqluri):
 	
 	A malformed URI will result in an exception being raised by the
 	supporting URI parsing module. """
-	uri_connect_method = _get_methods_by_uri(sqluri)[0]
-	return connection(uri_connect_method(sqluri))
+	methods = _get_methods_by_uri(sqluri)
+	uri_connect_method = methods[0]
+	return connection(uri_connect_method(sqluri), methods)
 
 def c14n_uri(sqluri):
 	"""Ask the backend to c14n the uri. See register_uri_backend() for
