@@ -58,7 +58,9 @@ class xivo_service_asterisk_rightcallexten extends xivo_service_asterisk_abstrac
 
 	function edit($id,$arr)
 	{
-		if(($id = xivo_uint($id)) === 0 || is_array($arr) === false)
+		if(($id = xivo_uint($id)) === 0
+		|| is_array($arr) === false
+		|| ($info = $this->get($id)) === false)
 			return(false);
 
 		unset($arr['extenhash']);
@@ -72,19 +74,36 @@ class xivo_service_asterisk_rightcallexten extends xivo_service_asterisk_abstrac
 			$arr['exten'] = $this->_sre->clean_extension($arr['exten']);
 		}
 
+		if(isset($arr['rightcallid']) === false)
+			$rightcallid = $info['rightcallid'];
+		else
+			$rightcallid = $arr['rightcallid'];
+
+		if(isset($arr['extenhash']) === false)
+			$extenhash = $info['extenhash'];
+		else
+			$extenhash = $arr['extenhash'];
+
+		if($this->exists($rightcallid,$extenhash,$id) !== false)
+			return(false);
+
 		return($this->_dso->edit($id,$arr));
 	}
 
-	function exists($rightcallid,$extenhash)
+	function exists($rightcallid,$extenhash,$id=null)
 	{
-		if(($rightcallid = xivo_uint($rightcallid)) === 0)
+		$id = $id !== null ? xivo_uint($id) : null;
+
+		if(($rightcallid = xivo_uint($rightcallid)) === 0
+		|| xivo_haslen($extenhash) === false)
 			return(null);
 
 		$where = array();
 		$where['rightcallid'] = $rightcallid;
 		$where['extenhash'] = $extenhash;
 
-		if($this->_dso->exists_exten($where) !== false)
+		if(($whereid = $this->get_id($where)) !== false
+		&& ($id === null || $whereid !== $id) === true)
 			return(true);
 
 		return(false);

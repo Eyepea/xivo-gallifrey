@@ -216,7 +216,7 @@ class xivo_application_service_asterisk_dialstatus_abstract extends xivo_applica
 
 	function reverse_add()
 	{
-		if(is_array($val) === false || ($nb = count($val)) === 0)
+		if(is_array($this->_return) === false || ($nb = count($this->_return)) === 0)
 			continue;
 
 		for($i = 0;$i < $nb;$i++)

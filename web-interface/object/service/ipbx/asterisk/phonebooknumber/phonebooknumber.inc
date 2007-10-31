@@ -73,7 +73,7 @@ class xivo_service_asterisk_phonebooknumber extends xivo_service_asterisk_abstra
 		$where['phonebookid'] = $phonebookid;
 		$where['type'] = $type;
 
-		if(($whereid = $this->_dso->exists_type($where)) !== false
+		if(($whereid = $this->get_id($where)) !== false
 		&& ($id === null || $whereid !== $id) === true)
 			return(true);
 

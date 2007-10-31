@@ -1,8 +1,8 @@
 <?php
 
-xivo_service_asterisk::required(array('realstatic','datastorage','abstract','datastorage.inc'),true);
+require_once(XIVO_PATH_OBJECT.XIVO_SEP_DIR.'abstract'.XIVO_SEP_DIR.'datastorage'.XIVO_SEP_DIR.'datastorage.inc');
 
-class xivo_service_asterisk_realstatic_abstract_sql extends xivo_service_asterisk_realstatic_abstract_datastorage
+class xivo_service_asterisk_realstatic_abstract_sql extends xivo_abstract_datastorage
 {
 	function xivo_service_asterisk_realstatic_abstract_sql(&$dso,$param=array())
 	{

@@ -83,6 +83,10 @@ class xivo_server extends xivo_libdatastorage_abstract
 	{
 		$id = $id !== null ? xivo_uint($id) : null;
 
+		if(xivo_haslen($host) === false
+		|| xivo_haslen($port) === false)
+			return(null);
+
 		$where = array();
 		$where['host'] = $host;
 		$where['port'] = $port;

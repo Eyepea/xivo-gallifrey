@@ -73,10 +73,8 @@ class xivo_service_asterisk_extenumbers extends xivo_service_asterisk_abstract
 	{
 		$id = $id !== null ? xivo_uint($id) : null;
 
-		if(is_array($arr) === false)
-			return(null);
-
-		if(xivo_haslen($arr,'exten') === false
+		if(is_array($arr) === false
+		|| xivo_haslen($arr,'exten') === false
 		|| ($exten = $this->_sre->chk_extension($arr['exten'])) === false)
 			return(null);
 
@@ -96,10 +94,8 @@ class xivo_service_asterisk_extenumbers extends xivo_service_asterisk_abstract
 
 	function exists_type($arr)
 	{
-		if(is_array($arr) === false)
-			return(null);
-
-		if(xivo_haslen($arr,'exten') === false
+		if(is_array($arr) === false
+		|| xivo_haslen($arr,'exten') === false
 		|| xivo_haslen($arr,'type') === false
 		|| ($exten = $this->_sre->chk_extension($arr['exten'])) === false)
 			return(null);

@@ -155,7 +155,7 @@ class xivo_service_asterisk_dialstatus extends xivo_service_asterisk_abstract
 		$where['category'] = $category;
 		$where['categoryval'] = $categoryval;
 
-		if(($whereid = $this->_dso->exists_category($where)) !== false
+		if(($whereid = $this->get_id($where)) !== false
 		&& ($id === null || $whereid !== $id) === true)
 			return(true);
 

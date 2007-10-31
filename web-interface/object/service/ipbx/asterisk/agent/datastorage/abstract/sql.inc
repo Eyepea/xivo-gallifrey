@@ -5,12 +5,6 @@ xivo_service_asterisk::required(array('staticconf','datastorage','abstract','sql
 class xivo_service_asterisk_agent_abstract_sql extends xivo_service_asterisk_staticconf_abstract_sql
 {
 	var $_param	= array('table' => 'agent');
-	var $_dso	= null;
-
-	function _init(&$dso,$param=array())
-	{
-		parent::_init(&$dso,$param);
-	}
 
 	function get_all_by_var_metric($id,$disable=null)
 	{

@@ -659,6 +659,9 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$arr['vendormodel'] = $arr['modact'] = '';
 		else
 		{
+			if(isset($arr['modact']) === false)
+				$arr['modact'] = 'prov';
+
 			$arr['iduserfeatures'] = 0;
 			$vendor = substr($arr['vendormodel'],0,$pos);
 			$model = substr($arr['vendormodel'],$pos+1);

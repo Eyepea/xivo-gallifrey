@@ -38,6 +38,34 @@ class xivo_service_asterisk_rightcallmember extends xivo_service_asterisk_abstra
 		return($this->_dso->add($arr));
 	}
 
+	function edit($id,$arr)
+	{
+		if(($id = xivo_uint($id)) === 0
+		|| is_array($arr) === false
+		|| ($info = $this->get($id)) === false)
+			return(false);
+
+		if(isset($arr['rightcallid']) === false)
+			$rightcallid = $info['rightcallid'];
+		else
+			$rightcallid = $arr['rightcallid'];
+
+		if(isset($arr['type']) === false)
+			$type = $info['type'];
+		else
+			$type = $arr['type'];
+
+		if(isset($arr['typeval']) === false)
+			$typeval = $info['typeval'];
+		else
+			$typeval = $arr['typeval'];
+
+		if($this->exists($rightcallid,$type,$typeval,$id) !== false)
+			return(false);
+
+		return($this->_dso->edit($id,$arr));
+	}
+
 	function is_valid($type,$typeval,$disable=null)
 	{
 		$type = strval($type);
@@ -66,8 +94,10 @@ class xivo_service_asterisk_rightcallmember extends xivo_service_asterisk_abstra
 		return($info);
 	}
 
-	function exists($rightcallid,$type,$typeval)
+	function exists($rightcallid,$type,$typeval,$id=null)
 	{
+		$id = $id !== null ? xivo_uint($id) : null;
+
 		if(($rightcallid = xivo_uint($rightcallid)) === 0
 		|| $this->chk_element_value('type',$type) === false
 		|| xivo_haslen($typeval) === false)
@@ -78,7 +108,8 @@ class xivo_service_asterisk_rightcallmember extends xivo_service_asterisk_abstra
 		$where['type'] = $type;
 		$where['typeval'] = $typeval;
 
-		if($this->_dso->exists_member($where) !== false)
+		if(($whereid = $this->get_id($where)) !== false
+		&& ($id === null || $whereid !== $id) === true)
 			return(true);
 
 		return(false);

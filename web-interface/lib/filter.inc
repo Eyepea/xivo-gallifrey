@@ -257,6 +257,16 @@ class xivo_filter
 		return(false);
 	}
 
+	function chk_host_subnet_ipv4_strict($value)
+	{
+		if(xivo_filter::chk_ipv4_strict($value) === true
+		|| xivo_filter::chk_host($value) === true
+		|| xivo_filter::chk_ipv4_subnet($value) === true)
+			return(true);
+
+		return(false);
+	}
+
 	function chk_bool($value)
 	{
 		return((xivo_bool($value) === true ? 1 : 0));

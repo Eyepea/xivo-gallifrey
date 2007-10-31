@@ -7,12 +7,20 @@ $userstat = $serverstat = array();
 $userstat['enable'] = $serverstat['enable'] = 0;
 $userstat['disable'] = $serverstat['disable'] = 0;
 
-$userstat['enable'] = $_USR->get_nb(true);
-$userstat['disable'] = $_USR->get_nb(false);
+if(($enableuser = $_USR->get_nb(true)) !== false)
+	$userstat['enable'] = $enableuser;
+
+if(($disableuser = $_USR->get_nb(false)) !== false)
+	$userstat['disable'] = $disableuser;
+
 $userstat['total'] = $userstat['enable'] + $userstat['disable'];
 
-$serverstat['enable'] = $_SVR->get_nb(null,false);
-$serverstat['disable'] = $_SVR->get_nb(null,true);
+if(($enableserver = $_SVR->get_nb(null,false)) !== false)
+	$serverstat['enable'] = $enableserver;
+
+if(($disableserver = $_SVR->get_nb(null,true)) !== false)
+	$serverstat['disable'] = $disableserver;
+
 $serverstat['total'] = $serverstat['enable'] + $serverstat['disable'];
 
 $_HTML->assign('userstat',$userstat);
