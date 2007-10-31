@@ -213,7 +213,9 @@ class xivo_service_asterisk extends xivo_service_abstract
 			$label = (string) $sess_sre['infos']['label'];
 			$version = (string) $sess_sre['infos']['version'];
 		}
-		else if(($infos = $this->discuss('show version',true)) !== false
+		else if((defined('XIVO_SESS_ENABLE') === false
+		        || (bool) XIVO_SESS_ENABLE === true) === true
+		&& ($infos = $this->discuss('show version',true)) !== false
 		&& is_array($infos) === true && isset($infos[0]) === true)
 		{
 			$infos = explode(' ',$infos[0],3);
