@@ -14,6 +14,8 @@ from provsup import BaseProv
 from provsup import ProvGeneralConf as pgc
 
 LINKSYS_COMMON_DIR = pgc['tftproot'] + "Linksys/"
+LINKSYS_COMMON_HTTP_USER = "admin"
+LINKSYS_COMMON_HTTP_PASS = "adminpass"
 
 class LinksysProv(BaseProv):
 	label = "Linksys"
@@ -29,25 +31,25 @@ class LinksysProv(BaseProv):
                        self.phone["model"] != "pap2t":
 			raise ValueError, "Unknown Linksys model '%s'" % self.phone["model"]
 
-	def __action(self, command):
+	def __action(self, command, user, passwd):
 		# -q -- quiet
 		# -nv -- non-verbose
 		# -O /dev/null -- send result into /dev/null
 		# -T 30 -- timeout after 30s
 		# -t 1 -- don't retry
-		os.system(pgc['wget_cmd'] + ' -t 1 -T %s -q -nv -O /dev/null http://%s/admin/%s'
-                          % (str(pgc['wget_to_s']), self.phone['ipv4'], command))
+		os.system(pgc['wget_cmd'] + ' -t 1 -T %s -q -nv -O /dev/null --http-user=%s --http-passwd=%s http://%s/admin/%s'
+                          % (str(pgc['wget_to_s']), user, passwd, self.phone['ipv4'], command))
 
 	def do_reinit(self):
 		"""Entry point to send the (possibly post) reinit command to
 		the phone.
 		
 		"""
-		self.__action("reboot")
+		self.__action("reboot", LINKSYS_COMMON_HTTP_USER, LINKSYS_COMMON_HTTP_PASS)
 
 	def do_reboot(self):
 		"Entry point to send the reboot command to the phone."
-		self.__action("reboot")
+		self.__action("reboot", LINKSYS_COMMON_HTTP_USER, LINKSYS_COMMON_HTTP_PASS)
 
 
 	def __generate(self, myprovinfo):
