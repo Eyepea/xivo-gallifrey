@@ -1,6 +1,6 @@
 """Support for Linksys phones for XIVO Autoprovisioning
 
-Linksys SPA901, SPA942, SPA962 and PAP2T are supported.
+Linksys SPA901, SPA921, SPA922, SPA942, SPA962 and PAP2T are supported.
 
 Copyright (C) 2007, Proformatique
 
@@ -21,6 +21,8 @@ class LinksysProv(BaseProv):
 		BaseProv.__init__(self, phone)
 		# TODO: handle this with a lookup table stored in the DB?
 		if self.phone["model"] != "spa901" and \
+                       self.phone["model"] != "spa921" and \
+                       self.phone["model"] != "spa922" and \
                        self.phone["model"] != "spa942" and \
                        self.phone["model"] != "spa962" and \
                        self.phone["model"] != "pap2t":
@@ -98,7 +100,12 @@ class LinksysProv(BaseProv):
 
 	def get_phones(cls):
 		"Report supported phone models for this vendor."
-		return (("spa901", "SPA901"), ("spa942", "SPA942"), ("spa962", "SPA962"), ("pap2t", "PAP2T"))
+		return (("spa901", "SPA901"),
+                        ("spa921", "SPA921"),
+                        ("spa922", "SPA922"),
+                        ("spa942", "SPA942"),
+                        ("spa962", "SPA962"),
+                        ("pap2t", "PAP2T"))
 	get_phones = classmethod(get_phones)
 
 	# Entry points for the AGI
