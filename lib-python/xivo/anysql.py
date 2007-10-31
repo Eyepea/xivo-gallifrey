@@ -33,6 +33,110 @@ any_paramstyle='format'
 any_threadsafety=1
 any_apilevel='2.0'
 
+class cursor(object):
+	class row(list):
+		def __init__(self, col2idx_map, dbapi2_result):
+			list.__init__(self, dbapi2_result)
+			self.__col2idx_map = col2idx_map
+		def __getitem__(self, k):
+			if isinstance(k, int):
+				return list.__getitem__(self, k)
+			else:
+				return list.__getitem__(self, self.__col2idx_map[k])
+
+	def __init__(self, dbapi2_cursor):
+		self.__dbapi2_cursor = dbapi2_cursor
+
+	def close(self):
+		self.__dbapi2_cursor.close()
+
+	def __preparequery(self, sql_query, columns):
+		"""WARNING: Columns is not escaped
+		WARNING: You can't pass a ${columns} literal to the underlying .execute() method
+		WARNING: It is not recommended to SELECT *
+		"""
+
+		self.__col2idx_map = {}
+		col_list = []
+
+		for idx,col in enumerate(columns):
+			self.__col2idx_map[col] = idx
+			col_list.append(col)
+
+		if "${columns}" in sql_query:
+			return sql_query.replace("${columns}", ",".join(col_list))
+		elif columns:
+			raise TypeError("received columns but ${columns} not in query")
+		else:
+			return sql_query
+
+	def query(self, sql_query, columns = None, parameters = None):
+		tmp_query = self.__preparequery(sql_query, columns)
+
+		if parameters is None:
+			self.__dbapi2_cursor.execute(tmp_query)
+		else:
+			self.__dbapi2_cursor.execute(tmp_query, parameters)
+
+	def querymany(self, sql_query, columns, seq_of_parameters):
+		tmp_query = self.__preparequery(sql_query, columns)
+		self.__dbapi2_cursor.executemany(tmp_query, seq_of_parameters)
+
+	def fetchone(self):
+		return self.row(self.__col2idx_map, self.__dbapi2_cursor.fetchone())
+
+	def fetchmany(self, size = None):
+		if size is None:
+			manyrows = self.__dbapi2_cursor.fetchmany()
+		else:
+			manyrows = self.__dbapi2_cursor.fetchmany(size)
+
+		return [self.row(self.__col2idx_map, dbapi2_row) for dbapi2_row in manyrows]
+
+	def fetchall(self):
+		return [self.row(self.__col2idx_map, dbapi2_row) for dbapi2_row in self.__dbapi2_cursor.fetchall()]
+
+	def setinputsizes(self, sizes):
+		self.__dbapi2_cursor.setinputsizes(sizes)
+
+	def setoutputsize(self, size, column = None):
+		if column is None:
+			self.__dbapi2_cursor.setoutputsize(size)
+		else:
+			self.__dbapi2_cursor.setoutputsize(size, column)
+
+	def __get_description(self):
+		return self.__dbapi2_cursor.description
+
+	def __get_rowcount(self):
+		return self.__dbapi2_cursor.rowcount
+
+	def __get_arraysize(self):
+		return self.__dbapi2_cursor.arraysize
+
+	def __set_arraysize(self, arraysize):
+		self.__dbapi2_cursor.arraysize = arraysize
+
+	description = property(__get_description)
+	rowcount = property(__get_rowcount)
+	arraysize = property(__get_arraysize, __set_arraysize)
+
+class connection:
+	def __init__(self, dbapi2_conn):
+		self.__dbapi2_conn = dbapi2_conn
+
+	def close(self):
+		self.__dbapi2_conn.close()
+
+	def commit(self):
+		self.__dbapi2_conn.commit()
+
+	def rollback(self):
+		self.__dbapi2_conn.rollback()
+
+	def cursor(self):
+		return cursor(self.__dbapi2_conn.cursor())
+
 def __compare_api_level(als1, als2):
 	lst1 = map(int, als1.split('.'))
 	lst2 = map(int, als2.split('.'))
@@ -97,7 +201,7 @@ def connect_by_uri(sqluri):
 	A malformed URI will result in an exception being raised by the
 	supporting URI parsing module. """
 	uri_connect_method = _get_methods_by_uri(sqluri)[0]
-	return uri_connect_method(sqluri)
+	return connection(uri_connect_method(sqluri))
 
 def c14n_uri(sqluri):
 	"""Ask the backend to c14n the uri. See register_uri_backend() for
