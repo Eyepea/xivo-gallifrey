@@ -413,9 +413,9 @@ def __provisioning(mode, ctx, phone):
 		phone["model"] = provsup.elem_or_none(phonedesc, "model")
 		prev_iduserfeatures = provsup.elem_or_none(phonedesc, "iduserfeatures")
 
-	if (not phone["vendor"]) or (not phone["model"]) or (not phone["isinalan"]):
-		syslogf(SYSLOG_ERR, "__provisioning(): Missing model or vendor in phone %s" % str(phone))
-		raise BadRequest, "Missing model or vendor or isinalan in phone %s" % str(phone)
+	if ("vendor" not in phone) or ("model" not in phone) or ("isinalan" not in phone):
+                syslogf(SYSLOG_ERR, "__provisioning(): Missing model or vendor in phone %s" % str(phone))
+                raise BadRequest, "Missing model or vendor or isinalan in phone %s" % str(phone)
 
 	if "provcode" in phone and phone["provcode"] != "0" and \
 	   not provsup.well_formed_provcode(phone["provcode"]):
