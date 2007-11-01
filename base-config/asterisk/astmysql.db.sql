@@ -1,6 +1,22 @@
-GRANT ALL PRIVILEGES ON `asterisk`.* TO `asterisk`@localhost IDENTIFIED BY PASSWORD '*DBA86DFECE903EB25FE460A66BDCDA790A1CA4A4';
+GRANT ALL PRIVILEGES ON `asterisk`.* TO `asterisk`@`localhost` IDENTIFIED BY PASSWORD '*DBA86DFECE903EB25FE460A66BDCDA790A1CA4A4';
 CREATE DATABASE IF NOT EXISTS `asterisk` DEFAULT CHARACTER SET utf8;
 USE `asterisk`;
+
+
+DROP TABLE IF EXISTS `accessfeatures`;
+CREATE TABLE `accessfeatures` (
+ `id` int(10) unsigned auto_increment,
+ `host` varchar(255) NOT NULL DEFAULT '',
+ `type` enum('phonebook') NOT NULL,
+ `commented` tinyint(1) NOT NULL DEFAULT 0,
+ PRIMARY KEY(`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE INDEX `accessfeatures__idx__host` ON `accessfeatures`(`host`);
+CREATE INDEX `accessfeatures__idx__type` ON `accessfeatures`(`type`);
+CREATE INDEX `accessfeatures__idx__commented` ON `accessfeatures`(`commented`);
+CREATE UNIQUE INDEX `accessfeatures__uidx__host_type` ON `accessfeatures`(`host`,`type`);
+
 
 DROP TABLE IF EXISTS `agent`;
 CREATE TABLE `agent` (
@@ -907,6 +923,21 @@ CREATE INDEX `schedule__idx__publicholiday` ON `schedule`(`publicholiday`);
 CREATE INDEX `schedule__idx__linked` ON `schedule`(`linked`);
 CREATE INDEX `schedule__idx__commented` ON `schedule`(`commented`);
 CREATE UNIQUE INDEX `schedule__uidx__name` ON `schedule`(`name`);
+
+
+DROP TABLE IF EXISTS `serverfeatures`;
+CREATE TABLE `serverfeatures` (
+ `id` int(10) unsigned auto_increment,
+ `serverid` int(10) unsigned NOT NULL,
+ `type` enum('phonebook') NOT NULL,
+ `commented` tinyint(1) NOT NULL DEFAULT 0,
+ PRIMARY KEY(`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE INDEX `serverfeatures__idx__serverid` ON `serverfeatures`(`serverid`);
+CREATE INDEX `serverfeatures__idx__type` ON `serverfeatures`(`type`);
+CREATE INDEX `serverfeatures__idx__commented` ON `serverfeatures`(`commented`);
+CREATE UNIQUE INDEX `serverfeatures__uidx__serverid_type` ON `serverfeatures`(`serverid`,`type`);
 
 
 DROP TABLE IF EXISTS `trunkfeatures`;

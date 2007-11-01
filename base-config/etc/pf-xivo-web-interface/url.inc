@@ -6,6 +6,7 @@ $array['service/ipbx'] = 'service/ipbx/index.php';
 $array['service/ipbx/general_settings/sip'] = 'service/ipbx/index.php/general_settings/sip/';
 $array['service/ipbx/general_settings/iax'] = 'service/ipbx/index.php/general_settings/iax/';
 $array['service/ipbx/general_settings/voicemail'] = 'service/ipbx/index.php/general_settings/voicemail/';
+$array['service/ipbx/general_settings/phonebook'] = 'service/ipbx/index.php/general_settings/phonebook/';
 $array['service/ipbx/general_settings/advanced'] = 'service/ipbx/index.php/general_settings/advanced/';
 $array['service/ipbx/pbx_settings/users'] = 'service/ipbx/index.php/pbx_settings/users/';
 $array['service/ipbx/pbx_settings/groups'] = 'service/ipbx/index.php/pbx_settings/groups/';

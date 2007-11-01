@@ -1,5 +1,20 @@
 BEGIN TRANSACTION;
 
+DROP TABLE accessfeatures;
+CREATE TABLE accessfeatures (
+ id integer unsigned,
+ host varchar(255) NOT NULL DEFAULT '',
+ type varchar(9) NOT NULL,
+ commented tinyint(1) NOT NULL DEFAULT 0,
+ PRIMARY KEY(id)
+);
+
+CREATE INDEX accessfeatures__idx__host ON accessfeatures(host);
+CREATE INDEX accessfeatures__idx__type ON accessfeatures(type);
+CREATE INDEX accessfeatures__idx__commented ON accessfeatures(commented);
+CREATE UNIQUE INDEX accessfeatures__uidx__host_type ON accessfeatures(host,type);
+
+
 DROP TABLE agent;
 CREATE TABLE agent (
  id integer unsigned,
@@ -905,6 +920,21 @@ CREATE INDEX schedule__idx__publicholiday ON schedule(publicholiday);
 CREATE INDEX schedule__idx__linked ON schedule(linked);
 CREATE INDEX schedule__idx__commented ON schedule(commented);
 CREATE UNIQUE INDEX schedule__uidx__name ON schedule(name);
+
+
+DROP TABLE serverfeatures;
+CREATE TABLE serverfeatures (
+ id integer unsigned,
+ serverid integer unsigned NOT NULL,
+ type varchar(9) NOT NULL,
+ commented tinyint(1) NOT NULL DEFAULT 0,
+ PRIMARY KEY(id)
+);
+
+CREATE INDEX serverfeatures__idx__serverid ON serverfeatures(serverid);
+CREATE INDEX serverfeatures__idx__type ON serverfeatures(type);
+CREATE INDEX serverfeatures__idx__commented ON serverfeatures(commented);
+CREATE UNIQUE INDEX serverfeatures__uidx__serverid_type ON serverfeatures(serverid,type);
 
 
 DROP TABLE trunkfeatures;
