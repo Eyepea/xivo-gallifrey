@@ -1,0 +1,32 @@
+; title_content_name
+Propriétés du carnet d'adresses 
+
+; smenu_access
+Hôtes
+
+; smenu_servers
+Serveurs
+
+; accessfeatures_add
+Ajouter un hôte :
+
+; bt-addaccess
+Ajouter un hôte
+
+; bt-deleteaccess
+Supprimer un ou plusieurs hôtes
+
+; bt-inserverfeatures
+Ajouter un ou plusieurs serveurs ->
+
+; bt-outserverfeatures
+<- Enlever un ou plusieurs serveurs
+
+; create_server
+Créer un serveur
+
+; fm_bt-save
+Sauvegarder
+
+; fm_success-save
+Propriétés du carnet d'adresses sauvegardés avec succès

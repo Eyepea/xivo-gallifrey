@@ -4,9 +4,11 @@ require_once(XIVO_PATH_OBJECT.XIVO_SEP_DIR.'abstract'.XIVO_SEP_DIR.'libdatastora
 
 class xivo_server extends xivo_libdatastorage_abstract
 {
-	var $_conf	= array();
-	var $_dso	= null;
-	var $_filter	= false;
+	var $_conf		= array();
+	var $_dso		= null;
+	var $_filter		= false;
+	var $_origin		= false;
+	var $_origin_list	= false;
 
 	function xivo_server()
 	{
@@ -18,6 +20,7 @@ class xivo_server extends xivo_libdatastorage_abstract
 	{
 		$data['disable'] = (bool) $data['disable'];
 		$data['ssl'] = (bool) $data['ssl'];
+		$data['identity'] = $data['name'].' ('.$data['host'].')';
 
 		return($data);
 	}

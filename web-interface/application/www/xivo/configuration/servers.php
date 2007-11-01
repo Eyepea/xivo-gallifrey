@@ -66,8 +66,17 @@ switch($act)
 	case 'delete':
 		$param['page'] = $page;
 
-		if(isset($_QR['id']) === true)
-			$_SVR->delete(intval($_QR['id']));
+		if(isset($_QR['id']) === true
+		&& ($id = intval($_QR['id'])) > 0
+		&& $_SVR->delete($id) !== false)
+		{
+			$ipbx = &$_SRE->get('ipbx');
+			$serverfeatures = &$ipbx->get_module('serverfeatures');
+
+			$where_serverfeatures = array();
+			$where_serverfeatures['serverid'] = $id;
+			$serverfeatures->delete_where($where_serverfeatures);
+		}
 
 		$_QRY->go($_HTML->url('xivo/configuration/servers'),$param);
 		break;
@@ -77,10 +86,22 @@ switch($act)
 		if(($values = xivo_issa_val('server',$_QR)) === false)
 			$_QRY->go($_HTML->url('xivo/configuration/servers'),$param);
 
+		$ipbx = &$_SRE->get('ipbx');
+		$serverfeatures = &$ipbx->get_module('serverfeatures');
+
+		$where_serverfeatures = array();
+
 		$nb = count($values);
 
 		for($i = 0;$i < $nb;$i++)
-			$_SVR->delete(intval($values[$i]));
+		{
+			if(($id = intval($values[$i])) > 0
+			&& $_SVR->delete($id) !== false)
+			{
+				$where_serverfeatures['serverid'] = $id;
+				$serverfeatures->delete_where($where_serverfeatures);
+			}
+		}
 
 		$_QRY->go($_HTML->url('xivo/configuration/servers'),$param);
 		break;

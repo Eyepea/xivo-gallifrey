@@ -84,6 +84,9 @@ $array['realstatic']['meetme']['datastorage'] = true;
 
 $array['module'] = array();
 
+$array['module']['accessfeatures'] = array();
+$array['module']['accessfeatures']['datastorage'] = true;
+
 $array['module']['agent'] = array();
 $array['module']['agent']['datastorage'] = true;
 
@@ -173,6 +176,9 @@ $array['module']['rightcallmember']['datastorage'] = true;
 
 $array['module']['schedule'] = array();
 $array['module']['schedule']['datastorage'] = true;
+
+$array['module']['serverfeatures'] = array();
+$array['module']['serverfeatures']['datastorage'] = true;
 
 $array['module']['sounds'] = array();
 $array['module']['sounds']['datastorage'] = false;

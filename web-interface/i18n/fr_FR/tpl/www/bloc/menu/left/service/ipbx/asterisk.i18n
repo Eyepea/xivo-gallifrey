@@ -13,6 +13,9 @@ Protocole IAX
 ; mn_left_generalsettings-voicemail
 Messageries vocales
 
+; mn_left_generalsettings-phonebook
+Carnet d'adresses
+
 ; mn_left_generalsettings-advanced
 Avancés
 

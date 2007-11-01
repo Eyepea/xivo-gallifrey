@@ -434,3 +434,13 @@ function xivo_fm_readonly(list,enable)
 		}
 	}
 }
+
+function xivo_fm_select_add_host_ipv4_subnet(id,value)
+{
+	if(xivo_chk_ipv4_strict(value) == false
+	&& xivo_chk_host(value) == false
+	&& xivo_chk_ipv4_subnet(value) == false)
+		return(false);
+
+	return(xivo_fm_select_add_entry(id,value,value));
+}

@@ -123,13 +123,13 @@ class xivo_service_abstract
 		return(($ref = &$r));
 	}
 
-	function &get_application($name)
+	function &get_application($name,$param=null)
 	{
 		$r = false;
 
 		$name = (string) $name;
 
-		if($this->_load_application($name) === true)
+		if($this->_load_application($name,$param) === true)
 			$r = &$this->_application[$name];
 
 		return(($ref = &$r));
@@ -178,7 +178,7 @@ class xivo_service_abstract
 		return(true);
 	}
 
-	function _load_application($name)
+	function _load_application($name,$param=null)
 	{
 		$name = (string) $name;
 
@@ -191,7 +191,7 @@ class xivo_service_abstract
 			return(false);
 		}
 
-		$this->_application[$name] = new $class($this);
+		$this->_application[$name] = new $class($this,$param);
 
 		return(true);
 	}

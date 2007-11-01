@@ -22,6 +22,9 @@ Protocole IAX
 ; acl_service-ipbx-general_settings-voicemail
 Messageries vocales
 
+; acl_service-ipbx-general_settings-phonebook
+Carnet d'adresses
+
 ; acl_service-ipbx-general_settings-advanced
 Avancés
 

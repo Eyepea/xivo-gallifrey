@@ -94,7 +94,7 @@ function xivo_get_exten_buffer(letter,value)
 	if(chr == '')
 		return(false);
 
-	regstr = new RegExp('['+chr+']*$','i');
+	var regstr = new RegExp('['+chr+']*$','i');
 
 	if((buffer = value.match(regstr)) == null)
 		return(false);
@@ -102,7 +102,7 @@ function xivo_get_exten_buffer(letter,value)
 	return(buffer[0].length);
 }
 
-function xivo_chk_exten_pattern(id,value)
+function xivo_chk_exten_pattern(value)
 {
 	if(xivo_is_undef(value) == true || xivo_is_string(value) == false)
 		return(false);
@@ -123,7 +123,7 @@ function xivo_chk_exten_pattern(id,value)
 
 function xivo_fm_select_add_exten(id,value)
 {
-	if((pattern = xivo_chk_exten_pattern(id,value)) == false)
+	if((pattern = xivo_chk_exten_pattern(value)) == false)
 		return(false);
 
 	return(xivo_fm_select_add_entry(id,pattern,pattern));

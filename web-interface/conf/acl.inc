@@ -10,6 +10,7 @@ $array['tree']['service']['ipbx']['general_settings'] = array();
 $array['tree']['service']['ipbx']['general_settings']['sip'] = true;
 $array['tree']['service']['ipbx']['general_settings']['iax'] = true;
 $array['tree']['service']['ipbx']['general_settings']['voicemail'] = true;
+$array['tree']['service']['ipbx']['general_settings']['phonebook'] = true;
 $array['tree']['service']['ipbx']['general_settings']['advanced'] = true;
 
 $array['tree']['service']['ipbx']['pbx_settings'] = array();

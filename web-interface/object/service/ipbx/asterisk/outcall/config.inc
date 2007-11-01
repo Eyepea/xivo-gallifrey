@@ -10,7 +10,8 @@ $array['element']['trunkfeaturesid'] = array();
 $array['element']['trunkfeaturesid']['default'] = '';
 
 $array['element']['context'] = array();
-$array['element']['context']['default'] = '';
+$array['element']['context']['default'] = 'default';
+$array['element']['context']['setdef'] = true;
 
 $array['element']['externprefix'] = array();
 $array['element']['externprefix']['default'] = '';

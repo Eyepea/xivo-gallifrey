@@ -225,7 +225,7 @@ class xivo_filter
 
 		if(xivo_filter::chk_ipv4($ip) === true
 		&& preg_match('#^(?:(?:\d|[1-9]\d|1\d{2}|2[0-4]\d|25[0-5])\.){3}'.
-				'(?:\d|[1-9]\d|1\d{2}|2[0-4]\d|25[0-5])$#i',$ip) === 1)
+				'(?:\d|[1-9]\d|1\d{2}|2[0-4]\d|25[0-5])$#',$ip) === 1)
 			return(true);
 
 		return(false);
@@ -234,8 +234,11 @@ class xivo_filter
 	function chk_host($host)
 	{
 		$host = strval($host);
+		$len = strlen($host);
 
-		if(preg_match('#^[a-z0-9-]+(?:\.[a-z0-9-]+)*\.[a-z]{2,4}$#i',$host) === 1)
+		if($len > 3
+		&& $len < 256
+		&& preg_match('#^[a-z0-9-]+(?:\.[a-z0-9-]+)*\.[a-z]{2,4}$#i',$host) === 1)
 			return(true);
 
 		return(false);

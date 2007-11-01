@@ -14,6 +14,9 @@
 		if($this->chk_acl('general_settings','voicemail') === true):
 			echo '<dd id="mn-general-settings--voicemail">',$url->href_html($this->bbf('mn_left_generalsettings-voicemail'),'service/ipbx/general_settings/voicemail'),'</dd>';
 		endif;
+		if($this->chk_acl('general_settings','phonebook') === true):
+			echo '<dd id="mn-general-settings--phonebook">',$url->href_html($this->bbf('mn_left_generalsettings-phonebook'),'service/ipbx/general_settings/phonebook'),'</dd>';
+		endif;
 		if($this->chk_acl('general_settings','advanced') === true):
 			echo '<dd id="mn-general-settings--advanced">',$url->href_html($this->bbf('mn_left_generalsettings-advanced'),'service/ipbx/general_settings/advanced'),'</dd>';
 		endif;

@@ -39,7 +39,7 @@
 	</ul>
 </div>
 
-	<div class="sb-content">
+<div class="sb-content">
 <form action="#" method="post" accept-charset="utf-8">
 
 <?=$form->hidden(array('name' => XIVO_SESS_NAME,'value' => XIVO_SESS_ID));?>

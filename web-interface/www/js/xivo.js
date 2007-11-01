@@ -560,6 +560,55 @@ function xivo_mk_dprog(id,h)
 	get.style.height = xivo_dprog['current'][id]['cheight']+'px';
 }
 
+function xivo_chk_ipv4_strict(value)
+{
+	if(xivo_is_undef(value) == true || xivo_is_string(value) == false)
+		return(false);
+	
+	var regstr = new RegExp('^(?:(?:\\d|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])\\.){3}'+
+				'(?:\\d|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])$');
+	
+	if(value.match(regstr) == null)
+		return(false);
+
+	return(value);
+}
+
+function xivo_chk_host(value)
+{
+	if(xivo_is_undef(value) == true
+	|| xivo_is_string(value) == false
+	|| value.length < 4
+	|| value.length > 255)
+		return(false);
+	
+	var regstr = new RegExp('^[a-z0-9-]+(?:\\.[a-z0-9-]+)*\\.[a-z]{2,4}$','i');
+
+	if(value.match(regstr) == null)
+		return(false);
+
+	return(value);
+}
+
+function xivo_chk_ipv4_subnet(value)
+{
+	if(xivo_is_undef(value) == true
+	|| xivo_is_string(value) == false
+	|| (pos = value.indexOf('/')) < 7)
+		return(false);
+
+	var mask = xivo_substr(value,pos+1);
+	var ip = xivo_substr(value,0,pos);
+
+	if(xivo_is_uint(mask) === false
+	|| (mask = Number(mask)) === 0
+	|| mask > 32
+	|| xivo_chk_ipv4_strict(ip) == false)
+		return(false);
+		
+	return(true);
+}
+
 function xivo_substr(str,beg,end)
 {
 	var r = '';
