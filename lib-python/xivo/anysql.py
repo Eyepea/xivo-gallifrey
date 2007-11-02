@@ -110,7 +110,12 @@ class cursor(object):
 		the correct behavior that would be that an exception would have
 		been raised)
 		"""
-		return self.row(self.__col2idx_map, self.__dbapi2_cursor.fetchone())
+		result = self.__dbapi2_cursor.fetchone()
+
+		if not result:
+			return result
+		else:
+			return self.row(self.__col2idx_map, result)
 
 	def fetchmany(self, size = None):
 		"""As in DBAPI2.0 (except the fact rows are not tuples but
@@ -123,7 +128,10 @@ class cursor(object):
 		else:
 			manyrows = self.__dbapi2_cursor.fetchmany(size)
 
-		return [self.row(self.__col2idx_map, dbapi2_row) for dbapi2_row in manyrows]
+		if not manyrows:
+			return manyrows
+		else:
+			return [self.row(self.__col2idx_map, dbapi2_row) for dbapi2_row in manyrows]
 
 	def fetchall(self):
 		"""As in DBAPI2.0 (except the fact rows are not tuples but
@@ -131,7 +139,12 @@ class cursor(object):
 		the correct behavior that would be that an exception would have
 		been raised)
 		"""
-		return [self.row(self.__col2idx_map, dbapi2_row) for dbapi2_row in self.__dbapi2_cursor.fetchall()]
+		allrows = self.__dbapi2_cursor.fetchall()
+
+		if not allrows:
+			return allrows
+		else:
+			return [self.row(self.__col2idx_map, dbapi2_row) for dbapi2_row in allrows]
 
 	def setinputsizes(self, sizes):
 		"As in DBAPI2.0"
