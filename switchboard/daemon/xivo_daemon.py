@@ -199,6 +199,7 @@ DAEMON = "daemon-announce"
 HISTSEPAR = ";"
 XIVO_CLI_PHP_HEADER = "XIVO-CLI-PHP"
 REQUIRED_CLIENT_VERSION = 1569
+XIVOVERSION = 0.2
 ITEMS_PER_PACKET = 500
 LENGTH_SSO = 11
 
@@ -310,23 +311,24 @@ def update_history_call(astnum, techno, phoneid, phonenum, nlines, kind):
                         # charset = 'utf8' : add ?charset=utf8 to the URI
 
                         cursor = conn.cursor()
-                        table = "cdr" # configs[astnum].cdr_db_tablename
-                        sql = ["SELECT calldate, clid, src, dst, dcontext, channel, dstchannel, " \
-                               "lastapp, lastdata, duration, billsec, disposition, amaflags, " \
-                               "accountcode, uniqueid, userfield FROM %s " % (table)]
+                        columns = ('calldate', 'clid', 'src', 'dst', 'dcontext', 'channel', 'dstchannel',
+                                   'lastapp', 'lastdata', 'duration', 'billsec', 'disposition', 'amaflags',
+                                   'accountcode', 'uniqueid', 'userfield')
+                        likestring = '%s/%s-%%' %(techno, phoneid)
+                        orderbycalldate = "ORDER BY calldate DESC LIMIT %s" % nlines
+                        
                         if kind == "0": # outgoing calls (all)
-                                # sql.append("WHERE disposition='ANSWERED' ")
-                                sql.append("WHERE channel LIKE '%s/%s-%%' " \
-                                           "ORDER BY calldate DESC LIMIT %s" % (techno, phoneid, nlines))
+                                cursor.query("SELECT ${columns} FROM cdr WHERE channel LIKE %s " + orderbycalldate,
+                                             columns,
+                                             (likestring,))
                         elif kind == "1": # incoming calls (answered)
-                                sql.append("WHERE disposition='ANSWERED' ")
-                                sql.append("AND dstchannel LIKE '%s/%s-%%' " \
-                                           "ORDER BY calldate DESC LIMIT %s" % (techno, phoneid, nlines))
+                                cursor.query("SELECT ${columns} FROM cdr WHERE disposition='ANSWERED' AND dstchannel LIKE %s " + orderbycalldate,
+                                             columns,
+                                             (likestring,))
                         else: # missed calls (received but not answered)
-                                sql.append("WHERE disposition!='ANSWERED' ")
-                                sql.append("AND dstchannel LIKE '%s/%s-%%' " \
-                                           "ORDER BY calldate DESC LIMIT %s" % (techno, phoneid, nlines))
-                        cursor.execute(''.join(sql))
+                                cursor.query("SELECT ${columns} FROM cdr WHERE disposition!='ANSWERED' AND dstchannel LIKE %s " + orderbycalldate,
+                                             columns,
+                                             (likestring,))
                         results = cursor.fetchall()
                         conn.close()
                 except Exception, exc:
@@ -402,6 +404,9 @@ def build_customers(ctx, searchpatterns):
                 except Exception, exc:
                         log_debug(SYSLOG_ERR, '--- exception --- ldaprequest : %s' % str(exc))
 
+        elif dbkind == "file":
+                log_debug(SYSLOG_WARNING, 'the URI <file> is not supported yet for directory-search queries')
+
         elif dbkind != "":
                 if searchpattern == "*":
                         whereline = ""
@@ -409,15 +414,14 @@ def build_customers(ctx, searchpatterns):
                         wl = []
                         for fname in z.search_matching_fields:
                                 wl.append("%s REGEXP '%s'" %(fname, searchpattern))
-                        whereline = "WHERE " + ' OR '.join(wl)
+                        whereline = 'WHERE ' + ' OR '.join(wl)
 
-                sqlrequest = "SELECT %s FROM %s %s;" %(', '.join(z.search_matching_fields),
-                                                       z.sqltable,
-                                                       whereline)
                 try:
                         conn = anysql.connect_by_uri(z.uri)
                         cursor = conn.cursor()
-                        cursor.execute(sqlrequest)
+                        cursor.query("SELECT ${columns} FROM " + z.sqltable + " " + whereline,
+                                     tuple(z.search_matching_fields),
+                                     None)
                         results = cursor.fetchall()
                         conn.close()
                         for result in results:
@@ -1020,11 +1024,13 @@ def manage_login(cfg, requester_ip, requester_port, socket):
 
                                 repstr = "loginok=" \
                                          "context:%s;phonenum:%s;capas:%s;" \
-                                         "version:%s;state:%s" %(userinfo.get('context'),
-                                                                 userinfo.get('phonenum'),
-                                                                 ",".join(capa_user),
-                                                                 __version__.split()[1],
-                                                                 userinfo.get('state'))
+                                         "xivoversion:%s;version:%s;state:%s" \
+                                         %(userinfo.get('context'),
+                                           userinfo.get('phonenum'),
+                                           ",".join(capa_user),
+                                           XIVOVERSION,
+                                           __version__.split()[1],
+                                           userinfo.get('state'))
                                 userinfo_by_requester[requester_ip + ":" + requester_port] = [astnum,
                                                                                               cfg.get('astid'),
                                                                                               proto + userid,
@@ -1098,8 +1104,16 @@ def manage_tcp_connection(connid, allow_events):
                 if usefulmsg == "show_infos":
                         try:
                                 time_uptime = int(time.time() - time_start)
-                                reply = "infos=this_server_version=%s;clients_required_version=%d;uptime=%d s;logged_sb=%d/%d;logged_xc=%d/%d" \
-                                        %(__version__.split()[1], REQUIRED_CLIENT_VERSION, time_uptime,
+                                reply = 'infos=' \
+                                        'xivo_version=%s;' \
+                                        'server_version=%s;' \
+                                        'clients_required_version=%d;' \
+                                        'uptime=%d s;' \
+                                        'logged_sb=%d/%d;' \
+                                        'logged_xc=%d/%d' \
+                                        %(XIVOVERSION,
+                                          __version__.split()[1],
+                                          REQUIRED_CLIENT_VERSION, time_uptime,
                                           conngui_sb, maxgui_sb, conngui_xc, maxgui_xc)
                                 for tcpo in tcpopens_sb:
                                         reply += ":%s:%d" %(tcpo[1],tcpo[2])
@@ -2877,12 +2891,14 @@ class LoginHandler(SocketServer.StreamRequestHandler):
 
                                 replystr = "OK SESSIONID %s " \
                                            "context:%s;phonenum:%s;capas:%s;" \
-                                           "version:%s;state:%s" %(sessionid,
-                                                                   userinfo.get('context'),
-                                                                   userinfo.get('phonenum'),
-                                                                   ",".join(capa_user),
-                                                                   __version__.split()[1],
-                                                                   userinfo.get('state'))
+                                           "xivoversion:%s;version:%s;state:%s" \
+                                           %(sessionid,
+                                             userinfo.get('context'),
+                                             userinfo.get('phonenum'),
+                                             ",".join(capa_user),
+                                             XIVOVERSION,
+                                             __version__.split()[1],
+                                             userinfo.get('state'))
                         else:
                                 replystr = "ERROR %s" % reterror
                                 debugstr += " / USER %s (%s)" %(user, reterror)

@@ -61,6 +61,12 @@ class AMIClass:
         def sendstatus(self):
                 ret = self.sendcommand('Status', [])
                 return ret
+        # \brief Requesting an ExtensionState.
+        def sendextensionstate(self, exten, context):
+                ret = self.sendcommand('ExtensionState',
+                                       [('Exten', exten),
+                                        ('Context', context)])
+                return ret
         # \brief For debug.
         def printresponse_forever(self):
                 while True:

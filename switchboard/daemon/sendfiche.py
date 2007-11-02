@@ -102,12 +102,12 @@ def get_sql_infos(cid, ctxinfos):
 
 
 	try:
-                sqlrequest = "SELECT %s FROM %s WHERE %s LIMIT 1;" % (', '.join(ctxinfos.sheet_matching_fields),
-                                                                      ctxinfos.sqltable,
-                                                                      ' OR '.join(str_cidm))
+                whereline = 'WHERE ' + ' OR '.join(str_cidm)
                 conn = anysql.connect_by_uri(ctxinfos.uri)
                 cursor = conn.cursor()
-                cursor.execute(sqlrequest)
+                cursor.query("SELECT ${columns} FROM " + ctxinfos.sqltable + " " + whereline + " LIMIT 1",
+                             tuple(ctxinfos.sheet_matching_fields),
+                             None)
                 results = [cursor.fetchone()] # vs. fetchall() if needed
                 conn.close()
 	except Exception, exc:
