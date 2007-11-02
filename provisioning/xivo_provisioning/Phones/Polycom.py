@@ -48,7 +48,7 @@ class PolycomProv(BaseProv):
 
 
 	def __generate(self, myprovinfo):
-                template_main_file = open(pgc['templates_dir'] + "polycom.cfg")
+                template_main_file = open(pgc['templates_dir'] + "polycom-%s.cfg" % self.phone["model"])
 		template_main_lines = template_main_file.readlines()
 		template_main_file.close()
                 template_phone_file = open(pgc['templates_dir'] + "polycom-phone.cfg")
