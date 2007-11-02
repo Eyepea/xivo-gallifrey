@@ -8,6 +8,8 @@
 #	   mailto:technique@proformatique.com
 #	   (C) 2007 Proformatique
 
+# TODO: Filter commented SQL rows
+
 __version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2007, Proformatique
@@ -40,55 +42,6 @@ import ConfigParser
 from ConfigDict import *
 from agi import *
 
-# TODO: put that somewhere else ...
-DB_DIALSTATUS = 'dialstatus'
-DB_DIALSTATUS_TYPE = 4
-DB_DIALSTATUS_TYPEVAL = 5
-
-DB_USERFEATURES = 'userfeatures'
-DB_USERFEATURES_ID = 0
-DB_USERFEATURES_PROTOCOL = 1
-DB_USERFEATURES_NAME = 5
-DB_USERFEATURES_NUMBER = 6
-DB_USERFEATURES_RINGSECONDS = 9
-DB_USERFEATURES_SIMULTCALLS = 10
-DB_USERFEATURES_ENABLEVOICEMAIL = 13
-DB_USERFEATURES_ENABLEXFER = 14
-DB_USERFEATURES_ENABLEAUTOMON = 15
-DB_USERFEATURES_CALLRECORD = 16
-DB_USERFEATURES_CALLFILTER = 17
-DB_USERFEATURES_ENABLEDND = 18
-DB_USERFEATURES_ENABLEUNC = 19
-DB_USERFEATURES_DESTUNC = 20
-DB_USERFEATURES_ENABLERNA = 21
-DB_USERFEATURES_DESTRNA = 22
-DB_USERFEATURES_ENABLEBUSY = 23
-DB_USERFEATURES_DESTBUSY = 24
-DB_USERFEATURES_MUSICONHOLD = 25
-
-DB_GROUPFEATURES = 'groupfeatures'
-DB_GROUPFEATURES_NUMBER = 2
-
-DB_QUEUEFEATURES = 'queuefeatures'
-DB_QUEUEFEATURES_NUMBER = 2
-
-DB_MEETMEFEATURES = 'meetmefeatures'
-DB_MEETMEFEATURES_NUMBER = 2
-
-DB_SCHEDULE = 'schedule'
-DB_SCHEDULE_TIMEBEG = 2
-DB_SCHEDULE_TIMEEND = 3
-DB_SCHEDULE_DAYNAMEBEG = 4
-DB_SCHEDULE_DAYNAMEEND = 5
-DB_SCHEDULE_DAYNUMBEG = 6
-DB_SCHEDULE_DAYNUMEND = 7
-DB_SCHEDULE_MONTHBEG = 8
-DB_SCHEDULE_MONTHEND = 9
-DB_SCHEDULE_TYPETRUE = 10
-DB_SCHEDULE_TYPEVALTRUE = 11
-DB_SCHEDULE_TYPEFALSE = 12
-DB_SCHEDULE_TYPEVALFALSE = 13
-
 options = { "db_uri" : "" }
 conf_obj = ConfigParser.ConfigParser()
 conf_obj.readfp(open(CONFIG_FILE))
@@ -119,48 +72,50 @@ def setvars(type, typeval, type_varname, typeval_varname):
 	if type == 'endcall' or type == 'application' or type == 'schedule' or type == 'sound' or type == 'custom':
 		agi.set_variable(typeval_varname, typeval)
 	elif type == 'user':
-		cursor.execute("SELECT * FROM %s WHERE id = '%s'" % (DB_USERFEATURES, typeval))
+		cursor.query("SELECT ${columns} FROM userfeatures WHERE id = %s", ('number',), (typeval,))
 		res = cursor.fetchone()
 
 		if not res:
 			dp_break("Database inconsistency: unable to find linked destination user '%s'" % typeval)
 
-		agi.set_variable(typeval_varname, res[DB_USERFEATURES_NUMBER])
+		agi.set_variable(typeval_varname, res['number'])
 	elif type == 'group':
-		cursor.execute("SELECT * FROM %s WHERE id = '%s'" % (DB_GROUPFEATURES, typeval))
+		cursor.query("SELECT ${columns} FROM groupfeatures WHERE id = %s", ('number',), (typeval,))
 		res = cursor.fetchone()
 
 		if not res:
 			dp_break("Database inconsistency: unable to find linked destination group '%s'" % typeval)
 
-		agi.set_variable(typeval_varname, res[DB_GROUPFEATURES_NUMBER])
+		agi.set_variable(typeval_varname, res['number'])
 	elif type == 'queue':
-		cursor.execute("SELECT * FROM %s WHERE id = '%s'" % (DB_QUEUEFEATURES, typeval))
+		cursor.query("SELECT ${columns} FROM queuefeatures WHERE id = %s", ('number',), (typeval,))
 		res = cursor.fetchone()
 
 		if not res:
 			dp_break("Database inconsistency: unable to find linked destination queue'%s'" % typeval)
 
-		agi.set_variable(typeval_varname, res[DB_QUEUEFEATURES_NUMBER])
+		agi.set_variable(typeval_varname, res['number'])
 	elif type == 'meetme':
-		cursor.execute("SELECT * FROM %s WHERE id = '%s'" % (DB_MEETMEFEATURES, typeval))
+		cursor.query("SELECT ${columns} FROM meetmefeatures WHERE id = %s", ('number',), (typeval,))
 		res = cursor.fetchone()
 
 		if not res:
 			dp_break("Database inconsistency: unable to find linked destination conference room'%s'" % typeval)
 
-		agi.set_variable(typeval_varname, res[DB_MEETMEFEATURES_NUMBER])
+		agi.set_variable(typeval_varname, res['number'])
 	else:
 		dp_break("Unknown dial status destination type '%s'" % type)
 
 def ds_setvars(id, status, type_varname, typeval_varname):
-	cursor.execute("SELECT * FROM %s WHERE status = '%s' AND category = 'user' AND categoryval = '%s' AND linked = 1" % (DB_DIALSTATUS, status, id))
+	cursor.query("SELECT ${columns} FROM dialstatus WHERE status = %s AND category = %s AND categoryval = %s AND linked = 1",
+                     ('type', 'typeval'),
+                     (status, 'user', id))
 	res = cursor.fetchone()
 
 	if not res:
 		return
 
-	setvars(res[DB_DIALSTATUS_TYPE], res[DB_DIALSTATUS_TYPEVAL], type_varname, typeval_varname)
+	setvars(res['type'], res['typeval'], type_varname, typeval_varname)
 
 # Cursors have a weak reference on their connection, so make a strong one.
 conn = db_connect()
@@ -168,57 +123,58 @@ cursor = conn.cursor()
 number = agi.get_variable('REAL_EXTEN')
 context = agi.get_variable('REAL_CONTEXT')
 
-#cursor.execute("SELECT * FROM %s WHERE commented = 0 AND number = '%s' AND context = '%s'" % (DB_USERFEATURES, number, context))
-cursor.execute("SELECT * FROM %s WHERE number = '%s' AND context = '%s'" % (DB_USERFEATURES, number, context))
+cursor.query("SELECT ${columns} FROM userfeatures WHERE number = %s AND context = %s",
+             ('id', 'protocol' , 'name', 'ringseconds', 'simultcalls', 'enablevoicemail', 'enablexfer', 'enableautomon', 'callrecord', 'callfilter', 'enablednd', 'enableunc', 'destunc', 'enablerna', 'destrna', 'enablebusy', 'destbusy', 'musiconhold'),
+             (number, context))
 res = cursor.fetchone()
 
 if not res:
 	dp_break("Unknown number '%s'" % number)
 
-agi.set_variable('XIVO_PROTOCOL', res[DB_USERFEATURES_PROTOCOL])
-agi.set_variable('XIVO_NAME', res[DB_USERFEATURES_NAME])
-agi.set_variable('XIVO_SIMULTCALLS', res[DB_USERFEATURES_SIMULTCALLS])
+agi.set_variable('XIVO_PROTOCOL', res['protocol'])
+agi.set_variable('XIVO_NAME', res['name'])
+agi.set_variable('XIVO_SIMULTCALLS', res['simultcalls'])
 
-if res[DB_USERFEATURES_RINGSECONDS] > 0:
-	agi.set_variable('XIVO_RINGSECONDS', res[DB_USERFEATURES_RINGSECONDS])
+if res['ringseconds'] > 0:
+	agi.set_variable('XIVO_RINGSECONDS', res['ringseconds'])
 
-agi.set_variable('XIVO_ENABLEDND', res[DB_USERFEATURES_ENABLEDND])
-agi.set_variable('XIVO_ENABLEVOICEMAIL', res[DB_USERFEATURES_ENABLEVOICEMAIL])
+agi.set_variable('XIVO_ENABLEDND', res['enablednd'])
+agi.set_variable('XIVO_ENABLEVOICEMAIL', res['enablevoicemail'])
 
 calloptions = ''
 
-if res[DB_USERFEATURES_ENABLEXFER] == 1:
+if res['enablexfer'] == 1:
 	calloptions += 't'
 
-if res[DB_USERFEATURES_ENABLEAUTOMON] == 1:
+if res['enableautomon'] == 1:
 	calloptions += 'w'
 
 agi.set_variable('XIVO_CALLOPTIONS', calloptions)
 
-if res[DB_USERFEATURES_ENABLEUNC] == 1:
+if res['enableunc'] == 1:
 	agi.set_variable('XIVO_FWD_TYPEUNC', 'user')
-	agi.set_variable('XIVO_FWD_TYPEVALUNC', res[DB_USERFEATURES_DESTUNC])
+	agi.set_variable('XIVO_FWD_TYPEVALUNC', res['destunc'])
 
-if res[DB_USERFEATURES_ENABLEBUSY] == 1:
+if res['enablebusy'] == 1:
 	agi.set_variable('XIVO_FWD_TYPEBUSY', 'user')
-	agi.set_variable('XIVO_FWD_TYPEVALBUSY', res[DB_USERFEATURES_DESTBUSY])
+	agi.set_variable('XIVO_FWD_TYPEVALBUSY', res['destbusy'])
 
 else:
-	ds_setvars(res[DB_USERFEATURES_ID], 'busy', 'XIVO_FWD_TYPEBUSY', 'XIVO_FWD_TYPEVALBUSY')
+	ds_setvars(res['id'], 'busy', 'XIVO_FWD_TYPEBUSY', 'XIVO_FWD_TYPEVALBUSY')
 
-if res[DB_USERFEATURES_ENABLERNA] == 1:
+if res['enablerna'] == 1:
 	agi.set_variable('XIVO_FWD_TYPERNA', 'user')
-	agi.set_variable('XIVO_FWD_TYPEVALRNA', res[DB_USERFEATURES_DESTRNA])
+	agi.set_variable('XIVO_FWD_TYPEVALRNA', res['destrna'])
 
 else:
-	ds_setvars(res[DB_USERFEATURES_ID], 'noanswer', 'XIVO_FWD_TYPERNA', 'XIVO_FWD_TYPEVALRNA')
+	ds_setvars(res['id'], 'noanswer', 'XIVO_FWD_TYPERNA', 'XIVO_FWD_TYPEVALRNA')
 
-ds_setvars(res[DB_USERFEATURES_ID], 'congestion', 'XIVO_FWD_TYPECONGESTION', 'XIVO_FWD_TYPEVALCONGESTION')
-ds_setvars(res[DB_USERFEATURES_ID], 'chanunavail', 'XIVO_FWD_TYPEUNAVAIL', 'XIVO_FWD_TYPEVALUNAVAIL')
-agi.set_variable('XIVO_CALLRECORD', res[DB_USERFEATURES_CALLRECORD])
+ds_setvars(res['id'], 'congestion', 'XIVO_FWD_TYPECONGESTION', 'XIVO_FWD_TYPEVALCONGESTION')
+ds_setvars(res['id'], 'chanunavail', 'XIVO_FWD_TYPEUNAVAIL', 'XIVO_FWD_TYPEVALUNAVAIL')
+agi.set_variable('XIVO_CALLRECORD', res['callrecord'])
 
 # TODO: Check these ones.
-agi.set_variable('XIVO_CALLFILTER', res[DB_USERFEATURES_CALLFILTER])
-agi.set_variable('XIVO_MUSICONHOLD', res[DB_USERFEATURES_MUSICONHOLD])
+agi.set_variable('XIVO_CALLFILTER', res['callfilter'])
+agi.set_variable('XIVO_MUSICONHOLD', res['musiconhold'])
 
 agi.verbose('AGI script "%s" successfully executed' % sys.argv[0])

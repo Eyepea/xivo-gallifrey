@@ -8,6 +8,8 @@
 #	   mailto:technique@proformatique.com
 #	   (C) 2007 Proformatique
 
+# TODO: Filter commented SQL rows
+
 __version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2007, Proformatique
@@ -39,51 +41,6 @@ from BackSQL import backmysql
 import ConfigParser
 from ConfigDict import *
 from agi import *
-
-# TODO: put that somewhere else ...
-DB_USERFEATURES = 'userfeatures'
-DB_USERFEATURES_ID = 0
-DB_USERFEATURES_PROTOCOL = 1
-DB_USERFEATURES_NAME = 5
-DB_USERFEATURES_NUMBER = 6
-DB_USERFEATURES_RINGSECONDS = 9
-DB_USERFEATURES_SIMULTCALLS = 10
-DB_USERFEATURES_ENABLEVOICEMAIL = 13
-DB_USERFEATURES_ENABLEXFER = 14
-DB_USERFEATURES_ENABLEAUTOMON = 15
-DB_USERFEATURES_CALLRECORD = 16
-DB_USERFEATURES_CALLFILTER = 17
-DB_USERFEATURES_ENABLEDND = 18
-DB_USERFEATURES_ENABLEUNC = 19
-DB_USERFEATURES_DESTUNC = 20
-DB_USERFEATURES_ENABLERNA = 21
-DB_USERFEATURES_DESTRNA = 22
-DB_USERFEATURES_ENABLEBUSY = 23
-DB_USERFEATURES_DESTBUSY = 24
-DB_USERFEATURES_MUSICONHOLD = 25
-
-DB_GROUPFEATURES = 'groupfeatures'
-DB_GROUPFEATURES_NUMBER = 2
-
-DB_QUEUEFEATURES = 'queuefeatures'
-DB_QUEUEFEATURES_NUMBER = 2
-
-DB_MEETMEFEATURES = 'meetmefeatures'
-DB_MEETMEFEATURES_NUMBER = 2
-
-DB_SCHEDULE = 'schedule'
-DB_SCHEDULE_TIMEBEG = 2
-DB_SCHEDULE_TIMEEND = 3
-DB_SCHEDULE_DAYNAMEBEG = 4
-DB_SCHEDULE_DAYNAMEEND = 5
-DB_SCHEDULE_DAYNUMBEG = 6
-DB_SCHEDULE_DAYNUMEND = 7
-DB_SCHEDULE_MONTHBEG = 8
-DB_SCHEDULE_MONTHEND = 9
-DB_SCHEDULE_TYPETRUE = 10
-DB_SCHEDULE_TYPEVALTRUE = 11
-DB_SCHEDULE_TYPEFALSE = 12
-DB_SCHEDULE_TYPEVALFALSE = 13
 
 options = { "db_uri" : "" }
 conf_obj = ConfigParser.ConfigParser()
@@ -124,19 +81,10 @@ def forgetimefield(start, end, includesep = False):
 		return timestr
 
 def forgetime(res):
-	timebeg = res[DB_SCHEDULE_TIMEBEG]
-	timeend = res[DB_SCHEDULE_TIMEEND]
-	daynamebeg = res[DB_SCHEDULE_DAYNAMEBEG]
-	daynameend = res[DB_SCHEDULE_DAYNAMEEND]
-	daynumbeg = res[DB_SCHEDULE_DAYNUMBEG]
-	daynumend = res[DB_SCHEDULE_DAYNUMEND]
-	monthbeg = res[DB_SCHEDULE_MONTHBEG]
-	monthend = res[DB_SCHEDULE_MONTHEND]
-
-	timestr = forgetimefield(timebeg, timeend)
-	timestr += forgetimefield(daynamebeg, daynameend, True)
-	timestr += forgetimefield(daynumbeg, daynumend, True)
-	timestr += forgetimefield(monthbeg, monthend, True)
+	timestr = forgetimefield(res['timebeg'], res['timeend'])
+	timestr += forgetimefield(res['daynamebeg'], res['daynameend'], True)
+	timestr += forgetimefield(res['daynumbeg'], res['daynumend'], True)
+	timestr += forgetimefield(res['monthbeg'], res['monthend'], True)
 	return timestr
 
 def setvars(type, typeval, type_varname, typeval_varname):
@@ -145,37 +93,37 @@ def setvars(type, typeval, type_varname, typeval_varname):
 	if type == 'endcall' or type == 'application' or type == 'schedule' or type == 'sound' or type == 'custom':
 		agi.set_variable(typeval_varname, typeval)
 	elif type == 'user':
-		cursor.execute("SELECT * FROM %s WHERE id = '%s'" % (DB_USERFEATURES, typeval))
+		cursor.query("SELECT ${columns} FROM userfeatures WHERE id = %s", ('number',), (typeval,))
 		res = cursor.fetchone()
 
 		if not res:
 			dp_break("Database inconsistency: unable to find linked destination user '%s'" % typeval)
 
-		agi.set_variable(typeval_varname, res[DB_USERFEATURES_NUMBER])
+		agi.set_variable(typeval_varname, res['number'])
 	elif type == 'group':
-		cursor.execute("SELECT * FROM %s WHERE id = '%s'" % (DB_GROUPFEATURES, typeval))
+		cursor.query("SELECT ${columns} FROM groupfeatures WHERE id = %s", ('number',), (typeval,))
 		res = cursor.fetchone()
 
 		if not res:
 			dp_break("Database inconsistency: unable to find linked destination group '%s'" % typeval)
 
-		agi.set_variable(typeval_varname, res[DB_GROUPFEATURES_NUMBER])
+		agi.set_variable(typeval_varname, res['number'])
 	elif type == 'queue':
-		cursor.execute("SELECT * FROM %s WHERE id = '%s'" % (DB_QUEUEFEATURES, typeval))
+		cursor.query("SELECT ${columns} FROM queuefeatures WHERE id = %s", ('number',), (typeval,))
 		res = cursor.fetchone()
 
 		if not res:
 			dp_break("Database inconsistency: unable to find linked destination queue'%s'" % typeval)
 
-		agi.set_variable(typeval_varname, res[DB_QUEUEFEATURES_NUMBER])
+		agi.set_variable(typeval_varname, res['number'])
 	elif type == 'meetme':
-		cursor.execute("SELECT * FROM %s WHERE id = '%s'" % (DB_MEETMEFEATURES, typeval))
+		cursor.query("SELECT ${columns} FROM meetmefeatures WHERE id = %s", ('number',), (typeval,))
 		res = cursor.fetchone()
 
 		if not res:
 			dp_break("Database inconsistency: unable to find linked destination conference room'%s'" % typeval)
 
-		agi.set_variable(typeval_varname, res[DB_MEETMEFEATURES_NUMBER])
+		agi.set_variable(typeval_varname, res['number'])
 	else:
 		dp_break("Unknown dial status destination type '%s'" % type)
 
@@ -184,14 +132,16 @@ conn = db_connect()
 cursor = conn.cursor()
 id = sys.argv[1]
 
-cursor.execute("SELECT * FROM %s WHERE id = '%s' AND linked = 1 AND commented = 0" % (DB_SCHEDULE, id))
+cursor.query("SELECT ${columns} FROM schedule WHERE id = %s AND linked = 1 AND commented = 0",
+             ('timebeg', 'timeend', 'daynamebeg', 'daynameend', 'daynumbeg', 'daynumend', 'monthbeg', 'monthend', 'typetrue', 'typevaltrue', 'typefalse', 'typevalfalse'),
+             (id,))
 res = cursor.fetchone()
 
 if not res:
 	dp_break("Invalid schedule ID '%s'" % id)
 
 agi.set_variable("XIVO_SCHEDULE_TIMERANGE", forgetime(res))
-setvars(res[DB_SCHEDULE_TYPETRUE], res[DB_SCHEDULE_TYPEVALTRUE], 'XIVO_SCHEDULE_TYPETRUE', 'XIVO_SCHEDULE_TYPEVALTRUE')
-setvars(res[DB_SCHEDULE_TYPEFALSE], res[DB_SCHEDULE_TYPEVALFALSE], 'XIVO_SCHEDULE_TYPEFALSE', 'XIVO_SCHEDULE_TYPEVALFALSE')
+setvars(res['typetrue'], res['typevaltrue'], 'XIVO_SCHEDULE_TYPETRUE', 'XIVO_SCHEDULE_TYPEVALTRUE')
+setvars(res['typefalse'], res['typevalfalse'], 'XIVO_SCHEDULE_TYPEFALSE', 'XIVO_SCHEDULE_TYPEVALFALSE')
 
 agi.verbose('AGI script "%s" successfully executed' % sys.argv[0])
