@@ -53,8 +53,9 @@ except: # XXX
         raise
 
 cursor = conn.cursor()
-query = "SELECT context FROM extenumbers WHERE context NOT IN('general','global','hints','initconfig','did-extensions') GROUP BY context"
-cursor.execute(query)
+query = "SELECT ${columns} FROM extenumbers WHERE context NOT IN('general','global','hints','initconfig','did-extensions') GROUP BY context"
+columns = ('context',)
+cursor.query(query, columns)
 
 r = cursor.fetchall()
 
@@ -78,8 +79,9 @@ if not config.has_section('template'):
 
 for context in r:
 	print "[" + context[0] + "]"
-	query = "SELECT number,protocol,name FROM userfeatures WHERE context='%s'" % context[0]
-	cursor.execute(query)
+	query = "SELECT ${columns} FROM userfeatures WHERE context='%s'" % context[0]
+	columns = ('number', 'protocol', 'name')
+	cursor.query(query, columns)
 	r = cursor.fetchall()
 	for e in r:
 		if e[0] and e[1] and e[2]:
