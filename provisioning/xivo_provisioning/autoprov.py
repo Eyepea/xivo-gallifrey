@@ -56,6 +56,8 @@ import anysql
 from BackSQL import backsqlite
 from BackSQL import backmysql
 
+from pyfunc import replace_keys
+
 from BaseHTTPServer import BaseHTTPRequestHandler
 
 from ThreadingHTTPServer import *
@@ -79,16 +81,6 @@ def name_from_first_last(first, last):
 	if last:
 		return last
 	return ''
-
-def nummap_and_selectexpr_from_symbmap(mapping):
-	nummap = {}
-	vlst = []
-	i = 0
-	for k,v in mapping.iteritems():
-		nummap[k] = i
-		vlst.append(v)
-		i+=1
-	return (nummap, ','.join(vlst))
 
 class SQLBackEnd:
 	"""An information backend for this provisioning daemon,
@@ -114,51 +106,44 @@ class SQLBackEnd:
 		conn.close()
 		return a
 
-	def sql_select_one(self, request, parameters_tuple, mapping):
+	def sql_select_one(self, request, columns, parameters):
 		"""Does a SELECT SQL query and returns only one row.
 		If the query returns no result, this method returns None
 		
 		"""
-		return self.generic_sql_request(self.method_select_one, request, parameters_tuple, mapping)
-	def method_select_one(self, conn, request, parameters_tuple, mapping):
+		return self.generic_sql_request(self.method_select_one, request, columns, parameters)
+	def method_select_one(self, conn, request, columns, parameters):
 		"""Internally called in a safe context to execute SELECT
 		SQL queries and return their result (only one row).
 		
 		"""
 		cursor = conn.cursor()
-		cursor.execute(request, parameters_tuple)
-		r = cursor.fetchone()
-		if not r:
-			return None
-		return dict([(k,lst_get(r,idx))
-			     for k,idx in mapping.iteritems()])
+		cursor.query(request, columns, parameters)
+		return cursor.fetchone()
 
-	def sql_select_all(self, request, parameters_tuple, mapping):
+	def sql_select_all(self, request, columns, parameters):
 		"Does a SELECT SQL query and returns all rows."
-		return self.generic_sql_request(self.method_select_all, request, parameters_tuple, mapping)
-	def method_select_all(self, conn, request, parameters_tuple, mapping):
+		return self.generic_sql_request(self.method_select_all, request, columns, parameters)
+	def method_select_all(self, conn, request, columns, parameters):
 		"""Internally called in a safe context to execute SELECT
 		SQL queries and return their result (all rows).
 		
 		"""
 		cursor = conn.cursor()
-		cursor.execute(request, parameters_tuple)
-		return [dict([(k,lst_get(row,idx))
-			     for k,idx in mapping.iteritems()])
-			for row in cursor.fetchall()]
+		cursor.query(request, columns, parameters)
+		return cursor.fetchall()
 
-	def sql_modify(self, request, parameters_tuple):
+	def sql_modify(self, request, columns, parameters):
 		"Does a SQL query that is going to modify the database."
-		return self.generic_sql_request(self.method_commit, request, parameters_tuple)
-	def method_commit(self, conn, request, parameters_tuple):
+		return self.generic_sql_request(self.method_commit, request, columns, parameters)
+	def method_commit(self, conn, request, columns, parameters):
 		"""Internally called in a safe context to commit the result of
 		SQL queries that modify the database content.
 		
 		"""
 		cursor = conn.cursor()
-		cursor.execute(request, parameters_tuple)
+		cursor.query(request, columns, parameters)
 		conn.commit()
-		return None
 
 	# === ENTRY POINTS ===
 
@@ -170,12 +155,10 @@ class SQLBackEnd:
 		or None
 		
 		"""
-		mapping = dict([(x,x) for x in
-				('macaddr', 'vendor', 'model', 'proto',
-				 'iduserfeatures', 'isinalan')])
-		nummap, sexpr = nummap_and_selectexpr_from_symbmap(mapping)
-		query = "SELECT %s FROM %s WHERE macaddr=%s" % (sexpr, TABLE, '%s')
-		return self.sql_select_one(query, (macaddr,), nummap)
+		return self.sql_select_one(
+			"SELECT ${columns} FROM %s WHERE macaddr=%s" % (TABLE, '%s'),
+			('macaddr', 'vendor', 'model', 'proto', 'iduserfeatures', 'isinalan'),
+			(macaddr,))
 
 	def config_by_something_proto(self, something_column, something_content, proto):
 		"""Query the database to return a phone configuration.
@@ -204,31 +187,32 @@ class SQLBackEnd:
 		if proto != TECH:
 			raise ValueError, "proto must be 'sip' for now"
 		mapping = {
-			"firstname":		UF_TABLE+".firstname",
-			"lastname":		UF_TABLE+".lastname",
-			"ident":		SIP_TABLE+".name",
-			"passwd":		SIP_TABLE+".secret",
-			"dtmfmode":		SIP_TABLE+".dtmfmode",
-			"simultcalls":		UF_TABLE+".simultcalls",
-			"number":		UF_TABLE+".number",
-			"iduserfeatures":	UF_TABLE+".id",
-			"provcode":		UF_TABLE+".provisioningid",
-			"proto":		UF_TABLE+".protocol"
+			UF_TABLE+".firstname":		'firstname',
+			UF_TABLE+".lastname":		'lastname',
+			SIP_TABLE+".ident":		'name',
+			SIP_TABLE+".passwd":		'secret',
+			SIP_TABLE+".dtmfmode":		'dtmfmode',
+			UF_TABLE+".simultcalls":	'simultcalls',
+			UF_TABLE+".number":		'number',
+			UF_TABLE+".iduserfeatures":	'id',
+			UF_TABLE+".provcode":		'provisioningid',
+			UF_TABLE+".proto":		'protocol'
 		}
-		nummap, sexpr = nummap_and_selectexpr_from_symbmap(mapping)
-		query = ("SELECT %s " +
-			  "FROM %s LEFT OUTER JOIN %s " +
-				"ON %s.protocolid=%s.id AND %s.protocol=%s " +
-			  "WHERE %s." + something_column + "=%s")\
-			% ( sexpr, UF_TABLE, SIP_TABLE,
-			    UF_TABLE, SIP_TABLE, UF_TABLE, '%s',
-			    UF_TABLE, '%s')
 		confdico = self.sql_select_one(
-			query, (proto, something_content), nummap)
+			("SELECT ${columns} "
+			  "FROM %s LEFT OUTER JOIN %s "
+				"ON %s.protocolid=%s.id AND %s.protocol=%s "
+			  "WHERE %s." + something_column + "=%s")
+			  % (UF_TABLE, SIP_TABLE,
+			     UF_TABLE, SIP_TABLE, UF_TABLE, '%s',
+			     UF_TABLE, '%s'),
+			mapping.keys(),
+			(proto, something_content))
 		if not confdico:
 			return None
-		confdico["name"] = name_from_first_last(confdico["firstname"],
-							confdico["lastname"])
+		confdico = replace_keys(confdico, mapping)
+		confdico['name'] = name_from_first_last(confdico['firstname'],
+							confdico['lastname'])
 		return confdico
 
 	def config_by_iduserfeatures_proto(self, iduserfeatures, proto):
@@ -239,7 +223,7 @@ class SQLBackEnd:
 		
 		"""
 		return self.config_by_something_proto(
-				"id", iduserfeatures, proto)
+				'id', iduserfeatures, proto)
 
 	def config_by_provcode_proto(self, provcode, proto):
 		"""Lookup the configuration information of the phone in the
@@ -249,7 +233,7 @@ class SQLBackEnd:
 		
 		"""
 		return self.config_by_something_proto(
-				"provisioningid", provcode, proto)
+				'provisioningid', provcode, proto)
 
 	def save_phone(self, phone):
 		"""Save phone informations in the database.
@@ -258,13 +242,13 @@ class SQLBackEnd:
 		'macaddr', 'vendor', 'model', 'proto', 'iduserfeatures', 'isinalan'
 		
 		"""
+		columns = ('macaddr', 'vendor', 'model', 'proto', 'iduserfeatures', 'isinalan')
 		self.sql_modify(
-			("REPLACE INTO %s "
-			 "(macaddr, vendor, model, proto, iduserfeatures, isinalan)"
+			("REPLACE INTO %s (${columns})"
 			 " VALUES (%s, %s, %s, %s, %s, %s)")
-			% (TABLE, '%s', '%s', '%s', '%s', '%s', '%s'),
-			[ phone[x] for x in ('macaddr', 'vendor', 'model',
-					     'proto', 'iduserfeatures', 'isinalan')])
+			 % (TABLE, '%s', '%s', '%s', '%s', '%s', '%s'),
+			columns,
+			[ phone[x] for x in columns ])
 
 	def phone_by_iduserfeatures(self, iduserfeatures):
 		"""Lookup phone information by user information (iduserfeatures)
@@ -275,14 +259,12 @@ class SQLBackEnd:
 		'macaddr', 'vendor', 'model', 'proto', 'iduserfeatures', 'isinalan'
 		
 		"""
-		mapping = dict([(x,x) for x in ("macaddr", "vendor", "model", "proto",
-						"iduserfeatures", "isinalan")])
-		nummap, sexpr = nummap_and_selectexpr_from_symbmap(mapping)
-		query = ("SELECT %s FROM %s " +
-			 "WHERE iduserfeatures=%s AND proto=%s") \
-			% ( sexpr, TABLE, '%s', '%s' )
 		return self.sql_select_one(
-			query, (iduserfeatures, TECH), nummap)
+			("SELECT ${columns} FROM %s "
+			 "WHERE iduserfeatures=%s AND proto=%s")
+			 % ( TABLE, '%s', '%s' ),
+			('macaddr', 'vendor', 'model', 'proto', 'iduserfeatures', 'isinalan'),
+			(iduserfeatures, TECH))
 
 	def delete_phone_by_iduserfeatures(self, iduserfeatures):
 		"""Delete any phone in the database having the given
@@ -290,8 +272,8 @@ class SQLBackEnd:
 		
 		"""
 		self.sql_modify(
-			("DELETE FROM %s WHERE iduserfeatures=%s")
-			% ( TABLE, '%s'),
+			"DELETE FROM %s WHERE iduserfeatures=%s" % ( TABLE, '%s'),
+			None,
 			(iduserfeatures,))
 
 	def find_orphan_phones(self):
@@ -307,17 +289,21 @@ class SQLBackEnd:
 		'macaddr', 'vendor', 'model', 'proto', 'iduserfeatures', 'isinalan'
 		
 		"""
-		mapping = dict([(x,TABLE+'.'+x)
-				for x in ("macaddr", "vendor", "model",
-					  "proto", "iduserfeatures", "isinalan")])
-		nummap, sexpr = nummap_and_selectexpr_from_symbmap(mapping)
-		query = ( "SELECT %s " + 
-			  "FROM %s LEFT JOIN %s " +
-			  "ON %s.iduserfeatures = %s.id " +
-			  "WHERE %s.iduserfeatures != 0 AND %s.id is NULL") \
-			% (sexpr, TABLE, UF_TABLE,
-			   TABLE, UF_TABLE, TABLE, UF_TABLE)
-		return self.sql_select_all(query, (), nummap)
+		mapping = dict([(TABLE+'.'+x,x)
+				for x in ('macaddr', 'vendor', 'model',
+					  'proto', 'iduserfeatures', 'isinalan')])
+		orphans = self.sql_select_all(
+			( "SELECT ${columns} FROM %s LEFT JOIN %s"
+			  " ON %s.iduserfeatures = %s.id"
+			  " WHERE %s.iduserfeatures != 0 AND %s.id is NULL" )
+			  % (TABLE, UF_TABLE,
+			     TABLE, UF_TABLE,
+			     TABLE, UF_TABLE),
+			mapping.keys(),
+			())
+		if not orphans:
+			return orphans
+		return [replace_keys(row, mapping) for row in orphans]
 
 	def delete_guest_by_mac(self, macaddr):
 		"""Delete from the database every GUEST phone having the given
@@ -325,9 +311,10 @@ class SQLBackEnd:
 		
 		"""
 		self.sql_modify(
-			("DELETE FROM %s WHERE macaddr = %s " +
+			("DELETE FROM %s WHERE macaddr = %s "
 					      "AND iduserfeatures = %s")
-			% (TABLE, '%s', '%s'),
+			 % (TABLE, '%s', '%s'),
+			None,
 			(macaddr, 0))
 
 class CommonProvContext:
