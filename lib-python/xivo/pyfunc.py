@@ -152,3 +152,7 @@ def unsplit_none(strseq, sep=''):
 	"""Join elements of strseq that are not None, using the value
 	of sep as separator. """
 	return sep.join(x for x in strseq if x is not None)
+
+def replace_keys(dico, repl_dico):
+	"return dict(((repl_dico[k],v) for (k,v) in dico.iteritems()))"
+	return dict(((repl_dico[k],v) for (k,v) in dico.iteritems()))
