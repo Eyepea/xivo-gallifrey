@@ -64,7 +64,6 @@ from ThreadingHTTPServer import *
 
 import provsup
 from provsup import ProvGeneralConf as pgc
-from provsup import lst_get
 
 from moresynchro import RWLock
 from moresynchro import ListLock
@@ -395,10 +394,10 @@ def __provisioning(mode, ctx, phone):
 		if phonedesc is None:
 			syslogf(SYSLOG_ERR, "__provisioning(): No phone has been found in the database for this mac address %s" % phone["macaddr"])
 			raise NotFoundError, "No phone has been found in the database for this mac address %s" % phone["macaddr"]
-		phone["isinalan"] = provsup.elem_or_none(phonedesc, "isinalan")
-		phone["vendor"] = provsup.elem_or_none(phonedesc, "vendor")
-		phone["model"] = provsup.elem_or_none(phonedesc, "model")
-		prev_iduserfeatures = provsup.elem_or_none(phonedesc, "iduserfeatures")
+		phone['isinalan'] = phonedesc['isinalan']
+		phone['vendor'] = phonedesc['vendor']
+		phone['model'] = phonedesc['model']
+		prev_iduserfeatures = phonedesc['iduserfeatures']
 
 	if ("vendor" not in phone) or ("model" not in phone) or ("isinalan" not in phone):
                 syslogf(SYSLOG_ERR, "__provisioning(): Missing model or vendor in phone %s" % str(phone))

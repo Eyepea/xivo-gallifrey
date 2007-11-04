@@ -53,19 +53,6 @@ def LoadConfig(filename):
 		if p.strip()
 	]
 
-def elem_or_none(r, el):
-	"r is a dictionary or None, and if (e1 in r) then r[el] must exists"
-	if r is None:
-		return None
-	else:
-		return r.get(el)
-
-def lst_get(lst, idx, dft=None):
-	"lst_get(lst, idx, default) -> lst[idx] if idx > 0 and idx < len(lst), else dft."
-	if lst is None or (not (idx >= 0 and idx < len(lst))):
-		return dft
-	return lst[idx]
-
 def linesubst(line, variables):
 	"""In a string, substitute '{{varname}}' occurrences with the 
 	value of variables['varname'], '\\' being an escaping char...
