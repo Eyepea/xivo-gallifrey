@@ -81,6 +81,9 @@ def name_from_first_last(first, last):
 		return last
 	return ''
 
+def field_empty(f):
+	return (f is None) or (f == "")
+
 class SQLBackEnd:
 	"""An information backend for this provisioning daemon,
 	using the Xivo SQL database.
@@ -399,9 +402,9 @@ def __provisioning(mode, ctx, phone):
 		phone['model'] = phonedesc['model']
 		prev_iduserfeatures = phonedesc['iduserfeatures']
 
-	if ("vendor" not in phone) or ("model" not in phone) or ("isinalan" not in phone):
-                syslogf(SYSLOG_ERR, "__provisioning(): Missing model or vendor in phone %s" % str(phone))
-                raise BadRequest, "Missing model or vendor or isinalan in phone %s" % str(phone)
+	if field_empty(phone['vendor']) or field_empty(phone['model']) or field_empty(phone['isinalan']):
+		syslogf(SYSLOG_ERR, "__provisioning(): Empty model or vendor or isinalan in phone %s" % str(phone))
+		raise BadRequest, "Empty model or vendor or isinalan in phone %s" % str(phone)
 
 	if "provcode" in phone and phone["provcode"] != "0" and \
 	   not provsup.well_formed_provcode(phone["provcode"]):
