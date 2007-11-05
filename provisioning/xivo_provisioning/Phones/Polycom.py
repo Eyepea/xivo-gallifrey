@@ -32,7 +32,7 @@ class PolycomProv(BaseProv):
 		# -O /dev/null -- send result into /dev/null
 		# -T 30 -- timeout after 30s
 		# -t 1 -- don't retry
-		os.system(pgc['wget_cmd'] + " -t 1 -T %s -q -nv -O /dev/null --http-user=%s --http-passwd=%s http://%s/form_submit --post-data=%s"
+		os.system(pgc['wget_cmd'] + " -t 1 -T %s -q -nv -O /dev/null --http-user=%s --http-passwd=%s http://%s/form-submit --post-data=%s"
                           % (str(pgc['wget_to_s']), user, passwd, self.phone['ipv4'], command))
 
 	def do_reboot(self):
