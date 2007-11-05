@@ -132,20 +132,6 @@ class xivo_application_asterisk_abstract extends xivo_application_abstract
 		return($rs);
 	}
 
-	function set_goto($action,$name,$exten,$arr,$context)
-	{
-		if(($action !== 'add' && $action !== 'edit') === true
-		|| is_scalar($name) === false)
-			return(false);
-
-		if($action === 'edit' && xivo_issa($name,$this->_info) !== false)
-			$rs = $this->_extensions->chk_exten('goto',$arr,$exten,$context);
-		else
-			$rs = $this->_extensions->new_exten('goto',$arr,$exten,$context);
-
-		return($rs);
-	}
-
 	function add_extenumbers($typeval='')
 	{
 		if(($rs = $this->_extenumbers->add($typeval)) === null || $rs === false)
