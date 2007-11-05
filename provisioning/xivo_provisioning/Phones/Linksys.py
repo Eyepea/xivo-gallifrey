@@ -129,7 +129,7 @@ class LinksysProv(BaseProv):
                 fw = 'unknown'
                 if len(ua_splitted) == 2:
 			modelfw = ua_splitted[1].split('-', 1)
-                        model = modelfw[0]
+                        model = modelfw[0].lower()
                         if len(modelfw) == 2:
                                 fw = modelfw[1]
 		return ("linksys", model, fw)
