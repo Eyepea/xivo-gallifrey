@@ -1178,15 +1178,16 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			return($this->add_voicemail());
 
 		if(xivo_issa('ufeatures',$this->_info) === false
-		|| $this->_uservoicemail === false)
+		|| $this->_uservoicemail === false
+		|| ($rs = $this->get_result('voicemail')) === false)
 			return(false);
 
 		if($this->_info['ufeatures']['number'] === '')
 			$r = $this->_uservoicemail->delete($this->_info['voicemail']['id']);
-		else if($this->get_result('voicemail') === null)
+		else if($rs === null)
 			$r = $this->_uservoicemail->disable($this->_info['voicemail']['id']);
 		else
-			$r = true;
+			$r = $this->_uservoicemail->edit($this->_info['voicemail']['id'],$rs);
 
 		return(($this->_return['uservoicemail'] = $r));
 	}
