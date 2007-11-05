@@ -189,7 +189,7 @@ class AMIClass:
                                                              ('Priority', '1'),
                                                              # ('CallerID', "%s" %(phonesrc)),
                                                              ('CallerID', "calls %s <%s>" %(phonedst, phonedst)),
-                                                             ('Variable', 'ORIGINATE_SRC=%s' %phonesrc),
+                                                             ('Variable', 'XIVO_ORIGSRC=%s' %phonesrc),
                                                              ('Async', 'true')])
                         reply = self.readresponse('')
                         return ret
