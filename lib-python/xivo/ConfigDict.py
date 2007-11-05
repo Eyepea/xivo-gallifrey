@@ -23,7 +23,10 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-from ConfigParser import ConfigParser, NoSectionError, NoOptionError
+from ConfigParser import ConfigParser, Error, NoSectionError, NoOptionError, \
+                         DuplicateSectionError, InterpolationError, \
+                         InterpolationDepthError, InterpolationSyntaxError, \
+                         ParsingError, MissingSectionHeaderError
 
 def FillDictFromConfigSection(dicttofill, confpars_obj, section):
 	"""Fills dicttofill with the content of the wanted section of the
@@ -110,7 +113,20 @@ def FillDictFromMultipleConfigOpt(dicttofill, confpars_obj, sect_mapping):
 			pass
 	return dicttofill
 
-__all__ = ["NoSectionError", "NoOptionError",
-           "FillDictFromConfigSection",
-           "FillDictFromMultipleConfig",
-	   "FillDictFromMultipleConfigOpt"]
+def ReadSingleKey(config_file_path, section, option):
+	"""Read a single option from a configuration file.
+	Do not use if you need to read multiple options.
+	"""
+	conf_obj = ConfigParser()
+	conf_obj.readfp(open(config_file_path))
+	return conf_obj.get(section, option)
+
+__all__ = ('NoSectionError', 'NoOptionError',
+           'Error', 'DuplicateSectionError',
+           'InterpolationError', 'InterpolationDepthError',
+           'InterpolationSyntaxError', 'ParsingError',
+           'MissingSectionHeaderError',
+           'FillDictFromConfigSection',
+           'FillDictFromMultipleConfig',
+           'FillDictFromMultipleConfigOpt',
+           'ReadSingleKey')
