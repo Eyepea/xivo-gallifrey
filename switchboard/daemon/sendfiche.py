@@ -148,7 +148,7 @@ def get_csv_infos(cid, ctxinfos):
                                         str_cidm.append(csv.index(cidm))
                         for items in csv.items:
                                 for idx in str_cidm:
-                                        if items[idx] == '"%s"' % cid:
+                                        if items[idx].strip('"') == '%s' % cid:
                                                 results.append(items)
 	except Exception, exc:
                 log_debug('Connection to URL <%s> failed : %s' % (ctxinfos.uri, str(exc)))
@@ -161,7 +161,7 @@ def get_csv_infos(cid, ctxinfos):
                                 for dbname in dbnames_list:
                                         if dbname in csv.keys and field_value is '':
                                                 field_value = results[0][csv.index(dbname)]
-                                        reply_by_field[dispname] = field_value[1:-1]
+                                        reply_by_field[dispname] = field_value.strip('"')
                 except Exception, exc:
                         log_debug('--- exception --- in anysql : %s' %(str(exc)))
 
