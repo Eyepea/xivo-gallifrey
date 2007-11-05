@@ -90,7 +90,7 @@ else:
 
         if calleridnum == 'unknown':
                 # to set according to os.getenv('LANG') or os.getenv('LANGUAGE') later on ?
-                calleridnum == 'Inconnu'
+                calleridnum = 'Inconnu'
         if calleridname == 'unknown':
                 calleridname = ''
 
