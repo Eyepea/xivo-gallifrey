@@ -191,14 +191,14 @@ class SQLBackEnd:
 		mapping = {
 			UF_TABLE+".firstname":		'firstname',
 			UF_TABLE+".lastname":		'lastname',
-			SIP_TABLE+".ident":		'name',
-			SIP_TABLE+".passwd":		'secret',
+			SIP_TABLE+".name":		'ident',
+			SIP_TABLE+".secret":		'passwd',
 			SIP_TABLE+".dtmfmode":		'dtmfmode',
 			UF_TABLE+".simultcalls":	'simultcalls',
 			UF_TABLE+".number":		'number',
-			UF_TABLE+".iduserfeatures":	'id',
-			UF_TABLE+".provcode":		'provisioningid',
-			UF_TABLE+".proto":		'protocol'
+			UF_TABLE+".id":			'iduserfeatures',
+			UF_TABLE+".provisioningid":	'provcode',
+			UF_TABLE+".protocol":		'proto',
 		}
 		confdico = self.sql_select_one(
 			("SELECT ${columns} "
