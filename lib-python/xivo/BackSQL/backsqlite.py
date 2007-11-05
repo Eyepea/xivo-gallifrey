@@ -48,6 +48,6 @@ def c14n_uri(uri):
 	return uri_help_unsplit(tuple(puri))
 
 def escape(s):
-	return '"' + s.replace('"', '""') + '"'
+	return '.'.join([('"%s"' % comp.replace('"', '""')) for comp in s.split('.')])
 
 anysql.register_uri_backend('sqlite', connect_by_uri, sqlite, c14n_uri, escape)

@@ -87,6 +87,6 @@ def connect_by_uri(uri):
 	return PgSQL.connect(**params)
 
 def escape(s):
-	return '"' + s.replace('"', '""') + '"'
+	return '.'.join([('"%s"' % comp.replace('"', '""')) for comp in s.split('.')])
 
 anysql.register_uri_backend('postgres', connect_by_uri, PgSQL, None, escape)

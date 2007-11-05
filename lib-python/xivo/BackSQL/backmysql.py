@@ -101,6 +101,6 @@ def connect_by_uri(uri):
 	return MySQLdb.connect(**params)
 
 def escape(s):
-	return '`' + s.replace('`', '``') + '`'
+	return '.'.join([('`%s`' % comp.replace('`', '``')) for comp in s.split('.')])
 
 anysql.register_uri_backend('mysql', connect_by_uri, MySQLdb, None, escape)
