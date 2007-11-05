@@ -388,7 +388,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		{
 			$this->_set_result_var('protocol','mailbox',$number.'@'.$context);
 
-			$appdata = array('appdata' => 'handle-incoming-user-call');
+			$appdata = array('appdata' => 'handle_incoming_user_call');
 
 			if(($localexten = $this->set_goto($action,'localexten',$number,$appdata,$context)) === false)
 				$this->_set_error('localexten');
