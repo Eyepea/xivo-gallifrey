@@ -18,6 +18,7 @@ $array['app']['system'] = array('name' => 'System');
 $array['app']['chanspy'] = array('name' => 'ChanSpy');
 $array['app']['vmauthenticate'] = array('name' => 'VMauthenticate');
 $array['app']['directory'] = array('name' => 'Directory');
+$array['app']['goto'] = array('name' => 'GoTo');
 
 $array['element'] = array();
 
