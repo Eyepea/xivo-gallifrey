@@ -44,7 +44,7 @@ conf_obj = ConfigParser.ConfigParser()
 conf_obj.readfp(open(CONFIG_FILE))
 FillDictFromConfigSection(options, conf_obj, "db")
 
-import operator, string
+import operator, string, ConfigParser
 
 try:
         conn = anysql.connect_by_uri(options['db_uri'])
