@@ -1,5 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- $Revision: 1.24 $  $Date: 2005/09/08 18:47:55 $ -->
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!-- $Revision: 1.30 $  $Date: 2007/07/12 22:03:53 $ -->
+<dictionary>
 <phrases>
 	<phrase i="0" t="Atrás"/>
 	<phrase i="1" t="Marcar"/>
@@ -7,7 +8,7 @@
 	<phrase i="3" t="Edición"/>
 	<phrase i="4" t="Arriba"/>
 	<phrase i="5" t="Guardar"/>
-	<phrase i="6" t="más"/>
+	<phrase i="6" t="Más"/>
 	<phrase i="7" t="Nuevo"/>
 	<phrase i="8" t="Ok"/>
 	<phrase i="9" t="Agregar"/>
@@ -24,20 +25,20 @@
 	<phrase i="20" t="Amigos"/>
 	<phrase i="21" t="Reanudar"/>
 	<phrase i="22" t="Reproducir"/>
-	<phrase i="23" t="TermLlamada"/>
+	<phrase i="23" t="Finalizar llamada"/>
 	<phrase i="24" t="Nueva llamada"/>
-	<phrase i="25" t="Remarcar"/>
+	<phrase i="25" t="Rellamada"/>
 	<phrase i="26" t="Contestar"/>
 	<phrase i="27" t="Nombre"/>
 	<phrase i="28" t="Número"/>
-	<phrase i="29" t="No colgar"/>
+	<phrase i="29" t="Espera"/>
 	<phrase i="30" t="Confrcia"/>
-	<phrase i="31" t="Trnsf"/>
+	<phrase i="31" t="Trnsfer"/>
 	<phrase i="32" t="Terminar"/>
 	<phrase i="33" t="Siguiente"/>
 	<phrase i="34" t="Prev"/>
 	<phrase i="35" t="Responder"/>
-	<phrase i="36" t="Salir "/>
+	<phrase i="36" t="Salir"/>
 	<phrase i="37" t="Cancelar"/>
 	<phrase i="38" t="a-&gt;A"/>
 	<phrase i="39" t="A-&gt;a"/>
@@ -54,7 +55,7 @@
 	<phrase i="50" t="Directories"/>
 	<phrase i="51" t="Directorios"/>
 	<phrase i="52" t="Servicio"/>
-	<phrase i="53" t="Servicios"/>
+	<phrase i="53" t="Aplicaciones"/>
 	<phrase i="54" t="Marcado Rápido"/>
 	<phrase i="55" t="Info Marcado Rápido"/>
 	<phrase i="56" t="Listas de llamadas"/>
@@ -71,7 +72,7 @@
 	<phrase i="67" t="Agregar a vigilar"/>
 	<phrase i="68" t="Resumen red"/>
 	<phrase i="69" t="Listas de amigos"/>
-	<phrase i="70" t="Condición amigos "/>
+	<phrase i="70" t="Condición amigos"/>
 	<phrase i="71" t="Tipo timbre"/>
 	<phrase i="72" t="Estado"/>
 	<phrase i="73" t="Configuración"/>
@@ -125,7 +126,7 @@
 	<phrase i="121" t="Hora"/>
 	<phrase i="122" t="Nombre"/>
 	<phrase i="123" t="Duración"/>
-	<phrase i="124" t="dice:"/>
+	<phrase i="124" t=" dice:"/>
 	<phrase i="125" t="Mensaje a"/>
 	<phrase i="126" t="Recibí tu mensaje."/>
 	<phrase i="127" t="Llámame."/>
@@ -149,7 +150,7 @@
 	<phrase i="145" t=" Nuevos mensajes"/>
 	<phrase i="146" t="Llamar"/>
 	<phrase i="147" t="Enlace no funciona"/>
-	<phrase i="148" t="Reconfigurando red"/>
+	<phrase i="148" t="Reconfigurando red" t.IP_330="Reconfigurando" />
 	<phrase i="149" t=" llamada nueva perdida"/>
 	<phrase i="150" t=" llamadas nuevas perdidas"/>
 	<phrase i="151" t="Reinicializando"/>
@@ -249,7 +250,7 @@
 	<phrase i="245" t="Conectar"/>
 	<phrase i="246" t="Agregar directorio"/>
 	<phrase i="247" t="Editar contacto"/>
-	<phrase i="248" t="Índice marcado rápid "/>
+	<phrase i="248" t="Índice marcado rápido"/>
 	<phrase i="249" t="Llamada desviada"/>
 	<phrase i="250" t="Rechazar"/>
 	<phrase i="251" t="Desviar"/>
@@ -261,7 +262,7 @@
 	<phrase i="257" t="Guardado"/>
 	<phrase i="258" t="Error"/>
 	<phrase i="259" t="Contacto ya existe."/>
-	<phrase i="260" t="Deshabilitar"/>
+	<phrase i="260" t="Desactivar"/>
 	<phrase i="261" t="Vigilar amigo"/>
 	<phrase i="262" t="Bloquear amigo"/>
 	<phrase i="263" t="Vuelva a intentar."/>
@@ -282,7 +283,7 @@
 	<phrase i="278" t="Mayo"/>
 	<phrase i="279" t="Junio"/>
 	<phrase i="280" t="Julio"/>
-	<phrase i="281" t="Agosto "/>
+	<phrase i="281" t="Agosto"/>
 	<phrase i="282" t="Septiembre"/>
 	<phrase i="283" t="Octubre"/>
 	<phrase i="284" t="Noviembre"/>
@@ -290,8 +291,8 @@
 	<phrase i="286" t="Hora reloj"/>
 	<phrase i="287" t="Config. todos"/>
 	<phrase i="288" t="Borrar todos"/>
-	<phrase i="289" t="Config. audífono"/>
-	<phrase i="290" t="Auto-detección audífono"/>
+	<phrase i="289" t="Config. Auriculares"/>
+	<phrase i="290" t="Auto-detección auriculares"/>
 	<phrase i="291" t="Error durante importación."/>
 	<phrase i="292" t="Llamada activa, acción abortada."/>
 	<phrase i="293" t="Introduzca contacto."/>
@@ -318,18 +319,18 @@
 	<phrase i="314" t="Long. máxima es"/>
 	<phrase i="315" t="1/A/a"/>
 	<phrase i="316" t="Llamada no disponible."/>
-	<phrase i="317" t="Codificando"/>
+	<phrase i="317" t="Codificación"/>
 	<phrase i="318" t="Velocidad LAN"/>
 	<phrase i="319" t="Velocidad PC"/>
-	<phrase i="320" t="Desconocido "/>
+	<phrase i="320" t="Desconocido"/>
 	<phrase i="321" t="Flash settings reset."/>
-	<phrase i="322" t="Modo LAN "/>
-	<phrase i="323" t="Modo PC "/>
+	<phrase i="322" t="Modo LAN"/>
+	<phrase i="323" t="Modo PC"/>
 	<phrase i="324" t="SNTP"/>
 	<phrase i="325" t="GMT"/>
 	<phrase i="326" t="Hora verano"/>
 	<phrase i="327" t="Encendido"/>
-	<phrase i="328" t="Apagado"/>
+	<phrase i="328" t="Des."/>
 	<phrase i="329" t="Carga CPU"/>
 	<phrase i="330" t="Más rápido"/>
 	<phrase i="331" t="Más despacio"/>
@@ -510,4 +511,193 @@
 	<phrase i="506" t="NO VÁLIDO"/>
 	<phrase i="507" t="Llamadas por tecla de línea"/>
 	<phrase i="508" t="Número de teclas de línea"/>
+	<phrase i="509" t="Microteléfono de banda ancha"/>
+	<phrase i="510" t="TLS"/>
+	<phrase i="511" t="Agregar amigo"/>
+	<phrase i="512" t="Intentos de transferencia de archivos"/>
+	<phrase i="513" t="Tiempo de espera para reintento"/>
+	<phrase i="514" t="Permitir"/>
+	<phrase i="515" t="Privacidad"/>
+	<phrase i="516" t="Lista de privacidad"/>
+	<phrase i="517" t="Buddy Privacy"/>
+	<phrase i="518" t="Agregar privacidad"/>
+	<phrase i="519" t="Editar privacidad"/>
+	<phrase i="520" t="Acceso"/>
+	<phrase i="521" t="Alimentación de EM"/>
+	<phrase i="522" t="Certificado guardado"/>
+	<phrase i="523" t="Error al guardar certificado"/>
+	<phrase i="524" t="Procesando solicitud"/>
+	<phrase i="525" t="&gt;&gt;"/>
+	<phrase i="526" t="Modo C-link"/>
+	<phrase i="527" t="Clien."/>
+	<phrase i="528" t="Menú Ethernet"/>
+	<phrase i="529" t="Modo P. LAN"/>
+	<phrase i="530" t="Modo P. PC"/>
+	<phrase i="531" t="Auto"/>
+	<phrase i="532" t="10HD"/>
+	<phrase i="533" t="10FD"/>
+	<phrase i="534" t="100HD"/>
+	<phrase i="535" t="100FD"/>
+	<phrase i="536" t="Vídeo"/>
+	<phrase i="537" t="Teléfono"/>
+	<phrase i="538" t="Md. Descolgar"/>
+	<phrase i="539" t="Agr. vídeo"/>
+	<phrase i="540" t="Seleccione"/>
+	<phrase i="541" t="Intensidad retroil."/>
+	<phrase i="542" t="Des."/>
+	<phrase i="543" t="Baja"/>
+	<phrase i="544" t="Media"/>
+	<phrase i="545" t="Alta"/>
+	<phrase i="546" t="Llam. p. línea"/>
+	<phrase i="547" t="Vol. altavoz"/>
+	<phrase i="548" t="Vol. timbre"/>
+	<phrase i="549" t="Admin."/>
+	<phrase i="550" t="Adm. conferencia"/>
+	<phrase i="551" t="Sil."/>
+	<phrase i="552" t="Sonido"/>
+	<phrase i="553" t="Quitar"/>
+	<phrase i="554" t="F. medios"/>
+	<phrase i="555" t="Inf. participantes"/>
+	<phrase i="556" t="Intensidad retr. act."/>
+	<phrase i="557" t="Intensidad retr. reposo"/>
+	<phrase i="558" t="Modo 2.5mm"/>
+	<phrase i="559" t="Cualq. (pred.)"/>
+	<phrase i="560" t="Tel. móvil"/>
+	<phrase i="561" t="Con. a PC"/>
+	<phrase i="562" t="Vídeollam."/>
+	<phrase i="563" t="Llam. tel."/>
+	<phrase i="564" t="Sólo SIP"/>
+	<phrase i="565" t="Sólo POTS"/>
+	<phrase i="566" t="Auto (prefer. llamada)"/>
+	<phrase i="567" t="Orden tipo llam."/>
+	<phrase i="568" t="Conten."/>
+	<phrase i="569" t="Autor llam."/>
+	<phrase i="570" t="Dir."/>
+	<phrase i="571" t="Omitir"/>
+	<phrase i="572" t="Llam. de:"/>
+	<phrase i="573" t="Vol."/>
+	<phrase i="574" t="Timbre"/>
+	<phrase i="575" t="Altavoz"/>
+	<phrase i="576" t="Normal"/>
+	<phrase i="577" t="&lt;Nueva anot.&gt;"/>
+	<phrase i="578" t="Guardar dir."/>
+	<phrase i="579" t="Confirmación"/>
+	<phrase i="580" t="Servicio no disp."/>
+	<phrase i="581" t="NM"/>
+	<phrase i="582" t="Conectando..."/>
+	<phrase i="583" t="Llam. entrante:"/>
+	<phrase i="584" t="Est. DSP"/>
+	<phrase i="585" t="Und. 0"/>
+	<phrase i="586" t="Und. 1"/>
+	<phrase i="587" t="Und. 2"/>
+	<phrase i="588" t="Mnsj"/>
+	<phrase i="589" t="Agr. tel."/>
+	<phrase i="590" t="Introducir más n.ºs"/>
+	<phrase i="591" t="Direcc. incompleta"/>
+	<phrase i="592" t="Est. servidores"/>
+	<phrase i="593" t="Registrando"/>
+	<phrase i="594" t="Anulando reg."/>
+	<phrase i="595" t="No registrar"/>
+	<phrase i="596" t="Borrar anotacicón dir."/>
+	<phrase i="597" t="Agregar otro a conf."/>
+	<phrase i="598" t="¿Vídeo o llam. tel.?"/>
+	<phrase i="599" t="Ninguna anotac."/>
+	<phrase i="600" t="Por apellido"/>
+	<phrase i="601" t="Por nombre"/>
+	<phrase i="602" t="Red"/>
+	<phrase i="603" t="Marcac."/>
+	<phrase i="604" t="Cable/DSL"/>
+	<phrase i="605" t="LAN"/>
+	<phrase i="606" t="Conferencia en curso"/>
+	<phrase i="607" t="Imposible"/>
+	<phrase i="608" t="Menú Syslog"/>
+	<phrase i="609" t="Recurso"/>
+	<phrase i="610" t="Nivel proces."/>
+	<phrase i="611" t="UDP"/>
+	<phrase i="612" t="TCP"/>
+	<phrase i="613" t="Nada"/>
+	<phrase i="614" t="Contraseña"/>
+	<phrase i="615" t="EC. agudos"/>
+	<phrase i="616" t="EC. graves"/>
+	<phrase i="617" t="En. audio aux."/>
+	<phrase i="618" t="Sal. audio aux."/>
+	<phrase i="619" t="Control auto. ganancia"/>
+	<phrase i="620" t="Supresión ruido"/>
+	<phrase i="621" t="URL"/>
+	<phrase i="622" t="Sólo env."/>
+	<phrase i="623" t="Env. y recib."/>
+	<phrase i="624" t="Sólo recibir"/>
+	<phrase i="625" t="Inactivo"/>
+	<phrase i="626" t="Sólo TCP"/>
+	<phrase i="627" t="Micro inal."/>
+	<phrase i="628" t="Otra entr."/>
+	<phrase i="629" t="Grabar sal."/>
+	<phrase i="630" t="Altavoz exterior"/>
+	<phrase i="631" t="Graves y agudos"/>
+	<phrase i="632" t="Audio auxiliar"/>
+	<phrase i="633" t="Transduc. locales"/>
+	<phrase i="634" t="Audio"/>
+	<phrase i="635" t="Selec. transdutores locales"/>
+	<phrase i="636" t="Micrófono"/>
+	<phrase i="637" t="Altavoz"/>
+	<phrase i="638" t="Conferencia"/>
+	<phrase i="639" t="MAC previa"/>
+	<phrase i="640" t="Vol. altavoz"/>
+        <phrase i="641" t="Volumen del auricular" />
+        <phrase i="642" t="Volumen del microteléfono" />
+        <phrase i="643" t="Contestar llamada" />
+        <phrase i="644" t="Llamada redirigida" />
+        <phrase i="645" t="Contestar llamadas de grupo predefinido" />
+        <phrase i="646" t="Pulse cualquier tecla para salir de la prueba." />
+        <phrase i="647" t="Prueba cancelada" />
+        <phrase i="648" t="Asociar NS a AU" />
+        <phrase i="649" t="1000HD" />
+        <phrase i="650" t="1000FD" />
+        <phrase i="651" t="Diagnósticos de red" />
+        <phrase i="652" t="Diagnósticos de puerto LAN" />
+        <phrase i="653" t="Diagnósticos de puerto PC" />
+        <phrase i="654" t="Diagnósticos de Ethernet en gigabits" />
+        <phrase i="655" t="Modo normal" />
+        <phrase i="656" t="Forma de onda de transmisión" />
+        <phrase i="657" t="Oscilación de transmisión principal" />
+        <phrase i="658" t="Oscilación de transmisión secundaria" />
+        <phrase i="659" t="Distorsión en transmisión" />
+        <phrase i="660" t="Indicación de micrófono activo" />
+        <phrase i="661" t="Audio móvil deshabilitado" />
+        <phrase i="662" t="Audio móvil habilitado" />
+        <phrase i="663" t="Llamada de audio" />
+        <phrase i="664" t="Videollamada" />
+        <phrase i="665" t="Llamada de vídeo y de audio" />
+        <phrase i="666" t="Cualquier llamada" />
+        <phrase i="667" t="Selección de tipo de reenvío" />
+        <phrase i="668" t="Siempre" />
+        <phrase i="669" t="Sin respuesta" />
+        <phrase i="670" t="Reenviar tras timbres" />
+        <phrase i="671" t="Reenviar tras llamadas sin respuesta" />
+        <phrase i="672" t="Reenviar llamadas ante línea ocupada" />
+        <phrase i="673" t="Reenviar llamadas siempre" />
+        <phrase i="674" t="Filtro de VLAN" />
+        <phrase i="675" t="Filtro de tormenta de mensajes" />
+        <phrase i="676" t="Contenido web de SIP" />
+        <phrase i="677" t="Inactivo" />
+        <phrase i="678" t="Error en conexión en serie:" />
+        <phrase i="679" t="Varios cables Ethernet" />
+        <phrase i="680" t="Conectar sólo un cable Ethernet" />
+        <phrase i="681" t="Conflicto de versión" />
+        <phrase i="682" t="Contacte con el administrador del sistema." />
 </phrases>
+<textEntry>
+        <Entry ID="0" key="=, $/~_?0" />
+        <Entry ID="1" key="!|'^\@:1" />
+	<Entry ID="2" key="abc2áç" />
+	<Entry ID="3" key="def3éè" />
+	<Entry ID="4" key="ghi4íï" />
+	<Entry ID="5" key="jkl5" />
+	<Entry ID="6" key="mno6ñóò" />
+	<Entry ID="7" key="pqrs7" />
+	<Entry ID="8" key="tuv8úü" />
+	<Entry ID="9" key="wxyz9" />
+	<Entry ID="*" key=".*#-&amp;%+;" />
+	<Entry ID="#" key="" />
+</textEntry>
+</dictionary>
