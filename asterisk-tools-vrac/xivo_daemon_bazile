@@ -31,14 +31,6 @@ __license__ = """
 PIDFILE = '/var/run/xivo_daemon_bazile.pid'
 
 import xivo.to_path
-
-import sys
-import anysql
-from BackSQL import backsqlite
-from BackSQL import backmysql
-import ConfigParser
-from ConfigDict import *
-
 import sys, time, ami, Queue, urllib, daemonize, syslog
 
 # Dictionnaire des status Callerid, Channel et status du channel
