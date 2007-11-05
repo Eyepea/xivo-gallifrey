@@ -33,7 +33,6 @@ import xivo.to_path
 import sys
 import socket
 import ConfigParser
-from ConfigDict import *
 from agi import *
 
 agi = AGI()
