@@ -150,6 +150,7 @@ if res['enableautomon'] == 1:
 	calloptions += 'w'
 
 agi.set_variable('XIVO_CALLOPTIONS', calloptions)
+agi.set_variable('XIVO_ENABLEUNC', res['enableunc'])
 
 if res['enableunc'] == 1:
 	agi.set_variable('XIVO_FWD_TYPEUNC', 'user')
