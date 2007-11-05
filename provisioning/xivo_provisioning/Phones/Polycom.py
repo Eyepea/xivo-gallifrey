@@ -9,6 +9,7 @@ Copyright (C) 2007, Proformatique
 __version__ = "$Revision$ $Date$"
 
 import os, sys, syslog
+import socket
 import provsup
 from provsup import BaseProv
 from provsup import ProvGeneralConf as pgc
@@ -16,6 +17,8 @@ from provsup import ProvGeneralConf as pgc
 POLYCOM_COMMON_DIR = pgc['tftproot'] + "Polycom/"
 POLYCOM_COMMON_HTTP_USER = "Polycom"
 POLYCOM_COMMON_HTTP_PASS = "456"
+SIP_TOFROM = 'guest'
+SIP_PORT = 5060
 
 class PolycomProv(BaseProv):
 	label = "Polycom"
@@ -35,16 +38,33 @@ class PolycomProv(BaseProv):
 		os.system(pgc['wget_cmd'] + " -t 1 -T %s -q -nv -O /dev/null --http-user=%s --http-passwd=%s http://%s/form-submit --post-data=%s"
                           % (str(pgc['wget_to_s']), user, passwd, self.phone['ipv4'], command))
 
+        def __sendsipnotify(self):
+                phoneip = self.phone['ipv4']
+                myip = pgc['asterisk_ipv4']
+                sip_message = [ 'NOTIFY sip:%s@%s:5060 SIP/2.0' %(SIP_TOFROM, phoneip),
+                                'Via: SIP/2.0/UDP %s' %(myip),
+                                'From: <sip:%s@%s>' %(SIP_TOFROM, myip),
+                                'To: <sip:%s@%s>' %(SIP_TOFROM, phoneip),
+                                'Event: check-sync',
+                                'Call-ID: callid-reboot@%s' %(myip),
+                                'CSeq: 1300 NOTIFY',
+                                'Contact: <sip:%s@%s' %(SIP_TOFROM, myip),
+                                'Content-Length: 0']
+                sipsocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                sipsocket.sendto('\r\n'.join(sip_message), (phoneip, SIP_PORT))
+
 	def do_reboot(self):
 		"Entry point to send the reboot command to the phone."
-		self.__action("up.welcomeSoundEnabled=0", POLYCOM_COMMON_HTTP_USER, POLYCOM_COMMON_HTTP_PASS)
+		# self.__action("up.welcomeSoundEnabled=0", POLYCOM_COMMON_HTTP_USER, POLYCOM_COMMON_HTTP_PASS)
+                self.__sendsipnotify()
 
 	def do_reinit(self):
 		"""Entry point to send the (possibly post) reinit command to
 		the phone.
 		
 		"""
-                self.__action("up.welcomeSoundEnabled=0", POLYCOM_COMMON_HTTP_USER, POLYCOM_COMMON_HTTP_PASS)
+                # self.__action("up.welcomeSoundEnabled=0", POLYCOM_COMMON_HTTP_USER, POLYCOM_COMMON_HTTP_PASS)
+                self.__sendsipnotify()
 
 
 	def __generate(self, myprovinfo):
