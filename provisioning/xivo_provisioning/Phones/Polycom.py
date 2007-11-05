@@ -107,7 +107,7 @@ class PolycomProv(BaseProv):
 
 	def get_phones(cls):
 		"Report supported phone models for this vendor."
-		return (("spip_430", "SoundPoint IP 430 SIP"), ("spip_650", "SoundPoint IP 650 SIP"))
+		return (("spip_430", "SPIP430"), ("spip_650", "SPIP650"))
 	get_phones = classmethod(get_phones)
 
 	# Entry points for the AGI
