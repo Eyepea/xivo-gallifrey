@@ -29,15 +29,6 @@ class PolycomProv(BaseProv):
 		   self.phone["model"] != "spip_650":
 			raise ValueError, "Unknown Polycom model '%s'" % self.phone["model"]
 
-	def __action(self, command, user, passwd):
-		# -q -- quiet
-		# -nv -- non-verbose
-		# -O /dev/null -- send result into /dev/null
-		# -T 30 -- timeout after 30s
-		# -t 1 -- don't retry
-		os.system(pgc['wget_cmd'] + " -t 1 -T %s -q -nv -O /dev/null --http-user=%s --http-passwd=%s http://%s/form-submit --post-data=%s"
-                          % (str(pgc['wget_to_s']), user, passwd, self.phone['ipv4'], command))
-
         def __sendsipnotify(self):
                 phoneip = self.phone['ipv4']
                 myip = pgc['asterisk_ipv4']
@@ -59,7 +50,6 @@ class PolycomProv(BaseProv):
 
 	def do_reboot(self):
 		"Entry point to send the reboot command to the phone."
-		# self.__action("up.welcomeSoundEnabled=0", POLYCOM_COMMON_HTTP_USER, POLYCOM_COMMON_HTTP_PASS)
                 self.__sendsipnotify()
 
 	def do_reinit(self):
@@ -67,7 +57,6 @@ class PolycomProv(BaseProv):
 		the phone.
 		
 		"""
-                # self.__action("up.welcomeSoundEnabled=0", POLYCOM_COMMON_HTTP_USER, POLYCOM_COMMON_HTTP_PASS)
                 self.__sendsipnotify()
 
 

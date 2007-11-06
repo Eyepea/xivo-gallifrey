@@ -32,13 +32,14 @@ class LinksysProv(BaseProv):
 			raise ValueError, "Unknown Linksys model '%s'" % self.phone["model"]
 
 	def __action(self, command, user, passwd):
-		# -q -- quiet
-		# -nv -- non-verbose
-		# -O /dev/null -- send result into /dev/null
-		# -T 30 -- timeout after 30s
-		# -t 1 -- don't retry
-		os.system(pgc['wget_cmd'] + ' -t 1 -T %s -q -nv -O /dev/null --http-user=%s --http-passwd=%s http://%s/admin/%s'
-                          % (str(pgc['wget_to_s']), user, passwd, self.phone['ipv4'], command))
+                ## wget options                                ## curl options
+		# -q -- quiet                                  # -s -- silent
+		# -nv -- non-verbose                           #
+		# -O /dev/null -- send result into /dev/null   # -o /dev/null
+		# -T 30 -- timeout after 30s                   # --connect-timeout 30
+		# -t 1 -- don't retry                          # -retry 0
+		os.system(pgc['curl_cmd'] + ' --retry 0 --connect-timeout %s -s -o /dev/null --digest -u %s:%s http://%s/admin/%s'
+                          % (str(pgc['curl_to_s']), user, passwd, self.phone['ipv4'], command))
 
 	def do_reinit(self):
 		"""Entry point to send the (possibly post) reinit command to

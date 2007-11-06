@@ -37,18 +37,21 @@ class SwissvoiceProv(BaseProv):
 		if self.phone["model"] != "ip10s":
 			raise ValueError, "Unknown Swissvoice model '%s'" % self.phone["model"]
 	def __action(self, command, user, passwd):
-		# -q -- quiet
-		# -nv -- non-verbose
-		# -O /dev/null -- send result into /dev/null
-		# -T 30 -- timeout after 30s
-		# -t 1 -- don't retry
+                ## wget options                                ## curl options
+		# -q -- quiet                                  # -s -- silent
+		# -nv -- non-verbose                           #
+		# -O /dev/null -- send result into /dev/null   # -o /dev/null
+		# -T 30 -- timeout after 30s                   # --connect-timeout 30
+		# -t 1 -- don't retry                          # -retry 0
 		url_rep1 = "Administrator_Settings"
 		url_rep2 = "reboot_choice_B.html?WINDWEB_URL=/Administrator_Settings/reboot_choice_B.html"
 		url_rep3 = "&EraseFlash=0&Reboot=+Reboot"
-		fullcommand = pgc['wget_cmd'] + \
-			      " -t 1 -T %s -q -nv -O /dev/null --http-user=%s --http-passwd=%s \"http://%s/%s/%s%s\"" \
-			      %(str(pgc['wget_to_s']), user, passwd,
-				self.phone['ipv4'], url_rep1, url_rep2, url_rep3)
+		fullcommand = pgc['curl_cmd'] + \
+			      " --retry 0 --connect-timeout %s -s -o /dev/null -u %s:%s \"http://%s/%s/%s%s\"" \
+			      %(str(pgc['curl_to_s']),
+                                user, passwd,
+				self.phone['ipv4'],
+                                url_rep1, url_rep2, url_rep3)
 		os.system(fullcommand)
 
 	def do_reinit(self):
