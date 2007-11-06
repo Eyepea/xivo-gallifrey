@@ -182,7 +182,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 	function set_exten($exten,$context)
 	{
 		if(($rs = $this->_extensions->new_exten('macro',
-						 array('appdata' => 'superoutcall'),
+						 array('appdata' => 'outgoing_user'),
 						 $exten,
 						 $context)) === false
 		|| $this->_extensions->set_exten('hangup',$rs) === false)
