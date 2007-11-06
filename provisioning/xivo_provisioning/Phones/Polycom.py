@@ -17,13 +17,13 @@ from provsup import ProvGeneralConf as pgc
 POLYCOM_COMMON_DIR = pgc['tftproot'] + "Polycom/"
 POLYCOM_COMMON_HTTP_USER = "Polycom"
 POLYCOM_COMMON_HTTP_PASS = "456"
-SIP_TOFROM = 'guest'
 SIP_PORT = 5060
 
 class PolycomProv(BaseProv):
 	label = "Polycom"
 	def __init__(self, phone):
 		BaseProv.__init__(self, phone)
+                self.provinfo = {}
 		# TODO: handle this with a lookup table stored in the DB?
 		if self.phone["model"] != "spip_430" and \
 		   self.phone["model"] != "spip_650":
@@ -41,14 +41,18 @@ class PolycomProv(BaseProv):
         def __sendsipnotify(self):
                 phoneip = self.phone['ipv4']
                 myip = pgc['asterisk_ipv4']
-                sip_message = [ 'NOTIFY sip:%s@%s:5060 SIP/2.0' %(SIP_TOFROM, phoneip),
+                if 'number' in self.provinfo:
+                        sip_number = self.provinfo['number']
+                else:
+                        sip_number = 'guest'
+                sip_message = [ 'NOTIFY sip:%s@%s:%d SIP/2.0' %(sip_number, phoneip, SIP_PORT),
                                 'Via: SIP/2.0/UDP %s' %(myip),
-                                'From: <sip:%s@%s>' %(SIP_TOFROM, myip),
-                                'To: <sip:%s@%s>' %(SIP_TOFROM, phoneip),
+                                'From: <sip:%s@%s>' %(sip_number, myip),
+                                'To: <sip:%s@%s>' %(sip_number, phoneip),
                                 'Event: check-sync',
                                 'Call-ID: callid-reboot@%s' %(myip),
                                 'CSeq: 1300 NOTIFY',
-                                'Contact: <sip:%s@%s' %(SIP_TOFROM, myip),
+                                'Contact: <sip:%s@%s>' %(sip_number, myip),
                                 'Content-Length: 0']
                 sipsocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                 sipsocket.sendto('\r\n'.join(sip_message), (phoneip, SIP_PORT))
@@ -109,18 +113,21 @@ class PolycomProv(BaseProv):
 		configuration for this phone.
 		
 		"""
-                self.__generate({ "name":   "guest",
+                self.provinfo = { "name":   "guest",
                                   "ident":  "guest",
                                   "number": "guest",
                                   "passwd": "guest"
-                                  })
+                                  }
+                self.__generate(self.provinfo)
+
 
 	def do_autoprov(self, provinfo):
 		"""Entry point to generate the provisioned configuration for
 		this phone.
 		
 		"""
-		self.__generate(provinfo)
+                self.provinfo = provinfo
+		self.__generate(self.provinfo)
 
 
 	# Introspection entry points
