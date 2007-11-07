@@ -94,7 +94,7 @@ class xivo_service_asterisk_ami extends xivo_service_asterisk_abstract
 			if(isset($msg[1]) === false)
 				$msg[1] = '';
 
-			if($msg[0] === 'XIVO-CLI-PHP')
+			if($msg[0] === 'XIVO-CLI-WEBI')
 			{
 				if(substr($msg[1],0,2) === 'KO')
 					return(false);

@@ -444,3 +444,36 @@ function xivo_fm_select_add_host_ipv4_subnet(id,value)
 
 	return(xivo_fm_select_add_entry(id,value,value));
 }
+
+function xivo_fm_checked_all(form,name,mode)
+{
+	if(xivo_is_undef(form) == true
+	|| xivo_is_undef(name) == true
+	|| xivo_is_string(form) == false
+	|| xivo_is_string(name) == false
+	|| xivo_is_undef(xivo_fm[form]) == true
+	|| xivo_is_undef(xivo_fm[form][name]) == true
+	|| (len = xivo_fm[form][name].length) == 0)
+		return(false);
+
+	if(xivo_is_undef(mode) == true)
+		mode = true;
+	else if(mode != 'reverse')
+		mode = Boolean(mode);
+
+	ref = xivo_fm[form][name];
+
+	for(var i = 0;i < len;i++)
+	{
+		if(ref[i].type != 'checkbox' && ref[i].type != 'radio')
+			continue;
+
+		if(mode != 'reverse')
+			ref[i].checked = mode;
+		else if(ref[i].checked == true)
+			ref[i].checked = false;
+		else
+			ref[i].checked = true;
+
+	}
+}

@@ -82,6 +82,9 @@ Signed Linear (SLN)
 ; toolbar_opt_advanced
 Mode avancé
 
+; toolbar_adv_menu_select-all
+Tout sélectionner
+
 ; toolbar_adv_menu_enable
 Activer
 

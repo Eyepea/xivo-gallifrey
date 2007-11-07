@@ -653,7 +653,7 @@ class xivo_i18n
 						$this->_file = $_file;
 					}
 					else if(preg_match('#^;(?:\t| )*load(\t| )+'.
-							   '(\.{1,2}\\'.preg_quote(XIVO_SEP_DIR).')?'.
+							   '(\.{1,2}'.preg_quote(XIVO_SEP_DIR).')?'.
 							   '([a-z0-9-_'.preg_quote(XIVO_SEP_DIR).']+)$#i',$line,$matchload) === 1)
 					{
 						if($priority > 3)
