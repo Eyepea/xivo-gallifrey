@@ -181,7 +181,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 
 	function set_exten($exten,$context)
 	{
-		$appdata = 'outgoing_user|'.$exten;
+		$appdata = 'outgoing_user|'.$this->_service->clean_extension($exten);
 
 		if(($rs = $this->_extensions->new_exten('macro',
 						 array('appdata' => $appdata),
