@@ -35,7 +35,7 @@
 # The main loop is triggered by a select() on the file descriptors for :
 # - the SIP sockets (SIPsocks);
 # - the AMI Event sockets (AMIsocks);
-# - the UI sockets (UIsock, PHPUIsock);
+# - the UI sockets (UIsock, WEBIsock);
 # - the Caller Information Popup sockets (authentication, keepalive and identrequest).
 #
 # On reception of a SIP socket, parseSIP is called in order to either read SIP
@@ -46,7 +46,7 @@
 # the detailed status of the channels.
 #
 # For each UI connection, a list of the open UI connections is updated
-# (tcpopens_sb or tcpopens_php according to the kind of connection).
+# (tcpopens_sb or tcpopens_webi according to the kind of connection).
 # This list is the one used to broadcast the miscellaneous updates
 # (it is up to the UI clients to fetch the initial status with the "hints"
 # command).
@@ -106,6 +106,7 @@
 __version__ = "$Revision$ $Date$"
 
 # debian.org modules
+import csv
 import string
 import ConfigParser
 import commands
@@ -197,9 +198,9 @@ SUBSCRIBES_TIME_UNIT_IN_S     = 1
 socket.setdefaulttimeout(2)
 DAEMON = "daemon-announce"
 HISTSEPAR = ";"
-XIVO_CLI_PHP_HEADER = "XIVO-CLI-PHP"
+XIVO_CLI_WEBI_HEADER = "XIVO-CLI-WEBI"
 REQUIRED_CLIENT_VERSION = 1569
-XIVOVERSION = 0.2
+XIVOVERSION = '0.2'
 ITEMS_PER_PACKET = 500
 LENGTH_SSO = 11
 
@@ -1049,7 +1050,7 @@ def manage_login(cfg, requester_ip, requester_port, socket):
 ## \brief Deals with requests from the UI clients.
 # \param connid connection identifier
 # \param allow_events tells if this connection belongs to events-allowed ones
-# (for switchboard) or to events-disallowed ones (for php CLI commands)
+# (for switchboard) or to events-disallowed ones (for WEBI CLI commands)
 # \return none
 def manage_tcp_connection(connid, allow_events):
         global AMI_array_user_commands, ins
@@ -1092,8 +1093,8 @@ def manage_tcp_connection(connid, allow_events):
                                                 userlist_lock.release()
                                         del userinfo_by_requester[requester]
                         else:
-                                tcpopens_php.remove(connid)
-                                log_debug(SYSLOG_INFO, "TCP (PHP) socket closed from %s" %requester)
+                                tcpopens_webi.remove(connid)
+                                log_debug(SYSLOG_INFO, "TCP (WEBI) socket closed from %s" %requester)
                 except Exception, exc:
                         log_debug(SYSLOG_ERR, '--- exception --- UI connection [%s] : a problem occured when trying to close %s : %s'
                                   %(msg, str(connid[0]), str(exc)))
@@ -1119,7 +1120,7 @@ def manage_tcp_connection(connid, allow_events):
                                         reply += ":%s:%d" %(tcpo[1],tcpo[2])
                                 connid[0].send(reply + "\n")
                                 connid[0].send("server capabilities = %s\n" %(",".join(capabilities_list)))
-                                connid[0].send("%s:OK\n" %(XIVO_CLI_PHP_HEADER))
+                                connid[0].send("%s:OK\n" %(XIVO_CLI_WEBI_HEADER))
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- UI connection [%s] : KO when sending to %s : %s'
                                           %(usefulmsg, requester, str(exc)))
@@ -1138,7 +1139,7 @@ def manage_tcp_connection(connid, allow_events):
                                                                  int(time.time() - plast.normal[kk].lasttime),
                                                                  len(canal),
                                                                  str(canal.keys())))
-                                connid[0].send("%s:OK\n" %(XIVO_CLI_PHP_HEADER))
+                                connid[0].send("%s:OK\n" %(XIVO_CLI_WEBI_HEADER))
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- UI connection [%s] : KO when sending to %s : %s'
                                           %(usefulmsg, requester, str(exc)))
@@ -1154,7 +1155,7 @@ def manage_tcp_connection(connid, allow_events):
                                         userlist_lock.release()
                                 if requester in userinfo_by_requester:
                                         connid[0].send("%s\n" %str(userinfo_by_requester[requester]))
-                                connid[0].send("%s:OK\n" %(XIVO_CLI_PHP_HEADER))
+                                connid[0].send("%s:OK\n" %(XIVO_CLI_WEBI_HEADER))
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- UI connection [%s] : KO when sending to %s : %s'
                                           %(usefulmsg, requester, str(exc)))
@@ -1164,7 +1165,7 @@ def manage_tcp_connection(connid, allow_events):
                                         connid[0].send("events   : %s : %s\n" %(amis, str(AMI_array_events_on[amis])))
                                 for amis in AMI_array_user_commands:
                                         connid[0].send("commands : %s : %s\n" %(amis, str(AMI_array_user_commands[amis])))
-                                connid[0].send("%s:OK\n" %(XIVO_CLI_PHP_HEADER))
+                                connid[0].send("%s:OK\n" %(XIVO_CLI_WEBI_HEADER))
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- UI connection [%s] : KO when sending to %s : %s'
                                           %(usefulmsg, requester, str(exc)))
@@ -1206,34 +1207,34 @@ def manage_tcp_connection(connid, allow_events):
                                                   %(l[0], requester, str(exc)))
 
 
-                        elif allow_events == False: # i.e. if PHP-style connection
+                        elif allow_events == False: # i.e. if WEBI-style connection
                                 n = -1
-                                if requester_ip in ip_reverse_php: n = ip_reverse_php[requester_ip]
+                                if requester_ip in ip_reverse_webi: n = ip_reverse_webi[requester_ip]
                                 if n == -1:
-                                        connid[0].send("%s:KO <NOT ALLOWED>\n" %(XIVO_CLI_PHP_HEADER))
+                                        connid[0].send("%s:KO <NOT ALLOWED>\n" %(XIVO_CLI_WEBI_HEADER))
                                 else:
                                         astid = configs[n].astid
-                                        connid[0].send("%s:ID <%s>\n" %(XIVO_CLI_PHP_HEADER, astid))
+                                        connid[0].send("%s:ID <%s>\n" %(XIVO_CLI_WEBI_HEADER, astid))
                                         try:
                                                 if astid in AMI_array_user_commands and AMI_array_user_commands[astid]:
                                                         try:
                                                                 s = AMI_array_user_commands[astid].execclicommand(usefulmsg.strip())
                                                         except Exception, exc:
-                                                                log_debug(SYSLOG_ERR, "--- exception --- (%s) error : php command <%s> : (client %s) : %s"
+                                                                log_debug(SYSLOG_ERR, "--- exception --- (%s) error : WEBI command <%s> : (client %s) : %s"
                                                                           %(astid, str(usefulmsg.strip()), requester, str(exc)))
                                                         try:
                                                                 for x in s: connid[0].send(x)
-                                                                connid[0].send("%s:OK\n" %(XIVO_CLI_PHP_HEADER))
+                                                                connid[0].send("%s:OK\n" %(XIVO_CLI_WEBI_HEADER))
                                                                 ins.remove(connid[0])
-                                                                log_debug(SYSLOG_INFO, "TCP (PHP) socket closed towards %s" %requester)
+                                                                log_debug(SYSLOG_INFO, "TCP (WEBI) socket closed towards %s" %requester)
                                                         except Exception, exc:
-                                                                log_debug(SYSLOG_ERR, "--- exception --- (%s) error : php command <%s> : (client %s) : %s"
+                                                                log_debug(SYSLOG_ERR, "--- exception --- (%s) error : WEBI command <%s> : (client %s) : %s"
                                                                           %(astid, str(usefulmsg.strip()), requester, str(exc)))
                                         except Exception, exc:
-                                                connid[0].send("%s:KO <Exception : %s>\n" %(XIVO_CLI_PHP_HEADER, str(exc)))
+                                                connid[0].send("%s:KO <Exception : %s>\n" %(XIVO_CLI_WEBI_HEADER, str(exc)))
                                         connid[0].close()
                         else:
-                                connid[0].send("%s:KO <NOT ALLOWED from Switchboard>\n" %(XIVO_CLI_PHP_HEADER))
+                                connid[0].send("%s:KO <NOT ALLOWED from Switchboard>\n" %(XIVO_CLI_WEBI_HEADER))
 
 
 ## \brief Tells whether a channel is a "normal" one, i.e. SIP, IAX2, mISDN, Zap
@@ -2393,7 +2394,7 @@ class AsteriskRemote:
         ## \var remoteaddr
         # \brief Address of the Asterisk server
 
-        ## \var ipaddress_php
+        ## \var ipaddress_webi
         # \brief IP address allowed to send CLI commands
 
         ## \var portsipclt
@@ -2421,7 +2422,7 @@ class AsteriskRemote:
                      extrachannels,
                      localaddr = '127.0.0.1',
                      remoteaddr = '127.0.0.1',
-                     ipaddress_php = '127.0.0.1',
+                     ipaddress_webi = '127.0.0.1',
                      ami_port = 5038,
                      ami_login = 'xivouser',
                      ami_pass = 'xivouser',
@@ -2440,7 +2441,7 @@ class AsteriskRemote:
                 self.extrachannels = extrachannels
                 self.localaddr = localaddr
                 self.remoteaddr = remoteaddr
-                self.ipaddress_php = ipaddress_php
+                self.ipaddress_webi = ipaddress_webi
                 self.portsipclt = portsipclt
                 self.portsipsrv = portsipsrv
                 self.ami_port = ami_port
@@ -2482,7 +2483,7 @@ class AsteriskRemote:
                                 sock.sendto(comm, (self.remoteaddr, self.portsipsrv))
 
 
-        ## \brief Function to load sso.php user file.
+        ## \brief Function to load the user file list.
         # SIP, Zap, mISDN and IAX2 are taken into account there.
         # There would remain MGCP, CAPI, h323, ...
         # \param url the url where lies the sso, it can be file:/ as well as http://
@@ -3289,7 +3290,7 @@ while True: # loops over the reloads
         port_keepalive = 5001
         port_request = 5002
         port_ui_srv = 5003
-        port_phpui_srv = 5004
+        port_webi = 5004
         port_fax = 5020
         port_switchboard_base_sip = 5005
         xivoclient_session_timeout = 60
@@ -3327,8 +3328,8 @@ while True: # loops over the reloads
                 port_fax = int(xivoconf_general["port_fax"])
         if "port_switchboard" in xivoconf_general:
                 port_ui_srv = int(xivoconf_general["port_switchboard"])
-        if "port_php" in xivoconf_general:
-                port_phpui_srv = int(xivoconf_general["port_php"])
+        if "port_webi" in xivoconf_general:
+                port_webi = int(xivoconf_general["port_webi"])
         if "port_switchboard_base_sip" in xivoconf_general:
                 port_switchboard_base_sip = int(xivoconf_general["port_switchboard_base_sip"])
         if "xivoclient_session_timeout" in xivoconf_general:
@@ -3358,7 +3359,7 @@ while True: # loops over the reloads
         save_for_next_packet_status = {}
         faxbuffer = {}
         n = 0
-        ip_reverse_php = {}
+        ip_reverse_webi = {}
         ip_reverse_sht = {}
 
         SIPSender().start()
@@ -3371,7 +3372,7 @@ while True: # loops over the reloads
                         localaddr = '127.0.0.1'
                         userlisturl = 'sso.php'
                         ipaddress = '127.0.0.1'
-                        ipaddress_php = '127.0.0.1'
+                        ipaddress_webi = '127.0.0.1'
                         extrachannels = ''
                         ami_port = 5038
                         ami_login = 'xivouser'
@@ -3391,8 +3392,8 @@ while True: # loops over the reloads
                                 userlisturl = xivoconf_local['userlisturl']
                         if 'ipaddress' in xivoconf_local:
                                 ipaddress = xivoconf_local['ipaddress']
-                        if 'ipaddress_php' in xivoconf_local:
-                                ipaddress_php = xivoconf_local['ipaddress_php']
+                        if 'ipaddress_webi' in xivoconf_local:
+                                ipaddress_webi = xivoconf_local['ipaddress_webi']
                         if 'extrachannels' in xivoconf_local:
                                 extrachannels = xivoconf_local['extrachannels']
                         if 'parkingnumber' in xivoconf_local:
@@ -3430,7 +3431,7 @@ while True: # loops over the reloads
                                                       extrachannels,
                                                       localaddr,
                                                       ipaddress,
-                                                      ipaddress_php,
+                                                      ipaddress_webi,
                                                       ami_port,
                                                       ami_login,
                                                       ami_pass,
@@ -3449,11 +3450,11 @@ while True: # loops over the reloads
                         else:
                                 log_debug(SYSLOG_INFO, 'WARNING - IP address already exists for asterisk #%d - can not set it for #%d'
                                           % (ip_reverse_sht[ipaddress], n))
-                        if ipaddress_php not in ip_reverse_php:
-                                ip_reverse_php[ipaddress_php] = n
+                        if ipaddress_webi not in ip_reverse_webi:
+                                ip_reverse_webi[ipaddress_webi] = n
                         else:
-                                log_debug(SYSLOG_INFO, 'WARNING - IP address (PHP) already exists for asterisk #%d - can not set it for #%d'
-                                          % (ip_reverse_php[ipaddress_php], n))
+                                log_debug(SYSLOG_INFO, 'WARNING - IP address (WEBI) already exists for asterisk #%d - can not set it for #%d'
+                                          % (ip_reverse_webi[ipaddress_webi], n))
                         save_for_next_packet_events[i] = ''
                         save_for_next_packet_status[i] = ''
                         faxbuffer[i] = []
@@ -3613,15 +3614,15 @@ while True: # loops over the reloads
         UIsock.listen(10)
         ins.append(UIsock)
 
-        # opens the listening socket for PHP/CLI connections
-        PHPUIsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        PHPUIsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        PHPUIsock.bind(("", port_phpui_srv))
-        PHPUIsock.listen(10)
-        ins.append(PHPUIsock)
+        # opens the listening socket for WEBI/CLI connections
+        WEBIsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        WEBIsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        WEBIsock.bind(("", port_webi))
+        WEBIsock.listen(10)
+        ins.append(WEBIsock)
 
         tcpopens_sb = []
-        tcpopens_php = []
+        tcpopens_webi = []
         lastrequest_time = []
 
         log_debug(SYSLOG_INFO, '# STARTING XIVO Daemon # (3/3) fetch SSO, SIP register and subscribe')
@@ -3718,14 +3719,14 @@ while True: # loops over the reloads
                                 ins.append(conn)
                                 conn.setblocking(0)
                                 tcpopens_sb.append([conn, UIsockparams[0], UIsockparams[1]])
-                        # the new UI (PHP) connections are catched here
-                        elif PHPUIsock in i:
-                                [conn, PHPUIsockparams] = PHPUIsock.accept()
-                                log_debug(SYSLOG_INFO, "TCP (PHP) socket opened on   %s:%s" %(PHPUIsockparams[0],str(PHPUIsockparams[1])))
+                        # the new UI (WEBI) connections are catched here
+                        elif WEBIsock in i:
+                                [conn, WEBIsockparams] = WEBIsock.accept()
+                                log_debug(SYSLOG_INFO, "TCP (WEBI) socket opened on   %s:%s" %(WEBIsockparams[0],str(WEBIsockparams[1])))
                                 # appending the opened socket to the ones watched
                                 ins.append(conn)
                                 conn.setblocking(0)
-                                tcpopens_php.append([conn, PHPUIsockparams[0], PHPUIsockparams[1]])
+                                tcpopens_webi.append([conn, WEBIsockparams[0], WEBIsockparams[1]])
                         # open UI (SB) connections
                         elif filter(lambda j: j[0] in i, tcpopens_sb):
                                 conn = filter(lambda j: j[0] in i, tcpopens_sb)[0]
@@ -3733,13 +3734,13 @@ while True: # loops over the reloads
                                         manage_tcp_connection(conn, True)
                                 except Exception, exc:
                                         log_debug(SYSLOG_ERR, '--- exception --- XC/SB tcp connection : %s' % str(exc))
-                        # open UI (PHP) connections
-                        elif filter(lambda j: j[0] in i, tcpopens_php):
-                                conn = filter(lambda j: j[0] in i, tcpopens_php)[0]
+                        # open UI (WEBI) connections
+                        elif filter(lambda j: j[0] in i, tcpopens_webi):
+                                conn = filter(lambda j: j[0] in i, tcpopens_webi)[0]
                                 try:
                                         manage_tcp_connection(conn, False)
                                 except Exception, exc:
-                                        log_debug(SYSLOG_ERR, '--- exception --- PHP tcp connection : %s' % str(exc))
+                                        log_debug(SYSLOG_ERR, '--- exception --- WEBI tcp connection : %s' % str(exc))
                         # advertising from other xivo_daemon's around
                         elif xdal in i:
                                 [data, addrsip] = xdal.recvfrom(BUFSIZE_UDP)
