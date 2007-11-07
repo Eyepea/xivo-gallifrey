@@ -38,14 +38,10 @@ import anysql
 import except_tb
 from BackSQL import backsqlite
 from BackSQL import backmysql
-import ConfigParser
-from ConfigDict import *
+import ConfigDict
 from agi import *
 
-options = { "db_uri" : "" }
-conf_obj = ConfigParser.ConfigParser()
-conf_obj.readfp(open(CONFIG_FILE))
-FillDictFromConfigSection(options, conf_obj, "db")
+db_uri = ConfigDict.ReadSingleKey(CONFIG_FILE, 'db', 'db_uri')
 
 agi = AGI()
 
@@ -60,9 +56,9 @@ def dp_break(message, show_tb = False):
 
 def db_connect():
 	try:
-		conn = anysql.connect_by_uri(options['db_uri'])
+		conn = anysql.connect_by_uri(db_uri)
 	except:
-		dp_break("Unable to connect to %s" % options['db_uri'], True)
+		dp_break("Unable to connect to %s" % db_uri, True)
 
 	return conn
 
