@@ -19,7 +19,7 @@ default:
 prepare-tarball::
 	@cp -a . ${TARBALL_DIR}
 	@if [ -z "${FORCE_UNSCRAMBLED}" ]; then \
-		eaccelerator_encoder . -r -f -sphp -sinc -o ${TARBALL_DIR}; \
+		eaccelerator_encoder . -w -r -f -sphp -sinc -o ${TARBALL_DIR}; \
 	fi
 
 clean-tarball::
