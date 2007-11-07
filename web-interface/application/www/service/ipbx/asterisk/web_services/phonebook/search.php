@@ -36,7 +36,7 @@ $url = $_HTML->url('service/ipbx/web_services/phonebook/local').
        '?'.'name='.$_QR['name'].'&vendor='.$vendor;
 
 if(($rss = $phonebook->get_phonebook_search_from_server($url,false)) !== false)
-	$rs = array_merge($rs,$rsu,$rss);
+	$rs = array_merge($rs,$rss);
 
 xivo::load_class('xivo::sort');
 $sort = new xivo_sort(array('key' => 'identity'));
