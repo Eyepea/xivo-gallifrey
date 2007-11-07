@@ -31,21 +31,17 @@ __license__ = """
 
 CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
 
-import xivo.to_path
-
 import sys, re
+
+import xivo.to_path
 import anysql
 import except_tb
 from BackSQL import backsqlite
 from BackSQL import backmysql
-import ConfigParser
-from ConfigDict import *
+import ConfigDict
 from agi import *
 
-options = { "db_uri" : "" }
-conf_obj = ConfigParser.ConfigParser()
-conf_obj.readfp(open(CONFIG_FILE))
-FillDictFromConfigSection(options, conf_obj, "db")
+db_uri = ConfigDict.ReadSingleKey(CONFIG_FILE, 'db', 'db_uri')
 
 agi = AGI()
 
@@ -60,9 +56,9 @@ def dp_break(message, show_tb = False):
 
 def db_connect():
 	try:
-		conn = anysql.connect_by_uri(options['db_uri'])
+		conn = anysql.connect_by_uri(db_uri)
 	except:
-		dp_break("Unable to connect to %s" % options['db_uri'], True)
+		dp_break("Unable to connect to %s" % db_uri, True)
 
 	return conn
 
@@ -74,30 +70,23 @@ dstnum = agi.get_variable('REAL_DSTNUM')
 context = agi.get_variable('REAL_CONTEXT')
 exten_pattern = agi.get_variable('REAL_EXTENPATTERN')
 
-cursor.query("SELECT ${columns} FROM extenumbers WHERE exten = %s AND context = %s AND type = 'outcall'",
-             ('typeval',),
-             (exten_pattern, context))
+cursor.query("SELECT ${columns} FROM extenumbers INNER JOIN outcall "
+             "ON outcall.id = extenumbers.typeval "
+	     "WHERE extenumbers.exten = %s AND extenumbers.context = %s AND extenumbers.type = 'outcall'",
+	     [('outcall.'+x) for x in ('trunkfeaturesid', 'externprefix', 'stripnum', 'setcallerid', 'callerid', 'useenum', 'internal', 'hangupringtime')],
+	     (exten_pattern, context))
 res = cursor.fetchone()
 
 if not res:
-	dp_break("Unable to find extension pattern '%s'" % exten_pattern)
+	dp_break("Unable to find outgoing call features joined to extension pattern '%s' in context '%s'" % (exten_pattern, context))
 
-typeval = res['typeval']
-cursor.query("SELECT ${columns} FROM outcall WHERE id = %s AND linked = 1 AND commented = 0",
-             ('trunkfeaturesid', 'externprefix', 'stripnum', 'setcallerid', 'callerid', 'useenum', 'internal', 'hangupringtime'),
-             (typeval,))
-res = cursor.fetchone()
-
-if not res:
-	dp_break("Unable to find outgoing call features '%s'" % typeval)
-
-trunkfeaturesid = res['trunkfeaturesid']
-externprefix = res['externprefix']
-stripnum = int(res['stripnum'])
-setcallerid = res['setcallerid']
-trunk_callerid = res['callerid']
-internal = res['internal']
-hangupringtime = res['hangupringtime']
+trunkfeaturesid = res['outcall.trunkfeaturesid']
+externprefix = res['outcall.externprefix']
+stripnum = int(res['outcall.stripnum'])
+setcallerid = res['outcall.setcallerid']
+trunk_callerid = res['outcall.callerid']
+internal = res['outcall.internal']
+hangupringtime = res['outcall.hangupringtime']
 
 if stripnum > 0:
 	dstnum = dstnum[stripnum:]
