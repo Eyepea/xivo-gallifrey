@@ -233,12 +233,12 @@ FeatureKeyExt03=L/<sip:>
 FeatureKeyExt04=L/<sip:>
 FeatureKeyExt05=L/<sip:>
 NormalDigitFlag=1
-Phonebook1_url=
+Phonebook1_url=https://192.168.0.254/service/ipbx/web_services.php/phonebook/search/?name=#SEARCH
 Phonebook2_url=
 Phonebook3_url=
 Phonebook4_url=
 Phonebook5_url=
-Phonebook1_name=
+Phonebook1_name=XIVO
 Phonebook2_name=
 Phonebook3_name=
 Phonebook4_name=

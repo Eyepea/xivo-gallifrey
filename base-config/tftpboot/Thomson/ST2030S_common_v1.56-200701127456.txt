@@ -185,8 +185,8 @@ FeatureKeyExt64=L/<sip:>
 FeatureKeyExt65=L/<sip:>
 FeatureKeyExt66=L/<sip:>
 NormalDigitFlag=1
-Phonebook1_url=http://192.168.0.254/phonebook/search.php?NAME=#SEARCH
-Phonebook1_name=Xivo
+Phonebook1_url=https://192.168.0.254/service/ipbx/web_services.php/phonebook/search/?name=#SEARCH
+Phonebook1_name=XIVO
 TelnetID=admin
 TelnetPWD=superpass
 UserID=xivo
