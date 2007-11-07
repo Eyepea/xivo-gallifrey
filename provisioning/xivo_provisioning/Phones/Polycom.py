@@ -24,6 +24,7 @@ class PolycomProv(BaseProv):
 	def __init__(self, phone):
 		BaseProv.__init__(self, phone)
                 self.provinfo = {}
+                self.provinfo_prev = {}
 		# TODO: handle this with a lookup table stored in the DB?
 		if self.phone["model"] != "spip_430" and \
 		   self.phone["model"] != "spip_650":
@@ -32,8 +33,8 @@ class PolycomProv(BaseProv):
         def __sendsipnotify(self):
                 phoneip = self.phone['ipv4']
                 myip = pgc['asterisk_ipv4']
-                if 'number' in self.provinfo:
-                        sip_number = self.provinfo['number']
+                if 'number' in self.provinfo_prev:
+                        sip_number = self.provinfo_prev['number']
                 else:
                         sip_number = 'guest'
                 sip_message = [ 'NOTIFY sip:%s@%s:%d SIP/2.0' %(sip_number, phoneip, SIP_PORT),
@@ -47,6 +48,7 @@ class PolycomProv(BaseProv):
                                 'Content-Length: 0']
                 sipsocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                 sipsocket.sendto('\r\n'.join(sip_message), (phoneip, SIP_PORT))
+                self.provinfo_prev = self.provinfo
 
 	def do_reboot(self):
 		"Entry point to send the reboot command to the phone."
