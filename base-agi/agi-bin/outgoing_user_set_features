@@ -98,7 +98,7 @@ if not internal:
 	if setcallerid:
 		callerid = trunk_callerid
 	else:
-		cursor.query("SELECT ${columns} FROM userfeatures WHERE number = %s AND context = %s AND commented = 0",
+		cursor.query("SELECT ${columns} FROM userfeatures WHERE number = %s AND context = %s AND internal = 0 AND commented = 0",
                              ('outcallerid',),
                              (srcnum, context))
 		res = cursor.fetchone()

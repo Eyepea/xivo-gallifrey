@@ -116,10 +116,10 @@ def ds_setvars(id, status, type_varname, typeval_varname):
 # Cursors have a weak reference on their connection, so make a strong one.
 conn = db_connect()
 cursor = conn.cursor()
-number = agi.get_variable('REAL_EXTEN')
+number = agi.get_variable('REAL_DSTNUM')
 context = agi.get_variable('REAL_CONTEXT')
 
-cursor.query("SELECT ${columns} FROM userfeatures WHERE number = %s AND context = %s",
+cursor.query("SELECT ${columns} FROM userfeatures WHERE number = %s AND context = %s AND internal = 0 AND commented = 0",
              ('id', 'protocol' , 'name', 'ringseconds', 'simultcalls', 'enablevoicemail', 'enablexfer', 'enableautomon', 'callrecord', 'callfilter', 'enablednd', 'enableunc', 'destunc', 'enablerna', 'destrna', 'enablebusy', 'destbusy', 'musiconhold'),
              (number, context))
 res = cursor.fetchone()

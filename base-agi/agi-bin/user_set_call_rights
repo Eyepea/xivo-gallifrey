@@ -1,0 +1,129 @@
+#!/usr/bin/python
+#
+# Authors : Cedric Lemarchand, Sylvain Boily, Guillaume Knispel
+#	   Proformatique
+#	   67, rue Voltaire
+#	   92800 PUTEAUX
+#	   (+33/0)1.41.38.99.60
+#	   mailto:technique@proformatique.com
+#	   (C) 2007 Proformatique
+
+# TODO: Filter commented SQL rows
+
+__version__ = "$Revision$ $Date$"
+__license__ = """
+    Copyright (C) 2007, Proformatique
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2.1 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+"""
+
+CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
+
+import xivo.to_path
+
+import sys, re
+import anysql
+import except_tb
+from BackSQL import backsqlite
+from BackSQL import backmysql
+import ConfigDict
+from agi import *
+
+db_uri = ConfigDict.ReadSingleKey(CONFIG_FILE, 'db', 'db_uri')
+
+rep = (('_', ''),
+       ('*', '\*'),
+       ('X', '[0-9]'),
+       ('Z', '[1-9]'),
+       ('N', '[2-9]'),
+       ('.', '[0-9#\*]+'),
+       ('!', '[0-9#\*]*'))
+
+agi = AGI()
+
+def dp_break(message, show_tb = False):
+	agi.verbose(message)
+
+	if show_tb:
+		except_tb.log_exception(agi.verbose)
+
+	agi.hangup()
+	sys.exit(1)
+
+def db_connect():
+	try:
+		conn = anysql.connect_by_uri(db_uri)
+	except:
+		dp_break("Unable to connect to %s" % db_uri, True)
+
+	return conn
+
+def extension_matches(number, pattern):
+	for (key,val) in rep:
+		pattern.replace(key, val)
+
+	match = bool(re.match(pattern, number))
+	print "re.match('" + pattern + "', '" + number + "') => %s" % match
+	return match
+
+# Cursors have a weak reference on their connection, so make a strong one.
+conn = db_connect()
+cursor = conn.cursor()
+srcnum = agi.get_variable('REAL_SRCNUM')
+dstnum = agi.get_variable('REAL_DSTNUM')
+context = agi.get_variable('REAL_CONTEXT')
+exten_pattern = agi.get_variable('REAL_EXTENPATTERN')
+
+cursor.query("SELECT ${columns} FROM rightcallexten",
+             ('rightcallid', 'exten'))
+res = cursor.fetchall()
+
+if not res:
+	dp_break("No rule defined")
+
+rightcallidset = set([row['rightcallid'] for row in res if extension_matches(dstnum, row['exten'])])
+
+if not rightcallidset:
+	dp_break("No rule matching extension '%s'" % dstnum)
+
+rightcallids = tuple(rightcallidset)
+
+cursor.query("SELECT ${columns} FROM userfeatures WHERE number = %s AND context = %s AND internal = 0 AND commented = 0",
+             ('id',),
+             (srcnum, context))
+res = cursor.fetchone()
+
+if not res:
+	dp_break("Unable to find user (number = '%s', context = '%s')" % (srcnum, context))
+
+userid = res['id']
+
+query = ("SELECT ${columns} FROM rightcall, rightcallmember "
+         "WHERE rightcall.id IN " + str(rightcallids) + " "
+         "AND rightcall.id = rightcallmember.rightcallid "
+         "AND rightcallmember.type = %s "
+         "AND rightcallmember.typeval = %s "
+         "AND rightcall.commented = 0")
+
+agi.verbose(query)
+cursor.query(query, ('passwd', 'permit'), ('user', userid))
+res = cursor.fetchall()
+
+agi.verbose("DEBUG: userid = %s" % userid)
+
+if res:
+	agi.verbose(res)
+
+agi.verbose('AGI script "%s" successfully executed' % sys.argv[0])
