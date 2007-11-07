@@ -33,14 +33,3 @@ NameVirtualHost *:8667
 	CustomLog /var/log/apache2/access-snom.log combined
 </VirtualHost>
 
-NameVirtualHost *:80
-
-<VirtualHost *:80>
-        DocumentRoot /var/www/
-        <Directory />
-                Options FollowSymLinks
-                AllowOverride None
-        </Directory>
-        CustomLog /var/log/apache2/access-phonebook.log combined
-</VirtualHost>
-
