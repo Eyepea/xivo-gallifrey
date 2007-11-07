@@ -2,6 +2,16 @@
 
 $array = array();
 $array['index'] = 'index.php';
+
+$array['xivo'] = 'xivo/index.php';
+$array['xivo/configuration'] = 'xivo/configuration/index.php';
+$array['xivo/configuration/users'] = 'xivo/configuration/index.php/users/';
+$array['xivo/configuration/servers'] = 'xivo/configuration/index.php/servers/';
+$array['xivo/preferences'] = 'xivo/preferences.php';
+$array['xivo/help'] = 'xivo/help.php';
+$array['xivo/contact'] = 'xivo/contact.php';
+$array['xivo/logout'] = 'xivo/logout.php';
+
 $array['service/ipbx'] = 'service/ipbx/index.php';
 $array['service/ipbx/general_settings/sip'] = 'service/ipbx/index.php/general_settings/sip/';
 $array['service/ipbx/general_settings/iax'] = 'service/ipbx/index.php/general_settings/iax/';
@@ -32,13 +42,8 @@ $array['service/ipbx/system_management/modules'] = 'service/ipbx/index.php/syste
 $array['service/ipbx/system_management/manager'] = 'service/ipbx/index.php/system_management/manager/';
 $array['service/ipbx/control_system/reload'] = 'service/ipbx/index.php/control_system/reload/';
 $array['service/ipbx/control_system/restart'] = 'service/ipbx/index.php/control_system/restart/';
-$array['xivo'] = 'xivo/index.php';
-$array['xivo/configuration'] = 'xivo/configuration/index.php';
-$array['xivo/configuration/users'] = 'xivo/configuration/index.php/users/';
-$array['xivo/configuration/servers'] = 'xivo/configuration/index.php/servers/';
-$array['xivo/preferences'] = 'xivo/preferences.php';
-$array['xivo/help'] = 'xivo/help.php';
-$array['xivo/contact'] = 'xivo/contact.php';
-$array['xivo/logout'] = 'xivo/logout.php';
+$array['service/ipbx/web_services/users'] = 'service/ipbx/web_services.php/users/';
+$array['service/ipbx/web_services/phonebook/search'] = 'service/ipbx/web_services.php/phonebook/search/';
+$array['service/ipbx/web_services/phonebook/local'] = 'service/ipbx/web_services.php/phonebook/local/';
 
 ?>
