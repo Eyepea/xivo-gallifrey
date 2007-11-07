@@ -45,7 +45,7 @@ class xivo_service_asterisk_usercustom extends xivo_service_asterisk_abstract
 		if(isset($arr['interface']) === true)
 		{
 			$where = array();
-			$where['interface'] = $arr['interface'];
+			$where['interface'] = strtolower($arr['interface']);
 			$where['category'] = $arr['category'];
 
 			if($this->get_id($where) !== false)
@@ -66,7 +66,7 @@ class xivo_service_asterisk_usercustom extends xivo_service_asterisk_abstract
 		if(isset($arr['interface']) === true)
 		{
 			$where = array();
-			$where['interface'] = $arr['interface'];
+			$where['interface'] = strtolower($arr['interface']);
 			$where['category'] = $arr['category'];
 
 			if(($whereid = $this->get_id($where)) !== false && $whereid !== $id)

@@ -58,8 +58,10 @@ class xivo_service_asterisk_userfeatures_abstract_sql extends xivo_service_aster
 		return(parent::get_nb($arr,$disable));
 	}
 
-	function get_search($value,$disable=null)
+	function get_search($value,$disable=null,$number=false)
 	{
+		$number = (bool) $number;
+
 		$where = array();
 
 		if(($rs = $this->_dso->search_contain('firstname',$value)) !== false)
@@ -74,7 +76,7 @@ class xivo_service_asterisk_userfeatures_abstract_sql extends xivo_service_aster
 		if(($rs = $this->_dso->search_contain('name',$value)) !== false)
 			$where[] = $rs;
 
-		if(($rs = $this->_dso->search_contain('context',$value)) !== false)
+		if($number === false && ($rs = $this->_dso->search_contain('context',$value)) !== false)
 			$where[] = $rs;
 
 		if(($where = implode(' OR ',$where)) === '')
@@ -88,9 +90,17 @@ class xivo_service_asterisk_userfeatures_abstract_sql extends xivo_service_aster
 		if(($internal = $this->_set_param_internal()) !== null)
 			$where .= ' AND internal = '.$internal;
 
+		if($number === true)
+			$where .= ' AND number != \'\' AND number IS NOT NULL';
+
 		$r = $this->_dso->select_all($this->_param['table'],null,$where);
 
 		return($r);
+	}
+
+	function get_search_number($value,$disable=null)
+	{
+		return($this->get_search($value,$disable,true));
 	}
 
 	function edit($id,$arr,$disable=null)

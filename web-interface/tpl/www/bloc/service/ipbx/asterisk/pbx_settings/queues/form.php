@@ -30,7 +30,7 @@ endif;
 if($announce_list !== false):
 	echo $form->select(array('desc' => $this->bbf('fm_queue_announce'),'name' => 'queue[announce]','labelid' => 'queue-announce','empty' => true,'default' => $element['queue']['announce']['default'],'value' => $info['queue']['announce']),$announce_list);
 else:
-	echo '<div class="txt-center">',$url->href_html($this->bbf('add_announce'),'service/ipbx/general_settings/sounds',array('act' => 'list','dir' => 'acd')),'</div>';
+	echo '<div class="txt-center">',$url->href_html($this->bbf('add_announce'),'service/ipbx/pbx_services/sounds',array('act' => 'list','dir' => 'acd')),'</div>';
 endif;
 
 ?>

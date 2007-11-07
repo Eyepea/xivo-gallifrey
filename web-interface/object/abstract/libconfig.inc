@@ -22,17 +22,15 @@ class xivo_libconfig_abstract
 
 	function _chk_exists_cfg($type,$name)
 	{
-		$r = false;
-
 		$type = (string) $type;
 		$name = (string) $name;
 
 		if(isset($this->_conf) === true
 		&& xivo_issa($type,$this->_conf) === true
 		&& xivo_ak($name,$this->_conf[$type]) === true)
-			$r = true;
+			return(true);
 
-		return($r);
+		return(false);
 	}
 
 	function get_option()

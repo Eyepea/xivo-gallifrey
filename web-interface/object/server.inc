@@ -21,6 +21,13 @@ class xivo_server extends xivo_libdatastorage_abstract
 		$data['disable'] = (bool) $data['disable'];
 		$data['ssl'] = (bool) $data['ssl'];
 		$data['identity'] = $data['name'].' ('.$data['host'].')';
+		
+		$data['url_http'] = '://'.$data['host'].':'.$data['port'];
+
+		if($data['ssl'] === true)
+			$data['url_http'] = 'https'.$data['url_http'];
+		else
+			$data['url_http'] = 'http'.$data['url_http'];
 
 		return($data);
 	}

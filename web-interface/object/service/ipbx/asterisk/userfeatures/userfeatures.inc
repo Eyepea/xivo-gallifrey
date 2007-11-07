@@ -172,7 +172,7 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		if(isset($arr['name']) === false)
 			$where['name'] = $info['name'];
 		else
-			$where['name'] = $arr['name'];
+			$where['name'] = strtolower($arr['name']);
 
 		if(isset($arr['protocol']) === false)
 			$where['protocol'] = $info['protocol'];
@@ -212,6 +212,24 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 	function get_search($value,$disable=null)
 	{
 		if(($list = $this->_dso->get_search($value,$disable)) === false)
+			return(false);
+
+		$nb = count($list);
+
+		$r = array();
+
+		for($i = 0;$i < $nb;$i++)
+			$r[] = $this->_prepare($list[$i]);
+
+		if(isset($r[0]) === false)
+			$r = false;
+
+		return($r);
+	}
+
+	function get_search_number($value,$disable=null)
+	{
+		if(($list = $this->_dso->get_search_number($value,$disable)) === false)
 			return(false);
 
 		$nb = count($list);

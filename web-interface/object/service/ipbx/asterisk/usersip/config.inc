@@ -115,7 +115,7 @@ $array['element']['call-limit']['setdef'] = true;
 
 $array['filter'] = array();
 $array['filter']['callerid'] = array('chk' => 2,'maxlen' => 80,'notag' => false);
-$array['filter']['name'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[a-z0-9_-]+$/i');
+$array['filter']['name'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[a-z0-9_-]+$/');
 $array['filter']['secret'] = array('set' => false,'chk' => 2,'minlen' => 1,'maxlen' => 80);
 $array['filter']['host'] = array('set' => false,'chk' => 2,'key' => array('dynamic','static'),'strict' => false,'func' => 'xivo_filter::chk_host_ipv4_strict');
 $array['filter']['dtmfmode'] = array('set' => false,'chk' => 2,'key' => array('rfc2833','inband','info','auto'));

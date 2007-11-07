@@ -55,6 +55,40 @@ class xivo_application_service_asterisk_serverfeatures extends xivo_application_
 		return($r);
 	}
 
+	function get_servers_list($disable=null,$opts=null,$assoc=false)
+	{
+		$assoc = (bool) $assoc;
+
+		if(is_array($opts) === true)
+			$opts = array_merge($opts,array('type' => $this->_type));
+		else
+			$opts = array('type' => $this->_type);
+
+		$rs = $this->_serverfeatures->get_all_where($opts,$disable);
+
+		if($rs === false || ($nb = count($rs)) === 0)
+			return(false);
+
+		$r = $info = array();
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			$info['serverfeatures'] = $rs[$i];
+
+			if(($info['server'] = $this->_server->get($info['serverfeatures']['serverid'],$disable)) === false)
+				continue;
+
+			$r[$info['serverfeatures']['id']] = $info;
+		}
+
+		if(empty($r) === true)
+			$r = false;
+		else if($assoc === false)
+			$r = array_values($r);
+
+		return($r);
+	}
+
 	function get_elements()
 	{
 		return($this->_serverfeatures->get_element());

@@ -68,6 +68,11 @@ define('XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_LENGTH','{1,50}');
 
 $array = array();
 
+$array['appcustom'] = array();
+
+$array['appcustom']['webservices'] = array();
+$array['appcustom']['webservices']['phonebook'] = true;
+
 $array['realstatic'] = array();
 
 $array['realstatic']['agents'] = array();

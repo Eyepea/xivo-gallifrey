@@ -207,30 +207,19 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 		$label = $version = false;
 
-		if(xivo_issa('infos',$sess_sre) === true
-		&& isset($sess_sre['infos']['label'],$sess_sre['infos']['version']) === true)
+		if(xivo_issa('info',$sess_sre) === true
+		&& isset($sess_sre['info']['label'],$sess_sre['info']['version']) === true)
 		{
-			$label = (string) $sess_sre['infos']['label'];
-			$version = (string) $sess_sre['infos']['version'];
+			$label = (string) $sess_sre['info']['label'];
+			$version = (string) $sess_sre['info']['version'];
 		}
-		else if((defined('XIVO_SESS_ENABLE') === false
-		        || (bool) XIVO_SESS_ENABLE === true) === true
-		&& ($infos = $this->discuss('show version',true)) !== false
-		&& is_array($infos) === true && isset($infos[0]) === true)
+		else if(($nversion = $this->_get_service_info_from_discuss()) !== false)
 		{
-			$infos = explode(' ',$infos[0],3);
+			if(isset($nversion['label']) === true)
+				$label = $sess_sre['info']['label'] = $nversion['label'];
 
-			if(isset($infos[0]) === true)
-			{
-				$label = $infos[0];
-				$sess_sre['infos']['label'] = $label;
-
-				if(isset($infos[1]) === true)
-				{
-					$version = $infos[1];
-					$sess_sre['infos']['version'] = $version;
-				}
-			}
+			if(isset($nversion['version']) === true)
+				$version = $sess_sre['info']['version'] = $nversion['version'];
 		}
 
 		if(($label === false || $version === false) === true
@@ -254,9 +243,41 @@ class xivo_service_asterisk extends xivo_service_abstract
 		define($define_version,$version);
 	}
 
-	function get_users_search($name,$protocols=array(),$disable=null,$assoc=false,$initialized=null,$internal=false)
+	function _get_service_info_from_discuss()
 	{
-		return($this->_get_users('search',$protocols,$disable,$name,$assoc,$initialized,$internal));
+		if((defined('XIVO_SESS_ENABLE') === true
+		&& (bool) XIVO_SESS_ENABLE === false) === true
+		|| ($info = $this->discuss('show version',true)) === false
+		|| is_array($info) === false
+		|| isset($info[0]) === false)
+			return(false);
+
+		$info = explode(' ',$info[0],3);
+
+		$r = array();
+
+		if(isset($info[0]) === true)
+		{
+			$r['label'] = $info[0];
+
+			if(isset($info[1]) === true)
+				$r['version'] = $info[1];
+		}
+
+		if(empty($r) === true)
+			$r = false;
+
+		return($r);
+	}
+
+	function get_users_search($search,$protocols=array(),$disable=null,$assoc=false,$initialized=null,$internal=false)
+	{
+		return($this->_get_users('search',$protocols,$disable,$search,$assoc,$initialized,$internal));
+	}
+
+	function get_users_search_number($search,$protocols=array(),$disable=null,$assoc=false,$initialized=null,$internal=false)
+	{
+		return($this->_get_users('search_number',$protocols,$disable,$search,$assoc,$initialized,$internal));
 	}
 
 	function get_users_list($protocols=array(),$disable=null,$assoc=false,$initialized=null,$internal=false)
@@ -289,6 +310,9 @@ class xivo_service_asterisk extends xivo_service_abstract
 		{
 			case 'search':
 				$rs = $ufeatures->get_search($opts,$disable);
+				break;
+			case 'search_number':
+				$rs = $ufeatures->get_search_number($opts,$disable);
 				break;
 			case 'context':
 				$rs = $ufeatures->get_all_where(array('context' => $opts),$disable);

@@ -504,11 +504,12 @@ class xivo_tpl
 		return($r);
 	}
 
-	function url($url='')
+	function url($url='',$full=false)
 	{
 		$r = '';
 
 		$url = (string) $url;
+		$full = (bool) $full;
 		
 		if(isset($url{0}) === false)
 			return($r);
@@ -520,6 +521,9 @@ class xivo_tpl
 			$url = $this->_url[$url];
 
 		$r = $url{0} !== '/' ? $this->get_option('script_root').'/'.$url : $url;
+
+		if($full === true)
+			$r = rtrim(XIVO_URL,'/').'/'.ltrim($url,'/');
 
 		return($r);
 	}

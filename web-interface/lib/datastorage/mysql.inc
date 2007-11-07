@@ -162,9 +162,9 @@ class xivo_datastorage_mysql extends xivo_datastorage_abstract_sql
 
 	function errno()
 	{
-		$r = false;
+		$r = 0;
 
-		if((bool) $this->_link !== false)
+		if(is_resource($this->_link) === true)
 			$r = mysql_errno($this->_link);
 
 		return($r);
@@ -172,9 +172,9 @@ class xivo_datastorage_mysql extends xivo_datastorage_abstract_sql
 
 	function error()
 	{
-		$r = false;
+		$r = '';
 
-		if((bool) $this->_link !== false)
+		if(is_resource($this->_link) === true)
 			$r = mysql_error($this->_link);
 
 		return($r);
@@ -209,8 +209,14 @@ class xivo_datastorage_mysql extends xivo_datastorage_abstract_sql
 
 	function close()
 	{
+		$r = null;
+	
 		if(is_resource($this->_link) === true)
-			mysql_close($this->_link);
+			$r = mysql_close($this->_link);
+
+		$this->_link = null;
+
+		return($r);
 	}
 
 	function free($r=false)

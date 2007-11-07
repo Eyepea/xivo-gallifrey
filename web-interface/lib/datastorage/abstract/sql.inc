@@ -44,10 +44,10 @@ class xivo_datastorage_abstract_sql
 	{
 		$str = (string) $str;
 
-		if(($this->_errno = $this->errno()) === false)
+		if(($this->_errno = $this->errno()) === 0)
 			$this->_errno = 'unknown';
 
-		if(($this->_error = $this->error()) === false)
+		if(($this->_error = $this->error()) === '')
 			$this->_error = 'unknown';
 
 		if($str !== '')

@@ -21,14 +21,25 @@ define('XIVO_TE_RFUNC_VARDUMP',2);
 
 define('XIVO_TE_CONTEXT','Global');
 
+define('XIVO_TE_TRAC_LABEL',XIVO_LABEL.' Trace');
+define('XIVO_TE_ERROR_LABEL',XIVO_LABEL.' Error');
+define('XIVO_TE_WARNING_LABEL',XIVO_LABEL.' Warning');
+define('XIVO_TE_NOTICE_LABEL',XIVO_LABEL.' Notice');
+define('XIVO_TE_PARSE_LABEL',XIVO_LABEL.' Parse');
+
 $array = array();
 
 $array['level'] = array(
-		XIVO_TE_ERR_TRAC	=> array('label' => 'XIVO Trace','color' => 'black'),
-		XIVO_TE_ERR_ERROR	=> array('label' => 'XIVO Error','color' => 'red'),
-		XIVO_TE_ERR_WARNING	=> array('label' => 'XIVO Warning','color' => 'purple'),
-		XIVO_TE_ERR_NOTICE	=> array('label' => 'XIVO Notice','color' => 'blue'),
-		XIVO_TE_ERR_PARSE	=> array('label' => 'XIVO Parse','color' => 'grey'));
+		XIVO_TE_ERR_TRAC	=> array('label' => XIVO_TE_TRAC_LABEL,
+						 'color' => 'black'),
+		XIVO_TE_ERR_ERROR	=> array('label' => XIVO_TE_ERROR_LABEL,
+						 'color' => 'red'),
+		XIVO_TE_ERR_WARNING	=> array('label' => XIVO_TE_WARNING_LABEL,
+						 'color' => 'purple'),
+		XIVO_TE_ERR_NOTICE	=> array('label' => XIVO_TE_NOTICE_LABEL,
+						 'color' => 'blue'),
+		XIVO_TE_ERR_PARSE	=> array('label' => XIVO_TE_PARSE_LABEL,
+						 'color' => 'grey'));
 
 $array['rtype'] = array(
 		XIVO_TE_RTYPE_NONE	=> 'XIVO_TE_RTYPE_NONE',

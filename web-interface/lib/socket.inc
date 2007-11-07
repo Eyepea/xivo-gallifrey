@@ -215,9 +215,6 @@ class xivo_socket
 
 	function open()
 	{
-		if(is_resource($this->_link) === true)
-			return(true);
-
 		if(($this->_link = $this->create()) === false)
 		{
 			$this->halt();
@@ -248,33 +245,42 @@ class xivo_socket
 	{
 		$str = (string) $str;
 
-		if(($this->_errno = $this->errno()) === false)
+		if(($this->_errno = $this->errno()) === 0)
 			$this->_errno = 'unknown';
 
-		if(($this->_error = $this->error()) === false)
+		if(($this->_error = $this->error()) === '')
 			$this->_error = 'unknown';
 
 		trigger_error($str.'Error: '.$this->_error.' - Errno: '.$this->_errno,E_USER_WARNING);
 	}
 
+	function create()
+	{
+		if(is_resource($this->_link) === true
+		|| ($this->_link = socket_create($this->_param['domain'],
+						 $this->_param['type'],
+						 $this->_param['protocol'])) === false)
+		{
+			$this->halt();
+			return(false);
+		}
+
+		return($this->_link);
+	}
+
 	function connect()
 	{
-		$r = false;
-
 		if(is_resource($this->_link) === false)
-			return($r);
-
+			$r = false;
 		if($this->_param['domain'] === AF_UNIX)
 			$r = socket_connect($this->_link,$this->_param['address']);
 		else if($this->_param['address'] !== '' && $this->_param['port'] !== 0)
 			$r = socket_connect($this->_link,$this->_param['address'],$this->_param['port']);
+		else
+			$r = false;
 
-		return($r);
-	}
-
-	function create()
-	{
-		$r = socket_create($this->_param['domain'],$this->_param['type'],$this->_param['protocol']);
+		if($r === false)
+			$this->halt();
 
 		return($r);
 	}
@@ -352,11 +358,13 @@ class xivo_socket
 	{
 		if(is_resource($this->_link) === true)
 			socket_close($this->_link);
+
+		$this->_link = null;
 	}
 
 	function errno()
 	{
-		$r = false;
+		$r = 0;
 
 		if(is_resource($this->_link) === true)
 			$r = socket_last_error($this->_link);
@@ -366,9 +374,9 @@ class xivo_socket
 
 	function error()
 	{
-		$r = false;
+		$r = '';
 
-		if(is_resource($this->_link) === true && ($errno = $this->errno()) !== false)
+		if(($errno = $this->errno()) !== 0)
 			$r = socket_strerror($errno);
 
 		return($r);

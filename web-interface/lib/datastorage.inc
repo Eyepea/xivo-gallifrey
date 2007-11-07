@@ -2,6 +2,8 @@
 
 class xivo_datastorage
 {
+	var $_uri	= null;
+	
 	function factory($type,$param=array())
 	{
 		$type = strtolower((string) $type);
@@ -29,7 +31,7 @@ class xivo_datastorage
 		return(isset($datastorage[$type]));
 	}
 
-	function get_param_uri($str)
+	function set_param_from_uri($str)
 	{
 		xivo::load_class('xivo_uri');
 		$uri = new xivo_uri();

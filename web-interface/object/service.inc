@@ -76,7 +76,7 @@ class xivo_service
 		if(isset($init['general']['datastorage']) === true)
 		{
 			if(is_string($init['general']['datastorage']) === true)
-				$init['general']['datastorage'] = xivo_datastorage::get_param_uri($init['general']['datastorage']);
+				$init['general']['datastorage'] = xivo_datastorage::set_param_from_uri($init['general']['datastorage']);
 			else if(isset($init['general']['datastorage']['type']) === false)
 				$init['general']['datastorage'] = false;
 

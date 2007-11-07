@@ -170,6 +170,29 @@ class xivo_filter
 		return(true);
 	}
 
+	function chk_ipv4_in_lhost($ip,$host)
+	{
+		$host = strval($host);
+		$ip = gethostbyname(strval($ip));
+
+		if(xivo_filter::chk_ipv4_strict($ip) === false)
+			return(false);
+
+		if(($lhost = gethostbynamel($host)) === false)
+			$lhost = (array) $host;
+		
+		$nb = count($lhost);
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			if($ip === $lhost[$i]
+			|| xivo_filter::chk_ipv4_in_subnet($ip,$lhost[$i]) !== false)
+				return(true);
+		}
+
+		return(false);
+	}
+
 	function chk_ipv4_in_subnet($ip,$sub)
 	{
 		if(($pos = strrpos($sub,'/')) === false)

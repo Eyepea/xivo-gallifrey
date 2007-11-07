@@ -1,5 +1,7 @@
 <?php
 
+define('XIVO_LABEL','XIVO-WEBI');
+
 $array = array();
 
 $array['ini'] = array();

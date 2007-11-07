@@ -96,9 +96,9 @@ class xivo_datastorage_sqlite extends xivo_datastorage_abstract_sql
 
 	function errno()
 	{
-		$r = false;
+		$r = 0;
 
-		if((bool) $this->_link !== false)
+		if(is_resource($this->_link) === true)
 			$r = sqlite_last_error($this->_link);
 
 		return($r);
@@ -106,9 +106,9 @@ class xivo_datastorage_sqlite extends xivo_datastorage_abstract_sql
 
 	function error()
 	{
-		$r = false;
+		$r = '';
 
-		if((bool) $this->_link !== false)
+		if(is_resource($this->_link) === true)
 			$r = sqlite_error_string($this->_link);
 
 		return($r);
@@ -131,8 +131,14 @@ class xivo_datastorage_sqlite extends xivo_datastorage_abstract_sql
 
 	function close()
 	{
+		$r = null;
+
 		if(is_resource($this->_link) === true)
-			return(sqlite_close($this->_link));
+			$r = sqlite_close($this->_link);
+
+		$this->_link = null;
+
+		return($r);
 	}
 
 	function num_rows($r=false)

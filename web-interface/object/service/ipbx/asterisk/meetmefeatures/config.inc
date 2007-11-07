@@ -74,7 +74,7 @@ $array['element']['exitcontext']['default'] = '';
 
 
 $array['filter'] = array();
-$array['filter']['name'] = array('regexp' => '/^[a-z0-9_\.-]+$/','minlen' => 1,'maxlen' => 128);
+$array['filter']['name'] = array('regexp' => '/^[a-z0-9_\.-]+$/i','minlen' => 1,'maxlen' => 128);
 $array['filter']['number'] = array('regexp' => '/^[0-9\*#]+$/','minlen' => 1,'maxlen' => 40);
 $array['filter']['meetmeid'] = array('cast' => 'uint');
 $array['filter']['mode'] = array('key' => array('talk','listen','all'));

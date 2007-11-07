@@ -23,7 +23,7 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 		return(true);
 	}
 
-	function get($id,$disable=null)
+	function get($id)
 	{
 		$this->_info = $this->_origin = array();
 

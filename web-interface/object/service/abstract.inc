@@ -5,6 +5,7 @@ class xivo_service_abstract
 	var $_conf		= array();
 	var $_module		= array();
 	var $_application	= array();
+	var $_appcustom		= array();
 
 	function get_name()
 	{
@@ -18,15 +19,13 @@ class xivo_service_abstract
 
 	function _chk_exists_cfg($type,$name)
 	{
-		$r = false;
-
 		$type = (string) $type;
 		$name = (string) $name;
 
 		if(xivo_issa($type,$this->_conf) === true && xivo_ak($name,$this->_conf[$type]) === true)
-			$r = true;
+			return(true);
 
-		return($r);
+		return(false);
 	}
 
 	function _load_module_class($module)
@@ -54,6 +53,23 @@ class xivo_service_abstract
 		$dir = array(XIVO_PATH_OBJECT,'application','service',$this->_type,$this->_name,$application);
 
 		$class = 'xivo_application_service_'.$this->_name.'_'.$application;
+
+		if(xivo_file::load_file($file,$dir,true) !== false && class_exists($class) === true)
+			return($class);
+
+		return(false);
+	}
+
+	function _load_appcustom_class($type,$name)
+	{
+		$type = (string) $type;
+		$name = (string) $name;
+
+		$file = $name.'.inc';
+
+		$dir = array(XIVO_PATH_OBJECT,'application','service',$this->_type,$this->_name,$type,$name);
+
+		$class = 'xivo_application_service_'.$this->_name.'_'.$type.'_'.$name;
 
 		if(xivo_file::load_file($file,$dir,true) !== false && class_exists($class) === true)
 			return($class);
@@ -111,6 +127,25 @@ class xivo_service_abstract
 		return(($ref = &$r));
 	}
 
+	function &call_appcustom($type,$name,$func,$args=null)
+	{
+		$type = (string) $type;
+		$name = (string) $name;
+		$func = (string) $func;
+
+		if($this->_load_appcustom($type,$name) === false)
+			$r = false;
+		else if($args === null)
+			$r = call_user_func(array(&$this->_appcustom[$type][$name],$func));
+		else
+		{
+			$args = (array) $args;
+			$r = call_user_func_array(array(&$this->_appcustom[$type][$name],$func),$args);
+		}
+
+		return(($ref = &$r));
+	}
+
 	function &get_module($name,$param=null)
 	{
 		$r = false;
@@ -135,9 +170,31 @@ class xivo_service_abstract
 		return(($ref = &$r));
 	}
 
+	function &get_appcustom($type,$name)
+	{
+		$r = false;
+
+		$type = (string) $type;
+		$name = (string) $name;
+
+		if($this->_load_appcustom($type,$name) === true)
+			$r = &$this->_appcustom[$type][$name];
+
+		return(($ref = &$r));
+	}
+
 	function chk_module_enable($name)
 	{
 		return($this->_chk_exists_cfg('module',$name));
+	}
+
+	function chk_appcustom_enable($type,$name)
+	{
+		if($this->_chk_exists_cfg('appcustom',$type) === true
+		&& isset($this->_conf['appcustom'][$type][$name]) === true)
+			return(true);
+
+		return(false);
 	}
 
 	function _load_module($name,$param=null)
@@ -196,6 +253,29 @@ class xivo_service_abstract
 		return(true);
 	}
 
+	function _load_appcustom($type,$name)
+	{
+		$type = (string) $type;
+		$name = (string) $name;
+
+		if(xivo_issa($this->_appcustom,$type) === true
+		&& isset($this->_appcustom[$type][$name]) === true)
+			return(true);
+		
+		if($this->chk_appcustom_enable($type,$name) === false)
+			return(false);
+
+		if(($class = $this->_load_appcustom_class($type,$name)) === false)
+		{
+			trigger_error('Custom Application '.$name.' does not exist in '.$this->_name,E_USER_ERROR);
+			return(false);
+		}
+
+		$this->_appcustom[$type][$name] = new $class($this);
+
+		return(true);
+	}
+
 	function _load_dso($name)
 	{
 		$r = false;
@@ -215,7 +295,7 @@ class xivo_service_abstract
 		if($ini !== false && isset($ini['datastorage']) === true)
 		{
 			if(is_string($ini['datastorage']) === true)
-				$datastorage = xivo_datastorage::get_param_uri($ini['datastorage']);
+				$datastorage = xivo_datastorage::set_param_from_uri($ini['datastorage']);
 			else
 				$datastorage = $ini['datastorage'];
 		}

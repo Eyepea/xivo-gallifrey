@@ -45,6 +45,7 @@ class xivo
 		$this->_cfg_separator();
 		$this->_cfg_eol();
 		$this->_cfg_sapi();
+		$this->_cfg_url();
 		$this->_cfg_infos_extension();
 
 		xivo::load_class('xivo_gateclass');
@@ -250,6 +251,28 @@ class xivo
 
 		define('XIVO_SAPI_NAME',$this->_conf['xivo']['sys']['sapi']['name']);
 		define('XIVO_SAPI_MODE',$this->_conf['xivo']['sys']['sapi']['mode']);
+	}
+
+	function _cfg_url()
+	{
+		$url = $scheme = '';
+
+		if(isset($_SERVER['SERVER_ADDR'],$_SERVER['SERVER_PORT']) === true)
+		{
+			$url = $_SERVER['SERVER_ADDR'].':'.$_SERVER['SERVER_PORT'];
+
+			if(isset($_SERVER['HTTP_HOST']) === true)
+			{
+				$scheme = 'http';
+				if(isset($_SERVER['HTTPS']) === true
+				&& (bool) $_SERVER['HTTPS'] === true)
+					$scheme .= 's';
+
+				$url = $scheme.'://'.$url;
+			}
+		}
+
+		define('XIVO_URL',$url);
 	}
 
 	function _cfg_ini_locale($a=null)

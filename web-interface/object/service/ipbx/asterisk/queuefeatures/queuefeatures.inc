@@ -41,6 +41,41 @@ class xivo_service_asterisk_queuefeatures extends xivo_service_asterisk_abstract
 		return($data);
 	}
 
+	function add($arr,$id=0)
+	{
+		if(is_array($arr) === false)
+			return(false);
+
+		if(($id = xivo_uint($id)) !== 0)
+			$arr['id'] = $id;
+
+		if(isset($arr['name']) === true)
+		{
+			$where = array('name' => strtolower($arr['name']));
+
+			if($this->get_id($where) !== false)
+				return(false);
+		}
+
+		return($this->_dso->add($arr));
+	}
+
+	function edit($id,$arr)
+	{
+		if(($id = xivo_uint($id)) === 0 || is_array($arr) === false)
+			return(false);
+
+		if(isset($arr['name']) === true)
+		{
+			$where = array('name' => strtolower($arr['name']));
+
+			if(($whereid = $this->get_id($where)) !== false && $whereid !== $id)
+				return(false);
+		}
+
+		return($this->_dso->edit($id,$arr));
+	}
+
 	function get_all_number()
 	{
 		if(($list = $this->get_all()) === false)

@@ -1,11 +1,11 @@
 <?php
 
 if(($users = $ipbx->get_users_list(array('sip','iax'),null,false,null,null)) === false)
-	die('XIVO-WEBI: no-data');
+	xivo_die('no-data');
 
 $total = count($users);
 
-$msg = 'XIVO-WEBI: beg-data'."\n";
+$msg = xivo_msg('beg-data')."\n";
 
 for($i = 0;$i < $total;$i++)
 {
@@ -25,10 +25,10 @@ for($i = 0;$i < $total;$i++)
 		'"'.str_replace('"','""',intval((bool) $ref['ufeatures']['enablehint'])).'"'."\n";
 }
 
-$msg .= 'XIVO-WEBI: end-data'."\n";
+$msg .= xivo_msg('end-data')."\n";
 
 if(isset($_QR['sum']) === true && $_QR['sum'] === md5($msg))
-	$msg = 'XIVO-WEBI: no-update';
+	$msg = xivo_msg('no-update');
 
 die($msg);
 

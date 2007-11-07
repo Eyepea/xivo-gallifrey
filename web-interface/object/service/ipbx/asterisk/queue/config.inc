@@ -170,7 +170,7 @@ $array['element']['periodic-announce']['default'] = '';
 $array['element']['periodic-announce']['null'] = true;
 
 $array['filter'] = array();
-$array['filter']['name'] = array('regexp' => '/^[a-z0-9_\.-]+$/','minlen' => 1,'maxlen' => 128);
+$array['filter']['name'] = array('regexp' => '/^[a-z0-9_\.-]+$/i','minlen' => 1,'maxlen' => 128);
 $array['filter']['timeout'] = array('set' => false,'chk' => 2,'key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
 $array['filter']['musiconhold'] = array('set' => false,'chk' => 2,'maxlen' => 20);
 $array['filter']['announce'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 128);

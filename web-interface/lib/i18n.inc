@@ -652,8 +652,9 @@ class xivo_i18n
 
 						$this->_file = $_file;
 					}
-					else if(preg_match('/^;(?:\t| )*load(\t| )+'.
-							   '(\.\\'.XIVO_SEP_DIR.')?([a-z0-9-_\\'.XIVO_SEP_DIR.']+)$/i',$line,$matchload) === 1)
+					else if(preg_match('#^;(?:\t| )*load(\t| )+'.
+							   '(\.{1,2}\\'.preg_quote(XIVO_SEP_DIR).')?'.
+							   '([a-z0-9-_'.preg_quote(XIVO_SEP_DIR).']+)$#i',$line,$matchload) === 1)
 					{
 						if($priority > 3)
 							continue;
@@ -668,7 +669,7 @@ class xivo_i18n
 						$filename = $matchload[3];
 
 						if($matchload[2] !== '')
-							$filename = $this->_file['dirname'].XIVO_SEP_DIR.$filename;
+							$filename = $this->_file['dirname'].XIVO_SEP_DIR.$matchload[2].$filename;
 
 						if($this->_load_file($filename,$this->_file['namespace']) !== false)
 							$_load[$filename] = 1;
