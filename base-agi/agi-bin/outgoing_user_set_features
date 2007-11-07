@@ -1,0 +1,188 @@
+#!/usr/bin/python
+#
+# Authors : Sylvain Boily, Guillaume Knispel, Richard Braun
+#	   Proformatique
+#	   67, rue Voltaire
+#	   92800 PUTEAUX
+#	   (+33/0)1.41.38.99.60
+#	   mailto:technique@proformatique.com
+#	   (C) 2007 Proformatique
+
+# TODO: Filter commented SQL rows
+
+__version__ = "$Revision$ $Date$"
+__license__ = """
+    Copyright (C) 2007, Proformatique
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2.1 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+"""
+
+CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
+
+import xivo.to_path
+
+import sys, re
+import anysql
+import except_tb
+from BackSQL import backsqlite
+from BackSQL import backmysql
+import ConfigParser
+from ConfigDict import *
+from agi import *
+
+options = { "db_uri" : "" }
+conf_obj = ConfigParser.ConfigParser()
+conf_obj.readfp(open(CONFIG_FILE))
+FillDictFromConfigSection(options, conf_obj, "db")
+
+agi = AGI()
+
+def dp_break(message, show_tb = False):
+	agi.verbose(message)
+
+	if show_tb:
+		except_tb.log_exception(agi.verbose)
+
+	agi.hangup()
+	sys.exit(1)
+
+def db_connect():
+	try:
+		conn = anysql.connect_by_uri(options['db_uri'])
+	except:
+		dp_break("Unable to connect to %s" % options['db_uri'], True)
+
+	return conn
+
+# Cursors have a weak reference on their connection, so make a strong one.
+conn = db_connect()
+cursor = conn.cursor()
+srcnum = agi.get_variable('REAL_SRCNUM')
+dstnum = agi.get_variable('REAL_DSTNUM')
+context = agi.get_variable('REAL_CONTEXT')
+exten_pattern = agi.get_variable('REAL_EXTENPATTERN')
+
+cursor.query("SELECT ${columns} FROM extenumbers WHERE exten = %s AND context = %s AND type = 'outcall'",
+             ('typeval',),
+             (exten_pattern, context))
+res = cursor.fetchone()
+
+if not res:
+	dp_break("Unable to find extension pattern '%s'" % exten_pattern)
+
+typeval = res['typeval']
+cursor.query("SELECT ${columns} FROM outcall WHERE id = %s AND linked = 1 AND commented = 0",
+             ('trunkfeaturesid', 'externprefix', 'stripnum', 'setcallerid', 'callerid', 'useenum', 'internal', 'hangupringtime'),
+             (typeval,))
+res = cursor.fetchone()
+
+if not res:
+	dp_break("Unable to find outgoing call features '%s'" % typeval)
+
+trunkfeaturesid = res['trunkfeaturesid']
+externprefix = res['externprefix']
+stripnum = int(res['stripnum'])
+setcallerid = res['setcallerid']
+trunk_callerid = res['callerid']
+internal = res['internal']
+hangupringtime = res['hangupringtime']
+
+if stripnum > 0:
+	dstnum = dstnum[stripnum:]
+
+if externprefix:
+	dstnum = externprefix + dstnum
+
+if not internal:
+	if setcallerid:
+		callerid = trunk_callerid
+	else:
+		cursor.query("SELECT ${columns} FROM userfeatures WHERE number = %s AND context = %s AND commented = 0",
+                             ('outcallerid',),
+                             (srcnum, context))
+		res = cursor.fetchone()
+
+		if not res:
+			dp_break("Unable to find user features (number = '%s', context = '%s')" % (srcnum, context))
+
+		callerid = res['outcallerid']
+
+		if callerid == "default":
+			callerid = ""
+
+cursor.query("SELECT ${columns} FROM trunkfeatures WHERE id = %s",
+             ('trunk', 'trunkid'),
+             (trunkfeaturesid,))
+res = cursor.fetchone()
+
+if not res:
+	dp_break("Unable to find trunk features (ID = '%s')" % trunkfeaturesid)
+
+trunk = res['trunk']
+trunkid = res['trunkid']
+
+if trunk == "sip":
+	protocol = "SIP"
+	cursor.query("SELECT ${columns} FROM usersip WHERE id = %s AND commented = 0",
+                     ('name',),
+                     (trunkid,))
+	res = cursor.fetchone()
+
+	if not res:
+		dp_break("Unable to find SIP peer (ID = '%s')" % trunkid)
+
+	peer = res['name']
+	interface = protocol + "/" + peer
+
+elif trunk == "iax":
+	protocol = "IAX2"
+	cursor.query("SELECT ${columns} FROM useriax WHERE id = %s AND commented = 0",
+                     ('name',),
+                     (trunkid,))
+	res = cursor.fetchone()
+
+	if not res:
+		dp_break("Unable to find IAX peer (ID = '%s')" % trunkid)
+
+	peer = res['name']
+	interface = protocol + "/" + peer
+
+elif trunk == "custom":
+	protocol = "CUSTOM"
+	cursor.query("SELECT ${columns} FROM usercustom WHERE id = %s AND commented = 0",
+                     ('name', 'interface',),
+                     (trunkid,))
+	res = cursor.fetchone()
+
+	if not res:
+		dp_break("Unable to find custom peer (ID = '%s')" % trunkid)
+
+	peer = res['name']
+	interface = res['interface']
+else:
+	dp_break("Unknown trunk type '%s'" % trunk)
+
+agi.set_variable('XIVO_PROTOCOL', protocol)
+agi.set_variable('XIVO_PEER', peer)
+agi.set_variable('XIVO_INTERFACE', interface)
+agi.set_variable('XIVO_EXTEN', dstnum)
+
+if callerid:
+	agi.set_variable('CALLERID(num)', callerid)
+
+if hangupringtime:
+	agi.set_variable('XIVO_HANGUPRINGTIME', hangupringtime)
+
+agi.verbose('AGI script "%s" successfully executed' % sys.argv[0])
