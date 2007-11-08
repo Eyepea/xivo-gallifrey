@@ -5,6 +5,7 @@ LDAP class.
 Copyright (C) 2007, Proformatique
 """
 
+import csv
 import ldap
 import syslog
 import sys
@@ -62,12 +63,14 @@ class xivo_csv:
         def open(self):
                 if self.uri.find('file:') == 0:
                         self.path = self.uri[5:]
+                if self.uri.find('file:') == 0 or self.uri.find('http:') == 0:
                         self.items = []
                         f = urllib.urlopen(self.uri)
-                        self.keys = f.next().strip().split(';')
-                        for line in f:
-                                myitem = line.strip().split(';')
-                                self.items.append(myitem)
+                        csvreader = csv.reader(f, delimiter = ';')
+                        self.keys = csvreader.next()
+                        for line in csvreader:
+                                if len(line) > 0:
+                                        self.items.append(line)
                         f.close()
                         self.opened = True
                 return self.opened
@@ -83,5 +86,3 @@ class xivo_csv:
                                 toadd = open(self.path, 'a')
                                 toadd.write('%s\n' % linetoadd)
                                 toadd.close()
-
-

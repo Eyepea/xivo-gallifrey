@@ -222,7 +222,7 @@ def retrieve_callerid_data(callerid, ctxinfos, xdconfig):
                                 log_debug('fields = %s' % str(fields))
                         except Exception, exc:
                                 log_debug('--- exception --- (in %s) %s' % (databasekind, str(exc)))
-                elif databasekind == 'file':
+                elif databasekind == 'file' or databasekind == 'http':
                         try:
                                 nfields = get_csv_infos(callerid, ctxinfos)
                                 for n, v in nfields.iteritems():

@@ -28,7 +28,7 @@
 #
 # \section section_2 Initializations
 #
-# - Fetch the phone number lists from the SSO addresses.
+# - Fetch the phone number lists from the WEB Interface.
 # - Sending the first SIP REGISTERs and SUBSCRIBEs
 #
 # \section section_3 Main loop
@@ -202,7 +202,7 @@ XIVO_CLI_WEBI_HEADER = "XIVO-CLI-WEBI"
 REQUIRED_CLIENT_VERSION = 1569
 XIVOVERSION = '0.2'
 ITEMS_PER_PACKET = 500
-LENGTH_SSO = 11
+USERLIST_LENGTH = 12
 
 # capabilities
 CAPA_CUSTINFO    = 1 <<  0
@@ -218,7 +218,7 @@ CAPA_AGENTS      = 1 <<  9
 CAPA_FAX         = 1 << 10
 CAPA_DATABASE    = 1 << 11
 
-# this list shall be defined through more options in SSO
+# this list shall be defined through more options in WEB Interface
 CAPA_ALMOST_ALL = CAPA_HISTORY  | CAPA_DIRECTORY | CAPA_PEERS | \
                   CAPA_PRESENCE | CAPA_DIAL      | CAPA_FEATURES | \
                   CAPA_AGENTS   | CAPA_FAX       | CAPA_SWITCHBOARD | \
@@ -2363,19 +2363,6 @@ class Context:
                 return reply_by_field
 
 
-def stripquotes(arrstring):
-        a = arrstring.split('"|"')
-        if len(a) >= LENGTH_SSO:
-                unquoted = []
-                unquoted.append(a[0][1:].replace('""', '"'))
-                for t in a[1:-1]:
-                        unquoted.append(t.replace('""', '"'))
-                unquoted.append(a[-1][:-1].replace('""', '"'))
-        else:
-                unquoted = arrstring.split('|')
-        return unquoted
-
-
 ## \class AsteriskRemote
 # \brief Properties of an Asterisk server
 class AsteriskRemote:
@@ -2494,6 +2481,7 @@ class AsteriskRemote:
                 numlist = {}
                 try:
                         f = urllib.urlopen(self.userlisturl)
+                        csvreader = csv.reader(f, delimiter = '|')
                 except Exception, exc:
                         log_debug(SYSLOG_ERR, "--- exception --- %s : unable to open URL %s : %s" %(self.astid, self.userlisturl, str(exc)))
                         return numlist
@@ -2502,15 +2490,14 @@ class AsteriskRemote:
                 sizeread = 0
                 try:
                         phone_list = []
-                        # builds the phone_list from the SSO
-                        for line in f:
+                        # builds the phone_list
+                        for line in csvreader:
                                 sizeread += len(line)
-                                # remove leading/tailing whitespaces
-                                line = line.strip()
-                                l = stripquotes(line)
-                                if len(l) >= LENGTH_SSO and l[6] == "0":
-                                        phone_list.append(l)
-
+                                if len(line) == USERLIST_LENGTH:
+                                        if line[6] == "0":
+                                                phone_list.append(line)
+                                else:
+                                        pass
                         t2 = time.time()
                         log_debug(SYSLOG_INFO, "%s : URL %s has read %d bytes in %f seconds" %(self.astid, self.userlisturl, sizeread, (t2-t1)))
                         # retrieves the xivosb account informations
@@ -2518,7 +2505,7 @@ class AsteriskRemote:
                         for l in phone_list:
                                 [sso_tech, sso_phoneid, sso_passwd, sso_cinfo_allowed,
                                  sso_phonenum, sso_l5, sso_l6,
-                                 fullname, firstname, lastname, sso_context] = l
+                                 fullname, firstname, lastname, sso_context, enable_hint] = l
                                 for sipacc in self.xivosb_phoneids:
                                         if sipacc == sso_phoneid:
                                                 found_xivosb = True
@@ -2550,7 +2537,7 @@ class AsteriskRemote:
                                         #         firstname | lastname | context
                                         [sso_tech, sso_phoneid, sso_passwd, sso_cinfo_allowed,
                                          sso_phonenum, sso_l5, sso_l6,
-                                         fullname, firstname, lastname, sso_context] = l
+                                         fullname, firstname, lastname, sso_context, enable_hint] = l
                                         
                                         if sso_context in self.xivosb_contexts:
                                                 sipaccount = self.xivosb_contexts[sso_context]
@@ -3625,7 +3612,7 @@ while True: # loops over the reloads
         tcpopens_webi = []
         lastrequest_time = []
 
-        log_debug(SYSLOG_INFO, '# STARTING XIVO Daemon # (3/3) fetch SSO, SIP register and subscribe')
+        log_debug(SYSLOG_INFO, '# STARTING XIVO Daemon # (3/3) fetch User List, SIP register and subscribe')
         for n in items_asterisks:
                 try:
                         update_sipnumlist(n)
