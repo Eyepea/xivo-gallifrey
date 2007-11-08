@@ -9,8 +9,6 @@ if(isset($_QR['id']) === false
 || ($info = $musiconhold->get_file($_QR['id'],$infos['cat']['category'])) === false)
 	$_QRY->go($_HTML->url('service/ipbx/pbx_services/musiconhold'),$param);
 
-xivo::load_class('xivo_file');
-
 $file = new xivo_file();
 
 if(($file->download($info['path'])) === false)

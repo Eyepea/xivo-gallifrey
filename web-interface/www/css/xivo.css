@@ -155,8 +155,10 @@ pre {text-align: left;}
 #b-tmenu #toolbar .fm-field {margin: 0px;padding: 0px;width: auto;}
 #b-tmenu #toolbar .fm-field input {vertical-align: top;margin-top: 1px;}
 #b-tmenu #toolbar .fm-field .itb-image {margin: 0px;}
-#b-tmenu #toolbar #add-menu,#b-tmenu #toolbar #advanced-menu {width: auto;float: right;display: none;background-color: #beddfb;border: 1px solid #057ab1;padding: 2px 4px;}
+#b-tmenu #toolbar #add-menu,#b-tmenu #toolbar #advanced-menu {width: auto;float: right;display: none;background-color: #beddfb;border: 1px solid #057ab1;}
 #b-tmenu #toolbar #add-menu li,#b-tmenu #toolbar #advanced-menu li {text-align: left;}
+#b-tmenu #toolbar #add-menu li a,#b-tmenu #toolbar #advanced-menu li a {display: block;padding: 1px 4px;}
+#b-tmenu #toolbar #add-menu li a:hover,#b-tmenu #toolbar #advanced-menu li a:hover {background-color: #7f99b1;color: #fff;}
 
 * html #b-tmenu .nav li li {height: auto;}
 * html #b-tmenu #tooltips {margin-top: 25px;margin-left: 0px;}

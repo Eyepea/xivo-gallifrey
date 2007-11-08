@@ -71,8 +71,7 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 
 	function get_config_exten()
 	{
-		if(isset($this->_conf) === false
-		|| xivo_issa('exten',$this->_conf) === false)
+		if(xivo_issa('exten',$this->_conf) === false)
 			return(false);
 
 		return($this->_conf['exten']);

@@ -1,6 +1,5 @@
 <?php
 	$form = &$this->get_module('form');
-	$element = $this->vars('element');
 	$info = $this->vars('info');
 ?>
 <div class="b-infos b-form">

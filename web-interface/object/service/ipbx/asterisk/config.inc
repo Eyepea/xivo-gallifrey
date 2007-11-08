@@ -66,6 +66,7 @@ define('XIVO_SRE_IPBX_AST_CDR_DISPOSITION_UNKNOWN','UNKNOWN');
 define('XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_PATTERN','a-zA-Z0-9_-');
 define('XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_LENGTH','{1,50}');
 
+define('XIVO_SRE_IPBX_AST_USER_MACRO','incoming_user');
 define('XIVO_SRE_IPBX_AST_OUTCALL_MACRO','outgoing_user');
 
 $array = array();

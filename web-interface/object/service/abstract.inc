@@ -17,15 +17,20 @@ class xivo_service_abstract
 		return($this->_type);
 	}
 
-	function _chk_exists_cfg($type,$name)
+	function _chk_exists_cfg($type,$name,$ret=false)
 	{
+		$r = false;
+
 		$type = (string) $type;
 		$name = (string) $name;
+		$ret = (bool) $ret;
 
-		if(xivo_issa($type,$this->_conf) === true && xivo_ak($name,$this->_conf[$type]) === true)
-			return(true);
+		if(isset($this->_conf) === true
+		&& xivo_issa($type,$this->_conf) === true
+		&& isset($this->_conf[$type][$name]) === true)
+			$r = $ret === true ? $this->_conf[$type][$name] : true;
 
-		return(false);
+		return($r);
 	}
 
 	function _load_module_class($module)

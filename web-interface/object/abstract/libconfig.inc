@@ -20,17 +20,20 @@ class xivo_libconfig_abstract
 		return(false);
 	}
 
-	function _chk_exists_cfg($type,$name)
+	function _chk_exists_cfg($type,$name,$ret=false)
 	{
+		$r = false;
+
 		$type = (string) $type;
 		$name = (string) $name;
+		$ret = (bool) $ret;
 
 		if(isset($this->_conf) === true
 		&& xivo_issa($type,$this->_conf) === true
-		&& xivo_ak($name,$this->_conf[$type]) === true)
-			return(true);
+		&& isset($this->_conf[$type][$name]) === true)
+			$r = $ret === true ? $this->_conf[$type][$name] : true;
 
-		return(false);
+		return($r);
 	}
 
 	function get_option()
@@ -345,6 +348,30 @@ class xivo_libconfig_abstract
 			return($r);
 
 		return($dval);
+	}
+
+	function _chk_upload_file()
+	{
+		$_CF = &xivo_gat::get('_CF');
+
+		if($_CF['xivo']['ini']['file_uploads'] !== true)
+		{
+			trigger_error('file_uploads php.ini directive is set at "false"',E_USER_ERROR);
+			return(false);
+		}
+
+		$upload = xivo_get_memory('upload_max_filesize');
+
+		if(($size = $this->_get_config_file_maxsize()) !== false && $upload < $size)
+		{
+			trigger_error('file max size in configuration file shoud be less than '.
+				      'upload_max_filesize php.ini directive',E_USER_ERROR);
+			return(false);
+		}
+		else
+			$size = $upload;
+
+		return($size);
 	}
 }
 

@@ -146,8 +146,10 @@ class xivo_file
 		$chk_param = (array) $chk_param;
 
 		if($this->chk_upload_err($name) === false
-		|| isset($_FILES[$name]['tmp_name'],$_FILES[$name]['name'],
-			$_FILES[$name]['type'],$_FILES[$name]['size']) === false)
+		|| isset($_FILES[$name]['tmp_name'],
+			 $_FILES[$name]['name'],
+			 $_FILES[$name]['type'],
+			 $_FILES[$name]['size']) === false)
 			return(false);
 
 		if(is_uploaded_file($_FILES[$name]['tmp_name']) === false)
@@ -231,11 +233,13 @@ class xivo_file
 					unset($param['extension'][$ext]['regexp']);
 				}
 
-				if(in_array($this->info['mime'],$param['extension'][$ext]) === false && $regexp === false)
+				if(($regexp === false
+				   && in_array($this->info['mime'],$param['extension'][$ext]) === false) === true
+				|| ($regexp !== false
+				   && preg_match($regexp,$this->info['mime']) === 0) === true)
+				{
 					return(false);
-
-				if($regexp !== false && preg_match($regexp,$this->info['mime']) === 0)
-					return(false);
+				}
 			}
 		}
 
@@ -636,14 +640,11 @@ class xivo_file
 			return(false);
 
 		$use_inc_path = ($flags & FILE_USE_INCLUDE_PATH) !== 0 ? true : false;
-
-		if(($fp = fopen($filename,$mode,$use_inc_path)) === false)
-			return(false);
-
-		if(($flags & LOCK_EX) !== 0 && flock($fp,LOCK_EX) === false)
-			return(false);
-
 		$use_lock = ($flags & LOCK_EX) !== 0 ? true : false;
+
+		if(($fp = fopen($filename,$mode,$use_inc_path)) === false
+		|| ($use_lock === true && flock($fp,LOCK_EX) === false) === true)
+			return(false);
 
 		$r = false;
 		$bytes = 0;
@@ -651,9 +652,12 @@ class xivo_file
 		if(($bytes = fwrite($fp,$data)) !== false)
 			$r = $bytes;
 
+		if($use_lock === true)
+			flock($fp,LOCK_UN);
+
 		fclose($fp);
 
-		return($r);		
+		return($r);
 	}
 
 	function read_d($dir,$type='',$mode='',$match='',$dirwmode=false)

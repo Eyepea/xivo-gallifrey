@@ -388,7 +388,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		{
 			$this->_set_result_var('protocol','mailbox',$number.'@'.$context);
 
-			$appdata = array('appdata' => 'incoming_user');
+			$appdata = array('appdata' => XIVO_SRE_IPBX_AST_USER_MACRO);
 
 			if(($localexten = $this->set_macro($action,'localexten',$number,$appdata,$context)) === false)
 				$this->_set_error('localexten');
@@ -641,10 +641,6 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		|| ($list = $this->_autoprov->get_autoprov_list()) === false)
 			return(false);
 
-		if(xivo_haslen($arr,'vendormodel') === false
-		|| xivo_haslen($arr,'macaddr') === false)
-			return(null);
-
 		if($action === 'edit' && xivo_issa('autoprov',$this->_info) === true)
 		{
 			if(xivo_haslen($arr,'modact') === false)
@@ -655,6 +651,9 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$arr['modact'] = $modact;
 			$arr['proto'] = $protocolname;
 		}
+		else if(xivo_haslen($arr,'vendormodel') === false
+		|| xivo_haslen($arr,'macaddr') === false)
+			return(null);
 		else if(($pos = strpos($arr['vendormodel'],'.')) === false)
 			$arr['vendormodel'] = $arr['modact'] = '';
 		else

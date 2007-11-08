@@ -11,8 +11,6 @@ do
 	|| ($infos = $musiconhold->get_category($_QR['category'])) === false)
 		break;
 
-	xivo::load_class('xivo_file');
-
 	$file = new xivo_file();
 
 	if($file->get_upload('filename',$option['file']) === false)

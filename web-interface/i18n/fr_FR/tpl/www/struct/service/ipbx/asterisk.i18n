@@ -79,8 +79,26 @@ Dialogic VOX (ADPCM)
 ; ast_format_name_info-slin
 Signed Linear (SLN)
 
+; toolbar_opt_add
+Ajouter
+
+; toolbar_opt_delete
+Supprimer
+
 ; toolbar_opt_advanced
 Mode avancé
+
+; toolbar_add_menu_add-directory
+Ajouter un répertoire
+
+; toolbar_add_menu_add-file
+Ajouter un file
+
+; toolbar_add_menu_add
+Ajouter
+
+; toolbar_add_menu_import-file
+Importer un fichier
 
 ; toolbar_adv_menu_select-all
 Tout sélectionner
@@ -94,25 +112,19 @@ Désactiver
 ; toolbar_adv_menu_delete
 Supprimer
 
-; toolbar_opt_add
-Ajouter
-
-; toolbar_opt_delete
-Supprimer
-
-; toolbar_adv_menu_add_category
+; toolbar_adv_menu_add-category
 Ajouter une catégorie
 
-; toolbar_adv_menu_add_directory
+; toolbar_adv_menu_add-directory
 Ajouter un répertoire
 
-; toolbar_adv_menu_add_file
+; toolbar_adv_menu_add-file
 Ajouter un fichier
 
-; toolbar_adv_menu_add_group
+; toolbar_adv_menu_add-group
 Ajouter un groupe
 
-; toolbar_adv_menu_add_agent
+; toolbar_adv_menu_add-agent
 Ajouter un agent
 
 ; toolbar_fm_search

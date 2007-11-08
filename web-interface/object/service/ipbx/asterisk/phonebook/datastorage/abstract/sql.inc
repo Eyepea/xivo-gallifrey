@@ -6,8 +6,10 @@ class xivo_service_asterisk_phonebook_abstract_sql extends xivo_service_asterisk
 {
 	var $_param	= array('table' => 'phonebook');
 
-	function get_search($value,$list=null,$order=null,$limit=null)
+	function get_search($value,$list=null,$order=null,$limit=null,$name=false)
 	{
+		$name = (bool) $name;
+
 		$where = array();
 
 		if(($rs = $this->_dso->search_contain('firstname',$value)) !== false)
@@ -19,17 +21,20 @@ class xivo_service_asterisk_phonebook_abstract_sql extends xivo_service_asterisk
 		if(($rs = $this->_dso->search_contain('displayname',$value)) !== false)
 			$where[] = $rs;
 
-		if(($rs = $this->_dso->search_contain('society',$value)) !== false)
-			$where[] = $rs;
+		if($name === false)
+		{
+			if(($rs = $this->_dso->search_contain('society',$value)) !== false)
+				$where[] = $rs;
 
-		if(($rs = $this->_dso->search_contain('email',$value)) !== false)
-			$where[] = $rs;
+			if(($rs = $this->_dso->search_contain('email',$value)) !== false)
+				$where[] = $rs;
 
-		if(($rs = $this->_dso->search_contain('url',$value)) !== false)
-			$where[] = $rs;
+			if(($rs = $this->_dso->search_contain('url',$value)) !== false)
+				$where[] = $rs;
 
-		if(($rs = $this->_dso->search_contain('description',$value)) !== false)
-			$where[] = $rs;
+			if(($rs = $this->_dso->search_contain('description',$value)) !== false)
+				$where[] = $rs;
+		}
 
 		if(is_array($list) === true && isset($list[0]) === true)
 		{

@@ -22,7 +22,7 @@
 <a href="#" onmouseover="xivo_eid('advanced-menu').style.display = 'block';" onmouseout="xivo_eid('advanced-menu').style.display = 'none';"><?=$url->img_html('img/menu/top/toolbar/bt-add.gif',$this->bbf('toolbar_opt_add'),'border="0"');?></a>
 <div class="sb-advanced-menu">
 	<ul id="advanced-menu" onmouseover="this.style.display = 'block';" onmouseout="this.style.display = 'none';">	
-		<li><?=$url->href_html($this->bbf('toolbar_adv_menu_add_category'),'service/ipbx/pbx_services/musiconhold','act=add');?></li>
-		<li><?=$url->href_html($this->bbf('toolbar_adv_menu_add_file'),'service/ipbx/pbx_services/musiconhold',$param);?></li>
+		<li><?=$url->href_html($this->bbf('toolbar_adv_menu_add-category'),'service/ipbx/pbx_services/musiconhold','act=add');?></li>
+		<li><?=$url->href_html($this->bbf('toolbar_adv_menu_add-file'),'service/ipbx/pbx_services/musiconhold',$param);?></li>
 	</ul>
 </div>

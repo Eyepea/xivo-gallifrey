@@ -123,6 +123,15 @@ switch($act)
 
 		$_QRY->go($_HTML->url('service/ipbx/pbx_services/phonebook'),$param);
 		break;
+	case 'import':
+		if(isset($_QR['fm_send']) === true)
+		{
+			$appphonebook->import_csv();
+			$_QRY->go($_HTML->url('service/ipbx/pbx_services/phonebook'),$param);
+		}
+
+		$_HTML->assign('import_file',$appphonebook->get_config_import_file());
+		break;
 	case 'list':
 	default:
 		$act = 'list';

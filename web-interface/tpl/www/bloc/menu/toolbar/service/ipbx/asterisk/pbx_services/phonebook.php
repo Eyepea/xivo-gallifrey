@@ -15,8 +15,13 @@
 <?=$form->hidden(array('name' => 'act','value' => 'list'));?>
 	<div class="fm-field"><?=$form->text(array('name' => 'search','id' => 'it-search','size' => 20,'field' => false,'value' => $search,'default' => $this->bbf('toolbar_fm_search')),'onfocus="this.value = this.value == \''.xivo_stript($this->bbf('toolbar_fm_search')).'\' ? \'\' : this.value; xivo_fm_set_onfocus(this);"');?><?=$form->image(array('name' => 'submit','id' => 'it-subsearch','src' => $url->img('img/menu/top/toolbar/bt-search.gif'),'field' => false,'alt' => $this->bbf('toolbar_fm_search')));?></div>
 </form>
-	<?=$url->href_html($url->img_html('img/menu/top/toolbar/bt-add.gif',$this->bbf('toolbar_opt_add'),'border="0"'),'service/ipbx/pbx_services/phonebook','act=add',null,$this->bbf('toolbar_opt_add'));?>
-<?php
+<a href="#" onmouseover="xivo_eid('add-menu').style.display = 'block';" onmouseout="xivo_eid('add-menu').style.display = 'none';"><?=$url->img_html('img/menu/top/toolbar/bt-add.gif',$this->bbf('toolbar_opt_add'),'border="0"');?>
+</a><div class="sb-advanced-menu">
+	<ul id="add-menu" onmouseover="this.style.display = 'block';" onmouseout="this.style.display = 'none';">	
+		<li><?=$url->href_html($this->bbf('toolbar_add_menu_add'),'service/ipbx/pbx_services/phonebook','act=add');?></li>
+		<li><?=$url->href_html($this->bbf('toolbar_add_menu_import-file'),'service/ipbx/pbx_services/phonebook','act=import');?></li>
+	</ul>
+</div><?php
 	if($act === 'list'):
 ?>
 <div class="sb-advanced-menu">

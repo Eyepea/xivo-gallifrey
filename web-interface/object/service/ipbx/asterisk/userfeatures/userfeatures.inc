@@ -209,9 +209,9 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		return($this->_dso->edit($id,$arr,$disable));
 	}
 
-	function get_search($value,$disable=null)
+	function get_search($value,$disable=null,$number=false)
 	{
-		if(($list = $this->_dso->get_search($value,$disable)) === false)
+		if(($list = $this->_dso->get_search($value,$disable,$number)) === false)
 			return(false);
 
 		$nb = count($list);
@@ -229,20 +229,7 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 
 	function get_search_number($value,$disable=null)
 	{
-		if(($list = $this->_dso->get_search_number($value,$disable)) === false)
-			return(false);
-
-		$nb = count($list);
-
-		$r = array();
-
-		for($i = 0;$i < $nb;$i++)
-			$r[] = $this->_prepare($list[$i]);
-
-		if(isset($r[0]) === false)
-			$r = false;
-
-		return($r);
+		return($this->get_search($value,$disable,true));
 	}
 
 	function get_all_number($id=0,$disable=null)

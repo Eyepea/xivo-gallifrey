@@ -291,7 +291,7 @@ $array['element']['rtcachefriends']['set'] = true;
 
 $array['element']['rtupdate'] = array();
 $array['element']['rtupdate']['value'] = array('no','yes');
-$array['element']['rtupdate']['default'] = 'yes';
+$array['element']['rtupdate']['default'] = 'no';
 $array['element']['rtupdate']['set'] = true;
 
 $array['element']['ignoreregexpire'] = array();
@@ -307,7 +307,7 @@ $array['element']['rtautoclear']['value'] = array('no' => 'no','yes' => 'yes',1 
 						  140 => array(2,20),150 => array(2,30),160 => array(2,40),
 						  170 => array(2,50),180 => 3,190 => array(3,10),200 => array(3,20),
 						  210 => array(3,30),220 => array(3,40),230 => array(3,50),240 => 4);
-$array['element']['rtautoclear']['default'] = 'yes'; 
+$array['element']['rtautoclear']['default'] = 'no'; 
 
 $array['element']['register'] = array();
 $array['element']['register']['default'] = '';

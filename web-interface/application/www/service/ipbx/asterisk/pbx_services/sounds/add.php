@@ -13,8 +13,6 @@ do
 	|| ($info['directory'] = $sounds->get_dir($_QR['dirname'])) === false)
 		break;
 
-	xivo::load_class('xivo_file');
-
 	$file = new xivo_file();
 
 	if($file->get_upload('filename',$option['file']) === false)

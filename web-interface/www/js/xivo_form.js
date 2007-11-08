@@ -452,8 +452,7 @@ function xivo_fm_checked_all(form,name,mode)
 	|| xivo_is_string(form) == false
 	|| xivo_is_string(name) == false
 	|| xivo_is_undef(xivo_fm[form]) == true
-	|| xivo_is_undef(xivo_fm[form][name]) == true
-	|| (len = xivo_fm[form][name].length) == 0)
+	|| xivo_is_undef(xivo_fm[form][name]) == true)
 		return(false);
 
 	if(xivo_is_undef(mode) == true)
@@ -462,6 +461,23 @@ function xivo_fm_checked_all(form,name,mode)
 		mode = Boolean(mode);
 
 	ref = xivo_fm[form][name];
+
+	if(xivo_is_undef(ref.length) == false)
+		len = ref.length;
+	else if(xivo_is_undef(ref.type) == true
+	|| (ref.type != 'checkbox' && ref.type != 'radio') == true)
+		return(false);
+	else
+	{
+		if(mode != 'reverse')
+			ref.checked = mode;
+		else if(ref.checked == true)
+			ref.checked = false;
+		else
+			ref.checked = true;
+
+		return(true);
+	}
 
 	for(var i = 0;i < len;i++)
 	{
@@ -474,6 +490,7 @@ function xivo_fm_checked_all(form,name,mode)
 			ref[i].checked = false;
 		else
 			ref[i].checked = true;
-
 	}
+
+	return(true);
 }

@@ -391,6 +391,11 @@ function xivo_isso($k,&$o,$t=false)
 	return($r);
 }
 
+function xivo_clone($obj)
+{
+	return(unserialize(serialize($obj)));
+}
+
 function xivo_group_array($ref,&$arr)
 {
 	if(xivo_issa($ref,$arr) === false
@@ -538,6 +543,33 @@ function xivo_array_reduce_level($arr,$t=false)
 		for($i = 0;$i < $nb;$i++)
 			$r = array_merge(array_keys(array_flip($arr[$i])),$r);
 	}
+
+	return($r);
+}
+
+function xivo_build_array_ref($arr)
+{
+	if(is_array($arr) === false)
+		return(false);
+
+	$arr = array_values($arr);
+
+	if(($nb = count($arr)) === 0)
+		return(false);
+
+	$cnt = $nb - 1;
+
+	$r['array'] = $r['ref'] = array();
+	$ref = &$r['array'];
+
+	for($i = 0;$i < $cnt;$i++)
+	{
+		$ref[$arr[$i]] = array();
+		$ref = &$ref[$arr[$i]];
+	}
+
+	$ref[$arr[$i]] = '';
+	$r['ref'] = &$ref[$arr[$i]];
 
 	return($r);
 }

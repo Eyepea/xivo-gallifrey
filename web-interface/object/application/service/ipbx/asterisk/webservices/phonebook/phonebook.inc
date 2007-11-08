@@ -94,7 +94,7 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 				$list[] = $rsn[$i]['phonebookid'];
 		}
 
-		if(($rs = $this->_phonebook->get_search($search,$list)) === false
+		if(($rs = $this->_phonebook->get_search_name($search,$list)) === false
 		|| ($nb = count($rs)) === 0)
 			return(false);
 

@@ -34,7 +34,9 @@ if(isset($_QR['fm_send']) === true)
 	if($appaccessfeatures->set($_QR['accessfeatures']) !== false)
 		$appaccessfeatures->save();
 
-	if(($info['accessfeatures'] = $appaccessfeatures->get_result()) !== false)
+	$info['accessfeatures'] = $appaccessfeatures->get_result();
+
+	if(is_array($info['accessfeatures']) === true)
 		uasort($info['accessfeatures'],array(&$accessfeaturessort,'str_usort'));
 
 	$error['accessfeatures'] = $appaccessfeatures->get_error();

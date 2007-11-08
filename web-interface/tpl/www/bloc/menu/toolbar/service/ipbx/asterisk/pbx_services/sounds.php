@@ -28,7 +28,7 @@ endif;
 ?>
 <div class="sb-advanced-menu">
 	<ul id="add-menu" onmouseover="this.style.display = 'block';" onmouseout="this.style.display = 'none';">	
-		<li><?=$url->href_html($this->bbf('toolbar_adv_menu_add_directory'),'service/ipbx/pbx_services/sounds','act=adddir');?></li>
-		<li><?=$url->href_html($this->bbf('toolbar_adv_menu_add_file'),'service/ipbx/pbx_services/sounds',$param);?></li>
+		<li><?=$url->href_html($this->bbf('toolbar_adv_menu_add-directory'),'service/ipbx/pbx_services/sounds','act=adddir');?></li>
+		<li><?=$url->href_html($this->bbf('toolbar_adv_menu_add-file'),'service/ipbx/pbx_services/sounds',$param);?></li>
 	</ul>
 </div>

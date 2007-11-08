@@ -98,11 +98,6 @@ class xivo_service_asterisk_userfeatures_abstract_sql extends xivo_service_aster
 		return($r);
 	}
 
-	function get_search_number($value,$disable=null)
-	{
-		return($this->get_search($value,$disable,true));
-	}
-
 	function edit($id,$arr,$disable=null)
 	{
 		if(is_array($id) === false)
