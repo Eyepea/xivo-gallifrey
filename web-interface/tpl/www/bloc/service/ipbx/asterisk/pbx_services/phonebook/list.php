@@ -36,7 +36,7 @@
 <table cellspacing="0" cellpadding="0" border="0">
 	<tr class="sb-top">
 		<th class="th-left xspan"><span class="span-left">&nbsp;</span></th>
-		<th class="th-center"><?=$this->bbf('col_fullname');?></th>
+		<th class="th-center"><?=$this->bbf('col_displayname');?></th>
 		<th class="th-center"><?=$this->bbf('col_society');?></th>
 		<th class="th-center"><?=$this->bbf('col_tel-office');?></th>
 		<th class="th-center"><?=$this->bbf('col_tel-mobile');?></th>
@@ -85,7 +85,7 @@
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=$mod?>on2">
 		<td class="td-left"><?=$form->checkbox(array('name' => 'phonebook[]','value' => $ref['phonebook']['id'],'label' => false,'id' => 'it-phonebook-'.$i,'checked' => false,'field' => false));?></td>
-		<td class="txt-left"><label for="it-phonebook-<?=$i?>" id="lb-phonebook-<?=$i?>"><?=$ref['phonebook']['fullname']?></label></td>
+		<td class="txt-left"><label for="it-phonebook-<?=$i?>" id="lb-phonebook-<?=$i?>"><?=$ref['phonebook']['displayname']?></label></td>
 		<td><?=$ref['phonebook']['society']?></td>
 		<td><?=$ref['phonebooknumber']['office']['number']?></td>
 		<td><?=$ref['phonebooknumber']['mobile']['number']?></td>

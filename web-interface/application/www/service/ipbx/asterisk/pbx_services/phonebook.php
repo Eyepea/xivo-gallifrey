@@ -139,9 +139,9 @@ switch($act)
 		$nb_page = 20;
 
 		$order = array();
+		$order['displayname'] = SORT_ASC;
 		$order['firstname'] = SORT_ASC;
 		$order['lastname'] = SORT_ASC;
-		$order['displayname'] = SORT_ASC;
 
 		$limit = array();
 		$limit[0] = ($page - 1) * $nb_page;

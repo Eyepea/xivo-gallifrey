@@ -29,12 +29,7 @@ class xivo_service_asterisk_phonebook extends xivo_service_asterisk_abstract
 		$data['fullname'] = trim(trim($data['firstname']).' '.trim($data['lastname']));
 
 		if($data['fullname'] === '')
-		{
-			if($data['displayname'] === '')
-				$data['fullname'] = '-';
-			else
-				$data['fullname'] = $data['displayname'];
-		}
+			$data['fullname'] = $data['displayname'];
 
 		return($data);
 	}
