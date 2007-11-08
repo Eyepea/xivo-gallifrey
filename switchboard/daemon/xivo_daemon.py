@@ -1753,7 +1753,7 @@ def update_phonelist(astnum):
                                                        plist[astnum].normal[snl].build_cidstatus(),
                                                        plist[astnum].normal[snl].build_fullstatlist() + ';']))
         dt5 = time.time()
-        log_debug(SYSLOG_INFO, '%s : sent ExtensionState for new phones (%f seconds)' %(astid, (dt5-dt4)))
+        log_debug(SYSLOG_INFO, '%s : sent ExtensionState request for new phones (%f seconds)' %(astid, (dt5-dt4)))
         if len(lstdel[astid]) > 0 or len(lstadd[astid]) > 0:
                 strupdate = "phones-signal-deloradd=%s;%d;%d;%d" % (astid, len(lstdel[astid]), len(lstadd[astid]), len(plist[astnum].normal))
                 send_msg_to_cti_clients(strupdate)
@@ -3019,7 +3019,7 @@ while True: # loops over the reloads
         port_webi = 5004
         port_fax = 5020
         xivoclient_session_timeout = 60
-        xivosb_register_frequency = 60
+        phonelist_update_period = 60
         capabilities_list = []
         capalist_server = 0
         asterisklist = []
@@ -3030,7 +3030,6 @@ while True: # loops over the reloads
         conngui_sb = 0
         evt_filename = "/var/log/pf-xivo-cti-server/ami_events.log"
         gui_filename = "/var/log/pf-xivo-cti-server/gui.log"
-        with_ami = True
         with_advert = False
         lstadd = {}
         lstdel = {}
@@ -3057,8 +3056,8 @@ while True: # loops over the reloads
                 port_webi = int(xivoconf_general["port_webi"])
         if "xivoclient_session_timeout" in xivoconf_general:
                 xivoclient_session_timeout = int(xivoconf_general["xivoclient_session_timeout"])
-        if "xivosb_register_frequency" in xivoconf_general:
-                xivosb_register_frequency = int(xivoconf_general["xivosb_register_frequency"])
+        if "phonelist_update_period" in xivoconf_general:
+                phonelist_update_period = int(xivoconf_general["phonelist_update_period"])
         if "capabilities" in xivoconf_general and xivoconf_general["capabilities"] != "":
                 capabilities_list = xivoconf_general["capabilities"].split(",")
                 for capa in capabilities_list:
@@ -3074,7 +3073,6 @@ while True: # loops over the reloads
         if "guifile" in xivoconf_general:
                 gui_filename = xivoconf_general["guifile"]
 
-        if "noami" in xivoconf_general: with_ami = False
         if "advert" in xivoconf_general: with_advert = True
 
         configs = []
@@ -3335,7 +3333,7 @@ while True: # loops over the reloads
         log_debug(SYSLOG_INFO, '# STARTING XIVO Daemon # (3/3) fetch SSO, SIP register and subscribe')
         for n in items_asterisks:
                 try:
-                        if with_ami: update_amisocks(n, configs[n].astid)
+                        update_amisocks(n, configs[n].astid)
                         update_phonelist(n)
                         lastrequest_time.append(time.time())
                 except Exception, exc:
@@ -3345,7 +3343,7 @@ while True: # loops over the reloads
         # Receive messages
         while not askedtoquit:
                 try:
-                        [i, o, e] = select.select(ins, [], [], xivosb_register_frequency)
+                        [i, o, e] = select.select(ins, [], [], phonelist_update_period)
                 except Exception, exc:
                         if askedtoquit:
                                 try:
@@ -3435,12 +3433,12 @@ while True: # loops over the reloads
                                 log_debug(SYSLOG_INFO, "unknown socket <%s>" % str(i))
 
                         for n in items_asterisks:
-                                if (time.time() - lastrequest_time[n]) > xivosb_register_frequency:
+                                if (time.time() - lastrequest_time[n]) > phonelist_update_period:
                                         lastrequest_time[n] = time.time()
                                         log_debug(SYSLOG_INFO, '%s : update_phonelist (computed timeout) %s'
                                                   % (configs[n].astid, time.strftime("%H:%M:%S", time.localtime())))
                                         try:
-                                                if with_ami: update_amisocks(n, configs[n].astid)
+                                                update_amisocks(n, configs[n].astid)
                                                 update_phonelist(n)
                                         except Exception, exc:
                                                 log_debug(SYSLOG_ERR, '--- exception --- %s : failed while updating lists and sockets : %s'
@@ -3451,7 +3449,7 @@ while True: # loops over the reloads
                         for n in items_asterisks:
                                 lastrequest_time[n] = time.time()
                                 try:
-                                        if with_ami: update_amisocks(n, configs[n].astid)
+                                        update_amisocks(n, configs[n].astid)
                                         update_phonelist(n)
                                 except Exception, exc:
                                         log_debug(SYSLOG_ERR, '--- exception --- %s : failed while updating lists and sockets : %s'
