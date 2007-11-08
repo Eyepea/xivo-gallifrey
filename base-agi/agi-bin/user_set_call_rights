@@ -112,20 +112,21 @@ cursor = conn.cursor()
 srcnum = agi.get_variable('REAL_SRCNUM')
 dstnum = agi.get_variable('REAL_DSTNUM')
 context = agi.get_variable('REAL_CONTEXT')
+exten_pattern = agi.get_variable('REAL_EXTENPATTERN')
 
 cursor.query("SELECT ${columns} FROM rightcallexten",
              ('rightcallid', 'exten'))
 res = cursor.fetchall()
 
 if not res:
-	exit()
+	allow()
 
 rightcallidset = set((row['rightcallid'] for row in res if extension_matches(dstnum, row['exten'])))
 
 if not rightcallidset:
-	exit()
+	allow()
 
-rightcallids = tuple(rightcallidset)
+rightcallids = str(tuple(rightcallidset))
 cursor.query("SELECT ${columns} FROM userfeatures WHERE number = %s AND context = %s AND internal = 0 AND commented = 0",
              ('id',),
              (srcnum, context))
@@ -136,7 +137,7 @@ if not res:
 
 userid = res['id']
 query = ("SELECT ${columns} FROM rightcall, rightcallmember "
-         "WHERE rightcall.id IN " + str(rightcallids) + " "
+         "WHERE rightcall.id IN " + rightcallids + " "
          "AND rightcall.id = rightcallmember.rightcallid "
          "AND rightcallmember.type = 'user' "
          "AND rightcallmember.typeval = %s "
@@ -162,12 +163,26 @@ res = cursor.fetchall()
 if res:
 	groupids = [row['groupfeatures.id'] for row in res]
 	query = ("SELECT ${columns} FROM rightcall, rightcallmember "
-                 "WHERE rightcall.id IN " + str(rightcallids) + " "
+                 "WHERE rightcall.id IN " + rightcallids + " "
                  "AND rightcall.id = rightcallmember.rightcallid "
                  "AND rightcallmember.type = 'group' "
                  "AND rightcallmember.typeval IN (" + ", ".join(["%s"] * len(res)) + ") "
                  "AND rightcall.commented = 0")
 	cursor.query(query, (RIGHTCALL_PERMIT_COLNAME, RIGHTCALL_PASSWD_COLNAME), groupids)
+	res = cursor.fetchall()
+	apply_rules(res)
+
+if exten_pattern:
+	query = ("SELECT ${columns} FROM rightcall, rightcallmember, extenumbers "
+                 "WHERE rightcall.id IN " + rightcallids + " "
+                 "AND rightcall.id = rightcallmember.rightcallid "
+                 "AND rightcallmember.type = 'outcall' "
+                 "AND rightcallmember.typeval = extenumbers.typeval "
+                 "AND extenumbers.exten = %s "
+                 "AND extenumbers.context = %s "
+                 "AND extenumbers.type = 'outcall' "
+                 "AND rightcall.commented = 0")
+	cursor.query(query, (RIGHTCALL_PERMIT_COLNAME, RIGHTCALL_PASSWD_COLNAME), (exten_pattern, context))
 	res = cursor.fetchall()
 	apply_rules(res)
 
