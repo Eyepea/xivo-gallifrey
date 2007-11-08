@@ -32,6 +32,9 @@ __license__ = """
 
 CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
 
+RIGHTCALL_PERMIT_COLNAME = "rightcall.permit"
+RIGHTCALL_PASSWD_COLNAME = "rightcall.passwd"
+
 import xivo.to_path
 
 import sys, re
@@ -78,15 +81,15 @@ def extension_matches(number, pattern):
 	match = bool(re.match(pattern, number))
 	return match
 
-def apply_rules(rules, permit_colname, passwd_colname):
+def apply_rules(rules):
 	if not rules:
 		return
 
 	for rule in rules:
-		if bool(rule[permit_colname]):
+		if bool(rule[RIGHTCALL_PERMIT_COLNAME]):
 			allow()
 
-	deny(rule[passwd_colname])
+	deny(rule[RIGHTCALL_PASSWD_COLNAME])
 
 def exit():
 	agi.verbose('AGI script "%s" successfully executed' % sys.argv[0])
@@ -115,15 +118,14 @@ cursor.query("SELECT ${columns} FROM rightcallexten",
 res = cursor.fetchall()
 
 if not res:
-	dp_break("No rule defined")
+	exit()
 
-rightcallidset = set([row['rightcallid'] for row in res if extension_matches(dstnum, row['exten'])])
+rightcallidset = set((row['rightcallid'] for row in res if extension_matches(dstnum, row['exten'])))
 
 if not rightcallidset:
-	dp_break("No rule matching extension '%s'" % dstnum)
+	exit()
 
 rightcallids = tuple(rightcallidset)
-
 cursor.query("SELECT ${columns} FROM userfeatures WHERE number = %s AND context = %s AND internal = 0 AND commented = 0",
              ('id',),
              (srcnum, context))
@@ -133,16 +135,40 @@ if not res:
 	dp_break("Unable to find user (number = '%s', context = '%s')" % (srcnum, context))
 
 userid = res['id']
-
 query = ("SELECT ${columns} FROM rightcall, rightcallmember "
          "WHERE rightcall.id IN " + str(rightcallids) + " "
          "AND rightcall.id = rightcallmember.rightcallid "
-         "AND rightcallmember.type = %s "
+         "AND rightcallmember.type = 'user' "
          "AND rightcallmember.typeval = %s "
          "AND rightcall.commented = 0")
-
-cursor.query(query, ('rightcall.passwd', 'rightcall.permit'), ('user', userid))
+cursor.query(query, (RIGHTCALL_PERMIT_COLNAME, RIGHTCALL_PASSWD_COLNAME), (userid,))
 res = cursor.fetchall()
-apply_rules(res, 'rightcall.permit', 'rightcall.passwd')
+apply_rules(res)
+
+cursor.query("SELECT ${columns} FROM groupfeatures, queuemember, queue "
+             "ON groupfeatures.name = queuemember.queue_name "
+             "AND queue.name = queuemember.queue_name "
+             "WHERE groupfeatures.deleted = 0 "
+             "AND queuemember.userid = %s "
+             "AND queuemember.usertype = 'user' "
+             "AND queuemember.category = 'group' "
+             "AND queuemember.commented = 0 "
+             "AND queue.category = 'group' "
+             "AND queue.commented = 0",
+             ('groupfeatures.id',),
+             (userid,))
+res = cursor.fetchall()
+
+if res:
+	groupids = [row['groupfeatures.id'] for row in res]
+	query = ("SELECT ${columns} FROM rightcall, rightcallmember "
+                 "WHERE rightcall.id IN " + str(rightcallids) + " "
+                 "AND rightcall.id = rightcallmember.rightcallid "
+                 "AND rightcallmember.type = 'group' "
+                 "AND rightcallmember.typeval IN (" + ", ".join(["%s"] * len(res)) + ") "
+                 "AND rightcall.commented = 0")
+	cursor.query(query, (RIGHTCALL_PERMIT_COLNAME, RIGHTCALL_PASSWD_COLNAME), groupids)
+	res = cursor.fetchall()
+	apply_rules(res)
 
 allow()
