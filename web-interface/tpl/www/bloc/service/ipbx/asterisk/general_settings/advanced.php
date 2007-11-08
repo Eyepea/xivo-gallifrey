@@ -49,8 +49,6 @@
 
 <?=$form->checkbox(array('desc' => $this->bbf('fm_userinternal_guest'),'name' => 'userinternal[guest]','labelid' => 'userinternal-guest','checked' => ((bool) $this->varra('userinternal',array('guest','ufeatures','commented')) === true ? false : true)));?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_userinternal_xivosb'),'name' => 'userinternal[xivosb]','labelid' => 'userinternal-xivosb','checked' => ((bool) $this->varra('userinternal',array('xivosb','ufeatures','commented')) === true ? false : true)));?>
-
 </div>
 
 <div id="sb-part-agent" class="b-nodisplay">

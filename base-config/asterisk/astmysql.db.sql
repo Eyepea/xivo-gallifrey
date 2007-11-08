@@ -1018,7 +1018,6 @@ CREATE UNIQUE INDEX `userfeatures__uidx__protocol_name` ON `userfeatures`(`proto
 CREATE UNIQUE INDEX `userfeatures__uidx__protocol_protocolid` ON `userfeatures`(`protocol`,`protocolid`);
 
 INSERT INTO `userfeatures` VALUES (1,'sip',1,'Guest','','guest','','initconfig',148378,30,5,0,0,0,0,0,0,0,0,0,'',0,'',0,'','','',1,0,'');
-INSERT INTO `userfeatures` VALUES (2,'sip',2,'XivoSB','','xivosb','','default',194867,30,5,0,0,0,0,0,0,0,0,0,'',0,'',0,'','','',1,0,'');
 
 
 DROP TABLE IF EXISTS `useriax`;
@@ -1115,7 +1114,6 @@ CREATE INDEX `usersip__idx__category` ON `usersip`(`category`);
 CREATE UNIQUE INDEX `usersip__uidx__name` ON `usersip`(`name`);
 
 INSERT INTO `usersip` VALUES (1,'guest',0,'','documentation','','Guest','no','initconfig',NULL,'rfc2833',NULL,NULL,'','dynamic',NULL,NULL,'',NULL,'no',NULL,NULL,NULL,'',5060,'no',NULL,NULL,NULL,'guest','friend','guest',NULL,NULL,NULL,0,NULL,'',NULL,'',0,'user');
-INSERT INTO `usersip` VALUES (2,'xivosb',0,'','documentation','','XivoSB','no','default',NULL,'rfc2833',NULL,NULL,'','dynamic',NULL,NULL,'',NULL,'no',NULL,NULL,NULL,'',5060,'no',NULL,NULL,NULL,'','friend','xivosb',NULL,NULL,NULL,0,NULL,'',NULL,'',0,'user');
 
 
 DROP TABLE IF EXISTS `uservoicemail`;

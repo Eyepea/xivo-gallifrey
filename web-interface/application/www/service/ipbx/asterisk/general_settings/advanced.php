@@ -9,7 +9,6 @@ $appmeetme = &$ipbx->get_apprealstatic('meetme');
 $appgeneralmeetme = &$appmeetme->get_module('general');
 
 $appuserguest = $ipbx->get_application('user');
-$appuserxivosb = $ipbx->get_application('user');
 
 $info = array();
 $info['generalagents'] = $appgeneralagents->get_all_by_category();
@@ -18,7 +17,6 @@ $info['generalmeetme'] = $appgeneralmeetme->get_all_by_category();
 
 $info['userinternal'] = array();
 $info['userinternal']['guest'] = $appuserguest->get_where(array('name' => 'guest'),null,false,true);
-$info['userinternal']['xivosb'] = $appuserxivosb->get_where(array('name' => 'xivosb'),null,false,true);
 
 $element = array();
 $element['generalagents'] = $appgeneralagents->get_elements();
@@ -88,20 +86,6 @@ if(isset($_QR['fm_send']) === true)
 		{
 			if($appuserguest->disable() === true)
 				$info['userinternal']['guest']['ufeatures']['commented'] = true;
-		}
-	}
-
-	if($info['userinternal']['xivosb'] !== false)
-	{
-		if(isset($_QR['userinternal']['xivosb']) === true)
-		{
-			if($appuserxivosb->enable() === true)
-				$info['userinternal']['xivosb']['ufeatures']['commented'] = false;
-		}
-		else
-		{
-			if($appuserxivosb->disable() === true)
-				$info['userinternal']['xivosb']['ufeatures']['commented'] = true;
 		}
 	}
 }
