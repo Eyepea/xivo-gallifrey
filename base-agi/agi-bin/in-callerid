@@ -1,0 +1,129 @@
+#!/usr/bin/python
+#
+# Authors : Cedric Lemarchand, Sylvain Boily, Guillaume Knispel
+#           Proformatique
+#           67, rue Voltaire
+#           92800 PUTEAUX
+#           (+33/0)1.41.38.99.60
+#           mailto:technique@proformatique.com
+#           (C) 2007 Proformatique
+#
+
+__version__ = "$Revision: 1136 $ $Date: 2007-07-13 19:49:46 +0200 (Fri, 13 Jul 2007) $"
+__license__ = """
+    Copyright (C) 2007, Proformatique
+
+    This software is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2.1 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+"""
+
+RULES_FILE = '/etc/asterisk/xivo_in_callerid.conf'
+
+import os, sys, re
+
+import xivo.to_path
+import OrderedConf
+from agi import *
+
+agi = AGI()
+
+
+### DEBUGGING CONFIGURATION ###
+
+# set to 1 to force all the following debug conf. to true
+debug_all=0
+
+# set to 1 if you don't want AGI protocol violation to trigger exceptions
+agi.DEBUG_PASSTHROUGH=0
+# set to 1 to emit lots of verbose messages
+debug=0
+# set to 1 to use sys.argv[1] instead of agi.env['agi_callerid']
+debug_callerid_from_argv=0
+
+
+### MAIN ###
+
+if debug_all:
+	agi.DEBUG_PASSTHROUGH=1
+	debug=1
+	debug_callerid_from_argv=1
+
+if debug == 1: agi.verbose("RULES USED : \"%s\"" % RULES_FILE)
+
+oconf = OrderedConf.OrderedRawConf(filename=RULES_FILE)
+
+section_names = oconf.ordered_sections()
+if debug == 1: agi.verbose(str(section_names))
+
+if not debug_callerid_from_argv:
+	callerid_num = agi.env['agi_callerid']
+else:
+	callerid_num = sys.argv[1]
+
+agi.verbose('INCOMING CALLERID : %s' % callerid_num)
+
+for section in oconf:
+	
+	try:
+		regexp = section.get('callerid')
+	except ConfigParser.NoOptionError:
+		agi.verbose("IN SECTION \"%s\" 'callerid' MISSING" % section.get_name())
+		continue
+	
+	if debug == 1: agi.verbose("SECTION \"%s\" - REGEXP: \"%s\"" % (section.get_name(), regexp))
+	
+	try:
+		re_obj = re.compile(regexp)
+	except re.error:
+		agi.verbose("IN SECTION \"%s\", INVALID REGEXP \"%s\"" % (section.get_name(), regexp))
+		re_obj = None
+	
+	if (not re_obj) or (not re_obj.match(callerid_num)):
+		if debug == 1: agi.verbose("REGEXP \"%s\" DONT MATCH CALLERID \"%s\"" % (regexp,callerid_num))
+		continue
+
+	if debug == 1: agi.verbose("CALLERID MATCH REGEXP \"%s\" OF SECTION \"%s\"" %(regexp, section.get_name()))
+
+	if section.has_option('strip') and section.get('strip'):
+
+		str_strip = section.get('strip')
+		try:
+			strip = int(str_strip)
+		except ValueError:
+			agi.verbose("IN SECTION \"%s\", STRIP=\"%s\" WHICH IS NOT A NUMBER (SHOULD BE)" % (section.get_name(), str_strip))
+			agi.verbose("DEFAULTING STRIP TO 0")
+			strip = 0
+		if debug == 1: agi.verbose("strip=%d" % strip)
+
+		callerid_num = callerid_num[strip:]
+		agi.set_variable('CALLERID(num)', callerid_num)
+		if debug == 1: agi.verbose('STRIPPED (-"%s") NUMBER : %s' % (strip, callerid_num))
+
+	if section.has_option('add') and section.get('add'):
+
+		add = section.get('add')
+		if debug == 1: agi.verbose("add=\"%s\"" % add)
+
+		callerid_num = add + callerid_num
+		agi.set_variable("CALLERID(num)", callerid_num)
+		agi.verbose("SETTING CALLERID(num) : \"%s\"" % callerid_num)
+		if debug == 1: agi.verbose('ADDED (+"%s") NUMBER : %s' %(add, callerid_num))
+
+	else:
+		if debug == 1: agi.verbose("NO PREFIX TO ADD IN SECTION \"%s\" FOR \"%s\", NOTHING CHANGED" % (section.get_name(), callerid_num))
+
+	sys.exit()
+
+agi.verbose("INCOMING CALLERID \"%s\" DONT MATCH ANYTHING" % callerid_num)
+sys.exit()
