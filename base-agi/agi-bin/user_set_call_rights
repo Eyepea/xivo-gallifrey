@@ -9,6 +9,7 @@
 #	   (C) 2007 Proformatique
 
 # TODO: Filter commented SQL rows
+# TODO: handle rules priority.
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
@@ -72,11 +73,35 @@ def db_connect():
 
 def extension_matches(number, pattern):
 	for (key,val) in rep:
-		pattern.replace(key, val)
+		pattern = pattern.replace(key, val)
 
 	match = bool(re.match(pattern, number))
-	print "re.match('" + pattern + "', '" + number + "') => %s" % match
 	return match
+
+def apply_rules(rules, permit_colname, passwd_colname):
+	if not rules:
+		return
+
+	for rule in rules:
+		if bool(rule[permit_colname]):
+			allow()
+
+	deny(rule[passwd_colname])
+
+def exit():
+	agi.verbose('AGI script "%s" successfully executed' % sys.argv[0])
+	sys.exit(0)
+
+def allow():
+	agi.set_variable('XIVO_AUTHORIZATION', "ALLOW")
+	exit()
+
+def deny(password):
+	if password:
+		agi.set_variable('XIVO_PASSWORD', password)
+
+	agi.set_variable('XIVO_AUTHORIZATION', "DENY")
+	exit()
 
 # Cursors have a weak reference on their connection, so make a strong one.
 conn = db_connect()
@@ -84,7 +109,6 @@ cursor = conn.cursor()
 srcnum = agi.get_variable('REAL_SRCNUM')
 dstnum = agi.get_variable('REAL_DSTNUM')
 context = agi.get_variable('REAL_CONTEXT')
-exten_pattern = agi.get_variable('REAL_EXTENPATTERN')
 
 cursor.query("SELECT ${columns} FROM rightcallexten",
              ('rightcallid', 'exten'))
@@ -117,13 +141,8 @@ query = ("SELECT ${columns} FROM rightcall, rightcallmember "
          "AND rightcallmember.typeval = %s "
          "AND rightcall.commented = 0")
 
-agi.verbose(query)
-cursor.query(query, ('passwd', 'permit'), ('user', userid))
+cursor.query(query, ('rightcall.passwd', 'rightcall.permit'), ('user', userid))
 res = cursor.fetchall()
+apply_rules(res, 'rightcall.permit', 'rightcall.passwd')
 
-agi.verbose("DEBUG: userid = %s" % userid)
-
-if res:
-	agi.verbose(res)
-
-agi.verbose('AGI script "%s" successfully executed' % sys.argv[0])
+allow()
