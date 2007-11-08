@@ -29,19 +29,19 @@ class AMIClass:
         def connect(self):
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 s.connect(self.address)
-                self.f = s.makefile('r', 0)
+                self.fd = s.makefile('r', 0)
                 s.close()
-                str = self.f.readline()
+                str = self.fd.readline()
                 #print str,
         # \brief Sending any AMI command.
         def sendcommand(self, action, args):
                 ret = False
                 try:
-                        self.f.write('Action: ' + action + '\r\n')
+                        self.fd.write('Action: ' + action + '\r\n')
                         for (name, value) in args:
-                                self.f.write(name + ': ' + value + '\r\n')
-                        self.f.write('\r\n')
-                        self.f.flush()
+                                self.fd.write(name + ': ' + value + '\r\n')
+                        self.fd.write('\r\n')
+                        self.fd.flush()
                         ret = True
                 except:
                         ret = False
@@ -70,14 +70,14 @@ class AMIClass:
         # \brief For debug.
         def printresponse_forever(self):
                 while True:
-                        str = self.f.readline()
+                        str = self.fd.readline()
                         self.i = self.i + 1
         # \brief Reads a part of a reply.
         def readresponsechunk(self):
                 start = True
                 list = []
                 while True:
-                        str = self.f.readline()
+                        str = self.fd.readline()
                         #print "--------------", self.i, len(str), str,
                         self.i = self.i + 1
                         if start and str == '\r\n': continue
@@ -142,9 +142,9 @@ class AMIClass:
                                  [('Command', command)])
                 resp = []
                 for i in (1, 2):
-                        str = self.f.readline()
+                        str = self.fd.readline()
                 while True:
-                        str = self.f.readline()
+                        str = self.fd.readline()
                         #print self.i, len(str), str,
                         self.i = self.i + 1
                         if str == '\r\n' or str == '' or str == '--END COMMAND--\r\n':
