@@ -9,9 +9,6 @@ if(defined('UPLOAD_ERR_CANT_WRITE') === false)
 if(defined('FILE_USE_INCLUDE_PATH') === false)
 	define('FILE_USE_INCLUDE_PATH',1);
 
-if(defined('LOCK_EX') === false)
-	define('LOCK_EX',2);
-
 if(defined('FILE_APPEND') === false)
 	define('FILE_APPEND',8);
 
@@ -233,13 +230,9 @@ class xivo_file
 					unset($param['extension'][$ext]['regexp']);
 				}
 
-				if(($regexp === false
-				   && in_array($this->info['mime'],$param['extension'][$ext]) === false) === true
-				|| ($regexp !== false
-				   && preg_match($regexp,$this->info['mime']) === 0) === true)
-				{
+				if((in_array($this->info['mime'],$param['extension'][$ext]) === true
+				|| ($regexp !== false && preg_match($regexp,$this->info['mime']) !== 0) === true) === false)
 					return(false);
-				}
 			}
 		}
 
