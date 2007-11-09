@@ -10,9 +10,7 @@ class xivo_file_fileinfo
 
 	function open($define=FILEINFO_MIME)
 	{
-		if($this->_finfo !== null)
-			$this->close_finfo();
-
+		$this->close();
 		$this->_finfo = finfo_open($define);
 	}
 
@@ -21,7 +19,7 @@ class xivo_file_fileinfo
 		if(($file = xivo_file::is_f($file)) === false)
 			return(false);
 
-		if($this->_finfo === null)
+		if(is_resource($this->_finfo) === false)
 			$this->open(FILEINFO_MIME);
 
 		$info = finfo_file($this->_finfo,$file);
@@ -56,7 +54,8 @@ class xivo_file_fileinfo
 
 	function close()
 	{
-		finfo_close($this->_finfo);
+		if(is_resource($this->_finfo) === true)
+			finfo_close($this->_finfo);
 	}
 }
 

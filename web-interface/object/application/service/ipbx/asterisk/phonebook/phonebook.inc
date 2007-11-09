@@ -721,11 +721,14 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 	{
 		$file = new xivo_file();
 
-		if($file->get_upload('import',$this->_conf['import']) === false)
+		if(xivo::load_class('xivo::file::csv') === false
+		|| $file->get_upload('import',$this->_conf['import']) === false)
 			return(false);
 
-		if(($fp = fopen($file->info['tmp_name'],'r')) === false
-		|| ($data = $this->_get_csv_data($file->info['tmp_name'])) === false
+		$filecsv = new xivo_file_csv();
+
+		if(($data = $filecsv->parse($file->info['tmp_name'],0,'|',null,true,
+					    $this->_conf['import']['field'])) === false
 		|| ($nb = count($data)) === 0)
 		{
 			xivo_file::rm($file->info['tmp_name']);
@@ -744,69 +747,6 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 		xivo_file::rm($file->info['tmp_name']);
 
 		return($r);
-	}
-
-	function _get_csv_data($file)
-	{
-		if(($fp = fopen($file,'r')) === false)
-			return(false);
-
-		$row = 1;
-		$field = $rs = $array_ref = array();
-		$ref_field = &$this->_conf['import']['field'];
-
-		while(($data = fgetcsv($fp,1024,'|')) !== false)
-		{
-			if(isset($data[0]) === false
-			|| ($row === 1 && ($nb = count($data)) === 0))
-				continue;
-
-			if($row !== 1)
-			{
-				$rs_row = $row - 2;
-				$rs[$rs_row] = array();
-				$ref_rs = &$rs[$rs_row];
-			}
-
-			for($i = 0;$i < $nb;$i++)
-			{
-				$ref = &$data[$i];
-
-				if($row !== 1)
-				{
-					if(isset($field[$i]) === false)
-						continue 2;
-
-					$array_ref[$field[$i]]['ref'] = $ref;
-					$ref_rs = array_merge_recursive(xivo_clone($array_ref[$field[$i]]['array']),$ref_rs);
-				}
-				else
-				{
-					if(isset($ref_field[$ref]) === false)
-					{
-						fclose($fp);
-						return(false);
-					}
-
-					$field[$i] = $ref;
-
-					if(isset($array_ref[$ref]) === true)
-						continue;
-
-					if(($array_ref[$ref] = xivo_build_array_ref($ref_field[$ref])) === false)
-					{
-						fclose($fp);
-						return(false);
-					}
-				}
-			}
-			$row++;
-		}
-
-		if(isset($rs[0]) === false)
-			$rs = false;
-
-		return($rs);
 	}
 }
 

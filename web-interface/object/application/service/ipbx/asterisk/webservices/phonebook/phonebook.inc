@@ -85,37 +85,48 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 		   && ($this->_phonebooknumber = &$this->_service->get_module('phonebooknumber')) === false) === true)
 		   	return(false);
 
-		$list = array();
+		$r = $list = array();
 
-		if(($rsn = $this->_phonebooknumber->get_search($search)) !== false
-		&& ($nb = count($rsn)) !== 0)
+		if(($rs = $this->_phonebook->get_search_name($search)) !== false
+		&& ($nb = count($rs)) !== 0)
 		{
+			$info = $where = array();
+
 			for($i = 0;$i < $nb;$i++)
-				$list[] = $rsn[$i]['phonebookid'];
+			{
+				$list[] = $where['phonebookid'] = $rs[$i]['id'];
+
+				if(($phonebooknumber = $this->_phonebooknumber->get_all_where($where)) === false
+				|| ($cnt = count($phonebooknumber)) === 0)
+					continue;
+
+				for($j = 0;$j < $cnt;$j++)
+				{
+					if(($info['type'] = $phonebooknumber[$j]['type']) === 'fax')
+						continue;
+
+					$info['name'] = $rs[$i]['displayname'];
+					$info['phone'] = $phonebooknumber[$j]['number'];
+					$info['identity'] = $info['name'].' ('.$info['type'].')';
+					$r[] = $info;
+				}
+			}
 		}
 
-		if(($rs = $this->_phonebook->get_search_name($search,$list)) === false
-		|| ($nb = count($rs)) === 0)
-			return(false);
-
-		$r = $info = $where = array();
-
-		for($i = 0;$i < $nb;$i++)
+		if(ctype_digit($search) === true
+		&& ($rs = $this->_phonebooknumber->get_search($search,$list)) !== false
+		&& ($nb = count($rs)) !== 0)
 		{
-			$phonebook = $rs[$i];
-			$where['phonebookid'] = $phonebook['id'];
+			$info = array();
 
-			if(($phonebooknumber = $this->_phonebooknumber->get_all_where($where)) === false
-			|| ($cnt = count($phonebooknumber)) === 0)
-				continue;
-
-			for($j = 0;$j < $cnt;$j++)
+			for($i = 0;$i < $nb;$i++)
 			{
-				if(($info['type'] = $phonebooknumber[$j]['type']) === 'fax')
+				if(($info['type'] = $rs[$i]['type']) === 'fax'
+				|| ($phonebook = $this->_phonebook->get($rs[$i]['phonebookid'])) === false)
 					continue;
 
 				$info['name'] = $phonebook['displayname'];
-				$info['phone'] = $phonebooknumber[$j]['number'];
+				$info['phone'] = $rs[$i]['number'];
 				$info['identity'] = $info['name'].' ('.$info['type'].')';
 				$r[] = $info;
 			}
@@ -178,36 +189,43 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 
 	function _parse_phonenumber_recv($recv)
 	{
-		$recv = explode("\n",str_replace("\r",'',$recv));
-
-		if(($nb = count($recv)) < 3)
+		if(xivo::load_class('xivo::file::csv') === false)
 			return(false);
 
-		$beg = explode(': ',$recv[0]);
-		$end = explode(': ',$recv[$nb-1]);
+		$recv = explode("\n",str_replace("\r",'',$recv));
+
+		$beg = explode(': ',array_shift($recv));
+		$end = explode(': ',array_pop($recv));
 
 		if(isset($beg[0],$beg[1],$end[0],$end[1]) === false
 		|| $beg[1] !== 'beg-data'
-		|| $end[1] !== 'end-data')
+		|| $end[1] !== 'end-data'
+		|| ($nb = count($recv)) === 0)
 			return(false);
 
-		$nb--;
+		$filecsv = new xivo_file_csv();
+
+		if(($data = $filecsv->parse($recv,0,'|',null,false)) === false
+		|| ($nb = count($data)) === 0)
+			return(false);
 
 		$r = $info = array();
 
-		for($i = 1;$i < $nb;$i++)
+		for($i = 0;$i < $nb;$i++)
 		{
-			if(($data = xivo_parse_csv($recv[$i],'|')) === false
-			|| isset($data[0],$data[1],$data[2]) === false)
+			if(is_array($data[$i]) === false
+			|| isset($data[$i][0],$data[$i][1],$data[$i][2]) === false)
 				continue;
 
-			$info['name'] = $data[0];
-			$info['phone'] = $data[1];
-			$info['type'] = $data[2];
-			$info['identity'] = $data[0];
+			$ref = &$data[$i];
+
+			$info['name'] = $ref[0];
+			$info['phone'] = $ref[1];
+			$info['type'] = $ref[2];
+			$info['identity'] = $ref[0];
 
 			if($info['type'] !== 'local')
-				$info['identity'] .= ' ('.$data[2].')';
+				$info['identity'] .= ' ('.$ref[2].')';
 
 			$r[] = $info;
 		}
