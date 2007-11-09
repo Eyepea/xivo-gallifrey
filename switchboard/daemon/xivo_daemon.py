@@ -196,10 +196,9 @@ CAPA_FAX         = 1 << 10
 CAPA_DATABASE    = 1 << 11
 
 # this list shall be defined through more options in WEB Interface
-CAPA_ALMOST_ALL = CAPA_HISTORY  | CAPA_DIRECTORY | CAPA_PEERS | \
-                  CAPA_PRESENCE | CAPA_DIAL      | CAPA_FEATURES | \
-                  CAPA_AGENTS   | CAPA_FAX       | CAPA_SWITCHBOARD | \
-                  CAPA_DATABASE
+CAPA_ALMOST_ALL = CAPA_CUSTINFO | CAPA_PRESENCE | CAPA_HISTORY  | CAPA_DIRECTORY | \
+                  CAPA_DIAL | CAPA_FEATURES | CAPA_PEERS | \
+                  CAPA_SWITCHBOARD | CAPA_AGENTS | CAPA_FAX | CAPA_DATABASE
 
 map_capas = {
         'customerinfo'     : CAPA_CUSTINFO,
@@ -875,6 +874,8 @@ def manage_tcp_connection(connid, allow_events):
                                 connid[0].send(reply + "\n")
                                 connid[0].send("server capabilities = %s\n" %(",".join(capabilities_list)))
                                 connid[0].send("%s:OK\n" %(XIVO_CLI_WEBI_HEADER))
+                                if not allow_events:
+                                        connid[0].close()
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- UI connection [%s] : KO when sending to %s : %s'
                                           %(usefulmsg, requester, str(exc)))
@@ -890,11 +891,13 @@ def manage_tcp_connection(connid, allow_events):
                                                                  kk,
                                                                  plast.normal[kk].towatch,
                                                                  plast.normal[kk].tech,
-                                                                 plast.normal[kk].sipstatus,
+                                                                 plast.normal[kk].hintstatus,
                                                                  int(time.time() - plast.normal[kk].lasttime),
                                                                  len(canal),
                                                                  str(canal.keys())))
                                 connid[0].send("%s:OK\n" %(XIVO_CLI_WEBI_HEADER))
+                                if not allow_events:
+                                        connid[0].close()
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- UI connection [%s] : KO when sending to %s : %s'
                                           %(usefulmsg, requester, str(exc)))
@@ -911,6 +914,8 @@ def manage_tcp_connection(connid, allow_events):
                                 if requester in userinfo_by_requester:
                                         connid[0].send("%s\n" %str(userinfo_by_requester[requester]))
                                 connid[0].send("%s:OK\n" %(XIVO_CLI_WEBI_HEADER))
+                                if not allow_events:
+                                        connid[0].close()
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- UI connection [%s] : KO when sending to %s : %s'
                                           %(usefulmsg, requester, str(exc)))
@@ -921,11 +926,13 @@ def manage_tcp_connection(connid, allow_events):
                                 for amis in AMI_array_user_commands:
                                         connid[0].send("commands : %s : %s\n" %(amis, str(AMI_array_user_commands[amis])))
                                 connid[0].send("%s:OK\n" %(XIVO_CLI_WEBI_HEADER))
+                                if not allow_events:
+                                        connid[0].close()
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- UI connection [%s] : KO when sending to %s : %s'
                                           %(usefulmsg, requester, str(exc)))
-
                 elif usefulmsg != "":
+                    if allow_events: # i.e. if SB-style connection
                         l = usefulmsg.split()
                         if l[0] in ['history', 'directory-search', 'featuresget', 'featuresput',
                                     'faxsend',
@@ -960,36 +967,40 @@ def manage_tcp_connection(connid, allow_events):
                                 except Exception, exc:
                                         log_debug(SYSLOG_ERR, '--- exception --- UI connection [%s] : a problem occured when sending to %s : %s'
                                                   %(l[0], requester, str(exc)))
+                        else:
+                                connid[0].send("Unknown Command\n")
 
 
-                        elif allow_events == False: # i.e. if WEBI-style connection
+                    else: # i.e. if WEBI-style connection
                                 n = -1
                                 if requester_ip in ip_reverse_webi: n = ip_reverse_webi[requester_ip]
                                 if n == -1:
-                                        connid[0].send("%s:KO <NOT ALLOWED>\n" %(XIVO_CLI_WEBI_HEADER))
+                                        connid[0].send('%s:KO <NOT ALLOWED>\n' %(XIVO_CLI_WEBI_HEADER))
                                 else:
                                         astid = configs[n].astid
-                                        connid[0].send("%s:ID <%s>\n" %(XIVO_CLI_WEBI_HEADER, astid))
+                                        connid[0].send('%s:ID <%s>\n' %(XIVO_CLI_WEBI_HEADER, astid))
                                         try:
-                                                if astid in AMI_array_user_commands and AMI_array_user_commands[astid]:
+                                                if usefulmsg == 'xivo-userlist-update':
+                                                        connid[0].send('%s:OK\n' %(XIVO_CLI_WEBI_HEADER))
+                                                        log_debug(SYSLOG_INFO, '%s : userlist update request received' % astid)
+                                                        update_userlist[astid] = True
+                                                elif astid in AMI_array_user_commands and AMI_array_user_commands[astid]:
                                                         try:
                                                                 s = AMI_array_user_commands[astid].execclicommand(usefulmsg.strip())
                                                         except Exception, exc:
-                                                                log_debug(SYSLOG_ERR, "--- exception --- (%s) error : WEBI command <%s> : (client %s) : %s"
+                                                                log_debug(SYSLOG_ERR, '--- exception --- (%s) error : WEBI command <%s> : (client %s) : %s'
                                                                           %(astid, str(usefulmsg.strip()), requester, str(exc)))
                                                         try:
                                                                 for x in s: connid[0].send(x)
-                                                                connid[0].send("%s:OK\n" %(XIVO_CLI_WEBI_HEADER))
-                                                                ins.remove(connid[0])
-                                                                log_debug(SYSLOG_INFO, "TCP (WEBI) socket closed towards %s" %requester)
+                                                                connid[0].send('%s:OK\n' %(XIVO_CLI_WEBI_HEADER))
                                                         except Exception, exc:
-                                                                log_debug(SYSLOG_ERR, "--- exception --- (%s) error : WEBI command <%s> : (client %s) : %s"
+                                                                log_debug(SYSLOG_ERR, '--- exception --- (%s) error : WEBI command <%s> : (client %s) : %s'
                                                                           %(astid, str(usefulmsg.strip()), requester, str(exc)))
                                         except Exception, exc:
-                                                connid[0].send("%s:KO <Exception : %s>\n" %(XIVO_CLI_WEBI_HEADER, str(exc)))
-                                        connid[0].close()
-                        else:
-                                connid[0].send("%s:KO <NOT ALLOWED from Switchboard>\n" %(XIVO_CLI_WEBI_HEADER))
+                                                connid[0].send('%s:KO <Exception : %s>\n' %(XIVO_CLI_WEBI_HEADER, str(exc)))
+                                connid[0].close()
+                                ins.remove(connid[0])
+                                log_debug(SYSLOG_INFO, 'TCP (WEBI) socket closed towards %s' %requester)
 
 
 ## \brief Tells whether a channel is a "normal" one, i.e. SIP, IAX2, mISDN, Zap
@@ -1299,7 +1310,7 @@ def handle_ami_event(astid, idata):
                                         sippresence = 'Unavailable'
                                 elif status == '8':
                                         sippresence = 'Ringing'
-                                normv.set_sipstatus(sippresence)
+                                normv.set_hintstatus(sippresence)
                                 g_update_gui_clients(astnum, sipphone, "SIP-NTFY")
                         
                         # QueueMemberStatus ExtensionStatus
@@ -1580,15 +1591,15 @@ def handle_ami_event(astid, idata):
                 elif this_event.get('Response') == 'Success':
                         msg = this_event.get('Message')
                         if msg == 'Extension Status':
-                                if astid != "clg":
-                                        print this_event
                                 status  = this_event.get('Status')
                                 hint    = this_event.get('Hint')
                                 context = this_event.get('Context')
                                 exten   = this_event.get('Exten')
-                                if astid == "clg":
-                                        if (int(exten) % 100) == 0:
-                                                print this_event
+##                                if astid == "clg":
+##                                        if (int(exten) % 100) == 0:
+##                                                print this_event
+##                                else:
+##                                        print this_event
                                 # 90 seconds are needed to retrieve ~ 9000 phone statuses from an asterisk (on daemon startup)
                                 if hint in plist[astnum].normal:
                                         normv = plist[astnum].normal[hint]
@@ -1604,7 +1615,7 @@ def handle_ami_event(astid, idata):
                                                 sippresence = 'Unavailable'
                                         elif status == '8':
                                                 sippresence = 'Ringing'
-                                        normv.set_sipstatus(sippresence)
+                                        normv.set_hintstatus(sippresence)
                                         g_update_gui_clients(astnum, hint, "SIP-NTFY")
                                 
                                 # log_debug(SYSLOG_INFO, 'AMI %s Response=Success (Extension Status) %s %s %s %s' % (astid, status, hint, context, exten))
@@ -1685,13 +1696,15 @@ def update_phonelist(astnum):
         try:
                 dt1 = time.time()
                 sipnuml = configs[astnum].update_userlist_fromurl()
+                if sipnuml is None:
+                        sipnuml = sipnumlistold
                 dt2 = time.time()
+                for x in configs[astnum].extrachannels.split(','):
+                        if x != '': sipnuml[x] = [x, '', '', x.split('/')[1], '', False]
+                sipnumlistnew = dict.fromkeys(sipnuml.keys())
         except Exception, exc:
                 log_debug(SYSLOG_ERR, '--- exception --- %s : update_userlist_fromurl failed : %s' %(astid, str(exc)))
                 sipnuml = {}
-        for x in configs[astnum].extrachannels.split(','):
-                if x != '': sipnuml[x] = [x, '', '', x.split('/')[1], '']
-        sipnumlistnew = dict.fromkeys(sipnuml.keys())
 
         dt3 = time.time()
         lstadd[astid] = []
@@ -1861,7 +1874,7 @@ class PhoneList:
                         self.normal[phoneid_src] = LineProp(phoneid_src.split("/")[0],
                                                             phoneid_src.split("/")[1],
                                                             phoneid_src.split("/")[1],
-                                                            "which-context?", "sipstatus?", False)
+                                                            "which-context?", "hintstatus?", False)
                 do_update = self.normal[phoneid_src].set_chan(chan_src, action, timeup, direction, chan_dst, num_dst, num_src)
                 if do_update:
                         self.update_gui_clients(phoneid_src, comment + "F")
@@ -1873,7 +1886,7 @@ class PhoneList:
                         self.normal[phoneid_src] = LineProp(phoneid_src.split("/")[0],
                                                             phoneid_src.split("/")[1],
                                                             phoneid_src.split("/")[1],
-                                                            "which-context?", "sipstatus?", False)
+                                                            "which-context?", "hintstatus?", False)
                 self.normal[phoneid_src].set_chan_hangup(chan_src)
                 self.update_gui_clients(phoneid_src, comment + "H")
                 self.normal[phoneid_src].del_chan(chan_src)
@@ -1957,7 +1970,7 @@ class LineProp:
         ## \var chann
         # \brief List of Channels, with their properties as ChannelStatus
         
-        ## \var sipstatus
+        ## \var hintstatus
         # \brief Status given through SIP presence detection
         
         ## \var imstat
@@ -1976,14 +1989,14 @@ class LineProp:
         # \brief Boolean value that tells whether this phone is watched by the switchboards
         
         ##  \brief Class initialization.
-        def __init__(self, itech, iphoneid, iphonenum, icontext, isipstatus, itowatch):
+        def __init__(self, itech, iphoneid, iphonenum, icontext, ihintstatus, itowatch):
                 self.tech = itech
                 self.phoneid  = iphoneid
                 self.phonenum = iphonenum
                 self.context = icontext
                 self.lasttime = 0
                 self.chann = {}
-                self.sipstatus = isipstatus # Asterisk "hints" status
+                self.hintstatus = ihintstatus # Asterisk "hints" status
                 self.imstat = "unknown"  # XMPP / Instant Messaging status
                 self.voicemail = ""  # Voicemail status
                 self.queueavail = "" # Availability as a queue member
@@ -1998,8 +2011,8 @@ class LineProp:
                 self.phoneid = iphoneid
         def set_phonenum(self, iphonenum):
                 self.phonenum = iphonenum
-        def set_sipstatus(self, isipstatus):
-                self.sipstatus = isipstatus
+        def set_hintstatus(self, ihintstatus):
+                self.hintstatus = ihintstatus
         def set_imstat(self, istatus):
                 self.imstat = istatus
         def set_lasttime(self, ilasttime):
@@ -2011,7 +2024,7 @@ class LineProp:
                               self.phonenum,
                               self.context,
                               self.imstat,
-                              self.sipstatus,
+                              self.hintstatus,
                               self.voicemail,
                               self.queueavail)
                 return ":".join(basestatus)
@@ -2179,7 +2192,7 @@ class AsteriskRemote:
         ## \var astid
         # \brief Asterisk String ID
         
-        ## \var userlisturl
+        ## \var userlist_url
         # \brief Asterisk's URL
         
         ## \var extrachannels
@@ -2206,7 +2219,7 @@ class AsteriskRemote:
         ##  \brief Class initialization.
         def __init__(self,
                      astid,
-                     userlisturl,
+                     userlist_url,
                      extrachannels,
                      localaddr = '127.0.0.1',
                      remoteaddr = '127.0.0.1',
@@ -2222,7 +2235,9 @@ class AsteriskRemote:
                      linkestablished = ''):
 
                 self.astid = astid
-                self.userlisturl = userlisturl
+                self.userlist_url = userlist_url
+                self.userlist_md5 = ""
+                self.userlist_kind = userlist_url.split(':')[0]
                 self.extrachannels = extrachannels
                 self.localaddr = localaddr
                 self.remoteaddr = remoteaddr
@@ -2241,7 +2256,7 @@ class AsteriskRemote:
                                 if ctx in xivoconf.sections():
                                         self.contexts[ctx] = dict(xivoconf.items(ctx))
 
-        ## \brief Function to load sso.php user file.
+        ## \brief Function to load user file.
         # SIP, Zap, mISDN and IAX2 are taken into account there.
         # There would remain MGCP, CAPI, h323, ...
         # \param url the url where lies the sso, it can be file:/ as well as http://
@@ -2250,19 +2265,26 @@ class AsteriskRemote:
         def update_userlist_fromurl(self):
                 numlist = {}
                 try:
-                        f = urllib.urlopen(self.userlisturl)
-                        csvreader = csv.reader(f, delimiter = '|')
+                        if self.userlist_kind == 'file':
+                                f = urllib.urlopen(self.userlist_url)
+                        else:
+                                f = urllib.urlopen(self.userlist_url + "?sum=%s" % self.userlist_md5)
                 except Exception, exc:
-                        log_debug(SYSLOG_ERR, "--- exception --- %s : unable to open URL %s : %s" %(self.astid, self.userlisturl, str(exc)))
+                        log_debug(SYSLOG_ERR, "--- exception --- %s : unable to open URL %s : %s" %(self.astid, self.userlist_url, str(exc)))
                         return numlist
 
                 t1 = time.time()
-                sizeread = 0
                 try:
                         phone_list = []
+                        mytab = []
+                        for line in f:
+                                mytab.append(line)
+                        f.close()
+                        fulltable = ''.join(mytab)
+                        self.userlist_md5 = md5.md5(fulltable).hexdigest()
+                        csvreader = csv.reader(mytab, delimiter = '|')
                         # builds the phone_list
                         for line in csvreader:
-                                sizeread += len(line)
                                 if len(line) == USERLIST_LENGTH:
                                         if line[6] == "0":
                                                 phone_list.append(line)
@@ -2270,10 +2292,16 @@ class AsteriskRemote:
                                         if line[6] == "0":
                                                 line.append("0")
                                                 phone_list.append(line)
+                                elif len(line) == 1:
+                                        if line[0] == 'XIVO-WEBI: no-data':
+                                                log_debug(SYSLOG_INFO, "%s : received no-data from WEBI" % self.astid)
+                                        elif line[0] == 'XIVO-WEBI: no-update':
+                                                log_debug(SYSLOG_INFO, "%s : received no-update from WEBI" % self.astid)
+                                                numlist = None
                                 else:
                                         pass
                         t2 = time.time()
-                        log_debug(SYSLOG_INFO, "%s : URL %s has read %d bytes in %f seconds" %(self.astid, self.userlisturl, sizeread, (t2-t1)))
+                        log_debug(SYSLOG_INFO, "%s : URL %s has read %d bytes in %f seconds" %(self.astid, self.userlist_url, len(fulltable), (t2-t1)))
                 except Exception, exc:
                         log_debug(SYSLOG_ERR, "--- exception --- %s : a problem occured when building phone list : %s" %(self.astid, str(exc)))
                         return numlist
@@ -2285,27 +2313,31 @@ class AsteriskRemote:
                                         # line is protocol | username | password | rightflag |
                                         #         phone number | initialized | disabled(=1) | callerid |
                                         #         firstname | lastname | context | enable_hint
-                                        [sso_tech, sso_phoneid, sso_passwd, sso_cinfo_allowed,
-                                         sso_phonenum, sso_l5, sso_l6,
+                                        [sso_tech, sso_phoneid, sso_passwd, sso_cti_allowed,
+                                         sso_phonenum, isinitialized, sso_l6,
                                          fullname, firstname, lastname, sso_context, enable_hint] = l
 
-                                        if sso_l5 == "1" and sso_phonenum != "":
+                                        if sso_phonenum != '':
                                                 fullname = '%s %s <b>%s</b>' % (firstname, lastname, sso_phonenum)
-                                                if sso_tech == "sip":
-                                                        argg = "SIP/%s" % sso_phoneid
-                                                        adduser(self.astid, sso_tech + sso_phoneid, sso_passwd, sso_context, sso_phonenum, sso_cinfo_allowed)
-                                                elif sso_tech == "iax":
-                                                        argg = "IAX2/%s" % sso_phoneid
-                                                elif sso_tech == "misdn":
-                                                        argg = "mISDN/%s" % sso_phoneid
-                                                elif sso_tech == "zap":
-                                                        argg = "Zap/%s" % sso_phoneid
-                                                        adduser(self.astid, sso_tech + sso_phoneid, sso_passwd, sso_context, sso_phonenum, sso_cinfo_allowed)
-                                                numlist[argg] = fullname, firstname, lastname, sso_phonenum, sso_context
+                                                if sso_tech == 'sip':
+                                                        argg = 'SIP/%s' % sso_phoneid
+                                                elif sso_tech == 'iax':
+                                                        argg = 'IAX2/%s' % sso_phoneid
+                                                elif sso_tech == 'misdn':
+                                                        argg = 'mISDN/%s' % sso_phoneid
+                                                elif sso_tech == 'zap':
+                                                        argg = 'Zap/%s' % sso_phoneid
+                                                else:
+                                                        argg = ''
+                                                if argg != '':
+                                                        adduser(self.astid, sso_tech + sso_phoneid, sso_passwd, sso_context, sso_phonenum,
+                                                                bool(int(isinitialized)), sso_cti_allowed)
+                                                        if bool(int(isinitialized)):
+                                                                numlist[argg] = fullname, firstname, lastname, sso_phonenum, sso_context, bool(int(enable_hint))
                                 except Exception, exc:
-                                        log_debug(SYSLOG_ERR, "--- exception --- %s : a problem occured when building phone list : %s" %(self.astid, str(exc)))
+                                        log_debug(SYSLOG_ERR, '--- exception --- %s : a problem occured when building phone list : %s' %(self.astid, str(exc)))
                                         return numlist
-                        log_debug(SYSLOG_INFO, "%s : found %d ids in phone list, among which %d ids are registered as users"
+                        log_debug(SYSLOG_INFO, '%s : found %d ids in phone list, among which %d ids are registered as users'
                                   %(self.astid, len(phone_list), len(numlist)))
                 finally:
                         f.close()
@@ -2316,22 +2348,26 @@ class AsteriskRemote:
 # \param user the user to add
 # \param passwd the user's passwd
 # \return none
-def adduser(astname, user, passwd, context, phonenum, cinfo_allowed):
+def adduser(astname, user, passwd, context, phonenum,
+            isinitialized, cti_allowed):
         global userlist
         if userlist[astname].has_key(user):
+                # updates
                 userlist[astname][user]['passwd']   = passwd
                 userlist[astname][user]['context']  = context
                 userlist[astname][user]['phonenum'] = phonenum
+                userlist[astname][user]['init']     = isinitialized
         else:
-                userlist[astname][user] = {'user':user,
-                                           'passwd':passwd,
-                                           'context':context,
-                                           'phonenum':phonenum,
-                                           'capas':0}
-        if cinfo_allowed == '1':
-                userlist[astname][user]['capas'] = CAPA_CUSTINFO | CAPA_ALMOST_ALL
-        else:
+                userlist[astname][user] = {'user'     : user,
+                                           'passwd'   : passwd,
+                                           'context'  : context,
+                                           'phonenum' : phonenum,
+                                           'init'     : isinitialized,
+                                           'capas'    : 0}
+        if cti_allowed == '1':
                 userlist[astname][user]['capas'] = CAPA_ALMOST_ALL
+        else:
+                userlist[astname][user]['capas'] = 0
 
 
 ## \brief Deletes a user from the userlist.
@@ -2344,6 +2380,9 @@ def deluser(astname, user):
 
 
 def check_user_connection(userinfo, whoami):
+        if userinfo.has_key('init'):
+                if not userinfo['init']:
+                        return 'uninit_phone'
         if userinfo.has_key('sessiontimestamp'):
                 if time.time() - userinfo.get('sessiontimestamp') < xivoclient_session_timeout:
                         if 'lastconnwins' in userinfo:
@@ -2351,15 +2390,15 @@ def check_user_connection(userinfo, whoami):
                                         # one should then disconnect the first peer
                                         pass
                                 else:
-                                        return "already_connected"
+                                        return 'already_connected'
                         else:
-                                return "already_connected"
+                                return 'already_connected'
         if whoami == 'XC':
                 if conngui_xc >= maxgui_xc:
-                        return "xcusers:%d" % maxgui_xc
+                        return 'xcusers:%d' % maxgui_xc
         else:
                 if conngui_sb >= maxgui_sb:
-                        return "sbusers:%d" % maxgui_sb
+                        return 'sbusers:%d' % maxgui_sb
         return None
 
 
@@ -2550,10 +2589,10 @@ class LoginHandler(SocketServer.StreamRequestHandler):
                 if len(nwhoami) == 2:
                         whatsmyos = nwhoami[1]
                 if whoami not in ["XC", "SB"]:
-                        log_debug(SYSLOG_INFO, "WARNING : %s/%s attempts to log in from %s:%d but has given no meaningful XC/SB hint (%s)"
+                        log_debug(SYSLOG_WARNING, "WARNING : %s/%s attempts to log in from %s:%d but has given no meaningful XC/SB hint (%s)"
                                   %(astname_xivoc, user, self.client_address[0], self.client_address[1], whoami))
                 if whatsmyos not in ["X11", "WIN", "MAC"]:
-                        log_debug(SYSLOG_INFO, "WARNING : %s/%s attempts to log in from %s:%d but has given no meaningful OS hint (%s)"
+                        log_debug(SYSLOG_WARNING, "WARNING : %s/%s attempts to log in from %s:%d but has given no meaningful OS hint (%s)"
                                   %(astname_xivoc, user, self.client_address[0], self.client_address[1], whatsmyos))
 
 
@@ -2682,13 +2721,13 @@ class IdentRequestHandler(SocketServer.StreamRequestHandler):
                         msg = m.group(4)
                         action = "PUSH"
                 else:
-                        log_debug(SYSLOG_INFO, 'PUSH command <%s> invalid' % line)
+                        log_debug(SYSLOG_ERR, 'PUSH command <%s> invalid' % line)
                         return
 
                 if callerctx in contexts_cl:
                         ctxinfo = contexts_cl.get(callerctx)
                 else:
-                        log_debug(SYSLOG_INFO, 'WARNING - no section has been defined for the context <%s>' % callerctx)
+                        log_debug(SYSLOG_WARNING, 'WARNING - no section has been defined for the context <%s>' % callerctx)
                         ctxinfo = contexts_cl.get('')
 
 		userlist_lock.acquire()
@@ -2913,7 +2952,7 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
                                         if list[1] in requestersocket_by_login:
                                                 del requestersocket_by_login[list[1]]
                                         else:
-                                                log_debug(SYSLOG_INFO, "warning : %s unknown" %(list[1]))
+                                                log_debug(SYSLOG_WARNING, "warning : %s unknown" %(list[1]))
                                         disconnect_user(userinfo)
                                         send_availstate_update(astnum, user, "unknown")
                                 finally:
@@ -3089,7 +3128,7 @@ while True: # loops over the reloads
                         xivoconf_local = dict(xivoconf.items(i))
 
                         localaddr = '127.0.0.1'
-                        userlisturl = 'sso.php'
+                        userlist_url = 'sso.php'
                         ipaddress = '127.0.0.1'
                         ipaddress_webi = '127.0.0.1'
                         extrachannels = ''
@@ -3106,7 +3145,7 @@ while True: # loops over the reloads
                         if 'localaddr' in xivoconf_local:
                                 localaddr = xivoconf_local['localaddr']
                         if 'userlisturl' in xivoconf_local:
-                                userlisturl = xivoconf_local['userlisturl']
+                                userlist_url = xivoconf_local['userlisturl']
                         if 'ipaddress' in xivoconf_local:
                                 ipaddress = xivoconf_local['ipaddress']
                         if 'ipaddress_webi' in xivoconf_local:
@@ -3140,7 +3179,7 @@ while True: # loops over the reloads
                                         cdefs = capadefs.split(',')
 
                         configs.append(AsteriskRemote(i,
-                                                      userlisturl,
+                                                      userlist_url,
                                                       extrachannels,
                                                       localaddr,
                                                       ipaddress,
@@ -3158,12 +3197,12 @@ while True: # loops over the reloads
                         if ipaddress not in ip_reverse_sht:
                                 ip_reverse_sht[ipaddress] = n
                         else:
-                                log_debug(SYSLOG_INFO, 'WARNING - IP address already exists for asterisk #%d - can not set it for #%d'
+                                log_debug(SYSLOG_WARNING, 'WARNING - IP address already exists for asterisk #%d - can not set it for #%d'
                                           % (ip_reverse_sht[ipaddress], n))
                         if ipaddress_webi not in ip_reverse_webi:
                                 ip_reverse_webi[ipaddress_webi] = n
                         else:
-                                log_debug(SYSLOG_INFO, 'WARNING - IP address (WEBI) already exists for asterisk #%d - can not set it for #%d'
+                                log_debug(SYSLOG_WARNING, 'WARNING - IP address (WEBI) already exists for asterisk #%d - can not set it for #%d'
                                           % (ip_reverse_webi[ipaddress_webi], n))
                         save_for_next_packet_events[i] = ''
                         save_for_next_packet_status[i] = ''
@@ -3284,6 +3323,7 @@ while True: # loops over the reloads
         AMI_array_events_fd = {}
         AMI_array_user_commands = {}
         asteriskr = {}
+        update_userlist = {}
 
         items_asterisks = xrange(len(configs))
         advertise = "xivo_daemon:" + str(len(items_asterisks))
@@ -3295,7 +3335,7 @@ while True: # loops over the reloads
                 plist.append(PhoneList(configs[n].astid))
                 userlist[configs[n].astid] = {}
                 asteriskr[configs[n].astid] = n
-
+                update_userlist[configs[n].astid] = False
                 advertise = advertise + ":" + configs[n].astid
 
         xdal = None
@@ -3433,16 +3473,18 @@ while True: # loops over the reloads
                                 log_debug(SYSLOG_INFO, "unknown socket <%s>" % str(i))
 
                         for n in items_asterisks:
-                                if (time.time() - lastrequest_time[n]) > phonelist_update_period:
+                                if (time.time() - lastrequest_time[n]) > phonelist_update_period or update_userlist[configs[n].astid]:
                                         lastrequest_time[n] = time.time()
                                         log_debug(SYSLOG_INFO, '%s : update_phonelist (computed timeout) %s'
                                                   % (configs[n].astid, time.strftime("%H:%M:%S", time.localtime())))
                                         try:
                                                 update_amisocks(n, configs[n].astid)
                                                 update_phonelist(n)
+                                                update_userlist[configs[n].astid] = False
                                         except Exception, exc:
                                                 log_debug(SYSLOG_ERR, '--- exception --- %s : failed while updating lists and sockets : %s'
                                                           %(configs[n].astid, str(exc)))
+                                        
                 else: # when nothing happens on the sockets, we fall here sooner or later
                         log_debug(SYSLOG_INFO, 'update_phonelist (select s timeout) %s'
                                   % time.strftime("%H:%M:%S", time.localtime()))

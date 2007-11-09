@@ -45,13 +45,21 @@ class Info:
         def getValue(self):
                 return self.value
 
+
 def varlog(string):
         syslog.syslog(syslog.LOG_NOTICE, "sendfiche : " + string)
         return 0
 
+
 def log_debug(string):
         print "#debug# (sendfiche) " + string
         return varlog(string)
+
+
+def callerid_match(dbfield, cid):
+        domatch = (dbfield[-9:] == cid[-9:])
+        return domatch
+
 
 ## \brief Returns informations fetched from the LDAP database
 # \param cid callerid requested
@@ -132,6 +140,7 @@ def get_sql_infos(cid, ctxinfos):
 
 	return reply_by_field
 
+
 ## \brief Returns informations fetched from a CSV file
 # \param cid callerid requested
 # \param ctxinfos context informations
@@ -148,7 +157,7 @@ def get_csv_infos(cid, ctxinfos):
                                         str_cidm.append(csv.index(cidm))
                         for items in csv.items:
                                 for idx in str_cidm:
-                                        if items[idx].strip('"') == '%s' % cid:
+                                        if callerid_match(items[idx], cid):
                                                 results.append(items)
 	except Exception, exc:
                 log_debug('Connection to URL <%s> failed : %s' % (ctxinfos.uri, str(exc)))
