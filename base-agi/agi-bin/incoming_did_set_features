@@ -36,74 +36,17 @@ import xivo.to_path
 import sys
 import anysql
 import except_tb
+import agi_helpers
 from BackSQL import backsqlite
 from BackSQL import backmysql
 import ConfigDict
 from agi import *
 
+agi = AGI()
 db_uri = ConfigDict.ReadSingleKey(CONFIG_FILE, 'db', 'db_uri')
 
-agi = AGI()
-
-def dp_break(message, show_tb = False):
-	agi.verbose(message)
-
-	if show_tb:
-		except_tb.log_exception(agi.verbose)
-
-	agi.hangup()
-	sys.exit(1)
-
-def db_connect():
-	try:
-		conn = anysql.connect_by_uri(db_uri)
-	except:
-		dp_break("Unable to connect to %s" % db_uri, True)
-
-	return conn
-
-def setvars(type, typeval, type_varname, typeval_varname):
-	agi.set_variable(type_varname, type)
-
-	if type == 'endcall' or type == 'application' or type == 'schedule' or type == 'sound' or type == 'custom':
-		agi.set_variable(typeval_varname, typeval)
-	elif type == 'user':
-		cursor.query("SELECT ${columns} FROM userfeatures WHERE id = %s", ('number',), (typeval,))
-		res = cursor.fetchone()
-
-		if not res:
-			dp_break("Database inconsistency: unable to find linked destination user '%s'" % typeval)
-
-		agi.set_variable(typeval_varname, res['number'])
-	elif type == 'group':
-		cursor.query("SELECT ${columns} FROM groupfeatures WHERE id = %s", ('number',), (typeval,))
-		res = cursor.fetchone()
-
-		if not res:
-			dp_break("Database inconsistency: unable to find linked destination group '%s'" % typeval)
-
-		agi.set_variable(typeval_varname, res['number'])
-	elif type == 'queue':
-		cursor.query("SELECT ${columns} FROM queuefeatures WHERE id = %s", ('number',), (typeval,))
-		res = cursor.fetchone()
-
-		if not res:
-			dp_break("Database inconsistency: unable to find linked destination queue'%s'" % typeval)
-
-		agi.set_variable(typeval_varname, res['number'])
-	elif type == 'meetme':
-		cursor.query("SELECT ${columns} FROM meetmefeatures WHERE id = %s", ('number',), (typeval,))
-		res = cursor.fetchone()
-
-		if not res:
-			dp_break("Database inconsistency: unable to find linked destination conference room'%s'" % typeval)
-
-		agi.set_variable(typeval_varname, res['number'])
-	else:
-		dp_break("Unknown dial status destination type '%s'" % type)
-
 # Cursors have a weak reference on their connection, so make a strong one.
-conn = db_connect()
+conn = agi_helpers.db_connect(agi, db_uri)
 cursor = conn.cursor()
 srcnum = agi.get_variable('REAL_SRCNUM')
 dstnum = agi.get_variable('REAL_DSTNUM')
@@ -112,7 +55,7 @@ exten_pattern = agi.get_variable('REAL_EXTENPATTERN')
 
 # TODO: handle caller ID.
 
-cursor.query("SELECT ${columns} FROM extenumbers INNER JOIN incall "
+cursor.query("SELECT ${columns} FROM incall INNER JOIN extenumbers "
              "ON incall.id = extenumbers.typeval "
              "WHERE extenumbers.exten = %s "
              "AND extenumbers.context = %s "
@@ -124,7 +67,7 @@ cursor.query("SELECT ${columns} FROM extenumbers INNER JOIN incall "
 res = cursor.fetchone()
 
 if not res:
-	dp_break("Unknown extension '%s'" % exten_pattern)
+	agi_helpers.dp_break(agi, "Unknown extension '%s'" % exten_pattern)
 
-setvars(res['incall.type'], res['incall.typeval'], "XIVO_DIDTYPE", "XIVO_DIDTYPEVAL")
+agi_helpers.set_fwd_vars(agi, cursor, res['incall.type'], res['incall.typeval'], "XIVO_DIDTYPE", "XIVO_DIDTYPEVAL", "XIVO_DIDCONTEXT")
 agi.verbose('AGI script "%s" successfully executed' % sys.argv[0])
