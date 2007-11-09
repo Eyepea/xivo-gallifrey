@@ -10,7 +10,7 @@ $array['option']['file'] = array();
 $array['option']['file']['name'] = '/^['.XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_PATTERN.']'.
 				    XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_LENGTH.'\.(mp3|wav|ogg)$/';
 $array['option']['file']['extension'] = array();
-$array['option']['file']['extension']['mp3'] = array('audio/mp3','regexp' => '/mpeg/i');
+$array['option']['file']['extension']['mp3'] = array('audio/mp3','regexp' => '/(?:mpeg|mp3)/i');
 $array['option']['file']['extension']['wav'] = array('audio/wav','regexp' => '/wav/i');
 $array['option']['file']['extension']['ogg'] = array('audio/ogg','regexp' => '/ogg/i');
 
