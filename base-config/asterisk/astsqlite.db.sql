@@ -956,6 +956,7 @@ DROP TABLE usercustom;
 CREATE TABLE usercustom (
  id integer unsigned,
  name varchar(40),
+ context varchar(39),
  interface varchar(128) NOT NULL,
  commented tinyint(1) NOT NULL DEFAULT 0,
  category varchar(5) NOT NULL,
@@ -963,8 +964,9 @@ CREATE TABLE usercustom (
 );
 
 CREATE INDEX usercustom__idx__name ON usercustom(name);
-CREATE INDEX usercustom__idx__category ON usercustom(category);
+CREATE INDEX usercustom__idx__context ON usercustom(context);
 CREATE INDEX usercustom__idx__commented ON usercustom(commented);
+CREATE INDEX usercustom__idx__category ON usercustom(category);
 CREATE UNIQUE INDEX usercustom__uidx__interface_category ON usercustom(interface,category);
 
 
@@ -1114,29 +1116,31 @@ INSERT INTO usersip VALUES (1,'guest',0,'','documentation','','Guest','no','init
 DROP TABLE uservoicemail;
 CREATE TABLE uservoicemail (
  id integer unsigned,
- customer_id varchar(11) NOT NULL DEFAULT '0',
- context varchar(39) NOT NULL DEFAULT '',
- mailbox varchar(40) NOT NULL DEFAULT '0',
- password varchar(5) NOT NULL DEFAULT '0',
- fullname varchar(150) NOT NULL DEFAULT '',
- email varchar(50) NOT NULL DEFAULT '',
- pager varchar(50) NOT NULL DEFAULT '',
- tz varchar(10) NOT NULL DEFAULT 'central',
- attach varchar(4) NOT NULL DEFAULT 'yes',
- saycid varchar(4) NOT NULL DEFAULT 'yes',
- dialout varchar(10) NOT NULL DEFAULT '',
- callback varchar(10) NOT NULL DEFAULT '',
- review varchar(4) NOT NULL DEFAULT 'no',
- operator varchar(4) NOT NULL DEFAULT 'no',
- envelope varchar(4) NOT NULL DEFAULT 'no',
- sayduration varchar(4) NOT NULL DEFAULT 'no',
- saydurationm tinyint unsigned NOT NULL DEFAULT 2,
- sendvoicemail varchar(4) NOT NULL DEFAULT 'no',
- 'delete' varchar(4) NOT NULL DEFAULT 'no',
- nextaftercmd varchar(5) NOT NULL DEFAULT 'yes',
- forcename varchar(4) NOT NULL DEFAULT 'no',
- forcegreetings varchar(4) NOT NULL DEFAULT 'no',
- hidefromdir varchar(4) NOT NULL DEFAULT 'yes',
+ uniqueid varchar(20) NOT NULL DEFAULT '',
+ context varchar(39),
+ mailbox varchar(40) NOT NULL DEFAULT '',
+ password varchar(80) NOT NULL DEFAULT '',
+ fullname varchar(80) NOT NULL DEFAULT '',
+ email varchar(80) NOT NULL DEFAULT '',
+ pager varchar(80) NOT NULL DEFAULT '',
+ dialout varchar(39),
+ callback varchar(39),
+ exitcontext varchar(39),
+ language varchar(20) NOT NULL DEFAULT '',
+ tz varchar(80) NOT NULL DEFAULT 'central',
+ attach tinyint(1) DEFAULT 1,
+ saycid tinyint(1) DEFAULT 1,
+ review tinyint(1) DEFAULT 0,
+ operator tinyint(1) DEFAULT 0,
+ envelope tinyint(1) DEFAULT 0,
+ sayduration tinyint(1) DEFAULT 0,
+ saydurationm tinyint unsigned DEFAULT 2,
+ sendvoicemail tinyint(1) DEFAULT 0,
+ 'delete' tinyint(1) NOT NULL DEFAULT 0,
+ forcename tinyint(1) DEFAULT 0,
+ forcegreetings tinyint(1) DEFAULT 0,
+ hidefromdir varchar(3) NOT NULL DEFAULT 'no',
+ maxmsg smallint unsigned DEFAULT 100,
  commented tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(id)
 );
