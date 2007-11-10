@@ -363,7 +363,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				$callgroup = implode(',',$callgroup);
 			else
 				$callgroup = '';
-
+			
 			if($this->_protocolname !== XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
 				$this->_set_result_var('protocol','callgroup',$callgroup);
 		}
@@ -373,6 +373,20 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		if(xivo_issa('dialstatus',$arr) === true)
 			$this->set_dialstatus($arr['dialstatus']);
+
+		$numhaslen = xivo_haslen($number);
+
+		if($this->_errnb === 0 && $numhaslen === true)
+		{
+			$appdata = array('appdata' => XIVO_SRE_IPBX_AST_USER_MACRO);
+
+			if(($localexten = $this->set_macro($action,'localexten',$number,$appdata,$context)) === false)
+				$this->_set_error('localexten');
+
+			$this->_set_result('localexten',$localexten);
+
+			$this->set_extenumbers($action,'user',$number,$context);
+		}
 
 		if($this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
 		{
@@ -384,21 +398,13 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			return($r);
 		}
 
-		if($this->_errnb === 0 && xivo_haslen($number) === true)
+		if($this->_errnb === 0 && $numhaslen === true)
 		{
-			$this->_set_result_var('protocol','mailbox',$number.'@'.$context);
-
-			$appdata = array('appdata' => XIVO_SRE_IPBX_AST_USER_MACRO);
-
-			if(($localexten = $this->set_macro($action,'localexten',$number,$appdata,$context)) === false)
-				$this->_set_error('localexten');
-
-			$this->_set_result('localexten',$localexten);
-
 			$callerid = (string) $this->get_result_var('protocol','callerid');
 			$callerid = $this->_service->mk_callerid($number,$callerid);
-
 			$this->_set_result_var('protocol','callerid',$callerid);
+
+			$this->_set_result_var('protocol','mailbox',$number.'@'.$context);
 
 			$enablehint = (bool) $this->get_result_var('ufeatures','enablehint');
 
@@ -411,8 +417,6 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				$this->_set_error('hints');
 
 			$this->_set_result('hints',$hints);
-
-			$this->set_extenumbers($action,'user',$number,$context);
 		}
 
 		if(xivo_issa('rightcall',$arr) === true)
@@ -941,26 +945,40 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		if($this->_info['ufeatures']['number'] !== '')
 		{
 			if($this->get_result('localexten') === null
-			|| $this->get_result('hints') === null
 			|| $this->get_result('extenumbers') === null)
 			{
 				$unlinks = true;
 				$this->delete_macro('localexten');
-				$this->delete_hints();
 				$this->delete_extenumbers();
 			}
 			else if($this->edit_macro('localexten') === false
-			|| $this->edit_hints() === false
 			|| $this->edit_extenumbers() === false)
 			{
 				$this->_reverse_edit($protocolret);
 				$this->_status = '';
 				return(false);
 			}
+			else if($this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
+				$this->delete_hints();
+			else if($this->_info['ufeatures']['protocol'] !== $this->_protocolname)
+			{
+				if($this->_info['ufeatures']['protocol'] === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
+					$hints = $this->add_hints();
+				else
+					$hints = $this->edit_hints();
+
+				if($hints === false)
+				{
+					$this->_reverse_edit($protocolret);
+					$this->_status = '';
+					return(false);
+				}
+			}
 		}
 		else if($this->add_macro('localexten') === false
-		|| $this->add_hints() === false
-		|| $this->add_extenumbers($this->_info['ufeatures']['id']) === false)
+		|| $this->add_extenumbers($this->_info['ufeatures']['id']) === false
+		|| ($this->_protocolname !== XIVO_SRE_IPBX_AST_PROTO_CUSTOM
+		   && $this->add_hints() === false) === true)
 		{
 			$this->_reverse_edit($protocolret);
 			$this->_status = '';
@@ -1030,11 +1048,11 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			return($protocol->edit_origin($this->_origin['protocol']));
 
 		if(($protocolid = xivo_uint($protocolid)) === 0
-		|| ($proto = &$this->_service->get_protocol($this->_protocolname)) === false
+		|| ($proto = &$this->_service->get_protocol_module($this->_protocolname)) === false
 		|| $proto->delete($protocolid) === false)
 			return(false);
 
-		return($proto->add_origin($this->_origin['protocol']));
+		return($protocol->add_origin($this->_origin['protocol']));
 	}
 
 	function edit_userfeatures($protocolid)

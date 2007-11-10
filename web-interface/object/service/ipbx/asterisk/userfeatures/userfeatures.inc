@@ -33,12 +33,10 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		if($data['fullname'] === '')
 			$data['fullname'] = '-';
 
-		if($data['protocol'] === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
-			$data['identity'] = $data['fullname'].' ('.$data['name'].')';
-		else if(xivo_haslen($data['number']) === false)
-			$data['identity'] = $data['fullname'].' ('.$data['context'].')';
-		else
+		if(xivo_haslen($data['number']) === true)
 			$data['identity'] = $data['fullname'].' ('.$data['number'].'@'.$data['context'].')';
+		else
+			$data['identity'] = $data['fullname'].' ('.$data['name'].')';
 
 		$data['enableclient'] = (bool) $data['enableclient'];
 		$data['enablehint'] = (bool) $data['enablehint'];

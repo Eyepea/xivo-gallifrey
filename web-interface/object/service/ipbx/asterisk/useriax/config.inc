@@ -98,7 +98,7 @@ $array['filter']['amaflags'] = array('set' => false,'chk' => 2,'key' => array(
 						XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_META_OMIT,
 						XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_META_BILLING,
 						XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_META_DOCUMENTATION));
-$array['filter']['accountcode'] = array('set' => false,'chk' => 2,'maxlen' => 20);
+$array['filter']['accountcode'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_-]+$/i','maxlen' => 20);
 $array['filter']['callgroup'] = array('set' => false,'chk' => 2,'regexp' => '/^([0-9]+[,]?)*$/','maxlen' => 180);
 $array['filter']['context'] = array('set' => false,'chk' => 2,'nokey' => array('general','global','globals','initconfig','hints','features','zonemessages'),'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 39);
 $array['filter']['qualify'] = array('bool' => true);

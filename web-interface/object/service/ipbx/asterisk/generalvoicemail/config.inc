@@ -54,7 +54,7 @@ $array['element']['review']['set'] = true;
 
 $array['element']['operator'] = array();
 $array['element']['operator']['value'] = array('no','yes');
-$array['element']['operator']['default'] = 'no';
+$array['element']['operator']['default'] = 'yes';
 $array['element']['operator']['set'] = true;
 
 $array['element']['format'] = array();

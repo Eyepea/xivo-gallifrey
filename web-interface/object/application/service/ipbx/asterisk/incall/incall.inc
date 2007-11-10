@@ -71,9 +71,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		$exten = $this->_service->clean_extension($exten);
 
 		$arr = array();
-		$arr['appdata'] = XIVO_SRE_IPBX_AST_INCALL_MACRO.
-				  '|'.$exten.
-				  '|'.XIVO_SRE_IPBX_AST_INCALL_CONTEXT;
+		$arr['appdata'] = XIVO_SRE_IPBX_AST_INCALL_MACRO.'|'.$exten;
 
 		return($arr);
 	}
@@ -103,7 +101,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 
 		$this->set_incall($arr['incall']);
 	
-		$context = 'incall-extensions';
+		$context = XIVO_SRE_IPBX_AST_INCALL_CONTEXT;
 
 		$this->set_extenumbers($action,$arr['extenumbers']['exten'],$context);
 

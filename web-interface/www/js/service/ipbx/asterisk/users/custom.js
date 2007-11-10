@@ -13,3 +13,7 @@ xivo_elt_protocol['custom']['sip-codec'] = new Array();
 xivo_elt_protocol['custom']['sip-codec']['it'] = new Array();
 xivo_elt_protocol['custom']['sip-codec']['it']['style'] = 'display:inline';
 xivo_elt_protocol['custom']['sip-codec']['it']['property'] = 'disabled|true:boolean;className|it-disabled';
+xivo_elt_protocol['custom']['custom-protocol-context'] = new Array();
+xivo_elt_protocol['custom']['custom-protocol-context']['it'] = true;
+xivo_elt_protocol['custom']['custom-protocol-context']['fd'] = true;
+

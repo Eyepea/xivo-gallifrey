@@ -722,7 +722,7 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 		$file = new xivo_file();
 
 		if(xivo::load_class('xivo::file::csv') === false
-		|| $file->get_upload('import',$this->_conf['import']) === false)
+		|| $file->get_upload('import',$this->_conf['import']['file']) === false)
 			return(false);
 
 		$filecsv = new xivo_file_csv();

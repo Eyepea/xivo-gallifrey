@@ -1,13 +1,13 @@
 xivo_elt_protocol['iax'] = new Array();
 
-xivo_elt_protocol['iax']['ufeatures-number'] = new Array();
-xivo_elt_protocol['iax']['ufeatures-number']['it']= true;
 xivo_elt_protocol['iax']['ufeatures-ringseconds'] = new Array();
 xivo_elt_protocol['iax']['ufeatures-ringseconds']['it']= true;
 xivo_elt_protocol['iax']['ufeatures-simultcalls'] = new Array();
 xivo_elt_protocol['iax']['ufeatures-simultcalls']['it']= true;
 xivo_elt_protocol['iax']['ufeatures-enableclient'] = new Array();
 xivo_elt_protocol['iax']['ufeatures-enableclient']['it']= true;
+xivo_elt_protocol['iax']['ufeatures-enablehint'] = new Array();
+xivo_elt_protocol['iax']['ufeatures-enablehint']['it']= true;
 xivo_elt_protocol['iax']['ufeatures-enablevoicemail'] = new Array();
 xivo_elt_protocol['iax']['ufeatures-enablevoicemail']['it']= true;
 xivo_elt_protocol['iax']['ufeatures-enablexfer'] = new Array();

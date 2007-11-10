@@ -119,7 +119,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 
 		$this->set_extenumbers($action,$number,$context);
 
-		$appdata = array('appdata' => 'supermeetme');
+		$appdata = array('appdata' => XIVO_SRE_IPBX_AST_MEETME_MACRO);
 
 		if(($localexten = $this->set_macro($action,'localexten',$number,$appdata,$context)) === false)
 			$this->_set_error('localexten');

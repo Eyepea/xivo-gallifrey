@@ -303,7 +303,9 @@
 
 	<?=$form->text(array('desc' => $this->bbf('fm_protocol_context'),'name' => 'protocol[context]','labelid' => 'sip-protocol-context','default' => $element['protocol']['sip']['context']['default'],'value' => $context,'size' => 15));?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_protocol_context'),'name' => 'protocol[context]','labelid' => 'iax-protocol-context','default' => $element['protocol']['iax']['context']['default'],'value' => $context,'size' => 15));?>
+	<?=$form->text(array('desc' => $this->bbf('fm_protocol_context'),'name' => 'protocol[context]','labelid' => 'iax-protocol-context','default' => $element['protocol']['iax']['context']['default'],'value' => $context,'size' => 15));?>
+
+	<?=$form->text(array('desc' => $this->bbf('fm_protocol_context'),'name' => 'protocol[context]','labelid' => 'custom-protocol-context','default' => $element['protocol']['custom']['context']['default'],'value' => $context,'size' => 15));?>
 
 	<?=$form->select(array('desc' => $this->bbf('fm_protocol_amaflags'),'name' => 'protocol[amaflags]','labelid' => 'sip-protocol-amaflags','bbf' => 'fm_protocol_amaflags-opt-','key' => false,'default' => $element['protocol']['sip']['amaflags']['default'],'value' => $amaflags),$element['protocol']['sip']['amaflags']['value']);?>
 

@@ -1,13 +1,13 @@
 xivo_elt_protocol['sip'] = new Array();
 
-xivo_elt_protocol['sip']['ufeatures-number'] = new Array();
-xivo_elt_protocol['sip']['ufeatures-number']['it']= true;
 xivo_elt_protocol['sip']['ufeatures-ringseconds'] = new Array();
 xivo_elt_protocol['sip']['ufeatures-ringseconds']['it']= true;
 xivo_elt_protocol['sip']['ufeatures-simultcalls'] = new Array();
 xivo_elt_protocol['sip']['ufeatures-simultcalls']['it']= true;
 xivo_elt_protocol['sip']['ufeatures-enableclient'] = new Array();
 xivo_elt_protocol['sip']['ufeatures-enableclient']['it']= true;
+xivo_elt_protocol['sip']['ufeatures-enablehint'] = new Array();
+xivo_elt_protocol['sip']['ufeatures-enablehint']['it']= true;
 xivo_elt_protocol['sip']['ufeatures-enablevoicemail'] = new Array();
 xivo_elt_protocol['sip']['ufeatures-enablevoicemail']['it']= true;
 xivo_elt_protocol['sip']['ufeatures-enablexfer'] = new Array();

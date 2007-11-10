@@ -113,8 +113,7 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 			}
 		}
 
-		if(ctype_digit($search) === true
-		&& ($rs = $this->_phonebooknumber->get_search($search,$list)) !== false
+		if(($rs = $this->_phonebooknumber->get_search($search,$list)) !== false
 		&& ($nb = count($rs)) !== 0)
 		{
 			$info = array();

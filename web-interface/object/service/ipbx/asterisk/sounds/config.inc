@@ -10,8 +10,8 @@ $array['option']['file'] = array();
 $array['option']['file']['name'] = '/^['.XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_PATTERN.']'.
 				    XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_LENGTH.'\.(wav|gsm)$/';
 $array['option']['file']['extension'] = array();
-$array['option']['file']['extension']['wav'] = array('audio/wav','regexp' => '/wav/i');
-$array['option']['file']['extension']['gsm'] = array('application/octet-stream','audio/x-gsm');
+$array['option']['file']['extension']['wav'] = array('audio/wav','audio/x-wav','application/octet-stream');
+$array['option']['file']['extension']['gsm'] = array('audio/gsm','audio/x-gsm','application/octet-stream');
 
 $array['filter'] = array();
 $array['filter']['filename'] = array('regexp' => '/^['.XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_PATTERN.']'.

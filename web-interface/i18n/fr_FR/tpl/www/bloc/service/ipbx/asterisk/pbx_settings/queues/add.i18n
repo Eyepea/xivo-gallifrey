@@ -104,7 +104,7 @@ Autorise l'appelant à enregistrer l'appel :
 Musique d'attente :
 
 ; fm_queue_announce
-Annonce :
+Annonce au décrochage du membre :
 
 ; fm_queue_context 
 Contexte de sortie :
