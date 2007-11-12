@@ -136,7 +136,7 @@ switch($act)
 	default:
 		$act = 'list';
 		$total = 0;
-		$nb_page = 20;
+		$nbbypage = XIVO_SRE_IPBX_AST_NBBYPAGE;
 
 		$order = array();
 		$order['displayname'] = SORT_ASC;
@@ -144,8 +144,8 @@ switch($act)
 		$order['lastname'] = SORT_ASC;
 
 		$limit = array();
-		$limit[0] = ($page - 1) * $nb_page;
-		$limit[1] = $nb_page;
+		$limit[0] = ($page - 1) * $nbbypage;
+		$limit[1] = $nbbypage;
 
 		if($search !== '')
 			$list = $appphonebook->get_phonebook_search($search,$order,$limit);
@@ -156,7 +156,7 @@ switch($act)
 			$total = $appphonebook->get_cnt();
 
 		$_HTML->set_var('total',$total);
-		$_HTML->set_var('pager',xivo_calc_page($page,$nb_page,$total));
+		$_HTML->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
 		$_HTML->set_var('list',$list);
 		$_HTML->set_var('search',$search);
 }

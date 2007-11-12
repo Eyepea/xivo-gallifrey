@@ -270,29 +270,27 @@ class xivo_service_asterisk extends xivo_service_abstract
 		return($r);
 	}
 
-	function get_users_search($search,$protocols=array(),$disable=null,$assoc=false,$initialized=null,$internal=false)
+	function get_users_search($search,$protocols=array(),$disable=null,$order=null,$limit=null,$assoc=false,$initialized=null,$internal=false)
 	{
-		return($this->_get_users('search',$protocols,$disable,$search,$assoc,$initialized,$internal));
+		return($this->_get_users('search',$protocols,$disable,$search,$order,$limit,$assoc,$initialized,$internal));
 	}
 
-	function get_users_search_number($search,$protocols=array(),$disable=null,$assoc=false,$initialized=null,$internal=false)
+	function get_users_search_number($search,$protocols=array(),$disable=null,$order=null,$limit=null,$assoc=false,$initialized=null,$internal=false)
 	{
-		return($this->_get_users('search_number',$protocols,$disable,$search,$assoc,$initialized,$internal));
+		return($this->_get_users('search_number',$protocols,$disable,$search,$order,$limit,$assoc,$initialized,$internal));
 	}
 
-	function get_users_list($protocols=array(),$disable=null,$assoc=false,$initialized=null,$internal=false)
+	function get_users_list($protocols=array(),$disable=null,$order=null,$limit=null,$assoc=false,$initialized=null,$internal=false)
 	{
-		return($this->_get_users('list',$protocols,$disable,null,$assoc,$initialized,$internal));
+		return($this->_get_users('list',$protocols,$disable,null,$order,$limit,$assoc,$initialized,$internal));
 	}
 
-	function get_users_context($name,$protocols=array(),$disable=null,$assoc=false,$initialized=null,$internal=false)
+	function get_users_context($context,$protocols=array(),$disable=null,$order=null,$limit=null,$assoc=false,$initialized=null,$internal=false)
 	{
-		$name = strval($name);
-
-		return($this->_get_users('context',$protocols,$disable,$name,$assoc,$initialized,$internal));
+		return($this->_get_users('context',$protocols,$disable,strval($context),$order,$limit,$assoc,$initialized,$internal));
 	}
 
-	function _get_users($action,$protocols=array(),$disable=null,$opts=array(),$assoc=false,$initialized=null,$internal=false)
+	function _get_users($action,$protocols=array(),$disable=null,$opts=array(),$order=null,$limit=null,$assoc=false,$initialized=null,$internal=false)
 	{
 		$action = (string) $action;
 		$protocols = (array) $protocols;
@@ -309,17 +307,17 @@ class xivo_service_asterisk extends xivo_service_abstract
 		switch($action)
 		{
 			case 'search':
-				$rs = $ufeatures->get_search($opts,$disable);
+				$rs = $ufeatures->get_search($opts,$disable,$order,$limit);
 				break;
 			case 'search_number':
-				$rs = $ufeatures->get_search_number($opts,$disable);
+				$rs = $ufeatures->get_search_number($opts,$disable,$order,$limit);
 				break;
 			case 'context':
-				$rs = $ufeatures->get_all_where(array('context' => $opts),$disable);
+				$rs = $ufeatures->get_all_where(array('context' => $opts),$disable,true,$order,$limit);
 				break;
 			case 'list':
 			default:
-				$rs = $ufeatures->get_all($disable);
+				$rs = $ufeatures->get_all($disable,true,$order,$limit);
 		}
 
 		if($rs === false || ($nb = count($rs)) === 0)

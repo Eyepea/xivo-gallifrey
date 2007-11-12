@@ -58,7 +58,7 @@ class xivo_service_asterisk_userfeatures_abstract_sql extends xivo_service_aster
 		return(parent::get_nb($arr,$disable));
 	}
 
-	function get_search($value,$disable=null,$number=false)
+	function get_search($value,$disable=null,$order=null,$limit=null,$number=false)
 	{
 		$number = (bool) $number;
 
@@ -93,7 +93,52 @@ class xivo_service_asterisk_userfeatures_abstract_sql extends xivo_service_aster
 		if($number === true)
 			$where .= ' AND number != \'\' AND number IS NOT NULL';
 
+		$this->_dso->order($order);
+		$this->_dso->limit($limit);
+
 		$r = $this->_dso->select_all($this->_param['table'],null,$where);
+
+		$this->_dso->order();
+		$this->_dso->limit();
+
+		if(empty($r) === true)
+			$r = false;
+		else
+			$this->_cnt = $this->_dso->select_count($this->_param['table'],null,$where);
+
+		if($this->_cnt === false)
+			$r = false;
+
+		return($r);
+	}
+
+	function get_all_context($disable=null,$order=null,$limit=null)
+	{
+		$this->_dso->order($order);
+		$this->_dso->limit($limit);
+
+		if($disable === null)
+			$where = '1';
+		else
+			$where = 'commented = '.intval((bool) $disable);
+
+		if(($internal = $this->_set_param_internal()) !== null)
+			$where .= ' AND internal = '.$internal;
+
+		$where .= ' GROUP BY context';
+
+		$r = $this->_dso->select_all($this->_param['table'],'context',$where);
+	
+		$this->_dso->order();
+		$this->_dso->limit();
+
+		if(empty($r) === true)
+			$r = false;
+		else
+			$this->_cnt = $this->_dso->select_count($this->_param['table'],null,$where);
+
+		if($this->_cnt === false)
+			$r = false;
 
 		return($r);
 	}

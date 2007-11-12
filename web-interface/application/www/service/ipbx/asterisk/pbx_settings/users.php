@@ -102,24 +102,28 @@ switch($act)
 	default:
 		$act = 'list';
 		$total = 0;
+		$nbbypage = XIVO_SRE_IPBX_AST_NBBYPAGE;
+
+		$order = array();
+		$order['firstname'] = SORT_ASC;
+		$order['lastname'] = SORT_ASC;
+
+		$limit = array();
+		$limit[0] = ($page - 1) * $nbbypage;
+		$limit[1] = $nbbypage;
 
 		if($search !== '')
-			$users = $ipbx->get_users_search($search);
+			$list = $ipbx->get_users_search($search,null,null,$order,$limit);
 		else if($context !== '')
-			$users = $ipbx->get_users_context($context);
+			$list = $ipbx->get_users_context($context,null,null,$order,$limit);
 		else
-			$users = $ipbx->get_users_list();
+			$list = $ipbx->get_users_list(null,null,$order,$limit);
 
-		if($users !== false)
-		{
-			$total = count($users);
-			xivo::load_class('xivo_sort');
-			$sort = new xivo_sort(array('browse' => 'ufeatures','key' => 'fullname'));
-			usort($users,array(&$sort,'str_usort'));
-		}
+		if($list !== false)
+			$total = $ufeatures->get_cnt();
 
 		$_HTML->set_var('pager',xivo_calc_page($page,20,$total));
-		$_HTML->set_var('list',$users);
+		$_HTML->set_var('list',$list);
 		$_HTML->set_var('search',$search);
 		$_HTML->set_var('context',$context);
 }

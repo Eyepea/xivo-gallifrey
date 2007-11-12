@@ -19,7 +19,7 @@ switch($act)
 		xivo::load_class('xivo_sort');
 		$usersort = new xivo_sort(array('browse' => 'ufeatures','key' => 'identity'));
 
-		if(($rcalluser['list'] = $ipbx->get_users_list(null,null,true)) !== false)
+		if(($rcalluser['list'] = $ipbx->get_users_list(null,null,null,null,true)) !== false)
 			uasort($rcalluser['list'],array(&$usersort,'str_usort'));
 
 		$groupsort = new xivo_sort(array('browse' => 'gfeatures','key' => 'name'));
@@ -111,7 +111,7 @@ switch($act)
 		xivo::load_class('xivo_sort');
 		$usersort = new xivo_sort(array('browse' => 'ufeatures','key' => 'identity'));
 
-		if(($rcalluser['list'] = $ipbx->get_users_list(null,null,true)) !== false)
+		if(($rcalluser['list'] = $ipbx->get_users_list(null,null,null,null,true)) !== false)
 			uasort($rcalluser['list'],array(&$usersort,'str_usort'));
 
 		$groupsort = new xivo_sort(array('browse' => 'gfeatures','key' => 'name'));

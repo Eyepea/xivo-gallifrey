@@ -4,6 +4,7 @@ xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
 
 class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 {
+	var $_cnt	= 0;
 	var $_dso	= null;
 	var $_name	= 'userfeatures';
 	var $_filter	= false;
@@ -207,9 +208,9 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		return($this->_dso->edit($id,$arr,$disable));
 	}
 
-	function get_search($value,$disable=null,$number=false)
+	function get_search($value,$disable=null,$order=null,$limit=null,$number=false)
 	{
-		if(($list = $this->_dso->get_search($value,$disable,$number)) === false)
+		if(($list = $this->_dso->get_search($value,$disable,$order,$limit,$number)) === false)
 			return(false);
 
 		$nb = count($list);
@@ -225,9 +226,9 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		return($r);
 	}
 
-	function get_search_number($value,$disable=null)
+	function get_search_number($value,$disable=null,$order=null,$limit=null)
 	{
-		return($this->get_search($value,$disable,true));
+		return($this->get_search($value,$disable,$order,$limit,true));
 	}
 
 	function get_all_number($id=0,$disable=null)
@@ -259,7 +260,7 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 
 	function get_all_context($disable=null)
 	{
-		if(($list = $this->get_all($disable)) === false)
+		if(($list = $this->_dso->get_all_context($disable)) === false)
 			return(false);
 
 		$nb = count($list);

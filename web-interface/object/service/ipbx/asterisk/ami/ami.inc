@@ -71,7 +71,7 @@ class xivo_service_asterisk_ami extends xivo_service_asterisk_abstract
 		if(($r = $this->_socket->write($cmd)) !== false && $read === true)
 			$r = $this->_parse_cti_recv($this->_socket->read_binary());
 
-		$this->_socket->close();
+		$this->_socket->shutdown();
 
 		return($r);
 	}

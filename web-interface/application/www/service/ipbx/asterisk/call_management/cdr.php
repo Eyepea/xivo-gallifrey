@@ -7,7 +7,7 @@ $cdr = &$ipbx->get_module('cdr');
 $element = $cdr->get_element();
 
 $total = 0;
-$nb_page = 30;
+$nbbypage = XIVO_SRE_IPBX_AST_CDR_NBBYPAGE;
 
 $info = null;
 $result = false;
@@ -23,8 +23,8 @@ if(isset($_QR['fm_send']) === true || isset($_QR['search']) === true)
 		else
 		{
 			$limit = array();
-			$limit[0] = ($page - 1) * $nb_page;
-			$limit[1] = $nb_page;
+			$limit[0] = ($page - 1) * $nbbypage;
+			$limit[1] = $nbbypage;
 		}
 
 		if(($result = $cdr->search($info,'calldate',$limit)) !== false && $result !== null)
@@ -33,7 +33,7 @@ if(isset($_QR['fm_send']) === true || isset($_QR['search']) === true)
 		if($result === false)
 			$info = null;
 
-		$_HTML->set_var('pager',xivo_calc_page($page,$nb_page,$total));
+		$_HTML->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
 	}
 
 	if($act === 'exportcsv' && $info !== null)

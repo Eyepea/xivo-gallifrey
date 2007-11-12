@@ -98,7 +98,7 @@ class xivo_service_asterisk_autoprov extends xivo_service_asterisk_abstract
 		|| ($read = $this->_sockprov['list']->read_binary()) === false
 		|| ($recv = $this->_parse_sockprov_recv($read)) === false)
 		{
-			$this->_sockprov['list']->close();
+			$this->_sockprov['list']->shutdown();
 			return(($this->_list = $r));
 		}
 
@@ -106,7 +106,7 @@ class xivo_service_asterisk_autoprov extends xivo_service_asterisk_abstract
 		|| ($nb = count($recv['data'])) === 0
 		|| preg_match('/^HTTP\/1\.[0-1] 200 /i',$recv['status']) !== 1)
 		{
-			$this->_sockprov['list']->close();
+			$this->_sockprov['list']->shutdown();
 			return(($this->_list = $r));
 		}
 
@@ -238,7 +238,7 @@ class xivo_service_asterisk_autoprov extends xivo_service_asterisk_abstract
 		if($this->_sockprov['prov']->write($write) !== false)
 			$r = true;
 
-		$this->_sockprov['prov']->close();
+		$this->_sockprov['prov']->shutdown();
 
 		return($r);
 	}

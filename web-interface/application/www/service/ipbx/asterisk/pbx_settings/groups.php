@@ -21,7 +21,7 @@ switch($act)
 		xivo::load_class('xivo_sort');
 		$usersort = new xivo_sort(array('browse' => 'ufeatures','key' => 'identity'));
 
-		if(($user['list'] = $ipbx->get_users_list(null,null,true)) !== false)
+		if(($user['list'] = $ipbx->get_users_list(null,null,null,null,true)) !== false)
 			uasort($user['list'],array(&$usersort,'str_usort'));
 
 		$rightcallsort = new xivo_sort(array('browse' => 'rightcall','key' => 'name'));
@@ -100,7 +100,7 @@ switch($act)
 		xivo::load_class('xivo_sort');
 		$usersort = new xivo_sort(array('browse' => 'ufeatures','key' => 'identity'));
 
-		if(($user['list'] = $ipbx->get_users_list(null,null,true)) !== false)
+		if(($user['list'] = $ipbx->get_users_list(null,null,null,null,true)) !== false)
 			uasort($user['list'],array(&$usersort,'str_usort'));
 
 		$rightcallsort = new xivo_sort(array('browse' => 'rightcall','key' => 'name'));

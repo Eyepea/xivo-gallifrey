@@ -69,10 +69,13 @@ define('XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_LENGTH','{1,50}');
 define('XIVO_SRE_IPBX_AST_USER_MACRO','incoming_user');
 define('XIVO_SRE_IPBX_AST_GROUP_MACRO','supergroup');
 define('XIVO_SRE_IPBX_AST_QUEUE_MACRO','superqueue');
-define('XIVO_SRE_IPBX_AST_MEETME_MACRO','supermeetme');
+define('XIVO_SRE_IPBX_AST_MEETME_MACRO','incoming_meetme');
 define('XIVO_SRE_IPBX_AST_INCALL_MACRO','incoming_did');
 define('XIVO_SRE_IPBX_AST_INCALL_CONTEXT','incall-extensions');
 define('XIVO_SRE_IPBX_AST_OUTCALL_MACRO','outgoing_user');
+
+define('XIVO_SRE_IPBX_AST_NBBYPAGE',20);
+define('XIVO_SRE_IPBX_AST_CDR_NBBYPAGE',30);
 
 $array = array();
 
