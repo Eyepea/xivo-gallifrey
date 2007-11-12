@@ -1760,7 +1760,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			|| $this->set_add($ref,$ref['protocol']['protocol']) === false
 			|| $this->add() === false)
 				$r = false;
-			else if(isset($ref['incall']) === true)
+			else if(isset($ref['incall']) === true && xivo_empty($ref['incall']) === false)
 			{
 				$incall['incall']['typeval'] = $this->get_return_var('userfeatures');
 				$incall['extenumbers']['exten'] = $ref['incall'];
