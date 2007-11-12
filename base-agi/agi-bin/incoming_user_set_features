@@ -36,73 +36,16 @@ import xivo.to_path
 import sys
 import anysql
 import except_tb
+import agi_helpers
 from BackSQL import backsqlite
 from BackSQL import backmysql
 import ConfigDict
 from agi import *
 
+agi = AGI()
 db_uri = ConfigDict.ReadSingleKey(CONFIG_FILE, 'db', 'db_uri')
 
-agi = AGI()
-
-def dp_break(message, show_tb = False):
-	agi.verbose(message)
-
-	if show_tb:
-		except_tb.log_exception(agi.verbose)
-
-	agi.hangup()
-	sys.exit(1)
-
-def db_connect():
-	try:
-		conn = anysql.connect_by_uri(db_uri)
-	except:
-		dp_break("Unable to connect to %s" % db_uri, True)
-
-	return conn
-
-def setvars(type, typeval, type_varname, typeval_varname):
-	agi.set_variable(type_varname, type)
-
-	if type == 'endcall' or type == 'application' or type == 'schedule' or type == 'sound' or type == 'custom':
-		agi.set_variable(typeval_varname, typeval)
-	elif type == 'user':
-		cursor.query("SELECT ${columns} FROM userfeatures WHERE id = %s", ('number',), (typeval,))
-		res = cursor.fetchone()
-
-		if not res:
-			dp_break("Database inconsistency: unable to find linked destination user '%s'" % typeval)
-
-		agi.set_variable(typeval_varname, res['number'])
-	elif type == 'group':
-		cursor.query("SELECT ${columns} FROM groupfeatures WHERE id = %s", ('number',), (typeval,))
-		res = cursor.fetchone()
-
-		if not res:
-			dp_break("Database inconsistency: unable to find linked destination group '%s'" % typeval)
-
-		agi.set_variable(typeval_varname, res['number'])
-	elif type == 'queue':
-		cursor.query("SELECT ${columns} FROM queuefeatures WHERE id = %s", ('number',), (typeval,))
-		res = cursor.fetchone()
-
-		if not res:
-			dp_break("Database inconsistency: unable to find linked destination queue'%s'" % typeval)
-
-		agi.set_variable(typeval_varname, res['number'])
-	elif type == 'meetme':
-		cursor.query("SELECT ${columns} FROM meetmefeatures WHERE id = %s", ('number',), (typeval,))
-		res = cursor.fetchone()
-
-		if not res:
-			dp_break("Database inconsistency: unable to find linked destination conference room'%s'" % typeval)
-
-		agi.set_variable(typeval_varname, res['number'])
-	else:
-		dp_break("Unknown dial status destination type '%s'" % type)
-
-def ds_setvars(id, status, type_varname, typeval_varname):
+def ds_set_fwd_vars(id, status, type_varname, typeval_varname, context_varname):
 	cursor.query("SELECT ${columns} FROM dialstatus WHERE status = %s AND category = %s AND categoryval = %s AND linked = 1",
                      ('type', 'typeval'),
                      (status, 'user', id))
@@ -111,31 +54,30 @@ def ds_setvars(id, status, type_varname, typeval_varname):
 	if not res:
 		return
 
-	setvars(res['type'], res['typeval'], type_varname, typeval_varname)
+	agi_helpers.set_fwd_vars(agi, cursor, res['type'], res['typeval'], type_varname, typeval_varname, context_varname)
 
 # Cursors have a weak reference on their connection, so make a strong one.
-conn = db_connect()
+conn = agi_helpers.db_connect(agi, db_uri)
 cursor = conn.cursor()
-number = agi.get_variable('REAL_DSTNUM')
+dstnum = agi.get_variable('REAL_DSTNUM')
 context = agi.get_variable('REAL_CONTEXT')
 
 cursor.query("SELECT ${columns} FROM userfeatures WHERE number = %s AND context = %s AND internal = 0 AND commented = 0",
-             ('id', 'protocol' , 'name', 'ringseconds', 'simultcalls', 'enablevoicemail', 'enablexfer', 'enableautomon', 'callrecord', 'callfilter', 'enablednd', 'enableunc', 'destunc', 'enablerna', 'destrna', 'enablebusy', 'destbusy', 'musiconhold'),
-             (number, context))
+             ('id', 'protocol' , 'protocolid', 'name', 'ringseconds', 'simultcalls', 'enablevoicemail', 'enablexfer', 'enableautomon', 'callrecord', 'callfilter', 'enablednd', 'enableunc', 'destunc', 'enablerna', 'destrna', 'enablebusy', 'destbusy', 'musiconhold'),
+             (dstnum, context))
 res = cursor.fetchone()
 
 if not res:
-	dp_break("Unknown number '%s'" % number)
+	agi_helpers.dp_break(agi, "Unknown number '%s'" % dstnum)
 
-agi.set_variable('XIVO_PROTOCOL', res['protocol'])
-agi.set_variable('XIVO_NAME', res['name'])
-agi.set_variable('XIVO_SIMULTCALLS', res['simultcalls'])
-
-if res['ringseconds'] > 0:
-	agi.set_variable('XIVO_RINGSECONDS', res['ringseconds'])
-
-agi.set_variable('XIVO_ENABLEDND', res['enablednd'])
-agi.set_variable('XIVO_ENABLEVOICEMAIL', res['enablevoicemail'])
+id = res['id']
+protocol = res['protocol']
+protocolid = res['protocolid']
+name = res['name']
+simultcalls = res['simultcalls']
+ringseconds = res['ringseconds']
+enablednd = res['enablednd']
+enablevoicemail = res['enablevoicemail']
 
 calloptions = ''
 
@@ -145,33 +87,66 @@ if res['enablexfer'] == 1:
 if res['enableautomon'] == 1:
 	calloptions += 'w'
 
-agi.set_variable('XIVO_CALLOPTIONS', calloptions)
-agi.set_variable('XIVO_ENABLEUNC', res['enableunc'])
-
-if res['enableunc'] == 1:
-	agi.set_variable('XIVO_FWD_TYPEUNC', 'user')
-	agi.set_variable('XIVO_FWD_TYPEVALUNC', res['destunc'])
-
-if res['enablebusy'] == 1:
-	agi.set_variable('XIVO_FWD_TYPEBUSY', 'user')
-	agi.set_variable('XIVO_FWD_TYPEVALBUSY', res['destbusy'])
-
-else:
-	ds_setvars(res['id'], 'busy', 'XIVO_FWD_TYPEBUSY', 'XIVO_FWD_TYPEVALBUSY')
-
-if res['enablerna'] == 1:
-	agi.set_variable('XIVO_FWD_TYPERNA', 'user')
-	agi.set_variable('XIVO_FWD_TYPEVALRNA', res['destrna'])
-
-else:
-	ds_setvars(res['id'], 'noanswer', 'XIVO_FWD_TYPERNA', 'XIVO_FWD_TYPEVALRNA')
-
-ds_setvars(res['id'], 'congestion', 'XIVO_FWD_TYPECONGESTION', 'XIVO_FWD_TYPEVALCONGESTION')
-ds_setvars(res['id'], 'chanunavail', 'XIVO_FWD_TYPEUNAVAIL', 'XIVO_FWD_TYPEVALUNAVAIL')
-agi.set_variable('XIVO_CALLRECORD', res['callrecord'])
+enableunc = res['enableunc']
+destunc = res['destunc']
+enablebusy = res['enablebusy']
+destbusy = res['destbusy']
+enablerna = res['enablerna']
+destrna = res['destrna']
+callrecord = res['callrecord']
 
 # TODO: Check these ones.
-agi.set_variable('XIVO_CALLFILTER', res['callfilter'])
-agi.set_variable('XIVO_MUSICONHOLD', res['musiconhold'])
+callfilter = res['callfilter']
+musiconhold = res['musiconhold']
+
+if protocol in ("sip", "iax"):
+	interface = protocol.upper() + "/" + name
+elif protocol == "custom":
+	cursor.query("SELECT ${columns} FROM usercustom "
+                     "WHERE id = %s "
+                     "AND commented = 0 "
+                     "AND category = 'user'",
+                     ('interface',),
+                     (protocolid,))
+	res = cursor.fetchone()
+
+	if not res:
+		agi_helpers.dp_break(agi, "Database inconsistency: unable to find custom user (name = '%s', context = '%s')" % (name, context))
+
+	interface = res['interface']
+else:
+	agi_helpers.dp_break(agi, "Unknown protocol '%s'" % protocol)
+
+agi.set_variable('XIVO_INTERFACE', interface)
+agi.set_variable('XIVO_SIMULTCALLS', simultcalls)
+
+if ringseconds > 0:
+	agi.set_variable('XIVO_RINGSECONDS', ringseconds)
+
+agi.set_variable('XIVO_ENABLEDND', enablednd)
+agi.set_variable('XIVO_ENABLEVOICEMAIL', enablevoicemail)
+agi.set_variable('XIVO_CALLOPTIONS', calloptions)
+
+if enableunc == 1:
+	agi.set_variable('XIVO_FWD_TYPEUNC', 'user')
+	agi.set_variable('XIVO_FWD_TYPEVALUNC', destunc)
+
+if enablebusy == 1:
+	agi.set_variable('XIVO_FWD_TYPEBUSY', 'user')
+	agi.set_variable('XIVO_FWD_TYPEVALBUSY', destbusy)
+else:
+	ds_set_fwd_vars(id, 'busy', 'XIVO_FWD_TYPEBUSY', 'XIVO_FWD_TYPEVALBUSY', 'XIVO_FWD_CONTEXTBUSY')
+
+if enablerna:
+	agi.set_variable('XIVO_FWD_TYPERNA', 'user')
+	agi.set_variable('XIVO_FWD_TYPEVALRNA', destrna)
+else:
+	ds_set_fwd_vars(id, 'noanswer', 'XIVO_FWD_TYPERNA', 'XIVO_FWD_TYPEVALRNA', 'XIVO_FWD_CONTEXTRNA')
+
+ds_set_fwd_vars(id, 'congestion', 'XIVO_FWD_TYPECONGESTION', 'XIVO_FWD_TYPEVALCONGESTION', 'XIVO_FWD_CONTEXTCONGESTION')
+ds_set_fwd_vars(id, 'chanunavail', 'XIVO_FWD_TYPEUNAVAIL', 'XIVO_FWD_TYPEVALUNAVAIL', 'XIVO_FWD_CONTEXTUNAVAIL')
+agi.set_variable('XIVO_CALLRECORD', callrecord)
+agi.set_variable('XIVO_CALLFILTER', callfilter)
+agi.set_variable('XIVO_MUSICONHOLD', musiconhold)
 
 agi.verbose('AGI script "%s" successfully executed' % sys.argv[0])
