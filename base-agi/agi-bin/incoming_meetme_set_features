@@ -74,7 +74,8 @@ elif res['meetmefeatures.mode'] != 'all':
 	agi_helpers.dp_break(agi, "Bogus value for conference mode '%s'" % res['meetmefeatures.mode'])
 
 if res['meetmefeatures.musiconhold']:
-	options += "M(%s)" % res['meetmefeatures.musiconhold']
+	agi.set_variable('MUSICCLASS()', res['meetmefeatures.musiconhold'])
+	options += "M"
 
 if res['meetmefeatures.poundexit']:
 	options += "p"
