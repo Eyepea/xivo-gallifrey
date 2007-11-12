@@ -980,7 +980,7 @@ def manage_tcp_connection(connid, allow_events):
                                         astid = configs[n].astid
                                         connid[0].send('%s:ID <%s>\n' %(XIVO_CLI_WEBI_HEADER, astid))
                                         try:
-                                                if usefulmsg == 'xivo-userlist-update':
+                                                if usefulmsg == 'xivo[userlist,update]':
                                                         connid[0].send('%s:OK\n' %(XIVO_CLI_WEBI_HEADER))
                                                         log_debug(SYSLOG_INFO, '%s : userlist update request received' % astid)
                                                         update_userlist[astid] = True
@@ -2281,6 +2281,7 @@ class AsteriskRemote:
                                 mytab.append(line)
                         f.close()
                         fulltable = ''.join(mytab)
+                        savemd5 = self.userlist_md5
                         self.userlist_md5 = md5.md5(fulltable).hexdigest()
                         csvreader = csv.reader(mytab, delimiter = '|')
                         # builds the phone_list
@@ -2298,6 +2299,7 @@ class AsteriskRemote:
                                         elif line[0] == 'XIVO-WEBI: no-update':
                                                 log_debug(SYSLOG_INFO, "%s : received no-update from WEBI" % self.astid)
                                                 numlist = None
+                                                self.userlist_md5 = savemd5
                                 else:
                                         pass
                         t2 = time.time()
@@ -2337,8 +2339,9 @@ class AsteriskRemote:
                                 except Exception, exc:
                                         log_debug(SYSLOG_ERR, '--- exception --- %s : a problem occured when building phone list : %s' %(self.astid, str(exc)))
                                         return numlist
-                        log_debug(SYSLOG_INFO, '%s : found %d ids in phone list, among which %d ids are registered as users'
-                                  %(self.astid, len(phone_list), len(numlist)))
+                        if numlist is not None:
+                                log_debug(SYSLOG_INFO, '%s : found %d ids in phone list, among which %d ids are registered as users'
+                                          %(self.astid, len(phone_list), len(numlist)))
                 finally:
                         f.close()
                 return numlist
