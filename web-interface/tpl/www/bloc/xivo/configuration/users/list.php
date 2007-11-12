@@ -14,7 +14,7 @@
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
 	</tr>
 <?php
-	$list = $this->vars('list');
+	$list = $this->get_var('list');
 
 	if($list === false || ($arr = xivo_get_aks($list)) === false):
 ?>

@@ -45,9 +45,9 @@ switch($act)
 		$dhtml = &$_HTML->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 
-		$_HTML->assign('element',$appphonebook->get_elements());
-		$_HTML->assign('territory',xivo_i18n::get_territory_translated_list());
-		$_HTML->assign('info',$result);
+		$_HTML->set_var('element',$appphonebook->get_elements());
+		$_HTML->set_var('territory',xivo_i18n::get_territory_translated_list());
+		$_HTML->set_var('info',$result);
 		break;
 	case 'edit':
 		$appphonebook = &$ipbx->get_application('phonebook');
@@ -88,12 +88,12 @@ switch($act)
 		$dhtml = &$_HTML->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 
-		$_HTML->assign('id',$info['phonebook']['id']);
-		$_HTML->assign('element',$appphonebook->get_elements());
-		$_HTML->assign('territory',xivo_i18n::get_territory_translated_list());
-		$_HTML->assign('info',$return);
-		$_HTML->assign('phonebookaddress',$return['phonebookaddress']);
-		$_HTML->assign('phonebooknumber',$return['phonebooknumber']);
+		$_HTML->set_var('id',$info['phonebook']['id']);
+		$_HTML->set_var('element',$appphonebook->get_elements());
+		$_HTML->set_var('territory',xivo_i18n::get_territory_translated_list());
+		$_HTML->set_var('info',$return);
+		$_HTML->set_var('phonebookaddress',$return['phonebookaddress']);
+		$_HTML->set_var('phonebooknumber',$return['phonebooknumber']);
 		break;
 	case 'delete':
 		$param['page'] = $page;
@@ -130,7 +130,7 @@ switch($act)
 			$_QRY->go($_HTML->url('service/ipbx/pbx_services/phonebook'),$param);
 		}
 
-		$_HTML->assign('import_file',$appphonebook->get_config_import_file());
+		$_HTML->set_var('import_file',$appphonebook->get_config_import_file());
 		break;
 	case 'list':
 	default:
@@ -155,13 +155,13 @@ switch($act)
 		if($list !== false)
 			$total = $appphonebook->get_cnt();
 
-		$_HTML->assign('total',$total);
-		$_HTML->assign('pager',xivo_calc_page($page,$nb_page,$total));
-		$_HTML->assign('list',$list);
-		$_HTML->assign('search',$search);
+		$_HTML->set_var('total',$total);
+		$_HTML->set_var('pager',xivo_calc_page($page,$nb_page,$total));
+		$_HTML->set_var('list',$list);
+		$_HTML->set_var('search',$search);
 }
 
-$_HTML->assign('act',$act);
+$_HTML->set_var('act',$act);
 
 $menu = &$_HTML->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

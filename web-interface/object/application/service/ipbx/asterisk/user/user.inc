@@ -17,6 +17,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 	var $_uservoicemail	= false;
 	var $_autoprov		= false;
 	var $_musiconhold	= false;
+	var $_conf		= array();
 
 	function xivo_application_service_asterisk_user(&$service)
 	{
@@ -32,6 +33,13 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$this->_queuemember = &$this->_service->get_module('queuemember');
 		$this->_uservoicemail = &$this->_service->get_module('uservoicemail');
 		$this->_autoprov = &$this->_service->get_module('autoprov');
+
+		$this->_load_config(dirname(__FILE__));
+
+		if(($size = $this->_chk_upload_file()) === false)
+			die();
+
+		$this->_conf['import']['file']['size'] = $size;
 
 		return(true);
 	}
@@ -267,6 +275,22 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			ksort($this->_musiconhold);
 
 		return($this->_musiconhold);
+	}
+
+	function get_config_import_file()
+	{
+		return($this->_chk_exists_cfg('import','file',true));
+	}
+
+	function _get_config_file_maxsize()
+	{
+		$r = false;
+
+		if(($import_file = $this->_chk_exists_cfg('import','file',true)) !== false
+		&& isset($import_file['size']) === true)
+			$r = xivo_get_memory($import_file['size'],false);
+
+		return($r);
 	}
 
 	function get_elements()
@@ -1696,6 +1720,60 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			}
 		}
 		return(true);
+	}
+
+	function import_csv()
+	{
+		$file = new xivo_file();
+
+		if(xivo::load_class('xivo::file::csv') === false
+		|| $file->get_upload('import',$this->_conf['import']['file']) === false)
+			return(false);
+
+		$filecsv = new xivo_file_csv();
+
+		if(($data = $filecsv->parse($file->info['tmp_name'],0,'|',null,true,
+					    $this->_conf['import']['field'])) === false
+		|| ($nb = count($data)) === 0)
+		{
+			xivo_file::rm($file->info['tmp_name']);
+			return(false);
+		}
+
+		$appincall = &$this->_service->get_application('incall');
+
+		$incall['incall'] = $incall['extenumbers'] = $incall = array();
+		$incall['incall']['type'] = 'user';
+		$incall['extenumbers']['exten'] = '';
+
+		$r = true;
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			$ref = &$data[$i];
+
+			if(xivo_issa('voicemail',$ref) === true)
+				$ref['voicemail']['voicemail-active'] = true;
+
+			if(xivo_issa('protocol',$ref) === false
+			|| isset($ref['protocol']['protocol']) === false
+			|| $this->set_add($ref,$ref['protocol']['protocol']) === false
+			|| $this->add() === false)
+				$r = false;
+			else if(isset($ref['incall']) === true)
+			{
+				$incall['incall']['typeval'] = $this->get_return_var('userfeatures');
+				$incall['extenumbers']['exten'] = $ref['incall'];
+
+				if($appincall->set_add($incall) === false
+				|| $appincall->add() === false)
+					$r = false;
+			}
+		}
+
+		xivo_file::rm($file->info['tmp_name']);
+
+		return($r);
 	}
 }
 

@@ -146,9 +146,9 @@ switch($act)
 		$element = array();
 		$element['schedule'] = $schedule->get_element();
 
-		$_HTML->assign('list',$list);
-		$_HTML->assign('info',$result);
-		$_HTML->assign('element',$element);
+		$_HTML->set_var('list',$list);
+		$_HTML->set_var('info',$result);
+		$_HTML->set_var('element',$element);
 
 		$dhtml = &$_HTML->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/schedule.js');
@@ -305,10 +305,10 @@ switch($act)
 		$element = array();
 		$element['schedule'] = $schedule->get_element();
 
-		$_HTML->assign('id',$info['schedule']['id']);
-		$_HTML->assign('list',$list);
-		$_HTML->assign('info',$return);
-		$_HTML->assign('element',$element);
+		$_HTML->set_var('id',$info['schedule']['id']);
+		$_HTML->set_var('list',$list);
+		$_HTML->set_var('info',$return);
+		$_HTML->set_var('element',$element);
 
 		$dhtml = &$_HTML->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/schedule.js');
@@ -393,8 +393,8 @@ switch($act)
 			usort($list,array(&$sort,'str_usort'));
 		}
 
-		$_HTML->assign('pager',xivo_calc_page($page,20,$total));
-		$_HTML->assign('list',$list);
+		$_HTML->set_var('pager',xivo_calc_page($page,20,$total));
+		$_HTML->set_var('list',$list);
 }
 
 $menu = &$_HTML->get_module('menu');
@@ -402,7 +402,7 @@ $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/service/ipbx/'.$ipbx->get_name());
 $menu->set_toolbar('toolbar/service/ipbx/'.$ipbx->get_name().'/call_management/schedule');
 
-$_HTML->assign('act',$act);
+$_HTML->set_var('act',$act);
 $_HTML->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/call_management/schedule/'.$act);
 $_HTML->set_struct('service/ipbx/'.$ipbx->get_name());
 $_HTML->display('index');

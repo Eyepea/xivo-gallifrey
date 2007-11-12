@@ -55,10 +55,10 @@ switch($act)
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/outcall.js');
 
-		$_HTML->assign('rightcall',$rightcall);
-		$_HTML->assign('element',$appoutcall->get_elements());
-		$_HTML->assign('info',$result);
-		$_HTML->assign('trunks_list',$ipbx->get_trunks_list());
+		$_HTML->set_var('rightcall',$rightcall);
+		$_HTML->set_var('element',$appoutcall->get_elements());
+		$_HTML->set_var('info',$result);
+		$_HTML->set_var('trunks_list',$ipbx->get_trunks_list());
 		break;
 	case 'edit':
 		$appoutcall = &$ipbx->get_application('outcall');
@@ -111,11 +111,11 @@ switch($act)
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/outcall.js');
 
-		$_HTML->assign('id',$info['outcall']['id']);
-		$_HTML->assign('rightcall',$rightcall);
-		$_HTML->assign('element',$appoutcall->get_elements());
-		$_HTML->assign('info',$return);
-		$_HTML->assign('trunks_list',$ipbx->get_trunks_list());
+		$_HTML->set_var('id',$info['outcall']['id']);
+		$_HTML->set_var('rightcall',$rightcall);
+		$_HTML->set_var('element',$appoutcall->get_elements());
+		$_HTML->set_var('info',$return);
+		$_HTML->set_var('trunks_list',$ipbx->get_trunks_list());
 		break;
 	case 'delete':
 		$param['page'] = $page;
@@ -185,8 +185,8 @@ switch($act)
 			usort($list,array(&$sort,'str_usort'));
 		}
 
-		$_HTML->assign('pager',xivo_calc_page($page,20,$total));
-		$_HTML->assign('list',$list);
+		$_HTML->set_var('pager',xivo_calc_page($page,20,$total));
+		$_HTML->set_var('list',$list);
 }
 
 
@@ -195,7 +195,7 @@ $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/service/ipbx/'.$ipbx->get_name());
 $menu->set_toolbar('toolbar/service/ipbx/'.$ipbx->get_name().'/call_management/outcall');
 
-$_HTML->assign('act',$act);
+$_HTML->set_var('act',$act);
 $_HTML->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/call_management/outcall/'.$act);
 $_HTML->set_struct('service/ipbx/'.$ipbx->get_name());
 $_HTML->display('index');

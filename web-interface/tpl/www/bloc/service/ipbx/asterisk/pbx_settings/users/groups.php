@@ -2,14 +2,14 @@
 	$form = &$this->get_module('form');
 	$url = &$this->get_module('url');
 
-	$info = $this->vars('info');
-	$element = $this->vars('element');
+	$info = $this->get_var('info');
+	$element = $this->get_var('element');
 
-	$groups = $this->vars('groups');
-	$gmember = $this->vars('gmember');
+	$groups = $this->get_var('groups');
+	$gmember = $this->get_var('gmember');
 
-	$queues = $this->vars('queues');
-	$qmember = $this->vars('qmember');
+	$queues = $this->get_var('queues');
+	$qmember = $this->get_var('qmember');
 ?>
 
 <fieldset id="fld-group">

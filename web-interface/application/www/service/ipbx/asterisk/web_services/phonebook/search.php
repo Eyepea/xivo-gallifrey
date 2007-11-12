@@ -42,7 +42,7 @@ xivo::load_class('xivo::sort');
 $sort = new xivo_sort(array('key' => 'identity'));
 usort($rs,array(&$sort,'str_usort'));
 
-$_HTML->assign('list',$rs);
+$_HTML->set_var('list',$rs);
 $_HTML->display($bloc.'/'.$vendor.'/directory');
 die();
 

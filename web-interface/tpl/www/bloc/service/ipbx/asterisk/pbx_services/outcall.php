@@ -3,18 +3,18 @@
 	$url = &$this->get_module('url');
 	$dhtml = &$this->get_module('dhtml');
 
-	$element = $this->vars('element');
-	$info = $this->vars('info');
-	$trunks_list = $this->vars('trunks_list');
-	$smenu = $this->vars('fm_smenu');
+	$element = $this->get_var('element');
+	$info = $this->get_var('info');
+	$trunks_list = $this->get_var('trunks_list');
+	$smenu = $this->get_var('fm_smenu');
 
 	$outcall_js = array();
 
-	if($this->vars('fm_save') === true):
+	if($this->get_var('fm_save') === true):
 		$outcall_js[] = 'xivo_form_success(\''.xivo_stript($this->bbf('fm_success-save')).'\');';
 	endif;
 
-	if(($smenu_tab = $this->vars('fm_smenu_tab')) !== '' && ($smenu_part = $this->vars('fm_smenu_part')) !== ''):
+	if(($smenu_tab = $this->get_var('fm_smenu_tab')) !== '' && ($smenu_part = $this->get_var('fm_smenu_part')) !== ''):
 		$outcall_js[] = 'xivo_smenu[\'tab\'] = \''.xivo_stript($smenu_tab).'\';';
 		$outcall_js[] = 'xivo_smenu[\'part\'] = \''.xivo_stript($smenu_part).'\';';
 

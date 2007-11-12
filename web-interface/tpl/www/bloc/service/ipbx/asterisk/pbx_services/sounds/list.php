@@ -2,10 +2,10 @@
 	$url = &$this->get_module('url');
 	$form = &$this->get_module('form');
 
-	$pager = $this->vars('pager');
-	$list = $this->vars('list');
-	$act = $this->vars('act');
-	$dir = $this->vars('dir');
+	$pager = $this->get_var('pager');
+	$list = $this->get_var('list');
+	$act = $this->get_var('act');
+	$dir = $this->get_var('dir');
 
 	$page = $url->pager($pager['pages'],$pager['page'],$pager['prev'],$pager['next'],'service/ipbx/pbx_services/sounds',array('act' => $act,'dir' => $dir));
 ?>

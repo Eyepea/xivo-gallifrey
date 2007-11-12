@@ -2,14 +2,14 @@
 	$form = &$this->get_module('form');
 	$url = &$this->get_module('url');
 
-	$incall = $this->vars('incall');
-	$element = $this->vars('element');
-	$list = $this->vars('list');
+	$incall = $this->get_var('incall');
+	$element = $this->get_var('element');
+	$list = $this->get_var('list');
 
 	$linked = $incall['linked'];
 	$type = $incall['type'];
 
-echo $form->text(array('desc' => $this->bbf('fm_extenumbers_exten'),'name' => 'extenumbers[exten]','labelid' => 'extenumbers-exten','size' => 15,'default' => $element['extenumbers']['exten']['default'],'value' => $this->varra('extenumbers','exten')));
+echo $form->text(array('desc' => $this->bbf('fm_extenumbers_exten'),'name' => 'extenumbers[exten]','labelid' => 'extenumbers-exten','size' => 15,'default' => $element['extenumbers']['exten']['default'],'value' => $this->get_varra('extenumbers','exten')));
 
 echo $form->select(array('desc' => $this->bbf('fm_incall_type'),'name' => 'incall[type]','labelid' => 'incall-type','bbf' => 'fm_incall_type-opt-','key' => false,'default' => $element['incall']['type']['default'],'value' => $type),$element['incall']['type']['value'],'onchange="xivo_chgtype(this);"');
 

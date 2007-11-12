@@ -2,18 +2,18 @@
 	$form = &$this->get_module('form');
 	$url = &$this->get_module('url');
 
-	$element = $this->vars('element');
-	$info = $this->vars('info');
+	$element = $this->get_var('element');
+	$info = $this->get_var('info');
 
-	$agents = $this->vars('agents');
-	$agent_unslt = $this->vars('agent_unslt');
-	$agent_slt = $this->vars('agent_slt');
+	$agents = $this->get_var('agents');
+	$agent_unslt = $this->get_var('agent_unslt');
+	$agent_slt = $this->get_var('agent_slt');
 
-	$deletable = $this->varra('info',array('agroup','deletable'));
+	$deletable = $this->get_varra('info',array('agroup','deletable'));
 
-	$queues = $this->vars('queues');
-	$qmember_slt = $this->vars('qmember_slt');
-	$qmember_unslt = $this->vars('qmember_unslt');
+	$queues = $this->get_var('queues');
+	$qmember_slt = $this->get_var('qmember_slt');
+	$qmember_unslt = $this->get_var('qmember_unslt');
 ?>
 
 <div id="sb-part-first">

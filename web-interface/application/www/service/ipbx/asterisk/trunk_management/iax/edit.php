@@ -190,7 +190,7 @@ if(empty($info['register']) === true)
 
 $return['trunk']['allow'] = $allow;
 
-$_HTML->assign('id',$info['trunk']['id']);
-$_HTML->assign('info',$return);
+$_HTML->set_var('id',$info['trunk']['id']);
+$_HTML->set_var('info',$return);
 
 ?>

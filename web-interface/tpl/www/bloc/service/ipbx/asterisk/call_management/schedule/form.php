@@ -2,9 +2,9 @@
 	$form = &$this->get_module('form');
 	$url = &$this->get_module('url');
 
-	$info = $this->vars('info');
-	$element = $this->vars('element');
-	$list = $this->vars('list');
+	$info = $this->get_var('info');
+	$element = $this->get_var('element');
+	$list = $this->get_var('list');
 
 	$linked = $info['schedule']['linked'];
 	$typetrue = $info['schedule']['typetrue'];

@@ -2,10 +2,10 @@
 	$url = &$this->get_module('url');
 	$form = &$this->get_module('form');
 
-	$pager = $this->vars('pager');
-	$list = $this->vars('list');
-	$act = $this->vars('act');
-	$group = $this->vars('group');
+	$pager = $this->get_var('pager');
+	$list = $this->get_var('list');
+	$act = $this->get_var('act');
+	$group = $this->get_var('group');
 
 	$page = $url->pager($pager['pages'],
 			    $pager['page'],

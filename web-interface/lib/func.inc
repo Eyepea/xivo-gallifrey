@@ -315,7 +315,7 @@ function xivo_ak($k,&$a,$t=false,$f=false)
 		else
 			$r = false;
 	}
-	elseif(array_key_exists($k,$a) === true)
+	else if(array_key_exists($k,$a) === true)
 		$r = $t === true ? $a[$k] : true;
 	else
 		$r = false;
@@ -339,7 +339,7 @@ function xivo_pk($k,&$a,$t=false,$f=false)
 		else
 			$r = false;
 	}
-	elseif(array_key_exists($k,get_object_vars($a)) === true)
+	else if(array_key_exists($k,get_object_vars($a)) === true)
 		$r = $t === true ? $a->{$k} : true;
 	else
 		$r = false;

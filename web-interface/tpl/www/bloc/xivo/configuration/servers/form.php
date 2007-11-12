@@ -1,8 +1,8 @@
 <?php
 	$form = &$this->get_module('form');
 
-	$info = $this->vars('info');
-	$element = $this->vars('element');
+	$info = $this->get_var('info');
+	$element = $this->get_var('element');
 ?>
 
 <?=$form->text(array('desc' => $this->bbf('fm_name'),'name' => 'name','size' => 15,'default' => $element['name']['default'],'value' => $info['name']));?>

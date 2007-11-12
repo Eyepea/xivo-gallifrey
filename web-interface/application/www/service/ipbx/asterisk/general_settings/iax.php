@@ -24,7 +24,7 @@ if(isset($_QR['fm_send']) === true)
 			$result['allow'] = implode(',',$result['allow']);
 		
 		if($generaliax->replace_val_list($result) === true)
-			$_HTML->assign('fm_save',true);
+			$_HTML->set_var('fm_save',true);
 	}
 }
 
@@ -40,8 +40,8 @@ if(xivo_issa('allow',$element) === true
 	$element['allow']['value'] = array_diff($element['allow']['value'],$info['allow']);
 }
 
-$_HTML->assign('info',$info);
-$_HTML->assign('element',$element);
+$_HTML->set_var('info',$info);
+$_HTML->set_var('element',$element);
 
 $dhtml = &$_HTML->get_module('dhtml');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');

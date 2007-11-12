@@ -2,13 +2,13 @@
 	$form = &$this->get_module('form');
 	$url = &$this->get_module('url');
 
-	$info = $this->vars('info');
-	$element = $this->vars('element');
+	$info = $this->get_var('info');
+	$element = $this->get_var('element');
 
-	$rcalluser = $this->vars('rcalluser');
-	$rcallgroup = $this->vars('rcallgroup');
-	$rcalloutcall = $this->vars('rcalloutcall');
-	$rcallexten = $this->vars('rcallexten');
+	$rcalluser = $this->get_var('rcalluser');
+	$rcallgroup = $this->get_var('rcallgroup');
+	$rcalloutcall = $this->get_var('rcalloutcall');
+	$rcallexten = $this->get_var('rcallexten');
 ?>
 
 <div id="sb-part-first">

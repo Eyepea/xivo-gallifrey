@@ -2,8 +2,8 @@
 	$form = &$this->get_module('form');
 	$url = &$this->get_module('url');
 	
-	$act = $this->vars('act');
-	$dir = $this->vars('dir');
+	$act = $this->get_var('act');
+	$dir = $this->get_var('dir');
 
 	$param = array('act' => 'add');
 
@@ -17,7 +17,7 @@
 <form action="#" method="post" id="fm-sounds-toolbar" accept-charset="utf-8">
 <?=$form->hidden(array('name' => XIVO_SESS_NAME,'value' => XIVO_SESS_ID));?>
 <?=$form->hidden(array('name' => 'act','value' => 'listdir'));?>
-	<div class="fm-field"><?=$form->select(array('name' => 'dir','id' => 'it-dir','key' => false,'field' => false,'empty' => $this->bbf('toolbar_fm_directory'),'value' => $dir),$this->vars('list_dirs'),'onchange="this.form[\'act\'].value = this.value == \'\' ? \'listdir\' : \'list\'; return(this.form.submit());"');?></div>
+	<div class="fm-field"><?=$form->select(array('name' => 'dir','id' => 'it-dir','key' => false,'field' => false,'empty' => $this->bbf('toolbar_fm_directory'),'value' => $dir),$this->get_var('list_dirs'),'onchange="this.form[\'act\'].value = this.value == \'\' ? \'listdir\' : \'list\'; return(this.form.submit());"');?></div>
 </form>
 <a href="#" onmouseover="xivo_eid('add-menu').style.display = 'block';" onmouseout="xivo_eid('add-menu').style.display = 'none';"><?=$url->img_html('img/menu/top/toolbar/bt-add.gif',$this->bbf('toolbar_opt_add'),'border="0"');?></a><?php
 

@@ -90,13 +90,13 @@ if(isset($_QR['fm_send']) === true)
 	}
 }
 
-$_HTML->assign('fm_save',$fm_save);
-$_HTML->assign('error',$error);
-$_HTML->assign('generalagents',$info['generalagents']);
-$_HTML->assign('generalqueue',$info['generalqueue']);
-$_HTML->assign('generalmeetme',$info['generalmeetme']);
-$_HTML->assign('userinternal',$info['userinternal']);
-$_HTML->assign('element',$element);
+$_HTML->set_var('fm_save',$fm_save);
+$_HTML->set_var('error',$error);
+$_HTML->set_var('generalagents',$info['generalagents']);
+$_HTML->set_var('generalqueue',$info['generalqueue']);
+$_HTML->set_var('generalmeetme',$info['generalmeetme']);
+$_HTML->set_var('userinternal',$info['userinternal']);
+$_HTML->set_var('element',$element);
 
 $dhtml = &$_HTML->get_module('dhtml');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');

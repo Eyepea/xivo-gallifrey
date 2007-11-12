@@ -9,7 +9,7 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 	var $_filter		= false;
 	var $_origin		= false;
 	var $_origin_list	= false;
-	var $_exten		= null;
+	var $_exten		= array();
 
 	function xivo_service_asterisk_extensions(&$sre,&$dso)
 	{
@@ -138,7 +138,10 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 	function set_exten($app,$id=0,$arr=null,$exten='',$context='')
 	{
 		if(($id = xivo_uint($id)) === 0)
+		{
 			$id = count($this->_exten) + 1;
+			$this->_exten[$id] = array();
+		}
 		else if(isset($this->_exten[$id]) === false)
 			return(false);
 

@@ -53,10 +53,10 @@ $menu = &$_HTML->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/service/ipbx/'.$ipbx->get_name());
 
-$_HTML->assign('userstat',$userstat);
-$_HTML->assign('groupstat',$groupstat);
-$_HTML->assign('queuestat',$queuestat);
-$_HTML->assign('meetmestat',$meetmestat);
+$_HTML->set_var('userstat',$userstat);
+$_HTML->set_var('groupstat',$groupstat);
+$_HTML->set_var('queuestat',$queuestat);
+$_HTML->set_var('meetmestat',$meetmestat);
 
 $_HTML->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/index');
 $_HTML->set_struct('service/ipbx/'.$ipbx->get_name());

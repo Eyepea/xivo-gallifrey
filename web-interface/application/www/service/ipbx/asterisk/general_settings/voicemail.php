@@ -93,7 +93,7 @@ if(isset($_QR['fm_send']) === true && xivo_issa('voicemail',$_QR) === true)
 	if($edit === true)
 	{
 		if($generalvoicemail->replace_val_list($result['voicemail']) === true)
-			$_HTML->assign('fm_save',true);
+			$_HTML->set_var('fm_save',true);
 
 		if($edit_zone === true)
 		{
@@ -124,10 +124,10 @@ if(xivo_issa('format',$element['voicemail']) === true
 							      $return['voicemail']['format']);
 }
 
-$_HTML->assign('element',$element);
-$_HTML->assign('voicemail',$return['voicemail']);
-$_HTML->assign('zonemessages',$return['zonemessages']);
-$_HTML->assign('timezone_list',$timezone_list);
+$_HTML->set_var('element',$element);
+$_HTML->set_var('voicemail',$return['voicemail']);
+$_HTML->set_var('zonemessages',$return['zonemessages']);
+$_HTML->set_var('timezone_list',$timezone_list);
 
 $dhtml = &$_HTML->get_module('dhtml');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/general.js');

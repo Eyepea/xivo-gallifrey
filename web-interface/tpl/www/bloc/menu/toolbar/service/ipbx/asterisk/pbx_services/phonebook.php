@@ -2,9 +2,9 @@
 	$form = &$this->get_module('form');
 	$url = &$this->get_module('url');
 	
-	$act = $this->vars('act');
+	$act = $this->get_var('act');
 
-	if(($search = (string) $this->vars('search')) === ''):
+	if(($search = (string) $this->get_var('search')) === ''):
 		$searchjs = '';
 	else:
 		$searchjs = ' xivo_fm[\'fm-phonebook-list\'][\'search\'].value = \''.xivo_stript($search).'\';';

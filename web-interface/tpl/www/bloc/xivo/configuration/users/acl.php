@@ -1,7 +1,7 @@
 <?php
 	$form = &$this->get_module('form');
-	$info = $this->vars('info');
-	$tree = $this->vars('tree');
+	$info = $this->get_var('info');
+	$tree = $this->get_var('tree');
 
 	$tree = &$tree['service'];
 ?>

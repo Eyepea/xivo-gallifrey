@@ -175,7 +175,7 @@ pre {text-align: left;}
 #b-lmenu dd .span-left {background-image: url(../img/menu/left/f-left.gif);}
 #b-lmenu dd .span-right {background-image: url(../img/menu/left/f-right.gif);}
 #b-lmenu dd {clear: both;}
-#b-lmenu dd dt {text-align: left;padding: 2px 2px 1px;background-image: url(../img/menu/left/s-bg.gif);background-repeat: repeat-x;border: 1px solid #9e9e9e;border-top-width: 0px; border-bottom-width: 0px;}
+#b-lmenu dd dt {text-align: left;padding: 1px 2px;background-image: url(../img/menu/left/s-bg.gif);background-repeat: repeat-x;border: 1px solid #9e9e9e;border-top-width: 0px;border-bottom-color: #7f99b1;}
 #b-lmenu dd dd {border: 1px solid #9e9e9e;border-top-width: 0px; border-bottom-color: #7f99b1;}
 #b-lmenu dd dd a {display: block; padding-left: 15px;}
 #b-lmenu .mn-active a {background-color: #fee6c1;}

@@ -2,9 +2,9 @@
 	$form = &$this->get_module('form');
 	$url = &$this->get_module('url');
 
-	$act = $this->vars('act');
+	$act = $this->get_var('act');
 
-	if(($search = (string) $this->vars('search')) === ''):
+	if(($search = (string) $this->get_var('search')) === ''):
 		$search = $this->bbf('toolbar_fm_search');
 		$searchjs = '';
 	else:

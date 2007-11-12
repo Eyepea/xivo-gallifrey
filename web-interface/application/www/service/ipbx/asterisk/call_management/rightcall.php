@@ -89,12 +89,12 @@ switch($act)
 		$dhtml = &$_HTML->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 
-		$_HTML->assign('rcalluser',$rcalluser);
-		$_HTML->assign('rcallgroup',$rcallgroup);
-		$_HTML->assign('rcalloutcall',$rcalloutcall);
-		$_HTML->assign('rcallexten',$rcallexten);
-		$_HTML->assign('element',$apprightcall->get_elements());
-		$_HTML->assign('info',$result);
+		$_HTML->set_var('rcalluser',$rcalluser);
+		$_HTML->set_var('rcallgroup',$rcallgroup);
+		$_HTML->set_var('rcalloutcall',$rcalloutcall);
+		$_HTML->set_var('rcallexten',$rcallexten);
+		$_HTML->set_var('element',$apprightcall->get_elements());
+		$_HTML->set_var('info',$result);
 		break;
 	case 'edit':
 		$apprightcall = &$ipbx->get_application('rightcall');
@@ -188,13 +188,13 @@ switch($act)
 		$dhtml = &$_HTML->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 
-		$_HTML->assign('id',$info['rightcall']['id']);
-		$_HTML->assign('rcalluser',$rcalluser);
-		$_HTML->assign('rcallgroup',$rcallgroup);
-		$_HTML->assign('rcalloutcall',$rcalloutcall);
-		$_HTML->assign('rcallexten',$rcallexten);
-		$_HTML->assign('element',$apprightcall->get_elements());
-		$_HTML->assign('info',$return);
+		$_HTML->set_var('id',$info['rightcall']['id']);
+		$_HTML->set_var('rcalluser',$rcalluser);
+		$_HTML->set_var('rcallgroup',$rcallgroup);
+		$_HTML->set_var('rcalloutcall',$rcalloutcall);
+		$_HTML->set_var('rcallexten',$rcallexten);
+		$_HTML->set_var('element',$apprightcall->get_elements());
+		$_HTML->set_var('info',$return);
 		break;
 	case 'delete':
 		$param['page'] = $page;
@@ -258,8 +258,8 @@ switch($act)
 			usort($list,array(&$sort,'str_usort'));
 		}
 
-		$_HTML->assign('pager',xivo_calc_page($page,20,$total));
-		$_HTML->assign('list',$list);
+		$_HTML->set_var('pager',xivo_calc_page($page,20,$total));
+		$_HTML->set_var('list',$list);
 }
 
 $menu = &$_HTML->get_module('menu');
@@ -267,7 +267,7 @@ $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/service/ipbx/'.$ipbx->get_name());
 $menu->set_toolbar('toolbar/service/ipbx/'.$ipbx->get_name().'/call_management/rightcall');
 
-$_HTML->assign('act',$act);
+$_HTML->set_var('act',$act);
 $_HTML->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/call_management/rightcall/'.$act);
 $_HTML->set_struct('service/ipbx/'.$ipbx->get_name());
 $_HTML->display('index');

@@ -285,44 +285,30 @@ class xivo_socket
 		return($r);
 	}
 
-	function read_binary($length=4096)
+	function _read($length=0,$type)
 	{
-		$length = xivo_uint($length);
+		$length = xivo_uint($length,4096);
 
 		if($length === 0 || is_resource($this->_link) === false)
 			return(false);
 		
 		$r = '';
 
-		while(($read = socket_read($this->_link,$length,PHP_BINARY_READ)))
-		{
-			if($read === '' || $read === false)
-				break;
-
+		while(($read = socket_read($this->_link,$length,$type)) !== false
+		&& $read !== '')
 			$r .= $read;
-		}
 
 		return($r);
 	}
 
-	function read_normal($length=4096)
+	function read_binary($length=0)
 	{
-		$length = xivo_uint($length);
+		return($this->_read($length,PHP_BINARY_READ));
+	}
 
-		if($length === 0 || is_resource($this->_link) === false)
-			return(false);
-
-		$r = '';
-
-		while(($read = socket_read($this->_link,$length,PHP_NORMAL_READ)))
-		{
-			if($read === '' || $read === false)
-				break;
-
-			$r .= $read;
-		}
-
-		return($r);
+	function read_normal($length=0)
+	{
+		return($this->_read($length,PHP_NORMAL_READ));
 	}
 
 	function write($data,$length=0)

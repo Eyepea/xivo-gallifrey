@@ -1,7 +1,7 @@
 <?php
 header('Content-Type: text/xml; charset=utf-8');
 
-$list = $this->vars('list');
+$list = $this->get_var('list');
 ?>
 <ThomsonPhoneBook>
 <?php

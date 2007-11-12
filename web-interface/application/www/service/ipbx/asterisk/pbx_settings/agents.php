@@ -15,7 +15,7 @@ if(($list_grps = $ipbx->get_agent_groups_list()) !== false)
 	usort($list_grps,array(&$sort,'str_usort'));
 }
 
-$_HTML->assign('list_grps',$list_grps);
+$_HTML->set_var('list_grps',$list_grps);
 
 $param = array();
 $param['act'] = 'list';
@@ -194,14 +194,14 @@ switch($act)
 		if(isset($agent_unslt[0]) === false && empty($agent_slt) === true)
 			$agent_unslt = $agents;
 
-		$_HTML->assign('queues',$queues);
-		$_HTML->assign('qmember_slt',false);
-		$_HTML->assign('qmember_unslt',$qmember_unslt);
-		$_HTML->assign('agents',($agents !== false ? true : false));
-		$_HTML->assign('agent_slt',$agent_slt);
-		$_HTML->assign('agent_unslt',$agent_unslt);
-		$_HTML->assign('info',$result);
-		$_HTML->assign('element',$element);
+		$_HTML->set_var('queues',$queues);
+		$_HTML->set_var('qmember_slt',false);
+		$_HTML->set_var('qmember_unslt',$qmember_unslt);
+		$_HTML->set_var('agents',($agents !== false ? true : false));
+		$_HTML->set_var('agent_slt',$agent_slt);
+		$_HTML->set_var('agent_unslt',$agent_unslt);
+		$_HTML->set_var('info',$result);
+		$_HTML->set_var('element',$element);
 
 		$dhtml = &$_HTML->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
@@ -490,14 +490,14 @@ switch($act)
 		if(isset($agent_unslt[0]) === false && empty($agent_slt) === true)
 			$agent_unslt = $agents;
 
-		$_HTML->assign('info',$return);
-		$_HTML->assign('element',$element);
-		$_HTML->assign('agents',($agents !== false ? true : false));
-		$_HTML->assign('agent_slt',$agent_slt);
-		$_HTML->assign('agent_unslt',$agent_unslt);
-		$_HTML->assign('queues',$queues);
-		$_HTML->assign('qmember_slt',$qmember_slt);
-		$_HTML->assign('qmember_unslt',$qmember_unslt);
+		$_HTML->set_var('info',$return);
+		$_HTML->set_var('element',$element);
+		$_HTML->set_var('agents',($agents !== false ? true : false));
+		$_HTML->set_var('agent_slt',$agent_slt);
+		$_HTML->set_var('agent_unslt',$agent_unslt);
+		$_HTML->set_var('queues',$queues);
+		$_HTML->set_var('qmember_slt',$qmember_slt);
+		$_HTML->set_var('qmember_unslt',$qmember_unslt);
 
 		$dhtml = &$_HTML->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
@@ -708,14 +708,14 @@ switch($act)
 		$element['agent'] = $agent->get_element();
 		$element['qmember'] = $qmember->get_element();
 
-		$_HTML->assign('info',$result);
-		$_HTML->assign('element',$element);
-		$_HTML->assign('queues',$queues);
-		$_HTML->assign('qmember_slt',false);
-		$_HTML->assign('qmember_unslt',$qmember_unslt);
-		$_HTML->assign('moh_list',$moh_list);
-		$_HTML->assign('beep_list',$beep_list);
-		$_HTML->assign('goodbye_list',$goodbye_list);
+		$_HTML->set_var('info',$result);
+		$_HTML->set_var('element',$element);
+		$_HTML->set_var('queues',$queues);
+		$_HTML->set_var('qmember_slt',false);
+		$_HTML->set_var('qmember_unslt',$qmember_unslt);
+		$_HTML->set_var('moh_list',$moh_list);
+		$_HTML->set_var('beep_list',$beep_list);
+		$_HTML->set_var('goodbye_list',$goodbye_list);
 
 		$dhtml = &$_HTML->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
@@ -947,15 +947,15 @@ switch($act)
 		$element['agent'] = $agent->get_element();
 		$element['qmember'] = $qmember->get_element();
 
-		$_HTML->assign('id',$id);
-		$_HTML->assign('info',$return);
-		$_HTML->assign('element',$element);
-		$_HTML->assign('queues',$queues);
-		$_HTML->assign('qmember_slt',$qmember_slt);
-		$_HTML->assign('qmember_unslt',$qmember_unslt);
-		$_HTML->assign('moh_list',$moh_list);
-		$_HTML->assign('beep_list',$beep_list);
-		$_HTML->assign('goodbye_list',$goodbye_list);
+		$_HTML->set_var('id',$id);
+		$_HTML->set_var('info',$return);
+		$_HTML->set_var('element',$element);
+		$_HTML->set_var('queues',$queues);
+		$_HTML->set_var('qmember_slt',$qmember_slt);
+		$_HTML->set_var('qmember_unslt',$qmember_unslt);
+		$_HTML->set_var('moh_list',$moh_list);
+		$_HTML->set_var('beep_list',$beep_list);
+		$_HTML->set_var('goodbye_list',$goodbye_list);
 
 		$dhtml = &$_HTML->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
@@ -1011,9 +1011,9 @@ switch($act)
 			usort($agents,array(&$sort,'num_usort'));
 		}
 
-		$_HTML->assign('group',$info['agroup']['id']);
-		$_HTML->assign('pager',xivo_calc_page($page,20,$total));
-		$_HTML->assign('list',$agents);
+		$_HTML->set_var('group',$info['agroup']['id']);
+		$_HTML->set_var('pager',xivo_calc_page($page,20,$total));
+		$_HTML->set_var('list',$agents);
 		break;
 	default:
 		$act = 'list';
@@ -1022,11 +1022,11 @@ switch($act)
 		if($list_grps !== false)
 			$total = count($list_grps);
 
-		$_HTML->assign('pager',xivo_calc_page($page,20,$total));
+		$_HTML->set_var('pager',xivo_calc_page($page,20,$total));
 }
 
-$_HTML->assign('act',$act);
-$_HTML->assign('group',$group);
+$_HTML->set_var('act',$act);
+$_HTML->set_var('group',$group);
 
 $menu = &$_HTML->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

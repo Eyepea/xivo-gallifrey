@@ -20,7 +20,7 @@ switch($act)
 			$_QRY->go($_HTML->url('xivo/configuration/users'),$param);
 		}
 
-		$_HTML->assign('info',$info);
+		$_HTML->set_var('info',$info);
 		break;
 	case 'acl':
 		if(isset($_QR['id']) === false || ($info = $_USR->get($_QR['id'])) === false
@@ -34,18 +34,18 @@ switch($act)
 		}
 		else if(($user_tree = $_USR->call_acl('get_user',array($info['id']))) !== false)
 		{
-			$_HTML->assign('info',$info);
-			$_HTML->assign('tree',$user_tree);
+			$_HTML->set_var('info',$info);
+			$_HTML->set_var('tree',$user_tree);
 		}
 		else $_QRY->go($_HTML->url('xivo/configuration/users'),$param);
 		break;
 	default:
 		$act = 'list';
-		$_HTML->assign('list',$_USR->get_list());
+		$_HTML->set_var('list',$_USR->get_list());
 		break;
 }
 
-$_HTML->assign('act',$act);
+$_HTML->set_var('act',$act);
 
 $menu = &$_HTML->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

@@ -2,13 +2,13 @@
 	$form = &$this->get_module('form');
 	$url = &$this->get_module('url');
 
-	$element = $this->vars('element');
-	$info = $this->vars('info');
-	$user = $this->vars('user');
-	$agentgroup = $this->vars('agentgroup');
-	$agent = $this->vars('agent');
-	$moh_list = $this->vars('moh_list');
-	$announce_list = $this->vars('announce_list');
+	$element = $this->get_var('element');
+	$info = $this->get_var('info');
+	$user = $this->get_var('user');
+	$agentgroup = $this->get_var('agentgroup');
+	$agent = $this->get_var('agent');
+	$moh_list = $this->get_var('moh_list');
+	$announce_list = $this->get_var('announce_list');
 ?>
 
 <div id="sb-part-first">

@@ -2,9 +2,9 @@
 	$form = &$this->get_module('form');
 	$url = &$this->get_module('url');
 
-	$tree = $this->vars('tree');
+	$tree = $this->get_var('tree');
 
-	if(($parent = $this->vars('parent')) === null):
+	if(($parent = $this->get_var('parent')) === null):
 		$pid = '';
 		$plevel = 0;
 	else:

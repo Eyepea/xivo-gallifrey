@@ -1,9 +1,5 @@
 xivo_elt_protocol['iax'] = new Array();
 
-xivo_elt_protocol['iax']['ufeatures-ringseconds'] = new Array();
-xivo_elt_protocol['iax']['ufeatures-ringseconds']['it']= true;
-xivo_elt_protocol['iax']['ufeatures-simultcalls'] = new Array();
-xivo_elt_protocol['iax']['ufeatures-simultcalls']['it']= true;
 xivo_elt_protocol['iax']['ufeatures-enableclient'] = new Array();
 xivo_elt_protocol['iax']['ufeatures-enableclient']['it']= true;
 xivo_elt_protocol['iax']['ufeatures-enablehint'] = new Array();

@@ -2,13 +2,13 @@
 	$url = &$this->get_module('url');
 	$form = &$this->get_module('form');
 
-	$pager = $this->vars('pager');
-	$list = $this->vars('list');
-	$act = $this->vars('act');
+	$pager = $this->get_var('pager');
+	$list = $this->get_var('list');
+	$act = $this->get_var('act');
 
 	$param = array();
 
-	if(($search = (string) $this->vars('search')) !== ''):
+	if(($search = (string) $this->get_var('search')) !== ''):
 		$param['search'] = $search;
 	else:
 		$param = null;	
@@ -24,7 +24,7 @@
 <div class="b-list">
 <?php
 	if($page !== ''):
-		echo '<div class="b-total">',$this->bbf('number_phonebook-result','<b>'.$this->vars('total').'</b>'),
+		echo '<div class="b-total">',$this->bbf('number_phonebook-result','<b>'.$this->get_var('total').'</b>'),
 		'</div><div class="b-page">',$page,'</div><div class="clearboth"></div>';
 	endif;
 ?>
@@ -108,7 +108,7 @@
 </form>
 <?php
 	if($page !== ''):
-		echo '<div class="b-total">',$this->bbf('number_phonebook-result','<b>'.$this->vars('total').'</b>'),
+		echo '<div class="b-total">',$this->bbf('number_phonebook-result','<b>'.$this->get_var('total').'</b>'),
 		'</div><div class="b-page">',$page,'</div><div class="clearboth"></div>';
 	endif;
 ?>

@@ -2,16 +2,16 @@
 	$form = &$this->get_module('form');
 	$url = &$this->get_module('url');
 
-	$element = $this->vars('element');
-	$info = $this->vars('info');
+	$element = $this->get_var('element');
+	$info = $this->get_var('info');
 
-	$moh_list = $this->vars('moh_list');
-	$beep_list = $this->vars('beep_list');
-	$list_grps = $this->vars('list_grps');
+	$moh_list = $this->get_var('moh_list');
+	$beep_list = $this->get_var('beep_list');
+	$list_grps = $this->get_var('list_grps');
 
-	$queues = $this->vars('queues');
-	$qmember_slt = $this->vars('qmember_slt');
-	$qmember_unslt = $this->vars('qmember_unslt');
+	$queues = $this->get_var('queues');
+	$qmember_slt = $this->get_var('qmember_slt');
+	$qmember_unslt = $this->get_var('qmember_unslt');
 ?>
 
 <div id="sb-part-first">
@@ -26,7 +26,7 @@
 
 <?=$form->checkbox(array('desc' => $this->bbf('fm_agentfeatures_silent'),'name' => 'afeatures[silent]','labelid' => 'afeatures-silent','default' => $element['afeatures']['silent']['default'],'checked' => $info['afeatures']['silent']));?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_agentfeatures_numgroup'),'name' => 'afeatures[numgroup]','labelid' => 'afeatures-numgroup','browse' => 'agroup','key' => 'name','altkey' => 'id','default' => $this->vars('group'),'value' => $info['afeatures']['numgroup']),$list_grps);?>
+<?=$form->select(array('desc' => $this->bbf('fm_agentfeatures_numgroup'),'name' => 'afeatures[numgroup]','labelid' => 'afeatures-numgroup','browse' => 'agroup','key' => 'name','altkey' => 'id','default' => $this->get_var('group'),'value' => $info['afeatures']['numgroup']),$list_grps);?>
 
 </div>
 

@@ -76,8 +76,8 @@ if($info['serverfeatures']['list'] !== false
 	}
 }
 
-$_HTML->assign('fm_save',$fm_save);
-$_HTML->assign('info',$info);
+$_HTML->set_var('fm_save',$fm_save);
+$_HTML->set_var('info',$info);
 
 $dhtml = &$_HTML->get_module('dhtml');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');

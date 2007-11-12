@@ -26,7 +26,7 @@ do
 
 } while(false);
 
-$_HTML->assign('id',$id);
+$_HTML->set_var('id',$id);
 $element = $musiconhold->get_element();
 
 ?>

@@ -1,7 +1,7 @@
 <?php
 	$form = &$this->get_module('form');
-	$element = $this->vars('element');
-	$info = $this->vars('info');
+	$element = $this->get_var('element');
+	$info = $this->get_var('info');
 ?>
 <div class="b-infos b-form">
 	<h3 class="sb-top xspan"><span class="span-left">&nbsp;</span><span class="span-center"><?=$this->bbf('title_content_name');?></span><span class="span-right">&nbsp;</span></h3>
@@ -9,12 +9,12 @@
 <form action="#" method="post" accept-charset="utf-8">
 <?=$form->hidden(array('name' => 'fm_send','value' => 1));?>
 <?=$form->hidden(array('name' => 'act','value' => 'editfile'));?>
-<?=$form->hidden(array('name' => 'id','value' => $this->vars('id')));?>
-<?=$form->hidden(array('name' => 'cat','value' => $this->vars('cat')));?>
+<?=$form->hidden(array('name' => 'id','value' => $this->get_var('id')));?>
+<?=$form->hidden(array('name' => 'cat','value' => $this->get_var('cat')));?>
 
 <?=$form->text(array('desc' => $this->bbf('fm_filename'),'name' => 'filename','labelid' => 'filename','size' => 15,'value' => $info['filename']));?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_category'),'name' => 'category','labelid' => 'it-category','key' => true,'altkey' => 'category','value' => $info['category']),$this->vars('list_cats'));?>
+<?=$form->select(array('desc' => $this->bbf('fm_category'),'name' => 'category','labelid' => 'it-category','key' => true,'altkey' => 'category','value' => $info['category']),$this->get_var('list_cats'));?>
 
 <?=$form->submit(array('name' => 'submit','id' => 'it-submit','value' => $this->bbf('fm_bt-save')));?>
 </form>

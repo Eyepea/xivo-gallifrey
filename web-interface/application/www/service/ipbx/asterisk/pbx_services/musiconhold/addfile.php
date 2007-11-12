@@ -35,7 +35,7 @@ do
 }
 while(false);
 
-$_HTML->assign('info',$info);
-$_HTML->assign('option',$option);
+$_HTML->set_var('info',$info);
+$_HTML->set_var('option',$option);
 
 ?>

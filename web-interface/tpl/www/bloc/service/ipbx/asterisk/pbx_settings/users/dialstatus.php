@@ -2,16 +2,16 @@
 	$form = &$this->get_module('form');
 	$url = &$this->get_module('url');
 
-	$element = $this->vars('element');
-	$list = $this->vars('list');
-	$status = $this->vars('status');
+	$element = $this->get_var('element');
+	$list = $this->get_var('list');
+	$status = $this->get_var('status');
 
-	$linked = $this->varra('dialstatus',array($status,'linked'));
-	$type = $this->varra('dialstatus',array($status,'type'));
+	$linked = $this->get_varra('dialstatus',array($status,'linked'));
+	$type = $this->get_varra('dialstatus',array($status,'type'));
 
 echo $form->select(array('desc' => $this->bbf('fm_dialstatus_type'),'name' => 'dialstatus['.$status.'][type]','labelid' => 'dialstatus-'.$status.'-type','bbf' => 'fm_dialstatus_type-opt-','key' => false,'default' => $element['dialstatus']['type']['default'],'value' => $type),$element['dialstatus']['type']['value'],'onchange="xivo_chgdialstatus(\''.$status.'\',this);"');
 
-echo $form->select(array('desc' => $this->bbf('fm_dialstatus_endcall-typeval'),'name' => 'dialstatus['.$status.'][typeval]','labelid' => 'dialstatus-'.$status.'-endcall-typeval','bbf' => 'fm_dialstatus_endcall-typeval-opt-','key' => false,'default' => $element['dialstatus']['typeval']['default'],'value' => $this->varra('dialstatus',array($status,'endcall'))),$element['dialstatus']['endcall']['value']);
+echo $form->select(array('desc' => $this->bbf('fm_dialstatus_endcall-typeval'),'name' => 'dialstatus['.$status.'][typeval]','labelid' => 'dialstatus-'.$status.'-endcall-typeval','bbf' => 'fm_dialstatus_endcall-typeval-opt-','key' => false,'default' => $element['dialstatus']['typeval']['default'],'value' => $this->get_varra('dialstatus',array($status,'endcall'))),$element['dialstatus']['endcall']['value']);
 
 if(empty($list['users']) === false):
 
@@ -21,7 +21,7 @@ if(empty($list['users']) === false):
 		$invalid = false;
 	endif;
 
-	echo $form->select(array('desc' => $this->bbf('fm_dialstatus_user-typeval'),'name' => 'dialstatus['.$status.'][typeval]','labelid' => 'dialstatus-'.$status.'-user-typeval','key' => 'identity','altkey' => 'id','invalid' => $invalid,'default' => $element['dialstatus']['typeval']['default'],'value' => $this->varra('dialstatus',array($status,'user'))),$list['users']);
+	echo $form->select(array('desc' => $this->bbf('fm_dialstatus_user-typeval'),'name' => 'dialstatus['.$status.'][typeval]','labelid' => 'dialstatus-'.$status.'-user-typeval','key' => 'identity','altkey' => 'id','invalid' => $invalid,'default' => $element['dialstatus']['typeval']['default'],'value' => $this->get_varra('dialstatus',array($status,'user'))),$list['users']);
 
 else:
 
@@ -37,7 +37,7 @@ if(empty($list['groups']) === false):
 		$invalid = false;
 	endif;
 
-	echo $form->select(array('desc' => $this->bbf('fm_dialstatus_group-typeval'),'name' => 'dialstatus['.$status.'][typeval]','labelid' => 'dialstatus-'.$status.'-group-typeval','key' => 'identity','altkey' => 'id','invalid' => $invalid,'default' => $element['dialstatus']['typeval']['default'],'value' => $this->varra('dialstatus',array($status,'group'))),$list['groups']);
+	echo $form->select(array('desc' => $this->bbf('fm_dialstatus_group-typeval'),'name' => 'dialstatus['.$status.'][typeval]','labelid' => 'dialstatus-'.$status.'-group-typeval','key' => 'identity','altkey' => 'id','invalid' => $invalid,'default' => $element['dialstatus']['typeval']['default'],'value' => $this->get_varra('dialstatus',array($status,'group'))),$list['groups']);
 
 else:
 
@@ -53,7 +53,7 @@ if(empty($list['queues']) === false):
 		$invalid = false;
 	endif;
 
-	echo $form->select(array('desc' => $this->bbf('fm_dialstatus_queue-typeval'),'name' => 'dialstatus['.$status.'][typeval]','labelid' => 'dialstatus-'.$status.'-queue-typeval','key' => 'identity','altkey' => 'id','invalid' => $invalid,'default' => $element['dialstatus']['typeval']['default'],'value' => $this->varra('dialstatus',array($status,'queue'))),$list['queues']);
+	echo $form->select(array('desc' => $this->bbf('fm_dialstatus_queue-typeval'),'name' => 'dialstatus['.$status.'][typeval]','labelid' => 'dialstatus-'.$status.'-queue-typeval','key' => 'identity','altkey' => 'id','invalid' => $invalid,'default' => $element['dialstatus']['typeval']['default'],'value' => $this->get_varra('dialstatus',array($status,'queue'))),$list['queues']);
 
 else:
 
@@ -69,7 +69,7 @@ if(empty($list['meetme']) === false):
 		$invalid = false;
 	endif;
 
-	echo $form->select(array('desc' => $this->bbf('fm_dialstatus_meetme-typeval'),'name' => 'dialstatus['.$status.'][typeval]','labelid' => 'dialstatus-'.$status.'-meetme-typeval','key' => 'identity','altkey' => 'id','invalid' => $invalid,'default' => $element['dialstatus']['typeval']['default'],'value' => $this->varra('dialstatus',array($status,'meetme'))),$list['meetme']);
+	echo $form->select(array('desc' => $this->bbf('fm_dialstatus_meetme-typeval'),'name' => 'dialstatus['.$status.'][typeval]','labelid' => 'dialstatus-'.$status.'-meetme-typeval','key' => 'identity','altkey' => 'id','invalid' => $invalid,'default' => $element['dialstatus']['typeval']['default'],'value' => $this->get_varra('dialstatus',array($status,'meetme'))),$list['meetme']);
 
 else:
 
@@ -85,7 +85,7 @@ if(empty($list['schedule']) === false):
 		$invalid = false;
 	endif;
 
-	echo $form->select(array('desc' => $this->bbf('fm_dialstatus_schedule-typeval'),'name' => 'dialstatus['.$status.'][typeval]','labelid' => 'dialstatus-'.$status.'-schedule-typeval','key' => 'name','altkey' => 'id','invalid' => $invalid,'default' => $element['dialstatus']['typeval']['default'],'value' => $this->varra('dialstatus',array($status,'schedule'))),$list['schedule']);
+	echo $form->select(array('desc' => $this->bbf('fm_dialstatus_schedule-typeval'),'name' => 'dialstatus['.$status.'][typeval]','labelid' => 'dialstatus-'.$status.'-schedule-typeval','key' => 'name','altkey' => 'id','invalid' => $invalid,'default' => $element['dialstatus']['typeval']['default'],'value' => $this->get_varra('dialstatus',array($status,'schedule'))),$list['schedule']);
 
 else:
 
@@ -93,11 +93,11 @@ else:
 
 endif;
 
-echo $form->select(array('desc' => $this->bbf('fm_dialstatus_application-typeval'),'name' => 'dialstatus['.$status.'][typeval]','labelid' => 'dialstatus-'.$status.'-application-typeval','bbf' => 'fm_dialstatus_application-typeval-opt-','key' => false,'default' => $element['dialstatus']['typeval']['default'],'value' => $this->varra('dialstatus',array($status,'application'))),$element['dialstatus']['application']['value']);
+echo $form->select(array('desc' => $this->bbf('fm_dialstatus_application-typeval'),'name' => 'dialstatus['.$status.'][typeval]','labelid' => 'dialstatus-'.$status.'-application-typeval','bbf' => 'fm_dialstatus_application-typeval-opt-','key' => false,'default' => $element['dialstatus']['typeval']['default'],'value' => $this->get_varra('dialstatus',array($status,'application'))),$element['dialstatus']['application']['value']);
 
 if($list['sounds'] !== false):
 
-	echo $form->select(array('desc' => $this->bbf('fm_dialstatus_sound-typeval'),'name' => 'dialstatus['.$status.'][typeval]','labelid' => 'dialstatus-'.$status.'-sound-typeval','default' => $element['dialstatus']['typeval']['default'],'value' => $this->varra('dialstatus',array($status,'sound'))),$list['sounds']);
+	echo $form->select(array('desc' => $this->bbf('fm_dialstatus_sound-typeval'),'name' => 'dialstatus['.$status.'][typeval]','labelid' => 'dialstatus-'.$status.'-sound-typeval','default' => $element['dialstatus']['typeval']['default'],'value' => $this->get_varra('dialstatus',array($status,'sound'))),$list['sounds']);
 
 else:
 
@@ -105,6 +105,6 @@ else:
 
 endif;
 
-	echo $form->text(array('desc' => $this->bbf('fm_dialstatus_custom-typeval'),'name' => 'dialstatus['.$status.'][typeval]','labelid' => 'dialstatus-'.$status.'-custom-typeval','size' => 15,'value' => $this->varra('dialstatus',array($status,'custom'))));
+	echo $form->text(array('desc' => $this->bbf('fm_dialstatus_custom-typeval'),'name' => 'dialstatus['.$status.'][typeval]','labelid' => 'dialstatus-'.$status.'-custom-typeval','size' => 15,'value' => $this->get_varra('dialstatus',array($status,'custom'))));
 
 ?>

@@ -2,9 +2,9 @@
 	$url = &$this->get_module('url');
 	$form = &$this->get_module('form');
 
-	$pager = $this->vars('pager');
-	$list = $this->vars('list');
-	$act = $this->vars('act');
+	$pager = $this->get_var('pager');
+	$list = $this->get_var('list');
+	$act = $this->get_var('act');
 
 	$page = $url->pager($pager['pages'],$pager['page'],$pager['prev'],$pager['next'],'service/ipbx/trunk_management/custom',array('act' => $act));
 ?>

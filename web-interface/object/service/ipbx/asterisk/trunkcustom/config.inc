@@ -17,7 +17,7 @@ $array['element']['commented']['set'] = true;
 
 $array['filter'] = array();
 $array['filter']['name'] = array('regexp' => '/^[a-z0-9_-]+$/i','minlen' => 1,'maxlen' => 40);
-$array['filter']['interface'] = array('regexp' => '/^[a-z0-9#\*\.\/_@:-]+$/','minlen' => 1,'maxlen' => 128);
+$array['filter']['interface'] = array('regexp' => '/^[a-z0-9#\*\.\/_@:-]+$/i','minlen' => 1,'maxlen' => 128);
 $array['filter']['commented'] = array('bool' => true);
 
 ?>

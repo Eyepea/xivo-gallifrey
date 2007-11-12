@@ -177,8 +177,13 @@ class xivo_file_csv
 					if(isset($field[$i]) === false)
 						continue 2;
 
-					$array_ref[$field[$i]]['ref'] = $ref;
-					$ref_rs = array_merge_recursive(xivo_clone($array_ref[$field[$i]]['array']),$ref_rs);
+					if(is_array($array_ref[$field[$i]]) === true)
+					{
+						$array_ref[$field[$i]]['ref'] = $ref;
+						$ref_rs = array_merge_recursive(xivo_clone($array_ref[$field[$i]]['array']),$ref_rs);
+					}
+					else
+						$ref_rs[$field[$i]] = $ref;
 				}
 				else
 				{
@@ -189,6 +194,12 @@ class xivo_file_csv
 
 					if(isset($array_ref[$ref]) === true)
 						continue;
+
+					if(is_array($arr[$ref]) === false)
+					{
+						$array_ref[$ref] = '';
+						continue;
+					}
 
 					if(($array_ref[$ref] = xivo_build_array_ref($arr[$ref])) === false)
 						return(false);

@@ -1,10 +1,10 @@
 <?php
 	$url = &$this->get_module('url');
 
-	$userstat = $this->vars('userstat');
-	$groupstat = $this->vars('groupstat');
-	$queuestat = $this->vars('queuestat');
-	$meetmestat = $this->vars('meetmestat');
+	$userstat = $this->get_var('userstat');
+	$groupstat = $this->get_var('groupstat');
+	$queuestat = $this->get_var('queuestat');
+	$meetmestat = $this->get_var('meetmestat');
 ?>
 <div id="index" class="b-infos">
 	<h3 class="sb-top xspan"><span class="span-left">&nbsp;</span><span class="span-center"><?=$this->bbf('title_content_name');?></span><span class="span-right">&nbsp;</span></h3>

@@ -52,7 +52,7 @@ do
 
 $element['trunk'] = $trunkcustom->get_element();
 
-$_HTML->assign('id',$info['trunk']['id']);
-$_HTML->assign('info',$return);
+$_HTML->set_var('id',$info['trunk']['id']);
+$_HTML->set_var('info',$return);
 
 ?>

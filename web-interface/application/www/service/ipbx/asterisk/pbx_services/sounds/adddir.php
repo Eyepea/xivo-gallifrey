@@ -9,6 +9,6 @@ if(isset($_QR['fm_send']) === true
 		$_QRY->go($_HTML->url('service/ipbx/pbx_services/sounds'),$param);
 }
 
-$_HTML->assign('info',$info);
+$_HTML->set_var('info',$info);
 
 ?>

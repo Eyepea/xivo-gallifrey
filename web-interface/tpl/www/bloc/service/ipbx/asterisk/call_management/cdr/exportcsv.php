@@ -2,8 +2,8 @@
 
 $url = &$this->get_module('url');
 
-$result = $this->vars('result');
-$info = $this->vars('info');
+$result = $this->get_var('result');
+$info = $this->get_var('info');
 
 if($result === false)
 	die();

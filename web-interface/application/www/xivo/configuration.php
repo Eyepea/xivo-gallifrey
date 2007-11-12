@@ -23,8 +23,8 @@ if(($disableserver = $_SVR->get_nb(null,true)) !== false)
 
 $serverstat['total'] = $serverstat['enable'] + $serverstat['disable'];
 
-$_HTML->assign('userstat',$userstat);
-$_HTML->assign('serverstat',$serverstat);
+$_HTML->set_var('userstat',$userstat);
+$_HTML->set_var('serverstat',$serverstat);
 
 $menu = &$_HTML->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

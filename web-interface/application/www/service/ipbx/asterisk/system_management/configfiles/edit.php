@@ -11,6 +11,6 @@ if(isset($_QR['fm_send'],$_QR['content']) === true)
 	$info['content'] = $_QR['content'];
 }
 
-$_HTML->assign('info',$info);
+$_HTML->set_var('info',$info);
 
 ?>

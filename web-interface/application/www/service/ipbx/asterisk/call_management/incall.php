@@ -55,10 +55,10 @@ switch($act)
 		$dhtml = &$_HTML->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/incall.js');
 
-		$_HTML->assign('incall',$result['incall']);
-		$_HTML->assign('extenumbers',$result['extenumbers']);
-		$_HTML->assign('list',$appincall->get_destination_list());
-		$_HTML->assign('element',$appincall->get_elements());
+		$_HTML->set_var('incall',$result['incall']);
+		$_HTML->set_var('extenumbers',$result['extenumbers']);
+		$_HTML->set_var('list',$appincall->get_destination_list());
+		$_HTML->set_var('element',$appincall->get_elements());
 		break;
 	case 'edit':
 		$appincall = &$ipbx->get_application('incall');
@@ -108,11 +108,11 @@ switch($act)
 		$dhtml = &$_HTML->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/incall.js');
 
-		$_HTML->assign('id',$info['incall']['id']);
-		$_HTML->assign('incall',$return['incall']);
-		$_HTML->assign('extenumbers',$return['extenumbers']);
-		$_HTML->assign('list',$appincall->get_destination_list());
-		$_HTML->assign('element',$appincall->get_elements());
+		$_HTML->set_var('id',$info['incall']['id']);
+		$_HTML->set_var('incall',$return['incall']);
+		$_HTML->set_var('extenumbers',$return['extenumbers']);
+		$_HTML->set_var('list',$appincall->get_destination_list());
+		$_HTML->set_var('element',$appincall->get_elements());
 		break;
 	case 'delete':
 		$param['page'] = $page;
@@ -187,9 +187,9 @@ switch($act)
 			usort($list,array(&$sort,'str_usort'));
 		}
 
-		$_HTML->assign('pager',xivo_calc_page($page,20,$total));
-		$_HTML->assign('list',$list);
-		$_HTML->assign('search',$search);
+		$_HTML->set_var('pager',xivo_calc_page($page,20,$total));
+		$_HTML->set_var('list',$list);
+		$_HTML->set_var('search',$search);
 }
 
 $menu = &$_HTML->get_module('menu');
@@ -197,7 +197,7 @@ $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/service/ipbx/'.$ipbx->get_name());
 $menu->set_toolbar('toolbar/service/ipbx/'.$ipbx->get_name().'/call_management/incall');
 
-$_HTML->assign('act',$act);
+$_HTML->set_var('act',$act);
 $_HTML->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/call_management/incall/'.$act);
 $_HTML->set_struct('service/ipbx/'.$ipbx->get_name());
 $_HTML->display('index');

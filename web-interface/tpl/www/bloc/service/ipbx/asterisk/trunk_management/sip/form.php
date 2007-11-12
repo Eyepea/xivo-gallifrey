@@ -2,8 +2,8 @@
 	$form = &$this->get_module('form');
 	$url = $this->get_module('url');
 
-	$info = $this->vars('info');
-	$element = $this->vars('element');
+	$info = $this->get_var('info');
+	$element = $this->get_var('element');
 
 	$allow = $info['trunk']['allow'];
 
@@ -13,9 +13,9 @@
 		$codec_active = true;
 	endif;
 
-	$trunk_active = (bool) $this->varra('info',array('trunk','commented'));
+	$trunk_active = (bool) $this->get_varra('info',array('trunk','commented'));
 
-	$reg_active = $this->varra('info',array('register','commented'));
+	$reg_active = $this->get_varra('info',array('register','commented'));
 
 	if($reg_active !== null):
 		$reg_active = xivo_bool($reg_active) === true ? false : true;
@@ -53,17 +53,17 @@
 
 <?=$form->checkbox(array('desc' => $this->bbf('fm_register'),'name' => 'register-active','labelid' => 'register-active','checked' => $reg_active),($trunk_active === true ? ' disabled="disabled"' : '').' onclick="xivo_chg_attrib(\'fm_register\',\'it-register-username\',(this.checked == true ? 0 : 1))"');?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_register_username'),'name' => 'register[username]','labelid' => 'register-username','size' => 15,'value' => $this->varra('info',array('register','username'))));?>
+<?=$form->text(array('desc' => $this->bbf('fm_register_username'),'name' => 'register[username]','labelid' => 'register-username','size' => 15,'value' => $this->get_varra('info',array('register','username'))));?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_register_password'),'name' => 'register[password]','labelid' => 'register-password','size' => 15,'value' => $this->varra('info',array('register','password'))));?>
+<?=$form->text(array('desc' => $this->bbf('fm_register_password'),'name' => 'register[password]','labelid' => 'register-password','size' => 15,'value' => $this->get_varra('info',array('register','password'))));?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_register_authuser'),'name' => 'register[authuser]','labelid' => 'register-authuser','size' => 15,'value' => $this->varra('info',array('register','authuser'))));?>
+<?=$form->text(array('desc' => $this->bbf('fm_register_authuser'),'name' => 'register[authuser]','labelid' => 'register-authuser','size' => 15,'value' => $this->get_varra('info',array('register','authuser'))));?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_register_host'),'name' => 'register[host]','labelid' => 'register-host','size' => 15,'value' => $this->varra('info',array('register','host'))));?>
+<?=$form->text(array('desc' => $this->bbf('fm_register_host'),'name' => 'register[host]','labelid' => 'register-host','size' => 15,'value' => $this->get_varra('info',array('register','host'))));?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_register_port'),'name' => 'register[port]','labelid' => 'register-port','size' => 15,'value' => $this->varra('info',array('register','port'))));?>
+<?=$form->text(array('desc' => $this->bbf('fm_register_port'),'name' => 'register[port]','labelid' => 'register-port','size' => 15,'value' => $this->get_varra('info',array('register','port'))));?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_register_contact'),'name' => 'register[contact]','labelid' => 'register-contact','size' => 15,'value' => $this->varra('info',array('register','contact'))));?>
+<?=$form->text(array('desc' => $this->bbf('fm_register_contact'),'name' => 'register[contact]','labelid' => 'register-contact','size' => 15,'value' => $this->get_varra('info',array('register','contact'))));?>
 
 </div>
 

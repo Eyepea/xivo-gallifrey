@@ -2,8 +2,8 @@
 	$form = &$this->get_module('form');
 	$url = &$this->get_module('url');
 
-	$info = $this->vars('info');
-	$element = $this->vars('element');
+	$info = $this->get_var('info');
+	$element = $this->get_var('element');
 ?>
 
 <div id="sb-part-first">
@@ -18,7 +18,7 @@
 
 <?=$form->text(array('desc' => $this->bbf('fm_phonebook_society'),'name' => 'phonebook[society]','labelid' => 'phonebook-society','size' => 15,'default' => $element['phonebook']['society']['default'],'value' => $info['phonebook']['society']));?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_phonebooknumber_mobile'),'name' => 'phonebooknumber[mobile]','labelid' => 'phonebooknumber-mobile','size' => 15,'default' => $element['phonebooknumber']['number']['default'],'value' => $this->varra('phonebooknumber',array('mobile','number'))));?>
+<?=$form->text(array('desc' => $this->bbf('fm_phonebooknumber_mobile'),'name' => 'phonebooknumber[mobile]','labelid' => 'phonebooknumber-mobile','size' => 15,'default' => $element['phonebooknumber']['number']['default'],'value' => $this->get_varra('phonebooknumber',array('mobile','number'))));?>
 
 <?=$form->text(array('desc' => $this->bbf('fm_phonebook_email'),'name' => 'phonebook[email]','labelid' => 'phonebook-email','size' => 15,'default' => $element['phonebook']['email']['default'],'value' => $info['phonebook']['email']));?>
 

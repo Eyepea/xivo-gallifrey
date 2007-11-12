@@ -2,13 +2,13 @@
 	$url = &$this->get_module('url');
 	$form = &$this->get_module('form');
 
-	$pager = $this->vars('pager');
-	$list = $this->vars('list');
-	$act = $this->vars('act');
+	$pager = $this->get_var('pager');
+	$list = $this->get_var('list');
+	$act = $this->get_var('act');
 
 	$param = array();
 
-	if(($search = (string) $this->vars('search')) !== ''):
+	if(($search = (string) $this->get_var('search')) !== ''):
 		$param['search'] = $search;
 	endif;
 

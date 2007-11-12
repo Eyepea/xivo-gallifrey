@@ -45,6 +45,6 @@ do
 
 $element['trunk'] = $trunkcustom->get_element();
 
-$_HTML->assign('info',$result);
+$_HTML->set_var('info',$result);
 
 ?>

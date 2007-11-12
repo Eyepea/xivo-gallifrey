@@ -22,19 +22,24 @@ class xivo_tpl_module
 		return($this->_tpl->get_option($name));
 	}
 
-	function assign($name,$value)
+	function set_var($name,$value)
 	{
-		return($this->_tpl->assign($name,$value));
+		return($this->_tpl->set_var($name,$value));
 	}
 
-	function assign_array(&$a)
+	function set_varra(&$a)
 	{
-		return($this->_tpl->assign_array($a));
+		return($this->_tpl->set_varra($a));
 	}
 
-	function vars($name)
+	function get_var($name)
 	{
-		return($this->_tpl->vars($name));
+		return($this->_tpl->get_var($name));
+	}
+
+	function get_varra($name,$keys)
+	{
+		return($this->_tpl->get_varra($name,$keys));
 	}
 
 	function set_file($name,$value)

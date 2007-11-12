@@ -85,13 +85,13 @@ switch($act)
 			}
 		}
 
-		$_HTML->assign('info',$result);
-		$_HTML->assign('element',$appqueue->get_elements());
-		$_HTML->assign('user',$user);
-		$_HTML->assign('agentgroup',$agentgroup);
-		$_HTML->assign('agent',$agent);
-		$_HTML->assign('moh_list',$appqueue->get_musiconhold());
-		$_HTML->assign('announce_list',$appqueue->get_announce());
+		$_HTML->set_var('info',$result);
+		$_HTML->set_var('element',$appqueue->get_elements());
+		$_HTML->set_var('user',$user);
+		$_HTML->set_var('agentgroup',$agentgroup);
+		$_HTML->set_var('agent',$agent);
+		$_HTML->set_var('moh_list',$appqueue->get_musiconhold());
+		$_HTML->set_var('announce_list',$appqueue->get_announce());
 
 		$dhtml = &$_HTML->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
@@ -177,14 +177,14 @@ switch($act)
 			}
 		}
 
-		$_HTML->assign('id',$info['qfeatures']['id']);
-		$_HTML->assign('info',$return);
-		$_HTML->assign('user',$user);
-		$_HTML->assign('agentgroup',$agentgroup);
-		$_HTML->assign('agent',$agent);
-		$_HTML->assign('element',$appqueue->get_elements());
-		$_HTML->assign('moh_list',$appqueue->get_musiconhold());
-		$_HTML->assign('announce_list',$appqueue->get_announce());
+		$_HTML->set_var('id',$info['qfeatures']['id']);
+		$_HTML->set_var('info',$return);
+		$_HTML->set_var('user',$user);
+		$_HTML->set_var('agentgroup',$agentgroup);
+		$_HTML->set_var('agent',$agent);
+		$_HTML->set_var('element',$appqueue->get_elements());
+		$_HTML->set_var('moh_list',$appqueue->get_musiconhold());
+		$_HTML->set_var('announce_list',$appqueue->get_announce());
 
 		$dhtml = &$_HTML->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
@@ -257,11 +257,11 @@ switch($act)
 			usort($queues,array(&$sort,'str_usort'));
 		}
 
-		$_HTML->assign('pager',xivo_calc_page($page,20,$total));
-		$_HTML->assign('list',$queues);
+		$_HTML->set_var('pager',xivo_calc_page($page,20,$total));
+		$_HTML->set_var('list',$queues);
 }
 
-$_HTML->assign('act',$act);
+$_HTML->set_var('act',$act);
 
 $menu = &$_HTML->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

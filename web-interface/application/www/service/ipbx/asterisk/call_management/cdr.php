@@ -33,18 +33,18 @@ if(isset($_QR['fm_send']) === true || isset($_QR['search']) === true)
 		if($result === false)
 			$info = null;
 
-		$_HTML->assign('pager',xivo_calc_page($page,$nb_page,$total));
+		$_HTML->set_var('pager',xivo_calc_page($page,$nb_page,$total));
 	}
 
 	if($act === 'exportcsv' && $info !== null)
 		$info['amaflagsmeta'] = $info['amaflags'] !== '' ? $cdr->amaflags_meta($info['amaflags']) : '';
 }
 
-$_HTML->assign('total',$total);
-$_HTML->assign('element',$element);
-$_HTML->assign('info',$info);
-$_HTML->assign('result',$result);
-$_HTML->assign('act',$act);
+$_HTML->set_var('total',$total);
+$_HTML->set_var('element',$element);
+$_HTML->set_var('info',$info);
+$_HTML->set_var('result',$result);
+$_HTML->set_var('act',$act);
 
 if($act === 'exportcsv')
 {

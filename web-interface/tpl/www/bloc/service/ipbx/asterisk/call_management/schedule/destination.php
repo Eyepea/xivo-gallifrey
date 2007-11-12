@@ -2,10 +2,10 @@
 	$form = &$this->get_module('form');
 	$url = &$this->get_module('url');
 
-	$info = $this->vars('info');
-	$element = $this->vars('element');
-	$list = $this->vars('list');
-	$typename = $this->vars('typename');
+	$info = $this->get_var('info');
+	$element = $this->get_var('element');
+	$list = $this->get_var('list');
+	$typename = $this->get_var('typename');
 
 	if($typename === 'true'):
 		$typeval = 'typetrue';

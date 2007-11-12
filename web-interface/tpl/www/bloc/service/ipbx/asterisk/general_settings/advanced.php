@@ -2,10 +2,10 @@
 	$form = &$this->get_module('form');
 	$dhtml = &$this->get_module('dhtml');
 
-	$element = $this->vars('element');
-	$error = $this->vars('error');
+	$element = $this->get_var('element');
+	$error = $this->get_var('error');
 
-	if($this->vars('fm_save') === true):
+	if($this->get_var('fm_save') === true):
 		$dhtml->write_js('xivo_form_success(\''.xivo_stript($this->bbf('fm_success-save')).'\');');
 	endif;
 
@@ -47,25 +47,25 @@
 
 <div id="sb-part-first">
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_userinternal_guest'),'name' => 'userinternal[guest]','labelid' => 'userinternal-guest','checked' => ((bool) $this->varra('userinternal',array('guest','ufeatures','commented')) === true ? false : true)));?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_userinternal_guest'),'name' => 'userinternal[guest]','labelid' => 'userinternal-guest','checked' => ((bool) $this->get_varra('userinternal',array('guest','ufeatures','commented')) === true ? false : true)));?>
 
 </div>
 
 <div id="sb-part-agent" class="b-nodisplay">
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_generalagents_persistentagents'),'name' => 'generalagents[persistentagents]','labelid' => 'generalagents-persistentagents','default' => $element['generalagents']['persistentagents']['default'],'checked' => $this->varra('generalagents',array('persistentagents','var_val'))));?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_generalagents_persistentagents'),'name' => 'generalagents[persistentagents]','labelid' => 'generalagents-persistentagents','default' => $element['generalagents']['persistentagents']['default'],'checked' => $this->get_varra('generalagents',array('persistentagents','var_val'))));?>
 
 </div>
 
 <div id="sb-part-queue" class="b-nodisplay">
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_generalqueue_persistentmembers'),'name' => 'generalqueue[persistentmembers]','labelid' => 'generalqueue-persistentmembers','default' => $element['generalqueue']['persistentmembers']['default'],'checked' => $this->varra('generalqueue',array('persistentmembers','var_val'))));?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_generalqueue_persistentmembers'),'name' => 'generalqueue[persistentmembers]','labelid' => 'generalqueue-persistentmembers','default' => $element['generalqueue']['persistentmembers']['default'],'checked' => $this->get_varra('generalqueue',array('persistentmembers','var_val'))));?>
 
 </div>
 
 <div id="sb-part-last" class="b-nodisplay">
 
-<?=$form->select(array('desc' => $this->bbf('fm_generalmeetme_audiobuffer'),'name' => 'generalmeetme[audiobuffer]','labelid' => 'generalmeetme-audiobuffer','key' => false,'default' => $element['generalmeetme']['audiobuffer']['default'],'value' => $this->varra('generalmeetme',array('audiobuffer','var_val'))),$element['generalmeetme']['audiobuffer']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_generalmeetme_audiobuffer'),'name' => 'generalmeetme[audiobuffer]','labelid' => 'generalmeetme-audiobuffer','key' => false,'default' => $element['generalmeetme']['audiobuffer']['default'],'value' => $this->get_varra('generalmeetme',array('audiobuffer','var_val'))),$element['generalmeetme']['audiobuffer']['value']);?>
 
 </div>
 

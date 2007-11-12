@@ -73,13 +73,13 @@ switch($act)
 		&& (xivo_issa('dialstatus',$result) === false || empty($result['dialstatus']) === true) === true)
 			$result['dialstatus'] = null;
 
-		$_HTML->assign('info',$result);
-		$_HTML->assign('dialstatus',$result['dialstatus']);
-		$_HTML->assign('element',$appgroup->get_elements());
-		$_HTML->assign('user',$user);
-		$_HTML->assign('rightcall',$rightcall);
-		$_HTML->assign('list',$appgroup->get_dialstatus_destination_list());
-		$_HTML->assign('moh_list',$appgroup->get_musiconhold());
+		$_HTML->set_var('info',$result);
+		$_HTML->set_var('dialstatus',$result['dialstatus']);
+		$_HTML->set_var('element',$appgroup->get_elements());
+		$_HTML->set_var('user',$user);
+		$_HTML->set_var('rightcall',$rightcall);
+		$_HTML->set_var('list',$appgroup->get_dialstatus_destination_list());
+		$_HTML->set_var('moh_list',$appgroup->get_musiconhold());
 
 		$dhtml = &$_HTML->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialstatus.js');
@@ -154,14 +154,14 @@ switch($act)
 		&& (xivo_issa('dialstatus',$return) === false || empty($return['dialstatus']) === true) === true)
 			$return['dialstatus'] = null;
 
-		$_HTML->assign('id',$info['gfeatures']['id']);
-		$_HTML->assign('info',$return);
-		$_HTML->assign('dialstatus',$return['dialstatus']);
-		$_HTML->assign('user',$user);
-		$_HTML->assign('rightcall',$rightcall);
-		$_HTML->assign('element',$appgroup->get_elements());
-		$_HTML->assign('list',$appgroup->get_dialstatus_destination_list());
-		$_HTML->assign('moh_list',$appgroup->get_musiconhold());
+		$_HTML->set_var('id',$info['gfeatures']['id']);
+		$_HTML->set_var('info',$return);
+		$_HTML->set_var('dialstatus',$return['dialstatus']);
+		$_HTML->set_var('user',$user);
+		$_HTML->set_var('rightcall',$rightcall);
+		$_HTML->set_var('element',$appgroup->get_elements());
+		$_HTML->set_var('list',$appgroup->get_dialstatus_destination_list());
+		$_HTML->set_var('moh_list',$appgroup->get_musiconhold());
 
 		$dhtml = &$_HTML->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialstatus.js');
@@ -235,11 +235,11 @@ switch($act)
 			usort($groups,array(&$sort,'str_usort'));
 		}
 
-		$_HTML->assign('pager',xivo_calc_page($page,20,$total));
-		$_HTML->assign('list',$groups);
+		$_HTML->set_var('pager',xivo_calc_page($page,20,$total));
+		$_HTML->set_var('list',$groups);
 }
 
-$_HTML->assign('act',$act);
+$_HTML->set_var('act',$act);
 
 $menu = &$_HTML->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

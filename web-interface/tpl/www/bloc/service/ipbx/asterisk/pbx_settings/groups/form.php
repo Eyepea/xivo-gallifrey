@@ -2,11 +2,11 @@
 	$form = &$this->get_module('form');
 	$url = &$this->get_module('url');
 
-	$element = $this->vars('element');
-	$info = $this->vars('info');
-	$user = $this->vars('user');
-	$rightcall = $this->vars('rightcall');
-	$moh_list = $this->vars('moh_list');
+	$element = $this->get_var('element');
+	$info = $this->get_var('info');
+	$user = $this->get_var('user');
+	$rightcall = $this->get_var('rightcall');
+	$moh_list = $this->get_var('moh_list');
 ?>
 
 <div id="sb-part-first" class="b-nodisplay">

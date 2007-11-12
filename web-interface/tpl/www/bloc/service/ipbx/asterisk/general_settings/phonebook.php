@@ -2,10 +2,10 @@
 	$form = &$this->get_module('form');
 	$url = &$this->get_module('url');
 
-	$info = $this->vars('info');
-	$element = $this->vars('element');
+	$info = $this->get_var('info');
+	$element = $this->get_var('element');
 
-	if($this->vars('fm_save') === true):
+	if($this->get_var('fm_save') === true):
 		$dhtml = &$this->get_module('dhtml');
 		$dhtml->write_js('xivo_form_success(\''.xivo_stript($this->bbf('fm_success-save')).'\');');
 	endif;

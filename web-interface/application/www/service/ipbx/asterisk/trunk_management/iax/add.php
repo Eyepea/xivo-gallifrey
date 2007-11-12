@@ -113,6 +113,6 @@ if($result !== null)
 		$result['register'] = null;
 }
 
-$_HTML->assign('info',$result);
+$_HTML->set_var('info',$result);
 
 ?>

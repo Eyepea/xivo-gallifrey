@@ -2,8 +2,8 @@
 	$form = &$this->get_module('form');
 	$url = &$this->get_module('url');
 	
-	$act = $this->vars('act');
-	$cat = $this->vars('cat');
+	$act = $this->get_var('act');
+	$cat = $this->get_var('cat');
 
 	$param = array('act' => 'addfile');
 
@@ -17,7 +17,7 @@
 <form action="#" method="post" id="fm-musiconhold-toolbar" accept-charset="utf-8">
 <?=$form->hidden(array('name' => XIVO_SESS_NAME,'value' => XIVO_SESS_ID));?>
 <?=$form->hidden(array('name' => 'act','value' => 'list'));?>
-	<div class="fm-field"><?=$form->select(array('name' => 'cat','id' => 'it-cat','key' => true,'altkey' => 'category','field' => false,'empty' => $this->bbf('toolbar_fm_category'),'value' => $cat),$this->vars('list_cats'),'onchange="this.form[\'act\'].value = this.value == \'\' ? \'list\' : \'listfile\'; return(this.form.submit());"');?></div>
+	<div class="fm-field"><?=$form->select(array('name' => 'cat','id' => 'it-cat','key' => true,'altkey' => 'category','field' => false,'empty' => $this->bbf('toolbar_fm_category'),'value' => $cat),$this->get_var('list_cats'),'onchange="this.form[\'act\'].value = this.value == \'\' ? \'list\' : \'listfile\'; return(this.form.submit());"');?></div>
 </form>
 <a href="#" onmouseover="xivo_eid('advanced-menu').style.display = 'block';" onmouseout="xivo_eid('advanced-menu').style.display = 'none';"><?=$url->img_html('img/menu/top/toolbar/bt-add.gif',$this->bbf('toolbar_opt_add'),'border="0"');?></a>
 <div class="sb-advanced-menu">

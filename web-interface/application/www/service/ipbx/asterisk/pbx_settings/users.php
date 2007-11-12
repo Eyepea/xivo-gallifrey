@@ -34,6 +34,8 @@ switch($act)
 
 		$appuser->delete();
 
+		$ipbx->discuss('xivo[userlist,update]');
+
 		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/users'),$param);
 		break;
 	case 'deletes':
@@ -53,6 +55,8 @@ switch($act)
 
 			$appuser->delete();
 		}
+
+		$ipbx->discuss('xivo[userlist,update]');
 
 		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/users'),$param);
 		break;
@@ -78,7 +82,21 @@ switch($act)
 				$appuser->enable();
 		}
 
+		$ipbx->discuss('xivo[userlist,update]');
+
 		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/users'),$param);
+		break;
+	case 'import':
+		$appuser = &$ipbx->get_application('user');
+
+		if(isset($_QR['fm_send']) === true)
+		{
+			$appuser->import_csv();
+			$ipbx->discuss('xivo[userlist,update]');
+			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/users'),$param);
+		}
+
+		$_HTML->set_var('import_file',$appuser->get_config_import_file());
 		break;
 	case 'list':
 	default:
@@ -100,14 +118,14 @@ switch($act)
 			usort($users,array(&$sort,'str_usort'));
 		}
 
-		$_HTML->assign('pager',xivo_calc_page($page,20,$total));
-		$_HTML->assign('list',$users);
-		$_HTML->assign('search',$search);
-		$_HTML->assign('context',$context);
+		$_HTML->set_var('pager',xivo_calc_page($page,20,$total));
+		$_HTML->set_var('list',$users);
+		$_HTML->set_var('search',$search);
+		$_HTML->set_var('context',$context);
 }
 
-$_HTML->assign('act',$act);
-$_HTML->assign('contexts',$contexts);
+$_HTML->set_var('act',$act);
+$_HTML->set_var('contexts',$contexts);
 
 $menu = &$_HTML->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

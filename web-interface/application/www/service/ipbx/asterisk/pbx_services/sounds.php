@@ -16,7 +16,7 @@ if(($list_dirs = $sounds->get_list_dirs()) !== false)
 	usort($list_dirs,array(&$sort,'str_usort'));
 }
 
-$_HTML->assign('list_dirs',$list_dirs);
+$_HTML->set_var('list_dirs',$list_dirs);
 
 switch($act)
 {
@@ -47,8 +47,8 @@ switch($act)
 
 include(dirname(__FILE__).'/sounds/'.$action.'.php');
 
-$_HTML->assign('act',$act);
-$_HTML->assign('dir',$dir);
+$_HTML->set_var('act',$act);
+$_HTML->set_var('dir',$dir);
 
 $menu = &$_HTML->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

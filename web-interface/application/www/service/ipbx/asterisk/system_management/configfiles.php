@@ -22,9 +22,9 @@ switch($act)
 
 include(dirname(__FILE__).'/configfiles/'.$action.'.php');
 
-$_HTML->assign('act',$act);
-$_HTML->assign('element',$element);
-$_HTML->assign('info',$info);
+$_HTML->set_var('act',$act);
+$_HTML->set_var('element',$element);
+$_HTML->set_var('info',$info);
 
 $menu = &$_HTML->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

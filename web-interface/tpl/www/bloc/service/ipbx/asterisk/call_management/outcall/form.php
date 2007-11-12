@@ -2,16 +2,16 @@
 	$form = &$this->get_module('form');
 	$url = &$this->get_module('url');
 
-	$info = $this->vars('info');
-	$element = $this->vars('element');
-	$rightcall = $this->vars('rightcall');
+	$info = $this->get_var('info');
+	$element = $this->get_var('element');
+	$rightcall = $this->get_var('rightcall');
 
-	if($this->vars('act') === 'add')
+	if($this->get_var('act') === 'add')
 		$invalid = false;
 	else
 		$invalid = true;
 
-	$trunks_list = $this->vars('trunks_list');
+	$trunks_list = $this->get_var('trunks_list');
 ?>
 
 <div id="sb-part-first">

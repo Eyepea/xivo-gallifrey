@@ -2,15 +2,15 @@
 	$form = &$this->get_module('form');
 	$url = &$this->get_module('url');
 	
-	$act = $this->vars('act');
+	$act = $this->get_var('act');
 
-	if(($search = (string) $this->vars('search')) === ''):
+	if(($search = (string) $this->get_var('search')) === ''):
 		$searchjs = '';
 	else:
 		$searchjs = ' xivo_fm[\'fm-users-list\'][\'search\'].value = \''.xivo_stript($search).'\';';
 	endif;
 
-	if(($context = $this->vars('context')) === '' && $search === ''):
+	if(($context = $this->get_var('context')) === '' && $search === ''):
 		$contextjs = '';
 	else:
 		$contextjs = ' xivo_fm[\'fm-users-list\'][\'context\'].value = \''.xivo_stript($context).'\';';
@@ -20,10 +20,15 @@
 <form action="#" method="post" accept-charset="utf-8">
 <?=$form->hidden(array('name' => XIVO_SESS_NAME,'value' => XIVO_SESS_ID));?>
 <?=$form->hidden(array('name' => 'act','value' => 'list'));?>
-	<div class="fm-field"><?=$form->text(array('name' => 'search','id' => 'it-search','size' => 20,'field' => false,'value' => $search,'default' => $this->bbf('toolbar_fm_search')),'onfocus="this.value = this.value == \''.xivo_stript($this->bbf('toolbar_fm_search')).'\' ? \'\' : this.value; xivo_fm_set_onfocus(this);"');?><?=$form->image(array('name' => 'submit','id' => 'it-subsearch','src' => $url->img('img/menu/top/toolbar/bt-search.gif'),'field' => false,'alt' => $this->bbf('toolbar_fm_search')));?><?=$form->select(array('name' => 'context','id' => 'it-context','field' => false,'empty' => $this->bbf('toolbar_fm_context'),'value' => $context),$this->vars('contexts'),'style="margin-left: 20px;" onchange="this.form[\'search\'].value = \'\'; this.form.submit()"');?></div>
+	<div class="fm-field"><?=$form->text(array('name' => 'search','id' => 'it-search','size' => 20,'field' => false,'value' => $search,'default' => $this->bbf('toolbar_fm_search')),'onfocus="this.value = this.value == \''.xivo_stript($this->bbf('toolbar_fm_search')).'\' ? \'\' : this.value; xivo_fm_set_onfocus(this);"');?><?=$form->image(array('name' => 'submit','id' => 'it-subsearch','src' => $url->img('img/menu/top/toolbar/bt-search.gif'),'field' => false,'alt' => $this->bbf('toolbar_fm_search')));?><?=$form->select(array('name' => 'context','id' => 'it-context','field' => false,'empty' => $this->bbf('toolbar_fm_context'),'value' => $context),$this->get_var('contexts'),'style="margin-left: 20px;" onchange="this.form[\'search\'].value = \'\'; this.form.submit()"');?></div>
 </form>
-	<?=$url->href_html($url->img_html('img/menu/top/toolbar/bt-add.gif',$this->bbf('toolbar_opt_add'),'border="0"'),'service/ipbx/pbx_settings/users','act=add',null,$this->bbf('toolbar_opt_add'));?>
-<?php
+<a href="#" onmouseover="xivo_eid('add-menu').style.display = 'block';" onmouseout="xivo_eid('add-menu').style.display = 'none';"><?=$url->img_html('img/menu/top/toolbar/bt-add.gif',$this->bbf('toolbar_opt_add'),'border="0"');?>
+</a><div class="sb-advanced-menu">
+	<ul id="add-menu" onmouseover="this.style.display = 'block';" onmouseout="this.style.display = 'none';">	
+		<li><?=$url->href_html($this->bbf('toolbar_add_menu_add'),'service/ipbx/pbx_settings/users','act=add');?></li>
+		<li><?=$url->href_html($this->bbf('toolbar_add_menu_import-file'),'service/ipbx/pbx_settings/users','act=import');?></li>
+	</ul>
+</div><?php
 	if($act === 'list'):
 ?>
 <div class="sb-advanced-menu">

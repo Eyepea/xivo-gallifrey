@@ -84,6 +84,8 @@ do
 		break;
 	}
 
+	$ipbx->discuss('xivo[userlist,update]');
+
 	$_QRY->go($_HTML->url('service/ipbx/pbx_settings/users'),$param);
 }
 while(false);
@@ -161,18 +163,18 @@ if(empty($return) === false)
 else
 	$return = null;
 
-$_HTML->assign('id',$info['ufeatures']['id']);
-$_HTML->assign('info',$return);
-$_HTML->assign('dialstatus',$return['dialstatus']);
-$_HTML->assign('groups',$groups);
-$_HTML->assign('gmember',$gmember);
-$_HTML->assign('queues',$queues);
-$_HTML->assign('qmember',$qmember);
-$_HTML->assign('rightcall',$rightcall);
-$_HTML->assign('element',$element);
-$_HTML->assign('list',$appuser->get_dialstatus_destination_list());
-$_HTML->assign('moh_list',$appuser->get_musiconhold());
-$_HTML->assign('autoprov_list',$autoprov->get_autoprov_list());
+$_HTML->set_var('id',$info['ufeatures']['id']);
+$_HTML->set_var('info',$return);
+$_HTML->set_var('dialstatus',$return['dialstatus']);
+$_HTML->set_var('groups',$groups);
+$_HTML->set_var('gmember',$gmember);
+$_HTML->set_var('queues',$queues);
+$_HTML->set_var('qmember',$qmember);
+$_HTML->set_var('rightcall',$rightcall);
+$_HTML->set_var('element',$element);
+$_HTML->set_var('list',$appuser->get_dialstatus_destination_list());
+$_HTML->set_var('moh_list',$appuser->get_musiconhold());
+$_HTML->set_var('autoprov_list',$autoprov->get_autoprov_list());
 
 $dhtml = &$_HTML->get_module('dhtml');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialstatus.js');

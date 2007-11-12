@@ -102,13 +102,13 @@ if(isset($_QR['fm_send']) === true)
 	}
 }
 
-$_HTML->assign('fm_save',$fm_save);
-$_HTML->assign('error',$error);
-$_HTML->assign('extenfeatures',$info['extenfeatures']);
-$_HTML->assign('generalfeatures',$info['generalfeatures']);
-$_HTML->assign('featuremap',$info['featuremap']);
-$_HTML->assign('sound_list',$appgeneralfeatures->get_sound());
-$_HTML->assign('element',$element);
+$_HTML->set_var('fm_save',$fm_save);
+$_HTML->set_var('error',$error);
+$_HTML->set_var('extenfeatures',$info['extenfeatures']);
+$_HTML->set_var('generalfeatures',$info['generalfeatures']);
+$_HTML->set_var('featuremap',$info['featuremap']);
+$_HTML->set_var('sound_list',$appgeneralfeatures->get_sound());
+$_HTML->set_var('element',$element);
 
 $dhtml = &$_HTML->get_module('dhtml');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/extenfeatures.js');

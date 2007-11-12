@@ -39,7 +39,7 @@ do
 }
 while(false);
 
-$_HTML->assign('id',$id);
-$_HTML->assign('info',$info);
+$_HTML->set_var('id',$id);
+$_HTML->set_var('info',$info);
 
 ?>

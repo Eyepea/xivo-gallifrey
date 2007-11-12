@@ -2,8 +2,8 @@
 	$url = &$this->get_module('url');
 	$form = &$this->get_module('form');
 
-	$pager = $this->vars('pager');
-	$act = $this->vars('act');
+	$pager = $this->get_var('pager');
+	$act = $this->get_var('act');
 
 	$page = $url->pager($pager['pages'],$pager['page'],$pager['prev'],$pager['next'],'service/ipbx/pbx_settings/queues',array('act' => $act));
 ?>
@@ -27,7 +27,7 @@
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
 	</tr>
 <?php
-	$list = $this->vars('list');
+	$list = $this->get_var('list');
 
 	if($list === false || ($nb = count($list)) === 0):
 ?>

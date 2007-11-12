@@ -1,6 +1,6 @@
 <?php
 	$form = &$this->get_module('form');
-	$element = $this->vars('element');
+	$element = $this->get_var('element');
 ?>
 <div class="b-infos b-form">
 	<h3 class="sb-top xspan"><span class="span-left">&nbsp;</span><span class="span-center"><?=$this->bbf('title_content_name');?></span><span class="span-right">&nbsp;</span></h3>
@@ -11,7 +11,7 @@
 <?=$form->hidden(array('name' => 'fm_send','value' => 1));?>
 <?=$form->hidden(array('name' => 'act','value' => 'adddir'));?>
 
-<?=$form->text(array('desc' => $this->bbf('fm_dirname'),'name' => 'dirname','labelid' => 'dirname','size' => 15,'value' => $this->varra('info','dirname')));?>
+<?=$form->text(array('desc' => $this->bbf('fm_dirname'),'name' => 'dirname','labelid' => 'dirname','size' => 15,'value' => $this->get_varra('info','dirname')));?>
 
 <?=$form->submit(array('name' => 'submit','id' => 'it-submit','value' => $this->bbf('fm_bt-save')));?>
 </form>

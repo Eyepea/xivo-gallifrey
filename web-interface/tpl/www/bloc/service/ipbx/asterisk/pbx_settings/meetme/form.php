@@ -1,9 +1,9 @@
 <?php
 	$form = &$this->get_module('form');
 
-	$moh_list = $this->vars('moh_list');
-	$info = $this->vars('info');
-	$element = $this->vars('element');
+	$moh_list = $this->get_var('moh_list');
+	$info = $this->get_var('info');
+	$element = $this->get_var('element');
 ?>
 
 <div id="sb-part-first">

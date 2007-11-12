@@ -1,8 +1,8 @@
 <?php
 	$url = &$this->get_module('url');
 
-	$userstat = $this->vars('userstat');
-	$serverstat = $this->vars('serverstat');
+	$userstat = $this->get_var('userstat');
+	$serverstat = $this->get_var('serverstat');
 ?>
 <div id="index" class="b-infos">
 	<h3 class="sb-top xspan"><span class="span-left">&nbsp;</span><span class="span-center"><?=$this->bbf('title_content_name');?></span><span class="span-right">&nbsp;</span></h3>

@@ -12,7 +12,7 @@
 <?=$form->hidden(array('name' => XIVO_SESS_NAME,'value' => XIVO_SESS_ID));?>
 <?=$form->hidden(array('name' => 'act','value' => 'edit'));?>
 <?=$form->hidden(array('name' => 'fm_send','value' => 1));?>
-<?=$form->hidden(array('name' => 'id','value' => $this->vars('id')));?>
+<?=$form->hidden(array('name' => 'id','value' => $this->get_var('id')));?>
 
 <?=$this->file_include('bloc/service/ipbx/asterisk/pbx_services/phonebook/form');?>
 

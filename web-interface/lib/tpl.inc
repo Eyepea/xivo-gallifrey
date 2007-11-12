@@ -205,7 +205,7 @@ class xivo_tpl
 		return(true);
 	}
 
-	function assign($name,$value)
+	function set_var($name,$value)
 	{
 		$name = (string) $name;
 
@@ -217,7 +217,7 @@ class xivo_tpl
 		return(true);
 	}
 
-	function assign_array(&$a)
+	function set_varra(&$a)
 	{
 		$a = (array) $a;
 
@@ -227,11 +227,23 @@ class xivo_tpl
 		for($i = 0;$i < $arr['cnt'];$i++)
 		{
 			$k = &$arr['keys'][$i];
-			$this->assign($k,$a[$k]);
+			$this->set_var($k,$a[$k]);
 		}
 	}
 
-	function varra($name,$keys)
+	function get_var($name)
+	{
+		$r = null;
+
+		$name = (string) $name;
+
+		if(isset($this->_var[$name]) === true)
+			$r = &$this->_var[$name];
+
+		return($r);
+	}
+
+	function get_varra($name,$keys)
 	{
 		$name = (string) $name;
 
@@ -261,18 +273,6 @@ class xivo_tpl
 		}
 
 		return($ref);
-	}
-
-	function vars($name)
-	{
-		$r = null;
-
-		$name = (string) $name;
-
-		if(isset($this->_var[$name]) === true)
-			$r = &$this->_var[$name];
-
-		return($r);
 	}
 
 	function set_file($name,$value)
@@ -483,7 +483,7 @@ class xivo_tpl
 			return(false);
 
 		$this->set_file('tpl',$path);
-		$this->assign_array($arr);
+		$this->set_varra($arr);
 
 		if($this->get_option('overload_i18n') !== false)
 			$this->load_i18n_file($file);

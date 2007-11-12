@@ -2,11 +2,11 @@
 	$form = &$this->get_module('form');
 	$url = &$this->get_module('url');
 
-	$element = $this->vars('element');
-	$pager = $this->vars('pager');
+	$element = $this->get_var('element');
+	$pager = $this->get_var('pager');
 
-	$result = $this->vars('result');
-	$info = $this->vars('info');
+	$result = $this->get_var('result');
+	$info = $this->get_var('info');
 
 	if(xivo_haslen($info['amaflags']) === false):
 		$amaflags = null;
@@ -152,7 +152,7 @@
 <div class="sb-list">
 <?php
 	if($page !== ''):
-		echo '<div class="b-total">',$this->bbf('number_cdr-result','<b>'.$this->vars('total').'</b>'),
+		echo '<div class="b-total">',$this->bbf('number_cdr-result','<b>'.$this->get_var('total').'</b>'),
 		'</div><div class="b-page">',$page,'</div><div class="clearboth"></div>';
 	endif;
 ?>
@@ -291,7 +291,7 @@
 	</table>
 <?php
 	if($page !== ''):
-		echo '<div class="b-total">',$this->bbf('number_cdr-result','<b>'.$this->vars('total').'</b>'),
+		echo '<div class="b-total">',$this->bbf('number_cdr-result','<b>'.$this->get_var('total').'</b>'),
 		'</div><div class="b-page">',$page,'</div><div class="clearboth"></div>';
 	endif;
 ?>
