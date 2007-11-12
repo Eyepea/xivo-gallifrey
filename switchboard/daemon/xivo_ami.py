@@ -227,6 +227,20 @@ class AMIClass:
                 except Exception, exc:
                         return False
 
+        # \brief Atxfer a channel towards a new extension.
+        def atxfer(self, channel, extension, context):
+                try:
+                        ret = self.sendcommand('Atxfer', [('Channel', channel),
+                                                          ('Exten', extension),
+                                                          ('Context', context),
+                                                          ('Priority', '1')])
+                        reply = self.readresponse('')
+                        return ret
+                except self.AMIError, exc:
+                        return False
+                except Exception, exc:
+                        return False
+
         def txfax(self, filename, callerid, number, context, debug):
                 # originate a call btw src and dst
                 # src will ring first, and dst will ring when src responds

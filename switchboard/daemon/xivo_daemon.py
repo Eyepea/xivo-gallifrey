@@ -692,6 +692,26 @@ def originate_or_transfer(requester, l):
                                                                 ret_message = "message=%s::transfer OK (%s) %s %s" %(DAEMON, ast_src, l[1], l[2])
                                                         else:
                                                                 ret_message = "message=%s::transfer KO (%s) %s %s" %(DAEMON, ast_src, l[1], l[2])
+                        elif l[0] == 'atxfer':
+                                log_debug(SYSLOG_INFO, "%s is attempting an ATXFER : %s" %(requester, str(l)))
+                                phonesrc, phonesrcchan = split_from_ui(l[1])
+                                if phonesrc == phonesrcchan:
+                                        ret_message = "message=%s::atxfer KO : %s not a channel" %(DAEMON, phonesrcchan)
+                                else:
+                                        if phonesrc in plist[idast_src].normal:
+                                                channellist = plist[idast_src].normal[phonesrc].chann
+                                                nopens = len(channellist)
+                                                if nopens == 0:
+                                                        ret_message = "message=%s::atxfer KO : no channel opened on %s" %(DAEMON, phonesrc)
+                                                else:
+                                                        tchan = channellist[phonesrcchan].getChannelPeer()
+                                                        ret = AMI_array_user_commands[ast_src].atxfer(tchan,
+                                                                                                      exten_dst,
+                                                                                                      context_dst)
+                                                        if ret:
+                                                                ret_message = "message=%s::atxfer OK (%s) %s %s" %(DAEMON, ast_src, l[1], l[2])
+                                                        else:
+                                                                ret_message = "message=%s::atxfer KO (%s) %s %s" %(DAEMON, ast_src, l[1], l[2])
         else:
                 ret_message = "message=%s::originate or transfer KO : asterisk id mismatch (%d %d)" %(DAEMON, idast_src, idast_dst)
         return ret_message
@@ -988,19 +1008,22 @@ def manage_tcp_connection(connid, allow_events):
                                                         try:
                                                                 s = AMI_array_user_commands[astid].execclicommand(usefulmsg.strip())
                                                         except Exception, exc:
-                                                                log_debug(SYSLOG_ERR, '--- exception --- (%s) error : WEBI command <%s> : (client %s) : %s'
+                                                                log_debug(SYSLOG_ERR, '--- exception --- (%s) error : WEBI command exec <%s> : (client %s) : %s'
                                                                           %(astid, str(usefulmsg.strip()), requester, str(exc)))
                                                         try:
                                                                 for x in s: connid[0].send(x)
                                                                 connid[0].send('%s:OK\n' %(XIVO_CLI_WEBI_HEADER))
                                                         except Exception, exc:
-                                                                log_debug(SYSLOG_ERR, '--- exception --- (%s) error : WEBI command <%s> : (client %s) : %s'
+                                                                log_debug(SYSLOG_ERR, '--- exception --- (%s) error : WEBI command reply <%s> : (client %s) : %s'
                                                                           %(astid, str(usefulmsg.strip()), requester, str(exc)))
                                         except Exception, exc:
                                                 connid[0].send('%s:KO <Exception : %s>\n' %(XIVO_CLI_WEBI_HEADER, str(exc)))
-                                connid[0].close()
-                                ins.remove(connid[0])
-                                log_debug(SYSLOG_INFO, 'TCP (WEBI) socket closed towards %s' %requester)
+                                try:
+                                        ins.remove(connid[0])
+                                        connid[0].close()
+                                        log_debug(SYSLOG_INFO, 'TCP (WEBI) socket closed towards %s' %requester)
+                                except Exception, exc:
+                                        log_debug(SYSLOG_ERR, '--- exception --- TCP (WEBI) could not close properly %s' %requester)
 
 
 ## \brief Tells whether a channel is a "normal" one, i.e. SIP, IAX2, mISDN, Zap
@@ -2866,7 +2889,7 @@ def parse_command_and_build_reply(me, myconn, myargs):
                         if (capalist & CAPA_MESSAGE):
                                 strmessage = 'message=%s/%s::<%s>' %(astid, me[2], myargs[1])
                                 send_msg_to_cti_clients(strmessage)
-                elif myargs[0] == 'originate' or myargs[0] == 'transfer':
+                elif myargs[0] == 'originate' or myargs[0] == 'transfer' or myargs[0] == 'atxfer':
                         if (capalist & CAPA_DIAL):
                                 repstr = originate_or_transfer("%s/%s" %(astid, me[2]), [myargs[0], myargs[1], myargs[2]])
                 elif myargs[0] == 'hangup':
