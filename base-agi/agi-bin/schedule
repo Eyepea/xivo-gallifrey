@@ -36,31 +36,14 @@ import xivo.to_path
 import sys
 import anysql
 import except_tb
+import agi_helpers
 from BackSQL import backsqlite
 from BackSQL import backmysql
 import ConfigDict
 from agi import *
 
-db_uri = ConfigDict.ReadSingleKey(CONFIG_FILE, 'db', 'db_uri')
-
 agi = AGI()
-
-def dp_break(message, show_tb = False):
-	agi.verbose(message)
-
-	if show_tb:
-		except_tb.log_exception(agi.verbose)
-
-	agi.hangup()
-	sys.exit(1)
-
-def db_connect():
-	try:
-		conn = anysql.connect_by_uri(db_uri)
-	except:
-		dp_break("Unable to connect to %s" % db_uri, True)
-
-	return conn
+db_uri = ConfigDict.ReadSingleKey(CONFIG_FILE, 'db', 'db_uri')
 
 def forgetimefield(start, end, includesep = False):
 	if start == '*':
@@ -83,52 +66,15 @@ def forgetime(res):
 	timestr += forgetimefield(res['monthbeg'], res['monthend'], True)
 	return timestr
 
-def setvars(type, typeval, type_varname, typeval_varname):
-	agi.set_variable(type_varname, type)
-
-	if type == 'endcall' or type == 'application' or type == 'schedule' or type == 'sound' or type == 'custom':
-		agi.set_variable(typeval_varname, typeval)
-	elif type == 'user':
-		cursor.query("SELECT ${columns} FROM userfeatures WHERE id = %s", ('number',), (typeval,))
-		res = cursor.fetchone()
-
-		if not res:
-			dp_break("Database inconsistency: unable to find linked destination user '%s'" % typeval)
-
-		agi.set_variable(typeval_varname, res['number'])
-	elif type == 'group':
-		cursor.query("SELECT ${columns} FROM groupfeatures WHERE id = %s", ('number',), (typeval,))
-		res = cursor.fetchone()
-
-		if not res:
-			dp_break("Database inconsistency: unable to find linked destination group '%s'" % typeval)
-
-		agi.set_variable(typeval_varname, res['number'])
-	elif type == 'queue':
-		cursor.query("SELECT ${columns} FROM queuefeatures WHERE id = %s", ('number',), (typeval,))
-		res = cursor.fetchone()
-
-		if not res:
-			dp_break("Database inconsistency: unable to find linked destination queue'%s'" % typeval)
-
-		agi.set_variable(typeval_varname, res['number'])
-	elif type == 'meetme':
-		cursor.query("SELECT ${columns} FROM meetmefeatures WHERE id = %s", ('number',), (typeval,))
-		res = cursor.fetchone()
-
-		if not res:
-			dp_break("Database inconsistency: unable to find linked destination conference room'%s'" % typeval)
-
-		agi.set_variable(typeval_varname, res['number'])
-	else:
-		dp_break("Unknown dial status destination type '%s'" % type)
-
 # Cursors have a weak reference on their connection, so make a strong one.
-conn = db_connect()
+conn = agi_helpers.db_connect(agi, db_uri)
 cursor = conn.cursor()
 id = sys.argv[1]
 
-cursor.query("SELECT ${columns} FROM schedule WHERE id = %s AND linked = 1 AND commented = 0",
+cursor.query("SELECT ${columns} FROM schedule "
+             "WHERE id = %s "
+             "AND linked = 1 "
+             "AND commented = 0",
              ('timebeg', 'timeend', 'daynamebeg', 'daynameend', 'daynumbeg', 'daynumend', 'monthbeg', 'monthend', 'typetrue', 'typevaltrue', 'typefalse', 'typevalfalse'),
              (id,))
 res = cursor.fetchone()
@@ -137,7 +83,7 @@ if not res:
 	dp_break("Invalid schedule ID '%s'" % id)
 
 agi.set_variable("XIVO_SCHEDULE_TIMERANGE", forgetime(res))
-setvars(res['typetrue'], res['typevaltrue'], 'XIVO_SCHEDULE_TYPETRUE', 'XIVO_SCHEDULE_TYPEVALTRUE')
-setvars(res['typefalse'], res['typevalfalse'], 'XIVO_SCHEDULE_TYPEFALSE', 'XIVO_SCHEDULE_TYPEVALFALSE')
+agi_helpers.set_fwd_vars(agi, cursor, res['typetrue'], res['typevaltrue'], 'XIVO_SCHEDULE_TYPETRUE', 'XIVO_SCHEDULE_TYPEVALTRUE', 'XIVO_SCHEDULE_CONTEXTTRUE')
+agi_helpers.set_fwd_vars(agi, cursor, res['typefalse'], res['typevalfalse'], 'XIVO_SCHEDULE_TYPEFALSE', 'XIVO_SCHEDULE_TYPEVALFALSE', 'XIVO_SCHEDULE_CONTEXTFALSE')
 
 agi.verbose('AGI script "%s" successfully executed' % sys.argv[0])
