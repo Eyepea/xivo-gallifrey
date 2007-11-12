@@ -40,11 +40,13 @@ import xivo.to_path
 import sys, re
 import anysql
 import except_tb
+import agi_helpers
 from BackSQL import backsqlite
 from BackSQL import backmysql
 import ConfigDict
 from agi import *
 
+agi = AGI()
 db_uri = ConfigDict.ReadSingleKey(CONFIG_FILE, 'db', 'db_uri')
 
 rep = (('_', ''),
@@ -54,25 +56,6 @@ rep = (('_', ''),
        ('N', '[2-9]'),
        ('.', '[0-9#\*]+'),
        ('!', '[0-9#\*]*'))
-
-agi = AGI()
-
-def dp_break(message, show_tb = False):
-	agi.verbose(message)
-
-	if show_tb:
-		except_tb.log_exception(agi.verbose)
-
-	agi.hangup()
-	sys.exit(1)
-
-def db_connect():
-	try:
-		conn = anysql.connect_by_uri(db_uri)
-	except:
-		dp_break("Unable to connect to %s" % db_uri, True)
-
-	return conn
 
 def extension_matches(number, pattern):
 	for (key,val) in rep:
@@ -107,7 +90,7 @@ def deny(password):
 	exit()
 
 # Cursors have a weak reference on their connection, so make a strong one.
-conn = db_connect()
+conn = agi_helpers.db_connect(agi, db_uri)
 cursor = conn.cursor()
 srcnum = agi.get_variable('REAL_SRCNUM')
 dstnum = agi.get_variable('REAL_DSTNUM')
@@ -133,7 +116,7 @@ cursor.query("SELECT ${columns} FROM userfeatures WHERE number = %s AND context 
 res = cursor.fetchone()
 
 if not res:
-	dp_break("Unable to find user (number = '%s', context = '%s')" % (srcnum, context))
+	allow()
 
 userid = res['id']
 query = ("SELECT ${columns} FROM rightcall, rightcallmember "
