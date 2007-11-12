@@ -49,8 +49,10 @@ def db_connect(agi, db_uri):
 def set_fwd_vars(agi, cursor, type, typeval, type_varname, typeval_varname, context_varname):
 	agi.set_variable(type_varname, type)
 
-	if type in ('endcall', 'application', 'schedule', 'sound', 'custom'):
+	if type in ('endcall', 'application', 'schedule', 'sound'):
 		agi.set_variable(typeval_varname, typeval)
+	elif type == 'custom':
+		agi.set_variable(typeval_varname, typeval.replace(",", "|"))
 	elif type == 'user':
 		cursor.query("SELECT ${columns} FROM userfeatures "
                              "WHERE id = %s "
