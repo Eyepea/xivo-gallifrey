@@ -1,0 +1,108 @@
+#!/usr/bin/python
+#
+# Authors : Sylvain Boily, Guillaume Knispel, Richard Braun
+#	   Proformatique
+#	   67, rue Voltaire
+#	   92800 PUTEAUX
+#	   (+33/0)1.41.38.99.60
+#	   mailto:technique@proformatique.com
+#	   (C) 2007 Proformatique
+
+# TODO: Filter commented SQL rows
+
+__version__ = "$Revision$ $Date$"
+__license__ = """
+    Copyright (C) 2007, Proformatique
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2.1 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+"""
+
+CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
+
+import xivo.to_path
+
+import sys
+import anysql
+import except_tb
+import agi_helpers
+from BackSQL import backsqlite
+from BackSQL import backmysql
+import ConfigDict
+from agi import *
+
+agi = AGI()
+db_uri = ConfigDict.ReadSingleKey(CONFIG_FILE, 'db', 'db_uri')
+
+# Cursors have a weak reference on their connection, so make a strong one.
+conn = agi_helpers.db_connect(agi, db_uri)
+cursor = conn.cursor()
+dstnum = agi.get_variable('REAL_DSTNUM')
+context = agi.get_variable('REAL_CONTEXT')
+
+cursor.query("SELECT ${columns} FROM meetmefeatures INNER JOIN meetme "
+             "ON meetmefeatures.meetmeid = meetme.id "
+             "WHERE meetmefeatures.number = %s "
+             "AND meetmefeatures.context = %s "
+             "AND meetme.commented = 0",
+             [('meetmefeatures.' + x) for x in ('mode', 'musiconhold', 'poundexit', 'quiet', 'record', 'adminmode', 'announceusercount', 'announcejoinleave', 'alwayspromptpin', 'starmenu', 'enableexitcontext', 'exitcontext')],
+             (dstnum, context))
+res = cursor.fetchone()
+
+if not res:
+	agi_helpers.dp_break(agi, "Unknown conference room number '%s'" % dstnum)
+
+agi.verbose(res)
+options = ''
+
+if res['meetmefeatures.mode'] == 'talk':
+	options += "t"
+elif res['meetmefeatures.mode'] == 'listen':
+	options += "m"
+elif res['meetmefeatures.mode'] != 'all':
+	agi_helpers.dp_break(agi, "Bogus value for conference mode '%s'" % res['meetmefeatures.mode'])
+
+if res['meetmefeatures.musiconhold']:
+	options += "M(%s)" % res['meetmefeatures.musiconhold']
+
+if res['meetmefeatures.poundexit']:
+	options += "p"
+
+if res['meetmefeatures.quiet']:
+	options += "q"
+
+if res['meetmefeatures.record']:
+	options += "r"
+
+if res['meetmefeatures.adminmode']:
+	options += "a"
+
+if res['meetmefeatures.announceusercount']:
+	options += "c"
+
+if res['meetmefeatures.announcejoinleave']:
+	options += "i"
+
+if res['meetmefeatures.alwayspromptpin']:
+	options += "P"
+
+if res['meetmefeatures.starmenu']:
+	options += "s"
+
+if res['meetmefeatures.enableexitcontext'] and res['meetmefeatures.exitcontext']:
+	options += "X"
+	agi.set_variable('MEETME_EXIT_CONTEXT', res['meetmefeatures.exitcontext'])
+
+agi.set_variable('XIVO_MEETMEOPTIONS', options)
+agi.verbose('AGI script "%s" successfully executed' % sys.argv[0])
