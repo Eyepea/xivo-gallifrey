@@ -106,6 +106,6 @@ if res['meetmefeatures.enableexitcontext'] and res['meetmefeatures.exitcontext']
 	options += "X"
 	agi.set_variable('MEETME_EXIT_CONTEXT', res['meetmefeatures.exitcontext'])
 
-agi.set_variable('MEETME_RECORDINGFILE', "/usr/share/asterisk/sounds/web-interface/recordings/meetme-%s-%s" % (dstnum, int(time.time())))
+agi.set_variable('MEETME_RECORDINGFILE', "/usr/share/asterisk/sounds/web-interface/monitor/meetme-%s-%s" % (dstnum, int(time.time())))
 agi.set_variable('XIVO_MEETMEOPTIONS', options)
 agi.verbose('AGI script "%s" successfully executed' % sys.argv[0])
