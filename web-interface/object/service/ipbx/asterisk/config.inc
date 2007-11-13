@@ -67,8 +67,8 @@ define('XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_PATTERN','a-zA-Z0-9_-');
 define('XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_LENGTH','{1,50}');
 
 define('XIVO_SRE_IPBX_AST_USER_MACRO','incoming_user');
-define('XIVO_SRE_IPBX_AST_GROUP_MACRO','supergroup');
-define('XIVO_SRE_IPBX_AST_QUEUE_MACRO','superqueue');
+define('XIVO_SRE_IPBX_AST_GROUP_MACRO','incoming_group');
+define('XIVO_SRE_IPBX_AST_QUEUE_MACRO','incoming_queue');
 define('XIVO_SRE_IPBX_AST_MEETME_MACRO','incoming_meetme');
 define('XIVO_SRE_IPBX_AST_INCALL_MACRO','incoming_did');
 define('XIVO_SRE_IPBX_AST_INCALL_CONTEXT','incall-extensions');
