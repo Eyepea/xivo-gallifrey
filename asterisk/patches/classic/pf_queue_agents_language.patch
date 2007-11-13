@@ -1,8 +1,8 @@
 2007-11-12  Corentin Le Gall <clegall@proformatique.com>
 
         pf_queue_agents_language.patch
-        $Revision: 1659 $
-        $Date: 2007-10-22 15:25:47 +0200 (Mon, 22 Oct 2007) $
+        $Revision$
+        $Date$
         Bugfix / Behavioral change
 
         Propagates the language setting to the subsequently created channels,

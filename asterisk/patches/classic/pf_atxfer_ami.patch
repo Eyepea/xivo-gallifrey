@@ -1,8 +1,8 @@
 2007-10-22  Corentin Le Gall <clegall@proformatique.com>
 
         pf_atxfer_ami.patch
-        $Revision: 1659 $
-        $Date: 2007-10-22 15:25:47 +0200 (Mon, 22 Oct 2007) $
+        $Revision$
+        $Date$
         Feature
 
         The Attended Transfer can be issued with AMI.
