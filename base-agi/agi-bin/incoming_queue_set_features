@@ -96,5 +96,8 @@ agi.set_variable('XIVO_QUEUENAME', res['queuefeatures.name'])
 agi.set_variable('XIVO_QUEUEOPTIONS', options)
 agi.set_variable('XIVO_QUEUEURL', res['queuefeatures.url'])
 agi.set_variable('XIVO_QUEUEANNOUNCEOVERRIDE', res['queuefeatures.announceoverride'])
-agi.set_variable('XIVO_QUEUETIMEOUT', res['queuefeatures.timeout'])
+
+if res['queuefeatures.timeout']:
+	agi.set_variable('XIVO_QUEUETIMEOUT', res['queuefeatures.timeout'])
+
 agi.verbose('AGI script "%s" successfully executed' % sys.argv[0])
