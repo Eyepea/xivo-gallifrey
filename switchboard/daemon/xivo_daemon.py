@@ -1715,12 +1715,11 @@ def update_phonelist(astnum):
         finally:
                 userlist_lock.release()
 
-        sipnumlistold = dict.fromkeys(filter(lambda j: plist[astnum].normal[j].towatch, plist[astnum].normal))
         try:
                 dt1 = time.time()
                 sipnuml = configs[astnum].update_userlist_fromurl()
                 if sipnuml is None:
-                        sipnuml = sipnumlistold
+                        return
                 dt2 = time.time()
                 for x in configs[astnum].extrachannels.split(','):
                         if x != '': sipnuml[x] = [x, '', '', x.split('/')[1], '', False]
@@ -1729,6 +1728,7 @@ def update_phonelist(astnum):
                 log_debug(SYSLOG_ERR, '--- exception --- %s : update_userlist_fromurl failed : %s' %(astid, str(exc)))
                 sipnuml = {}
 
+        sipnumlistold = dict.fromkeys(filter(lambda j: plist[astnum].normal[j].towatch, plist[astnum].normal))
         dt3 = time.time()
         lstadd[astid] = []
         lstdel[astid] = []
@@ -3508,7 +3508,7 @@ while True: # loops over the reloads
                                                 update_phonelist(n)
                                                 update_userlist[configs[n].astid] = False
                                         except Exception, exc:
-                                                log_debug(SYSLOG_ERR, '--- exception --- %s : failed while updating lists and sockets : %s'
+                                                log_debug(SYSLOG_ERR, '--- exception --- %s : failed while updating lists and sockets (computed timeout) : %s'
                                                           %(configs[n].astid, str(exc)))
                                         
                 else: # when nothing happens on the sockets, we fall here sooner or later
@@ -3520,7 +3520,7 @@ while True: # loops over the reloads
                                         update_amisocks(n, configs[n].astid)
                                         update_phonelist(n)
                                 except Exception, exc:
-                                        log_debug(SYSLOG_ERR, '--- exception --- %s : failed while updating lists and sockets : %s'
+                                        log_debug(SYSLOG_ERR, '--- exception --- %s : failed while updating lists and sockets (select s timeout) : %s'
                                                   %(configs[n].astid, str(exc)))
 
         log_debug(SYSLOG_NOTICE, 'after askedtoquit loop')
