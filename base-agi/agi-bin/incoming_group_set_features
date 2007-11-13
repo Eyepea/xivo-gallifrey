@@ -1,0 +1,87 @@
+#!/usr/bin/python
+#
+# Authors : Sylvain Boily, Guillaume Knispel, Richard Braun
+#	   Proformatique
+#	   67, rue Voltaire
+#	   92800 PUTEAUX
+#	   (+33/0)1.41.38.99.60
+#	   mailto:technique@proformatique.com
+#	   (C) 2007 Proformatique
+
+__version__ = "$Revision$ $Date$"
+__license__ = """
+    Copyright (C) 2007, Proformatique
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2.1 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+"""
+
+CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
+
+import xivo.to_path
+
+import sys
+import time
+import anysql
+import except_tb
+import agi_helpers
+from BackSQL import backsqlite
+from BackSQL import backmysql
+import ConfigDict
+from agi import *
+
+agi = AGI()
+db_uri = ConfigDict.ReadSingleKey(CONFIG_FILE, 'db', 'db_uri')
+
+def ds_set_fwd_vars(id, status, type_varname, typeval_varname, context_varname):
+	cursor.query("SELECT ${columns} FROM dialstatus WHERE status = %s AND category = %s AND categoryval = %s AND linked = 1",
+                     ('type', 'typeval'),
+                     (status, 'group', id))
+	res = cursor.fetchone()
+
+	if not res:
+		return
+
+	agi_helpers.set_fwd_vars(agi, cursor, res['type'], res['typeval'], type_varname, typeval_varname, context_varname)
+
+# Cursors have a weak reference on their connection, so make a strong one.
+conn = agi_helpers.db_connect(agi, db_uri)
+cursor = conn.cursor()
+dstnum = agi.get_variable('REAL_DSTNUM')
+context = agi.get_variable('REAL_CONTEXT')
+
+cursor.query("SELECT ${columns} FROM groupfeatures INNER JOIN queue "
+             "ON groupfeatures.name = queue.name "
+             "WHERE groupfeatures.number = %s "
+             "AND groupfeatures.context = %s "
+             "AND groupfeatures.deleted = 0 "
+             "AND queue.commented = 0 "
+             "AND queue.category = 'group'",
+             ('groupfeatures.id', 'groupfeatures.name'),
+             (dstnum, context))
+res = cursor.fetchone()
+
+if not res:
+	agi_helpers.dp_break(agi, "Unknown group number '%s'" % dstnum)
+
+id = res['groupfeatures.id']
+name = res['groupfeatures.name']
+
+agi.set_variable('XIVO_GROUPNAME', res['groupfeatures.name'])
+ds_set_fwd_vars(id, 'busy', 'XIVO_FWD_TYPEBUSY', 'XIVO_FWD_TYPEVALBUSY', 'XIVO_FWD_CONTEXTBUSY')
+ds_set_fwd_vars(id, 'noanswer', 'XIVO_FWD_TYPERNA', 'XIVO_FWD_TYPEVALRNA', 'XIVO_FWD_CONTEXTRNA')
+ds_set_fwd_vars(id, 'congestion', 'XIVO_FWD_TYPECONGESTION', 'XIVO_FWD_TYPEVALCONGESTION', 'XIVO_FWD_CONTEXTCONGESTION')
+ds_set_fwd_vars(id, 'chanunavail', 'XIVO_FWD_TYPEUNAVAIL', 'XIVO_FWD_TYPEVALUNAVAIL', 'XIVO_FWD_CONTEXTUNAVAIL')
+
+agi.verbose('AGI script "%s" successfully executed' % sys.argv[0])
