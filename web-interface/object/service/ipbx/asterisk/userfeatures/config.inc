@@ -58,7 +58,7 @@ $array['element']['enablehint']['set'] = true;
 
 $array['element']['enablevoicemail'] = array();
 $array['element']['enablevoicemail']['value'] = array(0,1);
-$array['element']['enablevoicemail']['default'] = 1;
+$array['element']['enablevoicemail']['default'] = 0;
 $array['element']['enablevoicemail']['set'] = true;
 
 $array['element']['enablexfer'] = array();

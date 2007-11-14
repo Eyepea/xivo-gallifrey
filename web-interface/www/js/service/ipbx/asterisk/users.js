@@ -413,6 +413,10 @@ xivo_fm_voicemail['it-voicemail-attach']['link'] = 'it-voicemail-delete';
 
 xivo_fm_voicemail['it-voicemail-delete'] = new Array();
 xivo_fm_voicemail['it-voicemail-delete']['property'] = new Array('disabled|false:boolean;className|it-enabled','disabled|true:boolean;className|it-disabled');
+xivo_fm_voicemail['it-voicemail-delete']['link'] = 'it-ufeatures-enablevoicemail';
+
+xivo_fm_voicemail['it-ufeatures-enablevoicemail'] = new Array();
+xivo_fm_voicemail['it-ufeatures-enablevoicemail']['property'] = new Array('checked|true:boolean','checked|false:boolean');
 
 xivo_attrib_register('fm_voicemail',xivo_fm_voicemail);
 

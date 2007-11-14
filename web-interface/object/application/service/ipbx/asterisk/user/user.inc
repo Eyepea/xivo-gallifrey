@@ -1742,9 +1742,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		$appincall = &$this->_service->get_application('incall');
 
-		$incall['incall'] = $incall['extenumbers'] = $incall = array();
-		$incall['incall']['type'] = 'user';
-		$incall['extenumbers']['exten'] = '';
+		$incall = array();
+		$incall['type'] = 'user';
 
 		$r = true;
 
@@ -1753,7 +1752,10 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$ref = &$data[$i];
 
 			if(xivo_issa('voicemail',$ref) === true)
+			{
 				$ref['voicemail']['voicemail-active'] = true;
+				$ref['ufeatures']['enablevoicemail'] = true;
+			}
 
 			if(xivo_issa('protocol',$ref) === false
 			|| isset($ref['protocol']['protocol']) === false
@@ -1762,8 +1764,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				$r = false;
 			else if(isset($ref['incall']) === true && xivo_empty($ref['incall']) === false)
 			{
-				$incall['incall']['typeval'] = $this->get_return_var('userfeatures');
-				$incall['extenumbers']['exten'] = $ref['incall'];
+				$incall['typeval'] = $this->get_return_var('userfeatures');
+				$incall['exten'] = $ref['incall'];
 
 				if($appincall->set_add($incall) === false
 				|| $appincall->add() === false)
