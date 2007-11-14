@@ -121,7 +121,10 @@ class SQLBackEnd:
 		"""
 		cursor = conn.cursor()
 		cursor.query(request, columns, parameters)
-		return cursor.fetchone()
+		r = cursor.fetchone()
+		if not r:
+			return r
+		return dict(r.iteritems())
 
 	def sql_select_all(self, request, columns, parameters):
 		"Does a SELECT SQL query and returns all rows."
@@ -133,7 +136,10 @@ class SQLBackEnd:
 		"""
 		cursor = conn.cursor()
 		cursor.query(request, columns, parameters)
-		return cursor.fetchall()
+		rows = cursor.fetchall()
+		if not rows:
+			return rows
+		return [ dict(r.iteritems()) for r in rows ]
 
 	def sql_modify(self, request, columns, parameters):
 		"Does a SQL query that is going to modify the database."
