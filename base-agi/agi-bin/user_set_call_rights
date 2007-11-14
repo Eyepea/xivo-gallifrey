@@ -119,9 +119,9 @@ if not res:
 	allow()
 
 userid = res['id']
-query = ("SELECT ${columns} FROM rightcall, rightcallmember "
+query = ("SELECT ${columns} FROM rightcall INNER JOIN rightcallmember "
+         "ON rightcall.id = rightcallmember.rightcallid "
          "WHERE rightcall.id IN " + rightcallids + " "
-         "AND rightcall.id = rightcallmember.rightcallid "
          "AND rightcallmember.type = 'user' "
          "AND rightcallmember.typeval = %s "
          "AND rightcall.commented = 0")
@@ -129,7 +129,7 @@ cursor.query(query, (RIGHTCALL_PERMIT_COLNAME, RIGHTCALL_PASSWD_COLNAME), (useri
 res = cursor.fetchall()
 apply_rules(res)
 
-cursor.query("SELECT ${columns} FROM groupfeatures, queuemember, queue "
+cursor.query("SELECT ${columns} FROM groupfeatures INNER JOIN queuemember INNER JOIN queue "
              "ON groupfeatures.name = queuemember.queue_name "
              "AND queue.name = queuemember.queue_name "
              "WHERE groupfeatures.deleted = 0 "
@@ -145,9 +145,9 @@ res = cursor.fetchall()
 
 if res:
 	groupids = [row['groupfeatures.id'] for row in res]
-	query = ("SELECT ${columns} FROM rightcall, rightcallmember "
+	query = ("SELECT ${columns} FROM rightcall INNER JOIN rightcallmember "
+                 "ON rightcall.id = rightcallmember.rightcallid "
                  "WHERE rightcall.id IN " + rightcallids + " "
-                 "AND rightcall.id = rightcallmember.rightcallid "
                  "AND rightcallmember.type = 'group' "
                  "AND rightcallmember.typeval IN (" + ", ".join(["%s"] * len(res)) + ") "
                  "AND rightcall.commented = 0")
@@ -156,11 +156,11 @@ if res:
 	apply_rules(res)
 
 if exten_pattern:
-	query = ("SELECT ${columns} FROM rightcall, rightcallmember, extenumbers "
-                 "WHERE rightcall.id IN " + rightcallids + " "
-                 "AND rightcall.id = rightcallmember.rightcallid "
-                 "AND rightcallmember.type = 'outcall' "
+	query = ("SELECT ${columns} FROM rightcall INNER JOIN rightcallmember INNER JOIN extenumbers "
+                 "ON rightcall.id = rightcallmember.rightcallid "
                  "AND rightcallmember.typeval = extenumbers.typeval "
+                 "WHERE rightcall.id IN " + rightcallids + " "
+                 "AND rightcallmember.type = 'outcall' "
                  "AND extenumbers.exten = %s "
                  "AND extenumbers.context = %s "
                  "AND extenumbers.type = 'outcall' "
@@ -168,5 +168,6 @@ if exten_pattern:
 	cursor.query(query, (RIGHTCALL_PERMIT_COLNAME, RIGHTCALL_PASSWD_COLNAME), (exten_pattern, context))
 	res = cursor.fetchall()
 	apply_rules(res)
+	agi.verbose("miaou")
 
 allow()
