@@ -2,22 +2,22 @@
 
 xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk.inc'),true);
 
-class xivo_application_service_asterisk_generaloutcall extends xivo_application_asterisk_abstract
+class xivo_application_service_asterisk_handynumbers extends xivo_application_asterisk_abstract
 {
 	var $_status		= '';
-	var $_generaloutcall	= null;
+	var $_handynumbers	= null;
 	var $_extenumbers	= null;
 	var $_trunkfeatures	= null;
 	var $_param		= array('type'	=> '');
 
-	function xivo_application_service_asterisk_generaloutcall(&$service,$param=array())
+	function xivo_application_service_asterisk_handynumbers(&$service,$param=array())
 	{
 		$this->xivo_application_asterisk_abstract(&$service);
 
 		if($this->set_params($param) === false
 		|| isset($param['type']) === false
-		|| ($this->_generaloutcall = &$this->_service->get_module('generaloutcall')) === false
-		|| $this->_generaloutcall->chk_element_value('type',$param['type']) === false
+		|| ($this->_handynumbers = &$this->_service->get_module('handynumbers')) === false
+		|| $this->_handynumbers->chk_element_value('type',$param['type']) === false
 		|| ($this->_extenumbers = &$this->_service->get_module('extenumbers')) === false
 		|| ($this->_trunkfeatures = &$this->_service->get_module('trunkfeatures')) === false)
 			return(false);
@@ -34,11 +34,11 @@ class xivo_application_service_asterisk_generaloutcall extends xivo_application_
 		$where = array();
 		$where['type'] = $this->_param['type'];
 
-		if(($this->_info['generaloutcall'] = $this->_generaloutcall->get_all_where($where)) === false
+		if(($this->_info['handynumbers'] = $this->_handynumbers->get_all_where($where)) === false
 		|| $this->_get_extenumbers() === false)
 			return(false);
 
-		$this->_origin['generaloutcall'] = $this->_generaloutcall->get_origin_list();
+		$this->_origin['handynumbers'] = $this->_handynumbers->get_origin_list();
 
 		return($this->_info);
 	}
@@ -48,19 +48,19 @@ class xivo_application_service_asterisk_generaloutcall extends xivo_application_
 		$this->_info['extenumbers'] = false;
 		$this->_origin['extenumbers'] = false;
 
-		if(xivo_issa('generaloutcall',$this->_info) === false
-		|| ($arr = xivo_get_aks($this->_info['generaloutcall'])) === false)
+		if(xivo_issa('handynumbers',$this->_info) === false
+		|| ($arr = xivo_get_aks($this->_info['handynumbers'])) === false)
 			return(false);
 
 		$this->_info['extenumbers'] = array();
 		$this->_origin['extenumbers'] = array();
 
 		$extenumbers_where = array();
-		$extenumbers_where['type'] = 'generaloutcall';
+		$extenumbers_where['type'] = 'handynumbers';
 
 		for($i = 0;$i < $arr['cnt'];$i++)
 		{
-			$extenumbers_where['typeval'] = $this->_info['generaloutcall'][$i]['id'];
+			$extenumbers_where['typeval'] = $this->_info['handynumbers'][$i]['id'];
 
 			if(($info = $this->_extenumbers->get_where($extenumbers_where)) === false)
 				continue;
@@ -75,7 +75,7 @@ class xivo_application_service_asterisk_generaloutcall extends xivo_application_
 	function get_elements()
 	{
 		$r = array();
-		$r['generaloutcall'] = $this->_generaloutcall->get_element();
+		$r['handynumbers'] = $this->_handynumbers->get_element();
 		$r['extenumbers'] = $this->_extenumbers->get_element();
 		$r['trunkfeatures'] = $this->_trunkfeatures->get_element();
 
@@ -88,7 +88,7 @@ class xivo_application_service_asterisk_generaloutcall extends xivo_application_
 
 		$extenum = array();
 		$extenum['exten'] = $number;
-		$extenum['type'] = 'generaloutcall';
+		$extenum['type'] = 'handynumbers';
 
 		if(($rs = $this->_extenumbers->chk_values($extenum)) === false
 		|| ($exists = $this->_extenumbers->exists_type($rs)) !== false)
@@ -144,21 +144,21 @@ class xivo_application_service_asterisk_generaloutcall extends xivo_application_
 
 			$ref['type'] = $this->_param['type'];
 
-			if(($rs = $this->_generaloutcall->chk_values($ref)) === false)
+			if(($rs = $this->_handynumbers->chk_values($ref)) === false)
 			{
-				$reslist[$j] = $this->_generaloutcall->get_filter_result();
-				$errlist[$j++] = $this->_generaloutcall->get_filter_error();
+				$reslist[$j] = $this->_handynumbers->get_filter_result();
+				$errlist[$j++] = $this->_handynumbers->get_filter_error();
 				continue;
 			}
 			
-			$result = $this->_generaloutcall->get_filter_result();
+			$result = $this->_handynumbers->get_filter_result();
 			$reslist[$j++] = $result;
 
-			if(xivo_issa('generaloutcall',$this->_info) === true
-			&& isset($this->_info['generaloutcall'][$k]) === true)
-				$result['id'] = $this->_info['generaloutcall'][$k]['id'];
+			if(xivo_issa('handynumbers',$this->_info) === true
+			&& isset($this->_info['handynumbers'][$k]) === true)
+				$result['id'] = $this->_info['handynumbers'][$k]['id'];
 
-			$this->_set_result('generaloutcall',$result);
+			$this->_set_result('handynumbers',$result);
 
 			if(xivo_issa('extenumbers',$this->_info) === true
 			&& isset($this->_info['extenumbers'][$k]) === true)
@@ -169,7 +169,7 @@ class xivo_application_service_asterisk_generaloutcall extends xivo_application_
 			$this->save();
 		}
 
-		$this->_set_result('generaloutcall',$reslist);
+		$this->_set_result('handynumbers',$reslist);
 
 		return(true);
 	}
@@ -178,13 +178,13 @@ class xivo_application_service_asterisk_generaloutcall extends xivo_application_
 	{
 		$this->_status = 'save';
 		$this->_return = array();
-		$generaloutcallid = null;
+		$handynumbersid = null;
 
 		if($this->get_errnb() > 0
-		|| ($generaloutcallid = $this->add_generaloutcall()) === false
-		|| $this->add_extenumbers($generaloutcallid) === false)
+		|| ($handynumbersid = $this->add_handynumbers()) === false
+		|| $this->add_extenumbers($handynumbersid) === false)
 		{
-			if($generaloutcallid !== null)
+			if($handynumbersid !== null)
 				$this->_reverse_save();
 
 			$this->_status = '';
@@ -195,9 +195,9 @@ class xivo_application_service_asterisk_generaloutcall extends xivo_application_
 		return(true);
 	}
 
-	function add_generaloutcall()
+	function add_handynumbers()
 	{
-		if(($rs = $this->get_result('generaloutcall')) === null
+		if(($rs = $this->get_result('handynumbers')) === null
 		|| $rs === false)
 			return($rs);
 
@@ -208,16 +208,16 @@ class xivo_application_service_asterisk_generaloutcall extends xivo_application_
 
 		unset($rs['id']);
 
-		$this->_return['generaloutcall'] = $this->_generaloutcall->add($rs,$gid);
+		$this->_return['handynumbers'] = $this->_handynumbers->add($rs,$gid);
 
-		return($this->_return['generaloutcall']);
+		return($this->_return['handynumbers']);
 	}
 
-	function add_extenumbers($generaloutcallid)
+	function add_extenumbers($handynumbersid)
 	{
 		$rs = false;
 
-		if(($generaloutcallid = xivo_uint($generaloutcallid)) === 0
+		if(($handynumbersid = xivo_uint($handynumbersid)) === 0
 		|| ($rs = $this->get_result('extenumbers')) === null
 		|| $rs === false)
 			return($rs);
@@ -229,7 +229,7 @@ class xivo_application_service_asterisk_generaloutcall extends xivo_application_
 
 		unset($rs['id']);
 
-		$rs['typeval'] = $generaloutcallid;
+		$rs['typeval'] = $handynumbersid;
 
 		$this->_return['extenumbers'] = $this->_extenumbers->add($rs,$eid);
 
@@ -248,7 +248,7 @@ class xivo_application_service_asterisk_generaloutcall extends xivo_application_
 		$where = array();
 		$where['type'] = $this->_param['type'];
 
-		$this->_generaloutcall->delete_where($where);
+		$this->_handynumbers->delete_where($where);
 	}
 
 	function _reverse_save()
@@ -268,8 +268,8 @@ class xivo_application_service_asterisk_generaloutcall extends xivo_application_
 
 			switch($key)
 			{
-				case 'generaloutcall':
-					$this->_generaloutcall->delete($key);
+				case 'handynumbers':
+					$this->_handynumbers->delete($key);
 					break;
 				case 'extenumbers':
 					$this->_extenumbers->delete($key);

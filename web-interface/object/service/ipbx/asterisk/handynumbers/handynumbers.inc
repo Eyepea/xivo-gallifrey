@@ -2,14 +2,14 @@
 
 xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
 
-class xivo_service_asterisk_generaloutcall extends xivo_service_asterisk_abstract
+class xivo_service_asterisk_handynumbers extends xivo_service_asterisk_abstract
 {
 	var $_dso	= null;
-	var $_name	= 'generaloutcall';
+	var $_name	= 'handynumbers';
 	var $_filter	= false;
 	var $_origin	= false;
 
-	function xivo_service_asterisk_generaloutcall(&$sre,&$dso)
+	function xivo_service_asterisk_handynumbers(&$sre,&$dso)
 	{
 		if(is_object($sre) === false)
 			trigger_error('Invalid service in '.__CLASS__,E_USER_ERROR);

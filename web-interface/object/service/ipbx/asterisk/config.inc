@@ -136,8 +136,8 @@ $array['module']['extenumbers']['datastorage'] = true;
 $array['module']['generaliax'] = array();
 $array['module']['generaliax']['datastorage'] = true;
 
-$array['module']['generaloutcall'] = array();
-$array['module']['generaloutcall']['datastorage'] = true;
+$array['module']['handynumbers'] = array();
+$array['module']['handynumbers']['datastorage'] = true;
 
 $array['module']['generalqueue'] = array();
 $array['module']['generalqueue']['datastorage'] = true;

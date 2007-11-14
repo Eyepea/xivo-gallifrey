@@ -6,38 +6,38 @@
 	$info = $this->get_var('info');
 	$smenu = $this->get_var('fm_smenu');
 
-	$outcall_js = array();
+	$handynumbers_js = array();
 
 	if($this->get_var('fm_save') === true):
-		$outcall_js[] = 'xivo_form_success(\''.xivo_stript($this->bbf('fm_success-save')).'\');';
+		$handynumbers_js[] = 'xivo_form_success(\''.xivo_stript($this->bbf('fm_success-save')).'\');';
 	endif;
 
 	if(($smenu_tab = $this->get_var('fm_smenu_tab')) !== '' && ($smenu_part = $this->get_var('fm_smenu_part')) !== ''):
-		$outcall_js[] = 'xivo_smenu[\'tab\'] = \''.xivo_stript($smenu_tab).'\';';
-		$outcall_js[] = 'xivo_smenu[\'part\'] = \''.xivo_stript($smenu_part).'\';';
+		$handynumbers_js[] = 'xivo_smenu[\'tab\'] = \''.xivo_stript($smenu_tab).'\';';
+		$handynumbers_js[] = 'xivo_smenu[\'part\'] = \''.xivo_stript($smenu_part).'\';';
 
 		if($smenu_part === 'sb-part-last'):
-			$outcall_js[] = 'xivo_smenu[\'last\'] = true;';
+			$handynumbers_js[] = 'xivo_smenu[\'last\'] = true;';
 		endif;
 	endif;
 
 	if($info['emergency'] !== false):
 		$egency_nb = count($info['emergency']);
-		$outcall_js[] = 'xivo_tlist[\'emergency\'] = new Array();';
-		$outcall_js[] = 'xivo_tlist[\'emergency\'][\'cnt\'] = '.$egency_nb.';';
+		$handynumbers_js[] = 'xivo_tlist[\'emergency\'] = new Array();';
+		$handynumbers_js[] = 'xivo_tlist[\'emergency\'][\'cnt\'] = '.$egency_nb.';';
 	else:
 		$egency_nb = 0;
 	endif;
 
 	if($info['special'] !== false):
 		$special_nb = count($info['special']);
-		$outcall_js[] = 'xivo_tlist[\'special\'] = new Array();';
-		$outcall_js[] = 'xivo_tlist[\'special\'][\'cnt\'] = '.$special_nb.';';
+		$handynumbers_js[] = 'xivo_tlist[\'special\'] = new Array();';
+		$handynumbers_js[] = 'xivo_tlist[\'special\'][\'cnt\'] = '.$special_nb.';';
 	else:
 		$special_nb = 0;
 	endif;
 
-	$dhtml->write_js($outcall_js);
+	$dhtml->write_js($handynumbers_js);
 ?>
 <div class="b-infos b-form">
 	<h3 class="sb-top xspan"><span class="span-left">&nbsp;</span><span class="span-center"><?=$this->bbf('title_content_name');?></span><span class="span-right">&nbsp;</span></h3>
@@ -72,13 +72,13 @@ else:
 
 <div id="sb-part-first" class="b-nodisplay">
 	<div class="sb-list">
-	<?=$this->file_include('bloc/service/ipbx/asterisk/pbx_services/outcall/form',array('type' => 'emergency','count' => $egency_nb));?>
+	<?=$this->file_include('bloc/service/ipbx/asterisk/pbx_services/handynumbers/form',array('type' => 'emergency','count' => $egency_nb));?>
 	</div>
 </div>
 
 <div id="sb-part-last" class="b-nodisplay">
 	<div class="sb-list">
-	<?=$this->file_include('bloc/service/ipbx/asterisk/pbx_services/outcall/form',array('type' => 'special','count' => $special_nb));?>
+	<?=$this->file_include('bloc/service/ipbx/asterisk/pbx_services/handynumbers/form',array('type' => 'special','count' => $special_nb));?>
 	</div>
 </div>
 

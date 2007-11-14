@@ -91,8 +91,8 @@ Musiques d'attente
 ; acl_service-ipbx-pbx_services-extenfeatures
 Extensions
 
-; acl_service-ipbx-pbx_services-outcall
-Appels sortants
+; acl_service-ipbx-pbx_services-handynumbers
+Numéros utiles
 
 ; acl_service-ipbx-pbx_services-phonebook
 Carnet d'adresses

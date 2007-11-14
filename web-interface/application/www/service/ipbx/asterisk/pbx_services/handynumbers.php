@@ -4,11 +4,11 @@ $info = $error = array();
 
 $return = &$info;
 
-$appgoutcallemergency = $ipbx->get_application('generaloutcall',array('type' => 'emergency'));
-$appgoutcallspecial = $ipbx->get_application('generaloutcall',array('type' => 'special'));
+$apphnumbersemergency = $ipbx->get_application('handynumbers',array('type' => 'emergency'));
+$apphnumbersspecial = $ipbx->get_application('handynumbers',array('type' => 'special'));
 
-$info['emergency'] = $appgoutcallemergency->get();
-$info['special'] = $appgoutcallspecial->get();
+$info['emergency'] = $apphnumbersemergency->get();
+$info['special'] = $apphnumbersspecial->get();
 
 $fm_save = false;
 $fm_smenu_tab = $fm_smenu_part = '';
@@ -28,43 +28,43 @@ if(isset($_QR['fm_send']) === true)
 	|| ($emergency = xivo_group_array('trunkfeaturesid',$_QR['emergency'])) === false)
 		$emergency = array();
 
-	if($appgoutcallemergency->set_save_all($emergency) === false)
+	if($apphnumbersemergency->set_save_all($emergency) === false)
 		$result['emergency'] = false;
 	else
-		$result['emergency'] = $appgoutcallemergency->get_result();
+		$result['emergency'] = $apphnumbersemergency->get_result();
 
-	if(($error['emergency'] = $appgoutcallemergency->get_error()) === false)
+	if(($error['emergency'] = $apphnumbersemergency->get_error()) === false)
 		$error['emergency'] = false;
 
 	if(xivo_issa('special',$_QR) === false
 	|| ($special = xivo_group_array('trunkfeaturesid',$_QR['special'])) === false)
 		$special = array();
 
-	if($appgoutcallspecial->set_save_all($special) === false)
+	if($apphnumbersspecial->set_save_all($special) === false)
 		$result['special'] = false;
 	else
-		$result['special'] = $appgoutcallspecial->get_result();
+		$result['special'] = $apphnumbersspecial->get_result();
 
-	if(($error['special'] = $appgoutcallspecial->get_error()) === false)
+	if(($error['special'] = $apphnumbersspecial->get_error()) === false)
 		$error['special'] = false;
 }
 
 if(xivo_issa('emergency',$return) === true
-&& isset($return['emergency']['generaloutcall'],$return['emergency']['generaloutcall'][0]) === true)
-	$return['emergency'] = $return['emergency']['generaloutcall'];
+&& isset($return['emergency']['handynumbers'],$return['emergency']['handynumbers'][0]) === true)
+	$return['emergency'] = $return['emergency']['handynumbers'];
 else
 	$return['emergency'] = false;
 
 if(xivo_issa('special',$return) === true
-&& isset($return['special']['generaloutcall'],$return['special']['generaloutcall'][0]) === true)
-	$return['special'] = $return['special']['generaloutcall'];
+&& isset($return['special']['handynumbers'],$return['special']['handynumbers'][0]) === true)
+	$return['special'] = $return['special']['handynumbers'];
 else
 	$return['special'] = false;
 
 $_HTML->set_var('fm_save',$fm_save);
 $_HTML->set_var('fm_smenu_tab',$fm_smenu_tab);
 $_HTML->set_var('fm_smenu_part',$fm_smenu_part);
-$_HTML->set_var('element',$appgoutcallemergency->get_elements());
+$_HTML->set_var('element',$apphnumbersemergency->get_elements());
 $_HTML->set_var('info',$return);
 $_HTML->set_var('error',$error);
 $_HTML->set_var('trunkslist',$ipbx->get_trunks_list());
@@ -77,7 +77,7 @@ $menu = &$_HTML->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/service/ipbx/'.$ipbx->get_name());
 
-$_HTML->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/pbx_services/outcall');
+$_HTML->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/pbx_services/handynumbers');
 $_HTML->set_struct('service/ipbx/'.$ipbx->get_name());
 $_HTML->display('index');
 

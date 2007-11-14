@@ -85,10 +85,10 @@
 			echo '<dd id="mn-pbx-services--musiconhold">',$url->href_html($this->bbf('mn_left_pbx_services-musiconhold'),'service/ipbx/pbx_services/musiconhold','act=list'),'</dd>';
 		endif;
 		if($this->chk_acl('pbx_services','extenfeatures') === true):
-			echo '<dd id="mn-pbx-services--extenfeatures">',$url->href_html($this->bbf('mn_left_pbx_services-extenfeatures'),'service/ipbx/pbx_services/extenfeatures','act=list'),'</dd>';
+			echo '<dd id="mn-pbx-services--extenfeatures">',$url->href_html($this->bbf('mn_left_pbx_services-extenfeatures'),'service/ipbx/pbx_services/extenfeatures'),'</dd>';
 		endif;
-		if($this->chk_acl('pbx_services','outcall') === true):
-			echo '<dd id="mn-pbx-services--outcall">',$url->href_html($this->bbf('mn_left_pbx_services-outcall'),'service/ipbx/pbx_services/outcall','act=list'),'</dd>';
+		if($this->chk_acl('pbx_services','handynumbers') === true):
+			echo '<dd id="mn-pbx-services--handynumbers">',$url->href_html($this->bbf('mn_left_pbx_services-handynumbers'),'service/ipbx/pbx_services/handynumbers'),'</dd>';
 		endif;
 		if($this->chk_acl('pbx_services','phonebook') === true):
 			echo '<dd id="mn-pbx-services--phonebook">',$url->href_html($this->bbf('mn_left_pbx_services-phonebook'),'service/ipbx/pbx_services/phonebook','act=list'),'</dd>';
