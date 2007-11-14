@@ -58,9 +58,6 @@ Activer le nom d'appel :
 ; fm_outcall_stripnum
 Nombre de chiffres supprimés en partant du début :
 
-; fm_outcall_weight
-Poids :
-
 ; fm_outcall_useenum
 Utiliser ENUM :
 

@@ -669,7 +669,6 @@ CREATE TABLE outcall (
  stripnum tinyint unsigned NOT NULL DEFAULT 0,
  setcallerid tinyint(1) NOT NULL DEFAULT 0,
  callerid varchar(80) NOT NULL DEFAULT '',
- weight tinyint unsigned NOT NULL DEFAULT 1,
  useenum tinyint(1) NOT NULL DEFAULT 0,
  internal tinyint(1) NOT NULL DEFAULT 0,
  hangupringtime smallint unsigned NOT NULL DEFAULT 0,
@@ -680,7 +679,6 @@ CREATE TABLE outcall (
 
 CREATE INDEX outcall__idx__trunkfeaturesid ON outcall(trunkfeaturesid);
 CREATE INDEX outcall__idx__context ON outcall(context);
-CREATE INDEX outcall__idx__weight ON outcall(weight);
 CREATE INDEX outcall__idx__linked ON outcall(linked);
 CREATE INDEX outcall__idx__commented ON outcall(commented);
 CREATE UNIQUE INDEX outcall__uidx__name ON outcall(name);
