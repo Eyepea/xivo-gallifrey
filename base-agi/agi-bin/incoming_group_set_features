@@ -68,7 +68,7 @@ cursor.query("SELECT ${columns} FROM groupfeatures INNER JOIN queue "
              "AND groupfeatures.deleted = 0 "
              "AND queue.commented = 0 "
              "AND queue.category = 'group'",
-             ('groupfeatures.id', 'groupfeatures.name'),
+             ('groupfeatures.id', 'groupfeatures.name', 'queue.musiconhold'),
              (dstnum, context))
 res = cursor.fetchone()
 
@@ -77,8 +77,13 @@ if not res:
 
 id = res['groupfeatures.id']
 name = res['groupfeatures.name']
+options = ""
+
+if not res['queue.musiconhold']:
+	options += "r"
 
 agi.set_variable('XIVO_GROUPNAME', res['groupfeatures.name'])
+agi.set_variable('XIVO_GROUPOPTIONS', options)
 ds_set_fwd_vars(id, 'busy', 'XIVO_FWD_TYPEBUSY', 'XIVO_FWD_TYPEVALBUSY', 'XIVO_FWD_CONTEXTBUSY')
 ds_set_fwd_vars(id, 'noanswer', 'XIVO_FWD_TYPERNA', 'XIVO_FWD_TYPEVALRNA', 'XIVO_FWD_CONTEXTRNA')
 ds_set_fwd_vars(id, 'congestion', 'XIVO_FWD_TYPECONGESTION', 'XIVO_FWD_TYPEVALCONGESTION', 'XIVO_FWD_CONTEXTCONGESTION')
