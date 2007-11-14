@@ -242,7 +242,7 @@ CREATE TABLE `extenumbers` (
  `exten` varchar(40) NOT NULL DEFAULT '',
  `extenhash` char(40) NOT NULL DEFAULT '',
  `context` varchar(39) NOT NULL,
- `type` varchar(64) NOT NULL DEFAULT '',
+ `type` enum('extenfeatures','featuremap','generalfeatures','generaloutcall','group','incall','meetme','outcall','queue','user') NOT NULL,
  `typeval` varchar(255) NOT NULL DEFAULT '',
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=ascii;
@@ -566,7 +566,7 @@ CREATE TABLE `groupfeatures` (
  `name` varchar(128) NOT NULL,
  `number` varchar(40) NOT NULL DEFAULT '',
  `context` varchar(39) NOT NULL,
- `timeout` tinyint(2) unsigned NOT NULL DEFAULT 30,
+ `timeout` smallint(4) unsigned NOT NULL DEFAULT 0,
  `deleted` tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=ascii;
@@ -578,6 +578,7 @@ CREATE INDEX `groupfeatures__idx__deleted` ON `groupfeatures`(`deleted`);
 DROP TABLE IF EXISTS `incall`;
 CREATE TABLE `incall` (
  `id` int(10) unsigned auto_increment,
+ `exten` varchar(40) NOT NULL DEFAULT '',
  `type` enum('endcall','user','group','queue','meetme','schedule','application','custom') NOT NULL,
  `typeval` varchar(255) NOT NULL DEFAULT '',
  `linked` tinyint(1) NOT NULL DEFAULT 0,
@@ -588,6 +589,7 @@ CREATE TABLE `incall` (
 CREATE INDEX `incall__idx__type_typeval` ON `incall`(`type`,`typeval`);
 CREATE INDEX `incall__idx__linked` ON `incall`(`linked`);
 CREATE INDEX `incall__idx__commented` ON `incall`(`commented`);
+CREATE UNIQUE INDEX `incall__uidx__exten` ON `incall`(`exten`);
 
 
 DROP TABLE IF EXISTS `meetme`;
@@ -824,7 +826,7 @@ CREATE TABLE `queuefeatures` (
  `write_calling` tinyint(1) NOT NULL DEFAULT 0,
  `url` varchar(255) NOT NULL DEFAULT '',
  `announceoverride` varchar(128) NOT NULL DEFAULT '',
- `timeout` tinyint(2) unsigned NOT NULL DEFAULT 30,
+ `timeout` smallint(4) unsigned NOT NULL DEFAULT 0,
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 

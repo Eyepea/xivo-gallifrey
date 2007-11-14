@@ -563,7 +563,7 @@ CREATE TABLE groupfeatures (
  name varchar(128) NOT NULL,
  number varchar(40) NOT NULL DEFAULT '',
  context varchar(39) NOT NULL,
- timeout tinyint unsigned NOT NULL DEFAULT 30,
+ timeout smallint unsigned NOT NULL DEFAULT 0,
  deleted tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(id)
 );
@@ -575,6 +575,7 @@ CREATE INDEX groupfeatures__idx__deleted ON groupfeatures(deleted);
 DROP TABLE incall;
 CREATE TABLE incall (
  id integer unsigned,
+ exten varchar(40) NOT NULL DEFAULT '',
  type varchar(64) NOT NULL DEFAULT '',
  typeval varchar(255) NOT NULL DEFAULT '',
  linked tinyint(1) NOT NULL DEFAULT 0,
@@ -585,6 +586,7 @@ CREATE TABLE incall (
 CREATE INDEX incall__idx__type_typeval ON incall(type,typeval);
 CREATE INDEX incall__idx__linked ON incall(linked);
 CREATE INDEX incall__idx__commented ON incall(commented);
+CREATE UNIQUE INDEX incall__uidx__exten ON incall(exten);
 
 
 DROP TABLE meetme;
@@ -821,7 +823,7 @@ CREATE TABLE queuefeatures (
  write_calling tinyint(1) NOT NULL DEFAULT 0,
  url varchar(255) NOT NULL DEFAULT '',
  announceoverride varchar(128) NOT NULL DEFAULT '',
- timeout tinyint unsigned NOT NULL DEFAULT 30,
+ timeout smallint unsigned NOT NULL DEFAULT 0,
  PRIMARY KEY(id)
 );
 
