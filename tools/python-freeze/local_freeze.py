@@ -44,7 +44,7 @@ executable_path = os.path.dirname(executable_pathname)
 executable_name = os.path.basename(executable_pathname)
 
 
-command_cp = "cp -r " + script_pathname
+command_cp = "cp -rL " + script_pathname
 for extramod in scripts_to_build[:nscripts-1]:
 	command_cp = command_cp + " " + script_path + "/" + extramod
 	if extramod.find(".py") > 0:
