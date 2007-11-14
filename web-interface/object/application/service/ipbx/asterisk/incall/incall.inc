@@ -6,6 +6,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 {
 	var $_origin		= array();
 	var $_status		= '';
+	var $_cnt		= 0;
 	var $_incall		= null;
 	var $_extenumbers	= null;
 	var $_extensions	= null;
@@ -66,6 +67,68 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		return($r);
 	}
 
+	function get_cnt()
+	{
+		return(xivo_uint($this->_cnt));
+	}
+
+	function get_incalls_search($search,$disable=null,$order=null,$limit=null,$assoc=false)
+	{
+		return($this->_get_incalls('search',$search,$disable,$order,$limit,$assoc));
+	}
+
+	function get_incalls_list($disable=null,$order=null,$limit=null,$assoc=false)
+	{
+		return($this->_get_incalls('list',null,$disable,$order,$limit,$assoc));
+	}
+
+	function _get_incalls($action,$search=null,$disable=null,$order=null,$limit=null,$assoc=false)
+	{
+		$action = (string) $action;
+		$assoc = (bool) $assoc;
+
+		$this->_cnt = 0;
+
+		switch($action)
+		{
+			case 'search':
+				$rs = $this->_incall->get_search($search,$disable,$order,$limit);
+				break;
+			default:
+				$rs = $this->_incall->get_all($disable,true,$order,$limit);
+		}
+
+		if($rs === false || ($nb = count($rs)) === 0)
+			return(false);
+
+		$r = $info = array();
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			$info['incall'] = $rs[$i];
+			$info['type'] = false;
+
+			if($info['incall']['linked'] === true
+			&& ($info['type'] = $this->_incall->is_valid($info['incall']['type'],
+								     $info['incall']['typeval'])) === false)
+				continue;
+
+			if($info['type'] === true)
+				$info['type'] = false;
+
+			$r[$info['incall']['id']] = $info;
+		}
+
+		$this->_cnt = $this->_incall->get_cnt();
+
+		if(empty($r) === true)
+			$r = false;
+		else if($assoc === false)
+			$r = array_values($r);
+
+		return($r);
+	}
+
 	function _mk_exten_appdata($exten)
 	{
 		$exten = $this->_service->clean_extension($exten);
@@ -94,18 +157,17 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		$this->_reset();
 
 		if(($action !== 'add' && $action !== 'edit') === true
-		|| xivo_issa('incall',$arr) === false
-		|| xivo_issa('extenumbers',$arr) === false
-		|| isset($arr['extenumbers']['exten']) === false)
+		|| xivo_issa('incall',$arr) === false)
 			return(false);
 
 		$this->set_incall($arr['incall']);
 	
+		$number = (string) $this->get_result_var('incall','exten');
+
 		$context = XIVO_SRE_IPBX_AST_INCALL_CONTEXT;
 
-		$this->set_extenumbers($action,$arr['extenumbers']['exten'],$context);
+		$this->set_extenumbers($action,$number,$context);
 
-		$number = (string) $this->get_result_var('extenumbers','exten');
 		$appdata = $this->_mk_exten_appdata($number);
 
 		if(($localexten = $this->set_macro($action,'localexten',$number,$appdata,$context)) === false)
@@ -441,8 +503,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 	{
 		$disable = (bool) $disable;
 
-		if(xivo_issa('localexten',$this->_info) === false
-		|| xivo_issa('extenumbers',$this->_info) === false)
+		if(xivo_issa('extenumbers',$this->_info) === false)
 			return(false);
 
 		$exten_where = array();

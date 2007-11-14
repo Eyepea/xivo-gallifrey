@@ -6,6 +6,7 @@
 	$trunkslist = $this->get_var('trunkslist');
 	$count = $this->get_var('count');
 	$element = $this->get_var('element');
+	$error = $this->get_var('error');
 	$info = $this->get_var('info');
 ?>
 <table cellspacing="0" cellpadding="0" border="0">

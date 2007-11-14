@@ -4,6 +4,9 @@ $array = array();
 
 $array['element'] = array();
 
+$array['element']['exten'] = array();
+$array['element']['exten']['default'] = '';
+
 $array['element']['type'] = array();
 $array['element']['type']['value'] = array('endcall','user','group','queue','meetme','schedule','application','custom');
 $array['element']['type']['default'] = 'endcall';
@@ -30,6 +33,7 @@ $array['element']['commented']['default'] = 0;
 $array['element']['commented']['set'] = true;
 
 $array['filter'] = array();
+$array['filter']['exten'] = array('maxlen' => 40,'regexp' => '/^[_]?[0-9NXZ\*#\-\[\]]+[\.\!]?$/');
 $array['filter']['type'] = array('key' => array('endcall','user','group','queue','meetme','schedule','application','custom'));
 $array['filter']['typeval'] = array('maxlen' => 255,'cast' => 'sgraph');
 $array['filter']['linked'] = array('bool' => true);

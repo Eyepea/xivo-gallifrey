@@ -37,10 +37,38 @@ class xivo_service_asterisk_incall extends xivo_service_asterisk_abstract
 		if(isset($data[$data['type']]) === true)
 			$data[$data['type']] = $data['typeval'];
 
+		if(xivo_haslen($data,'exten') === true)
+			$data['exten'] = $this->_sre->display_extension($data['exten']);
+
 		$data['linked'] = (bool) $data['linked'];
 		$data['commented'] = (bool) $data['commented'];
 
 		return($data);
+	}
+
+	function add($arr,$id=0)
+	{
+		if(is_array($arr) === false)
+			return(false);
+
+		if(($id = xivo_uint($id)) !== 0)
+			$arr['id'] = $id;
+
+		if(xivo_haslen($arr,'exten') === true)
+			$arr['exten'] = $this->_sre->clean_extension($arr['exten']);
+
+		return($this->_dso->add($arr));
+	}
+
+	function edit($id,$arr)
+	{
+		if(($id = xivo_uint($id)) === 0 || is_array($arr) === false)
+			return(false);
+
+		if(xivo_haslen($arr,'exten') === true)
+			$arr['exten'] = $this->_sre->clean_extension($arr['exten']);
+
+		return($this->_dso->edit($id,$arr));
 	}
 
 	function linked($id,$disable=null)
@@ -85,6 +113,24 @@ class xivo_service_asterisk_incall extends xivo_service_asterisk_abstract
 		}
 
 		return(false);
+	}
+
+	function get_search($exten,$disable=null,$order=null,$limit=null)
+	{
+		if(($list = $this->_dso->get_search($exten,$disable,$order,$limit)) === false)
+			return(false);
+
+		$nb = count($list);
+
+		$r = array();
+
+		for($i = 0;$i < $nb;$i++)
+			$r[] = $this->_prepare($list[$i]);
+
+		if(isset($r[0]) === false)
+			$r = false;
+
+		return($r);
 	}
 }
 

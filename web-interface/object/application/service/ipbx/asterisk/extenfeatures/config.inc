@@ -116,11 +116,6 @@ $array['exten']['enablednd']['priority'] = 1;
 $array['exten']['enablednd']['app'] = 'Macro';
 $array['exten']['enablednd']['appdata'] = 'features|DND|dnd-on|dnd-off';
 
-$array['exten']['enablednd'] = array();
-$array['exten']['enablednd']['priority'] = 1;
-$array['exten']['enablednd']['app'] = 'Macro';
-$array['exten']['enablednd']['appdata'] = 'features|DND|dnd-on|dnd-off';
-
 $array['exten']['incallrec'] = array();
 $array['exten']['incallrec']['priority'] = 1;
 $array['exten']['incallrec']['app'] = 'Macro';

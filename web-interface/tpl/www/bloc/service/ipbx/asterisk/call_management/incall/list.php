@@ -77,7 +77,7 @@
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=$mod?>on2">
 		<td class="td-left"><?=$form->checkbox(array('name' => 'incalls[]','value' => $ref['incall']['id'],'label' => false,'id' => 'it-incalls-'.$i,'checked' => false,'field' => false));?></td>
-		<td class="txt-left"><label for="it-incalls-<?=$i?>" id="lb-incalls-<?=$i?>"><?=$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"');?><?=$ref['extenumbers']['exten']?></label></td>
+		<td class="txt-left"><label for="it-incalls-<?=$i?>" id="lb-incalls-<?=$i?>"><?=$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"');?><?=$ref['incall']['exten']?></label></td>
 		<td><?=$type?></td>
 		<td><?=$identity?></td>
 		<td class="td-right" colspan="3">

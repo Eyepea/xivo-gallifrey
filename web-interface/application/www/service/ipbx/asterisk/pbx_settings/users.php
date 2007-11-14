@@ -122,7 +122,7 @@ switch($act)
 		if($list !== false)
 			$total = $ufeatures->get_cnt();
 
-		$_HTML->set_var('pager',xivo_calc_page($page,20,$total));
+		$_HTML->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
 		$_HTML->set_var('list',$list);
 		$_HTML->set_var('search',$search);
 		$_HTML->set_var('context',$context);

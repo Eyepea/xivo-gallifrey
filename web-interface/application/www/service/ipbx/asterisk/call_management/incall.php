@@ -22,8 +22,7 @@ switch($act)
 		do
 		{
 			if(isset($_QR['fm_send']) === false
-			|| xivo_issa('incall',$_QR) === false
-			|| xivo_issa('extenumbers',$_QR) === false)
+			|| xivo_issa('incall',$_QR) === false)
 				break;
 
 			if($appincall->set_add($_QR) === false
@@ -56,7 +55,6 @@ switch($act)
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/incall.js');
 
 		$_HTML->set_var('incall',$result['incall']);
-		$_HTML->set_var('extenumbers',$result['extenumbers']);
 		$_HTML->set_var('list',$appincall->get_destination_list());
 		$_HTML->set_var('element',$appincall->get_elements());
 		break;
@@ -72,8 +70,7 @@ switch($act)
 		do
 		{
 			if(isset($_QR['fm_send']) === false
-			|| xivo_issa('incall',$_QR) === false
-			|| xivo_issa('extenumbers',$_QR) === false)
+			|| xivo_issa('incall',$_QR) === false)
 				break;
 
 			$return = &$result;
@@ -110,7 +107,6 @@ switch($act)
 
 		$_HTML->set_var('id',$info['incall']['id']);
 		$_HTML->set_var('incall',$return['incall']);
-		$_HTML->set_var('extenumbers',$return['extenumbers']);
 		$_HTML->set_var('list',$appincall->get_destination_list());
 		$_HTML->set_var('element',$appincall->get_elements());
 		break;
@@ -173,21 +169,26 @@ switch($act)
 	default:
 		$act = 'list';
 		$total = 0;
+		$nbbypage = XIVO_SRE_IPBX_AST_NBBYPAGE;
+
+		$appincall = &$ipbx->get_application('incall');
+
+		$order = array();
+		$order['exten'] = SORT_ASC;
+
+		$limit = array();
+		$limit[0] = ($page - 1) * $nbbypage;
+		$limit[1] = $nbbypage;
 
 		if($search !== '')
-			$list = $ipbx->get_incall_search($search);
+			$list = $appincall->get_incalls_search($search,null,$order,$limit);
 		else
-			$list = $ipbx->get_incall_list();
+			$list = $appincall->get_incalls_list(null,$order,$limit);
 
 		if($list !== false)
-		{
-			$total = count($list);
-			xivo::load_class('xivo_sort');
-			$sort = new xivo_sort(array('browse' => 'extenumbers','key' => 'exten'));
-			usort($list,array(&$sort,'str_usort'));
-		}
+			$total = $appincall->get_cnt();
 
-		$_HTML->set_var('pager',xivo_calc_page($page,20,$total));
+		$_HTML->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
 		$_HTML->set_var('list',$list);
 		$_HTML->set_var('search',$search);
 }

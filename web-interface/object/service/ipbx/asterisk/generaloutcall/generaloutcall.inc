@@ -27,6 +27,9 @@ class xivo_service_asterisk_generaloutcall extends xivo_service_asterisk_abstrac
 	{
 		$data['commented'] = (bool) $data['commented'];
 
+		if(xivo_haslen($data,'exten') === true)
+			$data['exten'] = $this->_sre->display_extension($data['exten']);
+
 		return($data);
 	}
 

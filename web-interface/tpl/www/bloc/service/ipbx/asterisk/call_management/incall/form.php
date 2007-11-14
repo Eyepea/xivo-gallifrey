@@ -9,7 +9,7 @@
 	$linked = $incall['linked'];
 	$type = $incall['type'];
 
-echo $form->text(array('desc' => $this->bbf('fm_extenumbers_exten'),'name' => 'extenumbers[exten]','labelid' => 'extenumbers-exten','size' => 15,'default' => $element['extenumbers']['exten']['default'],'value' => $this->get_varra('extenumbers','exten')));
+echo $form->text(array('desc' => $this->bbf('fm_incall_exten'),'name' => 'incall[exten]','labelid' => 'incall-exten','size' => 15,'default' => $element['incall']['exten']['default'],'value' => $this->get_varra('incall','exten')));
 
 echo $form->select(array('desc' => $this->bbf('fm_incall_type'),'name' => 'incall[type]','labelid' => 'incall-type','bbf' => 'fm_incall_type-opt-','key' => false,'default' => $element['incall']['type']['default'],'value' => $type),$element['incall']['type']['value'],'onchange="xivo_chgtype(this);"');
 
