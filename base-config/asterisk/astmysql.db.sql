@@ -242,7 +242,7 @@ CREATE TABLE `extenumbers` (
  `exten` varchar(40) NOT NULL DEFAULT '',
  `extenhash` char(40) NOT NULL DEFAULT '',
  `context` varchar(39) NOT NULL,
- `type` enum('extenfeatures','featuremap','generalfeatures','generaloutcall','group','incall','meetme','outcall','queue','user') NOT NULL,
+ `type` enum('extenfeatures','featuremap','generalfeatures','handynumbers','group','incall','meetme','outcall','queue','user') NOT NULL,
  `typeval` varchar(255) NOT NULL DEFAULT '',
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=ascii;
@@ -377,8 +377,8 @@ INSERT INTO `generaliax` VALUES (NULL,0,0,0,'iax.conf','general','nochecksums','
 INSERT INTO `generaliax` VALUES (NULL,0,0,0,'iax.conf','general','autokill','yes');
 
 
-DROP TABLE IF EXISTS `generaloutcall`;
-CREATE TABLE `generaloutcall` (
+DROP TABLE IF EXISTS `handynumbers`;
+CREATE TABLE `handynumbers` (
  `id` int(10) unsigned auto_increment,
  `exten` varchar(40) NOT NULL DEFAULT '',
  `trunkfeaturesid` int(10) unsigned NOT NULL DEFAULT 0,
@@ -387,10 +387,10 @@ CREATE TABLE `generaloutcall` (
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=ascii;
 
-CREATE INDEX `generaloutcall__idx__trunkfeaturesid` ON `generaloutcall`(`trunkfeaturesid`);
-CREATE INDEX `generaloutcall__idx__type` ON `generaloutcall`(`type`);
-CREATE INDEX `generaloutcall__idx__commented` ON `generaloutcall`(`commented`);
-CREATE UNIQUE INDEX `generaloutcall__uidx__exten` ON `generaloutcall`(`exten`);
+CREATE INDEX `handynumbers__idx__trunkfeaturesid` ON `handynumbers`(`trunkfeaturesid`);
+CREATE INDEX `handynumbers__idx__type` ON `handynumbers`(`type`);
+CREATE INDEX `handynumbers__idx__commented` ON `handynumbers`(`commented`);
+CREATE UNIQUE INDEX `handynumbers__uidx__exten` ON `handynumbers`(`exten`);
 
 
 DROP TABLE IF EXISTS `generalqueue`;

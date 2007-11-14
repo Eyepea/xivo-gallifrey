@@ -374,8 +374,8 @@ INSERT INTO generaliax VALUES (NULL,0,0,0,'iax.conf','general','nochecksums','no
 INSERT INTO generaliax VALUES (NULL,0,0,0,'iax.conf','general','autokill','yes');
 
 
-DROP TABLE generaloutcall;
-CREATE TABLE generaloutcall (
+DROP TABLE handynumbers;
+CREATE TABLE handynumbers (
  id integer unsigned,
  exten varchar(40) NOT NULL DEFAULT '',
  trunkfeaturesid integer unsigned NOT NULL DEFAULT 0,
@@ -384,10 +384,10 @@ CREATE TABLE generaloutcall (
  PRIMARY KEY(id)
 );
 
-CREATE INDEX generaloutcall__idx__trunkfeaturesid ON generaloutcall(trunkfeaturesid);
-CREATE INDEX generaloutcall__idx__type ON generaloutcall(type);
-CREATE INDEX generaloutcall__idx__commented ON generaloutcall(commented);
-CREATE UNIQUE INDEX generaloutcall__uidx__exten ON generaloutcall(exten);
+CREATE INDEX handynumbers__idx__trunkfeaturesid ON handynumbers(trunkfeaturesid);
+CREATE INDEX handynumbers__idx__type ON handynumbers(type);
+CREATE INDEX handynumbers__idx__commented ON handynumbers(commented);
+CREATE UNIQUE INDEX handynumbers__uidx__exten ON handynumbers(exten);
 
 
 DROP TABLE generalqueue;
