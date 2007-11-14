@@ -245,7 +245,11 @@ class xivo_service_abstract
 		$name = (string) $name;
 
 		if(isset($this->_application[$name]) === true)
+		{
+			if(is_array($param) === true)
+				$this->_application[$name]->set_params($param);
 			return(true);
+		}
 		
 		if(($class = $this->_load_application_class($name)) === false)
 		{

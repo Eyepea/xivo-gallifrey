@@ -3,9 +3,7 @@
 	$url = &$this->get_module('url');
 	$dhtml = &$this->get_module('dhtml');
 
-	$element = $this->get_var('element');
 	$info = $this->get_var('info');
-	$trunks_list = $this->get_var('trunks_list');
 	$smenu = $this->get_var('fm_smenu');
 
 	$outcall_js = array();
@@ -59,7 +57,7 @@
 
 <?php
 
-if($trunks_list === false):
+if($this->get_var('trunkslist') === false):
 	echo '<div class="txt-center">',$url->href_html($this->bbf('create_trunk'),'service/ipbx/trunk_management/sip','act=add'),'</div>';
 else:
 
@@ -73,137 +71,18 @@ else:
 <?=$form->hidden(array('name' => 'fm_smenu-part','value' => 'sb-part-first'));?>
 
 <div id="sb-part-first" class="b-nodisplay">
-
-<div class="sb-list">
-	<table cellspacing="0" cellpadding="0" border="0">
-		<thead>
-		<tr class="sb-top">
-			<th class="th-left"><?=$this->bbf('col_emergency-trunk');?></th>
-			<th class="th-center"><?=$this->bbf('col_emergency-exten');?></th>
-			<th class="th-right"><?=$url->href_html($url->img_html('img/site/button/mini/orange/bo-add.gif',$this->bbf('col_emergency-add'),'border="0"'),'#',null,'onclick="xivo_table_list(\'emergency\',this); return(false);"',$this->bbf('col_emergency-add'));?></th>
-		</tr>
-		</thead>
-		<tbody id="emergency">
-<?php
-	if($egency_nb !== 0):
-		for($i = 0;$i < $egency_nb;$i++):
-			$ref = &$info['emergency'][$i];
-
-			if(isset($ref['_error']) === true):
-				$errdisplay = ' l-infos-error';
-			else:
-				$errdisplay = '';
-			endif;
-?>
-		<tr class="fm-field<?=$errdisplay?>">
-			<td class="td-left txt-center">
-<?php
-			if(isset($ref['generaloutcall']['id']) === true):
-				$id = $ref['generaloutcall']['id'];
-			else:
-				$id = '';
-			endif;
-
-			echo $form->hidden(array('name' => 'emergency[id][]','value' => $id));
-
-			echo $form->select(array('field' => false,'name' => 'emergency[trunkfeaturesid][]','id' => false,'label' => false,'browse' => 'trunk','key' => 'name','altkey' => 'trunkfeaturesid','invalid' => true,'optgroup' => array('key' => true,'bbf' => array('concat','fm_emergency-trunk-opt-')),'value' => $ref['generaloutcall']['trunkfeaturesid'],'default' => $element['generaloutcall']['trunkfeaturesid']['default']),$trunks_list);
-?>
-			</td>
-			<td><?=$form->text(array('field' => false,'name' => 'emergency[exten][]','id' => false,'label' => false,'size' => 15,'value' => $ref['extenumbers']['exten'],'default' => $element['extenumbers']['exten']['default']));?></td>
-			<td class="td-right"><?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',$this->bbf('opt_emergency-delete'),'border="0"'),'#',null,'onclick="xivo_table_list(\'emergency\',this,1); return(false);"',$this->bbf('opt_emergency-delete'));?></td>
-		</tr>
-
-<?php
-		endfor;
-	endif;
-?>
-		</tbody>
-		<tfoot>
-		<tr id="no-emergency"<?=($egency_nb !== 0 ? ' class="b-nodisplay"' : '')?>>
-			<td colspan="3" class="td-single"><?=$this->bbf('no_emergency');?></td>
-		</tr>
-		</tfoot>
-	</table>
-	<table class="b-nodisplay" cellspacing="0" cellpadding="0" border="0">
-		<tbody id="ex-emergency">
-		<tr class="fm-field">
-			<td class="td-left txt-center"><?=$form->select(array('field' => false,'name' => 'emergency[trunkfeaturesid][]','id' => false,'label' => false,'browse' => 'trunk','key' => 'name','altkey' => 'trunkfeaturesid','optgroup' => array('key' => true,'bbf' => array('concat','fm_emergency-trunk-opt-')),'default' => $element['generaloutcall']['trunkfeaturesid']['default']),$trunks_list,'disabled="disabled"');?></td>
-			<td><?=$form->text(array('field' => false,'name' => 'emergency[exten][]','id' => false,'label' => false,'size' => 15,'default' => $element['extenumbers']['exten']['default']),'disabled="disabled"');?></td>
-			<td class="td-right"><?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',$this->bbf('opt_delete'),'border="0"'),'#',null,'onclick="xivo_table_list(\'emergency\',this,1); return(false);"',$this->bbf('opt_delete'));?></td>
-		</tr>
-		</tbody>
-	</table>
-</div>
-
+	<div class="sb-list">
+	<?=$this->file_include('bloc/service/ipbx/asterisk/pbx_services/outcall/form',array('type' => 'emergency','count' => $egency_nb));?>
+	</div>
 </div>
 
 <div id="sb-part-last" class="b-nodisplay">
-
-<div class="sb-list">
-	<table cellspacing="0" cellpadding="0" border="0">
-		<thead>
-		<tr class="sb-top">
-			<th class="th-left"><?=$this->bbf('col_special-trunk');?></th>
-			<th class="th-center"><?=$this->bbf('col_special-exten');?></th>
-			<th class="th-right"><?=$url->href_html($url->img_html('img/site/button/mini/orange/bo-add.gif',$this->bbf('col_special-add'),'border="0"'),'#',null,'onclick="xivo_table_list(\'special\',this); return(false);"',$this->bbf('col_special-add'));?></th>
-		</tr>
-		</thead>
-		<tbody id="special">
-<?php
-	if($special_nb !== 0):
-		for($i = 0;$i < $special_nb;$i++):
-			$ref = &$info['special'][$i];
-
-			if(isset($ref['_error']) === true):
-				$errdisplay = ' l-infos-error';
-			else:
-				$errdisplay = '';
-			endif;
-?>
-		<tr class="fm-field<?=$errdisplay?>">
-			<td class="td-left txt-center">
-<?php
-			if(isset($ref['generaloutcall']['id']) === true):
-				$id = $ref['generaloutcall']['id'];
-			else:
-				$id = '';
-			endif;
-
-			echo $form->hidden(array('name' => 'special[id][]','value' => $id));
-
-			echo $form->select(array('field' => false,'name' => 'special[trunkfeaturesid][]','id' => false,'label' => false,'browse' => 'trunk','key' => 'name','altkey' => 'trunkfeaturesid','invalid' => true,'optgroup' => array('key' => true,'bbf' => array('concat','fm_special-trunk-opt-')),'value' => $ref['generaloutcall']['trunkfeaturesid'],'default' => $element['generaloutcall']['trunkfeaturesid']['default']),$trunks_list);
-?>
-			</td>
-			<td><?=$form->text(array('field' => false,'name' => 'special[exten][]','id' => false,'label' => false,'size' => 15,'value' => $ref['extenumbers']['exten'],'default' => $element['extenumbers']['exten']['default']));?></td>
-			<td class="td-right"><?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',$this->bbf('opt_emergency-delete'),'border="0"'),'#',null,'onclick="xivo_table_list(\'special\',this,1); return(false);"',$this->bbf('opt_emergency-delete'));?></td>
-		</tr>
-
-<?php
-		endfor;
-	endif;
-?>
-		</tbody>
-		<tfoot>
-		<tr id="no-special"<?=($special_nb !== 0 ? ' class="b-nodisplay"' : '')?>>
-			<td colspan="3" class="td-single"><?=$this->bbf('no_special');?></td>
-		</tr>
-		</tfoot>
-	</table>
-	<table class="b-nodisplay" cellspacing="0" cellpadding="0" border="0">
-		<tbody id="ex-special">
-		<tr class="fm-field">
-			<td class="td-left txt-center"><?=$form->select(array('field' => false,'name' => 'special[trunkfeaturesid][]','id' => false,'label' => false,'browse' => 'trunk','key' => 'name','altkey' => 'trunkfeaturesid','optgroup' => array('key' => true,'bbf' => array('concat','fm_special-trunk-opt-')),'default' => $element['generaloutcall']['trunkfeaturesid']['default']),$trunks_list,'disabled="disabled"');?></td>
-			<td><?=$form->text(array('field' => false,'name' => 'special[exten][]','id' => false,'label' => false,'size' => 15,'default' => $element['extenumbers']['exten']['default']),'disabled="disabled"');?></td>
-			<td class="td-right"><?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',$this->bbf('opt_special-delete'),'border="0"'),'#',null,'onclick="xivo_table_list(\'special\',this,1); return(false);"',$this->bbf('opt_special-delete'));?></td>
-		</tr>
-		</tbody>
-	</table>
-</div>
-
+	<div class="sb-list">
+	<?=$this->file_include('bloc/service/ipbx/asterisk/pbx_services/outcall/form',array('type' => 'special','count' => $special_nb));?>
+	</div>
 </div>
 
 <?=$form->submit(array('name' => 'submit','id' => 'it-submit','value' => $this->bbf('fm_bt-save')));?>
-
 </form>
 <?php
 	endif;

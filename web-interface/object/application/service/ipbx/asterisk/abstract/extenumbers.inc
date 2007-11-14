@@ -39,7 +39,7 @@ class xivo_application_service_asterisk_extenumbers_abstract extends xivo_applic
 		return($this->_extenumbers->get_element());
 	}
 
-	function set($action,$type,$number,$context,$typeval='')
+	function set($action,$type,$number,$context='',$typeval='')
 	{
 		$this->_reset();
 
@@ -75,12 +75,12 @@ class xivo_application_service_asterisk_extenumbers_abstract extends xivo_applic
 			return(false);
 		}
 
-		$rs = $this->_set_result($rs);
+		$this->_set_result($rs);
 
 		return(true);
 	}
 
-	function add($typeval='')
+	function add($typeval='',$id=0)
 	{
 		if(($rs = $this->get_result()) === null || $rs === false)
 			return($rs);
@@ -88,7 +88,7 @@ class xivo_application_service_asterisk_extenumbers_abstract extends xivo_applic
 		if(xivo_haslen($typeval) === true)
 			$rs['typeval'] = $typeval;
 
-		$this->_return = $this->_extenumbers->add($rs);
+		$this->_return = $this->_extenumbers->add($rs,$id);
 
 		return($this->_return);
 	}

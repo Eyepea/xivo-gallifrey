@@ -3,8 +3,8 @@
 $array = array();
 $array['element'] = array();
 
-$array['element']['extenumid'] = array();
-$array['element']['extenumid']['default'] = '';
+$array['element']['exten'] = array();
+$array['element']['exten']['default'] = '';
 
 $array['element']['trunkfeaturesid'] = array();
 $array['element']['trunkfeaturesid']['default'] = '';
@@ -19,7 +19,7 @@ $array['element']['commented']['default'] = 0;
 $array['element']['commented']['set'] = true;
 
 $array['filter'] = array();
-$array['filter']['extenumid'] = array('cast' => 'uint');
+$array['filter']['exten'] = array('set' => false,'chk' => 2,'maxlen' => 40,'regexp' => '/^[_]?[0-9NXZ\*#\-\[\]]+[\.\!]?$/');
 $array['filter']['trunkfeaturesid'] = array('cast' => 'uint');
 $array['filter']['type'] = array('key' => array('emergency','special'));
 $array['filter']['commented'] = array('bool' => true);

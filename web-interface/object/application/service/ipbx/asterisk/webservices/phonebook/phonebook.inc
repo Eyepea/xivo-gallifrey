@@ -12,14 +12,12 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 
 	function xivo_application_service_asterisk_webservices_phonebook(&$service)
 	{
-		$where = array();
-		$where['type'] = 'phonebook';
-
 		if($this->_init(&$service) === false
 		|| ($this->_accessfeatures = &$this->_service->get_module('accessfeatures')) === false
 		|| xivo::load_class('xivo::filter') === false
 		|| xivo::load_class('xivo::curl') === false
-		|| ($this->_appserverfeatures = &$this->_service->get_application('serverfeatures',$where)) === false)
+		|| ($this->_appserverfeatures = &$this->_service->get_application('serverfeatures',
+										  array('type' => 'phonebook'))) === false)
 			return(false);
 
 		$this->_curl = new xivo_curl();

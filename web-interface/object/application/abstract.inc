@@ -162,6 +162,55 @@ class xivo_application_abstract extends xivo_libconfig_abstract
 	{
 		return($this->_errnb);
 	}
+
+	function set_params($params)
+	{
+		if(is_array($params) === false
+		|| isset($this->_param) === false
+		|| is_array($this->_param) === false
+		|| ($arr = xivo_get_aks($params)) === false)
+			return(false);
+
+		for($i = 0;$i < $arr['cnt'];$i++)
+		{
+			$key = &$arr['keys'][$i];
+
+			if(isset($this->_param[$key]) === true)
+				$this->_param[$key] = $params[$key];
+		}
+
+		return(true);
+	}
+
+	function get_params()
+	{
+		if(isset($this->_param) === false)
+			return(false);
+
+		return($this->_param);
+	}
+
+	function set_param($name,$value)
+	{
+		if(isset($this->_param) === false
+		|| is_array($this->_param) === false
+		|| isset($this->_param[$name]) === false)
+			return(false);
+
+		$this->_param[$name] = $value;
+
+		return(true);
+	}
+
+	function get_param($name)
+	{
+		if(isset($this->_param) === false
+		|| is_array($this->_param) === false
+		|| isset($this->_param[$name]) === false)
+			return(false);
+
+		return($this->_param[$name]);
+	}
 }
 
 ?>

@@ -108,7 +108,7 @@ class xivo_application_asterisk_abstract extends xivo_application_abstract
 		return($this->_info['extenumbers']);
 	}
 
-	function set_extenumbers($action,$type,$number,$context,$typeval='')
+	function set_extenumbers($action,$type,$number,$context='',$typeval='')
 	{
 		if(($r = $this->_extenumbers->set($action,$type,$number,$context,$typeval)) === false)
 			$this->_set_error('extenumbers',$this->_extenumbers->get_error());
@@ -132,9 +132,9 @@ class xivo_application_asterisk_abstract extends xivo_application_abstract
 		return($rs);
 	}
 
-	function add_extenumbers($typeval='')
+	function add_extenumbers($typeval='',$id=0)
 	{
-		if(($rs = $this->_extenumbers->add($typeval)) === null || $rs === false)
+		if(($rs = $this->_extenumbers->add($typeval,$id)) === null || $rs === false)
 			return($rs);
 
 		$this->_return['extenumbers'] = $this->_extenumbers->get_return();

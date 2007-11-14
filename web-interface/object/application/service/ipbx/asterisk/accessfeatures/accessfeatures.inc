@@ -1,23 +1,24 @@
 <?php
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','abstract.inc'),true);
+xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk.inc'),true);
 
-class xivo_application_service_asterisk_accessfeatures extends xivo_application_service_asterisk_abstract
+class xivo_application_service_asterisk_accessfeatures extends xivo_application_asterisk_abstract
 {
 	var $_accessfeatures	= null;
+	var $_param		= array('type'	=> '');
 	var $_type		= '';
 
 	function xivo_application_service_asterisk_accessfeatures(&$service,$param=array())
 	{
-		$this->xivo_application_service_asterisk_abstract(&$service);
+		$this->xivo_application_asterisk_abstract(&$service);
 
-		if(is_array($param) === false
+		if($this->set_params($param) === false
 		|| isset($param['type']) === false
 		|| ($this->_accessfeatures = &$this->_service->get_module('accessfeatures')) === false
 		|| $this->_accessfeatures->chk_element_value('type',$param['type']) === false)
 			return(false);
 
-		$this->_type = $param['type'];
+		$this->_param['type'] = $param['type'];
 
 		return(true);
 	}
@@ -28,7 +29,7 @@ class xivo_application_service_asterisk_accessfeatures extends xivo_application_
 		$this->_origin = false;
 
 		$where = array();
-		$where['type'] = $this->_type;
+		$where['type'] = $this->_param['type'];
 
 		if(($this->_info = $this->_accessfeatures->get_all_where($where)) === false)
 			return(false);
@@ -56,36 +57,27 @@ class xivo_application_service_asterisk_accessfeatures extends xivo_application_
 			return(null);
 
 		$info = array();
-		$info['type'] = $this->_type;
+		$info['type'] = $this->_param['type'];
 		
-		$tmp = $reslist = $errlist = array();
+		$tmp = array();
 
-		for($i = 0;$i < $nb;$i++)
+		for($i = $j = $k = 0;$i < $nb;$i++)
 		{
 			$info['host'] = $list[$i];
 
 			if(($rs = $this->_accessfeatures->chk_values($info)) === false
 			|| isset($tmp[$rs['host']]) === true)
 			{
-				$errlist[] = 'wrong server';
+				$this->_set_error($j++,'wrong host');
 				continue;
 			}
 
 			$tmp[$rs['host']] = 1;
-			$reslist[] = $rs;
+			$this->_set_result($k++,$rs);
 		}
 
-		if(isset($reslist[0]) === false)
-			$reslist = false;
-
-		if(isset($errlist[0]) === true || $reslist === false)
-		{
-			$this->_set_result($reslist);
-			$this->_set_error($errlist);
+		if($this->get_errnb() > 0)
 			return(false);
-		}
-
-		$this->_set_result($reslist);
 
 		return(true);
 	}
@@ -176,7 +168,7 @@ class xivo_application_service_asterisk_accessfeatures extends xivo_application_
 			return(null);
 
 		$where = array();
-		$where['type'] = $this->_type;
+		$where['type'] = $this->_param['type'];
 
 		if(($r = $this->_accessfeatures->delete_where($where)) === false)
 			$this->_reverse_delete();

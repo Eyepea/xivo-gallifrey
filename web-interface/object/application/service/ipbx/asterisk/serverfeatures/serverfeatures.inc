@@ -1,18 +1,18 @@
 <?php
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','abstract.inc'),true);
+xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk.inc'),true);
 
-class xivo_application_service_asterisk_serverfeatures extends xivo_application_service_asterisk_abstract
+class xivo_application_service_asterisk_serverfeatures extends xivo_application_asterisk_abstract
 {
 	var $_serverfeatures	= null;
 	var $_server		= null;
-	var $_type		= '';
+	var $_param		= array('type'	=> '');
 
 	function xivo_application_service_asterisk_serverfeatures(&$service,$param=array())
 	{
-		$this->xivo_application_service_asterisk_abstract(&$service);
+		$this->xivo_application_asterisk_abstract(&$service);
 
-		if(is_array($param) === false
+		if($this->set_params($param) === false
 		|| isset($param['type']) === false
 		|| ($this->_serverfeatures = &$this->_service->get_module('serverfeatures')) === false
 		|| $this->_serverfeatures->chk_element_value('type',$param['type']) === false
@@ -20,7 +20,7 @@ class xivo_application_service_asterisk_serverfeatures extends xivo_application_
 		|| ($this->_server = new xivo_server()) === false)
 			return(false);
 
-		$this->_type = $param['type'];
+		$this->_param['type'] = $param['type'];
 
 		return(true);
 	}
@@ -31,7 +31,7 @@ class xivo_application_service_asterisk_serverfeatures extends xivo_application_
 		$this->_origin = false;
 
 		$where = array();
-		$where['type'] = $this->_type;
+		$where['type'] = $this->_param['type'];
 
 		if(($this->_info = $this->_serverfeatures->get_all_where($where)) === false)
 			return(false);
@@ -60,9 +60,9 @@ class xivo_application_service_asterisk_serverfeatures extends xivo_application_
 		$assoc = (bool) $assoc;
 
 		if(is_array($opts) === true)
-			$opts = array_merge($opts,array('type' => $this->_type));
+			$opts = array_merge($opts,array('type' => $this->_param['type']));
 		else
-			$opts = array('type' => $this->_type);
+			$opts = array('type' => $this->_param['type']);
 
 		$rs = $this->_serverfeatures->get_all_where($opts,$disable);
 
@@ -107,35 +107,26 @@ class xivo_application_service_asterisk_serverfeatures extends xivo_application_
 			return(null);
 
 		$info = array();
-		$info['type'] = $this->_type;
+		$info['type'] = $this->_param['type'];
 		
-		$tmp = $reslist = $errlist = array();
+		$tmp = array();
 
-		for($i = 0;$i < $nb;$i++)
+		for($i = $j = $k = 0;$i < $nb;$i++)
 		{
 			if(($info['serverid'] = $this->_server->get_id($list[$i])) === false
 			|| ($rs = $this->_serverfeatures->chk_values($info)) === false
 			|| isset($tmp[$rs['serverid']]) === true)
 			{
-				$errlist[] = 'wrong server';
+				$this->_set_error($j++,'wrong server');
 				continue;
 			}
 
 			$tmp[$rs['serverid']] = 1;
-			$reslist[] = $rs;
+			$this->_set_result($k++,$rs);
 		}
 
-		if(isset($reslist[0]) === false)
-			$reslist = false;
-
-		if(isset($errlist[0]) === true || $reslist === false)
-		{
-			$this->_set_result($reslist);
-			$this->_set_error($errlist);
+		if($this->get_errnb() > 0)
 			return(false);
-		}
-
-		$this->_set_result($reslist);
 
 		return(true);
 	}
@@ -226,7 +217,7 @@ class xivo_application_service_asterisk_serverfeatures extends xivo_application_
 			return(null);
 
 		$where = array();
-		$where['type'] = $this->_type;
+		$where['type'] = $this->_param['type'];
 
 		if(($r = $this->_serverfeatures->delete_where($where)) === false)
 			$this->_reverse_delete();

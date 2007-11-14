@@ -26,7 +26,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 	{
 		$this->_info = $this->_origin = array();
 
-		if(($this->_info['incall'] = $this->_incall->get($id)) === false
+		if(($this->_info['incall'] = $this->_incall->get($id,$disable)) === false
 		|| ($this->_info['extenumbers'] = $this->_get_extenumbers()) === false
 		|| $this->_get_localexten() === false)
 			return(false);
