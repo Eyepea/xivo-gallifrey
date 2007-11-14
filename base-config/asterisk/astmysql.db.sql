@@ -71,7 +71,7 @@ CREATE TABLE `agentgroup` (
  `commented` tinyint(1) NOT NULL DEFAULT 0,
  `deleted` tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=ascii;
 
 CREATE INDEX `agentgroup__idx__groupid` ON `agentgroup`(`groupid`);
 CREATE INDEX `agentgroup__idx__name` ON `agentgroup`(`name`);
@@ -245,7 +245,7 @@ CREATE TABLE `extenumbers` (
  `type` varchar(64) NOT NULL DEFAULT '',
  `typeval` varchar(255) NOT NULL DEFAULT '',
  PRIMARY KEY(`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=ascii;
 
 CREATE INDEX `extenumbers__idx__exten` ON `extenumbers`(`exten`);
 CREATE INDEX `extenumbers__idx__extenhash` ON `extenumbers`(`extenhash`);
@@ -293,7 +293,7 @@ CREATE TABLE `features` (
  `var_name` varchar(128) NOT NULL,
  `var_val` varchar(255),
  PRIMARY KEY(`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=ascii;
 
 CREATE INDEX `features__idx__commented` ON `features`(`commented`);
 CREATE INDEX `features__idx__filename` ON `features`(`filename`);
@@ -380,17 +380,17 @@ INSERT INTO `generaliax` VALUES (NULL,0,0,0,'iax.conf','general','autokill','yes
 DROP TABLE IF EXISTS `generaloutcall`;
 CREATE TABLE `generaloutcall` (
  `id` int(10) unsigned auto_increment,
- `extenumid` int(10) unsigned NOT NULL DEFAULT 0,
+ `exten` varchar(40) NOT NULL DEFAULT '',
  `trunkfeaturesid` int(10) unsigned NOT NULL DEFAULT 0,
  `type` enum('emergency','special') NOT NULL,
  `commented` tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=ascii;
 
 CREATE INDEX `generaloutcall__idx__trunkfeaturesid` ON `generaloutcall`(`trunkfeaturesid`);
 CREATE INDEX `generaloutcall__idx__type` ON `generaloutcall`(`type`);
 CREATE INDEX `generaloutcall__idx__commented` ON `generaloutcall`(`commented`);
-CREATE UNIQUE INDEX `generaloutcall__uidx__extenumid` ON `generaloutcall`(`extenumid`);
+CREATE UNIQUE INDEX `generaloutcall__uidx__exten` ON `generaloutcall`(`exten`);
 
 
 DROP TABLE IF EXISTS `generalqueue`;
@@ -404,7 +404,7 @@ CREATE TABLE `generalqueue` (
  `var_name` varchar(128) NOT NULL,
  `var_val` varchar(128),
  PRIMARY KEY(`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=ascii;
 
 CREATE INDEX `generalqueue__idx__commented` ON `generalqueue`(`commented`);
 CREATE INDEX `generalqueue__idx__filename` ON `generalqueue`(`filename`);
@@ -566,9 +566,10 @@ CREATE TABLE `groupfeatures` (
  `name` varchar(128) NOT NULL,
  `number` varchar(40) NOT NULL DEFAULT '',
  `context` varchar(39) NOT NULL,
+ `timeout` tinyint(2) unsigned NOT NULL DEFAULT 30,
  `deleted` tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=ascii;
 
 CREATE INDEX `groupfeatures__idx__name` ON `groupfeatures`(`name`);
 CREATE INDEX `groupfeatures__idx__deleted` ON `groupfeatures`(`deleted`);
@@ -600,7 +601,7 @@ CREATE TABLE `meetme` (
  `var_name` varchar(128) NOT NULL,
  `var_val` varchar(128),
  PRIMARY KEY(`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=ascii;
 
 CREATE INDEX `meetme__idx__commented` ON `meetme`(`commented`);
 CREATE INDEX `meetme__idx__filename` ON `meetme`(`filename`);
@@ -630,7 +631,7 @@ CREATE TABLE `meetmefeatures` (
  `enableexitcontext` tinyint(1) NOT NULL DEFAULT 0,
  `exitcontext` varchar(39) NOT NULL,
  PRIMARY KEY(`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=ascii;
 
 CREATE UNIQUE INDEX `meetmefeatures__uidx__meetmeid` ON `meetmefeatures`(`meetmeid`);
 CREATE UNIQUE INDEX `meetmefeatures__uidx__name` ON `meetmefeatures`(`name`);
@@ -676,7 +677,7 @@ CREATE TABLE `outcall` (
  `linked` tinyint(1) NOT NULL DEFAULT 0,
  `commented` tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=ascii;
 
 CREATE INDEX `outcall__idx__trunkfeaturesid` ON `outcall`(`trunkfeaturesid`);
 CREATE INDEX `outcall__idx__context` ON `outcall`(`context`);
@@ -695,7 +696,7 @@ CREATE TABLE `phone` (
  `iduserfeatures` int(10) unsigned NOT NULL,
  `isinalan` tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(`macaddr`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=ascii;
 
 CREATE INDEX `phone__idx__proto_iduserfeatures` ON `phone`(`proto`,`iduserfeatures`);
 
@@ -754,7 +755,7 @@ CREATE TABLE `phonebooknumber` (
  `number` varchar(40) NOT NULL DEFAULT '',
  `type` enum('home','office','mobile','fax','other') NOT NULL,
  PRIMARY KEY(`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=ascii;
 
 CREATE INDEX `phonebooknumber__idx__number` ON `phonebooknumber`(`number`);
 CREATE INDEX `phonebooknumber__idx__type` ON `phonebooknumber`(`type`);
@@ -842,7 +843,7 @@ CREATE TABLE `queuemember` (
  `channel` varchar(25) NOT NULL,
  `category` enum('group','queue') NOT NULL,
  PRIMARY KEY(`queue_name`,`interface`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=ascii;
 
 CREATE INDEX `queuemember__idx__commented` ON `queuemember`(`commented`);
 CREATE INDEX `queuemember__idx__usertype` ON `queuemember`(`usertype`);
@@ -861,7 +862,7 @@ CREATE TABLE `rightcall` (
  `commented` tinyint(1) NOT NULL DEFAULT 0,
  `description` text NOT NULL,
  PRIMARY KEY(`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=ascii;
 
 CREATE INDEX `rightcall__idx__passwd` ON `rightcall`(`passwd`);
 CREATE INDEX `rightcall__idx__permit` ON `rightcall`(`permit`);
@@ -876,7 +877,7 @@ CREATE TABLE `rightcallexten` (
  `exten` varchar(40) NOT NULL DEFAULT '',
  `extenhash` char(40) NOT NULL DEFAULT '',
  PRIMARY KEY(`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=ascii;
 
 CREATE UNIQUE INDEX `rightcallexten__uidx__rightcallid_extenhash` ON `rightcallexten`(`rightcallid`,`extenhash`);
 
@@ -888,7 +889,7 @@ CREATE TABLE `rightcallmember` (
  `type` enum('user','group','outcall') NOT NULL,
  `typeval` varchar(128) NOT NULL DEFAULT 0,
  PRIMARY KEY(`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=ascii;
 
 CREATE UNIQUE INDEX `rightcallmember__uidx__rightcallid_type_typeval` ON `rightcallmember`(`rightcallid`,`type`,`typeval`);
 
@@ -932,7 +933,7 @@ CREATE TABLE `serverfeatures` (
  `type` enum('phonebook') NOT NULL,
  `commented` tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=ascii;
 
 CREATE INDEX `serverfeatures__idx__serverid` ON `serverfeatures`(`serverid`);
 CREATE INDEX `serverfeatures__idx__type` ON `serverfeatures`(`type`);
@@ -948,7 +949,7 @@ CREATE TABLE `trunkfeatures` (
  `registerid` int(10) unsigned NOT NULL DEFAULT 0,
  `registercommented` tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=ascii;
 
 CREATE INDEX `trunkfeatures__idx__registerid` ON `trunkfeatures`(`registerid`);
 CREATE INDEX `trunkfeatures__idx__registercommented` ON `trunkfeatures`(`registercommented`);
@@ -964,7 +965,7 @@ CREATE TABLE `usercustom` (
  `commented` tinyint(1) NOT NULL DEFAULT 0,
  `category` enum('user','trunk') NOT NULL,
  PRIMARY KEY(`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=ascii;
 
 CREATE INDEX `usercustom__idx__name` ON `usercustom`(`name`);
 CREATE INDEX `usercustom__idx__context` ON `usercustom`(`context`);

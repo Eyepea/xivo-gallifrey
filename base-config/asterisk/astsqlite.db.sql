@@ -377,7 +377,7 @@ INSERT INTO generaliax VALUES (NULL,0,0,0,'iax.conf','general','autokill','yes')
 DROP TABLE generaloutcall;
 CREATE TABLE generaloutcall (
  id integer unsigned,
- extenumid integer unsigned NOT NULL DEFAULT 0,
+ exten varchar(40) NOT NULL DEFAULT '',
  trunkfeaturesid integer unsigned NOT NULL DEFAULT 0,
  type varchar(9) NOT NULL,
  commented tinyint(1) NOT NULL DEFAULT 0,
@@ -387,7 +387,7 @@ CREATE TABLE generaloutcall (
 CREATE INDEX generaloutcall__idx__trunkfeaturesid ON generaloutcall(trunkfeaturesid);
 CREATE INDEX generaloutcall__idx__type ON generaloutcall(type);
 CREATE INDEX generaloutcall__idx__commented ON generaloutcall(commented);
-CREATE UNIQUE INDEX generaloutcall__uidx__extenumid ON generaloutcall(extenumid);
+CREATE UNIQUE INDEX generaloutcall__uidx__exten ON generaloutcall(exten);
 
 
 DROP TABLE generalqueue;
@@ -563,6 +563,7 @@ CREATE TABLE groupfeatures (
  name varchar(128) NOT NULL,
  number varchar(40) NOT NULL DEFAULT '',
  context varchar(39) NOT NULL,
+ timeout tinyint unsigned NOT NULL DEFAULT 30,
  deleted tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(id)
 );
