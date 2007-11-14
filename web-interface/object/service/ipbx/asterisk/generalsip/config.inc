@@ -291,7 +291,7 @@ $array['element']['rtcachefriends']['set'] = true;
 
 $array['element']['rtupdate'] = array();
 $array['element']['rtupdate']['value'] = array('no','yes');
-$array['element']['rtupdate']['default'] = 'yes';
+$array['element']['rtupdate']['default'] = 'no';
 $array['element']['rtupdate']['set'] = true;
 
 $array['element']['ignoreregexpire'] = array();

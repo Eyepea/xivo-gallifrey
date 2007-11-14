@@ -397,8 +397,5 @@ Système ODBC :
 ; fm_voicemail-odbctable
 Table ODBC :
 
-; fm_bt-save
-Sauvegarder
-
 ; fm_success-save
 Propriétés des messageries vocales sauvegardées avec succès

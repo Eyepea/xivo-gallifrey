@@ -6,9 +6,10 @@ function tooltips_display()
 {
 	if(tooltips_display_enable == false)
 		return(false);
-
+/*
 	xivo_eid('tips-info-bindaddr').style.display = 'inline';
 	xivo_eid('ancr-tooltips-bindaddr').focus();
+*/
 }
 
 window.onload = function()
@@ -18,7 +19,7 @@ window.onload = function()
 
 	xivo_fm_show_error();
 	xivo_fm_onfocus_onblur();
-
+/*
 	if(xivo_eid('tooltips-bindaddr') == false && xivo_eid('lb-bindaddr') != false)
 	{
 		var nodechild = xivo_eid('lb-bindaddr').firstChild;
@@ -74,4 +75,5 @@ window.onload = function()
 	{
 		this.style.display = 'none';
 	}
+*/
 }

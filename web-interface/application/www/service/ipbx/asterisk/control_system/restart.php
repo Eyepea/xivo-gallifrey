@@ -7,6 +7,7 @@ if($_HTML->chk_acl(true) === false)
 
 $ami = &$ipbx->get_module('ami');
 $ami->cmd('restart now');
+$ami->cmd('moh reload');
 $ami->cmd('reload res_musiconhold.so');
 
 if(isset($_SERVER['HTTP_REFERER']) === true)

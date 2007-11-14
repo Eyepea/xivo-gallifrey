@@ -365,7 +365,7 @@ INSERT INTO generaliax VALUES (NULL,0,0,0,'iax.conf','general','codecpriority','
 INSERT INTO generaliax VALUES (NULL,0,0,1,'iax.conf','general','disallow',NULL);
 INSERT INTO generaliax VALUES (NULL,0,0,1,'iax.conf','general','allow',NULL);
 INSERT INTO generaliax VALUES (NULL,0,0,0,'iax.conf','general','rtcachefriends','yes');
-INSERT INTO generaliax VALUES (NULL,0,0,0,'iax.conf','general','rtupdate','yes');
+INSERT INTO generaliax VALUES (NULL,0,0,0,'iax.conf','general','rtupdate','no');
 INSERT INTO generaliax VALUES (NULL,0,0,0,'iax.conf','general','rtignoreregexpire','no');
 INSERT INTO generaliax VALUES (NULL,0,0,0,'iax.conf','general','rtautoclear','yes');
 INSERT INTO generaliax VALUES (NULL,0,0,0,'iax.conf','general','pingtime','20');
@@ -487,7 +487,7 @@ INSERT INTO generalsip VALUES (NULL,0,0,0,'sip.conf','general','sendrpid','no');
 INSERT INTO generalsip VALUES (NULL,0,0,0,'sip.conf','general','canreinvite','yes');
 INSERT INTO generalsip VALUES (NULL,0,0,1,'sip.conf','general','insecure',NULL);
 INSERT INTO generalsip VALUES (NULL,0,0,0,'sip.conf','general','rtcachefriends','yes');
-INSERT INTO generalsip VALUES (NULL,0,0,0,'sip.conf','general','rtupdate','yes');
+INSERT INTO generalsip VALUES (NULL,0,0,0,'sip.conf','general','rtupdate','no');
 INSERT INTO generalsip VALUES (NULL,0,0,0,'sip.conf','general','ignoreregexpire','no');
 INSERT INTO generalsip VALUES (NULL,0,0,0,'sip.conf','general','rtautoclear','yes');
 
