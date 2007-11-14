@@ -69,29 +69,6 @@ class xivo_service_asterisk_extenumbers extends xivo_service_asterisk_abstract
 		return($this->_dso->edit($id,$arr));
 	}
 
-	function exists($arr,$id=null)
-	{
-		$id = $id !== null ? xivo_uint($id) : null;
-
-		if(is_array($arr) === false
-		|| xivo_haslen($arr,'exten') === false
-		|| ($exten = $this->_sre->chk_extension($arr['exten'])) === false)
-			return(null);
-
-		$extenhash = sha1($exten);
-
-		$where = array();
-		$where['extenhash'] = $extenhash;
-
-		$context = xivo_haslen($arr,'context') === true ? $arr['context'] : '';
-
-		if(($whereid = $this->_dso->exists_exten($where,$context)) !== false
-		&& ($id === null || $whereid !== $id) === true)
-			return(true);
-
-		return(false);
-	}
-
 	function exists_type($arr)
 	{
 		if(is_array($arr) === false

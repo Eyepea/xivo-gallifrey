@@ -25,11 +25,29 @@ Contexte :
 ; fm_queue_strategy
 Stratégie :
 
-; fm_queue_timeout
-Temps de sonnerie :
-
 ; fm_queue_musiconhold
 Musique d'attente :
+
+; fm_gfeatures_timeout
+Temps de sonnerie :
+
+; fm_gfeatures_timeout-opt0
+Désactivé
+
+; fm_gfeatures_timeout-opt30
+30 secondes
+
+; fm_gfeatures_timeout-opt60
+1 minute
+
+; fm_gfeatures_timeout-opt90
+1 min. 30 sec.
+
+; fm_gfeatures_timeout-opt
+%s minutes
+
+; fm_queue_timeout
+Délai d'attente pour joindre un utilisateur :
 
 ; fm_queue_timeout-opt0
 Désactivé

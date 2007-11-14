@@ -70,8 +70,17 @@ Temps de sonnerie :
 ; fm_qfeatures_timeout-opt0
 Désactivé
 
+; fm_qfeatures_timeout-opt30
+30 secondes
+
+; fm_qfeatures_timeout-opt60
+1 minute
+
+; fm_qfeatures_timeout-opt90
+1 min. 30 sec.
+
 ; fm_qfeatures_timeout-opt
-%s secondes
+%s minutes
 
 ; fm_qfeatures_data-quality
 Qualité des données :

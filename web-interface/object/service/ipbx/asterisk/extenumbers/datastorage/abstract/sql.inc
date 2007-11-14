@@ -6,22 +6,6 @@ class xivo_service_asterisk_extenumbers_abstract_sql extends xivo_service_asteri
 {
 	var $_param	= array('table' => 'extenumbers');
 
-	function exists_exten($arr,$context='')
-	{
-		$context = (string) $context;
-
-		if(($where = $this->_dso->where($arr)) === false)
-			return(null);
-
-		if($context !== '')
-			$where .= ' AND (context = \''.$this->_dso->escape_string($context).'\' OR context = \'\')';
-
-		if(($r = $this->_dso->select_one($this->_param['table'],'id',$where)) !== false)
-			$r = (int) $r['id'];
-
-		return($r);
-	}
-
 	function exists_type($arr,$context='')
 	{
 		$context = (string) $context;

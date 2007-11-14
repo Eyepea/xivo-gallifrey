@@ -229,6 +229,8 @@ class xivo_tpl_form extends xivo_tpl_module
 				case 'paramvalue':
 				case 'mixvalue':
 				case 'concatkey':
+				case 'mixvaluekey':
+				case 'mixkeyvalue':
 					break;
 				default:
 					$v['bbf'][0] = 'concatvalue';
@@ -649,7 +651,9 @@ class xivo_tpl_form extends xivo_tpl_module
 				$render[3] = '&nbsp;';
 			else if(is_array($this->_param['bbf']) === true)
 			{
-				switch($this->_param['bbf'][0])
+				$key = $this->_param['bbf'][0];
+
+				switch($key)
 				{
 					case 'paramkey':
 						$render[3] = $this->bbf($this->_param['bbf'][1],(is_array($param) === true ? $param : $render[1]));
@@ -663,28 +667,37 @@ class xivo_tpl_form extends xivo_tpl_module
 					case 'concatvalue':
 						$render[3] = $this->bbf($this->_param['bbf'][1].$render[3]);
 						break;
-					case 'mixkey':
-						$render[3] = $this->bbf($this->_param['bbf'][1].$render[1]);
-
-						if($render[3] === $this->_param['bbf'][1].$render[1])
+					default:
+						if($key === 'mixkey')
 						{
-							if(is_array($param) === true)
-								$render[3] = $this->bbf($this->_param['bbf'][1],$param);
-							else
-								$render[3] = $this->bbf($this->_param['bbf'][1],$render[1]);
+							$concat = $this->_param['bbf'][1].$render[1];
+							$nparam = $render[1];
 						}
-						break;
-					case 'mixvalue':
-						$tmp = $render[3];
-						$render[3] = $this->bbf($this->_param['bbf'][1].$tmp);
-
-						if($render[3] === $this->_param['bbf'][1].$tmp)
+						else if($key === 'mixkeyvalue')
 						{
-							if(is_array($param) === true)
-								$render[3] = $this->bbf($this->_param['bbf'][1],$param);
-							else
-								$render[3] = $this->bbf($this->_param['bbf'][1],$tmp);
+							$concat = $this->_param['bbf'][1].$render[3];
+							$nparam = $render[1];
 						}
+						else if($key === 'mixvalue')
+						{
+							$concat = $this->_param['bbf'][1].$render[3];
+							$nparam = $render[3];
+						}
+						else if($key === 'mixvaluekey')
+						{
+							$concat = $this->_param['bbf'][1].$render[1];
+							$nparam = $render[3];
+						}
+						else
+							break;
+
+						if(($render[3] = $this->bbf($concat)) !== $concat)
+							break;
+
+						if(is_array($param) === true)
+							$render[3] = $this->bbf($this->_param['bbf'][1],$param);
+						else
+							$render[3] = $this->bbf($this->_param['bbf'][1],$nparam);
 						break;
 				}
 			}
@@ -697,7 +710,9 @@ class xivo_tpl_form extends xivo_tpl_module
 				$render[2] = '&nbsp;';
 			else if(is_array($this->_param['bbf']) === true)
 			{
-				switch($this->_param['bbf'][0])
+				$key = $this->_param['bbf'][0];
+
+				switch($key)
 				{
 					case 'paramkey':
 						$render[2] = $this->bbf($this->_param['bbf'][1],(is_array($param) === true ? $param : $render[0]));
@@ -711,28 +726,37 @@ class xivo_tpl_form extends xivo_tpl_module
 					case 'concatvalue':
 						$render[2] = $this->bbf($this->_param['bbf'][1].$render[2]);
 						break;
-					case 'mixkey':
-						$render[2] = $this->bbf($this->_param['bbf'][1].$render[0]);
-
-						if($render[2] === $this->_param['bbf'][1].$render[0])
+					default:
+						if($key === 'mixkey')
 						{
-							if(is_array($param) === true)
-								$render[2] = $this->bbf($this->_param['bbf'][1],$param);
-							else
-								$render[2] = $this->bbf($this->_param['bbf'][1],$render[0]);
+							$concat = $this->_param['bbf'][1].$render[0];
+							$nparam = $render[0];
 						}
-						break;
-					case 'mixvalue':
-						$tmp = $render[2];
-						$render[2] = $this->bbf($this->_param['bbf'][1].$tmp);
-
-						if($render[2] === $this->_param['bbf'][1].$tmp)
+						else if($key === 'mixkeyvalue')
 						{
-							if(is_array($param) === true)
-								$render[2] = $this->bbf($this->_param['bbf'][1],$param);
-							else
-								$render[2] = $this->bbf($this->_param['bbf'][1],$tmp);
+							$concat = $this->_param['bbf'][1].$render[2];
+							$nparam = $render[0];
 						}
+						else if($key === 'mixvalue')
+						{
+							$concat = $this->_param['bbf'][1].$render[2];
+							$nparam = $render[2];
+						}
+						else if($key === 'mixvaluekey')
+						{
+							$concat = $this->_param['bbf'][1].$render[0];
+							$nparam = $render[2];
+						}
+						else
+							break;
+
+						if(($render[2] = $this->bbf($concat)) !== $concat)
+							break;
+
+						if(is_array($param) === true)
+							$render[2] = $this->bbf($this->_param['bbf'][1],$param);
+						else
+							$render[2] = $this->bbf($this->_param['bbf'][1],$nparam);
 						break;
 				}
 			}

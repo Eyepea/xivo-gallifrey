@@ -55,8 +55,11 @@ $array['element']['announceoverride'] = array();
 $array['element']['announceoverride']['default'] = '';
 
 $array['element']['timeout'] = array();
-$array['element']['timeout']['value'] = array(0,5,10,15,20,25,30,35,40,45,50,55,60);
-$array['element']['timeout']['default'] = 30;
+$array['element']['timeout']['value'] = array(0 => 0,30 => 30,60 => 1,90 => array(1,30),
+					      120 => 2,180 => 3,240 => 4,300 => 5,360 => 6,
+					      420 => 7,480 => 8,540 => 9,
+					      600 => 10,900 => 15,1200 => 20,1500 => 25,1800 => 30);
+$array['element']['timeout']['default'] = 0;
 
 $array['filter'] = array();
 $array['filter']['number'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9\*#]+$/','maxlen' => 40);
@@ -73,6 +76,6 @@ $array['filter']['write_caller'] = array('bool' => true);
 $array['filter']['write_calling'] = array('bool' => true);
 $array['filter']['url'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 255);
 $array['filter']['announceoverride'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 128);
-$array['filter']['timeout'] = array('key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
+$array['filter']['timeout'] = array('key' => array(0,30,60,90,120,180,240,300,360,420,480,540,600,900,1200,1500,1800));
 
 ?>

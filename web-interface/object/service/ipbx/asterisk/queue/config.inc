@@ -40,7 +40,7 @@ $array['element']['weight']['default'] = 0;
 $array['element']['weight']['setdef'] = true;
 
 $array['element']['wrapuptime'] = array();
-$array['element']['wrapuptime']['value'] = array(0,5000 => 5,10000 => 10,15000 => 15,
+$array['element']['wrapuptime']['value'] = array(0 => 0,5000 => 5,10000 => 10,15000 => 15,
 						 20000 => 20,25000 => 25,30000 => 30,
 						 35000 => 35,40000 => 40,45000 => 45,
 						 50000 => 50,55000 => 55,60000 => 60);

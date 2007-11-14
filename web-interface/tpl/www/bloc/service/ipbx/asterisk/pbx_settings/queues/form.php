@@ -166,7 +166,7 @@ endif;
 
 <div id="sb-part-application" class="b-nodisplay">
 
-<?=$form->select(array('desc' => $this->bbf('fm_qfeatures_timeout'),'name' => 'qfeatures[timeout]','labelid' => 'qfeatures-timeout','bbf' => array('mixkey','fm_qfeatures_timeout-opt'),'key' => false,'default' => $element['qfeatures']['timeout']['default'],'value' => $info['qfeatures']['timeout']),$element['qfeatures']['timeout']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_qfeatures_timeout'),'name' => 'qfeatures[timeout]','labelid' => 'qfeatures-timeout','bbf' => array('mixvaluekey','fm_qfeatures_timeout-opt','paramarray'),'default' => $element['qfeatures']['timeout']['default'],'value' => $info['qfeatures']['timeout']),$element['qfeatures']['timeout']['value']);?>
 
 <?=$form->checkbox(array('desc' => $this->bbf('fm_qfeatures_data-quality'),'name' => 'qfeatures[data_quality]','labelid' => 'qfeatures-data-quality','default' => $element['qfeatures']['data_quality']['default'],'checked' => $info['qfeatures']['data_quality']));?>
 
