@@ -6,6 +6,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 {
 	var $_origin		= array();
 	var $_status		= '';
+	var $_cnt		= 0;
 	var $_outcall		= null;
 	var $_extenumbers	= null;
 	var $_trunkfeatures	= null;
@@ -71,7 +72,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		$this->_origin['exten'] = false;
 
 		$this->_info['exten'] = $this->_extensions->get_exten('macro',
-								    $this->_info['extenumbers']['exten'],
+								    $this->_info['outcall']['exten'],
 								    $this->_info['outcall']['context']);
 
 		$this->_origin['exten'] = $this->_extensions->get_origin();
@@ -91,6 +92,59 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		$r = array();
 		$r['outcall'] = $this->_outcall->get_element();
 		$r['extenumbers'] = $this->_extenumbers->get_element();
+
+		return($r);
+	}
+
+	function get_cnt()
+	{
+		return(xivo_uint($this->_cnt));
+	}
+
+	function get_outcalls_list($disable=null,$order=null,$limit=null,$assoc=false)
+	{
+		$assoc = (bool) $assoc;
+
+		$this->_cnt = 0;
+
+		if(($rs = $this->_outcall->get_all($disable,true,$order,$limit)) === false
+		|| ($nb = count($rs)) === 0)
+			return(false);
+
+		$r = $info = $trunks = array();
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			$info['outcall'] = $rs[$i];
+			$info['tfeatures'] = $info['trunk'] = false;
+
+			if($info['outcall']['linked'] === false)
+			{
+				$r[$info['outcall']['id']] = $info;
+				continue;
+			}
+
+			if(($info['tfeatures'] = $this->_trunkfeatures->get($info['outcall']['trunkfeaturesid'])) === false)
+				continue;
+
+			if(isset($trunks[$info['tfeatures']['trunk']]) === false)
+				$trunks[$info['tfeatures']['trunk']] = &$this->_service->get_module('trunk'.$info['tfeatures']['trunk']);
+
+			$trunkmodule = &$trunks[$info['tfeatures']['trunk']];
+
+			if($trunkmodule === false
+			|| ($info['trunk'] = $trunkmodule->get($info['tfeatures']['trunkid'],$disable)) === false)
+				continue;
+
+			$r[$info['outcall']['id']] = $info;
+		}
+
+		$this->_cnt = $this->_outcall->get_cnt();
+
+		if(empty($r) === true)
+			$r = false;
+		else if($assoc === false)
+			$r = array_values($r);
 
 		return($r);
 	}
@@ -123,20 +177,17 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		$this->_reset();
 
 		if(($action !== 'add' && $action !== 'edit') === true
-		|| xivo_issa('outcall',$arr) === false
-		|| xivo_issa('extenumbers',$arr) === false
-		|| isset($arr['extenumbers']['exten']) === false)
+		|| xivo_issa('outcall',$arr) === false)
 			return(false);
 
 		$this->set_outcall($arr['outcall']);
-
+	
+		$number = (string) $this->get_result_var('outcall','exten');
 		$context = (string) $this->get_result_var('outcall','context');
 
-		$this->set_extenumbers($action,$arr['extenumbers']['exten'],$context);
+		$this->set_extenumbers($action,$number,$context);
 
-		$exten = (string) $this->get_result_var('extenumbers','exten');
-
-		$this->set_exten($action,$exten,$context);
+		$this->set_exten($action,$number,$context);
 
 		if(xivo_issa('rightcall',$arr) === true)
 			$this->set_rightcall($arr['rightcall']);
@@ -544,13 +595,11 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 	{
 		$disable = (bool) $disable;
 
-		if(xivo_issa('exten',$this->_info) === false
-		|| xivo_issa('outcall',$this->_info) === false
-		|| xivo_issa('extenumbers',$this->_info) === false)
+		if(xivo_issa('outcall',$this->_info) === false)
 			return(false);
 
 		$exten_where = array();
-		$exten_where['exten'] = $this->_info['extenumbers']['exten'];
+		$exten_where['exten'] = $this->_info['outcall']['exten'];
 		$exten_where['context'] = $this->_info['outcall']['context'];
 
 		if($disable === false)

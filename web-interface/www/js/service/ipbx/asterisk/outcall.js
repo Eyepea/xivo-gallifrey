@@ -10,8 +10,8 @@ xivo_elt_mode['fd-outcall-numlen'] = new Array();
 xivo_elt_mode['fd-outcall-numlen']['style'] = 'display:none';
 xivo_elt_mode['it-outcall-numlen'] = new Array();
 xivo_elt_mode['it-outcall-numlen']['property'] = 'disabled|true:boolean';
-xivo_elt_mode['fd-extenumbers-exten'] = new Array();
-xivo_elt_mode['fd-extenumbers-exten']['style'] = 'display:none';
+xivo_elt_mode['fd-outcall-exten'] = new Array();
+xivo_elt_mode['fd-outcall-exten']['style'] = 'display:none';
 
 xivo_elt_mode['links'] = new Array();
 xivo_elt_mode['links']['link'] = new Array();
@@ -19,8 +19,8 @@ xivo_elt_mode['links']['link'][xivo_imode++] = new Array('fd-outcall-prefix',0,1
 xivo_elt_mode['links']['link'][xivo_imode++] = new Array('it-outcall-prefix',0,1);
 xivo_elt_mode['links']['link'][xivo_imode++] = new Array('fd-outcall-numlen',0,1);
 xivo_elt_mode['links']['link'][xivo_imode++] = new Array('it-outcall-numlen',0,1);
-xivo_elt_mode['links']['link'][xivo_imode++] = new Array('fd-extenumbers-exten',0,1);
-xivo_elt_mode['links']['link'][xivo_imode++] = new Array('it-extenumbers-exten',0,1);
+xivo_elt_mode['links']['link'][xivo_imode++] = new Array('fd-outcall-exten',0,1);
+xivo_elt_mode['links']['link'][xivo_imode++] = new Array('it-outcall-exten',0,1);
 
 var xivo_fm_mode = new Array();
 
@@ -33,7 +33,7 @@ xivo_fm_mode['wizard']['it-outcall-numlen']['property'] = 'disabled|false:boolea
 xivo_attrib_register('fm_mode-wizard',xivo_fm_mode['wizard']);
 
 xivo_fm_mode['extension'] = xivo_clone(xivo_elt_mode);
-xivo_fm_mode['extension']['fd-extenumbers-exten']['style'] = 'display:block';
+xivo_fm_mode['extension']['fd-outcall-exten']['style'] = 'display:block';
 
 xivo_attrib_register('fm_mode-extension',xivo_fm_mode['extension']);
 
@@ -105,7 +105,7 @@ function xivo_exten_wizard(prefix,numlen,result)
 
 function xivo_outcall_onload()
 {
-	xivo_exten_wizard('it-outcall-prefix','it-outcall-numlen','it-extenumbers-exten');
+	xivo_exten_wizard('it-outcall-prefix','it-outcall-numlen','it-outcall-exten');
 
 	if(xivo_eid('it-outcall-mode') != false)
 		xivo_chgmode(xivo_eid('it-outcall-mode'));

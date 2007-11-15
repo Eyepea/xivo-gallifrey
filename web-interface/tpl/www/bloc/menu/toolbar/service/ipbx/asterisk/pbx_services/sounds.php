@@ -19,7 +19,8 @@
 <?=$form->hidden(array('name' => 'act','value' => 'listdir'));?>
 	<div class="fm-field"><?=$form->select(array('name' => 'dir','id' => 'it-dir','key' => false,'field' => false,'empty' => $this->bbf('toolbar_fm_directory'),'value' => $dir),$this->get_var('list_dirs'),'onchange="this.form[\'act\'].value = this.value == \'\' ? \'listdir\' : \'list\'; return(this.form.submit());"');?></div>
 </form>
-<a href="#" onmouseover="xivo_eid('add-menu').style.display = 'block';" onmouseout="xivo_eid('add-menu').style.display = 'none';"><?=$url->img_html('img/menu/top/toolbar/bt-add.gif',$this->bbf('toolbar_opt_add'),'border="0"');?></a><?php
+<?=$url->img_html('img/menu/top/toolbar/bt-add.gif',$this->bbf('toolbar_opt_add'),'border="0" onmouseover="xivo_eid(\'add-menu\').style.display = \'block\';" onmouseout="xivo_eid(\'add-menu\').style.display = \'none\';"');?>
+<?php
 
 if($act === 'list'):
 	echo '<a href="#" onclick="this.tmp = xivo_fm[\'fm-files-list\'][\'act\'].value; xivo_fm[\'fm-files-list\'][\'act\'].value = \'deletes\'; return(confirm(\'',xivo_stript($this->bbf('toolbar_adv_menu_delete_confirm')),'\') ? xivo_fm[\'fm-files-list\'].submit() : xivo_fm[\'fm-files-list\'][\'act\'] = this.tmp);">',$url->img_html('img/menu/top/toolbar/bt-delete.gif',$this->bbf('toolbar_opt_delete'),'border="0"'),'</a>';

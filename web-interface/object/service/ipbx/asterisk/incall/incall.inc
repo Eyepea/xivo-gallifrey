@@ -37,7 +37,7 @@ class xivo_service_asterisk_incall extends xivo_service_asterisk_abstract
 		if(isset($data[$data['type']]) === true)
 			$data[$data['type']] = $data['typeval'];
 
-		if(xivo_haslen($data,'exten') === true)
+		if(isset($data['exten']) === true)
 			$data['exten'] = $this->_sre->display_extension($data['exten']);
 
 		$data['linked'] = (bool) $data['linked'];
@@ -54,7 +54,7 @@ class xivo_service_asterisk_incall extends xivo_service_asterisk_abstract
 		if(($id = xivo_uint($id)) !== 0)
 			$arr['id'] = $id;
 
-		if(xivo_haslen($arr,'exten') === true)
+		if(isset($arr['exten']) === true)
 			$arr['exten'] = $this->_sre->clean_extension($arr['exten']);
 
 		return($this->_dso->add($arr));
@@ -65,7 +65,7 @@ class xivo_service_asterisk_incall extends xivo_service_asterisk_abstract
 		if(($id = xivo_uint($id)) === 0 || is_array($arr) === false)
 			return(false);
 
-		if(xivo_haslen($arr,'exten') === true)
+		if(isset($arr['exten']) === true)
 			$arr['exten'] = $this->_sre->clean_extension($arr['exten']);
 
 		return($this->_dso->edit($id,$arr));

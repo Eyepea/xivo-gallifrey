@@ -412,10 +412,13 @@ class xivo_socket
 	{
 		$r = false;
 
-		$how = xivo_uint($how,2);
+		if(($how = xivo_uint($how)) > 2)
+			$how = 2;
 
-		if(is_resource($this->_link) === true && $how >= 0 && $how <= 2)
+		if(is_resource($this->_link) === true)
 			$r = socket_shutdown($this->_link,$how);
+
+		$this->_link = null;
 
 		return($r);
 	}

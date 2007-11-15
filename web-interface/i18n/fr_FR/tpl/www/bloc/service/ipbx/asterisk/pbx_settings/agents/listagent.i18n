@@ -10,17 +10,8 @@ Numéro
 ; col_passwd
 Mot de passe
 
-; col_action
-Action
-
 ; no_agent
 Aucun agent trouvé
-
-; opt_modify
-Modifier
-
-; opt_delete
-Supprimer
 
 ; opt_delete_confirm
 Etes-vous certain de vouloir supprimer cet agent ?

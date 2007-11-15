@@ -25,8 +25,7 @@ switch($act)
 		do
 		{
 			if(isset($_QR['fm_send']) === false
-			|| xivo_issa('outcall',$_QR) === false
-			|| xivo_issa('extenumbers',$_QR) === false)
+			|| xivo_issa('outcall',$_QR) === false)
 				break;
 
 			if($appoutcall->set_add($_QR) === false
@@ -79,8 +78,7 @@ switch($act)
 		do
 		{
 			if(isset($_QR['fm_send']) === false
-			|| xivo_issa('outcall',$_QR) === false
-			|| xivo_issa('extenumbers',$_QR) === false)
+			|| xivo_issa('outcall',$_QR) === false)
 				break;
 
 			$return = &$result;
@@ -176,16 +174,21 @@ switch($act)
 	default:
 		$act = 'list';
 		$total = 0;
+		$nbbypage = XIVO_SRE_IPBX_AST_NBBYPAGE;
 
-		if(($list = $ipbx->get_outcall_list()) !== false)
-		{
-			$total = count($list);
-			xivo::load_class('xivo_sort');
-			$sort = new xivo_sort(array('browse' => 'outcall','key' => 'name'));
-			usort($list,array(&$sort,'str_usort'));
-		}
+		$appoutcall = &$ipbx->get_application('outcall');
 
-		$_HTML->set_var('pager',xivo_calc_page($page,20,$total));
+		$order = array();
+		$order['name'] = SORT_ASC;
+
+		$limit = array();
+		$limit[0] = ($page - 1) * $nbbypage;
+		$limit[1] = $nbbypage;
+
+		if(($list = $appoutcall->get_outcalls_list(null,$order,$limit)) !== false)
+			$total = $appoutcall->get_cnt();
+
+		$_HTML->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
 		$_HTML->set_var('list',$list);
 }
 

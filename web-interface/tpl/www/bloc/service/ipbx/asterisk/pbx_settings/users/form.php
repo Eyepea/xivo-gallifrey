@@ -97,9 +97,9 @@
 
 <?=$form->checkbox(array('desc' => $this->bbf('fm_codec-custom'),'name' => 'codec-active','labelid' => 'codec-active','checked' => $codec_active),'onclick="xivo_chg_attrib(\'fm_codec\',\'it-\'+xivo_protocol+\'-protocol-disallow\',(this.checked == true ? 0 : 1))"');?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_protocol_codec-disallow'),'name' => 'protocol[disallow]','labelid' => 'sip-protocol-disallow','key' => false),$element['protocol']['sip']['disallow']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_protocol_codec-disallow'),'name' => 'protocol[disallow]','labelid' => 'sip-protocol-disallow','key' => false,'bbf' => array('concatvalue','fm_protocol_codec-disallow-opt-')),$element['protocol']['sip']['disallow']['value']);?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_protocol_codec-disallow'),'name' => 'protocol[disallow]','labelid' => 'iax-protocol-disallow','key' => false),$element['protocol']['iax']['disallow']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_protocol_codec-disallow'),'name' => 'protocol[disallow]','labelid' => 'iax-protocol-disallow','key' => false,'bbf' => array('concatvalue','fm_protocol_codec-disallow-opt-')),$element['protocol']['iax']['disallow']['value']);?>
 
 <div id="codeclist" class="fm-field fm-multilist">
 	<p>

@@ -1,17 +1,8 @@
 ; col_file
 Fichier
 
-; col_action
-Action
-
 ; no_file
 Aucun fichier trouvé
-
-; opt_modify
-Modifier
-
-; opt_delete
-Supprimer
 
 ; opt_delete_confirm
 Etes-vous certain de vouloir supprimer ce fichier ?

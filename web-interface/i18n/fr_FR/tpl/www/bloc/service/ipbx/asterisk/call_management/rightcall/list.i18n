@@ -7,9 +7,6 @@ Mot de passe
 ; col_permit
 Autoriser
 
-; col_action
-Action
-
 ; no_rightcall
 Aucun droit d'appel trouvé
 
@@ -18,12 +15,6 @@ Non
 
 ; rightcall_permit-1
 Oui
-
-; opt_modify
-Modifier
-
-; opt_delete
-Supprimer
 
 ; opt_delete_confirm
 Etes-vous certain de vouloir supprimer ce droit d'appel ?

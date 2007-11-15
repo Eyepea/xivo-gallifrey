@@ -13,9 +13,6 @@ Nombre d'appels
 ; col_provisioning
 Approvisionnement
 
-; col_action
-Action
-
 ; trunk_host-unknown
 Hôte inconnu
 
@@ -33,12 +30,6 @@ Appels illimités
 
 ; no_trunk
 Aucune interconnexion IAX trouvée
-
-; opt_modify
-Modifier
-
-; opt_delete
-Supprimer
 
 ; opt_delete_confirm
 Etes-vous certain de vouloir supprimer cette interconnexion ?

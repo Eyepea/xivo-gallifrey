@@ -4,17 +4,8 @@ Répertoire
 ; col_number-files
 Nombre de fichiers
 
-; col_action
-Action
-
 ; no_directory
 Aucun répertoire trouvé
-
-; opt_modify
-Modifier
-
-; opt_delete
-Supprimer
 
 ; opt_delete_confirm
 Etes-vous certain de vouloir supprimer ce répertoire ?

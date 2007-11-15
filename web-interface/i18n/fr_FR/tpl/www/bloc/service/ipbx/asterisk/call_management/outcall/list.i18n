@@ -10,9 +10,6 @@ Extension
 ; col_context
 Contexte
 
-; col_action
-Action
-
 ; outcall_trunk-sip
 Protocole SIP : %s
 
@@ -24,12 +21,6 @@ Personnalisée : %s
 
 ; no_outcall
 Aucun appel sortant trouvé
-
-; opt_modify
-Modifier
-
-; opt_delete
-Supprimer
 
 ; opt_delete_confirm
 Etes-vous certain de vouloir supprimer cet appel sortant ?

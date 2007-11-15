@@ -142,5 +142,14 @@ Chercher
 ; toolbar_fm_group
 -- Groupe --
 
+; col_action
+Action
+
+; opt_modify
+Modifier
+
+; opt_delete
+Supprimer
+
 ; fm_bt-save
 Sauvegarder

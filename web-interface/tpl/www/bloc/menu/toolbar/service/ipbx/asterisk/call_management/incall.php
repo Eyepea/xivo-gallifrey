@@ -21,14 +21,14 @@
 
 	if($act === 'list'):
 ?>
+<?=$url->img_html('img/menu/top/toolbar/bt-more.gif',$this->bbf('toolbar_opt_advanced'),'border="0" onmouseover="xivo_eid(\'advanced-menu\').style.display = \'block\';" onmouseout="xivo_eid(\'advanced-menu\').style.display = \'none\';"');?>
 <div class="sb-advanced-menu">
 	<ul id="advanced-menu" onmouseover="this.style.display = 'block';" onmouseout="this.style.display = 'none';">	
 		<li><a href="#" onclick="xivo_fm['fm-incall-list']['act'].value = 'enables';<?=$searchjs?> xivo_fm['fm-incall-list'].submit();"><?=$this->bbf('toolbar_adv_menu_enable');?></a></li>
 		<li><a href="#" onclick="xivo_fm['fm-incall-list']['act'].value = 'disables';<?=$searchjs?> xivo_fm['fm-incall-list'].submit();"><?=$this->bbf('toolbar_adv_menu_disable');?></a></li>
 		<li><a href="#" onclick="this.tmp = xivo_fm['fm-incall-list']['act'].value; xivo_fm['fm-incall-list']['act'].value = 'deletes';<?=$searchjs?> return(confirm('<?=xivo_stript($this->bbf('toolbar_adv_menu_delete_confirm'));?>') ? xivo_fm['fm-incall-list'].submit() : xivo_fm['fm-incall-list']['act'] = this.tmp);"><?=$this->bbf('toolbar_adv_menu_delete');?></a></li>
 	</ul>
-</div><a href="#" onmouseover="xivo_eid('advanced-menu').style.display = 'block';" onmouseout="xivo_eid('advanced-menu').style.display = 'none';"><?=$url->img_html('img/menu/top/toolbar/bt-more.gif',$this->bbf('toolbar_opt_advanced'),'border="0"');?></a>
-
+</div>
 <?php
 	endif;
 ?>

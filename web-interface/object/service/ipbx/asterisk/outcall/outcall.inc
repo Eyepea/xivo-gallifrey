@@ -25,6 +25,9 @@ class xivo_service_asterisk_outcall extends xivo_service_asterisk_abstract
 
 	function _prepare($data)
 	{
+		if(isset($data['exten']) === true)
+			$data['exten'] = $this->_sre->display_extension($data['exten']);
+
 		$data['setcallerid'] = (bool) $data['setcallerid'];
 		$data['useenum'] = (bool) $data['useenum'];
 		$data['internal'] = (bool) $data['internal'];
@@ -50,6 +53,16 @@ class xivo_service_asterisk_outcall extends xivo_service_asterisk_abstract
 				return(false);
 		}
 
+		if(isset($arr['exten']) === true)
+		{
+			$arr['exten'] = $this->_sre->clean_extension($arr['exten']);
+
+			$where = array('exten' => $arr['exten']);
+
+			if($this->get_id($where) !== false)
+				return(false);
+		}
+
 		return($this->_dso->add($arr));
 	}
 
@@ -63,6 +76,16 @@ class xivo_service_asterisk_outcall extends xivo_service_asterisk_abstract
 			$where = array('name' => strtolower($arr['name']));
 
 			if(($whereid = $this->get_id($where)) !== false && $whereid !== $id)
+				return(false);
+		}
+
+		if(isset($arr['exten']) === true)
+		{
+			$arr['exten'] = $this->_sre->clean_extension($arr['exten']);
+
+			$where = array('exten' => $arr['exten']);
+
+			if($this->get_id($where) !== false)
 				return(false);
 		}
 

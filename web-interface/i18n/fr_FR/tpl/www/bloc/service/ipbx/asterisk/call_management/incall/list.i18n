@@ -7,9 +7,6 @@ Destination
 ; col_identity
 Identité
 
-; col_action
-Action
-
 ; incall_type-endcall
 Fin d'appel
 
@@ -36,12 +33,6 @@ Personnalisée
 
 ; no_incall
 Aucun appel entrant trouvé
-
-; opt_modify
-Modifier
-
-; opt_delete
-Supprimer
 
 ; opt_delete_confirm
 Etes-vous certain de vouloir supprimer cet appel entrant ?

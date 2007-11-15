@@ -202,6 +202,9 @@ Personnaliser :
 ; fm_protocol_codec-disallow
 Désactiver :
 
+; fm_protocol_codec-disallow-opt-all
+Tous
+
 ; fm_protocol_codec-allow
 Activer :
 

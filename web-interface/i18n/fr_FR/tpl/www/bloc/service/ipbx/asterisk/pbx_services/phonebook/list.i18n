@@ -13,20 +13,11 @@ Tél. Mobile
 ; col_email
 E-mail
 
-; col_action
-Action
-
 ; number_phonebook-result
 Résultat(s) : %s
 
 ; no_phonebook
 Aucune entrée trouvée dans le carnet d'adresses
-
-; opt_modify
-Modifier
-
-; opt_delete
-Supprimer
 
 ; opt_delete_confirm
 Etes-vous certain de vouloir supprimer cette entrée du carnet d'adresses ?

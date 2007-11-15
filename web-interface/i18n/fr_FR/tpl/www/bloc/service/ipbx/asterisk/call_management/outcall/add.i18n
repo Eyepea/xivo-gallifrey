@@ -37,7 +37,7 @@ Extension
 ; fm_outcall_numlen
 Taille du numéro :
 
-; fm_extenumbers_exten
+; fm_outcall_exten
 Extension :
 
 ; fm_outcall_context

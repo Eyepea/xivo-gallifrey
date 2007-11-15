@@ -163,7 +163,6 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		$this->set_incall($arr['incall']);
 	
 		$number = (string) $this->get_result_var('incall','exten');
-
 		$context = XIVO_SRE_IPBX_AST_INCALL_CONTEXT;
 
 		$this->set_extenumbers($action,$number,$context);

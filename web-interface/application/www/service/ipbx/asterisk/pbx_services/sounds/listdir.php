@@ -6,7 +6,7 @@ if(($dirs = $sounds->get_list_dirs_files()) !== false)
 {
 	$total = count($dirs);
 	xivo::load_class('xivo_sort');
-	$sort = new xivo_sort(array('key' => 'name'));
+	$sort = new xivo_sort(array('key' => 'dirname'));
 	usort($dirs,array(&$sort,'str_usort'));	
 }
 

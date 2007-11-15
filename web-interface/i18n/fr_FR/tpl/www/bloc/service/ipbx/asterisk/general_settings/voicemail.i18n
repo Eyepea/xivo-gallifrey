@@ -367,9 +367,6 @@ Options
 ; col_timezone-add
 Ajouter
 
-; opt_delete
-Supprimer
-
 ; no_timezone
 Aucun fuseau horaire
 

@@ -19,9 +19,6 @@ Destination
 ; col_publicholiday
 Férié
 
-; col_action
-Action
-
 ; no_schedule
 Aucun horaire trouvé
 
@@ -69,12 +66,6 @@ Non
 
 ; schedule_publicholiday-1
 Oui
-
-; opt_modify
-Modifier
-
-; opt_delete
-Supprimer
 
 ; opt_delete_confirm
 Etes-vous certain de vouloir supprimer cet horaire ?

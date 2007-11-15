@@ -663,6 +663,7 @@ DROP TABLE outcall;
 CREATE TABLE outcall (
  id integer unsigned,
  name varchar(128) NOT NULL DEFAULT '',
+ exten varchar(40) NOT NULL DEFAULT '',
  trunkfeaturesid integer unsigned NOT NULL DEFAULT 0,
  context varchar(39) NOT NULL,
  externprefix varchar(20) NOT NULL DEFAULT '',
@@ -682,6 +683,7 @@ CREATE INDEX outcall__idx__context ON outcall(context);
 CREATE INDEX outcall__idx__linked ON outcall(linked);
 CREATE INDEX outcall__idx__commented ON outcall(commented);
 CREATE UNIQUE INDEX outcall__uidx__name ON outcall(name);
+CREATE UNIQUE INDEX outcall__uidx__exten ON outcall(exten);
 
 
 DROP TABLE phone;

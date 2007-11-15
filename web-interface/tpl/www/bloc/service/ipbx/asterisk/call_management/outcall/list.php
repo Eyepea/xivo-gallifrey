@@ -63,7 +63,7 @@
 		<td class="td-left"><?=$form->checkbox(array('name' => 'outcalls[]','value' => $ref['outcall']['id'],'label' => false,'id' => 'it-outcalls-'.$i,'checked' => false,'field' => false));?></td>
 		<td class="txt-left"><label for="it-outcalls-<?=$i?>" id="lb-outcalls-<?=$i?>"><?=$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"');?><?=$ref['outcall']['name']?></label></td>
 		<td><?=$trunk?></td>
-		<td><?=$ref['extenumbers']['exten']?></td>
+		<td><?=$ref['outcall']['exten']?></td>
 		<td><?=$ref['outcall']['context']?></td>
 		<td class="td-right" colspan="3">
 		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/call_management/outcall',array('act' => 'edit','id' => $ref['outcall']['id']),null,$this->bbf('opt_modify'));?>
