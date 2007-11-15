@@ -131,20 +131,21 @@ agi.set_variable('XIVO_ENABLEUNC', enableunc)
 if enableunc == 1:
 	agi.set_variable('XIVO_FWD_TYPEUNC', 'user')
 	agi.set_variable('XIVO_FWD_TYPEVALUNC', destunc)
+	agi.set_variable('XIVO_FWD_CONTEXTUNC', context)
 
 agi.set_variable('XIVO_ENABLEBUSY', enablebusy)
 
 if enablebusy == 1:
 	agi.set_variable('XIVO_FWD_TYPEBUSY', 'user')
 	agi.set_variable('XIVO_FWD_TYPEVALBUSY', destbusy)
+	agi.set_variable('XIVO_FWD_CONTEXTBUSY', context)
 else:
 	ds_set_fwd_vars(id, 'busy', 'XIVO_FWD_TYPEBUSY', 'XIVO_FWD_TYPEVALBUSY', 'XIVO_FWD_CONTEXTBUSY')
-
-agi.set_variable('XIVO_ENABLERNA', enablerna)
 
 if enablerna:
 	agi.set_variable('XIVO_FWD_TYPERNA', 'user')
 	agi.set_variable('XIVO_FWD_TYPEVALRNA', destrna)
+	agi.set_variable('XIVO_FWD_CONTEXTRNA', context)
 else:
 	ds_set_fwd_vars(id, 'noanswer', 'XIVO_FWD_TYPERNA', 'XIVO_FWD_TYPEVALRNA', 'XIVO_FWD_CONTEXTRNA')
 
