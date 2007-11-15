@@ -53,27 +53,25 @@ dstnum = agi.get_variable('REAL_DSTNUM')
 context = agi.get_variable('REAL_CONTEXT')
 exten_pattern = agi.get_variable('REAL_EXTENPATTERN')
 
-cursor.query("SELECT ${columns} FROM outcall INNER JOIN extenumbers "
-             "ON outcall.id = extenumbers.typeval "
-	     "WHERE extenumbers.exten = %s "
-             "AND extenumbers.context = %s "
-             "AND extenumbers.type = 'outcall' "
-             "AND outcall.linked = 1 "
-             "AND outcall.commented = 0",
-	     [('outcall.'+x) for x in ('trunkfeaturesid', 'externprefix', 'stripnum', 'setcallerid', 'callerid', 'useenum', 'internal', 'hangupringtime')],
-	     (exten_pattern, context))
+cursor.query("SELECT ${columns} FROM outcall "
+             "WHERE exten = %s "
+             "AND context = %s "
+             "AND linked = 1 "
+             "AND commented = 0",
+             ('trunkfeaturesid', 'externprefix', 'stripnum', 'setcallerid', 'callerid', 'useenum', 'internal', 'hangupringtime'),
+             (exten_pattern, context))
 res = cursor.fetchone()
 
 if not res:
-	agi_helpers.dp_break(agi, "Unable to find outgoing call features joined to extension pattern '%s' in context '%s'" % (exten_pattern, context))
+	agi_helpers.dp_break(agi, "Unable to find outgoing call features (extension pattern = '%s', context = '%s')" % (exten_pattern, context))
 
-trunkfeaturesid = res['outcall.trunkfeaturesid']
-externprefix = res['outcall.externprefix']
-stripnum = int(res['outcall.stripnum'])
-setcallerid = res['outcall.setcallerid']
-trunk_callerid = res['outcall.callerid']
-internal = res['outcall.internal']
-hangupringtime = res['outcall.hangupringtime']
+trunkfeaturesid = res['trunkfeaturesid']
+externprefix = res['externprefix']
+stripnum = int(res['stripnum'])
+setcallerid = res['setcallerid']
+trunk_callerid = res['callerid']
+internal = res['internal']
+hangupringtime = res['hangupringtime']
 
 if stripnum > 0:
 	dstnum = dstnum[stripnum:]
@@ -150,10 +148,8 @@ elif trunk == "custom":
 else:
 	agi_helpers.dp_break(agi, "Unknown trunk type '%s'" % trunk)
 
-agi.set_variable('XIVO_PROTOCOL', protocol)
-agi.set_variable('XIVO_PEER', peer)
 agi.set_variable('XIVO_INTERFACE', interface)
-agi.set_variable('XIVO_EXTEN', dstnum)
+agi.set_variable('XIVO_TRUNKEXTEN', dstnum)
 
 if callerid:
 	agi.set_variable('CALLERID(num)', callerid)
