@@ -105,15 +105,23 @@ $array['element']['maxmsg']['null'] = true;
 
 $array['filter'] = array();
 $array['filter']['uniqueid'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_-]+$/i','maxlen' => 20);
-$array['filter']['context'] = array('set' => false,'chk' => 2,'nokey' => array('general','global','globals','hints','features','zonemessages'),'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 39);
+$array['filter']['context'] = array('set' => false,'chk' => 2,
+				    'nokey' => xivo_service_asterisk::get_contexts_list(array(XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)),
+				    'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 39);
 $array['filter']['mailbox'] = array('minlen' => 1,'maxlen' => 40,'cast' => '/^[0-9#\*]+$/');
 $array['filter']['password'] = array('regexp' => '/^[0-9#\*]+$/','maxlen' => 80);
 $array['filter']['fullname'] = array('cast' => 'sgraph','maxlen' => 80);
 $array['filter']['email'] = array('set' => false,'chk' => 2,'func' => 'xivo_filter::chk_email','maxlen' => 80);
 $array['filter']['pager'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9#\*]+$/','maxlen' => 80);
-$array['filter']['dialout'] = array('set' => false,'chk' => 2,'nokey' => array('general','global','globals','hints','features','zonemessages'),'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 39);
-$array['filter']['callback'] = array('set' => false,'chk' => 2,'nokey' => array('general','global','globals','hints','features','zonemessages'),'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 39);
-$array['filter']['exitcontext'] = array('set' => false,'chk' => 2,'nokey' => array('general','global','globals','hints','features','zonemessages'),'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 39);
+$array['filter']['dialout'] = array('set' => false,'chk' => 2,
+				    'nokey' => xivo_service_asterisk::get_contexts_list(array(XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)),
+				    'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 39);
+$array['filter']['callback'] = array('set' => false,'chk' => 2,
+				     'nokey' => xivo_service_asterisk::get_contexts_list(array(XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)),
+				     'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 39);
+$array['filter']['exitcontext'] = array('set' => false,'chk' => 2,
+					'nokey' => xivo_service_asterisk::get_contexts_list(array(XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)),
+					'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 39);
 $array['filter']['language'] = array('set' => false,'chk' => 2,'minlen' => 2,'maxlen' => 2,'regexp' => '/^[a-z]{2}$/');
 $array['filter']['attach'] = array('bool' => true);
 $array['filter']['saycid'] = array('set' => false,'chk' => 2,'key' => array(0,1));

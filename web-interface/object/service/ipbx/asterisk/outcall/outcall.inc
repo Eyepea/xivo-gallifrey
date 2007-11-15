@@ -53,10 +53,13 @@ class xivo_service_asterisk_outcall extends xivo_service_asterisk_abstract
 				return(false);
 		}
 
+		if(isset($arr['exten']) === true)
+			$this->_sre->clean_extension($arr['exten']);
+
 		if(isset($arr['exten'],$arr['context']) === true)
 		{
 			$where = array();
-			$where['exten'] = $this->_sre->clean_extension($arr['exten']);
+			$where['exten'] = $arr['exten'];
 			$where['context'] = $arr['context'];
 
 			if($this->get_id($where) !== false)
@@ -79,10 +82,13 @@ class xivo_service_asterisk_outcall extends xivo_service_asterisk_abstract
 				return(false);
 		}
 
+		if(isset($arr['exten']) === true)
+			$this->_sre->clean_extension($arr['exten']);
+
 		if(isset($arr['exten'],$arr['context']) === true)
 		{
 			$where = array();
-			$where['exten'] = $this->_sre->clean_extension($arr['exten']);
+			$where['exten'] = $arr['exten'];
 			$where['context'] = $arr['context'];
 
 			if(($whereid = $this->get_id($where)) !== false && $whereid !== $id)

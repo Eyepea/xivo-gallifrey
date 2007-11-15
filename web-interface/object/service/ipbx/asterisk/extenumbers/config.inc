@@ -23,7 +23,9 @@ $array['element']['typeval']['default'] = '';
 $array['filter'] = array();
 $array['filter']['exten'] = array('set' => false,'chk' => 2,'maxlen' => 40,'regexp' => '/^[_]?[0-9NXZ\*#\-\[\]]+[\.\!]?$/');
 $array['filter']['extenhash'] = array('set' => false,'chk' => 2,'maxlen' => 40,'cast' => 'xdigit');
-$array['filter']['context'] = array('set' => false,'chk' => 2,'nokey' => array('general','global','globals','hints','features','authentification','zonemessages'),'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 39);
+$array['filter']['context'] = array('set' => false,'chk' => 2,
+				    'nokey' => xivo_service_asterisk::get_contexts_list(),
+				    'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 39);
 $array['filter']['type'] = array('key' => array('extenfeatures','featuremap','generalfeatures','handynumbers','group','incall','meetme','outcall','queue','user'));
 $array['filter']['typeval'] = array('set' => false,'chk' => 2,'maxlen' => 255,'cast' => 'sgraph');
 

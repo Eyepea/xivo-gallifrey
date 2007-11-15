@@ -38,7 +38,8 @@ $array['element']['commented']['set'] = true;
 
 $array['filter'] = array();
 $array['filter']['exten'] = array('maxlen' => 40,'regexp' => '/^[_]?[0-9NXZ\*#\-\[\]]+[\.\!]?$/');
-$array['filter']['context'] = array('nokey' => array('general','global','globals','initconfig','hints','features'),'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 39);
+$array['filter']['context'] = array('nokey' => xivo_service_asterisk::get_contexts_list(),
+				    'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 39);
 $array['filter']['type'] = array('key' => array('endcall','user','group','queue','meetme','schedule','application','custom'));
 $array['filter']['typeval'] = array('maxlen' => 255,'cast' => 'sgraph');
 $array['filter']['linked'] = array('bool' => true);

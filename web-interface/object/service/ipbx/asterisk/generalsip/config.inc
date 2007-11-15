@@ -345,9 +345,9 @@ $array['filter']['realm'] = array('regexp' => '/[^"]/','maxlen' => 64);
 $array['filter']['alwaysauthreject'] = array('bool' => true);
 $array['filter']['useragent'] = array('cast' => 'sgraph','maxlen' => 80);
 $array['filter']['checkmwi'] = array('key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
-$array['filter']['regcontext'] = array('set' => false,'chk' => 2,'maxlen' => 39,
-					'regexp' => '/^(?!macro-)[a-z0-9_-]+$/',
-					'nokey' => array('general','global','globals','hints','features','authentification'));
+$array['filter']['regcontext'] = array('set' => false,'chk' => 2,
+				       'nokey' => xivo_service_asterisk::get_contexts_list(array(XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTIFICATION)),
+				       'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 39);
 $array['filter']['callerid'] = array('regexp' => '/^[a-z0-9_-]+$/i','maxlen' => 80);
 $array['filter']['fromdomain'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_-\.]+$/i','maxlen' => 80);
 $array['filter']['sipdebug'] = array('bool' => true);
@@ -388,7 +388,8 @@ $array['filter']['compactheaders'] = array('bool' => true);
 $array['filter']['rtptimeout'] = array('key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
 $array['filter']['rtpholdtimeout'] = array('key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
 $array['filter']['rtpkeepalive'] = array('key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
-$array['filter']['notifymimetype'] = array('set' => false,'chk' => 2,'maxlen' => 80,'regexp' => '#^(?:text|application)/[a-zA-Z][a-zA-Z0-9][a-zA-Z0-9\+][a-zA-Z0-9\-\+\.]*$#');
+$array['filter']['notifymimetype'] = array('set' => false,'chk' => 2,'maxlen' => 80,
+					   'regexp' => '#^(?:text|application)/[a-zA-Z][a-zA-Z0-9][a-zA-Z0-9\+][a-zA-Z0-9\-\+\.]*$#');
 $array['filter']['srvlookup'] = array('bool' => true);
 $array['filter']['pedantic'] = array('bool' => true);
 $array['filter']['maxexpiry'] = array('key' => array(1,900,1800,2700,3600,4500,5400,6300,7200));
@@ -398,9 +399,9 @@ $array['filter']['defaultexpiry'] = array('key' => array(1,10,20,30,40,50,60,70,
 $array['filter']['registertimeout'] = array('key' => array(1,10,20,30,40,50,60,70,80,90,100,110,120));
 $array['filter']['registerattempts'] = array('key' => array(0,10,20,30,40,50,60,70,80,90,100,110,120));
 $array['filter']['notifyringing'] = array('bool' => true);
-$array['filter']['context'] = array('set' => false,'chk' => 2,'maxlen' => 39,
-				    'regexp' => '/^(?!macro-)[a-z0-9_-]+$/',
-				    'nokey' => array('general','global','globals','hints','features','authentification'));
+$array['filter']['context'] = array('set' => false,'chk' => 2,
+				    'nokey' => xivo_service_asterisk::get_contexts_list(array(XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTIFICATION)),
+				    'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 39);
 $array['filter']['nat'] = array('key' => array('no','yes','never','route'));
 $array['filter']['dtmfmode'] = array('key' => array('rfc2833','inband','info','auto'));
 $array['filter']['qualify'] = array('key' => array('no','yes',500,1000,1500,2000,2500,3000,3500,4000));

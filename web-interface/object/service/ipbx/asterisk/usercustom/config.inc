@@ -23,7 +23,11 @@ $array['element']['commented']['set'] = true;
 
 $array['filter'] = array();
 $array['filter']['name'] = array('set' => false,'chk' => 0);
-$array['filter']['context'] = array('set' => false,'chk' => 2,'nokey' => array('general','global','globals','hints','features','authentication','zonemessages'),'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 39);
+$array['filter']['context'] = array('set' => false,'chk' => 2,
+				    'nokey' => xivo_service_asterisk::get_contexts_list(array(
+							XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTIFICATION,
+							XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)),
+				    'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 39);
 $array['filter']['interface'] = array('regexp' => '/^[a-z0-9#\*\.\/_@:-]+$/i','minlen' => 1,'maxlen' => 128);
 $array['filter']['commented'] = array('bool' => true);
 

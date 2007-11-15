@@ -1173,6 +1173,23 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 		return(trim($r));
 	}
+
+	function get_contexts_list($arr=null)
+	{
+		$r = array();
+		$r[] = XIVO_SRE_IPBX_AST_CONTEXT_GENERAL;
+		$r[] = XIVO_SRE_IPBX_AST_CONTEXT_GLOBAL;
+		$r[] = XIVO_SRE_IPBX_AST_CONTEXT_GLOBALS;
+		$r[] = XIVO_SRE_IPBX_AST_CONTEXT_INITCONFIG;
+		$r[] = XIVO_SRE_IPBX_AST_CONTEXT_HINTS;
+		$r[] = XIVO_SRE_IPBX_AST_CONTEXT_FEATURES;
+		$r[] = XIVO_SRE_IPBX_AST_CONTEXT_EXTRAFEATURES;
+
+		if(is_array($arr) === true)
+			$r = array_merge($arr,$r);
+
+		return($r);
+	}
 }
 
 ?>
