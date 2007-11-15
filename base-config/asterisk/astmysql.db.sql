@@ -1023,7 +1023,7 @@ CREATE INDEX `userfeatures__idx__commented` ON `userfeatures`(`commented`);
 CREATE UNIQUE INDEX `userfeatures__uidx__protocol_name` ON `userfeatures`(`protocol`,`name`);
 CREATE UNIQUE INDEX `userfeatures__uidx__protocol_protocolid` ON `userfeatures`(`protocol`,`protocolid`);
 
-INSERT INTO `userfeatures` VALUES (1,'sip',1,'Guest','','guest','','initconfig',148378,30,5,0,0,0,0,0,0,0,0,0,'',0,'',0,'','','',1,0,'');
+INSERT INTO `userfeatures` VALUES (1,'sip',1,'Guest','','guest','','initconfig',148378,30,5,0,0,0,0,0,0,0,0,0,0,'',0,'',0,'','','',1,0,'');
 
 
 DROP TABLE IF EXISTS `useriax`;

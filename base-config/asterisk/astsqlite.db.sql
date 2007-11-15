@@ -587,7 +587,7 @@ CREATE TABLE incall (
 CREATE INDEX incall__idx__type_typeval ON incall(type,typeval);
 CREATE INDEX incall__idx__linked ON incall(linked);
 CREATE INDEX incall__idx__commented ON incall(commented);
-CREATE UNIQUE INDEX `incall__uidx__exten_context` ON `incall`(`exten`,`context`);
+CREATE UNIQUE INDEX incall__uidx__exten_context ON incall(exten,context);
 
 
 DROP TABLE meetme;
@@ -1018,7 +1018,7 @@ CREATE INDEX userfeatures__idx__provisioningid ON userfeatures(provisioningid);
 CREATE UNIQUE INDEX userfeatures__uidx__protocol_name ON userfeatures(protocol,name);
 CREATE UNIQUE INDEX userfeatures__uidx__protocol_protocolid ON userfeatures(protocol,protocolid);
 
-INSERT INTO userfeatures VALUES (1,'sip',1,'Guest','','guest','','initconfig',148378,30,5,0,0,0,0,0,0,0,0,0,'',0,'',0,'','','',1,0,'');
+INSERT INTO userfeatures VALUES (1,'sip',1,'Guest','','guest','','initconfig',148378,30,5,0,0,0,0,0,0,0,0,0,0,'',0,'',0,'','','',1,0,'');
 
 
 DROP TABLE useriax;
