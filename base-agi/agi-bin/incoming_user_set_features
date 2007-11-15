@@ -153,6 +153,6 @@ ds_set_fwd_vars(id, 'congestion', 'XIVO_FWD_TYPECONGESTION', 'XIVO_FWD_TYPEVALCO
 ds_set_fwd_vars(id, 'chanunavail', 'XIVO_FWD_TYPEUNAVAIL', 'XIVO_FWD_TYPEVALUNAVAIL', 'XIVO_FWD_CONTEXTUNAVAIL')
 agi.set_variable('XIVO_CALLRECORD', callrecord)
 agi.set_variable('XIVO_CALLFILTER', callfilter)
-agi.set_variable('XIVO_MUSICONHOLD', musiconhold)
+agi.set_variable('MUSICCLASS()', musiconhold)
 
 agi.verbose('AGI script "%s" successfully executed' % sys.argv[0])
