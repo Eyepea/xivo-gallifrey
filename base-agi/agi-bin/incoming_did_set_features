@@ -8,8 +8,6 @@
 #	   mailto:technique@proformatique.com
 #	   (C) 2007 Proformatique
 
-# TODO: Filter commented SQL rows
-
 __version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2007, Proformatique
@@ -48,26 +46,20 @@ db_uri = ConfigDict.ReadSingleKey(CONFIG_FILE, 'db', 'db_uri')
 # Cursors have a weak reference on their connection, so make a strong one.
 conn = agi_helpers.db_connect(agi, db_uri)
 cursor = conn.cursor()
-srcnum = agi.get_variable('REAL_SRCNUM')
-dstnum = agi.get_variable('REAL_DSTNUM')
-context = agi.get_variable('REAL_CONTEXT')
 exten_pattern = agi.get_variable('REAL_EXTENPATTERN')
 
 # TODO: handle caller ID.
 
-cursor.query("SELECT ${columns} FROM incall INNER JOIN extenumbers "
-             "ON incall.id = extenumbers.typeval "
-             "WHERE extenumbers.exten = %s "
-             "AND extenumbers.context = %s "
-             "AND extenumbers.type = 'incall' "
-             "AND incall.linked = 1 "
-             "AND incall.commented = 0",
-             [('incall.' + x) for x in ('type', 'typeval')],
-             (exten_pattern, context))
+cursor.query("SELECT ${columns} FROM incall "
+             "WHERE exten = %s "
+             "AND linked = 1 "
+             "AND commented = 0",
+             ('type', 'typeval'),
+             (exten_pattern,))
 res = cursor.fetchone()
 
 if not res:
 	agi_helpers.dp_break(agi, "Unknown extension '%s'" % exten_pattern)
 
-agi_helpers.set_fwd_vars(agi, cursor, res['incall.type'], res['incall.typeval'], "XIVO_DIDTYPE", "XIVO_DIDTYPEVAL", "XIVO_DIDCONTEXT")
+agi_helpers.set_fwd_vars(agi, cursor, res['type'], res['typeval'], "XIVO_DIDTYPE", "XIVO_DIDTYPEVAL", "XIVO_DIDCONTEXT")
 agi.verbose('AGI script "%s" successfully executed' % sys.argv[0])
