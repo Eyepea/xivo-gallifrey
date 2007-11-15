@@ -25,6 +25,9 @@ Utilisateurs
 ; fld-agents
 Agents
 
+; create_user
+Créer un utilisateur
+
 ; bt-inuser
 Ajouter un ou plusieurs utilisateurs ->
 
@@ -68,7 +71,7 @@ Contexte :
 Temps de sonnerie :
 
 ; fm_qfeatures_timeout-opt0
-Désactivé
+Illimité
 
 ; fm_qfeatures_timeout-opt30
 30 secondes

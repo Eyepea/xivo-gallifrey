@@ -566,7 +566,7 @@ CREATE TABLE `groupfeatures` (
  `name` varchar(128) NOT NULL,
  `number` varchar(40) NOT NULL DEFAULT '',
  `context` varchar(39) NOT NULL,
- `timeout` smallint(4) unsigned NOT NULL DEFAULT 0,
+ `timeout` tinyint(2) unsigned NOT NULL DEFAULT 0,
  `deleted` tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=ascii;

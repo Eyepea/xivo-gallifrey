@@ -19,7 +19,7 @@
 
 <?=$form->text(array('desc' => $this->bbf('fm_gfeatures_context'),'name' => 'gfeatures[context]','labelid' => 'gfeatures-context','size' => 15,'default' => $element['gfeatures']['context']['default'],'value' => $info['gfeatures']['context']));?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_gfeatures_timeout'),'name' => 'gfeatures[timeout]','labelid' => 'gfeatures-timeout','bbf' => array('mixvaluekey','fm_gfeatures_timeout-opt','paramarray'),'default' => $element['gfeatures']['timeout']['default'],'value' => $info['gfeatures']['timeout']),$element['gfeatures']['timeout']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_gfeatures_timeout'),'name' => 'gfeatures[timeout]','labelid' => 'gfeatures-timeout','bbf' => array('mixkey','fm_gfeatures_timeout-opt'),'key' => false,'default' => $element['gfeatures']['timeout']['default'],'value' => $info['gfeatures']['timeout']),$element['gfeatures']['timeout']['value']);?>
 
 <?=$form->select(array('desc' => $this->bbf('fm_queue_timeout'),'name' => 'queue[timeout]','labelid' => 'queue-timeout','bbf' => array('mixkey','fm_queue_timeout-opt'),'key' => false,'default' => $element['queue']['timeout']['default'],'value' => (isset($info['queue']['timeout']) === true ? (int) $info['queue']['timeout'] : null)),$element['queue']['timeout']['value']);?>
 
