@@ -84,10 +84,13 @@ enablevoicemail = res['enablevoicemail']
 calloptions = ''
 
 if res['enablexfer'] == 1:
-	calloptions += 't'
+	calloptions += "t"
 
 if res['enableautomon'] == 1:
-	calloptions += 'w'
+	calloptions += "w"
+
+if res['callfilter'] == 1:
+	calloptions += "p"
 
 enableunc = res['enableunc']
 destunc = res['destunc']
@@ -96,10 +99,6 @@ destbusy = res['destbusy']
 enablerna = res['enablerna']
 destrna = res['destrna']
 callrecord = res['callrecord']
-
-# TODO: Check these ones.
-callfilter = res['callfilter']
-musiconhold = res['musiconhold']
 
 if protocol in ("sip", "iax"):
 	interface = protocol.upper() + "/" + name
@@ -157,7 +156,6 @@ ds_set_fwd_vars(id, 'chanunavail', 'XIVO_FWD_TYPEUNAVAIL', 'XIVO_FWD_TYPEVALUNAV
 if callrecord:
 	agi.set_variable('XIVO_CALLRECORDFILE', "/usr/share/asterisk/sounds/web-interface/monitor/user-%s-%s-%s.wav" % (srcnum, dstnum, int(time.time())))
 
-agi.set_variable('XIVO_CALLFILTER', callfilter)
 agi.set_variable('MUSICCLASS()', musiconhold)
 
 agi.verbose('AGI script "%s" successfully executed' % sys.argv[0])
