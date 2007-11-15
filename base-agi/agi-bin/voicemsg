@@ -54,41 +54,14 @@ cursor.query("SELECT ${columns} FROM userfeatures "
              "AND context = %s "
              "AND internal = 0 "
              "AND commented = 0",
-             ('enableunc', 'destunc', 'enablebusy', 'destbusy', 'enablerna', 'destrna', 'enablevoicemail', 'callfilter', 'callrecord', 'enablednd'),
+             ('skipvoicemailpass',),
              (srcnum, context))
 res = cursor.fetchone()
 
 if not res:
 	agi_helpers.dp_break(agi, "Unknown number '%s'" % srcnum)
 
-enableunc = res['enableunc']
-destunc = res['destunc']
-enablebusy = res['enablebusy']
-destbusy = res['destbusy']
-enablerna = res['enablerna']
-destrna = res['destrna']
-enablevoicemail = res['enablevoicemail']
-callfilter = res['callfilter']
-callrecord = res['callrecord']
-enablednd = res['enablednd']
+if res['skipvoicemailpass']:
+	agi.set_variable('XIVO_VMOPTIONS', "s")
 
-agi.set_variable('XIVO_ENABLEUNC', enableunc)
-
-if enableunc:
-	agi.set_variable('XIVO_DESTUNC', destunc)
-
-agi.set_variable('XIVO_ENABLEBUSY', enablebusy)
-
-if enablebusy:
-	agi.set_variable('XIVO_DESTBUSY', destbusy)
-
-agi.set_variable('XIVO_ENABLERNA', enablerna)
-
-if enablerna:
-	agi.set_variable('XIVO_DESTRNA', destrna)
-
-agi.set_variable('XIVO_ENABLEVOICEMAIL', enablevoicemail)
-agi.set_variable('XIVO_CALLFILTER', callfilter)
-agi.set_variable('XIVO_CALLRECORD', callrecord)
-agi.set_variable('XIVO_ENABLEDND', enablednd)
 agi.verbose('AGI script "%s" successfully executed' % sys.argv[0])
