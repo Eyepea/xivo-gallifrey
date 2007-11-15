@@ -54,7 +54,7 @@ class xivo_service_asterisk_outcall extends xivo_service_asterisk_abstract
 		}
 
 		if(isset($arr['exten']) === true)
-			$this->_sre->clean_extension($arr['exten']);
+			$arr['exten'] = $this->_sre->clean_extension($arr['exten']);
 
 		if(isset($arr['exten'],$arr['context']) === true)
 		{
@@ -83,7 +83,7 @@ class xivo_service_asterisk_outcall extends xivo_service_asterisk_abstract
 		}
 
 		if(isset($arr['exten']) === true)
-			$this->_sre->clean_extension($arr['exten']);
+			$arr['exten'] = $this->_sre->clean_extension($arr['exten']);
 
 		if(isset($arr['exten'],$arr['context']) === true)
 		{
