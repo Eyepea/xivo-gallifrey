@@ -702,61 +702,6 @@ class xivo_service_asterisk extends xivo_service_abstract
 		return($r);
 	}
 
-	function get_outcall_list($disable=null,$assoc=false)
-	{
-		$assoc = (bool) $assoc;
-
-		$outcall = &$this->get_module('outcall');
-		$extenumbers = &$this->get_module('extenumbers');
-		$tfeatures = &$this->get_module('trunkfeatures');
-
-		if(($rs = $outcall->get_all($disable)) === false || ($nb = count($rs)) === 0)
-			return(false);
-
-		$r = $info = $trunks = array();
-
-		$extenumbers_where = array();
-		$extenumbers_where['type'] = 'outcall';
-
-		for($i = 0;$i < $nb;$i++)
-		{
-			$info['outcall'] = $rs[$i];
-			$info['tfeatures'] = $info['trunk'] = false;
-
-			$extenumbers_where['typeval'] = $info['outcall']['id'];
-
-			if(($info['extenumbers'] = $extenumbers->get_where($extenumbers_where)) === false)
-				continue;
-
-			if($info['outcall']['linked'] === false)
-			{
-				$r[$info['outcall']['id']] = $info;
-				continue;
-			}
-
-			if(($info['tfeatures'] = $tfeatures->get($info['outcall']['trunkfeaturesid'])) === false)
-				continue;
-
-			if(isset($trunks[$info['tfeatures']['trunk']]) === false)
-				$trunks[$info['tfeatures']['trunk']] = &$this->get_module('trunk'.$info['tfeatures']['trunk']);
-
-			$trunkmodule = &$trunks[$info['tfeatures']['trunk']];
-
-			if($trunkmodule === false
-			   || ($info['trunk'] = $trunkmodule->get($info['tfeatures']['trunkid'],$disable)) === false)
-				continue;
-
-			$r[$info['outcall']['id']] = $info;
-		}
-
-		if(empty($r) === true)
-			$r = false;
-		else if($assoc === false)
-			$r = array_values($r);
-
-		return($r);
-	}
-
 	function get_schedule_list($disable=null)
 	{
 		$schedule = &$this->get_module('schedule');

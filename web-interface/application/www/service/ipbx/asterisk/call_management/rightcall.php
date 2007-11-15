@@ -27,10 +27,9 @@ switch($act)
 		if(($rcallgroup['list'] = $ipbx->get_groups_list(null,true)) !== false)
 			uasort($rcallgroup['list'],array(&$groupsort,'str_usort'));
 
-		$outcallsort = new xivo_sort(array('browse' => 'outcall','key' => 'name'));
+		$appoutcall = &$ipbx->get_application('outcall');
 
-		if(($rcalloutcall['list'] = $ipbx->get_outcall_list(null,true)) !== false)
-			uasort($rcalloutcall['list'],array(&$outcallsort,'str_usort'));
+		$rcalloutcall['list'] = $appoutcall->get_outcalls_list(null,array('name' => SORT_ASC),null,true);
 
 		do
 		{
@@ -77,6 +76,8 @@ switch($act)
 			if($rcalloutcall['slt'] !== false)
 			{
 				$rcalloutcall['list'] = xivo_array_diff_key($rcalloutcall['list'],$rcalloutcall['slt']);
+				
+				$outcallsort = new xivo_sort(array('browse' => 'outcall','key' => 'name'));
 				uasort($rcalloutcall['slt'],array(&$outcallsort,'str_usort'));
 			}
 		}
@@ -119,10 +120,9 @@ switch($act)
 		if(($rcallgroup['list'] = $ipbx->get_groups_list(null,true)) !== false)
 			uasort($rcallgroup['list'],array(&$groupsort,'str_usort'));
 
-		$outcallsort = new xivo_sort(array('browse' => 'outcall','key' => 'name'));
+		$appoutcall = &$ipbx->get_application('outcall');
 
-		if(($rcalloutcall['list'] = $ipbx->get_outcall_list(null,true)) !== false)
-			uasort($rcalloutcall['list'],array(&$outcallsort,'str_usort'));
+		$rcalloutcall['list'] = $appoutcall->get_outcalls_list(null,array('name' => SORT_ASC),null,true);
 
 		do
 		{
@@ -171,6 +171,8 @@ switch($act)
 			if($rcalloutcall['slt'] !== false)
 			{
 				$rcalloutcall['list'] = xivo_array_diff_key($rcalloutcall['list'],$rcalloutcall['slt']);
+
+				$outcallsort = new xivo_sort(array('browse' => 'outcall','key' => 'name'));
 				uasort($rcalloutcall['slt'],array(&$outcallsort,'str_usort'));
 			}
 		}

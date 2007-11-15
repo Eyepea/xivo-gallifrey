@@ -575,7 +575,8 @@ CREATE INDEX groupfeatures__idx__deleted ON groupfeatures(deleted);
 DROP TABLE incall;
 CREATE TABLE incall (
  id integer unsigned,
- exten varchar(40) NOT NULL DEFAULT '',
+ exten varchar(40) NOT NULL,
+ context varchar(39) NOT NULL,
  type varchar(64) NOT NULL DEFAULT '',
  typeval varchar(255) NOT NULL DEFAULT '',
  linked tinyint(1) NOT NULL DEFAULT 0,
@@ -586,7 +587,7 @@ CREATE TABLE incall (
 CREATE INDEX incall__idx__type_typeval ON incall(type,typeval);
 CREATE INDEX incall__idx__linked ON incall(linked);
 CREATE INDEX incall__idx__commented ON incall(commented);
-CREATE UNIQUE INDEX incall__uidx__exten ON incall(exten);
+CREATE UNIQUE INDEX `incall__uidx__exten_context` ON `incall`(`exten`,`context`);
 
 
 DROP TABLE meetme;
@@ -662,10 +663,10 @@ INSERT INTO musiconhold VALUES (4,0,0,0,'musiconhold.conf','default','directory'
 DROP TABLE outcall;
 CREATE TABLE outcall (
  id integer unsigned,
- name varchar(128) NOT NULL DEFAULT '',
- exten varchar(40) NOT NULL DEFAULT '',
- trunkfeaturesid integer unsigned NOT NULL DEFAULT 0,
+ name varchar(128) NOT NULL,
+ exten varchar(40) NOT NULL,
  context varchar(39) NOT NULL,
+ trunkfeaturesid integer unsigned NOT NULL DEFAULT 0,
  externprefix varchar(20) NOT NULL DEFAULT '',
  stripnum tinyint unsigned NOT NULL DEFAULT 0,
  setcallerid tinyint(1) NOT NULL DEFAULT 0,
@@ -679,11 +680,10 @@ CREATE TABLE outcall (
 );
 
 CREATE INDEX outcall__idx__trunkfeaturesid ON outcall(trunkfeaturesid);
-CREATE INDEX outcall__idx__context ON outcall(context);
 CREATE INDEX outcall__idx__linked ON outcall(linked);
 CREATE INDEX outcall__idx__commented ON outcall(commented);
 CREATE UNIQUE INDEX outcall__uidx__name ON outcall(name);
-CREATE UNIQUE INDEX outcall__uidx__exten ON outcall(exten);
+CREATE UNIQUE INDEX outcall__uidx__exten_context ON outcall(exten,context);
 
 
 DROP TABLE phone;

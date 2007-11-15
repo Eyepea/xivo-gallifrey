@@ -578,7 +578,8 @@ CREATE INDEX `groupfeatures__idx__deleted` ON `groupfeatures`(`deleted`);
 DROP TABLE IF EXISTS `incall`;
 CREATE TABLE `incall` (
  `id` int(10) unsigned auto_increment,
- `exten` varchar(40) NOT NULL DEFAULT '',
+ `exten` varchar(40) NOT NULL,
+ `context` varchar(39) NOT NULL,
  `type` enum('endcall','user','group','queue','meetme','schedule','application','custom') NOT NULL,
  `typeval` varchar(255) NOT NULL DEFAULT '',
  `linked` tinyint(1) NOT NULL DEFAULT 0,
@@ -589,7 +590,7 @@ CREATE TABLE `incall` (
 CREATE INDEX `incall__idx__type_typeval` ON `incall`(`type`,`typeval`);
 CREATE INDEX `incall__idx__linked` ON `incall`(`linked`);
 CREATE INDEX `incall__idx__commented` ON `incall`(`commented`);
-CREATE UNIQUE INDEX `incall__uidx__exten` ON `incall`(`exten`);
+CREATE UNIQUE INDEX `incall__uidx__exten_context` ON `incall`(`exten`,`context`);
 
 
 DROP TABLE IF EXISTS `meetme`;
@@ -665,10 +666,10 @@ INSERT INTO `musiconhold` VALUES (4,0,0,0,'musiconhold.conf','default','director
 DROP TABLE IF EXISTS `outcall`;
 CREATE TABLE `outcall` (
  `id` int(10) unsigned auto_increment,
- `name` varchar(128) NOT NULL DEFAULT '',
- `exten` varchar(40) NOT NULL DEFAULT '',
- `trunkfeaturesid` int(10) unsigned NOT NULL DEFAULT 0,
+ `name` varchar(128) NOT NULL,
+ `exten` varchar(40) NOT NULL,
  `context` varchar(39) NOT NULL,
+ `trunkfeaturesid` int(10) unsigned NOT NULL DEFAULT 0,
  `externprefix` varchar(20) NOT NULL DEFAULT '',
  `stripnum` tinyint(2) unsigned NOT NULL DEFAULT 0,
  `setcallerid` tinyint(1) NOT NULL DEFAULT 0,
@@ -682,11 +683,10 @@ CREATE TABLE `outcall` (
 ) ENGINE=MyISAM DEFAULT CHARSET=ascii;
 
 CREATE INDEX `outcall__idx__trunkfeaturesid` ON `outcall`(`trunkfeaturesid`);
-CREATE INDEX `outcall__idx__context` ON `outcall`(`context`);
 CREATE INDEX `outcall__idx__linked` ON `outcall`(`linked`);
 CREATE INDEX `outcall__idx__commented` ON `outcall`(`commented`);
 CREATE UNIQUE INDEX `outcall__uidx__name` ON `outcall`(`name`);
-CREATE UNIQUE INDEX `outcall__uidx__exten` ON `outcall`(`exten`);
+CREATE UNIQUE INDEX `outcall__uidx__exten_context` ON `outcall`(`exten`,`context`);
 
 
 DROP TABLE IF EXISTS `phone`;

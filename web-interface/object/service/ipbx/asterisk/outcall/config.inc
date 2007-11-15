@@ -9,12 +9,12 @@ $array['element']['name']['default'] = '';
 $array['element']['exten'] = array();
 $array['element']['exten']['default'] = '';
 
-$array['element']['trunkfeaturesid'] = array();
-$array['element']['trunkfeaturesid']['default'] = '';
-
 $array['element']['context'] = array();
 $array['element']['context']['default'] = 'default';
 $array['element']['context']['setdef'] = true;
+
+$array['element']['trunkfeaturesid'] = array();
+$array['element']['trunkfeaturesid']['default'] = '';
 
 $array['element']['externprefix'] = array();
 $array['element']['externprefix']['default'] = '';
@@ -80,8 +80,8 @@ $array['element']['commented']['set'] = true;
 $array['filter'] = array();
 $array['filter']['name'] = array('maxlen' => 128,'regexp' => '/^[a-z0-9_-]+$/i');
 $array['filter']['exten'] = array('maxlen' => 40,'regexp' => '/^[_]?[0-9NXZ\*#\-\[\]]+[\.\!]?$/');
-$array['filter']['trunkfeaturesid'] = array('cast' => 'uint');
 $array['filter']['context'] = array('nokey' => array('general','global','globals','initconfig','hints','features'),'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 39);
+$array['filter']['trunkfeaturesid'] = array('cast' => 'uint');
 $array['filter']['externprefix'] = array('set' => false,'chk' => 2,'maxlen' => 20,'regexp' => '/^[0-9#\*]+$/');
 $array['filter']['stripnum'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,20));
 $array['filter']['mode'] = array('set' => false,'chk' => 2,'key' => array('wizard','extension'));

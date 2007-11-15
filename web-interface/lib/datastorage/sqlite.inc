@@ -5,11 +5,12 @@ require_once(XIVO_PATH_LIB.XIVO_SEP_DIR.'datastorage'.XIVO_SEP_DIR.'abstract'.XI
 class xivo_datastorage_sqlite extends xivo_datastorage_abstract_sql
 {
 	var $_param	= array(
-			'db'		=> '',
-			'persist'	=> false);
+				'db'		=> '',
+				'persist'	=> false);
 
 	var $_type	= 'sqlite';
-	var $_date	= array('datetime'	=> '%Y-%m-%d %H:%M:%S',
+	var $_date	= array(
+				'datetime'	=> '%Y-%m-%d %H:%M:%S',
 				'date'		=> '%Y-%m-%d',
 				'time'		=> '%H:%M:%S');
 

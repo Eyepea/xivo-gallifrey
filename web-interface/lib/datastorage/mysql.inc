@@ -5,23 +5,24 @@ require_once(XIVO_PATH_LIB.XIVO_SEP_DIR.'datastorage'.XIVO_SEP_DIR.'abstract'.XI
 class xivo_datastorage_mysql extends xivo_datastorage_abstract_sql
 {
 	var $_param	= array(
-			'host'		=> 'localhost',
-			'user'		=> '',
-			'pass'		=> '',
-			'db'		=> '',
-			'port'		=> 3306,
-			'socket'	=> '',
-			'persist'	=> false,
-			'compress'	=> false,
-			'ignore_space'	=> false,
-			'interactive'	=> false,
-			'ssl'		=> false);
+				'host'		=> 'localhost',
+				'user'		=> '',
+				'pass'		=> '',
+				'db'		=> '',
+				'port'		=> 3306,
+				'socket'	=> '',
+				'persist'	=> false,
+				'compress'	=> false,
+				'ignore_space'	=> false,
+				'interactive'	=> false,
+				'ssl'		=> false);
 
 	var $_flag	= 0;
 	var $_type	= 'mysql';
 	var $_free	= true;
 	var $_escape	= false;
-	var $_date	= array('datetime'	=> '%Y-%m-%d %H:%i:%s',
+	var $_date	= array(
+				'datetime'	=> '%Y-%m-%d %H:%i:%s',
 				'date'		=> '%Y-%m-%d',
 				'time'		=> '%H:%i:%s');
 
