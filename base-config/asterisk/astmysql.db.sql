@@ -992,6 +992,7 @@ CREATE TABLE `userfeatures` (
  `enableclient` tinyint(1) NOT NULL DEFAULT 0,
  `enablehint` tinyint(1) NOT NULL DEFAULT 0,
  `enablevoicemail` tinyint(1) NOT NULL DEFAULT 0,
+ `skipvoicemailpass` tinyint(1) NOT NULL DEFAULT 0,
  `enablexfer` tinyint(1) NOT NULL DEFAULT 0,
  `enableautomon` tinyint(1) NOT NULL DEFAULT 0,
  `callrecord` tinyint(1) NOT NULL DEFAULT 0,

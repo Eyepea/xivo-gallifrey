@@ -146,6 +146,8 @@
 
 	<?=$form->text(array('desc' => $this->bbf('fm_voicemail_email'),'name' => 'voicemail[email]','labelid' => 'voicemail-email','value' => $info['voicemail']['email'],'size' => 15));?>
 
+	<?=$form->checkbox(array('desc' => $this->bbf('fm_userfeatures_skipvoicemailpass'),'name' => 'ufeatures[skipvoicemailpass]','labelid' => 'ufeatures-skipvoicemailpass','default' => $element['ufeatures']['skipvoicemailpass']['default'],'checked' => $info['ufeatures']['skipvoicemailpass']));?>
+
 	<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail_attach'),'name' => 'voicemail[attach]','labelid' => 'voicemail-attach','checked' => $info['voicemail']['attach']));?>
 
 	<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail_delete'),'name' => 'voicemail[delete]','labelid' => 'voicemail-delete','checked' => $info['voicemail']['delete']));?>
@@ -285,7 +287,7 @@
 
 <?php
 	if($moh_list !== false):
-		echo $form->select(array('desc' => $this->bbf('fm_userfeatures_musiconhold'),'name' => 'ufeatures[musiconhold]','labelid' => 'ufeatures-musiconhold','key' => 'category','empty' => true,'default' => $element['ufeatures']['musiconhold']['default'],'value' => $info['ufeatures']['musiconhold']),$moh_list);
+		echo $form->select(array('desc' => $this->bbf('fm_userfeatures_musiconhold'),'name' => 'ufeatures[musiconhold]','labelid' => 'ufeatures-musiconhold','key' => 'category','default' => $element['ufeatures']['musiconhold']['default'],'value' => $info['ufeatures']['musiconhold']),$moh_list);
 	endif;
 ?>
 

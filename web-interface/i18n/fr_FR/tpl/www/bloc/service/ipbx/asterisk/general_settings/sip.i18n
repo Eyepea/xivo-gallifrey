@@ -65,7 +65,7 @@ Rejeter les invitations et enregistrements :
 User-Agent :
 
 ; fm_checkmwi
-Vérification de la messagerie vocale :
+Vérifier la présence de nouveaux messages :
 
 ; fm_checkmwi-opt0
 Désactivée

@@ -61,6 +61,11 @@ $array['element']['enablevoicemail']['value'] = array(0,1);
 $array['element']['enablevoicemail']['default'] = 0;
 $array['element']['enablevoicemail']['set'] = true;
 
+$array['element']['skipvoicemailpass'] = array();
+$array['element']['skipvoicemailpass']['value'] = array(0,1);
+$array['element']['skipvoicemailpass']['default'] = 1;
+$array['element']['skipvoicemailpass']['set'] = true;
+
 $array['element']['enablexfer'] = array();
 $array['element']['enablexfer']['value'] = array(0,1);
 $array['element']['enablexfer']['default'] = 0;
@@ -158,6 +163,7 @@ $array['filter']['simultcalls'] = array('set' => false,'chk' => 2,'cast' => 'uin
 $array['filter']['enableclient'] = array('bool' => true);
 $array['filter']['enablehint'] = array('bool' => true);
 $array['filter']['enablevoicemail'] = array('bool' => true);
+$array['filter']['skipvoicemailpass'] = array('bool' => true);
 $array['filter']['enablexfer'] = array('bool' => true);
 $array['filter']['enableautomon'] = array('bool' => true);
 $array['filter']['callrecord'] = array('bool' => true);

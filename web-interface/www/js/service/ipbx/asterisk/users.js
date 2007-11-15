@@ -64,6 +64,8 @@ xivo_list_elt_users['ufeatures-enablehint'] = new Array();
 xivo_list_elt_users['ufeatures-enablehint']['it'] = false;
 xivo_list_elt_users['ufeatures-enablevoicemail'] = new Array();
 xivo_list_elt_users['ufeatures-enablevoicemail']['it'] = false;
+xivo_list_elt_users['ufeatures-skipvoicemailpass'] = new Array();
+xivo_list_elt_users['ufeatures-skipvoicemailpass']['it'] = false;
 xivo_list_elt_users['ufeatures-enablexfer'] = new Array();
 xivo_list_elt_users['ufeatures-enablexfer']['it'] = false;
 xivo_list_elt_users['ufeatures-enableautomon'] = new Array();
@@ -417,6 +419,10 @@ xivo_fm_voicemail['it-voicemail-delete']['link'] = 'it-ufeatures-enablevoicemail
 
 xivo_fm_voicemail['it-ufeatures-enablevoicemail'] = new Array();
 xivo_fm_voicemail['it-ufeatures-enablevoicemail']['property'] = new Array('checked|true:boolean','checked|false:boolean');
+xivo_fm_voicemail['it-ufeatures-enablevoicemail']['link'] = 'it-ufeatures-skipvoicemailpass';
+
+xivo_fm_voicemail['it-ufeatures-skipvoicemailpass'] = new Array();
+xivo_fm_voicemail['it-ufeatures-skipvoicemailpass']['property'] = new Array('disabled|false:boolean;className|it-enabled','disabled|true:boolean;className|it-disabled');
 
 xivo_attrib_register('fm_voicemail',xivo_fm_voicemail);
 

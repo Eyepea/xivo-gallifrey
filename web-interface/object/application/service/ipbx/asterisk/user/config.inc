@@ -17,6 +17,7 @@ $array['import']['field']['protocol'] = array('protocol','protocol');
 $array['import']['field']['voicemailname'] = array('voicemail','fullname');
 $array['import']['field']['voicemailpassword'] = array('voicemail','password');
 $array['import']['field']['voicemailemail'] = array('voicemail','email');
+$array['import']['field']['voicemailskippass'] = array('ufeatures','skipvoicemailpass');
 $array['import']['field']['voicemailattach'] = array('voicemail','attach');
 $array['import']['field']['voicemaildelete'] = array('voicemail','delete');
 $array['import']['field']['context'] = array('protocol','context');

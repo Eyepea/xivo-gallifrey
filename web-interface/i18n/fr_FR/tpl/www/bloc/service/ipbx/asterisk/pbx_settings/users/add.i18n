@@ -232,6 +232,9 @@ Mot de passe :
 ; fm_voicemail_email
 E-mail :
 
+; fm_userfeatures_skipvoicemailpass
+Désactiver la vérification du mot de passe :
+
 ; fm_voicemail_attach
 Message attaché :
 
