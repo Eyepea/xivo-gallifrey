@@ -34,6 +34,7 @@ CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
 import xivo.to_path
 
 import sys
+import time
 import anysql
 import except_tb
 import agi_helpers
@@ -59,6 +60,7 @@ def ds_set_fwd_vars(id, status, type_varname, typeval_varname, context_varname):
 # Cursors have a weak reference on their connection, so make a strong one.
 conn = agi_helpers.db_connect(agi, db_uri)
 cursor = conn.cursor()
+srcnum = agi.get_variable('REAL_SRCNUM')
 dstnum = agi.get_variable('REAL_DSTNUM')
 context = agi.get_variable('REAL_CONTEXT')
 
@@ -151,7 +153,10 @@ else:
 
 ds_set_fwd_vars(id, 'congestion', 'XIVO_FWD_TYPECONGESTION', 'XIVO_FWD_TYPEVALCONGESTION', 'XIVO_FWD_CONTEXTCONGESTION')
 ds_set_fwd_vars(id, 'chanunavail', 'XIVO_FWD_TYPEUNAVAIL', 'XIVO_FWD_TYPEVALUNAVAIL', 'XIVO_FWD_CONTEXTUNAVAIL')
-agi.set_variable('XIVO_CALLRECORD', callrecord)
+
+if callrecord:
+	agi.set_variable('XIVO_CALLRECORDFILE', "/usr/share/asterisk/sounds/web-interface/monitor/user-%s-%s-%s.wav" % (srcnum, dstnum, int(time.time())))
+
 agi.set_variable('XIVO_CALLFILTER', callfilter)
 agi.set_variable('MUSICCLASS()', musiconhold)
 
