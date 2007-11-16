@@ -132,6 +132,27 @@ elif type == "dnd":
 	query += " enablednd = %s"
 	params.append(enablednd)
 	agi.set_variable('XIVO_DNDENABLED', enablednd)
+elif type == "callrecord":
+	cursor.query("SELECT ${columns} FROM userfeatures "
+                     "WHERE number = %s "
+                     "AND context = %s "
+                     "AND internal = 0 "
+                     "AND commented = 0",
+                     ('callrecord',),
+                     (srcnum, context))
+	res = cursor.fetchone()
+
+	if not res:
+		agi_helpers.dp_break(agi, "Unknown number '%s'" % dstnum)
+
+	if res['callrecord']:
+		callrecord = 0
+	else:
+		callrecord = 1
+
+	query += " callrecord = %s"
+	params.append(callrecord)
+	agi.set_variable('XIVO_CALLRECORDENABLED', callrecord)
 else:
 	agi_helpers.dp_break("Unknown forwarding type '%s'" % type)
 
