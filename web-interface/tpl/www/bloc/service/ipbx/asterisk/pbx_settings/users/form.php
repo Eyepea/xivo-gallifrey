@@ -138,7 +138,7 @@
 
 <div id="sb-part-voicemail" class="b-nodisplay">
 
-	<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail-active'),'name' => 'voicemail-active','labelid' => 'voicemail-active','checked' => $vm_active),'onclick="xivo_chg_attrib(\'fm_voicemail\',\'it-voicemail-fullname\',(this.checked == true ? 0 : 1))"');?>
+	<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail-active'),'name' => 'voicemail-active','labelid' => 'voicemail-active','checked' => $vm_active),'onclick="xivo_enable_voicemail();"');?>
 
 	<?=$form->text(array('desc' => $this->bbf('fm_voicemail_fullname'),'name' => 'voicemail[fullname]','labelid' => 'voicemail-fullname','value' => $info['voicemail']['fullname'],'size' => 15));?>
 

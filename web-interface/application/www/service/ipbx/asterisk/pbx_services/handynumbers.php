@@ -15,13 +15,14 @@ $fm_smenu_tab = $fm_smenu_part = '';
 
 if(isset($_QR['fm_send']) === true)
 {
+	$fm_save = true;
+
 	if(isset($_QR['fm_smenu-tab'],$_QR['fm_smenu-part']) === true)
 	{
 		$fm_smenu_tab = strval($_QR['fm_smenu-tab']);
 		$fm_smenu_part = strval($_QR['fm_smenu-part']);
 	}
 
-	$fm_save = true;
 	$return = &$result;
 
 	if(xivo_issa('emergency',$_QR) === false
@@ -33,8 +34,13 @@ if(isset($_QR['fm_send']) === true)
 	else
 		$result['emergency'] = $apphnumbersemergency->get_result();
 
-	if(($error['emergency'] = $apphnumbersemergency->get_error()) === false)
+	if($apphnumbersemergency->get_errnb() === 0)
 		$error['emergency'] = false;
+	else
+	{
+		$fm_save = false;
+		$error['emergency'] = $apphnumbersemergency->get_error();
+	}
 
 	if(xivo_issa('special',$_QR) === false
 	|| ($special = xivo_group_array('trunkfeaturesid',$_QR['special'])) === false)
@@ -45,8 +51,13 @@ if(isset($_QR['fm_send']) === true)
 	else
 		$result['special'] = $apphnumbersspecial->get_result();
 
-	if(($error['special'] = $apphnumbersspecial->get_error()) === false)
+	if($apphnumbersspecial->get_errnb() === 0)
 		$error['special'] = false;
+	else
+	{
+		$fm_save = false;
+		$error['special'] = $apphnumbersspecial->get_error();
+	}
 }
 
 if(xivo_issa('emergency',$return) === true
