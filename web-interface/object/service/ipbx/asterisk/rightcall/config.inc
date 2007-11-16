@@ -12,7 +12,6 @@ $array['element']['passwd']['default'] = '';
 $array['element']['authorization'] = array();
 $array['element']['authorization']['value'] = array(0 => 'deny',1 => 'permit');
 $array['element']['authorization']['default'] = 0;
-$array['element']['authorization']['set'] = true;
 
 $array['element']['description'] = array();
 $array['element']['description']['default'] = '';
