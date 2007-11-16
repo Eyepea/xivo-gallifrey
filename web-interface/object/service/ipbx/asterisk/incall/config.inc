@@ -4,10 +4,11 @@ $array = array();
 
 $array['applicationval'] = array();
 $array['applicationval']['filter'] = array();
-$array['applicationval']['filter']['faxtomail'] = array('func' => 'xivo_filter::chk_email','maxlen' => 80);
-$array['applicationval']['filter']['disa'] = array('cast' => 'digit','minlen' => 4,'maxlen' => 6);
-$array['applicationval']['filter']['directory'] = array('nokey' => xivo_service_asterisk::get_contexts_list(),
-							'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 39);
+$array['applicationval']['filter']['faxtomail'] = array('callback' => 'xivo_filter::chk_email','maxlen' => 80);
+$array['applicationval']['filter']['disa'] = array('callback' => 'xivo_service_asterisk::chk_passwd_context');
+$array['applicationval']['filter']['directory'] = array('callback' => 'xivo_service_asterisk::chk_context');
+$array['applicationval']['filter']['voicemail'] = array('callback' => 'xivo_service_asterisk::chk_context');
+$array['applicationval']['filter']['callback'] = array('callback' => 'xivo_service_asterisk::chk_passwd_context');
 
 $array['element'] = array();
 
@@ -30,7 +31,7 @@ $array['element']['endcall']['value'] = array('hangup','busy','congestion');
 $array['element']['endcall']['unset'] = true;
 
 $array['element']['application'] = array();
-$array['element']['application']['value'] = array('faxtomail','disa','directory');
+$array['element']['application']['value'] = array('faxtomail','disa','directory','voicemail','callback');
 $array['element']['application']['unset'] = true;
 
 $array['element']['applicationval'] = array();
@@ -48,11 +49,10 @@ $array['element']['commented']['set'] = true;
 
 $array['filter'] = array();
 $array['filter']['exten'] = array('maxlen' => 40,'regexp' => '/^[_]?[0-9NXZ\*#\-\[\]]+[\.\!]?$/');
-$array['filter']['context'] = array('nokey' => xivo_service_asterisk::get_contexts_list(),
-				    'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 39);
+$array['filter']['context'] = array('callback' => 'xivo_service_asterisk::chk_context');
 $array['filter']['type'] = array('key' => array('endcall','user','group','queue','meetme','schedule','application','custom'));
 $array['filter']['typeval'] = array('maxlen' => 255,'cast' => 'sgraph');
-$array['filter']['applicationval'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_\-\.@]+$/i','maxlen' => 80);
+$array['filter']['applicationval'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_\-\.\|@]+$/i','maxlen' => 80);
 $array['filter']['linked'] = array('bool' => true);
 $array['filter']['commented'] = array('bool' => true);
 

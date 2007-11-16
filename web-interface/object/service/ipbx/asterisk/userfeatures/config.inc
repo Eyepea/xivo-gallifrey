@@ -153,11 +153,11 @@ $array['filter']['firstname'] = array('set' => false,'chk' => 2,'cast' => 'sgrap
 $array['filter']['lastname'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 128);
 $array['filter']['name'] = array('regexp' => '/^[a-z0-9#\*\.\/_@:-]+$/i','minlen' => 1,'maxlen' => 128);
 $array['filter']['number'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9\*#]+$/','maxlen' => 40);
-$array['filter']['context'] = array('set' => false,'chk' => 2,
-				    'nokey' => xivo_service_asterisk::get_contexts_list(array(
-							XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTIFICATION,
-							XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)),
-				    'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 39);
+$array['filter']['context'] = array('set' => false,
+				    'chk' => 2,
+				    'callback' => 'xivo_service_asterisk::chk_context',
+				    'callbackparam' => array(XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTIFICATION,
+							     XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES));
 $array['filter']['ringseconds'] = array('set' => false,'chk' => 2,'key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
 $array['filter']['simultcalls'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,20));
 $array['filter']['enableclient'] = array('bool' => true);

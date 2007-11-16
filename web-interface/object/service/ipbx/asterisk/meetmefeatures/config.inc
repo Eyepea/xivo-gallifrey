@@ -79,9 +79,7 @@ $array['filter']['number'] = array('regexp' => '/^[0-9\*#]+$/','minlen' => 1,'ma
 $array['filter']['meetmeid'] = array('cast' => 'uint');
 $array['filter']['mode'] = array('key' => array('talk','listen','all'));
 $array['filter']['musiconhold'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 20);
-$array['filter']['context'] = array('set' => false,'chk' => 2,
-				    'nokey' => xivo_service_asterisk::get_contexts_list(),
-				    'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 39);
+$array['filter']['context'] = array('set' => false,'chk' => 2,'callback' => 'xivo_service_asterisk::chk_context');
 $array['filter']['poundexit'] = array('bool' => true);
 $array['filter']['quiet'] = array('bool' => true);
 $array['filter']['record'] = array('bool' => true);
@@ -91,8 +89,6 @@ $array['filter']['announcejoinleave'] = array('bool' => true);
 $array['filter']['alwayspromptpin'] = array('bool' => true);
 $array['filter']['starmenu'] = array('bool' => true);
 $array['filter']['enableexitcontext'] = array('bool' => true);
-$array['filter']['exitcontext'] = array('set' => false,'chk' => 2,
-					'nokey' => xivo_service_asterisk::get_contexts_list(),
-					'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 39);
+$array['filter']['exitcontext'] = array('set' => false,'chk' => 2,'callback' => 'xivo_service_asterisk::chk_context');
 
 ?>

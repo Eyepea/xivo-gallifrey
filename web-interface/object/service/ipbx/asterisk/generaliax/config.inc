@@ -224,15 +224,13 @@ $array['element']['register_port']['unset'] = true;
 
 $array['filter'] = array();
 $array['filter']['bindport'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,65535));
-$array['filter']['bindaddr'] = array('set' => false,'chk' => 2,'func' => 'xivo_filter::chk_host_ipv4_strict','maxlen' => 64);
+$array['filter']['bindaddr'] = array('set' => false,'chk' => 2,'callback' => 'xivo_filter::chk_host_ipv4_strict','maxlen' => 64);
 $array['filter']['iaxcompat'] = array('bool' => true);
 $array['filter']['authdebug'] = array('bool' => true);
 $array['filter']['delayreject'] = array('bool' => true);
 $array['filter']['trunkfreq'] = array('key' => array(10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100));
 $array['filter']['trunktimestamps'] = array('bool' => true);
-$array['filter']['regcontext'] = array('set' => false,'chk' => 2,'maxlen' => 39,
-					'nokey' => xivo_service_asterisk::get_contexts_list(),
-					'regexp' => '/^(?!macro-)[a-z0-9_-]+$/');
+$array['filter']['regcontext'] = array('set' => false,'chk' => 2,'callback' => 'xivo_service_asterisk::chk_context');
 $array['filter']['minregexpire'] = array('key' => array(0,10,20,30,40,50,60,70,80,90,100,110,120));
 $array['filter']['maxregexpire'] = array('key' => array(0,10,20,30,40,50,60,70,80,90,100,110,120));
 $array['filter']['bandwidth'] = array('key' => array('low','medium','high'));
@@ -292,7 +290,7 @@ $array['filter']['autokill'] = array('key' => array('no','yes',500,1000,1500,200
 
 $array['filter']['register_username'] = array('set' => false,'regexp' => '/^[a-z0-9_@\.-]+$/i','maxlen' => 80);
 $array['filter']['register_password'] = array('set' => false,'chk' => 2,'regexp' => '/^([a-z0-9_\.-]+|\[[a-z0-9\+\/]+={0,2}\])$/i','maxlen' => 80);
-$array['filter']['register_host'] = array('set' => false,'func' => 'xivo_filter::chk_host_ipv4_strict','maxlen' => 64);
+$array['filter']['register_host'] = array('set' => false,'callback' => 'xivo_filter::chk_host_ipv4_strict','maxlen' => 64);
 $array['filter']['register_port'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,65535));
 
 ?>

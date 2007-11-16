@@ -90,11 +90,12 @@ $array['filter']['name'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[a-
 $array['filter']['username'] = array('set' => false,'chk' => 2,'maxlen' => 80);
 $array['filter']['secret'] = array('set' => false,'chk' => 2,'maxlen' => 80);
 $array['filter']['callerid'] = array('set' => false,'chk' => 2,'maxlen' => 160);
-$array['filter']['context'] = array('set' => false,'chk' => 2,
-				    'nokey' => xivo_service_asterisk::get_contexts_list(array(XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)),
-				    'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 39);
+$array['filter']['context'] = array('set' => false,
+				    'chk' => 2,
+				    'callback' => 'xivo_service_asterisk::chk_context',
+				    'callbackparam' => array(XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES));
 $array['filter']['call-limit'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,30));
-$array['filter']['host'] = array('set' => false,'chk' => 2,'key' => array('dynamic','static'),'strict' => false,'func' => 'xivo_filter::chk_host_ipv4_strict');
+$array['filter']['host'] = array('set' => false,'chk' => 2,'key' => array('dynamic','static'),'strict' => false,'callback' => 'xivo_filter::chk_host_ipv4_strict');
 $array['filter']['type'] = array('set' => false,'chk' => 2,'key' => array('peer','user','friend'));
 $array['filter']['notransfer'] = array('bool' => true);
 $array['filter']['trunk'] = array('bool' => true);

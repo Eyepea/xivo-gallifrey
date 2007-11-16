@@ -103,6 +103,12 @@ DISA
 ; fm_schedule_application-typeval-opt-directory
 Directory
 
+; fm_schedule_application-typeval-opt-voicemail
+Voicemail
+
+; fm_schedule_application-typeval-opt-callback
+Callback
+
 ; fld-outschedule
 Hors de la plage horaire
 

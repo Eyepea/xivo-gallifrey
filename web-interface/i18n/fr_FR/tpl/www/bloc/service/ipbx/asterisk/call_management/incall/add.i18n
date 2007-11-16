@@ -73,6 +73,12 @@ DISA
 ; fm_incall_application-typeval-opt-directory
 Directory
 
+; fm_incall_application-typeval-opt-voicemail
+Voicemail
+
+; fm_incall_application-typeval-opt-callback
+Callback
+
 ; fm_incall_type
 Destination :
 

@@ -120,7 +120,7 @@ $array['filter']['secret'] = array('set' => false,'chk' => 2,'minlen' => 1,'maxl
 $array['filter']['host'] = array('set' => false,'chk' => 2,
 				 'key' => array('dynamic','static'),
 				 'strict' => false,
-				 'func' => 'xivo_filter::chk_host_ipv4_strict');
+				 'callback' => 'xivo_filter::chk_host_ipv4_strict');
 $array['filter']['dtmfmode'] = array('set' => false,'chk' => 2,'key' => array('rfc2833','inband','info','auto'));
 $array['filter']['canreinvite'] = array('bool' => true);
 $array['filter']['amaflags'] = array('set' => false,'chk' => 2,'key' => array(
@@ -130,11 +130,11 @@ $array['filter']['amaflags'] = array('set' => false,'chk' => 2,'key' => array(
 						XIVO_SRE_IPBX_AST_CDR_AMAFLAGS_META_DOCUMENTATION));
 $array['filter']['accountcode'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_-]+$/i','maxlen' => 20);
 $array['filter']['callgroup'] = array('set' => false,'chk' => 2,'regexp' => '/^(?:[0-9]+[,]?)*$/','maxlen' => 180);
-$array['filter']['context'] = array('set' => false,'chk' => 2,
-				    'nokey' => xivo_service_asterisk::get_contexts_list(array(
-							XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTIFICATION,
-							XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)),
-						'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 39);
+$array['filter']['context'] = array('set' => false,
+				    'chk' => 2,
+				    'callback' => 'xivo_service_asterisk::chk_context',
+				    'callbackparam' => array(XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTIFICATION,
+							     XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES));
 $array['filter']['nat'] = array('bool' => true);
 $array['filter']['qualify'] = array('bool' => true);
 $array['filter']['disallow'] = array('set' => false,'chk' => 2,'key' => array('all'));
@@ -160,7 +160,7 @@ $array['filter']['ipaddr'] = array('set' => false,'chk' => 0);
 $array['filter']['regexten'] = array('set' => false,'chk' => 0);
 $array['filter']['setvar'] = array('set' => false,'chk' => 0);
 $array['filter']['username'] = array('set' => false,'chk' => 2,'maxlen' => 80);
-$array['filter']['mailbox'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9#\*]{1,40}(@[a-z0-9@_\-]{1,39})?$/','maxlen' => 80);
+$array['filter']['mailbox'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9#\*]{1,40}(?:@[a-z0-9@_\-]{1,39})?$/','maxlen' => 80);
 $array['filter']['call-limit'] = array('set' => false,'chk' => 0);
 
 ?>

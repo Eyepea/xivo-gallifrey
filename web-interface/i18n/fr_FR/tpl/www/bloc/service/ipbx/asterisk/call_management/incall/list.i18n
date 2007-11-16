@@ -40,6 +40,12 @@ DISA : %s
 ; incall_type-application-directory
 Directory : %s
 
+; incall_type-application-voicemail
+Voicemail : %s
+
+; incall_type-application-callback
+Callback : %s
+
 ; no_incall
 Aucun appel entrant trouvé
 

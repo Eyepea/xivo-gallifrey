@@ -332,13 +332,13 @@ $array['element']['register_contact']['unset'] = true;
 
 $array['filter'] = array();
 $array['filter']['bindport'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,65535));
-$array['filter']['bindaddr'] = array('set' => false,'chk' => 2,'func' => 'xivo_filter::chk_host_ipv4_strict','maxlen' => 64);
+$array['filter']['bindaddr'] = array('set' => false,'chk' => 2,'callback' => 'xivo_filter::chk_host_ipv4_strict','maxlen' => 64);
 $array['filter']['videosupport'] = array('bool' => true);
 $array['filter']['autocreatepeer'] = array('bool' => true);
 $array['filter']['allowguest'] = array('key' => array('no','yes','osp'));
 $array['filter']['promiscredir'] = array('bool' => true);
 $array['filter']['autodomain'] = array('bool' => true);
-$array['filter']['domain'] = array('set' => false,'chk' => 2,'func' => 'xivo_filter::chk_host_ipv4_strict','maxlen' => 64);
+$array['filter']['domain'] = array('set' => false,'chk' => 2,'callback' => 'xivo_filter::chk_host_ipv4_strict','maxlen' => 64);
 $array['filter']['allowexternaldomains'] = array('bool' => true);
 $array['filter']['usereqphone'] = array('bool' => true);
 $array['filter']['realm'] = array('regexp' => '/[^"]/','maxlen' => 64);
@@ -346,8 +346,8 @@ $array['filter']['alwaysauthreject'] = array('bool' => true);
 $array['filter']['useragent'] = array('cast' => 'sgraph','maxlen' => 80);
 $array['filter']['checkmwi'] = array('key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
 $array['filter']['regcontext'] = array('set' => false,'chk' => 2,
-				       'nokey' => xivo_service_asterisk::get_contexts_list(array(XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTIFICATION)),
-				       'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 39);
+				       'callback' => 'xivo_service_asterisk::chk_context',
+				       'callbackparam' => array(XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTIFICATION));
 $array['filter']['callerid'] = array('regexp' => '/^[a-z0-9_-]+$/i','maxlen' => 80);
 $array['filter']['fromdomain'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_-\.]+$/i','maxlen' => 80);
 $array['filter']['sipdebug'] = array('bool' => true);
@@ -360,10 +360,10 @@ $array['filter']['tos'] = array('key' => array('none','lowdelay','throughput','r
 					  21,22,23,24,25,26,27,28,29,30,31));
 $array['filter']['ospauth'] = array('key' => array('no','proxy','gateway','exclusive'));
 $array['filter']['localnet'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9\.\/]+$/','maxlen' => 128);
-$array['filter']['externip'] = array('set' => false,'chk' => 2,'func' => 'xivo_filter::chk_host_ipv4_strict','maxlen' => 64);
-$array['filter']['externhost'] = array('set' => false,'chk' => 2,'func' => 'xivo_filter::chk_host_ipv4_strict','maxlen' => 64);
+$array['filter']['externip'] = array('set' => false,'chk' => 2,'callback' => 'xivo_filter::chk_host_ipv4_strict','maxlen' => 64);
+$array['filter']['externhost'] = array('set' => false,'chk' => 2,'callback' => 'xivo_filter::chk_host_ipv4_strict','maxlen' => 64);
 $array['filter']['externrefresh'] = array('key' => array(1,10,20,30,40,50,60,70,80,90,100,110,120));
-$array['filter']['outboundproxy'] = array('set' => false,'chk' => 2,'func' => 'xivo_filter::chk_host_ipv4_strict','maxlen' => 64);
+$array['filter']['outboundproxy'] = array('set' => false,'chk' => 2,'callback' => 'xivo_filter::chk_host_ipv4_strict','maxlen' => 64);
 $array['filter']['outboundproxyport'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,65535));
 $array['filter']['disallow'] = array('set' => false,'chk' => 2,'key' => array('all'));
 $array['filter']['allow'] = array('set' => false,'chk' => 2,'value' => array(
@@ -400,8 +400,8 @@ $array['filter']['registertimeout'] = array('key' => array(1,10,20,30,40,50,60,7
 $array['filter']['registerattempts'] = array('key' => array(0,10,20,30,40,50,60,70,80,90,100,110,120));
 $array['filter']['notifyringing'] = array('bool' => true);
 $array['filter']['context'] = array('set' => false,'chk' => 2,
-				    'nokey' => xivo_service_asterisk::get_contexts_list(array(XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTIFICATION)),
-				    'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 39);
+				    'callback' => 'xivo_service_asterisk::chk_context',
+				    'callbackparam' => array(XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTIFICATION));
 $array['filter']['nat'] = array('key' => array('no','yes','never','route'));
 $array['filter']['dtmfmode'] = array('key' => array('rfc2833','inband','info','auto'));
 $array['filter']['qualify'] = array('key' => array('no','yes',500,1000,1500,2000,2500,3000,3500,4000));
@@ -424,7 +424,7 @@ $array['filter']['rtautoclear'] = array('yes','no',1,10,20,30,40,50,60,70,80,90,
 $array['filter']['register_username'] = array('set' => false,'regexp' => '/^[a-z0-9_@\.-]+$/i','maxlen' => 80);
 $array['filter']['register_password'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_\.-]+$/i','maxlen' => 80);
 $array['filter']['register_authuser'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_\.-]+$/i','maxlen' => 80);
-$array['filter']['register_host'] = array('set' => false,'func' => 'xivo_filter::chk_host_ipv4_strict','maxlen' => 64);
+$array['filter']['register_host'] = array('set' => false,'callback' => 'xivo_filter::chk_host_ipv4_strict','maxlen' => 64);
 $array['filter']['register_port'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,65535));
 $array['filter']['register_contact'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9]+$/i','maxlen' => 250);
 

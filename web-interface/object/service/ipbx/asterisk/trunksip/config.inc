@@ -112,16 +112,16 @@ $array['filter']['name'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[a-
 $array['filter']['username'] = array('set' => false,'chk' => 2,'maxlen' => 80);
 $array['filter']['secret'] = array('set' => false,'chk' => 2,'maxlen' => 80);
 $array['filter']['callerid'] = array('set' => false,'chk' => 2,'maxlen' => 160);
-$array['filter']['context'] = array('set' => false,'chk' => 2,
-				    'nokey' => xivo_service_asterisk::get_contexts_list(array(
-							XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTIFICATION,
-							XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)),
-				    'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 39);
+$array['filter']['context'] = array('set' => false,
+				    'chk' => 2,
+				    'callback' => 'xivo_service_asterisk::chk_context',
+				    'callbackparam' => array(XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTIFICATION,
+							     XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES));
 $array['filter']['call-limit'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,30));
 $array['filter']['host'] = array('set' => false,'chk' => 2,
 				 'key' => array('dynamic','static'),
 				 'strict' => false,
-				 'func' => 'xivo_filter::chk_host_ipv4_strict');
+				 'callback' => 'xivo_filter::chk_host_ipv4_strict');
 $array['filter']['dtmfmode'] = array('set' => false,'chk' => 2,'key' => array('rfc2833','inband','info','auto'));
 $array['filter']['type'] = array('set' => false,'chk' => 2,'key' => array('peer','user','friend'));
 $array['filter']['nat'] = array('bool' => true);
@@ -151,6 +151,6 @@ $array['filter']['ipaddr'] = array('set' => false,'chk' => 0);
 $array['filter']['regexten'] = array('set' => false,'chk' => 0);
 $array['filter']['setvar'] = array('set' => false,'chk' => 0);
 $array['filter']['fromuser'] = array('set' => false,'chk' => 2,'maxlen' => 80);
-$array['filter']['fromdomain'] = array('set' => false,'chk' => 2,'func' => 'xivo_filter::chk_host_ipv4_strict');
+$array['filter']['fromdomain'] = array('set' => false,'chk' => 2,'callback' => 'xivo_filter::chk_host_ipv4_strict');
 
 ?>

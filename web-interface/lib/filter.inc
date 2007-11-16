@@ -403,7 +403,7 @@ class xivo_filter
 		return(true);
 	}
 
-	function chk_func($func,$value)
+	function callback($func,$value,$param=null)
 	{
 		if(is_array($func) === false)
 		{
@@ -433,7 +433,16 @@ class xivo_filter
 				return(false);
 		}
 
-		return(call_user_func($func,$value));
+		if($param === null)
+			return(call_user_func($func,$value));
+		else
+		{
+			$args = array();
+			$args[0] = $value;
+			$args[1] = (array) $param;
+
+			return(call_user_func_array($func,$args));
+		}
 	}
 
 	function chk_array_key($arr,$value)
@@ -627,15 +636,23 @@ class xivo_filter
 			return(false);
 		}
 	
-		if(isset($arr['func']) === true && $this->chk_func($arr['func'],$value) === false)
+		if(isset($arr['callback']) === true)
 		{
-			$this->_set_error($key,'func false');
-			return(false);
+			if(isset($arr['callbackparam']) === false)
+				$callbackparam = null;
+			else
+				$callbackparam = $arr['callbackparam'];
+
+			if($this->callback($arr['callback'],$value,$callbackparam) === false)
+			{
+				$this->_set_error($key,'callback false');
+				return(false);
+			}
 		}
 
 		if(isset($arr['regexp']) === true && preg_match((string) $arr['regexp'],$value) !== 1)
 		{
-			$this->_set_error($key,'preg false');
+			$this->_set_error($key,'regexp false');
 			return(false);
 		}
 	

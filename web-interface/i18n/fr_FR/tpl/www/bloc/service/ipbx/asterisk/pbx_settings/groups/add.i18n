@@ -151,6 +151,12 @@ DISA
 ; fm_dialstatus_application-typeval-opt-directory
 Directory
 
+; fm_dialstatus_application-typeval-opt-voicemail
+Voicemail
+
+; fm_dialstatus_application-typeval-opt-callback
+Callback
+
 ; create_user
 Créer un utilisateur
 
