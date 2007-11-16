@@ -4,17 +4,17 @@ Nom
 ; col_passwd
 Mot de passe
 
-; col_permit
-Autoriser
+; col_authorization
+Autorisation
 
 ; no_rightcall
 Aucun droit d'appel trouvé
 
-; rightcall_permit-0
-Non
+; rightcall_authorization-0
+Refuser
 
-; rightcall_permit-1
-Oui
+; rightcall_authorization-1
+Permettre
 
 ; opt_delete_confirm
 Etes-vous certain de vouloir supprimer ce droit d'appel ?

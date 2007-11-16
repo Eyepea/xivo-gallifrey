@@ -19,8 +19,14 @@ Nom :
 ; fm_rightcall_passwd
 Mot de passe :
 
-; fm_rightcall_permit
-Autoriser :
+; fm_rightcall_authorization
+Autorisation :
+
+; fm_rightcall_authorization-opt-deny
+Refuser
+
+; fm_rightcall_authorization-opt-permit
+Permettre
 
 ; fm_rightcallexten_exten
 Extensions :

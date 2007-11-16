@@ -17,7 +17,7 @@
 
 <?=$form->text(array('desc' => $this->bbf('fm_rightcall_passwd'),'name' => 'rightcall[passwd]','labelid' => 'rightcall-passwd','size' => 15,'default' => $element['rightcall']['passwd']['default'],'value' => $info['rightcall']['passwd']));?>
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_rightcall_permit'),'name' => 'rightcall[permit]','labelid' => 'permit','checked' => $info['rightcall']['permit'],'default' => $element['rightcall']['permit']['default']));?>
+<?=$form->select(array('desc' => $this->bbf('fm_rightcall_authorization'),'name' => 'rightcall[authorization]','bbf' => array('concatvalue','fm_rightcall_authorization-opt-'),'labelid' => 'authorization','value' => $info['rightcall']['authorization'],'default' => $element['rightcall']['authorization']['default']),$element['rightcall']['authorization']['value']);?>
 
 <div id="extenlist" class="fm-field fm-multilist">
 

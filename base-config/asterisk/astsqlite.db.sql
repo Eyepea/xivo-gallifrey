@@ -860,14 +860,14 @@ CREATE TABLE rightcall (
  id integer unsigned,
  name varchar(128) NOT NULL DEFAULT '',
  passwd varchar(40) NOT NULL DEFAULT '',
- permit tinyint(1) NOT NULL DEFAULT 0,
+ authorization tinyint(1) NOT NULL DEFAULT 0,
  commented tinyint(1) NOT NULL DEFAULT 0,
  description text NOT NULL,
  PRIMARY KEY(id)
 );
 
 CREATE INDEX rightcall__idx__passwd ON rightcall(passwd);
-CREATE INDEX rightcall__idx__permit ON rightcall(permit);
+CREATE INDEX rightcall__idx__authorization ON rightcall(authorization);
 CREATE INDEX rightcall__idx__commented ON rightcall(commented);
 CREATE UNIQUE INDEX rightcall__uidx__name ON rightcall(name);
 

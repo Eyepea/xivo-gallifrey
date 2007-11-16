@@ -139,6 +139,11 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 
 		if(xivo_issa('rightcallexten',$arr) === true)
 			$this->set_rightcallexten($arr['rightcallexten']);
+		else
+		{
+			$this->_set_result('rightcallexten',null);
+			$this->_set_error('rightcallexten','invalid data');
+		}
 
 		if($this->get_errnb() > 0)
 			$r = false;
@@ -235,13 +240,14 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 
 	function set_rightcallexten($list)
 	{
-		if(is_array($list) === false)
+		if(is_array($list) === false
+		|| ($list = array_values($list)) === false
+		|| ($nb = count($list)) === 0)
+		{
+			$this->_set_result('rightcallexten',null);
+			$this->_set_error('rightcallexten','invalid data');
 			return(false);
-
-		$list = array_values($list);
-
-		if(($nb = count($list)) === 0)
-			return(null);
+		}
 
 		$info = array();
 		$info['rightcallid'] = 0;
@@ -271,6 +277,7 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 		if(isset($reslist[0]) === false)
 		{
 			$this->_set_result('rightcallexten',false);
+			$this->_set_error('rightcallexten','empty');
 			return(false);
 		}
 

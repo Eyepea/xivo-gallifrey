@@ -28,7 +28,7 @@
 		<th class="th-left xspan"><span class="span-left">&nbsp;</span></th>
 		<th class="th-center"><?=$this->bbf('col_name');?></th>
 		<th class="th-center"><?=$this->bbf('col_passwd');?></th>
-		<th class="th-center"><?=$this->bbf('col_permit');?></th>
+		<th class="th-center"><?=$this->bbf('col_authorization');?></th>
 		<th class="th-center" id="col-action" colspan="2"><?=$this->bbf('col_action');?></th>
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
 	</tr>
@@ -57,7 +57,7 @@
 				$passwd = $ref['rightcall']['passwd'];
 			endif;
 
-			$ref['rightcall']['permit'] = (int) $ref['rightcall']['permit'];
+			$ref['rightcall']['authorization'] = (int) $ref['rightcall']['authorization'];
 
 			$mod = $j % 2 === 0 ? 1 : 2;
 ?>
@@ -65,7 +65,7 @@
 		<td class="td-left"><?=$form->checkbox(array('name' => 'rightcalls[]','value' => $ref['rightcall']['id'],'label' => false,'id' => 'it-rightcalls-'.$i,'checked' => false,'field' => false));?></td>
 		<td class="txt-left"><label for="it-rightcalls-<?=$i?>" id="lb-rightcalls-<?=$i?>"><?=$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"');?><?=$ref['rightcall']['name']?></label></td>
 		<td><?=$passwd?></td>
-		<td><?=$this->bbf('rightcall_permit-'.$ref['rightcall']['permit']);?></td>
+		<td><?=$this->bbf('rightcall_authorization-'.$ref['rightcall']['authorization']);?></td>
 		<td class="td-right" colspan="3">
 		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/call_management/rightcall',array('act' => 'edit','id' => $ref['rightcall']['id']),null,$this->bbf('opt_modify'));?>
 		<?=$url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'service/ipbx/call_management/rightcall',array('act' => 'delete','id' => $ref['rightcall']['id'],'page' => $pager['page']),'onclick="return(confirm(\''.xivo_stript($this->bbf('opt_delete_confirm')).'\') ? true : false);"',$this->bbf('opt_delete'));?>
