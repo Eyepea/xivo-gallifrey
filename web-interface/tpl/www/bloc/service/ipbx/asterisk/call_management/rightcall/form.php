@@ -7,6 +7,7 @@
 
 	$rcalluser = $this->get_var('rcalluser');
 	$rcallgroup = $this->get_var('rcallgroup');
+	$rcallincall = $this->get_var('rcallincall');
 	$rcalloutcall = $this->get_var('rcalloutcall');
 	$rcallexten = $this->get_var('rcallexten');
 ?>
@@ -103,6 +104,39 @@
 <?php
 	else:
 		echo '<div class="txt-center">',$url->href_html($this->bbf('create_group'),'service/ipbx/pbx_settings/groups','act=add'),'</div>';
+	endif;
+?>
+
+</div>
+
+<div id="sb-part-rightcallincall" class="b-nodisplay">
+
+<?php
+	if($rcallincall['list'] !== false):
+?>
+		<div id="incalllist" class="fm-field fm-multilist">
+			<div class="slt-outlist">
+
+		<?=$form->select(array('name' => 'incalllist','label' => false,'id' => 'it-incalllist','browse' => 'incall','key' => 'exten','altkey' => 'id','multiple' => true,'size' => 5,'field' => false),$rcallincall['list']);?>
+
+			</div>
+			<div class="inout-list">
+
+		<a href="#" onclick="xivo_fm_move_selected('it-incalllist','it-incall'); return(false);" title="<?=$this->bbf('bt-inincall');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt-inincall'),'class="bt-inlist" id="bt-inincall" border="0"');?></a><br />
+
+		<a href="#" onclick="xivo_fm_move_selected('it-incall','it-incalllist'); return(false);" title="<?=$this->bbf('bt-outincall');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt-outincall'),'class="bt-outlist" id="bt-outincall" border="0"');?></a>
+
+			</div>
+			<div class="slt-inlist">
+
+		<?=$form->select(array('name' => 'rightcallincall[]','label' => false,'id' => 'it-incall','browse' => 'incall','key' => 'exten','altkey' => 'id','multiple' => true,'size' => 5,'field' => false),$rcallincall['slt']);?>
+
+			</div>
+		</div>
+		<div class="clearboth"></div>
+<?php
+	else:
+		echo '<div class="txt-center">',$url->href_html($this->bbf('create_incall'),'service/ipbx/call_management/incall','act=add'),'</div>';
 	endif;
 ?>
 

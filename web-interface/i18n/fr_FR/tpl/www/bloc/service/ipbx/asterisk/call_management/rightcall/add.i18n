@@ -10,6 +10,9 @@ Utilisateurs
 ; smenu_groups
 Groupes
 
+; smenu_incall
+Appels entrants
+
 ; smenu_outcall
 Appels sortants
 
@@ -60,6 +63,15 @@ Ajouter un ou plusieurs groupes ->
 
 ; create_group
 Créer un groupe
+
+; bt-inincall
+Ajouter un ou plusieurs appels entrants ->
+
+; bt-outincall
+<- Enlever un ou plusieurs appels entrants
+
+; create_incall
+Créer un appel entrant
 
 ; bt-inoutcall
 Ajouter un ou plusieurs appels sortants ->

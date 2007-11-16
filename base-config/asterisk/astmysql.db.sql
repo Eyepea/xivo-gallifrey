@@ -830,7 +830,7 @@ DROP TABLE IF EXISTS `rightcallmember`;
 CREATE TABLE `rightcallmember` (
  `id` int(10) unsigned auto_increment,
  `rightcallid` int(10) unsigned NOT NULL DEFAULT 0,
- `type` enum('user','group','outcall') NOT NULL,
+ `type` enum('user','group','incall','outcall') NOT NULL,
  `typeval` varchar(128) NOT NULL DEFAULT 0,
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=ascii;

@@ -13,8 +13,8 @@ switch($act)
 
 		$result = null;
 
-		$rcalluser = $rcallgroup = $rcalloutcall = array();
-		$rcalluser['slt'] = $rcallgroup['slt'] = $rcalloutcall['slt'] = null;
+		$rcalluser = $rcallgroup = $rcallincall = $rcalloutcall = array();
+		$rcalluser['slt'] = $rcallgroup['slt'] = $rcallincall['slt'] = $rcalloutcall['slt'] = null;
 
 		xivo::load_class('xivo_sort');
 		$usersort = new xivo_sort(array('browse' => 'ufeatures','key' => 'identity'));
@@ -27,8 +27,10 @@ switch($act)
 		if(($rcallgroup['list'] = $ipbx->get_groups_list(null,true)) !== false)
 			uasort($rcallgroup['list'],array(&$groupsort,'str_usort'));
 
-		$appoutcall = &$ipbx->get_application('outcall');
+		$appincall = &$ipbx->get_application('incall');
+		$rcallincall['list'] = $appincall->get_incalls_list(null,array('exten' => SORT_ASC),null,true);
 
+		$appoutcall = &$ipbx->get_application('outcall');
 		$rcalloutcall['list'] = $appoutcall->get_outcalls_list(null,array('name' => SORT_ASC),null,true);
 
 		do
@@ -69,6 +71,19 @@ switch($act)
 			}
 		}
 
+		if($rcallincall['list'] !== false && xivo_ak('rightcallincall',$result) === true)
+		{
+			$rcallincall['slt'] = xivo_array_intersect_key($result['rightcallincall'],$rcallincall['list'],'typeval');
+			
+			if($rcallincall['slt'] !== false)
+			{
+				$rcallincall['list'] = xivo_array_diff_key($rcallincall['list'],$rcallincall['slt']);
+				
+				$incallsort = new xivo_sort(array('browse' => 'incall','key' => 'exten'));
+				uasort($rcallincall['slt'],array(&$incallsort,'str_usort'));
+			}
+		}
+
 		if($rcalloutcall['list'] !== false && xivo_ak('rightcalloutcall',$result) === true)
 		{
 			$rcalloutcall['slt'] = xivo_array_intersect_key($result['rightcalloutcall'],$rcalloutcall['list'],'typeval');
@@ -92,6 +107,7 @@ switch($act)
 
 		$_HTML->set_var('rcalluser',$rcalluser);
 		$_HTML->set_var('rcallgroup',$rcallgroup);
+		$_HTML->set_var('rcallincall',$rcallincall);
 		$_HTML->set_var('rcalloutcall',$rcalloutcall);
 		$_HTML->set_var('rcallexten',$rcallexten);
 		$_HTML->set_var('element',$apprightcall->get_elements());
@@ -106,8 +122,8 @@ switch($act)
 		$result = null;
 		$return = &$info;
 
-		$rcalluser = $rcallgroup = $rcalloutcall = array();
-		$rcalluser['slt'] = $rcallgroup['slt'] = $rcalloutcall['slt'] = null;
+		$rcalluser = $rcallgroup = $rcallincall = $rcalloutcall = array();
+		$rcalluser['slt'] = $rcallgroup['slt'] = $rcallincall['slt'] = $rcalloutcall['slt'] = null;
 
 		xivo::load_class('xivo_sort');
 		$usersort = new xivo_sort(array('browse' => 'ufeatures','key' => 'identity'));
@@ -120,8 +136,10 @@ switch($act)
 		if(($rcallgroup['list'] = $ipbx->get_groups_list(null,true)) !== false)
 			uasort($rcallgroup['list'],array(&$groupsort,'str_usort'));
 
-		$appoutcall = &$ipbx->get_application('outcall');
+		$appincall = &$ipbx->get_application('incall');
+		$rcallincall['list'] = $appincall->get_incalls_list(null,array('exten' => SORT_ASC),null,true);
 
+		$appoutcall = &$ipbx->get_application('outcall');
 		$rcalloutcall['list'] = $appoutcall->get_outcalls_list(null,array('name' => SORT_ASC),null,true);
 
 		do
@@ -164,6 +182,19 @@ switch($act)
 			}
 		}
 
+		if($rcallincall['list'] !== false && xivo_ak('rightcallincall',$return) === true)
+		{
+			$rcallincall['slt'] = xivo_array_intersect_key($return['rightcallincall'],$rcallincall['list'],'typeval');
+			
+			if($rcallincall['slt'] !== false)
+			{
+				$rcallincall['list'] = xivo_array_diff_key($rcallincall['list'],$rcallincall['slt']);
+
+				$incallsort = new xivo_sort(array('browse' => 'incall','key' => 'exten'));
+				uasort($rcallincall['slt'],array(&$incallsort,'str_usort'));
+			}
+		}
+
 		if($rcalloutcall['list'] !== false && xivo_ak('rightcalloutcall',$return) === true)
 		{
 			$rcalloutcall['slt'] = xivo_array_intersect_key($return['rightcalloutcall'],$rcalloutcall['list'],'typeval');
@@ -193,6 +224,7 @@ switch($act)
 		$_HTML->set_var('id',$info['rightcall']['id']);
 		$_HTML->set_var('rcalluser',$rcalluser);
 		$_HTML->set_var('rcallgroup',$rcallgroup);
+		$_HTML->set_var('rcallincall',$rcallincall);
 		$_HTML->set_var('rcalloutcall',$rcalloutcall);
 		$_HTML->set_var('rcallexten',$rcallexten);
 		$_HTML->set_var('element',$apprightcall->get_elements());

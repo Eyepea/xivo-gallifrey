@@ -33,6 +33,7 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 
 		$this->_get_rightcalluser();
 		$this->_get_rightcallgroup();
+		$this->_get_rightcallincall();
 		$this->_get_rightcalloutcall();
 		$this->_get_rightcallexten();
 
@@ -49,6 +50,11 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 		return($this->_get_rightcall_member_type('group'));
 	}
 
+	function _get_rightcallincall()
+	{
+		return($this->_get_rightcall_member_type('incall'));
+	}
+
 	function _get_rightcalloutcall()
 	{
 		return($this->_get_rightcall_member_type('outcall'));
@@ -56,9 +62,7 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 
 	function _get_rightcall_member_type($type)
 	{
-		if($type !== 'user'
-		&& $type !== 'group'
-		&& $type !== 'outcall')
+		if($this->_rightcallmember->chk_element_value('type',$type) === false)
 			return(false);
 
 		$membertype = 'rightcall'.$type;
@@ -134,6 +138,9 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 		if(xivo_issa('rightcallgroup',$arr) === true)
 			$this->set_rightcallgroup($arr['rightcallgroup']);
 
+		if(xivo_issa('rightcallincall',$arr) === true)
+			$this->set_rightcallincall($arr['rightcallincall']);
+
 		if(xivo_issa('rightcalloutcall',$arr) === true)
 			$this->set_rightcalloutcall($arr['rightcalloutcall']);
 
@@ -185,6 +192,11 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 		return($this->_set_rightcall_member_type('group',$list));
 	}
 
+	function set_rightcallincall($list)
+	{
+		return($this->_set_rightcall_member_type('incall',$list));
+	}
+
 	function set_rightcalloutcall($list)
 	{
 		return($this->_set_rightcall_member_type('outcall',$list));
@@ -192,9 +204,7 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 
 	function _set_rightcall_member_type($type,$list)
 	{
-		if(($type !== 'user'
-		   && $type !== 'group'
-		   && $type !== 'outcall') === true
+		if($this->_rightcallmember->chk_element_value('type',$type) === false
 		|| is_array($list) === false)
 			return(false);
 
@@ -296,6 +306,7 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 		|| ($rightcallid = $this->add_rightcall()) === false
 		|| $this->add_rightcalluser($rightcallid) === false
 		|| $this->add_rightcallgroup($rightcallid) === false
+		|| $this->add_rightcallincall($rightcallid) === false
 		|| $this->add_rightcalloutcall($rightcallid) === false
 		|| $this->add_rightcallexten($rightcallid) === false)
 		{
@@ -332,6 +343,11 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 		return($this->_add_rightcall_member_type('group',$rightcallid));
 	}
 
+	function add_rightcallincall($rightcallid)
+	{
+		return($this->_add_rightcall_member_type('incall',$rightcallid));
+	}
+
 	function add_rightcalloutcall($rightcallid)
 	{
 		return($this->_add_rightcall_member_type('outcall',$rightcallid));
@@ -339,9 +355,7 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 
 	function _add_rightcall_member_type($type,$rightcallid)
 	{
-		if(($type !== 'user'
-		   && $type !== 'group'
-		   && $type !== 'outcall') === true
+		if($this->_rightcallmember->chk_element_value('type',$type) === false
 		|| ($rightcallid = xivo_uint($rightcallid)) === 0)
 			return(false);
 
@@ -416,6 +430,7 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 					break;
 				case 'rightcalluser':
 				case 'rightcallgroup':
+				case 'rightcallincall':
 				case 'rightcalloutcall':
 					if(is_array($val) === false || ($nb = count($val)) === 0)
 						continue;
@@ -450,6 +465,7 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 		|| $this->edit_rightcall() === false
 		|| $this->edit_rightcalluser() === false
 		|| $this->edit_rightcallgroup() === false
+		|| $this->edit_rightcallincall() === false
 		|| $this->edit_rightcalloutcall() === false
 		|| $this->edit_rightcallexten() === false)
 		{
@@ -487,6 +503,11 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 		return($this->_edit_rightcall_member_type('group'));
 	}
 
+	function edit_rightcallincall()
+	{
+		return($this->_edit_rightcall_member_type('incall'));
+	}
+
 	function edit_rightcalloutcall()
 	{
 		return($this->_edit_rightcall_member_type('outcall'));
@@ -494,9 +515,7 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 
 	function _edit_rightcall_member_type($type)
 	{
-		if(($type !== 'user'
-		   && $type !== 'group'
-		   && $type !== 'outcall') === true
+		if($this->_rightcallmember->chk_element_value('type',$type) === false
 		|| xivo_issa('rightcall',$this->_info) === false)
 			return(false);
 
@@ -599,9 +618,9 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 					break;
 				case 'rightcalluser':
 				case 'rightcallgroup':
+				case 'rightcallincall':
 				case 'rightcalloutcall':
-					$type = substr($key,9);
-					$this->_delete_rightcall_member_type($type);
+					$this->_delete_rightcall_member_type(substr($key,9));
 
 					$this->_rightcallmember->add_origin_list($this->_origin[$key]);
 					break;
@@ -623,6 +642,7 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 		if($this->delete_rightcall() === false
 		|| $this->delete_rightcalluser() === false
 		|| $this->delete_rightcallgroup() === false
+		|| $this->delete_rightcallincall() === false
 		|| $this->delete_rightcalloutcall() === false
 		|| $this->delete_rightcallexten() === false)
 		{
@@ -659,6 +679,11 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 		return($this->_delete_rightcall_member_type('group'));
 	}
 
+	function delete_rightcallincall()
+	{
+		return($this->_delete_rightcall_member_type('incall'));
+	}
+
 	function delete_rightcalloutcall()
 	{
 		return($this->_delete_rightcall_member_type('outcall'));
@@ -666,10 +691,8 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 
 	function _delete_rightcall_member_type($type)
 	{
-		if(($type !== 'user'
-		   && $type !== 'group'
-		   && $type !== 'outcall') === true)
-		   return(false);
+		if($this->_rightcallmember->chk_element_value('type',$type) === false)
+			return(false);
 
 		$key = 'rightcall'.$type;
 
@@ -729,6 +752,7 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 					break;
 				case 'rightcalluser':
 				case 'rightcallgroup':
+				case 'rightcallincall':
 				case 'rightcalloutcall':
 					$this->_rightcallmember->add_origin_list($this->_origin[$key]);
 					break;

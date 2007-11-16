@@ -73,15 +73,14 @@ class xivo_service_asterisk_rightcallmember extends xivo_service_asterisk_abstra
 
 		switch($type)
 		{
+			case 'incall':
 			case 'outcall':
 				$typeval = (int) $typeval;
-
-				$module = $this->_sre->get_module('outcall');
+				$module = $this->_sre->get_module($type);
 				break;
 			case 'user':
 			case 'group':
 				$typeval = (int) $typeval;
-
 				$module = $this->_sre->get_module($type.'features');
 				break;
 			default:
