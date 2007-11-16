@@ -75,7 +75,7 @@ cursor.query("SELECT ${columns} FROM schedule "
              "WHERE id = %s "
              "AND linked = 1 "
              "AND commented = 0",
-             ('timebeg', 'timeend', 'daynamebeg', 'daynameend', 'daynumbeg', 'daynumend', 'monthbeg', 'monthend', 'typetrue', 'typevaltrue', 'typefalse', 'typevalfalse'),
+             ('timebeg', 'timeend', 'daynamebeg', 'daynameend', 'daynumbeg', 'daynumend', 'monthbeg', 'monthend', 'typetrue', 'typevaltrue', 'applicationvaltrue', 'typefalse', 'typevalfalse', 'applicationvalfalse'),
              (id,))
 res = cursor.fetchone()
 
@@ -83,7 +83,7 @@ if not res:
 	dp_break("Invalid schedule ID '%s'" % id)
 
 agi.set_variable("XIVO_SCHEDULE_TIMERANGE", forgetime(res))
-agi_helpers.set_fwd_vars(agi, cursor, res['typetrue'], res['typevaltrue'], 'XIVO_SCHEDULE_TYPETRUE', 'XIVO_SCHEDULE_TYPEVALTRUE', 'XIVO_SCHEDULE_CONTEXTTRUE')
-agi_helpers.set_fwd_vars(agi, cursor, res['typefalse'], res['typevalfalse'], 'XIVO_SCHEDULE_TYPEFALSE', 'XIVO_SCHEDULE_TYPEVALFALSE', 'XIVO_SCHEDULE_CONTEXTFALSE')
+agi_helpers.set_fwd_vars(agi, cursor, res['typetrue'], res['typevaltrue'], res['applicationvaltrue'], 'XIVO_SCHEDULE_TYPETRUE', 'XIVO_SCHEDULE_TYPEVAL1TRUE', 'XIVO_SCHEDULE_TYPEVAL2TRUE')
+agi_helpers.set_fwd_vars(agi, cursor, res['typefalse'], res['typevalfalse'], res['applicationvalfalse'], 'XIVO_SCHEDULE_TYPEFALSE', 'XIVO_SCHEDULE_TYPEVAL1FALSE', 'XIVO_SCHEDULE_TYPEVAL2FALSE')
 
 agi.verbose('AGI script "%s" successfully executed' % sys.argv[0])

@@ -46,16 +46,16 @@ from agi import *
 agi = AGI()
 db_uri = ConfigDict.ReadSingleKey(CONFIG_FILE, 'db', 'db_uri')
 
-def ds_set_fwd_vars(id, status, type_varname, typeval_varname, context_varname):
+def ds_set_fwd_vars(id, status, type_varname, typeval1_varname, typeval2_varname):
 	cursor.query("SELECT ${columns} FROM dialstatus WHERE status = %s AND category = %s AND categoryval = %s AND linked = 1",
-                     ('type', 'typeval'),
+                     ('type', 'typeval', 'applicationval'),
                      (status, 'user', id))
 	res = cursor.fetchone()
 
 	if not res:
 		return
 
-	agi_helpers.set_fwd_vars(agi, cursor, res['type'], res['typeval'], type_varname, typeval_varname, context_varname)
+	agi_helpers.set_fwd_vars(agi, cursor, res['type'], res['typeval'], res['applicationval'], type_varname, typeval1_varname, typeval2_varname)
 
 # Cursors have a weak reference on their connection, so make a strong one.
 conn = agi_helpers.db_connect(agi, db_uri)
@@ -131,31 +131,32 @@ agi.set_variable('XIVO_ENABLEUNC', enableunc)
 
 if enableunc == 1:
 	agi.set_variable('XIVO_FWD_TYPEUNC', 'user')
-	agi.set_variable('XIVO_FWD_TYPEVALUNC', destunc)
-	agi.set_variable('XIVO_FWD_CONTEXTUNC', context)
+	agi.set_variable('XIVO_FWD_TYPEVAL1UNC', destunc)
+	agi.set_variable('XIVO_FWD_TYPEVAL2UNC', context)
 
 agi.set_variable('XIVO_ENABLEBUSY', enablebusy)
 
 if enablebusy == 1:
 	agi.set_variable('XIVO_FWD_TYPEBUSY', 'user')
-	agi.set_variable('XIVO_FWD_TYPEVALBUSY', destbusy)
-	agi.set_variable('XIVO_FWD_CONTEXTBUSY', context)
+	agi.set_variable('XIVO_FWD_TYPEVAL1BUSY', destbusy)
+	agi.set_variable('XIVO_FWD_TYPEVAL2BUSY', context)
 else:
-	ds_set_fwd_vars(id, 'busy', 'XIVO_FWD_TYPEBUSY', 'XIVO_FWD_TYPEVALBUSY', 'XIVO_FWD_CONTEXTBUSY')
+	ds_set_fwd_vars(id, 'busy', 'XIVO_FWD_TYPEBUSY', 'XIVO_FWD_TYPEVAL1BUSY', 'XIVO_FWD_TYPEVAL2BUSY')
 
 if enablerna:
 	agi.set_variable('XIVO_FWD_TYPERNA', 'user')
-	agi.set_variable('XIVO_FWD_TYPEVALRNA', destrna)
-	agi.set_variable('XIVO_FWD_CONTEXTRNA', context)
+	agi.set_variable('XIVO_FWD_TYPEVAL1RNA', destrna)
+	agi.set_variable('XIVO_FWD_TYPEVAL2RNA', context)
 else:
-	ds_set_fwd_vars(id, 'noanswer', 'XIVO_FWD_TYPERNA', 'XIVO_FWD_TYPEVALRNA', 'XIVO_FWD_CONTEXTRNA')
+	ds_set_fwd_vars(id, 'noanswer', 'XIVO_FWD_TYPERNA', 'XIVO_FWD_TYPEVAL1RNA', 'XIVO_FWD_TYPEVAL2RNA')
 
-ds_set_fwd_vars(id, 'congestion', 'XIVO_FWD_TYPECONGESTION', 'XIVO_FWD_TYPEVALCONGESTION', 'XIVO_FWD_CONTEXTCONGESTION')
-ds_set_fwd_vars(id, 'chanunavail', 'XIVO_FWD_TYPEUNAVAIL', 'XIVO_FWD_TYPEVALUNAVAIL', 'XIVO_FWD_CONTEXTUNAVAIL')
+ds_set_fwd_vars(id, 'congestion', 'XIVO_FWD_TYPECONGESTION', 'XIVO_FWD_TYPEVAL1CONGESTION', 'XIVO_FWD_TYPEVAL2CONGESTION')
+ds_set_fwd_vars(id, 'chanunavail', 'XIVO_FWD_TYPEUNAVAIL', 'XIVO_FWD_TYPEVAL1UNAVAIL', 'XIVO_FWD_TYPEVAL2UNAVAIL')
 
 if callrecord:
 	agi.set_variable('XIVO_CALLRECORDFILE', "/usr/share/asterisk/sounds/web-interface/monitor/user-%s-%s-%s.wav" % (srcnum, dstnum, int(time.time())))
 
-agi.set_variable('MUSICCLASS()', musiconhold)
+if musiconhold:
+	agi.set_variable('MUSICCLASS()', musiconhold)
 
 agi.verbose('AGI script "%s" successfully executed' % sys.argv[0])

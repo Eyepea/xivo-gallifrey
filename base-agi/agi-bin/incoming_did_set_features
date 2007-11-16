@@ -54,12 +54,12 @@ cursor.query("SELECT ${columns} FROM incall "
              "WHERE exten = %s "
              "AND linked = 1 "
              "AND commented = 0",
-             ('type', 'typeval'),
+             ('type', 'typeval', 'applicationval'),
              (exten_pattern,))
 res = cursor.fetchone()
 
 if not res:
 	agi_helpers.dp_break(agi, "Unknown extension '%s'" % exten_pattern)
 
-agi_helpers.set_fwd_vars(agi, cursor, res['type'], res['typeval'], "XIVO_DIDTYPE", "XIVO_DIDTYPEVAL", "XIVO_DIDCONTEXT")
+agi_helpers.set_fwd_vars(agi, cursor, res['type'], res['typeval'], res['applicationval'], "XIVO_DIDTYPE", "XIVO_DIDTYPEVAL1", "XIVO_DIDTYPEVAL2")
 agi.verbose('AGI script "%s" successfully executed' % sys.argv[0])

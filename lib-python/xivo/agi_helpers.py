@@ -46,13 +46,14 @@ def db_connect(agi, db_uri):
 
 	return conn
 
-def set_fwd_vars(agi, cursor, type, typeval, type_varname, typeval_varname, context_varname):
+def set_fwd_vars(agi, cursor, type, typeval, appval, type_varname, typeval1_varname, typeval2_varname):
 	agi.set_variable(type_varname, type)
 
 	if type in ('endcall', 'application', 'schedule', 'sound'):
-		agi.set_variable(typeval_varname, typeval)
+		agi.set_variable(typeval1_varname, typeval)
+		agi.set_variable(typeval2_varname, appval)
 	elif type == 'custom':
-		agi.set_variable(typeval_varname, typeval.replace(",", "|"))
+		agi.set_variable(typeval1_varname, typeval.replace(",", "|"))
 	elif type == 'user':
 		cursor.query("SELECT ${columns} FROM userfeatures "
                              "WHERE id = %s "
@@ -65,8 +66,8 @@ def set_fwd_vars(agi, cursor, type, typeval, type_varname, typeval_varname, cont
 		if not res:
 			dp_break(agi, "Database inconsistency: unable to find linked destination user '%s'" % typeval)
 
-		agi.set_variable(typeval_varname, res['number'])
-		agi.set_variable(context_varname, res['context'])
+		agi.set_variable(typeval1_varname, res['number'])
+		agi.set_variable(typeval2_varname, res['context'])
 	elif type == 'group':
 		cursor.query("SELECT ${columns} FROM groupfeatures INNER JOIN queue "
                              "ON groupfeatures.name = queue.name "
@@ -81,8 +82,8 @@ def set_fwd_vars(agi, cursor, type, typeval, type_varname, typeval_varname, cont
 		if not res:
 			dp_break(agi, "Database inconsistency: unable to find linked destination group '%s'" % typeval)
 
-		agi.set_variable(typeval_varname, res['groupfeatures.number'])
-		agi.set_variable(context_varname, res['groupfeatures.context'])
+		agi.set_variable(typeval1_varname, res['groupfeatures.number'])
+		agi.set_variable(typeval2_varname, res['groupfeatures.context'])
 	elif type == 'queue':
 		cursor.query("SELECT ${columns} FROM queuefeatures INNER JOIN queue "
                              "ON queuefeatures.name = queue.name "
@@ -96,8 +97,8 @@ def set_fwd_vars(agi, cursor, type, typeval, type_varname, typeval_varname, cont
 		if not res:
 			dp_break(agi, "Database inconsistency: unable to find linked destination queue '%s'" % typeval)
 
-		agi.set_variable(typeval_varname, res['queuefeatures.number'])
-		agi.set_variable(context_varname, res['queuefeatures.context'])
+		agi.set_variable(typeval1_varname, res['queuefeatures.number'])
+		agi.set_variable(typeval2_varname, res['queuefeatures.context'])
 	elif type == 'meetme':
 		cursor.query("SELECT ${columns} FROM meetmefeatures INNER JOIN meetme "
                              "ON meetmefeatures.meetmeid = meetme.id "
@@ -110,7 +111,7 @@ def set_fwd_vars(agi, cursor, type, typeval, type_varname, typeval_varname, cont
 		if not res:
 			dp_break(agi, "Database inconsistency: unable to find linked destination conference room'%s'" % typeval)
 
-		agi.set_variable(typeval_varname, res['meetmefeatures.number'])
-		agi.set_variable(context_varname, res['meetmefeatures.context'])
+		agi.set_variable(typeval1_varname, res['meetmefeatures.number'])
+		agi.set_variable(typeval2_varname, res['meetmefeatures.context'])
 	else:
 		dp_break(agi, "Unknown dial status destination type '%s'" % type)
