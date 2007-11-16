@@ -1,0 +1,58 @@
+#!/usr/bin/python
+#
+# Authors : Cedric Lemarchand, Sylvain Boily, Guillaume Knispel
+#	   Proformatique
+#	   67, rue Voltaire
+#	   92800 PUTEAUX
+#	   (+33/0)1.41.38.99.60
+#	   mailto:technique@proformatique.com
+#	   (C) 2007 Proformatique
+
+__version__ = "$Revision$ $Date$"
+__license__ = """
+    Copyright (C) 2007, Proformatique
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2.1 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+"""
+
+CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
+
+import xivo.to_path
+
+import sys
+import anysql
+import except_tb
+import agi_helpers
+from BackSQL import backsqlite
+from BackSQL import backmysql
+import ConfigDict
+from agi import *
+
+agi = AGI()
+db_uri = ConfigDict.ReadSingleKey(CONFIG_FILE, 'db', 'db_uri')
+
+# Cursors have a weak reference on their connection, so make a strong one.
+conn = agi_helpers.db_connect(agi, db_uri)
+cursor = conn.cursor()
+srcnum = agi.get_variable('REAL_SRCNUM')
+context = agi.get_variable('REAL_CONTEXT')
+
+cursor.query("UPDATE userfeatures SET enableunc = 0, destunc = '', enablerna = 0, destrna = '', enablebusy = 0, destbusy = '' WHERE number = %s and CONTEXT = %s", parameters = (srcnum, context))
+
+if cursor.rowcount != 1:
+	agi_helpers.dp_break("Unable to perform the requested update")
+
+conn.commit()
+agi.verbose('AGI script "%s" successfully executed' % sys.argv[0])
