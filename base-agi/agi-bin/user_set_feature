@@ -90,6 +90,25 @@ elif type == "busy":
 
 	query += ", destbusy = %s"
 	params.append(destbusy)
+elif type == "vm":
+	cursor.query("SELECT ${columns} FROM userfeatures "
+                     "WHERE number = %s "
+                     "AND context = %s",
+                     ('enablevoicemail',),
+                     (srcnum, context))
+	res = cursor.fetchone()
+
+	if not res:
+		agi_helpers.dp_break(agi, "Unknown number '%s'" % dstnum)
+
+	if res['enablevoicemail']:
+		enablevoicemail = 0
+	else:
+		enablevoicemail = 1
+
+	query += " enablevoicemail = %s"
+	params.append(enablevoicemail)
+	agi.set_variable('XIVO_VMENABLED', enablevoicemail)
 else:
 	agi_helpers.dp_break("Unknown forwarding type '%s'" % type)
 
