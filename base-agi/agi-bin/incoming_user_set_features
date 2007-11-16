@@ -99,6 +99,7 @@ destbusy = res['destbusy']
 enablerna = res['enablerna']
 destrna = res['destrna']
 callrecord = res['callrecord']
+musiconhold = res['musiconhold']
 
 if protocol in ("sip", "iax"):
 	interface = protocol.upper() + "/" + name
