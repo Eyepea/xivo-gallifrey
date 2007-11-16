@@ -2,6 +2,13 @@
 
 $array = array();
 
+$array['applicationval'] = array();
+$array['applicationval']['filter'] = array();
+$array['applicationval']['filter']['faxtomail'] = array('func' => 'xivo_filter::chk_email','maxlen' => 80);
+$array['applicationval']['filter']['disa'] = array('cast' => 'digit','minlen' => 4,'maxlen' => 6);
+$array['applicationval']['filter']['directory'] = array('nokey' => xivo_service_asterisk::get_contexts_list(),
+							'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 39);
+
 $array['element'] = array();
 
 $array['element']['exten'] = array();
@@ -26,6 +33,9 @@ $array['element']['application'] = array();
 $array['element']['application']['value'] = array('faxtomail','disa','directory');
 $array['element']['application']['unset'] = true;
 
+$array['element']['applicationval'] = array();
+$array['element']['applicationval']['default'] = '';
+
 $array['element']['linked'] = array();
 $array['element']['linked']['value'] = array(0,1);
 $array['element']['linked']['default'] = 0;
@@ -42,6 +52,7 @@ $array['filter']['context'] = array('nokey' => xivo_service_asterisk::get_contex
 				    'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 39);
 $array['filter']['type'] = array('key' => array('endcall','user','group','queue','meetme','schedule','application','custom'));
 $array['filter']['typeval'] = array('maxlen' => 255,'cast' => 'sgraph');
+$array['filter']['applicationval'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_\-\.@]+$/i','maxlen' => 80);
 $array['filter']['linked'] = array('bool' => true);
 $array['filter']['commented'] = array('bool' => true);
 

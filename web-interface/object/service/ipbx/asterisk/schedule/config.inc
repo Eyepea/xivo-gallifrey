@@ -1,6 +1,14 @@
 <?php
 
 $array = array();
+
+$array['applicationval'] = array();
+$array['applicationval']['filter'] = array();
+$array['applicationval']['filter']['faxtomail'] = array('func' => 'xivo_filter::chk_email','maxlen' => 80);
+$array['applicationval']['filter']['disa'] = array('cast' => 'digit','minlen' => 4,'maxlen' => 6);
+$array['applicationval']['filter']['directory'] = array('nokey' => xivo_service_asterisk::get_contexts_list(),
+							'regexp' => '/^(?!macro-)[a-z0-9_-]+$/','maxlen' => 39);
+
 $array['element'] = array();
 
 $array['element']['name'] = array();
@@ -85,12 +93,18 @@ $array['element']['typetrue']['default'] = 'endcall';
 $array['element']['typevaltrue'] = array();
 $array['element']['typevaltrue']['default'] = '';
 
+$array['element']['applicationvaltrue'] = array();
+$array['element']['applicationvaltrue']['default'] = '';
+
 $array['element']['typefalse'] = array();
 $array['element']['typefalse']['value'] = array('endcall','user','group','queue','meetme','schedule','application','custom');
 $array['element']['typefalse']['default'] = '';
 
 $array['element']['typevalfalse'] = array();
 $array['element']['typevalfalse']['default'] = '';
+
+$array['element']['applicationvalfalse'] = array();
+$array['element']['applicationvalfalse']['default'] = '';
 
 $array['element']['endcall'] = array();
 $array['element']['endcall']['value'] = array('hangup','busy','congestion');
@@ -128,7 +142,9 @@ $array['filter']['monthend'] = array('set' => false,'chk' => 2,'key' => array('j
 $array['filter']['typetrue'] = array('key' => array('endcall','user','group','queue','meetme','schedule','application','custom'));
 $array['filter']['typevaltrue'] = array('maxlen' => 255,'cast' => 'sgraph');
 $array['filter']['typefalse'] = array('key' => array('endcall','user','group','queue','meetme','schedule','application','custom'));
+$array['filter']['applicationvaltrue'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_\-\.@]+$/i','maxlen' => 80);
 $array['filter']['typevalfalse'] = array('maxlen' => 255,'cast' => 'sgraph');
+$array['filter']['applicationvalfalse'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_\-\.@]+$/i','maxlen' => 80);
 $array['filter']['publicholiday'] = array('bool' => true);
 $array['filter']['linked'] = array('bool' => true);
 $array['filter']['commented'] = array('bool' => true);

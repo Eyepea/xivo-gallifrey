@@ -719,9 +719,11 @@ class xivo_service_asterisk extends xivo_service_abstract
 			if($info['schedule']['linked'] === true
 			&& (($info['typetrue'] = $schedule->is_valid($info['schedule']['typetrue'],
 								     $info['schedule']['typevaltrue'],
+								     $info['schedule']['applicationvaltrue'],
 								     $info['schedule']['id'])) === false
 			|| ($info['typefalse'] = $schedule->is_valid($info['schedule']['typefalse'],
 								     $info['schedule']['typevalfalse'],
+								     $info['schedule']['applicationvalfalse'],
 								     $info['schedule']['id'])) === false) === true)
 				continue;
 

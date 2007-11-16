@@ -52,6 +52,9 @@ class xivo_service_asterisk_dialstatus extends xivo_service_asterisk_abstract
 		if(($id = xivo_uint($id)) !== 0)
 			$arr['id'] = $id;
 
+		if($arr['type'] !== 'application')
+			$arr['applicationval'] = '';
+
 		if($this->exists($arr['status'],$arr['category'],$arr['categoryval']) !== false)
 			return(false);
 
@@ -74,6 +77,12 @@ class xivo_service_asterisk_dialstatus extends xivo_service_asterisk_abstract
 			$category = $info['category'];
 		else
 			$category = $arr['category'];
+
+		if(isset($arr['type']) === false)
+			$arr['type'] = $info['type'];
+
+		if($arr['type'] !== 'application')
+			$arr['applicationval'] = '';
 
 		if(isset($arr['categoryval']) === false)
 			$categoryval = $info['categoryval'];
@@ -106,7 +115,7 @@ class xivo_service_asterisk_dialstatus extends xivo_service_asterisk_abstract
 		return($this->edit_where($id,array('linked' => false)));
 	}
 
-	function is_valid($category,$categoryval,$type,$typeval,$disable=null)
+	function is_valid($category,$categoryval,$type,$typeval,$appval='',$disable=null)
 	{
 		if(is_string($category) === false || is_string($type) === false)
 			return(false);
@@ -119,8 +128,9 @@ class xivo_service_asterisk_dialstatus extends xivo_service_asterisk_abstract
 		switch($type)
 		{
 			case 'endcall':
-			case 'application':
 				return($this->_chk_dest_value($type,$typeval));
+			case 'application':
+				return($this->chk_dest_application($typeval,$appval));
 			case 'custom':
 				return($this->chk_dest_custom($typeval));
 			case 'schedule':

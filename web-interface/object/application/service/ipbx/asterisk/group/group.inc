@@ -127,6 +127,11 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		return($r);
 	}
 
+	function get_dialstatus_result()
+	{
+		return($this->_dialstatus->get_result_for_display());
+	}
+
 	function get_dialstatus_destination_list()
 	{
 		if(xivo_issa('gfeatures',$this->_info) === false)

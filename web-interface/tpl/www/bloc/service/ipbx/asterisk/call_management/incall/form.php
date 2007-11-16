@@ -85,7 +85,10 @@ else:
 	echo '<div id="fd-incall-schedule-typeval" class="txt-center">',$url->href_html($this->bbf('create_schedule'),'service/ipbx/call_management/schedule','act=add'),'</div>';
 endif;
 
-echo $form->select(array('desc' => $this->bbf('fm_incall_application-typeval'),'name' => 'incall[typeval]','labelid' => 'incall-application-typeval','bbf' => 'fm_incall_application-typeval-opt-','key' => false,'default' => $element['incall']['typeval']['default'],'value' => $incall['application']),$element['incall']['application']['value']);
+echo	'<div id="fd-incall-application-typeval" class="fm-field">',
+	$form->select(array('desc' => $this->bbf('fm_incall_application-typeval'),'name' => 'incall[typeval]','field' => false,'labelid' => 'incall-application-typeval','bbf' => 'fm_incall_application-typeval-opt-','key' => false,'default' => $element['incall']['typeval']['default'],'value' => $incall['application']),$element['incall']['application']['value']),
+	$form->text(array('field' => false,'name' => 'incall[applicationval]','labelid' => 'incall-application-applicationval','size' => 15,'value' => $incall['applicationval'])),
+	'</div>';
 
 echo $form->text(array('desc' => $this->bbf('fm_incall_custom-typeval'),'name' => 'incall[typeval]','labelid' => 'incall-custom-typeval','size' => 15,'value' => $incall['custom']));
 

@@ -122,13 +122,14 @@ CREATE TABLE dialstatus (
  categoryval varchar(128) NOT NULL DEFAULT '',
  type varchar(64) NOT NULL DEFAULT '',
  typeval varchar(255) NOT NULL DEFAULT '',
+ applicationval varchar(80) NOT NULL DEFAULT '',
  linked tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(id)
 );
 
+CREATE INDEX dialstatus__idx__type_typeval ON dialstatus(type,typeval);
+CREATE INDEX dialstatus__idx__applicationval ON dialstatus(applicationval);
 CREATE INDEX dialstatus__idx__linked ON dialstatus(linked);
-CREATE INDEX dialstatus__idx__type ON dialstatus(type);
-CREATE INDEX dialstatus__idx__typeval ON dialstatus(typeval);
 CREATE UNIQUE INDEX dialstatus__uidx__status_category_categoryval ON dialstatus(status,category,categoryval);
 
 
@@ -374,22 +375,6 @@ INSERT INTO generaliax VALUES (NULL,0,0,0,'iax.conf','general','nochecksums','no
 INSERT INTO generaliax VALUES (NULL,0,0,0,'iax.conf','general','autokill','yes');
 
 
-DROP TABLE handynumbers;
-CREATE TABLE handynumbers (
- id integer unsigned,
- exten varchar(40) NOT NULL DEFAULT '',
- trunkfeaturesid integer unsigned NOT NULL DEFAULT 0,
- type varchar(9) NOT NULL,
- commented tinyint(1) NOT NULL DEFAULT 0,
- PRIMARY KEY(id)
-);
-
-CREATE INDEX handynumbers__idx__trunkfeaturesid ON handynumbers(trunkfeaturesid);
-CREATE INDEX handynumbers__idx__type ON handynumbers(type);
-CREATE INDEX handynumbers__idx__commented ON handynumbers(commented);
-CREATE UNIQUE INDEX handynumbers__uidx__exten ON handynumbers(exten);
-
-
 DROP TABLE generalqueue;
 CREATE TABLE generalqueue (
  id integer unsigned,
@@ -572,6 +557,22 @@ CREATE INDEX groupfeatures__idx__name ON groupfeatures(name);
 CREATE INDEX groupfeatures__idx__deleted ON groupfeatures(deleted);
 
 
+DROP TABLE handynumbers;
+CREATE TABLE handynumbers (
+ id integer unsigned,
+ exten varchar(40) NOT NULL DEFAULT '',
+ trunkfeaturesid integer unsigned NOT NULL DEFAULT 0,
+ type varchar(9) NOT NULL,
+ commented tinyint(1) NOT NULL DEFAULT 0,
+ PRIMARY KEY(id)
+);
+
+CREATE INDEX handynumbers__idx__trunkfeaturesid ON handynumbers(trunkfeaturesid);
+CREATE INDEX handynumbers__idx__type ON handynumbers(type);
+CREATE INDEX handynumbers__idx__commented ON handynumbers(commented);
+CREATE UNIQUE INDEX handynumbers__uidx__exten ON handynumbers(exten);
+
+
 DROP TABLE incall;
 CREATE TABLE incall (
  id integer unsigned,
@@ -579,12 +580,14 @@ CREATE TABLE incall (
  context varchar(39) NOT NULL,
  type varchar(64) NOT NULL DEFAULT '',
  typeval varchar(255) NOT NULL DEFAULT '',
+ applicationval varchar(80) NOT NULL DEFAULT '',
  linked tinyint(1) NOT NULL DEFAULT 0,
  commented tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(id)
 );
 
 CREATE INDEX incall__idx__type_typeval ON incall(type,typeval);
+CREATE INDEX incall__idx__applicationval ON incall(applicationval);
 CREATE INDEX incall__idx__linked ON incall(linked);
 CREATE INDEX incall__idx__commented ON incall(commented);
 CREATE UNIQUE INDEX incall__uidx__exten_context ON incall(exten,context);
@@ -907,18 +910,20 @@ CREATE TABLE schedule (
  monthend varchar(3),
  typetrue varchar(64) NOT NULL DEFAULT '',
  typevaltrue varchar(255) NOT NULL DEFAULT '',
+ applicationvaltrue varchar(80) NOT NULL DEFAULT '',
  typefalse varchar(64) NOT NULL DEFAULT '',
  typevalfalse varchar(255) NOT NULL DEFAULT '',
+ applicationvalfalse varchar(80) NOT NULL DEFAULT '',
  publicholiday tinyint(1) NOT NULL DEFAULT 0,
  linked tinyint(1) NOT NULL DEFAULT 0,
  commented tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(id)
 );
 
-CREATE INDEX schedule__idx__typetrue ON schedule(typetrue);
-CREATE INDEX schedule__idx__typevaltrue ON schedule(typevaltrue);
-CREATE INDEX schedule__idx__typefalse ON schedule(typefalse);
-CREATE INDEX schedule__idx__typevalfalse ON schedule(typevalfalse);
+CREATE INDEX schedule__idx__typetrue_typevaltrue ON schedule(typetrue,typevaltrue);
+CREATE INDEX schedule__idx__applicationvaltrue ON schedule(applicationvaltrue);
+CREATE INDEX schedule__idx__typefalse_typevalfalse ON schedule(typefalse,typevalfalse);
+CREATE INDEX schedule__idx__applicationvalfalse ON schedule(applicationvalfalse);
 CREATE INDEX schedule__idx__publicholiday ON schedule(publicholiday);
 CREATE INDEX schedule__idx__linked ON schedule(linked);
 CREATE INDEX schedule__idx__commented ON schedule(commented);

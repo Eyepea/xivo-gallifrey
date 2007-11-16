@@ -94,7 +94,10 @@ else:
 
 endif;
 
-echo $form->select(array('desc' => $this->bbf('fm_dialstatus_application-typeval'),'name' => 'dialstatus['.$status.'][typeval]','labelid' => 'dialstatus-'.$status.'-application-typeval','bbf' => 'fm_dialstatus_application-typeval-opt-','key' => false,'default' => $element['dialstatus']['typeval']['default'],'value' => $this->get_varra('dialstatus',array($status,'application'))),$element['dialstatus']['application']['value']);
+echo	'<div id="fd-dialstatus-',$status,'-application-typeval" class="fm-field">',
+	$form->select(array('desc' => $this->bbf('fm_dialstatus_application-typeval'),'name' => 'dialstatus['.$status.'][typeval]','field' => false,'labelid' => 'dialstatus-'.$status.'-application-typeval','bbf' => 'fm_dialstatus_application-typeval-opt-','key' => false,'default' => $element['dialstatus']['typeval']['default'],'value' => $this->get_varra('dialstatus',array($status,'application'))),$element['dialstatus']['application']['value']),
+	$form->text(array('field' => false,'name' => 'dialstatus['.$status.'][applicationval]','labelid' => 'dialstatus-'.$status.'-application-applicationval','size' => 15,'value' => $this->get_varra('dialstatus',array($status,'applicationval')))),
+	'</div>';
 
 if($list['sounds'] !== false):
 

@@ -40,6 +40,7 @@ switch($act)
 			|| $appgroup->add() === false)
 			{
 				$result = $appgroup->get_result();
+				$result['dialstatus'] = $appgroup->get_dialstatus_result();
 				break;
 			}
 
@@ -121,6 +122,7 @@ switch($act)
 			|| $appgroup->edit() === false)
 			{
 				$result = $appgroup->get_result();
+				$result['dialstatus'] = $appgroup->get_dialstatus_result();
 				break;
 			}
 

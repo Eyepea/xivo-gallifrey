@@ -110,7 +110,8 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 
 			if($info['incall']['linked'] === true
 			&& ($info['type'] = $this->_incall->is_valid($info['incall']['type'],
-								     $info['incall']['typeval'])) === false)
+								     $info['incall']['typeval'],
+								     $info['incall']['applicationval'])) === false)
 				continue;
 
 			if($info['type'] === true)
@@ -245,6 +246,11 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		|| $rs === false)
 			return($rs);
 
+		if($this->_incall->is_valid($rs['type'],
+					    $rs['typeval'],
+					    $rs['applicationval']) === false)
+			return(false);
+
 		$this->_return['incall'] = $this->_incall->add($rs);
 
 		return($this->_return['incall']);
@@ -308,6 +314,11 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		|| ($rs = $this->get_result('incall')) === null
 		|| $rs === false)
 			return($rs);
+
+		if($this->_incall->is_valid($rs['type'],
+					    $rs['typeval'],
+					    $rs['applicationval']) === false)
+			return(false);
 
 		$rs['commented'] = $this->_info['incall']['commented'];
 

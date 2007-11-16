@@ -14,8 +14,8 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 	{
 		if($this->_init(&$service) === false
 		|| ($this->_accessfeatures = &$this->_service->get_module('accessfeatures')) === false
-		|| xivo::load_class('xivo::filter') === false
-		|| xivo::load_class('xivo::curl') === false
+		|| xivo::load_class('xivo_filter') === false
+		|| xivo::load_class('xivo_curl') === false
 		|| ($this->_appserverfeatures = &$this->_service->get_application('serverfeatures',
 										  array('type' => 'phonebook'))) === false)
 			return(false);

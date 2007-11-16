@@ -68,6 +68,8 @@
 			if($ref['type'] !== false && $ref['incall']['linked'] === true):
 				if($ref['incall']['type'] === 'schedule'):
 					$identity = $ref['type']['name'];
+				elseif($ref['incall']['type'] === 'application'):
+					$identity = $this->bbf('incall_type-application-'.$ref['incall']['typeval'],$ref['incall']['applicationval']);
 				elseif(isset($ref['type']['identity']) === true):
 					$identity = $ref['type']['identity'];
 				endif;

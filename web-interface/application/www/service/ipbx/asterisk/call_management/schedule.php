@@ -48,9 +48,11 @@ switch($act)
 
 			if(($result['schedule'] = $schedule->chk_values($_QR['schedule'])) === false
 			|| $schedule->is_valid($result['schedule']['typetrue'],
-					       $result['schedule']['typevaltrue']) === false
+					       $result['schedule']['typevaltrue'],
+					       $result['schedule']['applicationvaltrue']) === false
 			|| $schedule->is_valid($result['schedule']['typefalse'],
-					       $result['schedule']['typevalfalse']) === false)
+					       $result['schedule']['typevalfalse'],
+					       $result['schedule']['applicationvalfalse']) === false)
 			{
 				$add = false;
 				$result['schedule'] = $schedule->get_filter_result();
@@ -159,9 +161,11 @@ switch($act)
 		|| ($info['schedule']['linked'] === true
 		   && (($info['typetrue'] = $schedule->is_valid($info['schedule']['typetrue'],
 								$info['schedule']['typevaltrue'],
+								$info['schedule']['applicationvaltrue'],
 								$info['schedule']['id'])) === false
 		      || ($info['typefalse'] = $schedule->is_valid($info['schedule']['typefalse'],
 								   $info['schedule']['typevalfalse'],
+								   $info['schedule']['applicationvalfalse'],
 								   $info['schedule']['id'])) === false) === true) === true)
 			$_QRY->go($_HTML->url('service/ipbx/call_management/schedule'),$param);
 
@@ -204,9 +208,11 @@ switch($act)
 			if(($result['schedule'] = $schedule->chk_values($_QR['schedule'])) === false
 			|| $schedule->is_valid($result['schedule']['typetrue'],
 					       $result['schedule']['typevaltrue'],
+					       $result['schedule']['applicationvaltrue'],
 					       $info['schedule']['id']) === false
 			|| $schedule->is_valid($result['schedule']['typefalse'],
 					       $result['schedule']['typevalfalse'],
+					       $result['schedule']['applicationvalfalse'],
 					       $info['schedule']['id']) === false)
 			{
 				$edit = false;

@@ -10,9 +10,11 @@
 	if($typename === 'true'):
 		$typeval = 'typetrue';
 		$typevalname = 'typevaltrue';
+		$applicationvalname = 'applicationvaltrue';
 	else:
 		$typeval = 'typefalse';
 		$typevalname = 'typevalfalse';
+		$applicationvalname = 'applicationvalfalse';
 	endif;
 
 	$linked = $info['schedule']['linked'];
@@ -105,7 +107,10 @@ else:
 
 endif;
 
-echo $form->select(array('desc' => $this->bbf('fm_schedule_application-typeval'),'name' => 'schedule['.$typevalname.']','labelid' => 'schedule-application-'.$typevalname,'bbf' => 'fm_schedule_application-typeval-opt-','key' => false,'default' => $element['schedule'][$typevalname]['default'],'value' => $info['schedule']['application'][$typename]),$element['schedule']['application']['value']);
+echo	'<div id="fd-schedule-application-',$typevalname,'" class="fm-field">',
+	$form->select(array('desc' => $this->bbf('fm_schedule_application-typeval'),'name' => 'schedule['.$typevalname.']','field' => false,'labelid' => 'schedule-application-'.$typevalname,'bbf' => 'fm_schedule_application-typeval-opt-','key' => false,'default' => $element['schedule'][$typevalname]['default'],'value' => $info['schedule']['application'][$typename]),$element['schedule']['application']['value']),
+	$form->text(array('field' => false,'name' => 'schedule['.$applicationvalname.']','labelid' => 'schedule-application-'.$applicationvalname,'size' => 15,'value' => $info['schedule'][$applicationvalname])),
+	'</div>';
 
 echo $form->text(array('desc' => $this->bbf('fm_schedule_custom-typeval'),'name' => 'schedule['.$typevalname.']','labelid' => 'schedule-custom-'.$typevalname,'size' => 15,'value' => $info['schedule']['custom'][$typename]));
 

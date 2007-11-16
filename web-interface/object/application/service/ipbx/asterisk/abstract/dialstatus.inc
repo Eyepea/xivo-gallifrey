@@ -75,6 +75,7 @@ class xivo_application_service_asterisk_dialstatus_abstract extends xivo_applica
 		$info = array();
 		$info['category'] = $type;
 		$info['categoryval'] = 0;
+		$info['applicationval'] = '';
 		$info['linked'] = true;
 
 		$reslist = array();
@@ -108,6 +109,40 @@ class xivo_application_service_asterisk_dialstatus_abstract extends xivo_applica
 		return(true);
 	}
 
+	function get_result_for_display()
+	{
+		$r = array();
+
+		$r['noanswer'] = $this->_mk_result_for_display('noanswer');
+		$r['busy'] = $this->_mk_result_for_display('busy');
+		$r['congestion'] = $this->_mk_result_for_display('congestion');
+		$r['chanunavail'] = $this->_mk_result_for_display('chanunavail');
+
+		return($r);
+	}
+
+	function _mk_result_for_display($status)
+	{
+		$r = array();
+		$r['endcall'] = '';
+		$r['user'] = '';
+		$r['group'] = '';
+		$r['queue'] = '';
+		$r['meetme'] = '';
+		$r['schedule'] = '';
+		$r['application'] = '';
+		$r['sound'] = '';
+		$r['custom'] = ''; 
+
+		if(xivo_issa($status,$this->_result) === true)
+		{
+			$r[$this->_result[$status]['type']] = $this->_result[$status]['typeval'];
+			$r = array_merge($r,$this->_result[$status]);
+		}
+
+		return($r);
+	}
+
 	function add($id)
 	{
 		if(($id = xivo_uint($id)) === 0)
@@ -128,9 +163,10 @@ class xivo_application_service_asterisk_dialstatus_abstract extends xivo_applica
 			$ref['categoryval'] = $id;
 
 			if($this->_dialstatus->is_valid($ref['category'],
-						 $ref['categoryval'],
-						 $ref['type'],
-						 $ref['typeval']) === false
+							$ref['categoryval'],
+							$ref['type'],
+							$ref['typeval'],
+							$ref['applicationval']) === false
 			|| ($this->_return[$ref['status']] = $this->_dialstatus->add($ref)) === false)
 				return(false);
 		}
@@ -143,10 +179,7 @@ class xivo_application_service_asterisk_dialstatus_abstract extends xivo_applica
 
 	function add_origin_list()
 	{
-		if(($rightcallmember = &$this->_service->get_module('rightcallmember')) === false)
-			return(false);
-
-		return($rightcallmember->add_origin_list($this->_origin));
+		return($this->_dialstatus->add_origin_list($this->_origin));
 	}
 
 	function edit($status,$type,$id)
@@ -182,7 +215,8 @@ class xivo_application_service_asterisk_dialstatus_abstract extends xivo_applica
 			if($this->_dialstatus->is_valid($ref['category'],
 							$ref['categoryval'],
 							$ref['type'],
-							$ref['typeval']) === false
+							$ref['typeval'],
+							$ref['applicationval']) === false
 			|| ($this->_return[$ref['status']] = $this->_dialstatus->add($ref,$did)) === false)
 				return(false);
 		}
@@ -217,7 +251,7 @@ class xivo_application_service_asterisk_dialstatus_abstract extends xivo_applica
 	function reverse_add()
 	{
 		if(($arr = xivo_get_aks($this->_return)) === false)
-			continue;
+			return(false);
 
 		for($i = 0;$i < $arr['cnt'];$i++)
 		{

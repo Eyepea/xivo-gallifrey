@@ -37,9 +37,7 @@ class xivo_service_asterisk_incall extends xivo_service_asterisk_abstract
 		if(isset($data[$data['type']]) === true)
 			$data[$data['type']] = $data['typeval'];
 
-		if(isset($data['exten']) === true)
-			$data['exten'] = $this->_sre->display_extension($data['exten']);
-
+		$data['exten'] = $this->_sre->display_extension($data['exten']);
 		$data['linked'] = (bool) $data['linked'];
 		$data['commented'] = (bool) $data['commented'];
 
@@ -91,13 +89,14 @@ class xivo_service_asterisk_incall extends xivo_service_asterisk_abstract
 		return($this->edit_where($id,array('linked' => false),$disable));
 	}
 
-	function is_valid($type,$typeval,$disable=null)
+	function is_valid($type,$typeval,$appval='',$disable=null)
 	{
 		switch($type)
 		{
 			case 'endcall':
-			case 'application':
 				return($this->_chk_dest_value($type,$typeval));
+			case 'application':
+				return($this->chk_dest_application($typeval,$appval));
 			case 'custom':
 				return($this->chk_dest_custom($typeval));
 			case 'schedule':

@@ -31,6 +31,15 @@ Application
 ; incall_type-custom
 Personnalisée
 
+; incall_type-application-faxtomail
+FaxToMail : %s
+
+; incall_type-application-disa
+DISA : %s
+
+; incall_type-application-directory
+Directory : %s
+
 ; no_incall
 Aucun appel entrant trouvé
 

@@ -125,13 +125,14 @@ CREATE TABLE `dialstatus` (
  `categoryval` varchar(128) NOT NULL DEFAULT '',
  `type` enum('endcall','user','group','queue','meetme','schedule','application','sound','custom') NOT NULL,
  `typeval` varchar(255) NOT NULL DEFAULT '',
+ `applicationval` varchar(80) NOT NULL DEFAULT '',
  `linked` tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+CREATE INDEX `dialstatus__idx__type_typeval` ON `dialstatus`(`type`,`typeval`);
+CREATE INDEX `dialstatus__idx__applicationval` ON `dialstatus`(`applicationval`);
 CREATE INDEX `dialstatus__idx__linked` ON `dialstatus`(`linked`);
-CREATE INDEX `dialstatus__idx__type` ON `dialstatus`(`type`);
-CREATE INDEX `dialstatus__idx__typeval` ON `dialstatus`(`typeval`);
 CREATE UNIQUE INDEX `dialstatus__uidx__status_category_categoryval` ON `dialstatus`(`status`,`category`,`categoryval`);
 
 
@@ -377,22 +378,6 @@ INSERT INTO `generaliax` VALUES (NULL,0,0,0,'iax.conf','general','nochecksums','
 INSERT INTO `generaliax` VALUES (NULL,0,0,0,'iax.conf','general','autokill','yes');
 
 
-DROP TABLE IF EXISTS `handynumbers`;
-CREATE TABLE `handynumbers` (
- `id` int(10) unsigned auto_increment,
- `exten` varchar(40) NOT NULL DEFAULT '',
- `trunkfeaturesid` int(10) unsigned NOT NULL DEFAULT 0,
- `type` enum('emergency','special') NOT NULL,
- `commented` tinyint(1) NOT NULL DEFAULT 0,
- PRIMARY KEY(`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=ascii;
-
-CREATE INDEX `handynumbers__idx__trunkfeaturesid` ON `handynumbers`(`trunkfeaturesid`);
-CREATE INDEX `handynumbers__idx__type` ON `handynumbers`(`type`);
-CREATE INDEX `handynumbers__idx__commented` ON `handynumbers`(`commented`);
-CREATE UNIQUE INDEX `handynumbers__uidx__exten` ON `handynumbers`(`exten`);
-
-
 DROP TABLE IF EXISTS `generalqueue`;
 CREATE TABLE `generalqueue` (
  `id` int(10) unsigned auto_increment,
@@ -575,6 +560,22 @@ CREATE INDEX `groupfeatures__idx__name` ON `groupfeatures`(`name`);
 CREATE INDEX `groupfeatures__idx__deleted` ON `groupfeatures`(`deleted`);
 
 
+DROP TABLE IF EXISTS `handynumbers`;
+CREATE TABLE `handynumbers` (
+ `id` int(10) unsigned auto_increment,
+ `exten` varchar(40) NOT NULL DEFAULT '',
+ `trunkfeaturesid` int(10) unsigned NOT NULL DEFAULT 0,
+ `type` enum('emergency','special') NOT NULL,
+ `commented` tinyint(1) NOT NULL DEFAULT 0,
+ PRIMARY KEY(`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=ascii;
+
+CREATE INDEX `handynumbers__idx__trunkfeaturesid` ON `handynumbers`(`trunkfeaturesid`);
+CREATE INDEX `handynumbers__idx__type` ON `handynumbers`(`type`);
+CREATE INDEX `handynumbers__idx__commented` ON `handynumbers`(`commented`);
+CREATE UNIQUE INDEX `handynumbers__uidx__exten` ON `handynumbers`(`exten`);
+
+
 DROP TABLE IF EXISTS `incall`;
 CREATE TABLE `incall` (
  `id` int(10) unsigned auto_increment,
@@ -582,12 +583,14 @@ CREATE TABLE `incall` (
  `context` varchar(39) NOT NULL,
  `type` enum('endcall','user','group','queue','meetme','schedule','application','custom') NOT NULL,
  `typeval` varchar(255) NOT NULL DEFAULT '',
+ `applicationval` varchar(80) NOT NULL DEFAULT '',
  `linked` tinyint(1) NOT NULL DEFAULT 0,
  `commented` tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE INDEX `incall__idx__type_typeval` ON `incall`(`type`,`typeval`);
+CREATE INDEX `incall__idx__applicationval` ON `incall`(`applicationval`);
 CREATE INDEX `incall__idx__linked` ON `incall`(`linked`);
 CREATE INDEX `incall__idx__commented` ON `incall`(`commented`);
 CREATE UNIQUE INDEX `incall__uidx__exten_context` ON `incall`(`exten`,`context`);
@@ -910,7 +913,9 @@ CREATE TABLE `schedule` (
  `monthend` varchar(3),
  `typetrue` enum('endcall','user','group','queue','meetme','schedule','application','custom') NOT NULL,
  `typevaltrue` varchar(255) NOT NULL DEFAULT '',
+ `applicationvaltrue` varchar(80) NOT NULL DEFAULT '',
  `typefalse` enum('endcall','user','group','queue','meetme','schedule','application','custom') NOT NULL,
+ `applicationvalfalse` varchar(80) NOT NULL DEFAULT '',
  `typevalfalse` varchar(255) NOT NULL DEFAULT '',
  `publicholiday` tinyint(1) NOT NULL DEFAULT 0,
  `linked` tinyint(1) NOT NULL DEFAULT 0,
@@ -918,10 +923,10 @@ CREATE TABLE `schedule` (
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-CREATE INDEX `schedule__idx__typetrue` ON `schedule`(`typetrue`);
-CREATE INDEX `schedule__idx__typevaltrue` ON `schedule`(`typevaltrue`);
-CREATE INDEX `schedule__idx__typefalse` ON `schedule`(`typefalse`);
-CREATE INDEX `schedule__idx__typevalfalse` ON `schedule`(`typevalfalse`);
+CREATE INDEX `schedule__idx__typetrue_typevaltrue` ON `schedule`(`typetrue`,`typevaltrue`);
+CREATE INDEX `schedule__idx__applicationvaltrue` ON `schedule`(`applicationvaltrue`);
+CREATE INDEX `schedule__idx__typefalse_typevalfalse` ON `schedule`(`typefalse`,`typevalfalse`);
+CREATE INDEX `schedule__idx__applicationvalfalse` ON `schedule`(`applicationvalfalse`);
 CREATE INDEX `schedule__idx__publicholiday` ON `schedule`(`publicholiday`);
 CREATE INDEX `schedule__idx__linked` ON `schedule`(`linked`);
 CREATE INDEX `schedule__idx__commented` ON `schedule`(`commented`);

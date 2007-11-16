@@ -320,6 +320,11 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		return($r);
 	}
 
+	function get_dialstatus_result()
+	{
+		return($this->_dialstatus->get_result_for_display());
+	}
+
 	function get_dialstatus_destination_list()
 	{
 		if(xivo_issa('ufeatures',$this->_info) === false)

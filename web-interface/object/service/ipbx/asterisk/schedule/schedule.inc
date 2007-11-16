@@ -106,6 +106,12 @@ class xivo_service_asterisk_schedule extends xivo_service_asterisk_abstract
 		&& $arr['monthbeg'] === $arr['monthend'])
 			$arr['monthend'] = null;
 
+		if(isset($arr['typetrue']) === true && $arr['typetrue'] !== 'application')
+			$arr['applicationvaltrue'] = '';
+
+		if(isset($arr['typefalse']) === true && $arr['typefalse'] !== 'application')
+			$arr['applicationvalfalse'] = '';
+
 		if(isset($arr['name']) === true)
 		{
 			$where = array('name' => strtolower($arr['name']));
@@ -137,6 +143,12 @@ class xivo_service_asterisk_schedule extends xivo_service_asterisk_abstract
 		if(isset($arr['monthbeg'],$arr['monthend']) === true
 		&& $arr['monthbeg'] === $arr['monthend'])
 			$arr['monthend'] = null;
+
+		if(isset($arr['typetrue']) === true && $arr['typetrue'] !== 'application')
+			$arr['applicationvaltrue'] = '';
+
+		if(isset($arr['typefalse']) === true && $arr['typefalse'] !== 'application')
+			$arr['applicationvalfalse'] = '';
 
 		if(isset($arr['name']) === true)
 		{
@@ -260,13 +272,14 @@ class xivo_service_asterisk_schedule extends xivo_service_asterisk_abstract
 		return($arr);
 	}
 
-	function is_valid($type,$typeval,$id=null,$disable=null)
+	function is_valid($type,$typeval,$appval='',$id=null,$disable=null)
 	{
 		switch($type)
 		{
 			case 'endcall':
-			case 'application':
 				return($this->_chk_dest_value($type,$typeval));
+			case 'application':
+				return($this->chk_dest_application($typeval,$appval));
 			case 'custom':
 				return($this->chk_dest_custom($typeval));
 			case 'schedule':

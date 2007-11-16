@@ -69,6 +69,7 @@ do
 	|| $appuser->add() === false)
 	{
 		$result = $appuser->get_result();
+		$result['dialstatus'] = $appuser->get_dialstatus_result();
 
 		if(xivo_issa('protocol',$result) === true && isset($result['protocol']['allow']) === true)
 			$allow = $result['protocol']['allow'];

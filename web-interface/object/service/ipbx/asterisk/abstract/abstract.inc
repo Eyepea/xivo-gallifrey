@@ -72,9 +72,16 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 		return($this->_chk_dest_value('endcall',$val));
 	}
 
-	function chk_dest_application($val)
+	function chk_dest_application($val,$appval)
 	{
-		return($this->_chk_dest_value('application',$val));
+		if($this->_chk_dest_value('application',$val) === false
+		|| xivo::load_class('xivo_filter') === false
+		|| ($filters = $this->_chk_exists_cfg('applicationval','filter',true)) === false)
+			return(false);
+
+		$filter = new xivo_filter($filters);
+
+		return($filter->chk_value($val,$appval));
 	}
 
 	function _chk_dest_value($type,$val)
