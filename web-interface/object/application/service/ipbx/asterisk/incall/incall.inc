@@ -10,6 +10,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 	var $_incall		= null;
 	var $_extenumbers	= null;
 	var $_extensions	= null;
+	var $_rightcall		= null;
 
 	function xivo_application_service_asterisk_incall(&$service)
 	{
@@ -17,7 +18,8 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 
 		if(($this->_incall = &$this->_service->get_module('incall')) === false
 		|| ($this->_extenumbers = &$this->get_abstract('extenumbers')) === false
-		|| ($this->_extensions = &$this->_service->get_module('extensions')) === false)
+		|| ($this->_extensions = &$this->_service->get_module('extensions')) === false
+		|| ($this->_rightcall = &$this->get_abstract('rightcall')) === false)
 			return(false);
 
 		return(true);
@@ -29,11 +31,13 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 
 		if(($this->_info['incall'] = $this->_incall->get($id,$disable)) === false
 		|| ($this->_info['extenumbers'] = $this->_get_extenumbers()) === false
-		|| $this->_get_localexten() === false)
+		|| $this->_get_exten() === false)
 			return(false);
 
 		$this->_origin['incall'] = $this->_incall->get_origin();
 		$this->_origin['extenumbers'] = $this->_extenumbers->get_origin();
+
+		$this->_get_rightcall();
 
 		return($this->_info);
 	}
@@ -43,18 +47,25 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		return(parent::_get_extenumbers('incall',$this->_info['incall']['id']));
 	}
 
-	function _get_localexten()
+	function _get_exten()
 	{
-		$this->_info['localexten'] = false;
-		$this->_origin['localexten'] = false;
+		$this->_info['exten'] = false;
+		$this->_origin['exten'] = false;
 
-		$this->_info['localexten'] = $this->_extensions->get_exten('macro',
-								    $this->_info['extenumbers']['exten'],
-								    $this->_info['extenumbers']['context']);
+		$this->_info['exten'] = $this->_extensions->get_exten('macro',
+								    $this->_info['incall']['exten'],
+								    $this->_info['incall']['context']);
 
-		$this->_origin['localexten'] = $this->_extensions->get_origin();
+		$this->_origin['exten'] = $this->_extensions->get_origin();
 
-		return($this->_info['localexten']);
+		return($this->_info['exten']);
+	}
+
+	function _get_rightcall()
+	{
+		$this->_info['rightcall'] = $this->_rightcall->get('incall',$this->_info['incall']['id']);
+
+		return($this->_info['rightcall']);
 	}
 
 	function get_elements()
@@ -170,12 +181,10 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 
 		$this->set_extenumbers($action,$number,$context);
 
-		$appdata = $this->_mk_exten_appdata($number);
+		$this->set_exten($action,$number,$context);
 
-		if(($localexten = $this->set_macro($action,'localexten',$number,$appdata,$context)) === false)
-			$this->_set_error('localexten');
-
-		$this->_set_result('localexten',$localexten);
+		if(xivo_issa('rightcall',$arr) === true)
+			$this->set_rightcall($arr['rightcall']);
 
 		if($this->get_errnb() > 0)
 			$r = false;
@@ -216,6 +225,26 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		return(parent::set_extenumbers($action,'incall',$number,$context));
 	}
 
+	function set_exten($action,$exten,$context)
+	{
+		if(($rs = $this->set_macro($action,'exten',$exten,$this->_mk_exten_appdata($exten),$context)) === false)
+			$this->_set_error('exten');
+
+		$this->_set_result('exten',$rs);
+
+		return(true);
+	}
+
+	function set_rightcall($list)
+	{
+		if(($r = $this->_rightcall->set($list,'incall')) === false)
+			$this->_set_error('rightcall',$this->_rightcall->get_error());
+
+		$this->_set_result('rightcall',$this->_rightcall->get_result());
+
+		return($r);
+	}
+
 	function add()
 	{
 		$this->_status = 'add';
@@ -225,7 +254,8 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		if($this->get_errnb() > 0
 		|| ($incallid = $this->add_incall()) === false
 		|| $this->add_extenumbers($incallid) === false
-		|| $this->add_macro('localexten') === false)
+		|| $this->add_macro('exten') === false
+		|| $this->add_rightcall($incallid) === false)
 		{
 			if($incallid !== null)
 				$this->_reverse_add();
@@ -256,6 +286,15 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		return($this->_return['incall']);
 	}
 
+	function add_rightcall($incallid)
+	{
+		$r = $this->_rightcall->add($incallid);
+
+		$this->_return['rightcall'] = $this->_rightcall->get_return();
+
+		return($r);
+	}
+
 	function _reverse_add()
 	{
 		if($this->get_errnb() > 0
@@ -273,8 +312,11 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 
 			switch($key)
 			{
-				case 'localexten':
+				case 'exten':
 					$this->_extensions->delete_exten($val);
+					break;
+				case 'rightcall':
+					$this->_rightcall->reverse_add();
 					break;
 				default:
 					if(($module = &$this->_service->get_module($key)) === false)
@@ -294,7 +336,8 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		if($this->get_errnb() > 0
 		|| $this->edit_incall() === false
 		|| $this->edit_extenumbers() === false
-		|| $this->edit_macro('localexten') === false)
+		|| $this->edit_macro('exten') === false
+		|| $this->edit_rightcall() === false)
 		{
 			$this->_reverse_edit();
 			$this->_status = '';
@@ -335,6 +378,18 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		return(parent::edit_extenumbers($this->_info['extenumbers']['id']));
 	}
 
+	function edit_rightcall()
+	{
+		if(xivo_issa('incall',$this->_info) === false)
+			return(false);
+
+		$r = $this->_rightcall->edit($this->_status,'incall',$this->_info['incall']['id']);
+
+		$this->_return['rightcall'] = $this->_rightcall->get_return();
+
+		return($r);
+	}
+
 	function _reverse_edit()
 	{
 		if($this->get_errnb() > 0
@@ -352,8 +407,14 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 
 			switch($key)
 			{
-				case 'localexten':
-					$this->_extensions->edit_origin($this->_origin['localexten']);
+				case 'exten':
+					$this->_extensions->edit_origin($this->_origin['exten']);
+					break;
+				case 'rightcall':
+					if(xivo_issa('incall',$this->_info) === false)
+						break;
+
+					$this->_rightcall->reverse_edit($this->_status,'incall',$this->_info['incall']['id']);
 					break;
 				default:
 					if(($module = &$this->_service->get_module($key)) === false)
@@ -375,7 +436,8 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 
 		if($this->delete_incall() === false
 		|| $this->delete_extenumbers() === false
-		|| $this->delete_macro('localexten') === false)
+		|| $this->delete_macro('exten') === false
+		|| $this->delete_rightcall() === false)
 		{
 			$this->_reverse_delete();
 			$this->_status = '';
@@ -408,6 +470,21 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		return(parent::delete_extenumbers($this->_info['extenumbers']['id']));
 	}
 
+	function delete_rightcall()
+	{
+		if(xivo_issa('incall',$this->_info) === false)
+			$id = 0;
+		else
+			$id = $this->_info['incall']['id'];
+
+		$r = $this->_rightcall->delete($this->_status,'incall',$id);
+
+		if($this->_status === 'delete')
+			$this->_return['rightcall'] = $r;
+
+		return($r);
+	}
+
 	function _reverse_delete()
 	{
 		if($this->_status !== 'delete'
@@ -423,8 +500,11 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 
 			switch($key)
 			{
-				case 'localexten':
-					$this->_extensions->add_origin($this->_origin['localexten']);
+				case 'exten':
+					$this->_extensions->add_origin($this->_origin['exten']);
+					break;
+				case 'rightcall':
+					$this->_rightcall->add_origin_list();
 					break;
 				default:
 					if(($module = &$this->_service->get_module($key)) === false)
@@ -443,7 +523,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		$this->_return = array();
 
 		if($this->enable_incall() === false
-		|| $this->enable_localexten() === false)
+		|| $this->enable_exten() === false)
 		{
 			$this->_reverse_enable_disable();
 			$this->_status = '';
@@ -461,7 +541,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		$this->_return = array();
 
 		if($this->disable_incall() === false
-		|| $this->disable_localexten() === false)
+		|| $this->disable_exten() === false)
 		{
 			$this->_reverse_enable_disable();
 			$this->_status = '';
@@ -501,26 +581,26 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		return($r);
 	}
 
-	function enable_localexten()
+	function enable_exten()
 	{
-		return($this->_enable_disable_localexten(false));
+		return($this->_enable_disable_exten(false));
 	}
 
-	function disable_localexten()
+	function disable_exten()
 	{
-		return($this->_enable_disable_localexten(true));
+		return($this->_enable_disable_exten(true));
 	}
 
-	function _enable_disable_localexten($disable=false)
+	function _enable_disable_exten($disable=false)
 	{
 		$disable = (bool) $disable;
 
-		if(xivo_issa('extenumbers',$this->_info) === false)
+		if(xivo_issa('incall',$this->_info) === false)
 			return(false);
 
 		$exten_where = array();
-		$exten_where['exten'] = $this->_info['extenumbers']['exten'];
-		$exten_where['context'] = $this->_info['extenumbers']['context'];
+		$exten_where['exten'] = $this->_info['incall']['exten'];
+		$exten_where['context'] = $this->_info['incall']['context'];
 
 		if($disable === false)
 			$r = $this->_extensions->enable_where($exten_where);
@@ -528,7 +608,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 			$r = $this->_extensions->disable_where($exten_where);
 
 		if($this->_status === 'enable' || $this->_status === 'disable')
-			$this->_return['localexten'] = $r;
+			$this->_return['exten'] = $r;
 
 		return($r);
 	}
@@ -558,8 +638,8 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 				case 'incall':
 					$this->_enable_disable_incall($disable);
 					break;
-				case 'localexten':
-					$this->_enable_disable_localexten($disable);
+				case 'exten':
+					$this->_enable_disable_exten($disable);
 					break;
 			}
 		}

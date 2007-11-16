@@ -18,6 +18,13 @@ switch($act)
 		$appincall = &$ipbx->get_application('incall');
 
 		$result = null;
+		$rightcall['slt'] = $rightcall = array();
+
+		xivo::load_class('xivo_sort');
+		$rightcallsort = new xivo_sort(array('browse' => 'rightcall','key' => 'name'));
+
+		if(($rightcall['list'] = $ipbx->get_rightcall_list(null,true)) !== false)
+			uasort($rightcall['list'],array(&$rightcallsort,'str_usort'));
 
 		do
 		{
@@ -51,9 +58,22 @@ switch($act)
 				$result['incall'][$result['incall']['type']] = $result['incall']['typeval'];
 		}
 
+		if($rightcall['list'] !== false && xivo_ak('rightcall',$result) === true)
+		{
+			$rightcall['slt'] = xivo_array_intersect_key($result['rightcall'],$rightcall['list'],'rightcallid');
+
+			if($rightcall['slt'] !== false)
+			{
+				$rightcall['list'] = xivo_array_diff_key($rightcall['list'],$rightcall['slt']);
+				uasort($rightcall['slt'],array(&$rightcallsort,'str_usort'));
+			}
+		}
+
 		$dhtml = &$_HTML->get_module('dhtml');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/incall.js');
 
+		$_HTML->set_var('rightcall',$rightcall);
 		$_HTML->set_var('incall',$result['incall']);
 		$_HTML->set_var('list',$appincall->get_destination_list());
 		$_HTML->set_var('element',$appincall->get_elements());
@@ -66,6 +86,13 @@ switch($act)
 
 		$result = null;
 		$return = &$info;
+		$rightcall['slt'] = $rightcall = array();
+
+		xivo::load_class('xivo_sort');
+		$rightcallsort = new xivo_sort(array('browse' => 'rightcall','key' => 'name'));
+
+		if(($rightcall['list'] = $ipbx->get_rightcall_list(null,true)) !== false)
+			uasort($rightcall['list'],array(&$rightcallsort,'str_usort'));
 
 		do
 		{
@@ -102,10 +129,23 @@ switch($act)
 				$return['incall'][$return['incall']['type']] = $return['incall']['typeval'];
 		}
 
+		if($rightcall['list'] !== false && xivo_ak('rightcall',$return) === true)
+		{
+			$rightcall['slt'] = xivo_array_intersect_key($return['rightcall'],$rightcall['list'],'rightcallid');
+
+			if($rightcall['slt'] !== false)
+			{
+				$rightcall['list'] = xivo_array_diff_key($rightcall['list'],$rightcall['slt']);
+				uasort($rightcall['slt'],array(&$rightcallsort,'str_usort'));
+			}
+		}
+
 		$dhtml = &$_HTML->get_module('dhtml');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/incall.js');
 
 		$_HTML->set_var('id',$info['incall']['id']);
+		$_HTML->set_var('rightcall',$rightcall);
 		$_HTML->set_var('incall',$return['incall']);
 		$_HTML->set_var('list',$appincall->get_destination_list());
 		$_HTML->set_var('element',$appincall->get_elements());

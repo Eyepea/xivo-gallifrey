@@ -243,6 +243,8 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 			return(false);
 		}
 
+		$this->get_musiconhold();
+
 		if(isset($arr['musiconhold'],$this->_musiconhold[$arr['musiconhold']]) === false)
 			$arr['musiconhold'] = '';
 

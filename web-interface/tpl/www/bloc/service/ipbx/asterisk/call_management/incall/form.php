@@ -4,10 +4,16 @@
 
 	$incall = $this->get_var('incall');
 	$element = $this->get_var('element');
+	$rightcall = $this->get_var('rightcall');
 	$list = $this->get_var('list');
 
 	$linked = $incall['linked'];
 	$type = $incall['type'];
+?>
+
+<div id="sb-part-first">
+
+<?php
 
 echo $form->text(array('desc' => $this->bbf('fm_incall_exten'),'name' => 'incall[exten]','labelid' => 'incall-exten','size' => 15,'default' => $element['incall']['exten']['default'],'value' => $this->get_varra('incall','exten')));
 
@@ -93,3 +99,36 @@ echo	'<div id="fd-incall-application-typeval" class="fm-field">',
 echo $form->text(array('desc' => $this->bbf('fm_incall_custom-typeval'),'name' => 'incall[typeval]','labelid' => 'incall-custom-typeval','size' => 15,'value' => $incall['custom']));
 
 ?>
+</div>
+
+<div id="sb-part-last" class="b-nodisplay">
+
+<?php
+	if($rightcall['list'] !== false):
+?>
+		<div id="rightcalllist" class="fm-field fm-multilist">
+			<div class="slt-outlist">
+
+		<?=$form->select(array('name' => 'rightcalllist','label' => false,'id' => 'it-rightcalllist','browse' => 'rightcall','key' => 'name','altkey' => 'id','multiple' => true,'size' => 5,'field' => false),$rightcall['list']);?>
+
+			</div>
+			<div class="inout-list">
+
+		<a href="#" onclick="xivo_fm_move_selected('it-rightcalllist','it-rightcall'); return(false);" title="<?=$this->bbf('bt-inrightcall');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt-inrightcall'),'class="bt-inlist" id="bt-inrightcall" border="0"');?></a><br />
+
+		<a href="#" onclick="xivo_fm_move_selected('it-rightcall','it-rightcalllist'); return(false);" title="<?=$this->bbf('bt-outrightcall');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt-outrightcall'),'class="bt-outlist" id="bt-outrightcall" border="0"');?></a>
+
+			</div>
+			<div class="slt-inlist">
+
+		<?=$form->select(array('name' => 'rightcall[]','label' => false,'id' => 'it-rightcall','browse' => 'rightcall','key' => 'name','altkey' => 'id','multiple' => true,'size' => 5,'field' => false),$rightcall['slt']);?>
+
+			</div>
+		</div>
+		<div class="clearboth"></div>
+<?php
+	else:
+		echo '<div class="txt-center">',$url->href_html($this->bbf('create_rightcall'),'service/ipbx/call_management/rightcall','act=add'),'</div>';
+	endif;
+?>
+</div>
