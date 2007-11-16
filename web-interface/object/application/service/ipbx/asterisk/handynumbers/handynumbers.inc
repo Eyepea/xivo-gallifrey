@@ -7,6 +7,7 @@ class xivo_application_service_asterisk_handynumbers extends xivo_application_as
 	var $_status		= '';
 	var $_handynumbers	= null;
 	var $_extenumbers	= null;
+	var $_extensions	= null;
 	var $_trunkfeatures	= null;
 	var $_param		= array('type'	=> '');
 
@@ -19,6 +20,7 @@ class xivo_application_service_asterisk_handynumbers extends xivo_application_as
 		|| ($this->_handynumbers = &$this->_service->get_module('handynumbers')) === false
 		|| $this->_handynumbers->chk_element_value('type',$param['type']) === false
 		|| ($this->_extenumbers = &$this->_service->get_module('extenumbers')) === false
+		|| ($this->_extensions = &$this->_service->get_module('extensions')) === false
 		|| ($this->_trunkfeatures = &$this->_service->get_module('trunkfeatures')) === false)
 			return(false);
 
@@ -35,7 +37,7 @@ class xivo_application_service_asterisk_handynumbers extends xivo_application_as
 		$where['type'] = $this->_param['type'];
 
 		if(($this->_info['handynumbers'] = $this->_handynumbers->get_all_where($where)) === false
-		|| $this->_get_extenumbers() === false)
+		|| $this->_get_all_extenumbers_exten() === false)
 			return(false);
 
 		$this->_origin['handynumbers'] = $this->_handynumbers->get_origin_list();
@@ -43,10 +45,13 @@ class xivo_application_service_asterisk_handynumbers extends xivo_application_as
 		return($this->_info);
 	}
 
-	function _get_extenumbers()
+	function _get_all_extenumbers_exten()
 	{
 		$this->_info['extenumbers'] = false;
 		$this->_origin['extenumbers'] = false;
+
+		$this->_info['exten'] = false;
+		$this->_origin['exten'] = false;
 
 		if(xivo_issa('handynumbers',$this->_info) === false
 		|| ($arr = xivo_get_aks($this->_info['handynumbers'])) === false)
@@ -60,13 +65,20 @@ class xivo_application_service_asterisk_handynumbers extends xivo_application_as
 
 		for($i = 0;$i < $arr['cnt'];$i++)
 		{
-			$extenumbers_where['typeval'] = $this->_info['handynumbers'][$i]['id'];
+			$ref = &$this->_info['handynumbers'][$i];
+			$extenumbers_where['typeval'] = $ref['id'];
 
-			if(($info = $this->_extenumbers->get_where($extenumbers_where)) === false)
+			if(($info['extenumbers'] = $this->_extenumbers->get_where($extenumbers_where)) === false
+			|| ($info['exten'] = $this->_extensions->get_exten(null,
+									   $ref['exten'],
+									   XIVO_SRE_IPBX_AST_HANDYNUMBERS_CONTEXT)) === false)
 				continue;
 
-			$this->_info['extenumbers'][] = $info;
+			$this->_info['extenumbers'][] = $info['extenumbers'];
 			$this->_origin['extenumbers'][] = $this->_extenumbers->get_origin();
+
+			$this->_info['exten'][] = $info['exten'];
+			$this->_origin['exten'][] = $this->_extensions->get_origin();
 		}
 
 		return(true);
@@ -82,30 +94,12 @@ class xivo_application_service_asterisk_handynumbers extends xivo_application_as
 		return($r);
 	}
 
-	function set_extenumbers($number)
+	function _mk_exten_appdata($exten)
 	{
-		$exists = false;
+		$arr = array();
+		$arr['appdata'] = XIVO_SRE_IPBX_AST_HANDYNUMBERS_MACRO;
 
-		$extenum = array();
-		$extenum['exten'] = $number;
-		$extenum['type'] = 'handynumbers';
-
-		if(($rs = $this->_extenumbers->chk_values($extenum)) === false
-		|| ($exists = $this->_extenumbers->exists_type($rs)) !== false)
-		{
-			$this->_set_result('extenumbers',$this->_extenumbers->get_filter_result());
-
-			if($exists === false)
-				$this->_set_error('extenumbers',$this->_extenumbers->get_filter_error());
-			else
-				$this->_set_error('extenumbers','exists');
-
-			return(false);
-		}
-
-		$this->_set_result('extenumbers',$rs);
-
-		return(true);
+		return($arr);
 	}
 
 	function set_save_all($list)
@@ -142,6 +136,9 @@ class xivo_application_service_asterisk_handynumbers extends xivo_application_as
 			if($this->set_extenumbers($ref['exten']) === false)
 				$this->_set_error($j,$this->get_error('extenumbers'));
 
+			if($this->set_exten($ref['exten']) === false)
+				$this->_set_error($j,$this->get_error('exten'));
+
 			$ref['type'] = $this->_param['type'];
 
 			if(($rs = $this->_handynumbers->chk_values($ref)) === false)
@@ -164,6 +161,10 @@ class xivo_application_service_asterisk_handynumbers extends xivo_application_as
 			&& isset($this->_info['extenumbers'][$k]) === true)
 				$this->_set_result_var('extenumbers','id',$this->_info['extenumbers'][$k]['id']);
 
+			if(xivo_issa('exten',$this->_info) === true
+			&& isset($this->_info['exten'][$k]) === true)
+				$this->_set_result_var('exten','id',$this->_info['exten'][$k]['id']);
+
 			$k++;
 
 			$this->save();
@@ -174,6 +175,50 @@ class xivo_application_service_asterisk_handynumbers extends xivo_application_as
 		return(true);
 	}
 
+	function set_extenumbers($number)
+	{
+		$exists = false;
+
+		$extenum = array();
+		$extenum['exten'] = $number;
+		$extenum['type'] = 'handynumbers';
+
+		if(($rs = $this->_extenumbers->chk_values($extenum)) === false
+		|| ($exists = $this->_extenumbers->exists_type($rs)) !== false)
+		{
+			$this->_set_result('extenumbers',$this->_extenumbers->get_filter_result());
+
+			if($exists === false)
+				$this->_set_error('extenumbers',$this->_extenumbers->get_filter_error());
+			else
+				$this->_set_error('extenumbers','exists');
+
+			return(false);
+		}
+
+		$this->_set_result('extenumbers',$rs);
+
+		return(true);
+	}
+
+	function set_exten($exten)
+	{
+		$r = true;
+
+		if(($rs = $this->_extensions->chk_exten('macro',
+					   $this->_mk_exten_appdata($exten),
+					   $exten,
+					   XIVO_SRE_IPBX_AST_HANDYNUMBERS_CONTEXT)) === false)
+		{
+			$r = false;
+			$this->_set_error('exten',$this->_extensions->get_filter_error());
+		}
+
+		$this->_set_result('exten',$rs);
+
+		return($r);
+	}
+
 	function save()
 	{
 		$this->_status = 'save';
@@ -182,7 +227,8 @@ class xivo_application_service_asterisk_handynumbers extends xivo_application_as
 
 		if($this->get_errnb() > 0
 		|| ($handynumbersid = $this->add_handynumbers()) === false
-		|| $this->add_extenumbers($handynumbersid) === false)
+		|| $this->add_extenumbers($handynumbersid) === false
+		|| $this->add_exten() === false)
 		{
 			if($handynumbersid !== null)
 				$this->_reverse_save();
@@ -236,6 +282,24 @@ class xivo_application_service_asterisk_handynumbers extends xivo_application_as
 		return($this->_return['extenumbers']);
 	}
 
+	function add_exten()
+	{
+		if(($rs = $this->get_result('exten')) === null
+		|| $rs === false)
+			return($rs);
+
+		if(isset($rs['id']) === true)
+			$eid = $rs['id'];
+		else
+			$eid = 0;
+
+		unset($rs['id']);
+
+		$this->_return['exten'] = $this->_extensions->add($rs,$eid);
+
+		return($this->_return['extenumbers']);
+	}
+
 	function _delete_all()
 	{
 		if(xivo_issa('extenumbers',$this->_info) === true
@@ -243,6 +307,13 @@ class xivo_application_service_asterisk_handynumbers extends xivo_application_as
 		{
 			for($i = 0;$i < $nb;$i++)
 				$this->_extenumbers->delete($this->_info['extenumbers'][$i]['id']);
+		}
+
+		if(xivo_issa('exten',$this->_info) === true
+		&& ($nb = count($this->_info['exten'])) !== 0)
+		{
+			for($i = 0;$i < $nb;$i++)
+				$this->_extensions->delete($this->_info['exten'][$i]['id']);
 		}
 
 		$where = array();
@@ -270,6 +341,9 @@ class xivo_application_service_asterisk_handynumbers extends xivo_application_as
 			{
 				case 'handynumbers':
 					$this->_handynumbers->delete($key);
+					break;
+				case 'exten':
+					$this->_extensions->delete($key);
 					break;
 				case 'extenumbers':
 					$this->_extenumbers->delete($key);

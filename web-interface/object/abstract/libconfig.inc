@@ -170,6 +170,19 @@ class xivo_libconfig_abstract
 		return(false);
 	}
 
+	function force_element_default($key)
+	{
+		$key = (string) $key;
+
+		if(isset($this->_conf) === false
+		|| xivo_issa('element',$this->_conf) === false
+		|| xivo_issa($key,$this->_conf['element']) === false
+		|| xivo_ak('forcedef',$this->_conf['element'][$key],true) === false)
+			return(false);
+
+		return(true);
+	}
+
 	function isset_element_value($key)
 	{
 		$key = (string) $key;
@@ -274,14 +287,17 @@ class xivo_libconfig_abstract
 			if(($sval = $this->_set_value($key,$val)) !== false)
 				$val = $sval;
 
+			if(($defval = $this->get_element_default($key)) !== false
+			&& $this->force_element_default($key) === true)
+				$val = $defval;
+
 			if($val === '' && $this->isnull_element_value($key) === true)
 				$val = null;
 			else if($val === null && $this->isnull_element_value($key) === false)
 				$val = '';
 
-			if($val === '' && $this->isset_element_default($key) === true
-			&& ($dval = $this->get_element_default($key)) !== false)
-				$val = $dval;
+			if($val === '' && $defval !== false && $this->isset_element_default($key) === true)
+				$val = $defval;
 
 			$r[$key] = $val;
 		}
@@ -329,25 +345,27 @@ class xivo_libconfig_abstract
 
 		if(($val = $this->chk_value($key,$value)) !== false)
 		{
-			if(($sval = $this->_set_value($key,$val)) !== false)
-				$r = $sval;
+			if(($setval = $this->_set_value($key,$val)) !== false)
+				$r = $setval;
 			else
 				$r = $val;
 		}
 		else if($valid === true)
 			return(false);
 
+		if(($defval = $this->get_element_default($key)) !== false
+		&& $this->force_element_default($key) === true)
+			$r = $defval;
+
 		if($r === '' && $this->isnull_element_value($key) === true)
 			$r = null;
 		else if($r === null && $this->isnull_element_value($key) === false)
 			$r = '';
 
-		if($r !== ''
-		|| ($dval = $this->get_element_default($key)) === false
-		|| $this->unset_element_default($key) === true)
+		if($r !== '' || $defval === false || $this->unset_element_value($key) === true)
 			return($r);
 
-		return($dval);
+		return($defval);
 	}
 
 	function _chk_upload_file()

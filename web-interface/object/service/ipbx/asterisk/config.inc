@@ -73,15 +73,19 @@ define('XIVO_SRE_IPBX_AST_MEETME_MACRO','incoming_meetme');
 define('XIVO_SRE_IPBX_AST_INCALL_MACRO','incoming_did');
 define('XIVO_SRE_IPBX_AST_INCALL_CONTEXT','incall-extensions');
 define('XIVO_SRE_IPBX_AST_OUTCALL_MACRO','outgoing_user');
+define('XIVO_SRE_IPBX_AST_HANDYNUMBERS_MACRO','handynumbers');
+define('XIVO_SRE_IPBX_AST_HANDYNUMBERS_CONTEXT','handynumbers');
 
+define('XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTIFICATION','authentification');
+define('XIVO_SRE_IPBX_AST_CONTEXT_EXTRAFEATURES','extra-features');
+define('XIVO_SRE_IPBX_AST_CONTEXT_FEATURES','features');
 define('XIVO_SRE_IPBX_AST_CONTEXT_GENERAL','general');
 define('XIVO_SRE_IPBX_AST_CONTEXT_GLOBAL','global');
 define('XIVO_SRE_IPBX_AST_CONTEXT_GLOBALS','globals');
-define('XIVO_SRE_IPBX_AST_CONTEXT_INITCONFIG','initconfig');
+define('XIVO_SRE_IPBX_AST_CONTEXT_HINT','hint');
 define('XIVO_SRE_IPBX_AST_CONTEXT_HINTS','hints');
-define('XIVO_SRE_IPBX_AST_CONTEXT_FEATURES','features');
-define('XIVO_SRE_IPBX_AST_CONTEXT_EXTRAFEATURES','extra-features');
-define('XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTIFICATION','authentification');
+define('XIVO_SRE_IPBX_AST_CONTEXT_INITCONFIG','initconfig');
+define('XIVO_SRE_IPBX_AST_CONTEXT_PARKEDCALLS','parkedcalls');
 define('XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES','zonemessages');
 
 define('XIVO_SRE_IPBX_AST_NBBYPAGE',20);

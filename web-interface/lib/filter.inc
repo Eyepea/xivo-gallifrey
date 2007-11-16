@@ -58,7 +58,7 @@ class xivo_filter
 
 	function get_errnb()
 	{
-		return($this->_errnb);
+		return(xivo_uint($this->_errnb));
 	}
 
 	function _set_error($key,$msg)

@@ -87,7 +87,7 @@ $array['element']['saycid']['set'] = true;
 
 $array['element']['cidinternalcontexts'] = array();
 $array['element']['cidinternalcontexts']['default'] = 'default';
-$array['element']['cidinternalcontexts']['setdef'] = true;
+$array['element']['cidinternalcontexts']['forcedef'] = true;
 
 $array['element']['sayduration'] = array();
 $array['element']['sayduration']['value'] = array('no','yes');
@@ -164,7 +164,7 @@ $array['element']['attach']['set'] = true;
 
 $array['element']['mailcmd'] = array();
 $array['element']['mailcmd']['default'] = '/usr/sbin/sendmail -t';
-$array['element']['mailcmd']['setdef'] = true;
+$array['element']['mailcmd']['forcedef'] = true;
 
 $array['element']['serveremail'] = array();
 $array['element']['serveremail']['default'] = 'xivo';
@@ -172,7 +172,7 @@ $array['element']['serveremail']['setdef'] = true;
 
 $array['element']['charset'] = array();
 $array['element']['charset']['default'] = 'UTF-8';
-$array['element']['charset']['setdef'] = true;
+$array['element']['charset']['forcedef'] = true;
 
 $array['element']['fromstring'] = array();
 $array['element']['fromstring']['default'] = 'XIVO PBX';
@@ -226,7 +226,7 @@ $array['element']['searchcontexts']['set'] = true;
 
 $array['element']['externpass'] = array();
 $array['element']['externpass']['default'] = '/usr/share/asterisk/bin/change-pass-vm';
-$array['element']['externpass']['setdef'] = true;
+$array['element']['externpass']['forcedef'] = true;
 
 $array['element']['externnotify'] = array();
 $array['element']['externnotify']['default'] = '';
@@ -293,9 +293,10 @@ $array['filter']['dialout'] = array('set' => false,'chk' => 2,'callback' => 'xiv
 $array['filter']['callback'] = array('set' => false,'chk' => 2,'callback' => 'xivo_service_asterisk::chk_context');
 $array['filter']['exitcontext'] = array('set' => false,'chk' => 2,'callback' => 'xivo_service_asterisk::chk_context');
 $array['filter']['attach'] = array('bool' => true);
-$array['filter']['mailcmd'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 160);
+//$array['filter']['mailcmd'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 160);
+$array['filter']['mailcmd'] = array('set' => false);
 $array['filter']['serveremail'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9@\-_\.]+$/i','maxlen' => 80);
-$array['filter']['charset'] = array('set' => false,'chk' => 2,'key' => array('UTF-8'));
+$array['filter']['charset'] = array('set' => false);
 $array['filter']['fromstring'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9\-_\. ]+$/i','maxlen' => 100);
 $array['filter']['emaildateformat'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 32);
 $array['filter']['pbxskip'] = array('bool' => true);
@@ -308,7 +309,8 @@ $array['filter']['adsifdn'] = array('set' => false,'chk' => 2,'cast' => 'xdigit'
 $array['filter']['adsisec'] = array('set' => false,'chk' => 2,'cast' => 'xdigit','maxlen' => 8);
 $array['filter']['adsiver'] = array('set' => false,'chk' => 2,'cast' => 'int','between' => array(-1,255));
 $array['filter']['searchcontexts'] = array('bool' => true);
-$array['filter']['externpass'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 128);
+//$array['filter']['externpass'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 128);
+$array['filter']['externpass'] = array('set' => false);
 $array['filter']['externnotify'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 160);
 $array['filter']['odbcstorage'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 80);
 $array['filter']['odbctable'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 80);

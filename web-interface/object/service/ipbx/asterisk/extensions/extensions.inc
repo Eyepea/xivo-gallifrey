@@ -201,13 +201,11 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 
 	function get_exten($app='',$exten='',$context='',$arr=null)
 	{
+		$app = strval($app);
 		$arr = (array) $arr;
 
-		$exten = $this->_sre->clean_extension($exten);
-		$app = strval($app);
-
 		$where = array();
-		$where['exten'] = $exten;
+		$where['exten'] = $this->_sre->clean_extension($exten);
 		$where['context'] = $context;
 
 		if(isset($app{0}) === true)

@@ -17,6 +17,7 @@ $array['element']['parkext']['default'] = 700;
 
 $array['element']['context'] = array();
 $array['element']['context']['default'] = 'parkedcalls';
+$array['element']['context']['forcedef'] = true;
 
 $array['element']['parkingtime'] = array();
 $array['element']['parkingtime']['value'] = array(15 => 15,30 => 30,45 => 45,60 => 1,
@@ -69,7 +70,7 @@ $array['element']['pickupexten']['default'] = '*8';
 
 $array['filter'] = array();
 $array['filter']['parkext'] = array('regexp' => '/^[0-9\*#]+$/','minlen' => 1,'maxlen' => 40);
-$array['filter']['context'] = array('callback' => 'xivo_service_asterisk::chk_context');
+$array['filter']['context'] = array('set' => false);
 $array['filter']['parkingtime'] = array('key' => array(15,30,45,60,
 						       75,90,105,120,
 						       135,150,165,180,

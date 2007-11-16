@@ -114,10 +114,10 @@
 	if($this->chk_acl('control_system') === true):
 		echo '<dt>',$this->bbf('mn_left_ti_controlsystem'),'</dt>';
 		if($this->chk_acl('control_system','reload') === true):
-			echo '<dd id="mn-control-system--reload">',$url->href_html($this->bbf('mn_left_controlsystem-ipbxreload',XIVO_SRE_IPBX_LABEL),'service/ipbx/control_system/reload'),'</dd>';
+			echo '<dd id="mn-control-system--reload">',$url->href_html($this->bbf('mn_left_controlsystem-ipbxreload',XIVO_SRE_IPBX_LABEL),'service/ipbx/control_system/reload',null,'onclick="return(confirm(\''.xivo_stript($this->bbf('controlsystem_ipbxreload_confirm',XIVO_SRE_IPBX_LABEL)).'\') ? true : false);"'),'</dd>';
 		endif;
 		if($this->chk_acl('control_system','restart') === true):
-			echo '<dd id="mn-control-system--restart">',$url->href_html($this->bbf('mn_left_controlsystem-ipbxrestart',XIVO_SRE_IPBX_LABEL),'service/ipbx/control_system/restart'),'</dd>';
+			echo '<dd id="mn-control-system--restart">',$url->href_html($this->bbf('mn_left_controlsystem-ipbxrestart',XIVO_SRE_IPBX_LABEL),'service/ipbx/control_system/restart',null,'onclick="return(confirm(\''.xivo_stript($this->bbf('controlsystem_ipbxrestart_confirm',XIVO_SRE_IPBX_LABEL)).'\') ? true : false);"'),'</dd>';
 		endif;
 	endif;
 

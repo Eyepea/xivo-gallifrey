@@ -16,8 +16,8 @@ $array['element']['exten'] = array();
 $array['element']['exten']['default'] = '';
 
 $array['element']['context'] = array();
-$array['element']['context']['default'] = '';
-$array['element']['context']['setdef'] = true;
+$array['element']['context']['default'] = XIVO_SRE_IPBX_AST_INCALL_CONTEXT;
+$array['element']['context']['forcedef'] = true;
 
 $array['element']['type'] = array();
 $array['element']['type']['value'] = array('endcall','user','group','queue','meetme','schedule','application','custom');
@@ -49,7 +49,7 @@ $array['element']['commented']['set'] = true;
 
 $array['filter'] = array();
 $array['filter']['exten'] = array('maxlen' => 40,'regexp' => '/^[_]?[0-9NXZ\*#\-\[\]]+[\.\!]?$/');
-$array['filter']['context'] = array('callback' => 'xivo_service_asterisk::chk_context');
+$array['filter']['context'] = array('set' => false);
 $array['filter']['type'] = array('key' => array('endcall','user','group','queue','meetme','schedule','application','custom'));
 $array['filter']['typeval'] = array('maxlen' => 255,'cast' => 'sgraph');
 $array['filter']['applicationval'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_\-\.\|@]+$/i','maxlen' => 80);

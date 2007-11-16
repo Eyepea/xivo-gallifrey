@@ -144,7 +144,7 @@ class xivo_service_asterisk_dialstatus extends xivo_service_asterisk_abstract
 			case 'meetme':
 				return($this->chk_dest_meetme($typeval,null,$disable,false));
 			case 'sound':
-				return($this->chk_dest_sound('dialstatus',$typeval));
+				return($this->chk_dest_sound('playback',$typeval));
 		}
 
 		return(false);

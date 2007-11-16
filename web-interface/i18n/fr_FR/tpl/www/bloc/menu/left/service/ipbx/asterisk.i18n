@@ -109,5 +109,11 @@ Système de contrôle
 ; mn_left_controlsystem-ipbxreload
 Recharger %s
 
+; controlsystem_ipbxreload_confirm
+Etes-vous certain de vouloir recharger %s ?
+
 ; mn_left_controlsystem-ipbxrestart
 Redémarrer %s
+
+; controlsystem_ipbxrestart_confirm
+Etes-vous certain de vouloir redémarrer %s ?

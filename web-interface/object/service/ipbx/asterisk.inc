@@ -1179,13 +1179,18 @@ class xivo_service_asterisk extends xivo_service_abstract
 	function get_contexts_list($arr=null)
 	{
 		$r = array();
+		$r[] = XIVO_SRE_IPBX_AST_CONTEXT_EXTRAFEATURES;
+		$r[] = XIVO_SRE_IPBX_AST_CONTEXT_FEATURES;
 		$r[] = XIVO_SRE_IPBX_AST_CONTEXT_GENERAL;
 		$r[] = XIVO_SRE_IPBX_AST_CONTEXT_GLOBAL;
 		$r[] = XIVO_SRE_IPBX_AST_CONTEXT_GLOBALS;
-		$r[] = XIVO_SRE_IPBX_AST_CONTEXT_INITCONFIG;
+		$r[] = XIVO_SRE_IPBX_AST_CONTEXT_HINT;
 		$r[] = XIVO_SRE_IPBX_AST_CONTEXT_HINTS;
-		$r[] = XIVO_SRE_IPBX_AST_CONTEXT_FEATURES;
-		$r[] = XIVO_SRE_IPBX_AST_CONTEXT_EXTRAFEATURES;
+		$r[] = XIVO_SRE_IPBX_AST_CONTEXT_INITCONFIG;
+		$r[] = XIVO_SRE_IPBX_AST_CONTEXT_PARKEDCALLS;
+
+		$r[] = XIVO_SRE_IPBX_AST_INCALL_CONTEXT;
+		$r[] = XIVO_SRE_IPBX_AST_HANDYNUMBERS_CONTEXT;
 
 		if(is_array($arr) === true)
 			$r = array_merge($arr,$r);

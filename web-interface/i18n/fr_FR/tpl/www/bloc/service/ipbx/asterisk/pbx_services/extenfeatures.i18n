@@ -4,8 +4,14 @@ Gestion des extensions
 ; smenu_general
 Général
 
+; smenu_voicemail
+Messagerie vocale
+
 ; smenu_forwards
 Renvois
+
+; smenu_agents
+Agents
 
 ; smenu_parking
 Parking
