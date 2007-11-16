@@ -32,7 +32,7 @@ __license__ = """
 
 CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
 
-RIGHTCALL_PERMIT_COLNAME = "rightcall.permit"
+RIGHTCALL_AUTHORIZATION_COLNAME = "rightcall.authorization"
 RIGHTCALL_PASSWD_COLNAME = "rightcall.passwd"
 
 import xivo.to_path
@@ -69,7 +69,7 @@ def apply_rules(rules):
 		return
 
 	for rule in rules:
-		if bool(rule[RIGHTCALL_PERMIT_COLNAME]):
+		if bool(rule[RIGHTCALL_AUTHORIZATION_COLNAME]):
 			allow()
 
 	deny(rule[RIGHTCALL_PASSWD_COLNAME])
@@ -125,7 +125,7 @@ query = ("SELECT ${columns} FROM rightcall INNER JOIN rightcallmember "
          "AND rightcallmember.type = 'user' "
          "AND rightcallmember.typeval = %s "
          "AND rightcall.commented = 0")
-cursor.query(query, (RIGHTCALL_PERMIT_COLNAME, RIGHTCALL_PASSWD_COLNAME), (userid,))
+cursor.query(query, (RIGHTCALL_AUTHORIZATION_COLNAME, RIGHTCALL_PASSWD_COLNAME), (userid,))
 res = cursor.fetchall()
 apply_rules(res)
 
@@ -151,7 +151,7 @@ if res:
                  "AND rightcallmember.type = 'group' "
                  "AND rightcallmember.typeval IN (" + ", ".join(["%s"] * len(res)) + ") "
                  "AND rightcall.commented = 0")
-	cursor.query(query, (RIGHTCALL_PERMIT_COLNAME, RIGHTCALL_PASSWD_COLNAME), groupids)
+	cursor.query(query, (RIGHTCALL_AUTHORIZATION_COLNAME, RIGHTCALL_PASSWD_COLNAME), groupids)
 	res = cursor.fetchall()
 	apply_rules(res)
 
@@ -165,7 +165,7 @@ if exten_pattern:
                  "AND extenumbers.context = %s "
                  "AND extenumbers.type = 'outcall' "
                  "AND rightcall.commented = 0")
-	cursor.query(query, (RIGHTCALL_PERMIT_COLNAME, RIGHTCALL_PASSWD_COLNAME), (exten_pattern, context))
+	cursor.query(query, (RIGHTCALL_AUTHORIZATION_COLNAME, RIGHTCALL_PASSWD_COLNAME), (exten_pattern, context))
 	res = cursor.fetchall()
 	apply_rules(res)
 	agi.verbose("miaou")
