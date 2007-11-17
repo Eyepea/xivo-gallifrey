@@ -40,7 +40,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		$this->_origin['qfeatures'] = $this->_queuefeatures->get_origin();
 		$this->_origin['queue'] = $this->_queue->get_origin();
 
-		$this->_get_localexten();
+		$this->_get_exten();
 		$this->_get_extenumbers();
 		$this->_get_user();
 		$this->_get_agentgroup();
@@ -61,18 +61,18 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		return($this->_queue->get_nb($arr,$disable));
 	}
 
-	function _get_localexten()
+	function _get_exten()
 	{
-		$this->_info['localexten'] = false;
-		$this->_origin['localexten'] = false;
+		$this->_info['exten'] = false;
+		$this->_origin['exten'] = false;
 
-		$this->_info['localexten'] = $this->_extensions->get_exten('macro',
+		$this->_info['exten'] = $this->_extensions->get_exten('macro',
 								    $this->_info['qfeatures']['number'],
 								    $this->_info['qfeatures']['context']);
 
-		$this->_origin['localexten'] = $this->_extensions->get_origin();
+		$this->_origin['exten'] = $this->_extensions->get_origin();
 
-		return($this->_info['localexten']);
+		return($this->_info['exten']);
 	}
 
 	function _get_extenumbers()
@@ -186,11 +186,8 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		if($this->_errnb === 0 && $number !== '')
 		{
 			$appdata = array('appdata' => XIVO_SRE_IPBX_AST_QUEUE_MACRO);
-
-			if(($localexten = $this->set_macro($action,'localexten',$number,$appdata,$context)) === false)
-				$this->_set_error('localexten');
-
-			$this->_set_result('localexten',$localexten);
+			if(($rsexten = $this->set_macro($action,'exten',$number,$appdata,$context)) !== false)
+				$this->_set_result('exten',$rsexten);
 
 			$this->set_extenumbers($action,'queue',$number,$context);
 		}
@@ -447,7 +444,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		if($this->get_errnb() > 0
 		|| ($qfeaturesid = $this->add_queuefeatures()) === false
 		|| $this->add_queue() === false
-		|| $this->add_macro('localexten') === false
+		|| $this->add_macro('exten') === false
 		|| $this->add_extenumbers($qfeaturesid) === false
 		|| $this->add_user() === false
 		|| $this->add_agentgroup() === false
@@ -552,7 +549,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 			switch($key)
 			{
-				case 'localexten':
+				case 'exten':
 					$this->_extensions->delete_exten($val);
 					break;
 				case 'user':
@@ -602,14 +599,14 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 		if($this->_info['qfeatures']['number'] !== '')
 		{
-			if($this->get_result('localexten') === null
+			if($this->get_result('exten') === null
 			|| $this->get_result('extenumbers') === null)
 			{
 				$unlinks = true;
-				$this->delete_macro('localexten');
+				$this->delete_macro('exten');
 				$this->delete_extenumbers();
 			}
-			else if($this->edit_macro('localexten') === false
+			else if($this->edit_macro('exten') === false
 			|| $this->edit_extenumbers() === false)
 			{
 				$this->_reverse_edit();
@@ -617,7 +614,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 				return(false);
 			}
 		}
-		else if($this->add_macro('localexten') === false
+		else if($this->add_macro('exten') === false
 		|| $this->add_extenumbers($this->_info['qfeatures']['id']) === false)
 		{
 			$this->_reverse_edit();
@@ -770,11 +767,11 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 				case 'queuefeatures':
 					$this->_queuefeatures->edit_origin($this->_origin['qfeatures']);
 					break;
-				case 'localexten':
-					if($this->_origin['localexten'] === false)
+				case 'exten':
+					if($this->_origin['exten'] === false)
 						$this->_extensions->delete_exten($val);
 					else
-						$this->_extensions->edit_origin($this->_origin['localexten']);
+						$this->_extensions->edit_origin($this->_origin['exten']);
 					break;
 				case 'user':
 				case 'agentgroup':
@@ -806,7 +803,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 		if($this->delete_queuefeatures() === false
 		|| $this->delete_queue() === false
-		|| $this->delete_macro('localexten') === false
+		|| $this->delete_macro('exten') === false
 		|| $this->delete_extenumbers() === false
 		|| $this->delete_user($this->_info['qfeatures']['name']) === false
 		|| $this->delete_agentgroup($this->_info['qfeatures']['name']) === false
@@ -818,7 +815,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 			return(false);
 		}
 
-		if(isset($this->_return['localexten']) === true
+		if(isset($this->_return['exten']) === true
 		|| isset($this->_return['extensions']) === true)
 			$this->unlinks();
 
@@ -921,9 +918,9 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 				case 'queuefeatures':
 					$this->_queuefeatures->recover($this->_info['qfeatures']['id']);
 					break;
-				case 'localexten':
-					if($this->_origin['localexten'] !== false)
-						$this->_extensions->add_origin($this->_origin['localexten']);
+				case 'exten':
+					if($this->_origin['exten'] !== false)
+						$this->_extensions->add_origin($this->_origin['exten']);
 					break;
 				case 'user':
 				case 'agentgroup':

@@ -125,11 +125,19 @@ class xivo_application_asterisk_abstract extends xivo_application_abstract
 			return(false);
 
 		if($action === 'edit' && xivo_issa($name,$this->_info) !== false)
-			$rs = $this->_extensions->chk_exten('macro',$arr,$exten,$context);
+			$r = $this->_extensions->chk_exten('macro',$arr,$exten,$context);
 		else
-			$rs = $this->_extensions->new_exten('macro',$arr,$exten,$context);
+			$r = $this->_extensions->new_exten('macro',$arr,$exten,$context);
 
-		return($rs);
+		if($r === false)
+		{
+			if($this->_extensions->get_filter_errnb() > 0)
+				$this->_set_error($name,$this->_extensions->get_filter_error());
+			else
+				$this->_set_error($name,'invalid macro');
+		}
+
+		return($r);
 	}
 
 	function add_extenumbers($typeval='',$id=0)

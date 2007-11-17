@@ -297,7 +297,7 @@ class xivo_application_service_asterisk_handynumbers extends xivo_application_as
 
 		$this->_return['exten'] = $this->_extensions->add($rs,$eid);
 
-		return($this->_return['extenumbers']);
+		return($this->_return['exten']);
 	}
 
 	function _delete_all()

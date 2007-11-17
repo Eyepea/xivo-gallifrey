@@ -76,7 +76,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		if($full === false)
 			return($this->_info);
 
-		$this->_get_localexten();
+		$this->_get_exten();
 		$this->_get_hints();
 		$this->_get_extenumbers();
 		$this->_get_groupmember();
@@ -128,21 +128,21 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		return($r);
 	}
 
-	function _get_localexten()
+	function _get_exten()
 	{
-		$this->_info['localexten'] = false;
-		$this->_origin['localexten'] = false;
+		$this->_info['exten'] = false;
+		$this->_origin['exten'] = false;
 
 		if(isset($this->_info['protocol']['context']) === false)
 			return(false);
 
-		$this->_info['localexten'] = $this->_extensions->get_exten('macro',
+		$this->_info['exten'] = $this->_extensions->get_exten('macro',
 								    $this->_info['ufeatures']['number'],
 								    $this->_info['protocol']['context']);
 
-		$this->_origin['localexten'] = $this->_extensions->get_origin();
+		$this->_origin['exten'] = $this->_extensions->get_origin();
 
-		return($this->_info['localexten']);
+		return($this->_info['exten']);
 	}
 
 	function _get_hints()
@@ -408,11 +408,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		if($this->_errnb === 0 && $numhaslen === true)
 		{
 			$appdata = array('appdata' => XIVO_SRE_IPBX_AST_USER_MACRO);
-
-			if(($localexten = $this->set_macro($action,'localexten',$number,$appdata,$context)) === false)
-				$this->_set_error('localexten');
-
-			$this->_set_result('localexten',$localexten);
+			if(($rsexten = $this->set_macro($action,'exten',$number,$appdata,$context)) !== false)
+				$this->_set_result('exten',$rsexten);
 
 			$this->set_extenumbers($action,'user',$number,$context);
 		}
@@ -738,7 +735,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		|| $this->_protocolname === false
 		|| ($protocolid = $this->add_protocol()) === false
 		|| ($ufeaturesid = $this->add_userfeatures($protocolid)) === false
-		|| $this->add_macro('localexten') === false
+		|| $this->add_macro('exten') === false
 		|| $this->add_hints() === false
 		|| $this->add_extenumbers($ufeaturesid) === false
 		|| $this->add_groupmember($ufeaturesid) === false
@@ -911,7 +908,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 					$protocol = &$this->_service->get_protocol_module($this->_protocolname);
 					$protocol->delete($val);
 					break;
-				case 'localexten':
+				case 'exten':
 					$this->_extensions->delete_exten($val);
 					break;
 				case 'hints':
@@ -973,14 +970,15 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		if($this->_info['ufeatures']['number'] !== '')
 		{
-			if($this->get_result('localexten') === null
+			if($this->get_result('exten') === null
 			|| $this->get_result('extenumbers') === null)
 			{
 				$unlinks = true;
-				$this->delete_macro('localexten');
+				$this->delete_macro('exten');
 				$this->delete_extenumbers();
+				$this->delete_hints();
 			}
-			else if($this->edit_macro('localexten') === false
+			else if($this->edit_macro('exten') === false
 			|| $this->edit_extenumbers() === false)
 			{
 				$this->_reverse_edit($protocolret);
@@ -989,7 +987,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			}
 			else if($this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
 				$this->delete_hints();
-			else if($this->_info['ufeatures']['protocol'] !== $this->_protocolname)
+			else
 			{
 				if($this->_info['ufeatures']['protocol'] === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
 					$hints = $this->add_hints();
@@ -1004,7 +1002,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				}
 			}
 		}
-		else if($this->add_macro('localexten') === false
+		else if($this->add_macro('exten') === false
 		|| $this->add_extenumbers($this->_info['ufeatures']['id']) === false
 		|| ($this->_protocolname !== XIVO_SRE_IPBX_AST_PROTO_CUSTOM
 		   && $this->add_hints() === false) === true)
@@ -1287,11 +1285,11 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 					else
 						$this->_uservoicemail->edit_origin($this->_origin['voicemail']);
 					break;
-				case 'localexten':
-					if($this->_origin['localexten'] === false)
+				case 'exten':
+					if($this->_origin['exten'] === false)
 						$this->_extensions->delete_exten($val);
 					else
-						$this->_extensions->edit_origin($this->_origin['localexten']);
+						$this->_extensions->edit_origin($this->_origin['exten']);
 					break;
 				case 'hints':
 					if($this->_origin['hints'] === false)
@@ -1342,7 +1340,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		if($this->delete_protocol() === false
 		|| $this->delete_userfeatures() === false
-		|| $this->delete_macro('localexten') === false
+		|| $this->delete_macro('exten') === false
 		|| $this->delete_hints() === false
 		|| $this->delete_extenumbers() === false
 		|| $this->delete_groupmember() === false
@@ -1358,7 +1356,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			return(false);
 		}
 
-		if(isset($this->_return['localexten']) === true
+		if(isset($this->_return['exten']) === true
 		|| isset($this->_return['hints']) === true
 		|| isset($this->_return['extensions']) === true)
 			$this->unlinks();
@@ -1528,7 +1526,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 					if($this->_origin['voicemail'] !== false)
 						$this->_uservoicemail->add_origin($this->_origin['voicemail']);
 					break;
-				case 'localexten':
+				case 'exten':
 				case 'hints':
 					if($this->_origin[$key] !== false)
 						$this->_extensions->add_origin($this->_origin[$key]);

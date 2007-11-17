@@ -179,9 +179,10 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		$number = (string) $this->get_result_var('incall','exten');
 		$context = (string) $this->get_result_var('incall','context');
 
-		$this->set_extenumbers($action,$number,$context);
+		if(($rsexten = $this->set_macro($action,'exten',$number,$this->_mk_exten_appdata($number),$context)) !== false)
+			$this->_set_result('exten',$rsexten);
 
-		$this->set_exten($action,$number,$context);
+		$this->set_extenumbers($action,$number,$context);
 
 		if(xivo_issa('rightcall',$arr) === true)
 			$this->set_rightcall($arr['rightcall']);
@@ -223,16 +224,6 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 	function set_extenumbers($action,$number,$context)
 	{
 		return(parent::set_extenumbers($action,'incall',$number,$context));
-	}
-
-	function set_exten($action,$exten,$context)
-	{
-		if(($rs = $this->set_macro($action,'exten',$exten,$this->_mk_exten_appdata($exten),$context)) === false)
-			$this->_set_error('exten');
-
-		$this->_set_result('exten',$rs);
-
-		return(true);
 	}
 
 	function set_rightcall($list)
