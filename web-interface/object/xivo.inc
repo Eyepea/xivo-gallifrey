@@ -143,6 +143,7 @@ class xivo
 		define('XIVO_SOFT_NAME',$this->_conf['xivo']['sys']['general']['soft_name']);
 		define('XIVO_SOFT_LABEL',$this->_conf['xivo']['sys']['general']['soft_label']);
 		define('XIVO_SOFT_VERSION',$this->_conf['xivo']['sys']['general']['soft_version']);
+		define('XIVO_SOFT_CODENAME',$this->_conf['xivo']['sys']['general']['soft_codename']);
 		define('XIVO_SOFT_URL',$this->_conf['xivo']['sys']['general']['soft_url']);
 		define('XIVO_CORP_ADDRESS',$this->_conf['xivo']['sys']['general']['corp_address']);
 		define('XIVO_CORP_ZIPCODE',$this->_conf['xivo']['sys']['general']['corp_zipcode']);

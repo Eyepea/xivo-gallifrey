@@ -12,6 +12,7 @@ $array['sys']['general'] = array(
 				'soft_name'	=> 'xivo',
 				'soft_label'	=> 'XIVO',
 				'soft_version'	=> '0.2',
+				'soft_codename'	=> 'Torchwood',
 				'soft_url'	=> 'www.xivo.fr',
 				'corp_address'	=> '67 rue Voltaire',
 				'corp_zipcode'	=> '92800',
