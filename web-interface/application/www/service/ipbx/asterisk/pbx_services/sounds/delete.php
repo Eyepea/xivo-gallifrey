@@ -12,14 +12,7 @@ if(isset($_QR['id']) === false || ($info['file'] = $sounds->get($_QR['id'],$info
 
 $file = $info['directory']['dirname'].XIVO_SEP_DIR.$info['file']['filename'];
 
-if($sounds->delete($file) !== false && ($dialstatus = &$ipbx->get_module('dialstatus')) !== false)
-{
-	$dialstatus_where = array();
-	$dialstatus_where['type'] = 'sound';
-	$dialstatus_where['typeval'] = $info['file']['dirpath'].XIVO_SEP_DIR.$info['file']['basename'];
-
-	$dialstatus->unlinked_where($dialstatus_where);
-}
+$sounds->delete($file);
 
 $_QRY->go($_HTML->url('service/ipbx/pbx_services/sounds'),$param);
 

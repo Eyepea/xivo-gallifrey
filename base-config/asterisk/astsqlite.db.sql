@@ -150,10 +150,10 @@ CREATE INDEX extensions__idx__commented ON extensions(commented);
 CREATE INDEX extensions__idx__context_exten_priority ON extensions(context,exten,priority);
 CREATE INDEX extensions__idx__name ON extensions(name);
 
-INSERT INTO extensions VALUES (NULL,0,'features','*33',1,'AgentLogin','','agentdynamiclogin');
-INSERT INTO extensions VALUES (NULL,0,'features','_*31.',1,'Macro','agentstaticlogin|${EXTEN:3}','agentstaticlogin');
-INSERT INTO extensions VALUES (NULL,0,'features','_*32.',1,'Macro','agentstaticlogoff|${EXTEN:3}|fr','agentstaticlogoff');
-INSERT INTO extensions VALUES (NULL,0,'features','*34',1,'Macro','calllistening','calllistening');
+INSERT INTO extensions VALUES (NULL,1,'features','*33',1,'AgentLogin','','agentdynamiclogin');
+INSERT INTO extensions VALUES (NULL,1,'features','_*31.',1,'Macro','agentstaticlogin|${EXTEN:3}','agentstaticlogin');
+INSERT INTO extensions VALUES (NULL,1,'features','_*32.',1,'Macro','agentstaticlogoff|${EXTEN:3}|fr','agentstaticlogoff');
+INSERT INTO extensions VALUES (NULL,1,'features','*34',1,'Macro','calllistening','calllistening');
 INSERT INTO extensions VALUES (NULL,0,'features','*36',1,'Directory','${CONTEXT}','directoryaccess');
 INSERT INTO extensions VALUES (NULL,0,'features','*25',1,'Macro','enablednd','enablednd');
 INSERT INTO extensions VALUES (NULL,0,'features','*24',1,'Macro','enablevm','enablevm');
@@ -165,11 +165,11 @@ INSERT INTO extensions VALUES (NULL,0,'features','*23',1,'Macro','fwdundobusy','
 INSERT INTO extensions VALUES (NULL,0,'features','*22',1,'Macro','fwdundorna','fwdundorna');
 INSERT INTO extensions VALUES (NULL,0,'features','*21',1,'Macro','fwdundounc','fwdundounc');
 INSERT INTO extensions VALUES (NULL,0,'features','*27',1,'Macro','incallfilter','incallfilter');
-INSERT INTO extensions VALUES (NULL,0,'features','*26',1,'Macro','incallrec','incallrec');
+INSERT INTO extensions VALUES (NULL,1,'features','*26',1,'Macro','incallrec','incallrec');
 INSERT INTO extensions VALUES (NULL,0,'features','*10',1,'Macro','phonestatus','phonestatus');
 INSERT INTO extensions VALUES (NULL,0,'features','_*8.',1,'Pickup','${EXTEN:2}','pickup');
 INSERT INTO extensions VALUES (NULL,0,'features','*9',1,'Macro','recsnd|/usr/share/asterisk/sounds/web-interface/recordings|wav','recsnd');
-INSERT INTO extensions VALUES (NULL,0,'features','*35',1,'Macro','vmdelete|/var/spool/asterisk/voicemail','vmdelete');
+INSERT INTO extensions VALUES (NULL,1,'features','*35',1,'Macro','vmdelete|/var/spool/asterisk/voicemail','vmdelete');
 INSERT INTO extensions VALUES (NULL,0,'features','*98',1,'Macro','voicemsg','voicemsg');
 
 
