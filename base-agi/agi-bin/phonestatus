@@ -72,23 +72,46 @@ callfilter = res['callfilter']
 callrecord = res['callrecord']
 enablednd = res['enablednd']
 
-agi.set_variable('XIVO_ENABLEUNC', enableunc)
+cursor.query("SELECT ${columns} FROM extensions "
+             "WHERE name IN ('fwdunc', 'fwdrna', 'fwdbusy', 'enablevm', 'incallfilter', 'incallrec', 'enablednd') "
+             "AND commented = 0",
+             ('name',))
+res = cursor.fetchall()
 
-if enableunc:
-	agi.set_variable('XIVO_DESTUNC', destunc)
+if not res:
+	agi.verbose("All features disabled")
+	sys.exit(0)
 
-agi.set_variable('XIVO_ENABLEBUSY', enablebusy)
+features_list = [row['name'] for row in res]
 
-if enablebusy:
-	agi.set_variable('XIVO_DESTBUSY', destbusy)
+if 'fwdunc' in features_list:
+	agi.set_variable('XIVO_ENABLEUNC', enableunc)
 
-agi.set_variable('XIVO_ENABLERNA', enablerna)
+	if enableunc:
+		agi.set_variable('XIVO_DESTUNC', destunc)
 
-if enablerna:
-	agi.set_variable('XIVO_DESTRNA', destrna)
+if 'fwdbusy' in features_list:
+	agi.set_variable('XIVO_ENABLEBUSY', enablebusy)
 
-agi.set_variable('XIVO_ENABLEVOICEMAIL', enablevoicemail)
-agi.set_variable('XIVO_CALLFILTER', callfilter)
-agi.set_variable('XIVO_CALLRECORD', callrecord)
-agi.set_variable('XIVO_ENABLEDND', enablednd)
+	if enablebusy:
+		agi.set_variable('XIVO_DESTBUSY', destbusy)
+
+if 'fwdrna' in features_list:
+	agi.set_variable('XIVO_ENABLERNA', enablerna)
+
+	if enablerna:
+		agi.set_variable('XIVO_DESTRNA', destrna)
+
+if 'enablevm' in features_list:
+	agi.set_variable('XIVO_ENABLEVOICEMAIL', enablevoicemail)
+
+if 'incallfilter' in features_list:
+	agi.set_variable('XIVO_CALLFILTER', callfilter)
+
+if 'incallrec' in features_list:
+	agi.set_variable('XIVO_CALLRECORD', callrecord)
+
+if 'enablednd' in features_list:
+	agi.set_variable('XIVO_ENABLEDND', enablednd)
+
 agi.verbose('AGI script "%s" successfully executed' % sys.argv[0])
