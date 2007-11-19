@@ -17,6 +17,9 @@ xivo_list_elt_extenfeatures['it-extenfeatures-enable-pickup'] = new Array('it-ex
 xivo_list_elt_extenfeatures['it-extenfeatures-enable-agentstaticlogin'] = new Array('it-extenfeatures-agentstaticlogin','it-extenfeatures-list-agentstaticlogin');
 xivo_list_elt_extenfeatures['it-extenfeatures-enable-agentstaticlogoff'] = new Array('it-extenfeatures-agentstaticlogoff','it-extenfeatures-list-agentstaticlogoff');
 xivo_list_elt_extenfeatures['it-extenfeatures-enable-agentdynamiclogin'] = new Array('it-extenfeatures-agentdynamiclogin');
+xivo_list_elt_extenfeatures['it-extenfeatures-enable-calllistening'] = new Array('it-extenfeatures-calllistening');
+xivo_list_elt_extenfeatures['it-extenfeatures-enable-directoryaccess'] = new Array('it-extenfeatures-directoryaccess');
+xivo_list_elt_extenfeatures['it-extenfeatures-enable-vmdelete'] = new Array('it-extenfeatures-vmdelete');
 
 function xivo_extenfeatures_onload()
 {
