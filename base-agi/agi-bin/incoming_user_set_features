@@ -8,8 +8,6 @@
 #	   mailto:technique@proformatique.com
 #	   (C) 2007 Proformatique
 
-# TODO: Filter commented SQL rows
-
 __version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2007, Proformatique
@@ -64,7 +62,11 @@ srcnum = agi.get_variable('REAL_SRCNUM')
 dstnum = agi.get_variable('REAL_DSTNUM')
 context = agi.get_variable('REAL_CONTEXT')
 
-cursor.query("SELECT ${columns} FROM userfeatures WHERE number = %s AND context = %s AND internal = 0 AND commented = 0",
+cursor.query("SELECT ${columns} FROM userfeatures "
+             "WHERE number = %s "
+             "AND context = %s "
+             "AND internal = 0 "
+             "AND commented = 0",
              ('id', 'protocol' , 'protocolid', 'name', 'ringseconds', 'simultcalls', 'enablevoicemail', 'enablexfer', 'enableautomon', 'callrecord', 'callfilter', 'enablednd', 'enableunc', 'destunc', 'enablerna', 'destrna', 'enablebusy', 'destbusy', 'musiconhold'),
              (dstnum, context))
 res = cursor.fetchone()
@@ -80,18 +82,9 @@ simultcalls = res['simultcalls']
 ringseconds = res['ringseconds']
 enablednd = res['enablednd']
 enablevoicemail = res['enablevoicemail']
-
-calloptions = ''
-
-if res['enablexfer'] == 1:
-	calloptions += "t"
-
-if res['enableautomon'] == 1:
-	calloptions += "w"
-
-if res['callfilter'] == 1:
-	calloptions += "p"
-
+enablexfer = res['enablexfer']
+enableautomon = res['enableautomon']
+callfilter = res['callfilter']
 enableunc = res['enableunc']
 destunc = res['destunc']
 enablebusy = res['enablebusy']
@@ -119,42 +112,81 @@ elif protocol == "custom":
 else:
 	agi_helpers.dp_break(agi, "Unknown protocol '%s'" % protocol)
 
+cursor.query("SELECT ${columns} FROM extensions "
+             "WHERE name IN ('fwdunc', 'fwdrna', 'fwdbusy', 'enablevm', 'incallfilter', 'incallrec', 'enablednd') "
+             "AND commented = 0",
+             ('name',))
+res = cursor.fetchall()
+
+features_list = [row['name'] for row in res]
+
+calloptions = ''
+
+if enablexfer == 1:
+	calloptions += "t"
+
+if enableautomon == 1:
+	calloptions += "w"
+
+if 'incallfilter' in features_list and callfilter == 1:
+	calloptions += "p"
+
 agi.set_variable('XIVO_INTERFACE', interface)
 agi.set_variable('XIVO_SIMULTCALLS', simultcalls)
 
 if ringseconds > 0:
 	agi.set_variable('XIVO_RINGSECONDS', ringseconds)
 
-agi.set_variable('XIVO_ENABLEDND', enablednd)
-agi.set_variable('XIVO_ENABLEVOICEMAIL', enablevoicemail)
+if 'enablednd' in features_list:
+	agi.set_variable('XIVO_ENABLEDND', enablednd)
+else:
+	agi.set_variable('XIVO_ENABLEDND', 0)
+
+if 'enablevm' in features_list:
+	agi.set_variable('XIVO_ENABLEVOICEMAIL', enablevoicemail)
+else:
+	agi.set_variable('XIVO_ENABLEVOICEMAIL', 0)
+
 agi.set_variable('XIVO_CALLOPTIONS', calloptions)
-agi.set_variable('XIVO_ENABLEUNC', enableunc)
 
-if enableunc == 1:
-	agi.set_variable('XIVO_FWD_TYPEUNC', 'user')
-	agi.set_variable('XIVO_FWD_TYPEVAL1UNC', destunc)
-	agi.set_variable('XIVO_FWD_TYPEVAL2UNC', context)
+if 'fwdunc' in features_list:
+	agi.set_variable('XIVO_ENABLEUNC', enableunc)
 
-agi.set_variable('XIVO_ENABLEBUSY', enablebusy)
-
-if enablebusy == 1:
-	agi.set_variable('XIVO_FWD_TYPEBUSY', 'user')
-	agi.set_variable('XIVO_FWD_TYPEVAL1BUSY', destbusy)
-	agi.set_variable('XIVO_FWD_TYPEVAL2BUSY', context)
+	if enableunc == 1:
+		agi.set_variable('XIVO_FWD_TYPEUNC', 'user')
+		agi.set_variable('XIVO_FWD_TYPEVAL1UNC', destunc)
+		agi.set_variable('XIVO_FWD_TYPEVAL2UNC', context)
 else:
-	ds_set_fwd_vars(id, 'busy', 'XIVO_FWD_TYPEBUSY', 'XIVO_FWD_TYPEVAL1BUSY', 'XIVO_FWD_TYPEVAL2BUSY')
+	agi.set_variable('XIVO_ENABLEUNC', 0)
 
-if enablerna:
-	agi.set_variable('XIVO_FWD_TYPERNA', 'user')
-	agi.set_variable('XIVO_FWD_TYPEVAL1RNA', destrna)
-	agi.set_variable('XIVO_FWD_TYPEVAL2RNA', context)
+if 'fwdbusy' in features_list:
+	agi.set_variable('XIVO_ENABLEBUSY', enablebusy)
+
+	if enablebusy == 1:
+		agi.set_variable('XIVO_FWD_TYPEBUSY', 'user')
+		agi.set_variable('XIVO_FWD_TYPEVAL1BUSY', destbusy)
+		agi.set_variable('XIVO_FWD_TYPEVAL2BUSY', context)
+	else:
+		ds_set_fwd_vars(id, 'busy', 'XIVO_FWD_TYPEBUSY', 'XIVO_FWD_TYPEVAL1BUSY', 'XIVO_FWD_TYPEVAL2BUSY')
 else:
-	ds_set_fwd_vars(id, 'noanswer', 'XIVO_FWD_TYPERNA', 'XIVO_FWD_TYPEVAL1RNA', 'XIVO_FWD_TYPEVAL2RNA')
+	agi.set_variable('XIVO_FWD_TYPEBUSY', 'endcall')
+	agi.set_variable('XIVO_FWD_TYPEVAL1BUSY', 'none')
+
+if 'fwdrna' in features_list:
+	if enablerna:
+		agi.set_variable('XIVO_FWD_TYPERNA', 'user')
+		agi.set_variable('XIVO_FWD_TYPEVAL1RNA', destrna)
+		agi.set_variable('XIVO_FWD_TYPEVAL2RNA', context)
+	else:
+		ds_set_fwd_vars(id, 'noanswer', 'XIVO_FWD_TYPERNA', 'XIVO_FWD_TYPEVAL1RNA', 'XIVO_FWD_TYPEVAL2RNA')
+else:
+	agi.set_variable('XIVO_FWD_TYPERNA', 'endcall')
+	agi.set_variable('XIVO_FWD_TYPEVAL1RNA', 'none')
 
 ds_set_fwd_vars(id, 'congestion', 'XIVO_FWD_TYPECONGESTION', 'XIVO_FWD_TYPEVAL1CONGESTION', 'XIVO_FWD_TYPEVAL2CONGESTION')
 ds_set_fwd_vars(id, 'chanunavail', 'XIVO_FWD_TYPEUNAVAIL', 'XIVO_FWD_TYPEVAL1UNAVAIL', 'XIVO_FWD_TYPEVAL2UNAVAIL')
 
-if callrecord:
+if 'incallrec' in features_list and callrecord:
 	agi.set_variable('XIVO_CALLRECORDFILE', "/usr/share/asterisk/sounds/web-interface/monitor/user-%s-%s-%s.wav" % (srcnum, dstnum, int(time.time())))
 
 if musiconhold:
