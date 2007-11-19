@@ -1,0 +1,127 @@
+#!/usr/bin/python
+#
+# Authors : Cedric Lemarchand, Sylvain Boily, Guillaume Knispel
+#	   Proformatique
+#	   67, rue Voltaire
+#	   92800 PUTEAUX
+#	   (+33/0)1.41.38.99.60
+#	   mailto:technique@proformatique.com
+#	   (C) 2007 Proformatique
+
+# TODO: Filter commented SQL rows
+# TODO: handle rules priority.
+# TODO: factor code.
+
+__version__ = "$Revision$ $Date$"
+__license__ = """
+    Copyright (C) 2007, Proformatique
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2.1 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+"""
+
+CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
+
+RIGHTCALL_AUTHORIZATION_COLNAME = "rightcall.authorization"
+RIGHTCALL_PASSWD_COLNAME = "rightcall.passwd"
+
+import xivo.to_path
+
+import sys, re
+import anysql
+import except_tb
+import agi_helpers
+from BackSQL import backsqlite
+from BackSQL import backmysql
+import ConfigDict
+from agi import *
+
+agi = AGI()
+db_uri = ConfigDict.ReadSingleKey(CONFIG_FILE, 'db', 'db_uri')
+
+rep = (('_', ''),
+       ('*', '\*'),
+       ('X', '[0-9]'),
+       ('Z', '[1-9]'),
+       ('N', '[2-9]'),
+       ('.', '[0-9#\*]+'),
+       ('!', '[0-9#\*]*'))
+
+def extension_matches(number, pattern):
+	for (key,val) in rep:
+		pattern = pattern.replace(key, val)
+
+	match = bool(re.match(pattern, number))
+	return match
+
+def apply_rules(rules):
+	if not rules:
+		return
+
+	for rule in rules:
+		if bool(rule[RIGHTCALL_AUTHORIZATION_COLNAME]):
+			allow()
+
+	deny(rule[RIGHTCALL_PASSWD_COLNAME])
+
+def exit():
+	agi.verbose('AGI script "%s" successfully executed' % sys.argv[0])
+	sys.exit(0)
+
+def allow():
+	agi.set_variable('XIVO_AUTHORIZATION', "ALLOW")
+	exit()
+
+def deny(password):
+	if password:
+		agi.set_variable('XIVO_PASSWORD', password)
+
+	agi.set_variable('XIVO_AUTHORIZATION', "DENY")
+	exit()
+
+# Cursors have a weak reference on their connection, so make a strong one.
+conn = agi_helpers.db_connect(agi, db_uri)
+cursor = conn.cursor()
+srcnum = agi.get_variable('REAL_SRCNUM')
+dstnum = agi.get_variable('REAL_DSTNUM')
+context = agi.get_variable('REAL_CONTEXT')
+exten_pattern = agi.get_variable('REAL_EXTENPATTERN')
+
+cursor.query("SELECT ${columns} FROM rightcallexten",
+             ('rightcallid', 'exten'))
+res = cursor.fetchall()
+
+if not res:
+	allow()
+
+rightcallidset = set((row['rightcallid'] for row in res if extension_matches(srcnum, row['exten'])))
+agi.verbose(rightcallidset)
+
+if not rightcallidset:
+	allow()
+
+rightcallids = str(tuple(rightcallidset))
+query = ("SELECT ${columns} FROM rightcall INNER JOIN rightcallmember INNER JOIN extenumbers "
+         "ON rightcall.id = rightcallmember.rightcallid "
+         "AND rightcallmember.typeval = extenumbers.typeval "
+         "WHERE rightcall.id IN " + rightcallids + " "
+         "AND rightcallmember.type = 'incall' "
+         "AND extenumbers.exten = %s "
+         "AND extenumbers.context = %s "
+         "AND extenumbers.type = 'incall' "
+         "AND rightcall.commented = 0")
+cursor.query(query, (RIGHTCALL_AUTHORIZATION_COLNAME, RIGHTCALL_PASSWD_COLNAME), (exten_pattern, context))
+res = cursor.fetchall()
+apply_rules(res)
+allow()
