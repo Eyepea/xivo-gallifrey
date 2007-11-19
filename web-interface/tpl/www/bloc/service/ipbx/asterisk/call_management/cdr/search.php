@@ -188,6 +188,7 @@
 			endif;
 
 			$duration = xivo_calc_duration(0,0,$ref['duration'],true);
+			ksort($duration);
 
 			$cnt_duration = count($duration);
 
@@ -202,6 +203,7 @@
 			endif;
 
 			$billsec = xivo_calc_duration(0,0,$ref['billsec'],true);
+			ksort($billsec);
 
 			$cnt_billsec = count($billsec);
 
