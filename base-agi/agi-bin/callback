@@ -41,17 +41,6 @@ from agi import *
 
 agi = AGI()
 
-#exten = s,n,Set(CHANTECH=${CUT(CHANNEL,/,1)})
-#exten = s,n,System(echo "Channel: ${CHANTECH}/${REAL_EXTEN}" > ${FILE})
-#exten = s,n,System(echo "MaxRetries: 2" >> ${FILE})
-#exten = s,n,System(echo "RetryTime: 20" >> ${FILE})
-#exten = s,n,System(echo "WaitTime: 20" >> ${FILE})
-#exten = s,n,System(echo "Context: from-asterisk" >> ${FILE})
-#exten = s,n,System(echo "Extension: ${CALLERID(num)}" >> ${FILE})
-#exten = s,n,System(echo "Priority: 1" >> ${FILE})
-#CallerID: "Cedric" <111>
-#exten = s,n,System(chown asterisk:asterisk ${FILE})
-
 srcnum = agi.get_variable('CALLERID(num)')
 dstnum = agi.get_variable('REAL_DSTNUM')
 channel = agi.get_variable('CHANNEL')
