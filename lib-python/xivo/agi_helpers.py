@@ -49,9 +49,15 @@ def db_connect(agi, db_uri):
 def set_fwd_vars(agi, cursor, type, typeval, appval, type_varname, typeval1_varname, typeval2_varname):
 	agi.set_variable(type_varname, type)
 
-	if type in ('endcall', 'application', 'schedule', 'sound'):
+	if type in ('endcall', 'schedule', 'sound'):
 		agi.set_variable(typeval1_varname, typeval)
-		agi.set_variable(typeval2_varname, appval)
+	elif type == 'application':
+		agi.set_variable(typeval1_varname, typeval)
+
+		if typeval == 'disa':
+			agi.set_variable(typeval2_varname, appval.replace("|", ":"))
+		else:
+			agi.set_variable(typeval2_varname, appval)
 	elif type == 'custom':
 		agi.set_variable(typeval1_varname, typeval.replace(",", "|"))
 	elif type == 'user':
