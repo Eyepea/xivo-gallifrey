@@ -168,6 +168,5 @@ if exten_pattern:
 	cursor.query(query, (RIGHTCALL_AUTHORIZATION_COLNAME, RIGHTCALL_PASSWD_COLNAME), (exten_pattern, context))
 	res = cursor.fetchall()
 	apply_rules(res)
-	agi.verbose("miaou")
 
 allow()
