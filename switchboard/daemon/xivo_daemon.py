@@ -438,7 +438,7 @@ def build_features_get(reqlist):
                         columns = (key,)
                         cursor.query(query, columns, params)
                         results = cursor.fetchall()
-                        repstr += "%s;%s;" %(key, str(results[0][0]))
+                        repstr += "%s;%s:;" %(key, str(results[0][0]))
                 except Exception, exc:
                         log_debug(SYSLOG_ERR, '--- exception --- features_get(bool) id=%s key=%s : %s'
                                   %(str(reqlist), key, str(exc)))
@@ -1359,7 +1359,7 @@ def handle_ami_event(astid, idata):
                                         enable = appdata[3]
                                 if len(appdata) >= 5:
                                         value = appdata[4]
-                                strupdate = commandclass.features_srv2clt('update', ';'.join([astid, ctx, userid, feature, value]))
+                                strupdate = commandclass.features_srv2clt('update', ';'.join([astid, ctx, userid, feature, ':'.join([enable, value])]))
                                 send_msg_to_cti_clients(strupdate)
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- (UserEventFeature) <%s> : %s' %(str(this_event), str(exc)))
