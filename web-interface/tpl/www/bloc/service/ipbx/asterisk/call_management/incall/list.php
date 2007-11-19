@@ -48,7 +48,7 @@
 	</tr>
 <?php
 	else:
-		for($i = $pager['beg'],$j = 0;$i < $pager['end'] && $i < $pager['total'];$i++,$j++):
+		for($i = 0;$i < $nb;$i++):
 
 			$ref = &$list[$i];
 
@@ -75,7 +75,7 @@
 				endif;
 			endif;
 
-			$mod = $j % 2 === 0 ? 1 : 2;
+			$mod = $i % 2 === 0 ? 1 : 2;
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=$mod?>on2">
 		<td class="td-left"><?=$form->checkbox(array('name' => 'incalls[]','value' => $ref['incall']['id'],'label' => false,'id' => 'it-incalls-'.$i,'checked' => false,'field' => false));?></td>
