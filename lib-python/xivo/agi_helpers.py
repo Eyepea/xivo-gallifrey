@@ -54,7 +54,7 @@ def set_fwd_vars(agi, cursor, type, typeval, appval, type_varname, typeval1_varn
 	elif type == 'application':
 		agi.set_variable(typeval1_varname, typeval)
 
-		if typeval == 'disa':
+		if typeval in ('disa', 'callback'):
 			agi.set_variable(typeval2_varname, appval.replace("|", ":"))
 		else:
 			agi.set_variable(typeval2_varname, appval)
