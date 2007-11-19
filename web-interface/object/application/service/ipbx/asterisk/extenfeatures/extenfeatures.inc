@@ -186,6 +186,11 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 
 		$this->get($arr['name']);
 
+		if($this->get($arr['name']) !== false
+		&& array_key_exists('commented',$arr) === false
+		&& xivo_ak('commented',$this->_info['extenfeatures']) === true)
+			$arr['commented'] = $this->_info['extenfeatures']['commented'];
+
 		$this->set_extenfeatures($arr);
 
 		$number = (string) $this->get_result_var('extenfeatures','exten');

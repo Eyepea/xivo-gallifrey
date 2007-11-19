@@ -1,6 +1,5 @@
 <?php
 
-$appuser = &$ipbx->get_application('user');
 $autoprov = &$ipbx->get_module('autoprov');
 
 $result = null;

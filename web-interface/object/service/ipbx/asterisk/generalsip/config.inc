@@ -409,7 +409,7 @@ $array['filter']['useclientcode'] = array('bool' => true);
 $array['filter']['progressinband'] = array('key' => array('yes','no','never'));
 $array['filter']['language'] = array('key' => array('en','fr'));
 $array['filter']['musiconhold'] = array('set' => false,'chk' => 2,'maxlen' => 20);
-$array['filter']['vmexten'] = array('regexp' => '/^[0-9#\*]+$/i','maxlen' => 40);
+$array['filter']['vmexten'] = array('regexp' => '/^[0-9#\*]+$/','maxlen' => 40);
 $array['filter']['trustrpid'] = array('bool' => true);
 $array['filter']['sendrpid'] = array('bool' => true);
 $array['filter']['canreinvite'] = array('key' => array('yes','no','update'));

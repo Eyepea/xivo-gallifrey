@@ -26,8 +26,23 @@ if(isset($_QR['fm_send']) === true)
 
 		if(is_array($result['allow']) === true)
 			$result['allow'] = implode(',',$result['allow']);
-		
-		if($generalsip->replace_val_list($result) === true)
+
+		$rsvoicemsg = null;
+
+		if(isset($result['vmexten']) === true)
+		{
+			$appextenfeatures = &$ipbx->get_application('extenfeatures');
+
+			$voicemsg = array();
+			$voicemsg['name'] = 'voicemsg';
+			$voicemsg['exten'] = $result['vmexten'];
+
+			if($appextenfeatures->set($voicemsg) === false
+			|| $appextenfeatures->save() === false)
+				$rsvoicemsg = false;
+		}
+
+		if($rsvoicemsg !== false && $generalsip->replace_val_list($result) === true)
 			$_HTML->set_var('fm_save',true);
 	}
 }

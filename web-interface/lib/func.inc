@@ -866,6 +866,8 @@ function xivo_calc_duration($beg,$end,$diff=false,$unset=false)
 	$r['m']  = floor($r['s'] / 60);
 	$r['s'] -= $r['m'] * 60;
 
+	ksort($r);
+
 	if($unset === false)
 		return($r);
 	

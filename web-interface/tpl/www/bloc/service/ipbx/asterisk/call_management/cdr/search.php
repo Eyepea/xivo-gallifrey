@@ -188,11 +188,8 @@
 			endif;
 
 			$duration = xivo_calc_duration(0,0,$ref['duration'],true);
-			ksort($duration);
 
-			$cnt_duration = count($duration);
-
-			if($cnt_duration === 4):
+			if(($cnt_duration = count($duration)) === 4):
 				$bbf_duration = 'entry_duration-dayhourminsec';
 			elseif($cnt_duration === 3):
 				$bbf_duration = 'entry_duration-hourminsec';
@@ -203,11 +200,8 @@
 			endif;
 
 			$billsec = xivo_calc_duration(0,0,$ref['billsec'],true);
-			ksort($billsec);
 
-			$cnt_billsec = count($billsec);
-
-			if($cnt_billsec === 4):
+			if(($cnt_billsec = count($billsec)) === 4):
 				$bbf_billsec = 'entry_billsec-dayhourminsec';
 			elseif($cnt_billsec === 3):
 				$bbf_billsec = 'entry_billsec-hourminsec';

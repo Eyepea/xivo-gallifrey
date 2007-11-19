@@ -7,6 +7,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 	var $_protocolname	= false;
 	var $_origin		= array();
 	var $_status		= '';
+	var $_cnt		= 0;
 	var $_userfeatures	= null;
 	var $_protocol		= null;
 	var $_extensions	= null;
@@ -68,7 +69,12 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		if($this->_info['ufeatures'] === false
 		|| ($this->_protocol = &$this->_service->get_protocol_module($this->_info['ufeatures']['protocol'])) === false
 		|| ($this->_info['protocol'] = $this->_protocol->get($this->_info['ufeatures']['protocolid'],$disable)) === false)
+		{
+			$this->_userfeatures->set_dso_param('internal',false);
 			return(false);
+		}
+
+		$this->_userfeatures->set_dso_param('internal',false);
 
 		$this->_origin['protocol'] = $this->_protocol->get_origin();
 		$this->_origin['ufeatures'] = $this->_userfeatures->get_origin();
@@ -316,6 +322,99 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$r['autoprov'] = false;
 
 		$r['dialstatus'] = $this->_dialstatus->get_element();
+
+		return($r);
+	}
+
+	function get_all_context()
+	{
+		if(($r = $this->_userfeatures->get_all_context()) !== false)
+			ksort($r);
+
+		return($r);
+	}
+
+	function get_cnt()
+	{
+		return(xivo_uint($this->_cnt));
+	}
+
+	function get_users_search($search,$protocols=array(),$disable=null,$order=null,$limit=null,$assoc=false,$initialized=null,$internal=false)
+	{
+		return($this->_get_users('search',$protocols,$disable,$search,$order,$limit,$assoc,$initialized,$internal));
+	}
+
+	function get_users_search_number($search,$protocols=array(),$disable=null,$order=null,$limit=null,$assoc=false,$initialized=null,$internal=false)
+	{
+		return($this->_get_users('search_number',$protocols,$disable,$search,$order,$limit,$assoc,$initialized,$internal));
+	}
+
+	function get_users_list($protocols=array(),$disable=null,$order=null,$limit=null,$assoc=false,$initialized=null,$internal=false)
+	{
+		return($this->_get_users('list',$protocols,$disable,null,$order,$limit,$assoc,$initialized,$internal));
+	}
+
+	function get_users_context($context,$protocols=array(),$disable=null,$order=null,$limit=null,$assoc=false,$initialized=null,$internal=false)
+	{
+		return($this->_get_users('context',$protocols,$disable,strval($context),$order,$limit,$assoc,$initialized,$internal));
+	}
+
+	function _get_users($action,$protocols=array(),$disable=null,$opts=array(),$order=null,$limit=null,$assoc=false,$initialized=null,$internal=false)
+	{
+		$action = (string) $action;
+		$protocols = (array) $protocols;
+		$assoc = (bool) $assoc;
+
+		$this->_cnt = 0;
+	
+		if(empty($protocols) === true)
+			$protocols = array_keys($this->_service->get_protocol());
+		else
+			$protocols = array_values($protocols);
+
+		$this->_userfeatures->set_dso_param('internal',$internal);
+
+		switch($action)
+		{
+			case 'search':
+				$rs = $this->_userfeatures->get_search($opts,$disable,$order,$limit);
+				break;
+			case 'search_number':
+				$rs = $this->_userfeatures->get_search_number($opts,$disable,$order,$limit);
+				break;
+			case 'context':
+				$rs = $this->_userfeatures->get_all_where(array('context' => $opts),$disable,true,$order,$limit);
+				break;
+			case 'list':
+			default:
+				$rs = $this->_userfeatures->get_all($disable,true,$order,$limit);
+		}
+
+		$this->_userfeatures->set_dso_param('internal',false);
+
+		if($rs === false || ($nb = count($rs)) === 0)
+			return(false);
+
+		$r = $info = array();
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			$info['ufeatures'] = $rs[$i];
+
+			if(in_array($info['ufeatures']['protocol'],$protocols) === false
+			|| ($protocol = &$this->_service->get_protocol_module($info['ufeatures']['protocol'])) === false
+			|| ($info['protocol'] = $protocol->get($info['ufeatures']['protocolid'],$disable,$initialized)) === false)
+				continue;
+
+			$r[$info['ufeatures']['id']] = $info;
+		}
+
+		$this->_cnt = $this->_userfeatures->get_cnt();
+	
+		if(empty($r) === true)
+			$r = false;
+		else if($assoc === false)
+			$r = array_values($r);
 
 		return($r);
 	}

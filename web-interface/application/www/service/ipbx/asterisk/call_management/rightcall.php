@@ -16,11 +16,17 @@ switch($act)
 		$rcalluser = $rcallgroup = $rcallincall = $rcalloutcall = array();
 		$rcalluser['slt'] = $rcallgroup['slt'] = $rcallincall['slt'] = $rcalloutcall['slt'] = null;
 
-		xivo::load_class('xivo_sort');
-		$usersort = new xivo_sort(array('browse' => 'ufeatures','key' => 'identity'));
+		$userorder = array();
+		$userorder['firstname'] = SORT_ASC;
+		$userorder['lastname'] = SORT_ASC;
+		$userorder['number'] = SORT_ASC;
+		$userorder['context'] = SORT_ASC;
+		$userorder['name'] = SORT_ASC;
 
-		if(($rcalluser['list'] = $ipbx->get_users_list(null,null,null,null,true)) !== false)
-			uasort($rcalluser['list'],array(&$usersort,'str_usort'));
+		$appuser = &$ipbx->get_application('user');
+		$rcalluser['list'] = $appuser->get_users_list(null,null,$userorder,null,true);
+
+		xivo::load_class('xivo_sort');
 
 		$groupsort = new xivo_sort(array('browse' => 'gfeatures','key' => 'name'));
 
@@ -56,6 +62,8 @@ switch($act)
 			if($rcalluser['slt'] !== false)
 			{
 				$rcalluser['list'] = xivo_array_diff_key($rcalluser['list'],$rcalluser['slt']);
+
+				$usersort = new xivo_sort(array('browse' => 'ufeatures','key' => 'identity'));
 				uasort($rcalluser['slt'],array(&$usersort,'str_usort'));
 			}
 		}
@@ -125,11 +133,17 @@ switch($act)
 		$rcalluser = $rcallgroup = $rcallincall = $rcalloutcall = array();
 		$rcalluser['slt'] = $rcallgroup['slt'] = $rcallincall['slt'] = $rcalloutcall['slt'] = null;
 
-		xivo::load_class('xivo_sort');
-		$usersort = new xivo_sort(array('browse' => 'ufeatures','key' => 'identity'));
+		$userorder = array();
+		$userorder['firstname'] = SORT_ASC;
+		$userorder['lastname'] = SORT_ASC;
+		$userorder['number'] = SORT_ASC;
+		$userorder['context'] = SORT_ASC;
+		$userorder['name'] = SORT_ASC;
 
-		if(($rcalluser['list'] = $ipbx->get_users_list(null,null,null,null,true)) !== false)
-			uasort($rcalluser['list'],array(&$usersort,'str_usort'));
+		$appuser = &$ipbx->get_application('user');
+		$rcalluser['list'] = $appuser->get_users_list(null,null,$userorder,null,true);
+
+		xivo::load_class('xivo_sort');
 
 		$groupsort = new xivo_sort(array('browse' => 'gfeatures','key' => 'name'));
 
@@ -167,6 +181,8 @@ switch($act)
 			if($rcalluser['slt'] !== false)
 			{
 				$rcalluser['list'] = xivo_array_diff_key($rcalluser['list'],$rcalluser['slt']);
+
+				$usersort = new xivo_sort(array('browse' => 'ufeatures','key' => 'identity'));
 				uasort($rcalluser['slt'],array(&$usersort,'str_usort'));
 			}
 		}

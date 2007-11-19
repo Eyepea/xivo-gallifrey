@@ -3,7 +3,9 @@
 $protocols = array(XIVO_SRE_IPBX_AST_PROTO_SIP,
 		   XIVO_SRE_IPBX_AST_PROTO_IAX);
 
-if(($users = $ipbx->get_users_list($protocols)) === false)
+$appuser = &$ipbx->get_application('user');
+
+if(($users = $appuser->get_users_list($protocols)) === false)
 	xivo_die('no-data');
 
 $total = count($users);

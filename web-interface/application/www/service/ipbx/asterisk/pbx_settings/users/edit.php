@@ -1,7 +1,5 @@
 <?php
 
-$appuser = &$ipbx->get_application('user');
-
 if(isset($_QR['id']) === false || ($info = $appuser->get($_QR['id'])) === false)
 	$_QRY->go($_HTML->url('service/ipbx/pbx_settings/users'),$param);
 

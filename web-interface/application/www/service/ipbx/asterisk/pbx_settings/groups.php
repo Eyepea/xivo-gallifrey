@@ -18,11 +18,17 @@ switch($act)
 		$user = $rightcall = array();
 		$user['slt'] = $rightcall['slt'] = array();
 
-		xivo::load_class('xivo_sort');
-		$usersort = new xivo_sort(array('browse' => 'ufeatures','key' => 'identity'));
+		$userorder = array();
+		$userorder['firstname'] = SORT_ASC;
+		$userorder['lastname'] = SORT_ASC;
+		$userorder['number'] = SORT_ASC;
+		$userorder['context'] = SORT_ASC;
+		$userorder['name'] = SORT_ASC;
 
-		if(($user['list'] = $ipbx->get_users_list(null,null,null,null,true)) !== false)
-			uasort($user['list'],array(&$usersort,'str_usort'));
+		$appuser = &$ipbx->get_application('user');
+		$user['list'] = $appuser->get_users_list(null,null,$userorder,null,true);
+
+		xivo::load_class('xivo_sort');
 
 		$rightcallsort = new xivo_sort(array('browse' => 'rightcall','key' => 'name'));
 
@@ -55,6 +61,8 @@ switch($act)
 			if($user['slt'] !== false)
 			{
 				$user['list'] = xivo_array_diff_key($user['list'],$user['slt']);
+
+				$usersort = new xivo_sort(array('browse' => 'ufeatures','key' => 'identity'));
 				uasort($user['slt'],array(&$usersort,'str_usort'));
 			}
 		}
@@ -98,11 +106,17 @@ switch($act)
 		$user = $rightcall = array();
 		$user['slt'] = $rightcall['slt'] = array();
 
-		xivo::load_class('xivo_sort');
-		$usersort = new xivo_sort(array('browse' => 'ufeatures','key' => 'identity'));
+		$userorder = array();
+		$userorder['firstname'] = SORT_ASC;
+		$userorder['lastname'] = SORT_ASC;
+		$userorder['number'] = SORT_ASC;
+		$userorder['context'] = SORT_ASC;
+		$userorder['name'] = SORT_ASC;
 
-		if(($user['list'] = $ipbx->get_users_list(null,null,null,null,true)) !== false)
-			uasort($user['list'],array(&$usersort,'str_usort'));
+		$appuser = &$ipbx->get_application('user');
+		$user['list'] = $appuser->get_users_list(null,null,$userorder,null,true);
+
+		xivo::load_class('xivo_sort');
 
 		$rightcallsort = new xivo_sort(array('browse' => 'rightcall','key' => 'name'));
 
@@ -137,6 +151,8 @@ switch($act)
 			if($user['slt'] !== false)
 			{
 				$user['list'] = xivo_array_diff_key($user['list'],$user['slt']);
+
+				$usersort = new xivo_sort(array('browse' => 'ufeatures','key' => 'identity'));
 				uasort($user['slt'],array(&$usersort,'str_usort'));
 			}
 		}

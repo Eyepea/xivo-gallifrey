@@ -13,10 +13,9 @@ if($search !== '')
 else if($context !== '')
 	$param['context'] = $context;
 
-$ufeatures = &$ipbx->get_module('userfeatures');
+$appuser = &$ipbx->get_application('user');
 
-if(($contexts = $ufeatures->get_all_context()) !== false)
-	ksort($contexts);
+$contexts = $appuser->get_all_context();
 
 switch($act)
 {
@@ -26,8 +25,6 @@ switch($act)
 		break;
 	case 'delete':
 		$param['page'] = $page;
-
-		$appuser = &$ipbx->get_application('user');
 
 		if(isset($_QR['id']) === false || $appuser->get($_QR['id']) === false)
 			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/users'),$param);
@@ -43,8 +40,6 @@ switch($act)
 
 		if(($values = xivo_issa_val('users',$_QR)) === false)
 			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/users'),$param);
-
-		$appuser = &$ipbx->get_application('user');
 
 		$nb = count($values);
 
@@ -67,8 +62,6 @@ switch($act)
 		if(($values = xivo_issa_val('users',$_QR)) === false)
 			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/users'),$param);
 
-		$appuser = &$ipbx->get_application('user');
-
 		$nb = count($values);
 
 		for($i = 0;$i < $nb;$i++)
@@ -87,8 +80,6 @@ switch($act)
 		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/users'),$param);
 		break;
 	case 'import':
-		$appuser = &$ipbx->get_application('user');
-
 		if(isset($_QR['fm_send']) === true)
 		{
 			$appuser->import_csv();
@@ -101,6 +92,7 @@ switch($act)
 	case 'list':
 	default:
 		$act = 'list';
+
 		$total = 0;
 		$nbbypage = XIVO_SRE_IPBX_AST_NBBYPAGE;
 
@@ -113,14 +105,14 @@ switch($act)
 		$limit[1] = $nbbypage;
 
 		if($search !== '')
-			$list = $ipbx->get_users_search($search,null,null,$order,$limit);
+			$list = $appuser->get_users_search($search,null,null,$order,$limit);
 		else if($context !== '')
-			$list = $ipbx->get_users_context($context,null,null,$order,$limit);
+			$list = $appuser->get_users_context($context,null,null,$order,$limit);
 		else
-			$list = $ipbx->get_users_list(null,null,$order,$limit);
+			$list = $appuser->get_users_list(null,null,$order,$limit);
 
 		if($list !== false)
-			$total = $ufeatures->get_cnt();
+			$total = $appuser->get_cnt();
 
 		$_HTML->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
 		$_HTML->set_var('list',$list);
