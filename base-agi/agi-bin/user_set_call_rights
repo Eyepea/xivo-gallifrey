@@ -8,7 +8,6 @@
 #	   mailto:technique@proformatique.com
 #	   (C) 2007 Proformatique
 
-# TODO: Filter commented SQL rows
 # TODO: handle rules priority.
 
 __version__ = "$Revision$ $Date$"

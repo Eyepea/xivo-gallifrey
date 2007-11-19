@@ -48,8 +48,6 @@ conn = agi_helpers.db_connect(agi, db_uri)
 cursor = conn.cursor()
 exten_pattern = agi.get_variable('REAL_EXTENPATTERN')
 
-# TODO: handle caller ID.
-
 cursor.query("SELECT ${columns} FROM incall "
              "WHERE exten = %s "
              "AND linked = 1 "
