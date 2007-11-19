@@ -53,6 +53,7 @@ def ds_set_fwd_vars(id, status, type_varname, typeval1_varname, typeval2_varname
 	if not res:
 		return
 
+	agi.set_variable(type_varname + "_FROMDS", 1)
 	agi_helpers.set_fwd_vars(agi, cursor, res['type'], res['typeval'], res['applicationval'], type_varname, typeval1_varname, typeval2_varname)
 
 # Cursors have a weak reference on their connection, so make a strong one.
