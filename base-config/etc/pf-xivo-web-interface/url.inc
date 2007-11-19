@@ -10,7 +10,7 @@ $array['xivo/configuration/servers'] = 'xivo/configuration/index.php/servers/';
 $array['xivo/preferences'] = 'xivo/preferences.php';
 $array['xivo/help'] = 'xivo/help.php';
 $array['xivo/contact'] = 'xivo/contact.php';
-$array['xivo/logout'] = 'xivo/logout.php';
+$array['xivo/logoff'] = 'xivo/logoff.php';
 
 $array['service/ipbx'] = 'service/ipbx/index.php';
 $array['service/ipbx/general_settings/sip'] = 'service/ipbx/index.php/general_settings/sip/';
