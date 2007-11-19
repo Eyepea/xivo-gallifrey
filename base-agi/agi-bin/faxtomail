@@ -32,86 +32,42 @@ CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
 
 import xivo.to_path
 
-import sys
-import anysql
-from BackSQL import backsqlite
-from BackSQL import backmysql
-import ConfigParser
-from ConfigDict import *
+import os
+import sys, re
+import except_tb
+import agi_helpers
+import ConfigDict
 from agi import *
-
-options = { "db_uri" : "" }
-conf_obj = ConfigParser.ConfigParser()
-conf_obj.readfp(open(CONFIG_FILE))
-FillDictFromConfigSection(options, conf_obj, "db")
-
-import string, re, os, datetime
 
 agi = AGI()
 
-if len(sys.argv) != 4:
-	agi.verbose("Missing arguments")
-	sys.exit()
-
-
-if sys.argv[1].isdigit():
-	agi.verbose("OK, argv[1] is a phone number!")
-	callexten = sys.argv[1]
-else:
-	agi.verbose("Error, argv[1] is not a phone number!")
-	callexten = "Anonyme"
-
-filename = sys.argv[2]
-filepdf = string.replace(filename,".tif",".pdf")
-
-if sys.argv[3].isdigit():
-	mailbox = sys.argv[3]
-else:
-	agi.verbose("Error it's not a phone number!")
-
-try:
-        conn = anysql.connect_by_uri(options['db_uri'])
-except:
-        agi.verbose("Unable to connect to %s" %options['db_uri'])
-        raise
-
-query = "SELECT email, fullname FROM uservoicemail WHERE mailbox='%s'" % mailbox
-cursor = conn.cursor()
-cursor.execute(query)
-r = cursor.fetchone()
-
-if not r:
-	agi.verbose("Sorry there is not user for this FAX")
-	sys.exit()
-
-mail = r[0]
-name = r[1]
-date = datetime.datetime.now()
-
-if not mail and not name:
-	agi.verbose("Sorry there is no person at this number")
-	agi.verbose("Missing mail or name")
-	sys.exit()
-else:
+def atexit(filename, filepdf):
 	try:
-		if os.stat(filename).st_size != 0:
-			agi.verbose("Convert tif to pdf")
-			os.system("/usr/bin/tiff2pdf -o %s %s" %(filepdf, filename))
-			agi.verbose("Send FAX to %s (%s) at %s" %(mail, name, date))
-			os.system("echo \"Un nouveau fax est arrive pour %s, il est joint dans ce mail !\n\nCordialement,\nService IPBX\" | /usr/bin/mutt -s \"Reception FAX de %s\" -a %s %s" %(name, callexten, filepdf, mail))
-			try:
-				os.remove(filepdf)
-				os.remove(filename)
-			except OSError:
-				agi.verbose("Error while trying to remove '%s' and '%s'" % (filename, filepdf))
-				raise
-		else:
-			agi.verbose("Sorry the file is empty")
-			try:
-				os.remove(filename)
-			except OSError:
-				agi.verbose("Error while trying to remove '%s'" % filename)
-				raise
+		os.remove(filename)
+		os.remove(filepdf)
+
 	except OSError:
-		agi.verbose("Error during fax conversion, maybe no fax received...")
-		raise
+		pass
+def exit_on_error(filename, filepdf, message):
+	atexit(filename, filepdf)
+	agi_helpers.dp_break(agi, message)
+
+filename = sys.argv[1]
+filepdf = filename.replace(".tif",".pdf")
+
+email = sys.argv[2]
+
+dstnum = agi.get_variable('REAL_DSTNUM')
+
+status = os.system("/usr/bin/tiff2pdf -o '%s' '%s'" % (filepdf, filename))
+
+if status:
+	exit_on_error(filename, filepdf, "Unable to convert fax to PDF")
+
+status = os.system("echo \"Un nouveau fax est arrive. Il est joint dans ce mail.\n\nCordialement,\nService IPBX\" | /usr/bin/mutt -s \"Reception de FAX vers %s\" -a %s %s" % (dstnum, filepdf, mail))
+
+if status:
+	exit_on_error(filename, filepdf, "Unable to send fax as an email")
+
+atexit(filename, filepdf)
+agi.verbose('AGI script "%s" successfully executed' % sys.argv[0])
