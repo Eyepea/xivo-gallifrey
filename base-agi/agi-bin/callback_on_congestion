@@ -1,0 +1,74 @@
+#!/usr/bin/python
+#
+# Authors : Sylvain Boily, Guillaume Knispel, Richard Braun
+#	   Proformatique
+#	   67, rue Voltaire
+#	   92800 PUTEAUX
+#	   (+33/0)1.41.38.99.60
+#	   mailto:technique@proformatique.com
+#	   (C) 2007 Proformatique
+
+__version__ = "$Revision$ $Date$"
+__license__ = """
+    Copyright (C) 2007, Proformatique
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2.1 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+"""
+
+CONFIG_FILE = '/etc/asterisk/xivo_callback_on_congestion.conf'
+
+import xivo.to_path
+
+import os
+import sys
+import time
+import ConfigParser
+from agi import *
+
+agi = AGI()
+parser = ConfigParser.RawConfigParser()
+parser.readfp(open(CONFIG_FILE))
+
+srcnum = agi.get_variable('CALLERID(num)')
+dstnum = agi.get_variable('REAL_DSTNUM')
+context = agi.get_variable('REAL_CONTEXT')
+channel = agi.get_variable('CHANNEL')
+cb_passwd = agi.get_variable('CALLBACK_PASSWD')
+cb_context = agi.get_variable('CALLBACK_CONTEXT')
+chantech = channel.split('/')[0]
+max_retries = parser.getint('general', 'max_retries')
+retry_time = parser.getint('general', 'retry_time')
+wait_time = parser.getint('general', 'wait_time')
+
+mtime = time.time() + 5
+filename = "%s-%s.call" % (srcnum, int(mtime))
+
+tmpfile = "/var/spool/asterisk/tmp/" + filename
+realfile = "/var/spool/asterisk/outgoing/" + filename
+
+file = open(tmpfile, 'w')
+file.write("Channel: %s/%s\n"
+           "MaxRetries: %d\n"
+           "RetryTime: %d\n"
+           "WaitTime: %d\n"
+           "CallerID: %s\n"
+           "Context: %s\n"
+           "Extension: %s\n"
+           "Priority: 1\n" % (chantech, srcnum, max_retries, retry_time, wait_time, srcnum, context, dstnum))
+file.close()
+
+os.utime(tmpfile, (mtime, mtime))
+os.rename(tmpfile, realfile)
+agi.verbose('AGI script "%s" successfully executed' % sys.argv[0])
