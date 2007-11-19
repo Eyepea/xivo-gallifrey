@@ -64,7 +64,7 @@ status = os.system("/usr/bin/tiff2pdf -o '%s' '%s'" % (filepdf, filename))
 if status:
 	exit_on_error(filename, filepdf, "Unable to convert fax to PDF")
 
-status = os.system("echo \"Un nouveau fax est arrive. Il est joint dans ce mail.\n\nCordialement,\nService IPBX\" | /usr/bin/mutt -s \"Reception de FAX vers %s\" -a %s %s" % (dstnum, filepdf, mail))
+status = os.system("echo \"Un nouveau fax est arrive. Il est joint dans ce mail.\n\nCordialement,\nService IPBX\" | /usr/bin/mutt -s \"Reception de FAX vers %s\" -a %s %s" % (dstnum, filepdf, email))
 
 if status:
 	exit_on_error(filename, filepdf, "Unable to send fax as an email")
