@@ -88,7 +88,7 @@ $array['element']['monthend']['default'] = '';
 $array['element']['monthend']['null'] = true;
 
 $array['element']['typetrue'] = array();
-$array['element']['typetrue']['value'] = array('endcall','user','group','queue','meetme','schedule','application','custom');
+$array['element']['typetrue']['value'] = array('endcall','user','group','queue','meetme','schedule','application','sound','custom');
 $array['element']['typetrue']['default'] = 'endcall';
 
 $array['element']['typevaltrue'] = array();
@@ -98,7 +98,7 @@ $array['element']['applicationvaltrue'] = array();
 $array['element']['applicationvaltrue']['default'] = '';
 
 $array['element']['typefalse'] = array();
-$array['element']['typefalse']['value'] = array('endcall','user','group','queue','meetme','schedule','application','custom');
+$array['element']['typefalse']['value'] = array('endcall','user','group','queue','meetme','schedule','application','sound','custom');
 $array['element']['typefalse']['default'] = '';
 
 $array['element']['typevalfalse'] = array();
@@ -140,9 +140,9 @@ $array['filter']['daynumbeg'] = array('set' => false,'chk' => 2,'cast' => 'uint'
 $array['filter']['daynumend'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,31));
 $array['filter']['monthbeg'] = array('set' => false,'chk' => 2,'key' => array('jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'));
 $array['filter']['monthend'] = array('set' => false,'chk' => 2,'key' => array('jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'));
-$array['filter']['typetrue'] = array('key' => array('endcall','user','group','queue','meetme','schedule','application','custom'));
+$array['filter']['typetrue'] = array('key' => array('endcall','user','group','queue','meetme','schedule','application','sound','custom'));
 $array['filter']['typevaltrue'] = array('maxlen' => 255,'cast' => 'sgraph');
-$array['filter']['typefalse'] = array('key' => array('endcall','user','group','queue','meetme','schedule','application','custom'));
+$array['filter']['typefalse'] = array('key' => array('endcall','user','group','queue','meetme','schedule','application','sound','custom'));
 $array['filter']['applicationvaltrue'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_\-\.\|@]+$/i','maxlen' => 80);
 $array['filter']['typevalfalse'] = array('maxlen' => 255,'cast' => 'sgraph');
 $array['filter']['applicationvalfalse'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_\-\.\|@]+$/i','maxlen' => 80);

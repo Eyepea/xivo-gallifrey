@@ -35,6 +35,7 @@ class xivo_service_asterisk_schedule extends xivo_service_asterisk_abstract
 		$data['meetme'] = array('true' => '','false' => '');
 		$data['schedule'] = array('true' => '','false' => '');
 		$data['application'] = array('true' => '','false' => '');
+		$data['sound'] = array('true' => '','false' => '');
 		$data['custom'] = array('true' => '','false' => '');
 
 		if(isset($data[$data['typetrue']]) === true)
@@ -292,6 +293,8 @@ class xivo_service_asterisk_schedule extends xivo_service_asterisk_abstract
 				return($this->chk_dest_queue($typeval,null,$disable));
 			case 'meetme':
 				return($this->chk_dest_meetme($typeval,null,$disable));
+			case 'sound':
+				return($this->chk_dest_sound('playback',$typeval));
 		}
 
 		return(false);

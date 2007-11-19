@@ -234,35 +234,57 @@ class xivo_application_asterisk_abstract extends xivo_application_abstract
 		else if($type === 'group')
 			$groupid = xivo_uint($id);
 
-		if(($ufeatures = &$this->_service->get_module('userfeatures')) === false
-		|| ($r['users'] = $ufeatures->get_all_number($userid)) === false)
-			$r['users'] = false;
-		else
+		if(($ufeatures = &$this->_service->get_module('userfeatures')) !== false
+		&& ($r['users'] = $ufeatures->get_all_number($userid)) !== false)
 			usort($r['users'],array(&$sortidentity,'str_usort'));
-
-		if(($gfeatures = &$this->_service->get_module('groupfeatures')) === false
-		|| ($r['groups'] = $gfeatures->get_all_number($groupid)) === false)
-			$r['groups'] = false;
 		else
+			$r['users'] = false;
+
+		if(($gfeatures = &$this->_service->get_module('groupfeatures')) !== false
+		&& ($r['groups'] = $gfeatures->get_all_number($groupid)) !== false)
 			usort($r['groups'],array(&$sortidentity,'str_usort'));
-
-		if(($qfeatures = &$this->_service->get_module('queuefeatures')) === false
-		|| ($r['queues'] = $qfeatures->get_all_number()) === false)
-			$r['queues'] = false;
 		else
+			$r['groups'] = false;
+
+		if(($qfeatures = &$this->_service->get_module('queuefeatures')) !== false
+		&& ($r['queues'] = $qfeatures->get_all_number()) !== false)
 			usort($r['queues'],array(&$sortidentity,'str_usort'));
-
-		if(($mfeatures = &$this->_service->get_module('meetmefeatures')) === false
-		|| ($r['meetme'] = $mfeatures->get_all_number()) === false)
-			$r['meetme'] = false;
 		else
+			$r['queues'] = false;
+
+		if(($mfeatures = &$this->_service->get_module('meetmefeatures')) !== false
+		&& ($r['meetme'] = $mfeatures->get_all_number()) !== false)
 			usort($r['meetme'],array(&$sortidentity,'str_usort'));
-
-		if(($schedule = &$this->_service->get_module('schedule')) === false
-		|| ($r['schedule'] = $schedule->get_all()) === false)
-			$r['schedule'] = false;
 		else
+			$r['meetme'] = false;
+
+		if(($schedule = &$this->_service->get_module('schedule')) !== false
+		&& ($r['schedule'] = $schedule->get_all()) !== false)
 			usort($r['schedule'],array(&$sortname,'str_usort'));
+		else
+			$r['schedule'] = false;
+
+		return($r);
+	}
+
+	function get_destination_result_for_display($type)
+	{
+		$r = array();
+		$r['endcall'] = '';
+		$r['user'] = '';
+		$r['group'] = '';
+		$r['queue'] = '';
+		$r['meetme'] = '';
+		$r['schedule'] = '';
+		$r['application'] = '';
+		$r['sound'] = '';
+		$r['custom'] = ''; 
+
+		if(xivo_issa($type,$this->_result) === true)
+		{
+			$r[$this->_result[$type]['type']] = $this->_result[$type]['typeval'];
+			$r = array_merge($r,$this->_result[$type]);
+		}
 
 		return($r);
 	}

@@ -58,6 +58,9 @@ Horaire
 ; fm_schedule_type-opt-application
 Application
 
+; fm_schedule_type-opt-sound
+Fichier son
+
 ; fm_schedule_type-opt-custom
 Personnalisée
 
@@ -81,6 +84,9 @@ Renvoyer vers :
 
 ; fm_schedule_application-typeval
 Renvoyer vers :
+
+; fm_schedule_sound-typeval
+Jouer :
 
 ; fm_schedule_custom-typeval
 Commande :
@@ -126,3 +132,6 @@ Créer une chambre de conférence
 
 ; no_schedule
 Aucun horaire trouvé
+
+; add_playback-sound
+Ajouter un fichier son

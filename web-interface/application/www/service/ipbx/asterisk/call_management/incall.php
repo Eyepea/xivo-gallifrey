@@ -36,6 +36,7 @@ switch($act)
 			|| $appincall->add() === false)
 			{
 				$result = $appincall->get_result();
+				$result['incall'] = $appincall->get_destination_result();
 				break;
 			}
 
@@ -43,20 +44,8 @@ switch($act)
 		}
 		while(false);
 
-		if(isset($result['incall']) === true)
-		{
-			$result['incall']['endcall'] = '';
-			$result['incall']['user'] = '';
-			$result['incall']['group'] = '';
-			$result['incall']['queue'] = '';
-			$result['incall']['meetme'] = '';
-			$result['incall']['schedule'] = '';
-			$result['incall']['application'] = '';
-			$result['incall']['custom'] = '';
-
-			if(isset($result['incall'][$result['incall']['type']]) === true)
-				$result['incall'][$result['incall']['type']] = $result['incall']['typeval'];
-		}
+		if(xivo_issa('incall',$result) === false || empty($result['incall']) === true)
+			$result['incall'] = null;
 
 		if($rightcall['list'] !== false && xivo_ak('rightcall',$result) === true)
 		{
@@ -106,6 +95,7 @@ switch($act)
 			|| $appincall->edit() === false)
 			{
 				$result = $appincall->get_result();
+				$result['incall'] = $appincall->get_destination_result();
 				break;
 			}
 
@@ -113,21 +103,8 @@ switch($act)
 		}
 		while(false);
 
-		if(isset($return['incall']) === true)
-		{
-			$return['incall']['endcall'] = '';
-			$return['incall']['user'] = '';
-			$return['incall']['group'] = '';
-			$return['incall']['queue'] = '';
-			$return['incall']['meetme'] = '';
-			$return['incall']['schedule'] = '';
-			$return['incall']['application'] = '';
-			$return['incall']['custom'] = '';
-			$return['incall']['linked'] = $info['incall']['linked'];
-
-			if(isset($return['incall'][$return['incall']['type']]) === true)
-				$return['incall'][$return['incall']['type']] = $return['incall']['typeval'];
-		}
+		if(xivo_issa('incall',$return) === false || empty($return['incall']) === true)
+			$return['incall'] = null;
 
 		if($rightcall['list'] !== false && xivo_ak('rightcall',$return) === true)
 		{

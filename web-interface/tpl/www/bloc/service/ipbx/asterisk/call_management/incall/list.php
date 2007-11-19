@@ -70,7 +70,9 @@
 					$identity = $ref['type']['name'];
 				elseif($ref['incall']['type'] === 'application'):
 					$identity = $this->bbf('incall_type-application-'.$ref['incall']['typeval'],$ref['incall']['applicationval']);
-				elseif(isset($ref['type']['identity']) === true):
+				elseif($ref['incall']['type'] === 'sound'):
+					$identity = basename($ref['incall']['typeval']);
+				elseif(is_array($ref['type']) === true && isset($ref['type']['identity']) === true):
 					$identity = $ref['type']['identity'];
 				endif;
 			endif;

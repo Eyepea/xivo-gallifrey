@@ -30,6 +30,10 @@ xivo_elt_type['fd-incall-application-typeval'] = new Array();
 xivo_elt_type['fd-incall-application-typeval']['style'] = 'display:none';
 xivo_elt_type['it-incall-application-typeval'] = new Array();
 xivo_elt_type['it-incall-application-typeval']['property'] = 'disabled|true:boolean';
+xivo_elt_type['fd-incall-sound-typeval'] = new Array();
+xivo_elt_type['fd-incall-sound-typeval']['style'] = 'display:none';
+xivo_elt_type['it-incall-sound-typeval'] = new Array();
+xivo_elt_type['it-incall-sound-typeval']['property'] = 'disabled|true:boolean';
 xivo_elt_type['fd-incall-custom-typeval'] = new Array();
 xivo_elt_type['fd-incall-custom-typeval']['style'] = 'display:none';
 xivo_elt_type['it-incall-custom-typeval'] = new Array();
@@ -51,6 +55,8 @@ xivo_elt_type['links']['link'][xivo_itype++] = new Array('fd-incall-schedule-typ
 xivo_elt_type['links']['link'][xivo_itype++] = new Array('it-incall-schedule-typeval',0,1);
 xivo_elt_type['links']['link'][xivo_itype++] = new Array('fd-incall-application-typeval',0,1);
 xivo_elt_type['links']['link'][xivo_itype++] = new Array('it-incall-application-typeval',0,1);
+xivo_elt_type['links']['link'][xivo_itype++] = new Array('fd-incall-sound-typeval',0,1);
+xivo_elt_type['links']['link'][xivo_itype++] = new Array('it-incall-sound-typeval',0,1);
 xivo_elt_type['links']['link'][xivo_itype++] = new Array('fd-incall-custom-typeval',0,1);
 xivo_elt_type['links']['link'][xivo_itype++] = new Array('it-incall-custom-typeval',0,1);
 
@@ -97,6 +103,12 @@ xivo_fm_type['application']['fd-incall-application-typeval']['style'] = 'display
 xivo_fm_type['application']['it-incall-application-typeval']['property'] = 'disabled|false:boolean';
 
 xivo_attrib_register('fm_type-application',xivo_fm_type['application']);
+
+xivo_fm_type['sound'] = xivo_clone(xivo_elt_type);
+xivo_fm_type['sound']['fd-incall-sound-typeval']['style'] = 'display:block';
+xivo_fm_type['sound']['it-incall-sound-typeval']['property'] = 'disabled|false:boolean';
+
+xivo_attrib_register('fm_type-sound',xivo_fm_type['sound']);
 
 xivo_fm_type['custom'] = xivo_clone(xivo_elt_type);
 xivo_fm_type['custom']['fd-incall-custom-typeval']['style'] = 'display:block';

@@ -68,6 +68,14 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		return($this->_info['rightcall']);
 	}
 
+	function get_sound()
+	{
+		if(($sounds = &$this->_service->get_module('sounds')) === false)
+			return(false);
+
+		return($sounds->get_list('playback',true));
+	}
+
 	function get_elements()
 	{
 		$r = array();
@@ -137,6 +145,23 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 			$r = false;
 		else if($assoc === false)
 			$r = array_values($r);
+
+		return($r);
+	}
+
+	function get_destination_result()
+	{
+		return(parent::get_destination_result_for_display('incall'));
+	}
+
+	function get_destination_list()
+	{
+		$r = parent::get_destination_list();
+
+		if(($sounds = &$this->_service->get_module('sounds')) !== false)
+			$r['sounds'] = $sounds->get_list('playback',true);
+		else
+			$r['sounds'] = false;
 
 		return($r);
 	}

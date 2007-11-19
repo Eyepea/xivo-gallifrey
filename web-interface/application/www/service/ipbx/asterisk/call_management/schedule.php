@@ -80,6 +80,7 @@ switch($act)
 				$result['schedule']['meetme'] = null;
 				$result['schedule']['schedule'] = null;
 				$result['schedule']['application'] = null;
+				$result['schedule']['sound'] = null;
 				$result['schedule']['custom'] = null;
 
 				if(empty($result['schedule']['typetrue']) === false)
@@ -101,6 +102,10 @@ switch($act)
 		while(false);
 
 		$list = array();
+
+		$sounds = &$ipbx->get_module('sounds');
+
+		$list['sounds'] = $sounds->get_list('playback',true);	
 
 		$ufeatures = &$ipbx->get_module('userfeatures');
 
@@ -241,6 +246,7 @@ switch($act)
 				$result['schedule']['meetme'] = null;
 				$result['schedule']['schedule'] = null;
 				$result['schedule']['application'] = null;
+				$result['schedule']['sound'] = null;
 				$result['schedule']['custom'] = null;
 				$result['schedule']['linked'] = $info['schedule']['linked'];
 
@@ -264,6 +270,10 @@ switch($act)
 		while(false);
 
 		$list = array();
+
+		$sounds = &$ipbx->get_module('sounds');
+
+		$list['sounds'] = $sounds->get_list('playback',true);	
 
 		$ufeatures = &$ipbx->get_module('userfeatures');
 

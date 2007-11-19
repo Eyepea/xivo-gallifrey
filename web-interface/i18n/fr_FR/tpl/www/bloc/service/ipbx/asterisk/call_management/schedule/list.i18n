@@ -58,6 +58,9 @@ Horaire
 ; schedule_typetrue-application
 Application
 
+; schedule_typetrue-sound
+Fichier son
+
 ; schedule_typetrue-custom
 Personnalisée
 

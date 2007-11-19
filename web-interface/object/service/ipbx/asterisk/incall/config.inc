@@ -20,7 +20,7 @@ $array['element']['context']['default'] = XIVO_SRE_IPBX_AST_INCALL_CONTEXT;
 $array['element']['context']['forcedef'] = true;
 
 $array['element']['type'] = array();
-$array['element']['type']['value'] = array('endcall','user','group','queue','meetme','schedule','application','custom');
+$array['element']['type']['value'] = array('endcall','user','group','queue','meetme','schedule','application','sound','custom');
 $array['element']['type']['default'] = 'endcall';
 
 $array['element']['typeval'] = array();
@@ -50,7 +50,7 @@ $array['element']['commented']['set'] = true;
 $array['filter'] = array();
 $array['filter']['exten'] = array('maxlen' => 40,'regexp' => '/^[_]?[0-9NXZ\*#\-\[\]]+[\.\!]?$/');
 $array['filter']['context'] = array('set' => false);
-$array['filter']['type'] = array('key' => array('endcall','user','group','queue','meetme','schedule','application','custom'));
+$array['filter']['type'] = array('key' => array('endcall','user','group','queue','meetme','schedule','application','sound','custom'));
 $array['filter']['typeval'] = array('maxlen' => 255,'cast' => 'sgraph');
 $array['filter']['applicationval'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_\-\.\|@]+$/i','maxlen' => 80);
 $array['filter']['linked'] = array('bool' => true);

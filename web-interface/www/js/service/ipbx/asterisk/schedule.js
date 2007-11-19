@@ -30,6 +30,10 @@ xivo_elt_typetrue['fd-schedule-application-typevaltrue'] = new Array();
 xivo_elt_typetrue['fd-schedule-application-typevaltrue']['style'] = 'display:none';
 xivo_elt_typetrue['it-schedule-application-typevaltrue'] = new Array();
 xivo_elt_typetrue['it-schedule-application-typevaltrue']['property'] = 'disabled|true:boolean';
+xivo_elt_typetrue['fd-schedule-sound-typevaltrue'] = new Array();
+xivo_elt_typetrue['fd-schedule-sound-typevaltrue']['style'] = 'display:none';
+xivo_elt_typetrue['it-schedule-sound-typevaltrue'] = new Array();
+xivo_elt_typetrue['it-schedule-sound-typevaltrue']['property'] = 'disabled|true:boolean';
 xivo_elt_typetrue['fd-schedule-custom-typevaltrue'] = new Array();
 xivo_elt_typetrue['fd-schedule-custom-typevaltrue']['style'] = 'display:none';
 xivo_elt_typetrue['it-schedule-custom-typevaltrue'] = new Array();
@@ -51,6 +55,8 @@ xivo_elt_typetrue['links']['link'][xivo_itypetrue++] = new Array('fd-schedule-sc
 xivo_elt_typetrue['links']['link'][xivo_itypetrue++] = new Array('it-schedule-schedule-typevaltrue',0,1);
 xivo_elt_typetrue['links']['link'][xivo_itypetrue++] = new Array('fd-schedule-application-typevaltrue',0,1);
 xivo_elt_typetrue['links']['link'][xivo_itypetrue++] = new Array('it-schedule-application-typevaltrue',0,1);
+xivo_elt_typetrue['links']['link'][xivo_itypetrue++] = new Array('fd-schedule-sound-typevaltrue',0,1);
+xivo_elt_typetrue['links']['link'][xivo_itypetrue++] = new Array('it-schedule-sound-typevaltrue',0,1);
 xivo_elt_typetrue['links']['link'][xivo_itypetrue++] = new Array('fd-schedule-custom-typevaltrue',0,1);
 xivo_elt_typetrue['links']['link'][xivo_itypetrue++] = new Array('it-schedule-custom-typevaltrue',0,1);
 
@@ -86,6 +92,10 @@ xivo_elt_typefalse['fd-schedule-application-typevalfalse'] = new Array();
 xivo_elt_typefalse['fd-schedule-application-typevalfalse']['style'] = 'display:none';
 xivo_elt_typefalse['it-schedule-application-typevalfalse'] = new Array();
 xivo_elt_typefalse['it-schedule-application-typevalfalse']['property'] = 'disabled|true:boolean';
+xivo_elt_typefalse['fd-schedule-sound-typevalfalse'] = new Array();
+xivo_elt_typefalse['fd-schedule-sound-typevalfalse']['style'] = 'display:none';
+xivo_elt_typefalse['it-schedule-sound-typevalfalse'] = new Array();
+xivo_elt_typefalse['it-schedule-sound-typevalfalse']['property'] = 'disabled|true:boolean';
 xivo_elt_typefalse['fd-schedule-custom-typevalfalse'] = new Array();
 xivo_elt_typefalse['fd-schedule-custom-typevalfalse']['style'] = 'display:none';
 xivo_elt_typefalse['it-schedule-custom-typevalfalse'] = new Array();
@@ -107,6 +117,8 @@ xivo_elt_typefalse['links']['link'][xivo_itypefalse++] = new Array('fd-schedule-
 xivo_elt_typefalse['links']['link'][xivo_itypefalse++] = new Array('it-schedule-schedule-typevalfalse',0,1);
 xivo_elt_typefalse['links']['link'][xivo_itypefalse++] = new Array('fd-schedule-application-typevalfalse',0,1);
 xivo_elt_typefalse['links']['link'][xivo_itypefalse++] = new Array('it-schedule-application-typevalfalse',0,1);
+xivo_elt_typefalse['links']['link'][xivo_itypefalse++] = new Array('fd-schedule-sound-typevalfalse',0,1);
+xivo_elt_typefalse['links']['link'][xivo_itypefalse++] = new Array('it-schedule-sound-typevalfalse',0,1);
 xivo_elt_typefalse['links']['link'][xivo_itypefalse++] = new Array('fd-schedule-custom-typevalfalse',0,1);
 xivo_elt_typefalse['links']['link'][xivo_itypefalse++] = new Array('it-schedule-custom-typevalfalse',0,1);
 
@@ -153,6 +165,12 @@ xivo_fm_typetrue['application']['fd-schedule-application-typevaltrue']['style'] 
 xivo_fm_typetrue['application']['it-schedule-application-typevaltrue']['property'] = 'disabled|false:boolean';
 
 xivo_attrib_register('fm_typetrue-application',xivo_fm_typetrue['application']);
+
+xivo_fm_typetrue['sound'] = xivo_clone(xivo_elt_typetrue);
+xivo_fm_typetrue['sound']['fd-schedule-sound-typevaltrue']['style'] = 'display:block';
+xivo_fm_typetrue['sound']['it-schedule-sound-typevaltrue']['property'] = 'disabled|false:boolean';
+
+xivo_attrib_register('fm_typetrue-sound',xivo_fm_typetrue['sound']);
 
 xivo_fm_typetrue['custom'] = xivo_clone(xivo_elt_typetrue);
 xivo_fm_typetrue['custom']['fd-schedule-custom-typevaltrue']['style'] = 'display:block';
@@ -203,6 +221,12 @@ xivo_fm_typefalse['application']['fd-schedule-application-typevalfalse']['style'
 xivo_fm_typefalse['application']['it-schedule-application-typevalfalse']['property'] = 'disabled|false:boolean';
 
 xivo_attrib_register('fm_typefalse-application',xivo_fm_typefalse['application']);
+
+xivo_fm_typefalse['sound'] = xivo_clone(xivo_elt_typefalse);
+xivo_fm_typefalse['sound']['fd-schedule-sound-typevalfalse']['style'] = 'display:block';
+xivo_fm_typefalse['sound']['it-schedule-sound-typevalfalse']['property'] = 'disabled|false:boolean';
+
+xivo_attrib_register('fm_typefalse-sound',xivo_fm_typefalse['sound']);
 
 xivo_fm_typefalse['custom'] = xivo_clone(xivo_elt_typefalse);
 xivo_fm_typefalse['custom']['fd-schedule-custom-typevalfalse']['style'] = 'display:block';

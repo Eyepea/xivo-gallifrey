@@ -96,6 +96,16 @@ echo	'<div id="fd-incall-application-typeval" class="fm-field">',
 	$form->text(array('field' => false,'name' => 'incall[applicationval]','labelid' => 'incall-application-applicationval','size' => 15,'value' => $incall['applicationval'])),
 	'</div>';
 
+if($list['sounds'] !== false):
+
+	echo $form->select(array('desc' => $this->bbf('fm_incall_sound-typeval'),'name' => 'incall[typeval]','labelid' => 'incall-sound-typeval','default' => $element['incall']['typeval']['default'],'value' => $incall['sound']),$list['sounds']);
+
+else:
+
+	echo '<div id="fd-incall-sound-typeval" class="txt-center">',$url->href_html($this->bbf('add_playback-sound'),'service/ipbx/pbx_services/sounds',array('act' => 'list','dir' => 'playback')),'</div>';
+
+endif;
+
 echo $form->text(array('desc' => $this->bbf('fm_incall_custom-typeval'),'name' => 'incall[typeval]','labelid' => 'incall-custom-typeval','size' => 15,'value' => $incall['custom']));
 
 ?>

@@ -1,6 +1,6 @@
-GRANT ALL PRIVILEGES ON `asterisk`.* TO `asterisk`@`localhost` IDENTIFIED BY PASSWORD '*DBA86DFECE903EB25FE460A66BDCDA790A1CA4A4';
-CREATE DATABASE IF NOT EXISTS `asterisk` DEFAULT CHARACTER SET utf8;
-USE `asterisk`;
+--GRANT ALL PRIVILEGES ON `asterisk`.* TO `asterisk`@`localhost` IDENTIFIED BY PASSWORD '*DBA86DFECE903EB25FE460A66BDCDA790A1CA4A4';
+--CREATE DATABASE IF NOT EXISTS `asterisk` DEFAULT CHARACTER SET utf8;
+--USE `asterisk`;
 
 
 DROP TABLE IF EXISTS `accessfeatures`;
@@ -520,7 +520,7 @@ CREATE TABLE `incall` (
  `id` int(10) unsigned auto_increment,
  `exten` varchar(40) NOT NULL,
  `context` varchar(39) NOT NULL,
- `type` enum('endcall','user','group','queue','meetme','schedule','application','custom') NOT NULL,
+ `type` enum('endcall','user','group','queue','meetme','schedule','application','sound','custom') NOT NULL,
  `typeval` varchar(255) NOT NULL DEFAULT '',
  `applicationval` varchar(80) NOT NULL DEFAULT '',
  `linked` tinyint(1) NOT NULL DEFAULT 0,
@@ -850,10 +850,10 @@ CREATE TABLE `schedule` (
  `daynumend` varchar(2),
  `monthbeg` varchar(3) NOT NULL DEFAULT '*',
  `monthend` varchar(3),
- `typetrue` enum('endcall','user','group','queue','meetme','schedule','application','custom') NOT NULL,
+ `typetrue` enum('endcall','user','group','queue','meetme','schedule','application','sound','custom') NOT NULL,
  `typevaltrue` varchar(255) NOT NULL DEFAULT '',
  `applicationvaltrue` varchar(80) NOT NULL DEFAULT '',
- `typefalse` enum('endcall','user','group','queue','meetme','schedule','application','custom') NOT NULL,
+ `typefalse` enum('endcall','user','group','queue','meetme','schedule','application','sound','custom') NOT NULL,
  `applicationvalfalse` varchar(80) NOT NULL DEFAULT '',
  `typevalfalse` varchar(255) NOT NULL DEFAULT '',
  `publicholiday` tinyint(1) NOT NULL DEFAULT 0,

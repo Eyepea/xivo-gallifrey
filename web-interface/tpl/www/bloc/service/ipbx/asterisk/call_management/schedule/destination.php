@@ -107,6 +107,16 @@ else:
 
 endif;
 
+if($list['sounds'] !== false):
+
+	echo $form->select(array('desc' => $this->bbf('fm_schedule_sound-typeval'),'name' => 'schedule['.$typevalname.']','labelid' => 'schedule-sound-'.$typevalname,'default' => $element['schedule'][$typevalname]['default'],'value' => $info['schedule']['sound'][$typename]),$list['sounds']);
+
+else:
+
+	echo '<div id="fd-schedule-sound-'.$typevalname.'" class="txt-center">',$url->href_html($this->bbf('add_playback-sound'),'service/ipbx/pbx_services/sounds',array('act' => 'list','dir' => 'playback')),'</div>';
+
+endif;
+
 echo	'<div id="fd-schedule-application-',$typevalname,'" class="fm-field">',
 	$form->select(array('desc' => $this->bbf('fm_schedule_application-typeval'),'name' => 'schedule['.$typevalname.']','field' => false,'labelid' => 'schedule-application-'.$typevalname,'bbf' => 'fm_schedule_application-typeval-opt-','key' => false,'default' => $element['schedule'][$typevalname]['default'],'value' => $info['schedule']['application'][$typename]),$element['schedule']['application']['value']),
 	$form->text(array('field' => false,'name' => 'schedule['.$applicationvalname.']','labelid' => 'schedule-application-'.$applicationvalname,'size' => 15,'value' => $info['schedule'][$applicationvalname])),

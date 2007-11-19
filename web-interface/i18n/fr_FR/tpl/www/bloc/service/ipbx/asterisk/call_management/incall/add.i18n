@@ -34,6 +34,9 @@ Horaire
 ; fm_incall_type-opt-application
 Application
 
+; fm_incall_type-opt-sound
+Fichier son
+
 ; fm_incall_type-opt-custom
 Personnalisée
 
@@ -57,6 +60,9 @@ Renvoyer vers :
 
 ; fm_incall_application-typeval
 Renvoyer vers :
+
+; fm_incall_sound-typeval
+Jouer :
 
 ; fm_incall_custom-typeval
 Commande :
@@ -102,6 +108,9 @@ Créer une chambre de conférence
 
 ; create_schedule
 Créer un horaire
+
+; add_playback-sound
+Ajouter un fichier son
 
 ; bt-inrightcall
 Ajouter un ou plusieurs droits d'appels ->

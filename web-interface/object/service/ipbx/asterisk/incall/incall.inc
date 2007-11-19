@@ -32,6 +32,7 @@ class xivo_service_asterisk_incall extends xivo_service_asterisk_abstract
 		$data['meetme'] = '';
 		$data['schedule'] = '';
 		$data['application'] = '';
+		$data['sound'] = '';
 		$data['custom'] = '';
 
 		if(isset($data[$data['type']]) === true)
@@ -109,6 +110,8 @@ class xivo_service_asterisk_incall extends xivo_service_asterisk_abstract
 				return($this->chk_dest_queue($typeval,null,$disable));
 			case 'meetme':
 				return($this->chk_dest_meetme($typeval,null,$disable));
+			case 'sound':
+				return($this->chk_dest_sound('playback',$typeval));
 		}
 
 		return(false);

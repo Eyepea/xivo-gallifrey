@@ -172,5 +172,5 @@ Créer une chambre de conférence
 ; create_schedule
 Créer un horaire
 
-; add_dialstatus-sound
+; add_playback-sound
 Ajouter un fichier son

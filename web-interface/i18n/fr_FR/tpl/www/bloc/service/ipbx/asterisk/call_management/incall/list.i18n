@@ -28,6 +28,9 @@ Horaire
 ; incall_type-application
 Application
 
+; incall_type-sound
+Fichier son
+
 ; incall_type-custom
 Personnalisée
 
