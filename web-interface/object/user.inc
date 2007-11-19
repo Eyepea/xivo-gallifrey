@@ -213,7 +213,7 @@ class xivo_user
 		return($r);
 	}
 
-	function logout()
+	function logoff()
 	{
 		session_unset();
 	}
