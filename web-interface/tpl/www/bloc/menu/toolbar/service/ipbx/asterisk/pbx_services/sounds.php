@@ -1,6 +1,7 @@
 <?php
 	$form = &$this->get_module('form');
 	$url = &$this->get_module('url');
+	$dhtml = &$this->get_module('dhtml');
 	
 	$act = $this->get_var('act');
 	$dir = $this->get_var('dir');
@@ -23,7 +24,7 @@
 <?php
 
 if($act === 'list'):
-	echo '<a href="#" onclick="this.tmp = xivo_fm[\'fm-files-list\'][\'act\'].value; xivo_fm[\'fm-files-list\'][\'act\'].value = \'deletes\'; return(confirm(\'',xivo_stript($this->bbf('toolbar_adv_menu_delete_confirm')),'\') ? xivo_fm[\'fm-files-list\'].submit() : xivo_fm[\'fm-files-list\'][\'act\'] = this.tmp);">',$url->img_html('img/menu/top/toolbar/bt-delete.gif',$this->bbf('toolbar_opt_delete'),'border="0"'),'</a>';
+	echo '<a href="#" onclick="this.tmp = xivo_fm[\'fm-files-list\'][\'act\'].value; xivo_fm[\'fm-files-list\'][\'act\'].value = \'deletes\'; return(confirm(\'',$dhtml->escape($this->bbf('toolbar_adv_menu_delete_confirm')),'\') ? xivo_fm[\'fm-files-list\'].submit() : xivo_fm[\'fm-files-list\'][\'act\'] = this.tmp);">',$url->img_html('img/menu/top/toolbar/bt-delete.gif',$this->bbf('toolbar_opt_delete'),'border="0"'),'</a>';
 endif;
 
 ?>

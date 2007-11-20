@@ -1,6 +1,6 @@
 <?php
-	$form = &$this->get_module('form');
 	$url = &$this->get_module('url');
+	$form = &$this->get_module('form');
 	$dhtml = &$this->get_module('dhtml');
 
 	$info = $this->get_var('info');
@@ -9,12 +9,12 @@
 	$handynumbers_js = array();
 
 	if($this->get_var('fm_save') === true):
-		$handynumbers_js[] = 'xivo_form_success(\''.xivo_stript($this->bbf('fm_success-save')).'\');';
+		$handynumbers_js[] = 'xivo_form_success(\''.$dhtml->escape($this->bbf('fm_success-save')).'\');';
 	endif;
 
 	if(($smenu_tab = $this->get_var('fm_smenu_tab')) !== '' && ($smenu_part = $this->get_var('fm_smenu_part')) !== ''):
-		$handynumbers_js[] = 'xivo_smenu[\'tab\'] = \''.xivo_stript($smenu_tab).'\';';
-		$handynumbers_js[] = 'xivo_smenu[\'part\'] = \''.xivo_stript($smenu_part).'\';';
+		$handynumbers_js[] = 'xivo_smenu[\'tab\'] = \''.$dhtml->escape($smenu_tab).'\';';
+		$handynumbers_js[] = 'xivo_smenu[\'part\'] = \''.$dhtml->escape($smenu_part).'\';';
 
 		if($smenu_part === 'sb-part-last'):
 			$handynumbers_js[] = 'xivo_smenu[\'last\'] = true;';

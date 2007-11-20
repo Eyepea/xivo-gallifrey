@@ -7,7 +7,7 @@
 	$sound_list = $this->get_var('sound_list');
 
 	if($this->get_var('fm_save') === true):
-		$dhtml->write_js('xivo_form_success(\''.xivo_stript($this->bbf('fm_success-save')).'\');');
+		$dhtml->write_js('xivo_form_success(\''.$dhtml->escape($this->bbf('fm_success-save')).'\');');
 	endif;
 
 	$invalid = array();

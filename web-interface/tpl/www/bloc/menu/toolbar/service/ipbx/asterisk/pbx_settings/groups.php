@@ -1,5 +1,6 @@
 <?php
 	$url = &$this->get_module('url');
+	$dhtml = &$this->get_module('dhtml');
 
 	$act = $this->get_var('act');
 
@@ -12,7 +13,7 @@
 	<ul id="advanced-menu" onmouseover="this.style.display = 'block';" onmouseout="this.style.display = 'none';">	
 		<li><a href="#" onclick="xivo_fm['fm-group-list']['act'].value = 'enables'; xivo_fm['fm-group-list'].submit();"><?=$this->bbf('toolbar_adv_menu_enable');?></a></li>
 		<li><a href="#" onclick="xivo_fm['fm-group-list']['act'].value = 'disables'; xivo_fm['fm-group-list'].submit();"><?=$this->bbf('toolbar_adv_menu_disable');?></a></li>
-		<li><a href="#" onclick="this.tmp = xivo_fm['fm-group-list']['act'].value; xivo_fm['fm-group-list']['act'].value = 'deletes'; return(confirm('<?=xivo_stript($this->bbf('toolbar_adv_menu_delete_confirm'));?>') ? xivo_fm['fm-group-list'].submit() : xivo_fm['fm-group-list']['act'] = this.tmp);"><?=$this->bbf('toolbar_adv_menu_delete');?></a></li>
+		<li><a href="#" onclick="this.tmp = xivo_fm['fm-group-list']['act'].value; xivo_fm['fm-group-list']['act'].value = 'deletes'; return(confirm('<?=$dhtml->escape($this->bbf('toolbar_adv_menu_delete_confirm'));?>') ? xivo_fm['fm-group-list'].submit() : xivo_fm['fm-group-list']['act'] = this.tmp);"><?=$this->bbf('toolbar_adv_menu_delete');?></a></li>
 	</ul>
 </div>
 

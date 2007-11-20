@@ -67,6 +67,9 @@ Personnaliser :
 ; fm_trunk_codec-disallow
 Désactiver :
 
+; fm_trunk_codec-disallow-opt-all
+Tous
+
 ; fm_trunk_codec-allow
 Activer :
 

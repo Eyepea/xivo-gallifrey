@@ -1,6 +1,7 @@
 <?php
 	$form = &$this->get_module('form');
 	$url = &$this->get_module('url');
+	$dhtml = &$this->get_module('dhtml');
 
 	$info = $this->get_var('info');
 	$element = $this->get_var('element');
@@ -28,7 +29,7 @@
 		<?=$form->select(array('name' => 'rightcallexten[]','label' => false,'id' => 'it-exten','key' => true,'altkey' => 'exten','multiple' => true,'size' => 5,'field' => false),$rcallexten);?>
 		<div class="bt-adddelete">
 
-			<a href="#" onclick="xivo_fm_select_add_exten('it-exten',prompt('<?=xivo_stript($this->bbf('rightcallexten_add-extension'));?>')); return(false);" title="<?=$this->bbf('bt-addexten');?>"><?=$url->img_html('img/site/button/mini/blue/add.gif',$this->bbf('bt-addexten'),'class="bt-addlist" id="bt-addexten" border="0"');?></a><br />
+			<a href="#" onclick="xivo_fm_select_add_exten('it-exten',prompt('<?=$dhtml->escape($this->bbf('rightcallexten_add-extension'));?>')); return(false);" title="<?=$this->bbf('bt-addexten');?>"><?=$url->img_html('img/site/button/mini/blue/add.gif',$this->bbf('bt-addexten'),'class="bt-addlist" id="bt-addexten" border="0"');?></a><br />
 
 			<a href="#" onclick="xivo_fm_select_delete_entry('it-exten'); return(false);" title="<?=$this->bbf('bt-deleteexten');?>"><?=$url->img_html('img/site/button/mini/blue/delete.gif',$this->bbf('bt-deleteexten'),'class="bt-deletelist" id="bt-deleteexten" border="0"');?></a>
 

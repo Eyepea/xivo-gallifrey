@@ -6,7 +6,7 @@
 	$error = $this->get_var('error');
 
 	if($this->get_var('fm_save') === true):
-		$dhtml->write_js('xivo_form_success(\''.xivo_stript($this->bbf('fm_success-save')).'\');');
+		$dhtml->write_js('xivo_form_success(\''.$dhtml->escape($this->bbf('fm_success-save')).'\');');
 	endif;
 
 	$error_js = array();

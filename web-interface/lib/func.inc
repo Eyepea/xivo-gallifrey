@@ -708,21 +708,9 @@ function xivo_str_multicut($str,$arr)
         return($r);
 }
 
-function xivo_stript($str,$style=ENT_NOQUOTES)
-{
-	$r = preg_replace('/\s+/',' ',strval($str));
-	$r = str_replace(array('\'','"'),array('\\\'','\"'),$r);
-
-	$r = xivo_htmlsc($r,$style);
-
-	return($r);
-}
-
 function xivo_eol($str)
 {
-	$r = preg_replace('#\r\n|\n|\r#',XIVO_EOL,strval($str));
-
-	return($r);
+	return(preg_replace('#\r\n|\n|\r#',XIVO_EOL,strval($str)));
 }
 
 function xivo_alttitle($str,$sc=true)
@@ -733,7 +721,7 @@ function xivo_alttitle($str,$sc=true)
 	$rep = array('','',' ',' ');
 	$r = preg_replace($pat,$rep,strval($str));
 
-	if($sc !== false)
+	if($sc === true)
 		$r = xivo_htmlsc($r);
 
 	return($r);

@@ -1,13 +1,13 @@
 <?php
-	$form = &$this->get_module('form');
 	$url = &$this->get_module('url');
+	$form = &$this->get_module('form');
+	$dhtml = &$this->get_module('dhtml');
 
 	$info = $this->get_var('info');
 	$element = $this->get_var('element');
 
 	if($this->get_var('fm_save') === true):
-		$dhtml = &$this->get_module('dhtml');
-		$dhtml->write_js('xivo_form_success(\''.xivo_stript($this->bbf('fm_success-save')).'\');');
+		$dhtml->write_js('xivo_form_success(\''.$dhtml->escape($this->bbf('fm_success-save')).'\');');
 	endif;
 ?>
 <div class="b-infos b-form">
@@ -38,7 +38,7 @@
 		<?=$form->select(array('name' => 'accessfeatures[]','label' => false,'id' => 'it-access','key' => true,'altkey' => 'host','multiple' => true,'size' => 5,'field' => false),$info['accessfeatures']);?>
 		<div class="bt-adddelete">
 
-			<a href="#" onclick="xivo_fm_select_add_host_ipv4_subnet('it-access',prompt('<?=xivo_stript($this->bbf('accessfeatures_add'));?>')); return(false);" title="<?=$this->bbf('bt-addaccess');?>"><?=$url->img_html('img/site/button/mini/blue/add.gif',$this->bbf('bt-addaccess'),'class="bt-addlist" id="bt-addaccess" border="0"');?></a><br />
+			<a href="#" onclick="xivo_fm_select_add_host_ipv4_subnet('it-access',prompt('<?=$dhtml->escape($this->bbf('accessfeatures_add'));?>')); return(false);" title="<?=$this->bbf('bt-addaccess');?>"><?=$url->img_html('img/site/button/mini/blue/add.gif',$this->bbf('bt-addaccess'),'class="bt-addlist" id="bt-addaccess" border="0"');?></a><br />
 
 			<a href="#" onclick="xivo_fm_select_delete_entry('it-access'); return(false);" title="<?=$this->bbf('bt-deleteaccess');?>"><?=$url->img_html('img/site/button/mini/blue/delete.gif',$this->bbf('bt-deleteaccess'),'class="bt-deletelist" id="bt-deleteaccess" border="0"');?></a>
 

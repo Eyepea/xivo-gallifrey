@@ -1,6 +1,7 @@
 <?php
 	$url = &$this->get_module('url');
 	$form = &$this->get_module('form');
+	$dhtml = &$this->get_module('dhtml');
 
 	$pager = $this->get_var('pager');
 	$list = $this->get_var('list');
@@ -46,7 +47,7 @@
 		<td><?=$ref['nb_files']?></td>
 		<td class="td-right" colspan="2">
 		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'service/ipbx/pbx_services/sounds',array('act' => 'editdir','id' => $ref['dirname']),'id="ah-dirs-'.$i.'"',$this->bbf('opt_modify'));?>
-		<?=$url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'service/ipbx/pbx_services/sounds',array('act' => 'deletedir','id' => $ref['dirname'],'page' => $pager['page']),'onclick="return(confirm(\''.xivo_stript($this->bbf('opt_delete_confirm')).'\') ? true : false);"',$this->bbf('opt_delete'));?>
+		<?=$url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'service/ipbx/pbx_services/sounds',array('act' => 'deletedir','id' => $ref['dirname'],'page' => $pager['page']),'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_delete_confirm')).'\'));"',$this->bbf('opt_delete'));?>
 		</td>
 	</tr>
 <?php

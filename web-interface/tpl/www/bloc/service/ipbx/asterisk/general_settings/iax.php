@@ -1,12 +1,12 @@
 <?php
-	$form = &$this->get_module('form');
 	$url = &$this->get_module('url');
+	$form = &$this->get_module('form');
 
 	$element = $this->get_var('element');
 
 	if($this->get_var('fm_save') === true):
 		$dhtml = &$this->get_module('dhtml');
-		$dhtml->write_js('xivo_form_success(\''.xivo_stript($this->bbf('fm_success-save')).'\');');
+		$dhtml->write_js('xivo_form_success(\''.$dhtml->escape($this->bbf('fm_success-save')).'\');');
 	endif;
 
 	if(($ntos = xivo_uint($this->get_varra('info','tos'))) !== 0):

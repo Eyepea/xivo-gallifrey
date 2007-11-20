@@ -123,7 +123,7 @@ function xivo_chk_exten_pattern(value)
 
 function xivo_fm_select_add_exten(id,value)
 {
-	if((pattern = xivo_chk_exten_pattern(value)) == false)
+	if((pattern = xivo_chk_exten_pattern(value)) === false)
 		return(false);
 
 	return(xivo_fm_select_add_entry(id,pattern,pattern));

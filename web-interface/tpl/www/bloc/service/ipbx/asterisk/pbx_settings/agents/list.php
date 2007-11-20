@@ -1,6 +1,7 @@
 <?php
 	$url = &$this->get_module('url');
 	$form = &$this->get_module('form');
+	$dhtml = &$this->get_module('dhtml');
 
 	$pager = $this->get_var('pager');
 	$list = $this->get_var('list_grps');
@@ -45,7 +46,7 @@
 
 <?php
 		if($ref['agroup']['deletable'] === true):
-			echo $url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'service/ipbx/pbx_settings/agents',array('act' => 'delete','group' => $ref['agroup']['id'],'page' => $pager['page']),'onclick="return(confirm(\''.xivo_stript($this->bbf('opt_delete_confirm')).'\') ? true : false);"',$this->bbf('opt_delete'));
+			echo $url->href_html($url->img_html('img/site/button/delete.gif',$this->bbf('opt_delete'),'border="0"'),'service/ipbx/pbx_settings/agents',array('act' => 'delete','group' => $ref['agroup']['id'],'page' => $pager['page']),'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_delete_confirm')).'\'));"',$this->bbf('opt_delete'));
 		endif;
 ?>
 		</td>

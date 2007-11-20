@@ -15,6 +15,14 @@ class xivo_tpl_dhtml extends xivo_tpl_module
 		$this->_tpl = &$tpl;
 	}
 
+	function escape($str)
+	{
+		$r = xivo_htmlsc(preg_replace('/\s+/',' ',strval($str)),ENT_NOQUOTES);
+		$r = str_replace(array('\'','"'),array('\\\'','&quot;'),$r);
+
+		return($r);
+	}
+
 	function add_css($css)
 	{
 		return($this->_add_file('css',$css,'head'));
