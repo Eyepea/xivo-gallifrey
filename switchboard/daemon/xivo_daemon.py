@@ -1608,8 +1608,8 @@ def update_services(astnum):
         userlist_lock[astid].acquire()
         try:
                 for user,info in userlist[astid].iteritems():
-                        monit = info['monit']
-                        if monit is not None:
+                        if 'monit' in info:
+                                monit = info['monit']
                                 rep = build_features_get([monit[0], monit[1], monit[2]])
                                 send_msg_to_cti_clients(rep)
         finally:
@@ -2408,7 +2408,6 @@ def adduser(astname, user, passwd, context, phonenum,
                                            'context'  : context,
                                            'phonenum' : phonenum,
                                            'init'     : isinitialized,
-                                           'monit'    : None,
                                            'capas'    : 0}
         if cti_allowed == '1':
                 userlist[astname][user]['capas'] = CAPA_ALMOST_ALL
