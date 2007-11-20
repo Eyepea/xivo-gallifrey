@@ -29,6 +29,7 @@ __license__ = """
 
 import xivo.to_path
 
+import sys
 from agi import *
 
 agi = AGI()
