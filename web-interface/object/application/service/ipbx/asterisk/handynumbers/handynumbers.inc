@@ -96,8 +96,10 @@ class xivo_application_service_asterisk_handynumbers extends xivo_application_as
 
 	function _mk_exten_appdata($exten)
 	{
+		$exten = $this->_service->clean_extension($exten);
+
 		$arr = array();
-		$arr['appdata'] = XIVO_SRE_IPBX_AST_HANDYNUMBERS_MACRO;
+		$arr['appdata'] = XIVO_SRE_IPBX_AST_HANDYNUMBERS_MACRO.'|'.$exten;
 
 		return($arr);
 	}
