@@ -86,13 +86,11 @@ if not internal:
                              (srcnum, context))
 		res = cursor.fetchone()
 
-		if not res:
-			agi_helpers.dp_break(agi, "Unable to find user features (number = '%s', context = '%s')" % (srcnum, context))
+		if res:
+			callerid = res['outcallerid']
 
-		callerid = res['outcallerid']
-
-		if callerid == "default":
-			callerid = ""
+			if callerid == "default":
+				callerid = ""
 
 cursor.query("SELECT ${columns} FROM trunkfeatures WHERE id = %s",
              ('trunk', 'trunkid'),
