@@ -4,6 +4,12 @@ context features {
 	};
 };
 
+context handynumbers {
+	switches {
+		Realtime/handynumbers@extensions;
+	};
+};
+
 context initconfig {
 	NoOp(extension s);
 	678 => {

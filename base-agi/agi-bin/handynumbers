@@ -1,0 +1,129 @@
+#!/usr/bin/python
+#
+# Authors : Cedric Lemarchand, Sylvain Boily, Guillaume Knispel
+#	   Proformatique
+#	   67, rue Voltaire
+#	   92800 PUTEAUX
+#	   (+33/0)1.41.38.99.60
+#	   mailto:technique@proformatique.com
+#	   (C) 2007 Proformatique
+
+__version__ = "$Revision$ $Date$"
+__license__ = """
+    Copyright (C) 2007, Proformatique
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2.1 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+"""
+
+CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
+
+import xivo.to_path
+
+import sys, re
+import anysql
+import except_tb
+import agi_helpers
+from BackSQL import backsqlite
+from BackSQL import backmysql
+import ConfigDict
+from agi import *
+
+agi = AGI()
+db_uri = ConfigDict.ReadSingleKey(CONFIG_FILE, 'db', 'db_uri')
+
+# Cursors have a weak reference on their connection, so make a strong one.
+conn = agi_helpers.db_connect(agi, db_uri)
+cursor = conn.cursor()
+srcnum = agi.get_variable('REAL_SRCNUM')
+dstnum = agi.get_variable('REAL_DSTNUM')
+context = agi.get_variable('REAL_CONTEXT')
+exten_pattern = agi.get_variable('REAL_EXTENPATTERN')
+
+cursor.query("SELECT ${columns} FROM userfeatures "
+             "WHERE number = %s "
+             "AND context = %s "
+             "AND internal = 0 "
+             "AND commented = 0",
+             ('outcallerid',),
+             (srcnum, context))
+res = cursor.fetchone()
+
+if not res:
+	agi_helpers.dp_break(agi, "Unknown number '%s'" % srcnum)
+
+callerid = res['outcallerid']
+
+cursor.query("SELECT ${columns} FROM trunkfeatures INNER JOIN handynumbers "
+             "ON trunkfeatures.id = handynumbers.trunkfeaturesid "
+             "WHERE handynumbers.exten = %s "
+             "AND handynumbers.commented = 0",
+             ('trunk', 'trunkid'),
+             (exten_pattern,))
+res = cursor.fetchone()
+
+if not res:
+	agi_helpers.dp_break(agi, "Unable to find trunk features (handy number pattern = '%s')" % exten_pattern)
+
+trunk = res['trunk']
+trunkid = res['trunkid']
+
+if trunk == "sip":
+	protocol = "SIP"
+	cursor.query("SELECT ${columns} FROM usersip WHERE id = %s AND commented = 0",
+                     ('name',),
+                     (trunkid,))
+	res = cursor.fetchone()
+
+	if not res:
+		agi_helpers.dp_break(agi, "Unable to find SIP peer (ID = '%s')" % trunkid)
+
+	peer = res['name']
+	interface = protocol + "/" + peer
+
+elif trunk == "iax":
+	protocol = "IAX2"
+	cursor.query("SELECT ${columns} FROM useriax WHERE id = %s AND commented = 0",
+                     ('name',),
+                     (trunkid,))
+	res = cursor.fetchone()
+
+	if not res:
+		agi_helpers.dp_break(agi, "Unable to find IAX peer (ID = '%s')" % trunkid)
+
+	peer = res['name']
+	interface = protocol + "/" + peer
+
+elif trunk == "custom":
+	protocol = "CUSTOM"
+	cursor.query("SELECT ${columns} FROM usercustom WHERE id = %s AND commented = 0",
+                     ('name', 'interface',),
+                     (trunkid,))
+	res = cursor.fetchone()
+
+	if not res:
+		agi_helpers.dp_break(agi, "Unable to find custom peer (ID = '%s')" % trunkid)
+
+	peer = res['name']
+	interface = res['interface']
+else:
+	agi_helpers.dp_break(agi, "Unknown trunk type '%s'" % trunk)
+
+agi.set_variable('XIVO_INTERFACE', interface)
+agi.set_variable('XIVO_TRUNKEXTEN', dstnum)
+
+if callerid:
+	agi.set_variable('CALLERID(num)', callerid)
+
+agi.verbose('AGI script "%s" successfully executed' % sys.argv[0])
