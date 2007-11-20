@@ -55,11 +55,11 @@ def set_fwd_vars(agi, cursor, type, typeval, appval, type_varname, typeval1_varn
 		agi.set_variable(typeval1_varname, typeval)
 
 		if typeval in ('disa', 'callback'):
-			agi.set_variable(typeval2_varname, appval.replace("|", ":"))
+			agi.set_variable(typeval2_varname, appval.replace("|", ";"))
 		else:
 			agi.set_variable(typeval2_varname, appval)
 	elif type == 'custom':
-		agi.set_variable(typeval1_varname, typeval.replace(",", "|"))
+		agi.set_variable(typeval1_varname, typeval.replace(",", ";"))
 	elif type == 'user':
 		cursor.query("SELECT ${columns} FROM userfeatures "
                              "WHERE id = %s "

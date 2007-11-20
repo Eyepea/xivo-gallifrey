@@ -27,42 +27,10 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
-
 import xivo.to_path
 
-import os
-import sys
-import time
-import except_tb
-import agi_helpers
-import ConfigDict
 from agi import *
 
 agi = AGI()
-
-srcnum = agi.get_variable('CALLERID(num)')
-dstnum = agi.get_variable('REAL_DSTNUM')
-channel = agi.get_variable('CHANNEL')
-disa_params = sys.argv[1]
-chantech = channel.split('/')[0]
-
-mtime = time.time() + 5
-filename = "%s-%s.call" % (srcnum, int(mtime))
-
-tmpfile = "/var/spool/asterisk/tmp/" + filename
-realfile = "/var/spool/asterisk/outgoing/" + filename
-
-file = open(tmpfile, 'w')
-file.write("Channel: %s/%s\n"
-           "MaxRetries: 0\n"
-           "RetryTime: 30\n"
-           "WaitTime: 30\n"
-           "CallerID: %s\n"
-           "Application: DISA\n"
-           "Data: %s\n" % (chantech, srcnum, srcnum, disa_params))
-file.close()
-
-os.utime(tmpfile, (mtime, mtime))
-os.rename(tmpfile, realfile)
+agi.set_variable('XIVO_STRING', sys.argv[1].replace(';', '|'))
 agi.verbose('AGI script "%s" successfully executed' % sys.argv[0])
