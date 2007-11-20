@@ -35,29 +35,26 @@ import ConfigParser
 from ConfigDict import *
 from agi import *
 
-agi = AGI()
-
-if len(sys.argv) > 1:
-	if sys.argv[1].isdigit():
-		exten = sys.argv[1]
-else:
-	agi.verbose("Sorry there is not number !")
-	sys.exit()
-
 ring = "/etc/asterisk/xivo_ring.conf"
 
-config = ConfigParser.ConfigParser()
-config.readfp(open(ring))
+parser = ConfigParser.RawConfigParser()
+parser.readfp(open(ring))
 
-phonetype = config.get('number', exten)
+agi = AGI()
 
-if not phonetype:
-	agi.verbose("Sorry there is no phonetype !")
+srcnum = agi.get_variable('REAL_SRCNUM')
+dstnum = agi.get_variable('REAL_DSTNUM')
+context = agi.get_variable('REAL_CONTEXT')
+calltype = agi.get_variable('REAL_CALLTYPE')
+
+try:
+	phonetype = parser.get('number', "%s@%s" % (dstnum, context))
+except ConfigParser.NoOptionError:
+	agi.verbose("Using the phone ring tone")
 	sys.exit()
 
-agi.set_variable("RINGINTERNAL", config.get(phonetype, 'intern'))
-agi.set_variable("RINGEXTERNAL", config.get(phonetype, 'extern'))
-agi.set_variable("RINGGROUP", config.get(phonetype, 'group'))
+agi.set_variable('XIVO_RINGTYPE', parser.get(phonetype, calltype))
+agi.verbose(agi.get_variable('XIVO_RINGTYPE'))
 
 if phonetype == 'thomson':
 	agi.set_variable("ISTHOMSON", "1")
