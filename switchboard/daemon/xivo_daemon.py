@@ -956,9 +956,9 @@ def manage_tcp_connection(connid, allow_events):
                                         connid[0].send('%s:ID <%s>\n' %(XIVO_CLI_WEBI_HEADER, astid))
                                         try:
                                                 if usefulmsg == 'xivo[userlist,update]':
+                                                        update_userlist[astid] = True
                                                         connid[0].send('%s:OK\n' %(XIVO_CLI_WEBI_HEADER))
                                                         log_debug(SYSLOG_INFO, '%s : userlist update request received' % astid)
-                                                        update_userlist[astid] = True
                                                 elif astid in AMI_array_user_commands and AMI_array_user_commands[astid]:
                                                         try:
                                                                 s = AMI_array_user_commands[astid].execclicommand(usefulmsg.strip())
@@ -1601,6 +1601,20 @@ def update_amisocks(astnum, astid):
                                 log_debug(SYSLOG_INFO, '%s : AMI (commands)  : could NOT connect' % astid)
         except Exception, exc:
                 log_debug(SYSLOG_ERR, '--- exception --- %s (update_amisocks command) : %s' % (astid, str(exc)))
+
+
+def update_services(astnum):
+        astid = configsnumindex[astnum].astid
+        userlist_lock[astid].acquire()
+        try:
+                for user,info in userlist[astid].iteritems():
+                        monit = info['monit']
+                        if monit is not None:
+                                rep = build_features_get([monit[0], monit[1], monit[2]])
+                                send_msg_to_cti_clients(rep)
+        finally:
+                userlist_lock[astid].release()
+
 
 
 ## \brief Updates the list of sip numbers according to the SSO then sends old and new peers to the UIs.
@@ -2394,6 +2408,7 @@ def adduser(astname, user, passwd, context, phonenum,
                                            'context'  : context,
                                            'phonenum' : phonenum,
                                            'init'     : isinitialized,
+                                           'monit'    : None,
                                            'capas'    : 0}
         if cti_allowed == '1':
                 userlist[astname][user]['capas'] = CAPA_ALMOST_ALL
@@ -2489,6 +2504,7 @@ def disconnect_user(userinfo):
                         del userinfo['cticlientos']
                         del userinfo['tcpmode']
                         del userinfo['socket']
+                        del userinfo['monit']
         except Exception, exc:
                 log_debug(SYSLOG_ERR, "--- exception --- disconnect_user %s : %s" %(str(userinfo), str(exc)))
 
@@ -2864,6 +2880,9 @@ def parse_command_and_build_reply(me, myconn, icommand):
                                 repstr = database_update(me, icommand.args)
                 elif icommand.name == 'featuresget':
                         if (capalist & CAPA_FEATURES):
+                                userlist_lock[astid].acquire()
+                                userlist[astid][me[2]]['monit'] = icommand.args
+                                userlist_lock[astid].release()
                                 repstr = build_features_get(icommand.args)
                 elif icommand.name == 'featuresput':
                         if (capalist & CAPA_FEATURES):
@@ -3514,6 +3533,7 @@ while True: # loops over the reloads
                                                 update_amisocks(n, configsnumindex[n].astid)
                                                 plist[n].check_connected_accounts()
                                                 update_phonelist(n)
+                                                update_services(n)
                                                 update_userlist[configsnumindex[n].astid] = False
                                         except Exception, exc:
                                                 log_debug(SYSLOG_ERR, '--- exception --- %s : failed while updating lists and sockets (computed timeout) : %s'
