@@ -63,8 +63,8 @@ if len(sys.argv) < 1:
 else:
 	shost = sys.argv[1]
 	sport = int(xivocapas.get('general', 'port_fiche_agi'))
-	proto   = agi.get_variable('XIVO_PROTOCOL').lower()
-	exten   = agi.get_variable('XIVO_NAME')
+	proto   = agi.get_variable('XIVO_INTERFACE').split('/')[0].lower()
+	exten   = agi.get_variable('REAL_DSTNUM')
 	context = agi.get_variable('REAL_CONTEXT')
 	calleridnum  = agi.env['agi_callerid']
 	calleridname = agi.env['agi_calleridname']
