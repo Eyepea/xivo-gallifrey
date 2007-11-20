@@ -459,7 +459,7 @@ class xivo_tpl_form extends xivo_tpl_module
 		return($this->_render);
 	}
 
-	function radio()
+	function radio($v,$o='')
 	{
 		$v = (array) $v;
 		$o = (string) $o;

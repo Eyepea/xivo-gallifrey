@@ -18,11 +18,6 @@ if(isset($_QR['fm_send']) === true && xivo_issa('voicemail',$_QR) === true)
 	$edit = true;
 	$return = &$result;
 
-	unset($_QR['voicemail']['mailcmd'],
-	      $_QR['voicemail']['cidinternalcontexts'],
-	      $_QR['voicemail']['charset'],
-	      $_QR['voicemail']['externpass']);
-
 	if(($result['voicemail'] = $generalvoicemail->chk_values($_QR['voicemail'])) === false)
 	{
 		$edit = false;

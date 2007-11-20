@@ -9,9 +9,7 @@
 	$autoprov_list = $this->get_var('autoprov_list');
 	$rightcall = $this->get_var('rightcall');
 
-	$vm_active = $info['voicemail']['commented'];
-
-	if($vm_active !== null):
+	if(($vm_active = $info['voicemail']['commented']) !== null):
 		$vm_active = xivo_bool($vm_active) === true ? false : true;
 	endif;
 
@@ -145,6 +143,14 @@
 	<?=$form->text(array('desc' => $this->bbf('fm_voicemail_password'),'name' => 'voicemail[password]','labelid' => 'voicemail-password','value' => $info['voicemail']['password'],'size' => 15));?>
 
 	<?=$form->text(array('desc' => $this->bbf('fm_voicemail_email'),'name' => 'voicemail[email]','labelid' => 'voicemail-email','value' => $info['voicemail']['email'],'size' => 15));?>
+
+<?php
+	if(($zmsg = $this->get_var('zonemessages')) !== false):
+
+		echo $form->select(array('desc' => $this->bbf('fm_voicemail_tz'),'name' => 'voicemail[tz]','labelid' => 'voicemail-tz','key' => 'name','default' => $element['voicemail']['tz']['default'],'value' => $info['voicemail']['tz']),$zmsg);
+
+	endif;
+?>
 
 	<?=$form->checkbox(array('desc' => $this->bbf('fm_userfeatures_skipvoicemailpass'),'name' => 'ufeatures[skipvoicemailpass]','labelid' => 'ufeatures-skipvoicemailpass','default' => $element['ufeatures']['skipvoicemailpass']['default'],'checked' => $info['ufeatures']['skipvoicemailpass']));?>
 

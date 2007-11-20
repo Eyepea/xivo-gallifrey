@@ -494,3 +494,50 @@ function xivo_fm_checked_all(form,name,mode)
 
 	return(true);
 }
+
+function xivo_fm_get_checked(form,name)
+{
+	if(xivo_is_undef(form) == true
+	|| xivo_is_undef(name) == true
+	|| xivo_is_string(form) == false
+	|| xivo_is_string(name) == false
+	|| xivo_is_undef(xivo_fm[form]) == true
+	|| xivo_is_undef(xivo_fm[form][name]) == true)
+		return(false);
+
+	ref = xivo_fm[form][name];
+
+	if(xivo_is_undef(ref.length) == false)
+		len = ref.length;
+	else if(xivo_is_undef(ref.type) == true
+	|| (ref.type != 'checkbox' && ref.type != 'radio') == true)
+		return(false);
+	else
+		return(0);
+
+	for(var i = 0;i < len;i++)
+	{
+		if(ref[i].type != 'checkbox' && ref[i].type != 'radio')
+			continue;
+
+		if(ref[i].checked == true)
+			return(i);
+	}
+
+	return(false);
+}
+
+function xivo_fm_get_value_from_key(form,name,key)
+{
+	if(xivo_is_undef(form) == true
+	|| xivo_is_undef(name) == true
+	|| xivo_is_string(form) == false
+	|| xivo_is_string(name) == false
+	|| xivo_is_undef(xivo_fm[form]) == true
+	|| xivo_is_undef(xivo_fm[form][name]) == true
+	|| xivo_is_undef(xivo_fm[form][name][key]) == true
+	|| xivo_is_undef(xivo_fm[form][name][key].value) == true)
+		return(false);
+
+	return(xivo_fm[form][name][key].value);
+}

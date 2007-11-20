@@ -70,8 +70,7 @@ pre {text-align: left;}
 .fm-field .it-disabled, .fm-field .it-readonly {border: 1px solid #a5acb2;background-color: #ebebe4;color: #aca899;}
 .fm-field .it-readonly {color: #000;}
 
-.fm-field .it-checkbox {margin: 0px 2px;padding: 0px;border: 0px solid #fff;background-color: transparent;}
-.fm-field .it-radio {margin: 0px 2px;padding: 0px;border: 0px solid #fff;background-color: transparent;}
+.fm-field .it-checkbox, .fm-field .it-radio {margin: 0px 2px;padding: 0px;border: 0px solid #fff;background-color: transparent;}
 
 .fm-error, .fm-field .fm-error {background-color: #ffcbcb;}
 
@@ -241,6 +240,7 @@ pre {text-align: left;}
 #b-content .sb-list td {text-align: center;padding: 2px 0px;background-color: #eee;border: 0px solid #999;border-left-width: 1px;border-bottom-width: 1px;font-size: 8pt;}
 #b-content .sb-list .td-left {border-right-width: 0px;}
 #b-content .sb-list .td-right {border-right-width: 1px;}
+#b-content .sb-list .td-noleftright {border-right-width: 0px;border-left-width: 0px;}
 #b-content .sb-list .td-single {border: 1px solid #999;border-top-width: 0px;}
 #b-content .sb-list .l-infos-1on2 td {background-color: #eee;}
 #b-content .sb-list .l-infos-2on2 td {background-color: #e3e5fc;}

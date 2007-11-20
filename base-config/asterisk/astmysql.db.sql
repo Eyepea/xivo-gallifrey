@@ -441,7 +441,7 @@ INSERT INTO `generalvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','ma
 INSERT INTO `generalvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','silencethreshold','256');
 INSERT INTO `generalvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','minmessage','0');
 INSERT INTO `generalvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','maxmessage','0');
-INSERT INTO `generalvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','maxsilence','1');
+INSERT INTO `generalvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','maxsilence','15');
 INSERT INTO `generalvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','review','yes');
 INSERT INTO `generalvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','operator','yes');
 INSERT INTO `generalvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','format','wav49');
@@ -1080,7 +1080,7 @@ CREATE TABLE `uservoicemail` (
  `callback` varchar(39),
  `exitcontext` varchar(39),
  `language` varchar(20) NOT NULL DEFAULT '',
- `tz` varchar(80) NOT NULL DEFAULT 'central',
+ `tz` varchar(80) NOT NULL DEFAULT '',
  `attach` tinyint(1) DEFAULT 1,
  `saycid` tinyint(1) DEFAULT 1,
  `review` tinyint(1) DEFAULT 0,

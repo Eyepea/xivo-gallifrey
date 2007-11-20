@@ -1,6 +1,7 @@
 <?php
 
 $autoprov = &$ipbx->get_module('autoprov');
+$zonemessages = &$ipbx->get_module('zonemessages');
 
 $result = null;
 
@@ -161,6 +162,7 @@ $_HTML->set_var('gmember',$gmember);
 $_HTML->set_var('queues',$queues);
 $_HTML->set_var('qmember',$qmember);
 $_HTML->set_var('rightcall',$rightcall);
+$_HTML->set_var('zonemessages',$zonemessages->get_all_name());
 $_HTML->set_var('element',$element);
 $_HTML->set_var('list',$appuser->get_dialstatus_destination_list());
 $_HTML->set_var('moh_list',$appuser->get_musiconhold());
