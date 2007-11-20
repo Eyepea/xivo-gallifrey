@@ -82,9 +82,15 @@
 					<th class="th-right"><?=$this->bbf('stats_col_total');?></th>
 				</tr>
 				<tr class="l-infos-1on2">
-					<td class="td-left txt-left"><?=$this->bbf('stats_status-initialized')?></td>
+					<td class="td-left txt-left"><?=$this->bbf('stats_status-initialized');?></td>
 					<td class="td-center"><?=$userstat['initialized']?></td>
 					<td class="td-right"><?=$userstat['total']?></td>
+				</tr>
+			</table>
+
+			<table border="0" cellpadding="0" cellspacing="0">
+				<tr class="l-infos-1on2">
+					<td class="td-singlenotop"><?=$this->bbf('stats_calls-active',$this->get_var('activecalls'));?></td>
 				</tr>
 			</table>
 		</div>

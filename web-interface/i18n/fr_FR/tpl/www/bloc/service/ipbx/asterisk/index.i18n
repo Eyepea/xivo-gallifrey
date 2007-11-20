@@ -34,6 +34,9 @@ Chambre de conférence
 ; stats_status-initialized
 Initialisé
 
+; stats_calls-active
+Appel(s) actif(s) : %s
+
 ; info_service_label
 Logiciel :
 

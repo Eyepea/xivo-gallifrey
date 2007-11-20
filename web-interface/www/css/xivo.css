@@ -242,6 +242,7 @@ pre {text-align: left;}
 #b-content .sb-list .td-right {border-right-width: 1px;}
 #b-content .sb-list .td-noleftright {border-right-width: 0px;border-left-width: 0px;}
 #b-content .sb-list .td-single {border: 1px solid #999;border-top-width: 0px;}
+#b-content .sb-list .td-singlenotop {border: 1px solid #999;}
 #b-content .sb-list .l-infos-1on2 td {background-color: #eee;}
 #b-content .sb-list .l-infos-2on2 td {background-color: #e3e5fc;}
 #b-content .sb-list .l-infos-over td {background-color: #fff;}

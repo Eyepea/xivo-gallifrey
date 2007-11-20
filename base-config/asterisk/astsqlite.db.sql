@@ -466,7 +466,15 @@ INSERT INTO generalvoicemail VALUES (NULL,0,0,0,'voicemail.conf','general','from
 INSERT INTO generalvoicemail VALUES (NULL,0,0,0,'voicemail.conf','general','emaildateformat','%A, %B %d, %Y à %r');
 INSERT INTO generalvoicemail VALUES (NULL,0,0,0,'voicemail.conf','general','pbxskip','no');
 INSERT INTO generalvoicemail VALUES (NULL,0,0,0,'voicemail.conf','general','emailsubject','Messagerie XIVO');
-INSERT INTO generalvoicemail VALUES (NULL,0,0,0,'voicemail.conf','general','emailbody','Bonjour ${VM_NAME} !\n\nVous avez reçu un message d''une durée de ${VM_DUR} minute(s), il vous reste actuellement ${VM_MSGNUM} message(s) non lu(s) sur votre messagerie vocale : ${VM_MAILBOX}.\n\nLe dernier a été envoyé par ${VM_CALLERID}, le ${VM_DATE}. Si vous le souhaitez vous pouvez l''écouter ou le consulter en tapant le *98 sur votre téléphone.\n\nMerci.\n\n-- Messagerie XIVO --');
+INSERT INTO generalvoicemail VALUES (NULL,0,0,0,'voicemail.conf','general','emailbody','Bonjour ${VM_NAME} !
+
+Vous avez reçu un message d''une durée de ${VM_DUR} minute(s), il vous reste actuellement ${VM_MSGNUM} message(s) non lu(s) sur votre messagerie vocale : ${VM_MAILBOX}.
+
+Le dernier a été envoyé par ${VM_CALLERID}, le ${VM_DATE}. Si vous le souhaitez vous pouvez l''écouter ou le consulter en tapant le *98 sur votre téléphone.
+
+Merci.
+
+-- Messagerie XIVO --');
 INSERT INTO generalvoicemail VALUES (NULL,0,0,0,'voicemail.conf','general','pagerfromstring','XIVO PBX');
 INSERT INTO generalvoicemail VALUES (NULL,0,0,1,'voicemail.conf','general','pagersubject',NULL);
 INSERT INTO generalvoicemail VALUES (NULL,0,0,1,'voicemail.conf','general','pagerbody',NULL);
