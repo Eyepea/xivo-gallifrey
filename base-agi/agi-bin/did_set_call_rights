@@ -110,7 +110,6 @@ agi.verbose(rightcallidset)
 if not rightcallidset:
 	allow()
 
-# rightcallids = str(tuple(rightcallidset))
 rightcallids = '(' + ','.join((repr(el) for el in rightcallidset)) + ')'
 query = ("SELECT ${columns} FROM rightcall INNER JOIN rightcallmember INNER JOIN extenumbers "
          "ON rightcall.id = rightcallmember.rightcallid "

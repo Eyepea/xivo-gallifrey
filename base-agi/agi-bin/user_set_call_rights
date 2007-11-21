@@ -108,7 +108,6 @@ rightcallidset = set((row['rightcallid'] for row in res if extension_matches(dst
 if not rightcallidset:
 	allow()
 
-# rightcallids = str(tuple(rightcallidset))
 rightcallids = '(' + ','.join((repr(el) for el in rightcallidset)) + ')'
 cursor.query("SELECT ${columns} FROM userfeatures WHERE number = %s AND context = %s AND internal = 0 AND commented = 0",
              ('id',),
