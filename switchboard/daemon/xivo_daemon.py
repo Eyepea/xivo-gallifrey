@@ -2503,7 +2503,8 @@ def disconnect_user(userinfo):
                         del userinfo['cticlientos']
                         del userinfo['tcpmode']
                         del userinfo['socket']
-                        del userinfo['monit']
+                        if 'monit' in userinfo:
+                                del userinfo['monit']
         except Exception, exc:
                 log_debug(SYSLOG_ERR, "--- exception --- disconnect_user %s : %s" %(str(userinfo), str(exc)))
 
