@@ -38,6 +38,10 @@ def dp_break(agi, message, show_tb = False):
 	agi.hangup()
 	sys.exit(1)
 
+def agi_verbose_except(agi, message):
+	agi.verbose(message)
+	except_tb.log_exception(agi.verbose)
+
 def db_connect(agi, db_uri):
 	try:
 		conn = anysql.connect_by_uri(db_uri)
