@@ -281,7 +281,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 			$where['queue_name'] = $this->_info['gfeatures']['name'];
 		}
 
-		$tmp = $reslist = array();
+		$tmp = $reslist = $callgroup = array();
 
 		for($i = 0;$i < $nb;$i++)
 		{
@@ -321,6 +321,14 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 			|| isset($tmp[$uinfo['id']]) === true)
 				continue;
 
+			if($uinfo['protocol'] === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
+				$callgroup[$uinfo['id']] = false;
+			else
+			{
+				$callgroup[$uinfo['id']] = array('protocol' => $uinfo['protocol'],
+								 'protocolid' => $uinfo['protocolid']);
+			}
+
 			$tmp[$uinfo['id']] = 1;
 			$reslist[] = $rs;
 		}
@@ -330,6 +338,11 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 			$this->_set_result('user',false);
 			return(false);
 		}
+
+		if(empty($callgroup) === false)
+			$this->_set_result('user_callgroup',$callgroup);
+		else
+			$this->_set_result('user_callgroup',null);
 
 		$this->_set_result('user',$reslist);
 
@@ -377,6 +390,8 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 			$this->_status = '';
 			return(false);
 		}
+
+		$this->add_user_callgroup($gfeaturesid);
 
 		$this->_status = '';
 
@@ -450,6 +465,46 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		$this->_return['dialstatus'] = $this->_dialstatus->get_return();
 
 		return($r);
+	}
+
+	function add_user_callgroup($gfeaturesid)
+	{
+		$rs = false;
+
+		if(($gfeaturesid = xivo_uint($gfeaturesid)) === 0
+		|| ($rs = $this->get_result('user_callgroup')) === null
+		|| $rs === false)
+			return($rs);
+
+		if(($arr = xivo_get_aks($rs)) === false)
+			return(false);
+
+		$callgroup = array('callgroup' => '');
+
+		for($i = 0;$i < $arr['cnt'];$i++)
+		{
+			$ref = &$rs[$arr['keys'][$i]];
+
+			if($ref === false
+			|| ($protocol = &$this->_service->get_protocol_module($ref['protocol'])) === false
+			|| ($info = $protocol->get($ref['protocolid'])) === false)
+				continue;
+
+			if(is_array($info['callgroup']) === false)
+				$callgroup['callgroup'] = $gfeaturesid;
+			else if(in_array($gfeaturesid,$info['callgroup']) === true)
+				continue;
+			else
+			{
+				$callgroup['callgroup'] = $info['callgroup'];
+				$callgroup['callgroup'][] = $gfeaturesid;
+				$callgroup['callgroup'] = implode(',',$callgroup['callgroup']);
+			}
+
+			$protocol->edit($info['id'],$callgroup);
+		}
+
+		return(true);
 	}
 
 	function _reverse_add()
@@ -558,6 +613,8 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		if($unlinks === true)
 			$this->unlinks();
 
+		$this->edit_user_callgroup($this->_info['gfeatures']['id']);
+
 		$this->_status = '';
 
 		return(true);
@@ -655,6 +712,75 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		return($r);
 	}
 
+	function edit_user_callgroup($gfeaturesid)
+	{
+		if(($gfeaturesid = xivo_uint($gfeaturesid)) === 0
+		|| isset($this->_origin['user']) === false)
+			return(false);
+
+		if(is_array($this->_origin['user']) === false
+		|| ($nb = count($this->_origin['user'])) === 0)
+			return($this->add_user_callgroup($gfeaturesid));
+
+		$ufeatures = &$this->_service->get_module('userfeatures');
+
+		$rs = $this->get_result('user_callgroup');
+
+		$callgroup = array('callgroup' => '');
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			$ref = &$this->_origin['user'][$i];
+
+			if(is_array($rs) === false || isset($rs[$ref['userid']]) === false)
+			{
+				if(($uinfo = $ufeatures->get($ref['userid'])) === false
+				|| $uinfo['protocol'] === XIVO_SRE_IPBX_AST_PROTO_CUSTOM
+				|| ($protocol = &$this->_service->get_protocol_module($uinfo['protocol'])) === false
+				|| ($pinfo = $protocol->get($uinfo['protocolid'])) === false
+				|| is_array($pinfo['callgroup']) === false
+				|| ($key = array_search($gfeaturesid,$pinfo['callgroup'])) === false)
+					continue;
+
+				$callgroup['callgroup'] = $pinfo['callgroup'];
+				unset($callgroup['callgroup'][$key]);
+				$callgroup['callgroup'] = implode(',',$callgroup['callgroup']);
+
+				$protocol->edit($pinfo['id'],$callgroup);
+			}
+			else if($rs[$ref['userid']] !== false)
+			{
+				$res = $rs[$ref['userid']];
+				unset($rs[$ref['userid']]);
+
+				if(($protocol = &$this->_service->get_protocol_module($res['protocol'])) === false
+				|| ($pinfo = $protocol->get($res['protocolid'])) === false)
+					continue;
+
+				if(is_array($pinfo['callgroup']) === false)
+					$callgroup['callgroup'] = $gfeaturesid;
+				else if(in_array($gfeaturesid,$pinfo['callgroup']) === true)
+					continue;
+				else
+				{
+					$callgroup['callgroup'] = $pinfo['callgroup'];
+					$callgroup['callgroup'][] = $gfeaturesid;
+					$callgroup['callgroup'] = implode(',',$callgroup['callgroup']);
+				}
+
+				$protocol->edit($pinfo['id'],$callgroup);
+			}
+		}
+
+		if(empty($rs) === false)
+		{
+			$this->_set_result('user_callgroup',$rs);
+			$this->add_user_callgroup($gfeaturesid);
+		}
+
+		return(true);
+	}
+
 	function _reverse_edit()
 	{
 		if($this->get_errnb() > 0
@@ -736,6 +862,8 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		if(isset($this->_return['exten']) === true
 		|| isset($this->_return['extensions']) === true)
 			$this->unlinks();
+
+		$this->delete_user_callgroup($this->_info['gfeatures']['id']);
 
 		$this->_status = '';
 
@@ -819,6 +947,13 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 			$this->_return['dialstatus'] = $r;
 
 		return($r);
+	}
+
+	function delete_user_callgroup($gfeaturesid)
+	{
+		$this->_set_result('user_callgroup',null);
+
+		return($this->edit_user_callgroup($gfeaturesid));
 	}
 
 	function _reverse_delete()
