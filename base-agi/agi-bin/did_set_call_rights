@@ -61,15 +61,14 @@ def extension_matches(number, pattern):
 	for (key,val) in rep:
 		pattern = pattern.replace(key, val)
 
-	match = bool(re.match(pattern, number))
-	return match
+	return bool(re.match(pattern, number))
 
 def apply_rules(rules):
 	if not rules:
 		return
 
 	for rule in rules:
-		if bool(rule[RIGHTCALL_AUTHORIZATION_COLNAME]):
+		if rule[RIGHTCALL_AUTHORIZATION_COLNAME]:
 			allow()
 
 	deny(rule[RIGHTCALL_PASSWD_COLNAME])
