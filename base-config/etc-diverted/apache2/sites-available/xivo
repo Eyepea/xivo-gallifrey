@@ -25,7 +25,7 @@ NameVirtualHost *:443
 NameVirtualHost *:8667
 
 <VirtualHost *:8667>
-	DocumentRoot /tftpboot/Snom/
+	DocumentRoot /tftpboot
 	<Directory />
 		Options FollowSymLinks
 		AllowOverride None
