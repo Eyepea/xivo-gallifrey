@@ -27,6 +27,9 @@ for you, call agitb.handler().  The optional argument to handler() is a
 If you do not pass anything to handler() it will use sys.exc_info().
 
 This script was adapted from Ka-Ping Yee's cgitb.
+
+Modification by Proformatique:
+	PyDoc of enable() corrected. (it was the same as in cgitb)
 """
 
 __author__ = 'Matthew Nicholson'
@@ -202,11 +205,11 @@ class Hook:
 
 handler = Hook().handle
 def enable(agi=None, display=1, logdir=None, context=5):
-    """Install an exception handler that formats tracebacks as HTML.
+    """Install an exception handler that can send exceptions to agi.verbose
 
     The optional argument 'display' can be set to 0 to suppress sending the
-    traceback to the browser, and 'logdir' can be set to a directory to cause
-    tracebacks to be written to files there."""
+    traceback to the Asterisk verbose logs, and 'logdir' can be set to a
+    directory to cause tracebacks to be written to files there."""
     except_hook =  Hook(display=display, logdir=logdir,
                           context=context, agi=agi)
     sys.excepthook = except_hook
