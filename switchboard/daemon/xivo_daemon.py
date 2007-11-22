@@ -82,6 +82,7 @@
 #
 
 __version__ = "$Revision$ $Date$"
+__revision__ = __version__.split()[1]
 
 # debian.org modules
 import csv
@@ -144,16 +145,16 @@ import xivo_commandsets
 # from CommandSets import *
 import XivoSimple # the line above would be better, this one is because of freezing needs
 
-DIR_TO_STRING = ">"
-DIR_FROM_STRING = "<"
-allowed_states = ["available", "away", "outtolunch", "donotdisturb", "berightback"]
+DIR_TO_STRING = '>'
+DIR_FROM_STRING = '<'
+allowed_states = ['available', 'away', 'outtolunch', 'donotdisturb', 'berightback']
 
-DUMMY_DIR = ""
-DUMMY_RCHAN = ""
-DUMMY_EXTEN = ""
-DUMMY_MYNUM = ""
-DUMMY_CLID = ""
-DUMMY_STATE = ""
+DUMMY_DIR = ''
+DUMMY_RCHAN = ''
+DUMMY_EXTEN = ''
+DUMMY_MYNUM = ''
+DUMMY_CLID = ''
+DUMMY_STATE = ''
 
 # global : userlist
 # liste des champs :
@@ -177,8 +178,8 @@ SUBSCRIBES_N_PER_UNIT_OF_TIME = 20
 SUBSCRIBES_TIME_UNIT_IN_S     = 1
 
 socket.setdefaulttimeout(2)
-HISTSEPAR = ";"
-XIVO_CLI_WEBI_HEADER = "XIVO-CLI-WEBI"
+HISTSEPAR = ';'
+XIVO_CLI_WEBI_HEADER = 'XIVO-CLI-WEBI'
 REQUIRED_CLIENT_VERSION = 2025
 XIVOVERSION = '0.2'
 ITEMS_PER_PACKET = 500
@@ -228,7 +229,7 @@ fullstat_heavies = {}
 # \sa log_debug
 def varlog(syslogprio, string):
         if syslogprio <= SYSLOG_NOTICE:
-                syslogf(syslogprio, "xivo_daemon : " + string)
+                syslogf(syslogprio, 'xivo_daemon : ' + string)
         return 0
 
 # reminder :
@@ -250,10 +251,10 @@ def varlog(syslogprio, string):
 def verboselog(string, events, updatesgui):
         if debug_mode:
                 if events and evtfile:
-                        evtfile.write(time.strftime("%b %2d %H:%M:%S ", time.localtime()) + string + "\n")
+                        evtfile.write(time.strftime('%b %2d %H:%M:%S ', time.localtime()) + string + '\n')
                         evtfile.flush()
                 if updatesgui and guifile:
-                        guifile.write(time.strftime("%b %2d %H:%M:%S ", time.localtime()) + string + "\n")
+                        guifile.write(time.strftime('%b %2d %H:%M:%S ', time.localtime()) + string + '\n')
                         guifile.flush()
         return 0
 
@@ -265,7 +266,7 @@ def verboselog(string, events, updatesgui):
 # \sa varlog
 def log_debug(syslogprio, string):
         if debug_mode and syslogprio <= SYSLOG_INFO:
-                print "#debug# " + string
+                print '#debug# ' + string
         return varlog(syslogprio, string)
 
 
@@ -283,8 +284,8 @@ These functions should not deal with CTI clients directly, however.
 # \param kind kind of list (ingoing, outgoing, missed calls)
 def update_history_call(cfg, techno, phoneid, phonenum, nlines, kind):
         results = []
-        if cfg.cdr_db_uri == "":
-                log_debug(SYSLOG_WARNING, "%s : no CDR uri defined for this asterisk - see cdr_db_uri parameter" % cfg.astid)
+        if cfg.cdr_db_uri == '':
+                log_debug(SYSLOG_WARNING, '%s : no CDR uri defined for this asterisk - see cdr_db_uri parameter' % cfg.astid)
         else:
                 try:
                         conn = anysql.connect_by_uri(cfg.cdr_db_uri)
@@ -773,7 +774,7 @@ def manage_login(cfg, requester_ip, requester_port, socket):
                                            userinfo.get('phonenum'),
                                            ",".join(capa_user),
                                            XIVOVERSION,
-                                           __version__.split()[1],
+                                           __revision__,
                                            userinfo.get('state'))
                                 userinfo['connection'] = socket
                                 userinfo_by_requester[requester_ip + ":" + requester_port] = [cfg.get('astid'),
@@ -855,7 +856,7 @@ def manage_tcp_connection(connid, allow_events):
                                         'logged_sb=%d/%d;' \
                                         'logged_xc=%d/%d' \
                                         %(XIVOVERSION,
-                                          __version__.split()[1],
+                                          __revision__,
                                           REQUIRED_CLIENT_VERSION, time_uptime,
                                           conngui_sb, maxgui_sb, conngui_xc, maxgui_xc)
                                 for tcpo in tcpopens_sb:
@@ -924,7 +925,7 @@ def manage_tcp_connection(connid, allow_events):
                     if allow_events: # i.e. if SB-style connection
                         command = commandclass.parsecommand(usefulmsg)
                         if command.name in commandclass.get_list_commands_clt2srv():
-                                log_debug(SYSLOG_INFO, "%s is attempting a %s : %s" %(requester, command.name, str(command.args)))
+                                log_debug(SYSLOG_INFO, "%s is attempting a %s (TCP) : %s" %(requester, command.name, str(command.args)))
                                 try:
                                         if requester in userinfo_by_requester:
                                                 resp = parse_command_and_build_reply(userinfo_by_requester[requester],
@@ -955,9 +956,9 @@ def manage_tcp_connection(connid, allow_events):
 
                     else: # i.e. if WEBI-style connection
                                 if requester_ip in ip_reverse_webi:
-                                        astid = ip_reverse_webi[requester_ip]
-                                        connid[0].send('%s:ID <%s>\n' %(XIVO_CLI_WEBI_HEADER, astid))
                                         try:
+                                                astid = ip_reverse_webi[requester_ip]
+                                                connid[0].send('%s:ID <%s>\n' %(XIVO_CLI_WEBI_HEADER, astid))
                                                 if usefulmsg == 'xivo[userlist,update]':
                                                         update_userlist[astid] = True
                                                         connid[0].send('%s:OK\n' %(XIVO_CLI_WEBI_HEADER))
@@ -966,15 +967,17 @@ def manage_tcp_connection(connid, allow_events):
                                                         try:
                                                                 s = AMI_array_user_commands[astid].execclicommand(usefulmsg.strip())
                                                         except Exception, exc:
-                                                                log_debug(SYSLOG_ERR, '--- exception --- (%s) error : WEBI command exec <%s> : (client %s) : %s'
+                                                                log_debug(SYSLOG_ERR, '--- exception --- (%s) WEBI command exec <%s> : (client %s) : %s'
                                                                           %(astid, str(usefulmsg.strip()), requester, str(exc)))
                                                         try:
                                                                 for x in s: connid[0].send(x)
                                                                 connid[0].send('%s:OK\n' %(XIVO_CLI_WEBI_HEADER))
                                                         except Exception, exc:
-                                                                log_debug(SYSLOG_ERR, '--- exception --- (%s) error : WEBI command reply <%s> : (client %s) : %s'
+                                                                log_debug(SYSLOG_ERR, '--- exception --- (%s) WEBI command reply <%s> : (client %s) : %s'
                                                                           %(astid, str(usefulmsg.strip()), requester, str(exc)))
                                         except Exception, exc:
+                                                log_debug(SYSLOG_ERR, '--- exception --- (%s) WEBI <%s> : (client %s) : %s'
+                                                          %(astid, str(usefulmsg.strip()), requester, str(exc)))
                                                 connid[0].send('%s:KO <Exception : %s>\n' %(XIVO_CLI_WEBI_HEADER, str(exc)))
                                 else:
                                         connid[0].send('%s:KO <NOT ALLOWED>\n' %(XIVO_CLI_WEBI_HEADER))
@@ -983,7 +986,8 @@ def manage_tcp_connection(connid, allow_events):
                                         connid[0].close()
                                         log_debug(SYSLOG_INFO, 'TCP (WEBI) socket closed towards %s' %requester)
                                 except Exception, exc:
-                                        log_debug(SYSLOG_ERR, '--- exception --- TCP (WEBI) could not close properly %s' %requester)
+                                        log_debug(SYSLOG_ERR, '--- exception --- (%s) WEBI could not close properly %s'
+                                                  %(astid, requester))
 
 
 ## \brief Tells whether a channel is a "normal" one, i.e. SIP, IAX2, mISDN, Zap
@@ -2477,7 +2481,9 @@ def connect_user(userinfo, sessionid, iip, iport,
                 if state in allowed_states:
                         userinfo['state'] = state
                 else:
-                        userinfo['state'] = "undefinedstate"
+                        log_debug(SYSLOG_WARNING, '(user %s) : state <%s> is not an allowed one => undefinedstate-connect'
+                                  % (userinfo.get('user'), state))
+                        userinfo['state'] = 'undefinedstate-connect'
                 if whoami == 'XC':
                         conngui_xc = conngui_xc + 1
                 else:
@@ -2718,7 +2724,7 @@ class LoginHandler(SocketServer.StreamRequestHandler):
                                              userinfo.get('phonenum'),
                                              ",".join(capa_user),
                                              XIVOVERSION,
-                                             __version__.split()[1],
+                                             __revision__,
                                              userinfo.get('state'))
                         else:
                                 replystr = "ERROR %s" % reterror
@@ -2837,7 +2843,9 @@ def update_availstate(me, state):
                         if state in allowed_states:
                                 userinfo['state'] = state
                         else:
-                                userinfo['state'] = "undefinedstate"
+                                log_debug(SYSLOG_WARNING, '%s : (user %s) : state <%s> is not an allowed one => undefinedstate-updated'
+                                          % (astid, username, state))
+                                userinfo['state'] = 'undefinedstate-updated'
                         do_state_update = True
         finally:
                 userlist_lock[astid].release()
@@ -2981,7 +2989,9 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
                                 if state in allowed_states:
                                         userinfo['state'] = state
                                 else:
-                                        userinfo['state'] = "undefinedstate"
+                                        log_debug(SYSLOG_WARNING, '%s (user %s) : state <%s> is not an allowed one => undefinedstate-alive'
+                                                  % (astid, user, state))
+                                        userinfo['state'] = 'undefinedstate-alive'
                                 plist[astname_xivoc].send_availstate_update(user, state)
                                 response = 'OK'
 
@@ -3005,6 +3015,7 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
 
                                         command = commandclass.parsecommand(' '.join(list[4:]))
                                         if command.name in commandclass.get_list_commands_clt2srv():
+                                                log_debug(SYSLOG_INFO, "%s is attempting a %s (UDP) : %s" %('requester', command.name, str(command.args)))
                                                 response = parse_command_and_build_reply([astname_xivoc, user,
                                                                                           userinfo.get('context'), capalist_user],
                                                                                          ['udp', self.request[1], self.client_address[0], self.client_address[1]],
@@ -3083,9 +3094,11 @@ while True: # loops over the reloads
 
         time_start = time.time()
         if nreload == 0:
-                log_debug(SYSLOG_NOTICE, '# STARTING XIVO Daemon # (0/3) Starting')
+                log_debug(SYSLOG_NOTICE, '# STARTING XIVO Daemon %s / svn %s # (0/3) Starting'
+                          %(XIVOVERSION, __revision__))
         else:
-                log_debug(SYSLOG_NOTICE, '# STARTING XIVO Daemon # (0/3) Reloading (%d)' %nreload)
+                log_debug(SYSLOG_NOTICE, '# STARTING XIVO Daemon %s / svn %s # (0/3) Reloading (%d)'
+                          %(XIVOVERSION, __revision__, nreload))
         nreload += 1
         
         # global default definitions

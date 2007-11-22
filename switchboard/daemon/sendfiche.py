@@ -306,7 +306,7 @@ class FicheSender:
                                 fiche.sendtouser(address, sheetui)
                         log_debug('the customer info has been sent')
                 else:
-                        log_debug('the customer info has not been sent because inavailable state %s' % state)
+                        log_debug('the customer info has not been sent because unavailable state <%s>' % state)
 
 
 def sendficheasync(userinfo, ctxinfos, callerid, msg, xdconfig):
