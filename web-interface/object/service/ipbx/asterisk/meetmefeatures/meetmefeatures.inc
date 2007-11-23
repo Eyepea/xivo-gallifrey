@@ -61,7 +61,8 @@ class xivo_service_asterisk_meetmefeatures extends xivo_service_asterisk_abstrac
 
 		if(isset($arr['name']) === true)
 		{
-			$where = array('name' => strtolower($arr['name']));
+			$arr['name'] = strtolower($arr['name']);
+			$where = array('name' => $arr['name']);
 
 			if($this->get_id($where) !== false)
 				return(false);
@@ -85,7 +86,8 @@ class xivo_service_asterisk_meetmefeatures extends xivo_service_asterisk_abstrac
 
 		if(isset($arr['name']) === true)
 		{
-			$where = array('name' => strtolower($arr['name']));
+			$arr['name'] = strtolower($arr['name']);
+			$where = array('name' => $arr['name']);
 
 			if(($whereid = $this->get_id($where)) !== false && $whereid !== $id)
 				return(false);

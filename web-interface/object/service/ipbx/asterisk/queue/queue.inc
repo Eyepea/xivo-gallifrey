@@ -67,6 +67,15 @@ class xivo_service_asterisk_queue extends xivo_service_asterisk_abstract
 		if(is_array($arr) === false)
 			return(false);
 
+		if(isset($arr['name']) === true)
+		{
+			$arr['name'] = strtolower($arr['name']);
+			$where = array('name' => $arr['name']);
+
+			if($this->get_id($where) !== false)
+				return(false);
+		}
+
 		return($this->_dso->add($arr));
 	}
 
@@ -74,6 +83,9 @@ class xivo_service_asterisk_queue extends xivo_service_asterisk_abstract
 	{
 		if(is_scalar($id) === false || is_array($arr) === false)
 			return(false);
+
+		if(isset($arr['name']) === true)
+			$arr['name'] = strtolower($arr['name']);
 
 		return($this->_dso->edit($id,$arr,$disable));
 	}

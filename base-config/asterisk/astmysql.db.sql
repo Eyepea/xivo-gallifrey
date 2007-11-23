@@ -984,7 +984,7 @@ CREATE TABLE `useriax` (
  `name` varchar(40) NOT NULL,
  `commented` tinyint(1) NOT NULL DEFAULT 0,
  `username` varchar(80) NOT NULL,
- `type` varchar(6) NOT NULL DEFAULT 'friend',
+ `type` enum('friend','peer','user') NOT NULL,
  `secret` varchar(80),
  `md5secret` varchar(32),
  `dbsecret` varchar(100),
@@ -1052,14 +1052,14 @@ CREATE TABLE `usersip` (
  `rtptimeout` char(3),
  `rtpholdtimeout` char(3),
  `secret` varchar(80),
- `type` varchar(6) NOT NULL DEFAULT 'friend',
+ `type` enum('friend','peer','user') NOT NULL,
  `username` varchar(80) NOT NULL,
  `disallow` varchar(100),
  `allow` varchar(100),
  `musiconhold` varchar(100),
  `regseconds` int(10) unsigned NOT NULL DEFAULT 0,
  `ipaddr` varchar(15),
- `regexten` varchar(80) NOT NULL,
+ `regexten` varchar(80),
  `cancallforward` char(3),
  `setvar` varchar(100) NOT NULL,
  `call-limit` tinyint(2) unsigned NOT NULL DEFAULT 0,
@@ -1071,7 +1071,7 @@ CREATE INDEX `usersip__idx__commented` ON `usersip`(`commented`);
 CREATE INDEX `usersip__idx__category` ON `usersip`(`category`);
 CREATE UNIQUE INDEX `usersip__uidx__name` ON `usersip`(`name`);
 
-INSERT INTO `usersip` VALUES (1,'guest',0,'','documentation','','Guest','no','initconfig',NULL,'rfc2833',NULL,NULL,'','dynamic',NULL,NULL,'',NULL,'no',NULL,NULL,NULL,'',5060,'no',NULL,NULL,NULL,'guest','friend','guest',NULL,NULL,NULL,0,NULL,'',NULL,'',0,'user');
+INSERT INTO `usersip` VALUES (1,'guest',0,'','documentation','','Guest','no','initconfig',NULL,'rfc2833',NULL,NULL,'','dynamic',NULL,NULL,'',NULL,'no',NULL,NULL,NULL,'',NULL,'no',NULL,NULL,NULL,'guest','friend','guest',NULL,NULL,NULL,0,NULL,NULL,NULL,'',0,'user');
 
 
 DROP TABLE IF EXISTS `uservoicemail`;

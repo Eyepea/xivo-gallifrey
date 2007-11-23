@@ -119,6 +119,7 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 
 		if(isset($arr['name']) === true)
 		{
+			$arr['name'] = strtolower($arr['name']);
 			$where = array('name' => $arr['name'],'protocol' => $arr['protocol']);
 
 			if($this->get_id($where) !== false)
@@ -171,7 +172,7 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		if(isset($arr['name']) === false)
 			$where['name'] = $info['name'];
 		else
-			$where['name'] = strtolower($arr['name']);
+			$arr['name'] = $where['name'] = strtolower($arr['name']);
 
 		if(isset($arr['protocol']) === false)
 			$where['protocol'] = $info['protocol'];

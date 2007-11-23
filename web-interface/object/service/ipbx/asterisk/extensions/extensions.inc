@@ -354,7 +354,7 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 
 	function _chk_app($app)
 	{
-		$app = strtolower((string) $app);
+		$app = strtolower(strval($app));
 
 		if($this->_chk_exists_cfg('app',$app) === false)
 			return(false);

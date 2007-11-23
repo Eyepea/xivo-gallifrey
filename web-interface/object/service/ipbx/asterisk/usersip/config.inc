@@ -86,8 +86,8 @@ $array['element']['ipaddr']['default'] = '';
 $array['element']['ipaddr']['null'] = true;
 
 $array['element']['regexten'] = array();
-$array['element']['regexten']['default'] = 0;
-$array['element']['regexten']['setdef'] = true;
+$array['element']['regexten']['default'] = '';
+$array['element']['regexten']['null'] = true;
 
 $array['element']['accountcode'] = array();
 $array['element']['accountcode']['default'] = '';
