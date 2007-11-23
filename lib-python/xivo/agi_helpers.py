@@ -1,10 +1,11 @@
-"""Helper functions for Xivo AGI
+"""Helper functions for XIVO AGI
 
 Copyright (C) 2007, Proformatique
 
-"""
+This module provides a set of mostly unrelated functions that are used by
+several AGI scripts in XIVO.
 
-# TODO: Filter commented SQL rows
+"""
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
@@ -30,6 +31,15 @@ import anysql
 import except_tb
 
 def dp_break(agi, message, show_tb = False):
+	"""DialPlan BREAK
+
+	Display a message in the Asterisk CLI, optionally dumping the
+	exception trace, hangup the current channel and stop execution.
+
+	If show_tb is True, this function must be called from an except block.
+
+	"""
+
 	agi.verbose(message)
 
 	if show_tb:
@@ -39,10 +49,22 @@ def dp_break(agi, message, show_tb = False):
 	sys.exit(1)
 
 def agi_verbose_except(agi, message):
+	"""Display a message followed by an exception trace. This function
+	must be called from an except block.
+
+	"""
+
 	agi.verbose(message)
 	except_tb.log_exception(agi.verbose)
 
 def db_connect(agi, db_uri):
+	"""DataBase CONNECT
+
+	This function is a simple wrapper to connect to the database with error
+	handling. If successful, it returns the connection object.
+
+	"""
+
 	try:
 		conn = anysql.connect_by_uri(db_uri)
 	except:
@@ -51,6 +73,38 @@ def db_connect(agi, db_uri):
 	return conn
 
 def set_fwd_vars(agi, cursor, type, typeval, appval, type_varname, typeval1_varname, typeval2_varname):
+	"""The purpose of this function is to set some variables in the
+	Asterisk channel related to redirection. It can set up to 3 variables:
+	 - the redirection type (e.g. to a user, a group, a queue)
+	 - 2 parameters (typeval1 and typeval2)
+
+	type is the redirection type and is used to determine the corresponding
+	behaviour (e.g. how many variables to set, where to fetch their value
+	from).
+
+	typeval is a value related to the redirection type. For example, if the
+	type is 'user', and the type value is '101', this function will look up
+	user ID 101 in the user features table and set 2 variables (a number
+	and a context) so that the dial plan is able to forward the call to
+	that user. In this example, the number and context are the 2 parameters
+	(typeval1 and typeval2) that this function sets before returning.
+
+	Forwarding a call to an application sometimes require an extra
+	parameter (since type is 'application' and typeval1 is the application
+	name). This extra parameter is given in the appval argument.
+
+	Depending on the redirection type and the application (in case the type
+	is 'application'), some parameters can be processed so that commas are
+	translated to semicolumns. This is an ugly hack imagined because
+	Asterisk evaluates variables early, and commas are used as an argument
+	separator. In such cases, the dialplan translates semicolumns back
+	to commas/pipes before using the variale.
+
+	XXX This function and its users should be able to handle more
+	variables (if possible, there should be no limit).
+
+	"""
+
 	agi.set_variable(type_varname, type)
 
 	if type in ('endcall', 'schedule', 'sound'):
@@ -124,4 +178,4 @@ def set_fwd_vars(agi, cursor, type, typeval, appval, type_varname, typeval1_varn
 		agi.set_variable(typeval1_varname, res['meetmefeatures.number'])
 		agi.set_variable(typeval2_varname, res['meetmefeatures.context'])
 	else:
-		dp_break(agi, "Unknown dial status destination type '%s'" % type)
+		dp_break(agi, "Unknown destination type '%s'" % type)
