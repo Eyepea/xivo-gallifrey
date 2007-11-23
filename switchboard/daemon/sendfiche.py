@@ -181,7 +181,7 @@ def get_csv_infos(cid, ctxinfos):
 # \param items
 # \param formats
 # \param flds
-def make_fields(items, formats, flds):
+def make_fields(items, formats, flds, localdir):
 	fields_list = []
 	for field_to_display in items:
 		# a "|" character splits the order of the field in the displayed popup
@@ -202,6 +202,11 @@ def make_fields(items, formats, flds):
                                         if len(fmat) == 2:
                                                 prestr  = fmat[0]
                                                 poststr = fmat[1]
+                                if localdir is not None and len(localdir) == 3:
+                                        if kindoffield == 'firstname':
+                                                defaultvalue = localdir[1]
+                                        elif kindoffield == 'name':
+                                                defaultvalue = localdir[2]
                                 value = prestr + defaultvalue + poststr
                                 if kindoffield in flds:
                                         if flds[kindoffield] != "":
@@ -213,7 +218,7 @@ def make_fields(items, formats, flds):
 
 
 
-def retrieve_callerid_data(callerid, ctxinfos, xdconfig):
+def retrieve_callerid_data(callerid, ctxinfos, xdconfig, localdir):
         fields = {}
         fields['req_cid'] = callerid
         fields['callidname'] = ''
@@ -270,7 +275,7 @@ def retrieve_callerid_data(callerid, ctxinfos, xdconfig):
 
         # formats output according to filled-in values
         try:
-                fields_formatted = make_fields(fitems, fformats, fields)
+                fields_formatted = make_fields(fitems, fformats, fields, localdir)
                 log_debug('fields_formatted = %s' % str(fields_formatted))
         except Exception, exc:
                 log_debug('--- exception --- when calling make_fields : %s' % str(exc))
@@ -284,7 +289,7 @@ class FicheSender:
                 # print 'FicheSend.__class__(%s, %s, %s)' % (sessionid, address, state)
 
                 # sessionid, address, state, msg, tcpmode, socket
-                if state == 'available':
+                if state == 'available' or state == 'nopresence':
                         log_debug('address = %s' % str(address))
                         fiche = generefiche.Fiche(sessionid)
                         fiche.setmessage(msg)
@@ -309,7 +314,7 @@ class FicheSender:
                         log_debug('the customer info has not been sent because unavailable state <%s>' % state)
 
 
-def sendficheasync(userinfo, ctxinfos, callerid, msg, xdconfig):
+def sendficheasync(userinfo, ctxinfos, callerid, msg, xdconfig, localdir):
         params = {}
         if userinfo is not None:
                 sender = FicheSender()
@@ -325,7 +330,7 @@ def sendficheasync(userinfo, ctxinfos, callerid, msg, xdconfig):
                 else:
                         params['socket'] = None
 
-        [fields, params['todisplay']] = retrieve_callerid_data(callerid, ctxinfos, xdconfig)
+        [fields, params['todisplay']] = retrieve_callerid_data(callerid, ctxinfos, xdconfig, localdir)
         callidname = fields['callidname']
         params['sheetui'] = None
 
@@ -368,7 +373,7 @@ def senduiasync(userinfo, ctxinfos, callerid, xdconfig):
                 else:
                         params['socket'] = None
 
-        [fields, params['todisplay']] = retrieve_callerid_data(callerid, ctxinfos, xdconfig)
+        [fields, params['todisplay']] = retrieve_callerid_data(callerid, ctxinfos, xdconfig, None)
         callidname = fields['callidname']
         for lv in listvars:
                 if lv in ctxinfos.sheet_callidmatch:

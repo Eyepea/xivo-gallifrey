@@ -100,15 +100,15 @@ else:
         print_verbose("The Caller Id will be set to <%s>" % calleridtoset)
         agi.set_callerid(calleridtoset)
 
-if clientstate == "available":
+if clientstate == 'available' or clientstate == 'nopresence':
 	agi.set_variable('XIVO_AIMSTATUS', 0)
-elif clientstate == "away":
+elif clientstate == 'away':
 	agi.set_variable('XIVO_AIMSTATUS', 1)
-elif clientstate == "donotdisturb":
+elif clientstate == 'donotdisturb':
 	agi.set_variable('XIVO_AIMSTATUS', 2)
-elif clientstate == "outtolunch":
+elif clientstate == 'outtolunch':
 	agi.set_variable('XIVO_AIMSTATUS', 3)
-elif clientstate == "berightback":
+elif clientstate == 'berightback':
 	agi.set_variable('XIVO_AIMSTATUS', 4)
 else:
-	print_verbose("Unknown user's availability status : %s" % clientstate)
+	print_verbose("Unknown user's availability status : <%s>" % clientstate)

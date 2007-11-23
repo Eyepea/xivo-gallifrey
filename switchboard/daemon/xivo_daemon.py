@@ -2808,11 +2808,18 @@ class IdentRequestHandler(SocketServer.StreamRequestHandler):
 					log_debug(SYSLOG_WARNING, '%s : User <%s> session not defined (Call)' % (astid, user))
                                         userinfo = None
 
+                                sipcid = "SIP/%s" %callerid
+                                localdirinfo = None
+                                if sipcid in plist[astid].normal:
+                                        localdirinfo = [plist[astid].normal[sipcid].calleridfull,
+                                                        plist[astid].normal[sipcid].calleridfirst,
+                                                        plist[astid].normal[sipcid].calleridlast]
                                 calleridname = sendfiche.sendficheasync(userinfo,
                                                                         ctxinfo,
                                                                         callerid,
                                                                         msg,
-                                                                        xivoconf)
+                                                                        xivoconf,
+                                                                        localdirinfo)
                                 retline = 'USER %s STATE %s CIDNAME %s' %(user, state_userinfo, calleridname)
 			except Exception, exc:
                                 log_debug(SYSLOG_ERR, "--- exception --- error push : %s" %(str(exc)))
