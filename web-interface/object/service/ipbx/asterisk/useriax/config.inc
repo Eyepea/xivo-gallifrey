@@ -54,6 +54,10 @@ $array['element']['allow']['value'] = array(
 $array['element']['allow']['default'] = '';
 $array['element']['allow']['null'] = true;
 
+$array['element']['type'] = array();
+$array['element']['type']['default'] = 'friend';
+$array['element']['type']['forcedef'] = true;
+
 $array['element']['port'] = array();
 $array['element']['port']['default'] = '';
 $array['element']['port']['null'] = true;
@@ -126,6 +130,7 @@ $array['filter']['allow'] = array('set' => false,'chk' => 2,'value' => array(
 						XIVO_SRE_IPBX_AST_CODEC_VIDEO_H261,
 						XIVO_SRE_IPBX_AST_CODEC_VIDEO_H263,
 						XIVO_SRE_IPBX_AST_CODEC_VIDEO_H263P));
+$array['filter']['type'] = array('set' => false,'chk' => 0);
 $array['filter']['port'] = array('set' => false,'chk' => 0);
 $array['filter']['ipaddr'] = array('set' => false,'chk' => 0);
 $array['filter']['username'] = array('set' => false,'chk' => 2,'maxlen' => 80);
