@@ -45,6 +45,17 @@ agi = AGI()
 db_uri = ConfigDict.ReadSingleKey(CONFIG_FILE, 'db', 'db_uri')
 
 def ds_set_fwd_vars(id, status, type_varname, typeval1_varname, typeval2_varname):
+	"""Front-end to agi_helpers.set_fwd_vars() that fetches some data from
+	the dialstatus table.
+
+	This function is called when fetching the redirection settings from the
+	dialstatus table instead of the userfeatures table, which means that
+	the user didn't set its own redirection, and a default (set by the
+	administrator) is used instead. In this case, an extra variable named
+	type_varname + "_FROMDS" is exported to the dial plan.
+
+	"""
+
 	cursor.query("SELECT ${columns} FROM dialstatus WHERE status = %s AND category = %s AND categoryval = %s AND linked = 1",
                      ('type', 'typeval', 'applicationval'),
                      (status, 'user', id))
@@ -113,6 +124,8 @@ elif protocol == "custom":
 else:
 	agi_helpers.dp_break(agi, "Unknown protocol '%s'" % protocol)
 
+# The extension table contains some rows which are used to activate some
+# services like redirections or voicemail.
 cursor.query("SELECT ${columns} FROM extensions "
              "WHERE name IN ('fwdunc', 'fwdrna', 'fwdbusy', 'enablevm', 'incallfilter', 'incallrec', 'enablednd') "
              "AND commented = 0",
@@ -154,6 +167,9 @@ if 'fwdunc' in features_list:
 	agi.set_variable('XIVO_ENABLEUNC', enableunc)
 
 	if enableunc == 1:
+		# The redirection isn't actually meant to target a user, but
+		# the current implementation allows the use of this type for
+		# any kind of number.
 		agi.set_variable('XIVO_FWD_TYPEUNC', 'user')
 		agi.set_variable('XIVO_FWD_TYPEVAL1UNC', destunc)
 		agi.set_variable('XIVO_FWD_TYPEVAL2UNC', context)
@@ -164,6 +180,7 @@ if 'fwdbusy' in features_list:
 	agi.set_variable('XIVO_ENABLEBUSY', enablebusy)
 
 	if enablebusy == 1:
+		# See the comment concerning the fwdunc feature.
 		agi.set_variable('XIVO_FWD_TYPEBUSY', 'user')
 		agi.set_variable('XIVO_FWD_TYPEVAL1BUSY', destbusy)
 		agi.set_variable('XIVO_FWD_TYPEVAL2BUSY', context)
@@ -175,6 +192,7 @@ else:
 
 if 'fwdrna' in features_list:
 	if enablerna:
+		# See the comment concerning the fwdunc feature.
 		agi.set_variable('XIVO_FWD_TYPERNA', 'user')
 		agi.set_variable('XIVO_FWD_TYPEVAL1RNA', destrna)
 		agi.set_variable('XIVO_FWD_TYPEVAL2RNA', context)
