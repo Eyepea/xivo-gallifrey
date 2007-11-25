@@ -61,7 +61,8 @@ def db_connect(agi, db_uri):
 	"""DataBase CONNECT
 
 	This function is a simple wrapper to connect to the database with error
-	handling. If successful, it returns the connection object.
+	handling. If successful, it returns the connection object; otherwise it
+	calls dp_break().
 
 	"""
 
@@ -99,6 +100,9 @@ def set_fwd_vars(agi, cursor, type, typeval, appval, type_varname, typeval1_varn
 	Asterisk evaluates variables early, and commas are used as an argument
 	separator. In such cases, the dialplan translates semicolumns back
 	to commas/pipes before using the variale.
+
+	This function calls dp_break() upon detection of parameter/database
+	inconsistency or when the type parameter is invalid.
 
 	XXX This function and its users should be able to handle more
 	variables (if possible, there should be no limit).
