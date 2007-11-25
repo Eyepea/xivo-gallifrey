@@ -1,18 +1,17 @@
-"""More comprehensive traceback formatting for Python scripts.
+"""More comprehensive traceback formatting for AGI in Python.
 
 To enable this module, do:
 
-    import asterisk.agitb, asterisk.agi
-    asterisk.agitb.enable(display = False, logdir = '/var/log/asterisk/')
-
-    agi = asterisk.agi.AGI()
-    asterisk.agitb.enable(agi, False, '/var/log/asterisk')
+    from agi import AGI
+    import agitb
+    agi = AGI()
+    agitb.enable(agi)
 
 at the top of your script.  The optional arguments to enable() are:
 
     agi         - the agi handle to write verbose messages to
-    display     - if true, tracebacks are displayed on the asterisk console
-                  (used with the agi option) 
+    display     - if true (default), tracebacks are displayed on the asterisk
+                  console (used with the agi option) 
     logdir      - if set, tracebacks are written to files in this directory
     context     - number of lines of source code to show for each stack frame
 
@@ -148,7 +147,8 @@ the original traceback:
 ''' % ''.join(traceback.format_exception(etype, evalue, etb))
 
 class Hook:
-    """A hook to replace sys.excepthook that shows tracebacks in HTML."""
+    """A hook to replace sys.excepthook that sends detailed tracebacks to
+    Asterisk via agi.verbose() calls."""
 
     def __init__(self, display=1, logdir=None, context=5, file=None,
                   agi=None):
