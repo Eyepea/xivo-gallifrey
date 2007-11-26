@@ -2,19 +2,36 @@
 and allow precise tracing of calls and returns of functions with no modification
 of the instrumented source code.
 
-Some functions of inspect.py have been copied and corrected here (they will
-eventually be fixed upstream if we have some time to report the issues)
+Use of this feature is very easy; one just need to write from the point he wants
+the program to be traced, for example:
+
+	import tracer
+	tracer.enable_tofp(open(os.path.expanduser("~/traces"), 'w'))
+
+With the code above, a file named "traces" will be created in your home
+directory (or its content wiped if it already existed) and the function call
+traces of the current execution will be sent there.
+
+enable_tofp() takes two arguments:
+-fp: file pointer (like open(filename, 'w') or even sys.stderr if you want)
+-returns: optional, default to 1 -
+	  traces of function returns with their return value will be written if
+	  and only if 'returns' evaluates to True.
+
+Some functions of inspect.py have been copied and corrected in this module (they
+will eventually be bug reported and fixed upstream if we have some time to
+report the issues)
 
 Precisely, formatargvalues() from inspect fails to format arguments of functions
 which prototypes include one or multiple tuple pattern matching, for example of
 the form:
 
-def function1((a,b)):
-	...
+	def function1((a,b)):
+		...
 or:
 
-def function2(a, (b,c), ((d,),)):
-	...
+	def function2(a, (b,c), ((d,),)):
+		...
 
 It has been found, by trial and error, that when such parameter exists in a
 function definition, its constituents are not directly referenced by their names
@@ -35,7 +52,7 @@ __init__() constructor, a representation of an instance which class implements a
 personalized __repr__() directly or via __getattr__(), which needs some members
 that are not yet available when the __init__() trace is to be emitted.
 
-XXX: the TraceToFile class should be commented, cleaned up, and could be
+XXX: the TraceToFile class should be documented, cleaned up, and could be
 enhanced.
 
 """
@@ -141,8 +158,16 @@ def formatargvalues(args, varargs, varkw, lcals,
 #
 #foobar((0,(1,),2,(3,(4,((5,),))),6),(7,8))
 #
+#
+#def foobar3000(a,(c,),(d,),(e,),(f,),(g,),b,(h,),(i,),(j,),(k,),(l,),((m,),)):
+#	pass
+#
+#foobar3000(1,(3,),(4,),(5,),(6,),(7,),42,(8,),(9,),(10,),(11,),(12,),((13,),))
+#
 # Fixed implementation of formatargvalues() should be able to trace function
 # calls above :)
+#
+# XXX TODO: Write real non regression tests
 
 class TraceToFile:
 
@@ -208,4 +233,17 @@ class TraceToFile:
 		return self.traceit
 
 def enable_tofp(fp, returns = 1):
+	"""Enable function call traces and send them to the file pointer
+	referenced by 'fp'. Can optionally trace function returns and the values
+	returned.
+	
+	This function takes two arguments:
+	-fp: file pointer (like open(filename, 'w') or sys.stderr)
+	-returns: optional, default to 1 -
+	          traces function returns with their return values if and only
+	          if 'returns' evaluates to True.
+	
+	It is not possible to stop the tracing once it has been started
+	(XXX: this feature could be easily added if needed)
+	"""
 	sys.settrace(TraceToFile(fp, returns).traceit)
