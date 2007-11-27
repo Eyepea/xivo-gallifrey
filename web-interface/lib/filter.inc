@@ -172,15 +172,22 @@ class xivo_filter
 
 	function chk_ipv4_in_lhost($ip,$host)
 	{
+		$ip = strval($ip);
 		$host = strval($host);
-		$ip = gethostbyname(strval($ip));
 
 		if(xivo_filter::chk_ipv4_strict($ip) === false)
+		{
+			$ip = gethostbyname($ip);
+
+			if(xivo_filter::chk_ipv4_strict($ip) === false)
+				return(false);
+		}
+
+		if(xivo_filter::chk_ipv4_strict($host) === true)
+			$lhost = (array) $host;
+		else if(($lhost = gethostbynamel($host)) === false)
 			return(false);
 
-		if(($lhost = gethostbynamel($host)) === false)
-			$lhost = (array) $host;
-		
 		$nb = count($lhost);
 
 		for($i = 0;$i < $nb;$i++)
