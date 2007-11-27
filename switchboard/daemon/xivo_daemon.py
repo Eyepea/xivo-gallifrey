@@ -778,7 +778,7 @@ def manage_login(cfg, requester_ip, requester_port, socket):
                                            __revision__,
                                            userinfo.get('state'))
                                 if 'features' in capa_user:
-                                        replystr += ';capas_features:%s' %(','.join(configs[astid].capafeatures))
+                                        repstr += ';capas_features:%s' %(','.join(configs[astid].capafeatures))
 
                                 userinfo['connection'] = socket
                                 userinfo_by_requester[requester_ip + ":" + requester_port] = [cfg.get('astid'),
