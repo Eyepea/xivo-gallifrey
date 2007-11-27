@@ -183,7 +183,8 @@ class xivo_filter
 				return(false);
 		}
 
-		if(xivo_filter::chk_ipv4_strict($host) === true)
+		if(xivo_filter::chk_ipv4_strict($host) === true
+		|| xivo_filter::chk_ipv4_subnet($host) === true)
 			$lhost = (array) $host;
 		else if(($lhost = gethostbynamel($host)) === false)
 			return(false);
