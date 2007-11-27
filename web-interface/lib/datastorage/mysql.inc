@@ -51,7 +51,8 @@ class xivo_datastorage_mysql extends xivo_datastorage_abstract_sql
 
 		if(isset($param['port']) === true)
 			$this->_param['port'] = (int) $param['port'];
-		else if(isset($param['socket']) === true)
+
+		if(isset($param['socket']) === true)
 			$this->_param['socket'] = (string) $param['socket'];
 
 		if(isset($param['persist']) === true)
@@ -112,10 +113,10 @@ class xivo_datastorage_mysql extends xivo_datastorage_abstract_sql
 		else
 			$host = 'localhost';
 
-		if($this->_param['port'] !== 0 && xivo_uint($this->_param['port']) !== 0)
-			$host .= ':'.$this->_param['port'];
-		else if($this->_param['socket'] !== '')
+		if($this->_param['socket'] !== '')
 			$host .= ':'.$this->_param['socket'];
+		else if(xivo_uint($this->_param['port']) !== 0)
+			$host .= ':'.$this->_param['port'];
 
 		$this->_set_flag();
 
