@@ -205,7 +205,7 @@ def make_fields(items, formats, flds, localdir):
                                 if localdir is not None and len(localdir) == 3:
                                         if kindoffield == 'firstname':
                                                 defaultvalue = localdir[1]
-                                        elif kindoffield == 'name':
+                                        elif kindoffield == 'lastname':
                                                 defaultvalue = localdir[2]
                                 value = prestr + defaultvalue + poststr
                                 if kindoffield in flds:
