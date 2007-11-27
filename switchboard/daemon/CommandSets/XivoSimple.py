@@ -30,7 +30,12 @@ class XivoSimpleCommand(BaseCommand):
                         return header
                 else:
                         return header + ';' + ';'.join(results)
- 
+
+        def connected_srv2clt(self, conn, num):
+                return
+        def manage_srv2clt(self, conn, cname, usefulmsg):
+                return
+        
         def message_srv2clt(self, sender, message):
                 return 'message=%s::%s' %(sender, message)
         def dmessage_srv2clt(self, message):

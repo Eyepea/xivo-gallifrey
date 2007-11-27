@@ -142,8 +142,9 @@ import xivo_ami
 import xivo_ldap
 import xivo_commandsets
 
+# the first line would be better, but the second one is useful because of freezing needs
 # from CommandSets import *
-import XivoSimple # the line above would be better, this one is because of freezing needs
+import XivoSimple
 
 DIR_TO_STRING = '>'
 DIR_FROM_STRING = '<'
@@ -776,6 +777,9 @@ def manage_login(cfg, requester_ip, requester_port, socket):
                                            XIVOVERSION,
                                            __revision__,
                                            userinfo.get('state'))
+                                if 'features' in capa_user:
+                                        replystr += ';capas_features:%s' %(','.join(configs[astid].capafeatures))
+
                                 userinfo['connection'] = socket
                                 userinfo_by_requester[requester_ip + ":" + requester_port] = [cfg.get('astid'),
                                                                                               proto + userid,
@@ -926,6 +930,7 @@ def manage_tcp_connection(connid, allow_events):
                         command = commandclass.parsecommand(usefulmsg)
                         if command.name in commandclass.get_list_commands_clt2srv():
                                 log_debug(SYSLOG_INFO, "%s is attempting a %s (TCP) : %s" %(requester, command.name, str(command.args)))
+                                commandclass.manage_srv2clt(connid[0], command.name, usefulmsg)
                                 try:
                                         if requester in userinfo_by_requester:
                                                 resp = parse_command_and_build_reply(userinfo_by_requester[requester],
@@ -2272,6 +2277,7 @@ class AsteriskRemote:
                      ami_pass = 'xivouser',
                      contexts = '',
                      userfeatures_db_uri = '',
+                     capafeatures = [],
                      cdr_db_uri = '',
                      realm = 'asterisk',
                      parkingnumber = '700',
@@ -2290,6 +2296,7 @@ class AsteriskRemote:
                 self.ami_login = ami_login
                 self.ami_pass = ami_pass
                 self.userfeatures_db_uri = userfeatures_db_uri
+                self.capafeatures = capafeatures
                 self.cdr_db_uri = cdr_db_uri
                 self.realm = realm
                 self.parkingnumber = parkingnumber
@@ -2726,6 +2733,8 @@ class LoginHandler(SocketServer.StreamRequestHandler):
                                              XIVOVERSION,
                                              __revision__,
                                              userinfo.get('state'))
+                                if 'features' in capa_user:
+                                        replystr += ';capas_features:%s' %(','.join(configs[astid].capafeatures))
                         else:
                                 replystr = "ERROR %s" % reterror
                                 debugstr += " / USER %s (%s)" %(user, reterror)
@@ -3109,6 +3118,7 @@ while True: # loops over the reloads
         nreload += 1
         
         # global default definitions
+        commandset = 'xivosimple'
         port_login = 5000
         port_keepalive = 5001
         port_request = 5002
@@ -3138,6 +3148,8 @@ while True: # loops over the reloads
         xivoconf_general = dict(xivoconf.items("general"))
 
         # loads the general configuration
+        if 'commandset' in xivoconf_general:
+                commandset = xivoconf_general['commandset']
         if "port_fiche_login" in xivoconf_general:
                 port_login = int(xivoconf_general["port_fiche_login"])
         if "port_fiche_keepalive" in xivoconf_general:
@@ -3171,14 +3183,13 @@ while True: # loops over the reloads
 
         if "advert" in xivoconf_general: with_advert = True
 
-        cclass = xivo_commandsets.CommandClasses['xivosimple']
+        cclass = xivo_commandsets.CommandClasses[commandset]
         commandclass = cclass()
 
         configs = {}
         save_for_next_packet_events = {}
         save_for_next_packet_status = {}
         faxbuffer = {}
-        n = 0
         ip_reverse_webi = {}
         ip_reverse_sht = {}
 
@@ -3241,6 +3252,27 @@ while True: # loops over the reloads
                                         cuser = capauser[6:].split('/')
                                         cdefs = capadefs.split(',')
 
+                        capafeatures = []
+                        unallowed = []
+                        if userfeatures_db_uri is not '':
+                                conn = anysql.connect_by_uri(userfeatures_db_uri)
+                                cursor = conn.cursor()
+                                params = ['features']
+                                columns = ('commented', 'context', 'name')
+                                query = "SELECT ${columns} FROM extensions WHERE context = %s"
+                                cursor.query(query,
+                                             columns,
+                                             params)
+                                results = cursor.fetchall()
+                                conn.close()
+                                for res in results:
+                                        if res[0] == 0:
+                                                capafeatures.append(res[2])
+                                        else:
+                                                unallowed.append(res[2])
+                        #print "%s : allowed     : %s" %(i, str(capafeatures))
+                        #print "%s : not allowed : %s" %(i, str(unallowed))
+
                         astremote = AsteriskRemote(i,
                                                    userlist_url,
                                                    extrachannels,
@@ -3252,6 +3284,7 @@ while True: # loops over the reloads
                                                    ami_pass,
                                                    contexts,
                                                    userfeatures_db_uri,
+                                                   capafeatures,
                                                    cdr_db_uri,
                                                    realm,
                                                    parkingnumber,
@@ -3273,8 +3306,6 @@ while True: # loops over the reloads
                         save_for_next_packet_events[i] = ''
                         save_for_next_packet_status[i] = ''
                         faxbuffer[i] = []
-                        n += 1
-
 
         contexts_cl = {}
         contexts_cl[''] = Context()
@@ -3498,6 +3529,7 @@ while True: # loops over the reloads
                         elif UIsock in i:
                                 [conn, UIsockparams] = UIsock.accept()
                                 log_debug(SYSLOG_INFO, "TCP (SB)  socket opened on   %s:%s" %(UIsockparams[0],str(UIsockparams[1])))
+                                commandclass.connected_srv2clt(conn, 1)
                                 # appending the opened socket to the ones watched
                                 ins.append(conn)
                                 conn.setblocking(0)
