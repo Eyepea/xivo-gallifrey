@@ -320,10 +320,10 @@ def update_history_call(cfg, techno, phoneid, phonenum, nlines, kind):
 
 
 def build_history_string(requester_id, nlines, kind):
-        [dummyp, ast_src, dummyx, techno, phoneid, phonenum] = requester_id.split('/')
-        if ast_src in configs:
+        [dummyp, astid_src, dummyx, techno, phoneid, phonenum] = requester_id.split('/')
+        if astid_src in configs:
                 try:
-                        hist = update_history_call(configs[ast_src], techno, phoneid, phonenum, nlines, kind)
+                        hist = update_history_call(configs[astid_src], techno, phoneid, phonenum, nlines, kind)
                         reply = []
                         for x in hist:
                                 try:
@@ -340,9 +340,9 @@ def build_history_string(requester_id, nlines, kind):
                         return commandclass.history_srv2clt(reply)
                 except Exception, exc:
                         log_debug(SYSLOG_ERR, '--- exception --- (%s) error : history : (client %s) : %s'
-                                  %(ast_src, requester, str(exc)))
+                                  %(astid_src, requester, str(exc)))
         else:
-                return commandclass.dmessage_srv2clt('history KO : no such asterisk id <%s>' % ast_src)
+                return commandclass.dmessage_srv2clt('history KO : no such asterisk id <%s>' % astid_src)
 
 
 ## \brief Builds the full list of customers in order to send them to the requesting client.
@@ -623,90 +623,102 @@ def originate_or_transfer(requester, l):
         ret_message = 'originate_or_transfer KO from %s' % requester
 
         if len(src_split) == 5:
-                [dummyp, ast_src, context_src, proto_src, userid_src] = src_split
+                [dummyp, astid_src, context_src, proto_src, userid_src] = src_split
         elif len(src_split) == 6:
-                [dummyp, ast_src, context_src, proto_src, userid_src, dummy_exten_src] = src_split
+                [dummyp, astid_src, context_src, proto_src, userid_src, dummy_exten_src] = src_split
 
         if len(dst_split) == 6:
-                [dummyp, ast_dst, context_dst, proto_dst, userid_dst, exten_dst] = dst_split
+                [dummyp, astid_dst, context_dst, proto_dst, userid_dst, exten_dst] = dst_split
         else:
-                [dummyp, ast_dst, context_dst, proto_dst, userid_dst, exten_dst] = src_split
+                [dummyp, astid_dst, context_dst, proto_dst, userid_dst, exten_dst] = src_split
                 exten_dst = l[2]
-        if ast_src in configs and ast_src == ast_dst:
+        if astid_src in configs and astid_src == astid_dst:
                 if exten_dst == 'special:parkthecall':
-                        exten_dst = configs[ast_dst].parkingnumber
-                if ast_src in AMI_array_user_commands and AMI_array_user_commands[ast_src]:
+                        exten_dst = configs[astid_dst].parkingnumber
+                if astid_src in AMI_array_user_commands and AMI_array_user_commands[astid_src]:
                         if l[0] == 'originate':
                                 log_debug(SYSLOG_INFO, "%s is attempting an ORIGINATE : %s" %(requester, str(l)))
-                                if ast_dst != "":
-                                        ret = AMI_array_user_commands[ast_src].originate(proto_src,
-                                                                                         userid_src,
-                                                                                         exten_dst,
-                                                                                         context_dst)
+                                if astid_dst != "":
+                                        sipcid_src = "SIP/%s" % userid_src
+                                        sipcid_dst = "SIP/%s" % userid_dst
+                                        cidname_src = 'called by %s' % userid_src
+                                        cidname_dst = 'calls %s' % userid_dst
+                                        if sipcid_src in plist[astid_src].normal:
+                                                cidname_src = '%s %s' %(plist[astid_src].normal[sipcid_src].calleridfirst,
+                                                                        plist[astid_src].normal[sipcid_src].calleridlast)
+                                        if sipcid_dst in plist[astid_dst].normal:
+                                                cidname_dst = '%s %s' %(plist[astid_dst].normal[sipcid_dst].calleridfirst,
+                                                                        plist[astid_dst].normal[sipcid_dst].calleridlast)
+                                        ret = AMI_array_user_commands[astid_src].originate(proto_src,
+                                                                                           userid_src,
+                                                                                           cidname_src,
+                                                                                           exten_dst,
+                                                                                           cidname_dst,
+                                                                                           context_dst)
                                 else:
                                         ret = False
                                 if ret:
-                                        ret_message = 'originate OK (%s) %s %s' %(ast_src, l[1], l[2])
+                                        ret_message = 'originate OK (%s) %s %s' %(astid_src, l[1], l[2])
                                 else:
-                                        ret_message = 'originate KO (%s) %s %s' %(ast_src, l[1], l[2])
+                                        ret_message = 'originate KO (%s) %s %s' %(astid_src, l[1], l[2])
                         elif l[0] == 'transfer':
                                 log_debug(SYSLOG_INFO, "%s is attempting a TRANSFER : %s" %(requester, str(l)))
                                 phonesrc, phonesrcchan = split_from_ui(l[1])
                                 if phonesrc == phonesrcchan:
                                         ret_message = 'transfer KO : %s not a channel' % phonesrcchan
                                 else:
-                                        if phonesrc in plist[ast_src].normal:
-                                                channellist = plist[ast_src].normal[phonesrc].chann
+                                        if phonesrc in plist[astid_src].normal:
+                                                channellist = plist[astid_src].normal[phonesrc].chann
                                                 nopens = len(channellist)
                                                 if nopens == 0:
                                                         ret_message = 'transfer KO : no channel opened on %s' % phonesrc
                                                 else:
                                                         tchan = channellist[phonesrcchan].getChannelPeer()
-                                                        ret = AMI_array_user_commands[ast_src].transfer(tchan,
-                                                                                                        exten_dst,
-                                                                                                        context_dst)
+                                                        ret = AMI_array_user_commands[astid_src].transfer(tchan,
+                                                                                                          exten_dst,
+                                                                                                          context_dst)
                                                         if ret:
-                                                                ret_message = 'transfer OK (%s) %s %s' %(ast_src, l[1], l[2])
+                                                                ret_message = 'transfer OK (%s) %s %s' %(astid_src, l[1], l[2])
                                                         else:
-                                                                ret_message = 'transfer KO (%s) %s %s' %(ast_src, l[1], l[2])
+                                                                ret_message = 'transfer KO (%s) %s %s' %(astid_src, l[1], l[2])
                         elif l[0] == 'atxfer':
                                 log_debug(SYSLOG_INFO, "%s is attempting an ATXFER : %s" %(requester, str(l)))
                                 phonesrc, phonesrcchan = split_from_ui(l[1])
                                 if phonesrc == phonesrcchan:
                                         ret_message = 'atxfer KO : %s not a channel' % phonesrcchan
                                 else:
-                                        if phonesrc in plist[ast_src].normal:
-                                                channellist = plist[ast_src].normal[phonesrc].chann
+                                        if phonesrc in plist[astid_src].normal:
+                                                channellist = plist[astid_src].normal[phonesrc].chann
                                                 nopens = len(channellist)
                                                 if nopens == 0:
                                                         ret_message = 'atxfer KO : no channel opened on %s' % phonesrc
                                                 else:
                                                         tchan = channellist[phonesrcchan].getChannelPeer()
-                                                        ret = AMI_array_user_commands[ast_src].atxfer(tchan,
+                                                        ret = AMI_array_user_commands[astid_src].atxfer(tchan,
                                                                                                       exten_dst,
                                                                                                       context_dst)
                                                         if ret:
-                                                                ret_message = 'atxfer OK (%s) %s %s' %(ast_src, l[1], l[2])
+                                                                ret_message = 'atxfer OK (%s) %s %s' %(astid_src, l[1], l[2])
                                                         else:
-                                                                ret_message = 'atxfer KO (%s) %s %s' %(ast_src, l[1], l[2])
+                                                                ret_message = 'atxfer KO (%s) %s %s' %(astid_src, l[1], l[2])
         else:
-                ret_message = 'originate or transfer KO : asterisk id mismatch (%s %s)' %(ast_src, ast_dst)
+                ret_message = 'originate or transfer KO : asterisk id mismatch (%s %s)' %(astid_src, astid_dst)
         return commandclass.dmessage_srv2clt(ret_message)
 
 
 def hangup(requester, chan):
-        ast_src = chan.split("/")[1]
+        astid_src = chan.split("/")[1]
         ret_message = 'hangup KO from %s' % requester
-        if ast_src in configs:
+        if astid_src in configs:
                 log_debug(SYSLOG_INFO, "%s is attempting a HANGUP : %s" %(requester, chan))
                 phone, channel = split_from_ui(chan)
-                if phone in plist[ast_src].normal:
-                        if channel in plist[ast_src].normal[phone].chann:
-                                channel_peer = plist[ast_src].normal[phone].chann[channel].getChannelPeer()
+                if phone in plist[astid_src].normal:
+                        if channel in plist[astid_src].normal[phone].chann:
+                                channel_peer = plist[astid_src].normal[phone].chann[channel].getChannelPeer()
                                 log_debug(SYSLOG_INFO, "UI action : %s : hanging up <%s> and <%s>"
-                                          %(configs[ast_src].astid , channel, channel_peer))
-                                if ast_src in AMI_array_user_commands and AMI_array_user_commands[ast_src]:
-                                        ret = AMI_array_user_commands[ast_src].hangup(channel, channel_peer)
+                                          %(configs[astid_src].astid , channel, channel_peer))
+                                if astid_src in AMI_array_user_commands and AMI_array_user_commands[astid_src]:
+                                        ret = AMI_array_user_commands[astid_src].hangup(channel, channel_peer)
                                         if ret > 0:
                                                 ret_message = 'hangup OK (%d) <%s>' %(ret, chan)
                                         else:
@@ -718,7 +730,7 @@ def hangup(requester, chan):
                 else:
                         ret_message = 'hangup KO : no such phone <%s>' % phone
         else:
-                ret_message = 'hangup KO : no such asterisk id <%s>' % ast_src
+                ret_message = 'hangup KO : no such asterisk id <%s>' % astid_src
         return commandclass.dmessage_srv2clt(ret_message)
 
 
@@ -2773,15 +2785,15 @@ class IdentRequestHandler(SocketServer.StreamRequestHandler):
                             self.client_address[1],
                             line))
                 retline = 'ERROR'
-                action = ""
+                action = ''
                 # PUSH user callerid msg
-                m = re.match("PUSH (\S+) (\S+) <(\S*)> ?(.*)", line)
+                m = re.match('PUSH (\S+) (\S+) <(\S*)> ?(.*)', line)
                 if m != None:
-                        user = m.group(1)
+                        called = m.group(1)
                         callerid = m.group(2)
                         callerctx = m.group(3)
                         msg = m.group(4)
-                        action = "PUSH"
+                        action = 'PUSH'
                 else:
                         log_debug(SYSLOG_ERR, 'PUSH command <%s> invalid' % line)
                         return
@@ -2796,16 +2808,16 @@ class IdentRequestHandler(SocketServer.StreamRequestHandler):
 		userlist_lock[astid].acquire()
 		try:
 			try:
-				userinfo = finduser(astid, user)
+				userinfo = finduser(astid, called)
                                 state_userinfo = 'unknown'
                                 
 				if userinfo == None:
-					log_debug(SYSLOG_INFO, '%s : User <%s> not found (Call)' % (astid, user))
+					log_debug(SYSLOG_INFO, '%s : User <%s> not found (Call)' % (astid, called))
 				elif userinfo.has_key('ip') and userinfo.has_key('port') \
 					 and userinfo.has_key('state') and userinfo.has_key('sessionid') \
 					 and userinfo.has_key('sessiontimestamp'):
 					if time.time() - userinfo.get('sessiontimestamp') > xivoclient_session_timeout:
-                                                log_debug(SYSLOG_INFO, '%s : User <%s> session expired (Call)' % (astid, user))
+                                                log_debug(SYSLOG_INFO, '%s : User <%s> session expired (Call)' % (astid, called))
                                                 userinfo = None
 					else:
 						capalist = (userinfo.get('capas') & capalist_server)
@@ -2814,10 +2826,10 @@ class IdentRequestHandler(SocketServer.StreamRequestHandler):
                                                 else:
                                                         userinfo = None
 				else:
-					log_debug(SYSLOG_WARNING, '%s : User <%s> session not defined (Call)' % (astid, user))
+					log_debug(SYSLOG_WARNING, '%s : User <%s> session not defined (Call)' % (astid, called))
                                         userinfo = None
 
-                                sipcid = "SIP/%s" %callerid
+                                sipcid = "SIP/%s" % callerid
                                 localdirinfo = None
                                 if sipcid in plist[astid].normal:
                                         localdirinfo = [plist[astid].normal[sipcid].calleridfull,
@@ -2829,7 +2841,7 @@ class IdentRequestHandler(SocketServer.StreamRequestHandler):
                                                                         msg,
                                                                         xivoconf,
                                                                         localdirinfo)
-                                retline = 'USER %s STATE %s CIDNAME %s' %(user, state_userinfo, calleridname)
+                                retline = 'USER %s STATE %s CIDNAME %s' %(called, state_userinfo, calleridname)
 			except Exception, exc:
                                 log_debug(SYSLOG_ERR, "--- exception --- error push : %s" %(str(exc)))
 				retline = 'ERROR PUSH %s' %(str(exc))

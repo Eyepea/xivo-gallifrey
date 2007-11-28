@@ -179,7 +179,7 @@ class AMIClass:
                 return ret
 
         # \brief Originates a call from a phone towards another.
-        def originate(self, phoneproto, phonesrc, phonedst, locext):
+        def originate(self, phoneproto, phonesrc, cidnamesrc, phonedst, cidnamedst, locext):
                 # originate a call btw src and dst
                 # src will ring first, and dst will ring when src responds
                 try:
@@ -188,8 +188,9 @@ class AMIClass:
                                                              ('Context', locext),
                                                              ('Priority', '1'),
                                                              # ('CallerID', "%s" %(phonesrc)),
-                                                             ('CallerID', "calls %s <%s>" %(phonedst, phonedst)),
-                                                             ('Variable', 'XIVO_ORIGSRC=%s' %phonesrc),
+                                                             ('CallerID', "%s <%s>" %(cidnamedst, phonedst)),
+                                                             ('Variable', 'XIVO_ORIGSRCNAME=%s' % cidnamesrc),
+                                                             ('Variable', 'XIVO_ORIGSRCNUM=%s'  % phonesrc),
                                                              ('Async', 'true')])
                         reply = self.readresponse('')
                         return ret
