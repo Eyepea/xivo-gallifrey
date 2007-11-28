@@ -220,16 +220,14 @@ class xivo_user
 
 	function &factory($meta)
 	{
-		$r = false;
-
 		if(($meta = xivo_user::chk_meta($meta)) === false)
-			return($r);
+			return(false);
 
 		if(xivo_user::is_valid($meta) === true)
 			return(xivo_user::get($meta));
 
 		if(($class = xivo_user::load_class($meta)) === false)
-			return($r);
+			return(false);
 
 		return(($ref = &xivo_user::set_get($meta,new $class())));
 	}

@@ -29,11 +29,10 @@ $array = array(
 	'dyu' => array('locale' => array('dyu_BF' => 1,'dyu_CI' => 1)),
 	'dz' => array('default' => 'dz_BT','locale' => array('dz_BT' => 1)),
 	'el' => array('locale' => array('el_CY' => 1,'el_GR' => 1)),
-*/
-	'en' => array('locale' => array('en_AU' => 1,'en_BW' => 1,'en_CA' => 1,'en_DK' => 1,'en_GB' => 1,'en_HK' => 1,'en_IE' => 1,
-					'en_IN' => 1,'en_NZ' => 1,'en_PH' => 1,'en_SG' => 1,'en_US' => 1,'en_ZA' => 1,'en_ZW' => 1,
-					'en_CM' => 1,'en_GM' => 1,'en_GH' => 1,'en_LS' => 1,'en_LR' => 1,'en_MW' => 1)),
-/*
+	'en' => array('default' => 'en_GB','locale' => array('en_AU' => 1,'en_BW' => 1,'en_CA' => 1,'en_DK' => 1,'en_GB' => 1,
+							     'en_HK' => 1,'en_IE' => 1,'en_IN' => 1,'en_NZ' => 1,'en_PH' => 1,'en_SG' => 1,
+							     'en_US' => 1,'en_ZA' => 1,'en_ZW' => 1,'en_CM' => 1,'en_GM' => 1,'en_GH' => 1,
+							     'en_LS' => 1,'en_LR' => 1,'en_MW' => 1)),
 	'es' => array('default' => 'es_ES','locale' => array('es_AR' => 1,'es_BO' => 1,'es_CL' => 1,'es_CO' => 1,'es_CR' => 1,
 						'es_DO' => 1,'es_EC' => 1,'es_ES' => 1,'es_GT' => 1,'es_HN' => 1,'es_MX' => 1,
 						'es_NI' => 1,'es_PA' => 1,'es_PE' => 1,'es_PR' => 1,'es_PY' => 1,'es_SV' => 1,

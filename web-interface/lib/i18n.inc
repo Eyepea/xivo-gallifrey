@@ -10,8 +10,6 @@ class xivo_i18n
 
 	function xivo_i18n()
 	{
-		$this->set_locale(XIVO_LC_LANGUAGE,XIVO_LC_TERRITORY);
-
 		$dso = &xivo_gct::get('XIVO_DSO');
 		$name = 'xivo_i18n_'.$dso->get_type();
 
@@ -22,8 +20,6 @@ class xivo_i18n
 
 		if(isset($_SESSION['_i18n']) === false)
 			$_SESSION['_i18n'] = array('babelfish' => array());
-
-		$this->load_file('xivo');
 	}
 
 	function get_language($locale='')

@@ -123,7 +123,7 @@ class xivo_i18n_mediator
 	function get_browser_territory($lang='')
 	{
 		$r = false;
-		
+
 		if($lang !== '' && ($lang = $this->chk_language($lang)) !== false && isset($this->_attrib['browser'][$lang]) === true)
 		{
 			$v = &$this->_attrib['browser'][$lang];
@@ -279,13 +279,22 @@ class xivo_i18n_mediator
 		else
 			$territo = false;
 
-		if($lang !== false && $territo !== false)
-			$r = $this->chk_locale($lang.'_'.$territo);
-		else if($lang !== false && ($territo = $this->get_def_territory($lang)) !== false)
-			$r = $this->chk_locale($lang.'_'.$territo);
-		else if($territo !== false && ($lang = $this->get_def_language($territo)) !== false)
-			$r = $this->chk_locale($lang.'_'.$territo);
-		else if($this->_attrib['locale'] === '')
+		if($lang !== false)
+		{
+			if(($territo !== false
+			   && ($r = $this->chk_locale($lang.'_'.$territo)) !== false) === true
+			|| (($nterrito = $this->get_browser_territory($lang)) !== false
+			   && ($r = $this->chk_locale($lang.'_'.$nterrito)) !== false) === true
+			|| (($nterrito = $this->get_def_territory($lang)) !== false
+			   && ($r = $this->chk_locale($lang.'_'.$nterrito)) !== false) === true);
+		}
+
+		if($r === false
+		&& $territo !== false
+		&& ($nlang = $this->get_def_language($territo)) !== false)
+			$r = $this->chk_locale($nlang.'_'.$territo);
+
+		if($r === false && $this->_attrib['locale'] === '')
 		{
 			$this->set_territory($this->set_language());
 

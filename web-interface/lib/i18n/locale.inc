@@ -31,7 +31,8 @@ class xivo_i18n_locale
 
 	function is_valid($locale)
 	{
-		$locale = preg_replace('/([a-z]{2,3})([\._\- ]*)([a-z]{2,3})/ie',"strtolower('\\1').'_'.strtoupper('\\3')",$locale);
+		if(isset($this->_conf[$locale]) === false)
+			$locale = preg_replace('/([a-z]{2,3})[\._\- ]+([a-z]{2,3})/ie',"strtolower('\\1').'_'.strtoupper('\\2')",$locale);
 
 		if(xivo_issa($locale,$this->_conf) === false)
 			return(false);

@@ -9,6 +9,9 @@ $_XIVO = &xivo_gct::set_get(new xivo());
 $_CF = &xivo_gat::get('_CF');
 $_QR = &xivo_gat::get('_QR');
 
+$_I18N = &xivo_gct::get('xivo_i18n');
+$_I18N->load_file('xivo');
+
 $_QRY = &xivo_gct::get('xivo_query');
 $_SRE = &xivo_gct::get('xivo_service');
 $_USR = &xivo_gct::get('_USR');
