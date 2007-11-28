@@ -123,7 +123,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 			if($unb > $cnt)
 				$cnt = 0;
-			else
+			else if($unb !== $cnt)
 				$cnt -= $unb;
 
 			$r += $cnt;			

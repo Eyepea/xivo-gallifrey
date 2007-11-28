@@ -207,7 +207,10 @@ $array['element']['defaultexpiry']['value'] = array(1 => 1,10 => 10,20 => 20,30 
 						    100 => array(1,40),110 => array(1,50),120 => 2,130 => array(2,10),
 						    140 => array(2,20),150 => array(2,30),160 => array(2,40),
 						    170 => array(2,50),180 => 3,190 => array(3,10),200 => array(3,20),
-						    210 => array(3,30),220 => array(3,40),230 => array(3,50),240 => 4);
+						    210 => array(3,30),220 => array(3,40),230 => array(3,50),240 => 4,
+						    300 => 5,600 => 10,900 => 15,1200 => 20,1800 => 30,2400 => 40,
+						    2700 => 45,3000 => 50,3600 => 1,4500 => array(1,15),
+						    5400 => array(1,30),6300 => array(1,45),7200 => 2);
 $array['element']['defaultexpiry']['default'] = 120;
 
 $array['element']['registertimeout'] = array();
@@ -393,9 +396,13 @@ $array['filter']['notifymimetype'] = array('set' => false,'chk' => 2,'maxlen' =>
 $array['filter']['srvlookup'] = array('bool' => true);
 $array['filter']['pedantic'] = array('bool' => true);
 $array['filter']['maxexpiry'] = array('key' => array(1,900,1800,2700,3600,4500,5400,6300,7200));
-$array['filter']['defaultexpiry'] = array('key' => array(1,10,20,30,40,50,60,70,80,90,
-							    100,110,120,130,140,150,160,170,180,
-							    190,200,210,220,230,240));
+$array['filter']['defaultexpiry'] = array('key' => array(1,10,20,30,40,50,60,
+							 70,80,90,100,110,120,
+							 130,140,150,160,170,
+							 180,190,200,210,220,230,
+							 240,300,600,900,1200,1800,
+							 2400,2700,3000,3600,4500,
+							 5400,6300,7200));
 $array['filter']['registertimeout'] = array('key' => array(1,10,20,30,40,50,60,70,80,90,100,110,120));
 $array['filter']['registerattempts'] = array('key' => array(0,10,20,30,40,50,60,70,80,90,100,110,120));
 $array['filter']['notifyringing'] = array('bool' => true);

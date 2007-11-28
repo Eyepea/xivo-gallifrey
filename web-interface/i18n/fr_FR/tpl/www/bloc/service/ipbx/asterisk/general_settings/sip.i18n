@@ -256,8 +256,47 @@ Durée par défaut :
 ; fm_defaultexpiry-opt240
 4 min.
 
+; fm_defaultexpiry-opt300
+5 min.
+
+; fm_defaultexpiry-opt600
+10 min.
+
+; fm_defaultexpiry-opt900
+15 min.
+
+; fm_defaultexpiry-opt1200
+20 min.
+
+; fm_defaultexpiry-opt1800
+30 min.
+
+; fm_defaultexpiry-opt2400
+40 min.
+
+; fm_defaultexpiry-opt2700
+45 min.
+
+; fm_defaultexpiry-opt3000
+50 min.
+
 ; fm_defaultexpiry-opt
 %s min. %s sec.
+
+; fm_defaultexpiry-opt3600
+1 heure
+
+; fm_defaultexpiry-opt4500
+1 heure 15 min.
+
+; fm_defaultexpiry-opt5400
+1 heure 30 min.
+
+; fm_defaultexpiry-opt6300
+1 heure 45 min.
+
+; fm_defaultexpiry-opt7200
+2 heures
 
 ; fm_registertimeout
 Délai d'enregistrement :
