@@ -887,7 +887,7 @@ def manage_tcp_connection(connid, allow_events):
                                           %(usefulmsg, requester, str(exc)))
                 elif usefulmsg == "show_phones":
                         try:
-                                for plast in plist:
+                                for astid, plast in plist.iteritems():
                                         k1 = plast.normal.keys()
                                         k1.sort()
                                         for kk in k1:
