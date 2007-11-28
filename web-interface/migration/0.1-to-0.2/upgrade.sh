@@ -3,7 +3,7 @@
 set -e
 
 	BACKUPDIR=$1
-	SCRIPTSDIR="`dirname $0`/upgrade-pf-xivo-web-interface-arcadia-scripts"
+	SCRIPTSDIR="`dirname $0`/scripts"
 
 	ASTMOHDIR="/usr/share/asterisk/moh"
 	ASTSQLITEDBFILENAME="astsqlite"
