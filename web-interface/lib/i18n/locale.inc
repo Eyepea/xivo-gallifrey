@@ -45,30 +45,34 @@ class xivo_i18n_locale
 		if(($locale = $this->is_valid($locale)) === false)
 			return(false);
 
+		$exp = explode('_',$locale,2);
+
 		$r = $this->_conf[$locale];
 		$r['locale'] = $locale;
+		$r['lang'] = $exp[0];
+		$r['territo'] = $exp[1];
 
 		return($r);
 	}
 
 	function get_territory($locale)
 	{
-		$r = false;
+		if(($locale = $this->is_valid($locale)) === false)
+			return(false);
 
-		if(xivo_issa($locale,$this->_conf) === true && isset($this->_conf[$locale]['territo']) === true)
-			$r = $this->_conf[$locale]['territo'];
+		$territo = explode('_',$locale,2);
 
-		return($r);
+		return($territo[1]);
 	}
 
 	function get_language($locale)
 	{
-		$r = false;
+		if(($locale = $this->is_valid($locale)) === false)
+			return(false);
 
-		if(xivo_issa($locale,$this->_conf) === true && isset($this->_conf[$locale]['lang']) === true)
-			$r = $this->_conf[$locale]['lang'];
+		$territo = explode('_',$locale,1);
 
-		return($r);
+		return($territo[0]);
 	}
 
 	function get_list()
