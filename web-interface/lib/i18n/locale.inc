@@ -70,9 +70,9 @@ class xivo_i18n_locale
 		if(($locale = $this->is_valid($locale)) === false)
 			return(false);
 
-		$territo = explode('_',$locale,1);
+		$lang = explode('_',$locale,1);
 
-		return($territo[0]);
+		return($lang[0]);
 	}
 
 	function get_list()
