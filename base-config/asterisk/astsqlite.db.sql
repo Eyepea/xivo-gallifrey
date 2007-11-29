@@ -365,7 +365,7 @@ INSERT INTO generalsip VALUES (NULL,0,0,0,'sip.conf','general','allowexternaldom
 INSERT INTO generalsip VALUES (NULL,0,0,0,'sip.conf','general','usereqphone','no');
 INSERT INTO generalsip VALUES (NULL,0,0,0,'sip.conf','general','realm','xivo');
 INSERT INTO generalsip VALUES (NULL,0,0,0,'sip.conf','general','alwaysauthreject','no');
-INSERT INTO generalsip VALUES (NULL,0,0,0,'sip.conf','general','useragent','Xivo PBX');
+INSERT INTO generalsip VALUES (NULL,0,0,0,'sip.conf','general','useragent','XIVO PBX');
 INSERT INTO generalsip VALUES (NULL,0,0,0,'sip.conf','general','checkmwi',10);
 INSERT INTO generalsip VALUES (NULL,0,0,1,'sip.conf','general','regcontext',NULL);
 INSERT INTO generalsip VALUES (NULL,0,0,0,'sip.conf','general','callerid','xivo');
