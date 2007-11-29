@@ -9,8 +9,6 @@ class xivo_user_abstract
 
 	function mk_active()
 	{
-		$r = true;
-
 		if(xivo_user::is_valid() === false)
 			return(false);
 
@@ -19,12 +17,12 @@ class xivo_user_abstract
 		if(($active = xivo_user::chk_active()) !== null)
 			return($active);
 
-		if($this->call_auth('chk',array($_SESSION['_USR']->_login,$_SESSION['_USR']->_pass)) !== false)
-			$_SESSION['_USR']->_time = gmmktime();
-		else
-			$r = false;
+		if($this->call_auth('chk',array($_SESSION['_USR']->_login,$_SESSION['_USR']->_pass)) === false)
+			return(false);
 
-		return($r);
+		$_SESSION['_USR']->_time = gmmktime();
+
+		return(true);
 	}
 
 	function _chk_update()
@@ -79,20 +77,17 @@ class xivo_user_abstract
 
 	function load_by_id($id)
 	{
-		$r = false;
+		if(($data = $this->get_by_id($id)) === false)
+			return(false);
 
-		if(($data = $this->get_by_id($id)) !== false)
-		{
-			$r = true;
-			if(isset($data['valid']) === true)
-				$valid = $data['valid'];
-			else
-				$valid = false;
+		if(isset($data['valid']) === true)
+			$valid = $data['valid'];
+		else
+			$valid = false;
 
-			$this->_set_info($valid,$data);
-		}
+		$this->_set_info($valid,$data);
 
-		return($r);
+		return(true);
 	}
 
 	function load_by_authent($login,$pass)
@@ -179,14 +174,17 @@ class xivo_user_abstract
 		$this->_info['territory'] = xivo_i18n::attrib_territory();
 		$this->_info['locale'] = xivo_i18n::attrib_locale();
 
-		if(defined('XIVO_USER_I18N_LANGUAGE') === false)
-			define('XIVO_USER_I18N_LANGUAGE',$this->_info['language']);
+		if(isset($this->_info['_valid']) === true && $this->_info['_valid'] === true)
+		{
+			if(defined('XIVO_USER_I18N_LANGUAGE') === false)
+				define('XIVO_USER_I18N_LANGUAGE',$this->_info['language']);
 
-		if(defined('XIVO_USER_I18N_TERRITORY') === false)
-			define('XIVO_USER_I18N_TERRITORY',$this->_info['territory']);
+			if(defined('XIVO_USER_I18N_TERRITORY') === false)
+				define('XIVO_USER_I18N_TERRITORY',$this->_info['territory']);
 
-		if(defined('XIVO_USER_I18N_LOCALE') === false)
-			define('XIVO_USER_I18N_LOCALE',$this->_info['locale']);
+			if(defined('XIVO_USER_I18N_LOCALE') === false)
+				define('XIVO_USER_I18N_LOCALE',$this->_info['locale']);
+		}
 	}
 
 	function _add_by_login_pass($login,$pass,$type,$valid=true)
