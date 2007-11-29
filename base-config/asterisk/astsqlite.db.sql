@@ -491,7 +491,7 @@ INSERT INTO generalvoicemail VALUES (NULL,1,0,0,'voicemail.conf','zonemessages',
 
 DROP TABLE groupfeatures;
 CREATE TABLE groupfeatures (
- id tinyint unsigned,
+ id tinyint unsigned NOT NULL,
  name varchar(128) NOT NULL,
  number varchar(40) NOT NULL DEFAULT '',
  context varchar(39) NOT NULL,

@@ -62,7 +62,4 @@ $array['group']['admin']['service'] = false;
 
 $array['group']['root'] = true;
 
-$array['ip'] = array();
-$array['ip']['xivo'] = array('192.168.1.','proformatique.com','192.168.2/14');
-
 ?>
