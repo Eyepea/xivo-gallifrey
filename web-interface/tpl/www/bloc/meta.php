@@ -1,5 +1,5 @@
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
-<meta http-equiv="content-language" content="<?=xivo_user::get_info('language');?>">
+<meta http-equiv="content-language" content="<?=XIVO_I18N_BABELFISH_LANGUAGE?>">
 
 <meta name="charset" content="utf-8">
 <meta name="robots" content="none">

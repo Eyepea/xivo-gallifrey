@@ -142,7 +142,12 @@ class xivo_i18n
 		return(xivo_i18n::mediator('list','timezone'));
 	}
 
-	function mediator($func,$name,$value='')
+	function set_babelfish_path()
+	{
+		return(xivo_i18n::mediator('set_babelfish_path'));
+	}
+
+	function mediator($func,$name='',$value='')
 	{
 		static $mediator = null;
 		static $territory = null;
@@ -159,6 +164,9 @@ class xivo_i18n
 
 		$func = (string) $func;
 		$name = (string) $name;
+
+		if($func === 'set_babelfish_path')
+			return($mediator->set_babelfish_path());
 
 		if($mediator->chk($name) === false)
 			return($r);
@@ -292,10 +300,8 @@ class xivo_i18n
 
 	function _load_file($file,$namespace='')
 	{
-		$r = false;
-
 		if($this->_get_file_info($file,$namespace) === false)
-			return($r);
+			return(false);
 
 		if($this->_get_cache_file() === true)
 			return(true);
@@ -303,21 +309,21 @@ class xivo_i18n
 		if(xivo_ak('filei18n',$this->_file,true) === false)
 		{
 			trigger_error('I18N file not found',E_USER_WARNING);
-			return($r);
+			return(false);
 		}
 
 		if(isset($this->_loop[$this->_file['filei18n']]) === true)
 		{
 			trigger_error('I18N file already loaded: '.$this->_file['filei18n'],E_USER_WARNING);
-			return($r);
+			return(false);
 		}
 
 		$this->_loop[$this->_file['filei18n']] = 1;
 
 		if($this->_mk_cache_file() === true)
-			$r = $this->_get_cache_file();
+			return($this->_get_cache_file());
 
-		return($r);
+		return(false);
 	}
 
 	function load_file($file,$namespace='')
@@ -422,8 +428,6 @@ class xivo_i18n
 
 	function _get_file_info($file,$namespace='')
 	{
-		$r = false;
-
 		$file = (string) $file;
 
 		$namespace = $this->_chk_namespace($namespace);
@@ -431,7 +435,7 @@ class xivo_i18n
 		if(empty($file) === true)
 		{
 			$this->_file = false;
-			return($r);
+			return(false);
 		}
 		// TODO: trigger_error();
 
@@ -457,15 +461,27 @@ class xivo_i18n
 		$this->_file['basename'] = $file;
 		$this->_file['path'] = $path;
 
+		if(defined('XIVO_I18N_BABELFISH_PATH') === false && $this->set_babelfish_path() === false)
+		{
+			trigger_error('Invalid I18N Babelfish path',E_USER_ERROR);
+			return(false);
+		}
+
 		if(isset($this->_file['locale']) === true && ($lc = $this->chk_locale($this->_file['locale'])) !== false)
 		{
-			$this->_file['locale'] = $lc;
-			$this->_file['language'] = $this->get_language($lc);
+			if($lc !== XIVO_I18N_BABELFISH_LOCALE)
+			{
+				trigger_error('Invalid I18N locale',E_USER_ERROR);
+				return(false);
+			}
+
+			$this->_file['locale'] = XIVO_I18N_BABELFISH_LOCALE;
+			$this->_file['language'] = XIVO_I18N_BABELFISH_LANGUAGE;
 		}
 		else
 		{
-			$this->_file['locale'] = $this->attrib_locale();
-			$this->_file['language'] = $this->attrib_language();
+			$this->_file['locale'] = XIVO_I18N_BABELFISH_LOCALE;
+			$this->_file['language'] = XIVO_I18N_BABELFISH_LANGUAGE;
 		}
 
 		$this->_file['filei18n'] = realpath(XIVO_PATH_I18N.XIVO_SEP_DIR.$this->_file['locale'].XIVO_SEP_DIR.$this->_file['path']);
@@ -476,17 +492,15 @@ class xivo_i18n
 			$this->_file['filemtime'] = xivo_uint(filemtime($this->_file['filei18n']));
 		}
 		else
-			$this->_file = false;
+			$r = $this->_file = false;
 
 		return($r);
 	}
 
 	function _mk_cache_file()
 	{
-		$r = false;
-
 		if(is_array($this->_file) === false)
-			return($r);
+			return(false);
 
 		$cache = array('obj' => array());
 
@@ -502,31 +516,29 @@ class xivo_i18n
 		if($cache['locale'] === false || $cache['obj']['content'] === false)
 		{
 			trigger_error('Wrong locale or unavaivable file content',E_USER_WARNING);
-			return($r);
+			return(false);
 		}
 
 		$cache['language'] = $this->get_language($cache['locale']);
 		$cache['path'] = $this->_file['path'];
 
-		$r = $this->_dso->save_cache($cache);
-
-		return($r);
+		return($this->_dso->save_cache($cache));
 	}
 
 	function _get_cache_file()
 	{
-		$r = false;
-
 		if(is_array($this->_file) === false)
-			return($r);
+			return(false);
 
 		if($this->_mk_babelfish() === true)
 			return(true);
 
 		if(($cache = $this->_dso->get_cache($this->_file)) === false || xivo_issa('obj',$cache) === false)
-			return($r);
+			return(false);
 
 		$this->_file['filectime'] = $cache['filectime'];
+
+		$r = false;
 
 		if(isset($cache['obj']['content']) === true)
 		{
@@ -546,10 +558,8 @@ class xivo_i18n
 
 	function _mk_babelfish()
 	{
-		$r = false;
-
 		if(is_array($this->_file) === false)
-			return($r);
+			return(false);
 
 		$ref_sess = &$_SESSION['_i18n']['babelfish'];
 
@@ -562,9 +572,11 @@ class xivo_i18n
 			$ref_sess[$namespace][$this->_file['locale']] = array();
 
 		if(isset($ref_sess[$namespace][$this->_file['locale']][$this->_file['path']]) === false)
-			return($r);
+			return(false);
 
 		$ref_file = &$ref_sess[$namespace][$this->_file['locale']][$this->_file['path']];
+
+		$r = false;
 
 		if(xivo_issa('finfo',$ref_file) === true && $ref_file['finfo']['filemtime'] === $this->_file['filemtime'])
 		{
@@ -598,15 +610,13 @@ class xivo_i18n
 
 	function _parse_file()
 	{
-		$r = false;
-
 		if(is_array($this->_file) === false)
-			return($r);
+			return(false);
 
 		if(($file = xivo_file::is_f_r($this->_file['filei18n'])) === false)
 		{
 			trigger_error('I18N file not found',E_USER_WARNING);
-			return($r);
+			return(false);
 		}
 
 		$content = file($file);

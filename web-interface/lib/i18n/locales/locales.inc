@@ -1,7 +1,7 @@
 <?php
 
 $array = array(
-/*	'aa_DJ' => array('lang' => 'aa','territo' => 'DJ','charset' => array('UTF-8','ISO-8859-1')),
+	'aa_DJ' => array('lang' => 'aa','territo' => 'DJ','charset' => array('UTF-8','ISO-8859-1')),
 	'aa_ER' => array('lang' => 'aa','territo' => 'ER','charset' => array('UTF-8')),
 	'aa_ET' => array('lang' => 'aa','territo' => 'ET','charset' => array('UTF-8')),
 	'af_ZA' => array('lang' => 'af','territo' => 'ZA','charset' => array('UTF-8','ISO-8859-1')),
@@ -62,9 +62,7 @@ $array = array(
 	'en_CA' => array('lang' => 'en','territo' => 'CA','charset' => array('UTF-8','ISO-8859-1')),
 	'en_DK' => array('lang' => 'en','territo' => 'DK','charset' => array('UTF-8','ISO-8859-1')),
 	'en_CM' => array('lang' => 'en','territo' => 'CM','charset' => array('UTF-8','ISO-8859-1')),
-*/
 	'en_GB' => array('lang' => 'en','territo' => 'GB','charset' => array('UTF-8','ISO-8859-15','ISO-8859-1')),
-/*
 	'en_GH' => array('lang' => 'en','territo' => 'GH','charset' => array('UTF-8','ISO-8859-1')),
 	'en_GM' => array('lang' => 'en','territo' => 'GM','charset' => array('UTF-8','ISO-8859-1')),
 	'en_HK' => array('lang' => 'en','territo' => 'HK','charset' => array('UTF-8','ISO-8859-1')),
@@ -119,9 +117,9 @@ $array = array(
 	'fr_CF' => array('lang' => 'fr','territo' => 'CF','charset' => array('UTF-8','ISO-8859-1')),
 	'fr_CH' => array('lang' => 'fr','territo' => 'CH','charset' => array('UTF-8','ISO-8859-1')),
 	'fr_CI' => array('lang' => 'fr','territo' => 'CI','charset' => array('UTF-8','ISO-8859-1')),
-	'fr_CM' => array('lang' => 'fr','territo' => 'CM','charset' => array('UTF-8','ISO-8859-1')),*/
+	'fr_CM' => array('lang' => 'fr','territo' => 'CM','charset' => array('UTF-8','ISO-8859-1')),
 	'fr_FR' => array('lang' => 'fr','territo' => 'FR','charset' => array('UTF-8','ISO-8859-15@euro','ISO-8859-15','ISO-8859-1')),
-/*	'fr_GA' => array('lang' => 'fr','territo' => 'GA','charset' => array('UTF-8','ISO-8859-1')),
+	'fr_GA' => array('lang' => 'fr','territo' => 'GA','charset' => array('UTF-8','ISO-8859-1')),
 	'fr_GN' => array('lang' => 'fr','territo' => 'GN','charset' => array('UTF-8','ISO-8859-1')),
 	'fr_GQ' => array('lang' => 'fr','territo' => 'GQ','charset' => array('UTF-8','ISO-8859-1')),
 	'fr_LU' => array('lang' => 'fr','territo' => 'LU','charset' => array('UTF-8','ISO-8859-15@euro','ISO-8859-15','ISO-8859-1')),
@@ -161,11 +159,11 @@ $array = array(
 	'kw_GB' => array('lang' => 'kw','territo' => 'GB','charset' => array('UTF-8','ISO-8859-1')),
 	'ky_KG' => array('lang' => 'ky','territo' => 'KG','charset' => array('UTF-8')),
 	'lg_UG' => array('lang' => 'lg','territo' => 'UG','charset' => array('UTF-8','ISO-8859-10')),
-	'ln_CD' => array('lang' => 'ln','territo' => 'CD','charset' => array('UTF-8)),
-	'ln_CG' => array('lang' => 'ln','territo' => 'CG','charset' => array('UTF-8)),
+	'ln_CD' => array('lang' => 'ln','territo' => 'CD','charset' => array('UTF-8')),
+	'ln_CG' => array('lang' => 'ln','territo' => 'CG','charset' => array('UTF-8')),
 	'lo_LA' => array('lang' => 'lo','territo' => 'LA','charset' => array('UTF-8')),
 	'lt_LT' => array('lang' => 'lt','territo' => 'LT','charset' => array('UTF-8','ISO-8859-13')),
-	'lua_CD' => array('lang' => 'lua',territo' => 'CD','charset' => array('UTF-8)),
+	'lua_CD' => array('lang' => 'lua','territo' => 'CD','charset' => array('UTF-8')),
 	'lv_LV' => array('lang' => 'lv','territo' => 'LV','charset' => array('UTF-8','ISO-8859-13')),
 	'mai_IN' => array('lang' => 'mai','territo' => 'IN','charset' => array('UTF-8')),
 	'man_GM' => array('lang' => 'man','territo' => 'GM','charset' => array('UTF-8')),
@@ -223,7 +221,7 @@ $array = array(
 	'st_ZA' => array('lang' => 'st','territo' => 'ZA','charset' => array('UTF-8')),
 	'sv_FI' => array('lang' => 'sv','territo' => 'FI','charset' => array('UTF-8','ISO-8859-15@euro','ISO-8859-15','ISO-8859-1')),
 	'sv_SE' => array('lang' => 'sv','territo' => 'SE','charset' => array('UTF-8','ISO-8859-15','ISO-8859-1')),
-	'sw_CD' => array('lang' => 'sw','territo' => 'CD','charset' => array('UTF-8)),
+	'sw_CD' => array('lang' => 'sw','territo' => 'CD','charset' => array('UTF-8')),
 	'ta_IN' => array('lang' => 'ta','territo' => 'IN','charset' => array('UTF-8')),
 	'te_IN' => array('lang' => 'te','territo' => 'IN','charset' => array('UTF-8')),
 	'tg_TJ' => array('lang' => 'tg','territo' => 'TJ','charset' => array('UTF-8','KOI8-T')),
@@ -253,6 +251,6 @@ $array = array(
 	'zh_HK' => array('lang' => 'zh','territo' => 'HK','charset' => array('UTF-8','BIG5-HKSCS')),
 	'zh_SG' => array('lang' => 'zh','territo' => 'SG','charset' => array('UTF-8','GBK','EUC-CN')),
 	'zh_TW' => array('lang' => 'zh','territo' => 'TW','charset' => array('UTF-8','EUC-TW','BIG5')),
-	'zu_ZA' => array('lang' => 'zu','territo' => 'ZA','charset' => array('UTF-8','ISO-8859-1'))*/);
+	'zu_ZA' => array('lang' => 'zu','territo' => 'ZA','charset' => array('UTF-8','ISO-8859-1')));
 
 ?>

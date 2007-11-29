@@ -13,7 +13,7 @@ class xivo_tpl_image
 		if(isset($url{0}) === false)
 			return($r);
 
-		$url = $url{0} !== '/' ? '/i/i18n/'.XIVO_LC_META.'/'.$url : $url;
+		$url = $url{0} !== '/' ? '/i/i18n/'.XIVO_I18N_BABELFISH_LOCALE.'/'.$url : $url;
 
 		$r = '<img src="'.$url.'"'.(isset($opt{0}) === true ? ' '.$opt : '').' alt="'.xivo_alttitle($alt).'" />';
 
@@ -29,7 +29,7 @@ class xivo_tpl_image
 		if(isset($url{0}) === false)
 			return($r);
 
-		$r = $url{0} !== '/' ? '/i/i18n/'.XIVO_LC_META.'/'.$url : $url;
+		$r = $url{0} !== '/' ? '/i/i18n/'.XIVO_I18N_BABELFISH_LOCALE.'/'.$url : $url;
 
 		return($r);
 	}

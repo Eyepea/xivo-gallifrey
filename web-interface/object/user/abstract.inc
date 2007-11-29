@@ -178,6 +178,15 @@ class xivo_user_abstract
 		$this->_info['language'] = xivo_i18n::attrib_language();
 		$this->_info['territory'] = xivo_i18n::attrib_territory();
 		$this->_info['locale'] = xivo_i18n::attrib_locale();
+
+		if(defined('XIVO_USER_I18N_LANGUAGE') === false)
+			define('XIVO_USER_I18N_LANGUAGE',$this->_info['language']);
+
+		if(defined('XIVO_USER_I18N_TERRITORY') === false)
+			define('XIVO_USER_I18N_TERRITORY',$this->_info['territory']);
+
+		if(defined('XIVO_USER_I18N_LOCALE') === false)
+			define('XIVO_USER_I18N_LOCALE',$this->_info['locale']);
 	}
 
 	function _add_by_login_pass($login,$pass,$type,$valid=true)

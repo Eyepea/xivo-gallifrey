@@ -51,6 +51,14 @@ class xivo_i18n_language
 		return($r);
 	}
 
+	function get_locale_list($lang)
+	{
+		if(($lang = $this->is_valid($lang)) === false)
+			return(false);
+
+		return($this->_conf[$lang]['locale']);
+	}
+
 	function exists_default($lang)
 	{
 		if(($lang = $this->is_valid($lang)) === false)

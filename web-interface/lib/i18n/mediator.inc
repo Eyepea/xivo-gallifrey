@@ -408,10 +408,7 @@ class xivo_i18n_mediator
 
 	function get_def_timezone($territo)
 	{
-		if(($tz = $this->_mediator['territory']->get_timezone($territo)) === false)
-			return(false);
-
-		return($tz);
+		return($this->_mediator['territory']->get_timezone($territo));
 	}
 
 	function get_territory_list()
@@ -432,6 +429,120 @@ class xivo_i18n_mediator
 	function get_timezone_list()
 	{
 		return($this->_mediator['timezone']->get_list());
+	}
+
+	function set_babelfish_path()
+	{
+		if(defined('XIVO_I18N_BABELFISH_PATH') === true)
+			return(true);
+
+		if(defined('XIVO_PATH_I18N') === false)
+		{
+			trigger_error('Missing XIVO_PATH_I18N define',E_USER_ERROR);
+			return(false);
+		}
+
+		if(xivo_file::is_d_r(XIVO_PATH_I18N) === false)
+		{
+			trigger_error('Invalid I18N path',E_USER_ERROR);
+			return(false);
+		}
+
+		if(defined('XIVO_USER_I18N_LOCALE') === true
+		&& $this->_chk_babelfish_path(XIVO_USER_I18N_LOCALE,true) !== false)
+			return(true);
+
+		if(defined('XIVO_USER_I18N_LANGUAGE') === true)
+		{
+			if(($locale = $this->_mediator['language']->exists_default(XIVO_USER_I18N_LANGUAGE)) !== false
+			&& $this->_chk_babelfish_path($locale,true) !== false)
+				return(true);
+
+			if(($locales = $this->_mediator['language']->get_locale_list(XIVO_USER_I18N_LANGUAGE)) !== false
+			&& $this->_chk_babelfish_path($locales,true) !== false)
+				return(true);
+		}
+
+		$this->set_locale();
+
+		if(empty($this->_attrib['locale']) === false
+		&& $this->_chk_babelfish_path($this->_attrib['locale'],true) !== false)
+			return(true);
+
+		if(empty($this->_attrib['language']) === false)
+		{
+			if(($locale = $this->_mediator['language']->exists_default($this->_attrib['language'])) !== false
+			&& $this->_chk_babelfish_path($locale,true) !== false)
+				return(true);
+
+			if(($locales = $this->_mediator['language']->get_locale_list($this->_attrib['language'])) !== false
+			&& $this->_chk_babelfish_path($locales,true) !== false)
+				return(true);
+		}
+
+		if(defined('XIVO_LC_LANGUAGE') === true)
+		{
+			if(($locale = $this->_mediator['language']->exists_default(XIVO_LC_LANGUAGE)) !== false
+			&& $this->_chk_babelfish_path($locale,true) !== false)
+				return(true);
+
+			if(($locales = $this->_mediator['language']->get_locale_list(XIVO_LC_LANGUAGE)) !== false
+			&& $this->_chk_babelfish_path($locales,true) !== false)
+				return(true);
+		}
+
+		if($this->_chk_babelfish_path('fr_FR',true) !== false)
+			return(true);
+
+		return(false);
+	}
+
+	function _chk_babelfish_path($locale,$define=false)
+	{
+		$define = (bool) $define;
+
+		if(is_array($locale) === true)
+		{
+			if(($arr = xivo_get_aks($locale)) === false)
+				return(false);
+
+			for($i = 0;$i < $arr['cnt'];$i++)
+			{
+				$ref = &$arr['keys'][$i];
+				
+				if(($nlocale = $this->chk_locale($locale[$ref])) !== false
+				&& ($dir = xivo_file::is_d_r(XIVO_PATH_I18N.XIVO_SEP_DIR.$nlocale)) !== false)
+				{
+					if($define === true)
+					{
+						define('XIVO_I18N_BABELFISH_LANGUAGE',
+							$this->_mediator['locale']->get_language($nlocale));
+						define('XIVO_I18N_BABELFISH_TERRITORY',
+							$this->_mediator['locale']->get_territory($nlocale));
+						define('XIVO_I18N_BABELFISH_LOCALE',$nlocale);
+						define('XIVO_I18N_BABELFISH_PATH',$dir);
+					}
+					return($dir);
+				}
+			}
+
+			return(false);
+		}
+
+		if(($locale = $this->chk_locale($locale)) !== false
+		&& ($dir = xivo_file::is_d_r(XIVO_PATH_I18N.XIVO_SEP_DIR.$locale)) !== false)
+		{
+			if($define === true)
+			{
+				define('XIVO_I18N_BABELFISH_LANGUAGE',$this->_mediator['locale']->get_language($locale));
+				define('XIVO_I18N_BABELFISH_TERRITORY',$this->_mediator['locale']->get_territory($locale));
+				define('XIVO_I18N_BABELFISH_LOCALE',$locale);
+				define('XIVO_I18N_BABELFISH_PATH',$dir);
+			}
+			return($dir);
+		}
+
+		return(false);
 	}
 }
 

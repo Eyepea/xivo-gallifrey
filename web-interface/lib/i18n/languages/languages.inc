@@ -1,9 +1,9 @@
 <?php
 
 $array = array(
-/*	'aa' => array('locale' => array('aa_DJ' => 1,'aa_ER' => 1,'aa_ET' => 1)),
+	'aa' => array('locale' => array('aa_DJ' => 1,'aa_ER' => 1,'aa_ET' => 1)),
 	'af' => array('default' => 'af_ZA','locale' => array('af_ZA' => 1)),
-	'ak' => arary('default' => 'ak_GH','locale' => array('ak_GH' => 1)),
+	'ak' => array('default' => 'ak_GH','locale' => array('ak_GH' => 1)),
 	'am' => array('default' => 'am_ET','locale' => array('am_ET' => 1)),
 	'an' => array('default' => 'an_ES','locale' => array('an_ES' => 1)),
 	'ar' => array('locale' => array('ar_AE' => 1,'ar_BH' => 1,'ar_DZ' => 1,'ar_EG' => 1,'ar_IN' => 1,'ar_IQ' => 1,
@@ -42,12 +42,12 @@ $array = array(
 	'fa' => array('default' => 'fa_IR','locale' => array('fa_IR' => 1)),
 	'ff' => array('locale' => array('ff_BF' => 1,'ff_CM' => 1,'ff_MR' => 1,'ff_SN' => 1,'ff_GN' => 1)),
 	'fi' => array('default' => 'fi_FI','locale' => array('fi_FI' => 1)),
-	'fo' => array('default' => 'fo_FO','locale' => array('fo_FO' => 1)),*/
+	'fo' => array('default' => 'fo_FO','locale' => array('fo_FO' => 1)),
 	'fr' => array('default' => 'fr_FR','locale' => array('fr_BE' => 1,'fr_CA' => 1,'fr_CH' => 1,'fr_FR' => 1,'fr_LU' => 1,
 							     'fr_BF' => 1,'fr_BJ' => 1,'fr_BI' => 1,'fr_CM' => 1,'fr_CF' => 1,
 							     'fr_CD' => 1,'fr_CG' => 1,'fr_CI' => 1,'fr_GQ' => 1,'fr_GA' => 1,
 							     'fr_SN' => 1,'fr_MR' => 1,'fr_GN' => 1)),
-/*	'fy' => array('default' => 'fy_NL','locale' => array('fy_NL' => 1)),
+	'fy' => array('default' => 'fy_NL','locale' => array('fy_NL' => 1)),
 	'ga' => array('default' => 'ga_IE','locale' => array('ga_IE' => 1)),
 	'gd' => array('default' => 'gd_GB','locale' => array('gd_GB' => 1)),
 	'gez' => array('locale' => array('gez_ER' => 1,'gez_ET' => 1)),
@@ -87,7 +87,7 @@ $array = array(
 	'mi' => array('default' => 'mi_NZ','locale' => array('mi_NZ' => 1)),
 	'mk' => array('default' => 'mk_MK','locale' => array('mk_MK' => 1)),
 	'ml' => array('default' => 'ml_IN','locale' => array('ml_IN' => 1)),
-	'man' => array('default' => 'man_SN','locale' => array('man_SN'= > 1,'man_GM' => 1)),
+	'man' => array('default' => 'man_SN','locale' => array('man_SN' => 1,'man_GM' => 1)),
 	'mey' => array('default' => 'mey_MR','locale' => array('mey_MR' => 1)),
 	'mn' => array('default' => 'mn_MN','locale' => array('mn_MN' => 1)),
 	'mr' => array('default' => 'mr_IN','locale' => array('mr_IN' => 1)),
@@ -146,6 +146,6 @@ $array = array(
 	'xh' => array('default' => 'xh_ZA','locale' => array('xh_ZA' => 1)),
 	'yi' => array('default' => 'yi_US','locale' => array('yi_US' => 1)),
 	'zh' => array('locale' => array('zh_CN' => 1,'zh_HK' => 1,'zh_SG' => 1,'zh_TW' => 1)),
-	'zu' => array('default' => 'zu_ZA','locale' => array('zu_ZA' => 1))*/);
+	'zu' => array('default' => 'zu_ZA','locale' => array('zu_ZA' => 1)));
 
 ?>
