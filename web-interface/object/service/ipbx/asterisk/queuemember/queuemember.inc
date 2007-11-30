@@ -129,19 +129,9 @@ class xivo_service_asterisk_queuemember extends xivo_service_asterisk_abstract
 		return($this->_dso->add($arr));
 	}
 
-	function add_list($arr,$values=null)
+	function add_list($arr)
 	{
-		if(is_array($values) === false
-		&& (($nb = xivo_uint($arr)) === 0
-		   || ($values = $this->chk_values($values,true,false,false)) === false) === true)
-			return(false);
-
-		if(is_array($values) === true)
-		{
-			for($i = 0;$i < $nb;$i++)
-				$this->add($values);
-		}
-		else if(is_array($arr) === false)
+		if(is_array($arr) === false)
 			return(false);
 
 		$list = array_values($arr);

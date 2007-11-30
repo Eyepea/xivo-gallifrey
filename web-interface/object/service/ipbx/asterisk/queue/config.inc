@@ -30,7 +30,7 @@ $array['element']['context'] = array();
 $array['element']['context']['default'] = '';
 
 $array['element']['retry'] = array();
-$array['element']['retry']['value'] = array(0,5,10,15,20,25,30,35,40,45,50,55,60);
+$array['element']['retry']['value'] = array(1,5,10,15,20,25,30,35,40,45,50,55,60);
 $array['element']['retry']['default'] = 5;
 $array['element']['retry']['setdef'] = true;
 
@@ -178,7 +178,7 @@ $array['filter']['strategy'] = array('set' => false,'chk' => 2,
 				     'key' => array('ringall','roundrobin','leastrecent','fewestcalls','random','rrmemory'));
 $array['filter']['servicelevel'] = array('set' => false,'chk' => 2,'cast' => 'int');
 $array['filter']['context'] = array('set' => false,'chk' => 2,'callback' => 'xivo_service_asterisk::chk_context');
-$array['filter']['retry'] = array('set' => false,'chk' => 2,'key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
+$array['filter']['retry'] = array('set' => false,'chk' => 2,'key' => array(1,5,10,15,20,25,30,35,40,45,50,55,60));
 $array['filter']['weight'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,10));
 $array['filter']['wrapuptime'] = array('set' => false,'chk' => 2,'key' => array(0,5000,10000,15000,20000,
 										   25000,30000,35000,40000,

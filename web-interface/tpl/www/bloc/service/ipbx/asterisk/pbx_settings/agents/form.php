@@ -100,8 +100,8 @@
 			endif;
 ?>
 			<tr id="queue-<?=$name?>" class="fm-field<?=$class?>">
-				<td class="td-left txt-left"><?=$name?></td>
-				<td class="td-right txt-right"><?=$form->select(array('field' => false,'name' => 'queue['.$name.'][penalty]','id' => false,'label' => false,'default' => $element['qmember']['penalty']['default'],'value' => $penalty),$element['qmember']['penalty']['value']);?></td>
+				<td class="td-left txt-center"><?=$name?></td>
+				<td class="td-right txt-center"><?=$form->select(array('field' => false,'name' => 'queue['.$name.'][penalty]','id' => false,'label' => false,'default' => $element['qmember']['penalty']['default'],'value' => $penalty),$element['qmember']['penalty']['value']);?></td>
 			</tr>
 <?php
 		endfor;

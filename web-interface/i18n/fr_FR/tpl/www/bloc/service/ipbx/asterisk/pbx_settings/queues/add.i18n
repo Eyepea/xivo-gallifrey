@@ -142,8 +142,8 @@ Désactivé
 ; fm_queue_retry
 Délai d'attente avant rappel des membres :
 
-; fm_queue_retry-opt0
-Désactivé
+; fm_queue_retry-opt1
+1 seconde
 
 ; fm_queue_retry-opt
 %s secondes

@@ -454,7 +454,7 @@ switch($act)
 				if(isset($agent_order[0]) === true)
 					$agent->order_agent($info['agroup']['id'],$agent_order);
 			}
-
+			
 			if($edit_queue === true)
 			{
 				if(($nb = count($queue_del)) !== 0)
