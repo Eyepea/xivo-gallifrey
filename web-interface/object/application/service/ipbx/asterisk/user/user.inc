@@ -108,7 +108,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 	
 		$protocols = array_keys($protocols);
 
-		$this->_userfeatures->set_dso_param('internal',true);
+		$this->_userfeatures->set_dso_param('internal',false);
 
 		$r = 0;
 
@@ -123,8 +123,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 			if($unb > $cnt)
 				$cnt = 0;
-			else if($unb !== $cnt)
-				$cnt -= $unb;
+			else
+				$cnt = $unb;
 
 			$r += $cnt;			
 		}
