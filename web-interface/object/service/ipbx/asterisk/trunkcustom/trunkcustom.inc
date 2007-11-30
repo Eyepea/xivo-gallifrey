@@ -27,6 +27,8 @@ class xivo_service_asterisk_trunkcustom extends xivo_service_asterisk_abstract
 	{
 		$data['commented'] = (bool) $data['commented'];
 
+		$data['identity'] = $data['name'].' ('.$data['interface'].')';
+
 		return($data);
 	}
 

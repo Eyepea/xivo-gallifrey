@@ -270,18 +270,21 @@ class xivo_service_asterisk extends xivo_service_abstract
 		return($r);
 	}
 
-	function get_trunks_list($disable=null)
+	function get_trunks_list($disable=null,$trunk=true,$assoc=true)
 	{
+		$trunk = (bool) $trunk;
+		$assoc = (bool) $assoc;
+
 		$tfeatures = &$this->get_module('trunkfeatures');
 
 		if(($rs = $tfeatures->get_all(null,true,array('trunk' => SORT_ASC))) === false
 		|| ($nb = count($rs)) === 0)
 			return(false);
 
-		$r = $info = $trunk = array();
+		$r = $info = $trunks = array();
 
 		xivo::load_class('xivo_sort');
-		$sort = new xivo_sort(array('browse' => 'trunk','key' => 'name'));
+		$sort = new xivo_sort(array('browse' => 'trunk','key' => 'identity'));
 
 		for($i = 0;$i < $nb;$i++)
 		{
@@ -295,26 +298,39 @@ class xivo_service_asterisk extends xivo_service_abstract
 			if($trunkmodule === false)
 				continue;
 
-			if(isset($r[$info['tfeatures']['trunk']]) === false)
-				$r[$info['tfeatures']['trunk']] = array();
+			if($trunk === true)
+			{
+				if(isset($r[$info['tfeatures']['trunk']]) === false)
+					$r[$info['tfeatures']['trunk']] = array();
 
-			$ret = &$r[$info['tfeatures']['trunk']];
+				$ret = &$r[$info['tfeatures']['trunk']];
+			}
 
 			if(($info['trunk'] = $trunkmodule->get($info['tfeatures']['trunkid'],$disable)) === false)
 			{
-				if(empty($ret) === true)
+				if($trunk === true && empty($ret) === true)
 					unset($r[$info['tfeatures']['trunk']]);
 				continue;
 			}
 
 			$info['trunk']['trunkfeaturesid'] = $info['tfeatures']['id'];
-			$ret[] = $info;
 
-			usort($ret,array(&$sort,'str_usort'));
+			if($trunk === true)
+			{
+				$ret[$info['tfeatures']['id']] = $info;
+				usort($ret,array(&$sort,'str_usort'));
+			}
+			else
+			{
+				$r[$info['tfeatures']['id']] = $info;
+				uasort($r,array(&$sort,'str_usort'));
+			}
 		}
 
 		if(empty($r) === true)
 			$r = false;
+		else if($assoc === false)
+			$r = array_values($r);
 
 		return($r);
 	}

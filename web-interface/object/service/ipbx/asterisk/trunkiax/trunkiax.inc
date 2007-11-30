@@ -30,6 +30,11 @@ class xivo_service_asterisk_trunkiax extends xivo_service_asterisk_abstract
 		if(empty($data['call-limit']) === true)
 			$data['call-limit'] = '';
 
+		if(($channel = $this->_sre->get_channel_by_protocol('iax')) !== false)
+			$data['identity'] = $data['name'].' ('.$channel.')';
+		else
+			$data['identity'] = $data['name'];
+
 		return($data);
 	}
 

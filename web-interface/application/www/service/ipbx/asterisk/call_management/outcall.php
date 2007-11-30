@@ -13,13 +13,16 @@ switch($act)
 	case 'add':
 		$appoutcall = &$ipbx->get_application('outcall');
 
+		$trunks = array();
+		$trunks_list = $ipbx->get_trunks_list(null,false);
+
 		$result = null;
 		$rightcall['slt'] = $rightcall = array();
 
 		xivo::load_class('xivo_sort');
 		$rightcallsort = new xivo_sort(array('browse' => 'rightcall','key' => 'name'));
 
-		if(($rightcall['list'] = $ipbx->get_rightcall_list(null,true)) !== false)
+		if(($rightcall['list'] = $ipbx->get_rightcall_list(null,true,false)) !== false)
 			uasort($rightcall['list'],array(&$rightcallsort,'str_usort'));
 
 		do
@@ -32,6 +35,9 @@ switch($act)
 			|| $appoutcall->add() === false)
 			{
 				$result = $appoutcall->get_result();
+
+				if(xivo_issa('outcall',$result) === true && isset($result['outcall']['trunk']) === true)
+					$trunks = $result['outcall']['trunk'];
 				break;
 			}
 
@@ -57,13 +63,16 @@ switch($act)
 		$_HTML->set_var('rightcall',$rightcall);
 		$_HTML->set_var('element',$appoutcall->get_elements());
 		$_HTML->set_var('info',$result);
-		$_HTML->set_var('trunks_list',$ipbx->get_trunks_list());
+		$_HTML->set_var('trunks_list',$trunks_list);
 		break;
 	case 'edit':
 		$appoutcall = &$ipbx->get_application('outcall');
 
 		if(isset($_QR['id']) === false || ($info = $appoutcall->get($_QR['id'])) === false)
 			$_QRY->go($_HTML->url('service/ipbx/call_management/outcall'),$param);
+
+		$trunks = array();
+		$trunks_list = $ipbx->get_trunks_list(null,false);
 
 		$result = null;
 		$return = &$info;
@@ -87,6 +96,9 @@ switch($act)
 			|| $appoutcall->edit() === false)
 			{
 				$result = $appoutcall->get_result();
+
+				if(xivo_issa('outcall',$result) === true && isset($result['outcall']['trunk']) === true)
+					$trunks = $result['outcall']['trunk'];
 				break;
 			}
 
@@ -105,6 +117,15 @@ switch($act)
 			}
 		}
 
+		if(is_array($trunks_list) === true
+		&& empty($trunks) === false)
+		{
+			if(is_array($trunks) === false)
+				$trunks = explode(',',$trunks);
+
+			$trunks_list = xivo_array_diff_key($trunks_list,$trunks);
+		}
+
 		$dhtml = &$_HTML->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/outcall.js');
@@ -113,7 +134,7 @@ switch($act)
 		$_HTML->set_var('rightcall',$rightcall);
 		$_HTML->set_var('element',$appoutcall->get_elements());
 		$_HTML->set_var('info',$return);
-		$_HTML->set_var('trunks_list',$ipbx->get_trunks_list());
+		$_HTML->set_var('trunks_list',$trunks_list);
 		break;
 	case 'delete':
 		$param['page'] = $page;

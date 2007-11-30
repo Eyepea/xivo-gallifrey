@@ -12,6 +12,8 @@
 		$invalid = true;
 
 	$trunks_list = $this->get_var('trunks_list');
+
+	xivo_print_r($trunks_list);
 ?>
 
 <div id="sb-part-first">
@@ -23,8 +25,39 @@
 if($trunks_list === false):
 	echo '<div class="txt-center">',$url->href_html($this->bbf('create_trunk'),'service/ipbx/trunk_management/sip','act=add'),'</div>';
 else:
-	echo $form->select(array('desc' => $this->bbf('fm_outcall_trunk'),'name' => 'outcall[trunkfeaturesid]','labelid' => 'outcall-trunk','browse' => 'trunk','key' => 'name','altkey' => 'trunkfeaturesid','invalid' => $invalid,'optgroup' => array('key' => true,'bbf' => array('concat','fm_outcall-trunk-opt-')),'value' => $info['outcall']['trunkfeaturesid'],'default' => $element['outcall']['trunkfeaturesid']['default']),$trunks_list);
+
+?>
+
+<div id="trunklist" class="fm-field fm-multilist"><p><label id="lb-trunklist" for="it-trunklist"><?=$this->bbf('fm_outcall-trunk');?></label></p>
+	<div class="slt-outlist">
+		<?=$form->select(array('name' => 'trunklist','label' => false,'id' => 'it-trunklist','multiple' => true,'size' => 5,'field' => false,'browse' => 'trunk','key' => 'identity','altkey' => 'trunkfeaturesid'),$trunks_list);?>
+	</div>
+	<div class="inout-list">
+
+		<a href="#" onclick="xivo_fm_move_selected('it-trunklist','it-trunk'); return(false);" title="<?=$this->bbf('bt-intrunk');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt-intrunk'),'class="bt-inlist" id="bt-intrunk" border="0"');?></a><br />
+
+		<a href="#" onclick="xivo_fm_move_selected('it-trunk','it-trunklist'); return(false);" title="<?=$this->bbf('bt-outtrunk');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt-outtrunk'),'class="bt-outlist" id="bt-outtrunk" border="0"');?></a>
+	</div>
+	<div class="slt-inlist">
+
+		<?=$form->select(array('name' => 'outcall[trunk][]','label' => false,'id' => 'it-trunk','multiple' => true,'size' => 5,'field' => false,'browse' => 'trunk','key' => 'identity','altkey' => 'trunkfeaturesid'),$this->get_varra('info',array('outcall','trunk')));?>
+
+		<div class="bt-updown">
+
+			<a href="#" onclick="xivo_fm_order_selected('it-trunk',1); return(false);" title="<?=$this->bbf('bt-uptrunk');?>"><?=$url->img_html('img/site/button/row-up.gif',$this->bbf('bt-uptrunk'),'class="bt-uplist" id="bt-uptrunk" border="0"');?></a><br />
+
+			<a href="#" onclick="xivo_fm_order_selected('it-trunk',-1); return(false);" title="<?=$this->bbf('bt-downtrunk');?>"><?=$url->img_html('img/site/button/row-down.gif',$this->bbf('bt-downtrunk'),'class="bt-downlist" id="bt-downtrunk" border="0"');?></a>
+
+		</div>
+
+	</div>
+</div>
+<div class="clearboth"></div>
+
+<?php
+
 endif;
+
 ?>
 <?=$form->text(array('desc' => $this->bbf('fm_outcall_context'),'name' => 'outcall[context]','labelid' => 'outcall-context','size' => 15,'default' => $element['outcall']['context']['default'],'value' => $info['outcall']['context']));?>
 
