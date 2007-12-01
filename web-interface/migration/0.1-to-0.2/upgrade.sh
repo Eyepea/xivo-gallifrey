@@ -10,7 +10,7 @@ set -e
 	ASTSQLITEDB="/var/lib/asterisk/${ASTSQLITEDBFILENAME}"
 	ASTSQLITEFILE="/usr/share/pf-xivo-base-config/astsqlite.db.sql"
 
-	XIVOCONFDIR="/etc/pf-xivo-web-interface"
+	XIVOCONFDIR="/etc/pf-xivo/web-interface"
 	XIVOSQLITEDBFILENAME="xivo.db"
 	XIVOSQLITEDB="/var/lib/pf-xivo-web-interface/sqlite/${XIVOSQLITEDBFILENAME}"
 	XIVOSQLITEFILE="/usr/share/pf-xivo-base-config/xivo.db.sql"

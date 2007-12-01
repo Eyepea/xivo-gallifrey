@@ -10,7 +10,7 @@ class xivo_tpl
 	var $_option	= array('overload_i18n'	=> null);
 	var $_module	= array();
 
-	function xivo_tpl($param=array(),$modules=array())
+	function xivo_tpl($param=array(),$modules=array(),$url=null)
 	{
 		$param = (array) $param;
 		$modules = (array) $modules;
@@ -42,8 +42,8 @@ class xivo_tpl
 		$this->set_option('script_root',$script_root);
 		$this->set_option('i18n_namespace','tpl::'.$tpl_dir);
 
-		if(($this->_url = xivo_gat::load_get('url',XIVO_PATH_CONF)) === false)
-			trigger_error('Failed to load url Array',E_USER_ERROR);
+		if(is_array($url) === true)
+			$this->_url = $url;
 
 		if(($arr = xivo_get_aks($modules)) === false)
 			return(null);
