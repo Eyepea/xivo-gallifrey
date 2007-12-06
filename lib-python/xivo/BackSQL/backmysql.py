@@ -28,6 +28,8 @@ import MySQLdb
 import urisup
 from urisup import SCHEME, AUTHORITY, PATH, QUERY, FRAGMENT, uri_help_split
 
+from MySQLdb.converters import conversions as CST_CONVERSIONS
+
 __typemap = {
 	"host": str,
 	"user": str,
@@ -98,6 +100,30 @@ def connect_by_uri(uri):
 		if params['db'] and params['db'][0] == '/':
 			params['db'] = params['db'][1:]
 	__apply_types(params, __typemap)
+
+	# The next affectation work around a bug in python-mysqldb which
+	# happens when using an unicode charset: the conv parameter is
+	# defaulted to the common dictionary MySQLdb.converters.conversions
+	# when not explicitly given to the __init__() of
+	# MySQLdb.connections.Connection, the _mysql module just store it in
+	# the .converter member in the __init__() method of the base class
+	# _mysql.connection, and later, back in the __init__() of
+	# MySQLdb.connections.Connection, some children of .converter, which
+	# are lists, are prepended by dynamically generated functions. The net
+	# result is that every times a new Mysql connection is asked for with
+	# no individualised conversion dictionary passed to the conv parameter,
+	# a bunch of new functions and tuples are created, on which the process
+	# will keep references forever, effectively leaking some memory as some
+	# won't be used anymore after the termination of any connection.
+	# This work around is believed to be effective because the only
+	# references to the dynamically created conversion functions generated
+	# by MySQLdb.connections will be in this instance-specific copy of
+	# MySQLdb.converters.conversions. A unique reference to this copy will
+	# be held by the connection instance, so when the latter is garbage
+	# collected, the copied conversion dictionary is freed, and eventually 
+	# the now orphan tuples and generated functions are too.
+	params['conv'] = CST_CONVERSIONS.copy()
+
 	return MySQLdb.connect(**params)
 
 def escape(s):
