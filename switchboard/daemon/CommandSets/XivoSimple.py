@@ -8,7 +8,8 @@ class XivoSimpleCommand(BaseCommand):
         def __init__(self):
 		BaseCommand.__init__(self)
         def get_list_commands_clt2srv(self):
-                return ['history', 'directory-search',
+                return ['login',
+                        'history', 'directory-search',
                         'featuresget', 'featuresput',
                         'phones-list', 'phones-add', 'phones-del',
                         'faxsend',
@@ -22,7 +23,22 @@ class XivoSimpleCommand(BaseCommand):
         def parsecommand(self, linein):
                 params = linein.split()
                 cmd = xivo_commandsets.Command(params[0], params[1:])
+                if cmd.name == 'login':
+                        cmd.type = xivo_commandsets.CMD_LOGIN
+                else:
+                        cmd.type = xivo_commandsets.CMD_OTHER
                 return cmd
+
+        def get_login_params(self, command):
+                arglist = command.args[0].split(';')
+                cfg = {}
+                for argm in arglist:
+                        [param, value] = argm.split('=')
+                        cfg[param] = value
+                return cfg
+
+        def required_login_params(self):
+                return ['astid', 'proto', 'userid', 'state', 'ident', 'passwd', 'version']
 
         def directory_srv2clt(self, context, results):
                 header = 'directory-response=%d;%s' %(len(context.search_valid_fields), ';'.join(context.search_titles))
@@ -33,7 +49,7 @@ class XivoSimpleCommand(BaseCommand):
 
         def connected_srv2clt(self, conn, num):
                 return
-        def manage_srv2clt(self, conn, cname, usefulmsg):
+        def manage_srv2clt(self, conn, parsedcommand):
                 return
         
         def message_srv2clt(self, sender, message):
@@ -49,6 +65,7 @@ class XivoSimpleCommand(BaseCommand):
         def connect_srv2clt(self, num):
                 pass
         def park_srv2clt(self, function, args):
+                strupdate = ''
                 if function == 'parked':
                         [astid, channel, cfrom, exten, timeout] = args
                         strupdate = 'parkedcall=%s;%s;%s;%s;%s' %(astid, channel, cfrom, exten, timeout)
@@ -63,6 +80,7 @@ class XivoSimpleCommand(BaseCommand):
                         strupdate = 'parkedcallgiveup=%s;%s;;%s;giveup' %(astid, channel, exten)
                 return strupdate
         def phones_srv2clt(self, function, args):
+                strupdate = ''
                 if function == 'update':
                         strupdate = 'phones-update=' + ':'.join(args)
                 elif function == 'noupdate':

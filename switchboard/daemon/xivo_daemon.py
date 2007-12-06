@@ -182,7 +182,7 @@ socket.setdefaulttimeout(2)
 HISTSEPAR = ';'
 XIVO_CLI_WEBI_HEADER = 'XIVO-CLI-WEBI'
 REQUIRED_CLIENT_VERSION = 2025
-XIVOVERSION = '0.2'
+XIVOVERSION = '0.3'
 ITEMS_PER_PACKET = 500
 USERLIST_LENGTH = 12
 
@@ -289,10 +289,7 @@ def update_history_call(cfg, techno, phoneid, phonenum, nlines, kind):
                 log_debug(SYSLOG_WARNING, '%s : no CDR uri defined for this asterisk - see cdr_db_uri parameter' % cfg.astid)
         else:
                 try:
-                        conn = anysql.connect_by_uri(cfg.cdr_db_uri)
-                        # charset = 'utf8' : add ?charset=utf8 to the URI
-
-                        cursor = conn.cursor()
+                        cursor = cfg.cdr_db_conn.cursor()
                         columns = ('calldate', 'clid', 'src', 'dst', 'dcontext', 'channel', 'dstchannel',
                                    'lastapp', 'lastdata', 'duration', 'billsec', 'disposition', 'amaflags',
                                    'accountcode', 'uniqueid', 'userfield')
@@ -312,7 +309,6 @@ def update_history_call(cfg, techno, phoneid, phonenum, nlines, kind):
                                              columns,
                                              (likestring,))
                         results = cursor.fetchall()
-                        conn.close()
                 except Exception, exc:
                         log_debug(SYSLOG_ERR, '--- exception --- %s : Connection to DataBase %s failed in History request : %s'
                                   %(cfg.astid, cfg.cdr_db_uri, str(exc)))
@@ -323,24 +319,35 @@ def build_history_string(requester_id, nlines, kind):
         [dummyp, astid_src, dummyx, techno, phoneid, phonenum] = requester_id.split('/')
         if astid_src in configs:
                 try:
-                        hist = update_history_call(configs[astid_src], techno, phoneid, phonenum, nlines, kind)
                         reply = []
+                        hist = update_history_call(configs[astid_src], techno, phoneid, phonenum, nlines, kind)
                         for x in hist:
                                 try:
-                                        reply.append(x[0].isoformat() + HISTSEPAR + x[1].replace('"', '') \
-                                                     + HISTSEPAR + str(x[10]) + HISTSEPAR + x[11])
+                                        ry1 = x[0].isoformat() + HISTSEPAR + x[1].replace('"', '') \
+                                              + HISTSEPAR + str(x[10]) + HISTSEPAR + x[11]
                                 except:
-                                        reply.append(x[0] + HISTSEPAR + x[1].replace('"', '') \
-                                                     + HISTSEPAR + str(x[10]) + HISTSEPAR + x[11])
+                                        ry1 = x[0] + HISTSEPAR + x[1].replace('"', '') \
+                                              + HISTSEPAR + str(x[10]) + HISTSEPAR + x[11]
+
                                 if kind == '0':
-                                        reply.append(HISTSEPAR + x[3].replace('"', '') + HISTSEPAR + 'OUT')
+                                        num = x[3].replace('"', '')
+                                        sipcid = "SIP/%s" % num
+                                        cidname = num
+                                        if sipcid in plist[astid_src].normal:
+                                                cidname = '%s %s <%s>' %(plist[astid_src].normal[sipcid].calleridfirst,
+                                                                         plist[astid_src].normal[sipcid].calleridlast,
+                                                                         num)
+                                        ry2 = HISTSEPAR + cidname + HISTSEPAR + 'OUT'
                                 else:   # display callerid for incoming calls
-                                        reply.append(HISTSEPAR + x[1].replace('"', '') + HISTSEPAR + 'IN')
-                                reply.append(";")
+                                        ry2 = HISTSEPAR + x[1].replace('"', '') + HISTSEPAR + 'IN'
+
+                                reply.append(ry1)
+                                reply.append(ry2)
+                                reply.append(';')
                         return commandclass.history_srv2clt(reply)
                 except Exception, exc:
                         log_debug(SYSLOG_ERR, '--- exception --- (%s) error : history : (client %s) : %s'
-                                  %(astid_src, requester, str(exc)))
+                                  %(astid_src, requester_id, str(exc)))
         else:
                 return commandclass.dmessage_srv2clt('history KO : no such asterisk id <%s>' % astid_src)
 
@@ -638,7 +645,7 @@ def originate_or_transfer(requester, l):
                 if astid_src in AMI_array_user_commands and AMI_array_user_commands[astid_src]:
                         if l[0] == 'originate':
                                 log_debug(SYSLOG_INFO, "%s is attempting an ORIGINATE : %s" %(requester, str(l)))
-                                if astid_dst != "":
+                                if astid_dst != '':
                                         sipcid_src = "SIP/%s" % userid_src
                                         sipcid_dst = "SIP/%s" % userid_dst
                                         cidname_src = 'called by %s' % userid_src
@@ -737,8 +744,9 @@ def hangup(requester, chan):
 
 def manage_login(cfg, requester_ip, requester_port, socket):
         global userinfo_by_requester
-        for argum in ['astid', 'proto', 'userid', 'state', 'ident', 'passwd', 'version']:
+        for argum in commandclass.required_login_params():
                 if argum not in cfg:
+                        log_debug(SYSLOG_WARNING, 'missing argument when user attempts to log in : <%s>' % argum)
                         return commandclass.loginko_srv2clt('missing:%s' % argum)
 
         if cfg.get('astid') in configs:
@@ -836,7 +844,7 @@ def manage_tcp_connection(connid, allow_events):
                         ins.remove(connid[0])
                         if allow_events == True:
                                 tcpopens_sb.remove(connid)
-                                log_debug(SYSLOG_INFO, "TCP (SB)  socket closed from %s" %requester)
+                                log_debug(SYSLOG_INFO, "TCP (SB)  socket closed from %s" % requester)
                                 if requester in userinfo_by_requester:
                                         astid   = userinfo_by_requester[requester][0]
                                         username = userinfo_by_requester[requester][1]
@@ -853,7 +861,7 @@ def manage_tcp_connection(connid, allow_events):
                                         del userinfo_by_requester[requester]
                         else:
                                 tcpopens_webi.remove(connid)
-                                log_debug(SYSLOG_INFO, "TCP (WEBI) socket closed from %s" %requester)
+                                log_debug(SYSLOG_INFO, "TCP (WEBI) socket closed from %s" % requester)
                 except Exception, exc:
                         log_debug(SYSLOG_ERR, '--- exception --- UI connection [%s] : a problem occured when trying to close %s : %s'
                                   %(msg, str(connid[0]), str(exc)))
@@ -875,8 +883,6 @@ def manage_tcp_connection(connid, allow_events):
                                           __revision__,
                                           REQUIRED_CLIENT_VERSION, time_uptime,
                                           conngui_sb, maxgui_sb, conngui_xc, maxgui_xc)
-                                for tcpo in tcpopens_sb:
-                                        reply += ":%s:%d" %(tcpo[1],tcpo[2])
                                 connid[0].send(reply + "\n")
                                 connid[0].send("server capabilities = %s\n" %(",".join(capabilities_list)))
                                 connid[0].send("%s:OK\n" %(XIVO_CLI_WEBI_HEADER))
@@ -892,7 +898,7 @@ def manage_tcp_connection(connid, allow_events):
                                         k1.sort()
                                         for kk in k1:
                                                 canal = plast.normal[kk].chann
-                                                connid[0].send("%10s %10s %6s [%s : %12s - %4d s] %4d %s\n"
+                                                connid[0].send('%10s %10s %6s [%s : %12s - %4d s] %4d %s\n'
                                                                %(plast.astid,
                                                                  kk,
                                                                  plast.normal[kk].towatch,
@@ -907,14 +913,30 @@ def manage_tcp_connection(connid, allow_events):
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- UI connection [%s] : KO when sending to %s : %s'
                                           %(usefulmsg, requester, str(exc)))
-                elif usefulmsg == "show_logged":
+                elif usefulmsg == "show_busy":
+                        try:
+                                for astid, plast in plist.iteritems():
+                                        connid[0].send('%s : normal=%d queues=%d oldqueues=%d\n'
+                                                       %(astid, len(plast.normal), len(plast.queues), len(plast.oldqueues)))
+                                        k1 = plast.oldqueues.keys()
+                                        k1.sort()
+                                        for kk in k1:
+                                                connid[0].send('%s : %s %d\n' %(astid, kk, len(plast.oldqueues[kk])))
+                                connid[0].send("%s:OK\n" %(XIVO_CLI_WEBI_HEADER))
+                                if not allow_events:
+                                        connid[0].close()
+                        except Exception, exc:
+                                log_debug(SYSLOG_ERR, '--- exception --- UI connection [%s] : KO when sending to %s : %s'
+                                          %(usefulmsg, requester, str(exc)))
+                elif usefulmsg == 'show_users' or usefulmsg == 'show_logged':
                         try:
                                 for astid in userlist:
                                         userlist_lock[astid].acquire()
                                         try:
                                                 connid[0].send("on <%s> :\n" % astid)
                                                 for user,info in userlist[astid].iteritems():
-                                                        connid[0].send("%s %s\n" %(user, info))
+                                                        if 'logintimestamp' in info or usefulmsg == 'show_users':
+                                                                connid[0].send("%s %s\n" %(user, info))
                                         finally:
                                                 userlist_lock[astid].release()
                                 if requester in userinfo_by_requester:
@@ -941,32 +963,32 @@ def manage_tcp_connection(connid, allow_events):
                     if allow_events: # i.e. if SB-style connection
                         command = commandclass.parsecommand(usefulmsg)
                         if command.name in commandclass.get_list_commands_clt2srv():
-                                log_debug(SYSLOG_INFO, "%s is attempting a %s (TCP) : %s" %(requester, command.name, str(command.args)))
-                                commandclass.manage_srv2clt(connid[0], command.name, usefulmsg)
-                                try:
-                                        if requester in userinfo_by_requester:
-                                                resp = parse_command_and_build_reply(userinfo_by_requester[requester],
-                                                                                     ['tcp', connid[0], connid[1], connid[2]],
-                                                                                     command)
-                                                try:
-                                                        connid[0].send(resp + '\n')
-                                                except Exception, exc:
-                                                        log_debug(SYSLOG_ERR, '--- exception --- (sending TCP) %s' % str(exc))
-                                except Exception, exc:
-                                        log_debug(SYSLOG_ERR, '--- exception --- UI connection [%s] : a problem occured when sending to %s : %s'
-                                                  %(command.name, requester, str(exc)))
-                        elif command.name == 'login':
-                                try:
-                                        arglist = command.args[0].split(';')
-                                        cfg = {}
-                                        for argm in arglist:
-                                                [param, value] = argm.split('=')
-                                                cfg[param] = value
-                                        repstr = manage_login(cfg, requester_ip, requester_port, connid[0])
-                                        connid[0].send(repstr + '\n')
-                                except Exception, exc:
-                                        log_debug(SYSLOG_ERR, '--- exception --- UI connection [%s] : a problem occured when sending to %s : %s'
-                                                  %(command.name, requester, str(exc)))
+                                if command.type == xivo_commandsets.CMD_LOGIN:
+                                        try:
+                                                cfg = commandclass.get_login_params(command)
+                                                repstr = manage_login(cfg, requester_ip, requester_port, connid[0])
+                                                connid[0].send(repstr + '\n')
+                                        except Exception, exc:
+                                                log_debug(SYSLOG_ERR, '--- exception --- UI connection [%s] : a problem occured when sending to %s : %s'
+                                                          %(command.name, requester, str(exc)))
+                                else:
+                                        log_debug(SYSLOG_INFO, "%s is attempting a %s (TCP) : %s" %(requester, command.name, str(command.args)))
+                                        r = commandclass.manage_srv2clt(connid[0], command)
+                                        if r is not None:
+                                                originate_or_transfer('clg/%s' % r,
+                                                                      ['originate', 'p/clg/default/sip/%s/%s' %(r, r), 'p/clg/default///6%s' %(r)])
+                                        try:
+                                                if requester in userinfo_by_requester:
+                                                        resp = parse_command_and_build_reply(userinfo_by_requester[requester],
+                                                                                             ['tcp', connid[0], connid[1], connid[2]],
+                                                                                             command)
+                                                        try:
+                                                                connid[0].send(resp + '\n')
+                                                        except Exception, exc:
+                                                                log_debug(SYSLOG_ERR, '--- exception --- (sending TCP) %s' % str(exc))
+                                        except Exception, exc:
+                                                log_debug(SYSLOG_ERR, '--- exception --- UI connection [%s] : a problem occured when sending to %s : %s'
+                                                          %(command.name, requester, str(exc)))
                         else:
                                 connid[0].send("Unknown Command\n")
 
@@ -1001,7 +1023,7 @@ def manage_tcp_connection(connid, allow_events):
                                 try:
                                         ins.remove(connid[0])
                                         connid[0].close()
-                                        log_debug(SYSLOG_INFO, 'TCP (WEBI) socket closed towards %s' %requester)
+                                        log_debug(SYSLOG_INFO, 'TCP (WEBI) socket closed towards %s' % requester)
                                 except Exception, exc:
                                         log_debug(SYSLOG_ERR, '--- exception --- (%s) WEBI could not close properly %s'
                                                   %(astid, requester))
@@ -1237,7 +1259,7 @@ def handle_ami_event(astid, idata):
                         exten   = this_event.get('Exten')
                         context = this_event.get('Context')
                         status  = this_event.get('Status')
-                        # log_debug(SYSLOG_INFO, 'AMI:ExtensionStatus: %s : %s %s %s' %(astid, exten, context, status))
+                        log_debug(SYSLOG_INFO, 'AMI:ExtensionStatus: %s : %s %s %s' %(astid, exten, context, status))
 
                         sipphone = 'SIP/%s' % exten
                         if sipphone in plist_thisast.normal:
@@ -2309,7 +2331,10 @@ class AsteriskRemote:
                 self.ami_pass = ami_pass
                 self.userfeatures_db_uri = userfeatures_db_uri
                 self.capafeatures = capafeatures
-                self.cdr_db_uri = cdr_db_uri
+                self.cdr_db_uri  = cdr_db_uri
+                self.cdr_db_conn = anysql.connect_by_uri(cdr_db_uri)
+                # charset = 'utf8' : add ?charset=utf8 to the URI
+
                 self.realm = realm
                 self.parkingnumber = parkingnumber
                 self.faxcallerid = faxcallerid
@@ -2969,7 +2994,7 @@ class KeepAliveHandler(SocketServer.DatagramRequestHandler):
         def handle(self):
                 threading.currentThread().setName('keepalive-%s:%d' %(self.client_address[0], self.client_address[1]))
                 requester = "%s:%d" %(self.client_address[0],self.client_address[1])
-                log_debug(SYSLOG_INFO, "KeepAliveHandler    (UDP) : client = %s" %requester)
+                log_debug(SYSLOG_INFO, "KeepAliveHandler    (UDP) : client = %s" % requester)
                 astid = ''
                 response = 'ERROR unknown'
 
