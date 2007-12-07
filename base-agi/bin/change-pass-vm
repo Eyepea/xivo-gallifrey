@@ -66,5 +66,5 @@ password = sys.argv[3]
 
 cursor = conn.cursor()
 query = "UPDATE %s SET password='%s' WHERE context='%s' AND mailbox='%s'" % (table, password, context, mailbox)
-cursor.execute(query)
+cursor.query(query)
 conn.commit()
