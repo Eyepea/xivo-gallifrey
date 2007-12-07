@@ -14,7 +14,7 @@ class xivo_service_asterisk_cdr_abstract_sql extends xivo_service_asterisk_abstr
 		$this->_dso->order($order);
 		$this->_dso->limit($limit);
 
-		$select = '*, '.$this->_dso->unix_timestamp('calldate').' AS callunixtime';
+		$select = '*, '.$this->_dso->unix_timestamp('calldate','localtime').' AS callunixtime';
 
 		$r = $this->_dso->select_all($this->_param['table'],$select,$where);
 
@@ -56,7 +56,7 @@ class xivo_service_asterisk_cdr_abstract_sql extends xivo_service_asterisk_abstr
 			else
 				$dend = '';
 
-			if(($rs = $this->_dso->cond_date('calldate',$dbeg,$dend,$format)) !== false)
+			if(($rs = $this->_dso->cond_date('calldate',$dbeg,$dend,$format,'localtime')) !== false)
 				$where[] = $rs;
 		}
 

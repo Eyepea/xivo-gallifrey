@@ -157,7 +157,7 @@ class xivo_datastorage_sqlite extends xivo_datastorage_abstract_sql
 		return(sqlite_fetch_array(($r !== false ? $r : $this->_result),SQLITE_ASSOC));
 	}
 
-	function unix_timestamp($col='',$time='localtime')
+	function unix_timestamp($col='',$time='')
 	{
 		return($this->_expr_typetime(null,$col,$time,'%s'));
 	}
@@ -165,21 +165,23 @@ class xivo_datastorage_sqlite extends xivo_datastorage_abstract_sql
 	function _expr_typetime($type='',$col='',$time='',$format='')
 	{
 		$col = $this->quote_identifier($col);
-		$time = $time !== '' ? strtolower((string) $time) : 'localtime';
+		$time = strtolower((string) $time);
 		$format = (string) $format;
 
-		if($time !== 'localtime' && $time !== 'utc')
+		if($time !== '' && $time !== 'localtime' && $time !== 'utc')
 			return(false);
 
 		if($col === '')
 			$col = '\'now\'';
 
-		$col = 'datetime('.$col.',\''.$time.'\')';
-		
-		if($format === '')
-			$r = $col;
+		if($format === '' && $time === '')
+			$r = 'datetime('.$col.')';
+		if($format === '' && $time !== '')
+			$r = 'datetime('.$col.',\''.$time.'\')';
+		else if($time !== '' && $format !== '%s')
+			$r = 'strftime(\''.$format.'\',datetime('.$col.'),\''.$time.'\')';
 		else
-			$r = 'strftime(\''.$format.'\','.$col.')';
+			$r = 'strftime(\''.$format.'\',datetime('.$col.'))';
 
 		return($r);
 	}

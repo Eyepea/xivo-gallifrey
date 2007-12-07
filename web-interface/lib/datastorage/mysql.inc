@@ -187,6 +187,14 @@ class xivo_datastorage_mysql extends xivo_datastorage_abstract_sql
 		return($this->_insertupdate('update',$t,$data,$w,$escape,true,$o,true,true));
 	}
 
+	function join($t,$c='INNER',$o='')
+	{
+		if(($c = strtoupper(trim((string) $c))) === 'FULL')
+			return(false);
+
+		return(parent::join($t,$c,$o));
+	}
+
 	function affected_rows()
 	{
 		return(mysql_affected_rows($this->_link));
@@ -241,7 +249,7 @@ class xivo_datastorage_mysql extends xivo_datastorage_abstract_sql
 		return(mysql_fetch_assoc(($r !== false ? $r : $this->_result)));
 	}
 
-	function unix_timestamp($col='',$time='localtime')
+	function unix_timestamp($col='',$time='')
 	{
 		if(($r = $this->_expr_typetime('date',$col,$time,$this->_date['datetime'])) !== false)
 			$r = 'UNIX_TIMESTAMP('.$r.')';
@@ -253,11 +261,11 @@ class xivo_datastorage_mysql extends xivo_datastorage_abstract_sql
 	{
 		$type = $type !== '' ? strtolower((string) $type) : 'date';
 		$col = $this->quote_identifier($col);
-		$time = $time !== '' ? strtolower((string) $time) : 'localtime';
+		$time = strtolower((string) $time);
 		$format = (string) $format;
 
 		if(($type !== 'unix' && $type !== 'date') === true
-		|| ($time !== 'localtime' && $time !== 'utc') === true)
+		|| ($time !== '' && $time !== 'localtime' && $time !== 'utc') === true)
 			return(false);
 
 		if($type === 'unix')
@@ -275,6 +283,13 @@ class xivo_datastorage_mysql extends xivo_datastorage_abstract_sql
 		else if($time === 'utc')
 		{
 			$col = 'CONVERT_TZ('.$func.'('.$col.',\'%Y-%m-%d %H:%i:%s\'),@@session.time_zone,\'+00:00\')';
+
+			if($type === 'unix')
+				$col = 'UNIX_TIMESTAMP('.$col.')';
+		}
+		else if($time === 'localtime')
+		{
+			$col = 'CONVERT_TZ('.$func.'('.$col.',\'%Y-%m-%d %H:%i:%s\'),\'+00:00\',@@session.time_zone)';
 
 			if($type === 'unix')
 				$col = 'UNIX_TIMESTAMP('.$col.')';
