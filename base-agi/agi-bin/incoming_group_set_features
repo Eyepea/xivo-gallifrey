@@ -51,9 +51,15 @@ def ds_set_fwd_vars(id, status, type_varname, typeval1_varname, typeval2_varname
 	res = cursor.fetchone()
 
 	if not res:
-		return
+		type = "endcall"
+		typeval = "none"
+		applicationval = None
+	else:
+		type = res['type']
+		typeval = res['typeval']
+		applicationval = res['applicationval']
 
-	agi_helpers.set_fwd_vars(agi, cursor, res['type'], res['typeval'], res['applicationval'], type_varname, typeval1_varname, typeval2_varname)
+	agi_helpers.set_fwd_vars(agi, cursor, type, typeval, applicationval, type_varname, typeval1_varname, typeval2_varname)
 
 # Cursors have a weak reference on their connection, so make a strong one.
 conn = agi_helpers.db_connect(agi, db_uri)
