@@ -78,7 +78,7 @@ endif;
 <div id="userlist" class="fm-field fm-multilist">
 	<div class="slt-outlist">
 
-	<?=$form->select(array('name' => 'userlist','label' => false,'id' => 'it-userlist','multiple' => true,'size' => 5,'field' => false,'browse' => 'ufeatures','key' => 'identity','altkey' => 'id'),$user['list']);?>
+	<?=$form->select(array('name' => 'userlist','label' => false,'id' => 'it-userlist','multiple' => true,'size' => 5,'field' => false,'key' => 'identity','altkey' => 'id'),$user['list']);?>
 
 	</div>
 	<div class="inout-list">
@@ -90,7 +90,7 @@ endif;
 	</div>
 	<div class="slt-inlist">
 
-		<?=$form->select(array('name' => 'user[]','label' => false,'id' => 'it-user','multiple' => true,'size' => 5,'field' => false,'browse' => 'ufeatures','key' => 'identity','altkey' => 'id'),$user['slt']);?>
+		<?=$form->select(array('name' => 'user[]','label' => false,'id' => 'it-user','multiple' => true,'size' => 5,'field' => false,'key' => 'identity','altkey' => 'id'),$user['slt']);?>
 
 	</div>
 </div>

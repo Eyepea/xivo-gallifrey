@@ -5,8 +5,9 @@ require_once(XIVO_PATH_LIB.XIVO_SEP_DIR.'datastorage'.XIVO_SEP_DIR.'abstract'.XI
 class xivo_datastorage_sqlite extends xivo_datastorage_abstract_sql
 {
 	var $_param	= array(
-				'db'		=> '',
-				'persist'	=> false);
+				'db'			=> '',
+				'persist'		=> false,
+				'short_column_names'	=> true);
 
 	var $_type	= 'sqlite';
 	var $_date	= array(
@@ -29,6 +30,9 @@ class xivo_datastorage_sqlite extends xivo_datastorage_abstract_sql
 
 		if(isset($param['persist']) === true)
 			$this->_param['persist'] = (bool) $param['persist'];
+
+		if(isset($param['short_column_names']) === true)
+			$this->_param['short_column_names'] = (bool) $param['short_column_names'];
 
 		if($open === true)
 			$this->open();
@@ -60,6 +64,73 @@ class xivo_datastorage_sqlite extends xivo_datastorage_abstract_sql
 			$this->halt('Can\'t find database');
 	}
 
+	function _chk_pragma($key,$value)
+	{
+		$key = strtolower($key);
+
+		switch($key)
+		{
+			case 'full_column_names':
+			case 'short_column_names':
+			case 'count_changes':
+			case 'empty_result_callbacks':
+				$value = intval((bool) $value);
+				break;
+			case 'cache_size':
+			case 'default_cache_size':
+				if(($value = xivo_uint($value)) === 0 || $value > 4000)
+					return(false);
+				break;
+			case 'synchronous':
+				if(($value = strtoupper($value)) !== 'FULL'
+				&& $value !== 'NORMAL'
+				&& $value !== 'OFF'
+				&& $value !== '2'
+				&& $value !== '1'
+				&& $value !== '0')
+					return(false);
+				break;
+			case 'database_list':
+			case 'foreign_key_list':
+			case 'index_info':
+			case 'index_list':
+			case 'table_info':
+				$value = $this->quote_identifier($value);
+				break;
+			case 'temp_store':
+				if(($value = strtoupper($value)) !== 'DEFAULT'
+				&& $value !== 'FILE'
+				&& $value !== 'MEMORY'
+				&& $value !== '2'
+				&& $value !== '1'
+				&& $value !== '0')
+					return(false);
+				break;
+			case 'integrity_check':
+				if(($value = xivo_uint($value)) === 0 || $value > 200)
+					return(false);
+				break;
+			case 'parser_trace':
+			case 'vdbe_trace':
+				$value = intval((bool) $value);
+				break;
+			default:
+				return(false);
+		}
+		return($value);
+	}
+
+	function set_pragma($key,$value)
+	{
+		if(is_resource($this->_link) === false
+		|| ($value = $this->_chk_pragma($key,$value)) === false)
+			return(false);
+
+		$query = sprintf('PRAGMA %s = %s',strtolower($key),$value);
+
+		return($this->query($query));
+	}
+
 	function open()
 	{
 		if(is_resource($this->_link) === true)
@@ -74,6 +145,9 @@ class xivo_datastorage_sqlite extends xivo_datastorage_abstract_sql
 
 		if($this->_link === false)
 			$this->halt();
+
+		if(isset($this->_param['short_column_names']) === true)
+			$this->set_pragma('short_column_names',$this->_param['short_column_names']);
 
 		return($this->_link);
 	}

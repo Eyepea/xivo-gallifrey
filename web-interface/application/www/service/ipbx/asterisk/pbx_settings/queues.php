@@ -66,7 +66,7 @@ switch($act)
 			{
 				$user['list'] = xivo_array_diff_key($user['list'],$user['slt']);
 
-				$usersort = new xivo_sort(array('browse' => 'ufeatures','key' => 'identity'));
+				$usersort = new xivo_sort(array('key' => 'identity'));
 				uasort($user['slt'],array(&$usersort,'str_usort'));
 			}
 		}
@@ -166,7 +166,7 @@ switch($act)
 			{
 				$user['list'] = xivo_array_diff_key($user['list'],$user['slt']);
 
-				$usersort = new xivo_sort(array('browse' => 'ufeatures','key' => 'identity'));
+				$usersort = new xivo_sort(array('key' => 'identity'));
 				uasort($user['slt'],array(&$usersort,'str_usort'));
 			}
 		}

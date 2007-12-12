@@ -1,0 +1,80 @@
+; title_content_name
+Phonebook > Add
+
+; smenu_general
+General
+
+; smenu_office
+Office
+
+; smenu_home
+Home
+
+; smenu_other
+Other
+
+; fm_phonebook_title
+Title:
+
+; fm_phonebook_title-opt-mr
+Mr
+
+; fm_phonebook_title-opt-mrs
+Mrs
+
+; fm_phonebook_title-opt-ms
+Ms
+
+; fm_phonebook_firstname
+First Name:
+
+; fm_phonebook_lastname
+Last Name:
+
+; fm_phonebook_displayname
+Display name:
+
+; fm_phonebook_society
+Company:
+
+; fm_phonebooknumber_mobile
+Mobile phone:
+
+; fm_phonebook_email
+E-mail:
+
+; fm_phonebook_url
+Website URL:
+
+; fm_phonebook_description
+Description:
+
+; fm_phonebooknumber_office
+Phone:
+
+; fm_phonebooknumber_fax
+Fax:
+
+; fm_phonebookaddress_address1
+Address:
+
+; fm_phonebookaddress_address2
+Address (next):
+
+; fm_phonebookaddress_city
+City:
+
+; fm_phonebookaddress_state
+State:
+
+; fm_phonebookaddress_zipcode
+Zip code:
+
+; fm_phonebookaddress_country
+Country:
+
+; fm_phonebooknumber_home
+Phone:
+
+; fm_phonebooknumber_other
+Phone:

@@ -20,6 +20,14 @@ $array['element']['commented']['value'] = array(0,1);
 $array['element']['commented']['default'] = 0;
 $array['element']['commented']['set'] = true;
 
+$array['element']['protocol'] = array();
+$array['element']['protocol']['default'] = XIVO_SRE_IPBX_AST_PROTO_CUSTOM;
+$array['element']['protocol']['forcedef'] = true;
+
+$array['element']['category'] = array();
+$array['element']['category']['default'] = 'user';
+$array['element']['category']['forcedef'] = true;
+
 
 $array['filter'] = array();
 $array['filter']['name'] = array('set' => false,'chk' => 0);
@@ -30,5 +38,7 @@ $array['filter']['context'] = array('set' => false,
 							     XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES));
 $array['filter']['interface'] = array('regexp' => '/^[a-z0-9#\*\.\/_@:-]+$/i','minlen' => 1,'maxlen' => 128);
 $array['filter']['commented'] = array('bool' => true);
+$array['filter']['protocol'] = array('set' => false);
+$array['filter']['category'] = array('set' => false);
 
 ?>

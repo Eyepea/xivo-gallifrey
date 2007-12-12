@@ -508,9 +508,7 @@ class xivo_i18n_mediator
 
 			for($i = 0;$i < $arr['cnt'];$i++)
 			{
-				$ref = &$arr['keys'][$i];
-				
-				if(($nlocale = $this->chk_locale($locale[$ref])) !== false
+				if(($nlocale = $this->chk_locale($arr['keys'][$i])) !== false
 				&& ($dir = xivo_file::is_d_r(XIVO_PATH_I18N.XIVO_SEP_DIR.$nlocale)) !== false)
 				{
 					if($define === true)

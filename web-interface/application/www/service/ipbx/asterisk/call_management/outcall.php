@@ -13,11 +13,12 @@ switch($act)
 	case 'add':
 		$appoutcall = &$ipbx->get_application('outcall');
 
-		$trunks = array();
-		$trunks_list = $ipbx->get_trunks_list(null,false);
-
 		$result = null;
-		$rightcall['slt'] = $rightcall = array();
+
+		$outcalltrunk = $rightcall = array();
+		$outcalltrunk['slt'] = $rightcall['slt'] = array();
+
+		$outcalltrunk['list'] = $ipbx->get_trunks_list(null,false);
 
 		xivo::load_class('xivo_sort');
 		$rightcallsort = new xivo_sort(array('browse' => 'rightcall','key' => 'name'));
@@ -35,15 +36,23 @@ switch($act)
 			|| $appoutcall->add() === false)
 			{
 				$result = $appoutcall->get_result();
-
-				if(xivo_issa('outcall',$result) === true && isset($result['outcall']['trunk']) === true)
-					$trunks = $result['outcall']['trunk'];
 				break;
 			}
 
 			$_QRY->go($_HTML->url('service/ipbx/call_management/outcall'),$param);
 		}
 		while(false);
+
+		if($outcalltrunk['list'] !== false && xivo_issa('outcalltrunk',$result) === true)
+		{
+			$outcalltrunksort = new xivo_sort(array('key' => 'penalty'));
+			usort($result['outcalltrunk'],array(&$outcalltrunksort,'num_usort'));
+
+			$outcalltrunk['slt'] = xivo_array_intersect_key($result['outcalltrunk'],$outcalltrunk['list'],'trunkid');
+
+			if($outcalltrunk['slt'] !== false)
+				$outcalltrunk['list'] = xivo_array_diff_key($outcalltrunk['list'],$outcalltrunk['slt']);
+		}
 
 		if($rightcall['list'] !== false && xivo_ak('rightcall',$result) === true)
 		{
@@ -60,10 +69,10 @@ switch($act)
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/outcall.js');
 
+		$_HTML->set_var('outcalltrunk',$outcalltrunk);
 		$_HTML->set_var('rightcall',$rightcall);
 		$_HTML->set_var('element',$appoutcall->get_elements());
 		$_HTML->set_var('info',$result);
-		$_HTML->set_var('trunks_list',$trunks_list);
 		break;
 	case 'edit':
 		$appoutcall = &$ipbx->get_application('outcall');
@@ -71,12 +80,12 @@ switch($act)
 		if(isset($_QR['id']) === false || ($info = $appoutcall->get($_QR['id'])) === false)
 			$_QRY->go($_HTML->url('service/ipbx/call_management/outcall'),$param);
 
-		$trunks = array();
-		$trunks_list = $ipbx->get_trunks_list(null,false);
-
 		$result = null;
 		$return = &$info;
-		$rightcall['slt'] = $rightcall = array();
+		$outcalltrunk = $rightcall = array();
+		$outcalltrunk['slt'] = $rightcall['slt'] = array();
+
+		$outcalltrunk['list'] = $ipbx->get_trunks_list(null,false);
 
 		xivo::load_class('xivo_sort');
 		$rightcallsort = new xivo_sort(array('browse' => 'rightcall','key' => 'name'));
@@ -96,15 +105,23 @@ switch($act)
 			|| $appoutcall->edit() === false)
 			{
 				$result = $appoutcall->get_result();
-
-				if(xivo_issa('outcall',$result) === true && isset($result['outcall']['trunk']) === true)
-					$trunks = $result['outcall']['trunk'];
 				break;
 			}
 
 			$_QRY->go($_HTML->url('service/ipbx/call_management/outcall'),$param);
 		}
 		while(false);
+
+		if($outcalltrunk['list'] !== false && xivo_issa('outcalltrunk',$return) === true)
+		{
+			$outcalltrunksort = new xivo_sort(array('key' => 'penalty'));
+			usort($return['outcalltrunk'],array(&$outcalltrunksort,'num_usort'));
+
+			$outcalltrunk['slt'] = xivo_array_intersect_key($return['outcalltrunk'],$outcalltrunk['list'],'trunkid');
+
+			if($outcalltrunk['slt'] !== false)
+				$outcalltrunk['list'] = xivo_array_diff_key($outcalltrunk['list'],$outcalltrunk['slt']);
+		}
 
 		if($rightcall['list'] !== false && xivo_ak('rightcall',$return) === true)
 		{
@@ -117,24 +134,15 @@ switch($act)
 			}
 		}
 
-		if(is_array($trunks_list) === true
-		&& empty($trunks) === false)
-		{
-			if(is_array($trunks) === false)
-				$trunks = explode(',',$trunks);
-
-			$trunks_list = xivo_array_diff_key($trunks_list,$trunks);
-		}
-
 		$dhtml = &$_HTML->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/outcall.js');
 
 		$_HTML->set_var('id',$info['outcall']['id']);
+		$_HTML->set_var('outcalltrunk',$outcalltrunk);
 		$_HTML->set_var('rightcall',$rightcall);
 		$_HTML->set_var('element',$appoutcall->get_elements());
 		$_HTML->set_var('info',$return);
-		$_HTML->set_var('trunks_list',$trunks_list);
 		break;
 	case 'delete':
 		$param['page'] = $page;
@@ -194,7 +202,6 @@ switch($act)
 		break;
 	default:
 		$act = 'list';
-		$total = 0;
 		$nbbypage = XIVO_SRE_IPBX_AST_NBBYPAGE;
 
 		$appoutcall = &$ipbx->get_application('outcall');
@@ -206,8 +213,14 @@ switch($act)
 		$limit[0] = ($page - 1) * $nbbypage;
 		$limit[1] = $nbbypage;
 
-		if(($list = $appoutcall->get_outcalls_list(null,$order,$limit)) !== false)
-			$total = $appoutcall->get_cnt();
+		$list = $appoutcall->get_outcalls_list(null,$order,$limit);
+		$total = $appoutcall->get_cnt();
+
+		if($list === false && $total > 0)
+		{
+			$param['page'] = $page - 1;
+			$_QRY->go($_HTML->url('service/ipbx/call_management/outcall'),$param);
+		}
 
 		$_HTML->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
 		$_HTML->set_var('list',$list);

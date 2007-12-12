@@ -1,0 +1,29 @@
+; title_content_name
+Phonebook properties
+
+; smenu_access
+Hosts
+
+; smenu_servers
+Servers
+
+; accessfeatures_add
+Add an host:
+
+; bt-addaccess
+Add an host
+
+; bt-deleteaccess
+Delete one or more hosts
+
+; bt-inserverfeatures
+Add one or more servers ->
+
+; bt-outserverfeatures
+<- Remove one or more servers
+
+; create_server
+Create a server
+
+; fm_success-save
+Phonebook properties successfully saved

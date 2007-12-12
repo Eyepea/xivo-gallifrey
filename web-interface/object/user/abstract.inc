@@ -90,10 +90,10 @@ class xivo_user_abstract
 		return(true);
 	}
 
-	function load_by_authent($login,$pass)
+	function load_by_authent($login,$pass,$lang='')
 	{
 		$r = false;
-
+		
 		$infos = array();
 
 		if(($type = $this->call_auth('chk',array($login,$pass))) !== false && xivo_user::chk_type($type,true) === true)
@@ -121,6 +121,9 @@ class xivo_user_abstract
 				$infos = $this->_info;
 			}
 		}
+
+		if(xivo_haslen($lang) === true)
+			$infos['language'] = $lang;
 
 		$this->_set_info($r,$infos);
 

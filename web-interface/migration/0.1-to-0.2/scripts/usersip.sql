@@ -197,8 +197,8 @@ SELECT
 	'hints',
 	tmp_userfeatures.number,
 	1,
-	'Macro',
 	'SIP/'||tmp_userfeatures.name,
+	'',
 	''
 FROM tmp_userfeatures
 WHERE length(tmp_userfeatures.number) > 0

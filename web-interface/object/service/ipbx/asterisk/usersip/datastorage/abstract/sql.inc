@@ -16,6 +16,7 @@ class xivo_service_asterisk_usersip_abstract_sql extends xivo_service_asterisk_a
 				return(false);
 		}
 
+		$arr['protocol'] = XIVO_SRE_IPBX_AST_PROTO_SIP;
 		$arr['category'] = 'user';
 
 		return(parent::get($arr,$disable));
@@ -31,6 +32,7 @@ class xivo_service_asterisk_usersip_abstract_sql extends xivo_service_asterisk_a
 				return(false);
 		}
 
+		$arr['protocol'] = XIVO_SRE_IPBX_AST_PROTO_SIP;
 		$arr['category'] = 'user';
 
 		return(parent::get($arr,$disable,true));
@@ -43,6 +45,7 @@ class xivo_service_asterisk_usersip_abstract_sql extends xivo_service_asterisk_a
 
 		$where = '';
 
+		$arr['protocol'] = XIVO_SRE_IPBX_AST_PROTO_SIP;
 		$arr['category'] = 'user';
 
 		if($disable !== null)
@@ -74,6 +77,7 @@ class xivo_service_asterisk_usersip_abstract_sql extends xivo_service_asterisk_a
 				return(false);
 		}
 
+		$id['protocol'] = XIVO_SRE_IPBX_AST_PROTO_SIP;
 		$id['category'] = 'user';
 
 		return(parent::edit($id,$arr,$disable));
@@ -89,6 +93,7 @@ class xivo_service_asterisk_usersip_abstract_sql extends xivo_service_asterisk_a
 				return(false);
 		}
 
+		$arr['protocol'] = XIVO_SRE_IPBX_AST_PROTO_SIP;
 		$arr['category'] = 'user';
 
 		return(parent::delete($arr,$disable));
@@ -97,6 +102,7 @@ class xivo_service_asterisk_usersip_abstract_sql extends xivo_service_asterisk_a
 	function get_list($disable=null,$order=null,$limit=null)
 	{
 		$arr = array();
+		$arr['protocol'] = XIVO_SRE_IPBX_AST_PROTO_SIP;
 		$arr['category'] = 'user';
 
 		return(parent::get_list_where($arr,$disable,$order,$limit));
@@ -107,6 +113,7 @@ class xivo_service_asterisk_usersip_abstract_sql extends xivo_service_asterisk_a
 		if(is_array($arr) === false || empty($arr) === true)
 			return(false);
 
+		$arr['protocol'] = XIVO_SRE_IPBX_AST_PROTO_SIP;
 		$arr['category'] = 'user';
 
 		return(parent::get_list_where($arr,$disable,$order,$limit));
@@ -115,6 +122,7 @@ class xivo_service_asterisk_usersip_abstract_sql extends xivo_service_asterisk_a
 	function get_all($disable=null,$order=null,$limit=null)
 	{
 		$arr = array();
+		$arr['protocol'] = XIVO_SRE_IPBX_AST_PROTO_SIP;
 		$arr['category'] = 'user';
 
 		return(parent::get_list_where($arr,$disable,$order,$limit,true));
@@ -125,6 +133,7 @@ class xivo_service_asterisk_usersip_abstract_sql extends xivo_service_asterisk_a
 		if(is_array($arr) === false || empty($arr) === true)
 			return(false);
 
+		$arr['protocol'] = XIVO_SRE_IPBX_AST_PROTO_SIP;
 		$arr['category'] = 'user';
 
 		return(parent::get_list_where($arr,$disable,$order,$limit,true));

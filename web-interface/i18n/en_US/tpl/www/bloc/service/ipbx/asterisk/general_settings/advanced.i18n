@@ -1,0 +1,29 @@
+; title_content_name
+Global advanced parameters
+
+; smenu_userinternal
+Internal users
+
+; smenu_agents
+Agents
+
+; smenu_queues
+Queues
+
+; smenu_meetme
+Conference rooms
+
+; fm_userinternal_guest
+Guest:
+
+; fm_generalagents_persistentagents
+Persistent agents:
+
+; fm_generalqueue_persistentmembers
+Persistent members:
+
+; fm_generalmeetme_audiobuffer
+Audio buffer size:
+
+; fm_success-save
+Global advanced parameters successfully saved

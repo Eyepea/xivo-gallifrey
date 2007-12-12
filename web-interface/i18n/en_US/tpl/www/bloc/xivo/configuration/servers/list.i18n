@@ -1,0 +1,23 @@
+; col_name
+Name
+
+; col_host
+Host
+
+; col_port
+Port
+
+; col_ssl
+SSL
+
+; ssl_1
+Yes
+
+; ssl_0
+No
+
+; no_server
+No server found
+
+; opt_delete_confirm
+Are you sure you want to delete this server ?

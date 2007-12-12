@@ -4,6 +4,7 @@ xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 
 class xivo_application_service_asterisk_user extends xivo_application_asterisk_abstract
 {
+	var $_dso		= null;
 	var $_protocolname	= false;
 	var $_origin		= array();
 	var $_status		= '';
@@ -20,9 +21,14 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 	var $_musiconhold	= false;
 	var $_conf		= array();
 
-	function xivo_application_service_asterisk_user(&$service)
+	function xivo_application_service_asterisk_user(&$service,&$dso)
 	{
 		$this->xivo_application_asterisk_abstract(&$service);
+
+		if(is_object($dso) === false)
+			trigger_error('Invalid Datastorage object',E_USER_ERROR);
+
+		$this->_dso = &$dso;
 
 		if(($this->_userfeatures = &$this->_service->get_module('userfeatures')) === false
 		|| ($this->_extensions = &$this->_service->get_module('extensions')) === false
@@ -103,35 +109,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 	function get_nb($arr=null,$disable=null,$initialized=null)
 	{
-		if(($protocols = $this->_service->get_protocol()) === false)
-			return(false);
-	
-		$protocols = array_keys($protocols);
-
-		$this->_userfeatures->set_dso_param('internal',false);
-
-		$r = 0;
-
-		$nb = count($protocols);
-
-		for($i = 0;$i < $nb;$i++)
-		{
-			if(($protocol = &$this->_service->get_protocol_module($protocols[$i])) === false
-			|| ($cnt = $protocol->get_nb($arr,$disable,$initialized)) === false
-			|| ($unb = $this->_userfeatures->get_nb(array('protocol' => $protocols[$i]),$disable)) === false)
-				continue;
-
-			if($unb > $cnt)
-				$cnt = 0;
-			else
-				$cnt = $unb;
-
-			$r += $cnt;			
-		}
-
-		$this->_userfeatures->set_dso_param('internal',false);
-
-		return($r);
+		return($this->_dso->get_nb($arr,$disable,$initialized));
 	}
 
 	function _get_exten()
@@ -339,77 +317,73 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		return(xivo_uint($this->_cnt));
 	}
 
-	function get_users_search($search,$protocols=array(),$disable=null,$order=null,$limit=null,$assoc=false,$initialized=null,$internal=false)
+	function get_users_search($search,$disable=null,$order=null,$limit=null,$assoc=false,$initialized=null)
 	{
-		return($this->_get_users('search',$protocols,$disable,$search,$order,$limit,$assoc,$initialized,$internal));
+		return($this->_get_users('search',null,$disable,$search,$order,$limit,$assoc,$initialized));
 	}
 
-	function get_users_search_number($search,$protocols=array(),$disable=null,$order=null,$limit=null,$assoc=false,$initialized=null,$internal=false)
+	function get_users_search_number($search,$disable=null,$order=null,$limit=null,$assoc=false,$initialized=null)
 	{
-		return($this->_get_users('search_number',$protocols,$disable,$search,$order,$limit,$assoc,$initialized,$internal));
+		return($this->_get_users('search_number',null,$disable,$search,$order,$limit,$assoc,$initialized));
 	}
 
-	function get_users_list($protocols=array(),$disable=null,$order=null,$limit=null,$assoc=false,$initialized=null,$internal=false)
+	function get_users_list($protocols=null,$disable=null,$order=null,$limit=null,$assoc=false,$initialized=null)
 	{
-		return($this->_get_users('list',$protocols,$disable,null,$order,$limit,$assoc,$initialized,$internal));
+		return($this->_get_users('list',$protocols,$disable,null,$order,$limit,$assoc,$initialized));
 	}
 
-	function get_users_context($context,$protocols=array(),$disable=null,$order=null,$limit=null,$assoc=false,$initialized=null,$internal=false)
+	function get_users_context($context,$disable=null,$order=null,$limit=null,$assoc=false,$initialized=null)
 	{
-		return($this->_get_users('context',$protocols,$disable,strval($context),$order,$limit,$assoc,$initialized,$internal));
+		return($this->_get_users('context',null,$disable,$context,$order,$limit,$assoc,$initialized));
 	}
 
-	function _get_users($action,$protocols=array(),$disable=null,$opts=array(),$order=null,$limit=null,$assoc=false,$initialized=null,$internal=false)
+	function _get_users($action,$protocols=null,$disable=null,$search='',$order=null,$limit=null,$assoc=false,$initialized=null)
 	{
 		$action = (string) $action;
-		$protocols = (array) $protocols;
 		$assoc = (bool) $assoc;
+		$search = strval($search);
 
 		$this->_cnt = 0;
-	
-		if(empty($protocols) === true)
-			$protocols = array_keys($this->_service->get_protocol());
-		else
-			$protocols = array_values($protocols);
-
-		$this->_userfeatures->set_dso_param('internal',$internal);
 
 		switch($action)
 		{
 			case 'search':
-				$rs = $this->_userfeatures->get_search($opts,$disable,$order,$limit);
+				$rs = $this->_dso->search($search,$disable,$initialized,$order,$limit);
 				break;
 			case 'search_number':
-				$rs = $this->_userfeatures->get_search_number($opts,$disable,$order,$limit);
+				$rs = $this->_dso->search($search,$disable,$initialized,$order,$limit,1);
 				break;
 			case 'context':
-				$rs = $this->_userfeatures->get_all_where(array('context' => $opts),$disable,true,$order,$limit);
+				$rs = $this->_dso->search($search,$disable,$initialized,$order,$limit,2);
 				break;
 			case 'list':
 			default:
-				$rs = $this->_userfeatures->get_all($disable,true,$order,$limit);
+				if(is_array($protocols) === true && empty($protocols) === false)
+					$protocols = array_values($protocols);
+				else
+					$protocols = null;
+
+				$rs = $this->_dso->get_all($protocols,$disable,$initialized,$order,$limit);
 		}
 
-		$this->_userfeatures->set_dso_param('internal',false);
+		$this->_cnt = $this->_dso->get_cnt();
 
 		if($rs === false || ($nb = count($rs)) === 0)
 			return(false);
 
-		$r = $info = array();
+		$r = array();
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			$info['ufeatures'] = $rs[$i];
+			$ref = &$rs[$i];
 
-			if(in_array($info['ufeatures']['protocol'],$protocols) === false
-			|| ($protocol = &$this->_service->get_protocol_module($info['ufeatures']['protocol'])) === false
-			|| ($info['protocol'] = $protocol->get($info['ufeatures']['protocolid'],$disable,$initialized)) === false)
-				continue;
+			if($ref['protocol'] === XIVO_SRE_IPBX_AST_PROTO_SIP)
+				$ref['initialized'] = xivo_haslen($ref['fullcontact']);
+			else
+				$ref['initialized'] = true;
 
-			$r[$info['ufeatures']['id']] = $info;
+			$r[$ref['id']] = $this->_userfeatures->_prepare($ref);
 		}
-
-		$this->_cnt = $this->_userfeatures->get_cnt();
 	
 		if(empty($r) === true)
 			$r = false;
@@ -1326,11 +1300,11 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			return(false);
 
 		if($this->_info['ufeatures']['number'] === '')
-			$r = $this->_uservoicemail->delete($this->_info['voicemail']['id']);
+			$r = $this->_uservoicemail->delete($this->_info['voicemail']['uniqueid']);
 		else if($rs === null)
-			$r = $this->_uservoicemail->disable($this->_info['voicemail']['id']);
+			$r = $this->_uservoicemail->disable($this->_info['voicemail']['uniqueid']);
 		else
-			$r = $this->_uservoicemail->edit($this->_info['voicemail']['id'],$rs);
+			$r = $this->_uservoicemail->edit($this->_info['voicemail']['uniqueid'],$rs);
 
 		return(($this->_return['uservoicemail'] = $r));
 	}

@@ -156,7 +156,7 @@
 
 	<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail_attach'),'name' => 'voicemail[attach]','labelid' => 'voicemail-attach','checked' => $info['voicemail']['attach']));?>
 
-	<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail_delete'),'name' => 'voicemail[delete]','labelid' => 'voicemail-delete','checked' => $info['voicemail']['delete']));?>
+	<?=$form->checkbox(array('desc' => $this->bbf('fm_voicemail_deletevoicemail'),'name' => 'voicemail[deletevoicemail]','labelid' => 'voicemail-deletevoicemail','checked' => $info['voicemail']['deletevoicemail']));?>
 
 </div>
 

@@ -1,0 +1,113 @@
+; title_content_name
+IAX Trunk > Add
+
+; smenu_general
+General
+
+; smenu_register
+Register
+
+; smenu_codecs
+Codecs
+
+; smenu_advanced
+Advanced
+
+; fm_trunk_name
+Name:
+
+; fm_trunk_username
+Username:
+
+; fm_trunk_secret
+Password:
+
+; fm_trunk_callerid
+Caller ID:
+
+; fm_trunk_context
+Context:
+
+; fm_trunk_calllimit
+Call limit:
+
+; fm_trunk_host
+IP Addressing type:
+
+; fm_trunk_host-dynamic
+Dynamic
+
+; fm_trunk_host-static
+Static
+
+; fm_trunk_port
+Port:
+
+; fm_trunk_dtmfmode
+DTMF:
+
+; fm_trunk_type
+Type:
+
+; fm_trunk_nat
+NAT:
+
+; fm_trunk_qualify
+Monitoring:
+
+; fm_trunk_canreinvite
+Invite:
+
+; fm_trunk_insecure
+Authentication:
+
+; fm_codec-custom
+Customize:
+
+; fm_trunk_codec-disallow
+Disable:
+
+; fm_trunk_codec-disallow-opt-all
+All
+
+; fm_trunk_codec-allow
+Enable:
+
+; bt-upcodec
+Up one or more codecs
+
+; bt-downcodec
+Down one or more codecs
+
+; bt-incodec
+Add one or more codecs ->
+
+; bt-outcodec
+<- Remove one or more codecs
+
+; fm_register
+Register:
+
+; fm_register_username
+Username:
+
+; fm_register_password
+Password:
+
+; fm_register_authuser
+Authentication:
+
+; fm_register_host
+Remote server:
+
+; fm_register_port
+Port:
+
+; fm_register_contact
+Contact:
+
+; fm_trunk_notransfer
+Forbid transfers:
+
+; fm_trunk_trunk
+Trunk mode activation:

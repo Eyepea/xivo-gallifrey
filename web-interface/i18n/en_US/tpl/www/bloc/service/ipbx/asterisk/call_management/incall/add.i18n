@@ -1,0 +1,122 @@
+; title_content_name
+Incoming calls > Add
+
+; smenu_general
+General
+
+; smenu_rightcalls
+Call permissions
+
+; fm_incall_exten
+DID:
+
+; fm_incall_type
+Destination:
+
+; fm_incall_type-opt-endcall
+End call
+
+; fm_incall_type-opt-user
+User
+
+; fm_incall_type-opt-group
+Group
+
+; fm_incall_type-opt-queue
+Queues
+
+; fm_incall_type-opt-meetme
+Conference rooms
+
+; fm_incall_type-opt-schedule
+Scheduler
+
+; fm_incall_type-opt-application
+Application
+
+; fm_incall_type-opt-sound
+Audio files
+
+; fm_incall_type-opt-custom
+Customized
+
+; fm_incall_endcall-typeval
+Action:
+
+; fm_incall_user-typeval
+Forward to:
+
+; fm_incall_group-typeval
+Forward to:
+
+; fm_incall_queue-typeval
+Forward to:
+
+; fm_incall_meetme-typeval
+Forward to:
+
+; fm_incall_schedule-typeval
+Forward to:
+
+; fm_incall_application-typeval
+Forward to:
+
+; fm_incall_sound-typeval
+Play:
+
+; fm_incall_custom-typeval
+Command:
+
+; fm_incall_endcall-typeval-opt-hangup
+Hang up
+
+; fm_incall_endcall-typeval-opt-busy
+Busy
+
+; fm_incall_endcall-typeval-opt-congestion
+Congested
+
+; fm_incall_application-typeval-opt-faxtomail
+FaxToMail
+
+; fm_incall_application-typeval-opt-disa
+DISA
+
+; fm_incall_application-typeval-opt-directory
+Directory
+
+; fm_incall_application-typeval-opt-voicemail
+Voicemail
+
+; fm_incall_application-typeval-opt-callback
+Callback
+
+; fm_incall_type
+Destination:
+
+; create_user
+Create an user
+
+; create_group
+Create a group
+
+; create_queue
+Create a queue
+
+; create_meetme
+Create a conference room
+
+; create_schedule
+Create a schedule
+
+; add_playback-sound
+Add an audio file
+
+; bt-inrightcall
+Add one or more call permissions ->
+
+; bt-outrightcall
+<- Remove one or more call permissions
+
+; create_rightcall
+Create a call permission

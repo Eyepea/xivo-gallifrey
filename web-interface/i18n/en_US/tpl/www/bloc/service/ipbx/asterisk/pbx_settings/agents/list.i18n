@@ -1,0 +1,11 @@
+; col_group
+Group
+
+; col_number-agents
+Number of agents
+
+; no_group
+No agents groups has been found
+
+; opt_delete_confirm
+Are you sure you want to delete this group of agents ?

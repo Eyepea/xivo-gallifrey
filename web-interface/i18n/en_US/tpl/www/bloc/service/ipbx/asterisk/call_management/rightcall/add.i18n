@@ -1,0 +1,83 @@
+; title_content_name
+Call permissions > Add
+
+; smenu_general
+General
+
+; smenu_users
+Users
+
+; smenu_groups
+Groups
+
+; smenu_incall
+Incoming calls
+
+; smenu_outcall
+Outgoing calls
+
+; fm_rightcall_name
+Name:
+
+; fm_rightcall_passwd
+Password:
+
+; fm_rightcall_authorization
+Authorization:
+
+; fm_rightcall_authorization-opt-deny
+Deny
+
+; fm_rightcall_authorization-opt-permit
+Allow
+
+; fm_rightcallexten_exten
+Extensions:
+
+; rightcallexten_add-extension
+Add an extension:
+
+; bt-addexten
+Add an extension
+
+; bt-deleteexten
+Delete one or more extensions
+
+; fm_rightcall_description
+Description:
+
+; bt-inuser
+Add one or more users ->
+
+; bt-outuser
+<- Remove one or more users
+
+; create_user
+Create an user
+
+; bt-ingroup
+Add one or more groups ->
+
+; bt-outgroup
+<- Remove one or more groups
+
+; create_group
+Create a group
+
+; bt-inincall
+Add one or more incoming calls ->
+
+; bt-outincall
+<- Remove one or more incoming calls
+
+; create_incall
+Create an incoming call
+
+; bt-inoutcall
+Add one or more outgoing calls ->
+
+; bt-outoutcall
+<- Remove one or more outgoing calls
+
+; create_outcall
+Create an outgoing call

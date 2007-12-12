@@ -52,7 +52,7 @@
 		<div id="userlist" class="fm-field fm-multilist">
 			<div class="slt-outlist">
 
-		<?=$form->select(array('name' => 'userlist','label' => false,'id' => 'it-userlist','browse' => 'ufeatures','key' => 'identity','altkey' => 'id','multiple' => true,'size' => 5,'field' => false),$rcalluser['list']);?>
+		<?=$form->select(array('name' => 'userlist','label' => false,'id' => 'it-userlist','key' => 'identity','altkey' => 'id','multiple' => true,'size' => 5,'field' => false),$rcalluser['list']);?>
 
 			</div>
 			<div class="inout-list">
@@ -64,7 +64,7 @@
 			</div>
 			<div class="slt-inlist">
 
-		<?=$form->select(array('name' => 'rightcalluser[]','label' => false,'id' => 'it-user','browse' => 'ufeatures','key' => 'identity','altkey' => 'id','multiple' => true,'size' => 5,'field' => false),$rcalluser['slt']);?>
+		<?=$form->select(array('name' => 'rightcalluser[]','label' => false,'id' => 'it-user','key' => 'identity','altkey' => 'id','multiple' => true,'size' => 5,'field' => false),$rcalluser['slt']);?>
 
 			</div>
 		</div>

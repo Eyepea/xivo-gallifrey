@@ -1,0 +1,26 @@
+; info_top_login
+Login:
+
+; info_top_type
+Type:
+
+; mn_top_services
+Services
+
+; mn_sub_top_services_ipbx
+IPBX
+
+; mn_top_configuration
+Configuration
+
+; mn_top_preferences
+Preferences
+
+; mn_top_help
+Help
+
+; mn_top_contact
+Contact
+
+; mn_top_logoff
+Logout

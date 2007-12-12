@@ -7,7 +7,7 @@
 	<?=$this->file_include('bloc/service/ipbx/asterisk/call_management/outcall/submenu');?>
 
 	<div class="sb-content">
-<form action="#" method="post" accept-charset="utf-8" onsubmit="xivo_fm_select('it-rightcall');">
+<form action="#" method="post" accept-charset="utf-8" onsubmit="xivo_fm_select('it-outcalltrunk'); xivo_fm_select('it-rightcall');">
 
 <?=$form->hidden(array('name' => XIVO_SESS_NAME,'value' => XIVO_SESS_ID));?>
 <?=$form->hidden(array('name' => 'fm_send','value' => 1));?>

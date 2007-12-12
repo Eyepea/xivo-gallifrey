@@ -4,16 +4,8 @@
 
 	$info = $this->get_var('info');
 	$element = $this->get_var('element');
+	$outcalltrunk = $this->get_var('outcalltrunk');
 	$rightcall = $this->get_var('rightcall');
-
-	if($this->get_var('act') === 'add')
-		$invalid = false;
-	else
-		$invalid = true;
-
-	$trunks_list = $this->get_var('trunks_list');
-
-	xivo_print_r($trunks_list);
 ?>
 
 <div id="sb-part-first">
@@ -22,31 +14,29 @@
 
 <?php
 
-if($trunks_list === false):
-	echo '<div class="txt-center">',$url->href_html($this->bbf('create_trunk'),'service/ipbx/trunk_management/sip','act=add'),'</div>';
-else:
+if($outcalltrunk['list'] !== false):
 
 ?>
 
-<div id="trunklist" class="fm-field fm-multilist"><p><label id="lb-trunklist" for="it-trunklist"><?=$this->bbf('fm_outcall-trunk');?></label></p>
+<div id="outcalltrunklist" class="fm-field fm-multilist"><p><label id="lb-outcalltrunklist" for="it-outcalltrunklist"><?=$this->bbf('fm_outcalltrunk');?></label></p>
 	<div class="slt-outlist">
-		<?=$form->select(array('name' => 'trunklist','label' => false,'id' => 'it-trunklist','multiple' => true,'size' => 5,'field' => false,'browse' => 'trunk','key' => 'identity','altkey' => 'trunkfeaturesid'),$trunks_list);?>
+		<?=$form->select(array('name' => 'outcalltrunklist','label' => false,'id' => 'it-outcalltrunklist','multiple' => true,'size' => 5,'field' => false,'browse' => 'trunk','key' => 'identity','altkey' => 'trunkfeaturesid'),$outcalltrunk['list']);?>
 	</div>
 	<div class="inout-list">
 
-		<a href="#" onclick="xivo_fm_move_selected('it-trunklist','it-trunk'); return(false);" title="<?=$this->bbf('bt-intrunk');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt-intrunk'),'class="bt-inlist" id="bt-intrunk" border="0"');?></a><br />
+		<a href="#" onclick="xivo_fm_move_selected('it-outcalltrunklist','it-outcalltrunk'); return(false);" title="<?=$this->bbf('bt-inoutcalltrunk');?>"><?=$url->img_html('img/site/button/row-left.gif',$this->bbf('bt-inoutcalltrunk'),'class="bt-inlist" id="bt-inoutcalltrunk" border="0"');?></a><br />
 
-		<a href="#" onclick="xivo_fm_move_selected('it-trunk','it-trunklist'); return(false);" title="<?=$this->bbf('bt-outtrunk');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt-outtrunk'),'class="bt-outlist" id="bt-outtrunk" border="0"');?></a>
+		<a href="#" onclick="xivo_fm_move_selected('it-outcalltrunk','it-outcalltrunklist'); return(false);" title="<?=$this->bbf('bt-outoutcalltrunk');?>"><?=$url->img_html('img/site/button/row-right.gif',$this->bbf('bt-outoutcalltrunk'),'class="bt-outlist" id="bt-outoutcalltrunk" border="0"');?></a>
 	</div>
 	<div class="slt-inlist">
 
-		<?=$form->select(array('name' => 'outcall[trunk][]','label' => false,'id' => 'it-trunk','multiple' => true,'size' => 5,'field' => false,'browse' => 'trunk','key' => 'identity','altkey' => 'trunkfeaturesid'),$this->get_varra('info',array('outcall','trunk')));?>
+		<?=$form->select(array('name' => 'outcalltrunk[]','label' => false,'id' => 'it-outcalltrunk','multiple' => true,'size' => 5,'field' => false,'browse' => 'trunk','key' => 'identity','altkey' => 'trunkfeaturesid'),$outcalltrunk['slt']);?>
 
 		<div class="bt-updown">
 
-			<a href="#" onclick="xivo_fm_order_selected('it-trunk',1); return(false);" title="<?=$this->bbf('bt-uptrunk');?>"><?=$url->img_html('img/site/button/row-up.gif',$this->bbf('bt-uptrunk'),'class="bt-uplist" id="bt-uptrunk" border="0"');?></a><br />
+			<a href="#" onclick="xivo_fm_order_selected('it-outcalltrunk',1); return(false);" title="<?=$this->bbf('bt-upoutcalltrunk');?>"><?=$url->img_html('img/site/button/row-up.gif',$this->bbf('bt-upoutcalltrunk'),'class="bt-uplist" id="bt-upoutcalltrunk" border="0"');?></a><br />
 
-			<a href="#" onclick="xivo_fm_order_selected('it-trunk',-1); return(false);" title="<?=$this->bbf('bt-downtrunk');?>"><?=$url->img_html('img/site/button/row-down.gif',$this->bbf('bt-downtrunk'),'class="bt-downlist" id="bt-downtrunk" border="0"');?></a>
+			<a href="#" onclick="xivo_fm_order_selected('it-outcalltrunk',-1); return(false);" title="<?=$this->bbf('bt-downoutcalltrunk');?>"><?=$url->img_html('img/site/button/row-down.gif',$this->bbf('bt-downoutcalltrunk'),'class="bt-downlist" id="bt-downoutcalltrunk" border="0"');?></a>
 
 		</div>
 
@@ -56,6 +46,8 @@ else:
 
 <?php
 
+else:
+	echo '<div class="txt-center">',$url->href_html($this->bbf('create_trunk'),'service/ipbx/trunk_management/sip','act=add'),'</div>';
 endif;
 
 ?>

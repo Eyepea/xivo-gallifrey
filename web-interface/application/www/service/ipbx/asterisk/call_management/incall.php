@@ -185,7 +185,6 @@ switch($act)
 		break;
 	default:
 		$act = 'list';
-		$total = 0;
 		$nbbypage = XIVO_SRE_IPBX_AST_NBBYPAGE;
 
 		$appincall = &$ipbx->get_application('incall');
@@ -202,8 +201,13 @@ switch($act)
 		else
 			$list = $appincall->get_incalls_list(null,$order,$limit);
 
-		if($list !== false)
-			$total = $appincall->get_cnt();
+		$total = $appincall->get_cnt();
+
+		if($list === false && $total > 0)
+		{
+			$param['page'] = $page - 1;
+			$_QRY->go($_HTML->url('service/ipbx/call_management/incall'),$param);
+		}
 
 		$_HTML->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
 		$_HTML->set_var('list',$list);

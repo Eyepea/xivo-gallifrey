@@ -29,7 +29,7 @@ $rs = array();
 if(($rsp = $phonebook->get_phonebook_search($_QR['name'])) !== false)
 	$rs = $rsp;
 
-if(($rsu = $phonebook->get_user_search($_QR['name'],null,false)) !== false)
+if(($rsu = $phonebook->get_user_search($_QR['name'],false)) !== false)
 	$rs = array_merge($rs,$rsu);
 
 $url = $_HTML->url('service/ipbx/web_services/phonebook/local').

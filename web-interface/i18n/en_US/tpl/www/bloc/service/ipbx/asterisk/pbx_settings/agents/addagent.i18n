@@ -1,0 +1,116 @@
+; title_content_name
+Agents > Add an agent
+
+; smenu_general
+General
+
+; smenu_queues
+Queues
+
+; smenu_advanced
+Advanced
+
+; fm_agentfeatures_firstname
+First name:
+
+; fm_agentfeatures_lastname
+Last name:
+
+; fm_agentfeatures_number
+Number:
+
+; fm_agentfeatures_passwd
+Password:
+
+; fm_agentfeatures_silent
+Disable connection announce:
+
+; fm_agentfeatures_numgroup
+Group:
+
+; fm_agent_ackcall
+Press # before call pickup:
+
+; fm_agent_ackcall-opt-no
+No
+
+; fm_agent_ackcall-opt-yes
+Yes
+
+; fm_agent_ackcall-opt-always
+Always
+
+; fm_agent_autologoff
+Ringing time before logging off the agent:
+
+; fm_agent_autologoff-opt0
+Unlimited
+
+; fm_agent_autologoff-opt
+%s seconds
+
+; fm_agent_wrapuptime
+Delay before reassigning a call:
+
+; fm_agent_wrapuptime-opt0
+Disabled
+
+; fm_agent_wrapuptime-opt
+%s seconds
+
+; fm_agent_maxlogintries
+Number of login retries:
+
+; fm_agent_maxlogintries-opt0
+Unlimited
+
+; fm_agent_maxlogintries-opt
+%s
+
+; fm_agent_goodbye
+Audio file used when a call ends:
+
+; fm_agent_goodbye-opt-default
+Default
+
+; fm_agent_musiconhold
+On-Hold Music:
+
+; fm_agent_updatecdr
+Log the calls:
+
+; fm_agent_recordagentcalls
+Record the calls:
+
+; fm_agent_createlink
+Add the name of the recording in the logs:
+
+; fm_agent_recordformat
+Recording format:
+
+; fm_agent_urlprefix
+URL prefix used to access the recordings:
+
+; fm_agent_custom_beep
+Beeps audio file:
+
+; fm_agent_custom-beep-opt-default
+Default
+
+; bt-inqueue
+Add ->
+
+; bt-outqueue
+<- Remove
+
+; col_queue-name
+Name
+
+; col_queue-penalty
+Penalty
+
+; no_queue
+No queues
+
+; create_queue
+Create a queue

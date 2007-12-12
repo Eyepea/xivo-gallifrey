@@ -1,0 +1,359 @@
+; title_content_name
+IAX Protocol properties
+
+; smenu_general
+General
+
+; smenu_jitterbuffer
+Jitter Buffer
+
+; smenu_default
+Default
+
+; smenu_realtime
+Real time
+
+; smenu_advanced
+Advanced
+
+; fm_bindport
+Port:
+
+; fm_bindaddr
+IP Address:
+
+; fm_iaxcompat
+IAX Compatibility:
+
+; fm_authdebug
+Authentication debugging:
+
+; fm_delayreject
+Reject delay:
+
+; fm_trunkfreq
+Trunking frequency:
+
+; fm_trunkfreq-opt
+%s milliseconds
+
+; fm_trunktimestamps
+Add an individual timestamp:
+
+; fm_regcontext
+Recording context:
+
+; fm_minregexpire
+Minimum registration expiration time:
+
+; fm_minregexpire-opt0
+Disabled
+
+; fm_minregexpire-opt10
+10 sec.
+
+; fm_minregexpire-opt20
+20 sec.
+
+; fm_minregexpire-opt30
+30 sec.
+
+; fm_minregexpire-opt40
+40 sec.
+
+; fm_minregexpire-opt50
+50 sec.
+
+; fm_minregexpire-opt60
+1 min.
+
+; fm_minregexpire-opt120
+2 min.
+
+; fm_minregexpire-opt
+%s min. %s sec.
+
+; fm_maxregexpire
+Maximum registration expiration time:
+
+; fm_maxregexpire-opt0
+Disabled
+
+; fm_maxregexpire-opt10
+10 sec.
+
+; fm_maxregexpire-opt20
+20 sec.
+
+; fm_maxregexpire-opt30
+30 sec.
+
+; fm_maxregexpire-opt40
+40 sec.
+
+; fm_maxregexpire-opt50
+50 sec.
+
+; fm_maxregexpire-opt60
+1 min.
+
+; fm_maxregexpire-opt120
+2 min.
+
+; fm_maxregexpire-opt
+%s min. %s sec.
+
+; fm_bandwidth
+Bandwidth:
+
+; fm_bandwidth-opt-low
+Low
+
+; fm_bandwidth-opt-medium
+Medium
+
+; fm_bandwidth-opt-high
+High
+
+; fm_tos
+TOS:
+
+; fm_jitterbuffer
+Jitter buffer:
+
+; fm_forcejitterbuffer
+Force Jitter buffer:
+
+; fm_dropcount
+Drop count:
+
+; fm_maxjitterbuffer
+Maximum Jitter buffer:
+
+; fm_maxjitterbuffer-opt0
+Disabled
+
+; fm_maxjitterbuffer-opt
+%s milliseconds
+
+; fm_maxjitterinterps
+Maximum number of frames interpolation:
+
+; fm_maxjitterinterps-opt0
+Disabled
+
+; fm_maxjitterinterps-opt
+%s
+
+; fm_resyncthreshold
+Resynchronization on high delay:
+
+; fm_resyncthreshold-opt-1
+Disabled
+
+; fm_resyncthreshold-opt0
+0 millisecond
+
+; fm_resyncthreshold-opt
+%s milliseconds
+
+; fm_jittershrinkrate
+Bandwidth control:
+
+; fm_jittershrinkrate-opt0
+Disabled
+
+; fm_jittershrinkrate-opt
+%s
+
+; fm_minexcessbuffer
+Minimum buffer excess:
+
+; fm_minexcessbuffer-opt0
+Disabled
+
+; fm_minexcessbuffer-opt
+%s
+
+; fm_maxexcessbuffer
+Maximum buffer excess:
+
+; fm_maxexcessbuffer-opt0
+Disabled
+
+; fm_maxexcessbuffer-opt
+%s
+
+; fm_accountcode
+Account numbers:
+
+; fm_amaflags
+Billing flags:
+
+; fm_amaflags-opt-default
+Default
+
+; fm_amaflags-opt-billing
+Billing
+
+; fm_amaflags-opt-omit
+Omit
+
+; fm_amaflags-opt-documentation
+Documentation
+
+; fm_mailboxdetail
+Receive number of messages:
+
+; fm_language
+Languages:
+
+; fm_encryption
+Encryption:
+
+; fm_encryption-opt-no
+No
+
+; fm_encryption-opt-yes
+Yes
+
+; fm_encryption-opt-aes128
+AES 128
+
+; fm_maxauthreq
+Maximum AUTHREQs allowed:
+
+; fm_maxauthreq-opt0
+Disabled
+
+; fm_maxauthreq-opt
+%s
+
+; fm_codecpriority
+Codecs priority:
+
+; fm_codecpriority-opt-caller
+Caller
+
+; fm_codecpriority-opt-disabled
+Disabled
+
+; fm_codecpriority-opt-reqonly
+Request only
+
+; fm_codecpriority-opt-host
+Host
+
+; fm_codec-disallow
+Disallowed codecs:
+
+; fm_codec-disallow-opt-all
+All
+
+; fm_codec-allow
+Enabled codecs:
+
+; fm_channel-lang
+Languages:
+
+; bt-upcodec
+Up one or more codecs
+
+; bt-downcodec
+Down one or more codecs
+
+; bt-incodec
+Add one or more codecs ->
+
+; bt-outcodec
+<- Remove one or more codecs
+
+; fm_rtcachefriends
+Cache accounts:
+
+; fm_rtupdate
+Cache update:
+
+; fm_rtignoreregexpire
+Ignore registration expiration:
+
+; fm_rtautoclear
+Automatic cache clearing:
+
+; fm_rtautoclear-optno
+No
+
+; fm_rtautoclear-optyes
+Yes
+
+; fm_rtautoclear-opt1
+1 sec.
+
+; fm_rtautoclear-opt10
+10 sec.
+
+; fm_rtautoclear-opt20
+20 sec.
+
+; fm_rtautoclear-opt30
+30 sec.
+
+; fm_rtautoclear-opt40
+40 sec.
+
+; fm_rtautoclear-opt50
+50 sec.
+
+; fm_rtautoclear-opt60
+1 min.
+
+; fm_rtautoclear-opt120
+2 min.
+
+; fm_rtautoclear-opt180
+3 min.
+
+; fm_rtautoclear-opt240
+4 min.
+
+; fm_rtautoclear-opt
+%s min. %s sec.
+
+; fm_pingtime
+Ping time:
+
+; fm_pingtime-opt0
+0 second
+
+; fm_pingtime-opt
+%s seconds
+
+; fm_lagrqtime
+Latency RQ time:
+
+; fm_lagrqtime-opt0
+0 second
+
+; fm_lagrqtime-opt
+%s seconds
+
+; fm_nochecksums
+Disable UDP checksums:
+
+; fm_notransfer
+Forbid transfers:
+
+; fm_autokill
+Autokill:
+
+; fm_autokill-optno
+No
+
+; fm_autokill-optyes
+Yes
+
+; fm_autokill-opt
+%s milliseconds
+
+; fm_success-save
+IAX Protocol properties successfully saved

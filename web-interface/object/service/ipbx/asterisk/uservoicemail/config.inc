@@ -4,9 +4,6 @@ $array = array();
 
 $array['element'] = array();
 
-$array['element']['uniqueid'] = array();
-$array['element']['uniqueid']['default'] = '';
-
 $array['element']['context'] = array();
 $array['element']['context']['default'] = 'default';
 $array['element']['context']['setdef'] = true;
@@ -79,10 +76,10 @@ $array['element']['saydurationm']['value'] = array(1,2,3,4,5,10,15,20,25,30,35,4
 $array['element']['saydurationm']['default'] = '';
 $array['element']['saydurationm']['null'] = true;
 
-$array['element']['delete'] = array();
-$array['element']['delete']['value'] = array(0,1);
-$array['element']['delete']['default'] = 'no';
-$array['element']['delete']['set'] = true;
+$array['element']['deletevoicemail'] = array();
+$array['element']['deletevoicemail']['value'] = array(0,1);
+$array['element']['deletevoicemail']['default'] = 'no';
+$array['element']['deletevoicemail']['set'] = true;
 
 $array['element']['forcename'] = array();
 $array['element']['forcename']['value'] = array(0,1);
@@ -107,7 +104,6 @@ $array['element']['maxmsg']['default'] = '';
 $array['element']['maxmsg']['null'] = true;
 
 $array['filter'] = array();
-$array['filter']['uniqueid'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_-]+$/i','maxlen' => 20);
 $array['filter']['context'] = array('set' => false,
 				    'chk' => 2,
 				    'callback' => 'xivo_service_asterisk::chk_context',
@@ -139,7 +135,7 @@ $array['filter']['envelope'] = array('set' => false,'chk' => 2,'key' => array(0,
 $array['filter']['sayduration'] = array('set' => false,'chk' => 2,'key' => array(0,1));
 $array['filter']['saydurationm'] = array('set' => false,'chk' => 2,'key' => array(1,2,3,4,5,10,15,20,25,30,35,40,45,50,55,60));
 $array['filter']['sendvoicemail'] = array('set' => false,'chk' => 2,'key' => array(0,1));
-$array['filter']['delete'] = array('bool' => true);
+$array['filter']['deletevoicemail'] = array('bool' => true);
 $array['filter']['forcename'] = array('set' => false,'chk' => 2,'key' => array(0,1));
 $array['filter']['forcegreetings'] = array('set' => false,'chk' => 2,'key' => array(0,1));
 $array['filter']['hidefromdir'] = array('bool' => true);

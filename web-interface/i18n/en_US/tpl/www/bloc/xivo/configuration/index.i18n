@@ -1,0 +1,26 @@
+; title_content_name
+XIVO
+
+; stats_col_type
+Type
+
+; stats_col_enable
+Enabled
+
+; stats_col_disable
+Disabled
+
+; stats_col_total
+Total
+
+; stats_type-user
+User
+
+; stats_type-server
+Server
+
+; info_soft_label
+Software:
+
+; info_soft_version
+Version:

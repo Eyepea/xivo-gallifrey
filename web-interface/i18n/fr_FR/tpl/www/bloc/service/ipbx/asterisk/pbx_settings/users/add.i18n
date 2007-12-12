@@ -241,7 +241,7 @@ Désactiver la vérification du mot de passe :
 ; fm_voicemail_attach
 Message attaché :
 
-; fm_voicemail_delete
+; fm_voicemail_deletevoicemail
 Supprimer message après notification :
 
 ; fm_userfeatures_description

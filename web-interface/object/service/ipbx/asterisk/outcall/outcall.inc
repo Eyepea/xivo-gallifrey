@@ -29,7 +29,6 @@ class xivo_service_asterisk_outcall extends xivo_service_asterisk_abstract
 		$data['setcallerid'] = (bool) $data['setcallerid'];
 		$data['useenum'] = (bool) $data['useenum'];
 		$data['internal'] = (bool) $data['internal'];
-		$data['linked'] = (bool) $data['linked'];
 		$data['commented'] = (bool) $data['commented'];
 
 		return($data);
@@ -96,26 +95,6 @@ class xivo_service_asterisk_outcall extends xivo_service_asterisk_abstract
 		}
 
 		return($this->_dso->edit($id,$arr,$disable));
-	}
-
-	function linked($id,$disable=null)
-	{
-		return($this->edit($id,array('linked' => true),$disable));
-	}
-
-	function unlinked($id,$disable=null)
-	{
-		return($this->edit($id,array('linked' => false),$disable));
-	}
-
-	function linked_where($id,$disable=null)
-	{
-		return($this->edit_where($id,array('linked' => true),$disable));
-	}
-
-	function unlinked_where($id,$disable=null)
-	{
-		return($this->edit_where($id,array('linked' => false),$disable));
 	}
 }
 

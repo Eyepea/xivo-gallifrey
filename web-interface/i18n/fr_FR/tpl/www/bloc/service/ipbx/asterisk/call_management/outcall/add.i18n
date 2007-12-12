@@ -13,17 +13,20 @@ Créer une interconnexion
 ; fm_outcall_name
 Nom :
 
-; fm_outcall_trunk
-Interconnexion :
+; fm_outcalltrunk
+Interconnexions :
 
-; fm_outcall-trunk-opt-sip
-Protocole SIP
+; bt-inoutcalltrunk
+Ajouter une ou plusieurs interconnexions ->
 
-; fm_outcall-trunk-opt-iax
-Protocole IAX
+; bt-outoutcalltrunk
+<- Enlever une ou plusieurs interconnexions
 
-; fm_outcall-trunk-opt-custom
-Personnalisée
+; bt-upoutcalltrunk
+Monter une ou plusieurs interconnexions
+
+; bt-downoutcalltrunk
+Descendre une ou plusieurs interconnexions
 
 ; fm_outcall_mode
 Mode :

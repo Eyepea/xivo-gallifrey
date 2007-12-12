@@ -6,6 +6,9 @@ class xivo_service_abstract
 	var $_module		= array();
 	var $_application	= array();
 	var $_appcustom		= array();
+	var $_dsogeneral	= null;
+	var $_dsocustom		= array();
+	var $_dsoconf		= array();
 
 	function get_name()
 	{
@@ -87,13 +90,48 @@ class xivo_service_abstract
 		if(empty($this->_conf) === false)
 			return(null);
 	
-		$dir = XIVO_PATH_OBJECT.XIVO_SEP_DIR.
-		       'service'.XIVO_SEP_DIR.
-		       $this->_type.XIVO_SEP_DIR.
-		       $this->_name;
-	
+		$dir = array();
+		$dir[] = XIVO_PATH_OBJECT;
+		$dir[] = 'service';
+		$dir[] = $this->_type;
+		$dir[] = $this->_name;
+		$dir[] = 'config';
+
 		if(($this->_conf = xivo_gat::load_get('config',$dir,$this->_name)) === false)
 			trigger_error('Failed to load '.$this->_name.' configuration',E_USER_ERROR);
+	}
+
+	function _load_dso_config($type)
+	{
+		if(isset($this->_dsoconf[$type]) === true)
+			return(true);
+
+		$dir = array();
+		$dir[] = XIVO_PATH_OBJECT;
+		$dir[] = 'service';
+		$dir[] = $this->_type;
+		$dir[] = $this->_name;
+		$dir[] = 'config';
+		$dir[] = 'datastorage';
+		$dir[] = $type;
+
+		if(($this->_dsoconf[$type] = xivo_gat::get_file($dir)) === false)
+		{
+			trigger_error('Failed to load '.$type.' datastorage configuration for '.$this->_name,E_USER_ERROR);
+			return(false);
+		}
+
+		return(true);
+	}
+
+	function get_dso_config_by_name($type,$name)
+	{
+		if($this->_load_dso_config($type) === true
+		&& isset($this->_dsoconf[$type][$name]) === true
+		&& is_array($this->_dsoconf[$type][$name]) === true)
+			return($this->_dsoconf[$type][$name]);
+
+		return(false);
 	}
 
 	function &call_module($name,$func,$args=null)
@@ -216,26 +254,20 @@ class xivo_service_abstract
 
 		if(isset($this->_module[$name]) === true)
 			return(true);
-		
-		if($this->chk_module_enable($name) === false)
+		else if($this->chk_module_enable($name) === false)
 			return(false);
-
-		if(($class = $this->_load_module_class($name)) === false)
+		else if(($class = $this->_load_module_class($name)) === false)
 		{
 			trigger_error('Module '.$name.' does not exist in '.$this->_name,E_USER_ERROR);
 			return(false);
 		}
-
-		if(isset($ref['datastorage']) === false || (bool) $ref['datastorage'] === false)
-		{
+		else if(isset($ref['datastorage']) === false || (bool) $ref['datastorage'] === false)
 			$this->_module[$name] = new $class($this,$param);
-			return(true);
-		}
-
-		if(is_string($ref['datastorage']) === true && $this->chk_module_enable($ref['datastorage']) === true)
-			$this->_module[$name] = new $class($this,$this->_load_dso($ref['datastorage']),$param);
 		else
-			$this->_module[$name] = new $class($this,$this->_load_dso($name),$param);
+		{
+			$custom = (bool) xivo_ak('custom',$ref['datastorage'],true);
+			$this->_module[$name] = new $class($this,$this->_load_dso($name,$custom),$param);
+		}
 
 		return(true);
 	}
@@ -250,14 +282,15 @@ class xivo_service_abstract
 				$this->_application[$name]->set_params($param);
 			return(true);
 		}
-		
-		if(($class = $this->_load_application_class($name)) === false)
+		else if(($class = $this->_load_application_class($name)) === false)
 		{
 			trigger_error('Application '.$name.' does not exist in '.$this->_name,E_USER_ERROR);
 			return(false);
 		}
-
-		$this->_application[$name] = new $class($this,$param);
+		else if(($dsoclass = $this->_load_dso_application($name)) !== false)
+			$this->_application[$name] = new $class($this,$dsoclass,$param);
+		else
+			$this->_application[$name] = new $class($this,$param);
 
 		return(true);
 	}
@@ -270,11 +303,9 @@ class xivo_service_abstract
 		if(xivo_issa($this->_appcustom,$type) === true
 		&& isset($this->_appcustom[$type][$name]) === true)
 			return(true);
-		
-		if($this->chk_appcustom_enable($type,$name) === false)
+		else if($this->chk_appcustom_enable($type,$name) === false)
 			return(false);
-
-		if(($class = $this->_load_appcustom_class($type,$name)) === false)
+		else if(($class = $this->_load_appcustom_class($type,$name)) === false)
 		{
 			trigger_error('Custom Application '.$name.' does not exist in '.$this->_name,E_USER_ERROR);
 			return(false);
@@ -285,74 +316,144 @@ class xivo_service_abstract
 		return(true);
 	}
 
-	function _load_dso($name)
+	function _load_dso_application($name)
 	{
-		$r = false;
+		if(($conf = $this->_chk_exists_cfg('application',$name,true)) === true
+		&& isset($conf['datastorage']) === true
+		&& $this->_load_module($conf['datastorage']) !== false
+		&& isset($this->_dsocustom[$conf['datastorage']]) === true)
+		{
+			if(is_object($this->_dsocustom[$conf['datastorage']]) === true)
+				$dso = &$this->_dsocustom[$conf['datastorage']];
+			else
+			{
+				trigger_error('Invalid custom Datastorage in '.$this->_name.' for '.$name,E_USER_ERROR);
+				return(false);
+			}
+		}
+		else if(is_object($this->_dsogeneral) === true)
+			$dso = &$this->_dsogeneral;
+		else if($this->_load_dso() === true && is_object($this->_dsogeneral) === true)
+			$dso = &$this->_dsogeneral;
+		else
+		{
+			trigger_error('Missing general Datastorage in '.$this->_name.' for '.$name,E_USER_ERROR);
+			return(false);
+		}
 
+		$type = $dso->get_type();
+
+		$class = 'xivo_application_service_'.$this->_name.'_'.$name.'_'.$type;
+
+		$dir = array();
+		$dir[] = XIVO_PATH_OBJECT;
+		$dir[] = 'application';
+		$dir[] = 'service';
+		$dir[] = $this->_type;
+		$dir[] = $this->_name;
+		$dir[] = $name;
+		$dir[] = 'datastorage';
+
+		if($this->_load_dso_config($type) === false || xivo::load_class($class,$dir,$type,false) === false)
+			return(false);
+
+		return(new $class($dso,&$this->_dsoconf[$type]));
+	}
+
+	function _load_dso($name='',$custom=false)
+	{
 		$name = (string) $name;
-		$ini = $datastorage = false;
+		$custom = (bool) $custom;
+		$ini = $gendatastorage = $datastorage = $datastoragemod = false;
 
-		if(xivo_issa($name,$this->_ini) === true)
+		if($name !== '' && xivo_issa($name,$this->_ini) === true)
 			$ini = $this->_ini[$name];
 
 		if(isset($this->_ini['general']['datastorage']) === true)
-			$datastorage = $this->_ini['general']['datastorage'];
+			$datastorage = $gendatastorage = $this->_ini['general']['datastorage'];
 
-		if($ini === false && $datastorage === false)
-			trigger_error('Invalid or missing datastorage '.$name.' in '.$this->_type.' ini file',E_USER_ERROR);
+		if($name === '')
+		{
+			if($datastorage === false || isset($datastorage['type']) === false)
+				return(false);
+			else if(xivo_datastorage::is_valid($datastorage['type']) === false)
+			{
+				trigger_error('Invalid datastorage '.$datastorage['type'],E_USER_ERROR);
+				return(false);
+			}
+
+			$this->_load_dso_config($datastorage['type']);
+
+			if(is_object($this->_dsogeneral) === false)
+				$this->_dsogeneral = xivo_datastorage::factory($datastorage['type'],$datastorage);
+
+			return(true);
+		}
+
+		if($custom === false && $gendatastorage === false)
+			trigger_error('Missing general datastorage in '.$this->_type.' ini file',E_USER_ERROR);
+
+		if($ini === false && $gendatastorage === false)
+			trigger_error('Invalid or missing '.$name.' datastorage in '.$this->_type.' ini file',E_USER_ERROR);
 
 		if($ini !== false && isset($ini['datastorage']) === true)
 		{
 			if(is_string($ini['datastorage']) === true)
-				$datastorage = xivo_datastorage::set_param_from_uri($ini['datastorage']);
+				$datastoragemod = xivo_datastorage::set_param_from_uri($ini['datastorage']);
 			else
-				$datastorage = $ini['datastorage'];
+				$datastoragemod = $ini['datastorage'];
+
+			if($custom === true)
+				$datastorage = $datastoragemod;
 		}
 
 		if($datastorage === false)
-			trigger_error('Invalid or missing datastorage '.$name.' in '.$this->_type.' ini file',E_USER_ERROR);
-
-		if(isset($datastorage['type']) === false)
-			trigger_error('Missing datastorage type '.$name.' in '.$this->_type.' ini file',E_USER_ERROR);
+			trigger_error('Invalid or missing '.$name.' datastorage in '.$this->_type.' ini file',E_USER_ERROR);
+		else if(isset($datastorage['type']) === false)
+			trigger_error('Missing datastorage type in '.$this->_type.' ini file for '.$name,E_USER_ERROR);
+		else if(xivo_datastorage::is_valid($datastorage['type']) === false)
+			trigger_error('Invalid datastorage '.$datastorage['type'].' for '.$name,E_USER_ERROR);
 
 		$type = $datastorage['type'];
 
-		switch($type)
+		$class = 'xivo_service_'.$this->_name.'_'.$name.'_'.$type;
+
+		$dir = array();
+		$dir[] = XIVO_PATH_OBJECT;
+		$dir[] = 'service';
+		$dir[] = $this->_type;
+		$dir[] = $this->_name;
+		$dir[] = $name;
+		$dir[] = 'datastorage';
+
+		if(($param = $this->get_dso_config_by_name($type,$name)) === false)
+			$param = array();
+
+		if(is_array($datastoragemod) === true)
+			$param = array_merge($datastoragemod,$param);
+
+		if(xivo::load_class($class,$dir,$type,false) === false)
 		{
-			case 'internal':
-				$dso = &xivo_gct::get('XIVO_DSO');
-				$type = $dso->get_type();
-				$class = 'xivo_service_'.$this->_name.'_'.$name.'_'.$type;
+			trigger_error('Failed to load datastorage '.$type.' for '.$name,E_USER_ERROR);
+			return(false);
+		}
+		else if($custom === false)
+		{
+			if(is_object($this->_dsogeneral) === false)
+				$this->_dsogeneral = xivo_datastorage::factory($type,$datastorage);
 
-				$dir = XIVO_PATH_OBJECT.XIVO_SEP_DIR.'service'.
-				       XIVO_SEP_DIR.$this->_type.XIVO_SEP_DIR.$this->_name.
-				       XIVO_SEP_DIR.$name.XIVO_SEP_DIR.'datastorage';
+			return(new $class($this->_dsogeneral,$param));
+		}
+		else
+		{
+			if(isset($this->_dsocustom[$name]) === false
+			|| is_object($this->_dsocustom[$name]) === false)
+				$this->_dsocustom[$name] = xivo_datastorage::factory($type,$datastorage);
 
-				if(xivo::load_class($class,$dir,$type,false) === false)
-					trigger_error('Failed to load datastorage '.$type.' for '.$name,E_USER_ERROR);
-				else
-					$r = new $class($dso,$datastorage);
-				break;
-			default:
-				$class = 'xivo_service_'.$this->_name.'_'.$name.'_'.$type;
-
-				$dir = XIVO_PATH_OBJECT.XIVO_SEP_DIR.'service'.
-				       XIVO_SEP_DIR.$this->_type.XIVO_SEP_DIR.$this->_name.
-				       XIVO_SEP_DIR.$name.XIVO_SEP_DIR.'datastorage';
-
-				if(xivo::load_class($class,$dir,$type,false) === false)
-				{
-					trigger_error('Failed to load datastorage '.$type.' for '.$name,E_USER_ERROR);
-					return($r);
-				}
-
-				if(xivo_datastorage::is_valid($type) === true)
-					$r = new $class(xivo_datastorage::factory($type,$datastorage),$datastorage);
-				else
-					trigger_error('Invalid datastorage '.$type.' for '.$name,E_USER_ERROR);
+			return(new $class($this->_dsocustom[$name],$param));
 		}
 
-		return($r);
+		return(false);
 	}
 }
 

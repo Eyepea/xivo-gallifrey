@@ -1,0 +1,110 @@
+; title_content_name
+Outgoing calls > Add
+
+; smenu_general
+General
+
+; smenu_rightcalls
+Call permissions
+
+; create_trunk
+Create a trunk
+
+; fm_outcall_name
+Name:
+
+; fm_outcalltrunk
+Trunks :
+
+; bt-inoutcalltrunk
+Add one or more trunks ->
+
+; bt-outoutcalltrunk
+<- Remove one or more trunks
+
+; bt-upoutcalltrunk
+Up one or more trunks
+
+; bt-downoutcalltrunk
+Down one or more trunks
+
+; fm_outcall_mode
+Mode:
+
+; fm_outcall_mode-opt-wizard
+Wizard
+
+; fm_outcall_mode-opt-extension
+Extension
+
+; fm_outcall_numlen
+Number length:
+
+; fm_outcall_exten
+Extension:
+
+; fm_outcall_context
+Context:
+
+; fm_outcall_externprefix
+Extern prefix:
+
+; fm_outcall_prefix
+Prefix:
+
+; fm_outcall_callerid
+Caller ID:
+
+; fm_outcall_setcallerid
+Enable the Caller ID:
+
+; fm_outcall_stripnum
+Number of digits removed from the beginning:
+
+; fm_outcall_useenum
+Use ENUM:
+
+; fm_outcall_internal
+Internal:
+
+; fm_outcall_hangupringtime
+Ringing time before hangup:
+
+; fm_outcall_hangupringtime-opt0
+Unlimited
+
+; fm_outcall_hangupringtime-opt15
+15 seconds
+
+; fm_outcall_hangupringtime-opt30
+30 seconds
+
+; fm_outcall_hangupringtime-opt45
+45 seconds
+
+; fm_outcall_hangupringtime-opt60
+1 minute
+
+; fm_outcall_hangupringtime-opt120
+2 minutes
+
+; fm_outcall_hangupringtime-opt180
+3 minutes
+
+; fm_outcall_hangupringtime-opt240
+4 minutes
+
+; fm_outcall_hangupringtime-opt300
+5 minutes
+
+; fm_outcall_hangupringtime-opt
+%s min. %s sec.
+
+; bt-inrightcall
+Add one or more call permissions ->
+
+; bt-outrightcall
+<- Remove one or more call permissions
+
+; create_rightcall
+Create a call permission

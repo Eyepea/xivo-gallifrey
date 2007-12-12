@@ -1,0 +1,524 @@
+; title_content_name
+SIP Protocol properties
+
+; smenu_general
+General
+
+; smenu_network
+Network
+
+; smenu_signalling
+Signaling
+
+; smenu_default
+Default
+
+; smenu_realtime
+Real time
+
+; fm_bindport
+Port:
+
+; fm_bindaddr
+IP Address:
+
+; fm_videosupport
+Video support:
+
+; fm_autocreatepeer
+Automatic user creation:
+
+; fm_allowguest
+Accept unauthentified calls:
+
+; fm_allowguest-opt-no
+No
+
+; fm_allowguest-opt-yes
+Yes
+
+; fm_allowguest-opt-osp
+OSP
+
+; fm_promiscredir
+Support 302 redirections:
+
+; fm_autodomain
+Automatic domain:
+
+; fm_domain
+Domain:
+
+; fm_allowexternaldomains
+Allow external domains:
+
+; fm_usereqphone
+Add ";user=phone" in the URI :
+
+; fm_realm
+Realm:
+
+; fm_alwaysauthreject
+Reject invitations and recordings:
+
+; fm_useragent
+User-Agent:
+
+; fm_checkmwi
+Check for the presence of new messages:
+
+; fm_checkmwi-opt0
+Disabled
+
+; fm_checkmwi-opt
+%s seconds
+
+; fm_regcontext
+Recording context:
+
+; fm_callerid
+Caller ID:
+
+; fm_fromdomain
+From-Domain field rewrite:
+
+; fm_sipdebug
+Debugging:
+
+; fm_dumphistory
+History save:
+
+; fm_recordhistory
+History recording:
+
+; fm_callevents
+Call events (AMI):
+
+; fm_ospauth
+OSP Authentication:
+
+; fm_ospauth-opt-no
+No
+
+; fm_ospauth-opt-proxy
+Proxy
+
+; fm_ospauth-opt-gateway
+Gateway
+
+; fm_ospauth-opt-exclusive
+Exclusive
+
+; fm_tos
+TOS:
+
+; fm_localnet
+Local network:
+
+; fm_externip
+External IP address:
+
+; fm_externhost
+External domain:
+
+; fm_externrefresh
+External domain refresh time:
+
+; fm_externrefresh-opt1
+1 sec.
+
+; fm_externrefresh-opt10
+10 sec.
+
+; fm_externrefresh-opt20
+20 sec.
+
+; fm_externrefresh-opt30
+30 sec.
+
+; fm_externrefresh-opt40
+40 sec.
+
+; fm_externrefresh-opt50
+50 sec.
+
+; fm_externrefresh-opt60
+1 min.
+
+; fm_externrefresh-opt120
+2 min.
+
+; fm_externrefresh-opt
+%s min. %s sec.
+
+; fm_outboundproxy
+Outbound proxy:
+
+; fm_outboundproxyport
+Outbound proxy port:
+
+; fm_relaxdtmf
+Relax DTMF:
+
+; fm_compactheaders
+Compact headers:
+
+; fm_rtptimeout
+RTP Timeout:
+
+; fm_rtptimeout-opt0
+Disabled
+
+; fm_rtptimeout-opt
+%s seconds
+
+; fm_rtpholdtimeout
+RTP hold timeout:
+
+; fm_rtpholdtimeout-opt0
+Disabled
+
+; fm_rtpholdtimeout-opt
+%s seconds
+
+; fm_rtpkeepalive
+RTP Keepalive:
+
+; fm_rtpkeepalive-opt0
+Disabled 
+
+; fm_rtpkeepalive-opt
+%s seconds
+
+; fm_notifymimetype
+MIME type notification:
+
+; fm_srvlookup
+DNS request:
+
+; fm_pedantic
+Conform to standards:
+
+; fm_maxexpiry
+Maximum expiry:
+
+; fm_maxexpiry-opt1
+1 sec.
+
+; fm_maxexpiry-opt900
+15 min.
+
+; fm_maxexpiry-opt1800
+30 min.
+
+; fm_maxexpiry-opt2700
+45 min.
+
+; fm_maxexpiry-opt3600
+1 hour
+
+; fm_maxexpiry-opt7200
+2 hours
+
+; fm_maxexpiry-opt
+%s hour %s min.
+
+; fm_defaultexpiry
+Default expiry time:
+
+; fm_defaultexpiry-opt1
+1 sec.
+
+; fm_defaultexpiry-opt10
+10 sec.
+
+; fm_defaultexpiry-opt20
+20 sec.
+
+; fm_defaultexpiry-opt30
+30 sec.
+
+; fm_defaultexpiry-opt40
+40 sec.
+
+; fm_defaultexpiry-opt50
+50 sec.
+
+; fm_defaultexpiry-opt60
+1 min.
+
+; fm_defaultexpiry-opt120
+2 min.
+
+; fm_defaultexpiry-opt180
+3 min.
+
+; fm_defaultexpiry-opt240
+4 min.
+
+; fm_defaultexpiry-opt300
+5 min.
+
+; fm_defaultexpiry-opt600
+10 min.
+
+; fm_defaultexpiry-opt900
+15 min.
+
+; fm_defaultexpiry-opt1200
+20 min.
+
+; fm_defaultexpiry-opt1800
+30 min.
+
+; fm_defaultexpiry-opt2400
+40 min.
+
+; fm_defaultexpiry-opt2700
+45 min.
+
+; fm_defaultexpiry-opt3000
+50 min.
+
+; fm_defaultexpiry-opt
+%s min. %s sec.
+
+; fm_defaultexpiry-opt3600
+1 hour
+
+; fm_defaultexpiry-opt4500
+1 hour 15 min.
+
+; fm_defaultexpiry-opt5400
+1 hour 30 min.
+
+; fm_defaultexpiry-opt6300
+1 hour 45 min.
+
+; fm_defaultexpiry-opt7200
+2 hours
+
+; fm_registertimeout
+Registering timeout:
+
+; fm_registertimeout-opt1
+1 sec.
+
+; fm_registertimeout-opt10
+10 sec.
+
+; fm_registertimeout-opt20
+20 sec.
+
+; fm_registertimeout-opt30
+30 sec.
+
+; fm_registertimeout-opt40
+40 sec.
+
+; fm_registertimeout-opt50
+50 sec.
+
+; fm_registertimeout-opt60
+1 min.
+
+; fm_registertimeout-opt120
+2 min.
+
+; fm_registertimeout-opt
+%s min. %s sec.
+
+; fm_registerattempts
+Register attemps:
+
+; fm_registerattempts-opt0
+Unlimited
+
+; fm_registerattempts-opt10
+10 sec.
+
+; fm_registerattempts-opt20
+20 sec.
+
+; fm_registerattempts-opt30
+30 sec.
+
+; fm_registerattempts-opt40
+40 sec.
+
+; fm_registerattempts-opt50
+50 sec.
+
+; fm_registerattempts-opt60
+1 min.
+
+; fm_registerattempts-opt120
+2 min.
+
+; fm_registerattempts-opt
+%s min. %s sec.
+
+; fm_notifyringing
+Ringing notification:
+
+; fm_codec-disallow
+Disabled codecs:
+
+; fm_codec-disallow-opt-all
+All
+
+; fm_codec-allow
+Enabled codecs:
+
+; bt-upcodec
+Up one or more codecs
+
+; bt-downcodec
+Down one or more codecs
+
+; bt-incodec
+Add one or more codecs ->
+
+; bt-outcodec
+<- Remove one or more codecs
+
+; fm_context
+Context:
+
+; fm_nat
+NAT:
+
+; fm_nat-opt-no
+No
+
+; fm_nat-opt-yes
+Yes
+
+; fm_nat-opt-never
+Never
+
+; fm_nat-opt-route
+Route
+
+; fm_dtmfmode
+DTMF:
+
+; fm_qualify
+Monitoring:
+
+; fm_qualify-optno
+No
+
+; fm_qualify-optyes
+Yes
+
+; fm_qualify-opt
+%s milliseconds
+
+; fm_useclientcode
+Client code:
+
+; fm_progressinband
+inband RING event:
+
+; fm_progressinband-opt-no
+No
+
+; fm_progressinband-opt-yes
+Yes
+
+; fm_progressinband-opt-never
+Never
+
+; fm_language
+Languages:
+
+; fm_musiconhold
+On-Hold Music:
+
+; fm_vmexten
+Voicemail extension:
+
+; fm_trustrpid
+Trust the Remote-Party-ID:
+
+; fm_sendrpid
+Send the Remote-Party-ID:
+
+; fm_canreinvite
+Invite:
+
+; fm_canreinvite-opt-no
+No
+
+; fm_canreinvite-opt-yes
+Yes
+
+; fm_canreinvite-opt-update
+Update
+
+; fm_insecure
+Insecure:
+
+; fm_insecure-opt-port
+Port
+
+; fm_insecure-opt-invite
+Invite
+
+; fm_insecure-opt-all
+All
+
+; fm_rtcachefriends
+Cache accounts:
+
+; fm_rtupdate
+Cache update:
+
+; fm_ignoreregexpire
+Ignore registration expiration:
+
+; fm_rtautoclear
+Automatic cache clearing:
+
+; fm_rtautoclear-optno
+No
+
+; fm_rtautoclear-optyes
+Yes
+
+; fm_rtautoclear-opt1
+1 sec.
+
+; fm_rtautoclear-opt10
+10 sec.
+
+; fm_rtautoclear-opt20
+20 sec.
+
+; fm_rtautoclear-opt30
+30 sec.
+
+; fm_rtautoclear-opt40
+40 sec.
+
+; fm_rtautoclear-opt50
+50 sec.
+
+; fm_rtautoclear-opt60
+1 min.
+
+; fm_rtautoclear-opt120
+2 min.
+
+; fm_rtautoclear-opt180
+3 min.
+
+; fm_rtautoclear-opt240
+4 min.
+
+; fm_rtautoclear-opt
+%s min. %s sec.
+
+; fm_success-save
+SIP Protocol properties successfully saved

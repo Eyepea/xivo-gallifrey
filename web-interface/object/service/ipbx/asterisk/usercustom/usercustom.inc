@@ -40,6 +40,7 @@ class xivo_service_asterisk_usercustom extends xivo_service_asterisk_abstract
 			$arr['id'] = $id;
 
 		$arr['name'] = null;
+		$arr['protocol'] = XIVO_SRE_IPBX_AST_PROTO_CUSTOM;
 		$arr['category'] = 'user';
 
 		if(isset($arr['interface']) === true)
@@ -63,6 +64,7 @@ class xivo_service_asterisk_usercustom extends xivo_service_asterisk_abstract
 			return(false);
 
 		$arr['name'] = null;
+		$arr['protocol'] = XIVO_SRE_IPBX_AST_PROTO_CUSTOM;
 		$arr['category'] = 'user';
 
 		if(isset($arr['interface']) === true)

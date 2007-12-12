@@ -55,12 +55,8 @@ class xivo_service_asterisk_phonebook_abstract_sql extends xivo_service_asterisk
 		$this->_dso->order();
 		$this->_dso->limit();
 
-		if(empty($r) === true)
-			$r = false;
-		else
-			$this->_cnt = $this->_dso->select_count($this->_param['table'],null,$where);
-
-		if($this->_cnt === false)
+		if(($this->_cnt = $this->_dso->select_count($this->_param['table'],null,$where)) === false
+		|| empty($r) === true)
 			$r = false;
 
 		return($r);

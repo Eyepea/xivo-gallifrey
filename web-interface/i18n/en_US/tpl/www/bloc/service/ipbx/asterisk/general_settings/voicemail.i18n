@@ -1,0 +1,398 @@
+; title_content_name
+Voicemail properties
+
+; smenu_general
+General
+
+; smenu_voicemenu
+Voicemail menu
+
+; smenu_email
+E-mail
+
+; smenu_pager
+Pager
+
+; smenu_timezones
+Timezones
+
+; smenu_adsi
+ADSI
+
+; smenu_advanced
+Advanced
+
+; fm_voicemail-maxmsg
+Maximum number of messages:
+
+; fm_voicemail-silencethreshold
+Silence detection sensibility:
+
+; fm_voicemail-minmessage
+Minimum length of a message:
+
+; fm_voicemail-minmessage-opt0
+Disabled
+
+; fm_voicemail-minmessage-opt1
+1 sec.
+
+; fm_voicemail-minmessage-opt2
+2 sec.
+
+; fm_voicemail-minmessage-opt3
+3 sec.
+
+; fm_voicemail-minmessage-opt4
+4 sec.
+
+; fm_voicemail-minmessage-opt5
+5 sec.
+
+; fm_voicemail-minmessage-opt6
+6 sec.
+
+; fm_voicemail-minmessage-opt7
+7 sec.
+
+; fm_voicemail-minmessage-opt8
+8 sec.
+
+; fm_voicemail-minmessage-opt9
+9 sec.
+
+; fm_voicemail-minmessage-opt10
+10 sec.
+
+; fm_voicemail-minmessage-opt20
+20 sec.
+
+; fm_voicemail-minmessage-opt30
+30 sec.
+
+; fm_voicemail-minmessage-opt40
+40 sec.
+
+; fm_voicemail-minmessage-opt50
+50 sec.
+
+; fm_voicemail-minmessage-opt60
+1 min.
+
+; fm_voicemail-minmessage-opt120
+2 min.
+
+; fm_voicemail-minmessage-opt180
+3 min.
+
+; fm_voicemail-minmessage-opt240
+4 min.
+
+; fm_voicemail-minmessage-opt300
+5 min.
+
+; fm_voicemail-minmessage-opt360
+6 min.
+
+; fm_voicemail-minmessage-opt
+%s sec. %s min.
+
+; fm_voicemail-maxmessage
+Maximum length of a message:
+
+; fm_voicemail-maxmessage-opt0
+Disabled
+
+; fm_voicemail-maxmessage-opt1
+1 sec.
+
+; fm_voicemail-maxmessage-opt2
+2 sec.
+
+; fm_voicemail-maxmessage-opt3
+3 sec.
+
+; fm_voicemail-maxmessage-opt4
+4 sec.
+
+; fm_voicemail-maxmessage-opt5
+5 sec.
+
+; fm_voicemail-maxmessage-opt6
+6 sec.
+
+; fm_voicemail-maxmessage-opt7
+7 sec.
+
+; fm_voicemail-maxmessage-opt8
+8 sec.
+
+; fm_voicemail-maxmessage-opt9
+9 sec.
+
+; fm_voicemail-maxmessage-opt10
+10 sec.
+
+; fm_voicemail-maxmessage-opt20
+20 sec.
+
+; fm_voicemail-maxmessage-opt30
+30 sec.
+
+; fm_voicemail-maxmessage-opt40
+40 sec.
+
+; fm_voicemail-maxmessage-opt50
+50 sec.
+
+; fm_voicemail-maxmessage-opt60
+1 min.
+
+; fm_voicemail-maxmessage-opt120
+2 min.
+
+; fm_voicemail-maxmessage-opt180
+3 min.
+
+; fm_voicemail-maxmessage-opt240
+4 min.
+
+; fm_voicemail-maxmessage-opt300
+5 min.
+
+; fm_voicemail-maxmessage-opt360
+6 min.
+
+; fm_voicemail-maxmessage-opt
+%s sec. %s min.
+
+; fm_voicemail-maxsilence
+Maximum length of a silence:
+
+; fm_voicemail-maxsilence-opt1
+1 second
+
+; fm_voicemail-maxsilence-opt
+%s seconds
+
+; fm_voicemail-review
+Review / record again a message:
+
+; fm_voicemail-operator
+Get transfered to an operator:
+
+; fm_voicemail-format
+Recording formats:
+
+; bt-informat
+Add one or more formats ->
+
+; bt-outformat
+<- Remove one or more formats
+
+; fm_voicemail-maxlogins
+Maximum number of login retries:
+
+; fm_voicemail-envelope
+Announce date and time:
+
+; fm_voicemail-saycid
+Announce caller ID:
+
+; fm_voicemail-cidinternalcontexts
+Internal context:
+
+; fm_voicemail-sayduration
+Announce duration:
+
+; fm_voicemail-saydurationm
+Minimum time to announce duration:
+
+; fm_voicemail-saydurationm-opt1
+1 minute
+
+; fm_voicemail-saydurationm-opt
+%s minutes
+
+; fm_voicemail-forcename
+Force the recording of name:
+
+; fm_voicemail-forcegreetings
+Force the recording of greeting message:
+
+; fm_voicemail-maxgreet
+Maximum duration of the greeting message:
+
+; fm_voicemail-maxgreet-opt0
+Disabled
+
+; fm_voicemail-maxgreet-opt1
+1 sec.
+
+; fm_voicemail-maxgreet-opt2
+2 sec.
+
+; fm_voicemail-maxgreet-opt3
+3 sec.
+
+; fm_voicemail-maxgreet-opt4
+4 sec.
+
+; fm_voicemail-maxgreet-opt5
+5 sec.
+
+; fm_voicemail-maxgreet-opt6
+6 sec.
+
+; fm_voicemail-maxgreet-opt7
+7 sec.
+
+; fm_voicemail-maxgreet-opt8
+8 sec.
+
+; fm_voicemail-maxgreet-opt9
+9 sec.
+
+; fm_voicemail-maxgreet-opt10
+10 sec.
+
+; fm_voicemail-maxgreet-opt20
+20 sec.
+
+; fm_voicemail-maxgreet-opt30
+30 sec.
+
+; fm_voicemail-maxgreet-opt40
+40 sec.
+
+; fm_voicemail-maxgreet-opt50
+50 sec.
+
+; fm_voicemail-maxgreet-opt60
+1 min.
+
+; fm_voicemail-maxgreet-opt120
+2 min.
+
+; fm_voicemail-maxgreet-opt180
+3 min.
+
+; fm_voicemail-maxgreet-opt240
+4 min.
+
+; fm_voicemail-maxgreet-opt300
+5 min.
+
+; fm_voicemail-maxgreet-opt360
+6 min.
+
+; fm_voicemail-maxgreet-opt
+%s sec. %s min.
+
+; fm_voicemail-skipms
+Fast forward and fast rewind skip time:
+
+; fm_voicemail-skipms-opt1
+1 second
+
+; fm_voicemail-skipms-opt
+%s seconds
+
+; fm_voicemail-sendvoicemail
+Leave a message:
+
+; fm_voicemail-usedirectory
+Use the directory to transfer or to leave a message:
+
+; fm_voicemail-nextaftercmd
+Automatic playback of the next message:
+
+; fm_voicemail-dialout
+Incoming call context:
+
+; fm_voicemail-callback
+Callback context:
+
+; fm_voicemail-exitcontext
+Outgoing call context:
+
+; fm_voicemail-attach
+Attach the audio file:
+
+; fm_voicemail-attachformat
+Format of the attached file:
+
+; fm_voicemail-mailcmd
+Program to be used to send e-mails:
+
+; fm_voicemail-charset
+Encoding:
+
+; fm_voicemail-serveremail
+Sender e-mail address:
+
+; fm_voicemail-fromstring
+Sender:
+
+; fm_voicemail-emaildateformat
+Date format:
+
+; fm_voicemail-pbxskip
+Remove "[PBX]:" from the subject:
+
+; fm_voicemail-emailsubject
+Subject:
+
+; fm_voicemail-emailbody
+Body:
+
+; fm_voicemail-pagerfromstring
+Sender:
+
+; fm_voicemail-pagersubject
+Subject:
+
+; fm_voicemail-pagerbody
+Body:
+
+; col_timezone-name
+Name
+
+; col_timezone-timezone
+Time zone
+
+; col_timezone-options
+Options
+
+; col_timezone-add
+Add
+
+; no_timezone
+No timezone
+
+; fm_voicemail-adsifdn
+Descriptor number:
+
+; fm_voicemail-adsisec
+Security code:
+
+; fm_voicemail-adsiver
+Version:
+
+; fm_voicemail-searchcontexts
+Context search:
+
+; fm_voicemail-externpass
+External program used to change the password:
+
+; fm_voicemail-externnotify
+External program used to send new messages notifications:
+
+; fm_voicemail-odbcstorage
+ODBC system:
+
+; fm_voicemail-odbctable
+ODBC table:
+
+; fm_success-save
+Voicemail properties successfully saved

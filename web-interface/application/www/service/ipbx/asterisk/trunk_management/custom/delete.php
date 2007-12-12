@@ -20,8 +20,8 @@ do
 		break;
 	}
 
-	$outcall = &$ipbx->get_module('outcall');
-	$outcall->unlinked_where(array('trunkfeaturesid' => $info['tfeatures']['id']));
+	$outcalltrunk = &$ipbx->get_module('outcalltrunk');
+	$outcalltrunk->delete_where(array('trunkid' => $info['tfeatures']['id']));
 }
 while(false);
 

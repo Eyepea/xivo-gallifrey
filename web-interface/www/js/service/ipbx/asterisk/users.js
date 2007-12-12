@@ -107,8 +107,8 @@ xivo_list_elt_users['voicemail-tz'] = new Array();
 xivo_list_elt_users['voicemail-tz']['it'] = false;
 xivo_list_elt_users['voicemail-attach'] = new Array();
 xivo_list_elt_users['voicemail-attach']['it'] = false;
-xivo_list_elt_users['voicemail-delete'] = new Array();
-xivo_list_elt_users['voicemail-delete']['it'] = false;
+xivo_list_elt_users['voicemail-deletevoicemail'] = new Array();
+xivo_list_elt_users['voicemail-deletevoicemail']['it'] = false;
 
 xivo_list_elt_users['codec-active'] = new Array();
 xivo_list_elt_users['codec-active']['it'] = false;
@@ -417,11 +417,11 @@ xivo_fm_voicemail['it-voicemail-tz']['link'] = 'it-voicemail-attach';
 
 xivo_fm_voicemail['it-voicemail-attach'] = new Array();
 xivo_fm_voicemail['it-voicemail-attach']['property'] = new Array('disabled|false:boolean;className|it-enabled','disabled|true:boolean;className|it-disabled');
-xivo_fm_voicemail['it-voicemail-attach']['link'] = 'it-voicemail-delete';
+xivo_fm_voicemail['it-voicemail-attach']['link'] = 'it-voicemail-deletevoicemail';
 
-xivo_fm_voicemail['it-voicemail-delete'] = new Array();
-xivo_fm_voicemail['it-voicemail-delete']['property'] = new Array('disabled|false:boolean;className|it-enabled','disabled|true:boolean;className|it-disabled');
-xivo_fm_voicemail['it-voicemail-delete']['link'] = 'it-ufeatures-skipvoicemailpass';
+xivo_fm_voicemail['it-voicemail-deletevoicemail'] = new Array();
+xivo_fm_voicemail['it-voicemail-deletevoicemail']['property'] = new Array('disabled|false:boolean;className|it-enabled','disabled|true:boolean;className|it-disabled');
+xivo_fm_voicemail['it-voicemail-deletevoicemail']['link'] = 'it-ufeatures-skipvoicemailpass';
 
 xivo_fm_voicemail['it-ufeatures-skipvoicemailpass'] = new Array();
 xivo_fm_voicemail['it-ufeatures-skipvoicemailpass']['property'] = new Array('disabled|false:boolean;className|it-enabled','disabled|true:boolean;className|it-disabled');

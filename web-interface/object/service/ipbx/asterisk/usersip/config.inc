@@ -116,6 +116,14 @@ $array['element']['call-limit'] = array();
 $array['element']['call-limit']['default'] = 0;
 $array['element']['call-limit']['setdef'] = true;
 
+$array['element']['protocol'] = array();
+$array['element']['protocol']['default'] = XIVO_SRE_IPBX_AST_PROTO_SIP;
+$array['element']['protocol']['forcedef'] = true;
+
+$array['element']['category'] = array();
+$array['element']['category']['default'] = 'user';
+$array['element']['category']['forcedef'] = true;
+
 
 $array['filter'] = array();
 $array['filter']['callerid'] = array('set' => false,'chk' => 2,'maxlen' => 80,'notag' => false);
@@ -167,5 +175,7 @@ $array['filter']['setvar'] = array('set' => false,'chk' => 0);
 $array['filter']['username'] = array('set' => false,'chk' => 2,'maxlen' => 80);
 $array['filter']['mailbox'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9#\*]{1,40}(?:@[a-z0-9@_\-]{1,39})?$/','maxlen' => 80);
 $array['filter']['call-limit'] = array('set' => false,'chk' => 0);
+$array['filter']['protocol'] = array('set' => false);
+$array['filter']['category'] = array('set' => false);
 
 ?>

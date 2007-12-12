@@ -1,0 +1,29 @@
+; col_login
+Login
+
+; col_password
+Password
+
+; col_type
+Type
+
+; col_dcreate
+Creation date
+
+; col_valid
+Enabled
+
+; valid_1
+Yes
+
+; valid_0
+No
+
+; opt_modify
+Edit
+
+; opt_acl
+Rules
+
+; no_user
+No users found

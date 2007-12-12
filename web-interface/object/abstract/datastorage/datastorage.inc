@@ -3,6 +3,7 @@
 class xivo_abstract_datastorage
 {
 	var $_dso	= null;
+	var $_param	= array();
 
 	function _init(&$dso)
 	{
@@ -29,6 +30,11 @@ class xivo_abstract_datastorage
 			return($this->_param[$name]);
 		else
 			return(null);
+	}
+
+	function get_params()
+	{
+		return($this->_param);
 	}
 }
 

@@ -38,7 +38,7 @@ class xivo_gatearray
 		{
 			$file = substr($file,0,$pos);
 
-			if(preg_match('/^([a-z0-9\-_]+)$/i',$file) !== 1)
+			if(preg_match('/^[a-z0-9\-_]+$/i',$file) !== 1)
 				return($r);
 		}
 
@@ -47,6 +47,8 @@ class xivo_gatearray
 
 		if($path === '')
 			$path = XIVO_PATH_LIB.DIRECTORY_SEPARATOR.'gatearray'.DIRECTORY_SEPARATOR.$file.'.inc';
+		else if(is_array($path) === true)
+			$path = implode(DIRECTORY_SEPARATOR,$path).DIRECTORY_SEPARATOR.$file.'.inc';
 		else
 			$path = rtrim($path,DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.$file.'.inc';
 
@@ -71,6 +73,9 @@ class xivo_gatearray
 	function get_file($path,$once=false)
 	{
 		$r = false;
+
+		if(is_array($path) === true)
+			$path = implode(DIRECTORY_SEPARATOR,$path);
 
 		$path = (string) $path.'.inc';
 		$once = (bool) $once;

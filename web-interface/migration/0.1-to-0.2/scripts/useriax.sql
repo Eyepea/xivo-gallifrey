@@ -175,8 +175,8 @@ SELECT	0,
 	'hints',
 	tmp_userfeatures.number,
 	1,
-	'Macro',
 	'IAX2/'||tmp_userfeatures.name,
+	'',
 	''
 FROM tmp_userfeatures
 WHERE length(tmp_userfeatures.number) > 0

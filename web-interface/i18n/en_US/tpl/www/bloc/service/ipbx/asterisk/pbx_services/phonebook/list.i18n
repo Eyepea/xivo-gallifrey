@@ -1,0 +1,23 @@
+; col_displayname
+Display name
+
+; col_society
+Company
+
+; col_tel-office
+Office phone
+
+; col_tel-mobile
+Mobile phone
+
+; col_email
+E-mail
+
+; number_phonebook-result
+Result(s) : %s
+
+; no_phonebook
+Couldn't find any entries in the phonebook
+
+; opt_delete_confirm
+Are you sure you want to delete this entry from the phonebook ?

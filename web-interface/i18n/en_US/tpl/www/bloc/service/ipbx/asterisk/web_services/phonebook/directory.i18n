@@ -1,0 +1,17 @@
+; phone_noentry
+No entries
+
+; phone_name-local
+%s
+
+; phone_name-mobile
+%s (Cellphone)
+
+; phone_name-home
+%s (Home)
+
+; phone_name-office
+%s (Office)
+
+; phone_name-other
+%s (Other)

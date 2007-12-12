@@ -13,9 +13,6 @@ $array['element']['context'] = array();
 $array['element']['context']['default'] = 'default';
 $array['element']['context']['setdef'] = true;
 
-$array['element']['trunkfeaturesid'] = array();
-$array['element']['trunkfeaturesid']['default'] = '';
-
 $array['element']['externprefix'] = array();
 $array['element']['externprefix']['default'] = '';
 
@@ -67,11 +64,6 @@ $array['element']['hangupringtime']['value'] = array(0 => 0,15 => 15,30 => 30,45
 $array['element']['hangupringtime']['default'] = 0;
 $array['element']['hangupringtime']['setdef'] = true;
 
-$array['element']['linked'] = array();
-$array['element']['linked']['value'] = array(0,1);
-$array['element']['linked']['default'] = 0;
-$array['element']['linked']['set'] = true;
-
 $array['element']['commented'] = array();
 $array['element']['commented']['value'] = array(0,1);
 $array['element']['commented']['default'] = 0;
@@ -81,7 +73,6 @@ $array['filter'] = array();
 $array['filter']['name'] = array('maxlen' => 128,'regexp' => '/^[a-z0-9_-]+$/i');
 $array['filter']['exten'] = array('maxlen' => 40,'regexp' => '/^[_]?[0-9NXZ\*#\-\[\]]+[\.\!]?$/');
 $array['filter']['context'] = array('callback' => 'xivo_service_asterisk::chk_context');
-$array['filter']['trunkfeaturesid'] = array('cast' => 'uint');
 $array['filter']['externprefix'] = array('set' => false,'chk' => 2,'maxlen' => 20,'regexp' => '/^[0-9#\*]+$/');
 $array['filter']['stripnum'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,20));
 $array['filter']['mode'] = array('set' => false,'chk' => 2,'key' => array('wizard','extension'));
@@ -97,7 +88,6 @@ $array['filter']['internal'] = array('bool' => true);
 $array['filter']['hangupringtime'] = array('set' => false,'chk' => 2,'key' => array(0,15,30,45,60,75,90,105,120,135,
 										    150,165,180,210,225,240,255,270,
 										    285,300));
-$array['filter']['linked'] = array('bool' => true);
 $array['filter']['commented'] = array('bool' => true);
 
 ?>

@@ -63,7 +63,7 @@ switch($act)
 			{
 				$rcalluser['list'] = xivo_array_diff_key($rcalluser['list'],$rcalluser['slt']);
 
-				$usersort = new xivo_sort(array('browse' => 'ufeatures','key' => 'identity'));
+				$usersort = new xivo_sort(array('key' => 'identity'));
 				uasort($rcalluser['slt'],array(&$usersort,'str_usort'));
 			}
 		}
@@ -182,7 +182,7 @@ switch($act)
 			{
 				$rcalluser['list'] = xivo_array_diff_key($rcalluser['list'],$rcalluser['slt']);
 
-				$usersort = new xivo_sort(array('browse' => 'ufeatures','key' => 'identity'));
+				$usersort = new xivo_sort(array('key' => 'identity'));
 				uasort($rcalluser['slt'],array(&$usersort,'str_usort'));
 			}
 		}

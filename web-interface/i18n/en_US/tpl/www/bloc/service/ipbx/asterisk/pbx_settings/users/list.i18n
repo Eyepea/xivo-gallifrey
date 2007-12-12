@@ -1,0 +1,29 @@
+; col_fullname
+Full name
+
+; col_protocol
+Protocol
+
+; col_username
+Username
+
+; col_phone
+Phone number
+
+; col_provisioning
+Provisioning
+
+; user_protocol-sip
+SIP
+
+; user_protocol-iax
+IAX
+
+; user_protocol-custom
+Custom
+
+; no_user
+No user found
+
+; opt_delete_confirm
+Are you sure you want to delete this user ?

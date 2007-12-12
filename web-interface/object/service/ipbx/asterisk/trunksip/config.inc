@@ -107,6 +107,14 @@ $array['element']['call-limit'] = array();
 $array['element']['call-limit']['default'] = 0;
 $array['element']['call-limit']['setdef'] = true;
 
+$array['element']['protocol'] = array();
+$array['element']['protocol']['default'] = XIVO_SRE_IPBX_AST_PROTO_SIP;
+$array['element']['protocol']['forcedef'] = true;
+
+$array['element']['category'] = array();
+$array['element']['category']['default'] = 'trunk';
+$array['element']['category']['forcedef'] = true;
+
 $array['filter'] = array();
 $array['filter']['name'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[a-z0-9_-]+$/');
 $array['filter']['username'] = array('set' => false,'chk' => 2,'maxlen' => 80);
@@ -152,5 +160,7 @@ $array['filter']['regexten'] = array('set' => false,'chk' => 0);
 $array['filter']['setvar'] = array('set' => false,'chk' => 0);
 $array['filter']['fromuser'] = array('set' => false,'chk' => 2,'maxlen' => 80);
 $array['filter']['fromdomain'] = array('set' => false,'chk' => 2,'callback' => 'xivo_filter::chk_host_ipv4_strict');
+$array['filter']['protocol'] = array('set' => false);
+$array['filter']['category'] = array('set' => false);
 
 ?>

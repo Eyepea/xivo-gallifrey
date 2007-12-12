@@ -1,0 +1,74 @@
+; col_name
+Name
+
+; col_time
+Time
+
+; col_dayname
+Day
+
+; col_daynum
+Day of the month
+
+; col_month
+Month
+
+; col_destination
+Destination
+
+; col_publicholiday
+Public holiday
+
+; no_schedule
+No schedule has been found
+
+; schedule_time
+%sh%s
+
+; schedule_rangetime
+%s - %s
+
+; schedule_rangedayname
+%s - %s
+
+; schedule_rangedaynum
+%s - %s
+
+; schedule_rangemonth
+%s - %s
+
+; schedule_typetrue-endcall
+End call
+
+; schedule_typetrue-user
+User
+
+; schedule_typetrue-group
+Group
+
+; schedule_typetrue-queue
+Queue
+
+; schedule_typetrue-meetme
+Conference room
+
+; schedule_typetrue-schedule
+Schedule
+
+; schedule_typetrue-application
+Application
+
+; schedule_typetrue-sound
+Audio file
+
+; schedule_typetrue-custom
+Customized
+
+; schedule_publicholiday-0
+No
+
+; schedule_publicholiday-1
+Yes
+
+; opt_delete_confirm
+Are you sure you want to remove this schedule ?

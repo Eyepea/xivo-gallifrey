@@ -10,6 +10,7 @@ class xivo_datastorage_abstract_sql
 	var $_result	= false;
 	var $_debug	= false;
 	var $_free	= false;
+	var $_where	= array();
 	var $_order	= array();
 	var $_limit	= array();
 
@@ -194,12 +195,68 @@ class xivo_datastorage_abstract_sql
 		return($r);
 	}
 
-	function where($data,$escape=true)
+	function join($t,$c='INNER',$o='')
 	{
-		$r = false;
-	
-		if(($where = $this->_separator($data,$sep=' AND ',$escape,true,false)) === false)
-			return($r);
+		$t = trim((string) $t);
+		$c = strtoupper(trim((string) $c));
+		$o = trim((string) $o);
+
+		if($t === '')
+			return(false);
+
+		if($o !== '')
+			$o = ' ON '.$o;
+
+		switch($c)
+		{
+			case 'LEFT':
+			case 'RIGHT':
+			case 'CROSS':
+			case 'FULL':
+			case 'INNER':
+				break;
+			case 'NATURAL':
+				$o = '';
+				break;
+			case '':
+				$c = 'INNER';
+			default:
+				return(false);
+		}
+
+		return(sprintf('%s JOIN %s%s',$c,$t,$o));
+	}
+
+	function new_where($data,$not=false,$table='',$escape=true)
+	{
+		$this->_where = array();
+
+		return($this->add_where($data,$not,$table,$escape));
+	}
+
+	function add_where($data,$not=false,$table='',$escape=true)
+	{
+		if(($where = $this->where($data,$table,$escape)) === false)
+			return(false);
+
+		$this->_where[] = $where;
+		return(true);
+	}
+
+	function get_where($type)
+	{
+		if(strtoupper($type) === 'OR')
+			return(implode(' OR ',$this->_where));
+		else
+			return(implode(' AND ',$this->_where));
+	}
+
+	function where($data,$table='',$escape=true,$not=false)
+	{
+		$not = (bool) $not === true ? '!=' : '=';
+
+		if(($where = $this->_separator($data,$sep=' AND ',$escape,true,false,$not,$table)) === false)
+			return(false);
 
 		$r = $where['str'];
 
@@ -209,19 +266,9 @@ class xivo_datastorage_abstract_sql
 		return($r);
 	}
 
-	function where_not($data,$escape=true)
+	function where_not($data,$table='',$escape=true)
 	{
-		$r = false;
-
-		if(($where = $this->_separator($data,$sep=' AND ',$escape,true,false,'!=')) === false)
-			return($r);
-
-		$r = $where['str'];
-
-		if(trim($r) === '')
-			$r = false;
-
-		return($r);	
+		return($this->where($data,$table,$escape,true));
 	}
 
 	function _insertupdate($p,$t,&$data,$w='',$escape=true,$set=false,$o='',$order=false,$limit=false)
@@ -278,7 +325,7 @@ class xivo_datastorage_abstract_sql
 		return($r);
 	}
 
-	function _separator($val,$sep=',',$escape=true,$set=false,$ident=true,$oper='=')
+	function _separator($val,$sep=',',$escape=true,$set=false,$ident=true,$oper='=',$table='')
 	{
 		$r = array('str' => '','keys' => '');
 
@@ -288,6 +335,10 @@ class xivo_datastorage_abstract_sql
 		$set = (bool) $set;
 		$ident = (bool) $ident;
 		$oper = (string) $oper;
+		$table = trim((string) $table);
+
+		if($table !== '')
+			$ident = false;
 
 		if(($arr = xivo_get_aks($val)) === false)
 			return($r);
@@ -295,9 +346,9 @@ class xivo_datastorage_abstract_sql
 		for($i = 0;$i < $arr['cnt'];$i++)
 		{
 			$key = &$arr['keys'][$i];
-
-			$type = gettype($val[$key]);
 			$data = &$val[$key];
+
+			$type = gettype($data);
 
 			switch($type)
 			{
@@ -323,10 +374,22 @@ class xivo_datastorage_abstract_sql
 			}
 
 			if($set === true)
-				$r['str'] .= sprintf($f,($ident === true ? $this->quote_identifier($key) : $key),$oper,$data);
+			{
+				if($table !== '')
+					$key = $this->quote_identifier($table).'.'.$this->quote_identifier($key);
+				else if($ident === true)
+					$key = $this->quote_identifier($key);
+
+				$r['str'] .= sprintf($f,$key,$oper,$data);
+			}
 			else
 			{
-				$r['keys'] .= ($ident === true ? $this->quote_identifier($key) : $key).$sep;
+				if($table !== '')
+					$key = $this->quote_identifier($table).'.'.$key;
+				else if($ident === true)
+					$key = $this->quote_identifier($key);
+
+				$r['keys'] .= $key.$sep;
 				$r['str'] .= sprintf($f,$data);
 			}
 		}
@@ -384,8 +447,22 @@ class xivo_datastorage_abstract_sql
 		return($r);
 	}
 
-	function order($col='',$sort='')
+	function new_order($col='',$sort='',$table='')
 	{
+		$this->_order = array();
+
+		return($this->order($col,$sort,$table));
+	}
+
+	function reset_order()
+	{
+		$this->_order = array();
+	}
+
+	function order($col='',$sort='',$table='')
+	{
+		$table = trim((string) $table);
+
 		if(is_array($col) === true)
 		{
 			if(($arr = xivo_get_aks($col)) === false)
@@ -401,7 +478,12 @@ class xivo_datastorage_abstract_sql
 				if($key === '' || ($val = $this->_chk_sort($val)) === false)
 					continue;
 
-				$order[] = sprintf('%s %s',$this->quote_identifier($key),$val);
+				if($table !== '')
+					$key = $this->quote_identifier($table).'.'.$this->quote_identifier($key);
+				else
+					$key = $this->quote_identifier($key);
+
+				$order[] = sprintf('%s %s',$key,$val);
 			}
 
 			if(isset($order[0]) === false)
@@ -412,7 +494,7 @@ class xivo_datastorage_abstract_sql
 			return(true);
 		}
 
-		$col = (string) $col;
+		$col = trim((string) $col);
 		$sort = (string) $sort;
 
 		if($col !== '')
@@ -420,7 +502,12 @@ class xivo_datastorage_abstract_sql
 			if(($sort = $this->_chk_sort($sort)) === false)
 				return(false);
 
-			$this->_order[] = sprintf('%s %s',$this->quote_identifier($col),$sort);
+			if($table !== '')
+				$col = $this->quote_identifier($table).'.'.$this->quote_identifier($col);
+			else
+				$col = $this->quote_identifier($col);
+
+			$this->_order[] = sprintf('%s %s',$col,$sort);
 			return(true);
 		}
 		else if($sort === '')
@@ -463,6 +550,18 @@ class xivo_datastorage_abstract_sql
 		}
 
 		return(false);
+	}
+
+	function new_limit($offset='',$line='')
+	{
+		$this->_limit = array();
+
+		return($this->limit($offset,$line));
+	}
+
+	function reset_limit()
+	{
+		$this->_limit = array();
 	}
 
 	function limit($offset='',$line='')
@@ -508,14 +607,18 @@ class xivo_datastorage_abstract_sql
 		return($r);
 	}
 
-	function _in($col,&$list,$keys=false,$not=false)
+	function _in($col,&$list,$keys=false,$not=false,$table='')
 	{
-		$col = $this->quote_identifier($col);
+		$col = trim((string) $col);
 		$keys = (bool) $keys;
 		$not = (bool) $not;
+		$table = trim((string) $table);
 
 		if($col === '' || is_array($list) === false || empty($list) === true)
 			return(false);
+
+		if($table !== '')
+			$col = $this->quote_identifier($table).'.'.$this->quote_identifier($col);
 
 		$func = $not === true ? 'NOT IN' : 'IN';
 
@@ -527,21 +630,22 @@ class xivo_datastorage_abstract_sql
 		return($r);
 	}
 
-	function in($col,$list,$keys=false)
+	function in($col,$list,$keys=false,$table='')
 	{
-		return($this->_in($col,$list,$keys,false));
+		return($this->_in($col,$list,$keys,false,$table));
 	}
 
-	function notin($col,$list,$keys=false)
+	function notin($col,$list,$keys=false,$table='')
 	{
-		return($this->_in($col,$list,$keys,true));
+		return($this->_in($col,$list,$keys,true,$table));
 	}
 
-	function _search($col,$pattern,$format='',$not=false)
+	function _search($col,$pattern,$format='',$not=false,$table='')
 	{
-		$col = $this->quote_identifier($col);
+		$col = trim((string) $col);
 		$format = $format !== '' ? strtolower((string) $format) : 'exact';
 		$not = (bool) $not;
+		$table = trim((string) $table);
 
 		if(is_scalar($pattern) === true)
 			$pattern = array((string) $pattern);
@@ -550,6 +654,8 @@ class xivo_datastorage_abstract_sql
 
 		if($col === '')
 			return(false);
+		else if($table !== '')
+			$col = $this->quote_identifier($table).'.'.$this->quote_identifier($col);
 
 		$func = $not === true ? 'NOT LIKE' : 'LIKE';
 
@@ -601,54 +707,54 @@ class xivo_datastorage_abstract_sql
 		return($r);
 	}
 
-	function search($col,$pattern,$format='')
+	function search($col,$pattern,$format='',$table='')
 	{
-		return($this->_search($col,$pattern,$format,false));
+		return($this->_search($col,$pattern,$format,false,$table));
 	}
 
-	function search_not($col,$pattern,$format='')
+	function search_not($col,$pattern,$format='',$table='')
 	{
-		return($this->_search($col,$pattern,$format,true));
+		return($this->_search($col,$pattern,$format,true,$table));
 	}
 
-	function search_exact($col,$pattern)
+	function search_exact($col,$pattern,$table='')
 	{
-		return($this->search($col,$pattern,'exact'));
+		return($this->search($col,$pattern,'exact',$table));
 	}
 
-	function search_begin($col,$pattern)
+	function search_begin($col,$pattern,$table='')
 	{
-		return($this->search($col,$pattern,'begin'));
+		return($this->search($col,$pattern,'begin',$table));
 	}
 
-	function search_contain($col,$pattern)
+	function search_contain($col,$pattern,$table='')
 	{
-		return($this->search($col,$pattern,'contain'));
+		return($this->search($col,$pattern,'contain',$table));
 	}
 
-	function search_end($col,$pattern)
+	function search_end($col,$pattern,$table='')
 	{
-		return($this->search($col,$pattern,'end'));
+		return($this->search($col,$pattern,'end',$table));
 	}
 
-	function search_not_exact($col,$pattern)
+	function search_not_exact($col,$pattern,$table='')
 	{
-		return($this->search_not($col,$pattern,'exact'));
+		return($this->search_not($col,$pattern,'exact',$table));
 	}
 
-	function search_not_begin($col,$pattern)
+	function search_not_begin($col,$pattern,$table='')
 	{
-		return($this->search_not($col,$pattern,'begin'));
+		return($this->search_not($col,$pattern,'begin',$table));
 	}
 
-	function search_not_contain($col,$pattern)
+	function search_not_contain($col,$pattern,$table='')
 	{
-		return($this->search_not($col,$pattern,'contain'));
+		return($this->search_not($col,$pattern,'contain',$table));
 	}
 
-	function search_not_end($col,$pattern)
+	function search_not_end($col,$pattern,$table='')
 	{
-		return($this->search_not($col,$pattern,'end'));
+		return($this->search_not($col,$pattern,'end',$table));
 	}
 
 	function _cond_typetime($type,$col,$dbeg,$dend='',$format='',$time='')

@@ -135,7 +135,6 @@ switch($act)
 	case 'list':
 	default:
 		$act = 'list';
-		$total = 0;
 		$nbbypage = XIVO_SRE_IPBX_AST_NBBYPAGE;
 
 		$order = array();
@@ -152,8 +151,13 @@ switch($act)
 		else
 			$list = $appphonebook->get_phonebook_list($order,$limit);
 
-		if($list !== false)
-			$total = $appphonebook->get_cnt();
+		$total = $appphonebook->get_cnt();
+
+		if($list === false && $total > 0)
+		{
+			$param['page'] = $page - 1;
+			$_QRY->go($_HTML->url('service/ipbx/pbx_services/phonebook'),$param);
+		}
 
 		$_HTML->set_var('total',$total);
 		$_HTML->set_var('pager',xivo_calc_page($page,$nbbypage,$total));

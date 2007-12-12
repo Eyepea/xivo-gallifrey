@@ -1,0 +1,269 @@
+; title_content_name
+Call logs
+
+; smenu_search
+Search
+
+; smenu_result
+Results
+
+; smenu_exportcsv
+CSV Export
+
+; number_cdr-result
+Result(s) : %s
+
+; bt-showcalendar
+Calendar
+
+; fm_dbeg
+Beginning:
+
+; fm_dend
+End:
+
+; fm_channel
+Channel:
+
+; fm_channel-optothers
+Others
+
+; fm_channel-optunknown
+Unknown
+
+; fm_channel-opt
+%s
+
+; fm_disposition
+Call status:
+
+; fm_disposition-opt-ANSWERED
+Answered
+
+; "fm_disposition-opt-NO ANSWER"
+No answer
+
+; fm_disposition-opt-BUSY
+Busy
+
+; fm_disposition-opt-FAILED
+Failed
+
+; fm_disposition-opt-UNKNOWN
+Unknown
+
+; fm_amaflags
+Billing flag:
+
+; fm_amaflags-opt-default
+Default
+
+; fm_amaflags-opt-billing
+Billing
+
+; fm_amaflags-opt-omit
+Omit
+
+; fm_amaflags-opt-documentation
+Documentation
+
+; fm_src
+Caller:
+
+; fm_srcformat-opt-exact
+Exact
+
+; fm_srcformat-opt-begin
+Begins with
+
+; fm_srcformat-opt-contain
+Contain
+
+; fm_srcformat-opt-end
+Ends with
+
+; fm_dst
+Callee:
+
+; fm_dstformat-opt-exact
+Exact
+
+; fm_dstformat-opt-begin
+Begins with
+
+; fm_dstformat-opt-contain
+Contains
+
+; fm_dstformat-opt-end
+Ends with
+
+; fm_clid
+Caller ID:
+
+; fm_clidformat-opt-exact
+Exact
+
+; fm_clidformat-opt-begin
+Begins with
+
+; fm_clidformat-opt-contain
+Contains
+
+; fm_clidformat-opt-end
+Ends with
+
+; fm_accountcode
+Account number:
+
+; fm_accountcodeformat-opt-exact
+Exact
+
+; fm_accountcodeformat-opt-begin
+Begins with
+
+; fm_accountcodeformat-opt-contain
+Contains
+
+; fm_accountcodeformat-opt-end
+Ends with
+
+; fm_userfield
+User fields:
+
+; fm_userfieldformat-opt-exact
+Exact
+
+; fm_userfieldformat-opt-begin
+Begins with
+
+; fm_userfieldformat-opt-contain
+Contains
+
+; fm_userfieldformat-opt-end
+Ends with
+
+; fm_dubeg
+Beginning : 
+
+; fm_dubegunit-opt-seconds
+Seconds
+
+; fm_dubegunit-opt-minutes
+Minutes
+
+; fm_duend
+End:
+
+; fm_duendunit-opt-seconds
+Seconds
+
+; fm_duendunit-opt-minutes
+Minutes
+
+; fm_bt-search
+Search
+
+; col_calldate
+Call date
+
+; col_src
+Caller
+
+; col_dst
+Callee
+
+; col_duration
+Duration
+
+; entry_duration-sec
+%02d sec.
+
+; entry_duration-minsec
+%s min. %02d sec.
+
+; entry_duration-hourminsec
+%sh%02d %02d sec.
+
+; entry_duration-dayhourminsec
+%s day(s) %sh%02d %02d sec.
+
+; entry_channel
+Channel:
+
+; entry_channel-unknown
+Unknown
+
+; entry_disposition
+Call status:
+
+; entry_disposition-ANSWERED
+Answered:
+
+; "entry_disposition-NO ANSWER"
+No answer
+
+; entry_disposition-BUSY
+Busy
+
+; entry_disposition-FAILED
+Failed
+
+; entry_disposition-UNKNOWN
+Unknown
+
+; entry_amaflagsmeta
+Billing flag:
+
+; entry_amaflagsmeta-default
+Default
+
+; entry_amaflagsmeta-billing
+Billing
+
+; entry_amaflagsmeta-omit
+Omit
+
+; entry_amaflagsmeta-documentation
+Documentation
+
+; entry_clid
+Caller ID:
+
+; entry_accountcode
+Account number:
+
+; entry_userfield
+User fields:
+
+; entry_dcontext
+Context:
+
+; entry_dstchannel
+Destination channel:
+
+; entry_billsec
+Duration:
+
+; entry_billsec-sec
+%02d sec.
+
+; entry_billsec-minsec
+%s min. %02d sec.
+
+; entry_billsec-hourminsec
+%sh%02d %02d sec.
+
+; entry_billsec-dayhourminsec
+%s day(s) %sh%02d %02d sec.
+
+; entry_lastapp
+Last application:
+
+; entry_lastdata
+Last data:
+
+; entry_uniqueid
+Unique ID:
+
+; no_cdr-result
+Unable to find any entries matching your search in the log files

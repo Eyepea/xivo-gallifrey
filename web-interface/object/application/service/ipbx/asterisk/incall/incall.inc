@@ -117,6 +117,8 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 				$rs = $this->_incall->get_all($disable,true,$order,$limit);
 		}
 
+		$this->_cnt = $this->_incall->get_cnt();
+
 		if($rs === false || ($nb = count($rs)) === 0)
 			return(false);
 
@@ -138,8 +140,6 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 
 			$r[$info['incall']['id']] = $info;
 		}
-
-		$this->_cnt = $this->_incall->get_cnt();
 
 		if(empty($r) === true)
 			$r = false;

@@ -145,8 +145,8 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 						$list[] = $rsn[$i]['phonebookid'];
 				}
 
-				if(($rs = $this->_phonebook->get_search($search,$list,$order,$limit)) !== false)
-					$this->_cnt = $this->_phonebook->get_cnt();
+				$rs = $this->_phonebook->get_search($search,$list,$order,$limit);
+				$this->_cnt = $this->_phonebook->get_cnt();
 				break;
 			case 'list':
 			default:
@@ -307,6 +307,12 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 			   && is_scalar($val) === false) === true)
 				continue;
 
+			if($type === 'number' && xivo_haslen($val) === false)
+			{
+				unset($list[$key]);
+				continue;
+			}
+
 			$info['type'] = $key;
 
 			if($type === 'address')
@@ -320,6 +326,9 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 
 			$reslist[$rs['type']] = $rs;
 		}
+
+		if($type === 'number' && empty($list) === true)
+			return(null);
 
 		if(empty($reslist) === true)
 		{

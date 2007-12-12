@@ -37,7 +37,7 @@ SELECT
 	uservoicemail.pager,
 	uservoicemail.dialout,
 	uservoicemail.callback,
-	'',
+	NULL,
 	'',
 	'eu-fr',
 	CASE WHEN uservoicemail.attach = 'yes' THEN 1 ELSE 0 END,

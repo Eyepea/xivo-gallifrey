@@ -1,5 +1,6 @@
 <?php
 
+print 'toto';
 define('XIVO_SRE_IPBX_AST_CHAN_SIP','SIP');
 define('XIVO_SRE_IPBX_AST_CHAN_IAX','IAX2');
 define('XIVO_SRE_IPBX_AST_CHAN_LOCAL','Local');
@@ -10,8 +11,6 @@ define('XIVO_SRE_IPBX_AST_CHAN_MISDN','mISDN');
 define('XIVO_SRE_IPBX_AST_CHAN_MGCP','MGCP');
 define('XIVO_SRE_IPBX_AST_CHAN_SCCP','SCCP');
 define('XIVO_SRE_IPBX_AST_CHAN_H323','H323');
-define('XIVO_SRE_IPBX_AST_CHAN_OH323','OH323');
-define('XIVO_SRE_IPBX_AST_CHAN_OOH323','OOH323');
 define('XIVO_SRE_IPBX_AST_CHAN_UNKNOWN','**Unknown**');
 
 define('XIVO_SRE_IPBX_AST_PROTO_SIP','sip');
@@ -93,6 +92,11 @@ define('XIVO_SRE_IPBX_AST_CDR_NBBYPAGE',30);
 
 $array = array();
 
+$array['application'] = array();
+
+$array['application']['user'] = array();
+$array['application']['user']['datastorage'] = 'userfeatures';
+
 $array['appcustom'] = array();
 
 $array['appcustom']['webservices'] = array();
@@ -136,7 +140,8 @@ $array['module']['configfiles'] = array();
 $array['module']['configfiles']['datastorage'] = false;
 
 $array['module']['cdr'] = array();
-$array['module']['cdr']['datastorage'] = true;
+$array['module']['cdr']['datastorage'] = array();
+$array['module']['cdr']['datastorage']['custom'] = true;
 
 $array['module']['dialstatus'] = array();
 $array['module']['dialstatus']['datastorage'] = true;
@@ -244,9 +249,9 @@ $array['module']['zonemessages'] = array();
 $array['module']['zonemessages']['datastorage'] = true;
 
 $array['protocol'] = array();
-$array['protocol']['sip'] = array('name' => XIVO_SRE_IPBX_AST_PROTO_SIP,'module' => 'usersip'); 
-$array['protocol']['iax'] = array('name' => XIVO_SRE_IPBX_AST_PROTO_IAX,'module' => 'useriax'); 
-$array['protocol']['custom'] = array('name' => XIVO_SRE_IPBX_AST_PROTO_CUSTOM,'module' => 'usercustom'); 
+$array['protocol'][XIVO_SRE_IPBX_AST_PROTO_SIP] = array('module' => 'usersip'); 
+$array['protocol'][XIVO_SRE_IPBX_AST_PROTO_IAX] = array('module' => 'useriax'); 
+$array['protocol'][XIVO_SRE_IPBX_AST_PROTO_CUSTOM] = array('module' => 'usercustom'); 
 
 $array['channel'] = array();
 $array['channel']['sip'] = XIVO_SRE_IPBX_AST_CHAN_SIP;

@@ -87,40 +87,6 @@ class xivo_service_asterisk_queuemember extends xivo_service_asterisk_abstract
 		return(true);
 	}
 
-	function get_all_by_category($arr=array(),$disable=null)
-	{
-		$arr = (array) $arr;
-		$prepare = (bool) $prepare;
-
-		if(empty($arr) === true)
-		{
-			if(($list = $this->get_all($disable)) === false)
-				return(false);
-		}
-		else if(($list = $this->get_all_where($arr,$disable)) === false)
-				return(false);
-
-		if(isset($list[0]) === false)
-			return(false);
-
-		$nb = count($list);
-
-		$r = array();
-
-		for($i = 0;$i < $nb;$i++)
-		{
-			if(isset($r[$list[$i]['category']]) === false)
-				$r[$list[$i]['category']] = array();
-
-			$r[$list[$i]['category']][] = $list[$i];
-		}
-
-		if(empty($r) === true)
-			$r = false;
-
-		return($r);
-	}
-
 	function add($arr)
 	{
 		if(is_array($arr) === false)

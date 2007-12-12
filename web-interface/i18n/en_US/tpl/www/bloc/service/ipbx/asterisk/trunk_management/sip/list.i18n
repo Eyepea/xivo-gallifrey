@@ -1,0 +1,35 @@
+; col_name
+Name
+
+; col_host
+Host
+
+; col_connection-type
+Connection type
+
+; col_call-limit
+Number of calls
+
+; col_provisioning
+Provisioning
+
+; trunk_host-unknown
+Unknown host
+
+; trunk_connect-inbound
+Incoming
+
+; trunk_connect-outbound
+Outgoing
+
+; trunk_connect-inoutbound
+Incoming/Outgoing
+
+; trunk_call-unlimited
+Unlimited calls
+
+; no_trunk
+No SIP trunk found
+
+; opt_delete_confirm
+Are you sure you want to delete this trunk ?

@@ -1,0 +1,155 @@
+; service_type
+IPBX
+
+; ast_codec_name_type-g723
+G.723.1 (Audio)
+
+; ast_codec_name_type-gsm
+GSM (Audio)
+
+; ast_codec_name_type-ulaw
+G.711 u-law (Audio)
+
+; ast_codec_name_type-alaw
+G.711 A-law (Audio)
+
+; ast_codec_name_type-g726
+G.726 (Audio)
+
+; ast_codec_name_type-adpcm
+ADPCM (Audio)
+
+; ast_codec_name_type-slin
+16 bit Signed Linear PCM (Audio)
+
+; ast_codec_name_type-lpc10
+LPC10 (Audio)
+
+; ast_codec_name_type-g729
+G.729A (Audio)
+
+; ast_codec_name_type-speex
+SpeeX (Audio)
+
+; ast_codec_name_type-ilbc
+iLBC (Audio)
+
+; ast_codec_name_type-jpeg
+JPEG (Image)
+
+; ast_codec_name_type-png
+PNG (Image)
+
+; ast_codec_name_type-h261
+H.261 (Video)
+
+; ast_codec_name_type-h263
+H.263 (Video)
+
+; ast_codec_name_type-h263p
+H.263+ (Video)
+
+; ast_format_name_info-wav
+Microsoft WAV 8khz
+
+; ast_format_name_info-wav49
+Microsoft WAV GSM (WAV49)
+
+; ast_format_name_info-gsm
+GSM Data
+
+; ast_format_name_info-ogg
+OGG/Vorbis
+
+; ast_format_name_info-ulaw
+uLaw 8khz
+
+; ast_format_name_info-ulaw
+uLaw 8khz
+
+; ast_format_name_info-alaw
+aLaw 8khz
+
+; ast_format_name_info-au
+Sun Microsystems AU
+
+; ast_format_name_info-vox
+Dialogic VOX (ADPCM)
+
+; ast_format_name_info-slin
+Signed Linear (SLN)
+
+; toolbar_opt_add
+Add
+
+; toolbar_opt_delete
+Delete
+
+; toolbar_opt_advanced
+Advanced mode
+
+; toolbar_add_menu_add-directory
+Add a directory
+
+; toolbar_add_menu_add-file
+Add a queue
+
+; toolbar_add_menu_add
+Add
+
+; toolbar_add_menu_import-file
+Import a file
+
+; toolbar_adv_menu_select-all
+Select all
+
+; toolbar_adv_menu_enable
+Enable
+
+; toolbar_adv_menu_disable
+Disable
+
+; toolbar_adv_menu_delete
+Delete
+
+; toolbar_adv_menu_add-category
+Add a category
+
+; toolbar_adv_menu_add-directory
+Add a directory
+
+; toolbar_adv_menu_add-file
+Add a file
+
+; toolbar_adv_menu_add-group
+Add a group
+
+; toolbar_adv_menu_add-agent
+Add an agent
+
+; toolbar_fm_search
+Search
+
+; toolbar_fm_directory
+-- Directory --
+
+; toolbar_fm_category
+-- Category --
+
+; toolbar_fm_context
+-- Context --
+
+; toolbar_fm_group
+-- Group --
+
+; col_action
+Action
+
+; opt_modify
+Edit
+
+; opt_delete
+Delete
+
+; fm_bt-save
+Save

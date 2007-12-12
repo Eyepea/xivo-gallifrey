@@ -70,7 +70,7 @@ class xivo_i18n_locale
 		if(($locale = $this->is_valid($locale)) === false)
 			return(false);
 
-		$lang = explode('_',$locale,1);
+		$lang = explode('_',$locale,2);
 
 		return($lang[0]);
 	}

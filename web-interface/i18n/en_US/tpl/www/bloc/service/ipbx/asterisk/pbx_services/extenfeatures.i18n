@@ -1,0 +1,247 @@
+; title_content_name
+Extensions configuration
+
+; smenu_general
+General
+
+; smenu_voicemail
+Voicemail
+
+; smenu_forwards
+Forwards
+
+; smenu_agents
+Agents
+
+; smenu_parking
+Parking
+
+; fm_featuremap_blindxfer
+Blind transfer:
+
+; fm_featuremap_atxfer
+Indirect transfer:
+
+; fm_featuremap_automon
+Online call recording:
+
+; fm_featuremap_disconnect
+Hangup:
+
+; fm_extenfeatures_enable-enablevm
+Enable voicemail:
+
+; fm_extenfeatures_enablevm
+Extension:
+
+; fm_extenfeatures_enable-voicemsg
+Reach the voicemail:
+
+; fm_extenfeatures_voicemsg
+Extension:
+
+; fm_extenfeatures_enable-recsnd
+Sound recording:
+
+; fm_extenfeatures_recsnd
+Extension:
+
+; fm_extenfeatures_enable-phonestatus
+Phone status:
+
+; fm_extenfeatures_phonestatus
+Extension:
+
+; fm_extenfeatures_enable-enablednd
+Do not disturb:
+
+; fm_extenfeatures_enablednd
+Extension:
+
+; fm_extenfeatures_enable-incallrec
+Incoming call recording:
+
+; fm_extenfeatures_incallrec
+Extension:
+
+; fm_extenfeatures_enable-incallfilter
+Incoming call filtering:
+
+; fm_extenfeatures_incallfilter
+Extension:
+
+; fm_extenfeatures_enable-pickup
+Call interception:
+
+; fm_extenfeatures_pickup
+Extension:
+
+; fm_extenfeatures_enable-fwdundoall
+Disable all forwarding:
+
+; fm_extenfeatures_fwdundoall
+Extension:
+
+; fm_extenfeatures_enable-fwdundorna
+Disable forwarding on no-answer:
+
+; fm_extenfeatures_fwdundorna
+Extension:
+
+; fm_extenfeatures_enable-fwdundobusy
+Disable forwarding on busy:
+
+; fm_extenfeatures_fwdundobusy
+Extension:
+
+; fm_extenfeatures_enable-fwdundounc
+Disable unconditionnal forwarding:
+
+; fm_extenfeatures_fwdundounc
+Extension:
+
+; fm_extenfeatures_enable-fwdrna
+Enable forwarding on no-answer:
+
+; fm_extenfeatures_fwdrna
+Extension:
+
+; fm_extenfeatures_enable-fwdbusy
+Enable forwarding on busy:
+
+; fm_extenfeatures_fwdbusy
+Extension:
+
+; fm_extenfeatures_enable-fwdunc
+Enable unconditionnal forwarding:
+
+; fm_extenfeatures_fwdunc
+Extension:
+
+; fm_extenfeatures_enable-agentstaticlogin
+Connect a static agent:
+
+; fm_extenfeatures_agentstaticlogin
+Extension:
+
+; fm_extenfeatures_enable-agentstaticlogoff
+Disconnect a static agent:
+
+; fm_extenfeatures_agentstaticlogoff
+Extension:
+
+; fm_extenfeatures_enable-agentdynamiclogin
+Connect a dynamic agent:
+
+; fm_extenfeatures_agentdynamiclogin
+Extension:
+
+; fm_extenfeatures_enable-calllistening
+Listen to online calls:
+
+; fm_extenfeatures_calllistening
+Extension:
+
+; fm_extenfeatures_enable-vmdelete
+Delete messages from voicemail:
+
+; fm_extenfeatures_vmdelete
+Extension:
+
+; fm_extenfeatures_enable-directoryaccess
+Directory access:
+
+; fm_extenfeatures_directoryaccess
+Extension:
+
+; fm_generalfeatures_parkext
+Extension:
+
+; fm_generalfeatures_context
+Context:
+
+; fm_generalfeatures_parkingtime
+Wait delay:
+
+; fm_generalfeatures_parkingtime-opt15
+15 sec.
+
+; fm_generalfeatures_parkingtime-opt30
+30 sec.
+
+; fm_generalfeatures_parkingtime-opt45
+45 sec.
+
+; fm_generalfeatures_parkingtime-opt60
+1 min.
+
+; fm_generalfeatures_parkingtime-opt120
+2 min.
+
+; fm_generalfeatures_parkingtime-opt180
+3 min.
+
+; fm_generalfeatures_parkingtime-opt240
+4 min.
+
+; fm_generalfeatures_parkingtime-opt300
+5 min.
+
+; fm_generalfeatures_parkingtime-opt
+%s min. %s sec. 
+
+; fm_generalfeatures_parkpos
+Extension to parked calls:
+
+; fm_generalfeatures_parkfindnext
+Look for the next call:
+
+; fm_generalfeatures_adsipark
+Use ADSI announces:
+
+; fm_generalfeatures_transferdigittimeout
+Dial timeout on transfer:
+
+; fm_generalfeatures_xferfailsound
+
+; fm_generalfeatures_transferdigittimeout-opt1
+1 second
+
+; fm_generalfeatures_transferdigittimeout-opt60
+1 minute
+
+; fm_generalfeatures_transferdigittimeout-opt
+%s seconds
+
+; fm_generalfeatures_featuredigittimeout
+Feature dial timeout:
+
+; fm_generalfeatures_featuredigittimeout-opt1
+1 millisecond
+
+; fm_generalfeatures_featuredigittimeout-opt
+%s milliseconds
+
+; fm_generalfeatures_courtesytone
+Tone audio file:
+
+; fm_generalfeatures_courtesytone-opt-default
+Default
+
+; fm_generalfeatures_xfersound
+Audio file of a successful transfer:
+
+; fm_generalfeatures_xfersound-opt-default
+Default
+
+; fm_generalfeatures_xferfailsound
+Audio file of a failed transfer:
+
+; fm_generalfeatures_xferfailsound-opt-default
+Default
+
+; fm_generalfeatures_pickupexten
+Group interception:
+
+; fm_success-save
+Extensions successfully saved

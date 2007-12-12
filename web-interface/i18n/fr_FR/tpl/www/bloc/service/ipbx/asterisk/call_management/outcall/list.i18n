@@ -1,23 +1,11 @@
 ; col_name
 Nom
 
-; col_trunk
-Interconnexion
-
 ; col_exten
 Extension
 
 ; col_context
 Contexte
-
-; outcall_trunk-sip
-Protocole SIP : %s
-
-; outcall_trunk-iax
-Protocole IAX : %s
-
-; outcall_trunk-custom
-Personnalisée : %s
 
 ; no_outcall
 Aucun appel sortant trouvé

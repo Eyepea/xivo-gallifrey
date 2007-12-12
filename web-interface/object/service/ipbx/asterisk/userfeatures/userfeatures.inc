@@ -63,7 +63,7 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 
 		if(($id = xivo_uint($id)) === 0
 		|| ($r = $this->_dso->get($id,$disable)) === false
-		|| ($r['protocol'] = $this->_sre->get_protocol_by_protocol_name($r['protocol'])) === false)
+		|| $this->_sre->chk_protocol($r['protocol']) === false)
 			return(false);
 
 		if($orig === true)
@@ -97,7 +97,7 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		$r = false;
 
 		if(($id = xivo_uint($id)) === 0
-		|| ($protocol = $this->_sre->get_protocol_name($protocol)) === false
+		|| $this->_sre->chk_protocol($protocol) === false
 		|| ($r = $this->get_where(array('protocolid' => $id,'protocol' => $protocol),$orig,$disable)) === false)
 			return($r);
 
@@ -114,7 +114,7 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 
 		if(isset($arr['protocol']) === false
 		|| ($arr['provisioningid'] = $this->_mk_provisioning_id($arr['protocol'])) === false
-		|| ($arr['protocol'] = $this->_sre->get_protocol_name($arr['protocol'])) === false)
+		|| $this->_sre->chk_protocol($arr['protocol']) === false)
 			return(false);
 
 		if(isset($arr['name']) === true)
@@ -202,7 +202,7 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 			&& ($arr['provisioningid'] = $this->_mk_provisioning_id($arr['protocol'])) === false)
 				return(false);
 
-			if(($arr['protocol'] = $this->_sre->get_protocol_name($arr['protocol'])) === false)
+			if($this->_sre->chk_protocol($arr['protocol']) === false)
 				return(false);
 		}
 

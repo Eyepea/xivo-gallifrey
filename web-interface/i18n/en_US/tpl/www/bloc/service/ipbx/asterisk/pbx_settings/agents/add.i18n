@@ -1,0 +1,44 @@
+; title_content_name
+Agents > Add a group
+
+; smenu_general
+General
+
+; smenu_queues
+Queues
+
+; fm_agentgroup_name
+Name:
+
+; fm_agents
+Agents:
+
+; bt-inagent
+Add one or more agents ->
+
+; bt-outagent
+<- Remove one or more agents
+
+; bt-upagent
+Up one or more agents
+
+; bt-downagent
+Down one or more agents
+
+; bt-inqueue
+Add one or more queues ->
+
+; bt-outqueue
+<- Remove one or more queues ->
+
+; col_queue-name
+Name
+
+; col_queue-penalty
+Penalty
+
+; no_queue
+No queues
+
+; create_queue
+Create a queue

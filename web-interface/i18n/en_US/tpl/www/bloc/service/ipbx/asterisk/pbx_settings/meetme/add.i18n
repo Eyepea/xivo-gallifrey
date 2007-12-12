@@ -1,0 +1,65 @@
+; title_content_name
+Conference rooms > Add
+
+; smenu_general
+General
+
+; smenu_advanced
+Advanced
+
+; fm_meetmefeatures_name
+Name:
+
+; fm_meetmeroom_number
+Number:
+
+; fm_meetmeroom_pin
+PIN:
+
+; fm_meetmeroom_admin-pin
+Administrator PIN:
+
+; fm_meetmefeatures_mode
+Mode:
+
+; fm_meetmefeatures_mode-talk
+Talk
+
+; fm_meetmefeatures_mode-listen
+Listen
+
+; fm_meetmefeatures_mode-all
+All
+
+; fm_meetmefeatures_musiconhold
+On-Hold Music:
+
+; fm_meetmefeatures_poundexit
+Enable the possibility to get out with #:
+
+; fm_meetmefeatures_quiet
+No incoming notification:
+
+; fm_meetmefeatures_record
+Recording:
+
+; fm_meetmefeatures_adminmode
+Administrator mode:
+
+; fm_meetmefeatures_announceusercount 
+Announce number of participants:
+
+; fm_meetmefeatures_announcejoinleave
+Announce when people join and leave:
+
+; fm_meetmefeatures_alwayspromptpin
+PIN code control:
+
+; fm_meetmefeatures_starmenu
+Enable menu access with *:
+
+; fm_meetmefeatures_enableexitcontext
+Enable exit context:
+
+; fm_meetmefeatures_exitcontext
+Exit context:

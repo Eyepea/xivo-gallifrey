@@ -725,43 +725,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 	{
 		$name = strval($name);
 
-		return($this->_chk_exists_cfg('protocol',$name));
-	}
-
-	function get_protocol_name($name)
-	{
-		$r = false;
-
-		$name = strval($name);
-
-		if($this->chk_protocol($name) === true)
-			$r = xivo_ak('name',$this->_conf['protocol'][$name],true);
-
-		return($r);
-	}
-
-	function get_protocol_by_protocol_name($name)
-	{
-		$r = false;
-
-		$name = strval($name);
-
-		if(($arr = xivo_get_aks($this->_conf['protocol'])) === false)
-			return($r);
-
-		for($i = 0;$i < $arr['cnt'];$i++)
-		{
-			$k = &$arr['keys'][$i];
-			$v = &$this->_conf['protocol'][$k];
-
-			if(isset($v['name']) === true && $v['name'] === $name)
-			{
-				$r = $k;
-				break;
-			}
-		}
-
-		return($r);
+		return($this->_chk_exists_cfg('protocol',strval($name)));
 	}
 
 	function get_protocol_module_name($name)
@@ -782,6 +746,20 @@ class xivo_service_asterisk extends xivo_service_abstract
 			$r = &$this->get_module($module);
 
 		return(($ref = &$r));
+	}
+
+	function load_protocols_module()
+	{
+		if(($arr = xivo_get_aks($this->_conf['protocol'])) === false)
+			return(false);
+
+		for($i = 0;$i < $arr['cnt'];$i++)
+		{
+			$k = &$arr['keys'][$i];
+
+			if(($module_name = $this->get_protocol_module_name($k)) !== false)
+				$this->get_module($module_name);
+		}
 	}
 
 	function get_element($modules=array())

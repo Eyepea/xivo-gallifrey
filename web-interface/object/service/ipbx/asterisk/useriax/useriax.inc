@@ -40,6 +40,7 @@ class xivo_service_asterisk_useriax extends xivo_service_asterisk_abstract
 		if(($id = xivo_uint($id)) !== 0)
 			$arr['id'] = $id;
 
+		$arr['protocol'] = XIVO_SRE_IPBX_AST_PROTO_IAX;
 		$arr['category'] = 'user';
 
 		if(isset($arr['name']) === true)
@@ -59,6 +60,7 @@ class xivo_service_asterisk_useriax extends xivo_service_asterisk_abstract
 		if(($id = xivo_uint($id)) === 0 || is_array($arr) === false)
 			return(false);
 
+		$arr['protocol'] = XIVO_SRE_IPBX_AST_PROTO_IAX;
 		$arr['category'] = 'user';
 
 		if(isset($arr['name']) === true)

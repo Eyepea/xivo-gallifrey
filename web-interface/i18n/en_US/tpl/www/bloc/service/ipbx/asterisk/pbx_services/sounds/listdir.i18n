@@ -1,0 +1,11 @@
+; col_directory
+Directory
+
+; col_number-files
+Number of files
+
+; no_directory
+No directory found
+
+; opt_delete_confirm
+Are you sure you want to delete this directory ?

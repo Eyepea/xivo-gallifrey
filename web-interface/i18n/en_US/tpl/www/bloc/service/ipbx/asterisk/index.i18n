@@ -1,0 +1,44 @@
+; title_content_name
+IPBX
+
+; stats_col_type
+Type
+
+; stats_col_status
+Status
+
+; stats_col_enable
+Enabled
+
+; stats_col_disable
+Disabled
+
+; stats_col_user
+User
+
+; stats_col_total
+Total
+
+; stats_type-user
+User
+
+; stats_type-group
+Group
+
+; stats_type-queue
+Queue
+
+; stats_type-meetme
+Conference room
+
+; stats_status-initialized
+Initialized
+
+; stats_calls-active
+Active Call(s) : %s
+
+; info_service_label
+Software:
+
+; info_service_version
+Version:

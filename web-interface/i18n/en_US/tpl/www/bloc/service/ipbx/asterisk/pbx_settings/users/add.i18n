@@ -1,0 +1,407 @@
+; title_content_name
+Users > Add
+
+; smenu_general
+General
+
+; smenu_voicemail
+Voicemail
+
+; smenu_dialstatus
+No answer
+
+; smenu_services
+Services
+
+; smenu_groups
+Groups
+
+; smenu_autoprov
+Provisioning
+
+; smenu_advanced
+Advanced
+
+; smenu_codecs
+Codecs
+
+; smenu_rightcalls
+Call permissions
+
+; fm_userfeatures_firstname 
+First name:
+
+; fm_userfeatures_lastname
+Last name:
+
+; fm_protocol_name
+Username:
+
+; fm_protocol_interface
+Interface:
+
+; fm_protocol_secret
+Password:
+
+; fm_protocol_host
+IP Addressing type:
+
+; fm_protocol_protocol
+Protocol:
+
+; fm_protocol_protocol-opt-sip
+SIP
+
+; fm_protocol_protocol-opt-iax
+IAX
+
+; fm_protocol_protocol-opt-custom
+Custom
+
+; fm_protocol_nat
+NAT:
+
+; fm_protocol_context
+Context:
+
+; fm_protocol_amaflags
+Billing flag:
+
+; fm_protocol_amaflags-opt-default
+Default
+
+; fm_protocol_amaflags-opt-omit
+Omit
+
+; fm_protocol_amaflags-opt-billing
+Billing
+
+; fm_protocol_amaflags-opt-documentation
+Documentation
+
+; fm_protocol_canreinvite
+Invite:
+
+; fm_protocol_accountcode
+Account number:
+
+; fm_protocol_qualify
+Monitoring:
+
+; fm_protocol_dtmfmode
+DTMF:
+
+; fm_ufeatures_number
+Phone number:
+
+; fm_userfeatures_ringseconds
+Ringing time:
+
+; fm_userfeatures_ringseconds-opt0
+Unlimited
+
+; fm_userfeatures_ringseconds-opt
+%s seconds
+
+; fm_userfeatures_simultcalls
+Simultaneous calls:
+
+; fm_userfeatures_musiconhold
+On-Hold Music:
+
+; fm_userfeatures_enableclient
+Enable XIVO Client:
+
+; fm_userfeatures_enablehint
+Enable XIVO SwitchBoard monitoring:
+
+; fm_userfeatures_enablevoicemail
+Enable voicemail:
+
+; fm_userfeatures_enablexfer
+Enable call transfer:
+
+; fm_userfeatures_enableautomon
+Enable online call recording : 
+
+; fm_userfeatures_callrecord
+Call recording:
+
+; fm_userfeatures_callfilter
+Call filtering:
+
+; fm_userfeatures_enablednd
+Do not disturb:
+
+; fm_userfeatures_enablerna
+Forward on no-answer:
+
+; fm_userfeatures_destrna
+Destination:
+
+; fm_userfeatures_enablebusy
+Forward on busy:
+
+; fm_userfeatures_destbusy
+Destination:
+
+; fm_userfeatures_enableunc
+Unconditional forward:
+
+; fm_userfeatures_destunc
+Destination:
+
+; fld-callgroup
+Groups
+
+; bt-ingroup
+Add one or more groups ->
+
+; bt-outgroup
+<- Remove one or more groups
+
+; col_group-name
+Name
+
+; col_group-channel
+Channel
+
+; col_group-calllimit
+Call limit
+
+; no_group
+No interception groups
+
+; fld-queuegroup
+Queues
+
+; col_queue-name
+Name
+
+; col_queue-channel
+Channel
+
+; col_queue-penalty
+Penalty
+
+; col_queue-calllimit
+Call limit
+
+; no_queue
+No queues
+
+; bt-inqueue
+Add one or more queues ->
+
+; bt-outqueue
+<- Remove one or more queues
+
+; fm_codec-custom
+Customize:
+
+; fm_protocol_codec-disallow
+Disable:
+
+; fm_protocol_codec-disallow-opt-all
+All
+
+; fm_protocol_codec-allow
+Enable:
+
+; bt-upcodec
+Up one or more codecs
+
+; bt-downcodec
+Down one or more codecs
+
+; bt-incodec
+Add one or more codecs ->
+
+; bt-outcodec
+<- Remove one or more codecs
+
+; fm_voicemail-active
+Enable:
+
+; fm_voicemail_fullname
+Name:
+
+; fm_voicemail_password
+Password:
+
+; fm_voicemail_email
+E-mail:
+
+; fm_voicemail_tz
+Timezone:
+
+; fm_userfeatures_skipvoicemailpass
+Disable password checking:
+
+; fm_voicemail_attach
+Attached message:
+
+; fm_voicemail_deletevoicemail
+Delete message after notification:
+
+; fm_userfeatures_description
+Description:
+
+; bt-inrightcall
+Add one or more call permission ->
+
+; bt-outrightcall
+<- Delete one or more call permission
+
+; create_rightcall
+Create a call permission
+
+; fm_protocol_callerid
+Caller ID:
+
+; fm_ufeatures_outcallerid
+Outgoing Caller ID:
+
+; fm_ufeatures_outcallerid-opt-default
+Default
+
+; fm_ufeatures_outcallerid-opt-anonymous
+Anonymous
+
+; fm_ufeatures_outcallerid-opt-custom
+Customize
+
+; fm_protocol_host-dynamic
+Dynamic
+
+; fm_protocol_host-static
+Static
+
+; fm_autoprov_modact
+Mode:
+
+; fm_autoprov_modact-guest
+Initialize
+
+; fm_autoprov_modact-prov
+Provisioning
+
+; fm_autoprov_vendormodel
+Model:
+
+; fm_autoprov_macaddr
+MAC Address:
+
+; fld-dialstatus-noanswer
+No answer
+
+; fld-dialstatus-busy
+Busy
+
+; fld-dialstatus-congestion
+Congested
+
+; fld-dialstatus-chanunavail
+Unavailable
+
+; fm_dialstatus_type
+Destination:
+
+; fm_dialstatus_type-opt-endcall
+End call
+
+; fm_dialstatus_type-opt-user
+User
+
+; fm_dialstatus_type-opt-group
+Group
+
+; fm_dialstatus_type-opt-queue
+Queue
+
+; fm_dialstatus_type-opt-meetme
+Conference room
+
+; fm_dialstatus_type-opt-schedule
+Schedule
+
+; fm_dialstatus_type-opt-application
+Application
+
+; fm_dialstatus_type-opt-sound
+Audio file
+
+; fm_dialstatus_type-opt-custom
+Customized
+
+; fm_dialstatus_endcall-typeval
+Action:
+
+; fm_dialstatus_user-typeval
+Forward to:
+
+; fm_dialstatus_group-typeval
+Forward to:
+
+; fm_dialstatus_queue-typeval
+Forward to:
+
+; fm_dialstatus_meetme-typeval
+Forward to:
+
+; fm_dialstatus_schedule-typeval
+Forward to:
+
+; fm_dialstatus_application-typeval
+Forward to:
+
+; fm_dialstatus_sound-typeval
+Play:
+
+; fm_dialstatus_custom-typeval
+Command:
+
+; fm_dialstatus_endcall-typeval-opt-none
+None
+
+; fm_dialstatus_endcall-typeval-opt-hangup
+Hang up
+
+; fm_dialstatus_endcall-typeval-opt-busy
+Busy
+
+; fm_dialstatus_endcall-typeval-opt-congestion
+Congested
+
+; fm_dialstatus_application-typeval-opt-faxtomail
+FaxToMail
+
+; fm_dialstatus_application-typeval-opt-disa
+DISA
+
+; fm_dialstatus_application-typeval-opt-directory
+Directory
+
+; fm_dialstatus_application-typeval-opt-voicemail
+Voicemail
+
+; fm_dialstatus_application-typeval-opt-callback
+Callback
+
+; create_user
+Create an user
+
+; create_group
+Create a group
+
+; create_queue
+Create a queue
+
+; create_meetme
+Create a conference room
+
+; create_schedule
+Create a schedule
+
+; add_playback-sound
+Add an audio file

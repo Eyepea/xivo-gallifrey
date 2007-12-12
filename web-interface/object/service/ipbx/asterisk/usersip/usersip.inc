@@ -54,6 +54,7 @@ class xivo_service_asterisk_usersip extends xivo_service_asterisk_abstract
 			$arr['id'] = $id;
 
 		$arr['pickupgroup'] = $arr['callgroup'];
+		$arr['protocol'] = XIVO_SRE_IPBX_AST_PROTO_SIP;
 		$arr['category'] = 'user';
 
 		if(isset($arr['name']) === true)
@@ -76,6 +77,7 @@ class xivo_service_asterisk_usersip extends xivo_service_asterisk_abstract
 		if(isset($arr['callgroup']) === true)
 			$arr['pickupgroup'] = $arr['callgroup'];
 
+		$arr['protocol'] = XIVO_SRE_IPBX_AST_PROTO_SIP;
 		$arr['category'] = 'user';
 
 		if(isset($arr['name']) === true)

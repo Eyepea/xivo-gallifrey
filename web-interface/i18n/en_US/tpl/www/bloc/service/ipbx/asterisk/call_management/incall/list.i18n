@@ -1,0 +1,56 @@
+; col_did
+DID
+
+; col_destination
+Destination
+
+; col_identity
+Identity
+
+; incall_type-endcall
+End call
+
+; incall_type-user
+User
+
+; incall_type-group
+Group
+
+; incall_type-queue
+Queues
+
+; incall_type-meetme
+Conference rooms
+
+; incall_type-schedule
+Schedule
+
+; incall_type-application
+Application
+
+; incall_type-sound
+Audio files
+
+; incall_type-custom
+Customized
+
+; incall_type-application-faxtomail
+FaxToMail : %s
+
+; incall_type-application-disa
+DISA : %s
+
+; incall_type-application-directory
+Directory : %s
+
+; incall_type-application-voicemail
+Voicemail : %s
+
+; incall_type-application-callback
+Callback : %s
+
+; no_incall
+No incoming calls found
+
+; opt_delete_confirm
+Are you sure you want to delete this incoming call ?

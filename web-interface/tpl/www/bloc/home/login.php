@@ -14,7 +14,7 @@
 
 <?=$form->password(array('name' => 'password','id' => 'it-password','size' => 20,'value' => $this->bbf('fm_password')),'onfocus="this.value = this.value == \''.$dhtml->escape($this->bbf('fm_password')).'\' ? \'\' : this.value; xivo_fm_set_onfocus(this);"');?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_language'),'name' => 'language','id' => 'it-language'),array('fr' => 'Français'));?>
+<?=$form->select(array('desc' => $this->bbf('fm_language'),'name' => 'language','id' => 'it-language','value' => XIVO_I18N_BABELFISH_LANGUAGE),$this->get_var('language'));?>
 
 <?=$form->submit(array('name' => 'submit','id' => 'it-submit','value' => $this->bbf('fm_bt-connection')));?>
 </div>

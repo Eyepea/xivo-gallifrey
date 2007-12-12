@@ -92,8 +92,6 @@ switch($act)
 	case 'list':
 	default:
 		$act = 'list';
-
-		$total = 0;
 		$nbbypage = XIVO_SRE_IPBX_AST_NBBYPAGE;
 
 		$order = array();
@@ -105,14 +103,19 @@ switch($act)
 		$limit[1] = $nbbypage;
 
 		if($search !== '')
-			$list = $appuser->get_users_search($search,null,null,$order,$limit);
+			$list = $appuser->get_users_search($search,null,$order,$limit);
 		else if($context !== '')
-			$list = $appuser->get_users_context($context,null,null,$order,$limit);
+			$list = $appuser->get_users_context($context,null,$order,$limit);
 		else
 			$list = $appuser->get_users_list(null,null,$order,$limit);
 
-		if($list !== false)
-			$total = $appuser->get_cnt();
+		$total = $appuser->get_cnt();
+
+		if($list === false && $total > 0)
+		{
+			$param['page'] = $page - 1;
+			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/users'),$param);
+		}
 
 		$_HTML->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
 		$_HTML->set_var('list',$list);

@@ -22,8 +22,6 @@ $array['element']['channel']['value'] = array(
 			XIVO_SRE_IPBX_AST_CHAN_MGCP	=> XIVO_SRE_IPBX_AST_CHAN_MGCP,
 			XIVO_SRE_IPBX_AST_CHAN_SCCP	=> XIVO_SRE_IPBX_AST_CHAN_SCCP,
 			XIVO_SRE_IPBX_AST_CHAN_H323	=> XIVO_SRE_IPBX_AST_CHAN_H323,
-			XIVO_SRE_IPBX_AST_CHAN_OH323	=> XIVO_SRE_IPBX_AST_CHAN_OH323,
-			XIVO_SRE_IPBX_AST_CHAN_OOH323	=> XIVO_SRE_IPBX_AST_CHAN_OOH323,
 			XIVO_SRE_IPBX_AST_CHAN_UNKNOWN	=> 'unknown',
 			'others'			=> 'others');
 $array['element']['channel']['default'] = '';
@@ -125,8 +123,6 @@ $array['filter']['channel'] = array('set' => false,'chk' => 2,'key' => array(
 					XIVO_SRE_IPBX_AST_CHAN_MGCP,
 					XIVO_SRE_IPBX_AST_CHAN_SCCP,
 					XIVO_SRE_IPBX_AST_CHAN_H323,
-					XIVO_SRE_IPBX_AST_CHAN_OH323,
-					XIVO_SRE_IPBX_AST_CHAN_OOH323,
 					XIVO_SRE_IPBX_AST_CHAN_UNKNOWN,
 					'others'));
 $array['filter']['disposition'] = array('set' => false,'chk' => 2,'key' => array(

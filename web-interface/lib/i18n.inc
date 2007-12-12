@@ -52,6 +52,11 @@ class xivo_i18n
 		return(xivo_i18n::mediator('list','language'));
 	}
 
+	function get_language_translated_list()
+	{
+		return(xivo_i18n::mediator('translated_list','language'));
+	}
+
 	function get_territory($locale='')
 	{
 		return(xivo_i18n::mediator('get','territory',$locale));
@@ -151,6 +156,7 @@ class xivo_i18n
 	{
 		static $mediator = null;
 		static $territory = null;
+		static $language = null;
 
 		if($mediator === null)
 		{
@@ -270,13 +276,35 @@ class xivo_i18n
 			case 'translated_list':
 				switch($name)
 				{
+					case 'language':
+						if($language !== null)
+							return($language);
+
+						$i18n = &xivo_gct::get('xivo_i18n');
+
+						if($i18n->load_file('util'.XIVO_SEP_DIR.'language') === false
+						|| ($list = $mediator->get_language_list()) === false
+						|| ($arr = xivo_get_aks($list)) === false)
+							return(($language = false));
+
+						$language = array();
+
+						for($i = 0;$i < $arr['cnt'];$i++)
+						{
+							$key = &$arr['keys'][$i];
+							$language[$key] = xivo_i18n::babelfish('language_'.$key);
+						}
+
+						asort($language);
+						$r = &$language;
+						break;
 					case 'territory':
 						if($territory !== null)
 							return($territory);
 
 						$i18n = &xivo_gct::get('xivo_i18n');
 
-						if($i18n->load_file('util/territory') === false
+						if($i18n->load_file('util'.XIVO_SEP_DIR.'territory') === false
 						|| ($list = $mediator->get_territory_list()) === false
 						|| ($arr = xivo_get_aks($list)) === false)
 							return(($territory = false));
