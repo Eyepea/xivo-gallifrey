@@ -635,9 +635,9 @@ CREATE UNIQUE INDEX outcall__uidx__exten_context ON outcall(exten,context);
 DROP TABLE outcalltrunk;
 CREATE TABLE outcalltrunk (
  outcallid integer unsigned NOT NULL DEFAULT 0,
- trunkid integer unsigned NOT NULL DEFAULT 0,
+ trunkfeaturesid integer unsigned NOT NULL DEFAULT 0,
  priority tinyint unsigned NOT NULL DEFAULT 0,
- PRIMARY KEY(outcallid,trunkid)
+ PRIMARY KEY(outcallid,trunkfeaturesid)
 );
 
 CREATE INDEX outcalltrunk__idx__priority ON outcalltrunk(priority);
