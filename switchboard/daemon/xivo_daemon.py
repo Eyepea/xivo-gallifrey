@@ -2608,11 +2608,16 @@ class FaxRequestHandler(SocketServer.StreamRequestHandler):
                         brieffile = ' '.join(comm.split()[0:2])
                         if brieffile == 'PDF document,':
                                 log_debug(SYSLOG_INFO, 'fax : the file received is a PDF one : converting to TIFF')
-                                reply = 'ko;mv-pdf'
-                                ret = os.system('mv /tmp/%s /tmp/%s.pdf' %(filename, filename))
+                                try:
+                                        os.rename('/tmp/%s' % filename, '/tmp/%s.pdf' % filename)
+                                        ret = 0
+                                except Exception:
+                                        reply = 'ko;mv-pdf'
+                                        ret = -1
                                 if ret == 0:
                                         reply = 'ko;convert-pdftif'
                                         ret = os.system('%s -o /tmp/%s.tif /tmp/%s.pdf' %(PDF2FAX, filename, filename))
+
 ##                        elif brieffile == 'Netpbm PPM':
 ##                                log_debug(SYSLOG_INFO, 'fax : the file received is a PPM one : converting to TIFF')
 ##                                reply = 'ko;mv-pdf'
@@ -2632,8 +2637,12 @@ class FaxRequestHandler(SocketServer.StreamRequestHandler):
                                 if os.path.exists(PATH_SPOOL_ASTERISK_FAX):
                                         try:
                                                 filenamedest = '%s/%s.tif' %(PATH_SPOOL_ASTERISK_FAX, filename)
-                                                reply = 'ko;mv-pathspool'
-                                                ret = os.system('mv /tmp/%s.tif %s' %(filename, filenamedest))
+                                                try:
+                                                        os.rename('/tmp/%s.tif' % filename, filenamedest)
+                                                        ret = 0
+                                                except Exception:
+                                                        reply = 'ko;mv-pathspool'
+                                                        ret = -1
                                                 if ret == 0:
                                                         reply = 'ko;AMI'
                                                         ret = AMI_array_user_commands[astid].txfax(filenamedest, callerid, number, context, True)
@@ -2651,7 +2660,11 @@ class FaxRequestHandler(SocketServer.StreamRequestHandler):
                                 myconn[1].send('faxsent=%s\n' % reply)
                 except Exception, exc:
                         log_debug(SYSLOG_ERR, "--- exception --- (fax handler - global) : %s" %(str(exc)))
-                os.system('rm /tmp/%s*' % filename)
+                listtmpdir = os.listdir('/tmp')
+                for tmpfile in listtmpdir:
+                        if tmpfile.find(filename) == 0:
+                                os.unlink('/tmp/%s' % tmpfile)
+                                log_debug(SYSLOG_INFO, 'faxhandler : removed /tmp/%s file' % tmpfile)
 
 
 ## \class LoginHandler
