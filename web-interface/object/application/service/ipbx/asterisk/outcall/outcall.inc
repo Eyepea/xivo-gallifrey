@@ -241,7 +241,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 
 		for($i = 0,$j = 0;$i < $nb;$i++)
 		{
-			$info['penalty'] = $j;
+			$info['priority'] = $j;
 
 			if(($info['trunkid'] = $trunkfeatures->get_id($arr[$i])) === false
 			|| ($rs = $this->_outcalltrunk->chk_values($info)) === false

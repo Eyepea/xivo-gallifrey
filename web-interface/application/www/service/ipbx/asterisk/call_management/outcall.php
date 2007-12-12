@@ -45,7 +45,7 @@ switch($act)
 
 		if($outcalltrunk['list'] !== false && xivo_issa('outcalltrunk',$result) === true)
 		{
-			$outcalltrunksort = new xivo_sort(array('key' => 'penalty'));
+			$outcalltrunksort = new xivo_sort(array('key' => 'priority'));
 			usort($result['outcalltrunk'],array(&$outcalltrunksort,'num_usort'));
 
 			$outcalltrunk['slt'] = xivo_array_intersect_key($result['outcalltrunk'],$outcalltrunk['list'],'trunkid');
@@ -114,7 +114,7 @@ switch($act)
 
 		if($outcalltrunk['list'] !== false && xivo_issa('outcalltrunk',$return) === true)
 		{
-			$outcalltrunksort = new xivo_sort(array('key' => 'penalty'));
+			$outcalltrunksort = new xivo_sort(array('key' => 'priority'));
 			usort($return['outcalltrunk'],array(&$outcalltrunksort,'num_usort'));
 
 			$outcalltrunk['slt'] = xivo_array_intersect_key($return['outcalltrunk'],$outcalltrunk['list'],'trunkid');
