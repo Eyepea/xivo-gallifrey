@@ -92,9 +92,9 @@ if not internal:
 				callerid = ""
 
 cursor.query("SELECT ${columns} FROM trunkfeatures INNER JOIN outcalltrunk "
-             "ON trunkfeatures.id = outcalltrunk.trunkid "
+             "ON trunkfeatures.id = outcalltrunk.trunkfeaturesid "
              "WHERE outcalltrunk.outcallid = %d "
-             "ORDER BY outcalltrunk.penalty ASC",
+             "ORDER BY outcalltrunk.priority ASC",
              ('trunkfeatures.trunk', 'trunkfeatures.trunkid'),
              (outcallid,))
 res = cursor.fetchall()
