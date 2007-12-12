@@ -147,8 +147,7 @@ class cursor(object):
 	def fetchone(self):
 		"""As in DBAPI2.0 (except the fact rows are not tuples but
 		lists so if you try to modify them, you will succeed instead of
-		the correct behavior that would be that an exception would have
-		been raised)
+		the correct behaviour of raising an exception).
 		Additionally every row returned by this class is addressable
 		by column name besides the column position in the query.
 		"""
