@@ -377,10 +377,22 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		{
 			$ref = &$rs[$i];
 
-			if($ref['protocol'] === XIVO_SRE_IPBX_AST_PROTO_SIP)
-				$ref['initialized'] = xivo_haslen($ref['fullcontact']);
-			else
-				$ref['initialized'] = true;
+			switch($ref['protocol'])
+			{
+				case XIVO_SRE_IPBX_AST_PROTO_SIP:
+					$ref['initialized'] = xivo_haslen($ref['fullcontact']);
+					$ref['secret'] = $ref['sipsecret'];
+					$ref['callerid'] = $ref['sipcallerid'];
+					break;
+				case XIVO_SRE_IPBX_AST_PROTO_IAX:
+					$ref['initialized'] = true;
+					$ref['secret'] = $ref['iaxsecret'];
+					$ref['callerid'] = $ref['iaxcallerid'];
+					break;
+				default:
+					$ref['initialized'] = true;
+					break;
+			}
 
 			$r[$ref['id']] = $this->_userfeatures->_prepare($ref);
 		}

@@ -158,8 +158,15 @@ class xivo_application_service_asterisk_user_abstract_sql extends xivo_applicati
 
 		$this->_dso->new_order($order,null,$t['userfeatures']);
 		$this->_dso->new_limit($limit);
+	
+		$select =	$t['userfeatures'].'.*,'.
+				$t['usersip'].'.fullcontact,'.
+				$t['usersip'].'.secret AS sipsecret,'.
+				$t['usersip'].'.callerid AS sipcallerid,'.
+				$t['useriax'].'.secret AS iaxsecret,'.
+				$t['useriax'].'.callerid AS iaxcallerid';
 
-		$r = $this->_dso->select_all($from,$t['userfeatures'].'.*,'.$t['usersip'].'.fullcontact',$where);
+		$r = $this->_dso->select_all($from,$select,$where);
 
 		$this->_dso->reset_order();
 		$this->_dso->reset_limit();
@@ -237,11 +244,13 @@ class xivo_application_service_asterisk_user_abstract_sql extends xivo_applicati
 
 		if($use_sip === true)
 		{
+			$select .= ','.$t['usersip'].'.fullcontact,'.
+				   $t['usersip'].'.secret AS sipsecret,'.
+				   $t['usersip'].'.callerid AS sipcallerid';
+
 			$from .= ' '.$sipjoin.
 				 ' AND '.$sipwhere.
 				 ' AND '.$t['userfeatures'].'.protocol = '.$t['usersip'].'.protocol';
-
-			$select .= ','.$t['usersip'].'.fullcontact';
 
 			if($initialized !== null)
 			{
@@ -256,6 +265,9 @@ class xivo_application_service_asterisk_user_abstract_sql extends xivo_applicati
 
 		if($use_iax === true)
 		{
+			$select .= ','.$t['useriax'].'.secret AS iaxsecret,'.
+				   $t['useriax'].'.callerid AS iaxcallerid';
+
 			$from .= ' '.$iaxjoin.
 				 ' AND '.$iaxwhere.
 				 ' AND '.$t['userfeatures'].'.protocol = '.$t['useriax'].'.protocol';

@@ -16,18 +16,18 @@ for($i = 0;$i < $total;$i++)
 {
 	$ref = &$users[$i];
 
-	$msg .= '"'.str_replace('"','""',$ref['ufeatures']['protocol']).'"|'.
-		'"'.str_replace('"','""',$ref['protocol']['name']).'"|'.
-		'"'.str_replace('"','""',$ref['protocol']['secret']).'"|'.
-		'"'.str_replace('"','""',intval((bool) $ref['ufeatures']['enableclient'])).'"|'.
-		'"'.str_replace('"','""',$ref['ufeatures']['number']).'"|'.
-		'"'.str_replace('"','""',intval((bool) $ref['protocol']['initialized'])).'"|'.
-		'"'.str_replace('"','""',intval((bool) $ref['protocol']['commented'])).'"|'.
-		'"'.str_replace('"','""',$ref['protocol']['callerid']).'"|'.
-		'"'.str_replace('"','""',$ref['ufeatures']['firstname']).'"|'.
-		'"'.str_replace('"','""',$ref['ufeatures']['lastname']).'"|'.
-		'"'.str_replace('"','""',$ref['ufeatures']['context']).'"|'.
-		'"'.str_replace('"','""',intval((bool) $ref['ufeatures']['enablehint'])).'"'."\n";
+	$msg .= '"'.str_replace('"','""',$ref['protocol']).'"|'.
+		'"'.str_replace('"','""',$ref['name']).'"|'.
+		'"'.str_replace('"','""',$ref['secret']).'"|'.
+		'"'.str_replace('"','""',intval((bool) $ref['enableclient'])).'"|'.
+		'"'.str_replace('"','""',$ref['number']).'"|'.
+		'"'.str_replace('"','""',intval((bool) $ref['initialized'])).'"|'.
+		'"'.str_replace('"','""',intval((bool) $ref['commented'])).'"|'.
+		'"'.str_replace('"','""',$ref['callerid']).'"|'.
+		'"'.str_replace('"','""',$ref['firstname']).'"|'.
+		'"'.str_replace('"','""',$ref['lastname']).'"|'.
+		'"'.str_replace('"','""',$ref['context']).'"|'.
+		'"'.str_replace('"','""',intval((bool) $ref['enablehint'])).'"'."\n";
 }
 
 $msg .= xivo_msg('end-data')."\n";
