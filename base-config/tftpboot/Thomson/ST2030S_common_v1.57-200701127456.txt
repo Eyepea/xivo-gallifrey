@@ -68,10 +68,10 @@ UnRegister_priorFlgMP1=1
 ServiceDomainMP1=
 RegisterServerMP1=192.168.0.254
 ProxyServerMP1=192.168.0.254
-DisplayName1=
-TEL1Number=
-regid1=
-regpwd1=
+DisplayName1=Initialisation
+TEL1Number=guest
+regid1=guest
+regpwd1=guest
 ExpireTimeMP1=3600
 RegisterFrequencyMP1=60
 
