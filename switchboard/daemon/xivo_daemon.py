@@ -185,6 +185,7 @@ REQUIRED_CLIENT_VERSION = 2025
 XIVOVERSION = '0.3'
 ITEMS_PER_PACKET = 500
 USERLIST_LENGTH = 12
+PDF2FAX= '/usr/share/asterisk/bin/pdf2fax'
 
 # capabilities
 CAPA_CUSTINFO    = 1 <<  0
@@ -2574,8 +2575,8 @@ def finduser(astname, user):
 class FaxRequestHandler(SocketServer.StreamRequestHandler):
         def handle(self):
                 threading.currentThread().setName('fax-%s:%d' %(self.client_address[0], self.client_address[1]))
+                filename = 'astfaxsend-' + ''.join(random.sample(__alphanums__, 10)) + "-" + hex(int(time.time()))
                 try:
-                        filename = 'astfaxsend-' + ''.join(random.sample(__alphanums__, 10)) + "-" + hex(int(time.time()))
                         file_definition = self.rfile.readline().strip()
                         log_debug(SYSLOG_INFO, 'fax : received <%s>' % file_definition)
                         a = self.rfile.read()
@@ -2611,18 +2612,21 @@ class FaxRequestHandler(SocketServer.StreamRequestHandler):
                                 ret = os.system('mv /tmp/%s /tmp/%s.pdf' %(filename, filename))
                                 if ret == 0:
                                         reply = 'ko;convert-pdftif'
-                                        ret = os.system('convert /tmp/%s.pdf /tmp/%s.tif' %(filename, filename))
-                        elif brieffile == 'Netpbm PPM':
-                                log_debug(SYSLOG_INFO, 'fax : the file received is a PPM one : converting to TIFF')
-                                reply = 'ko;mv-pdf'
-                                ret = os.system('mv /tmp/%s /tmp/%s.ppm' %(filename, filename))
-                                if ret == 0:
-                                        reply = 'ko;convert-ppmtif'
-                                        ret = os.system('convert /tmp/%s.ppm /tmp/%s.tif' %(filename, filename))
-                        elif brieffile == 'TIFF image':
-                                log_debug(SYSLOG_INFO, 'fax : the file received is a TIFF one : no conversion needed')
-                                reply = 'ko;mv-tiff'
-                                ret = os.system('mv /tmp/%s /tmp/%s.tif' %(filename, filename))
+                                        ret = os.system('%s -o /tmp/%s.tif /tmp/%s.pdf' %(PDF2FAX, filename, filename))
+##                        elif brieffile == 'Netpbm PPM':
+##                                log_debug(SYSLOG_INFO, 'fax : the file received is a PPM one : converting to TIFF')
+##                                reply = 'ko;mv-pdf'
+##                                ret = os.system('mv /tmp/%s /tmp/%s.ppm' %(filename, filename))
+##                                if ret == 0:
+##                                        reply = 'ko;convert-ppmtif'
+##                                        ret = os.system('convert /tmp/%s.ppm /tmp/%s.tif' %(filename, filename))
+##                        elif brieffile == 'TIFF image':
+##                                log_debug(SYSLOG_INFO, 'fax : the file received is a TIFF one : no conversion needed')
+##                                reply = 'ko;mv-tiff'
+##                                ret = os.system('mv /tmp/%s /tmp/%s.tif' %(filename, filename))
+                        else:
+                                log_debug(SYSLOG_WARNING, 'fax : the file received is a <%s> one : format not (yet) supported' % brieffile)
+                                ret = -1
 
                         if ret == 0:
                                 if os.path.exists(PATH_SPOOL_ASTERISK_FAX):
@@ -2641,13 +2645,13 @@ class FaxRequestHandler(SocketServer.StreamRequestHandler):
                                         reply = 'ko;exists-pathspool'
                                         log_debug(SYSLOG_INFO, 'directory %s does not exist - could not send fax' %(PATH_SPOOL_ASTERISK_FAX))
 
-                        os.system('rm /tmp/%s*' % filename)
                         if myconn[0] == 'udp':
                                 myconn[1].sendto('faxsent=%s\n' % reply, (myconn[2], myconn[3]))
                         else:
                                 myconn[1].send('faxsent=%s\n' % reply)
                 except Exception, exc:
                         log_debug(SYSLOG_ERR, "--- exception --- (fax handler - global) : %s" %(str(exc)))
+                os.system('rm /tmp/%s*' % filename)
 
 
 ## \class LoginHandler
