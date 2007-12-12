@@ -444,7 +444,7 @@ INSERT INTO `generalvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','ma
 INSERT INTO `generalvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','maxsilence','15');
 INSERT INTO `generalvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','review','yes');
 INSERT INTO `generalvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','operator','yes');
-INSERT INTO `generalvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','format','wav49');
+INSERT INTO `generalvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','format','wav');
 INSERT INTO `generalvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','maxlogins','3');
 INSERT INTO `generalvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','envelope','yes');
 INSERT INTO `generalvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','saycid','no');
@@ -619,7 +619,6 @@ CREATE TABLE `outcall` (
  `name` varchar(128) NOT NULL,
  `exten` varchar(40) NOT NULL,
  `context` varchar(39) NOT NULL,
- `trunkfeaturesid` int(10) unsigned NOT NULL DEFAULT 0,
  `externprefix` varchar(20) NOT NULL DEFAULT '',
  `stripnum` tinyint(2) unsigned NOT NULL DEFAULT 0,
  `setcallerid` tinyint(1) NOT NULL DEFAULT 0,
@@ -627,16 +626,24 @@ CREATE TABLE `outcall` (
  `useenum` tinyint(1) NOT NULL DEFAULT 0,
  `internal` tinyint(1) NOT NULL DEFAULT 0,
  `hangupringtime` smallint(3) unsigned NOT NULL DEFAULT 0,
- `linked` tinyint(1) NOT NULL DEFAULT 0,
  `commented` tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=ascii;
 
-CREATE INDEX `outcall__idx__trunkfeaturesid` ON `outcall`(`trunkfeaturesid`);
-CREATE INDEX `outcall__idx__linked` ON `outcall`(`linked`);
 CREATE INDEX `outcall__idx__commented` ON `outcall`(`commented`);
 CREATE UNIQUE INDEX `outcall__uidx__name` ON `outcall`(`name`);
 CREATE UNIQUE INDEX `outcall__uidx__exten_context` ON `outcall`(`exten`,`context`);
+
+
+DROP TABLE IF EXISTS `outcalltrunk`;
+CREATE TABLE `outcalltrunk` (
+ `outcallid` int(10) unsigned NOT NULL DEFAULT 0,
+ `trunkid` int(10) unsigned NOT NULL DEFAULT 0,
+ `penalty` tinyint(2) unsigned NOT NULL DEFAULT 0,
+ PRIMARY KEY(`outcallid`,`trunkid`)
+) ENGINE=MyISAM DEFAULT CHARSET=ascii;
+
+CREATE INDEX `outcalltrunk__idx__penalty` ON `outcalltrunk`(`penalty`);
 
 
 DROP TABLE IF EXISTS `phone`;
@@ -917,6 +924,7 @@ CREATE TABLE `usercustom` (
  `context` varchar(39),
  `interface` varchar(128) NOT NULL,
  `commented` tinyint(1) NOT NULL DEFAULT 0,
+ `protocol` enum('custom') NOT NULL DEFAULT 'custom',
  `category` enum('user','trunk') NOT NULL,
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=ascii;
@@ -924,6 +932,7 @@ CREATE TABLE `usercustom` (
 CREATE INDEX `usercustom__idx__name` ON `usercustom`(`name`);
 CREATE INDEX `usercustom__idx__context` ON `usercustom`(`context`);
 CREATE INDEX `usercustom__idx__commented` ON `usercustom`(`commented`);
+CREATE INDEX `usercustom__idx__protocol` ON `usercustom`(`protocol`);
 CREATE INDEX `usercustom__idx__category` ON `usercustom`(`category`);
 CREATE UNIQUE INDEX `usercustom__uidx__interface_category` ON `usercustom`(`interface`,`category`);
 
@@ -1011,11 +1020,13 @@ CREATE TABLE `useriax` (
  `port` smallint unsigned,
  `regseconds` int(10) unsigned DEFAULT 0,
  `call-limit` tinyint(2) unsigned NOT NULL DEFAULT 0,
+ `protocol` enum('iax') NOT NULL DEFAULT 'iax',
  `category` enum('user','trunk') NOT NULL,
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE INDEX `useriax__idx__commented` ON `useriax`(`commented`);
+CREATE INDEX `useriax__idx__protocol` ON `useriax`(`protocol`);
 CREATE INDEX `useriax__idx__category` ON `useriax`(`category`);
 CREATE UNIQUE INDEX `useriax__uidx__name` ON `useriax`(`name`);
 
@@ -1063,21 +1074,22 @@ CREATE TABLE `usersip` (
  `cancallforward` char(3),
  `setvar` varchar(100) NOT NULL,
  `call-limit` tinyint(2) unsigned NOT NULL DEFAULT 0,
+ `protocol` enum('sip') NOT NULL DEFAULT 'sip',
  `category` enum('user','trunk') NOT NULL,
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE INDEX `usersip__idx__commented` ON `usersip`(`commented`);
+CREATE INDEX `usersip__idx__protocol` ON `usersip`(`protocol`);
 CREATE INDEX `usersip__idx__category` ON `usersip`(`category`);
 CREATE UNIQUE INDEX `usersip__uidx__name` ON `usersip`(`name`);
 
-INSERT INTO `usersip` VALUES (1,'guest',0,'','documentation','','Guest','no','initconfig',NULL,'rfc2833',NULL,NULL,'','dynamic',NULL,NULL,'',NULL,'no',NULL,NULL,NULL,'',NULL,'no',NULL,NULL,NULL,'guest','friend','guest',NULL,NULL,NULL,0,NULL,NULL,NULL,'',0,'user');
+INSERT INTO `usersip` VALUES (1,'guest',0,'','documentation','','Guest','no','initconfig',NULL,'rfc2833',NULL,NULL,'','dynamic',NULL,NULL,'',NULL,'no',NULL,NULL,NULL,'',NULL,'no',NULL,NULL,NULL,'guest','friend','guest',NULL,NULL,NULL,0,NULL,NULL,NULL,'',0,'sip','user');
 
 
 DROP TABLE IF EXISTS `uservoicemail`;
 CREATE TABLE `uservoicemail` (
- `id` int(10) unsigned auto_increment,
- `uniqueid` varchar(20) NOT NULL DEFAULT '',
+ `uniqueid` int(10) unsigned auto_increment,
  `context` varchar(39),
  `mailbox` varchar(40) NOT NULL DEFAULT '',
  `password` varchar(80) NOT NULL DEFAULT '',
@@ -1097,13 +1109,13 @@ CREATE TABLE `uservoicemail` (
  `sayduration` tinyint(1) DEFAULT 0,
  `saydurationm` tinyint(2) unsigned DEFAULT 2,
  `sendvoicemail` tinyint(1) DEFAULT 0,
- `delete` tinyint(1) NOT NULL DEFAULT 0,
+ `deletevoicemail` tinyint(1) NOT NULL DEFAULT 0,
  `forcename` tinyint(1) DEFAULT 0,
  `forcegreetings` tinyint(1) DEFAULT 0,
  `hidefromdir` enum('yes','no') NOT NULL DEFAULT 'no',
  `maxmsg` smallint(4) unsigned DEFAULT 100,
  `commented` tinyint(1) NOT NULL DEFAULT 0,
- PRIMARY KEY(`id`)
+ PRIMARY KEY(`uniqueid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE INDEX `uservoicemail__idx__commented` ON `uservoicemail`(`commented`);

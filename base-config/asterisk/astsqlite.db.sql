@@ -441,7 +441,7 @@ INSERT INTO generalvoicemail VALUES (NULL,0,0,0,'voicemail.conf','general','maxm
 INSERT INTO generalvoicemail VALUES (NULL,0,0,0,'voicemail.conf','general','maxsilence','15');
 INSERT INTO generalvoicemail VALUES (NULL,0,0,0,'voicemail.conf','general','review','yes');
 INSERT INTO generalvoicemail VALUES (NULL,0,0,0,'voicemail.conf','general','operator','yes');
-INSERT INTO generalvoicemail VALUES (NULL,0,0,0,'voicemail.conf','general','format','wav49');
+INSERT INTO generalvoicemail VALUES (NULL,0,0,0,'voicemail.conf','general','format','wav');
 INSERT INTO generalvoicemail VALUES (NULL,0,0,0,'voicemail.conf','general','maxlogins','3');
 INSERT INTO generalvoicemail VALUES (NULL,0,0,0,'voicemail.conf','general','envelope','yes');
 INSERT INTO generalvoicemail VALUES (NULL,0,0,0,'voicemail.conf','general','saycid','no');
@@ -616,7 +616,6 @@ CREATE TABLE outcall (
  name varchar(128) NOT NULL,
  exten varchar(40) NOT NULL,
  context varchar(39) NOT NULL,
- trunkfeaturesid integer unsigned NOT NULL DEFAULT 0,
  externprefix varchar(20) NOT NULL DEFAULT '',
  stripnum tinyint unsigned NOT NULL DEFAULT 0,
  setcallerid tinyint(1) NOT NULL DEFAULT 0,
@@ -624,16 +623,24 @@ CREATE TABLE outcall (
  useenum tinyint(1) NOT NULL DEFAULT 0,
  internal tinyint(1) NOT NULL DEFAULT 0,
  hangupringtime smallint unsigned NOT NULL DEFAULT 0,
- linked tinyint(1) NOT NULL DEFAULT 0,
  commented tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(id)
 );
 
-CREATE INDEX outcall__idx__trunkfeaturesid ON outcall(trunkfeaturesid);
-CREATE INDEX outcall__idx__linked ON outcall(linked);
 CREATE INDEX outcall__idx__commented ON outcall(commented);
 CREATE UNIQUE INDEX outcall__uidx__name ON outcall(name);
 CREATE UNIQUE INDEX outcall__uidx__exten_context ON outcall(exten,context);
+
+
+DROP TABLE outcalltrunk;
+CREATE TABLE outcalltrunk (
+ outcallid integer unsigned NOT NULL DEFAULT 0,
+ trunkid integer unsigned NOT NULL DEFAULT 0,
+ penalty tinyint unsigned NOT NULL DEFAULT 0,
+ PRIMARY KEY(outcallid,trunkid)
+);
+
+CREATE INDEX outcalltrunk__idx__penalty ON outcalltrunk(penalty);
 
 
 DROP TABLE phone;
@@ -914,6 +921,7 @@ CREATE TABLE usercustom (
  context varchar(39),
  interface varchar(128) NOT NULL,
  commented tinyint(1) NOT NULL DEFAULT 0,
+ protocol char(5) NOT NULL DEFAULT 'custom',
  category varchar(5) NOT NULL,
  PRIMARY KEY(id)
 );
@@ -921,6 +929,7 @@ CREATE TABLE usercustom (
 CREATE INDEX usercustom__idx__name ON usercustom(name);
 CREATE INDEX usercustom__idx__context ON usercustom(context);
 CREATE INDEX usercustom__idx__commented ON usercustom(commented);
+CREATE INDEX usercustom__idx__protocol ON usercustom(protocol);
 CREATE INDEX usercustom__idx__category ON usercustom(category);
 CREATE UNIQUE INDEX usercustom__uidx__interface_category ON usercustom(interface,category);
 
@@ -1006,11 +1015,13 @@ CREATE TABLE useriax (
  port smallint unsigned,
  regseconds integer unsigned DEFAULT 0,
  'call-limit' tinyint unsigned NOT NULL DEFAULT 0,
+ protocol char(3) NOT NULL DEFAULT 'iax',
  category varchar(5) NOT NULL,
  PRIMARY KEY(id)
 );
 
 CREATE INDEX useriax__idx__commented ON useriax(commented);
+CREATE INDEX useriax__idx__protocol ON useriax(protocol);
 CREATE INDEX useriax__idx__category ON useriax(category);
 CREATE UNIQUE INDEX useriax__uidx__name ON useriax(name);
 
@@ -1058,21 +1069,22 @@ CREATE TABLE usersip (
  cancallforward char(3),
  setvar varchar(100) NOT NULL,
  'call-limit' tinyint unsigned NOT NULL DEFAULT 0,
- category varchar(5)NOT NULL,
+ protocol char(3) NOT NULL DEFAULT 'sip',
+ category varchar(5) NOT NULL,
  PRIMARY KEY(id)
 );
 
 CREATE INDEX usersip__idx__commented ON usersip(commented);
+CREATE INDEX usersip__idx__protocol ON usersip(protocol);
 CREATE INDEX usersip__idx__category ON usersip(category);
 CREATE UNIQUE INDEX usersip__uidx__name ON usersip(name);
 
-INSERT INTO usersip VALUES (1,'guest',0,'','documentation','','Guest','no','initconfig',NULL,'rfc2833',NULL,NULL,'','dynamic',NULL,NULL,'',NULL,'no',NULL,NULL,NULL,'',NULL,'no',NULL,NULL,NULL,'guest','friend','guest',NULL,NULL,NULL,0,NULL,NULL,NULL,'',0,'user');
+INSERT INTO usersip VALUES (1,'guest',0,'','documentation','','Guest','no','initconfig',NULL,'rfc2833',NULL,NULL,'','dynamic',NULL,NULL,'',NULL,'no',NULL,NULL,NULL,'',NULL,'no',NULL,NULL,NULL,'guest','friend','guest',NULL,NULL,NULL,0,NULL,NULL,NULL,'',0,'sip','user');
 
 
 DROP TABLE uservoicemail;
 CREATE TABLE uservoicemail (
- id integer unsigned,
- uniqueid varchar(20) NOT NULL DEFAULT '',
+ uniqueid integer unsigned,
  context varchar(39),
  mailbox varchar(40) NOT NULL DEFAULT '',
  password varchar(80) NOT NULL DEFAULT '',
@@ -1092,13 +1104,13 @@ CREATE TABLE uservoicemail (
  sayduration tinyint(1) DEFAULT 0,
  saydurationm tinyint unsigned DEFAULT 2,
  sendvoicemail tinyint(1) DEFAULT 0,
- 'delete' tinyint(1) NOT NULL DEFAULT 0,
+ deletevoicemail tinyint(1) NOT NULL DEFAULT 0,
  forcename tinyint(1) DEFAULT 0,
  forcegreetings tinyint(1) DEFAULT 0,
  hidefromdir varchar(3) NOT NULL DEFAULT 'no',
  maxmsg smallint unsigned DEFAULT 100,
  commented tinyint(1) NOT NULL DEFAULT 0,
- PRIMARY KEY(id)
+ PRIMARY KEY(uniqueid)
 );
 
 CREATE INDEX uservoicemail__idx__commented ON uservoicemail(commented);
