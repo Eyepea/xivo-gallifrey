@@ -54,16 +54,15 @@ exten_pattern = agi.get_variable('REAL_EXTENPATTERN')
 cursor.query("SELECT ${columns} FROM outcall "
              "WHERE exten = %s "
              "AND context = %s "
-             "AND linked = 1 "
              "AND commented = 0",
-             ('trunkfeaturesid', 'externprefix', 'stripnum', 'setcallerid', 'callerid', 'useenum', 'internal', 'hangupringtime'),
+             ('id', 'externprefix', 'stripnum', 'setcallerid', 'callerid', 'useenum', 'internal', 'hangupringtime'),
              (exten_pattern, context))
 res = cursor.fetchone()
 
 if not res:
 	agi_helpers.dp_break(agi, "Unable to find outgoing call features (extension pattern = '%s', context = '%s')" % (exten_pattern, context))
 
-trunkfeaturesid = res['trunkfeaturesid']
+outcallid = res['id']
 externprefix = res['externprefix']
 stripnum = int(res['stripnum'])
 setcallerid = res['setcallerid']
@@ -92,60 +91,67 @@ if not internal:
 			if callerid == "default":
 				callerid = ""
 
-cursor.query("SELECT ${columns} FROM trunkfeatures WHERE id = %s",
-             ('trunk', 'trunkid'),
-             (trunkfeaturesid,))
-res = cursor.fetchone()
+cursor.query("SELECT ${columns} FROM trunkfeatures INNER JOIN outcalltrunk "
+             "ON trunkfeatures.id = outcalltrunk.trunkid "
+             "WHERE outcalltrunk.outcallid = %d "
+             "ORDER BY outcalltrunk.penalty ASC",
+             ('trunkfeatures.trunk', 'trunkfeatures.trunkid'),
+             (outcallid,))
+res = cursor.fetchall()
 
 if not res:
-	agi_helpers.dp_break(agi, "Unable to find trunk features (ID = '%s')" % trunkfeaturesid)
+	agi_helpers.dp_break(agi, "The outgoing call is associated with no trunk")
 
-trunk = res['trunk']
-trunkid = res['trunkid']
+trunkindex = 0
 
-if trunk == "sip":
-	protocol = "SIP"
-	cursor.query("SELECT ${columns} FROM usersip WHERE id = %s AND commented = 0",
-                     ('name',),
-                     (trunkid,))
-	res = cursor.fetchone()
+for row in res:
+	trunk = row['trunkfeatures.trunk']
+	trunkid = row['trunkfeatures.trunkid']
 
-	if not res:
-		agi_helpers.dp_break(agi, "Unable to find SIP peer (ID = '%s')" % trunkid)
+	if trunk == "sip":
+		protocol = "SIP"
+		cursor.query("SELECT ${columns} FROM usersip WHERE id = %s AND commented = 0",
+                             ('name',),
+                             (trunkid,))
+		res = cursor.fetchone()
 
-	peer = res['name']
-	interface = protocol + "/" + peer
+		if not res:
+			agi_helpers.dp_break(agi, "Unable to find SIP peer (ID = '%s')" % trunkid)
 
-elif trunk == "iax":
-	protocol = "IAX2"
-	cursor.query("SELECT ${columns} FROM useriax WHERE id = %s AND commented = 0",
-                     ('name',),
-                     (trunkid,))
-	res = cursor.fetchone()
+		peer = res['name']
+		interface = protocol + "/" + peer
 
-	if not res:
-		agi_helpers.dp_break(agi, "Unable to find IAX peer (ID = '%s')" % trunkid)
+	elif trunk == "iax":
+		protocol = "IAX2"
+		cursor.query("SELECT ${columns} FROM useriax WHERE id = %s AND commented = 0",
+                             ('name',),
+                             (trunkid,))
+		res = cursor.fetchone()
 
-	peer = res['name']
-	interface = protocol + "/" + peer
+		if not res:
+			agi_helpers.dp_break(agi, "Unable to find IAX peer (ID = '%s')" % trunkid)
 
-elif trunk == "custom":
-	protocol = "CUSTOM"
-	cursor.query("SELECT ${columns} FROM usercustom WHERE id = %s AND commented = 0",
-                     ('name', 'interface',),
-                     (trunkid,))
-	res = cursor.fetchone()
+		peer = res['name']
+		interface = protocol + "/" + peer
 
-	if not res:
-		agi_helpers.dp_break(agi, "Unable to find custom peer (ID = '%s')" % trunkid)
+	elif trunk == "custom":
+		protocol = "CUSTOM"
+		cursor.query("SELECT ${columns} FROM usercustom WHERE id = %s AND commented = 0",
+                             ('name', 'interface',),
+                             (trunkid,))
+		res = cursor.fetchone()
 
-	peer = res['name']
-	interface = res['interface']
-else:
-	agi_helpers.dp_break(agi, "Unknown trunk type '%s'" % trunk)
+		if not res:
+			agi_helpers.dp_break(agi, "Unable to find custom peer (ID = '%s')" % trunkid)
 
-agi.set_variable('XIVO_INTERFACE', interface)
-agi.set_variable('XIVO_TRUNKEXTEN', dstnum)
+		peer = res['name']
+		interface = res['interface']
+	else:
+		agi_helpers.dp_break(agi, "Unknown trunk type '%s'" % trunk)
+
+	agi.set_variable('XIVO_INTERFACE%d' % trunkindex, interface)
+	agi.set_variable('XIVO_TRUNKEXTEN%d' % trunkindex, dstnum)
+	trunkindex += 1
 
 if callerid:
 	agi.set_variable('CALLERID(num)', callerid)
