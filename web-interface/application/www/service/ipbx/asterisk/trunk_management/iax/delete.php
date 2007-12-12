@@ -32,7 +32,7 @@ do
 	}
 
 	$outcalltrunk = &$ipbx->get_module('outcalltrunk');
-	$outcalltrunk->delete_where(array('trunkid' => $info['tfeatures']['id']));
+	$outcalltrunk->delete_where(array('trunkfeaturesid' => $info['tfeatures']['id']));
 }
 while(false);
 

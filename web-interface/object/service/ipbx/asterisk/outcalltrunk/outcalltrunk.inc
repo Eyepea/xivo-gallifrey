@@ -29,9 +29,9 @@ class xivo_service_asterisk_outcalltrunk extends xivo_service_asterisk_abstract
 		$this->_origin = false;
 
 		if(is_array($id) === false
-		|| isset($id['outcallid'],$id['trunkid']) === false
+		|| isset($id['outcallid'],$id['trunkfeaturesid']) === false
 		|| ($id['outcallid'] = xivo_uint($id['outcallid'])) === 0
-		|| ($id['trunkid'] = xivo_uint($id['trunkid'])) === 0
+		|| ($id['trunkfeaturesid'] = xivo_uint($id['trunkfeaturesid'])) === 0
 		|| ($r = $this->_dso->get($id)) === false)
 			return(false);
 
@@ -56,7 +56,7 @@ class xivo_service_asterisk_outcalltrunk extends xivo_service_asterisk_abstract
 		if($type === 'add')
 			$r = $this->add($orig);
 		else
-			$r = $this->edit(array($orig['outcallid'],$orig['trunkid']),$orig);
+			$r = $this->edit(array($orig['outcallid'],$orig['trunkfeaturesid']),$orig);
 
 		return($r);
 	}
@@ -81,7 +81,7 @@ class xivo_service_asterisk_outcalltrunk extends xivo_service_asterisk_abstract
 		else
 		{
 			for($i = 0;$i < $nb;$i++)
-				$this->edit(array($orig[$i]['outcallid'],$orig[$i]['trunkid']),$orig[$i]);
+				$this->edit(array($orig[$i]['outcallid'],$orig[$i]['trunkfeaturesid']),$orig[$i]);
 		}
 
 		return(true);
@@ -90,7 +90,7 @@ class xivo_service_asterisk_outcalltrunk extends xivo_service_asterisk_abstract
 	function add($arr)
 	{
 		if(is_array($arr) === false
-		|| $this->get_id($arr['outcallid'],$arr['trunkid']) !== false)
+		|| $this->get_id($arr['outcallid'],$arr['trunkfeaturesid']) !== false)
 			return(false);
 
 		return($this->_dso->add($arr));
@@ -100,9 +100,9 @@ class xivo_service_asterisk_outcalltrunk extends xivo_service_asterisk_abstract
 	{
 		if(is_array($id) === false
 		|| is_array($arr) === false
-		|| isset($id['outcallid'],$id['trunkid']) === false
+		|| isset($id['outcallid'],$id['trunkfeaturesid']) === false
 		|| ($id['outcallid'] = xivo_uint($id['outcallid'])) === 0
-		|| ($id['trunkid'] = xivo_uint($id['trunkid'])) === 0)
+		|| ($id['trunkfeaturesid'] = xivo_uint($id['trunkfeaturesid'])) === 0)
 			return(false);
 
 		return($this->_dso->edit($id,$arr));
@@ -111,9 +111,9 @@ class xivo_service_asterisk_outcalltrunk extends xivo_service_asterisk_abstract
 	function delete($id)
 	{
 		if(is_array($id) === false
-		|| isset($id['outcallid'],$id['trunkid']) === false
+		|| isset($id['outcallid'],$id['trunkfeaturesid']) === false
 		|| ($id['outcallid'] = xivo_uint($id['outcallid'])) === 0
-		|| ($id['trunkid'] = xivo_uint($id['trunkid'])) === 0)
+		|| ($id['trunkfeaturesid'] = xivo_uint($id['trunkfeaturesid'])) === 0)
 			return(false);
 
 		return($this->_dso->delete($id));

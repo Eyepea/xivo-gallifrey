@@ -19,7 +19,7 @@ class xivo_service_asterisk_outcalltrunk_abstract_sql extends xivo_service_aster
 
 		$r = array();
 		$r['outcallid'] = $arr['outcallid'];
-		$r['trunkid'] = $arr['trunkid'];
+		$r['trunkfeaturesid'] = $arr['trunkfeaturesid'];
 
 		return($r);
 	}
@@ -57,7 +57,7 @@ class xivo_service_asterisk_outcalltrunk_abstract_sql extends xivo_service_aster
 
 		for($i = 0;$i < $nb;$i++)
 			$r[] = array('outcallid' => $list[$i]['outcallid'],
-				     'trunkid' => $list[$i]['trunkid']);
+				     'trunkfeaturesid' => $list[$i]['trunkfeaturesid']);
 
 		if(isset($r[0]) === false)
 			return(false);
@@ -77,7 +77,7 @@ class xivo_service_asterisk_outcalltrunk_abstract_sql extends xivo_service_aster
 
 		for($i = 0;$i < $nb;$i++)
 			$r[] = array('outcallid' => $list[$i]['outcallid'],
-				     'trunkid' => $list[$i]['trunkid']);
+				     'trunkfeaturesid' => $list[$i]['trunkfeaturesid']);
 
 		if(isset($r[0]) === false)
 			return(false);

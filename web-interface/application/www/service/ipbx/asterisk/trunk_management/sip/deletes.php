@@ -35,7 +35,7 @@ for($i = 0;$i < $nb;$i++)
 		continue;
 	}
 
-	$outcalltrunk->delete_where(array('trunkid' => $info['tfeatures']['id']));
+	$outcalltrunk->delete_where(array('trunkfeaturesid' => $info['tfeatures']['id']));
 }
 
 $_QRY->go($_HTML->url('service/ipbx/trunk_management/sip'),$param);

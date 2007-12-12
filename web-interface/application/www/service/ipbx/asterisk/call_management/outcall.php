@@ -48,7 +48,7 @@ switch($act)
 			$outcalltrunksort = new xivo_sort(array('key' => 'priority'));
 			usort($result['outcalltrunk'],array(&$outcalltrunksort,'num_usort'));
 
-			$outcalltrunk['slt'] = xivo_array_intersect_key($result['outcalltrunk'],$outcalltrunk['list'],'trunkid');
+			$outcalltrunk['slt'] = xivo_array_intersect_key($result['outcalltrunk'],$outcalltrunk['list'],'trunkfeaturesid');
 
 			if($outcalltrunk['slt'] !== false)
 				$outcalltrunk['list'] = xivo_array_diff_key($outcalltrunk['list'],$outcalltrunk['slt']);
@@ -117,7 +117,7 @@ switch($act)
 			$outcalltrunksort = new xivo_sort(array('key' => 'priority'));
 			usort($return['outcalltrunk'],array(&$outcalltrunksort,'num_usort'));
 
-			$outcalltrunk['slt'] = xivo_array_intersect_key($return['outcalltrunk'],$outcalltrunk['list'],'trunkid');
+			$outcalltrunk['slt'] = xivo_array_intersect_key($return['outcalltrunk'],$outcalltrunk['list'],'trunkfeaturesid');
 
 			if($outcalltrunk['slt'] !== false)
 				$outcalltrunk['list'] = xivo_array_diff_key($outcalltrunk['list'],$outcalltrunk['slt']);

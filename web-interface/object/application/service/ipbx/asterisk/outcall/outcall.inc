@@ -243,12 +243,12 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		{
 			$info['priority'] = $j;
 
-			if(($info['trunkid'] = $trunkfeatures->get_id($arr[$i])) === false
+			if(($info['trunkfeaturesid'] = $trunkfeatures->get_id($arr[$i])) === false
 			|| ($rs = $this->_outcalltrunk->chk_values($info)) === false
-			|| isset($tmp[$rs['trunkid']]) === true)
+			|| isset($tmp[$rs['trunkfeaturesid']]) === true)
 				continue;
 
-			$tmp[$rs['trunkid']] = 1;
+			$tmp[$rs['trunkfeaturesid']] = 1;
 			$reslist[] = $rs;
 			$j++;
 		}
