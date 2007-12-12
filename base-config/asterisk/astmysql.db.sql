@@ -613,7 +613,7 @@ INSERT INTO `musiconhold` VALUES (3,0,0,0,'musiconhold.conf','default','random',
 INSERT INTO `musiconhold` VALUES (4,0,0,0,'musiconhold.conf','default','directory','/usr/share/asterisk/moh/default');
 
 
-DROP TABLE IF EXISTS `outcall`;
+DROP TABLE IF EXISTS `
 CREATE TABLE `outcall` (
  `id` int(10) unsigned auto_increment,
  `name` varchar(128) NOT NULL,
@@ -639,11 +639,11 @@ DROP TABLE IF EXISTS `outcalltrunk`;
 CREATE TABLE `outcalltrunk` (
  `outcallid` int(10) unsigned NOT NULL DEFAULT 0,
  `trunkid` int(10) unsigned NOT NULL DEFAULT 0,
- `penalty` tinyint(2) unsigned NOT NULL DEFAULT 0,
+ `priority` tinyint(2) unsigned NOT NULL DEFAULT 0,
  PRIMARY KEY(`outcallid`,`trunkid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=ascii;
 
-CREATE INDEX `outcalltrunk__idx__penalty` ON `outcalltrunk`(`penalty`);
+CREATE INDEX `outcalltrunk__idx__priority` ON `outcalltrunk`(`priority`);
 
 
 DROP TABLE IF EXISTS `phone`;

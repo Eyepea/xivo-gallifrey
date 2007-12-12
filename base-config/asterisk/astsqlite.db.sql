@@ -636,11 +636,11 @@ DROP TABLE outcalltrunk;
 CREATE TABLE outcalltrunk (
  outcallid integer unsigned NOT NULL DEFAULT 0,
  trunkid integer unsigned NOT NULL DEFAULT 0,
- penalty tinyint unsigned NOT NULL DEFAULT 0,
+ priority tinyint unsigned NOT NULL DEFAULT 0,
  PRIMARY KEY(outcallid,trunkid)
 );
 
-CREATE INDEX outcalltrunk__idx__penalty ON outcalltrunk(penalty);
+CREATE INDEX outcalltrunk__idx__priority ON outcalltrunk(priority);
 
 
 DROP TABLE phone;
