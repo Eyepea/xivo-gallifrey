@@ -185,7 +185,9 @@ REQUIRED_CLIENT_VERSION = 2025
 XIVOVERSION = '0.3'
 ITEMS_PER_PACKET = 500
 USERLIST_LENGTH = 12
-PDF2FAX= '/usr/share/asterisk/bin/pdf2fax'
+
+# TODO: get it from external configuration.
+PDF2FAX = "/usr/share/asterisk/bin/pdf2fax"
 
 # capabilities
 CAPA_CUSTINFO    = 1 <<  0
@@ -221,7 +223,10 @@ map_capas = {
         'database'         : CAPA_DATABASE
         }
 
-PATH_SPOOL_ASTERISK_FAX = '/var/spool/asterisk/fax'
+# TODO: get these from external configuration.
+PATH_SPOOL_ASTERISK     = "/var/spool/asterisk"
+PATH_SPOOL_ASTERISK_FAX = PATH_SPOOL_ASTERISK + '/' + "fax"
+PATH_SPOOL_ASTERISK_TMP = PATH_SPOOL_ASTERISK + '/' + "tmp"
 
 fullstat_heavies = {}
 
@@ -2576,14 +2581,18 @@ class FaxRequestHandler(SocketServer.StreamRequestHandler):
         def handle(self):
                 threading.currentThread().setName('fax-%s:%d' %(self.client_address[0], self.client_address[1]))
                 filename = 'astfaxsend-' + ''.join(random.sample(__alphanums__, 10)) + "-" + hex(int(time.time()))
+                tmpfilepath = PATH_SPOOL_ASTERISK_TMP + '/' + filename
+                faxfilepath = PATH_SPOOL_ASTERISK_FAX + '/' + filename + ".tif"
+                tmpfiles = [tmpfilepath]
+
                 try:
                         file_definition = self.rfile.readline().strip()
                         log_debug(SYSLOG_INFO, 'fax : received <%s>' % file_definition)
                         a = self.rfile.read()
-                        z = open('/tmp/%s' %filename, 'w')
+                        z = open(tmpfilepath, 'w')
                         z.write(a)
                         z.close()
-                        log_debug(SYSLOG_INFO, 'fax : received %d bytes stored into /tmp/%s' %(len(a), filename))
+                        log_debug(SYSLOG_INFO, 'fax : received %d bytes stored into %s' % (len(a), tmpfilepath))
                         params = file_definition.split()
                         for p in params:
                                 [var, val] = p.split('=')
@@ -2604,19 +2613,12 @@ class FaxRequestHandler(SocketServer.StreamRequestHandler):
                                 callerid = 'anonymous'
 
                         reply = 'ko;unknown'
-                        comm = commands.getoutput('file -b /tmp/%s' % filename)
+                        comm = commands.getoutput('file -b %s' % tmpfilepath)
                         brieffile = ' '.join(comm.split()[0:2])
                         if brieffile == 'PDF document,':
-                                log_debug(SYSLOG_INFO, 'fax : the file received is a PDF one : converting to TIFF')
-                                try:
-                                        os.rename('/tmp/%s' % filename, '/tmp/%s.pdf' % filename)
-                                        ret = 0
-                                except Exception:
-                                        reply = 'ko;mv-pdf'
-                                        ret = -1
-                                if ret == 0:
-                                        reply = 'ko;convert-pdftif'
-                                        ret = os.system('%s -o /tmp/%s.tif /tmp/%s.pdf' %(PDF2FAX, filename, filename))
+                                log_debug(SYSLOG_INFO, 'fax : the file received is a PDF one : converting to TIFF/F')
+                                reply = 'ko;convert-pdftif'
+                                ret = os.system("%s -o %s %s" % (PDF2FAX, faxfilepath, tmpfilepath))
 
 ##                        elif brieffile == 'Netpbm PPM':
 ##                                log_debug(SYSLOG_INFO, 'fax : the file received is a PPM one : converting to TIFF')
@@ -2630,24 +2632,17 @@ class FaxRequestHandler(SocketServer.StreamRequestHandler):
 ##                                reply = 'ko;mv-tiff'
 ##                                ret = os.system('mv /tmp/%s /tmp/%s.tif' %(filename, filename))
                         else:
-                                log_debug(SYSLOG_WARNING, 'fax : the file received is a <%s> one : format not (yet) supported' % brieffile)
+                                log_debug(SYSLOG_WARNING, 'fax : the file received is a <%s> one : format not supported' % brieffile)
                                 ret = -1
 
                         if ret == 0:
                                 if os.path.exists(PATH_SPOOL_ASTERISK_FAX):
                                         try:
-                                                filenamedest = '%s/%s.tif' %(PATH_SPOOL_ASTERISK_FAX, filename)
-                                                try:
-                                                        os.rename('/tmp/%s.tif' % filename, filenamedest)
-                                                        ret = 0
-                                                except Exception:
-                                                        reply = 'ko;mv-pathspool'
-                                                        ret = -1
-                                                if ret == 0:
-                                                        reply = 'ko;AMI'
-                                                        ret = AMI_array_user_commands[astid].txfax(filenamedest, callerid, number, context, True)
-                                                        if ret:
-                                                                reply = 'ok;'
+                                                reply = 'ko;AMI'
+                                                ret = AMI_array_user_commands[astid].txfax(faxfilepath, callerid, number, context, True)
+
+                                                if ret:
+                                                        reply = 'ok;'
                                         except Exception, exc:
                                                 log_debug(SYSLOG_ERR, '--- exception --- (fax handler - AMI) : %s' %(str(exc)))
                                 else:
@@ -2660,11 +2655,10 @@ class FaxRequestHandler(SocketServer.StreamRequestHandler):
                                 myconn[1].send('faxsent=%s\n' % reply)
                 except Exception, exc:
                         log_debug(SYSLOG_ERR, "--- exception --- (fax handler - global) : %s" %(str(exc)))
-                listtmpdir = os.listdir('/tmp')
-                for tmpfile in listtmpdir:
-                        if tmpfile.find(filename) == 0:
-                                os.unlink('/tmp/%s' % tmpfile)
-                                log_debug(SYSLOG_INFO, 'faxhandler : removed /tmp/%s file' % tmpfile)
+
+                for tmpfile in tmpfiles:
+                        os.unlink(tmpfile)
+                        log_debug(SYSLOG_INFO, "faxhandler : removed %s" % tmpfile)
 
 
 ## \class LoginHandler
