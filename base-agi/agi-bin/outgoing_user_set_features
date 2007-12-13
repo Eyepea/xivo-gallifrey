@@ -76,6 +76,8 @@ if stripnum > 0:
 if externprefix:
 	dstnum = externprefix + dstnum
 
+callerid = ""
+
 if not internal:
 	if setcallerid:
 		callerid = trunk_callerid
