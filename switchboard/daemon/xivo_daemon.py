@@ -187,7 +187,7 @@ ITEMS_PER_PACKET = 500
 USERLIST_LENGTH = 12
 
 # TODO: get it from external configuration.
-PDF2FAX = "/usr/share/asterisk/bin/pdf2fax"
+PDF2FAX = "/usr/bin/xivo_pdf2fax"
 
 # capabilities
 CAPA_CUSTINFO    = 1 <<  0
