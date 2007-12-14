@@ -83,6 +83,7 @@ static void phase_e_handler(t30_state_t *s, void *user_data, int result)
     char far_ident[21];
     
     chan = (struct ast_channel *) user_data;
+    pbx_builtin_setvar_helper(chan, "PHASEESTATUS", result);
     if (result == T30_ERR_OK)
     {
         t30_get_far_ident(s, far_ident);
