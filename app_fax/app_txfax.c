@@ -80,10 +80,11 @@ static void t30_flush(t30_state_t *s, int which)
 static void phase_e_handler(t30_state_t *s, void *user_data, int result)
 {
     struct ast_channel *chan;
-    char far_ident[21];
+    char far_ident[21], result_str[32];
     
     chan = (struct ast_channel *) user_data;
-    pbx_builtin_setvar_helper(chan, "PHASEESTATUS", result);
+    snprintf(result_str, 32, "%d", result);
+    pbx_builtin_setvar_helper(chan, "PHASEESTATUS", result_str);
     if (result == T30_ERR_OK)
     {
         t30_get_far_ident(s, far_ident);
