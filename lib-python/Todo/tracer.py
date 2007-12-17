@@ -182,13 +182,18 @@ class TraceToFile:
 		self.call_level = 0
 
 	def traceit(self, frame, event, arg):
-
+		
 		modname = frame.f_globals["__name__"]
+		
+		# never trace ourself
+		if modname == 'tracer':
+			return
+		
 		lineno = frame.f_lineno
-
+		
 		# if name != '__main__':
 		#	return self.traceit
-
+		
 		if event == 'call':
 			args, varargs, varkw, lcals = inspect.getargvalues(frame)
 			funcname = frame.f_code.co_name
@@ -204,7 +209,7 @@ class TraceToFile:
 					                          x, funcname)),
 			)
 			self.call_level += 1
-
+		
 		elif event == 'return':
 			self.call_level -= 1
 			if self.returns:
@@ -216,7 +221,7 @@ class TraceToFile:
 					frame.f_code.co_name,
 					repr(arg)
 				)
-
+		
 		elif 0 and event == 'line':
 			lineno = frame.f_lineno
 			filename = frame.f_globals["__file__"]
@@ -229,8 +234,30 @@ class TraceToFile:
 				return self.traceit
 			line = linecache.getline(filename, lineno)
 			print >> self.fp, "%.03f %s:%s: %s" % (time.time(), name, lineno, line.rstrip())
-
+		
 		return self.traceit
+
+	def voluntary_trace(self, msg):
+		# retrieve real ultimate caller
+		frame = sys._getframe(1)
+		while frame.f_globals["__name__"] == 'tracer':
+			frame = frame.f_back
+			if frame is None:
+				return
+		
+		modname = frame.f_globals["__name__"]
+		lineno = frame.f_lineno
+		
+		# emit trace
+		print >> self.fp, "%.03f %24s %05d : %siii %s" % (
+			time.time(),
+			modname,
+			lineno,
+			'\t' * self.call_level,
+			msg
+		)
+
+last_ttf = None
 
 def enable_tofp(fp, returns = 1):
 	"""Enable function call traces and send them to the file pointer
@@ -246,4 +273,12 @@ def enable_tofp(fp, returns = 1):
 	It is not possible to stop the tracing once it has been started
 	(XXX: this feature could be easily added if needed)
 	"""
-	sys.settrace(TraceToFile(fp, returns).traceit)
+	global last_ttf
+	last_ttf = TraceToFile(fp, returns)
+	sys.settrace(last_ttf.traceit)
+
+def voluntary_trace(msg):
+	global last_ttf
+	last_ttf.voluntary_trace(msg)
+
+all = ('enable_tofp', 'voluntary')
