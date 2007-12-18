@@ -197,6 +197,8 @@ class TraceToFile:
 		if event == 'call':
 			args, varargs, varkw, lcals = inspect.getargvalues(frame)
 			funcname = frame.f_code.co_name
+			if 'DBGFOO' in funcname: # XXX parametrize
+				return
 			print >> self.fp, "%.03f %24s %05d : %s%s%s" % (
 				time.time(),
 				modname,
@@ -213,12 +215,16 @@ class TraceToFile:
 		elif event == 'return':
 			self.call_level -= 1
 			if self.returns:
+				funcname = frame.f_code.co_name
+				if 'DBGFOO' in funcname: # XXX parametrize
+					self.call_level += 1
+					return
 				print >> self.fp, "%.03f %24s %05d : %s... %s() returns %s" % (
 					time.time(),
 					modname,
 					lineno,
 					'\t' * self.call_level,
-					frame.f_code.co_name,
+					funcname,
 					repr(arg)
 				)
 		
@@ -237,10 +243,17 @@ class TraceToFile:
 		
 		return self.traceit
 
-	def voluntary_trace(self, msg):
-		# retrieve real ultimate caller
+	def voluntary_trace(self, msg, add_depth):
+		# retrieve out of module caller
 		frame = sys._getframe(1)
 		while frame.f_globals["__name__"] == 'tracer':
+			frame = frame.f_back
+			if frame is None:
+				return
+
+		# out of module caller can be abstracted,
+		# retrieve real ultimate caller
+		for i in xrange(add_depth):
 			frame = frame.f_back
 			if frame is None:
 				return
@@ -277,8 +290,8 @@ def enable_tofp(fp, returns = 1):
 	last_ttf = TraceToFile(fp, returns)
 	sys.settrace(last_ttf.traceit)
 
-def voluntary_trace(msg):
+def voluntary_trace(msg, add_depth=0):
 	global last_ttf
-	last_ttf.voluntary_trace(msg)
+	last_ttf.voluntary_trace(msg, add_depth)
 
 all = ('enable_tofp', 'voluntary')
