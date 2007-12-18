@@ -29,7 +29,8 @@ class AMIClass:
         def connect(self):
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 s.connect(self.address)
-                self.fd = s.makefile('r', 0)
+                s.settimeout(30)
+                self.fd = s.makefile('rw', 0)
                 s.close()
                 str = self.fd.readline()
                 #print str,

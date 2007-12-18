@@ -1582,6 +1582,9 @@ def handle_ami_event(astid, idata):
 
                         [faxid, faxstatus, remote] = status.split('|')
                         myconn = faxclients.pop(faxid)
+                        faxpath = PATH_SPOOL_ASTERISK_FAX + '/' + faxid + ".tif"
+                        os.unlink(faxpath)
+                        log_debug(SYSLOG_INFO, "txfax event handler : removed %s" % faxpath)
 
                         if faxstatus == '0':
                                 reply = 'ok;'
@@ -2645,9 +2648,11 @@ class FaxRequestHandler(SocketServer.StreamRequestHandler):
                         if ret == 0:
                                 if os.path.exists(PATH_SPOOL_ASTERISK_FAX):
                                         try:
-                                                # We don't check the error code because it has been found to be unreliable.
-                                                reply = 'ok;'
-                                                AMI_array_user_commands[astid].txfax(PATH_SPOOL_ASTERISK_FAX, filename, callerid, number, context)
+                                                reply = 'ko;AMI'
+                                                ret = AMI_array_user_commands[astid].txfax(PATH_SPOOL_ASTERISK_FAX, filename, callerid, number, context)
+
+                                                if ret:
+                                                        reply = 'ok;'
                                         except Exception, exc:
                                                 log_debug(SYSLOG_ERR, '--- exception --- (fax handler - AMI) : %s' %(str(exc)))
                                 else:
