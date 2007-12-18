@@ -2637,19 +2637,8 @@ class FaxRequestHandler(SocketServer.StreamRequestHandler):
                                 log_debug(SYSLOG_INFO, 'fax : the file received is a PDF one : converting to TIFF/F')
                                 reply = 'ko;convert-pdftif'
                                 ret = os.system("%s -o %s %s" % (PDF2FAX, faxfilepath, tmpfilepath))
-
-##                        elif brieffile == 'Netpbm PPM':
-##                                log_debug(SYSLOG_INFO, 'fax : the file received is a PPM one : converting to TIFF')
-##                                reply = 'ko;mv-pdf'
-##                                ret = os.system('mv /tmp/%s /tmp/%s.ppm' %(filename, filename))
-##                                if ret == 0:
-##                                        reply = 'ko;convert-ppmtif'
-##                                        ret = os.system('convert /tmp/%s.ppm /tmp/%s.tif' %(filename, filename))
-##                        elif brieffile == 'TIFF image':
-##                                log_debug(SYSLOG_INFO, 'fax : the file received is a TIFF one : no conversion needed')
-##                                reply = 'ko;mv-tiff'
-##                                ret = os.system('mv /tmp/%s /tmp/%s.tif' %(filename, filename))
                         else:
+                                reply = 'ko;filetype'
                                 log_debug(SYSLOG_WARNING, 'fax : the file received is a <%s> one : format not supported' % brieffile)
                                 ret = -1
 
