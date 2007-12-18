@@ -1576,6 +1576,23 @@ def handle_ami_event(astid, idata):
                                           % (astid, str(this_event)))
                 elif evfunction == 'StatusComplete':
                         log_debug(SYSLOG_INFO, 'AMI %s StatusComplete' % astid)
+                elif evfunction == 'UserEvent_txfax':
+                        status = this_event.get('XIVO_FAXSTATUS')
+                        log_debug(SYSLOG_INFO, 'AMI %s UserEvent_txfax (%s)' % (astid, status))
+
+                        [faxid, faxstatus, remote] = status.split('|')
+                        myconn = faxclients.pop(faxid)
+
+                        if faxstatus == '0':
+                                reply = 'ok;'
+                        else:
+                                reply = 'ko;%s' % faxstatus
+
+                        # TODO: report remote station.
+                        if myconn[0] == 'udp':
+                                myconn[1].sendto('faxsent=%s\n' % reply, (myconn[2], myconn[3]))
+                        else:
+                                myconn[1].send('faxsent=%s\n' % reply)
                 elif this_event.get('Response') == 'Follows' and this_event.get('Privilege') == 'Command':
                         log_debug(SYSLOG_INFO, 'AMI %s Response=Follows : %s' % (astid, str(this_event)))
                 elif this_event.get('Response') == 'Success':
@@ -2607,6 +2624,7 @@ class FaxRequestHandler(SocketServer.StreamRequestHandler):
 
                         if astid in faxbuffer:
                                 [dummyme, myconn] = faxbuffer[astid].pop()
+
                         if hide == "0":
                                 callerid = configs[astid].faxcallerid
                         else:
@@ -2638,16 +2656,19 @@ class FaxRequestHandler(SocketServer.StreamRequestHandler):
                         if ret == 0:
                                 if os.path.exists(PATH_SPOOL_ASTERISK_FAX):
                                         try:
-                                                reply = 'ko;AMI'
-                                                ret = AMI_array_user_commands[astid].txfax(faxfilepath, callerid, number, context, True)
-
-                                                if ret:
-                                                        reply = 'ok;'
+                                                # We don't check the error code because it has been found to be unreliable.
+                                                reply = 'ok;'
+                                                AMI_array_user_commands[astid].txfax(PATH_SPOOL_ASTERISK_FAX, filename, callerid, number, context)
                                         except Exception, exc:
                                                 log_debug(SYSLOG_ERR, '--- exception --- (fax handler - AMI) : %s' %(str(exc)))
                                 else:
                                         reply = 'ko;exists-pathspool'
                                         log_debug(SYSLOG_INFO, 'directory %s does not exist - could not send fax' %(PATH_SPOOL_ASTERISK_FAX))
+
+                        if reply == 'ok;':
+                                # filename is actually an identifier.
+                                faxclients[filename] = myconn
+                                reply = 'queued;'
 
                         if myconn[0] == 'udp':
                                 myconn[1].sendto('faxsent=%s\n' % reply, (myconn[2], myconn[3]))
@@ -3238,6 +3259,7 @@ while True: # loops over the reloads
         save_for_next_packet_events = {}
         save_for_next_packet_status = {}
         faxbuffer = {}
+        faxclients = {}
         ip_reverse_webi = {}
         ip_reverse_sht = {}
 

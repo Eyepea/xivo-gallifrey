@@ -242,18 +242,17 @@ class AMIClass:
                 except Exception, exc:
                         return False
 
-        def txfax(self, filename, callerid, number, context, debug):
+        def txfax(self, faxdir, faxid, callerid, number, context):
                 # originate a call btw src and dst
                 # src will ring first, and dst will ring when src responds
                 try:
-                        if debug:
-                                data = '%s|%s|debug' %(filename, number)
-                        else:
-                                data = '%s|%s' %(filename, number)
-                        ret = self.sendcommand('Originate', [('Channel', "Local/%s@%s" %(number, context)),
-                                                             ('Application', 'txfax'),
+                        ret = self.sendcommand('Originate', [('Channel', "Local/%s@%s" % (number, context)),
                                                              ('CallerID', callerid),
-                                                             ('Data', data)])
+                                                             ('Variable', 'FAXDIR=%s' % faxdir),
+                                                             ('Variable', 'FAXID=%s' % faxid),
+                                                             ('Context', 'macro-txfax'),
+                                                             ('Extension', 's'),
+                                                             ('Priority', '1')])
                         reply = self.readresponse('')
                         return ret
                 except self.AMIError, exc:
