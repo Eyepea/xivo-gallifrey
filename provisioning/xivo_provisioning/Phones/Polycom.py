@@ -123,13 +123,14 @@ class PolycomProv(BaseProv):
 
 	# Introspection entry points
 
+	@classmethod
 	def get_phones(cls):
 		"Report supported phone models for this vendor."
 		return (("spip_430", "SPIP430"), ("spip_650", "SPIP650"))
-	get_phones = classmethod(get_phones)
 
 	# Entry points for the AGI
 
+	@classmethod
 	def get_vendor_model_fw(cls, ua):
 		"""Extract Vendor / Model / FirmwareRevision from SIP User-Agent
 		or return None if we don't deal with this kind of Agent.
@@ -147,6 +148,5 @@ class PolycomProv(BaseProv):
                         fw = ua_splitted[1]
                         model = ua_splitted[0].split('-')[1].lower()
 		return ("polycom", model, fw)
-	get_vendor_model_fw = classmethod(get_vendor_model_fw)
 
 provsup.PhoneClasses["polycom"] = PolycomProv

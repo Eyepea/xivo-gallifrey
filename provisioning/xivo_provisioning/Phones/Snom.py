@@ -90,13 +90,14 @@ class SnomProv(BaseProv):
 
 	# Introspection entry points
 
+	@classmethod
 	def get_phones(cls):
 		"Report supported phone models for this vendor."
 		return (("300", "300"), ("320", "320"), ("360","360"))
-	get_phones = classmethod(get_phones)
 
 	# Entry points for the AGI
 
+	@classmethod
 	def get_vendor_model_fw(cls, ua):
 		"""Extract Vendor / Model / FirmwareRevision from SIP User-Agent
 		or return None if we don't deal with this kind of Agent.
@@ -110,6 +111,5 @@ class SnomProv(BaseProv):
 		if len(ua_splitted) > 1:
 			fw = ua_splitted[1]
 		return ("snom", model, fw)
-	get_vendor_model_fw = classmethod(get_vendor_model_fw)
 
 provsup.PhoneClasses["snom"] = SnomProv

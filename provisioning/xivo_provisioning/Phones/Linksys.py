@@ -100,6 +100,7 @@ class LinksysProv(BaseProv):
 
 	# Introspection entry points
 
+	@classmethod
 	def get_phones(cls):
 		"Report supported phone models for this vendor."
 		return (("spa901", "SPA901"),
@@ -109,10 +110,10 @@ class LinksysProv(BaseProv):
                         ("spa942", "SPA942"),
                         ("spa962", "SPA962"),
                         ("pap2t", "PAP2T"))
-	get_phones = classmethod(get_phones)
 
 	# Entry points for the AGI
 
+	@classmethod
 	def get_vendor_model_fw(cls, ua):
 		"""Extract Vendor / Model / FirmwareRevision from SIP User-Agent
 		or return None if we don't deal with this kind of Agent.
@@ -134,6 +135,5 @@ class LinksysProv(BaseProv):
                         if len(modelfw) == 2:
                                 fw = modelfw[1]
 		return ("linksys", model, fw)
-	get_vendor_model_fw = classmethod(get_vendor_model_fw)
 
 provsup.PhoneClasses["linksys"] = LinksysProv

@@ -190,13 +190,14 @@ class ThomsonProv(BaseProv):
 
 	# Introspection entry points
 
+	@classmethod
 	def get_phones(cls):
 		"Report supported phone models for this vendor."
 		return (("2022s", "2022S"), ("2030s", "2030S"))
-	get_phones = classmethod(get_phones)
 
 	# Entry points for the AGI
 
+	@classmethod
 	def get_vendor_model_fw(cls, ua):
 		"""Extract Vendor / Model / FirmwareRevision from SIP User-Agent
 		or return None if we don't deal with this kind of Agent.
@@ -215,6 +216,5 @@ class ThomsonProv(BaseProv):
 		if len(splitted_ua) >= 4:
 			fw = splitted_ua[3]
 		return ("thomson", model, fw)
-	get_vendor_model_fw = classmethod(get_vendor_model_fw)
 
 provsup.PhoneClasses["thomson"] = ThomsonProv

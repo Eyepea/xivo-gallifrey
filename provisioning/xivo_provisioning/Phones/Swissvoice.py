@@ -137,13 +137,14 @@ class SwissvoiceProv(BaseProv):
 
 	# Introspection entry points
 
+	@classmethod
 	def get_phones(cls):
 		"Report supported phone models for this vendor."
 		return (("ip10s", "IP10S"),)
-	get_phones = classmethod(get_phones)
 
 	# Entry points for the AGI
 
+	@classmethod
 	def get_vendor_model_fw(cls, ua):
 		"""Extract Vendor / Model / FirmwareRevision from SIP User-Agent
 		or return None if we don't deal with this kind of Agent.
@@ -155,6 +156,5 @@ class SwissvoiceProv(BaseProv):
 		model = ua_splitted[1].lower() + "s"
 		fw = ua_splitted[3]
 		return ("swissvoice", model, fw)
-	get_vendor_model_fw = classmethod(get_vendor_model_fw)
 
 provsup.PhoneClasses["swissvoice"] = SwissvoiceProv
