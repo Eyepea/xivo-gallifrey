@@ -363,8 +363,8 @@ def __mode_dependant_provlogic_locked(mode, ctx, phone, config, prev_iduserfeatu
 		syslogf(SYSLOG_DEBUG, "__mode_dependant_provlogic_locked() in notification mode for phone %s and user %s" % (phone['macaddr'], config['iduserfeatures']))
 		if prev_iduserfeatures:
 			if config['iduserfeatures'] != prev_iduserfeatures:
-				syslogf(SYSLOG_ERR, "__mode_dependant_provlogic_locked(): outdated isuserfeatures received for update notification of phone %s; wanted %s; got %s" % (str(phone), prev_iduserfeatures, config['iduserfeatures']))
-				raise ConflictError, "Outdated isuserfeatures received for update notification of phone %s; wanted %s; got %s" % (str(phone), prev_iduserfeatures, config['iduserfeatures'])
+				syslogf(SYSLOG_ERR, "__mode_dependant_provlogic_locked(): outdated iduserfeatures received for update notification of phone %s; wanted %s; got %s" % (str(phone), prev_iduserfeatures, config['iduserfeatures']))
+				raise ConflictError, "Outdated iduserfeatures received for update notification of phone %s; wanted %s; got %s" % (str(phone), prev_iduserfeatures, config['iduserfeatures'])
 		existing_phone = ctx.dbinfos.phone_by_iduserfeatures(config['iduserfeatures'])
 		if not existing_phone:
 			syslogf(SYSLOG_ERR, "__mode_dependant_provlogic_locked(): non existing phone %s to update for iduserfeatures %s" % (str(phone), config['iduserfeatures']))
