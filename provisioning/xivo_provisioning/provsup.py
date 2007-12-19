@@ -247,7 +247,7 @@ class BaseProv:
 		generate_reinitprov() method.
 		
 		"""
-		if self.phone["actions"].lower() == "no": # possible cause: "distant" provisioning
+		if self.phone["actions"] == "no": # possible cause: "distant" provisioning
 			syslogf("Skipping REINIT action for phone %s" % self.phone['macaddr'])
 			return
 		syslogf("Sending REINIT command to phone %s" % self.phone['macaddr'])
