@@ -313,18 +313,6 @@ class SQLBackEnd:
 			return orphans
 		return [replace_keys(row, mapping) for row in orphans]
 
-	def delete_guest_by_mac(self, macaddr):
-		"""Delete from the database every GUEST phone having the given
-		Mac Address.
-		
-		"""
-		self.sql_modify(
-			("DELETE FROM %s WHERE macaddr = %s "
-					      "AND iduserfeatures = %s")
-			 % (TABLE, '%s', '%s'),
-			None,
-			(macaddr, 0))
-
 class CommonProvContext:
 	def __init__(self, userlocks, maclocks, dbinfos, rwlock):
 		# There is no locking order because my ListLocks don't block.
