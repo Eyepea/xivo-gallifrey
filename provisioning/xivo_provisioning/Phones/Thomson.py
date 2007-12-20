@@ -116,6 +116,19 @@ class ThomsonProv(BaseProv):
 					break
 		finally:
 			tn.close()
+
+	@staticmethod
+	def __format_function_keys(funckey):
+		sorted_keys = funckey.keys()
+		sorted_keys.sort()
+		fk_config_lines = []
+		for key in sorted_keys:
+			exten, supervise = funckey[key]
+			fk_config_lines.append(
+				"FeatureKeyExt%02d=%s/<sip:%s>" %
+				(int(key), 'LS'[supervise], exten))
+		return '\n'.join(fk_config_lines)
+
 	def __generate(self, myprovinfo):
 		txt_template_file = open(THOMSON_SPEC_TXT_TEMPLATE + self.phone["model"].upper() + "_template.txt")
 		txt_template_lines = txt_template_file.readlines()
@@ -123,9 +136,9 @@ class ThomsonProv(BaseProv):
 		tmp_filename = THOMSON_SPEC_TXT_BASENAME + self.phone["model"].upper() + "_" + self.phone["macaddr"].replace(':','') + '.txt.tmp'
 		txt_filename = tmp_filename[:-4]
 
-		multilines = "10" # simultcalls not defined when called in guest mode
-		if "simultcalls" in myprovinfo:
-			multilines = str(myprovinfo["simultcalls"])
+		multilines = str(myprovinfo["simultcalls"])
+		function_keys_config_lines = \
+			self.__format_function_keys(myprovinfo['funckey'])
 
 		txt = provsup.txtsubst(txt_template_lines, {
 			"user_display_name": myprovinfo["name"],
@@ -137,8 +150,9 @@ class ThomsonProv(BaseProv):
 			"user_phone_passwd": myprovinfo["passwd"],
 			"simultcalls": multilines,
 			# <WARNING: THIS FIELD MUST STAY IN LOWER CASE IN THE TEMPLATE AND MAC SPECIFIC FILE>
-			"config_sn": self.__generate_timestamp()
+			"config_sn": self.__generate_timestamp(),
 			# </WARNING>
+			"function_keys": function_keys_config_lines,
 		}, txt_filename)
 		tmp_file = open(tmp_filename, 'w')
 		tmp_file.writelines(txt)
@@ -180,6 +194,8 @@ class ThomsonProv(BaseProv):
 			"ident": "guest",
 			"number": "guest",
 			"passwd": "guest",
+			"simultcalls": "10",
+			"funckey": {},
 		})
 	def do_autoprov(self, provinfo):
 		"""Entry point to generate the provisioned configuration for

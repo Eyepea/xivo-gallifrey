@@ -7,3 +7,4 @@ regpwd1={{user_phone_passwd}}
 [sys]
 config_sn={{config_sn}}
 Current_Max_Multiline={{simultcalls}}
+{{function_keys}}

@@ -7,13 +7,15 @@ Copyright (C) 2007, Proformatique
 
 __version__ = "$Revision$ $Date$"
 
-CONFIG_FILE		= '/etc/xivo/provisioning.conf' # can be overridden by cmd line param
-GETOPT_SHORTOPTS	= 'b:l:dfc:p:h'
+CONFIG_FILE		= "/etc/xivo/provisioning.conf" # can be overridden by cmd line param
+GETOPT_SHORTOPTS	= "b:l:dfc:p:h"
 PIDFILE			= "/var/run/autoprov.pid"
-TABLE			= "phone"
-UF_TABLE		= "userfeatures"
-SIP_TABLE		= "usersip"
-TECH			= "sip" # only allowed tech right now
+TABLE			= 'phone'
+UF_TABLE		= 'userfeatures'
+SIP_TABLE		= 'usersip'
+FK_TABLE		= 'phonefunckey'
+XNUM_TABLE		= 'extenumbers'
+TECH			= 'sip' # only allowed tech right now
 
 import encodings.latin_1
 import _sre
@@ -168,6 +170,49 @@ class SQLBackEnd:
 			('macaddr', 'vendor', 'model', 'proto', 'iduserfeatures', 'isinalan'),
 			(macaddr,))
 
+	@staticmethod
+	def exten_from_xnext_fkext(xnext, fkext):
+		"""Returns an extension that is purely function of xnext and fkext
+		
+		xnext - None or a string that is an Asterisk extension pattern
+		        from which the initial underscore specifying that the
+		        remaining part of the string is a pattern will be
+		        stripped, as well as the lasts consecutive non fixed
+		        pattern characters (for example "_5." => "5", and
+		        "_666[3-689]XNZ!" => "666", but this behavior won't be
+		        very useful if the pattern is something complicated
+		        like "_42!XNZ!666[5-7]Z.", in which case the following
+		        prefix will be emitted as is and as if it was the
+			beginning of a real extension: "42!XNZ!666"
+		fkext - right part of the extension to be returned
+		
+		WARNING: what will happen when you pass a really incorrect and 
+		stupid extension pattern is really unspecified (but should not
+		trigger any exception)
+		"""
+		exten = ""
+		if xnext:
+			if xnext[0] == '_':
+				xnext = xnext[1:]
+				bracket_level = 0
+				start_to_p = False
+				for p in xrange(len(xnext)-1,-1,-1):
+					if not bracket_level:
+						if xnext[p] == ']':
+							bracket_level += 1
+						elif xnext[p] not in 'NXZ!.':
+							start_to_p = True
+							break
+					elif xnext[p] == '[':
+						bracket_level -= 1
+				if start_to_p:
+					exten += xnext[:p+1]
+			else:
+				exten += xnext
+		if fkext:
+			exten += fkext
+		return exten
+
 	def config_by_something_proto(self, something_column, something_content, proto):
 		"""Query the database to return a phone configuration.
 		
@@ -188,6 +233,11 @@ class SQLBackEnd:
 			'simultcalls': number of simultaneous calls (multiline)
 			'number': extension number
 			'proto': protocol
+			'funckey': mapping where keys are function key number
+				and values a tuple (exten, supervise).
+				.exten is the extension to speed dial/supervise
+				.supervise is True if & only if supervision is
+				 activated on this function key
 		
 		Right now proto must evaluate to 'sip'
 		
@@ -221,6 +271,28 @@ class SQLBackEnd:
 		confdico = replace_keys(confdico, mapping)
 		confdico['name'] = name_from_first_last(confdico['firstname'],
 							confdico['lastname'])
+		fklist = self.sql_select_all(
+			("SELECT ${columns} "
+			 "FROM %s LEFT OUTER JOIN %s "
+			 "ON  %s.typeextenumbers = %s.type "
+			 "AND %s.typevalextenumbers = %s.typeval "
+			 "WHERE iduserfeatures=%s")
+			 % (FK_TABLE, XNUM_TABLE,
+			    FK_TABLE, XNUM_TABLE, 
+			    FK_TABLE, XNUM_TABLE,
+			    '%s'),
+			[FK_TABLE+x for x in ('.fknum', '.exten', '.supervision')]
+			+ [XNUM_TABLE+'.exten'],
+			(confdico['iduserfeatures'],))
+		funckey = {}
+		for fk in fklist:
+			funckey[fk[FK_TABLE+'.fknum']] = (
+				self.exten_from_xnext_fkext(
+					fk[XNUM_TABLE+'.exten'],
+					fk[FK_TABLE+'.exten']),
+				bool(int(fk[FK_TABLE+'.supervision']))
+			)
+		confdico['funckey'] = funckey
 		return confdico
 
 	def config_by_iduserfeatures_proto(self, iduserfeatures, proto):

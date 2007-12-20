@@ -111,8 +111,8 @@ def linesubst(line, variables):
 					    "empty string") % (curvar,))
 				else:
 					syslogf(SYSLOG_DEBUG,
-					    ("Substitution of {{%s}} by \"%s\""%\
-						(curvar, variables[curvar])))
+					    ("Substitution of {{%s}} by %s"%\
+						(curvar, `variables[curvar]`)))
 					out += variables[curvar]
 				curvar = ''
 				st = NORM
