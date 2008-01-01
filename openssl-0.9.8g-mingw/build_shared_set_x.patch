@@ -1,0 +1,14 @@
+diff -Nru openssl-0.9.8g-orig/Makefile.shared openssl-0.9.8g/Makefile.shared
+--- openssl-0.9.8g-orig/Makefile.shared	2008-01-01 00:11:22.000000000 +0100
++++ openssl-0.9.8g/Makefile.shared	2008-01-01 00:13:18.000000000 +0100
+@@ -70,8 +70,8 @@
+ #------------------------------------------------------------------------------
+ # The rest is private to this makefile.
+ 
+-SET_X=:
+-#SET_X=set -x
++#SET_X=:
++SET_X=set -x
+ 
+ top:
+ 	echo "Trying to use this makefile interactively?  Don't."

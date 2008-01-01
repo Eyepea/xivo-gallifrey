@@ -1,0 +1,20 @@
+diff -ru openssl-0.9.8g-orig/util/clean-depend.pl openssl-0.9.8g/util/clean-depend.pl
+--- openssl-0.9.8g-orig/util/clean-depend.pl	2007-09-19 15:10:34.000000000 +0200
++++ openssl-0.9.8g/util/clean-depend.pl	2007-12-13 17:01:11.000000000 +0100
+@@ -42,6 +42,16 @@
+     my @deps = map { $_ =~ s/^\.\///; $_ } @{$files{$file}};
+ 
+     foreach $dep (sort @deps) {
++
++	# The next line is needed when you try to build with a Cygwin
++	# GNU Make 3.81, which does not support Windows or hybrid (Windows
++	# but slash based) filenames. It was uneeded with Cygwin GNU Make 3.80
++	# because it included a patch adding support of this kind of filenames,
++	# but this patch is now no longer included and anyway this should not
++	# harm while building with Cygwin GNU Make 3.80 either.
++	# THIS PATCH MUST NOT BE APPLIED WHEN YOU DON'T BUILD UNDER CYGWIN
++	chomp($dep = `cygpath "$dep"`);
++
+ 	next if $prevdep eq $dep; # to exterminate duplicates...
+ 	$prevdep = $dep;
+ 	$len=0 if $len+length($dep)+1 >= 80;

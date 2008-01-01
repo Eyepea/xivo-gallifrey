@@ -1,0 +1,36 @@
+2007-12-12  Guillaume Knispel <gknispel@proformatique.com>
+
+	build_under_broken_cygwin.patch
+	OpenSSL build sys patch
+
+	This patch allows "make depend" to properly work under some
+	Cygwin installation that are broken for mysterious reasons and
+	where bash replaces in some cases but not always (typically when
+	invoking GCC in the domd script, and I have not understood why)
+	effects of a ">>" stdout derivation by effects of a ">" one.
+
+	Instead of asking to bash to perform the appending operation,
+	three separate files are created and cat is used to perform the
+	concatenation, the output of cat being sent to the input of
+	util/clean-depend.pl.
+
+diff -ru openssl-0.9.8g-orig/util/domd openssl-0.9.8g/util/domd
+--- openssl-0.9.8g-orig/util/domd	2005-03-30 16:44:50.000000000 +0200
++++ openssl-0.9.8g/util/domd	2007-12-12 17:34:25.000000000 +0100
+@@ -20,11 +20,11 @@
+ 	if [ "$1" != "--" ]; then args="$args $1"; fi
+ 	shift
+     done
+-    sed -e '/^# DO NOT DELETE.*/,$d' < Makefile > Makefile.tmp
+-    echo '# DO NOT DELETE THIS LINE -- make depend depends on it.' >> Makefile.tmp
+-    gcc -D OPENSSL_DOING_MAKEDEPEND -M $args >> Makefile.tmp
+-    ${PERL} $TOP/util/clean-depend.pl < Makefile.tmp > Makefile.new
+-    rm -f Makefile.tmp
++    sed -e '/^# DO NOT DELETE.*/,$d' < Makefile > Makefile.tmp1
++    echo '# DO NOT DELETE THIS LINE -- make depend depends on it.' > Makefile.tmp2
++    gcc -D OPENSSL_DOING_MAKEDEPEND -M $args > Makefile.tmp3
++    cat Makefile.tmp1 Makefile.tmp2 Makefile.tmp3 | ${PERL} $TOP/util/clean-depend.pl > Makefile.new
++    rm -f Makefile.tmp1 Makefile.tmp2 Makefile.tmp3
+ else
+     ${MAKEDEPEND} -D OPENSSL_DOING_MAKEDEPEND $@
+     ${PERL} $TOP/util/clean-depend.pl < Makefile > Makefile.new

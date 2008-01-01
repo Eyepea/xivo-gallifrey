@@ -1,0 +1,3 @@
+for each in `find -iname Makefile` ; do sed -i -e 's/^\([\t][\t ]*\)@[\t ]*/\1/' $each ; done
+for each in `find -iname Makefile.org` ; do sed -i -e 's/^\([\t][\t ]*\)@[\t ]*/\1/' $each ; done
+for each in `find -iname Makefile.shared` ; do sed -i -e 's/^\([\t][\t ]*\)@[\t ]*/\1/' $each ; done
