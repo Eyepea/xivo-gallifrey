@@ -26,18 +26,7 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 
 	function _prepare($data)
 	{
-		if($data['context'] === '')
-			$data['context'] = 'default';
-
-		$data['fullname'] = trim(trim($data['firstname']).' '.trim($data['lastname']));
-
-		if($data['fullname'] === '')
-			$data['fullname'] = '-';
-
-		if(xivo_haslen($data['number']) === true)
-			$data['identity'] = $data['fullname'].' ('.$data['number'].'@'.$data['context'].')';
-		else
-			$data['identity'] = $data['fullname'].' ('.$data['name'].')';
+		$this->mk_identity($data);
 
 		$data['enableclient'] = (bool) $data['enableclient'];
 		$data['enablehint'] = (bool) $data['enablehint'];
@@ -52,6 +41,24 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		$data['enableunc'] = (bool) $data['enableunc'];
 		$data['internal'] = (bool) $data['internal'];
 		$data['commented'] = (bool) $data['commented'];
+
+		return($data);
+	}
+
+	function mk_identity(&$data)
+	{
+		if($data['context'] === '')
+			$data['context'] = 'default';
+
+		$data['fullname'] = trim(trim($data['firstname']).' '.trim($data['lastname']));
+
+		if($data['fullname'] === '')
+			$data['fullname'] = '-';
+
+		if(xivo_haslen($data['number']) === true)
+			$data['identity'] = $data['fullname'].' ('.$data['number'].'@'.$data['context'].')';
+		else
+			$data['identity'] = $data['fullname'].' ('.$data['name'].')';
 
 		return($data);
 	}
@@ -74,13 +81,14 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		return($r);
 	}
 
-	function get_where($arr,$orig=true,$disable=null)
+	function get_where($arr,$orig=true,$disable=null,$id=null)
 	{
 		if(($orig = (bool) $orig) === true)
 			$this->_origin = false;
 
 		if(is_array($arr) === false
 		|| ($where = $this->get_element_where($arr)) === false
+		|| ($id !== null && ($where['id'] = xivo_uint($id)) === 0) === true
 		|| ($r = $this->_dso->get($where)) === false)
 			return(false);
 

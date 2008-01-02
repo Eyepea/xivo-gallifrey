@@ -151,6 +151,18 @@ Renvoi inconditionnel :
 ; fm_userfeatures_destunc
 Destination :
 
+; fm_userfeatures_bsfilter
+Filtrage Patron - Secrétaire :
+
+; fm_userfeatures_bsfilter-opt-no
+Non
+
+; fm_userfeatures_bsfilter-opt-boss
+Patron
+
+; fm_userfeatures_bsfilter-opt-secretary
+Secrétaire
+
 ; fld-callgroup
 Groupes
 
@@ -291,6 +303,27 @@ Modèle :
 
 ; fm_autoprov_macaddr
 Adresse MAC :
+
+; col_phonefunckey-fknum
+Touche
+
+; col_phonefunckey-type
+Type
+
+; col_phonefunckey-typeval
+Destination
+
+; col_phonefunckey-supervision
+Supervision
+
+; col_phonefunckey-add
+Ajouter
+
+; opt_phonefunckey-delete
+Supprimer
+
+; no_phonefunckey
+Aucune touche de fonction
 
 ; fld-dialstatus-noanswer
 Aucune réponse

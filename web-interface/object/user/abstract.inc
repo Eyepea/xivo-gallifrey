@@ -294,7 +294,7 @@ class xivo_user_abstract
 
 		if(is_object($this->_acl) === false)
 		{
-			if(($this->_acl = $this->load_acl($this->_dso,$this->_param['factory'])) === false)
+			if(($this->_acl = $this->_load_acl($this->_dso,$this->_param['factory'])) === false)
 				trigger_error('Failed to load user acl in '.__CLASS__,E_USER_ERROR);
 		}
 

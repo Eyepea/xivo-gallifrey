@@ -80,24 +80,6 @@ class xivo_service_asterisk_phonebookaddress extends xivo_service_asterisk_abstr
 		return(false);
 	}
 
-	function get_search($value,$except=null,$order=null,$limit=null)
-	{
-		if(($list = $this->_dso->get_search($value,$except,$order,$limit)) === false)
-			return(false);
-
-		$nb = count($list);
-
-		$r = array();
-
-		for($i = 0;$i < $nb;$i++)
-			$r[] = $this->_prepare($list[$i]);
-
-		if(isset($r[0]) === false)
-			$r = false;
-
-		return($r);
-	}
-
 	function get_all_type_by_phonebook($phonebookid,$prepare=true)
 	{
 		$prepare = (bool) $prepare;

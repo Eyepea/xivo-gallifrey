@@ -169,7 +169,47 @@ class xivo_user
 		return(false);
 	}
 
-	function acl_chk($section)
+	function chk_acl($cat='',$func='',$section='')
+	{
+		$section = (string) $section;
+		$cat = $cat === true ? true : (string) $cat;
+		$func = (string) $func;
+
+		if($section === '')
+		{
+			if(defined('XIVO_SCRIPT_ROOT') === true)
+				$script_root = XIVO_SCRIPT_ROOT;
+			else
+				$script_root = '';
+
+			if(($len = strlen($script_root)) === 0)
+				$section = $_SERVER['SCRIPT_NAME'];
+			else if(strncmp($script_root,$_SERVER['SCRIPT_NAME'],$len) === 0)
+				$section = substr($_SERVER['SCRIPT_NAME'],$len);
+			else
+				return(false);
+
+			if(($pos = strrpos($section,'/')) !== false)
+				$section = substr($section,0,$pos);
+		}
+
+		if($cat === true)
+		{
+			if(isset($_SERVER['PATH_INFO']) === true)
+				$section .= $_SERVER['PATH_INFO'];
+		}
+		else if($cat !== '')
+		{
+			$section .= '/'.$cat;
+
+			if($func !== '')
+				$section .= '/'.$func;
+		}
+
+		return(xivo_user::chk_acl_section($section));
+	}
+
+	function chk_acl_section($section)
 	{
 		if(isset($_SESSION['_ACL']) === false
 		|| xivo_user::is_valid() === false

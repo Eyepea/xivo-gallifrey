@@ -112,8 +112,7 @@ class xivo_application_service_asterisk_extenumbers_abstract extends xivo_applic
 	{
 		if($status !== 'save')
 			return(false);
-
-		if(empty($this->_info) === true)
+		else if(empty($this->_info) === true)
 			return($this->add($typeval));
 		else
 			return($this->edit($typeval));

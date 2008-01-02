@@ -133,6 +133,29 @@ function xivo_uint($str=0,$def=0,$t=false)
 	return($str);
 }
 
+function xivo_ubint($str=0,$def=0,$t=false)
+{
+	$str = strval($str);
+	$def = strval($def);
+	$t = (bool) $t;
+
+	if(is_numeric($str) === false
+	|| is_numeric($def) === false
+	|| $str{0} === '0')
+		return(false);
+
+	if($str{0} === '-')
+		$str = substr($str,1);
+
+	if($def !== '0' && $str === '0')
+		$str = $t === true ? xivo_ubint($def) : $def;
+
+	if($str === '0')
+		$str = 0;
+
+	return($str);
+}
+
 function xivo_sgraph($str='',$def=null,$t=false)
 {
 	$t = (bool) $t;

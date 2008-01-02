@@ -154,6 +154,12 @@ Accéder à l'annuaire :
 ; fm_extenfeatures_directoryaccess
 Extension :
 
+; fm_extenfeatures_enable-bsfilter
+Filtrage Patron - Secrétaire :
+
+; fm_extenfeatures_bsfilter
+Extension :
+
 ; fm_generalfeatures_parkext
 Extension :
 

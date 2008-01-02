@@ -20,6 +20,12 @@ $array['agents']['table'] = 'agent';
 $array['autoprov'] = array();
 $array['autoprov']['table'] = 'phone';
 
+$array['callfilter'] = array();
+$array['callfilter']['table'] = 'callfilter';
+
+$array['callfiltermember'] = array();
+$array['callfiltermember']['table'] = 'callfiltermember';
+
 $array['cdr'] = array();
 $array['cdr']['table'] = 'cdr';
 
@@ -79,6 +85,9 @@ $array['phonebookaddress']['table'] = 'phonebookaddress';
 
 $array['phonebooknumber'] = array();
 $array['phonebooknumber']['table'] = 'phonebooknumber';
+
+$array['phonefunckey'] = array();
+$array['phonefunckey']['table'] = 'phonefunckey';
 
 $array['queue'] = array();
 $array['queue']['table'] = 'queue';

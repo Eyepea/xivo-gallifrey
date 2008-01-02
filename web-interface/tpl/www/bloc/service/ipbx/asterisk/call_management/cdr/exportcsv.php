@@ -118,7 +118,7 @@ for($i = 0;$i < $nb;$i++)
 	if($ref['channel'] === XIVO_SRE_IPBX_AST_CHAN_UNKNOWN)
 		$ref['channel'] = $this->bbf('entry_channel-unknown');
 
-	echo	'"',str_replace('"','""',strftime($this->bbf('date_format_yymmddhhiiss'),$ref['callunixtime'])),'";',
+	echo	'"',str_replace('"','""',strftime($this->bbf('date_format_yymmddhhiiss'),strtotime($ref['calldate']))),'";',
 		'"',str_replace('"','""',$ref['src']),'";',
 		'"',str_replace('"','""',$ref['dst']),'";',
 		'"',str_replace('"','""',$ref['duration']),'";',

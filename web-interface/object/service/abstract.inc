@@ -310,8 +310,10 @@ class xivo_service_abstract
 			trigger_error('Custom Application '.$name.' does not exist in '.$this->_name,E_USER_ERROR);
 			return(false);
 		}
-
-		$this->_appcustom[$type][$name] = new $class($this);
+		else if(($dsoclass = $this->_load_dso_appcustom($type,$name)) !== false)
+			$this->_appcustom[$type][$name] = new $class($this,$dsoclass);
+		else
+			$this->_appcustom[$type][$name] = new $class($this);
 
 		return(true);
 	}
@@ -358,6 +360,41 @@ class xivo_service_abstract
 			return(false);
 
 		return(new $class($dso,&$this->_dsoconf[$type]));
+	}
+
+	function _load_dso_appcustom($type,$name)
+	{
+		$type = (string) $type;
+		$name = (string) $name;
+
+		if(is_object($this->_dsogeneral) === true)
+			$dso = &$this->_dsogeneral;
+		else if($this->_load_dso() === true && is_object($this->_dsogeneral) === true)
+			$dso = &$this->_dsogeneral;
+		else
+		{
+			trigger_error('Missing general Datastorage in '.$this->_name.' for '.$type.'::'.$name,E_USER_ERROR);
+			return(false);
+		}
+
+		$dsotype = $dso->get_type();
+
+		$class = 'xivo_application_service_'.$this->_name.'_'.$type.'_'.$name.'_'.$dsotype;
+
+		$dir = array();
+		$dir[] = XIVO_PATH_OBJECT;
+		$dir[] = 'application';
+		$dir[] = 'service';
+		$dir[] = $this->_type;
+		$dir[] = $this->_name;
+		$dir[] = $type;
+		$dir[] = $name;
+		$dir[] = 'datastorage';
+
+		if($this->_load_dso_config($dsotype) === false || xivo::load_class($class,$dir,$dsotype,false) === false)
+			return(false);
+
+		return(new $class($dso,&$this->_dsoconf[$dsotype]));
 	}
 
 	function _load_dso($name='',$custom=false)

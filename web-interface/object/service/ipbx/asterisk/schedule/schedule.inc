@@ -302,30 +302,59 @@ class xivo_service_asterisk_schedule extends xivo_service_asterisk_abstract
 		return(false);
 	}
 
-	function get_all($id=0,$disable=null,$prepare=true,$order=null,$limit=null)
+	function get_all($id=0,$disable=null,$prepare=true,$order=null,$limit=null,$assoc=false)
 	{
-		if(($list = parent::get_all($disable,$prepare,$order,$limit)) === false)
+		$id = xivo_uint($id);
+		$prepare = (bool) $prepare;
+		$assoc = (bool) $assoc;
+
+		if(isset($this->_origin_list) === true)
+			$this->_origin_list = false;
+
+		if(($list = $this->_dso->get_all($disable,$order,$limit)) === false
+		|| isset($list[0]) === false)
 			return(false);
 
-		if(($id = xivo_uint($id)) === 0)
-			return($list);
+		if(isset($this->_origin_list) === true)
+			$this->_origin_list = $list;
 
-		$nb = count($list);
+		if($prepare === false && $assoc === false)
+			return($list);
+		else if(($nb = count($list)) === 0)
+			return(false);
 
 		$r = array();
 
-		for($i = 0;$i < $nb;$i++)
+		if($assoc === true && $prepare === true)
 		{
-			$info = $list[$i];
+			for($i = 0;$i < $nb;$i++)
+			{
+				if($id === (int) $list[$i]['id'])
+					continue;
 
-			if($id === (int) $info['id'])
-				continue;
-
-			$r[] = $info;
+				$r[$list[$i]['id']] = $this->_prepare($list[$i]);
+			}
 		}
+		else if($assoc === true)
+		{
+			for($i = 0;$i < $nb;$i++)
+			{
+				if($id === (int) $list[$i]['id'])
+					continue;
 
-		if(isset($r[0]) === false)
-			$r = false;
+				$r[$list[$i]['id']] = $list[$i];
+			}
+		}
+		else
+		{
+			for($i = 0;$i < $nb;$i++)
+			{
+				if($id === (int) $list[$i]['id'])
+					continue;
+
+				$r[] = $this->_prepare($list[$i]);
+			}
+		}
 
 		return($r);
 	}

@@ -91,8 +91,7 @@ class xivo_application_service_asterisk_rightcall_abstract extends xivo_applicat
 	{
 		if(($id = xivo_uint($id)) === 0)
 			return(false);
-
-		if(($rs = $this->get_result()) === null || $rs === false)
+		else if(($rs = $this->get_result()) === null || $rs === false)
 			return($rs);
 
 		$this->_return = array();
@@ -122,16 +121,14 @@ class xivo_application_service_asterisk_rightcall_abstract extends xivo_applicat
 	{
 		if(($id = xivo_uint($id)) === 0)
 			return(false);
-
-		if(empty($this->_info) === true)
+		else if(empty($this->_info) === true)
 			return($this->add($id));
 
 		$this->_return = $this->delete($status,$type,$id);
 
 		if(($rs = $this->get_result()) === null)
 			return($this->_return);
-
-		if($rs === false)
+		else if($rs === false)
 			return(false);
 
 		$this->_return = array();
@@ -161,8 +158,7 @@ class xivo_application_service_asterisk_rightcall_abstract extends xivo_applicat
 	{
 		if(empty($this->_info) === true)
 			return(null);
-
-		if(is_string($type) === false
+		else if(is_string($type) === false
 		|| ($id = xivo_uint($id)) === 0)
 			return(false);
 

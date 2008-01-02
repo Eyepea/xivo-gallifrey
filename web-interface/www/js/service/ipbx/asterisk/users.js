@@ -94,6 +94,8 @@ xivo_list_elt_users['ufeatures-outcallerid-custom'] = new Array();
 xivo_list_elt_users['ufeatures-outcallerid-custom']['it'] = false;
 xivo_list_elt_users['ufeatures-musiconhold'] = new Array();
 xivo_list_elt_users['ufeatures-musiconhold']['it'] = false;
+xivo_list_elt_users['ufeatures-bsfilter'] = new Array();
+xivo_list_elt_users['ufeatures-bsfilter']['it'] = true;
 
 xivo_list_elt_users['voicemail-active'] = new Array();
 xivo_list_elt_users['voicemail-active']['it'] = false;

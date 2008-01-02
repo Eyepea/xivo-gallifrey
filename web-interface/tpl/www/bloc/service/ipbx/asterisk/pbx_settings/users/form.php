@@ -190,6 +190,8 @@
 
 	<?=$form->text(array('desc' => $this->bbf('fm_userfeatures_destunc'),'name' => 'ufeatures[destunc]','labelid' => 'ufeatures-destunc','value' => $info['ufeatures']['destunc'],'size' => 15));?>
 
+	<?=$form->select(array('desc' => $this->bbf('fm_userfeatures_bsfilter'),'name' => 'ufeatures[bsfilter]','labelid' => 'ufeatures-bsfilter','bbf' => array('concatkey','fm_userfeatures_bsfilter-opt-'),'key' => false,'default' => $element['ufeatures']['bsfilter']['default'],'value' => $info['ufeatures']['bsfilter']),$element['ufeatures']['bsfilter']['value']);?>
+
 </div>
 
 <div id="sb-part-autoprov" class="b-nodisplay">
@@ -223,6 +225,8 @@
 </p>
 <?php
 	endif;
+
+	echo $this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey',array('type' => 'emergency','count' => 0));
 ?>
 </div>
 

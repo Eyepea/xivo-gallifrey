@@ -2,52 +2,20 @@
 
 define('XIVO_LABEL','XIVO-WEBI');
 
-$array = array();
+define('XIVO_SOFT_NAME','xivo');
+define('XIVO_SOFT_LABEL','XIVO');
+define('XIVO_SOFT_VERSION','0.3');
+define('XIVO_SOFT_CODENAME','Tardis');
+define('XIVO_SOFT_URL','www.xivo.fr');
+define('XIVO_CORP_NAME','proformatique');
+define('XIVO_CORP_LABEL','Proformatique');
+define('XIVO_CORP_EMAIL','contact@proformatique.com');
+define('XIVO_CORP_URL','www.proformatique.com');
+define('XIVO_CORP_ADDRESS','67 rue Voltaire');
+define('XIVO_CORP_ZIPCODE','92800');
+define('XIVO_CORP_CITY','Puteaux');
+define('XIVO_CORP_COUNTRY','France');
+define('XIVO_CORP_PHONE','+33 (0) 1 41 38 99 60');
+define('XIVO_CORP_FAX','+33 (0) 1 41 38 99 70');
 
-$array['ini'] = array();
-
-$array['sys'] = array();
-
-$array['sys']['general'] = array(
-				'soft_name'	=> 'xivo',
-				'soft_label'	=> 'XIVO',
-				'soft_version'	=> '0.2',
-				'soft_codename'	=> 'Torchwood',
-				'soft_url'	=> 'www.xivo.fr',
-				'corp_address'	=> '67 rue Voltaire',
-				'corp_zipcode'	=> '92800',
-				'corp_city'	=> 'Puteaux',
-				'corp_country'	=> 'France',
-				'corp_phone'	=> '+33 (0) 1 41 38 99 60',
-				'corp_fax'	=> '+33 (0) 1 41 38 99 70',
-				'corp_name'	=> 'proformatique',
-				'corp_label'	=> 'Proformatique',
-				'corp_email'	=> 'contact@proformatique.com',
-				'corp_url'	=> 'www.proformatique.com');
-
-$array['sys']['php_version'] = array(
-				'min'		=> '4.4',
-				'max'		=> '5.0');
-
-$array['sys']['extension'] = array(
-				'prefix'	=> '',
-				'suffix'	=> '',
-				'const'		=> 'XIVO_EXT__');
-
-$array['sys']['separator'] = array(
-				'dir'		=> '/',
-				'path'		=> ':',
-				'arg_in'	=> '&',
-				'arg_out'	=> '&');
-
-$array['sys']['session'] = array(
-				'name'		=> '_eid',
-				'time'		=> 7200,
-				'path'		=> '/',
-				'max_per_user'	=> 1);
-
-$array['sys']['locale'] = array(
-				'language'	=> 'fr',
-				'territory'	=> 'FR',
-				'charset'	=> 'UTF-8');
 ?>

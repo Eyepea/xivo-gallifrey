@@ -6,5 +6,4 @@ $array = array();
 
 $array['ipbx'] = array('asterisk' => 1);
 
-
 ?>

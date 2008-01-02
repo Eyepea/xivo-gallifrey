@@ -118,6 +118,102 @@ class xivo_service_asterisk_outcalltrunk extends xivo_service_asterisk_abstract
 
 		return($this->_dso->delete($id));
 	}
+
+	function get_all($prepare=true,$order=null,$limit=null,$assoc=false)
+	{
+		$prepare = (bool) $prepare;
+		$assoc = (bool) $assoc;
+
+		if(isset($this->_origin_list) === true)
+			$this->_origin_list = false;
+
+		if(($list = $this->_dso->get_all(null,$order,$limit)) === false
+		|| isset($list[0]) === false)
+			return(false);
+
+		if(isset($this->_origin_list) === true)
+			$this->_origin_list = $list;
+
+		if($prepare === false && $assoc === false)
+			return($list);
+		else if(($nb = count($list)) === 0)
+			return(false);
+
+		$r = array();
+
+		if($assoc === true && $prepare === true)
+		{
+			for($i = 0;$i < $nb;$i++)
+			{
+				$key = $list[$i]['outcallid'].'-'.$list[$i]['trunkfeaturesid'];
+				$r[$key] = $this->_prepare($list[$i]);
+			}
+		}
+		else if($assoc === true)
+		{
+			for($i = 0;$i < $nb;$i++)
+			{
+				$key = $list[$i]['outcallid'].'-'.$list[$i]['trunkfeaturesid'];
+				$r[$key] = $list[$i];
+			}
+		}
+		else
+		{
+			for($i = 0;$i < $nb;$i++)
+				$r[] = $this->_prepare($list[$i]);
+		}
+
+		return($r);
+	}
+
+	function get_all_where($arr,$prepare=true,$order=null,$limit=null,$assoc=false)
+	{
+		$prepare = (bool) $prepare;
+		$assoc = (bool) $assoc;
+
+		if(isset($this->_origin_list) === true)
+			$this->_origin_list = false;
+
+		if(is_array($arr) === false
+		|| ($where = $this->get_element_where($arr)) === false
+		|| ($list = $this->_dso->get_all_where($where,null,$order,$limit)) === false
+		|| isset($list[0]) === false)
+			return(false);
+
+		if(isset($this->_origin_list) === true)
+			$this->_origin_list = $list;
+
+		if($prepare === false && $assoc === false)
+			return($list);
+		else if(($nb = count($list)) === 0)
+			return(false);
+
+		$r = array();
+
+		if($assoc === true && $prepare === true)
+		{
+			for($i = 0;$i < $nb;$i++)
+			{
+				$key = $list[$i]['outcallid'].'-'.$list[$i]['trunkfeaturesid'];
+				$r[$key] = $this->_prepare($list[$i]);
+			}
+		}
+		else if($assoc === true)
+		{
+			for($i = 0;$i < $nb;$i++)
+			{
+				$key = $list[$i]['outcallid'].'-'.$list[$i]['trunkfeaturesid'];
+				$r[$key] = $list[$i];
+			}
+		}
+		else
+		{
+			for($i = 0;$i < $nb;$i++)
+				$r[] = $this->_prepare($list[$i]);
+		}
+
+		return($r);
+	}
 }
 
 ?>

@@ -1,0 +1,48 @@
+<?php
+
+$array = array();
+$array['element'] = array();
+
+$array['element']['name'] = array();
+$array['element']['name']['default'] = '';
+
+$array['element']['type'] = array();
+$array['element']['type']['value'] = array('bosssecretary');
+$array['element']['type']['default'] = 'bosssecretary';
+$array['element']['type']['forcedef'] = true;
+
+$array['element']['bosssecretary'] = array();
+$array['element']['bosssecretary']['value'] = array('bossfirst-serial','bossfirst-simult','secretary-serial','secretary-simult','all');
+$array['element']['bosssecretary']['default'] = 'secretary-simult';
+
+$array['element']['zone'] = array();
+$array['element']['zone']['value'] = array('internal','external','all');
+$array['element']['zone']['default'] = 'all';
+
+$array['element']['callerdisplay'] = array();
+$array['element']['callerdisplay']['default'] = '';
+
+$array['element']['ringseconds'] = array();
+$array['element']['ringseconds']['value'] = array(0,5,10,15,20,25,30,35,40,45,50,55,60);
+$array['element']['ringseconds']['default'] = 0;
+$array['element']['ringseconds']['setdef'] = true;
+
+$array['element']['description'] = array();
+$array['element']['description']['default'] = '';
+
+$array['element']['commented'] = array();
+$array['element']['commented']['value'] = array(0,1);
+$array['element']['commented']['default'] = 0;
+$array['element']['commented']['set'] = true;
+
+$array['filter'] = array();
+$array['filter']['name'] = array('maxlen' => 128,'regexp' => '/^[a-z0-9_-]+$/i');
+$array['filter']['type'] = array('set' => false);
+$array['filter']['bosssecretary'] = array('set' => false,'key' => array('bossfirst-serial','bossfirst-simult','secretary-serial','secretary-simult','all'));
+$array['filter']['zone'] = array('key' => array('internal','external','all'));
+$array['filter']['callerdisplay'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 80);
+$array['filter']['ringseconds'] = array('set' => false,'chk' => 2,'key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
+$array['filter']['description'] = array('set' => false,'chk' => 2,'maxlen' => 1000,'cast' => 'sgraph_crlf_tab','eol' => true);
+$array['filter']['commented'] = array('bool' => true);
+
+?>

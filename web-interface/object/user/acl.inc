@@ -8,7 +8,12 @@ class xivo_user_acl
 
 	function xivo_user_acl(&$dso,$factory=true)
 	{
-		if(($this->_conf = xivo_gat::load_get('acl',XIVO_PATH_OBJECTCONF)) === false)
+		if(defined('XIVO_USER_ACL_PATH') === true)
+			$path = XIVO_USER_ACL_PATH;
+		else
+			$path = XIVO_PATH_OBJECTCONF;
+
+		if(($this->_conf = xivo_gat::load_get('acl',$path)) === false)
 			trigger_error('Failed to load user Array',E_USER_ERROR);
 
 		if(is_object($dso) === false)
@@ -26,8 +31,8 @@ class xivo_user_acl
 
 	function load_in_session()
 	{
-		if(($r = xivo_user::is_valid()) === false)
-			return($r);
+		if(xivo_user::is_valid() === false)
+			return(false);
 
 		$hash = md5(serialize($this->_conf));
 
@@ -118,9 +123,10 @@ class xivo_user_acl
 
 		$r = &$_SESSION['_ACL']['tree'];
 
+/*
 		if($section === '')
 			return($r);
-/*
+
 		if(isset($r[$section]) === true)
 			$r = &$r[$section];
 		else
@@ -145,8 +151,7 @@ class xivo_user_acl
 
 		if(($user = $this->_dso->get($id)) === false)
 			return($r);
-
-		if(isset($user['obj']['acl']) === true)
+		else if(isset($user['obj']['acl']) === true)
 			$r = &$user['obj']['acl'];
 		else if(isset($this->_conf['group'][$user['meta']]) === true)
 			$r = $this->_conf['group'][$user['meta']];
@@ -156,10 +161,8 @@ class xivo_user_acl
 
 	function edit($arr)
 	{
-		$r = false;
-
 		if(is_array($arr) === false || isset($arr['id']) === false)
-			return($r);
+			return(false);
 
 		if(isset($arr['tree']) === false)
 			$arr['tree'] = array();
@@ -171,30 +174,26 @@ class xivo_user_acl
 
 	function get_user($id)
 	{
-		$r = false;
-
 		if(($user = $this->get($id)) === null)
-			return($r);
+			return(false);
 
-		$r = $this->_mk_user_tree($this->get_tree(),$user);
-
-		return($r);
+		return($this->_mk_user_tree($this->get_tree(),$user));
 	}
 
 	function _mk_user_tree($tree,$user)
 	{
-		if(($arr = xivo_get_aks($tree)) !== false)
+		if(($arr = xivo_get_aks($tree)) === false)
+			return($tree);
+
+		for($i = 0;$i < $arr['cnt'];$i++)
 		{
-			for($i = 0;$i < $arr['cnt'];$i++)
-			{
-				$k = &$arr['keys'][$i];
-				$v = &$tree[$k];
+			$k = &$arr['keys'][$i];
+			$v = &$tree[$k];
 
-				$v['access'] = $this->chk($v['path'],$user);
+			$v['access'] = $this->chk($v['path'],$user);
 
-				if(isset($v['child']) === true)
-					$v['child'] = $this->_mk_user_tree($v['child'],$user);
-			}
+			if(isset($v['child']) === true)
+				$v['child'] = $this->_mk_user_tree($v['child'],$user);
 		}
 
 		return($tree);
@@ -202,10 +201,8 @@ class xivo_user_acl
 
 	function chk($section,$user)
 	{
-		$r = false;
-
 		if($user === null)
-			return($r);
+			return(false);
 
 		if($user === false || $user === true)
 			return($user);
@@ -222,7 +219,7 @@ class xivo_user_acl
 			$grp = $user;
 
 			if(xivo_issa($k,$tree) === false || ($user = xivo_ak($k,$user,true)) === false)
-				return($r);
+				return(false);
 
 			if($user === true)
 				return(true);
@@ -232,9 +229,9 @@ class xivo_user_acl
 		}
 
 		if(xivo_ak($k,$grp,true) !== false)
-			$r = true;
+			return(true);
 			
-		return($r);
+		return(false);
 	}
 
 	function _chk_tree($arr)
@@ -270,87 +267,11 @@ class xivo_user_acl
 
 		return($r);
 	}
-/*
-	function chk($section,$user='')
-	{
-		$r = false;
 
-		$section = trim(preg_replace('@/+@','/',$section),'/');
-		$user = (string) $user;
-		
-		if(isset($_SESSION['_ACL']) === false || xivo_user::is_valid() === false)
-			return($r);
-
-		if(xivo_issa('tree',$_SESSION['_ACL']) === false || xivo_issa('group',$_SESSION['_ACL']) === false)
-			return($r);
-
-		if($user === '')
-			$user = xivo_user::type_to_meta($_SESSION['_USR']->_type);
-
-		if(xivo_user::chk_meta($user) === false)
-			return($r);
-		
-		if(xivo_issa('tree',$_SESSION['_ACL']) === false || xivo_issa('group',$_SESSION['_ACL']) === false)
-			return($r);
-
-		$tree = &$_SESSION['_ACL']['tree'];
-		$group = &$_SESSION['_ACL']['group'];
-
-		if(($ugroup = xivo_ak($user,$group,true)) === false)
-			return($r);
-
-		if($ugroup === true)
-			return(true);
-
-		$arr = explode('/',$section);
-		$nb = count($arr);
-
-		for($i = 0;$i < $nb;$i++)
-		{
-			$k = &$arr[$i];
-			$grp = $ugroup;
-
-			if(xivo_issa($k,$tree) === false || ($ugroup = xivo_ak($k,$ugroup,true)) === false)
-				return($r);
-
-			if($ugroup === true)
-				return(true);
-
-			if(isset($tree[$k]['child']) === true)
-				$tree = &$tree[$k]['child'];
-		}
-
-		if(xivo_ak($k,$grp,true) !== false)
-			return(true);
-/*
-		if(isset($tree[$cat]) === false)
-			return($r);
-
-		if(($ugroup = xivo_ak($cat,$ugroup,true)) === false)
-			return($r);
-
-		if($ugroup === true)
-			return(true);
-
-		$tree = &$tree[$cat]['child'];
-
-		if(isset($tree[$func]) === false)
-			return($r);
-
-		if(($ugroup = xivo_ak($func,$ugroup,true)) === false)
-			return($r);
-
-		if($ugroup === true)
-			return(true);
-		return($r);
-	}
-*/
 	function _chk_path($path,$tree)
 	{
-		$r = false;
-
 		if(is_array($tree) === false)
-			return($r);
+			return(false);
 
 		$path = (string) $path;
 
@@ -358,20 +279,22 @@ class xivo_user_acl
 		$arr_path = $arr;
 
 		if(($nb = count($arr)) === 0)
-			return($r);
+			return(false);
 
 		for($i = 0;$i < $nb;$i++)
 		{
 			$k = &$arr[$i];
 
 			if(xivo_ak($k,$tree) === false)
-				return($r);
+				return(false);
 
 			$tree = &$tree[$k];
 		}
 
 		if(is_array($tree) === false)
 			$r = &$arr_path;
+		else
+			$r = false;
 
 		return($r);
 	}

@@ -68,8 +68,7 @@ class xivo_application_service_asterisk_dialstatus_abstract extends xivo_applica
 		|| is_string($type) === false
 		|| ($arr = xivo_get_aks($list,true)) === false)
 			return(false);
-
-		if($arr['cnt'] === 0)
+		else if($arr['cnt'] === 0)
 			return(null);
 
 		$info = array();
@@ -147,11 +146,9 @@ class xivo_application_service_asterisk_dialstatus_abstract extends xivo_applica
 	{
 		if(($id = xivo_uint($id)) === 0)
 			return(false);
-
-		if(($rs = $this->get_result()) === null || $rs === false)
+		else if(($rs = $this->get_result()) === null || $rs === false)
 			return($rs);
-
-		if(($arr = xivo_get_aks($rs)) === false)
+		else if(($arr = xivo_get_aks($rs)) === false)
 			return(false);
 
 		$this->_return = array();
@@ -186,16 +183,14 @@ class xivo_application_service_asterisk_dialstatus_abstract extends xivo_applica
 	{
 		if(($id = xivo_uint($id)) === 0)
 			return(false);
-
-		if(empty($this->_info) === true)
+		else if(empty($this->_info) === true)
 			return($this->add($id));
 
 		$this->_return = $this->delete($status,$type,$id);
 
 		if(($rs = $this->get_result()) === null)
 			return($this->_return);
-
-		if(($arr = xivo_get_aks($rs)) === false)
+		else if(($arr = xivo_get_aks($rs)) === false)
 			return(false);
 
 		$this->_return = array();
@@ -231,8 +226,7 @@ class xivo_application_service_asterisk_dialstatus_abstract extends xivo_applica
 	{
 		if(empty($this->_info) === true)
 			return(null);
-
-		if(is_string($type) === false
+		else if(is_string($type) === false
 		|| ($id = xivo_uint($id)) === 0)
 			return(false);
 

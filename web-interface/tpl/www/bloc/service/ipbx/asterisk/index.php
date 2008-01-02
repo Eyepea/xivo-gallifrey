@@ -20,7 +20,7 @@
 				<tr class="l-infos-1on2">
 					<td class="td-left txt-left">
 <?php
-	if($this->chk_acl('pbx_settings','users') === true):
+	if(xivo_user::chk_acl('pbx_settings','users') === true):
 		echo $url->href_html($this->bbf('stats_type-user'),'service/ipbx/pbx_settings/users','act=add');
 	else:
 		echo $this->bbf('stats_type-user');
@@ -34,7 +34,7 @@
 				<tr class="l-infos-2on2">
 					<td class="td-left txt-left">
 <?php
-	if($this->chk_acl('pbx_settings','groups') === true):
+	if(xivo_user::chk_acl('pbx_settings','groups') === true):
 		echo $url->href_html($this->bbf('stats_type-group'),'service/ipbx/pbx_settings/groups','act=add');
 	else:
 		echo $this->bbf('stats_type-group');
@@ -48,7 +48,7 @@
 				<tr class="l-infos-1on2">
 					<td class="td-left txt-left">
 <?php
-	if($this->chk_acl('pbx_settings','queues') === true):
+	if(xivo_user::chk_acl('pbx_settings','queues') === true):
 		echo $url->href_html($this->bbf('stats_type-queue'),'service/ipbx/pbx_settings/queues','act=add');
 	else:
 		echo $this->bbf('stats_type-queue');
@@ -62,7 +62,7 @@
 				<tr class="l-infos-2on2">
 					<td class="td-left txt-left">
 <?php
-	if($this->chk_acl('pbx_settings','meetme') === true):
+	if(xivo_user::chk_acl('pbx_settings','meetme') === true):
 		echo $url->href_html($this->bbf('stats_type-meetme'),'service/ipbx/pbx_settings/meetme','act=add');
 	else:
 		echo $this->bbf('stats_type-meetme');

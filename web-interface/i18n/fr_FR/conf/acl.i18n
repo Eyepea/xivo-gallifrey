@@ -58,6 +58,9 @@ Appels sortants
 ; acl_service-ipbx-call_management-rightcall
 Droits d'appels
 
+; acl_service-ipbx-call_management-callfilter
+Filtrages d'appels
+
 ; acl_service-ipbx-call_management-schedule
 Horaires
 

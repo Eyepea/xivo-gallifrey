@@ -33,33 +33,6 @@ class xivo_service_asterisk_phonebook extends xivo_service_asterisk_abstract
 
 		return($data);
 	}
-
-	function get_search($value,$list=null,$order=null,$limit=null,$assoc=false,$name=false)
-	{
-		$assoc = (bool) $assoc;
-
-		if(($list = $this->_dso->get_search($value,$list,$order,$limit,$name)) === false)
-			return(false);
-
-		$nb = count($list);
-
-		$r = array();
-
-		for($i = 0;$i < $nb;$i++)
-			$r[$list[$i]['id']] = $this->_prepare($list[$i]);
-		
-		if(empty($r) === true)
-			$r = false;
-		else if($assoc === false)
-			$r = array_values($r);
-
-		return($r);
-	}
-
-	function get_search_name($value,$list=null,$order=null,$limit=null,$assoc=false)
-	{
-		return($this->get_search($value,$list,$order,$limit,$assoc,true));
-	}
 }
 
 ?>

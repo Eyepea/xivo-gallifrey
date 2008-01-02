@@ -45,8 +45,7 @@ class xivo_application_service_asterisk_realstatic
 
 		if($this->is_valid($name) === false)
 			return(false);
-
-		if(isset($this->_module[$name]) === true && is_object($this->_module[$name]) === true)
+		else if(isset($this->_module[$name]) === true && is_object($this->_module[$name]) === true)
 			return(true);
 		
 		if(($class = $this->_load_module_class($name)) === false)

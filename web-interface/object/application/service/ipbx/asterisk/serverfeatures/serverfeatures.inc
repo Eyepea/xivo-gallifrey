@@ -184,8 +184,7 @@ class xivo_application_service_asterisk_serverfeatures extends xivo_application_
 
 		if(($rs = $this->get_result()) === null)
 			return($this->_return);
-
-		if($rs === false)
+		else if($rs === false)
 			return(false);
 
 		$this->_return = array();

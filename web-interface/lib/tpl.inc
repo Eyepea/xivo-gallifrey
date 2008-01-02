@@ -67,7 +67,8 @@ class xivo_tpl
 		if($namespace === '')
 			$namespace = $this->get_option('i18n_namespace');
 
-		$i18n = &xivo_gct::get('xivo_i18n');
+		if(($i18n = &xivo_gct::get('xivo_i18n')) === false)
+			return(false);
 
 		return($i18n->load_file($file,$namespace));
 	}
@@ -573,43 +574,6 @@ class xivo_tpl
 		$r = xivo_file::is_f_r($this->get_option('application_path').$dir);
 
 		return($r);
-	}
-
-	function chk_acl($cat='',$func='',$section='')
-	{
-		$section = (string) $section;
-		$cat = $cat === true ? true : (string) $cat;
-		$func = (string) $func;
-
-		if($section === '')
-		{
-			$script_root = $this->get_option('script_root');
-
-			if(($len = strlen($script_root)) === 0)
-				$section = $_SERVER['SCRIPT_NAME'];
-			else if(strncmp($script_root,$_SERVER['SCRIPT_NAME'],$len) === 0)
-				$section = substr($_SERVER['SCRIPT_NAME'],$len);
-			else
-				return(false);
-
-			if(($pos = strrpos($section,'/')) !== false)
-				$section = substr($section,0,$pos);
-		}
-
-		if($cat === true)
-		{
-			if(isset($_SERVER['PATH_INFO']) === true)
-				$section .= $_SERVER['PATH_INFO'];
-		}
-		else if($cat !== '')
-		{
-			$section .= '/'.$cat;
-
-			if($func !== '')
-				$section .= '/'.$func;
-		}
-
-		return(xivo_user::acl_chk($section));
 	}
 }
 

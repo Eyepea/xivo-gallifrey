@@ -43,19 +43,19 @@ Call management
 ; mn_left_callmanagement-incall
 Incoming calls
 
-; mn_left_callmamagement-outcall
+; mn_left_callmanagement-outcall
 Outgoing calls
 
-; mn_left_callmamagement-rightcall
+; mn_left_callmanagement-rightcall
 Call permissions
 
-; mn_left_callmamagement-schedule
+; mn_left_callmanagement-schedule
 Scheduler
 
 ; mn_left_callmanagement-ivr
 IVR Menus
 
-; mn_left_callmamagement-cdr
+; mn_left_callmanagement-cdr
 Call logs
 
 ; mn_left_ti_trunkmanagement

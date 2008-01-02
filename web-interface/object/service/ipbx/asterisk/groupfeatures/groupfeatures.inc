@@ -153,14 +153,14 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 		return(parent::get_list_where($arr,$delete,$order,$limit));
 	}
 
-	function get_all($delete=false,$prepare=true,$order=null,$limit=null)
+	function get_all($delete=false,$prepare=true,$order=null,$limit=null,$assoc=false)
 	{
-		return(parent::get_all($delete,$prepare,$order,$limit));
+		return(parent::get_all($delete,$prepare,$order,$limit,$assoc));
 	}
 
-	function get_all_where($arr,$delete=false,$prepare=true,$order=null,$limit=null)
+	function get_all_where($arr,$delete=false,$prepare=true,$order=null,$limit=null,$assoc=false)
 	{
-		return(parent::get_all_where($arr,$delete,$prepare,$order,$limit));
+		return(parent::get_all_where($arr,$delete,$prepare,$order,$limit,$assoc));
 	}
 
 	function get_all_number($id=0)

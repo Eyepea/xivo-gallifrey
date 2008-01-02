@@ -11,6 +11,7 @@ class xivo_datastorage_abstract_sql
 	var $_debug	= false;
 	var $_free	= false;
 	var $_where	= array();
+	var $_group	= array();
 	var $_order	= array();
 	var $_limit	= array();
 
@@ -70,6 +71,11 @@ class xivo_datastorage_abstract_sql
 		return((bool) $this->_free);
 	}
 
+	function free()
+	{
+		return(false);
+	}
+
 	function select_one($t,$s='',$w='',$o='')
 	{
 		$t = trim((string) $t);
@@ -84,6 +90,7 @@ class xivo_datastorage_abstract_sql
 		if($o !== '')
 			$o = ' '.$o;
 
+		$o .= $this->_mk_group();
 		$o .= $this->_mk_order();
 		$o .= $this->_mk_limit();
 		$this->limit();
@@ -101,12 +108,13 @@ class xivo_datastorage_abstract_sql
 		return($r);
 	}
 
-	function select_all($t,$s='',$w='',$o='')
+	function select_all($t,$s='',$w='',$o='',$f=true)
 	{
 		$t = trim((string) $t);
 		$s = trim((string) $s);
 		$w = trim((string) $w);
 		$o = trim((string) $o);
+		$f = (bool) $f;
 
 		if($s === '')
 			$s = '*';
@@ -114,6 +122,7 @@ class xivo_datastorage_abstract_sql
 		if($o !== '')
 			$o = ' '.$o;
 
+		$o .= $this->_mk_group();
 		$o .= $this->_mk_order();
 		$o .= $this->_mk_limit();
 
@@ -127,7 +136,7 @@ class xivo_datastorage_abstract_sql
 		for($i = 0;$m = $this->fetch_assoc();$i++)
 			$r[$i] = $m;
 
-		if($this->_free === true)
+		if($this->_free === true && $f === true)
 			$this->free();
 
 		return($r);
@@ -243,7 +252,7 @@ class xivo_datastorage_abstract_sql
 		return(true);
 	}
 
-	function get_where($type)
+	function get_where($type='')
 	{
 		if(strtoupper($type) === 'OR')
 			return(implode(' OR ',$this->_where));
@@ -251,11 +260,16 @@ class xivo_datastorage_abstract_sql
 			return(implode(' AND ',$this->_where));
 	}
 
-	function where($data,$table='',$escape=true,$not=false)
+	function where($data,$table='',$escape=true,$not=false,$sep='')
 	{
 		$not = (bool) $not === true ? '!=' : '=';
+	
+		if(strtoupper($sep) === 'OR')
+			$sep = ' OR ';
+		else
+			$sep = ' AND ';
 
-		if(($where = $this->_separator($data,$sep=' AND ',$escape,true,false,$not,$table)) === false)
+		if(($where = $this->_separator($data,$sep,$escape,true,false,$not,$table)) === false)
 			return(false);
 
 		$r = $where['str'];
@@ -266,9 +280,9 @@ class xivo_datastorage_abstract_sql
 		return($r);
 	}
 
-	function where_not($data,$table='',$escape=true)
+	function where_not($data,$table='',$escape=true,$sep='')
 	{
-		return($this->where($data,$table,$escape,true));
+		return($this->where($data,$table,$escape,true,$sep));
 	}
 
 	function _insertupdate($p,$t,&$data,$w='',$escape=true,$set=false,$o='',$order=false,$limit=false)
@@ -446,6 +460,80 @@ class xivo_datastorage_abstract_sql
 
 		return($r);
 	}
+	function new_group($col='',$table='')
+	{
+		$this->_group = array();
+
+		return($this->group($col,$table));
+	}
+
+	function reset_group()
+	{
+		$this->_group = array();
+	}
+
+	function group($col='',$table='')
+	{
+		$table = trim((string) $table);
+
+		if(is_array($col) === true)
+		{
+			$col = array_values($col);
+
+			if(($nb = count($col)) === 0)
+				return(false);
+
+			$group = array();
+
+			for($i = 0;$i < $arr['cnt'];$i++)
+			{
+				$ref = &$col[$i];
+
+				if(xivo_haslen($ref) === false)
+					continue;
+
+				if($table !== '')
+					$group[] = $this->quote_identifier($table).'.'.$this->quote_identifier($ref);
+				else
+					$group[] = $this->quote_identifier($ref);
+			}
+
+			if(isset($group[0]) === false)
+				return(false);
+
+			$this->_group = array_merge($this->_group,$group);
+
+			return(true);
+		}
+
+		$col = trim((string) $col);
+
+		if($col !== '')
+		{
+			if($table !== '')
+				$this->_group[] = $this->quote_identifier($table).'.'.$this->quote_identifier($col);
+			else
+				$this->_group[] = $this->quote_identifier($col);
+
+			return(true);
+		}
+
+		$this->_group = array();
+		return(null);
+	}
+
+	function _mk_group()
+	{
+		$r = '';
+
+		if(is_array($this->_group) === false || isset($this->_group[0]) === false)
+			return($r);
+
+		if(($r = implode(',',$this->_group)) !== '')
+			$r = ' GROUP BY '.$r;
+
+		return($r);
+	}
 
 	function new_order($col='',$sort='',$table='')
 	{
@@ -605,6 +693,24 @@ class xivo_datastorage_abstract_sql
 			$r .= ','.xivo_uint($this->_limit[1]);
 
 		return($r);
+	}
+
+	function add_where_in($col,$list,$keys=false,$table='')
+	{
+		if(($in = $this->_in($col,$list,$keys,false,$table)) === false)
+			return(false);
+
+		$this->_where[] = $in;
+		return(true);
+	}
+
+	function add_where_notin($col,$list,$keys=false,$table='')
+	{
+		if(($in = $this->_in($col,$list,$keys,true,$table)) === false)
+			return(false);
+
+		$this->_where[] = $in;
+		return(true);
 	}
 
 	function _in($col,&$list,$keys=false,$not=false,$table='')

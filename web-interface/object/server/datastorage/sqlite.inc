@@ -4,10 +4,7 @@ require_once(XIVO_PATH_OBJECT.XIVO_SEP_DIR.'server'.XIVO_SEP_DIR.'datastorage'.X
 
 class xivo_server_sqlite extends xivo_server_abstract_sql
 {
-	function xivo_server_sqlite(&$dso,$param=array())
-	{
-		$this->_init(&$dso,$param);
-	}
+
 }
 
 ?>

@@ -23,6 +23,7 @@ $array['import']['field']['voicemaildelete'] = array('voicemail','deletevoicemai
 $array['import']['field']['context'] = array('protocol','context');
 $array['import']['field']['callerid'] = array('protocol','callerid');
 $array['import']['field']['outcallerid'] = array('ufeatures','outcallerid');
+$array['import']['field']['enableclient'] = array('ufeatures','enableclient');
 $array['import']['field']['incall'] = '';
 
 ?>

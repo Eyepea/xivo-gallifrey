@@ -357,6 +357,14 @@ class xivo_filter
 			case 'unsigned-integer':
 				$cast = xivo_uint($value);
 				break;
+			case 'ubint':
+			case 'ubigint':
+			case 'ubinteger':
+			case 'ubiginteger':
+			case 'unsigned-binteger':
+			case 'unsigned-biginteger':
+				$cast = xivo_ubint($value);
+				break;
 			case 'int':
 			case 'integer':
 				$cast = intval($value);

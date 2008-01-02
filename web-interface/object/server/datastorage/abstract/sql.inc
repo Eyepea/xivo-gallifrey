@@ -6,9 +6,9 @@ class xivo_server_abstract_sql extends xivo_abstract_datastorage_sql
 {
 	var $_param	= array('table'	=> 'server');
 
-	function _init(&$dso,$param=array())
+	function xivo_server_abstract_sql(&$dso,$param=array())
 	{
-		parent::_init(&$dso,$param);
+		$this->_init(&$dso,$param);
 	}
 }
 

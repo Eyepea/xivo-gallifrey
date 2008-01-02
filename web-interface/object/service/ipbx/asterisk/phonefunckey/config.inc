@@ -1,0 +1,78 @@
+<?php
+
+$array = array();
+
+$array['type'] = array();
+$array['type']['extension'] = array();
+$array['type']['extension']['generalfeatures'] = array();
+$array['type']['extension']['generalfeatures']['parkext'] = true;
+$array['type']['extension']['generalfeatures']['pickupexten'] = true;
+$array['type']['extension']['featuremap'] = array();
+$array['type']['extension']['featuremap']['blindxfer'] = true;
+$array['type']['extension']['featuremap']['atxfer'] = true;
+$array['type']['extension']['featuremap']['automon'] = true;
+$array['type']['extension']['featuremap']['disconnect'] = true;
+$array['type']['extension']['extenfeatures'] = array();
+$array['type']['extension']['extenfeatures']['voicemsg'] = true;
+$array['type']['extension']['extenfeatures']['fwdundoall'] = true;
+$array['type']['extension']['extenfeatures']['fwdundorna'] = true;
+$array['type']['extension']['extenfeatures']['fwdundobusy'] = true;
+$array['type']['extension']['extenfeatures']['fwdundounc'] = true;
+$array['type']['extension']['extenfeatures']['fwdrna'] = true;
+$array['type']['extension']['extenfeatures']['fwdbusy'] = true;
+$array['type']['extension']['extenfeatures']['fwdunc'] = true;
+$array['type']['extension']['extenfeatures']['recsnd'] = true;
+$array['type']['extension']['extenfeatures']['phonestatus'] = true;
+$array['type']['extension']['extenfeatures']['enablevm'] = true;
+$array['type']['extension']['extenfeatures']['enablednd'] = true;
+$array['type']['extension']['extenfeatures']['incallrec'] = true;
+$array['type']['extension']['extenfeatures']['incallfilter'] = true;
+$array['type']['extension']['extenfeatures']['pickup'] = true;
+$array['type']['extension']['extenfeatures']['agentstaticlogin'] = true;
+$array['type']['extension']['extenfeatures']['agentstaticlogoff'] = true;
+$array['type']['extension']['extenfeatures']['agentdynamiclogin'] = true;
+$array['type']['extension']['extenfeatures']['calllistening'] = true;
+$array['type']['extension']['extenfeatures']['vmdelete'] = true;
+$array['type']['extension']['extenfeatures']['directoryaccess'] = true;
+$array['type']['extension']['extenfeatures']['bsfilter'] = true;
+
+$array['element'] = array();
+
+$array['element']['iduserfeatures'] = array();
+$array['element']['iduserfeatures']['default'] = 0;
+
+$array['element']['fknum'] = array();
+$array['element']['fknum']['value'] = range(1,100);
+$array['element']['fknum']['default'] = 1;
+
+$array['element']['exten'] = array();
+$array['element']['exten']['default'] = '';
+
+$array['element']['type'] = array();
+$array['element']['type']['value'] = array('user','group','queue','meetme','extension','custom');
+$array['element']['type']['default'] = 'user';
+$array['element']['type']['unset'] = true;
+
+$array['element']['typeextenumbers'] = array();
+$array['element']['typeextenumbers']['value'] = array('user','group','queue','meetme','extenfeatures','featuremap','generalfeatures');
+$array['element']['typeextenumbers']['default'] = '';
+$array['element']['typeextenumbers']['null'] = true;
+
+$array['element']['typevalextenumbers'] = array();
+$array['element']['typevalextenumbers']['default'] = '';
+$array['element']['typevalextenumbers']['null'] = true;
+
+$array['element']['supervision'] = array();
+$array['element']['supervision']['value'] = array(0,1);
+$array['element']['supervision']['default'] = 0;
+$array['element']['supervision']['set'] = true;
+
+$array['filter'] = array();
+$array['filter']['iduserfeatures'] = array('cast' => 'uint');
+$array['filter']['fknum'] = array('cast' => 'uint','between' => array(1,100));
+$array['filter']['exten'] = array('set' => false,'chk' => 2,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
+$array['filter']['typeextenumbers'] = array('set' => false,'chk' => 2,'key' => array('user','group','queue','meetme','extenfeatures','featuremap','generalfeatures'));
+$array['filter']['typevalextenumbers'] = array('set' => false,'chk' => 2,'maxlen' => 255,'cast' => 'sgraph');
+$array['filter']['supervision'] = array('bool' => true);
+
+?>

@@ -206,61 +206,85 @@ class xivo_service_asterisk_agentgroup extends xivo_service_asterisk_abstract
 		return($r);
 	}
 
-	function get_all($disable=null,$delete=false,$prepare=true,$order=null,$limit=null)
+	function get_all($disable=null,$delete=false,$prepare=true,$order=null,$limit=null,$assoc=false)
 	{
 		$prepare = (bool) $prepare;
+		$assoc = (bool) $assoc;
 
 		if(isset($this->_origin_list) === true)
 			$this->_origin_list = false;
 
 		if(($list = $this->_dso->get_all($disable,$delete,$order,$limit)) === false
-		|| ($nb = count($list)) === 0)
+		|| isset($list[0]) === false)
 			return(false);
 
 		if(isset($this->_origin_list) === true)
 			$this->_origin_list = $list;
 
+		if($prepare === false && $assoc === false)
+			return($list);
+		else if(($nb = count($list)) === 0)
+			return(false);
+
 		$r = array();
-	
-		if($prepare === true)
+
+		if($assoc === true && $prepare === true)
 		{
 			for($i = 0;$i < $nb;$i++)
-				$r[] = $this->_prepare($list[$i]);
+				$r[$list[$i]['id']] = $this->_prepare($list[$i]);
+		}
+		else if($assoc === true)
+		{
+			for($i = 0;$i < $nb;$i++)
+				$r[$list[$i]['id']] = $list[$i];
 		}
 		else
 		{
 			for($i = 0;$i < $nb;$i++)
-				$r[] = $list[$i];
+				$r[] = $this->_prepare($list[$i]);
 		}
 
 		return($r);
 	}
 
-	function get_all_where($arr,$disable=null,$delete=false,$prepare=true,$order=null,$limit=null)
+	function get_all_where($arr,$disable=null,$delete=false,$prepare=true,$order=null,$limit=null,$assoc=false)
 	{
+		$prepare = (bool) $prepare;
+		$assoc = (bool) $assoc;
+
 		if(isset($this->_origin_list) === true)
 			$this->_origin_list = false;
 
 		if(is_array($arr) === false
 		|| ($where = $this->get_element_where($arr)) === false
 		|| ($list = $this->_dso->get_all_where($where,$disable,$delete,$order,$limit)) === false
-		|| ($nb = count($list)) === 0)
+		|| isset($list[0]) === false)
 			return(false);
 
 		if(isset($this->_origin_list) === true)
 			$this->_origin_list = $list;
 
+		if($prepare === false && $assoc === false)
+			return($list);
+		else if(($nb = count($list)) === 0)
+			return(false);
+
 		$r = array();
 
-		if($prepare === true)
+		if($assoc === true && $prepare === true)
 		{
 			for($i = 0;$i < $nb;$i++)
-				$r[] = $this->_prepare($list[$i]);
+				$r[$list[$i]['id']] = $this->_prepare($list[$i]);
+		}
+		else if($assoc === true)
+		{
+			for($i = 0;$i < $nb;$i++)
+				$r[$list[$i]['id']] = $list[$i];
 		}
 		else
 		{
 			for($i = 0;$i < $nb;$i++)
-				$r[] = $list[$i];
+				$r[] = $this->_prepare($list[$i]);
 		}
 
 		return($r);

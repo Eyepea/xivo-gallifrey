@@ -19,6 +19,7 @@ xivo_list_elt_extenfeatures['it-extenfeatures-enable-agentstaticlogoff'] = new A
 xivo_list_elt_extenfeatures['it-extenfeatures-enable-agentdynamiclogin'] = new Array('it-extenfeatures-agentdynamiclogin');
 xivo_list_elt_extenfeatures['it-extenfeatures-enable-calllistening'] = new Array('it-extenfeatures-calllistening');
 xivo_list_elt_extenfeatures['it-extenfeatures-enable-directoryaccess'] = new Array('it-extenfeatures-directoryaccess');
+xivo_list_elt_extenfeatures['it-extenfeatures-enable-bsfilter'] = new Array('it-extenfeatures-bsfilter','it-extenfeatures-list-bsfilter');
 xivo_list_elt_extenfeatures['it-extenfeatures-enable-vmdelete'] = new Array('it-extenfeatures-vmdelete');
 
 function xivo_extenfeatures_onload()
@@ -54,6 +55,10 @@ function xivo_extenfeatures_onload()
 
 	if((elt = xivo_eid('it-extenfeatures-agentstaticlogoff')) != false
 	&& (eltlist = xivo_eid('it-extenfeatures-list-agentstaticlogoff')) != false)
+		eltlist.value = xivo_get_exten_buffer('X',elt.value);
+
+	if((elt = xivo_eid('it-extenfeatures-bsfilter')) != false
+	&& (eltlist = xivo_eid('it-extenfeatures-list-bsfilter')) != false)
 		eltlist.value = xivo_get_exten_buffer('X',elt.value);
 }
 

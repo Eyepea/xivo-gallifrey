@@ -38,22 +38,17 @@ class xivo_user_admin extends xivo_user_abstract
 
 	function edit($meta,$arr)
 	{
-		$r = false;
-
-		if(is_array($arr) === false || isset($arr['id']) === false)
-			return($r);
-
-		if(($arr_filter = $this->_load_filter('edit',$meta)) === false)
-			return($r);
+		if(is_array($arr) === false
+		|| isset($arr['id']) === false
+		|| ($arr_filter = $this->_load_filter('edit',$meta)) === false)
+			return(false);
 
 		$filter = new xivo_filter($arr_filter);
 
 		if($filter->chk($arr) === false)
-			return($r);
+			return(false);
 
-		$r = $filter->get_result();
-		
-		return($this->_dso->edit($arr['id'],$r));
+		return($this->_dso->edit($arr['id'],$filter->get_result()));
 	}
 }
 

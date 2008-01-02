@@ -9,7 +9,7 @@
 <div class="nav">
          <ul>
 <?php
-	if($this->chk_acl(null,null,'service') === true):
+	if(xivo_user::chk_acl(null,null,'service') === true):
 	 	echo '<li onmouseout="this.className=\'moo\';" onmouseover="this.className=\'mov\';"><span class="span-left">&nbsp;</span><span class="span-center">',$this->bbf('mn_top_services'),'</span><span class="span-right">&nbsp;</span><ul><li>',$url->href_html($this->bbf('mn_sub_top_services_ipbx'),'service/ipbx',null,''),'</li></ul></li>';
 	endif;
 ?>

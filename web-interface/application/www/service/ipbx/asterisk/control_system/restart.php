@@ -2,7 +2,7 @@
 
 require_once('xivo.php');
 
-if($_HTML->chk_acl(true) === false)
+if(xivo_user::chk_acl(true) === false)
 	$_QRY->go($_HTML->url('xivo'));
 
 $ami = &$ipbx->get_module('ami');

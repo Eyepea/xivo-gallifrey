@@ -168,12 +168,10 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 			$this->_set_error('rightcall','invalid data');
 			return(false);
 		}
-
-		if(($rs = $this->_rightcall->chk_values($arr)) === false)
+		else if(($rs = $this->_rightcall->chk_values($arr)) === false)
 		{
 			$this->_set_result('rightcall',$this->_rightcall->get_filter_result());
 			$this->_set_error('rightcall',$this->_rightcall->get_filter_error());
-
 			return(false);
 		}
 
@@ -298,6 +296,8 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 
 	function add()
 	{
+		$r = true;
+
 		$this->_status = 'add';
 		$this->_return = array();
 		$rightcallid = null;
@@ -310,17 +310,14 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 		|| $this->add_rightcalloutcall($rightcallid) === false
 		|| $this->add_rightcallexten($rightcallid) === false)
 		{
+			$r = false;
 			if($rightcallid !== null)
 				$this->_reverse_add();
-
-			$this->_status = '';
-
-			return(false);
 		}
 
 		$this->_status = '';
 
-		return(true);
+		return($r);
 	}
 
 	function add_rightcall()
@@ -386,8 +383,7 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 	{
 		if(($rightcallid = xivo_uint($rightcallid)) === 0)
 			return(false);
-
-		if(($rs = $this->get_result('rightcallexten')) === null || $rs === false)
+		else if(($rs = $this->get_result('rightcallexten')) === null || $rs === false)
 			return($rs);
 
 		$this->_return['rightcallexten'] = array();
@@ -458,6 +454,8 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 
 	function edit()
 	{
+		$r = true;
+
 		$this->_status = 'edit';
 		$this->_return = array();
 
@@ -469,14 +467,13 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 		|| $this->edit_rightcalloutcall() === false
 		|| $this->edit_rightcallexten() === false)
 		{
+			$r = false;
 			$this->_reverse_edit();
-			$this->_status = '';
-			return(false);
 		}
 
 		$this->_status = '';
 
-		return(true);
+		return($r);
 	}
 
 	function edit_rightcall()
@@ -636,6 +633,8 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 
 	function delete()
 	{
+		$r = true;
+
 		$this->_status = 'delete';
 		$this->_return = array();
 
@@ -646,14 +645,13 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 		|| $this->delete_rightcalloutcall() === false
 		|| $this->delete_rightcallexten() === false)
 		{
+			$r = false;
 			$this->_reverse_delete();
-			$this->_status = '';
-			return(false);
 		}
 
 		$this->_status = '';
 
-		return(true);
+		return($r);
 	}
 
 	function delete_rightcall()

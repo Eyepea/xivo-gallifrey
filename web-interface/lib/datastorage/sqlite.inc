@@ -252,10 +252,10 @@ class xivo_datastorage_sqlite extends xivo_datastorage_abstract_sql
 			$r = 'datetime('.$col.')';
 		if($format === '' && $time !== '')
 			$r = 'datetime('.$col.',\''.$time.'\')';
-		else if($time !== '' && $format !== '%s')
-			$r = 'strftime(\''.$format.'\',datetime('.$col.'),\''.$time.'\')';
-		else
+		else if($time === '')
 			$r = 'strftime(\''.$format.'\',datetime('.$col.'))';
+		else
+			$r = 'strftime(\''.$format.'\',datetime('.$col.'),\''.$time.'\')';
 
 		return($r);
 	}

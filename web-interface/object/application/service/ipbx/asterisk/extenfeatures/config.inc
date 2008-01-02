@@ -87,6 +87,10 @@ $array['exten']['directoryaccess'] = array();
 $array['exten']['directoryaccess']['app'] = 'Directory';
 $array['exten']['directoryaccess']['appdata'] = '${CONTEXT}';
 
+$array['exten']['bsfilter'] = array();
+$array['exten']['bsfilter']['app'] = 'Macro';
+$array['exten']['bsfilter']['appdata'] = 'bsfilter|${EXTEN:$<EXTNUMLEN>}';
+
 $array['element'] = array();
 $array['element']['voicemsg'] = array();
 $array['element']['voicemsg']['default'] = '*98';
@@ -151,6 +155,9 @@ $array['element']['vmdelete']['default'] = '*35';
 $array['element']['directoryaccess'] = array();
 $array['element']['directoryaccess']['default'] = '*36';
 
+$array['element']['bsfilter'] = array();
+$array['element']['bsfilter']['default'] = '*37.';
+
 $array['filter'] = array();
 $array['filter']['voicemsg'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
 $array['filter']['fwdundoall'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
@@ -173,5 +180,6 @@ $array['filter']['agentdynamiclogin'] = array('minlen' => 1,'maxlen' => 40,'rege
 $array['filter']['calllistening'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
 $array['filter']['vmdelete'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
 $array['filter']['directoryaccess'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
+$array['filter']['bsfilter'] = array('minlen' => 1,'maxlen' => 40);
 
 ?>

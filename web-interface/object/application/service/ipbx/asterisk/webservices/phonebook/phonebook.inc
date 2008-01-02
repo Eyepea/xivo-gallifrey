@@ -4,14 +4,20 @@ xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 
 class xivo_application_service_asterisk_webservices_phonebook extends xivo_application_service_asterisk_webservices_abstract
 {
+	var $_dso		= null;
 	var $_accessfeatures	= null;
 	var $_appserverfeatures	= null;
 	var $_curl		= null;
 	var $_phonebook		= false;
 	var $_phonebooknumber	= false;
 
-	function xivo_application_service_asterisk_webservices_phonebook(&$service)
+	function xivo_application_service_asterisk_webservices_phonebook(&$service,&$dso)
 	{
+		if(is_object($dso) === false)
+			trigger_error('Invalid Datastorage object',E_USER_ERROR);
+
+		$this->_dso = &$dso;
+
 		if($this->_init(&$service) === false
 		|| ($this->_accessfeatures = &$this->_service->get_module('accessfeatures')) === false
 		|| xivo::load_class('xivo_filter') === false
@@ -77,62 +83,13 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 
 	function get_phonebook_search($search)
 	{
-		if((is_object($this->_phonebook) === false
-		   && ($this->_phonebook = &$this->_service->get_module('phonebook')) === false) === true
-		|| (is_object($this->_phonebooknumber) === false
-		   && ($this->_phonebooknumber = &$this->_service->get_module('phonebooknumber')) === false) === true)
-		   	return(false);
+		if(($rs = $this->_dso->search($search)) === false || ($nb = count($rs)) === 0)
+			return(false);
 
-		$r = $list = array();
+		for($i = 0;$i < $nb;$i++)
+			$rs[$i]['identity'] = $rs[$i]['name'].' ('.$rs[$i]['type'].')';
 
-		if(($rs = $this->_phonebook->get_search_name($search)) !== false
-		&& ($nb = count($rs)) !== 0)
-		{
-			$info = $where = array();
-
-			for($i = 0;$i < $nb;$i++)
-			{
-				$list[] = $where['phonebookid'] = $rs[$i]['id'];
-
-				if(($phonebooknumber = $this->_phonebooknumber->get_all_where($where)) === false
-				|| ($cnt = count($phonebooknumber)) === 0)
-					continue;
-
-				for($j = 0;$j < $cnt;$j++)
-				{
-					if(($info['type'] = $phonebooknumber[$j]['type']) === 'fax')
-						continue;
-
-					$info['name'] = $rs[$i]['displayname'];
-					$info['phone'] = $phonebooknumber[$j]['number'];
-					$info['identity'] = $info['name'].' ('.$info['type'].')';
-					$r[] = $info;
-				}
-			}
-		}
-
-		if(($rs = $this->_phonebooknumber->get_search($search,$list)) !== false
-		&& ($nb = count($rs)) !== 0)
-		{
-			$info = array();
-
-			for($i = 0;$i < $nb;$i++)
-			{
-				if(($info['type'] = $rs[$i]['type']) === 'fax'
-				|| ($phonebook = $this->_phonebook->get($rs[$i]['phonebookid'])) === false)
-					continue;
-
-				$info['name'] = $phonebook['displayname'];
-				$info['phone'] = $rs[$i]['number'];
-				$info['identity'] = $info['name'].' ('.$info['type'].')';
-				$r[] = $info;
-			}
-		}
-
-		if(isset($r[0]) === false)
-			$r = false;
-
-		return($r);
+		return($rs);
 	}
 
 	function get_user_search($search,$disable=null)
@@ -147,9 +104,9 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			$info['phone'] = $rs[$i]['ufeatures']['number'];
+			$info['phone'] = $rs[$i]['number'];
 
-			if(($info['name'] = $rs[$i]['ufeatures']['fullname']) === '')
+			if(($info['name'] = $rs[$i]['fullname']) === '')
 				$info['name'] = $info['phone'];
 
 			$info['type'] = 'local';

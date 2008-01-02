@@ -50,7 +50,7 @@ class xivo_datastorage_mysql extends xivo_datastorage_abstract_sql
 			$open = false;
 
 		if(isset($param['port']) === true)
-			$this->_param['port'] = (int) $param['port'];
+			$this->_param['port'] = xivo_uint($param['port']);
 
 		if(isset($param['socket']) === true)
 			$this->_param['socket'] = (string) $param['socket'];
@@ -115,7 +115,7 @@ class xivo_datastorage_mysql extends xivo_datastorage_abstract_sql
 
 		if($this->_param['socket'] !== '')
 			$host .= ':'.$this->_param['socket'];
-		else if(xivo_uint($this->_param['port']) !== 0)
+		else if($this->_param['port'] !== 0)
 			$host .= ':'.$this->_param['port'];
 
 		$this->_set_flag();
@@ -189,8 +189,26 @@ class xivo_datastorage_mysql extends xivo_datastorage_abstract_sql
 
 	function join($t,$c='INNER',$o='')
 	{
-		if(($c = strtoupper(trim((string) $c))) === 'FULL')
-			return(false);
+		$c = strtoupper(trim((string) $c));
+
+		switch($c)
+		{
+			case 'STRAIGHT':
+				$c = 'STRAIGHT_JOIN';
+			case 'STRAIGHT_JOIN':
+				$t = trim((string) $t);
+				$o = trim((string) $o);
+
+				if($t === '')
+					return(false);
+
+				if($o !== '')
+					$o = ' ON '.$o;
+
+				return(sprintf('%s %s%s',$c,$t,$o));
+			case 'FULL':
+				return(false);
+		}
 
 		return(parent::join($t,$c,$o));
 	}
@@ -274,26 +292,14 @@ class xivo_datastorage_mysql extends xivo_datastorage_abstract_sql
 			$func = 'DATE_FORMAT';
 
 		if($col === '')
-		{
 			$col = ($time === 'utc' ? 'UTC' : 'CURRENT').'_TIMESTAMP()';
-
-			if($type === 'unix')
-				$col = 'UNIX_TIMESTAMP('.$col.')';
-		}
 		else if($time === 'utc')
-		{
 			$col = 'CONVERT_TZ('.$func.'('.$col.',\'%Y-%m-%d %H:%i:%s\'),@@session.time_zone,\'+00:00\')';
-
-			if($type === 'unix')
-				$col = 'UNIX_TIMESTAMP('.$col.')';
-		}
 		else if($time === 'localtime')
-		{
 			$col = 'CONVERT_TZ('.$func.'('.$col.',\'%Y-%m-%d %H:%i:%s\'),\'+00:00\',@@session.time_zone)';
-
-			if($type === 'unix')
-				$col = 'UNIX_TIMESTAMP('.$col.')';
-		}
+		
+		if($type === 'unix')
+			$col = 'UNIX_TIMESTAMP('.$col.')';
 
 		$r = $func.'('.$col.($format !== '' ? ',\''.$format.'\'' : '').')';
 

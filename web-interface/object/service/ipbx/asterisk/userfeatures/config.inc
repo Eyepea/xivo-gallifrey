@@ -141,6 +141,11 @@ $array['element']['internal']['value'] = array(0,1);
 $array['element']['internal']['default'] = 0;
 $array['element']['internal']['setdef'] = true;
 
+$array['element']['bsfilter'] = array();
+$array['element']['bsfilter']['value'] = array('no','boss','secretary');
+$array['element']['bsfilter']['default'] = 'no';
+$array['element']['bsfilter']['setdef'] = true;
+
 $array['element']['description'] = array();
 $array['element']['description']['default'] = '';
 
@@ -178,6 +183,7 @@ $array['filter']['destunc'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-
 $array['filter']['musiconhold'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 20);
 $array['filter']['outcallerid'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_-]+$/i','maxlen' => 80);
 $array['filter']['internal'] = array('set' => false,'chk' => 0);
+$array['filter']['bsfilter'] = array('key' => array('no','boss','secretary'));
 $array['filter']['description'] = array('set' => false,'chk' => 2,'maxlen' => 1000,'cast' => 'sgraph_crlf_tab','eol' => true);
 
 ?>

@@ -32,8 +32,7 @@ class xivo_application_abstract extends xivo_libconfig_abstract
 
 		if(isset($this->_abstract[$name]) === true)
 			return(true);
-		
-		if(($class = $this->_load_abstract_class($name)) === false)
+		else if(($class = $this->_load_abstract_class($name)) === false)
 		{
 			trigger_error('Abstract Application '.$name.' does not exist in '.$this->_service_name,E_USER_ERROR);
 			return(false);

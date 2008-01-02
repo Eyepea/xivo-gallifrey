@@ -141,7 +141,6 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 
 			$this->_set_result($this->_name,$rs);
 			$this->_set_error($this->_name,$this->get_filter_error());
-
 			return(false);
 		}
 
@@ -154,6 +153,8 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 
 	function save()
 	{
+		$r = true;
+
 		$this->_status = 'save';
 		$this->_return = array();
 
@@ -162,14 +163,13 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 		|| $this->get_errnb() > 0
 		|| ($name = $this->save_realstatic()) === false)
 		{
+			$r = false;
 			$this->_reverse_save();
-			$this->_status = '';
-			return(false);
 		}
 
 		$this->_status = '';
 
-		return(true);
+		return($r);
 	}
 
 	function set_save_all($arr,$disable=null)
@@ -220,11 +220,9 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 	{
 		if(isset($this->_info[$this->_name]) === false)
 			return(false);
-
-		if($this->_info[$this->_name] === false)
+		else if($this->_info[$this->_name] === false)
 			return($this->_add_realstatic());
-
-		if(($rs = $this->get_result($this->_name)) === null
+		else if(($rs = $this->get_result($this->_name)) === null
 		|| $rs === false)
 			return(false);
 

@@ -116,6 +116,13 @@
 
 <?=$form->text(array('desc' => $this->bbf('fm_extenfeatures_directoryaccess'),'name' => 'extenfeatures[directoryaccess][exten]','labelid' => 'extenfeatures-directoryaccess','size' => 15,'value' => $this->get_varra('extenfeatures',array('directoryaccess','exten')),'default' => $element['extenfeatures']['directoryaccess']['default'],'invalid' => isset($invalid['extenfeatures']['directoryaccess'])));?>
 
+<?=$form->checkbox(array('desc' => $this->bbf('fm_extenfeatures_enable-bsfilter'),'name' => 'extenfeatures[bsfilter][enable]','labelid' => 'extenfeatures-enable-bsfilter','checked' => ((bool) $this->get_varra('extenfeatures',array('bsfilter','commented')) === false ? true : false)));?>
+
+<div class="fm-field">
+<?=$form->text(array('desc' => $this->bbf('fm_extenfeatures_bsfilter'),'name' => 'extenfeatures[bsfilter][exten]','field' => false,'labelid' => 'extenfeatures-bsfilter','size' => 15,'value' => $this->get_varra('extenfeatures',array('bsfilter','exten')),'default' => $element['extenfeatures']['bsfilter']['default']));?>
+<?=$form->select(array('field' => false,'name' => 'extenfeatures[list-bsfilter]','labelid' => 'extenfeatures-list-bsfilter','key' => false,'empty' => true),array('*',range(3,11)),'onchange="xivo_exten_pattern(\'it-extenfeatures-bsfilter\',this.value);"');?>
+</div>
+
 </div>
 
 <div id="sb-part-voicemail" class="b-nodisplay">

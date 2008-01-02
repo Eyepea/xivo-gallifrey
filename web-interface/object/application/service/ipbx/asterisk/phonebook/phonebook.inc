@@ -4,6 +4,7 @@ xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 
 class xivo_application_service_asterisk_phonebook extends xivo_application_asterisk_abstract
 {
+	var $_dso		= null;
 	var $_origin		= array();
 	var $_status		= '';
 	var $_cnt		= 0;
@@ -12,9 +13,14 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 	var $_phonebooknumber	= null;
 	var $_conf		= array();
 
-	function xivo_application_service_asterisk_phonebook(&$service)
+	function xivo_application_service_asterisk_phonebook(&$service,&$dso)
 	{
 		$this->xivo_application_asterisk_abstract(&$service);
+
+		if(is_object($dso) === false)
+			trigger_error('Invalid Datastorage object',E_USER_ERROR);
+
+		$this->_dso = &$dso;
 
 		if(($this->_phonebook = &$this->_service->get_module('phonebook')) === false
 		|| ($this->_phonebookaddress = &$this->_service->get_module('phonebookaddress')) === false
@@ -119,34 +125,13 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 	{
 		$action = (string) $action;
 		$assoc = (bool) $assoc;
-
-		$this->_cnt = 0;
+		$search = strval($search);
 
 		switch($action)
 		{
 			case 'search':
-				$max = null;
-				$list = array();
-
-				if(isset($limit[1]) === true)
-					$max = array(0,$limit[1]);
-
-				if(($rsa = $this->_phonebookaddress->get_search($search,null,null,$max)) !== false
-				&& ($nb = count($rsa)) !== 0)
-				{
-					for($i = 0;$i < $nb;$i++)
-						$list[] = $rsa[$i]['phonebookid'];
-				}
-
-				if(($rsn = $this->_phonebooknumber->get_search($search,$list,null,$max)) !== false
-				&& ($nb = count($rsn)) !== 0)
-				{
-					for($i = 0;$i < $nb;$i++)
-						$list[] = $rsn[$i]['phonebookid'];
-				}
-
-				$rs = $this->_phonebook->get_search($search,$list,$order,$limit);
-				$this->_cnt = $this->_phonebook->get_cnt();
+				$rs = $this->_dso->search($search,$order,$limit);
+				$this->_cnt = $this->_dso->get_cnt();
 				break;
 			case 'list':
 			default:
@@ -161,7 +146,11 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			$info['phonebook'] = $rs[$i];
+			if($action === 'search')
+				$info['phonebook'] = $this->_phonebook->_prepare($rs[$i]);
+			else
+				$info['phonebook'] = $rs[$i];
+
 			$info['phonebookaddress'] = $this->_phonebookaddress->get_all_type_by_phonebook($info['phonebook']['id']); 
 			$info['phonebooknumber'] = $this->_phonebooknumber->get_all_type_by_phonebook($info['phonebook']['id']); 
 			$r[$info['phonebook']['id']] = $info;
@@ -343,6 +332,7 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 
 	function add()
 	{
+		$r = true;
 		$this->_status = 'add';
 		$this->_return = array();
 		$phonebookid = null;
@@ -352,16 +342,14 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 		|| $this->add_phonebookaddress($phonebookid) === false
 		|| $this->add_phonebooknumber($phonebookid) === false)
 		{
+			$r = false;
 			if($phonebookid !== null)
 				$this->_reverse_add();
-
-			$this->_status = '';
-			return(false);
 		}
 
 		$this->_status = '';
 
-		return(true);
+		return($r);
 	}
 
 	function add_phonebook()
@@ -404,8 +392,7 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 
 		if(($rs = $this->get_result($typename)) === null || $rs === false)
 			return($rs);
-
-		if(($arr = xivo_get_aks($rs)) === false)
+		else if(($arr = xivo_get_aks($rs)) === false)
 			return(false);
 
 		$this->_return[$typename] = array();
@@ -468,6 +455,7 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 
 	function edit()
 	{
+		$r = true;
 		$this->_status = 'edit';
 		$this->_return = array();
 
@@ -476,14 +464,13 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 		|| $this->edit_phonebookaddress() === false
 		|| $this->edit_phonebooknumber() === false)
 		{
+			$r = false;
 			$this->_reverse_edit();
-			$this->_status = '';
-			return(false);
 		}
 
 		$this->_status = '';
 
-		return(true);
+		return($r);
 	}
 
 	function edit_phonebook()
@@ -534,8 +521,7 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 
 		if(($rs = $this->get_result($typename)) === null)
 			return($this->_return[$typename]);
-
-		if(($arr = xivo_get_aks($rs)) === false)
+		else if(($arr = xivo_get_aks($rs)) === false)
 			return(false);
 
 		$this->_return[$typename] = array();
@@ -612,6 +598,7 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 
 	function delete()
 	{
+		$r = true;
 		$this->_status = 'delete';
 		$this->_return = array();
 
@@ -619,14 +606,13 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 		|| $this->delete_phonebookaddress() === false
 		|| $this->delete_phonebooknumber() === false)
 		{
+			$r = false;
 			$this->_reverse_delete();
-			$this->_status = '';
-			return(false);
 		}
 
 		$this->_status = '';
 
-		return(true);
+		return($r);
 	}
 
 	function delete_phonebook()
@@ -670,8 +656,7 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 
 		if(xivo_issa($typename,$this->_info) === false)
 			return(null);
-
-		if(xivo_issa('phonebook',$this->_info) === false)
+		else if(xivo_issa('phonebook',$this->_info) === false)
 			return(false);
 
 		$phonebooktype_where = array();

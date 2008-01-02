@@ -67,11 +67,6 @@ class xivo_tpl_module
 		return($this->_tpl->url($url));
 	}
 
-	function chk_acl($cat='',$func='',$section='')
-	{
-		return($this->_tpl->chk_acl($cat,$func,$section));
-	}
-
 	function &_get_module($name)
 	{
 		return(($ref = &$this->_tpl->get_module($name)));

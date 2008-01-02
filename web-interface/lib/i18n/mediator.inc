@@ -436,12 +436,6 @@ class xivo_i18n_mediator
 		if(defined('XIVO_I18N_BABELFISH_PATH') === true)
 			return(true);
 
-		if(defined('XIVO_PATH_I18N') === false)
-		{
-			trigger_error('Missing XIVO_PATH_I18N define',E_USER_ERROR);
-			return(false);
-		}
-
 		if(xivo_file::is_d_r(XIVO_PATH_I18N) === false)
 		{
 			trigger_error('Invalid I18N path',E_USER_ERROR);

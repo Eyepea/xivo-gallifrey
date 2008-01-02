@@ -39,15 +39,12 @@ class xivo_application_service_asterisk_realstatic_meetme_room extends xivo_appl
 		{
 			$this->_set_result($this->_name,null);
 			$this->_set_error($this->_name,'invalid data');
-
 			return(false);
 		}
-
-		if(($rs = $this->chk_values($arr)) === false)
+		else if(($rs = $this->chk_values($arr)) === false)
 		{
 			$this->_set_result($this->_name,$this->get_filter_result());
 			$this->_set_error($this->_name,$this->get_filter_error());
-
 			return(false);
 		}
 
@@ -87,8 +84,7 @@ class xivo_application_service_asterisk_realstatic_meetme_room extends xivo_appl
 			$id = $this->_info[$this->_name]['id'];
 		else if(($id = xivo_uint($id)) === 0)
 			return(false);
-
-		if(($rs = $this->get_result($this->_name)) === null || $rs === false)
+		else if(($rs = $this->get_result($this->_name)) === null || $rs === false)
 			return($rs);
 
 		$arr = array();

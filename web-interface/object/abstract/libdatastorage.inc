@@ -145,22 +145,27 @@ class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 		return($r);
 	}
 
-	function get_id($arr,$disable=null)
+	function get_id($arr,$disable=null,$id=null)
 	{
 		if(is_array($arr) === true
 		&& ($arr = $this->get_element_where($arr)) === false)
 			return(false);
 
+		if($id !== null
+		&& (is_array($arr) === false || ($arr['id'] = xivo_uint($id)) === 0) === true)
+			return(false);
+
 		return($this->_dso->get_id($arr,$disable));
 	}
 
-	function get_where($arr,$disable=null)
+	function get_where($arr,$disable=null,$id=null)
 	{
 		if(isset($this->_origin) === true)
 			$this->_origin = false;
 
 		if(is_array($arr) === false
 		|| ($where = $this->get_element_where($arr)) === false
+		|| ($id !== null && ($where['id'] = xivo_uint($id)) === 0) === true
 		|| ($r = $this->_dso->get($where,$disable)) === false)
 			return(false);
 
@@ -209,61 +214,85 @@ class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 		return($r);
 	}
 
-	function get_all($disable=null,$prepare=true,$order=null,$limit=null)
+	function get_all($disable=null,$prepare=true,$order=null,$limit=null,$assoc=false)
 	{
 		$prepare = (bool) $prepare;
+		$assoc = (bool) $assoc;
 
 		if(isset($this->_origin_list) === true)
 			$this->_origin_list = false;
 
 		if(($list = $this->_dso->get_all($disable,$order,$limit)) === false
-		|| ($nb = count($list)) === 0)
+		|| isset($list[0]) === false)
 			return(false);
 
 		if(isset($this->_origin_list) === true)
 			$this->_origin_list = $list;
 
+		if($prepare === false && $assoc === false)
+			return($list);
+		else if(($nb = count($list)) === 0)
+			return(false);
+
 		$r = array();
-	
-		if($prepare === true)
+
+		if($assoc === true && $prepare === true)
 		{
 			for($i = 0;$i < $nb;$i++)
-				$r[] = $this->_prepare($list[$i]);
+				$r[$list[$i]['id']] = $this->_prepare($list[$i]);
+		}
+		else if($assoc === true)
+		{
+			for($i = 0;$i < $nb;$i++)
+				$r[$list[$i]['id']] = $list[$i];
 		}
 		else
 		{
 			for($i = 0;$i < $nb;$i++)
-				$r[] = $list[$i];
+				$r[] = $this->_prepare($list[$i]);
 		}
 
 		return($r);
 	}
 
-	function get_all_where($arr,$disable=null,$prepare=true,$order=null,$limit=null)
+	function get_all_where($arr,$disable=null,$prepare=true,$order=null,$limit=null,$assoc=false)
 	{
+		$prepare = (bool) $prepare;
+		$assoc = (bool) $assoc;
+
 		if(isset($this->_origin_list) === true)
 			$this->_origin_list = false;
 
 		if(is_array($arr) === false
 		|| ($where = $this->get_element_where($arr)) === false
 		|| ($list = $this->_dso->get_all_where($where,$disable,$order,$limit)) === false
-		|| ($nb = count($list)) === 0)
+		|| isset($list[0]) === false)
 			return(false);
 
 		if(isset($this->_origin_list) === true)
 			$this->_origin_list = $list;
 
+		if($prepare === false && $assoc === false)
+			return($list);
+		else if(($nb = count($list)) === 0)
+			return(false);
+
 		$r = array();
 
-		if($prepare === true)
+		if($assoc === true && $prepare === true)
 		{
 			for($i = 0;$i < $nb;$i++)
-				$r[] = $this->_prepare($list[$i]);
+				$r[$list[$i]['id']] = $this->_prepare($list[$i]);
+		}
+		else if($assoc === true)
+		{
+			for($i = 0;$i < $nb;$i++)
+				$r[$list[$i]['id']] = $list[$i];
 		}
 		else
 		{
 			for($i = 0;$i < $nb;$i++)
-				$r[] = $list[$i];
+				$r[] = $this->_prepare($list[$i]);
 		}
 
 		return($r);
@@ -321,16 +350,22 @@ class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 
 	function enable($id,$value=false)
 	{
+		if(($id = xivo_uint($id)) === 0)
+			return(false);
+
 		$value = intval((bool) $value);
 
-		return($this->edit($id,array('disable' => $value)));
+		return($this->_dso->edit($id,array('disable' => $value)));
 	}
 
 	function disable($id,$value=true)
 	{
+		if(($id = xivo_uint($id)) === 0)
+			return(false);
+
 		$value = intval((bool) $value);
 
-		return($this->edit($id,array('disable' => $value)));
+		return($this->_dso->edit($id,array('disable' => $value)));
 	}
 
 	function enable_where($id,$value=false)

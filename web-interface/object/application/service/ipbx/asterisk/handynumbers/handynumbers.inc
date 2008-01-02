@@ -223,6 +223,8 @@ class xivo_application_service_asterisk_handynumbers extends xivo_application_as
 
 	function save()
 	{
+		$r = true;
+
 		$this->_status = 'save';
 		$this->_return = array();
 		$handynumbersid = null;
@@ -232,22 +234,21 @@ class xivo_application_service_asterisk_handynumbers extends xivo_application_as
 		|| $this->add_extenumbers($handynumbersid) === false
 		|| $this->add_exten() === false)
 		{
+			$r = false;
 			if($handynumbersid !== null)
 				$this->_reverse_save();
-
-			$this->_status = '';
-			return(false);
 		}
 		
 		$this->_status = '';
-		return(true);
+
+		return($r);
 	}
 
 	function add_handynumbers()
 	{
 		if(($rs = $this->get_result('handynumbers')) === null
 		|| $rs === false)
-			return($rs);
+			return(false);
 
 		if(isset($rs['id']) === true)
 			$gid = $rs['id'];

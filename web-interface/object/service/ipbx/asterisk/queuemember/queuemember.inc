@@ -133,6 +133,128 @@ class xivo_service_asterisk_queuemember extends xivo_service_asterisk_abstract
 
 		return($this->_dso->delete($id,$disable));
 	}
+
+	function enable($id,$value=false)
+	{
+		if(is_array($id) === false
+		|| isset($id['queue_name'],$id['interface']) === false
+		|| is_scalar($id['queue_name']) === false
+		|| is_scalar($id['interface']) === false)
+			return(false);
+
+		$value = intval((bool) $value);
+
+		return($this->_dso->edit($id,array('commented' => $value)));
+	}
+
+	function disable($id,$value=true)
+	{
+		if(is_array($id) === false
+		|| isset($id['queue_name'],$id['interface']) === false
+		|| is_scalar($id['queue_name']) === false
+		|| is_scalar($id['interface']) === false)
+			return(false);
+
+		$value = intval((bool) $value);
+
+		return($this->_dso->edit($id,array('commented' => $value)));
+	}
+
+	function get_all($disable=null,$prepare=true,$order=null,$limit=null,$assoc=false)
+	{
+		$prepare = (bool) $prepare;
+		$assoc = (bool) $assoc;
+
+		if(isset($this->_origin_list) === true)
+			$this->_origin_list = false;
+
+		if(($list = $this->_dso->get_all($disable,$order,$limit)) === false
+		|| isset($list[0]) === false)
+			return(false);
+
+		if(isset($this->_origin_list) === true)
+			$this->_origin_list = $list;
+
+		if($prepare === false && $assoc === false)
+			return($list);
+		else if(($nb = count($list)) === 0)
+			return(false);
+
+		$r = array();
+
+		if($assoc === true && $prepare === true)
+		{
+			for($i = 0;$i < $nb;$i++)
+			{
+				$key = $list[$i]['queue_name'].'-'.$list[$i]['interface'];
+				$r[$key] = $this->_prepare($list[$i]);
+			}
+		}
+		else if($assoc === true)
+		{
+			for($i = 0;$i < $nb;$i++)
+			{
+				$key = $list[$i]['queue_name'].'-'.$list[$i]['interface'];
+				$r[$key] = $list[$i];
+			}
+		}
+		else
+		{
+			for($i = 0;$i < $nb;$i++)
+				$r[] = $this->_prepare($list[$i]);
+		}
+
+		return($r);
+	}
+
+	function get_all_where($arr,$disable=null,$prepare=true,$order=null,$limit=null,$assoc=false)
+	{
+		$prepare = (bool) $prepare;
+		$assoc = (bool) $assoc;
+
+		if(isset($this->_origin_list) === true)
+			$this->_origin_list = false;
+
+		if(is_array($arr) === false
+		|| ($where = $this->get_element_where($arr)) === false
+		|| ($list = $this->_dso->get_all_where($where,$disable,$order,$limit)) === false
+		|| isset($list[0]) === false)
+			return(false);
+
+		if(isset($this->_origin_list) === true)
+			$this->_origin_list = $list;
+
+		if($prepare === false && $assoc === false)
+			return($list);
+		else if(($nb = count($list)) === 0)
+			return(false);
+
+		$r = array();
+
+		if($assoc === true && $prepare === true)
+		{
+			for($i = 0;$i < $nb;$i++)
+			{
+				$key = $list[$i]['queue_name'].'-'.$list[$i]['interface'];
+				$r[$key] = $this->_prepare($list[$i]);
+			}
+		}
+		else if($assoc === true)
+		{
+			for($i = 0;$i < $nb;$i++)
+			{
+				$key = $list[$i]['queue_name'].'-'.$list[$i]['interface'];
+				$r[$key] = $list[$i];
+			}
+		}
+		else
+		{
+			for($i = 0;$i < $nb;$i++)
+				$r[] = $this->_prepare($list[$i]);
+		}
+
+		return($r);
+	}
 }
 
 ?>

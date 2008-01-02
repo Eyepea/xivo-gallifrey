@@ -213,9 +213,6 @@ class xivo_application_service_asterisk_user_abstract_sql extends xivo_applicati
 
 		$uwhere = '';
 
-		if((empty($arr) === false && ($uwhere = $this->_dso->where($arr,$t['userfeatures'])) === false) === true)
-			return(false);
-
 		if((empty($arr) === false
 		   && ($uwhere = $this->_dso->where($arr,$t['userfeatures'])) === false) === true
 		|| ($use_sip === true

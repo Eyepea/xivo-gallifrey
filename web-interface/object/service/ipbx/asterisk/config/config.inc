@@ -130,6 +130,12 @@ $array['module']['ami']['datastorage'] = false;
 $array['module']['autoprov'] = array();
 $array['module']['autoprov']['datastorage'] = true;
 
+$array['module']['callfilter'] = array();
+$array['module']['callfilter']['datastorage'] = true;
+
+$array['module']['callfiltermember'] = array();
+$array['module']['callfiltermember']['datastorage'] = true;
+
 $array['module']['configfiles'] = array();
 $array['module']['configfiles']['datastorage'] = false;
 
@@ -187,6 +193,9 @@ $array['module']['phonebookaddress']['datastorage'] = true;
 
 $array['module']['phonebooknumber'] = array();
 $array['module']['phonebooknumber']['datastorage'] = true;
+
+$array['module']['phonefunckey'] = array();
+$array['module']['phonefunckey']['datastorage'] = true;
 
 $array['module']['queue'] = array();
 $array['module']['queue']['datastorage'] = true;

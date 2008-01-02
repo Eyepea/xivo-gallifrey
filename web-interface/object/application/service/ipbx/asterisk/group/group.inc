@@ -211,12 +211,10 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 			$this->_set_error('gfeatures','invalid data');
 			return(false);
 		}
-
-		if(($rs = $this->_groupfeatures->chk_values($arr)) === false)
+		else if(($rs = $this->_groupfeatures->chk_values($arr)) === false)
 		{
 			$this->_set_result('gfeatures',$this->_groupfeatures->get_filter_result());
 			$this->_set_error('gfeatures',$this->_groupfeatures->get_filter_error());
-
 			return(false);
 		}
 
@@ -245,7 +243,6 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		{
 			$this->_set_result('queue',$this->_queue->get_filter_result());
 			$this->_set_error('queue',$this->_queue->get_filter_error());
-
 			return(false);
 		}
 
@@ -402,7 +399,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 	{
 		if(($rs = $this->get_result('gfeatures')) === null
 		|| $rs === false)
-			return($rs);
+			return(false);
 
 		$this->_return['groupfeatures'] = $this->_groupfeatures->add($rs);
 
@@ -412,10 +409,8 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 	function add_queue()
 	{
 		if(($rs = $this->get_result('queue')) === null
-		|| $rs === false)
-			return($rs);
-
-		if($this->_queue->add($rs) === false)
+		|| $rs === false
+		|| $this->_queue->add($rs) === false)
 			return(false);
 
 		$this->_return['queue'] = $rs['name'];
@@ -566,8 +561,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 			$this->_status = '';
 			return(false);
 		}
-
-		if($this->edit_queue() === false)
+		else if($this->edit_queue() === false)
 		{
 			$this->_reverse_edit();
 			$this->_status = '';
@@ -622,12 +616,10 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 
 	function edit_groupfeatures()
 	{
-		$rs = false;
-
 		if(xivo_issa('gfeatures',$this->_info) === false
 		|| ($rs = $this->get_result('gfeatures')) === null
 		|| $rs === false)
-			return($rs);
+			return(false);
 
 		$this->_return['groupfeatures'] = $this->_groupfeatures->edit($this->_info['gfeatures']['id'],$rs);
 
@@ -636,14 +628,10 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 
 	function edit_queue()
 	{
-		$rs = false;
-
 		if(xivo_issa('queue',$this->_info) === false
 		|| ($rs = $this->get_result('queue')) === null
-		|| $rs === false)
-			return($rs);
-
-		if($this->_queue->edit($this->_info['queue']['name'],$rs) === false)
+		|| $rs === false
+		|| $this->_queue->edit($this->_info['queue']['name'],$rs) === false)
 			return(false);
 
 		$this->_return['queue'] = $rs['name'];
@@ -655,16 +643,14 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 	{
 		if(is_scalar($name) === false)
 			return(false);
-
-		if(xivo_issa('user',$this->_info) === false)
+		else if(xivo_issa('user',$this->_info) === false)
 			return($this->add_user());
 
 		$this->_return['user'] = $this->delete_user($name);
 
 		if(($rs = $this->get_result('user')) === null)
 			return($this->_return['user']);
-
-		if($rs === false)
+		else if($rs === false)
 			return(false);
 
 		$id = $this->_return['user'] = array();
@@ -717,8 +703,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		if(($gfeaturesid = xivo_uint($gfeaturesid)) === 0
 		|| isset($this->_origin['user']) === false)
 			return(false);
-
-		if(is_array($this->_origin['user']) === false
+		else if(is_array($this->_origin['user']) === false
 		|| ($nb = count($this->_origin['user'])) === 0)
 			return($this->add_user_callgroup($gfeaturesid));
 
@@ -855,7 +840,6 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		{
 			$this->_reverse_delete();
 			$this->_status = '';
-
 			return(false);
 		}
 

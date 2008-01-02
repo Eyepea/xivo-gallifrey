@@ -43,19 +43,22 @@ Gestion des appels
 ; mn_left_callmanagement-incall
 Appels entrants
 
-; mn_left_callmamagement-outcall
+; mn_left_callmanagement-outcall
 Appels sortants
 
-; mn_left_callmamagement-rightcall
+; mn_left_callmanagement-rightcall
 Droits d'appels
 
-; mn_left_callmamagement-schedule
+; mn_left_callmanagement-callfilter
+Filtrages d'appels
+
+; mn_left_callmanagement-schedule
 Horaires
 
 ; mn_left_callmanagement-ivr
 Menus vocaux 
 
-; mn_left_callmamagement-cdr
+; mn_left_callmanagement-cdr
 Journaux d'appels
 
 ; mn_left_ti_trunkmanagement

@@ -12,6 +12,30 @@
 
 <?=$form->text(array('desc' => $this->bbf('fm_outcall_name'),'name' => 'outcall[name]','labelid' => 'outcall-name','size' => 15,'default' => $element['outcall']['name']['default'],'value' => $info['outcall']['name']));?>
 
+<?=$form->text(array('desc' => $this->bbf('fm_outcall_context'),'name' => 'outcall[context]','labelid' => 'outcall-context','size' => 15,'default' => $element['outcall']['context']['default'],'value' => $info['outcall']['context']));?>
+
+<?=$form->text(array('desc' => $this->bbf('fm_outcall_externprefix'),'name' => 'outcall[externprefix]','labelid' => 'outcall-externprefix','size' => 15,'default' => $element['outcall']['externprefix']['default'],'value' => $info['outcall']['externprefix']));?>
+
+<?=$form->select(array('desc' => $this->bbf('fm_outcall_stripnum'),'name' => 'outcall[stripnum]','labelid' => 'outcall-stripnum','key' => false,'default' => $element['outcall']['stripnum']['default'],'value' => $info['outcall']['stripnum']),$element['outcall']['stripnum']['value']);?>
+
+<?=$form->select(array('desc' => $this->bbf('fm_outcall_mode'),'name' => 'outcall[mode]','labelid' => 'outcall-mode','key' => false,'bbf' => array('concatkey','fm_outcall_mode-opt-'),'default' => $element['outcall']['mode']['default'],'value' => ''),$element['outcall']['mode']['value'],'onchange="xivo_chgmode(this); (this.value == \'wizard\' ? xivo_exten_wizard(\'it-outcall-prefix\',\'it-outcall-numlen\',\'it-outcall-exten\') : xivo_wizard_exten(\'it-outcall-prefix\',\'it-outcall-numlen\',\'it-outcall-exten\'));" onfocus="xivo_fm_set_onfocus(this);" onblur="xivo_fm_set_onblur(this);"');?>
+
+<?=$form->text(array('desc' => $this->bbf('fm_outcall_prefix'),'name' => 'outcall[prefix]','labelid' => 'outcall-prefix','size' => 15,'default' => $element['outcall']['prefix']['default'],'value' => ''),'onchange="xivo_wizard_exten(this.id,\'it-outcall-numlen\',\'it-outcall-exten\');" onfocus="xivo_wizard_exten(this.id,\'it-outcall-numlen\',\'it-outcall-exten\'); xivo_fm_set_onfocus(this);" onblur="xivo_wizard_exten(this.id,\'it-outcall-numlen\',\'it-outcall-exten\'); xivo_fm_set_onblur(this);"');?>
+
+<?=$form->select(array('desc' => $this->bbf('fm_outcall_numlen'),'name' => 'outcall[numlen]','labelid' => 'outcall-numlen','key' => false,'empty' => true,'default' => $element['outcall']['numlen']['default'],'value' => ''),$element['outcall']['numlen']['value'],'onchange="xivo_wizard_exten(\'it-outcall-prefix\',this.id,\'it-outcall-exten\');" onfocus="xivo_wizard_exten(\'it-outcall-prefix\',this.id,\'it-outcall-exten\'); xivo_fm_set_onfocus(this);" onblur="xivo_wizard_exten(\'it-outcall-prefix\',this.id,\'it-outcall-exten\'); xivo_fm_set_onblur(this);"');?>
+
+<?=$form->text(array('desc' => $this->bbf('fm_outcall_exten'),'name' => 'outcall[exten]','labelid' => 'outcall-exten','size' => 15,'default' => $element['outcall']['exten']['default'],'value' => $info['outcall']['exten']),'onchange="xivo_exten_wizard(\'it-outcall-prefix\',\'it-outcall-numlen\',this.id);" onfocus="xivo_exten_wizard(\'it-outcall-prefix\',\'it-outcall-numlen\',this.id); xivo_fm_set_onfocus(this);" onblur="xivo_exten_wizard(\'it-outcall-prefix\',\'it-outcall-numlen\',this.id); xivo_fm_set_onblur(this);"');?>
+
+<?=$form->checkbox(array('desc' => $this->bbf('fm_outcall_setcallerid'),'name' => 'outcall[setcallerid]','labelid' => 'setcallerid','checked' => $info['outcall']['setcallerid'],'default' => $element['outcall']['setcallerid']['default']));?>
+
+<?=$form->text(array('desc' => $this->bbf('fm_outcall_callerid'),'name' => 'outcall[callerid]','labelid' => 'outcall-callerid','size' => 15,'default' => $element['outcall']['callerid']['default'],'value' => $info['outcall']['callerid']));?>
+
+<?=$form->checkbox(array('desc' => $this->bbf('fm_outcall_useenum'),'name' => 'outcall[useenum]','labelid' => 'useenum','checked' => $info['outcall']['useenum'],'default' => $element['outcall']['useenum']['default']));?>
+
+<?=$form->checkbox(array('desc' => $this->bbf('fm_outcall_internal'),'name' => 'outcall[internal]','labelid' => 'internal','checked' => $info['outcall']['internal'],'default' => $element['outcall']['internal']['default']));?>
+
+<?=$form->select(array('desc' => $this->bbf('fm_outcall_hangupringtime'),'name' => 'outcall[hangupringtime]','labelid' => 'outcall-hangupringtime','bbf' => array('mixkey','fm_outcall_hangupringtime-opt','paramarray'),'default' => $element['outcall']['hangupringtime']['default'],'value' => $info['outcall']['hangupringtime']),$element['outcall']['hangupringtime']['value']);?>
+
 <?php
 
 if($outcalltrunk['list'] !== false):
@@ -51,29 +75,6 @@ else:
 endif;
 
 ?>
-<?=$form->text(array('desc' => $this->bbf('fm_outcall_context'),'name' => 'outcall[context]','labelid' => 'outcall-context','size' => 15,'default' => $element['outcall']['context']['default'],'value' => $info['outcall']['context']));?>
-
-<?=$form->text(array('desc' => $this->bbf('fm_outcall_externprefix'),'name' => 'outcall[externprefix]','labelid' => 'outcall-externprefix','size' => 15,'default' => $element['outcall']['externprefix']['default'],'value' => $info['outcall']['externprefix']));?>
-
-<?=$form->select(array('desc' => $this->bbf('fm_outcall_stripnum'),'name' => 'outcall[stripnum]','labelid' => 'outcall-stripnum','key' => false,'default' => $element['outcall']['stripnum']['default'],'value' => $info['outcall']['stripnum']),$element['outcall']['stripnum']['value']);?>
-
-<?=$form->select(array('desc' => $this->bbf('fm_outcall_mode'),'name' => 'outcall[mode]','labelid' => 'outcall-mode','key' => false,'bbf' => array('concatkey','fm_outcall_mode-opt-'),'default' => $element['outcall']['mode']['default'],'value' => ''),$element['outcall']['mode']['value'],'onchange="xivo_chgmode(this); (this.value == \'wizard\' ? xivo_exten_wizard(\'it-outcall-prefix\',\'it-outcall-numlen\',\'it-outcall-exten\') : xivo_wizard_exten(\'it-outcall-prefix\',\'it-outcall-numlen\',\'it-outcall-exten\'));" onfocus="xivo_fm_set_onfocus(this);" onblur="xivo_fm_set_onblur(this);"');?>
-
-<?=$form->text(array('desc' => $this->bbf('fm_outcall_prefix'),'name' => 'outcall[prefix]','labelid' => 'outcall-prefix','size' => 15,'default' => $element['outcall']['prefix']['default'],'value' => ''),'onchange="xivo_wizard_exten(this.id,\'it-outcall-numlen\',\'it-outcall-exten\');" onfocus="xivo_wizard_exten(this.id,\'it-outcall-numlen\',\'it-outcall-exten\'); xivo_fm_set_onfocus(this);" onblur="xivo_wizard_exten(this.id,\'it-outcall-numlen\',\'it-outcall-exten\'); xivo_fm_set_onblur(this);"');?>
-
-<?=$form->select(array('desc' => $this->bbf('fm_outcall_numlen'),'name' => 'outcall[numlen]','labelid' => 'outcall-numlen','key' => false,'empty' => true,'default' => $element['outcall']['numlen']['default'],'value' => ''),$element['outcall']['numlen']['value'],'onchange="xivo_wizard_exten(\'it-outcall-prefix\',this.id,\'it-outcall-exten\');" onfocus="xivo_wizard_exten(\'it-outcall-prefix\',this.id,\'it-outcall-exten\'); xivo_fm_set_onfocus(this);" onblur="xivo_wizard_exten(\'it-outcall-prefix\',this.id,\'it-outcall-exten\'); xivo_fm_set_onblur(this);"');?>
-
-<?=$form->text(array('desc' => $this->bbf('fm_outcall_exten'),'name' => 'outcall[exten]','labelid' => 'outcall-exten','size' => 15,'default' => $element['outcall']['exten']['default'],'value' => $info['outcall']['exten']),'onchange="xivo_exten_wizard(\'it-outcall-prefix\',\'it-outcall-numlen\',this.id);" onfocus="xivo_exten_wizard(\'it-outcall-prefix\',\'it-outcall-numlen\',this.id); xivo_fm_set_onfocus(this);" onblur="xivo_exten_wizard(\'it-outcall-prefix\',\'it-outcall-numlen\',this.id); xivo_fm_set_onblur(this);"');?>
-
-<?=$form->checkbox(array('desc' => $this->bbf('fm_outcall_setcallerid'),'name' => 'outcall[setcallerid]','labelid' => 'setcallerid','checked' => $info['outcall']['setcallerid'],'default' => $element['outcall']['setcallerid']['default']));?>
-
-<?=$form->text(array('desc' => $this->bbf('fm_outcall_callerid'),'name' => 'outcall[callerid]','labelid' => 'outcall-callerid','size' => 15,'default' => $element['outcall']['callerid']['default'],'value' => $info['outcall']['callerid']));?>
-
-<?=$form->checkbox(array('desc' => $this->bbf('fm_outcall_useenum'),'name' => 'outcall[useenum]','labelid' => 'useenum','checked' => $info['outcall']['useenum'],'default' => $element['outcall']['useenum']['default']));?>
-
-<?=$form->checkbox(array('desc' => $this->bbf('fm_outcall_internal'),'name' => 'outcall[internal]','labelid' => 'internal','checked' => $info['outcall']['internal'],'default' => $element['outcall']['internal']['default']));?>
-
-<?=$form->select(array('desc' => $this->bbf('fm_outcall_hangupringtime'),'name' => 'outcall[hangupringtime]','labelid' => 'outcall-hangupringtime','bbf' => array('mixkey','fm_outcall_hangupringtime-opt','paramarray'),'default' => $element['outcall']['hangupringtime']['default'],'value' => $info['outcall']['hangupringtime']),$element['outcall']['hangupringtime']['value']);?>
 
 </div>
 

@@ -172,34 +172,63 @@ class xivo_service_asterisk_dialstatus extends xivo_service_asterisk_abstract
 		return(false);
 	}
 
-	function get_all($category='',$categoryval='',$prepare=true,$order=null,$limit=null)
+	function get_all($category='',$categoryval='',$disable=null,$prepare=true,$order=null,$limit=null,$assoc=false)
 	{
 		$category = strval($category);
 		$categoryval = strval($categoryval);
+		$prepare = (bool) $prepare;
+		$assoc = (bool) $assoc;
 
-		if(($list = parent::get_all(null,$prepare,$order,$limit)) === false)
+		if(isset($this->_origin_list) === true)
+			$this->_origin_list = false;
+
+		if(($list = $this->_dso->get_all($disable,$order,$limit)) === false
+		|| isset($list[0]) === false)
 			return(false);
 
-		if($id === 0)
-			return($list);
+		if(isset($this->_origin_list) === true)
+			$this->_origin_list = $list;
 
-		$nb = count($list);
+		if($prepare === false && $assoc === false)
+			return($list);
+		else if(($nb = count($list)) === 0)
+			return(false);
 
 		$r = array();
 
-		for($i = 0;$i < $nb;$i++)
+		if($assoc === true && $prepare === true)
 		{
-			$info = $list[$i];
+			for($i = 0;$i < $nb;$i++)
+			{
+				if($category === (string) $list[$i]['category']
+				&& $categoryval === (string) $list[$i]['categoryval'])
+					continue;
 
-			if($category === (string) $info['category']
-			&& $categoryval === (string) $info['categoryval'])
-				continue;
-
-			$r[] = $info;
+				$r[$list[$i]['id']] = $this->_prepare($list[$i]);
+			}
 		}
+		else if($assoc === true)
+		{
+			for($i = 0;$i < $nb;$i++)
+			{
+				if($category === (string) $list[$i]['category']
+				&& $categoryval === (string) $list[$i]['categoryval'])
+					continue;
 
-		if(isset($r[0]) === false)
-			$r = false;
+				$r[$list[$i]['id']] = $list[$i];
+			}
+		}
+		else
+		{
+			for($i = 0;$i < $nb;$i++)
+			{
+				if($category === (string) $list[$i]['category']
+				&& $categoryval === (string) $list[$i]['categoryval'])
+					continue;
+
+				$r[] = $this->_prepare($list[$i]);
+			}
+		}
 
 		return($r);
 	}

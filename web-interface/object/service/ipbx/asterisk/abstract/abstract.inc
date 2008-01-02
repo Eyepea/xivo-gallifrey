@@ -39,16 +39,22 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 
 	function enable($id,$value=false)
 	{
+		if(($id = xivo_uint($id)) === 0)
+			return(false);
+
 		$value = intval((bool) $value);
 
-		return($this->edit($id,array('commented' => $value)));
+		return($this->_dso->edit($id,array('commented' => $value)));
 	}
 
 	function disable($id,$value=true)
 	{
+		if(($id = xivo_uint($id)) === 0)
+			return(false);
+
 		$value = intval((bool) $value);
 
-		return($this->edit($id,array('commented' => $value)));
+		return($this->_dso->edit($id,array('commented' => $value)));
 	}
 
 	function enable_where($id,$value=false)

@@ -106,8 +106,6 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		$action = (string) $action;
 		$assoc = (bool) $assoc;
 
-		$this->_cnt = 0;
-
 		switch($action)
 		{
 			case 'search':
@@ -226,7 +224,6 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		{
 			$this->_set_result('incall',null);
 			$this->_set_error('incall','invalid data');
-
 			return(false);
 		}
 
@@ -237,7 +234,6 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		{
 			$this->_set_result('incall',$this->_incall->get_filter_result());
 			$this->_set_error('incall',$this->_incall->get_filter_error());
-
 			return(false);
 		}
 
@@ -263,6 +259,8 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 
 	function add()
 	{
+		$r = true;
+
 		$this->_status = 'add';
 		$this->_return = array();
 		$incallid = null;
@@ -273,24 +271,21 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		|| $this->add_macro('exten') === false
 		|| $this->add_rightcall($incallid) === false)
 		{
+			$r = false;
 			if($incallid !== null)
 				$this->_reverse_add();
-
-			$this->_status = '';
-
-			return(false);
 		}
 
 		$this->_status = '';
 
-		return(true);
+		return($r);
 	}
 
 	function add_incall()
 	{
 		if(($rs = $this->get_result('incall')) === null
 		|| $rs === false)
-			return($rs);
+			return(false);
 
 		if($this->_incall->is_valid($rs['type'],
 					    $rs['typeval'],
@@ -346,6 +341,8 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 
 	function edit()
 	{
+		$r = true;
+
 		$this->_status = 'edit';
 		$this->_return = array();
 
@@ -355,24 +352,21 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		|| $this->edit_macro('exten') === false
 		|| $this->edit_rightcall() === false)
 		{
+			$r = false;
 			$this->_reverse_edit();
-			$this->_status = '';
-			return(false);
 		}
 
 		$this->_status = '';
 
-		return(true);
+		return($r);
 	}
 
 	function edit_incall()
 	{
-		$rs = false;
-
 		if(xivo_issa('incall',$this->_info) === false
 		|| ($rs = $this->get_result('incall')) === null
 		|| $rs === false)
-			return($rs);
+			return(false);
 
 		if($this->_incall->is_valid($rs['type'],
 					    $rs['typeval'],
@@ -447,6 +441,8 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 
 	function delete()
 	{
+		$r = true;
+
 		$this->_status = 'delete';
 		$this->_return = array();
 
@@ -455,14 +451,13 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		|| $this->delete_macro('exten') === false
 		|| $this->delete_rightcall() === false)
 		{
+			$r = false;
 			$this->_reverse_delete();
-			$this->_status = '';
-			return(false);
 		}
 
 		$this->_status = '';
 
-		return(true);
+		return($r);
 	}
 
 	function delete_incall()

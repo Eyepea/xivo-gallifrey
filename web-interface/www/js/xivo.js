@@ -666,6 +666,29 @@ function xivo_clone(obj)
 	return(r);
 }
 
+function xivo_debug(obj)
+{
+	if(typeof(obj) != 'object')
+		return(false);
+
+	var r = '';
+
+  	for(var property in obj)
+	{
+    		if(typeof(obj[property]) != 'object')
+		{
+			if(typeof(obj[property]) != 'function')
+				r += property+':'+obj[property]+'\n';
+			else
+				r += 'function::'+property+'\n';
+		}
+	}
+
+	alert(r);
+	
+	return(r);
+}
+
 function xivo_leadzero(n)
 {
 	if (n < 10)
@@ -828,9 +851,10 @@ function xivo_smenu_over(obj,cname,last)
 	return(true);
 }
 
-function xivo_table_list(name,obj,del)
+function xivo_table_list(name,obj,del,cnt)
 {
 	del = xivo_is_undef(del) == true || del == 0 ? 0 : 1;
+	cnt = xivo_is_int(cnt) == true ? cnt : null;
 
 	if(xivo_is_undef(xivo_tlist[name]) == true
 	|| xivo_is_array(xivo_tlist[name]) == false)
@@ -884,6 +908,9 @@ function xivo_table_list(name,obj,del)
 		var xivo_node_clone = ref['node'].cloneNode(true);
 
 		xivo_fm_field_disabled(xivo_node_clone,false);
+
+		if(cnt !== null)
+			xivo_fm_field_id_counter(xivo_node_clone,cnt);
 
 		xivo_eid(name).appendChild(xivo_node_clone);
 	}

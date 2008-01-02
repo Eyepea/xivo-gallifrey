@@ -42,8 +42,7 @@ class xivo_application_service_asterisk_realstatic_features_general extends xivo
 	{
 		if($this->_sound !== false)
 			return($this->_sound);
-
-		if(($sounds = &$this->_service->get_module('sounds')) === false)
+		else if(($sounds = &$this->_service->get_module('sounds')) === false)
 			return(false);
 
 		$this->_sound = $sounds->get_list('features',true);
@@ -132,7 +131,6 @@ class xivo_application_service_asterisk_realstatic_features_general extends xivo
 		&& $this->chk_sound($value) === false)
 		{
 			$this->_set_error($this->_name,'wrong sound file');
-			
 			return(false);
 		}
 
@@ -141,6 +139,8 @@ class xivo_application_service_asterisk_realstatic_features_general extends xivo
 
 	function save()
 	{
+		$r = true;
+
 		$this->_status = 'save';
 		$this->_return = array();
 
@@ -150,22 +150,20 @@ class xivo_application_service_asterisk_realstatic_features_general extends xivo
 		|| ($name = $this->save_realstatic()) === false
 		|| $this->save_extenumbers($name) === false)
 		{
+			$r = false;
 			$this->_reverse_save();
-			$this->_status = '';
-			return(false);
 		}
 
 		$this->_status = '';
 
-		return(true);
+		return($r);
 	}
 
 	function save_extenumbers($name)
 	{
 		if($this->_chk_exists_cfg('exten',$name) === false)
 			return(null);
-
-		if(($r = parent::save_extenumbers($name)) === null)
+		else if(($r = parent::save_extenumbers($name)) === null)
 			$r = false;
 
 		return($r);

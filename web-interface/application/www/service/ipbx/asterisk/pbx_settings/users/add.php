@@ -170,6 +170,7 @@ $_HTML->set_var('autoprov_list',$autoprov->get_autoprov_list());
 
 $dhtml = &$_HTML->get_module('dhtml');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialstatus.js');
+$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/phonefunckey.js');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users/sip.js');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users/iax.js');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users/custom.js');

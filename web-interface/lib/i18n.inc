@@ -10,6 +10,9 @@ class xivo_i18n
 
 	function xivo_i18n()
 	{
+		if(defined('XIVO_PATH_I18N') === false)
+			define('XIVO_PATH_I18N',XIVO_PATH_ROOT.XIVO_SEP_DIR.'i18n');
+
 		$dso = &xivo_gct::get('XIVO_DSO');
 		$name = 'xivo_i18n_'.$dso->get_type();
 
@@ -651,6 +654,7 @@ class xivo_i18n
 		$nb = count($content);
 		$priority = 0;
 		$txt = $copy = $load = $data = false;
+		$quote_sep_dir = preg_quote(XIVO_SEP_DIR);
 
 		$r = array();
 
@@ -670,8 +674,8 @@ class xivo_i18n
 					$txt = false;
 					break;
 				case ';':
-					if(preg_match('/^;(?:\t| )*copy(\t| )+([a-z]{2,3}_[A-Z]{2})$/',$line,$matchcopy) === 1
-					&& ($locale = $this->chk_locale($matchcopy[2])) !== false)
+					if(preg_match('/^;[\t ]*copy[\t ]+([a-z]{2,3}_[A-Z]{2})$/',$line,$matchcopy) === 1
+					&& ($locale = $this->chk_locale($matchcopy[1])) !== false)
 					{
 						if($priority !== 0)
 							continue;
@@ -686,9 +690,9 @@ class xivo_i18n
 
 						$this->_file = $_file;
 					}
-					else if(preg_match('#^;(?:\t| )*load(\t| )+'.
-							   '(\.{1,2}'.preg_quote(XIVO_SEP_DIR).')?'.
-							   '([a-z0-9-_'.preg_quote(XIVO_SEP_DIR).']+)$#i',$line,$matchload) === 1)
+					else if(preg_match('#^;[\t ]*load[\t ]+'.
+							   '(\.{1,2}'.$quote_sep_dir.')?'.
+							   '([a-z0-9-_'.$quote_sep_dir.']+)$#i',$line,$matchload) === 1)
 					{
 						if($priority > 3)
 							continue;
@@ -700,10 +704,10 @@ class xivo_i18n
 						$_load = $this->_load;
 						$_copy = $this->_copy;
 
-						$filename = $matchload[3];
+						$filename = $matchload[2];
 
-						if($matchload[2] !== '')
-							$filename = $this->_file['dirname'].XIVO_SEP_DIR.$matchload[2].$filename;
+						if($matchload[1] !== '')
+							$filename = $this->_file['dirname'].XIVO_SEP_DIR.$matchload[1].$filename;
 
 						if($this->_load_file($filename,$this->_file['namespace']) !== false)
 							$_load[$filename] = 1;
@@ -712,7 +716,7 @@ class xivo_i18n
 						$this->_load = $_load; 
 						$this->_file = $_file;
 					}
-					else if(preg_match('/^;(?:\t| )*([a-zA-Z0-9-_]+)$/',$line,$match) === 1)
+					else if(preg_match('/^;[\t ]*([a-zA-Z0-9-_]+)$/',$line,$match) === 1)
 					{
 						$txt = true;
 						$key = $match[1];
@@ -720,7 +724,7 @@ class xivo_i18n
 						if(isset($r[$key]) === true)
 							$txt = false;
 					}
-					else if(preg_match('/^;(?:\t| )*"([a-zA-Z0-9_ -]+)"$/',$line,$match) === 1
+					else if(preg_match('/^;[\t ]*"([a-zA-Z0-9_ -]+)"$/',$line,$match) === 1
 					&& strpos($match[1],'  ') === false
 					&& $match[1]{0} !== ' ' && substr($match[1],-1,1) !== ' ')
 					{

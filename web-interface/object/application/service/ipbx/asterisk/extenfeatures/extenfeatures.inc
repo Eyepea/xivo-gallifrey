@@ -227,7 +227,6 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 
 			$this->_set_result('extenfeatures',$rs);
 			$this->_set_error('extenfeatures',$this->get_filter_error());
-
 			return(false);
 		}
 
@@ -239,6 +238,8 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 
 	function save()
 	{
+		$r = true;
+
 		$this->_status = 'save';
 		$this->_return = array();
 
@@ -248,22 +249,20 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 		|| ($name = $this->save_extenfeatures()) === false
 		|| $this->save_extenumbers($name) === false)
 		{
+			$r = false;
 			$this->_reverse_save();
-			$this->_status = '';
-			return(false);
 		}
 
 		$this->_status = '';
 
-		return(true);
+		return($r);
 	}
 
 	function save_extenfeatures()
 	{
 		if(isset($this->_info['extenfeatures']) === false)
 			return(false);
-
-		if($this->_info['extenfeatures'] === false)
+		else if($this->_info['extenfeatures'] === false)
 			return($this->_add_extenfeatures());
 
 		$this->_return['extenfeatures'] = $this->delete_extenfeatures();

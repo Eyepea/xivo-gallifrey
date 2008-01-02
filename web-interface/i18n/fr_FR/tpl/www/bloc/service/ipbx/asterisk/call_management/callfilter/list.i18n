@@ -1,0 +1,20 @@
+; col_name
+Nom
+
+; col_type
+Type
+
+; col_identity
+Identité
+
+; callfilter_type-bosssecretary
+Patron - Secrétaire
+
+; callfilter_type-opt-bosssecretary
+Patron : %s
+
+; no_callfilter
+Aucun filtrage d'appel trouvé
+
+; opt_delete_confirm
+Etes-vous certain de vouloir supprimer ce filtrage d'appel ?

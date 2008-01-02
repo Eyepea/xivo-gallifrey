@@ -348,19 +348,18 @@ function xivo_fm_unshift_pop_opt_select(from,text,value,chk,num)
 
 function xivo_fm_field_disabled(obj,disable)
 {
-	var i = 0;
+	if(xivo_is_object(obj) == false)
+		return(false);
 
 	if(xivo_is_undef(disable) == true)
 		disable = false;
 
 	disable = Boolean(disable);
 
+	var i = 0;
 	var tag_input = false;
 	var tag_select = false;
 	var tag_textarea = false;
-
-	if(xivo_is_object(obj) == false)
-		return(false);
 
 	if((tag_input = xivo_etag('input',obj)) != false)
 	{
@@ -384,6 +383,101 @@ function xivo_fm_field_disabled(obj,disable)
 
 		for(i = 0;i < tag_textarea_nb;i++)
 			tag_textarea[i].disabled = disable;
+	}
+
+	return(true);
+}
+
+function xivo_fm_field_id_counter(obj,cnt)
+{
+	if(xivo_is_object(obj) == false || xivo_is_int(cnt) == false)
+		return(false);
+
+	var i = 0;
+	var tag_input = false;
+	var tag_select = false;
+	var tag_textarea = false;
+
+	if((tag_input = xivo_etag('input',obj)) != false)
+	{
+		var tag_input_nb = tag_input.length;
+
+		for(i = 0;i < tag_input_nb;i++)
+		{
+			if(xivo_is_undef(tag_input[i].id) == false
+			&& tag_input[i].id.length > 0)
+				tag_input[i].id += '-'+cnt;
+		}
+	}
+
+	if((tag_select = xivo_etag('select',obj)) != false)
+	{
+		var tag_select_nb = tag_select.length;
+
+		for(i = 0;i < tag_select_nb;i++)
+		{
+			if(xivo_is_undef(tag_select[i].id) == false
+			&& tag_select[i].id.length > 0)
+				tag_select[i].id += '-'+cnt;
+		}
+	}
+
+	if((tag_textarea = xivo_etag('textarea',obj)) != false)
+	{
+		var tag_textarea_nb = tag_textarea.length;
+
+		for(i = 0;i < tag_textarea_nb;i++)
+		{
+			if(xivo_is_undef(tag_textarea[i].id) == false
+			&& tag_textarea[i].id.length > 0)
+				tag_textarea[i].id += '-'+cnt;
+		}
+	}
+
+	return(true);
+}
+
+function xivo_fm_field_name_counter(obj,cnt)
+{
+	if(xivo_is_object(obj) == false || xivo_is_int(cnt) == false)
+		return(false);
+
+	var i = 0;
+	var tag_input = false;
+	var tag_select = false;
+	var tag_textarea = false;
+
+	if((tag_input = xivo_etag('input',obj)) != false)
+	{
+		var tag_input_nb = tag_input.length;
+
+		for(i = 0;i < tag_input_nb;i++)
+		{
+			if(xivo_is_undef(tag_input[i].name) == false)
+				tag_input[i].name += '['+cnt+']';
+		}
+	}
+
+	if((tag_select = xivo_etag('select',obj)) != false)
+	{
+		var tag_select_nb = tag_select.length;
+
+		for(i = 0;i < tag_select_nb;i++)
+		{
+			if(xivo_is_undef(tag_select[i].name) == false)
+				tag_select[i].name += '['+cnt+']';
+		}
+	}
+
+	if((tag_textarea = xivo_etag('textarea',obj)) != false)
+	{
+		var tag_textarea_nb = tag_textarea.length;
+
+		for(i = 0;i < tag_textarea_nb;i++)
+		{
+			if(xivo_is_undef(tag_textarea[i].name) == false)
+				tag_textarea[i].name += '['+cnt+']';
+		}
 	}
 
 	return(true);
@@ -424,12 +518,16 @@ function xivo_fm_readonly(list,enable)
 
 		if(enable == true)
 		{
+			element.disabled = false;
 			element.readOnly = false;
 			element.className = xivo_fm_enabled_class;
 		}
 		else
 		{
-			element.readOnly = true;
+			if(element.tagName.toLowerCase() == 'select')
+				element.disabled = true;
+			else
+				element.readOnly = true;
 			element.className = xivo_fm_readonly_class;
 		}
 	}

@@ -57,15 +57,17 @@ class xivo_user_abstract_sql
 		return($r);
 	}
 
-	function get_nb($disable=null)
+	function get_nb($valid=null)
 	{
 		$where = '';
 
-		if($disable !== null)
-			$arr['valid'] = intval((bool) $disable);
+		if($valid !== null)
+		{
+			$arr = array('valid' => intval((bool) $valid));
 
-		if(is_array($arr) === true && ($where = $this->_dso->where($arr)) === false)
-			return(false);
+			if(($where = $this->_dso->where($arr)) === false)
+				return(false);
+		}
 
 		$r = $this->_dso->select_count($this->_param['table'],null,$where);
 

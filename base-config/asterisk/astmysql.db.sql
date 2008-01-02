@@ -81,6 +81,44 @@ CREATE INDEX `agentgroup__idx__deleted` ON `agentgroup`(`deleted`);
 INSERT INTO `agentgroup` VALUES (1,2,'default','',0,0);
 
 
+DROP TABLE IF EXISTS `callfilter`;
+CREATE TABLE `callfilter` (
+ `id` int(10) unsigned auto_increment,
+ `name` varchar(128) NOT NULL DEFAULT '',
+ `type` enum('bosssecretary') NOT NULL,
+ `bosssecretary` enum('bossfirst-serial','bossfirst-simult','secretary-serial','secretary-simult','all'),
+ `zone` enum('internal','external','all') NOT NULL,
+ `callerdisplay` varchar(80) NOT NULL DEFAULT '',
+ `ringseconds` tinyint(2) unsigned NOT NULL DEFAULT 0,
+ `commented` tinyint(1) NOT NULL DEFAULT 0,
+ `description` text NOT NULL,
+ PRIMARY KEY(`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE INDEX `callfilter__idx__type` ON `callfilter`(`type`);
+CREATE INDEX `callfilter__idx__bosssecretary` ON `callfilter`(`bosssecretary`);
+CREATE INDEX `callfilter__idx__zone` ON `callfilter`(`zone`);
+CREATE INDEX `callfilter__idx__commented` ON `callfilter`(`commented`);
+CREATE UNIQUE INDEX `callfilter__uidx__name` ON `callfilter`(`name`);
+
+
+DROP TABLE IF EXISTS `callfiltermember`;
+CREATE TABLE `callfiltermember` (
+ `id` int(10) unsigned auto_increment,
+ `callfilterid` int(10) unsigned NOT NULL DEFAULT 0,
+ `type` enum('user') NOT NULL,
+ `typeval` varchar(128) NOT NULL DEFAULT 0,
+ `ringseconds` tinyint(2) unsigned NOT NULL DEFAULT 0,
+ `priority` tinyint(2) unsigned NOT NULL DEFAULT 0,
+ `bstype` enum('boss','secretary'),
+ PRIMARY KEY(`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=ascii;
+
+CREATE INDEX `callfiltermember__idx__priority` ON `callfiltermember`(`priority`);
+CREATE INDEX `callfiltermember__idx__bstype` ON `callfiltermember`(`bstype`);
+CREATE UNIQUE INDEX `callfiltermember__uidx__callfilterid_type_typeval` ON `callfiltermember`(`callfilterid`,`type`,`typeval`);
+
+
 DROP TABLE IF EXISTS `cdr`;
 CREATE TABLE `cdr` (
  `id` int(10) unsigned auto_increment,
@@ -121,7 +159,7 @@ DROP TABLE IF EXISTS `dialstatus`;
 CREATE TABLE `dialstatus` (
  `id` int(10) unsigned auto_increment,
  `status` enum('noanswer','congestion','busy','chanunavail') NOT NULL,
- `category` enum('user','group') NOT NULL,
+ `category` enum('user','group','callfilter') NOT NULL,
  `categoryval` varchar(128) NOT NULL DEFAULT '',
  `type` enum('endcall','user','group','queue','meetme','schedule','application','sound','custom') NOT NULL,
  `typeval` varchar(255) NOT NULL DEFAULT '',
@@ -156,6 +194,7 @@ CREATE INDEX `extensions__idx__name` ON `extensions`(`name`);
 INSERT INTO `extensions` VALUES (NULL,1,'features','*33',1,'AgentLogin','','agentdynamiclogin');
 INSERT INTO `extensions` VALUES (NULL,1,'features','_*31.',1,'Macro','agentstaticlogin|${EXTEN:3}','agentstaticlogin');
 INSERT INTO `extensions` VALUES (NULL,1,'features','_*32.',1,'Macro','agentstaticlogoff|${EXTEN:3}|fr','agentstaticlogoff');
+INSERT INTO `extensions` VALUES (NULL,0,'features','_*37.',1,'Macro','bsfilter|${EXTEN:3}','bsfilter');
 INSERT INTO `extensions` VALUES (NULL,1,'features','*34',1,'Macro','calllistening','calllistening');
 INSERT INTO `extensions` VALUES (NULL,0,'features','*36',1,'Directory','${CONTEXT}','directoryaccess');
 INSERT INTO `extensions` VALUES (NULL,0,'features','*25',1,'Macro','enablednd','enablednd');
@@ -202,6 +241,7 @@ INSERT INTO `extenumbers` VALUES (NULL,'*3','68631b4b53ba2a27a969ca63bdcdc00805c
 INSERT INTO `extenumbers` VALUES (NULL,'*33','197040c848ebe83ae2e7f0b26a8667291d6b2746','','extenfeatures','agentdynamiclogin');
 INSERT INTO `extenumbers` VALUES (NULL,'_*31.','678fe23ee0d6aa64460584bebbed210e270d662f','','extenfeatures','agentstaticlogin');
 INSERT INTO `extenumbers` VALUES (NULL,'_*32.','3ae0f1ff0ef4907faa2dad5da7bb891c9dbf45ad','','extenfeatures','agentstaticlogoff');
+INSERT INTO `extenumbers` VALUES (NULL,'_*37.','249b00b17a5983bbb2af8ed0af2ab1a74abab342','','extenfeatures','bsfilter');
 INSERT INTO `extenumbers` VALUES (NULL,'*34','668a8d2d8fe980b663e2cdcecb977860e1b272f3','','extenfeatures','calllistening');
 INSERT INTO `extenumbers` VALUES (NULL,'*36','f9b69fe3c361ddfc2ae49e048460ea197ea850c8','','extenfeatures','directoryaccess');
 INSERT INTO `extenumbers` VALUES (NULL,'*25','c0d236c38bf8d5d84a2e154203cd2a18b86c6b2a','','extenfeatures','enablednd');
@@ -721,6 +761,21 @@ CREATE INDEX `phonebooknumber__idx__type` ON `phonebooknumber`(`type`);
 CREATE UNIQUE INDEX `phonebooknumber__uidx__phonebookid_type` ON `phonebooknumber`(`phonebookid`,`type`);
 
 
+DROP TABLE IF EXISTS `phonefunckey`;
+CREATE TABLE `phonefunckey` (
+ `iduserfeatures` int(10) unsigned NOT NULL,
+ `fknum` int(10) unsigned NOT NULL,
+ `exten` varchar(40) NOT NULL DEFAULT '',
+ `typeextenumbers` enum('user','group','queue','meetme','extenfeatures','featuremap','generalfeatures'),
+ `typevalextenumbers` varchar(255) NOT NULL DEFAULT '',
+ `supervision` tinyint(1) NOT NULL DEFAULT 0,
+ PRIMARY KEY(`iduserfeatures`,`fknum`)
+) ENGINE=MyISAM DEFAULT CHARSET=ascii;
+
+CREATE INDEX `phonefunckey__idx__exten` ON `phonefunckey`(`exten`);
+CREATE INDEX `phonefunckey__idx__typeextenumbers_typevalextenumbers` ON `phonefunckey`(`typeextenumbers`,`typevalextenumbers`);
+
+
 DROP TABLE IF EXISTS `queue`;
 CREATE TABLE `queue` (
  `name` varchar(128) NOT NULL,
@@ -968,6 +1023,7 @@ CREATE TABLE `userfeatures` (
  `musiconhold` varchar(128) NOT NULL DEFAULT '',
  `outcallerid` varchar(80) NOT NULL DEFAULT '',
  `internal` tinyint(1) NOT NULL DEFAULT 0,
+ `bsfilter` enum('no','boss','secretary') NOT NULL DEFAULT 'no',
  `commented` tinyint(1) NOT NULL DEFAULT 0,
  `description` text NOT NULL,
  PRIMARY KEY(`id`)
@@ -984,7 +1040,7 @@ CREATE INDEX `userfeatures__idx__commented` ON `userfeatures`(`commented`);
 CREATE UNIQUE INDEX `userfeatures__uidx__protocol_name` ON `userfeatures`(`protocol`,`name`);
 CREATE UNIQUE INDEX `userfeatures__uidx__protocol_protocolid` ON `userfeatures`(`protocol`,`protocolid`);
 
-INSERT INTO `userfeatures` VALUES (1,'sip',1,'Guest','','guest','','initconfig',148378,30,5,0,0,0,0,0,0,0,0,0,0,'',0,'',0,'','','',1,0,'');
+INSERT INTO `userfeatures` VALUES (1,'sip',1,'Guest','','guest','','initconfig',148378,30,5,0,0,0,0,0,0,0,0,0,0,'',0,'',0,'','','',1,'no',0,'');
 
 
 DROP TABLE IF EXISTS `useriax`;
