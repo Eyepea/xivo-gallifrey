@@ -1,7 +1,7 @@
 Index: openssl-0.9.8g/apps/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/apps/Makefile	2008-01-02 11:40:30.000000000 +0100
-+++ openssl-0.9.8g/apps/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/apps/Makefile	2008-01-02 14:45:30.000000000 +0100
++++ openssl-0.9.8g/apps/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -76,7 +76,7 @@
  ALL=    $(GENERAL) $(SRC) $(HEADER)
  
@@ -11,7 +11,7 @@ Index: openssl-0.9.8g/apps/Makefile
  
  all:	exe
  
-@@ -98,22 +98,22 @@
+@@ -99,22 +99,22 @@
  	$(PERL) $(TOP)/util/files.pl Makefile >> $(TOP)/MINFO
  
  install:
@@ -38,7 +38,7 @@ Index: openssl-0.9.8g/apps/Makefile
  	chmod 644 $(INSTALL_PREFIX)$(OPENSSLDIR)/openssl.cnf.new; \
  	mv -f  $(INSTALL_PREFIX)$(OPENSSLDIR)/openssl.cnf.new $(INSTALL_PREFIX)$(OPENSSLDIR)/openssl.cnf
  
-@@ -128,7 +128,7 @@
+@@ -129,7 +129,7 @@
  	lint -DLINT $(INCLUDES) $(SRC)>fluff
  
  depend:
@@ -49,8 +49,8 @@ Index: openssl-0.9.8g/apps/Makefile
  	    $(MAKEDEPEND) -- $(CFLAG) $(INCLUDES) $(DEPFLAG) -- $(PROGS) $(SRC); \
 Index: openssl-0.9.8g/crypto/aes/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/crypto/aes/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/crypto/aes/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/crypto/aes/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/crypto/aes/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -43,7 +43,7 @@
  lib:	$(LIBOBJ)
  	$(AR) $(LIB) $(LIBOBJ)
@@ -90,8 +90,8 @@ Index: openssl-0.9.8g/crypto/aes/Makefile
  dclean:
 Index: openssl-0.9.8g/crypto/asn1/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/crypto/asn1/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/crypto/asn1/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/crypto/asn1/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/crypto/asn1/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -65,19 +65,19 @@
  lib:	$(LIBOBJ)
  	$(AR) $(LIB) $(LIBOBJ)
@@ -129,8 +129,8 @@ Index: openssl-0.9.8g/crypto/asn1/Makefile
  dclean:
 Index: openssl-0.9.8g/crypto/bf/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/crypto/bf/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/crypto/bf/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/crypto/bf/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/crypto/bf/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -42,7 +42,7 @@
  lib:	$(LIBOBJ)
  	$(AR) $(LIB) $(LIBOBJ)
@@ -173,8 +173,8 @@ Index: openssl-0.9.8g/crypto/bf/Makefile
  dclean:
 Index: openssl-0.9.8g/crypto/bio/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/crypto/bio/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/crypto/bio/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/crypto/bio/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/crypto/bio/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -47,19 +47,19 @@
  lib:	$(LIBOBJ)
  	$(AR) $(LIB) $(LIBOBJ)
@@ -212,8 +212,8 @@ Index: openssl-0.9.8g/crypto/bio/Makefile
  dclean:
 Index: openssl-0.9.8g/crypto/bn/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/crypto/bn/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/crypto/bn/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/crypto/bn/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/crypto/bn/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -60,7 +60,7 @@
  lib:	$(LIBOBJ)
  	$(AR) $(LIB) $(LIBOBJ)
@@ -262,8 +262,8 @@ Index: openssl-0.9.8g/crypto/bn/Makefile
  dclean:
 Index: openssl-0.9.8g/crypto/buffer/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/crypto/buffer/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/crypto/buffer/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/crypto/buffer/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/crypto/buffer/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -35,19 +35,19 @@
  lib:	$(LIBOBJ)
  	$(AR) $(LIB) $(LIBOBJ)
@@ -301,8 +301,8 @@ Index: openssl-0.9.8g/crypto/buffer/Makefile
  dclean:
 Index: openssl-0.9.8g/crypto/camellia/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/crypto/camellia/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/crypto/camellia/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/crypto/camellia/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/crypto/camellia/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -43,7 +43,7 @@
  lib:	$(LIBOBJ)
  	$(AR) $(LIB) $(LIBOBJ)
@@ -342,8 +342,8 @@ Index: openssl-0.9.8g/crypto/camellia/Makefile
  dclean:
 Index: openssl-0.9.8g/crypto/cast/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/crypto/cast/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/crypto/cast/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/crypto/cast/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/crypto/cast/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -40,7 +40,7 @@
  lib:	$(LIBOBJ)
  	$(AR) $(LIB) $(LIBOBJ)
@@ -383,8 +383,8 @@ Index: openssl-0.9.8g/crypto/cast/Makefile
  dclean:
 Index: openssl-0.9.8g/crypto/comp/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/crypto/comp/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/crypto/comp/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/crypto/comp/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/crypto/comp/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -38,19 +38,19 @@
  lib:	$(LIBOBJ)
  	$(AR) $(LIB) $(LIBOBJ)
@@ -422,8 +422,8 @@ Index: openssl-0.9.8g/crypto/comp/Makefile
  dclean:
 Index: openssl-0.9.8g/crypto/conf/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/crypto/conf/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/crypto/conf/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/crypto/conf/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/crypto/conf/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -38,19 +38,19 @@
  lib:	$(LIBOBJ)
  	$(AR) $(LIB) $(LIBOBJ)
@@ -461,8 +461,8 @@ Index: openssl-0.9.8g/crypto/conf/Makefile
  dclean:
 Index: openssl-0.9.8g/crypto/des/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/crypto/des/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/crypto/des/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/crypto/des/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/crypto/des/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -56,7 +56,7 @@
  lib:	$(LIBOBJ)
  	$(AR) $(LIB) $(LIBOBJ)
@@ -505,8 +505,8 @@ Index: openssl-0.9.8g/crypto/des/Makefile
  dclean:
 Index: openssl-0.9.8g/crypto/dh/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/crypto/dh/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/crypto/dh/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/crypto/dh/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/crypto/dh/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -35,19 +35,19 @@
  lib:	$(LIBOBJ)
  	$(AR) $(LIB) $(LIBOBJ)
@@ -544,8 +544,8 @@ Index: openssl-0.9.8g/crypto/dh/Makefile
  dclean:
 Index: openssl-0.9.8g/crypto/dsa/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/crypto/dsa/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/crypto/dsa/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/crypto/dsa/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/crypto/dsa/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -37,19 +37,19 @@
  lib:	$(LIBOBJ)
  	$(AR) $(LIB) $(LIBOBJ)
@@ -583,8 +583,8 @@ Index: openssl-0.9.8g/crypto/dsa/Makefile
  dclean:
 Index: openssl-0.9.8g/crypto/dso/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/crypto/dso/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/crypto/dso/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/crypto/dso/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/crypto/dso/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -37,19 +37,19 @@
  lib:	$(LIBOBJ)
  	$(AR) $(LIB) $(LIBOBJ)
@@ -622,8 +622,8 @@ Index: openssl-0.9.8g/crypto/dso/Makefile
  dclean:
 Index: openssl-0.9.8g/crypto/ec/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/crypto/ec/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/crypto/ec/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/crypto/ec/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/crypto/ec/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -40,19 +40,19 @@
  lib:	$(LIBOBJ)
  	$(AR) $(LIB) $(LIBOBJ)
@@ -661,8 +661,8 @@ Index: openssl-0.9.8g/crypto/ec/Makefile
  dclean:
 Index: openssl-0.9.8g/crypto/ecdh/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/crypto/ecdh/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/crypto/ecdh/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/crypto/ecdh/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/crypto/ecdh/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -36,19 +36,19 @@
  lib:	$(LIBOBJ)
  	$(AR) $(LIB) $(LIBOBJ)
@@ -700,8 +700,8 @@ Index: openssl-0.9.8g/crypto/ecdh/Makefile
  dclean:
 Index: openssl-0.9.8g/crypto/ecdsa/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/crypto/ecdsa/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/crypto/ecdsa/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/crypto/ecdsa/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/crypto/ecdsa/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -36,19 +36,19 @@
  lib:	$(LIBOBJ)
  	$(AR) $(LIB) $(LIBOBJ)
@@ -739,8 +739,8 @@ Index: openssl-0.9.8g/crypto/ecdsa/Makefile
  dclean:
 Index: openssl-0.9.8g/crypto/engine/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/crypto/engine/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/crypto/engine/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/crypto/engine/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/crypto/engine/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -43,19 +43,19 @@
  lib:	$(LIBOBJ)
  	$(AR) $(LIB) $(LIBOBJ)
@@ -778,8 +778,8 @@ Index: openssl-0.9.8g/crypto/engine/Makefile
  dclean:
 Index: openssl-0.9.8g/crypto/err/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/crypto/err/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/crypto/err/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/crypto/err/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/crypto/err/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -35,19 +35,19 @@
  lib:	$(LIBOBJ)
  	$(AR) $(LIB) $(LIBOBJ)
@@ -817,8 +817,8 @@ Index: openssl-0.9.8g/crypto/err/Makefile
  dclean:
 Index: openssl-0.9.8g/crypto/evp/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/crypto/evp/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/crypto/evp/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/crypto/evp/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/crypto/evp/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -57,20 +57,20 @@
  lib:	$(LIBOBJ)
  	$(AR) $(LIB) $(LIBOBJ)
@@ -857,8 +857,8 @@ Index: openssl-0.9.8g/crypto/evp/Makefile
  dclean:
 Index: openssl-0.9.8g/crypto/hmac/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/crypto/hmac/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/crypto/hmac/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/crypto/hmac/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/crypto/hmac/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -35,19 +35,19 @@
  lib:	$(LIBOBJ)
  	$(AR) $(LIB) $(LIBOBJ)
@@ -896,8 +896,8 @@ Index: openssl-0.9.8g/crypto/hmac/Makefile
  dclean:
 Index: openssl-0.9.8g/crypto/idea/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/crypto/idea/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/crypto/idea/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/crypto/idea/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/crypto/idea/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -35,19 +35,19 @@
  lib:	$(LIBOBJ)
  	$(AR) $(LIB) $(LIBOBJ)
@@ -935,8 +935,8 @@ Index: openssl-0.9.8g/crypto/idea/Makefile
  dclean:
 Index: openssl-0.9.8g/crypto/krb5/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/crypto/krb5/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/crypto/krb5/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/crypto/krb5/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/crypto/krb5/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -36,19 +36,19 @@
  lib:	$(LIBOBJ)
  	$(AR) $(LIB) $(LIBOBJ)
@@ -974,8 +974,8 @@ Index: openssl-0.9.8g/crypto/krb5/Makefile
  dclean:
 Index: openssl-0.9.8g/crypto/lhash/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/crypto/lhash/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/crypto/lhash/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/crypto/lhash/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/crypto/lhash/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -35,19 +35,19 @@
  lib:	$(LIBOBJ)
  	$(AR) $(LIB) $(LIBOBJ)
@@ -1013,8 +1013,8 @@ Index: openssl-0.9.8g/crypto/lhash/Makefile
  dclean:
 Index: openssl-0.9.8g/crypto/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/crypto/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/crypto/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/crypto/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/crypto/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -45,7 +45,7 @@
  ALL=    $(GENERAL) $(SRC) $(HEADER)
  
@@ -1107,8 +1107,8 @@ Index: openssl-0.9.8g/crypto/Makefile
  
 Index: openssl-0.9.8g/crypto/md2/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/crypto/md2/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/crypto/md2/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/crypto/md2/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/crypto/md2/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -35,19 +35,19 @@
  lib:	$(LIBOBJ)
  	$(AR) $(LIB) $(LIBOBJ)
@@ -1146,8 +1146,8 @@ Index: openssl-0.9.8g/crypto/md2/Makefile
  dclean:
 Index: openssl-0.9.8g/crypto/md4/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/crypto/md4/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/crypto/md4/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/crypto/md4/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/crypto/md4/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -36,19 +36,19 @@
  lib:    $(LIBOBJ)
  	$(AR) $(LIB) $(LIBOBJ)
@@ -1185,8 +1185,8 @@ Index: openssl-0.9.8g/crypto/md4/Makefile
  dclean:
 Index: openssl-0.9.8g/crypto/md5/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/crypto/md5/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/crypto/md5/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/crypto/md5/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/crypto/md5/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -40,7 +40,7 @@
  lib:    $(LIBOBJ)
  	$(AR) $(LIB) $(LIBOBJ)
@@ -1226,8 +1226,8 @@ Index: openssl-0.9.8g/crypto/md5/Makefile
  dclean:
 Index: openssl-0.9.8g/crypto/mdc2/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/crypto/mdc2/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/crypto/mdc2/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/crypto/mdc2/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/crypto/mdc2/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -35,19 +35,19 @@
  lib:	$(LIBOBJ)
  	$(AR) $(LIB) $(LIBOBJ)
@@ -1265,8 +1265,8 @@ Index: openssl-0.9.8g/crypto/mdc2/Makefile
  dclean:
 Index: openssl-0.9.8g/crypto/objects/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/crypto/objects/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/crypto/objects/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/crypto/objects/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/crypto/objects/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -36,7 +36,7 @@
  lib:	$(LIBOBJ)
  	$(AR) $(LIB) $(LIBOBJ)
@@ -1313,8 +1313,8 @@ Index: openssl-0.9.8g/crypto/objects/Makefile
  dclean:
 Index: openssl-0.9.8g/crypto/ocsp/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/crypto/ocsp/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/crypto/ocsp/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/crypto/ocsp/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/crypto/ocsp/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -38,19 +38,19 @@
  lib:	$(LIBOBJ)
  	$(AR) $(LIB) $(LIBOBJ)
@@ -1352,8 +1352,8 @@ Index: openssl-0.9.8g/crypto/ocsp/Makefile
  dclean:
 Index: openssl-0.9.8g/crypto/pem/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/crypto/pem/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/crypto/pem/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/crypto/pem/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/crypto/pem/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -38,19 +38,19 @@
  lib:	$(LIBOBJ)
  	$(AR) $(LIB) $(LIBOBJ)
@@ -1391,8 +1391,8 @@ Index: openssl-0.9.8g/crypto/pem/Makefile
  dclean:
 Index: openssl-0.9.8g/crypto/pkcs12/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/crypto/pkcs12/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/crypto/pkcs12/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/crypto/pkcs12/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/crypto/pkcs12/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -41,19 +41,19 @@
  lib:	$(LIBOBJ)
  	$(AR) $(LIB) $(LIBOBJ)
@@ -1430,8 +1430,8 @@ Index: openssl-0.9.8g/crypto/pkcs12/Makefile
  dclean:
 Index: openssl-0.9.8g/crypto/pkcs7/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/crypto/pkcs7/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/crypto/pkcs7/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/crypto/pkcs7/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/crypto/pkcs7/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -56,19 +56,19 @@
  lib:	$(LIBOBJ)
  	$(AR) $(LIB) $(LIBOBJ)
@@ -1469,8 +1469,8 @@ Index: openssl-0.9.8g/crypto/pkcs7/Makefile
  dclean:
 Index: openssl-0.9.8g/crypto/pqueue/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/crypto/pqueue/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/crypto/pqueue/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/crypto/pqueue/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/crypto/pqueue/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -35,19 +35,19 @@
  lib:	$(LIBOBJ)
  	$(AR) $(LIB) $(LIBOBJ)
@@ -1508,8 +1508,8 @@ Index: openssl-0.9.8g/crypto/pqueue/Makefile
  dclean:
 Index: openssl-0.9.8g/crypto/rand/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/crypto/rand/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/crypto/rand/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/crypto/rand/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/crypto/rand/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -37,19 +37,19 @@
  lib:	$(LIBOBJ)
  	$(AR) $(LIB) $(LIBOBJ)
@@ -1547,8 +1547,8 @@ Index: openssl-0.9.8g/crypto/rand/Makefile
  dclean:
 Index: openssl-0.9.8g/crypto/rc2/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/crypto/rc2/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/crypto/rc2/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/crypto/rc2/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/crypto/rc2/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -35,19 +35,19 @@
  lib:	$(LIBOBJ)
  	$(AR) $(LIB) $(LIBOBJ)
@@ -1586,8 +1586,8 @@ Index: openssl-0.9.8g/crypto/rc2/Makefile
  dclean:
 Index: openssl-0.9.8g/crypto/rc4/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/crypto/rc4/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/crypto/rc4/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/crypto/rc4/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/crypto/rc4/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -39,7 +39,7 @@
  lib:	$(LIBOBJ)
  	$(AR) $(LIB) $(LIBOBJ)
@@ -1636,8 +1636,8 @@ Index: openssl-0.9.8g/crypto/rc4/Makefile
  dclean:
 Index: openssl-0.9.8g/crypto/rc5/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/crypto/rc5/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/crypto/rc5/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/crypto/rc5/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/crypto/rc5/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -42,7 +42,7 @@
  lib:	$(LIBOBJ)
  	$(AR) $(LIB) $(LIBOBJ)
@@ -1677,8 +1677,8 @@ Index: openssl-0.9.8g/crypto/rc5/Makefile
  dclean:
 Index: openssl-0.9.8g/crypto/ripemd/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/crypto/ripemd/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/crypto/ripemd/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/crypto/ripemd/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/crypto/ripemd/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -40,7 +40,7 @@
  lib:    $(LIBOBJ)
  	$(AR) $(LIB) $(LIBOBJ)
@@ -1718,8 +1718,8 @@ Index: openssl-0.9.8g/crypto/ripemd/Makefile
  dclean:
 Index: openssl-0.9.8g/crypto/rsa/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/crypto/rsa/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/crypto/rsa/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/crypto/rsa/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/crypto/rsa/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -39,19 +39,19 @@
  lib:	$(LIBOBJ)
  	$(AR) $(LIB) $(LIBOBJ)
@@ -1757,8 +1757,8 @@ Index: openssl-0.9.8g/crypto/rsa/Makefile
  dclean:
 Index: openssl-0.9.8g/crypto/seed/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/crypto/seed/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/crypto/seed/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/crypto/seed/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/crypto/seed/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -36,19 +36,19 @@
  lib:	$(LIBOBJ)
  	$(AR) $(LIB) $(LIBOBJ)
@@ -1796,8 +1796,8 @@ Index: openssl-0.9.8g/crypto/seed/Makefile
  dclean:
 Index: openssl-0.9.8g/crypto/sha/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/crypto/sha/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/crypto/sha/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/crypto/sha/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/crypto/sha/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -40,7 +40,7 @@
  lib:    $(LIBOBJ)
  	$(AR) $(LIB) $(LIBOBJ)
@@ -1837,8 +1837,8 @@ Index: openssl-0.9.8g/crypto/sha/Makefile
  dclean:
 Index: openssl-0.9.8g/crypto/stack/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/crypto/stack/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/crypto/stack/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/crypto/stack/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/crypto/stack/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -35,19 +35,19 @@
  lib:	$(LIBOBJ)
  	$(AR) $(LIB) $(LIBOBJ)
@@ -1876,8 +1876,8 @@ Index: openssl-0.9.8g/crypto/stack/Makefile
  dclean:
 Index: openssl-0.9.8g/crypto/store/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/crypto/store/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/crypto/store/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/crypto/store/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/crypto/store/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -37,19 +37,19 @@
  lib:	$(LIBOBJ)
  	$(AR) $(LIB) $(LIBOBJ)
@@ -1915,8 +1915,8 @@ Index: openssl-0.9.8g/crypto/store/Makefile
  dclean:
 Index: openssl-0.9.8g/crypto/txt_db/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/crypto/txt_db/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/crypto/txt_db/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/crypto/txt_db/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/crypto/txt_db/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -35,19 +35,19 @@
  lib:	$(LIBOBJ)
  	$(AR) $(LIB) $(LIBOBJ)
@@ -1954,8 +1954,8 @@ Index: openssl-0.9.8g/crypto/txt_db/Makefile
  dclean:
 Index: openssl-0.9.8g/crypto/ui/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/crypto/ui/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/crypto/ui/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/crypto/ui/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/crypto/ui/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -39,19 +39,19 @@
  lib:	$(LIBOBJ)
  	$(AR) $(LIB) $(LIBOBJ)
@@ -1993,8 +1993,8 @@ Index: openssl-0.9.8g/crypto/ui/Makefile
  dclean:
 Index: openssl-0.9.8g/crypto/x509/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/crypto/x509/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/crypto/x509/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/crypto/x509/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/crypto/x509/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -45,19 +45,19 @@
  lib:	$(LIBOBJ)
  	$(AR) $(LIB) $(LIBOBJ)
@@ -2032,8 +2032,8 @@ Index: openssl-0.9.8g/crypto/x509/Makefile
  dclean:
 Index: openssl-0.9.8g/crypto/x509v3/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/crypto/x509v3/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/crypto/x509v3/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/crypto/x509v3/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/crypto/x509v3/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -45,19 +45,19 @@
  lib:	$(LIBOBJ)
  	$(AR) $(LIB) $(LIBOBJ)
@@ -2071,8 +2071,8 @@ Index: openssl-0.9.8g/crypto/x509v3/Makefile
  dclean:
 Index: openssl-0.9.8g/demos/easy_tls/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/demos/easy_tls/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/demos/easy_tls/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/demos/easy_tls/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/demos/easy_tls/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -111,10 +111,10 @@
  OBJS=easy-tls.o test.o
  
@@ -2090,8 +2090,8 @@ Index: openssl-0.9.8g/demos/easy_tls/Makefile
  	$(CC) $(OBJS) $(LDFLAGS) -o test
 Index: openssl-0.9.8g/demos/engines/cluster_labs/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/demos/engines/cluster_labs/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/demos/engines/cluster_labs/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/demos/engines/cluster_labs/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/demos/engines/cluster_labs/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -13,16 +13,16 @@
  SHLIB=		$(LIBNAME).so
  
@@ -2121,8 +2121,8 @@ Index: openssl-0.9.8g/demos/engines/cluster_labs/Makefile
  update:		FORCE.update
 Index: openssl-0.9.8g/demos/engines/ibmca/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/demos/engines/ibmca/Makefile	2008-01-02 11:40:30.000000000 +0100
-+++ openssl-0.9.8g/demos/engines/ibmca/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/demos/engines/ibmca/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/demos/engines/ibmca/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -13,16 +13,16 @@
  SHLIB=		$(LIBNAME).so
  
@@ -2152,8 +2152,8 @@ Index: openssl-0.9.8g/demos/engines/ibmca/Makefile
  update:		FORCE.update
 Index: openssl-0.9.8g/demos/engines/rsaref/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/demos/engines/rsaref/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/demos/engines/rsaref/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/demos/engines/rsaref/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/demos/engines/rsaref/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -13,16 +13,16 @@
  SHLIB=		$(LIBNAME).so
  
@@ -2183,8 +2183,8 @@ Index: openssl-0.9.8g/demos/engines/rsaref/Makefile
  install:	FORCE.install
 Index: openssl-0.9.8g/demos/engines/zencod/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/demos/engines/zencod/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/demos/engines/zencod/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/demos/engines/zencod/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/demos/engines/zencod/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -13,16 +13,16 @@
  SHLIB=		$(LIBNAME).so
  
@@ -2214,8 +2214,8 @@ Index: openssl-0.9.8g/demos/engines/zencod/Makefile
  update:		FORCE.update
 Index: openssl-0.9.8g/demos/maurice/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/demos/maurice/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/demos/maurice/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/demos/maurice/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/demos/maurice/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -21,39 +21,39 @@
  	rm -f $(EXAMPLES) *.o
  
@@ -2278,8 +2278,8 @@ Index: openssl-0.9.8g/demos/maurice/Makefile
 +	echo example4 is OK
 Index: openssl-0.9.8g/demos/prime/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/demos/prime/Makefile	2008-01-02 11:40:30.000000000 +0100
-+++ openssl-0.9.8g/demos/prime/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/demos/prime/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/demos/prime/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -12,9 +12,9 @@
  	rm -f $(EXAMPLES) *.o
  
@@ -2295,8 +2295,8 @@ Index: openssl-0.9.8g/demos/prime/Makefile
  	./prime 512
 Index: openssl-0.9.8g/engines/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/engines/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/engines/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/engines/Makefile	2008-01-02 14:52:41.000000000 +0100
++++ openssl-0.9.8g/engines/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -62,7 +62,7 @@
  all:	lib
  
@@ -2306,7 +2306,7 @@ Index: openssl-0.9.8g/engines/Makefile
  		set -e; \
  		for l in $(LIBNAMES); do \
  			$(MAKE) -f ../Makefile.shared -e \
-@@ -86,8 +86,8 @@
+@@ -87,8 +87,8 @@
  # dlfcn_name_converter and therefore stores the engines with .so suffix, too.
  # XXXXX This was extended to HP-UX dl targets, which use .sl suffix.
  install:
@@ -2317,7 +2317,7 @@ Index: openssl-0.9.8g/engines/Makefile
  		set -e; \
  		for l in $(LIBNAMES); do \
  			( echo installing $$l; \
-@@ -122,7 +122,7 @@
+@@ -123,7 +123,7 @@
  	lint -DLINT $(INCLUDES) $(SRC)>fluff
  
  depend:
@@ -2328,8 +2328,8 @@ Index: openssl-0.9.8g/engines/Makefile
  	    $(MAKEDEPEND) -- $(CFLAG) $(INCLUDES) $(DEPFLAG) -- $(PROGS) $(LIBSRC); \
 Index: openssl-0.9.8g/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/Makefile	2008-01-02 11:40:30.000000000 +0100
-+++ openssl-0.9.8g/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/Makefile	2008-01-02 14:51:13.000000000 +0100
++++ openssl-0.9.8g/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -222,7 +222,7 @@
  	fi
  
@@ -2399,7 +2399,270 @@ Index: openssl-0.9.8g/Makefile
  		$(MAKE) -f $(HERE)/Makefile.shared -e $(BUILDENV) \
  			LIBNAME=$$i LIBVERSION=${SHLIB_MAJOR}.${SHLIB_MINOR} \
  			LIBCOMPATVERSIONS=";${SHLIB_VERSION_HISTORY}" \
-@@ -288,7 +288,7 @@
+@@ -289,7 +289,7 @@
+ build-shared: do_$(SHLIB_TARGET) link-shared
+ 
+ do_$(SHLIB_TARGET):
+-	@ set -e; libs='-L. ${SHLIBDEPS}'; for i in ${SHLIBDIRS}; do \
++	set -e; libs='-L. ${SHLIBDEPS}'; for i in ${SHLIBDIRS}; do \
+ 		if [ "${SHLIBDIRS}" = "ssl" -a -n "$(LIBKRB5)" ]; then \
+ 			libs="$(LIBKRB5) $$libs"; \
+ 		fi; \
+@@ -303,7 +303,7 @@
+ 	done
+ 
+ libcrypto.pc: Makefile
+-	@ ( echo 'prefix=$(INSTALLTOP)'; \
++	( echo 'prefix=$(INSTALLTOP)'; \
+ 	    echo 'exec_prefix=$${prefix}'; \
+ 	    echo 'libdir=$${exec_prefix}/lib'; \
+ 	    echo 'includedir=$${prefix}/include'; \
+@@ -316,7 +316,7 @@
+ 	    echo 'Cflags: -I$${includedir} $(KRB5_INCLUDES)' ) > libcrypto.pc
+ 
+ libssl.pc: Makefile
+-	@ ( echo 'prefix=$(INSTALLTOP)'; \
++	( echo 'prefix=$(INSTALLTOP)'; \
+ 	    echo 'exec_prefix=$${prefix}'; \
+ 	    echo 'libdir=$${exec_prefix}/lib'; \
+ 	    echo 'includedir=$${prefix}/include'; \
+@@ -329,7 +329,7 @@
+ 	    echo 'Cflags: -I$${includedir} $(KRB5_INCLUDES)' ) > libssl.pc
+ 
+ openssl.pc: Makefile
+-	@ ( echo 'prefix=$(INSTALLTOP)'; \
++	( echo 'prefix=$(INSTALLTOP)'; \
+ 	    echo 'exec_prefix=$${prefix}'; \
+ 	    echo 'libdir=$${exec_prefix}/lib'; \
+ 	    echo 'includedir=$${prefix}/include'; \
+@@ -342,21 +342,21 @@
+ 	    echo 'Cflags: -I$${includedir} $(KRB5_INCLUDES)' ) > openssl.pc
+ 
+ Makefile: Makefile.org Configure config
+-	@echo "Makefile is older than Makefile.org, Configure or config."
+-	@echo "Reconfigure the source tree (via './config' or 'perl Configure'), please."
+-	@false
++	echo "Makefile is older than Makefile.org, Configure or config."
++	echo "Reconfigure the source tree (via './config' or 'perl Configure'), please."
++	false
+ 
+ libclean:
+ 	rm -f *.map *.so *.so.* *.dll engines/*.so engines/*.dll *.a engines/*.a */lib */*/lib
+ 
+ clean:	libclean
+ 	rm -f shlib/*.o *.o core a.out fluff rehash.time testlog make.log cctest cctest.c
+-	@set -e; target=clean; $(RECURSIVE_BUILD_CMD)
++	set -e; target=clean; $(RECURSIVE_BUILD_CMD)
+ 	rm -f $(LIBS)
+ 	rm -f openssl.pc libssl.pc libcrypto.pc
+ 	rm -f speed.* .pure
+ 	rm -f $(TARFILE)
+-	@set -e; for i in $(ONEDIRS) ;\
++	set -e; for i in $(ONEDIRS) ;\
+ 	do \
+ 	rm -fr $$i/*; \
+ 	done
+@@ -367,24 +367,24 @@
+ 
+ files:
+ 	$(PERL) $(TOP)/util/files.pl Makefile > $(TOP)/MINFO
+-	@set -e; target=files; $(RECURSIVE_BUILD_CMD)
++	set -e; target=files; $(RECURSIVE_BUILD_CMD)
+ 
+ links:
+-	@$(PERL) $(TOP)/util/mkdir-p.pl include/openssl
+-	@$(PERL) $(TOP)/util/mklink.pl include/openssl $(EXHEADER)
+-	@set -e; target=links; $(RECURSIVE_BUILD_CMD)
++	$(PERL) $(TOP)/util/mkdir-p.pl include/openssl
++	$(PERL) $(TOP)/util/mklink.pl include/openssl $(EXHEADER)
++	set -e; target=links; $(RECURSIVE_BUILD_CMD)
+ 
+ gentests:
+-	@(cd test && echo "generating dummy tests (if needed)..." && \
++	(cd test && echo "generating dummy tests (if needed)..." && \
+ 	$(CLEARENV) && $(MAKE) -e $(BUILDENV) TESTS='${TESTS}' OPENSSL_DEBUG_MEMORY=on generate );
+ 
+ dclean:
+ 	rm -f *.bak
+-	@set -e; target=dclean; $(RECURSIVE_BUILD_CMD)
++	set -e; target=dclean; $(RECURSIVE_BUILD_CMD)
+ 
+ rehash: rehash.time
+ rehash.time: certs
+-	@(OPENSSL="`pwd`/util/opensslwrap.sh"; \
++	(OPENSSL="`pwd`/util/opensslwrap.sh"; \
+ 	  OPENSSL_DEBUG_MEMORY=on; \
+ 	  export OPENSSL OPENSSL_DEBUG_MEMORY; \
+ 	  $(PERL) tools/c_rehash certs)
+@@ -393,18 +393,18 @@
+ test:   tests
+ 
+ tests: rehash
+-	@(cd test && echo "testing..." && \
++	(cd test && echo "testing..." && \
+ 	$(CLEARENV) && $(MAKE) -e $(BUILDENV) TOP=.. TESTS='${TESTS}' OPENSSL_DEBUG_MEMORY=on tests );
+ 	util/opensslwrap.sh version -a
+ 
+ report:
+-	@$(PERL) util/selftest.pl
++	$(PERL) util/selftest.pl
+ 
+ depend:
+-	@set -e; target=depend; $(RECURSIVE_BUILD_CMD)
++	set -e; target=depend; $(RECURSIVE_BUILD_CMD)
+ 
+ lint:
+-	@set -e; target=lint; $(RECURSIVE_BUILD_CMD)
++	set -e; target=lint; $(RECURSIVE_BUILD_CMD)
+ 
+ tags:
+ 	rm -f TAGS
+@@ -461,7 +461,7 @@
+ 	ls -l ../$(TARFILE).gz
+ 
+ tar-snap:
+-	@$(TAR) $(TARFLAGS) -cvf - \
++	$(TAR) $(TARFLAGS) -cvf - \
+ 		`find * \! -path CVS/\* \! -path \*/CVS/\* \! -name CVS \! -name .cvsignore \! -name STATUS \! -name TABLE \! -name '*.o' \! -name '*.a' \! -name '*.so' \! -name '*.so.*'  \! -name 'openssl' \! -name '*test' \! -name '.#*' \! -name '*~' | sort` |\
+ 	tardy --user_number=0  --user_name=openssl \
+ 	      --group_number=0 --group_name=openssl \
+@@ -470,9 +470,9 @@
+ 
+ dist:   
+ 	$(PERL) Configure dist
+-	@$(MAKE) dist_pem_h
+-	@$(MAKE) SDIRS='${SDIRS}' clean
+-	@$(MAKE) TAR='${TAR}' TARFLAGS='${TARFLAGS}' tar
++	$(MAKE) dist_pem_h
++	$(MAKE) SDIRS='${SDIRS}' clean
++	$(MAKE) TAR='${TAR}' TARFLAGS='${TARFLAGS}' tar
+ 
+ dist_pem_h:
+ 	(cd crypto/pem; $(MAKE) -e $(BUILDENV) pem.h; $(MAKE) clean)
+@@ -480,7 +480,7 @@
+ install: all install_docs install_sw
+ 
+ install_sw:
+-	@$(PERL) $(TOP)/util/mkdir-p.pl $(INSTALL_PREFIX)$(INSTALLTOP)/bin \
++	$(PERL) $(TOP)/util/mkdir-p.pl $(INSTALL_PREFIX)$(INSTALLTOP)/bin \
+ 		$(INSTALL_PREFIX)$(INSTALLTOP)/lib \
+ 		$(INSTALL_PREFIX)$(INSTALLTOP)/lib/engines \
+ 		$(INSTALL_PREFIX)$(INSTALLTOP)/lib/pkgconfig \
+@@ -488,13 +488,13 @@
+ 		$(INSTALL_PREFIX)$(OPENSSLDIR)/misc \
+ 		$(INSTALL_PREFIX)$(OPENSSLDIR)/certs \
+ 		$(INSTALL_PREFIX)$(OPENSSLDIR)/private
+-	@set -e; headerlist="$(EXHEADER)"; for i in $$headerlist;\
++	set -e; headerlist="$(EXHEADER)"; for i in $$headerlist;\
+ 	do \
+ 	(cp $$i $(INSTALL_PREFIX)$(INSTALLTOP)/include/openssl/$$i; \
+ 	chmod 644 $(INSTALL_PREFIX)$(INSTALLTOP)/include/openssl/$$i ); \
+ 	done;
+-	@set -e; target=install; $(RECURSIVE_BUILD_CMD)
+-	@set -e; for i in $(LIBS) ;\
++	set -e; target=install; $(RECURSIVE_BUILD_CMD)
++	set -e; for i in $(LIBS) ;\
+ 	do \
+ 		if [ -f "$$i" ]; then \
+ 		(       echo installing $$i; \
+@@ -504,7 +504,7 @@
+ 			mv -f $(INSTALL_PREFIX)$(INSTALLTOP)/lib/$$i.new $(INSTALL_PREFIX)$(INSTALLTOP)/lib/$$i ); \
+ 		fi; \
+ 	done;
+-	@set -e; if [ -n "$(SHARED_LIBS)" ]; then \
++	set -e; if [ -n "$(SHARED_LIBS)" ]; then \
+ 		tmp="$(SHARED_LIBS)"; \
+ 		for i in $${tmp:-x}; \
+ 		do \
+@@ -543,12 +543,12 @@
+ 	chmod 644 $(INSTALL_PREFIX)$(INSTALLTOP)/lib/pkgconfig/openssl.pc
+ 
+ install_docs:
+-	@$(PERL) $(TOP)/util/mkdir-p.pl \
++	$(PERL) $(TOP)/util/mkdir-p.pl \
+ 		$(INSTALL_PREFIX)$(MANDIR)/man1 \
+ 		$(INSTALL_PREFIX)$(MANDIR)/man3 \
+ 		$(INSTALL_PREFIX)$(MANDIR)/man5 \
+ 		$(INSTALL_PREFIX)$(MANDIR)/man7
+-	@pod2man="`cd util; ./pod2mantest $(PERL)`"; \
++	pod2man="`cd util; ./pod2mantest $(PERL)`"; \
+ 	here="`pwd`"; \
+ 	filecase=; \
+ 	if [ "$(PLATFORM)" = "DJGPP" -o "$(PLATFORM)" = "Cygwin" -o "$(PLATFORM)" = "mingw" ]; then \
+Index: openssl-0.9.8g/Makefile.org
+===================================================================
+--- openssl-0.9.8g.orig/Makefile.org	2008-01-02 14:51:09.000000000 +0100
++++ openssl-0.9.8g/Makefile.org	2008-01-02 14:54:45.000000000 +0100
+@@ -220,7 +220,7 @@
+ 	fi
+ 
+ reflect:
+-	@[ -n "$(THIS)" ] && $(CLEARENV) && $(MAKE) $(THIS) -e $(BUILDENV)
++	[ -n "$(THIS)" ] && $(CLEARENV) && $(MAKE) $(THIS) -e $(BUILDENV)
+ 
+ sub_all: build_all
+ build_all: build_libs build_apps build_tests build_tools
+@@ -228,24 +228,24 @@
+ build_libs: build_crypto build_ssl build_engines
+ 
+ build_crypto:
+-	@dir=crypto; target=all; $(BUILD_ONE_CMD)
++	dir=crypto; target=all; $(BUILD_ONE_CMD)
+ build_ssl:
+-	@dir=ssl; target=all; $(BUILD_ONE_CMD)
++	dir=ssl; target=all; $(BUILD_ONE_CMD)
+ build_engines:
+-	@dir=engines; target=all; $(BUILD_ONE_CMD)
++	dir=engines; target=all; $(BUILD_ONE_CMD)
+ build_apps:
+-	@dir=apps; target=all; $(BUILD_ONE_CMD)
++	dir=apps; target=all; $(BUILD_ONE_CMD)
+ build_tests:
+-	@dir=test; target=all; $(BUILD_ONE_CMD)
++	dir=test; target=all; $(BUILD_ONE_CMD)
+ build_tools:
+-	@dir=tools; target=all; $(BUILD_ONE_CMD)
++	dir=tools; target=all; $(BUILD_ONE_CMD)
+ 
+ all_testapps: build_libs build_testapps
+ build_testapps:
+-	@dir=crypto; target=testapps; $(BUILD_ONE_CMD)
++	dir=crypto; target=testapps; $(BUILD_ONE_CMD)
+ 
+ libcrypto$(SHLIB_EXT): libcrypto.a
+-	@if [ "$(SHLIB_TARGET)" != "" ]; then \
++	if [ "$(SHLIB_TARGET)" != "" ]; then \
+ 		$(MAKE) SHLIBDIRS=crypto build-shared; \
+ 	else \
+ 		echo "There's no support for shared libraries on this platform" >&2; \
+@@ -253,7 +253,7 @@
+ 	fi
+ 
+ libssl$(SHLIB_EXT): libcrypto$(SHLIB_EXT) libssl.a
+-	@if [ "$(SHLIB_TARGET)" != "" ]; then \
++	if [ "$(SHLIB_TARGET)" != "" ]; then \
+ 		$(MAKE) SHLIBDIRS=ssl SHLIBDEPS='-lcrypto' build-shared; \
+ 	else \
+ 		echo "There's no support for shared libraries on this platform" >&2; \
+@@ -261,7 +261,7 @@
+ 	fi
+ 
+ clean-shared:
+-	@set -e; for i in $(SHLIBDIRS); do \
++	set -e; for i in $(SHLIBDIRS); do \
+ 		if [ -n "$(SHARED_LIBS_LINK_EXTS)" ]; then \
+ 			tmp="$(SHARED_LIBS_LINK_EXTS)"; \
+ 			for j in $${tmp:-x}; do \
+@@ -275,7 +275,7 @@
+ 	done
+ 
+ link-shared:
+-	@ set -e; for i in ${SHLIBDIRS}; do \
++	set -e; for i in ${SHLIBDIRS}; do \
+ 		$(MAKE) -f $(HERE)/Makefile.shared -e $(BUILDENV) \
+ 			LIBNAME=$$i LIBVERSION=${SHLIB_MAJOR}.${SHLIB_MINOR} \
+ 			LIBCOMPATVERSIONS=";${SHLIB_VERSION_HISTORY}" \
+@@ -287,7 +287,7 @@
  build-shared: do_$(SHLIB_TARGET) link-shared
  
  do_$(SHLIB_TARGET):
@@ -2589,273 +2852,10 @@ Index: openssl-0.9.8g/Makefile
  	here="`pwd`"; \
  	filecase=; \
  	if [ "$(PLATFORM)" = "DJGPP" -o "$(PLATFORM)" = "Cygwin" -o "$(PLATFORM)" = "mingw" ]; then \
-Index: openssl-0.9.8g/Makefile.org
-===================================================================
---- openssl-0.9.8g.orig/Makefile.org	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/Makefile.org	2008-01-02 11:45:42.000000000 +0100
-@@ -220,7 +220,7 @@
- 	fi
- 
- reflect:
--	@[ -n "$(THIS)" ] && $(CLEARENV) && $(MAKE) $(THIS) -e $(BUILDENV)
-+	[ -n "$(THIS)" ] && $(CLEARENV) && $(MAKE) $(THIS) -e $(BUILDENV)
- 
- sub_all: build_all
- build_all: build_libs build_apps build_tests build_tools
-@@ -228,24 +228,24 @@
- build_libs: build_crypto build_ssl build_engines
- 
- build_crypto:
--	@dir=crypto; target=all; $(BUILD_ONE_CMD)
-+	dir=crypto; target=all; $(BUILD_ONE_CMD)
- build_ssl:
--	@dir=ssl; target=all; $(BUILD_ONE_CMD)
-+	dir=ssl; target=all; $(BUILD_ONE_CMD)
- build_engines:
--	@dir=engines; target=all; $(BUILD_ONE_CMD)
-+	dir=engines; target=all; $(BUILD_ONE_CMD)
- build_apps:
--	@dir=apps; target=all; $(BUILD_ONE_CMD)
-+	dir=apps; target=all; $(BUILD_ONE_CMD)
- build_tests:
--	@dir=test; target=all; $(BUILD_ONE_CMD)
-+	dir=test; target=all; $(BUILD_ONE_CMD)
- build_tools:
--	@dir=tools; target=all; $(BUILD_ONE_CMD)
-+	dir=tools; target=all; $(BUILD_ONE_CMD)
- 
- all_testapps: build_libs build_testapps
- build_testapps:
--	@dir=crypto; target=testapps; $(BUILD_ONE_CMD)
-+	dir=crypto; target=testapps; $(BUILD_ONE_CMD)
- 
- libcrypto$(SHLIB_EXT): libcrypto.a
--	@if [ "$(SHLIB_TARGET)" != "" ]; then \
-+	if [ "$(SHLIB_TARGET)" != "" ]; then \
- 		$(MAKE) SHLIBDIRS=crypto build-shared; \
- 	else \
- 		echo "There's no support for shared libraries on this platform" >&2; \
-@@ -253,7 +253,7 @@
- 	fi
- 
- libssl$(SHLIB_EXT): libcrypto$(SHLIB_EXT) libssl.a
--	@if [ "$(SHLIB_TARGET)" != "" ]; then \
-+	if [ "$(SHLIB_TARGET)" != "" ]; then \
- 		$(MAKE) SHLIBDIRS=ssl SHLIBDEPS='-lcrypto' build-shared; \
- 	else \
- 		echo "There's no support for shared libraries on this platform" >&2; \
-@@ -261,7 +261,7 @@
- 	fi
- 
- clean-shared:
--	@set -e; for i in $(SHLIBDIRS); do \
-+	set -e; for i in $(SHLIBDIRS); do \
- 		if [ -n "$(SHARED_LIBS_LINK_EXTS)" ]; then \
- 			tmp="$(SHARED_LIBS_LINK_EXTS)"; \
- 			for j in $${tmp:-x}; do \
-@@ -275,7 +275,7 @@
- 	done
- 
- link-shared:
--	@ set -e; for i in ${SHLIBDIRS}; do \
-+	set -e; for i in ${SHLIBDIRS}; do \
- 		$(MAKE) -f $(HERE)/Makefile.shared -e $(BUILDENV) \
- 			LIBNAME=$$i LIBVERSION=${SHLIB_MAJOR}.${SHLIB_MINOR} \
- 			LIBCOMPATVERSIONS=";${SHLIB_VERSION_HISTORY}" \
-@@ -286,7 +286,7 @@
- build-shared: do_$(SHLIB_TARGET) link-shared
- 
- do_$(SHLIB_TARGET):
--	@ set -e; libs='-L. ${SHLIBDEPS}'; for i in ${SHLIBDIRS}; do \
-+	set -e; libs='-L. ${SHLIBDEPS}'; for i in ${SHLIBDIRS}; do \
- 		if [ "${SHLIBDIRS}" = "ssl" -a -n "$(LIBKRB5)" ]; then \
- 			libs="$(LIBKRB5) $$libs"; \
- 		fi; \
-@@ -299,7 +299,7 @@
- 	done
- 
- libcrypto.pc: Makefile
--	@ ( echo 'prefix=$(INSTALLTOP)'; \
-+	( echo 'prefix=$(INSTALLTOP)'; \
- 	    echo 'exec_prefix=$${prefix}'; \
- 	    echo 'libdir=$${exec_prefix}/lib'; \
- 	    echo 'includedir=$${prefix}/include'; \
-@@ -312,7 +312,7 @@
- 	    echo 'Cflags: -I$${includedir} $(KRB5_INCLUDES)' ) > libcrypto.pc
- 
- libssl.pc: Makefile
--	@ ( echo 'prefix=$(INSTALLTOP)'; \
-+	( echo 'prefix=$(INSTALLTOP)'; \
- 	    echo 'exec_prefix=$${prefix}'; \
- 	    echo 'libdir=$${exec_prefix}/lib'; \
- 	    echo 'includedir=$${prefix}/include'; \
-@@ -325,7 +325,7 @@
- 	    echo 'Cflags: -I$${includedir} $(KRB5_INCLUDES)' ) > libssl.pc
- 
- openssl.pc: Makefile
--	@ ( echo 'prefix=$(INSTALLTOP)'; \
-+	( echo 'prefix=$(INSTALLTOP)'; \
- 	    echo 'exec_prefix=$${prefix}'; \
- 	    echo 'libdir=$${exec_prefix}/lib'; \
- 	    echo 'includedir=$${prefix}/include'; \
-@@ -338,21 +338,21 @@
- 	    echo 'Cflags: -I$${includedir} $(KRB5_INCLUDES)' ) > openssl.pc
- 
- Makefile: Makefile.org Configure config
--	@echo "Makefile is older than Makefile.org, Configure or config."
--	@echo "Reconfigure the source tree (via './config' or 'perl Configure'), please."
--	@false
-+	echo "Makefile is older than Makefile.org, Configure or config."
-+	echo "Reconfigure the source tree (via './config' or 'perl Configure'), please."
-+	false
- 
- libclean:
- 	rm -f *.map *.so *.so.* *.dll engines/*.so engines/*.dll *.a engines/*.a */lib */*/lib
- 
- clean:	libclean
- 	rm -f shlib/*.o *.o core a.out fluff rehash.time testlog make.log cctest cctest.c
--	@set -e; target=clean; $(RECURSIVE_BUILD_CMD)
-+	set -e; target=clean; $(RECURSIVE_BUILD_CMD)
- 	rm -f $(LIBS)
- 	rm -f openssl.pc libssl.pc libcrypto.pc
- 	rm -f speed.* .pure
- 	rm -f $(TARFILE)
--	@set -e; for i in $(ONEDIRS) ;\
-+	set -e; for i in $(ONEDIRS) ;\
- 	do \
- 	rm -fr $$i/*; \
- 	done
-@@ -363,24 +363,24 @@
- 
- files:
- 	$(PERL) $(TOP)/util/files.pl Makefile > $(TOP)/MINFO
--	@set -e; target=files; $(RECURSIVE_BUILD_CMD)
-+	set -e; target=files; $(RECURSIVE_BUILD_CMD)
- 
- links:
--	@$(PERL) $(TOP)/util/mkdir-p.pl include/openssl
--	@$(PERL) $(TOP)/util/mklink.pl include/openssl $(EXHEADER)
--	@set -e; target=links; $(RECURSIVE_BUILD_CMD)
-+	$(PERL) $(TOP)/util/mkdir-p.pl include/openssl
-+	$(PERL) $(TOP)/util/mklink.pl include/openssl $(EXHEADER)
-+	set -e; target=links; $(RECURSIVE_BUILD_CMD)
- 
- gentests:
--	@(cd test && echo "generating dummy tests (if needed)..." && \
-+	(cd test && echo "generating dummy tests (if needed)..." && \
- 	$(CLEARENV) && $(MAKE) -e $(BUILDENV) TESTS='${TESTS}' OPENSSL_DEBUG_MEMORY=on generate );
- 
- dclean:
- 	rm -f *.bak
--	@set -e; target=dclean; $(RECURSIVE_BUILD_CMD)
-+	set -e; target=dclean; $(RECURSIVE_BUILD_CMD)
- 
- rehash: rehash.time
- rehash.time: certs
--	@(OPENSSL="`pwd`/util/opensslwrap.sh"; \
-+	(OPENSSL="`pwd`/util/opensslwrap.sh"; \
- 	  OPENSSL_DEBUG_MEMORY=on; \
- 	  export OPENSSL OPENSSL_DEBUG_MEMORY; \
- 	  $(PERL) tools/c_rehash certs)
-@@ -389,18 +389,18 @@
- test:   tests
- 
- tests: rehash
--	@(cd test && echo "testing..." && \
-+	(cd test && echo "testing..." && \
- 	$(CLEARENV) && $(MAKE) -e $(BUILDENV) TOP=.. TESTS='${TESTS}' OPENSSL_DEBUG_MEMORY=on tests );
- 	util/opensslwrap.sh version -a
- 
- report:
--	@$(PERL) util/selftest.pl
-+	$(PERL) util/selftest.pl
- 
- depend:
--	@set -e; target=depend; $(RECURSIVE_BUILD_CMD)
-+	set -e; target=depend; $(RECURSIVE_BUILD_CMD)
- 
- lint:
--	@set -e; target=lint; $(RECURSIVE_BUILD_CMD)
-+	set -e; target=lint; $(RECURSIVE_BUILD_CMD)
- 
- tags:
- 	rm -f TAGS
-@@ -457,7 +457,7 @@
- 	ls -l ../$(TARFILE).gz
- 
- tar-snap:
--	@$(TAR) $(TARFLAGS) -cvf - \
-+	$(TAR) $(TARFLAGS) -cvf - \
- 		`find * \! -path CVS/\* \! -path \*/CVS/\* \! -name CVS \! -name .cvsignore \! -name STATUS \! -name TABLE \! -name '*.o' \! -name '*.a' \! -name '*.so' \! -name '*.so.*'  \! -name 'openssl' \! -name '*test' \! -name '.#*' \! -name '*~' | sort` |\
- 	tardy --user_number=0  --user_name=openssl \
- 	      --group_number=0 --group_name=openssl \
-@@ -466,9 +466,9 @@
- 
- dist:   
- 	$(PERL) Configure dist
--	@$(MAKE) dist_pem_h
--	@$(MAKE) SDIRS='${SDIRS}' clean
--	@$(MAKE) TAR='${TAR}' TARFLAGS='${TARFLAGS}' tar
-+	$(MAKE) dist_pem_h
-+	$(MAKE) SDIRS='${SDIRS}' clean
-+	$(MAKE) TAR='${TAR}' TARFLAGS='${TARFLAGS}' tar
- 
- dist_pem_h:
- 	(cd crypto/pem; $(MAKE) -e $(BUILDENV) pem.h; $(MAKE) clean)
-@@ -476,7 +476,7 @@
- install: all install_docs install_sw
- 
- install_sw:
--	@$(PERL) $(TOP)/util/mkdir-p.pl $(INSTALL_PREFIX)$(INSTALLTOP)/bin \
-+	$(PERL) $(TOP)/util/mkdir-p.pl $(INSTALL_PREFIX)$(INSTALLTOP)/bin \
- 		$(INSTALL_PREFIX)$(INSTALLTOP)/lib \
- 		$(INSTALL_PREFIX)$(INSTALLTOP)/lib/engines \
- 		$(INSTALL_PREFIX)$(INSTALLTOP)/lib/pkgconfig \
-@@ -484,13 +484,13 @@
- 		$(INSTALL_PREFIX)$(OPENSSLDIR)/misc \
- 		$(INSTALL_PREFIX)$(OPENSSLDIR)/certs \
- 		$(INSTALL_PREFIX)$(OPENSSLDIR)/private
--	@set -e; headerlist="$(EXHEADER)"; for i in $$headerlist;\
-+	set -e; headerlist="$(EXHEADER)"; for i in $$headerlist;\
- 	do \
- 	(cp $$i $(INSTALL_PREFIX)$(INSTALLTOP)/include/openssl/$$i; \
- 	chmod 644 $(INSTALL_PREFIX)$(INSTALLTOP)/include/openssl/$$i ); \
- 	done;
--	@set -e; target=install; $(RECURSIVE_BUILD_CMD)
--	@set -e; for i in $(LIBS) ;\
-+	set -e; target=install; $(RECURSIVE_BUILD_CMD)
-+	set -e; for i in $(LIBS) ;\
- 	do \
- 		if [ -f "$$i" ]; then \
- 		(       echo installing $$i; \
-@@ -500,7 +500,7 @@
- 			mv -f $(INSTALL_PREFIX)$(INSTALLTOP)/lib/$$i.new $(INSTALL_PREFIX)$(INSTALLTOP)/lib/$$i ); \
- 		fi; \
- 	done;
--	@set -e; if [ -n "$(SHARED_LIBS)" ]; then \
-+	set -e; if [ -n "$(SHARED_LIBS)" ]; then \
- 		tmp="$(SHARED_LIBS)"; \
- 		for i in $${tmp:-x}; \
- 		do \
-@@ -539,12 +539,12 @@
- 	chmod 644 $(INSTALL_PREFIX)$(INSTALLTOP)/lib/pkgconfig/openssl.pc
- 
- install_docs:
--	@$(PERL) $(TOP)/util/mkdir-p.pl \
-+	$(PERL) $(TOP)/util/mkdir-p.pl \
- 		$(INSTALL_PREFIX)$(MANDIR)/man1 \
- 		$(INSTALL_PREFIX)$(MANDIR)/man3 \
- 		$(INSTALL_PREFIX)$(MANDIR)/man5 \
- 		$(INSTALL_PREFIX)$(MANDIR)/man7
--	@pod2man="`cd util; ./pod2mantest $(PERL)`"; \
-+	pod2man="`cd util; ./pod2mantest $(PERL)`"; \
- 	here="`pwd`"; \
- 	filecase=; \
- 	if [ "$(PLATFORM)" = "DJGPP" -o "$(PLATFORM)" = "Cygwin" -o "$(PLATFORM)" = "mingw" ]; then \
 Index: openssl-0.9.8g/Makefile.shared
 ===================================================================
---- openssl-0.9.8g.orig/Makefile.shared	2008-01-02 11:44:12.000000000 +0100
-+++ openssl-0.9.8g/Makefile.shared	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/Makefile.shared	2008-01-02 14:53:16.000000000 +0100
++++ openssl-0.9.8g/Makefile.shared	2008-01-02 14:54:45.000000000 +0100
 @@ -168,14 +168,14 @@
  	$(LINK_APP)
  
@@ -3140,8 +3140,8 @@ Index: openssl-0.9.8g/Makefile.shared
  	$(SYMLINK_SO)
 Index: openssl-0.9.8g/ssl/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/ssl/Makefile	2008-01-02 11:40:30.000000000 +0100
-+++ openssl-0.9.8g/ssl/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/ssl/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/ssl/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -58,7 +58,7 @@
  lib:	$(LIBOBJ)
  	$(AR) $(LIB) $(LIBOBJ)
@@ -3181,8 +3181,8 @@ Index: openssl-0.9.8g/ssl/Makefile
  	    $(MAKEDEPEND) -- $(CFLAG) $(INCLUDES) $(DEPFLAG) -- $(PROGS) $(LIBSRC); \
 Index: openssl-0.9.8g/test/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/test/Makefile	2008-01-02 11:40:30.000000000 +0100
-+++ openssl-0.9.8g/test/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/test/Makefile	2008-01-02 14:45:58.000000000 +0100
++++ openssl-0.9.8g/test/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -110,7 +110,7 @@
  
  generate: $(SRC)
@@ -3343,7 +3343,7 @@ Index: openssl-0.9.8g/test/Makefile
  	    $(MAKE) -f $(TOP)/Makefile reflect THIS=$@; \
  	else \
  	    $(MAKEDEPEND) -- $(CFLAG) $(INCLUDES) $(DEPFLAG) -- $(PROGS) $(SRC); \
-@@ -320,97 +320,97 @@
+@@ -321,97 +321,97 @@
  		link_app.$${shlib_target}
  
  $(RSATEST)$(EXE_EXT): $(RSATEST).o $(DLIBCRYPTO)
@@ -3472,7 +3472,7 @@ Index: openssl-0.9.8g/test/Makefile
  
  #$(AESTEST).o: $(AESTEST).c
  #	$(CC) -c $(CFLAGS) -DINTERMEDIATE_VALUE_KAT -DTRACE_KAT_MCT $(AESTEST).c
-@@ -423,7 +423,7 @@
+@@ -424,7 +424,7 @@
  #	fi
  
  dummytest$(EXE_EXT): dummytest.o $(DLIBCRYPTO)
@@ -3483,8 +3483,8 @@ Index: openssl-0.9.8g/test/Makefile
  
 Index: openssl-0.9.8g/tools/Makefile
 ===================================================================
---- openssl-0.9.8g.orig/tools/Makefile	2008-01-02 11:40:31.000000000 +0100
-+++ openssl-0.9.8g/tools/Makefile	2008-01-02 11:45:42.000000000 +0100
+--- openssl-0.9.8g.orig/tools/Makefile	2008-01-02 14:27:46.000000000 +0100
++++ openssl-0.9.8g/tools/Makefile	2008-01-02 14:54:45.000000000 +0100
 @@ -19,14 +19,14 @@
  all:
  
