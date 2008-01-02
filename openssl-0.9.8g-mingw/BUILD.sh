@@ -12,6 +12,12 @@ OPENSSL_OPTIONS="no-idea no-mdc2 no-rc5 zlib enable-tlsext threads shared"
 DEREF_SYMLINKS=deref_symlinks.sh
 
 # BUILD
+if [ -e $OPENSSL_DIR ] ; then
+	echo "$OPENSSL_DIR already exists." 1>&2
+	echo "This script refuses to overwrite it" \
+	     "(the build probably wouldn't work anyway)" 1>&2
+	exit 1
+fi
 tar xzvf $OPENSSL_TARBALL
 cp -a patches $OPENSSL_DIR/patches
 cd $OPENSSL_DIR
