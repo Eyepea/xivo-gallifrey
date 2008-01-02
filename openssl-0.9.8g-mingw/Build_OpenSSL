@@ -1,0 +1,329 @@
+Notes de build d'OpenSSL sous Cygwin avec MinGW en cible (pour Xivo)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+*** 1: DESCRIPTION DES PATCHS À LA FIN DE CE FICHIER ***
+*** 2: CONFIGURER BUILD.sh AVANT DE TENTER UN BUILD  ***
+
+Note préliminaire: ce build est necessaire pour les clients Xivo.
+En effet ces derniers utilisent QT, qui utilise OpenSSL (et peut être que
+les clients utilisent ou utiliseront vraiment des fonctions SSL au final).
+
+Nous avons plusieurs raisons de builder OpenSSL nous même:
+
+1) Par principe, on ne redistribue pas des paquets binaires only téléchargés
+depuis des emplacement aléatoires (Debian ça peut aller, mais le reste c'est
+mal - sauf eventuellement si on note l'origine précise et qu'on étudie ce que
+ca implique chez nous quand aux conditions légales et techniques auxquelles on
+pourra effectivement redistribuer le truc).
+
+2) qui confirme le 1 d'ailleurs: les binaires OpenSSL initialement distribués
+étaient linkés avec msvcr71.dll, et ce dernier n'est pas redistribuable (sauf
+peut-être si on avait eu une licence valide de Visual C++)
+
+3) pas sûr à 100% de ce point, mais on est potentiellement tenu légalement 
+d'être capable d'appliquer certains des critères de la GNU GPLv2 même sur
+OpenSSL en cas de redistribution des sources (il faudrait faire une étude
+détaillée des exceptions que Trolltech nous autorise pour trancher
+definitivement, mais dans le doute autant être safe), et n'importe quel client
+pourrait alors nous demander de lui fournir les sources et tout script /
+programme necessaire au build, ce qui inclue potentiellement même Cygwin, 
+MinGW et toute procédure permettant de réussir le build car il ne s'agit pas
+d'une chaine installée par défaut sous Windows ou largement standard comme
+on pourrait considerer que Visual C l'est, et qu'il faut une liste
+de précondition pour que le build réussisse)
+
+Tout cela implique que, par défaut, concernant les logiciels qui ne sont pas
+installés sur le type de LdB cible après une installation par défaut de base
+du LdB en question (vraiment de base, sans logiciel supplémentaire ni outil
+de dev particulier), il faut être capable de builder le soft nous même 
+(en plus de bien sûr étudier les compatibilité des licences).
+
+---
+
+L'host est constitué d'un Windows XP Pro SP2.
+
+---
+
+Cygwin est installé dans c:\cygwin
+
+Les paquets cygwin sont les suivants:
+
+$ cygcheck -c -d
+Cygwin Package Information
+Package              Version
+_update-info-dir     00567-1
+alternatives         1.3.29a-1
+ash                  20040127-3
+base-files           3.7-1
+base-passwd          2.2-1
+bash                 3.2.25-17
+bzip2                1.0.3-2
+coreutils            6.9-5
+crypt                1.1-1
+cygrunsrv            1.17-1
+cygutils             1.3.2-1
+cygwin               1.5.25-5
+cygwin-doc           1.4-4
+diffutils            2.8.7-1
+e2fsprogs            1.35-3
+editrights           1.01-1
+expat                1.95.8-2
+file                 4.21-1
+findutils            4.3.11-1
+fontconfig           2.4.1-5
+freetype2            2.3.4-2
+gawk                 3.1.6-1
+gettext              0.15-1
+grep                 2.5.1a-4
+groff                1.18.1-2
+gzip                 1.3.12-2
+ioperm               0.4-1
+less                 382-1
+libapr1              1.2.11-1
+libaprutil1          1.2.10-1
+libbz2_1             1.0.3-2
+libdb4.2             4.2.52-1
+libdb4.3             4.3.28-1
+libexpat0            1.95.8-2
+libfontconfig1       2.4.1-5
+libfreetype26        2.3.4-2
+libgdbm4             1.8.3-8
+libiconv2            1.11-1
+libintl1             0.10.40-1
+libintl2             0.12.1-3
+libintl3             0.14.5-1
+libintl8             0.15-1
+libncurses7          5.3-4
+libncurses8          5.5-3
+libneon26            0.26.4-1
+libpcre0             7.2-1
+libpopt0             1.6.4-4
+libreadline6         5.2.7-9
+libXft               2.1.6-1
+libXft1              1.0.0-1
+libXft2              2.1.6-1
+login                1.9-7
+make                 3.81-1
+man                  1.6e-1
+minires              1.01-1
+mktemp               1.5-4
+netcat               1.10-2
+openssh              4.7p1-2
+openssl              0.9.8g-1
+openssl-devel        0.9.8g-1
+patch                2.5.8-9
+pcre                 7.2-1
+perl                 5.8.8-4
+python               2.5.1-2
+rebase               2.4.3-1
+run                  1.1.10-1
+sed                  4.1.5-2
+subversion           1.4.5-2
+subversion-python    1.4.5-2
+tar                  1.19-1
+tcltk                20060202-1
+tcp_wrappers         7.6-1
+termcap              20050421-1
+terminfo             5.5_20061104-1
+texinfo              4.8a-1
+tzcode               2007h-2
+unzip                5.52-2
+util-linux           2.12r-2
+vim                  7.1-1
+wget                 1.10.2-2
+which                1.7-1
+X-startup-scripts    1.0.11-1
+xorg-x11-base        6.8.99.901-1
+xorg-x11-bin         6.8.99.901-1
+xorg-x11-bin-dlls    6.8.99.901-1
+xorg-x11-bin-lndir   6.8.99.901-1
+xorg-x11-etc         6.8.99.901-1
+xorg-x11-fenc        6.8.99.901-1
+xorg-x11-fnts        6.8.99.901-1
+xorg-x11-libs-data   6.8.99.901-1
+xorg-x11-xwin        6.8.99.901-1
+xterm                229-1
+zip                  2.32-2
+zlib                 1.2.3-2
+
+L'installeur Cygwin était le 2.573.2.2.(mais il est très probable qu'une
+install ait été effectuée avant avec un installeur précédent puis qu'il
+n'ait pas été conservé ni son numéro de version noté).
+
+NOTE: à propos des paquets X-window, ils sont nécessaires car
+xorg-x11-base et/ou xorg-x11-bin contiennent makedepend, que
+ce programme est utilisé par le build-sys Unix d'OpenSSL (lequel
+est celui applicable à un build sous host cygwin) et que les autres
+paquets X-window sont des dépendances de xorg-x11-base et/ou xorg-x11-bin.
+
+NOTE2: tous ces paquets sont en target Cygwin.
+On veut une target MinGW (entre autre pcq QT est en target MinGW.
+Donc les paquets OpenSSL listé ci-dessus ne sont pas réutilisable
+pour ce qu'on distribuera nous.
+
+TODO: il faudrait récuperer l'ensemble des paquets qui ont été utilisés lors
+d'un build et les stocker chez nous histoire de pouvoir reproduire le build
+en question. Ca pourrait même être sympa de stocker des images de VM contenant
+un OS propre + une installe fraiche de tout ça, qu'on pourrait dupliquer +
+déroulage du build super rapidement. Enfin, on peut sinon envisager de ce
+constituer un environnement de Xcompilation.
+
+---
+
+MinGW
+
+L'installeur est MinGW-5.1.3.exe (mais il est très probable qu'une
+install ait été effectuée avant avec un installeur précédent puis qu'il
+n'ait pas été conservé ni son numéro de version noté).
+
+Administrateur@nooceo-o45dtehd /cygdrive/c/MinGW
+$ cat installed.ini 
+[settings]
+mirror=
+installtype=current
+
+[components]
+runtime=mingw-runtime-3.13.tar.gz
+w32api=w32api-3.10.tar.gz
+binutils=binutils-2.17.50-20060824-1.tar.gz
+core=gcc-core-3.4.5-20060117-1.tar.gz
+gpp=gcc-g++-3.4.5-20060117-1.tar.gz
+g77=
+ada=
+java=
+objc=
+make=mingw32-make-3.81-2.tar.gz
+
+Administrateur@nooceo-o45dtehd /cygdrive/c/Documents and Settings/Administrateur/Bureau/MinGW
+$ ls
+MinGW-5.1.3.exe                     gcc-g++-3.4.5-20060117-1.tar.gz  mingw.ini.old
+binutils-2.17.50-20060824-1.tar.gz  mingw-runtime-3.13.tar.gz        mingw32-make-3.81-2.tar.gz
+gcc-core-3.4.5-20060117-1.tar.gz    mingw.ini                        w32api-3.10.tar.gz
+
+Administrateur@nooceo-o45dtehd /cygdrive/c/Documents and Settings/Administrateur/Bureau/MinGW
+$ cat mingw.ini
+[mingw]
+Build=10
+URL=http://prdownloads.sourceforge.net/mingw
+Filename=MinGW-5.1.3.exe
+packages=previous|current|candidate
+
+[current]
+runtime=mingw-runtime-3.13.tar.gz|5420
+w32api=w32api-3.10.tar.gz|14490
+binutils=binutils-2.17.50-20060824-1.tar.gz|21940
+core=gcc-core-3.4.5-20060117-1.tar.gz|8644
+gpp=gcc-g++-3.4.5-20060117-1.tar.gz|16140
+g77=gcc-g77-3.4.5-20060117-1.tar.gz|5161
+ada=gcc-ada-3.4.5-20060117-1.tar.gz|33352
+java=gcc-java-3.4.5-20060117-1.tar.gz|46767
+objc=gcc-objc-3.4.5-20060117-1.tar.gz|4559
+make=mingw32-make-3.81-2.tar.gz|720
+
+[previous]
+runtime=mingw-runtime-3.12.tar.gz|5270
+w32api=w32api-3.9.tar.gz|14480
+binutils=binutils-2.16.91-20060119-1.tar.gz|15850
+core=gcc-core-3.4.2-20040916-1.tar.gz|8627
+gpp=gcc-g++-3.4.2-20040916-1.tar.gz|16542
+g77=gcc-g77-3.4.2-20040916-1.tar.gz|5158
+ada=gcc-ada-3.4.2-20040916-1.tar.gz|33333
+java=gcc-java-3.4.2-20040916-1.tar.gz|45547
+objc=gcc-objc-3.4.2-20040916-1.tar.gz|4555
+make=mingw32-make-3.80.0-3.tar.gz|1925
+
+[candidate]
+binutils=binutils-2.17.50-20060824-1.tar.gz|21940
+core=gcc-core-3.4.5-20060117-1.tar.gz|8644
+gpp=gcc-g++-3.4.5-20060117-1.tar.gz|16140
+g77=gcc-g77-3.4.5-20060117-1.tar.gz|5161
+ada=gcc-ada-3.4.5-20060117-1.tar.gz|33352
+java=gcc-java-3.4.5-20060117-1.tar.gz|46767
+objc=gcc-objc-3.4.5-20060117-1.tar.gz|4559
+make=mingw32-make-3.81-2.tar.gz|720
+
+---
+
+Le mingw32-make ne supporte pas les symlinks, hors l'arbre OpenSSL en contient
+à divers phases de sa construction.
+
+BUILD.sh utilise deref_symlinks.sh pour remplacer les symlinks par une copie
+des fichiers pointés.
+
+---
+
+Décompression zlib et compilation par:
+
+Administrateur@nooceo-o45dtehd ~
+$ cd zlib-1.2.3
+
+Administrateur@nooceo-o45dtehd ~/zlib-1.2.3
+$ make CFLAGS="-D_REENTRANT -DPIC -O3 -W -Wall" CC=gcc      
+gcc -D_REENTRANT -DPIC -O3 -W -Wall   -c -o example.o example.c
+gcc -D_REENTRANT -DPIC -O3 -W -Wall   -c -o adler32.o adler32.c
+gcc -D_REENTRANT -DPIC -O3 -W -Wall   -c -o compress.o compress.c
+gcc -D_REENTRANT -DPIC -O3 -W -Wall   -c -o crc32.o crc32.c
+gcc -D_REENTRANT -DPIC -O3 -W -Wall   -c -o gzio.o gzio.c
+gcc -D_REENTRANT -DPIC -O3 -W -Wall   -c -o uncompr.o uncompr.c
+gcc -D_REENTRANT -DPIC -O3 -W -Wall   -c -o deflate.o deflate.c
+gcc -D_REENTRANT -DPIC -O3 -W -Wall   -c -o trees.o trees.c
+gcc -D_REENTRANT -DPIC -O3 -W -Wall   -c -o zutil.o zutil.c
+gcc -D_REENTRANT -DPIC -O3 -W -Wall   -c -o inflate.o inflate.c
+gcc -D_REENTRANT -DPIC -O3 -W -Wall   -c -o infback.o infback.c
+gcc -D_REENTRANT -DPIC -O3 -W -Wall   -c -o inftrees.o inftrees.c
+gcc -D_REENTRANT -DPIC -O3 -W -Wall   -c -o inffast.o inffast.c
+ar rc libz.a adler32.o compress.o crc32.o gzio.o uncompr.o deflate.o trees.o zutil.o inflate.o infback.o inftrees.o inffast.o 
+gcc -D_REENTRANT -DPIC -O3 -W -Wall -o example example.o libz.a
+gcc -D_REENTRANT -DPIC -O3 -W -Wall   -c -o minigzip.o minigzip.c
+gcc -D_REENTRANT -DPIC -O3 -W -Wall -o minigzip minigzip.o libz.a
+
+---
+build_under_broken_cygwin.patch
+
+        This patch allows "make depend" to properly work under some
+        Cygwin installation that are broken for mysterious reasons and
+        where bash replaces in some cases but not always (typically when
+        invoking GCC in the domd script, and I have not understood why)
+        effects of a ">>" stdout derivation by effects of a ">" one.
+
+        Instead of asking to bash to perform the appending operation,
+        three separate files are created and cat is used to perform the
+        concatenation, the output of cat being sent to the input of
+        util/clean-depend.pl.
+
+---
+build_cygwin_gnu_make_3_81_cross_mingw.patch
+
+À cause d'un arret de support d'un patch dans les cygwins recents, make 3.81,
+les paths dos/windows like (avec slash (ou backslash?)) ne sont plus supportés
+dans les Makefile donc le patch build_cygwin_gnu_make_3_81_cross_mingw.patch 
+transforme les filenames Windows hybride en filename Cygwin.
+
+Effet secondaire: make depend RAME ultimement.
+(probablement car Win lutte pour créer des process)
+
+---
+build_broken_cross_mingw_out_implib.patch
+
+Patch openssl-0.9.8g/Makefile.shared (qui devient cygwin && mingw only) afin
+que les dll et dll.a soient correctement buildées en ce qui concerne les
+symboles exportés.
+
+Pour ce faire un génère un .def grace à la sortie de
+	nm -Pg $$SHOBJECTS | grep ' [BDT] ' | cut -f1 -d' ' > lib$(LIBNAME).exp
+filtrée et transformée par
+	$(PERL) util/create_def.pl $$SHLIB$$SHLIB_SOVER$$SHLIB_SUFFIX \
+				   $$BASE_ADDR \
+				   	< lib$(LIBNAME).exp > lib$(LIBNAME).def
+puis on passe le .def à GCC pour le link
+
+---
+build_no_at_in_Makefile.patch
+
+Enleve les @ des Makefile histoire d'avoir des logs bien complets des builds,
+donc utilisable.
+
+---
+build_shared_set_x.patch
+
+Active les set -x de Makefile.shared pour avoir encore plus de trace de build.
