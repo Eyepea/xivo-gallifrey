@@ -762,15 +762,18 @@ DROP TABLE IF EXISTS phonefunckey;
 CREATE TABLE phonefunckey (
  iduserfeatures integer unsigned NOT NULL,
  fknum integer unsigned NOT NULL,
- exten varchar(40) NOT NULL DEFAULT '',
+ exten varchar(40),
  typeextenumbers varchar(64),
  typevalextenumbers varchar(255),
+ typeextenumbersright varchar(64),
+ typevalextenumbersright varchar(255),
  supervision tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(iduserfeatures,fknum)
 );
 
 CREATE INDEX phonefunckey__idx__exten ON phonefunckey(exten);
 CREATE INDEX phonefunckey__idx__typeextenumbers_typevalextenumbers ON phonefunckey(typeextenumbers,typevalextenumbers);
+CREATE INDEX phonefunckey__idx__typeextenumbersright_typevalextenumbersright ON phonefunckey(typeextenumbersright,typevalextenumbersright);
 
 
 DROP TABLE queue;

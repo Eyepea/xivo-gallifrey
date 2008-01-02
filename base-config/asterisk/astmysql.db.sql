@@ -765,15 +765,18 @@ DROP TABLE IF EXISTS `phonefunckey`;
 CREATE TABLE `phonefunckey` (
  `iduserfeatures` int(10) unsigned NOT NULL,
  `fknum` int(10) unsigned NOT NULL,
- `exten` varchar(40) NOT NULL DEFAULT '',
- `typeextenumbers` enum('user','group','queue','meetme','extenfeatures','featuremap','generalfeatures'),
- `typevalextenumbers` varchar(255) NOT NULL DEFAULT '',
+ `exten` varchar(40),
+ `typeextenumbers` enum('extenfeatures','featuremap','generalfeatures'),
+ `typevalextenumbers` varchar(255),
+ `typeextenumbersright` enum('user','group','queue','meetme'),
+ `typevalextenumbersright` varchar(255),
  `supervision` tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(`iduserfeatures`,`fknum`)
 ) ENGINE=MyISAM DEFAULT CHARSET=ascii;
 
 CREATE INDEX `phonefunckey__idx__exten` ON `phonefunckey`(`exten`);
 CREATE INDEX `phonefunckey__idx__typeextenumbers_typevalextenumbers` ON `phonefunckey`(`typeextenumbers`,`typevalextenumbers`);
+CREATE INDEX `phonefunckey__idx__typeextenumbersright_typevalextenumbersright` ON `phonefunckey`(`typeextenumbersright`,`typevalextenumbersright`);
 
 
 DROP TABLE IF EXISTS `queue`;
