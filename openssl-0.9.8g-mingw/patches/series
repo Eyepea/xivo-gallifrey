@@ -1,0 +1,5 @@
+build_under_broken_cygwin.patch
+build_cygwin_gnu_make_3_81_cross_mingw.patch
+build_broken_cross_mingw_out_implib.patch
+build_no_at_in_Makefile.patch
+build_shared_set_x.patch
