@@ -17,6 +17,7 @@ FK_TABLE		= 'phonefunckey'
 XNUM_TABLE		= 'extenumbers'
 TECH			= 'sip' # only allowed tech right now
 
+# encodings.latin_1 and _sre mainly for freezing
 import encodings.latin_1
 import _sre
 import sys
@@ -49,7 +50,11 @@ from getopt import getopt, GetoptError
 import timeoutsocket
 from timeoutsocket import Timeout
 
-import os, cgi, thread, threading
+import os
+import re
+import cgi
+import thread
+import threading
 
 import syslog
 from easyslog import *
@@ -85,6 +90,58 @@ def name_from_first_last(first, last):
 
 def field_empty(f):
 	return (f is None) or (f == "")
+
+find_ast_meta = re.compile('[[NXZ!.]').search
+def pos_ast_meta(ast_pattern):
+	mo = find_ast_meta(ast_pattern)
+	if not mo:
+		return None
+	return mo.start()
+
+def exten_from_parties(xleft, xright, fkext):
+	"""Returns an extension that is purely function of xnext and fkext
+	
+	xleft - None or a string that is an Asterisk extension pattern from
+	        which the initial underscore specifying that the remaining part
+	        of the string is a pattern will be stripped, as well as
+	        everything from the first variable part of the pattern to the
+	        end of the string.
+	        For example:
+	            "_5."                => "5"
+	            "_[5-7]."            => ""
+	            "_666[3-689]XNZ!"    => "666"
+	            "_42!XNZ!666[5-7]Z." => "42"
+	        The stripped xleft will be the left part of the generated
+	        extension.
+	xright - None or a string that will be the right part of the generated
+	         extension.
+	fkext - like xright
+	
+	WARNING: xright and fkext shall not be both set.
+	
+	WARNING: what will happen when you pass a really incorrect and 
+	stupid extension pattern is really unspecified (but should not
+	trigger any exception)
+	"""
+	if xright and fkext:
+		raise ValueError, "(xright, fkext) == " + `(xright, fkext)` + " but both shall not be set"
+	elif xright:
+		right_part = xright
+	elif fkext:
+		right_part = fkext
+	else:
+		right_part = ""
+	exten = ""
+	if xleft:
+		if xleft[0] == '_':
+			xleft = xleft[1:]
+			e = pos_ast_meta(xleft)
+			if e is not None:
+				xleft = xleft[:e]
+		exten += xleft
+	if right_part:
+		exten += right_part
+	return exten
 
 class SQLBackEnd:
 	"""An information backend for this provisioning daemon,
@@ -170,49 +227,6 @@ class SQLBackEnd:
 			('macaddr', 'vendor', 'model', 'proto', 'iduserfeatures', 'isinalan'),
 			(macaddr,))
 
-	@staticmethod
-	def exten_from_xnext_fkext(xnext, fkext):
-		"""Returns an extension that is purely function of xnext and fkext
-		
-		xnext - None or a string that is an Asterisk extension pattern
-		        from which the initial underscore specifying that the
-		        remaining part of the string is a pattern will be
-		        stripped, as well as the lasts consecutive non fixed
-		        pattern characters (for example "_5." => "5", and
-		        "_666[3-689]XNZ!" => "666", but this behavior won't be
-		        very useful if the pattern is something complicated
-		        like "_42!XNZ!666[5-7]Z.", in which case the following
-		        prefix will be emitted as is and as if it was the
-			beginning of a real extension: "42!XNZ!666"
-		fkext - right part of the extension to be returned
-		
-		WARNING: what will happen when you pass a really incorrect and 
-		stupid extension pattern is really unspecified (but should not
-		trigger any exception)
-		"""
-		exten = ""
-		if xnext:
-			if xnext[0] == '_':
-				xnext = xnext[1:]
-				bracket_level = 0
-				start_to_p = False
-				for p in xrange(len(xnext)-1,-1,-1):
-					if not bracket_level:
-						if xnext[p] == ']':
-							bracket_level += 1
-						elif xnext[p] not in 'NXZ!.':
-							start_to_p = True
-							break
-					elif xnext[p] == '[':
-						bracket_level -= 1
-				if start_to_p:
-					exten += xnext[:p+1]
-			else:
-				exten += xnext
-		if fkext:
-			exten += fkext
-		return exten
-
 	def config_by_something_proto(self, something_column, something_content, proto):
 		"""Query the database to return a phone configuration.
 		
@@ -273,22 +287,31 @@ class SQLBackEnd:
 							confdico['lastname'])
 		fklist = self.sql_select_all(
 			("SELECT ${columns} "
-			 "FROM %s LEFT OUTER JOIN %s "
-			 "ON  %s.typeextenumbers = %s.type "
-			 "AND %s.typevalextenumbers = %s.typeval "
+			 "FROM %s "
+			 "LEFT OUTER JOIN %s AS extenumleft "
+			 "ON  %s.typeextenumbers = extenumleft.type "
+			 "AND %s.typevalextenumbers = extenumleft.typeval "
+			 "LEFT OUTER JOIN %s AS extenumright "
+			 "ON  %s.typeextenumbersright = extenumright.type "
+			 "AND %s.typevalextenumbersright = extenumright.typeval "
 			 "WHERE iduserfeatures=%s")
-			 % (FK_TABLE, XNUM_TABLE,
-			    FK_TABLE, XNUM_TABLE, 
-			    FK_TABLE, XNUM_TABLE,
+			 % (FK_TABLE,
+			    XNUM_TABLE,
+			    FK_TABLE,
+			    FK_TABLE,
+			    XNUM_TABLE,
+			    FK_TABLE,
+			    FK_TABLE,
 			    '%s'),
 			[FK_TABLE+x for x in ('.fknum', '.exten', '.supervision')]
-			+ [XNUM_TABLE+'.exten'],
+			+ ['extenumleft.exten', 'extenumright.exten'],
 			(confdico['iduserfeatures'],))
 		funckey = {}
 		for fk in fklist:
 			funckey[fk[FK_TABLE+'.fknum']] = (
-				self.exten_from_xnext_fkext(
-					fk[XNUM_TABLE+'.exten'],
+				exten_from_parties(
+					fk['extenumleft.exten'],
+					fk['extenumright.exten'],
 					fk[FK_TABLE+'.exten']),
 				bool(int(fk[FK_TABLE+'.supervision']))
 			)
