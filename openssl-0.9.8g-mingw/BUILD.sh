@@ -8,7 +8,7 @@ OPENSSL_DIR=openssl-$VERSION
 OPENSSL_TARBALL=openssl-$VERSION.tar.gz
 PERL_PATH="c:/cygwin/bin/perl"
 ZLIB_PATH="/cygwin/home/Administrateur/zlib-1.2.3/"
-OPENSSL_OPTIONS=no-idea no-mdc2 no-rc5 zlib enable-tlsext threads shared
+OPENSSL_OPTIONS="no-idea no-mdc2 no-rc5 zlib enable-tlsext threads shared"
 DEREF_SYMLINKS=deref_symlinks.sh
 
 # BUILD
