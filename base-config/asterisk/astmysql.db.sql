@@ -90,6 +90,7 @@ CREATE TABLE `callfilter` (
  `zone` enum('internal','external','all') NOT NULL,
  `callerdisplay` varchar(80) NOT NULL DEFAULT '',
  `ringseconds` tinyint(2) unsigned NOT NULL DEFAULT 0,
+ `active` tinyint(1) NOT NULL DEFAULT 0,
  `commented` tinyint(1) NOT NULL DEFAULT 0,
  `description` text NOT NULL,
  PRIMARY KEY(`id`)
@@ -98,6 +99,7 @@ CREATE TABLE `callfilter` (
 CREATE INDEX `callfilter__idx__type` ON `callfilter`(`type`);
 CREATE INDEX `callfilter__idx__bosssecretary` ON `callfilter`(`bosssecretary`);
 CREATE INDEX `callfilter__idx__zone` ON `callfilter`(`zone`);
+CREATE INDEX `callfilter__idx__active` ON `callfilter`(`active`);
 CREATE INDEX `callfilter__idx__commented` ON `callfilter`(`commented`);
 CREATE UNIQUE INDEX `callfilter__uidx__name` ON `callfilter`(`name`);
 
@@ -111,11 +113,13 @@ CREATE TABLE `callfiltermember` (
  `ringseconds` tinyint(2) unsigned NOT NULL DEFAULT 0,
  `priority` tinyint(2) unsigned NOT NULL DEFAULT 0,
  `bstype` enum('boss','secretary'),
+ `active` tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=ascii;
 
 CREATE INDEX `callfiltermember__idx__priority` ON `callfiltermember`(`priority`);
 CREATE INDEX `callfiltermember__idx__bstype` ON `callfiltermember`(`bstype`);
+CREATE INDEX `callfiltermember__idx__active` ON `callfiltermember`(`active`);
 CREATE UNIQUE INDEX `callfiltermember__uidx__callfilterid_type_typeval` ON `callfiltermember`(`callfilterid`,`type`,`typeval`);
 
 
