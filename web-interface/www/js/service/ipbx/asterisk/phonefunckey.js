@@ -26,6 +26,16 @@ function xivo_build_phonefunckey_array(id)
 
 	for(property in xivo_phonefunckey_type)
 	{
+		key = 'fd-phonefunckey-'+property+'-typeval-'+id;
+		xivo_elt_phonefunckey[key] = new Array();
+		xivo_elt_phonefunckey[key]['style'] = 'display:none';
+		xivo_elt_phonefunckey['links']['link'][i++] = new Array(key,0,1);
+
+		key = 'it-phonefunckey-supervision-'+id;
+		xivo_elt_phonefunckey[key] = new Array();
+		xivo_elt_phonefunckey[key]['property'] = 'disabled|true:boolean';
+		xivo_elt_phonefunckey['links']['link'][i++] = new Array(key,0,1);
+
 		key = 'it-phonefunckey-'+property+'-typeval-'+id;
 		xivo_elt_phonefunckey[key] = new Array();
 		xivo_elt_phonefunckey[key]['style'] = 'display:none';
@@ -35,10 +45,16 @@ function xivo_build_phonefunckey_array(id)
 
 	for(property in xivo_phonefunckey_type)
 	{
-		key = 'it-phonefunckey-'+property+'-typeval-'+id;
+
 		xivo_fm_phonefunckey[id][property] = xivo_clone(xivo_elt_phonefunckey);
-		xivo_fm_phonefunckey[id][property][key]['style'] = 'display:inline';
-		xivo_fm_phonefunckey[id][property][key]['property'] = 'disabled|false:boolean;className|it-enabled';
+		xivo_fm_phonefunckey[id][property]['fd-phonefunckey-'+property+'-typeval-'+id]['style'] = 'display:inline';
+
+		keyit = 'it-phonefunckey-'+property+'-typeval-'+id;
+		xivo_fm_phonefunckey[id][property][keyit]['style'] = 'display:inline';
+		xivo_fm_phonefunckey[id][property][keyit]['property'] = 'disabled|false:boolean;className|it-enabled';
+
+		if(property == 'user' || property == 'custom')
+			xivo_fm_phonefunckey[id][property]['it-phonefunckey-supervision-'+id]['property'] = 'disabled|false:boolean';
 
 		xivo_attrib_register('fm_phonefunckey-'+id+'-'+property,xivo_fm_phonefunckey[id][property]);
 	}

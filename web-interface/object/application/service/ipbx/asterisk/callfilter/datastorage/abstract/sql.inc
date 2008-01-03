@@ -75,13 +75,15 @@ class xivo_application_service_asterisk_callfilter_abstract_sql extends xivo_app
 				'user1.lastname AS member_lastname,'.
 				'user1.number AS member_number,'.
 				'user1.name AS member_name,'.
-				'IFNULL(user2.id,0) AS linked';
+				'MAX(IFNULL(user2.id,0)) AS linked';
 
+		$this->_dso->new_group('id',$t['callfilter']);
 		$this->_dso->new_order($order,null,$t['callfilter']);
 		$this->_dso->new_limit($limit);
 
 		$r = $this->_dso->select_all($from,$select,$where);
 
+		$this->_dso->reset_group();
 		$this->_dso->reset_order();
 		$this->_dso->reset_limit();
 

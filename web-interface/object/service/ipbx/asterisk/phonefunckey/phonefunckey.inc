@@ -60,7 +60,7 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 				if(($arr2 = xivo_get_aks($val1)) === false)
 				{
 					if(is_array($val1) === false)
-						$r[$key][$key1.'.'.$val1] = $val1;
+						$r[$key][$key1.'-'.$val1] = $val1;
 					continue;
 				}
 
@@ -72,7 +72,7 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 					if(is_bool($val2) === false)
 						continue;
 
-					$r[$key][$key1.'.'.$key2] = $val2;
+					$r[$key][$key1.'-'.$key2] = $val2;
 				}
 			}
 		}

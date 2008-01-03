@@ -167,6 +167,7 @@ $_HTML->set_var('element',$element);
 $_HTML->set_var('list',$appuser->get_dialstatus_destination_list());
 $_HTML->set_var('moh_list',$appuser->get_musiconhold());
 $_HTML->set_var('autoprov_list',$autoprov->get_autoprov_list());
+$_HTML->set_var('fktype_list',$appuser->get_phonefunckey_type());
 
 $dhtml = &$_HTML->get_module('dhtml');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialstatus.js');

@@ -397,6 +397,7 @@ function xivo_fm_field_id_counter(obj,cnt)
 	var tag_input = false;
 	var tag_select = false;
 	var tag_textarea = false;
+	var tag_a = false;
 
 	if((tag_input = xivo_etag('input',obj)) != false)
 	{
@@ -431,6 +432,18 @@ function xivo_fm_field_id_counter(obj,cnt)
 			if(xivo_is_undef(tag_textarea[i].id) == false
 			&& tag_textarea[i].id.length > 0)
 				tag_textarea[i].id += '-'+cnt;
+		}
+	}
+
+	if((tag_a = xivo_etag('a',obj)) != false)
+	{
+		var tag_a_nb = tag_a.length;
+
+		for(i = 0;i < tag_a_nb;i++)
+		{
+			if(xivo_is_undef(tag_a[i].id) == false
+			&& tag_a[i].id.length > 0)
+				tag_a[i].id += '-'+cnt;
 		}
 	}
 

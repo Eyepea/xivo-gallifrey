@@ -5,10 +5,12 @@ xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 class xivo_application_service_asterisk_user_abstract_sql extends xivo_application_service_asterisk_abstract_sql
 {
 	var $_table	= array(
-				'userfeatures'	=> '',
-				'usersip'	=> '',
-				'useriax'	=> '',
-				'usercustom'	=> '');
+				'userfeatures'		=> '',
+				'usersip'		=> '',
+				'useriax'		=> '',
+				'usercustom'		=> '',
+				'callfilter'		=> '',
+				'callfiltermember'	=> '');
 
 	function get_nb($arr=null,$disable=null,$initialized=null)
 	{
@@ -299,6 +301,52 @@ class xivo_application_service_asterisk_user_abstract_sql extends xivo_applicati
 
 		if(($this->_cnt = $this->_dso->select_count($from,$t['userfeatures'].'.id',$where)) === false
 		|| empty($r) === true)
+			$r = false;
+
+		return($r);
+	}
+
+	function get_bsfilter($id)
+	{
+		if(($id = xivo_uint($id)) === 0)
+			return(false);
+
+		$t = &$this->_table;
+
+		$userwhere = array();
+		$userwhere['internal'] = 0;
+		$userwhere['id'] = $id;
+
+		$cfiltermjoin = $t['callfiltermember'].'.typeval = '.$t['userfeatures'].'.id'.
+				' AND '.$t['callfiltermember'].'.bstype = '.$t['userfeatures'].'.bsfilter';
+
+		$cfiltermwhere = array();
+		$cfiltermwhere['type'] = 'user';
+
+		$cfilterjoin = $t['callfilter'].'.id = '.$t['callfiltermember'].'.callfilterid';
+
+		$cfilterwhere = array();
+		$cfilterwhere['type'] = 'bosssecretary';
+
+		if(($where = $this->_dso->where($userwhere,$t['userfeatures'])) === false
+		|| ($cfiltermjoin = $this->_dso->join($t['callfiltermember'],'INNER',$cfiltermjoin)) === false
+		|| ($cfiltermwhere = $this->_dso->where($cfiltermwhere,$t['callfiltermember'])) === false
+		|| ($cfilterjoin = $this->_dso->join($t['callfilter'],'INNER',$cfilterjoin)) === false
+		|| ($cfilterwhere = $this->_dso->where($cfilterwhere,$t['callfilter'])) === false)
+			return(false);
+
+		$from = $t['userfeatures'].
+			' '.$cfiltermjoin.
+			' AND '.$cfiltermwhere.
+			' '.$cfilterjoin.
+			' AND '.$cfilterwhere;
+
+		$where	.= ' AND IFNULL('.$t['userfeatures'].'.number,\'\') != \'\'';
+
+		$r = $this->_dso->select_all($from,$t['callfilter'].'.*',$where);
+		//xivo_print_r($this->_dso->_query);
+
+		if(isset($r[0]) === false)
 			$r = false;
 
 		return($r);

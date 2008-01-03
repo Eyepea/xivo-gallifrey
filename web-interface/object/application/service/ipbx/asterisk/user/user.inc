@@ -21,8 +21,9 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 	var $_phonefunckey	= false;
 	var $_musiconhold	= false;
 	var $_conf		= array();
+	var $_param		= array();
 
-	function xivo_application_service_asterisk_user(&$service,&$dso)
+	function xivo_application_service_asterisk_user(&$service,&$dso,$param=array())
 	{
 		$this->xivo_application_asterisk_abstract(&$service);
 
@@ -44,6 +45,14 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$this->_phonefunckey = &$this->_service->get_module('phonefunckey');
 
 		$this->_load_config(dirname(__FILE__));
+
+		$this->_param['internal'] = false;
+
+		if(is_array($param) === true)
+		{
+			if(isset($param['internal']) === true)
+				$this->_param['internal'] = $param['internal'];
+		}
 
 		if(($size = $this->_chk_upload_file()) === false)
 			die();
@@ -78,11 +87,11 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		|| ($this->_protocol = &$this->_service->get_protocol_module($this->_info['ufeatures']['protocol'])) === false
 		|| ($this->_info['protocol'] = $this->_protocol->get($this->_info['ufeatures']['protocolid'],$disable)) === false)
 		{
-			$this->_userfeatures->set_dso_param('internal',false);
+			$this->_userfeatures->set_dso_param('internal',$this->_param['internal']);
 			return(false);
 		}
 
-		$this->_userfeatures->set_dso_param('internal',false);
+		$this->_userfeatures->set_dso_param('internal',$this->_param['internal']);
 
 		$this->_origin['protocol'] = $this->_protocol->get_origin();
 		$this->_origin['ufeatures'] = $this->_userfeatures->get_origin();
@@ -101,6 +110,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$this->_get_autoprov();
 		$this->_get_phonefunckey();
 		$this->get_musiconhold();
+		//xivo_print_r($this->get_bsfilter());
 
 		return($this->_info);
 	}
@@ -282,6 +292,14 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			ksort($this->_musiconhold);
 
 		return($this->_musiconhold);
+	}
+
+	function get_bsfilter()
+	{
+		if(xivo_issa('ufeatures',$this->_info) === false)
+			return(false);
+
+		return($this->_dso->get_bsfilter($this->_info['ufeatures']['id']));
 	}
 
 	function get_config_import_file()
@@ -1702,43 +1720,39 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 	function enable()
 	{
+		$r = true;
+
 		$this->_status = 'enable';
 		$this->_return = array();
 
 		if(is_object($this->_protocol) === false)
-		{
-			$this->_status = '';
-			return(false);
-		}
+			$r = false;
 		else if($this->enable_protocol() === false
 		|| $this->enable_userfeatures() === false)
 		{
+			$r = false;
 			$this->_reverse_enable_disable();
-			$this->_status = '';
-			return(false);
 		}
 
 		$this->_status = '';
 
-		return(true);
+		return($r);
 	}
 
 	function disable()
 	{
+		$r = true;
+
 		$this->_status = 'disable';
 		$this->_return = array();
 
 		if(is_object($this->_protocol) === false)
-		{
-			$this->_status = '';
-			return(false);
-		}
+			$r = false;
 		else if($this->disable_protocol() === false
 		|| $this->disable_userfeatures() === false)
 		{
+			$r = false;
 			$this->_reverse_enable_disable();
-			$this->_status = '';
-			return(false);
 		}
 
 		$this->_status = '';

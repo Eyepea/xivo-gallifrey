@@ -24,6 +24,13 @@ class xivo_service_asterisk_callfiltermember extends xivo_service_asterisk_abstr
 		$this->_load_config();
 	}
 
+	function _prepare($data)
+	{
+		$data['active'] = (bool) $data['active'];
+
+		return($data);
+	}
+
 	function add($arr,$id=0)
 	{
 		if(is_array($arr) === false
