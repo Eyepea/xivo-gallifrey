@@ -443,8 +443,7 @@ def build_features_get(reqlist):
         srcnum = reqlist[2]
         repstr = ''
 
-        conn = anysql.connect_by_uri(configs[reqlist[0]].userfeatures_db_uri)
-        cursor = conn.cursor()
+        cursor = configs[reqlist[0]].userfeatures_db_conn.cursor()
         params = [srcnum, context]
         query = 'SELECT ${columns} FROM userfeatures WHERE number = %s AND context = %s'
 
@@ -476,8 +475,6 @@ def build_features_get(reqlist):
                                   %(str(reqlist), key, str(exc)))
                         return commandclass.features_srv2clt('get', 'KO')
 
-        conn.close()
-
         if len(repstr) == 0:
                 repstr = 'KO'
         return commandclass.features_srv2clt('get', repstr)
@@ -496,11 +493,8 @@ def build_features_put(reqlist):
                                 value = reqlist[4]
                         query = 'UPDATE userfeatures SET ' + key + ' = %s WHERE number = %s AND context = %s'
                         params = [value, srcnum, context]
-                        conn = anysql.connect_by_uri(configs[reqlist[0]].userfeatures_db_uri)
-                        cursor = conn.cursor()
+                        cursor = configs[reqlist[0]].userfeatures_db_conn.cursor()
                         cursor.query(query, parameters = params)
-                        conn.commit()
-                        conn.close()
                         repstr = 'OK'
                         response = commandclass.features_srv2clt('put', '%s;%s;%s;' %(repstr, key, value))
                 else:
@@ -2355,7 +2349,8 @@ class AsteriskRemote:
                 self.ami_port = ami_port
                 self.ami_login = ami_login
                 self.ami_pass = ami_pass
-                self.userfeatures_db_uri = userfeatures_db_uri
+                self.userfeatures_db_uri  = userfeatures_db_uri
+                self.userfeatures_db_conn = anysql.connect_by_uri(userfeatures_db_uri)
                 self.capafeatures = capafeatures
                 self.cdr_db_uri  = cdr_db_uri
                 self.cdr_db_conn = anysql.connect_by_uri(cdr_db_uri)
