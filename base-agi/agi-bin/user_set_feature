@@ -39,8 +39,10 @@ from BackSQL import backsqlite
 from BackSQL import backmysql
 import ConfigDict
 from agi import *
+import agitb
 
 agi = AGI()
+agitb.enable(agi)
 db_uri = ConfigDict.ReadSingleKey(CONFIG_FILE, 'db', 'db_uri')
 
 # Cursors have a weak reference on their connection, so make a strong one.
@@ -49,6 +51,7 @@ cursor = conn.cursor()
 srcnum = agi.get_variable('REAL_SRCNUM')
 context = agi.get_variable('REAL_CONTEXT')
 
+custom_query = False
 query = "UPDATE userfeatures SET"
 params = []
 
@@ -174,16 +177,20 @@ elif type == "callfilter":
 	query += " callfilter = %s"
 	params.append(callfilter)
 	agi.set_variable('XIVO_CALLFILTERENABLED', callfilter)
+elif type == "bsfilter":
+	custom_query = True
+	filter = agi_helpers.bsfilter(agi, cursor, "101", "default")
 else:
-	agi_helpers.dp_break("Unknown forwarding type '%s'" % type)
+	agi_helpers.dp_break(agi, "Unknown forwarding type '%s'" % type)
 
-query += " WHERE number = %s AND context = %s"
-params.append(srcnum)
-params.append(context)
-cursor.query(query, parameters = params)
+if not custom_query:
+	query += " WHERE number = %s AND context = %s"
+	params.append(srcnum)
+	params.append(context)
+	cursor.query(query, parameters = params)
 
-if cursor.rowcount != 1:
-	agi_helpers.dp_break("Unable to perform the requested update")
+	if cursor.rowcount != 1:
+		agi_helpers.dp_break(agi, "Unable to perform the requested update")
 
 conn.commit()
 agi.verbose('AGI script "%s" successfully executed' % sys.argv[0])

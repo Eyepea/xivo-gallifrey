@@ -40,11 +40,13 @@ from BackSQL import backsqlite
 from BackSQL import backmysql
 import ConfigDict
 from agi import *
+import agitb
 
 agi = AGI()
+agitb.enable(agi)
 db_uri = ConfigDict.ReadSingleKey(CONFIG_FILE, 'db', 'db_uri')
 
-def ds_set_fwd_vars(id, status, type_varname, typeval1_varname, typeval2_varname):
+def ds_set_fwd_vars(id, lookuptype, status, type_varname, typeval1_varname, typeval2_varname):
 	"""Front-end to agi_helpers.set_fwd_vars() that fetches some data from
 	the dialstatus table.
 
@@ -58,7 +60,7 @@ def ds_set_fwd_vars(id, status, type_varname, typeval1_varname, typeval2_varname
 
 	cursor.query("SELECT ${columns} FROM dialstatus WHERE status = %s AND category = %s AND categoryval = %s AND linked = 1",
                      ('type', 'typeval', 'applicationval'),
-                     (status, 'user', id))
+                     (status, lookuptype, id))
 	res = cursor.fetchone()
 
 	if not res:
@@ -79,13 +81,14 @@ cursor = conn.cursor()
 srcnum = agi.get_variable('REAL_SRCNUM')
 dstnum = agi.get_variable('REAL_DSTNUM')
 context = agi.get_variable('REAL_CONTEXT')
+zone = agi.get_variable('REAL_CALLTYPE')
 
 cursor.query("SELECT ${columns} FROM userfeatures "
              "WHERE number = %s "
              "AND context = %s "
              "AND internal = 0 "
              "AND commented = 0",
-             ('id', 'protocol' , 'protocolid', 'name', 'ringseconds', 'simultcalls', 'enablevoicemail', 'enablexfer', 'enableautomon', 'callrecord', 'callfilter', 'enablednd', 'enableunc', 'destunc', 'enablerna', 'destrna', 'enablebusy', 'destbusy', 'musiconhold'),
+             ('id', 'protocol' , 'protocolid', 'name', 'ringseconds', 'simultcalls', 'enablevoicemail', 'enablexfer', 'enableautomon', 'callrecord', 'callfilter', 'enablednd', 'enableunc', 'destunc', 'enablerna', 'destrna', 'enablebusy', 'destbusy', 'musiconhold', 'bsfilter'),
              (dstnum, context))
 res = cursor.fetchone()
 
@@ -111,6 +114,38 @@ enablerna = res['enablerna']
 destrna = res['destrna']
 callrecord = res['callrecord']
 musiconhold = res['musiconhold']
+bsfilter = res['bsfilter']
+
+# Special case. If a boss-secretary filter is set, the code will prematurely
+# exit because the other normally set variables become useless.
+if bsfilter == 'boss':
+	apply_filter = False
+
+	try:
+		filter = agi_helpers.bsfilter(agi, cursor, dstnum, context)
+
+		if filter.check_zone(zone):
+			apply_filter = True
+	except LookupError:
+		pass
+
+	if apply_filter:
+		agi.verbose("Filter applies")
+
+		if filter.mode in ("bossfirst-simult", "secretary-simult", "all"):
+			if filter.mode in ("bossfirst-simult", "all"):
+				agi.set_variable('XIVO_BSFILTER_BOSS_INTERFACE', filter.boss.interface)
+				agi.set_variable('XIVO_BSFILTER_BOSS_TIMEOUT', filter.boss.ringseconds)
+
+			interface = '&'.join(secretary.interface for secretary in filter.secretaries)
+			agi.set_variable('XIVO_BSFILTER_INTERFACE', interface)
+			agi.set_variable('XIVO_BSFILTER_TIMEOUT', filter.ringseconds)
+
+		ds_set_fwd_vars(filter.id, 'callfilter', 'noanswer', 'XIVO_BSFILTER_FWD_TYPERNA', 'XIVO_BSFILTER_FWD_TYPEVAL1RNA', 'XIVO_BSFILTER_FWD_TYPEVAL2RNA')
+		agi.set_variable('XIVO_BSFILTER_MODE', filter.mode)
+		agi.set_variable('XIVO_BSFILTER', '1')
+		agi.verbose('AGI script "%s" successfully executed' % sys.argv[0])
+		sys.exit(0)
 
 if protocol in ("sip", "iax"):
 	interface = protocol.upper() + "/" + name
@@ -191,7 +226,7 @@ if 'fwdbusy' in features_list:
 		agi.set_variable('XIVO_FWD_TYPEVAL1BUSY', destbusy)
 		agi.set_variable('XIVO_FWD_TYPEVAL2BUSY', context)
 	else:
-		ds_set_fwd_vars(id, 'busy', 'XIVO_FWD_TYPEBUSY', 'XIVO_FWD_TYPEVAL1BUSY', 'XIVO_FWD_TYPEVAL2BUSY')
+		ds_set_fwd_vars(id, 'user', 'busy', 'XIVO_FWD_TYPEBUSY', 'XIVO_FWD_TYPEVAL1BUSY', 'XIVO_FWD_TYPEVAL2BUSY')
 else:
 	agi.set_variable('XIVO_FWD_TYPEBUSY', 'endcall')
 	agi.set_variable('XIVO_FWD_TYPEVAL1BUSY', 'none')
@@ -203,13 +238,13 @@ if 'fwdrna' in features_list:
 		agi.set_variable('XIVO_FWD_TYPEVAL1RNA', destrna)
 		agi.set_variable('XIVO_FWD_TYPEVAL2RNA', context)
 	else:
-		ds_set_fwd_vars(id, 'noanswer', 'XIVO_FWD_TYPERNA', 'XIVO_FWD_TYPEVAL1RNA', 'XIVO_FWD_TYPEVAL2RNA')
+		ds_set_fwd_vars(id, 'user', 'noanswer', 'XIVO_FWD_TYPERNA', 'XIVO_FWD_TYPEVAL1RNA', 'XIVO_FWD_TYPEVAL2RNA')
 else:
 	agi.set_variable('XIVO_FWD_TYPERNA', 'endcall')
 	agi.set_variable('XIVO_FWD_TYPEVAL1RNA', 'none')
 
-ds_set_fwd_vars(id, 'congestion', 'XIVO_FWD_TYPECONGESTION', 'XIVO_FWD_TYPEVAL1CONGESTION', 'XIVO_FWD_TYPEVAL2CONGESTION')
-ds_set_fwd_vars(id, 'chanunavail', 'XIVO_FWD_TYPEUNAVAIL', 'XIVO_FWD_TYPEVAL1UNAVAIL', 'XIVO_FWD_TYPEVAL2UNAVAIL')
+ds_set_fwd_vars(id, 'user', 'congestion', 'XIVO_FWD_TYPECONGESTION', 'XIVO_FWD_TYPEVAL1CONGESTION', 'XIVO_FWD_TYPEVAL2CONGESTION')
+ds_set_fwd_vars(id, 'user', 'chanunavail', 'XIVO_FWD_TYPEUNAVAIL', 'XIVO_FWD_TYPEVAL1UNAVAIL', 'XIVO_FWD_TYPEVAL2UNAVAIL')
 
 if 'incallrec' in features_list and callrecord:
 	agi.set_variable('XIVO_CALLRECORDFILE', "/usr/share/asterisk/sounds/web-interface/monitor/user-%s-%s-%s.wav" % (srcnum, dstnum, int(time.time())))
