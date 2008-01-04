@@ -123,8 +123,10 @@ if bsfilter == 'boss':
 
 	try:
 		filter = agi_helpers.bsfilter(agi, cursor, dstnum, context)
+		zone_applies = filter.check_zone(zone)
+		secretary_calling = filter.is_secretary(srcnum)
 
-		if filter.check_zone(zone):
+		if zone_applies and not secretary_calling:
 			apply_filter = True
 	except LookupError:
 		pass

@@ -361,3 +361,14 @@ class bsfilter:
 			return True
 		else:
 			return False
+
+	def is_secretary(self, number, context = None):
+		if not context:
+			context = self.context
+
+		secretary_numbers = (secretary.number for secretary in self.secretaries)
+
+		if number in secretary_numbers and context == self.context:
+			return True
+		else:
+			return False
