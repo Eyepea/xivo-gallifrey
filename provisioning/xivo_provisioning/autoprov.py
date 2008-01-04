@@ -1,7 +1,7 @@
 #!/usr/bin/python
 """Autoprovisioning daemon for Xivo
 
-Copyright (C) 2007, Proformatique
+Copyright (C) 2007, 2008 Proformatique
 
 """
 
