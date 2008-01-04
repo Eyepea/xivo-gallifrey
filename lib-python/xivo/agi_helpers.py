@@ -332,7 +332,8 @@ class bsfilter:
 
 			secretary.interface = interface
 			self.secretaries.append(secretary)
-			self.agi_str(agi)
+
+		self.agi_str(agi)
 
 	def __str__(self):
 		return ("Call filter object :\n"

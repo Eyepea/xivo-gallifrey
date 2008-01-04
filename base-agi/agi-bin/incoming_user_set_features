@@ -82,6 +82,7 @@ srcnum = agi.get_variable('REAL_SRCNUM')
 dstnum = agi.get_variable('REAL_DSTNUM')
 context = agi.get_variable('REAL_CONTEXT')
 zone = agi.get_variable('REAL_CALLTYPE')
+bypass = agi.get_variable('XIVO_BSFILTER_BYPASS')
 
 cursor.query("SELECT ${columns} FROM userfeatures "
              "WHERE number = %s "
@@ -118,7 +119,7 @@ bsfilter = res['bsfilter']
 
 # Special case. If a boss-secretary filter is set, the code will prematurely
 # exit because the other normally set variables become useless.
-if bsfilter == 'boss':
+if not bypass and bsfilter == 'boss':
 	apply_filter = False
 
 	try:
@@ -143,7 +144,17 @@ if bsfilter == 'boss':
 			agi.set_variable('XIVO_BSFILTER_INTERFACE', interface)
 			agi.set_variable('XIVO_BSFILTER_TIMEOUT', filter.ringseconds)
 
+		elif filter.mode in ("bossfirst-serial", "secretary-serial"):
+			if filter.mode == "bossfirst-serial":
+				agi.set_variable('XIVO_BSFILTER_BOSS_INTERFACE', filter.boss.interface)
+				agi.set_variable('XIVO_BSFILTER_BOSS_TIMEOUT', filter.boss.ringseconds)
+
+			for index, secretary in enumerate(filter.secretaries):
+				agi.set_variable('XIVO_BSFILTER_SECRETARY%d_INTERFACE' % index, secretary.interface)
+				agi.set_variable('XIVO_BSFILTER_SECRETARY%d_TIMEOUT' % index, secretary.ringseconds)
+
 		ds_set_fwd_vars(filter.id, 'callfilter', 'noanswer', 'XIVO_BSFILTER_FWD_TYPERNA', 'XIVO_BSFILTER_FWD_TYPEVAL1RNA', 'XIVO_BSFILTER_FWD_TYPEVAL2RNA')
+		agi.set_variable('CALLERID(num)', "%s - %s" % (srcnum, filter.callerdisplay))
 		agi.set_variable('XIVO_BSFILTER_MODE', filter.mode)
 		agi.set_variable('XIVO_BSFILTER', '1')
 		agi.verbose('AGI script "%s" successfully executed' % sys.argv[0])
