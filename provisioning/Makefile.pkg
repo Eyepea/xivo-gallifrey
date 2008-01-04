@@ -17,7 +17,7 @@ FREEZEPATH?=$(realpath ../tools/python-freeze/)
 default:
 
 prepare-tarball::
-	@echo "from xivo_provisioning import to_path" | PYTHONPATH=../lib-python/xivo/ /usr/bin/python2.4
+	@PYTHONPATH=../lib-python/xivo/ /usr/bin/python2.4 -c "from xivo_provisioning import to_path"
 	@cd xivo_provisioning && \
 	PYTHONPATH=../../lib-python/xivo/ /usr/bin/python2.4 -c "from Phones import *" && \
 	PYTHONPATH=../../lib-python/xivo/ /usr/bin/python2.4 -c "import provsup" && \
