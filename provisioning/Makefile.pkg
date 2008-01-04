@@ -19,8 +19,8 @@ default:
 prepare-tarball::
 	@echo "from xivo_provisioning import to_path" | PYTHONPATH=../lib-python/xivo/ /usr/bin/python2.4
 	@cd xivo_provisioning && \
-	echo "from Phones import *" | PYTHONPATH=../../lib-python/xivo/ /usr/bin/python2.4 && \
-	echo "import provsup" | PYTHONPATH=../../lib-python/xivo/ /usr/bin/python2.4 && \
+	PYTHONPATH=../../lib-python/xivo/ /usr/bin/python2.4 -c "from Phones import *" && \
+	PYTHONPATH=../../lib-python/xivo/ /usr/bin/python2.4 -c "import provsup" && \
 	${FREEZEPATH}/local_freeze.py ${FREEZEPATH}/freeze.py provsup.py,autoprov.py && \
 	cp initconfig.py initconfig
 
