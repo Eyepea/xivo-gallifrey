@@ -253,7 +253,9 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		$phonefunckey_where = array();
 		$phonefunckey_where['iduserfeatures'] = $this->_info['ufeatures']['id'];
-		$this->_info['phonefunckey'] = $this->_phonefunckey->get_all_where($phonefunckey_where);
+		$this->_info['phonefunckey'] = $this->_phonefunckey->get_all_where($phonefunckey_where,
+										   true,
+										   array('fknum' => SORT_ASC));
 		$this->_origin['phonefunckey'] = $this->_phonefunckey->get_origin_list();
 
 		return($this->_info['phonefunckey']);
