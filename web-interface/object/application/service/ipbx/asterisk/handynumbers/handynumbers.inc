@@ -129,7 +129,7 @@ class xivo_application_service_asterisk_handynumbers extends xivo_application_as
 
 			$ref = &$list[$i];
 
-			if(isset($ref['trunkfeaturesid'],$ref['exten']) === false)
+			if(is_array($ref) === false || isset($ref['trunkfeaturesid'],$ref['exten']) === false)
 				continue;
 
 			if(($ref['trunkfeaturesid'] = $this->_trunkfeatures->get_id($ref['trunkfeaturesid'])) === false)

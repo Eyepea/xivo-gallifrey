@@ -18,6 +18,8 @@
 	endif;
 ?>
 
+<div id="sb-part-first">
+
 <?=$form->text(array('desc' => $this->bbf('fm_callfilter_name'),'name' => 'callfilter[name]','labelid' => 'callfilter-name','size' => 15,'default' => $element['callfilter']['name']['default'],'value' => $info['callfilter']['name']));?>
 
 <?=$form->select(array('desc' => $this->bbf('fm_callfilter_zone'),'name' => 'callfilter[zone]','labelid' => 'callfilter-zone','bbf' => array('concatkey','fm_callfilter_zone-opt-'),'key' => false,'default' => $element['callfilter']['zone']['default'],'value' => $info['callfilter']['zone']),$element['callfilter']['zone']['value']);?>
@@ -84,7 +86,13 @@
 <?=$form->textarea(array('field' => false,'label' => false,'name' => 'callfilter[description]','id' => 'it-callfilter-description','cols' => 60,'rows' => 5,'default' => $element['callfilter']['description']['default']),$info['callfilter']['description']);?>
 </div>
 
+</div>
+
+<div id="sb-part-last" class="b-nodisplay">
+
 	<fieldset id="fld-dialstatus-noanswer">
 		<legend><?=$this->bbf('fld-dialstatus-noanswer');?></legend>
 		<?=$this->file_include('bloc/service/ipbx/asterisk/call_management/callfilter/dialstatus',array('status' => 'noanswer'));?>
 	</fieldset>
+
+</div>

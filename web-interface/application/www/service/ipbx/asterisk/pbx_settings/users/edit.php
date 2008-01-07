@@ -8,7 +8,7 @@ $return = &$info;
 $autoprov = &$ipbx->get_module('autoprov');
 $zonemessages = &$ipbx->get_module('zonemessages');
 
-$result = null;
+$result = $error = null;
 
 if(isset($info['protocol']['allow']) === true)
 	$allow = $info['protocol']['allow'];
@@ -77,6 +77,9 @@ do
 	{
 		$result = $appuser->get_result();
 		$result['dialstatus'] = $appuser->get_dialstatus_result();
+		$result['phonefunckey'] = $appuser->get_phonefunckey_result();
+
+		$error = $appuser->get_error();
 
 		if(xivo_issa('protocol',$result) === true
 		&& isset($result['protocol']['allow']) === true)
@@ -165,6 +168,7 @@ else
 
 $_HTML->set_var('id',$info['ufeatures']['id']);
 $_HTML->set_var('info',$return);
+$_HTML->set_var('error',$error);
 $_HTML->set_var('dialstatus',$return['dialstatus']);
 $_HTML->set_var('groups',$groups);
 $_HTML->set_var('gmember',$gmember);
@@ -173,9 +177,10 @@ $_HTML->set_var('qmember',$qmember);
 $_HTML->set_var('rightcall',$rightcall);
 $_HTML->set_var('zonemessages',$zonemessages->get_all_name());
 $_HTML->set_var('element',$element);
-$_HTML->set_var('list',$appuser->get_dialstatus_destination_list());
+$_HTML->set_var('destination_list',$appuser->get_destination_list());
 $_HTML->set_var('moh_list',$appuser->get_musiconhold());
 $_HTML->set_var('autoprov_list',$autoprov->get_autoprov_list());
+$_HTML->set_var('bsfilter_list',$appuser->get_bsfilter_list());
 $_HTML->set_var('fktype_list',$appuser->get_phonefunckey_type());
 
 $dhtml = &$_HTML->get_module('dhtml');

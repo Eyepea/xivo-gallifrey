@@ -4,7 +4,7 @@
 
 	$info = $this->get_var('info');
 	$element = $this->get_var('element');
-	$list = $this->get_var('list');
+	$list = $this->get_var('dialstatus_list');
 	$status = $this->get_var('status');
 
 	$linked = $this->get_varra('dialstatus',array($status,'linked'));

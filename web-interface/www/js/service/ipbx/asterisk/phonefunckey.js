@@ -8,6 +8,7 @@ xivo_phonefunckey_type['group'] = 1;
 xivo_phonefunckey_type['queue'] = 1;
 xivo_phonefunckey_type['meetme'] = 1;
 xivo_phonefunckey_type['extension'] = 1;
+xivo_phonefunckey_type['bosssecretary'] = 1;
 xivo_phonefunckey_type['custom'] = 1;
 
 function xivo_build_phonefunckey_array(id)
@@ -18,43 +19,47 @@ function xivo_build_phonefunckey_array(id)
 
 	xivo_fm_phonefunckey[id] = new Array();
 
-	xivo_elt_phonefunckey = new Array();
-	xivo_elt_phonefunckey['links'] = new Array();
-	xivo_elt_phonefunckey['links']['link'] = new Array();
+	xivo_elt_phonefunckey[id] = new Array();
+	xivo_elt_phonefunckey[id]['links'] = new Array();
+	xivo_elt_phonefunckey[id]['links']['link'] = new Array();
 
 	var i = 0;
 
 	for(property in xivo_phonefunckey_type)
 	{
 		key = 'fd-phonefunckey-'+property+'-typeval-'+id;
-		xivo_elt_phonefunckey[key] = new Array();
-		xivo_elt_phonefunckey[key]['style'] = 'display:none';
-		xivo_elt_phonefunckey['links']['link'][i++] = new Array(key,0,1);
+		xivo_elt_phonefunckey[id][key] = new Array();
+		xivo_elt_phonefunckey[id][key]['style'] = 'display:none';
+		xivo_elt_phonefunckey[id]['links']['link'][i++] = new Array(key,0,1);
 
 		key = 'it-phonefunckey-supervision-'+id;
-		xivo_elt_phonefunckey[key] = new Array();
-		xivo_elt_phonefunckey[key]['property'] = 'disabled|true:boolean';
-		xivo_elt_phonefunckey['links']['link'][i++] = new Array(key,0,1);
+		xivo_elt_phonefunckey[id][key] = new Array();
+		xivo_elt_phonefunckey[id][key]['property'] = 'className|it-disabled';
+		xivo_elt_phonefunckey[id]['links']['link'][i++] = new Array(key,0,1);
 
 		key = 'it-phonefunckey-'+property+'-typeval-'+id;
-		xivo_elt_phonefunckey[key] = new Array();
-		xivo_elt_phonefunckey[key]['style'] = 'display:none';
-		xivo_elt_phonefunckey[key]['property'] = 'disabled|true:boolean;className|it-disabled';
-		xivo_elt_phonefunckey['links']['link'][i++] = new Array(key,0,1);
+		xivo_elt_phonefunckey[id][key] = new Array();
+		xivo_elt_phonefunckey[id][key]['style'] = 'display:none';
+		xivo_elt_phonefunckey[id][key]['property'] = 'disabled|true:boolean;className|it-disabled';
+		xivo_elt_phonefunckey[id]['links']['link'][i++] = new Array(key,0,1);
 	}
 
 	for(property in xivo_phonefunckey_type)
 	{
-
-		xivo_fm_phonefunckey[id][property] = xivo_clone(xivo_elt_phonefunckey);
+		xivo_fm_phonefunckey[id][property] = xivo_clone(xivo_elt_phonefunckey[id]);
 		xivo_fm_phonefunckey[id][property]['fd-phonefunckey-'+property+'-typeval-'+id]['style'] = 'display:inline';
 
 		keyit = 'it-phonefunckey-'+property+'-typeval-'+id;
 		xivo_fm_phonefunckey[id][property][keyit]['style'] = 'display:inline';
 		xivo_fm_phonefunckey[id][property][keyit]['property'] = 'disabled|false:boolean;className|it-enabled';
 
-		if(property == 'user' || property == 'custom')
-			xivo_fm_phonefunckey[id][property]['it-phonefunckey-supervision-'+id]['property'] = 'disabled|false:boolean';
+		if(property == 'user'
+		|| property == 'bosssecretary'
+		|| property == 'custom')
+		{
+			keyit = 'it-phonefunckey-supervision-'+id;
+			xivo_fm_phonefunckey[id][property][keyit]['property'] = 'className|it-enabled';
+		}
 
 		xivo_attrib_register('fm_phonefunckey-'+id+'-'+property,xivo_fm_phonefunckey[id][property]);
 	}
@@ -74,11 +79,15 @@ function xivo_chgphonefunckey(type)
 
 function xivo_phonefunckey_onload()
 {
-	for(id in xivo_fm_phonefunckey)
+	if(xivo_is_undef(xivo_tlist['phonefunckey']) == true
+	|| xivo_is_undef(xivo_tlist['phonefunckey']['cnt']) == true)
+		return(false);
+
+	for(var i = 0;i < xivo_tlist['phonefunckey']['cnt'];i++)
 	{
-		if(xivo_eid('it-phonefunckey-'+id+'-type') != false)
-			xivo_chgphonefunckey(id,xivo_eid('it-phonefunckey-'+id+'-type'));
+		if((eid = xivo_eid('it-phonefunckey-type-'+i)) != false)
+			xivo_chgphonefunckey(eid);
 	}
 }
 
-//xivo_winload.push('xivo_phonefunckey_onload();');
+xivo_winload.push('xivo_phonefunckey_onload();');

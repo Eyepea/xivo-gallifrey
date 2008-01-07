@@ -76,6 +76,22 @@ class xivo_datastorage_abstract_sql
 		return(false);
 	}
 
+	function escape($val)
+	{
+		switch(gettype($val))
+		{
+			case 'boolean':
+				$val = intval($val);
+			case 'integer':
+			case 'float':
+				return($val);
+			case 'NULL':
+				return('NULL');
+		}
+
+		return('\''.$this->escape_string(strval($val)).'\'');
+	}
+
 	function select_one($t,$s='',$w='',$o='')
 	{
 		$t = trim((string) $t);
@@ -108,13 +124,14 @@ class xivo_datastorage_abstract_sql
 		return($r);
 	}
 
-	function select_all($t,$s='',$w='',$o='',$f=true)
+	function select_all($t,$s='',$w='',$o='',$f=true,$u=false)
 	{
 		$t = trim((string) $t);
 		$s = trim((string) $s);
 		$w = trim((string) $w);
 		$o = trim((string) $o);
 		$f = (bool) $f;
+		$u = (bool) $u;
 
 		if($s === '')
 			$s = '*';
@@ -126,6 +143,11 @@ class xivo_datastorage_abstract_sql
 		$o .= $this->_mk_order();
 		$o .= $this->_mk_limit();
 
+		if($u === true && strpos($s,'*') === false)
+			$s .= ' AS __UNIQUE__';
+		else
+			$u = false;
+
 		$q = sprintf('SELECT %s FROM %s WHERE %s%s',$s,$t,($w !== '' ? $w : 1),$o);
 
 		if($this->query($q) === false)
@@ -133,8 +155,16 @@ class xivo_datastorage_abstract_sql
 
 		$r = array();
 
-		for($i = 0;$m = $this->fetch_assoc();$i++)
-			$r[$i] = $m;
+		if($u === true)
+		{
+			for($i = 0;$m = $this->fetch_assoc();$i++)
+				$r[$i] = $m['__UNIQUE__'];
+		}
+		else
+		{
+			for($i = 0;$m = $this->fetch_assoc();$i++)
+				$r[$i] = $m;
+		}
 
 		if($this->_free === true && $f === true)
 			$this->free();
@@ -245,7 +275,7 @@ class xivo_datastorage_abstract_sql
 
 	function add_where($data,$not=false,$table='',$escape=true)
 	{
-		if(($where = $this->where($data,$table,$escape)) === false)
+		if(($where = $this->where($data,$table,$escape,$not)) === false)
 			return(false);
 
 		$this->_where[] = $where;
@@ -376,11 +406,9 @@ class xivo_datastorage_abstract_sql
 
 					$f = $set === true ? '%s %s %s'.$sep : '%s'.$sep;
 					break;
-				case 'string':
 				default:
-					if(is_string($data) === false)
-						$data = strval($data);
-
+					$data = strval($data);
+				case 'string':
 					$f = $set === true ? '%s %s \'%s\''.$sep : '\'%s\''.$sep;
 
 					if($escape === true)
@@ -731,7 +759,7 @@ class xivo_datastorage_abstract_sql
 		if($keys === true)
 			$list = array_keys($list);
 
-		$r = $col.' '.$func.'(\''.implode('\',\'',array_map(array(&$this,'escape_string'),$list)).'\')';
+		$r = $col.' '.$func.'('.implode(',',array_map(array(&$this,'escape'),$list)).')';
 
 		return($r);
 	}

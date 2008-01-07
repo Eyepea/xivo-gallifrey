@@ -120,12 +120,18 @@ function xivo_xdigit($str=0,$def=null,$t=false)
 
 function xivo_uint($str=0,$def=0,$t=false)
 {
-	$str = intval($str);
 	$def = intval($def);
 	$t = (bool) $t;
 
-	if($str < 0)
-		$str = (int) substr($str,1);
+	if(is_scalar($str) === false)
+		$str = 0;
+	else
+	{
+		$str = intval($str);
+
+		if($str < 0)
+			$str = (int) substr($str,1);
+	}
 
 	if($def !== 0 && $str === 0)
 		$str = $t === true ? xivo_uint($def) : $def;

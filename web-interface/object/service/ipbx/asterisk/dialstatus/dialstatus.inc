@@ -134,15 +134,15 @@ class xivo_service_asterisk_dialstatus extends xivo_service_asterisk_abstract
 			case 'custom':
 				return($this->chk_dest_custom($typeval));
 			case 'schedule':
-				return($this->chk_dest_schedule($typeval,null,$disable,false));
+				return($this->chk_dest_schedule($typeval,null,$disable));
 			case 'user':
-				return($this->chk_dest_user($typeval,$id,$disable,false));
+				return($this->chk_dest_user($typeval,$id,$disable));
 			case 'group':
-				return($this->chk_dest_group($typeval,$id,$disable,false));
+				return($this->chk_dest_group($typeval,$id,$disable));
 			case 'queue':
-				return($this->chk_dest_queue($typeval,null,$disable,false));
+				return($this->chk_dest_queue($typeval,null,$disable));
 			case 'meetme':
-				return($this->chk_dest_meetme($typeval,null,$disable,false));
+				return($this->chk_dest_meetme($typeval,null,$disable));
 			case 'sound':
 				return($this->chk_dest_sound('playback',$typeval));
 		}

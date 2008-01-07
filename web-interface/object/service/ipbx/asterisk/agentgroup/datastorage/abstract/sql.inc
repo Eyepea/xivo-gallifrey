@@ -78,11 +78,11 @@ class xivo_service_asterisk_agentgroup_abstract_sql extends xivo_service_asteris
 	{
 		$r = false;
 
-		$this->_dso->order(array('id' => SORT_ASC));
+		$this->_dso->new_order(array('id' => SORT_ASC));
 
 		$r = $this->_dso->select_one($this->_param['table'],'id','deleted = 1');
 
-		$this->_dso->order();
+		$this->_dso->reset_order();
 
 		if($r !== false)
 			$r = $r['id'];
@@ -161,21 +161,15 @@ class xivo_service_asterisk_agentgroup_abstract_sql extends xivo_service_asteris
 		if(empty($arr) === false && ($where = $this->_dso->where($arr)) === false)
 			return(false);
 
-		if($order !== null)
-			$this->_dso->order($order);
-
-		if($limit !== null)
-			$this->_dso->limit($limit);
+		$this->_dso->new_order($order);
+		$this->_dso->new_limit($limit);
 
 		$col = $all === true ? null : 'id';
 
 		$r = $this->_dso->select_all($this->_param['table'],$col,$where);
 
-		if($order !== null)
-			$this->_dso->order();
-
-		if($limit !== null)
-			$this->_dso->limit();
+		$this->_dso->reset_order();
+		$this->_dso->reset_limit();
 
 		$this->_cnt = $this->_dso->select_count($this->_param['table'],null,$where);
 
@@ -201,21 +195,15 @@ class xivo_service_asterisk_agentgroup_abstract_sql extends xivo_service_asteris
 		if(($where = $this->_dso->where($arr)) === false)
 			return(false);
 
-		if($order !== null)
-			$this->_dso->order($order);
-
-		if($limit !== null)
-			$this->_dso->limit($limit);
+		$this->_dso->new_order($order);
+		$this->_dso->new_limit($limit);
 
 		$col = $all === true ? null : 'id';
 
 		$r = $this->_dso->select_all($this->_param['table'],$col,$where);
 
-		if($order !== null)
-			$this->_dso->order();
-
-		if($limit !== null)
-			$this->_dso->limit();
+		$this->_dso->reset_order();
+		$this->_dso->reset_limit();
 
 		$this->_cnt = $this->_dso->select_count($this->_param['table'],null,$where);
 

@@ -87,7 +87,7 @@ switch($act)
 		$_HTML->set_var('element',$appgroup->get_elements());
 		$_HTML->set_var('user',$user);
 		$_HTML->set_var('rightcall',$rightcall);
-		$_HTML->set_var('list',$appgroup->get_dialstatus_destination_list());
+		$_HTML->set_var('dialstatus_list',$appgroup->get_dialstatus_destination_list());
 		$_HTML->set_var('moh_list',$appgroup->get_musiconhold());
 
 		$dhtml = &$_HTML->get_module('dhtml');
@@ -178,7 +178,7 @@ switch($act)
 		$_HTML->set_var('user',$user);
 		$_HTML->set_var('rightcall',$rightcall);
 		$_HTML->set_var('element',$appgroup->get_elements());
-		$_HTML->set_var('list',$appgroup->get_dialstatus_destination_list());
+		$_HTML->set_var('dialstatus_list',$appgroup->get_dialstatus_destination_list());
 		$_HTML->set_var('moh_list',$appgroup->get_musiconhold());
 
 		$dhtml = &$_HTML->get_module('dhtml');

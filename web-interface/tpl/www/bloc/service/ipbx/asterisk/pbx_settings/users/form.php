@@ -226,7 +226,7 @@
 <?php
 	endif;
 
-	echo $this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey',array('type' => 'emergency','count' => 0));
+	echo $this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey');
 ?>
 </div>
 

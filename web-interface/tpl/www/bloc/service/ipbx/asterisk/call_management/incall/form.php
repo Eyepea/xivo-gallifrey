@@ -109,6 +109,7 @@ endif;
 echo $form->text(array('desc' => $this->bbf('fm_incall_custom-typeval'),'name' => 'incall[typeval]','labelid' => 'incall-custom-typeval','size' => 15,'value' => $incall['custom']));
 
 ?>
+
 </div>
 
 <div id="sb-part-last" class="b-nodisplay">
@@ -141,4 +142,5 @@ echo $form->text(array('desc' => $this->bbf('fm_incall_custom-typeval'),'name' =
 		echo '<div class="txt-center">',$url->href_html($this->bbf('create_rightcall'),'service/ipbx/call_management/rightcall','act=add'),'</div>';
 	endif;
 ?>
+
 </div>

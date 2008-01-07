@@ -306,7 +306,7 @@ class xivo_application_service_asterisk_user_abstract_sql extends xivo_applicati
 		return($r);
 	}
 
-	function get_bsfilter($id)
+	function get_bsfilter($id,$context,$bsfilter)
 	{
 		if(($id = xivo_uint($id)) === 0)
 			return(false);
@@ -317,37 +317,132 @@ class xivo_application_service_asterisk_user_abstract_sql extends xivo_applicati
 		$userwhere['internal'] = 0;
 		$userwhere['id'] = $id;
 
-		$cfiltermjoin = $t['callfiltermember'].'.typeval = '.$t['userfeatures'].'.id'.
-				' AND '.$t['callfiltermember'].'.bstype = '.$t['userfeatures'].'.bsfilter';
+		$cfiltermjoin = $t['callfiltermember'].'.typeval = '.$t['userfeatures'].'.id';
 
 		$cfiltermwhere = array();
 		$cfiltermwhere['type'] = 'user';
+		$cfiltermwhere['bstype'] = $bsfilter;
+
+		if(($userwhere = $this->_dso->where($userwhere,$t['userfeatures'])) === false
+		|| ($cfiltermjoin = $this->_dso->join($t['callfiltermember'],'INNER',$cfiltermjoin)) === false
+		|| ($cfiltermwhere = $this->_dso->where($cfiltermwhere,$t['callfiltermember'])) === false)
+			return(false);
+
+		$from = $t['userfeatures'].
+			' '.$cfiltermjoin.
+			' AND '.$t['callfiltermember'].'.bstype = '.$t['userfeatures'].'.bsfilter'.
+			' AND '.$cfiltermwhere;
+
+		$callfilterids = $this->_dso->select_all($from,$t['callfiltermember'].'.callfilterid',$userwhere,null,true,true);
+
+		if(isset($callfilterids[0]) === false)
+			return(false);
+
+		$userjoin = $t['userfeatures'].'.id = '.$t['callfiltermember'].'.typeval';
+
+		$userwhere = array();
+		$userwhere['internal'] = 0;
+		$userwhere['context'] = $context;
 
 		$cfilterjoin = $t['callfilter'].'.id = '.$t['callfiltermember'].'.callfilterid';
 
 		$cfilterwhere = array();
 		$cfilterwhere['type'] = 'bosssecretary';
 
-		if(($where = $this->_dso->where($userwhere,$t['userfeatures'])) === false
-		|| ($cfiltermjoin = $this->_dso->join($t['callfiltermember'],'INNER',$cfiltermjoin)) === false
-		|| ($cfiltermwhere = $this->_dso->where($cfiltermwhere,$t['callfiltermember'])) === false
+		if(($userjoin = $this->_dso->join($t['userfeatures'],'INNER',$userjoin)) === false
+		|| ($userwhere = $this->_dso->where($userwhere,$t['userfeatures'])) === false
 		|| ($cfilterjoin = $this->_dso->join($t['callfilter'],'INNER',$cfilterjoin)) === false
 		|| ($cfilterwhere = $this->_dso->where($cfilterwhere,$t['callfilter'])) === false)
 			return(false);
 
-		$from = $t['userfeatures'].
-			' '.$cfiltermjoin.
-			' AND '.$cfiltermwhere.
+		$this->_dso->new_where(array('type' => 'user'),false,$t['callfiltermember']);
+		$this->_dso->add_where(array('bstype' => $bsfilter),true,$t['callfiltermember']);
+		$this->_dso->add_where_in('id',$callfilterids,false,$t['callfilter']);
+
+		$from = $t['callfiltermember'].
+			' '.$userjoin.
+			' AND '.$userwhere.
+			' AND '.$t['userfeatures'].'.bsfilter = '.$t['callfiltermember'].'.bstype'.
+			' AND IFNULL('.$t['userfeatures'].'.number,\'\') != \'\''.
 			' '.$cfilterjoin.
-			' AND '.$cfilterwhere;
+			' AND '.$cfilterwhere.
+			' AND '.$t['callfilter'].'.bosssecretary IS NOT NULL';
 
-		$where	.= ' AND IFNULL('.$t['userfeatures'].'.number,\'\') != \'\'';
+		$select = $t['callfilter'].'.id AS callfilterid,'.
+			  $t['callfilter'].'.name AS callfiltername,'.
+			  $t['userfeatures'].'.*';
 
-		$r = $this->_dso->select_all($from,$t['callfilter'].'.*',$where);
-		//xivo_print_r($this->_dso->_query);
+		$r = $this->_dso->select_all($from,$select,$this->_dso->get_where());
 
 		if(isset($r[0]) === false)
 			$r = false;
+
+		return($r);
+	}
+
+	function chk_bsfilter($id,$context,$bsfilter,$user2id)
+	{
+		if(($id = xivo_uint($id)) === 0
+		|| ($user2id = xivo_uint($user2id)) === 0)
+			return(false);
+
+		$t = &$this->_table;
+		$arr = $user1 = $user2 = $cfilterm1where = array();
+		$user1where = $user2where = '';
+
+		$arr['type'] = 'bosssecretary';
+
+		$user1['id'] = $id;
+		$user2['context'] = $context;
+		$user2['id'] = $user2id;
+
+		$user1['internal'] = $user2['internal'] = 0;
+
+		$cfilterm1join = 'cfilterm1.callfilterid = '.$t['callfilter'].'.id';
+		$cfilterm2join = 'cfilterm2.callfilterid = '.$t['callfilter'].'.id';
+		$user1join = 'user1.id = cfilterm1.typeval';
+		$user2join = 'user2.id = cfilterm2.typeval';
+
+		$cfilterm1where['type'] = 'user';
+		$cfilterm1where['bstype'] = $bsfilter;
+
+		$cfilterm2where['type'] = 'user';
+
+		if(($cfilterm1join = $this->_dso->join($t['callfiltermember'].' AS cfilterm1','INNER',$cfilterm1join)) === false
+		|| ($cfilterm1where = $this->_dso->where($cfilterm1where,'cfilterm1')) === false
+		|| ($user1join = $this->_dso->join($t['userfeatures'].' AS user1','INNER',$user1join)) === false
+		|| ($user1where = $this->_dso->where($user1,'user1')) === false
+		|| ($cfilterm2join = $this->_dso->join($t['callfiltermember'].' AS cfilterm2','INNER',$cfilterm2join)) === false
+		|| ($cfilterm2where = $this->_dso->where($cfilterm2where,'cfilterm2')) === false
+		|| ($user2join = $this->_dso->join($t['userfeatures'].' AS user2','INNER',$user2join)) === false
+		|| ($user2where = $this->_dso->where($user2,'user2')) === false)
+			return(false);
+
+		$from =	$t['callfilter'].
+			' '.$cfilterm1join.
+			' AND '.$cfilterm1where.
+			' '.$user1join.
+			' AND '.$user1where.
+			' AND IFNULL(user1.number,\'\') != \'\''.
+			' AND user1.bsfilter = cfilterm1.bstype'.
+			' '.$cfilterm2join.
+			' AND '.$cfilterm2where.
+			' '.$user2join.
+			' AND '.$user2where.
+			' AND IFNULL(user2.number,\'\') != \'\''.
+			' AND user2.bsfilter = cfilterm2.bstype';
+
+		$this->_dso->new_where(array('bstype' => $bsfilter),true,'cfilterm2');
+
+		$where = $this->_dso->get_where().
+			 ' AND '.$t['callfilter'].'.bosssecretary IS NOT NULL';
+
+		$r = $this->_dso->select_one($from,'cfilterm2.id',$this->_dso->get_where());
+
+		if(isset($r['id']) === false)
+			$r = false;
+		else
+			$r = $r['id'];
 
 		return($r);
 	}

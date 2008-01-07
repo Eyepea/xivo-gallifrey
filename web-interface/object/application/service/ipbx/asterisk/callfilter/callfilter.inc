@@ -690,7 +690,10 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 		$rs['boss']['callfilterid'] = $id;
 
 		if(xivo_issa('boss',$this->_info['callfiltermember']) === true)
+		{
 			$cid = $this->_info['callfiltermember']['boss']['id'];
+			$rs['boss']['active'] = $this->_info['callfiltermember']['boss']['active'];
+		}
 		else
 			$cid = 0;
 
@@ -699,18 +702,33 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 			return(false);
 
 		if(xivo_issa('secretary',$this->_info['callfiltermember']) === true)
+		{
 			$secretary = &$this->_info['callfiltermember']['secretary'];
+			$cnt = count($secretary);
+		}
 		else
+		{
 			$secretary = null;
+			$cnt = 0;
+		}
 
 		for($i = 0,$j = 1;$i < $nb;$i++,$j++)
 		{
+			$cid = 0;
 			$ref = &$rs['secretary'][$i];
 
-			if(isset($secretary[$j]) === true)
+			for($k = 0;$k < $cnt;$k++)
+			{
+				if($secretary[$k]['type'] === $ref['type']
+				&& (string) $secretary[$k]['typeval'] === (string) $ref['typeval'])
+				{
+					$ref['active'] = $secretary[$k]['active'];	
+					$cid = $secretary[$k]['id'];
+				}
+			}
+
+			if($cid === 0 && isset($secretary[$j]) === true)
 				$cid = $secretary[$j]['id'];
-			else
-				$cid = 0;
 
 			$ref['callfilterid'] = $id;
 

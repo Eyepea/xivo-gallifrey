@@ -25,6 +25,55 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 		$this->_load_config();
 	}
 
+	function _prepare($data)
+	{
+		$data['type'] = '';
+		$data['typeval'] = '';
+		$data['user'] = '';
+		$data['group'] = '';
+		$data['queue'] = '';
+		$data['meetme'] = '';
+		$data['extension'] = '';
+		$data['bosssecretary'] = '';
+		$data['custom'] = '';
+		$data['supervision'] = (bool) $data['supervision'];
+
+		switch($data['typeextenumbers'])
+		{
+			case 'extenfeatures':
+				if($data['typevalextenumbers'] === 'bsfilter')
+				{
+					$data['type'] = 'bosssecretary';
+					$data['bosssecretary'] = $data['typeval'] = $data['typevalextenumbersright'];
+					return($data);
+				}
+			case 'featuremap':
+			case 'generalfeatures':
+				$data['type'] = 'extension';
+				$data['extension'] = $data['typeval'] = $data['typevalextenumbers'];
+				return($data);
+		}
+
+		switch($data['typeextenumbersright'])
+		{
+			case 'user':
+			case 'group':
+			case 'queue':
+			case 'meetme':
+				$data['type'] = $data['typeextenumbersright'];
+				$data[$data['typeextenumbersright']] = $data['typeval'] = $data['typevalextenumbersright'];
+				return($data);
+		}
+
+		if(xivo_haslen($data['exten']) === true)
+		{
+			$data['type'] = 'custom';
+			$data['custom'] = $data['typeval'] = $data['exten'];
+		}
+
+		return($data);
+	}
+
 	function get_type_list()
 	{
 		if(is_array($this->_type_list) === true)
@@ -175,18 +224,88 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 		return($this->_dso->delete($id));
 	}
 
-	function is_valid($type,$typeval,$id=null,$disable=null)
+	function mk_values_array($arr)
+	{
+		if(is_array($arr) === false
+		|| isset($arr['fknum'],$arr['type'],$arr['typeval'],$arr['iduserfeatures']) === false
+		|| $this->chk_element_value('type',$arr['type']) === false
+		|| xivo_haslen($arr['typeval']) === false)
+			return(false);
+
+		$r = array();
+		$r['iduserfeatures'] = $arr['iduserfeatures'];
+		$r['fknum'] = $arr['fknum'];
+		$r['exten'] = '';
+		$r['typeextenumbers'] = '';
+		$r['typevalextenumbers'] = '';
+		$r['typeextenumbersright'] = '';
+		$r['typevalextenumbersright'] = '';
+		$r['supervision'] = 0;
+
+		switch($arr['type'])
+		{
+			case 'extension':
+				$val = explode('-',$arr['typeval'],2);
+
+				if(xivo_haslen($val,0) === false
+				|| xivo_haslen($val,1) === false)
+					return(false);
+
+				$r['typeextenumbers'] = $val[0];
+				$r['typevalextenumbers'] = $val[1];
+				break;
+			case 'bosssecretary':
+				$r['typeextenumbers'] = 'extenfeatures';
+				$r['typevalextenumbers'] = 'bsfilter';
+				$r['typeextenumbersright'] = 'user';
+				$r['typevalextenumbersright'] = $arr['typeval'];
+
+				if(isset($arr['supervision']) === true)
+					$r['supervision'] = $arr['supervision'];
+				break;
+			case 'custom':
+				$r['exten'] = $arr['typeval'];
+
+				if(isset($arr['supervision']) === true)
+					$r['supervision'] = $arr['supervision'];
+				break;
+			case 'user':
+				if(isset($arr['supervision']) === true)
+					$r['supervision'] = $arr['supervision'];
+			default:
+				$r['typeextenumbersright'] = $arr['type'];
+				$r['typevalextenumbersright'] = $arr['typeval'];
+		}
+
+		return($r);
+	}
+
+	function is_valid($type='',$typeval='',$typeright='',$typevalright='',$id=null,$disable=null,$context=null)
 	{
 		switch($type)
 		{
+			case 'extenfeatures':
+				if($typeval === 'bsfilter')
+					return(true);
+			case 'featuremap':
+			case 'generalfeatures':
+				if(($extentype = $this->_chk_exists_cfg('type','extension',true)) === false
+				|| xivo_issa($type,$extentype) === false
+				|| isset($extentype[$type][$typeval]) === false)
+					return(false);
+				return(true);
+		}
+
+		switch($typeright)
+		{
 			case 'user':
-				return($this->chk_dest_user($typeval,$id,$disable,false));
+				return($this->chk_dest_user($typevalright,$id,$disable,true,true,$context));
 			case 'group':
-				return($this->chk_dest_group($typeval,null,$disable,false));
+				return($this->chk_dest_group($typevalright,null,$disable,true,true,$context));
 			case 'queue':
-				return($this->chk_dest_queue($typeval,null,$disable,false));
+				return($this->chk_dest_queue($typevalright,null,$disable,true,true,$context));
 			case 'meetme':
-				return($this->chk_dest_meetme($typeval,null,$disable,false));
+				return($this->chk_dest_meetme($typevalright,null,$disable,true,true,$context));
 		}
 
 		return(false);

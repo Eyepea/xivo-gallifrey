@@ -133,32 +133,32 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 
 	function chk_dest_schedule($val,$id=null,$disable=null)
 	{
-		return($this->_chk_dest('schedule',$val,$id,$disable,false));
+		return($this->_chk_dest('schedule',$val,$id,$disable,false,false,null));
 	}
 
-	function chk_dest_user($val,$id=null,$disable=null,$number=true)
+	function chk_dest_user($val,$id=null,$disable=null,$chknumber=true,$chkcontext=false,$context=null)
 	{
-		return($this->_chk_dest('userfeatures',$val,$id,$disable,$number));	
+		return($this->_chk_dest('userfeatures',$val,$id,$disable,$chknumber,$chkcontext,$context));	
 	}
 
-	function chk_dest_group($val,$id=null,$disable=null,$number=true)
+	function chk_dest_group($val,$id=null,$disable=null,$chknumber=true,$chkcontext=false,$context=null)
 	{
-		return($this->_chk_dest_group_queue('group',$val,$id,$disable,$number));
+		return($this->_chk_dest_group_queue('group',$val,$id,$disable,$chknumber,$chkcontext,$context));
 	}
 
-	function chk_dest_queue($val,$id=null,$disable=null,$number=true)
+	function chk_dest_queue($val,$id=null,$disable=null,$chknumber=true,$chkcontext=false,$context=null)
 	{
-		return($this->_chk_dest_group_queue('queue',$val,$id,$disable,$number));
+		return($this->_chk_dest_group_queue('queue',$val,$id,$disable,$chknumber,$chkcontext,$context));
 	}
 
-	function _chk_dest_group_queue($type,$val,$id=null,$disable=null,$number=true)
+	function _chk_dest_group_queue($type,$val,$id=null,$disable=null,$chknumber=true,$chkcontext=false,$context=null)
 	{
 		$val = intval($val);
 
 		if($type !== 'group' && $type !== 'queue')
 			return(false);
 
-		if(($info = $this->_chk_dest($type.'features',$val,$id,null,$number)) === false
+		if(($info = $this->_chk_dest($type.'features',$val,$id,null,$chknumber,$chkcontext,$context)) === false
 		|| $disable === null)
 			return($info);
 
@@ -172,15 +172,16 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 		return($info);
 	}
 
-	function chk_dest_meetme($val,$id=null,$disable=null,$number=true)
+	function chk_dest_meetme($val,$id=null,$disable=null,$chknumber=true,$chkcontext=false,$context=null)
 	{
-		return($this->_chk_dest('meetmefeatures',$val,$id,$disable,$number));
+		return($this->_chk_dest('meetmefeatures',$val,$id,$disable,$chknumber,$chkcontext,$context));
 	}
 
-	function _chk_dest($type,$val,$id=null,$disable=null,$number=true)
+	function _chk_dest($type,$val,$id=null,$disable=null,$chknumber=true,$chkcontext=false,$context=null)
 	{
 		$val = intval($val);
-		$number = (bool) $number;
+		$chknumber = (bool) $chknumber;
+		$chkcontext = (bool) $chkcontext;
 
 		if($id !== null)
 			$id = xivo_uint($id);
@@ -188,7 +189,8 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 		if(($module = $this->_sre->get_module($type)) === false
 		|| ($info = $module->get($val,$disable)) === false
 		|| ($id !== null && $id === $info['id']) === true
-		|| ($number === true && xivo_haslen($info['number']) === false) === true)
+		|| ($chknumber === true && xivo_haslen($info['number']) === false) === true
+		|| ($chkcontext === true && $info['context'] !== $context) === true)
 			return(false);
 
 		return($info);

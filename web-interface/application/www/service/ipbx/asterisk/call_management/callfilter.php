@@ -59,11 +59,12 @@ switch($act)
 		$_HTML->set_var('info',$result);
 		$_HTML->set_var('dialstatus',$result['dialstatus']);
 		$_HTML->set_var('element',$appcallfilter->get_elements());
-		$_HTML->set_var('list',$appcallfilter->get_dialstatus_destination_list());
+		$_HTML->set_var('dialstatus_list',$appcallfilter->get_dialstatus_destination_list());
 		$_HTML->set_var('bosslist',$appcallfilter->get_free_boss_users());
 		$_HTML->set_var('secretary',$secretary);
 
 		$dhtml = &$_HTML->get_module('dhtml');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialstatus.js');
 		break;
 	case 'edit':
@@ -121,11 +122,12 @@ switch($act)
 		$_HTML->set_var('info',$return);
 		$_HTML->set_var('dialstatus',$return['dialstatus']);
 		$_HTML->set_var('element',$appcallfilter->get_elements());
-		$_HTML->set_var('list',$appcallfilter->get_dialstatus_destination_list());
+		$_HTML->set_var('dialstatus_list',$appcallfilter->get_dialstatus_destination_list());
 		$_HTML->set_var('bosslist',$appcallfilter->get_boss_users());
 		$_HTML->set_var('secretary',$secretary);
 
 		$dhtml = &$_HTML->get_module('dhtml');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialstatus.js');
 		break;
 	case 'delete':

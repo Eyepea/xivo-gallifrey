@@ -93,13 +93,13 @@ class xivo_service_asterisk_userfeatures_abstract_sql extends xivo_service_aster
 		if($number === true)
 			$where .= ' AND number != \'\' AND number IS NOT NULL';
 
-		$this->_dso->order($order);
-		$this->_dso->limit($limit);
+		$this->_dso->new_order($order);
+		$this->_dso->new_limit($limit);
 
 		$r = $this->_dso->select_all($this->_param['table'],null,$where);
 
-		$this->_dso->order();
-		$this->_dso->limit();
+		$this->_dso->reset_order();
+		$this->_dso->reset_limit();
 
 		if(empty($r) === true)
 			$r = false;
@@ -114,8 +114,8 @@ class xivo_service_asterisk_userfeatures_abstract_sql extends xivo_service_aster
 
 	function get_all_context($disable=null,$order=null,$limit=null)
 	{
-		$this->_dso->order($order);
-		$this->_dso->limit($limit);
+		$this->_dso->new_order($order);
+		$this->_dso->new_limit($limit);
 
 		if($disable === null)
 			$where = '1';
@@ -125,12 +125,15 @@ class xivo_service_asterisk_userfeatures_abstract_sql extends xivo_service_aster
 		if(($internal = $this->_set_param_internal()) !== null)
 			$where .= ' AND internal = '.$internal;
 
-		$where .= ' GROUP BY context';
+		$this->_dso->new_group('context');
+		$this->_dso->new_order($order);
+		$this->_dso->new_limit($limit);
 
 		$r = $this->_dso->select_all($this->_param['table'],'context',$where);
 	
-		$this->_dso->order();
-		$this->_dso->limit();
+		$this->_dso->reset_group();
+		$this->_dso->reset_order();
+		$this->_dso->reset_limit();
 
 		if(empty($r) === true)
 			$r = false;

@@ -10,7 +10,7 @@ class xivo_service_asterisk_autoprov_abstract_sql extends xivo_service_asterisk_
 	{
 		if(is_array($arr) === false)
 		{
-			if(is_string($arr) !== false)
+			if(is_string($arr) === true)
 				$arr = array('macaddr' => $arr);
 			else
 				return(false);

@@ -325,6 +325,96 @@ Supprimer
 ; no_phonefunckey
 Aucune touche de fonction
 
+; fm_phonefunckey_type-opt-user
+Utilisateur
+
+; fm_phonefunckey_type-opt-group
+Groupe
+
+; fm_phonefunckey_type-opt-queue
+File d'attente
+
+; fm_phonefunckey_type-opt-meetme
+Chambre de conférence
+
+; fm_phonefunckey_type-opt-extension
+Extension
+
+; fm_phonefunckey_type-opt-bosssecretary
+Filtrage Patron - Secrétaire
+
+; fm_phonefunckey_type-opt-custom
+Personnalisé
+
+; fm_phonefunckey_extension-typeval-opt-generalfeatures-parkext
+Parking
+
+; fm_phonefunckey_extension-typeval-opt-generalfeatures-pickupexten
+Interception de groupe
+
+; fm_phonefunckey_extension-typeval-opt-featuremap-blindxfer
+Transfert direct
+
+; fm_phonefunckey_extension-typeval-opt-featuremap-atxfer
+Transfert indirect
+
+; fm_phonefunckey_extension-typeval-opt-featuremap-automon
+Enregistrement d'appel à la volée
+
+; fm_phonefunckey_extension-typeval-opt-featuremap-disconnect
+Raccrocher
+
+; fm_phonefunckey_extension-typeval-opt-extenfeatures-voicemsg
+Consulter la messagerie vocale
+
+; fm_phonefunckey_extension-typeval-opt-extenfeatures-fwdundoall
+Désactive tous les renvois
+
+; fm_phonefunckey_extension-typeval-opt-extenfeatures-fwdundorna
+Désactive le renvoi sur non réponse
+
+; fm_phonefunckey_extension-typeval-opt-extenfeatures-fwdundobusy
+Désactive le renvoi sur occupation
+
+; fm_phonefunckey_extension-typeval-opt-extenfeatures-fwdundounc
+Désactive le renvoi inconditionnel
+
+; fm_phonefunckey_extension-typeval-opt-extenfeatures-recsnd
+Enregistrement sonore
+
+; fm_phonefunckey_extension-typeval-opt-extenfeatures-phonestatus
+Statut du téléphone
+
+; fm_phonefunckey_extension-typeval-opt-extenfeatures-enablevm
+Active la messagerie vocale
+
+; fm_phonefunckey_extension-typeval-opt-extenfeatures-enablednd
+Ne pas déranger
+
+; fm_phonefunckey_extension-typeval-opt-extenfeatures-incallrec
+Enregistrement d'appel entrant
+
+; fm_phonefunckey_extension-typeval-opt-extenfeatures-incallfilter
+Filtrage d'appel entrant
+
+; fm_phonefunckey_extension-typeval-opt-extenfeatures-agentdynamiclogin
+Connecter un agent dynamique
+
+; fm_phonefunckey_extension-typeval-opt-extenfeatures-calllistening
+Ecouter les appels en cours
+
+; fm_phonefunckey_extension-typeval-opt-extenfeatures-vmdelete
+Supprimer les messages de la boîte vocale
+
+; fm_phonefunckey_extension-typeval-opt-extenfeatures-directoryaccess
+Accéder à l'annuaire
+
+; fm_phonefunckey_supervision-opt-0
+Désactivée
+
+; fm_phonefunckey_supervision-opt-1
+Activée
+
 ; fld-dialstatus-noanswer
 Aucune réponse
 
@@ -438,3 +528,6 @@ Créer un horaire
 
 ; add_playback-sound
 Ajouter un fichier son
+
+; create_callfilter
+Créer un filtrage d'appel

@@ -43,7 +43,7 @@ $array['element']['exten']['default'] = '';
 $array['element']['exten']['null'] = true;
 
 $array['element']['type'] = array();
-$array['element']['type']['value'] = array('user','group','queue','meetme','extension','custom');
+$array['element']['type']['value'] = array('user','group','queue','meetme','extension','bosssecretary','custom');
 $array['element']['type']['default'] = 'user';
 $array['element']['type']['unset'] = true;
 

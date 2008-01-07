@@ -11,13 +11,13 @@ class xivo_service_asterisk_cdr_abstract_sql extends xivo_service_asterisk_abstr
 		if(($where = $this->_search_where($arr)) === false)
 			return(false);
 
-		$this->_dso->order($order);
-		$this->_dso->limit($limit);
+		$this->_dso->new_order($order);
+		$this->_dso->new_limit($limit);
 
 		$r = $this->_dso->select_all($this->_param['table'],null,$where);
 
-		$this->_dso->order();
-		$this->_dso->limit();
+		$this->_dso->reset_order();
+		$this->_dso->reset_limit();
 
 		if(empty($r) === true)
 			$r = false;

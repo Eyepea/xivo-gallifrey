@@ -6,12 +6,15 @@ class xivo_service_asterisk_uservoicemail_abstract_sql extends xivo_service_aste
 {
 	var $_param	= array('table' => 'uservoicemail');
 
-	function get($id,$disable=null)
+	function get($arr,$disable=null)
 	{
-		if(($id = xivo_uint($id)) === 0)
-			return(false);
-
-		$arr = array('uniqueid' => $id);
+		if(is_array($arr) === false)
+		{
+			if(($arr = xivo_uint($arr)) !== 0)
+				$arr = array('uniqueid' => $arr);
+			else
+				return(false);
+		}
 
 		return(parent::get($arr,$disable));
 	}

@@ -1,6 +1,12 @@
 ; title_content_name
 Filtrages d'appels > Ajouter
 
+; smenu_general
+Général
+
+; smenu_dialstatus
+Non réponse
+
 ; fm_callfilter_name
 Nom :
 

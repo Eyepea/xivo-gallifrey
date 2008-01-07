@@ -6,12 +6,15 @@ class xivo_service_asterisk_queue_abstract_sql extends xivo_service_asterisk_abs
 {
 	var $_param	= array('table' => 'queue');
 
-	function get($id,$disable=null)
+	function get($arr,$disable=null)
 	{
-		if(is_scalar($id) === false)
-			return(false);
-
-		$arr = array('name' => $id);
+		if(is_array($arr) === false)
+		{
+			if(is_scalar($arr) === true)
+				$arr = array('name' => $arr);
+			else
+				return(false);
+		}
 
 		return(parent::get($arr,$disable));
 	}
