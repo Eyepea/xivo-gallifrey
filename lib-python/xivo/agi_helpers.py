@@ -124,7 +124,7 @@ def set_fwd_vars(agi, cursor, type, typeval, appval, type_varname, typeval1_varn
 		agi.set_variable(typeval1_varname, typeval.replace(",", ";").replace("|", ";"))
 	elif type == 'user':
 		cursor.query("SELECT ${columns} FROM userfeatures "
-                             "WHERE id = %d "
+                             "WHERE id = %s "
                              "AND internal = 0 "
                              "AND commented = 0",
                              ('number', 'context'),
@@ -139,7 +139,7 @@ def set_fwd_vars(agi, cursor, type, typeval, appval, type_varname, typeval1_varn
 	elif type == 'group':
 		cursor.query("SELECT ${columns} FROM groupfeatures INNER JOIN queue "
                              "ON groupfeatures.name = queue.name "
-                             "WHERE groupfeatures.id = %d "
+                             "WHERE groupfeatures.id = %s "
                              "AND groupfeatures.deleted = 0 "
                              "AND queue.category = 'group' "
                              "AND queue.commented = 0",
@@ -155,7 +155,7 @@ def set_fwd_vars(agi, cursor, type, typeval, appval, type_varname, typeval1_varn
 	elif type == 'queue':
 		cursor.query("SELECT ${columns} FROM queuefeatures INNER JOIN queue "
                              "ON queuefeatures.name = queue.name "
-                             "WHERE queuefeatures.id = %d "
+                             "WHERE queuefeatures.id = %s "
                              "AND queue.category = 'queue' "
                              "AND queue.commented = 0",
                              [('queuefeatures.' + x) for x in ('number', 'context')],
@@ -170,7 +170,7 @@ def set_fwd_vars(agi, cursor, type, typeval, appval, type_varname, typeval1_varn
 	elif type == 'meetme':
 		cursor.query("SELECT ${columns} FROM meetmefeatures INNER JOIN meetme "
                              "ON meetmefeatures.meetmeid = meetme.id "
-                             "WHERE meetmefeatures.id = %d "
+                             "WHERE meetmefeatures.id = %s "
                              "AND meetme.commented = 0",
                              [('meetmefeatures.' + x) for x in ('number', 'context')],
                              (typeval,))
@@ -200,7 +200,7 @@ class bsf_member:
 	def __str__(self):
 		return ("Call filter member object :\n"
                        "Type:        %s\n"
-                       "User ID:     %d\n"
+                       "User ID:     %s\n"
                        "Number:      %s\n"
                        "Interface:   %s\n"
                        "RingSeconds: %s"
@@ -270,7 +270,7 @@ class bsfilter:
 			interface = protocol.upper() + "/" + name
 		elif protocol == "custom":
 			cursor.query("SELECT ${columns} FROM usercustom "
-                                     "WHERE id = %d "
+                                     "WHERE id = %s "
                                      "AND commented = 0 "
                                      "AND category = 'user'",
                                      ('interface',),
@@ -288,7 +288,7 @@ class bsfilter:
 
 		cursor.query("SELECT ${columns} FROM callfiltermember INNER JOIN userfeatures "
                              "ON callfiltermember.typeval = userfeatures.id "
-                             "WHERE callfiltermember.callfilterid = %d "
+                             "WHERE callfiltermember.callfilterid = %s "
                              "AND callfiltermember.type = 'user' "
                              "AND callfiltermember.bstype = 'secretary' "
                              #"AND callfiltermember.active = 1 "
@@ -316,7 +316,7 @@ class bsfilter:
 				interface = protocol.upper() + "/" + name
 			elif protocol == "custom":
 				cursor.query("SELECT ${columns} FROM usercustom "
-                                             "WHERE id = %d "
+                                             "WHERE id = %s "
                                              "AND commented = 0 "
                                              "AND category = 'user'",
                                              ('interface',),

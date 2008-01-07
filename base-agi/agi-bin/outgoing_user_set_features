@@ -95,7 +95,7 @@ if not internal:
 
 cursor.query("SELECT ${columns} FROM trunkfeatures INNER JOIN outcalltrunk "
              "ON trunkfeatures.id = outcalltrunk.trunkfeaturesid "
-             "WHERE outcalltrunk.outcallid = %d "
+             "WHERE outcalltrunk.outcallid = %s "
              "ORDER BY outcalltrunk.priority ASC",
              ('trunkfeatures.trunk', 'trunkfeatures.trunkid'),
              (outcallid,))
