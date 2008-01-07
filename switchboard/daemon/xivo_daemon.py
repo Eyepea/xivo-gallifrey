@@ -648,8 +648,8 @@ def originate_or_transfer(requester, l):
                                 if astid_dst != '':
                                         sipcid_src = "SIP/%s" % userid_src
                                         sipcid_dst = "SIP/%s" % userid_dst
-                                        cidname_src = 'called by %s' % userid_src
-                                        cidname_dst = 'calls %s' % userid_dst
+                                        cidname_src = userid_src
+                                        cidname_dst = userid_dst
                                         if sipcid_src in plist[astid_src].normal:
                                                 cidname_src = '%s %s' %(plist[astid_src].normal[sipcid_src].calleridfirst,
                                                                         plist[astid_src].normal[sipcid_src].calleridlast)
