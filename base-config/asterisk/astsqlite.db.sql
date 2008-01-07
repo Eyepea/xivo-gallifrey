@@ -78,7 +78,7 @@ CREATE INDEX agentgroup__idx__deleted ON agentgroup(deleted);
 INSERT INTO agentgroup VALUES (1,2,'default','',0,0);
 
 
-DROP TABLE IF EXISTS callfilter;
+DROP TABLE callfilter;
 CREATE TABLE callfilter (
  id integer unsigned,
  name varchar(128) NOT NULL DEFAULT '',
@@ -101,7 +101,7 @@ CREATE INDEX callfilter__idx__commented ON callfilter(commented);
 CREATE UNIQUE INDEX callfilter__uidx__name ON callfilter(name);
 
 
-DROP TABLE IF EXISTS callfiltermember;
+DROP TABLE callfiltermember;
 CREATE TABLE callfiltermember (
  id integer unsigned,
  callfilterid integer unsigned NOT NULL DEFAULT 0,
@@ -762,10 +762,10 @@ CREATE INDEX phonebooknumber__idx__type ON phonebooknumber(type);
 CREATE UNIQUE INDEX phonebooknumber__uidx__phonebookid_type ON phonebooknumber(phonebookid,type);
 
 
-DROP TABLE IF EXISTS phonefunckey;
+DROP TABLE phonefunckey;
 CREATE TABLE phonefunckey (
  iduserfeatures integer unsigned NOT NULL,
- fknum integer unsigned NOT NULL,
+ fknum smallint unsigned NOT NULL,
  exten varchar(40),
  typeextenumbers varchar(64),
  typevalextenumbers varchar(255),

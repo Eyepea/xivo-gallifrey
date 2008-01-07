@@ -768,7 +768,7 @@ CREATE UNIQUE INDEX `phonebooknumber__uidx__phonebookid_type` ON `phonebooknumbe
 DROP TABLE IF EXISTS `phonefunckey`;
 CREATE TABLE `phonefunckey` (
  `iduserfeatures` int(10) unsigned NOT NULL,
- `fknum` int(10) unsigned NOT NULL,
+ `fknum` smallint unsigned NOT NULL,
  `exten` varchar(40),
  `typeextenumbers` enum('extenfeatures','featuremap','generalfeatures'),
  `typevalextenumbers` varchar(255),
