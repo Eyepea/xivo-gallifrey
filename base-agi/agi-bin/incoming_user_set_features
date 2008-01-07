@@ -156,7 +156,7 @@ if not bypass and bsfilter == 'boss':
 		ds_set_fwd_vars(filter.id, 'callfilter', 'noanswer', 'XIVO_BSFILTER_FWD_TYPERNA', 'XIVO_BSFILTER_FWD_TYPEVAL1RNA', 'XIVO_BSFILTER_FWD_TYPEVAL2RNA')
 
 		if filter.callerdisplay:
-			agi.set_variable('CALLERID(num)', "%s - %s" % (srcnum, filter.callerdisplay))
+			agi.set_variable('CALLERID(name)', "%s - %s" % (filter.callerdisplay, agi.get_variable("CALLERID(name)")))
 
 		agi.set_variable('XIVO_BSFILTER_MODE', filter.mode)
 		agi.set_variable('XIVO_BSFILTER', '1')
