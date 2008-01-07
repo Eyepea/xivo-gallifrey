@@ -319,7 +319,7 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 		if(isset($this->_origin_list) === true)
 			$this->_origin_list = false;
 
-		if(($list = $this->_dso->get_all(null,$order,$limit)) === false
+		if(($list = $this->_dso->get_all($order,$limit)) === false
 		|| isset($list[0]) === false)
 			return(false);
 
@@ -368,7 +368,7 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 
 		if(is_array($arr) === false
 		|| ($where = $this->get_element_where($arr)) === false
-		|| ($list = $this->_dso->get_all_where($where,null,$order,$limit)) === false
+		|| ($list = $this->_dso->get_all_where($where,$order,$limit)) === false
 		|| isset($list[0]) === false)
 			return(false);
 
