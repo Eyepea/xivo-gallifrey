@@ -51,7 +51,6 @@ import timeoutsocket
 from timeoutsocket import Timeout
 
 import os
-import re
 import cgi
 import thread
 import threading
@@ -77,6 +76,7 @@ from moresynchro import ListLock
 import daemonize
 
 import except_tb
+from xivo_helpers import speed_dial_key_extension
 
 def name_from_first_last(first, last):
 	"Construct full name from first and last."
@@ -90,58 +90,6 @@ def name_from_first_last(first, last):
 
 def field_empty(f):
 	return (f is None) or (f == "")
-
-find_ast_meta = re.compile('[[NXZ!.]').search
-def pos_ast_meta(ast_pattern):
-	mo = find_ast_meta(ast_pattern)
-	if not mo:
-		return None
-	return mo.start()
-
-def exten_from_parties(xleft, xright, fkext):
-	"""Returns an extension that is purely function of xnext and fkext
-	
-	xleft - None or a string that is an Asterisk extension pattern from
-	        which the initial underscore specifying that the remaining part
-	        of the string is a pattern will be stripped, as well as
-	        everything from the first variable part of the pattern to the
-	        end of the string.
-	        For example:
-	            "_5."                => "5"
-	            "_[5-7]."            => ""
-	            "_666[3-689]XNZ!"    => "666"
-	            "_42!XNZ!666[5-7]Z." => "42"
-	        The stripped xleft will be the left part of the generated
-	        extension.
-	xright - None or a string that will be the right part of the generated
-	         extension.
-	fkext - like xright
-	
-	WARNING: xright and fkext shall not be both set.
-	
-	WARNING: what will happen when you pass a really incorrect and 
-	stupid extension pattern is really unspecified (but should not
-	trigger any exception)
-	"""
-	if xright and fkext:
-		raise ValueError, "(xright, fkext) == " + `(xright, fkext)` + " but both shall not be set"
-	elif xright:
-		right_part = xright
-	elif fkext:
-		right_part = fkext
-	else:
-		right_part = ""
-	exten = ""
-	if xleft:
-		if xleft[0] == '_':
-			xleft = xleft[1:]
-			e = pos_ast_meta(xleft)
-			if e is not None:
-				xleft = xleft[:e]
-		exten += xleft
-	if right_part:
-		exten += right_part
-	return exten
 
 class SQLBackEnd:
 	"""An information backend for this provisioning daemon,
@@ -285,7 +233,7 @@ class SQLBackEnd:
 		confdico = replace_keys(confdico, mapping)
 		confdico['name'] = name_from_first_last(confdico['firstname'],
 							confdico['lastname'])
-		fklist = self.sql_select_all(
+		function_key_list = self.sql_select_all(
 			("SELECT ${columns} "
 			 "FROM %s "
 			 "LEFT OUTER JOIN %s AS extenumleft "
@@ -304,15 +252,23 @@ class SQLBackEnd:
 			    FK_TABLE,
 			    '%s'),
 			[FK_TABLE+x for x in ('.fknum', '.exten', '.supervision')]
-			+ ['extenumleft.exten', 'extenumright.exten'],
+			+ ['extenumleft.exten', 'extenumright.exten',
+			   'extenumleft.type', 'extenumleft.typeval'],
 			(confdico['iduserfeatures'],))
 		funckey = {}
-		for fk in fklist:
+		for fk in function_key_list:
+			# SPECIAL CASE:
+			isbsfilter = \
+				(fk['extenumleft.type'],
+				 fk['extenumleft.typeval']) \
+				== ('extenfeatures', 'bsfilter')
 			funckey[fk[FK_TABLE+'.fknum']] = (
-				exten_from_parties(
+				speed_dial_key_extension(
 					fk['extenumleft.exten'],
 					fk['extenumright.exten'],
-					fk[FK_TABLE+'.exten']),
+					fk[FK_TABLE+'.exten'],
+					confdico['number'],
+					isbsfilter),
 				bool(int(fk[FK_TABLE+'.supervision']))
 			)
 		confdico['funckey'] = funckey
