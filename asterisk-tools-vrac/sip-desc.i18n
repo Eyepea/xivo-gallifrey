@@ -1,0 +1,161 @@
+; fm_bindport
+Port sur lequelle Asterisk écoute
+
+; fm_bindaddr
+Adresse IP / interface sur laquelle Asterisk écoute.
+
+; fm_videosupport
+Support de la vidéo via le protocole SIP.
+
+; fm_autocreatepeer
+Non documenté
+
+; fm_allowguest
+
+; fm_promiscredir
+Active la redirection vers des adresses SIP distantes.
+
+; fm_autodomain
+Ajoute à la liste des domaines le nom du serveur et son adresse IP.
+
+; fm_domain
+Défini le domaine par défaut pour la machine.
+
+; fm_allowexternaldomains
+Autorise les requettes de domaines non listés.
+
+; fm_usereqphone
+
+; fm_realm
+Domaine utilisé pour l'authentification, par défaut "asterisk". Doit être en accord avec la RFC 3261.
+
+; fm_alwaysauthreject
+N'informe pas la cause du rejet de l'appel, quelqu'en soit la raison. Indique seulement "401 Unauthorized".
+
+; fm_useragent
+La chaine "useragent" du serveur Asterisk, par défaut "Asterisk PBX".
+
+; fm_checkmwi
+Interval entre chaques vérifications/notifications (si besoin est) des boite vocales des utilisateurs.
+
+; fm_regcontext
+
+; fm_callerid
+
+; fm_fromdomain
+Réécrit le champ "From:" des entêtes SIP des appels vers par la valeur par défaut qui correspond
+
+; fm_sipdebug
+Active le mode debug su SIP.
+
+; fm_dumphistory
+
+; fm_recordhistory
+Active l'enregistrement des historiques des communication SIP, accéssibles via la CLI.
+
+; fm_callevents
+Génére des évenement SIP au travers de l'AMI.
+
+; fm_ospauth
+
+; fm_tos
+
+; fm_localnet
+Permet de spécifier les plages réseaux considérées comme "local", utilisé dans les cas où du NAT est présent.
+
+; fm_externip
+Adresse qui serra utilisée dans les entête SIP pour les messages sortants lorsque le serveur se trouve dérrière un NAT.
+
+; fm_externhost
+Domaine utilisé pour les clients ne faisant par parti des réseaux considéré comme locaux.
+
+; fm_externrefresh
+Intervale de rafraîchissement de la liste des domaines externes.
+
+; fm_outboundproxy
+Adresse du proxy pour la signalisation des appels externes.
+
+; fm_outboundproxyport
+Port du proxy pour la signalisation des appels externes.
+
+; fm_relaxdtmf
+Permet d'éviter que des DTMF soient détectés par erreur pendant une conversation.
+
+; fm_compactheaders
+Utilise le format compact des entêtes SIP.
+
+; fm_rtptimeout
+Spécifi le temps maximum d'inactivité du flux RTP avant de terminer l'appel.
+
+; fm_rtpholdtimeout
+Spécifi le temps maximum d'inactivité du flux RTP avant de terminer un appel mis en attente.
+
+; fm_rtpkeepalive
+
+; fm_notifymimetype
+
+; fm_srvlookup
+Active la résolution DNS pour les appels sortants. Permet le routage, basé sur la résolution DNS, des appels vers des utilisateurs distants.
+
+; fm_pedantic
+Active la vérification (lente) des formats d'entêtes SIP à des fin d'inter opérabilité . (par exemple avec Pingtel))
+
+; fm_maxexpiry
+Delait maximum d'une authentification entrante.
+
+; fm_defaultexpiry
+Delait maximum d'une authentification.
+
+; fm_registertimeout
+Délait entre chaque tentative d'enregistrement.
+
+; fm_registerattempts
+Nombre maximum de tentative d'enregistrement lorsque celles ci échouent, par défaut illimité.
+
+; fm_notifyringing
+
+; fm_context
+Context utilisé par défaut lorsque celui ci n'est pas indiqué.
+
+; fm_nat
+Indique que par défaut tout les utilisateurs sont dérrières un NAT.
+
+; fm_dtmfmode
+Le mode de DTMF à utiliser, doit concorder avec la configuration les téléphones.
+
+; fm_qualify
+Active la supervision des téléphones par défaut, spécifi aussi la latence maximum d'un téléphone pour qu'il soit considéré comme injoingnable.
+
+; fm_useclientcode
+
+; fm_progressinband
+Permet d'indiquer l'état "entraint de sonné" via la signalisation SIP.
+
+; fm_language
+Language à utiliser par défaut.
+
+; fm_musiconhold
+Musique d'attente à utiliser par défaut.
+
+; fm_vmexten
+Extensions à utiliser pour consulter la messagerie vocale.
+
+; fm_trustrpid
+
+; fm_sendrpid
+
+; fm_canreinvite
+Autorise la transmission du flux RTP directement entre les téléphones.
+
+
+; fm_insecure
+
+; fm_rtcachefriends
+Permet la mise en cache des comptes en "real time"
+
+; fm_rtupdate
+
+; fm_ignoreregexpire
+
+; fm_rtautoclear
+
