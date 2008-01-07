@@ -113,7 +113,7 @@ On-Hold Music:
 Enable XIVO Client:
 
 ; fm_userfeatures_enablehint
-Enable XIVO SwitchBoard monitoring:
+Enable supervision:
 
 ; fm_userfeatures_enablevoicemail
 Enable voicemail:

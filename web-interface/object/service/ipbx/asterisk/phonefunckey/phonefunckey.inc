@@ -265,9 +265,6 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 				break;
 			case 'custom':
 				$r['exten'] = $arr['typeval'];
-
-				if(isset($arr['supervision']) === true)
-					$r['supervision'] = $arr['supervision'];
 				break;
 			case 'user':
 				if(isset($arr['supervision']) === true)

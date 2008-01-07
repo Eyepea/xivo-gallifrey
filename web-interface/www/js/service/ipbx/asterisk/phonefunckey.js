@@ -54,8 +54,7 @@ function xivo_build_phonefunckey_array(id)
 		xivo_fm_phonefunckey[id][property][keyit]['property'] = 'disabled|false:boolean;className|it-enabled';
 
 		if(property == 'user'
-		|| property == 'bosssecretary'
-		|| property == 'custom')
+		|| property == 'bosssecretary')
 		{
 			keyit = 'it-phonefunckey-supervision-'+id;
 			xivo_fm_phonefunckey[id][property][keyit]['property'] = 'className|it-enabled';
