@@ -1,170 +1,170 @@
 ; title_content_name
-Filtrages d'appels > Ajouter
+Call filters > Add
 
 ; smenu_general
-Général
+General
 
 ; smenu_dialstatus
-Non réponse
+No answer
 
 ; fm_callfilter_name
-Nom :
+Name:
 
 ; fm_callfilter_zone
-Zone :
+Zone:
 
 ; fm_callfilter_zone-opt-internal
-Interne
+Internal
 
 ; fm_callfilter_zone-opt-external
-Externe
+External
 
 ; fm_callfilter_zone-opt-all
-Tout
+All
 
 ; fm_callfilter_bosssecretary
-Mode :
+Mode:
 
 ; fm_callfilter_bosssecretary-opt-bossfirst-serial
-Patron puis secrétaires en série
+Boss, then secretaries, serially
 
 ; fm_callfilter_bosssecretary-opt-bossfirst-simult
-Patron puis secrétaires en simultané
+Boss, then secretaries, simultaneously
 
 ; fm_callfilter_bosssecretary-opt-secretary-serial
-Secrétaires en série
+Only secretaries, serially
 
 ; fm_callfilter_bosssecretary-opt-secretary-simult
-Secrétaires en simultané
+Only secretaries, simultaneously
 
 ; fm_callfilter_bosssecretary-opt-all
-Patron et secrétaires en simultané
+Boss and secretaries, simultaneously
 
 ; fm_callfilter_callerdisplay
-Texte d'appel additionnel :
+Additional call text:
 
 ; fm_callfilter_ringseconds
-Temps de sonnerie :
+Ringing time:
 
 ; fm_callfilter_ringseconds-opt0
-Illimité
+Unlimited
 
 ; fm_callfilter_ringseconds-opt
-%s secondes
+%s seconds
 
 ; fld-callfilter-boss
-Patron
+Boss
 
 ; fm_callfiltermember-boss
-Identité :
+Identity:
 
 ; fm_callfiltermember_ringseconds-boss
-Temps de sonnerie :
+Ringing time:
 
 ; fm_callfiltermember_ringseconds-boss-optno
-Désactivé
+Disabled
 
 ; fm_callfiltermember_ringseconds-boss-opt0
-Illimité
+Unlimited
 
 ; fm_callfiltermember_ringseconds-boss-opt
-%s secondes
+%s seconds
 
 ; fld-callfilter-secretary
-Secrétaire
+Secretary
 
 ; bt-insecretary
-Ajouter une ou plusieurs secrétaires ->
+Add one or more secretaries ->
 
 ; bt-outsecretary
-<- Enlever une ou plusieurs secrétaires
+<- Remove one or more secretaries
 
 ; bt-upsecretary
-Monter une ou plusieurs secrétaires 
+Up one or more secretaries
 
 ; bt-downsecretary
-Descendre une ou plusieurs secrétaires
+Down one or more secretaries
 
 ; fld-dialstatus-noanswer
-Aucune réponse
+No answer
 
 ; fld-dialstatus-busy
-Occupé
+Busy
 
 ; fld-dialstatus-congestion
-Saturé
+Congested
 
 ; fld-dialstatus-chanunavail
-Echoué
+Unavailable
 
 ; fm_dialstatus_type
-Destination :
+Destination:
 
 ; fm_dialstatus_type-opt-endcall
-Fin d'appel
+End call
 
 ; fm_dialstatus_type-opt-user
-Utilisateur
+User
 
 ; fm_dialstatus_type-opt-group
-Groupe
+Group
 
 ; fm_dialstatus_type-opt-queue
-File d'attente
+Queue
 
 ; fm_dialstatus_type-opt-meetme
-Chambre de conférence
+Conference room
 
 ; fm_dialstatus_type-opt-schedule
-Horaire
+Schedule
 
 ; fm_dialstatus_type-opt-application
 Application
 
 ; fm_dialstatus_type-opt-sound
-Fichier son
+Audio file
 
 ; fm_dialstatus_type-opt-custom
-Personnalisée
+Customized
 
 ; fm_dialstatus_endcall-typeval
-Action :
+Action:
 
 ; fm_dialstatus_user-typeval
-Renvoyer vers :
+Forward to:
 
 ; fm_dialstatus_group-typeval
-Renvoyer vers :
+Forward to:
 
 ; fm_dialstatus_queue-typeval
-Renvoyer vers :
+Forward to:
 
 ; fm_dialstatus_meetme-typeval
-Renvoyer vers :
+Forward to:
 
 ; fm_dialstatus_schedule-typeval
-Renvoyer vers :
+Forward to:
 
 ; fm_dialstatus_application-typeval
-Renvoyer vers :
+Forward to:
 
 ; fm_dialstatus_sound-typeval
-Jouer :
+Play:
 
 ; fm_dialstatus_custom-typeval
-Commande :
+Command:
 
 ; fm_dialstatus_endcall-typeval-opt-none
-Aucune
+None
 
 ; fm_dialstatus_endcall-typeval-opt-hangup
-Raccrocher
+Hang up
 
 ; fm_dialstatus_endcall-typeval-opt-busy
-Occupé
+Busy
 
 ; fm_dialstatus_endcall-typeval-opt-congestion
-Saturé
+Congested
 
 ; fm_dialstatus_application-typeval-opt-faxtomail
 FaxToMail
@@ -182,28 +182,28 @@ Voicemail
 Callback
 
 ; create_user
-Créer un utilisateur
+Create an user
 
 ; create_group
-Créer un groupe
+Create a group
 
 ; create_queue
-Créer une file d'attente
+Create a queue
 
 ; create_meetme
-Créer une chambre de conférence
+Create a conference room
 
 ; create_schedule
-Créer un horaire
+Create a schedule
 
 ; add_playback-sound
-Ajouter un fichier son
+Add an audio file
 
 ; fm_callfilter_description
-Description :
+Description:
 
 ; create_user-boss
-Créer un patron
+Create a boss
 
 ; create_user-secretary
-Créer une secrétaire
+Create a secretary

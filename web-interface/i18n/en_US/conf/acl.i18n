@@ -58,6 +58,9 @@ Outgoing calls
 ; acl_service-ipbx-call_management-rightcall
 Call permissions
 
+; acl_service-ipbx-call_management-callfilter
+Call filters
+
 ; acl_service-ipbx-call_management-schedule
 Scheduler
 

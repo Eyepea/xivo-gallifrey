@@ -151,6 +151,18 @@ Unconditional forward:
 ; fm_userfeatures_destunc
 Destination:
 
+; fm_userfeatures_bsfilter
+Filter Boss - Secretary:
+
+; fm_userfeatures_bsfilter-opt-no
+No
+
+; fm_userfeatures_bsfilter-opt-boss
+Boss
+
+; fm_userfeatures_bsfilter-opt-secretary
+Secretary
+
 ; fld-callgroup
 Groups
 
@@ -291,6 +303,117 @@ Model:
 
 ; fm_autoprov_macaddr
 MAC Address:
+ 
+; col_phonefunckey-fknum
+Key
+
+; col_phonefunckey-type
+Type
+
+; col_phonefunckey-typeval
+Destination
+
+; col_phonefunckey-supervision
+Supervision
+
+; col_phonefunckey-add
+Add
+
+; opt_phonefunckey-delete
+Delete
+
+; no_phonefunckey
+No function key
+
+; fm_phonefunckey_type-opt-user
+User
+
+; fm_phonefunckey_type-opt-group
+Group
+
+; fm_phonefunckey_type-opt-queue
+Queue
+
+; fm_phonefunckey_type-opt-meetme
+Conference room
+
+; fm_phonefunckey_type-opt-extension
+Extension
+
+; fm_phonefunckey_type-opt-bosssecretary
+Filter Boss - Secretary
+
+; fm_phonefunckey_type-opt-custom
+Customized
+
+; fm_phonefunckey_extension-typeval-opt-generalfeatures-parkext
+Parking
+
+; fm_phonefunckey_extension-typeval-opt-generalfeatures-pickupexten
+Group interception
+
+; fm_phonefunckey_extension-typeval-opt-featuremap-blindxfer
+Blind transfer
+
+; fm_phonefunckey_extension-typeval-opt-featuremap-atxfer
+Indirect transfer
+
+; fm_phonefunckey_extension-typeval-opt-featuremap-automon
+Online call recording
+
+; fm_phonefunckey_extension-typeval-opt-featuremap-disconnect
+Hangup
+
+; fm_phonefunckey_extension-typeval-opt-extenfeatures-voicemsg
+Reach the voicemail
+
+; fm_phonefunckey_extension-typeval-opt-extenfeatures-fwdundoall
+Disable all forwarding
+
+; fm_phonefunckey_extension-typeval-opt-extenfeatures-fwdundorna
+Disable forwarding on no-answer
+
+; fm_phonefunckey_extension-typeval-opt-extenfeatures-fwdundobusy
+Disable forwarding on busy
+
+; fm_phonefunckey_extension-typeval-opt-extenfeatures-fwdundounc
+Disable unconditionnal forwarding
+
+; fm_phonefunckey_extension-typeval-opt-extenfeatures-recsnd
+Sound recording
+
+; fm_phonefunckey_extension-typeval-opt-extenfeatures-phonestatus
+Phone status
+
+; fm_phonefunckey_extension-typeval-opt-extenfeatures-enablevm
+Enable voicemail
+
+; fm_phonefunckey_extension-typeval-opt-extenfeatures-enablednd
+Do not disturb
+
+; fm_phonefunckey_extension-typeval-opt-extenfeatures-incallrec
+Incoming call recording
+
+; fm_phonefunckey_extension-typeval-opt-extenfeatures-incallfilter
+Incoming call filtering
+
+; fm_phonefunckey_extension-typeval-opt-extenfeatures-agentdynamiclogin
+Connect a dynamic agent
+
+; fm_phonefunckey_extension-typeval-opt-extenfeatures-calllistening
+Listen to online calls
+
+; fm_phonefunckey_extension-typeval-opt-extenfeatures-vmdelete
+Delete messages from voicemail
+
+; fm_phonefunckey_extension-typeval-opt-extenfeatures-directoryaccess
+Directory access
+
+; fm_phonefunckey_supervision-opt-0
+Disabled
+
+; fm_phonefunckey_supervision-opt-1
+Enabled
 
 ; fld-dialstatus-noanswer
 No answer
@@ -405,3 +528,6 @@ Create a schedule
 
 ; add_playback-sound
 Add an audio file
+
+; create_callfilter
+Create a call filter

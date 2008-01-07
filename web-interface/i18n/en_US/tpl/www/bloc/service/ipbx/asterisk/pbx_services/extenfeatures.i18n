@@ -153,6 +153,12 @@ Directory access:
 
 ; fm_extenfeatures_directoryaccess
 Extension:
+ 
+; fm_extenfeatures_enable-bsfilter
+Filter Boss - Secretary:
+
+; fm_extenfeatures_bsfilter
+Extension:
 
 ; fm_generalfeatures_parkext
 Extension:

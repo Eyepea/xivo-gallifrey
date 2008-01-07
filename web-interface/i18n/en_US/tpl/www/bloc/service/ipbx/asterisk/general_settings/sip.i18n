@@ -53,7 +53,7 @@ Domain:
 Allow external domains:
 
 ; fm_usereqphone
-Add ";user=phone" in the URI :
+Add ";user=phone" in the URI:
 
 ; fm_realm
 Realm:

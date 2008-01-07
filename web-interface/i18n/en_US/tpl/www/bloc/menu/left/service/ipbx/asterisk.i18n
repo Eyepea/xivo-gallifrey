@@ -49,6 +49,9 @@ Outgoing calls
 ; mn_left_callmanagement-rightcall
 Call permissions
 
+; mn_left_callmanagement-callfilter
+Call filters
+
 ; mn_left_callmanagement-schedule
 Scheduler
 

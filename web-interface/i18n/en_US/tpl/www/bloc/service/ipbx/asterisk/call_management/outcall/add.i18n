@@ -14,7 +14,7 @@ Create a trunk
 Name:
 
 ; fm_outcalltrunk
-Trunks :
+Trunks:
 
 ; bt-inoutcalltrunk
 Add one or more trunks ->
