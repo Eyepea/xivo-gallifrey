@@ -31,11 +31,6 @@ $array['element']['ringseconds']['setdef'] = true;
 $array['element']['description'] = array();
 $array['element']['description']['default'] = '';
 
-$array['element']['active'] = array();
-$array['element']['active']['value'] = array(0,1);
-$array['element']['active']['default'] = 0;
-$array['element']['active']['set'] = true;
-
 $array['element']['commented'] = array();
 $array['element']['commented']['value'] = array(0,1);
 $array['element']['commented']['default'] = 0;
@@ -49,7 +44,6 @@ $array['filter']['zone'] = array('key' => array('internal','external','all'));
 $array['filter']['callerdisplay'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 80);
 $array['filter']['ringseconds'] = array('set' => false,'chk' => 2,'key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
 $array['filter']['description'] = array('set' => false,'chk' => 2,'maxlen' => 1000,'cast' => 'sgraph_crlf_tab','eol' => true);
-$array['filter']['active'] = array('bool' => true);
 $array['filter']['commented'] = array('bool' => true);
 
 ?>

@@ -346,7 +346,6 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 			return(false);
 		}
 
-		$arr['active'] = false;
 		$arr['commented'] = false;
 
 		if(($rs = $this->_callfilter->chk_values($arr)) === false)
@@ -643,7 +642,6 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 		|| $rs === false)
 			return(false);
 
-		$rs['active'] = $this->_info['callfilter']['active'];
 		$rs['commented'] = $this->_info['callfilter']['commented'];
 
 		$this->_return['callfilter'] = $this->_callfilter->edit($this->_info['callfilter']['id'],$rs);

@@ -25,7 +25,6 @@ class xivo_service_asterisk_callfilter extends xivo_service_asterisk_abstract
 
 	function _prepare($data)
 	{
-		$data['active'] = (bool) $data['active'];
 		$data['commented'] = (bool) $data['commented'];
 
 		return($data);

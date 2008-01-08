@@ -90,7 +90,6 @@ CREATE TABLE `callfilter` (
  `zone` enum('internal','external','all') NOT NULL,
  `callerdisplay` varchar(80) NOT NULL DEFAULT '',
  `ringseconds` tinyint(2) unsigned NOT NULL DEFAULT 0,
- `active` tinyint(1) NOT NULL DEFAULT 0,
  `commented` tinyint(1) NOT NULL DEFAULT 0,
  `description` text NOT NULL,
  PRIMARY KEY(`id`)
@@ -99,7 +98,6 @@ CREATE TABLE `callfilter` (
 CREATE INDEX `callfilter__idx__type` ON `callfilter`(`type`);
 CREATE INDEX `callfilter__idx__bosssecretary` ON `callfilter`(`bosssecretary`);
 CREATE INDEX `callfilter__idx__zone` ON `callfilter`(`zone`);
-CREATE INDEX `callfilter__idx__active` ON `callfilter`(`active`);
 CREATE INDEX `callfilter__idx__commented` ON `callfilter`(`commented`);
 CREATE UNIQUE INDEX `callfilter__uidx__name` ON `callfilter`(`name`);
 
