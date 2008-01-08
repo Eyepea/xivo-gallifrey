@@ -124,6 +124,10 @@ if not bypass and bsfilter == 'boss':
 
 	try:
 		filter = agi_helpers.bsfilter(agi, cursor, dstnum, context)
+
+		if not filter.active:
+			raise LookupError
+
 		zone_applies = filter.check_zone(zone)
 		secretary_calling = filter.is_secretary(srcnum)
 
@@ -133,8 +137,6 @@ if not bypass and bsfilter == 'boss':
 		pass
 
 	if apply_filter:
-		agi.verbose("Filter applies")
-
 		if filter.mode in ("bossfirst-simult", "secretary-simult", "all"):
 			if filter.mode in ("bossfirst-simult", "all"):
 				agi.set_variable('XIVO_BSFILTER_BOSS_INTERFACE', filter.boss.interface)
