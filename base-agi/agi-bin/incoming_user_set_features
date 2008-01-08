@@ -129,9 +129,9 @@ if not bypass and bsfilter == 'boss':
 			raise LookupError
 
 		zone_applies = filter.check_zone(zone)
-		secretary_calling = filter.is_secretary(srcnum)
+		secretary = filter.get_secretary(srcnum)
 
-		if zone_applies and not secretary_calling:
+		if zone_applies and not secretary:
 			apply_filter = True
 	except LookupError:
 		pass

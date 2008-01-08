@@ -185,7 +185,8 @@ def set_fwd_vars(agi, cursor, type, typeval, appval, type_varname, typeval1_varn
 		dp_break(agi, "Unknown destination type '%s'" % type)
 
 class bsf_member:
-	def __init__(self, type, userid, number, ringseconds):
+	def __init__(self, active, type, userid, number, ringseconds):
+		self.active = bool(active)
 		self.type = type
 		self.userid = userid
 		self.number = number
@@ -215,6 +216,7 @@ class bsf_member:
 class bsfilter:
 	def __init__(self, agi, cursor, boss_number, boss_context):
 		self.id = None
+		self.active = False
 		self.context = None
 		self.mode = None
 		self.zone = None
@@ -229,11 +231,9 @@ class bsfilter:
                              "INNER JOIN userfeatures "
                              "ON callfiltermember.typeval = userfeatures.id "
                              "WHERE callfilter.type = 'bosssecretary' "
-                             #"AND callfilter.active = 1 "
                              "AND callfilter.commented = 0 "
                              "AND callfiltermember.type = 'user' "
                              "AND callfiltermember.bstype = 'boss' "
-                             #"AND callfiltermember.active = 1 "
                              "AND userfeatures.number = %s "
                              "AND userfeatures.context = %s "
                              "AND userfeatures.internal = 0 "
@@ -260,7 +260,7 @@ class bsfilter:
 		self.zone = res['callfilter.zone']
 		self.callerdisplay = res['callfilter.callerdisplay']
 		self.ringseconds = res['callfilter.ringseconds']
-		self.boss = bsf_member('boss', res['userfeatures.id'], boss_number, res['callfiltermember.ringseconds'])
+		self.boss = bsf_member(True, 'boss', res['userfeatures.id'], boss_number, res['callfiltermember.ringseconds'])
 		self.secretaries = []
 
 		if self.ringseconds == 0:
@@ -291,14 +291,15 @@ class bsfilter:
                              "WHERE callfiltermember.callfilterid = %s "
                              "AND callfiltermember.type = 'user' "
                              "AND callfiltermember.bstype = 'secretary' "
-                             #"AND callfiltermember.active = 1 "
+                             "AND IFNULL(userfeatures.number,'') != '' "
                              "AND userfeatures.context = %s "
                              "AND userfeatures.internal = 0 "
                              "AND userfeatures.bsfilter = 'secretary' "
                              "AND userfeatures.commented = 0 "
                              "ORDER BY priority ASC",
-                             ('userfeatures.id', 'userfeatures.protocol', 'userfeatures.protocolid',
-                              'userfeatures.name', 'userfeatures.number', 'userfeatures.ringseconds'),
+                             ('callfiltermember.active', 'userfeatures.id', 'userfeatures.protocol',
+                              'userfeatures.protocolid', 'userfeatures.name', 'userfeatures.number',
+                              'userfeatures.ringseconds'),
                              (self.id, boss_context))
 		res = cursor.fetchall()
 
@@ -309,8 +310,11 @@ class bsfilter:
 			protocol = row['userfeatures.protocol']
 			protocolid = row['userfeatures.protocolid']
 			name = row['userfeatures.name']
-			secretary = bsf_member('secretary', row['userfeatures.id'],
+			secretary = bsf_member(row['callfiltermember.active'], 'secretary', row['userfeatures.id'],
                                                row['userfeatures.number'], row['userfeatures.ringseconds'])
+
+			if secretary.active:
+				self.active = True
 
 			if protocol in ("sip", "iax"):
 				interface = protocol.upper() + "/" + name
@@ -363,13 +367,12 @@ class bsfilter:
 		else:
 			return False
 
-	def is_secretary(self, number, context = None):
-		if not context:
-			context = self.context
+	def get_secretary(self, number, context = None):
+		if context and context != self.context:
+			return None
 
-		secretary_numbers = (secretary.number for secretary in self.secretaries)
+		for secretary in self.secretaries:
+			if number == secretary.number:
+				return secretary
 
-		if number in secretary_numbers and context == self.context:
-			return True
-		else:
-			return False
+		return None
