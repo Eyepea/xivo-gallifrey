@@ -64,7 +64,13 @@ fi
 
 if [ "`sqlite "${ASTSQLITEDB}" 'SELECT id FROM dialstatus LIMIT 1' 2>&1 1>/dev/null`" != "" ]
 then
-	echo "Wrong Asterisk Database version"
+	echo "Wrong Asterisk Database version: too old"
+	exit 1
+fi
+
+if [ "`sqlite "${ASTSQLITEDB}" 'SELECT outcallid FROM outcalltrunk LIMIT 1' 2>&1 1>/dev/null`" = "" ]
+then
+	echo "Wrong Asterisk Database version: already upgraded"
 	exit 1
 fi
 
@@ -111,17 +117,21 @@ sqlite "${ASTSQLITEDB}" < "${SCRIPTSDIR}/usersip.sql"
 
 sqlite "${ASTSQLITEDB}" < "${SCRIPTSDIR}/uservoicemail.sql"
 
-sqlite "${ASTSQLITEDB}" < "${SCRIPTSDIR}/${ASTSQLITEFILE}"
+sqlite "${ASTSQLITEDB}" < "${ASTSQLITEFILE}" 1>/dev/null
 
 for SQLTABLE in `sqlite "${ASTSQLITEDB}" ".table tmp_"`;
 do echo -e .mode insert `echo ${SQLTABLE} | sed 's/^tmp_//'`"\nSELECT * FROM ${SQLTABLE};\n";
 done > "${SCRIPTSDIR}/mode-insert.sql.tmp"
 
-sqlite "${ASTSQLITEDB}" < "${SCRIPTSDIR}/mode-insert.sql.tmp"
+cat "${SCRIPTSDIR}/add-insert.sql" > "${SCRIPTSDIR}/astsqlite.sql.tmp"
 
-sqlite "${ASTSQLITEDB}" < "${SCRIPTSDIR}/add-insert.sql"
+sqlite "${ASTSQLITEDB}" < "${SCRIPTSDIR}/mode-insert.sql.tmp" >> "${SCRIPTSDIR}/astsqlite.sql.tmp"
 
-sqlite "${ASTSQLITEDB}" < `grep '^DROP TABLE tmp_' "${SCRIPTSDIR}/astsqlite_drop-table.db.sql.tmp"` 1>/dev/null
+sqlite "${ASTSQLITEDB}" < "${SCRIPTSDIR}/astsqlite.sql.tmp"
+
+grep '^DROP TABLE tmp_' "${SCRIPTSDIR}/astsqlite_drop-table.db.sql.tmp" > "${SCRIPTSDIR}/astsqlite_drop-table.sql.tmp"
+
+sqlite "${ASTSQLITEDB}" < "${SCRIPTSDIR}/astsqlite_drop-table.sql.tmp" 1>/dev/null
 
 rm -rf "${SCRIPTSDIR}"/*.sql.tmp
 
