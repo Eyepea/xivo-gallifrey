@@ -14,7 +14,8 @@ class xivo_service_asterisk_phonefunckey_abstract_sql extends xivo_service_aster
 
 	function get_id($arr)
 	{
-		if(($arr = parent::get($arr)) === false)
+		if(is_array($arr) === false
+		|| ($arr = parent::get($arr)) === false)
 			return(false);
 
 		$r = array();

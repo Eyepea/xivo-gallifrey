@@ -194,8 +194,14 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 
 	function add($arr)
 	{
-		if(is_array($arr) === false
-		|| $this->get_id($arr['iduserfeatures'],$arr['fknum']) !== false)
+		if(is_array($arr) === false)
+			return(false);
+
+		$id = array();
+		$id['iduserfeatures'] = $arr['iduserfeatures'];
+		$id['fknum'] = $arr['fknum'];
+
+		if($this->get_id($id) !== false)
 			return(false);
 
 		return($this->_dso->add($arr));
