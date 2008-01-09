@@ -157,8 +157,7 @@ if not bypass and bsfilter == 'boss':
 				if secretary.active:
 					agi.set_variable('XIVO_BSFILTER_SECRETARY%d_INTERFACE' % index, secretary.interface)
 					agi.set_variable('XIVO_BSFILTER_SECRETARY%d_TIMEOUT' % index, secretary.ringseconds)
-
-				index += 1
+					index += 1
 
 		ds_set_fwd_vars(filter.id, 'callfilter', 'noanswer', 'XIVO_BSFILTER_FWD_TYPERNA', 'XIVO_BSFILTER_FWD_TYPEVAL1RNA', 'XIVO_BSFILTER_FWD_TYPEVAL2RNA')
 
