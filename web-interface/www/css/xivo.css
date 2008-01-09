@@ -235,7 +235,7 @@ pre {text-align: left;}
 #b-content .sb-list table {width: 740px;}
 #b-content .b-form .sb-list table {margin-top: 10px;}
 #b-content .sb-list th {padding: 1px 0px;}
-#b-content fieldset {width: 715px;margin-bottom: 20px;}
+#b-content fieldset {width: 715px;max-width: 715px;margin: 0px auto 20px;}
 #b-content fieldset .sb-list table {width: 720px;}
 #b-content .sb-list th {text-align: center;background-position: left top; background-repeat: repeat-x;background-image: url(../img/content/top/bg-1.gif);background-color: #fff;padding-top: 2px;border: 1px solid #999;border-right-width: 0px;font-size: 8pt;}
 #b-content .sb-list .th-left {border-right-width: 0px;}
