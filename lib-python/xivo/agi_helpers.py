@@ -125,6 +125,7 @@ def set_fwd_vars(agi, cursor, type, typeval, appval, type_varname, typeval1_varn
 	elif type == 'user':
 		cursor.query("SELECT ${columns} FROM userfeatures "
                              "WHERE id = %s "
+                             "AND IFNULL(userfeatures.number,'') != '' "
                              "AND internal = 0 "
                              "AND commented = 0",
                              ('number', 'context'),

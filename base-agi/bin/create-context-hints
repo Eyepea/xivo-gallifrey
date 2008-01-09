@@ -82,6 +82,7 @@ for context in r:
 	print "[" + context[0] + "]"
 	cursor.query("SELECT ${columns} FROM userfeatures "
                      "WHERE context = %s "
+                     "AND IFNULL(number,'') != '' "
                      "AND enablehint = 1",
                      ('number', 'protocol', 'name'),
                      (context[0],))
@@ -92,18 +93,19 @@ for context in r:
 
 	# Ewww. The following query is a closure of one in provisioning/xivo_provisioning/autoprov.py.
 	query = ("SELECT ${columns} FROM userfeatures INNER JOIN phonefunckey "
-                     "ON userfeatures.context = %s "
-                     "AND userfeatures.id = phonefunckey.iduserfeatures "
-                     "AND phonefunckey.typeextenumbers = 'extenfeatures' "
-                     "AND phonefunckey.typevalextenumbers = 'bsfilter' "
-                     "AND phonefunckey.typeextenumbersright = 'user' "
-                     "AND phonefunckey.supervision = 1 "
-                     "LEFT OUTER JOIN extenumbers AS extenumleft "
-                     "ON extenumleft.type = 'extenfeatures' "
-                     "AND extenumleft.typeval = 'bsfilter' "
-                     "LEFT OUTER JOIN extenumbers AS extenumright "
-                     "ON phonefunckey.typeextenumbersright = extenumright.type "
-                     "AND phonefunckey.typevalextenumbersright = extenumright.typeval ")
+                 "ON userfeatures.context = %s "
+                 "AND userfeatures.id = phonefunckey.iduserfeatures "
+                 "AND phonefunckey.typeextenumbers = 'extenfeatures' "
+                 "AND phonefunckey.typevalextenumbers = 'bsfilter' "
+                 "AND phonefunckey.typeextenumbersright = 'user' "
+                 "AND phonefunckey.supervision = 1 "
+                 "LEFT OUTER JOIN extenumbers AS extenumleft "
+                 "ON extenumleft.type = 'extenfeatures' "
+                 "AND extenumleft.typeval = 'bsfilter' "
+                 "LEFT OUTER JOIN extenumbers AS extenumright "
+                 "ON phonefunckey.typeextenumbersright = extenumright.type "
+                 "AND phonefunckey.typevalextenumbersright = extenumright.typeval "
+                 "WHERE IFNULL(userfeatures.number,'') != ''")
 	cursor.query(query,
                      ('extenumleft.exten', 'phonefunckey.exten', 'extenumright.exten', 'userfeatures.number'),
                      (context[0],))
