@@ -81,7 +81,7 @@ then
 	mv "${BACKUPDIR}/${ASTSQLITEDBFILENAME}-torchwood" "${BACKUPDIR}/${ASTSQLITEDBFILENAME}-torchwood-`date +%Y%m%d%H%M%S`"
 fi
 
-cp -a "${ASTSQLITEDB}" "${BACKUPDIR}"
+cp -a "${ASTSQLITEDB}" "${BACKUPDIR}/${ASTSQLITEDBFILENAME}-torchwood"
 
 echo "Performing upgrade..."
 
