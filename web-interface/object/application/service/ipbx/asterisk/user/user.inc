@@ -1144,6 +1144,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		else
 			$this->_return['autoprov'] = $ufeaturesid;
 
+		$this->_service->discuss('extensions reload');
+
 		return($this->_return['autoprov']);
 	}
 
@@ -1573,6 +1575,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		else
 			$this->_return['autoprov'] = $this->_autoprov->authoritative($rs,$rs['modact']);
 
+		$this->_service->discuss('extensions reload');
+
 		return($this->_return['autoprov']);
 	}
 
@@ -1837,6 +1841,9 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		if($this->_status === 'delete')
 			$this->_return['autoprov'] = $r;
+
+		if($r !== false)
+			$this->_service->discuss('extensions reload');
 
 		return($r);
 	}
