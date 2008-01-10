@@ -7,7 +7,8 @@ class xivo_datastorage_sqlite extends xivo_datastorage_abstract_sql
 	var $_param	= array(
 				'db'			=> '',
 				'persist'		=> false,
-				'short_column_names'	=> true);
+				'short_column_names'	=> true,
+				'timeout'		=> 150);
 
 	var $_type	= 'sqlite';
 	var $_date	= array(
@@ -33,6 +34,9 @@ class xivo_datastorage_sqlite extends xivo_datastorage_abstract_sql
 
 		if(isset($param['short_column_names']) === true)
 			$this->_param['short_column_names'] = (bool) $param['short_column_names'];
+
+		if(isset($param['timeout']) === true)
+			$this->_param['timeout'] = xivo_uint($param['timeout']);
 
 		if($open === true)
 			$this->open();
@@ -148,6 +152,9 @@ class xivo_datastorage_sqlite extends xivo_datastorage_abstract_sql
 
 		if(isset($this->_param['short_column_names']) === true)
 			$this->set_pragma('short_column_names',$this->_param['short_column_names']);
+	
+		if(isset($this->_param['timeout']) === true)
+			$this->timeout($this->_link,$this->_param['timeout']);
 
 		return($this->_link);
 	}
@@ -187,6 +194,11 @@ class xivo_datastorage_sqlite extends xivo_datastorage_abstract_sql
 			$r = sqlite_error_string($this->_link);
 
 		return($r);
+	}
+
+	function timeout($time)
+	{
+		return(sqlite_busy_timeout($this->_link,xivo_uint($time)));
 	}
 
 	function affected_rows()

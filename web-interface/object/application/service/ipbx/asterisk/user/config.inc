@@ -24,6 +24,7 @@ $array['import']['field']['context'] = array('protocol','context');
 $array['import']['field']['callerid'] = array('protocol','callerid');
 $array['import']['field']['outcallerid'] = array('ufeatures','outcallerid');
 $array['import']['field']['enableclient'] = array('ufeatures','enableclient');
+$array['import']['field']['enablehint'] = array('ufeatures','enablehint');
 $array['import']['field']['incall'] = '';
 
 ?>

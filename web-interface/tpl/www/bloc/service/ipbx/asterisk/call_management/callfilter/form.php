@@ -24,7 +24,7 @@
 
 <?=$form->select(array('desc' => $this->bbf('fm_callfilter_zone'),'name' => 'callfilter[zone]','labelid' => 'callfilter-zone','bbf' => array('concatkey','fm_callfilter_zone-opt-'),'key' => false,'default' => $element['callfilter']['zone']['default'],'value' => $info['callfilter']['zone']),$element['callfilter']['zone']['value']);?>
 
-<?=$form->select(array('desc' => $this->bbf('fm_callfilter_bosssecretary'),'name' => 'callfilter[bosssecretary]','labelid' => 'callfilter-bosssecretary','bbf' => array('concatkey','fm_callfilter_bosssecretary-opt-'),'key' => false,'default' => $element['callfilter']['bosssecretary']['default'],'value' => $info['callfilter']['bosssecretary']),$element['callfilter']['bosssecretary']['value']);?>
+<?=$form->select(array('desc' => $this->bbf('fm_callfilter_bosssecretary'),'name' => 'callfilter[bosssecretary]','labelid' => 'callfilter-bosssecretary','bbf' => array('concatkey','fm_callfilter_bosssecretary-opt-'),'key' => false,'default' => $element['callfilter']['bosssecretary']['default'],'value' => $info['callfilter']['bosssecretary']),$element['callfilter']['bosssecretary']['value'],'onchange="xivo_chgmode(\'bosssecretary\',this);"');?>
 
 <?=$form->select(array('desc' => $this->bbf('fm_callfilter_ringseconds'),'name' => 'callfilter[ringseconds]','labelid' => 'callfilter-ringseconds','bbf' => array('mixkey','fm_callfilter_ringseconds-opt'),'key' => false,'default' => $element['callfilter']['ringseconds']['default'],'value' => $info['callfilter']['ringseconds']),$element['callfilter']['ringseconds']['value']);?>
 

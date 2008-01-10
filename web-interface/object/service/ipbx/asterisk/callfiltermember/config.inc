@@ -14,7 +14,7 @@ $array['element']['typeval'] = array();
 $array['element']['typeval']['default'] = '';
 
 $array['element']['ringseconds'] = array();
-$array['element']['ringseconds']['value'] = array('no',0,5,10,15,20,25,30,35,40,45,50,55,60);
+$array['element']['ringseconds']['value'] = array(0,5,10,15,20,25,30,35,40,45,50,55,60);
 $array['element']['ringseconds']['default'] = 0;
 $array['element']['ringseconds']['setdef'] = true;
 
@@ -35,7 +35,7 @@ $array['filter'] = array();
 $array['filter']['callfilterid'] = array('cast' => 'uint');
 $array['filter']['type'] = array('key' => array('user'));
 $array['filter']['typeval'] = array('maxlen' => 128,'rexgep' => '/^[a-z0-9_-]+$/');
-$array['filter']['ringseconds'] = array('set' => false,'chk' => 2,'key' => array('no',0,5,10,15,20,25,30,35,40,45,50,55,60));
+$array['filter']['ringseconds'] = array('set' => false,'chk' => 2,'key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
 $array['filter']['priority'] = array('cast' => 'uint','between' => array(0,16));
 $array['filter']['bstype'] = array('set' => false,'chk' => 2,'key' => array('boss','secretary'));
 $array['filter']['active'] = array('bool' => true);

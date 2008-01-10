@@ -65,6 +65,7 @@ switch($act)
 
 		$dhtml = &$_HTML->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/callfilter.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialstatus.js');
 		break;
 	case 'edit':
@@ -128,6 +129,7 @@ switch($act)
 
 		$dhtml = &$_HTML->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/callfilter.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialstatus.js');
 		break;
 	case 'delete':

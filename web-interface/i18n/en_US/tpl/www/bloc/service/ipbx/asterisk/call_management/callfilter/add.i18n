@@ -61,9 +61,6 @@ Identity:
 ; fm_callfiltermember_ringseconds-boss
 Ringing time:
 
-; fm_callfiltermember_ringseconds-boss-optno
-Disabled
-
 ; fm_callfiltermember_ringseconds-boss-opt0
 Unlimited
 
