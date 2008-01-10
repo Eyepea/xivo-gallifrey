@@ -84,7 +84,8 @@ class xivo_application_service_asterisk_realstatic_meetme_room extends xivo_appl
 			$id = $this->_info[$this->_name]['id'];
 		else if(($id = xivo_uint($id)) === 0)
 			return(false);
-		else if(($rs = $this->get_result($this->_name)) === null || $rs === false)
+
+		if(($rs = $this->get_result($this->_name)) === null || $rs === false)
 			return($rs);
 
 		$arr = array();
