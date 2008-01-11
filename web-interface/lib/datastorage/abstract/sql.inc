@@ -488,6 +488,7 @@ class xivo_datastorage_abstract_sql
 
 		return($r);
 	}
+
 	function new_group($col='',$table='')
 	{
 		$this->_group = array();
@@ -513,7 +514,7 @@ class xivo_datastorage_abstract_sql
 
 			$group = array();
 
-			for($i = 0;$i < $arr['cnt'];$i++)
+			for($i = 0;$i < $nb;$i++)
 			{
 				$ref = &$col[$i];
 
