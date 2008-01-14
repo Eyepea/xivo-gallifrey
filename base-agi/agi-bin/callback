@@ -44,7 +44,7 @@ channel = agi.get_variable('CHANNEL')
 disa_params = sys.argv[1]
 chantech = channel.split('/')[0]
 
-mtime = time.time() + 5
+mtime = time.time()
 filename = "%s-%s.call" % (srcnum, int(mtime))
 
 tmpfile = "/var/spool/asterisk/tmp/" + filename
@@ -60,6 +60,5 @@ file.write("Channel: %s/%s\n"
            "Data: %s\n" % (chantech, srcnum, srcnum, disa_params))
 file.close()
 
-os.utime(tmpfile, (mtime, mtime))
 os.rename(tmpfile, realfile)
 agi.verbose('AGI script "%s" successfully executed' % sys.argv[0])
