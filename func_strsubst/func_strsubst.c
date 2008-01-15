@@ -157,7 +157,8 @@ static const char *set_one_name = "SetOne";
 static const char *set_one_synopsis = "Set exactly one channel variable and allow the rvalue to contain pipes characters";
 static const char *set_one_description =
 "  SetOne(name=value)\n"
-"This function can only be used to set the value of channel variables.\n"
+"This function can be used to set the value of one channel variable, with an\n"
+"rvalue which is allowed to contain pipe characters.\n"
 "If the variable name is prefixed with _, the variable will be inherited into\n"
 "channels created from the current channel. If the variable name is prefixed\n"
 "with __, the variable will be inherited into channels created from the current\n"

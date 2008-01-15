@@ -1,0 +1,18 @@
+#!/usr/bin/make -f
+# -*- mode: makefile; coding: utf-8 -*-
+#
+# $Revision$
+# $Date$
+#
+# set PATH and CC to include cross compiling tools for cross compilation, e.g.
+# export PATH=/path/to/toolchain/powerpc-linux-gnu/bin:$PATH
+# export CC=gcc
+
+include ../autobuild.mk
+include ../autobuild-classic.mk
+
+DEB_PKG="pf-asterisk-func-strsubst"
+DEB_TB_DEPS=""
+
+default:
+
