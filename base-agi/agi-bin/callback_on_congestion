@@ -50,7 +50,7 @@ max_retries = parser.getint('general', 'max_retries')
 retry_time = parser.getint('general', 'retry_time')
 wait_time = parser.getint('general', 'wait_time')
 
-mtime = time.time() + 5
+mtime = time.time()
 filename = "%s-%s.call" % (srcnum, int(mtime))
 
 tmpfile = "/var/spool/asterisk/tmp/" + filename
