@@ -1,17 +1,9 @@
 #!/usr/bin/python
 #
-# Authors : Sylvain Boily, Guillaume Knispel
-#           Proformatique
-#           67, rue Voltaire
-#           92800 PUTEAUX
-#           (+33/0)1.41.38.99.60
-#           mailto:technique@proformatique.com
-#           (C) 2007 Proformatique
-#
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
-    Copyright (C) 2007, Proformatique
+    Copyright (C) 2007, 2008 Proformatique
 
     This software is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
