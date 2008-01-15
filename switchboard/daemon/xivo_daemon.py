@@ -495,6 +495,7 @@ def build_features_put(reqlist):
                         params = [value, srcnum, context]
                         cursor = configs[reqlist[0]].userfeatures_db_conn.cursor()
                         cursor.query(query, parameters = params)
+                        configs[reqlist[0]].userfeatures_db_conn.commit()
                         repstr = 'OK'
                         response = commandclass.features_srv2clt('put', '%s;%s;%s;' %(repstr, key, value))
                 else:
@@ -2353,7 +2354,10 @@ class AsteriskRemote:
                 self.userfeatures_db_conn = anysql.connect_by_uri(userfeatures_db_uri)
                 self.capafeatures = capafeatures
                 self.cdr_db_uri  = cdr_db_uri
-                self.cdr_db_conn = anysql.connect_by_uri(cdr_db_uri)
+                if self.cdr_db_uri == self.userfeatures_db_uri :
+                        self.cdr_db_conn = self.userfeatures_db_conn
+                else:
+                        self.cdr_db_conn = anysql.connect_by_uri(cdr_db_uri)
                 # charset = 'utf8' : add ?charset=utf8 to the URI
 
                 self.realm = realm
