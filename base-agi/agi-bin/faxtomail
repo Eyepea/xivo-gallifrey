@@ -28,15 +28,11 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
-
 import xivo.to_path
 
 import os
-import sys, re
-import except_tb
+import sys
 import agi_helpers
-import ConfigDict
 from agi import *
 
 agi = AGI()

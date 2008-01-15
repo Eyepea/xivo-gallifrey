@@ -30,7 +30,9 @@ __license__ = """
 
 RULES_FILE = '/etc/asterisk/xivo_in_callerid.conf'
 
-import os, sys, re
+import os
+import sys
+import re
 
 import xivo.to_path
 import OrderedConf
