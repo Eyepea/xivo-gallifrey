@@ -33,7 +33,6 @@ import xivo.to_path
 
 import sys
 import anysql
-import except_tb
 import agi_helpers
 from BackSQL import backsqlite
 from BackSQL import backmysql
