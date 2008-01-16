@@ -44,13 +44,9 @@ class xivo_datastorage_sqlite extends xivo_datastorage_abstract_sql
 
 	function quote_identifier($name)
 	{
-		$r = '';
+		if(($r = $this->_chk_quote($name)) !== '')
+			$r = '"'.str_replace('"','""',$r).'"';
 
-		$name = (string) $name;
-
-		if(isset($name{0}) === true)
-			$r = '"'.str_replace('"','""',$name).'"';
-		
 		return($r);
 	}
 
@@ -152,20 +148,20 @@ class xivo_datastorage_sqlite extends xivo_datastorage_abstract_sql
 
 		if(isset($this->_param['short_column_names']) === true)
 			$this->set_pragma('short_column_names',$this->_param['short_column_names']);
-	
+		
 		if(isset($this->_param['timeout']) === true)
 			$this->timeout($this->_param['timeout']);
 
 		return($this->_link);
 	}
 
-	function query($q,$b=false,$o=false)
+	function query($query,$buffer=false,$o=false)
 	{
-		$this->_query = (string) $q;
-		$b = (bool) $b;
+		$this->_query = (string) $query;
+		$buffer = (bool) $buffer;
 		$o = (bool) $o;
 
-		if($b === true)
+		if($buffer === true)
 			$this->_result = sqlite_query($this->_query,$this->_link);
 		else
 			$this->_result = sqlite_unbuffered_query($this->_query,$this->_link);
@@ -233,44 +229,51 @@ class xivo_datastorage_sqlite extends xivo_datastorage_abstract_sql
 
 	function num_rows($r=false)
 	{
-		return(sqlite_num_rows(($r !== false ? $r : $this->_result)));
+		return(sqlite_num_rows((is_resource($r) === true ? $r : $this->_result)));
 	}
 
 	function fetch_row($r=false)
 	{
-		return(sqlite_fetch_array(($r !== false ? $r : $this->_result),SQLITE_NUM));
+		return(sqlite_fetch_array((is_resource($r) === true ? $r : $this->_result),SQLITE_NUM));
 	}
 
 	function fetch_assoc($r=false)
 	{
-		return(sqlite_fetch_array(($r !== false ? $r : $this->_result),SQLITE_ASSOC));
+		return(sqlite_fetch_array((is_resource($r) === true ? $r : $this->_result),SQLITE_ASSOC));
 	}
 
-	function unix_timestamp($col='',$time='')
+	function unix_timestamp($column='',$time='')
 	{
-		return($this->_expr_typetime(null,$col,$time,'%s'));
+		return($this->_expr_typetime(null,$column,$time,'%s'));
 	}
 
-	function _expr_typetime($type='',$col='',$time='',$format='')
+	function _expr_typetime($type='',$column='',$time='',$format='',$table='')
 	{
-		$col = $this->quote_identifier($col);
+		$column = trim((string) $column);
 		$time = strtolower((string) $time);
 		$format = (string) $format;
+		$table = trim((string) $table);
 
 		if($time !== '' && $time !== 'localtime' && $time !== 'utc')
 			return(false);
+		else if($table === '')
+			$column = $this->quote_identifier($column);
+		else if(isset($this->_table[$table]) === false || $column === '')
+				return(false);
+		else
+			$column = $this->quote_identifier($table).'.'.$this->quote_identifier($column);
 
-		if($col === '')
-			$col = '\'now\'';
+		if($column === '')
+			$column = '\'now\'';
 
 		if($format === '' && $time === '')
-			$r = 'datetime('.$col.')';
+			$r = 'datetime('.$column.')';
 		if($format === '' && $time !== '')
-			$r = 'datetime('.$col.',\''.$time.'\')';
+			$r = 'datetime('.$column.',\''.$time.'\')';
 		else if($time === '')
-			$r = 'strftime(\''.$format.'\',datetime('.$col.'))';
+			$r = 'strftime(\''.$format.'\',datetime('.$column.'))';
 		else
-			$r = 'strftime(\''.$format.'\',datetime('.$col.'),\''.$time.'\')';
+			$r = 'strftime(\''.$format.'\',datetime('.$column.'),\''.$time.'\')';
 
 		return($r);
 	}

@@ -116,10 +116,7 @@ class xivo_service_abstract
 		$dir[] = $type;
 
 		if(($this->_dsoconf[$type] = xivo_gat::get_file($dir)) === false)
-		{
-			trigger_error('Failed to load '.$type.' datastorage configuration for '.$this->_name,E_USER_ERROR);
 			return(false);
-		}
 
 		return(true);
 	}
@@ -343,9 +340,7 @@ class xivo_service_abstract
 			return(false);
 		}
 
-		$type = $dso->get_type();
-
-		$class = 'xivo_application_service_'.$this->_name.'_'.$name.'_'.$type;
+		$dsotype = $dso->get_type();
 
 		$dir = array();
 		$dir[] = XIVO_PATH_OBJECT;
@@ -356,10 +351,19 @@ class xivo_service_abstract
 		$dir[] = $name;
 		$dir[] = 'datastorage';
 
-		if($this->_load_dso_config($type) === false || xivo::load_class($class,$dir,$type,false) === false)
+		$appdso = $this->_load_dso_application_class($name,$dir,$dsotype,$dso);
+
+		if(is_object($appdso) === true)
+			return($appdso);
+		else if(($meta = xivo_datastorage::get_meta($dsotype)) === false)
 			return(false);
 
-		return(new $class($dso,&$this->_dsoconf[$type]));
+		$appdso = $this->_load_dso_application_class($name,$dir,$dsotype,$dso,$meta,$appdso);
+
+		if(is_object($appdso) === true)
+			return($appdso);
+
+		return(false);
 	}
 
 	function _load_dso_appcustom($type,$name)
@@ -379,8 +383,6 @@ class xivo_service_abstract
 
 		$dsotype = $dso->get_type();
 
-		$class = 'xivo_application_service_'.$this->_name.'_'.$type.'_'.$name.'_'.$dsotype;
-
 		$dir = array();
 		$dir[] = XIVO_PATH_OBJECT;
 		$dir[] = 'application';
@@ -391,10 +393,40 @@ class xivo_service_abstract
 		$dir[] = $name;
 		$dir[] = 'datastorage';
 
-		if($this->_load_dso_config($dsotype) === false || xivo::load_class($class,$dir,$dsotype,false) === false)
+		$appdso = $this->_load_dso_application_class($name,$dir,$dsotype,$dso,false,false,$type);
+
+		if(is_object($appdso) === true)
+			return($appdso);
+		else if(($meta = xivo_datastorage::get_meta($dsotype)) === false)
 			return(false);
 
-		return(new $class($dso,&$this->_dsoconf[$dsotype]));
+		$appdso = $this->_load_dso_application_class($name,$dir,$dsotype,$dso,$meta,$appdso,$type);
+
+		if(is_object($appdso) === true)
+			return($appdso);
+
+		return(false);
+	}
+
+	function _load_dso_application_class($name,$dir,$dsotype,&$dso,$meta=false,$param=false,$custom=false)
+	{
+		if($meta === false)
+			$metatype = $dsotype;
+		else
+			$metatype = $meta;
+
+		if($custom === false)
+			$class = 'xivo_application_service_'.$this->_name.'_'.$name.'_'.$metatype;
+		else
+			$class = 'xivo_application_service_'.$this->_name.'_'.$custom.'_'.$name.'_'.$metatype;
+
+		if($param === false && $this->_load_dso_config($metatype) === true)
+			$param = &$this->_dsoconf[$metatype];
+
+		if($param === false || xivo::load_class($class,$dir,$metatype,false) === false)
+			return($param);
+
+		return(new $class($dso,&$param));
 	}
 
 	function _load_dso($name='',$custom=false)
@@ -453,8 +485,6 @@ class xivo_service_abstract
 
 		$type = $datastorage['type'];
 
-		$class = 'xivo_service_'.$this->_name.'_'.$name.'_'.$type;
-
 		$dir = array();
 		$dir[] = XIVO_PATH_OBJECT;
 		$dir[] = 'service';
@@ -463,23 +493,52 @@ class xivo_service_abstract
 		$dir[] = $name;
 		$dir[] = 'datastorage';
 
-		if(($param = $this->get_dso_config_by_name($type,$name)) === false)
-			$param = array();
+		$dso = $this->_load_dso_class($name,$type,$dir,$custom,$datastorage,$datastoragemod);
 
-		if(is_array($datastoragemod) === true)
-			$param = array_merge($datastoragemod,$param);
+		if(is_object($dso) === true)
+			return($dso);
 
-		if(xivo::load_class($class,$dir,$type,false) === false)
+		if(($meta = xivo_datastorage::get_meta($type)) === false)
 		{
 			trigger_error('Failed to load datastorage '.$type.' for '.$name,E_USER_ERROR);
 			return(false);
 		}
+
+		$dso = $this->_load_dso_class($name,$meta,$dir,$custom,$datastorage,$datastorage,$meta,$dso);
+
+		if(is_object($dso) === true)
+			return($dso);
+
+		trigger_error('Failed to load datastorage '.$type.' for '.$name,E_USER_ERROR);
+
+		return(false);
+	}
+
+	function _load_dso_class($name,$type,$dir,$custom,$datastorage,$datastoragemod,$meta=false,$param=false)
+	{
+		if($meta === false)
+			$metatype = $type;
+		else
+			$metatype = $meta;
+
+		$class = 'xivo_service_'.$this->_name.'_'.$name.'_'.$metatype;
+
+		if(empty($param) === true && ($param = $this->get_dso_config_by_name($metatype,$name)) === false)
+			$param = array();
+
+		if(is_array($datastoragemod) === true)
+			$paramod = array_merge($datastoragemod,$param);
+		else
+			$paramod = $param;
+
+		if(xivo::load_class($class,$dir,$metatype,false) === false)
+			return($param);
 		else if($custom === false)
 		{
 			if(is_object($this->_dsogeneral) === false)
 				$this->_dsogeneral = xivo_datastorage::factory($type,$datastorage);
 
-			return(new $class($this->_dsogeneral,$param));
+			return(new $class($this->_dsogeneral,$paramod));
 		}
 		else
 		{
@@ -487,10 +546,10 @@ class xivo_service_abstract
 			|| is_object($this->_dsocustom[$name]) === false)
 				$this->_dsocustom[$name] = xivo_datastorage::factory($type,$datastorage);
 
-			return(new $class($this->_dsocustom[$name],$param));
+			return(new $class($this->_dsocustom[$name],$paramod));
 		}
 
-		return(false);
+		return($param);
 	}
 }
 

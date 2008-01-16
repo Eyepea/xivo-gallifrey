@@ -36,7 +36,6 @@
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
 	</tr>
 <?php
-
 	if($list === false || ($nb = count($list)) === 0):
 ?>
 	<tr class="sb-content">

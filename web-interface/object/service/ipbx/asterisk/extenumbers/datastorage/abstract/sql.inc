@@ -8,51 +8,54 @@ class xivo_service_asterisk_extenumbers_abstract_sql extends xivo_service_asteri
 
 	function exists_type($arr,$context='')
 	{
+		if(is_array($arr) === false)
+			return(false);
+
 		$context = (string) $context;
 
-		if(($where = $this->_dso->where($arr)) === false)
-			return(null);
+		$this->_dso->new_select($this->_param['table'],array('type','typeval'));
+		$this->_dso->where($arr);
 
 		if($context !== '')
-			$where .= ' AND (context = \''.$this->_dso->escape_string($context).'\' OR context = \'\')';
+			$this->_dso->andwhere('(context = %s OR context = \'\')',$context);
 
-		$r = $this->_dso->select_one($this->_param['table'],'type,typeval',$where);
-
-		return($r);
+		return($this->_dso->select_single());
 	}
 
 	function get_search($exten,$extenhash,$context='',$type='',$typeval='')
 	{
-		$where = array();
+		$this->_cnt = 0;
 
-		if(($rs = $this->_dso->search_contain('exten',$exten)) !== false)
-			$where[] = $rs;
+		$this->_dso->new_select($this->_param['table']);
+		$this->_dso->wherecontain('exten',$exten);
+		$this->_dso->orwhere(array('extenhash' => $extenhash));
 
-		if(($rs = $this->_dso->search_exact('extenhash',$extenhash)) !== false)
-			$where[] = $rs;
-
-		if(($where = implode(' OR ',$where)) === '')
+		if($this->_dso->aggregate_where() === false)
 			return(false);
 
-		$whereand = array();
+		$where = array();
 
-		if(xivo_haslen($context) !== false
-		&& ($rs = $this->_dso->search_exact('context',$context)) !== false)
-			$whereand[] = $rs;
+		if(xivo_haslen($context) === true)
+			$where['context'] = $context;
 
-		if(xivo_haslen($type) !== false
-		&& ($rs = $this->_dso->search_exact('type',$type)) !== false)
-			$whereand[] = $rs;
+		if(xivo_haslen($type) === true)
+			$where['type'] = $type;
 
-		if(xivo_haslen($typeval) !== false
-		&& ($rs = $this->_dso->search_exact('typeval',$typeval)) !== false)
-			$whereand[] = $rs;
+		if(xivo_haslen($typeval) === true)
+			$where['typeval'] = $typeval;
 
-		if(isset($whereand[0]) === true && ($whereand = implode(' AND ',$whereand)) !== '')
-			$where = '('.$where.') AND '.$whereand;
+		if(empty($where) === false)
+			$this->_dso->andwhere($where);
 
-		$r = $this->_dso->select_all($this->_param['table'],null,$where);
+		$r = $this->_dso->select_all();
 
+		$this->_dso->reset_order();
+		$this->_dso->reset_limit();
+
+		if(($this->_cnt = $this->_dso->select_count()) === false
+		|| isset($r[0]) === false)
+			$r = false;
+		
 		return($r);
 	}
 }

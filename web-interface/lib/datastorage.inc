@@ -7,16 +7,14 @@ class xivo_datastorage
 	function factory($type,$param=array())
 	{
 		$type = strtolower((string) $type);
-
-		if(xivo_datastorage::is_valid($type) === false)
-			trigger_error('Invalid datastorage type');
-
-		if(xivo_datastorage::chk_extension_exists($type) === true && xivo_datastorage::chk_extension_loaded($type,true) === false)
-		       trigger_error('Datastorage '.$type.' extension is not loaded',E_USER_ERROR);	
-
 		$name = 'xivo_datastorage_'.$type;
 
-		if(xivo::load_class($name,'datastorage',$type) === false)
+		if(xivo_datastorage::is_valid($type) === false)
+			trigger_error('Invalid datastorage type',E_USER_ERROR);
+		else if(xivo_datastorage::chk_extension_exists($type) === true
+		&& xivo_datastorage::chk_extension_loaded($type,true) === false)
+		       trigger_error('Datastorage '.$type.' extension is not loaded',E_USER_ERROR);
+		else if(xivo::load_class($name,'datastorage',$type) === false)
 			return(false);
 
 		return(new $name($param));
@@ -73,8 +71,7 @@ class xivo_datastorage
 			{
 				if(xivo_haslen($arr['query'][$i],0) === false)
 					continue;
-
-				if(isset($arr['query'][$i][1]) === true)
+				else if(isset($arr['query'][$i][1]) === true)
 					$r[$arr['query'][$i][0]] = $arr['query'][$i][1];
 				else
 					$r[$arr['query'][$i][0]] = '';
@@ -86,64 +83,54 @@ class xivo_datastorage
 
 	function get_extension_name($type)
 	{
-		$r = false;
-
 		$type = (string) $type;
+
+		if(xivo_datastorage::chk_extension_exists($type) === false)
+			return(false);
 
 		$datastorage = &xivo_gat::get('datastorage');
 
-		if(xivo_datastorage::chk_extension_exists($type) === true)
-			$r = $datastorage[$type]['extension'];
-
-		return($r);
+		return($datastorage[$type]['extension']);
 	}
 
 	function chk_extension_loaded($type,$load=false)
 	{
-		$r = false;
-
 		$type = (string) $type;
 		$load = (bool) $load;
 
+		if(xivo_datastorage::chk_extension_exists($type) === false)
+			return(false);
+
 		$datastorage = &xivo_gat::get('datastorage');
+	
+		if($load === true)
+			xivo::load_extension($datastorage[$type]['extension']);
 
-		if(xivo_datastorage::chk_extension_exists($type) === true)
-		{
-			if($load === true)
-				xivo::load_extension($datastorage[$type]['extension']);
-
-			$r = xivo::chk_extension_loaded($datastorage[$type]['extension']);
-		}
-
-		return($r);
+		return(xivo::chk_extension_loaded($datastorage[$type]['extension']));
 	}
 
 	function chk_extension_exists($type)
 	{
-		$r = false;
-
 		$type = (string) $type;
+
+		if(xivo_datastorage::is_valid($type) === false)
+			return(false);
 
 		$datastorage = &xivo_gat::get('datastorage');
 
-		if(xivo_datastorage::is_valid($type) === true && xivo_ak('extension',$datastorage[$type]) === true)
-			$r = true;
-
-		return($r);
+		return(xivo_ak('extension',$datastorage[$type]));
 	}
 
-	function chk_link($type)
+	function get_meta($type)
 	{
-		$r = false;
-
 		$type = (string) $type;
+
+		if(xivo_datastorage::is_valid($type) === false)
+			return(false);
 
 		$datastorage = &xivo_gat::get('datastorage');
 
-		if(xivo_datastorage::is_valid($type) === true && xivo_issa('link',$datastorage[$type],true) === true)
-			$r = true;
-
-		return($r);
+		return(xivo_ak('meta',$datastorage[$type],true));
 	}
 }
 

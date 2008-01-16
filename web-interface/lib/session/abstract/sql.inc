@@ -54,26 +54,25 @@ class xivo_session_abstract_sql
 
 		$this->_insert = true;
 
-		$rs = $this->_dso->query('SELECT userid, data, expire FROM '.$this->_param['table'].
-					 ' WHERE key = \''.$this->_dso->escape_string($key).'\''.
-					 ' AND expire >= '.gmmktime(),true);
+		$this->_dso->new_select($this->_param['table'],array('userid','data','expire'));
+		$this->_dso->where(array('key' => $key));
+		$this->_dso->andwhere('expire >= %s',gmmktime());
+		$this->_dso->limit(2);
 
-		if($rs !== false)
+		if(($rs = $this->_dso->select_all(null,false)) !== false)
 		{
-			if($this->_dso->num_rows($rs) === 1)
+			if($this->_dso->num_rows() === 1)
 			{
 				$this->_insert = false;
-				$rw = $this->_dso->fetch_assoc($rs);
 
-				$r = rawurldecode($rw['data']);
-				$this->_attrib['userid'] = $rw['userid'];
+				$r = rawurldecode($rs[0]['data']);
+				$this->_attrib['userid'] = $rs[0]['userid'];
 
 				if(empty($r) === true)
-					$this->_dso->delete($this->_param['table'],'key = \''.$this->_dso->escape_string($key).'\'');
+					$this->_dso->delete($this->_param['table'],array('key' => $key));
 			}
 
-			if($this->_dso->is_free() === true)
-				$this->_dso->free($rs);
+			$this->_dso->free();
 		}
 
 		$this->_crc = sha1($r.$this->_attrib['userid']);
@@ -101,9 +100,10 @@ class xivo_session_abstract_sql
 
 		if($this->_insert === false)
 		{
-			$where = 'key = \''.$this->_dso->escape_string($key).'\'';
+			$this->_dso->new_select($this->_param['table']);
+			$this->_dso->where(array('key' => $key));
 
-			if(($r = $this->_dso->select_count($this->_param['table'],null,$where)) !== false)
+			if(($r = $this->_dso->select_count()) !== false)
 			{
 				if($r > 0)
 				{
@@ -112,7 +112,7 @@ class xivo_session_abstract_sql
 					$arr['expire'] = $expire;
 					$arr['data'] = $val;
 
-					$rs = $this->_dso->update($this->_param['table'],$arr,$where);
+					$rs = $this->_dso->update($this->_param['table'],$arr,null,null,true);
 
 					if($rs !== false && $this->_dso->affected_rows() === 0)
 						$this->_insert = true;
@@ -139,13 +139,13 @@ class xivo_session_abstract_sql
 
 	function destroy($key)
 	{
-		$this->_dso->delete($this->_param['table'],'key = \''.$this->_dso->escape_string($key).'\'');
+		$this->_dso->delete($this->_param['table'],array('key' => $key));
 		return(true);
 	}
 
 	function gc($t=0)
 	{
-		$this->_dso->delete($this->_param['table'],'expire < '.gmmktime());
+		$this->_dso->delete($this->_param['table'],'expire < %s',gmmktime());
 		return(true);
 	}
 

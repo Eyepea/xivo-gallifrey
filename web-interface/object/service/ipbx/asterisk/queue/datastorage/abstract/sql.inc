@@ -21,7 +21,8 @@ class xivo_service_asterisk_queue_abstract_sql extends xivo_service_asterisk_abs
 
 	function get_id($arr,$disable=null)
 	{
-		if(($r = parent::get($arr,$disable)) === false)
+		if(is_array($arr) === false
+		|| ($r = parent::get($arr,$disable)) === false)
 			return(false);
 
 		return($r['name']);
@@ -32,14 +33,14 @@ class xivo_service_asterisk_queue_abstract_sql extends xivo_service_asterisk_abs
 		return(parent::add($arr,false));
 	}
 
-	function edit($id,$arr,$disable=null)
+	function edit($id,$value,$disable=null)
 	{
 		if(is_scalar($id) === false)
 			return(false);
 
 		$id = array('name' => $id);
 
-		return(parent::edit($id,$arr,$disable));
+		return(parent::edit($id,$value,$disable));
 	}
 
 	function delete($id,$disable=null)

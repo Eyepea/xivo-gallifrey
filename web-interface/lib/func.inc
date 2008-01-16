@@ -820,31 +820,28 @@ function xivo_malert($subject='',$msg='',$to='')
 
 function xivo_get_aks(&$a,$empty=false)
 {
-	$r = false;
-
 	if(is_array($a) === false)
-		return($r);
+		return(false);
 
 	$ak = array_keys($a);
 
 	if(($cnt = count($ak)) > 0 || $empty === true)
 		$r = array('keys' => $ak,'cnt' => $cnt);	
+	else
+		$r = false;
 
 	return($r);
 }
 
 function xivo_last_key(&$a,$sort=SORT_NUMERIC)
 {
-	$r = false;
-
 	if(is_array($a) === false)
-		return($r);
+		return(false);
 
 	$ak = array_keys($a);
 	ksort($ak,$sort);
-	$r = end($ak);
 
-	return($r);
+	return(end($ak));
 }
 
 function xivo_genpwd($str='')

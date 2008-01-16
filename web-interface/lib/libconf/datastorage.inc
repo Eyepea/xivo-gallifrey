@@ -1,7 +1,7 @@
 <?php
 
 $array = array(
-	'mysql'		=> array('extension' => 'mysql','link' => true),
-	'sqlite'	=> array('extension' => 'sqlite','link' => true));
+	'mysql'		=> array('meta' => 'sql','extension' => 'mysql'),
+	'sqlite'	=> array('meta' => 'sql','extension' => 'sqlite'));
 
 ?>

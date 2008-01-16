@@ -38,7 +38,7 @@ class xivo_user_abstract_sql
 
 		$arr['dupdate'] = time();
 
-		$r = $this->_dso->update($this->_param['table'],$arr,'id = '.$id);
+		$r = $this->_dso->update($this->_param['table'],$arr,array('id' => $id));
 
 		return($r);
 	}
@@ -48,42 +48,39 @@ class xivo_user_abstract_sql
 		if(($id = xivo_uint($id)) === 0)
 			return(false);
 
-		if(($r = $this->_dso->select_one($this->_param['table'],null,'id = '.$id)) !== false)
-		{
-			$r['valid'] = (bool) $r['valid'];
-			$r['obj'] = xivo_unserialize($r['obj']);
-		}
+		$this->_dso->new_select($this->_param['table']);
+		$this->_dso->where(array('id' => $id));
+
+		if(($r = $this->_dso->select_single()) === false)
+			return(false);
+
+		$r['valid'] = (bool) $r['valid'];
+		$r['obj'] = xivo_unserialize($r['obj']);
 
 		return($r);
 	}
 
 	function get_nb($valid=null)
 	{
-		$where = '';
+		$this->_dso->new_select($this->_param['table']);
 
 		if($valid !== null)
-		{
-			$arr = array('valid' => intval((bool) $valid));
+			$this->_dso->where(array('valid' => intval((bool) $valid)));
 
-			if(($where = $this->_dso->where($arr)) === false)
-				return(false);
-		}
-
-		$r = $this->_dso->select_count($this->_param['table'],null,$where);
-
-		return($r);
+		return((int) $this->_dso->select_count());
 	}
 
 	function get_by_login_pass($login,$pass)
 	{
-		$where = 'login = \''.$this->_dso->escape_string($login).'\''.
-			 ' AND passwd = \''.$this->_dso->escape_string($pass).'\'';
+		$this->_dso->new_select($this->_param['table']);
+		$this->_dso->where(array('login' => $login,
+					 'passwd' => $pass));
 
-		if(($r = $this->_dso->select_one($this->_param['table'],null,$where)) !== false)
-		{
-			$r['valid'] = (bool) $r['valid'];
-			$r['obj'] = xivo_unserialize($r['obj']);
-		}
+		if(($r = $this->_dso->select_single()) === false)
+			return(false);
+
+		$r['valid'] = (bool) $r['valid'];
+		$r['obj'] = xivo_unserialize($r['obj']);
 
 		return($r);
 	}
@@ -91,12 +88,13 @@ class xivo_user_abstract_sql
 	function get_list($arr=array())
 	{
 		$arr = (array) $arr;
-		$where = '';
+
+		$this->_dso->new_select($this->_param['table']);
 
 		if(empty($arr) === false)
-			$where = $this->_dso->in('meta',$arr);
+			$this->_dso->wherein('meta',$arr);
 
-		$r = $this->_dso->select_all($this->_param['table'],null,$where);
+		$r = $this->_dso->select_all();
 
 		if(isset($r[0]) === false)
 			$r = false;
@@ -109,9 +107,10 @@ class xivo_user_abstract_sql
 		if(($id = xivo_uint($id)) === 0 || ($dupdate = xivo_uint($dupdate)) === 0)
 			return(false);
 
-		$where = 'id = '.$id.' AND dupdate != '.$dupdate;
+		$this->_dso->new_select($this->_param['table'],'id');
+		$this->_dso->where(array('id' => $id,'dupdate' => $dupdate));
 
-		if(($r = $this->_dso->select_one($this->_param['table'],'id',$where)) !== false)
+		if(($r = $this->_dso->select_one()) !== false)
 			$r = true;
 
 		return($r);
@@ -124,9 +123,7 @@ class xivo_user_abstract_sql
 
 		$obj['acl'] = $arr;
 
-		$r = $this->_save_obj($id,$obj);
-
-		return($r);
+		return($this->_save_obj($id,$obj));
 	}
 
 	function _save_obj($id,$obj)
@@ -134,9 +131,9 @@ class xivo_user_abstract_sql
 		if(($id = xivo_uint($id)) === 0 || is_array($obj) === false)
 			return(false);
 
-		$arr = array('obj' => serialize($obj));
-
-		$r = $this->_dso->update($this->_param['table'],$arr,'id = '.$id);
+		$r = $this->_dso->update($this->_param['table'],
+					 array('obj' => serialize($obj)),
+					 array('id' => $id));
 
 		return($r);
 	}
@@ -146,10 +143,13 @@ class xivo_user_abstract_sql
 		if(($id = xivo_uint($id)) === 0)
 			return(false);
 
-		if(($r = $this->_dso->select_one($this->_param['table'],'obj','id = '.$id)) !== false)
-			$r = xivo_unserialize($r['obj']);
+		$this->_dso->new_select($this->_param['table'],'obj');
+		$this->_dso->where(array('id' => $id));
 
-		return($r);
+		if(($r = $this->_dso->select_one()) === false)
+			return(false);
+
+		return(xivo_unserialize($r));
 	}
 }
 

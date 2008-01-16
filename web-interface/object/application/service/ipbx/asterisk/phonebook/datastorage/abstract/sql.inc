@@ -11,82 +11,46 @@ class xivo_application_service_asterisk_phonebook_abstract_sql extends xivo_appl
 
 	function search($value,$order=null,$limit=null)
 	{
-		$t = &$this->_table;
-		$search = array();
+		$this->_cnt = 0;
 
-		if(($rs = $this->_dso->search_contain('address1',$value,$t['phonebookaddress'])) !== false)
-			$search[] = $rs;
+		$this->_dso->new_select($this->_table['phonebook']);
 
-		if(($rs = $this->_dso->search_contain('address2',$value,$t['phonebookaddress'])) !== false)
-			$search[] = $rs;
+		$this->_dso->leftjoin($this->_table['phonebookaddress'],
+				      $this->_table['phonebook'].'.id = '.$this->_table['phonebookaddress'].'.phonebookid');
 
-		if(($rs = $this->_dso->search_contain('city',$value,$t['phonebookaddress'])) !== false)
-			$search[] = $rs;
+		$this->_dso->leftjoin($this->_table['phonebooknumber'],
+				      $this->_table['phonebook'].'.id = '.$this->_table['phonebooknumber'].'.phonebookid');
 
-		if(($rs = $this->_dso->search_contain('state',$value,$t['phonebookaddress'])) !== false)
-			$search[] = $rs;
+		$this->_dso->wherecontain('address1',$value,$this->_table['phonebookaddress']);
+		$this->_dso->orwherecontain('address2',$value,$this->_table['phonebookaddress']);
+		$this->_dso->orwherecontain('city',$value,$this->_table['phonebookaddress']);
+		$this->_dso->orwherecontain('state',$value,$this->_table['phonebookaddress']);
+		$this->_dso->orwherecontain('zipcode',$value,$this->_table['phonebookaddress']);
+		$this->_dso->orwherecontain('country',$value,$this->_table['phonebookaddress']);
+		$this->_dso->orwherecontain('number',$value,$this->_table['phonebooknumber']);
+		$this->_dso->orwherecontain('firstname',$value,$this->_table['phonebook']);
+		$this->_dso->orwherecontain('lastname',$value,$this->_table['phonebook']);
+		$this->_dso->orwherecontain('displayname',$value,$this->_table['phonebook']);
+		$this->_dso->orwherecontain('society',$value,$this->_table['phonebook']);
+		$this->_dso->orwherecontain('email',$value,$this->_table['phonebook']);
+		$this->_dso->orwherecontain('url',$value,$this->_table['phonebook']);
+		$this->_dso->orwherecontain('description',$value,$this->_table['phonebook']);
 
-		if(($rs = $this->_dso->search_contain('zipcode',$value,$t['phonebookaddress'])) !== false)
-			$search[] = $rs;
-
-		if(($rs = $this->_dso->search_contain('country',$value,$t['phonebookaddress'])) !== false)
-			$search[] = $rs;
-
-		if(($rs = $this->_dso->search_contain('number',$value,$t['phonebooknumber'])) !== false)
-			$search[] = $rs;
-
-		if(($rs = $this->_dso->search_contain('firstname',$value,$t['phonebook'])) !== false)
-			$search[] = $rs;
-
-		if(($rs = $this->_dso->search_contain('lastname',$value,$t['phonebook'])) !== false)
-			$search[] = $rs;
-
-		if(($rs = $this->_dso->search_contain('displayname',$value,$t['phonebook'])) !== false)
-			$search[] = $rs;
-
-		if(($rs = $this->_dso->search_contain('society',$value,$t['phonebook'])) !== false)
-			$search[] = $rs;
-
-		if(($rs = $this->_dso->search_contain('email',$value,$t['phonebook'])) !== false)
-			$search[] = $rs;
-
-		if(($rs = $this->_dso->search_contain('url',$value,$t['phonebook'])) !== false)
-			$search[] = $rs;
-
-		if(($rs = $this->_dso->search_contain('description',$value,$t['phonebook'])) !== false)
-			$search[] = $rs;
-
-		if(($search = implode(' OR ',$search)) === '')
+		if($this->_dso->aggregate_where() === false)
 			return(false);
 
-		$where = '('.$search.')';
-
-		$phonebookid = $t['phonebook'].'.id';
-
-		if(($phonebookaddressjoin = $this->_dso->join($t['phonebookaddress'],
-							      'LEFT',
-							      $t['phonebookaddress'].'.phonebookid = '.$phonebookid)) === false
-		|| ($phonebooknumberjoin = $this->_dso->join($t['phonebooknumber'],
-							      'LEFT',
-							      $t['phonebooknumber'].'.phonebookid = '.$phonebookid)) === false)
-			return(false);
-
-		$from = $t['phonebook'].
-			' '.$phonebookaddressjoin.
-			' '.$phonebooknumberjoin;
-
-		$this->_dso->new_group('id',$t['phonebook']);
-		$this->_dso->new_order($order,null,$t['phonebook']);
-		$this->_dso->new_limit($limit);
+		$this->_dso->new_group('id',$this->_table['phonebook']);
+		$this->_dso->new_order($order,null,$this->_table['phonebook']);
+		$this->_dso->limit($limit);
 	
-		$r = $this->_dso->select_all($from,$t['phonebook'].'.*',$where);
+		$r = $this->_dso->select_all();
 
 		$this->_dso->reset_group();
 		$this->_dso->reset_order();
 		$this->_dso->reset_limit();
 
-		if(($this->_cnt = $this->_dso->select_count($from,$t['phonebook'].'.id',$where)) === false
-		|| empty($r) === true)
+		if(($this->_cnt = $this->_dso->select_count(null,'id',$this->_table['phonebook'])) === false
+		|| isset($r[0]) === false)
 			$r = false;
 
 		return($r);

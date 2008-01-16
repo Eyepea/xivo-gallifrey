@@ -49,20 +49,20 @@ class xivo_service_asterisk_trunkiax_abstract_sql extends xivo_service_asterisk_
 		return(parent::get_nb($arr,$disable));
 	}
 
-	function edit($id,$arr,$disable=null)
+	function edit($arr,$value,$disable=null)
 	{
-		if(is_array($id) === false)
+		if(is_array($arr) === false)
 		{
-			if(($id = xivo_uint($id)) !== 0)
-				$id = array('id' => $id);
+			if(($arr = xivo_uint($arr)) !== 0)
+				$arr = array('id' => $arr);
 			else
 				return(false);
 		}
 
-		$id['protocol'] = XIVO_SRE_IPBX_AST_PROTO_IAX;
-		$id['category'] = 'trunk';
+		$arr['protocol'] = XIVO_SRE_IPBX_AST_PROTO_IAX;
+		$arr['category'] = 'trunk';
 
-		return(parent::edit($id,$arr,$disable));
+		return(parent::edit($arr,$value,$disable));
 	}
 
 	function delete($arr,$disable=null)

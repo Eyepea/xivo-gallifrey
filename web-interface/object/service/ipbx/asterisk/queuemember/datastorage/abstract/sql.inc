@@ -16,7 +16,8 @@ class xivo_service_asterisk_queuemember_abstract_sql extends xivo_service_asteri
 
 	function get_id($arr,$disable=null)
 	{
-		if(($arr = parent::get($arr,$disable)) === false)
+		if(is_array($arr) === false
+		|| ($arr = parent::get($arr,$disable)) === false)
 			return(false);
 
 		$r = array();
@@ -31,12 +32,12 @@ class xivo_service_asterisk_queuemember_abstract_sql extends xivo_service_asteri
 		return(parent::add($arr,false));
 	}
 
-	function edit($id,$arr,$disable=null)
+	function edit($arr,$value,$disable=null)
 	{
-		if(is_array($id) === false)
+		if(is_array($arr) === false)
 			return(false);
 
-		return(parent::edit($id,$arr,$disable));
+		return(parent::edit($arr,$value,$disable));
 	}
 
 	function delete($arr,$disable=null)

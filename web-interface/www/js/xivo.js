@@ -578,7 +578,7 @@ function xivo_chk_host(value)
 {
 	if(xivo_is_undef(value) == true
 	|| xivo_is_string(value) == false
-	|| value.length < 4
+	|| value.length < 4
 	|| value.length > 255)
 		return(false);
 	

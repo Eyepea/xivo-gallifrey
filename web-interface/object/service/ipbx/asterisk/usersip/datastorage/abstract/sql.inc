@@ -43,44 +43,39 @@ class xivo_service_asterisk_usersip_abstract_sql extends xivo_service_asterisk_a
 		if(is_array($arr) === false)
 			$arr = array();
 
-		$where = '';
-
 		$arr['protocol'] = XIVO_SRE_IPBX_AST_PROTO_SIP;
 		$arr['category'] = 'user';
 
 		if($disable !== null)
 			$arr['commented'] = intval((bool) $disable);
 
-		if(($where = $this->_dso->where($arr)) === false)
-			return(false);
+		$this->_dso->where($arr);
 
 		if($initialized !== null)
 		{
 			if((bool) $initialized === false)
-				$where .= ' AND (fullcontact IS NULL OR fullcontact = \'\')';
+				$this->_dso->andwhere('IFNULL(fullcontact,\'\') = \'\'');
 			else
-				$where .= ' AND fullcontact IS NOT NULL AND fullcontact != \'\'';
+				$this->_dso->andwherenot('IFNULL(fullcontact,\'\') = \'\'');
 		}
 
-		$r = $this->_dso->select_count($this->_param['table'],null,$where);
-
-		return($r);
+		return((int) $this->_dso->select_count());
 	}
 
-	function edit($id,$arr,$disable=null)
+	function edit($arr,$value,$disable=null)
 	{
-		if(is_array($id) === false)
+		if(is_array($arr) === false)
 		{
-			if(($id = xivo_uint($id)) !== 0)
-				$id = array('id' => $id);
+			if(($arr = xivo_uint($arr)) !== 0)
+				$arr = array('id' => $arr);
 			else
 				return(false);
 		}
 
-		$id['protocol'] = XIVO_SRE_IPBX_AST_PROTO_SIP;
-		$id['category'] = 'user';
+		$arr['protocol'] = XIVO_SRE_IPBX_AST_PROTO_SIP;
+		$arr['category'] = 'user';
 
-		return(parent::edit($id,$arr,$disable));
+		return(parent::edit($arr,$value,$disable));
 	}
 
 	function delete($arr,$disable=null)

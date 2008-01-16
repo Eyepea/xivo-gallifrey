@@ -78,13 +78,9 @@ class xivo_datastorage_mysql extends xivo_datastorage_abstract_sql
 
 	function quote_identifier($name)
 	{
-		$r = '';
-
-		$name = (string) $name;
-
-		if(isset($name{0}) === true)
+		if(($r = $this->_chk_quote($name)) !== '')
 			$r = '`'.str_replace('`','``',$name).'`';
-		
+
 		return($r);
 	}
 
@@ -139,9 +135,9 @@ class xivo_datastorage_mysql extends xivo_datastorage_abstract_sql
 		return($r);
 	}
 
-	function query($q,$b=false,$o=false)
+	function query($query,$buffer=false,$o=false)
 	{
-		$this->_query = (string) $q;
+		$this->_query = (string) $query;
 		$o = (bool) $o;
 
 		if(($this->_result = mysql_query($this->_query,$this->_link)) === false && $o !== false)
@@ -152,14 +148,14 @@ class xivo_datastorage_mysql extends xivo_datastorage_abstract_sql
 
 	function lock($t)
 	{
-		$q = sprintf('LOCK TABLES %s WRITE',$t);
-		return($this->query($q));
+		$query = sprintf('LOCK TABLES %s WRITE',$t);
+		return($this->query($query));
 	}
 
 	function unlock()
 	{
-		$q = 'UNLOCK TABLES';
-		return($this->query($q));
+		$query = 'UNLOCK TABLES';
+		return($this->query($query));
 	}
 
 	function errno()
@@ -182,35 +178,14 @@ class xivo_datastorage_mysql extends xivo_datastorage_abstract_sql
 		return($r);
 	}
 
-	function update($t,&$data,$w='',$escape=true,$o='')
+	function _chk_join($type)
 	{
-		return($this->_insertupdate('update',$t,$data,$w,$escape,true,$o,true,true));
-	}
+		$type = strtoupper((string) $type);
 
-	function join($t,$c='INNER',$o='')
-	{
-		$c = strtoupper(trim((string) $c));
+		if($type === 'FULL')
+			return(false);
 
-		switch($c)
-		{
-			case 'STRAIGHT':
-				$c = 'STRAIGHT_JOIN';
-			case 'STRAIGHT_JOIN':
-				$t = trim((string) $t);
-				$o = trim((string) $o);
-
-				if($t === '')
-					return(false);
-
-				if($o !== '')
-					$o = ' ON '.$o;
-
-				return(sprintf('%s %s%s',$c,$t,$o));
-			case 'FULL':
-				return(false);
-		}
-
-		return(parent::join($t,$c,$o));
+		return(parent::_chk_join($type));
 	}
 
 	function affected_rows()
@@ -249,59 +224,66 @@ class xivo_datastorage_mysql extends xivo_datastorage_abstract_sql
 
 	function free($r=false)
 	{
-		return(mysql_free_result(($r !== false ? $r : $this->_result)));
+		return(mysql_free_result((is_resource($r) === true ? $r : $this->_result)));
 	}
 
 	function num_rows($r=false)
 	{
-		return(mysql_num_rows(($r !== false ? $r : $this->_result)));
+		return(mysql_num_rows((is_resource($r) === true ? $r : $this->_result)));
 	}
 
 	function fetch_row($r=false)
 	{
-		return(mysql_fetch_row(($r !== false ? $r : $this->_result)));
+		return(mysql_fetch_row((is_resource($r) === true ? $r : $this->_result)));
 	}
 
 	function fetch_assoc($r=false)
 	{
-		return(mysql_fetch_assoc(($r !== false ? $r : $this->_result)));
+		return(mysql_fetch_assoc((is_resource($r) === true ? $r : $this->_result)));
 	}
 
-	function unix_timestamp($col='',$time='')
+	function unix_timestamp($column='',$time='')
 	{
-		if(($r = $this->_expr_typetime('date',$col,$time,$this->_date['datetime'])) !== false)
+		if(($r = $this->_expr_typetime('date',$column,$time,$this->_date['datetime'])) !== false)
 			$r = 'UNIX_TIMESTAMP('.$r.')';
 
 		return($r);
 	}
 
-	function _expr_typetime($type='',$col='',$time='',$format='')
+	function _expr_typetime($type='',$column='',$time='',$format='',$table='')
 	{
+		$column = trim((string) $column);
 		$type = $type !== '' ? strtolower((string) $type) : 'date';
-		$col = $this->quote_identifier($col);
 		$time = strtolower((string) $time);
 		$format = (string) $format;
+		$table = trim((string) $table);
 
 		if(($type !== 'unix' && $type !== 'date') === true
 		|| ($time !== '' && $time !== 'localtime' && $time !== 'utc') === true)
 			return(false);
+		else if($table === '')
+			$column = $this->quote_identifier($column);
+		else if(isset($this->_table[$table]) === false || $column === '')
+				return(false);
+		else
+			$column = $this->quote_identifier($table).'.'.$this->quote_identifier($column);
 
 		if($type === 'unix')
 			$func = 'FROM_UNIXTIME';
 		else
 			$func = 'DATE_FORMAT';
 
-		if($col === '')
-			$col = ($time === 'utc' ? 'UTC' : 'CURRENT').'_TIMESTAMP()';
+		if($column === '')
+			$column = ($time === 'utc' ? 'UTC' : 'CURRENT').'_TIMESTAMP()';
 		else if($time === 'utc')
-			$col = 'CONVERT_TZ('.$func.'('.$col.',\'%Y-%m-%d %H:%i:%s\'),@@session.time_zone,\'+00:00\')';
+			$column = 'CONVERT_TZ('.$func.'('.$column.',\'%Y-%m-%d %H:%i:%s\'),@@session.time_zone,\'+00:00\')';
 		else if($time === 'localtime')
-			$col = 'CONVERT_TZ('.$func.'('.$col.',\'%Y-%m-%d %H:%i:%s\'),\'+00:00\',@@session.time_zone)';
+			$column = 'CONVERT_TZ('.$func.'('.$column.',\'%Y-%m-%d %H:%i:%s\'),\'+00:00\',@@session.time_zone)';
 		
 		if($type === 'unix')
-			$col = 'UNIX_TIMESTAMP('.$col.')';
+			$column = 'UNIX_TIMESTAMP('.$column.')';
 
-		$r = $func.'('.$col.($format !== '' ? ',\''.$format.'\'' : '').')';
+		$r = $func.'('.$column.($format !== '' ? ',\''.$format.'\'' : '').')';
 
 		return($r);
 	}

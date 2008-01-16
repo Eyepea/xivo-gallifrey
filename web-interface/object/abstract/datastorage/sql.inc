@@ -29,17 +29,14 @@ class xivo_abstract_datastorage_sql extends xivo_abstract_datastorage
 				return(false);
 		}
 
+		$this->_dso->new_select($this->_param['table'],($id === true ? 'id' : '*'));
+
 		if($disable !== null)
 			$arr[$this->_disable_varname] = intval((bool) $disable);
 
-		if(($where = $this->_dso->where($arr)) === false)
-			return(false);
+		$this->_dso->where($arr);
 
-		$id = $id === true ? 'id' : null;
-
-		$r = $this->_dso->select_one($this->_param['table'],$id,$where);
-
-		if($r !== false && $id !== null)
+		if(($r = $this->_dso->select_single()) !== false && $id === true)
 			$r = (int) $r['id'];
 
 		return($r);
@@ -61,23 +58,19 @@ class xivo_abstract_datastorage_sql extends xivo_abstract_datastorage
 		&& (is_array($arr) === false || empty($arr) === true) === true)
 			return(false);
 
-		$where = '';
-
 		if($disable !== null)
 			$arr[$this->_disable_varname] = intval((bool) $disable);
 
-		if(is_array($arr) === true && ($where = $this->_dso->where($arr)) === false)
-			return(false);
+		$this->_dso->new_select($this->_param['table']);
 
-		$r = $this->_dso->select_count($this->_param['table'],null,$where);
+		if(is_array($arr) === true)
+			$this->_dso->where($arr);
 
-		return($r);
+		return((int) $this->_dso->select_count());
 	}
 
 	function add($arr,$insertid=true)
 	{
-		$r = false;
-
 		$insertid = (bool) $insertid;
 
 		if(is_array($arr) === false)
@@ -86,37 +79,32 @@ class xivo_abstract_datastorage_sql extends xivo_abstract_datastorage
 		if(array_key_exists($this->_disable_varname,$arr) === true)
 			$arr[$this->_disable_varname] = intval((bool) $arr[$this->_disable_varname]);
 
-		if($this->_dso->insert($this->_param['table'],$arr) === true)
-			$r = $insertid === true ? $this->_dso->insert_id() : true;
-
-		return($r);
-	}
-
-	function edit($id,$arr,$disable=null)
-	{
-		if(is_array($arr) === false)
+		if($this->_dso->insert($this->_param['table'],$arr) === false)
 			return(false);
 
-		if(is_array($id) === false)
+		return(($insertid === true ? $this->_dso->insert_id() : true));
+	}
+
+	function edit($arr,$value,$disable=null)
+	{
+		if(is_array($value) === false)
+			return(false);
+
+		if(is_array($arr) === false)
 		{
-			if(($id = xivo_uint($id)) !== 0)
-				$id = array('id' => $id);
+			if(($arr = xivo_uint($arr)) !== 0)
+				$arr = array('id' => $arr);
 			else
 				return(false);
 		}
 
 		if($disable !== null)
-			$id[$this->_disable_varname] = intval((bool) $disable);
+			$arr[$this->_disable_varname] = intval((bool) $disable);
 
-		if(($where = $this->_dso->where($id)) === false)
-			return(false);
+		if(array_key_exists($this->_disable_varname,$value) === true)
+			$value[$this->_disable_varname] = intval((bool) $value[$this->_disable_varname]);
 
-		if(array_key_exists($this->_disable_varname,$arr) === true)
-			$arr[$this->_disable_varname] = intval((bool) $arr[$this->_disable_varname]);
-
-		$r = $this->_dso->update($this->_param['table'],$arr,$where);
-
-		return($r);
+		return($this->_dso->update($this->_param['table'],$value,$arr));
 	}
 
 	function delete($arr,$disable=null)
@@ -132,41 +120,28 @@ class xivo_abstract_datastorage_sql extends xivo_abstract_datastorage
 		if($disable !== null)
 			$arr[$this->_disable_varname] = intval((bool) $disable);
 
-		if(($where = $this->_dso->where($arr)) === false)
-			return(false);
-
-		$r = $this->_dso->delete($this->_param['table'],$where);
-
-		return($r);
+		return($this->_dso->delete($this->_param['table'],$arr));
 	}
 
 	function get_list($disable=null,$order=null,$limit=null,$all=false)
 	{
 		$all = (bool) $all;
 
-		$where = '';
-
-		$arr = array();
+		$this->_dso->new_select($this->_param['table'],($all === true ? '*' : 'id'));
 
 		if($disable !== null)
-			$arr[$this->_disable_varname] = intval((bool) $disable);
-
-		if(empty($arr) === false && ($where = $this->_dso->where($arr)) === false)
-			return(false);
+			$this->_dso->where(array($this->_disable_varname => intval((bool) $disable)));
 
 		$this->_dso->new_order($order);
-		$this->_dso->new_limit($limit);
+		$this->_dso->limit($limit);
 
-		$col = $all === true ? null : 'id';
-
-		$r = $this->_dso->select_all($this->_param['table'],$col,$where);
+		$r = $this->_dso->select_all();
 
 		$this->_dso->reset_order();
 		$this->_dso->reset_limit();
 
-		$this->_cnt = $this->_dso->select_count($this->_param['table'],null,$where);
-
-		if($this->_cnt === false)
+		if(($this->_cnt = $this->_dso->select_count()) === false
+		|| isset($r[0]) === false)
 			$r = false;
 
 		return($r);
@@ -176,28 +151,28 @@ class xivo_abstract_datastorage_sql extends xivo_abstract_datastorage
 	{
 		$all = (bool) $all;
 
+		$this->_cnt = 0;
+
 		if(is_array($arr) === false || empty($arr) === true)
 			return(false);
+
+		$this->_dso->new_select($this->_param['table'],($all === true ? '*' : 'id'));
 
 		if($disable !== null)
 			$arr[$this->_disable_varname] = intval((bool) $disable);
 
-		if(($where = $this->_dso->where($arr)) === false)
-			return(false);
+		$this->_dso->where($arr);
 
 		$this->_dso->new_order($order);
-		$this->_dso->new_limit($limit);
+		$this->_dso->limit($limit);
 
-		$col = $all === true ? null : 'id';
-
-		$r = $this->_dso->select_all($this->_param['table'],$col,$where);
+		$r = $this->_dso->select_all();
 
 		$this->_dso->reset_order();
 		$this->_dso->reset_limit();
 
-		$this->_cnt = $this->_dso->select_count($this->_param['table'],null,$where);
-
-		if($this->_cnt === false)
+		if(($this->_cnt = $this->_dso->select_count()) === false
+		|| isset($r[0]) === false)
 			$r = false;
 
 		return($r);

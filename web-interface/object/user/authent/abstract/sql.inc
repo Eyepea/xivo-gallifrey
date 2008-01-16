@@ -41,20 +41,21 @@ class xivo_authent_abstract_sql
 	{
 		$meta = (bool) $meta;
 
-		$select = 'login, passwd';
+		$column = array('login','passwd');
 
 		if($meta === true)
-			$select .= ',meta';
+			$column[] = 'meta';
 
-		$where = 'login = \''.$this->_dso->escape_string($login).'\' AND valid = 1';
+		$this->_dso->new_select($this->_param['table'],$column);
+		$this->_dso->where(array('login' => $login,'valid' => 1));
 
-		if(($r = $this->_dso->select_one($this->_param['table'],$select,$where)) !== false)
-		{
-			if($r['login'] !== $login || $r['passwd'] !== $pass)
-				$r = false;
-			else
-				$r = $meta === true ? $r['meta'] : true;
-		}
+		if(($r = $this->_dso->select_single()) === false)
+			return(false);
+
+		if($r['login'] !== $login || $r['passwd'] !== $pass)
+			$r = false;
+		else
+			$r = $meta === true ? $r['meta'] : true;
 
 		return($r);
 	}

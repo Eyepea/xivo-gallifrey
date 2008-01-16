@@ -11,15 +11,18 @@ class xivo_service_asterisk_agent_abstract_sql extends xivo_service_asterisk_sta
 		if(($id = xivo_uint($id)) === 0)
 			return(false);
 
-		$where = 'var_metric = '.$id.
-			 ' AND filename = \''.$this->_dso->escape_string($this->_param['filename']).'\'';
+		$this->_dso->new_select($this->_param['table']);
+
+		$arr = array();
+		$arr['var_metric'] = $id;
+		$arr['filename'] = $this->_param['filename'];
 
 		if($disable !== null)
-			$where = ' AND commented = '.intval((bool) $disable);
+			$arr['commented'] = intval((bool) $disable);
 
-		$r = $this->_dso->select_all($this->_param['table'],null,$where);
+		$this->_dso->where($arr);
 
-		return($r);
+		return($this->_dso->select_all());
 	}
 
 	function get_last_var_metric($min,$max)
@@ -27,12 +30,15 @@ class xivo_service_asterisk_agent_abstract_sql extends xivo_service_asterisk_sta
 		$min = xivo_uint($min);
 		$max = xivo_uint($max);
 
-		$r = $this->_dso->select_one($this->_param['table'],
-					     'COUNT(*) AS cnt, MAX(var_metric) AS var_metric',
-					     'filename = \''.$this->_dso->escape_string($this->_param['filename']).'\''.
-					     ' AND var_metric BETWEEN '.(int) $min.' AND '.(int) $max);
+		$column = array();
+		$column['cnt'] = (object) 'COUNT(*)';
+		$column['var_metric'] = (object) 'MAX(var_metric)';
 
-		if($r !== false)
+		$this->_dso->new_select($this->_param['table'],$column);
+		$this->_dso->where(array('filename' => $this->_param['filename']));
+		$this->_dso->andwherebetween('var_metric',$min,$max);
+
+		if(($r = $this->_dso->select_single()) !== false)
 			$r = $r['cnt'] > 0 ? $r['var_metric'] : $min;
 
 		return($r);
@@ -40,15 +46,17 @@ class xivo_service_asterisk_agent_abstract_sql extends xivo_service_asterisk_sta
 
 	function get_free_var_metric($min,$max)
 	{
-		$min = xivo_uint($min);
-		$max = xivo_uint($max);
+		$this->_dso->new_select($this->_param['table'],array('id','var_metric'));
 
-		$r = $this->_dso->select_one($this->_param['table'],'id, var_metric',
-					     'filename = \''.$this->_dso->escape_string($this->_param['filename']).'\''.
-					     ' AND var_metric BETWEEN '.(int) $min.' AND '.(int) $max.
-					     ' AND var_name = \'deleted\' AND commented = 1');
+		$arr = array();
+		$arr['filename'] = $this->_param['filename'];
+		$arr['var_name'] = 'deleted';
+		$arr['commented'] = 1;
 
-		return($r);
+		$this->_dso->where($arr);
+		$this->_dso->andwherebetween('var_metric',xivo_uint($min),xivo_uint($max));
+
+		return($this->_dso->select_single());
 	}
 }
 

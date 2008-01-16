@@ -30,12 +30,12 @@ class xivo_service_asterisk_phonefunckey_abstract_sql extends xivo_service_aster
 		return(parent::add($arr,false));
 	}
 
-	function edit($id,$arr)
+	function edit($arr,$value)
 	{
-		if(is_array($id) === false)
+		if(is_array($arr) === false)
 			return(false);
 
-		return(parent::edit($id,$arr));
+		return(parent::edit($arr,$value));
 	}
 
 	function delete($arr)

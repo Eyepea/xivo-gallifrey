@@ -50,7 +50,8 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 			case 'featuremap':
 			case 'generalfeatures':
 				$data['type'] = 'extension';
-				$data['extension'] = $data['typeval'] = $data['typevalextenumbers'];
+				$data['typeval'] = $data['typevalextenumbers'];
+				$data['extension'] = $data['typeextenumbers'].'-'.$data['typevalextenumbers'];
 				return($data);
 		}
 

@@ -2,18 +2,27 @@
 
 class xivo_datastorage_abstract_sql
 {
-	var $_error	= '';
-	var $_errno	= 0;
-	var $_query	= '';
-	var $_quote	= false;
-	var $_link	= null;
-	var $_result	= false;
-	var $_debug	= false;
-	var $_free	= false;
-	var $_where	= array();
-	var $_group	= array();
-	var $_order	= array();
-	var $_limit	= array();
+	var $_error		= '';
+	var $_errno		= 0;
+	var $_query		= '';
+	var $_meta		= 'sql';
+	var $_quote		= false;
+	var $_link		= null;
+	var $_result		= false;
+	var $_debug		= false;
+	var $_free		= false;
+	var $_from		= '';
+	var $_table		= array();
+	var $_column		= array();
+	var $_colall		= array();
+	var $_join		= array();
+	var $_joinwhere		= array();
+	var $_aggjoinwhere	= array();
+	var $_where		= '';
+	var $_aggwhere		= array();
+	var $_group		= array();
+	var $_order		= array();
+	var $_limit		= array();
 
 	function set_param($name,$value)
 	{
@@ -28,8 +37,8 @@ class xivo_datastorage_abstract_sql
 
 		if(isset($this->_param[$name]) === true)
 			return($this->_param[$name]);
-		else
-			return(null);
+
+		return(null);
 	}
 
 	function set_debug($debug=false)
@@ -40,6 +49,11 @@ class xivo_datastorage_abstract_sql
 	function get_type()
 	{
 		return($this->_type);
+	}
+
+	function get_meta()
+	{
+		return($this->_meta);
 	}
 
 	function halt($str='')
@@ -76,6 +90,24 @@ class xivo_datastorage_abstract_sql
 		return(false);
 	}
 
+	function _chk_quote($name)
+	{
+		$r = '';
+
+		if(is_object($name) === true)
+		{
+			if(isset($name->scalar) === false)
+				return($r);
+
+			$name = $name->scalar;
+		}
+
+		if(xivo_haslen($name) === true)
+			$r = $name;
+
+		return($r);
+	}
+
 	function escape($val)
 	{
 		switch(gettype($val))
@@ -85,6 +117,10 @@ class xivo_datastorage_abstract_sql
 			case 'integer':
 			case 'float':
 				return($val);
+			case 'object':
+				if(isset($val->scalar) === false)
+					return(false);
+				return((string) $val->scalar);
 			case 'NULL':
 				return('NULL');
 		}
@@ -92,408 +128,1590 @@ class xivo_datastorage_abstract_sql
 		return('\''.$this->escape_string(strval($val)).'\'');
 	}
 
-	function select_one($t,$s='',$w='',$o='')
+	function new_select($table,$column='*')
 	{
-		$t = trim((string) $t);
-		$s = trim((string) $s);
-		$w = trim((string) $w);
-		$o = trim((string) $o);
-		$this->limit(1);
+		$this->reset_all();
 
-		if($s === '')
-			$s = '*';
-
-		if($o !== '')
-			$o = ' '.$o;
-
-		$o .= $this->_mk_group();
-		$o .= $this->_mk_order();
-		$o .= $this->_mk_limit();
-		$this->limit();
-
-		$q = sprintf('SELECT %s FROM %s WHERE %s%s',$s,$t,($w !== '' ? $w : 1),$o);
-
-		if($this->query($q) === false)
-			return(false);
-
-		$r = $this->fetch_assoc();
-
-		if($this->_free === true)
-			$this->free();
-
-		return($r);
+		return($this->from($table,$column));
 	}
 
-	function select_all($t,$s='',$w='',$o='',$f=true,$u=false)
+	function from($table,$column='*')
 	{
-		$t = trim((string) $t);
-		$s = trim((string) $s);
-		$w = trim((string) $w);
-		$o = trim((string) $o);
-		$f = (bool) $f;
-		$u = (bool) $u;
-
-		if($s === '')
-			$s = '*';
-
-		if($o !== '')
-			$o = ' '.$o;
-
-		$o .= $this->_mk_group();
-		$o .= $this->_mk_order();
-		$o .= $this->_mk_limit();
-
-		if($u === true && strpos($s,'*') === false)
-			$s .= ' AS __UNIQUE__';
-		else
-			$u = false;
-
-		$q = sprintf('SELECT %s FROM %s WHERE %s%s',$s,$t,($w !== '' ? $w : 1),$o);
-
-		if($this->query($q) === false)
+		if(($table = $this->_mk_table($table)) === false)
 			return(false);
-
-		$r = array();
-
-		if($u === true)
+		else if(is_array($table) === true)
 		{
-			for($i = 0;$m = $this->fetch_assoc();$i++)
-				$r[$i] = $m['__UNIQUE__'];
+			$this->_from = sprintf('%s AS %s',$this->quote_identifier($table[1]),
+							  $this->quote_identifier($table[0]));
+			$table = $table[0];
 		}
 		else
-		{
-			for($i = 0;$m = $this->fetch_assoc();$i++)
-				$r[$i] = $m;
-		}
+			$this->_from = $this->quote_identifier($table);
 
-		if($this->_free === true && $f === true)
-			$this->free();
-
-		return($r);
+		return($this->_mk_column($table,$column));
 	}
 
-	function select_count($t,$s='',$w='',$o='')
+	function get_from()
 	{
-		$t = trim((string) $t);
-		$s = trim((string) $s);
-		$w = trim((string) $w);
-		$o = trim((string) $o);
+		if($this->_from !== '')
+			return($this->_from);
 
-		if($s === '')
-			$s = '*';
+		return(null);
+	}
 
-		if($o !== '')
-			$o = ' '.$o;
+	function reset_from()
+	{
+		$this->_from = '';
+	}
 
-		$q = sprintf('SELECT COUNT(%s) FROM %s WHERE %s%s',$s,$t,($w !== '' ? $w : 1),$o);
+	function get_select()
+	{
+		if(($r = $this->_mk_select()) !== false)
+			return($r);
 
-		if($this->query($q) === false)
+		return(null);
+	}
+
+	function reset_all()
+	{
+		$this->_table = array();
+		$this->reset_from();
+		$this->reset_column();
+		$this->reset_join();
+		$this->reset_where();
+		$this->reset_group();
+		$this->reset_order();
+		$this->reset_limit();
+	}
+
+	function _mk_select()
+	{
+		if(($from = $this->get_from()) === null
+		|| ($column = $this->get_column()) === null)
 			return(false);
 
-		if(($r = $this->fetch_row()) !== false)
-			$r = (int) $r[0];
+		$r = 'SELECT '.$column.' FROM '.$from;
 
-		if($this->_free === true)
-			$this->free();
+		if(($join = $this->get_join()) !== null)
+			$r .= ' '.$join;
+
+		if(($where = $this->get_where()) !== null)
+			$r .= ' WHERE '.$where;
+
+		if(($group = $this->get_group()) !== null)
+			$r .= ' GROUP BY '.$group;
+
+		if(($order = $this->get_order()) !== null)
+			$r .= ' ORDER BY '.$order;
+
+		if(($limit = $this->get_limit()) !== null)
+			$r .= ' LIMIT '.$limit;
 
 		return($r);
 	}
 
-	function insert($t,&$data,$escape=true)
+	function innerjoin($table,$cond,$val='',$column='')
 	{
-		return($this->_insertupdate('insert',$t,$data,null,$escape));
+		if($cond === null)
+			return(false);
+
+		return($this->_mk_join('inner',$table,$cond,$val,$column));
 	}
 
-	function update($t,&$data,$w='',$escape=true,$o='')
+	function leftjoin($table,$cond,$val='',$column='')
 	{
-		return($this->_insertupdate('update',$t,$data,$w,$escape,true,$o));
+		if($cond === null)
+			return(false);
+
+		return($this->_mk_join('left',$table,$cond,$val,$column));
 	}
 
-	function replace($t,&$data,$escape=true)
+	function rightjoin($table,$cond,$val='',$column='')
 	{
-		return($this->_insertupdate('replace',$t,$data,null,$escape));
+		if($cond === null)
+			return(false);
+
+		return($this->_mk_join('right',$table,$cond,$val,$column));
 	}
 
-	function delete($t,$w='',$o='')
+	function crossjoin($table,$column='')
 	{
-		$t = trim((string) $t);
-		$w = trim((string) $w);
-		$o = trim((string) $o);
+		return($this->_mk_join('cross',$table,null,null,$column));
+	}
 
-		if($o !== '')
-			$o = ' '.$o;
+	function naturaljoin($table,$column='')
+	{
+		return($this->_mk_join('natural',$table,null,null,$column));
+	}
 
-		$o .= $this->_mk_order();
-		$o .= $this->_mk_limit();
+	function get_join()
+	{
+		if(($arr = xivo_get_aks($this->_join)) === false)
+			return(null);
 
-		$q = sprintf('DELETE FROM %s WHERE %s%s',$t,($w !== '' ? $w : 1),$o);
+		$r = '';
 
-		if(($r = $this->query($q)) !== false)
+		for($i = 0;$i < $arr['cnt'];$i++)
+		{
+			$table = &$arr['keys'][$i];
+			$r .= ' '.$this->_join[$table];
+
+			if(isset($this->_joinwhere[$table]) === true)
+				$r .= ' ON '.$this->_joinwhere[$table];
+		}
+
+		if(($r = ltrim($r)) === '')
+			$r = null;
+
+		return($r);
+	}
+
+	function reset_join()
+	{
+		$this->_join = $this->_joinwhere = $this->_aggjoinwhere = array();
+	}
+
+	function _chk_join($type)
+	{
+		$type = strtoupper((string) $type);
+
+		switch($type)
+		{
+			case 'INNER':
+			case 'LEFT':
+			case 'RIGHT':
+			case 'CROSS':
+			case 'FULL':
+			case 'NATURAL':
+				break;
+			case '':
+				$type = 'INNER';
+			default:
+				return(false);
+		}
+
+		return(sprintf('%s JOIN',$type));
+	}
+
+	function _mk_join($type,$table,$cond='',$val='',$column='')
+	{
+		if(($type = $this->_chk_join($type)) === false
+		|| ($table = $this->_mk_table($table)) === false)
+			return(false);
+		else if(is_array($table) === true)
+		{
+			$this->_join[$table[0]] = sprintf('%s %s AS %s',$type,
+								        $this->quote_identifier($table[1]),
+								        $this->quote_identifier($table[0]));
+			$table = $table[0];
+		}
+		else
+			$this->_join[$table] = sprintf('%s %s',$type,$this->quote_identifier($table));
+
+		if($cond !== null)
+		{
+			if(is_array($cond) === true)
+				$val = $table;
+
+			if($this->joinwhere($table,$cond,$val) === false)
+				return(false);
+		}
+
+		return($this->_mk_column($table,$column));
+	}
+
+	function _mk_table($table)
+	{
+		if(xivo_haslen($table) === true)
+		{
+			if(isset($this->_table[$table]) === true)
+				return(false);
+
+			$this->_table[$table] = 1;
+			return($table);
+		}
+		else if(is_array($table) === false)
+			return(false);
+
+		$key = key($table);
+		$val = current($table);
+
+		if(xivo_haslen($key) === false
+		|| xivo_haslen($val) === false
+		|| isset($this->_table[$key]) === true)
+			return(false);
+
+		$this->_table[$key] = $val;
+
+		return(array($key,$val));
+	}
+
+	function reset_column()
+	{
+		$this->_column = $this->_colall = array();
+	}
+
+	function get_column()
+	{
+		if(isset($this->_colall[0]) === true
+		&& ($join = implode('.*, ',array_map(array(&$this,'quote_identifier'),$this->_colall))) !== '')
+			$r = $join.'.*';
+		else
+			$r = '';
+
+		if(isset($this->_column[0]) === true
+		&& ($join = implode(', ',$this->_column)) !== '')
+			$r .= ($r !== '' ? ', ' : '').$join;
+
+		if($r === '')
+			$r = null;
+
+		return($r);
+	}
+
+	function _mk_column($table,$column)
+	{
+		if(is_scalar($column) === true)
+		{
+			$column = trim($column);
+
+			if(xivo_haslen($column) === false)
+				return(null);
+
+			if($column !== '*')
+				$column = (array) $column;
+			else
+			{
+				$this->_colall[] = $table;
+				return(true);
+			}
+		}
+
+		if(($arr = xivo_get_aks($column)) === false)
+			return(null);
+
+		$tabledot = $table.'.';
+		$tabledotlen = strlen($tabledot);
+
+		$noassoc = in_array(0,$arr['keys'],true);
+
+		for($i = 0;$i < $arr['cnt'];$i++)
+		{
+			$key = &$arr['keys'][$i];
+			$val = &$column[$key];
+
+			$object = false;
+
+			if(is_object($val) === true)
+			{
+				if(isset($val->scalar) === false)
+					return(false);
+
+				$object = true;
+				$val = $val->scalar;
+			}
+
+			if(xivo_haslen($val) === false)
+				continue;
+			else if($object === true || preg_match('/^[a-zA-Z0-9_\-\.]+$/',$val) === 0)
+			{
+				if($noassoc === true && is_int($key) === true)
+					$col = sprintf('%s',$val);
+				else
+					$col = sprintf('%s AS %s',$val,
+								  $this->quote_identifier($key));
+
+				$this->_column[] = $col;
+				continue;
+			}
+
+			if(strncasecmp($val,$tabledot,$tabledotlen) === 0)
+				$val = substr($val,$tabledotlen);
+
+			if(xivo_haslen($val) === false)
+				continue;
+
+			if($noassoc === true && is_int($key) === true)
+				$col = sprintf('%s.%s',$this->quote_identifier($table),
+						       $this->quote_identifier($val));
+			else
+				$col = sprintf('%s.%s AS %s',$this->quote_identifier($table),
+							     $this->quote_identifier($val),
+							     $this->quote_identifier($key));
+
+			$this->_column[] = $col;
+		}
+
+		return(true);
+	}
+
+	function insert($table,$data)
+	{
+		return($this->_insertupdate('insert',$table,$data));
+	}
+
+	function update($table,$data,$condwhere='',$valwhere='',$usewhere=false,$useorder=false,$uselimit=false)
+	{
+		return($this->_insertupdate('update',$table,$data,true,$condwhere,$valwhere,$usewhere,$useorder,$uselimit));
+	}
+
+	function replace($table,$data)
+	{
+		return($this->_insertupdate('replace',$table,$data));
+	}
+
+	function delete($table,$cond='',$val='',$usewhere=false,$useorder=false,$uselimit=false)
+	{
+		$table = trim((string) $table);
+		$usewhere = (bool) $usewhere;
+
+		$order = $limit = null;
+
+		if(is_bool($useorder) === true)
+		{
+			if($useorder === true)
+				$order = $this->get_order();
+		}
+		else if(($order = $this->_mk_order($useorder)) === false)
+			return(false);
+
+		if(is_bool($uselimit) === true)
+		{
+			if($uselimit === true)
+				$limit = $this->get_limit();
+		}
+		else if(($limit = $this->_mk_limit($uselimit)) === false)
+			return(false);
+
+		if($table === ''
+		|| (($where = $this->_mk_where($cond,$val)) === false && $usewhere === false) === true
+		|| ($usewhere === true && ($where = $this->get_where()) === null) === true)
+			return(false);
+
+		if($where === '')
+			$where = 1;
+
+		$other = '';
+
+		if($order !== null)
+			$other .= ' ORDER BY '.$order;
+
+		if($limit !== null)
+			$other .= ' LIMIT '.$limit;
+
+		$query = sprintf('DELETE FROM %s WHERE %s%s',$this->quote_identifier($table),$where,$other);
+
+		if(($r = $this->query($query)) !== false)
 			$r = (bool) $this->affected_rows();
 
 		return($r);
 	}
 
-	function join($t,$c='INNER',$o='')
+	function _insertupdate($proc,$table,&$data,$set=false,$condwhere='',$valwhere='',$usewhere=false,$useorder=false,$uselimit=false)
 	{
-		$t = trim((string) $t);
-		$c = strtoupper(trim((string) $c));
-		$o = trim((string) $o);
+		$proc = strtolower((string) $proc);
+		$table = trim((string) $table);
+		$set = (bool) $set;
+		$usewhere = (bool) $usewhere;
 
-		if($t === '')
+		if($table === '' || ($values = $this->_mk_sep($data,$set)) === false)
 			return(false);
 
-		if($o !== '')
-			$o = ' ON '.$o;
+		$where = $other = '';
 
-		switch($c)
+		switch($proc)
 		{
-			case 'LEFT':
-			case 'RIGHT':
-			case 'CROSS':
-			case 'FULL':
-			case 'INNER':
+			case 'insert':
+			case 'replace':
+				$proc = strtoupper($proc).' INTO';
 				break;
-			case 'NATURAL':
-				$o = '';
+			case 'update':
+				$proc = 'UPDATE';
+
+				if($condwhere === '' && $usewhere === false)
+					$condwhere = 1;
+
+				if((($where = $this->_mk_where($condwhere,$valwhere)) === false && $usewhere === false) === true
+				|| ($usewhere === true && ($where = $this->get_where()) === null) === true)
+					return(false);
+
+				$order = $limit = null;
+
+				if(is_bool($useorder) === true)
+				{
+					if($useorder === true)
+						$order = $this->get_order();
+				}
+				else if(($order = $this->_mk_order($useorder)) === false)
+					return(false);
+
+				if(is_bool($uselimit) === true)
+				{
+					if($uselimit === true)
+						$limit = $this->get_limit();
+				}
+				else if(($limit = $this->_mk_limit($uselimit)) === false)
+					return(false);
+
+				if($order !== null)
+					$other .= ' ORDER BY '.$order;
+
+				if($limit !== null)
+					$other .= ' LIMIT '.$limit;
 				break;
-			case '':
-				$c = 'INNER';
 			default:
 				return(false);
 		}
 
-		return(sprintf('%s JOIN %s%s',$c,$t,$o));
-	}
+		if($set === true)
+			$query = sprintf('%s %s SET %s',$proc,
+						    $this->quote_identifier($table),
+						    implode(', ',$values['str']));
+		else
+			$query = sprintf('%s %s (%s) VALUES(%s)',$proc,
+							     $this->quote_identifier($table),
+							     implode(',',$values['keys']),
+							     implode(',',$values['str']));
 
-	function new_where($data,$not=false,$table='',$escape=true)
-	{
-		$this->_where = array();
+		if($where !== '')
+			$query .= ' WHERE '.$where;
 
-		return($this->add_where($data,$not,$table,$escape));
-	}
+		if($other !== '')
+			$query .= $other;
 
-	function add_where($data,$not=false,$table='',$escape=true)
-	{
-		if(($where = $this->where($data,$table,$escape,$not)) === false)
+		if($this->query($query) === false)
 			return(false);
 
-		$this->_where[] = $where;
 		return(true);
 	}
 
-	function get_where($type='')
+	function _mk_sep(&$val,$set=false,$table='')
 	{
-		if(strtoupper($type) === 'OR')
-			return(implode(' OR ',$this->_where));
-		else
-			return(implode(' AND ',$this->_where));
-	}
-
-	function where($data,$table='',$escape=true,$not=false,$sep='')
-	{
-		$not = (bool) $not === true ? '!=' : '=';
-	
-		if(strtoupper($sep) === 'OR')
-			$sep = ' OR ';
-		else
-			$sep = ' AND ';
-
-		if(($where = $this->_separator($data,$sep,$escape,true,false,$not,$table)) === false)
-			return(false);
-
-		$r = $where['str'];
-
-		if(trim($r) === '')
-			$r = false;
-
-		return($r);
-	}
-
-	function where_not($data,$table='',$escape=true,$sep='')
-	{
-		return($this->where($data,$table,$escape,true,$sep));
-	}
-
-	function _insertupdate($p,$t,&$data,$w='',$escape=true,$set=false,$o='',$order=false,$limit=false)
-	{
-		$p = strtolower((string) $p);
-		$t = $this->quote_identifier(trim((string) $t));
-		$w = trim((string) $w);
-		$set = (bool) $set;
-		$o = trim((string) $o);
-		$order = (bool) $order;
-		$limit = (bool) $limit;
-
-		$r = false;
-
-		if(($values = $this->_separator($data,',',$escape,$set)) === false)
-			return($r);
-
-		if($o !== '')
-			$o = ' '.$o;
-
-		switch($p)
-		{
-			case 'insert':
-			case 'replace':
-				$p = strtoupper($p).' INTO';
-				break;
-			case 'update':
-				$p = 'UPDATE';
-
-				if($order === true)
-					$o .= $this->_mk_order();
-
-				if($limit === true)
-					$o .= $this->_mk_limit();
-				break;
-			default:
-				return($r);
-		}
-
-		if($set === true)
-			$q = sprintf('%s %s SET %s',$p,$t,$values['str']);
-		else
-			$q = sprintf('%s %s (%s) VALUES(%s)',$p,$t,$values['keys'],$values['str']);
-
-		if($w !== '')
-			$q .= sprintf(' WHERE %s',$w);
-
-		if($o !== '')
-			$q .= $o;
-
-		if($this->query($q) !== false)
-			$r = true;
-
-		return($r);
-	}
-
-	function _separator($val,$sep=',',$escape=true,$set=false,$ident=true,$oper='=',$table='')
-	{
-		$r = array('str' => '','keys' => '');
+		$r = array('str' => array(),'keys' => array());
 
 		$val = (array) $val;
-		$sep = (string) $sep;
-		$escape = (bool) $escape;
 		$set = (bool) $set;
-		$ident = (bool) $ident;
-		$oper = (string) $oper;
 		$table = trim((string) $table);
 
-		if($table !== '')
-			$ident = false;
-
 		if(($arr = xivo_get_aks($val)) === false)
-			return($r);
+			return(false);
+
+		$tabledot = '';
+
+		if($table !== '')
+		{
+			if(isset($this->_table[$table]) === false)
+				return(false);
+
+			$tabledot = $this->quote_identifier($table).'.';
+		}
 
 		for($i = 0;$i < $arr['cnt'];$i++)
 		{
 			$key = &$arr['keys'][$i];
-			$data = &$val[$key];
-
-			$type = gettype($data);
-
-			switch($type)
-			{
-				case 'boolean':
-					$data = intval($data);
-				case 'integer':
-				case 'float':
-				case 'NULL':
-					if($type === 'NULL')
-						$data = 'NULL';
-
-					$f = $set === true ? '%s %s %s'.$sep : '%s'.$sep;
-					break;
-				default:
-					$data = strval($data);
-				case 'string':
-					$f = $set === true ? '%s %s \'%s\''.$sep : '\'%s\''.$sep;
-
-					if($escape === true)
-						$data = $this->escape_string($data);
-			}
+			$data = $this->escape($val[$key]);
 
 			if($set === true)
-			{
-				if($table !== '')
-					$key = $this->quote_identifier($table).'.'.$this->quote_identifier($key);
-				else if($ident === true)
-					$key = $this->quote_identifier($key);
-
-				$r['str'] .= sprintf($f,$key,$oper,$data);
-			}
+				$r['str'][] = $tabledot.$this->quote_identifier($key).' = '.$data;
 			else
 			{
-				if($table !== '')
-					$key = $this->quote_identifier($table).'.'.$key;
-				else if($ident === true)
-					$key = $this->quote_identifier($key);
-
-				$r['keys'] .= $key.$sep;
-				$r['str'] .= sprintf($f,$data);
+				$r['keys'][] = $tabledot.$this->quote_identifier($key);
+				$r['str'][] = $data;
 			}
 		}
 
-		if(isset($r['str']{0},$sep{0}) === false)
+		if(isset($r['str'][0]) === false)
 			return(false);
 
-		$len = strlen($sep);
-
-		if($set === false)
-			$r['keys'] = substr($r['keys'],0,-$len);
-
-		$r['str'] = substr($r['str'],0,-$len);
-
 		return($r);
 	}
 
-	function between_value($col,$beg,$end)
+	function reset_where()
 	{
-		$r = '';
-	
-		$col = $this->quote_identifier($col);
-		$beg = $this->escape_string($beg);
-		$end = $this->escape_string($end);
-
-		if(isset($col{0},$beg{0},$end{0}) === false)
-			return($r);
-
-		$r = sprintf('%s BETWEEN \'%s\' AND \'%s\'',$col,$beg,$end);
-
-		return($r);
+		$this->_where = '';
+		$this->_aggwhere = array();
 	}
 
-	function between_column($val,$beg,$end)
+	function _set_where($cond,$val='',$condand=true,$and=true,$not=false,$join=false)
 	{
-		$r = '';
+		$and = (bool) $and === true ? ' AND ' : ' OR ';
+		$not = (bool) $not;
 
-		$beg = $this->quote_identifier($beg);
-		$end = $this->quote_identifier($end);
+		if(($where = $this->_mk_where($cond,$val,$condand,$join)) === false
+		|| ($join !== false && isset($this->_join[$join]) === false) === true)
+			return(false);
 
-		if(isset($beg{0},$end{0}) === false)
-			return($r);
-
-		switch(gettype($val))
+		if($join === false)
+			$ref = &$this->_where;
+		else
 		{
-			case 'integer':
-			case 'float':
-				break;
-			default:
-				$val = '\''.$this->escape_string(strval($val)).'\'';
+			if(isset($this->_joinwhere[$join]) === false)
+				$this->_joinwhere[$join] = '';
+
+			$ref = &$this->_joinwhere[$join];
 		}
 
-		$r = sprintf('%s BETWEEN %s AND %s',$val,$beg,$end);
+		if($not === true)
+			$where = 'NOT ('.$where.')';
+
+		if($ref === '')
+			$ref = $where;
+		else
+			$ref .= $and.$where; 
+
+		return(true);
+	}
+
+	function _mk_where($cond,$val='',$condand=true,$join=false)
+	{
+		$condand = (bool) $condand === true ? ' AND ' : ' OR ';
+
+		if(is_array($cond) === true)
+		{
+			if($join !== false)
+				$val = $join;
+
+			if(($condsep = $this->_mk_sep($cond,true,$val)) === false)
+				return(false);
+
+			$r = implode($condand,$condsep['str']);
+		}
+		else if(is_array($val) === true || xivo_haslen($val) === true)
+		{
+			$val = (array) $val;
+			$r = vsprintf(xivo_printf_strip($cond,count($val)),
+				      array_map(array(&$this,'escape'),$val));
+		}
+		else if(xivo_haslen($cond) === true)
+			$r = (string) $cond;
+		else
+			return(false);
+
+		if(trim($r) === '')
+			return(false);
 
 		return($r);
 	}
 
-	function new_group($col='',$table='')
+	function get_where()
 	{
-		$this->_group = array();
+		if(xivo_haslen($this->_where) === false)
+			return(null);
 
-		return($this->group($col,$table));
+		return($this->_where);
+	}
+
+	function aggregate_where($all=false)
+	{
+		$all = (bool) $all;
+
+		if($this->_where === '')
+			return(false);
+
+		if($all === true || isset($this->_aggwhere[0]) === false)
+		{
+			$this->_where = '('.$this->_where.')';
+			$this->_aggwhere[] = strlen($this->_where)+1;
+			return(true);
+		}
+		else if(($last = xivo_last_key($this->_aggwhere)) === false)
+			return(false);
+
+		$start = substr($this->_where,0,$this->_aggwhere[$last]);
+		$end = substr($this->_where,$this->_aggwhere[$last]);
+
+		if(preg_match('/^([\s])?(AND|OR|XOR)([\(\s])?/i',$end,$match) === 0)
+			return(false);
+
+		$logic = $match[1].strtoupper($match[2]);
+		$len = strlen($match[2]);
+
+		if(isset($match[3]{0}) === false)
+			$logic .= ' ';
+		else
+		{
+			$len++;
+			$logic .= $match[3];
+		}
+
+		$this->_where = $start.$logic.'('.substr(ltrim($end),$len).')';
+
+		return(true);
+	}
+
+	function aggregate_where_all()
+	{
+		return($this->aggregate_where(true));
+	}
+
+	function where($cond,$val='',$condand=true)
+	{
+		return($this->andwhere($cond,$val,$condand));
+	}
+
+	function andwhere($cond,$val='',$condand=true)
+	{
+		return($this->_set_where($cond,$val,$condand,true,false));
+	}
+
+	function andwherenot($cond,$val='',$condand=true)
+	{
+		return($this->_set_where($cond,$val,$condand,true,true));
+	}
+
+	function orwhere($cond,$val='',$condand=true)
+	{
+		return($this->_set_where($cond,$val,$condand,false,false));
+	}
+
+	function orwherenot($cond,$val='',$condand=true)
+	{
+		return($this->_set_where($cond,$val,$condand,false,true));
+	}
+
+	function aggregate_joinwhere($table,$all=false)
+	{
+		$all = (bool) $all;
+
+		if(isset($this->_joinwhere[$table]) === false
+		|| $this->_joinwhere[$table] === '')
+			return(false);
+
+		if(isset($this->_aggjoinwhere[$table]) === false)
+			$this->_aggjoinwhere[$table] = array();
+
+		if($all === true || isset($this->_aggjoinwhere[$table][0]) === false)
+		{
+			$this->_joinwhere[$table] = '('.$this->_joinwhere[$table].')';
+			$this->_aggjoinwhere[$table][] = strlen($this->_joinwhere[$table])+1;
+			return(true);
+		}
+		else if(($last = xivo_last_key($this->_aggjoinwhere[$table])) === false)
+			return(false);
+
+		$start = substr($this->_joinwhere[$table],0,$this->_aggjoinwhere[$table][$last]);
+		$end = substr($this->_joinwhere[$table],$this->_aggjoinwhere[$table][$last]);
+
+		if(preg_match('/^([\s])?(AND|OR|XOR)([\(\s])?/i',$end,$match) === 0)
+			return(false);
+
+		$logic = $match[1].strtoupper($match[2]);
+		$len = strlen($match[2]);
+
+		if(isset($match[3]{0}) === false)
+			$logic .= ' ';
+		else
+		{
+			$len++;
+			$logic .= $match[3];
+		}
+
+		$this->_joinwhere[$table] = $start.$logic.'('.substr(ltrim($end),$len).')';
+
+		return(true);
+	}
+
+	function aggregate_joinwhere_all($table)
+	{
+		return($this->aggregate_where($table,true));
+	}
+
+	function joinwhere($table,$cond,$val='',$condand=true)
+	{
+		return($this->andjoinwhere($table,$cond,$val,$condand));
+	}
+
+	function andjoinwhere($table,$cond,$val='',$condand=true)
+	{
+		return($this->_set_where($cond,$val,$condand,true,false,$table));
+	}
+
+	function andjoinwherenot($table,$cond,$val='',$condand=true)
+	{
+		return($this->_set_where($cond,$val,$condand,true,true,$table));
+	}
+
+	function orjoinwhere($table,$cond,$val='',$condand=true)
+	{
+		return($this->_set_where($cond,$val,$condand,false,false,$table));
+	}
+
+	function orjoinwherenot($table,$cond,$val='',$condand=true)
+	{
+		return($this->_set_where($cond,$val,$condand,false,true,$table));
+	}
+
+	function _set_wherebetween($column,$beg,$end,$table='',$and=true,$not=false,$join=false)
+	{
+		$and = (bool) $and === true ? ' AND ' : ' OR ';
+		$not = (bool) $not;
+
+		if(($between = $this->_mk_wherebetween($column,$beg,$end,$table)) === false
+		|| ($join !== false && isset($this->_join[$join]) === false) === true)
+			return(false);
+
+		if($join === false)
+			$ref = &$this->_where;
+		else
+		{
+			if(isset($this->_joinwhere[$join]) === false)
+				$this->_joinwhere[$join] = '';
+
+			$ref = &$this->_joinwhere[$join];
+		}
+
+		if($not === true)
+			$between = 'NOT ('.$between.')';
+
+		if($ref === '')
+			$ref = $between;
+		else
+			$ref .= $and.$between;
+
+		return(true);
+	}
+
+	function _mk_wherebetween($column,$beg,$end,$table='')
+	{
+		$column = trim((string) $column);
+		$table = trim((string) $table);
+	
+		if($column === '')
+			return(false);
+		else if($table === '')
+			$column = $this->quote_identifier($column);
+		else if(isset($this->_table[$table]) === false)
+			return(false);
+		else
+			$column = $this->quote_identifier($table).'.'.$this->quote_identifier($column);
+
+		$r = sprintf('%s BETWEEN %s AND %s',$column,$this->escape($beg),$this->escape($end));
+
+		return($r);
+	}
+
+	function wherebetween($column,$beg,$end,$table='')
+	{
+		return($this->andwherebetween($column,$beg,$end,$table));
+	}
+
+	function andwherebetween($column,$beg,$end,$table='')
+	{
+		return($this->_set_wherebetween($column,$beg,$end,$table,true,false));
+	}
+
+	function andwherenotbetween($column,$beg,$end,$table='')
+	{
+		return($this->_set_wherebetween($column,$beg,$end,$table,true,true));
+	}
+
+	function orwherebetween($column,$beg,$end,$table='')
+	{
+		return($this->_set_wherebetween($column,$beg,$end,$table,false,false));
+	}
+
+	function orwherenotbetween($column,$beg,$end,$table='')
+	{
+		return($this->_set_wherebetween($column,$beg,$end,$table,false,true));
+	}
+
+	function joinwherebetween($table,$column,$beg,$end)
+	{
+		return($this->andjoinwherebetween($table,$column,$beg,$end));
+	}
+
+	function andjoinwherebetween($table,$column,$beg,$end)
+	{
+		return($this->_set_wherebetween($column,$beg,$end,$table,true,false,$table));
+	}
+
+	function andjoinwherenotbetween($table,$column,$beg,$end)
+	{
+		return($this->_set_wherebetween($column,$beg,$end,$table,true,true,$table));
+	}
+
+	function orjoinwherebetween($table,$column,$beg,$end)
+	{
+		return($this->_set_wherebetween($column,$beg,$end,$table,false,false,$table));
+	}
+
+	function orjoinwherenotbetween($table,$column,$beg,$end)
+	{
+		return($this->_set_wherebetween($column,$beg,$end,$table,false,true,$table));
+	}
+
+	function _set_wherebetweencolumn($val,$beg,$end,$table='',$and=true,$not=false,$join=false)
+	{
+		$and = (bool) $and === true ? ' AND ' : ' OR ';
+		$not = (bool) $not;
+
+		if(($between = $this->_mk_wherebetweencolumn($val,$beg,$end,$table)) === false
+		|| ($join !== false && isset($this->_join[$join]) === false) === true)
+			return(false);
+
+		if($join === false)
+			$ref = &$this->_where;
+		else
+		{
+			if(isset($this->_joinwhere[$join]) === false)
+				$this->_joinwhere[$join] = '';
+
+			$ref = &$this->_joinwhere[$join];
+		}
+
+		if($not === true)
+			$between = 'NOT ('.$between.')';
+
+		if($ref === '')
+			$ref = $between;
+		else
+			$ref .= $and.$between;
+
+		return(true);
+	}
+
+	function _mk_wherebetweencolumn($val,$beg,$end,$table='')
+	{
+		$beg = trim((string) $beg);
+		$end = trim((string) $end);
+		$table = trim((string) $table);
+	
+		if(isset($beg{0},$end{0}) === false)
+			return(false);
+		else if($table === '')
+		{
+			$beg = $this->quote_identifier($beg);
+			$end = $this->quote_identifier($end);
+		}
+		else if(isset($this->_table[$table]) === false)
+			return(false);
+		else
+		{
+			$beg = $this->quote_identifier($table).'.'.$this->quote_identifier($beg);
+			$end = $this->quote_identifier($table).'.'.$this->quote_identifier($end);
+		}
+
+		$r = sprintf('%s BETWEEN %s AND %s',$this->escape($val),$beg,$end);
+
+		return($r);
+	}
+
+	function wherebetweencolumn($val,$beg,$end,$table='')
+	{
+		return($this->andwherebetweencolumn($val,$beg,$end,$table));
+	}
+
+	function andwherebetweencolumn($val,$beg,$end,$table='')
+	{
+		return($this->_set_wherebetweencolumn($val,$beg,$end,$table,true,false));
+	}
+
+	function andwherenotbetweencolumn($val,$beg,$end,$table='')
+	{
+		return($this->_set_wherebetweencolumn($val,$beg,$end,$table,true,true));
+	}
+
+	function orwherebetweencolumn($val,$beg,$end,$table='')
+	{
+		return($this->_set_wherebetweencolumn($val,$beg,$end,$table,false,false));
+	}
+
+	function orwherenotbetweencolumn($val,$beg,$end,$table='')
+	{
+		return($this->_set_wherebetweencolumn($val,$beg,$end,$table,false,true));
+	}
+
+	function joinwherebetweencolumn($table,$val,$beg,$end)
+	{
+		return($this->andjoinwherebetweencolumn($table,$val,$beg,$end));
+	}
+
+	function andjoinwherebetweencolumn($table,$val,$beg,$end)
+	{
+		return($this->_set_wherebetweencolumn($val,$beg,$end,$table,true,false,$table));
+	}
+
+	function andjoinwherenotbetweencolumn($table,$val,$beg,$end)
+	{
+		return($this->_set_wherebetweencolumn($val,$beg,$end,$table,true,true,$table));
+	}
+
+	function orjoinwherebetweencolumn($table,$val,$beg,$end)
+	{
+		return($this->_set_wherebetweencolumn($val,$beg,$end,$table,false,false,$table));
+	}
+
+	function orjoinwherenotbetweencolumn($table,$val,$beg,$end)
+	{
+		return($this->_set_wherebetweencolumn($val,$beg,$end,$table,false,true,$table));
+	}
+
+	function _set_wherein($column,&$list,$table='',$keys=false,$and=true,$not=false,$join=false)
+	{
+		$and = (bool) $and === true ? ' AND ' : ' OR ';
+
+		if(($in = $this->_mk_wherein($column,$list,$table,$keys,$not)) === false
+		|| ($join !== false && isset($this->_join[$join]) === false) === true)
+			return(false);
+
+		if($join === false)
+			$ref = &$this->_where;
+		else
+		{
+			if(isset($this->_joinwhere[$join]) === false)
+				$this->_joinwhere[$join] = '';
+
+			$ref = &$this->_joinwhere[$join];
+		}
+
+		if($ref === '')
+			$ref = $in;
+		else
+			$ref .= $and.$in;
+
+		return(true);
+	}
+
+	function _mk_wherein($column,&$list,$table='',$keys=false,$not=false)
+	{
+		$column = trim((string) $column);
+		$table = trim((string) $table);
+		$keys = (bool) $keys;
+		$not = (bool) $not;
+
+		if($column === '' || is_array($list) === false || empty($list) === true)
+			return(false);
+		else if($table === '')
+			$column = $this->quote_identifier($column);
+		else if(isset($this->_table[$table]) === false)
+			return(false);
+		else
+			$column = $this->quote_identifier($table).'.'.$this->quote_identifier($column);
+
+		$func = $not === true ? 'NOT ' : '';
+
+		if($keys === true)
+			$list = array_keys($list);
+
+		$list = implode(',',array_map(array(&$this,'escape'),$list));
+
+		if(trim($list) === '')
+			return(false);
+
+		return(sprintf('%s %sIN(%s)',$column,$func,$list));
+	}
+
+	function wherein($column,$list,$table='',$keys=false)
+	{
+		return($this->andwherein($column,$list,$table,$keys));
+	}
+
+	function andwherein($column,$list,$table='',$keys=false)
+	{
+		return($this->_set_wherein($column,$list,$table,$keys,true,false));
+	}
+
+	function andwherenotin($column,$list,$table='',$keys=false)
+	{
+		return($this->_set_wherein($column,$list,$table,$keys,true,true));
+	}
+
+	function orwherein($column,$list,$table='',$keys=false)
+	{
+		return($this->_set_wherein($column,$list,$table,$keys,false,false));
+	}
+
+	function orwherenotin($column,$list,$table='',$keys=false)
+	{
+		return($this->_set_wherein($column,$list,$table,$keys,false,true));
+	}
+
+	function joinwherein($table,$column,$list,$keys=false)
+	{
+		return($this->andjoinwherein($table,$column,$list,null,$keys));
+	}
+
+	function andjoinwherein($table,$column,$list,$keys=false)
+	{
+		return($this->_set_wherein($column,$list,$table,$keys,true,false,$table));
+	}
+
+	function andjoinwherenotin($table,$column,$list,$keys=false)
+	{
+		return($this->_set_wherein($column,$list,$table,$keys,true,true,$table));
+	}
+
+	function orjoinwherein($table,$column,$list,$keys=false)
+	{
+		return($this->_set_wherein($column,$list,$table,$keys,false,false,$table));
+	}
+
+	function orjoinwherenotin($table,$column,$list,$keys=false)
+	{
+		return($this->_set_wherein($column,$list,$table,$keys,false,true,$table));
+	}
+
+	function _set_wherelike($column,$pattern,$table='',$format='',$and=true,$not=false,$join=false)
+	{
+		$and = (bool) $and === true ? ' AND ' : ' OR ';
+
+		if(($like = $this->_mk_wherelike($column,$pattern,$table,$format,$not)) === false
+		|| ($join !== false && isset($this->_join[$join]) === false) === true)
+			return(false);
+
+		if($join === false)
+			$ref = &$this->_where;
+		else
+		{
+			if(isset($this->_joinwhere[$join]) === false)
+				$this->_joinwhere[$join] = '';
+
+			$ref = &$this->_joinwhere[$join];
+		}
+
+		if($ref === '')
+			$ref = $like;
+		else
+			$ref .= $and.$like;
+
+		return(true);
+	}
+
+	function _mk_wherelike($column,$pattern,$table='',$format='',$not=false)
+	{
+		$column = trim((string) $column);
+		$table = trim((string) $table);
+		$format = $format !== '' ? strtolower((string) $format) : 'exact';
+		$not = (bool) $not;
+
+		if(is_scalar($pattern) === true)
+			$pattern = array((string) $pattern);
+		else if(is_array($pattern) === false)
+			return(false);
+
+		if($column === '')
+			return(false);
+		else if($table === '')
+			$column = $this->quote_identifier($column);
+		else if(isset($this->_table[$table]) === false)
+				return(false);
+		else
+			$column = $this->quote_identifier($table).'.'.$this->quote_identifier($column);
+
+		$func = $not === true ? 'NOT LIKE' : 'LIKE';
+
+		$like_format = '%s %s ';
+
+		switch($format)
+		{
+			case 'begin':
+				$like_format .= '\'%s%%\'';
+				break;
+			case 'contain':
+				$like_format .= '\'%%%s%%\'';
+				break;
+			case 'end':
+				$like_format .= '\'%%%s\'';
+				break;
+			default:
+				$func = '=';
+				$like_format .= '\'%s\'';
+		}
+
+		$value = array_values($pattern);
+
+		if(($nb = count($value)) === 0)
+			return(false);
+
+		$r = '';
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			$pattern = $this->escape_string($this->_escape_like($value[$i]));
+
+			if(isset($pattern{0}) === false)
+				continue;
+
+			if($i > 0)
+				$r .= ' AND ';
+
+			$r .= sprintf($like_format,$column,$func,$pattern);
+		}
+
+		return($r);
+	}
+
+	function _escape_like($str)
+	{
+		$r = str_replace(array('%','_'),array('\%','\_'),(string) $str);
+
+		return($r);
+	}
+
+	function wherelike($column,$pattern,$format,$table='')
+	{
+		return($this->andwherelike($column,$pattern,$format,$table));
+	}
+
+	function andwherelike($column,$pattern,$format,$table='')
+	{
+		return($this->_set_wherelike($column,$pattern,$table,$format,true,false));
+	}
+
+	function andwherenotlike($column,$pattern,$format,$table='')
+	{
+		return($this->_set_wherelike($column,$pattern,$table,$format,true,true));
+	}
+
+	function orwherelike($column,$pattern,$format,$table='')
+	{
+		return($this->_set_wherelike($column,$pattern,$table,$format,false,false));
+	}
+
+	function orwherenotlike($column,$pattern,$format,$table='')
+	{
+		return($this->_set_wherelike($column,$pattern,$table,$format,false,true));
+	}
+
+	function whereexact($column,$pattern,$table='')
+	{
+		return($this->andwhereexact($column,$pattern,$table));
+	}
+
+	function andwhereexact($column,$pattern,$table='')
+	{
+		return($this->_set_wherelike($column,$pattern,$table,'exact',true,false));
+	}
+
+	function andwherenotexact($column,$pattern,$table='')
+	{
+		return($this->_set_wherelike($column,$pattern,$table,'exact',true,true));
+	}
+
+	function orwhereexact($column,$pattern,$table='')
+	{
+		return($this->_set_wherelike($column,$pattern,$table,'exact',false,false));
+	}
+
+	function orwherenotexact($column,$pattern,$table='')
+	{
+		return($this->_set_wherelike($column,$pattern,$table,'exact',false,true));
+	}
+
+	function wherebegin($column,$pattern,$table='')
+	{
+		return($this->andwherebegin($column,$pattern,$table));
+	}
+
+	function andwherebegin($column,$pattern,$table='')
+	{
+		return($this->_set_wherelike($column,$pattern,$table,'begin',true,false));
+	}
+
+	function andwherenotbegin($column,$pattern,$table='')
+	{
+		return($this->_set_wherelike($column,$pattern,$table,'begin',true,true));
+	}
+
+	function orwherebegin($column,$pattern,$table='')
+	{
+		return($this->_set_wherelike($column,$pattern,$table,'begin',false,false));
+	}
+
+	function orwherenotbegin($column,$pattern,$table='')
+	{
+		return($this->_set_wherelike($column,$pattern,$table,'begin',false,true));
+	}
+
+	function wherecontain($column,$pattern,$table='')
+	{
+		return($this->andwherecontain($column,$pattern,$table));
+	}
+
+	function andwherecontain($column,$pattern,$table='')
+	{
+		return($this->_set_wherelike($column,$pattern,$table,'contain',true,false));
+	}
+
+	function andwherenotcontain($column,$pattern,$table='')
+	{
+		return($this->_set_wherelike($column,$pattern,$table,'contain',true,true));
+	}
+
+	function orwherecontain($column,$pattern,$table='')
+	{
+		return($this->_set_wherelike($column,$pattern,$table,'contain',false,false));
+	}
+
+	function orwherenotcontain($column,$pattern,$table='')
+	{
+		return($this->_set_wherelike($column,$pattern,$table,'contain',false,true));
+	}
+
+	function whereend($column,$pattern,$table='')
+	{
+		return($this->andwhereend($column,$pattern,$table));
+	}
+
+	function andwhereend($column,$pattern,$table='')
+	{
+		return($this->_set_wherelike($column,$pattern,$table,'end',true,false));
+	}
+
+	function andwherenotend($column,$pattern,$table='')
+	{
+		return($this->_set_wherelike($column,$pattern,$table,'end',true,true));
+	}
+
+	function orwhereend($column,$pattern,$table='')
+	{
+		return($this->_set_wherelike($column,$pattern,$table,'end',false,false));
+	}
+
+	function orwherenotend($column,$pattern,$table='')
+	{
+		return($this->_set_wherelike($column,$pattern,$table,'end',false,true));
+	}
+
+	function joinwherelike($table,$column,$pattern,$format)
+	{
+		return($this->andjoinwherelike($table,$column,$pattern,$format));
+	}
+
+	function andjoinwherelike($table,$column,$pattern,$format)
+	{
+		return($this->_set_wherelike($column,$pattern,$table,$format,true,false,$table));
+	}
+
+	function andjoinwherenotlike($table,$column,$pattern,$format)
+	{
+		return($this->_set_wherelike($column,$pattern,$table,$format,true,true,$table));
+	}
+
+	function orjoinwherelike($table,$column,$pattern,$format)
+	{
+		return($this->_set_wherelike($column,$pattern,$table,$format,false,false,$table));
+	}
+
+	function orjoinwherenotlike($table,$column,$pattern,$format)
+	{
+		return($this->_set_wherelike($column,$pattern,$table,$format,false,true,$table));
+	}
+
+	function joinwhereexact($table,$column,$pattern)
+	{
+		return($this->andjoinwhereexact($table,$column,$pattern));
+	}
+
+	function andjoinwhereexact($table,$column,$pattern)
+	{
+		return($this->_set_wherelike($column,$pattern,$table,'exact',true,false,$table));
+	}
+
+	function andjoinwherenotexact($table,$column,$pattern)
+	{
+		return($this->_set_wherelike($column,$pattern,$table,'exact',true,true,$table));
+	}
+
+	function orjoinwhereexact($table,$column,$pattern)
+	{
+		return($this->_set_wherelike($column,$pattern,$table,'exact',false,false,$table));
+	}
+
+	function orjoinwherenotexact($table,$column,$pattern)
+	{
+		return($this->_set_wherelike($column,$pattern,$table,'exact',false,true,$table));
+	}
+
+	function joinwherebegin($table,$column,$pattern)
+	{
+		return($this->andjoinwherebegin($table,$column,$pattern));
+	}
+
+	function andjoinwherebegin($table,$column,$pattern)
+	{
+		return($this->_set_wherelike($column,$pattern,$table,'begin',true,false,$table));
+	}
+
+	function andjoinwherenotbegin($table,$column,$pattern)
+	{
+		return($this->_set_wherelike($column,$pattern,$table,'begin',true,true,$table));
+	}
+
+	function orjoinwherebegin($table,$column,$pattern)
+	{
+		return($this->_set_wherelike($column,$pattern,$table,'begin',false,false,$table));
+	}
+
+	function orjoinwherenotbegin($table,$column,$pattern)
+	{
+		return($this->_set_wherelike($column,$pattern,$table,'begin',false,true,$table));
+	}
+
+	function joinwherecontain($table,$column,$pattern)
+	{
+		return($this->andjoinwherecontain($table,$column,$pattern));
+	}
+
+	function andjoinwherecontain($table,$column,$pattern)
+	{
+		return($this->_set_wherelike($column,$pattern,$table,'contain',true,false,$table));
+	}
+
+	function andjoinwherenotcontain($table,$column,$pattern)
+	{
+		return($this->_set_wherelike($column,$pattern,$table,'contain',true,true,$table));
+	}
+
+	function orjoinwherecontain($table,$column,$pattern)
+	{
+		return($this->_set_wherelike($column,$pattern,$table,'contain',false,false,$table));
+	}
+
+	function orjoinwherenotcontain($table,$column,$pattern)
+	{
+		return($this->_set_wherelike($column,$pattern,$table,'contain',false,true,$table));
+	}
+
+	function joinwhereend($table,$column,$pattern)
+	{
+		return($this->andjoinwhereend($table,$column,$pattern));
+	}
+
+	function andjoinwhereend($table,$column,$pattern)
+	{
+		return($this->_set_wherelike($column,$pattern,$table,'end',true,false,$table));
+	}
+
+	function andjoinwherenotend($table,$column,$pattern)
+	{
+		return($this->_set_wherelike($column,$pattern,$table,'end',true,true,$table));
+	}
+
+	function orjoinwhereend($table,$column,$pattern)
+	{
+		return($this->_set_wherelike($column,$pattern,$table,'end',false,false,$table));
+	}
+
+	function orjoinwherenotend($table,$column,$pattern)
+	{
+		return($this->_set_wherelike($column,$pattern,$table,'end',false,true,$table));
+	}
+
+	function _set_wheretypetime($type,$column,$dbeg,$dend='',$table='',$format='',$time='',$and=true,$not=false,$join=false)
+	{
+		$and = (bool) $and === true ? ' AND ' : ' OR ';
+		$not = (bool) $not;
+
+		if(($time = $this->_mk_wheretypetime($type,$column,$dbeg,$dend,$table,$format,$time)) === false
+		|| ($join !== false && isset($this->_join[$join]) === false) === true)
+			return(false);
+
+		if($join === false)
+			$ref = &$this->_where;
+		else
+		{
+			if(isset($this->_joinwhere[$join]) === false)
+				$this->_joinwhere[$join] = '';
+
+			$ref = &$this->_joinwhere[$join];
+		}
+
+		if($not === true)
+			$time = 'NOT ('.$time.')';
+
+		if($ref === '')
+			$ref = $time;
+		else
+			$ref .= $and.$time; 
+
+		return(true);
+	}
+
+	function _mk_wheretypetime($type,$column,$dbeg,$dend='',$table='',$format='',$time='')
+	{
+		$format = $format !== '' ? (string) $format : 'date';
+		$lowerformat = strtolower($format);
+
+		if(isset($this->_date[$lowerformat]) === true)
+			$format = $this->_date[$lowerformat];
+
+		if($dbeg === '' || ($expr_dbeg = $this->_format_typetime($format,$type,$column,$time,$table)) === false)
+			return(false);
+
+		if($dend === '')
+			$r = $expr_dbeg.' = '.$this->escape($dbeg);
+		else
+			$r = $expr_dbeg.' BETWEEN '.$this->escape($dbeg).' AND '.$this->escape($dend);
+		
+		return($r);
+	}
+
+	function wheredate($column,$dbeg,$dend='',$table='',$format='',$time='')
+	{
+		return($this->andwheredate($column,$dbeg,$dend,$table,$format,$time));
+	}
+
+	function andwheredate($column,$dbeg,$dend='',$table='',$format='',$time='')
+	{
+		return($this->_set_wheretypetime('date',$column,$dbeg,$dend,$table,$format,$time,true,false));
+	}
+
+	function andwherenotdate($column,$dbeg,$dend='',$table='',$format='',$time='')
+	{
+		return($this->_set_wheretypetime('date',$column,$dbeg,$dend,$table,$format,$time,true,true));
+	}
+
+	function orwheredate($column,$dbeg,$dend='',$table='',$format='',$time='')
+	{
+		return($this->_set_wheretypetime('date',$column,$dbeg,$dend,$table,$format,$time,false,false));
+	}
+
+	function orwherenotdate($column,$dbeg,$dend='',$table='',$format='',$time='')
+	{
+		return($this->_set_wheretypetime('date',$column,$dbeg,$dend,$table,$format,$time,false,true));
+	}
+
+	function whereunixtime($column,$dbeg,$dend='',$table='',$format='',$time='')
+	{
+		return($this->andwhereunixtime($column,$dbeg,$dend,$table,$format,$time));
+	}
+
+	function andwhereunixtime($column,$dbeg,$dend='',$table='',$format='',$time='')
+	{
+		return($this->_set_wheretypetime('unix',$column,$dbeg,$dend,$table,$format,$time,true,false));
+	}
+
+	function andwherenotunixtime($column,$dbeg,$dend='',$table='',$format='',$time='')
+	{
+		return($this->_set_wheretypetime('unix',$column,$dbeg,$dend,$table,$format,$time,true,true));
+	}
+
+	function orwhereunixtime($column,$dbeg,$dend='',$table='',$format='',$time='')
+	{
+		return($this->_set_wheretypetime('unix',$column,$dbeg,$dend,$table,$format,$time,false,false));
+	}
+
+	function orwherenotunixtime($column,$dbeg,$dend='',$table='',$format='',$time='')
+	{
+		return($this->_set_wheretypetime('unix',$column,$dbeg,$dend,$table,$format,$time,false,true));
+	}
+
+	function joinwheredate($table,$column,$dbeg,$dend='',$format='',$time='')
+	{
+		return($this->andjoinwheredate($table,$column,$dbeg,$dend,$table,$format,$time));
+	}
+
+	function andjoinwheredate($table,$column,$dbeg,$dend='',$format='',$time='')
+	{
+		return($this->_set_wheretypetime('date',$column,$dbeg,$dend,$table,$format,$time,true,false,$table));
+	}
+
+	function andjoinwherenotdate($table,$column,$dbeg,$dend='',$format='',$time='')
+	{
+		return($this->_set_wheretypetime('date',$column,$dbeg,$dend,$table,$format,$time,true,true,$table));
+	}
+
+	function orjoinwheredate($table,$column,$dbeg,$dend='',$format='',$time='')
+	{
+		return($this->_set_wheretypetime('date',$column,$dbeg,$dend,$table,$format,$time,false,false,$table));
+	}
+
+	function orjoinwherenotdate($table,$column,$dbeg,$dend='',$format='',$time='')
+	{
+		return($this->_set_wheretypetime('date',$column,$dbeg,$dend,$table,$format,$time,false,true,$table));
+	}
+
+	function joinwhereunixtime($table,$column,$dbeg,$dend='',$format='',$time='')
+	{
+		return($this->andjoinwhereunixtime($table,$column,$dbeg,$dend,$table,$format,$time));
+	}
+
+	function andjoinwhereunixtime($table,$column,$dbeg,$dend='',$format='',$time='')
+	{
+		return($this->_set_wheretypetime('unix',$column,$dbeg,$dend,$table,$format,$time,true,false,$table));
+	}
+
+	function andjoinwherenotunixtime($table,$column,$dbeg,$dend='',$format='',$time='')
+	{
+		return($this->_set_wheretypetime('unix',$column,$dbeg,$dend,$table,$format,$time,true,true,$table));
+	}
+
+	function orjoinwhereunixtime($table,$column,$dbeg,$dend='',$format='',$time='')
+	{
+		return($this->_set_wheretypetime('unix',$column,$dbeg,$dend,$table,$format,$time,false,false,$table));
+	}
+
+	function orjoinwherenotunixtime($table,$column,$dbeg,$dend='',$format='',$time='')
+	{
+		return($this->_set_wheretypetime('unix',$column,$dbeg,$dend,$table,$format,$time,false,true,$table));
+	}
+
+	function _format_typetime($format,$type='',$column='',$time='',$table='')
+	{
+		return($this->_expr_typetime($type,$column,$time,$format,$table));
+	}
+
+	function format_date($format,$column='',$time='',$table='')
+	{
+		return($this->_format_typetime('date',$column,$time,$format,$table));
+	}
+
+	function datetime_from_date($column='',$time='',$table='')
+	{
+		return($this->_expr_typetime('date',$column,$time,$this->_date['datetime'],$table));
+	}
+
+	function date_from_date($column='',$time='',$table='')
+	{
+		return($this->_expr_typetime('date',$column,$time,$this->_date['date'],$table));
+	}
+
+	function time_from_date($column='',$time='',$table='',$table='')
+	{
+		return($this->_expr_typetime('date',$column,$time,$this->_date['time'],$table));
+	}
+
+	function format_unixtime($format,$column='',$time='',$table='')
+	{
+		return($this->_format_typetime($column,'unix',$time,$format,$table));
+	}
+
+	function datetime_from_unixtime($column='',$time='',$table='')
+	{
+		return($this->_expr_typetime('unix',$column,$time,$this->_date['datetime'],$table));
+	}
+
+	function date_from_unixtime($column='',$time='',$table='')
+	{
+		return($this->_expr_typetime('unix',$column,$time,$this->_date['date'],$table));
+	}
+
+	function time_from_unixtime($column='',$time='',$table='')
+	{
+		return($this->_expr_typetime('unix',$column,$time,$this->_date['time'],$table));
+	}
+
+	function new_group($column,$table='')
+	{
+		$this->reset_group();
+
+		if(($r = $this->_set_group($column,$table)) === false)
+			return(false);
+
+		$this->_group = $r;
+
+		return(true);
+	}
+
+	function add_group($column,$table='')
+	{
+		if(($r = $this->_set_group($column,$table)) === false)
+			return(false);
+
+		$this->_group = array_merge($this->_group,$r);
+
+		return(true);
 	}
 
 	function reset_group()
@@ -501,74 +1719,98 @@ class xivo_datastorage_abstract_sql
 		$this->_group = array();
 	}
 
-	function group($col='',$table='')
+	function get_group()
 	{
-		$table = trim((string) $table);
+		if(($r = $this->_mk_group()) !== false)
+			return($r);
 
-		if(is_array($col) === true)
-		{
-			$col = array_values($col);
-
-			if(($nb = count($col)) === 0)
-				return(false);
-
-			$group = array();
-
-			for($i = 0;$i < $nb;$i++)
-			{
-				$ref = &$col[$i];
-
-				if(xivo_haslen($ref) === false)
-					continue;
-
-				if($table !== '')
-					$group[] = $this->quote_identifier($table).'.'.$this->quote_identifier($ref);
-				else
-					$group[] = $this->quote_identifier($ref);
-			}
-
-			if(isset($group[0]) === false)
-				return(false);
-
-			$this->_group = array_merge($this->_group,$group);
-
-			return(true);
-		}
-
-		$col = trim((string) $col);
-
-		if($col !== '')
-		{
-			if($table !== '')
-				$this->_group[] = $this->quote_identifier($table).'.'.$this->quote_identifier($col);
-			else
-				$this->_group[] = $this->quote_identifier($col);
-
-			return(true);
-		}
-
-		$this->_group = array();
 		return(null);
 	}
 
-	function _mk_group()
+	function _set_group($column,$table='')
 	{
-		$r = '';
+		$table = trim((string) $table);
 
-		if(is_array($this->_group) === false || isset($this->_group[0]) === false)
+		$tabledot = '';
+
+		if($table !== '')
+		{
+			if(isset($this->_table[$table]) === false)
+				return(false);
+
+			$tabledot = $this->quote_identifier($table).'.';
+		}
+
+		$r = array();
+
+		if(is_array($column) === true)
+		{
+			$column = array_values($column);
+
+			if(($nb = count($column)) === 0)
+				return(false);
+
+			for($i = 0;$i < $nb;$i++)
+			{
+				$col = $this->quote_identifier(trim((string) $column[$i]));
+
+				if($col === '')
+					continue;
+
+				$r[] = $tabledot.$col;
+			}
+
+			if(isset($r[0]) === false)
+				$r = false;
+
 			return($r);
+		}
 
-		if(($r = implode(',',$this->_group)) !== '')
-			$r = ' GROUP BY '.$r;
+		$column = $this->quote_identifier(trim((string) $column));
+
+		if($column === '')
+			return(false);
+
+		$r[] = $tabledot.$column;
 
 		return($r);
 	}
 
-	function new_order($col='',$sort='',$table='')
+	function _mk_group($column='',$table='')
 	{
-		$this->_order = array();
+		if(xivo_empty($column) === true)
+			$group = $this->_group;
+		else
+			$group = $this->_set_group($column,$table);
 
-		return($this->order($col,$sort,$table));
+		if(is_array($group) === false
+		|| isset($group[0]) === false
+		|| ($r = implode(', ',$group)) === '')
+			return(false);
+
+		return($r);
+	}
+
+	function new_order($column,$sort='',$table='')
+	{
+		$this->reset_order();
+
+		if(($r = $this->_set_order($column,$sort,$table)) === false)
+			return(false);
+
+		$this->_order = $r;
+
+		return(true);
+	}
+
+	function add_order($column,$sort='',$table='')
+	{
+		if(($r = $this->_set_order($column,$sort,$table)) === false)
+			return(false);
+
+		$this->_order = array_merge($this->_order,$r);
+
+		return(true);
 	}
 
 	function reset_order()
@@ -576,75 +1818,73 @@ class xivo_datastorage_abstract_sql
 		$this->_order = array();
 	}
 
-	function order($col='',$sort='',$table='')
+	function get_order()
+	{
+		if(($r = $this->_mk_order()) !== false)
+			return($r);
+
+		return(null);
+	}
+
+	function _set_order($column,$sort='',$table='')
 	{
 		$table = trim((string) $table);
 
-		if(is_array($col) === true)
+		$tabledot = '';
+
+		if($table !== '')
 		{
-			if(($arr = xivo_get_aks($col)) === false)
+			if(isset($this->_table[$table]) === false)
 				return(false);
 
-			$order = array();
+			$tabledot = $this->quote_identifier($table).'.';
+		}
+
+		$r = array();
+
+		if(is_array($column) === true)
+		{
+			if(($arr = xivo_get_aks($column)) === false)
+				return(false);
 
 			for($i = 0;$i < $arr['cnt'];$i++)
 			{
 				$key = &$arr['keys'][$i];
-				$val = $col[$key];
+				$val = $column[$key];
 
-				if($key === '' || ($val = $this->_chk_sort($val)) === false)
+				if(($key = $this->quote_identifier($key)) === ''
+				|| ($val = $this->_chk_sort($val)) === false)
 					continue;
 
-				if($table !== '')
-					$key = $this->quote_identifier($table).'.'.$this->quote_identifier($key);
-				else
-					$key = $this->quote_identifier($key);
-
-				$order[] = sprintf('%s %s',$key,$val);
+				$r[] = $tabledot.$key.' '.$val;
 			}
 
-			if(isset($order[0]) === false)
-				return(false);
+			if(isset($r[0]) === false)
+				$r = false;
 
-			$this->_order = array_merge($this->_order,$order);
-
-			return(true);
+			return($r);
 		}
 
-		$col = trim((string) $col);
-		$sort = (string) $sort;
+		if(($column = $this->quote_identifier($column)) === ''
+		|| ($sort = $this->_chk_sort($sort)) === false)
+			return(false);
 
-		if($col !== '')
-		{
-			if(($sort = $this->_chk_sort($sort)) === false)
-				return(false);
+		$r[] = $tabledot.$column.' '.$sort;
 
-			if($table !== '')
-				$col = $this->quote_identifier($table).'.'.$this->quote_identifier($col);
-			else
-				$col = $this->quote_identifier($col);
-
-			$this->_order[] = sprintf('%s %s',$col,$sort);
-			return(true);
-		}
-		else if($sort === '')
-		{
-			$this->_order = array();
-			return(null);
-		}
-
-		return(false);
+		return($r);
 	}
 
-	function _mk_order()
+	function _mk_order($column='',$sort='',$table='')
 	{
-		$r = '';
+		if(xivo_empty($column) === true)
+			$order = $this->_order;
+		else
+			$order = $this->_set_order($column,$sort,$table);
 
-		if(is_array($this->_order) === false || isset($this->_order[0]) === false)
-			return($r);
-
-		if(($r = implode(',',$this->_order)) !== '')
-			$r = ' ORDER BY '.$r;
+		if(is_array($order) === false
+		|| isset($order[0]) === false
+		|| ($r = implode(', ',$order)) === '')
+			return(false);
 
 		return($r);
 	}
@@ -669,11 +1909,24 @@ class xivo_datastorage_abstract_sql
 		return(false);
 	}
 
-	function new_limit($offset='',$line='')
+	function limit($offset,$line='')
 	{
-		$this->_limit = array();
+		$this->reset_limit();
 
-		return($this->limit($offset,$line));
+		if(($r = $this->_set_limit($offset,$line)) === false)
+			return(false);
+
+		$this->_limit = $r;
+
+		return(true);
+	}
+
+	function get_limit()
+	{
+		if(($r = $this->_mk_limit()) !== false)
+			return($r);
+
+		return(null);
 	}
 
 	function reset_limit()
@@ -681,8 +1934,10 @@ class xivo_datastorage_abstract_sql
 		$this->_limit = array();
 	}
 
-	function limit($offset='',$line='')
+	function _set_limit($offset,$line='')
 	{
+		$r = array();
+
 		if(is_array($offset) === true && isset($offset[0]) === true)
 		{
 			if(isset($offset[1]) === true)
@@ -694,278 +1949,220 @@ class xivo_datastorage_abstract_sql
 		$offset = (string) $offset;
 		$line = (string) $line;
 
-		if($offset !== '')
-		{
-			$this->_limit[0] = xivo_uint($offset);
+		if($offset === '')
+			return(false);
 
-			if($line !== '')
-				$this->_limit[1] = xivo_uint($line);
+		$r[0] = xivo_uint($offset);
+
+		if($line !== '')
+			$r[1] = xivo_uint($line);
 			
-			return(true);
-		}
-
-		$this->_limit = array();
-
-		return(($line === '' ? null : false));
-	}
-
-	function _mk_limit()
-	{
-		$r = '';
-
-		if(is_array($this->_limit) === false || isset($this->_limit[0]) === false)
-			return($r);
-
-		$r = ' LIMIT '.xivo_uint($this->_limit[0]);
-
-		if(isset($this->_limit[1]) === true)
-			$r .= ','.xivo_uint($this->_limit[1]);
-
 		return($r);
 	}
 
-	function add_where_in($col,$list,$keys=false,$table='')
+	function _mk_limit($offset='',$line='')
 	{
-		if(($in = $this->_in($col,$list,$keys,false,$table)) === false)
-			return(false);
-
-		$this->_where[] = $in;
-		return(true);
-	}
-
-	function add_where_notin($col,$list,$keys=false,$table='')
-	{
-		if(($in = $this->_in($col,$list,$keys,true,$table)) === false)
-			return(false);
-
-		$this->_where[] = $in;
-		return(true);
-	}
-
-	function _in($col,&$list,$keys=false,$not=false,$table='')
-	{
-		$col = trim((string) $col);
-		$keys = (bool) $keys;
-		$not = (bool) $not;
-		$table = trim((string) $table);
-
-		if($col === '' || is_array($list) === false || empty($list) === true)
-			return(false);
-
-		if($table !== '')
-			$col = $this->quote_identifier($table).'.'.$this->quote_identifier($col);
-
-		$func = $not === true ? 'NOT IN' : 'IN';
-
-		if($keys === true)
-			$list = array_keys($list);
-
-		$r = $col.' '.$func.'('.implode(',',array_map(array(&$this,'escape'),$list)).')';
-
-		return($r);
-	}
-
-	function in($col,$list,$keys=false,$table='')
-	{
-		return($this->_in($col,$list,$keys,false,$table));
-	}
-
-	function notin($col,$list,$keys=false,$table='')
-	{
-		return($this->_in($col,$list,$keys,true,$table));
-	}
-
-	function _search($col,$pattern,$format='',$not=false,$table='')
-	{
-		$col = trim((string) $col);
-		$format = $format !== '' ? strtolower((string) $format) : 'exact';
-		$not = (bool) $not;
-		$table = trim((string) $table);
-
-		if(is_scalar($pattern) === true)
-			$pattern = array((string) $pattern);
-		else if(is_array($pattern) !== true)
-			return(false);
-
-		if($col === '')
-			return(false);
-		else if($table !== '')
-			$col = $this->quote_identifier($table).'.'.$this->quote_identifier($col);
-
-		$func = $not === true ? 'NOT LIKE' : 'LIKE';
-
-		$search_format = '%s %s ';
-
-		switch($format)
-		{
-			case 'begin':
-				$search_format .= '\'%s%%\'';
-				break;
-			case 'contain':
-				$search_format .= '\'%%%s%%\'';
-				break;
-			case 'end':
-				$search_format .= '\'%%%s\'';
-				break;
-			default:
-				$func = $not === false ? '=' : '!=';
-				$search_format .= '\'%s\'';
-		}
-
-		$value = array_values($pattern);
-
-		if(($nb = count($value)) === 0)
-			return(false);
-
-		$r = '';
-
-		for($i = 0;$i < $nb;$i++)
-		{
-			$pattern = $this->escape_string($this->_escape_search($value[$i]));
-
-			if(strlen($pattern) === 0)
-				continue;
-
-			if($i > 0)
-				$r .= ' AND ';
-
-			$r .= sprintf($search_format,$col,$func,$pattern);
-		}
-
-		return($r);
-	}
-
-	function _escape_search($str)
-	{
-		$r = str_replace(array('%','_'),array('\%','\_'),(string) $str);
-
-		return($r);
-	}
-
-	function search($col,$pattern,$format='',$table='')
-	{
-		return($this->_search($col,$pattern,$format,false,$table));
-	}
-
-	function search_not($col,$pattern,$format='',$table='')
-	{
-		return($this->_search($col,$pattern,$format,true,$table));
-	}
-
-	function search_exact($col,$pattern,$table='')
-	{
-		return($this->search($col,$pattern,'exact',$table));
-	}
-
-	function search_begin($col,$pattern,$table='')
-	{
-		return($this->search($col,$pattern,'begin',$table));
-	}
-
-	function search_contain($col,$pattern,$table='')
-	{
-		return($this->search($col,$pattern,'contain',$table));
-	}
-
-	function search_end($col,$pattern,$table='')
-	{
-		return($this->search($col,$pattern,'end',$table));
-	}
-
-	function search_not_exact($col,$pattern,$table='')
-	{
-		return($this->search_not($col,$pattern,'exact',$table));
-	}
-
-	function search_not_begin($col,$pattern,$table='')
-	{
-		return($this->search_not($col,$pattern,'begin',$table));
-	}
-
-	function search_not_contain($col,$pattern,$table='')
-	{
-		return($this->search_not($col,$pattern,'contain',$table));
-	}
-
-	function search_not_end($col,$pattern,$table='')
-	{
-		return($this->search_not($col,$pattern,'end',$table));
-	}
-
-	function _cond_typetime($type,$col,$dbeg,$dend='',$format='',$time='')
-	{
-		$dbeg = (string) $dbeg;
-		$dend = (string) $dend;
-		$format = $format !== '' ? (string) $format : 'date';
-		$lowerformat = strtolower($format);
-
-		if(isset($this->_date[$lowerformat]) === true)
-			$format = $this->_date[$lowerformat];
-
-		if($dbeg === '' || ($expr_dbeg = $this->_format_typetime($format,$type,$col,$time)) === false)
-			return(false);
-
-		if($dend === '')
-			$r = $expr_dbeg.' = \''.$this->escape_string($dbeg).'\'';
+		if(xivo_empty($offset) === true)
+			$limit = $this->_limit;
 		else
-			$r = $expr_dbeg.' BETWEEN \''.$this->escape_string($dbeg).'\' AND \''.$this->escape_string($dend).'\'';
-		
+			$limit = $this->_set_limit($offset,$line);
+
+		if(is_array($limit) === false || isset($limit[0]) === false)
+			return(false);
+
+		$r = xivo_uint($limit[0]);
+
+		if(isset($limit[1]) === true)
+			$r .= ', '.xivo_uint($limit[1]);
+
 		return($r);
 	}
 
-	function _format_typetime($format,$type='',$col='',$time='')
+	function select_singlecolumn($query='',$free=true)
 	{
-		return($this->_expr_typetime($type,$col,$time,$format));
+		$query = (string) $query;
+		$free = (bool) $free;
+
+		if((xivo_haslen($query) === false
+		   && ($query = $this->get_select()) === null) === true
+		|| $this->query($query,($free === true ? false : true)) === false)
+			return(false);
+
+		$r = array();
+
+		for($i = 0;$m = $this->fetch_row();$i++)
+			$r[$i] = $m[0];
+
+		if($this->_free === true && $free === true)
+			$this->free();
+
+		return($r);
 	}
 
-	function cond_date($col,$dbeg,$dend='',$format='',$time='')
+	function select_columnpair($query='',$free=true)
 	{
-		return($this->_cond_typetime('date',$col,$dbeg,$dend,$format,$time));
+		$query = (string) $query;
+		$free = (bool) $free;
+
+		if((xivo_haslen($query) === false
+		   && ($query = $this->get_select()) === null) === true
+		|| $this->query($query,($free === true ? false : true)) === false)
+			return(false);
+
+		$r = array();
+
+		while(($m = $this->fetch_row()) !== false)
+		{
+			if(isset($m[0],$m[1]) === false)
+				return(false);
+
+			$r[$m[0]] = $m[1];
+		}
+
+		if($this->_free === true && $free === true)
+			$this->free();
+
+		return($r);
 	}
 
-	function format_date($format,$col='',$time='')
+	function select_count($query='',$column='',$table='',$free=true)
 	{
-		return($this->_format_typetime('date',$col,$time,$format));
+		$query = (string) $query;
+		$free = (bool) $free;
+
+		if(xivo_haslen($query) === false)
+		{
+			$column = trim((string) $column);
+			$table = trim((string) $table);
+
+			$tabledot = '';
+
+			if($table !== '')
+			{
+				if(isset($this->_table[$table]) === false)
+					return(false);
+
+				$tabledot = $this->quote_identifier($table).'.';
+			}
+
+			if($column === '' || $column === '*')
+				$column = '*';
+			else
+				$column = $this->quote_identifier($column);
+
+			if(($from = $this->get_from()) === null)
+				return(false);
+
+			$query = 'SELECT COUNT('.$tabledot.$column.') FROM '.$from;
+
+			if(($join = $this->get_join()) !== null)
+				$query .= ' '.$join;
+
+			if(($where = $this->get_where()) !== null)
+				$query .= ' WHERE '.$where;
+
+			if(($group = $this->get_group()) !== null)
+				$query .= ' GROUP BY '.$group;
+
+			if(($order = $this->get_order()) !== null)
+				$query .= ' ORDER BY '.$order;
+
+			if(($limit = $this->get_limit()) !== null)
+				$query .= ' LIMIT '.$limit;
+		}
+
+		if($this->query($query,($free === true ? false : true)) === false)
+			return(false);
+
+		if(($r = $this->fetch_row()) !== false)
+			$r = (int) $r[0];
+
+		if($this->_free === true && $free === true)
+			$this->free();
+
+		return($r);
 	}
 
-	function datetime_from_date($col='',$time='')
+	function select_one($query='',$free=true)
 	{
-		return($this->_expr_typetime('date',$col,$time,$this->_date['datetime']));
+		$query = (string) $query;
+		$free = (bool) $free;
+
+		if(xivo_haslen($query) === false)
+		{
+			$limit = $this->_limit;
+			$this->limit(1);
+
+			if(($query = $this->get_select()) === null)
+			{
+				$this->_limit = $limit;
+				return(false);
+			}
+
+			$this->_limit = $limit;
+		}
+
+		if($this->query($query,($free === true ? false : true)) === false)
+			return(false);
+
+		if(($r = $this->fetch_row()) !== false)
+			$r = $r[0];
+
+		if($this->_free === true && $free === true)
+			$this->free();
+
+		return($r);
 	}
 
-	function date_from_date($col='',$time='')
+	function select_single($query='',$free=true)
 	{
-		return($this->_expr_typetime('date',$col,$time,$this->_date['date']));
+		$query = (string) $query;
+		$free = (bool) $free;
+
+		if(xivo_haslen($query) === false)
+		{
+			$limit = $this->_limit;
+			$this->limit(1);
+
+			if(($query = $this->get_select()) === null)
+			{
+				$this->_limit = $limit;
+				return(false);
+			}
+
+			$this->_limit = $limit;
+		}
+
+		if($this->query($query,($free === true ? false : true)) === false)
+			return(false);
+
+		$r = $this->fetch_assoc();
+
+		if($this->_free === true && $free === true)
+			$this->free();
+
+		return($r);
 	}
 
-	function time_from_date($col='',$time='')
+	function select_all($query='',$free=true)
 	{
-		return($this->_expr_typetime('date',$col,$time,$this->_date['time']));
-	}
+		$query = (string) $query;
+		$free = (bool) $free;
 
-	function cond_unixtime($col,$dbeg,$dend='',$format='',$time='')
-	{
-		return($this->_cond_typetime('unix',$col,$dbeg,$dend,$format,$time));
-	}
+		if((xivo_haslen($query) === false
+		   && ($query = $this->get_select()) === null) === true
+		|| $this->query($query,($free === true ? false : true)) === false)
+			return(false);
 
-	function format_unixtime($format,$col='',$time='')
-	{
-		return($this->_format_typetime($col,'unix',$time,$format));
-	}
+		$r = array();
 
-	function datetime_from_unixtime($col='',$time='')
-	{
-		return($this->_expr_typetime('unix',$col,$time,$this->_date['datetime']));
-	}
+		for($i = 0;$m = $this->fetch_assoc();$i++)
+			$r[$i] = $m;
 
-	function date_from_unixtime($col='',$time='')
-	{
-		return($this->_expr_typetime('unix',$col,$time,$this->_date['date']));
-	}
+		if($this->_free === true && $free === true)
+			$this->free();
 
-	function time_from_unixtime($col='',$time='')
-	{
-		return($this->_expr_typetime('unix',$col,$time,$this->_date['time']));
+		return($r);
 	}
 }
 

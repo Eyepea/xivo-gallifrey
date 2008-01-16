@@ -240,7 +240,7 @@ class xivo_curl
 			case 'followlocation':
 			case CURLOPT_FOLLOWLOCATION:
 				if(XIVO_PHP_SAFE === true
-				|| xivo_empty(ini_get('open_basedir')) === true)
+				|| xivo_empty(ini_get('open_basedir')) === true)
 					return(CURLOPT_FOLLOWLOCATION);
 				else
 					return(false);

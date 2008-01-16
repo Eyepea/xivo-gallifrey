@@ -41,16 +41,15 @@ class xivo_i18n_abstract_sql
 		if(is_array($arr) === false)
 			return(false);
 
-		$arr['filemtime'] = xivo_uint($arr['filemtime']);
+		$this->_dso->new_select($this->_param['table'],array('dcreate','dupdate','obj'));
+		$this->_dso->where(array('locale' => $arr['locale'],
+					 'path'	=> $arr['path']));
 
-		$where = 'locale = \''.$this->_dso->escape_string($arr['locale']).'\''.
-			 ' AND path = \''.$this->_dso->escape_string($arr['path']).'\'';
-
- 		if(($r = $this->_dso->select_one($this->_param['table'],'dcreate, dupdate, obj',$where)) !== false)
+ 		if(($r = $this->_dso->select_single()) !== false)
 		{
 			$r['filectime'] = $r['dcreate'];
 
-			if((int) $r['dupdate'] === $arr['filemtime'])
+			if((int) $r['dupdate'] === (int) $arr['filemtime'])
 				$r['obj'] = xivo_unserialize($r['obj']);
 		}
 

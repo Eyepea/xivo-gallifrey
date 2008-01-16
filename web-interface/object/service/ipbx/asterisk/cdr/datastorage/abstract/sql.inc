@@ -4,27 +4,25 @@ xivo_service_asterisk::required(array('abstract','datastorage','abstract','sql.i
 
 class xivo_service_asterisk_cdr_abstract_sql extends xivo_service_asterisk_abstract_sql
 {
-	var $_param	= array('table' => 'cdr');
-
 	function search($arr,$order=null,$limit=null)
 	{
-		if(($where = $this->_search_where($arr)) === false)
+		$this->_cnt = 0;
+
+		$this->_dso->new_select($this->_param['table']);
+
+		if($this->_search_where($arr) === false)
 			return(false);
 
 		$this->_dso->new_order($order);
-		$this->_dso->new_limit($limit);
+		$this->_dso->limit($limit);
 
-		$r = $this->_dso->select_all($this->_param['table'],null,$where);
+		$r = $this->_dso->select_all();
 
 		$this->_dso->reset_order();
 		$this->_dso->reset_limit();
 
-		if(empty($r) === true)
-			$r = false;
-		else
-			$this->_cnt = $this->_dso->select_count($this->_param['table'],null,$where);
-
-		if($this->_cnt === false)
+		if(($this->_cnt = $this->_dso->select_count()) === false
+		|| isset($r[0]) === false)
 			$r = false;
 
 		return($r);
@@ -34,8 +32,6 @@ class xivo_service_asterisk_cdr_abstract_sql extends xivo_service_asterisk_abstr
 	{
 		if(is_array($arr) === false)
 			return(false);
-
-		$where = array();
 
 		if(isset($arr['dbeg']) === true)
 		{
@@ -54,64 +50,47 @@ class xivo_service_asterisk_cdr_abstract_sql extends xivo_service_asterisk_abstr
 			else
 				$dend = '';
 
-			if(($rs = $this->_dso->cond_date('calldate',$dbeg,$dend,$format)) !== false)
-				$where[] = $rs;
+			$this->_dso->wheredate('calldate',$dbeg,$dend,null,$format);
 		}
 
 		if(isset($arr['channel']) === true)
 		{
 			if(is_array($arr['channel']) === true)
-				$rs = $this->_dso->search_not_begin('channel',$arr['channel']);
+				$this->_dso->andwherenotbegin('channel',$arr['channel']);
 			else
-				$rs = $this->_dso->search_begin('channel',$arr['channel']);
-
-			if($rs !== false)
-				$where[] = $rs;
+				$this->_dso->andwherebegin('channel',$arr['channel']);
 		}
 
-		if(isset($arr['disposition']) === true
-		&& ($rs = $this->_dso->search_exact('disposition',$arr['disposition'])) !== false)
-			$where[] = $rs;
+		if(isset($arr['disposition']) === true)
+			$this->_dso->andwhereexact('disposition',$arr['disposition']);
 
-		if(isset($arr['amaflags']) === true
-		&& ($rs = $this->_dso->search_exact('amaflags',$arr['amaflags'])) !== false)
-			$where[] = $rs;
+		if(isset($arr['amaflags']) === true)
+			$this->_dso->andwhereexact('amaflags',$arr['amaflags']);
 
-		if(xivo_issa('src',$arr) === true
-		&& ($rs = $this->_dso->search('src',$arr['src']['pattern'],$arr['src']['type'])) !== false)
-			$where[] = $rs;
+		if(xivo_issa('src',$arr) === true)
+			$this->_dso->andwherelike('src',$arr['src']['pattern'],$arr['src']['type']);
 
-		if(xivo_issa('dst',$arr) === true
-		&& ($rs = $this->_dso->search('dst',$arr['dst']['pattern'],$arr['dst']['type'])) !== false)
-			$where[] = $rs;
+		if(xivo_issa('dst',$arr) === true)
+			$this->_dso->andwherelike('dst',$arr['dst']['pattern'],$arr['dst']['type']);
 
-		if(xivo_issa('clid',$arr) === true
-		&& ($rs = $this->_dso->search('clid',$arr['clid']['pattern'],$arr['clid']['type'])) !== false)
-			$where[] = $rs;
+		if(xivo_issa('clid',$arr) === true)
+			$this->_dso->andwherelike('clid',$arr['clid']['pattern'],$arr['clid']['type']);
 
-		if(xivo_issa('accountcode',$arr) === true
-		&& ($rs = $this->_dso->search('accountcode',$arr['accountcode']['pattern'],$arr['accountcode']['type'])) !== false)
-			$where[] = $rs;
+		if(xivo_issa('accountcode',$arr) === true)
+			$this->_dso->andwherelike('accountcode',$arr['accountcode']['pattern'],$arr['accountcode']['type']);
 
-		if(xivo_issa('userfield',$arr) === true
-		&& ($rs = $this->_dso->search('userfield',$arr['userfield']['pattern'],$arr['userfield']['type'])) !== false)
-			$where[] = $rs;
+		if(xivo_issa('userfield',$arr) === true)
+			$this->_dso->andwherelike('userfield',$arr['userfield']['pattern'],$arr['userfield']['type']);
 
 		if(isset($arr['dubeg']) === true)
 		{
 			if(isset($arr['duend']) === true)
-				$rs = $this->_dso->between_value('duration',$arr['dubeg'],$arr['duend']);
+				$this->_dso->andwherebetween('duration',$arr['dubeg'],$arr['duend']);
 			else
-				$rs = $this->_dso->search_exact('duration',$arr['dubeg']);
-
-			if($rs !== false)
-				$where[] = $rs;
+				$this->_dso->andwhereexact('duration',$arr['dubeg']);
 		}
 
-		if(($r = implode(' AND ',$where)) === '')
-			$r = false;
-
-		return($r);
+		return(true);
 	}
 }
 

@@ -27,14 +27,14 @@ class xivo_service_asterisk_uservoicemail_abstract_sql extends xivo_service_aste
 		return((int) $r['uniqueid']);
 	}
 
-	function edit($id,$arr,$disable=null)
+	function edit($arr,$value,$disable=null)
 	{
-		if(($id = xivo_uint($id)) === 0)
+		if(($arr = xivo_uint($arr)) === 0)
 			return(false);
 
-		$id = array('uniqueid' => $id);
+		$arr = array('uniqueid' => $arr);
 
-		return(parent::edit($id,$arr,$disable));
+		return(parent::edit($arr,$value,$disable));
 	}
 
 	function delete($id,$disable=null)

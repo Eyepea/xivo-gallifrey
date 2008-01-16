@@ -4,8 +4,6 @@ xivo_service_asterisk::required(array('abstract','datastorage','abstract','sql.i
 
 class xivo_service_asterisk_groupfeatures_abstract_sql extends xivo_service_asterisk_abstract_sql
 {
-	var $_param	= array('table' => 'groupfeatures');
-
 	function get($arr,$delete=null,$id=false)
 	{
 		$id = (bool) $id;
@@ -18,17 +16,14 @@ class xivo_service_asterisk_groupfeatures_abstract_sql extends xivo_service_aste
 				return(false);
 		}
 
+		$this->_dso->new_select($this->_param['table'],($id === true ? 'id' : '*'));
+
 		if($delete !== null)
 			$arr['deleted'] = intval((bool) $delete);
 
-		if(($where = $this->_dso->where($arr)) === false)
-			return(false);
+		$this->_dso->where($arr);
 
-		$id = $id === true ? 'id' : null;
-
-		$r = $this->_dso->select_one($this->_param['table'],$id,$where);
-
-		if($r !== false && $id !== null)
+		if(($r = $this->_dso->select_single()) !== false && $id === true)
 			$r = (int) $r['id'];
 
 		return($r);
@@ -40,24 +35,23 @@ class xivo_service_asterisk_groupfeatures_abstract_sql extends xivo_service_aste
 		&& (is_array($arr) === false || empty($arr) === true) === true)
 			return(false);
 
-		$where = '';
-
 		if($delete !== null)
 			$arr['deleted'] = intval((bool) $delete);
 
-		if(is_array($arr) === true && ($where = $this->_dso->where($arr)) === false)
-			return(false);
+		$this->_dso->new_select($this->_param['table']);
 
-		$r = $this->_dso->select_count($this->_param['table'],null,$where);
+		if(is_array($arr) === true)
+			$this->_dso->where($arr);
 
-		return($r);
+		return((int) $this->_dso->select_count());
 	}
 
 	function get_last()
 	{
-		$r = $this->_dso->select_one($this->_param['table'],'COUNT(*) AS cnt, MAX(id) AS id');
+		$this->_dso->new_select($this->_param['table'],array('cnt' => (object) 'COUNT(*)',
+								     'id' => (object) 'MAX(id)'));
 
-		if($r !== false)	
+		if(($r = $this->_dso->select_single()) !== false)
 			$r = $r['cnt'] > 0 ? $r['id'] : 0;
 
 		return($r);
@@ -65,24 +59,19 @@ class xivo_service_asterisk_groupfeatures_abstract_sql extends xivo_service_aste
 
 	function get_free()
 	{
-		$r = false;
-
+		$this->_dso->new_select($this->_param['table'],'id');
+		$this->_dso->where(array('deleted' => 1));
 		$this->_dso->new_order(array('id' => SORT_ASC));
 
-		$r = $this->_dso->select_one($this->_param['table'],'id','deleted = 1');
+		$r = $this->_dso->select_one();
 
 		$this->_dso->reset_order();
-
-		if($r !== false)
-			$r = $r['id'];
 
 		return($r);
 	}
 
 	function add($arr,$insertid=true)
 	{
-		$r = false;
-
 		$insertid = (bool) $insertid;
 
 		if(is_array($arr) === false)
@@ -91,37 +80,32 @@ class xivo_service_asterisk_groupfeatures_abstract_sql extends xivo_service_aste
 		if(array_key_exists('deleted',$arr) === true)
 			$arr['deleted'] = intval((bool) $arr['deleted']);
 
-		if($this->_dso->insert($this->_param['table'],$arr) === true)
-			$r = $insertid === true ? $this->_dso->insert_id() : true;
-
-		return($r);
-	}
-
-	function edit($id,$arr,$delete=null)
-	{
-		if(is_array($arr) === false)
+		if($this->_dso->insert($this->_param['table'],$arr) === false)
 			return(false);
 
-		if(is_array($id) === false)
+		return(($insertid === true ? $this->_dso->insert_id() : true));
+	}
+
+	function edit($arr,$value,$delete=null)
+	{
+		if(is_array($value) === false)
+			return(false);
+
+		if(is_array($arr) === false)
 		{
-			if(($id = xivo_uint($id)) !== 0)
-				$id = array('id' => $id);
+			if(($arr = xivo_uint($arr)) !== 0)
+				$arr = array('id' => $arr);
 			else
 				return(false);
 		}
 
 		if($delete !== null)
-			$id['deleted'] = intval((bool) $delete);
+			$arr['deleted'] = intval((bool) $delete);
 
-		if(($where = $this->_dso->where($id)) === false)
-			return(false);
+		if(array_key_exists('deleted',$value) === true)
+			$value['deleted'] = intval((bool) $value['deleted']);
 
-		if(array_key_exists('deleted',$arr) === true)
-			$arr['deleted'] = intval((bool) $arr['deleted']);
-
-		$r = $this->_dso->update($this->_param['table'],$arr,$where);
-
-		return($r);
+		return($this->_dso->update($this->_param['table'],$value,$arr));
 	}
 
 	function delete($arr)
@@ -133,29 +117,21 @@ class xivo_service_asterisk_groupfeatures_abstract_sql extends xivo_service_aste
 	{
 		$all = (bool) $all;
 
-		$where = '';
-
-		$arr = array();
+		$this->_dso->new_select($this->_param['table'],($all === true ? '*' : 'id'));
 
 		if($delete !== null)
-			$arr['deleted'] = intval((bool) $delete);
-
-		if(empty($arr) === false && ($where = $this->_dso->where($arr)) === false)
-			return(false);
+			$this->_dso->where(array('deleted' => intval((bool) $delete)));
 
 		$this->_dso->new_order($order);
-		$this->_dso->new_limit($limit);
+		$this->_dso->limit($limit);
 
-		$col = $all === true ? null : 'id';
-
-		$r = $this->_dso->select_all($this->_param['table'],$col,$where);
+		$r = $this->_dso->select_all();
 
 		$this->_dso->reset_order();
 		$this->_dso->reset_limit();
 
-		$this->_cnt = $this->_dso->select_count($this->_param['table'],null,$where);
-
-		if($this->_cnt === false)
+		if(($this->_cnt = $this->_dso->select_count()) === false
+		|| isset($r[0]) === false)
 			$r = false;
 
 		return($r);
@@ -165,28 +141,28 @@ class xivo_service_asterisk_groupfeatures_abstract_sql extends xivo_service_aste
 	{
 		$all = (bool) $all;
 
+		$this->_cnt = 0;
+
 		if(is_array($arr) === false || empty($arr) === true)
 			return(false);
+
+		$this->_dso->new_select($this->_param['table'],($all === true ? '*' : 'id'));
 
 		if($delete !== null)
 			$arr['deleted'] = intval((bool) $delete);
 
-		if(($where = $this->_dso->where($arr)) === false)
-			return(false);
+		$this->_dso->where($arr);
 
 		$this->_dso->new_order($order);
-		$this->_dso->new_limit($limit);
+		$this->_dso->limit($limit);
 
-		$col = $all === true ? null : 'id';
-
-		$r = $this->_dso->select_all($this->_param['table'],$col,$where);
+		$r = $this->_dso->select_all();
 
 		$this->_dso->reset_order();
 		$this->_dso->reset_limit();
 
-		$this->_cnt = $this->_dso->select_count($this->_param['table'],null,$where);
-
-		if($this->_cnt === false)
+		if(($this->_cnt = $this->_dso->select_count()) === false
+		|| isset($r[0]) === false)
 			$r = false;
 
 		return($r);
