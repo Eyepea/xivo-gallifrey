@@ -48,6 +48,8 @@ switch($act)
 			$result = array();
 			$return = &$result;
 
+			$_QR['disable'] = $info['disable'];
+
 			if(($result = $_SVR->chk_values($_QR)) === false)
 			{
 				$result = $_SVR->get_filter_result();

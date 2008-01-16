@@ -1803,7 +1803,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		else if($this->_uservoicemail === false)
 			return(false);
 
-		$r = $this->_uservoicemail->delete($this->_info['voicemail']['id']);
+		$r = $this->_uservoicemail->delete($this->_info['voicemail']['uniqueid']);
 
 		if($this->_status === 'delete')
 			$this->_return['voicemail'] = $r;
