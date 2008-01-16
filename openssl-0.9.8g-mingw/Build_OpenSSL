@@ -41,6 +41,7 @@ de dev particulier), il faut être capable de builder le soft nous même
 ---
 
 L'host est constitué d'un Windows XP Pro SP2.
+Il est lui même le guest d'un KVM.
 
 ---
 
@@ -51,22 +52,22 @@ Les paquets cygwin sont les suivants:
 $ cygcheck -c -d
 Cygwin Package Information
 Package              Version
-_update-info-dir     00567-1
+_update-info-dir     00575-1
 alternatives         1.3.29a-1
 ash                  20040127-3
 base-files           3.7-1
 base-passwd          2.2-1
-bash                 3.2.25-17
+bash                 3.2.33-18
 bzip2                1.0.3-2
 coreutils            6.9-5
 crypt                1.1-1
 cygrunsrv            1.17-1
 cygutils             1.3.2-1
-cygwin               1.5.25-5
+cygwin               1.5.25-7
 cygwin-doc           1.4-4
 diffutils            2.8.7-1
 e2fsprogs            1.35-3
-editrights           1.01-1
+editrights           1.01-2
 expat                1.95.8-2
 file                 4.21-1
 findutils            4.3.11-1
@@ -82,8 +83,10 @@ less                 382-1
 libapr1              1.2.11-1
 libaprutil1          1.2.10-1
 libbz2_1             1.0.3-2
-libdb4.2             4.2.52-1
-libdb4.3             4.3.28-1
+libdb4.2             4.2.52.5-2
+libdb4.3             4.3.29.1-1
+libdb4.4             4.4.20.4-1
+libdb4.5             4.5.20.2-2
 libexpat0            1.95.8-2
 libfontconfig1       2.4.1-5
 libfreetype26        2.3.4-2
@@ -98,7 +101,7 @@ libncurses8          5.5-3
 libneon26            0.26.4-1
 libpcre0             7.2-1
 libpopt0             1.6.4-4
-libreadline6         5.2.7-9
+libreadline6         5.2.12-10
 libXft               2.1.6-1
 libXft1              1.0.0-1
 libXft2              2.1.6-1
@@ -110,7 +113,6 @@ mktemp               1.5-4
 netcat               1.10-2
 openssh              4.7p1-2
 openssl              0.9.8g-1
-openssl-devel        0.9.8g-1
 patch                2.5.8-9
 pcre                 7.2-1
 perl                 5.8.8-4
@@ -122,16 +124,16 @@ subversion           1.4.5-2
 subversion-python    1.4.5-2
 tar                  1.19-1
 tcltk                20060202-1
-tcp_wrappers         7.6-1
+tcp_wrappers         7.6-2
 termcap              20050421-1
 terminfo             5.5_20061104-1
 texinfo              4.8a-1
 tzcode               2007h-2
 unzip                5.52-2
-util-linux           2.12r-2
+upx                  3.01-1
 vim                  7.1-1
 wget                 1.10.2-2
-which                1.7-1
+which                2.18-2
 X-startup-scripts    1.0.11-1
 xorg-x11-base        6.8.99.901-1
 xorg-x11-bin         6.8.99.901-1
@@ -146,9 +148,7 @@ xterm                229-1
 zip                  2.32-2
 zlib                 1.2.3-2
 
-L'installeur Cygwin était le 2.573.2.2.(mais il est très probable qu'une
-install ait été effectuée avant avec un installeur précédent puis qu'il
-n'ait pas été conservé ni son numéro de version noté).
+L'installeur Cygwin était >= 2.573.2.2
 
 NOTE: à propos des paquets X-window, ils sont nécessaires car
 xorg-x11-base et/ou xorg-x11-bin contiennent makedepend, que
@@ -161,121 +161,59 @@ On veut une target MinGW (entre autre pcq QT est en target MinGW.
 Donc les paquets OpenSSL listé ci-dessus ne sont pas réutilisable
 pour ce qu'on distribuera nous.
 
-TODO: il faudrait récuperer l'ensemble des paquets qui ont été utilisés lors
-d'un build et les stocker chez nous histoire de pouvoir reproduire le build
-en question. Ca pourrait même être sympa de stocker des images de VM contenant
-un OS propre + une installe fraiche de tout ça, qu'on pourrait dupliquer +
-déroulage du build super rapidement. Enfin, on peut sinon envisager de ce
-constituer un environnement de Xcompilation.
+NOTE3: On dispose de tous les paquets binaires sur notre serveur de build
+Windows. Il faudrait récup les sources correspondant pour être sûr à 200%
+d'être capable dans tous les cas de se conformer avec la GNU GPLv2 (et autres
+licences copyleft), car il y a ambiguïté sur le fait que Cygwin est un "major
+components (compiler, kernel, and so on) of the operating system on which the
+executable runs" (GNU GPLv2 Section 3) ou pas, vu qu'il n'est pas distribué de
+base avec Windows. Donc si on est ammené à redistribuer cette chaîne binaire
+pour cette raison, les critères des licences copylefts respectives des
+différents soft la composant s'appliqueront... Contournement possible; laisser
+systématiquement aux clients la responsabilité des installations des binaires
+Windows en leur spécifiant contractuellement en petites lignes que la seule
+cible supportée formellement est un Win XP SP2 doté de Cygwin et de tous les
+paquets énoncés ci-dessus.
 
 ---
 
 MinGW
 
-L'installeur est MinGW-5.1.3.exe (mais il est très probable qu'une
-install ait été effectuée avant avec un installeur précédent puis qu'il
-n'ait pas été conservé ni son numéro de version noté).
+Le MinGW distribué par Trolltech est utilisé:
 
-Administrateur@nooceo-o45dtehd /cygdrive/c/MinGW
-$ cat installed.ini 
-[settings]
-mirror=
-installtype=current
+Il s'agit de
 
-[components]
-runtime=mingw-runtime-3.13.tar.gz
-w32api=w32api-3.10.tar.gz
-binutils=binutils-2.17.50-20060824-1.tar.gz
-core=gcc-core-3.4.5-20060117-1.tar.gz
-gpp=gcc-g++-3.4.5-20060117-1.tar.gz
-g77=
-ada=
-java=
-objc=
-make=mingw32-make-3.81-2.tar.gz
+	ftp://ftp.trolltech.com/misc/MinGW-3.4.2-src.exe
+	ftp://ftp.trolltech.com/misc/MinGW-3.4.2.exe
 
-Administrateur@nooceo-o45dtehd /cygdrive/c/Documents and Settings/Administrateur/Bureau/MinGW
-$ ls
-MinGW-5.1.3.exe                     gcc-g++-3.4.5-20060117-1.tar.gz  mingw.ini.old
-binutils-2.17.50-20060824-1.tar.gz  mingw-runtime-3.13.tar.gz        mingw32-make-3.81-2.tar.gz
-gcc-core-3.4.5-20060117-1.tar.gz    mingw.ini                        w32api-3.10.tar.gz
-
-Administrateur@nooceo-o45dtehd /cygdrive/c/Documents and Settings/Administrateur/Bureau/MinGW
-$ cat mingw.ini
-[mingw]
-Build=10
-URL=http://prdownloads.sourceforge.net/mingw
-Filename=MinGW-5.1.3.exe
-packages=previous|current|candidate
-
-[current]
-runtime=mingw-runtime-3.13.tar.gz|5420
-w32api=w32api-3.10.tar.gz|14490
-binutils=binutils-2.17.50-20060824-1.tar.gz|21940
-core=gcc-core-3.4.5-20060117-1.tar.gz|8644
-gpp=gcc-g++-3.4.5-20060117-1.tar.gz|16140
-g77=gcc-g77-3.4.5-20060117-1.tar.gz|5161
-ada=gcc-ada-3.4.5-20060117-1.tar.gz|33352
-java=gcc-java-3.4.5-20060117-1.tar.gz|46767
-objc=gcc-objc-3.4.5-20060117-1.tar.gz|4559
-make=mingw32-make-3.81-2.tar.gz|720
-
-[previous]
-runtime=mingw-runtime-3.12.tar.gz|5270
-w32api=w32api-3.9.tar.gz|14480
-binutils=binutils-2.16.91-20060119-1.tar.gz|15850
-core=gcc-core-3.4.2-20040916-1.tar.gz|8627
-gpp=gcc-g++-3.4.2-20040916-1.tar.gz|16542
-g77=gcc-g77-3.4.2-20040916-1.tar.gz|5158
-ada=gcc-ada-3.4.2-20040916-1.tar.gz|33333
-java=gcc-java-3.4.2-20040916-1.tar.gz|45547
-objc=gcc-objc-3.4.2-20040916-1.tar.gz|4555
-make=mingw32-make-3.80.0-3.tar.gz|1925
-
-[candidate]
-binutils=binutils-2.17.50-20060824-1.tar.gz|21940
-core=gcc-core-3.4.5-20060117-1.tar.gz|8644
-gpp=gcc-g++-3.4.5-20060117-1.tar.gz|16140
-g77=gcc-g77-3.4.5-20060117-1.tar.gz|5161
-ada=gcc-ada-3.4.5-20060117-1.tar.gz|33352
-java=gcc-java-3.4.5-20060117-1.tar.gz|46767
-objc=gcc-objc-3.4.5-20060117-1.tar.gz|4559
-make=mingw32-make-3.81-2.tar.gz|720
+On a une copie locale de ces deux fichiers sur notre serveur de build Windows.
 
 ---
 
-Le mingw32-make ne supporte pas les symlinks, hors l'arbre OpenSSL en contient
-à divers phases de sa construction.
+Certains (voir tous) mingw32-make ne supportent pas les symlinks basés sur des
+raccourcis Windows, hors Cygwin utilise cette technique pour les implémenter.
+(je crois que NTFS supporte les vrai symlinks, mais vu que Cygwin peut se faire
+ hoster sur de la FAT et que probablement 0.1% des logiciels sous Win
+ supportent les symlinks NTFS, Cygwin émule les symlinks par des raccourcis)
 
-BUILD.sh utilise deref_symlinks.sh pour remplacer les symlinks par une copie
-des fichiers pointés.
+Hors l'arbre OpenSSL en contient à divers phases de sa construction, car l'env
+de build est en fait un mélange de Cygwin et de MinGW.
+
+Le build fait donc des appels à deref_symlinks.sh et deref_one_symlink.sh
+pour remplacer les symlinks par une copie des fichiers pointés
 
 ---
 
-Décompression zlib et compilation par:
+Décompression zlib et compilation par build_zlib.sh:
 
-Administrateur@nooceo-o45dtehd ~
-$ cd zlib-1.2.3
+xivo/trunk/openssl-0.9.8g-mingw$ cat build_zlib.sh 
+#!/bin/sh
 
-Administrateur@nooceo-o45dtehd ~/zlib-1.2.3
-$ make CFLAGS="-D_REENTRANT -DPIC -O3 -W -Wall" CC=gcc      
-gcc -D_REENTRANT -DPIC -O3 -W -Wall   -c -o example.o example.c
-gcc -D_REENTRANT -DPIC -O3 -W -Wall   -c -o adler32.o adler32.c
-gcc -D_REENTRANT -DPIC -O3 -W -Wall   -c -o compress.o compress.c
-gcc -D_REENTRANT -DPIC -O3 -W -Wall   -c -o crc32.o crc32.c
-gcc -D_REENTRANT -DPIC -O3 -W -Wall   -c -o gzio.o gzio.c
-gcc -D_REENTRANT -DPIC -O3 -W -Wall   -c -o uncompr.o uncompr.c
-gcc -D_REENTRANT -DPIC -O3 -W -Wall   -c -o deflate.o deflate.c
-gcc -D_REENTRANT -DPIC -O3 -W -Wall   -c -o trees.o trees.c
-gcc -D_REENTRANT -DPIC -O3 -W -Wall   -c -o zutil.o zutil.c
-gcc -D_REENTRANT -DPIC -O3 -W -Wall   -c -o inflate.o inflate.c
-gcc -D_REENTRANT -DPIC -O3 -W -Wall   -c -o infback.o infback.c
-gcc -D_REENTRANT -DPIC -O3 -W -Wall   -c -o inftrees.o inftrees.c
-gcc -D_REENTRANT -DPIC -O3 -W -Wall   -c -o inffast.o inffast.c
-ar rc libz.a adler32.o compress.o crc32.o gzio.o uncompr.o deflate.o trees.o zutil.o inflate.o infback.o inftrees.o inffast.o 
-gcc -D_REENTRANT -DPIC -O3 -W -Wall -o example example.o libz.a
-gcc -D_REENTRANT -DPIC -O3 -W -Wall   -c -o minigzip.o minigzip.c
-gcc -D_REENTRANT -DPIC -O3 -W -Wall -o minigzip minigzip.o libz.a
+set -e
+
+tar xzvf zlib-1.2.3.tar.gz
+cd zlib-1.2.3
+make CFLAGS="-D_REENTRANT -DPIC -O3 -W -Wall" CC=gcc
 
 ---
 build_under_broken_cygwin.patch
@@ -321,9 +259,9 @@ puis on passe le .def à GCC pour le link
 build_no_at_in_Makefile.patch
 
 Enleve les @ des Makefile histoire d'avoir des logs bien complets des builds,
-donc utilisable.
+donc utilisables.
 
 ---
 build_shared_set_x.patch
 
-Active les set -x de Makefile.shared pour avoir encore plus de trace de build.
+Active les set -x de Makefile.shared pour avoir encore plus de traces de build.
