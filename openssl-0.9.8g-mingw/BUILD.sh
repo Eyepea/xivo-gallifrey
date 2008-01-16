@@ -14,9 +14,9 @@ OPENSSL_OPTIONS="no-idea no-mdc2 no-rc5 zlib enable-tlsext threads shared"
 DEREF_SYMLINKS=deref_symlinks.sh
 
 if [ ! -e /cygdrive/c$ZLIB_PATH ] ; then
-	echo "/cygdrive/c$ZLIB_PATH not found"
-	echo "Please fix ZLIB_PATH in this script, or export it as an environment"
-	echo "var before invocation."
+	echo "/cygdrive/c$ZLIB_PATH not found" 1>&2
+	echo "Please fix ZLIB_PATH in this script, or export it as an environment" 1>&2
+	echo "var before invocation." 1>&2
 	exit 1
 fi
 
