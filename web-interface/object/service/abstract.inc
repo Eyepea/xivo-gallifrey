@@ -504,7 +504,7 @@ class xivo_service_abstract
 			return(false);
 		}
 
-		$dso = $this->_load_dso_class($name,$meta,$dir,$custom,$datastorage,$datastorage,$meta,$dso);
+		$dso = $this->_load_dso_class($name,$type,$dir,$custom,$datastorage,$datastorage,$meta,$dso);
 
 		if(is_object($dso) === true)
 			return($dso);

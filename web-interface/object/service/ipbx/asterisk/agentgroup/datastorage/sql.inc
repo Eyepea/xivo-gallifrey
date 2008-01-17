@@ -1,22 +1,10 @@
 <?php
 
-require_once(XIVO_PATH_OBJECT.XIVO_SEP_DIR.'abstract'.XIVO_SEP_DIR.'datastorage'.XIVO_SEP_DIR.'datastorage.inc');
+xivo_service_asterisk::required(array('abstract','datastorage','abstract','sql.inc'),true);
 
-class xivo_service_asterisk_realstatic_abstract_sql extends xivo_abstract_datastorage
+class xivo_service_asterisk_agentgroup_sql extends xivo_service_asterisk_abstract_sql
 {
-	var $_disable_varname	= 'commented';
-
-	function xivo_service_asterisk_realstatic_abstract_sql(&$dso,$param=array())
-	{
-		parent::_init(&$dso);
-
-		$param = (array) $param;
-
-		if(isset($param['table']) === true)
-			$this->_param['table'] = (string) $param['table'];
-	}
-
-	function get($arr,$disable=null,$id=false)
+	function get($arr,$disable=null,$delete=null,$id=false)
 	{
 		$id = (bool) $id;
 
@@ -33,7 +21,8 @@ class xivo_service_asterisk_realstatic_abstract_sql extends xivo_abstract_datast
 		if($disable !== null)
 			$arr[$this->_disable_varname] = intval((bool) $disable);
 
-		$arr['filename'] = $this->_param['filename'];
+		if($delete !== null)
+			$arr['deleted'] = intval((bool) $delete);
 
 		$this->_dso->where($arr);
 
@@ -43,24 +32,22 @@ class xivo_service_asterisk_realstatic_abstract_sql extends xivo_abstract_datast
 		return($r);
 	}
 
-	function get_id($arr,$disable=null)
+	function get_id($arr,$disable=null,$delete=null)
 	{
-		return($this->get($arr,$disable,true));
+		return($this->get($arr,$disable,$delete,true));
 	}
 
-	function get_nb($arr=null,$disable=null)
+	function get_nb($arr=null,$disable=null,$delete=null)
 	{
 		if($arr !== null
 		&& (is_array($arr) === false || empty($arr) === true) === true)
 			return(false);
 
-		if(is_array($arr) === false)
-			$arr = array();
-
-		$arr['filename'] = $this->_param['filename'];
-
 		if($disable !== null)
 			$arr[$this->_disable_varname] = intval((bool) $disable);
+
+		if($delete !== null)
+			$arr['deleted'] = intval((bool) $delete);
 
 		$this->_dso->new_select($this->_param['table']);
 
@@ -68,6 +55,30 @@ class xivo_service_asterisk_realstatic_abstract_sql extends xivo_abstract_datast
 			$this->_dso->where($arr);
 
 		return((int) $this->_dso->select_count());
+	}
+
+	function get_last()
+	{
+		$this->_dso->new_select($this->_param['table'],array('cnt' => (object) 'COUNT(*)',
+								     'id' => (object) 'MAX(id)'));
+
+		if(($r = $this->_dso->select_single()) !== false)
+			$r = $r['cnt'] > 0 ? $r['id'] : 0;
+
+		return($r);
+	}
+
+	function get_free()
+	{
+		$this->_dso->new_select($this->_param['table'],'id');
+		$this->_dso->where(array('deleted' => 1));
+		$this->_dso->new_order(array('id' => SORT_ASC));
+
+		$r = $this->_dso->select_one();
+
+		$this->_dso->reset_order();
+
+		return($r);
 	}
 
 	function add($arr,$insertid=true)
@@ -80,7 +91,8 @@ class xivo_service_asterisk_realstatic_abstract_sql extends xivo_abstract_datast
 		if(array_key_exists($this->_disable_varname,$arr) === true)
 			$arr[$this->_disable_varname] = intval((bool) $arr[$this->_disable_varname]);
 
-		$arr['filename'] = $this->_param['filename'];
+		if(array_key_exists('deleted',$arr) === true)
+			$arr['deleted'] = intval((bool) $arr['deleted']);
 
 		if($this->_dso->insert($this->_param['table'],$arr) === false)
 			return(false);
@@ -88,7 +100,7 @@ class xivo_service_asterisk_realstatic_abstract_sql extends xivo_abstract_datast
 		return(($insertid === true ? $this->_dso->insert_id() : true));
 	}
 
-	function edit($arr,$value,$disable=null)
+	function edit($arr,$value,$disable=null,$delete=null)
 	{
 		if(is_array($value) === false)
 			return(false);
@@ -101,36 +113,22 @@ class xivo_service_asterisk_realstatic_abstract_sql extends xivo_abstract_datast
 				return(false);
 		}
 
-		$value['filename'] = $arr['filename'] = $this->_param['filename'];
-
 		if($disable !== null)
 			$arr[$this->_disable_varname] = intval((bool) $disable);
+
+		if($delete !== null)
+			$arr['deleted'] = intval((bool) $delete);
 
 		if(array_key_exists($this->_disable_varname,$value) === true)
 			$value[$this->_disable_varname] = intval((bool) $value[$this->_disable_varname]);
 
+		if(array_key_exists('deleted',$value) === true)
+			$value['deleted'] = intval((bool) $value['deleted']);
+
 		return($this->_dso->update($this->_param['table'],$value,$arr));
 	}
 
-	function delete($arr,$disable=null)
-	{
-		if(is_array($arr) === false)
-		{
-			if(($arr = xivo_uint($arr)) !== 0)
-				$arr = array('id' => $arr);
-			else
-				return(false);
-		}
-
-		$arr['filename'] = $this->_param['filename'];
-
-		if($disable !== null)
-			$arr[$this->_disable_varname] = intval((bool) $disable);
-
-		return($this->_dso->delete($this->_param['table'],$arr));
-	}
-
-	function get_list($disable=null,$order=null,$limit=null,$all=false)
+	function get_list($disable=null,$delete=null,$order=null,$limit=null,$all=false)
 	{
 		$all = (bool) $all;
 
@@ -141,9 +139,11 @@ class xivo_service_asterisk_realstatic_abstract_sql extends xivo_abstract_datast
 		if($disable !== null)
 			$arr[$this->_disable_varname] = intval((bool) $disable);
 
-		$arr['filename'] = $this->_param['filename'];
+		if($delete !== null)
+			$arr['deleted'] = intval((bool) $delete);
 
-		$this->_dso->where($arr);
+		if(empty($arr) === false)
+			$this->_dso->where($arr);
 
 		$this->_dso->new_order($order);
 		$this->_dso->limit($limit);
@@ -160,7 +160,7 @@ class xivo_service_asterisk_realstatic_abstract_sql extends xivo_abstract_datast
 		return($r);
 	}
 
-	function get_list_where($arr,$disable=null,$order=null,$limit=null,$all=false)
+	function get_list_where($arr,$disable=null,$delete=null,$order=null,$limit=null,$all=false)
 	{
 		$all = (bool) $all;
 
@@ -174,7 +174,8 @@ class xivo_service_asterisk_realstatic_abstract_sql extends xivo_abstract_datast
 		if($disable !== null)
 			$arr[$this->_disable_varname] = intval((bool) $disable);
 
-		$arr['filename'] = $this->_param['filename'];
+		if($delete !== null)
+			$arr['deleted'] = intval((bool) $delete);
 
 		$this->_dso->where($arr);
 
@@ -193,14 +194,14 @@ class xivo_service_asterisk_realstatic_abstract_sql extends xivo_abstract_datast
 		return($r);
 	}
 
-	function get_all($disable=null,$order=null,$limit=null)
+	function get_all($disable=null,$delete=null,$order=null,$limit=null)
 	{
-		return($this->get_list($disable,$order,$limit,true));
+		return($this->get_list($disable,$delete,$order,$limit,true));
 	}
 
-	function get_all_where($arr,$disable=null,$order=null,$limit=null)
+	function get_all_where($arr,$disable=null,$delete=null,$order=null,$limit=null)
 	{
-		return($this->get_list_where($arr,$disable,$order,$limit,true));
+		return($this->get_list_where($arr,$disable,$delete,$order,$limit,true));
 	}
 }
 

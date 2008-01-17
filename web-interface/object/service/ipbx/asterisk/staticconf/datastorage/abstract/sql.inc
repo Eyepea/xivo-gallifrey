@@ -4,7 +4,9 @@ require_once(XIVO_PATH_OBJECT.XIVO_SEP_DIR.'abstract'.XIVO_SEP_DIR.'datastorage'
 
 class xivo_service_asterisk_staticconf_abstract_sql extends xivo_abstract_datastorage
 {
-	function _init(&$dso,$param=array())
+	var $_disable_varname	= 'commented';
+
+	function xivo_service_asterisk_staticconf_abstract_sql(&$dso,$param=array())
 	{
 		parent::_init(&$dso);
 
@@ -26,7 +28,7 @@ class xivo_service_asterisk_staticconf_abstract_sql extends xivo_abstract_datast
 		$arr['filename'] = $this->_param['filename'];
 
 		if($disable !== null)
-			$arr['commented'] = intval((bool) $disable);
+			$arr[$this->_disable_varname] = intval((bool) $disable);
 
 		$this->_dso->where($arr);
 
@@ -41,7 +43,7 @@ class xivo_service_asterisk_staticconf_abstract_sql extends xivo_abstract_datast
 		$this->_dso->new_select($this->_param['table'],'id');
 
 		if($disable !== null)
-			$arr['commented'] = intval((bool) $disable);
+			$arr[$this->_disable_varname] = intval((bool) $disable);
 
 		$this->_dso->where($arr);
 
@@ -72,7 +74,7 @@ class xivo_service_asterisk_staticconf_abstract_sql extends xivo_abstract_datast
 			return(false);
 
 		if($disable !== null)
-			$arr['commented'] = intval((bool) $disable);
+			$arr[$this->_disable_varname] = intval((bool) $disable);
 
 		return($this->_dso->update($this->_param['table'],$value,$arr));
 	}
@@ -91,7 +93,7 @@ class xivo_service_asterisk_staticconf_abstract_sql extends xivo_abstract_datast
 			return(false);
 
 		if($disable !== null)
-			$arr['commented'] = intval((bool) $disable);
+			$arr[$this->_disable_varname] = intval((bool) $disable);
 
 		return($this->_dso->delete($this->_param['table'],$arr));
 	}
@@ -105,7 +107,7 @@ class xivo_service_asterisk_staticconf_abstract_sql extends xivo_abstract_datast
 		$arr = array();
 
 		if($disable !== null)
-			$arr['commented'] = intval((bool) $disable);
+			$arr[$this->_disable_varname] = intval((bool) $disable);
 
 		$arr['filename'] = $this->_param['filename'];
 
@@ -138,7 +140,7 @@ class xivo_service_asterisk_staticconf_abstract_sql extends xivo_abstract_datast
 		$this->_dso->new_select($this->_param['table'],($all === true ? '*' : 'id'));
 
 		if($disable !== null)
-			$arr['commented'] = intval((bool) $disable);
+			$arr[$this->_disable_varname] = intval((bool) $disable);
 
 		$arr['filename'] = $this->_param['filename'];
 

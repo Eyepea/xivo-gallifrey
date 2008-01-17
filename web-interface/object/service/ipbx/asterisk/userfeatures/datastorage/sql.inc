@@ -4,13 +4,7 @@ xivo_service_asterisk::required(array('abstract','datastorage','abstract','sql.i
 
 class xivo_service_asterisk_userfeatures_sql extends xivo_service_asterisk_abstract_sql
 {
-	var $_param	= array('table'		=> 'userfeatures',
-				'internal'	=> 0);
-
-	function xivo_service_asterisk_userfeatures_sql(&$dso,$param=array())
-	{
-		$this->_init(&$dso,$param);
-	}
+	var $_param	= array('internal'	=> 0);
 
 	function _set_param_internal()
 	{

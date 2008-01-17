@@ -1,0 +1,61 @@
+<?php
+
+xivo_service_asterisk::required(array('staticconf','datastorage','abstract','sql.inc'),true);
+
+class xivo_service_asterisk_agent_sql extends xivo_service_asterisk_staticconf_abstract_sql
+{
+	function get_all_by_var_metric($id,$disable=null)
+	{
+		if(($id = xivo_uint($id)) === 0)
+			return(false);
+
+		$this->_dso->new_select($this->_param['table']);
+
+		$arr = array();
+		$arr['var_metric'] = $id;
+		$arr['filename'] = $this->_param['filename'];
+
+		if($disable !== null)
+			$arr['commented'] = intval((bool) $disable);
+
+		$this->_dso->where($arr);
+
+		return($this->_dso->select_all());
+	}
+
+	function get_last_var_metric($min,$max)
+	{
+		$min = xivo_uint($min);
+		$max = xivo_uint($max);
+
+		$column = array();
+		$column['cnt'] = (object) 'COUNT(*)';
+		$column['var_metric'] = (object) 'MAX(var_metric)';
+
+		$this->_dso->new_select($this->_param['table'],$column);
+		$this->_dso->where(array('filename' => $this->_param['filename']));
+		$this->_dso->andwherebetween('var_metric',$min,$max);
+
+		if(($r = $this->_dso->select_single()) !== false)
+			$r = $r['cnt'] > 0 ? $r['var_metric'] : $min;
+
+		return($r);
+	}
+
+	function get_free_var_metric($min,$max)
+	{
+		$this->_dso->new_select($this->_param['table'],array('id','var_metric'));
+
+		$arr = array();
+		$arr['filename'] = $this->_param['filename'];
+		$arr['var_name'] = 'deleted';
+		$arr['commented'] = 1;
+
+		$this->_dso->where($arr);
+		$this->_dso->andwherebetween('var_metric',xivo_uint($min),xivo_uint($max));
+
+		return($this->_dso->select_single());
+	}
+}
+
+?>
