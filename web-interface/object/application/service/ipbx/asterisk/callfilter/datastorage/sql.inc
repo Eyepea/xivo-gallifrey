@@ -9,11 +9,6 @@ class xivo_application_service_asterisk_callfilter_sql extends xivo_application_
 				'callfiltermember'	=> '',
 				'userfeatures'		=> '');
 
-	function xivo_application_service_asterisk_callfilter_sql(&$dso,&$dsoconf)
-	{
-		$this->_init(&$dso,&$dsoconf);
-	}
-
 	function get_all($type,$disable=null,$order=null,$limit=null)
 	{
 		$arr = array();

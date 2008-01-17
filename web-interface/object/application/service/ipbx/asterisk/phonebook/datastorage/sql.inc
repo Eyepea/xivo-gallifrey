@@ -9,11 +9,6 @@ class xivo_application_service_asterisk_phonebook_sql extends xivo_application_s
 				'phonebookaddress'	=> '',
 				'phonebooknumber'	=> '');
 
-	function xivo_application_service_asterisk_phonebook_sql(&$dso,&$dsoconf)
-	{
-		$this->_init(&$dso,&$dsoconf);
-	}
-
 	function search($value,$order=null,$limit=null)
 	{
 		$this->_cnt = 0;

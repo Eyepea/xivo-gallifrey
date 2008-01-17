@@ -8,7 +8,7 @@ class xivo_application_service_asterisk_abstract_sql extends xivo_abstract_datas
 	var $_dsoconf	= array();
 	var $_table	= array();
 
-	function _init(&$dso,&$dsoconf)
+	function xivo_application_service_asterisk_abstract_sql(&$dso,&$dsoconf)
 	{
 		parent::_init(&$dso);
 

@@ -844,19 +844,6 @@ function xivo_last_key(&$a,$sort=SORT_NUMERIC)
 	return(end($ak));
 }
 
-function xivo_genpwd($str='')
-{
-	$r  = (string) $str;
-	$r .= preg_replace('/[^a-z0-9]/i','',crypt(uniqid(rand(), true)));
-
-	$len = strlen($r);
-
-	if($len < 9)
-		$r .= xivo_genpwd($r);
-
-	return(substr($r,1,8));
-}
-
 function xivo_calc_duration($beg,$end,$diff=false,$unset=false)
 {
 	$r = array();
