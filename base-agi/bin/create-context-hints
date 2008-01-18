@@ -84,12 +84,35 @@ for context in r:
                      "WHERE context = %s "
                      "AND IFNULL(number,'') != '' "
                      "AND enablehint = 1",
-                     ('number', 'protocol', 'name'),
+                     ('number', 'protocol', 'protocolid', 'name'),
                      (context[0],))
 	res = cursor.fetchall()
-	for e in res:
-		if e[0] and e[1] and e[2]:
-			print "exten = " + str(e[0]) + ",hint," + str(e[1].upper()) + "/" + str(e[2])
+
+	for row in res:
+		number = row['number']
+		protocol = row['protocol']
+		protocolid = row['protocolid']
+		name = row['name']
+
+		if protocol in ("sip", "iax"):
+			interface = protocol.upper() + "/" + name
+		elif protocol == "custom":
+			cursor.query("SELECT ${columns} FROM usercustom "
+                                     "WHERE id = %s "
+                                     "AND commented = 0 "
+                                     "AND category = 'user'",
+                                     ('interface',),
+                                     (protocolid,))
+			res2 = cursor.fetchone()
+
+			if not res2:
+				agi_helpers.dp_break(agi, "Database inconsistency: unable to find custom user (name = '%s', context = '%s')" % (name, context))
+
+			interface = res2['interface']
+		else:
+			agi_helpers.dp_break(agi, "Unknown protocol '%s'" % protocol)
+
+		print "exten = " + str(number) + ",hint," + str(interface)
 
 	# Ewww. The following query is a closure of one in provisioning/xivo_provisioning/autoprov.py.
 	query = ("SELECT ${columns} FROM userfeatures INNER JOIN phonefunckey "
