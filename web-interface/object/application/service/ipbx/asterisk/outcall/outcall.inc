@@ -33,13 +33,13 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 
 		if(($this->_info['outcall'] = $this->_outcall->get($id,$disable)) === false
 		|| ($this->_info['extenumbers'] = $this->_get_extenumbers()) === false
-		|| $this->_get_outcalltrunk() === false
 		|| $this->_get_exten() === false)
 			return(false);
 
 		$this->_origin['outcall'] = $this->_outcall->get_origin();
 		$this->_origin['extenumbers'] = $this->_extenumbers->get_origin();
 
+		$this->_get_outcalltrunk();
 		$this->_get_rightcall();
 
 		return($this->_info);

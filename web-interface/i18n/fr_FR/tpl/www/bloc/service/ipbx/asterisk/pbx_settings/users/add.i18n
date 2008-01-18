@@ -86,7 +86,7 @@ Invite :
 Numéro d'acompte :
 
 ; fm_protocol_qualify
-Supervision :
+Supervision de la latence :
 
 ; fm_protocol_dtmfmode
 DTMF :

@@ -153,7 +153,6 @@ class xivo_session_abstract_sql
 	{
 		$this->gc();
 		session_write_close();
-
 		return(true);
 	}
 }

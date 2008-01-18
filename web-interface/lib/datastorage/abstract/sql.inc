@@ -411,7 +411,7 @@ class xivo_datastorage_abstract_sql
 				$val = $val->scalar;
 			}
 
-			if(xivo_haslen($val) === false)
+			if(xivo_haslen($key) === false || xivo_haslen($val) === false)
 				continue;
 			else if($object === true || preg_match('/^[a-zA-Z0-9_\-\.]+$/',$val) === 0)
 			{
@@ -611,7 +611,9 @@ class xivo_datastorage_abstract_sql
 			$key = &$arr['keys'][$i];
 			$data = $this->escape($val[$key]);
 
-			if($set === true)
+			if(xivo_haslen($key) === false)
+				continue;
+			else if($set === true)
 				$r['str'][] = $tabledot.$this->quote_identifier($key).' = '.$data;
 			else
 			{

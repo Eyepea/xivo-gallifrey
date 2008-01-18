@@ -4,11 +4,13 @@ xivo_service_asterisk::required(array('abstract','datastorage','abstract','sql.i
 
 class xivo_service_asterisk_cdr_sql extends xivo_service_asterisk_abstract_sql
 {
+	var $_disable	= null;
+
 	function search($arr,$order=null,$limit=null)
 	{
 		$this->_cnt = 0;
 
-		$this->_dso->new_select($this->_param['table']);
+		$this->_dso->new_select($this->_table);
 
 		if($this->_search_where($arr) === false)
 			return(false);

@@ -30,8 +30,6 @@ class xivo_user_visitor extends xivo_user_abstract
 
 	function call_auth($func,$args=null)
 	{
-		$r = false;
-
 		if($this->_param['factory'] === true)
 			trigger_error('Unable to call authentification with factory',E_USER_ERROR);
 

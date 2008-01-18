@@ -94,14 +94,14 @@ class xivo_service_asterisk_extenumbers extends xivo_service_asterisk_abstract
 		return(false);
 	}
 
-	function get_search($exten,$context='',$type='',$typeval='')
+	function search($exten,$context='',$type='',$typeval='')
 	{
 		if(($extenchk = $this->_sre->chk_extension($exten)) === false)
 			return(false);
 
 		$extenhash = sha1($extenchk);
 
-		if(($list = $this->_dso->get_search($exten,$extenhash,$context,$type,$typeval)) === false)
+		if(($list = $this->_dso->search($exten,$extenhash,$context,$type,$typeval)) === false)
 			return(false);
 
 		$nb = count($list);

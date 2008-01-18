@@ -109,7 +109,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		switch($action)
 		{
 			case 'search':
-				$rs = $this->_incall->get_search($search,$disable,$order,$limit);
+				$rs = $this->_incall->search($search,$disable,$order,$limit);
 				break;
 			default:
 				$rs = $this->_incall->get_all($disable,true,$order,$limit);

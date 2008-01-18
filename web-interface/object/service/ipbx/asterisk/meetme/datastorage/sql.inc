@@ -4,7 +4,7 @@ xivo_service_asterisk::required(array('realstatic','datastorage','abstract','sql
 
 class xivo_service_asterisk_meetme_sql extends xivo_service_asterisk_realstatic_abstract_sql
 {
-
+	var $_forcecolumn	= array('filename' => 'meetme.conf');
 }
 
 ?>

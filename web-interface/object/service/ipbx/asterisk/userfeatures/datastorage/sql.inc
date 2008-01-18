@@ -14,36 +14,21 @@ class xivo_service_asterisk_userfeatures_sql extends xivo_service_asterisk_abstr
 		return($this->_param['internal']);
 	}
 
-	function get($arr,$disable=null)
+	function get($arr,$disable=null,$primary=false)
 	{
-		if(is_array($arr) === false)
-		{
-			if(($arr = xivo_uint($arr)) !== 0)
-				$arr = array('id' => $arr);
-			else
-				return(false);
-		}
+		if(is_array($arr) === false
+		&& ($arr = $this->get_primary_key($arr)) === false)
+			return(false);
 
 		if(($arr['internal'] = $this->_set_param_internal()) === null)
 			unset($arr['internal']);
 
-		return(parent::get($arr,$disable));
+		return(parent::get($arr,$disable,$primary));
 	}
 
 	function get_id($arr,$disable=null)
 	{
-		if(is_array($arr) === false)
-		{
-			if(($arr = xivo_uint($arr)) !== 0)
-				$arr = array('id' => $arr);
-			else
-				return(false);
-		}
-
-		if(($arr['internal'] = $this->_set_param_internal()) === null)
-			unset($arr['internal']);
-
-		return(parent::get($arr,$disable,true));
+		return($this->get($arr,$disable,true));
 	}
 
 	function get_nb($arr=null,$disable=null)
@@ -57,13 +42,13 @@ class xivo_service_asterisk_userfeatures_sql extends xivo_service_asterisk_abstr
 		return(parent::get_nb($arr,$disable));
 	}
 
-	function get_search($value,$disable=null,$order=null,$limit=null,$number=false)
+	function search($value,$disable=null,$order=null,$limit=null,$number=false)
 	{
 		$this->_cnt = 0;
 
 		$number = (bool) $number;
 
-		$this->_dso->new_select($this->_param['table']);
+		$this->_dso->new_select($this->_table);
 		$this->_dso->wherecontain('firstname',$value);
 		$this->_dso->orwherecontain('lastname',$value);
 		$this->_dso->orwherecontain('number',$value);
@@ -75,11 +60,16 @@ class xivo_service_asterisk_userfeatures_sql extends xivo_service_asterisk_abstr
 		if($this->aggregate_where() === false)
 			return(false);
 
-		if($disable !== null)
-			$this->_dso->andwhere(array($this->_disable_varname => intval((bool) $disable)));
+		$arr = array();
+
+		if($disable !== null && isset($this->_disable) === true)
+			$arr[$this->_disable] = intval((bool) $disable);
 
 		if(($internal = $this->_set_param_internal()) !== null)
-			$this->_dso->andwhere(array('internal' => $internal));
+			$arr['internal'] = $internal;
+
+		if(empty($arr) === false)
+			$this->_dso->andwhere($arr);
 
 		if($number === true)
 			$this->_dso->andwhere('IFNULL(number,\'\') != \'\'');
@@ -103,12 +93,12 @@ class xivo_service_asterisk_userfeatures_sql extends xivo_service_asterisk_abstr
 	{
 		$this->_cnt = 0;
 
-		$this->_dso->new_select($this->_param['table'],'context');
+		$this->_dso->new_select($this->_table,'context');
 
 		$arr = array();
 
-		if($disable !== null)
-			$arr[$this->_disable_varname] = intval((bool) $disable);
+		if($disable !== null && isset($this->_disable) === true)
+			$arr[$this->_disable] = intval((bool) $disable);
 
 		if(($internal = $this->_set_param_internal()) !== null)
 			$arr['internal'] = $internal;
@@ -135,13 +125,8 @@ class xivo_service_asterisk_userfeatures_sql extends xivo_service_asterisk_abstr
 
 	function edit($arr,$value,$disable=null)
 	{
-		if(is_array($arr) === false)
-		{
-			if(($arr = xivo_uint($arr)) !== 0)
-				$arr = array('id' => $arr);
-			else
-				return(false);
-		}
+		if(is_array($arr) === false && ($arr = $this->get_primary_key($arr)) === false)
+			return(false);
 
 		if(($arr['internal'] = $this->_set_param_internal()) === null)
 			unset($arr['internal']);
@@ -151,20 +136,15 @@ class xivo_service_asterisk_userfeatures_sql extends xivo_service_asterisk_abstr
 
 	function delete($arr,$disable=null)
 	{
-		if(is_array($arr) === false)
-		{
-			if(($arr = xivo_uint($arr)) !== 0)
-				$arr = array('id' => $arr);
-			else
-				return(false);
-		}
+		if(is_array($arr) === false
+		&& ($arr = $this->get_primary_key($arr)) === false)
+			return(false);
 
 		if(($arr['internal'] = $this->_set_param_internal()) === null)
 			unset($arr['internal']);
 
 		return(parent::delete($arr,$disable));
 	}
-
 
 	function get_list($disable=null,$order=null,$limit=null)
 	{
@@ -180,6 +160,8 @@ class xivo_service_asterisk_userfeatures_sql extends xivo_service_asterisk_abstr
 
 	function get_list_where($arr,$disable=null,$order=null,$limit=null)
 	{
+		$this->_cnt = 0;
+
 		if(is_array($arr) === false || empty($arr) === true)
 			return(false);
 
@@ -203,6 +185,8 @@ class xivo_service_asterisk_userfeatures_sql extends xivo_service_asterisk_abstr
 
 	function get_all_where($arr,$disable=null,$order=null,$limit=null)
 	{
+		$this->_cnt = 0;
+
 		if(is_array($arr) === false || empty($arr) === true)
 			return(false);
 

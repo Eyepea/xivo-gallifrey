@@ -117,9 +117,9 @@ class xivo_service_asterisk_incall extends xivo_service_asterisk_abstract
 		return(false);
 	}
 
-	function get_search($exten,$disable=null,$order=null,$limit=null)
+	function search($exten,$disable=null,$order=null,$limit=null)
 	{
-		if(($list = $this->_dso->get_search($exten,$disable,$order,$limit)) === false)
+		if(($list = $this->_dso->search($exten,$disable,$order,$limit)) === false)
 			return(false);
 
 		$nb = count($list);

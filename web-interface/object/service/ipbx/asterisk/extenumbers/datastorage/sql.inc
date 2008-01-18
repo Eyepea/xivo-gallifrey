@@ -4,6 +4,8 @@ xivo_service_asterisk::required(array('abstract','datastorage','abstract','sql.i
 
 class xivo_service_asterisk_extenumbers_sql extends xivo_service_asterisk_abstract_sql
 {
+	var $_disable	= null;
+
 	function exists_type($arr,$context='')
 	{
 		if(is_array($arr) === false)
@@ -11,7 +13,7 @@ class xivo_service_asterisk_extenumbers_sql extends xivo_service_asterisk_abstra
 
 		$context = (string) $context;
 
-		$this->_dso->new_select($this->_param['table'],array('type','typeval'));
+		$this->_dso->new_select($this->_table,array('type','typeval'));
 		$this->_dso->where($arr);
 
 		if($context !== '')
@@ -20,11 +22,11 @@ class xivo_service_asterisk_extenumbers_sql extends xivo_service_asterisk_abstra
 		return($this->_dso->select_single());
 	}
 
-	function get_search($exten,$extenhash,$context='',$type='',$typeval='')
+	function search($exten,$extenhash,$context='',$type='',$typeval='')
 	{
 		$this->_cnt = 0;
 
-		$this->_dso->new_select($this->_param['table']);
+		$this->_dso->new_select($this->_table);
 		$this->_dso->wherecontain('exten',$exten);
 		$this->_dso->orwhere(array('extenhash' => $extenhash));
 

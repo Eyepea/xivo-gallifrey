@@ -4,19 +4,20 @@ xivo_service_asterisk::required(array('staticconf','datastorage','abstract','sql
 
 class xivo_service_asterisk_agent_sql extends xivo_service_asterisk_staticconf_abstract_sql
 {
+	var $_forcecolumn	= array('filename' => 'agents.conf');
+
 	function get_all_by_var_metric($id,$disable=null)
 	{
 		if(($id = xivo_uint($id)) === 0)
 			return(false);
 
-		$this->_dso->new_select($this->_param['table']);
+		$this->_dso->new_select($this->_table);
 
-		$arr = array();
+		$arr = $this->_forcecolumn;
 		$arr['var_metric'] = $id;
-		$arr['filename'] = $this->_param['filename'];
 
 		if($disable !== null)
-			$arr['commented'] = intval((bool) $disable);
+			$arr[$this->_disable] = intval((bool) $disable);
 
 		$this->_dso->where($arr);
 
@@ -32,8 +33,8 @@ class xivo_service_asterisk_agent_sql extends xivo_service_asterisk_staticconf_a
 		$column['cnt'] = (object) 'COUNT(*)';
 		$column['var_metric'] = (object) 'MAX(var_metric)';
 
-		$this->_dso->new_select($this->_param['table'],$column);
-		$this->_dso->where(array('filename' => $this->_param['filename']));
+		$this->_dso->new_select($this->_table,$column);
+		$this->_dso->where($this->_forcecolumn);
 		$this->_dso->andwherebetween('var_metric',$min,$max);
 
 		if(($r = $this->_dso->select_single()) !== false)
@@ -44,12 +45,11 @@ class xivo_service_asterisk_agent_sql extends xivo_service_asterisk_staticconf_a
 
 	function get_free_var_metric($min,$max)
 	{
-		$this->_dso->new_select($this->_param['table'],array('id','var_metric'));
+		$this->_dso->new_select($this->_table,array('id','var_metric'));
 
-		$arr = array();
-		$arr['filename'] = $this->_param['filename'];
+		$arr = $this->_forcecolumn;
 		$arr['var_name'] = 'deleted';
-		$arr['commented'] = 1;
+		$arr[$this->_disable] = 1;
 
 		$this->_dso->where($arr);
 		$this->_dso->andwherebetween('var_metric',xivo_uint($min),xivo_uint($max));

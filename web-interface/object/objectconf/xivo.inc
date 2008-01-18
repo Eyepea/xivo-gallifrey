@@ -4,8 +4,8 @@ define('XIVO_LABEL','XIVO-WEBI');
 
 define('XIVO_SOFT_NAME','xivo');
 define('XIVO_SOFT_LABEL','XIVO');
-define('XIVO_SOFT_VERSION','0.3');
-define('XIVO_SOFT_CODENAME','Tardis');
+define('XIVO_SOFT_VERSION','0.4');
+define('XIVO_SOFT_CODENAME','K-9');
 define('XIVO_SOFT_URL','www.xivo.fr');
 define('XIVO_CORP_NAME','proformatique');
 define('XIVO_CORP_LABEL','Proformatique');

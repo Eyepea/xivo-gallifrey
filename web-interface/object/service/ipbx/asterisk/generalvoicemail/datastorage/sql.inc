@@ -4,7 +4,7 @@ xivo_service_asterisk::required(array('staticconf','datastorage','abstract','sql
 
 class xivo_service_asterisk_generalvoicemail_sql extends xivo_service_asterisk_staticconf_abstract_sql
 {
-
+	var $_forcecolumn	= array('filename' => 'voicemail.conf');
 }
 
 ?>

@@ -108,7 +108,8 @@ class xivo_user_abstract_sql
 			return(false);
 
 		$this->_dso->new_select($this->_param['table'],'id');
-		$this->_dso->where(array('id' => $id,'dupdate' => $dupdate));
+		$this->_dso->where(array('id' => $id));
+		$this->_dso->andwherenot(array('dupdate' => $dupdate));
 
 		if(($r = $this->_dso->select_one()) !== false)
 			$r = true;

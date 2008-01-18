@@ -1,34 +1,25 @@
 <?php
 
-require_once(XIVO_PATH_OBJECT.XIVO_SEP_DIR.'abstract'.XIVO_SEP_DIR.'datastorage'.XIVO_SEP_DIR.'datastorage.inc');
+xivo_service_asterisk::required(array('abstract','datastorage','abstract','sql.inc'),true);
 
-class xivo_service_asterisk_staticconf_abstract_sql extends xivo_abstract_datastorage
+class xivo_service_asterisk_staticconf_abstract_sql extends xivo_service_asterisk_abstract_sql
 {
-	var $_disable_varname	= 'commented';
-
-	function xivo_service_asterisk_staticconf_abstract_sql(&$dso,$param=array())
-	{
-		parent::_init(&$dso);
-
-		$param = (array) $param;
-
-		if(isset($param['table']) === true)
-			$this->_param['table'] = (string) $param['table'];
-	}
-
 	function get($id,$disable=null)
 	{
 		if(($id = xivo_uint($id)) === 0)
 			return(false);
 
-		$this->_dso->new_select($this->_param['table']);
+		$this->_dso->new_select($this->_table);
 
-		$arr = array();
+		if(isset($this->_forcecolumn) === true)
+			$arr = $this->_forcecolumn;
+		else
+			$arr = array();
+
 		$arr['id'] = $id;
-		$arr['filename'] = $this->_param['filename'];
 
 		if($disable !== null)
-			$arr[$this->_disable_varname] = intval((bool) $disable);
+			$arr[$this->_disable] = intval((bool) $disable);
 
 		$this->_dso->where($arr);
 
@@ -40,10 +31,10 @@ class xivo_service_asterisk_staticconf_abstract_sql extends xivo_abstract_datast
 		if(is_array($arr) === false || empty($arr) === true)
 			return(false);
 
-		$this->_dso->new_select($this->_param['table'],'id');
+		$this->_dso->new_select($this->_table,'id');
 
 		if($disable !== null)
-			$arr[$this->_disable_varname] = intval((bool) $disable);
+			$arr[$this->_disable] = intval((bool) $disable);
 
 		$this->_dso->where($arr);
 
@@ -54,7 +45,7 @@ class xivo_service_asterisk_staticconf_abstract_sql extends xivo_abstract_datast
 	{
 		$r = false;
 
-		if($this->_dso->insert($this->_param['table'],$arr) === true)
+		if($this->_dso->insert($this->_table,$arr) === true)
 			$r = $this->_dso->insert_id();
 
 		return($r);
@@ -65,7 +56,7 @@ class xivo_service_asterisk_staticconf_abstract_sql extends xivo_abstract_datast
 		if(($id = xivo_uint($id)) === 0)
 			return(false);
 
-		return($this->_dso->update($this->_param['table'],$value,array('id' => $id)));
+		return($this->_dso->update($this->_table,$value,array('id' => $id)));
 	}
 
 	function edit_where($arr,$value,$disable=null)
@@ -74,9 +65,9 @@ class xivo_service_asterisk_staticconf_abstract_sql extends xivo_abstract_datast
 			return(false);
 
 		if($disable !== null)
-			$arr[$this->_disable_varname] = intval((bool) $disable);
+			$arr[$this->_disable] = intval((bool) $disable);
 
-		return($this->_dso->update($this->_param['table'],$value,$arr));
+		return($this->_dso->update($this->_table,$value,$arr));
 	}
 
 	function delete($id)
@@ -84,7 +75,7 @@ class xivo_service_asterisk_staticconf_abstract_sql extends xivo_abstract_datast
 		if(($id = xivo_uint($id)) === 0)
 			return(false);
 
-		return($this->_dso->delete($this->_param['table'],array('id' => $id)));
+		return($this->_dso->delete($this->_table,array('id' => $id)));
 	}
 
 	function delete_where($arr,$disable=null)
@@ -93,82 +84,9 @@ class xivo_service_asterisk_staticconf_abstract_sql extends xivo_abstract_datast
 			return(false);
 
 		if($disable !== null)
-			$arr[$this->_disable_varname] = intval((bool) $disable);
+			$arr[$this->_disable] = intval((bool) $disable);
 
-		return($this->_dso->delete($this->_param['table'],$arr));
-	}
-
-	function get_list($disable=null,$order=null,$limit=null,$all=false)
-	{
-		$all = (bool) $all;
-
-		$this->_dso->new_select($this->_param['table'],($all === true ? '*' : 'id'));
-
-		$arr = array();
-
-		if($disable !== null)
-			$arr[$this->_disable_varname] = intval((bool) $disable);
-
-		$arr['filename'] = $this->_param['filename'];
-
-		$this->_dso->where($arr);
-
-		$this->_dso->new_order($order);
-		$this->_dso->limit($limit);
-
-		$r = $this->_dso->select_all();
-
-		$this->_dso->reset_order();
-		$this->_dso->reset_limit();
-
-		if(($this->_cnt = $this->_dso->select_count()) === false
-		|| isset($r[0]) === false)
-			$r = false;
-
-		return($r);
-	}
-
-	function get_list_where($arr,$disable=null,$order=null,$limit=null,$all=false)
-	{
-		$all = (bool) $all;
-
-		$this->_cnt = 0;
-
-		if(is_array($arr) === false || empty($arr) === true)
-			return(false);
-
-		$this->_dso->new_select($this->_param['table'],($all === true ? '*' : 'id'));
-
-		if($disable !== null)
-			$arr[$this->_disable_varname] = intval((bool) $disable);
-
-		$arr['filename'] = $this->_param['filename'];
-
-		$this->_dso->where($arr);
-
-		$this->_dso->new_order($order);
-		$this->_dso->limit($limit);
-
-		$r = $this->_dso->select_all();
-
-		$this->_dso->reset_order();
-		$this->_dso->reset_limit();
-
-		if(($this->_cnt = $this->_dso->select_count()) === false
-		|| isset($r[0]) === false)
-			$r = false;
-
-		return($r);
-	}
-
-	function get_all($disable=null,$order=null,$limit=null)
-	{
-		return($this->get_list($disable,$order,$limit,true));
-	}
-
-	function get_all_where($arr,$disable=null,$order=null,$limit=null)
-	{
-		return($this->get_list_where($arr,$disable,$order,$limit,true));
+		return($this->_dso->delete($this->_table,$arr));
 	}
 }
 

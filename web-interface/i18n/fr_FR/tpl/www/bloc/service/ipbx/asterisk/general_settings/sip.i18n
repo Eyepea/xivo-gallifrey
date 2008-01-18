@@ -404,7 +404,7 @@ Route
 DTMF :
 
 ; fm_qualify
-Supervision :
+Supervision de la latence :
 
 ; fm_qualify-optno
 Non
