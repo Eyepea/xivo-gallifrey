@@ -186,6 +186,11 @@ def set_fwd_vars(agi, cursor, type, typeval, appval, type_varname, typeval1_varn
 		dp_break(agi, "Unknown destination type '%s'" % type)
 
 class bsf_member:
+	"""This class represents a boss-secretary filter member (e.g. a boss
+	or a secretary).
+
+	"""
+
 	def __init__(self, active, type, userid, number, ringseconds):
 		self.active = bool(active)
 		self.type = type
@@ -215,6 +220,14 @@ class bsf_member:
 			agi.verbose(line)
 
 class bsfilter:
+	"""Boss-secretary filter class. Creating a boss-secretary filter
+	automatically load everything related to the filter (its properties,
+	those of its boss, its secretaries). Creating a filter is also a way
+	to check its existence. Trying to construct a filter that doesn't
+	exist or has no secretary raises a LookupError.
+
+	"""
+
 	def __init__(self, agi, cursor, boss_number, boss_context):
 		self.id = None
 		self.active = False
@@ -326,12 +339,12 @@ class bsfilter:
                                              "AND category = 'user'",
                                              ('interface',),
                                              (protocolid,))
-				res = cursor.fetchone()
+				res2 = cursor.fetchone()
 
-				if not res:
+				if not res2:
 					agi_helpers.dp_break(agi, "Database inconsistency: unable to find custom user (name = '%s', context = '%s')" % (name, context))
 
-				interface = res['interface']
+				interface = res2['interface']
 			else:
 				agi_helpers.dp_break(agi, "Unknown protocol '%s'" % protocol)
 
