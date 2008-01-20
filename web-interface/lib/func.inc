@@ -304,6 +304,16 @@ function xivo_is_alnumpunct($str)
 	return(xivo_is_spunct($str,'alphanum',false));
 }
 
+function xivo_instanceof($obj,$name)
+{
+	if(is_object($obj) === false
+	|| is_string($name) === false
+	|| get_class($obj) !== $name)
+		return(false);
+
+	return(true);
+}
+
 function xivo_trunc(&$str,$nb=0,$end='',$chr=null)
 {
 	$r = strval($str);

@@ -1,6 +1,6 @@
 <?php
 
-class xivo_datastorage_abstract_sql
+class xivo_datastorage_adapter_abstract_sql
 {
 	var $_error		= '';
 	var $_errno		= 0;

@@ -1,8 +1,8 @@
 <?php
 
-require_once(XIVO_PATH_OBJECT.XIVO_SEP_DIR.'abstract'.XIVO_SEP_DIR.'datastorage'.XIVO_SEP_DIR.'datastorage.inc');
+require_once(XIVO_PATH_LIB.XIVO_SEP_DIR.'datastorage'.XIVO_SEP_DIR.'helper'.XIVO_SEP_DIR.'abstract.inc');
 
-class xivo_application_service_asterisk_abstract_sql extends xivo_abstract_datastorage
+class xivo_application_service_asterisk_abstract_sql extends xivo_datastorage_helper_abstract
 {
 	var $_cnt	= 0;
 	var $_dsoconf	= array();

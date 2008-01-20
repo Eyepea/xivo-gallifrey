@@ -1,8 +1,8 @@
 <?php
 
-require_once(XIVO_PATH_LIB.XIVO_SEP_DIR.'datastorage'.XIVO_SEP_DIR.'abstract'.XIVO_SEP_DIR.'sql.inc');
+require_once(XIVO_PATH_LIB.XIVO_SEP_DIR.'datastorage'.XIVO_SEP_DIR.'adapter'.XIVO_SEP_DIR.'abstract'.XIVO_SEP_DIR.'sql.inc');
 
-class xivo_datastorage_sqlite extends xivo_datastorage_abstract_sql
+class xivo_datastorage_adapter_sqlite extends xivo_datastorage_adapter_abstract_sql
 {
 	var $_param	= array(
 				'db'			=> '',
@@ -16,7 +16,7 @@ class xivo_datastorage_sqlite extends xivo_datastorage_abstract_sql
 				'date'		=> '%Y-%m-%d',
 				'time'		=> '%H:%M:%S');
 
-	function xivo_datastorage_sqlite($param=array())
+	function xivo_datastorage_adapter_sqlite($param=array())
 	{
 		$param = (array) $param;
 		$open = true;

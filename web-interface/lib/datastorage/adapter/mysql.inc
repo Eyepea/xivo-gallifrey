@@ -1,8 +1,8 @@
 <?php
 
-require_once(XIVO_PATH_LIB.XIVO_SEP_DIR.'datastorage'.XIVO_SEP_DIR.'abstract'.XIVO_SEP_DIR.'sql.inc');
+require_once(XIVO_PATH_LIB.XIVO_SEP_DIR.'datastorage'.XIVO_SEP_DIR.'adapter'.XIVO_SEP_DIR.'abstract'.XIVO_SEP_DIR.'sql.inc');
 
-class xivo_datastorage_mysql extends xivo_datastorage_abstract_sql
+class xivo_datastorage_adapter_mysql extends xivo_datastorage_adapter_abstract_sql
 {
 	var $_param	= array(
 				'host'		=> 'localhost',
@@ -26,7 +26,7 @@ class xivo_datastorage_mysql extends xivo_datastorage_abstract_sql
 				'date'		=> '%Y-%m-%d',
 				'time'		=> '%H:%i:%s');
 
-	function xivo_datastorage_mysql($param=array())
+	function xivo_datastorage_adapter_mysql($param=array())
 	{
 		$param = (array) $param;
 

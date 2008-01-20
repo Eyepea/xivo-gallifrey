@@ -63,7 +63,7 @@ class xivo_file
 		$info['mtime'] = filemtime($info['path']);
 		$info['size'] = filesize($info['path']);
 
-		if(isset($this) === true && get_class($this) === __CLASS__)
+		if(isset($this) === true && xivo_instanceof($this,__CLASS__) === true)
 			$this->info = $info;
 
 		return($info);
@@ -96,7 +96,7 @@ class xivo_file
 
 	function get_mime($file='')
 	{
-		if(isset($this) === true && get_class($this) === __CLASS__)
+		if(isset($this) === true && xivo_instanceof($this,__CLASS__) === true)
 			$static = false;
 		else
 			$static = true;
@@ -117,7 +117,7 @@ class xivo_file
 	function get_charset($file='')
 	{
 		if(isset($this) === false
-		|| get_class($this) !== __CLASS__
+		|| xivo_instanceof($this,__CLASS__) === false
 		|| is_object($this->_finfo) === false)
 			return(false);
 

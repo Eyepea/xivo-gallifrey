@@ -1,6 +1,6 @@
 <?php
 
-class xivo_abstract_datastorage
+class xivo_datastorage_helper_abstract
 {
 	var $_dso	= null;
 	var $_param	= array();

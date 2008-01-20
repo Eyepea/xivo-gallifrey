@@ -11,7 +11,7 @@ class xivo_application_asterisk_abstract extends xivo_application_abstract
 
 	function xivo_application_asterisk_abstract(&$service)
 	{
-		if(is_object($service) === false || get_class($service) !== 'xivo_service_asterisk')
+		if(xivo_instanceof($service,'xivo_service_asterisk') === false)
 			trigger_error('Invalid service in '.__CLASS__,E_USER_ERROR);
 
 		$this->_service = &$service;

@@ -1,8 +1,8 @@
 <?php
 
-require_once(XIVO_PATH_OBJECT.XIVO_SEP_DIR.'abstract'.XIVO_SEP_DIR.'datastorage'.XIVO_SEP_DIR.'sql.inc');
+require_once(XIVO_PATH_LIB.XIVO_SEP_DIR.'datastorage'.XIVO_SEP_DIR.'helper'.XIVO_SEP_DIR.'table.inc');
 
-class xivo_service_asterisk_abstract_sql extends xivo_abstract_datastorage_sql
+class xivo_service_asterisk_abstract_sql extends xivo_datastorage_helper_table
 {
 	var $_disable	= 'commented';
 
