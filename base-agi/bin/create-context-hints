@@ -124,5 +124,3 @@ for (context,) in res:
 
 	for option in config.iter_options(section_name):
 		print option.get_name() + ' = ' + option.get_value().replace('%%CONTEXT%%',context)
-
-	print "\r"
