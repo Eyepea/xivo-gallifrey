@@ -1,10 +1,7 @@
 # This module magically adds NamedTuple (that will be standard Python 2.6) to
 # the collections module when it's imported.
 #
-# Code comes from http://svn.python.org/projects/!svn/bc/56130/python/trunk/Lib/collections.py
-# which was the same as http://svn.python.org/projects/python/trunk/Lib/collections.py
-# at revision 56130, and it has then been lightly modified so its usable with
-# Python 2.4 and maybe 2.5.
+# Code comes from http://svn.python.org/view/python/trunk/Lib/collections.py?rev=56130
 
 # Proformatique version control:
 __version__ = "$Revision$ $Date$"
@@ -15,7 +12,7 @@ __license__ = """
 
     Under PSF LICENSE AGREEMENT FOR PYTHON
     See the following URI for the full license:
-	http://svn.python.org/projects/!svn/bc/56130/python/trunk/LICENSE
+	http://svn.python.org/view/python/trunk/LICENSE?rev=56130
 """
 
 from operator import itemgetter as _itemgetter
