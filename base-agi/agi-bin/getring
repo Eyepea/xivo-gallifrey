@@ -1,5 +1,4 @@
 #!/usr/bin/python
-#
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
