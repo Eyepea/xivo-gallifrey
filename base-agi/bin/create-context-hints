@@ -25,13 +25,12 @@ CONFIG_CONTEXT_TEMPLATE = "/etc/asterisk/xivo_context.conf"
 import xivo.to_path
 
 import sys
-import operator
+import ConfigDict
 import OrderedConf
 import anysql
 import xivo_helpers
 from BackSQL import backsqlite
 from BackSQL import backmysql
-from ConfigDict import *
 
 db_uri = ConfigDict.ReadSingleKey(CONFIG_FILE, 'db', 'db_uri')
 conn = anysql.connect_by_uri(db_uri)
