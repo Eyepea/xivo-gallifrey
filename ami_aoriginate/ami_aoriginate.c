@@ -234,7 +234,7 @@ static const char mandescr_aoriginate[] =
 "  behavior you can expect when using the Dial() application from within the\n"
 "  DialPlan: in both cases all the function calls to the channel technology\n"
 "  callbacks for the given half-call target will be made from a single thread.\n"
-"  This is expected by some technologies, notably chan_agent."
+"  This is expected by some technologies, notably chan_agent.\n"
 "Variables: (Names marked with * are required)\n"
 "	*Channel: Channel name to call\n"
 "	Exten: Extension to use (requires 'Context' and 'Priority')\n"
