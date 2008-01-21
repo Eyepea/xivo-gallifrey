@@ -1,14 +1,5 @@
 #!/usr/bin/python
-#
-# Authors : Sylvain Boily, Guillaume Knispel
-#           Proformatique
-#           67, rue Voltaire
-#           92800 PUTEAUX
-#           (+33/0)1.41.38.99.60
-#           mailto:technique@proformatique.com
-#           (C) 2007 Proformatique
-#
-
+ 
 __version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2007, Proformatique
@@ -28,67 +19,54 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
+CONFIG_FILE = "/etc/asterisk/xivo_agi.conf"
+CONFIG_CONTEXT_TEMPLATE = "/etc/asterisk/xivo_context.conf"
 
 import xivo.to_path
 
 import sys
+import operator
+import OrderedConf
 import anysql
 import xivo_helpers
 from BackSQL import backsqlite
 from BackSQL import backmysql
-import ConfigParser
 from ConfigDict import *
 
-options = { "db_uri" : "" }
-conf_obj = ConfigParser.ConfigParser()
-conf_obj.readfp(open(CONFIG_FILE))
-FillDictFromConfigSection(options, conf_obj, "db")
-
-import operator, string, ConfigParser
-
-try:
-        conn = anysql.connect_by_uri(options['db_uri'])
-except: # XXX
-        print "Error: Unable to connect to %s" %options['db_uri']
-        raise
-
+db_uri = ConfigDict.ReadSingleKey(CONFIG_FILE, 'db', 'db_uri')
+conn = anysql.connect_by_uri(db_uri)
 cursor = conn.cursor()
-query = "SELECT ${columns} FROM extenumbers WHERE context NOT IN ('', 'incall-extensions') GROUP BY context"
-columns = ('context',)
-cursor.query(query, columns)
 
-r = cursor.fetchall()
+# In extenumbers, there are some lines where context is
+#   '': this is a global entity, whereas this script only computes local things
+#   'incall-extensions': describes a DID, cannot describe a user
+cursor.query("SELECT ${columns} FROM extenumbers WHERE context NOT IN ('', 'incall-extensions') GROUP BY context", ('context',))
+res = cursor.fetchall()
 
-if not r:
+if not res:
 	# No context time to exit
 	sys.exit()
 
-# This is the configuration file, please do not change the path because if was editable by xivo web interface
-outcall = "/etc/asterisk/xivo_context.conf"
+# /!\ Do not change the path before asking everybody in the office /!\
+config = OrderedConf.OrderedRawConf(filename=CONFIG_CONTEXT_TEMPLATE)
 
-try:
-        config = ConfigParser.ConfigParser()
-        config.readfp(open(outcall))
-except IOError:
-        print "Error: Configuration file not found : %s" % outcall
-        raise
+if config.has_conflicting_section_names():
+	raise ValueError, CONFIG_CONTEXT_TEMPLATE + " has conflicting section names"
 
 if not config.has_section('template'):
-	print "Error: Template section doesn't exist"
-	sys.exit()
+	raise ValueError, "Template section doesn't exist"
 
-for context in r:
-	print "[" + context[0] + "]"
+for (context,) in res:
+	print "[" + context + "]"
 	cursor.query("SELECT ${columns} FROM userfeatures "
                      "WHERE context = %s "
                      "AND IFNULL(number,'') != '' "
                      "AND enablehint = 1",
                      ('number', 'protocol', 'protocolid', 'name'),
-                     (context[0],))
-	res = cursor.fetchall()
+                     (context,))
+	res2 = cursor.fetchall()
 
-	for row in res:
+	for row in res2:
 		number = row['number']
 		protocol = row['protocol']
 		protocolid = row['protocolid']
@@ -106,11 +84,11 @@ for context in r:
 			res2 = cursor.fetchone()
 
 			if not res2:
-				agi_helpers.dp_break(agi, "Database inconsistency: unable to find custom user (name = '%s', context = '%s')" % (name, context))
+				raise ValueError, "Database inconsistency: unable to find custom user (name = '%s', context = '%s')" % (name, context)
 
 			interface = res2['interface']
 		else:
-			agi_helpers.dp_break(agi, "Unknown protocol '%s'" % protocol)
+			raise ValueError, "Unknown protocol '%s'" % protocol
 
 		print "exten = " + str(number) + ",hint," + str(interface)
 
@@ -131,21 +109,21 @@ for context in r:
                  "WHERE IFNULL(userfeatures.number,'') != ''")
 	cursor.query(query,
                      ('extenumleft.exten', 'phonefunckey.exten', 'extenumright.exten', 'userfeatures.number'),
-                     (context[0],))
-	res = cursor.fetchall()
+                     (context,))
+	res2 = cursor.fetchall()
 	extens = set(xivo_helpers.speed_dial_key_extension(row['extenumleft.exten'], row['extenumright.exten'],
                                                            row['phonefunckey.exten'], row['userfeatures.number'], True)
-                     for row in res)
+                     for row in res2)
 
 	for exten in extens:
 		print "exten = " + exten + ",hint,DS/" + exten
 
-	if config.has_section(context[0]):
-		exten = config.items(context[0])
+	if config.has_section(context):
+		section_name = context
 	else:
-		exten = config.items('template')
+		section_name = 'template'
 
-	for line in sorted(exten, key=operator.itemgetter(0)):
-		print string.replace(line[1],'%%CONTEXT%%',context[0])
-	
+	for option in config.iter_options(section_name):
+		print option.get_name() + ' = ' + option.get_value().replace('%%CONTEXT%%',context)
+
 	print "\r"
