@@ -59,8 +59,8 @@ LOCAL_USER_DECL;
 
 #define AO_LOCAL_USER_ADD(u)
 
-#define AO_TOAPP 0
-#define AO_TOEXTEN 1
+#define AO_TOEXTEN 0
+#define AO_TOAPP 1
 #define AO_DEST(aodata) (!ast_strlen_zero((aodata)->app))
 
 /* evil use of not really exported function: */
