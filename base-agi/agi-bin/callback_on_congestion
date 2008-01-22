@@ -28,8 +28,10 @@ import sys
 import time
 import ConfigParser
 from agi import *
+import agitb
 
 agi = AGI()
+agitb.enable(agi)
 parser = ConfigParser.RawConfigParser()
 parser.readfp(open(CONFIG_FILE))
 

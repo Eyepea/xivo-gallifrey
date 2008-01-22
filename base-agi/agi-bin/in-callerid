@@ -28,9 +28,10 @@ import re
 import xivo.to_path
 import OrderedConf
 from agi import *
+import agitb
 
 agi = AGI()
-
+agitb.enable(agi)
 
 ### DEBUGGING CONFIGURATION ###
 

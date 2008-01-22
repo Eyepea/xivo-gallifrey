@@ -30,8 +30,10 @@ from BackSQL import backmysql
 import agi_helpers
 import ConfigDict
 from agi import *
+import agitb
 
 agi = AGI()
+agitb.enable(agi)
 db_uri = ConfigDict.ReadSingleKey(CONFIG_FILE, 'db', 'db_uri')
 
 # Cursors have a weak reference on their connection, so make a strong one.

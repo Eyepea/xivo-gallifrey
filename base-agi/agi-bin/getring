@@ -25,6 +25,7 @@ import sys
 import ConfigParser
 from ConfigDict import *
 from agi import *
+import agitb
 
 ring = "/etc/asterisk/xivo_ring.conf"
 
@@ -32,6 +33,7 @@ parser = ConfigParser.RawConfigParser()
 parser.readfp(open(ring))
 
 agi = AGI()
+agitb.enable(agi)
 
 srcnum = agi.get_variable('REAL_SRCNUM')
 dstnum = agi.get_variable('REAL_DSTNUM')

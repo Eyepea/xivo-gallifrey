@@ -30,8 +30,10 @@ from BackSQL import backsqlite
 from BackSQL import backmysql
 import ConfigDict
 from agi import *
+import agitb
 
 agi = AGI()
+agitb.enable(agi)
 db_uri = ConfigDict.ReadSingleKey(CONFIG_FILE, 'db', 'db_uri')
 
 def ds_set_fwd_vars(id, status, type_varname, typeval1_varname, typeval2_varname):

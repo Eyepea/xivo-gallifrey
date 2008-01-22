@@ -27,8 +27,10 @@ import os
 import sys
 import time
 from agi import *
+import agitb
 
 agi = AGI()
+agitb.enable(agi)
 
 srcnum = agi.get_variable('CALLERID(num)')
 dstnum = agi.get_variable('REAL_DSTNUM')

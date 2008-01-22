@@ -25,8 +25,10 @@ import os
 import sys
 import agi_helpers
 from agi import *
+import agitb
 
 agi = AGI()
+agitb.enable(agi)
 
 def atexit(filename, filepdf):
 	try:
