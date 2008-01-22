@@ -36,36 +36,21 @@ class xivo_service_asterisk_rightcall extends xivo_service_asterisk_abstract
 		if(is_array($arr) === false)
 			return(false);
 
-		if(($id = xivo_uint($id)) !== 0)
-			$arr['id'] = $id;
-
 		if(isset($arr['name']) === true)
-		{
 			$arr['name'] = strtolower($arr['name']);
-			$where = array('name' => $arr['name']);
 
-			if($this->get_id($where) !== false)
-				return(false);
-		}
-
-		return($this->_dso->add($arr));
+		return(parent::add($arr,$id));
 	}
 
 	function edit($id,$arr,$disable=null)
 	{
-		if(($id = xivo_uint($id)) === 0 || is_array($arr) === false)
+		if(is_array($arr) === false)
 			return(false);
 
 		if(isset($arr['name']) === true)
-		{
 			$arr['name'] = strtolower($arr['name']);
-			$where = array('name' => $arr['name']);
 
-			if(($whereid = $this->get_id($where)) !== false && $whereid !== $id)
-				return(false);
-		}
-
-		return($this->_dso->edit($id,$arr,$disable));
+		return(parent::edit($id,$arr,$disable));
 	}
 }
 

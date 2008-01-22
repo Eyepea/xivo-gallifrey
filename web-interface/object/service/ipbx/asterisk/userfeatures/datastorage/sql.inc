@@ -4,6 +4,7 @@ xivo_service_asterisk::required(array('abstract','datastorage','abstract','sql.i
 
 class xivo_service_asterisk_userfeatures_sql extends xivo_service_asterisk_abstract_sql
 {
+	var $_unique	= array(array('protocol','name'),array('protocol','protocolid'));
 	var $_param	= array('internal'	=> 0);
 
 	function _set_param_internal()
@@ -17,7 +18,7 @@ class xivo_service_asterisk_userfeatures_sql extends xivo_service_asterisk_abstr
 	function get($arr,$disable=null,$primary=false)
 	{
 		if(is_array($arr) === false
-		&& ($arr = $this->get_primary_key($arr)) === false)
+		&& ($arr = $this->mk_primary_key_value($arr)) === false)
 			return(false);
 
 		if(($arr['internal'] = $this->_set_param_internal()) === null)
@@ -125,7 +126,7 @@ class xivo_service_asterisk_userfeatures_sql extends xivo_service_asterisk_abstr
 
 	function edit($arr,$value,$disable=null)
 	{
-		if(is_array($arr) === false && ($arr = $this->get_primary_key($arr)) === false)
+		if(is_array($arr) === false && ($arr = $this->mk_primary_key_value($arr)) === false)
 			return(false);
 
 		if(($arr['internal'] = $this->_set_param_internal()) === null)
@@ -137,7 +138,7 @@ class xivo_service_asterisk_userfeatures_sql extends xivo_service_asterisk_abstr
 	function delete($arr,$disable=null)
 	{
 		if(is_array($arr) === false
-		&& ($arr = $this->get_primary_key($arr)) === false)
+		&& ($arr = $this->mk_primary_key_value($arr)) === false)
 			return(false);
 
 		if(($arr['internal'] = $this->_set_param_internal()) === null)

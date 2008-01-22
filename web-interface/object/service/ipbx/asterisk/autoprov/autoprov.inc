@@ -26,18 +26,6 @@ class xivo_service_asterisk_autoprov extends xivo_service_asterisk_abstract
 		$this->_chk_autoprov();
 	}
 
-	function get($macaddr)
-	{
-		$this->_origin = false;
-
-		if(($r = $this->_dso->get($macaddr)) === false)
-			return(false);
-
-		$this->_origin = $r;
-
-		return($r);
-	}
-
 	function _chk_autoprov()
 	{
 		if(xivo_issa($this->_name,$this->_sre->_ini) === false

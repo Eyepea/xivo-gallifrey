@@ -8,7 +8,6 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 	var $_protocolname	= false;
 	var $_origin		= array();
 	var $_status		= '';
-	var $_cnt		= 0;
 	var $_userfeatures	= null;
 	var $_protocol		= null;
 	var $_extensions	= null;
@@ -23,7 +22,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 	var $_conf		= array();
 	var $_param		= array();
 
-	function xivo_application_service_asterisk_user(&$service,&$dso,$param=array())
+	function xivo_application_service_asterisk_user(&$service,&$dso,$param=array(),$components=true)
 	{
 		$this->xivo_application_asterisk_abstract(&$service);
 
@@ -32,17 +31,11 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		$this->_dso = &$dso;
 
-		if(($this->_userfeatures = &$this->_service->get_module('userfeatures')) === false
-		|| ($this->_extensions = &$this->_service->get_module('extensions')) === false
-		|| ($this->_extenumbers = &$this->get_abstract('extenumbers')) === false
-		|| ($this->_rightcall = &$this->get_abstract('rightcall')) === false
-		|| ($this->_dialstatus = &$this->get_abstract('dialstatus')) === false)
+		if(($this->_userfeatures = &$this->_service->get_module('userfeatures')) === false)
 			return(false);
 
-		$this->_queuemember = &$this->_service->get_module('queuemember');
-		$this->_uservoicemail = &$this->_service->get_module('uservoicemail');
-		$this->_phonefunckey = &$this->_service->get_module('phonefunckey');
-		$this->_autoprov = &$this->_service->get_module('autoprov');
+		if((bool) $components === true)
+			$this->load_components();
 
 		$this->_load_config(dirname(__FILE__));
 
@@ -62,6 +55,24 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		return(true);
 	}
 
+	function load_components()
+	{
+		$this->_components = true;
+
+		if(($this->_extensions = &$this->_service->get_module('extensions')) === false
+		|| ($this->_extenumbers = &$this->get_abstract('extenumbers')) === false
+		|| ($this->_rightcall = &$this->get_abstract('rightcall')) === false
+		|| ($this->_dialstatus = &$this->get_abstract('dialstatus')) === false)
+			return(false);
+
+		$this->_queuemember = &$this->_service->get_module('queuemember');
+		$this->_uservoicemail = &$this->_service->get_module('uservoicemail');
+		$this->_phonefunckey = &$this->_service->get_module('phonefunckey');
+		$this->_autoprov = &$this->_service->get_module('autoprov');
+
+		return(true);
+	}
+
 	function _reset()
 	{
 		$this->_protocolname = false;
@@ -69,9 +80,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		return(parent::_reset());
 	}
 
-	function get($id,$disable=null,$full=true,$internal=false,$where=false)
+	function get($id,$disable=null,$internal=false,$where=false)
 	{
-		$full = (bool) $full;
 		$where = (bool) $where;
 
 		$this->_info = $this->_origin = array();
@@ -96,7 +106,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$this->_origin['protocol'] = $this->_protocol->get_origin();
 		$this->_origin['ufeatures'] = $this->_userfeatures->get_origin();
 
-		if($full === false)
+		if($this->_components === false)
 			return($this->_info);
 
 		$this->_get_exten();
@@ -114,9 +124,9 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		return($this->_info);
 	}
 
-	function get_where($arr,$disable=null,$full=true,$internal=false)
+	function get_where($arr,$disable=null,$internal=false)
 	{
-		return($this->get($arr,$disable,$full,$internal,true));
+		return($this->get($arr,$disable,$internal,true));
 	}
 
 	function get_nb($arr=null,$disable=null,$initialized=null)
@@ -254,6 +264,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$phonefunckey_where = array();
 		$phonefunckey_where['iduserfeatures'] = $this->_info['ufeatures']['id'];
 		$this->_info['phonefunckey'] = $this->_phonefunckey->get_all_where($phonefunckey_where,
+										   null,
 										   true,
 										   array('fknum' => SORT_ASC));
 		$this->_origin['phonefunckey'] = $this->_phonefunckey->get_origin_list();
@@ -373,11 +384,6 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			ksort($r);
 
 		return($r);
-	}
-
-	function get_cnt()
-	{
-		return(xivo_uint($this->_cnt));
 	}
 
 	function get_users_search($search,$disable=null,$order=null,$limit=null,$assoc=false,$initialized=null)

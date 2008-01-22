@@ -25,7 +25,7 @@ switch($act)
 		$userorder['context'] = SORT_ASC;
 		$userorder['name'] = SORT_ASC;
 
-		$appuser = &$ipbx->get_application('user');
+		$appuser = &$ipbx->get_application('user',null,false);
 		$user['list'] = $appuser->get_users_list(null,null,$userorder,null,true);
 
 		xivo::load_class('xivo_sort');
@@ -113,7 +113,7 @@ switch($act)
 		$userorder['context'] = SORT_ASC;
 		$userorder['name'] = SORT_ASC;
 
-		$appuser = &$ipbx->get_application('user');
+		$appuser = &$ipbx->get_application('user',null,false);
 		$user['list'] = $appuser->get_users_list(null,null,$userorder,null,true);
 
 		xivo::load_class('xivo_sort');
@@ -220,8 +220,8 @@ switch($act)
 	case 'disables':
 	case 'enables':
 		$param['page'] = $page;
-		$disable = $act === 'disables' ? true : false;
-		$invdisable = $disable === true ? false : true;
+		$disable = $act === 'disables';
+		$invdisable = $disable === false;
 
 		if(($values = xivo_issa_val('groups',$_QR)) === false)
 			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/groups'),$param);
@@ -243,18 +243,28 @@ switch($act)
 		break;
 	default:
 		$act = 'list';
-		$total = 0;
+		$nbbypage = XIVO_SRE_IPBX_AST_NBBYPAGE;
 
-		if(($groups = $ipbx->get_groups_list()) !== false)
+		$appgroup = &$ipbx->get_application('group',null,false);
+
+		$order = array();
+		$order['name'] = SORT_ASC;
+
+		$limit = array();
+		$limit[0] = ($page - 1) * $nbbypage;
+		$limit[1] = $nbbypage;
+
+		$list = $appgroup->get_groups_list(null,$order,$limit);
+		$total = $appgroup->get_cnt();
+
+		if($list === false && $total > 0)
 		{
-			$total = count($groups);
-			xivo::load_class('xivo_sort');
-			$sort = new xivo_sort(array('browse' => 'gfeatures','key' => 'name'));
-			usort($groups,array(&$sort,'str_usort'));
+			$param['page'] = $page - 1;
+			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/groups'),$param);
 		}
 
 		$_HTML->set_var('pager',xivo_calc_page($page,20,$total));
-		$_HTML->set_var('list',$groups);
+		$_HTML->set_var('list',$list);
 }
 
 $_HTML->set_var('act',$act);

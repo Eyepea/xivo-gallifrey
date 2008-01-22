@@ -14,7 +14,7 @@ if(($recvactivecalls = $ipbx->discuss('show channels',true)) !== false
 && $pos !== 0)
 	$activecalls = substr($recvactivecalls[$nb],0,$pos);
 
-$appuser = &$ipbx->get_application('user');
+$appuser = &$ipbx->get_application('user',null,false);
 
 if(($enableuser = $appuser->get_nb(null,false)) !== false)
 	$userstat['enable'] = $enableuser;
@@ -27,7 +27,7 @@ if(($initializeduser = $appuser->get_nb(null,null,true)) !== false)
 
 $userstat['total'] = $userstat['enable'] + $userstat['disable'];
 
-$appgroup = &$ipbx->get_application('group');
+$appgroup = &$ipbx->get_application('group',null,false);
 
 if(($enablegroup = $appgroup->get_nb(null,false)) !== false)
 	$groupstat['enable'] = $enablegroup;
@@ -37,7 +37,7 @@ if(($disablegroup = $appgroup->get_nb(null,true)) !== false)
 
 $groupstat['total'] = $groupstat['enable'] + $groupstat['disable'];
 
-$appqueue = &$ipbx->get_application('queue');
+$appqueue = &$ipbx->get_application('queue',null,false);
 
 if(($enablequeue = $appqueue->get_nb(null,false)) !== false)
 	$queuestat['enable'] = $enablequeue;
@@ -47,7 +47,7 @@ if(($disablequeue = $appqueue->get_nb(null,true)) !== false)
 
 $queuestat['total'] = $queuestat['enable'] + $queuestat['disable'];
 
-$appmeetme = &$ipbx->get_application('meetme');
+$appmeetme = &$ipbx->get_application('meetme',null,false);
 
 if(($enablemeetme = $appmeetme->get_nb(null,false)) !== false)
 	$meetmestat['enable'] = $enablemeetme;

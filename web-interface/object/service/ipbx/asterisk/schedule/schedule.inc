@@ -88,9 +88,6 @@ class xivo_service_asterisk_schedule extends xivo_service_asterisk_abstract
 		if(is_array($arr) === false)
 			return(false);
 
-		if(($id = xivo_uint($id)) !== 0)
-			$arr['id'] = $id;
-
 		if(isset($arr['timebeg'],$arr['timeend']) === true
 		&& $arr['timebeg'] === $arr['timeend'])
 			$arr['timeend'] = null;
@@ -114,20 +111,14 @@ class xivo_service_asterisk_schedule extends xivo_service_asterisk_abstract
 			$arr['applicationvalfalse'] = '';
 
 		if(isset($arr['name']) === true)
-		{
 			$arr['name'] = strtolower($arr['name']);
-			$where = array('name' => $arr['name']);
 
-			if($this->get_id($where) !== false)
-				return(false);
-		}
-
-		return($this->_dso->add($arr));
+		return(parent::add($arr,$id));
 	}
 
 	function edit($id,$arr,$disable=null)
 	{
-		if(($id = xivo_uint($id)) === 0 || is_array($arr) === false)
+		if(is_array($arr) === false)
 			return(false);
 
 		if(isset($arr['timebeg'],$arr['timeend']) === true
@@ -153,15 +144,9 @@ class xivo_service_asterisk_schedule extends xivo_service_asterisk_abstract
 			$arr['applicationvalfalse'] = '';
 
 		if(isset($arr['name']) === true)
-		{
 			$arr['name'] = strtolower($arr['name']);
-			$where = array('name' => $arr['name']);
 
-			if(($whereid = $this->get_id($where)) !== false && $whereid !== $id)
-				return(false);
-		}
-
-		return($this->_dso->edit($id,$arr,$disable));
+		return(parent::edit($id,$arr,$disable));
 	}
 
 	function linked($id,$disable=null)
@@ -302,16 +287,15 @@ class xivo_service_asterisk_schedule extends xivo_service_asterisk_abstract
 		return(false);
 	}
 
-	function get_all($id=0,$disable=null,$prepare=true,$order=null,$limit=null,$assoc=false)
+	function get_all_except($id,$disable=null,$prepare=true,$order=null,$limit=null,$assoc=false)
 	{
-		$id = xivo_uint($id);
 		$prepare = (bool) $prepare;
 		$assoc = (bool) $assoc;
 
 		if(isset($this->_origin_list) === true)
 			$this->_origin_list = false;
 
-		if(($list = $this->_dso->get_all($disable,$order,$limit)) === false
+		if(($list = $this->_dso->get_all_except($id,$disable,$order,$limit)) === false
 		|| isset($list[0]) === false)
 			return(false);
 
@@ -320,43 +304,8 @@ class xivo_service_asterisk_schedule extends xivo_service_asterisk_abstract
 
 		if($prepare === false && $assoc === false)
 			return($list);
-		else if(($nb = count($list)) === 0)
-			return(false);
 
-		$r = array();
-
-		if($assoc === true && $prepare === true)
-		{
-			for($i = 0;$i < $nb;$i++)
-			{
-				if($id === (int) $list[$i]['id'])
-					continue;
-
-				$r[$list[$i]['id']] = $this->_prepare($list[$i]);
-			}
-		}
-		else if($assoc === true)
-		{
-			for($i = 0;$i < $nb;$i++)
-			{
-				if($id === (int) $list[$i]['id'])
-					continue;
-
-				$r[$list[$i]['id']] = $list[$i];
-			}
-		}
-		else
-		{
-			for($i = 0;$i < $nb;$i++)
-			{
-				if($id === (int) $list[$i]['id'])
-					continue;
-
-				$r[] = $this->_prepare($list[$i]);
-			}
-		}
-
-		return($r);
+		return($this->_mk_list_assoc_prepare($list,$assoc,$prepare));
 	}
 }
 

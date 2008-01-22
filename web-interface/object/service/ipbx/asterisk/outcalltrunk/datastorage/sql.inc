@@ -6,6 +6,7 @@ class xivo_service_asterisk_outcalltrunk_sql extends xivo_service_asterisk_abstr
 {
 	var $_disable		= null;
 	var $_autoincrement	= false;
+	var $_unique		= array(array('outcallid','trunkfeaturesid'));
 }
 
 ?>

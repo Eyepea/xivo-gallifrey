@@ -49,50 +49,21 @@ class xivo_service_asterisk_dialstatus extends xivo_service_asterisk_abstract
 		if(is_array($arr) === false)
 			return(false);
 
-		if(($id = xivo_uint($id)) !== 0)
-			$arr['id'] = $id;
-
 		if($arr['type'] !== 'application')
 			$arr['applicationval'] = '';
 
-		if($this->exists($arr['status'],$arr['category'],$arr['categoryval']) !== false)
-			return(false);
-
-		return($this->_dso->add($arr));
+		return(parent::add($arr,$id));
 	}
 
 	function edit($id,$arr)
 	{
-		if(($id = xivo_uint($id)) === 0
-		|| is_array($arr) === false
-		|| ($info = $this->get($id)) === false)
+		if(is_array($arr) === false)
 			return(false);
 
-		if(isset($arr['status']) === false)
-			$status = $info['status'];
-		else
-			$status = $arr['status'];
-
-		if(isset($arr['category']) === false)
-			$category = $info['category'];
-		else
-			$category = $arr['category'];
-
-		if(isset($arr['type']) === false)
-			$arr['type'] = $info['type'];
-
-		if($arr['type'] !== 'application')
+		if(isset($arr['type']) === true && $arr['type'] !== 'application')
 			$arr['applicationval'] = '';
 
-		if(isset($arr['categoryval']) === false)
-			$categoryval = $info['categoryval'];
-		else
-			$categoryval = $arr['categoryval'];
-
-		if($this->exists($status,$category,$categoryval,$id) !== false)
-			return(false);
-
-		return($this->_dso->edit($id,$arr));
+		return(parent::edit($id,$arr));
 	}
 
 	function linked($id)
@@ -170,67 +141,6 @@ class xivo_service_asterisk_dialstatus extends xivo_service_asterisk_abstract
 			return(true);
 
 		return(false);
-	}
-
-	function get_all($category='',$categoryval='',$disable=null,$prepare=true,$order=null,$limit=null,$assoc=false)
-	{
-		$category = strval($category);
-		$categoryval = strval($categoryval);
-		$prepare = (bool) $prepare;
-		$assoc = (bool) $assoc;
-
-		if(isset($this->_origin_list) === true)
-			$this->_origin_list = false;
-
-		if(($list = $this->_dso->get_all($disable,$order,$limit)) === false
-		|| isset($list[0]) === false)
-			return(false);
-
-		if(isset($this->_origin_list) === true)
-			$this->_origin_list = $list;
-
-		if($prepare === false && $assoc === false)
-			return($list);
-		else if(($nb = count($list)) === 0)
-			return(false);
-
-		$r = array();
-
-		if($assoc === true && $prepare === true)
-		{
-			for($i = 0;$i < $nb;$i++)
-			{
-				if($category === (string) $list[$i]['category']
-				&& $categoryval === (string) $list[$i]['categoryval'])
-					continue;
-
-				$r[$list[$i]['id']] = $this->_prepare($list[$i]);
-			}
-		}
-		else if($assoc === true)
-		{
-			for($i = 0;$i < $nb;$i++)
-			{
-				if($category === (string) $list[$i]['category']
-				&& $categoryval === (string) $list[$i]['categoryval'])
-					continue;
-
-				$r[$list[$i]['id']] = $list[$i];
-			}
-		}
-		else
-		{
-			for($i = 0;$i < $nb;$i++)
-			{
-				if($category === (string) $list[$i]['category']
-				&& $categoryval === (string) $list[$i]['categoryval'])
-					continue;
-
-				$r[] = $this->_prepare($list[$i]);
-			}
-		}
-
-		return($r);
 	}
 }
 

@@ -6,6 +6,7 @@ class xivo_service_asterisk_trunkiax_sql extends xivo_service_asterisk_abstract_
 {
 	var $_forcecolumn	= array('protocol'	=> XIVO_SRE_IPBX_AST_PROTO_IAX,
 					'category'	=> 'trunk');
+	var $_unique		= 'name';
 }
 
 ?>

@@ -23,20 +23,16 @@ switch($act)
 		$userorder['context'] = SORT_ASC;
 		$userorder['name'] = SORT_ASC;
 
-		$appuser = &$ipbx->get_application('user');
+		$appuser = &$ipbx->get_application('user',null,false);
 		$rcalluser['list'] = $appuser->get_users_list(null,null,$userorder,null,true);
 
-		xivo::load_class('xivo_sort');
+		$appgroup = &$ipbx->get_application('group',null,false);
+		$rcallgroup['list'] = $appgroup->get_groups_list(null,array('name' => SORT_ASC),null,true);
 
-		$groupsort = new xivo_sort(array('browse' => 'gfeatures','key' => 'name'));
-
-		if(($rcallgroup['list'] = $ipbx->get_groups_list(null,true)) !== false)
-			uasort($rcallgroup['list'],array(&$groupsort,'str_usort'));
-
-		$appincall = &$ipbx->get_application('incall');
+		$appincall = &$ipbx->get_application('incall',null,false);
 		$rcallincall['list'] = $appincall->get_incalls_list(null,array('exten' => SORT_ASC),null,true);
 
-		$appoutcall = &$ipbx->get_application('outcall');
+		$appoutcall = &$ipbx->get_application('outcall',null,false);
 		$rcalloutcall['list'] = $appoutcall->get_outcalls_list(null,array('name' => SORT_ASC),null,true);
 
 		do
@@ -54,6 +50,8 @@ switch($act)
 			$_QRY->go($_HTML->url('service/ipbx/call_management/rightcall'),$param);
 		}
 		while(false);
+
+		xivo::load_class('xivo_sort');
 
 		if($rcalluser['list'] !== false && xivo_ak('rightcalluser',$result) === true)
 		{
@@ -75,6 +73,8 @@ switch($act)
 			if($rcallgroup['slt'] !== false)
 			{
 				$rcallgroup['list'] = xivo_array_diff_key($rcallgroup['list'],$rcallgroup['slt']);
+
+				$groupsort = new xivo_sort(array('browse' => 'gfeatures','key' => 'name'));
 				uasort($rcallgroup['slt'],array(&$groupsort,'str_usort'));
 			}
 		}
@@ -140,20 +140,16 @@ switch($act)
 		$userorder['context'] = SORT_ASC;
 		$userorder['name'] = SORT_ASC;
 
-		$appuser = &$ipbx->get_application('user');
+		$appuser = &$ipbx->get_application('user',null,false);
 		$rcalluser['list'] = $appuser->get_users_list(null,null,$userorder,null,true);
 
-		xivo::load_class('xivo_sort');
+		$appgroup = &$ipbx->get_application('group',null,false);
+		$rcallgroup['list'] = $appgroup->get_groups_list(null,array('name' => SORT_ASC),null,true);
 
-		$groupsort = new xivo_sort(array('browse' => 'gfeatures','key' => 'name'));
-
-		if(($rcallgroup['list'] = $ipbx->get_groups_list(null,true)) !== false)
-			uasort($rcallgroup['list'],array(&$groupsort,'str_usort'));
-
-		$appincall = &$ipbx->get_application('incall');
+		$appincall = &$ipbx->get_application('incall',null,false);
 		$rcallincall['list'] = $appincall->get_incalls_list(null,array('exten' => SORT_ASC),null,true);
 
-		$appoutcall = &$ipbx->get_application('outcall');
+		$appoutcall = &$ipbx->get_application('outcall',null,false);
 		$rcalloutcall['list'] = $appoutcall->get_outcalls_list(null,array('name' => SORT_ASC),null,true);
 
 		do
@@ -173,6 +169,8 @@ switch($act)
 			$_QRY->go($_HTML->url('service/ipbx/call_management/rightcall'),$param);
 		}
 		while(false);
+
+		xivo::load_class('xivo_sort');
 
 		if($rcalluser['list'] !== false && xivo_ak('rightcalluser',$return) === true)
 		{
@@ -194,6 +192,8 @@ switch($act)
 			if($rcallgroup['slt'] !== false)
 			{
 				$rcallgroup['list'] = xivo_array_diff_key($rcallgroup['list'],$rcallgroup['slt']);
+		
+				$groupsort = new xivo_sort(array('browse' => 'gfeatures','key' => 'name'));
 				uasort($rcallgroup['slt'],array(&$groupsort,'str_usort'));
 			}
 		}
@@ -281,7 +281,7 @@ switch($act)
 	case 'disables':
 	case 'enables':
 		$param['page'] = $page;
-		$disable = $act === 'disables' ? true : false;
+		$disable = $act === 'disables';
 
 		if(($values = xivo_issa_val('rightcalls',$_QR)) === false)
 			$_QRY->go($_HTML->url('service/ipbx/call_management/rightcall'),$param);

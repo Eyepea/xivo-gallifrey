@@ -7,7 +7,7 @@ class xivo_service_asterisk_agentgroup_sql extends xivo_service_asterisk_abstrac
 	function get($arr,$disable=null,$delete=null,$primary=false)
 	{
 		if(is_array($arr) === false
-		&& ($arr = $this->get_primary_key($arr)) === false)
+		&& ($arr = $this->mk_primary_key_value($arr)) === false)
 			return(false);
 
 		if($delete !== null)
@@ -70,7 +70,7 @@ class xivo_service_asterisk_agentgroup_sql extends xivo_service_asterisk_abstrac
 	function edit($arr,$value,$disable=null,$delete=null)
 	{
 		if(is_array($value) === false
-		|| (is_array($arr) === false && ($arr = $this->get_primary_key($arr)) === false) === true)
+		|| (is_array($arr) === false && ($arr = $this->mk_primary_key_value($arr)) === false) === true)
 			return(false);
 
 		if($delete !== null)

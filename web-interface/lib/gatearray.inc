@@ -29,8 +29,6 @@ class xivo_gatearray
 
 	function load($file,$path='',$name='')
 	{
-		$r = false;
-
 		$file = (string) $file;
 		$name = (string) $name;
 
@@ -39,7 +37,7 @@ class xivo_gatearray
 			$file = substr($file,0,$pos);
 
 			if(preg_match('/^[a-z0-9\-_]+$/i',$file) !== 1)
-				return($r);
+				return(false);
 		}
 
 		if($name === '')
@@ -53,27 +51,22 @@ class xivo_gatearray
 			$path = rtrim($path,DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.$file.'.inc';
 
 		if(xivo_file::is_i($path) === false)
-			return($r);
-
-		if(isset($this->_array[$name]) === false)
+			return(false);
+		else if(isset($this->_array[$name]) === false)
 		{
 			require_once($path);
 
-			if(isset($array) === true && is_array($array) === true)
-			{
-				$r = $name;
-				$this->_array[$name] = &$array;
-			}
-		}
-		else $r = $name;
+			if(isset($array) === false || is_array($array) === false)
+				return(false);
 
-		return($r);
+			$this->_array[$name] = &$array;
+		}
+
+		return($name);
 	}
 
 	function get_file($path,$once=false)
 	{
-		$r = false;
-
 		if(is_array($path) === true)
 			$path = implode(DIRECTORY_SEPARATOR,$path);
 
@@ -90,6 +83,8 @@ class xivo_gatearray
 
 		if(isset($array) === true && is_array($array) === true)
 			$r = &$array;
+		else
+			$r = false;
 
 		return($r);
 	}
@@ -132,12 +127,10 @@ class xivo_gatearray
 	{
 		$name = (string) $name;
 
-		$r = false;
-
 		if(xivo_issa($name,$this->_array) === true)
-			$r = true;
+			return(true);
 
-		return($r);
+		return(false);
 	}
 }
 

@@ -7,14 +7,13 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 	var $_dso		= null;
 	var $_origin		= array();
 	var $_status		= '';
-	var $_cnt		= 0;
 	var $_callfilter	= null;
 	var $_callfiltermember	= null;
 	var $_userfeatures	= null;
 	var $_dialstatus	= null;
 	var $_param		= array('type'	=> '');
 
-	function xivo_application_service_asterisk_callfilter(&$service,&$dso,$param=array())
+	function xivo_application_service_asterisk_callfilter(&$service,&$dso,$param=array(),$components=true)
 	{
 		$this->xivo_application_asterisk_abstract(&$service);
 
@@ -27,12 +26,24 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 		|| isset($param['type']) === false
 		|| ($this->_callfilter = &$this->_service->get_module('callfilter')) === false
 		|| $this->_callfilter->chk_element_value('type',$param['type']) === false
-		|| ($this->_callfiltermember = &$this->_service->get_module('callfiltermember')) === false
-		|| ($this->_userfeatures = &$this->_service->get_module('userfeatures')) === false
-		|| ($this->_dialstatus = &$this->get_abstract('dialstatus')) === false)
+		|| ($this->_userfeatures = &$this->_service->get_module('userfeatures')) === false)
 			return(false);
 
+		if((bool) $components === true)
+			$this->load_components();
+
 		$this->_param['type'] = $param['type'];
+
+		return(true);
+	}
+
+	function load_components()
+	{
+		$this->_components = true;
+
+		if(($this->_callfiltermember = &$this->_service->get_module('callfiltermember')) === false
+		|| ($this->_dialstatus = &$this->get_abstract('dialstatus')) === false)
+			return(false);
 
 		return(true);
 	}
@@ -44,10 +55,13 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 		if(($this->_info['callfilter'] = $this->_callfilter->get($id,$disable)) === false)
 			return(false);
 
+		$this->_origin['callfilter'] = $this->_callfilter->get_origin();
+
+		if($this->_components === false)
+			return($this->_info);
+
 		$this->_get_callfiltermember();
 		$this->_get_dialstatus();
-
-		$this->_origin['callfilter'] = $this->_callfilter->get_origin();
 
 		return($this->_info);
 	}
@@ -222,11 +236,6 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 		$r['dialstatus'] = $this->_dialstatus->get_element();
 
 		return($r);
-	}
-
-	function get_cnt()
-	{
-		return(xivo_uint($this->_cnt));
 	}
 
 	function get_callfilters_list($disable=null,$order=null,$limit=null,$assoc=false)
@@ -835,7 +844,9 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 
 	function _delete_callfilterbs()
 	{
-		if(xivo_issa('callfiltermember',$this->_info) === false)
+		if(xivo_issa('callfiltermember',$this->_info) === false
+		|| (isset($this->_info['callfiltermember']['boss']) === false
+		   && isset($this->_info['callfiltermember']['secretary']) === false) === true)
 			return(null);
 		else if(xivo_issa('callfilter',$this->_info) === false)
 			return(false);

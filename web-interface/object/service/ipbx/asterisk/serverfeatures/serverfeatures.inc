@@ -23,62 +23,6 @@ class xivo_service_asterisk_serverfeatures extends xivo_service_asterisk_abstrac
 
 		$this->_load_config();
 	}
-
-	function add($arr,$id=0)
-	{
-		if(is_array($arr) === false)
-			return(false);
-
-		if(($id = xivo_uint($id)) !== 0)
-			$arr['id'] = $id;
-
-		if($this->exists($arr['serverid'],$arr['type']) !== false)
-			return(false);
-
-		return($this->_dso->add($arr));
-	}
-
-	function edit($id,$arr)
-	{
-		if(($id = xivo_uint($id)) === 0
-		|| is_array($arr) === false
-		|| ($info = $this->get($id)) === false)
-			return(false);
-
-		if(isset($arr['serverid']) === false)
-			$serverid = $info['serverid'];
-		else
-			$serverid = $arr['serverid'];
-
-		if(isset($arr['type']) === false)
-			$type = $info['type'];
-		else
-			$type = $arr['type'];
-
-		if($this->exists($serverid,$type,$id) !== false)
-			return(false);
-
-		return($this->_dso->edit($id,$arr));
-	}
-
-	function exists($serverid,$type,$id=null)
-	{
-		$id = $id !== null ? xivo_uint($id) : null;
-
-		if(($serverid = xivo_uint($serverid)) === 0
-		|| $this->chk_element_value('type',$type) === false)
-			return(null);
-
-		$where = array();
-		$where['serverid'] = $serverid;
-		$where['type'] = $type;
-
-		if(($whereid = $this->get_id($where)) !== false
-		&& ($id === null || $whereid !== $id) === true)
-			return(true);
-
-		return(false);
-	}
 }
 
 ?>

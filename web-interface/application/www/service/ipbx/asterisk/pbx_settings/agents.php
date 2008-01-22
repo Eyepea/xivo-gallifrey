@@ -40,12 +40,10 @@ switch($act)
 
 		$qmember_unslt = false;
 
-		if(($queues = $ipbx->get_queues_list()) !== false)
-		{
-			xivo::load_class('xivo_sort');
-			$sort = new xivo_sort(array('browse' => 'qfeatures','key' => 'name'));
-			usort($queues,array(&$sort,'str_usort'));
+		$appqueue = &$ipbx->get_application('queue',null,false);
 
+		if(($queues = $appqueue->get_queues_list(null,array('name' => SORT_ASC))) !== false)
+		{
 			$qmember_unslt = array();
 
 			$nb = count($queues);
@@ -197,7 +195,7 @@ switch($act)
 		$_HTML->set_var('queues',$queues);
 		$_HTML->set_var('qmember_slt',false);
 		$_HTML->set_var('qmember_unslt',$qmember_unslt);
-		$_HTML->set_var('agents',($agents !== false ? true : false));
+		$_HTML->set_var('agents',($agents !== false));
 		$_HTML->set_var('agent_slt',$agent_slt);
 		$_HTML->set_var('agent_unslt',$agent_unslt);
 		$_HTML->set_var('info',$result);
@@ -492,7 +490,7 @@ switch($act)
 
 		$_HTML->set_var('info',$return);
 		$_HTML->set_var('element',$element);
-		$_HTML->set_var('agents',($agents !== false ? true : false));
+		$_HTML->set_var('agents',($agents !== false));
 		$_HTML->set_var('agent_slt',$agent_slt);
 		$_HTML->set_var('agent_unslt',$agent_unslt);
 		$_HTML->set_var('queues',$queues);
@@ -580,12 +578,10 @@ switch($act)
 
 		$qmember_unslt = false;
 
-		if(($queues = $ipbx->get_queues_list()) !== false)
-		{
-			xivo::load_class('xivo_sort');
-			$sort = new xivo_sort(array('browse' => 'qfeatures','key' => 'name'));
-			usort($queues,array(&$sort,'str_usort'));
+		$appqueue = &$ipbx->get_application('queue',null,false);
 
+		if(($queues = $appqueue->get_queues_list(null,array('name' => SORT_ASC))) !== false)
+		{
 			$qmember_unslt = array();
 
 			$nb = count($queues);

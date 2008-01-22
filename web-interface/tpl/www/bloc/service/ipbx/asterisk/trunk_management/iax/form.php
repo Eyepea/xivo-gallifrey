@@ -7,18 +7,14 @@
 
 	$allow = $info['trunk']['allow'];
 
-	if(empty($allow) === true):
-		$codec_active = false;
-	else:
-		$codec_active = true;
-	endif;
+	$codec_active = empty($allow) === false;
 
 	$trunk_active = (bool) $this->get_varra('info',array('trunk','commented'));
 
 	$reg_active = $this->get_varra('info',array('register','commented'));
 
 	if($reg_active !== null):
-		$reg_active = xivo_bool($reg_active) === true ? false : true;
+		$reg_active = xivo_bool($reg_active) === false;
 	endif;
 
 	if(($host = (string) $info['trunk']['host']) === ''

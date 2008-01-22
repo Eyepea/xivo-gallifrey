@@ -4,6 +4,7 @@ require_once(XIVO_PATH_OBJECT.XIVO_SEP_DIR.'abstract'.XIVO_SEP_DIR.'libconfig.in
 
 class xivo_application_abstract extends xivo_libconfig_abstract
 {
+	var $_cnt	= 0;
 	var $_errnb	= 0;
 	var $_error	= array();
 	var $_result	= array();
@@ -43,6 +44,11 @@ class xivo_application_abstract extends xivo_libconfig_abstract
 		return(true);
 	}
 
+	function load_components()
+	{
+		return(null);
+	}
+
 	function &get_abstract($name)
 	{
 		$r = false;
@@ -61,6 +67,11 @@ class xivo_application_abstract extends xivo_libconfig_abstract
 		$this->_error = array();
 		$this->_result = array();
 		$this->_return = array();
+	}
+
+	function get_cnt()
+	{
+		return(xivo_uint($this->_cnt));
 	}
 
 	function get_info()

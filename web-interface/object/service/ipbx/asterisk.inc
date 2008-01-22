@@ -89,23 +89,19 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 		if(isset($this->_realstatic[$name]) === true)
 			return(true);
-		
-		if($this->chk_realstatic_enable($name) === false)
+		else if($this->chk_realstatic_enable($name) === false)
 			return(false);
-
-		if(($class = $this->_load_realstatic_class($name)) === false)
+		else if(($class = $this->_load_realstatic_class($name)) === false)
 		{
 			trigger_error('Realtime Static '.$name.' does not exist in '.$this->_name,E_USER_ERROR);
 			return(false);
 		}
-
-		if(isset($ref['datastorage']) === false || (bool) $ref['datastorage'] === false)
+		else if(isset($ref['datastorage']) === false || (bool) $ref['datastorage'] === false)
 		{
 			$this->_realstatic[$name] = new $class($this,$param);
 			return(true);
 		}
-
-		if(is_string($ref['datastorage']) === true && $this->chk_realstatic_enable($ref['datastorage']) === true)
+		else if(is_string($ref['datastorage']) === true && $this->chk_realstatic_enable($ref['datastorage']) === true)
 			$this->_realstatic[$name] = new $class($this,$this->_load_dso($ref['datastorage']),$param);
 		else
 			$this->_realstatic[$name] = new $class($this,$this->_load_dso($name),$param);
@@ -177,8 +173,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 		if(isset($this->_apprealstatic[$name]) === true)
 			return(true);
-		
-		if(($class = $this->_load_apprealstatic_class($name)) === false)
+		else if(($class = $this->_load_apprealstatic_class($name)) === false)
 		{
 			trigger_error('RealStatic Application '.$name.' does not exist in '.$this->_name,E_USER_ERROR);
 			return(false);
@@ -199,7 +194,6 @@ class xivo_service_asterisk extends xivo_service_abstract
 		{
 			define($define_label,'undefined');
 			define($define_version,'undefined');
-
 			return(false);
 		}
 
@@ -325,70 +319,6 @@ class xivo_service_asterisk extends xivo_service_abstract
 				$r[$info['tfeatures']['id']] = $info;
 				uasort($r,array(&$sort,'str_usort'));
 			}
-		}
-
-		if(empty($r) === true)
-			$r = false;
-		else if($assoc === false)
-			$r = array_values($r);
-
-		return($r);
-	}
-
-	function get_groups_list($disable=null,$assoc=false)
-	{
-		$assoc = (bool) $assoc;
-
-		$gfeatures = &$this->get_module('groupfeatures');
-		$queue = &$this->get_module('queue');
-		$qmember = &$this->get_module('queuemember');
-
-		if(($rs = $gfeatures->get_all()) === false || ($nb = count($rs)) === 0)
-			return(false);
-
-		$r = $info = array();
-
-		for($i = 0;$i < $nb;$i++)
-		{
-			$info['gfeatures'] = $rs[$i];
-
-			if(($info['queue'] = $queue->get($info['gfeatures']['name'],$disable)) === false
-			|| ($info['nb_qmember'] = $qmember->get_nb(array('queue_name' => $info['queue']['name']),$disable)) === false)
-				continue;
-
-			$r[$info['gfeatures']['id']] = $info;
-		}
-
-		if(empty($r) === true)
-			$r = false;
-		else if($assoc === false)
-			$r = array_values($r);
-
-		return($r);
-	}
-
-	function get_queues_list($disable=null,$assoc=false)
-	{
-		$assoc = (bool) $assoc;
-
-		$qfeatures = &$this->get_module('queuefeatures');
-		$queue = &$this->get_module('queue');
-		$qmember = &$this->get_module('queuemember');
-
-		if(($rs = $qfeatures->get_all($disable)) === false || ($nb = count($rs)) === 0)
-			return(false);
-
-		$r = $info = array();
-
-		for($i = 0;$i < $nb;$i++)
-		{
-			$info['qfeatures'] = $rs[$i];
-
-			if(($info['queue'] = $queue->get($info['qfeatures']['name'],$disable)) === false
-			|| ($info['nb_qmember'] = $qmember->get_nb(array('queue_name' => $info['queue']['name']),$disable)) === false)
-				continue;
-
-			$r[$info['qfeatures']['id']] = $info;
 		}
 
 		if(empty($r) === true)
@@ -600,39 +530,6 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 			$info['member'] = $memberinfo;
 			$info['agroup'] = $agroupinfo;
-
-			$r[] = $info;
-		}
-
-		if(isset($r[0]) === false)
-			$r = false;
-
-		return($r);
-	}
-
-	function get_meetme_list($disable=null)
-	{
-		$appmeetme = &$this->get_apprealstatic('meetme');
-		$appmeetmeroom = &$appmeetme->get_module('room');
-
-		$mfeatures = &$this->get_module('meetmefeatures');
-
-		if(($rs = $appmeetmeroom->get_all($disable)) === false
-		|| ($nb = count($rs)) === 0)
-			return(false);
-
-		$r = $info = array();
-
-		$meetmefeatures_where = array();
-
-		for($i = 0;$i < $nb;$i++)
-		{
-			$info['meetmeroom'] = $rs[$i];
-
-			$meetmefeatures_where['meetmeid'] = $info['meetmeroom']['id'];
-
-			if(($info['mfeatures'] = $mfeatures->get_where($meetmefeatures_where)) === false)
-				continue;
 
 			$r[] = $info;
 		}

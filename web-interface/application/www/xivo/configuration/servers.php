@@ -110,7 +110,7 @@ switch($act)
 	case 'enables':
 	case 'disables':
 		$param['page'] = $page;
-		$disable = $act === 'disables' ? true : false;
+		$disable = $act === 'disables';
 
 		if(($values = xivo_issa_val('server',$_QR)) === false)
 			$_QRY->go($_HTML->url('xivo/configuration/servers'),$param);

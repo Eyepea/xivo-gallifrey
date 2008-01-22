@@ -15,13 +15,25 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 	var $_queuemember	= false;
 	var $_musiconhold	= false;
 
-	function xivo_application_service_asterisk_group(&$service)
+	function xivo_application_service_asterisk_group(&$service,$param=null,$components=true)
 	{
 		$this->xivo_application_asterisk_abstract(&$service);
 
 		if(($this->_groupfeatures = &$this->_service->get_module('groupfeatures')) === false
-		|| ($this->_queue = &$this->_service->get_module('queue')) === false
-		|| ($this->_extensions = &$this->_service->get_module('extensions')) === false
+		|| ($this->_queue = &$this->_service->get_module('queue')) === false)
+			return(false);
+
+		if((bool) $components === true)
+			$this->load_components();
+
+		return(true);
+	}
+
+	function load_components()
+	{
+		$this->_components = true;
+
+		if(($this->_extensions = &$this->_service->get_module('extensions')) === false
 		|| ($this->_extenumbers = &$this->get_abstract('extenumbers')) === false
 		|| ($this->_rightcall = &$this->get_abstract('rightcall')) === false
 		|| ($this->_dialstatus = &$this->get_abstract('dialstatus')) === false)
@@ -37,11 +49,14 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		$this->_info = $this->_origin = array();
 
 		if(($this->_info['gfeatures'] = $this->_groupfeatures->get($id)) === false
-		|| ($this->_info['queue'] = $this->_queue->get($this->_info['gfeatures']['name'])) === false)
+		|| ($this->_info['queue'] = $this->_queue->get($this->_info['gfeatures']['name'],$disable)) === false)
 			return(false);
 
 		$this->_origin['gfeatures'] = $this->_groupfeatures->get_origin();
 		$this->_origin['queue'] = $this->_queue->get_origin();
+
+		if($this->_components === false)
+			return($this->_info);
 
 		$this->_get_exten();
 		$this->_get_extenumbers();
@@ -123,6 +138,44 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		$r['gfeatures'] = $this->_groupfeatures->get_element();
 		$r['queue'] = $this->_queue->get_element();
 		$r['dialstatus'] = $this->_dialstatus->get_element();
+
+		return($r);
+	}
+
+	function get_groups_list($disable=null,$order=null,$limit=null,$assoc=false)
+	{
+		$assoc = (bool) $assoc;
+
+		if(($rs = $this->_groupfeatures->get_all(false,true,$order,$limit)) === false
+		|| ($nb = count($rs)) === 0)
+		{
+			$this->_cnt = $this->_groupfeatures->get_cnt();
+			return(false);
+		}
+
+		$this->_cnt = $this->_groupfeatures->get_cnt();
+
+		$this->_queuemember = &$this->_service->get_module('queuemember');
+
+		$r = $info = array();
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			$info['gfeatures'] = $rs[$i];
+
+			if(($info['queue'] = $this->_queue->get($info['gfeatures']['name'],$disable)) === false
+			|| ($info['nb_qmember'] = $this->_queuemember->get_nb(
+							array('queue_name' => $info['queue']['name']),
+							$disable)) === false)
+				continue;
+
+			$r[$info['gfeatures']['id']] = $info;
+		}
+
+		if(empty($r) === true)
+			$r = false;
+		else if($assoc === false)
+			$r = array_values($r);
 
 		return($r);
 	}

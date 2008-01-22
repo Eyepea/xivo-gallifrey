@@ -166,7 +166,7 @@ switch($act)
 		if(($values = xivo_issa_val('incalls',$_QR)) === false)
 			$_QRY->go($_HTML->url('service/ipbx/call_management/incall'),$param);
 
-		$appincall = &$ipbx->get_application('incall');
+		$appincall = &$ipbx->get_application('incall',null,false);
 
 		$nb = count($values);
 
@@ -187,7 +187,7 @@ switch($act)
 		$act = 'list';
 		$nbbypage = XIVO_SRE_IPBX_AST_NBBYPAGE;
 
-		$appincall = &$ipbx->get_application('incall');
+		$appincall = &$ipbx->get_application('incall',null,false);
 
 		$order = array();
 		$order['exten'] = SORT_ASC;

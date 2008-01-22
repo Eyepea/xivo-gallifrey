@@ -8,7 +8,7 @@ $appgeneralqueue = &$ipbx->get_apprealstatic('generalqueue');
 $appmeetme = &$ipbx->get_apprealstatic('meetme');
 $appgeneralmeetme = &$appmeetme->get_module('general');
 
-$appuserguest = &$ipbx->get_application('user',array('internal' => 1));
+$appuserguest = &$ipbx->get_application('user',array('internal' => 1),false);
 
 $info = array();
 $info['generalagents'] = $appgeneralagents->get_all_by_category();
@@ -16,7 +16,7 @@ $info['generalqueue'] = $appgeneralqueue->get_all_by_category();
 $info['generalmeetme'] = $appgeneralmeetme->get_all_by_category();
 
 $info['userinternal'] = array();
-$info['userinternal']['guest'] = $appuserguest->get_where(array('name' => 'guest'),null,false,true);
+$info['userinternal']['guest'] = $appuserguest->get_where(array('name' => 'guest'),null,true);
 
 $element = array();
 $element['generalagents'] = $appgeneralagents->get_elements();

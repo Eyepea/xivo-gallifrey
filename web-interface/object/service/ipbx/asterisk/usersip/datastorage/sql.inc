@@ -6,6 +6,7 @@ class xivo_service_asterisk_usersip_sql extends xivo_service_asterisk_abstract_s
 {
 	var $_forcecolumn	= array('protocol'	=> XIVO_SRE_IPBX_AST_PROTO_SIP,
 					'category'	=> 'user');
+	var $_unique		= 'name';
 
 	function get_nb($arr=null,$disable=null,$initialized=null)
 	{

@@ -198,13 +198,13 @@ class xivo_service_abstract
 		return(($ref = &$r));
 	}
 
-	function &get_application($name,$param=null)
+	function &get_application($name,$param=null,$components=true)
 	{
 		$r = false;
 
 		$name = (string) $name;
 
-		if($this->_load_application($name,$param) === true)
+		if($this->_load_application($name,$param,$components) === true)
 			$r = &$this->_application[$name];
 
 		return(($ref = &$r));
@@ -269,14 +269,17 @@ class xivo_service_abstract
 		return(true);
 	}
 
-	function _load_application($name,$param=null)
+	function _load_application($name,$param=null,$components=true)
 	{
 		$name = (string) $name;
+		$components = (bool) $components;
 
 		if(isset($this->_application[$name]) === true)
 		{
 			if(is_array($param) === true)
 				$this->_application[$name]->set_params($param);
+			if($components === true)
+				$this->_application[$name]->load_components();
 			return(true);
 		}
 		else if(($class = $this->_load_application_class($name)) === false)
@@ -285,9 +288,9 @@ class xivo_service_abstract
 			return(false);
 		}
 		else if(($dsoclass = $this->_load_dso_application($name)) !== false)
-			$this->_application[$name] = new $class($this,$dsoclass,$param);
+			$this->_application[$name] = new $class($this,$dsoclass,$param,$components);
 		else
-			$this->_application[$name] = new $class($this,$param);
+			$this->_application[$name] = new $class($this,$param,$components);
 
 		return(true);
 	}

@@ -380,28 +380,28 @@ class xivo_file
 	{
 		$file = (string) $file;
 
-		return((is_readable($file) === true && is_writeable($file) === true ? true : false));
+		return((is_readable($file) === true && is_writeable($file) === true));
 	}
 
 	function is_rx($file)
 	{
 		$file = (string) $file;
 
-		return((is_readable($file) === true && is_executable($file) === true ? true : false));
+		return((is_readable($file) === true && is_executable($file) === true));
 	}
 
 	function is_wx($file)
 	{
 		$file = (string) $file;
 
-		return((is_writeable($file) === true && is_executable($file) === true ? true : false));
+		return((is_writeable($file) === true && is_executable($file) === true));
 	}
 
 	function is_rwx($file)
 	{
 		$file = (string) $file;
 
-		return((is_readable($file) === true && is_writeable($file) === true && is_executable($file) === true ? true : false));
+		return((is_readable($file) === true && is_writeable($file) === true && is_executable($file) === true));
 	}
 
 	function is_f($file)
@@ -621,8 +621,8 @@ class xivo_file
 		else
 			return(false);
 
-		$use_inc_path = ($flags & FILE_USE_INCLUDE_PATH) !== 0 ? true : false;
-		$use_lock = ($flags & LOCK_EX) !== 0 ? true : false;
+		$use_inc_path = ($flags & FILE_USE_INCLUDE_PATH) !== 0;
+		$use_lock = ($flags & LOCK_EX) !== 0;
 
 		if(($fp = fopen($filename,$mode,$use_inc_path)) === false
 		|| ($use_lock === true && flock($fp,LOCK_EX) === false) === true)

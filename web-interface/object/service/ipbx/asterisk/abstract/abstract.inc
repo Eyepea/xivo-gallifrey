@@ -37,52 +37,6 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 			$this->_conf = array();
 	}
 
-	function enable($id,$value=false)
-	{
-		if(($id = xivo_uint($id)) === 0)
-			return(false);
-
-		$value = intval((bool) $value);
-
-		return($this->_dso->edit($id,array('commented' => $value)));
-	}
-
-	function disable($id,$value=true)
-	{
-		if(($id = xivo_uint($id)) === 0)
-			return(false);
-
-		$value = intval((bool) $value);
-
-		return($this->_dso->edit($id,array('commented' => $value)));
-	}
-
-	function enable_where($id,$value=false)
-	{
-		if(is_array($id) === false
-		|| ($where = $this->get_element_where($id)) === false)
-			return(false);
-
-		$value = intval((bool) $value);
-
-		$r = $this->_dso->edit($where,array('commented' => $value));
-
-		return($r);
-	}
-
-	function disable_where($id,$value=true)
-	{
-		if(is_array($id) === false
-		|| ($where = $this->get_element_where($id)) === false)
-			return(false);
-
-		$value = intval((bool) $value);
-
-		$r = $this->_dso->edit($where,array('commented' => $value));
-
-		return($r);
-	}
-
 	function chk_dest_endcall($val)
 	{
 		return($this->_chk_dest_value('endcall',$val));

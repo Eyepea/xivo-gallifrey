@@ -32,28 +32,24 @@ class xivo_service_asterisk_callfilter extends xivo_service_asterisk_abstract
 
 	function add($arr,$id=0)
 	{
-		if(is_array($arr) === false
-		|| $this->exists($arr) !== false)
+		if(is_array($arr) === false)
 			return(false);
 
-		if(($id = xivo_uint($id)) !== 0)
-			$arr['id'] = $id;
+		if(isset($arr['name']) === true)
+			$arr['name'] = strtolower($arr['name']);
 
-		$arr['name'] = strtolower($arr['name']);
-
-		return($this->_dso->add($arr));
+		return(parent::add($arr,$id));
 	}
 
 	function edit($id,$arr,$disable=null)
 	{
-		if(($id = xivo_uint($id)) === 0
-		|| is_array($arr) === false
-		|| $this->exists($arr,$id) !== false)
+		if(is_array($arr) === false)
 			return(false);
 
-		$arr['name'] = strtolower($arr['name']);
+		if(isset($arr['name']) === true)
+			$arr['name'] = strtolower($arr['name']);
 
-		return($this->_dso->edit($id,$arr,$disable));
+		return(parent::edit($id,$arr,$disable));
 	}
 
 	function is_valid($type,$typeopt)

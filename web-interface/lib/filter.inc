@@ -523,7 +523,7 @@ class xivo_filter
 		}
 
 		$chk = isset($arr['chk']) === false ? 1 : xivo_uint($arr['chk']);
-		$strict = isset($arr['strict']) === false ? true : false;
+		$strict = isset($arr['strict']) === false;
 
 		if(isset($arr['bool']) === true)
 			return($this->chk_bool($value));

@@ -192,8 +192,6 @@ class xivo_user_abstract
 
 	function _add_by_login_pass($login,$pass,$type,$valid=true)
 	{
-		$valid = (bool) $valid;
-
 		if(($meta = xivo_user::type_to_meta($type)) === false)
 			return(false);
 
@@ -202,7 +200,7 @@ class xivo_user_abstract
 		$arr['passwd'] = $pass;
 		$arr['meta'] = $meta;
 		$arr['time'] = gmmktime();
-		$arr['valid'] = $valid === false ? false : true;
+		$arr['valid'] = (bool) $valid;
 
 		return($this->_dso->add($arr));
 	}

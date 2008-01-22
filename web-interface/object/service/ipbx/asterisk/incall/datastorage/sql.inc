@@ -4,6 +4,8 @@ xivo_service_asterisk::required(array('abstract','datastorage','abstract','sql.i
 
 class xivo_service_asterisk_incall_sql extends xivo_service_asterisk_abstract_sql
 {
+	var $_unique	= array(array('exten','context'));
+
 	function search($exten,$disable=null,$order=null,$limit=null)
 	{
 		$this->_dso->new_select($this->_table);

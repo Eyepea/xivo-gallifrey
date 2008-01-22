@@ -37,41 +37,6 @@ class xivo_service_asterisk_agentfeatures extends xivo_service_asterisk_abstract
 
 		return($data);
 	}
-
-	function add($arr,$id=0)
-	{
-		if(is_array($arr) === false)
-			return(false);
-
-		if(($id = xivo_uint($id)) !== 0)
-			$arr['id'] = $id;
-
-		if(isset($arr['number']) === true)
-		{
-			$where = array('number' => $arr['number']);
-
-			if($this->get_id($where) !== false)
-				return(false);
-		}
-
-		return($this->_dso->add($arr));
-	}
-
-	function edit($id,$arr,$disable=null)
-	{
-		if(($id = xivo_uint($id)) === 0 || is_array($arr) === false)
-			return(false);
-
-		if(isset($arr['number']) === true)
-		{
-			$where = array('number' => $arr['number']);
-
-			if(($whereid = $this->get_id($where)) !== false && $whereid !== $id)
-				return(false);
-		}
-
-		return($this->_dso->edit($id,$arr,$disable));
-	}
 }
 
 ?>

@@ -102,7 +102,7 @@ class xivo_user
 		$r = isset($cfg['type'][$type]);
 
 		if($r === true && $real === true)
-			return(($type > 0 ? true : false));
+			return(($type > 0));
 
 		return($r);
 	}

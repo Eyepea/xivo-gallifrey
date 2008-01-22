@@ -10,7 +10,7 @@
 	$rightcall = $this->get_var('rightcall');
 
 	if(($vm_active = $info['voicemail']['commented']) !== null):
-		$vm_active = xivo_bool($vm_active) === true ? false : true;
+		$vm_active = xivo_bool($vm_active) === false;
 	endif;
 
 	if(isset($info['protocol']['allow']) === true):
@@ -19,11 +19,7 @@
 		$allow = array();
 	endif;
 
-	if(empty($allow) === true):
-		$codec_active = false;
-	else:
-		$codec_active = true;
-	endif;
+	$codec_active = empty($allow) === false;
 
 	if(isset($info['protocol']) === true):
 		$host = (string) xivo_ak('host',$info['protocol'],true);

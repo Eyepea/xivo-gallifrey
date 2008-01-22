@@ -507,7 +507,7 @@ class xivo_uri
 		$ip = (string) $ip;
 
 		if(($pos = strpos($ip,'::')) === false)
-			return(($this->_valid_rightipv6($ip) === 8 ? true : false));
+			return(($this->_valid_rightipv6($ip) === 8));
 
 		if(substr_count($ip,'::') !== 1)
 			return(false);
@@ -518,7 +518,7 @@ class xivo_uri
 		if(($left = $this->_valid_leftipv6(substr($ip,0,$pos))) === false)
 			return(false);
 
-		return(($right + $left < 8 ? true : false));
+		return(($right + $left < 8));
 	}
 
 	function _valid_h16($h16)

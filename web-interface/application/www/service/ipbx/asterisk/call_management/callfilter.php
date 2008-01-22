@@ -171,7 +171,7 @@ switch($act)
 		if(($values = xivo_issa_val('callfilters',$_QR)) === false)
 			$_QRY->go($_HTML->url('service/ipbx/call_management/callfilter'),$param);
 
-		$appcallfilter = &$ipbx->get_application('callfilter',array('type' => 'bosssecretary'));
+		$appcallfilter = &$ipbx->get_application('callfilter',array('type' => 'bosssecretary'),false);
 
 		$nb = count($values);
 
@@ -192,7 +192,7 @@ switch($act)
 		$act = 'list';
 		$nbbypage = XIVO_SRE_IPBX_AST_NBBYPAGE;
 
-		$appcallfilter = &$ipbx->get_application('callfilter',array('type' => 'bosssecretary'));
+		$appcallfilter = &$ipbx->get_application('callfilter',array('type' => 'bosssecretary'),false);
 
 		$order = array();
 		$order['name'] = SORT_ASC;

@@ -183,7 +183,7 @@ switch($act)
 		if(($values = xivo_issa_val('outcalls',$_QR)) === false)
 			$_QRY->go($_HTML->url('service/ipbx/call_management/outcall'),$param);
 
-		$appoutcall = &$ipbx->get_application('outcall');
+		$appoutcall = &$ipbx->get_application('outcall',null,false);
 
 		$nb = count($values);
 
@@ -204,7 +204,7 @@ switch($act)
 		$act = 'list';
 		$nbbypage = XIVO_SRE_IPBX_AST_NBBYPAGE;
 
-		$appoutcall = &$ipbx->get_application('outcall');
+		$appoutcall = &$ipbx->get_application('outcall',null,false);
 
 		$order = array();
 		$order['name'] = SORT_ASC;

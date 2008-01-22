@@ -7,7 +7,6 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 	var $_dso		= null;
 	var $_origin		= array();
 	var $_status		= '';
-	var $_cnt		= 0;
 	var $_phonebook		= null;
 	var $_phonebookaddress	= null;
 	var $_phonebooknumber	= null;
@@ -50,11 +49,6 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 		$this->_get_phonebooknumber();
 
 		return($this->_info);
-	}
-
-	function get_cnt()
-	{
-		return(xivo_uint($this->_cnt));
 	}
 
 	function _get_phonebookaddress()

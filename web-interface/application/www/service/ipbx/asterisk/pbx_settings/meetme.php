@@ -133,14 +133,24 @@ switch($act)
 		break;
 	default:
 		$act = 'list';
-		$total = 0;
+		$nbbypage = XIVO_SRE_IPBX_AST_NBBYPAGE;
 
-		if(($list = $ipbx->get_meetme_list()) !== false)
+		$appmeetme = &$ipbx->get_application('meetme',null,false);
+
+		$order = array();
+		$order['name'] = SORT_ASC;
+
+		$limit = array();
+		$limit[0] = ($page - 1) * $nbbypage;
+		$limit[1] = $nbbypage;
+
+		$list = $appmeetme->get_meetme_list(null,$order,$limit);
+		$total = $appmeetme->get_cnt();
+
+		if($list === false && $total > 0)
 		{
-			$total = count($list);
-			xivo::load_class('xivo_sort');
-			$sort = new xivo_sort(array('browse' => 'mfeatures','key' => 'name'));
-			usort($list,array(&$sort,'str_usort'));
+			$param['page'] = $page - 1;
+			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/meetme'),$param);
 		}
 
 		$_HTML->set_var('pager',xivo_calc_page($page,20,$total));

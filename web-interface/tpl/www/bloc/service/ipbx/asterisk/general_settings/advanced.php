@@ -47,7 +47,7 @@
 
 <div id="sb-part-first">
 
-<?=$form->checkbox(array('desc' => $this->bbf('fm_userinternal_guest'),'name' => 'userinternal[guest]','labelid' => 'userinternal-guest','checked' => ((bool) $this->get_varra('userinternal',array('guest','ufeatures','commented')) === true ? false : true)));?>
+<?=$form->checkbox(array('desc' => $this->bbf('fm_userinternal_guest'),'name' => 'userinternal[guest]','labelid' => 'userinternal-guest','checked' => ((bool) $this->get_varra('userinternal',array('guest','ufeatures','commented')) === false)));?>
 
 </div>
 

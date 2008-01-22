@@ -16,26 +16,21 @@ class xivo_gateclass
 
 	function set(&$obj,$name='')
 	{
-		$r = false;
-
 		$name = (string) $name;
 
-		if(is_object($obj) === true)
-		{
-			if($name === '')
-				$name = get_class($obj);
-			if($name !== '' && preg_match('/^([a-z0-9\-_]+)$/i',$name) !== 1)
-				return($r);
+		if(is_object($obj) === false)
+			return(false);
 
-			if(isset($this->_class[$name]) === false)
-			{
-				$r = true;
-				$this->_class[$name] = &$obj;
-			}
-			else $r = true;
-		}
+		if($name === '')
+			$name = get_class($obj);
 
-		return($r);
+		if($name !== '' && preg_match('/^[a-z0-9\-_]+$/i',$name) !== 1)
+			return(false);
+
+		if(isset($this->_class[$name]) === false)
+			$this->_class[$name] = &$obj;
+
+		return(true);
 	}
 
 	function &get($name)
@@ -64,14 +59,12 @@ class xivo_gateclass
 
 	function is_valid($name)
 	{
-		$r = false;
-
 		$name = (string) $name;
 
 		if(isset($this->_class[$name]) === true && is_object($this->_class[$name]) === true)
-			$r = true;
+			return(true);
 
-		return($r);
+		return(false);
 	}
 }
 

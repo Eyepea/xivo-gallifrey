@@ -29,58 +29,6 @@ class xivo_service_asterisk_uservoicemail extends xivo_service_asterisk_abstract
 
 		return($data);
 	}
-
-	function _origin($type,$val=null)
-	{
-		if($val !== null)
-			$orig = $val;
-		else
-			$orig = $this->_origin;
-
-		if(($type !== 'add' && $type !== 'edit') === true
-		|| is_array($orig) === false)
-			return(false);
-
-		if($type === 'add')
-			return($this->add($orig));
-		else
-			return($this->edit($orig['uniqueid'],$orig));
-	}
-
-	function add($arr,$id=0)
-	{
-		if(is_array($arr) === false)
-			return(false);
-
-		if(($id = xivo_uint($id)) !== 0)
-			$arr['uniqueid'] = $id;
-
-		if(isset($arr['mailbox'],$arr['context']) === true)
-		{
-			$where = array('mailbox' => $arr['mailbox'],'context' => $arr['context']);
-
-			if($this->get_id($where) !== false)
-				return(false);
-		}
-
-		return($this->_dso->add($arr));
-	}
-
-	function edit($id,$arr,$disable=null)
-	{
-		if(($id = xivo_uint($id)) === 0 || is_array($arr) === false)
-			return(false);
-
-		if(isset($arr['mailbox'],$arr['context']) === true)
-		{
-			$where = array('mailbox' => $arr['mailbox'],'context' => $arr['context']);
-
-			if(($whereid = $this->get_id($where)) !== false && $whereid !== $id)
-				return(false);
-		}
-
-		return($this->_dso->edit($id,$arr,$disable));
-	}
 }
 
 ?>

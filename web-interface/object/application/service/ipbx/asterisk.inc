@@ -8,6 +8,7 @@ class xivo_application_asterisk_abstract extends xivo_application_abstract
 	var $_abstract		= array();
 	var $_service_type	= 'ipbx';
 	var $_service_name	= 'asterisk';
+	var $_components	= false;
 
 	function xivo_application_asterisk_abstract(&$service)
 	{

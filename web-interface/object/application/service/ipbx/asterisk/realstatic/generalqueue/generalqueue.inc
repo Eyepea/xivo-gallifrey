@@ -8,7 +8,7 @@ class xivo_application_service_asterisk_realstatic_generalqueue extends xivo_app
 	var $_modulename	= 'generalqueue';
 	var $_category		= 'general';
 	var $_cat_metric	= 0;
-	var $_filename		= 'queue.conf';
+	var $_filename		= 'queues.conf';
 
 	function xivo_application_service_asterisk_realstatic_generalqueue(&$service)
 	{

@@ -89,11 +89,9 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 		}
 
 		if($replace === true)
-			$r = $this->_dso->edit($last,$arr);
-		else
-			$r = $this->_dso->add($arr);
+			return($this->_dso->edit($last,$arr));
 
-		return($r);
+		return($this->_dso->add($arr));
 	}
 
 	function edit($id,$arr,$delete=false)

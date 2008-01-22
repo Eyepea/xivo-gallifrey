@@ -13,14 +13,26 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 	var $_extenumbers	= null;
 	var $_musiconhold	= false;
 
-	function xivo_application_service_asterisk_meetme(&$service)
+	function xivo_application_service_asterisk_meetme(&$service,$param=null,$components=true)
 	{
 		$this->xivo_application_asterisk_abstract(&$service);
 
 		if(($this->_meetmefeatures = &$this->_service->get_module('meetmefeatures')) === false
 		|| ($this->_appmeetme = &$this->_service->get_apprealstatic('meetme')) === false
-		|| ($this->_meetmeroom = &$this->_appmeetme->get_module('room')) === false
-		|| ($this->_extensions = &$this->_service->get_module('extensions')) === false
+		|| ($this->_meetmeroom = &$this->_appmeetme->get_module('room')) === false)
+			return(false);
+		
+		if((bool) $components === true)
+			$this->load_components();
+
+		return(true);
+	}
+
+	function load_components()
+	{
+		$this->_components = true;
+
+		if(($this->_extensions = &$this->_service->get_module('extensions')) === false
 		|| ($this->_extenumbers = &$this->get_abstract('extenumbers')) === false)
 			return(false);
 
@@ -31,17 +43,16 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 	{
 		$this->_info = $this->_origin = array();
 
-		if(($this->_info['meetmeroom'] = $this->_meetmeroom->get_meetmeroom($id)) === false)
-			return(false);
-
-		$mfeatures_where = array();
-		$mfeatures_where['meetmeid'] = $this->_info['meetmeroom']['id'];
-
-		if(($this->_info['mfeatures'] = $this->_meetmefeatures->get_where($mfeatures_where)) === false)
+		if(($this->_info['meetmeroom'] = $this->_meetmeroom->get_meetmeroom($id)) === false
+		|| ($this->_info['mfeatures'] = $this->_meetmefeatures->get_where(
+							array('meetmeid' => $this->_info['meetmeroom']['id']))) === false)
 			return(false);
 
 		$this->_origin['mfeatures'] = $this->_meetmefeatures->get_origin();
 		$this->_origin['meetmeroom'] = $this->_meetmeroom->get_origin_var('meetmeroom');
+
+		if($this->_components === false)
+			return($this->_info);
 
 		$this->_get_exten();
 		$this->_get_extenumbers();
@@ -80,6 +91,37 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 
 		$r['mfeatures'] = $this->_meetmefeatures->get_element();
 		$r['meetmeroom'] = $this->_meetmeroom->get_element();
+
+		return($r);
+	}
+
+	function get_meetme_list($disable=null,$order=null,$limit=null)
+	{
+		if(($rs = $this->_meetmefeatures->get_all(null,true,$order,$limit)) === false
+		|| ($nb = count($rs)) === 0)
+		{
+			$this->_cnt = $this->_meetmefeatures->get_cnt();
+			return(false);
+		}
+		
+		$this->_cnt = $this->_meetmefeatures->get_cnt();
+
+		$r = $info = array();
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			$info['mfeatures'] = $rs[$i];
+
+			if(($info['meetmeroom'] = $this->_meetmeroom->get_meetmeroom(
+							$info['mfeatures']['meetmeid'],
+							$disable)) === false)
+				continue;
+
+			$r[] = $info;
+		}
+
+		if(isset($r[0]) === false)
+			$r = false;
 
 		return($r);
 	}

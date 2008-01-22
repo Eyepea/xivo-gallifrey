@@ -37,75 +37,10 @@ class xivo_server extends xivo_libdatastorage_abstract
 		if(is_array($arr) === false)
 			return(false);
 
-		if(($id = xivo_uint($id)) !== 0)
-			$arr['id'] = $id;
+		if(empty($id) === false)
+			$arr['dcreate'] = gmmktime();
 
-		if($this->exists_host_port($arr['host'],$arr['port']) !== false)
-			return(false);
-
-		if($this->exists_name($arr['name']) !== false)
-			return(false);
-
-		$arr['dcreate'] = gmmktime();
-
-		return($this->_dso->add($arr));
-	}
-
-	function edit($id,$arr,$disable=null)
-	{
-		if(($id = xivo_uint($id)) === 0
-		|| is_array($arr) === false
-		|| ($info = $this->get($id)) === false)
-			return(false);
-
-		if(isset($arr['host']) === false)
-			$host = $info['host'];
-		else
-			$host = $arr['host'];
-
-		if(isset($arr['port']) === false)
-			$port = $info['port'];
-		else
-			$port = $arr['port'];
-
-		if(isset($arr['name']) === true
-		&& $this->exists_name($arr['name'],$id) !== false)
-			return(false);
-
-		if($this->exists_host_port($host,$port,$id) !== false)
-			return(false);
-
-		return($this->_dso->edit($id,$arr));
-	}
-
-	function exists_name($name,$id=null)
-	{
-		$id = $id !== null ? xivo_uint($id) : null;
-
-		if(($whereid = $this->get_id(array('name' => $name))) !== false
-		&& ($id === null || $whereid !== $id) === true)
-			return(true);
-
-		return(false);
-	}
-
-	function exists_host_port($host,$port,$id=null)
-	{
-		$id = $id !== null ? xivo_uint($id) : null;
-
-		if(xivo_haslen($host) === false
-		|| xivo_haslen($port) === false)
-			return(null);
-
-		$where = array();
-		$where['host'] = $host;
-		$where['port'] = $port;
-
-		if(($whereid = $this->get_id($where)) !== false
-		&& ($id === null || $whereid !== $id) === true)
-			return(true);
-
-		return(false);
+		return(parent::add($arr,$id));
 	}
 
 	function _load_dso()

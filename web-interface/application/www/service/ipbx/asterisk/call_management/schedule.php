@@ -311,7 +311,7 @@ switch($act)
 			usort($list['meetme'],array(&$sort,'str_usort'));
 		}
 
-		if(($list['schedule'] = $schedule->get_all($info['schedule']['id'])) !== false)
+		if(($list['schedule'] = $schedule->get_all_except($info['schedule']['id'])) !== false)
 		{
 			xivo::load_class('xivo_sort');
 			$sort = new xivo_sort(array('key' => 'name'));
@@ -385,7 +385,7 @@ switch($act)
 	case 'disables':
 	case 'enables':
 		$param['page'] = $page;
-		$disable = $act === 'disables' ? true : false;
+		$disable = $act === 'disables';
 
 		if(($values = xivo_issa_val('schedules',$_QR)) === false)
 			$_QRY->go($_HTML->url('service/ipbx/call_management/schedule'),$param);

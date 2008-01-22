@@ -6,21 +6,32 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 {
 	var $_origin		= array();
 	var $_status		= '';
-	var $_cnt		= 0;
 	var $_outcall		= null;
 	var $_extenumbers	= null;
 	var $_outcalltrunk	= null;
 	var $_extensions	= null;
 	var $_rightcall		= null;
 
-	function xivo_application_service_asterisk_outcall(&$service)
+	function xivo_application_service_asterisk_outcall(&$service,$param=null,$components=true)
 	{
 		$this->xivo_application_asterisk_abstract(&$service);
 
 		if(($this->_outcall = &$this->_service->get_module('outcall')) === false
 		|| ($this->_extenumbers = &$this->get_abstract('extenumbers')) === false
-		|| ($this->_outcalltrunk = &$this->_service->get_module('outcalltrunk')) === false
-		|| ($this->_extensions = &$this->_service->get_module('extensions')) === false
+		|| ($this->_extensions = &$this->_service->get_module('extensions')) === false)
+			return(false);
+		
+		if((bool) $components === true)
+			$this->load_components();
+
+		return(true);
+	}
+
+	function load_components()
+	{
+		$this->_components = true;
+
+		if(($this->_outcalltrunk = &$this->_service->get_module('outcalltrunk')) === false
 		|| ($this->_rightcall = &$this->get_abstract('rightcall')) === false)
 			return(false);
 
@@ -38,6 +49,9 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 
 		$this->_origin['outcall'] = $this->_outcall->get_origin();
 		$this->_origin['extenumbers'] = $this->_extenumbers->get_origin();
+
+		if($this->_components === false)
+			return($this->_info);
 
 		$this->_get_outcalltrunk();
 		$this->_get_rightcall();
@@ -94,11 +108,6 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		$r['extenumbers'] = $this->_extenumbers->get_element();
 
 		return($r);
-	}
-
-	function get_cnt()
-	{
-		return(xivo_uint($this->_cnt));
 	}
 
 	function get_outcalls_list($disable=null,$order=null,$limit=null,$assoc=false)
@@ -545,7 +554,9 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 
 	function delete_outcalltrunk()
 	{
-		if(xivo_issa('outcall',$this->_info) === false)
+		if(xivo_issa('outcalltrunk',$this->_info) === false)
+			return(null);
+		else if(xivo_issa('outcall',$this->_info) === false)
 			return(false);
 
 		$r = $this->_outcalltrunk->delete_where(array('outcallid' => $this->_info['outcall']['id']));

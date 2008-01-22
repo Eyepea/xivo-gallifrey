@@ -48,9 +48,7 @@ class xivo_service_asterisk_agentgroup extends xivo_service_asterisk_abstract
 		if(isset($this->_origin) === true)
 			$this->_origin = $r;
 
-		$r = $this->_prepare($r);
-
-		return($r);
+		return($this->_prepare($r));
 	}
 
 	function get_id($arr,$disable=null,$delete=false)
@@ -131,11 +129,9 @@ class xivo_service_asterisk_agentgroup extends xivo_service_asterisk_abstract
 		}
 
 		if($replace === true)
-			$r = $this->_dso->edit($last,$arr);
-		else
-			$r = $this->_dso->add($arr);
+			return($this->_dso->edit($last,$arr));
 
-		return($r);
+		return($this->_dso->add($arr));
 	}
 
 	function edit($id,$arr,$disable=null,$delete=false)
@@ -223,28 +219,8 @@ class xivo_service_asterisk_agentgroup extends xivo_service_asterisk_abstract
 
 		if($prepare === false && $assoc === false)
 			return($list);
-		else if(($nb = count($list)) === 0)
-			return(false);
 
-		$r = array();
-
-		if($assoc === true && $prepare === true)
-		{
-			for($i = 0;$i < $nb;$i++)
-				$r[$list[$i]['id']] = $this->_prepare($list[$i]);
-		}
-		else if($assoc === true)
-		{
-			for($i = 0;$i < $nb;$i++)
-				$r[$list[$i]['id']] = $list[$i];
-		}
-		else
-		{
-			for($i = 0;$i < $nb;$i++)
-				$r[] = $this->_prepare($list[$i]);
-		}
-
-		return($r);
+		return($this->_mk_list_assoc_prepare($list,$assoc,$prepare));
 	}
 
 	function get_all_where($arr,$disable=null,$delete=false,$prepare=true,$order=null,$limit=null,$assoc=false)
@@ -266,28 +242,8 @@ class xivo_service_asterisk_agentgroup extends xivo_service_asterisk_abstract
 
 		if($prepare === false && $assoc === false)
 			return($list);
-		else if(($nb = count($list)) === 0)
-			return(false);
 
-		$r = array();
-
-		if($assoc === true && $prepare === true)
-		{
-			for($i = 0;$i < $nb;$i++)
-				$r[$list[$i]['id']] = $this->_prepare($list[$i]);
-		}
-		else if($assoc === true)
-		{
-			for($i = 0;$i < $nb;$i++)
-				$r[$list[$i]['id']] = $list[$i];
-		}
-		else
-		{
-			for($i = 0;$i < $nb;$i++)
-				$r[] = $this->_prepare($list[$i]);
-		}
-
-		return($r);
+		return($this->_mk_list_assoc_prepare($list,$assoc,$prepare));
 	}
 }
 

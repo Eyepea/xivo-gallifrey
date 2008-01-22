@@ -20,22 +20,17 @@ $gmember['list'] = $qmember['list'] = false;
 $gmember['info'] = $qmember['info'] = false;
 $gmember['slt'] = $qmember['slt'] = $rightcall['slt'] = array();
 
-xivo::load_class('xivo_sort');
-$groupsort = new xivo_sort(array('browse' => 'gfeatures','key' => 'name'));
+$appgroup = &$ipbx->get_application('group',null,false);
 
-if(($groups = $ipbx->get_groups_list(null,true)) !== false)
-{
-	uasort($groups,array(&$groupsort,'str_usort'));
+if(($groups = $appgroup->get_groups_list(null,array('name' => SORT_ASC),null,true)) !== false)
 	$gmember['list'] = $groups;
-}
 
-$queuesort = new xivo_sort(array('browse' => 'qfeatures','key' => 'name'));
+$appqueue = &$ipbx->get_application('queue',null,false);
 
-if(($queues = $ipbx->get_queues_list(null,true)) !== false)
-{
-	uasort($queues,array(&$queuesort,'str_usort'));
+if(($queues = $appqueue->get_queues_list(null,array('name' => SORT_ASC),null,true)) !== false)
 	$qmember['list'] = $queues;
-}
+
+xivo::load_class('xivo_sort');
 
 $rightcallsort = new xivo_sort(array('browse' => 'rightcall','key' => 'name'));
 
@@ -101,6 +96,8 @@ if($gmember['list'] !== false && xivo_ak('groupmember',$return) === true)
 	{
 		$gmember['info'] = xivo_array_copy_intersect_key($return['groupmember'],$gmember['slt'],'gfeaturesid');
 		$gmember['list'] = xivo_array_diff_key($gmember['list'],$gmember['slt']);
+
+		$groupsort = new xivo_sort(array('browse' => 'gfeatures','key' => 'name'));
 		uasort($gmember['slt'],array(&$groupsort,'str_usort'));
 	}
 }
@@ -113,6 +110,8 @@ if($qmember['list'] !== false && xivo_ak('queuemember',$return) === true)
 	{
 		$qmember['info'] = xivo_array_copy_intersect_key($return['queuemember'],$qmember['slt'],'qfeaturesid');
 		$qmember['list'] = xivo_array_diff_key($qmember['list'],$qmember['slt']);
+
+		$queuesort = new xivo_sort(array('browse' => 'qfeatures','key' => 'name'));
 		uasort($qmember['slt'],array(&$queuesort,'str_usort'));
 	}
 }

@@ -7,7 +7,7 @@ if(($arr = xivo_issa_val('peers',$_QR)) === false)
 
 $generalsip = &$ipbx->get_module('generalsip');
 
-$disable = $act === 'disables' ? true : false;
+$disable = $act === 'disables';
 
 $nb = count($arr);
 

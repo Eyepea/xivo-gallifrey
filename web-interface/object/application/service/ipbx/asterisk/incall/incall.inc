@@ -6,20 +6,31 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 {
 	var $_origin		= array();
 	var $_status		= '';
-	var $_cnt		= 0;
 	var $_incall		= null;
 	var $_extenumbers	= null;
 	var $_extensions	= null;
 	var $_rightcall		= null;
 
-	function xivo_application_service_asterisk_incall(&$service)
+	function xivo_application_service_asterisk_incall(&$service,$param=null,$components=true)
 	{
 		$this->xivo_application_asterisk_abstract(&$service);
 
 		if(($this->_incall = &$this->_service->get_module('incall')) === false
 		|| ($this->_extenumbers = &$this->get_abstract('extenumbers')) === false
-		|| ($this->_extensions = &$this->_service->get_module('extensions')) === false
-		|| ($this->_rightcall = &$this->get_abstract('rightcall')) === false)
+		|| ($this->_extensions = &$this->_service->get_module('extensions')) === false)
+			return(false);
+
+		if((bool) $components === true)
+			$this->load_components();
+
+		return(true);
+	}
+
+	function load_components()
+	{
+		$this->_components = true;
+
+		if(($this->_rightcall = &$this->get_abstract('rightcall')) === false)
 			return(false);
 
 		return(true);
@@ -36,6 +47,9 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 
 		$this->_origin['incall'] = $this->_incall->get_origin();
 		$this->_origin['extenumbers'] = $this->_extenumbers->get_origin();
+
+		if($this->_components === false)
+			return($this->_info);
 
 		$this->_get_rightcall();
 
@@ -84,11 +98,6 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		$r['extenumbers'] = $this->_extenumbers->get_element();
 
 		return($r);
-	}
-
-	function get_cnt()
-	{
-		return(xivo_uint($this->_cnt));
 	}
 
 	function get_incalls_search($search,$disable=null,$order=null,$limit=null,$assoc=false)

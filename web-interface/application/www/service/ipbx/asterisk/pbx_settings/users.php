@@ -13,18 +13,21 @@ if($search !== '')
 else if($context !== '')
 	$param['context'] = $context;
 
-$appuser = &$ipbx->get_application('user');
-
-$contexts = $appuser->get_all_context();
+$contexts = false;
 
 switch($act)
 {
 	case 'add':
 	case 'edit':
+		$appuser = &$ipbx->get_application('user');
+		$contexts = $appuser->get_all_context();
+
 		include(dirname(__FILE__).'/users/'.$act.'.php');
 		break;
 	case 'delete':
 		$param['page'] = $page;
+
+		$appuser = &$ipbx->get_application('user');
 
 		if(isset($_QR['id']) === false || $appuser->get($_QR['id']) === false)
 			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/users'),$param);
@@ -40,6 +43,8 @@ switch($act)
 
 		if(($values = xivo_issa_val('users',$_QR)) === false)
 			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/users'),$param);
+
+		$appuser = &$ipbx->get_application('user');
 
 		$nb = count($values);
 
@@ -62,11 +67,13 @@ switch($act)
 		if(($values = xivo_issa_val('users',$_QR)) === false)
 			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/users'),$param);
 
+		$appuser = &$ipbx->get_application('user',null,false);
+
 		$nb = count($values);
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			if($appuser->get($values[$i],null,false) === false)
+			if($appuser->get($values[$i]) === false)
 				continue;
 
 			if($act === 'disables')
@@ -80,6 +87,9 @@ switch($act)
 		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/users'),$param);
 		break;
 	case 'import':
+		$appuser = &$ipbx->get_application('user');
+		$contexts = $appuser->get_all_context();
+
 		if(isset($_QR['fm_send']) === true)
 		{
 			$appuser->import_csv();
@@ -91,6 +101,9 @@ switch($act)
 		break;
 	case 'list':
 	default:
+		$appuser = &$ipbx->get_application('user');
+		$contexts = $appuser->get_all_context();
+
 		$act = 'list';
 		$nbbypage = XIVO_SRE_IPBX_AST_NBBYPAGE;
 

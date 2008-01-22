@@ -65,84 +65,49 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 
 	function get($id,$orig=true,$disable=null)
 	{
-		if(($orig = (bool) $orig) === true)
-			$this->_origin = false;
+		$origin = $this->_origin;
 
-		if(($id = xivo_uint($id)) === 0
-		|| ($r = $this->_dso->get($id,$disable)) === false
+		if(($orig = (bool) $orig) === false)
+			$this->_origin = null;
+
+		if(($r = parent::get($id,$disable)) === false
 		|| $this->_sre->chk_protocol($r['protocol']) === false)
+		{
+			$this->_origin = $origin;
 			return(false);
+		}
+		else if($orig === false)
+			$this->_origin = $origin;
 
-		if($orig === true)
-			$this->_origin = $r;
-
-		$r = $this->_prepare($r);
-
-		return($r);
+		return($this->_prepare($r));
 	}
 
 	function get_where($arr,$orig=true,$disable=null,$id=null)
 	{
-		if(($orig = (bool) $orig) === true)
-			$this->_origin = false;
+		$origin = $this->_origin;
 
-		if(is_array($arr) === false
-		|| ($where = $this->get_element_where($arr)) === false
-		|| ($id !== null && ($where['id'] = xivo_uint($id)) === 0) === true
-		|| ($r = $this->_dso->get($where)) === false)
+		if(($orig = (bool) $orig) === false)
+			$this->_origin = null;
+
+		if(($r = parent::get_where($arr,$disable,$id)) === false)
+		{
+			$this->_origin = $origin;
 			return(false);
-
-		if($orig === true)
-			$this->_origin = $r;
-
-		$r = $this->_prepare($r);
+		}
+		else if($orig === false)
+			$this->_origin = $origin;
 
 		return($r);
 	}
 
 	function get_by_protocol($id,$protocol,$orig=true,$disable=null)
 	{
-		$r = false;
-
 		if(($id = xivo_uint($id)) === 0
 		|| $this->_sre->chk_protocol($protocol) === false
 		|| ($r = $this->get_where(array('protocolid' => $id,'protocol' => $protocol),$orig,$disable)) === false)
-			return($r);
+			return(false);
 
 		return($r);
-	}
-
-	function add($arr,$id=0)
-	{
-		if(is_array($arr) === false)
-			return(false);
-
-		if(($id = xivo_uint($id)) !== 0)
-			$arr['id'] = $id;
-
-		if(isset($arr['protocol']) === false
-		|| ($arr['provisioningid'] = $this->_mk_provisioning_id($arr['protocol'])) === false
-		|| $this->_sre->chk_protocol($arr['protocol']) === false)
-			return(false);
-
-		if(isset($arr['name']) === true)
-		{
-			$arr['name'] = strtolower($arr['name']);
-			$where = array('name' => $arr['name'],'protocol' => $arr['protocol']);
-
-			if($this->get_id($where) !== false)
-				return(false);
-	
-			if((isset($arr['destrna']) === true
-			   && $arr['name'] === $arr['destrna']) === true
-			|| (isset($arr['destbusy']) === true
-			   && $arr['name'] === $arr['destbusy']) === true
-			|| (isset($arr['destunc']) === true
-			   && $arr['name'] === $arr['destunc']) === true)
-				return(false);
-		}
-
-		return($this->_dso->add($arr));
 	}
 
 	function _mk_provisioning_id($protocol)
@@ -160,53 +125,54 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 
 		if($r > $min && $r < $max && $this->get_id(array('provisioningid' => $r)) === false)
 			return($r);
-		else
-			$r = $this->_mk_provisioning_id($protocol);
 
-		return($r);
+		return($this->_mk_provisioning_id($protocol));
+	}
+
+	function add($arr,$id=0)
+	{
+		if(is_array($arr) === false)
+			return(false);
+		else if(isset($arr['protocol']) === false
+		|| ($arr['provisioningid'] = $this->_mk_provisioning_id($arr['protocol'])) === false
+		|| $this->_sre->chk_protocol($arr['protocol']) === false)
+			return(false);
+		else if(isset($arr['name']) === true)
+		{
+			$arr['name'] = strtolower($arr['name']);
+
+			if((isset($arr['destrna']) === true
+			   && $arr['name'] === $arr['destrna']) === true
+			|| (isset($arr['destbusy']) === true
+			   && $arr['name'] === $arr['destbusy']) === true
+			|| (isset($arr['destunc']) === true
+			   && $arr['name'] === $arr['destunc']) === true)
+				return(false);
+		}
+
+		return(parent::add($arr,$id));
 	}
 
 	function edit($id,$arr,$provisioning=false,$disable=null)
 	{
-		$provisioning = (bool) $provisioning;
-
-		if(($id = xivo_uint($id)) === 0
-		|| is_array($arr) === false
-		|| ($info = $this->get($id,false)) === false)
+		if(is_array($arr) === false)
 			return(false);
+		else if(isset($arr['name']) === true)
+		{
+			$arr['name'] = strtolower($arr['name']);
 
-		$where = array();
-
-		if(isset($arr['name']) === false)
-			$where['name'] = $info['name'];
-		else
-			$arr['name'] = $where['name'] = strtolower($arr['name']);
-
-		if(isset($arr['protocol']) === false)
-			$where['protocol'] = $info['protocol'];
-		else
-			$where['protocol'] = $arr['protocol'];
-
-		if(($whereid = $this->get_id($where)) !== false && $whereid !== $id)
-			return(false);
-
-		if(isset($arr['destrna']) === false)
-			$arr['destrna'] = $info['destrna'];
-
-		if(isset($arr['destbusy']) === false)
-			$arr['destbusy'] = $info['destbusy'];
-
-		if(isset($arr['destunc']) === false)
-			$arr['destunc'] = $info['destunc'];
-
-		if($arr['destrna'] === $where['name']
-		|| $arr['destbusy'] === $where['name']
-		|| $arr['destunc'] === $where['name'])
-			return(false);
+			if((isset($arr['destrna']) === true
+			   && $arr['name'] === $arr['destrna']) === true
+			|| (isset($arr['destbusy']) === true
+			   && $arr['name'] === $arr['destbusy']) === true
+			|| (isset($arr['destunc']) === true
+			   && $arr['name'] === $arr['destunc']) === true)
+				return(false);
+		}
 
 		if(isset($arr['protocol']) === true)
 		{
-			if($provisioning === true
+			if((bool) $provisioning === true
 			&& ($arr['provisioningid'] = $this->_mk_provisioning_id($arr['protocol'])) === false)
 				return(false);
 
@@ -214,7 +180,7 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 				return(false);
 		}
 
-		return($this->_dso->edit($id,$arr,$disable));
+		return(parent::edit($id,$arr,$disable));
 	}
 
 	function search($value,$disable=null,$order=null,$limit=null,$number=false)

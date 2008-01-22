@@ -50,24 +50,21 @@ class xivo_service_asterisk_incall extends xivo_service_asterisk_abstract
 		if(is_array($arr) === false)
 			return(false);
 
-		if(($id = xivo_uint($id)) !== 0)
-			$arr['id'] = $id;
-
 		if(isset($arr['exten']) === true)
 			$arr['exten'] = $this->_sre->clean_extension($arr['exten']);
 
-		return($this->_dso->add($arr));
+		return(parent::add($arr,$id));
 	}
 
-	function edit($id,$arr)
+	function edit($id,$arr,$disable=null)
 	{
-		if(($id = xivo_uint($id)) === 0 || is_array($arr) === false)
+		if(is_array($arr) === false)
 			return(false);
 
 		if(isset($arr['exten']) === true)
 			$arr['exten'] = $this->_sre->clean_extension($arr['exten']);
 
-		return($this->_dso->edit($id,$arr));
+		return(parent::edit($id,$arr,$disable));
 	}
 
 	function linked($id,$disable=null)

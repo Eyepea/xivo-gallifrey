@@ -42,9 +42,7 @@ class xivo_service_asterisk_zonemessages extends xivo_service_asterisk_staticcon
 
 		$this->_origin = $r;
 
-		$r = $this->_prepare($r);
-
-		return($r);
+		return($this->_prepare($r));
 	}
 
 	function get_where($arr,$disable=null)
@@ -61,9 +59,7 @@ class xivo_service_asterisk_zonemessages extends xivo_service_asterisk_staticcon
 
 		$this->_origin = $r;
 
-		$r = $this->_prepare($r);
-
-		return($r);
+		return($this->_prepare($r));
 	}
 
 	function _prepare($data)

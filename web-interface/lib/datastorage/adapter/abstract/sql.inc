@@ -1987,7 +1987,7 @@ class xivo_datastorage_adapter_abstract_sql
 
 		if((xivo_haslen($query) === false
 		   && ($query = $this->get_select()) === null) === true
-		|| $this->query($query,($free === true ? false : true)) === false)
+		|| $this->query($query,($free === false)) === false)
 			return(false);
 
 		$r = array();
@@ -2008,7 +2008,7 @@ class xivo_datastorage_adapter_abstract_sql
 
 		if((xivo_haslen($query) === false
 		   && ($query = $this->get_select()) === null) === true
-		|| $this->query($query,($free === true ? false : true)) === false)
+		|| $this->query($query,($free === false)) === false)
 			return(false);
 
 		$r = array();
@@ -2073,7 +2073,7 @@ class xivo_datastorage_adapter_abstract_sql
 				$query .= ' LIMIT '.$limit;
 		}
 
-		if($this->query($query,($free === true ? false : true)) === false)
+		if($this->query($query,($free === false)) === false)
 			return(false);
 
 		if(($r = $this->fetch_row()) !== false)
@@ -2104,7 +2104,7 @@ class xivo_datastorage_adapter_abstract_sql
 			$this->_limit = $limit;
 		}
 
-		if($this->query($query,($free === true ? false : true)) === false)
+		if($this->query($query,($free === false)) === false)
 			return(false);
 
 		if(($r = $this->fetch_row()) !== false)
@@ -2135,7 +2135,7 @@ class xivo_datastorage_adapter_abstract_sql
 			$this->_limit = $limit;
 		}
 
-		if($this->query($query,($free === true ? false : true)) === false)
+		if($this->query($query,($free === false)) === false)
 			return(false);
 
 		$r = $this->fetch_assoc();
@@ -2153,7 +2153,7 @@ class xivo_datastorage_adapter_abstract_sql
 
 		if((xivo_haslen($query) === false
 		   && ($query = $this->get_select()) === null) === true
-		|| $this->query($query,($free === true ? false : true)) === false)
+		|| $this->query($query,($free === false)) === false)
 			return(false);
 
 		$r = array();
