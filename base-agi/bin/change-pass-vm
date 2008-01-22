@@ -19,9 +19,6 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-# XXX TODO BUGBUG FIXME SATAN: any print or sys.stdout.write is probably a bug,
-# remove every prints and include the correct modules (Xilun - 2007-06-15)
-
 CONFIG_FILE = '/etc/asterisk/xivo_agi.conf'
 
 import xivo.to_path
@@ -30,32 +27,18 @@ import sys
 import anysql
 from BackSQL import backsqlite
 from BackSQL import backmysql
-import ConfigParser
-from ConfigDict import *
-
-options = { "db_uri" : "" }
-conf_obj = ConfigParser.ConfigParser()
-conf_obj.readfp(open(CONFIG_FILE))
-FillDictFromConfigSection(options, conf_obj, "db")
-
-try:
-        conn = anysql.connect_by_uri(options['db_uri'])
-except:
-        print "VERBOSE \"Unable to connect to %s\"" %options['db_uri']
-        raise
+import ConfigDict
 
 if len(sys.argv) != 4:
-        print "Missing args!"
-        sys.exit()
+        raise ValueError, "Missing args!"
 
-# FIXME : Make the table dynamic (Xilun 2007-06-15: what does that mean? its name configurable maybe?)
-table = 'uservoicemail'
+db_uri = ConfigDict.ReadSingleKey(CONFIG_FILE, 'db', 'db_uri')
+conn = anysql.connect_by_uri(db_uri)
 
 context = sys.argv[1]
 mailbox = sys.argv[2]
 password = sys.argv[3]
 
 cursor = conn.cursor()
-query = "UPDATE %s SET password='%s' WHERE context='%s' AND mailbox='%s'" % (table, password, context, mailbox)
-cursor.query(query)
+cursor.query("UPDATE uservoicemail SET password='%s' WHERE context='%s' AND mailbox='%s'" % (password, context, mailbox))
 conn.commit()
