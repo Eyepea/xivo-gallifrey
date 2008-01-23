@@ -331,7 +331,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 	function get_agents_list($group=0,$disable=null,$assoc=false)
 	{
-		$group = xivo_uint($group);
+		$group = xivo_ulongint($group);
 		$assoc = (bool) $assoc;
 
 		$afeatures = &$this->get_module('agentfeatures');
@@ -417,7 +417,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 	function _get_queue_member($usertype='',$userid=0,$disable=null,$assoc=false)
 	{
 		$usertype = (string) $usertype;
-		$userid = xivo_uint($userid);
+		$userid = xivo_ulongint($userid);
 		$assoc = (bool) $assoc;
 	
 		$qfeatures = &$this->get_module('queuefeatures');
@@ -472,7 +472,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 	function get_group_agent($userid=0,$disable=null)
 	{
-		$userid = xivo_uint($userid);
+		$userid = xivo_ulongint($userid);
 	
 		$agroup = &$this->get_module('agentgroup');
 		$agent = &$this->get_module('agent');

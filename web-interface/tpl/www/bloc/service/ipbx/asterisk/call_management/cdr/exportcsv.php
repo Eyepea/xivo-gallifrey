@@ -8,11 +8,13 @@ $info = $this->get_var('info');
 if($result === false)
 	die();
 
-header('Expires: 0');
+header('Pragma: no-cache');
+header('Cache-Control: private, must-revalidate');
 header('Last-Modified: '.date('D, d M Y H:i:s',mktime()).' '.strftime('%Z'));
-header('Cache-Control: must-revalidate');
-header('Content-Type: text/csv');
 header('Content-Disposition: attachment; filename=xivo_cdr-'.strftime('%Y-%m-%d-%H:%M:%S').'.csv');
+header('Content-Type: text/csv; charset=UTF-8');
+
+ob_start();
 
 echo	'"',str_replace('"','""',$this->bbf('fm_dbeg')),'";',
 	'"',str_replace('"','""',$info['dbeg']),'"',"\n";
@@ -91,6 +93,8 @@ echo "\n";
 if($result === null || ($nb = count($result)) === 0)
 {
 	echo	$this->bbf('no_cdr-result');
+	header('Content-Length: '.ob_get_length());
+	ob_end_flush();
 	die();
 }
 
@@ -136,6 +140,8 @@ for($i = 0;$i < $nb;$i++)
 		'"',str_replace('"','""',$ref['uniqueid']),'"',"\n";
 }
 
+header('Content-Length: '.ob_get_length());
+ob_end_flush();
 die();
 
 ?>

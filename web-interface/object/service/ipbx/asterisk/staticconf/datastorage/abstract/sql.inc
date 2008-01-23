@@ -6,7 +6,7 @@ class xivo_service_asterisk_staticconf_abstract_sql extends xivo_service_asteris
 {
 	function get($id,$disable=null)
 	{
-		if(($id = xivo_uint($id)) === 0)
+		if(($id = xivo_ulongint($id)) === 0)
 			return(false);
 
 		$this->_dso->new_select($this->_table);
@@ -53,7 +53,7 @@ class xivo_service_asterisk_staticconf_abstract_sql extends xivo_service_asteris
 
 	function edit($id,$value)
 	{
-		if(($id = xivo_uint($id)) === 0)
+		if(($id = xivo_ulongint($id)) === 0)
 			return(false);
 
 		return($this->_dso->update($this->_table,$value,array('id' => $id)));
@@ -72,7 +72,7 @@ class xivo_service_asterisk_staticconf_abstract_sql extends xivo_service_asteris
 
 	function delete($id)
 	{
-		if(($id = xivo_uint($id)) === 0)
+		if(($id = xivo_ulongint($id)) === 0)
 			return(false);
 
 		return($this->_dso->delete($this->_table,array('id' => $id)));

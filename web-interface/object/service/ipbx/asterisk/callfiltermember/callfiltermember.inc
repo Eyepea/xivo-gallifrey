@@ -38,7 +38,7 @@ class xivo_service_asterisk_callfiltermember extends xivo_service_asterisk_abstr
 		switch($type)
 		{
 			case 'user':
-				$typeval = (int) $typeval;
+				$typeval = xivo_ulongint($typeval);
 				$module = $this->_sre->get_module('userfeatures');
 				break;
 			default:

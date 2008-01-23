@@ -82,7 +82,7 @@ class xivo_application_service_asterisk_realstatic_meetme_room extends xivo_appl
 	{
 		if(xivo_issa($this->_name,$this->_info) === true)
 			$id = $this->_info[$this->_name]['id'];
-		else if(($id = xivo_uint($id)) === 0)
+		else if(($id = xivo_ulongint($id)) === 0)
 			return(false);
 
 		if(($rs = $this->get_result($this->_name)) === null || $rs === false)
@@ -112,7 +112,7 @@ class xivo_application_service_asterisk_realstatic_meetme_room extends xivo_appl
 	{
 		if(xivo_issa($this->_name,$this->_info) === true)
 			$id = $this->_info[$this->_name]['id'];
-		else if(($id = xivo_uint($id)) === 0)
+		else if(($id = xivo_ulongint($id)) === 0)
 			return(null);
 
 		$r = $this->_realstatic->delete($id);

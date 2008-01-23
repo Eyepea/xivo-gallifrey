@@ -36,7 +36,7 @@ class xivo_application_service_asterisk_abstract_sql extends xivo_datastorage_he
 
 	function get_cnt()
 	{
-		return(xivo_uint($this->_cnt));
+		return(xivo_ulongint($this->_cnt));
 	}
 
 	function _get_table($module)

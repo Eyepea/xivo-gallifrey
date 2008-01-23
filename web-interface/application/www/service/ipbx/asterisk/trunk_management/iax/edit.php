@@ -11,7 +11,7 @@ if(isset($_QR['id']) === false
 					'trunk' => 'iax'))) === false)
 	$_QRY->go($_HTML->url('service/ipbx/trunk_management/iax'),$param);
 
-$registerid = (int) $info['tfeatures']['registerid'];
+$registerid = xivo_ulongint($info['tfeatures']['registerid']);
 
 $generaliax = &$ipbx->get_module('generaliax');
 

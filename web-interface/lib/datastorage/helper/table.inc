@@ -76,7 +76,7 @@ class xivo_datastorage_helper_table extends xivo_datastorage_helper_abstract
 					$r[strval($val)] = '';
 			}
 			else if(xivo_haslen($key) === true && is_scalar($val) === true)
-				$r[strval($key)] = $val;
+				$r[strval($key)] = is_null($val) === true || is_bool($val) === true ? '' : $val;
 		}
 
 		if(empty($r) === false)
@@ -210,14 +210,14 @@ class xivo_datastorage_helper_table extends xivo_datastorage_helper_abstract
 		return($r);
 	}
 
-	function get_id($arr,$disable=null)
+	function get_primary($arr,$disable=null)
 	{
 		return($this->get($arr,$disable,true));
 	}
 
 	function get_cnt()
 	{
-		return(xivo_uint($this->_cnt));
+		return(xivo_ulongint($this->_cnt));
 	}
 
 	function get_nb($arr=null,$disable=null)
@@ -236,7 +236,7 @@ class xivo_datastorage_helper_table extends xivo_datastorage_helper_abstract
 		if(is_array($arr) === true)
 			$this->_dso->where($arr);
 
-		return((int) $this->_dso->select_count());
+		return(xivo_ulongint($this->_dso->select_count()));
 	}
 
 	function chk_unique($arr,$primary=null)
@@ -314,13 +314,12 @@ class xivo_datastorage_helper_table extends xivo_datastorage_helper_abstract
 
 		if($this->_dso->insert($this->_table,$arr) === false)
 			return(false);
-		else if((bool) $insertid === false
-		|| $this->_autoincrement === false
-		|| $this->is_single_primary() === false
-		|| is_int(current($this->_primary)) === false)
-			return(true);
+		else if((bool) $insertid === true
+		&& $this->_autoincrement === true
+		&& $this->is_single_primary() === true)
+			return($this->_dso->insert_id());
 
-		return($this->_dso->insert_id());
+		return(true);
 	}
 
 	function edit($arr,$value,$disable=null,$unique=true)
@@ -352,8 +351,7 @@ class xivo_datastorage_helper_table extends xivo_datastorage_helper_abstract
 		if(is_array($arr) === false
 		&& ($arr = $this->mk_primary_key_value($arr)) === false)
 			return(false);
-	
-		if(isset($this->_forcecolumn) === true)
+		else if(isset($this->_forcecolumn) === true)
 			$arr = array_merge($arr,$this->_forcecolumn);
 
 		if($disable !== null && isset($this->_disable) === true)
@@ -403,8 +401,7 @@ class xivo_datastorage_helper_table extends xivo_datastorage_helper_abstract
 
 		if(is_array($arr) === false || empty($arr) === true)
 			return(false);
-
-		if((bool) $all === false && isset($this->_primary) === true)
+		else if((bool) $all === false && isset($this->_primary) === true)
 			$column = array_keys($this->_primary);
 		else
 			$column = '*';

@@ -138,7 +138,7 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 		$chkcontext = (bool) $chkcontext;
 
 		if($id !== null)
-			$id = xivo_uint($id);
+			$id = xivo_ulongint($id);
 
 		if(($module = $this->_sre->get_module($type)) === false
 		|| ($info = $module->get($val,$disable)) === false

@@ -28,7 +28,7 @@ class xivo_service_asterisk_usersip_sql extends xivo_service_asterisk_abstract_s
 				$this->_dso->andwherenot('IFNULL(fullcontact,\'\') = \'\'');
 		}
 
-		return((int) $this->_dso->select_count());
+		return(xivo_ulongint($this->_dso->select_count()));
 	}
 }
 

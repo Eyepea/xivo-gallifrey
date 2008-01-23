@@ -27,7 +27,7 @@ class xivo_service_asterisk_userfeatures_sql extends xivo_service_asterisk_abstr
 		return(parent::get($arr,$disable,$primary));
 	}
 
-	function get_id($arr,$disable=null)
+	function get_primary($arr,$disable=null)
 	{
 		return($this->get($arr,$disable,true));
 	}

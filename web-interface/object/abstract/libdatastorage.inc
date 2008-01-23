@@ -209,7 +209,7 @@ class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 		return($this->_prepare($r));
 	}
 
-	function get_id($arr,$disable=null,$id=null)
+	function get_primary($arr,$disable=null,$id=null)
 	{
 		if(is_array($arr) === true
 		&& ($arr = $this->get_element_where($arr)) === false)
@@ -223,7 +223,7 @@ class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 			$arr = array_merge($arr,$id);
 		}
 
-		return($this->_dso->get_id($arr,$disable));
+		return($this->_dso->get_primary($arr,$disable));
 	}
 
 	function get_where($arr,$disable=null,$id=null)

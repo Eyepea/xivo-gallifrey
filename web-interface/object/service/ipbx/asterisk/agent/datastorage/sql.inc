@@ -8,7 +8,7 @@ class xivo_service_asterisk_agent_sql extends xivo_service_asterisk_staticconf_a
 
 	function get_all_by_var_metric($id,$disable=null)
 	{
-		if(($id = xivo_uint($id)) === 0)
+		if(($id = xivo_ulongint($id)) === 0)
 			return(false);
 
 		$this->_dso->new_select($this->_table);

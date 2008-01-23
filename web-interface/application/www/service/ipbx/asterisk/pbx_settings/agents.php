@@ -233,7 +233,7 @@ switch($act)
 				$agent_info['agentid'] = $ref['afeatures']['agentid'];
 				$agent_info['numgroup'] = $ref['afeatures']['numgroup'];
 
-				if((int) $agents[$i]['afeatures']['numgroup'] !== (int) $group)
+				if(xivo_ulongint($agents[$i]['afeatures']['numgroup']) !== xivo_ulongint($group))
 				{
 					$agent_info['afeaturesid'] = $ref['afeatures']['id'];
 					$agent_unslt[] = $agent_info;
@@ -406,7 +406,8 @@ switch($act)
 				{
 					$ref = &$agent_unslt[$i];
 
-					if((int) $ref['numgroup'] === $defgroup || (int) $ref['numgroup'] !== (int) $info['agroup']['id'])
+					if(xivo_ulongint($ref['numgroup']) === $defgroup
+					|| xivo_ulongint($ref['numgroup']) !== xivo_ulongint($info['agroup']['id']))
 						continue;
 
 					$agent_id = $ref['agentid'];
@@ -434,7 +435,7 @@ switch($act)
 
 					$ref = &$agent_slt[$agent_id];
 					
-					if((int) $ref['numgroup'] === (int) $info['agroup']['id'])
+					if(xivo_ulongint($ref['numgroup']) === xivo_ulongint($info['agroup']['id']))
 					{
 						$agent_order[] = $ref['agentid'];
 						continue;
@@ -825,7 +826,7 @@ switch($act)
 				$result['agent'] = $agent->get_filter_result();
 			}
 
-			if((int) $result['afeatures']['numgroup'] === (int) $info['afeatures']['numgroup'])
+			if(xivo_ulongint($result['afeatures']['numgroup']) === xivo_ulongint($info['afeatures']['numgroup']))
 				unset($result['agent']['group']);
 
 			$aqueue_where = array(

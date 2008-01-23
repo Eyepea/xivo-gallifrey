@@ -120,28 +120,6 @@ class xivo_service_asterisk_dialstatus extends xivo_service_asterisk_abstract
 
 		return(false);
 	}
-
-	function exists($status,$category,$categoryval,$id=null)
-	{
-		$id = $id !== null ? xivo_uint($id) : null;
-
-		if(is_string($status) === false
-		|| xivo_haslen($status) === false
-		|| $this->chk_element_value('category',$category) === false
-		|| xivo_haslen($categoryval) === false)
-			return(null);
-
-		$where = array();
-		$where['status'] = $status;
-		$where['category'] = $category;
-		$where['categoryval'] = $categoryval;
-
-		if(($whereid = $this->get_id($where)) !== false
-		&& ($id === null || $whereid !== $id) === true)
-			return(true);
-
-		return(false);
-	}
 }
 
 ?>

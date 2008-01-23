@@ -231,9 +231,9 @@ class xivo_application_asterisk_abstract extends xivo_application_abstract
 		$userid = $groupid = 0;
 
 		if($type === 'user')
-			$userid = xivo_uint($id);
+			$userid = xivo_ulongint($id);
 		else if($type === 'group')
-			$groupid = xivo_uint($id);
+			$groupid = xivo_ulongint($id);
 
 		if(($ufeatures = &$this->_service->get_module('userfeatures')) !== false
 		&& ($r['users'] = $ufeatures->get_all_number($userid)) !== false)

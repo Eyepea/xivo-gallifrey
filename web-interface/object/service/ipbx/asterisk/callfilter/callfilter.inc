@@ -60,23 +60,6 @@ class xivo_service_asterisk_callfilter extends xivo_service_asterisk_abstract
 
 		return(true);
 	}
-
-	function exists($arr,$id=null)
-	{
-		$id = $id !== null ? xivo_uint($id) : null;
-
-		if(is_array($arr) === false || isset($arr['name']) === false)
-			return(null);
-
-		$where = array();
-		$where['name'] = strtolower($arr['name']);
-
-		if(($whereid = $this->get_id($where)) !== false
-		&& ($id === null || $whereid !== $id) === true)
-			return(true);
-
-		return(false);
-	}
 }
 
 ?>

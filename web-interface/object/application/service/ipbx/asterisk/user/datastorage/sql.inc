@@ -69,7 +69,7 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_servic
 							  'IFNULL('.$this->_table['usersip'].'.fullcontact,\'\') = \'\'');
 		}
 
-		return((int) $this->_dso->select_count(null,'id',$this->_table['userfeatures']));
+		return(xivo_ulongint($this->_dso->select_count(null,'id',$this->_table['userfeatures'])));
 	}
 
 	function search($value,$disable=null,$initialized=null,$order=null,$limit=null,$type=0)
@@ -298,7 +298,7 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_servic
 
 	function get_bsfilter($id,$context,$bsfilter)
 	{
-		if(($id = xivo_uint($id)) === 0)
+		if(($id = xivo_ulongint($id)) === 0)
 			return(false);
 
 		$this->_dso->new_select($this->_table['userfeatures'],null);
@@ -354,8 +354,8 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_servic
 
 	function chk_bsfilter($id,$context,$bsfilter,$user2id)
 	{
-		if(($id = xivo_uint($id)) === 0
-		|| ($user2id = xivo_uint($user2id)) === 0)
+		if(($id = xivo_ulongint($id)) === 0
+		|| ($user2id = xivo_ulongint($user2id)) === 0)
 			return(false);
 
 		$this->_dso->new_select($this->_table['callfilter'],null);

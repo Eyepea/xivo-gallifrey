@@ -208,7 +208,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			if(($id = $module->get_id(array('name' => $ref[$i]['queue_name']))) === false)
+			if(($id = $module->get_primary(array('name' => $ref[$i]['queue_name']))) === false)
 				continue;
 
 			if($type === 'queue')
@@ -746,7 +746,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			|| isset($list[$qname]) === false
 			|| ($chantype = xivo_ak('chantype',$list[$qname],true)) === false
 			|| ($interface = $this->mk_interface($name,$chantype,$context,$number,$protocolname)) === false
-			|| ($typeid = $module->get_id(array('name' => $qname))) === false)
+			|| ($typeid = $module->get_primary(array('name' => $qname))) === false)
 				continue;
 
 			$info['queue_name'] = $qname;
@@ -985,7 +985,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 	function add_userfeatures($protocolid)
 	{
-		if(($protocolid = xivo_uint($protocolid)) === 0
+		if(($protocolid = xivo_ulongint($protocolid)) === 0
 		|| ($rs = $this->get_result('ufeatures')) === null
 		|| $rs === false)
 			return(false);
@@ -1019,7 +1019,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 	function _add_member_type($type,$ufeaturesid)
 	{
 		if(($type !== 'group' && $type !== 'queue') === true
-		|| ($ufeaturesid = xivo_uint($ufeaturesid)) === 0)
+		|| ($ufeaturesid = xivo_ulongint($ufeaturesid)) === 0)
 			return(false);
 
 		$key = $type.'member';
@@ -1084,7 +1084,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 	{
 		$rs = false;
 
-		if(($ufeaturesid = xivo_uint($ufeaturesid)) === 0
+		if(($ufeaturesid = xivo_ulongint($ufeaturesid)) === 0
 		|| ($rs = $this->get_result('phonefunckey')) === null
 		|| $rs === false)
 			return($rs);
@@ -1138,7 +1138,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 	{
 		$rs = false;
 
-		if(($ufeaturesid = xivo_uint($ufeaturesid)) === 0
+		if(($ufeaturesid = xivo_ulongint($ufeaturesid)) === 0
 		|| ($rs = $this->get_result('autoprov')) === null
 		|| $rs === false)
 			return($rs);
@@ -1351,7 +1351,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			return(false);
 		else if($this->_info['ufeatures']['protocol'] === $this->_protocolname)
 			return($protocol->edit_origin($this->_origin['protocol']));
-		else if(($protocolid = xivo_uint($protocolid)) === 0
+		else if(($protocolid = xivo_ulongint($protocolid)) === 0
 		|| ($proto = &$this->_service->get_protocol_module($this->_protocolname)) === false
 		|| $proto->delete($protocolid) === false)
 			return(false);
@@ -1372,7 +1372,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$rs['protocolid'] = $this->_info['protocol']['id'];
 			$provisioning = false;
 		}
-		else if(($protocolid = xivo_uint($protocolid)) !== 0)
+		else if(($protocolid = xivo_ulongint($protocolid)) !== 0)
 		{
 			$rs['protocolid'] = $protocolid;
 			$provisioning = true;

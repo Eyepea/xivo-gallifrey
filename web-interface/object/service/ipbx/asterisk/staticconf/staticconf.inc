@@ -19,7 +19,7 @@ class xivo_service_asterisk_staticconf extends xivo_service_asterisk_abstract
 
 	function get($id,$disable=null)
 	{
-		if(($id = xivo_uint($id)) === 0
+		if(($id = xivo_ulongint($id)) === 0
 		|| ($r = $this->_dso->get($id,$disable)) === false)
 			return(false);
 
@@ -43,7 +43,7 @@ class xivo_service_asterisk_staticconf extends xivo_service_asterisk_abstract
 		$where['filename'] = $this->_filename;
 
 		if(isset($arr['id']) === true)
-			$where['id'] = (int) $arr['id'];
+			$where['id'] = xivo_ulongint($arr['id']);
 
 		if(isset($arr['category']) === true)
 			$where['category'] = $arr['category'];
@@ -94,7 +94,7 @@ class xivo_service_asterisk_staticconf extends xivo_service_asterisk_abstract
 
 		$r = array();
 
-		if(($id = xivo_uint($id)) !== 0)
+		if(($id = xivo_ulongint($id)) !== 0)
 			$r['id'] = $id;
 
 		$r['filename'] = $this->_filename;
@@ -174,7 +174,7 @@ class xivo_service_asterisk_staticconf extends xivo_service_asterisk_abstract
 
 	function edit($id,$arr)
 	{
-		if(($id = xivo_uint($id)) === 0 || is_array($arr) === false)
+		if(($id = xivo_ulongint($id)) === 0 || is_array($arr) === false)
 			return(false);
 
 		$r = array();
@@ -329,7 +329,7 @@ class xivo_service_asterisk_staticconf extends xivo_service_asterisk_abstract
 
 	function delete($id)
 	{
-		if(($id = xivo_uint($id)) === 0)
+		if(($id = xivo_ulongint($id)) === 0)
 			return(false);
 
 		return($this->_dso->delete($id));

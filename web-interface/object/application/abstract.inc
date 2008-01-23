@@ -71,7 +71,7 @@ class xivo_application_abstract extends xivo_libconfig_abstract
 
 	function get_cnt()
 	{
-		return(xivo_uint($this->_cnt));
+		return(xivo_ulongint($this->_cnt));
 	}
 
 	function get_info()

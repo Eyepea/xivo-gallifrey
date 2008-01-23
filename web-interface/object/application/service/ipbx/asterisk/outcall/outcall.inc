@@ -250,7 +250,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		{
 			$info['priority'] = $j;
 
-			if(($info['trunkfeaturesid'] = $trunkfeatures->get_id($arr[$i])) === false
+			if(($info['trunkfeaturesid'] = $trunkfeatures->get_primary($arr[$i])) === false
 			|| ($rs = $this->_outcalltrunk->chk_values($info)) === false
 			|| isset($tmp[$rs['trunkfeaturesid']]) === true)
 				continue;
@@ -318,7 +318,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 
 	function add_outcalltrunk($outcallid)
 	{
-		if(($outcallid = xivo_uint($outcallid)) === 0
+		if(($outcallid = xivo_ulongint($outcallid)) === 0
 		|| ($rs = $this->get_result('outcalltrunk')) === null
 		|| $rs === false)
 			return(false);
@@ -363,7 +363,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 	{
 		if($this->get_errnb() > 0
 		|| $this->_status !== 'add'
-		|| ($outcallid = xivo_uint($outcallid)) === 0
+		|| ($outcallid = xivo_ulongint($outcallid)) === 0
 		|| ($arr = xivo_get_aks($this->_return)) === false)
 			return(false);
 

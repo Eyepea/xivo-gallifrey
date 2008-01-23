@@ -252,7 +252,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 
 	function add_meetmefeatures($meetmeid)
 	{
-		if(($meetmeid = xivo_uint($meetmeid)) === 0
+		if(($meetmeid = xivo_ulongint($meetmeid)) === 0
 		|| ($rs = $this->get_result('mfeatures')) === null
 		|| $rs === false)
 			return(false);

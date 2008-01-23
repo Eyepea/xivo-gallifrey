@@ -132,7 +132,7 @@ class xivo_application_service_asterisk_handynumbers extends xivo_application_as
 			if(is_array($ref) === false || isset($ref['trunkfeaturesid'],$ref['exten']) === false)
 				continue;
 
-			if(($ref['trunkfeaturesid'] = $this->_trunkfeatures->get_id($ref['trunkfeaturesid'])) === false)
+			if(($ref['trunkfeaturesid'] = $this->_trunkfeatures->get_primary($ref['trunkfeaturesid'])) === false)
 				$this->_set_error($j,'wrong trunk');
 
 			if($this->set_extenumbers($ref['exten']) === false)
@@ -266,7 +266,7 @@ class xivo_application_service_asterisk_handynumbers extends xivo_application_as
 	{
 		$rs = false;
 
-		if(($handynumbersid = xivo_uint($handynumbersid)) === 0
+		if(($handynumbersid = xivo_ulongint($handynumbersid)) === 0
 		|| ($rs = $this->get_result('extenumbers')) === null
 		|| $rs === false)
 			return($rs);

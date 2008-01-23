@@ -14,7 +14,7 @@ switch($act)
 		if(isset($_QR['fm_send']) === true
 		&& $_USR->edit($info['meta'],$_QR) === true)
 		{
-			if((int) $_USR->get_info('id') === (int) $_QR['id'])
+			if(xivo_ulongint($_USR->get_info('id')) === xivo_ulongint($_QR['id']))
 				$_USR->load_by_id($_QR['id']);
 
 			$_QRY->go($_HTML->url('xivo/configuration/users'),$param);

@@ -100,16 +100,6 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		return($r);
 	}
 
-	function get_by_protocol($id,$protocol,$orig=true,$disable=null)
-	{
-		if(($id = xivo_uint($id)) === 0
-		|| $this->_sre->chk_protocol($protocol) === false
-		|| ($r = $this->get_where(array('protocolid' => $id,'protocol' => $protocol),$orig,$disable)) === false)
-			return(false);
-
-		return($r);
-	}
-
 	function _mk_provisioning_id($protocol)
 	{
 		if($this->_chk_exists_cfg('provisioning_id',$protocol) === false)
@@ -123,7 +113,7 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 
 		$r = $ref['prefix'].substr(crc32(uniqid(rand(),true)),1,$len);
 
-		if($r > $min && $r < $max && $this->get_id(array('provisioningid' => $r)) === false)
+		if($r > $min && $r < $max && $this->get_primary(array('provisioningid' => $r)) === false)
 			return($r);
 
 		return($this->_mk_provisioning_id($protocol));
@@ -208,7 +198,7 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 
 	function get_all_number($id=0,$disable=null)
 	{
-		$id = xivo_uint($id);
+		$id = xivo_ulongint($id);
 
 		if(($list = $this->get_all($disable)) === false)
 			return(false);
@@ -221,7 +211,7 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		{
 			$info = $list[$i];
 
-			if($id === (int) $info['id'] || xivo_haslen($info['number']) === false)
+			if($id === $info['id'] || xivo_haslen($info['number']) === false)
 				continue;
 
 			$r[] = $info;

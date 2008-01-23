@@ -519,7 +519,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 	{
 		$rs = false;
 
-		if(($gfeaturesid = xivo_uint($gfeaturesid)) === 0
+		if(($gfeaturesid = xivo_ulongint($gfeaturesid)) === 0
 		|| ($rs = $this->get_result('user_callgroup')) === null
 		|| $rs === false)
 			return($rs);
@@ -753,7 +753,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 
 	function edit_user_callgroup($gfeaturesid)
 	{
-		if(($gfeaturesid = xivo_uint($gfeaturesid)) === 0
+		if(($gfeaturesid = xivo_ulongint($gfeaturesid)) === 0
 		|| isset($this->_origin['user']) === false)
 			return(false);
 		else if(is_array($this->_origin['user']) === false

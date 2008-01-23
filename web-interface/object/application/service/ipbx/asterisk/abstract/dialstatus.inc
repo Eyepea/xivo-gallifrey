@@ -21,7 +21,7 @@ class xivo_application_service_asterisk_dialstatus_abstract extends xivo_applica
 		$this->_info = false;
 		$this->_origin = false;
 
-		if(is_string($type) === false || ($id = xivo_uint($id)) === 0)
+		if(is_string($type) === false || ($id = xivo_ulongint($id)) === 0)
 			return(false);
 
 		$where = array();
@@ -144,7 +144,7 @@ class xivo_application_service_asterisk_dialstatus_abstract extends xivo_applica
 
 	function add($id)
 	{
-		if(($id = xivo_uint($id)) === 0)
+		if(($id = xivo_ulongint($id)) === 0)
 			return(false);
 		else if(($rs = $this->get_result()) === null || $rs === false)
 			return($rs);
@@ -181,7 +181,7 @@ class xivo_application_service_asterisk_dialstatus_abstract extends xivo_applica
 
 	function edit($status,$type,$id)
 	{
-		if(($id = xivo_uint($id)) === 0)
+		if(($id = xivo_ulongint($id)) === 0)
 			return(false);
 		else if(empty($this->_info) === true)
 			return($this->add($id));
@@ -227,7 +227,7 @@ class xivo_application_service_asterisk_dialstatus_abstract extends xivo_applica
 		if(empty($this->_info) === true)
 			return(null);
 		else if(is_string($type) === false
-		|| ($id = xivo_uint($id)) === 0)
+		|| ($id = xivo_ulongint($id)) === 0)
 			return(false);
 
 		$dialstatus_where = array();
@@ -266,7 +266,7 @@ class xivo_application_service_asterisk_dialstatus_abstract extends xivo_applica
 	function unlinked($type,$id)
 	{
 		if(is_string($type) === false
-		|| ($id = xivo_uint($id)) === 0)
+		|| ($id = xivo_ulongint($id)) === 0)
 			return(false);
 
 		$dialstatus_where = array();

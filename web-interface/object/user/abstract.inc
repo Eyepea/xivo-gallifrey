@@ -34,7 +34,7 @@ class xivo_user_abstract
 
 	function get($id)
 	{
-		if(($id = xivo_uint($id)) === 0)
+		if(($id = xivo_ulongint($id)) === 0)
 			return(false);
 
 		return($this->_dso->get($id));

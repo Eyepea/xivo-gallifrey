@@ -541,7 +541,7 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 
 	function _add_callfilterbs($callfilterid)
 	{
-		if(($callfilterid = xivo_uint($callfilterid)) === 0
+		if(($callfilterid = xivo_ulongint($callfilterid)) === 0
 		|| ($rs = $this->get_result('callfiltermember')) === null
 		|| $rs === false
 		|| isset($rs['boss'],$rs['secretary']) === false
@@ -557,7 +557,7 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 
 		$rs['boss']['callfilterid'] = $callfilterid;
 
-		if($this->_callfiltermember->get_id($where) !== false
+		if($this->_callfiltermember->get_primary($where) !== false
 		|| ($this->_return['callfiltermember'][] = $this->_callfiltermember->add($rs['boss'])) === false)
 			return(false);
 
@@ -704,7 +704,7 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 		else
 			$cid = 0;
 
-		if($this->_callfiltermember->get_id($where) !== false
+		if($this->_callfiltermember->get_primary($where) !== false
 		|| ($this->_return['callfiltermember'][] = $this->_callfiltermember->add($rs['boss'],$cid)) === false)
 			return(false);
 

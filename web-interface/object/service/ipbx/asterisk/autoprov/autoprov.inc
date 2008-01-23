@@ -264,7 +264,7 @@ class xivo_service_asterisk_autoprov extends xivo_service_asterisk_abstract
 
 	function userdeleted($iduserfeatures)
 	{
-		if(($id = xivo_uint($iduserfeatures)) === 0)
+		if(($id = xivo_ulongint($iduserfeatures)) === 0)
 			return(false);
 
 		$r = array();

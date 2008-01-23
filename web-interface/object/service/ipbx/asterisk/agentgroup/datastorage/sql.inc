@@ -16,7 +16,7 @@ class xivo_service_asterisk_agentgroup_sql extends xivo_service_asterisk_abstrac
 		return(parent::get($arr,$disable,$primary));
 	}
 
-	function get_id($arr,$disable=null,$delete=null)
+	function get_primary($arr,$disable=null,$delete=null)
 	{
 		return($this->get($arr,$disable,$delete,true));
 	}

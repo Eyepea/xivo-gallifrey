@@ -28,7 +28,7 @@ class xivo_service_asterisk_agentgroup extends xivo_service_asterisk_abstract
 		$data['deleted'] = (bool) $data['deleted'];
 		$data['commented'] = (bool) $data['commented'];
 
-		if($this->get_defgroup() === (int) $data['id'])
+		if($this->get_defgroup() === $data['id'])
 			$data['deletable'] = false;
 		else
 			$data['deletable'] = true;
@@ -41,7 +41,7 @@ class xivo_service_asterisk_agentgroup extends xivo_service_asterisk_abstract
 		if(isset($this->_origin) === true)
 			$this->_origin = false;
 
-		if(($id = xivo_uint($id)) === 0
+		if(($id = xivo_ulongint($id)) === 0
 		|| ($r = $this->_dso->get($id,$disable,$delete)) === false)
 			return(false);
 
@@ -51,13 +51,13 @@ class xivo_service_asterisk_agentgroup extends xivo_service_asterisk_abstract
 		return($this->_prepare($r));
 	}
 
-	function get_id($arr,$disable=null,$delete=false)
+	function get_primary($arr,$disable=null,$delete=false)
 	{
 		if(is_array($arr) === true
 		&& ($arr = $this->get_element_where($arr)) === false)
 			return(false);
 
-		return($this->_dso->get_id($arr,$disable,$delete));
+		return($this->_dso->get_primary($arr,$disable,$delete));
 	}
 
 	function get_where($arr,$disable=null,$delete=false)
@@ -93,7 +93,7 @@ class xivo_service_asterisk_agentgroup extends xivo_service_asterisk_abstract
 	function get_defgroup()
 	{
 		if(isset($this->_conf['group_default']) === false
-		|| ($r = xivo_uint($this->_conf['group_default'])) === 0)
+		|| ($r = xivo_ulongint($this->_conf['group_default'])) === 0)
 			$r = false;
 
 		return($r);
@@ -124,7 +124,7 @@ class xivo_service_asterisk_agentgroup extends xivo_service_asterisk_abstract
 		{
 			$where = array('name' => $arr['name']);
 
-			if($this->get_id($where) !== false)
+			if($this->get_primary($where) !== false)
 				return(false);
 		}
 
@@ -136,14 +136,14 @@ class xivo_service_asterisk_agentgroup extends xivo_service_asterisk_abstract
 
 	function edit($id,$arr,$disable=null,$delete=false)
 	{
-		if(($id = xivo_uint($id)) === 0 || is_array($arr) === false)
+		if(($id = xivo_ulongint($id)) === 0 || is_array($arr) === false)
 			return(false);
 
 		if(isset($arr['name']) === true)
 		{
 			$where = array('name' => $arr['name']);
 
-			if(($whereid = $this->get_id($where)) !== false && $whereid !== $id)
+			if(($whereid = $this->get_primary($where)) !== false && $whereid !== $id)
 				return(false);
 		}
 

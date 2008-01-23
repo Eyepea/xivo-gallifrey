@@ -49,9 +49,9 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 		return(parent::get($id,$delete));
 	}
 
-	function get_id($arr,$delete=false)
+	function get_primary($arr,$delete=false)
 	{
-		return(parent::get_id($arr,$delete));
+		return(parent::get_primary($arr,$delete));
 	}
 
 	function get_where($arr,$delete=false)
@@ -84,7 +84,7 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 			$arr['name'] = strtolower($arr['name']);
 			$where = array('name' => $arr['name']);
 
-			if($this->get_id($where) !== false)
+			if($this->get_primary($where) !== false)
 				return(false);
 		}
 
@@ -96,7 +96,7 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 
 	function edit($id,$arr,$delete=false)
 	{
-		if(($id = xivo_uint($id)) === 0 || is_array($arr) === false)
+		if(($id = xivo_ulongint($id)) === 0 || is_array($arr) === false)
 			return(false);
 
 		if(isset($arr['name']) === true)
@@ -104,7 +104,7 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 			$arr['name'] = strtolower($arr['name']);
 			$where = array('name' => $arr['name']);
 
-			if(($whereid = $this->get_id($where)) !== false && $whereid !== $id)
+			if(($whereid = $this->get_primary($where)) !== false && $whereid !== $id)
 				return(false);
 		}
 
@@ -163,7 +163,7 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 
 	function get_all_number($id=0)
 	{
-		$id = xivo_uint($id);
+		$id = xivo_ulongint($id);
 
 		if(($list = $this->get_all()) === false)
 			return(false);
@@ -176,7 +176,7 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 		{
 			$info = $list[$i];
 
-			if($id === (int) $info['id'] || xivo_haslen($info['number']) === false)
+			if($id === $info['id'] || xivo_haslen($info['number']) === false)
 				continue;
 
 			$r[] = $info;

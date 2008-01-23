@@ -113,7 +113,7 @@ class xivo_application_service_asterisk_serverfeatures extends xivo_application_
 
 		for($i = $j = $k = 0;$i < $nb;$i++)
 		{
-			if(($info['serverid'] = $this->_server->get_id($list[$i])) === false
+			if(($info['serverid'] = $this->_server->get_primary($list[$i])) === false
 			|| ($rs = $this->_serverfeatures->chk_values($info)) === false
 			|| isset($tmp[$rs['serverid']]) === true)
 			{

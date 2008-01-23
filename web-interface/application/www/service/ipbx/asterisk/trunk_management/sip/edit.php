@@ -11,7 +11,7 @@ if(isset($_QR['id']) === false
 					'trunk' => 'sip'))) === false)
 	$_QRY->go($_HTML->url('service/ipbx/trunk_management/sip'),$param);
 
-$registerid = (int) $info['tfeatures']['registerid'];
+$registerid = xivo_ulongint($info['tfeatures']['registerid']);
 
 $generalsip = &$ipbx->get_module('generalsip');
 

@@ -353,7 +353,7 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 	function _add_rightcall_member_type($type,$rightcallid)
 	{
 		if($this->_rightcallmember->chk_element_value('type',$type) === false
-		|| ($rightcallid = xivo_uint($rightcallid)) === 0)
+		|| ($rightcallid = xivo_ulongint($rightcallid)) === 0)
 			return(false);
 
 		$key = 'rightcall'.$type;
@@ -381,7 +381,7 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 
 	function add_rightcallexten($rightcallid)
 	{
-		if(($rightcallid = xivo_uint($rightcallid)) === 0)
+		if(($rightcallid = xivo_ulongint($rightcallid)) === 0)
 			return(false);
 		else if(($rs = $this->get_result('rightcallexten')) === null || $rs === false)
 			return($rs);

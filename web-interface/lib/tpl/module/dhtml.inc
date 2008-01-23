@@ -257,10 +257,7 @@ class xivo_tpl_dhtml extends xivo_tpl_module
 
 		ob_start();
 		include($this->get_file('dhtml'));
-		$r = ob_get_contents();
-		ob_end_clean();
-
-		return($r);
+		return(ob_get_clean());
 	}
 }
 

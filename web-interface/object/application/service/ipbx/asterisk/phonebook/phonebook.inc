@@ -370,10 +370,9 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 	function _add_phonebook_type($type,$id)
 	{
 		if(($type !== 'address' && $type !== 'number') === true
-		|| ($id = xivo_uint($id)) === 0)
+		|| ($id = xivo_ulongint($id)) === 0)
 			return(false);
-
-		if($type === 'address')
+		else if($type === 'address')
 		{
 			$typename = 'phonebookaddress';
 			$module = &$this->_phonebookaddress;

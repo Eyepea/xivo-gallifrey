@@ -97,7 +97,7 @@ class xivo_application_service_asterisk_extenumbers_abstract extends xivo_applic
 	{
 		if(empty($this->_info) === false)
 			$id = $this->_info['id'];
-		else if(($id = xivo_uint($id)) === 0)
+		else if(($id = xivo_ulongint($id)) === 0)
 			return(false);
 
 		if(($rs = $this->get_result()) === null || $rs === false)
@@ -122,7 +122,7 @@ class xivo_application_service_asterisk_extenumbers_abstract extends xivo_applic
 	{
 		if(empty($this->_info) === false)
 			$id = $this->_info['id'];
-		else if(($id = xivo_uint($id)) === 0)
+		else if(($id = xivo_ulongint($id)) === 0)
 			return(null);
 
 		$r = $this->_extenumbers->delete($id);

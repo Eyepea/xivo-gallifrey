@@ -48,15 +48,13 @@ class xivo_service_asterisk_agent extends xivo_service_asterisk_staticconf
 	{
 		$this->_origin = false;
 
-		if(($id = xivo_uint($id)) === 0
+		if(($id = xivo_ulongint($id)) === 0
 		|| ($r = $this->_dso->get($id,$disable)) === false)
 			return(false);
 
 		$this->_origin = $r;
 
-		$r = $this->_prepare($r);
-
-		return($r);
+		return($this->_prepare($r));
 	}
 
 	function get_where($arr,$disable=null)
@@ -85,7 +83,7 @@ class xivo_service_asterisk_agent extends xivo_service_asterisk_staticconf
 
 	function add_group($group,$list=array(),$id=0)
 	{
-		if(($group = xivo_uint($group)) === 0)
+		if(($group = xivo_ulongint($group)) === 0)
 			return(false);
 
 		$list = array_values((array) $list);
@@ -108,7 +106,7 @@ class xivo_service_asterisk_agent extends xivo_service_asterisk_staticconf
 
 	function edit_group($id,$group,$list=array())
 	{
-		if(($group = xivo_uint($group)) === 0)
+		if(($group = xivo_ulongint($group)) === 0)
 			return(false);
 
 		$list = array_values((array) $list);
@@ -133,8 +131,7 @@ class xivo_service_asterisk_agent extends xivo_service_asterisk_staticconf
 	{
 		if(($r = $this->_get_agent($id,$disable)) === false)
 			return(false);
-
-		if(($opt = $this->_get_opt_by_agent($r['var_metric'])) === false)
+		else if(($opt = $this->_get_opt_by_agent($r['var_metric'])) === false)
 			return($r);
 
 		$nb = count($opt);
@@ -149,7 +146,7 @@ class xivo_service_asterisk_agent extends xivo_service_asterisk_staticconf
 	{
 		$this->_origin = false;
 
-		if(($id = xivo_uint($id)) === 0)
+		if(($id = xivo_ulongint($id)) === 0)
 			return(false);
 
 		$arr = array();
@@ -161,9 +158,7 @@ class xivo_service_asterisk_agent extends xivo_service_asterisk_staticconf
 
 		$this->_origin = $r;
 
-		$r = $this->_prepare($r);
-
-		return($r);
+		return($this->_prepare($r));
 	}
 
 	function _origin($type,$val=null)

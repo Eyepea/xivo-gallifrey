@@ -62,7 +62,7 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 
 		$r = array();
 
-		if(($id = xivo_uint($id)) !== 0)
+		if(($id = xivo_ulongint($id)) !== 0)
 			$r['id'] = $id;
 
 		$r['context'] = $arr['context'];
@@ -90,7 +90,7 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 
 	function edit($id,$arr,$disable=null)
 	{
-		if(($id = xivo_uint($id)) === 0 || is_array($arr) === false)
+		if(($id = xivo_ulongint($id)) === 0 || is_array($arr) === false)
 			return(false);
 
 		$r = array();

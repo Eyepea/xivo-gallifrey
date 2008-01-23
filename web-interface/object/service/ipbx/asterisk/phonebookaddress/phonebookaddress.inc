@@ -28,7 +28,7 @@ class xivo_service_asterisk_phonebookaddress extends xivo_service_asterisk_abstr
 	{
 		$prepare = (bool) $prepare;
 
-		if(($phonebookid = xivo_uint($phonebookid)) === 0)
+		if(($phonebookid = xivo_ulongint($phonebookid)) === 0)
 			return(false);
 
 		$arr = array('phonebookid' => $phonebookid);

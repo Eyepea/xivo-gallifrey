@@ -127,7 +127,7 @@ class xivo_service_asterisk_realstatic extends xivo_service_asterisk_abstract
 
 		$r = array();
 
-		if(($id = xivo_uint($id)) !== 0)
+		if(($id = xivo_ulongint($id)) !== 0)
 			$r['id'] = $id;
 
 		$r['filename'] = $this->_filename;
@@ -220,7 +220,7 @@ class xivo_service_asterisk_realstatic extends xivo_service_asterisk_abstract
 
 	function edit($id,$arr)
 	{
-		if(($id = xivo_uint($id)) === 0 || is_array($arr) === false)
+		if(($id = xivo_ulongint($id)) === 0 || is_array($arr) === false)
 			return(false);
 
 		$r = array();

@@ -33,7 +33,7 @@ class xivo_user_abstract_sql
 
 	function edit($id,$arr)
 	{
-		if(($id = xivo_uint($id)) === 0)
+		if(($id = xivo_ulongint($id)) === 0)
 			return(false);
 
 		$arr['dupdate'] = time();
@@ -45,7 +45,7 @@ class xivo_user_abstract_sql
 
 	function get($id)
 	{
-		if(($id = xivo_uint($id)) === 0)
+		if(($id = xivo_ulongint($id)) === 0)
 			return(false);
 
 		$this->_dso->new_select($this->_param['table']);
@@ -67,7 +67,7 @@ class xivo_user_abstract_sql
 		if($valid !== null)
 			$this->_dso->where(array('valid' => intval((bool) $valid)));
 
-		return((int) $this->_dso->select_count());
+		return(xivo_ulongint($this->_dso->select_count()));
 	}
 
 	function get_by_login_pass($login,$pass)
@@ -104,7 +104,7 @@ class xivo_user_abstract_sql
 
 	function chk_update($id,$dupdate)
 	{
-		if(($id = xivo_uint($id)) === 0 || ($dupdate = xivo_uint($dupdate)) === 0)
+		if(($id = xivo_ulongint($id)) === 0 || ($dupdate = xivo_uint($dupdate)) === 0)
 			return(false);
 
 		$this->_dso->new_select($this->_param['table'],'id');
@@ -129,7 +129,7 @@ class xivo_user_abstract_sql
 
 	function _save_obj($id,$obj)
 	{
-		if(($id = xivo_uint($id)) === 0 || is_array($obj) === false)
+		if(($id = xivo_ulongint($id)) === 0 || is_array($obj) === false)
 			return(false);
 
 		$r = $this->_dso->update($this->_param['table'],
@@ -141,7 +141,7 @@ class xivo_user_abstract_sql
 
 	function _get_obj($id)
 	{
-		if(($id = xivo_uint($id)) === 0)
+		if(($id = xivo_ulongint($id)) === 0)
 			return(false);
 
 		$this->_dso->new_select($this->_param['table'],'obj');
