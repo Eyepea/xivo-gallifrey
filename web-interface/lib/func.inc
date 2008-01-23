@@ -122,7 +122,7 @@ function xivo_ulongint($str,$def=0,$t=false)
 {
 	$str = strval($str);
 
-	if(preg_match('/^[1-9][0-9]{0,19}$/',$str,$match) === 1)
+	if(preg_match('/^[1-9][0-9]{0,19}$/',$str) === 1)
 		return($str);
 
 	$str = (bool) $t === false ? strval($def) : xivo_ulongint($def);
