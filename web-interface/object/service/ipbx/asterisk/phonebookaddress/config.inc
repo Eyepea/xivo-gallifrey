@@ -29,7 +29,7 @@ $array['element']['type']['value'] = array('home','office','other');
 $array['element']['type']['default'] = 'office';
 
 $array['filter'] = array();
-$array['filter']['phonebookid'] = array('cast' => 'uint');
+$array['filter']['phonebookid'] = array('cast' => 'ulongint');
 $array['filter']['address1'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 30);
 $array['filter']['address2'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 30);
 $array['filter']['city'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 128);

@@ -11,7 +11,7 @@ $array['element']['type']['value'] = array('phonebook');
 $array['element']['type']['default'] = 'phonebook';
 
 $array['filter'] = array();
-$array['filter']['serverid'] = array('cast' => 'uint');
+$array['filter']['serverid'] = array('cast' => 'ulongint');
 $array['filter']['type'] = array('key' => array('phonebook'));
 
 ?>

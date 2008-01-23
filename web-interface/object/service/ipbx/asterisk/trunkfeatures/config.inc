@@ -24,8 +24,8 @@ $array['filter']['trunk'] = array('key' => array(
 						XIVO_SRE_IPBX_AST_PROTO_SIP,
 						XIVO_SRE_IPBX_AST_PROTO_IAX,
 						XIVO_SRE_IPBX_AST_PROTO_CUSTOM));
-$array['filter']['trunkid'] = array('cast' => 'uint');
-$array['filter']['registerid'] = array('set' => false,'chk' => 2,'cast' => 'uint');
+$array['filter']['trunkid'] = array('cast' => 'ulongint');
+$array['filter']['registerid'] = array('set' => false,'chk' => 2,'cast' => 'ulongint');
 $array['filter']['registercommented'] = array('bool' => true);
 
 ?>

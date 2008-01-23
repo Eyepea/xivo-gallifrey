@@ -14,7 +14,7 @@ $array['element']['type']['value'] = array('home','office','mobile','fax','other
 $array['element']['type']['default'] = 'office';
 
 $array['filter'] = array();
-$array['filter']['phonebookid'] = array('cast' => 'uint');
+$array['filter']['phonebookid'] = array('cast' => 'ulongint');
 $array['filter']['number'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
 $array['filter']['type'] = array('key' => array('home','office','mobile','fax','other'));
 

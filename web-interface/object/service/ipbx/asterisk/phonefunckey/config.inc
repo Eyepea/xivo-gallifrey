@@ -71,7 +71,7 @@ $array['element']['supervision']['default'] = 0;
 $array['element']['supervision']['set'] = true;
 
 $array['filter'] = array();
-$array['filter']['iduserfeatures'] = array('cast' => 'uint');
+$array['filter']['iduserfeatures'] = array('cast' => 'ulongint');
 $array['filter']['fknum'] = array('cast' => 'uint','between' => array(1,100));
 $array['filter']['exten'] = array('set' => false,'chk' => 2,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
 $array['filter']['typeextenumbers'] = array('set' => false,'chk' => 2,'key' => array('extenfeatures','featuremap','generalfeatures'));

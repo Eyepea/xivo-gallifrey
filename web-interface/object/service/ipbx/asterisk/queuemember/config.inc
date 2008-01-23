@@ -46,7 +46,7 @@ $array['filter']['interface'] = array('regexp' => '/^[a-z0-9#\*\.\/_@:-]+$/i','m
 $array['filter']['penalty'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,20));
 $array['filter']['call-limit'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,20));
 $array['filter']['usertype'] = array('key' => array('user','agent'));
-$array['filter']['userid'] = array('cast' => 'uint');
+$array['filter']['userid'] = array('cast' => 'ulongint');
 $array['filter']['channel'] = array('key' => array(
 							XIVO_SRE_IPBX_AST_CHAN_SIP,
 							XIVO_SRE_IPBX_AST_CHAN_IAX,

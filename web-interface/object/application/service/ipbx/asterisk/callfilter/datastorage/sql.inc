@@ -27,7 +27,7 @@ class xivo_application_service_asterisk_callfilter_sql extends xivo_application_
 					    'member_lastname' => 'lastname',
 					    'member_number' => 'number',
 					    'member_name' => 'name',
-					    'linked' => (object) 'MAX(IFNULL(user1.id,0))'));
+					    'linked' => (object) 'MAX(IFNULL(user2.id,0))'));
 
 		$this->_dso->leftjoin(array('cfilterm2' => $this->_table['callfiltermember']),
 				      $this->_table['callfilter'].'.id = cfilterm2.callfilterid');

@@ -76,7 +76,7 @@ $array['element']['exitcontext']['default'] = '';
 $array['filter'] = array();
 $array['filter']['name'] = array('regexp' => '/^[a-z0-9_\.-]+$/i','minlen' => 1,'maxlen' => 128);
 $array['filter']['number'] = array('regexp' => '/^[0-9\*#]+$/','minlen' => 1,'maxlen' => 40);
-$array['filter']['meetmeid'] = array('cast' => 'uint');
+$array['filter']['meetmeid'] = array('cast' => 'ulongint');
 $array['filter']['mode'] = array('key' => array('talk','listen','all'));
 $array['filter']['musiconhold'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 20);
 $array['filter']['context'] = array('set' => false,'chk' => 2,'callback' => 'xivo_service_asterisk::chk_context');

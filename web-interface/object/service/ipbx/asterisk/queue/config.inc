@@ -183,7 +183,7 @@ $array['filter']['weight'] = array('set' => false,'chk' => 2,'cast' => 'uint','b
 $array['filter']['wrapuptime'] = array('set' => false,'chk' => 2,'key' => array(0,5000,10000,15000,20000,
 										   25000,30000,35000,40000,
 										   45000,50000,55000,60000));
-$array['filter']['maxlen'] = array('set' => false,'chk' => 2,'cast' => 'uint');
+$array['filter']['maxlen'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,65535));
 $array['filter']['announce-frequency'] = array('set' => false,'chk' => 2,'key' => array(0,15,30,45,60,75,90,105,120,135,
 											   150,165,180,210,225,240,255,270,
 											   285,300));

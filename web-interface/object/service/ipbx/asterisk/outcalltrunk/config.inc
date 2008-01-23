@@ -12,8 +12,8 @@ $array['element']['priority'] = array();
 $array['element']['priority']['default'] = 0;
 
 $array['filter'] = array();
-$array['filter']['outcallid'] = array('cast' => 'uint');
-$array['filter']['trunkfeaturesid'] = array('cast' => 'uint');
+$array['filter']['outcallid'] = array('cast' => 'ulongint');
+$array['filter']['trunkfeaturesid'] = array('cast' => 'ulongint');
 $array['filter']['priority'] = array('cast' => 'uint','between' => array(0,16));
 
 ?>

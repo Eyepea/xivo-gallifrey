@@ -28,7 +28,7 @@ $array['element']['silent']['default'] = 0;
 $array['element']['silent']['set'] = true;
 
 $array['filter'] = array();
-$array['filter']['agentid'] = array('cast' => 'uint');
+$array['filter']['agentid'] = array('cast' => 'ulongint');
 $array['filter']['numgroup'] = array('cast' => 'uint','between' => array(1,63));
 $array['filter']['number'] = array('regexp' => '/^[0-9\*#]+$/','minlen' => 1,'maxlen' => 40);
 $array['filter']['passwd'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9\*#]+$/','minlen' => 1,'maxlen' => 40);

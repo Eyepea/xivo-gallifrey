@@ -13,7 +13,7 @@ $array['element']['extenhash'] = array();
 $array['element']['extenhash']['default'] = '';
 
 $array['filter'] = array();
-$array['filter']['rightcallid'] = array('cast' => 'uint');
+$array['filter']['rightcallid'] = array('cast' => 'ulongint');
 $array['filter']['exten'] = array('set' => false,'chk' => 2,'maxlen' => 40,'regexp' => '/^[_]?[0-9NXZ\*#\-\[\]]+[\.\!]?$/');
 $array['filter']['extenhash'] = array('set' => false,'chk' => 2,'maxlen' => 40,'cast' => 'xdigit');
 
