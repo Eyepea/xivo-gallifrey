@@ -160,12 +160,10 @@ if not bypass and bsfilter == 'boss':
 		agi.verbose('AGI script "%s" successfully executed' % sys.argv[0])
 		sys.exit(0)
 
-if protocol in ("sip", "iax"):
-        if protocol == "iax":
-                interface = protocol.upper() + "2/" + name
-        else:
-                interface = protocol.upper() + "/" + name
-
+if protocol == "iax":
+	interface = "IAX2/" + name
+elif protocol == "sip":
+	interface = "SIP/" + name
 elif protocol == "custom":
 	cursor.query("SELECT ${columns} FROM usercustom "
                      "WHERE id = %s "
