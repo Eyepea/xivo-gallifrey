@@ -69,9 +69,6 @@ class xivo_datastorage_adapter_abstract_sql
 		if($str !== '')
 			$str .= ' - ';
 
-		if(isset($this->_table['cdr']) === true)
-			die($this->_query);
-
 		if($this->_debug === true && empty($this->_query) === false)
 			$str .= 'Query: '.$this->_query.' - ';
 
