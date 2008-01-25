@@ -589,14 +589,12 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 	{
 		if($this->get_errnb() > 0
 		|| $this->_status !== 'add'
-		|| ($arr = xivo_get_aks($this->_return)) === false)
+		|| is_array($this->_return) === false
+		|| empty($this->_return) === true)
 			return(false);
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		foreach($this->_return as $key => $val)
 		{
-			$key = &$arr['keys'][$i];
-			$val = &$this->_return[$key];
-
 			if($val === false)
 				continue;
 
@@ -609,10 +607,10 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 					if(is_array($val) === false || ($nb = count($val)) === 0)
 						continue;
 
-					for($j = 0;$j < $nb;$j++)
+					for($i = 0;$i < $nb;$i++)
 					{
-						if($val[$j] !== false)
-							$this->_callfiltermember->delete($val[$j]);
+						if($val[$i] !== false)
+							$this->_callfiltermember->delete($val[$i]);
 					}
 					break;
 				case 'dialstatus':
@@ -620,6 +618,7 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 					break;
 			}
 		}
+
 		return(true);
 	}
 
@@ -765,14 +764,12 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 	{
 		if($this->get_errnb() > 0
 		|| $this->_status !== 'edit'
-		|| ($arr = xivo_get_aks($this->_return)) === false)
+		|| is_array($this->_return) === false
+		|| empty($this->_return) === true)
 			return(false);
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		foreach($this->_return as $key => $val)
 		{
-			$key = &$arr['keys'][$i];
-			$val = &$this->_return[$key];
-
 			if($val === false)
 				continue;
 
@@ -787,13 +784,13 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 					$this->_callfiltermember->add_origin_list($this->_origin[$key]);
 					break;
 				case 'dialstatus':
-					if(xivo_issa('callfilter',$this->_info) === false)
-						break;
-
-					$this->_dialstatus->reverse_edit($this->_status,'callfilter',$this->_info['callfilter']['id']);
+					if(xivo_issa('callfilter',$this->_info) === true)
+						$this->_dialstatus->reverse_edit($this->_status,'callfilter',
+										 $this->_info['callfilter']['id']);
 					break;
 			}
 		}
+
 		return(true);
 	}
 
@@ -881,14 +878,13 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 	function _reverse_delete()
 	{
 		if($this->_status !== 'delete'
-		|| ($arr = xivo_get_aks($this->_return)) === false)
+		|| is_array($this->_return) === false
+		|| empty($this->_return) === true)
 			return(false);
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		foreach($this->_return as $key => $val)
 		{
-			$key = &$arr['keys'][$i];
-
-			if($this->_return[$key] === false)
+			if($val === false)
 				continue;
 
 			switch($key)
@@ -904,6 +900,7 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 					break;
 			}
 		}
+
 		return(true);
 	}
 
@@ -962,8 +959,7 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 
 		if(xivo_issa('callfilter',$this->_info) === false)
 			return(false);
-
-		if($disable === false)
+		else if($disable === false)
 			$r = $this->_callfilter->enable($this->_info['callfilter']['id']);
 		else
 			$r = $this->_callfilter->disable($this->_info['callfilter']['id']);

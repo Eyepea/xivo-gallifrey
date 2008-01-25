@@ -53,15 +53,19 @@ class xivo_datastorage_helper_table extends xivo_datastorage_helper_abstract
 	{
 		if(xivo_haslen($list) === true)
 			return(array(strval($list) => ''));
-		else if(($arr = xivo_get_aks($list)) === false)
+		else if(is_array($list) === false || empty($list) === true)
 			return(null);
 
-		$r = array();
-		$noassoc = in_array(0,$arr['keys'],true);
+		$keys = array_keys($list);
+		$noassoc = in_array(0,$keys,true);
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		$nb = count($keys);
+
+		$r = array();
+
+		for($i = 0;$i < $nb;$i++)
 		{
-			$key = &$arr['keys'][$i];
+			$key = &$keys[$i];
 			$val = &$list[$key];
 
 			if(is_array($val) === true)
@@ -144,21 +148,23 @@ class xivo_datastorage_helper_table extends xivo_datastorage_helper_abstract
 
 	function _mk_forcecolumn($column)
 	{
-		if(($arr = xivo_get_aks($column)) === false)
+		if(is_array($column) === false || empty($column) === true)
 			return(null);
 
+		$keys = array_keys($column);
+		$noassoc = in_array(0,$keys,true);
+
+		$nb = count($keys);
+
 		$r = array();
-		$noassoc = in_array(0,$arr['keys'],true);
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		for($i = 0;$i < $nb;$i++)
 		{
-			$key = &$arr['keys'][$i];
-			$val = &$column[$key];
+			$key = &$keys[$i];
 
-			if($noassoc === true && is_int($key) === true)
-				continue;
-			else if(xivo_haslen($key) === true)
-				$r[strval($key)] = $val;
+			if(($noassoc === true && is_int($key) === true) === false
+			&& xivo_haslen($key) === true)
+				$r[strval($key)] = $column[$key];
 		}
 
 		if(empty($r) === false)
@@ -194,20 +200,10 @@ class xivo_datastorage_helper_table extends xivo_datastorage_helper_abstract
 
 		$this->_dso->where($arr);
 
-		if(($r = $this->_dso->select_single()) === false || $primary === false)
-			return($r);
-		else if(($nb = count($column)) > 1)
-		{
-			for($i = 0;$i < $nb;$i++)
-				settype($r[$column[$i]],gettype($this->_primary[$column[$i]]));
-		}
-		else
-		{
-			$r = $r[$column[0]];
-			settype($r,gettype($this->_primary[$column[0]]));
-		}
+		if($primary === true && $this->is_single_primary() === true)
+			return($this->_dso->select_one());
 
-		return($r);
+		return($this->_dso->select_single());
 	}
 
 	function get_primary($arr,$disable=null)
@@ -242,36 +238,34 @@ class xivo_datastorage_helper_table extends xivo_datastorage_helper_abstract
 	function chk_unique($arr,$primary=null)
 	{
 		if(isset($this->_unique) === false 
-		|| ($uniq = xivo_get_aks($this->_unique)) === false)
+		|| is_array($this->_unique) === false
+		|| empty($this->_unique) === true)
 			return(null);
 
 		$this->_dso->new_select($this->_table);
 
-		for($i = 0;$i < $uniq['cnt'];$i++)
+		foreach($this->_unique as $key => $val)
 		{
-			$key = &$uniq['keys'][$i];
-			$val = &$this->_unique[$key];
-
 			if(is_array($val) === true)
 			{
 				$where = array();
-				$keys = array_keys($val);
-				$nb = count($keys);
 
-				for($j = $k = 0;$j < $nb;$j++)
+				$i = 0;
+
+				reset($val);
+
+				while(list($key2) = each($val))
 				{
-					$key2 = &$keys[$j];
-
-					if(isset($arr[$key2]) === true)
+					if(isset($arr[$key2]) ===true)
 					{
 						$where[$key2] = $arr[$key2];
-						$k++;
+						$i++;
 					}
-					else if($k > 0)
+					else if($i > 0)
 						return(false);
 				}
 
-				if(empty($where) === true)
+				if($i === 0)
 					continue;
 
 				$this->_dso->orwhere($where);
@@ -365,7 +359,10 @@ class xivo_datastorage_helper_table extends xivo_datastorage_helper_abstract
 		if((bool) $all === false && isset($this->_primary) === true)
 			$column = array_keys($this->_primary);
 		else
+		{
+			$all = true;
 			$column = '*';
+		}
 
 		$this->_dso->new_select($this->_table,$column);
 
@@ -383,7 +380,10 @@ class xivo_datastorage_helper_table extends xivo_datastorage_helper_abstract
 		$this->_dso->new_order($order);
 		$this->_dso->limit($limit);
 
-		$r = $this->_dso->select_all();
+		if($all === false && $this->is_single_primary() === true)
+			$r = $this->_dso->select_singlecolumn();
+		else
+			$r = $this->_dso->select_all();
 
 		$this->_dso->reset_order();
 		$this->_dso->reset_limit();
@@ -404,7 +404,10 @@ class xivo_datastorage_helper_table extends xivo_datastorage_helper_abstract
 		else if((bool) $all === false && isset($this->_primary) === true)
 			$column = array_keys($this->_primary);
 		else
+		{
+			$all = true;
 			$column = '*';
+		}
 
 		$this->_dso->new_select($this->_table,$column);
 	
@@ -419,7 +422,10 @@ class xivo_datastorage_helper_table extends xivo_datastorage_helper_abstract
 		$this->_dso->new_order($order);
 		$this->_dso->limit($limit);
 
-		$r = $this->_dso->select_all();
+		if($all === false && $this->is_single_primary() === true)
+			$r = $this->_dso->select_singlecolumn();
+		else
+			$r = $this->_dso->select_all();
 
 		$this->_dso->reset_order();
 		$this->_dso->reset_limit();

@@ -16,18 +16,14 @@
 <?=$form->hidden(array('name' => 'id','value' => $info['id']));?>
 <table cellspacing="0" cellpadding="0" border="0">
 <?php
-	if(isset($tree['child']) === true && ($arr = xivo_get_aks($tree['child'])) !== false):
-		$tree = &$tree['child'];
-		for($i = 0;$i < $arr['cnt'];$i++):
-			$k = &$arr['keys'][$i];
-			$v = &$tree[$k];
-
+	if(xivo_issa('child',$tree) === true && empty($tree['child']) === false):
+		foreach($tree['child'] as $v):
 			echo '<tr><th>',$form->checkbox(array('desc' => array('%s%s',$this->bbf('acl_'.$v['id']),1),'name' => 'tree[]','label' => 'lb-'.$v['id'],'id' => $v['id'],'field' => false,'value' => $v['path'],'checked' => $v['access']),'onclick="xivo_fm_mk_acl(this);"'),'</th></tr>';
 
 			if(isset($v['child']) === true):
 				$this->file_include('bloc/xivo/configuration/users/acltree',array('tree' => $v['child']));
 			endif;
-		endfor;
+		endforeach;
 	endif;
 ?>
 </table>

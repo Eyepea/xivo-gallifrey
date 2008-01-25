@@ -27,19 +27,18 @@ class xivo_curl
 
 		$option = array_merge($this->_option,$option);
 
-		if(($arr = xivo_get_aks($option)) === false)
+		if(empty($option) === true)
 		{
 			if($open === true)
 				return($this->open());
 			else
 				return($this->create());
 		}
-
-		if(($r = $this->create()) === false)
+		else if(($r = $this->create()) === false)
 			return(false);
 
-		for($i = 0;$i < $arr['cnt'];$i++)
-			$this->set_option($arr['keys'][$i],$option[$arr['keys'][$i]]);
+		foreach($option as $key => $val)
+			$this->set_option($key,$val);
 
 		if($open === true)
 			return($this->connect());

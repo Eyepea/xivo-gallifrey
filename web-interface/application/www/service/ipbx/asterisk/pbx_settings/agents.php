@@ -377,14 +377,12 @@ switch($act)
 
 			if($qmember_slt !== false)
 			{
-				$queue_slt = array_keys($qmember_slt);
 				$aqueue_info = $aqueue_where;
 
-				$nb = count($queue_slt);
+				reset($qmember_slt);
 
-				for($i = 0;$i < $nb;$i++)
+				while(list($qname) = each($qmember_slt))
 				{
-					$qname = &$queue_slt[$i];
 					$aqueue_info['queue_name'] = $qname;
 
 					if(isset($queue_tmp[$qname]) === true)
@@ -882,14 +880,12 @@ switch($act)
 
 			if($qmember_slt !== false)
 			{
-				$queue_slt = array_keys($qmember_slt);
 				$aqueue_info = $aqueue_where;
 
-				$nb = count($queue_slt);
+				reset($qmember_slt);
 
-				for($i = 0;$i < $nb;$i++)
+				while(list($qname) = each($qmember_slt))
 				{
-					$qname = &$queue_slt[$i];
 					$aqueue_info['queue_name'] = $qname;
 
 					if(isset($queue_tmp[$qname]) === true)

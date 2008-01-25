@@ -81,48 +81,39 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 			return($this->_type_list);
 
 		if(isset($this->_conf['type']) === false
-		|| ($arr = xivo_get_aks($this->_conf['type'])) === false)
+		|| is_array($this->_conf['type']) === false
+		|| empty($this->_conf['type']) === true)
 			return(false);
 
 		$this->_type_list = array();
 		$r = &$this->_type_list;
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		foreach($this->_conf['type'] as $key => $val)
 		{
-			$key = &$arr['keys'][$i];
-			$val = &$this->_conf['type'][$key];
-
-			if(($arr1 = xivo_get_aks($val)) === false)
+			if(is_array($val) === false
+			|| empty($val) === true)
 			{
 				if(is_array($val) === false)
 					$r[$key] = $val;
 				continue;
 			}
-
-			if(isset($r[$key]) === false)
+			else if(isset($r[$key]) === false)
 				$r[$key] = array();
 
-			for($j = 0;$j < $arr1['cnt'];$j++)
+			foreach($val as $key1 => $val1)
 			{
-				$key1 = &$arr1['keys'][$j];
-				$val1 = &$val[$key1];
-
-				if(($arr2 = xivo_get_aks($val1)) === false)
+				if(is_array($val1) === false
+				|| empty($val1) === true)
 				{
 					if(is_array($val1) === false)
 						$r[$key][$key1.'-'.$val1] = $val1;
 					continue;
 				}
 
-				for($k = 0;$k < $arr2['cnt'];$k++)
+				foreach($val1 as $key2 => $val2)
 				{
-					$key2 = &$arr2['keys'][$k];
-					$val2 = &$val1[$key2];
-
-					if(is_bool($val2) === false)
-						continue;
-
-					$r[$key][$key1.'-'.$key2] = $val2;
+					if(is_bool($val2) === true)
+						$r[$key][$key1.'-'.$key2] = $val2;
 				}
 			}
 		}

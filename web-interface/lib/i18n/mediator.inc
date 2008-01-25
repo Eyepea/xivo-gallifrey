@@ -122,40 +122,41 @@ class xivo_i18n_mediator
 
 	function get_browser_territory($lang='')
 	{
-		$r = false;
-
-		if($lang !== '' && ($lang = $this->chk_language($lang)) !== false && isset($this->_attrib['browser'][$lang]) === true)
+		if($lang !== ''
+		&& ($lang = $this->chk_language($lang)) !== false
+		&& isset($this->_attrib['browser'][$lang]) === true)
 		{
 			$v = &$this->_attrib['browser'][$lang];
 
 			if(is_array($v) === true && ($nb = count($v)) > 1)
 			{
-				for($j = 0;$j < $nb;$j++)
+				for($i = 0;$i < $nb;$i++)
 				{
-					if($v[$j] !== '' && ($r = $this->chk_territory($v[$j])) !== false)
+					if($v[$i] !== ''
+					&& ($r = $this->chk_territory($v[$i])) !== false)
 						return($r);
 				}
 			}
 		}
-		else if(($arr = xivo_get_aks($this->_attrib['browser'])) !== false)
+		else if(empty($this->_attrib['browser']) === false)
 		{
-			for($i = 0;$i < $arr['cnt'];$i++)
+			foreach($this->_attrib['browser'] as $k => $v)
 			{
-				$k = &$arr['keys'][$i];
-				$v = &$this->_attrib['browser'][$k];
+				if(($k = $this->chk_language($k)) === false
+				|| is_array($v) === false
+				|| ($nb = count($v)) < 2)
+					continue;
 
-				if(($k = $this->chk_language($k)) !== false && is_array($v) === true && ($nb = count($v)) > 1)
+				for($i = 0;$i < $nb;$i++)
 				{
-					for($j = 0;$j < $nb;$j++)
-					{
-						if($v[$j] !== '' && ($r = $this->chk_territory($v[$j])) !== false)
-							return($r);
-					}
+					if($v[$i] !== ''
+					&& ($r = $this->chk_territory($v[$i])) !== false)
+						return($r);
 				}
 			}
 		}
 
-		return($r);
+		return(false);
 	}
 
 	function set_language($lang='')
@@ -497,25 +498,27 @@ class xivo_i18n_mediator
 
 		if(is_array($locale) === true)
 		{
-			if(($arr = xivo_get_aks($locale)) === false)
+			if(empty($locale) === true)
 				return(false);
 
-			for($i = 0;$i < $arr['cnt'];$i++)
+			reset($locale);
+
+			while(list($key) = each($locale))
 			{
-				if(($nlocale = $this->chk_locale($arr['keys'][$i])) !== false
-				&& ($dir = xivo_file::is_d_r(XIVO_PATH_I18N.XIVO_SEP_DIR.$nlocale)) !== false)
+				if(($nlocale = $this->chk_locale($key)) === false
+				|| ($dir = xivo_file::is_d_r(XIVO_PATH_I18N.XIVO_SEP_DIR.$nlocale)) === false)
+					continue;
+
+				if($define === true)
 				{
-					if($define === true)
-					{
-						define('XIVO_I18N_BABELFISH_LANGUAGE',
-							$this->_mediator['locale']->get_language($nlocale));
-						define('XIVO_I18N_BABELFISH_TERRITORY',
-							$this->_mediator['locale']->get_territory($nlocale));
-						define('XIVO_I18N_BABELFISH_LOCALE',$nlocale);
-						define('XIVO_I18N_BABELFISH_PATH',$dir);
-					}
-					return($dir);
+					define('XIVO_I18N_BABELFISH_LANGUAGE',
+						$this->_mediator['locale']->get_language($nlocale));
+					define('XIVO_I18N_BABELFISH_TERRITORY',
+						$this->_mediator['locale']->get_territory($nlocale));
+					define('XIVO_I18N_BABELFISH_LOCALE',$nlocale);
+					define('XIVO_I18N_BABELFISH_PATH',$dir);
 				}
+				return($dir);
 			}
 
 			return(false);

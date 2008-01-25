@@ -54,7 +54,7 @@ class xivo_application_service_asterisk_handynumbers extends xivo_application_as
 		$this->_origin['exten'] = false;
 
 		if(xivo_issa('handynumbers',$this->_info) === false
-		|| ($arr = xivo_get_aks($this->_info['handynumbers'])) === false)
+		|| empty($this->_info['handynumbers']) === true)
 			return(false);
 
 		$this->_info['extenumbers'] = array();
@@ -63,14 +63,13 @@ class xivo_application_service_asterisk_handynumbers extends xivo_application_as
 		$extenumbers_where = array();
 		$extenumbers_where['type'] = 'handynumbers';
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		foreach($this->_info['handynumbers'] as $val)
 		{
-			$ref = &$this->_info['handynumbers'][$i];
-			$extenumbers_where['typeval'] = $ref['id'];
+			$extenumbers_where['typeval'] = $val['id'];
 
 			if(($info['extenumbers'] = $this->_extenumbers->get_where($extenumbers_where)) === false
 			|| ($info['exten'] = $this->_extensions->get_exten(null,
-									   $ref['exten'],
+									   $val['exten'],
 									   XIVO_SRE_IPBX_AST_HANDYNUMBERS_CONTEXT)) === false)
 				continue;
 
@@ -329,14 +328,12 @@ class xivo_application_service_asterisk_handynumbers extends xivo_application_as
 	{
 		if($this->get_errnb() > 0
 		|| $this->_status !== 'save'
-		|| ($arr = xivo_get_aks($this->_return)) === false)
+		|| is_array($this->_return) === false
+		|| empty($this->_return) === true)
 			return(false);
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		foreach($this->_return as $key => $val)
 		{
-			$key = &$arr['keys'][$i];
-			$val = &$this->_return[$key];
-
 			if($val === false)
 				continue;
 
@@ -353,6 +350,7 @@ class xivo_application_service_asterisk_handynumbers extends xivo_application_as
 					break;
 			}
 		}
+
 		return(true);
 	}
 }

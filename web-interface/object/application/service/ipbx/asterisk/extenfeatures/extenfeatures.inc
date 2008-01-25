@@ -312,8 +312,7 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 		|| $rs === false
 		|| ($id = $this->_mk_extenfeatures_dialplan($rs['name'],$rs['exten'],$rs['commented'])) === false)
 			return(false);
-
-		if($this->_extensions->add_exten($id) === false)
+		else if($this->_extensions->add_exten($id) === false)
 			$this->_return['extenfeatures'] = false;
 		else
 			$this->_return['extenfeatures'] = $rs['name'];
@@ -325,14 +324,12 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 	{
 		if($this->get_errnb() > 0
 		|| $this->_status !== 'save'
-		|| ($arr = xivo_get_aks($this->_return)) === false)
+		|| is_array($this->_return) === false
+		|| empty($this->_return) === true)
 			return(false);
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		foreach($this->_return as $key => $val)
 		{
-			$key = &$arr['keys'][$i];
-			$val = &$this->_return[$key];
-
 			if($val === false)
 				continue;
 
@@ -349,8 +346,7 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 				case 'extenumbers':
 					if(isset($this->_origin['extenumbers']) === false)
 						continue;
-
-					if($this->_origin['extenumbers'] === false)
+					else if($this->_origin['extenumbers'] === false)
 						$this->_extenumbers->delete($this->_status,$val);
 					else
 						$this->_extenumbers->edit_origin($this->_origin['extenumbers']);

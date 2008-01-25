@@ -58,17 +58,15 @@ if(isset($_QR['fm_send']) === true && xivo_issa('voicemail',$_QR) === true)
 	if($edit_zone === false)
 		$result['zonemessages'] = false;
 
-	if(($zmsg = xivo_get_aks($info['zonemessages'])) !== false)
+	if(is_array($info['zonemessages']) === true)
 	{
-		for($i = 0;$i < $zmsg['cnt'];$i++)
+		foreach($info['zonemessages'] as $name => $value)
 		{
-			$name = &$zmsg['keys'][$i];
-
 			if(isset($zone_tmp[$name]) === true)
 				continue;
 
 			$edit_zone = true;
-			$zone_del[] = $info['zonemessages'][$name]['id'];
+			$zone_del[] = $value['id'];
 		}
 	}
 

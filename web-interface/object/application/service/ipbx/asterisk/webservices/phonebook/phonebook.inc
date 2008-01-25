@@ -54,16 +54,14 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 	function get_vendor_from_useragent()
 	{
 		if(isset($_SERVER['HTTP_USER_AGENT']) === false
-		|| ($arr = xivo_get_aks($this->_conf['vendor'])) === false)
+		|| is_array($this->_conf['vendor']) === false
+		|| empty($this->_conf['vendor']) === true)
 			return(false);
 
 		$useragent = strtolower($_SERVER['HTTP_USER_AGENT']);
 		
-		for($i = 0;$i < $arr['cnt'];$i++)
+		foreach($this->_conf['vendor'] as $key => $val)
 		{
-			$key = &$arr['keys'][$i];
-			$val = &$this->_conf['vendor'][$key];
-
 			if(strpos($useragent,$val) !== false)
 				return($key);
 		}

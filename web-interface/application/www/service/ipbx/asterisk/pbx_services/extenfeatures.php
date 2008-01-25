@@ -32,18 +32,17 @@ if(isset($_QR['fm_send']) === true)
 
 		$extens = $appextenfeatures->get_config_exten();
 
-		if(($arr = xivo_get_aks($extens)) !== false)
+		if(is_array($extens) === true && empty($extens) === false)
 		{
 			$rs = array();
 
-			for($i = 0;$i < $arr['cnt'];$i++)
-			{
-				$key = &$arr['keys'][$i];
+			reset($extens);
 
+			while(list($key) = each($extens))
+			{
 				if(xivo_issa($key,$_QR['extenfeatures']) === false)
 					continue;
-
-				if(isset($_QR['extenfeatures'][$key]['exten']) === true)
+				else if(isset($_QR['extenfeatures'][$key]['exten']) === true)
 					$exten = $_QR['extenfeatures'][$key]['exten'];
 				else
 					$exten = '';

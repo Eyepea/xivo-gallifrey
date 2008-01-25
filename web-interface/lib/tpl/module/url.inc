@@ -151,25 +151,22 @@ class xivo_tpl_url extends xivo_tpl_module
 		if($prev === true)
 			$r .= $this->_mk_href_html($this->bbf('page_previous'),$url.($page - 1),$opt,$this->bbf('page_previous')).' - ';
 
-		if(($arr = xivo_get_aks($a)) !== false)
+		reset($a);
+
+		while(list($k) = each($a))
 		{
-			for($i = 0;$i < $arr['cnt'];$i++)
-			{
-				$k = $arr['keys'][$i];
+			$pagek = $k === $page ? '<b>'.$k.'</b>' : $k;
 
-				$pagek = $k === $page ? '<b>'.$k.'</b>' : $k;
+			$slt = $this->_mk_href_html($pagek,$url.$k,$opt,$this->bbf('page_number',$k));
 
-				$slt = $this->_mk_href_html($pagek,$url.$k,$opt,$this->bbf('page_number',$k));
-
-				if($k > 4 && isset($a[$k-1]) === false)
-					$r .= ' ... '.$slt.', ';
-				else if($k > 4 && $k < $nb-5 && isset($a[$k-1]) === false)
-					$r .= $slt.' ... ';
-				else if(isset($a[$k+1]) === true)
-					$r .= $slt.', ';
-				else
-					$r .= $slt;
-			}
+			if($k > 4 && isset($a[$k-1]) === false)
+				$r .= ' ... '.$slt.', ';
+			else if($k > 4 && $k < $nb-5 && isset($a[$k-1]) === false)
+				$r .= $slt.' ... ';
+			else if(isset($a[$k+1]) === true)
+				$r .= $slt.', ';
+			else
+				$r .= $slt;
 		}
 
 		if($next === true)

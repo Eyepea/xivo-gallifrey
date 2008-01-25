@@ -331,7 +331,7 @@ function xivo_pk($k,&$o,$t=false,$f=false)
 
 		return(((bool) $t === false ? true : $o->{$k}));
 	}
-	else if(array_key_exists($k,get_object_vars($o)) === true)
+	else if(array_key_exists($k,$o) === true)
 		return(((bool) $t === false ? true : $o->{$k}));
 
 	return(false);
@@ -379,25 +379,23 @@ function xivo_group_array($ref,&$arr)
 {
 	if(xivo_issa($ref,$arr) === false
 	|| ($nb = count($arr[$ref])) === 0
-	|| ($list = xivo_get_aks($arr)) === false)
+	|| is_array($arr) === false
+	|| empty($arr) === true)
 		return(false);
 
 	$r = array();
 
-	for($i = 0;$i < $list['cnt'];$i++)
+	foreach($arr as $key => $val)
 	{
-		$key = $list['keys'][$i];
-		$val = &$arr[$key];
-
 		if(is_array($val) === false)
 			continue;
 
-		for($j = 0;$j < $nb;$j++)
+		for($i = 0;$i < $nb;$i++)
 		{
-			if(isset($r[$j]) === false)
-				$r[$j] = array();
+			if(isset($r[$i]) === false)
+				$r[$i] = array();
 
-			$r[$j][$key] = isset($val[$j]) === false ? '' : $val[$j];
+			$r[$i][$key] = isset($val[$i]) === false ? '' : $val[$i];
 		}
 	}
 
@@ -406,34 +404,29 @@ function xivo_group_array($ref,&$arr)
 
 function xivo_array_intersect_key($arr,$data,$key=null,$empty=false)
 {
-	$list = false;
 	$empty = (bool) $empty;
 
-	if(is_array($data) === false || ($list = xivo_get_aks($arr,$empty)) === false)
-		return($list);
+	$r = $empty === false ? false : array();
+
+	if(is_array($arr) === false
+	|| is_array($data) === false
+	|| empty($arr) === true)
+		return($r);
 
 	$r = array();
 
-	for($i = 0;$i < $list['cnt'];$i++)
+	foreach($arr as $k => $v)
 	{
-		$k = &$list['keys'][$i];
-
 		if($key === null)
 		{
 			if(isset($data[$k]) === true)
 				$r[$k] = $data[$k];
-			continue;
 		}
-
-		$v = &$arr[$k];
-
-		if(is_array($v) === false
-		|| isset($v[$key]) === false
-		|| is_scalar($v[$key]) === false
-		|| isset($data[$v[$key]]) === false)
-			continue;
-
-		$r[$v[$key]] = $data[$v[$key]];
+		else if(is_array($v) === true
+		&& isset($v[$key]) === true
+		&& is_scalar($v[$key]) === true
+		&& isset($data[$v[$key]]) === true)
+			$r[$v[$key]] = $data[$v[$key]];
 	}
 
 	if($empty === false && empty($r) === true)
@@ -444,34 +437,29 @@ function xivo_array_intersect_key($arr,$data,$key=null,$empty=false)
 
 function xivo_array_copy_intersect_key($arr,$data,$key=null,$empty=false)
 {
-	$list = false;
 	$empty = (bool) $empty;
 
-	if(is_array($data) === false || ($list = xivo_get_aks($arr,$empty)) === false)
-		return($list);
+	$r = $empty === false ? false : array();
+
+	if(is_array($arr) === false
+	|| is_array($data) === false
+	|| empty($arr) === true)
+		return($r);
 
 	$r = array();
 
-	for($i = 0;$i < $list['cnt'];$i++)
+	foreach($arr as $k => $v)
 	{
-		$k = &$list['keys'][$i];
-
 		if($key === null)
 		{
 			if(isset($data[$k]) === true)
 				$r[$k] = $v;
-			continue;
 		}
-
-		$v = &$arr[$k];
-
-		if(is_array($v) === false
-		|| isset($v[$key]) === false
-		|| is_scalar($v[$key]) === false
-		|| isset($data[$v[$key]]) === false)
-			continue;
-
-		$r[$v[$key]] = $v;
+		else if(is_array($v) === true
+		&& isset($v[$key]) === true
+		&& is_scalar($v[$key]) === true
+		&& isset($data[$v[$key]]) === true)
+			$r[$v[$key]] = $v;
 	}
 
 	if($empty === false && empty($r) === true)
@@ -487,7 +475,7 @@ function xivo_array_diff_key($arr1,$arr2)
 
 	$r = array();
 
-	$diff = array_values(array_diff(array_keys($arr1),array_keys($arr2)));
+	$diff = array_values(array_diff(array_keys(&$arr1),array_keys(&$arr2)));
 
 	if(($nb = count($diff)) === 0)
 		return($r);
@@ -513,23 +501,23 @@ function xivo_array_reduce_level($arr,$t=false)
 	if((bool) $t === false)
 	{
 		for($i = 0;$i < $nb;$i++)
-			$r = array_merge(array_keys($arr[$i]),$r);
+			$r = array_merge(array_keys(&$arr[$i]),$r);
 	}
 	else
 	{
 		for($i = 0;$i < $nb;$i++)
-			$r = array_merge(array_keys(array_flip($arr[$i])),$r);
+			$r = array_merge(array_keys(array_flip(&$arr[$i])),$r);
 	}
 
 	return($r);
 }
 
-function xivo_build_array_ref($arr)
+function xivo_build_array_ref(&$a)
 {
-	if(is_array($arr) === false)
+	if(is_array($a) === false)
 		return(false);
 
-	$arr = array_values($arr);
+	$arr = array_values(&$a);
 
 	if(($nb = count($arr)) === 0)
 		return(false);
@@ -629,52 +617,6 @@ function xivo_chk_email($email,$strict=false)
 	return(false);
 }
 
-function xivo_mk_list(&$a,$f=false)
-{
-	$a = (array) $a;
-
-	if(empty($a) === true)
-		return(false);
-	else if((bool) $f === true)
-		$a = array_keys($a);
-
-	$r = '\''.implode('\',\'',array_map('addslashes', $a)).'\'';
-
-	return($r);
-}
-
-function xivo_str_multicut($str,$arr)
-{
-	$str = (string) $str;
-	$arr = (array) $arr;
-
-	if(($cnt = count($arr)) === 0 || ($len = strlen($str)) === 0)
-		return(false);
-	
-	$r = array();
-
-	if($len === 1)
-		return(array($str));
-
-	for($i = 0;$i < $cnt;$i++)
-	{
-		$cut = (int) $arr[$i];
-		$r[] = substr($str,0,$cut);
-		$str = substr($str,$cut);
-
-		if(($len = strlen($str)) === 0)
-			break;
-	}
-
-	if($len > 0)
-		$r[] = $str;
-
-	if(empty($r) === true)
-		return(false);
-
-        return($r);
-}
-
 function xivo_eol($str)
 {
 	return(preg_replace('#\r\n|\n|\r#',XIVO_EOL,strval($str)));
@@ -747,25 +689,12 @@ function xivo_malert($subject='',$msg='',$to='')
 	mb_send_mail($mail,$subject,$msg,$h);
 }
 
-function xivo_get_aks(&$a,$empty=false)
-{
-	if(is_array($a) === false)
-		return(false);
-
-	$ak = array_keys($a);
-
-	if(($cnt = count($ak)) > 0 || $empty === true)
-		return(array('keys' => $ak,'cnt' => $cnt));
-
-	return(false);
-}
-
 function xivo_last_key(&$a,$sort=SORT_NUMERIC)
 {
 	if(is_array($a) === false)
 		return(false);
 
-	$ak = array_keys($a);
+	$ak = array_keys(&$a);
 	ksort($ak,$sort);
 
 	return(end($ak));

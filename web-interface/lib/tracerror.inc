@@ -289,27 +289,25 @@ class xivo_tracerror
 
 	function display_delayed()
 	{
-		if(is_array($this->_delayed_content) === true)
+		if(is_array($this->_delayed_content) === false
+		|| empty($this->_delayed_content) === true)
 			return(null);
 
 		ksort($this->_delayed_content,SORT_NUMERIC);
-		$k = array_keys($this->_delayed_content);
-		$cnt = count($k);
-
-		if($cnt === 0)
-			return(null);
 
 		if($this->_sapi === 'default')
 			echo '<table cellspacing="0" cellpadding="0" border="1">';
 
-		for($i = 0;$i < $cnt;$i++)
+		reset($this->_delayed_content);
+
+		while(list($key) = each($this->_delayed_content))
 		{
-			if((is_array($this->_delayed_content[$k[$i]]) === true
-			&& ($nb = count($this->_delayed_content[$k[$i]])) !== 0) === false)
+			if(is_array($this->_delayed_content[$key]) === false
+			|| ($nb = count($this->_delayed_content[$key])) === 0)
 				continue;
 
-			for($j = 0;$j < $nb;$j++)
-				echo $this->_delayed_content[$k[$i]][$j];
+			for($i = 0;$i < $nb;$i++)
+				echo $this->_delayed_content[$key][$i];
 		}
 
 		if($this->_sapi === 'default')

@@ -173,25 +173,22 @@ class xivo_service_asterisk_realstatic extends xivo_service_asterisk_abstract
 
 		$add['category'] = $category;
 
-		if(($a = xivo_get_aks($arr)) === false)
-			return(false);
+		$i = 0;
 
-		for($i = 0;$i < $a['cnt'];$i++)
+		foreach($arr as $key => $val)
 		{
-			$key = &$a['keys'][$i];
 			$add['var_name'] = $key;
-			$add['var_val'] = &$arr[$key];
+			$add['var_val'] = $val;
 
 			if(($id = $this->add($add)) === false)
 				break;
 
-			$r[$i] = $id;
+			$r[$i++] = $id;
 		}
 
 		if(isset($r[0]) === false)
 			return(false);
-
-		if($id !== false)
+		else if($id !== false)
 			return($r);
 
 		for($j = 0;$j < $i;$j++)
@@ -306,22 +303,19 @@ class xivo_service_asterisk_realstatic extends xivo_service_asterisk_abstract
 		$edit['category'] = $arr['category'];
 		unset($arr['category']);
 
-		if(($a = xivo_get_aks($arr)) === false)
+		if(empty($arr) === true)
 			return(false);
 
-		for($i = 0;$i < $a['cnt'];$i++)
+		foreach($arr as $key => $val)	
 		{
-			$key = &$a['keys'][$i];
-
 			$where['var_name'] = $key;
 
 			$edit['var_name'] = $key;
-			$edit['var_val'] = &$arr[$key];
+			$edit['var_val'] = $val;
 
 			if(($info = $this->get_where($where)) === false)
 				continue;
-
-			if(($ret = $this->edit($info['id'],$edit)) === false)
+			else if(($ret = $this->edit($info['id'],$edit)) === false)
 				break;
 
 			$r[] = $info;
@@ -329,8 +323,7 @@ class xivo_service_asterisk_realstatic extends xivo_service_asterisk_abstract
 
 		if(isset($r[0]) === false)
 			return(false);
-
-		if($ret !== false)
+		else if($ret !== false)
 			return($r);
 
 		$nb = count($r);

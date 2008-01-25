@@ -45,14 +45,11 @@ class xivo_tpl
 		if(is_array($url) === true)
 			$this->_url = $url;
 
-		if(($arr = xivo_get_aks($modules)) === false)
+		if(empty($modules) === true)
 			return(null);
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		foreach($modules as $class)
 		{
-			$k = &$arr['keys'][$i];
-			$class = &$modules[$k];
-
 			if(is_object($class) === true)
 				$this->set_module($class);
 			else if(is_string($class) === true)
@@ -222,14 +219,11 @@ class xivo_tpl
 	{
 		$a = (array) $a;
 
-		if(($arr = xivo_get_aks($a)) === false)
+		if(empty($a) === true)
 			return(false);
 
-		for($i = 0;$i < $arr['cnt'];$i++)
-		{
-			$k = &$arr['keys'][$i];
-			$this->set_var($k,$a[$k]);
-		}
+		foreach($a as $k => $v)
+			$this->set_var($k,$v);
 	}
 
 	function get_var($name)

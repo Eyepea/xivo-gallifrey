@@ -645,43 +645,22 @@ class xivo_service_asterisk extends xivo_service_abstract
 		return(($ref = &$r));
 	}
 
-	function load_protocols_module()
-	{
-		if(($arr = xivo_get_aks($this->_conf['protocol'])) === false)
-			return(false);
-
-		for($i = 0;$i < $arr['cnt'];$i++)
-		{
-			$k = &$arr['keys'][$i];
-
-			if(($module_name = $this->get_protocol_module_name($k)) !== false)
-				$this->get_module($module_name);
-		}
-	}
-
 	function get_element($modules=array())
 	{
-		$r = false;
-
 		$modules = (array) $modules;
 		
 		if(isset($modules[0]) === false)
 			$modules = array_keys($this->_conf['module']);
 			
-		if(($arr = xivo_get_aks($modules)) === false)
-			return($r);
+		if(empty($modules) === true)
+			return(false);
 
 		$r = array();
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		foreach($modules as $v)
 		{
-			$k = $arr['keys'][$i];
-			$v = &$modules[$arr['keys'][$i]];
-
-			if(($module = &$this->get_module($v)) === false || ($list = $module->get_element()) === false)
-				continue;
-			
-			$r[$v] = &$list;
+			if(($module = &$this->get_module($v)) !== false && ($list = $module->get_element()) !== false)
+				$r[$v] = &$list;
 		}
 
 		if(empty($r) === true)
@@ -698,30 +677,22 @@ class xivo_service_asterisk extends xivo_service_abstract
 		if(isset($protocols[0]) === false)
 			$protocols = $this->_conf['protocol'];			
 
-		if(($arr = xivo_get_aks($protocols)) === false)
+		if(empty($protocols) === true)
 			return(false);
 
 		$r = array();
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		foreach($protocols as $k => $v)
 		{
-			$k = $arr['keys'][$i];
-			$v = &$protocols[$k];
-
 			if(isset($v['module']) === false || ($element = $this->get_element($v['module'])) === false)
 				continue;
-
-			if($module === true)
+			else if($module === true)
 				$r[$k] = $element;
-			else
+			else if(is_array($element) === true)
 			{
-				if(($mods = xivo_get_aks($element)) === false)
-					continue;
-
-				for($j = 0;$j < $mods['cnt'];$j++)
-					$r[$k] = $element[$mods['keys'][$j]];
+				foreach($element as $value)
+					$r[$k] = $value;
 			}
-
 		}
 
 		if(empty($r) === true)

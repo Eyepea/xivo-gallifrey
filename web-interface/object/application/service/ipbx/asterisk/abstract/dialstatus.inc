@@ -65,10 +65,9 @@ class xivo_application_service_asterisk_dialstatus_abstract extends xivo_applica
 		$this->_reset();
 
 		if(is_array($list) === false
-		|| is_string($type) === false
-		|| ($arr = xivo_get_aks($list,true)) === false)
+		|| is_string($type) === false)
 			return(false);
-		else if($arr['cnt'] === 0)
+		else if(empty($list) === true)
 			return(null);
 
 		$info = array();
@@ -79,22 +78,17 @@ class xivo_application_service_asterisk_dialstatus_abstract extends xivo_applica
 
 		$reslist = array();
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		foreach($list as $key => $val)
 		{
-			$key = &$arr['keys'][$i];
-			$val = &$list[$key];
-
 			if(is_array($val) === false)
 				continue;
 
 			$info['status'] = $key;
 			$info = array_merge($info,$val);
 
-			if(($rs = $this->_dialstatus->chk_values($info)) === false
-			|| isset($tmp[$rs['status']]) === true)
-				continue;
-
-			$reslist[$rs['status']] = $rs;
+			if(($rs = $this->_dialstatus->chk_values($info)) !== false
+			&& isset($tmp[$rs['status']]) === false)
+				$reslist[$rs['status']] = $rs;
 		}
 
 		if(empty($reslist) === true)
@@ -146,25 +140,23 @@ class xivo_application_service_asterisk_dialstatus_abstract extends xivo_applica
 	{
 		if(($id = xivo_ulongint($id)) === 0)
 			return(false);
-		else if(($rs = $this->get_result()) === null || $rs === false)
+		else if(($rs = $this->get_result()) === null)
 			return($rs);
-		else if(($arr = xivo_get_aks($rs)) === false)
+		else if(is_array($rs) === false || empty($rs) === true)
 			return(false);
 
 		$this->_return = array();
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		foreach($rs as $val)
 		{
-			$key = &$arr['keys'][$i];
-			$ref = &$rs[$key];
-			$ref['categoryval'] = $id;
+			$val['categoryval'] = $id;
 
-			if($this->_dialstatus->is_valid($ref['category'],
-							$ref['categoryval'],
-							$ref['type'],
-							$ref['typeval'],
-							$ref['applicationval']) === false
-			|| ($this->_return[$ref['status']] = $this->_dialstatus->add($ref)) === false)
+			if($this->_dialstatus->is_valid($val['category'],
+							$val['categoryval'],
+							$val['type'],
+							$val['typeval'],
+							$val['applicationval']) === false
+			|| ($this->_return[$val['status']] = $this->_dialstatus->add($val)) === false)
 				return(false);
 		}
 
@@ -190,29 +182,30 @@ class xivo_application_service_asterisk_dialstatus_abstract extends xivo_applica
 
 		if(($rs = $this->get_result()) === null)
 			return($this->_return);
-		else if(($arr = xivo_get_aks($rs)) === false)
+		else if(is_array($rs) === false || empty($rs) === true)
 			return(false);
 
 		$this->_return = array();
 
-		$list = xivo_get_aks($this->_info);
+		$list = is_array($this->_info) === true ? array_keys($this->_info) : false;
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		$i = 0;
+
+		foreach($rs as $val)
 		{
-			if($list !== false && isset($list['keys'][$i]) === true)
-				$did = $this->_info[$list['keys'][$i]]['id'];
+			if($list !== false && isset($list[$i]) === true)
+				$did = $this->_info[$list[$i++]]['id'];
 			else
 				$did = 0;
 
-			$ref = &$rs[$arr['keys'][$i]];
-			$ref['categoryval'] = $id;
+			$val['categoryval'] = $id;
 
-			if($this->_dialstatus->is_valid($ref['category'],
-							$ref['categoryval'],
-							$ref['type'],
-							$ref['typeval'],
-							$ref['applicationval']) === false
-			|| ($this->_return[$ref['status']] = $this->_dialstatus->add($ref,$did)) === false)
+			if($this->_dialstatus->is_valid($val['category'],
+							$val['categoryval'],
+							$val['type'],
+							$val['typeval'],
+							$val['applicationval']) === false
+			|| ($this->_return[$val['status']] = $this->_dialstatus->add($val,$did)) === false)
 				return(false);
 		}
 
@@ -244,13 +237,14 @@ class xivo_application_service_asterisk_dialstatus_abstract extends xivo_applica
 
 	function reverse_add()
 	{
-		if(($arr = xivo_get_aks($this->_return)) === false)
+		if(is_array($this->_return) === false
+		|| empty($this->_return) === true)
 			return(false);
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		foreach($this->_return as $val)
 		{
-			if($this->_return[$arr['keys'][$i]] !== false)
-				$this->_dialstatus->delete($this->_return[$arr['keys'][$i]]);
+			if($val !== false)
+				$this->_dialstatus->delete($val);
 		}
 
 		return(true);

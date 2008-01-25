@@ -520,25 +520,20 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		$rs = false;
 
 		if(($gfeaturesid = xivo_ulongint($gfeaturesid)) === 0
-		|| ($rs = $this->get_result('user_callgroup')) === null
-		|| $rs === false)
+		|| ($rs = $this->get_result('user_callgroup')) === null)
 			return($rs);
-
-		if(($arr = xivo_get_aks($rs)) === false)
+		else if(is_array($rs) === false || empty($rs) === true)
 			return(false);
 
 		$callgroup = array('callgroup' => '');
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		foreach($rs as $val)
 		{
-			$ref = &$rs[$arr['keys'][$i]];
-
-			if($ref === false
-			|| ($protocol = &$this->_service->get_protocol_module($ref['protocol'])) === false
-			|| ($info = $protocol->get($ref['protocolid'])) === false)
+			if($val === false
+			|| ($protocol = &$this->_service->get_protocol_module($val['protocol'])) === false
+			|| ($info = $protocol->get($val['protocolid'])) === false)
 				continue;
-
-			if(is_array($info['callgroup']) === false)
+			else if(is_array($info['callgroup']) === false)
 				$callgroup['callgroup'] = $gfeaturesid;
 			else if(in_array($gfeaturesid,$info['callgroup']) === true)
 				continue;
@@ -559,14 +554,12 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 	{
 		if($this->get_errnb() > 0
 		|| $this->_status !== 'add'
-		|| ($arr = xivo_get_aks($this->_return)) === false)
+		|| is_array($this->_return) === false
+		|| empty($this->_return) === true)
 			return(false);
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		foreach($this->_return as $key => $val)
 		{
-			$key = &$arr['keys'][$i];
-			$val = &$this->_return[$key];
-
 			if($val === false)
 				continue;
 
@@ -579,10 +572,10 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 					if(is_array($val) === false || ($nb = count($val)) === 0)
 						continue;
 
-					for($j = 0;$j < $nb;$j++)
+					for($i = 0;$i < $nb;$i++)
 					{
-						if($val[$j] !== false)
-							$this->_queuemember->delete($val[$j]);
+						if($val[$i] !== false)
+							$this->_queuemember->delete($val[$i]);
 					}
 					break;
 				case 'rightcall':
@@ -598,6 +591,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 					$module->delete($val);
 			}
 		}
+
 		return(true);
 	}
 
@@ -794,8 +788,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 				if(($protocol = &$this->_service->get_protocol_module($res['protocol'])) === false
 				|| ($pinfo = $protocol->get($res['protocolid'])) === false)
 					continue;
-
-				if(is_array($pinfo['callgroup']) === false)
+				else if(is_array($pinfo['callgroup']) === false)
 					$callgroup['callgroup'] = $gfeaturesid;
 				else if(in_array($gfeaturesid,$pinfo['callgroup']) === true)
 					continue;
@@ -823,14 +816,12 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 	{
 		if($this->get_errnb() > 0
 		|| $this->_status !== 'edit'
-		|| ($arr = xivo_get_aks($this->_return)) === false)
+		|| is_array($this->_return) === false
+		|| empty($this->_return) === true)
 			return(false);
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		foreach($this->_return as $key => $val)
 		{
-			$key = &$arr['keys'][$i];
-			$val = &$this->_return[$key];
-
 			if($val === false)
 				continue;
 
@@ -868,13 +859,13 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 				default:
 					if(($module = &$this->_service->get_module($key)) === false)
 						continue;
-
-					if($this->_origin[$key] === false)
+					else if($this->_origin[$key] === false)
 						$module->delete($val);
 					else
 						$module->edit_origin($this->_origin[$key]);
 			}
 		}
+
 		return(true);
 	}
 
@@ -997,14 +988,13 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 	{
 		if($this->get_errnb() > 0
 		|| $this->_status !== 'delete'
-		|| ($arr = xivo_get_aks($this->_return)) === false)
+		|| is_array($this->_return) === false
+		|| empty($this->_return) === true)
 			return(false);
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		foreach($this->_return as $key => $val)
 		{
-			$key = &$arr['keys'][$i];
-
-			if($this->_return[$key] === false)
+			if($val === false)
 				continue;
 
 			switch($key)
@@ -1026,13 +1016,12 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 					$this->_dialstatus->add_origin_list();
 					break;
 				default:
-					if(($module = &$this->_service->get_module($key)) === false)
-						continue;
-
-					if($this->_origin[$key] !== false)
+					if(($module = &$this->_service->get_module($key)) !== false
+					&& $this->_origin[$key] !== false)
 						$module->add_origin($this->_origin[$key]);
 			}
 		}
+
 		return(true);
 	}
 
@@ -1040,8 +1029,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 	{
 		if(xivo_issa('gfeatures',$this->_info) === false)
 			return(false);
-
-		if(($incall = &$this->_service->get_module('incall')) !== false)
+		else if(($incall = &$this->_service->get_module('incall')) !== false)
 		{
 			$incall_where = array();
 			$incall_where['type'] = 'group';

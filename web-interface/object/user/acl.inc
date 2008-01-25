@@ -68,10 +68,8 @@ class xivo_user_acl
 
 	function _mk_tree($a,$sess)
 	{
-		$r = false;
-
-		if(($arr = xivo_get_aks($a)) === false)
-			return($r);
+		if(is_array($a) === false || empty($a) === true)
+			return(false);
 
 		$id = $path = '';
 		$level = 1;
@@ -87,11 +85,8 @@ class xivo_user_acl
 			$sess = &$sess['child'];
 		}
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		foreach($a as $k => $v)
 		{
-			$k = $arr['keys'][$i];
-			$v = &$a[$k];
-
 			if(isset($sess[$k]) === false)
 				$sess[$k] = array();
 
@@ -163,13 +158,10 @@ class xivo_user_acl
 	{
 		if(is_array($arr) === false || isset($arr['id']) === false)
 			return(false);
-
-		if(isset($arr['tree']) === false)
+		else if(isset($arr['tree']) === false)
 			$arr['tree'] = array();
 
-		$r = $this->_dso->acl_edit($arr['id'],$this->_chk_tree($arr['tree']));
-
-		return($r);
+		return($this->_dso->acl_edit($arr['id'],$this->_chk_tree($arr['tree'])));
 	}
 
 	function get_user($id)
@@ -182,18 +174,18 @@ class xivo_user_acl
 
 	function _mk_user_tree($tree,$user)
 	{
-		if(($arr = xivo_get_aks($tree)) === false)
+		if(is_array($tree) === false || empty($tree) === true)
 			return($tree);
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		reset($tree);
+
+		while(list($key) = each($tree))
 		{
-			$k = &$arr['keys'][$i];
-			$v = &$tree[$k];
+			$ref = &$tree[$key];
+			$ref['access'] = $this->chk($ref['path'],$user);
 
-			$v['access'] = $this->chk($v['path'],$user);
-
-			if(isset($v['child']) === true)
-				$v['child'] = $this->_mk_user_tree($v['child'],$user);
+			if(isset($ref['child']) === true)
+				$ref['child'] = $this->_mk_user_tree($ref['child'],$user);
 		}
 
 		return($tree);
@@ -201,11 +193,8 @@ class xivo_user_acl
 
 	function chk($section,$user)
 	{
-		if($user === null)
-			return(false);
-
-		if($user === false || $user === true)
-			return($user);
+		if($user === null || is_bool($user) === true)
+			return((bool) $user);
 
 		$section = trim(preg_replace('@/+@','/',(string) $section),'/');
 		$tree = $this->get_tree();
@@ -220,11 +209,9 @@ class xivo_user_acl
 
 			if(xivo_issa($k,$tree) === false || ($user = xivo_ak($k,$user,true)) === false)
 				return(false);
-
-			if($user === true)
+			else if($user === true)
 				return(true);
-
-			if(isset($tree[$k]['child']) === true)
+			else if(isset($tree[$k]['child']) === true)
 				$tree = &$tree[$k]['child'];
 		}
 

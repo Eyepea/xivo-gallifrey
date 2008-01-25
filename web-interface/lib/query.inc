@@ -353,16 +353,13 @@ class xivo_query
 				$sep = '&';
 		}
 
-		if(($arr = xivo_get_aks($a)) === false)
+		if(empty($a) === true)
 			return($r);
 
 		$r = array();
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		foreach($a as $k => $v)
 		{
-			$k = &$arr['keys'][$i];
-			$v = &$a[$k];
-
 			$tmp = $pre !== '' && is_int($k) === true ? $pre.$k : $k;
 
 			if($key !== '')
@@ -391,15 +388,13 @@ class xivo_query
 
 			return(($ref = &$value));
 		}
-
-		if(($arr = xivo_get_aks($value)) === false)
+		else if(empty($value) === true)
 			return(($ref = &$value));
 
-		for($i = 0;$i < $arr['cnt'];$i++)
-		{
-			$k = &$arr['keys'][$i];
-			$value[$k] = &$this->_filter($value[$k],$mode,$quote);
-		}
+		reset($value);
+
+		while(list($key,$val) = each($value))
+			$value[$key] = &$this->_filter($val,$mode,$quote);
 
 		return(($ref = &$value));
 	}

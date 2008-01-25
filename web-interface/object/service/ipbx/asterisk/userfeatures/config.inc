@@ -183,7 +183,7 @@ $array['filter']['destunc'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-
 $array['filter']['musiconhold'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 20);
 $array['filter']['outcallerid'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_-]+$/i','maxlen' => 80);
 $array['filter']['internal'] = array('set' => false,'chk' => 0);
-$array['filter']['bsfilter'] = array('key' => array('no','boss','secretary'));
+$array['filter']['bsfilter'] = array('set' => false,'chk' => 2,'key' => array('no','boss','secretary'));
 $array['filter']['description'] = array('set' => false,'chk' => 2,'maxlen' => 1000,'cast' => 'sgraph_crlf_tab','eol' => true);
 
 ?>

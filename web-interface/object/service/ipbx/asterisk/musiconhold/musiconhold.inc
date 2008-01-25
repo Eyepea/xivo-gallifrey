@@ -398,30 +398,20 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 
 	function get_all_by_category()
 	{
-		$r = false;
-
 		if(($list = parent::get_name_val_by_category()) === false
-		|| ($arr = xivo_get_aks($list)) === false)
-			return($r);
+		|| is_array($list) === false
+		|| empty($list) === true)
+			return(false);
 
 		$r = array();
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		foreach($list as $key => $val)
 		{
-			$key = &$arr['keys'][$i];
-			$val = &$list[$key];
 			$val['category'] = $key;
 
-			if($val['mode'] === 'custom' && $val['directory'] === '')
-			{
+			if(($val['mode'] === 'custom' && $val['directory'] === '') === true
+			|| $this->_chk_dir($key,true) !== false)
 				$r[] = $val;
-				continue;
-			}
-
-			if($this->_chk_dir($key,true) === false)
-				continue;
-
-			$r[] = $val;
 		}
 
 		if(isset($r[0]) === false)

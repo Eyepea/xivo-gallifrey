@@ -256,8 +256,7 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 	function _set_phonebook_type($type,$list)
 	{
 		if(($type !== 'address' && $type !== 'number') === true
-		|| is_array($list) === false
-		|| ($arr = xivo_get_aks($list,true)) === false)
+		|| is_array($list) === false)
 			return(false);
 
 		if($type === 'address')
@@ -271,7 +270,7 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 			$module = &$this->_phonebooknumber;
 		}
 
-		if($arr['cnt'] === 0)
+		if(empty($list) === true)
 			return(null);
 
 		$info = array();
@@ -279,18 +278,14 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 
 		$reslist = array();
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		foreach($list as $key => $val)
 		{
-			$key = &$arr['keys'][$i];
-			$val = &$list[$key];
-
 			if(($type === 'address'
 			   && is_array($val) === false) === true
 			|| ($type === 'number'
 			   && is_scalar($val) === false) === true)
 				continue;
-
-			if($type === 'number' && xivo_haslen($val) === false)
+			else if($type === 'number' && xivo_haslen($val) === false)
 			{
 				unset($list[$key]);
 				continue;
@@ -303,11 +298,9 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 			else
 				$info['number'] = $val;
 
-			if(($rs = $module->chk_values($info)) === false
-			|| isset($tmp[$rs['type']]) === true)
-				continue;
-
-			$reslist[$rs['type']] = $rs;
+			if(($rs = $module->chk_values($info)) !== false
+			&& isset($tmp[$rs['type']]) === false)
+				$reslist[$rs['type']] = $rs;
 		}
 
 		if($type === 'number' && empty($list) === true)
@@ -383,20 +376,18 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 			$module = &$this->_phonebooknumber;
 		}
 
-		if(($rs = $this->get_result($typename)) === null || $rs === false)
+		if(($rs = $this->get_result($typename)) === null)
 			return($rs);
-		else if(($arr = xivo_get_aks($rs)) === false)
+		else if(is_array($rs) === false || empty($rs) === true)
 			return(false);
 
 		$this->_return[$typename] = array();
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		foreach($rs as $val)
 		{
-			$key = &$arr['keys'][$i];
-			$ref = &$rs[$key];
-			$ref['phonebookid'] = $id;
+			$val['phonebookid'] = $id;
 
-			if(($this->_return[$typename][$ref['type']] = $module->add($ref)) === false)
+			if(($this->_return[$typename][$val['type']] = $module->add($val)) === false)
 				return(false);
 		}
 
@@ -410,16 +401,16 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 	{
 		if($this->get_errnb() > 0
 		|| $this->_status !== 'add'
-		|| ($arr = xivo_get_aks($this->_return)) === false)
+		|| is_array($this->_return) === false
+		|| empty($this->_return) === true)
 			return(false);
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		foreach($this->_return as $key => $val)
 		{
-			$key = &$arr['keys'][$i];
-			$val = &$this->_return[$key];
-
 			if($val === false)
 				continue;
+
+			$module = null;
 
 			switch($key)
 			{
@@ -429,20 +420,21 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 				case 'phonebookaddress':
 					$module = &$this->_phonebookaddress;
 				case 'phonebooknumber':
-					if(isset($module) === false)
+					if($module === null)
 						$module = &$this->_phonebooknumber;
 
-					if(($arrval = xivo_get_aks($val)) === false)
+					if(is_array($val) === false)
 						continue;
 
-					for($j = 0;$j < $arrval['cnt'];$j++)
+					foreach($val as $phoneval)
 					{
-						if($val[$arrval['keys'][$j]] !== false)
-							$module->delete($val[$arrval['keys'][$j]]);
+						if($phoneval !== false)
+							$module->delete($phoneval);
 					}
 					break;
 			}
 		}
+
 		return(true);
 	}
 
@@ -493,10 +485,7 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 		if(($type !== 'address' && $type !== 'number') === true
 		|| xivo_issa('phonebook',$this->_info) === false)
 			return(false);
-
-		$id = $this->_info['phonebook']['id'];
-
-		if($type === 'address')
+		else if($type === 'address')
 		{
 			$typename = 'phonebookaddress';
 			$module = &$this->_phonebookaddress;
@@ -507,6 +496,8 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 			$module = &$this->_phonebooknumber;
 		}
 
+		$id = $this->_info['phonebook']['id'];
+
 		if(xivo_issa($typename,$this->_info) === false)
 			return($this->_add_phonebook_type($type,$id));
 
@@ -514,24 +505,25 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 
 		if(($rs = $this->get_result($typename)) === null)
 			return($this->_return[$typename]);
-		else if(($arr = xivo_get_aks($rs)) === false)
+		else if(is_array($rs) === false || empty($rs) === true)
 			return(false);
 
 		$this->_return[$typename] = array();
 
-		$list = xivo_get_aks($this->_info[$typename]);
+		$list = array_keys($this->_info[$typename]);
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		$i = 0;
+
+		foreach($rs as $val)
 		{
-			if($list !== false && isset($list['keys'][$i]) === true)
-				$pid = $this->_info[$typename][$list['keys'][$i]]['id'];
+			if($list !== false && isset($list[$i]) === true)
+				$pid = $this->_info[$typename][$list[$i++]]['id'];
 			else
 				$pid = 0;
 
-			$ref = &$rs[$arr['keys'][$i]];
-			$ref['phonebookid'] = $id;
+			$val['phonebookid'] = $id;
 
-			if(($this->_return[$typename][$ref['type']] = $module->add($ref,$pid)) === false)
+			if(($this->_return[$typename][$val['type']] = $module->add($val,$pid)) === false)
 				return(false);
 		}
 
@@ -545,24 +537,23 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 	{
 		if($this->get_errnb() > 0
 		|| $this->_status !== 'edit'
-		|| ($arr = xivo_get_aks($this->_return)) === false)
+		|| is_array($this->_return) === false
+		|| empty($this->_return) === true)
 			return(false);
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		foreach($this->_return as $key => $val)
 		{
-			$key = &$arr['keys'][$i];
-			$val = &$this->_return[$key];
-
 			if($val === false)
 				continue;
+
+			$module = null;
 
 			switch($key)
 			{
 				case 'phonebook':
 					if(isset($this->_origin['phonebook']) === false)
 						continue;
-
-					if($this->_origin['phonebook'] === false)
+					else if($this->_origin['phonebook'] === false)
 						$this->_phonebook->delete($val);
 					else
 						$this->_phonebook->edit_origin($this->_origin['phonebook']);
@@ -571,7 +562,7 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 					$type = 'address';
 					$module = &$this->_phonebookaddress;
 				case 'phonebooknumber':
-					if(isset($module) === false)
+					if($module === null)
 					{
 						$type = 'number';
 						$module = &$this->_phonebooknumber;
@@ -586,6 +577,7 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 					break;
 			}
 		}
+
 		return(true);
 	}
 
@@ -666,41 +658,39 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 	function _reverse_delete()
 	{
 		if($this->_status !== 'delete'
-		|| ($arr = xivo_get_aks($this->_return)) === false)
+		|| is_array($this->_return) === false
+		|| empty($this->_return) === true)
 			return(false);
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		foreach($this->_return as $key => $val)
 		{
-			$key = &$arr['keys'][$i];
-
-			if($this->_return[$key] === false)
+			if($val === false)
 				continue;
+
+			$module = null;
 
 			switch($key)
 			{
 				case 'phonebook':
-					if(isset($this->_origin['phonebook']) === false)
-						continue;
-
-					$this->_phonebook->add_origin($this->_origin['phonebook']);
+					if(isset($this->_origin['phonebook']) === true)
+						$this->_phonebook->add_origin($this->_origin['phonebook']);
 					break;
 				case 'phonebookaddress':
 					$type = 'address';
 					$module = &$this->_phonebookaddress;
 				case 'phonebooknumber':
-					if(isset($module) === false)
+					if($module === null)
 					{
 						$type = 'number';
 						$module = &$this->_phonebooknumber;
 					}
 
-					if(isset($this->_origin[$key]) === false)
-						continue;
-
-					$module->add_origin_list($this->_origin[$key]);
+					if(isset($this->_origin[$key]) === true)
+						$module->add_origin_list($this->_origin[$key]);
 					break;
 			}
 		}
+
 		return(true);
 	}
 

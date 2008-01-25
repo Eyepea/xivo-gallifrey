@@ -68,20 +68,16 @@ class xivo_libconfig_abstract
 	{
 		if(is_array($where) === false
 		|| isset($this->_conf) === false
-		|| xivo_issa('element',$this->_conf) === false)
-			return(false);
-
-		$arr_keys = array_keys($this->_conf['element']);
-
-		if(($nb = count($arr_keys)) === 0)
+		|| xivo_issa('element',$this->_conf) === false
+		|| empty($this->_conf['element']) === true)
 			return(false);
 
 		$r = array();
 
-		for($i = 0;$i < $nb;$i++)
-		{
-			$key = &$arr_keys[$i];
+		reset($this->_conf['element']);
 
+		while(list($key) = each($this->_conf['element']))
+		{
 			if(array_key_exists($key,$where) === true
 			&& $this->unset_element_value($key) === false)
 				$r[$key] = $where[$key];
@@ -271,20 +267,18 @@ class xivo_libconfig_abstract
 
 		$rs = $this->_filter->get_result();
 
-		if($set === false || ($arr = xivo_get_aks($rs)) === false)
+		if($set === false
+		|| is_array($rs) === false
+		|| empty($rs) === true)
 			return($rs);
 
 		$r = array();
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		foreach($rs as $key => $val)
 		{
-			$key = &$arr['keys'][$i];
-			$val = &$rs[$key];
-
 			if($this->unset_element_value($key) === true)
 				continue;
-
-			if(($sval = $this->_set_value($key,$val)) !== false)
+			else if(($sval = $this->_set_value($key,$val)) !== false)
 				$val = $sval;
 
 			if(($defval = $this->get_element_default($key)) !== false

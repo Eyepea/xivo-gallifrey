@@ -10,7 +10,7 @@ class xivo_service
 	{
 		if(($this->_conf = xivo_gat::load_get('service',XIVO_PATH_OBJECTCONF)) === false)
 			trigger_error('Failed to load service Array',E_USER_ERROR);	
-		else if(($arr = xivo_get_aks($ini)) === false)
+		else if(is_array($ini) === false || empty($ini) === true)
 			trigger_error('Invalid parameter in '.__CLASS__,E_USER_ERROR);
 
 		$this->_ini = $ini;
@@ -18,8 +18,10 @@ class xivo_service
 		if(xivo_issa('_SRE',$_SESSION) === false)
 			$_SESSION['_SRE'] = array();
 
-		for($i = 0;$i < $arr['cnt'];$i++)
-			$this->_load_service($arr['keys'][$i]);
+		reset($ini);
+
+		while(list($key) = each($ini))
+			$this->_load_service($key);
 	}
 
 	function _load_service($name)

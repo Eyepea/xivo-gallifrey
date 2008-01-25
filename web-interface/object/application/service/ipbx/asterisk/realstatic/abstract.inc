@@ -186,16 +186,13 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 		$r['result'] = array();
 		$r['error'] = array();
 
-		$keys = array_keys($list);
-		$nb = count($keys);
-
 		$rs = array();
 		$rs['commented'] = $disable;
 
-		for($i = 0;$i < $nb;$i++)
-		{
-			$key = &$keys[$i];
+		reset($list);
 
+		while(list($key) = each($list))
+		{
 			if($this->unset_element_value($key) === true)
 				continue;
 

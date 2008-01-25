@@ -22,13 +22,16 @@ class xivo_application_service_asterisk_abstract_sql extends xivo_datastorage_he
 
 	function _set_table()
 	{
-		if(($arr = xivo_get_aks($this->_table)) === false)
+		if(is_array($this->_table) === false
+		|| empty($this->_table) === true)
 			return(false);
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		reset($this->_table);
+
+		while(list($key) = each($this->_table))
 		{
-			if($this->_get_table($arr['keys'][$i]) === false)
-				trigger_error('Invalid or missing Datastorage table '.$arr['keys'][$i],E_USER_ERROR);
+			if($this->_get_table($key) === false)
+				trigger_error('Invalid or missing Datastorage table '.$key,E_USER_ERROR);
 		}
 		
 		return(true);

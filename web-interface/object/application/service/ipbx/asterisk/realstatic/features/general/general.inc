@@ -173,14 +173,12 @@ class xivo_application_service_asterisk_realstatic_features_general extends xivo
 	{
 		if($this->get_errnb() > 0
 		|| $this->_status !== 'save'
-		|| ($arr = xivo_get_aks($this->_return)) === false)
+		|| is_array($this->_return) === false
+		|| empty($this->_return) === true)
 			return(false);
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		foreach($this->_return as $key => $val)
 		{
-			$key = &$arr['keys'][$i];
-			$val = &$this->_return[$key];
-
 			if($val === false)
 				continue;
 
@@ -192,14 +190,15 @@ class xivo_application_service_asterisk_realstatic_features_general extends xivo
 				case 'extenumbers':
 					if(isset($this->_origin['extenumbers']) === false)
 						continue;
-
-					if($this->_origin['extenumbers'] === false)
+					else if($this->_origin['extenumbers'] === false)
 						$this->_extenumbers->delete($this->_status,$val);
 					else
 						$this->_extenumbers->edit_origin($this->_origin['extenumbers']);
 					break;
 			}
 		}
+
+		return(true);
 	}
 }
 

@@ -894,23 +894,24 @@ class xivo_tpl_form extends xivo_tpl_module
 
 	function _mk_slt_option(&$a)
 	{
-		if(($arr = xivo_get_aks($a)) === false)
+		if(is_array($a) === false || empty($a) === true)
 			return(false);
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		reset($a);
+
+		while(list($k) = each($a))
 		{
-			$k = &$arr['keys'][$i];
 			$ref = &$a[$k];
 
 			if($this->_param['browse'] !== false
-			&& ($nb = count($this->_param['browse'])) !== 0)
+			&& ($cnt = count($this->_param['browse'])) !== 0)
 			{
-				for($j = 0;$j < $nb;$j++)
+				for($i = 0;$i < $cnt;$i++)
 				{
-					if(xivo_issa($this->_param['browse'][$j],$ref) === false)
+					if(xivo_issa($this->_param['browse'][$i],$ref) === false)
 						break;
 
-					$ref = &$ref[$this->_param['browse'][$j]];
+					$ref = &$ref[$this->_param['browse'][$i]];
 				}
 			}
 

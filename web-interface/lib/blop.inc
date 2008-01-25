@@ -322,23 +322,15 @@ class blop
 
 	function _cfg_ini_extension($a)
 	{
-		$r = false;
+		if(is_array($a) === false || empty($a) === true)
+			return(false);
 
-		if(($arr = xivo_get_aks($a)) === false)
-			return($r);
-
-		for($i = 0;$i < $arr['cnt'];$i++)
+		foreach($a as $k => $v)
 		{
-			$k = $arr['keys'][$i];
-			$v = (bool) $a[$k];
-
-			if(($const = $this->chk_ini_extension($k)) === false)
+			if(($const = $this->chk_ini_extension($k)) === false
+			|| $this->_conf['extension'][$const]['optionnal'] !== 1)
 				continue;
-
-			if($this->_conf['extension'][$const]['optionnal'] !== 1)
-				continue;
-
-			if($v === true)
+			else if((bool) $v === true)
 				$this->_conf['extension'][$const]['load'] = 1;
 			else
 				$this->_conf['extension'][$const]['load'] = 2;
@@ -347,14 +339,11 @@ class blop
 
 	function _cfg_ini_template($a)
 	{
-		if(($arr = xivo_get_aks($a)) === false)
+		if(is_array($a) === false || empty($a) === true)
 			die('ERR: Invalid template configuration in XIVO ini file');
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		foreach($a as $k => $v)
 		{
-			$k = $arr['keys'][$i];
-			$v = &$a[$k];
-
 			if(is_array($v) === false)
 				die('ERR: Missing information in '.$k.' for template configuration in XIVO ini file');
 
@@ -382,20 +371,18 @@ class blop
 
 	function _load_ini_extension()
 	{
-		if(($arr = xivo_get_aks($this->_conf['extension'])) === false)
+		if(is_array($this->_conf['extension']) === false
+		|| empty($this->_conf['extension']) === true)
 		{
 			define('XIVO_EXT_INI_LD',$this->_conf['xivo']['ini']['extension_loaded']);
 			return(null);
 		}
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		foreach($this->_conf['extension'] as $k => $v)
 		{
-			$k = &$arr['keys'][$i];
-			$ref_ext = &$this->_conf['extension'][$k];
-
-			if(extension_loaded($ref_ext['meta']) === true)
+			if(extension_loaded($v['meta']) === true)
 				$this->_conf['xivo']['ini']['extension_loaded'] |= $k;
-			else if($ref_ext['load'] === 1 && XIVO_EXT_ENABLE === true)
+			else if($v['load'] === 1 && XIVO_EXT_ENABLE === true)
 			{
 				$file = XIVO_EXT_PRE.$this->_conf['extension'][$k]['meta'].'.'.XIVO_EXT_SUF;
 				$path = $this->_conf['xivo']['ini']['extension_dir'].XIVO_SEP_DIR.$file;
@@ -415,22 +402,19 @@ class blop
 
 	function chk_ini_extension($meta)
 	{
-		$r = false;
-
 		$meta = strtoupper((string) $meta);
-
 		$name = XIVO_EXT_CONST.$meta;
 
 		if(defined($name) === false)
-			return($r);
+			return(false);
 
 		$const = constant($name);
 		$extension = &xivo_gat::get('extension');
 
 		if(xivo_issa($const,$extension) === true)
-			$r = $const;
+			return($const);
 
-		return($r);
+		return(false);
 	}
 
 	function chk_extension_loaded($meta)
@@ -484,7 +468,6 @@ class blop
 			$dir = (string) $dir;
 
 		$file = (string) $file;
-		$lib = (bool) $lib;
 
 		if(class_exists($class) === true)
 			return(true);
@@ -510,7 +493,7 @@ class blop
 		}
 		else if(substr($class,0,5) === 'xivo_')
 		{
-			if($lib === true)
+			if((bool) $lib === true)
 				$dir = rtrim(XIVO_PATH_LIB.XIVO_SEP_DIR.ltrim($dir,XIVO_SEP_DIR),XIVO_SEP_DIR.'.');
 			else
 				$dir = rtrim($dir,XIVO_SEP_DIR.'.');
@@ -533,44 +516,31 @@ class blop
 
 	function load_init($file,$name='')
 	{
-		$r = false;
-
 		$file = (string) $file;
 		$name = (string) $name;
 
 		if(xivo_file::is_i($file) === false
 		|| ($init = parse_ini_file($file,true)) === false
-		|| ($arr = xivo_get_aks($init)) === false)
-			return($r);
-
-		if($name !== '' && isset($init[$name]) === false)
-			return($r);
+		|| empty($init) === true
+		|| ($name !== '' && isset($init[$name]) === false) === true)
+			return(false);
 
 		$r = array();
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		foreach($init as $k => $v)
 		{
-			$k = &$arr['keys'][$i];
-
 			if($name !== '' && $name !== $k)
 				continue;
-			
-			$v = &$init[$k];
-
-			if(is_array($v) === false)
+			else if(is_array($v) === false)
 			{
 				$r[$k] = $v;
 				continue;
 			}
-
-			if(($a = xivo_get_aks($v)) === false)
+			else if(empty($v) === true)
 				continue;
 
-			for($j = 0;$j < $a['cnt'];$j++)
+			foreach($v as $ks => $vs)
 			{
-				$ks = &$a['keys'][$j];
-				$vs = &$v[$ks];
-
 				if(($pos = strpos($ks,'.')) === false)
 				{
 					if(isset($r[$k]) === false)
@@ -579,8 +549,7 @@ class blop
 					$r[$k][$ks] = $vs;
 					continue;
 				}
-
-				if($pos === 0 || ($key2 = substr($ks,$pos+1)) === '')
+				else if($pos === 0 || ($key2 = substr($ks,$pos+1)) === '')
 					continue;
 
 				$key1 = substr($ks,0,$pos);
@@ -608,19 +577,14 @@ class blop
 
 	function load_array($file,$once=true)
 	{
-		$r = false;
-
 		if(is_array($file) === true)
 			$file = implode(XIVO_SEP_DIR,$file);
 		else
 			$file = (string) $file;
 
-		$once = (bool) $once;
-
 		if(xivo_file::is_i($file) === false)
-			return($r);
-
-		if($once === true)
+			return(false);
+		else if((bool) $once === true)
 			require_once($file);
 		else
 			require($file);

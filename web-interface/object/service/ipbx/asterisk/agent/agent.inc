@@ -208,14 +208,12 @@ class xivo_service_asterisk_agent extends xivo_service_asterisk_staticconf
 
 		$arr['savecallsin'] = $this->_callpath;
 
-		if(($a = xivo_get_aks($arr)) === false)
-			return(false);
+		$i = 0;
 
-		for($i = 0;$i < $a['cnt'];$i++)
+		foreach($arr as $key => $val)
 		{
-			$key = &$a['keys'][$i];
 			$add['var_name'] = $key;
-			$add['var_val'] = &$arr[$key];
+			$add['var_val'] = $val;
 
 			if($key === 'agent')
 				$add['var_metric'] = $last + 1;
@@ -224,17 +222,15 @@ class xivo_service_asterisk_agent extends xivo_service_asterisk_staticconf
 
 			if(($id = $this->add($add)) === false)
 				break;
-
-			if($key === 'agent')
+			else if($key === 'agent')
 				$agentid = $id;
 
-			$r[$i] = $id;
+			$r[$i++] = $id;
 		}
 
 		if(isset($r[0]) === false)
 			return(false);
-
-		if($id !== false)
+		else if($id !== false)
 		{
 			if($free !== false)
 				$this->delete($free['id']);
@@ -329,7 +325,7 @@ class xivo_service_asterisk_agent extends xivo_service_asterisk_staticconf
 			}
 		}
 
-		if(($a = xivo_get_aks($arr)) !== false)
+		if(empty($arr) === false)
 		{
 			$ret = null;
 
@@ -338,16 +334,17 @@ class xivo_service_asterisk_agent extends xivo_service_asterisk_staticconf
 			$add['cat_metric'] = $this->_cat_metric;
 			$add['var_metric'] = $var_metric;
 
-			for($i = 0;$i < $a['cnt'];$i++)
+			$i = 0;
+
+			foreach($arr as $key => $val)
 			{
-				$key = &$a['keys'][$i];
 				$add['var_name'] = $key;
-				$add['var_val'] = &$arr[$key];
+				$add['var_val'] = $val;
 
 				if(($ret = $this->add($add)) === false)
 					break;
 
-				$r[$i] = $ret;
+				$r[$i++] = $ret;
 			}
 
 			if($ret === false)
@@ -427,16 +424,13 @@ class xivo_service_asterisk_agent extends xivo_service_asterisk_staticconf
 
 		$arr = (array) $arr;
 
-		if(($a = xivo_get_aks($arr)) === false)
+		if(empty($arr) === true)
 			return(false);
 
 		$opt = array();
 
-		for($i = 0;$i < $a['cnt'];$i++)
+		foreach($arr as $pos => $id)
 		{
-			$pos = &$a['keys'][$i];
-			$id = &$arr[$pos];
-
 			$pos_metric = ($group * $this->_conf['var_metric']['range']) + (2 * $pos) + 2;
 
 			if(($agent = $this->_get_agent($id)) === false

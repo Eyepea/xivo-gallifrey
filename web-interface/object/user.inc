@@ -145,24 +145,20 @@ class xivo_user
 	{
 		$users = (array) $users;
 
-		if(xivo_user::is_valid() === false)
+		if(xivo_user::is_valid() === false
+		|| empty($users) === true)
 			return(false);
-
-		if($meta === '')
+		else if($meta === '')
 			$meta = $_SESSION['_USR']->meta;
 
-		if(xivo_user::chk_meta($meta) === false || ($arr = xivo_get_aks($users)) === false)
+		if(xivo_user::chk_meta($meta) === false)
 			return(false);
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		foreach($users as $value)
 		{
-			$k = &$arr['keys'][$i];
-			$v = &$users[$k];
-
-			if(($umeta = xivo_user::chk_meta($v,$real)) === false)
+			if(($umeta = xivo_user::chk_meta($value,$real)) === false)
 				break;
-
-			if($meta === $umeta)
+			else if($meta === $umeta)
 				return(true);
 		}
 

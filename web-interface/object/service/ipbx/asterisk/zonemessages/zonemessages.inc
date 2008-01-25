@@ -128,16 +128,11 @@ class xivo_service_asterisk_zonemessages extends xivo_service_asterisk_staticcon
 	{
 		$arr = (array) $arr;
 
-		if(($list = xivo_get_aks($arr)) === false)
+		if(empty($arr) === true)
 			return(false);
 
-		for($i = 0;$i < $list['cnt'];$i++)
-		{
-			$name = &$list['keys'][$i];
-			$val = &$arr[$name];
-
+		foreach($arr as $name => $val)
 			$this->replace_val_by_name($name,$val,$disable);
-		}
 
 		return(true);
 	}

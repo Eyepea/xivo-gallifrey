@@ -187,13 +187,11 @@ class xivo_service_asterisk_autoprov extends xivo_service_asterisk_abstract
 
 	function _send_sockprov_mode($mode,$arr,$modact='')
 	{
-		$r = false;
-
 		$mode = (string) $mode;
 		$modact = (string) $modact;
 
 		if(is_array($arr) === false)
-			return($r);
+			return(false);
 
 		unset($arr['modact']);
 
@@ -202,29 +200,22 @@ class xivo_service_asterisk_autoprov extends xivo_service_asterisk_abstract
 
 		$arr['mode'] = $mode;
 
-		if(($aks = xivo_get_aks($arr)) === false)
-			return($r);
-
 		$data = '';
 
-		for($i = 0;$i < $aks['cnt'];$i++)
+		foreach($arr as $key => $val)
 		{
-			$key = &$aks['keys'][$i];
-			$val = &$arr[$key];
-
-			if(xivo_haslen($val) === false)
-				continue;
-
-			$data .= $key.'='.$val."\r\n";
+			if(xivo_haslen($val) === true)
+				$data .= $key.'='.$val."\r\n";
 		}
 
 		if($this->_load_sockprov('prov') === false
 		|| ($write = $this->_mk_sockprov_http('prov',$data)) === false
 		|| $this->_sockprov['prov']->is_open() === false)
-			return($r);
-
-		if($this->_sockprov['prov']->write($write) !== false)
+			return(false);
+		else if($this->_sockprov['prov']->write($write) !== false)
 			$r = true;
+		else
+			$r = false;
 
 		$this->_sockprov['prov']->shutdown();
 

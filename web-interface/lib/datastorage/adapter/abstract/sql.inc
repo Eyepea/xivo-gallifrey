@@ -69,6 +69,9 @@ class xivo_datastorage_adapter_abstract_sql
 		if($str !== '')
 			$str .= ' - ';
 
+		if(isset($this->_table['cdr']) === true)
+			die($this->_query);
+
 		if($this->_debug === true && empty($this->_query) === false)
 			$str .= 'Query: '.$this->_query.' - ';
 
@@ -246,15 +249,15 @@ class xivo_datastorage_adapter_abstract_sql
 
 	function get_join()
 	{
-		if(($arr = xivo_get_aks($this->_join)) === false)
+		if(is_array($this->_join) === false
+		|| empty($this->_join) === true)
 			return(null);
 
 		$r = '';
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		foreach($this->_join as $table => $join)
 		{
-			$table = &$arr['keys'][$i];
-			$r .= ' '.$this->_join[$table];
+			$r .= ' '.$join;
 
 			if(isset($this->_joinwhere[$table]) === true)
 				$r .= ' ON '.$this->_joinwhere[$table];
@@ -377,8 +380,7 @@ class xivo_datastorage_adapter_abstract_sql
 
 			if(xivo_haslen($column) === false)
 				return(null);
-
-			if($column !== '*')
+			else if($column !== '*')
 				$column = (array) $column;
 			else
 			{
@@ -387,17 +389,19 @@ class xivo_datastorage_adapter_abstract_sql
 			}
 		}
 
-		if(($arr = xivo_get_aks($column)) === false)
+		if(is_array($column) === false || empty($column) === true)
 			return(null);
 
 		$tabledot = $table.'.';
 		$tabledotlen = strlen($tabledot);
 
-		$noassoc = in_array(0,$arr['keys'],true);
+		$keys = array_keys($column);
+		$noassoc = in_array(0,$keys,true);
+		$nb = count($keys);
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		for($i = 0;$i < $nb;$i++)
 		{
-			$key = &$arr['keys'][$i];
+			$key = &$keys[$i];
 			$val = &$column[$key];
 
 			$object = false;
@@ -430,8 +434,7 @@ class xivo_datastorage_adapter_abstract_sql
 
 			if(xivo_haslen($val) === false)
 				continue;
-
-			if($noassoc === true && is_int($key) === true)
+			else if($noassoc === true && is_int($key) === true)
 				$col = sprintf('%s.%s',$this->quote_identifier($table),
 						       $this->quote_identifier($val));
 			else
@@ -593,7 +596,7 @@ class xivo_datastorage_adapter_abstract_sql
 		$set = (bool) $set;
 		$table = trim((string) $table);
 
-		if(($arr = xivo_get_aks($val)) === false)
+		if(empty($val) === true)
 			return(false);
 
 		$tabledot = '';
@@ -606,19 +609,16 @@ class xivo_datastorage_adapter_abstract_sql
 			$tabledot = $this->quote_identifier($table).'.';
 		}
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		foreach($val as $key => $data)
 		{
-			$key = &$arr['keys'][$i];
-			$data = $this->escape($val[$key]);
-
 			if(xivo_haslen($key) === false)
 				continue;
 			else if($set === true)
-				$r['str'][] = $tabledot.$this->quote_identifier($key).' = '.$data;
+				$r['str'][] = $tabledot.$this->quote_identifier($key).' = '.$this->escape($data);
 			else
 			{
 				$r['keys'][] = $tabledot.$this->quote_identifier($key);
-				$r['str'][] = $data;
+				$r['str'][] = $this->escape($data);
 			}
 		}
 
@@ -1846,19 +1846,14 @@ class xivo_datastorage_adapter_abstract_sql
 
 		if(is_array($column) === true)
 		{
-			if(($arr = xivo_get_aks($column)) === false)
+			if(empty($column) === true)
 				return(false);
 
-			for($i = 0;$i < $arr['cnt'];$i++)
+			foreach($column as $key => $val)
 			{
-				$key = &$arr['keys'][$i];
-				$val = $column[$key];
-
-				if(($key = $this->quote_identifier($key)) === ''
-				|| ($val = $this->_chk_sort($val)) === false)
-					continue;
-
-				$r[] = $tabledot.$key.' '.$val;
+				if(($key = $this->quote_identifier($key)) !== ''
+				&& ($val = $this->_chk_sort($val)) !== false)
+					$r[] = $tabledot.$key.' '.$val;
 			}
 
 			if(isset($r[0]) === false)

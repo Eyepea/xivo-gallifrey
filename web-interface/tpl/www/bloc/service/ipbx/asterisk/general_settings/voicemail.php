@@ -19,8 +19,9 @@
 
 	$zonemessages = $this->get_var('zonemessages');
 
-	if(($zmsg = xivo_get_aks($zonemessages)) !== false):
-		$zmsg_nb = $zmsg['cnt'];
+	if(is_array($zonemessages) === true && empty($zonemessages) === false):
+		$zmsg_keys = array_keys($zonemessages);
+		$zmsg_nb = count($zmsg_keys);
 		$zmsg_js = array();
 		$zmsg_js[0] = 'xivo_tlist[\'timezone\'] = new Array();';
 		$zmsg_js[1] = 'xivo_tlist[\'timezone\'][\'cnt\'] = '.$zmsg_nb.';';
@@ -190,9 +191,8 @@
 		<tbody id="timezone">
 <?php
 	if($zmsg_nb !== 0):
-		for($i = 0;$i < $zmsg['cnt'];$i++):
-			$key = &$zmsg['keys'][$i];
-			$val = &$zonemessages[$key];
+		for($i = 0;$i < $zmsg_nb;$i++):
+			$val = &$zonemessages[$zmsg_keys[$i]];
 ?>
 		<tr class="fm-field">
 			<td class="td-left"><?=$form->text(array('field' => false,'name' => 'zonemessages[name][]','id' => false,'label' => false,'value' => $val['name'],'default' => $element['zonemessages']['name']['default']));?></td>

@@ -23,14 +23,11 @@ class xivo_filter
 		$this->_reset_result();
 		$this->_reset_error();
 
-		if(($arr = xivo_get_aks($a)) === false)
+		if(empty($a) === true)
 			return(false);
 
-		for($i = 0;$i < $arr['cnt'];$i++)
-		{
-			$key = &$arr['keys'][$i];
-			$this->_chk_key_value($key,$a,$v,$set);
-		}
+		foreach($a as $key => $arr)
+			$this->_chk_key_value($key,$arr,$v,$set);
 
 		return(($this->_errnb > 0 ? false : true));
 	}
@@ -693,20 +690,12 @@ class xivo_filter
 		return($value);
 	}
 
-	function _chk_key_value($key,&$a,&$v,$set=true)
+	function _chk_key_value($key,&$arr,&$v,$set=true)
 	{
-		$a = (array) $a;
+		$arr = (array) $arr;
 		$v = (array) $v;
 		$set = (bool) $set;
 	
-		if(isset($a[$key]) === false)
-		{
-			$this->_set_result($key);
-			return(true);
-		}
-	
-		$arr = &$a[$key];
-
 		if($set === false && isset($v[$key]) === false)
 			return(true);
 	

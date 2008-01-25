@@ -16,38 +16,38 @@
 <?php
 	$list = $this->get_var('list');
 
-	if($list === false || ($arr = xivo_get_aks($list)) === false):
+	if(is_array($list) === false || empty($list) === true):
 ?>
 	<tr class="sb-content">
 		<td colspan="9" class="td-single"><?=$this->bbf('no_user');?></td>
 	</tr>
 <?php
 	else:
-		for($i = 0; $i < $arr['cnt'];$i++):
-			$ref = &$list[$arr['keys'][$i]];
+		$i = 0;
 
-			$ref['valid'] = (int) $ref['valid'];
+		foreach($list as $value):
+			$value['valid'] = (int) $value['valid'];
 
-			$mod = $i % 2 === 0 ? 1 : 2;
+			$mod = ($i++) % 2 === 0 ? 1 : 2;
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';" onmouseout="this.className = this.tmp;" class="sb-content l-infos-<?=$mod?>on2">
-		<td class="td-left" colspan="2"><?=$ref['login']?></td>
-		<td><?=$ref['passwd']?></td>
-		<td><?=$ref['meta']?></td>
-		<td><?=strftime($this->bbf('date_format_yymmdd'),$ref['dcreate']);?></td>
-		<td><?=$this->bbf('valid_'.$ref['valid']);?></td>
+		<td class="td-left" colspan="2"><?=$value['login']?></td>
+		<td><?=$value['passwd']?></td>
+		<td><?=$value['meta']?></td>
+		<td><?=strftime($this->bbf('date_format_yymmdd'),$value['dcreate']);?></td>
+		<td><?=$this->bbf('valid_'.$value['valid']);?></td>
 		<td class="td-right" colspan="3">
-		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'xivo/configuration/users',array('act' => 'edit','id' => $ref['id']),null,$this->bbf('opt_modify'));?>
+		<?=$url->href_html($url->img_html('img/site/button/edit.gif',$this->bbf('opt_modify'),'border="0"'),'xivo/configuration/users',array('act' => 'edit','id' => $value['id']),null,$this->bbf('opt_modify'));?>
 
 <?php
-		if(xivo_user::chk_authorize('admin',$ref['meta']) === true):
-			echo $url->href_html($url->img_html('img/site/button/key.gif',$this->bbf('opt_acl'),'border="0"'),'xivo/configuration/users',array('act' => 'acl','id' => $ref['id']),null,$this->bbf('opt_acl'));
+		if(xivo_user::chk_authorize('admin',$value['meta']) === true):
+			echo $url->href_html($url->img_html('img/site/button/key.gif',$this->bbf('opt_acl'),'border="0"'),'xivo/configuration/users',array('act' => 'acl','id' => $value['id']),null,$this->bbf('opt_acl'));
 		endif;
 ?>
 		</td>
 	</tr>
 <?php
-		endfor;
+		endforeach;
 	endif;
 ?>
 	<tr class="sb-foot">

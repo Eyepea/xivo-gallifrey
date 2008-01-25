@@ -591,14 +591,12 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 	{
 		if($this->get_errnb() > 0
 		|| $this->_status !== 'add'
-		|| ($arr = xivo_get_aks($this->_return)) === false)
+		|| is_array($this->_return) === false
+		|| empty($this->_return) === true)
 			return(false);
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		foreach($this->_return as $key => $val)
 		{
-			$key = &$arr['keys'][$i];
-			$val = &$this->_return[$key];
-
 			if($val === false)
 				continue;
 
@@ -613,19 +611,18 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 					if(is_array($val) === false || ($nb = count($val)) === 0)
 						continue;
 
-					for($j = 0;$j < $nb;$j++)
+					for($i = 0;$i < $nb;$i++)
 					{
-						if($val[$j] !== false)
-							$this->_queuemember->delete($val[$j]);
+						if($val[$i] !== false)
+							$this->_queuemember->delete($val[$i]);
 					}
 					break;
 				default:
-					if(($module = &$this->_service->get_module($key)) === false)
-						continue;
-
-					$module->delete($val);
+					if(($module = &$this->_service->get_module($key)) !== false)
+						$module->delete($val);
 			}
 		}
+
 		return(true);
 	}
 
@@ -795,14 +792,12 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 	{
 		if($this->get_errnb() > 0
 		|| $this->_status !== 'edit'
-		|| ($arr = xivo_get_aks($this->_return)) === false)
+		|| is_array($this->_return) === false
+		|| empty($this->_return) === true)
 			return(false);
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		foreach($this->_return as $key => $val)
 		{
-			$key = &$arr['keys'][$i];
-			$val = &$this->_return[$key];
-
 			if($val === false)
 				continue;
 
@@ -830,13 +825,13 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 				default:
 					if(($module = &$this->_service->get_module($key)) === false)
 						continue;
-
-					if($this->_origin[$key] === false)
+					else if($this->_origin[$key] === false)
 						$module->delete($val);
 					else
 						$module->edit_origin($this->_origin[$key]);
 			}
 		}
+
 		return(true);
 	}
 
@@ -946,14 +941,13 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 	{
 		if($this->get_errnb() > 0
 		|| $this->_status !== 'delete'
-		|| ($arr = xivo_get_aks($this->_return)) === false)
+		|| is_array($this->_return) === false
+		|| empty($this->_return) === true)
 			return(false);
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		foreach($this->_return as $key => $val)
 		{
-			$key = &$arr['keys'][$i];
-
-			if($this->_return[$key] === false)
+			if($val === false)
 				continue;
 
 			switch($key)
@@ -971,13 +965,12 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 					$this->_queuemember->add_origin_list($this->_origin[$key]);
 					break;
 				default:
-					if(($module = &$this->_service->get_module($key)) === false)
-						continue;
-
-					if($this->_origin[$key] !== false)
+					if(($module = &$this->_service->get_module($key)) !== false
+					&& $this->_origin[$key] !== false)
 						$module->add_origin($this->_origin[$key]);
 			}
 		}
+
 		return(true);
 	}
 
@@ -985,8 +978,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 	{
 		if(xivo_issa('qfeatures',$this->_info) === false)
 			return(false);
-
-		if(($incall = &$this->_service->get_module('incall')) !== false)
+		else if(($incall = &$this->_service->get_module('incall')) !== false)
 		{
 			$incall_where = array();
 			$incall_where['type'] = 'queue';

@@ -408,14 +408,12 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 	{
 		if($this->get_errnb() > 0
 		|| $this->_status !== 'add'
-		|| ($arr = xivo_get_aks($this->_return)) === false)
+		|| is_array($this->_return) === false
+		|| empty($this->_return) === true)
 			return(false);
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		foreach($this->_return as $key => $val)
 		{
-			$key = &$arr['keys'][$i];
-			$val = &$this->_return[$key];
-
 			if($val === false)
 				continue;
 
@@ -428,27 +426,28 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 				case 'rightcallgroup':
 				case 'rightcallincall':
 				case 'rightcalloutcall':
-					if(is_array($val) === false || ($nb = count($val)) === 0)
+					if(is_array($val) === false || empty($val) === true)
 						continue;
 
-					for($j = 0;$j < $nb;$j++)
+					foreach($val as $memberval)
 					{
-						if($val[$j] !== false)
-							$this->_rightcallmember->delete($val[$j]);
+						if($memberval !== false)
+							$this->_rightcallmember->delete($memberval);
 					}
 					break;
 				case 'rightcallexten':
-					if(is_array($val) === false || ($nb = count($val)) === 0)
+					if(is_array($val) === false || empty($val) === true)
 						continue;
 
-					for($j = 0;$j < $nb;$j++)
+					foreach($val as $extenval)
 					{
-						if($val[$j] !== false)
-							$this->_rightcallexten->delete($val[$j]);
+						if($extenval !== false)
+							$this->_rightcallexten->delete($extenval);
 					}
 					break;
 			}
 		}
+
 		return(true);
 	}
 
@@ -597,14 +596,12 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 	{
 		if($this->get_errnb() > 0
 		|| $this->_status !== 'edit'
-		|| ($arr = xivo_get_aks($this->_return)) === false)
+		|| is_array($this->_return) === false
+		|| empty($this->_return) === true)
 			return(false);
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		foreach($this->_return as $key => $val)
 		{
-			$key = &$arr['keys'][$i];
-			$val = &$this->_return[$key];
-
 			if($val === false)
 				continue;
 
@@ -628,6 +625,7 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 					break;
 			}
 		}
+
 		return(true);
 	}
 
@@ -733,14 +731,13 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 	function _reverse_delete()
 	{
 		if($this->_status !== 'delete'
-		|| ($arr = xivo_get_aks($this->_return)) === false)
+		|| is_array($this->_return) === false
+		|| empty($this->_return) === true)
 			return(false);
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		foreach($this->_return as $key => $val)
 		{
-			$key = &$arr['keys'][$i];
-
-			if($this->_return[$key] === false)
+			if($val === false)
 				continue;
 
 			switch($key)
@@ -759,6 +756,7 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 					break;
 			}
 		}
+
 		return(true);
 	}
 }

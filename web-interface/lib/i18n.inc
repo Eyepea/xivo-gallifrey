@@ -287,16 +287,16 @@ class xivo_i18n
 
 						if($i18n->load_file('util'.XIVO_SEP_DIR.'language') === false
 						|| ($list = $mediator->get_language_list()) === false
-						|| ($arr = xivo_get_aks($list)) === false)
+						|| is_array($list) === false
+						|| empty($list) === true)
 							return(($language = false));
 
 						$language = array();
 
-						for($i = 0;$i < $arr['cnt'];$i++)
-						{
-							$key = &$arr['keys'][$i];
+						reset($list);
+
+						while(list($key) = each($list))
 							$language[$key] = xivo_i18n::babelfish('language_'.$key);
-						}
 
 						asort($language);
 						$r = &$language;
@@ -309,16 +309,16 @@ class xivo_i18n
 
 						if($i18n->load_file('util'.XIVO_SEP_DIR.'territory') === false
 						|| ($list = $mediator->get_territory_list()) === false
-						|| ($arr = xivo_get_aks($list)) === false)
+						|| is_array($list) === false
+						|| empty($list) === true)
 							return(($territory = false));
 
 						$territory = array();
 
-						for($i = 0;$i < $arr['cnt'];$i++)
-						{
-							$key = &$arr['keys'][$i];
+						reset($list);
+
+						while(list($key) = each($list))
 							$territory[$key] = xivo_i18n::babelfish('territory_'.$key);
-						}
 
 						asort($territory);
 						$r = &$territory;
@@ -622,13 +622,16 @@ class xivo_i18n
 				$this->_file = $_file;
 			}
 
-			if(($arr = xivo_get_aks($ref_file['load'])) !== false)
+			if(is_array($ref_file['load']) === true
+			&& empty($ref_file['load']) === false)
 			{
 				$_file = $this->_file;
 				$this->_file = $ref_file['finfo'];
 
-				for($i = 0;$i < $arr['cnt'];$i++)
-					$this->_load_file($arr['keys'][$i],$ref_file['finfo']['namespace']);
+				reset($ref_file['load']);
+
+				while(list($key) = each($ref_file['load']))
+					$this->_load_file($key,$ref_file['finfo']['namespace']);
 				
 				$this->_file = $_file;
 			}

@@ -15,7 +15,7 @@
 <fieldset id="fld-group">
 	<legend><?=$this->bbf('fld-callgroup');?></legend>
 <?php
-	if(($arr_groups = xivo_get_aks($groups)) !== false):
+	if(is_array($groups) === true && empty($groups) === false):
 ?>
 	<div id="grouplist" class="fm-field fm-multilist">
 		<div class="slt-outlist">
@@ -46,28 +46,26 @@
 				<th class="th-right"><?=$this->bbf('col_group-calllimit');?></th>
 			</tr>
 <?php
-		for($i = 0;$i < $arr_groups['cnt'];$i++):
-			$key = &$arr_groups['keys'][$i];
-			$ref = &$groups[$key];
-			$name = &$ref['gfeatures']['name'];
-			$class = ' b-nodisplay';
-			$penalty = $calllimit = '';
+		foreach($groups as $value):
+			$name = &$value['gfeatures']['name'];
 
-			if(xivo_issa($ref['gfeatures']['id'],$gmember['info']) === true):
+			if(xivo_issa($value['gfeatures']['id'],$gmember['info']) === true):
 				$class = '';
-				$ref['member'] = $gmember['info'][$ref['gfeatures']['id']];
-				$calllimit = (int) $ref['member']['call-limit'];
+				$value['member'] = $gmember['info'][$value['gfeatures']['id']];
+				$calllimit = (int) $value['member']['call-limit'];
 			else:
-				$ref['member'] = null;
+				$class = ' b-nodisplay';
+				$value['member'] = null;
+				$calllimit = '';
 			endif;
 ?>
 			<tr id="group-<?=$name?>" class="fm-field<?=$class?>">
 				<td class="td-left"><?=$name?></td>
-				<td><?=$form->select(array('field' => false,'name' => 'group['.$name.'][chantype]','id' => false,'label' => false,'key' => false,'default' => $element['qmember']['chantype']['default'],'value' => $ref['member']['channel']),$element['qmember']['chantype']['value']);?></td>
+				<td><?=$form->select(array('field' => false,'name' => 'group['.$name.'][chantype]','id' => false,'label' => false,'key' => false,'default' => $element['qmember']['chantype']['default'],'value' => $value['member']['channel']),$element['qmember']['chantype']['value']);?></td>
 				<td class="td-right"><?=$form->select(array('field' => false,'name' => 'group['.$name.'][call-limit]','id' => false,'label' => false,'default' => $element['qmember']['call-limit']['default'],'value' => $calllimit),$element['qmember']['call-limit']['value']);?></td>
 			</tr>
 <?php
-		endfor;
+		endforeach;
 ?>
 			<tr id="no-group"<?=(empty($gmember['slt']) === false ? ' class="b-nodisplay"' : '')?>>
 				<td colspan="3" class="td-single"><?=$this->bbf('no_group');?></td>
@@ -83,7 +81,7 @@
 <fieldset id="fld-queue">
 	<legend><?=$this->bbf('fld-queuegroup');?></legend>
 <?php
-	if(($arr_queues = xivo_get_aks($queues)) !== false):
+	if(is_array($queues) === true && empty($queues) === false):
 ?>
 	<div id="queuelist" class="fm-field fm-multilist">
 		<div class="slt-outlist">
@@ -114,30 +112,28 @@
 				<th class="th-right"><?=$this->bbf('col_queue-calllimit');?></th>
 			</tr>
 <?php
-		for($i = 0;$i < $arr_queues['cnt'];$i++):
-			$key = &$arr_queues['keys'][$i];
-			$ref = &$queues[$key];
-			$name = &$ref['qfeatures']['name'];
-			$class = ' b-nodisplay';
-			$penalty = $calllimit = '';
+		foreach($queues as $value):
+			$name = &$value['qfeatures']['name'];
 
-			if(xivo_issa($ref['qfeatures']['id'],$qmember['info']) === true):
+			if(xivo_issa($value['qfeatures']['id'],$qmember['info']) === true):
 				$class = '';
-				$ref['member'] = $qmember['info'][$ref['qfeatures']['id']];
-				$calllimit = (int) $ref['member']['call-limit'];
-				$penalty = (int) $ref['member']['penalty'];
+				$value['member'] = $qmember['info'][$value['qfeatures']['id']];
+				$calllimit = (int) $value['member']['call-limit'];
+				$penalty = (int) $value['member']['penalty'];
 			else:
-				$ref['member'] = null;
+				$class = ' b-nodisplay';
+				$value['member'] = null;
+				$penalty = $calllimit = '';
 			endif;
 ?>
 			<tr id="queue-<?=$name?>" class="fm-field<?=$class?>">
 				<td class="td-left"><?=$name?></td>
-				<td><?=$form->select(array('field' => false,'name' => 'queue['.$name.'][chantype]','id' => false,'label' => false,'key' => false,'default' => $element['qmember']['chantype']['default'],'value' => $ref['member']['channel']),$element['qmember']['chantype']['value']);?></td>
+				<td><?=$form->select(array('field' => false,'name' => 'queue['.$name.'][chantype]','id' => false,'label' => false,'key' => false,'default' => $element['qmember']['chantype']['default'],'value' => $value['member']['channel']),$element['qmember']['chantype']['value']);?></td>
 				<td><?=$form->select(array('field' => false,'name' => 'queue['.$name.'][penalty]','id' => false,'label' => false,'default' => $element['qmember']['penalty']['default'],'value' => $penalty),$element['qmember']['penalty']['value']);?></td>
 				<td class="td-right"><?=$form->select(array('field' => false,'name' => 'queue['.$name.'][call-limit]','id' => false,'label' => false,'default' => $element['qmember']['call-limit']['default'],'value' => $calllimit),$element['qmember']['call-limit']['value']);?></td>
 			</tr>
 <?php
-		endfor;
+		endforeach;
 ?>
 			<tr id="no-queue"<?=(empty($qmember['slt']) === false ? ' class="b-nodisplay"' : '')?>>
 				<td colspan="4" class="td-single"><?=$this->bbf('no_queue');?></td>

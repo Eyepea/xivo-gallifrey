@@ -176,17 +176,15 @@ class xivo_application_abstract extends xivo_libconfig_abstract
 	function set_params($params)
 	{
 		if(is_array($params) === false
+		|| empty($params) === true
 		|| isset($this->_param) === false
-		|| is_array($this->_param) === false
-		|| ($arr = xivo_get_aks($params)) === false)
+		|| is_array($this->_param) === false)
 			return(false);
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		foreach($params as $key => $value)
 		{
-			$key = &$arr['keys'][$i];
-
 			if(isset($this->_param[$key]) === true)
-				$this->_param[$key] = $params[$key];
+				$this->_param[$key] = $value;
 		}
 
 		return(true);

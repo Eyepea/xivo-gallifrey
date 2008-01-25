@@ -12,14 +12,17 @@
 		$plevel = $parent['level'];
 	endif;
 
-	if(($arr = xivo_get_aks($tree)) !== false):
+	if(is_array($tree) === true && empty($tree) === false):
 		if($pid === '' && $plevel === 0):
 			echo '<tr><td>';
 		endif;
 
-		for($i = 0;$i < $arr['cnt'];$i++):
-			$k = &$arr['keys'][$i];
-			$v = &$tree[$k];
+		$keys = array_keys($tree);
+		$nb = count($keys);
+		$cnt = $nb - 1;
+
+		for($i = 0;$i < $nb;$i++):
+			$v = &$tree[$keys[$i]];
 
 			$mod9 = $i % 9;
 			$mod3 = $i % 3;
@@ -37,7 +40,7 @@
 
 				echo '<div class="acl-func">',$form->checkbox(array('desc' => array('%s%s',$this->bbf('acl_'.$v['id']),1),'name' => 'tree[]','label' => 'lb-'.$v['id'],'id' => $v['id'],'field' => false,'value' => $v['path'],'checked' => $v['access']),'onclick="xivo_fm_mk_acl(this);"'),'</div>',"\n";
 
-				if($arr['cnt']-1 === $i):
+				if($cnt === $i):
 					if($mod9 < 3):
 						$repeat = 2;
 					elseif($mod9 < 6):
@@ -46,9 +49,7 @@
 						echo '</td>';
 						$repeat = 0;
 					endif;
-					echo str_repeat('<td>&nbsp;</td>',$repeat);
-
-					echo '</tr></table>',"\n";
+					echo str_repeat('<td>&nbsp;</td>',$repeat),'</tr></table>',"\n";
 				endif;
 
 			endif;

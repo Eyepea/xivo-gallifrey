@@ -319,14 +319,12 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 	{
 		if($this->get_errnb() > 0
 		|| $this->_status !== 'add'
-		|| ($arr = xivo_get_aks($this->_return)) === false)
+		|| is_array($this->_return) === false
+		|| empty($this->_return) === true)
 			return(false);
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		foreach($this->_return as $key => $val)
 		{
-			$key = &$arr['keys'][$i];
-			$val = &$this->_return[$key];
-
 			if($val === false)
 				continue;
 
@@ -339,12 +337,11 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 					$this->_rightcall->reverse_add();
 					break;
 				default:
-					if(($module = &$this->_service->get_module($key)) === false)
-						continue;
-
-					$module->delete($val);
+					if(($module = &$this->_service->get_module($key)) !== false)
+						$module->delete($val);
 			}
 		}
+
 		return(true);
 	}
 
@@ -413,14 +410,12 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 	{
 		if($this->get_errnb() > 0
 		|| $this->_status !== 'edit'
-		|| ($arr = xivo_get_aks($this->_return)) === false)
+		|| is_array($this->_return) === false
+		|| empty($this->_return) === true)
 			return(false);
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		foreach($this->_return as $key => $val)
 		{
-			$key = &$arr['keys'][$i];
-			$val = &$this->_return[$key];
-
 			if($val === false)
 				continue;
 
@@ -430,16 +425,13 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 					$this->_extensions->edit_origin($this->_origin['exten']);
 					break;
 				case 'rightcall':
-					if(xivo_issa('incall',$this->_info) === false)
-						break;
-
-					$this->_rightcall->reverse_edit($this->_status,'incall',$this->_info['incall']['id']);
+					if(xivo_issa('incall',$this->_info) === true)
+						$this->_rightcall->reverse_edit($this->_status,'incall',$this->_info['incall']['id']);
 					break;
 				default:
 					if(($module = &$this->_service->get_module($key)) === false)
 						continue;
-
-					if($this->_origin[$key] === false)
+					else if($this->_origin[$key] === false)
 						$module->delete($val);
 					else
 						$module->edit_origin($this->_origin[$key]);
@@ -508,14 +500,13 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 	function _reverse_delete()
 	{
 		if($this->_status !== 'delete'
-		|| ($arr = xivo_get_aks($this->_return)) === false)
+		|| is_array($this->_return) === false
+		|| empty($this->_return) === true)
 			return(false);
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		foreach($this->_return as $key => $val)
 		{
-			$key = &$arr['keys'][$i];
-
-			if($this->_return[$key] === false)
+			if($val === false)
 				continue;
 
 			switch($key)
@@ -527,13 +518,12 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 					$this->_rightcall->add_origin_list();
 					break;
 				default:
-					if(($module = &$this->_service->get_module($key)) === false)
-						continue;
-
-					if($this->_origin[$key] !== false)
+					if(($module = &$this->_service->get_module($key)) !== false
+					&& $this->_origin[$key] !== false)
 						$module->add_origin($this->_origin[$key]);
 			}
 		}
+
 		return(true);
 	}
 
@@ -636,21 +626,17 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 	function _reverse_enable_disable()
 	{
 		if(($this->_status !== 'enable' && $this->_status !== 'disable') === true
-		|| ($arr = xivo_get_aks($this->_return)) === false)
+		|| is_array($this->_return) === false
+		|| empty($this->_return) === true)
 			return(false);
 
-		if($this->_status === 'enable')
-			$disable = true;
-		else
-			$disable = false;
+		$disable = $this->_status === 'enable';
 
 		$this->_status = '';
 
-		for($i = 0;$i < $arr['cnt'];$i++)
+		foreach($this->_return as $key => $val)
 		{
-			$key = &$arr['keys'][$i];
-
-			if($this->_return[$key] === false)
+			if($val === false)
 				continue;
 
 			switch($key)
@@ -663,6 +649,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 					break;
 			}
 		}
+
 		return(true);
 	}
 }
