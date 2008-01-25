@@ -12,8 +12,8 @@ $array['option']['file']['name'] = '/^['.XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_PAT
 $array['option']['file']['extension'] = array();
 $array['option']['file']['extension']['mp3'] = array('audio/mp3','audio/x-mp3','audio/mpeg','audio/x-mpeg','audio/mpeg3','audio/x-mpeg3');
 $array['option']['file']['extension']['wav'] = array('audio/wav','audio/x-wav','application/octet-stream');
-$array['option']['file']['extension']['ogg'] = array('audio/ogg','audio/x-ogg','application/ogg','application/x-ogg');
-$array['option']['file']['extension']['gsm'] = array('audio/gsm','audio/x-gsm','application/gsm','application/x-gsm');
+$array['option']['file']['extension']['ogg'] = array('audio/ogg','audio/x-ogg','application/octet-stream','application/ogg','application/x-ogg');
+$array['option']['file']['extension']['gsm'] = array('audio/gsm','audio/x-gsm','application/octet-stream');
 
 $array['element'] = array();
 
