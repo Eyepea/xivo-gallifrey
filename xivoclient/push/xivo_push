@@ -94,10 +94,10 @@ else:
                 calleridname = ''
 
         if len(list) > 5:
-                calleridtoset = "\"%s <%s>\"" %(list[5], calleridnum)
+                calleridtoset = "\"%s\" <%s>" %(list[5], calleridnum)
         else:
-                calleridtoset = "\"%s <%s>\"" %(calleridname, calleridnum)
-        print_verbose("The Caller Id will be set to <%s>" % calleridtoset)
+                calleridtoset = "\"%s\" <%s>" %(calleridname, calleridnum)
+        print_verbose("The Caller Id will be set to %s" % calleridtoset)
         agi.set_callerid(calleridtoset)
 
 if clientstate == 'available' or clientstate == 'nopresence':
