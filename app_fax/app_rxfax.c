@@ -301,7 +301,7 @@ static int rxfax_exec(struct ast_channel *chan, void *data)
                 res = -1;
                 break;
             }
-            if (inf->frametype == AST_FRAME_VOICE)
+            if (inf->frametype == AST_FRAME_VOICE && inf->subclass == AST_FORMAT_SLINEAR)
             {
                 if (fax_rx(&fax, inf->data, inf->samples))
                     break;
