@@ -45,7 +45,7 @@ def exit_on_error(filename, filepdf, message):
 filename = sys.argv[1]
 
 if not filename:
-	exit_on_error(filename, filepdf, "No email address")
+	exit_on_error(filename, filepdf, "No fax file")
 
 filepdf = filename.replace(".tif",".pdf")
 
