@@ -37,14 +37,22 @@ def atexit(filename, filepdf):
 
 	except OSError:
 		pass
+
 def exit_on_error(filename, filepdf, message):
 	atexit(filename, filepdf)
 	agi_helpers.dp_break(agi, message)
 
 filename = sys.argv[1]
+
+if not filename:
+	exit_on_error(filename, filepdf, "No email address")
+
 filepdf = filename.replace(".tif",".pdf")
 
 email = sys.argv[2]
+
+if not email:
+	exit_on_error(filename, filepdf, "No email address")
 
 dstnum = agi.get_variable('REAL_DSTNUM')
 

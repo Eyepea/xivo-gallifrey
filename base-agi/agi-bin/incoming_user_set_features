@@ -214,6 +214,18 @@ else:
 
 if 'enablevm' in features_list:
 	agi.set_variable('XIVO_ENABLEVOICEMAIL', enablevoicemail)
+
+	if enablevoicemail:
+		cursor.query("SELECT ${columns} FROM uservoicemail "
+                             "WHERE mailbox = %s "
+                             "AND context = %s "
+                             "AND commented = 0",
+                             ('email',),
+                             (dstnum, context))
+		res = cursor.fetchone()
+
+		if res and res['email']:
+			agi.set_variable('XIVO_USEREMAIL', res['email'])
 else:
 	agi.set_variable('XIVO_ENABLEVOICEMAIL', 0)
 
