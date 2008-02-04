@@ -200,6 +200,88 @@ class AMIClass:
                 except Exception, exc:
                         return False
 
+        # \brief Originates a call from a phone towards another.
+        def aoriginate(self, phoneproto, phonesrc, cidnamesrc, phonedst, cidnamedst, locext):
+                # originate a call btw src and dst
+                # src will ring first, and dst will ring when src responds
+                try:
+                        ret = self.sendcommand('AOriginate', [('Channel', phoneproto + '/' + phonesrc),
+                                                              ('Exten', phonedst),
+                                                              ('Context', locext),
+                                                              ('Priority', '1'),
+                                                              # ('CallerID', "%s" %(phonesrc)),
+                                                              ('CallerID', "%s <%s>" %(cidnamedst, phonedst)),
+                                                              ('Variable', 'XIVO_ORIGSRCNAME=%s' % cidnamesrc),
+                                                              ('Variable', 'XIVO_ORIGSRCNUM=%s'  % phonesrc),
+                                                              ('Async', 'true')])
+                        reply = self.readresponse('')
+                        return ret
+                except self.AMIError, exc:
+                        return False
+                except Exception, exc:
+                        return False
+
+        # \brief Originates a call from a phone towards another.
+        def aoriginate_var(self, phoneproto, phonesrc, cidnamesrc, phonedst, cidnamedst, locext, var, val):
+                # originate a call btw src and dst
+                # src will ring first, and dst will ring when src responds
+                try:
+                        ret = self.sendcommand('AOriginate', [('Channel', phoneproto + '/' + phonesrc),
+                                                             ('Exten', phonedst),
+                                                             ('Context', locext),
+                                                             ('Priority', '1'),
+                                                             # ('CallerID', "%s" %(phonesrc)),
+                                                             ('CallerID', "%s <%s>" %(cidnamedst, phonedst)),
+                                                             ('Variable', 'XIVO_ORIGSRCNAME=%s' % cidnamesrc),
+                                                             ('Variable', 'XIVO_ORIGSRCNUM=%s'  % phonesrc),
+                                                             ('Variable', '%s=%s'  % (var, val)),
+                                                             ('Async', 'true')])
+                        reply = self.readresponse('')
+                        return ret
+                except self.AMIError, exc:
+                        return False
+                except Exception, exc:
+                        return False
+
+        # \brief Adds a Queue
+        def queueadd(self, queuename, interface):
+                try:
+                        ret = self.sendcommand('QueueAdd', [('Queue', queuename),
+                                                            ('Interface', interface),
+                                                            ('Penalty', '1'),
+                                                            ('Paused', 'true')])
+                        reply = self.readresponse('')
+                        return ret
+                except self.AMIError, exc:
+                        return False
+                except Exception, exc:
+                        return False
+
+        # \brief Removes a Queue
+        def queueremove(self, queuename, interface):
+                try:
+                        ret = self.sendcommand('QueueRemove', [('Queue', queuename),
+                                                               ('Interface', interface)])
+                        reply = self.readresponse('')
+                        return ret
+                except self.AMIError, exc:
+                        return False
+                except Exception, exc:
+                        return False
+
+        # \brief (Un)Pauses a Queue
+        def queuepause(self, queuename, interface, paused):
+                try:
+                        ret = self.sendcommand('QueuePause', [('Queue', queuename),
+                                                              ('Interface', interface),
+                                                              ('Paused', paused)])
+                        reply = self.readresponse('')
+                        return ret
+                except self.AMIError, exc:
+                        return False
+                except Exception, exc:
+                        return False
+
         # \brief Retrieves the value of Variable in a Channel
         def getvar(self, channel, varname):
                 try:
