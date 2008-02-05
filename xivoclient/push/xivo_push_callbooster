@@ -1,0 +1,115 @@
+#! /usr/bin/python
+# vim: set fileencoding=utf-8 :
+#
+# $Revision$
+# $Date$
+#
+# Authors : Thomas Bernard, Corentin Le Gall, Sylvain Boily
+#           Proformatique
+#           67, rue Voltaire
+#           92800 PUTEAUX
+#           (+33/0)1.41.38.99.60
+#           mailto:technique@proformatique.com
+#           (C) 2007 Proformatique
+#
+# AGI de push de fiche
+#
+
+import xivo.to_path
+import pickle
+import re
+import sys
+import socket
+from agi import *
+
+agi = AGI()
+
+## \brief Logs a message into the Asterisk CLI
+# \param txt message to send to the CLI
+def print_verbose(txt):
+        agi.verbose("push_callbooster : %s" % txt)
+
+
+# ==============================================================================
+# Main Code starts here
+# ==============================================================================
+
+action = 'exit'
+mysda = sys.argv[1]
+print_verbose('in callbooster AGI <%s>' % mysda)
+
+cidnum    = agi.env['agi_callerid']
+prevwhere = agi.get_variable('CB_AGI_WHERE')
+inchannel = agi.get_variable('CHANNEL')
+if prevwhere == '':
+        upto = '0'
+else:
+        upto = prevwhere
+
+try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect(('127.0.0.1', 4970))
+        s.send('PUSH <%s> <%s> <%s> <%s>\r\n' % (inchannel, cidnum, mysda, upto))
+        pushreply = s.recv(8192)
+        # print_verbose('before pickle loads : <%s>' % str(pushreply))
+        # format PULL_START (struct) PULL_STOP
+        try:
+                n = pickle.loads(pushreply[11:-10])
+        except Exception, exc:
+                n = None
+                print_verbose('could not pickle.loads the answer from daemon')
+        # print_verbose('pickle loads : %s' % str(n))
+        if n is not None:
+                action = n['action']
+                delay  = n['delay']
+                argum  = n['argument']
+                where  = n['newupto']
+                queuename = n['queuename']
+                dialplan = n['dialplan']
+                print_verbose('%s %s %s %s %s : %s' % (action, delay, argum, where, queuename, str(dialplan)))
+        else:
+                action = 'exit'
+                delay  = 0
+                print_verbose('could not unpickle the reply : set CB_AGI_STATUS to exit')
+except Exception, exc:
+        action = 'exit'
+        delay  = 0
+        print_verbose('could not connect to daemon : %s' % str(exc))
+
+
+# sets the action before further treatment (in order for dialplan to end in the exit case)
+agi.set_variable('CB_AGI_STATUS', action)
+
+print_verbose('CB : received ACTION=%s WAIT=%ds ARG=%s WHERE=%s QUEUENAME=%s' %(action, int(delay), argum, where, queuename))
+
+if action == 'intro' or action == 'sec':
+        agi.set_variable('CB_AGI_MES_WELCOME', argum)
+
+if action == 'tel' or action == 'bas' or action == 'fic':
+        telargs = argum.split('-')
+        agi.set_variable('CB_AGI_TEL_NUM', telargs[0])
+        agi.set_variable('CB_AGI_TEL_DELAY', telargs[1])
+        agi.set_variable('CB_AGI_TEL_CHERCHE', telargs[2])
+        agi.set_variable('CB_AGI_TEL_PATIENTE', telargs[3])
+
+if action == 'rep' or action == 'mes':
+        agi.set_variable('CB_AGI_ARG', argum)
+
+if 'dialplan' is not None:
+        if dialplan['record'] is not None:
+                agi.set_variable('CB_AGI_RECORD', dialplan['record'])
+        if 'soundpath' in dialplan:
+                for mfile in ['M005', 'M006', 'M007', 'M008', 'M009', 'M012', 'M025']:
+                        if mfile in dialplan['sounds']:
+                                agi.set_variable('CB_AGI_MES_%s' % mfile, '%s/%s' % (dialplan['soundpath'], mfile))
+                if 'M018' in dialplan['sounds']:
+                        agi.set_variable('CB_AGI_MES_WAITINGMUSIC', dialplan['soundpath'])
+
+
+# saving the current CB 'dialplan' position and status, might be useful for true dialplan decisions
+agi.set_variable('CB_AGI_WHERE', where)
+
+# setting the Queue() to call
+agi.set_variable('CB_AGI_QUEUE_NAME', queuename)
+# delay to set for Queue()
+agi.set_variable('CB_AGI_QUEUE_WAIT', delay)
