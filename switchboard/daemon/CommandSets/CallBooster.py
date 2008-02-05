@@ -39,7 +39,7 @@ class CallBoosterCommand(BaseCommand):
         CallBoosterCommand class.
         Defines the behaviour of commands.
         """
-        def __init__(self, ulist, amis, operatsocket, operatport):
+        def __init__(self, ulist, amis, operatsocket, operatport, operatini):
 		BaseCommand.__init__(self)
                 self.commands = ['Init',
                                  'AppelOpe', 'TransfertOpe', 'RaccrocheOpe',
@@ -59,7 +59,7 @@ class CallBoosterCommand(BaseCommand):
                 self.soperat_port   = operatport
                 self.conn_clients = {}
                 opconf = ConfigParser.ConfigParser()
-                opconf.readfp(open('/var/lib/asterisk/callbooster_serveuriv/Operat.ini'))
+                opconf.readfp(open(operatini))
                 opconf_so = dict(opconf.items('SO'))
                 d = opconf_so.get('opejd')
                 n = opconf_so.get('opend')
@@ -165,8 +165,12 @@ class CallBoosterCommand(BaseCommand):
                 sqluri_system = '%s/system' % self.uribase
 
                 try:
+                        print 'connecting to URI %s - it can take some time' % sqluri_system
                         self.conn_system = anysql.connect_by_uri(sqluri_system)
+                        print 'connecting to URI %s - done' % sqluri_system
+                        print 'connecting to URI %s - it can take some time' % sqluri_agents
                         self.conn_agents = anysql.connect_by_uri(sqluri_agents)
+                        print 'connecting to URI %s - done' % sqluri_agents
                         cursor_agents = self.conn_agents.cursor()
                         
                         columns = ('CODE', 'NOM', 'PASS')
@@ -198,7 +202,9 @@ class CallBoosterCommand(BaseCommand):
                 self.uribase = uribase
                 # the following commands do nothing really useful, except initializing some field somewhere
                 sqluri_dummy = '%s?charset=%s' % (uribase, 'latin1')
+                print 'connecting to URI %s - it can take some time' % sqluri_dummy
                 conn_dummy = anysql.connect_by_uri(sqluri_dummy)
+                print 'connecting to URI %s - done' % sqluri_dummy
                 conn_dummy.close()
 
 
@@ -212,19 +218,19 @@ class CallBoosterCommand(BaseCommand):
         def parsecommand(self, linein):
                 params = linein.split(',')
                 print 'CallBooster : command', params
-                cmd = xivo_commandsets.Command(params[-1][:-1], params[:-1])
+                cmd = xivo_commandsets.Command(params[-1], params[:-1])
                 if cmd.name == 'Init':
                         cmd.type = xivo_commandsets.CMD_LOGIN
                 else:
                         cmd.type = xivo_commandsets.CMD_OTHER
                 return cmd
 
-        def get_login_params(self, command):
+        def get_login_params(self, command, astid):
                 print 'CallBooster Login :', command.name, command.args
                 agent = command.args[0]
                 reference = command.args[1]
                 [computername, tagent, phonenum, computeripref, srvnum] = agent.split('|')
-                cfg = {'astid' : 'clg', ## XXX to be replaced by 'xivo' later on
+                cfg = {'astid' : astid,
                        'proto' : 'sip',
                        'passwd' : 'nopasswd',
                        'state' : 'available',
@@ -648,7 +654,9 @@ class CallBoosterCommand(BaseCommand):
                         socname = self.__socname(idsoc)
                         if socname not in self.conn_clients:
                                 sqluri_clients = '%s/%s_clients' % (self.uribase, socname)
+                                print 'connecting to URI %s - it can take some time' % sqluri_clients
                                 self.conn_clients[socname] = anysql.connect_by_uri(sqluri_clients)
+                                print 'connecting to URI %s - done' % sqluri_clients
 
                         ostatus = OutgoingCall.OutgoingCall(comm_id_outgoing, astid, self.conn_clients[socname],
                                                             userinfo, agentnum, agentname, dest,
@@ -1288,7 +1296,7 @@ class CallBoosterCommand(BaseCommand):
 
 
         def __gettaxes(self, num):
-                num = '003%d' % random.randint(0, 999999999) # fake, for testing purposes ...
+                # num = '003%d' % random.randint(0, 999999999) # fake, for testing purposes ...
                 juridict = self.__juridictions(num)
                 if juridict is not None:
                         impulsion = self.__impulsion(juridict)
@@ -1395,7 +1403,7 @@ class CallBoosterCommand(BaseCommand):
                                                 if opername not in todo_by_oper:
                                                         todo_by_oper[opername] = []
                                                 opstatus = incall.check_operator_status(opername)
-                                                print '__choose :', opername, opstatus
+                                                print '__choose : <%s> (%s)' % (opername, opstatus)
                                                 if opstatus is not None:
                                                         userinfo = self.ulist[astid].finduser('sip' + opername)
                                                         if 'connection' in userinfo:
@@ -1440,7 +1448,7 @@ class CallBoosterCommand(BaseCommand):
                 thiscall = None
                 if upto == '0':
                         queuenum = self.__choosequeuenum()
-                        print 'INCOMING CALL ## building an IncomingCall structure ##'
+                        print ' NCOMING CALL ## building an IncomingCall structure ##'
                         thiscall = IncomingCall.IncomingCall(self.conn_agents, self.conn_system,
                                                              cidnum, sdanum, queuenum, self.soperat_socket, self.soperat_port)
 
@@ -1448,21 +1456,23 @@ class CallBoosterCommand(BaseCommand):
                                 socname = thiscall.socname
                                 if socname not in self.conn_clients:
                                         sqluri_clients = '%s/%s_clients' % (self.uribase, socname)
+                                        print 'connecting to URI %s - it can take some time' % sqluri_clients
                                         self.conn_clients[socname] = anysql.connect_by_uri(sqluri_clients)
+                                        print 'connecting to URI %s - done' % sqluri_clients
 
                                 thiscall.setclicolnames(self.conn_clients[socname])
 
                         self.__init_taxes(thiscall, cidnum, cidnum, sdanum, TRUNKNAME, 'PABX', 0)
 
                         if thiscall.statacd2_state == 'V':
-                                print 'INCOMING CALL ## calling get_sda_profiles ##'
+                                print ' NCOMING CALL ## calling get_sda_profiles ##'
                                 if sdanum not in incoming_calls:
                                         incoming_calls[sdanum] = {}
                                 self.__clear_call_fromqueues(astid, thiscall)
                                 ret = thiscall.get_sda_profiles(self.conn_clients[socname], len(incoming_calls[sdanum]))
                                 if ret == True:
                                         incoming_calls[sdanum][inchannel] = thiscall
-                                        print 'INCOMING CALL : list of used SDA :', incoming_calls
+                                        print ' NCOMING CALL : list of used SDA :', incoming_calls
                                 else:
                                         self.__update_taxes(thiscall, 'Termine')
                                         self.__update_stat_acd2(thiscall)
@@ -1478,13 +1488,13 @@ class CallBoosterCommand(BaseCommand):
                 #  retstatus = welcome if needed
                 argument = None
                 if thiscall is not None:
-                        print 'INCOMING CALL ## calling findaction ##'
+                        print ' NCOMING CALL ## calling findaction ##'
                         [action, delay, argument, newupto] = thiscall.findaction(upto)
                         # findaction will find who might be available for this incoming call
                         # however me must take care of other current calls (those which are not yet 'solved')
                         # in order to be able to deal with the SDA priorities meanwhile : thiscall.elect_prio
 
-                        print 'INCOMING CALL : findaction result : %s / %s / %s / %s' % (action, delay, argument, newupto)
+                        print ' NCOMING CALL : findaction result : %s / %s / %s / %s' % (action, delay, argument, newupto)
 
                         if action == 'mes' or action == 'rep' or action == 'tel' or action == 'fic' or action == 'bas' or action == 'intro':
                                 # maybe we had been in 'sec' mode previously, so that we shouldn't wait anymore
@@ -1530,7 +1540,7 @@ class CallBoosterCommand(BaseCommand):
                                     'queuename' : thiscall.queuename,
                                     'dialplan' : thiscall.dialplan}
                 else:
-                        print 'INCOMING CALL : no call processed'
+                        print ' NCOMING CALL : no call processed'
                         whattodo = {'action' : action,
                                     'delay' : delay,
                                     'argument' : argument,

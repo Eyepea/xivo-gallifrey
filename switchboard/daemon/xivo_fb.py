@@ -480,27 +480,26 @@ def manage_tcp(connid):
                         connid[0].close()
                         ins.remove(connid[0])
                         tcpopens_fc.remove(connid)
-                        log_debug(SYSLOG_INFO, "TCP (F)  socket closed from %s" % requester)
+                        log_debug(SYSLOG_INFO, "TCP (F) socket closed from %s" % requester)
                 except Exception, exc:
                         log_debug(SYSLOG_ERR, '--- exception --- UI connection [%s] : a problem occured when trying to close %s : %s'
                                   %(msg, str(connid[0]), str(exc)))
         else:
-                print len(msg), msg
                 re_push = re.match('PUSH <(\S+)> <(\S+)> <(\S+)> <(\S+)>', msg.strip())
                 if re_push != None:
                         inchannel = re_push.group(1)
                         cidnum    = re_push.group(2)
                         sdanum    = re_push.group(3)
                         prevupto  = re_push.group(4)
-                        print 'INCOMING CALL : PUSH received #', inchannel, cidnum, sdanum, prevupto
-                        whattodo = commandclass.elect('clg', inchannel, cidnum, sdanum, prevupto)
+                        print 'INCOMING CALL ## PUSH received #', inchannel, cidnum, sdanum, prevupto
+                        whattodo = commandclass.elect(asterisklist[0], inchannel, cidnum, sdanum, prevupto)
                         msgforagi = 'PULL_START %s PULL_STOP' % pickle.dumps(whattodo)
-                        print 'INCOMING CALL : sending <xxx> back to AGI'
+                        print 'INCOMING CALL ## sending pickled reply to AGI'
                         connid[0].send(msgforagi)
                         connid[0].close()
                         ins.remove(connid[0])
                         tcpopens_fc.remove(connid)
-                        log_debug(SYSLOG_INFO, "TCP (F)  socket closed from %s" % requester)
+                        log_debug(SYSLOG_INFO, "TCP (F) socket closed from %s" % requester)
 
 
 ## \brief Deals with requests from the UI clients.
@@ -541,10 +540,7 @@ def manage_tcp_connection(connid, allow_events):
                         if allow_events:
                                 tcpopens_sb.remove(connid)
                                 log_debug(SYSLOG_INFO, "TCP (SB)  socket closed from %s" % requester)
-                        else:
-                                tcpopens_webi.remove(connid)
-                                log_debug(SYSLOG_INFO, "TCP (WEBI) socket closed from %s" % requester)
-                        if requester in userinfo_by_requester:
+                                if requester in userinfo_by_requester:
                                         astid   = userinfo_by_requester[requester][0]
                                         username = userinfo_by_requester[requester][1]
                                         ulist[astid].acquire()
@@ -558,16 +554,21 @@ def manage_tcp_connection(connid, allow_events):
                                         finally:
                                                 ulist[astid].release()
                                         del userinfo_by_requester[requester]
+                        else:
+                                tcpopens_webi.remove(connid)
+                                log_debug(SYSLOG_INFO, "TCP (WEBI) socket closed from %s" % requester)
 
 
                 except Exception, exc:
                         log_debug(SYSLOG_ERR, '--- exception --- UI connection [%s] : a problem occured when trying to close %s : %s'
                                   %(msg, str(connid[0]), str(exc)))
         else:
-##            t = msg.replace('\n', '_N_').replace('\r', '_R_')
-##            print '....', t
-            for usefulmsgpart in msg.split("\n"):
-                usefulmsg = usefulmsgpart.split("\r")[0]
+            if allow_events:
+                    multimsg = msg.split('/')
+            else:
+                    multimsg = msg.split('\n')
+            for usefulmsgpart in multimsg:
+                usefulmsg = usefulmsgpart.split('\r')[0]
                 # debug/setup functions
                 if usefulmsg == "show_infos":
                         try:
@@ -586,8 +587,8 @@ def manage_tcp_connection(connid, allow_events):
                                 connid[0].send(reply + "\n")
                                 # connid[0].send("server capabilities = %s\n" %(",".join()))
                                 connid[0].send("%s:OK\n" %(XIVO_CLI_WEBI_HEADER))
-##                                if not allow_events:
-##                                        connid[0].close()
+                                if not allow_events:
+                                        connid[0].close()
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- UI connection [%s] : KO when sending to %s : %s'
                                           %(usefulmsg, requester, str(exc)))
@@ -608,8 +609,8 @@ def manage_tcp_connection(connid, allow_events):
                                                                  len(canal),
                                                                  str(canal.keys())))
                                 connid[0].send("%s:OK\n" %(XIVO_CLI_WEBI_HEADER))
-##                                if not allow_events:
-##                                        connid[0].close()
+                                if not allow_events:
+                                        connid[0].close()
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- UI connection [%s] : KO when sending to %s : %s'
                                           %(usefulmsg, requester, str(exc)))
@@ -623,8 +624,8 @@ def manage_tcp_connection(connid, allow_events):
                                         for kk in k1:
                                                 connid[0].send('%s : %s %d\n' %(astid, kk, len(plast.oldqueues[kk])))
                                 connid[0].send("%s:OK\n" %(XIVO_CLI_WEBI_HEADER))
-##                                if not allow_events:
-##                                        connid[0].close()
+                                if not allow_events:
+                                        connid[0].close()
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- UI connection [%s] : KO when sending to %s : %s'
                                           %(usefulmsg, requester, str(exc)))
@@ -637,8 +638,8 @@ def manage_tcp_connection(connid, allow_events):
                                 if requester in userinfo_by_requester:
                                         connid[0].send('%s\n' % str(userinfo_by_requester[requester]))
                                 connid[0].send("%s:OK\n" %(XIVO_CLI_WEBI_HEADER))
-##                                if not allow_events:
-##                                        connid[0].close()
+                                if not allow_events:
+                                        connid[0].close()
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- UI connection [%s] : KO when sending to %s : %s'
                                           %(usefulmsg, requester, str(exc)))
@@ -651,8 +652,8 @@ def manage_tcp_connection(connid, allow_events):
                                 if requester in userinfo_by_requester:
                                         connid[0].send('%s\n' % str(userinfo_by_requester[requester]))
                                 connid[0].send("%s:OK\n" %(XIVO_CLI_WEBI_HEADER))
-##                                if not allow_events:
-##                                        connid[0].close()
+                                if not allow_events:
+                                        connid[0].close()
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- UI connection [%s] : KO when sending to %s : %s'
                                           %(usefulmsg, requester, str(exc)))
@@ -663,18 +664,18 @@ def manage_tcp_connection(connid, allow_events):
                                 for amis in AMI_array_user_commands:
                                         connid[0].send("commands : %s : %s\n" %(amis, str(AMI_array_user_commands[amis])))
                                 connid[0].send("%s:OK\n" %(XIVO_CLI_WEBI_HEADER))
-##                                if not allow_events:
-##                                        connid[0].close()
+                                if not allow_events:
+                                        connid[0].close()
                         except Exception, exc:
                                 log_debug(SYSLOG_ERR, '--- exception --- UI connection [%s] : KO when sending to %s : %s'
                                           %(usefulmsg, requester, str(exc)))
                 elif usefulmsg != "":
-                    if True: # allow_events: # i.e. if SB-style connection
+                    if allow_events: # i.e. if SB-style connection
                         command = commandclass.parsecommand(usefulmsg)
                         if command.name in commandclass.get_list_commands_clt2srv():
                                 if command.type == xivo_commandsets.CMD_LOGIN:
                                         try:
-                                                cfg = commandclass.get_login_params(command)
+                                                cfg = commandclass.get_login_params(command, asterisklist[0])
                                                 repstr = manage_login(cfg, requester_ip, requester_port, connid[0])
                                                 connid[0].send(repstr + '\n')
                                         except Exception, exc:
@@ -2351,10 +2352,11 @@ while True: # loops over the reloads
         # global default definitions
         commandset = 'xivosimple'
         port_request = 5002
-        port_ui_srv = 5003
+        port_ui_srv = 4949
         port_webi = 5004
         port_operat = 4950
         port_elect = 4970
+        port_sv = 4946
         xivoclient_session_timeout = 60
         phonelist_update_period = 60
         asterisklist = []
@@ -2385,12 +2387,16 @@ while True: # loops over the reloads
                 port_ui_srv = int(xivoconf_general['port_switchboard'])
         if 'port_webi' in xivoconf_general:
                 port_webi = int(xivoconf_general['port_webi'])
+        if 'port_sv' in xivoconf_general:
+                port_sv = int(xivoconf_general['port_sv'])
         if 'port_operat' in xivoconf_general:
                 port_operat = int(xivoconf_general['port_operat'])
         if 'port_elect' in xivoconf_general:
                 port_elect = int(xivoconf_general['port_elect'])
         if 'address_operat' in xivoconf_general:
                 address_operat = xivoconf_general['address_operat']
+        if 'operatini' in xivoconf_general:
+                operatini = xivoconf_general['operatini']
         if 'xivoclient_session_timeout' in xivoconf_general:
                 xivoclient_session_timeout = int(xivoconf_general['xivoclient_session_timeout'])
         if 'phonelist_update_period' in xivoconf_general:
@@ -2408,15 +2414,17 @@ while True: # loops over the reloads
 
         if 'advert' in xivoconf_general: with_advert = True
 
+        # log_debug(SYSLOG_INFO, '# connection to Operat')
         OperatSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
                 OperatSock.connect((address_operat, port_operat))
         except Exception, exc:
                 print 'could not connect to Operat Serveur', exc
+        # log_debug(SYSLOG_INFO, '# connection to Operat done')
 
         AMI_array_user_commands = {}
         cclass = xivo_commandsets.CommandClasses[commandset]
-        commandclass = cclass(ulist, AMI_array_user_commands, OperatSock, port_webi)
+        commandclass = cclass(ulist, AMI_array_user_commands, OperatSock, port_sv, operatini)
 
         save_for_next_packet_events = {}
         faxbuffer = {}
@@ -2656,12 +2664,12 @@ while True: # loops over the reloads
                 try:
                         plist[astid] = PhoneList(astid, commandclass)
                         update_userlist[astid] = False
+                        lastrequest_time[astid] = time.time()
 
                         update_amisocks(astid)
                         users_to_kick = ulist[astid].todisconnect()
                         plist[astid].kick(users_to_kick)
                         update_phonelist(astid)
-                        lastrequest_time[astid] = time.time()
                 except Exception, exc:
                         log_debug(SYSLOG_ERR, '--- exception --- %s : failed while setting lists and sockets : %s'
                                   %(astid, str(exc)))
@@ -2686,6 +2694,12 @@ while True: # loops over the reloads
         UIsock.listen(10)
         ins.append(UIsock)
         
+        UIsock2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        UIsock2.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        UIsock2.bind(("", port_sv))
+        UIsock2.listen(10)
+        ins.append(UIsock2)
+
         # opens the listening socket for WEBI/CLI connections
         WEBIsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         WEBIsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -2760,11 +2774,18 @@ while True: # loops over the reloads
                                 ins.append(conn)
                                 conn.setblocking(0)
                                 tcpopens_sb.append([conn, UIsockparams[0], UIsockparams[1]])
+                        elif UIsock2 in i:
+                                [conn, UIsock2params] = UIsock2.accept()
+                                log_debug(SYSLOG_INFO, "TCP (SB)  socket opened on   %s:%d" % (UIsock2params[0], UIsock2params[1]))
+                                commandclass.connected_srv2clt(conn, '%s:%d' % (UIsock2params[0], UIsock2params[1]), True)
+                                # appending the opened socket to the ones watched
+                                ins.append(conn)
+                                conn.setblocking(0)
+                                tcpopens_sb.append([conn, UIsock2params[0], UIsock2params[1]])
                         # the new UI (WEBI) connections are catched here
                         elif WEBIsock in i:
                                 [conn, WEBIsockparams] = WEBIsock.accept()
                                 log_debug(SYSLOG_INFO, "TCP (WEBI) socket opened on   %s:%d" % (WEBIsockparams[0], WEBIsockparams[1]))
-                                commandclass.connected_srv2clt(conn, '%s:%d' % (WEBIsockparams[0], WEBIsockparams[1]), True)
                                 # appending the opened socket to the ones watched
                                 ins.append(conn)
                                 conn.setblocking(0)

@@ -6,12 +6,6 @@ WEEKDAY = ['LUN', 'MAR', 'MER', 'JEU', 'VEN', 'SAM', 'DIM']
 DATEFMT = '%Y-%m-%d'
 DATETIMEFMT = DATEFMT + ' %H:%M:%S'
 
-## \brief Logs a message into the Asterisk CLI
-# \param txt message to send to the CLI
-def print_verbose(txt):
-        print txt
-        return
-
 class Action:
         def __init__(self, action, delay, arg):
                 self.action = action
@@ -230,11 +224,13 @@ class IncomingCall:
                 cursor_clients.query("SELECT ${columns} FROM profil WHERE TypeP = 'SEC' AND NCLI = 0 AND NCOL = 0",
                                      columns)
                 results = cursor_clients.fetchall()
+                if results == ():
+                        results = []
+
                 cursor_clients.query('SELECT ${columns} FROM profil WHERE NCLI = %s AND NCOL = %s',
                                      columns,
                                      [self.ncli, self.ncol])
                 results.extend(cursor_clients.fetchall())
-
                 if results == ():
                         results = []
 
@@ -300,7 +296,6 @@ class IncomingCall:
                                         self.dialplan['welcomefile'] = '%s/%s' % (self.dialplan['soundpath'], 'M001')
                                 else:
                                         self.dialplan['welcomefile'] = None
-                        print 'welcomefile', self.dialplan['welcomefile']
 
                         if len(self.true_clients_profil) == 0:
                                 self.statacd2_tt = 'TT_SND'
@@ -329,14 +324,14 @@ class IncomingCall:
         def __localN_group_composition(self, nprof, id):
                 columns = ('NPERM', 'NGROUP', 'NOM', 'NPROF')
                 cursor_clients = self.conn_clients.cursor()
-                cursor_clients.query('SELECT ${columns} FROM groupes WHERE NGROUP = %s',
+                cursor_clients.query('SELECT ${columns} FROM groupes WHERE NGROUP = %s AND NPROF = %s',
                                      columns,
-                                     id)
+                                     (id, nprof))
                 results = cursor_clients.fetchall()
                 list_operators = []
                 list_requests  = []
 
-                print '__localN_group_composition', id, results
+                print '  COMING CALL : __localN_group_composition, id = %s / nprof = %s' % (id, nprof), results
                 for clients_groupes in results:
                         nperm  = clients_groupes[0]
                         ngroup = clients_groupes[1]
@@ -436,7 +431,7 @@ class IncomingCall:
                         else:
                                 return None
                 else:
-                        print_verbose('no match for %s in agents.agents' % operatorname)
+                        print '  COMING CALL : check_operator_status() : no match for %s in agents.agents' % operatorname
                         return None
 
 
@@ -447,7 +442,6 @@ class IncomingCall:
                 """
                 listopers = []
                 listsv    = []
-                print '__list_operators', upto
                 for num in xrange(upto):
                         id = detail_tab[num]
                         if id == '0': # local group
@@ -478,23 +472,23 @@ class IncomingCall:
                 else:
                         upto = self.wherephS + 1
 
-                print '__typet_secretariat, upto = ', upto
+                print '  COMING CALL : __typet_secretariat, upto = ', upto
                 while True: # loop over the detailed items
                                 self.wherephS = upto
                                 if upto > ngroupes:
                                         whattodo = None
                                         break
 
-                                print 'prevnum = %d / %s' % (self.wherephS, detail_tab[0:upto+1])
+                                print '  COMING CALL : __typet_secretariat, prevnum = %d / %s' % (self.wherephS, detail_tab[0:upto+1])
                                 [self.list_operators, self.list_svirt] = self.__list_operators(nprof, detail_tab, upto)
-                                print 'operators and rooms :', self.list_operators, self.list_svirt
+                                print '  COMING CALL : __typet_secretariat, operators and rooms :', self.list_operators, self.list_svirt
 
                                 if upto == ngroupes or len(self.list_operators) == 0 and len(self.list_svirt) == 0:
                                         delay = 0
                                 else:
                                         delay = int(delaigrp_tab[upto])
 
-                                print '__typet_secretariat, upto = ', upto, delay
+                                print '  COMING CALL : __typet_secretariat, upto = ', upto, delay
 
                                 if len(self.list_operators) == 0 and len(self.list_svirt) == 0:
                                         upto += 1
@@ -507,9 +501,9 @@ class IncomingCall:
                                         break
                                 
                 if whattodo is not None:
-                        print '__typet_secretariat : ', upto, whattodo.status()
+                        print '  COMING CALL : __typet_secretariat : ', upto, whattodo.status()
                 else:
-                        print '__typet_secretariat : ', upto, whattodo
+                        print '  COMING CALL : __typet_secretariat : ', upto, whattodo
                 return whattodo
 
 
@@ -539,7 +533,7 @@ class IncomingCall:
                         if self.wherephF < nresults:
                                 self.statacd2_tt = 'TT_FIC'
                                 b = results[self.wherephF]
-                                print_verbose('Fichier %s : %s %s %s %s' % (str(b), b[3], b[6], b[7], b[8]))
+                                print 'Fichier %s : %s %s %s %s' % (str(b), b[3], b[6], b[7], b[8])
                                 whattodo = Action('fic', 0, '%s-%s-%s-%s' %(b[3], b[8], b[6], b[7]))
                         else:
                                 whattodo = None
@@ -556,7 +550,7 @@ class IncomingCall:
                                 self.statacd2_tt = 'TT_TEL'
                                 self.wherephF = 0
                                 b = results[0]
-                                print_verbose('Telephone %s : %s %s %s %s' % (str(b), b[3], b[6], b[7], b[8]))
+                                print 'Telephone %s : %s %s %s %s' % (str(b), b[3], b[6], b[7], b[8])
                                 whattodo = Action('tel', 0, '%s-%s-%s-%s' %(b[3], b[8], b[6], b[7]))
                         else:
                                 whattodo = None
@@ -645,29 +639,29 @@ class IncomingCall:
                 detail = clients_profil[8]
                 delaigrp = clients_profil[10]
                 if typet == 'S':
-                        print_verbose('typep/typet is %s/Secretariat' % typep)
+                        print '  COMING CALL : __typep_phases, typep/typet is %s/Secretariat' % typep
                         whattodo = self.__typet_secretariat(nprof, detail, delaigrp)
                 elif typet == 'F':
-                        print_verbose('typep/typet is %s/Fichier' % typep)
+                        print '  COMING CALL : __typep_phases, typep/typet is %s/Fichier' % typep
                         whattodo = self.__typet_fichier(detail)
                 elif typet == 'T':
-                        print_verbose('typep/typet is %s/Telephone' % typep)
+                        print '  COMING CALL : __typep_phases, typep/typet is %s/Telephone' % typep
                         whattodo = self.__typet_telephone(detail)
                 elif typet == 'B':
-                        print_verbose('typep/typet is %s/Base' % typep)
+                        print '  COMING CALL : __typep_phases, typep/typet is %s/Base' % typep
                         whattodo = self.__typet_base(detail)
                 elif typet == '0':
-                        print_verbose('typep/typet is %s/Aucun' % typep)
+                        print '  COMING CALL : __typep_phases, typep/typet is %s/Aucun' % typep
                         whattodo = None
                 else:
-                        print_verbose('typep/typet is %s/%s' % (typep, typet))
+                        print '  COMING CALL : __typep_phases, typep/typet is %s/%s' % (typep, typet)
                         whattodo = None
                 return whattodo
 
 
         def __typep_rep(self, clients_profil):
                 filename = '%s/%s/%s/Repondeurs/%s' % (self.socname, self.ncli, self.ncol, clients_profil[8])
-                print '__typep_rep', filename
+                print '  COMING CALL : __typep_rep', filename
                 # removing the .wav => [:-4]
                 whattodo = Action('rep', 0, filename[:-4])
                 return whattodo
@@ -681,7 +675,7 @@ class IncomingCall:
                                      (self.ncli, self.ncol, clients_profil[0]))
                 results = cursor_clients.fetchall()
                 if len(results) > 0:
-                        print_verbose('typep is MES : %s' % str(results[0]))
+                        print '  COMING CALL : __typep_mes, typep is MES : %s' % str(results[0])
                         self.statacd2_tt = 'TT_MES'
                         whattodo = Action('mes', 0, None)
                 else:
@@ -690,7 +684,7 @@ class IncomingCall:
 
 
         def __spanprofiles(self):
-                print 'INCOMING CALL : __spanprofiles : where\'s = %s/%s/%s' % (self.whereph, self.wherephS, self.wherephF)
+                print '  COMING CALL : __spanprofiles : where\'s = %s/%s/%s' % (self.whereph, self.wherephS, self.wherephF)
 
                 whattodo = None
                 if self.whereph == 'INTRO':
@@ -730,9 +724,9 @@ class IncomingCall:
 
                 if whattodo is None:
                         # if we get there nothing has been found
-                        print 'INCOMING CALL : (before return) :', whattodo, self.whereph, self.wherephS, self.wherephF
+                        print '  COMING CALL : __spanprofiles, before return :', whattodo, self.whereph, self.wherephS, self.wherephF
                 else:
-                        print 'INCOMING CALL : (before return) :', whattodo.status(), self.whereph, self.wherephS, self.wherephF
+                        print '  COMING CALL : __spanprofiles, before return :', whattodo.status(), self.whereph, self.wherephS, self.wherephF
                 return [whattodo, self.whereph]
 
 
@@ -757,6 +751,8 @@ class IncomingCall:
                 newupto = None
                 try:
                         [whattodo, newupto] = self.__spanprofiles()
+                        if whattodo is None:
+                                whattodo = Action('exit', 0, None)
                         self.set_timestamp_stat(whattodo.action)
                 except Exception, exc:
                         print 'exception when calling __spanprofiles() : %s' % str(exc)
