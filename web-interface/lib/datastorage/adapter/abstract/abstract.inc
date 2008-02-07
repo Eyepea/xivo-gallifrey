@@ -11,6 +11,14 @@ class xivo_datastorage_adapter_abstract
 	var $_result	= false;
 	var $_debug	= false;
 	var $_free	= false;
+	var $_from	= '';
+	var $_table	= array();
+	var $_column	= array();
+	var $_colall	= array();
+	var $_where	= '';
+	var $_aggwhere	= array();
+	var $_order	= array();
+	var $_limit	= array();
 
 	function set_param($name,$value)
 	{
@@ -105,7 +113,7 @@ class xivo_datastorage_adapter_abstract
 
 	function reset_column()
 	{
-		$this->_column = array();
+		$this->_column = $this->_colall = array();
 	}
 
 	function get_column()
@@ -155,6 +163,7 @@ class xivo_datastorage_adapter_abstract
 	function reset_where()
 	{
 		$this->_where = '';
+		$this->_aggwhere = array();
 	}
 
 	function get_where()
@@ -482,17 +491,17 @@ class xivo_datastorage_adapter_abstract
 		return(true);
 	}
 
+	function reset_limit()
+	{
+		$this->_limit = array();
+	}
+
 	function get_limit()
 	{
 		if(($r = $this->_mk_limit()) !== false)
 			return($r);
 
 		return(null);
-	}
-
-	function reset_limit()
-	{
-		$this->_limit = array();
 	}
 
 	function _set_limit($offset,$line='')

@@ -24,16 +24,14 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 	var $_type		= 'ldap';
 	var $_meta		= 'ldap';
 	var $_free		= true;
-	var $_table		= array();
-	var $_colall		= false;
-	var $_sortorder		= 0;
-	var $_countorder	= 0;
-	var $_limitoffset	= 0;
-	var $_limitlength	= 0;
 	var $_ber		= null;
 	var $_entry		= null;
-	var $_aggwhere		= array();
+	var $_colall		= false;
 	var $_attrib		= array();
+	var $_ordersort		= 0;
+	var $_ordercount	= 0;
+	var $_limitoffset	= 0;
+	var $_limitlength	= 0;
 
 	function xivo_datastorage_adapter_ldap($param=array())
 	{
@@ -361,7 +359,7 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 
 		if($this->_result !== false
 		&& $order !== null
-		&& $this->_countorder === 1)
+		&& $this->_ordercount === 1)
 			ldap_sort($this->_link,$this->_result,key($order));
 		else if((bool) $this->_debug === true)
 			$this->halt();
@@ -608,12 +606,6 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 		return($r);
 	}
 
-	function reset_where()
-	{
-		parent::reset_where();
-		$this->_aggwhere = array();
-	}
-
 	function get_where()
 	{
 		$r = '';
@@ -653,6 +645,12 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 		$this->_table = $r;
 
 		return($r);
+	}
+
+	function reset_column()
+	{
+		parent::reset_column();
+		$this->_colall = false;
 	}
 
 	function get_column()
@@ -922,7 +920,7 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 	function reset_order()
 	{
 		parent::reset_order();
-		$this->_countorder = $this->_sortorder = 0;
+		$this->_ordercount = $this->_ordersort = 0;
 	}
 
 	function _set_order($column,$sort='')
@@ -941,8 +939,8 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 				if(xivo_haslen($key) === true)
 				{
 					$sort = $this->_set_sort($val);
-					$this->_countorder++;
-					$this->_sortorder |= $sort;
+					$this->_ordercount++;
+					$this->_ordersort |= $sort;
 
 					$r[$key] = $sort;
 				}
@@ -957,8 +955,8 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 			return(false);
 
 		$sort = $this->_set_sort($sort);
-		$this->_countorder++;
-		$this->_sortorder |= $sort;
+		$this->_ordercount++;
+		$this->_ordersort |= $sort;
 
 		$r[strtolower($column)] = $sort;
 
@@ -1047,7 +1045,7 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 
 	function select_singlecolumn($search=array(),$free=true,$scope=LDAP_SCOPE_SUBTREE)
 	{
-		if($this->_countorder > 1 || ($this->_sortorder & SORT_DESC) !== 0)
+		if($this->_ordercount > 1 || ($this->_ordersort & SORT_DESC) !== 0)
 		{
 			if(($rs = $this->select_all($search,false,false,$scope,false)) === false
 			|| $rs['count'] === 0)
@@ -1110,7 +1108,7 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 
 	function select_columnpair($search=array(),$free=true,$scope=LDAP_SCOPE_SUBTREE)
 	{
-		if($this->_countorder > 1 || ($this->_sortorder & SORT_DESC) !== 0)
+		if($this->_ordercount > 1 || ($this->_ordersort & SORT_DESC) !== 0)
 		{
 			if(($rs = $this->select_all($search,false,false,$scope,false)) === false
 			|| $rs['count'] === 0)
@@ -1259,7 +1257,7 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 
 	function select_one($search=array(),$free=true,$scope=LDAP_SCOPE_SUBTREE)
 	{
-		if($this->_countorder > 1 || ($this->_sortorder & SORT_DESC) !== 0)
+		if($this->_ordercount > 1 || ($this->_ordersort & SORT_DESC) !== 0)
 		{
 			if(($r = $this->select_all($search,false,false,$scope,false)) === false)
 			{
@@ -1308,7 +1306,7 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 
 	function select_single($search=array(),$free=true,$clean=false,$scope=LDAP_SCOPE_SUBTREE)
 	{
-		if($this->_countorder > 1 || ($this->_sortorder & SORT_DESC) !== 0)
+		if($this->_ordercount > 1 || ($this->_ordersort & SORT_DESC) !== 0)
 		{
 			if(($r = $this->select_all($search,$free,$clean,$scope,false)) === false)
 				return(false);
@@ -1339,9 +1337,9 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 			return(false);
 		else if(($r = $this->get_entries()) !== false && $r['count'] === 0)
 			$r = false;
-		else if($this->_countorder === 1 && $this->_sortorder === SORT_DESC)
+		else if($this->_ordercount === 1 && $this->_ordersort === SORT_DESC)
 			$r = array_reverse($r);
-		else if($this->_countorder > 1 || ($this->_sortorder & SORT_DESC) !== 0)
+		else if($this->_ordercount > 1 || ($this->_ordersort & SORT_DESC) !== 0)
 			$this->_order_result($r);
 
 		if($r !== false)

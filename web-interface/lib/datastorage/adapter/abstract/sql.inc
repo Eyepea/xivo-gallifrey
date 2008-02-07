@@ -4,27 +4,12 @@ require_once(XIVO_PATH_LIB.XIVO_SEP_DIR.'datastorage'.XIVO_SEP_DIR.'adapter'.XIV
 
 class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abstract
 {
-	var $_error		= '';
-	var $_errno		= 0;
 	var $_query		= '';
 	var $_meta		= 'sql';
-	var $_quote		= false;
-	var $_link		= null;
-	var $_result		= false;
-	var $_debug		= false;
-	var $_free		= false;
-	var $_from		= '';
-	var $_table		= array();
-	var $_column		= array();
-	var $_colall		= array();
 	var $_join		= array();
 	var $_joinwhere		= array();
 	var $_aggjoinwhere	= array();
-	var $_where		= '';
-	var $_aggwhere		= array();
 	var $_group		= array();
-	var $_order		= array();
-	var $_limit		= array();
 
 	function _chk_quote($name)
 	{
@@ -69,13 +54,6 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 		parent::reset_all();
 		$this->reset_join();
 		$this->reset_group();
-
-		$this->_table = array();
-		$this->reset_from();
-		$this->reset_column();
-		$this->reset_where();
-		$this->reset_order();
-		$this->reset_limit();
 	}
 
 	function from($table,$column='*')
@@ -254,11 +232,6 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 		$this->_table[$key] = $val;
 
 		return(array($key,$val));
-	}
-
-	function reset_column()
-	{
-		$this->_column = $this->_colall = array();
 	}
 
 	function get_column()
@@ -533,12 +506,6 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 			return(false);
 
 		return($r);
-	}
-
-	function reset_where()
-	{
-		parent::reset_where();
-		$this->_aggwhere = array();
 	}
 
 	function _set_where($cond,$val='',$condand=true,$and=true,$not=false,$join=false)
