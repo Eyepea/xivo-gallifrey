@@ -54,8 +54,7 @@ class xivo_datastorage_adapter_sqlite extends xivo_datastorage_adapter_abstract_
 	{
 		if(($db = xivo_file::is_f($this->_param['db'])) !== false)
 			return(null);
-
-		if(($pos = strrpos($this->_param['db'],'.')) === false || substr($this->_param['db'],1-$pos) !== '.db')
+		else if(($pos = strrpos($this->_param['db'],'.')) === false || substr($this->_param['db'],1-$pos) !== '.db')
 			$this->_param['db'] .= '.db';
 
 		$this->_param['db'] = XIVO_PATH_DS.XIVO_SEP_DIR.$this->_type.XIVO_SEP_DIR.ltrim($this->_param['db'],XIVO_SEP_DIR);
@@ -138,10 +137,10 @@ class xivo_datastorage_adapter_sqlite extends xivo_datastorage_adapter_abstract_
 
 		$this->_chk_db();
 
-		if($this->_param['persist'] === true)
-			$this->_link = sqlite_popen($this->_param['db'],0666);
-		else
+		if((bool) $this->_param['persist'] === false)
 			$this->_link = sqlite_open($this->_param['db'],0666);
+		else
+			$this->_link = sqlite_popen($this->_param['db'],0666);
 
 		if($this->_link === false)
 			$this->halt();
@@ -155,18 +154,19 @@ class xivo_datastorage_adapter_sqlite extends xivo_datastorage_adapter_abstract_
 		return($this->_link);
 	}
 
-	function query($query,$buffer=false,$o=false)
+	function query($query,$buffer=false)
 	{
-		$this->_query = (string) $query;
-		$buffer = (bool) $buffer;
-		$o = (bool) $o;
+		if(is_string($query) === false)
+			return(false);
 
-		if($buffer === true)
-			$this->_result = sqlite_query($this->_query,$this->_link);
-		else
+		$this->_query = $query;
+
+		if((bool) $buffer === false)
 			$this->_result = sqlite_unbuffered_query($this->_query,$this->_link);
+		else
+			$this->_result = sqlite_query($this->_query,$this->_link);
 
-		if($this->_result === false && $o !== false)
+		if($this->_result === false && (bool) $this->_debug === true)
 			$this->halt();
 
 		return($this->_result);
@@ -174,45 +174,47 @@ class xivo_datastorage_adapter_sqlite extends xivo_datastorage_adapter_abstract_
 
 	function errno()
 	{
-		$r = 0;
-
 		if(is_resource($this->_link) === true)
-			$r = sqlite_last_error($this->_link);
+			return(sqlite_last_error($this->_link));
 
-		return($r);
+		return(0);
 	}
 
 	function error()
 	{
-		$r = '';
-
 		if(is_resource($this->_link) === true)
-			$r = sqlite_error_string($this->_link);
+			return(sqlite_error_string($this->_link));
 
-		return($r);
+		return('');
 	}
 
 	function timeout($time)
 	{
-		if(($time = xivo_uint($time)) >= 60000)
-			return(false);
+		if(($time = xivo_uint($time)) < 60000 && is_resource($this->_link) === true)
+			return(sqlite_busy_timeout($this->_link,$time));
 
-		return(sqlite_busy_timeout($this->_link,$time));
+		return(false);
 	}
 
 	function affected_rows()
 	{
-		return(sqlite_changes($this->_link));
+		if(is_resource($this->_link) === true)
+			return(sqlite_changes($this->_link));
+
+		return(false);
 	}
 
 	function insert_id()
 	{
-		return(sqlite_last_insert_rowid($this->_link));
+		if(is_resource($this->_link) === true)
+			return(sqlite_last_insert_rowid($this->_link));
+
+		return(false);
 	}
 
 	function escape_string($str)
 	{
-		return(sqlite_escape_string((string) $str));
+		return(sqlite_escape_string($str));
 	}
 
 	function close()
@@ -227,19 +229,28 @@ class xivo_datastorage_adapter_sqlite extends xivo_datastorage_adapter_abstract_
 		return($r);
 	}
 
-	function num_rows($r=false)
+	function num_rows()
 	{
-		return(sqlite_num_rows((is_resource($r) === true ? $r : $this->_result)));
+		if(is_resource($this->_result) === true)
+			return(sqlite_num_rows($this->_result));
+
+		return(false);
 	}
 
-	function fetch_row($r=false)
+	function fetch_row()
 	{
-		return(sqlite_fetch_array((is_resource($r) === true ? $r : $this->_result),SQLITE_NUM));
+		if(is_resource($this->_result) === true)
+			return(sqlite_fetch_array($this->_result,SQLITE_NUM));
+
+		return(false);
 	}
 
-	function fetch_assoc($r=false)
+	function fetch_assoc()
 	{
-		return(sqlite_fetch_array((is_resource($r) === true ? $r : $this->_result),SQLITE_ASSOC));
+		if(is_resource($this->_result) === true)
+			return(sqlite_fetch_array($this->_result,SQLITE_ASSOC));
+
+		return(false);
 	}
 
 	function unix_timestamp($column='',$time='')
@@ -249,10 +260,10 @@ class xivo_datastorage_adapter_sqlite extends xivo_datastorage_adapter_abstract_
 
 	function _expr_typetime($type='',$column='',$time='',$format='',$table='')
 	{
-		$column = trim((string) $column);
-		$time = strtolower((string) $time);
+		$column = trim($column);
+		$time = strtolower($time);
 		$format = (string) $format;
-		$table = trim((string) $table);
+		$table = trim($table);
 
 		if($time !== '' && $time !== 'localtime' && $time !== 'utc')
 			return(false);

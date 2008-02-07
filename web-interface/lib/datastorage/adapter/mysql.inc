@@ -103,8 +103,7 @@ class xivo_datastorage_adapter_mysql extends xivo_datastorage_adapter_abstract_s
 	{
 		if(is_resource($this->_link) === true)
 			return($this->_link);
-
-		if($this->_param['host'] !== '')
+		else if($this->_param['host'] !== '')
 			$host = $this->_param['host'];
 		else
 			$host = 'localhost';
@@ -116,10 +115,10 @@ class xivo_datastorage_adapter_mysql extends xivo_datastorage_adapter_abstract_s
 
 		$this->_set_flag();
 
-		if($this->_param['persist'] === true)
-			$this->_link = mysql_pconnect($host,$this->_param['user'],$this->_param['pass'],false,$this->_flag);
-		else
+		if((bool) $this->_param['persist'] === false)
 			$this->_link = mysql_connect($host,$this->_param['user'],$this->_param['pass'],false,$this->_flag);
+		else
+			$this->_link = mysql_pconnect($host,$this->_param['user'],$this->_param['pass'],false,$this->_flag);
 
 		if($this->_link === false)
 			$this->halt('Can\'t connect to mysql server');
@@ -129,18 +128,23 @@ class xivo_datastorage_adapter_mysql extends xivo_datastorage_adapter_abstract_s
 
 	function select_db()
 	{
-		if(($r = mysql_select_db($this->_param['db'], $this->_link)) === false)
+		$r = false;
+
+		if(is_resource($this->_link) === false
+		|| ($r = mysql_select_db($this->_param['db'], $this->_link)) === false)
 			$this->halt('Can\'t select database: '.$this->_param['db']);
 
 		return($r);
 	}
 
-	function query($query,$buffer=false,$o=false)
+	function query($query)
 	{
-		$this->_query = (string) $query;
-		$o = (bool) $o;
+		if(is_string($query) === false)
+			return(false);
 
-		if(($this->_result = mysql_query($this->_query,$this->_link)) === false && $o !== false)
+		$this->_query = $query;
+
+		if(($this->_result = mysql_query($this->_query,$this->_link)) === false && (bool) $this->_debug === true)
 			$this->halt();
 
 		return($this->_result);
@@ -160,27 +164,23 @@ class xivo_datastorage_adapter_mysql extends xivo_datastorage_adapter_abstract_s
 
 	function errno()
 	{
-		$r = 0;
-
 		if(is_resource($this->_link) === true)
-			$r = mysql_errno($this->_link);
+			return(mysql_errno($this->_link));
 
-		return($r);
+		return(0);
 	}
 
 	function error()
 	{
-		$r = '';
-
 		if(is_resource($this->_link) === true)
-			$r = mysql_error($this->_link);
+			return(mysql_error($this->_link));
 
-		return($r);
+		return('');
 	}
 
 	function _chk_join($type)
 	{
-		$type = strtoupper((string) $type);
+		$type = strtoupper($type);
 
 		if($type === 'FULL')
 			return(false);
@@ -190,24 +190,26 @@ class xivo_datastorage_adapter_mysql extends xivo_datastorage_adapter_abstract_s
 
 	function affected_rows()
 	{
-		return(mysql_affected_rows($this->_link));
+		if(is_resource($this->_link) === true)
+			return(mysql_affected_rows($this->_link));
+
+		return(false);
 	}
 
 	function insert_id()
 	{
-		return(mysql_insert_id($this->_link));
+		if(is_resource($this->_link) === true)
+			return(mysql_insert_id($this->_link));
+
+		return(false);
 	}
 
 	function escape_string($str)
 	{
-		$str = (string) $str;
-
 		if($this->_escape === true && is_resource($this->_link) === true)
-			$str = mysql_real_escape_string($str,$this->_link);
-		else
-			$str = mysql_escape_string($str);
+			return(mysql_real_escape_string($str,$this->_link));
 
-		return($str);
+		return(mysql_escape_string($str));
 	}
 
 	function close()
@@ -222,24 +224,36 @@ class xivo_datastorage_adapter_mysql extends xivo_datastorage_adapter_abstract_s
 		return($r);
 	}
 
-	function free($r=false)
+	function free()
 	{
-		return(mysql_free_result((is_resource($r) === true ? $r : $this->_result)));
+		if(is_resource($this->_result) === true)
+			return(mysql_free_result($this->_result));
+
+		return(false);
 	}
 
-	function num_rows($r=false)
+	function num_rows()
 	{
-		return(mysql_num_rows((is_resource($r) === true ? $r : $this->_result)));
+		if(is_resource($this->_result) === true)
+			return(mysql_num_rows($this->_result));
+
+		return(false);
 	}
 
-	function fetch_row($r=false)
+	function fetch_row()
 	{
-		return(mysql_fetch_row((is_resource($r) === true ? $r : $this->_result)));
+		if(is_resource($this->_result) === true)
+			return(mysql_fetch_row($this->_result));
+
+		return(false);
 	}
 
-	function fetch_assoc($r=false)
+	function fetch_assoc()
 	{
-		return(mysql_fetch_assoc((is_resource($r) === true ? $r : $this->_result)));
+		if(is_resource($this->_result) === true)
+			return(mysql_fetch_assoc($this->_result));
+
+		return(false);
 	}
 
 	function unix_timestamp($column='',$time='')
@@ -252,11 +266,11 @@ class xivo_datastorage_adapter_mysql extends xivo_datastorage_adapter_abstract_s
 
 	function _expr_typetime($type='',$column='',$time='',$format='',$table='')
 	{
-		$column = trim((string) $column);
-		$type = $type !== '' ? strtolower((string) $type) : 'date';
-		$time = strtolower((string) $time);
+		$column = trim($column);
+		$type = $type !== '' ? strtolower($type) : 'date';
+		$time = strtolower($time);
 		$format = (string) $format;
-		$table = trim((string) $table);
+		$table = trim($table);
 
 		if(($type !== 'unix' && $type !== 'date') === true
 		|| ($time !== '' && $time !== 'localtime' && $time !== 'utc') === true)

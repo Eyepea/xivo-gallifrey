@@ -2,11 +2,9 @@
 
 class xivo_datastorage
 {
-	var $_uri	= null;
-	
 	function factory($type,$param=array())
 	{
-		$type = strtolower((string) $type);
+		$type = strtolower($type);
 		$name = 'xivo_datastorage_adapter_'.$type;
 
 		if(xivo_datastorage::is_valid($type) === false)
@@ -29,12 +27,44 @@ class xivo_datastorage
 		return(isset($datastorage[$type]));
 	}
 
+	function has_ssl($type)
+	{
+		$type = (string) $type;
+
+		$datastorage = &xivo_gat::get('datastorage');
+
+		if(xivo_datastorage::is_valid($type) === true
+		&& (bool) $datastorage[$type]['ssl'] === true)
+			return($type);
+
+		return(xivo_datastorage::is_ssl_scheme($type));
+	}
+
+	function is_ssl_scheme($type)
+	{
+		$type = (string) $type;
+
+		$datastorage = &xivo_gat::get('datastorage');
+
+		if(substr($type,-1) === 's'
+		&& ($type = substr($type,0,-1)) !== false
+		&& xivo_datastorage::is_valid($type) === true
+		&& (bool) $datastorage[$type]['ssl'] === true)
+			return($type);
+
+		return(false);
+	}
+
 	function set_param_from_uri($str)
 	{
 		xivo::load_class('xivo_uri');
 		$uri = new xivo_uri();
 
 		if(($arr = $uri->parse_uri($str)) === false || isset($arr['scheme']) === false)
+			return(false);
+		else if(($ssl = xivo_datastorage::is_ssl_scheme($arr['scheme'])) !== false)
+			$arr['scheme'] = $ssl;
+		else if(xivo_datastorage::is_valid($arr['scheme']) === false)
 			return(false);
 
 		$r = array();
@@ -78,6 +108,8 @@ class xivo_datastorage
 			}
 		}
 
+		$r['ssl'] = $ssl !== false;
+
 		return($r);
 	}
 
@@ -96,14 +128,13 @@ class xivo_datastorage
 	function chk_extension_loaded($type,$load=false)
 	{
 		$type = (string) $type;
-		$load = (bool) $load;
 
 		if(xivo_datastorage::chk_extension_exists($type) === false)
 			return(false);
 
 		$datastorage = &xivo_gat::get('datastorage');
 	
-		if($load === true)
+		if((bool) $load === true)
 			xivo::load_extension($datastorage[$type]['extension']);
 
 		return(xivo::chk_extension_loaded($datastorage[$type]['extension']));
