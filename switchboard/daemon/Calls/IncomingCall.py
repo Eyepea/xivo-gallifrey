@@ -1,3 +1,8 @@
+# $Revision$
+# $Date$
+
+__version__ = "$Revision$ $Date$"
+
 import socket
 import time
 
@@ -16,7 +21,8 @@ class Action:
 
 
 class IncomingCall:
-        def __init__(self, conn_agents, conn_system, cidnum, sdanum, queuenum, soperat_socket, soperat_port):
+        def __init__(self, conn_agents, conn_system, cidnum, sdanum, queuenum, soperat_socket, soperat_port, opejd, opend):
+                self.dir       = 'i'
                 self.cidnum    = cidnum
                 self.sdanum    = sdanum
                 self.num       = 0
@@ -32,18 +38,22 @@ class IncomingCall:
                 self.nsoc = 0 # None
                 self.ncli = 0 # None
                 self.ncol = 0 # None
+                self.opejd = opejd.split(':')
+                self.opend = opend.split(':')
                 self.cliname = ''
                 self.colname = ''
                 self.socname = ''
-                self.waiting = True
                 self.statacd2_state = 'NC'
                 self.statacd2_tt = 'TT_RAF'
+
+                self.waiting = True
                 self.parking = None
                 self.parkexten = None
                 self.peerchannel = None
                 self.appelaboute = None
                 self.tocall = False
                 self.toretrieve = None
+
                 self.stimes = {time.time() : 'init'}
                 self.ttimes = {time.time() : 'init'}
                 self.uinfo = None
@@ -54,7 +64,8 @@ class IncomingCall:
                                  'record' : None,
                                  'rescue' : 1,
                                  'rescue_details' : None,
-                                 'sun' : 0,
+                                 'hassun' : False,
+                                 'sun' : False,
                                  'sounds' : []}
                 self.soperat_socket = soperat_socket
                 self.soperat_port   = soperat_port
@@ -84,7 +95,7 @@ class IncomingCall:
                         else:
                                 self.socname = 'adh_inconnu'
 
-                        self.dialplan['soundpath'] = '%s/%s/%s/Sons' % (self.socname, self.ncli, self.ncol)
+                        self.dialplan['soundpath'] = '%s/%s/%s' % (self.socname, self.ncli, self.ncol)
                         isvalid = self.system_sda[7]
                         if isvalid == 1:
                                 nowdate = time.strftime(DATEFMT, self.ctime)
@@ -164,19 +175,18 @@ class IncomingCall:
                 cursor_system.query('SELECT ${columns} FROM jferies WHERE NSOC = %s',
                                     columns,
                                     self.nsoc)
-                results = cursor_system.fetchall()
+                system_jferies = cursor_system.fetchall()
 
                 self.period = ['JOUR', '']
                 weekday_today = WEEKDAY[self.ctime[6]]
                 if weekday_today == 'SAM' or weekday_today == 'DIM':
                         self.period[1] = 'WE'
                 today_ferie = time.strftime('%d-%m', self.ctime)
-                for z in results:
+                for z in system_jferies:
                         if z[1] == today_ferie:
                                 self.period[1] = 'FERIE'
                                 weekday_today = z[2]
                                 break
-                print 'jferies ?', today_ferie, weekday_today, self.period
 
                 self.competences = []
                 self.languages_sv = []
@@ -188,9 +198,9 @@ class IncomingCall:
                 cursor_clients.query('SELECT ${columns} FROM son WHERE NCLI = %s AND NCOL = %s',
                                      columns,
                                      (self.ncli, self.ncol))
-                results = cursor_clients.fetchall()
-                for t in results:
-                        self.dialplan['sounds'].append(t[2])
+                clients_son = cursor_clients.fetchall()
+                for cson in clients_son:
+                        self.dialplan['sounds'].append(cson[2])
 
                 # competences
                 columns = ('NCLI', 'NCOL', 'NComp')
@@ -198,8 +208,8 @@ class IncomingCall:
                 cursor_clients.query('SELECT ${columns} FROM clicomp WHERE NCLI = %s AND NCOL = %s',
                                      columns,
                                      (self.ncli, self.ncol))
-                results = cursor_clients.fetchall()
-                for t in results:
+                clients_clicomp = cursor_clients.fetchall()
+                for t in clients_clicomp:
                         self.competences.append(str(t[2]))
 
                 # langues
@@ -208,8 +218,8 @@ class IncomingCall:
                 cursor_clients.query('SELECT ${columns} FROM clilang WHERE NCLI = %s AND NCOL = %s',
                                      columns,
                                      (self.ncli, self.ncol))
-                results = cursor_clients.fetchall()
-                for t in results:
+                clients_clilang = cursor_clients.fetchall()
+                for t in clients_clilang:
                         self.languages[str(t[2])] = t[3]
                         self.languages_sv.append('%d-%s' %(t[2], t[3]))
 
@@ -263,8 +273,10 @@ class IncomingCall:
                                 if ok_weekdays and ok_days:
                                         pld = time.strptime(nowdate + ' ' + clients_profil[5], DATETIMEFMT)
                                         plf = time.strptime(nowdate + ' ' + clients_profil[6], DATETIMEFMT)
+                                        typep = clients_profil[3]
+                                        if typep == 'SUN':
+                                                self.dialplan['hassun'] = True
                                         if self.ctime > pld and self.ctime < plf:
-                                                typep = clients_profil[3]
                                                 if typep == 'SUN':
                                                         self.dialplan['sun'] = True
                                                 elif typep == 'SEC' and self.dialplan['rescue'] == 1:
@@ -279,28 +291,46 @@ class IncomingCall:
                                                         else:
                                                                 prio_by_phase[typep] = prio
                                                                 self.true_clients_profil[typep] = clients_profil
-                        for typep in self.true_clients_profil:
-                                print 'INCOMING CALL : phases', typep, self.true_clients_profil[typep]
-
-
-                        if self.dialplan['sun']:
-                                if 'M001' in self.dialplan['sounds']:
-                                        self.dialplan['welcomefile'] = '%s/%s' % (self.dialplan['soundpath'], 'M001')
-                                else:
-                                        self.dialplan['welcomefile'] = None
-                        else:
-                                self.period[0] = 'NUIT'
-                                if 'M003' in self.dialplan['sounds']:
-                                        self.dialplan['welcomefile'] = '%s/%s' % (self.dialplan['soundpath'], 'M003')
-                                elif 'M001' in self.dialplan['sounds']:
-                                        self.dialplan['welcomefile'] = '%s/%s' % (self.dialplan['soundpath'], 'M001')
-                                else:
-                                        self.dialplan['welcomefile'] = None
-
-                        if len(self.true_clients_profil) == 0:
-                                self.statacd2_tt = 'TT_SND'
                 else:
                         self.statacd2_tt = 'TT_SND'
+
+                if len(self.true_clients_profil) == 0:
+                        self.statacd2_tt = 'TT_SND'
+
+                for typep in self.true_clients_profil:
+                        print 'INCOMING CALL : phases', typep, self.true_clients_profil[typep]
+
+                # are we the day or the night ???
+                are_we_day = True
+                time1 = int(self.opejd[0]) * 60 + int(self.opejd[1])
+                time2 = int(self.opend[0]) * 60 + int(self.opend[1])
+                timex = self.ctime[3] * 60 + self.ctime[4]
+
+                if self.dialplan['hassun']:
+                        if not self.dialplan['sun']:
+                                are_we_day = False
+                else:
+                        if timex > time2 or timex < time1:
+                                are_we_day = False
+
+                if are_we_day:
+                        self.period[0] = 'JOUR'
+                        if 'M001' in self.dialplan['sounds']:
+                                self.dialplan['M001003'] = 'M001'
+                        else:
+                                self.dialplan['M001003'] = None
+                else:
+                        self.period[0] = 'NUIT'
+                        if 'M003' in self.dialplan['sounds']:
+                                self.dialplan['M001003'] = 'M003'
+                        elif 'M001' in self.dialplan['sounds']:
+                                self.dialplan['M001003'] = 'M001'
+                        else:
+                                self.dialplan['M001003'] = None
+
+                print 'day/night status', self.dialplan['hassun'], self.dialplan['sun'], time1, time2, timex, self.period, self.dialplan['M001003']
+
+
 
                 # print out a summary of dialplan statuses
                 print 'INCOMING CALL : dialplan settings =', self.dialplan
@@ -327,12 +357,15 @@ class IncomingCall:
                 cursor_clients.query('SELECT ${columns} FROM groupes WHERE NGROUP = %s AND NPROF = %s',
                                      columns,
                                      (id, nprof))
-                results = cursor_clients.fetchall()
+##                cursor_clients.query('SELECT ${columns} FROM groupes WHERE NGROUP = %s',
+##                                     columns,
+##                                     id)
+                clients_groupes_liste = cursor_clients.fetchall()
                 list_operators = []
                 list_requests  = []
 
-                print '  COMING CALL : __localN_group_composition, id = %s / nprof = %s' % (id, nprof), results
-                for clients_groupes in results:
+                print '  COMING CALL : __localN_group_composition, id = %s / nprof = %s' % (id, nprof), clients_groupes_liste
+                for clients_groupes in clients_groupes_liste:
                         nperm  = clients_groupes[0]
                         ngroup = clients_groupes[1]
                         nom    = clients_groupes[2]
@@ -345,8 +378,8 @@ class IncomingCall:
                                 cursor_clients.query('SELECT ${columns} FROM groupes_ope WHERE Nom = %s AND NOPE != 0',
                                                      columns,
                                                      nom_groupe)
-                                results = cursor_clients.fetchall()
-                                for res in results:
+                                clients_groupes_ope = cursor_clients.fetchall()
+                                for res in clients_groupes_ope:
                                         list_operators.append(res[2])
                         elif ngroup > 0:
                                 list_requests.append([str(self.nsoc_global),
@@ -479,7 +512,7 @@ class IncomingCall:
                                         whattodo = None
                                         break
 
-                                print '  COMING CALL : __typet_secretariat, prevnum = %d / %s' % (self.wherephS, detail_tab[0:upto+1])
+                                print '  COMING CALL : __typet_secretariat, prevnum = %d / grouplist = %s' % (self.wherephS, ';'.join(detail_tab[0:upto+1]))
                                 [self.list_operators, self.list_svirt] = self.__list_operators(nprof, detail_tab, upto)
                                 print '  COMING CALL : __typet_secretariat, operators and rooms :', self.list_operators, self.list_svirt
 
@@ -488,12 +521,12 @@ class IncomingCall:
                                 else:
                                         delay = int(delaigrp_tab[upto])
 
-                                print '  COMING CALL : __typet_secretariat, upto = ', upto, delay
+                                print '  COMING CALL : __typet_secretariat, upto = %d, delay = %d s' % (upto, delay)
 
                                 if len(self.list_operators) == 0 and len(self.list_svirt) == 0:
                                         upto += 1
                                 else:
-                                        whattodo = Action('sec', delay, self.dialplan['welcomefile'])
+                                        whattodo = Action('sec', delay, None)
                                         for areq in self.list_svirt:
                                                 req = 'ACDAddRequest' + chr(2) + chr(2).join(areq[:6]) + chr(2) + chr(2).join(areq[6:]) + chr(2) + str(self.soperat_port) + chr(3)
                                                 print 'cg', self.nsoc, self.ncli, delay, self.ncol, areq, '<%s>' % req
@@ -518,8 +551,8 @@ class IncomingCall:
                         cursor_clients.query('SELECT ${columns} FROM fichier WHERE NCLI = %s AND NCOL = %s AND NOM = %s',
                                              columns,
                                              (self.ncli, self.ncol, detail))
-                results = cursor_clients.fetchall()
-                return results
+                clients_fichier = cursor_clients.fetchall()
+                return clients_fichier
 
 
         def __typet_fichier(self, detail):
@@ -533,8 +566,11 @@ class IncomingCall:
                         if self.wherephF < nresults:
                                 self.statacd2_tt = 'TT_FIC'
                                 b = results[self.wherephF]
-                                print 'Fichier %s : %s %s %s %s' % (str(b), b[3], b[6], b[7], b[8])
-                                whattodo = Action('fic', 0, '%s-%s-%s-%s' %(b[3], b[8], b[6], b[7]))
+                                delay = b[8]
+                                print 'Fichier %s : %s (%s) %s %s %s' % (str(b), b[3], b[5], b[6], b[7], delay)
+                                if b[5] == 'STAND':
+                                        delay = ''
+                                whattodo = Action('fic', 0, '%s-%s-%s-%s' %(b[3], delay, b[6], b[7]))
                         else:
                                 whattodo = None
                 else:
@@ -550,8 +586,11 @@ class IncomingCall:
                                 self.statacd2_tt = 'TT_TEL'
                                 self.wherephF = 0
                                 b = results[0]
-                                print 'Telephone %s : %s %s %s %s' % (str(b), b[3], b[6], b[7], b[8])
-                                whattodo = Action('tel', 0, '%s-%s-%s-%s' %(b[3], b[8], b[6], b[7]))
+                                delay = b[8]
+                                print 'Telephone %s : %s (%s) %s %s %s' % (str(b), b[3], b[5], b[6], b[7], delay)
+                                if b[5] == 'STAND':
+                                        delay = ''
+                                whattodo = Action('tel', 0, '%s-%s-%s-%s' %(b[3], delay, b[6], b[7]))
                         else:
                                 whattodo = None
                 else:
@@ -566,12 +605,12 @@ class IncomingCall:
                 cursor_clients.query('SELECT ${columns} FROM gardes WHERE NCLI = %s AND NCOL = 0 AND Nom = %s',
                                      columns,
                                      (self.ncli, detail)) # (self.ncli, self.ncol, detail))
-                results = cursor_clients.fetchall()
-                if len(results) > 0 and self.wherephF is None:
+                clients_gardes = cursor_clients.fetchall()
+                if len(clients_gardes) > 0 and self.wherephF is None:
                         nows = time.mktime(self.ctime)
                         str_today = time.strftime(DATEFMT, self.ctime)
                         realidx = None
-                        for b in results:
+                        for b in clients_gardes:
                                 if str(b[3])[:10] == str_today:
                                         plbase = []
                                         dateplage_prev = time.strptime(str(b[3])[:11] + '00:00', DATEFMT + ' %H:%M')
@@ -605,7 +644,7 @@ class IncomingCall:
 
                         if realidx is not None:
                                 fichenum = realbase[5 + realidx].split('.')[0]
-                                print 'Base', now, plbase, realidx, realbase
+                                print 'Base', plbase, realidx, realbase
                                 if fichenum != '0':
                                         self.statacd2_tt = 'TT_BAS'
                                         self.wherephF = 0
@@ -622,6 +661,8 @@ class IncomingCall:
                                                 [num, intext, normstd, ncherche, npatiente, withsda, wtime] = fg.split('.')
                                                 print 'intext = %s, normstd = %s, num = %s, ncherche = %s, npatiente = %s, time = %s, withsda = %s' \
                                                       %(intext, normstd, num, ncherche, npatiente, wtime, withsda)
+                                                if normstd == '1':
+                                                        wtime = ''
                                                 whattodo = Action('bas', 0, '-'.join([num, wtime, ncherche, npatiente]))
 
                 return whattodo
@@ -673,9 +714,9 @@ class IncomingCall:
                 cursor_clients.query('SELECT ${columns} FROM messagerie WHERE NCLI = %s AND NCOL = %s AND NPROF = %s',
                                      columns,
                                      (self.ncli, self.ncol, clients_profil[0]))
-                results = cursor_clients.fetchall()
-                if len(results) > 0:
-                        print '  COMING CALL : __typep_mes, typep is MES : %s' % str(results[0])
+                clients_messagerie = cursor_clients.fetchall()
+                if len(clients_messagerie) > 0:
+                        print '  COMING CALL : __typep_mes, typep is MES : %s' % str(clients_messagerie[0])
                         self.statacd2_tt = 'TT_MES'
                         whattodo = Action('mes', 0, None)
                 else:
@@ -684,12 +725,12 @@ class IncomingCall:
 
 
         def __spanprofiles(self):
-                print '  COMING CALL : __spanprofiles : where\'s = %s/%s/%s' % (self.whereph, self.wherephS, self.wherephF)
+                print '  COMING CALL : __spanprofiles : where s = %s/%s/%s' % (self.whereph, self.wherephS, self.wherephF)
 
                 whattodo = None
                 if self.whereph == 'INTRO':
-                        if self.dialplan['welcome'] == 1 and self.dialplan['welcomefile'] is not None:
-                                whattodo = Action('intro', 0, self.dialplan['welcomefile'])
+                        if self.dialplan['welcome'] == 1:
+                                whattodo = Action('intro', 0, None)
                         self.whereph = 'PH1'
 
                 for [thisstep, nextstep] in ['PH1', 'PH2'], ['PH2', 'SEC'], ['SEC', 'REP']:

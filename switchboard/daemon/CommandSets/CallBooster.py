@@ -1,6 +1,6 @@
 
 __version__   = '$Revision$ $Date$'
-__copyright__ = 'Copyright (C) 2007, Proformatique'
+__copyright__ = 'Copyright (C) 2007, 2008, Proformatique'
 __author__    = 'Corentin Le Gall'
 
 import anysql
@@ -16,22 +16,27 @@ from Calls import IncomingCall
 from Calls import OutgoingCall
 from xivo_commandsets import BaseCommand
 from xivo_common import *
+from easyslog import *
 
 STARTAGENTNUM = 6100
 DATEFMT = '%Y-%m-%d'
 DATETIMEFMT = DATEFMT + ' %H:%M:%S'
 PARK_EXTEN = '700'
 TRUNKNAME = 'FT'
-TSLOTTIME = 600
+TSLOTTIME = 1800
 
 incoming_calls = {}
 outgoing_calls = {}
 
-class ByAgentChannelStatus:
-        def __init__(self, direction, call):
-                self.dir   = direction
-                self.call  = call
-                return
+def varlog(syslogprio, string):
+        if syslogprio <= SYSLOG_NOTICE:
+                syslogf(syslogprio, 'xivo_fb : ' + string)
+        return 0
+
+def log_debug(syslogprio, string):
+        if syslogprio <= SYSLOG_INFO:
+                print '#debug# ' + string
+        return varlog(syslogprio, string)
 
 
 class CallBoosterCommand(BaseCommand):
@@ -61,15 +66,14 @@ class CallBoosterCommand(BaseCommand):
                 opconf = ConfigParser.ConfigParser()
                 opconf.readfp(open(operatini))
                 opconf_so = dict(opconf.items('SO'))
-                d = opconf_so.get('opejd')
-                n = opconf_so.get('opend')
-                #print d, n
-                self.list_svirt = []
-                self.pending_sv_fiches = []
+                self.opejd = opconf_so.get('opejd')
+                self.opend = opconf_so.get('opend')
+                self.list_svirt = {}
+                self.pending_sv_fiches = {}
 
 
         def __sendfiche_a(self, userinfo, incall):
-                userinfo['calls'][incall.commid] = ByAgentChannelStatus('i', incall)
+                userinfo['calls'][incall.commid] = incall
                 # CLR-ACD to,be sent only if there was an Indispo sent previously
                 if incall.dialplan['callerid'] == 1:
                         cnum = incall.cidnum
@@ -80,28 +84,27 @@ class CallBoosterCommand(BaseCommand):
                 incall.uinfo = userinfo
                 if 'connection' in userinfo:
                         incall.uinfo['connection'].send(reply)
-                        print 'CallBooster : sent <%s>' % reply
+                        log_debug(SYSLOG_INFO, 'CallBooster : sent <%s>' % reply)
                 else:
-                        print 'CallBooster : could not send', replies
+                        log_debug(SYSLOG_INFO, 'CallBooster : could not send <%s>' % reply)
                 return
 
 
         # the call comes here when the AGI has directly found a peer
         def __sendfiche(self, astid, dest, incall):
-                userinfo = self.ulist[astid].finduser('sip' + dest)
-                print '__sendfiche', userinfo
+                userinfo = self.ulist[astid].finduser(dest)
+                log_debug(SYSLOG_INFO, '__sendfiche : userinfo = %s' % str(userinfo))
                 if userinfo is not None:
                         agentnum = userinfo['agentnum']
                         if 'agentchannel' in userinfo:
                                 print 'sendfiche, the agent is online :', userinfo['agentchannel']
                         else:
-                                print 'sendfiche, the agent is not online ... we\'re going to call him'
                                 phonenum = userinfo['phonenum']
-                                agentname = userinfo['user'][3:]
+                                agentname = userinfo['user']
+                                log_debug(SYSLOG_INFO, 'sendfiche, the agent is not online ... we re going to call him : %s (%s)' % (phonenum, str(userinfo)))
                                 self.amis[astid].aoriginate_var('sip', phonenum, 'Log %s' % phonenum,
                                                                 agentnum, agentname, 'default', 'CB_MES_LOGAGENT', agentname)
                         self.__sendfiche_a(userinfo, incall)
-                        # better wait for 'pret1' before establishing the call ?
                         print '__sendfiche', incall.queuename, agentnum
                         userinfo['queuelist'][incall.queuename] = incall
                         userinfo['sendfiche'] = [incall.queuename, 'Agent/%s' % agentnum]
@@ -118,15 +121,15 @@ class CallBoosterCommand(BaseCommand):
                                 reply = '%s,%s,,CLR-ACD/' % (incall.commid, incall.sdanum)
                                 if 'connection' in userinfo:
                                         userinfo['connection'].send(reply)
-                                        print 'CallBooster : sent <%s>' % reply
+                                        log_debug(SYSLOG_INFO, 'CallBooster : sent <%s>' % reply)
                                 else:
-                                        print 'CallBooster : can not send <%s>' % reply
+                                        log_debug(SYSLOG_INFO, 'CallBooster : could not send <%s>' % reply)
                 return
 
 
         def __addtoqueue(self, astid, dest, incall):
                 print '__addtoqueue', dest, incall.commid, incall.sdanum
-                userinfo = self.ulist[astid].finduser('sip' + dest)
+                userinfo = self.ulist[astid].finduser(dest)
                 if userinfo is not None:
                         if incall.queuename not in userinfo['queuelist']:
                                 agentnum = userinfo['agentnum']
@@ -165,12 +168,8 @@ class CallBoosterCommand(BaseCommand):
                 sqluri_system = '%s/system' % self.uribase
 
                 try:
-                        print 'connecting to URI %s - it can take some time' % sqluri_system
                         self.conn_system = anysql.connect_by_uri(sqluri_system)
-                        print 'connecting to URI %s - done' % sqluri_system
-                        print 'connecting to URI %s - it can take some time' % sqluri_agents
                         self.conn_agents = anysql.connect_by_uri(sqluri_agents)
-                        print 'connecting to URI %s - done' % sqluri_agents
                         cursor_agents = self.conn_agents.cursor()
                         
                         columns = ('CODE', 'NOM', 'PASS')
@@ -183,7 +182,8 @@ class CallBoosterCommand(BaseCommand):
                                 # in order to avoid tricky u'sdlkfs'
                                 oname = opername.__repr__()[2:-1].replace('\\xe9', 'é').replace('\\xea', 'è')
                                 pname = passname.__repr__()[2:-1].replace('\\xe9', 'é').replace('\\xea', 'è')
-                                phlist = ['sip%s' % oname,
+                                phlist = ['sip',
+                                          oname,
                                           'nopasswd', #pname,
                                           'default',
                                           None,
@@ -202,9 +202,7 @@ class CallBoosterCommand(BaseCommand):
                 self.uribase = uribase
                 # the following commands do nothing really useful, except initializing some field somewhere
                 sqluri_dummy = '%s?charset=%s' % (uribase, 'latin1')
-                print 'connecting to URI %s - it can take some time' % sqluri_dummy
                 conn_dummy = anysql.connect_by_uri(sqluri_dummy)
-                print 'connecting to URI %s - done' % sqluri_dummy
                 conn_dummy.close()
 
 
@@ -225,36 +223,69 @@ class CallBoosterCommand(BaseCommand):
                         cmd.type = xivo_commandsets.CMD_OTHER
                 return cmd
 
-        def get_login_params(self, command, astid):
+        def get_login_params(self, astid, command, connid):
                 print 'CallBooster Login :', command.name, command.args
                 agent = command.args[0]
+                sagent = agent.split('|')
                 reference = command.args[1]
-                [computername, tagent, phonenum, computeripref, srvnum] = agent.split('|')
-                cfg = {'astid' : astid,
-                       'proto' : 'sip',
-                       'passwd' : 'nopasswd',
-                       'state' : 'available',
-                       'ident' : 'OP@WIN',
-                       'computername' : computername,
-                       'phonenum' : phonenum,
-                       'computeripref' : computeripref,
-                       'srvnum' : srvnum,
-                       'userid' : tagent,
-                       'version' : 99999
-                       }
-                return cfg
+                if len(sagent) == 5:
+                        # Init from local connection
+                        [computername, tagent, phonenum, computeripref, srvnum] = sagent
+                        cfg = {'astid' : astid,
+                               'proto' : 'sip',
+                               'passwd' : 'nopasswd',
+                               'state' : 'available',
+                               'ident' : 'OP@WIN',
+                               'computername' : computername,
+                               'phonenum' : phonenum,
+                               'computeripref' : computeripref,
+                               'srvnum' : srvnum,
+                               'userid' : tagent,
+                               'version' : 99999
+                               }
+                        return cfg
+                elif len(sagent) == 6:
+                        # Init from remote connection
+                        # NRef|NOpe|NIdPerm|NTelOpe|NomOpe|AdherentOpe,0,Init
+                        [callref, nope, nperm, phonenum, tagent, nadherent] = sagent
+                        print 'remote connection', callref, nope, nperm, phonenum, tagent, nadherent
+                        if callref in self.pending_sv_fiches:
+                                connid.send(self.pending_sv_fiches[callref])
+                                del self.pending_sv_fiches[callref]
+
+                        # adds the user at once
+                        phlist = ['sip',
+                                  tagent,
+                                  'nopasswd',
+                                  'default',
+                                  None,
+                                  '%d' % (STARTAGENTNUM + int(nope)),
+                                  True,
+                                  '1']
+                        self.ulist[astid].adduser(phlist)
+
+                        cfg = {'astid' : astid,
+                               'proto' : 'sip',
+                               'passwd' : 'nopasswd',
+                               'state' : 'available',
+                               'ident' : 'OP@WIN',
+                               'computername' : nope,
+                               'phonenum' : phonenum,
+                               'computeripref' : nadherent,
+                               'srvnum' : nperm,
+                               'userid' : tagent,
+                               'version' : 99999
+                               }
+                        return cfg
+
 
         def required_login_params(self):
                 return ['astid', 'proto', 'ident', 'userid', 'version', 'computername', 'phonenum', 'computeripref', 'srvnum']
 
-        def connected_srv2clt(self, conn, id, issv):
+        def connected_srv2clt(self, conn, id):
                 msg = 'Connect%s/' % id
                 print 'CallBooster', 'sending %s' % msg
                 conn.send(msg)
-                # if issv, we receive an incoming connection from a SV host
-                if issv:
-                        for p in self.pending_sv_fiches:
-                                conn.send(p)
                 return
 
 
@@ -293,21 +324,21 @@ class CallBoosterCommand(BaseCommand):
                                         print 'LINK for Agent/%s : %s (peer = %s)' % (userinfo['agentnum'], userinfo['user'], peer)
                                         connid_socket = userinfo['connection']
                                         for callnum, anycall in userinfo['calls'].iteritems():
-                                                        if anycall.call.peerchannel is None:
+                                                        if anycall.peerchannel is None:
                                                                 # New Call
-                                                                anycall.call.peerchannel = peer
-                                                                print 'LINK (new call)', callnum, anycall.dir, anycall.call.peerchannel, peer
-                                                                anycall.call.set_timestamp_stat('link')
+                                                                anycall.peerchannel = peer
+                                                                print 'LINK (new call)', callnum, anycall.dir, anycall.peerchannel, peer
+                                                                anycall.set_timestamp_stat('link')
                                                                 if anycall.dir == 'o':
-                                                                        outgoing_calls[peer] = anycall.call
+                                                                        outgoing_calls[peer] = anycall
                                                                         # self.__update_taxes(anycall.call, 'Decroche')
                                                                         reply = '%s,1,%s,Decroche/' % (callnum, callerid)
                                                                         connid_socket.send(reply)
-                                                                anycall.call.set_timestamp_tax('link')
-                                                        elif anycall.call.peerchannel == peer:
-                                                                if anycall.call.parking is not None:
-                                                                        print 'LINK but UNPARKING :', callnum, anycall.dir, anycall.call.parking, anycall.call.peerchannel, peer
-                                                                        anycall.call.parking = None
+                                                                anycall.set_timestamp_tax('link')
+                                                        elif anycall.peerchannel == peer:
+                                                                if anycall.parking is not None:
+                                                                        print 'LINK but UNPARKING :', callnum, anycall.dir, anycall.parking, anycall.peerchannel, peer
+                                                                        anycall.parking = None
                                                                 else:
                                                                         print 'LINK but ?', callnum, peer
                                                         else:
@@ -359,34 +390,29 @@ class CallBoosterCommand(BaseCommand):
                                                 # lookup the call to unlink
                                                 calltounlink = None
                                                 for callnum, anycall in userinfo['calls'].iteritems():
-                                                        print 'UNLINK', callnum, peer, anycall.call.peerchannel,
-                                                        if anycall.call.peerchannel is None:
+                                                        print 'UNLINK', callnum, peer, anycall.peerchannel,
+                                                        if anycall.peerchannel is None:
                                                                 print 'no action since peerchannel is None'
-                                                        elif anycall.call.peerchannel == peer:
-                                                                if anycall.call.parking == callnum:
-                                                                        print 'but PARKING :', anycall.call.parking
-                                                                elif anycall.call.appelaboute is not None:
-                                                                        print 'but appelaboute :', anycall.call.appelaboute
+                                                        elif anycall.peerchannel == peer:
+                                                                if anycall.parking == callnum:
+                                                                        print 'but PARKING :', anycall.parking
+                                                                elif anycall.appelaboute is not None:
+                                                                        print 'but appelaboute :', anycall.appelaboute
                                                                 else:
                                                                         print anycall.dir
                                                                         calltounlink = anycall
                                                                         break
                                                         else:
-                                                                print 'else', anycall.call.peerchannel
+                                                                print 'else', anycall.peerchannel
 
                                                 if calltounlink is not None:
                                                         if calltounlink.dir == 'i':
                                                                 print 'unlink INCOMING CALL => __update_stat_acd2', peer
-                                                                self.__update_stat_acd2(calltounlink.call)
-                                                        self.__update_taxes(calltounlink.call, 'Termine')
+                                                                self.__update_stat_acd2(calltounlink)
+                                                        self.__update_taxes(calltounlink, 'Termine')
 
                                                         # the link had been established => send Annule
                                                         connid_socket.send('%s,1,,Annule/' % callnum)
-
-                                                        ### why ???
-                                                        #for queuename in userinfo['queuelist'].keys():
-                                                        #       self.amis[astid].queueremove(queuename, 'Agent/%s' % agentnum)
-                                                        #userinfo['queuelist'].clear()
 
                                                         # remove call from incoming or outgoing list
                                                         userinfo['calls'].pop(callnum)
@@ -396,7 +422,7 @@ class CallBoosterCommand(BaseCommand):
                         ic1 = self.__incallref_from_channel(event.get('Channel1'))
                         ic2 = self.__incallref_from_channel(event.get('Channel2'))
                         if ic1 is not None:
-                                print 'UNLINK without Agent', ic1.sdanum, ic1.commid
+                                log_debug(SYSLOG_INFO, 'UNLINK without Agent sda=%s commid=%s' % (ic1.sdanum, ic1.commid))
                                 ic1.set_timestamp_stat('unlink')
                 return
 
@@ -440,30 +466,30 @@ class CallBoosterCommand(BaseCommand):
                         usercalls = thiscall.uinfo['calls']
                         for commid, usercall in usercalls.iteritems():
                                 if commid != thiscall.commid:
-                                        if usercall.call.tocall:
-                                                print 'ParkedCall Attente', commid, usercall.call.parking, usercall.call.parkexten, usercall.call.appelaboute, usercall.call.tocall
-                                                usercall.call.tocall = False
-                                                self.__outcall(usercall.call)
-                                        elif usercall.call.forceacd is not None:
-                                                [uinfo, qname, agchan] = usercall.call.forceacd
+                                        if usercall.tocall:
+                                                print 'ParkedCall Attente', commid, usercall.parking, usercall.parkexten, usercall.appelaboute, usercall.tocall
+                                                usercall.tocall = False
+                                                self.__outcall(usercall)
+                                        elif usercall.forceacd is not None:
+                                                [uinfo, qname, agchan] = usercall.forceacd
                                                 print 'ok for forceacd ...', qname, agchan, uinfo
                                                 uinfo['sendfiche'] = [qname, agchan]
 
-                                                if usercall.call.dialplan['callerid'] == 1:
-                                                        cnum = usercall.call.cidnum
+                                                if usercall.dialplan['callerid'] == 1:
+                                                        cnum = usercall.cidnum
                                                 else:
                                                         cnum = ''
-                                                reply = '%s,%s,%s,Fiche/' % (usercall.call.commid, usercall.call.sdanum, usercall.call.cidnum)
+                                                reply = '%s,%s,%s,Fiche/' % (usercall.commid, usercall.sdanum, usercall.cidnum)
                                                 uinfo['connection'].send(reply)
                                                 
-                                                reply = '%s,%s,,CLR-ACD/' % (usercall.call.commid, usercall.call.sdanum)
+                                                reply = '%s,%s,,CLR-ACD/' % (usercall.commid, usercall.sdanum)
                                                 uinfo['connection'].send(reply)
-                                                usercall.call.forceacd = None
-                                        elif usercall.call.toretrieve is not None:
-                                                print 'usercall.call.toretrieve', usercall.call.toretrieve
-                                                r = self.amis[astid].aoriginate('Agent', usercall.call.uinfo['agentnum'], 'agentname',
-                                                                                usercall.call.toretrieve, 'cid b', 'default')
-                                                usercall.call.toretrieve = None
+                                                usercall.forceacd = None
+                                        elif usercall.toretrieve is not None:
+                                                print 'usercall.toretrieve', usercall.toretrieve
+                                                r = self.amis[astid].aoriginate('Agent', usercall.uinfo['agentnum'], 'agentname',
+                                                                                usercall.toretrieve, 'cid b', 'default')
+                                                usercall.toretrieve = None
                 return
 
 
@@ -520,11 +546,11 @@ class CallBoosterCommand(BaseCommand):
                                 # reply = ',%d,,AppelOpe/' % (-3)
                                 v['connection'].send(reply)
                                 for cnum, xcall in v['calls'].iteritems():
-                                        if xcall.call.tocall:
-                                                print 'an outgoing call is waiting to be sent ...'
+                                        if xcall.tocall:
+                                                log_debug(SYSLOG_INFO, 'an outgoing call is waiting to be sent ...')
                                                 time.sleep(1) # otherwise the Agent's channel is not found
-                                                xcall.call.tocall = False
-                                                self.__outcall(xcall.call)
+                                                xcall.tocall = False
+                                                self.__outcall(xcall)
                 return
 
 
@@ -535,8 +561,8 @@ class CallBoosterCommand(BaseCommand):
                         if 'agentchannel' in v and v['agentnum'] == agentnum:
                                 print v['agentnum'], 'has left', v['calls']
                                 for j, k in v['calls'].iteritems():
-                                        reply = '%s,1,,Annule/' % k.call.commid
-                                        k.call.uinfo['connection'].send(reply)
+                                        reply = '%s,1,,Annule/' % k.commid
+                                        k.uinfo['connection'].send(reply)
                                 # if an outgoing call was there, send an (Annule ?)
                                 del v['agentchannel']
                 return
@@ -563,27 +589,28 @@ class CallBoosterCommand(BaseCommand):
                 cname = parsedcommand.name
                 connid_socket = connid[1]
                 astid = userinfo_by_requester[0]
-                # print 'userinfo_by_requester', userinfo_by_requester
+                log_debug(SYSLOG_INFO, 'manage_srv2clt : %s / %s' % (cname, str(userinfo_by_requester)))
 
                 if len(parsedcommand.args) > 0:
                         agentname = parsedcommand.args[0]
                 else:
                         for agname, v in self.ulist[astid].list.iteritems():
+                                print 'manage_srv2clt', agname, v
                                 if 'connection' in v and v['connection'] == connid_socket:
-                                        agentname = v['user'][3:]
-                userinfo = self.ulist[astid].finduser('sip' + agentname)
+                                        agentname = v['user']
+                userinfo = self.ulist[astid].finduser(agentname)
                 if 'agentnum' in userinfo:
                         agentnum = userinfo['agentnum']
                         agentid = 'Agent/%s' % agentnum
                 else:
                         print '--- no agentnum defined in userinfo'
-                # print '%s : %s (agent %s) attempts a <%s>' % (astid, agentname, agentnum, cname)
                 
                 if cname == 'AppelOpe':
                         if len(parsedcommand.args) == 2:
                                 # the phonenum comes from the first Init/ command, therefore doesn't need
                                 # to be fetched from the 'postes' table
-                                phonenum = userinfo_by_requester[4]
+                                phonenum = userinfo_by_requester[5]
+                                log_debug(SYSLOG_INFO, 'AppelOpe : aoriginate_var for phonenum = %s' % phonenum)
                                 self.amis[astid].aoriginate_var('sip', phonenum, 'Log %s' % phonenum,
                                                                 agentnum, agentname, 'default', 'CB_MES_LOGAGENT', agentname)
                         else:
@@ -598,7 +625,7 @@ class CallBoosterCommand(BaseCommand):
                         mreference = parsedcommand.args[1]
                         [reference, nope, ncol] = mreference.split('|')
                         if reference in userinfo['calls']:
-                                cchan = userinfo['calls'][reference].call.peerchannel
+                                cchan = userinfo['calls'][reference].peerchannel
 
                                 columns = ('N', 'AdrNet')
                                 cursor_agents = self.conn_agents.cursor()
@@ -614,8 +641,9 @@ class CallBoosterCommand(BaseCommand):
                                 cursor_system.query('SELECT ${columns} FROM postes WHERE NET = %s',
                                                     columns,
                                                     addposte)
-                                results = cursor_clients.fetchall()
+                                results = cursor_system.fetchall()
                                 if len(results) > 0:
+                                        print 'TransfertOpe', cchan, addposte, results[0][0]
                                         r = self.amis[astid].transfer(cchan, results[0][0], 'default')
 
                 elif cname == 'ForceACD':
@@ -633,13 +661,12 @@ class CallBoosterCommand(BaseCommand):
                                         # park the current calls
                                         topark = []
                                         for j, calls in userinfo['calls'].iteritems():
-                                                if calls.call.parking is None and calls.call.peerchannel is not None:
-                                                        calls.call.parking = j
+                                                if calls.parking is None and calls.peerchannel is not None:
+                                                        calls.parking = j
                                                         topark.append(j)
-                                                        print '#', calls.call.peerchannel
-                                                        r = self.amis[astid].transfer(calls.call.peerchannel, PARK_EXTEN, 'default')
+                                                        r = self.amis[astid].transfer(calls.peerchannel, PARK_EXTEN, 'default')
 
-                                        userinfo['calls'][calltoforce.commid] = ByAgentChannelStatus('i', calltoforce)
+                                        userinfo['calls'][calltoforce.commid] = calltoforce
                         else:
                                 print 'ForceACD - unknown ref =', reference
 
@@ -654,31 +681,29 @@ class CallBoosterCommand(BaseCommand):
                         socname = self.__socname(idsoc)
                         if socname not in self.conn_clients:
                                 sqluri_clients = '%s/%s_clients' % (self.uribase, socname)
-                                print 'connecting to URI %s - it can take some time' % sqluri_clients
                                 self.conn_clients[socname] = anysql.connect_by_uri(sqluri_clients)
-                                print 'connecting to URI %s - done' % sqluri_clients
 
-                        ostatus = OutgoingCall.OutgoingCall(comm_id_outgoing, astid, self.conn_clients[socname],
+                        outCall = OutgoingCall.OutgoingCall(comm_id_outgoing, astid, self.conn_clients[socname],
                                                             userinfo, agentnum, agentname, dest,
                                                             idsoc, idcli, idcol)
 
                         if len(userinfo['calls']) > 0:
                                 print 'Appel : there are already ongoing calls'
                                 for reference, anycall in userinfo['calls'].iteritems():
-                                        print 'ongoing call', reference, anycall.call.parking, anycall.call.peerchannel
-                                        if anycall.call.parking is None and anycall.call.peerchannel is not None:
-                                                anycall.call.parking = reference
-                                                r = self.amis[astid].transfer(anycall.call.peerchannel, PARK_EXTEN, 'default')
-                                userinfo['calls'][comm_id_outgoing] = ByAgentChannelStatus('o', ostatus)
-                                userinfo['calls'][comm_id_outgoing].call.tocall = True
+                                        print 'ongoing call', reference, anycall.parking, anycall.peerchannel
+                                        if anycall.parking is None and anycall.peerchannel is not None:
+                                                anycall.parking = reference
+                                                r = self.amis[astid].transfer(anycall.peerchannel, PARK_EXTEN, 'default')
+                                userinfo['calls'][comm_id_outgoing] = outCall
+                                userinfo['calls'][comm_id_outgoing].tocall = True
                         else:
                                 if 'agentchannel' in userinfo:
-                                        userinfo['calls'][comm_id_outgoing] = ByAgentChannelStatus('o', ostatus)
-                                        self.__outcall(ostatus)
+                                        userinfo['calls'][comm_id_outgoing] = outCall
+                                        self.__outcall(outCall)
                                 else:
-                                        userinfo['calls'][comm_id_outgoing] = ByAgentChannelStatus('o', ostatus)
-                                        userinfo['calls'][comm_id_outgoing].call.tocall = True
-                                        phonenum = userinfo_by_requester[4]
+                                        userinfo['calls'][comm_id_outgoing] = outCall
+                                        userinfo['calls'][comm_id_outgoing].tocall = True
+                                        phonenum = userinfo_by_requester[5]
                                         self.amis[astid].aoriginate_var('sip', phonenum, 'Log %s' % phonenum,
                                                                         agentnum, agentname, 'default', 'CB_MES_LOGAGENT', agentname)
                                         
@@ -689,15 +714,15 @@ class CallBoosterCommand(BaseCommand):
                             if reference in userinfo['calls']:
                                 # END OF INCOMING OR OUTGOING CALL
                                 anycall = userinfo['calls'][reference]
-                                print 'Raccroche', anycall, anycall.call.appelaboute, anycall.call.parking, anycall.call.parkexten, anycall.call.peerchannel
-                                if anycall.call.peerchannel is None:
+                                print 'Raccroche', anycall, anycall.appelaboute, anycall.parking, anycall.parkexten, anycall.peerchannel
+                                if anycall.peerchannel is None:
                                         self.amis[astid].hangup(agentid, '')
                                 else:
-                                        self.amis[astid].hangup(anycall.call.peerchannel, '')
+                                        self.amis[astid].hangup(anycall.peerchannel, '')
                                 try:
                                         if anycall.dir == 'i':
-                                                self.__update_stat_acd2(anycall.call)
-                                        self.__update_taxes(anycall.call, 'Termine')
+                                                self.__update_stat_acd2(anycall)
+                                        self.__update_taxes(anycall, 'Termine')
                                 except Exception, exc:
                                         print '--- exception --- (Raccroche) :', exc
 
@@ -717,9 +742,9 @@ class CallBoosterCommand(BaseCommand):
                         print 'Aboute', agentname, refcomm_out, refcomm_in
 
                         if refcomm_in in userinfo['calls']:
-                                callbackexten = userinfo['calls'][refcomm_in].call.parkexten
+                                callbackexten = userinfo['calls'][refcomm_in].parkexten
                         if refcomm_out in userinfo['calls']:
-                                chan = userinfo['calls'][refcomm_in].call.peerchannel
+                                chan = userinfo['calls'][refcomm_in].peerchannel
                         if callbackexten is not None:
                                 self.amis[astid].transfer(chan, callbackexten, 'default')
 
@@ -734,19 +759,19 @@ class CallBoosterCommand(BaseCommand):
 
                         if refcomm in userinfo['calls']:
                                 incall = userinfo['calls'][refcomm]
-                                print "AppelAboute", incall.dir, incall.call.peerchannel
-                                incall.call.appelaboute = comm_id_outgoing
-                                incall.call.set_timestamp_stat('appelaboute')
-                                r = self.amis[astid].transfer(incall.call.peerchannel, dest, 'default')
+                                print "AppelAboute", incall.dir, incall.peerchannel
+                                incall.appelaboute = comm_id_outgoing
+                                incall.set_timestamp_stat('appelaboute')
+                                r = self.amis[astid].transfer(incall.peerchannel, dest, 'default')
 
                                 socname = self.__socname(idsoc)
                                 if socname not in self.conn_clients:
                                         sqluri_clients = '%s/%s_clients' % (self.uribase, socname)
                                         self.conn_clients[socname] = anysql.connect_by_uri(sqluri_clients)
-                                ostatus = OutgoingCall.OutgoingCall(comm_id_outgoing, astid, self.conn_clients[socname],
+                                outCall = OutgoingCall.OutgoingCall(comm_id_outgoing, astid, self.conn_clients[socname],
                                                                     userinfo, agentnum, agentname, dest,
                                                                     idsoc, idcli, idcol)
-                                userinfo['calls'][comm_id_outgoing] = ByAgentChannelStatus('o', ostatus)
+                                userinfo['calls'][comm_id_outgoing] = outCall
                                 retval = 1
                                 reply = '%s,%d,%s,Appel/' % (comm_id_outgoing, retval, dest)
                                 connid_socket.send(reply)
@@ -763,15 +788,15 @@ class CallBoosterCommand(BaseCommand):
                         reference = parsedcommand.args[1]
                         if reference in userinfo['calls']:
                                 anycall = userinfo['calls'][reference]
-                                if anycall.call.parking is None:
-                                        if anycall.call.peerchannel is not None:
-                                                anycall.call.parking = reference
-                                                r = self.amis[astid].transfer(anycall.call.peerchannel, PARK_EXTEN, 'default')
+                                if anycall.parking is None:
+                                        if anycall.peerchannel is not None:
+                                                anycall.parking = reference
+                                                r = self.amis[astid].transfer(anycall.peerchannel, PARK_EXTEN, 'default')
                                                 # the reply will be sent when the parkedcall signal is received
                                         else:
                                                 print 'Attente : the agent is not in Attente mode yet but peerchannel is not defined'
                                 else:
-                                        print 'Attente : the agent is already in Attente mode with callref %s' % anycall.call.parking
+                                        print 'Attente : the agent is already in Attente mode with callref %s' % anycall.parking
                         else:
                                 print 'Attente : the requested reference %s does not exist' % reference
 
@@ -780,18 +805,18 @@ class CallBoosterCommand(BaseCommand):
                         reference = parsedcommand.args[1]
                         if reference in userinfo['calls']:
                                 anycall = userinfo['calls'][reference]
-                                if anycall.call.parking is not None:
-                                        callbackexten = anycall.call.parkexten
+                                if anycall.parking is not None:
+                                        callbackexten = anycall.parkexten
                                         if callbackexten is not None:
                                                 topark = []
                                                 for j, calls in userinfo['calls'].iteritems():
-                                                        if calls.call.parking is None and calls.call.peerchannel is not None:
-                                                                calls.call.parking = j
+                                                        if calls.parking is None and calls.peerchannel is not None:
+                                                                calls.parking = j
                                                                 topark.append(j)
-                                                                print '#', calls.call.peerchannel
-                                                                r = self.amis[astid].transfer(calls.call.peerchannel, PARK_EXTEN, 'default')
+                                                                print '#', calls.peerchannel
+                                                                r = self.amis[astid].transfer(calls.peerchannel, PARK_EXTEN, 'default')
                                                 if len(topark) > 0:
-                                                        anycall.call.toretrieve = callbackexten
+                                                        anycall.toretrieve = callbackexten
                                                 else:
                                                         r = self.amis[astid].aoriginate('Agent', agentnum, agentname,
                                                                                         callbackexten, 'cid b', 'default')
@@ -818,7 +843,7 @@ class CallBoosterCommand(BaseCommand):
                         if cname == 'Prêt':
                                 reference = parsedcommand.args[1]
                                 if userinfo['cbstatus'] == 'Pause':
-                                        # XXX send current Indispo's to the user
+                                        # XXX send current Indispo's to the user ?
                                         pass
                                 userinfo['cbstatus'] = 'Pret' + reference
                         elif cname == 'Change': # we must take into account new parameters
@@ -964,7 +989,7 @@ class CallBoosterCommand(BaseCommand):
 
         # updated when it receives a reply from a remote Operat server
         def svreply(self, msg):
-                params = msg.split(chr(3))
+                params = msg.strip(chr(4)).split(chr(3))
                 cmd = params[0]
                 val = params[1]
                 if cmd == 'ACDReponse':
@@ -986,21 +1011,23 @@ class CallBoosterCommand(BaseCommand):
                                                         reply = '%s,%s-%s-%s-%s,%s,FicheD/' % (ic.commid,
                                                                                                ic.sdanum, params[2], params[3], params[4],
                                                                                                cnum)
-                                                        self.pending_sv_fiches.append(reply)
-                                                        self.list_svirt.append(params)
-##                                                        self.amis[astid].queueadd(ic.qname, agname)
-##                                                        self.amis[astid].queuepause(ic.qname, agname, 'false')
+                                                        self.pending_sv_fiches[ic.commid] = reply
                                                 elif val == 'Attente':
-                                                        self.list_svirt.append(params)
+                                                        self.list_svirt[ic.commid] = params
                                                 print 'OperatSock : received reply for :', sdanum, commid, ic, ic.commid, val
+                elif cmd == 'ACDCheckRequest':
+                        if val == '0':
+                                print 'ACDCheckRequest : request not in SV'
+                        elif val == '-1':
+                                print 'ACDCheckRequest : request still in SV'
                 return None
 
 
         # checking if any news from pending requests
         def svcheck(self):
-                for areq in self.list_svirt:
-                        print 'areq =', areq
-                        req = 'ACDCheckRequest' + chr(2) + chr(2).join(areq[:6]) + chr(3)
+                for areq, v in self.list_svirt.iteritems():
+                        req = 'ACDCheckRequest' + chr(2) + chr(2).join(v[2:8]) + chr(3)
+                        print 'areq =', areq, v, req
                         self.soperat_socket.send(req)
                 return
 
@@ -1079,14 +1106,13 @@ class CallBoosterCommand(BaseCommand):
                 self.conn_system.commit()
 
 
-        def __update_stat_acd(self, state,
+        def __update_stat_acd(self, state, t0, in_period,
                               tt_raf, tt_asd, tt_snd, tt_sfa, tt_sop,
                               tt_tel, tt_fic, tt_bas, tt_mes, tt_rep):
                 
-                ntime = int(time.time() / TSLOTTIME) * TSLOTTIME
-                datetime = time.strftime(DATETIMEFMT, time.localtime(ntime))
-                period = 'JOUR'
-                print '__update_stat_acd : datetime = %s (period = %s)' %(datetime, period)
+                datetime = time.strftime(DATETIMEFMT, time.localtime(int(t0 / TSLOTTIME) * TSLOTTIME))
+                period = '_'.join(in_period).strip('_')
+                log_debug(SYSLOG_INFO, '__update_stat_acd : datetime = %s (period = %s)' %(datetime, period))
 
                 try:
                         columns = ('DATE', 'Periode', 'SDA_NC', 'SDA_NV', 'SDA_HDV', 'SDA_V', 'TTraitement',
@@ -1167,11 +1193,11 @@ class CallBoosterCommand(BaseCommand):
                 This is only for incoming calls.
                 """
                 if incall.statdone:
-                        print '__update_stat_acd2 : STAT ALREADY DONE for', incall.commid
+                        log_debug(SYSLOG_INFO, '__update_stat_acd2 : STAT ALREADY DONE for commid <%s>' % incall.commid)
                         return
                 incall.statdone = True
 
-                print '__update_stat_acd2 (END OF INCOMING CALL)', incall.commid
+                log_debug(SYSLOG_INFO, '__update_stat_acd2 (END OF INCOMING CALL) for commid <%s>' % incall.commid)
                 now_t_time = time.localtime()
                 now_f_time = time.strftime(DATETIMEFMT, now_t_time)
                 datetime = time.strftime(DATETIMEFMT, incall.ctime)
@@ -1206,13 +1232,13 @@ class CallBoosterCommand(BaseCommand):
                 sortedtimes.sort()
                 nks = len(sortedtimes)
                 bil = {}
-                isaa = False
+                is_appelaboute = False
                 print '__update_stat_acd2 : history =',
                 for t in xrange(nks - 1):
                         act = incall.stimes[sortedtimes[t]]
                         if act == 'appelaboute':
-                                isaa = True
-                        if act == 'link' and isaa:
+                                is_appelaboute = True
+                        if act == 'link' and is_appelaboute:
                                 act = 'linkaboute'
                         dt = sortedtimes[t+1] - sortedtimes[t]
                         print '(', dt, act, ')',
@@ -1225,13 +1251,10 @@ class CallBoosterCommand(BaseCommand):
                         print '(', act, bil[act], ')',
                 print
                 dtime = sortedtimes[nks - 1] - sortedtimes[0]
-                nslots = int(sortedtimes[nks - 1]/TSLOTTIME) - int(sortedtimes[0]/TSLOTTIME)
-                print '__update_stat_acd2 : history - total time =', dtime, nslots + 1
-                for g in xrange(nslots):
-                        print (g + 1 + int(sortedtimes[0]/TSLOTTIME)) * TSLOTTIME
+                print '__update_stat_acd2 : history - total time =', dtime
                 if incall.uinfo is not None:
                         print '__update_stat_acd2 : uinfo calls', incall.uinfo['calls']
-                        opername = incall.uinfo['user'][3:]
+                        opername = incall.uinfo['user']
                 else:
                         opername = ''
                 
@@ -1286,7 +1309,7 @@ class CallBoosterCommand(BaseCommand):
                                                '"%s"' % incall.socname,
                                                incall.insert_taxes_id))
 
-                        self.__update_stat_acd(state,
+                        self.__update_stat_acd(state, sortedtimes[0], incall.period,
                                                tt_raf, tt_asd, tt_snd, tt_sfa, tt_sop,
                                                tt_tel, tt_fic, tt_bas, tt_mes, tt_rep)
                 except Exception, exc:
@@ -1391,10 +1414,9 @@ class CallBoosterCommand(BaseCommand):
                 mycall = None
                 todo_by_oper = {}
                 todo_by_call = {}
-                for u in xrange(6):
-                        if len(byprio[u]) > 0:
-                                print '__choose : prio %d :' % u
-                                for incall in byprio[u]:
+                for sdaprio in xrange(6):
+                        if len(byprio[sdaprio]) > 0:
+                                for incall in byprio[sdaprio]:
                                         # choose the operator or the list of queues for this incoming call
                                         topush = {}
                                         tochoose = {}
@@ -1403,9 +1425,9 @@ class CallBoosterCommand(BaseCommand):
                                                 if opername not in todo_by_oper:
                                                         todo_by_oper[opername] = []
                                                 opstatus = incall.check_operator_status(opername)
-                                                print '__choose : <%s> (%s)' % (opername, opstatus)
+                                                print '__choose : (SDA prio = %d) <%s> (%s)' % (sdaprio, opername, opstatus)
                                                 if opstatus is not None:
-                                                        userinfo = self.ulist[astid].finduser('sip' + opername)
+                                                        userinfo = self.ulist[astid].finduser(opername)
                                                         if 'connection' in userinfo:
                                                                 userqueuesize = len(userinfo['queuelist'])
                                                                 print '__choose :', opername, userinfo, opstatus, userqueuesize
@@ -1450,15 +1472,13 @@ class CallBoosterCommand(BaseCommand):
                         queuenum = self.__choosequeuenum()
                         print ' NCOMING CALL ## building an IncomingCall structure ##'
                         thiscall = IncomingCall.IncomingCall(self.conn_agents, self.conn_system,
-                                                             cidnum, sdanum, queuenum, self.soperat_socket, self.soperat_port)
+                                                             cidnum, sdanum, queuenum, self.soperat_socket, self.soperat_port, self.opejd, self.opend)
 
                         if thiscall.statacd2_state != 'NC':
                                 socname = thiscall.socname
                                 if socname not in self.conn_clients:
                                         sqluri_clients = '%s/%s_clients' % (self.uribase, socname)
-                                        print 'connecting to URI %s - it can take some time' % sqluri_clients
                                         self.conn_clients[socname] = anysql.connect_by_uri(sqluri_clients)
-                                        print 'connecting to URI %s - done' % sqluri_clients
 
                                 thiscall.setclicolnames(self.conn_clients[socname])
 
@@ -1501,16 +1521,15 @@ class CallBoosterCommand(BaseCommand):
                                 thiscall.waiting = False
                                 # send CLR-ACD to the users who had received an Indispo as concerning this call
                                 self.__clear_call_fromqueues(astid, thiscall)
-##                        elif action == 'sv':
-##                                self.__addtoqueue(astid, opername, thiscall)
                         elif action == 'sec':
                                 thiscall.waiting = True
                                 print 'elect : calling __choose()'
                                 todo = self.__choose(astid)
                                 # once all the queues have been spanned, send the push / queues where needed
+                                argument = 'welcome'
                                 for opername, couplelist in todo.iteritems():
                                         for td in couplelist:
-                                                print 'elect : sec / %s / %s / %s' % (opername, td[0], td[1].sdanum)
+                                                log_debug(SYSLOG_INFO, 'elect : sec / %s / %s / %s' % (opername, td[0], td[1].sdanum))
                                                 if td[0] == 'push':
                                                         if thiscall == td[1]:
                                                                 self.__clear_call_fromqueues(astid, td[1])

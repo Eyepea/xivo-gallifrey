@@ -111,7 +111,7 @@ import sendfiche
 
 # XIVO lib-python modules initialization
 import xivo.to_path
-xivoconffile            = "/etc/asterisk/xivo_daemon.conf"
+xivoconffile            = "/etc/xivo/xivo_fb.conf"
 GETOPT_SHORTOPTS        = 'dc:'
 GETOPT_LONGOPTS         = ["debug", "config="]
 debug_mode = False
@@ -139,9 +139,9 @@ from BackSQL import backsqlite
 import xivo_ami
 import xivo_ldap
 import xivo_commandsets
+import xivo_astcfg
 from xivo_common import *
 from xivo_log import *
-import xivo_astcfg
 
 # the first line would be better, but the second one is useful because of freezing needs
 from CommandSets import *
@@ -160,7 +160,7 @@ allowed_states = ['available', 'away', 'outtolunch', 'donotdisturb', 'berightbac
 #  state :            cf. allowed_states
 # The user identifier will likely be its phone number
 
-PIDFILE = '/tmp/xivo_daemon.pid'
+PIDFILE = '/tmp/xivo_fb.pid'
 # TODO: command line parameter
 
 BUFSIZE_LARGE = 8192
@@ -409,7 +409,7 @@ def manage_login(cfg, requester_ip, requester_port, socket):
         capa_user = []
         ulist[astid].acquire()
         try:
-                userinfo = ulist[astid].finduser(proto + userid)
+                userinfo = ulist[astid].finduser(userid)
                 if userinfo == None:
                         repstr = commandclass.loginko_srv2clt(cfg, 'user_not_found')
                         log_debug(SYSLOG_INFO, "no user found %s" % str(cfg))
@@ -434,11 +434,12 @@ def manage_login(cfg, requester_ip, requester_port, socket):
                                 if u_phonenum is None:
                                         userinfo['phonenum'] = phonenum
                                 userinfo_by_requester[requester_ip + ":" + requester_port] = [userinfo.get('astid'),
-                                                                                              proto + userid,
+                                                                                              proto,
+                                                                                              userid,
                                                                                               userinfo.get('context'),
                                                                                               userinfo.get('capas'),
                                                                                               userinfo.get('phonenum')]
-                                plist[astid].send_availstate_update(proto + userid, state)
+                                plist[astid].send_availstate_update(userid, state)
                         else:
                                 repstr = commandclass.loginko_srv2clt(cfg, reterror)
         finally:
@@ -541,8 +542,9 @@ def manage_tcp_connection(connid, allow_events):
                                 tcpopens_sb.remove(connid)
                                 log_debug(SYSLOG_INFO, "TCP (SB)  socket closed from %s" % requester)
                                 if requester in userinfo_by_requester:
-                                        astid   = userinfo_by_requester[requester][0]
-                                        username = userinfo_by_requester[requester][1]
+                                        astid    = userinfo_by_requester[requester][0]
+                                        tech     = userinfo_by_requester[requester][1]
+                                        username = userinfo_by_requester[requester][2]
                                         ulist[astid].acquire()
                                         try:
                                                 userinfo = ulist[astid].finduser(username)
@@ -675,14 +677,14 @@ def manage_tcp_connection(connid, allow_events):
                         if command.name in commandclass.get_list_commands_clt2srv():
                                 if command.type == xivo_commandsets.CMD_LOGIN:
                                         try:
-                                                cfg = commandclass.get_login_params(command, asterisklist[0])
+                                                cfg = commandclass.get_login_params(asterisklist[0], command, connid[0])
                                                 repstr = manage_login(cfg, requester_ip, requester_port, connid[0])
                                                 connid[0].send(repstr + '\n')
                                         except Exception, exc:
                                                 log_debug(SYSLOG_ERR, '--- exception --- UI connection [%s] : a problem occured when sending to %s : %s'
                                                           %(command.name, requester, str(exc)))
                                 else:
-                                        # log_debug(SYSLOG_INFO, "%s is attempting a %s (TCP) : %s" %(requester, command.name, str(command.args)))
+                                        log_debug(SYSLOG_INFO, "%s is attempting a %s (TCP) : %s" %(requester, command.name, str(command.args)))
                                         try:
                                                 if requester in userinfo_by_requester:
                                                         resp = commandclass.manage_srv2clt(userinfo_by_requester[requester],
@@ -2003,9 +2005,10 @@ class AsteriskUsers:
                 return
 
         def adduser(self, inparams):
-                [user, passwd, context, phonenum, agentnum, isinitialized, cti_allowed] = inparams
+                [tech, user, passwd, context, phonenum, agentnum, isinitialized, cti_allowed] = inparams
                 if self.list.has_key(user):
                         # updates
+                        self.list[user]['tech']     = tech
                         self.list[user]['passwd']   = passwd
                         self.list[user]['context']  = context
                         self.list[user]['phonenum'] = phonenum
@@ -2013,6 +2016,7 @@ class AsteriskUsers:
                         self.list[user]['init']     = isinitialized
                 else:
                         self.list[user] = {'astid'    : self.astid,
+                                           'tech'     : tech,
                                            'user'     : user,
                                            'passwd'   : passwd,
                                            'context'  : context,
@@ -2667,8 +2671,8 @@ while True: # loops over the reloads
                         lastrequest_time[astid] = time.time()
 
                         update_amisocks(astid)
-                        users_to_kick = ulist[astid].todisconnect()
-                        plist[astid].kick(users_to_kick)
+                        # users_to_kick = ulist[astid].todisconnect()
+                        # plist[astid].kick(users_to_kick)
                         update_phonelist(astid)
                 except Exception, exc:
                         log_debug(SYSLOG_ERR, '--- exception --- %s : failed while setting lists and sockets : %s'
@@ -2769,7 +2773,7 @@ while True: # loops over the reloads
                         elif UIsock in i:
                                 [conn, UIsockparams] = UIsock.accept()
                                 log_debug(SYSLOG_INFO, "TCP (SB)  socket opened on   %s:%d" % (UIsockparams[0], UIsockparams[1]))
-                                commandclass.connected_srv2clt(conn, '%s:%d' % (UIsockparams[0], UIsockparams[1]), False)
+                                commandclass.connected_srv2clt(conn, '%s:%d' % (UIsockparams[0], UIsockparams[1]))
                                 # appending the opened socket to the ones watched
                                 ins.append(conn)
                                 conn.setblocking(0)
@@ -2777,7 +2781,7 @@ while True: # loops over the reloads
                         elif UIsock2 in i:
                                 [conn, UIsock2params] = UIsock2.accept()
                                 log_debug(SYSLOG_INFO, "TCP (SB)  socket opened on   %s:%d" % (UIsock2params[0], UIsock2params[1]))
-                                commandclass.connected_srv2clt(conn, '%s:%d' % (UIsock2params[0], UIsock2params[1]), True)
+                                commandclass.connected_srv2clt(conn, '%s:%d' % (UIsock2params[0], UIsock2params[1]))
                                 # appending the opened socket to the ones watched
                                 ins.append(conn)
                                 conn.setblocking(0)
@@ -2827,7 +2831,7 @@ while True: # loops over the reloads
                         # advertising from other xivo_daemon's around
                         elif xdal in i:
                                 [data, addrsip] = xdal.recvfrom(BUFSIZE_UDP)
-                                log_debug(SYSLOG_INFO, 'a xivo_daemon is around : <%s>' % str(addrsip))
+                                log_debug(SYSLOG_INFO, 'a xivo_fb is around : <%s>' % str(addrsip))
                         else:
                                 log_debug(SYSLOG_INFO, "unknown socket <%s>" % str(i))
 
@@ -2839,9 +2843,9 @@ while True: # loops over the reloads
                                                   % (astid, time.strftime("%H:%M:%S", time.localtime())))
                                         try:
                                                 update_amisocks(astid)
-                                                users_to_kick = ulist[astid].todisconnect()
-                                                plist[astid].kick(users_to_kick)
-                                                update_phonelist(astid)
+                                                # users_to_kick = ulist[astid].todisconnect()
+                                                # plist[astid].kick(users_to_kick)
+                                                # update_phonelist(astid)
                                                 ulist[astid].update_services()
                                                 update_userlist[astid] = False
                                         except Exception, exc:
@@ -2856,8 +2860,8 @@ while True: # loops over the reloads
                                 lastrequest_time[astid] = time.time()
                                 try:
                                         update_amisocks(astid)
-                                        users_to_kick = ulist[astid].todisconnect()
-                                        plist[astid].kick(users_to_kick)
+                                        # users_to_kick = ulist[astid].todisconnect()
+                                        # plist[astid].kick(users_to_kick)
                                         # update_phonelist(astid)
                                 except Exception, exc:
                                         log_debug(SYSLOG_ERR, '--- exception --- %s : failed while updating lists and sockets (select s timeout) : %s'

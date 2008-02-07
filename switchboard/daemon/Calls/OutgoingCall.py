@@ -1,7 +1,13 @@
+# $Revision$
+# $Date$
+
+__version__ = "$Revision$ $Date$"
+
 import time
 
 class OutgoingCall:
         def __init__(self, commid, astid, conn_clients, uinfo, agentnum, agentname, dest, nsoc, ncli, ncol):
+                self.dir    = 'o'
                 self.commid = commid
                 self.nsoc   = nsoc
                 self.ncli   = ncli
@@ -14,12 +20,14 @@ class OutgoingCall:
                 self.agentname = agentname
                 self.astid = astid
                 self.uinfo = uinfo
+                
                 self.parking = None
                 self.parkexten = None
                 self.peerchannel = None
                 self.appelaboute = None
                 self.tocall = False
                 self.toretrieve = None
+                
                 self.stimes = {time.time() : 'init'}
                 self.ttimes = {time.time() : 'init'}
 

@@ -73,9 +73,9 @@ class AsteriskConfig:
                 self.capas_i = capas_i
                 self.capafeatures = capafeatures
                 self.cdr_db_uri  = cdr_db_uri
-                print 'connecting to URI %s - it can take some time' % cdr_db_uri
+                # print 'connecting to URI %s - it can take some time' % cdr_db_uri
                 self.cdr_db_conn = anysql.connect_by_uri(cdr_db_uri)
-                print 'connecting to URI %s - done' % cdr_db_uri
+                # print 'connecting to URI %s - done' % cdr_db_uri
                 # charset = 'utf8' : add ?charset=utf8 to the URI
 
                 self.realm = realm
@@ -160,7 +160,7 @@ class AsteriskConfig:
                                                 else:
                                                         argg = ''
                                                 if argg != '':
-                                                        userslist[argg] = [sso_tech + sso_phoneid, sso_passwd, sso_context, sso_phonenum, None,
+                                                        userslist[argg] = [sso_tech, sso_phoneid, sso_passwd, sso_context, sso_phonenum, None,
                                                                            bool(int(isinitialized)), sso_cti_allowed]
                                                         if bool(int(isinitialized)):
                                                                 phonelist[argg] = fullname, firstname, lastname, sso_phonenum, sso_context, bool(int(enable_hint))

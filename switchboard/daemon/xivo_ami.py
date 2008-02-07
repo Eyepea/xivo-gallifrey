@@ -1,8 +1,8 @@
-#!/usr/bin/python
+# $Revision$
 # $Date$
 """
 Asterisk AMI utilities.
-Copyright (C) 2007, Proformatique
+Copyright (C) 2007, 2008, Proformatique
 """
 
 __version__ = "$Revision$ $Date$"
@@ -205,6 +205,7 @@ class AMIClass:
                 # originate a call btw src and dst
                 # src will ring first, and dst will ring when src responds
                 try:
+                        print 'AOriginate', phoneproto, phonesrc, cidnamesrc, phonedst, cidnamedst, locext
                         ret = self.sendcommand('AOriginate', [('Channel', phoneproto + '/' + phonesrc),
                                                               ('Exten', phonedst),
                                                               ('Context', locext),
@@ -226,6 +227,7 @@ class AMIClass:
                 # originate a call btw src and dst
                 # src will ring first, and dst will ring when src responds
                 try:
+                        print 'AOriginate_var', phoneproto, phonesrc, cidnamesrc, phonedst, cidnamedst, locext
                         ret = self.sendcommand('AOriginate', [('Channel', phoneproto + '/' + phonesrc),
                                                              ('Exten', phonedst),
                                                              ('Context', locext),
