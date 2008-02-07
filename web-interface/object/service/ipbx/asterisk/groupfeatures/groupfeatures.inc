@@ -98,8 +98,7 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 	{
 		if(($id = xivo_ulongint($id)) === 0 || is_array($arr) === false)
 			return(false);
-
-		if(isset($arr['name']) === true)
+		else if(isset($arr['name']) === true)
 		{
 			$arr['name'] = strtolower($arr['name']);
 			$where = array('name' => $arr['name']);

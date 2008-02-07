@@ -97,8 +97,7 @@ class xivo_application_service_asterisk_accessfeatures extends xivo_application_
 		{
 			if(($this->_return[] = $this->_accessfeatures->add($rs[$i])) !== false)
 				continue;
-
-			if($this->_status === 'add')
+			else if($this->_status === 'add')
 				$this->_reverse_add();
 			else if($this->_status === 'edit' || $this->_status === 'save')
 				$this->_reverse_edit();

@@ -48,7 +48,7 @@ class xivo_curl
 
 	function _chk_scheme($scheme)
 	{
-		$scheme = strtolower((string) $scheme);
+		$scheme = strtolower($scheme);
 
 		switch($scheme)
 		{
@@ -151,10 +151,9 @@ class xivo_curl
 		return(false);
 	}
 
-	function _chk_option($option,$value=null)
+	function _chk_option($option)
 	{
-		if(is_string($option) === true)
-			$option = strtolower($option);
+		$option = strtolower($option);
 
 		switch($option)
 		{
@@ -560,17 +559,12 @@ class xivo_curl
 
 	function get_info($info=null)
 	{
-		$r = false;
-
 		if(is_resource($this->_link) === false || ($info = $this->_chk_info($info)) === false)
 			return(false);
+		else if($info === null)
+			return(curl_getinfo($this->_link));
 
-		if($info === null)
-			$r = curl_getinfo($this->_link);
-		else
-			$r = curl_getinfo($this->_link,$info);
-
-		return($r);
+		return(curl_getinfo($this->_link,$info));
 	}
 
 	function set_option($option,$value)

@@ -48,8 +48,7 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 	{
 		if(is_array($where) === false)
 			return(false);
-
-		if(isset($where['exten']) === true)
+		else if(isset($where['exten']) === true)
 			$where['exten'] = $this->_sre->clean_extension($where['exten']);
 
 		return(parent::get_element_where($where));
@@ -123,8 +122,7 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 	{
 		if(is_array($arr) === false)
 			return(false);
-
-		if(isset($arr['exten']) === true)
+		else if(isset($arr['exten']) === true)
 			$arr['exten'] = $this->_sre->clean_extension($arr['exten']);
 
 		return(parent::edit_where($id,$arr,$disable));
@@ -153,8 +151,7 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 
 		if(($r = $this->chk_exten($app,$arr,$exten,$context)) === false)
 			return(false);
-
-		if(isset($r['priority']) === false)
+		else if(isset($r['priority']) === false)
 			$r['priority'] = count($this->_exten[$id]);
 
 		$this->_exten[$id][] = $r;
@@ -248,8 +245,7 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 
 		if(isset($r[0]) === false)
 			return(false);
-
-		if($ret === false)
+		else if($ret === false)
 		{
 			for($j = 0;$j < $i;$j++)
 				$this->delete($r[$j]);
@@ -337,8 +333,7 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 	{
 		if(is_array($arr) === false)
 			return(false);
-
-		if(isset($arr['priority']) === false)
+		else if(isset($arr['priority']) === false)
 			$arr['priority'] = 1;
 		else
 			$arr['priority'] = xivo_uint($arr['priority'],1);
@@ -426,7 +421,6 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 	function get_all_by_name_context($arr=array(),$disable=null,$display=false)
 	{
 		$arr = (array) $arr;
-		$display = (bool) $display;
 
 		if(isset($arr['name'],$arr['context']) === false
 		|| ($list = $this->get_all_where($arr,$disable)) === false)
@@ -435,10 +429,10 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 		$r = array();
 		$r['name'] = $list[0]['name'];
 
-		if($display === true)
-			$r['exten'] = $this->_sre->display_extension($list[0]['exten']);
-		else
+		if((bool) $display === false)
 			$r['exten'] = $list[0]['exten'];
+		else
+			$r['exten'] = $this->_sre->display_extension($list[0]['exten']);
 
 		$r['context'] = $list[0]['context'];
 		$r['commented'] = $list[0]['commented'];

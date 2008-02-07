@@ -102,8 +102,7 @@ class xivo_application_service_asterisk_realstatic_features_general extends xivo
 
 		if(is_array($arr) === false || isset($arr['var_name']) === false)
 			return(false);
-
-		if($this->_chk_exists_cfg('exten',$arr['var_name']) === true)
+		else if($this->_chk_exists_cfg('exten',$arr['var_name']) === true)
 		{
 			$number = (string) $this->get_result_var($this->_name,'var_val');
 			$context = '';
@@ -111,20 +110,14 @@ class xivo_application_service_asterisk_realstatic_features_general extends xivo
 			$this->set_extenumbers('save','generalfeatures',$number,$context);
 		}
 
-		if($this->get_errnb() > 0)
-			$r = false;
-		else
-			$r = true;
-
-		return($r);
+		return(($this->get_errnb() < 1));
 	}
 
 	function set_realstatic($arr)
 	{
 		if(parent::set_realstatic($arr) === false)
 			return(false);
-
-		if(($value = $this->get_result_var($this->_name,'var_val')) === null)
+		else if(($value = $this->get_result_var($this->_name,'var_val')) === null)
 			$value = $arr['var_val'];
 
 		if($this->_chk_exists_cfg('sound',$arr['var_name']) === true

@@ -87,8 +87,7 @@ class xivo_service_asterisk_schedule extends xivo_service_asterisk_abstract
 	{
 		if(is_array($arr) === false)
 			return(false);
-
-		if(isset($arr['timebeg'],$arr['timeend']) === true
+		else if(isset($arr['timebeg'],$arr['timeend']) === true
 		&& $arr['timebeg'] === $arr['timeend'])
 			$arr['timeend'] = null;
 
@@ -120,8 +119,7 @@ class xivo_service_asterisk_schedule extends xivo_service_asterisk_abstract
 	{
 		if(is_array($arr) === false)
 			return(false);
-
-		if(isset($arr['timebeg'],$arr['timeend']) === true
+		else if(isset($arr['timebeg'],$arr['timeend']) === true
 		&& $arr['timebeg'] === $arr['timeend'])
 			$arr['timeend'] = null;
 
@@ -208,8 +206,7 @@ class xivo_service_asterisk_schedule extends xivo_service_asterisk_abstract
 	{
 		if(is_array($arr) === false)
 			return(false);
-
-		if(isset($arr['daynamebeg']) === false
+		else if(isset($arr['daynamebeg']) === false
 		|| $arr['daynamebeg'] === ''
 		|| $arr['daynamebeg'] === '*')
 		{
@@ -244,8 +241,7 @@ class xivo_service_asterisk_schedule extends xivo_service_asterisk_abstract
 
 		if($leapdbeg !== $leapdate && $normdbeg !== $normdate)
 			return(false);
-
-		if($arr['daynumend'] === null || $arr['monthend'] === null)
+		else if($arr['daynumend'] === null || $arr['monthend'] === null)
 			return($arr);
 
 		$leapdend = strtolower($arr['daynumend'].'-'.$arr['monthend'].'-2000');
@@ -298,8 +294,7 @@ class xivo_service_asterisk_schedule extends xivo_service_asterisk_abstract
 		if(($list = $this->_dso->get_all_except($id,$disable,$order,$limit)) === false
 		|| isset($list[0]) === false)
 			return(false);
-
-		if(isset($this->_origin_list) === true)
+		else if(isset($this->_origin_list) === true)
 			$this->_origin_list = $list;
 
 		if($prepare === false && $assoc === false)

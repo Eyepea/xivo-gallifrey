@@ -79,8 +79,7 @@ class xivo_socket
 
 	function _chk_option($func,$option)
 	{
-		if(is_string($option) === true)
-			$option = strtolower($option);
+		$option = strtolower($option);
 
 		switch($option)
 		{
@@ -127,22 +126,21 @@ class xivo_socket
 			case SO_TYPE:
 				if($func !== 'get')
 					return(false);
-				else
-					return(SO_TYPE);
+
+				return(SO_TYPE);
 			case 'error':
 			case SO_ERROR:
 				if($func !== 'get')
 					return(false);
-				else
-					return(SO_ERROR);
+
+				return(SO_ERROR);
 		}
 		return(false);
 	}
 
 	function _chk_domain($domain)
 	{
-		if(is_string($domain) === true)
-			$domain = strtolower($domain);
+		$domain = strtolower($domain);
 
 		switch($domain)
 		{
@@ -158,8 +156,7 @@ class xivo_socket
 
 	function _chk_type($type)
 	{
-		if(is_string($type) === true)
-			$type = strtolower($type);
+		$type = strtolower($type);
 
 		switch($type)
 		{
@@ -184,8 +181,7 @@ class xivo_socket
 
 	function _chk_protocol($protocol)
 	{
-		if(is_string($protocol) === true)
-			$protocol = strtolower($protocol);
+		$protocol = strtolower($protocol);
 
 		switch($protocol)
 		{

@@ -37,8 +37,7 @@ class xivo_service_asterisk_handynumbers extends xivo_service_asterisk_abstract
 	{
 		if(is_array($arr) === false)
 			return(false);
-
-		if(xivo_haslen($arr,'exten') === true)
+		else if(xivo_haslen($arr,'exten') === true)
 			$arr['exten'] = $this->_sre->clean_extension($arr['exten']);
 
 		return(parent::add($arr,$id));
@@ -48,8 +47,7 @@ class xivo_service_asterisk_handynumbers extends xivo_service_asterisk_abstract
 	{
 		if(is_array($arr) === false)
 			return(false);
-
-		if(xivo_haslen($arr,'exten') === true)
+		else if(xivo_haslen($arr,'exten') === true)
 			$arr['exten'] = $this->_sre->clean_extension($arr['exten']);
 
 		return(parent::edit($id,$arr,$disable));

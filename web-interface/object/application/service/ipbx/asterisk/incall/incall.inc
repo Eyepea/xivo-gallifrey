@@ -19,8 +19,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		|| ($this->_extenumbers = &$this->get_abstract('extenumbers')) === false
 		|| ($this->_extensions = &$this->_service->get_module('extensions')) === false)
 			return(false);
-
-		if((bool) $components === true)
+		else if((bool) $components === true)
 			$this->load_components();
 
 		return(true);
@@ -113,7 +112,6 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 	function _get_incalls($action,$search=null,$disable=null,$order=null,$limit=null,$assoc=false)
 	{
 		$action = (string) $action;
-		$assoc = (bool) $assoc;
 
 		switch($action)
 		{
@@ -150,7 +148,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 
 		if(empty($r) === true)
 			$r = false;
-		else if($assoc === false)
+		else if((bool) $assoc === false)
 			$r = array_values($r);
 
 		return($r);
@@ -219,12 +217,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		if(xivo_issa('rightcall',$arr) === true)
 			$this->set_rightcall($arr['rightcall']);
 
-		if($this->get_errnb() > 0)
-			$r = false;
-		else
-			$r = true;
-
-		return($r);
+		return(($this->get_errnb() < 1));
 	}
 
 	function set_incall($arr)
@@ -575,12 +568,9 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 
 	function _enable_disable_incall($disable=false)
 	{
-		$disable = (bool) $disable;
-
 		if(xivo_issa('incall',$this->_info) === false)
 			return(false);
-
-		if($disable === false)
+		else if((bool) $disable === false)
 			$r = $this->_incall->enable($this->_info['incall']['id']);
 		else
 			$r = $this->_incall->disable($this->_info['incall']['id']);
@@ -603,8 +593,6 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 
 	function _enable_disable_exten($disable=false)
 	{
-		$disable = (bool) $disable;
-
 		if(xivo_issa('incall',$this->_info) === false)
 			return(false);
 
@@ -612,7 +600,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		$exten_where['exten'] = $this->_info['incall']['exten'];
 		$exten_where['context'] = $this->_info['incall']['context'];
 
-		if($disable === false)
+		if((bool) $disable === false)
 			$r = $this->_extensions->enable_where($exten_where);
 		else
 			$r = $this->_extensions->disable_where($exten_where);

@@ -39,8 +39,7 @@ do
 
 	if($edit === false || $trunkcustom->edit($info['trunk']['id'],$result['trunk']) === false)
 		break;
-
-	if($tfeatures->edit($info['tfeatures']['id'],$result['tfeatures']) === false)
+	else if($tfeatures->edit($info['tfeatures']['id'],$result['tfeatures']) === false)
 	{
 		$trunkcustom->edit_origin();
 		break;

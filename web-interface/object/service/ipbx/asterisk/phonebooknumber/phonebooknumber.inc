@@ -26,8 +26,6 @@ class xivo_service_asterisk_phonebooknumber extends xivo_service_asterisk_abstra
 
 	function get_all_type_by_phonebook($phonebookid,$prepare=true)
 	{
-		$prepare = (bool) $prepare;
-
 		if(($phonebookid = xivo_ulongint($phonebookid)) === 0)
 			return(false);
 
@@ -41,7 +39,7 @@ class xivo_service_asterisk_phonebooknumber extends xivo_service_asterisk_abstra
 
 		$r = array();
 
-		if($prepare === true)
+		if((bool) $prepare === true)
 		{
 			for($i = 0;$i < $nb;$i++)
 			{

@@ -73,8 +73,7 @@ do
 
 	if($add === false || ($trunkid = $trunkiax->add($result['trunk'])) === false)
 		break;
-
-	if($register !== '' && ($registerid = $generaliax->add_name_val('register',$register)) === false)
+	else if($register !== '' && ($registerid = $generaliax->add_name_val('register',$register)) === false)
 		$registerid = 0;
 
 	$result['tfeatures']['registerid'] = $registerid;

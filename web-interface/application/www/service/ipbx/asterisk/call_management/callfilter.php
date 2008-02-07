@@ -18,12 +18,8 @@ switch($act)
 		$secretary['slt'] = $secretary = array();
 		$secretary['list'] = $appcallfilter->get_secretary_users(null,true);
 
-		do
+		if(isset($_QR['fm_send']) === true && xivo_issa('callfilter',$_QR) === true)
 		{
-			if(isset($_QR['fm_send']) === false
-			|| xivo_issa('callfilter',$_QR) === false)
-				break;
-
 			if($appcallfilter->set_add($_QR) === false
 			|| $appcallfilter->add() === false)
 			{
@@ -33,12 +29,10 @@ switch($act)
 					$callfiltermember = &$result['callfiltermember'];
 
 				$result['dialstatus'] = $appcallfilter->get_dialstatus_result();
-				break;
 			}
-
-			$_QRY->go($_HTML->url('service/ipbx/call_management/callfilter'),$param);
+			else
+				$_QRY->go($_HTML->url('service/ipbx/call_management/callfilter'),$param);
 		}
-		while(false);
 
 		if($secretary['list'] !== false && xivo_issa('secretary',$callfiltermember) === true)
 		{
@@ -80,12 +74,8 @@ switch($act)
 		$secretary['slt'] = $secretary = array();
 		$secretary['list'] = $appcallfilter->get_secretary_users(null,true);
 
-		do
+		if(isset($_QR['fm_send']) === true && xivo_issa('callfilter',$_QR) === true)
 		{
-			if(isset($_QR['fm_send']) === false
-			|| xivo_issa('callfilter',$_QR) === false)
-				break;
-
 			$return = &$result;
 
 			if($appcallfilter->set_edit($_QR) === false
@@ -93,12 +83,10 @@ switch($act)
 			{
 				$result = $appcallfilter->get_result();
 				$result['dialstatus'] = $appcallfilter->get_dialstatus_result();
-				break;
 			}
-
-			$_QRY->go($_HTML->url('service/ipbx/call_management/callfilter'),$param);
+			else
+				$_QRY->go($_HTML->url('service/ipbx/call_management/callfilter'),$param);
 		}
-		while(false);
 
 		if(xivo_issa('callfiltermember',$return) === true)
 			$callfiltermember = &$return['callfiltermember'];
@@ -156,10 +144,8 @@ switch($act)
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			if($appcallfilter->get($values[$i]) === false)
-				continue;
-
-			$appcallfilter->delete();
+			if($appcallfilter->get($values[$i]) !== false)
+				$appcallfilter->delete();
 		}
 
 		$_QRY->go($_HTML->url('service/ipbx/call_management/callfilter'),$param);
@@ -179,8 +165,7 @@ switch($act)
 		{
 			if($appcallfilter->get($values[$i]) === false)
 				continue;
-
-			if($act === 'disables')
+			else if($act === 'disables')
 				$appcallfilter->disable();
 			else
 				$appcallfilter->enable();

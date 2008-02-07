@@ -60,8 +60,7 @@ class xivo_service_asterisk_agentgroup_sql extends xivo_service_asterisk_abstrac
 	{
 		if(is_array($arr) === false)
 			return(false);
-
-		if(array_key_exists('deleted',$arr) === true)
+		else if(array_key_exists('deleted',$arr) === true)
 			$arr['deleted'] = intval((bool) $arr['deleted']);
 
 		return(parent::add($arr,$insertid));
@@ -100,8 +99,7 @@ class xivo_service_asterisk_agentgroup_sql extends xivo_service_asterisk_abstrac
 
 		if(is_array($arr) === false || empty($arr) === true)
 			return(false);
-
-		if($delete !== null)
+		else if($delete !== null)
 			$arr['deleted'] = intval((bool) $delete);
 
 		return(parent::get_list_where($arr,$disable,$order,$limit));
@@ -126,8 +124,7 @@ class xivo_service_asterisk_agentgroup_sql extends xivo_service_asterisk_abstrac
 
 		if(is_array($arr) === false || empty($arr) === true)
 			return(false);
-
-		if($delete !== null)
+		else if($delete !== null)
 			$arr['deleted'] = intval((bool) $delete);
 
 		return(parent::get_list_where($arr,$disable,$order,$limit,true));

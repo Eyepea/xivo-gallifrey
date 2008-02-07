@@ -40,23 +40,16 @@ switch($act)
 		if(($agent['list'] = $ipbx->get_agents_list(null,null,true)) !== false)
 			uasort($agent['list'],array(&$agentsort,'str_usort'));
 
-		do
+		if(isset($_QR['fm_send']) === true
+		&& xivo_issa('qfeatures',$_QR) === true
+		&& xivo_issa('queue',$_QR) === true)
 		{
-			if(isset($_QR['fm_send']) === false
-			|| xivo_issa('qfeatures',$_QR) === false
-			|| xivo_issa('queue',$_QR) === false)
-				break;
-
 			if($appqueue->set_add($_QR) === false
 			|| $appqueue->add() === false)
-			{
 				$result = $appqueue->get_result();
-				break;
-			}
-
-			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/queues'),$param);
+			else
+				$_QRY->go($_HTML->url('service/ipbx/pbx_settings/queues'),$param);
 		}
-		while(false);
 
 		if($user['list'] !== false && xivo_ak('user',$result) === true)
 		{
@@ -138,25 +131,18 @@ switch($act)
 		if(($agent['list'] = $ipbx->get_agents_list(null,null,true)) !== false)
 			uasort($agent['list'],array(&$agentsort,'str_usort'));
 
-		do
+		if(isset($_QR['fm_send']) === true
+		&& xivo_issa('qfeatures',$_QR) === true
+		&& xivo_issa('queue',$_QR) === true)
 		{
-			if(isset($_QR['fm_send']) === false
-			|| xivo_issa('qfeatures',$_QR) === false
-			|| xivo_issa('queue',$_QR) === false)
-					break;
-
 			$return = &$result;
 
 			if($appqueue->set_edit($_QR) === false
 			|| $appqueue->edit() === false)
-			{
 				$result = $appqueue->get_result();
-				break;
-			}
-
-			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/queues'),$param);
+			else
+				$_QRY->go($_HTML->url('service/ipbx/pbx_settings/queues'),$param);
 		}
-		while(false);
 
 		if($user['list'] !== false && xivo_ak('user',$return) === true)
 		{
@@ -229,10 +215,8 @@ switch($act)
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			if($appqueue->get($values[$i]) === false)
-				continue;
-
-			$appqueue->delete();
+			if($appqueue->get($values[$i]) !== false)
+				$appqueue->delete();
 		}
 
 		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/queues'),$param);
@@ -253,10 +237,8 @@ switch($act)
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			if(($info = $qfeatures->get($values[$i])) === false)
-				continue;
-
-			$queue->disable($info['name'],$disable);
+			if(($info = $qfeatures->get($values[$i])) !== false)
+				$queue->disable($info['name'],$disable);
 		}
 
 		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/queues'),$param);

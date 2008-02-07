@@ -82,11 +82,8 @@ class xivo_service_asterisk_sounds extends xivo_service_asterisk_abstract
 
 	function _chk_file($name,$dir,$exists=false)
 	{
-		$r = false;
-
 		$name = strval($name);
 		$dir = strval($dir);
-		$exists = (bool) $exists;
 
 		if(($extensions = $this->_get_option_file_extension()) === false
 		|| ($match_dir = $this->_get_option_dir_name()) === false
@@ -94,30 +91,25 @@ class xivo_service_asterisk_sounds extends xivo_service_asterisk_abstract
 		|| ($match_file = $this->_get_option_file_name()) === false
 		|| preg_match($match_file,$name) !== 1
 		|| ($pos = strrpos($name,'.')) === false)
-			return($r);
+			return(false);
 
 		$ext = strtolower(substr($name,$pos + 1));
 
 		if(in_array($ext,$extensions) === false)
-			return($r);
+			return(false);
+		else if((bool) $exists === false)
+			return(true);
 
-		if($exists === true)
-			$r = xivo_file::is_f($this->_sndpath.XIVO_SEP_DIR.$dir.XIVO_SEP_DIR.$name);
-		else
-			$r = true;
-
-		return($r);
+		return(xivo_file::is_f($this->_sndpath.XIVO_SEP_DIR.$dir.XIVO_SEP_DIR.$name));
 	}
 
 	function get($name,$dir)
 	{
-		$r = false;
-
 		$name = strval($name);
 		$dir = strval($dir);
 
 		if(($file = $this->_chk_file($name,$dir,true)) === false)
-			return($r);
+			return(false);
 
 		$r = pathinfo($file);
 		$r['path'] = $file;
@@ -156,8 +148,7 @@ class xivo_service_asterisk_sounds extends xivo_service_asterisk_abstract
 
 		if($file === $newfile)
 			return(true);
-
-		if(xivo_file::is_f($file) === false
+		else if(xivo_file::is_f($file) === false
 		|| xivo_file::is_f($newfile) !== false
 		|| xivo_file::is_d_rwx($this->_sndpath) === false
 		|| rename($file,$newfile) === false)
@@ -182,16 +173,12 @@ class xivo_service_asterisk_sounds extends xivo_service_asterisk_abstract
 
 	function get_dir($name,$getpath=false,$getfull=false)
 	{
-		$r = false;
-
 		$name = strval($name);
 
 		if(($match_dir = $this->_get_option_dir_name()) === false
-		|| preg_match($match_dir,$name) !== 1)
-			return($r);
-
-		if(($path = xivo_file::is_d_rwx($this->_sndpath.XIVO_SEP_DIR.$name)) === false)
-			return($r);
+		|| preg_match($match_dir,$name) !== 1
+		|| ($path = xivo_file::is_d_rwx($this->_sndpath.XIVO_SEP_DIR.$name)) === false)
+			return(false);
 
 		$r = array();
 		$r['dirname'] = $name;
@@ -208,8 +195,6 @@ class xivo_service_asterisk_sounds extends xivo_service_asterisk_abstract
 
 	function add_dir($name)
 	{
-		$r = false;
-
 		$name = (string) $name;
 
 		$dir = $this->_sndpath.XIVO_SEP_DIR.$name;
@@ -218,46 +203,39 @@ class xivo_service_asterisk_sounds extends xivo_service_asterisk_abstract
 		|| preg_match($match_dir,$name) !== 1
 		|| xivo_file::is_d_rwx($this->_sndpath) === false
 		|| xivo_file::is_d($dir) !== false) 
-			return($r);
+			return(false);
 
-		$r = mkdir($dir);
-
-		return($r);
+		return(mkdir($dir));
 	}
 
 	function edit_dir($name,$newname)
 	{
-		$r = false;
-
 		$name = (string) $name;
 		$newname = (string) $newname;
 
 		$dir = $this->_sndpath.XIVO_SEP_DIR.$name;
+		$newdir = $this->_sndpath.XIVO_SEP_DIR.$newname;
 
 		if(($match_dir = $this->_get_option_dir_name()) === false
 		|| preg_match($match_dir,$newname) !== 1
 		|| xivo_file::is_d_rwx($this->_sndpath) === false
 		|| xivo_file::is_d($dir) === false)
-			return($r);
-
-		if($name === $newname)
+			return(false);
+		else if($name === $newname)
 			return(true);
+		else if(xivo_file::is_d($newdir) !== false)
+			return(false);
 
-		$r = rename($this->_sndpath.XIVO_SEP_DIR.$name,$this->_sndpath.XIVO_SEP_DIR.$newname);
-
-		return($r);
+		return(rename($dir,$newdir));
 	}
 
 	function delete_dir($name)
 	{
-		$r = false;
-
 		$name = (string) $name;
 
 		if(($info = $this->get_dir($name)) === false)
-			return($r);
-
-		if($info['files'] === false)
+			return(false);
+		else if($info['files'] === false)
 			return(rmdir($this->_sndpath.XIVO_SEP_DIR.$name));
 
 		$r = true;
@@ -280,13 +258,11 @@ class xivo_service_asterisk_sounds extends xivo_service_asterisk_abstract
 	function get_list($dir='',$getpath=false,$getfull=false)
 	{
 		$dir = (string) $dir;
-		$getpath = (bool) $getpath;
 		$getfull = (bool) $getfull;
 
 		if(($match_file = $this->_get_option_file_name()) === false)
 			return(false);
-
-		if($dir !== '')
+		else if($dir !== '')
 		{
 			if(($dirs = $this->get_list_dirs()) === false || in_array($dir,$dirs) === false)
 				return(false);
@@ -301,7 +277,7 @@ class xivo_service_asterisk_sounds extends xivo_service_asterisk_abstract
 		if($r !== false && isset($r[0]) === false)
 			$r = false;
 
-		if($r === false || $getpath === false)
+		if($r === false || (bool) $getpath === false)
 			return($r);
 
 		$arr = array();
@@ -350,10 +326,8 @@ class xivo_service_asterisk_sounds extends xivo_service_asterisk_abstract
 		{
 			$name = &$list[$i];
 
-			if(($info = $this->get_dir($name)) === false)
-				continue;
-
-			$r[] = $info;
+			if(($info = $this->get_dir($name)) !== false)
+				$r[] = $info;
 		}
 
 		return($r);

@@ -144,8 +144,6 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 
 	function get_groups_list($disable=null,$order=null,$limit=null,$assoc=false)
 	{
-		$assoc = (bool) $assoc;
-
 		if(($rs = $this->_groupfeatures->get_all(false,true,$order,$limit)) === false
 		|| ($nb = count($rs)) === 0)
 		{
@@ -174,7 +172,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 
 		if(empty($r) === true)
 			$r = false;
-		else if($assoc === false)
+		else if((bool) $assoc === false)
 			$r = array_values($r);
 
 		return($r);
@@ -248,12 +246,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		if(xivo_issa('dialstatus',$arr) === true)
 			$this->set_dialstatus($arr['dialstatus']);
 
-		if($this->get_errnb() > 0)
-			$r = false;
-		else
-			$r = true;
-
-		return($r);
+		return(($this->get_errnb() < 1));
 	}
 
 	function set_groupfeatures($arr)
@@ -928,8 +921,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 	{
 		if(xivo_issa('user',$this->_info) === false)
 			return(null);
-
-		if(xivo_issa('gfeatures',$this->_info) === false
+		else if(xivo_issa('gfeatures',$this->_info) === false
 		|| is_scalar($name) === false
 		|| $this->_queuemember === false)
 			return(false);

@@ -20,8 +20,7 @@ class xivo_gatearray
 
 		if(is_array($array) === false || $name === '')
 			return(false);
-
-		if(isset($this->_array[$name]) === false)
+		else if(isset($this->_array[$name]) === false)
 			$this->_array[$name] = &$array;
 
 		return(true);
@@ -71,12 +70,10 @@ class xivo_gatearray
 			$path = implode(DIRECTORY_SEPARATOR,$path);
 
 		$path = (string) $path.'.inc';
-		$once = (bool) $once;
 
 		if(xivo_file::is_i($path) === false)
 			return(false);
-
-		if($once === false)
+		else if((bool) $once === false)
 			require($path);
 		else
 			require_once($path);

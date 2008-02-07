@@ -198,8 +198,6 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 
 	function get_secretary_users($disable=null,$assoc=false)
 	{
-		$assoc = (bool) $assoc;
-
 		$order = array();
 		$order['firstname'] = SORT_ASC;
 		$order['lastname'] = SORT_ASC;
@@ -210,7 +208,7 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 
 		$r = array();
 
-		if($assoc === true)
+		if((bool) $assoc === true)
 		{
 			for($i = 0;$i < $nb;$i++)
 				$r[$rs[$i]['id']] = $this->_userfeatures->_prepare($rs[$i]);
@@ -240,8 +238,6 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 
 	function get_callfilters_list($disable=null,$order=null,$limit=null,$assoc=false)
 	{
-		$assoc = (bool) $assoc;
-
 		$this->_cnt = $this->_dso->get_cnt();
 
 		$rs = $this->_dso->get_all($this->_param['type'],$disable,$order,$limit);
@@ -263,10 +259,7 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 			}
 			else
 			{
-				if((bool) $ref['linked'] === false)
-					$ref['linked'] = false;
-				else
-					$ref['linked'] = true;
+				$ref['linked'] = (bool) $ref['linked'];
 
 				$member = array();
 				$member['context'] = $ref['member_context'];
@@ -281,7 +274,7 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 
 		if(empty($r) === true)
 			$r = false;
-		else if($assoc === false)
+		else if((bool) $assoc === false)
 			$r = array_values($r);
 
 		return($r);
@@ -338,12 +331,7 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 		if(xivo_issa('dialstatus',$arr) === true)
 			$this->set_dialstatus($arr['dialstatus']);
 
-		if($this->get_errnb() > 0)
-			$r = false;
-		else
-			$r = true;
-
-		return($r);
+		return(($this->get_errnb() < 1));
 	}
 
 	function set_callfilter($arr)
@@ -955,11 +943,9 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 
 	function _enable_disable_callfilter($disable=false)
 	{
-		$disable = (bool) $disable;
-
 		if(xivo_issa('callfilter',$this->_info) === false)
 			return(false);
-		else if($disable === false)
+		else if((bool) $disable === false)
 			$r = $this->_callfilter->enable($this->_info['callfilter']['id']);
 		else
 			$r = $this->_callfilter->disable($this->_info['callfilter']['id']);

@@ -17,21 +17,14 @@ switch($act)
 	case 'add':
 		$result = null;
 
-		do
+		if(isset($_QR['fm_send']) === true && xivo_issa('phonebook',$_QR) === true)
 		{
-			if(isset($_QR['fm_send']) === false || xivo_issa('phonebook',$_QR) === false)
-				break;
-
 			if($appphonebook->set_add($_QR) === false
 			|| $appphonebook->add() === false)
-			{
 				$result = $appphonebook->get_result();
-				break;
-			}
-
-			$_QRY->go($_HTML->url('service/ipbx/pbx_services/phonebook'),$param);
+			else
+				$_QRY->go($_HTML->url('service/ipbx/pbx_services/phonebook'),$param);
 		}
-		while(false);
 
 		if(xivo_issa('phonebook',$result) === false || empty($result['phonebook']) === true)
 			$result['phonebook'] = null;
@@ -58,23 +51,16 @@ switch($act)
 		$result = null;
 		$return = &$info;
 
-		do
+		if(isset($_QR['fm_send']) === true && xivo_issa('phonebook',$_QR) === true)
 		{
-			if(isset($_QR['fm_send']) === false || xivo_issa('phonebook',$_QR) === false)
-				break;
-
 			$return = &$result;
 
 			if($appphonebook->set_edit($_QR) === false
 			|| $appphonebook->edit() === false)
-			{
 				$result = $appphonebook->get_result();
-				break;
-			}
-
-			$_QRY->go($_HTML->url('service/ipbx/pbx_services/phonebook'),$param);
+			else
+				$_QRY->go($_HTML->url('service/ipbx/pbx_services/phonebook'),$param);
 		}
-		while(false);
 
 		if(xivo_issa('phonebook',$return) === false || empty($return['phonebook']) === true)
 			$return['phonebook'] = null;
@@ -115,10 +101,8 @@ switch($act)
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			if($appphonebook->get($values[$i]) === false)
-				continue;
-
-			$appphonebook->delete();
+			if($appphonebook->get($values[$i]) !== false)
+				$appphonebook->delete();
 		}
 
 		$_QRY->go($_HTML->url('service/ipbx/pbx_services/phonebook'),$param);

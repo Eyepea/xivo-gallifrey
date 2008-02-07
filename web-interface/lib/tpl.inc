@@ -26,7 +26,7 @@ class xivo_tpl
 			trigger_error('Missing or invalid parameter tpl_path in '.__CLASS__,E_USER_ERROR);
 
 		if(isset($param['script_root']) === true)
-			$script_root = rtrim((string) $param['script_root'],'/');
+			$script_root = rtrim($param['script_root'],'/');
 
 		$pos = strrpos($tpl_path,XIVO_SEP_DIR);
 
@@ -112,8 +112,7 @@ class xivo_tpl
 
 		if(is_object($value) === false)
 			return(false);
-
-		if($name === '')
+		else if($name === '')
 			$name = get_class($value);
 
 		$this->_module[$name] = &$value;
@@ -146,8 +145,7 @@ class xivo_tpl
 
 		if($name === '' || $this->_load_module($name) === false)
 			return(false);
-
-		if($args === null)
+		else if($args === null)
 			$r = call_user_func(array(&$this->_module[$name],$func));
 		else
 		{
@@ -176,8 +174,7 @@ class xivo_tpl
 
 		if(xivo_file::load_file($file,$dir,true) === false)
 			return(false);
-
-		if(class_exists($class) === true)
+		else if(class_exists($class) === true)
 			$r = $class;
 		else
 			$r = false;
@@ -191,8 +188,7 @@ class xivo_tpl
 
 		if($this->valid_module($name) === true)
 			return(true);
-
-		if(($class = $this->_load_class($name)) === false)
+		else if(($class = $this->_load_class($name)) === false)
 		{
 			trigger_error('Module does not exist in tpl',E_USER_ERROR);
 			return(false);
@@ -277,14 +273,12 @@ class xivo_tpl
 
 		if($name === '')
 			return(false);
-
-		if(isset($this->_file[$name]) === false)
+		else if(isset($this->_file[$name]) === false)
 		{
 			$this->_file[$name] = $value;
 			return(true);
 		}
-
-		if(is_array($this->_file[$name]) === true)
+		else if(is_array($this->_file[$name]) === true)
 			$this->_file[$name][] = $value;
 		else
 			$this->_file[$name] = array($this->_file[$name],$value);
@@ -298,8 +292,7 @@ class xivo_tpl
 	
 		if(isset($this->_file[$name]) === false)
 			return(null);
-
-		if(is_array($this->_file[$name]) === true)
+		else if(is_array($this->_file[$name]) === true)
 			$r = end($this->_file[$name]);
 		else
 			$r = $this->_file[$name];
@@ -349,7 +342,7 @@ class xivo_tpl
 		if($ext === '')
 			$ext = XIVO_TPL_FILE_EXT;
 
-		$file = 'bloc'.XIVO_SEP_DIR.ltrim((string) $file,XIVO_SEP_DIR).'.'.$ext;
+		$file = 'bloc'.XIVO_SEP_DIR.ltrim($file,XIVO_SEP_DIR).'.'.$ext;
 
 		if($name === '' || xivo_file::is_f_r($this->get_option('tpl_path').XIVO_SEP_DIR.$file) === false)
 			return(false);
@@ -377,7 +370,7 @@ class xivo_tpl
 		if($ext === '')
 			$ext = XIVO_TPL_FILE_EXT;
 
-		$file = 'struct'.XIVO_SEP_DIR.ltrim((string) $file,XIVO_SEP_DIR).'.'.$ext;
+		$file = 'struct'.XIVO_SEP_DIR.ltrim($file,XIVO_SEP_DIR).'.'.$ext;
 
 		if(xivo_file::is_i($this->get_option('tpl_path').XIVO_SEP_DIR.$file) === false)
 			return(false);
@@ -394,8 +387,7 @@ class xivo_tpl
 	{
 		if(xivo_file::is_i($this->get_option('tpl_path').XIVO_SEP_DIR.$this->get_file('structure')) === false)
 			return(false);
-
-		if($this->get_option('overload_i18n') !== false)
+		else if($this->get_option('overload_i18n') !== false)
 			$this->load_i18n_file($this->get_file('structure'));
 
 		include($this->get_option('tpl_path').XIVO_SEP_DIR.$this->get_file('structure'));
@@ -403,13 +395,11 @@ class xivo_tpl
 
 	function display($page,$overload_i18n=false,$ext='')
 	{
-		$overload_i18n = (bool) $overload_i18n;
 		$ext = (string) $ext;
 
 		if(xivo_haslen($page) === false)
 			return(false);
-
-		if($ext === '')
+		else if($ext === '')
 			$ext = XIVO_TPL_FILE_EXT;
 
 		if($page{0} === XIVO_SEP_DIR)
@@ -419,7 +409,7 @@ class xivo_tpl
 
 		$path = $this->get_option('tpl_path').$page;
 
-		if($overload_i18n === true)
+		if((bool) $overload_i18n === true)
 			$this->set_option('overload_i18n',true);
 
 		if(xivo_file::is_i($path) === false)
@@ -463,7 +453,7 @@ class xivo_tpl
 
 	function file_include($file,$arr=array(),$ext='')
 	{
-		$file = ltrim((string) $file,XIVO_SEP_DIR);
+		$file = ltrim($file,XIVO_SEP_DIR);
 
 		if($ext === null)
 			$ext = '';
@@ -543,8 +533,7 @@ class xivo_tpl
 
 		if($section === '')
 			return(false);
-
-		if($path === '' && isset($_SERVER['PATH_INFO']) === true)
+		else if($path === '' && isset($_SERVER['PATH_INFO']) === true)
 			$path = $_SERVER['PATH_INFO'];
 
 		if($path !== '')

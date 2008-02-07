@@ -336,14 +336,13 @@ class xivo_query
 		return($r);
 	}
 
-	function mk_query_str($a,$pre='',$key='',$sep='',$empty=true)
+	function mk_query_str($a,$pre='',$key='',$sep='')
 	{
 		$r = '';
 		$a = (array) $a;
 		$pre = (string) $pre;
 		$key = (string) $key;
 		$sep = (string) $sep;
-		$empty = (bool) $empty;
 
 		if($sep === '')
 		{
@@ -381,7 +380,7 @@ class xivo_query
 		if(is_array($value) === false)
 		{
 			if(($mode & XIVO_QUERY_MODE_UNTRIM) === 0)
-				$value = trim((string) $value);
+				$value = trim($value);
 
 			if($quote !== null)
 				$value = (bool) $quote === true ? stripslashes($value) : addslashes($value);

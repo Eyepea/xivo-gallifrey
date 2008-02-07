@@ -57,8 +57,7 @@ class xivo_service_asterisk_ami extends xivo_service_asterisk_abstract
 
 	function cmd($cmd,$read=false)
 	{
-		$cmd = trim((string) $cmd);
-		$read = (bool) $read;
+		$cmd = trim($cmd);
 
 		if(xivo_is_sgraph($cmd) === false)
 			return(false);
@@ -67,8 +66,7 @@ class xivo_service_asterisk_ami extends xivo_service_asterisk_abstract
 
 		if($this->_socket->is_open() === false)
 			return(false);
-
-		if(($r = $this->_socket->write($cmd)) !== false && $read === true)
+		else if(($r = $this->_socket->write($cmd)) !== false && (bool) $read === true)
 			$r = $this->_parse_cti_recv($this->_socket->read_binary());
 
 		$this->_socket->shutdown();

@@ -22,8 +22,7 @@ class xivo_i18n_abstract_sql
 	{
 		if(is_array($arr) === false)
 			return(false);
-
-		if(($arr['dcreate'] = xivo_uint($arr['dcreate'])) === 0)
+		else if(($arr['dcreate'] = xivo_uint($arr['dcreate'])) === 0)
 			$arr['dcreate'] = time();
 
 		if(($arr['dupdate'] = xivo_uint($arr['dupdate'])) === 0)

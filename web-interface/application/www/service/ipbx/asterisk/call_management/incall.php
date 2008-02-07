@@ -26,23 +26,17 @@ switch($act)
 		if(($rightcall['list'] = $ipbx->get_rightcall_list(null,true)) !== false)
 			uasort($rightcall['list'],array(&$rightcallsort,'str_usort'));
 
-		do
+		if(isset($_QR['fm_send']) === true && xivo_issa('incall',$_QR) === true)
 		{
-			if(isset($_QR['fm_send']) === false
-			|| xivo_issa('incall',$_QR) === false)
-				break;
-
 			if($appincall->set_add($_QR) === false
 			|| $appincall->add() === false)
 			{
 				$result = $appincall->get_result();
 				$result['incall'] = $appincall->get_destination_result();
-				break;
 			}
-
-			$_QRY->go($_HTML->url('service/ipbx/call_management/incall'),$param);
+			else
+				$_QRY->go($_HTML->url('service/ipbx/call_management/incall'),$param);
 		}
-		while(false);
 
 		if(xivo_issa('incall',$result) === false || empty($result['incall']) === true)
 			$result['incall'] = null;
@@ -83,12 +77,8 @@ switch($act)
 		if(($rightcall['list'] = $ipbx->get_rightcall_list(null,true)) !== false)
 			uasort($rightcall['list'],array(&$rightcallsort,'str_usort'));
 
-		do
+		if(isset($_QR['fm_send']) === true && xivo_issa('incall',$_QR) === true)
 		{
-			if(isset($_QR['fm_send']) === false
-			|| xivo_issa('incall',$_QR) === false)
-				break;
-
 			$return = &$result;
 
 			if($appincall->set_edit($_QR) === false
@@ -96,12 +86,10 @@ switch($act)
 			{
 				$result = $appincall->get_result();
 				$result['incall'] = $appincall->get_destination_result();
-				break;
 			}
-
-			$_QRY->go($_HTML->url('service/ipbx/call_management/incall'),$param);
+			else
+				$_QRY->go($_HTML->url('service/ipbx/call_management/incall'),$param);
 		}
-		while(false);
 
 		if(xivo_issa('incall',$return) === false || empty($return['incall']) === true)
 			$return['incall'] = null;
@@ -151,10 +139,8 @@ switch($act)
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			if($appincall->get($values[$i]) === false)
-				continue;
-
-			$appincall->delete();
+			if($appincall->get($values[$i]) !== false)
+				$appincall->delete();
 		}
 
 		$_QRY->go($_HTML->url('service/ipbx/call_management/incall'),$param);
@@ -174,8 +160,7 @@ switch($act)
 		{
 			if($appincall->get($values[$i]) === false)
 				continue;
-
-			if($act === 'disables')
+			else if($act === 'disables')
 				$appincall->disable();
 			else
 				$appincall->enable();

@@ -63,8 +63,7 @@ class xivo_service_asterisk_staticconf_abstract_sql extends xivo_service_asteris
 	{
 		if(is_array($arr) === false || is_array($value) === false)
 			return(false);
-
-		if($disable !== null)
+		else if($disable !== null)
 			$arr[$this->_disable] = intval((bool) $disable);
 
 		return($this->_dso->update($this->_table,$value,$arr));
@@ -82,8 +81,7 @@ class xivo_service_asterisk_staticconf_abstract_sql extends xivo_service_asteris
 	{
 		if(is_array($arr) === false)
 			return(false);
-
-		if($disable !== null)
+		else if($disable !== null)
 			$arr[$this->_disable] = intval((bool) $disable);
 
 		return($this->_dso->delete($this->_table,$arr));

@@ -33,8 +33,8 @@ class xivo_authent_abstract_sql
 
 		if(isset($this->_attrib[$name]) === true)
 			return($this->_attrib[$name]);
-		else
-			return(null);
+
+		return(null);
 	}
 
 	function chk($login,$pass,$meta=false)
@@ -51,8 +51,7 @@ class xivo_authent_abstract_sql
 
 		if(($r = $this->_dso->select_single()) === false)
 			return(false);
-
-		if($r['login'] !== $login || $r['passwd'] !== $pass)
+		else if($r['login'] !== $login || $r['passwd'] !== $pass)
 			$r = false;
 		else
 			$r = $meta === true ? $r['meta'] : true;

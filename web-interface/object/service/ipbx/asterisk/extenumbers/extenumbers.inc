@@ -35,8 +35,7 @@ class xivo_service_asterisk_extenumbers extends xivo_service_asterisk_abstract
 	{
 		if(is_array($arr) === false)
 			return(false);
-
-		if(xivo_haslen($arr,'exten') === false
+		else if(xivo_haslen($arr,'exten') === false
 		|| ($exten = $this->_sre->chk_extension($arr['exten'])) === false)
 			return(false);
 

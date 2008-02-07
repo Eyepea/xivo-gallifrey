@@ -20,8 +20,7 @@ for($i = 0;$i < $nb;$i++)
 
 	if(($info['tfeatures'] = $tfeatures->get_where($tfeatures_where)) === false)
 		continue;
-
-	if(xivo_ulongint($info['tfeatures']['registerid']) !== 0)
+	else if(xivo_ulongint($info['tfeatures']['registerid']) !== 0)
 	{
 		if($disable === true || (bool) $info['tfeatures']['registercommented'] === true)
 			$generalsip->disable($info['tfeatures']['registerid']);

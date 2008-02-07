@@ -35,24 +35,19 @@ switch($act)
 		if(($rightcall['list'] = $ipbx->get_rightcall_list(null,true)) !== false)
 			uasort($rightcall['list'],array(&$rightcallsort,'str_usort'));
 
-		do
+		if(isset($_QR['fm_send']) === true
+		&& xivo_issa('gfeatures',$_QR) === true
+		&& xivo_issa('queue',$_QR) === true)
 		{
-			if(isset($_QR['fm_send']) === false
-			|| xivo_issa('gfeatures',$_QR) === false
-			|| xivo_issa('queue',$_QR) === false)
-				break;
-
 			if($appgroup->set_add($_QR) === false
 			|| $appgroup->add() === false)
 			{
 				$result = $appgroup->get_result();
 				$result['dialstatus'] = $appgroup->get_dialstatus_result();
-				break;
 			}
-
-			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/groups'),$param);
+			else
+				$_QRY->go($_HTML->url('service/ipbx/pbx_settings/groups'),$param);
 		}
-		while(false);
 
 		if($user['list'] !== false && xivo_ak('user',$result) === true)
 		{
@@ -123,13 +118,10 @@ switch($act)
 		if(($rightcall['list'] = $ipbx->get_rightcall_list(null,true)) !== false)
 			uasort($rightcall['list'],array(&$rightcallsort,'str_usort'));
 
-		do
+		if(isset($_QR['fm_send']) === true
+		&& xivo_issa('gfeatures',$_QR) === true
+		&& xivo_issa('queue',$_QR) === true)
 		{
-			if(isset($_QR['fm_send']) === false
-			|| xivo_issa('gfeatures',$_QR) === false
-			|| xivo_issa('queue',$_QR) === false)
-					break;
-
 			$return = &$result;
 
 			if($appgroup->set_edit($_QR) === false
@@ -137,12 +129,10 @@ switch($act)
 			{
 				$result = $appgroup->get_result();
 				$result['dialstatus'] = $appgroup->get_dialstatus_result();
-				break;
 			}
-
-			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/groups'),$param);
+			else
+				$_QRY->go($_HTML->url('service/ipbx/pbx_settings/groups'),$param);
 		}
-		while(false);
 
 		if($user['list'] !== false && xivo_ak('user',$return) === true)
 		{
@@ -209,10 +199,8 @@ switch($act)
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			if($appgroup->get($values[$i]) === false)
-				continue;
-
-			$appgroup->delete();
+			if($appgroup->get($values[$i]) !== false)
+				$appgroup->delete();
 		}
 
 		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/groups'),$param);
@@ -233,10 +221,8 @@ switch($act)
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			if(($info = $gfeatures->get($values[$i])) === false)
-				continue;
-
-			$queue->disable($info['name'],$disable);
+			if(($info = $gfeatures->get($values[$i])) !== false)
+				$queue->disable($info['name'],$disable);
 		}
 
 		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/groups'),$param);

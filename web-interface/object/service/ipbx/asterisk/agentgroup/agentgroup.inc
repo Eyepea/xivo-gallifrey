@@ -27,11 +27,7 @@ class xivo_service_asterisk_agentgroup extends xivo_service_asterisk_abstract
 	{
 		$data['deleted'] = (bool) $data['deleted'];
 		$data['commented'] = (bool) $data['commented'];
-
-		if($this->get_defgroup() === $data['id'])
-			$data['deletable'] = false;
-		else
-			$data['deletable'] = true;
+		$data['deletable'] = $this->get_defgroup() !== $data['id'];
 
 		return($data);
 	}
@@ -44,8 +40,7 @@ class xivo_service_asterisk_agentgroup extends xivo_service_asterisk_abstract
 		if(($id = xivo_ulongint($id)) === 0
 		|| ($r = $this->_dso->get($id,$disable,$delete)) === false)
 			return(false);
-
-		if(isset($this->_origin) === true)
+		else if(isset($this->_origin) === true)
 			$this->_origin = $r;
 
 		return($this->_prepare($r));
@@ -69,22 +64,17 @@ class xivo_service_asterisk_agentgroup extends xivo_service_asterisk_abstract
 		|| ($where = $this->get_element_where($arr)) === false
 		|| ($r = $this->_dso->get($where,$disable,$delete)) === false)
 			return(false);
-
-		if(isset($this->_origin) === true)
+		else if(isset($this->_origin) === true)
 			$this->_origin = $r;
 
-		$r = $this->_prepare($r);
-
-		return($r);
+		return($this->_prepare($r));
 	}
 
 	function get_nb($arr=null,$disable=null,$delete=false)
 	{
-		if($arr !== null && is_array($arr) === false)
-			return(false);
-
-		if(is_array($arr) === true
-		&& ($arr = $this->get_element_where($arr)) === false)
+		if(($arr !== null && is_array($arr) === false) === true
+		|| (is_array($arr) === true
+		   && ($arr = $this->get_element_where($arr)) === false) === true)
 			return(false);
 
 		return($this->_dso->get_nb($arr,$disable,$delete));
@@ -122,9 +112,9 @@ class xivo_service_asterisk_agentgroup extends xivo_service_asterisk_abstract
 
 		if(isset($arr['name']) === true)
 		{
-			$where = array('name' => $arr['name']);
+			$arr['name'] = strtolower($arr['name']);
 
-			if($this->get_primary($where) !== false)
+			if($this->get_primary(array('name' => $arr['name'])) !== false)
 				return(false);
 		}
 
@@ -138,12 +128,12 @@ class xivo_service_asterisk_agentgroup extends xivo_service_asterisk_abstract
 	{
 		if(($id = xivo_ulongint($id)) === 0 || is_array($arr) === false)
 			return(false);
-
-		if(isset($arr['name']) === true)
+		else if(isset($arr['name']) === true)
 		{
-			$where = array('name' => $arr['name']);
+			$arr['name'] = strtolower($arr['name']);
 
-			if(($whereid = $this->get_primary($where)) !== false && $whereid !== $id)
+			if(($whereid = $this->get_primary(array('name' => $arr['name']))) !== false
+			&& $whereid !== $id)
 				return(false);
 		}
 
@@ -157,9 +147,7 @@ class xivo_service_asterisk_agentgroup extends xivo_service_asterisk_abstract
 		|| ($arr = $this->chk_values($arr,true,false,false)) === false)
 			return(false);
 
-		$r = $this->_dso->edit($where,$arr,$disable,$delete);
-
-		return($r);
+		return($this->_dso->edit($where,$arr,$disable,$delete));
 	}
 
 	function delete($id,$disable=null)
@@ -213,8 +201,7 @@ class xivo_service_asterisk_agentgroup extends xivo_service_asterisk_abstract
 		if(($list = $this->_dso->get_all($disable,$delete,$order,$limit)) === false
 		|| isset($list[0]) === false)
 			return(false);
-
-		if(isset($this->_origin_list) === true)
+		else if(isset($this->_origin_list) === true)
 			$this->_origin_list = $list;
 
 		if($prepare === false && $assoc === false)
@@ -236,8 +223,7 @@ class xivo_service_asterisk_agentgroup extends xivo_service_asterisk_abstract
 		|| ($list = $this->_dso->get_all_where($where,$disable,$delete,$order,$limit)) === false
 		|| isset($list[0]) === false)
 			return(false);
-
-		if(isset($this->_origin_list) === true)
+		else if(isset($this->_origin_list) === true)
 			$this->_origin_list = $list;
 
 		if($prepare === false && $assoc === false)

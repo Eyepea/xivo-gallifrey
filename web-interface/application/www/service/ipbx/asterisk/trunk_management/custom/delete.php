@@ -13,8 +13,7 @@ do
 {
 	if($trunkcustom->delete($info['trunk']['id']) === false)
 		break;
-
-	if($tfeatures->delete($info['tfeatures']['id']) === false)
+	else if($tfeatures->delete($info['tfeatures']['id']) === false)
 	{
 		$trunkcustom->add_origin();
 		break;

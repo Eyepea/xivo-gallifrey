@@ -15,23 +15,16 @@ switch($act)
 
 		$result = null;
 
-		do
+		if(isset($_QR['fm_send']) === true
+		&& xivo_issa('meetmeroom',$_QR) === true
+		&& xivo_issa('mfeatures',$_QR) === true)
 		{
-			if(isset($_QR['fm_send']) === false
-			|| xivo_issa('meetmeroom',$_QR) === false
-			|| xivo_issa('mfeatures',$_QR) === false)
-				break;
-
 			if($appmeetme->set_add($_QR) === false
 			|| $appmeetme->add() === false)
-			{
 				$result = $appmeetme->get_result();
-				break;
-			}
-
-			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/meetme'),$param);
+			else
+				$_QRY->go($_HTML->url('service/ipbx/pbx_settings/meetme'),$param);
 		}
-		while(false);
 
 		$_HTML->set_var('info',$result);
 		$_HTML->set_var('moh_list',$appmeetme->get_musiconhold());
@@ -49,25 +42,18 @@ switch($act)
 		$result = null;
 		$return = &$info;
 
-		do
+		if(isset($_QR['fm_send']) === true
+		&& xivo_issa('meetmeroom',$_QR) === true
+		&& xivo_issa('mfeatures',$_QR) === true)
 		{
-			if(isset($_QR['fm_send']) === false
-			|| xivo_issa('meetmeroom',$_QR) === false
-			|| xivo_issa('mfeatures',$_QR) === false)
-				break;
-
 			$return = &$result;
 
 			if($appmeetme->set_edit($_QR) === false
 			|| $appmeetme->edit() === false)
-			{
 				$result = $appmeetme->get_result();
-				break;
-			}
-
-			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/meetme'),$param);
+			else
+				$_QRY->go($_HTML->url('service/ipbx/pbx_settings/meetme'),$param);
 		}
-		while(false);
 
 		$_HTML->set_var('id',$info['meetmeroom']['id']);
 		$_HTML->set_var('info',$return);
@@ -101,10 +87,8 @@ switch($act)
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			if($appmeetme->get($values[$i]) === false)
-				continue;
-
-			$appmeetme->delete();
+			if($appmeetme->get($values[$i]) !== false)
+				$appmeetme->delete();
 		}
 
 		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/meetme'),$param);

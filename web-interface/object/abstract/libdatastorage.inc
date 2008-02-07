@@ -244,8 +244,7 @@ class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 
 		if(($r = $this->_dso->get($where,$disable)) === false)
 			return(false);
-
-		if(isset($this->_origin) === true)
+		else if(isset($this->_origin) === true)
 			$this->_origin = $r;
 
 		return($this->_prepare($r));
@@ -253,10 +252,9 @@ class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 
 	function get_nb($arr=null,$disable=null)
 	{
-		if($arr !== null && is_array($arr) === false)
-			return(false);
-		else if(is_array($arr) === true
-		&& ($arr = $this->get_element_where($arr)) === false)
+		if(($arr !== null && is_array($arr) === false) === true
+		|| (is_array($arr) === true
+		   && ($arr = $this->get_element_where($arr)) === false) === true)
 			return(false);
 
 		return($this->_dso->get_nb($arr,$disable));
@@ -298,8 +296,7 @@ class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 		if(($list = $this->_dso->get_all($disable,$order,$limit)) === false
 		|| isset($list[0]) === false)
 			return(false);
-
-		if(isset($this->_origin_list) === true)
+		else if(isset($this->_origin_list) === true)
 			$this->_origin_list = $list;
 
 		if($prepare === false && $assoc === false)
@@ -321,8 +318,7 @@ class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 		|| ($list = $this->_dso->get_all_where($where,$disable,$order,$limit)) === false
 		|| isset($list[0]) === false)
 			return(false);
-
-		if(isset($this->_origin_list) === true)
+		else if(isset($this->_origin_list) === true)
 			$this->_origin_list = $list;
 
 		if($prepare === false && $assoc === false)

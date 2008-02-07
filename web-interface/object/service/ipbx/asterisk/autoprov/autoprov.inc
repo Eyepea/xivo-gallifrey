@@ -45,8 +45,7 @@ class xivo_service_asterisk_autoprov extends xivo_service_asterisk_abstract
 	{
 		if(($type !== 'list' && $type !== 'prov') === true || xivo_ak($type,$this->_autoprov) === false)
 			return(false);
-
-		if(xivo_ak($type,$this->_sockprov) === true)
+		else if(xivo_ak($type,$this->_sockprov) === true)
 			return($this->_sockprov[$type]->open());
 
 		xivo::load_class('xivo_socket');
@@ -71,31 +70,22 @@ class xivo_service_asterisk_autoprov extends xivo_service_asterisk_abstract
 
 	function get_autoprov_list()
 	{
-		$r = false;
-
 		if($this->_list !== null)
 			return($this->_list);
-
-		if($this->_load_sockprov('list') === false
+		else if($this->_load_sockprov('list') === false
 		|| $this->_sockprov['list']->is_open() === false
 		|| ($write = $this->_mk_sockprov_http('list')) === false)
-			return(($this->_list = $r));
-	
-		if(($write = $this->_mk_sockprov_http('list')) === false
+			return(($this->_list = false));
+		else if(($write = $this->_mk_sockprov_http('list')) === false
 		|| $this->_sockprov['list']->write($write) === false
 		|| ($read = $this->_sockprov['list']->read_binary()) === false
-		|| ($recv = $this->_parse_sockprov_recv($read)) === false)
-		{
-			$this->_sockprov['list']->shutdown();
-			return(($this->_list = $r));
-		}
-
-		if(isset($recv['status']) === false
+		|| ($recv = $this->_parse_sockprov_recv($read)) === false
+		|| isset($recv['status']) === false
 		|| ($nb = count($recv['data'])) === 0
 		|| preg_match('/^HTTP\/1\.[0-1] 200 /i',$recv['status']) !== 1)
 		{
 			$this->_sockprov['list']->shutdown();
-			return(($this->_list = $r));
+			return(($this->_list = false));
 		}
 
 		$r = array();
@@ -212,10 +202,8 @@ class xivo_service_asterisk_autoprov extends xivo_service_asterisk_abstract
 		|| ($write = $this->_mk_sockprov_http('prov',$data)) === false
 		|| $this->_sockprov['prov']->is_open() === false)
 			return(false);
-		else if($this->_sockprov['prov']->write($write) !== false)
-			$r = true;
 		else
-			$r = false;
+			$r = $this->_sockprov['prov']->write($write) !== false;
 
 		$this->_sockprov['prov']->shutdown();
 

@@ -267,7 +267,6 @@ class xivo_service_asterisk extends xivo_service_abstract
 	function get_trunks_list($disable=null,$trunk=true,$assoc=true)
 	{
 		$trunk = (bool) $trunk;
-		$assoc = (bool) $assoc;
 
 		$tfeatures = &$this->get_module('trunkfeatures');
 
@@ -291,8 +290,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 			if($trunkmodule === false)
 				continue;
-
-			if($trunk === true)
+			else if($trunk === true)
 			{
 				if(isset($r[$info['tfeatures']['trunk']]) === false)
 					$r[$info['tfeatures']['trunk']] = array();
@@ -323,7 +321,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 		if(empty($r) === true)
 			$r = false;
-		else if($assoc === false)
+		else if((bool) $assoc === false)
 			$r = array_values($r);
 
 		return($r);
@@ -332,7 +330,6 @@ class xivo_service_asterisk extends xivo_service_abstract
 	function get_agents_list($group=0,$disable=null,$assoc=false)
 	{
 		$group = xivo_ulongint($group);
-		$assoc = (bool) $assoc;
 
 		$afeatures = &$this->get_module('agentfeatures');
 		$agroup = &$this->get_module('agentgroup');
@@ -366,7 +363,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 		if(empty($r) === true)
 			$r = false;
-		else if($assoc === false)
+		else if((bool) $assoc === false)
 			$r = array_values($r);
 
 		return($r);
@@ -374,8 +371,6 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 	function get_agent_groups_list($disable=null,$assoc=false)
 	{
-		$assoc = (bool) $assoc;
-
 		$agroup = &$this->get_module('agentgroup');
 		$agent = &$this->get_module('agent');
 		$afeatures = &$this->get_module('agentfeatures');
@@ -398,7 +393,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 		if(empty($r) === true)
 			$r = false;
-		else if($assoc === false)
+		else if((bool) $assoc === false)
 			$r = array_values($r);
 
 		return($r);
@@ -418,7 +413,6 @@ class xivo_service_asterisk extends xivo_service_abstract
 	{
 		$usertype = (string) $usertype;
 		$userid = xivo_ulongint($userid);
-		$assoc = (bool) $assoc;
 	
 		$qfeatures = &$this->get_module('queuefeatures');
 		$queue = &$this->get_module('queue');
@@ -464,7 +458,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 		if(empty($r) === true)
 			$r = false;
-		else if($assoc === false)
+		else if((bool) $assoc === false)
 			$r = array_values($r);
 
 		return($r);
@@ -582,8 +576,6 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 	function get_rightcall_list($disable=null,$assoc=false)
 	{
-		$assoc = (bool) $assoc;
-
 		$rightcall = &$this->get_module('rightcall');
 		$rightcallmember = &$this->get_module('rightcallmember');
 		$rightcallexten = &$this->get_module('rightcallexten');
@@ -607,7 +599,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 		if(empty($r) === true)
 			$r = false;
-		else if($assoc === false)
+		else if((bool) $assoc === false)
 			$r = array_values($r);
 
 		return($r);
@@ -761,17 +753,13 @@ class xivo_service_asterisk extends xivo_service_abstract
 	function mk_agent_interface($number,$group=false)
 	{
 		$number = strval($number);
-		$group = (bool) $group;
 
 		if(ctype_digit($number) === false)
 			return(false);
-
-		if($group === true)
+		else if((bool) $group === true)
 			$number = ':'.$number;
 
-		$r = $this->mk_interface($number,null,null,null,XIVO_SRE_IPBX_AST_CHAN_AGENT);
-
-		return($r);
+		return($this->mk_interface($number,null,null,null,XIVO_SRE_IPBX_AST_CHAN_AGENT));
 	}
 
 	function mk_interface($name,$protocol='',$number='',$context='',$channel='')
@@ -846,8 +834,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 		if(isset($str{0}) === false)
 			return(false);
-
-		if(preg_match('/[\[\-\]]/',$str) === 0)
+		else if(preg_match('/[\[\-\]]/',$str) === 0)
 			return($this->_realexten_pattern($str));
 
 		$split = preg_split('/\[(\d+(?:\-\d+)?)\]/',$str,-1,PREG_SPLIT_DELIM_CAPTURE);
@@ -935,7 +922,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 	function _realexten_pattern($str)
 	{
-		$str = preg_replace('/\[(\d)\]/','\\1',(string) $str);
+		$str = preg_replace('/\[(\d)\]/','\\1',$str);
 		$pat = array('_','X','Z','N');
 		$rep = array('','[0123456789]','[123456879]','[23456789]');
 
@@ -947,7 +934,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 		$pat = array('_','*','X','Z','N','.','!');
 		$rep = array('','\*','[0-9]','[1-9]','[2-9]','[0-9#\*]+','[0-9#\*]*');
 
-		return(str_replace($pat,$rep,(string) $str));
+		return(str_replace($pat,$rep,$str));
 	}
 
 	function mk_callerid($number,$callerid='')

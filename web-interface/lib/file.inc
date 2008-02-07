@@ -179,8 +179,7 @@ class xivo_file
 	{
 		if(is_array($param) === false)
 			return(false);
-
-		if(isset($param['size']) === true)
+		else if(isset($param['size']) === true)
 		{
 			$param['size'] = xivo_uint($param['size']);
 
@@ -234,8 +233,7 @@ class xivo_file
 
 		if(xivo_issa($name,$_FILES) === false || isset($_FILES[$name]['error']) === false)
 			return(false);
-
-		if(($upload = xivo_get_memory('upload_max_filesize')) === false)
+		else if(($upload = xivo_get_memory('upload_max_filesize')) === false)
 			trigger_error('Invalid upload_max_filesize php.ini directive',E_USER_ERROR);
 
 		if(($post = xivo_get_memory('post_max_size')) === false)
@@ -285,14 +283,11 @@ class xivo_file
 	function load_file($file,$dir='',$once=false,$verif=true)
 	{
 		$file = (string) $file;
-		$once = (bool) $once;
-		$verif = (bool) $verif;
 		$path = '';
 		
 		if(preg_match('/^[a-z0-9\-_.]+$/i',$file) !== 1)
 			return(false);
-
-		if(is_array($dir) === true)
+		else if(is_array($dir) === true)
 		{
 			if(isset($dir[0]) === false)
 				return(false);
@@ -314,21 +309,17 @@ class xivo_file
 
 		if(xivo_file::is_i($path,$verif) === false)
 			return(false);
-
-		if($once === true)
-			return((bool) require_once($path));
-		else
+		else if($once === false)
 			return((bool) require($path));
+
+		return((bool) require_once($path));
 	}
 
 	function is_i($file,$verif=true)
 	{
-		$verif = (bool) $verif;
-
-		if($verif === true && ($file = xivo_file::is_f_r($file)) === false)
+		if((bool) $verif === true && ($file = xivo_file::is_f_r($file)) === false)
 			return(false);
-
-		if(($r = is_resource(($f = fopen($file,'r',true)))) === true)
+		else if(($r = is_resource(($f = fopen($file,'r',true)))) === true)
 			fclose($f);
 
 		return($r);
@@ -337,22 +328,19 @@ class xivo_file
 	function required($arr,$once=false,$includable=false)
 	{
 		$arr = (array) $arr;
-		$once = (bool) $once;
-		$includable = (bool) $includable;
 
 		if(isset($arr[0]) === false)
 			return(false);
 
 		$path = implode($arr,XIVO_SEP_DIR);
 
-		if(($includable === true && xivo_file::is_i($path) === false) === true
+		if(((bool) $includable === true && xivo_file::is_i($path) === false) === true
 		|| ($path = xivo_file::is_f_r($path)) === false)
 			return(false);
-
-		if($once === true)
-			return((bool) require_once($path));
-		else
+		else if((bool) $once === false)
 			return((bool) require($path));
+		else
+			return((bool) require_once($path));
 	}
 
 	function is_r($file)
@@ -613,8 +601,7 @@ class xivo_file
 		
 		if(xivo_file::is_d_rwx($dir) === false)
 			return(false);
-
-		if(($flags & FILE_APPEND) !== 0)
+		else if(($flags & FILE_APPEND) !== 0)
 			$mode = 'a';
 		else if(($filename = xivo_file::is_f_rw($filename)) !== false)
 			$mode = 'wb';
@@ -648,11 +635,10 @@ class xivo_file
 		$type = (string) $type;
 		$mode = (string) $mode;
 		$match = (string) $match;
-		$dirwmode = (bool) $dirwmode;
 
 		if(($dir = xivo_file::is_d_rx($dir)) === false
 		|| ($open = opendir($dir)) === false
-		|| ($dirwmode === true && xivo_file::is_w($dir) === false) === true)
+		|| ((bool) $dirwmode === true && xivo_file::is_w($dir) === false) === true)
 			return(false);
 
 		if($type !== 'file' && $type !== 'dir')
@@ -677,8 +663,7 @@ class xivo_file
 		{
 			if($name === '.' || $name === '..')
 				continue;
-
-			if($match !== '' && preg_match($match,$name) !== 1)
+			else if($match !== '' && preg_match($match,$name) !== 1)
 				continue;
 
 			$file = $dir.XIVO_SEP_DIR.$name;
@@ -751,8 +736,7 @@ class xivo_file
 		|| xivo_file::is_d_rw(dirname($dir)) === false
 		|| ($list = xivo_file::read_d($dir)) === false)
 			return(false);
-
-		if(isset($list[0]) === false)
+		else if(isset($list[0]) === false)
 			return(rmdir($dir));
 
 		$nb = count($list);

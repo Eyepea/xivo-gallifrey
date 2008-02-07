@@ -88,14 +88,11 @@ class xivo_application_asterisk_abstract extends xivo_application_abstract
 	{
 		if(isset($this->_musiconhold) === false)
 			return(false);
-
-		if($this->_musiconhold !== false)
+		else if($this->_musiconhold !== false)
 			return($this->_musiconhold);
-
-		if(($musiconhold = &$this->_service->get_module('musiconhold')) === false)
+		else if(($musiconhold = &$this->_service->get_module('musiconhold')) === false)
 			return(false);
-
-		if(($this->_musiconhold = $musiconhold->get_all_category(null,false)) !== false)
+		else if(($this->_musiconhold = $musiconhold->get_all_category(null,false)) !== false)
 			ksort($this->_musiconhold);
 
 		return($this->_musiconhold);

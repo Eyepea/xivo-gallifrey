@@ -99,13 +99,13 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_servic
 			$this->_dso->where($this->_table['userfeatures'].'.context = %s',$value);
 		else
 		{
-			$this->_dso->wherecontain('firstname',$value,$this->_table['userfeatures']);
-			$this->_dso->orwherecontain('lastname',$value,$this->_table['userfeatures']);
-			$this->_dso->orwherecontain('number',$value,$this->_table['userfeatures']);
-			$this->_dso->orwherecontain('name',$value,$this->_table['userfeatures']);
+			$this->_dso->wherecontain('firstname',$value,true,$this->_table['userfeatures']);
+			$this->_dso->orwherecontain('lastname',$value,true,$this->_table['userfeatures']);
+			$this->_dso->orwherecontain('number',$value,true,$this->_table['userfeatures']);
+			$this->_dso->orwherecontain('name',$value,true,$this->_table['userfeatures']);
 
 			if($type === 0)
-				$this->_dso->orwherecontain('context',$value,$this->_table['userfeatures']);
+				$this->_dso->orwherecontain('context',$value,true,$this->_table['userfeatures']);
 		}
 		
 		$this->_dso->aggregate_where();

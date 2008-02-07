@@ -206,11 +206,9 @@ class xivo_service_asterisk_zonemessages extends xivo_service_asterisk_staticcon
 
 		if(($len = strlen($str)) === 0)
 			return(false);
-
-		if(($nb = preg_match_all('/\'/',$str,$match,PREG_OFFSET_CAPTURE)) === 0)
+		else if(($nb = preg_match_all('/\'/',$str,$match,PREG_OFFSET_CAPTURE)) === 0)
 			return($this->_chk_letter_format($str));
-
-		if($nb % 2 === 1)
+		else if($nb % 2 === 1)
 			return(false);
 
 		$match = $match[0];
@@ -238,8 +236,7 @@ class xivo_service_asterisk_zonemessages extends xivo_service_asterisk_staticcon
 
 			if(preg_match('/^'.$regex.'$/',$msg) === 0)
 				return(false);
-
-			if(isset($match[$i+2]) === false)
+			else if(isset($match[$i+2]) === false)
 				break;
 
 			$offset3 = $match[$i+2][1];

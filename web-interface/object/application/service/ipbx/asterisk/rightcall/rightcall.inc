@@ -152,12 +152,7 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 			$this->_set_error('rightcallexten','invalid data');
 		}
 
-		if($this->get_errnb() > 0)
-			$r = false;
-		else
-			$r = true;
-
-		return($r);
+		return(($this->get_errnb() < 1));
 	}
 
 	function set_rightcall($arr)
@@ -694,8 +689,7 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 
 		if(xivo_issa($key,$this->_info) === false)
 			return(null);
-
-		if(xivo_issa('rightcall',$this->_info) === false)
+		else if(xivo_issa('rightcall',$this->_info) === false)
 			return(false);
 
 		$rightcallmember_where = array();
@@ -714,8 +708,7 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 	{
 		if(xivo_issa('rightcallexten',$this->_info) === false)
 			return(null);
-
-		if(xivo_issa('rightcall',$this->_info) === false)
+		else if(xivo_issa('rightcall',$this->_info) === false)
 			return(false);
 
 		$rightcallexten_where = array('rightcallid' => $this->_info['rightcall']['id']);

@@ -63,8 +63,7 @@ class xivo_service_asterisk_usersip extends xivo_service_asterisk_abstract
 	{
 		if(is_array($arr) === false)
 			return(false);
-
-		if(isset($arr['callgroup']) === true)
+		else if(isset($arr['callgroup']) === true)
 			$arr['pickupgroup'] = $arr['callgroup'];
 
 		$arr['protocol'] = XIVO_SRE_IPBX_AST_PROTO_SIP;

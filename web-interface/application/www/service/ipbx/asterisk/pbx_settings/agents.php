@@ -87,12 +87,9 @@ switch($act)
 					$agent_info['numgroup'] = $ref['afeatures']['numgroup'];
 
 					if(in_array($ref['afeatures']['id'],$arr_agent) === false)
-					{
 						$agent_unslt[] = $agent_info;
-						continue;
-					}
-
-					$agent_slt[$ref['afeatures']['id']] = $agent_info;
+					else
+						$agent_slt[$ref['afeatures']['id']] = $agent_info;
 				}
 			}
 
@@ -132,22 +129,19 @@ switch($act)
 
 			if($add === false || ($agroupid = $agroup->add($result['agroup'])) === false)
 				break;
-
-			if(($group = $agent->chk_value('group',$agroupid)) === false
+			else if(($group = $agent->chk_value('group',$agroupid)) === false
 			|| ($groupid = $agent->add_group($group)) === false)
 			{
 				$agroup->delete($agroupid);
 				break;
 			}
-
-			if($agroup->edit($agroupid,array('groupid' => $groupid)) === false)
+			else if($agroup->edit($agroupid,array('groupid' => $groupid)) === false)
 			{
 				$agroup->delete($agroupid);
 				$agent->delete($groupid);
 				break;
 			}
-
-			if(empty($agent_slt) === false)
+			else if(empty($agent_slt) === false)
 			{
 				$nb = count($arr_agent);
 
@@ -160,10 +154,8 @@ switch($act)
 
 					$ref = &$agent_slt[$agent_id];
 
-					if($afeatures->edit($agent_id,array('numgroup' => $agroupid)) === false)
-						continue;
-
-					if($agent->edit_agent($ref['agentid'],array('group' => $agroupid)) === false)
+					if($afeatures->edit($agent_id,array('numgroup' => $agroupid)) !== false
+					&& $agent->edit_agent($ref['agentid'],array('group' => $agroupid)) === false)
 						$afeatures->edit($agent_id,array('numgroup' => $ref['numgroup']));
 				}
 			}
@@ -174,10 +166,8 @@ switch($act)
 				{
 					$queue_add[$i]['userid'] = $agroupid;
 
-					if(($queue_add[$i]['interface'] = $ipbx->mk_agent_interface($agroupid,true)) === false)
-						continue;
-
-					$qmember->add($queue_add[$i]);
+					if(($queue_add[$i]['interface'] = $ipbx->mk_agent_interface($agroupid,true)) !== false)
+						$qmember->add($queue_add[$i]);
 				}
 			}
 
@@ -237,10 +227,9 @@ switch($act)
 				{
 					$agent_info['afeaturesid'] = $ref['afeatures']['id'];
 					$agent_unslt[] = $agent_info;
-					continue;
 				}
-
-				$agent_slt[$ref['afeatures']['id']] = $agent_info;
+				else
+					$agent_slt[$ref['afeatures']['id']] = $agent_info;
 			}
 		}
 
@@ -317,10 +306,9 @@ switch($act)
 					{
 						$agent_info['afeaturesid'] = $ref['afeatures']['id'];
 						$agent_unslt[] = $agent_info;
-						continue;
 					}
-
-					$agent_slt[$ref['afeatures']['id']] = $agent_info;
+					else
+						$agent_slt[$ref['afeatures']['id']] = $agent_info;
 				}
 			}
 
@@ -395,8 +383,7 @@ switch($act)
 
 			if($edit === false || $agroup->edit($info['agroup']['id'],$result['agroup']) === false)
 				break;
-
-			if(isset($agent_unslt[0]) === true && ($defgroup = $agroup->get_defgroup()) !== false)
+			else if(isset($agent_unslt[0]) === true && ($defgroup = $agroup->get_defgroup()) !== false)
 			{
 				$nb = count($agent_unslt);
 
@@ -410,10 +397,8 @@ switch($act)
 
 					$agent_id = $ref['agentid'];
 
-					if($afeatures->edit($ref['afeaturesid'],array('numgroup' => $defgroup)) === false)
-						continue;
-
-					if($agent->edit_agent($ref['agentid'],array('group' => $defgroup)) === false)
+					if($afeatures->edit($ref['afeaturesid'],array('numgroup' => $defgroup)) !== false
+					&& $agent->edit_agent($ref['agentid'],array('group' => $defgroup)) === false)
 						$afeatures->edit($ref['afeaturesid'],array('numgroup' => $ref['numgroup']));
 				}
 			}
@@ -438,11 +423,9 @@ switch($act)
 						$agent_order[] = $ref['agentid'];
 						continue;
 					}
-
-					if($afeatures->edit($agent_id,array('numgroup' => $info['agroup']['id'])) === false)
+					else if($afeatures->edit($agent_id,array('numgroup' => $info['agroup']['id'])) === false)
 						continue;
-
-					if($agent->edit_agent($ref['agentid'],array('group' => $info['agroup']['id'])) === false)
+					else if($agent->edit_agent($ref['agentid'],array('group' => $info['agroup']['id'])) === false)
 						$afeatures->edit($agent_id,array('numgroup' => $ref['numgroup']));
 					else
 						$agent_order[] = $ref['agentid'];
@@ -539,8 +522,7 @@ switch($act)
 
 			if($agroup->delete($info['agroup']['id']) === false)
 				break;
-
-			if($agent->delete($info['agent']['id']) === false)
+			else if($agent->delete($info['agent']['id']) === false)
 			{
 				$agroup->recover($info['agroup']['id']);
 				break;
@@ -684,8 +666,7 @@ switch($act)
 				$agent->delete_agent($agentid);
 				break;
 			}
-
-			if(($nb = count($queue_add)) !== 0)
+			else if(($nb = count($queue_add)) !== 0)
 			{
 				for($i = 0;$i < $nb;$i++)
 				{
@@ -898,14 +879,12 @@ switch($act)
 
 			if($edit === false || $afeatures->edit($info['afeatures']['id'],$result['afeatures']) === false)
 				break;
-
-			if($agent->edit_agent($info['agent']['id'],$result['agent']) === false)
+			else if($agent->edit_agent($info['agent']['id'],$result['agent']) === false)
 			{
 				$afeatures->edit_origin();
 				break;
 			}
-
-			if($edit_queue === true)
+			else if($edit_queue === true)
 			{
 				if(isset($queue_add[0]) === true)
 					$qmember->add_list($queue_add);
@@ -967,11 +946,9 @@ switch($act)
 			|| ($info['afeatures'] = $afeatures->get($_QR['id'])) === false
 			|| ($info['agent'] = $agent->get_agent($info['afeatures']['agentid'])) === false)
 				break;
-
-			if($afeatures->delete($info['afeatures']['id']) === false)
+			else if($afeatures->delete($info['afeatures']['id']) === false)
 				break;
-
-			if($agent->delete_agent($info['agent']['id']) === false)
+			else if($agent->delete_agent($info['agent']['id']) === false)
 			{
 				$afeatures->add_origin();
 				break;

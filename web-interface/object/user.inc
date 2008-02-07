@@ -97,11 +97,10 @@ class xivo_user
 	function chk_type($type,$real=false)
 	{
 		$cfg = xivo_gat::get('user');
-		$real = (bool) $real;
 
 		$r = isset($cfg['type'][$type]);
 
-		if($r === true && $real === true)
+		if($r === true && (bool) $real === true)
 			return(($type > 0));
 
 		return($r);
@@ -133,7 +132,7 @@ class xivo_user
 	{
 		$r = false;
 
-		$meta = strtoupper((string) $meta);
+		$meta = strtoupper($meta);
 
 		if(defined('XIVO_USER__'.$meta) === true)
 			$r = constant('XIVO_USER__'.$meta);
@@ -213,7 +212,7 @@ class xivo_user
 		|| isset($_SESSION['_ACL']['user']) === false)
 			return(false);
 			
-		$section = trim(preg_replace('@/+@','/',(string) $section),'/');
+		$section = trim(preg_replace('@/+@','/',$section),'/');
 
 		$tree = $_SESSION['_ACL']['tree'];
 		$user = $_SESSION['_ACL']['user'];
@@ -235,11 +234,9 @@ class xivo_user
 
 			if(xivo_issa($k,$tree) === false)
 				return(false);
-
-			if($r === false && is_bool(($user = xivo_ak($k,$user,true))) === true)
+			else if($r === false && is_bool(($user = xivo_ak($k,$user,true))) === true)
 				return($user);
-
-			if(isset($tree[$k]['child']) === true)
+			else if(isset($tree[$k]['child']) === true)
 				$tree = &$tree[$k]['child'];
 		}
 
@@ -258,11 +255,9 @@ class xivo_user
 	{
 		if(($meta = xivo_user::chk_meta($meta)) === false)
 			return(false);
-
-		if(xivo_user::is_valid($meta) === true)
+		else if(xivo_user::is_valid($meta) === true)
 			return(xivo_user::get($meta));
-
-		if(($class = xivo_user::load_class($meta)) === false)
+		else if(($class = xivo_user::load_class($meta)) === false)
 			return(false);
 
 		return(($ref = &xivo_user::set_get($meta,new $class())));

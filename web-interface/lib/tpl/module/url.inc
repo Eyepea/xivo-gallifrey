@@ -69,21 +69,22 @@ class xivo_tpl_url extends xivo_tpl_module
 
 	function img($url,$i18n=false)
 	{
+		$r = '';
+
 		$url = (string) $url;
-		$i18n = (bool) $i18n;
 
 		if(isset($url{0}) === false)
 			return($r);
 
 		if($url{0} !== '/')
 		{
-			if($i18n === true)
+			if((bool) $i18n === false)
+				$r = $this->get_option('script_root').'/'.$url;
+			else
 			{
 				$usr = &$this->_get_module('user');
 				$r = $this->get_option('script_root').'/img/i18n/'.$usr->get_info('language').'/'.$url;
 			}
-			else
-				$r = $this->get_option('script_root').'/'.$url;
 		}
 		else $r = $url;
 
@@ -108,8 +109,6 @@ class xivo_tpl_url extends xivo_tpl_module
 
 		$nb = xivo_uint($nb);
 		$page = xivo_uint($page,1);
-		$prev = (bool) $prev;
-		$next = (bool) $next;
 		$sep = $sep === null ? '&amp;' : (string) $sep;
 	
 		if($nb < 2)
@@ -148,7 +147,7 @@ class xivo_tpl_url extends xivo_tpl_module
 
 		$url = $this->url($url).$param.'page=';
 
-		if($prev === true)
+		if((bool) $prev === true)
 			$r .= $this->_mk_href_html($this->bbf('page_previous'),$url.($page - 1),$opt,$this->bbf('page_previous')).' - ';
 
 		reset($a);
@@ -169,7 +168,7 @@ class xivo_tpl_url extends xivo_tpl_module
 				$r .= $slt;
 		}
 
-		if($next === true)
+		if((bool) $next === true)
 			$r .= ' - '.$this->_mk_href_html($this->bbf('page_next'),$url.($page + 1),$opt,$this->bbf('page_next'));
 
 		return($r);

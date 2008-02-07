@@ -2,11 +2,12 @@
 
 function xivo_get_memory($value,$name=true)
 {
-	$get_name = strtolower((string) $value);
-	$name = (bool) $name;
+	$get_name = strtolower($value);
 
-	if($name === true &&
-	($get_name === 'memory_limit' || $get_name === 'post_max_size' || $get_name === 'upload_max_filesize') === true)
+	if((bool) $name === true 
+	&& ($get_name === 'memory_limit'
+	   || $get_name === 'post_max_size'
+	   || $get_name === 'upload_max_filesize') === true)
 		$mem = ini_get($get_name);
 	else
 		$mem = strtoupper($value);
@@ -76,26 +77,28 @@ function xivo_haslen($val,$key=null)
 
 function xivo_digit($str=0,$def=null,$t=false)
 {
-	if(ctype_digit($str) === true)
+	if(ctype_digit(strval($str)) === true)
 		return($str);
 	else if($def === null)
 		return(false);
 	else if((bool) $t === false)
 		return($def);
 
-	return((ctype_digit($def) === true ? $def : false));
+	return((ctype_digit(strval($def)) === true ? $def : false));
 }
 
 function xivo_xdigit($str=0,$def=null,$t=false)
 {
-	if(ctype_xdigit($str) === true)
+	if(ctype_xdigit(strval($str)) === true)
 		return($str);
 	else if($def === null)
 		return(false);
 	else if((bool) $t === false)
 		return($def);
 
-	return((ctype_xdigit($def) === true ? $def : false));
+	$def = strval($def);
+
+	return((ctype_xdigit(strval($def)) === true ? $def : false));
 }
 
 function xivo_uint($str,$def=0,$t=false)
@@ -150,7 +153,7 @@ function xivo_is_sgraph($str,$type='')
 	if(is_scalar($str) === false)
 		return(false);
 
-	$type = strtolower((string) $type);
+	$type = strtolower($type);
 
 	$reg = '\x00-\x08\x0B\x0C\x0E-\x1F\x7F';
 
@@ -200,7 +203,7 @@ function xivo_is_spunct($str,$type='',$space=true)
 	if(is_scalar($str) === false)
 		return(false);
 
-	$type = strtolower((string) $type);
+	$type = strtolower($type);
 
 	if($space === true)
 		$reg = '\x20-';
@@ -824,8 +827,7 @@ function xivo_printf_strip($format,$argc=0)
 	{
 		if(strlen($match[$i][0]) % 2 === 0)
 			continue;
-
-		if($argc <= $j)
+		else if($argc <= $j)
 		{
 			$format = substr($format,0,$match[$i][1]+$k).'%'.substr($format,$match[$i][1]+$k);
 			$k++;

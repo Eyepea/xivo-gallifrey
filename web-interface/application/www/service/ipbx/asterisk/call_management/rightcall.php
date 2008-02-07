@@ -35,21 +35,14 @@ switch($act)
 		$appoutcall = &$ipbx->get_application('outcall',null,false);
 		$rcalloutcall['list'] = $appoutcall->get_outcalls_list(null,array('name' => SORT_ASC),null,true);
 
-		do
+		if(isset($_QR['fm_send']) === true && xivo_issa('rightcall',$_QR) === true)
 		{
-			if(isset($_QR['fm_send']) === false || xivo_issa('rightcall',$_QR) === false)
-				break;
-
 			if($apprightcall->set_add($_QR) === false
 			|| $apprightcall->add() === false)
-			{
 				$result = $apprightcall->get_result();
-				break;
-			}
-
-			$_QRY->go($_HTML->url('service/ipbx/call_management/rightcall'),$param);
+			else
+				$_QRY->go($_HTML->url('service/ipbx/call_management/rightcall'),$param);
 		}
-		while(false);
 
 		xivo::load_class('xivo_sort');
 
@@ -152,23 +145,16 @@ switch($act)
 		$appoutcall = &$ipbx->get_application('outcall',null,false);
 		$rcalloutcall['list'] = $appoutcall->get_outcalls_list(null,array('name' => SORT_ASC),null,true);
 
-		do
+		if(isset($_QR['fm_send']) === true && xivo_issa('rightcall',$_QR) === true)
 		{
-			if(isset($_QR['fm_send']) === false || xivo_issa('rightcall',$_QR) === false)
-				break;
-
 			$return = &$result;
 
 			if($apprightcall->set_edit($_QR) === false
 			|| $apprightcall->edit() === false)
-			{
 				$result = $apprightcall->get_result();
-				break;
-			}
-
-			$_QRY->go($_HTML->url('service/ipbx/call_management/rightcall'),$param);
+			else
+				$_QRY->go($_HTML->url('service/ipbx/call_management/rightcall'),$param);
 		}
-		while(false);
 
 		xivo::load_class('xivo_sort');
 
@@ -270,10 +256,8 @@ switch($act)
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			if($apprightcall->get($values[$i]) === false)
-				continue;
-
-			$apprightcall->delete();
+			if($apprightcall->get($values[$i]) !== false)
+				$apprightcall->delete();
 		}
 
 		$_QRY->go($_HTML->url('service/ipbx/call_management/rightcall'),$param);

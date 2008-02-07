@@ -333,17 +333,14 @@ class xivo_i18n
 	{
 		if($this->_get_file_info($file,$namespace) === false)
 			return(false);
-
-		if($this->_get_cache_file() === true)
+		else if($this->_get_cache_file() === true)
 			return(true);
-
-		if(xivo_ak('filei18n',$this->_file,true) === false)
+		else if(xivo_ak('filei18n',$this->_file,true) === false)
 		{
 			trigger_error('I18N file not found',E_USER_WARNING);
 			return(false);
 		}
-
-		if(isset($this->_loop[$this->_file['filei18n']]) === true)
+		else if(isset($this->_loop[$this->_file['filei18n']]) === true)
 		{
 			trigger_error('I18N file already loaded: '.$this->_file['filei18n'],E_USER_WARNING);
 			return(false);
@@ -560,11 +557,9 @@ class xivo_i18n
 	{
 		if(is_array($this->_file) === false)
 			return(false);
-
-		if($this->_mk_babelfish() === true)
+		else if($this->_mk_babelfish() === true)
 			return(true);
-
-		if(($cache = $this->_dso->get_cache($this->_file)) === false || xivo_issa('obj',$cache) === false)
+		else if(($cache = $this->_dso->get_cache($this->_file)) === false || xivo_issa('obj',$cache) === false)
 			return(false);
 
 		$this->_file['filectime'] = $cache['filectime'];
@@ -646,8 +641,7 @@ class xivo_i18n
 	{
 		if(is_array($this->_file) === false)
 			return(false);
-
-		if(($file = xivo_file::is_f_r($this->_file['filei18n'])) === false)
+		else if(($file = xivo_file::is_f_r($this->_file['filei18n'])) === false)
 		{
 			trigger_error('I18N file not found',E_USER_WARNING);
 			return(false);

@@ -16,11 +16,9 @@ class xivo_user_user extends xivo_user_abstract
 		if(is_object($this->_dso) === false)
 			trigger_error('Invalid datastorage in '.__CLASS__,E_USER_ERROR);
 
-		$factory = (bool) $factory;
+		$this->_param['factory'] = (bool) $factory;
 
-		$this->_param['factory'] = $factory;
-
-		if($factory === false)
+		if($this->_param['factory'] === false)
 			$this->load_by_session();
 
 		$this->_load_acl();
@@ -28,8 +26,6 @@ class xivo_user_user extends xivo_user_abstract
 
 	function load_authent($type='')
 	{
-		$r = false;
-
 		$type = (string) $type;
 
 		if($type === 'internal')
@@ -38,7 +34,7 @@ class xivo_user_user extends xivo_user_abstract
 		$ini = xivo_user::load_get_init();
 
 		if(xivo_issa('authent',$ini) === false)
-			return($r);
+			return(false);
 
 		$authent = &$ini['authent'];
 
@@ -47,13 +43,15 @@ class xivo_user_user extends xivo_user_abstract
 
 		$type = $authent['type'];
 
+		$r = false;
+
 		switch($type)
 		{
 			case 'internal':
 				$r = parent::load_authent();
 				break;
 			case 'service':
-				// TODO: Authentification par service
+				// TODO: Authentification by service
 				break;
 			default:
 				$name = 'xivo_authent_'.$type;

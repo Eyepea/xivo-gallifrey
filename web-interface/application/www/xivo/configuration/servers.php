@@ -14,21 +14,13 @@ switch($act)
 	case 'add':
 		$result = null;
 
-		do
+		if(isset($_QR['fm_send']) === true)
 		{
-			if(isset($_QR['fm_send']) === false)
-				break;
-
 			if(($result = $_SVR->chk_values($_QR)) === false)
-			{
 				$result = $_SVR->get_filter_result();
-				break;
-			}
-
-			if($_SVR->add($result) !== false)
+			else if($_SVR->add($result) !== false)
 				$_QRY->go($_HTML->url('xivo/configuration/servers'),$param);
 		}
-		while(false);
 
 		$_HTML->set_var('info',$result);
 		$_HTML->set_var('element',$_SVR->get_element());
@@ -40,26 +32,18 @@ switch($act)
 
 		$return = &$info;
 
-		do
+		if(isset($_QR['fm_send']) === true)
 		{
-			if(isset($_QR['fm_send']) === false)
-				break;
-
 			$result = array();
 			$return = &$result;
 
 			$_QR['disable'] = $info['disable'];
 
 			if(($result = $_SVR->chk_values($_QR)) === false)
-			{
 				$result = $_SVR->get_filter_result();
-				break;
-			}
-
-			if($_SVR->edit($info['id'],$result) !== false)
+			else if($_SVR->edit($info['id'],$result) !== false)
 				$_QRY->go($_HTML->url('xivo/configuration/servers'),$param);
 		}
-		while(false);
 
 		$_HTML->set_var('id',$info['id']);
 		$_HTML->set_var('info',$return);

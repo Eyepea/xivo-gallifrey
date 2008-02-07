@@ -78,8 +78,7 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 	{
 		if(preg_match('/^[a-zA-Z]{3,}\((.*)\)$/',$val,$match) !== 1)
 			return(false);
-
-		if($match[1] === '' || ctype_print($match[1]) === true)
+		else if($match[1] === '' || ctype_print($match[1]) === true)
 			return(true);
 
 		return(false);
@@ -111,8 +110,13 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 
 		if($type !== 'group' && $type !== 'queue')
 			return(false);
-
-		if(($info = $this->_chk_dest($type.'features',$val,$id,null,$chknumber,$chkcontext,$context)) === false
+		else if(($info = $this->_chk_dest($type.'features',
+						  $val,
+						  $id,
+						  null,
+						  $chknumber,
+						  $chkcontext,
+						  $context)) === false
 		|| $disable === null)
 			return($info);
 
@@ -134,8 +138,6 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 	function _chk_dest($type,$val,$id=null,$disable=null,$chknumber=true,$chkcontext=false,$context=null)
 	{
 		$val = intval($val);
-		$chknumber = (bool) $chknumber;
-		$chkcontext = (bool) $chkcontext;
 
 		if($id !== null)
 			$id = xivo_ulongint($id);
@@ -143,8 +145,8 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 		if(($module = $this->_sre->get_module($type)) === false
 		|| ($info = $module->get($val,$disable)) === false
 		|| ($id !== null && $id === $info['id']) === true
-		|| ($chknumber === true && xivo_haslen($info['number']) === false) === true
-		|| ($chkcontext === true && $info['context'] !== $context) === true)
+		|| ((bool) $chknumber === true && xivo_haslen($info['number']) === false) === true
+		|| ((bool) $chkcontext === true && $info['context'] !== $context) === true)
 			return(false);
 
 		return($info);

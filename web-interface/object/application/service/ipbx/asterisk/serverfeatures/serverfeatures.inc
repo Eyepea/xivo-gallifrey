@@ -57,8 +57,6 @@ class xivo_application_service_asterisk_serverfeatures extends xivo_application_
 
 	function get_servers_list($disable=null,$opts=null,$assoc=false)
 	{
-		$assoc = (bool) $assoc;
-
 		if(is_array($opts) === true)
 			$opts = array_merge($opts,array('type' => $this->_param['type']));
 		else
@@ -83,7 +81,7 @@ class xivo_application_service_asterisk_serverfeatures extends xivo_application_
 
 		if(empty($r) === true)
 			$r = false;
-		else if($assoc === false)
+		else if((bool) $assoc === false)
 			$r = array_values($r);
 
 		return($r);
@@ -146,8 +144,7 @@ class xivo_application_service_asterisk_serverfeatures extends xivo_application_
 		{
 			if(($this->_return[] = $this->_serverfeatures->add($rs[$i])) !== false)
 				continue;
-
-			if($this->_status === 'add')
+			else if($this->_status === 'add')
 				$this->_reverse_add();
 			else if($this->_status === 'edit' || $this->_status === 'save')
 				$this->_reverse_edit();

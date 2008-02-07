@@ -13,14 +13,12 @@ do
 {
 	if($trunksip->delete($info['trunk']['id']) === false)
 		break;
-
-	if($tfeatures->delete($info['tfeatures']['id']) === false)
+	else if($tfeatures->delete($info['tfeatures']['id']) === false)
 	{
 		$trunksip->add_origin();
 		break;
 	}
-
-	if($info['tfeatures']['registerid'] !== 0)
+	else if($info['tfeatures']['registerid'] !== 0)
 	{
 		$generalsip = &$ipbx->get_module('generalsip');
 		if($generalsip->delete($info['tfeatures']['registerid']) === false)

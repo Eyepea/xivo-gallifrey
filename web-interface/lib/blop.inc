@@ -22,11 +22,9 @@ class blop
 
 		if(($this->_conf['extension'] = xivo_gat::load_get('extension',XIVO_PATH_LIBCONF)) === false)
 			die('ERR: Failed to load extension Array');
-
-		if(($this->_conf['datastorage'] = xivo_gat::load_get('datastorage',XIVO_PATH_LIBCONF)) === false)
+		else if(($this->_conf['datastorage'] = xivo_gat::load_get('datastorage',XIVO_PATH_LIBCONF)) === false)
 			die('ERR: Failed to load datastorage Array');
-
-		if(function_exists('version_compare') === false
+		else if(function_exists('version_compare') === false
 		|| version_compare(PHP_VERSION,$this->_conf['xivo']['sys']['php_version']['min'],'<') === true
 		|| version_compare(PHP_VERSION,$this->_conf['xivo']['sys']['php_version']['max'],'>=') === true)
 			die('ERR: Please update your PHP');
@@ -240,8 +238,7 @@ class blop
 
 		if(is_array($a) === false)
 			return(null);
-
-		if(isset($a['level']) === true)
+		else if(isset($a['level']) === true)
 			$this->_conf['xivo']['sys']['error']['level'] = (string) $a['level'];
 
 		if(isset($a['report_type']) === true)
@@ -298,20 +295,17 @@ class blop
 
 		if(is_array($a) === false)
 			die('ERR: Invalid datastorage configuration in XIVO ini file');
-
-		if(isset($a['type']) === false)
+		else if(isset($a['type']) === false)
 			die('ERR: Missing datastorage "type" configuration in XIVO ini file');
 
 		blop::load_class('xivo_datastorage');
 
 		if(xivo_datastorage::is_valid($a['type']) === false)
 			die('ERR: Invalid datastorage "type" configuration in XIVO ini file');
-
-		if(xivo_datastorage::chk_extension_exists($a['type']) === true
+		else if(xivo_datastorage::chk_extension_exists($a['type']) === true
 		&& $this->chk_extension_loaded(xivo_datastorage::get_extension_name($a['type'])) === false)
 			die('ERR: Datastorage '.$a['type'].' extension is not loaded');
-		
-		if(($dso = &xivo_gct::set_get(xivo_datastorage::factory($a['type'],$a),'XIVO_DSO')) === false)
+		else if(($dso = &xivo_gct::set_get(xivo_datastorage::factory($a['type'],$a),'XIVO_DSO')) === false)
 			die('ERR: Datastorage class '.$a['type'].' does not exist');
 
 		define('XIVO_DSO_TYPE',$dso->get_type());
@@ -346,8 +340,7 @@ class blop
 		{
 			if(is_array($v) === false)
 				die('ERR: Missing information in '.$k.' for template configuration in XIVO ini file');
-
-			if(isset($v['script_path']) === true && ($script_path = xivo_file::is_d_r($v['script_path'])) !== false)
+			else if(isset($v['script_path']) === true && ($script_path = xivo_file::is_d_r($v['script_path'])) !== false)
 				$this->_conf['tpl'][$k]['script_path'] = $script_path;
 			else
 				die('ERR: Missing or invalid script_path in '.$k.' for template configuration in XIVO ini file');
@@ -363,7 +356,7 @@ class blop
 				die('ERR: Missing or invalid tpl_path in '.$k.' for template configuration in XIVO ini file');
 
 			if(isset($v['script_root']) === true)
-				$this->_conf['tpl'][$k]['script_root'] = rtrim((string) $v['script_root'],XIVO_SEP_DIR);
+				$this->_conf['tpl'][$k]['script_root'] = rtrim($v['script_root'],XIVO_SEP_DIR);
 			else
 				$this->_conf['tpl'][$k]['script_root'] = '';
 		}
@@ -402,8 +395,7 @@ class blop
 
 	function chk_ini_extension($meta)
 	{
-		$meta = strtoupper((string) $meta);
-		$name = XIVO_EXT_CONST.$meta;
+		$name = XIVO_EXT_CONST.strtoupper($meta);
 
 		if(defined($name) === false)
 			return(false);

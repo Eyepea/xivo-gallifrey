@@ -9,8 +9,6 @@ class xivo_file_csv
 
 	function parse($data,$length=0,$delimiter=null,$enclosure=null,$isfile=true,$arr=null)
 	{
-		$isfile = (bool) $isfile;
-
 		$this->_length = $this->_chk_length($length);
 		
 		if(($delimiter = $this->_chk_delimiter($delimiter)) === false
@@ -20,18 +18,17 @@ class xivo_file_csv
 		$this->_delimiter = $delimiter;
 		$this->_enclosure = $enclosure;
 
-		if($isfile === true)
+		if((bool) $isfile === true)
 			return($this->_parse_file($data,$arr));
-		else
-			return($this->_parse_data($data,$arr));
+
+		return($this->_parse_data($data,$arr));
 	}
 
 	function _parse_file($file,$arr=null)
 	{
 		if(($this->_open_file($file)) === false)
 			return(false);
-
-		if(is_array($arr) === false)
+		else if(is_array($arr) === false)
 			$r = $this->_get_file_data();
 		else
 			$r = $this->_get_file_data_array_ref($arr);
@@ -176,8 +173,7 @@ class xivo_file_csv
 				{
 					if(isset($field[$i]) === false)
 						continue 2;
-
-					if(is_array($array_ref[$field[$i]]) === true)
+					else if(is_array($array_ref[$field[$i]]) === true)
 					{
 						$array_ref[$field[$i]]['ref'] = $ref;
 						$ref_rs = array_merge_recursive(xivo_clone($array_ref[$field[$i]]['array']),$ref_rs);
@@ -194,14 +190,12 @@ class xivo_file_csv
 
 					if(isset($array_ref[$ref]) === true)
 						continue;
-
-					if(is_array($arr[$ref]) === false)
+					else if(is_array($arr[$ref]) === false)
 					{
 						$array_ref[$ref] = '';
 						continue;
 					}
-
-					if(($array_ref[$ref] = xivo_build_array_ref($arr[$ref])) === false)
+					else if(($array_ref[$ref] = xivo_build_array_ref($arr[$ref])) === false)
 						return(false);
 				}
 			}

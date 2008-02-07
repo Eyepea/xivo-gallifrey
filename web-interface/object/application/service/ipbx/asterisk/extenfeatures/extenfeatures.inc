@@ -130,8 +130,7 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 		{
 			if(isset($arr['app']) === false)
 				return(false);
-
-			if(isset($arr['appdata']) === true)
+			else if(isset($arr['appdata']) === true)
 				$arr['appdata'] = $this->_mk_extenfeatures_appdata_vars($arr['appdata'],$val);
 
 			$r = $this->_extensions->new_exten($arr['app'],$arr,$val,$this->_context);
@@ -151,8 +150,7 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 
 		if(isset($line['app']) === false)
 			return(false);
-
-		if(isset($line['appdata']) === true)
+		else if(isset($line['appdata']) === true)
 			$line['appdata'] = $this->_mk_extenfeatures_appdata_vars($line['appdata'],$val);
 
 		$id = $this->_extensions->new_exten($line['app'],$line,$val,$this->_context);
@@ -166,8 +164,7 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 
 			if(isset($line['app']) === false)
 				return(false);
-
-			if(isset($line['appdata']) === true)
+			else if(isset($line['appdata']) === true)
 				$line['appdata'] = $this->_mk_extenfeatures_appdata_vars($line['appdata'],$val);
 
 			if($this->_extensions->set_exten($line['app'],$id,$line,$val,$this->_context) === false)
@@ -198,12 +195,7 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 
 		$this->set_extenumbers('save','extenfeatures',$number,$context);
 
-		if($this->get_errnb() > 0)
-			$r = false;
-		else
-			$r = true;
-
-		return($r);
+		return(($this->get_errnb() < 1));
 	}
 
 	function set_extenfeatures($arr)

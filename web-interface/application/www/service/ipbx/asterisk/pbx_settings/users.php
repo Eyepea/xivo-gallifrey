@@ -50,10 +50,8 @@ switch($act)
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			if($appuser->get($values[$i]) === false)
-				continue;
-
-			$appuser->delete();
+			if($appuser->get($values[$i]) !== false)
+				$appuser->delete();
 		}
 
 		$ipbx->discuss('xivo[userlist,update]');
@@ -75,8 +73,7 @@ switch($act)
 		{
 			if($appuser->get($values[$i]) === false)
 				continue;
-
-			if($act === 'disables')
+			else if($act === 'disables')
 				$appuser->disable();
 			else
 				$appuser->enable();

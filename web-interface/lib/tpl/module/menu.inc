@@ -52,7 +52,7 @@ class xivo_tpl_menu extends xivo_tpl_module
 		if($ext === '')
 			$ext = XIVO_TPL_FILE_EXT;
 
-		$file = 'bloc'.XIVO_SEP_DIR.'menu'.XIVO_SEP_DIR.ltrim((string) $file,XIVO_SEP_DIR).'.'.$ext;
+		$file = 'bloc'.XIVO_SEP_DIR.'menu'.XIVO_SEP_DIR.ltrim($file,XIVO_SEP_DIR).'.'.$ext;
 
 		if(xivo_file::is_f_r($this->get_option('tpl_path').XIVO_SEP_DIR.$file) !== false)
 			$this->set_file('menu_'.$where,$file);

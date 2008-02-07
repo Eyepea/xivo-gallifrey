@@ -47,11 +47,7 @@ if(isset($_QR['fm_send']) === true)
 				else
 					$exten = '';
 
-				if(isset($_QR['extenfeatures'][$key]['enable']) === false)
-					$rs['commented'] = true;
-				else
-					$rs['commented'] = false;
-
+				$rs['commented'] = isset($_QR['extenfeatures'][$key]['enable']) === false;
 				$rs['name'] = $key;
 				$rs['exten'] = $exten;
 

@@ -123,14 +123,12 @@ class xivo_filter
 	{
 		$nb = 0;
 		$email = strtolower(strval($email));
-		$strict = (bool) $strict;
 		$len = strlen($email);
 
 		if($len < 6 || $len > 255
 		|| preg_match('/^[a-z0-9_-]+(?:\.[a-z0-9_-]+)*@[a-z0-9-]+(?:\.[a-z0-9-]+)*\.[a-z]{2,4}$/',$email) !== 1)
 			return(false);
-
-		if($strict === false || function_exists('getmxrr') === false)
+		else if((bool) $strict === false || function_exists('getmxrr') === false)
 			return($email);
 
 		$a = explode('@',$email);
@@ -660,7 +658,7 @@ class xivo_filter
 			}
 		}
 
-		if(isset($arr['regexp']) === true && preg_match((string) $arr['regexp'],$value) !== 1)
+		if(isset($arr['regexp']) === true && preg_match($arr['regexp'],$value) !== 1)
 		{
 			$this->_set_error($key,'regexp false');
 			return(false);
@@ -694,9 +692,8 @@ class xivo_filter
 	{
 		$arr = (array) $arr;
 		$v = (array) $v;
-		$set = (bool) $set;
 	
-		if($set === false && isset($v[$key]) === false)
+		if((bool) $set === false && isset($v[$key]) === false)
 			return(true);
 	
 		$set = isset($arr['set']) === false ? true : (bool) $arr['set'];

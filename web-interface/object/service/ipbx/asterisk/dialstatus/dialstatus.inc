@@ -48,8 +48,7 @@ class xivo_service_asterisk_dialstatus extends xivo_service_asterisk_abstract
 	{
 		if(is_array($arr) === false)
 			return(false);
-
-		if($arr['type'] !== 'application')
+		else if($arr['type'] !== 'application')
 			$arr['applicationval'] = '';
 
 		return(parent::add($arr,$id));
@@ -59,8 +58,7 @@ class xivo_service_asterisk_dialstatus extends xivo_service_asterisk_abstract
 	{
 		if(is_array($arr) === false)
 			return(false);
-
-		if(isset($arr['type']) === true && $arr['type'] !== 'application')
+		else if(isset($arr['type']) === true && $arr['type'] !== 'application')
 			$arr['applicationval'] = '';
 
 		return(parent::edit($id,$arr));
@@ -90,8 +88,7 @@ class xivo_service_asterisk_dialstatus extends xivo_service_asterisk_abstract
 	{
 		if(is_string($category) === false || is_string($type) === false)
 			return(false);
-
-		if($category === $type)
+		else if($category === $type)
 			$id = $categoryval;
 		else
 			$id = null;

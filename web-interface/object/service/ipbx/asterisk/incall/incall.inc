@@ -49,8 +49,7 @@ class xivo_service_asterisk_incall extends xivo_service_asterisk_abstract
 	{
 		if(is_array($arr) === false)
 			return(false);
-
-		if(isset($arr['exten']) === true)
+		else if(isset($arr['exten']) === true)
 			$arr['exten'] = $this->_sre->clean_extension($arr['exten']);
 
 		return(parent::add($arr,$id));
@@ -60,8 +59,7 @@ class xivo_service_asterisk_incall extends xivo_service_asterisk_abstract
 	{
 		if(is_array($arr) === false)
 			return(false);
-
-		if(isset($arr['exten']) === true)
+		else if(isset($arr['exten']) === true)
 			$arr['exten'] = $this->_sre->clean_extension($arr['exten']);
 
 		return(parent::edit($id,$arr,$disable));

@@ -396,8 +396,7 @@ class xivo_service_asterisk_agent extends xivo_service_asterisk_staticconf
 	{
 		if(($info = $this->get($id)) === false)
 			return(false);
-
-		if(isset($info['var_metric']) === true)
+		else if(isset($info['var_metric']) === true)
 		{
 			$this->_conf = &$this->_staticconf['conf'];
 
@@ -484,8 +483,7 @@ class xivo_service_asterisk_agent extends xivo_service_asterisk_staticconf
 
 			if(($pinfo = $this->_chk_free_var_metric($ref['pos_metric'])) === false)
 				continue;
-
-			if($this->delete($pinfo['id']) === false)
+			else if($this->delete($pinfo['id']) === false)
 			{
 				$ret = $i;
 				break;

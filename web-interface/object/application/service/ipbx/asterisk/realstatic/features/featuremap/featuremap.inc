@@ -60,12 +60,7 @@ class xivo_application_service_asterisk_realstatic_features_featuremap extends x
 
 		$this->set_extenumbers('save','featuremap',$number,$context);
 
-		if($this->get_errnb() > 0)
-			$r = false;
-		else
-			$r = true;
-
-		return($r);
+		return(($this->get_errnb() < 1));
 	}
 
 	function save()

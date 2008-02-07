@@ -36,8 +36,7 @@ class xivo_server extends xivo_libdatastorage_abstract
 	{
 		if(is_array($arr) === false)
 			return(false);
-
-		if(empty($id) === false)
+		else if(empty($id) === false)
 			$arr['dcreate'] = gmmktime();
 
 		return(parent::add($arr,$id));

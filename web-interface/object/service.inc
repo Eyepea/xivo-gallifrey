@@ -28,8 +28,7 @@ class xivo_service
 	{
 		if($this->is_valid($name) === true)
 			return(null);
-
-		if(xivo_issa($name,$this->_conf) === false
+		else if(xivo_issa($name,$this->_conf) === false
 		|| ($init = $this->_load_init_file($name)) === false
 		|| xivo_issa('general',$init) === false
 		|| isset($init['general']['name'],$this->_conf[$name][$init['general']['name']]) === false)

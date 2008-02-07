@@ -155,8 +155,6 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 	function get_queues_list($disable=null,$order=null,$limit=null,$assoc=false)
 	{
-		$assoc = (bool) $assoc;
-
 		if(($rs = $this->_queuefeatures->get_all(null,true,$order,$limit)) === false
 		|| ($nb = count($rs)) === 0)
 		{
@@ -185,7 +183,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 		if(empty($r) === true)
 			$r = false;
-		else if($assoc === false)
+		else if((bool) $assoc === false)
 			$r = array_values($r);
 
 		return($r);
@@ -253,12 +251,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		if(xivo_issa('agent',$arr) === true)
 			$this->set_agent($action,$arr['agent'],$name);
 
-		if($this->get_errnb() > 0)
-			$r = false;
-		else
-			$r = true;
-
-		return($r);
+		return(($this->get_errnb() < 1));
 	}
 
 	function set_queuefeatures($arr)
@@ -418,8 +411,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 		if(($nb = count($list)) === 0)
 			return(null);
-
-		if($action === 'edit')
+		else if($action === 'edit')
 		{
 			if(xivo_issa('qfeatures',$this->_info) === false)
 				return(false);

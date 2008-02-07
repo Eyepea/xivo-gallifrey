@@ -37,11 +37,8 @@ $rightcallsort = new xivo_sort(array('browse' => 'rightcall','key' => 'name'));
 if(($rightcall['list'] = $ipbx->get_rightcall_list(null,true)) !== false)
 	uasort($rightcall['list'],array(&$rightcallsort,'str_usort'));
 
-do
+if(isset($_QR['fm_send']) === true && xivo_issa('protocol',$_QR) === true && xivo_issa('ufeatures',$_QR) === true)
 {
-	if(isset($_QR['fm_send']) === false || xivo_issa('protocol',$_QR) === false || xivo_issa('ufeatures',$_QR) === false)
-		break;
-
 	$return = &$result;
 
 	if(xivo_issa('allow',$_QR['protocol']) === false)
@@ -79,14 +76,13 @@ do
 		if(xivo_issa('protocol',$result) === true
 		&& isset($result['protocol']['allow']) === true)
 			$allow = $result['protocol']['allow'];
-		break;
 	}
-
-	$ipbx->discuss('xivo[userlist,update]');
-
-	$_QRY->go($_HTML->url('service/ipbx/pbx_settings/users'),$param);
+	else
+	{
+		$ipbx->discuss('xivo[userlist,update]');
+		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/users'),$param);
+	}
 }
-while(false);
 
 if($gmember['list'] !== false && xivo_ak('groupmember',$return) === true)
 {

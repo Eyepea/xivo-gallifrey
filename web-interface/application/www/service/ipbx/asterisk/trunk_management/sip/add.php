@@ -70,8 +70,7 @@ do
 
 	if($add === false || ($trunkid = $trunksip->add($result['trunk'])) === false)
 		break;
-
-	if($register !== '' && ($registerid = $generalsip->add_name_val('register',$register)) === false)
+	else if($register !== '' && ($registerid = $generalsip->add_name_val('register',$register)) === false)
 		$registerid = 0;
 
 	$result['tfeatures']['registerid'] = $registerid;

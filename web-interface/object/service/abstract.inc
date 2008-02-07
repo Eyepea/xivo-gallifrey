@@ -26,12 +26,11 @@ class xivo_service_abstract
 
 		$type = (string) $type;
 		$name = (string) $name;
-		$ret = (bool) $ret;
 
 		if(isset($this->_conf) === true
 		&& xivo_issa($type,$this->_conf) === true
 		&& isset($this->_conf[$type][$name]) === true)
-			$r = $ret === true ? $this->_conf[$type][$name] : true;
+			$r = (bool) $ret === false ? true : $this->_conf[$type][$name];
 
 		return($r);
 	}

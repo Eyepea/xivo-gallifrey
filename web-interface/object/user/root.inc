@@ -16,11 +16,9 @@ class xivo_user_root extends xivo_user_abstract
 		if(is_object($this->_dso) === false)
 			trigger_error('Invalid datastorage in '.__CLASS__,E_USER_ERROR);
 
-		$factory = (bool) $factory;
+		$this->_param['factory'] = (bool) $factory;
 
-		$this->_param['factory'] = $factory;
-
-		if($factory === false)
+		if($this->_param['factory'] === false)
 			$this->load_by_session();
 
 		$this->_load_acl();

@@ -22,10 +22,10 @@ class xivo_application_service_asterisk_webservices_phonebook_sql extends xivo_a
 				       $this->_table['phonebook'].'.id = '.$this->_table['phonebooknumber'].'.phonebookid',
 				       null,
 				       array('phone' => 'number','type'));
-		$this->_dso->wherecontain('number',$value,$this->_table['phonebooknumber']);
-		$this->_dso->orwherecontain('firstname',$value,$this->_table['phonebook']);
-		$this->_dso->orwherecontain('lastname',$value,$this->_table['phonebook']);
-		$this->_dso->orwherecontain('displayname',$value,$this->_table['phonebook']);
+		$this->_dso->wherecontain('number',$value,true,$this->_table['phonebooknumber']);
+		$this->_dso->orwherecontain('firstname',$value,true,$this->_table['phonebook']);
+		$this->_dso->orwherecontain('lastname',$value,true,$this->_table['phonebook']);
+		$this->_dso->orwherecontain('displayname',$value,true,$this->_table['phonebook']);
 
 		if($this->_dso->aggregate_where() === false)
 			return(false);

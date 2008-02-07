@@ -18,8 +18,7 @@ class xivo_file_fileinfo
 	{
 		if(($file = xivo_file::is_f($file)) === false)
 			return(false);
-
-		if(is_resource($this->_finfo) === false)
+		else if(is_resource($this->_finfo) === false)
 			$this->open(FILEINFO_MIME);
 
 		$info = finfo_file($this->_finfo,$file);

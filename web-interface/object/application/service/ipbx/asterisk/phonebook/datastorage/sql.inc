@@ -21,20 +21,20 @@ class xivo_application_service_asterisk_phonebook_sql extends xivo_application_s
 		$this->_dso->leftjoin($this->_table['phonebooknumber'],
 				      $this->_table['phonebook'].'.id = '.$this->_table['phonebooknumber'].'.phonebookid');
 
-		$this->_dso->wherecontain('address1',$value,$this->_table['phonebookaddress']);
-		$this->_dso->orwherecontain('address2',$value,$this->_table['phonebookaddress']);
-		$this->_dso->orwherecontain('city',$value,$this->_table['phonebookaddress']);
-		$this->_dso->orwherecontain('state',$value,$this->_table['phonebookaddress']);
-		$this->_dso->orwherecontain('zipcode',$value,$this->_table['phonebookaddress']);
-		$this->_dso->orwherecontain('country',$value,$this->_table['phonebookaddress']);
-		$this->_dso->orwherecontain('number',$value,$this->_table['phonebooknumber']);
-		$this->_dso->orwherecontain('firstname',$value,$this->_table['phonebook']);
-		$this->_dso->orwherecontain('lastname',$value,$this->_table['phonebook']);
-		$this->_dso->orwherecontain('displayname',$value,$this->_table['phonebook']);
-		$this->_dso->orwherecontain('society',$value,$this->_table['phonebook']);
-		$this->_dso->orwherecontain('email',$value,$this->_table['phonebook']);
-		$this->_dso->orwherecontain('url',$value,$this->_table['phonebook']);
-		$this->_dso->orwherecontain('description',$value,$this->_table['phonebook']);
+		$this->_dso->wherecontain('address1',$value,true,$this->_table['phonebookaddress']);
+		$this->_dso->orwherecontain('address2',$value,true,$this->_table['phonebookaddress']);
+		$this->_dso->orwherecontain('city',$value,true,$this->_table['phonebookaddress']);
+		$this->_dso->orwherecontain('state',$value,true,$this->_table['phonebookaddress']);
+		$this->_dso->orwherecontain('zipcode',$value,true,$this->_table['phonebookaddress']);
+		$this->_dso->orwherecontain('country',$value,true,$this->_table['phonebookaddress']);
+		$this->_dso->orwherecontain('number',$value,true,$this->_table['phonebooknumber']);
+		$this->_dso->orwherecontain('firstname',$value,true,$this->_table['phonebook']);
+		$this->_dso->orwherecontain('lastname',$value,true,$this->_table['phonebook']);
+		$this->_dso->orwherecontain('displayname',$value,true,$this->_table['phonebook']);
+		$this->_dso->orwherecontain('society',$value,true,$this->_table['phonebook']);
+		$this->_dso->orwherecontain('email',$value,true,$this->_table['phonebook']);
+		$this->_dso->orwherecontain('url',$value,true,$this->_table['phonebook']);
+		$this->_dso->orwherecontain('description',$value,true,$this->_table['phonebook']);
 
 		if($this->_dso->aggregate_where() === false)
 			return(false);

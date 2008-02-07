@@ -553,23 +553,21 @@ class xivo_tpl_form extends xivo_tpl_module
 	{
 		if($this->_param['desc'] === false)
 			return(false);
-
-		if(is_scalar($this->_param['desc']) === true)
+		else if(is_scalar($this->_param['desc']) === true)
 		{
 			$this->_render = '<span class="fm-desc">'.(string) $this->_param['desc'].'</span>'.$this->_render;	
 			return(null);
 		}
-
-		if(is_array($this->_param['desc']) === true && isset($this->_param['desc'][0],$this->_param['desc'][1]) === true)
+		else if(is_array($this->_param['desc']) === true && isset($this->_param['desc'][0],$this->_param['desc'][1]) === true)
 		{
 			$this->_mk_field();
 
 			$this->_param['desc'][1] = '<span class="fm-desc">'.(string) $this->_param['desc'][1].'</span>';
 
 			if(isset($this->_param['desc'][2]) === false)
-				$this->_render = sprintf((string) $this->_param['desc'][0],$this->_mk_label($this->_param['desc'][1]),$this->_render);
+				$this->_render = sprintf($this->_param['desc'][0],$this->_mk_label($this->_param['desc'][1]),$this->_render);
 			else
-				$this->_render = sprintf((string) $this->_param['desc'][0],$this->_render,$this->_mk_label($this->_param['desc'][1]));
+				$this->_render = sprintf($this->_param['desc'][0],$this->_render,$this->_mk_label($this->_param['desc'][1]));
 
 			$this->_param['label'] = $this->_param['field'] = false;
 		}
@@ -644,8 +642,7 @@ class xivo_tpl_form extends xivo_tpl_module
 	{
 		if(is_array($render) === false)
 			return(null);
-
-		if($this->_param['optgroup'] !== false)
+		else if($this->_param['optgroup'] !== false)
 		{
 			if(isset($render[3]{0}) === false)
 				$render[3] = '&nbsp;';
@@ -693,8 +690,7 @@ class xivo_tpl_form extends xivo_tpl_module
 
 						if(($render[3] = $this->bbf($concat)) !== $concat)
 							break;
-
-						if(is_array($param) === true)
+						else if(is_array($param) === true)
 							$render[3] = $this->bbf($this->_param['bbf'][1],$param);
 						else
 							$render[3] = $this->bbf($this->_param['bbf'][1],$nparam);
@@ -752,8 +748,7 @@ class xivo_tpl_form extends xivo_tpl_module
 
 						if(($render[2] = $this->bbf($concat)) !== $concat)
 							break;
-
-						if(is_array($param) === true)
+						else if(is_array($param) === true)
 							$render[2] = $this->bbf($this->_param['bbf'][1],$param);
 						else
 							$render[2] = $this->bbf($this->_param['bbf'][1],$nparam);

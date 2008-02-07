@@ -21,11 +21,9 @@ class xivo_user_acl
 
 		$this->_dso = &$dso;
 
-		$factory = (bool) $factory;
+		$this->_param['factory'] = (bool) $factory;
 
-		$this->_param['factory'] = $factory;
-
-		if($factory === false)
+		if($this->_param['factory'] === false)
 			$this->load_in_session();
 	}
 
@@ -196,7 +194,7 @@ class xivo_user_acl
 		if($user === null || is_bool($user) === true)
 			return((bool) $user);
 
-		$section = trim(preg_replace('@/+@','/',(string) $section),'/');
+		$section = trim(preg_replace('@/+@','/',$section),'/');
 		$tree = $this->get_tree();
 
 		$arr = explode('/',$section);

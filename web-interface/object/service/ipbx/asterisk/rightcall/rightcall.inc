@@ -35,8 +35,7 @@ class xivo_service_asterisk_rightcall extends xivo_service_asterisk_abstract
 	{
 		if(is_array($arr) === false)
 			return(false);
-
-		if(isset($arr['name']) === true)
+		else if(isset($arr['name']) === true)
 			$arr['name'] = strtolower($arr['name']);
 
 		return(parent::add($arr,$id));
@@ -46,8 +45,7 @@ class xivo_service_asterisk_rightcall extends xivo_service_asterisk_abstract
 	{
 		if(is_array($arr) === false)
 			return(false);
-
-		if(isset($arr['name']) === true)
+		else if(isset($arr['name']) === true)
 			$arr['name'] = strtolower($arr['name']);
 
 		return(parent::edit($id,$arr,$disable));

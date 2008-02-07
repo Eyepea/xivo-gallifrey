@@ -20,9 +20,9 @@ class xivo_sort
 			$this->_param['browse'] = (array) $param['browse'];
 
 		if(isset($param['sort']) === true)
-			$this->_param['sort'] = $this->_chk_sort($param['sort']);
+			$this->_param['sort'] = $this->_set_sort($param['sort']);
 		else
-			$this->_param['sort'] = $this->_chk_sort();
+			$this->_param['sort'] = $this->_set_sort();
 
 		if(isset($param['type']) === true)
 			$this->_param['type'] = $this->_chk_type($param['type']);
@@ -44,19 +44,19 @@ class xivo_sort
 		$this->_nb++;
 	}
 
-	function _chk_sort($sort=SORT_ASC)
+	function _set_sort($sort='')
 	{
+		$sort = strtoupper($sort);
+
 		switch($sort)
 		{
-			case 'desc':
+			case 'D':
+			case 'DESC':
 			case SORT_DESC:
-				$sort = SORT_DESC;
-				break;
-			default:
-				$sort = SORT_ASC;
+				return(SORT_DESC);
 		}
 
-		return($sort);
+		return(SORT_ASC);
 	}
 
 	function _chk_type($type=SORT_REGULAR)
@@ -82,29 +82,27 @@ class xivo_sort
 
 	function multisort($data)
 	{
-		if(is_array($data) === false)
-			return($data);
-
-		$val = array_values($data);
-
-		if(($nb = count($val)) === 0)
+		if(is_array($data) === false || empty($data) === true)
 			return($data);
 
 		$rs = array();
 
-		for($i = 0;$i < $nb;$i++)
+		$i = -1;
+
+		foreach($data as $val)
 		{
-			$rs[$i] = array();
+			$rs[++$i] = array();
 
 			for($j = 0;$j < $this->_nb;$j++)
 			{
-				$rs[$i][$j] = $val[$i];
+				$rs[$i][$j] = $val;
 				$multi = &$this->_multi[$j];
 
-				if(($browse = $this->_multibrowse($multi['browse'],$val[$i])) !== false)
+				if(($browse = $this->_multibrowse($multi['browse'],$val)) !== false)
 					$rs[$i][$j] = $browse;
 
-				if($multi['key'] !== false && is_array($rs[$i][$j]) === true
+				if($multi['key'] !== false
+				&& is_array($rs[$i][$j]) === true
 				&& isset($rs[$i][$j][$multi['key']]) === true)
 					$rs[$i][$j] = &$rs[$i][$j][$multi['key']];
 			}
@@ -157,7 +155,9 @@ class xivo_sort
 			$r['b'] = $browse['b'];
 		}
 
-		if($this->_param['key'] !== false && is_array($r['a']) === true && is_array($r['b']) === true
+		if($this->_param['key'] !== false
+		&& is_array($r['a']) === true
+		&& is_array($r['b']) === true
 		&& isset($r['a'][$this->_param['key']],$r['b'][$this->_param['key']]) === true)
 		{
 			$r['a'] = &$r['a'][$this->_param['key']];
@@ -171,22 +171,19 @@ class xivo_sort
 	{
 		$r = array('a' => $a,'b' => $b);
 
-		if(is_array($this->_param['browse']) === false)
+		if(is_array($this->_param['browse']) === false
+		|| empty($this->_param['browse']) === true)
 			return($r);
 
-		$val = array_values($this->_param['browse']);
-
-		if(($nb = count($val)) === 0)
-			return($r);
-
-		for($i = 0;$i < $nb;$i++)
+		foreach($this->_param['browse'] as $val)
 		{
-			if(is_array($r['a']) === false || is_array($r['b']) === false
-			|| isset($r['a'][$val[$i]],$r['b'][$val[$i]]) === false)
+			if(is_array($r['a']) === false
+			|| is_array($r['b']) === false
+			|| isset($r['a'][$val],$r['b'][$val]) === false)
 				return($r);
 
-			$r['a'] = &$r['a'][$val[$i]];
-			$r['b'] = &$r['b'][$val[$i]];
+			$r['a'] = &$r['a'][$val];
+			$r['b'] = &$r['b'][$val];
 		}
 
 		return($r);
@@ -194,20 +191,17 @@ class xivo_sort
 
 	function _multibrowse($browse,$arr)
 	{
-		if(is_array($browse) === false || is_array($arr) === false)
+		if(is_array($browse) === false
+		|| empty($browse) === true
+		|| is_array($arr) === false)
 			return(false);
 
-		$val = array_values($browse);
-
-		if(($nb = count($val)) === 0)
-			return($arr);
-
-		for($i = 0;$i < $nb;$i++)
+		foreach($browse as $val)
 		{
-			if(is_array($arr) === false || isset($arr[$val[$i]]) === false)
+			if(is_array($arr) === false || isset($arr[$val]) === false)
 				return($arr);
 
-			$arr = &$arr[$val[$i]];
+			$arr = &$arr[$val];
 		}
 
 		return($arr);

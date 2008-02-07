@@ -8,8 +8,7 @@ class xivo_libconfig_abstract
 
 		if(isset($this->_conf) === false)
 			return(false);
-
-		if(empty($this->_conf) === false)
+		else if(empty($this->_conf) === false)
 			return(null);
 
 		$dir = $dir.XIVO_SEP_DIR.'config';
@@ -26,12 +25,11 @@ class xivo_libconfig_abstract
 
 		$type = (string) $type;
 		$name = (string) $name;
-		$ret = (bool) $ret;
 
 		if(isset($this->_conf) === true
 		&& xivo_issa($type,$this->_conf) === true
 		&& isset($this->_conf[$type][$name]) === true)
-			$r = $ret === true ? $this->_conf[$type][$name] : true;
+			$r = (bool) $ret === false ? true : $this->_conf[$type][$name];
 
 		return($r);
 	}
@@ -256,18 +254,14 @@ class xivo_libconfig_abstract
 
 	function chk_values($arr,$set=true,$setval=true,$empty=true)
 	{
-		$set = (bool) $set;
-		$setval = (bool) $setval;
-		$empty = (bool) $empty;
-
 		if(isset($this->_filter) === false
 		|| ($this->_filter === false && $this->_load_filter() === false) === true
-		|| $this->_filter->chk($arr,$setval) === false)
+		|| $this->_filter->chk($arr,(bool) $setval) === false)
 			return(false);
 
 		$rs = $this->_filter->get_result();
 
-		if($set === false
+		if((bool) $set === false
 		|| is_array($rs) === false
 		|| empty($rs) === true)
 			return($rs);
@@ -296,7 +290,7 @@ class xivo_libconfig_abstract
 			$r[$key] = $val;
 		}
 
-		if($empty === false && empty($r) === true)
+		if((bool) $empty === false && empty($r) === true)
 			return(false);
 			
 		return($r);
@@ -318,14 +312,11 @@ class xivo_libconfig_abstract
 	{
 		if($this->isset_element_value($key) === false)
 			return($val);
-
-		if(($value = $this->get_element_value($key)) === false)
+		else if(($value = $this->get_element_value($key)) === false)
 			return(false);
-
-		if(is_scalar($value) === true)
+		else if(is_scalar($value) === true)
 			return($value);
-
-		if(xivo_ak($val,$value) === true)
+		else if(xivo_ak($val,$value) === true)
 			return($value[$val]);
 
 		return(false);
@@ -335,8 +326,6 @@ class xivo_libconfig_abstract
 	{
 		$r = '';
 		
-		$valid = (bool) $valid;
-
 		if(($val = $this->chk_value($key,$value)) !== false)
 		{
 			if(($setval = $this->_set_value($key,$val)) !== false)
@@ -344,7 +333,7 @@ class xivo_libconfig_abstract
 			else
 				$r = $val;
 		}
-		else if($valid === true)
+		else if((bool) $valid === true)
 			return(false);
 
 		if(($defval = $this->get_element_default($key)) !== false

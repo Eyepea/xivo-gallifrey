@@ -20,14 +20,12 @@ class xivo_gateclass
 
 		if(is_object($obj) === false)
 			return(false);
-
-		if($name === '')
+		else if($name === '')
 			$name = get_class($obj);
 
 		if($name !== '' && preg_match('/^[a-z0-9\-_]+$/i',$name) !== 1)
 			return(false);
-
-		if(isset($this->_class[$name]) === false)
+		else if(isset($this->_class[$name]) === false)
 			$this->_class[$name] = &$obj;
 
 		return(true);

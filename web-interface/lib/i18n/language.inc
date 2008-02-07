@@ -32,7 +32,7 @@ class xivo_i18n_language
 
 	function is_valid($lang)
 	{
-		$lang = strtolower((string) $lang);
+		$lang = strtolower($lang);
 
 		if(xivo_issa($lang,$this->_conf) === false)
 			return(false);

@@ -20,8 +20,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		|| ($this->_extenumbers = &$this->get_abstract('extenumbers')) === false
 		|| ($this->_extensions = &$this->_service->get_module('extensions')) === false)
 			return(false);
-		
-		if((bool) $components === true)
+		else if((bool) $components === true)
 			$this->load_components();
 
 		return(true);
@@ -112,8 +111,6 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 
 	function get_outcalls_list($disable=null,$order=null,$limit=null,$assoc=false)
 	{
-		$assoc = (bool) $assoc;
-
 		if(($rs = $this->_outcall->get_all($disable,true,$order,$limit)) === false
 		|| ($nb = count($rs)) === 0)
 		{
@@ -125,7 +122,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 
 		$r = array();
 
-		if($assoc === false)
+		if((bool) $assoc === false)
 			$r = &$rs;
 		else
 		{
@@ -188,12 +185,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		if(xivo_issa('rightcall',$arr) === true)
 			$this->set_rightcall($arr['rightcall']);
 
-		if($this->get_errnb() > 0)
-			$r = false;
-		else
-			$r = true;
-
-		return($r);
+		return(($this->get_errnb() < 1));
 	}
 
 	function set_outcall($arr)
@@ -657,12 +649,9 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 
 	function _enable_disable_outcall($disable=false)
 	{
-		$disable = (bool) $disable;
-
 		if(xivo_issa('outcall',$this->_info) === false)
 			return(false);
-
-		if($disable === false)
+		else if((bool) $disable === false)
 			$r = $this->_outcall->enable($this->_info['outcall']['id']);
 		else
 			$r = $this->_outcall->disable($this->_info['outcall']['id']);
@@ -685,8 +674,6 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 
 	function _enable_disable_exten($disable=false)
 	{
-		$disable = (bool) $disable;
-
 		if(xivo_issa('outcall',$this->_info) === false)
 			return(false);
 
@@ -694,7 +681,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		$exten_where['exten'] = $this->_info['outcall']['exten'];
 		$exten_where['context'] = $this->_info['outcall']['context'];
 
-		if($disable === false)
+		if((bool) $disable === false)
 			$r = $this->_extensions->enable_where($exten_where);
 		else
 			$r = $this->_extensions->disable_where($exten_where);

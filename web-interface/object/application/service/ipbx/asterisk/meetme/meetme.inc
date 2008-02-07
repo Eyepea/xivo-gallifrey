@@ -165,12 +165,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 
 		$this->set_extenumbers($action,$number,$context);
 
-		if($this->get_errnb() > 0)
-			$r = false;
-		else
-			$r = true;
-
-		return($r);
+		return(($this->get_errnb() < 1));
 	}
 
 	function set_meetmefeatures($arr)
@@ -504,8 +499,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 	{
 		if(xivo_issa('mfeatures',$this->_info) === false)
 			return(false);
-
-		if(($incall = &$this->_service->get_module('incall')) !== false)
+		else if(($incall = &$this->_service->get_module('incall')) !== false)
 		{
 			$incall_where = array();
 			$incall_where['type'] = 'meetme';

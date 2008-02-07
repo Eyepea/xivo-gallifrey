@@ -38,8 +38,7 @@ class xivo_service_asterisk_outcall extends xivo_service_asterisk_abstract
 	{
 		if(is_array($arr) === false)
 			return(false);
-
-		if(isset($arr['name']) === true)
+		else if(isset($arr['name']) === true)
 			$arr['name'] = strtolower($arr['name']);
 
 		if(isset($arr['exten']) === true)
@@ -52,8 +51,7 @@ class xivo_service_asterisk_outcall extends xivo_service_asterisk_abstract
 	{
 		if(is_array($arr) === false)
 			return(false);
-
-		if(isset($arr['name']) === true)
+		else if(isset($arr['name']) === true)
 			$arr['name'] = strtolower($arr['name']);
 
 		if(isset($arr['exten']) === true)

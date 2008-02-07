@@ -263,8 +263,7 @@ class xivo_service_asterisk_realstatic extends xivo_service_asterisk_abstract
 	{
 		if(is_array($arr) === false)
 			return(false);
-
-		if(array_key_exists('var_val',$arr) === true && $arr['var_val'] === null)
+		else if(array_key_exists('var_val',$arr) === true && $arr['var_val'] === null)
 			$arr['commented'] = true;
 		else if(isset($arr['commented']) === true)
 			$arr['commented'] = (bool) $arr['commented'];

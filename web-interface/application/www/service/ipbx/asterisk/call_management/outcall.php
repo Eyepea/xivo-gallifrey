@@ -26,22 +26,14 @@ switch($act)
 		if(($rightcall['list'] = $ipbx->get_rightcall_list(null,true,false)) !== false)
 			uasort($rightcall['list'],array(&$rightcallsort,'str_usort'));
 
-		do
+		if(isset($_QR['fm_send']) === true && xivo_issa('outcall',$_QR) === true)
 		{
-			if(isset($_QR['fm_send']) === false
-			|| xivo_issa('outcall',$_QR) === false)
-				break;
-
 			if($appoutcall->set_add($_QR) === false
 			|| $appoutcall->add() === false)
-			{
 				$result = $appoutcall->get_result();
-				break;
-			}
-
-			$_QRY->go($_HTML->url('service/ipbx/call_management/outcall'),$param);
+			else
+				$_QRY->go($_HTML->url('service/ipbx/call_management/outcall'),$param);
 		}
-		while(false);
 
 		if($outcalltrunk['list'] !== false && xivo_issa('outcalltrunk',$result) === true)
 		{
@@ -93,24 +85,16 @@ switch($act)
 		if(($rightcall['list'] = $ipbx->get_rightcall_list(null,true)) !== false)
 			uasort($rightcall['list'],array(&$rightcallsort,'str_usort'));
 
-		do
+		if(isset($_QR['fm_send']) === true && xivo_issa('outcall',$_QR) === true)
 		{
-			if(isset($_QR['fm_send']) === false
-			|| xivo_issa('outcall',$_QR) === false)
-				break;
-
 			$return = &$result;
 
 			if($appoutcall->set_edit($_QR) === false
 			|| $appoutcall->edit() === false)
-			{
 				$result = $appoutcall->get_result();
-				break;
-			}
-
-			$_QRY->go($_HTML->url('service/ipbx/call_management/outcall'),$param);
+			else
+				$_QRY->go($_HTML->url('service/ipbx/call_management/outcall'),$param);
 		}
-		while(false);
 
 		if($outcalltrunk['list'] !== false && xivo_issa('outcalltrunk',$return) === true)
 		{
@@ -168,10 +152,8 @@ switch($act)
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			if($appoutcall->get($values[$i]) === false)
-				continue;
-
-			$appoutcall->delete();
+			if($appoutcall->get($values[$i]) !== false)
+				$appoutcall->delete();
 		}
 
 		$_QRY->go($_HTML->url('service/ipbx/call_management/outcall'),$param);
@@ -191,8 +173,7 @@ switch($act)
 		{
 			if($appoutcall->get($values[$i]) === false)
 				continue;
-
-			if($act === 'disables')
+			else if($act === 'disables')
 				$appoutcall->disable();
 			else
 				$appoutcall->enable();

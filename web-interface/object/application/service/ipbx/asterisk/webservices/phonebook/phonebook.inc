@@ -127,23 +127,29 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 
 		$option = &$this->_conf['phonenumber']['option'];
 		
+		$r = array();
+
 		for($i = 0;$i < $nb;$i++)
 		{
 			$ref_url = &$rs[$i]['server']['url_http'];
 			$url_http = rtrim($ref_url,'/').'/'.ltrim($query,'/');
 
-			if(($recv = $this->_curl->load($url_http,$option)) !== false)
-				$recv = $this->_parse_phonenumber_recv($recv);
+			if(($recv = $this->_parse_phonenumber_recv($this->_curl->load($url_http,$option))) !== false)
+				$r = array_merge($r,$recv);
 
 			$this->_curl->close();
 		}
 
-		return($recv);
+		if(isset($r[0]) === false)
+			$r = false;
+
+		return($r);
 	}
 
 	function _parse_phonenumber_recv($recv)
 	{
-		if(xivo::load_class('xivo::file::csv') === false)
+		if(xivo::load_class('xivo::file::csv') === false
+		|| xivo_haslen($recv) === false)
 			return(false);
 
 		$recv = explode("\n",str_replace("\r",'',$recv));

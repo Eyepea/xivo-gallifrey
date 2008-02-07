@@ -17,16 +17,10 @@ class xivo_i18n_mediator
 
 	function xivo_i18n_mediator()
 	{
-		if(xivo::load_class('xivo::i18n::language') === false)
-			return(false);
-
-		if(xivo::load_class('xivo::i18n::locale') === false)
-			return(false);
-
-		if(xivo::load_class('xivo::i18n::territory') === false)
-			return(false);
-
-		if(xivo::load_class('xivo::i18n::timezone') === false)
+		if(xivo::load_class('xivo::i18n::language') === false
+		|| xivo::load_class('xivo::i18n::locale') === false
+		|| xivo::load_class('xivo::i18n::territory') === false
+		|| xivo::load_class('xivo::i18n::timezone') === false)
 			return(false);
 
 		$this->_mediator['language'] = new xivo_i18n_language();
@@ -436,24 +430,20 @@ class xivo_i18n_mediator
 	{
 		if(defined('XIVO_I18N_BABELFISH_PATH') === true)
 			return(true);
-
-		if(xivo_file::is_d_r(XIVO_PATH_I18N) === false)
+		else if(xivo_file::is_d_r(XIVO_PATH_I18N) === false)
 		{
 			trigger_error('Invalid I18N path',E_USER_ERROR);
 			return(false);
 		}
-
-		if(defined('XIVO_USER_I18N_LOCALE') === true
+		else if(defined('XIVO_USER_I18N_LOCALE') === true
 		&& $this->_chk_babelfish_path(XIVO_USER_I18N_LOCALE,true) !== false)
 			return(true);
-
-		if(defined('XIVO_USER_I18N_LANGUAGE') === true)
+		else if(defined('XIVO_USER_I18N_LANGUAGE') === true)
 		{
 			if(($locale = $this->_mediator['language']->exists_default(XIVO_USER_I18N_LANGUAGE)) !== false
 			&& $this->_chk_babelfish_path($locale,true) !== false)
 				return(true);
-
-			if(($locales = $this->_mediator['language']->get_locale_list(XIVO_USER_I18N_LANGUAGE)) !== false
+			else if(($locales = $this->_mediator['language']->get_locale_list(XIVO_USER_I18N_LANGUAGE)) !== false
 			&& $this->_chk_babelfish_path($locales,true) !== false)
 				return(true);
 		}
@@ -463,14 +453,12 @@ class xivo_i18n_mediator
 		if(empty($this->_attrib['locale']) === false
 		&& $this->_chk_babelfish_path($this->_attrib['locale'],true) !== false)
 			return(true);
-
-		if(empty($this->_attrib['language']) === false)
+		else if(empty($this->_attrib['language']) === false)
 		{
 			if(($locale = $this->_mediator['language']->exists_default($this->_attrib['language'])) !== false
 			&& $this->_chk_babelfish_path($locale,true) !== false)
 				return(true);
-
-			if(($locales = $this->_mediator['language']->get_locale_list($this->_attrib['language'])) !== false
+			else if(($locales = $this->_mediator['language']->get_locale_list($this->_attrib['language'])) !== false
 			&& $this->_chk_babelfish_path($locales,true) !== false)
 				return(true);
 		}
@@ -480,8 +468,7 @@ class xivo_i18n_mediator
 			if(($locale = $this->_mediator['language']->exists_default(XIVO_LC_LANGUAGE)) !== false
 			&& $this->_chk_babelfish_path($locale,true) !== false)
 				return(true);
-
-			if(($locales = $this->_mediator['language']->get_locale_list(XIVO_LC_LANGUAGE)) !== false
+			else if(($locales = $this->_mediator['language']->get_locale_list(XIVO_LC_LANGUAGE)) !== false
 			&& $this->_chk_babelfish_path($locales,true) !== false)
 				return(true);
 		}
@@ -508,8 +495,7 @@ class xivo_i18n_mediator
 				if(($nlocale = $this->chk_locale($key)) === false
 				|| ($dir = xivo_file::is_d_r(XIVO_PATH_I18N.XIVO_SEP_DIR.$nlocale)) === false)
 					continue;
-
-				if($define === true)
+				else if($define === true)
 				{
 					define('XIVO_I18N_BABELFISH_LANGUAGE',
 						$this->_mediator['locale']->get_language($nlocale));
@@ -523,8 +509,7 @@ class xivo_i18n_mediator
 
 			return(false);
 		}
-
-		if(($locale = $this->chk_locale($locale)) !== false
+		else if(($locale = $this->chk_locale($locale)) !== false
 		&& ($dir = xivo_file::is_d_r(XIVO_PATH_I18N.XIVO_SEP_DIR.$locale)) !== false)
 		{
 			if($define === true)

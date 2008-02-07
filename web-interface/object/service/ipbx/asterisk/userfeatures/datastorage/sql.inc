@@ -58,7 +58,7 @@ class xivo_service_asterisk_userfeatures_sql extends xivo_service_asterisk_abstr
 		if($number === false)
 			$this->_dso->orwherecontain('context',$value);
 
-		if($this->aggregate_where() === false)
+		if($this->_dso->aggregate_where() === false)
 			return(false);
 
 		$arr = array();
@@ -128,8 +128,7 @@ class xivo_service_asterisk_userfeatures_sql extends xivo_service_asterisk_abstr
 	{
 		if(is_array($arr) === false && ($arr = $this->mk_primary_key_value($arr)) === false)
 			return(false);
-
-		if(($arr['internal'] = $this->_set_param_internal()) === null)
+		else if(($arr['internal'] = $this->_set_param_internal()) === null)
 			unset($arr['internal']);
 
 		return(parent::edit($arr,$value,$disable));
@@ -165,8 +164,7 @@ class xivo_service_asterisk_userfeatures_sql extends xivo_service_asterisk_abstr
 
 		if(is_array($arr) === false || empty($arr) === true)
 			return(false);
-
-		if(($arr['internal'] = $this->_set_param_internal()) === null)
+		else if(($arr['internal'] = $this->_set_param_internal()) === null)
 			unset($arr['internal']);
 
 		return(parent::get_list_where($arr,$disable,$order,$limit));
@@ -190,8 +188,7 @@ class xivo_service_asterisk_userfeatures_sql extends xivo_service_asterisk_abstr
 
 		if(is_array($arr) === false || empty($arr) === true)
 			return(false);
-
-		if(($arr['internal'] = $this->_set_param_internal()) === null)
+		else if(($arr['internal'] = $this->_set_param_internal()) === null)
 			unset($arr['internal']);
 
 		return(parent::get_list_where($arr,$disable,$order,$limit,true));

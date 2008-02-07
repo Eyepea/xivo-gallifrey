@@ -113,12 +113,7 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 
 		$this->set_realstatic($arr);
 
-		if($this->get_errnb() > 0)
-			$r = false;
-		else
-			$r = true;
-
-		return($r);
+		return(($this->get_errnb() < 1));
 	}
 
 	function set_realstatic($arr)
@@ -178,8 +173,7 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 		|| ($list = $this->get_element()) === false
 		|| is_array($list) === false)
 			return(false);
-
-		if($disable !== null)
+		else if($disable !== null)
 			$disable = (bool) $disable;
 
 		$r = array();

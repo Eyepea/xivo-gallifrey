@@ -16,8 +16,7 @@ class xivo_user_abstract
 
 		if(($active = xivo_user::chk_active()) !== null)
 			return($active);
-
-		if($this->call_auth('chk',array($_SESSION['_USR']->_login,$_SESSION['_USR']->_pass)) === false)
+		else if($this->call_auth('chk',array($_SESSION['_USR']->_login,$_SESSION['_USR']->_pass)) === false)
 			return(false);
 
 		$_SESSION['_USR']->_time = gmmktime();
@@ -79,8 +78,7 @@ class xivo_user_abstract
 	{
 		if(($data = $this->get_by_id($id)) === false)
 			return(false);
-
-		if(isset($data['valid']) === true)
+		else if(isset($data['valid']) === true)
 			$valid = $data['valid'];
 		else
 			$valid = false;
@@ -132,8 +130,6 @@ class xivo_user_abstract
 
 	function _set_info($valid,$arr=array())
 	{
-		$valid = (bool) $valid;
-
 		if(is_array($arr) === true)
 		{
 			$this->_info = &$arr;
@@ -152,10 +148,7 @@ class xivo_user_abstract
 				$this->_info['_valid'] = $valid = false;
 		}
 
-		if($valid === true)
-			$this->_info['_valid'] = true;
-		else
-			$this->_info['_valid'] = false;
+		$this->_info['_valid'] = (bool) $valid;
 
 		$this->set_i18n();
 		$_SESSION['_USR'] = (object) $this->_info;

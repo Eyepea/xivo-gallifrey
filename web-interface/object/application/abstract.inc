@@ -110,11 +110,9 @@ class xivo_application_abstract extends xivo_libconfig_abstract
 
 		if(empty($this->_result) === true)
 			return(null);
-
-		if($name === '')
+		else if($name === '')
 			return($this->_result);
-
-		if(isset($this->_result[$name]) === true)
+		else if(isset($this->_result[$name]) === true)
 			return($this->_result[$name]);
 
 		return(null);

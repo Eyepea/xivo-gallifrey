@@ -32,7 +32,7 @@ class xivo_i18n_territory
 
 	function is_valid($territo)
 	{
-		$territo = strtoupper((string) $territo);
+		$territo = strtoupper($territo);
 
 		if(xivo_issa($territo,$this->_conf) === false)
 			return(false);

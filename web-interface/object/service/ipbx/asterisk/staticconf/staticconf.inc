@@ -110,10 +110,8 @@ class xivo_service_asterisk_staticconf extends xivo_service_asterisk_abstract
 
 		if(isset($arr['commented']) === true)
 			$r['commented'] = (bool) $arr['commented'];
-		else if($arr['var_val'] === null)
-			$r['commented'] = true;
 		else
-			$r['commented'] = false;
+			$r['commented'] = $arr['var_val'] === null;
 
 		return($this->_dso->add($r));
 	}
@@ -195,10 +193,8 @@ class xivo_service_asterisk_staticconf extends xivo_service_asterisk_abstract
 
 		if(isset($arr['commented']) === true)
 			$r['commented'] = (bool) $arr['commented'];
-		else if(array_key_exists('var_val',$arr) === true && $arr['var_val'] === null)
-			$r['commented'] = true;
 		else
-			$r['commented'] = false;
+			$r['commented'] = xivo_ak('var_val',$arr,true,true) === null;
 
 		return($this->_dso->edit($id,$r));
 	}

@@ -118,7 +118,6 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 	function _get_phonebook($action,$search=null,$order=null,$limit=null,$assoc=false)
 	{
 		$action = (string) $action;
-		$assoc = (bool) $assoc;
 		$search = strval($search);
 
 		switch($action)
@@ -152,7 +151,7 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 		
 		if(empty($r) === true)
 			$r = false;
-		else if($assoc === false)
+		else if((bool) $assoc === false)
 			$r = array_values($r);
 
 		return($r);
@@ -214,12 +213,7 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 		if(xivo_issa('phonebooknumber',$arr) === true)
 			$this->set_phonebooknumber($arr['phonebooknumber']);
 
-		if($this->get_errnb() > 0)
-			$r = false;
-		else
-			$r = true;
-
-		return($r);
+		return(($this->get_errnb() < 1));
 	}
 
 	function set_phonebook($arr)
@@ -230,8 +224,7 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 			$this->_set_error('phonebook','invalid data');
 			return(false);
 		}
-
-		if(($rs = $this->_phonebook->chk_values($arr)) === false)
+		else if(($rs = $this->_phonebook->chk_values($arr)) === false)
 		{
 			$this->_set_result('phonebook',$this->_phonebook->get_filter_result());
 			$this->_set_error('phonebook',$this->_phonebook->get_filter_error());
@@ -305,8 +298,7 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 
 		if($type === 'number' && empty($list) === true)
 			return(null);
-
-		if(empty($reslist) === true)
+		else if(empty($reslist) === true)
 		{
 			$this->_set_result($typename,false);
 			return(false);
@@ -627,8 +619,7 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 	{
 		if(($type !== 'address' && $type !== 'number') === true)
 			return(false);
-
-		if($type === 'address')
+		else if($type === 'address')
 		{
 			$typename = 'phonebookaddress';
 			$module = &$this->_phonebookaddress;

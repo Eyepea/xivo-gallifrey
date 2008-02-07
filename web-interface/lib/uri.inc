@@ -44,8 +44,7 @@ class xivo_uri
 
 		if(is_array($arr) === false)
 			return(false);
-
-		if(xivo_haslen($arr,'scheme') === true)
+		else if(xivo_haslen($arr,'scheme') === true)
 		{
 			if($this->valid_scheme($arr['scheme']) === false)
 				return(false);
@@ -170,16 +169,13 @@ class xivo_uri
 
 		if(($uri = $this->uri_split($uri)) === false)
 			return(false);
-
-		if(isset($uri['authority']) === true
+		else if(isset($uri['authority']) === true
 		&& ($uri['authority'] = $this->split_authority($uri['authority'])) === false)
 			return(false);
-
-		if(isset($uri['query']) === true
+		else if(isset($uri['query']) === true
 		&& ($uri['query'] = $this->split_query($uri['query'])) === false)
 			return(false);
-
-		if(isset($uri['scheme']) === true && $this->valid_scheme($uri['scheme']) === false)
+		else if(isset($uri['scheme']) === true && $this->valid_scheme($uri['scheme']) === false)
 			return(false);
 
 		if(xivo_issa('authority',$uri) === true)
@@ -508,14 +504,9 @@ class xivo_uri
 
 		if(($pos = strpos($ip,'::')) === false)
 			return(($this->_valid_rightipv6($ip) === 8));
-
-		if(substr_count($ip,'::') !== 1)
-			return(false);
-
-		if(($right = $this->_valid_rightipv6(substr($ip,$pos + 2))) === false)
-			return(false);
-
-		if(($left = $this->_valid_leftipv6(substr($ip,0,$pos))) === false)
+		else if(substr_count($ip,'::') !== 1
+		|| ($right = $this->_valid_rightipv6(substr($ip,$pos + 2))) === false
+		|| ($left = $this->_valid_leftipv6(substr($ip,0,$pos))) === false)
 			return(false);
 
 		return(($right + $left < 8));
@@ -523,6 +514,8 @@ class xivo_uri
 
 	function _valid_h16($h16)
 	{
+		$h16 = (string) $h16;
+
 		if((($b16 = base_convert($h16,16,10)) !== '0'
 		   || ctype_digit($h16) === true) === true
 		&& $b16 >= 0 && $b16 <= 65535)
@@ -645,19 +638,11 @@ class xivo_uri
 		$passwd = (string) $passwd;
 		$port = (string) $port;
 
-		if($host !== '' && $this->valid_host($host) === false)
-			return(false);
-
-		if($user !== '' && $this->valid_user($user) === false)
-			return(false);
-
-		if($passwd !== '' && $this->valid_passwd($passwd) === false)
-			return(false);
-
-		if($port !== '' && $this->valid_port($port) === false)
-			return(false);
-
-		if($host === '' && $user === '' && $passwd === '' && $port === '')
+		if(($host !== '' && $this->valid_host($host) === false) === true
+		|| ($user !== '' && $this->valid_user($user) === false) === true
+		|| ($passwd !== '' && $this->valid_passwd($passwd) === false) === true
+		|| ($port !== '' && $this->valid_port($port) === false) === true
+		|| ($host === '' && $user === '' && $passwd === '' && $port === '') === true)
 			return(false);
 
 		return(true);

@@ -72,8 +72,8 @@ class xivo_tracerror
 
 		if(isset($this->_param[$name]) === true)
 			return($this->_param[$name]);
-		else
-			return(null);
+
+		return(null);
 	}
 
 	function notice($msg,$context='',$report_type=null)
@@ -144,8 +144,7 @@ class xivo_tracerror
 
 		if($level === 0 || $level === false || ($this->_param['level'] & $level) === 0)
 			return(false);
-
-		if(($report_type = $this->_chk_report_type($report_type)) === false)
+		else if(($report_type = $this->_chk_report_type($report_type)) === false)
 			$report_type = $this->_param['report_type'];
 
 		$context = $context !== '' ? (string) $context : XIVO_TE_CONTEXT;
@@ -160,6 +159,9 @@ class xivo_tracerror
 
 	function report_e_err($errno,$errstr,$errfile,$errline)
 	{
+		if(error_reporting() < 1)
+			return(null);
+
 		$context = XIVO_TE_CONTEXT;
 		$level = XIVO_TE_ERR_TRAC;
 

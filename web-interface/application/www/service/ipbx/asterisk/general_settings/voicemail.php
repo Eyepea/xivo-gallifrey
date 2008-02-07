@@ -41,10 +41,8 @@ if(isset($_QR['fm_send']) === true && xivo_issa('voicemail',$_QR) === true)
 		{
 			$ref = &$arr_zmsg[$i];
 
-			if(isset($zone_tmp[$ref['name']]) === true)
-				continue;
-
-			if(($zinfo = $zonemessages->chk_values($ref)) === false
+			if(isset($zone_tmp[$ref['name']]) === true
+			|| ($zinfo = $zonemessages->chk_values($ref)) === false
 			|| $zonemessages->chk_msg_format($zinfo['msg_format']) === false)
 				continue;
 

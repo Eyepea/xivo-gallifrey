@@ -46,8 +46,7 @@ class xivo_tpl_dhtml extends xivo_tpl_module
 		{
 			if(xivo_haslen($files,$i) === false)
 				continue;
-
-			if($files[$i]{0} === XIVO_SEP_DIR)
+			else if($files[$i]{0} === XIVO_SEP_DIR)
 				$file = $files[$i];
 			else
 				$file = XIVO_SEP_DIR.'bloc'.XIVO_SEP_DIR.$files[$i];

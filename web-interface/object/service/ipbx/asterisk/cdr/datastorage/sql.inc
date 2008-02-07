@@ -34,8 +34,7 @@ class xivo_service_asterisk_cdr_sql extends xivo_service_asterisk_abstract_sql
 	{
 		if(is_array($arr) === false)
 			return(false);
-
-		if(isset($arr['dbeg']) === true)
+		else if(isset($arr['dbeg']) === true)
 		{
 			$dbeg = $arr['dbeg'];
 			$len = strlen($dbeg);

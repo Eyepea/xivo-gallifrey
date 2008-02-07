@@ -65,9 +65,10 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 
 	function get($id,$orig=true,$disable=null)
 	{
+		$orig = (bool) $orig;
 		$origin = $this->_origin;
 
-		if(($orig = (bool) $orig) === false)
+		if($orig === false)
 			$this->_origin = null;
 
 		if(($r = parent::get($id,$disable)) === false
@@ -84,9 +85,10 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 
 	function get_where($arr,$orig=true,$disable=null,$id=null)
 	{
+		$orig = (bool) $orig;
 		$origin = $this->_origin;
 
-		if(($orig = (bool) $orig) === false)
+		if($orig === false)
 			$this->_origin = null;
 
 		if(($r = parent::get_where($arr,$disable,$id)) === false)
