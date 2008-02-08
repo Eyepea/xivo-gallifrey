@@ -66,8 +66,15 @@ class CallBoosterCommand(BaseCommand):
                 opconf = ConfigParser.ConfigParser()
                 opconf.readfp(open(operatini))
                 opconf_so = dict(opconf.items('SO'))
-                self.opejd = opconf_so.get('opejd')
-                self.opend = opconf_so.get('opend')
+                if 'opejd' in opconf_so:
+                        self.opejd = opconf_so.get('opejd')
+                else:
+                        self.opejd = '08:00'
+                if 'opend' in opconf_so:
+                        self.opend = opconf_so.get('opend')
+                else:
+                        self.opend = '20:00'
+                print self.opejd, self.opend
                 self.list_svirt = {}
                 self.pending_sv_fiches = {}
 
@@ -251,32 +258,41 @@ class CallBoosterCommand(BaseCommand):
                         print 'remote connection', callref, nope, nperm, phonenum, tagent, nadherent
                         if callref in self.pending_sv_fiches:
                                 connid.send(self.pending_sv_fiches[callref])
+                                agentnum = str(STARTAGENTNUM + int(nope))
+
+                                # XXX : sip/phonenum => IAX2/trunkname/number
+                                self.amis[astid].aoriginate_var('sip', phonenum, 'Log %s' % phonenum,
+                                                                agentnum, 'agentname', 'default', 'CB_MES_LOGAGENT', 'agentname')
                                 del self.pending_sv_fiches[callref]
 
-                        # adds the user at once
-                        phlist = ['sip',
-                                  tagent,
-                                  'nopasswd',
-                                  'default',
-                                  None,
-                                  '%d' % (STARTAGENTNUM + int(nope)),
-                                  True,
-                                  '1']
-                        self.ulist[astid].adduser(phlist)
+                                # adds the user at once
+                                phlist = ['sip',
+                                          tagent,
+                                          'nopasswd',
+                                          'default',
+                                          None,
+                                          '%d' % (STARTAGENTNUM + int(nope)),
+                                          True,
+                                          '1']
+                                self.ulist[astid].adduser(phlist)
+                                userinfo = self.ulist[astid].finduser(tagent)
+                                userinfo['sendfiche'] = ['qcb_%05d' % (int(callref) - 100000), 'Agent/%s' % agentnum]
 
-                        cfg = {'astid' : astid,
-                               'proto' : 'sip',
-                               'passwd' : 'nopasswd',
-                               'state' : 'available',
-                               'ident' : 'OP@WIN',
-                               'computername' : nope,
-                               'phonenum' : phonenum,
-                               'computeripref' : nadherent,
-                               'srvnum' : nperm,
-                               'userid' : tagent,
-                               'version' : 99999
-                               }
-                        return cfg
+                                cfg = {'astid' : astid,
+                                       'proto' : 'sip',
+                                       'passwd' : 'nopasswd',
+                                       'state' : 'available',
+                                       'ident' : 'OP@WIN',
+                                       'computername' : nope,
+                                       'phonenum' : phonenum,
+                                       'computeripref' : nadherent,
+                                       'srvnum' : nperm,
+                                       'userid' : tagent,
+                                       'version' : 99999
+                                       }
+                                return cfg
+                        else:
+                                pass
 
 
         def required_login_params(self):
@@ -300,7 +316,7 @@ class CallBoosterCommand(BaseCommand):
         def link(self, astid, event):
                 ch1 = event.get('Channel1').split('/')
                 ch2 = event.get('Channel2').split('/')
-                # print 'LINK', ch1, ch2
+                print 'LINK', ch1, ch2
                 if ch1[0] == 'Agent':
                         # OUTGOING CALL
                         agentnum = ch1[1]
@@ -351,7 +367,13 @@ class CallBoosterCommand(BaseCommand):
                         ic1 = self.__incallref_from_channel(event.get('Channel1'))
                         ic2 = self.__incallref_from_channel(event.get('Channel2'))
                         if ic1 is not None:
-                                print 'LINK without Agent', ic1.sdanum, ic1.commid
+                                print 'LINK without Agent', ic1.sdanum, ic1.commid, ic1.appelaboute
+                                if ic1.appelaboute is not None:
+                                        connid_socket = ic1.uinfo['connection']
+                                        reply = '%s,%d,,Raccroche/' % (ic1.commid, 1)
+                                        connid_socket.send(reply)
+                                        reply = '%s,%d,,Raccroche/' % (ic1.appelaboute, 1)
+                                        connid_socket.send(reply)
                                 ic1.set_timestamp_stat('link')
                 return
 
@@ -1327,7 +1349,7 @@ class CallBoosterCommand(BaseCommand):
                         impulsion = None
                         juridict = '0'
 
-                print '___ TAXES :', num, juridict, impulsion
+                print '__gettaxes :', num, juridict, impulsion
 
                 if impulsion is None:
                         impulsion = [0, 0, 30]

@@ -351,50 +351,38 @@ class IncomingCall:
                 return lstlocal
 
 
-        def __localN_group_composition(self, nprof, id):
+        def __localN_group_composition(self, nprof, ngroup):
                 columns = ('NPERM', 'NGROUP', 'NOM', 'NPROF')
                 cursor_clients = self.conn_clients.cursor()
                 cursor_clients.query('SELECT ${columns} FROM groupes WHERE NGROUP = %s AND NPROF = %s',
                                      columns,
-                                     (id, nprof))
-##                cursor_clients.query('SELECT ${columns} FROM groupes WHERE NGROUP = %s',
-##                                     columns,
-##                                     id)
+                                     (ngroup, nprof))
                 clients_groupes_liste = cursor_clients.fetchall()
                 list_operators = []
-                list_requests  = []
+                list_permanences = []
 
-                print '  COMING CALL : __localN_group_composition, id = %s / nprof = %s' % (id, nprof), clients_groupes_liste
-                for clients_groupes in clients_groupes_liste:
-                        nperm  = clients_groupes[0]
-                        ngroup = clients_groupes[1]
-                        nom    = clients_groupes[2]
-                        if ngroup < 0 and nom[0] != '%':
-                                list_operators.append(nom)
-                        elif ngroup < 0 and nom[0] == '%':
-                                nom_groupe = nom[1:]
-                                columns = ('Nom', 'NOPE', 'NomOPE')
-                                cursor_clients = self.conn_clients.cursor()
-                                cursor_clients.query('SELECT ${columns} FROM groupes_ope WHERE Nom = %s AND NOPE != 0',
-                                                     columns,
-                                                     nom_groupe)
-                                clients_groupes_ope = cursor_clients.fetchall()
-                                for res in clients_groupes_ope:
-                                        list_operators.append(res[2])
-                        elif ngroup > 0:
-                                list_requests.append([str(self.nsoc_global),
-                                                      self.ncli,
-                                                      self.ncol,
-                                                      self.sdanum,
-                                                      self.commid,
-                                                      str(ngroup),
-                                                      self.cidnum,
-                                                      str(nperm),
-                                                      ','.join(self.competences),
-                                                      ','.join(self.languages_sv),
-                                                      self.commid])
+                print '  COMING CALL : __localN_group_composition, ngroup = %s / nprof = %s' % (ngroup, nprof), clients_groupes_liste
+                if int(ngroup) < 0:
+                        for clients_groupes in clients_groupes_liste:
+                                nom = clients_groupes[2]
+                                if nom[0] != '%':
+                                        list_operators.append(nom)
+                                elif nom[0] == '%':
+                                        nom_groupe = nom[1:]
+                                        columns = ('Nom', 'NOPE', 'NomOPE')
+                                        cursor_clients = self.conn_clients.cursor()
+                                        cursor_clients.query('SELECT ${columns} FROM groupes_ope WHERE Nom = %s AND NOPE != 0',
+                                                             columns,
+                                                             nom_groupe)
+                                        clients_groupes_ope = cursor_clients.fetchall()
+                                        for res in clients_groupes_ope:
+                                                list_operators.append(res[2])
+                elif int(ngroup) > 0:
+                        list_permanences = []
+                        for clients_groupes in clients_groupes_liste:
+                                list_permanences.append(str(clients_groupes[0]))
 
-                return [list_operators, list_requests]
+                return [list_operators, ','.join(list_permanences)]
 
 
         def check_operator_status(self, operatorname):
@@ -474,7 +462,7 @@ class IncomingCall:
                 index 0 to upto.
                 """
                 listopers = []
-                listsv    = []
+                listperms = {}
                 for num in xrange(upto):
                         id = detail_tab[num]
                         if id == '0': # local group
@@ -482,14 +470,15 @@ class IncomingCall:
                                         if lgc not in listopers:
                                                 listopers.append(lgc)
                         else: # localN and globalN groups
-                                [lopers, lsv] = self.__localN_group_composition(nprof, id)
+                                [lopers, lperms] = self.__localN_group_composition(nprof, id)
                                 for lgc in lopers:
                                         if lgc not in listopers:
                                                 listopers.append(lgc)
-                                listsv.extend(lsv)
+                                if len(lperms) > 0:
+                                        listperms[id] = lperms
 
                 # should we return the ones which are in 'sortie' status there ?
-                return [listopers, listsv]
+                return [listopers, listperms]
 
 
         def __typet_secretariat(self, nprof, detail, delaigrp):
@@ -527,9 +516,19 @@ class IncomingCall:
                                         upto += 1
                                 else:
                                         whattodo = Action('sec', delay, None)
-                                        for areq in self.list_svirt:
-                                                req = 'ACDAddRequest' + chr(2) + chr(2).join(areq[:6]) + chr(2) + chr(2).join(areq[6:]) + chr(2) + str(self.soperat_port) + chr(3)
-                                                print 'cg', self.nsoc, self.ncli, delay, self.ncol, areq, '<%s>' % req
+                                        for ngroup, perms in self.list_svirt.iteritems():
+                                                request = [str(self.nsoc_global),
+                                                           self.ncli,
+                                                           self.ncol,
+                                                           self.sdanum,
+                                                           self.commid,
+                                                           ngroup,
+                                                           self.cidnum,
+                                                           perms,
+                                                           ','.join(self.competences),
+                                                           ','.join(self.languages_sv),
+                                                           self.commid]
+                                                req = 'ACDAddRequest' + chr(2) + chr(2).join(request[:6]) + chr(2) + chr(2).join(request[6:]) + chr(2) + str(self.soperat_port) + chr(3)
                                                 self.soperat_socket.send(req)
                                         break
                                 
@@ -659,11 +658,15 @@ class IncomingCall:
                                                 which = res3[9]
                                                 fg = res3[2 + which]
                                                 [num, intext, normstd, ncherche, npatiente, withsda, wtime] = fg.split('.')
-                                                print 'intext = %s, normstd = %s, num = %s, ncherche = %s, npatiente = %s, time = %s, withsda = %s' \
-                                                      %(intext, normstd, num, ncherche, npatiente, wtime, withsda)
-                                                if normstd == '1':
-                                                        wtime = ''
-                                                whattodo = Action('bas', 0, '-'.join([num, wtime, ncherche, npatiente]))
+                                                print 'intext = %s, normstd = %s, num = %s, ncherche = %s, npatiente = %s, time = %s, withsda = %s, which = %d' \
+                                                      %(intext, normstd, num, ncherche, npatiente, wtime, withsda, which)
+                                                if which == 6:
+                                                        # number is a Repondeur file
+                                                        whattodo = Action('rep', 0, num.strip('.wav'))
+                                                else:
+                                                        if normstd == '1':
+                                                                wtime = ''
+                                                        whattodo = Action('bas', 0, '-'.join([num, wtime, ncherche, npatiente]))
 
                 return whattodo
 
@@ -703,8 +706,7 @@ class IncomingCall:
         def __typep_rep(self, clients_profil):
                 filename = '%s/%s/%s/Repondeurs/%s' % (self.socname, self.ncli, self.ncol, clients_profil[8])
                 print '  COMING CALL : __typep_rep', filename
-                # removing the .wav => [:-4]
-                whattodo = Action('rep', 0, filename[:-4])
+                whattodo = Action('rep', 0, filename.strip('.wav'))
                 return whattodo
 
 
