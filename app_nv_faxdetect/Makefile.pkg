@@ -1,0 +1,18 @@
+#!/usr/bin/make -f
+# -*- mode: makefile; coding: utf-8 -*-
+#
+# $Revision: 1479 $
+# $Date: 2007-09-07 15:17:42 +0200 (Fri, 07 Sep 2007) $
+#
+# set PATH and CC to include cross compiling tools for cross compilation, e.g.
+# export PATH=/path/to/toolchain/powerpc-linux-gnu/bin:$PATH
+# export CC=gcc
+
+include ../autobuild.mk
+include ../autobuild-classic.mk
+
+DEB_PKG="pf-asterisk-app-nv-faxdetect"
+DEB_TB_DEPS=""
+
+default:
+
