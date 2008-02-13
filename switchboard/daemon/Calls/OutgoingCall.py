@@ -6,7 +6,9 @@ __version__ = "$Revision$ $Date$"
 import time
 
 class OutgoingCall:
-        def __init__(self, commid, astid, conn_clients, uinfo, agentnum, agentname, dest, nsoc, ncli, ncol):
+        def __init__(self, commid, astid,
+                     cursor_operat, socname,
+                     uinfo, agentnum, agentname, dest, nsoc, ncli, ncol):
                 self.dir    = 'o'
                 self.commid = commid
                 self.nsoc   = nsoc
@@ -31,22 +33,21 @@ class OutgoingCall:
                 self.stimes = {time.time() : 'init'}
                 self.ttimes = {time.time() : 'init'}
 
-                self.conn_clients = conn_clients
-                cursor_clients = self.conn_clients.cursor()
-
+                self.cursor_operat = cursor_operat
                 columns = ('N', 'NLIST')
-                cursor_clients.query('SELECT ${columns} FROM clients WHERE N = %s',
-                                     columns,
-                                     ncli)
-                results = cursor_clients.fetchall()
+                self.cursor_operat.query('USE %s_clients' % socname)
+                self.cursor_operat.query('SELECT ${columns} FROM clients WHERE N = %s',
+                                         columns,
+                                         ncli)
+                results = self.cursor_operat.fetchall()
                 if len(results) > 0:
                         self.cliname = results[0][1]
 
                 columns = ('N', 'NLIST')
-                cursor_clients.query('SELECT ${columns} FROM collaborateurs WHERE N = %s',
-                                     columns,
-                                     ncol)
-                results = cursor_clients.fetchall()
+                self.cursor_operat.query('SELECT ${columns} FROM collaborateurs WHERE N = %s',
+                                         columns,
+                                         ncol)
+                results = self.cursor_operat.fetchall()
                 if len(results) > 0:
                         self.colname = results[0][1]
 

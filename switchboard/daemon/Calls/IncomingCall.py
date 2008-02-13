@@ -21,7 +21,7 @@ class Action:
 
 
 class IncomingCall:
-        def __init__(self, conn_agents, conn_system, cidnum, sdanum, queuenum, soperat_socket, soperat_port, opejd, opend):
+        def __init__(self, cursor_operat, cidnum, sdanum, queuenum, soperat_socket, soperat_port, opejd, opend):
                 self.dir       = 'i'
                 self.cidnum    = cidnum
                 self.sdanum    = sdanum
@@ -30,8 +30,7 @@ class IncomingCall:
                 self.commid    = str(100000 + queuenum)
                 self.ctime     = time.localtime()
                 #                self.chan = None
-                self.conn_system = conn_system
-                self.conn_agents = conn_agents
+                self.cursor_operat = cursor_operat
                 self.whereph = 'INTRO'
                 self.wherephS = None
                 self.wherephF = None
@@ -73,11 +72,11 @@ class IncomingCall:
 
 
                 columns = ('NSDA', 'NSOC', 'NCLI', 'NCOL', 'NOM', 'DateD', 'DateF', 'Valide')
-                cursor_system = self.conn_system.cursor()
-                cursor_system.query('SELECT ${columns} FROM sda WHERE NSDA = %s',
-                                    columns,
-                                    self.sdanum)
-                results = cursor_system.fetchall()
+                self.cursor_operat.query('USE system')
+                self.cursor_operat.query('SELECT ${columns} FROM sda WHERE NSDA = %s',
+                                         columns,
+                                         self.sdanum)
+                results = self.cursor_operat.fetchall()
                 if len(results) > 0:
                         self.system_sda = results[0]
                         self.nsoc = str(self.system_sda[1])
@@ -85,11 +84,11 @@ class IncomingCall:
                         self.ncol = str(self.system_sda[3])
 
                         columns = ('N', 'NOM', 'ID', 'Dossier')
-                        cursor_system = self.conn_system.cursor()
-                        cursor_system.query('SELECT ${columns} FROM societes WHERE N = %s',
-                                            columns,
-                                            self.nsoc)
-                        system_societes = cursor_system.fetchall()
+                        self.cursor_operat.query('USE system')
+                        self.cursor_operat.query('SELECT ${columns} FROM societes WHERE N = %s',
+                                                 columns,
+                                                 self.nsoc)
+                        system_societes = self.cursor_operat.fetchall()
                         if len(system_societes) > 0:
                                 self.nsoc_global = system_societes[0][2]
                                 self.socname = system_societes[0][3]
@@ -120,37 +119,33 @@ class IncomingCall:
         def settaxes(self, triplet):
                 self.taxes = triplet
 
-        def setclicolnames(self, conn_clients):
-                self.conn_clients = conn_clients
-                cursor_clients = self.conn_clients.cursor()
-
+        def setclicolnames(self):
                 columns = ('N', 'NLIST')
-                cursor_clients.query('SELECT ${columns} FROM clients WHERE N = %s',
-                                     columns,
-                                     self.ncli)
-                results = cursor_clients.fetchall()
+                self.cursor_operat.query('USE %s_clients' % self.socname)
+                self.cursor_operat.query('SELECT ${columns} FROM clients WHERE N = %s',
+                                         columns,
+                                         self.ncli)
+                results = self.cursor_operat.fetchall()
                 if len(results) > 0:
                         self.cliname = results[0][1]
 
                 columns = ('N', 'NLIST')
-                cursor_clients.query('SELECT ${columns} FROM collaborateurs WHERE N = %s',
-                                     columns,
-                                     self.ncol)
-                results = cursor_clients.fetchall()
+                self.cursor_operat.query('SELECT ${columns} FROM collaborateurs WHERE N = %s',
+                                         columns,
+                                         self.ncol)
+                results = self.cursor_operat.fetchall()
                 if len(results) > 0:
                         self.colname = results[0][1]
 
-        def get_sda_profiles(self, conn_clients, nsda):
+        def get_sda_profiles(self, nsda):
                 self.elect_competence = None
-                self.conn_clients = conn_clients
-
 
                 columns = ('N', 'NCLI', 'NCOL', 'NSDA', 'Script', 'Flag', 'Priorite', 'CompLocale', 'VoiesSim')
-                cursor_clients = self.conn_clients.cursor()
-                cursor_clients.query('SELECT ${columns} FROM sda WHERE NSDA = %s',
-                                     columns,
-                                     self.sdanum)
-                results = cursor_clients.fetchall()
+                self.cursor_operat.query('USE %s_clients' % self.socname)
+                self.cursor_operat.query('SELECT ${columns} FROM sda WHERE NSDA = %s',
+                                         columns,
+                                         self.sdanum)
+                results = self.cursor_operat.fetchall()
                 if len(results) > 0:
                         clients_sda = results[0]
                         flags = clients_sda[5][:4]
@@ -172,11 +167,11 @@ class IncomingCall:
                         return False
 
                 columns = ('NSOC', 'DATEJ', 'TCOMME')
-                cursor_system = self.conn_system.cursor()
-                cursor_system.query('SELECT ${columns} FROM jferies WHERE NSOC = %s',
-                                    columns,
-                                    self.nsoc)
-                system_jferies = cursor_system.fetchall()
+                self.cursor_operat.query('USE system')
+                self.cursor_operat.query('SELECT ${columns} FROM jferies WHERE NSOC = %s',
+                                         columns,
+                                         self.nsoc)
+                system_jferies = self.cursor_operat.fetchall()
 
                 self.period = ['JOUR', '']
                 weekday_today = WEEKDAY[self.ctime[6]]
@@ -195,31 +190,29 @@ class IncomingCall:
 
                 # fichiers sons
                 columns = ('NCLI', 'NCOL', 'Nom')
-                cursor_clients = self.conn_clients.cursor()
-                cursor_clients.query('SELECT ${columns} FROM son WHERE NCLI = %s AND NCOL = %s',
+                self.cursor_operat.query('USE %s_clients' % self.socname)
+                self.cursor_operat.query('SELECT ${columns} FROM son WHERE NCLI = %s AND NCOL = %s',
                                      columns,
                                      (self.ncli, self.ncol))
-                clients_son = cursor_clients.fetchall()
+                clients_son = self.cursor_operat.fetchall()
                 for cson in clients_son:
                         self.dialplan['sounds'].append(cson[2])
 
                 # competences
                 columns = ('NCLI', 'NCOL', 'NComp')
-                cursor_clients = self.conn_clients.cursor()
-                cursor_clients.query('SELECT ${columns} FROM clicomp WHERE NCLI = %s AND NCOL = %s',
-                                     columns,
-                                     (self.ncli, self.ncol))
-                clients_clicomp = cursor_clients.fetchall()
+                self.cursor_operat.query('SELECT ${columns} FROM clicomp WHERE NCLI = %s AND NCOL = %s',
+                                         columns,
+                                         (self.ncli, self.ncol))
+                clients_clicomp = self.cursor_operat.fetchall()
                 for t in clients_clicomp:
                         self.competences.append(str(t[2]))
 
                 # langues
                 columns = ('NCLI', 'NCOL', 'NLang', 'Niveau')
-                cursor_clients = self.conn_clients.cursor()
-                cursor_clients.query('SELECT ${columns} FROM clilang WHERE NCLI = %s AND NCOL = %s',
-                                     columns,
-                                     (self.ncli, self.ncol))
-                clients_clilang = cursor_clients.fetchall()
+                self.cursor_operat.query('SELECT ${columns} FROM clilang WHERE NCLI = %s AND NCOL = %s',
+                                         columns,
+                                         (self.ncli, self.ncol))
+                clients_clilang = self.cursor_operat.fetchall()
                 for t in clients_clilang:
                         self.languages[str(t[2])] = t[3]
                         self.languages_sv.append('%d-%s' %(t[2], t[3]))
@@ -231,17 +224,16 @@ class IncomingCall:
                 # Mode non secours
                 columns = ('N', 'NCLI', 'NCOL', 'TypeP', 'JOUR', 'PlgD', 'PlgF', 'TypeT', 'Detail', 'Ordre', 'DelaiGRP', 'DATED', 'DATEF')
 
-                cursor_clients = self.conn_clients.cursor()
-                cursor_clients.query("SELECT ${columns} FROM profil WHERE TypeP = 'SEC' AND NCLI = 0 AND NCOL = 0",
-                                     columns)
-                results = cursor_clients.fetchall()
+                self.cursor_operat.query("SELECT ${columns} FROM profil WHERE TypeP = 'SEC' AND NCLI = 0 AND NCOL = 0",
+                                         columns)
+                results = self.cursor_operat.fetchall()
                 if results == ():
                         results = []
 
-                cursor_clients.query('SELECT ${columns} FROM profil WHERE NCLI = %s AND NCOL = %s',
-                                     columns,
-                                     [self.ncli, self.ncol])
-                results.extend(cursor_clients.fetchall())
+                self.cursor_operat.query('SELECT ${columns} FROM profil WHERE NCLI = %s AND NCOL = %s',
+                                         columns,
+                                         [self.ncli, self.ncol])
+                results.extend(self.cursor_operat.fetchall())
                 if results == ():
                         results = []
 
@@ -341,10 +333,10 @@ class IncomingCall:
 
         def __local_group_composition(self):
                 columns = ('CODE', 'NOM', 'GL')
-                cursor_agents = self.conn_agents.cursor()
-                cursor_agents.query('SELECT ${columns} FROM agents WHERE GL = 1',
-                                    columns)
-                agents_agents = cursor_agents.fetchall()
+                self.cursor_operat.query('USE agents')
+                self.cursor_operat.query('SELECT ${columns} FROM agents WHERE GL = 1',
+                                         columns)
+                agents_agents = self.cursor_operat.fetchall()
                 lstlocal = []
                 if len(agents_agents) > 0:
                         for ag in agents_agents:
@@ -354,11 +346,11 @@ class IncomingCall:
 
         def __localN_group_composition(self, nprof, ngroup):
                 columns = ('NPERM', 'NGROUP', 'NOM', 'NPROF')
-                cursor_clients = self.conn_clients.cursor()
-                cursor_clients.query('SELECT ${columns} FROM groupes WHERE NGROUP = %s AND NPROF = %s',
-                                     columns,
-                                     (ngroup, nprof))
-                clients_groupes_liste = cursor_clients.fetchall()
+                self.cursor_operat.query('USE %s_clients' % self.socname)
+                self.cursor_operat.query('SELECT ${columns} FROM groupes WHERE NGROUP = %s AND NPROF = %s',
+                                         columns,
+                                         (ngroup, nprof))
+                clients_groupes_liste = self.cursor_operat.fetchall()
                 list_operators = []
                 list_permanences = []
 
@@ -371,11 +363,10 @@ class IncomingCall:
                                 elif nom[0] == '%':
                                         nom_groupe = nom[1:]
                                         columns = ('Nom', 'NOPE', 'NomOPE')
-                                        cursor_clients = self.conn_clients.cursor()
-                                        cursor_clients.query('SELECT ${columns} FROM groupes_ope WHERE Nom = %s AND NOPE != 0',
-                                                             columns,
-                                                             nom_groupe)
-                                        clients_groupes_ope = cursor_clients.fetchall()
+                                        self.cursor_operat.query('SELECT ${columns} FROM groupes_ope WHERE Nom = %s AND NOPE != 0',
+                                                                 columns,
+                                                                 nom_groupe)
+                                        clients_groupes_ope = self.cursor_operat.fetchall()
                                         for res in clients_groupes_ope:
                                                 list_operators.append(res[2])
                 elif int(ngroup) > 0:
@@ -389,31 +380,31 @@ class IncomingCall:
         def check_operator_status(self, operatorname):
                 columns = ('CODE', 'NOM', 'AGPI')
                 # AGPI : records outgoing calls
-                cursor_agents = self.conn_agents.cursor()
-                cursor_agents.query('SELECT ${columns} FROM agents WHERE NOM = %s',
-                                    columns,
-                                    operatorname)
-                agents_agents = cursor_agents.fetchall()
+                self.cursor_operat.query('USE agents')
+                self.cursor_operat.query('SELECT ${columns} FROM agents WHERE NOM = %s',
+                                         columns,
+                                         operatorname)
+                agents_agents = self.cursor_operat.fetchall()
                 if len(agents_agents) > 0:
                         operator_code = agents_agents[0][0]
 
                         agent_comp = []
                         columns = ('Nagt', 'NComp')
-                        cursor_agents = self.conn_agents.cursor()
-                        cursor_agents.query('SELECT ${columns} FROM agtcomp WHERE Nagt = %s',
-                                            columns,
-                                            operator_code)
-                        agents_agtcomp = cursor_agents.fetchall()
+                        self.cursor_operat.query('USE agents')
+                        self.cursor_operat.query('SELECT ${columns} FROM agtcomp WHERE Nagt = %s',
+                                                 columns,
+                                                 operator_code)
+                        agents_agtcomp = self.cursor_operat.fetchall()
                         for t in agents_agtcomp:
                                 agent_comp.append(t[1])
 
                         agent_lang = {}
                         columns = ('Nagt', 'NLang', 'Niveau')
-                        cursor_agents = self.conn_agents.cursor()
-                        cursor_agents.query('SELECT ${columns} FROM agtlang WHERE Nagt = %s',
-                                            columns,
-                                            operator_code)
-                        agents_agtlang = cursor_agents.fetchall()
+                        self.cursor_operat.query('USE agents')
+                        self.cursor_operat.query('SELECT ${columns} FROM agtlang WHERE Nagt = %s',
+                                                 columns,
+                                                 operator_code)
+                        agents_agtlang = self.cursor_operat.fetchall()
                         for t in agents_agtlang:
                                 agent_lang[str(t[1])] = t[2]
 
@@ -433,11 +424,10 @@ class IncomingCall:
                                 return None
 
                         columns = ('NOPE', 'AdrNet', 'CompLocale', 'Etat', 'Voie', 'NbT8', 'NbT4', 'NbT2', 'NbT1', 'Niveau', 'Derange', 'Priorite', 'NoDecroche')
-                        cursor_agents = self.conn_agents.cursor()
-                        cursor_agents.query("SELECT ${columns} FROM acd WHERE NOPE = %s AND Derange != 0 AND Etat != 'Sortie' AND CompLocale >= %s",
-                                            columns,
-                                            (operator_code, self.elect_competence))
-                        agents_acd = cursor_agents.fetchall()
+                        self.cursor_operat.query("SELECT ${columns} FROM acd WHERE NOPE = %s AND Derange != 0 AND Etat != 'Sortie' AND CompLocale >= %s",
+                                                 columns,
+                                                 (operator_code, self.elect_competence))
+                        agents_acd = self.cursor_operat.fetchall()
                         if len(agents_acd) > 0:
                                 dispo = agents_acd[0]
                                 if dispo[3] == PDISPO:
@@ -542,16 +532,16 @@ class IncomingCall:
 
         def __get_fichier(self, detail):
                 columns = ('NCLI', 'NCOL', 'NOM', 'NTEL', 'TypeN', 'ModeA', 'NbC', 'NbP', 'DSonn', 'SDA', 'Ordre')
-                cursor_clients = self.conn_clients.cursor()
+                self.cursor_operat.query('USE %s_clients' % self.socname)
                 if self.whereph == 'SEC':
-                        cursor_clients.query('SELECT ${columns} FROM fichier WHERE NCLI = 0 AND NCOL = 0 AND NOM = %s',
-                                             columns,
-                                             (detail))
+                        self.cursor_operat.query('SELECT ${columns} FROM fichier WHERE NCLI = 0 AND NCOL = 0 AND NOM = %s',
+                                                 columns,
+                                                 (detail))
                 else:
-                        cursor_clients.query('SELECT ${columns} FROM fichier WHERE NCLI = %s AND NCOL = %s AND NOM = %s',
-                                             columns,
-                                             (self.ncli, self.ncol, detail))
-                clients_fichier = cursor_clients.fetchall()
+                        self.cursor_operat.query('SELECT ${columns} FROM fichier WHERE NCLI = %s AND NCOL = %s AND NOM = %s',
+                                                 columns,
+                                                 (self.ncli, self.ncol, detail))
+                clients_fichier = self.cursor_operat.fetchall()
                 return clients_fichier
 
 
@@ -601,11 +591,11 @@ class IncomingCall:
         def __typet_base(self, detail):
                 whattodo = None
                 columns = ('NCLI', 'NCOL', 'Nom', 'DateJ', 'Plages', 'Plage1', 'Plage2', 'Plage3', 'Plage4')
-                cursor_clients = self.conn_clients.cursor()
-                cursor_clients.query('SELECT ${columns} FROM gardes WHERE NCLI = %s AND NCOL = 0 AND Nom = %s',
-                                     columns,
-                                     (self.ncli, detail)) # (self.ncli, self.ncol, detail))
-                clients_gardes = cursor_clients.fetchall()
+                self.cursor_operat.query('USE %s_clients' % self.socname)
+                self.cursor_operat.query('SELECT ${columns} FROM gardes WHERE NCLI = %s AND NCOL = 0 AND Nom = %s',
+                                         columns,
+                                         (self.ncli, detail)) # (self.ncli, self.ncol, detail))
+                clients_gardes = self.cursor_operat.fetchall()
                 if len(clients_gardes) > 0 and self.wherephF is None:
                         nows = time.mktime(self.ctime)
                         str_today = time.strftime(DATEFMT, self.ctime)
@@ -649,11 +639,10 @@ class IncomingCall:
                                         self.statacd2_tt = 'TT_BAS'
                                         self.wherephF = 0
                                         columns = ('N', 'NCLI', 'Nom', 'Tel1', 'Tel2', 'Tel3', 'Tel4', 'Tel5', 'Tel6', 'TelSel')
-                                        cursor_clients = self.conn_clients.cursor()
-                                        cursor_clients.query('SELECT ${columns} FROM fichesgarde WHERE N = %s AND NCLI = %s',
-                                                             columns,
-                                                             (fichenum, self.ncli))
-                                        res2 = cursor_clients.fetchall()
+                                        self.cursor_operat.query('SELECT ${columns} FROM fichesgarde WHERE N = %s AND NCLI = %s',
+                                                                 columns,
+                                                                 (fichenum, self.ncli))
+                                        res2 = self.cursor_operat.fetchall()
                                         if len(res2) > 0:
                                                 res3 = res2[0]
                                                 which = res3[9]
@@ -713,11 +702,11 @@ class IncomingCall:
 
         def __typep_mes(self, clients_profil):
                 columns = ('NCLI', 'NCOL', 'NPROF', 'NomMess', 'Duree', 'Envoie', 'Mail', 'Conserve')
-                cursor_clients = self.conn_clients.cursor()
-                cursor_clients.query('SELECT ${columns} FROM messagerie WHERE NCLI = %s AND NCOL = %s AND NPROF = %s',
-                                     columns,
-                                     (self.ncli, self.ncol, clients_profil[0]))
-                clients_messagerie = cursor_clients.fetchall()
+                self.cursor_operat.query('USE %s_clients' % self.socname)
+                self.cursor_operat.query('SELECT ${columns} FROM messagerie WHERE NCLI = %s AND NCOL = %s AND NPROF = %s',
+                                         columns,
+                                         (self.ncli, self.ncol, clients_profil[0]))
+                clients_messagerie = self.cursor_operat.fetchall()
 
                 if len(clients_messagerie) > 0:
                         clients_messagerie_item = clients_messagerie[0]

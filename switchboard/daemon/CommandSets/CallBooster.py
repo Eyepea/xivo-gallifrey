@@ -64,7 +64,6 @@ class CallBoosterCommand(BaseCommand):
                 self.commidcurr = 200000
                 self.soperat_socket = operatsocket
                 self.soperat_port   = operatport
-                self.conn_clients = {}
                 opconf = ConfigParser.ConfigParser()
                 opconf.readfp(open(operatini))
                 opconf_so = dict(opconf.items('SO'))
@@ -159,11 +158,11 @@ class CallBoosterCommand(BaseCommand):
 
         def __socname(self, idsoc):
                 columns = ('N', 'NOM', 'ID', 'Dossier')
-                cursor_system = self.conn_system.cursor()
-                cursor_system.query('SELECT ${columns} FROM societes WHERE ID = %s',
-                                    columns,
-                                    idsoc)
-                results = cursor_system.fetchall()
+                self.cursor_operat.query('USE system')
+                self.cursor_operat.query('SELECT ${columns} FROM societes WHERE ID = %s',
+                                         columns,
+                                         idsoc)
+                results = self.cursor_operat.fetchall()
                 if len(results) > 0:
                         sname = results[0][3].lower()
                 else:
@@ -173,19 +172,13 @@ class CallBoosterCommand(BaseCommand):
 
         def getuserlist(self):
                 localulist = {}
-                sqluri_agents = '%s/agents' % self.uribase
-                sqluri_system = '%s/system' % self.uribase
-
                 try:
-                        self.conn_system = anysql.connect_by_uri(sqluri_system)
-                        self.conn_agents = anysql.connect_by_uri(sqluri_agents)
-                        cursor_agents = self.conn_agents.cursor()
-                        
                         columns = ('CODE', 'NOM', 'PASS')
-                        cursor_agents.query('SELECT ${columns} FROM agents',
-                                            columns)
-                        results = cursor_agents.fetchall()
-                        for r in results:
+                        self.cursor_operat.query('USE agents')
+                        self.cursor_operat.query('SELECT ${columns} FROM agents',
+                                                 columns)
+                        agents_agents = self.cursor_operat.fetchall()
+                        for r in agents_agents:
                                 opername = r[1]
                                 passname = r[2]
                                 # in order to avoid tricky u'sdlkfs'
@@ -209,10 +202,9 @@ class CallBoosterCommand(BaseCommand):
         def set_cdr_uri(self, uribase):
                 """In this CB case, defines the path to the Operat MySQL database."""
                 self.uribase = uribase
-                # the following commands do nothing really useful, except initializing some field somewhere
-                sqluri_dummy = '%s?charset=%s' % (uribase, 'latin1')
-                conn_dummy = anysql.connect_by_uri(sqluri_dummy)
-                conn_dummy.close()
+                sqluri = '%s?charset=%s' % (uribase, 'latin1')
+                self.conn_operat = anysql.connect_by_uri(sqluri)
+                self.cursor_operat = self.conn_operat.cursor()
 
 
         def get_list_commands_clt2srv(self):
@@ -667,20 +659,20 @@ class CallBoosterCommand(BaseCommand):
                                 cchan = userinfo['calls'][reference].peerchannel
 
                                 columns = ('N', 'AdrNet')
-                                cursor_agents = self.conn_agents.cursor()
-                                cursor_agents.query('SELECT ${columns} FROM acd WHERE N = %s',
-                                                    columns,
-                                                    nope)
-                                results = cursor_agents.fetchall()
+                                self.cursor_operat.query('USE agents')
+                                self.cursor_operat.query('SELECT ${columns} FROM acd WHERE N = %s',
+                                                         columns,
+                                                         nope)
+                                results = self.cursor_operat.fetchall()
                                 if len(results) > 0:
                                         addposte = results[0][1]
 
                                 columns = ('TEL', 'NET')
-                                cursor_system = self.conn_system.cursor()
-                                cursor_system.query('SELECT ${columns} FROM postes WHERE NET = %s',
-                                                    columns,
-                                                    addposte)
-                                results = cursor_system.fetchall()
+                                self.cursor_operat.query('USE system')
+                                self.cursor_operat.query('SELECT ${columns} FROM postes WHERE NET = %s',
+                                                         columns,
+                                                         addposte)
+                                results = self.cursor_operat.fetchall()
                                 if len(results) > 0:
                                         print 'TransfertOpe', cchan, addposte, results[0][0]
                                         r = self.amis[astid].transfer(cchan, results[0][0], 'default')
@@ -718,11 +710,7 @@ class CallBoosterCommand(BaseCommand):
                         comm_id_outgoing = str(self.commidcurr)
 
                         socname = self.__socname(idsoc)
-                        if socname not in self.conn_clients:
-                                sqluri_clients = '%s/%s_clients' % (self.uribase, socname)
-                                self.conn_clients[socname] = anysql.connect_by_uri(sqluri_clients)
-
-                        outCall = OutgoingCall.OutgoingCall(comm_id_outgoing, astid, self.conn_clients[socname],
+                        outCall = OutgoingCall.OutgoingCall(comm_id_outgoing, astid, self.cursor_operat, socname,
                                                             userinfo, agentnum, agentname, dest,
                                                             idsoc, idcli, idcol)
 
@@ -804,10 +792,7 @@ class CallBoosterCommand(BaseCommand):
                                 r = self.amis[astid].transfer(incall.peerchannel, dest, 'default')
 
                                 socname = self.__socname(idsoc)
-                                if socname not in self.conn_clients:
-                                        sqluri_clients = '%s/%s_clients' % (self.uribase, socname)
-                                        self.conn_clients[socname] = anysql.connect_by_uri(sqluri_clients)
-                                outCall = OutgoingCall.OutgoingCall(comm_id_outgoing, astid, self.conn_clients[socname],
+                                outCall = OutgoingCall.OutgoingCall(comm_id_outgoing, astid, self.cursor_operat, socname,
                                                                     userinfo, agentnum, agentname, dest,
                                                                     idsoc, idcli, idcol)
                                 userinfo['calls'][comm_id_outgoing] = outCall
@@ -933,14 +918,12 @@ class CallBoosterCommand(BaseCommand):
                         reply = ',1,,%s/' % (cname)
                         connid_socket.send(reply)
 
-                        sqluri_mvts = '%s/%s_mvts' % (self.uribase, self.__socname(idsoc))
-                        conn_mvts = anysql.connect_by_uri(sqluri_mvts)
                         columns = ('N', 'NAlerteStruct', 'NomFichierMessage', 'ListeGroupes', 'interval_suivi')
-                        cursor_mvts = conn_mvts.cursor()
-                        cursor_mvts.query('SELECT ${columns} FROM alertes WHERE N = %s',
-                                          columns,
-                                          nalerte)
-                        results = cursor_mvts.fetchall()
+                        self.cursor_operat.query('USE %s_mvts' % self.__socname(idsoc))
+                        self.cursor_operat.query('SELECT ${columns} FROM alertes WHERE N = %s',
+                                                 columns,
+                                                 nalerte)
+                        results = self.cursor_operat.fetchall()
                         for rr in results:
                                 numstruct = rr[1]
                                 filename = rr[2] # message file name
@@ -948,18 +931,14 @@ class CallBoosterCommand(BaseCommand):
                                 intervsuivi = rr[4] # in seconds
 
                                 print 'Alerte : filename = %s (groups = %s) intsuivi = %s' %(filename, str(grouplist), intervsuivi)
-                                socname = self.__socname(idsoc)
-                                if socname not in self.conn_clients:
-                                        sqluri_clients = '%s/%s_clients' % (self.uribase, socname)
-                                        self.conn_clients[socname] = anysql.connect_by_uri(sqluri_clients)
                                 columns = ('N', 'Libelle', 'NCol', 'NQuestion',
                                            'Type_Traitement', 'Nom_table_contact', 'Type_Alerte',
                                            'CallingNumber', 'nbTentatives', 'Alerte_Tous', 'Stop_Decroche')
-                                cursor_clients = self.conn_clients[socname].cursor()
-                                cursor_clients.query('SELECT ${columns} FROM alerte_struct WHERE N = %s',
-                                                     columns,
-                                                     numstruct)
-                                results2 = cursor_clients.fetchall()
+                                self.cursor_operat.query('USE %s_clients' % self.__socname(idsoc))
+                                self.cursor_operat.query('SELECT ${columns} FROM alerte_struct WHERE N = %s',
+                                                         columns,
+                                                         numstruct)
+                                results2 = self.cursor_operat.fetchall()
                                 nquestion = results2[0][3]
                                 print '       : struct =', results2[0][1:]
 
@@ -967,33 +946,31 @@ class CallBoosterCommand(BaseCommand):
                                            'Touches_autorisees', 'Touches_terminales', 'Touche_repete',
                                            'T0', 'T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9',
                                            'AttenteMax', 'TValidate')
-                                cursor_system = self.conn_system.cursor()
-                                cursor_system.query('SELECT ${columns} FROM questions WHERE N = %s',
-                                                    columns,
-                                                    nquestion)
-                                results3 = cursor_system.fetchall()
+                                self.cursor_operat.query('USE system')
+                                self.cursor_operat.query('SELECT ${columns} FROM questions WHERE N = %s',
+                                                         columns,
+                                                         nquestion)
+                                results3 = self.cursor_operat.fetchall()
                                 print '       : questions =', results3[0][1:8]
                                 print '       : questions =', results3[0][8:18]
                                 print '       : questions =', results3[0][18:20]
 
                                 columns = ('N', 'JOUR', 'DATED', 'DATEF', 'TYPE',
                                            'PlgD', 'PlgF', 'Valeur')
-                                cursor_system = self.conn_system.cursor()
-                                cursor_system.query('SELECT ${columns} FROM ressource_struct',
-                                                    columns)
-                                results5 = cursor_system.fetchall()
+                                self.cursor_operat.query('USE system')
+                                self.cursor_operat.query('SELECT ${columns} FROM ressource_struct',
+                                                         columns)
+                                results5 = self.cursor_operat.fetchall()
                                 print results5
 
                                 for gl in grouplist:
                                         try:
-                                                sqluri_annexe = '%s/%s_annexe' % (self.uribase, self.__socname(idsoc))
-                                                conn_annexe = anysql.connect_by_uri(sqluri_annexe)
                                                 columns = ('N', 'Groupe', 'nom', 'prenom',
                                                            'tel1', 'tel2', 'tel3', 'tel4',
                                                            'Civilite', 'Fax', 'eMail', 'SMS', 'Code', 'DureeSonnerie')
-                                                cursor_annexe = conn_annexe.cursor()
-                                                cursor_annexe.query('SELECT * FROM %s' % gl)
-                                                results4 = cursor_annexe.fetchall()
+                                                self.cursor_operat.query('USE %s_annexe' % self.__socname(idsoc))
+                                                self.cursor_operat.query('SELECT * FROM %s' % gl)
+                                                results4 = self.cursor_operat.fetchall()
                                                 for r4 in results4:
                                                         print r4
                                                         # self.amis[astid].aoriginate('local', phonenum, 'dest %s' % phonenum, 'any', 'any name', 'automa')
@@ -1001,8 +978,8 @@ class CallBoosterCommand(BaseCommand):
                                         except Exception, exc:
                                                 print 'grouplist %s : %s' % (gl, str(exc))
                                         
-                        cursor_mvts = conn_mvts.cursor()
-                        cursor_mvts.query('DELETE FROM alertes WHERE N = %s' % nalerte)
+                        self.cursor_operat.query('USE %s_mvts' % self.__socname(idsoc))
+                        self.cursor_operat.query('DELETE FROM alertes WHERE N = %s' % nalerte)
                         # system / compteurs, suivis, suivisalertes
 
                 else:
@@ -1114,27 +1091,27 @@ class CallBoosterCommand(BaseCommand):
                         [juridict, impulsion] = self.__gettaxes(numbertobill)
                         call.settaxes(impulsion)
                         datetime = time.strftime(DATETIMEFMT)
-                        cursor_system = self.conn_system.cursor()
-                        cursor_system.query('INSERT INTO taxes VALUES (0, %s, 0, %s, %d, %d, %s, %s, %s, %s, %s, %d, %s, %s, %s, %s, %s, %s, %s)'
-                                            % (call.commid,
-                                               '"%s"' % datetime,
-                                               0, # Duree
-                                               0, # DureeSonnerie
-                                               call.nsoc,
-                                               call.ncli,
-                                               '"%s"' % call.cliname,
-                                               call.ncol,
-                                               '"%s"' % call.colname,
-                                               NOpe,
-                                               fromN,
-                                               toN,
-                                               '"%s"' % fromS,
-                                               '"%s"' % toS,
-                                               '"Sonnerie"',
-                                               impulsion[0],
-                                               juridict))
-                        cursor_system.query('SELECT LAST_INSERT_ID()') # last_insert_id
-                        results = cursor_system.fetchall()
+                        self.cursor_operat.query('USE system')
+                        self.cursor_operat.query('INSERT INTO taxes VALUES (0, %s, 0, %s, %d, %d, %s, %s, %s, %s, %s, %d, %s, %s, %s, %s, %s, %s, %s)'
+                                                 % (call.commid,
+                                                    '"%s"' % datetime,
+                                                    0, # Duree
+                                                    0, # DureeSonnerie
+                                                    call.nsoc,
+                                                    call.ncli,
+                                                    '"%s"' % call.cliname,
+                                                    call.ncol,
+                                                    '"%s"' % call.colname,
+                                                    NOpe,
+                                                    fromN,
+                                                    toN,
+                                                    '"%s"' % fromS,
+                                                    '"%s"' % toS,
+                                                    '"Sonnerie"',
+                                                    impulsion[0],
+                                                    juridict))
+                        self.cursor_operat.query('SELECT LAST_INSERT_ID()') # last_insert_id
+                        results = self.cursor_operat.fetchall()
                         call.insert_taxes_id = results[0][0]
 
                 except Exception, exc:
@@ -1176,11 +1153,11 @@ class CallBoosterCommand(BaseCommand):
                       'durees = %f, %d, %d, taxes = %d' \
                       %(cs.commid, str(cs.taxes), state, duree, duree_int, dureesonnerie, ntaxes)
 
-                cursor_system = self.conn_system.cursor()
-                cursor_system.query('UPDATE taxes SET Duree = %d, DureeSonnerie = %d, Etat = %s, nbTaxes = %d WHERE RefFB = %s'
-                                    % (duree, dureesonnerie, '"%s"' % state, ntaxes, cs.commid))
-                # cursor_system.fetchall()
-                self.conn_system.commit()
+                self.cursor_operat.query('USE system')
+                self.cursor_operat.query('UPDATE taxes SET Duree = %d, DureeSonnerie = %d, Etat = %s, nbTaxes = %d WHERE RefFB = %s'
+                                         % (duree, dureesonnerie, '"%s"' % state, ntaxes, cs.commid))
+                # self.cursor_operat.fetchall()
+                self.conn_operat.commit()
 
 
         def __update_stat_acd(self, state, t0, in_period,
@@ -1196,11 +1173,11 @@ class CallBoosterCommand(BaseCommand):
                                    'TT_RAF', 'TT_ASD', 'TT_SND', 'TT_SFA', 'TT_SOP',
                                    'TT_TEL', 'TT_FIC', 'TT_BAS', 'TT_MES', 'TT_REP',
                                    'NSOC' )
-                        cursor_system = self.conn_system.cursor()
-                        cursor_system.query('SELECT ${columns} FROM stat_acd WHERE DATE = %s',
-                                            columns,
-                                            datetime)
-                        results = cursor_system.fetchall()
+                        self.cursor_operat.query('USE system')
+                        self.cursor_operat.query('SELECT ${columns} FROM stat_acd WHERE DATE = %s',
+                                                 columns,
+                                                 datetime)
+                        results = self.cursor_operat.fetchall()
                         if len(results) > 0:
                                 r = results[0]
                                 [nnc, nnv, nhdv, nv, ttime,
@@ -1236,29 +1213,29 @@ class CallBoosterCommand(BaseCommand):
                         ntt_rep = ntt_rep + tt_rep
                         
                         if len(results) > 0:
-                                cursor_system.query("UPDATE stat_acd SET SDA_NC = %d, SDA_NV = %d, SDA_HDV = %d, SDA_V = %d,"
-                                                    " TT_RAF = %d, TT_ASD = %d, TT_SND = %d, TT_SFA = %d, TT_SOP = %d,"
-                                                    " TT_TEL = %d, TT_FIC = %d, TT_BAS = %d, TT_MES = %d, TT_REP = %d"
-                                                    " WHERE DATE = '%s'"
-                                                    % (nnc, nnv, nhdv, nv,
-                                                       ntt_raf, ntt_asd, ntt_snd, ntt_sfa, ntt_sop,
-                                                       ntt_tel, ntt_fic, ntt_bas, ntt_mes, ntt_rep,
-                                                       datetime))
+                                self.cursor_operat.query("UPDATE stat_acd SET SDA_NC = %d, SDA_NV = %d, SDA_HDV = %d, SDA_V = %d,"
+                                                         " TT_RAF = %d, TT_ASD = %d, TT_SND = %d, TT_SFA = %d, TT_SOP = %d,"
+                                                         " TT_TEL = %d, TT_FIC = %d, TT_BAS = %d, TT_MES = %d, TT_REP = %d"
+                                                         " WHERE DATE = '%s'"
+                                                         % (nnc, nnv, nhdv, nv,
+                                                            ntt_raf, ntt_asd, ntt_snd, ntt_sfa, ntt_sop,
+                                                            ntt_tel, ntt_fic, ntt_bas, ntt_mes, ntt_rep,
+                                                            datetime))
                         else:
-                                cursor_system.query('INSERT INTO stat_acd VALUES'
-                                                    ' (0, %s, %s,'
-                                                    ' %d, %d, %d, %d,'
-                                                    ' %d,'
-                                                    ' %d, %d, %d, %d, %d, %d, %d, %d, %d, %d,'
-                                                    ' %d)'
-                                                    % ('"%s"' % datetime,
-                                                       '"%s"' % period,
-                                                       nnc, nnv, nhdv, nv,
-                                                       ttime,
-                                                       ntt_raf, ntt_asd, ntt_snd, ntt_sfa, ntt_sop,
-                                                       ntt_tel, ntt_fic, ntt_bas, ntt_mes, ntt_rep,
-                                                       nsoc))
-                        self.conn_system.commit()
+                                self.cursor_operat.query('INSERT INTO stat_acd VALUES'
+                                                         ' (0, %s, %s,'
+                                                         ' %d, %d, %d, %d,'
+                                                         ' %d,'
+                                                         ' %d, %d, %d, %d, %d, %d, %d, %d, %d, %d,'
+                                                         ' %d)'
+                                                         % ('"%s"' % datetime,
+                                                            '"%s"' % period,
+                                                            nnc, nnv, nhdv, nv,
+                                                            ttime,
+                                                            ntt_raf, ntt_asd, ntt_snd, ntt_sfa, ntt_sop,
+                                                            ntt_tel, ntt_fic, ntt_bas, ntt_mes, ntt_rep,
+                                                            nsoc))
+                        self.conn_operat.commit()
                 except Exception, exc:
                         print 'exception in __update_stat_acd :', exc
                 return
@@ -1361,31 +1338,31 @@ class CallBoosterCommand(BaseCommand):
                         trep = int(bil['rep'])
 
                 try:
-                        cursor_system = self.conn_system.cursor()
-                        cursor_system.query('INSERT INTO stat_acd2 VALUES'
-                                            ' (0, %s, %s, %s, %s, %s, %d,'
-                                            ' %d, %d, %d, %d, %d, %d, %d, %d, %d, %d,'
-                                            ' %s, %s, %s,'
-                                            ' %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d,'
-                                            ' %s, %s, %d)'
-                                            % ('"%s"' % datetime,
-                                               '"%s"' % now_f_time,
-                                               '"%s"' % incall.sdanum,
-                                               '"%s"' % incall.cidnum,
-                                               '"%s"' % state,
-                                               int(dtime),
-                                               tt_raf, tt_asd, tt_snd, tt_sfa, tt_sop,
-                                               tt_tel, tt_fic, tt_bas, tt_mes, tt_rep,
-                                               incall.nsoc,
-                                               incall.ncli,
-                                               incall.ncol,
-                                               tacd, tope, tatt, tattabo, tabo,
-                                               ttel, trep, tmes, tsec,    tdec,
-                                               dec,
-                                               '"%s"' % opername,
-                                               '"%s"' % incall.socname,
-                                               incall.insert_taxes_id))
-
+                        self.cursor_operat.query('USE system')
+                        self.cursor_operat.query('INSERT INTO stat_acd2 VALUES'
+                                                 ' (0, %s, %s, %s, %s, %s, %d,'
+                                                 ' %d, %d, %d, %d, %d, %d, %d, %d, %d, %d,'
+                                                 ' %s, %s, %s,'
+                                                 ' %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d,'
+                                                 ' %s, %s, %d)'
+                                                 % ('"%s"' % datetime,
+                                                    '"%s"' % now_f_time,
+                                                    '"%s"' % incall.sdanum,
+                                                    '"%s"' % incall.cidnum,
+                                                    '"%s"' % state,
+                                                    int(dtime),
+                                                    tt_raf, tt_asd, tt_snd, tt_sfa, tt_sop,
+                                                    tt_tel, tt_fic, tt_bas, tt_mes, tt_rep,
+                                                    incall.nsoc,
+                                                    incall.ncli,
+                                                    incall.ncol,
+                                                    tacd, tope, tatt, tattabo, tabo,
+                                                    ttel, trep, tmes, tsec,    tdec,
+                                                    dec,
+                                                    '"%s"' % opername,
+                                                    '"%s"' % incall.socname,
+                                                    incall.insert_taxes_id))
+                        
                         self.__update_stat_acd(state, sortedtimes[0], incall.period,
                                                tt_raf, tt_asd, tt_snd, tt_sfa, tt_sop,
                                                tt_tel, tt_fic, tt_bas, tt_mes, tt_rep)
@@ -1413,10 +1390,10 @@ class CallBoosterCommand(BaseCommand):
 
         def __juridictions(self, num):
                 columns = ('Numero', 'Juridiction', 'Type_Num', 'Description', 'Local')
-                cursor_system = self.conn_system.cursor()
-                cursor_system.query("SELECT ${columns} FROM juridict",
-                                    columns)
-                results = cursor_system.fetchall()
+                self.cursor_operat.query('USE system')
+                self.cursor_operat.query("SELECT ${columns} FROM juridict",
+                                         columns)
+                results = self.cursor_operat.fetchall()
                 jurs = None
                 maxlen = 0
                 for r in results:
@@ -1433,11 +1410,11 @@ class CallBoosterCommand(BaseCommand):
 
         def __impulsion(self, jur):
                 columns = ('Juridiction', 'Info', 'NbTaxePC', 'DureePC', 'DureeTaxe')
-                cursor_system = self.conn_system.cursor()
-                cursor_system.query('SELECT ${columns} FROM impulsion WHERE Juridiction = %s',
-                                    columns,
-                                    jur)
-                results = cursor_system.fetchall()
+                self.cursor_operat.query('USE system')
+                self.cursor_operat.query('SELECT ${columns} FROM impulsion WHERE Juridiction = %s',
+                                         columns,
+                                         jur)
+                results = self.cursor_operat.fetchall()
                 if len(results) > 0:
                         r = results[0]
                         imp = [r[2], r[3], r[4]]
@@ -1548,16 +1525,12 @@ class CallBoosterCommand(BaseCommand):
                 if upto == '0':
                         queuenum = self.__choosequeuenum()
                         print ' NCOMING CALL ## building an IncomingCall structure ##'
-                        thiscall = IncomingCall.IncomingCall(self.conn_agents, self.conn_system,
-                                                             cidnum, sdanum, queuenum, self.soperat_socket, self.soperat_port, self.opejd, self.opend)
+                        thiscall = IncomingCall.IncomingCall(self.cursor_operat,
+                                                             cidnum, sdanum, queuenum,
+                                                             self.soperat_socket, self.soperat_port, self.opejd, self.opend)
 
                         if thiscall.statacd2_state != 'NC':
-                                socname = thiscall.socname
-                                if socname not in self.conn_clients:
-                                        sqluri_clients = '%s/%s_clients' % (self.uribase, socname)
-                                        self.conn_clients[socname] = anysql.connect_by_uri(sqluri_clients)
-
-                                thiscall.setclicolnames(self.conn_clients[socname])
+                                thiscall.setclicolnames()
 
                         self.__init_taxes(thiscall, cidnum, cidnum, sdanum, TRUNKNAME, 'PABX', 0)
 
@@ -1566,7 +1539,7 @@ class CallBoosterCommand(BaseCommand):
                                 if sdanum not in incoming_calls:
                                         incoming_calls[sdanum] = {}
                                 self.__clear_call_fromqueues(astid, thiscall)
-                                ret = thiscall.get_sda_profiles(self.conn_clients[socname], len(incoming_calls[sdanum]))
+                                ret = thiscall.get_sda_profiles(len(incoming_calls[sdanum]))
                                 if ret == True:
                                         incoming_calls[sdanum][inchannel] = thiscall
                                         print ' NCOMING CALL : list of used SDA :', incoming_calls
