@@ -62,6 +62,10 @@ class AMIClass:
         def sendstatus(self):
                 ret = self.sendcommand('Status', [])
                 return ret
+        # \brief Requesting the Agents' Status.
+        def sendagents(self):
+                ret = self.sendcommand('Agents', [])
+                return ret
         # \brief Requesting an ExtensionState.
         def sendextensionstate(self, exten, context):
                 ret = self.sendcommand('ExtensionState',

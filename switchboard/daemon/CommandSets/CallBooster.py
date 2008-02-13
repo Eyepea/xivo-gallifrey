@@ -10,6 +10,8 @@ import re
 import os
 import pickle
 import socket
+import threading
+import Queue
 import time
 import xivo_commandsets
 from Calls import IncomingCall
@@ -44,7 +46,7 @@ class CallBoosterCommand(BaseCommand):
         CallBoosterCommand class.
         Defines the behaviour of commands.
         """
-        def __init__(self, ulist, amis, operatsocket, operatport, operatini):
+        def __init__(self, ulist, amis, operatsocket, operatport, operatini, queued_threads_pipe):
 		BaseCommand.__init__(self)
                 self.commands = ['Init',
                                  'AppelOpe', 'TransfertOpe', 'RaccrocheOpe',
@@ -74,9 +76,9 @@ class CallBoosterCommand(BaseCommand):
                         self.opend = opconf_so.get('opend')
                 else:
                         self.opend = '20:00'
-                print self.opejd, self.opend
-                self.list_svirt = {}
                 self.pending_sv_fiches = {}
+                self.tqueue = Queue.Queue()
+                self.queued_threads_pipe = queued_threads_pipe
 
 
         def __sendfiche_a(self, userinfo, incall):
@@ -449,6 +451,11 @@ class CallBoosterCommand(BaseCommand):
                 return
 
 
+        def messagewaiting(self, astid, event):
+                print 'messagewaiting', astid, event
+                # event.get('Mailbox'), event.get('Waiting'), event.get('New'), event.get('Old')
+
+
         def dial(self, astid, event):
                 # print 'DIAL', event
                 return
@@ -554,7 +561,16 @@ class CallBoosterCommand(BaseCommand):
                         print 'ParkedCall Annule', thiscall.uinfo['calls']
                         # remove the call from userinfo + list
                 return
-        
+
+
+        def agent_was_logged_in(self, astid, event):
+                agentnum = event.get('Agent')
+                agentchannel = event.get('LoggedInChan')
+                print 'agent_was_logged_in', astid, event
+                for agname, v in self.ulist[astid].list.iteritems():
+                        if 'agentnum' in v and v['agentnum'] == agentnum:
+                                v['agentchannel'] = agentchannel
+
 
         def agentlogin(self, astid, event):
                 agentnum = event.get('Agent')
@@ -566,7 +582,8 @@ class CallBoosterCommand(BaseCommand):
                                 # maybe we don't need to send an AppelOpe reply if it has not been explicitly required
                                 reply = ',%d,,AppelOpe/' % (1)
                                 # reply = ',%d,,AppelOpe/' % (-3)
-                                v['connection'].send(reply)
+                                if 'connection' in v:
+                                        v['connection'].send(reply)
                                 for cnum, xcall in v['calls'].iteritems():
                                         if xcall.tocall:
                                                 log_debug(SYSLOG_INFO, 'an outgoing call is waiting to be sent ...')
@@ -853,6 +870,7 @@ class CallBoosterCommand(BaseCommand):
                 elif cname == 'Ping':
                         reference = parsedcommand.args[1]
                         reply = ',,,Pong/'
+                        # Ping received every 60 seconds
                         connid_socket.send(reply)
 
                 elif cname == 'Sortie':
@@ -1035,23 +1053,60 @@ class CallBoosterCommand(BaseCommand):
                                                                                                cnum)
                                                         self.pending_sv_fiches[ic.commid] = reply
                                                 elif val == 'Attente':
-                                                        self.list_svirt[ic.commid] = params
+                                                        timer = threading.Timer(5, self.svcheck)
+                                                        timer.start()
+                                                        ic.svirt = {'params' : params,
+                                                                    'timer' : timer,
+                                                                    'val' : '1'}
+                                                        print '(Attente) : starting a Timer :', timer
                                                 print 'OperatSock : received reply for :', sdanum, commid, ic, ic.commid, val
                 elif cmd == 'ACDCheckRequest':
+                        iic = None
+                        for sdanum, lic in incoming_calls.iteritems():
+                                for chan, ic in lic.iteritems():
+                                        if ic.svirt is not None:
+                                                iic = ic
+                        timer = threading.Timer(5, self.svcheck)
+                        timer.start()
+                        iic.svirt['timer'] = timer
+                        iic.svirt['val'] = val
+                        print '(ACDCheckRequest) : starting a Timer :', timer
+
                         if val == '0':
                                 print 'ACDCheckRequest : request not in SV'
                         elif val == '-1':
                                 print 'ACDCheckRequest : request still in SV'
+
                 return None
+
+
+        def checkqueue(self):
+                buf = os.read(self.queued_threads_pipe[0], 1024)
+                print 'checkqueue', buf
+                qsize = self.tqueue.qsize()
+                if qsize > 0:
+                        print 'qsize =', self.tqueue.qsize()
+                        thisthread = self.tqueue.get()
+                        for sdanum, lic in incoming_calls.iteritems():
+                                for chan, ic in lic.iteritems():
+                                        if ic.svirt is not None and ic.svirt['timer'] == thisthread:
+                                                v = ic.svirt['params']
+                                                val = int(ic.svirt['val'])
+                                                if val != 0:
+                                                        req = 'ACDCheckRequest' + chr(2) + chr(2).join(v[2:8]) + chr(3)
+                                                        print 'req =', v, req
+                                                        self.soperat_socket.send(req)
+                                                        ic.svirt['timer'] = None
+                                                else:
+                                                        print 'check if someone has taken the call ...'
 
 
         # checking if any news from pending requests
         def svcheck(self):
-                for areq, v in self.list_svirt.iteritems():
-                        req = 'ACDCheckRequest' + chr(2) + chr(2).join(v[2:8]) + chr(3)
-                        print 'areq =', areq, v, req
-                        self.soperat_socket.send(req)
-                return
+                print 'a timer has finished ... checking pending requests ...'
+                thisthread = threading.currentThread()
+                self.tqueue.put(thisthread)
+                os.write(self.queued_threads_pipe[1], 'a')
 
 
         def __init_taxes(self, call, numbertobill, fromN, toN, fromS, toS, NOpe):

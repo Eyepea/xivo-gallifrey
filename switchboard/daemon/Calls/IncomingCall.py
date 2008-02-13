@@ -53,7 +53,8 @@ class IncomingCall:
                 self.appelaboute = None
                 self.tocall = False
                 self.toretrieve = None
-
+                self.svirt = None
+                
                 self.stimes = {time.time() : 'init'}
                 self.ttimes = {time.time() : 'init'}
                 self.uinfo = None
@@ -95,7 +96,7 @@ class IncomingCall:
                         else:
                                 self.socname = 'adh_inconnu'
 
-                        self.dialplan['soundpath'] = '%s/%s/%s' % (self.socname, self.ncli, self.ncol)
+                        self.dialplan['soundpath'] = '%s/%s/%s' % (self.nsoc, self.ncli, self.ncol)
                         isvalid = self.system_sda[7]
                         if isvalid == 1:
                                 nowdate = time.strftime(DATEFMT, self.ctime)
@@ -704,23 +705,28 @@ class IncomingCall:
 
 
         def __typep_rep(self, clients_profil):
-                filename = '%s/%s/%s/Repondeurs/%s' % (self.socname, self.ncli, self.ncol, clients_profil[8])
+                filename = '%s/%s/%s/Repondeurs/%s' % (self.nsoc, self.ncli, self.ncol, clients_profil[8])
                 print '  COMING CALL : __typep_rep', filename
                 whattodo = Action('rep', 0, filename.strip('.wav'))
                 return whattodo
 
 
         def __typep_mes(self, clients_profil):
-                columns = ('NCLI', 'NCOL', 'NPROF', 'Duree', 'Envoie', 'Mail', 'Conserve')
+                columns = ('NCLI', 'NCOL', 'NPROF', 'NomMess', 'Duree', 'Envoie', 'Mail', 'Conserve')
                 cursor_clients = self.conn_clients.cursor()
                 cursor_clients.query('SELECT ${columns} FROM messagerie WHERE NCLI = %s AND NCOL = %s AND NPROF = %s',
                                      columns,
                                      (self.ncli, self.ncol, clients_profil[0]))
                 clients_messagerie = cursor_clients.fetchall()
+
                 if len(clients_messagerie) > 0:
-                        print '  COMING CALL : __typep_mes, typep is MES : %s' % str(clients_messagerie[0])
+                        clients_messagerie_item = clients_messagerie[0]
+
+                        print '  COMING CALL : __typep_mes, typep is MES : %s' % str(clients_messagerie_item)
                         self.statacd2_tt = 'TT_MES'
-                        whattodo = Action('mes', 0, None)
+                        filename = '%s/%s/%s/Repondeurs/%s' % (self.nsoc, self.ncli, self.ncol, clients_messagerie_item[3])
+                        maxlength = str(clients_messagerie_item[4])
+                        whattodo = Action('mes', 0, ';'.join([filename.strip('.wav').strip('.WAV'), maxlength]))
                 else:
                         whattodo = None
                 return whattodo

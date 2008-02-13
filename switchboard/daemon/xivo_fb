@@ -1170,9 +1170,10 @@ def handle_ami_event(astid, idata):
                                 pass
 
                 elif evfunction == 'MessageWaiting':
-                        mwi_string = '%s waiting=%s; new=%s; old=%s' \
-                                     % (this_event.get('Mailbox'), str(this_event.get('Waiting')), str(this_event.get('New')), str(this_event.get('Old')))
-                        log_debug(SYSLOG_INFO, 'AMI:MessageWaiting: %s : %s' % (astid, mwi_string))
+                        commandclass.messagewaiting(astid, this_event)
+##                        mwi_string = '%s waiting=%s; new=%s; old=%s' \
+##                                     % (this_event.get('Mailbox'), str(this_event.get('Waiting')), str(this_event.get('New')), str(this_event.get('Old')))
+##                        log_debug(SYSLOG_INFO, 'AMI:MessageWaiting: %s : %s' % (astid, mwi_string))
                 elif evfunction == 'QueueParams':
                         log_debug(SYSLOG_INFO, '//AMI:QueueParams// %s : %s' %(astid, str(this_event)))
                 elif evfunction == 'QueueMemberAdded':
@@ -1195,6 +1196,10 @@ def handle_ami_event(astid, idata):
 ##                                        log_debug(SYSLOG_INFO,
 ##                                                  'AMI:QueueMemberStatus: %s %s %s %s (%s)'
 ##                                                  % (astid, qname, location, est[status], str(plist_thisast.queues[qname])))
+                elif evfunction == 'Agents':
+                        status = this_event.get('Status')
+                        if status != 'AGENT_LOGGEDOFF':
+                                commandclass.agent_was_logged_in(astid, this_event)
                 elif evfunction == 'Status':
                         state = this_event.get('State')
                         if state == 'Up':
@@ -1351,6 +1356,9 @@ def update_amisocks(astid):
                                 ret = als0.sendstatus()
                                 if not ret:
                                         log_debug(SYSLOG_INFO, '%s : could not send status command' % astid)
+                                ret = als0.sendagents()
+                                if not ret:
+                                        log_debug(SYSLOG_INFO, '%s : could not send agents command' % astid)
                         else:
                                 log_debug(SYSLOG_INFO, '%s : AMI : could NOT connect' % astid)
         except Exception, exc:
@@ -2359,7 +2367,7 @@ while True: # loops over the reloads
         port_ui_srv = 4949
         port_webi = 5004
         port_operat = 4950
-        port_elect = 4970
+        port_comm_agi_daemon = 4970
         port_sv = 4946
         xivoclient_session_timeout = 60
         phonelist_update_period = 60
@@ -2395,8 +2403,8 @@ while True: # loops over the reloads
                 port_sv = int(xivoconf_general['port_sv'])
         if 'port_operat' in xivoconf_general:
                 port_operat = int(xivoconf_general['port_operat'])
-        if 'port_elect' in xivoconf_general:
-                port_elect = int(xivoconf_general['port_elect'])
+        if 'port_comm_agi_daemon' in xivoconf_general:
+                port_comm_agi_daemon = int(xivoconf_general['port_comm_agi_daemon'])
         if 'address_operat' in xivoconf_general:
                 address_operat = xivoconf_general['address_operat']
         if 'operatini' in xivoconf_general:
@@ -2426,9 +2434,10 @@ while True: # loops over the reloads
                 print 'could not connect to Operat Serveur', exc
         # log_debug(SYSLOG_INFO, '# connection to Operat done')
 
+        queued_threads_pipe = os.pipe()
         AMI_array_user_commands = {}
         cclass = xivo_commandsets.CommandClasses[commandset]
-        commandclass = cclass(ulist, AMI_array_user_commands, OperatSock, port_sv, operatini)
+        commandclass = cclass(ulist, AMI_array_user_commands, OperatSock, port_sv, operatini, queued_threads_pipe)
 
         save_for_next_packet_events = {}
         faxbuffer = {}
@@ -2714,11 +2723,12 @@ while True: # loops over the reloads
         # opens the listening socket for WEBI/CLI connections
         Fsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         Fsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        Fsock.bind(("", port_elect))
+        Fsock.bind(("", port_comm_agi_daemon))
         Fsock.listen(10)
         ins.append(Fsock)
 
         ins.append(OperatSock)
+        ins.append(queued_threads_pipe[0])
 
         # Receive messages
         while not askedtoquit:
@@ -2728,6 +2738,13 @@ while True: # loops over the reloads
                         if askedtoquit:
                                 try:
                                         send_msg_to_cti_clients("ERROR server_stopped")
+                                        print
+                                        print 'current open TCP connections : (SB)  ', tcpopens_sb
+                                        print 'current open TCP connections : (WEBI)', tcpopens_webi
+                                        print 'current open TCP connections : (FC)  ', tcpopens_fc
+                                        print 'current open TCP connections : (AMI) ', AMI_array_events_fd
+                                        print 'current open TCP connections : (OP)  ', OperatSock
+                                        print
                                         os.unlink(PIDFILE)
                                 except Exception, exc:
                                         print exc
@@ -2828,6 +2845,9 @@ while True: # loops over the reloads
                                 msg = OperatSock.recv(BUFSIZE_LARGE)
                                 commandclass.svreply(msg)
 
+                        elif queued_threads_pipe[0] in i:
+                                commandclass.checkqueue()
+
                         # advertising from other xivo_daemon's around
                         elif xdal in i:
                                 [data, addrsip] = xdal.recvfrom(BUFSIZE_UDP)
@@ -2838,7 +2858,6 @@ while True: # loops over the reloads
                         for astid in configs:
                                 if (time.time() - lastrequest_time[astid]) > phonelist_update_period or update_userlist[astid]:
                                         lastrequest_time[astid] = time.time()
-                                        commandclass.svcheck()
                                         log_debug(SYSLOG_INFO, '%s : update_phonelist (computed timeout) %s'
                                                   % (astid, time.strftime("%H:%M:%S", time.localtime())))
                                         try:
@@ -2853,7 +2872,6 @@ while True: # loops over the reloads
                                                           %(astid, str(exc)))
 
                 else: # when nothing happens on the sockets, we fall here sooner or later
-                        commandclass.svcheck()
 ##                        log_debug(SYSLOG_INFO, 'update_phonelist (select s timeout) %s'
 ##                                  % time.strftime("%H:%M:%S", time.localtime()))
                         for astid in configs:
