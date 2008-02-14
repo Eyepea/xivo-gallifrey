@@ -4,6 +4,7 @@
  * Fax detection application for all channel types.
  * 
  * Copyright (C) 2004-2005, Newman Telecom, Inc. and Newman Ventures, Inc.
+ * Copyright (c) 2008 Proformatique
  *
  * Justin Newman <jnewman@newmantelecom.com>
  *
@@ -23,6 +24,9 @@
  * the GNU General Public License
  */
  
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 #include <asterisk/lock.h>
 #include <asterisk/file.h>
 #include <asterisk/logger.h>
@@ -32,8 +36,6 @@
 #include <asterisk/translate.h>
 #include <asterisk/dsp.h>
 #include <asterisk/utils.h>
-#include <string.h>
-#include <stdlib.h>
 
 static char *tdesc = "Newman's fax detection application";
 
