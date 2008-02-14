@@ -111,7 +111,7 @@ class CallBoosterCommand(BaseCommand):
                                 agentname = userinfo['user']
                                 log_debug(SYSLOG_INFO, 'sendfiche, the agent is not online ... we re going to call him : %s (%s)' % (phonenum, str(userinfo)))
                                 userinfo['startcontact'] = time.time()
-                                userinfo['startcontactth'] = 10
+                                userinfo['startcontactth'] = 7
                                 self.amis[astid].aoriginate_var('sip', phonenum, 'Log %s' % phonenum,
                                                                 agentnum, agentname, 'default', 'CB_MES_LOGAGENT', agentname)
                         self.__sendfiche_a(userinfo, incall)
@@ -447,25 +447,60 @@ class CallBoosterCommand(BaseCommand):
 
         def messagewaiting(self, astid, event):
                 print 'messagewaiting', astid, event
+                # /var/spool/asterisk/voicemail/default/101/INBOX/
                 # event.get('Mailbox'), event.get('Waiting'), event.get('New'), event.get('Old')
+                # {'Old': '0', 'Mailbox': '101@default', 'Waiting': '1', 'Privilege': 'call,all', 'New': '1', 'Event': 'MessageWaiting'}
+                # {'Old': '0', 'Mailbox': '101@default', 'Waiting': '1', 'Privilege': 'call,all', 'New': '2', 'Event': 'MessageWaiting'}
+
+                self.cursor_operat.query('USE system')
+##                self.cursor_operat.query('INSERT INTO suivis VALUES (%s, %d, %d, %d, %d, %s, %s, %s, %s, %s)'
+##                                         % (nomcoll, nsoc, ncli, ncol, nstruct, 'AUDIO', date, 'ACD', 'ATT', filename))
+
+                # ','2008-01-06_09;27;09,060;;.WAV\\Déclenché en automatique');
+                # NOM : Nom du collaborateur (ou du client s'il s'agit d'une SDA où NCOL=0)
+                # NSOC : Numero de l'adhérent
+                # NCLI : Numero du Client
+                # NCOL : Numero du Collaborateur
+                # NSTRUCT : Indice de l'enregistrement de la table `messagerie` utilisé pour cette messagerie
+                # DateP : Date et Heure d'envoi programmé
+                # STATUT : Doit contenir le nom du fichier message à envoyer plus la chaine '\Déclenché en automatique'
+
+
+        def newcallerid(self, astid, event):
+                agentnum = event.get('CallerID')
+                channel = event.get('Channel')
+                for agname, uinfo in self.ulist[astid].list.iteritems():
+                        if 'agentnum' in uinfo and uinfo['agentnum'] == agentnum:
+                                uinfo['chancon'] = channel
 
         def queuememberstatus(self, astid, event):
-                agentnum = event.get('Location')
+                agentid = event.get('Location')
                 status = event.get('Status')
                 queue = event.get('Queue')
                 for agname, uinfo in self.ulist[astid].list.iteritems():
-                        if 'agentnum' in uinfo and uinfo['agentnum'] == agentnum.split('/')[1]:
+                        if 'agentnum' in uinfo and uinfo['agentnum'] == agentid.split('/')[1]:
                                 if 'startcontact' in uinfo:
                                         dtime = time.time() - int(uinfo['startcontact'])
                                         thresh = uinfo['startcontactth']
-                                        print 'queuememberstatus', agentnum, status, queue, dtime
+                                        print 'queuememberstatus', agentid, status, queue, dtime, uinfo
                                         if status == '5' and dtime > thresh:
-                                                reply = ',%d,,AppelOpe/' % (-(thresh/10))
+                                                if thresh == 7:
+                                                        code = -1
+                                                        uinfo['startcontactth'] = 14
+                                                elif thresh == 14:
+                                                        code = -2
+                                                        uinfo['startcontactth'] = 21
+                                                else:
+                                                        code = -3
+                                                        del uinfo['startcontact']
+                                                        del uinfo['startcontactth']
+                                                        if 'chancon' in uinfo:
+                                                                self.amis[astid].hangup(uinfo['chancon'], '')
+                                                reply = ',%d,,AppelOpe/' % code
                                                 uinfo['connection'].send(reply)
-                                                uinfo['startcontactth'] += 10
 
         def dial(self, astid, event):
-                # print 'DIAL', event
+                #print 'DIAL', event
                 return
 
 
@@ -1025,7 +1060,7 @@ class CallBoosterCommand(BaseCommand):
                 cmd = params[0]
                 val = params[1]
                 if cmd == 'ACDReponse':
-                        print 'ACDReponse', msg
+                        print '(received) ACDReponse', msg
                         sdanum = params[5]
                         commid = params[6]
                         if sdanum in incoming_calls:
@@ -1053,21 +1088,24 @@ class CallBoosterCommand(BaseCommand):
                                                         print '(Attente) : starting a Timer :', timer
                                                 print 'OperatSock : received reply for :', sdanum, commid, ic, ic.commid, val
                 elif cmd == 'ACDCheckRequest':
+                        print '(received) ACDCheckRequest', msg
+                        commid = params[2]
                         iic = None
                         for sdanum, lic in incoming_calls.iteritems():
                                 for chan, ic in lic.iteritems():
-                                        if ic.svirt is not None:
+                                        if ic.commid == commid :
                                                 iic = ic
-                        timer = threading.Timer(5, self.svcheck)
-                        timer.start()
-                        iic.svirt['timer'] = timer
-                        iic.svirt['val'] = val
-                        print '(ACDCheckRequest) : starting a Timer :', timer
-
-                        if val == '0':
-                                print 'ACDCheckRequest : request not in SV'
-                        elif val == '-1':
-                                print 'ACDCheckRequest : request still in SV'
+                        if iic is not None:
+                                timer = threading.Timer(5, self.svcheck)
+                                timer.start()
+                                iic.svirt['timer'] = timer
+                                iic.svirt['val'] = val
+                                print '(ACDCheckRequest) : starting a Timer :', timer
+                                
+                                if val == '0':
+                                        print 'ACDCheckRequest : request not in SV'
+                                elif val == '-1':
+                                        print 'ACDCheckRequest : request still in SV'
 
                 return None
 
@@ -1125,6 +1163,7 @@ class CallBoosterCommand(BaseCommand):
                                                     '"Sonnerie"',
                                                     impulsion[0],
                                                     juridict))
+                        self.conn_operat.commit()
                         self.cursor_operat.query('SELECT LAST_INSERT_ID()') # last_insert_id
                         results = self.cursor_operat.fetchall()
                         call.insert_taxes_id = results[0][0]
@@ -1378,7 +1417,7 @@ class CallBoosterCommand(BaseCommand):
                                                     '"%s"' % opername,
                                                     '"%s"' % incall.socname,
                                                     incall.insert_taxes_id))
-                        
+                        self.conn_operat.commit()                        
                         self.__update_stat_acd(state, sortedtimes[0], incall.period,
                                                tt_raf, tt_asd, tt_snd, tt_sfa, tt_sop,
                                                tt_tel, tt_fic, tt_bas, tt_mes, tt_rep)

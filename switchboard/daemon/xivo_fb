@@ -106,12 +106,9 @@ import time
 import urllib
 import _sre
 
-# fiche
-import sendfiche
-
 # XIVO lib-python modules initialization
 import xivo.to_path
-xivoconffile            = "/etc/xivo/xivo_fb.conf"
+xivoconffile            = "/etc/asterisk/xivo_fb.conf"
 GETOPT_SHORTOPTS        = 'dc:'
 GETOPT_LONGOPTS         = ["debug", "config="]
 debug_mode = False
@@ -136,6 +133,7 @@ from BackSQL import backmysql
 from BackSQL import backsqlite
 
 # XIVO modules
+import sendfiche
 import xivo_ami
 import xivo_ldap
 import xivo_commandsets
@@ -1084,6 +1082,7 @@ def handle_ami_event(astid, idata):
                         chan    = this_event.get('Channel')
                         clid    = this_event.get('CallerID')
                         clidn   = this_event.get('CallerIDName')
+                        commandclass.newcallerid(astid, this_event)
                         # log_debug(SYSLOG_INFO, 'AMI:Newcallerid: %s channel=%s callerid=%s calleridname=%s'
                         # %(astid, chan, clid, clidn))
                         # plist_thisast.normal_channel_fills(chan, clid,
