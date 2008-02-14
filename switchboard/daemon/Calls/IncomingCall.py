@@ -652,7 +652,7 @@ class IncomingCall:
                                                       %(intext, normstd, num, ncherche, npatiente, wtime, withsda, which)
                                                 if which == 6:
                                                         # number is a Repondeur file
-                                                        whattodo = Action('rep', 0, num.strip('.wav'))
+                                                        whattodo = Action('rep', 0, num.strip('.wav').strip('.WAV'))
                                                 else:
                                                         if normstd == '1':
                                                                 wtime = ''
@@ -694,9 +694,9 @@ class IncomingCall:
 
 
         def __typep_rep(self, clients_profil):
-                filename = '%s/%s/%s/Repondeurs/%s' % (self.nsoc, self.ncli, self.ncol, clients_profil[8])
+                filename = clients_profil[8].strip('.wav').strip('.WAV')
                 print '  COMING CALL : __typep_rep', filename
-                whattodo = Action('rep', 0, filename.strip('.wav'))
+                whattodo = Action('rep', 0, filename)
                 return whattodo
 
 
@@ -713,9 +713,9 @@ class IncomingCall:
 
                         print '  COMING CALL : __typep_mes, typep is MES : %s' % str(clients_messagerie_item)
                         self.statacd2_tt = 'TT_MES'
-                        filename = '%s/%s/%s/Repondeurs/%s' % (self.nsoc, self.ncli, self.ncol, clients_messagerie_item[3])
+                        filename = clients_messagerie_item[3].strip('.wav').strip('.WAV')
                         maxlength = str(clients_messagerie_item[4])
-                        whattodo = Action('mes', 0, ';'.join([filename.strip('.wav').strip('.WAV'), maxlength]))
+                        whattodo = Action('mes', 0, ';'.join([filename, maxlength]))
                 else:
                         whattodo = None
                 return whattodo

@@ -31,9 +31,12 @@ agi = AGI()
 def print_verbose(txt):
         agi.verbose("push_callbooster : %s" % txt)
 
-def findpath(acc, mfile):
-        fullfile = '%s/%s/%s/Sons/%s.wav' % (path_sounds_asterisk, path_sounds_callbooster, '/'.join(acc), mfile)
-        partfile = '%s/Sons/%s' % ('/'.join(acc), mfile)
+def rfindpath(acc, mfile, kind):
+        if len(acc) > 0:
+                partfile = '%s/%s/%s/%s' % (path_sounds_byadh, '/'.join(acc), kind, mfile)
+        else:
+                partfile = '%s/%s' % (path_sounds_global.get(kind), mfile)
+        fullfile = '%s/%s.wav' % (path_sounds_asterisk, partfile)
         if os.path.exists(fullfile):
                 return [acc, partfile]
         else:
@@ -54,12 +57,17 @@ def findpath(acc, mfile):
                                 tacc = []
 
                 if len(acc) > 0:
-                        [nacc, npartfile] = findpath(tacc, mfile)
+                        [nacc, npartfile] = rfindpath(tacc, mfile, kind)
                 else:
                         [nacc, npartfile] = [None, None]
                 return [nacc, npartfile]
 
-
+def findpath_and_set(acc, argum, kind, varname):
+        [fpath, partfile] = rfindpath(acc, argum, kind)
+        if partfile is not None:
+                agi.set_variable(varname, partfile)
+        else:
+                print_verbose('%s (%s) : %s does not exist on filesystem' % (varname, str(acc), argum))
 
 # ==============================================================================
 # Main Code starts here
@@ -69,7 +77,9 @@ CONFIG_XIVO_DAEMON = '/etc/xivo/xivo_fb.conf'
 
 port_comm_agi_daemon = 4970
 path_sounds_asterisk = '/var/lib/asterisk/sounds'
-path_sounds_callbooster = 'fr/callbooster'
+path_sounds_byadh = 'callbooster'
+path_sounds_global = {'Sons' : 'web-interface/callbooster-sons',
+                      'Repondeurs' : 'web-interface/callbooster-repondeurs'}
 
 xivocfg = ConfigParser.ConfigParser()
 try:
@@ -78,9 +88,11 @@ try:
         if 'port_comm_agi_daemon' in xivocfg_general:
                 port_comm_agi_daemon = int(xivocfg_general.get('port_comm_agi_daemon'))
         if 'path_sounds_asterisk' in xivocfg_general:
-                path_sounds_asterisk = int(xivocfg_general.get('path_sounds_asterisk'))
-        if 'path_sounds_callbooster' in xivocfg_general:
-                path_sounds_callbooster = int(xivocfg_general.get('path_sounds_callbooster'))
+                path_sounds_asterisk = xivocfg_general.get('path_sounds_asterisk')
+        if 'path_sounds_byadh' in xivocfg_general:
+                path_sounds_byadh = xivocfg_general.get('path_sounds_byadh')
+##        if 'path_sounds_global' in xivocfg_general:
+##                path_sounds_global = xivocfg_general.get('path_sounds_global')
 except Exception, exc:
         print_verbose('could not access to config in %s (err = %s) : default config used' % (CONFIG_XIVO_DAEMON, str(exc)))
 
@@ -145,32 +157,26 @@ if action == 'tel' or action == 'bas' or action == 'fic':
         agi.set_variable('CB_AGI_TEL_PATIENTE', telargs[3])
 
 if action == 'rep':
-        agi.set_variable('CB_AGI_ARG', argum)
+        if 'soundpath' in dialplan:
+                acc = dialplan['soundpath'].split('/')
+                findpath_and_set(acc, argum, 'Repondeurs', 'CB_AGI_ARG')
 
 if action == 'mes':
         argums = argum.split(';')
-        agi.set_variable('CB_AGI_MES_MES', argums[0])
+        if 'soundpath' in dialplan:
+                acc = dialplan['soundpath'].split('/')
+                findpath_and_set(acc, argums[0], 'Repondeurs', 'CB_AGI_MES_MES')
         agi.set_variable('CB_AGI_MES_SDA', mysda)
 
-if 'dialplan' is not None:
+if dialplan is not None:
         if dialplan['record'] is not None:
                 agi.set_variable('CB_AGI_RECORD', dialplan['record'])
         if 'soundpath' in dialplan:
                 acc = dialplan['soundpath'].split('/')
-
-                [fpath, partfile] = findpath(acc, dialplan['M001003'])
-                if partfile is not None:
-                        agi.set_variable('CB_AGI_MES_WELCOME', partfile)
-                else:
-                        print_verbose('CB_AGI_MES_WELCOME (%s) : %s does not exist on filesystem' % (str(acc), dialplan['M001003']))
-
+                findpath_and_set(acc, dialplan['M001003'], 'Sons', 'CB_AGI_MES_WELCOME')
                 for mfile in ['M002', 'M005', 'M006', 'M007', 'M008', 'M009', 'M012', 'M025']:
                         if mfile in dialplan['sounds']:
-                                [fpath, partfile] = findpath(acc, mfile)
-                                if partfile is not None:
-                                        agi.set_variable('CB_AGI_MES_%s' % mfile, partfile)
-                                else:
-                                        print_verbose('CB_AGI_MES_%s (%s) : does not exist on filesystem' % (mfile, str(acc)))
+                                findpath_and_set(acc, mfile, 'Sons', 'CB_AGI_MES_%s' % mfile)
                 if 'M018' in dialplan['sounds']:
                         agi.set_variable('CB_AGI_MES_WAITINGMUSIC', dialplan['soundpath'])
 

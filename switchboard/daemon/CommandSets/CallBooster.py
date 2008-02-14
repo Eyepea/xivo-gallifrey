@@ -110,6 +110,8 @@ class CallBoosterCommand(BaseCommand):
                                 phonenum = userinfo['phonenum']
                                 agentname = userinfo['user']
                                 log_debug(SYSLOG_INFO, 'sendfiche, the agent is not online ... we re going to call him : %s (%s)' % (phonenum, str(userinfo)))
+                                userinfo['startcontact'] = time.time()
+                                userinfo['startcontactth'] = 10
                                 self.amis[astid].aoriginate_var('sip', phonenum, 'Log %s' % phonenum,
                                                                 agentnum, agentname, 'default', 'CB_MES_LOGAGENT', agentname)
                         self.__sendfiche_a(userinfo, incall)
@@ -447,6 +449,20 @@ class CallBoosterCommand(BaseCommand):
                 print 'messagewaiting', astid, event
                 # event.get('Mailbox'), event.get('Waiting'), event.get('New'), event.get('Old')
 
+        def queuememberstatus(self, astid, event):
+                agentnum = event.get('Location')
+                status = event.get('Status')
+                queue = event.get('Queue')
+                for agname, uinfo in self.ulist[astid].list.iteritems():
+                        if 'agentnum' in uinfo and uinfo['agentnum'] == agentnum.split('/')[1]:
+                                if 'startcontact' in uinfo:
+                                        dtime = time.time() - int(uinfo['startcontact'])
+                                        thresh = uinfo['startcontactth']
+                                        print 'queuememberstatus', agentnum, status, queue, dtime
+                                        if status == '5' and dtime > thresh:
+                                                reply = ',%d,,AppelOpe/' % (-(thresh/10))
+                                                uinfo['connection'].send(reply)
+                                                uinfo['startcontactth'] += 10
 
         def dial(self, astid, event):
                 # print 'DIAL', event
@@ -733,7 +749,6 @@ class CallBoosterCommand(BaseCommand):
                                         phonenum = userinfo_by_requester[5]
                                         self.amis[astid].aoriginate_var('sip', phonenum, 'Log %s' % phonenum,
                                                                         agentnum, agentname, 'default', 'CB_MES_LOGAGENT', agentname)
-                                        
 
                 elif cname == 'Raccroche':
                         reference = parsedcommand.args[1]
@@ -1113,9 +1128,10 @@ class CallBoosterCommand(BaseCommand):
                         self.cursor_operat.query('SELECT LAST_INSERT_ID()') # last_insert_id
                         results = self.cursor_operat.fetchall()
                         call.insert_taxes_id = results[0][0]
-
                 except Exception, exc:
                         print '--- exception --- (__init_taxes) :', exc
+
+
 
 
         def __update_taxes(self, cs, state):
@@ -1584,7 +1600,7 @@ class CallBoosterCommand(BaseCommand):
                                                         if thiscall == td[1]:
                                                                 self.__clear_call_fromqueues(astid, td[1])
                                                                 self.__sendfiche(astid, opername, td[1])
-                                                                delay = 10
+                                                                delay = 30
                                                                 argument = None
                                                         else:
                                                                 pass

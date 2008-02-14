@@ -1188,7 +1188,8 @@ def handle_ami_event(astid, idata):
                         qname    = this_event.get('Queue')
                         location = this_event.get('Location')
                         status   = int(this_event.get('Status'))
-                        print 'QueueMemberStatus', qname, location, status
+                        commandclass.queuememberstatus(astid, this_event)
+                        # print 'QueueMemberStatus', qname, location, status, time.time()
 
 ##                        if qname in plist_thisast.queues and (status == 1 or status == 2 or status == 6):
 ##                                est = ['?', 'Free', 'Busy', '?', '?', '?', 'Ringing', '?', '?']
