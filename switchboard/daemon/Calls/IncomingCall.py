@@ -435,11 +435,12 @@ class IncomingCall:
                                 else:
                                         truedispo = dispo[3]
 
+                                print 'busy-ness :', dispo[5], dispo[6], dispo[7], dispo[8]
                                 if truedispo == 'Pret':
                                         status = 'Pret%d' % dispo[4]
                                 else:
                                         status = truedispo
-                                return [status, dispo[1], dispo[9], dispo[11]]
+                                return [status, dispo[1], dispo[9], dispo[11], dispo[5] + dispo[6] + dispo[7] + dispo[8]]
                         else:
                                 return None
                 else:
@@ -707,7 +708,6 @@ class IncomingCall:
                                          columns,
                                          (self.ncli, self.ncol, clients_profil[0]))
                 clients_messagerie = self.cursor_operat.fetchall()
-
                 if len(clients_messagerie) > 0:
                         clients_messagerie_item = clients_messagerie[0]
 

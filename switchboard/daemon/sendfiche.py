@@ -12,10 +12,9 @@ import threading
 import urllib
 import encodings.utf_8
 
-import generefiche
-
 # XIVO lib-python modules initialization
 import xivo.to_path
+import generefiche
 
 # XIVO lib-python modules imports
 import anysql

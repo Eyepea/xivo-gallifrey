@@ -227,21 +227,22 @@ class AMIClass:
                         return False
 
         # \brief Originates a call from a phone towards another.
-        def aoriginate_var(self, phoneproto, phonesrc, cidnamesrc, phonedst, cidnamedst, locext, var, val):
+        def aoriginate_var(self, phoneproto, phonesrc, cidnamesrc, phonedst, cidnamedst, locext, var, val, timeout):
                 # originate a call btw src and dst
                 # src will ring first, and dst will ring when src responds
                 try:
                         print 'AOriginate_var', phoneproto, phonesrc, cidnamesrc, phonedst, cidnamedst, locext
                         ret = self.sendcommand('AOriginate', [('Channel', phoneproto + '/' + phonesrc),
-                                                             ('Exten', phonedst),
-                                                             ('Context', locext),
-                                                             ('Priority', '1'),
-                                                             # ('CallerID', "%s" %(phonesrc)),
-                                                             ('CallerID', "%s <%s>" %(cidnamedst, phonedst)),
-                                                             ('Variable', 'XIVO_ORIGSRCNAME=%s' % cidnamesrc),
-                                                             ('Variable', 'XIVO_ORIGSRCNUM=%s'  % phonesrc),
-                                                             ('Variable', '%s=%s'  % (var, val)),
-                                                             ('Async', 'true')])
+                                                              ('Exten', phonedst),
+                                                              ('Context', locext),
+                                                              ('Priority', '1'),
+                                                              ('Timeout', str(timeout * 1000)),
+                                                              # ('CallerID', "%s" %(phonesrc)),
+                                                              ('CallerID', "%s <%s>" %(cidnamedst, phonedst)),
+                                                              ('Variable', 'XIVO_ORIGSRCNAME=%s' % cidnamesrc),
+                                                              ('Variable', 'XIVO_ORIGSRCNUM=%s'  % phonesrc),
+                                                              ('Variable', '%s=%s'  % (var, val)),
+                                                              ('Async', 'true')])
                         reply = self.readresponse('')
                         return ret
                 except self.AMIError, exc:

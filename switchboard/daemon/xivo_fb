@@ -712,12 +712,13 @@ def manage_tcp_connection(connid, allow_events):
                                                         log_debug(SYSLOG_INFO, '%s : userlist update request received' % astid)
                                                 elif astid in AMI_array_user_commands and AMI_array_user_commands[astid]:
                                                         stripped_usefulmsg = usefulmsg.strip()
-                                                        if stripped_usefulmsg == 'moh reload':
-                                                                try:
-                                                                        commandclass.moh_updates()
-                                                                except Exception, exc:
-                                                                        log_debug(SYSLOG_ERR, '--- exception --- (moh_updates) : %s' % str(exc))
-
+                                                        try:
+                                                                if stripped_usefulmsg == 'moh reload':
+                                                                        commandclass.pre_moh_reload()
+                                                                elif stripped_usefulmsg == 'reload':
+                                                                        commandclass.pre_reload()
+                                                        except Exception, exc:
+                                                                log_debug(SYSLOG_ERR, '--- exception --- (pre reloads) : %s' % str(exc))
                                                         try:
                                                                 s = AMI_array_user_commands[astid].execclicommand(stripped_usefulmsg)
                                                         except Exception, exc:

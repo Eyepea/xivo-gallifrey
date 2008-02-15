@@ -111,9 +111,9 @@ class CallBoosterCommand(BaseCommand):
                                 agentname = userinfo['user']
                                 log_debug(SYSLOG_INFO, 'sendfiche, the agent is not online ... we re going to call him : %s (%s)' % (phonenum, str(userinfo)))
                                 userinfo['startcontact'] = time.time()
-                                userinfo['startcontactth'] = 7
+                                userinfo['startcontactth'] = 10
                                 self.amis[astid].aoriginate_var('sip', phonenum, 'Log %s' % phonenum,
-                                                                agentnum, agentname, 'default', 'CB_MES_LOGAGENT', agentname)
+                                                                agentnum, agentname, 'default', 'CB_MES_LOGAGENT', agentname, 100)
                         self.__sendfiche_a(userinfo, incall)
                         print '__sendfiche', incall.queuename, agentnum
                         userinfo['queuelist'][incall.queuename] = incall
@@ -262,7 +262,7 @@ class CallBoosterCommand(BaseCommand):
 
                                 # XXX : sip/phonenum => IAX2/trunkname/number
                                 self.amis[astid].aoriginate_var('sip', phonenum, 'Log %s' % phonenum,
-                                                                agentnum, 'agentname', 'default', 'CB_MES_LOGAGENT', 'agentname')
+                                                                agentnum, 'agentname', 'default', 'CB_MES_LOGAGENT', 'agentname', 100)
                                 del self.pending_sv_fiches[callref]
 
                                 # adds the user at once
@@ -452,14 +452,39 @@ class CallBoosterCommand(BaseCommand):
 
         def messagewaiting(self, astid, event):
                 print 'messagewaiting', astid, event
-                # /var/spool/asterisk/voicemail/default/101/INBOX/
-                # event.get('Mailbox'), event.get('Waiting'), event.get('New'), event.get('Old')
-                # {'Old': '0', 'Mailbox': '101@default', 'Waiting': '1', 'Privilege': 'call,all', 'New': '1', 'Event': 'MessageWaiting'}
-                # {'Old': '0', 'Mailbox': '101@default', 'Waiting': '1', 'Privilege': 'call,all', 'New': '2', 'Event': 'MessageWaiting'}
+                datetime = time.strftime('%Y-%m-%d_%H-%M-%S')
+                sdanum = event.get('Mailbox').split('@')[0]
+                dirname ='/var/spool/asterisk/voicemail/default/%s/INBOX' % sdanum
 
+                nsoc = 0
+                ncli = 0
+                ncol = 0
+                if sdanum in incoming_calls:
+                        lst = incoming_calls[sdanum]
+                        for chan, ic in lst.iteritems():
+                                nsoc = ic.nsoc
+                                ncli = ic.ncli
+                                ncol = ic.ncol
+
+                n = 0
+                # {'Old': '0', 'Mailbox': '101@default', 'Waiting': '1', 'Privilege': 'call,all', 'New': '1', 'Event': 'MessageWaiting'}
                 self.cursor_operat.query('USE system')
-##                self.cursor_operat.query('INSERT INTO suivis VALUES (%s, %d, %d, %d, %d, %s, %s, %s, %s, %s)'
-##                                         % (nomcoll, nsoc, ncli, ncol, nstruct, 'AUDIO', date, 'ACD', 'ATT', filename))
+                for msg in os.listdir(dirname):
+                        fullpath = '/'.join([dirname, msg])
+                        if msg.find('.wav') > 0:
+                                print 'full path is', fullpath, 'renaming'
+                                newpath = '/var/spool/asterisk/voicemail/%s.%s.%02d.wav' % (sdanum, datetime, n)
+                                n += 1
+                                os.rename(fullpath, newpath)
+                                self.cursor_operat.query("INSERT INTO suivis (`NOM`,`NSOC`,`NCLI`,`NCOL`,`NSTRUCT`,`TypeT`,`DateP`,`NAPL`,`ETAT`,`STATUT`) "
+                                                         "VALUES ('%s', %d, %d, %d, %d, '%s', '%s', '%s', '%s', '%s')"
+                                                         % ('collab', nsoc, ncli, ncol, 2, 'AUDIO',
+                                                            datetime, 'ACD', 'ATT',
+                                                            newpath))
+                        else:
+                                print 'full path is', fullpath, 'deleting'
+                                os.remove(fullpath)
+
 
                 # ','2008-01-06_09;27;09,060;;.WAV\\Déclenché en automatique');
                 # NOM : Nom du collaborateur (ou du client s'il s'agit d'une SDA où NCOL=0)
@@ -491,18 +516,19 @@ class CallBoosterCommand(BaseCommand):
                                         thresh = uinfo['startcontactth']
                                         print 'queuememberstatus', agentid, status, queue, dtime, uinfo
                                         if status == '5' and dtime > thresh:
-                                                if thresh == 7:
+                                                if thresh == 10:
                                                         code = -2
-                                                        uinfo['startcontactth'] = 14
-                                                elif thresh == 14:
+                                                        uinfo['startcontactth'] = 20
+                                                elif thresh == 20:
                                                         code = -2
-                                                        uinfo['startcontactth'] = 21
+                                                        uinfo['startcontactth'] = 30
                                                 else:
                                                         code = -3
                                                         del uinfo['startcontact']
                                                         del uinfo['startcontactth']
                                                         if 'chancon' in uinfo:
                                                                 self.amis[astid].hangup(uinfo['chancon'], '')
+                                                                del uinfo['chancon']
                                                 reply = ',%d,,AppelOpe/' % code
                                                 uinfo['connection'].send(reply)
 
@@ -515,7 +541,12 @@ class CallBoosterCommand(BaseCommand):
                 chan = event.get('Channel')
                 thiscall = self.__incallref_from_channel(chan)
                 if thiscall is not None:
-                        print 'HANGUP => __update_stat_acd2', chan, thiscall.queuename
+                        print 'HANGUP => __update_stat_acd2', chan, thiscall.queuename, thiscall.uinfo
+                        if thiscall.uinfo is not None:
+                                if 'startcontact' in thiscall.uinfo and 'chancon' in thiscall.uinfo:
+                                        reply = ',-1,,AppelOpe/'
+                                        thiscall.uinfo['connection'].send(reply)
+                                        self.amis[astid].hangup(thiscall.uinfo['chancon'], '')
                         self.__update_taxes(thiscall, 'Termine')
                         self.__update_stat_acd2(thiscall)
                         self.__clear_call_fromqueues(astid, thiscall)
@@ -660,21 +691,32 @@ class CallBoosterCommand(BaseCommand):
                 return
 
 
-
         def __walkdir(self, args, dirname, filenames):
                 if dirname[-5:] == '/Sons':
                         for filename in filenames:
                                 if filename.find('M018.') == 0:
                                         self.listreps.append(dirname)
 
-        def moh_updates(self):
-                print 'moh_updates'
+        def pre_reload(self):
+                print 'pre_reload'
+##                for b in self.getuserlist().itervalues():
+##                        print int(b[5]) - STARTAGENTNUM, b[1]
+##                self.cursor_xivo.query("SELECT * FROM agent WHERE var_name = 'agent'")
+##                results = self.cursor_xivo.fetchall()
+##                for l in results:
+##                        print l
+##                self.cursor_xivo.query('SELECT * FROM agentfeatures')
+##                results = self.cursor_xivo.fetchall()
+##                for l in results:
+##                        print l
+                return
+
+
+        def pre_moh_reload(self):
+                print 'pre_moh_reload'
                 REPFILES = '/usr/share/asterisk/sounds/callbooster'
                 MOHFILES = '/usr/share/asterisk/moh/callbooster'
                 columns = ('category', 'var_name', 'var_val')
-##                self.cursor_xivo.query("SELECT ${columns} FROM musiconhold WHERE var_name = %s",
-##                                       columns,
-##                                       ('directory'))
                 self.listreps = []
                 os.path.walk(REPFILES, self.__walkdir, None)
                 for r in self.listreps:
@@ -683,8 +725,10 @@ class CallBoosterCommand(BaseCommand):
                                                columns,
                                                (acc, 'directory'))
                         results = self.cursor_xivo.fetchall()
-                        if results == ():
-                                print 'creating item in %s' % acc
+                        if len(results) > 0:
+                                thisdir = results[0][2]
+                        else:
+                                print 'insert %s entry in db' % acc
                                 newclass = acc
                                 moh_params = {'mode' : 'files',
                                               'application' : None,
@@ -700,16 +744,10 @@ class CallBoosterCommand(BaseCommand):
                                                 self.cursor_xivo.query("INSERT INTO musiconhold VALUES "
                                                                        "(0, 0, 0, 1, 'musiconhold.conf', '%s', '%s', NULL)"
                                                                        % (newclass, p))
-                        else:
-                                print acc, results
-                                thisdir = results[0][2]
-                        print 'checking dir existence for %s' % acc
-                        if os.path.exists(thisdir):
-                                print 'ok', thisdir
-                        else:
+                        if not os.path.exists(thisdir):
                                 os.umask(002)
                                 prevuid = os.getuid()
-                                print 'ko', thisdir, prevuid, r
+                                print 'mkdir a directory for moh :', thisdir, prevuid, r
                                 # os.setuid(102)
                                 os.makedirs(thisdir, 02775)
                                 os.symlink('/'.join([r, 'M018.wav']),
@@ -762,7 +800,7 @@ class CallBoosterCommand(BaseCommand):
                                 phonenum = userinfo_by_requester[5]
                                 log_debug(SYSLOG_INFO, 'AppelOpe : aoriginate_var for phonenum = %s' % phonenum)
                                 self.amis[astid].aoriginate_var('sip', phonenum, 'Log %s' % phonenum,
-                                                                agentnum, agentname, 'default', 'CB_MES_LOGAGENT', agentname)
+                                                                agentnum, agentname, 'default', 'CB_MES_LOGAGENT', agentname, 100)
                         else:
                                 reply = ',%d,,AppelOpe/' % (-3)
                                 connid_socket.send(reply)
@@ -851,7 +889,7 @@ class CallBoosterCommand(BaseCommand):
                                         userinfo['calls'][comm_id_outgoing].tocall = True
                                         phonenum = userinfo_by_requester[5]
                                         self.amis[astid].aoriginate_var('sip', phonenum, 'Log %s' % phonenum,
-                                                                        agentnum, agentname, 'default', 'CB_MES_LOGAGENT', agentname)
+                                                                        agentnum, agentname, 'default', 'CB_MES_LOGAGENT', agentname, 100)
 
                 elif cname == 'Raccroche':
                         reference = parsedcommand.args[1]
@@ -973,7 +1011,7 @@ class CallBoosterCommand(BaseCommand):
                 elif cname == 'Ping':
                         reference = parsedcommand.args[1]
                         reply = ',,,Pong/'
-                        # Ping received every 60 seconds
+                        # timer = threading.Timer(60, self.__pingnoreply)
                         connid_socket.send(reply)
 
                 elif cname == 'Sortie':
@@ -1028,7 +1066,7 @@ class CallBoosterCommand(BaseCommand):
                         connid_socket.send(reply)
                         self.amis[astid].aoriginate_var('Agent', agentnum, agentname,
                                                        '7444', 'Enregistre', 'default',
-                                                       'CB_RECORD_FILENAME', reference[0])
+                                                       'CB_RECORD_FILENAME', reference[0], 100)
 
                 elif cname == 'Alerte':
                         mreference = parsedcommand.args[1]
@@ -1098,7 +1136,7 @@ class CallBoosterCommand(BaseCommand):
                                         
                         self.cursor_operat.query('USE %s_mvts' % self.__socname(idsoc))
                         self.cursor_operat.query('DELETE FROM alertes WHERE N = %s' % nalerte)
-                        # system / compteurs, suivis, suivisalertes
+                        # system / compteurs, suivisalertes
 
                 else:
                         print 'CallBooster : unmanaged command <%s>' % cname
@@ -1148,7 +1186,7 @@ class CallBoosterCommand(BaseCommand):
                                                                                                cnum)
                                                         self.pending_sv_fiches[ic.commid] = reply
                                                 elif val == 'Attente':
-                                                        timer = threading.Timer(5, self.svcheck)
+                                                        timer = threading.Timer(5, self.__svcheck)
                                                         timer.start()
                                                         ic.svirt = {'params' : params,
                                                                     'timer' : timer,
@@ -1164,7 +1202,7 @@ class CallBoosterCommand(BaseCommand):
                                         if ic.commid == commid :
                                                 iic = ic
                         if iic is not None:
-                                timer = threading.Timer(5, self.svcheck)
+                                timer = threading.Timer(5, self.__svcheck)
                                 timer.start()
                                 iic.svirt['timer'] = timer
                                 iic.svirt['val'] = val
@@ -1200,7 +1238,7 @@ class CallBoosterCommand(BaseCommand):
 
 
         # checking if any news from pending requests
-        def svcheck(self):
+        def __svcheck(self):
                 print 'a timer has finished ... checking pending requests ...'
                 thisthread = threading.currentThread()
                 self.tqueue.put(thisthread)
@@ -1608,7 +1646,7 @@ class CallBoosterCommand(BaseCommand):
                                                         if 'connection' in userinfo:
                                                                 userqueuesize = len(userinfo['queuelist'])
                                                                 print '__choose :', opername, userinfo, opstatus, userqueuesize
-                                                                [status, dummy, level, prio] = opstatus
+                                                                [status, dummy, level, prio, busyness] = opstatus
                                                                 # print '__choose : incall : %s / opername : %s %s' % (incall.cidnum, opername, status)
                                                                 if status == 'Pret0':
                                                                         if len(todo_by_oper[opername]) == 0 and userqueuesize + 1 >= int(level):
