@@ -16,6 +16,9 @@
 #
 
 import xivo.to_path
+import anysql
+from BackSQL import backmysql
+from BackSQL import backsqlite
 import ConfigParser
 import os
 import pickle
@@ -69,17 +72,33 @@ def findpath_and_set(acc, argum, kind, varname):
         else:
                 print_verbose('%s (%s) : %s does not exist on filesystem' % (varname, str(acc), argum))
 
+def moh_check(path):
+        conn_ast = anysql.connect_by_uri(xivo_db)
+        cursor_ast = conn_ast.cursor()
+        columns = ('category', 'var_name', 'var_val')
+        cursor_ast.query("SELECT ${columns} FROM musiconhold WHERE var_name = %s AND category = %s",
+                         columns,
+                         ('directory', path))
+        results = cursor_ast.fetchall()
+        if results == ():
+                return 'callbooster'
+        else:
+                print_verbose('an moh path was found in the DB for %s : %s' % (path, results[0][2]))
+                return path
+
+
 # ==============================================================================
 # Main Code starts here
 # ==============================================================================
 
-CONFIG_XIVO_DAEMON = '/etc/xivo/xivo_fb.conf'
+CONFIG_XIVO_DAEMON = '/etc/asterisk/xivo_fb.conf'
 
 port_comm_agi_daemon = 4970
 path_sounds_asterisk = '/var/lib/asterisk/sounds'
 path_sounds_byadh = 'callbooster'
 path_sounds_global = {'Sons' : 'web-interface/callbooster-sons',
                       'Repondeurs' : 'web-interface/callbooster-repondeurs'}
+xivo_db = 'mysql://asterisk:proformatique@127.0.0.1:3306/asterisk?charset=utf8'
 
 xivocfg = ConfigParser.ConfigParser()
 try:
@@ -91,6 +110,8 @@ try:
                 path_sounds_asterisk = xivocfg_general.get('path_sounds_asterisk')
         if 'path_sounds_byadh' in xivocfg_general:
                 path_sounds_byadh = xivocfg_general.get('path_sounds_byadh')
+        if 'xivo_db' in xivocfg_general:
+                xivo_db = xivocfg_general.get('xivo_db')
 ##        if 'path_sounds_global' in xivocfg_general:
 ##                path_sounds_global = xivocfg_general.get('path_sounds_global')
 except Exception, exc:
@@ -178,8 +199,8 @@ if dialplan is not None:
                         if mfile in dialplan['sounds']:
                                 findpath_and_set(acc, mfile, 'Sons', 'CB_AGI_MES_%s' % mfile)
                 if 'M018' in dialplan['sounds']:
-                        agi.set_variable('CB_AGI_MES_WAITINGMUSIC', dialplan['soundpath'])
-
+                        moh_class = moh_check(dialplan['soundpath'])
+                        agi.set_variable('CB_AGI_MES_WAITINGMUSIC', moh_class)
 
 # saving the current CB 'dialplan' position and status, might be useful for true dialplan decisions
 agi.set_variable('CB_AGI_WHERE', where)

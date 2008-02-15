@@ -201,20 +201,23 @@ class CallBoosterCommand(BaseCommand):
                 return localulist
 
 
-        def set_cdr_uri(self, uribase):
+        def set_cdr_uri(self, uri_operat, uri_xivo):
                 """In this CB case, defines the path to the Operat MySQL database."""
-                self.uribase = uribase
-                sqluri = '%s?charset=%s' % (uribase, 'latin1')
-                self.conn_operat = anysql.connect_by_uri(sqluri)
+                sqluri = '%s?charset=%s' % (uri_operat, 'latin1')
+                self.conn_operat   = anysql.connect_by_uri(sqluri)
                 self.cursor_operat = self.conn_operat.cursor()
+                self.conn_xivo     = anysql.connect_by_uri(uri_xivo)
+                self.cursor_xivo   = self.conn_xivo.cursor()
 
 
         def get_list_commands_clt2srv(self):
                 """Defines the list of allowed commands."""
                 return self.commands
 
+
         def get_list_commands_srv2clt(self):
                 return None
+
 
         def parsecommand(self, linein):
                 params = linein.split(',')
@@ -225,6 +228,7 @@ class CallBoosterCommand(BaseCommand):
                 else:
                         cmd.type = xivo_commandsets.CMD_OTHER
                 return cmd
+
 
         def get_login_params(self, astid, command, connid):
                 print 'CallBooster Login :', command.name, command.args
@@ -293,6 +297,7 @@ class CallBoosterCommand(BaseCommand):
 
         def required_login_params(self):
                 return ['astid', 'proto', 'ident', 'userid', 'version', 'computername', 'phonenum', 'computeripref', 'srvnum']
+
 
         def connected_srv2clt(self, conn, id):
                 msg = 'Connect%s/' % id
@@ -472,6 +477,8 @@ class CallBoosterCommand(BaseCommand):
                 for agname, uinfo in self.ulist[astid].list.iteritems():
                         if 'agentnum' in uinfo and uinfo['agentnum'] == agentnum:
                                 uinfo['chancon'] = channel
+                return
+
 
         def queuememberstatus(self, astid, event):
                 agentid = event.get('Location')
@@ -485,7 +492,7 @@ class CallBoosterCommand(BaseCommand):
                                         print 'queuememberstatus', agentid, status, queue, dtime, uinfo
                                         if status == '5' and dtime > thresh:
                                                 if thresh == 7:
-                                                        code = -1
+                                                        code = -2
                                                         uinfo['startcontactth'] = 14
                                                 elif thresh == 14:
                                                         code = -2
@@ -624,6 +631,9 @@ class CallBoosterCommand(BaseCommand):
                                 v['agentchannel'] = agentchannel
                                 # maybe we don't need to send an AppelOpe reply if it has not been explicitly required
                                 reply = ',%d,,AppelOpe/' % (1)
+                                if 'startcontact' in v:
+                                        del v['startcontact']
+                                        del v['startcontactth']
                                 # reply = ',%d,,AppelOpe/' % (-3)
                                 if 'connection' in v:
                                         v['connection'].send(reply)
@@ -647,6 +657,64 @@ class CallBoosterCommand(BaseCommand):
                                         k.uinfo['connection'].send(reply)
                                 # if an outgoing call was there, send an (Annule ?)
                                 del v['agentchannel']
+                return
+
+
+
+        def __walkdir(self, args, dirname, filenames):
+                if dirname[-5:] == '/Sons':
+                        for filename in filenames:
+                                if filename.find('M018.') == 0:
+                                        self.listreps.append(dirname)
+
+        def moh_updates(self):
+                print 'moh_updates'
+                REPFILES = '/usr/share/asterisk/sounds/callbooster'
+                MOHFILES = '/usr/share/asterisk/moh/callbooster'
+                columns = ('category', 'var_name', 'var_val')
+##                self.cursor_xivo.query("SELECT ${columns} FROM musiconhold WHERE var_name = %s",
+##                                       columns,
+##                                       ('directory'))
+                self.listreps = []
+                os.path.walk(REPFILES, self.__walkdir, None)
+                for r in self.listreps:
+                        acc = r[len(REPFILES)+1:-5]
+                        self.cursor_xivo.query("SELECT ${columns} FROM musiconhold WHERE category = %s AND var_name = %s",
+                                               columns,
+                                               (acc, 'directory'))
+                        results = self.cursor_xivo.fetchall()
+                        if results == ():
+                                print 'creating item in %s' % acc
+                                newclass = acc
+                                moh_params = {'mode' : 'files',
+                                              'application' : None,
+                                              'random' : 'no'}
+                                moh_params['directory'] = '%s/%s' % (MOHFILES, newclass)
+                                thisdir = moh_params['directory']
+                                for p, vp in moh_params.iteritems():
+                                        if p != 'application':
+                                                self.cursor_xivo.query("INSERT INTO musiconhold VALUES "
+                                                                       "(0, 0, 0, 0, 'musiconhold.conf', '%s', '%s', '%s')"
+                                                                       % (newclass, p, vp))
+                                        else:
+                                                self.cursor_xivo.query("INSERT INTO musiconhold VALUES "
+                                                                       "(0, 0, 0, 1, 'musiconhold.conf', '%s', '%s', NULL)"
+                                                                       % (newclass, p))
+                        else:
+                                print acc, results
+                                thisdir = results[0][2]
+                        print 'checking dir existence for %s' % acc
+                        if os.path.exists(thisdir):
+                                print 'ok', thisdir
+                        else:
+                                os.umask(002)
+                                prevuid = os.getuid()
+                                print 'ko', thisdir, prevuid, r
+                                # os.setuid(102)
+                                os.makedirs(thisdir, 02775)
+                                os.symlink('/'.join([r, 'M018.wav']),
+                                           '/'.join([thisdir, 'M018.wav']))
+                                os.setuid(prevuid)
                 return
 
 

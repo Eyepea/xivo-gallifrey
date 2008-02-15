@@ -158,7 +158,7 @@ allowed_states = ['available', 'away', 'outtolunch', 'donotdisturb', 'berightbac
 #  state :            cf. allowed_states
 # The user identifier will likely be its phone number
 
-PIDFILE = '/tmp/xivo_fb.pid'
+PIDFILE = '/var/run/xivo_fb.pid'
 # TODO: command line parameter
 
 BUFSIZE_LARGE = 8192
@@ -711,17 +711,24 @@ def manage_tcp_connection(connid, allow_events):
                                                         connid[0].send('%s:OK\n' %(XIVO_CLI_WEBI_HEADER))
                                                         log_debug(SYSLOG_INFO, '%s : userlist update request received' % astid)
                                                 elif astid in AMI_array_user_commands and AMI_array_user_commands[astid]:
+                                                        stripped_usefulmsg = usefulmsg.strip()
+                                                        if stripped_usefulmsg == 'moh reload':
+                                                                try:
+                                                                        commandclass.moh_updates()
+                                                                except Exception, exc:
+                                                                        log_debug(SYSLOG_ERR, '--- exception --- (moh_updates) : %s' % str(exc))
+
                                                         try:
-                                                                s = AMI_array_user_commands[astid].execclicommand(usefulmsg.strip())
+                                                                s = AMI_array_user_commands[astid].execclicommand(stripped_usefulmsg)
                                                         except Exception, exc:
                                                                 log_debug(SYSLOG_ERR, '--- exception --- (%s) WEBI command exec <%s> : (client %s) : %s'
-                                                                          %(astid, str(usefulmsg.strip()), requester, str(exc)))
+                                                                          %(astid, str(stripped_usefulmsg), requester, str(exc)))
                                                         try:
                                                                 for x in s: connid[0].send(x)
                                                                 connid[0].send('%s:OK\n' %(XIVO_CLI_WEBI_HEADER))
                                                         except Exception, exc:
                                                                 log_debug(SYSLOG_ERR, '--- exception --- (%s) WEBI command reply <%s> : (client %s) : %s'
-                                                                          %(astid, str(usefulmsg.strip()), requester, str(exc)))
+                                                                          %(astid, str(stripped_usefulmsg), requester, str(exc)))
                                         except Exception, exc:
                                                 log_debug(SYSLOG_ERR, '--- exception --- (%s) WEBI <%s> : (client %s) : %s'
                                                           %(astid, str(usefulmsg.strip()), requester, str(exc)))
@@ -729,8 +736,9 @@ def manage_tcp_connection(connid, allow_events):
                                 else:
                                         connid[0].send('%s:KO <NOT ALLOWED>\n' %(XIVO_CLI_WEBI_HEADER))
                                 try:
-                                        ins.remove(connid[0])
                                         connid[0].close()
+                                        ins.remove(connid[0])
+                                        tcpopens_webi.remove(connid)
                                         log_debug(SYSLOG_INFO, 'TCP (WEBI) socket closed towards %s' % requester)
                                 except Exception, exc:
                                         log_debug(SYSLOG_ERR, '--- exception --- (%s) WEBI could not close properly %s'
@@ -2369,6 +2377,7 @@ while True: # loops over the reloads
         port_operat = 4950
         port_comm_agi_daemon = 4970
         port_sv = 4946
+        xivo_db = 'mysql://asterisk:proformatique@127.0.0.1:3306/asterisk?charset=utf8'
         xivoclient_session_timeout = 60
         phonelist_update_period = 60
         asterisklist = []
@@ -2409,6 +2418,8 @@ while True: # loops over the reloads
                 address_operat = xivoconf_general['address_operat']
         if 'operatini' in xivoconf_general:
                 operatini = xivoconf_general['operatini']
+        if 'xivo_db' in xivoconf_general:
+                xivo_db = xivoconf_general['xivo_db']
         if 'xivoclient_session_timeout' in xivoconf_general:
                 xivoclient_session_timeout = int(xivoconf_general['xivoclient_session_timeout'])
         if 'phonelist_update_period' in xivoconf_general:
@@ -2551,7 +2562,7 @@ while True: # loops over the reloads
                                                                     faxcallerid,
                                                                     linkestablished)
                         ulist[astid] = AsteriskUsers(astid)
-                        commandclass.set_cdr_uri(cdr_db_uri)
+                        commandclass.set_cdr_uri(cdr_db_uri, xivo_db)
 
                         if ipaddress not in ip_reverse_sht:
                                 ip_reverse_sht[ipaddress] = astid
