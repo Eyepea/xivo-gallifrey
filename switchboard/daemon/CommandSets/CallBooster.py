@@ -704,19 +704,50 @@ class CallBoosterCommand(BaseCommand):
                 self.cursor_operat.query('SELECT ${columns} FROM agents',
                                          columns)
                 agents_agents = self.cursor_operat.fetchall()
+                agent_params = {'ackcall' : 'no',
+                                'autologoff' : '0',
+                                'wrapuptime' : '0',
+                                'maxlogintries' : '3',
+                                'goodbye' : 'vm-goodbye',
+                                'musiconhold' : 'ope',
+                                'updatecdr' : 'no',
+                                'recordagentcalls' : 'no',
+                                'createlink' : 'no',
+                                'recordformat' : 'wav',
+                                'urlprefix' : '',
+                                'custom_beep' : 'beep',
+                                'savecallsin' : '/usr/share/asterisk/sounds/web-interface/monitor'}
                 for ag in agents_agents:
-                        print '  %s  =>  %d' %(ag[1], STARTAGENTNUM + ag[0])
-
-##                for b in self.getuserlist().itervalues():
-##                        print int(b[5]) - STARTAGENTNUM, b[1]
-##                self.cursor_xivo.query("SELECT * FROM agent WHERE var_name = 'agent'")
-##                results = self.cursor_xivo.fetchall()
-##                for l in results:
-##                        print l
-##                self.cursor_xivo.query('SELECT * FROM agentfeatures')
-##                results = self.cursor_xivo.fetchall()
-##                for l in results:
-##                        print l
+                        agnum = str(STARTAGENTNUM + ag[0])
+                        columns = ('number',)
+                        self.cursor_xivo.query('SELECT ${columns} FROM agentfeatures WHERE number = %s',
+                                               columns,
+                                               agnum)
+                        isaginxivo = self.cursor_xivo.fetchall()
+                        if len(isaginxivo) > 0:
+                                print '  defined :  %s  =>  %s' %(ag[1], agnum)
+                        else:
+                                print 'undefined :  %s  =>  %s' %(ag[1], agnum)
+                                columns = ('var_metric',)
+                                self.cursor_xivo.query('SELECT ${columns} FROM agent ORDER BY var_metric DESC LIMIT 1',
+                                                       columns)
+                                cnum = self.cursor_xivo.fetchall()
+                                curnum = cnum[0][0] + 2
+                                self.cursor_xivo.query("ALTER TABLE agent AUTO_INCREMENT = 0")
+                                self.cursor_xivo.query("INSERT INTO agent VALUES "
+                                                       "(0, %d, %d, 0, 'agents.conf', 'agents', '%s', '%s')"
+                                                       % (1, curnum, 'agent', '%s,,%s' % (agnum, ag[1])))
+                                self.cursor_xivo.query('SELECT LAST_INSERT_ID()') # last_insert_id
+                                results = self.cursor_xivo.fetchall()
+                                last_insert_id = results[0][0]
+                                for p, vp in agent_params.iteritems():
+                                        self.cursor_xivo.query("INSERT INTO agent VALUES "
+                                                               "(0, %d, %d, 0, 'agents.conf', 'agents', '%s', '%s')"
+                                                               % (1, curnum - 1, p, vp))
+                                self.cursor_xivo.query("ALTER TABLE agentfeatures AUTO_INCREMENT = 0")
+                                self.cursor_xivo.query("INSERT INTO agentfeatures VALUES "
+                                                       "(0, %d, %d, '%s', '%s', '%s', '', 0, 1)"
+                                                       % (last_insert_id, 1, ag[1], '', agnum))
                 return
 
 
@@ -779,8 +810,8 @@ class CallBoosterCommand(BaseCommand):
                 return
 
 
-        def __pingnoreply(self):
-                print '__pingnoreply'
+        def __ping_noreply(self):
+                print '__ping_noreply'
                 thname = threading.currentThread().getName()
                 print 'timer/Ping :', thname
                 for astid in self.ulist:
@@ -1039,13 +1070,13 @@ class CallBoosterCommand(BaseCommand):
                                 userinfo['timer'].cancel()
                                 del userinfo['timer']
                                 if isalive:
-                                        print 'timer/Ping : was running, rebuilding timer'
+                                        print 'timer/Ping : was running, renew the timer'
                                 else:
                                         print 'timer/Ping : received a Ping but the timer was out ... should have been removed when out'
                         else:
                                 print 'timer/Ping : first setup for this connection'
 
-                        timer = threading.Timer(TIMEOUTPING, self.__pingnoreply)
+                        timer = threading.Timer(TIMEOUTPING, self.__ping_noreply)
                         timer.start()
                         userinfo['timer'] = timer
 
@@ -1173,7 +1204,7 @@ class CallBoosterCommand(BaseCommand):
                                                 print 'grouplist %s : %s' % (gl, str(exc))
                                         
                         self.cursor_operat.query('USE %s_mvts' % self.__socname(idsoc))
-                        self.cursor_operat.query('DELETE FROM alertes WHERE N = %s' % nalerte)
+                        # self.cursor_operat.query('DELETE FROM alertes WHERE N = %s' % nalerte)
                         # system / compteurs, suivisalertes
 
                 else:

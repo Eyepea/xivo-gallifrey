@@ -1009,10 +1009,12 @@ def handle_ami_event(astid, idata):
                         #                 6 AST_EXTENSION_RINGING = 8  appele
                 elif evfunction == 'OriginateSuccess':
                         pass
-                elif evfunction == 'AOriginateFailure':
-                        log_debug(SYSLOG_INFO, 'AMI:AOriginateFailure: %s - reason = %s' % (astid, this_event.get('Reason')))
+                elif evfunction == 'AOriginateSuccess':
+                        pass
                 elif evfunction == 'OriginateFailure':
                         log_debug(SYSLOG_INFO, 'AMI:OriginateFailure: %s - reason = %s' % (astid, this_event.get('Reason')))
+                elif evfunction == 'AOriginateFailure':
+                        log_debug(SYSLOG_INFO, 'AMI:AOriginateFailure: %s - reason = %s' % (astid, this_event.get('Reason')))
                         #define AST_CONTROL_HANGUP              1
                         #define AST_CONTROL_RING                2
                         #define AST_CONTROL_RINGING             3
