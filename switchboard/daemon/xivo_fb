@@ -1308,6 +1308,8 @@ def handle_ami_event(astid, idata):
                                           % (astid, str(this_event)))
                 elif evfunction == 'StatusComplete':
                         log_debug(SYSLOG_INFO, 'AMI %s StatusComplete' % astid)
+                elif evfunction == 'AgentsComplete':
+                        log_debug(SYSLOG_INFO, 'AMI %s AgentsComplete' % astid)
                 elif this_event.get('Response') == 'Follows' and this_event.get('Privilege') == 'Command':
                         log_debug(SYSLOG_INFO, 'AMI %s Response=Follows : %s' % (astid, str(this_event)))
                 elif this_event.get('Response') == 'Success':

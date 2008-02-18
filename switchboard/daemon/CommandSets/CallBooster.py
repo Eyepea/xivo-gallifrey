@@ -699,6 +699,14 @@ class CallBoosterCommand(BaseCommand):
 
         def pre_reload(self):
                 print 'pre_reload'
+                columns = ('CODE', 'NOM')
+                self.cursor_operat.query('USE agents')
+                self.cursor_operat.query('SELECT ${columns} FROM agents',
+                                         columns)
+                agents_agents = self.cursor_operat.fetchall()
+                for ag in agents_agents:
+                        print '  %s  =>  %d' %(ag[1], STARTAGENTNUM + ag[0])
+
 ##                for b in self.getuserlist().itervalues():
 ##                        print int(b[5]) - STARTAGENTNUM, b[1]
 ##                self.cursor_xivo.query("SELECT * FROM agent WHERE var_name = 'agent'")
@@ -768,8 +776,20 @@ class CallBoosterCommand(BaseCommand):
                                                      'Appel %s' % call.dest,
                                                      'default')
                 self.__init_taxes(call, call.dest, call.agentnum, call.dest, 'PABX', TRUNKNAME, int(call.agentnum) - STARTAGENTNUM)
-        
+                return
 
+
+        def __pingnoreply(self):
+                print '__pingnoreply'
+                thname = threading.currentThread().getName()
+                print 'timer/Ping :', thname
+                for astid in self.ulist:
+                        for agname, userinfo in self.ulist[astid].list.iteritems():
+                                if 'timer' in userinfo:
+                                        print userinfo['timer'].getName(), thname
+                return
+
+        
         def manage_srv2clt(self, userinfo_by_requester, connid, parsedcommand, cfg):
                 """
                 Defines the actions to be proceeded according to the client's commands.
@@ -1011,14 +1031,32 @@ class CallBoosterCommand(BaseCommand):
                 elif cname == 'Ping':
                         reference = parsedcommand.args[1]
                         reply = ',,,Pong/'
-                        # timer = threading.Timer(60, self.__pingnoreply)
                         connid_socket.send(reply)
+
+                        TIMEOUTPING = 120
+                        if 'timer' in userinfo:
+                                isalive = userinfo['timer'].isAlive()
+                                userinfo['timer'].cancel()
+                                del userinfo['timer']
+                                if isalive:
+                                        print 'timer/Ping : was running, rebuilding timer'
+                                else:
+                                        print 'timer/Ping : received a Ping but the timer was out ... should have been removed when out'
+                        else:
+                                print 'timer/Ping : first setup for this connection'
+
+                        timer = threading.Timer(TIMEOUTPING, self.__pingnoreply)
+                        timer.start()
+                        userinfo['timer'] = timer
+
 
                 elif cname == 'Sortie':
                         userinfo['cbstatus'] = 'Sortie'
 
+
                 elif cname == 'Pause':
                         userinfo['cbstatus'] = 'Pause'
+
 
                 elif cname == 'Prêt' or cname == 'Change' or cname == 'Sonn':
                         if cname == 'Prêt':
@@ -1634,7 +1672,7 @@ class CallBoosterCommand(BaseCommand):
                                 for incall in byprio[sdaprio]:
                                         # choose the operator or the list of queues for this incoming call
                                         topush = {}
-                                        tochoose = {}
+                                        tochoose = []
                                         time.sleep(0.1) # wait in order for the database value to be compliant ...
                                         for opername in incall.list_operators:
                                                 if opername not in todo_by_oper:
@@ -1650,11 +1688,11 @@ class CallBoosterCommand(BaseCommand):
                                                                 # print '__choose : incall : %s / opername : %s %s' % (incall.cidnum, opername, status)
                                                                 if status == 'Pret0':
                                                                         if len(todo_by_oper[opername]) == 0 and userqueuesize + 1 >= int(level):
-                                                                                topush[opername] = int(prio)
+                                                                                topush[opername] = [int(prio), int(busyness)]
                                                                         else:
-                                                                                tochoose[opername] = int(prio)
+                                                                                tochoose.append(opername)
                                                                 elif status in ['Pret1', 'Pause', 'Sonn']:
-                                                                        tochoose[opername] = int(prio)
+                                                                        tochoose.append(opername)
 
                                         print '__choose : callid = %s :' % incall.commid, topush, tochoose
                                         if len(topush) == 0: # noone available for this call yet
@@ -1663,12 +1701,15 @@ class CallBoosterCommand(BaseCommand):
                                         else:
                                                 if len(topush) == 1: # somebody available
                                                         opername = topush.keys()[0]
-                                                else: # choose among the pushers, according to prio
+                                                else: # choose among the pushers, according to prio and busyness
                                                         maxp = 0
-                                                        for opn, p in topush.iteritems():
-                                                                if p > maxp:
+                                                        minb = 100000
+                                                        for opn, sel in topush.iteritems():
+                                                                [p, b] = sel
+                                                                if p > maxp or p >= maxp and b < minb:
                                                                         opername = opn
                                                                         maxp = p
+                                                                        minb = b
                                                 todo_by_oper[opername].append(['push', incall])
                 return todo_by_oper
 

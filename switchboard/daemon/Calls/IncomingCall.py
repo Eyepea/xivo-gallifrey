@@ -435,12 +435,13 @@ class IncomingCall:
                                 else:
                                         truedispo = dispo[3]
 
-                                print 'busy-ness :', dispo[5], dispo[6], dispo[7], dispo[8]
+                                bness = dispo[5] * 8 + dispo[6] * 4 + dispo[7] * 2 + dispo[8]
+                                print 'busy-ness :', dispo[5], dispo[6], dispo[7], dispo[8], bness
                                 if truedispo == 'Pret':
                                         status = 'Pret%d' % dispo[4]
                                 else:
                                         status = truedispo
-                                return [status, dispo[1], dispo[9], dispo[11], dispo[5] + dispo[6] + dispo[7] + dispo[8]]
+                                return [status, dispo[1], dispo[9], dispo[11], bness]
                         else:
                                 return None
                 else:
