@@ -182,7 +182,7 @@ socket.setdefaulttimeout(2)
 HISTSEPAR = ';'
 XIVO_CLI_WEBI_HEADER = 'XIVO-CLI-WEBI'
 REQUIRED_CLIENT_VERSION = 2025
-XIVOVERSION = '0.3'
+XIVOVERSION = '0.4'
 ITEMS_PER_PACKET = 500
 USERLIST_LENGTH = 12
 
@@ -1152,15 +1152,14 @@ def handle_ami_event(astid, idata):
                                 log_debug(SYSLOG_ERR, '--- exception --- handle_ami_event_hangup : %s' % str(exc))
                 elif evfunction == 'Reload':
                         message = this_event.get('Message')
+                        log_debug(SYSLOG_WARN, "AMI:Reload: %s : %s" %(astid, str(this_event)))
                         if message == 'Reload Requested':
                                 # warning : "reload" as well as "reload manager" can appear here
                                 send_msg_to_cti_clients(commandclass.dmessage_srv2clt('Reload <%s>' % astid))
-                        else:
-                                log_debug(SYSLOG_INFO, "AMI:Reload: %s : %s" %(astid, str(this_event)))
                 elif evfunction == 'Shutdown':
                         shutdown = this_event.get('Shutdown')
                         restart  = this_event.get('Restart')
-                        log_debug(SYSLOG_INFO, "AMI:Shutdown: %s (how=%s restart=%s)" %(astid, shutdown, restart))
+                        log_debug(SYSLOG_WARN, "AMI:Shutdown: %s (how=%s restart=%s)" %(astid, shutdown, restart))
                         send_msg_to_cti_clients(commandclass.dmessage_srv2clt('Shutdown <%s>' % astid))
                 elif evfunction == 'Join':
                         chan  = this_event.get('Channel')
