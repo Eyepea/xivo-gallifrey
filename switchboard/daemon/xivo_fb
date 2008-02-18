@@ -2026,7 +2026,7 @@ class AsteriskUsers:
                 return
 
         def adduser(self, inparams):
-                [tech, user, passwd, context, phonenum, agentnum, isinitialized, cti_allowed] = inparams
+                [tech, user, passwd, context, phonenum, agentnum, isinitialized, cti_allowed, options] = inparams
                 if self.list.has_key(user):
                         # updates
                         self.list[user]['tech']     = tech
@@ -2047,6 +2047,7 @@ class AsteriskUsers:
                                            'calls'    : {},
                                            'queuelist': {},
                                            'init'     : isinitialized,
+                                           'options'  : options,
                                            'capas'    : 0}
                         if cti_allowed == '1':
                                 self.list[user]['capas'] = CAPA_ALMOST_ALL

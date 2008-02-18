@@ -378,7 +378,7 @@ class IncomingCall:
 
 
         def check_operator_status(self, operatorname):
-                columns = ('CODE', 'NOM', 'AGPI')
+                columns = ('CODE', 'NOM')
                 # AGPI : records outgoing calls
                 self.cursor_operat.query('USE agents')
                 self.cursor_operat.query('SELECT ${columns} FROM agents WHERE NOM = %s',
@@ -423,7 +423,9 @@ class IncomingCall:
                                 print operatorname, ':', language_allowed, comp_allowed
                                 return None
 
-                        columns = ('NOPE', 'AdrNet', 'CompLocale', 'Etat', 'Voie', 'NbT8', 'NbT4', 'NbT2', 'NbT1', 'Niveau', 'Derange', 'Priorite', 'NoDecroche')
+                        columns = ('NOPE', 'AdrNet', 'CompLocale', 'Etat', 'Voie',
+                                   'NbT8', 'NbT4', 'NbT2', 'NbT1',
+                                   'Niveau', 'Derange', 'Priorite')
                         self.cursor_operat.query("SELECT ${columns} FROM acd WHERE NOPE = %s AND Derange != 0 AND Etat != 'Sortie' AND CompLocale >= %s",
                                                  columns,
                                                  (operator_code, self.elect_competence))

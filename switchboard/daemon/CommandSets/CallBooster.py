@@ -175,26 +175,64 @@ class CallBoosterCommand(BaseCommand):
         def getuserlist(self):
                 localulist = {}
                 try:
-                        columns = ('CODE', 'NOM', 'PASS')
+                        columns = ('CODE', 'NOM', 'PASS', 'AGPI')
                         self.cursor_operat.query('USE agents')
                         self.cursor_operat.query('SELECT ${columns} FROM agents',
                                                  columns)
                         agents_agents = self.cursor_operat.fetchall()
                         for r in agents_agents:
+                                nope = r[0]
+                                agnum = str(STARTAGENTNUM + nope)
                                 opername = r[1]
                                 passname = r[2]
                                 # in order to avoid tricky u'sdlkfs'
                                 oname = opername.__repr__()[2:-1].replace('\\xe9', 'é').replace('\\xea', 'è')
                                 pname = passname.__repr__()[2:-1].replace('\\xe9', 'é').replace('\\xea', 'è')
+
+                                columns = ('NOPE', 'AdrNet', 'NoDecroche', 'NoMusique')
+                                self.cursor_operat.query("SELECT ${columns} FROM acd WHERE NOPE = %s",
+                                                         columns,
+                                                         str(nope))
+                                agents_acd = self.cursor_operat.fetchall()
+                                [nodecr, nomusic] = [agents_acd[0][2], agents_acd[0][3]]
+
+                                columns = ('agentid', 'number')
+                                self.cursor_xivo.query("SELECT ${columns} FROM agentfeatures WHERE number = %s",
+                                                       columns,
+                                                       agnum)
+                                a = self.cursor_xivo.fetchall()
+                                columns = ('id', 'var_metric')
+                                self.cursor_xivo.query("SELECT ${columns} FROM agent WHERE id = %s",
+                                                       columns,
+                                                       a[0][0])
+                                b = self.cursor_xivo.fetchall()
+                                columns = ('var_metric', 'var_name', 'var_val')
+                                self.cursor_xivo.query("SELECT ${columns} FROM agent WHERE var_metric = %s AND var_name = 'musiconhold'",
+                                                       columns,
+                                                       str(b[0][1] - 1))
+                                c = self.cursor_xivo.fetchall()
+                                if nomusic == '0':
+                                        if c[0][2] == 'silence':
+                                                self.cursor_xivo.query("UPDATE agent SET var_val = '%s' "
+                                                                       "WHERE var_metric = '%s' AND var_name = 'musiconhold'"
+                                                                       % ('ope', str(b[0][1] - 1)))
+                                else:
+                                        if c[0][2] == 'ope':
+                                                self.cursor_xivo.query("UPDATE agent SET var_val = '%s' "
+                                                                       "WHERE var_metric = '%s' AND var_name = 'musiconhold'"
+                                                                       % ('silence', str(b[0][1] - 1)))
+                                
                                 phlist = ['sip',
                                           oname,
                                           'nopasswd', #pname,
                                           'default',
                                           None,
-                                          '%d' % (STARTAGENTNUM + r[0]),
+                                          agnum,
                                           True,
-                                          '1']
+                                          '1',
+                                          ':'.join([str(r[3]), agents_acd[0][2], agents_acd[0][3]])]
                                 localulist['SIP/%s' % oname] = phlist
+
 
                 except Exception, exc:
                         print '--- exception --- in getuserlist()', exc
@@ -273,7 +311,8 @@ class CallBoosterCommand(BaseCommand):
                                           None,
                                           '%d' % (STARTAGENTNUM + int(nope)),
                                           True,
-                                          '1']
+                                          '1',
+                                          '0:0:0']
                                 self.ulist[astid].adduser(phlist)
                                 userinfo = self.ulist[astid].finduser(tagent)
                                 userinfo['sendfiche'] = ['qcb_%05d' % (int(callref) - 100000), 'Agent/%s' % agentnum]
