@@ -1021,6 +1021,7 @@ class CallBoosterCommand(BaseCommand):
 
                         if len(userinfo['calls']) > 0:
                                 print 'Appel : there are already ongoing calls'
+                                ntowait = 0
                                 for reference, anycall in userinfo['calls'].iteritems():
                                         print 'ongoing call', reference, anycall.parking, anycall.peerchannel
                                         if anycall.parking is None and anycall.peerchannel is not None:
@@ -1030,8 +1031,12 @@ class CallBoosterCommand(BaseCommand):
                                                         print 'it seems the mohclass will soon be set to %s' % mohclass
                                                         self.amis[astid].setvar(anycall.peerchannel, 'CB_MOH', mohclass)
                                                 self.amis[astid].transfer(anycall.peerchannel, PARK_EXTEN, 'default')
+                                                ntowait += 1
                                 userinfo['calls'][comm_id_outgoing] = outCall
-                                userinfo['calls'][comm_id_outgoing].tocall = True
+                                if ntowait > 0:
+                                        userinfo['calls'][comm_id_outgoing].tocall = True
+                                else:
+                                        self.__outcall(outCall)
                         else:
                                 if 'agentchannel' in userinfo:
                                         userinfo['calls'][comm_id_outgoing] = outCall

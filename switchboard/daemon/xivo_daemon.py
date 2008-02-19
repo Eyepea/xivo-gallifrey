@@ -3577,7 +3577,7 @@ while True: # loops over the reloads
                                 try:
                                         a = AMI_array_events_fd[astid].readline() # (BUFSIZE_ANY)
                                         if len(a) == 0: # end of connection from server side : closing socket
-                                                log_debug(SYSLOG_INFO, "%s : AMI : CLOSING" % astid)
+                                                log_debug(SYSLOG_WARNING, "%s : AMI : CLOSING" % astid)
                                                 strmessage = commandclass.dmessage_srv2clt('AMI OFF for <%s>' % astid)
                                                 send_msg_to_cti_clients(strmessage)
                                                 AMI_array_events_fd[astid].close()
