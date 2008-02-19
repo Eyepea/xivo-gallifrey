@@ -2,8 +2,6 @@
 # $Revision$
 # $Date$
 
-# TODO: handle multi-modules python programs
-
 import os
 import os.path
 import string
@@ -17,12 +15,13 @@ def excludable(module_name):
 	return True
 
 TMP_DIR = "TMP_LOCAL_FREEZE_PYTHON"
-excludables = ["__main__", 're', 'sre', 'sre_compile', 'os', 'encodings', 'encodings.aliases', 'codecs']
-excludables.append("threading")
+excludables = [
+	'__main__', 're', 'sre', 'sre_compile', 'os', 'encodings',
+	'encodings.aliases', 'codecs', 'threading',
+]
 
 noupx = False
 
-#if len(sys.argv) < 3 or len(sys.argv[2]) <= 3 or string.find(sys.argv[2], ".py") != len(sys.argv[2]) - 3:
 if len(sys.argv) < 3 or len(sys.argv[2]) <= 3:
 	print >> sys.stderr, "Syntax: <path>local_freeze.py /path/to/freeze.py /alt/path/to/script/to/build.py [noupx]\n"
 	sys.exit(2)
@@ -39,16 +38,15 @@ script_pathname = os.path.abspath(scripts_to_build[nscripts-1])
 script_path = os.path.dirname(script_pathname)
 script_name = os.path.basename(script_pathname)
 
-executable_pathname = os.path.abspath(scripts_to_build[nscripts-1][0:len(scripts_to_build[nscripts-1]) - 3])
+executable_pathname = os.path.abspath(scripts_to_build[nscripts-1][0:-3])
 executable_path = os.path.dirname(executable_pathname)
 executable_name = os.path.basename(executable_pathname)
-
 
 command_cp = "cp -rL " + script_pathname
 for extramod in scripts_to_build[:nscripts-1]:
 	command_cp = command_cp + " " + script_path + "/" + extramod
 	if extramod.find(".py") > 0:
-		excludables.append(os.path.basename(extramod[0:len(extramod[nscripts-1]) - 4]))
+		excludables.append(os.path.basename(extramod[0:-3]))
 	else:
 		excludables.append(extramod)
 command_cp = command_cp + " " + TMP_DIR
