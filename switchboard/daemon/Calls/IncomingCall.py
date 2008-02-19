@@ -53,7 +53,8 @@ class IncomingCall:
                 self.tocall = False
                 self.toretrieve = None
                 self.svirt = None
-                
+                self.forceacd = None
+
                 self.stimes = {time.time() : 'init'}
                 self.ttimes = {time.time() : 'init'}
                 self.uinfo = None

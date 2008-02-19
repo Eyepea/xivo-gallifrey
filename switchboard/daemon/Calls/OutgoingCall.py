@@ -29,6 +29,7 @@ class OutgoingCall:
                 self.appelaboute = None
                 self.tocall = False
                 self.toretrieve = None
+                self.forceacd = None
                 
                 self.stimes = {time.time() : 'init'}
                 self.ttimes = {time.time() : 'init'}
