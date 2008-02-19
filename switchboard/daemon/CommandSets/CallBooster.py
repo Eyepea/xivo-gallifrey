@@ -41,6 +41,10 @@ def log_debug(syslogprio, string):
         return varlog(syslogprio, string)
 
 
+# update features set var_val = '36000' where id = 3;
+# |  3 |          0 |          0 |         0 | features.conf | general    | parkingtime          | 36000       |
+# delete from musiconhold where category = "1/3/0";
+
 class CallBoosterCommand(BaseCommand):
         """
         CallBoosterCommand class.
@@ -78,6 +82,7 @@ class CallBoosterCommand(BaseCommand):
                 self.pending_sv_fiches = {}
                 self.tqueue = Queue.Queue()
                 self.queued_threads_pipe = queued_threads_pipe
+                self.alerts = {}
 
 
         def __sendfiche_a(self, userinfo, incall):
@@ -113,7 +118,7 @@ class CallBoosterCommand(BaseCommand):
                                 userinfo['startcontact'] = time.time()
                                 userinfo['startcontactth'] = 10
                                 self.amis[astid].aoriginate_var('sip', phonenum, 'Log %s' % phonenum,
-                                                                agentnum, agentname, 'default', 'CB_MES_LOGAGENT', agentname, 100)
+                                                                agentnum, agentname, 'default', {'CB_MES_LOGAGENT' : agentname}, 100)
                         self.__sendfiche_a(userinfo, incall)
                         print '__sendfiche', incall.queuename, agentnum
                         userinfo['queuelist'][incall.queuename] = incall
@@ -300,7 +305,7 @@ class CallBoosterCommand(BaseCommand):
 
                                 # XXX : sip/phonenum => IAX2/trunkname/number
                                 self.amis[astid].aoriginate_var('sip', phonenum, 'Log %s' % phonenum,
-                                                                agentnum, 'agentname', 'default', 'CB_MES_LOGAGENT', 'agentname', 100)
+                                                                agentnum, 'agentname', 'default', {'CB_MES_LOGAGENT' : 'agentname'}, 100)
                                 del self.pending_sv_fiches[callref]
 
                                 # adds the user at once
@@ -489,6 +494,38 @@ class CallBoosterCommand(BaseCommand):
                 return
 
 
+        def __originatefailure(self, astid, event, kind):
+                print '__originatefailure (%s) :' % kind, astid, event
+                # __originatefailure clg {'Uniqueid': '<null>', 'Exten': '6104', 'Reason': '0', 'Context': 'default', 'Privilege': 'call,all', 'Event': 'AOriginateFailure', 'Channel': 'sip/101'} a
+                return
+
+
+        def aoriginatefailure(self, astid, event):
+                self.__originatefailure(astid, event, 'a')
+                return
+
+
+        def originatefailure(self, astid, event):
+                self.__originatefailure(astid, event, '')
+                return
+
+
+        def __originatesuccess(self, astid, event, kind):
+                print '__originatesuccess (%s) :' % kind, astid, event
+                # __originatesuccess clg {'Uniqueid': '<null>', 'Exten': '6104', 'Reason': '0', 'Context': 'default', 'Privilege': 'call,all', 'Event': 'AOriginateSuccess', 'Channel': 'sip/101'} a
+                return
+
+
+        def aoriginatesuccess(self, astid, event):
+                self.__originatesuccess(astid, event, 'a')
+                return
+
+
+        def originatesuccess(self, astid, event):
+                self.__originatesuccess(astid, event, '')
+                return
+
+
         def messagewaiting(self, astid, event):
                 print 'messagewaiting', astid, event
                 datetime = time.strftime('%Y-%m-%d_%H-%M-%S')
@@ -591,6 +628,8 @@ class CallBoosterCommand(BaseCommand):
                         self.__clear_call_fromqueues(astid, thiscall)
                         # removes the call from incoming call list
                         incoming_calls[thiscall.sdanum].pop(chan)
+                else:
+                        print 'HANGUP (not incoming call)', event
                 return
 
 
@@ -850,7 +889,7 @@ class CallBoosterCommand(BaseCommand):
 
 
         def __ping_noreply(self):
-                print '__ping_noreply'
+                print '__ping_noreply', time.asctime()
                 thname = threading.currentThread().getName()
                 print 'timer/Ping :', thname
                 for astid in self.ulist:
@@ -859,7 +898,23 @@ class CallBoosterCommand(BaseCommand):
                                         print userinfo['timer'].getName(), thname
                 return
 
-        
+
+        def userevent(self, astid, event):
+                print 'userevent :', astid, event
+                appdatas = event.get('AppData').split('-', 1)
+                dtmfreply = appdatas[0]
+                rid = appdatas[1]
+                if rid in self.alerts:
+                        print self.alerts[rid]
+                        del self.alerts[rid]
+                # for rid, al in self.alerts.iteritems():
+                # issue one or more new calls ?
+                return
+
+        # self.cursor_operat.query('USE %s_mvts' % self.__socname(idsoc))
+        # self.cursor_operat.query('DELETE FROM alertes WHERE N = %s' % nalerte)
+        # system / compteurs, suivisalertes
+
         def manage_srv2clt(self, userinfo_by_requester, connid, parsedcommand, cfg):
                 """
                 Defines the actions to be proceeded according to the client's commands.
@@ -890,7 +945,7 @@ class CallBoosterCommand(BaseCommand):
                                 phonenum = userinfo_by_requester[5]
                                 log_debug(SYSLOG_INFO, 'AppelOpe : aoriginate_var for phonenum = %s' % phonenum)
                                 self.amis[astid].aoriginate_var('sip', phonenum, 'Log %s' % phonenum,
-                                                                agentnum, agentname, 'default', 'CB_MES_LOGAGENT', agentname, 100)
+                                                                agentnum, agentname, 'default', {'CB_MES_LOGAGENT' : agentname}, 100)
                         else:
                                 reply = ',%d,,AppelOpe/' % (-3)
                                 connid_socket.send(reply)
@@ -942,8 +997,11 @@ class CallBoosterCommand(BaseCommand):
                                                 if calls.parking is None and calls.peerchannel is not None:
                                                         calls.parking = j
                                                         topark.append(j)
-                                                        r = self.amis[astid].transfer(calls.peerchannel, PARK_EXTEN, 'default')
-
+                                                        if calls.dir == 'o':
+                                                                mohclass = '/'.join([calls.nsoc, calls.ncli, calls.ncol])
+                                                                print 'it seems the mohclass will soon be set to %s' % mohclass
+                                                                self.amis[astid].setvar(calls.peerchannel, 'CB_MOH', mohclass)
+                                                        self.amis[astid].transfer(calls.peerchannel, PARK_EXTEN, 'default')
                                         userinfo['calls'][calltoforce.commid] = calltoforce
                         else:
                                 print 'ForceACD - unknown ref =', reference
@@ -967,7 +1025,11 @@ class CallBoosterCommand(BaseCommand):
                                         print 'ongoing call', reference, anycall.parking, anycall.peerchannel
                                         if anycall.parking is None and anycall.peerchannel is not None:
                                                 anycall.parking = reference
-                                                r = self.amis[astid].transfer(anycall.peerchannel, PARK_EXTEN, 'default')
+                                                if anycall.dir == 'o':
+                                                        mohclass = '/'.join([anycall.nsoc, anycall.ncli, anycall.ncol])
+                                                        print 'it seems the mohclass will soon be set to %s' % mohclass
+                                                        self.amis[astid].setvar(anycall.peerchannel, 'CB_MOH', mohclass)
+                                                self.amis[astid].transfer(anycall.peerchannel, PARK_EXTEN, 'default')
                                 userinfo['calls'][comm_id_outgoing] = outCall
                                 userinfo['calls'][comm_id_outgoing].tocall = True
                         else:
@@ -979,7 +1041,7 @@ class CallBoosterCommand(BaseCommand):
                                         userinfo['calls'][comm_id_outgoing].tocall = True
                                         phonenum = userinfo_by_requester[5]
                                         self.amis[astid].aoriginate_var('sip', phonenum, 'Log %s' % phonenum,
-                                                                        agentnum, agentname, 'default', 'CB_MES_LOGAGENT', agentname, 100)
+                                                                        agentnum, agentname, 'default', {'CB_MES_LOGAGENT' : agentname}, 100)
 
                 elif cname == 'Raccroche':
                         reference = parsedcommand.args[1]
@@ -1061,7 +1123,11 @@ class CallBoosterCommand(BaseCommand):
                                 if anycall.parking is None:
                                         if anycall.peerchannel is not None:
                                                 anycall.parking = reference
-                                                r = self.amis[astid].transfer(anycall.peerchannel, PARK_EXTEN, 'default')
+                                                if anycall.dir == 'o':
+                                                        mohclass = '/'.join([anycall.nsoc, anycall.ncli, anycall.ncol])
+                                                        print 'it seems the mohclass will soon be set to %s' % mohclass
+                                                        self.amis[astid].setvar(anycall.peerchannel, 'CB_MOH', mohclass)
+                                                self.amis[astid].transfer(anycall.peerchannel, PARK_EXTEN, 'default')
                                                 # the reply will be sent when the parkedcall signal is received
                                         else:
                                                 print 'Attente : the agent is not in Attente mode yet but peerchannel is not defined'
@@ -1084,12 +1150,16 @@ class CallBoosterCommand(BaseCommand):
                                                                 calls.parking = j
                                                                 topark.append(j)
                                                                 print '#', calls.peerchannel
-                                                                r = self.amis[astid].transfer(calls.peerchannel, PARK_EXTEN, 'default')
+                                                                if calls.dir == 'o':
+                                                                        mohclass = '/'.join([calls.nsoc, calls.ncli, calls.ncol])
+                                                                        print 'it seems the mohclass will soon be set to %s' % mohclass
+                                                                        self.amis[astid].setvar(calls.peerchannel, 'CB_MOH', mohclass)
+                                                                self.amis[astid].transfer(calls.peerchannel, PARK_EXTEN, 'default')
                                                 if len(topark) > 0:
                                                         anycall.toretrieve = callbackexten
                                                 else:
-                                                        r = self.amis[astid].aoriginate('Agent', agentnum, agentname,
-                                                                                        callbackexten, 'cid b', 'default')
+                                                        self.amis[astid].aoriginate('Agent', agentnum, agentname,
+                                                                                    callbackexten, 'cid b', 'default')
                                         else:
                                                 print 'Reprise : the parkexten number is not defined'
                                 else:
@@ -1173,14 +1243,26 @@ class CallBoosterCommand(BaseCommand):
                         reply = ',,,%s/' % (cname)
                         connid_socket.send(reply)
                         self.amis[astid].aoriginate_var('Agent', agentnum, agentname,
-                                                       '7444', 'Enregistre', 'default',
-                                                       'CB_RECORD_FILENAME', reference[0], 100)
+                                                        '7444', 'Enregistre', 'default',
+                                                        {'CB_RECORD_FILENAME' : reference[0]}, 100)
 
                 elif cname == 'Alerte':
                         mreference = parsedcommand.args[1]
                         [nalerte, idsoc, idcli, idcol] = mreference.split('|')
                         reply = ',1,,%s/' % (cname)
                         connid_socket.send(reply)
+
+
+                        # System Resources
+                        columns = ('N', 'JOUR', 'DATED', 'DATEF', 'TYPE',
+                                   'PlgD', 'PlgF', 'Valeur')
+                        self.cursor_operat.query('USE system')
+                        self.cursor_operat.query('SELECT ${columns} FROM ressource_struct',
+                                                 columns)
+                        system_ressource_struct = self.cursor_operat.fetchall()
+                        for srs in system_ressource_struct:
+                                print 'A/ (# outgoing lines according to date & time) :', srs
+                                nsimlines = int(srs[7])
 
                         columns = ('N', 'NAlerteStruct', 'NomFichierMessage', 'ListeGroupes', 'interval_suivi')
                         self.cursor_operat.query('USE %s_mvts' % self.__socname(idsoc))
@@ -1194,7 +1276,8 @@ class CallBoosterCommand(BaseCommand):
                                 grouplist = rr[3].split(',')
                                 intervsuivi = rr[4] # in seconds
 
-                                print 'Alerte : filename = %s (groups = %s) intsuivi = %s' %(filename, str(grouplist), intervsuivi)
+                                # Alerte command => fetch details
+                                print 'B/ Alerte : filename = %s (groups = %s) intsuivi = %s' %(filename, str(grouplist), intervsuivi)
                                 columns = ('N', 'Libelle', 'NCol', 'NQuestion',
                                            'Type_Traitement', 'Nom_table_contact', 'Type_Alerte',
                                            'CallingNumber', 'nbTentatives', 'Alerte_Tous', 'Stop_Decroche')
@@ -1204,8 +1287,9 @@ class CallBoosterCommand(BaseCommand):
                                                          numstruct)
                                 results2 = self.cursor_operat.fetchall()
                                 nquestion = results2[0][3]
-                                print '       : struct =', results2[0][1:]
+                                callingnum = results2[0][7]
 
+                                # Fetch question details
                                 columns = ('N', 'Libelle', 'Descriptif', 'Fichier', 'Type_saisie',
                                            'Touches_autorisees', 'Touches_terminales', 'Touche_repete',
                                            'T0', 'T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9',
@@ -1215,18 +1299,8 @@ class CallBoosterCommand(BaseCommand):
                                                          columns,
                                                          nquestion)
                                 results3 = self.cursor_operat.fetchall()
-                                print '       : questions =', results3[0][1:8]
-                                print '       : questions =', results3[0][8:18]
-                                print '       : questions =', results3[0][18:20]
 
-                                columns = ('N', 'JOUR', 'DATED', 'DATEF', 'TYPE',
-                                           'PlgD', 'PlgF', 'Valeur')
-                                self.cursor_operat.query('USE system')
-                                self.cursor_operat.query('SELECT ${columns} FROM ressource_struct',
-                                                         columns)
-                                results5 = self.cursor_operat.fetchall()
-                                print results5
-
+                                nid = 0
                                 for gl in grouplist:
                                         try:
                                                 columns = ('N', 'Groupe', 'nom', 'prenom',
@@ -1236,15 +1310,33 @@ class CallBoosterCommand(BaseCommand):
                                                 self.cursor_operat.query('SELECT * FROM %s' % gl)
                                                 results4 = self.cursor_operat.fetchall()
                                                 for r4 in results4:
-                                                        print r4
-                                                        # self.amis[astid].aoriginate('local', phonenum, 'dest %s' % phonenum, 'any', 'any name', 'automa')
-                                                        
+                                                        rid = '%s-%06d' % (nalerte, nid)
+                                                        nid += 1
+                                                        self.alerts[rid] = {'nsoc' : idsoc,
+                                                                             'group' : gl,
+                                                                             'questionkind' : nquestion,
+                                                                             'digits-allowed' : results3[0][5],
+                                                                             'digits-end' : results3[0][6],
+                                                                             'digits-repeat' : results3[0][7],
+                                                                             'numbers' : r4[4:8],
+                                                                             'timetoring' : int(r4[13]),
+                                                                             'status' : 'init'
+                                                                             }
                                         except Exception, exc:
                                                 print 'grouplist %s : %s' % (gl, str(exc))
-                                        
-                        self.cursor_operat.query('USE %s_mvts' % self.__socname(idsoc))
-                        # self.cursor_operat.query('DELETE FROM alertes WHERE N = %s' % nalerte)
-                        # system / compteurs, suivisalertes
+
+
+##                        for rid, al in self.alerts.iteritems():
+##                                # print rid, al
+##                                if al['numbers'][0] == '0450029451' and al['status'] == 'init':
+##                                        self.amis[astid].aoriginate_var('sip', '102', 'dest 102',
+##                                                                        'cidFB', 'automated call', 'alerte-callbooster',
+##                                                                        {'CB_ALERT_MESSAGE' : 'fr/ss-noservice',
+##                                                                         'CB_ALERT_ID' : rid,
+##                                                                         'CB_ALERT_ALLOWED' : al['digits-allowed'],
+##                                                                         'CB_ALERT_REPEAT' : al['digits-repeat']},
+##                                                                        al['timetoring'])
+##                                        al['status'] = 'called'
 
                 else:
                         print 'CallBooster : unmanaged command <%s>' % cname

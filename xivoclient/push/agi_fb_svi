@@ -1,0 +1,39 @@
+#! /usr/bin/python
+# vim: set fileencoding=utf-8 :
+#
+# $Revision: 2427 $
+# $Date: 2008-02-15 13:19:34 +0100 (Fri, 15 Feb 2008) $
+#
+# Authors : Corentin Le Gall
+#           Proformatique
+#           67, rue Voltaire
+#           92800 PUTEAUX
+#           (+33/0)1.41.38.99.60
+#           mailto:technique@proformatique.com
+#           (C) 2007 Proformatique
+#
+
+import xivo.to_path
+import os
+import re
+import sys
+from agi import *
+
+agi = AGI()
+
+## \brief Logs a message into the Asterisk CLI
+# \param txt message to send to the CLI
+def print_verbose(txt):
+        agi.verbose("dtmf_callbooster : %s" % txt)
+
+dtmfnum = agi.get_variable('CB_DTMF')
+repeat  = agi.get_variable('CB_ALERTE_REPEAT')
+allowed = agi.get_variable('CB_ALERTE_ALLOWED')
+
+if dtmfnum not in allowed.split(';'):
+        agi.set_variable('CB_SVI_ACTION', 'reread')
+else:
+        if dtmfnum == repeat:
+                agi.set_variable('CB_SVI_ACTION', 'repeat')
+        else:
+                agi.set_variable('CB_SVI_ACTION', 'ok')

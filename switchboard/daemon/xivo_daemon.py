@@ -1152,14 +1152,14 @@ def handle_ami_event(astid, idata):
                                 log_debug(SYSLOG_ERR, '--- exception --- handle_ami_event_hangup : %s' % str(exc))
                 elif evfunction == 'Reload':
                         message = this_event.get('Message')
-                        log_debug(SYSLOG_WARN, "AMI:Reload: %s : %s" %(astid, str(this_event)))
+                        log_debug(SYSLOG_WARNING, "AMI:Reload: %s : %s" %(astid, str(this_event)))
                         if message == 'Reload Requested':
                                 # warning : "reload" as well as "reload manager" can appear here
                                 send_msg_to_cti_clients(commandclass.dmessage_srv2clt('Reload <%s>' % astid))
                 elif evfunction == 'Shutdown':
                         shutdown = this_event.get('Shutdown')
                         restart  = this_event.get('Restart')
-                        log_debug(SYSLOG_WARN, "AMI:Shutdown: %s (how=%s restart=%s)" %(astid, shutdown, restart))
+                        log_debug(SYSLOG_WARNING, "AMI:Shutdown: %s (how=%s restart=%s)" %(astid, shutdown, restart))
                         send_msg_to_cti_clients(commandclass.dmessage_srv2clt('Shutdown <%s>' % astid))
                 elif evfunction == 'Join':
                         chan  = this_event.get('Channel')

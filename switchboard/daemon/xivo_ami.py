@@ -183,6 +183,20 @@ class AMIClass:
                 
                 return ret
 
+
+        def setvar(self, chan, var, val):
+                try:
+                        ret = self.sendcommand('SetVar', [('Channel', chan),
+                                                          ('Variable', var),
+                                                          ('Value', val)])
+                        reply = self.readresponse('')
+                        return ret
+                except self.AMIError, exc:
+                        return False
+                except Exception, exc:
+                        return False
+
+
         # \brief Originates a call from a phone towards another.
         def originate(self, phoneproto, phonesrc, cidnamesrc, phonedst, cidnamedst, locext):
                 # originate a call btw src and dst
@@ -209,7 +223,7 @@ class AMIClass:
                 # originate a call btw src and dst
                 # src will ring first, and dst will ring when src responds
                 try:
-                        print 'AOriginate', phoneproto, phonesrc, cidnamesrc, phonedst, cidnamedst, locext
+                        #print 'AOriginate', phoneproto, phonesrc, cidnamesrc, phonedst, cidnamedst, locext
                         ret = self.sendcommand('AOriginate', [('Channel', phoneproto + '/' + phonesrc),
                                                               ('Exten', phonedst),
                                                               ('Context', locext),
@@ -227,22 +241,24 @@ class AMIClass:
                         return False
 
         # \brief Originates a call from a phone towards another.
-        def aoriginate_var(self, phoneproto, phonesrc, cidnamesrc, phonedst, cidnamedst, locext, var, val, timeout):
+        def aoriginate_var(self, phoneproto, phonesrc, cidnamesrc, phonedst, cidnamedst, locext, extravars, timeout):
                 # originate a call btw src and dst
                 # src will ring first, and dst will ring when src responds
                 try:
-                        print 'AOriginate_var', phoneproto, phonesrc, cidnamesrc, phonedst, cidnamedst, locext
-                        ret = self.sendcommand('AOriginate', [('Channel', phoneproto + '/' + phonesrc),
-                                                              ('Exten', phonedst),
-                                                              ('Context', locext),
-                                                              ('Priority', '1'),
-                                                              ('Timeout', str(timeout * 1000)),
-                                                              # ('CallerID', "%s" %(phonesrc)),
-                                                              ('CallerID', "%s <%s>" %(cidnamedst, phonedst)),
-                                                              ('Variable', 'XIVO_ORIGSRCNAME=%s' % cidnamesrc),
-                                                              ('Variable', 'XIVO_ORIGSRCNUM=%s'  % phonesrc),
-                                                              ('Variable', '%s=%s'  % (var, val)),
-                                                              ('Async', 'true')])
+                        #print 'AOriginate_var', phoneproto, phonesrc, cidnamesrc, phonedst, cidnamedst, locext
+                        command_details = [('Channel', phoneproto + '/' + phonesrc),
+                                           ('Exten', phonedst),
+                                           ('Context', locext),
+                                           ('Priority', '1'),
+                                           ('Timeout', str(timeout * 1000)),
+                                           # ('CallerID', "%s" %(phonesrc)),
+                                           ('CallerID', "%s <%s>" %(cidnamedst, phonedst)),
+                                           ('Variable', 'XIVO_ORIGSRCNAME=%s' % cidnamesrc),
+                                           ('Variable', 'XIVO_ORIGSRCNUM=%s'  % phonesrc),
+                                           ('Async', 'true')]
+                        for var, val in extravars.iteritems():
+                                command_details.append(('Variable', '%s=%s'  % (var, val)))
+                        ret = self.sendcommand('AOriginate', command_details)
                         reply = self.readresponse('')
                         return ret
                 except self.AMIError, exc:
@@ -307,10 +323,11 @@ class AMIClass:
         # \brief Transfers a channel towards a new extension.
         def transfer(self, channel, extension, context):
                 try:
-                        ret = self.sendcommand('Redirect', [('Channel', channel),
-                                                            ('Exten', extension),
-                                                            ('Context', context),
-                                                            ('Priority', '1')])
+                        command_details = [('Channel', channel),
+                                           ('Exten', extension),
+                                           ('Context', context),
+                                           ('Priority', '1')]
+                        ret = self.sendcommand('Redirect', command_details)
                         reply = self.readresponse('')
                         return ret
                 except self.AMIError, exc:

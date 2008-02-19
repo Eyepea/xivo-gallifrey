@@ -866,15 +866,14 @@ def handle_ami_event(astid, idata):
                                 log_debug(SYSLOG_ERR, '--- exception --- AMI / Hangup : %s (%s)' % (str(exc), str(this_event)))
                 elif evfunction == 'Reload':
                         message = this_event.get('Message')
+                        log_debug(SYSLOG_WARNING, "AMI:Reload: %s : %s" %(astid, str(this_event)))
                         if message == 'Reload Requested':
                                 # warning : "reload" as well as "reload manager" can appear here
                                 send_msg_to_cti_clients(commandclass.dmessage_srv2clt('Reload <%s>' % astid))
-                        else:
-                                log_debug(SYSLOG_INFO, "AMI:Reload: %s : %s" %(astid, str(this_event)))
                 elif evfunction == 'Shutdown':
                         shutdown = this_event.get('Shutdown')
                         restart  = this_event.get('Restart')
-                        log_debug(SYSLOG_INFO, "AMI:Shutdown: %s (how=%s restart=%s)" %(astid, shutdown, restart))
+                        log_debug(SYSLOG_WARNING, "AMI:Shutdown: %s (how=%s restart=%s)" %(astid, shutdown, restart))
                         send_msg_to_cti_clients(commandclass.dmessage_srv2clt('Shutdown <%s>' % astid))
                 elif evfunction == 'Join':
                         chan  = this_event.get('Channel')
@@ -1008,13 +1007,15 @@ def handle_ami_event(astid, idata):
                         #                 5                  AST_DEVICE_UNAVAILABLE
                         #                 6 AST_EXTENSION_RINGING = 8  appele
                 elif evfunction == 'OriginateSuccess':
-                        pass
+                        commandclass.originatesuccess(astid, this_event)
                 elif evfunction == 'AOriginateSuccess':
-                        pass
+                        commandclass.aoriginatesuccess(astid, this_event)
                 elif evfunction == 'OriginateFailure':
-                        log_debug(SYSLOG_INFO, 'AMI:OriginateFailure: %s - reason = %s' % (astid, this_event.get('Reason')))
+                        commandclass.originatefailure(astid, this_event)
+                        # log_debug(SYSLOG_INFO, 'AMI:OriginateFailure: %s - reason = %s' % (astid, this_event.get('Reason')))
                 elif evfunction == 'AOriginateFailure':
-                        log_debug(SYSLOG_INFO, 'AMI:AOriginateFailure: %s - reason = %s' % (astid, this_event.get('Reason')))
+                        commandclass.aoriginatefailure(astid, this_event)
+                        # log_debug(SYSLOG_INFO, 'AMI:AOriginateFailure: %s - reason = %s' % (astid, this_event.get('Reason')))
                         #define AST_CONTROL_HANGUP              1
                         #define AST_CONTROL_RING                2
                         #define AST_CONTROL_RINGING             3
@@ -1136,6 +1137,8 @@ def handle_ami_event(astid, idata):
                                 log_debug(SYSLOG_ERR, '--- exception --- (UserEventFeature) <%s> : %s' %(str(this_event), str(exc)))
                 elif evfunction == 'UserEventUserFeature':
                         pass
+                elif evfunction == 'UserEventACB':
+                        commandclass.userevent(astid, this_event)
                 elif evfunction == 'Newexten': # in order to handle outgoing calls ?
                         chan    = this_event.get('Channel')
                         exten   = this_event.get('Extension')
