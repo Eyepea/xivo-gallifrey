@@ -2015,7 +2015,7 @@ class CallBoosterCommand(BaseCommand):
                                                         nevt += 1
                                                         self.__addtoqueue(astid, opername, td[1])
                                 if nevt == 0:
-                                        action = 'bypass'
+                                        action = 'noqueue'
                         elif action == 'exit':
                                 self.__update_taxes(thiscall, 'Termine')
                                 self.__update_stat_acd2(thiscall)
